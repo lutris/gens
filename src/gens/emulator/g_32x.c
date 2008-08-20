@@ -449,17 +449,7 @@ int Do_32X_Frame_No_VDP (void)
 #endif
 		PWM_Update_Timer (PWM_Cycles);
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
@@ -533,17 +523,7 @@ int Do_32X_Frame_No_VDP (void)
 	}
 	
 	main68k_exec (Cycles_M68K - 360);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
 	
 	VDP_Status &= ~0x0004;		// HBlank = 0
 	_32X_VDP.State &= ~0x4000;
@@ -595,17 +575,7 @@ int Do_32X_Frame_No_VDP (void)
 	
 	PWM_Update_Timer (PWM_Cycles);
 	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	Z80_EXEC(0);
 	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
@@ -697,17 +667,7 @@ int Do_32X_Frame_No_VDP (void)
 		
 		PWM_Update_Timer (PWM_Cycles);
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	PSG_Special_Update ();
@@ -869,17 +829,7 @@ int Do_32X_Frame (void)
 #endif
 		PWM_Update_Timer (PWM_Cycles);
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
@@ -953,17 +903,7 @@ int Do_32X_Frame (void)
 	}
 	
 	main68k_exec (Cycles_M68K - 360);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
 	
 	//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80 - 168);
 	//else z80_Set_Odo(&M_Z80, Cycles_Z80 - 168);
@@ -1019,21 +959,11 @@ int Do_32X_Frame (void)
 	//SH2_Exec(&S_SH2, Cycles_SSH2);
 	
 	PWM_Update_Timer (PWM_Cycles);
-
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	
+	Z80_EXEC(0);
 	//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80);
 	//else z80_Set_Odo(&M_Z80, Cycles_Z80);
-
+	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
 	     VDP_Current_Line++)
@@ -1124,17 +1054,7 @@ int Do_32X_Frame (void)
 		//SH2_Exec(&S_SH2, Cycles_SSH2);
 		PWM_Update_Timer (PWM_Cycles);
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 		//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80);
 		//else z80_Set_Odo(&M_Z80, Cycles_Z80);
 	}

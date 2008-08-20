@@ -417,21 +417,7 @@ int Do_Genesis_Frame_No_VDP (void)
 		}
 		
 		main68k_exec (Cycles_M68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-		{
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		}
-		else
-		{
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-		}
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
@@ -454,18 +440,7 @@ int Do_Genesis_Frame_No_VDP (void)
 	
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
 	main68k_exec (Cycles_M68K - 360);
-	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
 	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
@@ -474,17 +449,7 @@ int Do_Genesis_Frame_No_VDP (void)
 	z80_Interrupt (&M_Z80, 0xFF);
 	
 	main68k_exec (Cycles_M68K);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	Z80_EXEC(0);
 	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
@@ -508,17 +473,7 @@ int Do_Genesis_Frame_No_VDP (void)
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
 		main68k_exec (Cycles_M68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	PSG_Special_Update ();
@@ -596,21 +551,7 @@ int Do_Genesis_Frame (void)
 		Render_Line ();
 		
 		main68k_exec (Cycles_M68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-		{
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		}
-		else
-		{
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-		}
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
@@ -633,22 +574,7 @@ int Do_Genesis_Frame (void)
 	
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
 	main68k_exec (Cycles_M68K - 360);
-	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-	{
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	}
-	else
-	{
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-	}
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
 	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
@@ -658,21 +584,7 @@ int Do_Genesis_Frame (void)
 	z80_Interrupt (&M_Z80, 0xFF);
 	
 	main68k_exec (Cycles_M68K);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-	{
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	}
-	else
-	{
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-	}
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	Z80_EXEC(0);
 	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
@@ -697,21 +609,7 @@ int Do_Genesis_Frame (void)
 		
 		main68k_exec (Cycles_M68K);
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-		{
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		}
-		else
-		{
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-		}
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 	}
 	
 	PSG_Special_Update ();

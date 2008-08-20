@@ -41,4 +41,22 @@ void Set_Clock_Freq(int system);
 	else					\
 		VDP_Num_Vis_Lines = 224;
 
+/**
+ * Z80_EXEC: Z80 execution macro.
+ * @param cyclesSubtract Cycles to subtract from Cycles_Z80.
+ */
+#ifdef __RESULT__
+#define Z80_EXEC(cyclesSubtract)									\
+	if (Z80_State == 3)										\
+		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - (cyclesSubtract)));	\
+	else												\
+		z80_Set_Odo (&M_Z80, Cycles_Z80 - (cyclesSubtract));
+#else
+#define Z80_EXEC(cyclesSubtract)					\
+	if (Z80_State == 3)						\
+		z80_Exec (&M_Z80, Cycles_Z80 - (cyclesSubtract));	\
+	else								\
+		z80_Set_Odo (&M_Z80, Cycles_Z80 - (cyclesSubtract));
+#endif
+
 #endif

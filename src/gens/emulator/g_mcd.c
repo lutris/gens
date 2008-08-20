@@ -353,17 +353,8 @@ int Do_SegaCD_Frame_No_VDP (void)
 		
 		main68k_exec (Cycles_M68K);
 		sub68k_exec (Cycles_S68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
+		
 		Update_SegaCD_Timer ();
 	}
 	
@@ -393,17 +384,8 @@ int Do_SegaCD_Frame_No_VDP (void)
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
 	main68k_exec (Cycles_M68K - 360);
 	sub68k_exec (Cycles_S68K - 586);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
+	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
@@ -412,17 +394,8 @@ int Do_SegaCD_Frame_No_VDP (void)
 	
 	main68k_exec (Cycles_M68K);
 	sub68k_exec (Cycles_S68K);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	Z80_EXEC(0);
+	
 	Update_SegaCD_Timer ();
 	
 	for (VDP_Current_Line++;
@@ -452,17 +425,8 @@ int Do_SegaCD_Frame_No_VDP (void)
 		
 		main68k_exec (Cycles_M68K);
 		sub68k_exec (Cycles_S68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
+		
 		Update_SegaCD_Timer ();
 	}
 	
@@ -589,17 +553,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 		
 		/* end instruction by instruction execution */
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 		
 		Update_SegaCD_Timer ();
 	}
@@ -651,18 +605,8 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 	
 	/* end instruction by instruction execution */
 	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
-
+	Z80_EXEC(168);
+	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
@@ -688,18 +632,8 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 	
 	/* end instruction by instruction execution */
 	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
-
+	Z80_EXEC(0);
+	
 	Update_SegaCD_Timer ();
 	
 	for (VDP_Current_Line++;
@@ -768,17 +702,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 		
 		/* end instruction by instruction execution */
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 		
 		Update_SegaCD_Timer ();
 	}
@@ -869,17 +793,8 @@ int Do_SegaCD_Frame (void)
 		
 		main68k_exec (Cycles_M68K);
 		sub68k_exec (Cycles_S68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
+		
 		Update_SegaCD_Timer ();
 	}
 	
@@ -909,17 +824,7 @@ int Do_SegaCD_Frame (void)
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
 	main68k_exec (Cycles_M68K - 360);
 	sub68k_exec (Cycles_S68K - 586);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
 	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
@@ -929,17 +834,8 @@ int Do_SegaCD_Frame (void)
 	
 	main68k_exec (Cycles_M68K);
 	sub68k_exec (Cycles_S68K);
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	Z80_EXEC(0);
+	
 	Update_SegaCD_Timer ();
 	
 	for (VDP_Current_Line++;
@@ -969,17 +865,8 @@ int Do_SegaCD_Frame (void)
 		
 		main68k_exec (Cycles_M68K);
 		sub68k_exec (Cycles_S68K);
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
+		
 		Update_SegaCD_Timer ();
 	}
 	
@@ -1134,17 +1021,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 		
 		/* end instruction by instruction execution */
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 		
 		Update_SegaCD_Timer ();
 	}
@@ -1196,17 +1073,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 	
 	/* end instruction by instruction execution */
 	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80 - 168));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80 - 168);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80 - 168);
-#endif
+	Z80_EXEC(168);
 	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
@@ -1233,17 +1100,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 	
 	/* end instruction by instruction execution */
 	
-#ifdef __RESULT__
-	if (Z80_State == 3)
-		asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-	if (Z80_State == 3)
-		z80_Exec (&M_Z80, Cycles_Z80);
-	else
-		z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+	Z80_EXEC(0);
 	
 	Update_SegaCD_Timer ();
 	
@@ -1313,17 +1170,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 		
 		/* end instruction by instruction execution */
 		
-#ifdef __RESULT__
-		if (Z80_State == 3)
-			asm volatile ("call z80_Exec"::"c" (&M_Z80), "d" (Cycles_Z80));
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#else
-		if (Z80_State == 3)
-			z80_Exec (&M_Z80, Cycles_Z80);
-		else
-			z80_Set_Odo (&M_Z80, Cycles_Z80);
-#endif
+		Z80_EXEC(0);
 		
 		Update_SegaCD_Timer ();
 	}
