@@ -885,30 +885,7 @@ int Do_SegaCD_Frame (void)
 		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
 	if (Show_LED)
-	{
-		if (LED_Status & 2)
-		{
-			MD_Screen[336 * 220 + 12] = 0x03E0;
-			MD_Screen[336 * 220 + 13] = 0x03E0;
-			MD_Screen[336 * 220 + 14] = 0x03E0;
-			MD_Screen[336 * 220 + 15] = 0x03E0;
-			MD_Screen[336 * 222 + 12] = 0x03E0;
-			MD_Screen[336 * 222 + 13] = 0x03E0;
-			MD_Screen[336 * 222 + 14] = 0x03E0;
-			MD_Screen[336 * 222 + 15] = 0x03E0;
-		}
-		if (LED_Status & 1)
-		{
-			MD_Screen[336 * 220 + 12 + 8] = 0xF800;
-			MD_Screen[336 * 220 + 13 + 8] = 0xF800;
-			MD_Screen[336 * 220 + 14 + 8] = 0xF800;
-			MD_Screen[336 * 220 + 15 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 12 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 13 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 14 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 15 + 8] = 0xF800;
-		}
-	}
+		SegaCD_Display_LED();
 	
 	return 1;
 }
@@ -1190,30 +1167,37 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
 	if (Show_LED)
-	{
-		if (LED_Status & 2)
-		{
-			MD_Screen[336 * 220 + 12] = 0x03E0;
-			MD_Screen[336 * 220 + 13] = 0x03E0;
-			MD_Screen[336 * 220 + 14] = 0x03E0;
-			MD_Screen[336 * 220 + 15] = 0x03E0;
-			MD_Screen[336 * 222 + 12] = 0x03E0;
-			MD_Screen[336 * 222 + 13] = 0x03E0;
-			MD_Screen[336 * 222 + 14] = 0x03E0;
-			MD_Screen[336 * 222 + 15] = 0x03E0;
-		}
-		if (LED_Status & 1)
-		{
-			MD_Screen[336 * 220 + 12 + 8] = 0xF800;
-			MD_Screen[336 * 220 + 13 + 8] = 0xF800;
-			MD_Screen[336 * 220 + 14 + 8] = 0xF800;
-			MD_Screen[336 * 220 + 15 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 12 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 13 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 14 + 8] = 0xF800;
-			MD_Screen[336 * 222 + 15 + 8] = 0xF800;
-		}
-	}
+		SegaCD_Display_LED();
 	
 	return 1;
+}
+
+
+/**
+ * SegaCD_Display_LED(): Display the LEDs on the Sega CD interface.
+ */
+inline void SegaCD_Display_LED()
+{
+	if (LED_Status & 2)
+	{
+		MD_Screen[336 * 220 + 12] = 0x03E0;
+		MD_Screen[336 * 220 + 13] = 0x03E0;
+		MD_Screen[336 * 220 + 14] = 0x03E0;
+		MD_Screen[336 * 220 + 15] = 0x03E0;
+		MD_Screen[336 * 222 + 12] = 0x03E0;
+		MD_Screen[336 * 222 + 13] = 0x03E0;
+		MD_Screen[336 * 222 + 14] = 0x03E0;
+		MD_Screen[336 * 222 + 15] = 0x03E0;
+	}
+	if (LED_Status & 1)
+	{
+		MD_Screen[336 * 220 + 12 + 8] = 0xF800;
+		MD_Screen[336 * 220 + 13 + 8] = 0xF800;
+		MD_Screen[336 * 220 + 14 + 8] = 0xF800;
+		MD_Screen[336 * 220 + 15 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 12 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 13 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 14 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 15 + 8] = 0xF800;
+	}
 }
