@@ -208,46 +208,7 @@ int Init_32X (struct Rom *MD_Rom)
 	PWM_Init ();
 	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
-	if (CPU_Mode)
-	{
-		// PAL
-		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) SSH2_Speed) / 100.0);
-		
-		VDP_Num_Lines = 312;
-		VDP_Status |= 0x0001;
-		_32X_VDP.Mode &= ~0x8000;
-		
-		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_PAL / 15, Sound_Rate);
-	}
-	else
-	{
-		// NTSC
-		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) SSH2_Speed) / 100.0);
-		
-		VDP_Num_Lines = 262;
-		VDP_Status &= 0xFFFE;
-		_32X_VDP.Mode |= 0x8000;
-		
-		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
-	}
-	
-	_32X_VDP.State |= 0x2000;
+	Set_Clock_Freq(2);
 	
 	// If auto-fix checksum is enabled, fix the ROM checksum.
 	if (Auto_Fix_CS)

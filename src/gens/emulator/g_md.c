@@ -268,42 +268,7 @@ int Init_Genesis (struct Rom *MD_Rom)
 	Reset_VDP ();
 	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
-	if (CPU_Mode)
-	{
-		// PAL
-		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) SSH2_Speed) / 100.0);
-		
-		VDP_Num_Lines = 312;
-		VDP_Status |= 0x0001;
-		
-		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_PAL / 15, Sound_Rate);
-	}
-	else
-	{
-		// NTSC
-		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) SSH2_Speed) / 100.0);
-		
-		VDP_Num_Lines = 262;
-		VDP_Status &= 0xFFFE;
-		
-		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
-	}
+	Set_Clock_Freq(0);
 	
 	// If auto-fix checksum is enabled, fix the ROM checksum.
 	if (Auto_Fix_CS)

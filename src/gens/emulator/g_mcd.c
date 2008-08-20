@@ -143,40 +143,8 @@ int Init_SegaCD (char *iso_name)
 	BRAM_Ex_State &= 0x100;
 	Controller_1_COM = Controller_2_COM = 0;
 	
-	if (CPU_Mode)
-	{
-		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) SSH2_Speed) / 100.0);
-		
-		VDP_Num_Lines = 312;
-		VDP_Status |= 0x0001;
-		
-		CD_Access_Timer = 2080;
-		Timer_Step = 136752;
-	}
-	else
-	{
-		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) SSH2_Speed) / 100.0);
-		
-		VDP_Num_Lines = 262;
-		VDP_Status &= 0xFFFE;
-		
-		CD_Access_Timer = 2096;
-		Timer_Step = 135708;
-	}
+	// Set clock rates depending on the CPU mode (NTSC / PAL).
+	Set_Clock_Freq(1);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
@@ -192,17 +160,6 @@ int Init_SegaCD (char *iso_name)
 	Reset_VDP ();
 	LC89510_Reset ();
 	Init_RS_GFX ();
-	
-	if (CPU_Mode)
-	{
-		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_PAL / 15, Sound_Rate);
-	}
-	else
-	{
-		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
-	}
 	
 	Init_PCM (Sound_Rate);
 	

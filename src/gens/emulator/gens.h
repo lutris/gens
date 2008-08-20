@@ -28,4 +28,6 @@ void Init_Tab(void);
 void Recalculate_Palettes(void);
 void Check_Country_Order(void);
 
+void Set_Clock_Freq(int system);
+
 #endif

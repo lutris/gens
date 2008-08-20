@@ -365,3 +365,69 @@ void Check_Country_Order (void)
 		Country_Order[2] = 2;
 	}
 }
+
+
+/**
+ * Set_CPU_Freq(): Sets the CPU frequencies.
+ * @param system System: 0 = MD only, 1 = MCD, 2 = 32X
+ */
+void Set_Clock_Freq(int system)
+{
+	if (CPU_Mode)
+	{
+		// PAL
+		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
+		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
+		CPL_MSH2 =
+			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+				(double) MSH2_Speed) / 100.0);
+		CPL_SSH2 =
+			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+				(double) SSH2_Speed) / 100.0);
+		
+		VDP_Num_Lines = 312;
+		VDP_Status |= 0x0001;
+		
+		if (system == 1) // SegaCD
+		{
+			CD_Access_Timer = 2080;
+			Timer_Step = 136752;
+		}
+		
+		if (system == 2) // 32X
+			_32X_VDP.Mode &= ~0x8000;
+		
+		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+		PSG_Init (CLOCK_PAL / 15, Sound_Rate);
+	}
+	else
+	{
+		// NTSC
+		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
+		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
+		CPL_MSH2 =
+			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+				(double) MSH2_Speed) / 100.0);
+		CPL_SSH2 =
+			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+				(double) SSH2_Speed) / 100.0);
+		
+		VDP_Num_Lines = 262;
+		VDP_Status &= 0xFFFE;
+		
+		if (system == 1) // SegaCD
+		{
+			CD_Access_Timer = 2096;
+			Timer_Step = 135708;
+		}
+		
+		if (system == 2) // 32X
+			_32X_VDP.Mode |= 0x8000;
+		
+		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+		PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+	}
+	
+	if (system == 2) // 32X
+		_32X_VDP.State |= 0x2000;
+}
