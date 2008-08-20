@@ -42,7 +42,7 @@ void Set_Clock_Freq(int system);
 		VDP_Num_Vis_Lines = 224;
 
 /**
- * Z80_EXEC: Z80 execution macro.
+ * Z80_EXEC(): Z80 execution macro.
  * @param cyclesSubtract Cycles to subtract from Cycles_Z80.
  */
 #ifdef __RESULT__
