@@ -173,10 +173,13 @@ Build_Language_String (void)
   return (0);
 }
 
-void
-SetWindowText (const char *s)
+/**
+ * SetWindowText(): Sets the window title.
+ * @param s New window title.
+ */
+void SetWindowText (const char *s)
 {
-  SDL_WM_SetCaption (s, NULL);
+	gtk_window_set_title((GtkWindow*)gens_window, s);
 }
 
 
