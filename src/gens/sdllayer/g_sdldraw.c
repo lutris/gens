@@ -13,6 +13,7 @@
 #include "g_sdlinput.h"
 #include "g_main.h"
 #include "gens.h"
+#include "g_md.h"
 #include "mem_m68k.h"
 #include "vdp_io.h"
 #include "vdp_rend.h"

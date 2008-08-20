@@ -9,6 +9,8 @@
 #include "g_main.h"
 #include "timer.h"
 #include "gens.h"
+#include "g_md.h"
+#include "g_mcd.h"
 #include "g_sdlsound.h"
 #include "g_sdldraw.h"
 #include "g_sdlinput.h"

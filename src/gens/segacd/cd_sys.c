@@ -3,6 +3,7 @@
 #include "cd_aspi.h"		// this include cd_sys.h
 #include "cd_file.h"
 #include "gens.h"
+#include "g_mcd.h"
 #include "g_sdlsound.h"
 #include "cdda_mp3.h"
 #include "lc89510.h"
