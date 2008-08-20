@@ -316,12 +316,8 @@ int Do_32X_Frame_No_VDP (void)
 	int HInt_Counter, HInt_Counter_32X;
 	int CPL_PWM;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;
@@ -738,12 +734,8 @@ int Do_32X_Frame (void)
 	int HInt_Counter, HInt_Counter_32X;
 	int CPL_PWM;
 	
-  	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;

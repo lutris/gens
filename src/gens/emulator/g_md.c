@@ -343,12 +343,8 @@ void Reset_Genesis (void)
  */
 int Do_VDP_Only (void)
 {
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	for (VDP_Current_Line = 0;
 	     VDP_Current_Line < VDP_Num_Vis_Lines;
@@ -370,12 +366,8 @@ int Do_Genesis_Frame_No_VDP (void)
 	int *buf[2];
 	int HInt_Counter;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;
@@ -552,12 +544,8 @@ int Do_Genesis_Frame (void)
 	int *buf[2];
 	int HInt_Counter;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
 	YM_Buf[1] = PSG_Buf[1] = Seg_R;

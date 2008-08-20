@@ -296,13 +296,9 @@ int Do_SegaCD_Frame_No_VDP (void)
 	int *buf[2];
 	int HInt_Counter;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
-	
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
+
 	CPL_S68K = 795;
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
@@ -497,12 +493,8 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 	int *buf[2], i, j;
 	int HInt_Counter;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	CPL_S68K = 795;
 	
@@ -818,12 +810,8 @@ int Do_SegaCD_Frame (void)
 	int *buf[2];
 	int HInt_Counter;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	CPL_S68K = 795;
 	
@@ -1048,12 +1036,8 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 	int *buf[2], i, j;
 	int HInt_Counter;
 	
-	// If PAL and some VDP register are set, use 240 lines.
-	// Otherwise, only 224 lines are visible.
-	if ((CPU_Mode) && (VDP_Reg.Set2 & 0x8))
-		VDP_Num_Vis_Lines = 240;
-	else
-		VDP_Num_Vis_Lines = 224;
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
 	
 	CPL_S68K = 795;
 	
