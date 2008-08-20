@@ -76,9 +76,11 @@ am_gens_OBJECTS = gens_core/cpu/68k/gens-cpu_68k.$(OBJEXT) \
 	util/file/gens-unzip.$(OBJEXT) util/sound/gens-wave.$(OBJEXT) \
 	port/gens-port.$(OBJEXT) port/gens-timer.$(OBJEXT) \
 	emulator/gens-ui_proxy.$(OBJEXT) \
-	emulator/gens-g_main.$(OBJEXT) emulator/gens-gens.$(OBJEXT) \
-	debug/gens-debug.$(OBJEXT) debug/gens-m68kd.$(OBJEXT) \
-	debug/gens-sh2d.$(OBJEXT) debug/gens-z80dis.$(OBJEXT) \
+	emulator/gens-g_main.$(OBJEXT) emulator/gens-g_md.$(OBJEXT) \
+	emulator/gens-g_mcd.$(OBJEXT) emulator/gens-g_32x.$(OBJEXT) \
+	emulator/gens-gens.$(OBJEXT) debug/gens-debug.$(OBJEXT) \
+	debug/gens-m68kd.$(OBJEXT) debug/gens-sh2d.$(OBJEXT) \
+	debug/gens-z80dis.$(OBJEXT) \
 	gtkui/glade/gens-callbacks.$(OBJEXT) \
 	gtkui/glade/gens-interface.$(OBJEXT) \
 	gtkui/gens-support.$(OBJEXT) emulator/gens-parse.$(OBJEXT)
@@ -333,6 +335,12 @@ gens_SOURCES = \
 		emulator/ui_proxy.h \
 		emulator/g_main.c \
 		emulator/g_main.h \
+		emulator/g_md.c \
+		emulator/g_md.h \
+		emulator/g_mcd.c \
+		emulator/g_mcd.h \
+		emulator/g_32x.c \
+		emulator/g_32x.h \
 		emulator/gens.c \
 		emulator/gens.h \
 		debug/debug.c \
@@ -583,6 +591,12 @@ emulator/gens-ui_proxy.$(OBJEXT): emulator/$(am__dirstamp) \
 	emulator/$(DEPDIR)/$(am__dirstamp)
 emulator/gens-g_main.$(OBJEXT): emulator/$(am__dirstamp) \
 	emulator/$(DEPDIR)/$(am__dirstamp)
+emulator/gens-g_md.$(OBJEXT): emulator/$(am__dirstamp) \
+	emulator/$(DEPDIR)/$(am__dirstamp)
+emulator/gens-g_mcd.$(OBJEXT): emulator/$(am__dirstamp) \
+	emulator/$(DEPDIR)/$(am__dirstamp)
+emulator/gens-g_32x.$(OBJEXT): emulator/$(am__dirstamp) \
+	emulator/$(DEPDIR)/$(am__dirstamp)
 emulator/gens-gens.$(OBJEXT): emulator/$(am__dirstamp) \
 	emulator/$(DEPDIR)/$(am__dirstamp)
 debug/$(am__dirstamp):
@@ -629,7 +643,10 @@ mostlyclean-compile:
 	-rm -f debug/gens-m68kd.$(OBJEXT)
 	-rm -f debug/gens-sh2d.$(OBJEXT)
 	-rm -f debug/gens-z80dis.$(OBJEXT)
+	-rm -f emulator/gens-g_32x.$(OBJEXT)
 	-rm -f emulator/gens-g_main.$(OBJEXT)
+	-rm -f emulator/gens-g_mcd.$(OBJEXT)
+	-rm -f emulator/gens-g_md.$(OBJEXT)
 	-rm -f emulator/gens-gens.$(OBJEXT)
 	-rm -f emulator/gens-parse.$(OBJEXT)
 	-rm -f emulator/gens-ui_proxy.$(OBJEXT)
@@ -677,7 +694,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@debug/$(DEPDIR)/gens-m68kd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@debug/$(DEPDIR)/gens-sh2d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@debug/$(DEPDIR)/gens-z80dis.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-g_32x.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-g_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-g_mcd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-g_md.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-gens.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/gens-ui_proxy.Po@am__quote@
@@ -1223,6 +1243,48 @@ emulator/gens-g_main.obj: emulator/g_main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_main.c' object='emulator/gens-g_main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_main.obj `if test -f 'emulator/g_main.c'; then $(CYGPATH_W) 'emulator/g_main.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_main.c'; fi`
+
+emulator/gens-g_md.o: emulator/g_md.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-g_md.o -MD -MP -MF "emulator/$(DEPDIR)/gens-g_md.Tpo" -c -o emulator/gens-g_md.o `test -f 'emulator/g_md.c' || echo '$(srcdir)/'`emulator/g_md.c; \
+@am__fastdepCC_TRUE@	then mv -f "emulator/$(DEPDIR)/gens-g_md.Tpo" "emulator/$(DEPDIR)/gens-g_md.Po"; else rm -f "emulator/$(DEPDIR)/gens-g_md.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_md.c' object='emulator/gens-g_md.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_md.o `test -f 'emulator/g_md.c' || echo '$(srcdir)/'`emulator/g_md.c
+
+emulator/gens-g_md.obj: emulator/g_md.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-g_md.obj -MD -MP -MF "emulator/$(DEPDIR)/gens-g_md.Tpo" -c -o emulator/gens-g_md.obj `if test -f 'emulator/g_md.c'; then $(CYGPATH_W) 'emulator/g_md.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_md.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "emulator/$(DEPDIR)/gens-g_md.Tpo" "emulator/$(DEPDIR)/gens-g_md.Po"; else rm -f "emulator/$(DEPDIR)/gens-g_md.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_md.c' object='emulator/gens-g_md.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_md.obj `if test -f 'emulator/g_md.c'; then $(CYGPATH_W) 'emulator/g_md.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_md.c'; fi`
+
+emulator/gens-g_mcd.o: emulator/g_mcd.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-g_mcd.o -MD -MP -MF "emulator/$(DEPDIR)/gens-g_mcd.Tpo" -c -o emulator/gens-g_mcd.o `test -f 'emulator/g_mcd.c' || echo '$(srcdir)/'`emulator/g_mcd.c; \
+@am__fastdepCC_TRUE@	then mv -f "emulator/$(DEPDIR)/gens-g_mcd.Tpo" "emulator/$(DEPDIR)/gens-g_mcd.Po"; else rm -f "emulator/$(DEPDIR)/gens-g_mcd.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_mcd.c' object='emulator/gens-g_mcd.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_mcd.o `test -f 'emulator/g_mcd.c' || echo '$(srcdir)/'`emulator/g_mcd.c
+
+emulator/gens-g_mcd.obj: emulator/g_mcd.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-g_mcd.obj -MD -MP -MF "emulator/$(DEPDIR)/gens-g_mcd.Tpo" -c -o emulator/gens-g_mcd.obj `if test -f 'emulator/g_mcd.c'; then $(CYGPATH_W) 'emulator/g_mcd.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_mcd.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "emulator/$(DEPDIR)/gens-g_mcd.Tpo" "emulator/$(DEPDIR)/gens-g_mcd.Po"; else rm -f "emulator/$(DEPDIR)/gens-g_mcd.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_mcd.c' object='emulator/gens-g_mcd.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_mcd.obj `if test -f 'emulator/g_mcd.c'; then $(CYGPATH_W) 'emulator/g_mcd.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_mcd.c'; fi`
+
+emulator/gens-g_32x.o: emulator/g_32x.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-g_32x.o -MD -MP -MF "emulator/$(DEPDIR)/gens-g_32x.Tpo" -c -o emulator/gens-g_32x.o `test -f 'emulator/g_32x.c' || echo '$(srcdir)/'`emulator/g_32x.c; \
+@am__fastdepCC_TRUE@	then mv -f "emulator/$(DEPDIR)/gens-g_32x.Tpo" "emulator/$(DEPDIR)/gens-g_32x.Po"; else rm -f "emulator/$(DEPDIR)/gens-g_32x.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_32x.c' object='emulator/gens-g_32x.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_32x.o `test -f 'emulator/g_32x.c' || echo '$(srcdir)/'`emulator/g_32x.c
+
+emulator/gens-g_32x.obj: emulator/g_32x.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-g_32x.obj -MD -MP -MF "emulator/$(DEPDIR)/gens-g_32x.Tpo" -c -o emulator/gens-g_32x.obj `if test -f 'emulator/g_32x.c'; then $(CYGPATH_W) 'emulator/g_32x.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_32x.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "emulator/$(DEPDIR)/gens-g_32x.Tpo" "emulator/$(DEPDIR)/gens-g_32x.Po"; else rm -f "emulator/$(DEPDIR)/gens-g_32x.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='emulator/g_32x.c' object='emulator/gens-g_32x.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -c -o emulator/gens-g_32x.obj `if test -f 'emulator/g_32x.c'; then $(CYGPATH_W) 'emulator/g_32x.c'; else $(CYGPATH_W) '$(srcdir)/emulator/g_32x.c'; fi`
 
 emulator/gens-gens.o: emulator/gens.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gens_CFLAGS) $(CFLAGS) -MT emulator/gens-gens.o -MD -MP -MF "emulator/$(DEPDIR)/gens-gens.Tpo" -c -o emulator/gens-gens.o `test -f 'emulator/gens.c' || echo '$(srcdir)/'`emulator/gens.c; \

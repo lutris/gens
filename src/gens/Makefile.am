@@ -140,6 +140,12 @@ gens_SOURCES = \
 		emulator/ui_proxy.h \
 		emulator/g_main.c \
 		emulator/g_main.h \
+		emulator/g_md.c \
+		emulator/g_md.h \
+		emulator/g_mcd.c \
+		emulator/g_mcd.h \
+		emulator/g_32x.c \
+		emulator/g_32x.h \
 		emulator/gens.c \
 		emulator/gens.h \
 		debug/debug.c \
