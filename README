@@ -1,0 +1,148 @@
+Summary
+-------
+
+1) What is it ?
+2) Why this emulator ?
+3) Who've done it ?
+4) So, what are the requirements ?
+5) There are some glitches. Why that ?
+6) What does it emulate ?
+7) Will it run at the same speed than the Windows version ?
+8) How do I compile it ?
+9) Then, how do I run it ?
+10) Where are language.dat and gens.cfg ?
+11) What is the syntax of gens.cfg ?
+12) How to configure inputs without the GTK interface ?
+
+1) What is it ?
+---------------
+
+This is a Linux port (x86 processors) based on the Sega Genesis Emulator "Gens" version 2.12a
+
+
+2) Why this emulator ?
+----------------------
+
+Because it was a pity that Gens wasn't available on Linux platforms.
+
+
+3) Who've done it ?
+-------------------
+
+Stephane Dallongeville is the author of Gens (Windows version).
+Caz has made a BeOS port, using Allegro. But this port was command line oriented. And though Allegro is a great library, 
+its GUI part is ... well ... rather ugly.
+Thus, I (Stephane Akhoun) wanted to use GTK+ for the GUI. But as mixing Allegro and GTK+ events loop was a bit of challenge
+(though possible) I decided to switch to SDL. Fortunately, it was very easy (only 2 function calls to change !).
+Finally, in the port process, my main work is the GTK+ GUI, and some work here and there.
+Caz ported the gens core : I wanted to thank him/her one more time for his/her pieces of advice.
+
+Thanks also for Lester Barrows (aryarya) and El Pelos (wah wah 69) for their contribution, patches, joystick support, ...
+For all users that helped and help us in the porting process : thank you very much !
+
+
+4) So, what are the requirements ?
+----------------------------------
+
+You must have at least :
+
+- SDL 1.2 (SDL 1.1.3 reported to work)
+
+- GTK+ 2.4
+
+- gcc >= 2.95
+
+- nasm 0.98.38 (older version may work. Didn't try.)
+
+
+5) There are some glitches. Why that ?
+--------------------------------------
+
+You are very welcome to :
+	- report bugs
+	- notify incomplete features and strange behaviour (ie that differs from the original version)
+
+on Sourceforge site.
+For more specific stuff (ie : only stuff related to gens for unix), you can contact me at yabdeo@free.fr
+Please, check on Sourceforge that your bug/request feature is not already taken in account ! Thanks by advance !
+
+
+6) What does it emulate ?
+-------------------------
+
+It emulates Genesis, Sega CD (iso/mp3, not real CD) and 32X roms.
+
+
+7) Will it run at the same speed than the Windows version ?
+-----------------------------------------------------------
+
+It will.
+32X games run slowly at full definition (2xSAI, 44kHz, all improvements on). But maybe my PC is not powerful enough.
+
+
+8) How do I compile it ?
+------------------------
+
+First, uncompress the archive gens.tar.gz in an empty directory :
+'tar xvzf gens.tar.gz'
+In all cases, make sure that you use GNU Make.
+
+Then type :
+'configure'
+'make'
+'make install'
+
+You should also have a look at the INSTALL file, if you're not comfortable with this.
+
+
+9) Then, how do I run it ?
+--------------------------
+
+After a successful compilation, you should have a file named 'gens' in your 'gens' directory. Just type './gens' and enjoy !
+
+
+10) Where are language.dat and gens.cfg ?
+----------------------------------------
+
+In ~/.gens/
+
+
+11) What is the syntax of gens.cfg ?
+------------------------------------
+
+[section1]
+key=value
+...
+...
+
+[section2]
+key=value
+...
+
+
+12) How to configure inputs without the GTK interface ?
+-------------------------------------------------------
+
+If you must edit gens.cfg by hand to configure your joystick :
+
+Down  : 4096 + 256*which + 1
+Up    : 4096 + 256*which + 2
+Left  : 4096 + 256*which + 3
+Right : 4096 + 256*which + 4
+
+Buttons : 4112 + 256*which + x 
+
+
+where which = 0 for first joystick,
+            = 1 for second joystick,
+      x     = the number of the button
+		  
+Here how a typical gens.cfg with joystick would look like (modify for your own needs)
+
+P1.Up=4098
+P1.Down=4097
+P1.Left=4099
+P1.Right=4100
+P1.Start=4112
+P1.A=4113
+...
