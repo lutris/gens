@@ -31,7 +31,7 @@ void Check_Country_Order(void);
 void Set_Clock_Freq(int system);
 
 /**
- * Set_Visible_Lines(): Sets the number of visible lines, depending on CPU mode and VDP setting.
+ * SET_VISIBLE_LINES: Sets the number of visible lines, depending on CPU mode and VDP setting.
  * If PAL and some VDP register are set, use 240 lines.
  * Otherwise, only 224 lines are visible.
  */
