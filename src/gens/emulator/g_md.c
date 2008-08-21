@@ -2,24 +2,17 @@
  * GENS: Genesis (Mega Drive) initialization and main loop code.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include "g_md.h"
 #include "gens.h"
+#include "g_md.h"
 #include "g_main.h"
 #include "g_sdldraw.h"
 #include "g_sdlsound.h"
 #include "g_sdlinput.h"
-#include "rom.h"
 #include "mem_m68k.h"
-#include "mem_s68k.h"
-#include "mem_sh2.h"
 #include "ym2612.h"
 #include "psg.h"
 #include "cpu_68k.h"
 #include "cpu_z80.h"
-#include "cpu_sh2.h"
 #include "z80.h"
 #include "vdp_io.h"
 #include "vdp_rend.h"
@@ -28,14 +21,7 @@
 #include "misc.h"
 #include "save.h"
 #include "ggenie.h"
-#include "cd_sys.h"
-#include "lc89510.h"
-#include "gfx_cd.h"
 #include "wave.h"
-#include "pcm.h"
-#include "pwm.h"
-#include "cd_sys.h"
-#include "cd_file.h"
 #include "gym.h"
 #include "support.h"
 

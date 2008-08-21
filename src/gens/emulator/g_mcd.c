@@ -2,29 +2,22 @@
  * GENS: Sega CD (Mega CD) initialization and main loop code.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include "g_mcd.h"
-#include "g_md.h"
 #include "gens.h"
+#include "g_md.h"
+#include "g_mcd.h"
 #include "g_main.h"
 #include "g_sdldraw.h"
 #include "g_sdlsound.h"
 #include "g_sdlinput.h"
-#include "rom.h"
 #include "mem_m68k.h"
 #include "mem_s68k.h"
-#include "mem_sh2.h"
 #include "ym2612.h"
 #include "psg.h"
 #include "cpu_68k.h"
 #include "cpu_z80.h"
-#include "cpu_sh2.h"
 #include "z80.h"
 #include "vdp_io.h"
 #include "vdp_rend.h"
-#include "vdp_32x.h"
 #include "io.h"
 #include "misc.h"
 #include "save.h"
@@ -34,7 +27,6 @@
 #include "gfx_cd.h"
 #include "wave.h"
 #include "pcm.h"
-#include "pwm.h"
 #include "cd_sys.h"
 #include "cd_file.h"
 #include "gym.h"
@@ -726,6 +718,36 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 
 
 /**
+ * SegaCD_Display_LED(): Display the LEDs on the Sega CD interface.
+ */
+inline void SegaCD_Display_LED()
+{
+	if (LED_Status & 2)
+	{
+		MD_Screen[336 * 220 + 12] = 0x03E0;
+		MD_Screen[336 * 220 + 13] = 0x03E0;
+		MD_Screen[336 * 220 + 14] = 0x03E0;
+		MD_Screen[336 * 220 + 15] = 0x03E0;
+		MD_Screen[336 * 222 + 12] = 0x03E0;
+		MD_Screen[336 * 222 + 13] = 0x03E0;
+		MD_Screen[336 * 222 + 14] = 0x03E0;
+		MD_Screen[336 * 222 + 15] = 0x03E0;
+	}
+	if (LED_Status & 1)
+	{
+		MD_Screen[336 * 220 + 12 + 8] = 0xF800;
+		MD_Screen[336 * 220 + 13 + 8] = 0xF800;
+		MD_Screen[336 * 220 + 14 + 8] = 0xF800;
+		MD_Screen[336 * 220 + 15 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 12 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 13 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 14 + 8] = 0xF800;
+		MD_Screen[336 * 222 + 15 + 8] = 0xF800;
+	}
+}
+
+
+/**
  * Do_SegaCD_Frame_No_VDP(): Runs a Sega CD.
  * @return 1 if successful.
  */
@@ -1170,34 +1192,4 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 		SegaCD_Display_LED();
 	
 	return 1;
-}
-
-
-/**
- * SegaCD_Display_LED(): Display the LEDs on the Sega CD interface.
- */
-inline void SegaCD_Display_LED()
-{
-	if (LED_Status & 2)
-	{
-		MD_Screen[336 * 220 + 12] = 0x03E0;
-		MD_Screen[336 * 220 + 13] = 0x03E0;
-		MD_Screen[336 * 220 + 14] = 0x03E0;
-		MD_Screen[336 * 220 + 15] = 0x03E0;
-		MD_Screen[336 * 222 + 12] = 0x03E0;
-		MD_Screen[336 * 222 + 13] = 0x03E0;
-		MD_Screen[336 * 222 + 14] = 0x03E0;
-		MD_Screen[336 * 222 + 15] = 0x03E0;
-	}
-	if (LED_Status & 1)
-	{
-		MD_Screen[336 * 220 + 12 + 8] = 0xF800;
-		MD_Screen[336 * 220 + 13 + 8] = 0xF800;
-		MD_Screen[336 * 220 + 14 + 8] = 0xF800;
-		MD_Screen[336 * 220 + 15 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 12 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 13 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 14 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 15 + 8] = 0xF800;
-	}
 }
