@@ -47,7 +47,7 @@ char Dbg_Cond_Str[3];
 	strcpy(_GString, (text));			\
 	Print_Text(_GString, (size), (x), (y), (color));
 
-void Debug_Event (int key)
+void Debug_Event(int key)
 {
 	int i, steps;
 	SH2_CONTEXT *sh;
@@ -301,7 +301,7 @@ void Debug_Event (int key)
  * Next_Short(): Get the next short (16-bit) value.
  * @return Next short (16-bit) value.
  */
-unsigned short Next_Word (void)
+unsigned short Next_Word(void)
 {
 	unsigned short val;
 	
@@ -320,7 +320,7 @@ unsigned short Next_Word (void)
  * Next_Long(): Get the next long (32-bit) value.
  * @return Next long (32-bit) value.
  */
-unsigned int Next_Long (void)
+unsigned int Next_Long(void)
 {
 	unsigned int val;
 	
@@ -942,7 +942,7 @@ void Refresh_Word_Ram_Pattern(void)
 /**
  * Update_Debug_Screen(): Update the debug screen.
  */
-void Update_Debug_Screen (void)
+void Update_Debug_Screen(void)
 {
 	// Clear the MD screen.
 	memset(MD_Screen, 0, 336 * 240 * 2);
