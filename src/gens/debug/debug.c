@@ -259,10 +259,14 @@ void Debug_Event(int key, int mod)
 					MD_Palette[7 * 16 + i] =
 						((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
 			}
-		break;
+			break;
 		
 		case GENS_KEY_NUM_MULTIPLY:
-			pattern_pal++;
+		printf("mod: %x; GENS_KMOD_SHIFT: %x\n", mod, GENS_KMOD_SHIFT);
+			if (mod & GENS_KMOD_SHIFT)
+				pattern_pal--;
+			else
+				pattern_pal++;
 			pattern_pal &= 0xF;
 			break;
 		
