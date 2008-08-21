@@ -22,31 +22,29 @@ void Sleep (int i);
 //cdrd: to read from ioctl.
 union cdrd
 {
-  struct cdrom_msf0 msf;
-  char buf[2048 + 512];
+	struct cdrom_msf0 msf;
+	char buf[2048 + 512];
 };
 
 int FD_CDROM = 0;
 int LBA_POS = 0;
 int MAX_LBA = 0;
 
-static inline int
-MSF2LBA (struct cdrom_msf0 msf)
+static inline int MSF2LBA (struct cdrom_msf0 msf)
 {
-  return (((msf.minute * CD_SECS) + msf.second) * CD_FRAMES + msf.frame) -
-    CD_MSF_OFFSET;
+	return (((msf.minute * CD_SECS) + msf.second) * CD_FRAMES + msf.frame) - CD_MSF_OFFSET;
 }
-static inline struct cdrom_msf0
-LBA2MSF (int lba)
+
+static inline struct cdrom_msf0 LBA2MSF (int lba)
 {
-  struct cdrom_msf0 msf;
-  lba += CD_MSF_OFFSET;
-  msf.frame = lba % CD_FRAMES;
-  lba /= CD_FRAMES;
-  msf.second = lba % CD_SECS;
-  lba /= CD_SECS;
-  msf.minute = lba;
-  return msf;
+	struct cdrom_msf0 msf;
+	lba += CD_MSF_OFFSET;
+	msf.frame = lba % CD_FRAMES;
+	lba /= CD_FRAMES;
+	msf.second = lba % CD_SECS;
+	lba /= CD_SECS;
+	msf.minute = lba;
+	return msf;
 }
 
 //End By Ubi.
@@ -71,73 +69,88 @@ unsigned char Buf_Read[2366 * 64];
 SRB_ExecSCSICmd sread;
 
 
-int
-ASPI_Init (void)
+/**
+ * ASPI_Init(): Initialize ASPI.
+ * @return 0 if successful.
+ */
+int ASPI_Init (void)
 {
-  ASPI_Command_Running = 0;
-  Num_CD_Drive = 0;
-  Current_LBA = 0;
-
-  //By Ubi Start:
-  FD_CDROM = open (CDROM_DEV, O_RDONLY | O_NONBLOCK);
-  if (FD_CDROM >= 0)
-    {
-      LINUXCD_Select_Speed();
-      Num_CD_Drive = 1;
-      return 0; // !1 !!!!!!!!!!!!!!!!!!!!!!
-    }
-  //Ubi End.
-  return Num_CD_Drive;			// useless...
+	ASPI_Command_Running = 0;
+	Num_CD_Drive = 0;
+	Current_LBA = 0;
+	
+	//By Ubi Start:
+	FD_CDROM = open (CDROM_DEV, O_RDONLY | O_NONBLOCK);
+	if (FD_CDROM >= 0)
+	{
+		LINUXCD_Select_Speed();
+		Num_CD_Drive = 1;
+		return 0; // !1 !!!!!!!!!!!!!!!!!!!!!!
+	}
+	//Ubi End.
+	
+	// useless...
+	return Num_CD_Drive;
 }
 
 
-int
-ASPI_End (void)
+/**
+ * ASPI_End(): Shut down ASPI.
+ * @return 0 if successful; non-zero on error.
+ */
+int ASPI_End (void)
 {
-  if (FD_CDROM == -1)
-    return -1;
-  close (FD_CDROM);
-  Num_CD_Drive = 0;
-  //By Ubi
-  return 0;
+	if (FD_CDROM == -1)
+		return -1;
+	close (FD_CDROM);
+	Num_CD_Drive = 0;
+	//By Ubi
+	return 0;
 }
 
 
+/**
+ * ASPI_Reset_Drive(): Reset a CD-ROM drive.
+ * @param buf Return message.
+ */
 void
 ASPI_Reset_Drive (char *buf)
 {
-  Read_Complete = 1;
-
-  ASPI_Star_Stop_Unit (STOP_DISC, NULL);
-  ASPI_Star_Stop_Unit (CLOSE_TRAY, NULL);
-  ASPI_Test_Unit_Ready (7000);
-  ASPI_Star_Stop_Unit (START_DISC, NULL);
-
-  // Fill the TOC and set the CD_Present flag
-  ASPI_Read_TOC (1, 0, 0, 0, NULL);
-
-  if (CD_Present)
-    {
-      while (ASPI_Read_CD_LBA (0, 1, 0, 0, 0, 0, NULL) == -1);
-    }
-  else
-    ASPI_Read_CD_LBA (0, 1, 0, 0, 0, 0, NULL);
-
-  memcpy (buf, &Buf_Read[0x100], 0x200);
-  CDD_Complete = 1;
+	Read_Complete = 1;
+	
+	ASPI_Star_Stop_Unit (STOP_DISC, NULL);
+	ASPI_Star_Stop_Unit (CLOSE_TRAY, NULL);
+	ASPI_Test_Unit_Ready (7000);
+	ASPI_Star_Stop_Unit (START_DISC, NULL);
+	
+	// Fill the TOC and set the CD_Present flag
+	ASPI_Read_TOC (1, 0, 0, 0, NULL);
+	
+	if (CD_Present)
+		while (ASPI_Read_CD_LBA (0, 1, 0, 0, 0, 0, NULL) == -1);
+	else
+		ASPI_Read_CD_LBA (0, 1, 0, 0, 0, 0, NULL);
+	
+	memcpy (buf, &Buf_Read[0x100], 0x200);
+	CDD_Complete = 1;
 }
 
 
-int
-ASPI_Test_Unit_Ready (int timeout) //da verificare
+/**
+ * ASPI_Test_Unit_Ready(): Check if the CD-ROM drive is ready.
+ * @param timeout Maximum timeout period.
+ * @return 0 if OK; 2 if no disc; 3 if tray is open; -1 on error.
+ */
+int ASPI_Test_Unit_Ready (int timeout) //da verificare
 {
-  int wait_time = 0;
-
-  CDD_Complete = 1;
-  while (wait_time < timeout)
-  {
-	int ret = ioctl(FD_CDROM, CDROM_DRIVE_STATUS, CDSL_CURRENT);
-		switch(ret) {
+	int wait_time = 0;
+	
+	CDD_Complete = 1;
+	while (wait_time < timeout)
+	{
+		int ret = ioctl(FD_CDROM, CDROM_DRIVE_STATUS, CDSL_CURRENT);
+		switch(ret)
+		{
 			case CDS_DISC_OK:
 				return 0;
 			case CDS_NO_DISC:
@@ -145,71 +158,86 @@ ASPI_Test_Unit_Ready (int timeout) //da verificare
 			case CDS_TRAY_OPEN:
 				return 3;
 		}
-    wait_time += 10;
-    Sleep (8);
-  }
-
-  return -1;
+		wait_time += 10;
+		Sleep (8);
+	}
+	
+	return -1;
 }
 
 
-int
-ASPI_Lock (int flock)
+/**
+ * ASPI_Lock(): Lock the drive.
+ * @param flock 1 to lock the drive, 0 to unlock the drive. (TODO: Check this!)
+ * @return 0 on success.
+ */
+int ASPI_Lock (int flock)
 {
-  int ret;			//By Ubi Start
-  ret = ioctl (FD_CDROM, CDROM_LOCKDOOR, flock);
-  CDD_Complete = 1;
-  return 0;
-  //By Ubi End, nothing to make.
+	//By Ubi Start
+	int ret;
+	ret = ioctl (FD_CDROM, CDROM_LOCKDOOR, flock);
+	CDD_Complete = 1;
+	return 0;
+	//By Ubi End, nothing to make.
 }
 
 
-int
-ASPI_Star_Stop_Unit (int op, int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
+/**
+ * ASPI_Star_Stop_Unit(): Start, Stop, Eject, or Close the CD-ROM drive.
+ * @param op Operation.
+ * @param PostProc Post-processing SCSI command to run.
+ * @return 0 on success; -1 on error. (On second thought, WTF does this function return?!)
+ */
+int ASPI_Star_Stop_Unit (int op, int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
 {
-  SRB_ExecSCSICmd s_loc, *s;
-//By Ubi Start
-  int ret;
-  switch (op)
-    {
-    case START_DISC:
-      ret = ioctl (FD_CDROM, CDROMSTART, 0);
-      break;
-    case STOP_DISC:
-      ret = ioctl (FD_CDROM, CDROMSTOP, 0);
-      break;
-    case CLOSE_TRAY:
-      ret = ioctl (FD_CDROM, CDROMCLOSETRAY, 0);
-      break;
-    case OPEN_TRAY:
-      ret = ioctl (FD_CDROM, CDROMEJECT, 0);
-      break;
-    default:
-      ret = -1;
-    }
-  if (ret < 0)
-    return 0;			//What i return with an error?
-  if (PostProc == NULL)
-    PostProc = ASPI_Star_Stop_Unit_COMP;
-  s_loc.SRB_Status = SS_COMP;
-  return PostProc (&s_loc);
-  return 0;
-  //End
+	SRB_ExecSCSICmd s_loc, *s;
+	//By Ubi Start
+	int ret;
+	switch (op)
+	{
+		case START_DISC:
+			ret = ioctl (FD_CDROM, CDROMSTART, 0);
+			break;
+		case STOP_DISC:
+			ret = ioctl (FD_CDROM, CDROMSTOP, 0);
+			break;
+		case CLOSE_TRAY:
+			ret = ioctl (FD_CDROM, CDROMCLOSETRAY, 0);
+			break;
+		case OPEN_TRAY:
+			ret = ioctl (FD_CDROM, CDROMEJECT, 0);
+			break;
+		default:
+			ret = -1;
+	}
+	if (ret < 0)
+	{
+		//What i return with an error?
+		return 0;
+	}
+	if (PostProc == NULL)
+		PostProc = ASPI_Star_Stop_Unit_COMP;
+	s_loc.SRB_Status = SS_COMP;
+	return PostProc (&s_loc);
+	return 0;
+	//End
 }
 
 
-void
-LINUXCD_Select_Speed ()
+/**
+ * LINUXCD_Select_Speed(): Select drive speed.
+ */
+void LINUXCD_Select_Speed ()
 {
 	int ret = -1;
 	int speed[6] = {20,12,10,8,4,0};
 	int i = 0;
-
+	
 	if(CDROM_SPEED)
 	{
 		ret = ioctl(FD_CDROM, CDROM_SELECT_SPEED, CDROM_SPEED);
 	}
-
+	
 	while(ret < 0 && i < 6)
 	{
 		ret = ioctl(FD_CDROM, CDROM_SELECT_SPEED, speed[i]);
@@ -218,54 +246,61 @@ LINUXCD_Select_Speed ()
 }
 
 
-int
-ASPI_Read_TOC (int MSF, int format, int st, int async,
-	       int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
+/**
+ * ASPI_Read_TOC(): Read the disc TOC.
+ * @param MSF
+ * @param format
+ * @param st
+ * @param async
+ * @param PostProc
+ * @return 0 on success; -1 on error.
+ */
+int ASPI_Read_TOC (int MSF, int format, int st, int async,
+		   int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
 {
-  SRB_ExecSCSICmd s_loc, *s;
-  //By Ubi Start:
-  int ret, i, t;
-  struct cdrom_tochdr tochd;
-  struct cdrom_tocentry tocent;
-
-
-  ret = ioctl (FD_CDROM, CDROMREADTOCHDR, &tochd);
-  if (ret >= 0)
-    {
-      toc.tocLen = sizeof (toc);
-      toc.firstTrack = tochd.cdth_trk0;
-      toc.lastTrack = tochd.cdth_trk1;
-
-      for (t = 0, i = tochd.cdth_trk0; i <= tochd.cdth_trk1; i++, t++)
+	SRB_ExecSCSICmd s_loc, *s;
+	//By Ubi Start:
+	int ret, i, t;
+	struct cdrom_tochdr tochd;
+	struct cdrom_tocentry tocent;
+	
+	ret = ioctl (FD_CDROM, CDROMREADTOCHDR, &tochd);
+	if (ret >= 0)
 	{
-	  tocent.cdte_track = i;
-	  tocent.cdte_format = CDROM_MSF;
-	  ret = ioctl (FD_CDROM, CDROMREADTOCENTRY, &tocent);
-	  toc.tracks[t].ADR = tocent.cdte_ctrl | tocent.cdte_datamode;
-	  toc.tracks[t].trackNumber = i;
-	  toc.tracks[t].addr[1] = tocent.cdte_addr.msf.minute;
-	  toc.tracks[t].addr[2] = tocent.cdte_addr.msf.second;
-	  toc.tracks[t].addr[3] = tocent.cdte_addr.msf.frame;
-	  toc.tracks[t].addr[0] = 0x01;
-	}
-      tocent.cdte_track = 0xAA;	//Lead Out!!!
-      tocent.cdte_format = CDROM_MSF;
-      ret = ioctl (FD_CDROM, CDROMREADTOCENTRY, &tocent);
-      toc.tracks[t].ADR = tocent.cdte_ctrl | tocent.cdte_datamode;
-      toc.tracks[t].trackNumber = i;
-      toc.tracks[t].addr[1] = tocent.cdte_addr.msf.minute;
-      toc.tracks[t].addr[2] = tocent.cdte_addr.msf.second;
-      toc.tracks[t].addr[3] = tocent.cdte_addr.msf.frame;
-      toc.tracks[t].addr[0] = 0x01;
-      MAX_LBA = MSF2LBA (tocent.cdte_addr.msf);
-      Fill_SCD_TOC_from_MSF_TOC ();
+		toc.tocLen = sizeof (toc);
+		toc.firstTrack = tochd.cdth_trk0;
+		toc.lastTrack = tochd.cdth_trk1;
+		
+		for (t = 0, i = tochd.cdth_trk0; i <= tochd.cdth_trk1; i++, t++)
+		{
+			tocent.cdte_track = i;
+			tocent.cdte_format = CDROM_MSF;
+			ret = ioctl (FD_CDROM, CDROMREADTOCENTRY, &tocent);
+			toc.tracks[t].ADR = tocent.cdte_ctrl | tocent.cdte_datamode;
+			toc.tracks[t].trackNumber = i;
+			toc.tracks[t].addr[1] = tocent.cdte_addr.msf.minute;
+			toc.tracks[t].addr[2] = tocent.cdte_addr.msf.second;
+			toc.tracks[t].addr[3] = tocent.cdte_addr.msf.frame;
+			toc.tracks[t].addr[0] = 0x01;
+		}
+		tocent.cdte_track = 0xAA;	//Lead Out!!!
+		tocent.cdte_format = CDROM_MSF;
+		ret = ioctl (FD_CDROM, CDROMREADTOCENTRY, &tocent);
+		toc.tracks[t].ADR = tocent.cdte_ctrl | tocent.cdte_datamode;
+		toc.tracks[t].trackNumber = i;
+		toc.tracks[t].addr[1] = tocent.cdte_addr.msf.minute;
+		toc.tracks[t].addr[2] = tocent.cdte_addr.msf.second;
+		toc.tracks[t].addr[3] = tocent.cdte_addr.msf.frame;
+		toc.tracks[t].addr[0] = 0x01;
+		MAX_LBA = MSF2LBA (tocent.cdte_addr.msf);
+		Fill_SCD_TOC_from_MSF_TOC ();
 #ifdef DEBUG_CD
-      fprintf (debug_SCD_file, "Read TOC: MAX_LBA=%d\n", MAX_LBA);
+		fprintf (debug_SCD_file, "Read TOC: MAX_LBA=%d\n", MAX_LBA);
 #endif
-    }
-  CDD_Complete = 1;
-  return 0;
-  //By Ubi End.
+	}
+	CDD_Complete = 1;
+	return 0;
+	//By Ubi End.
 }
 
 
