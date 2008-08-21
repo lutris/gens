@@ -15,6 +15,10 @@ extern struct {
 
 extern int Table_Rot_Time[4 * 4 * 4];
 
+// GENS Re-Recording [GENS Savestate v7]
+extern int Stamp_Map_Adr, Buffer_Adr, Vector_Adr, Jmp_Adr, Float_Part, Draw_Speed;
+extern int XS, YS, DXS, DYS, XD, YD, XD_Mul, H_Dot;
+
 void Init_RS_GFX(void);
 int Calcul_Rot_Comp(void);
 

@@ -475,4 +475,18 @@ PSG_Special_Update (void)
 
 void _PSG_Write (int data) __attribute__ ((alias ("PSG_Write")));
 
+// Full PSG save/restore functions from GENS Re-Recording
+
+unsigned char PSG_Save_Full[sizeof(struct _psg)];
+
+void PSG_Save_State_Full(void)
+{
+	memcpy(PSG_Save_Full, &PSG, sizeof(PSG));
+}
+
+void PSG_Restore_State_Full(void)
+{
+	memcpy(&PSG, PSG_Save_Full, sizeof(PSG));
+} 
+
 /* end */

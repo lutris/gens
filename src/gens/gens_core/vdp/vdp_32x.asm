@@ -12,6 +12,9 @@ section .bss align=64
 	DECL _32X_Palette_16B
 	resw 0x10000
 
+	DECL _32X_Palette_32B
+	resd 0x10000
+
 	DECL _32X_VDP_Ram
 	resb 0x100 * 1024
 
@@ -20,7 +23,10 @@ section .bss align=64
 
 	DECL _32X_VDP_CRam_Ajusted
 	resw 0x100
-
+	
+        DECL _32X_VDP_CRam_Ajusted32
+        resd 0x100
+	
 	ALIGNB 32
 	
 	DECL _32X_VDP
@@ -175,3 +181,5 @@ section .text align=64
 
 		popad
 		ret
+
+; TODO: Port 32-bit drawing code from Gens Re-Recording.

@@ -21,6 +21,17 @@ int freqs_mp3[9] = { 44100, 48000, 32000,
 };
 
 
+// GENS Re-Recording
+// Modif N. -- added variable. Set when MP3 decoding fails, reset when attempting to play a new MP3.
+// The point of this is to turn what was previously a crash
+// into an error that only stops the MP3 playback part of the program for the particular MP3 that couldn't play
+int fatal_mp3_error = 0;
+
+// TODO: Finish porting the async decoding patch.
+// _file_track, Tracks[]
+extern char played_tracks_linear [101];
+
+
 int
 MP3_Init (void)
 {
@@ -131,9 +142,17 @@ MP3_Find_Frame (FILE * f, int pos_wanted)
 
       if ((header & 0x0000E0FF) == 0x0000E0FF)
 	{
+	  float decode_header_res;
+	  
 	  prev_pos = ftell (f) - 1;
 
-	  cur_pos += (float) decode_header_gens (&fr, header) * (float) 0.075;
+	  decode_header_res = (float) decode_header_gens (&fr, header) * (float) 0.075;
+	  if (!decode_header_res)
+	  {
+		fatal_mp3_error = 1;
+		break;
+	  }
+	  cur_pos += (float)decode_header_res * (float)0.075;
 
 //fprintf(debug_SCD_file, "             hearder find at= %d     = %.8X\n", ftell(f) - 1, header);
 //fprintf(debug_SCD_file, "             current time = %g\n", cur_pos);
@@ -170,7 +189,7 @@ MP3_Update_IN (void)
   size_read = fread (buf_in, 1, 8 * 1024, Tracks[Track_Played].F);
   Current_IN_Pos += size_read;
 
-  if (size_read <= 0)
+  if (size_read <= 0 || fatal_mp3_error)
     {
       // go to the next track
 
@@ -201,6 +220,9 @@ MP3_Update_IN (void)
       Current_IN_Pos += size_read;
     }
 
+  if (fatal_mp3_error)
+	return 1;
+
   if (decodeMP3 (&mp, buf_in, size_read, buf_out, 8 * 1024, &Current_OUT_Size)
       != MP3_OK)
     {
@@ -211,7 +233,10 @@ MP3_Update_IN (void)
       if (decodeMP3
 	  (&mp, buf_in, size_read, buf_out, 8 * 1024,
 	   &Current_OUT_Size) != MP3_OK)
-	return 1;
+	{
+		fatal_mp3_error = 1;
+		return 1;
+	}
     }
 
   return 0;
@@ -223,6 +248,9 @@ MP3_Update_OUT (void)
 {
   Current_OUT_Pos = 0;
 
+	if (fatal_mp3_error)
+		return 1;
+
   if (decodeMP3 (&mp, NULL, 0, buf_out, 8 * 1024, &Current_OUT_Size) !=
       MP3_OK)
     {
@@ -233,8 +261,8 @@ MP3_Update_OUT (void)
 }
 
 
-int
-MP3_Play (int track, int lba_pos)
+// int async added by GENS Re-Recording
+int MP3_Play (int track, int lba_pos, int async)
 {
   Track_Played = track;
 
@@ -244,10 +272,21 @@ MP3_Play (int track, int lba_pos)
       return -1;
     }
 
-  Current_IN_Pos = MP3_Find_Frame (Tracks[Track_Played].F, lba_pos);
-
-  ResetMP3_Gens (&mp);
-  MP3_Update_IN ();
+	if (!IsAsyncAllowed())
+		async = 0;
+	
+/*	if (!async)
+	{
+		Preload_MP3(&Tracks[Track_Played].F_decoded, Track_Played);
+	}
+	
+	if (async && !Tracks[Track_Played].F_decoded)
+	{
+*/		// start playing MP3 "asynchronously", decoding on the fly... but it won't reliably produce the same sound samples under the same circumstances
+		Current_IN_Pos = MP3_Find_Frame (Tracks[Track_Played].F, lba_pos);
+		ResetMP3_Gens (&mp);
+		MP3_Update_IN ();
+//	}
 
   return 0;
 }

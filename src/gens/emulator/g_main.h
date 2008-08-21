@@ -59,6 +59,9 @@ void End_All(void);
 void Sleep(int i);
 void close_gens();
 
+// GENS Re-Recording
+int IsAsyncAllowed(void);
+
 #include <gtk/gtk.h>
 extern GtkWidget* gens_window;
 

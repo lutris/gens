@@ -66,7 +66,7 @@ typedef struct {
 } _scd;
 
 
-
+extern int File_Add_Delay;	// GENS Re-Recording [GENS Savestate v7]
 extern int CDDA_Enable;
 
 extern int CD_Audio_Buffer_L[8192];

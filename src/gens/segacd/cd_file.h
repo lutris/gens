@@ -9,8 +9,10 @@
 
 struct _file_track {
 	FILE *F;
+	FILE *F_decoded;
 	int Lenght;
 	int Type;
+	char filename [512];
 };
 
 extern struct _file_track Tracks[100];
@@ -25,6 +27,6 @@ int Load_ISO(char *buf, char *iso_name);
 void Unload_ISO(void);
 //int FILE_Read_One_CD_LBA(int lba);
 int FILE_Read_One_LBA_CDC(void);
-int FILE_Play_CD_LBA(void);
+int FILE_Play_CD_LBA(int async);
 
 #endif

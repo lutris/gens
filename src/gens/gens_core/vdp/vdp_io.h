@@ -46,6 +46,8 @@ extern int VRam_Flag;
 extern int VDP_Int;
 extern int VDP_Status;
 extern int DMAT_Lenght;
+extern int DMAT_Type;
+extern int DMAT_Tmp;
 extern struct {
 	int Flag;
 	int Data;

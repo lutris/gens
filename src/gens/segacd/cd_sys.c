@@ -35,6 +35,9 @@ int track_number;		// Used for the Get_Track_Adr function
 unsigned int CD_timer_st;	// Used for CD timer
 unsigned int CD_LBA_st;		// Used for CD timer
 
+// GENS Re-Recording
+char played_tracks_linear [101] = {0};
+
 _scd SCD;
 
 
@@ -655,7 +658,7 @@ Play_CDD_c3 (void)
       CDD.Control &= ~0x0100;	// AUDIO
       CD_Audio_Starting = 1;
       if (CD_Load_System == FILE_ISO)
-	FILE_Play_CD_LBA ();
+	FILE_Play_CD_LBA(1);
     }
 
   if (SCD.Cur_Track == 100)
@@ -787,7 +790,7 @@ Resume_CDD_c7 (void)
       CDD.Control &= ~0x0100;	// AUDIO
       CD_Audio_Starting = 1;
       if (CD_Load_System == FILE_ISO)
-	FILE_Play_CD_LBA ();
+	FILE_Play_CD_LBA(1);
     }
 
   if (SCD.Cur_Track == 100)

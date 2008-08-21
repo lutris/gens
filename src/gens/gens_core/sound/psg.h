@@ -37,4 +37,9 @@ void PSG_Restore_State(void);
 
 void PSG_Special_Update(void);
 
+// Full PSG save/restore functions from GENS Re-Recording
+extern unsigned char PSG_Save_Full[sizeof(struct _psg)];
+void PSG_Save_State_Full(void);
+void PSG_Restore_State_Full(void); 
+
 #endif

@@ -37,6 +37,7 @@ extern int Last_BUS_REQ_Cnt;
 extern int Last_BUS_REQ_St;
 extern int Bank_M68K;
 extern int Bank_SH2;
+extern int Fake_Fetch;
 
 extern int CPL_M68K;
 extern int CPL_S68K;

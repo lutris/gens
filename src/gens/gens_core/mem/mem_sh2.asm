@@ -138,11 +138,14 @@ section .bss align=64
 	endstruc
 	extern M_SH2
 	extern S_SH2
-
+	
+	; 32B and Ajusted32 ported from Gens Re-Recording.
 	extern _32X_Palette_16B
+	extern _32X_Palette_32B
 	extern _32X_VDP_Ram
 	extern _32X_VDP_CRam
 	extern _32X_VDP_CRam_Ajusted
+	extern _32X_VDP_CRam_Ajusted32
 	extern _32X_VDP
 
 	extern PWM_FIFO_R
@@ -781,8 +784,10 @@ section .text align=64
 		and edx, 0xFFFF
 		and ecx, 0x1FE
 		mov ax, [_32X_Palette_16B + edx * 2]
+		mov ebx, [_32X_Palette_32B + edx * 4]
 		mov [_32X_VDP_CRam + ecx], dx
 		mov [_32X_VDP_CRam_Ajusted + ecx], ax
+		mov [_32X_VDP_CRam_Ajusted32 + ecx * 2], ebx
 		ret
 
 
@@ -798,7 +803,7 @@ section .text align=64
 		test ecx, 0xFFC000
 		jz short SH2_WW_Bad
 		test ecx, 0xFFBF00
-		jnz short SH2_Write_Word_VDP
+		jnz near SH2_Write_Word_VDP ; originally was jnz short, but Gens Re-Recording additions made it out of range...
 
 		jmp SSH2_Write_Word_32X_Reg
 
@@ -949,6 +954,19 @@ section .text align=64
 		mov [_32X_VDP_CRam_Ajusted + ecx + 2], dx
 		mov ax, [_32X_Palette_16B + eax * 2]
 		mov [_32X_VDP_CRam_Ajusted + ecx + 0], ax
+
+		; Ported from Gens Re-Recording.
+		mov eax, [_32X_VDP_CRam + ecx]
+		mov edx, eax
+		shl ecx, 1
+		rol edx, 16
+		and eax, 0xFF
+		and edx, 0xFFFF
+		mov eax, [_32X_Palette_32B + eax * 4]
+		mov edx, [_32X_Palette_32B + edx * 4]
+		mov [_32X_VDP_CRam_Ajusted32 + ecx + 0], eax
+		mov [_32X_VDP_CRam_Ajusted32 + ecx + 4], edx
+		
 		ret
 
 

@@ -396,9 +396,8 @@ FILE_Read_One_LBA_CDC (void)
   return 0;
 }
 
-
-int
-FILE_Play_CD_LBA (void)
+// int async added by GENS Re-Recording
+int FILE_Play_CD_LBA (int async)
 {
   int Track_LBA_Pos;
 
@@ -417,7 +416,7 @@ FILE_Play_CD_LBA (void)
 
   if (Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type == TYPE_MP3)
     {
-      MP3_Play (SCD.Cur_Track - SCD.TOC.First_Track, Track_LBA_Pos);
+      MP3_Play (SCD.Cur_Track - SCD.TOC.First_Track, Track_LBA_Pos, async);
     }
   else if (Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type == TYPE_WAV)
     {

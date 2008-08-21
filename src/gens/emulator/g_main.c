@@ -310,6 +310,19 @@ void End_All (void)
 }
 
 
+/**
+ * IsAsyncAllowed(): Determines if asynchronous stuff is allowed.
+ * @return 0 if not allowed; non-zero otherwise.
+ */
+int IsAsyncAllowed(void)
+{
+	// In GENS Re-Recording, async is disabled if:
+	// - Async is explicitly disabled due to testing for desyncs.
+	// - A movie is being played or recorded.
+	// Since none of the above applies here, async is allowed.
+	return 1;
+}
+
 int
 main (int argc, char *argv[])
 {

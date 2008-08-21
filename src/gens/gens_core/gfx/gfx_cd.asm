@@ -562,22 +562,38 @@ section .bss align=64
 		resd 1
 	DECL Rotation_Running
 		resd 1
+	
+	; Converted to DECL for GENS Re-Recording
+	DECL Stamp_Map_Adr
+		resd 1
+	DECL Buffer_Adr
+		resd 1
+	DECL Vector_Adr
+		resd 1
+	DECL Jmp_Adr
+		resd 1
+	DECL Float_Part
+		resd 1
+	DECL Draw_Speed
+		resd 1
 
-	Stamp_Map_Adr	resd 1
-	Buffer_Adr		resd 1
-	Vector_Adr		resd 1
-	Jmp_Adr			resd 1
-	Float_Part		resd 1
-	Draw_Speed		resd 1
-
-	XS		resd 1
-	YS		resd 1
-	DXS		resd 1
-	DYS		resd 1
-	XD		resd 1
-	YD		resd 1
-	XD_Mul	resd 1
-	H_Dot	resd 1
+	; Converted to DECL for GENS Re-Recording
+	DECL XS
+		resd 1
+	DECL YS
+		resd 1
+	DECL DXS
+		resd 1
+	DECL DYS
+		resd 1
+	DECL XD
+		resd 1
+	DECL YD
+		resd 1
+	DECL XD_Mul
+		resd 1
+	DECL H_Dot
+		resd 1
 
 
 section .data align=64
