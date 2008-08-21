@@ -40,6 +40,13 @@ char Dbg_EA_Str[16];
 char Dbg_Size_Str[3];
 char Dbg_Cond_Str[3];
 
+// Macro used to print a constant string.
+// Print_Text() doesn't directly support string constants, and since it's
+// written in assembly language, it's too cumbersome to fix.
+#define Print_Text_Constant(text, size, x, y, color)	\
+	strcpy(_GString, (text));			\
+	Print_Text(_GString, (size), (x), (y), (color));
+
 void Debug_Event (int key)
 {
 	int i, steps;
@@ -342,10 +349,8 @@ unsigned int Next_Long (void)
 void Refresh_M68k_Inst(void)
 {
 	unsigned int i, PC;
-	
-	Print_Text("** MAIN 68000 DEBUG **", 22, 24, 1, VERT);
-	
 	Current_PC = main68k_context.pc;
+	Print_Text_Constant("** MAIN 68000 DEBUG **", 22, 24, 1, VERT);
 	
 	for (i = 1; i < 14; i++)
 	{
@@ -362,10 +367,8 @@ void Refresh_M68k_Inst(void)
 void Refresh_S68k_Inst(void)
 {
 	unsigned int i, PC;
-	
-	Print_Text("** SUB 68000 DEBUG **", 22, 24, 1, VERT);
-	
 	Current_PC = sub68k_context.pc;
+	Print_Text_Constant("** SUB 68000 DEBUG **", 22, 24, 1, VERT);
 	
 	for (i = 1; i < 14; i++)
 	{
@@ -382,10 +385,8 @@ void Refresh_S68k_Inst(void)
 void Refresh_Z80_Inst(void)
 {
 	unsigned int i, PC;
-	
-	Print_Text("***** Z80 DEBUG *****", 22, 24, 1, VERT);
-	
 	PC = z80_Get_PC (&M_Z80);
+	Print_Text_Constant("***** Z80 DEBUG *****", 22, 24, 1, VERT);
 	
 	for (i = 1; i < 14; i++)
 	{
@@ -404,7 +405,17 @@ void Refresh_SH2_Inst (int num)
 	unsigned int i, PC;
 	SH2_CONTEXT *sh;
 	
-	Print_Text((num == 0 ? "** MASTER SH2 DEBUG **" : "** SLAVE SH2 DEBUG **"), 22, 24, 1, VERT);
+	if (num)
+	{
+		strcpy(_GString, "** SLAVE SH2 DEBUG **");
+		sh = &S_SH2;
+	}
+	else
+	{
+		strcpy(_GString, "** MASTER SH2 DEBUG **");
+		sh = &M_SH2;
+	}
+	Print_Text(_GString, 22, 24, 1, VERT);
 	
 	PC = (sh->PC - sh->Base_PC) - 4;
 	
@@ -422,10 +433,8 @@ void Refresh_SH2_Inst (int num)
 void Refresh_M68k_Mem (void)
 {
 	unsigned int i, j, k, Adr;
-	
 	Adr = adr_mem >> 1;
-	
-	Print_Text("** MAIN 68000 MEM **", 20, 24, 130, VERT);
+	Print_Text_Constant("** MAIN 68000 MEM **", 20, 24, 130, VERT);
 	
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
@@ -448,10 +457,8 @@ void Refresh_M68k_Mem (void)
 void Refresh_S68k_Mem (void)
 {
 	unsigned int i, j, k, Adr;
-	
 	Adr = adr_mem >> 1;
-	
-	Print_Text("** SUB 68000 MEM **", 19, 24, 130, VERT);
+	Print_Text_Constant("** SUB 68000 MEM **", 19, 24, 130, VERT);
 	
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
@@ -474,8 +481,7 @@ void Refresh_S68k_Mem (void)
 void Refresh_Z80_Mem(void)
 {
 	unsigned int j, k;
-	
-	Print_Text("***** Z80 MEM *****", 19, 24, 130, VERT);
+	Print_Text_Constant("***** Z80 MEM *****", 19, 24, 130, VERT);
 	
 	for (k = 0, j = adr_mem & 0xFFFF; k < 7; k++, j = (j + 12) & 0xFFFF)
 	{
@@ -495,10 +501,8 @@ void Refresh_Z80_Mem(void)
 void Refresh_SH2_Mem(void)
 {
 	unsigned int i, j, k, Adr;
-	
 	Adr = adr_mem >> 1;
-	
-	Print_Text("*** SH2 CPU MEM ***", 19, 24, 130, VERT);
+	Print_Text_Constant("** SH2 CPU MEM **", 19, 24, 130, VERT);
 	
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
@@ -520,7 +524,7 @@ void Refresh_SH2_Mem(void)
  */
 void Refresh_M68k_State(void)
 {
-	Print_Text("** MAIN 68000 STATUS **", 23, 196, 130, VERT);
+	Print_Text_Constant("** MAIN 68000 STATUS **", 23, 196, 130, VERT);
 	
 	sprintf(_GString, "A0=%.8X A1=%.8X A2=%.8X X=%d\n",
 			main68k_context.areg[0], main68k_context.areg[1],
@@ -563,7 +567,7 @@ void Refresh_M68k_State(void)
  */
 void Refresh_S68k_State(void)
 {
-	Print_Text("** SUB 68000 STATUS **", 22, 196, 130, VERT);
+	Print_Text_Constant("** SUB 68000 STATUS **", 22, 196, 130, VERT);
 	
 	sprintf(_GString, "A0=%.8X A1=%.8X A2=%.8X X=%d\n", sub68k_context.areg[0],
 			sub68k_context.areg[1], sub68k_context.areg[2],
@@ -600,7 +604,7 @@ void Refresh_S68k_State(void)
  */
 void Refresh_Z80_State(void)
 {
-	Print_Text("***** Z80 STATUS *****", 22, 196, 130, VERT);
+	Print_Text_Constant("***** Z80 STATUS *****", 22, 196, 130, VERT);
 	
 	sprintf(_GString, "AF =%.4X BC =%.4X DE =%.4X HL =%.4X\n",
 			z80_Get_AF (&M_Z80), M_Z80.BC.w.BC,
@@ -645,14 +649,15 @@ void Refresh_SH2_State(int num)
 	
 	if (num)
 	{
-		Print_Text("** SLAVE SH2 STATUS **", 22, 196, 130, VERT);
+		strcpy(_GString, "** SLAVE SH2 STATUS **");
 		sh = &S_SH2;
 	}
 	else
 	{
-		Print_Text("** MASTER SH2 STATUS **", 22, 196, 130, VERT);
+		strcpy(_GString, "** MASTER SH2 STATUS **");
 		sh = &M_SH2;
 	}
+	Print_Text(_GString, 22, 196, 130, VERT);
 	
 	sprintf(_GString, "R0=%.8X R1=%.8X R2=%.8X T=%d\n", SH2_Get_R(sh, 0),
 			SH2_Get_R(sh, 1), SH2_Get_R(sh, 2), SH2_Get_SR(sh) & 1);
@@ -689,8 +694,7 @@ void Refresh_SH2_State(int num)
 void Refresh_VDP_State(void)
 {
 	int tmp;
-	
-	Print_Text("**** VDP STATUS ****", 20, 200, 1, VERT);
+	Print_Text_Constant("**** VDP STATUS ****", 20, 200, 1, VERT);
 	
 	sprintf(_GString, "Setting register: 1=%.2X 2=%.2X 3=%.2X 4=%.2X",
 			VDP_Reg.Set1, VDP_Reg.Set2, VDP_Reg.Set3, VDP_Reg.Set4);
@@ -741,8 +745,7 @@ void Refresh_VDP_State(void)
 void Refresh_VDP_Pattern(void)
 {
 	unsigned int i;
-	
-	Print_Text("******** VDP PATTERN ********", 29, 28, 0, VERT);
+	Print_Text_Constant("******** VDP PATTERN ********", 29, 28, 0, VERT);
 	
 	for (i = 0; i < 20; i++)
 	{
@@ -760,8 +763,7 @@ void Refresh_VDP_Pattern(void)
 void Refresh_VDP_Palette(void)
 {
 	unsigned int i, j, k;
-	
-	Print_Text("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
+	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
 	for (i = 0; i < 16; i++)
 	{
@@ -781,7 +783,7 @@ void Refresh_VDP_Palette(void)
 		}
 	}
 	
-	Print_Text("******** VDP CONTROL ********", 29, 180, 60, BLANC);
+	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
 	
 	sprintf(_GString, "Status : %.4X", Read_VDP_Status ());
 	Print_Text(_GString, strlen(_GString), 176, 70, BLANC);
@@ -796,9 +798,7 @@ void Refresh_VDP_Palette(void)
 	sprintf(_GString, "DMA : %.2X", Ctrl.DMA);
 	Print_Text(_GString, strlen(_GString), 176, 110, BLANC);
 	
-	sprintf(_GString, "Sprite List:");
-	Print_Text(_GString, strlen(_GString), 176, 126, BLANC);
-	
+	Print_Text_Constant("Sprite List:", strlen(_GString), 176, 126, BLANC);
 	for (i = 0; i < 10; i++)
 	{
 		sprintf(_GString, "%d %d %d %d %d",
@@ -815,7 +815,7 @@ void Refresh_VDP_Palette(void)
  */
 void Refresh_SegaCD_State(void)
 {
-	Print_Text("** SEGACD STATUS **", 20, 200, 1, VERT);
+	Print_Text_Constant("** SEGACD STATUS **", 20, 200, 1, VERT);
 	
 	sprintf(_GString, "GE00=%.4X GE02=%.4X CD00=%.4X CD02=%.4X",
 			M68K_RW (0xA12000), M68K_RW (0xA12002), S68K_RW (0xFF8000), S68K_RW (0xFF8002));
@@ -866,7 +866,7 @@ void Refresh_SegaCD_State(void)
  */
 void Refresh_32X_State(void)
 {
-	Print_Text("*** 32X STATUS ***", 20, 200, 1, VERT);
+	Print_Text_Constant("** 32X STATUS **", 20, 200, 1, VERT);
 	
 	sprintf(_GString, "M000=%.4X S000=%.4X M004=%.4X M006=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4000), SH2_Read_Word (&S_SH2, 0x4000),
@@ -908,7 +908,7 @@ void Refresh_32X_State(void)
  */
 void Refresh_CDC_State(void)
 {
-	Print_Text("** CDC STATUS **", 16, 200, 1, VERT);
+	Print_Text_Constant("** CDC STATUS **", 16, 200, 1, VERT);
 	
 	sprintf(_GString, "COMIN=%.2X IFSTAT=%.2X DBC=%.4X", CDC.COMIN, CDC.IFSTAT, CDC.DBC);
 	Print_Text(_GString, strlen(_GString), 162, 14, BLANC);
@@ -927,8 +927,7 @@ void Refresh_CDC_State(void)
 void Refresh_Word_Ram_Pattern(void)
 {
 	unsigned int i;
-	
-	Print_Text("****** WORD RAM PATTERN ******", 29, 28, 0, VERT);
+	Print_Text_Constant("****** WORD RAM PATTERN ******", 29, 28, 0, VERT);
 	
 	for (i = 0; i < 20; i++)
 	{
