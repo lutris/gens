@@ -26,6 +26,7 @@
 #include "cpu_z80.h"
 #include "psg.h"
 #include "pwm.h"
+#include "debug.h"
 
 // TODO: Eliminate the dependency on these files.
 #include "g_sdlsound.h"
@@ -385,7 +386,7 @@ main (int argc, char *argv[])
 #ifdef GENS_DEBUG
 		if (Debug)		// DEBUG
 		{
-			Update_Debug_Screen ();
+			Update_Debug_Screen();
 			Flip ();
 		}
 		else

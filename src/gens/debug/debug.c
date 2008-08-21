@@ -29,9 +29,10 @@
 #include "vdp_32x.h"
 #include "lc89510.h"
 #include "cd_aspi.h"
+#include "gfx_cd.h"
 
 int Current_32X_FB = 0;
-int adr_mem = 0, nb_inst = 1, pattern_adr = 0, pattern_pal;
+int adr_mem = 0, nb_inst = 1, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal;
 int Current_PC;
 
 char _GString[1024];		// GString is a GLib type (Unix version)
@@ -111,7 +112,7 @@ void Debug_Event(int key, int mod)
 				}
 				else if (Debug == DEBUG_SUB_68000_REG ||
 					 Debug == DEBUG_SUB_68000_CDC ||
-					 Debug == DEBUG_VEC_CHIP_PATTERN)
+					 Debug == DEBUG_WORD_RAM_PATTERN)
 				{
 					sub68k_tripOdometer ();
 					sub68k_exec (1);
@@ -157,7 +158,7 @@ void Debug_Event(int key, int mod)
 				z80_Interrupt (&M_Z80, 0xFF);
 			else if (Debug == DEBUG_SUB_68000_REG ||
 				 Debug == DEBUG_SUB_68000_CDC ||
-				 Debug == DEBUG_VEC_CHIP_PATTERN)
+				 Debug == DEBUG_WORD_RAM_PATTERN)
 				sub68k_interrupt (5, -1);
 			else if (Debug == DEBUG_MAIN_SH2 ||
 				 Debug == DEBUG_SUB_SH2 ||
@@ -172,7 +173,7 @@ void Debug_Event(int key, int mod)
 				z80_Interrupt (&M_Z80, 0xFF);
 			else if (Debug == DEBUG_SUB_68000_REG ||
 				 Debug == DEBUG_SUB_68000_CDC ||
-				 Debug == DEBUG_VEC_CHIP_PATTERN)
+				 Debug == DEBUG_WORD_RAM_PATTERN)
 				sub68k_interrupt (4, -1);
 			else if (Debug == DEBUG_MAIN_SH2 ||
 				 Debug == DEBUG_SUB_SH2 ||
@@ -277,11 +278,15 @@ void Debug_Event(int key, int mod)
 			{
 				if (pattern_adr < 0xD800)
 					pattern_adr = (pattern_adr + 0x200) & 0xFFFF;
+				if (pattern_adr >= 0xD800) // Make sure it doesn't go out of bounds.
+					pattern_adr = 0xD800 - 0x200;
 			}
-			else
+			else if (Debug == DEBUG_WORD_RAM_PATTERN)
 			{
-				if (pattern_adr < 0x3D800)
-					pattern_adr = (pattern_adr + 0x800) & 0x3FFFF;
+				if (cd_pattern_adr < 0x3D000)
+					cd_pattern_adr = (pattern_adr + 0x800) & 0x3FFFF;
+				if (pattern_adr >= 0x3D000) // Make sure it doesn't go out of bounds.
+					pattern_adr = 0x3D000 - 0x800;
 			}
 			break;
 		
@@ -293,12 +298,15 @@ void Debug_Event(int key, int mod)
 			{
 				if (pattern_adr > 0)
 					pattern_adr = (pattern_adr - 0x200) & 0xFFFF;
-			}
-			else
-			{
-				pattern_adr = pattern_adr - 0x800;
-				if (pattern_adr < 0)
+				if (pattern_adr < 0) // Make sure it doesn't go out of bounds.
 					pattern_adr = 0;
+			}
+			else if (Debug == DEBUG_WORD_RAM_PATTERN)
+			{
+				if (cd_pattern_adr > 0)
+					cd_pattern_adr = cd_pattern_adr - 0x800;
+				if (cd_pattern_adr < 0)	// Make sure it doesn't go out of bounds.
+					cd_pattern_adr = 0;
 			}
 			break;
 	}
@@ -790,6 +798,12 @@ void Refresh_VDP_Palette(void)
 			}
 		}
 	}
+	// Outline the selected palette. Ported from GENS Re-Recording.
+	for (i = 0; i < 16 * 8; i++)
+	{
+		MD_Screen[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
+		MD_Screen[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
+	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
 	
@@ -930,20 +944,52 @@ void Refresh_CDC_State(void)
 
 
 /**
- * Refresh_Word_Ram_Pattern(): Refresh the Word RAM pattern status display.
+ * Refresh_Word_RAM_Pattern(): Refresh the Word RAM pattern status display.
  */
-void Refresh_Word_Ram_Pattern(void)
+void Refresh_Word_RAM_Pattern(void)
 {
-	unsigned int i;
+	// Improved Word RAM pattern display function ported from GENS Re-Recording.
+	
+	unsigned int i, j, k;
 	Print_Text_Constant("****** WORD RAM PATTERN ******", 29, 28, 0, VERT);
 	
-	for (i = 0; i < 20; i++)
+	for (i = 0; i < 24; i++)
 	{
-		sprintf(_GString, "%.4X", (pattern_adr & 0x3FFFF) + 0x200 * i);
+		sprintf(_GString, "%.4X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
 		Print_Text(_GString, strlen(_GString), 2, (i << 3) + 11, BLANC);
 	}
 	
-	Cell_16x16_Dump (&Ram_Word_2M[pattern_adr & 0x3FFFF], pattern_pal);
+	// Word RAM patterns can be either 16x16 or 32x32.
+	if (Rot_Comp.Stamp_Size & 2)
+		Cell_32x32_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
+	else
+		Cell_16x16_Dump(&Ram_Word_2M[cd_pattern_adr & 0x3FFFF], pattern_pal);
+	
+	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
+	
+	for (i = 0; i < 16; i++)
+	{
+		for (j = 0; j < 8; j++)
+		{
+			for (k = 0; k < 8; k++)
+			{
+				MD_Screen[(336 * 10) + (k * 336) + 180 + (i * 8) + j] =
+					MD_Palette[i + 0];
+				MD_Screen[(336 * 18) + (k * 336) + 180 + (i * 8) + j] =
+					MD_Palette[i + 16];
+				MD_Screen[(336 * 26) + (k * 336) + 180 + (i * 8) + j] =
+					MD_Palette[i + 32];
+				MD_Screen[(336 * 34) + (k * 336) + 180 + (i * 8) + j] =
+					MD_Palette[i + 48];
+			}
+		}
+	}
+	// Outline the selected palette. Ported from GENS Re-Recording.
+	for (i = 0; i < 16 * 8; i++)
+	{
+		MD_Screen[(336 * (9 + (pattern_pal * 8))) + 180 + i] = 0xFFFF;
+		MD_Screen[(336 * (18 + (pattern_pal * 8))) + 180 + i] = 0xFFFF;
+	}
 }
 
 
@@ -998,9 +1044,9 @@ void Update_Debug_Screen(void)
 				Refresh_CDC_State ();
 				break;
 			
-			case DEBUG_VEC_CHIP_PATTERN:
-				// Vector chip pattern
-				Refresh_Word_Ram_Pattern ();
+			case DEBUG_WORD_RAM_PATTERN:
+				// Word RAM pattern
+				Refresh_Word_RAM_Pattern ();
 				break;
 			
 			case DEBUG_MAIN_SH2:

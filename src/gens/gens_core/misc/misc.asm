@@ -203,7 +203,7 @@ section .text align=64
 
 %macro AFF_PIXEL 2
 
-		mov eax, ebx							; eax = données pixels
+		mov eax, ebx							; eax = donnï¿½es pixels
 		shr eax, %2								; on garde le premier
 		and eax, 0xF
 		mov ax, [MD_Palette + eax * 2 + ebp]	; conversion 8->16 bits palette
@@ -585,7 +585,7 @@ section .text align=64
 
 	.No_MMX
 		mov esi, MD_Screen
-		mov ecx, 336 * 240  ; nombre de pix 16 bits à rendre en blur
+		mov ecx, 336 * 240  ; nombre de pix 16 bits ï¿½ rendre en blur
 		xor edi, edi
 		xor edx, edx
 		test byte [Mode_555], 1
@@ -715,7 +715,7 @@ section .text align=64
 
 	.Size_x1
 		sub edx, ebx					; on teste si la chaine n'est pas trop grande
-		jb short .String_OK				; si c ok on passe à la suite sinon
+		jb short .String_OK				; si c ok on passe ï¿½ la suite sinon
 
 		shr edx, 2
 		test eax, 0x10					; teste si mode x2
@@ -724,14 +724,14 @@ section .text align=64
 		shr edx, 1
 
 	.Size_x1_2
-		inc edx							; edx = nombre de caractère en trop
-		sub ecx, edx					; ecx = nouvelle taille pour être OK
+		inc edx							; edx = nombre de caractï¿½re en trop
+		sub ecx, edx					; ecx = nouvelle taille pour ï¿½tre OK
 		mov byte [esi + ecx - 2], '.'	; on termine la chiane avec des points
 		mov byte [esi + ecx - 1], '.'
 
 	.String_OK
 		mov ebx, eax
-		mov byte [esi + ecx - 0], 0		; fin de la chaine pour être sur
+		mov byte [esi + ecx - 0], 0		; fin de la chaine pour ï¿½tre sur
 		shr ebx, 1
 		sub esp, 4
 		and ebx, 0x3					; on garde uniquement le type palette
@@ -742,8 +742,8 @@ section .text align=64
 		mov dword [Mask], 0x7BDE
 
 	.Mode_565
-		test byte [esi], 0xFF				; on teste la première lettre
-		mov ebx, [.Palette_Table + ebx * 4]	; ebx pointe sur la palette utilisée
+		test byte [esi], 0xFF				; on teste la premiï¿½re lettre
+		mov ebx, [.Palette_Table + ebx * 4]	; ebx pointe sur la palette utilisï¿½e
 		jz near .End						; si NULL alors on quitte
 		add ebx, 12							; couleurs claires
 
@@ -903,7 +903,7 @@ section .text align=64
 
 		xor eax, eax					; eax = 0
 		mov ebp, [esp + 32]				; ebp = nb_pal
-		mov edx, 20						; edx = Nombre de lignes de pattern à afficher
+		mov edx, 20						; edx = Nombre de lignes de pattern ï¿½ afficher
 		mov esi, [esp + 28]				; esi = Adresse
 		shl ebp, 5						; ebp = nb_pal * 32
 		lea edi, [MD_Screen	+ 6780]		; edi = MD_Screen + marge pour l'affichage
@@ -962,7 +962,7 @@ section .text align=64
 
 		xor eax, eax					; eax = 0
 		mov ebp, [esp + 32]				; ebp = nb_pal
-		mov edx, 10						; edx = Nombre de lignes de pattern à afficher
+		mov edx, 10						; edx = Nombre de lignes de pattern ï¿½ afficher
 		mov esi, [esp + 28]				; esi = Adresse
 		shl ebp, 5						; ebp = nb_pal * 32
 		lea edi, [MD_Screen	+ 6780]		; edi = MD_Screen + marge pour l'affichage
@@ -991,7 +991,7 @@ section .text align=64
 		jnz near .Loop_EBX				; alors on continue
 
 		sub edi, ((336 * 8) - 8) * 2	; on retourne 8 lignes en arriere et on avance de 8 pixels pour Dest
-		add esi, 0x20					; pattern à droite
+		add esi, 0x20					; pattern ï¿½ droite
 		dec ecx							; s'il reste des pattern en longueur	
 		jnz near .Loop_ECX				; alors on continue
 
@@ -1020,7 +1020,7 @@ section .text align=64
 		jnz near .Loop_EBX_2			; alors on continue
 
 		sub edi, ((336 * 8) - 8) * 2	; on retourne 8 lignes en arriere et on avance de 8 pixels pour Dest
-		add esi, 0x20					; pattern à droite
+		add esi, 0x20					; pattern ï¿½ droite
 		dec ecx							; s'il reste des pattern en longueur	
 		jnz near .Loop_ECX_2			; alors on continue
 
@@ -1038,6 +1038,106 @@ section .text align=64
 		ret
 
 
+	ALIGN32
+	
+		;void Cell_32x32_Dump(unsigned char *Adr, int Palette)
+		DECL Cell_32x32_Dump
+
+		push ebx
+		push ecx
+		push edx
+		push edi
+		push esi
+		push ebp
+
+		xor eax, eax					; eax = 0
+		mov ebp, [esp + 32]				; ebp = palette_number
+		mov edx, 6						; edx = Number of rows of the pattern to be copied
+		shl ebp, 5						; ebp = palette_number * 32
+		;test [_Bits32], byte 1
+		mov esi, [esp + 28]				; esi = Address
+		;jnz	.32BIT					; TODO: 32-bit support
+		lea edi, [MD_Screen	+ 6780]		; edi = MD_Screen + copy offset
+
+	.Loop_EDX
+		mov ecx, 16						; ecx = Number of patterns per row
+
+	.Loop_ECX
+		mov ebx, 32						; ebx = Number of rows in each pattern
+
+	.Loop_EBX
+		push ebx
+		mov ebx, [esi]
+		AFF_PIXEL 0, 12
+		AFF_PIXEL 1, 8
+		AFF_PIXEL 2, 4
+		AFF_PIXEL 3, 0
+		AFF_PIXEL 4, 28
+		AFF_PIXEL 5, 24
+		AFF_PIXEL 6, 20
+		AFF_PIXEL 7, 16
+		pop ebx
+		add esi, 4						; advance Src by 4
+		add edi, 336 * 2				; go to the next Dest row
+		dec ebx							; if there are any more rows
+		jnz near .Loop_EBX				; then keep going
+
+		sub edi, ((336 * 32) - 8) * 2	; we skip 8 rows from the top and 8 pixels from the left of Dest
+		dec ecx							; if there is more to copy on this row
+		jnz near .Loop_ECX				; then keep going
+
+		add edi, ((336 * 32) - (8 * 16)) * 2		; we skip 8 rows from the top and 16*8 pixels from the left of Dest
+		dec edx
+		jnz near .Loop_EDX
+		jmp near .END
+		
+		; TODO: 32-bit support
+;		
+;	.32BIT
+;		shl ebp, 1
+;		lea edi, [MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
+;
+;	.Loop_EDX32
+;		mov ecx, 16						; ecx = Number of patterns per row
+;
+;	.Loop_ECX32
+;		mov ebx, 32						; ebx = Number of rows in each pattern
+;
+;	.Loop_EBX32
+;		push ebx
+;		mov ebx, [esi]
+;		AFF_PIXEL32 0, 12
+;		AFF_PIXEL32 1, 8
+;		AFF_PIXEL32 2, 4
+;		AFF_PIXEL32 3, 0
+;		AFF_PIXEL32 4, 28
+;		AFF_PIXEL32 5, 24
+;		AFF_PIXEL32 6, 20
+;		AFF_PIXEL32 7, 16
+;		pop ebx
+;		add esi, 4						; advance Src by 4
+;		add edi, 336 * 4				; go to the next Dest row
+;		dec ebx							; if there are any more rows
+;		jnz near .Loop_EBX32				; then keep going
+;
+;		sub edi, ((336 * 32) - 8) * 4	; we skip 8 rows from the top and 8 pixels from the left of Dest
+;		dec ecx							; if there is more to copy on this row
+;		jnz near .Loop_ECX32			; then keep going
+;
+;		add edi, ((336 * 32) - (8 * 16)) * 4	; we skip 8 rows from the top and 16*8 pixels from the left of Dest
+;		dec edx
+;		jnz near .Loop_EDX32
+;		
+	.END
+		pop ebp
+		pop esi
+		pop edi
+		pop edx
+		pop ecx
+		pop ebx
+		ret
+	
+	
 	ALIGN32
 
 	; void CDD_Export_Status(void)
