@@ -10,7 +10,6 @@ extern "C" {
 #endif
 
 #include <SDL.h>
-#include "g_input.h"
 
 void SetWindowText(const char *text);
 void SetWindowVisibility (int visibility);

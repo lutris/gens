@@ -7,7 +7,7 @@
 #include "g_sdlinput.h"
 #include "io.h"
 #include "g_main.h"
-//#include "g_input.h"
+#include "g_input.h"
 #include "support.h"
 
 //char Phrase[1024];
