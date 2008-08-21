@@ -3,6 +3,9 @@
 
 #include "port.h"
 
+// TODO: Make this conditional based on operating system.
+#include "g_main_linux.h"
+
 #define UPDATE_GTK 0
 #define UPDATE_GTK_SOUNDOFF 1
 #define UPDATE_GTK_SOUNDON 2
@@ -31,22 +34,22 @@ extern int Intro_Style;
 extern int SegaCD_Accurate;
 extern int Active;
 extern int Quick_Exit;
+extern int FS_Minimised;
 
 extern POINT Window_Pos;
 
-extern char Start_Rom[1024];
-extern char Str_Tmp[1024];
-extern char Gens_Path[1024];
-extern char Language_Path[1024];
-extern char CGOffline_Path[1024];
-extern char Manual_Path[1024];
+#define GENS_PATH_MAX 1024
+extern char Start_Rom[GENS_PATH_MAX];
+extern char Str_Tmp[GENS_PATH_MAX];
+extern char Gens_Path[GENS_PATH_MAX];
+extern char Language_Path[GENS_PATH_MAX];
+extern char CGOffline_Path[GENS_PATH_MAX];
+extern char Manual_Path[GENS_PATH_MAX];
 
 extern char **language_name;
 	
 extern unsigned char Keys[];
 extern unsigned char joystate[];
-
-void SetWindowText(const char *text);
 
 int Set_Render(int Full, int Num, int Force);
 int Change_68K_Type(int hWnd, int Num, int Reset_SND);
