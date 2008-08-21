@@ -3,8 +3,14 @@
 
 #include "port.h"
 
-// TODO: Make this conditional based on operating system.
+// OS-specific includes.
+#if (defined(__linux__))
 #include "g_main_linux.h"
+#elif (defined(__WIN32__))
+#error TODO: Add Win32 support.
+#else
+#error Unsupported operating system.
+#endif
 
 #define UPDATE_GTK 0
 #define UPDATE_GTK_SOUNDOFF 1
