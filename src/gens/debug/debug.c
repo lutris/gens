@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "g_main.h"
-#include "g_sdlinput.h"
-#include "keycode.h"
+#include "g_md.h"
+#include "g_input.h"
 #include "misc.h"
 #include "gens.h"
 
@@ -40,418 +40,333 @@ char Dbg_EA_Str[16];
 char Dbg_Size_Str[3];
 char Dbg_Cond_Str[3];
 
-void
-Debug_Event (int key)
+void Debug_Event (int key)
 {
-  int i;
-  SH2_CONTEXT *sh;
-
-  if (Debug & 1)
-    sh = &M_SH2;
-  else
-    sh = &S_SH2;
-
-  switch (key)
-    {
-    case K_T:
-      if ((Debug == 1) || (Debug == 3))
+	int i, steps;
+	SH2_CONTEXT *sh;
+	
+	// Determine the appropriate SH2 context.
+	if (Debug == DEBUG_MAIN_SH2 || Debug == DEBUG_32X_VDP)
+		sh = &M_SH2;
+	else if (Debug == DEBUG_SUB_SH2)
+		sh = &S_SH2;
+	else
+		sh = NULL;
+	
+	switch (key)
 	{
-	  main68k_tripOdometer ();
-	  main68k_exec (1);
+		case GENS_KEY_t:
+		case GENS_KEY_y:
+		case GENS_KEY_u:
+		case GENS_KEY_i:
+		case GENS_KEY_o:
+		case GENS_KEY_p:
+			// Trip Odometer (run code?)
+			// T = 1; Y = 10; U = 100; I = 1,000; O = 10,000; P = 100,000
+			steps = 0;
+			switch (key)
+			{
+				case GENS_KEY_t:
+					steps = 1;
+					break;
+				case GENS_KEY_y:
+					steps = 10;
+					break;
+				case GENS_KEY_u:
+					steps = 100;
+					break;
+				case GENS_KEY_i:
+					steps = 1000;
+					break;
+				case GENS_KEY_o:
+					steps = 10000;
+					break;
+				case GENS_KEY_p:
+					steps = 100000;
+					break;
+			}
+			for (i = 0; i < steps; i++)
+			{
+				if ((Debug == DEBUG_MAIN_68000) || (Debug == DEBUG_GENESIS_VDP))
+				{
+					main68k_tripOdometer ();
+					main68k_exec (1);
+				}
+				else if (Debug == DEBUG_Z80)
+				{
+					z80_Clear_Odo (&M_Z80);
+					z80_Exec (&M_Z80, 1);
+				}
+				else if (Debug == DEBUG_SUB_68000_REG ||
+					 Debug == DEBUG_SUB_68000_CDC ||
+					 Debug == DEBUG_VEC_CHIP_PATTERN)
+				{
+					sub68k_tripOdometer ();
+					sub68k_exec (1);
+				}
+				else if (Debug == DEBUG_MAIN_SH2 ||
+					 Debug == DEBUG_SUB_SH2 ||
+					 Debug == DEBUG_32X_VDP)
+				{
+					SH2_Clear_Odo (sh);
+					SH2_Exec (sh, 1);
+				}
+			}
+			break;
+		
+		case GENS_KEY_z:
+			adr_mem -= 0xC * 0xC * 0xC;
+			break;
+		
+		case GENS_KEY_s:
+			adr_mem += 0xC * 0xC * 0xC;
+			break;
+		
+		case GENS_KEY_e:
+			adr_mem -= 0xC * 0xC;
+			break;
+		
+		case GENS_KEY_d:
+			adr_mem += 0xC * 0xC;
+			break;
+		
+		case GENS_KEY_r:
+			adr_mem -= 0xC;
+			break;
+		
+		case GENS_KEY_f:
+			adr_mem += 0xC;
+			break;
+		
+		case GENS_KEY_h:
+			if (Debug == DEBUG_MAIN_68000)
+				main68k_interrupt (4, -1);
+			else if (Debug == DEBUG_Z80)
+				z80_Interrupt (&M_Z80, 0xFF);
+			else if (Debug == DEBUG_SUB_68000_REG ||
+				 Debug == DEBUG_SUB_68000_CDC ||
+				 Debug == DEBUG_VEC_CHIP_PATTERN)
+				sub68k_interrupt (5, -1);
+			else if (Debug == DEBUG_MAIN_SH2 ||
+				 Debug == DEBUG_SUB_SH2 ||
+				 Debug == DEBUG_32X_VDP)
+				SH2_Interrupt (sh, 8);
+			break;
+		
+		case GENS_KEY_j:
+			if (Debug == DEBUG_MAIN_68000)
+				main68k_interrupt (6, -1);
+			else if (Debug == DEBUG_Z80)
+				z80_Interrupt (&M_Z80, 0xFF);
+			else if (Debug == DEBUG_SUB_68000_REG ||
+				 Debug == DEBUG_SUB_68000_CDC ||
+				 Debug == DEBUG_VEC_CHIP_PATTERN)
+				sub68k_interrupt (4, -1);
+			else if (Debug == DEBUG_MAIN_SH2 ||
+				 Debug == DEBUG_SUB_SH2 ||
+				 Debug == DEBUG_32X_VDP)
+				SH2_Interrupt (sh, 12);
+			break;
+		
+		case GENS_KEY_l:
+			// Go up one VDP line.
+			if (VDP_Current_Line > 0)
+				VDP_Current_Line--;
+			break;
+		
+		case GENS_KEY_m:
+			// Go down one VDP line.
+			if (VDP_Current_Line < 319)
+				VDP_Current_Line++;
+			break;
+		
+		case GENS_KEY_x:
+			Debug ^= 0x0100;
+			break;
+		
+		case GENS_KEY_c:
+			if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+				SCD.Cur_LBA++;
+			VDP_Status ^= 0x8;
+			break;
+		
+		case GENS_KEY_v:
+			VDP_Status ^= 0x4;
+			Current_32X_FB ^= 1;
+			break;
+		
+		case GENS_KEY_n:
+			if (Debug == DEBUG_MAIN_SH2 || Debug == DEBUG_SUB_SH2)
+			{
+				sh->PC += 2;
+				sh->Status &= 0xFFFFFFF0;
+			}
+			else if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+				sub68k_context.pc += 2;
+			else if (Debug == DEBUG_MAIN_68000)
+				main68k_context.pc += 2;
+			else if (Debug == DEBUG_Z80)
+				z80_Set_PC (&M_Z80, z80_Get_PC (&M_Z80) + 1);
+			break;
+		
+		case GENS_KEY_w:
+			if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+				Check_CD_Command ();
+			break;
+		
+		case GENS_KEY_SPACE:
+			if (Debug)
+			{
+				Debug++;
+				
+				if (SegaCD_Started)
+				{
+					if (Debug > 6)
+						Debug = 1;
+				}
+				else if (_32X_Started)
+				{
+					if ((Debug > 3) && (Debug < 7))
+						Debug = 7;
+					if (Debug > 9)
+						Debug = 1;
+				}
+				else if (Debug > 3)
+					Debug = 1;
+			}
+			break;
+		
+		case GENS_KEY_NUM_DIVIDE:
+			VDP_Status &= ~2;
+			for (i = 0; i < 16; i++)
+			{
+				if (Mode_555 & 1)
+					MD_Palette[7 * 16 + i] =
+						((2 * i) << 10) + ((2 * i) << 5) + (2 * i);
+				else
+					MD_Palette[7 * 16 + i] =
+						((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
+			}
+		break;
+		
+		case GENS_KEY_NUM_MULTIPLY:
+			pattern_pal++;
+			pattern_pal &= 0xF;
+			break;
+		
+		case GENS_KEY_NUM_PLUS:
+			// Scroll down in pattern debugging.
+			if (Debug == DEBUG_MAIN_68000 ||
+			    Debug == DEBUG_Z80 ||
+			    Debug == DEBUG_GENESIS_VDP)
+			{
+				if (pattern_adr < 0xD800)
+					pattern_adr = (pattern_adr + 0x200) & 0xFFFF;
+			}
+			else
+			{
+				if (pattern_adr < 0x3D800)
+					pattern_adr = (pattern_adr + 0x800) & 0x3FFFF;
+			}
+			break;
+		
+		case GENS_KEY_NUM_MINUS:
+			// Scroll up in pattern debugging.
+			if (Debug == DEBUG_MAIN_68000 ||
+			    Debug == DEBUG_Z80 ||
+			    Debug == DEBUG_GENESIS_VDP)
+			{
+				if (pattern_adr > 0)
+					pattern_adr = (pattern_adr - 0x200) & 0xFFFF;
+			}
+			else
+			{
+				pattern_adr = pattern_adr - 0x800;
+				if (pattern_adr < 0)
+					pattern_adr = 0;
+			}
+			break;
 	}
-      else if (Debug == 2)
-	{
-	  z80_Clear_Odo (&M_Z80);
-	  z80_Exec (&M_Z80, 1);
-	}
-      else if ((Debug >= 4) && (Debug < 7))
-	{
-	  sub68k_tripOdometer ();
-	  sub68k_exec (1);
-	}
-      else if ((Debug >= 7) && (Debug < 10))
-	{
-	  SH2_Clear_Odo (sh);
-	  SH2_Exec (sh, 1);
-	}
-      break;
-
-    case K_Y:
-      for (i = 0; i < 10; i++)
-	{
-	  if ((Debug == 1) || (Debug == 3))
-	    {
-	      main68k_tripOdometer ();
-	      main68k_exec (1);
-	    }
-	  else if (Debug == 2)
-	    {
-	      z80_Clear_Odo (&M_Z80);
-	      z80_Exec (&M_Z80, 1);
-	    }
-	  else if ((Debug >= 4) && (Debug < 7))
-	    {
-	      sub68k_tripOdometer ();
-	      sub68k_exec (1);
-	    }
-	  else if ((Debug >= 7) && (Debug < 10))
-	    {
-	      SH2_Clear_Odo (sh);
-	      SH2_Exec (sh, 1);
-	    }
-	}
-      break;
-
-    case K_U:
-      for (i = 0; i < 100; i++)
-	{
-	  if ((Debug == 1) || (Debug == 3))
-	    {
-	      main68k_tripOdometer ();
-	      main68k_exec (1);
-	    }
-	  else if (Debug == 2)
-	    {
-	      z80_Clear_Odo (&M_Z80);
-	      z80_Exec (&M_Z80, 1);
-	    }
-	  else if ((Debug >= 4) && (Debug < 7))
-	    {
-	      sub68k_tripOdometer ();
-	      sub68k_exec (1);
-	    }
-	  else if ((Debug >= 7) && (Debug < 10))
-	    {
-	      SH2_Clear_Odo (sh);
-	      SH2_Exec (sh, 1);
-	    }
-	}
-      break;
-
-    case K_I:
-      for (i = 0; i < 1000; i++)
-	{
-	  if ((Debug == 1) || (Debug == 3))
-	    {
-	      main68k_tripOdometer ();
-	      main68k_exec (1);
-	    }
-	  else if (Debug == 2)
-	    {
-	      z80_Clear_Odo (&M_Z80);
-	      z80_Exec (&M_Z80, 1);
-	    }
-	  else if ((Debug >= 4) && (Debug < 7))
-	    {
-	      sub68k_tripOdometer ();
-	      sub68k_exec (1);
-	    }
-	  else if ((Debug >= 7) && (Debug < 10))
-	    {
-	      SH2_Clear_Odo (sh);
-	      SH2_Exec (sh, 1);
-	    }
-	}
-      break;
-
-    case K_O:
-      for (i = 0; i < 10000; i++)
-	{
-	  if ((Debug == 1) || (Debug == 3))
-	    {
-	      main68k_tripOdometer ();
-	      main68k_exec (1);
-	    }
-	  else if (Debug == 2)
-	    {
-	      z80_Clear_Odo (&M_Z80);
-	      z80_Exec (&M_Z80, 1);
-	    }
-	  else if ((Debug >= 4) && (Debug < 7))
-	    {
-	      sub68k_tripOdometer ();
-	      sub68k_exec (1);
-	    }
-	  else if ((Debug >= 7) && (Debug < 10))
-	    {
-	      SH2_Clear_Odo (sh);
-	      SH2_Exec (sh, 1);
-	    }
-	}
-      break;
-
-    case K_P:
-      for (i = 0; i < 100000; i++)
-	{
-	  if ((Debug == 1) || (Debug == 3))
-	    {
-	      main68k_tripOdometer ();
-	      main68k_exec (1);
-	    }
-	  else if (Debug == 2)
-	    {
-	      z80_Clear_Odo (&M_Z80);
-	      z80_Exec (&M_Z80, 1);
-	    }
-	  else if ((Debug >= 4) && (Debug < 7))
-	    {
-	      sub68k_tripOdometer ();
-	      sub68k_exec (1);
-	    }
-	  else if ((Debug >= 7) && (Debug < 10))
-	    {
-	      SH2_Clear_Odo (sh);
-	      SH2_Exec (sh, 1);
-	    }
-	}
-      break;
-
-    case K_Z:
-      adr_mem -= 0xC * 0xC * 0xC;
-      break;
-
-    case K_S:
-      adr_mem += 0xC * 0xC * 0xC;
-      break;
-
-    case K_E:
-      adr_mem -= 0xC * 0xC;
-      break;
-
-    case K_D:
-      adr_mem += 0xC * 0xC;
-      break;
-
-    case K_R:
-      adr_mem -= 0xC;
-      break;
-
-    case K_F:
-      adr_mem += 0xC;
-      break;
-
-    case K_H:
-      if (Debug == 1)
-	main68k_interrupt (4, -1);
-      else if (Debug == 2)
-	z80_Interrupt (&M_Z80, 0xFF);
-      else if ((Debug >= 4) && (Debug < 7))
-	sub68k_interrupt (5, -1);
-      else if ((Debug >= 7) && (Debug < 9))
-	SH2_Interrupt (sh, 8);
-      break;
-
-    case K_J:
-      if (Debug == 1)
-	main68k_interrupt (6, -1);
-      else if (Debug == 2)
-	z80_Interrupt (&M_Z80, 0xFF);
-      else if ((Debug >= 4) && (Debug < 7))
-	sub68k_interrupt (4, -1);
-      else if ((Debug >= 7) && (Debug < 9))
-	SH2_Interrupt (sh, 12);
-      break;
-
-    case K_L:
-      if (VDP_Current_Line > 0)
-	VDP_Current_Line--;
-      break;
-
-    case K_M:
-      if (VDP_Current_Line < 319)
-	VDP_Current_Line++;
-      break;
-
-    case K_X:
-      Debug ^= 0x0100;
-      break;
-
-    case K_C:
-      if ((Debug > 3) && (Debug < 6))
-	SCD.Cur_LBA++;
-      VDP_Status ^= 0x8;
-      break;
-
-    case K_V:
-      VDP_Status ^= 0x4;
-      Current_32X_FB ^= 1;
-      break;
-
-    case K_N:
-      if ((Debug > 6) && (Debug < 9))
-	{
-	  sh->PC += 2;
-	  sh->Status &= 0xFFFFFFF0;
-	}
-      else if ((Debug > 3) && (Debug < 6))
-	{
-	  sub68k_context.pc += 2;
-	}
-      else if (Debug == 1)
-	{
-	  main68k_context.pc += 2;
-	}
-      else if (Debug == 2)
-	{
-	  z80_Set_PC (&M_Z80, z80_Get_PC (&M_Z80) + 1);
-	}
-      break;
-
-    case K_W:
-      if ((Debug > 3) && (Debug < 6))
-	Check_CD_Command ();
-
-    case K_SPACE:
-      if (Debug)
-	{
-	  Debug++;
-
-	  if (SegaCD_Started)
-	    {
-	      if (Debug > 6)
-		Debug = 1;
-	    }
-	  else if (_32X_Started)
-	    {
-	      if ((Debug > 3) && (Debug < 7))
-		Debug = 7;
-	      if (Debug > 9)
-		Debug = 1;
-	    }
-	  else if (Debug > 3)
-	    Debug = 1;
-	}
-      break;
-
-    case K_DIV:
-      VDP_Status &= ~2;
-      for (i = 0; i < 16; i++)
-	{
-	  if (Mode_555 & 1)
-	    MD_Palette[7 * 16 + i] =
-	      ((2 * i) << 10) + ((2 * i) << 5) + (2 * i);
-	  else
-	    MD_Palette[7 * 16 + i] =
-	      ((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
-	}
-      break;
-
-    case K_ETOILE:
-      pattern_pal++;
-      pattern_pal &= 0xF;
-      break;
-
-    case K_PLUS:
-      if (Debug < 4)
-	{
-	  if (pattern_adr < 0xD800)
-	    pattern_adr = (pattern_adr + 0x200) & 0xFFFF;
-	}
-      else
-	{
-	  if (pattern_adr < 0x3D800)
-	    pattern_adr = (pattern_adr + 0x800) & 0x3FFFF;
-	}
-      break;
-
-    case K_MINUS:
-      if (Debug < 4)
-	{
-	  if (pattern_adr > 0)
-	    pattern_adr = (pattern_adr - 0x200) & 0xFFFF;
-	}
-      else
-	{
-	  pattern_adr = pattern_adr - 0x800;
-	  if (pattern_adr < 0)
-	    pattern_adr = 0;
-	}
-      break;
-    }
 }
 
 
-unsigned short
-Next_Word (void)
+unsigned short Next_Word (void)
 {
-  unsigned short val;
-
-  if (Debug == 1)
-    val = M68K_RW (Current_PC);
-  else if (Debug >= 2)
-    val = S68K_RW (Current_PC);
-
-  Current_PC += 2;
-
-  return (val);
+	unsigned short val;
+	
+	if (Debug == DEBUG_MAIN_68000)
+		val = M68K_RW (Current_PC);
+	else if (Debug >= DEBUG_Z80)
+		val = S68K_RW (Current_PC);
+	
+	Current_PC += 2;
+	
+	return (val);
 }
 
 
-unsigned int
-Next_Long (void)
+unsigned int Next_Long (void)
 {
-  unsigned int val;
-
-  if (Debug == 1)
-    {
-      val = M68K_RW (Current_PC);
-      val <<= 16;
-      val |= M68K_RW (Current_PC + 2);
-    }
-  else if (Debug >= 2)
-    {
-      val = S68K_RW (Current_PC);
-      val <<= 16;
-      val |= S68K_RW (Current_PC + 2);
-    }
-
-  Current_PC += 4;
-
-  return (val);
+	unsigned int val;
+	
+	if (Debug == DEBUG_MAIN_68000)
+	{
+		val = M68K_RW (Current_PC);
+		val <<= 16;
+		val |= M68K_RW (Current_PC + 2);
+	}
+	else if (Debug >= DEBUG_Z80)
+	{
+		val = S68K_RW (Current_PC);
+		val <<= 16;
+		val |= S68K_RW (Current_PC + 2);
+	}
+	
+	Current_PC += 4;
+	
+	return (val);
 }
 
 
-void
-Refresh_M68k_Inst (void)
+void Refresh_M68k_Inst (void)
 {
-  unsigned int i, PC;
-
-  Print_Text ("** MAIN 68000 DEBUG **", 22, 24, 1, VERT);
-
-  Current_PC = main68k_context.pc;
-
-  for (i = 1; i < 14; i++)
-    {
-      PC = Current_PC;
-      sprintf (_GString, "%.4X   %-33s\n", PC,
-	       M68KDisasm (Next_Word, Next_Long));
-      if (i == 1)
-	Print_Text (_GString, 39, 1, (i << 3) + 5, ROUGE);
-      else
-	Print_Text (_GString, 39, 1, (i << 3) + 5, BLANC);
-    }
+	unsigned int i, PC;
+	
+	Print_Text ("** MAIN 68000 DEBUG **", 22, 24, 1, VERT);
+	
+	Current_PC = main68k_context.pc;
+	
+	for (i = 1; i < 14; i++)
+	{
+		PC = Current_PC;
+		sprintf (_GString, "%.4X   %-33s\n", PC,
+			M68KDisasm (Next_Word, Next_Long));
+		if (i == 1)
+			Print_Text (_GString, 39, 1, (i << 3) + 5, ROUGE);
+		else
+			Print_Text (_GString, 39, 1, (i << 3) + 5, BLANC);
+	}
 }
 
 
-void
-Refresh_S68k_Inst (void)
+void Refresh_S68k_Inst (void)
 {
-  unsigned int i, PC;
-
-  Print_Text ("** SUB 68000 DEBUG **", 22, 24, 1, VERT);
-
-  Current_PC = sub68k_context.pc;
-
-  for (i = 1; i < 14; i++)
-    {
-      PC = Current_PC;
-      sprintf (_GString, "%.4X   %-33s\n", PC,
-	       M68KDisasm (Next_Word, Next_Long));
-      if (i == 1)
-	Print_Text (_GString, 39, 1, (i << 3) + 5, ROUGE);
-      else
-	Print_Text (_GString, 39, 1, (i << 3) + 5, BLANC);
-    }
+	unsigned int i, PC;
+	
+	Print_Text ("** SUB 68000 DEBUG **", 22, 24, 1, VERT);
+	
+	Current_PC = sub68k_context.pc;
+	
+	for (i = 1; i < 14; i++)
+	{
+		PC = Current_PC;
+		sprintf (_GString, "%.4X   %-33s\n", PC,
+			M68KDisasm (Next_Word, Next_Long));
+		if (i == 1)
+			Print_Text (_GString, 39, 1, (i << 3) + 5, ROUGE);
+		else
+			Print_Text (_GString, 39, 1, (i << 3) + 5, BLANC);
+	}
 }
 
 
@@ -1018,73 +933,73 @@ Refresh_Word_Ram_Pattern (void)
 }
 
 
-void
-Update_Debug_Screen (void)
+void Update_Debug_Screen (void)
 {
-  memset (MD_Screen, 0, 336 * 240 * 2);
-
-  if (Debug & 0x100)
-    Do_VDP_Only ();
-  else
-    switch (Debug)
-      {
-      default:
-      case 1:			// Main 68000
-	Refresh_M68k_Mem ();
-	Refresh_M68k_Inst ();
-	Refresh_M68k_State ();
-	Refresh_VDP_State ();
-	break;
-
-      case 2:			// Z80
-	Refresh_Z80_Mem ();
-	Refresh_Z80_Inst ();
-	Refresh_Z80_State ();
-	break;
-
-      case 3:			// Genesis VDP
-	Refresh_VDP_Pattern ();
-	Refresh_VDP_Palette ();
-	break;
-
-      case 4:			// Sub 68000 Reg
-	Refresh_S68k_Mem ();
-	Refresh_S68k_Inst ();
-	Refresh_S68k_State ();
-	Refresh_SegaCD_State ();
-	break;
-
-      case 5:			// Sub 68000 CDC
-	Refresh_S68k_Mem ();
-	Refresh_S68k_Inst ();
-	Refresh_S68k_State ();
-	Refresh_CDC_State ();
-	break;
-
-      case 6:			// Vector chip pattern
-	Refresh_Word_Ram_Pattern ();
-	break;
-
-      case 7:			// Main SH2
-	Refresh_SH2_Mem ();
-	Refresh_SH2_Inst (0);
-	Refresh_SH2_State (0);
-	Refresh_32X_State ();
-	break;
-
-      case 8:			// Sub SH2
-	Refresh_SH2_Mem ();
-	Refresh_SH2_Inst (1);
-	Refresh_SH2_State (1);
-	Refresh_32X_State ();
-	break;
-
-      case 9:			// 32X VDP
-	_32X_VDP_Draw (Current_32X_FB);
-	break;
-      }
-
-  Sleep (10);
+	// Clear the MD screen.
+	memset (MD_Screen, 0, 336 * 240 * 2);
+	
+	if (Debug & 0x100)
+		Do_VDP_Only ();
+	else
+		switch (Debug)
+		{
+			default:
+			case DEBUG_MAIN_68000:		// Main 68000
+				Refresh_M68k_Mem ();
+				Refresh_M68k_Inst ();
+				Refresh_M68k_State ();
+				Refresh_VDP_State ();
+				break;
+			
+			case DEBUG_Z80:			// Z80
+				Refresh_Z80_Mem ();
+				Refresh_Z80_Inst ();
+				Refresh_Z80_State ();
+				break;
+			
+			case DEBUG_GENESIS_VDP:		// Genesis VDP
+				Refresh_VDP_Pattern ();
+				Refresh_VDP_Palette ();
+				break;
+			
+			case DEBUG_SUB_68000_REG:	// Sub 68000 reg
+				Refresh_S68k_Mem ();
+				Refresh_S68k_Inst ();
+				Refresh_S68k_State ();
+				Refresh_SegaCD_State ();
+				break;
+			
+			case DEBUG_SUB_68000_CDC:	// Sub 68000 CDC
+				Refresh_S68k_Mem ();
+				Refresh_S68k_Inst ();
+				Refresh_S68k_State ();
+				Refresh_CDC_State ();
+				break;
+			
+			case DEBUG_VEC_CHIP_PATTERN:	// Vector chip pattern
+				Refresh_Word_Ram_Pattern ();
+				break;
+			
+			case DEBUG_MAIN_SH2:		// Main SH2
+				Refresh_SH2_Mem ();
+				Refresh_SH2_Inst (0);
+				Refresh_SH2_State (0);
+				Refresh_32X_State ();
+				break;
+			
+			case DEBUG_SUB_SH2:		// Sub SH2
+				Refresh_SH2_Mem ();
+				Refresh_SH2_Inst (1);
+				Refresh_SH2_State (1);
+				Refresh_32X_State ();
+				break;
+			
+			case DEBUG_32X_VDP:		// 32X VDP
+				_32X_VDP_Draw (Current_32X_FB);
+				break;
+		}
+	
+	Sleep (10);
 }
 
 
