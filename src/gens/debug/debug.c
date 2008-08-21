@@ -47,7 +47,12 @@ char Dbg_Cond_Str[3];
 	strcpy(_GString, (text));			\
 	Print_Text(_GString, (size), (x), (y), (color));
 
-void Debug_Event(int key)
+/**
+ * Debug_Event(): Key pressed while debugging.
+ * @param key Keycode.
+ * @param mod Modifiers.
+ */
+void Debug_Event(int key, int mod)
 {
 	int i, steps;
 	SH2_CONTEXT *sh;

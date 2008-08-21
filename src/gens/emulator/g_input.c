@@ -18,6 +18,7 @@
 #include "gym.h"
 #include "cd_aspi.h"
 #include "vdp_io.h"
+#include "debug.h"
 
 // The default key definitions match a French AZERTY keyboard.
 // TODO: Add another default for QWERTY and select it on English systems.
@@ -37,7 +38,7 @@ struct K_Def Keys_Def[8] =
 
 /**
  * Input_KeyDown(): Check if a key is pressed.
- * @param key Key code.
+ * @param key Keycode.
  * @param mod Modifiers.
  */
 void Input_KeyDown(int key, int mod)
@@ -385,12 +386,18 @@ void Input_KeyDown(int key, int mod)
 		default:
 			break;
 	}
+	
+#ifdef GENS_DEBUG
+	// If debugging, pass the key to the debug handler.
+	if (Debug != DEBUG_NONE)
+		Debug_Event(key, mod);
+#endif
 }
 
 
 /**
  * Input_KeyUp(): Check if a key is released.
- * @param key Key code.
+ * @param key Keycode.
  * @param mod Modifiers.
  */
 void Input_KeyUp(int key, int mod)

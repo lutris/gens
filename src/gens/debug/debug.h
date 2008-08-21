@@ -1,7 +1,6 @@
 #ifndef _DEBUG_68K_H
 #define _DEBUG_68K_H
 
-#include "gens.h"
 #ifdef GENS_DEBUG
 
 extern int adr_mem;
@@ -10,11 +9,12 @@ extern int pattern_pal;
 extern int pattern_adr;
 extern int Current_PC;
 
-void Debug_Event (int key);
-void Update_Debug_Screen (void);
+void Debug_Event(int key, int mod);
+void Update_Debug_Screen(void);
 
 enum DEBUG_MODE
 {
+	DEBUG_NONE		= 0,
 	DEBUG_MAIN_68000	= 1,
 	DEBUG_Z80		= 2,
 	DEBUG_GENESIS_VDP	= 3,
