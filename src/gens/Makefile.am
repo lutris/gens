@@ -142,6 +142,9 @@ gens_SOURCES = \
 		emulator/g_main.h \
 		emulator/g_main_linux.c \
 		emulator/g_main_linux.h \
+		emulator/g_input.c \
+		emulator/g_input.h \
+		emulator/g_input_linux.h \
 		emulator/g_md.c \
 		emulator/g_md.h \
 		emulator/g_mcd.c \

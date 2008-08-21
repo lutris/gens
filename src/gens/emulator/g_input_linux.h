@@ -1,0 +1,125 @@
+/**
+ * GENS: Input handler. (Linux-specific code)
+ */
+
+#ifndef G_INPUT_LINUX_H
+#define G_INPUT_LINUX_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <SDL/SDL_keysym.h>
+#include "g_sdlinput.h"
+
+// Maps key symbols from SDL to OS-independent key symbols.
+#define GENS_KEY_BACKSPACE	SDLK_BACKSPACE
+#define GENS_KEY_TAB		SDLK_TAB
+#define GENS_KEY_RETURN		SDLK_RETURN
+#define GENS_KEY_PAUSE		SDLK_PAUSE
+#define GENS_KEY_ESCAPE		SDLK_ESCAPE
+#define GENS_KEY_SPACE		SDLK_SPACE
+
+// Numbers
+#define GENS_KEY_0		SDLK_0
+#define GENS_KEY_1		SDLK_1
+#define GENS_KEY_2		SDLK_2
+#define GENS_KEY_3		SDLK_3
+#define GENS_KEY_4		SDLK_4
+#define GENS_KEY_5		SDLK_5
+#define GENS_KEY_6		SDLK_6
+#define GENS_KEY_7		SDLK_7
+#define GENS_KEY_8		SDLK_8
+#define GENS_KEY_9		SDLK_9
+
+// Letters
+#define	GENS_KEY_a		SDLK_a
+#define	GENS_KEY_b		SDLK_b
+#define	GENS_KEY_c		SDLK_c
+#define	GENS_KEY_d		SDLK_d
+#define	GENS_KEY_e		SDLK_e
+#define	GENS_KEY_f		SDLK_f
+#define	GENS_KEY_g		SDLK_g
+#define	GENS_KEY_h		SDLK_h
+#define	GENS_KEY_i		SDLK_i
+#define	GENS_KEY_j		SDLK_j
+#define	GENS_KEY_k		SDLK_k
+#define	GENS_KEY_l		SDLK_l
+#define	GENS_KEY_m		SDLK_m
+#define	GENS_KEY_n		SDLK_n
+#define	GENS_KEY_o		SDLK_o
+#define	GENS_KEY_p		SDLK_p
+#define	GENS_KEY_q		SDLK_q
+#define	GENS_KEY_r		SDLK_r
+#define	GENS_KEY_s		SDLK_s
+#define	GENS_KEY_t		SDLK_t
+#define	GENS_KEY_u		SDLK_u
+#define	GENS_KEY_v		SDLK_v
+#define	GENS_KEY_w		SDLK_w
+#define	GENS_KEY_x		SDLK_x
+#define	GENS_KEY_y		SDLK_y
+#define	GENS_KEY_z		SDLK_z
+
+// Arrow Keys
+#define GENS_KEY_UP		SDLK_UP
+#define GENS_KEY_DOWN		SDLK_DOWN
+#define GENS_KEY_LEFT		SDLK_LEFT
+#define GENS_KEY_RIGHT		SDLK_RIGHT
+
+// Function Keys
+#define GENS_KEY_F1		SDLK_F1
+#define GENS_KEY_F2		SDLK_F2
+#define GENS_KEY_F3		SDLK_F3
+#define GENS_KEY_F4		SDLK_F4
+#define GENS_KEY_F5		SDLK_F5
+#define GENS_KEY_F6		SDLK_F6
+#define GENS_KEY_F7		SDLK_F7
+#define GENS_KEY_F8		SDLK_F8
+#define GENS_KEY_F9		SDLK_F9
+#define GENS_KEY_F10		SDLK_F10
+#define GENS_KEY_F11		SDLK_F11
+#define GENS_KEY_F12		SDLK_F12
+#define GENS_KEY_F13		SDLK_F13
+#define GENS_KEY_F14		SDLK_F14
+#define GENS_KEY_F15		SDLK_F15
+
+// Modifier Keys (not the same as modifiers, which are included with regular keypresses)
+#define GENS_KEY_NUMLOCK	SDLK_NUMLOCK
+#define GENS_KEY_CAPSLOCK	SDLK_CAPSLOCK
+#define GENS_KEY_SCROLLOCK	SDLK_SCROLLOCK
+#define GENS_KEY_LSHIFT		SDLK_LSHIFT
+#define GENS_KEY_RSHIFT		SDLK_RSHIFT
+#define GENS_KEY_LCTRL		SDLK_LCTRL
+#define GENS_KEY_RCTRL		SDLK_RCTRL
+#define GENS_KEY_LALT		SDLK_LALT
+#define GENS_KEY_RALT		SDLK_RALT
+#define GENS_KEY_LMETA		SDLK_LMETA
+#define GENS_KEY_RMETA		SDLK_RMETA
+#define GENS_KEY_LSUPER		SDLK_LSUPER
+#define GENS_KEY_RSUPER		SDLK_RSUPER
+
+// Maps key modifiers from SDL to OS-independent key modifiers.
+#define GENS_KMOD_NONE		KMOD_NONE
+#define GENS_KMOD_LSHIFT	KMOD_LSHIFT
+#define GENS_KMOD_RSHIFT	KMOD_RSHIFT
+#define GENS_KMOD_LCTRL		KMOD_LCTRL
+#define GENS_KMOD_RCTRL		KMOD_RCTRL
+#define GENS_KMOD_LALT		KMOD_LALT
+#define GENS_KMOD_RALT		KMOD_RALT
+#define GENS_KMOD_LMETA		KMOD_LMETA
+#define GENS_KMOD_RMETA		KMOD_RMETA
+#define GENS_KMOD_NUM		KMOD_NUM
+#define GENS_KMOD_CAPS		KMOD_CAPS
+#define GENS_KMOD_MODE		KMOD_MODE
+
+// Composite modifiers.
+#define GENS_KMOD_CTRL		KMOD_CTRL
+#define GENS_KMOD_SHIFT		KMOD_SHIFT
+#define GENS_KMOD_ALT		KMOD_ALT
+#define GENS_KMOD_META		KMOD_META
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

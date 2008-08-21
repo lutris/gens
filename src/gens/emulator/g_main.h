@@ -1,6 +1,10 @@
 #ifndef G_MAIN_H
 #define G_MAIN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "port.h"
 
 // OS-specific includes.
@@ -112,5 +116,8 @@ SetDlgItemText(hDlg, id, Str_Tmp);
 
 #endif
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

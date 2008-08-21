@@ -1,17 +1,8 @@
-#ifndef G_INPUT_H
-#define G_INPUT_H
+#ifndef G_SDLINPUT_H
+#define G_SDLINPUT_H
 
 #include <gtk/gtk.h>
 
-struct K_Def {
-	unsigned int Start, Mode;
-	unsigned int A, B, C;
-	unsigned int X, Y, Z;
-	unsigned int Up, Down, Left, Right;
-};
-
-extern struct K_Def Keys_Def[8];
-extern unsigned char Kaillera_Keys[16];
 
 unsigned int Get_Key(void);
 int Check_Key_Pressed(unsigned int key);

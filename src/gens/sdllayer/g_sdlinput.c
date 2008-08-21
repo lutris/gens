@@ -7,6 +7,7 @@
 #include "g_sdlinput.h"
 #include "io.h"
 #include "g_main.h"
+//#include "g_input.h"
 #include "support.h"
 
 //char Phrase[1024];
@@ -19,17 +20,6 @@ unsigned char Keys[1024];
 
 unsigned char Kaillera_Keys[16];
 unsigned char joystate[0x530];
-
-struct K_Def Keys_Def[8] = {
-  {SDLK_RETURN, SDLK_RSHIFT,
-   SDLK_a, SDLK_z, SDLK_e,
-   SDLK_q, SDLK_s, SDLK_d,
-   SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT},
-  {SDLK_u, SDLK_t,
-   SDLK_k, SDLK_l, SDLK_m,
-   SDLK_i, SDLK_o, SDLK_p,
-   SDLK_y, SDLK_h, SDLK_g, SDLK_j}
-};
 
 SDL_Joystick *joy[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
 
