@@ -42,7 +42,6 @@ void SetWindowVisibility (int visibility)
 void update_SDL_events(void)
 {
 	SDL_Event event;
-	// TODO: Make "mod" independent of SDL.
 	
 	while (SDL_PollEvent(&event))
 	{
@@ -54,11 +53,11 @@ void update_SDL_events(void)
 				break;
 		*/
 			case SDL_KEYDOWN:
-				Input_KeyDown(event.key.keysym.sym, event.key.keysym.mod);
+				Input_KeyDown(event.key.keysym.sym);
 				break;
 				
 			case SDL_KEYUP:
-				Input_KeyUp(event.key.keysym.sym, event.key.keysym.mod);
+				Input_KeyUp(event.key.keysym.sym);
 				break;
 			
 			case SDL_JOYAXISMOTION:

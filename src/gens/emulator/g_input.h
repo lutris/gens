@@ -31,8 +31,8 @@ extern unsigned char Kaillera_Keys[16];
 extern struct K_Def Keys_Def[8];
 
 
-void Input_KeyDown(int key, int mod);
-void Input_KeyUp(int key, int mod);
+void Input_KeyDown(int key);
+void Input_KeyUp(int key);
 
 #ifdef __cplusplus
 }

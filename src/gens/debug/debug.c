@@ -262,7 +262,6 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_NUM_MULTIPLY:
-		printf("mod: %x; GENS_KMOD_SHIFT: %x\n", mod, GENS_KMOD_SHIFT);
 			if (mod & GENS_KMOD_SHIFT)
 				pattern_pal--;
 			else

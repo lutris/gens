@@ -20,6 +20,10 @@
 #include "vdp_io.h"
 #include "debug.h"
 
+// Due to bugs with SDL and GTK, modifier state has to be tracked manually.
+// TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
+int mod = 0;
+
 // The default key definitions match a French AZERTY keyboard.
 // TODO: Add another default for QWERTY and select it on English systems.
 struct K_Def Keys_Def[8] =
@@ -39,16 +43,31 @@ struct K_Def Keys_Def[8] =
 /**
  * Input_KeyDown(): Check if a key is pressed.
  * @param key Keycode.
- * @param mod Modifiers.
  */
-void Input_KeyDown(int key, int mod)
+void Input_KeyDown(int key)
 {
-	// TODO: Make "mod" OS-independent. Currently, it depends on SDL.
-	// TODO: Make keys remappable.
 	Keys[key] = 1;
 	
 	switch (key)
 	{
+		case GENS_KEY_LCTRL:
+			mod |= GENS_KMOD_LCTRL;
+			break;
+		case GENS_KEY_RCTRL:
+			mod |= GENS_KMOD_RCTRL;
+			break;
+		case GENS_KEY_LALT:
+			mod |= GENS_KMOD_LALT;
+			break;
+		case GENS_KEY_RALT:
+			mod |= GENS_KMOD_RALT;
+			break;
+		case GENS_KEY_LSHIFT:
+			mod |= GENS_KMOD_LSHIFT;
+			break;
+		case GENS_KEY_RSHIFT:
+			mod |= GENS_KMOD_RSHIFT;
+			break;
 		case GENS_KEY_ESCAPE:
 			if (Quick_Exit)
 				close_gens();
@@ -398,14 +417,31 @@ void Input_KeyDown(int key, int mod)
 /**
  * Input_KeyUp(): Check if a key is released.
  * @param key Keycode.
- * @param mod Modifiers.
  */
-void Input_KeyUp(int key, int mod)
+void Input_KeyUp(int key)
 {
 	Keys[key] = 0;
 	
 	switch(key)
 	{
+		case GENS_KEY_LCTRL:
+			mod &= ~GENS_KMOD_LCTRL;
+			break;
+		case GENS_KEY_RCTRL:
+			mod &= ~GENS_KMOD_RCTRL;
+			break;
+		case GENS_KEY_LALT:
+			mod &= ~GENS_KMOD_LALT;
+			break;
+		case GENS_KEY_RALT:
+			mod &= ~GENS_KMOD_RALT;
+			break;
+		case GENS_KEY_LSHIFT:
+			mod &= ~GENS_KMOD_LSHIFT;
+			break;
+		case GENS_KEY_RSHIFT:
+			mod &= ~GENS_KMOD_RSHIFT;
+			break;
 		case GENS_KEY_F1:
 			fast_forward = 0;
 			break;

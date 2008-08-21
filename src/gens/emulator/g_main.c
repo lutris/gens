@@ -323,6 +323,12 @@ int IsAsyncAllowed(void)
 	return 1;
 }
 
+
+void KPTest(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	printf("GTK Key: 0x%X; Modifier: 0x%X\n", event->keyval, event->state);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -342,10 +348,14 @@ main (int argc, char *argv[])
 	
 	gens_window = create_gens_window ();
 	sdlsock = gtk_event_box_new();
+	// Connect the keypress event.
+	gtk_signal_connect(GTK_OBJECT(sdlsock), "key-press-event",
+			GTK_SIGNAL_FUNC(KPTest), NULL);
 	gtk_widget_set_name(sdlsock, "sdlsock");
 	g_object_set_data_full(G_OBJECT(gens_window), "sdlsock",
 	gtk_widget_ref(sdlsock), (GDestroyNotify) gtk_widget_unref);
 	gtk_box_pack_end(GTK_BOX(lookup_widget(gens_window, "vbox1")), sdlsock, 0, 0, 0);
+	
 	
 	gtk_widget_show(gens_window);
 	//initializeConsoleRomsView(); // not yet finished (? - wryun)
