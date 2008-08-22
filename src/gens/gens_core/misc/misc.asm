@@ -1174,7 +1174,7 @@ section .text align=64
 	ALIGN32
 
 
-	; void Write_Sound_Mono_MMX(int *Left, int *Right, short *Dest, int lenght)
+	; void Write_Sound_Mono_MMX(int *Left, int *Right, short *Dest, int length)
 	DECL Write_Sound_Mono_MMX
 
 		push ebx
@@ -1184,7 +1184,7 @@ section .text align=64
 
 		mov edi, [esp + 20]			; Left
 		mov esi, [esp + 24]			; Right
-		mov ecx, [esp + 32]			; Lenght
+		mov ecx, [esp + 32]			; Length
 		mov ebx, [esp + 28]			; Dest
 
 		shr ecx, 1
@@ -1259,7 +1259,7 @@ section .text align=64
 
 	ALIGN32
 
-	; void Write_Sound_Stereo_MMX(int *Left, int *Right, short *Dest, int lenght)
+	; void Write_Sound_Stereo_MMX(int *Left, int *Right, short *Dest, int length)
 	DECL Write_Sound_Stereo_MMX
 
 		push ebx
@@ -1270,7 +1270,7 @@ section .text align=64
 
 		mov edi, [esp + 24]			; Left
 		mov esi, [esp + 28]			; Right
-		mov ecx, [esp + 36]			; Lenght
+		mov ecx, [esp + 36]			; Length
 		mov ebx, [esp + 32]			; Dest
 
 		shr ecx, 1

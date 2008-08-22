@@ -50,21 +50,21 @@
 #define LFO_HBITS      10	// LFO phase counter int part
 #define LFO_LBITS      (28 - LFO_HBITS)	// LFO phase counter float part (best setting)
 
-#define SIN_LENGHT     (1 << SIN_HBITS)
-#define ENV_LENGHT     (1 << ENV_HBITS)
-#define LFO_LENGHT     (1 << LFO_HBITS)
+#define SIN_LENGTH     (1 << SIN_HBITS)
+#define ENV_LENGTH     (1 << ENV_HBITS)
+#define LFO_LENGTH     (1 << LFO_HBITS)
 
-#define TL_LENGHT      (ENV_LENGHT * 3)	// Env + TL scaling + LFO
+#define TL_LENGTH      (ENV_LENGTH * 3)	// Env + TL scaling + LFO
 
-#define SIN_MASK       (SIN_LENGHT - 1)
-#define ENV_MASK       (ENV_LENGHT - 1)
-#define LFO_MASK       (LFO_LENGHT - 1)
+#define SIN_MASK       (SIN_LENGTH - 1)
+#define ENV_MASK       (ENV_LENGTH - 1)
+#define LFO_MASK       (LFO_LENGTH - 1)
 
-#define ENV_STEP       (96.0 / ENV_LENGHT)	// ENV_MAX = 96 dB
+#define ENV_STEP       (96.0 / ENV_LENGTH)	// ENV_MAX = 96 dB
 
-#define ENV_ATTACK     ((ENV_LENGHT * 0) << ENV_LBITS)
-#define ENV_DECAY      ((ENV_LENGHT * 1) << ENV_LBITS)
-#define ENV_END        ((ENV_LENGHT * 2) << ENV_LBITS)
+#define ENV_ATTACK     ((ENV_LENGTH * 0) << ENV_LBITS)
+#define ENV_DECAY      ((ENV_LENGTH * 1) << ENV_LBITS)
+#define ENV_END        ((ENV_LENGTH * 2) << ENV_LBITS)
 
 #define MAX_OUT_BITS   (SIN_HBITS + SIN_LBITS + 2)	// Modulation = -4 <--> +4
 #define MAX_OUT        ((1 << MAX_OUT_BITS) - 1)
@@ -103,12 +103,12 @@
 
 struct ym2612__ YM2612;
 
-int *SIN_TAB[SIN_LENGHT];	// SINUS TABLE (pointer on TL TABLE)
-int TL_TAB[TL_LENGHT * 2];	// TOTAL LEVEL TABLE (positif and minus)
-unsigned int ENV_TAB[2 * ENV_LENGHT + 8];	// ENV CURVE TABLE (attack & decay)
+int *SIN_TAB[SIN_LENGTH];	// SINUS TABLE (pointer on TL TABLE)
+int TL_TAB[TL_LENGTH * 2];	// TOTAL LEVEL TABLE (positif and minus)
+unsigned int ENV_TAB[2 * ENV_LENGTH + 8];	// ENV CURVE TABLE (attack & decay)
 
-//unsigned int ATTACK_TO_DECAY[ENV_LENGHT];     // Conversion from attack to decay phase
-unsigned int DECAY_TO_ATTACK[ENV_LENGHT];	// Conversion from decay to attack phase
+//unsigned int ATTACK_TO_DECAY[ENV_LENGTH];     // Conversion from attack to decay phase
+unsigned int DECAY_TO_ATTACK[ENV_LENGTH];	// Conversion from decay to attack phase
 
 unsigned int FINC_TAB[2048];	// Frequency step table
 
@@ -118,19 +118,19 @@ unsigned int DT_TAB[8][32];	// Detune table
 unsigned int SL_TAB[16];	// Substain level table
 unsigned int NULL_RATE[32];	// Table for NULL rate
 
-int LFO_ENV_TAB[LFO_LENGHT];	// LFO AMS TABLE (adjusted for 11.8 dB)
-int LFO_FREQ_TAB[LFO_LENGHT];	// LFO FMS TABLE
-int LFO_ENV_UP[MAX_UPDATE_LENGHT];	// Temporary calculated LFO AMS (adjusted for 11.8 dB)
-int LFO_FREQ_UP[MAX_UPDATE_LENGHT];	// Temporary calculated LFO FMS
+int LFO_ENV_TAB[LFO_LENGTH];	// LFO AMS TABLE (adjusted for 11.8 dB)
+int LFO_FREQ_TAB[LFO_LENGTH];	// LFO FMS TABLE
+int LFO_ENV_UP[MAX_UPDATE_LENGTH];	// Temporary calculated LFO AMS (adjusted for 11.8 dB)
+int LFO_FREQ_UP[MAX_UPDATE_LENGTH];	// Temporary calculated LFO FMS
 
-int INTER_TAB[MAX_UPDATE_LENGHT];	// Interpolation table
+int INTER_TAB[MAX_UPDATE_LENGTH];	// Interpolation table
 
 int LFO_INC_TAB[8];		// LFO step table
 
 int in0, in1, in2, in3;		// current phase calculation
 int en0, en1, en2, en3;		// current enveloppe calculation
 
-/*const void (*UPDATE_CHAN[8 * 8]) (channel_ * CH, int **buf, int lenght) =	// Update Channel functions pointer table
+/*const void (*UPDATE_CHAN[8 * 8]) (channel_ * CH, int **buf, int length) =	// Update Channel functions pointer table
 {
 Update_Chan_Algo0,
     Update_Chan_Algo1,
@@ -1184,7 +1184,7 @@ CH->Old_OUTd = CH->OUTd;
 
 
 void
-Update_Chan_Algo0 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo0 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1192,10 +1192,10 @@ Update_Chan_Algo0 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 0 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 0 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_0 DO_OUTPUT}
@@ -1203,7 +1203,7 @@ Update_Chan_Algo0 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo1 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo1 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1211,10 +1211,10 @@ Update_Chan_Algo1 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 1 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 1 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_1 DO_OUTPUT}
@@ -1222,7 +1222,7 @@ Update_Chan_Algo1 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo2 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo2 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1230,10 +1230,10 @@ Update_Chan_Algo2 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 2 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 2 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_2 DO_OUTPUT}
@@ -1241,7 +1241,7 @@ Update_Chan_Algo2 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo3 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo3 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1249,10 +1249,10 @@ Update_Chan_Algo3 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 3 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 3 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_3 DO_OUTPUT}
@@ -1260,7 +1260,7 @@ Update_Chan_Algo3 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo4 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo4 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1268,10 +1268,10 @@ Update_Chan_Algo4 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 4 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 4 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_4 DO_OUTPUT}
@@ -1279,7 +1279,7 @@ Update_Chan_Algo4 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo5 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo5 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1288,10 +1288,10 @@ Update_Chan_Algo5 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 5 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 5 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_5 DO_OUTPUT}
@@ -1299,7 +1299,7 @@ Update_Chan_Algo5 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo6 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo6 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1308,10 +1308,10 @@ Update_Chan_Algo6 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 6 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 6 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_6 DO_OUTPUT}
@@ -1319,7 +1319,7 @@ Update_Chan_Algo6 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo7 (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo7 (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1328,10 +1328,10 @@ Update_Chan_Algo7 (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 7 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 7 len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_7 DO_OUTPUT}
@@ -1339,7 +1339,7 @@ Update_Chan_Algo7 (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo0_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo0_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1347,10 +1347,10 @@ Update_Chan_Algo0_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 0 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 0 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_0 DO_OUTPUT}
@@ -1358,7 +1358,7 @@ Update_Chan_Algo0_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo1_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo1_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1366,10 +1366,10 @@ Update_Chan_Algo1_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 1 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 1 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_1 DO_OUTPUT}
@@ -1377,7 +1377,7 @@ Update_Chan_Algo1_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo2_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo2_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1385,10 +1385,10 @@ Update_Chan_Algo2_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 2 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 2 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_2 DO_OUTPUT}
@@ -1396,7 +1396,7 @@ Update_Chan_Algo2_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo3_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo3_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1404,10 +1404,10 @@ Update_Chan_Algo3_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 3 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 3 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_3 DO_OUTPUT}
@@ -1415,7 +1415,7 @@ Update_Chan_Algo3_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo4_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo4_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1423,10 +1423,10 @@ Update_Chan_Algo4_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 4 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 4 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_4 DO_OUTPUT}
@@ -1434,7 +1434,7 @@ Update_Chan_Algo4_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo5_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo5_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1443,10 +1443,10 @@ Update_Chan_Algo5_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 5 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 5 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_5 DO_OUTPUT}
@@ -1454,7 +1454,7 @@ Update_Chan_Algo5_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo6_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo6_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1463,10 +1463,10 @@ Update_Chan_Algo6_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 6 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 6 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_6 DO_OUTPUT}
@@ -1474,7 +1474,7 @@ Update_Chan_Algo6_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo7_LFO (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo7_LFO (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1483,10 +1483,10 @@ Update_Chan_Algo7_LFO (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 7 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 7 LFO len = %d\n\n", length);
 #endif
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO GET_CURRENT_ENV_LFO UPDATE_ENV DO_ALGO_7 DO_OUTPUT}
@@ -1499,7 +1499,7 @@ Update_Chan_Algo7_LFO (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo0_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo0_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1507,12 +1507,12 @@ Update_Chan_Algo0_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 0 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 0 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_0 DO_OUTPUT_INT}
@@ -1520,7 +1520,7 @@ Update_Chan_Algo0_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo1_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo1_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1528,12 +1528,12 @@ Update_Chan_Algo1_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 1 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 1 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_1 DO_OUTPUT_INT}
@@ -1541,7 +1541,7 @@ Update_Chan_Algo1_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo2_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo2_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1549,12 +1549,12 @@ Update_Chan_Algo2_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 2 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 2 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_2 DO_OUTPUT_INT}
@@ -1562,7 +1562,7 @@ Update_Chan_Algo2_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo3_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo3_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1570,12 +1570,12 @@ Update_Chan_Algo3_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 3 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 3 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_3 DO_OUTPUT_INT}
@@ -1583,7 +1583,7 @@ Update_Chan_Algo3_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo4_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo4_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1591,12 +1591,12 @@ Update_Chan_Algo4_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 4 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 4 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_4 DO_OUTPUT_INT}
@@ -1604,7 +1604,7 @@ Update_Chan_Algo4_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo5_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo5_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1613,12 +1613,12 @@ Update_Chan_Algo5_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 5 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 5 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_5 DO_OUTPUT_INT}
@@ -1626,7 +1626,7 @@ Update_Chan_Algo5_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo6_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo6_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1635,12 +1635,12 @@ Update_Chan_Algo6_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 6 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 6 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_6 DO_OUTPUT_INT}
@@ -1648,7 +1648,7 @@ Update_Chan_Algo6_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo7_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo7_Int (channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1657,12 +1657,12 @@ Update_Chan_Algo7_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 7 len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 7 len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE GET_CURRENT_ENV UPDATE_ENV DO_ALGO_7 DO_OUTPUT_INT}
@@ -1670,7 +1670,7 @@ Update_Chan_Algo7_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo0_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo0_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1678,12 +1678,12 @@ Update_Chan_Algo0_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 0 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 0 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1692,7 +1692,7 @@ Update_Chan_Algo0_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo1_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo1_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1700,12 +1700,12 @@ Update_Chan_Algo1_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 1 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 1 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1714,7 +1714,7 @@ Update_Chan_Algo1_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo2_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo2_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1722,12 +1722,12 @@ Update_Chan_Algo2_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 2 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 2 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1736,7 +1736,7 @@ Update_Chan_Algo2_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo3_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo3_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1744,12 +1744,12 @@ Update_Chan_Algo3_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 3 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 3 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1758,7 +1758,7 @@ Update_Chan_Algo3_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo4_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo4_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1766,12 +1766,12 @@ Update_Chan_Algo4_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 4 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 4 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1780,7 +1780,7 @@ Update_Chan_Algo4_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo5_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo5_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1789,12 +1789,12 @@ Update_Chan_Algo5_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 5 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 5 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1803,7 +1803,7 @@ Update_Chan_Algo5_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo6_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo6_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1812,12 +1812,12 @@ Update_Chan_Algo6_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 6 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 6 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1826,7 +1826,7 @@ Update_Chan_Algo6_LFO_Int (channel_ * CH, int **buf, int lenght)
 
 
 void
-Update_Chan_Algo7_LFO_Int (channel_ * CH, int **buf, int lenght)
+Update_Chan_Algo7_LFO_Int (channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1835,12 +1835,12 @@ Update_Chan_Algo7_LFO_Int (channel_ * CH, int **buf, int lenght)
     return;
 
 #if YM_DEBUG_LEVEL > 1
-  fprintf (debug_file, "\n\nAlgo 7 LFO len = %d\n\n", lenght);
+  fprintf (debug_file, "\n\nAlgo 7 LFO len = %d\n\n", length);
 #endif
 
   int_cnt = YM2612.Inter_Cnt;
 
-  for (i = 0; i < lenght; i++)
+  for (i = 0; i < length; i++)
     {
     GET_CURRENT_PHASE
 	UPDATE_PHASE_LFO
@@ -1948,11 +1948,11 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
   // [0     -  4095] = +output  [4095  - ...] = +output overflow (fill with 0)
   // [12288 - 16383] = -output  [16384 - ...] = -output overflow (fill with 0)
 
-  for (i = 0; i < TL_LENGHT; i++)
+  for (i = 0; i < TL_LENGTH; i++)
     {
       if (i >= PG_CUT_OFF)	// YM2612 cut off sound after 78 dB (14 bits output ?)
 	{
-	  TL_TAB[TL_LENGHT + i] = TL_TAB[i] = 0;
+	  TL_TAB[TL_LENGTH + i] = TL_TAB[i] = 0;
 	}
       else
 	{
@@ -1960,12 +1960,12 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
 	  x /= pow (10, (ENV_STEP * i) / 20);	// Decibel -> Voltage
 
 	  TL_TAB[i] = (int) x;
-	  TL_TAB[TL_LENGHT + i] = -TL_TAB[i];
+	  TL_TAB[TL_LENGTH + i] = -TL_TAB[i];
 	}
 
 #if YM_DEBUG_LEVEL > 2
       fprintf (debug_file, "TL_TAB[%d] = %.8X    TL_TAB[%d] = %.8X\n", i,
-	       TL_TAB[i], TL_LENGHT + i, TL_TAB[TL_LENGHT + i]);
+	       TL_TAB[i], TL_LENGTH + i, TL_TAB[TL_LENGTH + i]);
 #endif
     }
 
@@ -1977,11 +1977,11 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
   // SIN_TAB[x][y] = sin(x) * y; 
   // x = phase and y = volume
 
-  SIN_TAB[0] = SIN_TAB[SIN_LENGHT / 2] = &TL_TAB[(int) PG_CUT_OFF];
+  SIN_TAB[0] = SIN_TAB[SIN_LENGTH / 2] = &TL_TAB[(int) PG_CUT_OFF];
 
-  for (i = 1; i <= SIN_LENGHT / 4; i++)
+  for (i = 1; i <= SIN_LENGTH / 4; i++)
     {
-      x = sin (2.0 * PI * (double) (i) / (double) (SIN_LENGHT));	// Sinus
+      x = sin (2.0 * PI * (double) (i) / (double) (SIN_LENGTH));	// Sinus
       x = 20 * log10 (1 / x);	// convert to dB
 
       j = (int) (x / ENV_STEP);	// Get TL range
@@ -1989,17 +1989,17 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
       if (j > PG_CUT_OFF)
 	j = (int) PG_CUT_OFF;
 
-      SIN_TAB[i] = SIN_TAB[(SIN_LENGHT / 2) - i] = &TL_TAB[j];
-      SIN_TAB[(SIN_LENGHT / 2) + i] = SIN_TAB[SIN_LENGHT - i] =
-	&TL_TAB[TL_LENGHT + j];
+      SIN_TAB[i] = SIN_TAB[(SIN_LENGTH / 2) - i] = &TL_TAB[j];
+      SIN_TAB[(SIN_LENGTH / 2) + i] = SIN_TAB[SIN_LENGTH - i] =
+	&TL_TAB[TL_LENGTH + j];
 
 #if YM_DEBUG_LEVEL > 2
       fprintf (debug_file,
 	       "SIN[%d][0] = %.8X    SIN[%d][0] = %.8X    SIN[%d][0] = %.8X    SIN[%d][0] = %.8X\n",
-	       i, SIN_TAB[i][0], (SIN_LENGHT / 2) - i,
-	       SIN_TAB[(SIN_LENGHT / 2) - i][0], (SIN_LENGHT / 2) + i,
-	       SIN_TAB[(SIN_LENGHT / 2) + i][0], SIN_LENGHT - i,
-	       SIN_TAB[SIN_LENGHT - i][0]);
+	       i, SIN_TAB[i][0], (SIN_LENGTH / 2) - i,
+	       SIN_TAB[(SIN_LENGTH / 2) - i][0], (SIN_LENGTH / 2) + i,
+	       SIN_TAB[(SIN_LENGTH / 2) + i][0], SIN_LENGTH - i,
+	       SIN_TAB[SIN_LENGTH - i][0]);
 #endif
     }
 
@@ -2009,16 +2009,16 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
 
   // Tableau LFO (LFO wav) :
 
-  for (i = 0; i < LFO_LENGHT; i++)
+  for (i = 0; i < LFO_LENGTH; i++)
     {
-      x = sin (2.0 * PI * (double) (i) / (double) (LFO_LENGHT));	// Sinus
+      x = sin (2.0 * PI * (double) (i) / (double) (LFO_LENGTH));	// Sinus
       x += 1.0;
       x /= 2.0;			// positive only
       x *= 11.8 / ENV_STEP;	// ajusted to MAX enveloppe modulation
 
       LFO_ENV_TAB[i] = (int) x;
 
-      x = sin (2.0 * PI * (double) (i) / (double) (LFO_LENGHT));	// Sinus
+      x = sin (2.0 * PI * (double) (i) / (double) (LFO_LENGTH));	// Sinus
       x *= (double) ((1 << (LFO_HBITS - 1)) - 1);
 
       LFO_FREQ_TAB[i] = (int) x;
@@ -2033,34 +2033,34 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
 #endif
 
   // Tableau Enveloppe :
-  // ENV_TAB[0] -> ENV_TAB[ENV_LENGHT - 1]                                = attack curve
-  // ENV_TAB[ENV_LENGHT] -> ENV_TAB[2 * ENV_LENGHT - 1]   = decay curve
+  // ENV_TAB[0] -> ENV_TAB[ENV_LENGTH - 1]                                = attack curve
+  // ENV_TAB[ENV_LENGTH] -> ENV_TAB[2 * ENV_LENGTH - 1]   = decay curve
 
-  for (i = 0; i < ENV_LENGHT; i++)
+  for (i = 0; i < ENV_LENGTH; i++)
     {
       // Attack curve (x^8 - music level 2 Vectorman 2)
-      x = pow (((double) ((ENV_LENGHT - 1) - i) / (double) (ENV_LENGHT)), 8);
-      x *= ENV_LENGHT;
+      x = pow (((double) ((ENV_LENGTH - 1) - i) / (double) (ENV_LENGTH)), 8);
+      x *= ENV_LENGTH;
 
       ENV_TAB[i] = (int) x;
 
       // Decay curve (just linear)
-      x = pow (((double) (i) / (double) (ENV_LENGHT)), 1);
-      x *= ENV_LENGHT;
+      x = pow (((double) (i) / (double) (ENV_LENGTH)), 1);
+      x *= ENV_LENGTH;
 
-      ENV_TAB[ENV_LENGHT + i] = (int) x;
+      ENV_TAB[ENV_LENGTH + i] = (int) x;
 
 #if YM_DEBUG_LEVEL > 2
       fprintf (debug_file, "ATTACK[%d] = %d   DECAY[%d] = %d\n", i,
-	       ENV_TAB[i], i, ENV_TAB[ENV_LENGHT + i]);
+	       ENV_TAB[i], i, ENV_TAB[ENV_LENGTH + i]);
 #endif
     }
 
-  ENV_TAB[ENV_END >> ENV_LBITS] = ENV_LENGHT - 1;	// for the stopped state
+  ENV_TAB[ENV_END >> ENV_LBITS] = ENV_LENGTH - 1;	// for the stopped state
 
   // Tableau pour la conversion Attack -> Decay and Decay -> Attack
 
-  for (i = 0, j = ENV_LENGHT - 1; i < ENV_LENGHT; i++)
+  for (i = 0, j = ENV_LENGTH - 1; i < ENV_LENGTH; i++)
     {
       while (j && (ENV_TAB[j] < (unsigned) i))
 	j--;
@@ -2081,7 +2081,7 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
       SL_TAB[i] = j + ENV_DECAY;
     }
 
-  j = ENV_LENGHT - 1;		// special case : volume off
+  j = ENV_LENGTH - 1;		// special case : volume off
   j <<= ENV_LBITS;
   SL_TAB[15] = j + ENV_DECAY;
 
@@ -2116,7 +2116,7 @@ YM2612_Init (int Clock, int Rate, int Interpolation)
 
       x *= 1.0 + ((i & 3) * 0.25);	// bits 0-1 : x1.00, x1.25, x1.50, x1.75
       x *= (double) (1 << ((i >> 2)));	// bits 2-5 : shift bits (x2^0 - x2^15)
-      x *= (double) (ENV_LENGHT << ENV_LBITS);	// on ajuste pour le tableau ENV_TAB
+      x *= (double) (ENV_LENGTH << ENV_LBITS);	// on ajuste pour le tableau ENV_TAB
 
       AR_TAB[i + 4] = (unsigned int) (x / AR_RATE);
       DR_TAB[i + 4] = (unsigned int) (x / DR_RATE);

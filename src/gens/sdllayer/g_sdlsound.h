@@ -10,7 +10,7 @@ extern int Sound_Initialised;
 extern int WAV_Dumping;
 extern int GYM_Playing;
 extern int Seg_L[882], Seg_R[882];
-extern int Seg_Lenght;
+extern int Seg_Length;
 
 extern unsigned int Sound_Interpol[882];
 extern unsigned int Sound_Extrapol[312][2];

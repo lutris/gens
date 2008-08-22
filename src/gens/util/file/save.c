@@ -497,7 +497,7 @@ int Import_Genesis (unsigned char *Data)
 	/*
 	// Commented out in GENS Re-Recording.
 	VDP_Int = 0;
-	DMAT_Lenght = 0;
+	DMAT_Length = 0;
 	*/
 	
 	// Length of the savestate.
@@ -669,12 +669,12 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&VDP_Reg.Scr_Size, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.Win_H_Pos, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.Win_V_Pos, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght_L, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght_H, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_L, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_H, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Address, Data, &offset, 4);
 		
 		ImportDataAuto(&Controller_1_Counter, Data, &offset, 4);
@@ -714,7 +714,7 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Controller_2_Y, Data, &offset, 4);
 		ImportDataAuto(&Controller_2_Z, Data, &offset, 4);
 		
-		ImportDataAuto(&DMAT_Lenght, Data, &offset, 4);
+		ImportDataAuto(&DMAT_Length, Data, &offset, 4);
 		ImportDataAuto(&DMAT_Type, Data, &offset, 4);
 		ImportDataAuto(&DMAT_Tmp, Data, &offset, 4);
 		ImportDataAuto(&VDP_Current_Line, Data, &offset, 4);
@@ -745,9 +745,9 @@ int Import_Genesis (unsigned char *Data)
 		//ImportDataAuto(&LagCount, Data, &offset, 4);
 		offset += 4;
 		ImportDataAuto(&VRam_Flag, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.Auto_Inc, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
 	////	ImportDataAuto(VRam, Data, &offset, 65536);
 		ImportDataAuto(CRam, Data, &offset, 512);
 	////	ImportDataAuto(VSRam, Data, &offset, 64);
@@ -756,12 +756,12 @@ int Import_Genesis (unsigned char *Data)
 	////	extern int DMAT_Tmp, VSRam_Over;
 	////	ImportDataAuto(&DMAT_Tmp, Data, &offset, 4);
 	////	ImportDataAuto(&VSRam_Over, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght_L, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght_H, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_L, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_H, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Lenght, Data, &offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
 		ImportDataAuto(&VDP_Reg.DMA_Address, Data, &offset, 4);
 		
 #ifdef _DEBUG
@@ -793,7 +793,7 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&VDP_Current_Line, Data, &offset, 4);
 		ImportDataAuto(&VDP_Num_Lines, Data, &offset, 4);
 		ImportDataAuto(&VDP_Num_Vis_Lines, Data, &offset, 4);
-		ImportDataAuto(&DMAT_Lenght, Data, &offset, 4);
+		ImportDataAuto(&DMAT_Length, Data, &offset, 4);
 		ImportDataAuto(&DMAT_Type, Data, &offset, 4);
 		//ImportDataAuto(&CRam_Flag, Data, &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		// TODO: LagCount for GENS ReRecording.
@@ -863,7 +863,7 @@ void Export_Genesis (unsigned char *Data)
 	int i;
 	
 	// Be sure to finish DMA before save
-	while (DMAT_Lenght)
+	while (DMAT_Length)
 		Update_DMA ();
 	
 	// Genecyst savestate header
@@ -924,8 +924,8 @@ void Export_Genesis (unsigned char *Data)
 	Data[0x48] = Ctrl.Address & 0xFF;
 	Data[0x49] = (Ctrl.Address >> 8) & 0xFF;
 	
-	VDP_Reg.DMA_Lenght_L = VDP_Reg.DMA_Lenght & 0xFF;
-	VDP_Reg.DMA_Lenght_H = (VDP_Reg.DMA_Lenght >> 8) & 0xFF;
+	VDP_Reg.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
+	VDP_Reg.DMA_Length_H = (VDP_Reg.DMA_Length >> 8) & 0xFF;
 	
 	VDP_Reg.DMA_Src_Adr_L = VDP_Reg.DMA_Address & 0xFF;
 	VDP_Reg.DMA_Src_Adr_M = (VDP_Reg.DMA_Address >> 8) & 0xFF;
@@ -1036,7 +1036,7 @@ void Export_Genesis (unsigned char *Data)
 	ExportDataAuto(&VDP_Current_Line, Data, &offset, 4);
 	ExportDataAuto(&VDP_Num_Lines, Data, &offset, 4);
 	ExportDataAuto(&VDP_Num_Vis_Lines, Data, &offset, 4);
-	ExportDataAuto(&DMAT_Lenght, Data, &offset, 4);
+	ExportDataAuto(&DMAT_Length, Data, &offset, 4);
 	ExportDataAuto(&DMAT_Type, Data, &offset, 4);
 	//ExportDataAuto(&CRam_Flag, Data, &offset, 4);
 	// TODO: LagCount for GENS ReRecording.

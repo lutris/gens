@@ -87,7 +87,7 @@ LC89510_Reset (void)
 void
 Update_CDC_TRansfert (void)
 {
-  unsigned int dep, lenght, add_dest;
+  unsigned int dep, length, add_dest;
   unsigned char *dest;
 
   if ((SCD.Status_CDC & 0x08) == 0)
@@ -140,7 +140,7 @@ Update_CDC_TRansfert (void)
 
   if (CDC.DBC.N <= (CDC_DMA_SPEED * 2))
     {
-      lenght = (CDC.DBC.N + 1) >> 1;
+      length = (CDC.DBC.N + 1) >> 1;
       SCD.Status_CDC &= ~0x08;	// Last transfert
       CDC.RS0 |= 0x8000;	// End data transfert
       CDC.RS0 &= ~0x4000;	// no more data ready
@@ -159,16 +159,16 @@ Update_CDC_TRansfert (void)
 	}
     }
   else
-    lenght = CDC_DMA_SPEED;
+    length = CDC_DMA_SPEED;
 
 #ifdef DEBUG_CD
-//      fprintf(debug_SCD_file, "DMA lenght = %.4X\n", lenght);
+//      fprintf(debug_SCD_file, "DMA length = %.4X\n", length);
 #endif
 
 
   if ((CDC.RS0 & 0x0700) == 0x0400)	// PCM DMA
     {
-      int len = lenght;
+      int len = length;
       unsigned char *src = (unsigned char *) &CDC.Buffer[CDC.DAC.N];
       unsigned char *dst = (unsigned char *) dest + dep;
 
@@ -178,12 +178,12 @@ Update_CDC_TRansfert (void)
 	  src += 2;
 	  dst += add_dest;
 	}
-      lenght <<= 1;
-      CDC.DMA_Adr += lenght >> 2;
+      length <<= 1;
+      CDC.DMA_Adr += length >> 2;
     }
   else				// OTHER DMA
     {
-      int len = lenght;
+      int len = length;
       unsigned char *src = (unsigned char *) &CDC.Buffer[CDC.DAC.N];
       unsigned char *dst = (unsigned char *) dest + dep;
 
@@ -196,13 +196,13 @@ Update_CDC_TRansfert (void)
 	  src += 2;
 	  dst += add_dest;
 	}
-      lenght <<= 1;
-      CDC.DMA_Adr += lenght >> 3;
+      length <<= 1;
+      CDC.DMA_Adr += length >> 3;
     }
 
-  CDC.DAC.N = (CDC.DAC.N + lenght) & 0xFFFF;
+  CDC.DAC.N = (CDC.DAC.N + length) & 0xFFFF;
   if (SCD.Status_CDC & 0x08)
-    CDC.DBC.N -= lenght;
+    CDC.DBC.N -= length;
   else
     CDC.DBC.N = 0;
 }
@@ -671,9 +671,9 @@ CDD_Import_Command (void)
 	  Get_Current_Track_CDD_c22 ();
 	  break;
 
-	case 0x3:		// get total lenght (MSF format)
+	case 0x3:		// get total length (MSF format)
 	  CDD.Status = (CDD.Status & 0xFF00) | 3;
-	  Get_Total_Lenght_CDD_c23 ();
+	  Get_Total_Length_CDD_c23 ();
 	  break;
 
 	case 0x4:		// first & last track number

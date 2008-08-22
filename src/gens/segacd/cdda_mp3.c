@@ -81,7 +81,7 @@ MP3_Get_Bitrate (FILE * f)
 
 
 int
-MP3_Lenght_LBA (FILE * f)
+MP3_Length_LBA (FILE * f)
 {
   float len;
   unsigned int header, br;
@@ -101,7 +101,7 @@ MP3_Lenght_LBA (FILE * f)
 	  len += decode_header_gens (&fr, header);
 
 #ifdef DEBUG_CD
-	  fprintf (debug_SCD_file, "mp3 lenght update = %f\n", len);
+	  fprintf (debug_SCD_file, "mp3 length update = %f\n", len);
 #endif
 
 	  fseek (f, fr.framesize, SEEK_CUR);
@@ -292,10 +292,10 @@ int MP3_Play (int track, int lba_pos, int async)
 }
 
 /*
-int MP3_Update(int **buf, unsigned int lenght_dest)
+int MP3_Update(int **buf, unsigned int length_dest)
 {
 	int *bufL, *bufR;
-	unsigned int byte_mul, lenght_src, pas_src;
+	unsigned int byte_mul, length_src, pas_src;
 	unsigned int dest, src, limit_src;
 	short *buf_mp3;
 	float Freq_Div;
@@ -313,7 +313,7 @@ int MP3_Update(int **buf, unsigned int lenght_dest)
 
 	if (Freq_Div == 0) return -1;
 	
-	lenght_src = (int) ((float) lenght_dest * Freq_Div);
+	length_src = (int) ((float) length_dest * Freq_Div);
 	pas_src = (int) ((float) 256 * Freq_Div);
 
 	if (mp.fr.stereo == 2) byte_mul = 2;
@@ -321,7 +321,7 @@ int MP3_Update(int **buf, unsigned int lenght_dest)
 
 	dest = 0;
 
-	while ((lenght_src << byte_mul) > (Current_OUT_Size - Current_OUT_Pos))
+	while ((length_src << byte_mul) > (Current_OUT_Size - Current_OUT_Pos))
 	{
 		buf_mp3 = (short *) &buf_out[Current_OUT_Pos];
 
@@ -346,14 +346,14 @@ int MP3_Update(int **buf, unsigned int lenght_dest)
 			}
 		}
 
-		lenght_src -= (limit_src >> 8);
+		length_src -= (limit_src >> 8);
 
 		if (MP3_Update_OUT()) return -1;
 	}
 
 	buf_mp3 = (short *) &buf_out[Current_OUT_Pos];
 
-	limit_src = lenght_src << 8;
+	limit_src = length_src << 8;
 
 	if (mp.fr.stereo == 2)
 	{
@@ -372,16 +372,16 @@ int MP3_Update(int **buf, unsigned int lenght_dest)
 		}
 	}
 
-	Current_OUT_Pos += lenght_src << byte_mul;
+	Current_OUT_Pos += length_src << byte_mul;
 
 	return 0;
 }
 */
 
 int
-MP3_Update (char *buf, int *rate, int *channel, unsigned int lenght_dest)
+MP3_Update (char *buf, int *rate, int *channel, unsigned int length_dest)
 {
-  unsigned int lenght_src, size;
+  unsigned int length_src, size;
   char *buf_mp3;
 
   if (Current_OUT_Size == 0)
@@ -397,22 +397,22 @@ MP3_Update (char *buf, int *rate, int *channel, unsigned int lenght_dest)
   else
     *channel = 1;
 
-  lenght_src = (*rate / 75) << *channel;
+  length_src = (*rate / 75) << *channel;
 
   size = Current_OUT_Size - Current_OUT_Pos;
 
-//      fprintf(debug_SCD_file, "\n*********  rate = %d chan = %d size = %d len = %d\n", *rate, *channel, size, lenght_src);
+//      fprintf(debug_SCD_file, "\n*********  rate = %d chan = %d size = %d len = %d\n", *rate, *channel, size, length_src);
 
-  while (lenght_src > size)
+  while (length_src > size)
     {
       buf_mp3 = (char *) &buf_out[Current_OUT_Pos];
 
       memcpy (buf, buf_mp3, size);
 
-      lenght_src -= size;
+      length_src -= size;
       buf += size;
 
-//              fprintf(debug_SCD_file, "size = %d len = %d\n", size, lenght_src);
+//              fprintf(debug_SCD_file, "size = %d len = %d\n", size, length_src);
 
       if (MP3_Update_OUT ())
 	return -1;
@@ -421,11 +421,11 @@ MP3_Update (char *buf, int *rate, int *channel, unsigned int lenght_dest)
 
   buf_mp3 = (char *) &buf_out[Current_OUT_Pos];
 
-  memcpy (buf, buf_mp3, lenght_src);
+  memcpy (buf, buf_mp3, length_src);
 
-//      fprintf(debug_SCD_file, "size = %d len = %d\n", size, lenght_src);
+//      fprintf(debug_SCD_file, "size = %d len = %d\n", size, length_src);
 
-  Current_OUT_Pos += lenght_src;
+  Current_OUT_Pos += length_src;
 
   return 0;
 }

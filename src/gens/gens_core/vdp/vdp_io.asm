@@ -124,13 +124,13 @@ section .bss align=64
 	.Scr_Size		resd 1
 	.Win_H_Pos		resd 1
 	.Win_V_Pos		resd 1
-	.DMA_Lenght_L	resd 1
-	.DMA_Lenght_H	resd 1
+	.DMA_Length_L	resd 1
+	.DMA_Length_H	resd 1
 	.DMA_Src_Adr_L	resd 1
 	.DMA_Src_Adr_M	resd 1
 	.DMA_Src_Adr_H	resd 1
 
-	.DMA_Lenght		resd 1
+	.DMA_Length		resd 1
 	.DMA_Address	resd 1
 
 	DECL ScrA_Addr
@@ -180,7 +180,7 @@ section .bss align=64
 
 	DECL DMAT_Tmp
 	resd 1
-	DECL DMAT_Lenght
+	DECL DMAT_Length
 	resd 1
 	DECL DMAT_Type
 	resd 1
@@ -427,7 +427,7 @@ section .text align=64
 		mov dword [VDP_Status], 0x0200
 		mov dword [VDP_Int], 0
 		mov dword [DMAT_Tmp], 0
-		mov dword [DMAT_Lenght], 0
+		mov dword [DMAT_Length], 0
 		mov dword [DMAT_Type], 0
 		mov dword [Ctrl.Flag], 0
 		mov dword [Ctrl.Data], 0
@@ -503,14 +503,14 @@ section .text align=64
 	.Blanking
 		mov ecx, [DMA_Timing_Table + ebx * 4]
 		mov eax, [CPL_M68K]
-		sub dword [DMAT_Lenght], ecx
+		sub dword [DMAT_Length], ecx
 		ja short .DMA_Not_Finished
 
 			shl eax, 16
-			mov ebx, [DMAT_Lenght]
+			mov ebx, [DMAT_Length]
 			xor edx, edx
 			add ebx, ecx
-			mov [DMAT_Lenght], edx
+			mov [DMAT_Length], edx
 			div ecx
 			and word [VDP_Status], 0xFFFD
 			mul ebx
@@ -627,7 +627,7 @@ section .text align=64
 		call _main68k_readOdometer
 		mov ebx, [Cycles_M68K]
 		sub ebx, [CPL_M68K]
-		sub eax, ebx						; Nb cycles effectués sur cette ligne.
+		sub eax, ebx						; Nb cycles effectuÃ©s sur cette ligne.
 		xor ebx, ebx
 		and eax, 0x1FF
 		test byte [VDP_Reg.Set_4], 0x81		; 40 cell mode ?
@@ -647,7 +647,7 @@ section .text align=64
 		call _main68k_readOdometer
 		mov ebx, [Cycles_M68K]
 		sub ebx, [CPL_M68K]
-		sub eax, ebx						; Nb cycles effectués sur cette ligne.
+		sub eax, ebx						; Nb cycles effectuÃ©s sur cette ligne.
 		xor ebx, ebx
 		and eax, 0x1FF
 		test byte [VDP_Reg.Set_4], 0x81		; 40 cell mode ?
@@ -793,9 +793,9 @@ section .text align=64
 		push edx
 
 		mov ebx, [Ctrl.Address]					; bx = Address Dest
-		mov ecx, [VDP_Reg.DMA_Lenght]			; DMA Lenght
+		mov ecx, [VDP_Reg.DMA_Length]			; DMA Length
 		mov edx, [VDP_Reg.Auto_Inc]				; edx = Auto_Inc
-		mov dword [VDP_Reg.DMA_Lenght], 0		; Clear DMA.Lenght
+		mov dword [VDP_Reg.DMA_Length], 0		; Clear DMA.Length
 		and ebx, 0xFFFF
 		mov dword [Ctrl.DMA], 0					; Flag DMA Fill = 0
 		xor ebx, 1
@@ -805,11 +805,11 @@ section .text align=64
 		mov dword [DMAT_Type], 0x2
 		and ecx, 0xFFFF
 		mov byte [VRam_Flag], 1
-		mov dword [DMAT_Lenght], ecx
+		mov dword [DMAT_Length], ecx
 		jnz short .Loop
 
 		mov ecx, 0xFFFF
-		mov [DMAT_Lenght], ecx
+		mov [DMAT_Length], ecx
 		jmp short .Loop
 
 	ALIGN4
@@ -839,7 +839,7 @@ section .text align=64
 ;		cmp eax, 0x8000					; on est en mode set register
 ;		je short .Set_Register
 ;
-;		test dword [Ctrl.Flag], 1		; est-on à la 1ère ecriture ??
+;		test dword [Ctrl.Flag], 1		; est-on Ã  la 1Ã¨re ecriture ??
 ;		mov eax, ebx
 ;		jz short .First_Word			; si oui on y va !
 ;		jmp .Second_Word				; sinon
@@ -857,7 +857,7 @@ section .text align=64
 
 
 		mov eax, [esp + 4]
-		test byte [Ctrl.Flag], 1		; est-on à la 2eme ecriture ??
+		test byte [Ctrl.Flag], 1		; est-on Ã  la 2eme ecriture ??
 		push ebx
 		jnz near .Second_Word			; sinon
 
@@ -893,7 +893,7 @@ section .text align=64
 		mov [Ctrl.Address], bx			; Ctrl.Address = Address de depart pour le port VDP Data
 		or edx, ecx						; edx = CD
 		mov eax, [CD_Table + edx]		; eax = Location & Read/Write
-		mov [Ctrl.Access], al			; on stocke l'accés
+		mov [Ctrl.Access], al			; on stocke l'accÃ©s
 
 		pop edx
 		pop ecx
@@ -920,7 +920,7 @@ section .text align=64
 		mov eax, [CD_Table + edx]			; eax = Location & Read/Write
 		mov byte [Ctrl.Flag], 0				; on en a finit avec Address Set
 		test ah, ah							; on teste si il y a transfert DMA
-		mov [Ctrl.Access], al				; on stocke l'accés
+		mov [Ctrl.Access], al				; on stocke l'accÃ©s
 		mov al, ah
 		jnz short DO_DMA					; si oui on y va
 
@@ -952,7 +952,7 @@ section .text align=64
 	ALIGN32
 	
 	.No_Fill
-		mov ecx, [VDP_Reg.DMA_Lenght]		; ecx = DMA Lenght
+		mov ecx, [VDP_Reg.DMA_Length]		; ecx = DMA Length
 		mov esi, [VDP_Reg.DMA_Address]		; esi = DMA Source Address / 2
 		and ecx, 0xFFFF
 		mov edi, [Ctrl.Address]				; edi = Address Dest
@@ -1000,7 +1000,7 @@ section .text align=64
 	.DMA_Dest_OK
 		or word [VDP_Status], 0x0002
 		xor eax, eax
-		jmp [.Table_DMA + ebx * 4]			; on effectue le transfert DMA adéquat
+		jmp [.Table_DMA + ebx * 4]			; on effectue le transfert DMA adÃ©quat
 
 	ALIGN4
 
@@ -1143,16 +1143,16 @@ section .text align=64
 	ALIGN32
 
 	.End_DMA
-		mov eax, [VDP_Reg.DMA_Lenght]
+		mov eax, [VDP_Reg.DMA_Length]
 		mov [Ctrl.Address], bx
 		mov esi, [VDP_Reg.DMA_Address]
 		sub eax, ecx
-		mov [VDP_Reg.DMA_Lenght], ecx
+		mov [VDP_Reg.DMA_Length], ecx
 		lea esi, [esi + eax]
 		jbe short .Nothing_To_Do
 
 		and esi, 0x7FFFFF
-		mov [DMAT_Lenght], eax
+		mov [DMAT_Length], eax
 		mov [VDP_Reg.DMA_Address], esi
 		call Update_DMA
 		call _main68k_releaseCycles
@@ -1179,8 +1179,8 @@ section .text align=64
 	V_RAM_Copy:
 		or word [VDP_Status], 0x0002
 		and esi, 0xFFFF
-		mov dword [VDP_Reg.DMA_Lenght], 0
-		mov dword [DMAT_Lenght], ecx
+		mov dword [VDP_Reg.DMA_Length], 0
+		mov dword [DMAT_Length], ecx
 		mov dword [DMAT_Type], 0x3
 		mov dword [VRam_Flag], 1
 		jmp short .VRam_Copy_Loop
@@ -1193,7 +1193,7 @@ section .text align=64
 			mov [VRam + edi], al					; VRam[Dest] = Src.W
 			add di, dx								; Adr = Adr + Auto_Inc
 			dec ecx									; un transfert de moins
-			jnz short .VRam_Copy_Loop				; si DMA Lenght >= 0 alors on continue le transfert DMA
+			jnz short .VRam_Copy_Loop				; si DMA Length >= 0 alors on continue le transfert DMA
 
 		mov [VDP_Reg.DMA_Address], esi
 		mov [Ctrl.Address], di					; on stocke la nouvelle Data_Address
@@ -1576,17 +1576,17 @@ section .text align=64
 	ALIGN32
 	
 	.DMALL
-		mov [VDP_Reg.DMA_Lenght_L], al
+		mov [VDP_Reg.DMA_Length_L], al
 		pop ebx
-		mov [VDP_Reg.DMA_Lenght], al
+		mov [VDP_Reg.DMA_Length], al
 		ret
 
 	ALIGN32
 	
 	.DMALH
-		mov [VDP_Reg.DMA_Lenght_H], al
+		mov [VDP_Reg.DMA_Length_H], al
 		pop ebx
-		mov [VDP_Reg.DMA_Lenght + 1], al
+		mov [VDP_Reg.DMA_Length + 1], al
 		ret
 
 	ALIGN32

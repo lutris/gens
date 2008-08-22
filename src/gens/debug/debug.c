@@ -733,8 +733,8 @@ void Refresh_VDP_State(void)
 	sprintf(_GString, "Scroll Size=%.2X    Window Pos: H=%.2X V=%.2X",
 			VDP_Reg.Scr_Size, VDP_Reg.Win_H_Pos, VDP_Reg.Win_V_Pos);
 	Print_Text(_GString, strlen(_GString), 162, 62, BLANC);
-	sprintf(_GString, "DMA Lenght: Low=%.2X High=%.2X",
-		VDP_Reg.DMA_Lenght_L, VDP_Reg.DMA_Lenght_H);
+	sprintf(_GString, "DMA Length: Low=%.2X High=%.2X",
+		VDP_Reg.DMA_Length_L, VDP_Reg.DMA_Length_H);
 	Print_Text(_GString, strlen(_GString), 162, 70, BLANC);
 	sprintf(_GString, "DMA Source Adr: Low=%.2X Med=%.2X High=%.2X",
 			VDP_Reg.DMA_Src_Adr_L, VDP_Reg.DMA_Src_Adr_M,
@@ -750,7 +750,7 @@ void Refresh_VDP_State(void)
 	Print_Text(_GString, strlen(_GString), 162, 102, BLANC);
 	sprintf(_GString, "DMA Busy %d  PAL Mode %d Line Num %d", (tmp >> 1) & 1, tmp & 1, VDP_Current_Line);
 	Print_Text(_GString, strlen(_GString), 162, 110, BLANC);
-	sprintf(_GString, "VDP Int =%.2X DMA_Lenght=%.4X", VDP_Int, DMAT_Lenght);
+	sprintf(_GString, "VDP Int =%.2X DMA_Length=%.4X", VDP_Int, DMAT_Length);
 	Print_Text(_GString, strlen(_GString), 162, 118, BLANC);
 }
 
@@ -815,7 +815,7 @@ void Refresh_VDP_Palette(void)
 	Print_Text(_GString, strlen(_GString), 176, 86, BLANC);
 	sprintf(_GString, "Address : %.4X  DMA_Mode : %.2X", Ctrl.Address, Ctrl.DMA_Mode);
 	Print_Text(_GString, strlen(_GString), 176, 94, BLANC);
-	sprintf(_GString, "DMA adr: %.8X  DMA len: %.4X", VDP_Reg.DMA_Address, VDP_Reg.DMA_Lenght);
+	sprintf(_GString, "DMA adr: %.8X  DMA len: %.4X", VDP_Reg.DMA_Address, VDP_Reg.DMA_Length);
 	Print_Text(_GString, strlen(_GString), 176, 102, BLANC);
 	sprintf(_GString, "DMA : %.2X", Ctrl.DMA);
 	Print_Text(_GString, strlen(_GString), 176, 110, BLANC);

@@ -35,6 +35,6 @@ void FASTCALL PWM_Set_Cycle(unsigned int cycle);
 void FASTCALL PWM_Set_Int(unsigned int int_time);
 void FASTCALL PWM_Clear_Timer(void);
 void FASTCALL PWM_Update_Timer(unsigned int cycle);
-void FASTCALL PWM_Update(int **buf, int lenght);
+void FASTCALL PWM_Update(int **buf, int length);
 
 #endif

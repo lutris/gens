@@ -291,7 +291,7 @@ Load_Patch_File (void)
   unsigned char *Patch_String;
   char Name[2048], Code[16], Comment[256], c;
   unsigned int i_code = 0, i_comment = 0, Ind_GG;
-  unsigned long Lenght, Bytes_Read, i;
+  unsigned long Length, Bytes_Read, i;
   enum etat_sec
   { DEB_LIGNE, CODE, BLANC, COMMENT, ERR } etat = DEB_LIGNE;
 
@@ -315,10 +315,10 @@ Load_Patch_File (void)
     return 0;
 
   fseek (Patch_File, 0, SEEK_END);
-  Lenght = ftell (Patch_File);
+  Length = ftell (Patch_File);
   fseek (Patch_File, 0, SEEK_SET);
 
-  Patch_String = (unsigned char *) malloc (Lenght);
+  Patch_String = (unsigned char *) malloc (Length);
 
   if (!Patch_String)
     {
@@ -326,9 +326,9 @@ Load_Patch_File (void)
       return (0);
     }
 
-  if (fread (Patch_String, Lenght, 1, Patch_File))
+  if (fread (Patch_String, Length, 1, Patch_File))
     {
-      Bytes_Read = Lenght;
+      Bytes_Read = Length;
       i = 0;
       Ind_GG = 0;
 

@@ -511,7 +511,7 @@ Get_Current_Track_CDD_c22 (void)
 
 
 int
-Get_Total_Lenght_CDD_c23 (void)
+Get_Total_Length_CDD_c23 (void)
 {
   CHECK_TRAY_OPEN CDD.Status &= 0xFF;
   if (!CD_Present)
@@ -974,9 +974,9 @@ CDD_Def (void)
 
 
 void
-Write_CD_Audio (short *Buf, int rate, int channel, int lenght)
+Write_CD_Audio (short *Buf, int rate, int channel, int length)
 {
-  unsigned int lenght_src, lenght_dst;
+  unsigned int length_src, length_dst;
   unsigned int pos_src, pas_src;
   unsigned int tmp;
 
@@ -993,10 +993,10 @@ Write_CD_Audio (short *Buf, int rate, int channel, int lenght)
       CD_Audio_Buffer_Write_Pos = (CD_Audio_Buffer_Read_Pos + 2000) & 0xFFF;
     }
 
-  lenght_src = rate / 75;	// 75th of a second
-  lenght_dst = Sound_Rate / 75;	// 75th of a second
+  length_src = rate / 75;	// 75th of a second
+  length_dst = Sound_Rate / 75;	// 75th of a second
 
-  pas_src = (lenght_src << 16) / lenght_dst;
+  pas_src = (length_src << 16) / length_dst;
   pos_src = 0;
 
 #ifdef DEBUG_CD
@@ -1006,9 +1006,9 @@ Write_CD_Audio (short *Buf, int rate, int channel, int lenght)
 
   if (channel == 2)
     {
-      while (lenght_dst > 0)
+      while (length_dst > 0)
 	{
-	  lenght_dst--;
+	  length_dst--;
 	  tmp = pos_src >> 15;	/* the same as "(pos_src >> 16) * 2", but faster */
 	  CD_Audio_Buffer_L[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
 	  CD_Audio_Buffer_R[CD_Audio_Buffer_Write_Pos] = Buf[tmp + 1];
@@ -1020,9 +1020,9 @@ Write_CD_Audio (short *Buf, int rate, int channel, int lenght)
     }
   else
     {
-      while (lenght_dst > 0)
+      while (length_dst > 0)
 	{
-	  lenght_dst--;
+	  length_dst--;
 	  tmp = pos_src >> 16;
 	  CD_Audio_Buffer_L[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
 	  CD_Audio_Buffer_R[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
@@ -1039,7 +1039,7 @@ Write_CD_Audio (short *Buf, int rate, int channel, int lenght)
 
 
 void
-Update_CD_Audio (int **buf, int lenght)
+Update_CD_Audio (int **buf, int length)
 {
   int *Buf_L, *Buf_R;
   int diff;
@@ -1087,7 +1087,7 @@ Update_CD_Audio (int **buf, int lenght)
 
   if (CDDA_Enable)
     {
-      for (lenght--, i = 0; lenght > 0; lenght--, i++)
+      for (length--, i = 0; length > 0; length--, i++)
 	{
 	  Buf_L[i] += CD_Audio_Buffer_L[CD_Audio_Buffer_Read_Pos];
 	  Buf_R[i] += CD_Audio_Buffer_R[CD_Audio_Buffer_Read_Pos];
@@ -1097,7 +1097,7 @@ Update_CD_Audio (int **buf, int lenght)
     }
   else
     {
-      CD_Audio_Buffer_Read_Pos += lenght;
+      CD_Audio_Buffer_Read_Pos += length;
       CD_Audio_Buffer_Read_Pos &= 0xFFF;
     }
 

@@ -90,7 +90,7 @@ void LINUXCD_Select_Speed(void);
 int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Stop_Play_Scan(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Seek(int pos, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
-int ASPI_Read_CD_LBA(int adr, int lenght, unsigned char sector, unsigned char flag, unsigned char sub_chan, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
+int ASPI_Read_CD_LBA(int adr, int length, unsigned char sector, unsigned char flag, unsigned char sub_chan, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 
 // Default Callback
 

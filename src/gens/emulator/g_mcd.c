@@ -334,7 +334,7 @@ int Do_SegaCD_Frame_No_VDP (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -369,7 +369,7 @@ int Do_SegaCD_Frame_No_VDP (void)
 	Cycles_Z80 += CPL_Z80;
 	if (S68K_State == 1)
 		Cycles_S68K += CPL_S68K;
-	if (DMAT_Lenght)
+	if (DMAT_Length)
 		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
@@ -413,7 +413,7 @@ int Do_SegaCD_Frame_No_VDP (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -432,7 +432,7 @@ int Do_SegaCD_Frame_No_VDP (void)
 	
 	PSG_Special_Update ();
 	YM2612_Special_Update ();
-	Update_CD_Audio (buf, Seg_Lenght);
+	Update_CD_Audio (buf, Seg_Length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
@@ -498,7 +498,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -572,7 +572,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 	Cycles_Z80 += CPL_Z80;
 	if (S68K_State == 1)
 		Cycles_S68K += CPL_S68K;
-	if (DMAT_Lenght)
+	if (DMAT_Length)
 		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
@@ -654,7 +654,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -709,7 +709,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 	
 	PSG_Special_Update ();
 	YM2612_Special_Update ();
-	Update_CD_Audio (buf, Seg_Lenght);
+	Update_CD_Audio (buf, Seg_Length);
 	
   	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
@@ -802,7 +802,7 @@ int Do_SegaCD_Frame (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -839,7 +839,7 @@ int Do_SegaCD_Frame (void)
 	Cycles_Z80 += CPL_Z80;
 	if (S68K_State == 1)
 		Cycles_S68K += CPL_S68K;
-	if (DMAT_Lenght)
+	if (DMAT_Length)
 		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
@@ -883,7 +883,7 @@ int Do_SegaCD_Frame (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -902,7 +902,7 @@ int Do_SegaCD_Frame (void)
 	
 	PSG_Special_Update ();
 	YM2612_Special_Update ();
-	Update_CD_Audio (buf, Seg_Lenght);
+	Update_CD_Audio (buf, Seg_Length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
@@ -971,7 +971,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -1047,7 +1047,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 	Cycles_Z80 += CPL_Z80;
 	if (S68K_State == 1)
 		Cycles_S68K += CPL_S68K;
-	if (DMAT_Lenght)
+	if (DMAT_Length)
 		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
@@ -1129,7 +1129,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -1184,7 +1184,7 @@ int Do_SegaCD_Frame_Cycle_Accurate (void)
 	
 	PSG_Special_Update ();
 	YM2612_Special_Update ();
-	Update_CD_Audio (buf, Seg_Lenght);
+	Update_CD_Audio (buf, Seg_Length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping

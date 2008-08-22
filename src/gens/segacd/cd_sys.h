@@ -112,7 +112,7 @@ int Stop_CDD_c1(void);
 int Get_Pos_CDD_c20(void);
 int Get_Track_Pos_CDD_c21(void);
 int Get_Current_Track_CDD_c22(void);
-int Get_Total_Lenght_CDD_c23(void);
+int Get_Total_Length_CDD_c23(void);
 int Get_First_Last_Track_CDD_c24(void);
 int Get_Track_Adr_CDD_c25(void);
 int Play_CDD_c3(void);
@@ -127,8 +127,8 @@ int Open_Tray_CDD_cD(void);
 
 int CDD_Def(void);
 
-void Write_CD_Audio(short *Buf, int rate, int channel, int lenght);
-void Update_CD_Audio(int **Buf, int lenght);
+void Write_CD_Audio(short *Buf, int rate, int channel, int length);
+void Update_CD_Audio(int **Buf, int length);
 //void Start_CD_Timer(void);
 //void Stop_CD_Timer(void);
 //void Update_CD_Timer(void);

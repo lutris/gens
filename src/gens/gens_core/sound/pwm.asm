@@ -448,7 +448,7 @@ section .text align=64
 
 	ALIGN32
 
-	; void PWM_Update(int **buf, int lenght)
+	; void PWM_Update(int **buf, int length)
 	DECLF PWM_Update, 8
 
 		push ebx

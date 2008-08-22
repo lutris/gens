@@ -10,7 +10,7 @@
 struct _file_track {
 	FILE *F;
 	FILE *F_decoded;
-	int Lenght;
+	int Length;
 	int Type;
 	char filename [512];
 };

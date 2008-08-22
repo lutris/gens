@@ -19,12 +19,12 @@ struct Reg_VDP_Type {
 	unsigned int Scr_Size;
 	unsigned int Win_H_Pos;
 	unsigned int Win_V_Pos;
-	unsigned int DMA_Lenght_L;
-	unsigned int DMA_Lenght_H;
+	unsigned int DMA_Length_L;
+	unsigned int DMA_Length_H;
 	unsigned int DMA_Src_Adr_L;
 	unsigned int DMA_Src_Adr_M;
 	unsigned int DMA_Src_Adr_H;
-	unsigned int DMA_Lenght;
+	unsigned int DMA_Length;
 	unsigned int DMA_Address;
 };
 
@@ -45,7 +45,7 @@ extern int CRam_Flag;
 extern int VRam_Flag;
 extern int VDP_Int;
 extern int VDP_Status;
-extern int DMAT_Lenght;
+extern int DMAT_Length;
 extern int DMAT_Type;
 extern int DMAT_Tmp;
 extern struct {

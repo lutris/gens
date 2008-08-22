@@ -386,7 +386,7 @@ int Do_Genesis_Frame_No_VDP (void)
 		Fix_Controllers ();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -414,7 +414,7 @@ int Do_Genesis_Frame_No_VDP (void)
 	Fix_Controllers ();
 	Cycles_M68K += CPL_M68K;
 	Cycles_Z80 += CPL_Z80;
-	if (DMAT_Lenght)
+	if (DMAT_Length)
 		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
@@ -449,7 +449,7 @@ int Do_Genesis_Frame_No_VDP (void)
 		Fix_Controllers ();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -519,7 +519,7 @@ int Do_Genesis_Frame (void)
 		Fix_Controllers ();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
@@ -548,7 +548,7 @@ int Do_Genesis_Frame (void)
 	Fix_Controllers ();
 	Cycles_M68K += CPL_M68K;
 	Cycles_Z80 += CPL_Z80;
-	if (DMAT_Lenght)
+	if (DMAT_Length)
 		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
@@ -584,7 +584,7 @@ int Do_Genesis_Frame (void)
 		Fix_Controllers ();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
-		if (DMAT_Lenght)
+		if (DMAT_Length)
 			main68k_addCycles (Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1

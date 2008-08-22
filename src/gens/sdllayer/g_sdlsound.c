@@ -14,7 +14,7 @@
 
 int Seg_To_Buffer = 8; // for frame skip
 int Seg_L[882], Seg_R[882];
-int Seg_Lenght, SBuffer_Lenght;
+int Seg_Length, SBuffer_Length;
 int Sound_Rate = 44100, Sound_Segs = 8;
 int Bytes_Per_Unit = 4;
 int Sound_Enable;
@@ -62,44 +62,44 @@ int Init_Sound (void)
     {
     case 11025:
       if (CPU_Mode)
-	Seg_Lenght = 220;
+	Seg_Length = 220;
       else
-	Seg_Lenght = 184;
+	Seg_Length = 184;
       break;
 
     case 16000:
       if (CPU_Mode)
-	Seg_Lenght = 330;
+	Seg_Length = 330;
       else
-	Seg_Lenght = 276;
+	Seg_Length = 276;
       break;
 
     case 22050:
       if (CPU_Mode)
-	Seg_Lenght = 441;
+	Seg_Length = 441;
       else
-	Seg_Lenght = 368;
+	Seg_Length = 368;
       break;
 
     case 32000:
       if (CPU_Mode)
-	Seg_Lenght = 660;
+	Seg_Length = 660;
       else
-	Seg_Lenght = 552;
+	Seg_Length = 552;
       break;
 
     case 44100:
       if (CPU_Mode)
-	Seg_Lenght = 882;
+	Seg_Length = 882;
       else
-	Seg_Lenght = 735;
+	Seg_Length = 735;
       break;
 
     case 48000:
       if (CPU_Mode)
-	Seg_Lenght = 990;
+	Seg_Length = 990;
       else
-	Seg_Lenght = 828;
+	Seg_Length = 828;
       break;
 
     }
@@ -108,34 +108,34 @@ int Init_Sound (void)
     {
       for (i = 0; i < 312; i++)
 	{
-	  Sound_Extrapol[i][0] = ((Seg_Lenght * i) / 312);
-	  Sound_Extrapol[i][1] = (((Seg_Lenght * (i + 1)) / 312) - Sound_Extrapol[i][0]);
+	  Sound_Extrapol[i][0] = ((Seg_Length * i) / 312);
+	  Sound_Extrapol[i][1] = (((Seg_Length * (i + 1)) / 312) - Sound_Extrapol[i][0]);
 	}
 
-      for (i = 0; i < Seg_Lenght; i++)
-	Sound_Interpol[i] = ((312 * i) / Seg_Lenght);
+      for (i = 0; i < Seg_Length; i++)
+	Sound_Interpol[i] = ((312 * i) / Seg_Length);
     }
   else
     {
       for (i = 0; i < 262; i++)
 	{
-	  Sound_Extrapol[i][0] = ((Seg_Lenght * i) / 262);
-	  Sound_Extrapol[i][1] = (((Seg_Lenght * (i + 1)) / 262) - Sound_Extrapol[i][0]);
+	  Sound_Extrapol[i][0] = ((Seg_Length * i) / 262);
+	  Sound_Extrapol[i][1] = (((Seg_Length * (i + 1)) / 262) - Sound_Extrapol[i][0]);
 	}
 
-      for (i = 0; i < Seg_Lenght; i++)
-	Sound_Interpol[i] = ((262 * i) / Seg_Lenght);
+      for (i = 0; i < Seg_Length; i++)
+	Sound_Interpol[i] = ((262 * i) / Seg_Length);
     }
 
-  memset (Seg_L, 0, Seg_Lenght << 2);
-  memset (Seg_R, 0, Seg_Lenght << 2);
+  memset (Seg_L, 0, Seg_Length << 2);
+  memset (Seg_R, 0, Seg_Length << 2);
 
   if (-1 == SDL_InitSubSystem (SDL_INIT_AUDIO))
     {
       return 0;
     }
 
-  pMsndOut = (unsigned char *) malloc (Seg_Lenght << 2);
+  pMsndOut = (unsigned char *) malloc (Seg_Length << 2);
 
   SDL_AudioSpec spec;
 
@@ -179,14 +179,14 @@ int Get_Current_Seg (void)
 	unsigned long R;
 	
 	lpDSBuffer->GetCurrentPosition(&R, NULL);
-	return(R / (Seg_Lenght * Bytes_Per_Unit));
+	return(R / (Seg_Length * Bytes_Per_Unit));
 	*/
 	
 }
 
 int Lots_In_Audio_Buffer(void)
 {
-	return (audio_len > Seg_Lenght * Seg_To_Buffer);
+	return (audio_len > Seg_Length * Seg_To_Buffer);
 }
 
 int Check_Sound_Timing (void)
@@ -195,12 +195,12 @@ int Check_Sound_Timing (void)
 }
 
 
-void Write_Sound_Stereo (short *Dest, int lenght)
+void Write_Sound_Stereo (short *Dest, int length)
 {
   int i, out_L, out_R;
   short *dest = Dest;
 
-  for (i = 0; i < Seg_Lenght; i++)
+  for (i = 0; i < Seg_Length; i++)
     {
       out_L = Seg_L[i];
       Seg_L[i] = 0;
@@ -219,12 +219,12 @@ void Write_Sound_Stereo (short *Dest, int lenght)
 }
 
 
-void Dump_Sound_Stereo (short *Dest, int lenght)
+void Dump_Sound_Stereo (short *Dest, int length)
 {
   int i, out_L, out_R;
   short *dest = Dest;
 
-  for (i = 0; i < Seg_Lenght; i++)
+  for (i = 0; i < Seg_Length; i++)
     {
       out_L = Seg_L[i];
 
@@ -241,12 +241,12 @@ void Dump_Sound_Stereo (short *Dest, int lenght)
 }
 
 
-void Write_Sound_Mono (short *Dest, int lenght)
+void Write_Sound_Mono (short *Dest, int length)
 {
   int i, out;
   short *dest = Dest;
 
-  for (i = 0; i < Seg_Lenght; i++)
+  for (i = 0; i < Seg_Length; i++)
     {
       out = Seg_L[i] + Seg_R[i];
       Seg_L[i] = Seg_R[i] = 0;
@@ -258,12 +258,12 @@ void Write_Sound_Mono (short *Dest, int lenght)
 }
 
 
-void Dump_Sound_Mono (short *Dest, int lenght)
+void Dump_Sound_Mono (short *Dest, int length)
 {
   int i, out;
   short *dest = Dest;
 
-  for (i = 0; i < Seg_Lenght; i++)
+  for (i = 0; i < Seg_Length; i++)
     {
       out = Seg_L[i] + Seg_R[i];
 
@@ -282,16 +282,16 @@ int Write_Sound_Buffer (void *Dump_Buf)
 
   if (Sound_Stereo)
     {
-      if (Have_MMX) Write_Sound_Stereo_MMX (Seg_L, Seg_R, (short *) pMsndOut, Seg_Lenght);
-      else Write_Sound_Stereo ((short *) pMsndOut, Seg_Lenght);
+      if (Have_MMX) Write_Sound_Stereo_MMX (Seg_L, Seg_R, (short *) pMsndOut, Seg_Length);
+      else Write_Sound_Stereo ((short *) pMsndOut, Seg_Length);
     }
   else
     {
-      if (Have_MMX) Write_Sound_Mono_MMX (Seg_L, Seg_R, (short *) pMsndOut, Seg_Lenght);
-      else Write_Sound_Mono ((short *) pMsndOut, Seg_Lenght);
+      if (Have_MMX) Write_Sound_Mono_MMX (Seg_L, Seg_R, (short *) pMsndOut, Seg_Length);
+      else Write_Sound_Mono ((short *) pMsndOut, Seg_Length);
     }
-  memcpy (audiobuf + audio_len, pMsndOut, Seg_Lenght * 4);
-  audio_len += Seg_Lenght * 4;
+  memcpy (audiobuf + audio_len, pMsndOut, Seg_Length * 4);
+  audio_len += Seg_Length * 4;
 
   SDL_UnlockAudio ();
 		
@@ -315,12 +315,12 @@ int Clear_Sound_Buffer (void)
 
   if (!Sound_Initialised) return 0;
 
-  rval = lpDSBuffer->Lock (0, Seg_Lenght * Sound_Segs * Bytes_Per_Unit, &lpvPtr1, &dwBytes1, NULL, NULL, 0);
+  rval = lpDSBuffer->Lock (0, Seg_Length * Sound_Segs * Bytes_Per_Unit, &lpvPtr1, &dwBytes1, NULL, NULL, 0);
 
   if (rval == DSERR_BUFFERLOST)
     {
       lpDSBuffer->Restore ();
-      rval = lpDSBuffer->Lock (0, Seg_Lenght * Sound_Segs * Bytes_Per_Unit, &lpvPtr1, &dwBytes1, NULL, NULL, 0);
+      rval = lpDSBuffer->Lock (0, Seg_Length * Sound_Segs * Bytes_Per_Unit, &lpvPtr1, &dwBytes1, NULL, NULL, 0);
 
     }
 
@@ -328,7 +328,7 @@ int Clear_Sound_Buffer (void)
     {
       signed short *w = (signed short *) lpvPtr1;
 
-      for (i = 0; i < Seg_Lenght * Sound_Segs * Bytes_Per_Unit; i += 2)
+      for (i = 0; i < Seg_Length * Sound_Segs * Bytes_Per_Unit; i += 2)
 	*w++ = (signed short) 0;
 
       rval = lpDSBuffer->Unlock (lpvPtr1, dwBytes1, NULL, NULL);
@@ -411,17 +411,17 @@ int Update_WAV_Dump (void)
 {
 #if 0
   unsigned char Buf_Tmp[882 * 4 + 16];
-  unsigned int lenght, Writted;
+  unsigned int length, Writted;
 
   if (!WAV_Dumping) return 0;
 
   Write_Sound_Buffer (Buf_Tmp);
 
-  lenght = Seg_Lenght << 1;
+  length = Seg_Length << 1;
 
-  if (Sound_Stereo) lenght *= 2;
+  if (Sound_Stereo) length *= 2;
 
-  if (WaveWriteFile (MMIOOut, lenght, &Buf_Tmp[0], &CkOut, &Writted, &MMIOInfoOut))
+  if (WaveWriteFile (MMIOOut, length, &Buf_Tmp[0], &CkOut, &Writted, &MMIOInfoOut))
     {
       Put_Info ("Error in WAV dumping", 1000);
       return 0;

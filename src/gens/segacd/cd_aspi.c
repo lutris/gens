@@ -340,7 +340,7 @@ ASPI_Seek (int pos, int async,
 
 
 int
-ASPI_Read_CD_LBA (int adr, int lenght, unsigned char sector,
+ASPI_Read_CD_LBA (int adr, int length, unsigned char sector,
 		  unsigned char flag, unsigned char sub_chan, int async,
 		  int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
 {
@@ -350,13 +350,13 @@ ASPI_Read_CD_LBA (int adr, int lenght, unsigned char sector,
   int lbi;
   union cdrd cdread;
 
-  if (lenght > 64)
-    lenght = 64;
-  else if (lenght <= 0)
-    lenght = 1;
+  if (length > 64)
+    length = 64;
+  else if (length <= 0)
+    length = 1;
   if (adr < 0)
     adr = 0;
-  for (lbi = 0; lbi < lenght; lbi++)
+  for (lbi = 0; lbi < length; lbi++)
     {
       cdread.msf = LBA2MSF (adr + lbi);
       ret = ioctl (FD_CDROM, CDROMREADRAW, &cdread);

@@ -61,13 +61,13 @@ Load_ISO (char *buf, char *iso_name)
 
   File_Size = fopen (iso_name, "rb");
   fseek (File_Size, 0, SEEK_END);
-  Tracks[0].Lenght = ftell (File_Size);
+  Tracks[0].Length = ftell (File_Size);
   fseek (File_Size, 0, SEEK_SET);
 
   if (Tracks[0].Type == TYPE_ISO)
-    Tracks[0].Lenght >>= 11;	// size in sectors
+    Tracks[0].Length >>= 11;	// size in sectors
   else
-    Tracks[0].Lenght /= 2352;	// size in sectors
+    Tracks[0].Length /= 2352;	// size in sectors
 
   fclose (File_Size);
 
@@ -76,7 +76,7 @@ Load_ISO (char *buf, char *iso_name)
   if (Tracks[0].F == NULL)
     {
       Tracks[0].Type = 0;
-      Tracks[0].Lenght = 0;
+      Tracks[0].Length = 0;
       return -1;
     }
 
@@ -107,7 +107,7 @@ Load_ISO (char *buf, char *iso_name)
     fprintf (debug_SCD_file, "AUDIO\n");
 #endif
 
-  Cur_LBA = Tracks[0].Lenght;	// Size in sectors
+  Cur_LBA = Tracks[0].Length;	// Size in sectors
 
   strcpy (tmp_name, iso_name);
 
@@ -160,15 +160,15 @@ Load_ISO (char *buf, char *iso_name)
 		  fs /= (float) (MP3_Get_Bitrate (Tracks[num_track - 1].F) >>
 				 3);
 		  fs *= 75;
-		  Tracks[num_track - SCD.TOC.First_Track].Lenght = (int) fs;
-		  Cur_LBA += Tracks[num_track - SCD.TOC.First_Track].Lenght;
+		  Tracks[num_track - SCD.TOC.First_Track].Length = (int) fs;
+		  Cur_LBA += Tracks[num_track - SCD.TOC.First_Track].Length;
 		}
 	      else
 		{
 		  // WAV File
 		  Tracks[num_track - SCD.TOC.First_Track].Type = TYPE_WAV;
-		  Tracks[num_track - SCD.TOC.First_Track].Lenght = 1000;
-		  Cur_LBA += Tracks[num_track - SCD.TOC.First_Track].Lenght;
+		  Tracks[num_track - SCD.TOC.First_Track].Length = 1000;
+		  Cur_LBA += Tracks[num_track - SCD.TOC.First_Track].Length;
 		}
 
 	      j = 1000;
@@ -224,7 +224,7 @@ Unload_ISO (void)
       if (Tracks[i].F)
 	fclose (Tracks[i].F);
       Tracks[i].F = NULL;
-      Tracks[i].Lenght = 0;
+      Tracks[i].Length = 0;
       Tracks[i].Type = 0;
     }
 }
@@ -242,8 +242,8 @@ FILE_Read_One_LBA_CDC (void)
 
       if (SCD.Cur_LBA < 0)
 	where_read = 0;
-      else if (SCD.Cur_LBA >= Tracks[0].Lenght)
-	where_read = Tracks[0].Lenght - 1;
+      else if (SCD.Cur_LBA >= Tracks[0].Length)
+	where_read = Tracks[0].Length - 1;
       else
 	where_read = SCD.Cur_LBA;
 

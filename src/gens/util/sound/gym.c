@@ -251,9 +251,9 @@ GYM_Next (void)
       switch (c)
 	{
 	case 0:
-	  PSG_Update (buf, Seg_Lenght);
+	  PSG_Update (buf, Seg_Length);
 	  if (YM2612_Enable)
-	    YM2612_Update (buf, Seg_Lenght);
+	    YM2612_Update (buf, Seg_Length);
 	  break;
 
 	case 1:
