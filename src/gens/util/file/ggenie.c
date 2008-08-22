@@ -295,7 +295,7 @@ Load_Patch_File (void)
   enum etat_sec
   { DEB_LIGNE, CODE, BLANC, COMMENT, ERR } etat = DEB_LIGNE;
 
-  SetCurrentDirectory (Gens_Path);
+  SetCurrentDirectory (Settings.PathNames.Gens_Path);
 
   for (i = 0; i < 256; i++)
     {
@@ -471,7 +471,7 @@ Save_Patch_File (void)
   char Name[2048];
   int i;
 
-  SetCurrentDirectory (Gens_Path);
+  SetCurrentDirectory (Settings.PathNames.Gens_Path);
 
   if (Liste_GG[0].code[0] == 0)
     return 0;

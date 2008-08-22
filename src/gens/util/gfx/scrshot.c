@@ -18,7 +18,7 @@ Save_Shot (unsigned char *Screen, int mode, int X, int Y, int Pitch)
   char Name[1024], ext[16];
   struct stat sbuf;
 
-  SetCurrentDirectory (Gens_Path);
+  SetCurrentDirectory (Settings.PathNames.Gens_Path);
 
   i = (X * Y * 3) + 54;
 

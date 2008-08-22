@@ -1378,13 +1378,13 @@ on_buttonCfgBios_clicked               (GtkButton       *button,
 	txt = (gchar*)gtk_entry_get_text(GTK_ENTRY(cgoffline));
 	if (strlen(txt))
 	{
-		strcpy(CGOffline_Path, txt);
+		strcpy(Settings.PathNames.CGOffline_Path, txt);
 	}
 	
 	txt = (gchar*)gtk_entry_get_text(GTK_ENTRY(manual));
 	if (strlen(txt))
 	{
-		strcpy(Manual_Path, txt);
+		strcpy(Settings.PathNames.Manual_Path, txt);
 	}
 	
 	dircfg = lookup_widget(GTK_WIDGET(button), "bios_files");

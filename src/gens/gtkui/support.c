@@ -1199,8 +1199,8 @@ open_bios_cfg ()
 	gtk_entry_set_text (GTK_ENTRY (usabios), US_CD_Bios);
 	gtk_entry_set_text (GTK_ENTRY (eurbios), EU_CD_Bios);
 	gtk_entry_set_text (GTK_ENTRY (japbios), JA_CD_Bios);
-	gtk_entry_set_text (GTK_ENTRY (cgoffline), CGOffline_Path);
-	gtk_entry_set_text (GTK_ENTRY (manual), Manual_Path);
+	gtk_entry_set_text (GTK_ENTRY (cgoffline), Settings.PathNames.CGOffline_Path);
+	gtk_entry_set_text (GTK_ENTRY (manual), Settings.PathNames.Manual_Path);
 
 	g_signal_connect (GTK_OBJECT (btngenesis), "clicked",
 			  G_CALLBACK (on_change_file), genesis);

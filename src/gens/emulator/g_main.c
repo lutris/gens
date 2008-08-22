@@ -33,15 +33,16 @@
 #include "g_sdldraw.h"
 #include "g_sdlinput.h"
 
+
+// GENS Settings struct
+struct GENS_Settings_t Settings;
+
 int fast_forward = 0;
 
 POINT Window_Pos;
+
+// Stupid temporary string needed for some stuff.
 char Str_Tmp[1024];
-char Start_Rom[1024];
-char Gens_Path[1024];
-char Language_Path[1024];
-char CGOffline_Path[1024];
-char Manual_Path[1024];
 
 char **language_name = NULL;
 int Active = 1;
@@ -71,6 +72,15 @@ int Quick_Exit = 0;
 
 static int Gens_Running = 0;
 
+
+/**
+ * Init_Settings(): Initialize the Settings struct.
+ */
+void Init_Settings(void)
+{
+	// Nothing yet...
+}
+
 static int Build_Language_String (void)
 {
 	unsigned long nb_lue = 1;
@@ -95,10 +105,10 @@ static int Build_Language_String (void)
 	language_name = (char **) malloc (sec_alloue * sizeof (char *));
 	language_name[0] = NULL;
 	
-	LFile = fopen (Language_Path, "r");
+	LFile = fopen (Settings.PathNames.Language_Path, "r");
 	if (!LFile)
 	{
-		LFile = fopen (Language_Path, "w");
+		LFile = fopen (Settings.PathNames.Language_Path, "w");
 	}
 	
 	while (nb_lue)
@@ -167,7 +177,7 @@ static int Build_Language_String (void)
 		language_name[0] = (char *) malloc (32 * sizeof (char));
 		strcpy (language_name[0], "English");
 		language_name[1] = NULL;
-		WritePrivateProfileString ("English", "Menu Language", "&English menu", Language_Path);
+		WritePrivateProfileString ("English", "Menu Language", "&English menu", Settings.PathNames.Language_Path);
 	}
 	
 	return 0;
@@ -241,20 +251,20 @@ static void InitParameters (void)
 	Debug = 0;
 	CPU_Mode = 0;
 	
-	Get_Save_Path(Gens_Path, GENS_PATH_MAX);
-	Create_Save_Directory(Gens_Path);
+	Get_Save_Path(Settings.PathNames.Gens_Path, GENS_PATH_MAX);
+	Create_Save_Directory(Settings.PathNames.Gens_Path);
 	
 	// Create default language filename.
-	strncpy (Language_Path, Gens_Path, GENS_PATH_MAX);
-	strcat (Language_Path, "language.dat");
+	strncpy (Settings.PathNames.Language_Path, Settings.PathNames.Gens_Path, GENS_PATH_MAX);
+	strcat (Settings.PathNames.Language_Path, "language.dat");
 	
 	// Create default configuration filename.
-	strncpy (Str_Tmp, Gens_Path, 1000);
+	strncpy (Str_Tmp, Settings.PathNames.Gens_Path, 1000);
 	strcat (Str_Tmp, "gens.cfg");
 	
 	// Default manual and CGOffline path is empty.
-	strcpy (Manual_Path, "");
-	strcpy (CGOffline_Path, "");
+	strcpy (Settings.PathNames.Manual_Path, "");
+	strcpy (Settings.PathNames.CGOffline_Path, "");
 	
 	// Build language strings and load the default configuration.
 	Build_Language_String ();
@@ -325,14 +335,11 @@ int IsAsyncAllowed(void)
 }
 
 
-void KPTest(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+int main (int argc, char *argv[])
 {
-	printf("GTK Key: 0x%X; Modifier: 0x%X\n", event->keyval, event->state);
-}
-
-int
-main (int argc, char *argv[])
-{
+	// Initialize the Settings struct.
+	Init_Settings();
+	
 	//char sdlbuf[32];
 	
 	//sprintf(sdlbuf, "SDL_WINDOWID=%ld",  GDK_WINDOW_XWINDOW(gens_window->window));
@@ -349,9 +356,6 @@ main (int argc, char *argv[])
 	
 	gens_window = create_gens_window ();
 	sdlsock = gtk_event_box_new();
-	// Connect the keypress event.
-	gtk_signal_connect(GTK_OBJECT(sdlsock), "key-press-event",
-			GTK_SIGNAL_FUNC(KPTest), NULL);
 	gtk_widget_set_name(sdlsock, "sdlsock");
 	g_object_set_data_full(G_OBJECT(gens_window), "sdlsock",
 	gtk_widget_ref(sdlsock), (GDestroyNotify) gtk_widget_unref);
@@ -364,11 +368,11 @@ main (int argc, char *argv[])
 	if (!Init ())
 		return 0;
 	
-	if (0 != strcmp(Start_Rom, ""))
+	if (strcmp(Settings.PathNames.Start_Rom, "") != 0)
 	{
-		if (-1 == Open_Rom(Start_Rom))
+		if (Open_Rom(Settings.PathNames.Start_Rom) == -1)
 		{
-			fprintf(stderr, "Failed to load %s\n", Start_Rom);
+			fprintf(stderr, "Failed to load %s\n", Settings.PathNames.Start_Rom);
 		}
 	}
 	

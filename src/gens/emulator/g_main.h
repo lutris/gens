@@ -20,6 +20,27 @@ extern "C" {
 #define UPDATE_GTK_SOUNDOFF 1
 #define UPDATE_GTK_SOUNDON 2
 
+
+// GENS Path Names
+#define GENS_PATH_MAX 1024
+struct PathNames_t
+{
+	char Start_Rom[GENS_PATH_MAX];
+	char Gens_Path[GENS_PATH_MAX];
+	char Language_Path[GENS_PATH_MAX];
+	char CGOffline_Path[GENS_PATH_MAX];
+	char Manual_Path[GENS_PATH_MAX];
+};
+
+
+struct GENS_Settings_t
+{
+	struct PathNames_t PathNames;
+};
+
+
+extern struct GENS_Settings_t Settings;
+
 extern int Paused;
 extern int Net_Play;
 extern int Current_State;
@@ -48,18 +69,13 @@ extern int FS_Minimised;
 
 extern POINT Window_Pos;
 
-#define GENS_PATH_MAX 1024
-extern char Start_Rom[GENS_PATH_MAX];
-extern char Str_Tmp[GENS_PATH_MAX];
-extern char Gens_Path[GENS_PATH_MAX];
-extern char Language_Path[GENS_PATH_MAX];
-extern char CGOffline_Path[GENS_PATH_MAX];
-extern char Manual_Path[GENS_PATH_MAX];
-
 extern char **language_name;
-	
+
 extern unsigned char Keys[];
 extern unsigned char joystate[];
+
+// Stupid temporary string needed for some stuff.
+extern char Str_Tmp[GENS_PATH_MAX];
 
 int Set_Render(int Full, int Num, int Force);
 int Change_68K_Type(int hWnd, int Num, int Reset_SND);
@@ -77,7 +93,7 @@ extern GtkWidget* gens_window;
 
 #define MESSAGE_L(str, def, time) \
 {\
-	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024, Language_Path);	\
+	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024, Settings.PathNames.Language_Path);	\
 	Put_Info(Str_Tmp, (time));\
 }
 
@@ -87,7 +103,7 @@ extern GtkWidget* gens_window;
 {\
 	char mes_tmp[1024];\
 	Str_Tmp[0]='\0';\
-	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024, Language_Path);	\
+	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024, Settings.PathNames.Language_Path);	\
 	sprintf(mes_tmp, Str_Tmp, (num));\
 	Put_Info(mes_tmp, (time));\
 }

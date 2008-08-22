@@ -2035,9 +2035,9 @@ Save_Config (char *File_Name)
       WritePrivateProfileString ("Options", "Ram Cart Size", "-1", Conf_File);
     }
 
-  WritePrivateProfileString ("Options", "GCOffline path", CGOffline_Path,
+  WritePrivateProfileString ("Options", "GCOffline path", Settings.PathNames.CGOffline_Path,
 			     Conf_File);
-  WritePrivateProfileString ("Options", "Gens manual path", Manual_Path,
+  WritePrivateProfileString ("Options", "Gens manual path", Settings.PathNames.Manual_Path,
 			     Conf_File);
 
   sprintf (Str_Tmp, "%d", Controller_1_Type & 0x13);
@@ -2316,38 +2316,38 @@ Load_Config (char *File_Name, void *Game_Active)
 
   GetPrivateProfileString ("General", "Rom path", Home_Dir, &Rom_Dir[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "Save path", Gens_Path, &State_Dir[0],
+  GetPrivateProfileString ("General", "Save path", Settings.PathNames.Gens_Path, &State_Dir[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "SRAM path", Gens_Path, &SRAM_Dir[0],
+  GetPrivateProfileString ("General", "SRAM path", Settings.PathNames.Gens_Path, &SRAM_Dir[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "BRAM path", Gens_Path, &BRAM_Dir[0],
+  GetPrivateProfileString ("General", "BRAM path", Settings.PathNames.Gens_Path, &BRAM_Dir[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "Dump path", Gens_Path, &Dump_Dir[0],
+  GetPrivateProfileString ("General", "Dump path", Settings.PathNames.Gens_Path, &Dump_Dir[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "Dump GYM path", Gens_Path,
+  GetPrivateProfileString ("General", "Dump GYM path", Settings.PathNames.Gens_Path,
 			   &Dump_GYM_Dir[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "Screen Shot path", Gens_Path,
+  GetPrivateProfileString ("General", "Screen Shot path", Settings.PathNames.Gens_Path,
 			   &ScrShot_Dir[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "Patch path", Gens_Path, &Patch_Dir[0],
+  GetPrivateProfileString ("General", "Patch path", Settings.PathNames.Gens_Path, &Patch_Dir[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "IPS Patch path", Gens_Path, &IPS_Dir[0],
+  GetPrivateProfileString ("General", "IPS Patch path", Settings.PathNames.Gens_Path, &IPS_Dir[0],
 			   1024, Conf_File);
 
-  GetPrivateProfileString ("General", "Genesis Bios", Gens_Path,
+  GetPrivateProfileString ("General", "Genesis Bios", Settings.PathNames.Gens_Path,
 			   &Genesis_Bios[0], 1024, Conf_File);
 
-  GetPrivateProfileString ("General", "USA CD Bios", Gens_Path, &US_CD_Bios[0],
+  GetPrivateProfileString ("General", "USA CD Bios", Settings.PathNames.Gens_Path, &US_CD_Bios[0],
 			   1024, Conf_File);
-  GetPrivateProfileString ("General", "EUROPE CD Bios", Gens_Path,
+  GetPrivateProfileString ("General", "EUROPE CD Bios", Settings.PathNames.Gens_Path,
 			   &EU_CD_Bios[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "JAPAN CD Bios", Gens_Path,
+  GetPrivateProfileString ("General", "JAPAN CD Bios", Settings.PathNames.Gens_Path,
 			   &JA_CD_Bios[0], 1024, Conf_File);
 
-  GetPrivateProfileString ("General", "32X 68000 Bios", Gens_Path,
+  GetPrivateProfileString ("General", "32X 68000 Bios", Settings.PathNames.Gens_Path,
 			   &_32X_Genesis_Bios[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "32X Master SH2 Bios", Gens_Path,
+  GetPrivateProfileString ("General", "32X Master SH2 Bios", Settings.PathNames.Gens_Path,
 			   &_32X_Master_Bios[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "32X Slave SH2 Bios", Gens_Path,
+  GetPrivateProfileString ("General", "32X Slave SH2 Bios", Settings.PathNames.Gens_Path,
 			   &_32X_Slave_Bios[0], 1024, Conf_File);
 
   GetPrivateProfileString ("General", "Rom 1", "", &Recent_Rom[0][0], 1024,
@@ -2515,9 +2515,9 @@ Load_Config (char *File_Name, void *Game_Active)
     BRAM_Ex_State |= 0x100;
 
   GetPrivateProfileString ("Options", "GCOffline path", "GCOffline.chm",
-			   CGOffline_Path, 1024, Conf_File);
+			   Settings.PathNames.CGOffline_Path, 1024, Conf_File);
   GetPrivateProfileString ("Options", "Gens manual path", "manual.exe",
-			   Manual_Path, 1024, Conf_File);
+			   Settings.PathNames.Manual_Path, 1024, Conf_File);
 
   Controller_1_Type = GetPrivateProfileInt ("Input", "P1.Type", 1, Conf_File);
   Keys_Def[0].Up = GetPrivateProfileInt ("Input", "P1.Up", DIK_UP, Conf_File);
