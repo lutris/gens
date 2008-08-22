@@ -18,8 +18,6 @@
 #include "gym.h"
 #include "mem_m68k.h"
 #include "ym2612.h"
-#include "interface.h"
-#include "support.h"
 #include "ui_proxy.h"
 #include "parse.h"
 #include "cpu_sh2.h"
@@ -34,6 +32,8 @@
 #include "g_sdldraw.h"
 #include "g_sdlinput.h"
 
+#include "ui-common.h"
+#include "gtk-misc.h"
 
 // GENS Settings struct
 struct GENS_Settings_t Settings;
@@ -349,8 +349,10 @@ int main (int argc, char *argv[])
 	InitParameters ();
 	parseArgs (argc, argv);
 	
-	add_pixmap_directory (DATADIR);
-	gtk_init (&argc, &argv);
+	// TODO: Split out GTK+ stuff from main().
+	add_pixmap_directory(DATADIR);
+	add_pixmap_directory("images");
+	gtk_init(&argc, &argv);
 	
 	gens_window = create_gens_window ();
 	sdlsock = gtk_event_box_new();
@@ -446,6 +448,8 @@ int main (int argc, char *argv[])
 		else
 		{
 			// BLANK SCREEN (MAX IDLE)
+			// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
+			// TODO: Fix this lag!
 			//Clear_Back_Screen();
 			Eff_Screen();
 			Flip ();

@@ -24,7 +24,8 @@
 #include "wave.h"
 #include "gym.h"
 #include <assert.h>
-#include "support.h"
+
+#include "ui-common.h"
 
 Rom *My_Rom = NULL;
 struct Rom *Game = NULL;
@@ -404,94 +405,76 @@ Fill_Infos (void)
 }
 
 
-int
-Get_Rom ()
+int Get_Rom(void)
 {
-  GtkWidget *widget;
-  gint res;
-  char Name[2048];
-
-  widget = create_file_chooser_dialog ("Open Rom", GTK_FILE_CHOOSER_ACTION_OPEN);
-  gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(widget), Rom_Dir);
-  addRomsFilter (widget);
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-      gchar *filename;
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-     strncpy (Name, filename, 2048);
-      g_free (filename);
-      
-    }
-      else
-    {
-      strcpy (Name, "\n");
-    }
-    
-  gtk_widget_destroy (widget);
-  if (res == GTK_RESPONSE_CANCEL)
-  	return 0;
-  return Open_Rom (Name);
+	char filename[GENS_PATH_MAX];
+	int x;
+	
+	if (UI_OpenFile("Open ROM", Rom_Dir, ROMFile, filename) != 0)
+	{
+		// No ROM selected.
+		return 0;
+	}
+	
+	// Open the ROM.
+	return Open_Rom(filename);
 }
 
-int
-Open_Rom (char *Name)
+
+int Open_Rom(const char *Name)
 {
-  int sys;
-
-  Free_Rom (Game);
-  sys = Detect_Format (Name);
-
-  if (sys < 1)
-    return -1;
-
-  Update_Recent_Rom (Name);
-  Update_Rom_Dir (Name);
-
-  if ((sys >> 1) < 3)		// Have to load a rom
-    {
-      if ((!strcasecmp ("zip", &Name[strlen (Name) - 3]))
-	  || (!strcasecmp ("zsg", &Name[strlen (Name) - 3])))
+	int sys;
+	
+	Free_Rom(Game);
+	sys = Detect_Format(Name);
+	
+	if (sys < 1)
+		return -1;
+	
+	Update_Recent_Rom (Name);
+	Update_Rom_Dir (Name);
+	
+	if ((sys >> 1) < 3)		// Have to load a rom
 	{
-	  Game = Load_Rom_Zipped (Name, sys & 1);
+		if ((!strcasecmp ("zip", &Name[strlen (Name) - 3])) ||
+		    (!strcasecmp ("zsg", &Name[strlen (Name) - 3])))
+		{
+			Game = Load_Rom_Zipped (Name, sys & 1);
+		}
+		else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
+			Game = Load_Rom_Gz (Name, sys & 1);
+		else
+			Game = Load_Rom (Name, sys & 1);
 	}
-      else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
-	Game = Load_Rom_Gz (Name, sys & 1);
-      else
+	
+	switch (sys >> 1)
 	{
-	  Game = Load_Rom (Name, sys & 1);
+		default:
+		case 1:			// Genesis rom
+			if (Game)
+				Genesis_Started = Init_Genesis (Game);
+			
+			return Genesis_Started;
+			break;
+	
+		case 2:			// 32X rom
+			if (Game)
+				_32X_Started = Init_32X (Game);
+			
+			return _32X_Started;
+			break;
+		
+		case 3:			// Sega CD image
+			SegaCD_Started = Init_SegaCD (Name);
+			
+			return SegaCD_Started;
+			break;
+		
+		case 4:			// Sega CD 32X image
+			break;
 	}
-    }
-
-  switch (sys >> 1)
-    {
-    default:
-    case 1:			// Genesis rom
-      if (Game)
-	Genesis_Started = Init_Genesis (Game);
-
-      return Genesis_Started;
-      break;
-
-    case 2:			// 32X rom
-      if (Game)
-	_32X_Started = Init_32X (Game);
-
-      return _32X_Started;
-      break;
-
-    case 3:			// Sega CD image
-      SegaCD_Started = Init_SegaCD (Name);
-
-      return SegaCD_Started;
-      break;
-
-    case 4:			// Sega CD 32X image
-      break;
-    }
-
-  return -1;
-  
+	
+	return -1;
 }
 
 
@@ -592,13 +575,13 @@ Load_Rom_Gz (char *Name, int inter)
   int Size = 0;
   char *read_buf[1024];
   //SetCurrentDirectory (Gens_Path);
-  if ((Rom_File = (FILE *) gzopen (Name, "rb")) == 0)
-    {
-	  printf("No genesis or 32X roms file found in gzip");
-      open_msgbox ("No genesis or 32X roms file found in gzip");
-      Game = NULL;
-      return (NULL);
-    }
+	if ((Rom_File = (FILE*)gzopen(Name, "rb")) == 0)
+	{
+		printf("No Genesis or 32X ROM file found in GZip archive.");
+		UI_MsgBox("No Genesis or 32X ROM file found in GZip archive.", "Error");
+		Game = NULL;
+		return (NULL);
+	}
 
   while (gzeof (Rom_File) == 0)
     {
@@ -648,7 +631,7 @@ Load_Rom_Zipped (char *Name, int inter)
 
   if (!Rom_File)
     {
-      open_msgbox ("No genesis or 32X roms file found in zip");
+      UI_MsgBox("No Genesis or 32X ROM file found in ZIP archive.", "Error");
 
       Game = NULL;
       return (NULL);
@@ -681,7 +664,7 @@ Load_Rom_Zipped (char *Name, int inter)
   if ((Current != UNZ_END_OF_LIST_OF_FILE && Current != UNZ_OK) || !Size)
     {
 
-      open_msgbox ("No genesis or 32X roms file found in zip");
+      UI_MsgBox("No Genesis or 32X ROM file found in ZIP archive.", "Error");
 
       unzClose (Rom_File);
       Game = NULL;
@@ -753,7 +736,7 @@ Load_Rom_Zipped (char *Name, int inter)
 	  strcat (Tmp, "CRC error.");
 	  break;
 	}
-      open_msgbox (Tmp);
+      UI_MsgBox(Tmp, "Error");
       unzClose (Rom_File);
       Game = NULL;
       return (NULL);
@@ -936,5 +919,5 @@ Free_Rom (Rom * Rom_MD)
   if (Intro_Style == 3)
     Init_Genesis_Bios ();
 
-  SetWindowText ("Gens - Idle");
+  UI_Set_Window_Title("Gens - Idle");
 }

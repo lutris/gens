@@ -54,7 +54,7 @@ void Update_CD_Rom_Name(char *Name);
 int Detect_Format(char *Name);
 
 int Get_Rom(void);
-int Open_Rom(char *Name);
+int Open_Rom(const char *Name);
 int Load_Rom_CC(char *Name, int Size);
 struct Rom *Load_Bios(char *Name);
 struct Rom *Load_Rom(char *Name, int inter);

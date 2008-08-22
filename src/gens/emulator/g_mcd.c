@@ -30,7 +30,10 @@
 #include "cd_sys.h"
 #include "cd_file.h"
 #include "gym.h"
-#include "support.h"
+
+
+#include "ui-common.h"
+
 
 unsigned char CD_Data[1024];	// Used for hard reset to know the game name
 
@@ -69,12 +72,12 @@ int Init_SegaCD (char *iso_name)
 {
 	char Str_Err[256], *Bios_To_Use;
 	
-	SetWindowText ("Gens - Sega CD : initialising, please wait ...");
+	UI_Set_Window_Title("Gens - Sega CD : initialising, please wait ...");
 	
 	if (Reset_CD ((char *) CD_Data, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
-		SetWindowText ("Gens - Idle");
+		UI_Set_Window_Title("Gens - Idle");
 		return 0;
 	}
 	
@@ -115,8 +118,9 @@ int Init_SegaCD (char *iso_name)
 	// Attempt to load the Sega CD BIOS.
 	if (Load_Bios (Bios_To_Use) == NULL)
 	{
-		open_msgbox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.");
-		SetWindowText ("Gens - Idle");
+		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
+			  "BIOS Configuration Error");
+		UI_Set_Window_Title("Gens - Idle");
 		return 0;
 	}
 	
@@ -127,7 +131,7 @@ int Init_SegaCD (char *iso_name)
 		sprintf (Str_Err, "Gens - MegaCD : %s", Rom_Name);
 	else
 		sprintf (Str_Err, "Gens - SegaCD : %s", Rom_Name);
-	SetWindowText (Str_Err);
+	UI_Set_Window_Title(Str_Err);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -198,7 +202,7 @@ int Reload_SegaCD (char *iso_name)
 	
 	Save_BRAM ();
 	
-	SetWindowText ("Gens - Sega CD : re-initialising, please wait ...");
+	UI_Set_Window_Title("Gens - Sega CD : re-initialising, please wait ...");
 	
 	Reset_CD ((char *) CD_Data, iso_name);
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
@@ -209,7 +213,7 @@ int Reload_SegaCD (char *iso_name)
 	else
 		sprintf (Str_Err, "Gens - SegaCD : %s", Rom_Name);
 	
-	SetWindowText (Str_Err);
+	UI_Set_Window_Title(Str_Err);
 	
 	Load_BRAM ();
 	
@@ -236,7 +240,8 @@ Reset_SegaCD ()
 	
 	if (Detect_Format (Bios_To_Use) == -1)
 	{
-		open_msgbox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.");
+		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
+			  "BIOS Configuration Error");
 		return;
 	}
 	

@@ -23,7 +23,6 @@
 #include "ggenie.h"
 #include "wave.h"
 #include "gym.h"
-#include "support.h"
 
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.
@@ -240,7 +239,7 @@ int Init_Genesis (struct Rom *MD_Rom)
 		sprintf (Str_Err, "Gens - Megadrive : %s", MD_Rom->Rom_Name_W);
 	else
 		sprintf (Str_Err, "Gens - Genesis : %s", MD_Rom->Rom_Name_W);
-	SetWindowText (Str_Err);
+	UI_Set_Window_Title(Str_Err);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)

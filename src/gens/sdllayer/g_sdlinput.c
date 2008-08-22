@@ -8,7 +8,10 @@
 #include "io.h"
 #include "g_main.h"
 #include "g_input.h"
-#include "support.h"
+
+
+#include "gtk-misc.h"
+
 
 //char Phrase[1024];
 static int Nb_Joys = 0;

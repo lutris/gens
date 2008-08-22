@@ -29,8 +29,7 @@ void Sleep(int i);
 SDL_Surface *screen = NULL;
 
 
-#include "support.h"
-#include <gdk/gdkx.h>
+#include "ui-common.h"
 
 
 clock_t Last_Time = 0, New_Time = 0;
@@ -192,7 +191,7 @@ int Init_DDraw()
 {	
 	int x;
 	int w, h;
-
+	
 	if (Opengl) {
 		w = Width_gl;
 		h = Height_gl;
@@ -209,28 +208,23 @@ int Init_DDraw()
 	}
 	
 	if (Full_Screen) {
-		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
-
+		UI_Hide_Embedded_Window();
+		
 		if (WindowID) {
 			unsetenv("SDL_WINDOWID");
 			g_free(WindowID);
 			WindowID = NULL;
 		}
 	} else {
-		GtkWidget *sdlsock;
-		sdlsock = lookup_widget(gens_window, "sdlsock");
-
-		gtk_widget_set_size_request(sdlsock, w, h);
-		gtk_widget_realize(sdlsock);
-		gtk_widget_show(sdlsock);
-               
+		UI_Show_Embedded_Window(w, h);
+		
 		/* Let GTK catch up. */
 		while (gtk_events_pending())
 			gtk_main_iteration_do(FALSE);
                
-		if (!WindowID) {
-			WindowID = g_strdup_printf("%ld",
-					GDK_WINDOW_XWINDOW(sdlsock->window));
+		if (!WindowID)
+		{
+			WindowID = g_strdup_printf("%ld", UI_Get_Embedded_WindowID());
 			setenv("SDL_WINDOWID", WindowID, 1);
 		}
 	}

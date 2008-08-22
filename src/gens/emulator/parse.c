@@ -32,7 +32,6 @@
 #include "io.h"
 #include "misc.h"
 #include "cd_sys.h"
-#include "support.h"
 #include "parse.h"
 #include "ui_proxy.h"
 

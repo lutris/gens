@@ -13,7 +13,6 @@
 #include "g_sdlsound.h"
 #include "g_sdldraw.h"
 #include "ui_proxy.h"
-#include "support.h"
 #include "save.h"
 #include "gym.h"
 #include "cd_aspi.h"
@@ -47,7 +46,6 @@ struct K_Def Keys_Def[8] =
 void Input_KeyDown(int key)
 {
 	Keys[key] = 1;
-	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -333,15 +331,17 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_CTRL)
 			{
 				//if (Check_If_Kaillera_Running()) return 0;                                            
-				MINIMIZE open_game_genie ();
+				MINIMIZE;
+				// TODO: Re-enable this when the GTK+ GUI is rewritten.
+				//open_game_genie();
 			}
 			break;
 		
 		case GENS_KEY_h:
 			if (mod & KMOD_CTRL)
-				SetWindowVisibility(0);
+				UI_Set_Window_Visibility(0);
 			else
-				SetWindowVisibility(1);
+				UI_Set_Window_Visibility(1);
 			break;
 		
 		case GENS_KEY_o:
@@ -351,7 +351,7 @@ void Input_KeyDown(int key)
 				if (GYM_Playing)
 					Stop_Play_GYM ();
 				MINIMIZE;
-				Get_Rom ();
+				Get_Rom();
 			}
 			break;
 		

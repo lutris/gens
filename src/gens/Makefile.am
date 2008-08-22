@@ -36,7 +36,7 @@ INCLUDES = \
 -I@srcdir@/gens_core/io -I@srcdir@/gens_core/vdp -I@srcdir@/segacd -I@srcdir@/mp3_dec -I@srcdir@/sdllayer \
 -I@srcdir@/util -I@srcdir@/util/gfx -I@srcdir@/util/sound -I@srcdir@/util/file \
 -I@srcdir@/port -I@srcdir@/emulator -I@srcdir@/debug -I@srcdir@/netplay \
--I@srcdir@/gtkui -I@srcdir@/gtkui/glade \
+-I@srcdir@/ui -I@srcdir@/ui/gtk \
 -I@srcdir@
 
 bin_PROGRAMS = gens
@@ -161,12 +161,15 @@ gens_SOURCES = \
 		debug/sh2d.h \
 		debug/z80dis.c \
 		debug/z80dis.h \
-		gtkui/glade/callbacks.c \
-		gtkui/glade/callbacks.h \
-		gtkui/glade/interface.c \
-		gtkui/glade/interface.h \
-		gtkui/support.c \
-		gtkui/support.h \
+		ui/ui-common.h \
+		ui/gtk/ui-common_gtk.c \
+		ui/gtk/ui-common_gtk.h \
+		ui/gtk/gtk-misc.c \
+		ui/gtk/gtk-misc.h \
+		ui/gtk/genswindow.c \
+		ui/gtk/genswindow.h \
+		ui/gtk/genswindow_callbacks.c \
+		ui/gtk/genswindow_callbacks.h \
 		emulator/parse.c \
 		emulator/parse.h
 ##		netplay/ccnet.c \

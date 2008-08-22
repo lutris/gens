@@ -15,26 +15,6 @@ GtkWidget *gens_window = NULL;
 
 void SDL_Check_Joystick_Axis(SDL_Event *event);
 
-/**
- * SetWindowText(): Sets the window title.
- * @param s New window title.
- */
-void SetWindowText (const char *s)
-{
-	gtk_window_set_title((GtkWindow*)gens_window, s);
-}
-
-/**
- * SetWindowVisibility(): Sets window visibility.
- * @param visibility 0 to hide; anything else to show.
- */
-void SetWindowVisibility (int visibility)
-{
-	if (visibility)
-		gtk_widget_show(gens_window);
-	else
-		gtk_widget_hide(gens_window);
-}
 
 /**
  * update_SDL_events(): Check for SDL events.

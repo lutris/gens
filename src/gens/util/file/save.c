@@ -36,8 +36,9 @@
 #include "lc89510.h"
 #include "cd_file.h"
 #include "vdp_32x.h"
-#include "support.h"
 #include "ui_proxy.h"
+
+#include "ui-common.h"
 
 // GENS Re-Recording
 // fatal_mp3_error indicates an error occurred while reading an MP3 for a Sega CD game.
@@ -70,86 +71,60 @@ char BRAM_Dir[1024] = "";
 unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
 
 
-int
-Change_File_S (char *Dest, char *Dir)
+/**
+ * Change_File_S(): Select a savestate to save.
+ * @param Dest Destination buffer for the filename.
+ * @param Dir ???
+ * @return 1 if a file was selected.
+ */
+int Change_File_S (char *Dest, char *Dir)
 {
-  gchar *filename = NULL;
-  GtkWidget *widget;
-  gint res;
-  widget =
-    create_file_chooser_dialog ("Save state", GTK_FILE_CHOOSER_ACTION_SAVE);
-//      fileselection_set_dir (fd.filesel, Rom_Dir);
-  addStateFilter (widget);
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-    }
-  gtk_widget_destroy (widget);
-
-  if (filename != NULL)
-    {
-      strcpy (Dest, filename);
-      g_free (filename);
-      return 1;
-    }
-  return 0;
+	char filename[GENS_PATH_MAX];
+	
+	if (UI_SaveFile("Save Savetate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
+		return 0;
+	
+	// Filename selected for the savestate.
+	strcpy(Dest, filename);
+	return 1;
 }
 
 
-int
-Change_File_L (char *Dest, char *Dir)
+/**
+ * Change_File_L(): Select a savestate to load.
+ * @param Dest Destination buffer for the filename.
+ * @param Dir ???
+ * @return 1 if a file was selected.
+ */
+int Change_File_L (char *Dest, char *Dir)
 {
-  gchar *filename = NULL;
-  GtkWidget *widget;
-  gint res;
-  widget =
-    create_file_chooser_dialog ("Load state", GTK_FILE_CHOOSER_ACTION_OPEN);
-//      fileselection_set_dir (fd.filesel, Rom_Dir);
-  addStateFilter (widget);
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-    }
-  gtk_widget_destroy (widget);
-
-  if (filename)
-    {
-      strcpy (Dest, filename);
-      g_free (filename);
-      return 1;
-    }
-  return 0;
+	char filename[GENS_PATH_MAX];
+	
+	if (UI_OpenFile("Load Savestate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
+		return 0;
+	
+	// Filename selected for the savestate.
+	strcpy(Dest, filename);
+	return 1;
 }
 
-int
-Change_File_L_CD (char *Dest, char *Dir)
+
+/**
+ * Change_File_L_CD(): Select a CD image to load. (Used for multi-disc SegaCD games.)
+ * @param Dest Destination buffer for the filename.
+ * @param Dir ???
+ * @return 1 if a file is selected.
+ */
+int Change_File_L_CD (char *Dest, char *Dir)
 {
-
-  gchar *filename = NULL;
-  GtkWidget *widget;
-  gint res;
-  widget =
-    create_file_chooser_dialog ("Load SegaCD image file",
-				GTK_FILE_CHOOSER_ACTION_OPEN);
-  addIsoFilter (widget);
-//      fileselection_set_dir (fd.filesel, Rom_Dir);
-  addStateFilter (widget);
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-    }
-  gtk_widget_destroy (widget);
-
-  if (filename)
-    {
-      strcpy (Dest, filename);
-      g_free (filename);
-      return 1;
-    }
-  return 0;
+	char filename[GENS_PATH_MAX];
+	
+	if (UI_OpenFile("Load SegaCD Disc Image", NULL /*Rom_Dir*/, CDImage, filename) != 0)
+		return 0;
+	
+	// Filename selected for the CD image.
+	strcpy(Dest, filename);
+	return 1;
 }
 
 /*int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
@@ -2260,43 +2235,27 @@ Save_Config (char *File_Name)
 }
 
 
-
-int
-Save_As_Config ()
+/**
+ * Save_As_Config(): Save the current configuration using a user-selected filename.
+ * @return 1 if a file was selected.
+ */
+int Save_As_Config(void)
 {
-  char Name[2048];
-  GtkWidget *widget;
-  gint res;
-
-  widget =
-    create_file_chooser_dialog ("Save Config As",
-				GTK_FILE_CHOOSER_ACTION_SAVE);
-  addCfgFilter (widget);
-
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-      char* filename;
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-      strncpy (Name, filename, 2048);
-      g_free(filename);
-    }
-    else {
-    	strcpy(Name, "\n");
-    }
-  gtk_widget_destroy (widget);
-  if (res == GTK_RESPONSE_CANCEL)
-  	return 0;
-
-  if (strlen (Name))
-    {
-      Save_Config (Name);
-      strcpy (Str_Tmp, "config saved in ");
-      strcat (Str_Tmp, Name);
-      Put_Info (Str_Tmp, 2000);
-      return 1;
-    }
-  return 0;
+	char filename[GENS_PATH_MAX];
+	
+	if (UI_SaveFile("Save Config As", NULL, ConfigFile, filename) != 0)
+		return 0;
+	
+	// Make sure a filename was actually selected.
+	if (strlen(filename) == 0)
+		return 0;
+	
+	// Filename selected for the config file.
+	Save_Config(filename);
+	strcpy (Str_Tmp, "config saved in ");
+	strcat (Str_Tmp, filename);
+	Put_Info (Str_Tmp, 2000);
+	return 1;
 }
 
 
@@ -2664,33 +2623,28 @@ Load_Config (char *File_Name, void *Game_Active)
 }
 
 
-int
-Load_As_Config (void *Game_Active)
+/**
+ * Load_As_Config(): Load a user-selected configuration file.
+ * @param Game_Active ???
+ * @return 1 if a file was selected.
+ */
+int Load_As_Config(void *Game_Active)
 {
-  GtkWidget *widget;
-  gint res;
-  widget = create_file_chooser_dialog ("Load Config", GTK_FILE_CHOOSER_ACTION_OPEN);
-  addCfgFilter (widget);
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-  	  char* filename;
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-
-  if (res == GTK_RESPONSE_CANCEL)
-  	return 0;
-  if (strlen (filename))
-    {
-      Load_Config (filename, Game_Active);
-      strcpy (Str_Tmp, "config loaded from ");
-      strcat (Str_Tmp, filename);
-      Put_Info (Str_Tmp, 2000);
-      g_free (filename);
-      return 1;
-    }
-   }
-  gtk_widget_destroy (widget);
-  return 0;
+	char filename[GENS_PATH_MAX];
+	
+	if (UI_OpenFile("Load Config", NULL, ConfigFile, filename) != 0)
+		return 0;
+	
+	// Make sure a filename was actually selected.
+	if (strlen(filename) == 0)
+		return 0;
+	
+	// Filename selected for the config file.
+	Load_Config (filename, Game_Active);
+	strcpy (Str_Tmp, "config loaded from ");
+	strcat (Str_Tmp, filename);
+	Put_Info (Str_Tmp, 2000);
+	return 1;
 }
 
 

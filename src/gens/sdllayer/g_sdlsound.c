@@ -11,7 +11,6 @@
 #include "vdp_io.h"
 #include "pcm.h"
 #include "misc.h"		// for Have_MMX flag
-#include "support.h"
 
 int Seg_To_Buffer = 8; // for frame skip
 int Seg_L[882], Seg_R[882];

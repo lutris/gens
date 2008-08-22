@@ -631,7 +631,7 @@ if (Genesis_Started)
                else
                        sprintf(Str_Tmp, "Gens - Genesis : %s", Game->Rom_Name_W);
 
-               SetWindowText( Str_Tmp);
+               UI_Set_Window_Title( Str_Tmp);
        }
        else if (_32X_Started)
        {
@@ -640,7 +640,7 @@ if (Genesis_Started)
                else
                        sprintf(Str_Tmp, "Gens - 32X (NTSC) : %s", Game->Rom_Name_W);
 
-               SetWindowText( Str_Tmp);
+               UI_Set_Window_Title( Str_Tmp);
        }
        else if (SegaCD_Started)
        {
@@ -649,7 +649,7 @@ if (Genesis_Started)
                else
                        sprintf(Str_Tmp, "Gens - SegaCD : %s", Rom_Name);
 
-               SetWindowText( Str_Tmp);
+               UI_Set_Window_Title( Str_Tmp);
        }
 
 }

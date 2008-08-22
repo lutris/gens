@@ -7,9 +7,10 @@
 #include "mem_m68k.h"
 #include "gens.h"
 #include "ym2612.h"
-#include "support.h"
 #include "psg.h"
 #include "g_sdldraw.h"
+
+#include "ui-common.h"
 
 FILE *GYM_File;
 int GYM_Dumping = 0;
@@ -158,65 +159,53 @@ Stop_GYM_Dump (void)
 }
 
 
-int
-Start_Play_GYM (void)
+/**
+ * Start_Play_GYM(): Play a GYM file.
+ * @return 1 if a GYM file was loaded.
+ */
+int Start_Play_GYM(void)
 {
-  char Name[1024];
-
-  if (Game || !(Sound_Enable))
-    return (0);
-
-  if (GYM_Playing)
-    {
-      Put_Info ("Already playing GYM", 1000);
-      return 0;
-    }
-
-  End_Sound ();
-  CPU_Mode = 0;
-
-  if (!Init_Sound ())
-    {
-      Sound_Enable = 0;
-      Put_Info ("Can't initialise SDL Sound", 1000);
-      return 0;
-    }
-
-  Play_Sound ();
-
-
-  memset (Name, 0, 1024);
-
-  gchar *filename = NULL;
-  GtkWidget *widget;
-  gint res;
-  widget =
-    create_file_chooser_dialog ("Load GYM file",
-				GTK_FILE_CHOOSER_ACTION_OPEN);
-//      fileselection_set_dir (fd.filesel, Rom_Dir);
-  addGymFilter (widget);
-  res = gtk_dialog_run (GTK_DIALOG (widget));
-  if (res == GTK_RESPONSE_OK)
-    {
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
-    }
-  gtk_widget_destroy (widget);
-  if (filename)
-    {
-      GYM_File = fopen (filename, "r");
-      g_free (filename);
-      if (!GYM_File)
-	return 0;
-    }
-  else
-    return 0;
-
-  YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-  PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
-  GYM_Playing = 1;
-
-  Put_Info ("Starting to play GYM", 1000);
-  return 1;
+	char filename[GENS_PATH_MAX];
+	
+	if (Game || !(Sound_Enable))
+		return 0;
+	
+	if (GYM_Playing)
+	{
+		Put_Info ("Already playing GYM", 1000);
+		return 0;
+	}
+	
+	End_Sound();
+	CPU_Mode = 0;
+	
+	if (!Init_Sound())
+	{
+		Sound_Enable = 0;
+		Put_Info ("Can't initialise SDL Sound", 1000);
+		return 0;
+	}
+	
+	Play_Sound ();
+	
+	if (UI_OpenFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile, filename) != 0)
+		return 0;
+	
+	// Make sure a filename was actually selected.
+	if (strlen(filename) == 0)
+		return 0;
+	
+	// Attempt to open the GYM file.
+	GYM_File = fopen (filename, "r");
+	if (!GYM_File)
+		return 0;
+	
+	YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+	PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+	GYM_Playing = 1;
+	
+	Put_Info ("Starting to play GYM", 1000);
+	return 1;
 }
 
 

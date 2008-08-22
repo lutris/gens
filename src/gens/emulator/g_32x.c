@@ -26,7 +26,10 @@
 #include "ggenie.h"
 #include "pwm.h"
 #include "gym.h"
-#include "support.h"
+
+
+#include "ui-common.h"
+
 
 #ifdef __RESULT__
 #define SH2_EXEC(cycM, cycS)						\
@@ -47,7 +50,7 @@ void Error_32X_BIOS(const char *Str_BIOS)
 {
 	char Str_Err[256];
 	sprintf(Str_Err, "Your 32X BIOS files aren't correctly configured:\n%s\nGo to menu 'Options -> BIOS/Misc Files' to set them up.", Str_BIOS);
-	open_msgbox(Str_Err);
+	UI_MsgBox(Str_Err, "BIOS Configuration Error");
 }
 
 /**
@@ -185,7 +188,7 @@ int Init_32X (struct Rom *MD_Rom)
 		sprintf (Str_Err, "Gens - 32X (PAL) : %s", MD_Rom->Rom_Name_W);
 	else
 		sprintf (Str_Err, "Gens - 32X (NTSC) : %s", MD_Rom->Rom_Name_W);
-	SetWindowText (Str_Err);
+	UI_Set_Window_Title(Str_Err);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
