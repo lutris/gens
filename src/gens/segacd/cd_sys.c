@@ -973,67 +973,65 @@ CDD_Def (void)
  **************************/
 
 
-void
-Write_CD_Audio (short *Buf, int rate, int channel, int length)
+void Write_CD_Audio (short *Buf, int rate, int channel, int length)
 {
-  unsigned int length_src, length_dst;
-  unsigned int pos_src, pas_src;
-  unsigned int tmp;
-
-  if (rate == 0)
-    return;
-  if (Sound_Rate == 0)
-    return;
-
-  if (CD_Audio_Starting)
-    {
-      CD_Audio_Starting = 0;
-      memset (CD_Audio_Buffer_L, 0, 4096 * 4);
-      memset (CD_Audio_Buffer_R, 0, 4096 * 4);
-      CD_Audio_Buffer_Write_Pos = (CD_Audio_Buffer_Read_Pos + 2000) & 0xFFF;
-    }
-
-  length_src = rate / 75;	// 75th of a second
-  length_dst = Sound_Rate / 75;	// 75th of a second
-
-  pas_src = (length_src << 16) / length_dst;
-  pos_src = 0;
-
+	unsigned int length_src, length_dst;
+	unsigned int pos_src, pas_src;
+	unsigned int tmp;
+	
+	if (rate == 0)
+		return;
+	if (Sound_Rate == 0)
+		return;
+	
+	if (CD_Audio_Starting)
+	{
+		CD_Audio_Starting = 0;
+		memset(CD_Audio_Buffer_L, 0, 4096 * 4);
+		memset(CD_Audio_Buffer_R, 0, 4096 * 4);
+		CD_Audio_Buffer_Write_Pos = (CD_Audio_Buffer_Read_Pos + 2000) & 0xFFF;
+	}
+	
+	length_src = rate / 75;		// 75th of a second
+	length_dst = Sound_Rate / 75;	// 75th of a second
+	
+	pas_src = (length_src << 16) / length_dst;
+	pos_src = 0;
+	
 #ifdef DEBUG_CD
-  fprintf (debug_SCD_file, "\n*********  Write Pos = %d    ",
-	   CD_Audio_Buffer_Write_Pos);
+	fprintf(debug_SCD_file, "\n*********  Write Pos = %d    ",
+		CD_Audio_Buffer_Write_Pos);
 #endif
-
-  if (channel == 2)
-    {
-      while (length_dst > 0)
+	
+	if (channel == 2)
 	{
-	  length_dst--;
-	  tmp = pos_src >> 15;	/* the same as "(pos_src >> 16) * 2", but faster */
-	  CD_Audio_Buffer_L[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
-	  CD_Audio_Buffer_R[CD_Audio_Buffer_Write_Pos] = Buf[tmp + 1];
-	  CD_Audio_Buffer_Write_Pos++;
-	  CD_Audio_Buffer_Write_Pos &= 0xFFF;
-	  pos_src += pas_src;
+		while (length_dst > 0)
+		{
+			length_dst--;
+			tmp = pos_src >> 15;	/* the same as "(pos_src >> 16) * 2", but faster */
+			CD_Audio_Buffer_L[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
+			CD_Audio_Buffer_R[CD_Audio_Buffer_Write_Pos] = Buf[tmp + 1];
+			CD_Audio_Buffer_Write_Pos++;
+			CD_Audio_Buffer_Write_Pos &= 0xFFF;
+			pos_src += pas_src;
+		}
 	}
-
-    }
-  else
-    {
-      while (length_dst > 0)
+	else
 	{
-	  length_dst--;
-	  tmp = pos_src >> 16;
-	  CD_Audio_Buffer_L[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
-	  CD_Audio_Buffer_R[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
-	  CD_Audio_Buffer_Write_Pos++;
-	  CD_Audio_Buffer_Write_Pos &= 0xFFF;
-	  pos_src += pas_src;
+		while (length_dst > 0)
+		{
+			length_dst--;
+			tmp = pos_src >> 16;
+			CD_Audio_Buffer_L[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
+			CD_Audio_Buffer_R[CD_Audio_Buffer_Write_Pos] = Buf[tmp];
+			CD_Audio_Buffer_Write_Pos++;
+			CD_Audio_Buffer_Write_Pos &= 0xFFF;
+			pos_src += pas_src;
+		}
 	}
-    }
-
+	
 #ifdef DEBUG_CD
-  fprintf (debug_SCD_file, "Write Pos 2 = %d\n\n", CD_Audio_Buffer_Write_Pos);
+	fprintf (debug_SCD_file, "Write Pos 2 = %d\n\n", CD_Audio_Buffer_Write_Pos);
 #endif
 }
 
