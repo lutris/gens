@@ -1038,70 +1038,64 @@ Write_CD_Audio (short *Buf, int rate, int channel, int length)
 }
 
 
-void
-Update_CD_Audio (int **buf, int length)
+void Update_CD_Audio(int **buf, int length)
 {
-  int *Buf_L, *Buf_R;
-  int diff;
-  int i;
-
-  Buf_L = buf[0];
-  Buf_R = buf[1];
-
-  if (CDD.Control & 0x0100)
-    return;
-  if (!(SCD.Status_CDC & 1))
-    return;
-  if (CD_Audio_Starting)
-    return;
-
+	int *Buf_L, *Buf_R;
+	int diff;
+	int i;
+	
+	Buf_L = buf[0];
+	Buf_R = buf[1];
+	
+	if (CDD.Control & 0x0100)
+		return;
+	if (!(SCD.Status_CDC & 1))
+		return;
+	if (CD_Audio_Starting)
+		return;
+	
 #ifdef DEBUG_CD
-  fprintf (debug_SCD_file, "\n*********  Read Pos Normal = %d     ",
-	   CD_Audio_Buffer_Read_Pos);
+	fprintf(debug_SCD_file, "\n*********  Read Pos Normal = %d     ",
+		CD_Audio_Buffer_Read_Pos);
 #endif
-
-  if (CD_Audio_Buffer_Write_Pos < CD_Audio_Buffer_Read_Pos)
-    {
-      diff = CD_Audio_Buffer_Write_Pos + (4096) - CD_Audio_Buffer_Read_Pos;
-    }
-  else
-    {
-      diff = CD_Audio_Buffer_Write_Pos - CD_Audio_Buffer_Read_Pos;
-    }
-
-  if (diff < 500)
-    CD_Audio_Buffer_Read_Pos -= 2000;
-  else if (diff > 3500)
-    CD_Audio_Buffer_Read_Pos += 2000;
-
+	
+	if (CD_Audio_Buffer_Write_Pos < CD_Audio_Buffer_Read_Pos)
+		diff = CD_Audio_Buffer_Write_Pos + (4096) - CD_Audio_Buffer_Read_Pos;
+	else
+		diff = CD_Audio_Buffer_Write_Pos - CD_Audio_Buffer_Read_Pos;
+	
+	if (diff < 500)
+		CD_Audio_Buffer_Read_Pos -= 2000;
+	else if (diff > 3500)
+		CD_Audio_Buffer_Read_Pos += 2000;
 #ifdef DEBUG_CD
-  else
-    fprintf (debug_SCD_file, " pas de modifs   ");
+	else
+		fprintf(debug_SCD_file, " pas de modifs   ");
 #endif
-
-  CD_Audio_Buffer_Read_Pos &= 0xFFF;
-
+	
+	CD_Audio_Buffer_Read_Pos &= 0xFFF;
+	
 #ifdef DEBUG_CD
-  fprintf (debug_SCD_file, "Read Pos = %d   ", CD_Audio_Buffer_Read_Pos);
+	fprintf(debug_SCD_file, "Read Pos = %d   ", CD_Audio_Buffer_Read_Pos);
 #endif
-
-  if (CDDA_Enable)
-    {
-      for (length--, i = 0; length > 0; length--, i++)
+	
+	if (CDDA_Enable)
 	{
-	  Buf_L[i] += CD_Audio_Buffer_L[CD_Audio_Buffer_Read_Pos];
-	  Buf_R[i] += CD_Audio_Buffer_R[CD_Audio_Buffer_Read_Pos];
-	  CD_Audio_Buffer_Read_Pos++;
-	  CD_Audio_Buffer_Read_Pos &= 0xFFF;
+		for (length--, i = 0; length > 0; length--, i++)
+		{
+			Buf_L[i] += CD_Audio_Buffer_L[CD_Audio_Buffer_Read_Pos];
+			Buf_R[i] += CD_Audio_Buffer_R[CD_Audio_Buffer_Read_Pos];
+			CD_Audio_Buffer_Read_Pos++;
+			CD_Audio_Buffer_Read_Pos &= 0xFFF;
+		}
 	}
-    }
-  else
-    {
-      CD_Audio_Buffer_Read_Pos += length;
-      CD_Audio_Buffer_Read_Pos &= 0xFFF;
-    }
-
+	else
+	{
+		CD_Audio_Buffer_Read_Pos += length;
+		CD_Audio_Buffer_Read_Pos &= 0xFFF;
+	}
+	
 #ifdef DEBUG_CD
-  fprintf (debug_SCD_file, "Read Pos 2 = %d\n\n", CD_Audio_Buffer_Read_Pos);
+	fprintf (debug_SCD_file, "Read Pos 2 = %d\n\n", CD_Audio_Buffer_Read_Pos);
 #endif
 }
