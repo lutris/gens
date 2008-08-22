@@ -191,7 +191,7 @@ static int Build_Language_String (void)
  */
 void Sleep (int i)
 {
-	usleep(i);
+	usleep(i * 1000);
 }
 
 
