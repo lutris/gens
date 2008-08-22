@@ -2,6 +2,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include "g_main.h"
 #include "timer.h"
@@ -190,10 +191,7 @@ static int Build_Language_String (void)
  */
 void Sleep (int i)
 {
-	// i : millisecond
-	struct timespec rqtp = { 0, 0 };
-	rqtp.tv_nsec *= 1000000;
-	nanosleep (&rqtp, NULL);
+	usleep(i);
 }
 
 
