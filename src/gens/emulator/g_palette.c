@@ -33,6 +33,23 @@ inline int Constrain_Color_Component(int c)
 
 
 /**
+ * CalculateGrayScale_16B(): Calculate the grayscale color values for 16-bit colors.
+ * @param r Red component.
+ * @param g Green component.
+ * @param b Blue component.
+ * @return Grayscale value.
+ */
+inline int CalculateGrayScale_16B(int r, int g, int b)
+{
+	// Standard grayscale computation: Y = R*0.30 + G*0.59 + B*0.11
+	r = (r * (unsigned int) (0.30 * 65536.0)) >> 16;
+	g = (g * (unsigned int) (0.59 * 65536.0)) >> 16;
+	b = (b * (unsigned int) (0.11 * 65536.0)) >> 16;
+	return (r + g + b);
+}
+
+
+/**
  * Recalculate_Palettes(): Recalculates the MD and 32X palettes for brightness, contrast, and various effects.
  */
 void Recalculate_Palettes (void)
@@ -169,11 +186,7 @@ void Recalculate_Palettes (void)
 			
 			b = ((Palette[i] >> 0) & 0x1F) << 1;
 			
-			r = (r * (unsigned int) (0.30 * 65536.0)) >> 16;
-			g = (g * (unsigned int) (0.59 * 65536.0)) >> 16;
-			b = (b * (unsigned int) (0.11 * 65536.0)) >> 16;
-			
-			r = g = b = r + g + b;
+			r = g = b = CalculateGrayScale_16B(r, g, b);
 			
 			if (Mode_555 & 1)
 			{
@@ -207,11 +220,7 @@ void Recalculate_Palettes (void)
 			
 			b = ((_32X_Palette_16B[i] >> 0) & 0x1F) << 1;
 			
-			r = (r * (unsigned int) (0.30 * 65536.0)) >> 16;
-			g = (g * (unsigned int) (0.59 * 65536.0)) >> 16;
-			b = (b * (unsigned int) (0.11 * 65536.0)) >> 16;
-			
-			r = g = b = (r + g + b);
+			r = g = b = CalculateGrayScale_16B(r, g, b);
 			
 			if (Mode_555 & 1)
 			{
@@ -250,6 +259,5 @@ void Recalculate_Palettes (void)
 	for (i = 0; i < 0x100; i++)
 	{
 		_32X_VDP_CRam_Ajusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
-	
 	}
 }
