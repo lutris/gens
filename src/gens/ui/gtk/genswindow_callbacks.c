@@ -522,6 +522,24 @@ void on_CPUMenu_SegaCD_PerfectSync_activate(GtkMenuItem *menuitem, gpointer user
 
 
 /**
+ * Sound, Enable
+ */
+void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	Change_Sound(gtk_check_menu_item_get_active(menuitem));
+	// TODO: Synchronize the GTK+ UI for the other sound settings.
+	/*
+	if (Sound_Enable)
+		sync_gens_ui (UPDATE_GTK_SOUNDOFF);
+	else
+		sync_gens_ui (UPDATE_GTK_SOUNDON);
+	*/
+}
+
+
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)

@@ -8,7 +8,7 @@ int Change_Debug(int Debug_Mode);
 int Change_Country_Order(int Num);
 int Change_Country(int Num);
 int Change_SegaCD_PerfectSync(newPerfectSync);
-int	Change_Sound(void);
+int Change_Sound(int newSound);
 int Change_Sample_Rate(int Rate);
 int Change_Sound_Stereo(void);
 int Change_Z80(void);

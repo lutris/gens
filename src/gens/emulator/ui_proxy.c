@@ -517,54 +517,57 @@ Change_Sample_Rate (int Rate)
   return (1);
 }
 
-int
-Change_Sound (void)
+
+/**
+ * Change_Sound(): Enable or Disable sound.
+ * @param newSound New sound enable setting.
+ * @return 1 on success.
+ */
+int Change_Sound(int newSound)
 {
-  if (Sound_Enable)
-    {
-      End_Sound ();
-
-      Sound_Enable = 0;
-      YM2612_Enable = 0;
-      PSG_Enable = 0;
-      DAC_Enable = 0;
-      PCM_Enable = 0;
-      PWM_Enable = 0;
-      CDDA_Enable = 0;
-
-    MESSAGE_L ("Sound Disabled", "Sound Disabled", 1500)}
-  else
-    {
-      if (!Init_Sound ())
+	Sound_Enable = newSound;
+	if (!Sound_Enable)
 	{
-	  Sound_Enable = 0;
-	  YM2612_Enable = 0;
-	  PSG_Enable = 0;
-	  DAC_Enable = 0;
-	  PCM_Enable = 0;
-	  PWM_Enable = 0;
-	  CDDA_Enable = 0;
-
-	  return 0;
+		End_Sound ();
+		YM2612_Enable = 0;
+		PSG_Enable = 0;
+		DAC_Enable = 0;
+		PCM_Enable = 0;
+		PWM_Enable = 0;
+		CDDA_Enable = 0;
+		MESSAGE_L ("Sound Disabled", "Sound Disabled", 1500);
 	}
-
-      Sound_Enable = 1;
-      Play_Sound ();
-
-      if (!(Z80_State & 1))
-	Change_Z80 ();
-
-      YM2612_Enable = 1;
-      PSG_Enable = 1;
-      DAC_Enable = 1;
-      PCM_Enable = 1;
-      PWM_Enable = 1;
-      CDDA_Enable = 1;
-
-    MESSAGE_L ("Sound Enabled", "Sound Enabled", 1500)}
-
-
-  return 1;
+	else
+	{
+		if (!Init_Sound())
+		{
+			// Error initializing sound.
+			Sound_Enable = 0;
+			YM2612_Enable = 0;
+			PSG_Enable = 0;
+			DAC_Enable = 0;
+			PCM_Enable = 0;
+			PWM_Enable = 0;
+			CDDA_Enable = 0;
+			return 0;
+		}
+		
+		Play_Sound ();
+		
+		if (!(Z80_State & 1))
+			Change_Z80();
+		
+		YM2612_Enable = 1;
+		PSG_Enable = 1;
+		DAC_Enable = 1;
+		PCM_Enable = 1;
+		PWM_Enable = 1;
+		CDDA_Enable = 1;
+		
+		MESSAGE_L ("Sound Enabled", "Sound Enabled", 1500);
+	}
+	
+	return 1;
 }
 
 

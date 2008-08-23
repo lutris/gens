@@ -49,6 +49,7 @@ void create_genswindow_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUG
 void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container);
 #endif
+void create_genswindow_SoundMenu(GtkWidget *container);
 void create_genswindow_HelpMenu(GtkWidget *container);
 
 // Set to 0 to temporarily disable callbacks.
@@ -233,6 +234,7 @@ void create_genswindow_menubar(GtkWidget *container)
 	create_genswindow_FileMenu(MenuBar);
 	create_genswindow_GraphicsMenu(MenuBar);
 	create_genswindow_CPUMenu(MenuBar);
+	create_genswindow_SoundMenu(MenuBar);
 	create_genswindow_HelpMenu(MenuBar);
 }
 
@@ -819,6 +821,34 @@ void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container)
 	}
 }
 #endif
+
+
+/**
+ * create_genswindow_SoundMenu(): Create the Sound menu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_SoundMenu(GtkWidget *container)
+{
+	GtkWidget *Sound;			GtkWidget *Sound_Icon;
+	GtkWidget *SoundMenu;
+	GtkWidget *SoundMenu_Enable;
+	GtkWidget *SoundMenu_Separator1;
+	
+	// Sound
+	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
+	
+	// Menu object for the SoundMenu
+	SoundMenu = gtk_menu_new();
+	gtk_widget_set_name(SoundMenu, "SoundMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Sound), SoundMenu);
+	
+	// Enable
+	NewMenuItem_Check(SoundMenu_Enable, "_Enable", "SoundMenu_Enable", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_Enable, on_SoundMenu_Enable_activate);
+	
+	// Separator
+	NewMenuSeparator(SoundMenu_Separator1, "SoundMenu_Separator1", SoundMenu);
+}
 
 
 /**

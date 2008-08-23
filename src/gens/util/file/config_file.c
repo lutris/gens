@@ -468,7 +468,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Only load the IC sound settings if sound can be initialized.
 	new_val = GetPrivateProfileInt ("Sound", "State", 1, Conf_File);
 	if (new_val == Sound_Enable ||
-	    (new_val != Sound_Enable && Change_Sound()))
+	    (new_val != Sound_Enable && Change_Sound(1)))
 	{
 		YM2612_Enable = GetPrivateProfileInt("Sound", "YM2612 State", 1, Conf_File);
 		PSG_Enable = GetPrivateProfileInt("Sound", "PSG State", 1, Conf_File);
