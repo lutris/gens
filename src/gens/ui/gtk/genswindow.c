@@ -35,6 +35,7 @@ void create_genswindow_GraphicsMenu(GtkWidget *container);
 void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container);
 void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container);
 void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container);
+void create_genswindow_GraphicsMenu_FrameSkipSubMenu(GtkWidget *container);
 
 
 // Set to 0 to temporarily disable callbacks.
@@ -464,7 +465,8 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	// Frame Skip
 	NewMenuItem_Icon(GraphicsMenu_FrameSkip, "Frame Skip", "GraphicsMenu_FrameSkip", GraphicsMenu,
 			 GraphicsMenu_FrameSkip_Icon, "2rightarrow.png");
-	// TODO: Frame Skip submenu
+	// Frame Skip submenu
+	create_genswindow_GraphicsMenu_FrameSkipSubMenu(GraphicsMenu_FrameSkip);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator5, "GraphicsMenu_Separator5", GraphicsMenu);
@@ -551,7 +553,7 @@ void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container)
 	for (i = 0; i < 3; i++)
 	{
 		sprintf(bppName, "%d", bpp[i]);
-		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", bppName);
+		sprintf(ObjName, "GraphicsMenu_bpp_SubMenu_%s", bppName);
 		NewMenuItem_Radio(bppItem, bppName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), bppGroup);
 		g_signal_connect((gpointer)bppItem, "activate",
 				 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_bppItem_activate),
@@ -613,9 +615,44 @@ void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container)
 	// Create the render entries.
 	for (i = 0; i < 12; i++)
 	{
-		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", RenderTag[i]);
+		sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%s", RenderTag[i]);
 		NewMenuItem_Radio(RenderItem, Render[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), RenderGroup);
 		// TODO: Somehow pass the render ID using the parameter.
 		//g_signal_connect((gpointer)RenderItem, G_CALLBACK(on_RenderItem_activate), NULL);
+	}
+}
+
+
+/**
+ * create_genswindow_GraphicsMenu_FrameSkipSubMenu(): Create the frame skip submenu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_GraphicsMenu_FrameSkipSubMenu(GtkWidget *container)
+{
+	GtkWidget *SubMenu;
+	GtkWidget *FSItem;
+	GSList *FSGroup = NULL;
+	
+	int i;
+	char ObjName[64];
+	char FSName[8];
+	
+	// Create the submenu.
+	SubMenu = gtk_menu_new();
+	gtk_widget_set_name(SubMenu, "GraphicsMenu_bpp_FrameSkip_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	
+	// Create the frame skip entries.
+	for (i = -1; i <= 8; i++)
+	{
+		if (i >= 0)
+			sprintf(FSName, "%d", i);
+		else
+			strcpy(FSName, "Auto");
+		sprintf(ObjName, "GraphicsMenu_FrameSkip_SubMenu_%s", FSName);
+		NewMenuItem_Radio(FSItem, FSName, ObjName, SubMenu, (i == -1 ? TRUE : FALSE), FSGroup);
+		g_signal_connect((gpointer)FSItem, "activate",
+				 G_CALLBACK(on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate),
+				 GINT_TO_POINTER(i));
 	}
 }

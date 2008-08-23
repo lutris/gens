@@ -242,7 +242,7 @@ void on_GraphicsMenu_OpenGL_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 /**
  * Graphics, Resolution, #x# or Custom
- * TODO: Use this for SDL mode, not just OpenGL mode.
+ * TODO: Use this for SDL mode too, not just for OpenGL mode.
  */
 void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
@@ -271,17 +271,21 @@ void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, g
 }
 
 
+/**
+ * Graphics, Bits per pixel, #
+ * TODO: Use this for SDL mode too, not just for OpenGL mode.
+ */
 void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	int bpp = GPOINTER_TO_INT(user_data);
 	
-	if (!do_callbacks)// || !Opengl)
+	if (!do_callbacks || !Opengl)
 		return;
 	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
 		return;
 	
 	// Set the bits per pixel.
-	//Set_Bpp(bpp);
+	Set_Bpp(bpp);
 	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
 }
 
@@ -305,6 +309,21 @@ void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_d
 		return;
 	
 	Set_Sprite_Limit(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
+/**
+ * Graphics, Frame Skip, #
+ */
+void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	int fs = GPOINTER_TO_INT(user_data);
+	
+	if (!do_callbacks)
+		return;
+	
+	// Set the frame skip value.
+	Set_Frame_Skip(fs);
 }
 
 

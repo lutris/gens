@@ -2,8 +2,8 @@
 #define UI_PROXY_H
 
 int Set_Sprite_Limit(int newLimit);
-int Set_Current_State(int Num);
-int Set_Frame_Skip(int Num);
+int Set_Current_State(int slot);
+int Set_Frame_Skip(int frames);
 int Change_Debug(int Debug_Mode);
 int Change_Country_Order(int Num);
 int Change_Country(int Num);

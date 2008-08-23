@@ -41,7 +41,7 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data);
-
+void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 #ifdef __cplusplus
 }

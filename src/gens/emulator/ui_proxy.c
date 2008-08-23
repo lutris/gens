@@ -925,34 +925,49 @@ int Change_VSync(int newVSync)
 		return 1;
 }
 
-      int Set_Frame_Skip (int Num)
-      {
-	Frame_Skip = Num;
 
+/**
+ * Set_Frame_Skip(): Set the frame skip setting.
+ * @param frames Frames to skip. (-1 == Auto)
+ * @return 1 on success.
+ */
+int Set_Frame_Skip(int frames)
+{
+	Frame_Skip = frames;
+	
 	if (Frame_Skip != -1)
-	  MESSAGE_NUM_L ("Frame skip set to %d", "Frame skip set to %d",
-			 Frame_Skip, 1500)
-	  else
-	  MESSAGE_L ("Frame skip set to Auto", "Frame skip set to Auto", 1500)
-	    return (1);
-      }
-
-      int Set_Current_State (int Num)
-      {
-	FILE *f;
-
-	Current_State = Num;
-
-	if ((f = Get_State_File ()))
-	  {
-	    fclose (f);
-	  MESSAGE_NUM_L ("SLOT %d [OCCUPIED]", "SLOT %d [OCCUPIED]",
-			   Current_State, 1500)}
+		MESSAGE_NUM_L("Frame skip set to %d", "Frame skip set to %d", Frame_Skip, 1500)
 	else
-	  {
-	  MESSAGE_NUM_L ("SLOT %d [EMPTY]", "SLOT %d [EMPTY]",
-			   Current_State, 1500)}
-
-
+		MESSAGE_L("Frame skip set to Auto", "Frame skip set to Auto", 1500)
 	return 1;
-      }
+}
+
+/**
+ * Set_Current_State(): Set the current savestate slot.
+ * @param slot Savestate slot.
+ * @return 1 on success.
+ */
+int Set_Current_State(int slot)
+{
+	FILE *f;
+	
+	// Make sure the slot number is in bounds.
+	if (slot < 0 || slot > 9)
+		return 0;
+	
+	// Set the new savestate slot number.
+	Current_State = slot;
+	
+	// TODO: Change this to just check if the file exists.
+	if ((f = Get_State_File()))
+	{
+		fclose(f);
+		MESSAGE_NUM_L("SLOT %d [OCCUPIED]", "SLOT %d [OCCUPIED]", Current_State, 1500);
+	}
+	else
+	{
+		MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
+	}
+	
+	return 1;
+}
