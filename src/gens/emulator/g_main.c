@@ -460,7 +460,7 @@ int main (int argc, char *argv[])
 	
 	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
 	strcat(Str_Tmp, "gens.cfg");
-	Save_Config(Str_Tmp);
+	Save_Config(&Str_Tmp[0]);
 	
 	End_All ();
 	return 0;

@@ -57,6 +57,10 @@ char BRAM_Dir[1024] = "";
 unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
 
 
+// TODO: Make this a global array somewhere better.
+const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2D"};
+
+
 /**
  * Change_File_S(): Select a savestate to save.
  * @param Dest Destination buffer for the filename.
@@ -1819,405 +1823,252 @@ void Export_32X (unsigned char *Data)
 }
 
 
-int
-Save_Config (char *File_Name)
+/**
+ * Save_Config(): Save GENS configuration.
+ * @param File_Name Configuration filename.
+ */
+int Save_Config(const char *File_Name)
 {
-  char Conf_File[1024];
-
-  strcpy (Conf_File, File_Name);
-
-  WritePrivateProfileString ("General", "Rom path", Rom_Dir, Conf_File);
-  WritePrivateProfileString ("General", "Save path", State_Dir, Conf_File);
-  WritePrivateProfileString ("General", "SRAM path", SRAM_Dir, Conf_File);
-  WritePrivateProfileString ("General", "BRAM path", BRAM_Dir, Conf_File);
-  WritePrivateProfileString ("General", "Dump path", Dump_Dir, Conf_File);
-  WritePrivateProfileString ("General", "Dump GYM path", Dump_GYM_Dir,
-			     Conf_File);
-  WritePrivateProfileString ("General", "Screen Shot path", ScrShot_Dir,
-			     Conf_File);
-  WritePrivateProfileString ("General", "Patch path", Patch_Dir, Conf_File);
-  WritePrivateProfileString ("General", "IPS Patch path", IPS_Dir, Conf_File);
-
-  WritePrivateProfileString ("General", "Genesis Bios", Genesis_Bios,
-			     Conf_File);
-
-  WritePrivateProfileString ("General", "USA CD Bios", US_CD_Bios, Conf_File);
-  WritePrivateProfileString ("General", "EUROPE CD Bios", EU_CD_Bios,
-			     Conf_File);
-  WritePrivateProfileString ("General", "JAPAN CD Bios", JA_CD_Bios,
-			     Conf_File);
-
-  WritePrivateProfileString ("General", "32X 68000 Bios", _32X_Genesis_Bios,
-			     Conf_File);
-  WritePrivateProfileString ("General", "32X Master SH2 Bios",
-			     _32X_Master_Bios, Conf_File);
-  WritePrivateProfileString ("General", "32X Slave SH2 Bios", _32X_Slave_Bios,
-			     Conf_File);
-
-  WritePrivateProfileString ("General", "Rom 1", Recent_Rom[0], Conf_File);
-  WritePrivateProfileString ("General", "Rom 2", Recent_Rom[1], Conf_File);
-  WritePrivateProfileString ("General", "Rom 3", Recent_Rom[2], Conf_File);
-  WritePrivateProfileString ("General", "Rom 4", Recent_Rom[3], Conf_File);
-  WritePrivateProfileString ("General", "Rom 5", Recent_Rom[4], Conf_File);
-  WritePrivateProfileString ("General", "Rom 6", Recent_Rom[5], Conf_File);
-  WritePrivateProfileString ("General", "Rom 7", Recent_Rom[6], Conf_File);
-  WritePrivateProfileString ("General", "Rom 8", Recent_Rom[7], Conf_File);
-  WritePrivateProfileString ("General", "Rom 9", Recent_Rom[8], Conf_File);
-
-  WritePrivateProfileString ("General", "CD Drive", CDROM_DEV, Conf_File);
-  sprintf (Str_Tmp, "%d", CDROM_SPEED);
-  WritePrivateProfileString ("General", "CD Speed", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Current_State);
-  WritePrivateProfileString ("General", "State Number", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Language);
-  WritePrivateProfileString ("General", "Language", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Window_Pos.x);
-  WritePrivateProfileString ("General", "Window X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Window_Pos.y);
-  WritePrivateProfileString ("General", "Window Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Effect_Color);
-  WritePrivateProfileString ("General", "Free Mode Color", Str_Tmp,
-			     Conf_File);
-
-  sprintf (Str_Tmp, "%d", Full_Screen & 1);
-  WritePrivateProfileString ("Graphics", "Full Screen", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", FS_VSync & 1);
-  WritePrivateProfileString ("Graphics", "Full Screen VSync", Str_Tmp,
-			     Conf_File);
-  sprintf (Str_Tmp, "%d", W_VSync & 1);
-  WritePrivateProfileString ("Graphics", "Windows VSync", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Render_Mode);
-  WritePrivateProfileString ("Graphics", "Render Mode", Str_Tmp,
-			     Conf_File);
-  sprintf(Str_Tmp, "%d", Bpp);
-  WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
-  sprintf(Str_Tmp, "%d", Opengl & 1);
-  WritePrivateProfileString("Graphics", "Render Opengl", Str_Tmp, Conf_File);
-  sprintf(Str_Tmp, "%d", Width_gl);
-  WritePrivateProfileString("Graphics", "Opengl Width", Str_Tmp, Conf_File);
-  sprintf(Str_Tmp, "%d", Height_gl);
-  WritePrivateProfileString("Graphics", "Opengl Height", Str_Tmp, Conf_File);			     
-//  sprintf(Str_Tmp, "%d", gl_linear_filter);
-//  WritePrivateProfileString("Graphics", "Opengl Filter", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Stretch & 1);  
-  WritePrivateProfileString ("Graphics", "Stretch", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Blit_Soft & 1);
-  WritePrivateProfileString ("Graphics", "Software Blit", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Contrast_Level);
-  WritePrivateProfileString ("Graphics", "Contrast", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Brightness_Level);
-  WritePrivateProfileString ("Graphics", "Brightness", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Greyscale & 1);
-  WritePrivateProfileString ("Graphics", "Greyscale", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Invert_Color & 1);
-  WritePrivateProfileString ("Graphics", "Invert", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Sprite_Over & 1);
-  WritePrivateProfileString ("Graphics", "Sprite limit", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Frame_Skip);
-  WritePrivateProfileString ("Graphics", "Frame skip", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Sound_Enable & 1);
-  WritePrivateProfileString ("Sound", "State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Sound_Rate);
-  WritePrivateProfileString ("Sound", "Rate", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Sound_Stereo);
-  WritePrivateProfileString ("Sound", "Stereo", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Z80_State & 1);
-  WritePrivateProfileString ("Sound", "Z80 State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", YM2612_Enable & 1);
-  WritePrivateProfileString ("Sound", "YM2612 State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", PSG_Enable & 1);
-  WritePrivateProfileString ("Sound", "PSG State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", DAC_Enable & 1);
-  WritePrivateProfileString ("Sound", "DAC State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", PCM_Enable & 1);
-  WritePrivateProfileString ("Sound", "PCM State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", PWM_Enable & 1);
-  WritePrivateProfileString ("Sound", "PWM State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", CDDA_Enable & 1);
-  WritePrivateProfileString ("Sound", "CDDA State", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", YM2612_Improv & 1);
-  WritePrivateProfileString ("Sound", "YM2612 Improvement", Str_Tmp,
-			     Conf_File);
-  sprintf (Str_Tmp, "%d", DAC_Improv & 1);
-  WritePrivateProfileString ("Sound", "DAC Improvement", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", PSG_Improv & 1);
-  WritePrivateProfileString ("Sound", "PSG Improvement", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Country);
-  WritePrivateProfileString ("CPU", "Country", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Country_Order[0]);
-  WritePrivateProfileString ("CPU", "Prefered Country 1", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Country_Order[1]);
-  WritePrivateProfileString ("CPU", "Prefered Country 2", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Country_Order[2]);
-  WritePrivateProfileString ("CPU", "Prefered Country 3", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", SegaCD_Accurate);
-  WritePrivateProfileString ("CPU",
-			     "Perfect synchro between main and sub CPU (Sega CD)",
-			     Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", MSH2_Speed);
-  WritePrivateProfileString ("CPU", "Main SH2 Speed", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", SSH2_Speed);
-  WritePrivateProfileString ("CPU", "Slave SH2 Speed", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Fast_Blur & 1);
-  WritePrivateProfileString ("Options", "Fast Blur", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Show_FPS & 1);
-  WritePrivateProfileString ("Options", "FPS", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", FPS_Style);
-  WritePrivateProfileString ("Options", "FPS Style", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Show_Message & 1);
-  WritePrivateProfileString ("Options", "Message", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Message_Style);
-  WritePrivateProfileString ("Options", "Message Style", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Show_LED & 1);
-  WritePrivateProfileString ("Options", "LED", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Auto_Fix_CS & 1);
-  WritePrivateProfileString ("Options", "Auto Fix Checksum", Str_Tmp,
-			     Conf_File);
-  sprintf (Str_Tmp, "%d", Auto_Pause & 1);
-  WritePrivateProfileString ("Options", "Auto Pause", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", CUR_DEV);
-  WritePrivateProfileString ("Options", "CD Drive", Str_Tmp, Conf_File);
-
-  if (BRAM_Ex_State & 0x100)
-    {
-      sprintf (Str_Tmp, "%d", BRAM_Ex_Size);
-      WritePrivateProfileString ("Options", "Ram Cart Size", Str_Tmp,
-				 Conf_File);
-    }
-  else
-    {
-      WritePrivateProfileString ("Options", "Ram Cart Size", "-1", Conf_File);
-    }
-
-  WritePrivateProfileString ("Options", "GCOffline path", Settings.PathNames.CGOffline_Path,
-			     Conf_File);
-  WritePrivateProfileString ("Options", "Gens manual path", Settings.PathNames.Manual_Path,
-			     Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_1_Type & 0x13);
-  WritePrivateProfileString ("Input", "P1.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Up);
-  WritePrivateProfileString ("Input", "P1.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Down);
-  WritePrivateProfileString ("Input", "P1.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Left);
-  WritePrivateProfileString ("Input", "P1.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Right);
-  WritePrivateProfileString ("Input", "P1.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Start);
-  WritePrivateProfileString ("Input", "P1.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].A);
-  WritePrivateProfileString ("Input", "P1.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].B);
-  WritePrivateProfileString ("Input", "P1.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].C);
-  WritePrivateProfileString ("Input", "P1.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Mode);
-  WritePrivateProfileString ("Input", "P1.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].X);
-  WritePrivateProfileString ("Input", "P1.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Y);
-  WritePrivateProfileString ("Input", "P1.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[0].Z);
-  WritePrivateProfileString ("Input", "P1.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_1B_Type & 0x03);
-  WritePrivateProfileString ("Input", "P1B.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Up);
-  WritePrivateProfileString ("Input", "P1B.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Down);
-  WritePrivateProfileString ("Input", "P1B.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Left);
-  WritePrivateProfileString ("Input", "P1B.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Right);
-  WritePrivateProfileString ("Input", "P1B.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Start);
-  WritePrivateProfileString ("Input", "P1B.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].A);
-  WritePrivateProfileString ("Input", "P1B.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].B);
-  WritePrivateProfileString ("Input", "P1B.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].C);
-  WritePrivateProfileString ("Input", "P1B.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Mode);
-  WritePrivateProfileString ("Input", "P1B.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].X);
-  WritePrivateProfileString ("Input", "P1B.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Y);
-  WritePrivateProfileString ("Input", "P1B.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[2].Z);
-  WritePrivateProfileString ("Input", "P1B.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_1C_Type & 0x03);
-  WritePrivateProfileString ("Input", "P1C.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Up);
-  WritePrivateProfileString ("Input", "P1C.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Down);
-  WritePrivateProfileString ("Input", "P1C.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Left);
-  WritePrivateProfileString ("Input", "P1C.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Right);
-  WritePrivateProfileString ("Input", "P1C.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Start);
-  WritePrivateProfileString ("Input", "P1C.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].A);
-  WritePrivateProfileString ("Input", "P1C.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].B);
-  WritePrivateProfileString ("Input", "P1C.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].C);
-  WritePrivateProfileString ("Input", "P1C.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Mode);
-  WritePrivateProfileString ("Input", "P1C.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].X);
-  WritePrivateProfileString ("Input", "P1C.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Y);
-  WritePrivateProfileString ("Input", "P1C.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[3].Z);
-  WritePrivateProfileString ("Input", "P1C.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_1D_Type & 0x03);
-  WritePrivateProfileString ("Input", "P1D.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Up);
-  WritePrivateProfileString ("Input", "P1D.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Down);
-  WritePrivateProfileString ("Input", "P1D.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Left);
-  WritePrivateProfileString ("Input", "P1D.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Right);
-  WritePrivateProfileString ("Input", "P1D.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Start);
-  WritePrivateProfileString ("Input", "P1D.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].A);
-  WritePrivateProfileString ("Input", "P1D.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].B);
-  WritePrivateProfileString ("Input", "P1D.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].C);
-  WritePrivateProfileString ("Input", "P1D.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Mode);
-  WritePrivateProfileString ("Input", "P1D.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].X);
-  WritePrivateProfileString ("Input", "P1D.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Y);
-  WritePrivateProfileString ("Input", "P1D.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[4].Z);
-  WritePrivateProfileString ("Input", "P1D.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_2_Type & 0x13);
-  WritePrivateProfileString ("Input", "P2.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Up);
-  WritePrivateProfileString ("Input", "P2.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Down);
-  WritePrivateProfileString ("Input", "P2.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Left);
-  WritePrivateProfileString ("Input", "P2.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Right);
-  WritePrivateProfileString ("Input", "P2.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Start);
-  WritePrivateProfileString ("Input", "P2.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].A);
-  WritePrivateProfileString ("Input", "P2.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].B);
-  WritePrivateProfileString ("Input", "P2.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].C);
-  WritePrivateProfileString ("Input", "P2.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Mode);
-  WritePrivateProfileString ("Input", "P2.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].X);
-  WritePrivateProfileString ("Input", "P2.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Y);
-  WritePrivateProfileString ("Input", "P2.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[1].Z);
-  WritePrivateProfileString ("Input", "P2.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_2B_Type & 0x03);
-  WritePrivateProfileString ("Input", "P2B.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Up);
-  WritePrivateProfileString ("Input", "P2B.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Down);
-  WritePrivateProfileString ("Input", "P2B.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Left);
-  WritePrivateProfileString ("Input", "P2B.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Right);
-  WritePrivateProfileString ("Input", "P2B.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Start);
-  WritePrivateProfileString ("Input", "P2B.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].A);
-  WritePrivateProfileString ("Input", "P2B.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].B);
-  WritePrivateProfileString ("Input", "P2B.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].C);
-  WritePrivateProfileString ("Input", "P2B.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Mode);
-  WritePrivateProfileString ("Input", "P2B.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].X);
-  WritePrivateProfileString ("Input", "P2B.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Y);
-  WritePrivateProfileString ("Input", "P2B.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[5].Z);
-  WritePrivateProfileString ("Input", "P2B.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_2C_Type & 0x03);
-  WritePrivateProfileString ("Input", "P2C.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Up);
-  WritePrivateProfileString ("Input", "P2C.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Down);
-  WritePrivateProfileString ("Input", "P2C.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Left);
-  WritePrivateProfileString ("Input", "P2C.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Right);
-  WritePrivateProfileString ("Input", "P2C.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Start);
-  WritePrivateProfileString ("Input", "P2C.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].A);
-  WritePrivateProfileString ("Input", "P2C.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].B);
-  WritePrivateProfileString ("Input", "P2C.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].C);
-  WritePrivateProfileString ("Input", "P2C.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Mode);
-  WritePrivateProfileString ("Input", "P2C.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].X);
-  WritePrivateProfileString ("Input", "P2C.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Y);
-  WritePrivateProfileString ("Input", "P2C.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[6].Z);
-  WritePrivateProfileString ("Input", "P2C.Z", Str_Tmp, Conf_File);
-
-  sprintf (Str_Tmp, "%d", Controller_2D_Type & 0x03);
-  WritePrivateProfileString ("Input", "P2D.Type", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Up);
-  WritePrivateProfileString ("Input", "P2D.Up", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Down);
-  WritePrivateProfileString ("Input", "P2D.Down", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Left);
-  WritePrivateProfileString ("Input", "P2D.Left", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Right);
-  WritePrivateProfileString ("Input", "P2D.Right", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Start);
-  WritePrivateProfileString ("Input", "P2D.Start", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].A);
-  WritePrivateProfileString ("Input", "P2D.A", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].B);
-  WritePrivateProfileString ("Input", "P2D.B", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].C);
-  WritePrivateProfileString ("Input", "P2D.C", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Mode);
-  WritePrivateProfileString ("Input", "P2D.Mode", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].X);
-  WritePrivateProfileString ("Input", "P2D.X", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Y);
-  WritePrivateProfileString ("Input", "P2D.Y", Str_Tmp, Conf_File);
-  sprintf (Str_Tmp, "%d", Keys_Def[7].Z);
-  WritePrivateProfileString ("Input", "P2D.Z", Str_Tmp, Conf_File);
-
-  return 1;
+	int i;
+	
+	// String copy is needed, since the passed variable might be Str_Tmp.
+	char Conf_File[GENS_PATH_MAX];
+	strncpy(Conf_File, File_Name, GENS_PATH_MAX);
+	
+	// Paths
+	WritePrivateProfileString("General", "Rom path", Rom_Dir, Conf_File);
+	WritePrivateProfileString("General", "Save path", State_Dir, Conf_File);
+	WritePrivateProfileString("General", "SRAM path", SRAM_Dir, Conf_File);
+	WritePrivateProfileString("General", "BRAM path", BRAM_Dir, Conf_File);
+	WritePrivateProfileString("General", "Dump path", Dump_Dir, Conf_File);
+	WritePrivateProfileString("General", "Dump GYM path", Dump_GYM_Dir, Conf_File);
+	WritePrivateProfileString("General", "Screen Shot path", ScrShot_Dir, Conf_File);
+	WritePrivateProfileString("General", "Patch path", Patch_Dir, Conf_File);
+	WritePrivateProfileString("General", "IPS Patch path", IPS_Dir, Conf_File);
+	
+	// Genesis BIOS
+	WritePrivateProfileString("General", "Genesis Bios", Genesis_Bios, Conf_File);
+	
+	// SegaCD BIOSes
+	WritePrivateProfileString ("General", "USA CD Bios", US_CD_Bios, Conf_File);
+	WritePrivateProfileString ("General", "EUROPE CD Bios", EU_CD_Bios, Conf_File);
+	WritePrivateProfileString ("General", "JAPAN CD Bios", JA_CD_Bios, Conf_File);
+	
+	// 32X BIOSes
+	WritePrivateProfileString("General", "32X 68000 Bios", _32X_Genesis_Bios, Conf_File);
+	WritePrivateProfileString("General", "32X Master SH2 Bios", _32X_Master_Bios, Conf_File);
+	WritePrivateProfileString("General", "32X Slave SH2 Bios", _32X_Slave_Bios, Conf_File);
+	
+	// Last 9 ROMs
+	for (i = 0; i < 9; i++)
+	{
+		sprintf(Str_Tmp, "Rom %d", i + 1);
+		WritePrivateProfileString("General", Str_Tmp, Recent_Rom[i], Conf_File);
+	}
+	
+	// SegaCD
+	WritePrivateProfileString("General", "CD Drive", CDROM_DEV, Conf_File);
+	sprintf(Str_Tmp, "%d", CDROM_SPEED);
+	WritePrivateProfileString("General", "CD Speed", Str_Tmp, Conf_File);
+	
+	sprintf(Str_Tmp, "%d", Current_State);
+	WritePrivateProfileString("General", "State Number", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Language);
+	WritePrivateProfileString("General", "Language", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Window_Pos.x);
+	WritePrivateProfileString("General", "Window X", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Window_Pos.y);
+	WritePrivateProfileString("General", "Window Y", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Effect_Color);
+	WritePrivateProfileString("General", "Free Mode Color", Str_Tmp, Conf_File);
+	
+	// Video adjustments
+	sprintf(Str_Tmp, "%d", Contrast_Level);
+	WritePrivateProfileString("Graphics", "Contrast", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Brightness_Level);
+	WritePrivateProfileString("Graphics", "Brightness", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Greyscale & 1);
+	WritePrivateProfileString("Graphics", "Greyscale", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Invert_Color & 1);
+	WritePrivateProfileString("Graphics", "Invert", Str_Tmp, Conf_File);
+	
+	// Video settings
+	sprintf(Str_Tmp, "%d", FS_VSync & 1);
+	WritePrivateProfileString("Graphics", "Full Screen VSync", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", W_VSync & 1);
+	WritePrivateProfileString("Graphics", "Windows VSync", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Full_Screen & 1);
+	WritePrivateProfileString("Graphics", "Full Screen", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Render_Mode);
+	WritePrivateProfileString("Graphics", "Render Mode", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Bpp);
+	WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Opengl & 1);
+	WritePrivateProfileString("Graphics", "Render Opengl", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Width_gl);
+	WritePrivateProfileString("Graphics", "Opengl Width", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Height_gl);
+	WritePrivateProfileString("Graphics", "Opengl Height", Str_Tmp, Conf_File);
+	/*
+	sprintf(Str_Tmp, "%d", gl_linear_filter);
+	WritePrivateProfileString("Graphics", "Opengl Filter", Str_Tmp, Conf_File);
+	*/
+	
+	sprintf(Str_Tmp, "%d", Stretch & 1);  
+	WritePrivateProfileString("Graphics", "Stretch", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Blit_Soft & 1);
+	WritePrivateProfileString("Graphics", "Software Blit", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Sprite_Over & 1);
+	WritePrivateProfileString("Graphics", "Sprite limit", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Frame_Skip);
+	WritePrivateProfileString("Graphics", "Frame skip", Str_Tmp, Conf_File);
+	
+	// Sound settings
+	sprintf(Str_Tmp, "%d", Sound_Enable & 1);
+	WritePrivateProfileString("Sound", "State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Sound_Rate);
+	WritePrivateProfileString("Sound", "Rate", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Sound_Stereo);
+	WritePrivateProfileString("Sound", "Stereo", Str_Tmp, Conf_File);
+	
+	sprintf(Str_Tmp, "%d", Z80_State & 1);
+	WritePrivateProfileString("Sound", "Z80 State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", YM2612_Enable & 1);
+	WritePrivateProfileString("Sound", "YM2612 State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", PSG_Enable & 1);
+	WritePrivateProfileString("Sound", "PSG State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", DAC_Enable & 1);
+	WritePrivateProfileString("Sound", "DAC State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", PCM_Enable & 1);
+	WritePrivateProfileString("Sound", "PCM State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", PWM_Enable & 1);
+	WritePrivateProfileString("Sound", "PWM State", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", CDDA_Enable & 1);
+	WritePrivateProfileString("Sound", "CDDA State", Str_Tmp, Conf_File);
+	
+	// Improved sound options
+	sprintf(Str_Tmp, "%d", YM2612_Improv & 1);
+	WritePrivateProfileString("Sound", "YM2612 Improvement", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", DAC_Improv & 1);
+	WritePrivateProfileString("Sound", "DAC Improvement", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", PSG_Improv & 1);
+	WritePrivateProfileString("Sound", "PSG Improvement", Str_Tmp, Conf_File);
+	
+	// Country codes
+	sprintf(Str_Tmp, "%d", Country);
+	WritePrivateProfileString("CPU", "Country", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Country_Order[0]);
+	WritePrivateProfileString("CPU", "Prefered Country 1", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Country_Order[1]);
+	WritePrivateProfileString("CPU", "Prefered Country 2", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Country_Order[2]);
+	WritePrivateProfileString("CPU", "Prefered Country 3", Str_Tmp, Conf_File);
+	
+	// CPU options
+	
+	sprintf(Str_Tmp, "%d", SegaCD_Accurate);
+	WritePrivateProfileString("CPU", "Perfect synchro between main and sub CPU (Sega CD)", Str_Tmp, Conf_File);
+	
+	sprintf(Str_Tmp, "%d", MSH2_Speed);
+	WritePrivateProfileString("CPU", "Main SH2 Speed", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", SSH2_Speed);
+	WritePrivateProfileString("CPU", "Slave SH2 Speed", Str_Tmp, Conf_File);
+	
+	// Various settings
+	sprintf(Str_Tmp, "%d", Fast_Blur & 1);
+	WritePrivateProfileString("Options", "Fast Blur", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Show_FPS & 1);
+	WritePrivateProfileString("Options", "FPS", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", FPS_Style);
+	WritePrivateProfileString("Options", "FPS Style", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Show_Message & 1);
+	WritePrivateProfileString("Options", "Message", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Message_Style);
+	WritePrivateProfileString("Options", "Message Style", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Show_LED & 1);
+	WritePrivateProfileString("Options", "LED", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Auto_Fix_CS & 1);
+	WritePrivateProfileString("Options", "Auto Fix Checksum", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Auto_Pause & 1);
+	WritePrivateProfileString("Options", "Auto Pause", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", CUR_DEV);
+	WritePrivateProfileString("Options", "CD Drive", Str_Tmp, Conf_File);
+	
+	// SegaCD BRAM cartridge
+	if (BRAM_Ex_State & 0x100)
+	{
+		sprintf (Str_Tmp, "%d", BRAM_Ex_Size);
+		WritePrivateProfileString ("Options", "Ram Cart Size", Str_Tmp, Conf_File);
+	}
+	else
+	{
+		WritePrivateProfileString ("Options", "Ram Cart Size", "-1", Conf_File);
+	}
+	
+	// Manuals
+	WritePrivateProfileString("Options", "GCOffline path", Settings.PathNames.CGOffline_Path, Conf_File);
+	WritePrivateProfileString("Options", "Gens manual path", Settings.PathNames.Manual_Path, Conf_File);
+	
+	// Controller settings
+	sprintf(Str_Tmp, "%d", Controller_1_Type & 0x13);
+	WritePrivateProfileString("Input", "P1.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_1B_Type & 0x13);
+	WritePrivateProfileString("Input", "P1B.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_1C_Type & 0x13);
+	WritePrivateProfileString("Input", "P1C.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_1D_Type & 0x13);
+	WritePrivateProfileString("Input", "P1D.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_2_Type & 0x13);
+	WritePrivateProfileString("Input", "P2.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_2B_Type & 0x13);
+	WritePrivateProfileString("Input", "P2B.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_2C_Type & 0x13);
+	WritePrivateProfileString("Input", "P2C.Type", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", Controller_2D_Type & 0x13);
+	WritePrivateProfileString("Input", "P2D.Type", Str_Tmp, Conf_File);
+	
+	char tmpKey[16];
+	for (i = 0; i < 8; i++)
+	{
+		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Up);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Down", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Down);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Left", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Left);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Right", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Right);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Start", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Start);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.A", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].A);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.B", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].B);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.C", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].C);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Mode", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Mode);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.X", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].X);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Y", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Y);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		sprintf(tmpKey, "%s.Z", PlayerNames[i]);
+		sprintf (Str_Tmp, "%d", Keys_Def[i].Z);
+		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+	}
+	
+	return 1;
 }
 
 
@@ -2245,367 +2096,238 @@ int Save_As_Config(void)
 }
 
 
-int
-Load_Config (char *File_Name, void *Game_Active)
+/**
+ * Load_Config(): Load GENS configuration.
+ * @param Conf_File Configuration filename.
+ * @param Game_Active ???
+ */
+int Load_Config(const char *File_Name, void *Game_Active)
 {
-  int new_val;
-  char Conf_File[1024];
-  char Home_Dir[1024];
-  strncpy(Home_Dir, getenv("HOME"), 900);
-  strcat(Home_Dir, "/");
+	int new_val, i;
+	char Conf_File[GENS_PATH_MAX];
+	char Save_Path[GENS_PATH_MAX];
 
-  //SetCurrentDirectory (Gens_Path);
-  strcpy (Conf_File, File_Name);
-
-  CRam_Flag = 1;
-
-  GetPrivateProfileString ("General", "Rom path", Home_Dir, &Rom_Dir[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "Save path", Settings.PathNames.Gens_Path, &State_Dir[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "SRAM path", Settings.PathNames.Gens_Path, &SRAM_Dir[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "BRAM path", Settings.PathNames.Gens_Path, &BRAM_Dir[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "Dump path", Settings.PathNames.Gens_Path, &Dump_Dir[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "Dump GYM path", Settings.PathNames.Gens_Path,
-			   &Dump_GYM_Dir[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "Screen Shot path", Settings.PathNames.Gens_Path,
-			   &ScrShot_Dir[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "Patch path", Settings.PathNames.Gens_Path, &Patch_Dir[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "IPS Patch path", Settings.PathNames.Gens_Path, &IPS_Dir[0],
-			   1024, Conf_File);
-
-  GetPrivateProfileString ("General", "Genesis Bios", Settings.PathNames.Gens_Path,
-			   &Genesis_Bios[0], 1024, Conf_File);
-
-  GetPrivateProfileString ("General", "USA CD Bios", Settings.PathNames.Gens_Path, &US_CD_Bios[0],
-			   1024, Conf_File);
-  GetPrivateProfileString ("General", "EUROPE CD Bios", Settings.PathNames.Gens_Path,
-			   &EU_CD_Bios[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "JAPAN CD Bios", Settings.PathNames.Gens_Path,
-			   &JA_CD_Bios[0], 1024, Conf_File);
-
-  GetPrivateProfileString ("General", "32X 68000 Bios", Settings.PathNames.Gens_Path,
-			   &_32X_Genesis_Bios[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "32X Master SH2 Bios", Settings.PathNames.Gens_Path,
-			   &_32X_Master_Bios[0], 1024, Conf_File);
-  GetPrivateProfileString ("General", "32X Slave SH2 Bios", Settings.PathNames.Gens_Path,
-			   &_32X_Slave_Bios[0], 1024, Conf_File);
-
-  GetPrivateProfileString ("General", "Rom 1", "", &Recent_Rom[0][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 2", "", &Recent_Rom[1][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 3", "", &Recent_Rom[2][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 4", "", &Recent_Rom[3][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 5", "", &Recent_Rom[4][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 6", "", &Recent_Rom[5][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 7", "", &Recent_Rom[6][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 8", "", &Recent_Rom[7][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "Rom 9", "", &Recent_Rom[8][0], 1024,
-			   Conf_File);
-  GetPrivateProfileString ("General", "CD Drive", Rom_Dir, &CDROM_DEV[0],
-			   16, Conf_File);
-  CDROM_SPEED =   GetPrivateProfileInt ("General", "CD Speed", 0, Conf_File);
-  Current_State =
-    GetPrivateProfileInt ("General", "State Number", 0, Conf_File);
-  Language = GetPrivateProfileInt ("General", "Language", 0, Conf_File);
-  Window_Pos.x = GetPrivateProfileInt ("General", "Window X", 0, Conf_File);
-  Window_Pos.y = GetPrivateProfileInt ("General", "Window Y", 0, Conf_File);
-  Intro_Style = GetPrivateProfileInt ("General", "Intro Style", 0, Conf_File);
-  Effect_Color =
-    GetPrivateProfileInt ("General", "Free Mode Color", 7, Conf_File);
-  Sleep_Time =
-    GetPrivateProfileInt ("General", "Allow Idle", 0, Conf_File) & 1;
-
-  if (GetPrivateProfileInt ("Graphics", "Force 555", 0, Conf_File))
-    Mode_555 = 3;
-  else if (GetPrivateProfileInt ("Graphics", "Force 565", 0, Conf_File))
-    Mode_555 = 2;
-  else
-    Mode_555 = 0;
-
-  RMax_Level = GetPrivateProfileInt ("Graphics", "Red Max", 255, Conf_File);
-  GMax_Level = GetPrivateProfileInt ("Graphics", "Green Max", 255, Conf_File);
-  BMax_Level = GetPrivateProfileInt ("Graphics", "Blue Max", 255, Conf_File);
-  Contrast_Level =
-    GetPrivateProfileInt ("Graphics", "Contrast", 100, Conf_File);
-  Brightness_Level =
-    GetPrivateProfileInt ("Graphics", "Brightness", 100, Conf_File);
-  Greyscale = GetPrivateProfileInt ("Graphics", "Greyscale", 0, Conf_File);
-  Invert_Color = GetPrivateProfileInt ("Graphics", "Invert", 0, Conf_File);
-
-  Recalculate_Palettes ();
-
-  FS_VSync =
-    GetPrivateProfileInt ("Graphics", "Full Screen VSync", 0, Conf_File);
-  W_VSync = GetPrivateProfileInt ("Graphics", "Windows VSync", 0, Conf_File);
-  Full_Screen =
-    GetPrivateProfileInt ("Graphics", "Full Screen", 0, Conf_File);
-  Render_Mode =
-    GetPrivateProfileInt ("Graphics", "Render Mode", 1, Conf_File);
-  Bpp = GetPrivateProfileInt("Graphics", "Bits Per Pixel", 16, Conf_File);
-  Opengl = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
-  Width_gl = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
-  Height_gl = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
-//  gl_linear_filter = GetPrivateProfileInt("Graphics", "Opengl Filter", 1, Conf_File);
-  //Set_Render (Full_Screen, -1, 1);
-
-  Stretch = GetPrivateProfileInt ("Graphics", "Stretch", 0, Conf_File);
-  Blit_Soft =
-    GetPrivateProfileInt ("Graphics", "Software Blit", 0, Conf_File);
-  Sprite_Over =
-    GetPrivateProfileInt ("Graphics", "Sprite limit", 1, Conf_File);
-  Frame_Skip = GetPrivateProfileInt ("Graphics", "Frame skip", -1, Conf_File);
-
-  Sound_Rate = GetPrivateProfileInt ("Sound", "Rate", 22050, Conf_File);
-  Sound_Stereo = GetPrivateProfileInt ("Sound", "Stereo", 1, Conf_File);
-
-  if (GetPrivateProfileInt ("Sound", "Z80 State", 1, Conf_File))
-    Z80_State |= 1;
-  else
-    Z80_State &= ~1;
-
-  new_val = GetPrivateProfileInt ("Sound", "State", 1, Conf_File);
-  if (new_val != Sound_Enable)
-    {
-      if (Change_Sound ())
+	// String copy is needed, since the passed variable might be Str_Tmp.
+	strncpy(Conf_File, File_Name, GENS_PATH_MAX);
+	
+	// Get the default save path.
+	Get_Save_Path(Save_Path, GENS_PATH_MAX);
+	
+	CRam_Flag = 1;
+	
+	// Paths
+	GetPrivateProfileString("General", "Rom path", Save_Path,
+				&Rom_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "Save path", Settings.PathNames.Gens_Path,
+				 &State_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "SRAM path", Settings.PathNames.Gens_Path,
+				&SRAM_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "BRAM path", Settings.PathNames.Gens_Path,
+				&BRAM_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "Dump path",	Settings.PathNames.Gens_Path,
+				&Dump_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "Dump GYM path", Settings.PathNames.Gens_Path,
+				&Dump_GYM_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "Screen Shot path", Settings.PathNames.Gens_Path,
+				&ScrShot_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "Patch path", Settings.PathNames.Gens_Path,
+				&Patch_Dir[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "IPS Patch path", Settings.PathNames.Gens_Path,
+				&IPS_Dir[0], GENS_PATH_MAX, Conf_File);
+	
+	// Genesis BIOS
+	GetPrivateProfileString("General", "Genesis Bios", Settings.PathNames.Gens_Path,
+				&Genesis_Bios[0], GENS_PATH_MAX, Conf_File);
+	
+	// SegaCD BIOSes
+	GetPrivateProfileString("General", "USA CD Bios", Settings.PathNames.Gens_Path,
+				&US_CD_Bios[0],	GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "EUROPE CD Bios", Settings.PathNames.Gens_Path,
+				&EU_CD_Bios[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "JAPAN CD Bios", Settings.PathNames.Gens_Path,
+				&JA_CD_Bios[0], GENS_PATH_MAX, Conf_File);
+	
+	// 32X BIOSes
+	GetPrivateProfileString("General", "32X 68000 Bios", Settings.PathNames.Gens_Path,
+				&_32X_Genesis_Bios[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "32X Master SH2 Bios", Settings.PathNames.Gens_Path,
+				&_32X_Master_Bios[0], GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("General", "32X Slave SH2 Bios", Settings.PathNames.Gens_Path,
+				&_32X_Slave_Bios[0], GENS_PATH_MAX, Conf_File);
+	
+	// Last 9 ROMs
+	for (i = 0; i < 9; i++)
 	{
-	  YM2612_Enable =
-	    GetPrivateProfileInt ("Sound", "YM2612 State", 1, Conf_File);
-	  PSG_Enable =
-	    GetPrivateProfileInt ("Sound", "PSG State", 1, Conf_File);
-	  DAC_Enable =
-	    GetPrivateProfileInt ("Sound", "DAC State", 1, Conf_File);
-	  PCM_Enable =
-	    GetPrivateProfileInt ("Sound", "PCM State", 1, Conf_File);
-	  PWM_Enable =
-	    GetPrivateProfileInt ("Sound", "PWM State", 1, Conf_File);
-	  CDDA_Enable =
-	    GetPrivateProfileInt ("Sound", "CDDA State", 1, Conf_File);
+		sprintf(Str_Tmp, "Rom %d", i + 1);
+		GetPrivateProfileString("General", Str_Tmp, "",
+					&Recent_Rom[i][0], GENS_PATH_MAX, Conf_File);
 	}
-    }
-  else
-    {
-      YM2612_Enable =
-	GetPrivateProfileInt ("Sound", "YM2612 State", 1, Conf_File);
-      PSG_Enable = GetPrivateProfileInt ("Sound", "PSG State", 1, Conf_File);
-      DAC_Enable = GetPrivateProfileInt ("Sound", "DAC State", 1, Conf_File);
-      PCM_Enable = GetPrivateProfileInt ("Sound", "PCM State", 1, Conf_File);
-      PWM_Enable = GetPrivateProfileInt ("Sound", "PWM State", 1, Conf_File);
-      CDDA_Enable =
-	GetPrivateProfileInt ("Sound", "CDDA State", 1, Conf_File);
-    }
-
-  YM2612_Improv =
-    GetPrivateProfileInt ("Sound", "YM2612 Improvement", 0, Conf_File);
-  DAC_Improv =
-    GetPrivateProfileInt ("Sound", "DAC Improvement", 0, Conf_File);
-  PSG_Improv =
-    GetPrivateProfileInt ("Sound", "PSG Improvement", 0, Conf_File);
-
-  Country = GetPrivateProfileInt ("CPU", "Country", -1, Conf_File);
-  Country_Order[0] =
-    GetPrivateProfileInt ("CPU", "Prefered Country 1", 0, Conf_File);
-  Country_Order[1] =
-    GetPrivateProfileInt ("CPU", "Prefered Country 2", 1, Conf_File);
-  Country_Order[2] =
-    GetPrivateProfileInt ("CPU", "Prefered Country 3", 2, Conf_File);
-
-  SegaCD_Accurate =
-    GetPrivateProfileInt ("CPU",
-			  "Perfect synchro between main and sub CPU (Sega CD)",
-			  0, Conf_File);
-
-  MSH2_Speed = GetPrivateProfileInt ("CPU", "Main SH2 Speed", 100, Conf_File);
-  SSH2_Speed =
-    GetPrivateProfileInt ("CPU", "Slave SH2 Speed", 100, Conf_File);
-
-  if (MSH2_Speed < 0)
-    MSH2_Speed = 0;
-  if (SSH2_Speed < 0)
-    SSH2_Speed = 0;
-
-  Check_Country_Order ();
-
-  Fast_Blur = GetPrivateProfileInt ("Options", "Fast Blur", 0, Conf_File);
-  Show_FPS = GetPrivateProfileInt ("Options", "FPS", 0, Conf_File);
-  FPS_Style = GetPrivateProfileInt ("Options", "FPS Style", 0, Conf_File);
-  Show_Message = GetPrivateProfileInt ("Options", "Message", 1, Conf_File);
-  Message_Style =
-    GetPrivateProfileInt ("Options", "Message Style", 0, Conf_File);
-  Show_LED = GetPrivateProfileInt ("Options", "LED", 1, Conf_File);
-  Auto_Fix_CS =
-    GetPrivateProfileInt ("Options", "Auto Fix Checksum", 0, Conf_File);
-  Auto_Pause = GetPrivateProfileInt ("Options", "Auto Pause", 0, Conf_File);
-  CUR_DEV = GetPrivateProfileInt ("Options", "CD Drive", 0, Conf_File);
-  BRAM_Ex_Size =
-    GetPrivateProfileInt ("Options", "Ram Cart Size", 3, Conf_File);
-
-  if (BRAM_Ex_Size == -1)
-    {
-      BRAM_Ex_State &= 1;
-      BRAM_Ex_Size = 0;
-    }
-  else
-    BRAM_Ex_State |= 0x100;
-
-  GetPrivateProfileString ("Options", "GCOffline path", "GCOffline.chm",
-			   Settings.PathNames.CGOffline_Path, 1024, Conf_File);
-  GetPrivateProfileString ("Options", "Gens manual path", "manual.exe",
-			   Settings.PathNames.Manual_Path, 1024, Conf_File);
-
-  Controller_1_Type = GetPrivateProfileInt ("Input", "P1.Type", 1, Conf_File);
-  Keys_Def[0].Up = GetPrivateProfileInt ("Input", "P1.Up", GENS_KEY_UP, Conf_File);
-  Keys_Def[0].Down =
-    GetPrivateProfileInt ("Input", "P1.Down", GENS_KEY_DOWN, Conf_File);
-  Keys_Def[0].Left =
-    GetPrivateProfileInt ("Input", "P1.Left", GENS_KEY_LEFT, Conf_File);
-  Keys_Def[0].Right =
-    GetPrivateProfileInt ("Input", "P1.Right", GENS_KEY_RIGHT, Conf_File);
-  Keys_Def[0].Start =
-    GetPrivateProfileInt ("Input", "P1.Start", GENS_KEY_RETURN, Conf_File);
-  Keys_Def[0].A = GetPrivateProfileInt ("Input", "P1.A", GENS_KEY_a, Conf_File);
-  Keys_Def[0].B = GetPrivateProfileInt ("Input", "P1.B", GENS_KEY_s, Conf_File);
-  Keys_Def[0].C = GetPrivateProfileInt ("Input", "P1.C", GENS_KEY_d, Conf_File);
-  Keys_Def[0].Mode =
-    GetPrivateProfileInt ("Input", "P1.Mode", GENS_KEY_RSHIFT, Conf_File);
-  Keys_Def[0].X = GetPrivateProfileInt ("Input", "P1.X", GENS_KEY_z, Conf_File);
-  Keys_Def[0].Y = GetPrivateProfileInt ("Input", "P1.Y", GENS_KEY_x, Conf_File);
-  Keys_Def[0].Z = GetPrivateProfileInt ("Input", "P1.Z", GENS_KEY_c, Conf_File);
-
-  Controller_1B_Type =
-    GetPrivateProfileInt ("Input", "P1B.Type", 0, Conf_File);
-  Keys_Def[2].Up = GetPrivateProfileInt ("Input", "P1B.Up", 0, Conf_File);
-  Keys_Def[2].Down = GetPrivateProfileInt ("Input", "P1B.Down", 0, Conf_File);
-  Keys_Def[2].Left = GetPrivateProfileInt ("Input", "P1B.Left", 0, Conf_File);
-  Keys_Def[2].Right =
-    GetPrivateProfileInt ("Input", "P1B.Right", 0, Conf_File);
-  Keys_Def[2].Start =
-    GetPrivateProfileInt ("Input", "P1B.Start", 0, Conf_File);
-  Keys_Def[2].A = GetPrivateProfileInt ("Input", "P1B.A", 0, Conf_File);
-  Keys_Def[2].B = GetPrivateProfileInt ("Input", "P1B.B", 0, Conf_File);
-  Keys_Def[2].C = GetPrivateProfileInt ("Input", "P1B.C", 0, Conf_File);
-  Keys_Def[2].Mode = GetPrivateProfileInt ("Input", "P1B.Mode", 0, Conf_File);
-  Keys_Def[2].X = GetPrivateProfileInt ("Input", "P1B.X", 0, Conf_File);
-  Keys_Def[2].Y = GetPrivateProfileInt ("Input", "P1B.Y", 0, Conf_File);
-  Keys_Def[2].Z = GetPrivateProfileInt ("Input", "P1B.Z", 0, Conf_File);
-
-  Controller_1C_Type =
-    GetPrivateProfileInt ("Input", "P1C.Type", 0, Conf_File);
-  Keys_Def[3].Up = GetPrivateProfileInt ("Input", "P1C.Up", 0, Conf_File);
-  Keys_Def[3].Down = GetPrivateProfileInt ("Input", "P1C.Down", 0, Conf_File);
-  Keys_Def[3].Left = GetPrivateProfileInt ("Input", "P1C.Left", 0, Conf_File);
-  Keys_Def[3].Right =
-    GetPrivateProfileInt ("Input", "P1C.Right", 0, Conf_File);
-  Keys_Def[3].Start =
-    GetPrivateProfileInt ("Input", "P1C.Start", 0, Conf_File);
-  Keys_Def[3].A = GetPrivateProfileInt ("Input", "P1C.A", 0, Conf_File);
-  Keys_Def[3].B = GetPrivateProfileInt ("Input", "P1C.B", 0, Conf_File);
-  Keys_Def[3].C = GetPrivateProfileInt ("Input", "P1C.C", 0, Conf_File);
-  Keys_Def[3].Mode = GetPrivateProfileInt ("Input", "P1C.Mode", 0, Conf_File);
-  Keys_Def[3].X = GetPrivateProfileInt ("Input", "P1C.X", 0, Conf_File);
-  Keys_Def[3].Y = GetPrivateProfileInt ("Input", "P1C.Y", 0, Conf_File);
-  Keys_Def[3].Z = GetPrivateProfileInt ("Input", "P1C.Z", 0, Conf_File);
-
-  Controller_1D_Type =
-    GetPrivateProfileInt ("Input", "P1D.Type", 0, Conf_File);
-  Keys_Def[4].Up = GetPrivateProfileInt ("Input", "P1D.Up", 0, Conf_File);
-  Keys_Def[4].Down = GetPrivateProfileInt ("Input", "P1D.Down", 0, Conf_File);
-  Keys_Def[4].Left = GetPrivateProfileInt ("Input", "P1D.Left", 0, Conf_File);
-  Keys_Def[4].Right =
-    GetPrivateProfileInt ("Input", "P1D.Right", 0, Conf_File);
-  Keys_Def[4].Start =
-    GetPrivateProfileInt ("Input", "P1D.Start", 0, Conf_File);
-  Keys_Def[4].A = GetPrivateProfileInt ("Input", "P1D.A", 0, Conf_File);
-  Keys_Def[4].B = GetPrivateProfileInt ("Input", "P1D.B", 0, Conf_File);
-  Keys_Def[4].C = GetPrivateProfileInt ("Input", "P1D.C", 0, Conf_File);
-  Keys_Def[4].Mode = GetPrivateProfileInt ("Input", "P1D.Mode", 0, Conf_File);
-  Keys_Def[4].X = GetPrivateProfileInt ("Input", "P1D.X", 0, Conf_File);
-  Keys_Def[4].Y = GetPrivateProfileInt ("Input", "P1D.Y", 0, Conf_File);
-  Keys_Def[4].Z = GetPrivateProfileInt ("Input", "P1D.Z", 0, Conf_File);
-
-  Controller_2_Type = GetPrivateProfileInt ("Input", "P2.Type", 1, Conf_File);
-  Keys_Def[1].Up = GetPrivateProfileInt ("Input", "P2.Up", GENS_KEY_y, Conf_File);
-  Keys_Def[1].Down =
-    GetPrivateProfileInt ("Input", "P2.Down", GENS_KEY_h, Conf_File);
-  Keys_Def[1].Left =
-    GetPrivateProfileInt ("Input", "P2.Left", GENS_KEY_g, Conf_File);
-  Keys_Def[1].Right =
-    GetPrivateProfileInt ("Input", "P2.Right", GENS_KEY_j, Conf_File);
-  Keys_Def[1].Start =
-    GetPrivateProfileInt ("Input", "P2.Start", GENS_KEY_u, Conf_File);
-  Keys_Def[1].A = GetPrivateProfileInt ("Input", "P2.A", GENS_KEY_k, Conf_File);
-  Keys_Def[1].B = GetPrivateProfileInt ("Input", "P2.B", GENS_KEY_l, Conf_File);
-  Keys_Def[1].C = GetPrivateProfileInt ("Input", "P2.C", GENS_KEY_m, Conf_File);
-  Keys_Def[1].Mode =
-    GetPrivateProfileInt ("Input", "P2.Mode", GENS_KEY_t, Conf_File);
-  Keys_Def[1].X = GetPrivateProfileInt ("Input", "P2.X", GENS_KEY_i, Conf_File);
-  Keys_Def[1].Y = GetPrivateProfileInt ("Input", "P2.Y", GENS_KEY_o, Conf_File);
-  Keys_Def[1].Z = GetPrivateProfileInt ("Input", "P2.Z", GENS_KEY_p, Conf_File);
-
-  Controller_2B_Type =
-    GetPrivateProfileInt ("Input", "P2B.Type", 0, Conf_File);
-  Keys_Def[5].Up = GetPrivateProfileInt ("Input", "P2B.Up", 0, Conf_File);
-  Keys_Def[5].Down = GetPrivateProfileInt ("Input", "P2B.Down", 0, Conf_File);
-  Keys_Def[5].Left = GetPrivateProfileInt ("Input", "P2B.Left", 0, Conf_File);
-  Keys_Def[5].Right =
-    GetPrivateProfileInt ("Input", "P2B.Right", 0, Conf_File);
-  Keys_Def[5].Start =
-    GetPrivateProfileInt ("Input", "P2B.Start", 0, Conf_File);
-  Keys_Def[5].A = GetPrivateProfileInt ("Input", "P2B.A", 0, Conf_File);
-  Keys_Def[5].B = GetPrivateProfileInt ("Input", "P2B.B", 0, Conf_File);
-  Keys_Def[5].C = GetPrivateProfileInt ("Input", "P2B.C", 0, Conf_File);
-  Keys_Def[5].Mode = GetPrivateProfileInt ("Input", "P2B.Mode", 0, Conf_File);
-  Keys_Def[5].X = GetPrivateProfileInt ("Input", "P2B.X", 0, Conf_File);
-  Keys_Def[5].Y = GetPrivateProfileInt ("Input", "P2B.Y", 0, Conf_File);
-  Keys_Def[5].Z = GetPrivateProfileInt ("Input", "P2B.Z", 0, Conf_File);
-
-  Controller_2C_Type =
-    GetPrivateProfileInt ("Input", "P2C.Type", 0, Conf_File);
-  Keys_Def[6].Up = GetPrivateProfileInt ("Input", "P2C.Up", 0, Conf_File);
-  Keys_Def[6].Down = GetPrivateProfileInt ("Input", "P2C.Down", 0, Conf_File);
-  Keys_Def[6].Left = GetPrivateProfileInt ("Input", "P2C.Left", 0, Conf_File);
-  Keys_Def[6].Right =
-    GetPrivateProfileInt ("Input", "P2C.Right", 0, Conf_File);
-  Keys_Def[6].Start =
-    GetPrivateProfileInt ("Input", "P2C.Start", 0, Conf_File);
-  Keys_Def[6].A = GetPrivateProfileInt ("Input", "P2C.A", 0, Conf_File);
-  Keys_Def[6].B = GetPrivateProfileInt ("Input", "P2C.B", 0, Conf_File);
-  Keys_Def[6].C = GetPrivateProfileInt ("Input", "P2C.C", 0, Conf_File);
-  Keys_Def[6].Mode = GetPrivateProfileInt ("Input", "P2C.Mode", 0, Conf_File);
-  Keys_Def[6].X = GetPrivateProfileInt ("Input", "P2C.X", 0, Conf_File);
-  Keys_Def[6].Y = GetPrivateProfileInt ("Input", "P2C.Y", 0, Conf_File);
-  Keys_Def[6].Z = GetPrivateProfileInt ("Input", "P2C.Z", 0, Conf_File);
-
-  Controller_2D_Type =
-    GetPrivateProfileInt ("Input", "P2D.Type", 0, Conf_File);
-  Keys_Def[7].Up = GetPrivateProfileInt ("Input", "P2D.Up", 0, Conf_File);
-  Keys_Def[7].Down = GetPrivateProfileInt ("Input", "P2D.Down", 0, Conf_File);
-  Keys_Def[7].Left = GetPrivateProfileInt ("Input", "P2D.Left", 0, Conf_File);
-  Keys_Def[7].Right =
-    GetPrivateProfileInt ("Input", "P2D.Right", 0, Conf_File);
-  Keys_Def[7].Start =
-    GetPrivateProfileInt ("Input", "P2D.Start", 0, Conf_File);
-  Keys_Def[7].A = GetPrivateProfileInt ("Input", "P2D.A", 0, Conf_File);
-  Keys_Def[7].B = GetPrivateProfileInt ("Input", "P2D.B", 0, Conf_File);
-  Keys_Def[7].C = GetPrivateProfileInt ("Input", "P2D.C", 0, Conf_File);
-  Keys_Def[7].Mode = GetPrivateProfileInt ("Input", "P2D.Mode", 0, Conf_File);
-  Keys_Def[7].X = GetPrivateProfileInt ("Input", "P2D.X", 0, Conf_File);
-  Keys_Def[7].Y = GetPrivateProfileInt ("Input", "P2D.Y", 0, Conf_File);
-  Keys_Def[7].Z = GetPrivateProfileInt ("Input", "P2D.Z", 0, Conf_File);
-
-  Make_IO_Table ();
-  return 1;
+	
+	// SegaCD
+	GetPrivateProfileString("General", "CD Drive", Rom_Dir,
+				&CDROM_DEV[0], 16, Conf_File);
+	CDROM_SPEED = GetPrivateProfileInt("General", "CD Speed", 0, Conf_File);
+	
+	Current_State = GetPrivateProfileInt("General", "State Number", 0, Conf_File);
+	Language = GetPrivateProfileInt("General", "Language", 0, Conf_File);
+	Window_Pos.x = GetPrivateProfileInt("General", "Window X", 0, Conf_File);
+	Window_Pos.y = GetPrivateProfileInt("General", "Window Y", 0, Conf_File);
+	Intro_Style = GetPrivateProfileInt("General", "Intro Style", 0, Conf_File);
+	Effect_Color = GetPrivateProfileInt("General", "Free Mode Color", 7, Conf_File);
+	Sleep_Time = GetPrivateProfileInt("General", "Allow Idle", 0, Conf_File) & 1;
+	
+	// 555 or 565 mode
+	if (GetPrivateProfileInt ("Graphics", "Force 555", 0, Conf_File))
+		Mode_555 = 3;
+	else if (GetPrivateProfileInt ("Graphics", "Force 565", 0, Conf_File))
+		Mode_555 = 2;
+	else
+		Mode_555 = 0;
+	
+	// Color settings
+	RMax_Level = GetPrivateProfileInt("Graphics", "Red Max", 255, Conf_File);
+	GMax_Level = GetPrivateProfileInt("Graphics", "Green Max", 255, Conf_File);
+	BMax_Level = GetPrivateProfileInt("Graphics", "Blue Max", 255, Conf_File);
+	
+	// Video adjustments
+	Contrast_Level = GetPrivateProfileInt("Graphics", "Contrast", 100, Conf_File);
+	Brightness_Level = GetPrivateProfileInt("Graphics", "Brightness", 100, Conf_File);
+	Greyscale = GetPrivateProfileInt("Graphics", "Greyscale", 0, Conf_File);
+	Invert_Color = GetPrivateProfileInt("Graphics", "Invert", 0, Conf_File);
+	
+	// Recalculate the MD and 32X palettes using the new color settings.
+	Recalculate_Palettes ();
+	
+	// Video settings
+	FS_VSync = GetPrivateProfileInt("Graphics", "Full Screen VSync", 0, Conf_File);
+	W_VSync = GetPrivateProfileInt("Graphics", "Windows VSync", 0, Conf_File);
+	Full_Screen = GetPrivateProfileInt("Graphics", "Full Screen", 0, Conf_File);
+	Render_Mode = GetPrivateProfileInt ("Graphics", "Render Mode", 1, Conf_File);
+	Bpp = GetPrivateProfileInt("Graphics", "Bits Per Pixel", 16, Conf_File);
+	Opengl = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
+	Width_gl = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
+	Height_gl = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
+	//gl_linear_filter = GetPrivateProfileInt("Graphics", "Opengl Filter", 1, Conf_File);
+	//Set_Render(Full_Screen, -1, 1);
+	
+	Stretch = GetPrivateProfileInt("Graphics", "Stretch", 0, Conf_File);
+	Blit_Soft = GetPrivateProfileInt("Graphics", "Software Blit", 0, Conf_File);
+	Sprite_Over = GetPrivateProfileInt("Graphics", "Sprite limit", 1, Conf_File);
+	Frame_Skip = GetPrivateProfileInt("Graphics", "Frame skip", -1, Conf_File);
+	
+	// Sound settings
+	Sound_Rate = GetPrivateProfileInt("Sound", "Rate", 22050, Conf_File);
+	Sound_Stereo = GetPrivateProfileInt("Sound", "Stereo", 1, Conf_File);
+	
+	if (GetPrivateProfileInt ("Sound", "Z80 State", 1, Conf_File))
+		Z80_State |= 1;
+	else
+		Z80_State &= ~1;
+	
+	// Only load the IC sound settings if sound can be initialized.
+	new_val = GetPrivateProfileInt ("Sound", "State", 1, Conf_File);
+	if (new_val == Sound_Enable ||
+	    (new_val != Sound_Enable && Change_Sound()))
+	{
+		YM2612_Enable = GetPrivateProfileInt("Sound", "YM2612 State", 1, Conf_File);
+		PSG_Enable = GetPrivateProfileInt("Sound", "PSG State", 1, Conf_File);
+		DAC_Enable = GetPrivateProfileInt("Sound", "DAC State", 1, Conf_File);
+		PCM_Enable = GetPrivateProfileInt("Sound", "PCM State", 1, Conf_File);
+		PWM_Enable = GetPrivateProfileInt("Sound", "PWM State", 1, Conf_File);
+		CDDA_Enable = GetPrivateProfileInt("Sound", "CDDA State", 1, Conf_File);
+		
+		// Improved sound options
+		YM2612_Improv = GetPrivateProfileInt("Sound", "YM2612 Improvement", 0, Conf_File);
+		DAC_Improv = GetPrivateProfileInt("Sound", "DAC Improvement", 0, Conf_File);
+		PSG_Improv = GetPrivateProfileInt("Sound", "PSG Improvement", 0, Conf_File);
+	}
+	
+	// Country codes
+	Country = GetPrivateProfileInt("CPU", "Country", -1, Conf_File);
+	Country_Order[0] = GetPrivateProfileInt("CPU", "Prefered Country 1", 0, Conf_File);
+	Country_Order[1] = GetPrivateProfileInt("CPU", "Prefered Country 2", 1, Conf_File);
+	Country_Order[2] = GetPrivateProfileInt("CPU", "Prefered Country 3", 2, Conf_File);
+	Check_Country_Order();
+	
+	// CPU options
+	
+	SegaCD_Accurate = GetPrivateProfileInt("CPU", "Perfect synchro between main and sub CPU (Sega CD)", 0, Conf_File);
+	MSH2_Speed = GetPrivateProfileInt("CPU", "Main SH2 Speed", 100, Conf_File);
+	SSH2_Speed = GetPrivateProfileInt("CPU", "Slave SH2 Speed", 100, Conf_File);
+	
+	// Make sure the SH2 speeds aren't below 0.
+	if (MSH2_Speed < 0)
+		MSH2_Speed = 0;
+	if (SSH2_Speed < 0)
+		SSH2_Speed = 0;
+	
+	// Various settings
+	Fast_Blur = GetPrivateProfileInt("Options", "Fast Blur", 0, Conf_File);
+	Show_FPS = GetPrivateProfileInt("Options", "FPS", 0, Conf_File);
+	FPS_Style = GetPrivateProfileInt("Options", "FPS Style", 0, Conf_File);
+	Show_Message = GetPrivateProfileInt("Options", "Message", 1, Conf_File);
+	Message_Style = GetPrivateProfileInt("Options", "Message Style", 0, Conf_File);
+	Show_LED = GetPrivateProfileInt("Options", "LED", 1, Conf_File);
+	Auto_Fix_CS = GetPrivateProfileInt("Options", "Auto Fix Checksum", 0, Conf_File);
+	Auto_Pause = GetPrivateProfileInt("Options", "Auto Pause", 0, Conf_File);
+	CUR_DEV = GetPrivateProfileInt("Options", "CD Drive", 0, Conf_File);
+	
+	// SegaCD BRAM cartridge size
+	BRAM_Ex_Size = GetPrivateProfileInt ("Options", "Ram Cart Size", 3, Conf_File);
+	if (BRAM_Ex_Size == -1)
+	{
+		BRAM_Ex_State &= 1;
+		BRAM_Ex_Size = 0;
+	}
+	else
+		BRAM_Ex_State |= 0x100;
+	
+	// Manuals
+	GetPrivateProfileString("Options", "GCOffline path", "GCOffline.chm",
+				Settings.PathNames.CGOffline_Path, GENS_PATH_MAX, Conf_File);
+	GetPrivateProfileString("Options", "Gens manual path", "manual.exe",
+				Settings.PathNames.Manual_Path, GENS_PATH_MAX, Conf_File);
+	
+	// Controller settings
+	Controller_1_Type = GetPrivateProfileInt("Input", "P1.Type", 1, Conf_File);
+	Controller_1B_Type = GetPrivateProfileInt("Input", "P1B.Type", 1, Conf_File);
+	Controller_1C_Type = GetPrivateProfileInt("Input", "P1C.Type", 1, Conf_File);
+	Controller_1D_Type = GetPrivateProfileInt("Input", "P1D.Type", 1, Conf_File);
+	Controller_2_Type = GetPrivateProfileInt("Input", "P2.Type", 1, Conf_File);
+	Controller_2B_Type = GetPrivateProfileInt("Input", "P2B.Type", 1, Conf_File);
+	Controller_2C_Type = GetPrivateProfileInt("Input", "P2C.Type", 1, Conf_File);
+	Controller_2D_Type = GetPrivateProfileInt("Input", "P2D.Type", 1, Conf_File);
+	
+	for (i = 0; i < 8; i++)
+	{
+		sprintf(Str_Tmp, "%s.Up", PlayerNames[i]);
+		Keys_Def[i].Up = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Up, Conf_File);
+		sprintf(Str_Tmp, "%s.Down", PlayerNames[i]);
+		Keys_Def[i].Down = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Down, Conf_File);
+		sprintf(Str_Tmp, "%s.Left", PlayerNames[i]);
+		Keys_Def[i].Left = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Left, Conf_File);
+		sprintf(Str_Tmp, "%s.Right", PlayerNames[i]);
+		Keys_Def[i].Right = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Right, Conf_File);
+		sprintf(Str_Tmp, "%s.Start", PlayerNames[i]);
+		Keys_Def[i].Start = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Start, Conf_File);
+		sprintf(Str_Tmp, "%s.A", PlayerNames[i]);
+		Keys_Def[i].A = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].A, Conf_File);
+		sprintf(Str_Tmp, "%s.B", PlayerNames[i]);
+		Keys_Def[i].B = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].B, Conf_File);
+		sprintf(Str_Tmp, "%s.C", PlayerNames[i]);
+		Keys_Def[i].C = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].C, Conf_File);
+		sprintf(Str_Tmp, "%s.Mode", PlayerNames[i]);
+		Keys_Def[i].Mode = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Mode, Conf_File);
+		sprintf(Str_Tmp, "%s.X", PlayerNames[i]);
+		Keys_Def[i].X = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].X, Conf_File);
+		sprintf(Str_Tmp, "%s.Y", PlayerNames[i]);
+		Keys_Def[i].Y = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Y, Conf_File);
+		sprintf(Str_Tmp, "%s.Z", PlayerNames[i]);
+		Keys_Def[i].Z = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Z, Conf_File);
+	}
+	
+	Make_IO_Table();
+	return 1;
 }
 
 

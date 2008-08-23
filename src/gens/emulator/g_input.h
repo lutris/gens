@@ -29,6 +29,7 @@ struct K_Def
 };
 extern unsigned char Kaillera_Keys[16];
 extern struct K_Def Keys_Def[8];
+extern const struct K_Def Keys_Default[8];
 
 
 void Input_KeyDown(int key);

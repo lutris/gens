@@ -42,9 +42,9 @@ InsertSectionKey (const char *section, const char *var,
 {
   if (saut)
     fwrite ("\n", 1, 1, file);
-  fwrite ("*", 1, 1, file);
+  fwrite ("[", 1, 1, file);
   fwrite (section, strlen (section), 1, file);
-  fwrite ("?\n", 2, 1, file);
+  fwrite ("]\n", 2, 1, file);
   WriteKey (var, var_name, file);
 }
 
@@ -72,10 +72,10 @@ SearchSection (const char *buf, const char *section)
   char *ext_section;
 
   ext_section = malloc (1 + strlen (section) + 1 + 1);	// [ section ] \0 
-  ext_section[0] = '*';
+  ext_section[0] = '[';
   ext_section[1] = '\0';
   strcat (ext_section, section);
-  strcat (ext_section, "?");
+  strcat (ext_section, "]");
   found = strstr (buf, ext_section);
   if (found)
     return found + 1;
