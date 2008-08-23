@@ -24,6 +24,8 @@
 #include "mem_s68k.h"
 #include "save.h"
 #include "ui_proxy.h"
+#include "ui-common.h"
+
 
 _filters filters;
 
