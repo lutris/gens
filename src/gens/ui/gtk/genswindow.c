@@ -599,7 +599,7 @@ void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container)
 		"intscan",
 		"int50scan",
 		"int25scan",
-		"_2xsai",
+		"2xsai",
 		"scale2x",
 		"hq2x",
 	};
@@ -617,8 +617,9 @@ void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container)
 	{
 		sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%s", RenderTag[i]);
 		NewMenuItem_Radio(RenderItem, Render[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), RenderGroup);
-		// TODO: Somehow pass the render ID using the parameter.
-		//g_signal_connect((gpointer)RenderItem, G_CALLBACK(on_RenderItem_activate), NULL);
+		g_signal_connect((gpointer)RenderItem, "activate",
+				 G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
+				 GINT_TO_POINTER(i + 1));
 	}
 }
 

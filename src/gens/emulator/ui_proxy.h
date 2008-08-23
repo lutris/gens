@@ -28,6 +28,7 @@ int Change_PSG_Improv(void);
 int Change_YM2612_Improv(void);
 void system_reset ();
 void Set_Game_Name(void);
+int Set_Render(int FullScreen, int Mode, int Force);
 
 typedef enum {
 	NORMAL = 1,

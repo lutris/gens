@@ -313,6 +313,21 @@ void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_d
 
 
 /**
+ * Graphics, Render, #
+ */
+void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	int renderMode = GPOINTER_TO_INT(user_data);
+	
+	if (!do_callbacks)
+		return;
+	
+	// Set the render mode.
+	Set_Render(Full_Screen, renderMode, 0);
+}
+
+
+/**
  * Graphics, Frame Skip, #
  */
 void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data)

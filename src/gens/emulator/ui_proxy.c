@@ -62,16 +62,23 @@ system_reset ()
     }
 }
 
-int Set_Render( int Full, int Num, int Force)
+
+/**
+ * Set_Render(): Set the rendering mode.
+ * @param FullScreen FullScreen setting.
+ * @param Mode Rendering mode / filter.
+ * @param Force If 1, forces a rendering mode change.
+ */
+int Set_Render(int FullScreen, int Mode, int Force)
 {
 	int Old_Rend, *Rend;
 	void (**Blit)(unsigned char*, int, int, int, int);
 	
-	Blit = Full ? &Blit_FS : &Blit_W;
+	Blit = FullScreen ? &Blit_FS : &Blit_W;
 	Rend = &Render_Mode;
 	Old_Rend=Render_Mode;
 	
-	switch(Num)
+	switch (Mode)
 	{
 		case NORMAL:
 			*Rend = NORMAL;
@@ -179,16 +186,13 @@ int Set_Render( int Full, int Num, int Force)
 			break;
 	}
 	
-
-	
-	shift=((Render_Mode)!=1);
+	shift = ((Render_Mode) != 1);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
 	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
 	// this doesn't cover hq2x etc. properly. Let's just always refresh.
-	Refresh_video();
-	 
+	Refresh_video(); 
 }
 
 int
