@@ -1893,14 +1893,15 @@ int Save_Config(const char *File_Name)
 	WritePrivateProfileString("Graphics", "Invert", Str_Tmp, Conf_File);
 	
 	// Video settings
-	sprintf(Str_Tmp, "%d", FS_VSync & 1);
-	WritePrivateProfileString("Graphics", "Full Screen VSync", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", W_VSync & 1);
-	WritePrivateProfileString("Graphics", "Windows VSync", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Full_Screen & 1);
 	WritePrivateProfileString("Graphics", "Full Screen", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Render_Mode);
 	WritePrivateProfileString("Graphics", "Render Mode", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", FS_VSync & 1);
+	WritePrivateProfileString("Graphics", "Full Screen VSync", Str_Tmp, Conf_File);
+	sprintf(Str_Tmp, "%d", W_VSync & 1);
+	WritePrivateProfileString("Graphics", "Windows VSync", Str_Tmp, Conf_File);
+	
 	sprintf(Str_Tmp, "%d", Bpp);
 	WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Opengl & 1);

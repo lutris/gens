@@ -54,7 +54,7 @@ SearchKey (const char *fromWhere, const char *key)
   char *found = NULL;
   char *ext_key;
 
-  ext_key = malloc (1 + strlen (key) + 1);	// \n key \0
+  ext_key = malloc (1 + strlen (key) + 1 + 1);	// \n key \0
   ext_key[0] = '\n';
   ext_key[1] = '\0';
   strcat (ext_key, key);
