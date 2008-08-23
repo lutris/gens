@@ -345,17 +345,12 @@ void create_genswindow_FileMenu(GtkWidget *container)
 void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
-	GtkWidget *FileMenu_ChangeState_SubMenu_0;
-	GtkWidget *FileMenu_ChangeState_SubMenu_1;
-	GtkWidget *FileMenu_ChangeState_SubMenu_2;
-	GtkWidget *FileMenu_ChangeState_SubMenu_3;
-	GtkWidget *FileMenu_ChangeState_SubMenu_4;
-	GtkWidget *FileMenu_ChangeState_SubMenu_5;
-	GtkWidget *FileMenu_ChangeState_SubMenu_6;
-	GtkWidget *FileMenu_ChangeState_SubMenu_7;
-	GtkWidget *FileMenu_ChangeState_SubMenu_8;
-	GtkWidget *FileMenu_ChangeState_SubMenu_9;
+	GtkWidget *SlotItem;
 	GSList *SlotGroup = NULL;
+	
+	int i;
+	char ObjName[64];
+	char SlotName[8];
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
@@ -363,26 +358,15 @@ void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the save slot entries.
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_0, "FileMenu_ChangeState_SubMenu_0",
-			 "0", TRUE, on_FileMenu_ChangeState_SubMenu_0_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_1, "FileMenu_ChangeState_SubMenu_1",
-			 "1", FALSE, on_FileMenu_ChangeState_SubMenu_1_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_2, "FileMenu_ChangeState_SubMenu_2",
-			 "2", FALSE, on_FileMenu_ChangeState_SubMenu_2_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_3, "FileMenu_ChangeState_SubMenu_3",
-			 "3", FALSE, on_FileMenu_ChangeState_SubMenu_3_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_4, "FileMenu_ChangeState_SubMenu_4",
-			 "4", FALSE, on_FileMenu_ChangeState_SubMenu_4_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_5, "FileMenu_ChangeState_SubMenu_5",
-			 "5", FALSE, on_FileMenu_ChangeState_SubMenu_5_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_6, "FileMenu_ChangeState_SubMenu_6",
-			 "6", FALSE, on_FileMenu_ChangeState_SubMenu_6_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_7, "FileMenu_ChangeState_SubMenu_7",
-			 "7", FALSE, on_FileMenu_ChangeState_SubMenu_7_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_8, "FileMenu_ChangeState_SubMenu_8",
-			 "8", FALSE, on_FileMenu_ChangeState_SubMenu_8_activate);
-	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_9, "FileMenu_ChangeState_SubMenu_9",
-			 "9", FALSE, on_FileMenu_ChangeState_SubMenu_9_activate);
+	for (i = 0; i < 10; i++)
+	{
+		sprintf(SlotName, "%d", i);
+		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", SlotName);
+		NewMenuItem_Radio(SlotItem, SlotName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), SlotGroup);
+		g_signal_connect((gpointer)SlotItem, "activate",
+				 G_CALLBACK(on_FileMenu_ChangeState_SubMenu_SlotItem_activate),
+				 GINT_TO_POINTER(i));
+	}
 }
 
 
@@ -502,6 +486,7 @@ void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container)
 	GtkWidget *SubMenu;
 	GtkWidget *ResItem;
 	GSList *ResGroup = NULL;
+	int resValue;	// 0xWWWWHHHH
 	
 	// TODO: Move this array somewhere else.
 	int resolutions[5][2] =
@@ -532,8 +517,10 @@ void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container)
 		
 		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", ResName);
 		NewMenuItem_Radio(ResItem, ResName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), ResGroup);
-		// TODO: Somehow pass the resolution ID using the parameter.
-		//g_signal_connect((gpointer)ResItem, G_CALLBACK(on_ResItem_activate), NULL);
+		resValue = (resolutions[i][0] == -1 ? 0 : (resolutions[i][0] << 16 | resolutions[i][1]));
+		g_signal_connect((gpointer)ResItem, "activate",
+				 G_CALLBACK(on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate),
+				 GINT_TO_POINTER(resValue));
 	}
 }
 
@@ -545,33 +532,31 @@ void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container)
 void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
-	GtkWidget *GraphicsMenu_bpp_SubMenu_16;
-	GtkWidget *GraphicsMenu_bpp_SubMenu_24;
-	GtkWidget *GraphicsMenu_bpp_SubMenu_32;
+	GtkWidget *bppItem;
 	GSList *bppGroup = NULL;
+	
+	// TODO: Move this array somewhere else.
+	int bpp[3] = {16, 24, 32};
+	
+	int i;
+	char ObjName[64];
+	char bppName[8];
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
 	gtk_widget_set_name(SubMenu, "GraphicsMenu_bpp_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
-	// Create the resolution entries.
-	/*
-	NewMenuItem_Radio(GraphicsMenu_bpp_SubMenu_16, "16",
-			  "GraphicsMenu_bpp_SubMenu_16", SubMenu, FALSE, bppGroup);
-	g_signal_connect((gpointer)GraphicsMenu_bpp_SubMenu_16, "activate",
-			 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_16_activate), NULL);
-	
-	NewMenuItem_Radio(GraphicsMenu_bpp_SubMenu_24, "24",
-			  "GraphicsMenu_bpp_SubMenu_24", SubMenu, FALSE, bppGroup);
-	g_signal_connect((gpointer)GraphicsMenu_bpp_SubMenu_24, "activate",
-			 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_24_activate), NULL);
-
-	NewMenuItem_Radio(GraphicsMenu_bpp_SubMenu_32, "32",
-			  "GraphicsMenu_bpp_SubMenu_32", SubMenu, FALSE, bppGroup);
-	g_signal_connect((gpointer)GraphicsMenu_bpp_SubMenu_32, "activate",
-			 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_32_activate), NULL);
-	*/
+	// Create the bits per pixel entries.
+	for (i = 0; i < 3; i++)
+	{
+		sprintf(bppName, "%d", bpp[i]);
+		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", bppName);
+		NewMenuItem_Radio(bppItem, bppName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), bppGroup);
+		g_signal_connect((gpointer)bppItem, "activate",
+				 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_bppItem_activate),
+				 GINT_TO_POINTER(bpp[i]));
+	}
 }
 
 

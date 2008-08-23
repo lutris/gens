@@ -163,24 +163,15 @@ void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data)
 /**
  * File, Change State, #
  */
-#define CHANGE_SAVE_SLOT(function, slot)					\
-void function(GtkMenuItem *menuitem, gpointer user_data)			\
-{										\
-	if (!do_callbacks)							\
-		return;								\
-	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))	\
-		Set_Current_State(slot);					\
+void on_FileMenu_ChangeState_SubMenu_SlotItem_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	int slot = GPOINTER_TO_INT(user_data);
+	
+	if (!do_callbacks)
+		return;
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		Set_Current_State(slot);
 }
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_0_activate, 0);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_1_activate, 1);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_2_activate, 2);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_3_activate, 3);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_4_activate, 4);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_5_activate, 5);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_6_activate, 6);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_7_activate, 7);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_8_activate, 8);
-CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_9_activate, 9);
 
 
 /**
@@ -246,6 +237,52 @@ void on_GraphicsMenu_OpenGL_activate(GtkMenuItem *menuitem, gpointer user_data)
 		return;
 	
 	Change_OpenGL(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
+/**
+ * Graphics, Resolution, #x# or Custom
+ * TODO: Use this for SDL mode, not just OpenGL mode.
+ */
+void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	int resValue, w, h;
+	
+	if (!do_callbacks)
+		return;
+	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		return;
+	
+	resValue = GPOINTER_TO_INT(user_data);
+	if (resValue == 0)
+	{
+		// TODO: Custom Resolution window.
+		fprintf(stderr, "TODO: %s() - Custom Resolution Window\n", __func__);
+		return;
+	}
+	
+	// Get the resolution.
+	w = (resValue >> 16);
+	h = (resValue & 0xFFFF);
+	
+	// Set the resolution.
+	Set_GL_Resolution(w, h);
+	MESSAGE_NUM_L("Seleted %dx[TODO] Resolution", "Selected %dx[TODO] Resolution", (w), 1500);
+}
+
+
+void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	int bpp = GPOINTER_TO_INT(user_data);
+	
+	if (!do_callbacks)// || !Opengl)
+		return;
+	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		return;
+	
+	// Set the bits per pixel.
+	//Set_Bpp(bpp);
+	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
 }
 
 

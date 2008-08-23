@@ -1006,29 +1006,28 @@ void Refresh_video()
 	Adjust_Stretch(); 
 }
 
-void Set_gl_resolution(int w,int h){
-	
-	if((Opengl)&& (Width_gl!=w ||Height_gl!=h ))
-	{
-	
-	Width_gl=w;
-	Height_gl=h;
 
+/**
+ * Set_GL_Resolution(): Set the OpenGL resolution.
+ * @param w Width.
+ * @param h Height.
+ */
+void Set_GL_Resolution(int w,int h)
+{
+	if (Width_gl == w && Height_gl == h)
+		return;
+	
+	// OpenGL resolution has changed.
+	Width_gl = w;
+	Height_gl = h;
+	if (!Opengl)
+		return;
+	
+	// OpenGL mode is currently enabled. Change the resolution.
 	End_DDraw();
-	
-	
-	
 	Init_DDraw();
-	
-	
-	
-	Set_Render(Full_Screen,Render_Mode,0);
-	
+	Set_Render(Full_Screen, Render_Mode, 0);
 	Refresh_video();
-	
-	}
-	
-	
 }
 
 void Set_Bpp(int newbpp)

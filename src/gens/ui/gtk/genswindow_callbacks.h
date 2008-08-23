@@ -27,16 +27,7 @@ void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_SaveState_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_0_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_1_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_2_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_3_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_4_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_5_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_6_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_7_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_8_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_FileMenu_ChangeState_SubMenu_9_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_SlotItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 
@@ -45,6 +36,8 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
 void on_GraphicsMenu_VSync_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_Stretch_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_OpenGL_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data);
