@@ -1044,21 +1044,23 @@ void Set_Bpp(int newbpp)
 	
 }
 
-void Change_backend()
+
+/**
+ * Change_OpenGL(): Change the OpenGL setting.
+ * @param stretch 0 to turn OpenGL off; 1 to turn OpenGL on.
+ */
+void Change_OpenGL(int newOpenGL)
 {
 	End_DDraw();
-	
-	Opengl=!Opengl;
-	
+	Opengl = (newOpenGL == 1 ? 1 : 0);
 	Init_DDraw();
 	
-	if(Opengl)
-	MESSAGE_L("Selected Opengl Renderer", "Selected Opengl Renderer", 1500)
-	
+	if (Opengl)
+		MESSAGE_L("Selected Opengl Renderer", "Selected Opengl Renderer", 1500)
 	else
-	MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500)
-	
+		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500)
 }
+
 /*
 void vsync(){
 if(Opengl){

@@ -19,6 +19,8 @@
 #include "vdp_io.h"
 #include "debug.h"
 
+#include "ui-common.h"
+
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
 int mod = 0;
@@ -95,6 +97,7 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
+		/*
 		case GENS_KEY_BACKSPACE:
 			if (KMOD_SHIFT & mod)
 			{
@@ -102,6 +105,7 @@ void Input_KeyDown(int key)
 				Take_Shot ();
 			}
 			break;
+		*/
 		
 		case GENS_KEY_TAB:
 			system_reset ();
@@ -128,12 +132,15 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F2:
+			/*
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_Stretch ();
 				sync_gens_ui (UPDATE_GTK);
 			}
-			else // if (!mod)
+			else
+			*/
+			if (!mod)
 			{
 				Set_Frame_Skip (-1);
 				sync_gens_ui (UPDATE_GTK);
@@ -141,12 +148,14 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F3:
+			/*
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_VSync ();
-				sync_gens_ui (UPDATE_GTK);
+				Change_VSync(-1);
+				sync_gens_ui(UPDATE_GTK);
 			}
-			else // if (!mod)
+			else */
+			if (!mod)
 			{
 				if (Frame_Skip == -1)
 				{
@@ -162,16 +171,20 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F4:
-			if (Frame_Skip == -1)
-				Set_Frame_Skip (1);
-			else
+			if (!mod)
 			{
-				if (Frame_Skip < 8)
-					Set_Frame_Skip (Frame_Skip + 1);
+				if (Frame_Skip == -1)
+					Set_Frame_Skip (1);
+				else
+				{
+					if (Frame_Skip < 8)
+						Set_Frame_Skip (Frame_Skip + 1);
+				}
+				sync_gens_ui (UPDATE_GTK);
 			}
-			sync_gens_ui (UPDATE_GTK);
 			break;
 		
+		/*
 		case GENS_KEY_F5:
 			if (mod & GENS_KMOD_SHIFT)
 			{
@@ -187,17 +200,25 @@ void Input_KeyDown(int key)
 				Save_State (Str_Tmp);
 			}
 			break;
+		*/
 		
 		case GENS_KEY_F6:
-			Set_Current_State ((Current_State + 9) % 10);
-			sync_gens_ui (UPDATE_GTK);
+			if (!mod)
+			{
+				Set_Current_State ((Current_State + 9) % 10);
+				sync_gens_ui (UPDATE_GTK);
+			}
 			break;
 		
 		case GENS_KEY_F7:
-			Set_Current_State ((Current_State + 1) % 10);
-			sync_gens_ui (UPDATE_GTK);
+			if (!mod)
+			{
+				Set_Current_State ((Current_State + 1) % 10);
+				sync_gens_ui (UPDATE_GTK);
+			}
 			break;
 		
+		/*
 		case GENS_KEY_F8:
 			if (mod & GENS_KMOD_SHIFT)
 			{
@@ -214,6 +235,7 @@ void Input_KeyDown(int key)
 				Load_State (Str_Tmp);
 			}
 			break;
+		*/
 		
 		case GENS_KEY_F9:
 			if (mod & GENS_KMOD_SHIFT)
@@ -375,13 +397,15 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
+		/*
 		case GENS_KEY_r:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_backend();
+				Change_OpenGL(!Opengl);
 				sync_gens_ui(UPDATE_GTK);
 			}
 			break;
+		*/
 		
 		case GENS_KEY_v:
 			if (mod & GENS_KMOD_CTRL)

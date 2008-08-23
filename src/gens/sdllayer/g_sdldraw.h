@@ -49,7 +49,7 @@ void Put_Info(char *,int);
 void Refresh_video();
 void Set_gl_resolution(int w,int h);
 void Set_Bpp(int newbpp);
-void Change_backend();
+void Change_OpenGL(int newOpenGL);
 void Adjust_Stretch();
 extern SDL_Surface *surface;
 

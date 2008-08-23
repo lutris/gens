@@ -5,10 +5,13 @@
 
 #include "gens.h"
 #include "g_main.h"
+#include "genswindow.h"
 #include "genswindow_callbacks.h"
+#include "ui_proxy.h"
 #include "ui-common.h"
 
 #include "g_sdlsound.h"
+#include "g_sdldraw.h"
 #include "gym.h"
 #include "rom.h"
 #include "vdp_io.h"
@@ -93,7 +96,7 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	// TODO: Reimplement Game Genie.
-	fprintf(stderr, "TODO: STUB: on_FileMenu_GameGenie_activate()\n");
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
 }
 
 
@@ -163,6 +166,8 @@ void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data)
 #define CHANGE_SAVE_SLOT(function, slot)					\
 void function(GtkMenuItem *menuitem, gpointer user_data)			\
 {										\
+	if (!do_callbacks)							\
+		return;								\
 	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))	\
 		Set_Current_State(slot);					\
 }
@@ -184,4 +189,93 @@ CHANGE_SAVE_SLOT(on_FileMenu_ChangeState_SubMenu_9_activate, 9);
 void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	close_gens();
+}
+
+
+/**
+ * Graphics, Full Screen
+ */
+void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+
+	/*
+	if (Full_Screen)
+		Set_Render(0, -1, 1);
+	else
+		Set_Render(1, Render_FS, 1);
+	*/
+	
+	Full_Screen = !Full_Screen;
+	Set_Render(Full_Screen, Render_Mode, 0);
+	printf("%d\n", Full_Screen);
+}
+
+
+/**
+ * Graphics, VSync
+ */
+void on_GraphicsMenu_VSync_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	
+	Change_VSync(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
+/**
+ * Graphics, Stretch
+ */
+void on_GraphicsMenu_Stretch_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	
+	Change_Stretch(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
+/**
+ * Graphics, OpenGL
+ */
+void on_GraphicsMenu_OpenGL_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	
+	Change_OpenGL(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
+/**
+ * Graphics, Color Adjust...
+ */
+void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	// TODO: Color Adjust window.
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+}
+
+
+/**
+ * Graphics, Sprite Limit
+ */
+void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	
+	Set_Sprite_Limit(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
+/**
+ * Graphics, Screen Shot
+ */
+void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	Clear_Sound_Buffer();
+	Take_Shot();
 }

@@ -34,6 +34,7 @@
 
 #include "ui-common.h"
 #include "gtk-misc.h"
+#include "genswindow.h"
 
 // GENS Settings struct
 struct GENS_Settings_t Settings;

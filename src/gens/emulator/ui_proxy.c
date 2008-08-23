@@ -817,22 +817,32 @@ Change_Country (int Num)
 		Set_Game_Name();
 		return 1;
 	}
-      int Change_Stretch (void)
-      {
+
+
+/**
+ * Change_Stretch(): Change the Stretch setting.
+ * @param stretch 0 to turn Stretch off; 1 to turn Stretch on.
+ * @return 1 on success.
+ */
+int Change_Stretch(int newStretch)
+{
+	// TODO: Stretched mode seems to be broken, even though it is being set correctly...
+	
 	if ((Full_Screen) && (Render_Mode > 1))
-	  return (0);
-
+		return 0;
+	
 	Flag_Clr_Scr = 1;
-
-	if ((Stretch = (1 - Stretch)))
-	  MESSAGE_L ("Stretched mode", "Stretched mode", 1000)
-	  else
-	  MESSAGE_L ("Correct ratio mode", "Correct ratio mode", 1000)
-	  
-	  Adjust_Stretch();
-	  
-	    return (1);
-      }
+	
+	Stretch = (newStretch == 1 ? 1 : 0);
+	
+	if (Stretch)
+		MESSAGE_L ("Stretched mode", "Stretched mode", 1000)
+	else
+		MESSAGE_L ("Correct ratio mode", "Correct ratio mode", 1000)
+	
+	Adjust_Stretch();
+	return 1;
+}
 
 
       int Change_Blit_Style (void)
@@ -850,14 +860,23 @@ Change_Country (int Num)
 		     "Enable hardware blit for Full-Screen", 1000) return (1);
       }
 
-      int Set_Sprite_Over (int Num)
-      {
-	if ((Sprite_Over = Num))
-	  MESSAGE_L ("Sprite Limit Enabled", "Sprite Limit Enabled", 1000)
-	  else
-	  MESSAGE_L ("Sprite Limit Disabled", "Sprite Limit Disabled", 1000)
-	    return (1);
-      }
+
+/**
+ * Set_Sprite_Limit(): Enable/Disable the sprite limit.
+ * @param newLimit 0 to disable; 1 to enable.
+ * @return 1 on success. 
+ */
+int Set_Sprite_Limit(int newLimit)
+{
+	Sprite_Over = newLimit;
+	
+	if (Sprite_Over)
+		MESSAGE_L ("Sprite Limit Enabled", "Sprite Limit Enabled", 1000)
+	else
+		MESSAGE_L ("Sprite Limit Disabled", "Sprite Limit Disabled", 1000)
+	
+	return 1;
+}
 
       int Change_Debug (int Debug_Mode)
       {
@@ -875,31 +894,37 @@ Change_Country (int Num)
 
 	return 1;
       }
-      int Change_VSync (void)
-      {
+
+/**
+ * Change_VSync(): Change the VSync setting.
+ * @param vsync 0 to turn VSync off; 1 to turn VSync on.
+ * @return 1 on success.
+ */
+int Change_VSync(int newVSync)
+{
 	int *p_vsync;
-
+	
 	if (Full_Screen)
-	  {
-	    End_DDraw ();
-	    p_vsync = &FS_VSync;
-	  }
+	{
+		End_DDraw ();
+		p_vsync = &FS_VSync;
+	}
 	else
-	  p_vsync = &W_VSync;
-
-	*p_vsync = 1 - *p_vsync;
-
+		p_vsync = &W_VSync;
+	
+	*p_vsync = (newVSync == 1 ? 1 : 0);
+	
 	if (*p_vsync)
-	  MESSAGE_L ("Vertical Sync Enabled", "Vertical Sync Enabled", 1000)
-	  else
-	  MESSAGE_L ("Vertical Sync Disabled", "Vertical Sync Disabled", 1000)
-	    if (Full_Screen)
-	    return Init_DDraw (640, 480,
-			       SDL_HWSURFACE | SDL_DOUBLEBUF |
-			       SDL_FULLSCREEN);
-	  else
-	    return 1;
-      }
+		MESSAGE_L ("Vertical Sync Enabled", "Vertical Sync Enabled", 1000)
+	else
+		MESSAGE_L ("Vertical Sync Disabled", "Vertical Sync Disabled", 1000)
+	
+	if (Full_Screen)
+		return Init_DDraw (640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+	else
+		return 1;
+}
+
       int Set_Frame_Skip (int Num)
       {
 	Frame_Skip = Num;

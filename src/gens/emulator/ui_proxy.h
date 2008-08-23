@@ -1,7 +1,7 @@
 #ifndef UI_PROXY_H
 #define UI_PROXY_H
 
-int Set_Sprite_Over(int Num);
+int Set_Sprite_Limit(int newLimit);
 int Set_Current_State(int Num);
 int Set_Frame_Skip(int Num);
 int Change_Debug(int Debug_Mode);
@@ -18,8 +18,8 @@ int Change_PWM(void);
 int Change_DAC(void);
 int Change_CDDA(void);
 int Change_Fast_Blur(void);
-int Change_Stretch(void);
-int Change_VSync(void);
+int Change_Stretch(int newStretch);
+int Change_VSync(int newVSync);
 int Change_Blit_Style(void);
 int Change_DAC_Improv(void);
 int Change_SegaCD_SRAM_Size(int num);

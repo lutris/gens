@@ -13,6 +13,7 @@ extern "C" {
 
 GtkWidget* create_gens_window(void); 
 extern GtkWidget *gens_window;
+extern int do_callbacks;
 
 #ifdef __cplusplus
 }

@@ -31,10 +31,14 @@ GtkTooltips *tooltips;
 void create_genswindow_menubar(GtkWidget *container);
 void create_genswindow_FileMenu(GtkWidget *container);
 void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container);
-void create_genswindow_GraphicMenu(GtkWidget *container);
-void create_genswindow_GraphicMenu_OpenGLResSubMenu(GtkWidget *container);
-void create_genswindow_GraphicMenu_bppSubMenu(GtkWidget *container);
-void create_genswindow_GraphicMenu_RenderSubMenu(GtkWidget *container);
+void create_genswindow_GraphicsMenu(GtkWidget *container);
+void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container);
+void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container);
+void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container);
+
+
+// Set to 0 to temporarily disable callbacks.
+int do_callbacks = 1;
 
 
 // Macros from Glade used to store GtkWidget pointers.
@@ -215,7 +219,7 @@ void create_genswindow_menubar(GtkWidget *container)
 	create_genswindow_FileMenu(MenuBar);
 	
 	// Graphic menu.
-	create_genswindow_GraphicMenu(MenuBar);
+	create_genswindow_GraphicsMenu(MenuBar);
 }
 
 
@@ -312,7 +316,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	// Quick Save
 	NewMenuItem_StockIcon(FileMenu_QuickSave, "Quick Save", "FileMenu_QuickSave", FileMenu,
 			      FileMenu_QuickSave_Icon, "gtk-save");
-	AddMenuAccelerator(FileMenu_QuickSave, GDK_F8, 0);
+	AddMenuAccelerator(FileMenu_QuickSave, GDK_F5, 0);
 	AddMenuCallback(FileMenu_QuickSave, on_FileMenu_QuickSave_activate);
 	
 	// Change State
@@ -386,107 +390,114 @@ void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container)
  * create_genswindow_FileMenu(): Create the file menu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicMenu(GtkWidget *container)
+void create_genswindow_GraphicsMenu(GtkWidget *container)
 {
 	GtkWidget *Graphic;			GtkWidget *Graphic_Icon;
-	GtkWidget *GraphicMenu;
-	GtkWidget *GraphicMenu_FullScreen;	GtkWidget *GraphicMenu_FullScreen_Icon;
-	GtkWidget *GraphicMenu_VSync;
-	GtkWidget *GraphicMenu_Stretch;
-	GtkWidget *GraphicMenu_Separator1;
-	GtkWidget *GraphicMenu_OpenGL;
-	GtkWidget *GraphicMenu_OpenGLRes;
-	GtkWidget *GraphicMenu_bpp;
-	GtkWidget *GraphicMenu_Separator2;
-	GtkWidget *GraphicMenu_ColorAdjust;	GtkWidget *GraphicMenu_ColorAdjust_Icon;
-	GtkWidget *GraphicMenu_Render;		GtkWidget *GraphicMenu_Render_Icon;
-	GtkWidget *GraphicMenu_Separator3;
-	GtkWidget *GraphicMenu_SpriteLimit;
-	GtkWidget *GraphicMenu_Separator4;
-	GtkWidget *GraphicMenu_FrameSkip;	GtkWidget *GraphicMenu_FrameSkip_Icon;
-	GtkWidget *GraphicMenu_Separator5;
-	GtkWidget *GraphicMenu_ScreenShot;	GtkWidget *GraphicMenu_ScreenShot_Icon;
+	GtkWidget *GraphicsMenu;
+	GtkWidget *GraphicsMenu_FullScreen;	GtkWidget *GraphicsMenu_FullScreen_Icon;
+	GtkWidget *GraphicsMenu_VSync;
+	GtkWidget *GraphicsMenu_Stretch;
+	GtkWidget *GraphicsMenu_Separator1;
+	GtkWidget *GraphicsMenu_OpenGL;
+	GtkWidget *GraphicsMenu_OpenGLRes;
+	GtkWidget *GraphicsMenu_bpp;
+	GtkWidget *GraphicsMenu_Separator2;
+	GtkWidget *GraphicsMenu_ColorAdjust;	GtkWidget *GraphicsMenu_ColorAdjust_Icon;
+	GtkWidget *GraphicsMenu_Render;		GtkWidget *GraphicsMenu_Render_Icon;
+	GtkWidget *GraphicsMenu_Separator3;
+	GtkWidget *GraphicsMenu_SpriteLimit;
+	GtkWidget *GraphicsMenu_Separator4;
+	GtkWidget *GraphicsMenu_FrameSkip;	GtkWidget *GraphicsMenu_FrameSkip_Icon;
+	GtkWidget *GraphicsMenu_Separator5;
+	GtkWidget *GraphicsMenu_ScreenShot;	GtkWidget *GraphicsMenu_ScreenShot_Icon;
 	
 	// Graphic
-	NewMenuItem_Icon(Graphic, "_Graphic", "Graphic", container, Graphic_Icon, "xpaint.png");
+	NewMenuItem_Icon(Graphic, "_Graphics", "Graphics", container, Graphic_Icon, "xpaint.png");
 	
-	// Menu object for the GraphicMenu
-	GraphicMenu = gtk_menu_new();
-	gtk_widget_set_name(GraphicMenu, "GraphicMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Graphic), GraphicMenu);
+	// Menu object for the GraphicsMenu
+	GraphicsMenu = gtk_menu_new();
+	gtk_widget_set_name(GraphicsMenu, "GraphicsMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Graphic), GraphicsMenu);
 	
 	// Full Screen
-	NewMenuItem_Icon(GraphicMenu_FullScreen, "_Full Screen", "GraphicMenu_FullScreen", GraphicMenu,
-			 GraphicMenu_FullScreen_Icon, "viewmag1.png");
-	AddMenuAccelerator(GraphicMenu_FullScreen, GDK_Return, GDK_MOD1_MASK);
+	NewMenuItem_Icon(GraphicsMenu_FullScreen, "_Full Screen", "GraphicsMenu_FullScreen", GraphicsMenu,
+			 GraphicsMenu_FullScreen_Icon, "viewmag1.png");
+	AddMenuAccelerator(GraphicsMenu_FullScreen, GDK_Return, GDK_MOD1_MASK);
+	AddMenuCallback(GraphicsMenu_FullScreen, on_GraphicsMenu_FullScreen_activate);
 	
 	// VSync
-	NewMenuItem_Check(GraphicMenu_VSync, "_VSync", "GraphicMenu_VSync", GraphicMenu, FALSE);
-	AddMenuAccelerator(GraphicMenu_VSync, GDK_F3, GDK_SHIFT_MASK);
+	NewMenuItem_Check(GraphicsMenu_VSync, "_VSync", "GraphicsMenu_VSync", GraphicsMenu, FALSE);
+	AddMenuAccelerator(GraphicsMenu_VSync, GDK_F3, GDK_SHIFT_MASK);
+	AddMenuCallback(GraphicsMenu_VSync, on_GraphicsMenu_VSync_activate);
 	
 	// Stretch
-	NewMenuItem_Check(GraphicMenu_Stretch, "_Stretch", "GraphicMenu_Stretch", GraphicMenu, FALSE);
-	AddMenuAccelerator(GraphicMenu_Stretch, GDK_F2, GDK_SHIFT_MASK);
+	NewMenuItem_Check(GraphicsMenu_Stretch, "_Stretch", "GraphicsMenu_Stretch", GraphicsMenu, FALSE);
+	AddMenuAccelerator(GraphicsMenu_Stretch, GDK_F2, GDK_SHIFT_MASK);
+	AddMenuCallback(GraphicsMenu_Stretch, on_GraphicsMenu_Stretch_activate);
 	
 	// Separator
-	NewMenuSeparator(GraphicMenu_Separator1, "GraphicMenu_Separator1", GraphicMenu);
+	NewMenuSeparator(GraphicsMenu_Separator1, "GraphicsMenu_Separator1", GraphicsMenu);
 	
 	// OpenGL
-	NewMenuItem(GraphicMenu_OpenGL, "Open_GL", "GraphicMenu_OpenGL", GraphicMenu);
-	AddMenuAccelerator(GraphicMenu_OpenGL, GDK_r, GDK_SHIFT_MASK);
+	NewMenuItem_Check(GraphicsMenu_OpenGL, "Open_GL", "GraphicsMenu_OpenGL", GraphicsMenu, FALSE);
+	AddMenuAccelerator(GraphicsMenu_OpenGL, GDK_r, GDK_SHIFT_MASK);
+	AddMenuCallback(GraphicsMenu_OpenGL, on_GraphicsMenu_OpenGL_activate);
 	
 	// OpenGL Resolution
-	NewMenuItem(GraphicMenu_OpenGLRes, "OpenGL Resolution", "GraphicMenu_OpenGLRes", GraphicMenu);
+	NewMenuItem(GraphicsMenu_OpenGLRes, "OpenGL Resolution", "GraphicsMenu_OpenGLRes", GraphicsMenu);
 	// OpenGL Resolution submenu
-	create_genswindow_GraphicMenu_OpenGLResSubMenu(GraphicMenu_OpenGLRes);
+	create_genswindow_GraphicsMenu_OpenGLResSubMenu(GraphicsMenu_OpenGLRes);
 	
 	// Bits per pixel (OpenGL mode) [TODO: Where is this value actually used?]
-	NewMenuItem(GraphicMenu_bpp, "Bits per pixel", "GraphicMenu_bpp", GraphicMenu);
+	NewMenuItem(GraphicsMenu_bpp, "Bits per pixel", "GraphicsMenu_bpp", GraphicsMenu);
 	// Bits per pixel submenu
-	create_genswindow_GraphicMenu_bppSubMenu(GraphicMenu_bpp);
+	create_genswindow_GraphicsMenu_bppSubMenu(GraphicsMenu_bpp);
 	
 	// Separator
-	NewMenuSeparator(GraphicMenu_Separator2, "GraphicMenu_Separator2", GraphicMenu);
+	NewMenuSeparator(GraphicsMenu_Separator2, "GraphicsMenu_Separator2", GraphicsMenu);
 	
 	// Color Adjust
-	NewMenuItem_StockIcon(GraphicMenu_ColorAdjust, "Color Adjust...", "GraphicMenu_ColorAdjust", GraphicMenu,
-			      GraphicMenu_ColorAdjust_Icon, "gtk-select-color");
+	NewMenuItem_StockIcon(GraphicsMenu_ColorAdjust, "Color Adjust...", "GraphicsMenu_ColorAdjust", GraphicsMenu,
+			      GraphicsMenu_ColorAdjust_Icon, "gtk-select-color");
+	AddMenuCallback(GraphicsMenu_ColorAdjust, on_GraphicsMenu_ColorAdjust_activate);
 	
 	// Render
-	NewMenuItem_Icon(GraphicMenu_Render, "_Render", "GraphicMenu_Render", GraphicMenu,
-			 GraphicMenu_Render_Icon, "viewmag.png");
+	NewMenuItem_Icon(GraphicsMenu_Render, "_Render", "GraphicsMenu_Render", GraphicsMenu,
+			 GraphicsMenu_Render_Icon, "viewmag.png");
 	// Render submenu
-	create_genswindow_GraphicMenu_RenderSubMenu(GraphicMenu_Render);
+	create_genswindow_GraphicsMenu_RenderSubMenu(GraphicsMenu_Render);
 	
 	// Separator
-	NewMenuSeparator(GraphicMenu_Separator3, "GraphicMenu_Separator3", GraphicMenu);
+	NewMenuSeparator(GraphicsMenu_Separator3, "GraphicsMenu_Separator3", GraphicsMenu);
 	
 	// Sprite Limit
-	NewMenuItem_Check(GraphicMenu_SpriteLimit, "Sprite Limit", "GraphicMenu_SpriteLimit", GraphicMenu, TRUE);
+	NewMenuItem_Check(GraphicsMenu_SpriteLimit, "Sprite Limit", "GraphicsMenu_SpriteLimit", GraphicsMenu, TRUE);
+	AddMenuCallback(GraphicsMenu_SpriteLimit, on_GraphicsMenu_SpriteLimit_activate);
 	
 	// Separator
-	NewMenuSeparator(GraphicMenu_Separator4, "GraphicMenu_Separator4", GraphicMenu);
+	NewMenuSeparator(GraphicsMenu_Separator4, "GraphicsMenu_Separator4", GraphicsMenu);
 	
 	// Frame Skip
-	NewMenuItem_Icon(GraphicMenu_FrameSkip, "Frame Skip", "GraphicMenu_FrameSkip", GraphicMenu,
-			 GraphicMenu_FrameSkip_Icon, "2rightarrow.png");
+	NewMenuItem_Icon(GraphicsMenu_FrameSkip, "Frame Skip", "GraphicsMenu_FrameSkip", GraphicsMenu,
+			 GraphicsMenu_FrameSkip_Icon, "2rightarrow.png");
 	// TODO: Frame Skip submenu
 	
 	// Separator
-	NewMenuSeparator(GraphicMenu_Separator5, "GraphicMenu_Separator5", GraphicMenu);
+	NewMenuSeparator(GraphicsMenu_Separator5, "GraphicsMenu_Separator5", GraphicsMenu);
 	
 	// Screen Shot
-	NewMenuItem_Icon(GraphicMenu_ScreenShot, "Screen Shot", "GraphicMenu_ScreenShot", GraphicMenu,
-			 GraphicMenu_ScreenShot_Icon, "editcopy.png");
-	AddMenuAccelerator(GraphicMenu_ScreenShot, GDK_BackSpace, GDK_SHIFT_MASK);
+	NewMenuItem_Icon(GraphicsMenu_ScreenShot, "Screen Shot", "GraphicsMenu_ScreenShot", GraphicsMenu,
+			 GraphicsMenu_ScreenShot_Icon, "editcopy.png");
+	AddMenuAccelerator(GraphicsMenu_ScreenShot, GDK_BackSpace, GDK_SHIFT_MASK);
+	AddMenuCallback(GraphicsMenu_ScreenShot, on_GraphicsMenu_ScreenShot_activate);
 }
 
 
 /**
- * create_genswindow_GraphicMenu_OpenGLResSubMenu(): Create the OpenGL Resolution submenu.
+ * create_genswindow_GraphicsMenu_OpenGLResSubMenu(): Create the OpenGL Resolution submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicMenu_OpenGLResSubMenu(GtkWidget *container)
+void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *ResItem;
@@ -508,7 +519,7 @@ void create_genswindow_GraphicMenu_OpenGLResSubMenu(GtkWidget *container)
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicMenu_OpenGLRes_SubMenu");
+	gtk_widget_set_name(SubMenu, "GraphicsMenu_OpenGLRes_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the resolution entries.
@@ -519,7 +530,7 @@ void create_genswindow_GraphicMenu_OpenGLResSubMenu(GtkWidget *container)
 		else
 			strcpy(ResName, "Custom");
 		
-		sprintf(ObjName, "GraphicMenu_OpenGLRes_SubMenu_%s", ResName);
+		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", ResName);
 		NewMenuItem_Radio(ResItem, ResName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), ResGroup);
 		// TODO: Somehow pass the resolution ID using the parameter.
 		//g_signal_connect((gpointer)ResItem, G_CALLBACK(on_ResItem_activate), NULL);
@@ -528,47 +539,47 @@ void create_genswindow_GraphicMenu_OpenGLResSubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicMenu_bppSubMenu(): Create the bits per pixel submenu.
+ * create_genswindow_GraphicsMenu_bppSubMenu(): Create the bits per pixel submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicMenu_bppSubMenu(GtkWidget *container)
+void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
-	GtkWidget *GraphicMenu_bpp_SubMenu_16;
-	GtkWidget *GraphicMenu_bpp_SubMenu_24;
-	GtkWidget *GraphicMenu_bpp_SubMenu_32;
+	GtkWidget *GraphicsMenu_bpp_SubMenu_16;
+	GtkWidget *GraphicsMenu_bpp_SubMenu_24;
+	GtkWidget *GraphicsMenu_bpp_SubMenu_32;
 	GSList *bppGroup = NULL;
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicMenu_bpp_SubMenu");
+	gtk_widget_set_name(SubMenu, "GraphicsMenu_bpp_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the resolution entries.
 	/*
-	NewMenuItem_Radio(GraphicMenu_bpp_SubMenu_16, "16",
-			  "GraphicMenu_bpp_SubMenu_16", SubMenu, FALSE, bppGroup);
-	g_signal_connect((gpointer)GraphicMenu_bpp_SubMenu_16, "activate",
-			 G_CALLBACK(on_GraphicMenu_bpp_SubMenu_16_activate), NULL);
+	NewMenuItem_Radio(GraphicsMenu_bpp_SubMenu_16, "16",
+			  "GraphicsMenu_bpp_SubMenu_16", SubMenu, FALSE, bppGroup);
+	g_signal_connect((gpointer)GraphicsMenu_bpp_SubMenu_16, "activate",
+			 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_16_activate), NULL);
 	
-	NewMenuItem_Radio(GraphicMenu_bpp_SubMenu_24, "24",
-			  "GraphicMenu_bpp_SubMenu_24", SubMenu, FALSE, bppGroup);
-	g_signal_connect((gpointer)GraphicMenu_bpp_SubMenu_24, "activate",
-			 G_CALLBACK(on_GraphicMenu_bpp_SubMenu_24_activate), NULL);
+	NewMenuItem_Radio(GraphicsMenu_bpp_SubMenu_24, "24",
+			  "GraphicsMenu_bpp_SubMenu_24", SubMenu, FALSE, bppGroup);
+	g_signal_connect((gpointer)GraphicsMenu_bpp_SubMenu_24, "activate",
+			 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_24_activate), NULL);
 
-	NewMenuItem_Radio(GraphicMenu_bpp_SubMenu_32, "32",
-			  "GraphicMenu_bpp_SubMenu_32", SubMenu, FALSE, bppGroup);
-	g_signal_connect((gpointer)GraphicMenu_bpp_SubMenu_32, "activate",
-			 G_CALLBACK(on_GraphicMenu_bpp_SubMenu_32_activate), NULL);
+	NewMenuItem_Radio(GraphicsMenu_bpp_SubMenu_32, "32",
+			  "GraphicsMenu_bpp_SubMenu_32", SubMenu, FALSE, bppGroup);
+	g_signal_connect((gpointer)GraphicsMenu_bpp_SubMenu_32, "activate",
+			 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_32_activate), NULL);
 	*/
 }
 
 
 /**
- * create_genswindow_GraphicMenu_RenderSubMenu(): Create the Render submenu.
+ * create_genswindow_GraphicsMenu_RenderSubMenu(): Create the Render submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicMenu_RenderSubMenu(GtkWidget *container)
+void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *RenderItem;
@@ -611,13 +622,13 @@ void create_genswindow_GraphicMenu_RenderSubMenu(GtkWidget *container)
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicMenu_Render_SubMenu");
+	gtk_widget_set_name(SubMenu, "GraphicsMenu_Render_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the render entries.
 	for (i = 0; i < 12; i++)
 	{
-		sprintf(ObjName, "GraphicMenu_OpenGLRes_SubMenu_%s", RenderTag[i]);
+		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", RenderTag[i]);
 		NewMenuItem_Radio(RenderItem, Render[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), RenderGroup);
 		// TODO: Somehow pass the render ID using the parameter.
 		//g_signal_connect((gpointer)RenderItem, G_CALLBACK(on_RenderItem_activate), NULL);
