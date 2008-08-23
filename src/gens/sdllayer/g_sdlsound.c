@@ -48,128 +48,102 @@ void proc (void *user, Uint8 * buffer, int len)
 
 }
 
-int Init_Sound (void)
+
+/**
+ * Init_Sound(): Initialize sound.
+ * @return 1 on success; -1 if sound was already initialized; 0 on error.
+ */
+int Init_Sound(void)
 {
-  int i;
-
-  if (Sound_Initialised)
-    {
-      return -1;
-    }
-  End_Sound ();
-
-  switch (Sound_Rate)
-    {
-    case 11025:
-      if (CPU_Mode)
-	Seg_Length = 220;
-      else
-	Seg_Length = 184;
-      break;
-
-    case 16000:
-      if (CPU_Mode)
-	Seg_Length = 330;
-      else
-	Seg_Length = 276;
-      break;
-
-    case 22050:
-      if (CPU_Mode)
-	Seg_Length = 441;
-      else
-	Seg_Length = 368;
-      break;
-
-    case 32000:
-      if (CPU_Mode)
-	Seg_Length = 660;
-      else
-	Seg_Length = 552;
-      break;
-
-    case 44100:
-      if (CPU_Mode)
-	Seg_Length = 882;
-      else
-	Seg_Length = 735;
-      break;
-
-    case 48000:
-      if (CPU_Mode)
-	Seg_Length = 990;
-      else
-	Seg_Length = 828;
-      break;
-
-    }
-
-  if (CPU_Mode)
-    {
-      for (i = 0; i < 312; i++)
+	int i;
+	int videoLines;
+	
+	if (Sound_Initialised)
+		return -1;
+	
+	End_Sound ();
+	
+	switch (Sound_Rate)
 	{
-	  Sound_Extrapol[i][0] = ((Seg_Length * i) / 312);
-	  Sound_Extrapol[i][1] = (((Seg_Length * (i + 1)) / 312) - Sound_Extrapol[i][0]);
+		case 11025:
+			Seg_Length = (CPU_Mode ? 220 : 184);
+			break;
+		case 16000:
+			Seg_Length = (CPU_Mode ? 330 : 276);
+			break;
+		case 22050:
+			Seg_Length = (CPU_Mode ? 441 : 368);
+			break;
+		case 32000:
+			Seg_Length = (CPU_Mode ? 660 : 552);
+			break;
+		case 44100:
+			Seg_Length = (CPU_Mode ? 882 : 735);
+			break;
+		case 48000:
+			Seg_Length = (CPU_Mode ? 990 : 828);
+			break;
 	}
-
-      for (i = 0; i < Seg_Length; i++)
-	Sound_Interpol[i] = ((312 * i) / Seg_Length);
-    }
-  else
-    {
-      for (i = 0; i < 262; i++)
+	
+	
+	videoLines = (CPU_Mode ? 312 : 262);
+	for (i = 0; i < videoLines; i++)
 	{
-	  Sound_Extrapol[i][0] = ((Seg_Length * i) / 262);
-	  Sound_Extrapol[i][1] = (((Seg_Length * (i + 1)) / 262) - Sound_Extrapol[i][0]);
+		Sound_Extrapol[i][0] = ((Seg_Length * i) / videoLines);
+		Sound_Extrapol[i][1] = (((Seg_Length * (i + 1)) / videoLines) - Sound_Extrapol[i][0]);
 	}
-
-      for (i = 0; i < Seg_Length; i++)
-	Sound_Interpol[i] = ((262 * i) / Seg_Length);
-    }
-
-  memset (Seg_L, 0, Seg_Length << 2);
-  memset (Seg_R, 0, Seg_Length << 2);
-
-  if (-1 == SDL_InitSubSystem (SDL_INIT_AUDIO))
-    {
-      return 0;
-    }
-
-  pMsndOut = (unsigned char *) malloc (Seg_Length << 2);
-
-  SDL_AudioSpec spec;
-
-  spec.freq = Sound_Rate;
-  spec.format = AUDIO_S16SYS;
-  spec.channels = (Sound_Stereo == 0) ? 1 : 2;
-  spec.samples = 1024;
-  spec.callback = proc;
-  audiobuf = (unsigned char *) malloc ((spec.samples * spec.channels * 2 * 4) * sizeof (short));
-
-  spec.userdata = audiobuf;
-
-  memset (audiobuf, 0, (spec.samples * spec.channels * 2 * 4) * sizeof (short));
-  if (SDL_OpenAudio (&spec, 0) != 0)
-    {
-      return 0;
-    }
-  SDL_PauseAudio (0);
-  return (Sound_Initialised = 1);
+	for (i = 0; i < Seg_Length; i++)
+		Sound_Interpol[i] = ((videoLines * i) / Seg_Length);
+	
+	memset (Seg_L, 0, Seg_Length << 2);
+	memset (Seg_R, 0, Seg_Length << 2);
+	
+	if (SDL_InitSubSystem (SDL_INIT_AUDIO) == -1)
+		return 0;
+	
+	pMsndOut = (unsigned char *) malloc (Seg_Length << 2);
+	
+	SDL_AudioSpec spec;
+	
+	spec.freq = Sound_Rate;
+	spec.format = AUDIO_S16SYS;
+	spec.channels = 2;//(Sound_Stereo == 0) ? 1 : 2; // TODO: Initializing 1 channel seems to cause a segfault if it's later changed...
+	spec.samples = 1024;
+	spec.callback = proc;
+	audiobuf = (unsigned char *) malloc ((spec.samples * spec.channels * 2 * 4) * sizeof (short));
+	
+	spec.userdata = audiobuf;
+	
+	memset(audiobuf, 0, (spec.samples * spec.channels * 2 * 4) * sizeof (short));
+	if (SDL_OpenAudio(&spec, 0) != 0)
+		return 0;
+	SDL_PauseAudio(0);
+	
+	Sound_Initialized = 1;
+	return 1;
 }
 
 
-void End_Sound ()
+/**
+ * End_Sound(): Stop sound output.
+ */
+void End_Sound(void)
 {
-  SDL_PauseAudio (1);
-  free (audiobuf); audiobuf = NULL;
-  free (pMsndOut); pMsndOut = NULL;
-  if (Sound_Initialised)
-    {
-      Sound_Is_Playing = 0;
-      Sound_Initialised = 0;
-    }
-  SDL_QuitSubSystem (SDL_INIT_AUDIO);
+	SDL_PauseAudio(1);
+	free(audiobuf);
+	audiobuf = NULL;
+	
+	free(pMsndOut);
+	pMsndOut = NULL;
+	
+	if (Sound_Initialised)
+	{
+		Sound_Is_Playing = 0;
+		Sound_Initialised = 0;
+	}
+	SDL_QuitSubSystem (SDL_INIT_AUDIO);
 }
+
 
 int Get_Current_Seg (void)
 {
