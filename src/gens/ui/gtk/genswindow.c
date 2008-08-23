@@ -690,6 +690,8 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	GtkWidget *CPUMenu_ResetSub68000;
 	GtkWidget *CPUMenu_ResetMainSH2;
 	GtkWidget *CPUMenu_ResetSubSH2;
+	GtkWidget *CPUMenu_ResetZ80;
+	GtkWidget *CPUMenu_Separator2;
 	
 	// CPU
 	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
@@ -741,6 +743,13 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Reset Sub SH2
 	NewMenuItem(CPUMenu_ResetSubSH2, "Reset Sub SH2", "CPUMenu_ResetSubSH2", CPUMenu);
 	AddMenuCallback(CPUMenu_ResetSubSH2, on_CPUMenu_ResetSubSH2_activate);
+	
+	// Reset Z80
+	NewMenuItem(CPUMenu_ResetZ80, "Reset Z80", "CPUMenu_ResetZ80", CPUMenu);
+	AddMenuCallback(CPUMenu_ResetZ80, on_CPUMenu_ResetZ80_activate);
+	
+	// Separator
+	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
 }
 
 

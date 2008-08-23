@@ -16,6 +16,7 @@
 #include "rom.h"
 #include "vdp_io.h"
 #include "save.h"
+#include "z80.h"
 
 // Sega CD
 #include "cd_aspi.h"
@@ -488,4 +489,22 @@ void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
 	Paused = 0;
 	SH2_Reset(&S_SH2, 1);
 	MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
+}
+
+
+/**
+ * CPU, Reset Z80
+ */
+void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	/*
+	if (Check_If_Kaillera_Running())
+		return 0;
+	*/
+	
+	if (!Game)
+		return;
+	
+	z80_Reset(&M_Z80);
+	MESSAGE_L("Z80 reset", "Z80 reset", 1000);
 }
