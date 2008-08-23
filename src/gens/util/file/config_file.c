@@ -18,6 +18,7 @@
 #include "scrshot.h"
 #include "ggenie.h"
 #include "misc.h"
+#include "g_palette.h"
 
 // CPU
 #include "cpu_68k.h"

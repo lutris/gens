@@ -153,6 +153,8 @@ gens_SOURCES = \
 		emulator/g_mcd.h \
 		emulator/g_32x.c \
 		emulator/g_32x.h \
+		emulator/g_palette.c \
+		emulator/g_palette.h \
 		emulator/gens.c \
 		emulator/gens.h \
 		debug/debug.c \

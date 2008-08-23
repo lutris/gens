@@ -18,6 +18,7 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 #include "vdp_32x.h"
+#include "g_palette.h"
 #include "rom.h"
 #include "mem_m68k.h"
 #include "mem_s68k.h"

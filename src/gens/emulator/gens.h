@@ -15,17 +15,9 @@ extern int Debug;
 extern int Frame_Skip;
 extern int Frame_Number;
 extern int DAC_Improv;
-extern int RMax_Level;
-extern int GMax_Level;
-extern int BMax_Level;
-extern int Contrast_Level;
-extern int Brightness_Level;
-extern int Greyscale;
-extern int Invert_Color;
 
 int Round_Double(double val);
 void Init_Tab(void);
-void Recalculate_Palettes(void);
 void Check_Country_Order(void);
 
 void Set_Clock_Freq(int system);
