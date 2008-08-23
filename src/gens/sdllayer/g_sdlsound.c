@@ -85,7 +85,6 @@ int Init_Sound(void)
 			break;
 	}
 	
-	
 	videoLines = (CPU_Mode ? 312 : 262);
 	for (i = 0; i < videoLines; i++)
 	{
