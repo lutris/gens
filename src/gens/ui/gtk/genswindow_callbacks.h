@@ -52,6 +52,8 @@ void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_ResetMain68000_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 #ifdef __cplusplus
 }

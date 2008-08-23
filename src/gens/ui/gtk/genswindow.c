@@ -685,8 +685,11 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	#endif
 	GtkWidget *CPUMenu_Country;
 	GtkWidget *CPUMenu_HardReset;		GtkWidget *CPUMenu_HardReset_Icon;
+	GtkWidget *CPUMenu_Reset68000;
 	GtkWidget *CPUMenu_ResetMain68000;
 	GtkWidget *CPUMenu_ResetSub68000;
+	GtkWidget *CPUMenu_ResetMainSH2;
+	GtkWidget *CPUMenu_ResetSubSH2;
 	
 	// CPU
 	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
@@ -719,6 +722,10 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	AddMenuAccelerator(CPUMenu_HardReset, GDK_Tab, 0);
 	AddMenuCallback(CPUMenu_HardReset, on_CPUMenu_HardReset_activate);
 	
+	// Reset 68000 (same as Reset Main 68000, but shows up if the Sega CD isn't enabled.)
+	NewMenuItem(CPUMenu_Reset68000, "Reset 68000", "CPUMenu_Reset68000", CPUMenu);
+	AddMenuCallback(CPUMenu_Reset68000, on_CPUMenu_ResetMain68000_activate);
+	
 	// Reset Main 68000
 	NewMenuItem(CPUMenu_ResetMain68000, "Reset Main 68000", "CPUMenu_ResetMain68000", CPUMenu);
 	AddMenuCallback(CPUMenu_ResetMain68000, on_CPUMenu_ResetMain68000_activate);
@@ -726,6 +733,14 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Reset Sub 68000
 	NewMenuItem(CPUMenu_ResetSub68000, "Reset Sub 68000", "CPUMenu_ResetSub68000", CPUMenu);
 	AddMenuCallback(CPUMenu_ResetSub68000, on_CPUMenu_ResetSub68000_activate);
+	
+	// Reset Main SH2
+	NewMenuItem(CPUMenu_ResetMainSH2, "Reset Main SH2", "CPUMenu_ResetMainSH2", CPUMenu);
+	AddMenuCallback(CPUMenu_ResetMainSH2, on_CPUMenu_ResetMainSH2_activate);
+	
+	// Reset Sub SH2
+	NewMenuItem(CPUMenu_ResetSubSH2, "Reset Sub SH2", "CPUMenu_ResetSubSH2", CPUMenu);
+	AddMenuCallback(CPUMenu_ResetSubSH2, on_CPUMenu_ResetSubSH2_activate);
 }
 
 

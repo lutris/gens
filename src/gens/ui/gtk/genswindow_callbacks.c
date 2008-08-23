@@ -21,6 +21,9 @@
 #include "cd_aspi.h"
 #include "g_mcd.h"
 
+// 32X
+#include "sh2.h"
+
 
 // For some reason, these aren't extern'd anywhere...
 void main68k_reset();
@@ -447,4 +450,42 @@ void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data
 	Paused = 0;
 	sub68k_reset();
 	MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
+}
+
+
+/**
+ * CPU, Reset Main SH2
+ */
+void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	/*
+	if (Check_If_Kaillera_Running())
+		return 0;
+	*/
+	
+	if (!Game || !_32X_Started)
+		return;
+	
+	Paused = 0;
+	SH2_Reset(&M_SH2, 1);
+	MESSAGE_L("Master SH2 reset", "Master SH2 reset", 1000);
+}
+
+
+/**
+ * CPU, Reset Sub SH2
+ */
+void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	/*
+	if (Check_If_Kaillera_Running())
+		return 0;
+	*/
+	
+	if (!Game || !_32X_Started)
+		return;
+	
+	Paused = 0;
+	SH2_Reset(&S_SH2, 1);
+	MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
 }
