@@ -49,7 +49,7 @@ void create_genswindow_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUG
 void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container);
 #endif
-
+void create_genswindow_HelpMenu(GtkWidget *container);
 
 // Set to 0 to temporarily disable callbacks.
 int do_callbacks = 1;
@@ -233,6 +233,7 @@ void create_genswindow_menubar(GtkWidget *container)
 	create_genswindow_FileMenu(MenuBar);
 	create_genswindow_GraphicsMenu(MenuBar);
 	create_genswindow_CPUMenu(MenuBar);
+	create_genswindow_HelpMenu(MenuBar);
 }
 
 
@@ -818,3 +819,27 @@ void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container)
 	}
 }
 #endif
+
+
+/**
+ * create_genswindow_HelpMenu(): Create the Help menu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_HelpMenu(GtkWidget *container)
+{
+	GtkWidget *Help;			GtkWidget *Help_Icon;
+	GtkWidget *HelpMenu;
+	GtkWidget *HelpMenu_About;		GtkWidget *HelpMenu_About_Icon;
+	
+	// Help
+	NewMenuItem_StockIcon(Help, "_Help", "Help", container, Help_Icon, "gtk-help");
+	
+	// Menu object for the HelpMenu
+	HelpMenu = gtk_menu_new();
+	gtk_widget_set_name(HelpMenu, "HelpMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Help), HelpMenu);
+	
+	// About
+	NewMenuItem_StockIcon(HelpMenu_About, "_About", "About", HelpMenu, HelpMenu_About_Icon, "gtk-help");
+	AddMenuCallback(HelpMenu_About, on_HelpMenu_About_activate);
+}

@@ -45,6 +45,7 @@ void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_da
 void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 
+
 // CPU menu
 #ifdef GENS_DEBUG
 void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data);
@@ -56,6 +57,11 @@ void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
 void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_SegaCD_PerfectSync_activate(GtkMenuItem *menuitem, gpointer user_data);
+
+
+// Help menu
+void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);
+
 
 #ifdef __cplusplus
 }

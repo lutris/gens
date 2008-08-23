@@ -519,3 +519,13 @@ void on_CPUMenu_SegaCD_PerfectSync_activate(GtkMenuItem *menuitem, gpointer user
 		return;
 	Change_SegaCD_PerfectSync(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
 }
+
+
+/**
+ * Help, About
+ */
+void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	// TODO: About Dialog.
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+}
