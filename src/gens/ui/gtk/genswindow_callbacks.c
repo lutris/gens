@@ -22,6 +22,11 @@
 #include "g_mcd.h"
 
 
+// For some reason, these aren't extern'd anywhere...
+void main68k_reset();
+void sub68k_reset();
+
+
 /**
  * Window is closed.
  */
@@ -397,4 +402,49 @@ void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	system_reset();
+}
+
+
+/**
+ * CPU, Reset Main 68000
+ */
+void on_CPUMenu_ResetMain68000_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	/*
+	if (Check_If_Kaillera_Running())
+		return 0;
+	*/
+	
+	if (!Game)
+		return;
+	
+	Paused = 0;
+	main68k_reset();
+	if (Genesis_Started || _32X_Started)
+	{
+		MESSAGE_L("68000 CPU reset", "68000 CPU reset", 1000);
+	}
+	else if(SegaCD_Started)
+	{
+		MESSAGE_L("Main 68000 CPU reset", "Main 68000 CPU reset", 1000);
+	}
+}
+
+
+/**
+ * CPU, Reset Sub 68000
+ */
+void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	/*
+	if (Check_If_Kaillera_Running())
+		return 0;
+	*/
+	
+	if (!Game || !SegaCD_Started)
+		return;
+	
+	Paused = 0;
+	sub68k_reset();
+	MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
 }

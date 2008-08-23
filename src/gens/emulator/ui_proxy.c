@@ -57,11 +57,20 @@ void system_reset(void)
 	*/
 	
 	if (Genesis_Started)
+	{
 		Reset_Genesis();
+		MESSAGE_L("Genesis reset", "Genesis reset", 1500)
+	}
 	else if (SegaCD_Started)
+	{
 		Reset_SegaCD();
+		MESSAGE_L("SegaCD reset", "SegaCD reset", 1500)
+	}
 	else if (_32X_Started)
+	{
 		Reset_32X();
+		MESSAGE_L("32X reset", "32X reset", 1500)
+	}
 }
 
 

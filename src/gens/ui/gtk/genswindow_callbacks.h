@@ -50,6 +50,8 @@ void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gp
 void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data);
 #endif
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_CPUMenu_ResetMain68000_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 #ifdef __cplusplus
 }

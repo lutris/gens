@@ -685,6 +685,8 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	#endif
 	GtkWidget *CPUMenu_Country;
 	GtkWidget *CPUMenu_HardReset;		GtkWidget *CPUMenu_HardReset_Icon;
+	GtkWidget *CPUMenu_ResetMain68000;
+	GtkWidget *CPUMenu_ResetSub68000;
 	
 	// CPU
 	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
@@ -716,6 +718,14 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Leaving this line in anyway so the accelerator is displayed in the menu.
 	AddMenuAccelerator(CPUMenu_HardReset, GDK_Tab, 0);
 	AddMenuCallback(CPUMenu_HardReset, on_CPUMenu_HardReset_activate);
+	
+	// Reset Main 68000
+	NewMenuItem(CPUMenu_ResetMain68000, "Reset Main 68000", "CPUMenu_ResetMain68000", CPUMenu);
+	AddMenuCallback(CPUMenu_ResetMain68000, on_CPUMenu_ResetMain68000_activate);
+
+	// Reset Sub 68000
+	NewMenuItem(CPUMenu_ResetSub68000, "Reset Sub 68000", "CPUMenu_ResetSub68000", CPUMenu);
+	AddMenuCallback(CPUMenu_ResetSub68000, on_CPUMenu_ResetSub68000_activate);
 }
 
 
