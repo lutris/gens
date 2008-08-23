@@ -22,8 +22,17 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
+#include "gens.h"
+#include "debug.h"
+
 GtkWidget *gens_window;
 GtkWidget *MenuBar;
+
+#ifdef GENS_DEBUG
+// Debug menu items
+GtkWidget *debugMenuItems[9];
+GtkWidget *debugSeparators[2];
+#endif
 
 GtkAccelGroup *accel_group;
 GtkTooltips *tooltips;
@@ -36,6 +45,10 @@ void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container);
 void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container);
 void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container);
 void create_genswindow_GraphicsMenu_FrameSkipSubMenu(GtkWidget *container);
+void create_genswindow_CPUMenu(GtkWidget *container);
+#ifdef GENS_DEBUG
+void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container);
+#endif
 
 
 // Set to 0 to temporarily disable callbacks.
@@ -216,16 +229,15 @@ void create_genswindow_menubar(GtkWidget *container)
 	gtk_widget_show(MenuBar);
 	gtk_container_add(GTK_CONTAINER(container), MenuBar);
 	
-	// File menu.
+	// Menus
 	create_genswindow_FileMenu(MenuBar);
-	
-	// Graphic menu.
 	create_genswindow_GraphicsMenu(MenuBar);
+	create_genswindow_CPUMenu(MenuBar);
 }
 
 
 /**
- * create_genswindow_FileMenu(): Create the file menu.
+ * create_genswindow_FileMenu(): Create the File menu.
  * @param container Container for this menu.
  */
 void create_genswindow_FileMenu(GtkWidget *container)
@@ -335,7 +347,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 
 
 /**
- * genswindow_FileMenu_ChangeStateSubMenu(): Create the Change State submenu.
+ * genswindow_FileMenu_ChangeStateSubMenu(): Create the File, Change State submenu.
  * @param container Container for this menu.
  */
 #define CREATE_SAVE_SLOT(widget, ObjName, text, defState, callbackFunc)			\
@@ -372,12 +384,12 @@ void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_FileMenu(): Create the file menu.
+ * create_genswindow_GraphicsMenu(): Create the Graphics menu.
  * @param container Container for this menu.
  */
 void create_genswindow_GraphicsMenu(GtkWidget *container)
 {
-	GtkWidget *Graphic;			GtkWidget *Graphic_Icon;
+	GtkWidget *Graphics;			GtkWidget *Graphics_Icon;
 	GtkWidget *GraphicsMenu;
 	GtkWidget *GraphicsMenu_FullScreen;	GtkWidget *GraphicsMenu_FullScreen_Icon;
 	GtkWidget *GraphicsMenu_VSync;
@@ -396,13 +408,13 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	GtkWidget *GraphicsMenu_Separator5;
 	GtkWidget *GraphicsMenu_ScreenShot;	GtkWidget *GraphicsMenu_ScreenShot_Icon;
 	
-	// Graphic
-	NewMenuItem_Icon(Graphic, "_Graphics", "Graphics", container, Graphic_Icon, "xpaint.png");
+	// Graphics
+	NewMenuItem_Icon(Graphics, "_Graphics", "Graphics", container, Graphics_Icon, "xpaint.png");
 	
 	// Menu object for the GraphicsMenu
 	GraphicsMenu = gtk_menu_new();
 	gtk_widget_set_name(GraphicsMenu, "GraphicsMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Graphic), GraphicsMenu);
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Graphics), GraphicsMenu);
 	
 	// Full Screen
 	NewMenuItem_Icon(GraphicsMenu_FullScreen, "_Full Screen", "GraphicsMenu_FullScreen", GraphicsMenu,
@@ -480,7 +492,7 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_OpenGLResSubMenu(): Create the OpenGL Resolution submenu.
+ * create_genswindow_GraphicsMenu_OpenGLResSubMenu(): Create the Graphics, OpenGL Resolution submenu.
  * @param container Container for this menu.
  */
 void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container)
@@ -528,7 +540,7 @@ void create_genswindow_GraphicsMenu_OpenGLResSubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_bppSubMenu(): Create the bits per pixel submenu.
+ * create_genswindow_GraphicsMenu_bppSubMenu(): Create the Graphics, Bits per pixel submenu.
  * @param container Container for this menu.
  */
 void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container)
@@ -563,7 +575,7 @@ void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_RenderSubMenu(): Create the Render submenu.
+ * create_genswindow_GraphicsMenu_RenderSubMenu(): Create the Graphics, Render submenu.
  * @param container Container for this menu.
  */
 void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container)
@@ -625,7 +637,7 @@ void create_genswindow_GraphicsMenu_RenderSubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_FrameSkipSubMenu(): Create the frame skip submenu.
+ * create_genswindow_GraphicsMenu_FrameSkipSubMenu(): Create the Graphics, Frame Skip submenu.
  * @param container Container for this menu.
  */
 void create_genswindow_GraphicsMenu_FrameSkipSubMenu(GtkWidget *container)
@@ -657,3 +669,98 @@ void create_genswindow_GraphicsMenu_FrameSkipSubMenu(GtkWidget *container)
 				 GINT_TO_POINTER(i));
 	}
 }
+
+
+/**
+ * create_genswindow_CPUMenu(): Create the CPU menu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_CPUMenu(GtkWidget *container)
+{
+	GtkWidget *CPU;				GtkWidget *CPU_Icon;
+	GtkWidget *CPUMenu;
+	#ifdef GENS_DEBUG
+	GtkWidget *CPUMenu_Debug;
+	GtkWidget *CPUMenu_Separator1;
+	#endif
+	
+	// CPU
+	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
+	
+	// Menu object for the CPUMenu
+	CPUMenu = gtk_menu_new();
+	gtk_widget_set_name(CPUMenu, "CPUMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(CPU), CPUMenu);
+	
+	#ifdef GENS_DEBUG
+	// Debug
+	NewMenuItem(CPUMenu_Debug, "_Debug", "CPUMenu_Debug", CPUMenu);
+	// Debug submenu
+	create_genswindow_CPUMenu_DebugSubMenu(CPUMenu_Debug);
+	
+	// Separator
+	NewMenuSeparator(CPUMenu_Separator1, "CPUMenu_Separator1", CPUMenu);
+	#endif
+}
+
+
+#ifdef GENS_DEBUG
+/**
+ * create_genswindow_CPUMenu_DebugSubMenu(): Create the CPU, Debug submenu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container)
+{
+	GtkWidget *SubMenu;
+	
+	// TODO: Move this array somewhere else.
+	const char* DebugStr[9] =
+	{
+		"_Genesis - 68000",
+		"Genesis - _Z80",
+		"Genesis - _VDP",
+		"_SegaCD - 68000",
+		"SegaCD - _CDC",
+		"SegaCD - GF_X",
+		"32X - Main SH2",
+		"32X - Sub SH2",
+		"32X - VDP",
+	};
+	const char* DebugTag[9] =
+	{
+		"md_68000",
+		"md_Z80",
+		"md_VDP",
+		"mcd_68000",
+		"mcd_CDC",
+		"mcd_GFX",
+		"32X_MSH2",
+		"32X_SSH2",
+		"32X_VDP",
+	};
+	
+	int i;
+	char ObjName[64];
+	
+	// Create the submenu.
+	SubMenu = gtk_menu_new();
+	gtk_widget_set_name(SubMenu, "CPUMenu_Debug_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	
+	// Create the render entries.
+	for (i = 0; i < 9; i++)
+	{
+		sprintf(ObjName, "CPUMenu_Debug_SubMenu_%s", DebugTag[i]);
+		NewMenuItem_Check(debugMenuItems[i], DebugStr[i], ObjName, SubMenu, FALSE);
+		g_signal_connect((gpointer)debugMenuItems[i], "activate",
+				 G_CALLBACK(on_CPUMenu_Debug_SubMenu_activate),
+				 GINT_TO_POINTER(i + 1));
+		if (i % 3 == 2 && i < 6)
+		{
+			// Every three entires, add a separator.
+			sprintf(ObjName, "CPUMenu_Debug_SubMenu_Sep%d", (i / 3) + 1);
+			NewMenuSeparator(debugSeparators[i / 3], ObjName, SubMenu);
+		}
+	}
+}
+#endif

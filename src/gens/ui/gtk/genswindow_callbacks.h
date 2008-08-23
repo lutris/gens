@@ -3,8 +3,8 @@
  */
 
 
-#ifndef UI_GENSWINDOW_CALLBACKS_H
-#define UI_GENSWINDOW_CALLBACKS_H
+#ifndef GENSWINDOW_CALLBACKS_H
+#define GENSWINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,6 +12,7 @@ extern "C" {
 
 
 #include <gtk/gtk.h>
+#include "gens.h"
 
 
 // Window is closed.
@@ -43,6 +44,11 @@ void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_d
 void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data);
+
+// CPU menu
+#ifdef GENS_DEBUG
+void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data);
+#endif
 
 #ifdef __cplusplus
 }

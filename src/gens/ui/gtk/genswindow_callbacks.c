@@ -321,6 +321,8 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 	
 	if (!do_callbacks)
 		return;
+	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		return;
 	
 	// Set the render mode.
 	Set_Render(Full_Screen, renderMode, 0);
@@ -336,6 +338,8 @@ void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gp
 	
 	if (!do_callbacks)
 		return;
+	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		return;
 	
 	// Set the frame skip value.
 	Set_Frame_Skip(fs);
@@ -350,3 +354,38 @@ void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_da
 	Clear_Sound_Buffer();
 	Take_Shot();
 }
+
+
+#ifdef GENS_DEBUG
+/**
+ * CPU, Debug, #
+ */
+void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	int newDebug = GPOINTER_TO_INT(user_data);
+	int i;
+	
+	if (!do_callbacks)
+		return;
+	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+	{
+		// Debug mode is unchecked.
+		if (newDebug == Debug)
+		{
+			// This debugging mode is being turned off.
+			Change_Debug(newDebug);
+		}
+		return;
+	}
+	
+	// Set the debug mode.
+	Change_Debug(newDebug);
+	
+	// Uncheck all other Debug items.
+	for (i = 0; i < 9; i++)
+	{
+		if (i + 1 != newDebug)
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(debugMenuItems[i]), FALSE);
+	}	
+}
+#endif

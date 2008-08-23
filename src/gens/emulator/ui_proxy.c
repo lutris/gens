@@ -882,22 +882,27 @@ int Set_Sprite_Limit(int newLimit)
 	return 1;
 }
 
-      int Change_Debug (int Debug_Mode)
-      {
-	if (!Game)
-	  return 0;
 
+/**
+ * Change_Debug(): Change the current debugging mode.
+ * @param Debug_Mode New debug mode.
+ * @return 1 on success.
+ */
+int Change_Debug(int Debug_Mode)
+{
+	if (!Game)
+		return 0;
+	
 	Flag_Clr_Scr = 1;
 	Clear_Sound_Buffer ();
-
+	
 	if (Debug_Mode == Debug)
-	  Debug = 0;
+		Debug = 0;
 	else
-	  Debug = Debug_Mode;
-
-
+		Debug = Debug_Mode;
+	
 	return 1;
-      }
+}
 
 /**
  * Change_VSync(): Change the VSync setting.
