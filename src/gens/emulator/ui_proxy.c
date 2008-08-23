@@ -45,21 +45,23 @@ load_state ()
   Load_State (Str_Tmp);
 }
 
-void
-system_reset ()
+
+/**
+ * system_reset(): Reset the active system.
+ */
+void system_reset(void)
 {
-  if (Genesis_Started)
-    {
-      Reset_Genesis ();
-    }
-  else if (_32X_Started)
-    {
-      Reset_32X ();
-    }
-  else if (SegaCD_Started)
-    {
-      Reset_SegaCD ();
-    }
+	/*
+	if (Check_If_Kaillera_Running())
+		return 0;
+	*/
+	
+	if (Genesis_Started)
+		Reset_Genesis();
+	else if (SegaCD_Started)
+		Reset_SegaCD();
+	else if (_32X_Started)
+		Reset_32X();
 }
 
 

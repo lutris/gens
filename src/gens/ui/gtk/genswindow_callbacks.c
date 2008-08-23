@@ -389,3 +389,12 @@ void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data
 	}	
 }
 #endif
+
+
+/**
+ * CPU, Hard Reset
+ */
+void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	system_reset();
+}

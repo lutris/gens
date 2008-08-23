@@ -683,6 +683,8 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	GtkWidget *CPUMenu_Debug;
 	GtkWidget *CPUMenu_Separator1;
 	#endif
+	GtkWidget *CPUMenu_Country;
+	GtkWidget *CPUMenu_HardReset;		GtkWidget *CPUMenu_HardReset_Icon;
 	
 	// CPU
 	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
@@ -701,6 +703,19 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Separator
 	NewMenuSeparator(CPUMenu_Separator1, "CPUMenu_Separator1", CPUMenu);
 	#endif
+	
+	// Country
+	NewMenuItem(CPUMenu_Country, "_Country", "CPUMenu_Country", CPUMenu);
+	// Country submenu
+	// TODO
+	
+	// Hard Reset
+	NewMenuItem_Icon(CPUMenu_HardReset, "Hard _Reset", "CPUMenu_HardReset", CPUMenu,
+			 CPUMenu_HardReset_Icon, "reload.png");
+	// Tab doesn't seem to work here...
+	// Leaving this line in anyway so the accelerator is displayed in the menu.
+	AddMenuAccelerator(CPUMenu_HardReset, GDK_Tab, 0);
+	AddMenuCallback(CPUMenu_HardReset, on_CPUMenu_HardReset_activate);
 }
 
 

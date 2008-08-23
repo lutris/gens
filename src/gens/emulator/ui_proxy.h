@@ -26,7 +26,7 @@ int Change_SegaCD_SRAM_Size(int num);
 int Change_YM2612(void);
 int Change_PSG_Improv(void);
 int Change_YM2612_Improv(void);
-void system_reset ();
+void system_reset(void);
 void Set_Game_Name(void);
 int Set_Render(int FullScreen, int Mode, int Force);
 
