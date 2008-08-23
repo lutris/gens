@@ -27,6 +27,7 @@
 #include "psg.h"
 #include "pwm.h"
 #include "debug.h"
+#include "ggenie.h"
 
 // TODO: Eliminate the dependency on these files.
 #include "g_sdlsound.h"
@@ -335,10 +336,19 @@ int IsAsyncAllowed(void)
 }
 
 
-int main (int argc, char *argv[])
+/**
+ * main(): Main loop.
+ * @param argc Number of arguments.
+ * @param argv Array of arguments.
+ * @return Error code.
+ */
+int main(int argc, char *argv[])
 {
 	// Initialize the Settings struct.
 	Init_Settings();
+	
+	// Clear the Game Genie struct.
+	memset(Liste_GG, 0, sizeof(Liste_GG));
 	
 	//char sdlbuf[32];
 	

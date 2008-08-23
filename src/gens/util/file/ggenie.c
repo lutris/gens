@@ -31,7 +31,7 @@
 #include "rom.h"
 
 
-struct GG_Code Liste_GG[256] = { {"\0", "\0", 0, 0, 0, 0} };
+struct GG_Code Liste_GG[256];
 static char genie_chars[] =
   "AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 char Patch_Dir[1024] = "\\";
