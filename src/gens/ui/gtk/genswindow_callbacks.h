@@ -14,10 +14,30 @@ extern "C" {
 #include <gtk/gtk.h>
 
 
+// Window is closed.
+gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data);
+
+
 // File menu
 void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_SaveState_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_0_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_1_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_2_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_3_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_4_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_5_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_6_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_7_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_8_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ChangeState_SubMenu_9_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 
 #ifdef __cplusplus

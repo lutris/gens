@@ -104,7 +104,6 @@ void create_genswindow_GraphicMenu_RenderSubMenu(GtkWidget *container);
 // Macro to create a menu item with radio buttons.
 #define NewMenuItem_Radio(MenuItemWidget, MenuItemCaption, MenuItemName, Container, State, RadioGroup)	\
 {												\
-	printf("%s\n", MenuItemName); \
 	MenuItemWidget = gtk_radio_menu_item_new_with_mnemonic(RadioGroup, (MenuItemCaption));	\
 	RadioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(MenuItemWidget));	\
 	gtk_widget_set_name(MenuItemWidget, MenuItemName);					\
@@ -191,6 +190,12 @@ GtkWidget* create_gens_window(void)
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(gens_window), accel_group);
 	
+	// Callbacks for if the window is closed.
+	g_signal_connect ((gpointer)gens_window, "delete_event",
+			  G_CALLBACK(on_gens_window_close), NULL);
+	g_signal_connect ((gpointer)gens_window, "destroy_event",
+			  G_CALLBACK(on_gens_window_close), NULL);
+	
 	return gens_window;
 }
 
@@ -264,7 +269,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	
 	// ROM History
 	NewMenuItem_Icon(FileMenu_ROMHistory, "ROM _History", "FileMenu_ROMHistory", FileMenu,
-			 FileMenu_ROMHistory_Icon, "Modem.png");
+			 FileMenu_ROMHistory_Icon, "history.png");
 	// TODO: ROM History submenu
 	
 	// Close ROM
@@ -281,6 +286,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	// Game Genie
 	NewMenuItem_Icon(FileMenu_GameGenie, "_Game Genie", "FileMenu_GameGenie", FileMenu,
 			 FileMenu_GameGenie_Icon, "password.png");
+	AddMenuCallback(FileMenu_GameGenie, on_FileMenu_GameGenie_activate);
 	
 	// Separator
 	NewMenuSeparator(FileMenu_Separator2, "FileMenu_Separator2", FileMenu);
@@ -289,21 +295,25 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	NewMenuItem_Icon(FileMenu_LoadState, "_Load State...", "FileMenu_LoadState", FileMenu,
 			 FileMenu_LoadState_Icon, "folder_slin_open.png");
 	AddMenuAccelerator(FileMenu_LoadState, GDK_F8, GDK_SHIFT_MASK);
+	AddMenuCallback(FileMenu_LoadState, on_FileMenu_LoadState_activate);
 	
 	// Save State As...
 	NewMenuItem_StockIcon(FileMenu_SaveState, "_Save State As...", "FileMenu_SaveState", FileMenu,
 			      FileMenu_SaveState_Icon, "gtk-save-as");
 	AddMenuAccelerator(FileMenu_SaveState, GDK_F5, GDK_SHIFT_MASK);
+	AddMenuCallback(FileMenu_SaveState, on_FileMenu_SaveState_activate);
 	
 	// Quick Load
 	NewMenuItem_Icon(FileMenu_QuickLoad, "Quick Load", "FileMenu_QuickLoad", FileMenu,
 			 FileMenu_QuickLoad_Icon, "reload.png");
 	AddMenuAccelerator(FileMenu_QuickLoad, GDK_F8, 0);
+	AddMenuCallback(FileMenu_QuickLoad, on_FileMenu_QuickLoad_activate);
 	
 	// Quick Save
 	NewMenuItem_StockIcon(FileMenu_QuickSave, "Quick Save", "FileMenu_QuickSave", FileMenu,
 			      FileMenu_QuickSave_Icon, "gtk-save");
 	AddMenuAccelerator(FileMenu_QuickSave, GDK_F8, 0);
+	AddMenuCallback(FileMenu_QuickSave, on_FileMenu_QuickSave_activate);
 	
 	// Change State
 	NewMenuItem_StockIcon(FileMenu_ChangeState, "Change State", "FileMenu_ChangeState", FileMenu,
@@ -315,6 +325,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	NewMenuItem_StockIcon(FileMenu_Quit, "_Quit", "FileMenu_Quit", FileMenu,
 			      FileMenu_Quit_Icon, "gtk-quit");
 	AddMenuAccelerator(FileMenu_Quit, GDK_Q, GDK_CONTROL_MASK);
+	AddMenuCallback(FileMenu_Quit, on_FileMenu_Quit_activate);
 }
 
 
@@ -322,15 +333,25 @@ void create_genswindow_FileMenu(GtkWidget *container)
  * genswindow_FileMenu_ChangeStateSubMenu(): Create the Change State submenu.
  * @param container Container for this menu.
  */
+#define CREATE_SAVE_SLOT(widget, ObjName, text, defState, callbackFunc)			\
+{											\
+	NewMenuItem_Radio(widget, text, ObjName, SubMenu, defState, SlotGroup);		\
+	g_signal_connect((gpointer)widget, "activate", G_CALLBACK(callbackFunc), NULL);	\
+}
 void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
-	GtkWidget *SaveSlot;
+	GtkWidget *FileMenu_ChangeState_SubMenu_0;
+	GtkWidget *FileMenu_ChangeState_SubMenu_1;
+	GtkWidget *FileMenu_ChangeState_SubMenu_2;
+	GtkWidget *FileMenu_ChangeState_SubMenu_3;
+	GtkWidget *FileMenu_ChangeState_SubMenu_4;
+	GtkWidget *FileMenu_ChangeState_SubMenu_5;
+	GtkWidget *FileMenu_ChangeState_SubMenu_6;
+	GtkWidget *FileMenu_ChangeState_SubMenu_7;
+	GtkWidget *FileMenu_ChangeState_SubMenu_8;
+	GtkWidget *FileMenu_ChangeState_SubMenu_9;
 	GSList *SlotGroup = NULL;
-	
-	int i;
-	char ObjName[32];
-	char SlotName[2];
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
@@ -338,16 +359,26 @@ void create_genswindow_FileMenu_ChangeStateSubMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the save slot entries.
-	strcpy(ObjName, "FileMenu_ChangeState_SubMenu_X");
-	for (i = 0; i < 10; i++)
-	{
-		ObjName[29] = (char)(i + '0');
-		SlotName[0] = (char)(i + '0');
-		SlotName[1] = 0x00;
-		NewMenuItem_Radio(SaveSlot, SlotName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), SlotGroup);
-		// TODO: Somehow pass the slot number using the parameter.
-		//g_signal_connect((gpointer)SaveSlot, "activate", G_CALLBACK(on_SaveSlot_activate), NULL);
-	}
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_0, "FileMenu_ChangeState_SubMenu_0",
+			 "0", TRUE, on_FileMenu_ChangeState_SubMenu_0_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_1, "FileMenu_ChangeState_SubMenu_1",
+			 "1", FALSE, on_FileMenu_ChangeState_SubMenu_1_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_2, "FileMenu_ChangeState_SubMenu_2",
+			 "2", FALSE, on_FileMenu_ChangeState_SubMenu_2_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_3, "FileMenu_ChangeState_SubMenu_3",
+			 "3", FALSE, on_FileMenu_ChangeState_SubMenu_3_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_4, "FileMenu_ChangeState_SubMenu_4",
+			 "4", FALSE, on_FileMenu_ChangeState_SubMenu_4_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_5, "FileMenu_ChangeState_SubMenu_5",
+			 "5", FALSE, on_FileMenu_ChangeState_SubMenu_5_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_6, "FileMenu_ChangeState_SubMenu_6",
+			 "6", FALSE, on_FileMenu_ChangeState_SubMenu_6_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_7, "FileMenu_ChangeState_SubMenu_7",
+			 "7", FALSE, on_FileMenu_ChangeState_SubMenu_7_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_8, "FileMenu_ChangeState_SubMenu_8",
+			 "8", FALSE, on_FileMenu_ChangeState_SubMenu_8_activate);
+	CREATE_SAVE_SLOT(FileMenu_ChangeState_SubMenu_9, "FileMenu_ChangeState_SubMenu_9",
+			 "9", FALSE, on_FileMenu_ChangeState_SubMenu_9_activate);
 }
 
 
@@ -503,15 +534,10 @@ void create_genswindow_GraphicMenu_OpenGLResSubMenu(GtkWidget *container)
 void create_genswindow_GraphicMenu_bppSubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
-	GtkWidget *bppItem;
+	GtkWidget *GraphicMenu_bpp_SubMenu_16;
+	GtkWidget *GraphicMenu_bpp_SubMenu_24;
+	GtkWidget *GraphicMenu_bpp_SubMenu_32;
 	GSList *bppGroup = NULL;
-	
-	// TODO: Move this array somewhere else.
-	int bppVals[3] = {16, 24, 32};
-	
-	int i;
-	char ObjName[64];
-	char bppName[8];
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
@@ -519,14 +545,22 @@ void create_genswindow_GraphicMenu_bppSubMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the resolution entries.
-	for (i = 0; i < 3; i++)
-	{
-		sprintf(bppName, "%d", bppVals[i]);
-		sprintf(ObjName, "GraphicMenu_bpp_SubMenu_%s", bppName);
-		NewMenuItem_Radio(bppItem, bppName, ObjName, SubMenu, (i == 2 ? TRUE : FALSE), bppGroup);
-		// TODO: Somehow pass the bpp using the parameter.
-		//g_signal_connect((gpointer)bppItem, G_CALLBACK(on_bppItem_activate), NULL);
-	}
+	/*
+	NewMenuItem_Radio(GraphicMenu_bpp_SubMenu_16, "16",
+			  "GraphicMenu_bpp_SubMenu_16", SubMenu, FALSE, bppGroup);
+	g_signal_connect((gpointer)GraphicMenu_bpp_SubMenu_16, "activate",
+			 G_CALLBACK(on_GraphicMenu_bpp_SubMenu_16_activate), NULL);
+	
+	NewMenuItem_Radio(GraphicMenu_bpp_SubMenu_24, "24",
+			  "GraphicMenu_bpp_SubMenu_24", SubMenu, FALSE, bppGroup);
+	g_signal_connect((gpointer)GraphicMenu_bpp_SubMenu_24, "activate",
+			 G_CALLBACK(on_GraphicMenu_bpp_SubMenu_24_activate), NULL);
+
+	NewMenuItem_Radio(GraphicMenu_bpp_SubMenu_32, "32",
+			  "GraphicMenu_bpp_SubMenu_32", SubMenu, FALSE, bppGroup);
+	g_signal_connect((gpointer)GraphicMenu_bpp_SubMenu_32, "activate",
+			 G_CALLBACK(on_GraphicMenu_bpp_SubMenu_32_activate), NULL);
+	*/
 }
 
 
