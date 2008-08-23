@@ -508,3 +508,14 @@ void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data)
 	z80_Reset(&M_Z80);
 	MESSAGE_L("Z80 reset", "Z80 reset", 1000);
 }
+
+
+/**
+ * CPU, SegaCD Perfect Sync
+ */
+void on_CPUMenu_SegaCD_PerfectSync_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	Change_SegaCD_PerfectSync(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}

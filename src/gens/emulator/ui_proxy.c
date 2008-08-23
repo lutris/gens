@@ -567,35 +567,42 @@ Change_Sound (void)
   return 1;
 }
 
-int
-Change_SegaCD_Synchro (void)
+
+/**
+ * Change_SegaCD_PerfectSync(): Set the SegaCD accuracy level.
+ * @param newPerfectSync New accuracy level value.
+ * @return 1 on success.
+ */
+int Change_SegaCD_PerfectSync(newPerfectSync)
 {
-  if (SegaCD_Accurate)
-    {
-      SegaCD_Accurate = 0;
-
-      if (SegaCD_Started)
+	SegaCD_Accurate = newPerfectSync;
+	
+	if (!SegaCD_Accurate)
 	{
-	  Update_Frame = Do_SegaCD_Frame;
-	  Update_Frame_Fast = Do_SegaCD_Frame_No_VDP;
+		// SegaCD Perfect Sync disabled.
+		if (SegaCD_Started)
+		{
+			Update_Frame = Do_SegaCD_Frame;
+			Update_Frame_Fast = Do_SegaCD_Frame_No_VDP;
+		}
+	
+		MESSAGE_L("SegaCD normal mode", "SegaCD normal mode", 1500);
 	}
-
-    MESSAGE_L ("SegaCD normal mode", "SegaCD normal mode", 1500)}
-  else
-    {
-      SegaCD_Accurate = 1;
-
-      if (SegaCD_Started)
+	else
 	{
-	  Update_Frame = Do_SegaCD_Frame_Cycle_Accurate;
-	  Update_Frame_Fast = Do_SegaCD_Frame_No_VDP_Cycle_Accurate;
+		// SegaCD Perfect Sync enabled.
+		
+		if (SegaCD_Started)
+		{
+			Update_Frame = Do_SegaCD_Frame_Cycle_Accurate;
+			Update_Frame_Fast = Do_SegaCD_Frame_No_VDP_Cycle_Accurate;
+		}
+		
+		MESSAGE_L("SegaCD Perfect Sync mode (SLOW)",
+			  "SegaCD Perfect Sync mode (slower)", 1500);
 	}
-
-    MESSAGE_L ("SegaCD perfect synchro mode (SLOW)",
-		 "SegaCD perfect synchro mode (slower)", 1500)}
-
-
-  return 1;
+	
+	return 1;
 }
 
 int

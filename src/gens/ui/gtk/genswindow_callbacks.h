@@ -55,6 +55,7 @@ void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data
 void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_CPUMenu_SegaCD_PerfectSync_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 #ifdef __cplusplus
 }

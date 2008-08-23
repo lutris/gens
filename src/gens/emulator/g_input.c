@@ -390,11 +390,6 @@ void Input_KeyDown(int key)
 					sync_gens_ui (UPDATE_GTK);
 				}
 			}
-			else if (mod & GENS_KMOD_CTRL)
-			{
-				Change_SegaCD_Synchro ();
-				sync_gens_ui (UPDATE_GTK);
-			}
 			break;
 		
 		/*

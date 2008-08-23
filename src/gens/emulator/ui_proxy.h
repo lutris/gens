@@ -7,7 +7,7 @@ int Set_Frame_Skip(int frames);
 int Change_Debug(int Debug_Mode);
 int Change_Country_Order(int Num);
 int Change_Country(int Num);
-int Change_SegaCD_Synchro(void);
+int Change_SegaCD_PerfectSync(newPerfectSync);
 int	Change_Sound(void);
 int Change_Sample_Rate(int Rate);
 int Change_Sound_Stereo(void);

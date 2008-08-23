@@ -692,6 +692,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	GtkWidget *CPUMenu_ResetSubSH2;
 	GtkWidget *CPUMenu_ResetZ80;
 	GtkWidget *CPUMenu_Separator2;
+	GtkWidget *CPUMenu_SegaCD_PerfectSync;
 	
 	// CPU
 	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
@@ -750,6 +751,10 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	
 	// Separator
 	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
+	
+	// SegaCD Perfect Sync
+	NewMenuItem_Check(CPUMenu_SegaCD_PerfectSync, "SegaCD Perfect Sync (SLOW)", "SegaCD Perfect Sync (SLOW)", CPUMenu, FALSE);
+	AddMenuCallback(CPUMenu_SegaCD_PerfectSync, on_CPUMenu_SegaCD_PerfectSync_activate);
 }
 
 
