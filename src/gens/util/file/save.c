@@ -48,20 +48,6 @@ extern int fatal_mp3_error;	// cdda_mp3.c
 extern unsigned int Current_OUT_Pos, Current_OUT_Size;	// cdda_mp3.c
 extern char preloaded_tracks [100], played_tracks_linear [101]; // added for synchronous MP3 code
 
-enum
-{
-  DIK_UP = SDLK_UP, DIK_DOWN = SDLK_DOWN,
-  DIK_LEFT = SDLK_LEFT, DIK_RIGHT = SDLK_RIGHT,
-  DIK_RETURN = SDLK_RETURN, DIK_A = SDLK_a,
-  DIK_S = SDLK_s, DIK_D = SDLK_d,
-  DIK_RSHIFT = SDLK_RSHIFT, DIK_Z = SDLK_z,
-  DIK_X = SDLK_x, DIK_C = SDLK_c, DIK_Y = SDLK_y,
-  DIK_H = SDLK_h, DIK_G = SDLK_g, DIK_J = SDLK_j,
-  DIK_U = SDLK_u, DIK_K = SDLK_k, DIK_L = SDLK_l,
-  DIK_M = SDLK_m, DIK_T = SDLK_t, DIK_I = SDLK_i,
-  DIK_O = SDLK_o, DIK_P = SDLK_p
-};
-
 #define DIR_SEPARATOR '/'
 
 int Current_State = 0;
@@ -2479,23 +2465,23 @@ Load_Config (char *File_Name, void *Game_Active)
 			   Settings.PathNames.Manual_Path, 1024, Conf_File);
 
   Controller_1_Type = GetPrivateProfileInt ("Input", "P1.Type", 1, Conf_File);
-  Keys_Def[0].Up = GetPrivateProfileInt ("Input", "P1.Up", DIK_UP, Conf_File);
+  Keys_Def[0].Up = GetPrivateProfileInt ("Input", "P1.Up", GENS_KEY_UP, Conf_File);
   Keys_Def[0].Down =
-    GetPrivateProfileInt ("Input", "P1.Down", DIK_DOWN, Conf_File);
+    GetPrivateProfileInt ("Input", "P1.Down", GENS_KEY_DOWN, Conf_File);
   Keys_Def[0].Left =
-    GetPrivateProfileInt ("Input", "P1.Left", DIK_LEFT, Conf_File);
+    GetPrivateProfileInt ("Input", "P1.Left", GENS_KEY_LEFT, Conf_File);
   Keys_Def[0].Right =
-    GetPrivateProfileInt ("Input", "P1.Right", DIK_RIGHT, Conf_File);
+    GetPrivateProfileInt ("Input", "P1.Right", GENS_KEY_RIGHT, Conf_File);
   Keys_Def[0].Start =
-    GetPrivateProfileInt ("Input", "P1.Start", DIK_RETURN, Conf_File);
-  Keys_Def[0].A = GetPrivateProfileInt ("Input", "P1.A", DIK_A, Conf_File);
-  Keys_Def[0].B = GetPrivateProfileInt ("Input", "P1.B", DIK_S, Conf_File);
-  Keys_Def[0].C = GetPrivateProfileInt ("Input", "P1.C", DIK_D, Conf_File);
+    GetPrivateProfileInt ("Input", "P1.Start", GENS_KEY_RETURN, Conf_File);
+  Keys_Def[0].A = GetPrivateProfileInt ("Input", "P1.A", GENS_KEY_a, Conf_File);
+  Keys_Def[0].B = GetPrivateProfileInt ("Input", "P1.B", GENS_KEY_s, Conf_File);
+  Keys_Def[0].C = GetPrivateProfileInt ("Input", "P1.C", GENS_KEY_d, Conf_File);
   Keys_Def[0].Mode =
-    GetPrivateProfileInt ("Input", "P1.Mode", DIK_RSHIFT, Conf_File);
-  Keys_Def[0].X = GetPrivateProfileInt ("Input", "P1.X", DIK_Z, Conf_File);
-  Keys_Def[0].Y = GetPrivateProfileInt ("Input", "P1.Y", DIK_X, Conf_File);
-  Keys_Def[0].Z = GetPrivateProfileInt ("Input", "P1.Z", DIK_C, Conf_File);
+    GetPrivateProfileInt ("Input", "P1.Mode", GENS_KEY_RSHIFT, Conf_File);
+  Keys_Def[0].X = GetPrivateProfileInt ("Input", "P1.X", GENS_KEY_z, Conf_File);
+  Keys_Def[0].Y = GetPrivateProfileInt ("Input", "P1.Y", GENS_KEY_x, Conf_File);
+  Keys_Def[0].Z = GetPrivateProfileInt ("Input", "P1.Z", GENS_KEY_c, Conf_File);
 
   Controller_1B_Type =
     GetPrivateProfileInt ("Input", "P1B.Type", 0, Conf_File);
@@ -2549,23 +2535,23 @@ Load_Config (char *File_Name, void *Game_Active)
   Keys_Def[4].Z = GetPrivateProfileInt ("Input", "P1D.Z", 0, Conf_File);
 
   Controller_2_Type = GetPrivateProfileInt ("Input", "P2.Type", 1, Conf_File);
-  Keys_Def[1].Up = GetPrivateProfileInt ("Input", "P2.Up", DIK_Y, Conf_File);
+  Keys_Def[1].Up = GetPrivateProfileInt ("Input", "P2.Up", GENS_KEY_y, Conf_File);
   Keys_Def[1].Down =
-    GetPrivateProfileInt ("Input", "P2.Down", DIK_H, Conf_File);
+    GetPrivateProfileInt ("Input", "P2.Down", GENS_KEY_h, Conf_File);
   Keys_Def[1].Left =
-    GetPrivateProfileInt ("Input", "P2.Left", DIK_G, Conf_File);
+    GetPrivateProfileInt ("Input", "P2.Left", GENS_KEY_g, Conf_File);
   Keys_Def[1].Right =
-    GetPrivateProfileInt ("Input", "P2.Right", DIK_J, Conf_File);
+    GetPrivateProfileInt ("Input", "P2.Right", GENS_KEY_j, Conf_File);
   Keys_Def[1].Start =
-    GetPrivateProfileInt ("Input", "P2.Start", DIK_U, Conf_File);
-  Keys_Def[1].A = GetPrivateProfileInt ("Input", "P2.A", DIK_K, Conf_File);
-  Keys_Def[1].B = GetPrivateProfileInt ("Input", "P2.B", DIK_L, Conf_File);
-  Keys_Def[1].C = GetPrivateProfileInt ("Input", "P2.C", DIK_M, Conf_File);
+    GetPrivateProfileInt ("Input", "P2.Start", GENS_KEY_u, Conf_File);
+  Keys_Def[1].A = GetPrivateProfileInt ("Input", "P2.A", GENS_KEY_k, Conf_File);
+  Keys_Def[1].B = GetPrivateProfileInt ("Input", "P2.B", GENS_KEY_l, Conf_File);
+  Keys_Def[1].C = GetPrivateProfileInt ("Input", "P2.C", GENS_KEY_m, Conf_File);
   Keys_Def[1].Mode =
-    GetPrivateProfileInt ("Input", "P2.Mode", DIK_T, Conf_File);
-  Keys_Def[1].X = GetPrivateProfileInt ("Input", "P2.X", DIK_I, Conf_File);
-  Keys_Def[1].Y = GetPrivateProfileInt ("Input", "P2.Y", DIK_O, Conf_File);
-  Keys_Def[1].Z = GetPrivateProfileInt ("Input", "P2.Z", DIK_P, Conf_File);
+    GetPrivateProfileInt ("Input", "P2.Mode", GENS_KEY_t, Conf_File);
+  Keys_Def[1].X = GetPrivateProfileInt ("Input", "P2.X", GENS_KEY_i, Conf_File);
+  Keys_Def[1].Y = GetPrivateProfileInt ("Input", "P2.Y", GENS_KEY_o, Conf_File);
+  Keys_Def[1].Z = GetPrivateProfileInt ("Input", "P2.Z", GENS_KEY_p, Conf_File);
 
   Controller_2B_Type =
     GetPrivateProfileInt ("Input", "P2B.Type", 0, Conf_File);
