@@ -118,6 +118,8 @@ gens_SOURCES = \
 		sdllayer/g_dsound.h \
 		util/file/chd.c \
 		util/file/chd.h \
+		util/file/config_file.c \
+		util/file/config_file.h \
 		util/file/rom.c \
 		util/file/rom.h \
 		util/file/save.c \

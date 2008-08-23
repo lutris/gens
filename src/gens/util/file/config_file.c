@@ -2,14 +2,13 @@
  * GENS: Configuration file handler.
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "save.h"
 #include "config_file.h"
 #include "port.h"
 
-#include "save.h"
 #include "gens.h"
 #include "g_main.h"
 #include "g_input.h"
@@ -52,6 +51,7 @@
 #include "cd_file.h"
 #include "cd_aspi.h"
 
+// UI
 #include "ui_proxy.h"
 #include "ui-common.h"
 

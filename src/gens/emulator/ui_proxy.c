@@ -573,7 +573,7 @@ Change_Sound (void)
  * @param newPerfectSync New accuracy level value.
  * @return 1 on success.
  */
-int Change_SegaCD_PerfectSync(newPerfectSync)
+int Change_SegaCD_PerfectSync(int newPerfectSync)
 {
 	SegaCD_Accurate = newPerfectSync;
 	

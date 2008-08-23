@@ -23,6 +23,8 @@
 #include "ggenie.h"
 #include "wave.h"
 #include "gym.h"
+#include "ui-common.h"
+
 
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.

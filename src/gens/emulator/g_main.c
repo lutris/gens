@@ -13,6 +13,7 @@
 #include "misc.h"
 #include "vdp_rend.h"
 #include "save.h"
+#include "config_file.h"
 #include "cd_aspi.h"
 #include "vdp_io.h"
 #include "gym.h"
