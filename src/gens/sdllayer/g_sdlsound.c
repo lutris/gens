@@ -118,7 +118,7 @@ int Init_Sound(void)
 		return 0;
 	SDL_PauseAudio(0);
 	
-	Sound_Initialized = 1;
+	Sound_Initialised = 1;
 	return 1;
 }
 
@@ -214,20 +214,28 @@ void Dump_Sound_Stereo (short *Dest, int length)
 }
 
 
+/**
+ * Write_Sound_Mono(): Write a mono sound segment.
+ * @param Dest Destination buffer.
+ * @param length Length of the sound segment.
+ */
 void Write_Sound_Mono (short *Dest, int length)
 {
-  int i, out;
-  short *dest = Dest;
-
-  for (i = 0; i < Seg_Length; i++)
-    {
-      out = Seg_L[i] + Seg_R[i];
-      Seg_L[i] = Seg_R[i] = 0;
-
-      if (out < -0xFFFF) *dest++ = -0x7FFF;
-      else if (out > 0xFFFF) *dest++ = 0x7FFF;
-      else *dest++ = (short) (out >> 1);
-    }
+	int i, out;
+	short *dest = Dest;
+	
+	for (i = 0; i < Seg_Length; i++)
+	{
+		out = Seg_L[i] + Seg_R[i];
+		Seg_L[i] = Seg_R[i] = 0;
+		
+		if (out < -0xFFFF)
+			*dest++ = -0x7FFF;
+		else if (out > 0xFFFF)
+			*dest++ = 0x7FFF;
+		else
+			*dest++ = (short)(out >> 1);
+	}
 }
 
 
@@ -247,34 +255,44 @@ void Dump_Sound_Mono (short *Dest, int length)
 }
 
 
+/**
+ * Write_Sound_Buffer(): Write the sound buffer to the audio output.
+ * @param Dump_BUf Sound buffer.
+ * @return 1 on success.
+ */
 int Write_Sound_Buffer (void *Dump_Buf)
 {
-  struct timespec rqtp = { 0, 1000000 };
-
-  SDL_LockAudio ();
-
-  if (Sound_Stereo)
-    {
-      if (Have_MMX) Write_Sound_Stereo_MMX (Seg_L, Seg_R, (short *) pMsndOut, Seg_Length);
-      else Write_Sound_Stereo ((short *) pMsndOut, Seg_Length);
-    }
-  else
-    {
-      if (Have_MMX) Write_Sound_Mono_MMX (Seg_L, Seg_R, (short *) pMsndOut, Seg_Length);
-      else Write_Sound_Mono ((short *) pMsndOut, Seg_Length);
-    }
-  memcpy (audiobuf + audio_len, pMsndOut, Seg_Length * 4);
-  audio_len += Seg_Length * 4;
-
-  SDL_UnlockAudio ();
-		
-  while (audio_len > 1024 * 2 * 2 * 4){
-		
+	struct timespec rqtp = { 0, 1000000 };
+	
+	SDL_LockAudio ();
+	
+	if (Sound_Stereo)
+	{
+		if (Have_MMX)
+			Write_Sound_Stereo_MMX(Seg_L, Seg_R, (short *)pMsndOut, Seg_Length);
+		else
+			Write_Sound_Stereo ((short *) pMsndOut, Seg_Length);
+	}
+	else
+	{
+		if (Have_MMX)
+			Write_Sound_Mono_MMX (Seg_L, Seg_R, (short *)pMsndOut, Seg_Length);
+		else
+			Write_Sound_Mono ((short *) pMsndOut, Seg_Length);
+	}
+	
+	memcpy(audiobuf + audio_len, pMsndOut, Seg_Length * 4);
+	audio_len += Seg_Length * 4;
+	
+	SDL_UnlockAudio();
+	
+	while (audio_len > 1024 * 2 * 2 * 4)
+	{
 		nanosleep (&rqtp, NULL);	
-		if(fast_forward){audio_len=1024;}
-		
-  } //SDL_Delay(1); 
-  return 1;
+		if (fast_forward)
+			audio_len = 1024;
+	} //SDL_Delay(1); 
+	return 1;
 }
 
 
