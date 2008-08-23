@@ -833,6 +833,8 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu;
 	GtkWidget *SoundMenu_Enable;
 	GtkWidget *SoundMenu_Separator1;
+	GtkWidget *SoundMenu_Rate;
+	GtkWidget *SoundMenu_Stereo;
 	
 	// Sound
 	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
@@ -848,6 +850,14 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	
 	// Separator
 	NewMenuSeparator(SoundMenu_Separator1, "SoundMenu_Separator1", SoundMenu);
+
+	// Rate
+	NewMenuItem(SoundMenu_Rate, "_Rate", "SoundMenu_Rate", SoundMenu);
+	// TODO: Rate submenu
+	
+	// Stereo
+	NewMenuItem_Check(SoundMenu_Stereo, "_Stereo", "SoundMenu_Stereo", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_Stereo, on_SoundMenu_Stereo_activate);
 }
 
 

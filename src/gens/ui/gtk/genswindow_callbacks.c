@@ -528,7 +528,7 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	if (!do_callbacks)
 		return;
-	Change_Sound(gtk_check_menu_item_get_active(menuitem));
+	Change_Sound(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
 	// TODO: Synchronize the GTK+ UI for the other sound settings.
 	/*
 	if (Sound_Enable)
@@ -536,6 +536,17 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 	else
 		sync_gens_ui (UPDATE_GTK_SOUNDON);
 	*/
+}
+
+
+/**
+ * Sound, Stereo
+ */
+void on_SoundMenu_Stereo_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	Change_Sound_Stereo(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
 }
 
 

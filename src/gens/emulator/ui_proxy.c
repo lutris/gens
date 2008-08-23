@@ -226,6 +226,123 @@ Change_SegaCD_SRAM_Size (int num)
   return 1;
 }
 
+/**
+ * Change_Sound(): Enable or disable sound.
+ * @param newSound New sound enable setting.
+ * @return 1 on success.
+ */
+int Change_Sound(int newSound)
+{
+	Sound_Enable = newSound;
+	if (!Sound_Enable)
+	{
+		End_Sound ();
+		YM2612_Enable = 0;
+		PSG_Enable = 0;
+		DAC_Enable = 0;
+		PCM_Enable = 0;
+		PWM_Enable = 0;
+		CDDA_Enable = 0;
+		MESSAGE_L ("Sound Disabled", "Sound Disabled", 1500);
+	}
+	else
+	{
+		if (!Init_Sound())
+		{
+			// Error initializing sound.
+			Sound_Enable = 0;
+			YM2612_Enable = 0;
+			PSG_Enable = 0;
+			DAC_Enable = 0;
+			PCM_Enable = 0;
+			PWM_Enable = 0;
+			CDDA_Enable = 0;
+			return 0;
+		}
+		
+		Play_Sound ();
+		
+		if (!(Z80_State & 1))
+			Change_Z80();
+		
+		YM2612_Enable = 1;
+		PSG_Enable = 1;
+		DAC_Enable = 1;
+		PCM_Enable = 1;
+		PWM_Enable = 1;
+		CDDA_Enable = 1;
+		
+		MESSAGE_L ("Sound Enabled", "Sound Enabled", 1500);
+	}
+	
+	return 1;
+}
+
+
+/**
+ * Change_Sound_Stereo(): Enable or disable stereo sound.
+ * @param newStereo New stereo sound enable setting.
+ * @return 1 on success.
+ */
+int Change_Sound_Stereo(int newStereo)
+{
+	unsigned char Reg_1[0x200];
+	
+	Sound_Stereo = newStereo;
+	if (!Sound_Stereo)
+	{
+		MESSAGE_L("Mono sound", "Mono sound", 1000);
+	}
+	else
+	{
+		MESSAGE_L ("Stereo sound", "Stereo sound", 1000);
+	}
+	
+	if (!Sound_Enable)
+	{
+		// Sound isn't enabled, so nothing needs to be changed.
+		return 1;
+	}
+	
+	// Save the current sound state.
+	// TODO: Use full save instead of partial save?
+	PSG_Save_State();
+	YM2612_Save(Reg_1);
+	
+	// Temporarily disable sound.
+	End_Sound();
+	Sound_Enable = 0;
+	
+	// Reinitialize the sound processors.
+	if(CPU_Mode)
+	{
+		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+		PSG_Init(CLOCK_PAL / 15, Sound_Rate);
+	}
+	else
+	{
+		YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+		PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+	}
+	
+	if (SegaCD_Started)
+		Set_Rate_PCM(Sound_Rate);
+	
+	// Restore the sound state.
+	YM2612_Restore(Reg_1);
+	PSG_Restore_State();
+	
+	// Attempt to re-enable sound.
+	if (!Init_Sound())
+		return (0);
+	
+	// Sound enabled.
+	Sound_Enable = 1;
+	Play_Sound();
+	return 1;
+}
+
+
 int
 Change_YM2612 (void)
 {
@@ -397,54 +514,6 @@ Change_PWM (void)
   return 1;
 }
 
-int
-Change_Sound_Stereo (void)
-{
-  unsigned char Reg_1[0x200];
-
-  if (Sound_Stereo)
-    {
-      Sound_Stereo = 0;
-    MESSAGE_L ("Mono sound", "Mono sound", 1000)}
-  else
-    {
-      Sound_Stereo = 1;
-    MESSAGE_L ("Stereo sound", "Stereo sound", 1000)}
-
-  if (Sound_Enable)
-    {
-      PSG_Save_State ();
-      YM2612_Save (Reg_1);
-
-      End_Sound ();
-      Sound_Enable = 0;
-
-      if (CPU_Mode)
-	{
-	  YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-	  PSG_Init (CLOCK_PAL / 15, Sound_Rate);
-	}
-      else
-	{
-	  YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	  PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
-	}
-
-      if (SegaCD_Started)
-	Set_Rate_PCM (Sound_Rate);
-      YM2612_Restore (Reg_1);
-      PSG_Restore_State ();
-
-      if (!Init_Sound ())
-	return (0);
-
-      Sound_Enable = 1;
-      Play_Sound ();
-    }
-
-
-  return (1);
-}
 
 int
 Change_Sample_Rate (int Rate)
@@ -515,59 +584,6 @@ Change_Sample_Rate (int Rate)
 
 
   return (1);
-}
-
-
-/**
- * Change_Sound(): Enable or Disable sound.
- * @param newSound New sound enable setting.
- * @return 1 on success.
- */
-int Change_Sound(int newSound)
-{
-	Sound_Enable = newSound;
-	if (!Sound_Enable)
-	{
-		End_Sound ();
-		YM2612_Enable = 0;
-		PSG_Enable = 0;
-		DAC_Enable = 0;
-		PCM_Enable = 0;
-		PWM_Enable = 0;
-		CDDA_Enable = 0;
-		MESSAGE_L ("Sound Disabled", "Sound Disabled", 1500);
-	}
-	else
-	{
-		if (!Init_Sound())
-		{
-			// Error initializing sound.
-			Sound_Enable = 0;
-			YM2612_Enable = 0;
-			PSG_Enable = 0;
-			DAC_Enable = 0;
-			PCM_Enable = 0;
-			PWM_Enable = 0;
-			CDDA_Enable = 0;
-			return 0;
-		}
-		
-		Play_Sound ();
-		
-		if (!(Z80_State & 1))
-			Change_Z80();
-		
-		YM2612_Enable = 1;
-		PSG_Enable = 1;
-		DAC_Enable = 1;
-		PCM_Enable = 1;
-		PWM_Enable = 1;
-		CDDA_Enable = 1;
-		
-		MESSAGE_L ("Sound Enabled", "Sound Enabled", 1500);
-	}
-	
-	return 1;
 }
 
 
