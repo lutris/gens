@@ -1,0 +1,24 @@
+High-Level TODO:
+- Rewrite GTK+ UI
+- Move most global variables to global Settings struct
+- Port all Gens Re-Recording changes
+- Add Win32 support
+- Add Qt4 UI
+- Convert all code to C++ with classes, etc
+- Convert from automak to CMake
+
+Low Priority:
+- Add MacOS X Aqua UI
+
+Emulator TODO:
+- Fix VRAM overwrite bug, as seen in Sonic 2 Delta. Gens doesn't overwrite the VRAM, but Kega and the actual MD do.
+- Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual MD do. (Possible: Make an option to crash on illegal address.)
+- CD audio fixes in Gens Re-Recording r65, r66, etc.
+  - http://code.google.com/p/gens-rerecording/source/detail?r=65
+
+- Sprite priority bug (from #retro)
+<+Sik> See, there's a priority flag for each tile in the plans and each sprite
+<+Sik> However, it only works between planes. Sprites are ordered by the chain list.
+<+Sik> So a sprite with low priority flag can still appear over one with a high priority flag.
+<+Sik> Guess what happens when you have that situation and it's mixed with a high priority in the scroll planes.
+<+Sik> Hint: put a green block in Sonic 1 in the overground areas. Put it into the lava so it floats on it. Wait until it collisions with a platform...
