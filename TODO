@@ -17,3 +17,4 @@ Emulator TODO:
 - CD audio fixes in Gens Re-Recording r65, r66, etc.
   - http://code.google.com/p/gens-rerecording/source/detail?r=65
 - Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
+- Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
