@@ -146,9 +146,10 @@ int Init_SegaCD (char *iso_name)
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
+	// TODO: Why are these two bytes set to 0xFF?
 	Rom_Data[0x72] = 0xFF;
 	Rom_Data[0x73] = 0xFF;
-	Byte_Swap (Rom_Data, Rom_Size);
+	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
 	M68K_Reset (2);
@@ -263,10 +264,10 @@ Reset_SegaCD ()
 	
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
 	
+	// TODO: Why are these two bytes set to 0xFF?
 	Rom_Data[0x72] = 0xFF;
 	Rom_Data[0x73] = 0xFF;
-	
-	Byte_Swap (Rom_Data, Rom_Size);
+	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
 	M68K_Reset (2);

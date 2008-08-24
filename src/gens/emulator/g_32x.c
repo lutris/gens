@@ -74,7 +74,7 @@ int Init_32X (struct Rom *MD_Rom)
 	if ((f = fopen (_32X_Genesis_Bios, "rb")))
 	{
 		fread (&_32X_Genesis_Rom[0], 1, 256, f);
-		Byte_Swap (&_32X_Genesis_Rom[0], 256);
+		be16_to_cpu_array(&_32X_Genesis_Rom[0], 256);
 		fclose (f);
 	}
 	else
@@ -193,11 +193,18 @@ int Init_32X (struct Rom *MD_Rom)
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
-	// Two copies of the ROM are needed:
-	// - Non-byteswapped for SH2
-	// - Byteswapped for 68000
-	memcpy (_32X_Rom, Rom_Data, 4 * 1024 * 1024);	// no byteswapped image (for SH2)
-	Byte_Swap (Rom_Data, Rom_Size);	// byteswapped image (for 68000)
+	// Two copies of the ROM are needed, one for the 68000 and one for the SH2s.
+	// SH2 is little-endian, 68000 is big endian.
+	// Thus, they need to be byteswapped differently.
+	
+	// First, copy the ROM to the 32X ROM section.
+	memcpy(_32X_Rom, Rom_Data, 4 * 1024 * 1024);
+	
+	// Byteswap the SH2 ROM data from little-endian (SH2) to host-endian.
+	le16_to_cpu_array(_32X_Rom, Rom_Size);
+	
+	// Byteswap the 68000 ROM data from big-endian (MC68000) to host-endian.
+	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
 	MSH2_Reset ();

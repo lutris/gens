@@ -126,7 +126,7 @@ void Init_Genesis_Bios (void)
 	if ((f = fopen (Genesis_Bios, "rb")))
 	{
 		fread (&Genesis_Rom[0], 1, 2 * 1024, f);
-		Byte_Swap (&Genesis_Rom[0], 2 * 1024);
+		be16_to_cpu_array(&Genesis_Rom[0], 2 * 1024);
 		fclose (f);
 	}
 	else
@@ -247,7 +247,7 @@ int Init_Genesis (struct Rom *MD_Rom)
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
 	
 	// Byteswap the ROM data.
-	Byte_Swap (Rom_Data, Rom_Size);
+	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
 	M68K_Reset (0);
