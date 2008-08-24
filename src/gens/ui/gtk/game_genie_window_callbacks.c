@@ -98,15 +98,6 @@ void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
- * Cancel
- */
-void on_button_gg_cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	STUB;
-}
-
-
-/**
  * OK
  */
 void on_button_gg_OK_clicked(GtkButton *button, gpointer user_data)

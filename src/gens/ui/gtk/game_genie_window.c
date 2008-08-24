@@ -262,7 +262,8 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(button_gg_cancel, "button_gg_cancel");
 	gtk_widget_show(button_gg_cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_cancel, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_gg_cancel, on_button_gg_cancel_clicked);
+	g_signal_connect_swapped((gpointer)button_gg_cancel, "clicked",
+				 G_CALLBACK(gtk_widget_destroy), GTK_OBJECT(game_genie_window));
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_cancel, "button_gg_cancel");
 	
 	// OK
