@@ -22,13 +22,6 @@
 #include "gym.h"
 
 
-// Per-menu synchronization functions.
-void Sync_GensWindow_FileMenu(void);
-void Sync_GensWindow_GraphicsMenu(void);
-void Sync_GensWindow_CPUMenu(void);
-void Sync_GensWindow_SoundMenu(void);
-
-
 /**
  * Sync_GensWindow(): Synchronize the GENS Main Window.
  */
@@ -39,6 +32,7 @@ void Sync_GensWindow(void)
 	Sync_GensWindow_GraphicsMenu();
 	Sync_GensWindow_CPUMenu();
 	Sync_GensWindow_SoundMenu();
+	Sync_GensWindow_OptionsMenu();
 }
 
 
@@ -249,4 +243,26 @@ void Sync_GensWindow_SoundMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+}
+
+
+/**
+ * Sync_GensWindow_SoundMenu(): Synchronize the Options menu.
+ */
+void Sync_GensWindow_OptionsMenu(void)
+{
+	GtkWidget *SRAMSize;
+	
+	if (BRAM_Ex_State & 0x100)
+	{
+		// RAM cart selected.
+		sprintf(Str_Tmp, "OptionsMenu_SegaCDSRAMSize_SubMenu_%d", BRAM_Ex_Size);
+	}
+	else
+	{
+		// No RAM cart selected.
+		strcpy(Str_Tmp, "OptionsMenu_SegaCDSRAMSize_SubMenu_None");
+	}
+	SRAMSize = lookup_widget(gens_window, Str_Tmp);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(SRAMSize), TRUE);
 }

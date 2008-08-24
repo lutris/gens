@@ -1080,7 +1080,7 @@ void create_genswindow_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)
 		else
 		{
 			sprintf(SRAMName, "%d KB", 8 << i);	
-			sprintf(ObjName, "OptionsMenu_SegaCDSRAMSize_SubMenu_%d", 8 << i);
+			sprintf(ObjName, "OptionsMenu_SegaCDSRAMSize_SubMenu_%d", i);
 		}
 		NewMenuItem_Radio(SRAMItem, SRAMName, ObjName, SubMenu, (i == -1 ? TRUE : FALSE), SRAMGroup);
 		g_signal_connect((gpointer)SRAMItem, "activate",

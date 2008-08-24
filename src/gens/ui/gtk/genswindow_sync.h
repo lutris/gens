@@ -16,6 +16,7 @@ void Sync_GensWindow_FileMenu(void);
 void Sync_GensWindow_GraphicsMenu(void);
 void Sync_GensWindow_CPUMenu(void);
 void Sync_GensWindow_SoundMenu(void);
+void Sync_GensWindow_OptionsMenu(void);
 
 
 #ifdef __cplusplus
