@@ -8,6 +8,7 @@
 #include "genswindow.h"
 #include "genswindow_callbacks.h"
 #include "genswindow_sync.h"
+#include "game_genie_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -143,7 +144,7 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	Open_Game_Genie();
 }
 
 

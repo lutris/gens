@@ -179,6 +179,8 @@ gens_SOURCES = \
 		ui/gtk/genswindow_callbacks.h \
 		ui/gtk/genswindow_sync.c \
 		ui/gtk/genswindow_sync.h \
+		ui/gtk/game_genie_window.c \
+		ui/gtk/game_genie_window.h \
 		emulator/parse.c \
 		emulator/parse.h
 ##		netplay/ccnet.c \
