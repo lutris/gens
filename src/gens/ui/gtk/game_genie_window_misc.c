@@ -3,6 +3,8 @@
  */
 
 
+#include <string.h>
+
 #include "game_genie_window.h"
 #include "game_genie_window_callbacks.h"
 #include "game_genie_window_misc.h"
@@ -176,5 +178,55 @@ void GG_DeactivateAllCodes(GtkWidget *treeview)
 	{
 		gtk_list_store_set(GTK_LIST_STORE(listmodel), &iter, 0, 0, -1);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+	}
+}
+
+
+/**
+ * GG_SaveCodes(): Save the codes from the GtkTreeView to Liste_GG[].
+ * @param treeview Treeview widget.
+ */
+void GG_SaveCodes(GtkWidget *treeview)
+{
+	gboolean valid, enabled;
+	GtkTreeIter iter;
+	gchar *code, *name;
+	int i;
+	
+	// Reinitialize the Game Genie array.
+	Init_GameGenie();
+	
+	// Copy each item in the listview to the array.
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
+	i = 0;
+	while (valid && i < 256)
+	{
+		gtk_tree_model_get(GTK_TREE_MODEL(listmodel), &iter, 0, &enabled, 1, &code, 2, &name, -1);
+		strcpy(Liste_GG[i].name, name);
+		strcpy(Liste_GG[i].code, code);
+		Liste_GG[i].active = (enabled ? 1 : 0);
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+		i++;
+	}
+	
+	// Decode and apply Game Genie codes.
+	// TODO: Move this somewhere else?
+	for (i = 0; i < 256; i++)
+	{
+		if ((Liste_GG[i].code[0] != 0) &&
+		    (Liste_GG[i].addr == 0xFFFFFFFF) &&
+		    (Liste_GG[i].data == 0))
+		{
+			// Decode this entry.
+			decode(Liste_GG[i].code, (struct patch*)(&(Liste_GG[i].addr)));
+			
+			if ((Liste_GG[i].restore = 0xFFFFFFFF) &&
+			    (Liste_GG[i].addr < Rom_Size) &&
+			    (Genesis_Started))
+			{
+				Liste_GG[i].restore = (unsigned int)(Rom_Data[Liste_GG[i].addr] & 0xFF) +
+						      (unsigned int)((Rom_Data[Liste_GG[i].addr + 1] & 0xFF) << 8);
+			}
+		}
 	}
 }

@@ -3,13 +3,14 @@
  */
  
  
- #include <string.h>
- #include "game_genie_window_callbacks.h"
- #include "game_genie_window_misc.h"
- 
- #include "gtk-misc.h"
- 
- 
+#include <string.h>
+#include "game_genie_window.h"
+#include "game_genie_window_callbacks.h"
+#include "game_genie_window_misc.h"
+
+#include "gtk-misc.h"
+
+
 /**
  * STUB: Indicates that this function is a stub.
  */
@@ -46,8 +47,8 @@ void AddCode_Signal(GtkWidget *widget, gpointer user_data)
 	g_free(name);
 	
 	// Clear the contents of the entry widgets.
-	gtk_entry_set_text(entry_gg_code, "");
-	gtk_entry_set_text(entry_gg_name, "");
+	gtk_entry_set_text(GTK_ENTRY(entry_gg_code), "");
+	gtk_entry_set_text(GTK_ENTRY(entry_gg_name), "");
 	
 	// Set the focus to the code entry widget.
 	gtk_widget_grab_focus(entry_gg_code);
@@ -102,7 +103,9 @@ void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_OK_clicked(GtkButton *button, gpointer user_data)
 {
-	STUB;
+	GtkWidget *treeview = lookup_widget(GTK_WIDGET(button), "treeview_gg_list");
+	GG_SaveCodes(treeview);
+	gtk_widget_destroy(game_genie_window);
 }
 
 

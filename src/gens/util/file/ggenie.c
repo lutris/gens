@@ -40,7 +40,7 @@ char Patch_Dir[1024] = "\\";
 /**
  * Init_GameGenie(): Initialize the Liste_GG[] array.
  */
-void Init_GameGenie()
+void Init_GameGenie(void)
 {
 	int i;
 	

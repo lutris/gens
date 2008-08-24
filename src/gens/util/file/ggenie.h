@@ -17,6 +17,7 @@ struct GG_Code
 extern struct GG_Code Liste_GG[256];
 extern char Patch_Dir[1024];
 
+void Init_GameGenie(void);
 int Load_Patch_File(void);
 int Save_Patch_File(void);
 void decode(const char* code, struct patch *result);
