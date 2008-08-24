@@ -7,7 +7,7 @@
 MM      Ma         ,M     MM    M    M      ZM
 M2     .MM S       MBM;MM2WBMMMWMaMMMMMMXZMM
 MX      SMM0      B
-MM                M Sega 16bits Emulator © 1999-2002 Stéphane Dallongeville.
+MM                M Sega 16bits Emulator Â© 1999-2002 StÃ©phane Dallongeville.
  MMX             M
   MMMMMMMM;      M 
          W      @            Homepage: http://gens.consolemul.com
@@ -30,13 +30,13 @@ NOTE: This text file is only intended to be a basic guide for using Gens,
    /################/
   /# INTRODUCTION #/
  /################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Gens is a Win9x based emulator for the SEGA Genesis/Mega-Drive/Sega-CD/
 Mega-CD/32X systems, it allows you to play games developed for these classic
 SEGA 16bit game consoles on your x86 compatible PC.
 
-Gens is developed by Stéphane Dallongeville and has been coded 35% in C/C++
+Gens is developed by StÃ©phane Dallongeville and has been coded 35% in C/C++
 and 65% in Assembler. It runs under Windows 95/98/ME/2000/XP and requires
 DirectX 7.0 or above to be installed on your system.
 
@@ -57,9 +57,9 @@ about 90% or higher and the 32X system compatibility turn around 75%.
    /##############/
   /# DISCLAIMER #/
  /##############/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
-GENS © 1999/2000/2001/2002 Stéphane Dallongeville.
+GENS Â© 1999/2000/2001/2002 StÃ©phane Dallongeville.
 SEGA/Genesis/MegaDrive/SEGA-CD/Mega-CD/32X are trademarks of
 Sega Enterprises Ltd.
 
@@ -71,18 +71,18 @@ own risk. If you do not agree with these terms you should delete Gens now.
 
 Gens is cardware, if you like it you can send a post card to its author at:
 
-Snail mail:  Stéphane DALLONGEVILLE
+Snail mail:  StÃ©phane DALLONGEVILLE
               7 Rue Danton
                80090 AMIENS (FRANCE)
 
-I'd really appreciate it, thanks :) ~ Stéphane.
+I'd really appreciate it, thanks :) ~ StÃ©phane.
 
 
     _______________
    /##############/
   /# WHAT'S NEW #/
  /##############/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 (09/10/2002) Changes Gens 2.11 <- Gens 2.10 :
 ---------------------------------------------
@@ -132,7 +132,7 @@ I'd really appreciate it, thanks :) ~ Stéphane.
    /#######################/
   /# SYSTEM REQUIREMENTS #/
  /#######################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 All the system requirements below assume you are using the Normal (320x240)
 video mode.
@@ -177,7 +177,7 @@ need to downclock manually the SH2 CPU clock (see section 32X).
    /#############################/
   /# DEFAULT KEYBOARD SETTINGS #/
  /#############################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 The default keyboard layout for players 1 and 2 are shown below, you can of
 course change these to whatever keys you wish or map them onto a Windows
@@ -202,7 +202,7 @@ compatible Joystick/Joypad. (via the Joypad utility in the Options Menu)
    /#############################/
   /# USEFUL KEYBOARD SHORTCUTS #/
  /#############################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Open Rom                           Ctrl + O
 Boot CD                            Ctrl + B
@@ -243,7 +243,7 @@ Pause                              ESC
    /###################/
   /# DISPLAY OPTIONS #/
  /###################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Gens features Windowed (Default) and Fullscreen graphics modes, you can swap
 between the two by clicking on the Windowed/Fullscreen option in the
@@ -295,7 +295,7 @@ modes on slower computers.
    /#################/
   /# SOUND OPTIONS #/
  /#################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 The default sound setting is 22050Hz, you may want to increase this to
 44100Hz especially for Sega-CD/Mega-CD emulation. Alternatively if you have
@@ -327,7 +327,7 @@ normal PSG sound.
    /#######/
   /# 32X #/
  /#######/
- ¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Before you can begin playing 32X games you must configure the 32X bios files:
 
@@ -377,7 +377,7 @@ PWN sound isn't important.
    /#####################/
   /# SEGA-CD / MEGA-CD #/
  /#####################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Before you can begin playing Sega-CD/Mega-CD games you must configure Gens
 ready for CD emulation:
@@ -489,7 +489,7 @@ Save states aren't supported yet for Sega CD.
    /#####################/
   /# VIRTUAL RAM CARTS #/
  /#####################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 The Sega-CD/Mega-CD came with 8kb of internal BRam for save games, this only
 allowed fairly basic save game features and is often a problem on real
@@ -522,7 +522,7 @@ separately for each Sega-CD/Mega-CD game that you wish to use it with.
    /###########/
   /# NETPLAY #/
  /###########/
- ¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Gens also has the ability to play games over the Internet (.net) or a Local
 Area Network (LAN) using the Kaillera network client. Please note that
@@ -594,7 +594,7 @@ Value : 0 if the button is pressed, and 1 if inactive.
    /#####################/
   /# GCOFFLINE SUPPORT #/
  /#####################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 There is optional GCOffline support (Genesis Collective Database or GCO)
 built into Gens, press F1 whilst any game is running and the GCO should open
@@ -616,7 +616,7 @@ becomes available.
    /########################################/
   /# FREQUENTLY ASKED QUESTIONS (General) #/
  /########################################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Q : When I try to run Gens I get the following message :
                             "Error with Query Interface". How do I fix it?
@@ -679,7 +679,7 @@ A : The Kaillera library has some bugs, Gens has others so unfortunately
    /########################################/
   /# FREQUENTLY ASKED QUESTIONS (Mega-CD) #/
  /########################################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Q : Gens returns to the blank/intro screen after I used Boot CD (or loaded
     an ISO image), why?
@@ -748,7 +748,7 @@ A : This is normal, save state aren't yet supported with Sega-CD/Mega-CD.
    /####################################/
   /# FREQUENTLY ASKED QUESTIONS (32X) #/
  /####################################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 Q : 32X doesn't work !
 A : Be sure you correctly configured the 32X bios files
@@ -767,7 +767,7 @@ A : 32X emulation is still in development, some games aren't yet supported.
    /##################/
   /# TECHNICAL INFO #/
  /##################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 The following features are present in Gens:
 -------------------------------------------
@@ -837,7 +837,7 @@ The following features are missing from Gens:
    /######################################/
   /# GREETINGS (in no particular order) #/
  /######################################/
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯Â¯
 
 * Neill Corlett for his very fast 68000 Starscream emulator.
 * Michel Gerrie, Steve Snake, Jagboy, Trzy, Atani, Quinneston, Charles Mac
@@ -847,7 +847,7 @@ The following features are missing from Gens:
 * Mysticales for all the help she gives me.
 * Christophe Thibault for making Kaillera.
 * Kreed (Derek Liauw Kie Fa) for his excellent 2xSaI engine.
-* David González Flores for help with SEGA CD stuff.
+* David GonzÃ¡lez Flores for help with SEGA CD stuff.
 * Nicolas BRAY, NiNjA LEMoN, Arzeno Fabrice, DaGee, Thierry Caland,
   Mickagame, Nik 166, Belgarion, Darkfalz, Herakles, Biohazard ... (I'm
   surely going to forget someone, sorry) for being Gens beta testers.
@@ -864,3 +864,4 @@ The following features are missing from Gens:
 * Everyone which report bugs, which give support for Gens by replying
   questions on the forum... 
 * Anyone else I forgot !
+
