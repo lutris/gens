@@ -181,7 +181,7 @@ void Sync_GensWindow_SoundMenu(void)
 	GtkWidget *MItem_PCM, *MItem_PWM, *MItem_CDDA;
 	
 	GtkWidget *MItem_GYMDump, *MItem_WAVDump;
-	gchar *label;
+	gchar *label; int allowGYMDump;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -235,6 +235,12 @@ void Sync_GensWindow_SoundMenu(void)
 	gtk_widget_set_sensitive(MItem_CDDA, Sound_Enable);
 	gtk_widget_set_sensitive(MItem_GYMDump, Sound_Enable);
 	gtk_widget_set_sensitive(MItem_WAVDump, Sound_Enable);
+	
+	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
+	// Also, don't enable this if sound is disabled.
+	allowGYMDump = (Genesis_Started || SegaCD_Started || _32X_Started) && Sound_Enable;
+	gtk_widget_set_sensitive(MItem_GYMDump, systemStarted);
+	gtk_widget_set_sensitive(MItem_WAVDump, systemStarted);
 	
 	// Enable callbacks.
 	do_callbacks = 1;
