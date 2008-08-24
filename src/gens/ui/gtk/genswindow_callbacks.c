@@ -48,6 +48,12 @@ void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
 
 
 /**
+ * STUB: Indicates that this function is a stub.
+ */
+#define STUB fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+
+
+/**
  * Window is closed.
  */
 gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data)
@@ -120,8 +126,7 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Reimplement Game Genie.
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 }
 
 
@@ -292,8 +297,7 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
  */
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Color Adjust window.
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 }
 
 
@@ -589,8 +593,7 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Reimplement General Options.
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 }
 
 
@@ -599,8 +602,7 @@ void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user
  */
 void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Reimplement Joypads.
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 }
 
 
@@ -609,8 +611,7 @@ void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Reimplement Directories.
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 }
 
 
@@ -619,6 +620,5 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: About Dialog.
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 }
