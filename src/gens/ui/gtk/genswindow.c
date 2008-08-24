@@ -983,6 +983,9 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_BIOSMiscFiles;	GtkWidget *OptionsMenu_BIOSMiscFiles_Icon;
 	GtkWidget *OptionsMenu_Separator1;
 	GtkWidget *OptionsMenu_SDLSoundTest;	GtkWidget *OptionsMenu_SDLSoundTest_Icon;
+	GtkWidget *OptionsMenu_Separator2;
+	GtkWidget *OptionsMenu_CurrentCDDrive;	GtkWidget *OptionsMenu_CurrentCDDrive_Icon;
+	GtkWidget *OptionsMenu_SegaCDBRAMSize;	GtkWidget *OptionsMenu_SegaCDBRAMSize_Icon;
 	
 	// Options
 	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
@@ -1019,6 +1022,19 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_Icon(OptionsMenu_SDLSoundTest, "SDL Sound _Test", "OptionsMenu_SDLSoundTest", OptionsMenu,
 			 OptionsMenu_SDLSoundTest_Icon, "package_settings.png");
 	AddMenuCallback(OptionsMenu_SDLSoundTest, on_OptionsMenu_SDLSoundTest_activate);
+	
+	// Separator
+	NewMenuSeparator(OptionsMenu_Separator2, "OptionsMenu_Separator2", OptionsMenu);
+	
+	// Current CD Drive...
+	NewMenuItem_Icon(OptionsMenu_CurrentCDDrive, "Current _CD Drive...", "OptionsMenu_CurrentCDDrive", OptionsMenu,
+			 OptionsMenu_CurrentCDDrive_Icon, "cdrom2_unmount.png");
+	AddMenuCallback(OptionsMenu_CurrentCDDrive, on_OptionsMenu_CurrentCDDrive_activate);
+	
+	// Sega CD BRAM Size
+	NewMenuItem_Icon(OptionsMenu_SegaCDBRAMSize, "Sega CD B_RAM Size", "OptionsMenu_SegaCDBRAMSize", OptionsMenu,
+			 OptionsMenu_SegaCDBRAMSize_Icon, "memory.png");
+	// TODO: BRAM submenu
 }
 
 

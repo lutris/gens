@@ -634,6 +634,15 @@ void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_d
 
 
 /**
+ * Options, Current CD Drive...
+ */
+void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	STUB;
+}
+
+
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
