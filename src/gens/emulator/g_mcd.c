@@ -73,13 +73,13 @@ int Init_SegaCD (char *iso_name)
 {
 	char Str_Err[256], *Bios_To_Use;
 	
-	UI_Set_Window_Title("Gens - Sega CD : initialising, please wait ...");
+	UI_Set_Window_Title_Init("SegaCD", 0);
 	
 	if (Reset_CD ((char *) CD_Data, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
 		// TODO: Show a message box.
-		UI_Set_Window_Title("Gens - Idle");
+		UI_Set_Window_Title_Idle();
 		return 0;
 	}
 	
@@ -122,7 +122,7 @@ int Init_SegaCD (char *iso_name)
 	{
 		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
 			  "BIOS Configuration Error");
-		UI_Set_Window_Title("Gens - Idle");
+		UI_Set_Window_Title_Idle();
 		return 0;
 	}
 	
@@ -130,10 +130,10 @@ int Init_SegaCD (char *iso_name)
 	
 	// Set the window title to the localized console name and the game name.
 	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		sprintf (Str_Err, "Gens - MegaCD : %s", Rom_Name);
+		strcpy(Str_Err, "MegaCD");
 	else
-		sprintf (Str_Err, "Gens - SegaCD : %s", Rom_Name);
-	UI_Set_Window_Title(Str_Err);
+		strcpy(Str_Err, "SegaCD");
+	UI_Set_Window_Title_Game(Str_Err, Rom_Name);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -199,26 +199,25 @@ int Init_SegaCD (char *iso_name)
  * Reload_SegaCD(): Reloads the Sega CD.
  * @return 1 if successful.
  */
-int Reload_SegaCD (char *iso_name)
+int Reload_SegaCD(char *iso_name)
 {
 	char Str_Err[256];
 	
 	Save_BRAM ();
 	
-	UI_Set_Window_Title("Gens - Sega CD : re-initialising, please wait ...");
+	UI_Set_Window_Title_Init("SegaCD", 1);
 	
 	Reset_CD ((char *) CD_Data, iso_name);
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
 	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		sprintf (Str_Err, "Gens - MegaCD : %s", Rom_Name);
+		strcpy(Str_Err, "MegaCD");
 	else
-		sprintf (Str_Err, "Gens - SegaCD : %s", Rom_Name);
+		strcpy(Str_Err, "SegaCD");
+	UI_Set_Window_Title_Game(Str_Err, Rom_Name);
 	
-	UI_Set_Window_Title(Str_Err);
-	
-	Load_BRAM ();
+	Load_BRAM();
 	
 	return 1;
 }

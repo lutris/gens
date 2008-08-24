@@ -743,37 +743,46 @@ Change_Country_Order (int Num)
   MESSAGE_L (str_w, str_w, 1500) return (1);
 }
 
+
+/**
+ * Set_Game_Name(): Sets the title of the window to the system name and the game name.
+ */
 void Set_Game_Name()
 {
-
-if (Genesis_Started)
-       {
-               if ((CPU_Mode == 1) || (Game_Mode == 0))
-                       sprintf(Str_Tmp, "Gens - Megadrive : %s", Game->Rom_Name_W);
-               else
-                       sprintf(Str_Tmp, "Gens - Genesis : %s", Game->Rom_Name_W);
-
-               UI_Set_Window_Title( Str_Tmp);
-       }
-       else if (_32X_Started)
-       {
-               if (CPU_Mode == 1)
-                       sprintf(Str_Tmp, "Gens - 32X (PAL) : %s", Game->Rom_Name_W);
-               else
-                       sprintf(Str_Tmp, "Gens - 32X (NTSC) : %s", Game->Rom_Name_W);
-
-               UI_Set_Window_Title( Str_Tmp);
-       }
-       else if (SegaCD_Started)
-       {
-               if ((CPU_Mode == 1) || (Game_Mode == 0))
-                       sprintf(Str_Tmp, "Gens - MegaCD : %s", Rom_Name);
-               else
-                       sprintf(Str_Tmp, "Gens - SegaCD : %s", Rom_Name);
-
-               UI_Set_Window_Title( Str_Tmp);
-       }
-
+	char SystemName[16];
+	char *Title_Rom_Name;
+	
+	if (Genesis_Started)
+	{
+		if ((CPU_Mode == 1) || (Game_Mode == 0))
+			strcpy(SystemName, "Mega Drive");
+		else
+			strcpy(SystemName, "Genesis");
+		Title_Rom_Name = Game->Rom_Name_W;
+	}
+	else if (_32X_Started)
+	{
+		if (CPU_Mode == 1)
+			strcpy(SystemName, "32X (PAL)");
+		else
+			strcpy(SystemName, "32X (NTSC)");
+		Title_Rom_Name = Game->Rom_Name_W;
+	}
+	else if (SegaCD_Started)
+	{
+		if ((CPU_Mode == 1) || (Game_Mode == 0))
+			strcpy(SystemName, "MegaCD");
+		else
+			strcpy(SystemName, "SegaCD");
+		Title_Rom_Name = Rom_Name;
+	}
+	else
+	{
+		UI_Set_Window_Title_Idle();
+		return;
+	}
+	
+	UI_Set_Window_Title_Game(SystemName, Title_Rom_Name);
 }
 
 

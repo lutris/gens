@@ -185,11 +185,11 @@ int Init_32X (struct Rom *MD_Rom)
 	}
 	
 	// Set the window title to the localized console name and the game name.
-	if (CPU_Mode == 1)
-		sprintf (Str_Err, "Gens - 32X (PAL) : %s", MD_Rom->Rom_Name_W);
+	if ((CPU_Mode == 1) || (Game_Mode == 0))
+		strcpy(Str_Err, "32X (PAL)");
 	else
-		sprintf (Str_Err, "Gens - 32X (NTSC) : %s", MD_Rom->Rom_Name_W);
-	UI_Set_Window_Title(Str_Err);
+		strcpy(Str_Err, "32X (PAL)");
+	UI_Set_Window_Title_Game(Str_Err, MD_Rom->Rom_Name_W);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)

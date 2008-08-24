@@ -241,10 +241,10 @@ int Init_Genesis (struct Rom *MD_Rom)
 	
 	// Set the window title to the localized console name and the game name.
 	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		sprintf (Str_Err, "Gens - Megadrive : %s", MD_Rom->Rom_Name_W);
+		strcpy(Str_Err, "Mega Drive");
 	else
-		sprintf (Str_Err, "Gens - Genesis : %s", MD_Rom->Rom_Name_W);
-	UI_Set_Window_Title(Str_Err);
+		strcpy(Str_Err, "Genesis");
+	UI_Set_Window_Title_Game(Str_Err, MD_Rom->Rom_Name_W);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
