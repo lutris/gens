@@ -11,13 +11,11 @@ extern "C" {
 #endif
 
 
-typedef enum
-{
-	WINDOW_SYNC_ALL		= 0,
-	WINDOW_SYNC_SOUND	= 1,
-} WindowSyncType;
-
-void Sync_GensWindow(WindowSyncType sync);
+void Sync_GensWindow(void);
+void Sync_GensWindow_FileMenu(void);
+void Sync_GensWindow_GraphicsMenu(void);
+void Sync_GensWindow_CPUMenu(void);
+void Sync_GensWindow_SoundMenu(void);
 
 
 #ifdef __cplusplus

@@ -395,7 +395,7 @@ int main(int argc, char *argv[])
 	Set_Render(Full_Screen,Render_Mode,1);
 	
 	// Synchronize the Gens window.
-	Sync_GensWindow(WINDOW_SYNC_ALL);
+	Sync_GensWindow();
 	
 	while (is_gens_running ())
 	{

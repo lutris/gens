@@ -32,7 +32,7 @@ void Sync_GensWindow_SoundMenu(void);
 /**
  * Sync_GensWindow(): Synchronize the GENS Main Window.
  */
-void Sync_GensWindow(WindowSyncType sync)
+void Sync_GensWindow(void)
 {
 	// Synchronize all menus.
 	Sync_GensWindow_FileMenu();
@@ -239,8 +239,8 @@ void Sync_GensWindow_SoundMenu(void)
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
 	allowGYMDump = (Genesis_Started || SegaCD_Started || _32X_Started) && Sound_Enable;
-	gtk_widget_set_sensitive(MItem_GYMDump, systemStarted);
-	gtk_widget_set_sensitive(MItem_WAVDump, systemStarted);
+	gtk_widget_set_sensitive(MItem_GYMDump, allowGYMDump);
+	gtk_widget_set_sensitive(MItem_WAVDump, allowGYMDump);
 	
 	// Enable callbacks.
 	do_callbacks = 1;
