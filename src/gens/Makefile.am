@@ -73,6 +73,8 @@ gens_SOURCES = \
 		gens_core/mem/mem_z80.h \
 		gens_core/mem/mem_m68k_32x.inc \
 		gens_core/mem/mem_m68k_cd.inc \
+		gens_core/misc/byteswap.c \
+		gens_core/misc/byteswap.h \
 		gens_core/misc/misc.asm \
 		gens_core/misc/misc.h \
 		gens_core/gfx/blit.asm \

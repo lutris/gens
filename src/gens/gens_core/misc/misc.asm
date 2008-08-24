@@ -644,38 +644,6 @@ section .text align=64
 
 
 	ALIGN4
-
-	; void Byte_Swap(void *Ptr, int NumByte)
-	DECL Byte_Swap
-
-		push eax
-		push ecx
-		push edi
-	
-		mov ecx, [esp + 20]
-		mov edi, [esp + 16]
-		shr ecx, 1
-		jz short .end
-
-	ALIGN4
-
-	.loop
-			mov ax, [edi]
-			add edi, 2
-			rol ax, 8
-			dec ecx
-			mov [edi - 2], ax
-			jnz short .loop
-
-	.end
-
-		pop edi
-		pop ecx
-		pop eax
-		ret
-
-
-	ALIGN4
 	
 		; void Print_Text(char *str, int Size, int Pos_X, int Pos_Y, int Style)
 		DECL Print_Text

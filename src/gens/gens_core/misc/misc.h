@@ -1,6 +1,9 @@
 #ifndef MISC_H
 #define MISC_H
 
+// TODO: Remove this include later on, so other files can include them only if they're necessary.
+#include "byteswap.h"
+
 #define EMU_MODE 0x01
 #define BLANC    0x00
 #define BLEU     0x02
@@ -14,7 +17,6 @@ extern int MMX_Enable;
 
 void Identify_CPU(void);
 int Half_Blur(void);
-void Byte_Swap(void *Ptr, int NumByte);
 void Print_Text(char *str, int Size, int Pos_X, int Pos_Y, int Style);
 
 void Cell_8x8_Dump(unsigned char *Adr, int Palette);
@@ -25,6 +27,7 @@ void CDD_Export_Status(void);
 
 void Write_Sound_Mono_MMX(int *Left, int *Right, short *Dest, int length);
 void Write_Sound_Stereo_MMX(int *Left, int *Right, short *Dest, int length);
+
 
 #endif
 
