@@ -201,10 +201,10 @@ GtkWidget* create_gens_window(void)
 	gtk_window_add_accel_group(GTK_WINDOW(gens_window), accel_group);
 	
 	// Callbacks for if the window is closed.
-	g_signal_connect ((gpointer)gens_window, "delete_event",
-			  G_CALLBACK(on_gens_window_close), NULL);
-	g_signal_connect ((gpointer)gens_window, "destroy_event",
-			  G_CALLBACK(on_gens_window_close), NULL);
+	g_signal_connect((gpointer)gens_window, "delete-event",
+			 G_CALLBACK(on_gens_window_close), NULL);
+	g_signal_connect((gpointer)gens_window, "destroy-event",
+			 G_CALLBACK(on_gens_window_close), NULL);
 	
 	return gens_window;
 }
