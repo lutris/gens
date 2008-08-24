@@ -52,7 +52,7 @@ GtkTooltips *tooltips;
 
 
 /**
- * create_game_genie(): Create the Game Genie Window.
+ * create_game_genie_window(): Create the Game Genie Window.
  * @return Game Genie Window.
  */
 GtkWidget* create_game_genie_window(void)
