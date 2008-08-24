@@ -74,13 +74,16 @@ void Sync_GensWindow_FileMenu(void)
 		// Increment the ROMs Found counter.
 		romsFound++;
 		
+		// Add a number to indicate the position in the ROM History menu.
+		sprintf(ROM_Name, "_%d. ", romsFound);
+		
 		// Determine the ROM format.
 		// TODO: Improve the return variable from Detect_Format()
 		romFormat = Detect_Format(Recent_Rom[i]) >> 1;
 		if (romFormat >= 1 && romFormat <= 4)
-			strcpy(ROM_Name, ROM_Format_Prefix[romFormat]);
+			strcat(ROM_Name, ROM_Format_Prefix[romFormat]);
 		else
-			strcpy(ROM_Name, ROM_Format_Prefix[0]);
+			strcat(ROM_Name, ROM_Format_Prefix[0]);
 		
 		// Add a tab, a dash, and a space.
 		strcat(ROM_Name, "\t- ");
@@ -90,7 +93,7 @@ void Sync_GensWindow_FileMenu(void)
 		strcat(ROM_Name, Str_Tmp);
 		
 		// Add the ROM item to the ROM History submenu.
-		MItem_ROMHistory_SubMenu_Item = gtk_menu_item_new_with_label(ROM_Name);
+		MItem_ROMHistory_SubMenu_Item = gtk_image_menu_item_new_with_mnemonic(ROM_Name);
 		gtk_widget_show(MItem_ROMHistory_SubMenu_Item);
 		gtk_container_add(GTK_CONTAINER(MItem_ROMHistory_SubMenu),
 				  MItem_ROMHistory_SubMenu_Item);
