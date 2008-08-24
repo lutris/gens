@@ -358,10 +358,3 @@ void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
 	
 	Add_All_Files_Filter(filter, dialog);
 }
-
-
-/** STUB FUNCTION */
-void sync_gens_ui(int updateSoundGTK)
-{
-	printf("sync_gens_ui()\n");
-}

@@ -23,9 +23,10 @@
 #include "cpu_sh2.h"
 #include "mem_s68k.h"
 #include "save.h"
+
 #include "ui_proxy.h"
 #include "ui-common.h"
-
+#include "genswindow_sync.h"
 
 _filters filters;
 
@@ -1092,6 +1093,7 @@ int Set_Current_State(int slot)
 	{
 		MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
 	}
+	Sync_GensWindow_FileMenu();
 	
 	return 1;
 }

@@ -7,6 +7,8 @@
 #include "g_main.h"
 #include "genswindow.h"
 #include "genswindow_callbacks.h"
+#include "genswindow_sync.h"
+
 #include "ui_proxy.h"
 #include "ui-common.h"
 #include "config_file.h"
@@ -80,7 +82,7 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (GYM_Playing)
 		Stop_Play_GYM();
 	if (Get_Rom() != -1)
-		sync_gens_ui(UPDATE_GTK);
+		Sync_GensWindow();
 	else
 		UI_MsgBox("Error opening ROM.", "Error");
 }
@@ -102,6 +104,7 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 	
 	Free_Rom(Game); // Don't forget it !
 	SegaCD_Started = Init_SegaCD(NULL);
+	Sync_GensWindow();
 }
 
 
@@ -119,6 +122,7 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 			Set_Render( 0, -1, 1);
 	}
 	Free_Rom(Game);
+	Sync_GensWindow();
 }
 
 
@@ -231,7 +235,6 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
 	
 	Full_Screen = !Full_Screen;
 	Set_Render(Full_Screen, Render_Mode, 0);
-	printf("%d\n", Full_Screen);
 }
 
 
@@ -657,7 +660,7 @@ void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user
 void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	Load_As_Config(Game);
-	// TODO: sync_gens_ui(UPDATE_GTK);
+	Sync_GensWindow();
 }
 
 
