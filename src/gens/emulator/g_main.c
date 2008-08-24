@@ -348,8 +348,8 @@ int main(int argc, char *argv[])
 	// Initialize the Settings struct.
 	Init_Settings();
 	
-	// Clear the Game Genie struct.
-	memset(Liste_GG, 0, sizeof(Liste_GG));
+	// Initialize the Game Genie array.
+	Init_GameGenie();
 	
 	//char sdlbuf[32];
 	

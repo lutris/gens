@@ -36,6 +36,27 @@ static char genie_chars[] =
   "AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 char Patch_Dir[1024] = "\\";
 
+
+/**
+ * Init_GameGenie(): Initialize the Liste_GG[] array.
+ */
+void Init_GameGenie()
+{
+	int i;
+	
+	// Address and restore values are both 0xFFFFFFFF when the entry is unused.
+	for (i = 0; i < 256; i++)
+	{
+		Liste_GG[i].code[0] = 0;
+		Liste_GG[i].name[0] = 0;
+		Liste_GG[i].active = 0;
+		Liste_GG[i].addr = 0xFFFFFFFF;
+		Liste_GG[i].data = 0;
+		Liste_GG[i].restore = 0xFFFFFFFF;
+	}
+}
+
+
 /* genie_decode
  * This function converts a Game Genie code to an address:data pair.
  * The code is given as an 8-character string, like "BJX0SA1C". It need not
