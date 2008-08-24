@@ -28,13 +28,18 @@ system_time ()
 #endif
 }
 
-static inline long long
-read_rdtsc (void)
+
+/**
+ * read_rdtsc(): Read the time stamp counter.
+ * @return Time stamp counter.
+ */
+static inline long long read_rdtsc(void)
 {
-  long long result;
-  asm volatile ("rdtsc":"=A" (result));
-  return (result);
+	long long result;
+	__asm__ __volatile__ ("rdtsc":"=A" (result));
+	return result;
 }
+
 
 static long long
 get_cpu_speed ()		// based on mame
