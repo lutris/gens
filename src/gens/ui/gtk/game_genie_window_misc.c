@@ -34,6 +34,7 @@ void Open_Game_Genie(void)
 	// Populate the TreeView.
 	treeview = lookup_widget(gg, "treeview_gg_list");
 	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	gtk_tree_selection_set_mode(select, GTK_SELECTION_MULTIPLE);
 	
 	// Check if the listmodel is already created.
 	// If it is, clear it; if not, create a new one.
