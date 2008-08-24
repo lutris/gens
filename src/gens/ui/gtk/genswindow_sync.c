@@ -174,7 +174,7 @@ void Sync_GensWindow_CPUMenu(void)
  */
 void Sync_GensWindow_SoundMenu(void)
 {
-	GtkWidget *MItem_Enable, *MItem_Stereo, *MItem_Z80;
+	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
 	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
 	GtkWidget *MItem_DAC, *MItem_DAC_Improved;
 	GtkWidget *MItem_PSG, *MItem_PSG_Improved;
@@ -211,6 +211,11 @@ void Sync_GensWindow_SoundMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PWM), PWM_Enable);
 	MItem_CDDA = lookup_widget(gens_window, "SoundMenu_CDDA");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_CDDA), CDDA_Enable);
+	
+	// Rate
+	sprintf(Str_Tmp, "SoundMenu_Rate_SubMenu_%d", Sound_Rate);
+	MItem_Rate = lookup_widget(gens_window, Str_Tmp);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Rate), TRUE);
 	
 	// GYM dumping
 	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
