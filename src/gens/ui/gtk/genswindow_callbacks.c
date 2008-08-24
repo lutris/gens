@@ -32,6 +32,22 @@ void sub68k_reset();
 
 
 /**
+ * CHECK_MENU_ITEM_CALLBACK(): Macro for simple callbacks that merely check
+ * if callbacks are enabled and run a function.
+ * These callbacks are usually used for menu item that act as checkboxes.
+ * @param callbackFunction: Name of the callback function.
+ * @param uiProxyFunction: Function in ui_proxy.c to call.
+ */
+#define CHECK_MENU_ITEM_CALLBACK(callbackFunction, uiProxyFunction)			\
+void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
+{											\
+	if (!do_callbacks)								\
+		return;									\
+	uiProxyFunction(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));	\
+}
+
+
+/**
  * Window is closed.
  */
 gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data)
@@ -214,39 +230,11 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
 
 
 /**
- * Graphics, VSync
+ * Various items in the Graphics menu.
  */
-void on_GraphicsMenu_VSync_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	
-	Change_VSync(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
-
-
-/**
- * Graphics, Stretch
- */
-void on_GraphicsMenu_Stretch_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	
-	Change_Stretch(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
-
-
-/**
- * Graphics, OpenGL
- */
-void on_GraphicsMenu_OpenGL_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	
-	Change_OpenGL(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
+CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_VSync_activate, Change_VSync);
+CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_Stretch_activate, Change_Stretch);
+CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_OpenGL_activate, Change_OpenGL);
 
 
 /**
@@ -312,13 +300,7 @@ void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_d
 /**
  * Graphics, Sprite Limit
  */
-void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	
-	Set_Sprite_Limit(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
+CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_SpriteLimit_activate, Set_Sprite_Limit);
 
 
 /**
@@ -513,12 +495,7 @@ void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data)
 /**
  * CPU, SegaCD Perfect Sync
  */
-void on_CPUMenu_SegaCD_PerfectSync_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	Change_SegaCD_PerfectSync(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
+CHECK_MENU_ITEM_CALLBACK(on_CPUMenu_SegaCD_PerfectSync_activate, Change_SegaCD_PerfectSync);
 
 
 /**
@@ -540,46 +517,12 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
- * Sound, Stereo
+ * Various items in the Sound menu.
  */
-void on_SoundMenu_Stereo_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	Change_Sound_Stereo(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
-
-
-/**
- * Sound, Z80
- */
-void on_SoundMenu_Z80_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	Change_Z80(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
- 
-
-/**
- * Sound, YM2612
- */
-void on_SoundMenu_YM2612_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	Change_YM2612(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
-
-/**
- * Sound, YM2612 Improved
- */
-void on_SoundMenu_YM2612_Improved_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	Change_YM2612_Improved(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-}
+CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_Stereo_activate, Change_Sound_Stereo);
+CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_Z80_activate, Change_Z80);
+CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_YM2612_activate, Change_YM2612);
+CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_YM2612_Improved_activate, Change_YM2612_Improved);
 
 
 /**
