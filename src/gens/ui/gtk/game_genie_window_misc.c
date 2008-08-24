@@ -156,3 +156,25 @@ void GG_DelSelectedCode(GtkWidget *treeview)
 			need_check = FALSE;
 	}
 }
+
+
+/**
+ * GG_DeactivateAllCodes(): Deactivate all codes.
+ * @param treeview Treeview widget.
+ */
+void GG_DeactivateAllCodes(GtkWidget *treeview)
+{
+	GtkTreeIter iter;
+	gboolean valid;
+	
+	if (!treeview)
+		return;
+	
+	// Deactivate all codes.
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
+	while (valid)
+	{
+		gtk_list_store_set(GTK_LIST_STORE(listmodel), &iter, 0, 0, -1);
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+	}
+}

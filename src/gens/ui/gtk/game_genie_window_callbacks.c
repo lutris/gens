@@ -90,7 +90,8 @@ void on_button_gg_delCode_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 {
-	STUB;
+	GtkWidget *treeview = lookup_widget(GTK_WIDGET(button), "treeview_gg_list");
+	GG_DeactivateAllCodes(treeview);
 }
 
 
