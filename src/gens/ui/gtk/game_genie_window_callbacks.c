@@ -17,17 +17,17 @@
 
 
 /**
- * Add Code
+ * Generic AddCode signal handler.
  */
-void on_button_gg_addCode_clicked(GtkButton *button, gpointer user_data)
+void AddCode_Signal(GtkWidget *widget, gpointer user_data)
 {
 	GtkWidget *entry_gg_code, *entry_gg_name;
 	gchar *code, *name;
 	int length;
 	
 	// Look up the entry widgets.
-	entry_gg_code = lookup_widget(GTK_WIDGET(button), "entry_gg_code");
-	entry_gg_name = lookup_widget(GTK_WIDGET(button), "entry_gg_name");
+	entry_gg_code = lookup_widget(widget, "entry_gg_code");
+	entry_gg_name = lookup_widget(widget, "entry_gg_name");
 	
 	// Get the text.
 	code = strdup(gtk_entry_get_text(GTK_ENTRY(entry_gg_code)));
@@ -50,7 +50,30 @@ void on_button_gg_addCode_clicked(GtkButton *button, gpointer user_data)
 	// Set the focus to the code entry widget.
 	gtk_widget_grab_focus(entry_gg_code);
 }
- 
+
+
+/**
+ * Add Code button
+ */
+void on_button_gg_addCode_clicked(GtkButton *button, gpointer user_data)
+{
+	AddCode_Signal(GTK_WIDGET(button), user_data);
+}
+
+
+/**
+ * Key press event in either the code entry widget or the name entry widget.
+ */
+gboolean on_entry_gg_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	if (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)
+	{
+		AddCode_Signal(widget, user_data);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 
 /**
  * Delete Code

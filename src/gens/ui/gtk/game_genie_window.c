@@ -171,6 +171,8 @@ GtkWidget* create_game_genie_window(void)
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	GLADE_HOOKUP_OBJECT(game_genie_window, entry_gg_code, "entry_gg_code");
+	g_signal_connect((gpointer)entry_gg_code, "key-press-event",
+			 G_CALLBACK(on_entry_gg_keypress), NULL);
 	
 	// Name label and entry widgets
 	label_gg_name = gtk_label_new("Name");
@@ -190,6 +192,8 @@ GtkWidget* create_game_genie_window(void)
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	GLADE_HOOKUP_OBJECT(game_genie_window, entry_gg_name, "entry_gg_name");
+	g_signal_connect((gpointer)entry_gg_name, "key-press-event",
+			 G_CALLBACK(on_entry_gg_keypress), NULL);
 	
 	// Add Code button
 	button_gg_addCode = gtk_button_new_with_mnemonic("_Add Code");
