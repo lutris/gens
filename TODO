@@ -5,7 +5,8 @@ High-Level TODO:
 - Add Win32 support
 - Add Qt4 UI
 - Convert all code to C++ with classes, etc
-- Convert from automak to CMake
+- Convert from automake to CMake
+- Add VGM dumping support
 
 Low Priority:
 - Add MacOS X Aqua UI
