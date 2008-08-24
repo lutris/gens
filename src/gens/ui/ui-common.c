@@ -23,12 +23,26 @@ void UI_Set_Window_Title_Idle(void)
  * @param system System name.
  * @param game Game name.
  */
-void UI_Set_Window_Title_Game(const char* system, const char* game)
+void UI_Set_Window_Title_Game(const char* systemName, const char* gameName)
 {
 	char title[128];
+	char condGameName[64];
+	int gni, cgni = 0;
+	
+	// Condense the game name by removing excess spaces.
+	for (gni = 0; gni < 64; gni++)
+	{
+		if (cgni != 0 && condGameName[cgni - 1] == ' ' && gameName[gni] == ' ')
+			continue;
+		else if (cgni == 0 && gameName[gni] == ' ')
+			continue;
+		condGameName[cgni] = gameName[gni];
+		cgni++;
+	}
+	condGameName[cgni] = 0x00;
 	
 	// Create the title.
-	sprintf(title, GENS_APPNAME " - %s: %s", system, game);
+	sprintf(title, GENS_APPNAME " - %s: %s", systemName, condGameName);
 	
 	// Set the title.
 	UI_Set_Window_Title(title);
