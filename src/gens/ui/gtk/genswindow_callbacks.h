@@ -66,6 +66,8 @@ void on_SoundMenu_DAC_Improved_activate(GtkMenuItem *menuitem, gpointer user_dat
 void on_SoundMenu_PSG_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_SoundMenu_PSG_Improved_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_SoundMenu_CDDA_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 // Help menu
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);

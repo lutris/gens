@@ -364,6 +364,7 @@ int Stop_Sound (void)
 
 int Start_WAV_Dump (void)
 {
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
 #if 0
   char Name[1024] = "";
 
@@ -399,6 +400,7 @@ int Start_WAV_Dump (void)
 
 int Update_WAV_Dump (void)
 {
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
 #if 0
   unsigned char Buf_Tmp[882 * 4 + 16];
   unsigned int length, Writted;
@@ -423,6 +425,7 @@ int Update_WAV_Dump (void)
 
 int Stop_WAV_Dump (void)
 {
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
 #if 0
   if (!WAV_Dumping)
     {

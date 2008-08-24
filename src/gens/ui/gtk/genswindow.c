@@ -845,6 +845,9 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu_PSG;
 	GtkWidget *SoundMenu_PSG_Improved;
 	GtkWidget *SoundMenu_CDDA;
+	GtkWidget *SoundMenu_Separator4;
+	GtkWidget *SoundMenu_WAVDump;
+	GtkWidget *SoundMenu_GYMDump;
 	
 	// Sound
 	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
@@ -906,6 +909,17 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// CDDA
 	NewMenuItem_Check(SoundMenu_CDDA, "CDDA (CD Audio)", "SoundMenu_CDDA", SoundMenu, TRUE);
 	AddMenuCallback(SoundMenu_CDDA, on_SoundMenu_CDDA_activate);
+	
+	// Separator
+	NewMenuSeparator(SoundMenu_Separator4, "SoundMenu_Separator4", SoundMenu);
+	
+	// WAV Dump
+	NewMenuItem(SoundMenu_WAVDump, "Start WAV Dump", "SoundMenu_WAVDump", SoundMenu);
+	AddMenuCallback(SoundMenu_WAVDump, on_SoundMenu_WAVDump_activate);
+	
+	// GYM Dump
+	NewMenuItem(SoundMenu_GYMDump, "Start GYM Dump", "SoundMenu_GYMDump", SoundMenu);
+	AddMenuCallback(SoundMenu_GYMDump, on_SoundMenu_GYMDump_activate);
 }
 
 

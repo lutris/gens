@@ -531,6 +531,48 @@ CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_CDDA_activate, Change_CDDA);
 
 
 /**
+ * Sound, WAV Dump
+ */
+void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	gchar* label;
+	
+	// Change WAV dump status.
+	if (!WAV_Dumping)
+		Start_WAV_Dump();
+	else
+		Stop_WAV_Dump();
+	
+	// Check the status again to determine what to set the label to.
+	label = (WAV_Dumping ? "Start WAV Dump" : "Stop WAV Dump");
+	
+	// Set the text of the WAV dump menu item.
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label);
+}
+
+
+/**
+ * Sound, GYM Dump
+ */
+void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	gchar* label;
+	
+	// Change GYM dump status.
+	if (!GYM_Dumping)
+		Start_GYM_Dump();
+	else
+		Stop_GYM_Dump();
+	
+	// Check the status again to determine what to set the label to.
+	label = (GYM_Dumping ? "Start GYM Dump" : "Stop GYM Dump");
+	
+	// Set the text of the GYM dump menu item.
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label);
+}
+
+
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
