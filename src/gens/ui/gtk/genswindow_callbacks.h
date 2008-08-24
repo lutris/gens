@@ -21,6 +21,7 @@ gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer u
 // File menu
 void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data);

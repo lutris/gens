@@ -109,6 +109,18 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
+ * File, ROM History, #
+ */
+void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (GYM_Playing)
+		Stop_Play_GYM();
+	Open_Rom(Recent_Rom[GPOINTER_TO_INT(user_data)]);
+	Sync_GensWindow();
+}
+
+
+/**
  * File, Close ROM
  */
 void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)

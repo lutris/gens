@@ -295,7 +295,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	// ROM History
 	NewMenuItem_Icon(FileMenu_ROMHistory, "ROM _History", "FileMenu_ROMHistory", FileMenu,
 			 FileMenu_ROMHistory_Icon, "history.png");
-	// TODO: ROM History submenu
+	// ROM History submenu is handled by Sync_GensWindow_FileMenu().
 	
 	// Close ROM
 	NewMenuItem_Icon(FileMenu_CloseROM, "_Close ROM", "FileMenu_CloseROM", FileMenu,

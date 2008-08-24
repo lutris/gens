@@ -5,6 +5,7 @@
 
 #include "genswindow.h"
 #include "genswindow_sync.h"
+#include "genswindow_callbacks.h"
 #include "gtk-misc.h"
 
 #include "g_main.h"
@@ -41,12 +42,65 @@ void Sync_GensWindow(void)
  */
 void Sync_GensWindow_FileMenu(void)
 {
-	GtkWidget *MItem_SaveState;
+	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
+	GtkWidget *MItem_ROMHistory_SubMenu_Item, *MItem_SaveState;
+	char ROM_Name[GENS_PATH_MAX];
+	
+	// ROM Format prefixes
+	// TODO: Move this somewhere else.
+	const char* ROM_Format_Prefix[5] = {"[---]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
+	
+	// Temporary variables for ROM History.
+	int i, romFormat;
+	// Number of ROMs found for ROM History.
+	int romsFound = 0;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
-	// TODO: ROM History
+	// ROM History
+	MItem_ROMHistory = lookup_widget(gens_window, "FileMenu_ROMHistory");
+	gtk_menu_item_remove_submenu(GTK_MENU_ITEM(MItem_ROMHistory));
+	MItem_ROMHistory_SubMenu = gtk_menu_new();
+	gtk_widget_set_name(MItem_ROMHistory_SubMenu, "FileMenu_ROMHistory_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(MItem_ROMHistory), MItem_ROMHistory_SubMenu);
+	
+	for (i = 0; i < 9; i++)
+	{
+		// Make sure this Recent ROM entry actually has an entry.
+		if (strlen(Recent_Rom[i]) == 0)
+			continue;
+		
+		// Increment the ROMs Found counter.
+		romsFound++;
+		
+		// Determine the ROM format.
+		// TODO: Improve the return variable from Detect_Format()
+		romFormat = Detect_Format(Recent_Rom[i]) >> 1;
+		if (romFormat >= 1 && romFormat <= 4)
+			strcpy(ROM_Name, ROM_Format_Prefix[romFormat]);
+		else
+			strcpy(ROM_Name, ROM_Format_Prefix[0]);
+		
+		// Add a tab, a dash, and a space.
+		strcat(ROM_Name, "\t- ");
+		
+		// Get the ROM filename.
+		Get_Name_From_Path(Recent_Rom[i], Str_Tmp);
+		strcat(ROM_Name, Str_Tmp);
+		
+		// Add the ROM item to the ROM History submenu.
+		MItem_ROMHistory_SubMenu_Item = gtk_menu_item_new_with_label(ROM_Name);
+		gtk_widget_show(MItem_ROMHistory_SubMenu_Item);
+		gtk_container_add(GTK_CONTAINER(MItem_ROMHistory_SubMenu),
+				  MItem_ROMHistory_SubMenu_Item);
+		g_signal_connect((gpointer)MItem_ROMHistory_SubMenu_Item, "activate",
+				 G_CALLBACK(on_FileMenu_ROMHistory_activate),
+				 GINT_TO_POINTER(i));
+	}
+	
+	// If no recent ROMs were found, disable the ROM History menu.
+	gtk_widget_set_sensitive(MItem_ROMHistory, romsFound);
 	
 	// Current savestate
 	sprintf(Str_Tmp, "FileMenu_ChangeState_SubMenu_%d", Current_State);
