@@ -8,9 +8,14 @@ int Change_Debug(int Debug_Mode);
 int Change_Country_Order(int Num);
 int Change_Country(int Num);
 int Change_SegaCD_PerfectSync(newPerfectSync);
+
+// Sound
 int Change_Sound(int newSound);
 int Change_Sound_Stereo(int newStereo);
 int Change_Z80(int newZ80);
+int Change_YM2612(int newYM2612);
+int Change_YM2612_Improved(int newYM2612Improved);
+
 int Change_Sample_Rate(int Rate);
 int Change_PSG(void);
 int Change_PCM(void);
@@ -23,9 +28,7 @@ int Change_VSync(int newVSync);
 int Change_Blit_Style(void);
 int Change_DAC_Improv(void);
 int Change_SegaCD_SRAM_Size(int num);
-int Change_YM2612(void);
 int Change_PSG_Improv(void);
-int Change_YM2612_Improv(void);
 void system_reset(void);
 void Set_Game_Name(void);
 int Set_Render(int FullScreen, int Mode, int Force);

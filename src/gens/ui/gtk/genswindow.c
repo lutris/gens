@@ -837,6 +837,9 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu_Stereo;
 	GtkWidget *SoundMenu_Separator2;
 	GtkWidget *SoundMenu_Z80;
+	GtkWidget *SoundMenu_Separator3;
+	GtkWidget *SoundMenu_YM2612;
+	GtkWidget *SoundMenu_YM2612_Improved;
 	
 	// Sound
 	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
@@ -867,6 +870,17 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// Z80
 	NewMenuItem_Check(SoundMenu_Z80, "_Z80", "SoundMenu_Z80", SoundMenu, TRUE);
 	AddMenuCallback(SoundMenu_Z80, on_SoundMenu_Z80_activate);
+	
+	// Separator
+	NewMenuSeparator(SoundMenu_Separator3, "SoundMenu_Separator3", SoundMenu);
+	
+	// YM2612
+	NewMenuItem_Check(SoundMenu_YM2612, "_YM2612", "SoundMenu_YM2612", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_YM2612, on_SoundMenu_YM2612_activate);
+	
+	// YM2612 Improved
+	NewMenuItem_Check(SoundMenu_YM2612_Improved, "YM2612 Improved", "SoundMenu_YM2612_Improved", SoundMenu, FALSE);
+	AddMenuCallback(SoundMenu_YM2612_Improved, on_SoundMenu_YM2612_Improved_activate);
 }
 
 

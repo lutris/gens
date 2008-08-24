@@ -315,7 +315,7 @@ int Change_Sound_Stereo(int newStereo)
 	Sound_Enable = 0;
 	
 	// Reinitialize the sound processors.
-	if(CPU_Mode)
+	if (CPU_Mode)
 	{
 		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
 		PSG_Init(CLOCK_PAL / 15, Sound_Rate);
@@ -369,21 +369,64 @@ int Change_Z80(int newZ80)
 }
 
 
-int
-Change_YM2612 (void)
+/**
+ * Change_YM2612(): Enable or disable YM2612 sound emulation.
+ * @param newYM2612 New YM2612 sound enable setting.
+ * @return 1 on success.
+ */
+int Change_YM2612(int newYM2612)
 {
-  if (YM2612_Enable)
-    {
-      YM2612_Enable = 0;
-    MESSAGE_L ("YM2612 Disabled", "YM2612 Disabled", 1000)}
-  else
-    {
-      YM2612_Enable = 1;
-    MESSAGE_L ("YM2612 Enabled", "YM2612 Enabled", 1000)}
-
-
-  return (1);
+	YM2612_Enable = newYM2612;
+	
+	if (YM2612_Enable)
+	{
+		MESSAGE_L("YM2612 Enabled", "YM2612 Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L("YM2612 Disabled", "YM2612 Disabled", 1000);
+	}
+	
+	return 1;
 }
+
+
+/**
+ * Change_YM2612_Improved(): Enable or disable improved YM2612 sound emulation.
+ * @param newYM2612Improved New improved YM2612 sound enable setting.
+ * @return 1 on success.
+ */
+int Change_YM2612_Improved(int newYM2612Improved)
+{
+	unsigned char Reg_1[0x200];
+	
+	YM2612_Improv = newYM2612Improved;
+	if (YM2612_Improv)
+	{
+		MESSAGE_L("High Quality YM2612 emulation",
+			  "High Quality YM2612 emulation", 1000);
+	}
+	else
+	{
+		MESSAGE_L("Normal YM2612 emulation",
+			  "Normal YM2612 emulation", 1000);
+	}
+	
+	// Save the YM2612 registers.
+	// TODO: Use full save instead of partial save?
+	YM2612_Save (Reg_1);
+	
+	if (CPU_Mode)
+		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+	else
+		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+	
+	// Restore the YM2612 registers.
+	YM2612_Restore (Reg_1);
+	
+	return 1;
+}
+
 
 int
 Change_PSG_Improv (void)
@@ -400,37 +443,6 @@ Change_PSG_Improv (void)
   return 1;
 }
 
-int
-Change_YM2612_Improv (void)
-{
-  unsigned char Reg_1[0x200];
-
-  if (YM2612_Improv)
-    {
-      YM2612_Improv = 0;
-    MESSAGE_L ("Normal YM2612 emulation", "Normal YM2612 emulation", 1000)}
-  else
-    {
-      YM2612_Improv = 1;
-    MESSAGE_L ("High Quality YM2612 emulation",
-		 "High Quality YM2612 emulation", 1000)}
-
-  YM2612_Save (Reg_1);
-
-  if (CPU_Mode)
-    {
-      YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-    }
-  else
-    {
-      YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-    }
-
-  YM2612_Restore (Reg_1);
-
-
-  return 1;
-}
 
 int
 Change_CDDA (void)

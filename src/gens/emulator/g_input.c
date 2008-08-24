@@ -18,6 +18,7 @@
 #include "cd_aspi.h"
 #include "vdp_io.h"
 #include "debug.h"
+#include "ym2612.h"
 
 #include "ui-common.h"
 
@@ -291,8 +292,8 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F12:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_YM2612_Improv ();
-				sync_gens_ui (UPDATE_GTK);
+				Change_YM2612_Improved(!YM2612_Improv);
+				sync_gens_ui(UPDATE_GTK);
 			}
 			else //if (!mod)
 			{

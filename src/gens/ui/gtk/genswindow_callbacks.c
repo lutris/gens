@@ -553,13 +553,35 @@ void on_SoundMenu_Stereo_activate(GtkMenuItem *menuitem, gpointer user_data)
 /**
  * Sound, Z80
  */
- void on_SoundMenu_Z80_activate(GtkMenuItem *menuitem, gpointer user_data)
- {
- 	if (!do_callbacks)
+void on_SoundMenu_Z80_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
 		return;
 	Change_Z80(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
 }
  
+
+/**
+ * Sound, YM2612
+ */
+void on_SoundMenu_YM2612_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	Change_YM2612(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+/**
+ * Sound, YM2612 Improved
+ */
+void on_SoundMenu_YM2612_Improved_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	Change_YM2612_Improved(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+
+
 /**
  * Help, About
  */
