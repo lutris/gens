@@ -93,8 +93,23 @@ void Open_Game_Genie(void)
 void GG_AddCode(GtkWidget *treeview, const char *name, const char *code, int enabled)
 {
 	GtkTreeIter iter;
+	char upperCode[16];
+	int i;
+	
+	// Convert the code to uppercase.
+	for (i = 0; i < 16; i++)
+	{
+		if (code[i] >= 'a' && code[i] <= 'z')
+			upperCode[i] = code[i] - ('a' - 'A');
+		else
+			upperCode[i] = code[i];
+		
+		if (upperCode[i] == 0x00)
+			break;
+	}
+	
 	gtk_list_store_append(listmodel, &iter);
-	gtk_list_store_set(GTK_LIST_STORE(listmodel), &iter, 0, enabled, 1, code, 2, name, -1);
+	gtk_list_store_set(GTK_LIST_STORE(listmodel), &iter, 0, enabled, 1, upperCode, 2, name, -1);
 	
 	// TODO: What is this for?
 	if (enabled && treeview)
