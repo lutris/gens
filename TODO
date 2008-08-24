@@ -16,3 +16,4 @@ Emulator TODO:
 - Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual MD do. (Possible: Make an option to crash on illegal address.)
 - CD audio fixes in Gens Re-Recording r65, r66, etc.
   - http://code.google.com/p/gens-rerecording/source/detail?r=65
+- Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
