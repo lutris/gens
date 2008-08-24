@@ -860,9 +860,11 @@ unsigned int Calculate_CRC32(void)
 {
 	unsigned int crc = 0;
 	
-	Byte_Swap(Rom_Data, Rom_Size);
+	// For some reason, the CRC32 function requires byteswapped data...
+	// TODO: Determine if this must be little-endian or if it must be host-endian.
+	be16_to_cpu_array(Rom_Data, Rom_Size);
 	crc = crc32(0, Rom_Data, Rom_Size);
-	Byte_Swap(Rom_Data, Rom_Size);
+	cpu_to_be16_array(Rom_Data, Rom_Size);
 	
 	return crc;
 }
