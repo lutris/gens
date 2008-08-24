@@ -42,6 +42,13 @@ void on_button_gg_addCode_clicked(GtkButton *button, gpointer user_data)
 	
 	g_free(code);
 	g_free(name);
+	
+	// Clear the contents of the entry widgets.
+	gtk_entry_set_text(entry_gg_code, "");
+	gtk_entry_set_text(entry_gg_name, "");
+	
+	// Set the focus to the code entry widget.
+	gtk_widget_grab_focus(entry_gg_code);
 }
  
 
