@@ -519,20 +519,25 @@ int Change_PSG_Improved(int newPSGImproved)
 }
 
 
-int
-Change_CDDA (void)
+/**
+ * Change_CDDA(): Enable or disable CDDA (CD Audio).
+ * @param newCDDA New CDDA setting.
+ * @return 1 on success.
+ */
+int Change_CDDA(int newCDDA)
 {
-  if (CDDA_Enable)
-    {
-      CDDA_Enable = 0;
-    MESSAGE_L ("CD Audio Sound Disabled", "CD Audio Sound Disabled", 1000)}
-  else
-    {
-      CDDA_Enable = 1;
-    MESSAGE_L ("CD Audio Enabled", "CD Audio Enabled", 1000)}
-
-
-  return (1);
+	CDDA_Enable = newCDDA;
+	
+	if (CDDA_Enable)
+	{
+		MESSAGE_L("CD Audio Enabled", "CD Audio Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L ("CD Audio Disabled", "CD Audio Disabled", 1000);
+	}
+	
+	return 1;
 }
 
 int

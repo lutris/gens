@@ -844,6 +844,7 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu_DAC_Improved;
 	GtkWidget *SoundMenu_PSG;
 	GtkWidget *SoundMenu_PSG_Improved;
+	GtkWidget *SoundMenu_CDDA;
 	
 	// Sound
 	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
@@ -901,6 +902,10 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// PSG Improved
 	NewMenuItem_Check(SoundMenu_PSG_Improved, "PSG Improved", "SoundMenu_PSG_Improved", SoundMenu, FALSE);
 	AddMenuCallback(SoundMenu_PSG_Improved, on_SoundMenu_PSG_Improved_activate);
+	
+	// CDDA
+	NewMenuItem_Check(SoundMenu_CDDA, "CDDA (CD Audio)", "SoundMenu_CDDA", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_CDDA, on_SoundMenu_CDDA_activate);
 }
 
 

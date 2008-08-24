@@ -65,6 +65,7 @@ void on_SoundMenu_DAC_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_SoundMenu_DAC_Improved_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_SoundMenu_PSG_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_SoundMenu_PSG_Improved_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_SoundMenu_CDDA_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 // Help menu
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);
