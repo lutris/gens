@@ -64,6 +64,8 @@ GtkWidget* create_game_genie_window(void)
 	
 	// Buttons
 	GtkWidget *button_gg_addCode;	GtkWidget *button_gg_addCode_Icon;
+	GtkWidget *hbox_gg_buttonRow;
+	GtkWidget *button_gg_delCode;
 	
 	// List of codes
 	GtkWidget *hbox_gg_list;
@@ -208,6 +210,18 @@ GtkWidget* create_game_genie_window(void)
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_gg_list), TRUE);
 	gtk_widget_show(treeview_gg_list);
 	gtk_container_add(GTK_CONTAINER(scroll_gg_list), treeview_gg_list);
+	
+	// HBox for the row of buttons on the bottom of the window
+	hbox_gg_buttonRow = gtk_hbox_new(FALSE, 0);
+	gtk_widget_set_name(hbox_gg_buttonRow, "hbox_gg_buttonRow");
+	gtk_widget_show(hbox_gg_buttonRow);
+	gtk_box_pack_start(GTK_BOX(vbox_gg), hbox_gg_buttonRow, FALSE, FALSE, 0);
+	
+	// Buttons on the bottom of the window
+	button_gg_delCode = gtk_button_new_from_stock("gtk-delete");
+	gtk_widget_set_name(button_gg_delCode, "button_gg_delCode");
+	gtk_widget_show(button_gg_delCode);
+	gtk_box_pack_start(GTK_BOX(hbox_gg_buttonRow), button_gg_delCode, FALSE, FALSE, 0);
 	
 	return game_genie_window;
 }
