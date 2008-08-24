@@ -822,6 +822,8 @@ void create_genswindow_CPUMenu_Country_SubMenu(GtkWidget *container)
 	GtkWidget *SubMenu;
 	GtkWidget *CountryItem;
 	GSList *CountryGroup = NULL;
+	GtkWidget *CPUMenu_Country_SubMenu_Separator;
+	GtkWidget *CPUMenu_Country_SubMenu_AutoDetectOrder;
 	
 	// TODO: Move this array somewhere else.
 	const char* CountryCodes[5] =
@@ -853,6 +855,13 @@ void create_genswindow_CPUMenu_Country_SubMenu(GtkWidget *container)
 		g_signal_connect((gpointer)CountryItem, "activate",
 				 G_CALLBACK(on_CPUMenu_Country_activate), GINT_TO_POINTER(i - 1));
 	}
+	
+	// Separator
+	NewMenuSeparator(CPUMenu_Country_SubMenu_Separator, "CPUMenu_Country_SubMenu_Separator", SubMenu);
+	
+	// Add the Auto-Detection Order configuration option.
+	NewMenuItem_Check(CPUMenu_Country_SubMenu_AutoDetectOrder, "Auto-Detection Order...", "Auto-Detection Order...", SubMenu, FALSE);
+	AddMenuCallback(CPUMenu_Country_SubMenu_AutoDetectOrder, on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate);	
 }
 
 

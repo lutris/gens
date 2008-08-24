@@ -415,6 +415,15 @@ void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
+ * CPU, Country, Auto-Detect Order...
+ */
+void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	STUB;
+}
+
+
+/**
  * CPU, Hard Reset
  */
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)
