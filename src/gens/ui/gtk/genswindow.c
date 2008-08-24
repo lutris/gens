@@ -840,6 +840,10 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu_Separator3;
 	GtkWidget *SoundMenu_YM2612;
 	GtkWidget *SoundMenu_YM2612_Improved;
+	GtkWidget *SoundMenu_DAC;
+	GtkWidget *SoundMenu_DAC_Improved;
+	GtkWidget *SoundMenu_PSG;
+	GtkWidget *SoundMenu_PSG_Improved;
 	
 	// Sound
 	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
@@ -881,6 +885,22 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// YM2612 Improved
 	NewMenuItem_Check(SoundMenu_YM2612_Improved, "YM2612 Improved", "SoundMenu_YM2612_Improved", SoundMenu, FALSE);
 	AddMenuCallback(SoundMenu_YM2612_Improved, on_SoundMenu_YM2612_Improved_activate);
+	
+	// DAC
+	NewMenuItem_Check(SoundMenu_DAC, "_DAC", "SoundMenu_DAC", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_DAC, on_SoundMenu_DAC_activate);
+	
+	// DAC Improved
+	NewMenuItem_Check(SoundMenu_DAC_Improved, "DAC Improved", "SoundMenu_DAC_Improved", SoundMenu, FALSE);
+	AddMenuCallback(SoundMenu_DAC_Improved, on_SoundMenu_DAC_Improved_activate);
+	
+	// PSG
+	NewMenuItem_Check(SoundMenu_PSG, "_PSG", "SoundMenu_PSG", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_PSG, on_SoundMenu_PSG_activate);
+	
+	// PSG Improved
+	NewMenuItem_Check(SoundMenu_PSG_Improved, "PSG Improved", "SoundMenu_PSG_Improved", SoundMenu, FALSE);
+	AddMenuCallback(SoundMenu_PSG_Improved, on_SoundMenu_PSG_Improved_activate);
 }
 
 

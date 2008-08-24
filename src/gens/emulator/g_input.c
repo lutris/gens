@@ -18,7 +18,10 @@
 #include "cd_aspi.h"
 #include "vdp_io.h"
 #include "debug.h"
+
+// Sound includes.
 #include "ym2612.h"
+#include "psg.h"
 
 #include "ui-common.h"
 
@@ -256,16 +259,16 @@ void Input_KeyDown(int key)
 		
 		case GENS_KEY_F9:
 			if (mod & GENS_KMOD_SHIFT)
-				Change_Blit_Style ();
+				Change_Blit_Style();
 			else // if (!mod)
-				Change_Fast_Blur ();
+				Change_Fast_Blur();
 			break;
 		
 		case GENS_KEY_F10:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_DAC_Improv ();
-				sync_gens_ui (UPDATE_GTK);
+				Change_DAC_Improved(!DAC_Improv);
+				sync_gens_ui(UPDATE_GTK);
 			}
 			else //if (!mod)
 			{
@@ -276,8 +279,8 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F11:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_PSG_Improv ();
-				sync_gens_ui (UPDATE_GTK);
+				Change_PSG_Improved(!PSG_Improv);
+				sync_gens_ui(UPDATE_GTK);
 			}
 			else //if (!mod)
 			{

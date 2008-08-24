@@ -428,19 +428,94 @@ int Change_YM2612_Improved(int newYM2612Improved)
 }
 
 
-int
-Change_PSG_Improv (void)
+/**
+ * Change_DAC(): Enable or disable DAC sound emulation.
+ * @param newDAC New DAC sound emulation setting.
+ * @return 1 on success.
+ */
+int Change_DAC(int newDAC)
 {
-  if (PSG_Improv)
-    {
-      PSG_Improv = 0;
-    MESSAGE_L ("Normal PSG sound", "Normal PSG sound", 1000)}
-  else
-    {
-      PSG_Improv = 1;
-    MESSAGE_L ("Improved PSG sound", "Improved PSG sound", 1000)}
+	DAC_Enable = newDAC;
+	
+	if (DAC_Enable)
+	{
+		MESSAGE_L("DAC Enabled", "DAC Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L("DAC Disabled", "DAC Disabled", 1000);
+	}
+	
+	return 1;
+}
 
-  return 1;
+
+/**
+ * Change_DAC_Improved(): Enable or disable improved DAC sound emulation.
+ * @param newDACImproved New improved DAC sound emulation setting.
+ * @return 1 on success.
+ */
+
+int Change_DAC_Improved(int newDACImproved)
+{
+	DAC_Improv = newDACImproved;
+	
+	if (DAC_Improv)
+	{
+		MESSAGE_L("Improved DAC sound (voices)",
+			  "Improved DAC sound (voices)", 1000);
+	}
+	else
+	{
+		MESSAGE_L("Normal DAC sound",
+			  "Normal DAC sound", 1000);
+	}
+	
+	return 1;
+}
+
+
+/**
+ * Change_PSG(): Enable or disable PSG sound emulation.
+ * @param newPSG New PSG sound emulation setting.
+ * @return 1 on success.
+ */
+int Change_PSG(int newPSG)
+{
+	PSG_Enable = newPSG;
+	
+	if (PSG_Enable)
+	{
+		MESSAGE_L("PSG Enabled", "PSG Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L("PSG Disabled", "PSG Disabled", 1000);
+	}
+	
+	return 1;
+}
+
+
+/**
+ * Change_PSG_Improved(): Enable or disable improved PSG sound emulation.
+ * @param newPSGImproved New improved PSG sound emulation setting.
+ * @return 1 on success.
+ */
+int Change_PSG_Improved(int newPSGImproved)
+{
+	PSG_Improv = newPSGImproved;
+	
+	if (PSG_Improv)
+	{
+		MESSAGE_L("Improved PSG sound", "Improved PSG sound", 1000);
+	}
+	else
+	{
+		MESSAGE_L("Normal PSG sound", "Normal PSG sound", 1000);
+	}
+	
+	return 1;
 }
 
 
@@ -471,53 +546,6 @@ Change_Fast_Blur (void)
     MESSAGE_L ("Fast Blur Disabled", "Fast Blur Disabled", 1000) return (1);
 }
 
-int
-Change_DAC_Improv (void)
-{
-  if (DAC_Improv)
-    {
-      DAC_Improv = 0;
-    MESSAGE_L ("Normal DAC sound", "Normal DAC sound", 1000)}
-  else
-    {
-      DAC_Improv = 1;
-    MESSAGE_L ("Improved DAC sound (voices)", "Improved DAC sound (voices)",
-		 1000)}
-
-  return (1);
-}
-
-int
-Change_DAC (void)
-{
-  if (DAC_Enable)
-    {
-      DAC_Enable = 0;
-    MESSAGE_L ("DAC Disabled", "DAC Disabled", 1000)}
-  else
-    {
-      DAC_Enable = 1;
-    MESSAGE_L ("DAC Enabled", "DAC Enabled", 1000)}
-
-
-  return (1);
-}
-
-int
-Change_PSG (void)
-{
-  if (PSG_Enable)
-    {
-      PSG_Enable = 0;
-    MESSAGE_L ("PSG Disabled", "PSG Disabled", 1000)}
-  else
-    {
-      PSG_Enable = 1;
-    MESSAGE_L ("PSG Enabled", "PSG Enabled", 1000)}
-
-
-  return 1;
-}
 
 int
 Change_PCM (void)
