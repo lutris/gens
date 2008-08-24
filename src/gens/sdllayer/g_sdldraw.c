@@ -224,7 +224,7 @@ int Init_DDraw()
                
 		if (!WindowID)
 		{
-			WindowID = g_strdup_printf("%ld", UI_Get_Embedded_WindowID());
+			WindowID = g_strdup_printf("%d", UI_Get_Embedded_WindowID());
 			setenv("SDL_WINDOWID", WindowID, 1);
 		}
 	}
@@ -580,8 +580,11 @@ int Flip(void)
 		{
 			GetPerformanceFrequency((long long *) freq_cpu);
 			if (freq_cpu[0] == 0) freq_cpu[0] = 1;
-
-			sprintf(Info_String, "", FPS);
+			
+			// TODO: WTF is this for?
+			// Assuming it just clears the string...
+			//sprintf(Info_String, "", FPS);
+			Info_String[0] = 0;
 		}
 
 		Print_Text(Info_String, strlen(Info_String), 10, 210, FPS_Style);

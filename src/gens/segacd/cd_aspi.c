@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "port.h"
 #include "g_main.h"
 #include "rom.h"

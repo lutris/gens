@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "psg.h"
 
 

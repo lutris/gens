@@ -51,14 +51,14 @@ extern int CDROM_SPEED;
 void Get_Name_From_Path(char *Full_Path, char *Name);
 void Get_Dir_From_Path(char *Full_Path, char *Dir);
 void Update_CD_Rom_Name(char *Name);
-int Detect_Format(char *Name);
+int Detect_Format(const char *Name);
 
 int Get_Rom(void);
 int Open_Rom(const char *Name);
 int Load_Rom_CC(char *Name, int Size);
 struct Rom *Load_Bios(char *Name);
 struct Rom *Load_Rom(char *Name, int inter);
-struct Rom *Load_Rom_Zipped(char *Name, int inter);
+struct Rom* Load_Rom_Zipped(const char *Name, int interleaved);
 struct Rom *Load_Rom_Gz(char *Name, int inter);
 void Fix_Checksum(void);
 unsigned int Calculate_CRC32(void);
