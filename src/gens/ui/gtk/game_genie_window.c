@@ -31,6 +31,17 @@ GtkAccelGroup *accel_group;
 GtkTooltips *tooltips;
 
 
+// Macro to add a stock icon to a GtkButton.
+#define Button_AddStockIcon(ButtonWidget, ButtonWidgetName, IconWidget, IconName)		\
+{												\
+	IconWidget = gtk_image_new_from_stock(IconName, GTK_ICON_SIZE_BUTTON);			\
+	gtk_widget_set_name(IconWidget, ButtonWidgetName "_Icon");				\
+	gtk_widget_show(IconWidget);								\
+	gtk_button_set_image(GTK_BUTTON(ButtonWidget), IconWidget);				\
+	GLADE_HOOKUP_OBJECT(game_genie_window, IconWidget, ButtonWidgetName "_Icon");		\
+}
+
+
 /**
  * create_game_genie(): Create the Game Genie Window.
  * @return Game Genie Window.
@@ -42,6 +53,17 @@ GtkWidget* create_game_genie_window(void)
 	GtkWidget *frame_gg;
 	GtkWidget *label_gg_header;
 	GtkWidget *label_gg_description;
+	
+	// Table layout
+	GtkWidget *vbox2_gg;
+	GtkWidget *table_gg;
+	
+	// Code / Name
+	GtkWidget *label_gg_code;	GtkWidget *entry_gg_code;
+	GtkWidget *label_gg_name;	GtkWidget *entry_gg_name;
+	
+	// Buttons
+	GtkWidget *button_gg_addCode;	GtkWidget *button_gg_addCode_Icon;
 	
 	// Create the Game Genie window.
 	game_genie_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -72,6 +94,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_show(frame_gg);
 	gtk_box_pack_start(GTK_BOX(vbox_gg), frame_gg, FALSE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame_gg), GTK_SHADOW_NONE);
+	GLADE_HOOKUP_OBJECT(game_genie_window, frame_gg, "frame_gg");
 	
 	// Header label
 	label_gg_header = gtk_label_new("<b><i>Information about Game Genie / Patch codes</i></b>");
@@ -79,6 +102,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_label_set_use_markup(GTK_LABEL(label_gg_header), TRUE);
 	gtk_widget_show(label_gg_header);
 	gtk_frame_set_label_widget(GTK_FRAME(frame_gg), label_gg_header);
+	GLADE_HOOKUP_OBJECT(game_genie_window, label_gg_header, "label_gg_header");
 	
 	// Description label
 	label_gg_description = gtk_label_new(
@@ -92,6 +116,71 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_show(label_gg_description);
 	gtk_container_add(GTK_CONTAINER(frame_gg), label_gg_description);
 	gtk_misc_set_alignment(GTK_MISC(label_gg_description), 0.02, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, label_gg_description, "label_gg_description");
+	
+	// vbox for table layout
+	vbox2_gg = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vbox2_gg, "vbox2_gg");
+	gtk_widget_show(vbox2_gg);
+	gtk_box_pack_start(GTK_BOX(vbox_gg), vbox2_gg, FALSE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, vbox2_gg, "vbox2_gg");
+	
+	// Table layout
+	table_gg = gtk_table_new(2, 3, FALSE);
+	gtk_widget_set_name(table_gg, "table_gg");
+	gtk_widget_show(table_gg);
+	gtk_table_set_col_spacings(GTK_TABLE(table_gg), 10);
+	gtk_box_pack_start(GTK_BOX(vbox2_gg), table_gg, FALSE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, table_gg, "table_gg");
+	
+	// Code label and entry widgets
+	label_gg_code = gtk_label_new("Code");
+	gtk_widget_set_name(label_gg_code, "label_gg_code");
+	gtk_misc_set_alignment(GTK_MISC(label_gg_code), 0, 0.5);
+	gtk_widget_show(label_gg_code);
+	gtk_table_attach(GTK_TABLE(table_gg), label_gg_code, 0, 1, 0, 1,
+			 (GtkAttachOptions)(GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, label_gg_code, "label_gg_code");
+	
+	entry_gg_code = gtk_entry_new();
+	gtk_widget_set_name(entry_gg_code, "entry_gg_code");
+	gtk_entry_set_max_length(GTK_ENTRY(entry_gg_code), 11);
+	gtk_entry_set_text(GTK_ENTRY(entry_gg_code), "XXXX-YYYY");
+	gtk_widget_show(entry_gg_code);
+	gtk_table_attach(GTK_TABLE(table_gg), entry_gg_code, 1, 2, 0, 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, entry_gg_code, "entry_gg_code");
+	
+	// Name label and entry widgets
+	label_gg_name = gtk_label_new("Name");
+	gtk_widget_set_name(label_gg_name, "label_gg_name");
+	gtk_misc_set_alignment(GTK_MISC(label_gg_name), 0, 0.5);
+	gtk_widget_show(label_gg_name);
+	gtk_table_attach(GTK_TABLE(table_gg), label_gg_name, 0, 1, 1, 2,
+			 (GtkAttachOptions)(GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, label_gg_name, "label_gg_name");
+	
+	entry_gg_name = gtk_entry_new();
+	gtk_widget_set_name(entry_gg_name, "entry_gg_name");
+	gtk_entry_set_max_length(GTK_ENTRY(entry_gg_name), 11);
+	gtk_widget_show(entry_gg_name);
+	gtk_table_attach(GTK_TABLE(table_gg), entry_gg_name, 1, 2, 1, 2,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, entry_gg_name, "entry_gg_name");
+	
+	// Add Code button
+	button_gg_addCode = gtk_button_new_with_mnemonic("Add Code");
+	gtk_widget_set_name(button_gg_addCode, "button_gg_addCode");
+	gtk_widget_show(button_gg_addCode);
+	gtk_table_attach(GTK_TABLE(table_gg), button_gg_addCode, 2, 3, 0, 1,
+			 (GtkAttachOptions)(GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_addCode, "button_gg_addCode");
+	Button_AddStockIcon(button_gg_addCode, "button_gg_addCode", button_gg_addCode_Icon, "gtk-add");
 	
 	return game_genie_window;
 }
