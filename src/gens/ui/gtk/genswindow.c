@@ -981,6 +981,8 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_Joypads;		GtkWidget *OptionsMenu_Joypads_Icon;
 	GtkWidget *OptionsMenu_Directories;	GtkWidget *OptionsMenu_Directories_Icon;
 	GtkWidget *OptionsMenu_BIOSMiscFiles;	GtkWidget *OptionsMenu_BIOSMiscFiles_Icon;
+	GtkWidget *OptionsMenu_Separator1;
+	GtkWidget *OptionsMenu_SDLSoundTest;	GtkWidget *OptionsMenu_SDLSoundTest_Icon;
 	
 	// Options
 	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
@@ -1009,6 +1011,14 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_Icon(OptionsMenu_BIOSMiscFiles, "_BIOS/Misc Files...", "OptionsMenu_BIOSMiscFiles", OptionsMenu,
 			 OptionsMenu_BIOSMiscFiles_Icon, "binary.png");
 	AddMenuCallback(OptionsMenu_BIOSMiscFiles, on_OptionsMenu_BIOSMiscFiles_activate);
+	
+	// Separator
+	NewMenuSeparator(OptionsMenu_Separator1, "OptionsMenu_Separator1", OptionsMenu);
+	
+	// SDL Sound Test
+	NewMenuItem_Icon(OptionsMenu_SDLSoundTest, "SDL Sound _Test", "OptionsMenu_SDLSoundTest", OptionsMenu,
+			 OptionsMenu_SDLSoundTest_Icon, "package_settings.png");
+	AddMenuCallback(OptionsMenu_SDLSoundTest, on_OptionsMenu_SDLSoundTest_activate);
 }
 
 

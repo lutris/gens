@@ -75,6 +75,7 @@ void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user
 void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 // Help menu
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);
