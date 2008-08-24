@@ -18,3 +18,4 @@ Emulator TODO:
   - http://code.google.com/p/gens-rerecording/source/detail?r=65
 - Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
 - Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
+- Set the border color to color 0 of palette 0. (See Sonic 1 GHZ for an example.)
