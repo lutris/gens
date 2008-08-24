@@ -79,3 +79,24 @@ void on_button_gg_OK_clicked(GtkButton *button, gpointer user_data)
 {
 	STUB;
 }
+
+
+/**
+ * Code was toggled.
+ */
+void on_treeview_gg_list_item_toggled(GtkCellRendererToggle *cell_renderer,
+				      gchar *path, gpointer user_data)
+{
+	// Toggle the state of this item.
+	GtkTreeIter iter;
+	gboolean curState;
+	
+	// Get the iterator pointing to this list item.
+	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(user_data), &iter, path);
+	
+	// Get the current value.
+	gtk_tree_model_get(GTK_TREE_MODEL(user_data), &iter, 0, &curState, -1);
+	
+	// Set the inverted value.
+	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !curState, -1);
+}

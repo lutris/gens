@@ -3,8 +3,9 @@
  */
 
 
-#include "game_genie_window_misc.h"
 #include "game_genie_window.h"
+#include "game_genie_window_callbacks.h"
+#include "game_genie_window_misc.h"
 #include "genswindow.h"
 #include "ggenie.h"
 #include "mem_m68k.h"
@@ -52,6 +53,10 @@ void Open_Game_Genie(void)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_enabled);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_code);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_name);
+	
+	// Connect the toggle renderer to the callback.
+	g_signal_connect((gpointer)toggle_renderer, "toggled",
+			 G_CALLBACK(on_treeview_gg_list_item_toggled), (gpointer)listmodel);
 	
 	// Go through the list of codes and add them to the treeview.
 	for (i = 0; i < 256; i++)
