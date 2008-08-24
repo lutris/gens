@@ -1,0 +1,132 @@
+GST genecyst save file
+
+Range        Size   Description
+-----------  -----  -----------
+00000-00002  3      "GST"
+00006-00007  2      "\xE0\x40"
+000FA-00112  24     VDP registers
+00112-00191  128    Color RAM
+00192-001E1  80     Vertical scroll RAM
+001E4-003E3  512    YM2612 registers
+00474-02473  8192   Z80 RAM
+02478-12477  65536  68K RAM
+12478-22477  65536  Video RAM
+
+main 68000 registers
+--------------------
+
+00080-0009F : D0-D7
+000A0-000BF : A0-A7
+000C8 : PC
+000D0 : SR
+000D2 : USP
+000D6 : SSP
+
+Z80 registers
+-------------
+
+00404 : AF
+00408 : BC
+0040C : DE
+00410 : HL
+00414 : IX
+00418 : IY
+0041C : PC
+00420 : SP
+00424 : AF'
+00428 : BC'
+0042C : DE'
+00430 : HL'
+
+00434 : I
+00435 : Unknow
+00436 : IFF1 = IFF2
+00437 : Unknow
+
+The 'R' register is not supported.
+
+Z80 State
+---------
+
+00438 : Z80 RESET
+00439 : Z80 BUSREQ
+0043A : Unknow
+0043B : Unknow
+
+0043C : Z80 BANK (DWORD)
+
+Gens and Kega ADD
+-----------------
+
+00040 : last VDP Control data written (DWORD)
+00044 : second write flag (1 for second write) 
+00045 : DMA Fill flag (1 mean next data write will cause a DMA fill)
+00048 : VDP write address (DWORD)
+
+00050 : Version       (Genecyst=0 ; Kega=5 ; Gens=5)
+00051 : Emulator ID   (Genecyst=0 ; Kega=0 ; Gens=1)
+00052 : System ID     (Genesis=0 ; SegaCD=1 ; 32X=2 ; SegaCD32X=3)
+
+00060-00070 : PSG registers (WORD).
+
+
+SEGA CD
+-------
+
++00000-00FFF : Gate array & sub 68K
++01000-80FFF : Prg RAM
++81000-C0FFF : Word RAM (2M mode arrangement)
++C1000-D0FFF : PCM RAM
++D1000-DFFFF : CDD & CDC data (16 kB cache include)
+
+32X
+---
+
+main SH2
+--------
+
++00000-00FFF : cache
++01000-011FF : IO registers
++01200-0123F : R0-R15
++01240 : SR
++01244 : GBR
++01248 : VBR
++0124C : MACL
++01250 : MACH
++01254 : PR
++01258 : PC
++0125C : State
+
+sub SH2
+-------
+
++01400-023FF : cache
++02400-025FF : IO registers
++02600-0263F : R0-R15
++02640 : SR
++02644 : GBR
++02648 : VBR
++0264C : MACL
++02650 : MACH
++02654 : PR
++02658 : PC
++0265C : State
+
+others
+------
+// Fix 32X save state :
+// enregistrer correctement les registres systèmes ...
+
++02700 : ADEN bit (bit 0)
++02701 : FM bit (bit 7)
++02702 : Master SH2 INT mask register
++02703 : Slave SH2 INT mask register
++02704 : 68000 32X rom bank register
++02705 : RV (Rom to VRAM DMA allowed) bit (bit 0)
++02710-0273F : FIFO stuff (not yet done)
++02740-0274F : 32X communication buffer
++02750-02759 : PWM registers
++02760-0276F : 32X VDP registers
++02800-029FF : 32X palette
++02A00-429FF : SDRAM
++42A00-829FF : FB1 & FB2
