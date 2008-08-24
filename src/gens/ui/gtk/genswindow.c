@@ -978,6 +978,7 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *Options;			GtkWidget *Options_Icon;
 	GtkWidget *OptionsMenu;
 	GtkWidget *OptionsMenu_GeneralOptions;	GtkWidget *OptionsMenu_GeneralOptions_Icon;
+	GtkWidget *OptionsMenu_Joypads;		GtkWidget *OptionsMenu_Joypads_Icon;
 	
 	// Options
 	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
@@ -988,9 +989,14 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Options), OptionsMenu);
 	
 	// General Options
-	NewMenuItem_Icon(OptionsMenu_GeneralOptions, "_General Options...", "SoundMenu_Enable", OptionsMenu,
-			 OptionsMenu_GeneralOptions_Icon, "package_settings.png");
+	NewMenuItem_Icon(OptionsMenu_GeneralOptions, "_General Options...", "OptionsMenu_GeneralOptions", OptionsMenu,
+			 OptionsMenu_GeneralOptions_Icon, "ksysguard.png");
 	AddMenuCallback(OptionsMenu_GeneralOptions, on_OptionsMenu_GeneralOptions_activate);
+	
+	// Joypads
+	NewMenuItem_Icon(OptionsMenu_Joypads, "_Joypads...", "OptionsMenu_Joypads", OptionsMenu,
+			 OptionsMenu_Joypads_Icon, "package_games.png");
+	AddMenuCallback(OptionsMenu_Joypads, on_OptionsMenu_Joypads_activate);
 }
 
 

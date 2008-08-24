@@ -585,11 +585,21 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
- * Options, General Options
+ * Options, General Options...
  */
 void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	// TODO: Reimplement General Options.
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+}
+
+
+/**
+ * Options, Joypads...
+ */
+void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	// TODO: Reimplement Joypads.
 	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
 }
 
