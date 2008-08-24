@@ -125,17 +125,15 @@ void GG_AddCode(GtkWidget *treeview, const char *name, const char *code, int ena
 
 /**
  * GG_DelSelectedCode(): Delete the selected code.
- * @param treeview Treeview widget.
  */
-void GG_DelSelectedCode(GtkWidget *treeview)
+void GG_DelSelectedCode(void)
 {
+	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 	GtkTreeIter iter;
 	gboolean need_check, row_erased, valid;
 	
-	if (!treeview)
-		return;
-	
+	treeview = lookup_widget(game_genie_window, "treeview_gg_list");
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 	
 	// Delete all selected codes.
@@ -162,15 +160,14 @@ void GG_DelSelectedCode(GtkWidget *treeview)
 
 /**
  * GG_DeactivateAllCodes(): Deactivate all codes.
- * @param treeview Treeview widget.
  */
-void GG_DeactivateAllCodes(GtkWidget *treeview)
+void GG_DeactivateAllCodes(void)
 {
+	GtkWidget *treeview;
 	GtkTreeIter iter;
 	gboolean valid;
 	
-	if (!treeview)
-		return;
+	treeview = lookup_widget(game_genie_window, "treeview_gg_list");
 	
 	// Deactivate all codes.
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
@@ -184,9 +181,8 @@ void GG_DeactivateAllCodes(GtkWidget *treeview)
 
 /**
  * GG_SaveCodes(): Save the codes from the GtkTreeView to Liste_GG[].
- * @param treeview Treeview widget.
  */
-void GG_SaveCodes(GtkWidget *treeview)
+void GG_SaveCodes(void)
 {
 	gboolean valid, enabled;
 	GtkTreeIter iter;

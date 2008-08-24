@@ -83,8 +83,7 @@ gboolean on_entry_gg_keypress(GtkWidget *widget, GdkEventKey *event, gpointer us
  */
 void on_button_gg_delCode_clicked(GtkButton *button, gpointer user_data)
 {
-	GtkWidget *treeview = lookup_widget(GTK_WIDGET(button), "treeview_gg_list");
-	GG_DelSelectedCode(treeview);
+	GG_DelSelectedCode();
 }
 
 
@@ -93,8 +92,7 @@ void on_button_gg_delCode_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 {
-	GtkWidget *treeview = lookup_widget(GTK_WIDGET(button), "treeview_gg_list");
-	GG_DeactivateAllCodes(treeview);
+	GG_DeactivateAllCodes();
 }
 
 
@@ -103,8 +101,7 @@ void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_OK_clicked(GtkButton *button, gpointer user_data)
 {
-	GtkWidget *treeview = lookup_widget(GTK_WIDGET(button), "treeview_gg_list");
-	GG_SaveCodes(treeview);
+	GG_SaveCodes();
 	gtk_widget_destroy(game_genie_window);
 }
 
