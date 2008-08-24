@@ -19,7 +19,6 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 #include "io.h"
-#include "misc.h"
 #include "save.h"
 #include "ggenie.h"
 #include "cd_sys.h"
@@ -31,6 +30,8 @@
 #include "cd_file.h"
 #include "gym.h"
 
+#include "misc.h"
+#include "byteswap.h"
 
 #include "ui-common.h"
 

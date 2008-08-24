@@ -45,13 +45,6 @@ void __byte_swap_16_deprecated(void *ptr, int n);
 #define cpu_to_le16_array(ptr, n) __byte_swap_16((ptr), (n));
 #endif
 
-/**
- * Byte_Swap(): Swap bytes. [DEPRECATED; USE CPU-SPECIFIC VERSIONS]
- * @param ptr Pointer to bytes.
- * @param n Number of bytes to swap.
- */
-#define Byte_Swap(ptr, n) __byte_swap_16((ptr), (n));
-
 
 #ifdef __cplusplus
 }

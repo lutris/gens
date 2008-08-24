@@ -1,9 +1,6 @@
 #ifndef MISC_H
 #define MISC_H
 
-// TODO: Remove this include later on, so other files can include them only if they're necessary.
-#include "byteswap.h"
-
 #define EMU_MODE 0x01
 #define BLANC    0x00
 #define BLEU     0x02

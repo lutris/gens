@@ -21,12 +21,13 @@
 #include "vdp_rend.h"
 #include "vdp_32x.h"
 #include "io.h"
-#include "misc.h"
 #include "save.h"
 #include "ggenie.h"
 #include "pwm.h"
 #include "gym.h"
 
+#include "misc.h"
+#include "byteswap.h"
 
 #include "ui-common.h"
 

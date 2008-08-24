@@ -18,12 +18,14 @@
 #include "vdp_io.h"
 #include "save.h"
 #include "ccnet.h"
-#include "misc.h"
 #include "unzip.h"
 #include "chd.h"
 #include "wave.h"
 #include "gym.h"
 #include <assert.h>
+
+#include "misc.h"
+#include "byteswap.h"
 
 #include "ui-common.h"
 
