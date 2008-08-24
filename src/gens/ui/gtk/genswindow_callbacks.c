@@ -8,7 +8,7 @@
 #include "genswindow.h"
 #include "genswindow_callbacks.h"
 #include "genswindow_sync.h"
-#include "game_genie_window.h"
+#include "game_genie_window_misc.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"

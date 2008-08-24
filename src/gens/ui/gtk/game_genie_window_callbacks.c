@@ -3,7 +3,11 @@
  */
  
  
+ #include <string.h>
  #include "game_genie_window_callbacks.h"
+ #include "game_genie_window_misc.h"
+ 
+ #include "gtk-misc.h"
  
  
 /**
@@ -17,7 +21,27 @@
  */
 void on_button_gg_addCode_clicked(GtkButton *button, gpointer user_data)
 {
-	STUB;
+	GtkWidget *entry_gg_code, *entry_gg_name;
+	gchar *code, *name;
+	int length;
+	
+	// Look up the entry widgets.
+	entry_gg_code = lookup_widget(GTK_WIDGET(button), "entry_gg_code");
+	entry_gg_name = lookup_widget(GTK_WIDGET(button), "entry_gg_name");
+	
+	// Get the text.
+	code = strdup(gtk_entry_get_text(GTK_ENTRY(entry_gg_code)));
+	name = strdup(gtk_entry_get_text(GTK_ENTRY(entry_gg_name)));
+	
+	// Get the length of the code.
+	// Game Genie codes are 9 characters long. ("XXXX-YYYY")
+	// Patch codes are 11 characters long. ("AAAAAA-DDDD")
+	length = strlen(code);
+	if (length == 9 || length == 11)
+		GG_AddCode(NULL, name, code, 0);
+	
+	g_free(code);
+	g_free(name);
 }
  
 

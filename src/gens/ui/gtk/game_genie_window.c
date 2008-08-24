@@ -207,6 +207,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(hbox_gg_list, "hbox_gg_list");
 	gtk_widget_show(hbox_gg_list);
 	gtk_box_pack_start(GTK_BOX(vbox_gg), hbox_gg_list, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, hbox_gg_list, "hbox_gg_list");
 	
 	// Scrolled Window for the code list
 	scroll_gg_list = gtk_scrolled_window_new(NULL, NULL);
@@ -216,19 +217,23 @@ GtkWidget* create_game_genie_window(void)
 				       GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scroll_gg_list);
 	gtk_box_pack_start(GTK_BOX(hbox_gg_list), scroll_gg_list, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, scroll_gg_list, "scroll_gg_list");
 	
 	// Tree view containing the Game Genie codes
 	treeview_gg_list = gtk_tree_view_new();
 	gtk_widget_set_name(treeview_gg_list, "treeview_gg_list");
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_gg_list), TRUE);
+	gtk_widget_set_size_request(treeview_gg_list, -1, 160);
 	gtk_widget_show(treeview_gg_list);
 	gtk_container_add(GTK_CONTAINER(scroll_gg_list), treeview_gg_list);
+	GLADE_HOOKUP_OBJECT(game_genie_window, treeview_gg_list, "treeview_gg_list");
 	
 	// HButton Box for the row of buttons on the bottom of the window
 	hbutton_box_gg_buttonRow = gtk_hbutton_box_new();
 	gtk_widget_set_name(hbutton_box_gg_buttonRow, "hbox_gg_buttonRow");
 	gtk_widget_show(hbutton_box_gg_buttonRow);
 	gtk_box_pack_start(GTK_BOX(vbox_gg), hbutton_box_gg_buttonRow, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(game_genie_window, hbutton_box_gg_buttonRow, "hbutton_box_gg_buttonRow");
 	
 	// Buttons on the bottom of the window.
 	
@@ -238,6 +243,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_show(button_gg_delCode);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_delCode, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_gg_delCode, on_button_gg_delCode_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_delCode, "button_gg_delCode");
 	
 	// Deactivate All Codes
 	button_gg_deactAllCodes = gtk_button_new_with_mnemonic("Deac_tivate All");
@@ -246,6 +252,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_deactAllCodes, FALSE, FALSE, 0);
 	Button_AddStockIcon(button_gg_deactAllCodes, "button_gg_deactAllCodes", button_gg_deactAllCodes_Icon, "gtk-remove");
 	AddButtonCallback_Clicked(button_gg_deactAllCodes, on_button_gg_deactAllCodes_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_deactAllCodes, "button_gg_deactAllCodes");
 	
 	// Cancel
 	button_gg_cancel = gtk_button_new_from_stock("gtk-cancel");
@@ -253,6 +260,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_show(button_gg_cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_cancel, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_gg_cancel, on_button_gg_cancel_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_cancel, "button_gg_cancel");
 	
 	// OK
 	button_gg_OK = gtk_button_new_from_stock("gtk-ok");
@@ -260,20 +268,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_show(button_gg_cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_OK, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_gg_OK, on_button_gg_OK_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_OK, "button_gg_OK");
 	
 	return game_genie_window;
-}
-
-
-/**
- * Open_Game_Genie(): Opens the Game Genie window.
- */
-void Open_Game_Genie(void)
-{
-	GtkWidget *gg = create_game_genie_window();
-	gtk_window_set_transient_for(GTK_WINDOW(gg), GTK_WINDOW(gens_window));
-	
-	// TODO: Populate the Game Genie window with the active codes.
-	
-	gtk_widget_show_all(gg);
 }

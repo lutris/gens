@@ -12,7 +12,7 @@ extern "C" {
 #include <gtk/gtk.h>
 
 GtkWidget* create_game_genie_window(void); 
-void Open_Game_Genie(void);
+extern GtkWidget *game_genie_window;
 
 #ifdef __cplusplus
 }
