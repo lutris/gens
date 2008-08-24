@@ -605,6 +605,16 @@ void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
+ * Options, Directories...
+ */
+void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	// TODO: Reimplement Directories.
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+}
+
+
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)

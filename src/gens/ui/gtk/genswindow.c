@@ -979,6 +979,7 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu;
 	GtkWidget *OptionsMenu_GeneralOptions;	GtkWidget *OptionsMenu_GeneralOptions_Icon;
 	GtkWidget *OptionsMenu_Joypads;		GtkWidget *OptionsMenu_Joypads_Icon;
+	GtkWidget *OptionsMenu_Directories;	GtkWidget *OptionsMenu_Directories_Icon;
 	
 	// Options
 	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
@@ -997,6 +998,11 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_Icon(OptionsMenu_Joypads, "_Joypads...", "OptionsMenu_Joypads", OptionsMenu,
 			 OptionsMenu_Joypads_Icon, "package_games.png");
 	AddMenuCallback(OptionsMenu_Joypads, on_OptionsMenu_Joypads_activate);
+	
+	// Directories
+	NewMenuItem_Icon(OptionsMenu_Directories, "_Directories...", "OptionsMenu_Directories", OptionsMenu,
+			 OptionsMenu_Directories_Icon, "folder_slin_open.png");
+	AddMenuCallback(OptionsMenu_Directories, on_OptionsMenu_Directories_activate);
 }
 
 
