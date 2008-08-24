@@ -167,6 +167,7 @@ gens_SOURCES = \
 		debug/sh2d.h \
 		debug/z80dis.c \
 		debug/z80dis.h \
+		ui/ui-common.c \
 		ui/ui-common.h \
 		ui/gtk/ui-common_gtk.c \
 		ui/gtk/ui-common_gtk.h \
