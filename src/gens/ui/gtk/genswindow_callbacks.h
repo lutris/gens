@@ -77,6 +77,8 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
 void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 // Help menu
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);

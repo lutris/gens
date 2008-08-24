@@ -986,6 +986,9 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_Separator2;
 	GtkWidget *OptionsMenu_CurrentCDDrive;	GtkWidget *OptionsMenu_CurrentCDDrive_Icon;
 	GtkWidget *OptionsMenu_SegaCDBRAMSize;	GtkWidget *OptionsMenu_SegaCDBRAMSize_Icon;
+	GtkWidget *OptionsMenu_Separator3;
+	GtkWidget *OptionsMenu_LoadConfig;	GtkWidget *OptionsMenu_LoadConfig_Icon;
+	GtkWidget *OptionsMenu_SaveConfigAs;	GtkWidget *OptionsMenu_SaveConfigAs_Icon;
 	
 	// Options
 	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
@@ -1035,6 +1038,19 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_Icon(OptionsMenu_SegaCDBRAMSize, "Sega CD B_RAM Size", "OptionsMenu_SegaCDBRAMSize", OptionsMenu,
 			 OptionsMenu_SegaCDBRAMSize_Icon, "memory.png");
 	// TODO: BRAM submenu
+	
+	// Separator
+	NewMenuSeparator(OptionsMenu_Separator3, "OptionsMenu_Separator3", OptionsMenu);
+	
+	// Load Config...
+	NewMenuItem_Icon(OptionsMenu_LoadConfig, "_Load Config...", "OptionsMenu_LoadConfig", OptionsMenu,
+			 OptionsMenu_LoadConfig_Icon, "folder_slin_open.png");
+	AddMenuCallback(OptionsMenu_LoadConfig, on_OptionsMenu_LoadConfig_activate);
+	
+	// Save Config As...
+	NewMenuItem_StockIcon(OptionsMenu_SaveConfigAs, "_Save Config As...", "OptionsMenu_SaveConfigAs", OptionsMenu,
+			      OptionsMenu_SaveConfigAs_Icon, "gtk-save-as");
+	AddMenuCallback(OptionsMenu_SaveConfigAs, on_OptionsMenu_SaveConfigAs_activate);
 }
 
 

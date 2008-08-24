@@ -9,6 +9,7 @@
 #include "genswindow_callbacks.h"
 #include "ui_proxy.h"
 #include "ui-common.h"
+#include "config_file.h"
 
 #include "g_sdlsound.h"
 #include "g_sdldraw.h"
@@ -639,6 +640,25 @@ void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_d
 void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	STUB;
+}
+
+
+/**
+ * Options, Load Config...
+ */
+void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	Load_As_Config(Game);
+	// TODO: sync_gens_ui(UPDATE_GTK);
+}
+
+
+/**
+ * Options, Save Config As...
+ */
+void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	Save_As_Config();
 }
 
 
