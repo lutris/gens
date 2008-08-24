@@ -672,6 +672,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	GtkWidget *CPUMenu_Separator1;
 	#endif
 	GtkWidget *CPUMenu_Country;
+	GtkWidget *CPUMenu_Separator2;
 	GtkWidget *CPUMenu_HardReset;		GtkWidget *CPUMenu_HardReset_Icon;
 	GtkWidget *CPUMenu_Reset68000;
 	GtkWidget *CPUMenu_ResetMain68000;
@@ -679,7 +680,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	GtkWidget *CPUMenu_ResetMainSH2;
 	GtkWidget *CPUMenu_ResetSubSH2;
 	GtkWidget *CPUMenu_ResetZ80;
-	GtkWidget *CPUMenu_Separator2;
+	GtkWidget *CPUMenu_Separator3;
 	GtkWidget *CPUMenu_SegaCD_PerfectSync;
 	
 	// CPU
@@ -704,6 +705,9 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	NewMenuItem(CPUMenu_Country, "_Country", "CPUMenu_Country", CPUMenu);
 	// Country submenu
 	// TODO
+	
+	// Separator
+	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
 	
 	// Hard Reset
 	NewMenuItem_Icon(CPUMenu_HardReset, "Hard _Reset", "CPUMenu_HardReset", CPUMenu,
@@ -738,7 +742,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	AddMenuCallback(CPUMenu_ResetZ80, on_CPUMenu_ResetZ80_activate);
 	
 	// Separator
-	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
+	NewMenuSeparator(CPUMenu_Separator3, "CPUMenu_Separator3", CPUMenu);
 	
 	// SegaCD Perfect Sync
 	NewMenuItem_Check(CPUMenu_SegaCD_PerfectSync, "SegaCD Perfect Sync (SLOW)", "SegaCD Perfect Sync (SLOW)", CPUMenu, FALSE);

@@ -11,10 +11,13 @@
 #include "g_sdldraw.h"
 #include "vdp_rend.h"
 #include "gens.h"
+#include "vdp_io.h"
 
 
+// Per-menu synchronization functions.
 void Sync_GensWindow_FileMenu(void);
 void Sync_GensWindow_GraphicsMenu(void);
+void Sync_GensWindow_CPUMenu(void);
 
 
 /**
@@ -27,6 +30,7 @@ void Sync_GensWindow(WindowSyncType sync)
 	
 	Sync_GensWindow_FileMenu();
 	Sync_GensWindow_GraphicsMenu();
+	Sync_GensWindow_CPUMenu();
 	
 	// Re-enable callbacks.
 	do_callbacks = 1;
@@ -91,4 +95,52 @@ void Sync_GensWindow_GraphicsMenu(void)
 		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
 	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
+}
+
+
+/**
+ * Sync_GensWindow_CPUMenu(): Synchronize the CPU menu.
+ */
+void Sync_GensWindow_CPUMenu(void)
+{
+	// TODO: Debug
+	// TODO: Country
+	
+	// Hide and show appropriate RESET items.
+	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
+	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
+	
+	MItem_Reset68K = lookup_widget(gens_window, "CPUMenu_Reset68000");
+	MItem_ResetM68K = lookup_widget(gens_window, "CPUMenu_ResetMain68000");
+	MItem_ResetS68K = lookup_widget(gens_window, "CPUMenu_ResetSub68000");
+	MItem_ResetMSH2 = lookup_widget(gens_window, "CPUMenu_ResetMainSH2");
+	MItem_ResetSSH2 = lookup_widget(gens_window, "CPUMenu_ResetSubSH2");
+	
+	if (SegaCD_Started)
+	{
+		// SegaCD: Hide regular 68000; show Main 68000 and Sub 68000.
+		gtk_widget_hide(MItem_Reset68K);
+		gtk_widget_show(MItem_ResetM68K);
+		gtk_widget_show(MItem_ResetS68K);
+	}
+	else
+	{
+		// No SegaCD: Show regular 68000; hide Main 68000 and Sub 68000;
+		gtk_widget_show(MItem_Reset68K);
+		gtk_widget_hide(MItem_ResetM68K);
+		gtk_widget_hide(MItem_ResetS68K);
+	}
+	
+	if (_32X_Started)
+	{
+		// 32X: Show Main SH2 and Sub SH2.
+		gtk_widget_show(MItem_ResetMSH2);
+		gtk_widget_show(MItem_ResetSSH2);
+	}
+	else
+	{
+		// 32X: Hide Main SH2 and Sub SH2.
+		gtk_widget_hide(MItem_ResetMSH2);
+		gtk_widget_hide(MItem_ResetSSH2);
+	}
 }
