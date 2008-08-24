@@ -36,16 +36,15 @@ unsigned char *audiobuf = 0;
 
 void proc (void *user, Uint8 * buffer, int len)
 {
-  if (audio_len < (int) len)
-    {
-      memcpy (buffer, user, audio_len);
-      audio_len = 0;
-      return;
-    }
-  memcpy (buffer, user, len);
-  audio_len -= len;
-  memcpy (user, (unsigned char *) user + len, audio_len);
-
+	if (audio_len < (int)len)
+	{
+		memcpy (buffer, user, audio_len);
+		audio_len = 0;
+		return;
+	}
+	memcpy (buffer, user, len);
+	audio_len -= len;
+	memcpy (user, (unsigned char *) user + len, audio_len);
 }
 
 
@@ -106,7 +105,7 @@ int Init_Sound(void)
 	
 	spec.freq = Sound_Rate;
 	spec.format = AUDIO_S16SYS;
-	spec.channels = 2;//(Sound_Stereo == 0) ? 1 : 2; // TODO: Initializing 1 channel seems to cause a segfault if it's later changed...
+	spec.channels = (Sound_Stereo == 0) ? 1 : 2; // TODO: Initializing 1 channel seems to double-free if it's later changed...
 	spec.samples = 1024;
 	spec.callback = proc;
 	audiobuf = (unsigned char *) malloc ((spec.samples * spec.channels * 2 * 4) * sizeof (short));
