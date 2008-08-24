@@ -185,7 +185,7 @@ GtkWidget* create_game_genie_window(void)
 	
 	entry_gg_name = gtk_entry_new();
 	gtk_widget_set_name(entry_gg_name, "entry_gg_name");
-	gtk_entry_set_max_length(GTK_ENTRY(entry_gg_name), 11);
+	gtk_entry_set_max_length(GTK_ENTRY(entry_gg_name), 239);
 	gtk_widget_show(entry_gg_name);
 	gtk_table_attach(GTK_TABLE(table_gg), entry_gg_name, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
