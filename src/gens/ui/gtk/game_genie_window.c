@@ -1,5 +1,5 @@
 /**
- * GENS: Game Genie Window. (GTK+)
+ * GENS: (GTK+) Game Genie Window.
  */
  
 #include "game_genie_window.h"

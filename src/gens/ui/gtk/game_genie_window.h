@@ -1,5 +1,5 @@
 /**
- * GENS: Game Genie Window. (GTK+)
+ * GENS: (GTK+) Game Genie Window.
  */
  
 #ifndef GAME_GENIE_WINDOW_H

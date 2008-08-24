@@ -1,5 +1,5 @@
 /**
- * GENS: Main Window Callbacks. (GTK+)
+ * GENS: (GTK+) Main Window Callbacks.
  */
 
 

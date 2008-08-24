@@ -1,5 +1,5 @@
 /**
- * GENS: Main Window. (GTK+)
+ * GENS: (GTK+) Main Window.
  */
 
 #ifndef GENSWINDOW_H
