@@ -103,3 +103,40 @@ void GG_AddCode(GtkWidget *treeview, const char *name, const char *code, int ena
 		gtk_tree_selection_select_iter(select, &iter);
 	}
 }
+
+
+/**
+ * GG_DelSelectedCode(): Delete the selected code.
+ * @param treeview Treeview widget.
+ */
+void GG_DelSelectedCode(GtkWidget *treeview)
+{
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+	gboolean need_check, row_erased, valid;
+	
+	if (!treeview)
+		return;
+	
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	
+	// Delete all selected codes.
+	need_check = TRUE;
+	while (need_check)
+	{
+		row_erased = FALSE;
+		valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
+		while (valid && !row_erased)
+		{
+			if (gtk_tree_selection_iter_is_selected(selection, &iter))
+			{
+				gtk_list_store_remove(listmodel, &iter);
+				row_erased = TRUE;
+			}
+			else
+				valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+		}
+		if (!valid && !row_erased)
+			need_check = FALSE;
+	}
+}
