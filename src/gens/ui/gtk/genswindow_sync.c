@@ -310,6 +310,9 @@ void Sync_GensWindow_OptionsMenu(void)
 {
 	GtkWidget *SRAMSize;
 	
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+	
 	if (BRAM_Ex_State & 0x100)
 	{
 		// RAM cart selected.
@@ -322,4 +325,7 @@ void Sync_GensWindow_OptionsMenu(void)
 	}
 	SRAMSize = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(SRAMSize), TRUE);
+	
+	// Enable callbacks.
+	do_callbacks = 1;
 }
