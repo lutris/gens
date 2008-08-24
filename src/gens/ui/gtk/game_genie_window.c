@@ -65,6 +65,11 @@ GtkWidget* create_game_genie_window(void)
 	// Buttons
 	GtkWidget *button_gg_addCode;	GtkWidget *button_gg_addCode_Icon;
 	
+	// List of codes
+	GtkWidget *hbox_gg_list;
+	GtkWidget *scroll_gg_list;
+	GtkWidget *treeview_gg_list;
+	
 	// Create the Game Genie window.
 	game_genie_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name(game_genie_window, "game_genie_window");
@@ -181,6 +186,28 @@ GtkWidget* create_game_genie_window(void)
 			 (GtkAttachOptions)(0), 0, 0);
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_addCode, "button_gg_addCode");
 	Button_AddStockIcon(button_gg_addCode, "button_gg_addCode", button_gg_addCode_Icon, "gtk-add");
+	
+	// HBox for the code list
+	hbox_gg_list = gtk_hbox_new(FALSE, 0);
+	gtk_widget_set_name(hbox_gg_list, "hbox_gg_list");
+	gtk_widget_show(hbox_gg_list);
+	gtk_box_pack_start(GTK_BOX(vbox_gg), hbox_gg_list, TRUE, TRUE, 0);
+	
+	// Scrolled Window for the code list
+	scroll_gg_list = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_name(scroll_gg_list, "scroll_gg_list");
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_gg_list),
+				       GTK_POLICY_AUTOMATIC,
+				       GTK_POLICY_AUTOMATIC);
+	gtk_widget_show(scroll_gg_list);
+	gtk_box_pack_start(GTK_BOX(hbox_gg_list), scroll_gg_list, TRUE, TRUE, 0);
+	
+	// Tree view containing the Game Genie codes
+	treeview_gg_list = gtk_tree_view_new();
+	gtk_widget_set_name(treeview_gg_list, "treeview_gg_list");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_gg_list), TRUE);
+	gtk_widget_show(treeview_gg_list);
+	gtk_container_add(GTK_CONTAINER(scroll_gg_list), treeview_gg_list);
 	
 	return game_genie_window;
 }
