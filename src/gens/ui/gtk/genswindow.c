@@ -833,6 +833,8 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu_DAC_Improved;
 	GtkWidget *SoundMenu_PSG;
 	GtkWidget *SoundMenu_PSG_Improved;
+	GtkWidget *SoundMenu_PCM;
+	GtkWidget *SoundMenu_PWM;
 	GtkWidget *SoundMenu_CDDA;
 	GtkWidget *SoundMenu_Separator4;
 	GtkWidget *SoundMenu_WAVDump;
@@ -895,6 +897,14 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// PSG Improved
 	NewMenuItem_Check(SoundMenu_PSG_Improved, "PSG Improved", "SoundMenu_PSG_Improved", SoundMenu, FALSE);
 	AddMenuCallback(SoundMenu_PSG_Improved, on_SoundMenu_PSG_Improved_activate);
+	
+	// PCM
+	NewMenuItem_Check(SoundMenu_PCM, "_PCM", "SoundMenu_PCM", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_PCM, on_SoundMenu_PCM_activate);
+	
+	// PWM
+	NewMenuItem_Check(SoundMenu_PWM, "_PWM", "SoundMenu_PWM", SoundMenu, TRUE);
+	AddMenuCallback(SoundMenu_PWM, on_SoundMenu_PWM_activate);
 	
 	// CDDA
 	NewMenuItem_Check(SoundMenu_CDDA, "CDDA (CD Audio)", "SoundMenu_CDDA", SoundMenu, TRUE);

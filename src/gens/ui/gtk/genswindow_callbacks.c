@@ -511,13 +511,7 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (!do_callbacks)
 		return;
 	Change_Sound(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-	// TODO: Synchronize the GTK+ UI for the other sound settings.
-	/*
-	if (Sound_Enable)
-		sync_gens_ui (UPDATE_GTK_SOUNDOFF);
-	else
-		sync_gens_ui (UPDATE_GTK_SOUNDON);
-	*/
+	Sync_GensWindow();
 }
 
 
@@ -544,6 +538,8 @@ CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_DAC_activate, Change_DAC);
 CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_DAC_Improved_activate, Change_DAC_Improved);
 CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PSG_activate, Change_PSG);
 CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PSG_Improved_activate, Change_PSG_Improved);
+CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PCM_activate, Change_PCM);
+CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PWM_activate, Change_PWM);
 CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_CDDA_activate, Change_CDDA);
 
 

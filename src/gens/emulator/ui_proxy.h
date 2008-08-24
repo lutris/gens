@@ -19,11 +19,11 @@ int Change_DAC(int newDAC);
 int Change_DAC_Improved(int newDACImproved);
 int Change_PSG(int newPSG);
 int Change_PSG_Improved(int newPSGImproved);
+int Change_PCM(int newPCM);
+int Change_PWM(int newPWM);
 int Change_CDDA(int newCDDA);
 
 int Change_Sample_Rate(int Rate);
-int Change_PCM(void);
-int Change_PWM(void);
 int Change_Fast_Blur(void);
 int Change_Stretch(int newStretch);
 int Change_VSync(int newVSync);

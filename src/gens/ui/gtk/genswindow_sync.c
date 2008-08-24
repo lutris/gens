@@ -12,12 +12,21 @@
 #include "vdp_rend.h"
 #include "gens.h"
 #include "vdp_io.h"
+#include "mem_m68k.h"
+#include "g_sdlsound.h"
+#include "ym2612.h"
+#include "psg.h"
+#include "pcm.h"
+#include "pwm.h"
+#include "cd_sys.h"
+#include "gym.h"
 
 
 // Per-menu synchronization functions.
 void Sync_GensWindow_FileMenu(void);
 void Sync_GensWindow_GraphicsMenu(void);
 void Sync_GensWindow_CPUMenu(void);
+void Sync_GensWindow_SoundMenu(void);
 
 
 /**
@@ -25,15 +34,11 @@ void Sync_GensWindow_CPUMenu(void);
  */
 void Sync_GensWindow(WindowSyncType sync)
 {
-	// Disable callbacks so things don't get screwed up.
-	do_callbacks = 0;
-	
+	// Synchronize all menus.
 	Sync_GensWindow_FileMenu();
 	Sync_GensWindow_GraphicsMenu();
 	Sync_GensWindow_CPUMenu();
-	
-	// Re-enable callbacks.
-	do_callbacks = 1;
+	Sync_GensWindow_SoundMenu();
 }
 
 
@@ -44,6 +49,9 @@ void Sync_GensWindow_FileMenu(void)
 {
 	GtkWidget *MItem_SaveState;
 	
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+	
 	// TODO: ROM History
 	
 	// Current savestate
@@ -52,6 +60,9 @@ void Sync_GensWindow_FileMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SaveState), TRUE);
 	
 	// TODO: Disable Close ROM if no ROM is loaded.
+	
+	// Enable callbacks.
+	do_callbacks = 1;
 }
 
 
@@ -62,6 +73,9 @@ void Sync_GensWindow_GraphicsMenu(void)
 {
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_OpenGL, *MItem_SpriteLimit;
 	GtkWidget *MItem_OpenGL_Resolution, *MItem_bpp, *MItem_Render, *MItem_FrameSkip;
+	
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
 	
 	// Simple checkbox items
 	MItem_VSync = lookup_widget(gens_window, "GraphicsMenu_VSync");
@@ -95,6 +109,9 @@ void Sync_GensWindow_GraphicsMenu(void)
 		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
 	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
+	
+	// Enable callbacks.
+	do_callbacks = 1;
 }
 
 
@@ -103,13 +120,16 @@ void Sync_GensWindow_GraphicsMenu(void)
  */
 void Sync_GensWindow_CPUMenu(void)
 {
+	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
+	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
+	
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+
 	// TODO: Debug
 	// TODO: Country
 	
 	// Hide and show appropriate RESET items.
-	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
-	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
-	
 	MItem_Reset68K = lookup_widget(gens_window, "CPUMenu_Reset68000");
 	MItem_ResetM68K = lookup_widget(gens_window, "CPUMenu_ResetMain68000");
 	MItem_ResetS68K = lookup_widget(gens_window, "CPUMenu_ResetSub68000");
@@ -143,4 +163,79 @@ void Sync_GensWindow_CPUMenu(void)
 		gtk_widget_hide(MItem_ResetMSH2);
 		gtk_widget_hide(MItem_ResetSSH2);
 	}
+	
+	// Enable callbacks.
+	do_callbacks = 1;
+}
+
+
+/**
+ * Sync_GensWindow_SoundMenu(): Synchronize the Sound menu.
+ */
+void Sync_GensWindow_SoundMenu(void)
+{
+	GtkWidget *MItem_Enable, *MItem_Stereo, *MItem_Z80;
+	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
+	GtkWidget *MItem_DAC, *MItem_DAC_Improved;
+	GtkWidget *MItem_PSG, *MItem_PSG_Improved;
+	GtkWidget *MItem_PCM, *MItem_PWM, *MItem_CDDA;
+	
+	GtkWidget *MItem_GYMDump, *MItem_WAVDump;
+	gchar *label;
+	
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+	
+	// Simple checkbox items
+	MItem_Enable = lookup_widget(gens_window, "SoundMenu_Enable");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Enable), Sound_Enable);
+	MItem_Stereo = lookup_widget(gens_window, "SoundMenu_Stereo");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stereo), Sound_Stereo);
+	MItem_Z80 = lookup_widget(gens_window, "SoundMenu_Z80");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Z80), Z80_State & 1);
+	MItem_YM2612 = lookup_widget(gens_window, "SoundMenu_YM2612");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_YM2612), YM2612_Enable);
+	MItem_YM2612_Improved = lookup_widget(gens_window, "SoundMenu_YM2612_Improved");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_YM2612_Improved), YM2612_Improv);
+	MItem_DAC = lookup_widget(gens_window, "SoundMenu_DAC");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_DAC), DAC_Enable);
+	MItem_DAC_Improved = lookup_widget(gens_window, "SoundMenu_DAC_Improved");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_DAC_Improved), DAC_Improv);
+	MItem_PSG = lookup_widget(gens_window, "SoundMenu_PSG");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PSG), PSG_Enable);
+	MItem_PSG_Improved = lookup_widget(gens_window, "SoundMenu_PSG_Improved");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PSG_Improved), PSG_Improv);
+	MItem_PCM = lookup_widget(gens_window, "SoundMenu_PCM");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PCM), PCM_Enable);
+	MItem_PWM = lookup_widget(gens_window, "SoundMenu_PWM");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PWM), PWM_Enable);
+	MItem_CDDA = lookup_widget(gens_window, "SoundMenu_CDDA");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_CDDA), CDDA_Enable);
+	
+	// GYM dumping
+	label = (GYM_Dumping ? "Start GYM Dump" : "Stop GYM Dump");
+	MItem_GYMDump = lookup_widget(gens_window, "SoundMenu_GYMDump");
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label);
+	
+	// WAV dumping
+	label = (WAV_Dumping ? "Start WAV Dump" : "Stop WAV Dump");
+	MItem_WAVDump = lookup_widget(gens_window, "SoundMenu_WAVDump");
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label);
+	
+	// Enable or disable items, depending on the Enable state.
+	gtk_widget_set_sensitive(MItem_Stereo, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_YM2612, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_YM2612_Improved, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_DAC, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_DAC_Improved, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_PSG, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_PSG_Improved, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_PCM, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_PWM, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_CDDA, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_GYMDump, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_WAVDump, Sound_Enable);
+	
+	// Enable callbacks.
+	do_callbacks = 1;
 }

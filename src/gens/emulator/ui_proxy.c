@@ -526,6 +526,48 @@ int Change_PSG_Improved(int newPSGImproved)
 
 
 /**
+ * Change_PCM(): Enable or disable PCM sound emulation.
+ * @param newPCM New PCM sound emulation setting.
+ * @return 1 on success.
+ */
+int Change_PCM(int newPCM)
+{
+	PCM_Enable = newPCM;
+	if (PCM_Enable)
+	{
+		MESSAGE_L("PCM Sound Enabled", "PCM Sound Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L("PCM Sound Disabled", "PCM Sound Disabled", 1000);
+	}
+	
+	return 1;
+}
+
+
+/**
+ * Change_PWM(): Enable or disable PWM sound emulation.
+ * @param newPWM New PWM sound emulation setting.
+ * @return 1 on success.
+ */
+int Change_PWM(int newPWM)
+{
+	PWM_Enable = newPWM;
+	if (PWM_Enable)
+	{
+		MESSAGE_L("PWM Sound Enabled", "PWM Sound Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L("PWM Sound Disabled", "PWM Sound Disabled", 1000);
+	}
+	
+	return 1;
+}
+
+
+/**
  * Change_CDDA(): Enable or disable CDDA (CD Audio).
  * @param newCDDA New CDDA setting.
  * @return 1 on success.
@@ -555,40 +597,6 @@ Change_Fast_Blur (void)
     MESSAGE_L ("Fast Blur Enabled", "Fast Blur Enabled", 1000)
     else
     MESSAGE_L ("Fast Blur Disabled", "Fast Blur Disabled", 1000) return (1);
-}
-
-
-int
-Change_PCM (void)
-{
-  if (PCM_Enable)
-    {
-      PCM_Enable = 0;
-    MESSAGE_L ("PCM Sound Disabled", "PCM Sound Disabled", 1000)}
-  else
-    {
-      PCM_Enable = 1;
-    MESSAGE_L ("PCM Sound Enabled", "PCM Sound Enabled", 1000)}
-
-
-  return 1;
-}
-
-
-int
-Change_PWM (void)
-{
-  if (PWM_Enable)
-    {
-      PWM_Enable = 0;
-    MESSAGE_L ("PWM Sound Disabled", "PWM Sound Disabled", 1000)}
-  else
-    {
-      PWM_Enable = 1;
-    MESSAGE_L ("PWM Sound Enabled", "PWM Sound Enabled", 1000)}
-
-
-  return 1;
 }
 
 
