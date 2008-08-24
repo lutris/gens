@@ -382,6 +382,7 @@ void Input_KeyDown(int key)
 				UI_Set_Window_Visibility(1);
 			break;
 		
+		/*
 		case GENS_KEY_o:
 			if (mod & GENS_KMOD_CTRL)
 			{
@@ -392,6 +393,7 @@ void Input_KeyDown(int key)
 				Get_Rom();
 			}
 			break;
+		*/
 		
 		case GENS_KEY_p:
 			if (mod & (GENS_KMOD_CTRL | GENS_KMOD_SHIFT))
