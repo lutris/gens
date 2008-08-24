@@ -517,6 +517,18 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
+ * CPU, Rate, #
+ */
+void on_SoundMenu_Rate_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		Change_Sample_Rate(GPOINTER_TO_INT(user_data));
+}
+
+
+/**
  * Various items in the Sound menu.
  */
 CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_Stereo_activate, Change_Sound_Stereo);

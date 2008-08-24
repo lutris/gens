@@ -586,75 +586,84 @@ Change_PWM (void)
 }
 
 
-int
-Change_Sample_Rate (int Rate)
+/**
+ * Change_Sample_Rate(): Change the sample rate.
+ * @param Rate Rate ID. (TODO: Make an enum containing the rate IDs.
+ * @return 1 on success.
+ */
+int Change_Sample_Rate(int Rate)
 {
-  unsigned char Reg_1[0x200];
-  assert (Rate == 0 || Rate == 1 || Rate == 2 || Rate == 3|| Rate == 4 || Rate == 5);
-  switch (Rate)
-    {
-    case 0:
-      Sound_Rate = 11025;
-      MESSAGE_L ("Sound rate set to 11025", "Sound rate set to 11025", 2500)
-	break;
-
-    case 1:
-      Sound_Rate = 22050;
-      MESSAGE_L ("Sound rate set to 22050", "Sound rate set to 22050", 2500)
-	break;
-
-    case 2:
-      Sound_Rate = 44100;
-      MESSAGE_L ("Sound rate set to 44100", "Sound rate set to 44100", 2500)
-	break;
-	case 3:
-      Sound_Rate = 16000;
-      MESSAGE_L ("Sound rate set to 16000", "Sound rate set to 16000", 2500)
-	break;
-	case 4:
-      Sound_Rate = 32000;
-      MESSAGE_L ("Sound rate set to 32000", "Sound rate set to 32000", 2500)
-	break;
-    case 5:
-      Sound_Rate = 48000;
-      MESSAGE_L ("Sound rate set to 48000", "Sound rate set to 48000", 2500)
-	break;
+	unsigned char Reg_1[0x200];
 	
-    }
-
-  if (Sound_Enable)
-    {
-      PSG_Save_State ();
-      YM2612_Save (Reg_1);
-
-      End_Sound ();
-      Sound_Enable = 0;
-
-      if (CPU_Mode)
+	// Make sure the rate ID is valid.
+	assert (Rate >= 0 && Rate <= 5);
+	
+	switch (Rate)
 	{
-	  YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-	  PSG_Init (CLOCK_PAL / 15, Sound_Rate);
+		case 0:
+			Sound_Rate = 11025;
+			break;
+		case 1:
+			Sound_Rate = 22050;
+			break;
+		case 2:
+			Sound_Rate = 44100;
+			break;
+		case 3:
+			Sound_Rate = 16000;
+			break;
+		case 4:
+			Sound_Rate = 32000;
+			break;
+		case 5:
+			Sound_Rate = 48000;
+			break;
 	}
-      else
+	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", Sound_Rate, 2500)
+	
+	// If sound isn't enabled, we're done.
+	if (!Sound_Enable)
+		return 1;
+	
+	// Sound's enabled. Reinitialize it.
+	
+	// Save the sound registers.
+	// TODO: Use a full save instead of a partial save?
+	PSG_Save_State ();
+	YM2612_Save (Reg_1);
+	
+	// Stop sound.
+	End_Sound();
+	Sound_Enable = 0;
+	
+	// Reinitialize the sound processors.
+	if (CPU_Mode)
 	{
-	  YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	  PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+		PSG_Init(CLOCK_PAL / 15, Sound_Rate);
+	}
+	else
+	{
+		YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+		PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
 	}
 
-      if (SegaCD_Started)
-	Set_Rate_PCM (Sound_Rate);
-      YM2612_Restore (Reg_1);
-      PSG_Restore_State ();
-
-      if (!Init_Sound ())
-	return (0);
-
-      Sound_Enable = 1;
-      Play_Sound ();
-    }
-
-
-  return (1);
+	if (SegaCD_Started)
+		Set_Rate_PCM (Sound_Rate);
+	
+	// Restore the sound registers
+	YM2612_Restore (Reg_1);
+	PSG_Restore_State();
+	
+	// Attempt to reinitialize sound.
+	if (!Init_Sound())
+		return 0;
+	
+	// Sound is reinitialized.
+	Sound_Enable = 1;
+	Play_Sound();
+	
+	return 1;
 }
 
 

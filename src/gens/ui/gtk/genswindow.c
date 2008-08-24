@@ -50,6 +50,7 @@ void create_genswindow_CPUMenu(GtkWidget *container);
 void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container);
 #endif
 void create_genswindow_SoundMenu(GtkWidget *container);
+void create_genswindow_CPUMenu_RateSubMenu(GtkWidget *container);
 void create_genswindow_HelpMenu(GtkWidget *container);
 
 // Set to 0 to temporarily disable callbacks.
@@ -556,8 +557,8 @@ void create_genswindow_GraphicsMenu_bppSubMenu(GtkWidget *container)
 	int bpp[3] = {16, 24, 32};
 	
 	int i;
-	char ObjName[64];
 	char bppName[8];
+	char ObjName[64];
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
@@ -650,8 +651,8 @@ void create_genswindow_GraphicsMenu_FrameSkipSubMenu(GtkWidget *container)
 	GSList *FSGroup = NULL;
 	
 	int i;
-	char ObjName[64];
 	char FSName[8];
+	char ObjName[64];
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
@@ -866,7 +867,8 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 
 	// Rate
 	NewMenuItem(SoundMenu_Rate, "_Rate", "SoundMenu_Rate", SoundMenu);
-	// TODO: Rate submenu
+	// Rate submenu
+	create_genswindow_SoundMenu_RateSubMenu(SoundMenu_Rate);
 	
 	// Stereo
 	NewMenuItem_Check(SoundMenu_Stereo, "_Stereo", "SoundMenu_Stereo", SoundMenu, TRUE);
@@ -920,6 +922,47 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// GYM Dump
 	NewMenuItem(SoundMenu_GYMDump, "Start GYM Dump", "SoundMenu_GYMDump", SoundMenu);
 	AddMenuCallback(SoundMenu_GYMDump, on_SoundMenu_GYMDump_activate);
+}
+
+
+/**
+ * create_genswindow_SoundMenu_RateSubMenu(): Create the Sound, Rate submenu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_SoundMenu_RateSubMenu(GtkWidget *container)
+{
+	GtkWidget *SubMenu;
+	GtkWidget *SndItem;
+	GSList *SndGroup = NULL;
+	
+	// Sample rates are referenced by an index.
+	// The index is not sorted by rate; the xx000 rates are 3, 4, 5.
+	// This is probably for backwards-compatibilty with older Gens.
+	const int SndRates[6][2] =
+	{
+		{0, 11025}, {3, 16000}, {1, 22050},
+		{4, 32000}, {2, 44100}, {5, 48000},
+	};
+	
+	int i;
+	char SndName[16];
+	char ObjName[64];
+	
+	// Create the submenu.
+	SubMenu = gtk_menu_new();
+	gtk_widget_set_name(SubMenu, "SoundMenu_Rate_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	
+	// Create the rate entries.
+	for (i = 0; i < 6; i++)
+	{
+		sprintf(SndName, "%d Hz", SndRates[i][1]);
+		sprintf(ObjName, "SoundMenu_Rate_SubMenu_%d", SndRates[i][1]);
+		NewMenuItem_Radio(SndItem, SndName, ObjName, SubMenu, (SndRates[i][1] == 22050 ? TRUE : FALSE), SndGroup);
+		g_signal_connect((gpointer)SndItem, "activate",
+				 G_CALLBACK(on_SoundMenu_Rate_SubMenu_activate),
+				 GINT_TO_POINTER(SndRates[i][0]));
+	}
 }
 
 
