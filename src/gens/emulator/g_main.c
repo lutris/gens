@@ -193,9 +193,9 @@ static int Build_Language_String (void)
  * Sleep(): Sleeps for i milliseconds.
  * @param i Milliseconds to sleep.
  */
-void Sleep (int i)
+void Sleep(int i)
 {
-	usleep(i * 1000);
+	//usleep(i * 1000);
 }
 
 
