@@ -9,6 +9,7 @@
 #include "genswindow_callbacks.h"
 #include "genswindow_sync.h"
 #include "game_genie_window_misc.h"
+#include "controller_config_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -636,7 +637,8 @@ void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user
  */
 void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	// TODO: Create another function to load the controller information.
+	create_controller_config_window();
 }
 
 
