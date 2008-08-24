@@ -277,20 +277,20 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(File), FileMenu);
 	
 	// Open ROM...
-	NewMenuItem_Icon(FileMenu_OpenROM, "_Open ROM...", "FileMenu_OpenROM", FileMenu,
-			 FileMenu_OpenROM_Icon, "folder_slin_open.png");
+	NewMenuItem_StockIcon(FileMenu_OpenROM, "_Open ROM...", "FileMenu_OpenROM", FileMenu,
+			      FileMenu_OpenROM_Icon, "gtk-open");
 	AddMenuAccelerator(FileMenu_OpenROM, GDK_O, GDK_CONTROL_MASK);
 	AddMenuCallback(FileMenu_OpenROM, on_FileMenu_OpenROM_activate);
 	
 	// Boot CD
-	NewMenuItem_Icon(FileMenu_BootCD, "_Boot CD", "FileMenu_BootCD", FileMenu,
-			 FileMenu_BootCD_Icon, "cdrom2_unmount.png");
+	NewMenuItem_StockIcon(FileMenu_BootCD, "_Boot CD", "FileMenu_BootCD", FileMenu,
+			      FileMenu_BootCD_Icon, "gtk-cdrom");
 	AddMenuAccelerator(FileMenu_BootCD, GDK_B, GDK_CONTROL_MASK);
 	AddMenuCallback(FileMenu_BootCD, on_FileMenu_BootCD_activate);
 	
 	// Netplay (currently disabled)
 	NewMenuItem_Icon(FileMenu_Netplay, "_Netplay", "FileMenu_Netplay", FileMenu,
-			 FileMenu_Netplay_Icon, "Modem.png");
+			 FileMenu_Netplay_Icon, "modem.png");
 	gtk_widget_set_sensitive(FileMenu_Netplay, FALSE);
 	
 	// ROM History
@@ -299,8 +299,8 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	// ROM History submenu is handled by Sync_GensWindow_FileMenu().
 	
 	// Close ROM
-	NewMenuItem_Icon(FileMenu_CloseROM, "_Close ROM", "FileMenu_CloseROM", FileMenu,
-			 FileMenu_CloseROM_Icon, "filleclose.png");
+	NewMenuItem_StockIcon(FileMenu_CloseROM, "_Close ROM", "FileMenu_CloseROM", FileMenu,
+			      FileMenu_CloseROM_Icon, "gtk-close");
 	gtk_widget_add_accelerator(FileMenu_CloseROM, "activate", accel_group,
 				   GDK_W, (GdkModifierType)GDK_CONTROL_MASK,
 				   GTK_ACCEL_VISIBLE);
@@ -318,8 +318,8 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	NewMenuSeparator(FileMenu_Separator2, "FileMenu_Separator2", FileMenu);
 	
 	// Load State...
-	NewMenuItem_Icon(FileMenu_LoadState, "_Load State...", "FileMenu_LoadState", FileMenu,
-			 FileMenu_LoadState_Icon, "folder_slin_open.png");
+	NewMenuItem_StockIcon(FileMenu_LoadState, "_Load State...", "FileMenu_LoadState", FileMenu,
+			      FileMenu_LoadState_Icon, "gtk-open");
 	AddMenuAccelerator(FileMenu_LoadState, GDK_F8, GDK_SHIFT_MASK);
 	AddMenuCallback(FileMenu_LoadState, on_FileMenu_LoadState_activate);
 	
@@ -330,8 +330,8 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	AddMenuCallback(FileMenu_SaveState, on_FileMenu_SaveState_activate);
 	
 	// Quick Load
-	NewMenuItem_Icon(FileMenu_QuickLoad, "Quick Load", "FileMenu_QuickLoad", FileMenu,
-			 FileMenu_QuickLoad_Icon, "reload.png");
+	NewMenuItem_StockIcon(FileMenu_QuickLoad, "Quick Load", "FileMenu_QuickLoad", FileMenu,
+			      FileMenu_QuickLoad_Icon, "gtk-refresh");
 	AddMenuAccelerator(FileMenu_QuickLoad, GDK_F8, 0);
 	AddMenuCallback(FileMenu_QuickLoad, on_FileMenu_QuickLoad_activate);
 	
@@ -421,8 +421,8 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Graphics), GraphicsMenu);
 	
 	// Full Screen
-	NewMenuItem_Icon(GraphicsMenu_FullScreen, "_Full Screen", "GraphicsMenu_FullScreen", GraphicsMenu,
-			 GraphicsMenu_FullScreen_Icon, "viewmag1.png");
+	NewMenuItem_StockIcon(GraphicsMenu_FullScreen, "_Full Screen", "GraphicsMenu_FullScreen", GraphicsMenu,
+			      GraphicsMenu_FullScreen_Icon, "gtk-fullscreen");
 	AddMenuAccelerator(GraphicsMenu_FullScreen, GDK_Return, GDK_MOD1_MASK);
 	AddMenuCallback(GraphicsMenu_FullScreen, on_GraphicsMenu_FullScreen_activate);
 	
@@ -488,8 +488,8 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	NewMenuSeparator(GraphicsMenu_Separator5, "GraphicsMenu_Separator5", GraphicsMenu);
 	
 	// Screen Shot
-	NewMenuItem_Icon(GraphicsMenu_ScreenShot, "Screen Shot", "GraphicsMenu_ScreenShot", GraphicsMenu,
-			 GraphicsMenu_ScreenShot_Icon, "editcopy.png");
+	NewMenuItem_StockIcon(GraphicsMenu_ScreenShot, "Screen Shot", "GraphicsMenu_ScreenShot", GraphicsMenu,
+			      GraphicsMenu_ScreenShot_Icon, "gtk-copy");
 	AddMenuAccelerator(GraphicsMenu_ScreenShot, GDK_BackSpace, GDK_SHIFT_MASK);
 	AddMenuCallback(GraphicsMenu_ScreenShot, on_GraphicsMenu_ScreenShot_activate);
 }
@@ -711,8 +711,8 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
 	
 	// Hard Reset
-	NewMenuItem_Icon(CPUMenu_HardReset, "Hard _Reset", "CPUMenu_HardReset", CPUMenu,
-			 CPUMenu_HardReset_Icon, "reload.png");
+	NewMenuItem_StockIcon(CPUMenu_HardReset, "Hard _Reset", "CPUMenu_HardReset", CPUMenu,
+			      CPUMenu_HardReset_Icon, "gtk-refresh");
 	// Tab doesn't seem to work here...
 	// Leaving this line in anyway so the accelerator is displayed in the menu.
 	AddMenuAccelerator(CPUMenu_HardReset, GDK_Tab, 0);
@@ -1069,8 +1069,8 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuSeparator(OptionsMenu_Separator2, "OptionsMenu_Separator2", OptionsMenu);
 	
 	// Current CD Drive...
-	NewMenuItem_Icon(OptionsMenu_CurrentCDDrive, "Current _CD Drive...", "OptionsMenu_CurrentCDDrive", OptionsMenu,
-			 OptionsMenu_CurrentCDDrive_Icon, "cdrom2_unmount.png");
+	NewMenuItem_StockIcon(OptionsMenu_CurrentCDDrive, "Current _CD Drive...", "OptionsMenu_CurrentCDDrive", OptionsMenu,
+			      OptionsMenu_CurrentCDDrive_Icon, "gtk-cdrom");
 	AddMenuCallback(OptionsMenu_CurrentCDDrive, on_OptionsMenu_CurrentCDDrive_activate);
 	
 	// Sega CD SRAM Size
@@ -1083,8 +1083,8 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuSeparator(OptionsMenu_Separator3, "OptionsMenu_Separator3", OptionsMenu);
 	
 	// Load Config...
-	NewMenuItem_Icon(OptionsMenu_LoadConfig, "_Load Config...", "OptionsMenu_LoadConfig", OptionsMenu,
-			 OptionsMenu_LoadConfig_Icon, "folder_slin_open.png");
+	NewMenuItem_StockIcon(OptionsMenu_LoadConfig, "_Load Config...", "OptionsMenu_LoadConfig", OptionsMenu,
+			      OptionsMenu_LoadConfig_Icon, "gtk-open");
 	AddMenuCallback(OptionsMenu_LoadConfig, on_OptionsMenu_LoadConfig_activate);
 	
 	// Save Config As...
