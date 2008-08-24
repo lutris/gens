@@ -358,11 +358,6 @@ void create_genswindow_FileMenu(GtkWidget *container)
  * genswindow_FileMenu_ChangeState_SubMenu(): Create the File, Change State submenu.
  * @param container Container for this menu.
  */
-#define CREATE_SAVE_SLOT(widget, ObjName, text, defState, callbackFunc)			\
-{											\
-	NewMenuItem_Radio(widget, text, ObjName, SubMenu, defState, SlotGroup);		\
-	g_signal_connect((gpointer)widget, "activate", G_CALLBACK(callbackFunc), NULL);	\
-}
 void create_genswindow_FileMenu_ChangeState_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
@@ -382,7 +377,7 @@ void create_genswindow_FileMenu_ChangeState_SubMenu(GtkWidget *container)
 	for (i = 0; i < 10; i++)
 	{
 		sprintf(SlotName, "%d", i);
-		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", SlotName);
+		sprintf(ObjName, "FileMenu_ChangeState_SubMenu_%s", SlotName);
 		NewMenuItem_Radio(SlotItem, SlotName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), SlotGroup);
 		g_signal_connect((gpointer)SlotItem, "activate",
 				 G_CALLBACK(on_FileMenu_ChangeState_SubMenu_SlotItem_activate),
