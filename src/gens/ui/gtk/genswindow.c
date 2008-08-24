@@ -848,7 +848,7 @@ void create_genswindow_CPUMenu_Country_SubMenu(GtkWidget *container)
 		if (i == 0)
 			strcpy(ObjName, "CPUMenu_Country_SubMenu_Auto");
 		else
-			sprintf(ObjName, "CPUMenu_Country_SubMenu_%d", i);
+			sprintf(ObjName, "CPUMenu_Country_SubMenu_%d", i - 1);
 		NewMenuItem_Radio(CountryItem, CountryCodes[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), CountryGroup);
 		g_signal_connect((gpointer)CountryItem, "activate",
 				 G_CALLBACK(on_CPUMenu_Country_activate), GINT_TO_POINTER(i - 1));

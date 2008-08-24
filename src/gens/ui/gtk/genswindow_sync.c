@@ -168,14 +168,26 @@ void Sync_GensWindow_GraphicsMenu(void)
  */
 void Sync_GensWindow_CPUMenu(void)
 {
+	GtkWidget *MItem_Country;
 	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
 	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
-
+	
 	// TODO: Debug
-	// TODO: Country
+	
+	// Country code
+	if (Country == -1)
+		MItem_Country = lookup_widget(gens_window, "CPUMenu_Country_SubMenu_Auto");
+	else
+	{
+		sprintf(Str_Tmp, "CPUMenu_Country_SubMenu_%d", Country);
+		MItem_Country = lookup_widget(gens_window, Str_Tmp);
+	}
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Country), TRUE);
+	
+	// TODO: Country order (maybe?)
 	
 	// Hide and show appropriate RESET items.
 	MItem_Reset68K = lookup_widget(gens_window, "CPUMenu_Reset68000");
