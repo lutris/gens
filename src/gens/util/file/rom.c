@@ -791,61 +791,80 @@ struct Rom* Load_Rom_Zipped(const char *Name, int interleaved)
 	if (interleaved)
 		De_Interleave();
 	
-	Fill_Infos ();
+	Fill_Infos();
 	
 	return My_Rom;
 }
 
 
-unsigned short
-Calculate_Checksum (void)
+/**
+ * Calculate_Checksum(): Calculates the checksum of the loaded ROM.
+ * @return Checksum of the loaded ROM.
+ */
+unsigned short Calculate_Checksum(void)
 {
-  unsigned short checksum = 0;
-  unsigned int i;
-
-  if (!Game)
-    return (0);
-
-  for (i = 512; i < Rom_Size; i += 2)
-    {
-      checksum += (unsigned short) (Rom_Data[i + 0]);
-      checksum += (unsigned short) (Rom_Data[i + 1] << 8);
-    }
-
-  return checksum;
+	unsigned short checksum = 0;
+	unsigned int i;
+	
+	// A game needs to be loaded in order for this function to work...
+	if (!Game)
+		return 0;
+	
+	// Checksum starts at 0x200, past the vector table and ROM header.
+	for (i = 0x200; i < Rom_Size; i += 2)
+	{
+		// Remember, since the MC68000 is little-endian, we can't
+		// just cast Rom_Data[i] to an unsigned short directly.
+		checksum += (unsigned short)(Rom_Data[i + 0]) +
+			    (unsigned short)(Rom_Data[i + 1] << 8);
+	}
+	
+	return checksum;
 }
 
 
-void
-Fix_Checksum (void)
+/**
+ * Fix_Checksum(): Fixes the checksum of the loaded ROM.
+ */
+void Fix_Checksum(void)
 {
-  unsigned short checks;
-
-  if (!Game)
-    return;
-
-  checks = Calculate_Checksum ();
-
-  if (Rom_Size)
-    {
-      Rom_Data[0x18E] = checks & 0xFF;
-      Rom_Data[0x18F] = checks >> 8;
-      _32X_Rom[0x18E] = checks >> 8;;
-      _32X_Rom[0x18F] = checks & 0xFF;
-    }
+	unsigned short checks;
+	
+	if (!Game)
+		return;
+	
+	// Get the checksum.
+	checks = Calculate_Checksum ();
+	
+	if (Rom_Size)
+	{
+		// MC68000 checksum.
+		// MC68000 is big-endian.
+		Rom_Data[0x18E] = checks & 0xFF;
+		Rom_Data[0x18F] = checks >> 8;
+		
+		// SH2 checksum.
+		// SH2 is little-endian.
+		// TODO: Only do this if the 32X is active.
+		_32X_Rom[0x18E] = checks >> 8;;
+		_32X_Rom[0x18F] = checks & 0xFF;
+	}
 }
 
 
-unsigned int
-Calculate_CRC32 (void)
+/**
+ * Calculate_CRC32(): Calculate the CRC32 of the loaded ROM.
+ * @return CRC32 of the loaded ROM.
+ */
+unsigned int Calculate_CRC32(void)
 {
-  unsigned int crc = 0;
-
-  Byte_Swap (Rom_Data, Rom_Size);
-  crc = crc32 (0, Rom_Data, Rom_Size);
-  Byte_Swap (Rom_Data, Rom_Size);
-
-  return crc;
+	unsigned int crc = 0;
+	
+	Byte_Swap(Rom_Data, Rom_Size);
+	crc = crc32(0, Rom_Data, Rom_Size);
+	Byte_Swap(Rom_Data, Rom_Size);
+	
+	return crc;
 }
 
 
