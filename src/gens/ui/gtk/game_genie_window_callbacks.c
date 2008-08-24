@@ -36,6 +36,8 @@ void AddCode_Signal(GtkWidget *widget, gpointer user_data)
 	// Get the length of the code.
 	// Game Genie codes are 9 characters long. ("XXXX-YYYY")
 	// Patch codes are 11 characters long. ("AAAAAA-DDDD")
+	// TODO: Better verification of valid codes.
+	// TODO: Automatically add a hyphen for 8-char Game Genie codes and a colon for 10-char Patch codes.
 	length = strlen(code);
 	if (length == 9 || length == 11)
 		GG_AddCode(NULL, name, code, 0);
