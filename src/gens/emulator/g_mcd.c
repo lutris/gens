@@ -65,7 +65,7 @@ char* Detect_Country_SegaCD (void)
 
 /**
  * Init_SegaCD(): Initialize the Sega CD with the specified ISO image.
- * @param iso_name ISO image filename.
+ * @param iso_name ISO image filename. (If NULL, use the actual CD drive.)
  * @return 1 if successful; 0 if an error occurred.
  */
 int Init_SegaCD (char *iso_name)
@@ -77,6 +77,7 @@ int Init_SegaCD (char *iso_name)
 	if (Reset_CD ((char *) CD_Data, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
+		// TODO: Show a message box.
 		UI_Set_Window_Title("Gens - Idle");
 		return 0;
 	}
@@ -116,7 +117,7 @@ int Init_SegaCD (char *iso_name)
 	}
 	
 	// Attempt to load the Sega CD BIOS.
-	if (Load_Bios (Bios_To_Use) == NULL)
+	if (Load_Bios(Bios_To_Use) == NULL)
 	{
 		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
 			  "BIOS Configuration Error");
