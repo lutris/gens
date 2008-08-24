@@ -377,23 +377,23 @@ int Load_Config(const char *File_Name, void *Game_Active)
 				&IPS_Dir[0], GENS_PATH_MAX, Conf_File);
 	
 	// Genesis BIOS
-	GetPrivateProfileString("General", "Genesis Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "Genesis Bios", "",
 				&Genesis_Bios[0], GENS_PATH_MAX, Conf_File);
 	
 	// SegaCD BIOSes
-	GetPrivateProfileString("General", "USA CD Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "USA CD Bios", "",
 				&US_CD_Bios[0],	GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "EUROPE CD Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "EUROPE CD Bios", "",
 				&EU_CD_Bios[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "JAPAN CD Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "JAPAN CD Bios", "",
 				&JA_CD_Bios[0], GENS_PATH_MAX, Conf_File);
 	
 	// 32X BIOSes
-	GetPrivateProfileString("General", "32X 68000 Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "32X 68000 Bios", "",
 				&_32X_Genesis_Bios[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "32X Master SH2 Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "32X Master SH2 Bios", "",
 				&_32X_Master_Bios[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "32X Slave SH2 Bios", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "32X Slave SH2 Bios", "",
 				&_32X_Slave_Bios[0], GENS_PATH_MAX, Conf_File);
 	
 	// Last 9 ROMs
