@@ -551,6 +551,16 @@ void on_SoundMenu_Stereo_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
+ * Sound, Z80
+ */
+ void on_SoundMenu_Z80_activate(GtkMenuItem *menuitem, gpointer user_data)
+ {
+ 	if (!do_callbacks)
+		return;
+	Change_Z80(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
+}
+ 
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)

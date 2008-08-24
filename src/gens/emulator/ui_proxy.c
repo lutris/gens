@@ -262,8 +262,9 @@ int Change_Sound(int newSound)
 		
 		Play_Sound ();
 		
+		// Make sure Z80 sound emulation is enabled.
 		if (!(Z80_State & 1))
-			Change_Z80();
+			Change_Z80(1);
 		
 		YM2612_Enable = 1;
 		PSG_Enable = 1;
@@ -339,6 +340,31 @@ int Change_Sound_Stereo(int newStereo)
 	// Sound enabled.
 	Sound_Enable = 1;
 	Play_Sound();
+	return 1;
+}
+
+
+/**
+ * Change_Z80(): Enable or disable Z80 sound emulation.
+ * @param newZ80 New Z80 sound enable setting.
+ * @return 1 on success.
+ */
+int Change_Z80(int newZ80)
+{
+	if (newZ80)
+		Z80_State |= 1;
+	else
+		Z80_State &= ~1;
+	
+	if (Z80_State & 1)
+	{
+		MESSAGE_L("Z80 Enabled", "Z80 Enabled", 1000);
+	}
+	else
+	{
+		MESSAGE_L("Z80 Disabled", "Z80 Disabled", 1000);
+	}
+	
 	return 1;
 }
 
@@ -646,22 +672,6 @@ Change_Country_Order (int Num)
   sprintf (str_w, "Country detec.order : %s %s %s", c_str[Country_Order[0]],
 	   c_str[Country_Order[1]], c_str[Country_Order[2]]);
   MESSAGE_L (str_w, str_w, 1500) return (1);
-}
-
-int
-Change_Z80 (void)
-{
-  if (Z80_State & 1)
-    {
-      Z80_State &= ~1;
-    MESSAGE_L ("Z80 Disabled", "Z80 Disabled", 1000)}
-  else
-    {
-      Z80_State |= 1;
-    MESSAGE_L ("Z80 Enabled", "Z80 Enabled", 1000)}
-
-
-  return (1);
 }
 
 void Set_Game_Name()
