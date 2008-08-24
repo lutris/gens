@@ -557,7 +557,7 @@ void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 		Stop_WAV_Dump();
 	
 	// Check the status again to determine what to set the label to.
-	label = (WAV_Dumping ? "Start WAV Dump" : "Stop WAV Dump");
+	label = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
 	
 	// Set the text of the WAV dump menu item.
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label);
@@ -578,7 +578,7 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 		Stop_GYM_Dump();
 	
 	// Check the status again to determine what to set the label to.
-	label = (GYM_Dumping ? "Start GYM Dump" : "Stop GYM Dump");
+	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
 	
 	// Set the text of the GYM dump menu item.
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label);

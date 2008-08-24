@@ -213,12 +213,12 @@ void Sync_GensWindow_SoundMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_CDDA), CDDA_Enable);
 	
 	// GYM dumping
-	label = (GYM_Dumping ? "Start GYM Dump" : "Stop GYM Dump");
+	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
 	MItem_GYMDump = lookup_widget(gens_window, "SoundMenu_GYMDump");
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label);
 	
 	// WAV dumping
-	label = (WAV_Dumping ? "Start WAV Dump" : "Stop WAV Dump");
+	label = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
 	MItem_WAVDump = lookup_widget(gens_window, "SoundMenu_WAVDump");
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label);
 	
