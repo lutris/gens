@@ -50,8 +50,10 @@ void create_genswindow_CPUMenu(GtkWidget *container);
 void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container);
 #endif
 void create_genswindow_SoundMenu(GtkWidget *container);
-void create_genswindow_CPUMenu_RateSubMenu(GtkWidget *container);
+void create_genswindow_SoundMenu_RateSubMenu(GtkWidget *container);
+void create_genswindow_OptionsMenu(GtkWidget *container);
 void create_genswindow_HelpMenu(GtkWidget *container);
+
 
 // Set to 0 to temporarily disable callbacks.
 int do_callbacks = 1;
@@ -236,6 +238,7 @@ void create_genswindow_menubar(GtkWidget *container)
 	create_genswindow_GraphicsMenu(MenuBar);
 	create_genswindow_CPUMenu(MenuBar);
 	create_genswindow_SoundMenu(MenuBar);
+	create_genswindow_OptionsMenu(MenuBar);
 	create_genswindow_HelpMenu(MenuBar);
 }
 
@@ -963,6 +966,31 @@ void create_genswindow_SoundMenu_RateSubMenu(GtkWidget *container)
 				 G_CALLBACK(on_SoundMenu_Rate_SubMenu_activate),
 				 GINT_TO_POINTER(SndRates[i][0]));
 	}
+}
+
+
+/**
+ * create_genswindow_OptionsMenu(): Create the Options menu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_OptionsMenu(GtkWidget *container)
+{
+	GtkWidget *Options;			GtkWidget *Options_Icon;
+	GtkWidget *OptionsMenu;
+	GtkWidget *OptionsMenu_GeneralOptions;	GtkWidget *OptionsMenu_GeneralOptions_Icon;
+	
+	// Options
+	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
+	
+	// Menu object for the OptionsMenu
+	OptionsMenu = gtk_menu_new();
+	gtk_widget_set_name(OptionsMenu, "OptionsMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Options), OptionsMenu);
+	
+	// General Options
+	NewMenuItem_Icon(OptionsMenu_GeneralOptions, "_General Options...", "SoundMenu_Enable", OptionsMenu,
+			 OptionsMenu_GeneralOptions_Icon, "package_settings.png");
+	AddMenuCallback(OptionsMenu_GeneralOptions, on_OptionsMenu_GeneralOptions_activate);
 }
 
 

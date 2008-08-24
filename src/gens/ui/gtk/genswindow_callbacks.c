@@ -585,6 +585,16 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
+ * Options, General Options
+ */
+void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	// TODO: Reimplement General Options.
+	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+}
+
+
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
