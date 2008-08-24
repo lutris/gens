@@ -409,7 +409,7 @@ void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	if (!do_callbacks)
 		return;
-	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
 		Change_Country(GPOINTER_TO_INT(user_data));
 }
 

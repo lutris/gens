@@ -788,7 +788,8 @@ int Change_Country(int newCountry)
 	
 	Flag_Clr_Scr = 1;
 	
-	switch (Country = Num)
+	Country = newCountry;
+	switch (Country)
 	{
 		default:
 		case -1:
