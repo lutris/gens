@@ -31,6 +31,12 @@ void Open_Game_Genie(void)
 	int i;
 	
 	gg = create_game_genie_window();
+	if (!gg)
+	{
+		// Either an error occurred while creating the Game Genie window,
+		// or the Game Genie window is already created.
+		return;
+	}
 	gtk_window_set_transient_for(GTK_WINDOW(gg), GTK_WINDOW(gens_window));
 	
 	// Populate the TreeView.

@@ -18,6 +18,17 @@
 
 
 /**
+ * Window is closed.
+ */
+gboolean on_game_genie_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtk_widget_destroy(game_genie_window);
+	game_genie_window = NULL;
+	return FALSE;
+}
+
+
+/**
  * Generic AddCode signal handler.
  */
 void AddCode_Signal(GtkWidget *widget, gpointer user_data)
@@ -97,12 +108,23 @@ void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
+ * Cancel
+ */
+void on_button_gg_cancel_clicked(GtkButton *button, gpointer user_data)
+{
+	gtk_widget_destroy(game_genie_window);
+	game_genie_window = NULL;
+}
+
+
+/**
  * OK
  */
 void on_button_gg_OK_clicked(GtkButton *button, gpointer user_data)
 {
 	GG_SaveCodes();
 	gtk_widget_destroy(game_genie_window);
+	game_genie_window = NULL;
 }
 
 

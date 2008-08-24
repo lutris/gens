@@ -26,7 +26,7 @@
 #include "gens.h"
 #include "debug.h"
 
-GtkWidget *game_genie_window;
+GtkWidget *game_genie_window = NULL;
 
 GtkAccelGroup *accel_group;
 GtkTooltips *tooltips;
@@ -84,6 +84,13 @@ GtkWidget* create_game_genie_window(void)
 	GtkWidget *scroll_gg_list;
 	GtkWidget *treeview_gg_list;
 	
+	if (game_genie_window)
+	{
+		// Game Genie window is already created. Set focus.
+		gtk_widget_grab_focus(game_genie_window);
+		return NULL;
+	}
+	
 	// Create the Game Genie window.
 	game_genie_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name(game_genie_window, "game_genie_window");
@@ -100,6 +107,12 @@ GtkWidget* create_game_genie_window(void)
 		gtk_window_set_icon(GTK_WINDOW(game_genie_window), game_genie_window_icon_pixbuf);
 		gdk_pixbuf_unref(game_genie_window_icon_pixbuf);
 	}
+	
+	// Callbacks for if the window is closed.
+	g_signal_connect((gpointer)game_genie_window, "delete_event",
+			 G_CALLBACK(on_game_genie_window_close), NULL);
+	g_signal_connect((gpointer)game_genie_window, "destroy_event",
+			 G_CALLBACK(on_game_genie_window_close), NULL);
 	
 	// Layout objects.
 	vbox_gg = gtk_vbox_new(FALSE, 5);
@@ -262,8 +275,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(button_gg_cancel, "button_gg_cancel");
 	gtk_widget_show(button_gg_cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_cancel, FALSE, FALSE, 0);
-	g_signal_connect_swapped((gpointer)button_gg_cancel, "clicked",
-				 G_CALLBACK(gtk_widget_destroy), GTK_OBJECT(game_genie_window));
+	AddButtonCallback_Clicked(button_gg_cancel, on_button_gg_cancel_clicked);
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_cancel, "button_gg_cancel");
 	
 	// OK
