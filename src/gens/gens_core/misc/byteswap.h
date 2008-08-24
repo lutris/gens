@@ -30,7 +30,7 @@ extern "C" {
 
 
 // 16-bit byteswap function.
-void __byte_swap_16(void *ptr, int n);
+void __byte_swap_16_array(void *ptr, int n);
 
 #if GENS_BYTEORDER == GENS_LIL_ENDIAN
 #define be16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
