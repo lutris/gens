@@ -622,49 +622,66 @@ Load_Rom (char *Name, int inter)
   return My_Rom;
 }
 
-Rom *
-Load_Rom_Gz (char *Name, int inter)
+
+/**
+ * Load_Rom_Gz: Load a ROM file from a GZip archive.
+ * @param filename Filename of the GZip archive containing the ROM file.
+ * @param interleaved If 0, the ROM is not interleaved; otherwise, it is.
+ */
+struct Rom *Load_Rom_Gz(const char *filename, int interleaved)
 {
-  FILE *Rom_File;
-  int Size = 0;
-  char *read_buf[1024];
-  //SetCurrentDirectory (Gens_Path);
-	if ((Rom_File = (FILE*)gzopen(Name, "rb")) == 0)
+	FILE *Rom_File;
+	int Size = 0;
+	char *read_buf[1024];
+	
+	//SetCurrentDirectory (Gens_Path);
+	
+	if ((Rom_File = (FILE*)gzopen(filename, "rb")) == 0)
 	{
-		printf("No Genesis or 32X ROM file found in GZip archive.");
 		UI_MsgBox("No Genesis or 32X ROM file found in GZip archive.", "Error");
 		Game = NULL;
 		return (NULL);
 	}
-
-  while (gzeof (Rom_File) == 0)
-    {
-      Size += gzread (Rom_File, read_buf, 1024);
-    }
-  gzrewind (Rom_File);
-  if ((Size) > ((6 * 1024 * 1024) + 512))
-    {
-      Game = NULL;
-      gzclose (Rom_File);
-      return (NULL);
-    }
-  My_Rom = (Rom *) malloc (sizeof (Rom));
-  if (!My_Rom)
-    {
-      Game = NULL;
-      gzclose (Rom_File);
-      return (NULL);
-    }
-
-  memset (Rom_Data, 0, 6 * 1024 * 1024);
-  gzread (Rom_File, Rom_Data, Size);
-  gzclose (Rom_File);
-  Update_Rom_Name (Name);
-  Rom_Size = Size;
-  if (inter)
-    De_Interleave ();
-  Fill_Infos ();
-  return My_Rom;
+	
+	// Determine the size of the GZip archive.
+	while (gzeof(Rom_File) == 0)
+	{
+		Size += gzread (Rom_File, read_buf, 1024);
+	}
+	gzrewind (Rom_File);
+	
+	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
+	if (Size > ((6 * 1024 * 1024) + 512))
+	{
+		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
+		gzclose (Rom_File);
+		Game = NULL;
+		return NULL;
+	}
+	
+	My_Rom = (Rom*)malloc(sizeof(Rom));
+	if (!My_Rom)
+	{
+		// Memory allocation error
+		gzclose(Rom_File);
+		Game = NULL;
+		return NULL;
+	}
+	
+	// Clear the ROM buffer and load the ROM.
+	memset(Rom_Data, 0, 6 * 1024 * 1024);
+	gzread(Rom_File, Rom_Data, Size);
+	gzclose(Rom_File);
+	
+	Update_Rom_Name(filename);
+	Rom_Size = Size;
+	
+	// Deinterleave the ROM, if necessary.
+	if (interleaved)
+		De_Interleave();
+	
+	Fill_Infos();
+	return My_Rom;
 }
 
 
@@ -673,7 +690,7 @@ Load_Rom_Gz (char *Name, int inter)
  * @param Name Filename of the ZIP archive containing the ROM file.
  * @param interleaved If 0, the ROM is not interleaved; otherwise, it is.
  */
-struct Rom* Load_Rom_Zipped(const char *Name, int interleaved)
+struct Rom *Load_Rom_Zipped(const char *Name, int interleaved)
 {
 	int Size = 0;
 	int bResult;
@@ -743,13 +760,13 @@ struct Rom* Load_Rom_Zipped(const char *Name, int interleaved)
 	My_Rom = (Rom*)malloc(sizeof(Rom));
 	if (!My_Rom)
 	{
-		// Memory allocation error?
+		// Memory allocation error
 		unzClose(Rom_File);
 		Game = NULL;
 		return (NULL);
 	}
 	
-	// Clear the ROM buffer.
+	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
 	bResult = unzReadCurrentFile (Rom_File, Rom_Data, Size);
 	unzCloseCurrentFile (Rom_File);
