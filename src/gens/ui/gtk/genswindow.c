@@ -125,7 +125,7 @@ GtkTooltips *tooltips;
 #define AddMenuCallback(MenuItemWidget, CallbackFunction)					\
 {												\
 	g_signal_connect((gpointer)MenuItemWidget, "activate",					\
-			 G_CALLBACK (CallbackFunction), NULL);					\
+			 G_CALLBACK(CallbackFunction), NULL);					\
 }
 
 

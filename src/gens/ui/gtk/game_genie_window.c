@@ -3,6 +3,7 @@
  */
  
 #include "game_genie_window.h"
+#include "game_genie_window_callbacks.h"
 #include "genswindow.h"
 
 #ifdef HAVE_CONFIG_H
@@ -39,6 +40,14 @@ GtkTooltips *tooltips;
 	gtk_widget_show(IconWidget);								\
 	gtk_button_set_image(GTK_BUTTON(ButtonWidget), IconWidget);				\
 	GLADE_HOOKUP_OBJECT(game_genie_window, IconWidget, ButtonWidgetName "_Icon");		\
+}
+
+
+// Macro to add a clicked callback to a button
+#define AddButtonCallback_Clicked(ButtonWidget, CallbackFunction)				\
+{												\
+	g_signal_connect((gpointer)ButtonWidget, "clicked",					\
+			 G_CALLBACK(CallbackFunction), NULL);					\
 }
 
 
@@ -191,6 +200,7 @@ GtkWidget* create_game_genie_window(void)
 			 (GtkAttachOptions)(0), 0, 0);
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_addCode, "button_gg_addCode");
 	Button_AddStockIcon(button_gg_addCode, "button_gg_addCode", button_gg_addCode_Icon, "gtk-add");
+	AddButtonCallback_Clicked(button_gg_addCode, on_button_gg_addCode_clicked);
 	
 	// HBox for the code list
 	hbox_gg_list = gtk_hbox_new(FALSE, 0);
@@ -227,6 +237,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(button_gg_delCode, "button_gg_delCode");
 	gtk_widget_show(button_gg_delCode);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_delCode, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_gg_delCode, on_button_gg_delCode_clicked);
 	
 	// Deactivate All Codes
 	button_gg_deactAllCodes = gtk_button_new_with_mnemonic("Deac_tivate All");
@@ -234,18 +245,21 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_show(button_gg_deactAllCodes);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_deactAllCodes, FALSE, FALSE, 0);
 	Button_AddStockIcon(button_gg_deactAllCodes, "button_gg_deactAllCodes", button_gg_deactAllCodes_Icon, "gtk-remove");
+	AddButtonCallback_Clicked(button_gg_deactAllCodes, on_button_gg_deactAllCodes_clicked);
 	
 	// Cancel
 	button_gg_cancel = gtk_button_new_from_stock("gtk-cancel");
 	gtk_widget_set_name(button_gg_cancel, "button_gg_cancel");
 	gtk_widget_show(button_gg_cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_cancel, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_gg_cancel, on_button_gg_cancel_clicked);
 	
 	// OK
 	button_gg_OK = gtk_button_new_from_stock("gtk-ok");
 	gtk_widget_set_name(button_gg_OK, "button_gg_OK");
 	gtk_widget_show(button_gg_cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_OK, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_gg_OK, on_button_gg_OK_clicked);
 	
 	return game_genie_window;
 }
