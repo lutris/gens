@@ -616,6 +616,15 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
 
 
 /**
+ * Options, BIOS/Misc Files...
+ */
+void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	STUB;
+}
+
+
+/**
  * Help, About
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)

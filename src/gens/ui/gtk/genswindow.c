@@ -980,6 +980,7 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_GeneralOptions;	GtkWidget *OptionsMenu_GeneralOptions_Icon;
 	GtkWidget *OptionsMenu_Joypads;		GtkWidget *OptionsMenu_Joypads_Icon;
 	GtkWidget *OptionsMenu_Directories;	GtkWidget *OptionsMenu_Directories_Icon;
+	GtkWidget *OptionsMenu_BIOSMiscFiles;	GtkWidget *OptionsMenu_BIOSMiscFiles_Icon;
 	
 	// Options
 	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
@@ -1003,6 +1004,11 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_Icon(OptionsMenu_Directories, "_Directories...", "OptionsMenu_Directories", OptionsMenu,
 			 OptionsMenu_Directories_Icon, "folder_slin_open.png");
 	AddMenuCallback(OptionsMenu_Directories, on_OptionsMenu_Directories_activate);
+	
+	// BIOS/Misc Files...
+	NewMenuItem_Icon(OptionsMenu_BIOSMiscFiles, "_BIOS/Misc Files...", "OptionsMenu_BIOSMiscFiles", OptionsMenu,
+			 OptionsMenu_BIOSMiscFiles_Icon, "binary.png");
+	AddMenuCallback(OptionsMenu_BIOSMiscFiles, on_OptionsMenu_BIOSMiscFiles_activate);
 }
 
 
