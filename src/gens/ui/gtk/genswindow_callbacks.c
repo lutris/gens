@@ -403,6 +403,18 @@ void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data
 
 
 /**
+ * CPU, Country, #
+ */
+void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		Change_Country(GPOINTER_TO_INT(user_data));
+}
+
+
+/**
  * CPU, Hard Reset
  */
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)

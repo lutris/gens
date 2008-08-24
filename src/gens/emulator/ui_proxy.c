@@ -777,166 +777,148 @@ if (Genesis_Started)
 }
 
 
-int
-Change_Country (int Num)
+/**
+ * Change_Country(): Change the current country code.
+ * @param newCountry New country code.
+ * @return 1 on success.
+ */
+int Change_Country(int newCountry)
 {
-  unsigned char Reg_1[0x200];
-
-  Flag_Clr_Scr = 1;
-
-  switch (Country = Num)
-    {
-    default:
-    case -1:
-      if (Genesis_Started || _32X_Started)
-	Detect_Country_Genesis ();
-      else if (SegaCD_Started)
-	Detect_Country_SegaCD ();
-      break;
-
-    case 0:
-      Game_Mode = 0;
-      CPU_Mode = 0;
-      break;
-
-    case 1:
-      Game_Mode = 1;
-      CPU_Mode = 0;
-      break;
-
-    case 2:
-      Game_Mode = 1;
-      CPU_Mode = 1;
-      break;
-
-    case 3:
-      Game_Mode = 0;
-      CPU_Mode = 1;
-      break;
-    }
-
-  if (CPU_Mode)
-    {
-      CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
-      CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
-      CPL_MSH2 =
-	Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-		       (double) MSH2_Speed) / 100.0);
-      CPL_SSH2 =
-	Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-		       (double) SSH2_Speed) / 100.0);
-
-      VDP_Num_Lines = 312;
-      VDP_Status |= 0x0001;
-      _32X_VDP.Mode &= ~0x8000;
-
-      CD_Access_Timer = 2080;
-      Timer_Step = 136752;
-    }
-  else
-    {
-      CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-      CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-      CPL_MSH2 =
-	Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) /
-			262.0) * (double) MSH2_Speed) / 100.0);
-      CPL_SSH2 =
-	Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) /
-			262.0) * (double) SSH2_Speed) / 100.0);
-
-      VDP_Num_Lines = 262;
-      VDP_Status &= 0xFFFE;
-      _32X_VDP.Mode |= 0x8000;
-
-      CD_Access_Timer = 2096;
-      Timer_Step = 135708;
-    }
-
-  if (Sound_Enable)
-    {
-      PSG_Save_State ();
-      YM2612_Save (Reg_1);
-
-      End_Sound ();
-      Sound_Enable = 0;
-
-      if (CPU_Mode)
+	unsigned char Reg_1[0x200];
+	
+	Flag_Clr_Scr = 1;
+	
+	switch (Country = Num)
 	{
-	  YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-	  PSG_Init (CLOCK_PAL / 15, Sound_Rate);
+		default:
+		case -1:
+			// Auto-detect.
+			if (Genesis_Started || _32X_Started)
+				Detect_Country_Genesis();
+			else if (SegaCD_Started)
+				Detect_Country_SegaCD();
+			break;
+		
+		case 0:
+			// Japan (NTSC)
+			Game_Mode = 0;
+			CPU_Mode = 0;
+			break;
+		
+		case 1:
+			// USA (NTSC)
+			Game_Mode = 1;
+			CPU_Mode = 0;
+			break;
+		
+		case 2:
+			// Europe (PAL)
+			Game_Mode = 1;
+			CPU_Mode = 1;
+			break;
+		
+		case 3:
+			// Japan (PAL)
+			Game_Mode = 0;
+			CPU_Mode = 1;
+			break;
 	}
-      else
+	
+	if (CPU_Mode)
 	{
-	  YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	  PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
+		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
+		CPL_MSH2 =
+			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+				(double) MSH2_Speed) / 100.0);
+		CPL_SSH2 =
+			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+				(double) SSH2_Speed) / 100.0);
+		
+		VDP_Num_Lines = 312;
+		VDP_Status |= 0x0001;
+		_32X_VDP.Mode &= ~0x8000;
+		
+		CD_Access_Timer = 2080;
+		Timer_Step = 136752;
 	}
-
-      if (SegaCD_Started)
-	Set_Rate_PCM (Sound_Rate);
-      YM2612_Restore (Reg_1);
-      PSG_Restore_State ();
-
-      if (!Init_Sound ())
-	return (0);
-
-      Sound_Enable = 1;
-      Play_Sound ();
-    }
-
-  if (Game_Mode)
-    {
-/*      if (CPU_Mode)
-	MESSAGE_L ("Europe system (50 FPS)", "Europe system (50 FPS)", 1500)
-	else
-	MESSAGE_L ("USA system (60 FPS)", "USA system (60 FPS)", 1500)}
 	else
 	{
-	  if (CPU_Mode)
-	    MESSAGE_L ("Japan system (50 FPS)", "Japan system (50 FPS)", 1500)
-	    else
-	    MESSAGE_L ("Japan system (60 FPS)", "Japan system (60 FPS)", 1500)}
-
-	    if (Genesis_Started)
-	      {
-		if ((CPU_Mode == 1) || (Game_Mode == 0))
-		  sprintf (Str_Tmp, "Gens - Megadrive : %s",
-			   Game->Rom_Name_W);
-		else
-		  sprintf (Str_Tmp, "Gens - Genesis : %s", Game->Rom_Name_W);
-
-		SetWindowText (Str_Tmp);
-*/
-		if (CPU_Mode) MESSAGE_L("Europe system (50 FPS)", "Europe system (50 FPS)", 1500)
-        else MESSAGE_L("USA system (60 FPS)", "USA system (60 FPS)", 1500)
-	      }
-	    /*else if (_32X_Started)
-	      {
-		if (CPU_Mode == 1)
-		  sprintf (Str_Tmp, "Gens - 32X (PAL) : %s",
-			   Game->Rom_Name_W);
-		 */
-		else
-		/*  sprintf (Str_Tmp, "Gens - 32X (NTSC) : %s",
-			   Game->Rom_Name_W);
-
-		SetWindowText (Str_Tmp);
-	      }
-	    else if (SegaCD_Started)
-	    */
-	      {
-		/*if ((CPU_Mode == 1) || (Game_Mode == 0))
-		  sprintf (Str_Tmp, "Gens - MegaCD : %s", Rom_Name);
-		else
-		  sprintf (Str_Tmp, "Gens - SegaCD : %s", Rom_Name);
-
-		SetWindowText (Str_Tmp);*/
-		if (CPU_Mode) MESSAGE_L("Japan system (50 FPS)", "Japan system (50 FPS)", 1500)
-        else MESSAGE_L("Japan system (60 FPS)", "Japan system (60 FPS)", 1500)
-	      }
-
-		Set_Game_Name();
-		return 1;
+		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
+		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
+		CPL_MSH2 =
+		Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+				(double) MSH2_Speed) / 100.0);
+		CPL_SSH2 =
+			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+				(double) SSH2_Speed) / 100.0);
+		
+		VDP_Num_Lines = 262;
+		VDP_Status &= 0xFFFE;
+		_32X_VDP.Mode |= 0x8000;
+		
+		CD_Access_Timer = 2096;
+		Timer_Step = 135708;
 	}
+	
+	if (Sound_Enable)
+	{
+		PSG_Save_State();
+		YM2612_Save(Reg_1);
+		
+		End_Sound();
+		Sound_Enable = 0;
+		
+		if (CPU_Mode)
+		{
+			YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+			PSG_Init(CLOCK_PAL / 15, Sound_Rate);
+		}
+		else
+		{
+			YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+			PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+		}
+		
+		if (SegaCD_Started)
+			Set_Rate_PCM (Sound_Rate);
+		
+		YM2612_Restore (Reg_1);
+		PSG_Restore_State ();
+		
+		if (!Init_Sound ())
+			return 0;
+		
+		Sound_Enable = 1;
+		Play_Sound();
+	}
+	
+	if (Game_Mode)
+	{
+		if (CPU_Mode)
+		{
+			MESSAGE_L("Europe system (50 FPS)", "Europe system (50 FPS)", 1500);
+		}
+		else
+		{
+			MESSAGE_L("USA system (60 FPS)", "USA system (60 FPS)", 1500);
+		}
+	}
+	else
+	{
+		if (CPU_Mode)
+		{
+			MESSAGE_L("Japan system (50 FPS)", "Japan system (50 FPS)", 1500);
+		}
+		else
+		{
+			MESSAGE_L("Japan system (60 FPS)", "Japan system (60 FPS)", 1500);
+		}
+	}
+	
+	Set_Game_Name();
+	return 1;
+}
 
 
 /**

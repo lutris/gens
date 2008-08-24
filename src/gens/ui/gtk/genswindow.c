@@ -49,6 +49,7 @@ void create_genswindow_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUG
 void create_genswindow_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif
+void create_genswindow_CPUMenu_Country_SubMenu(CPUMenu_Debug);
 void create_genswindow_SoundMenu(GtkWidget *container);
 void create_genswindow_SoundMenu_Rate_SubMenu(GtkWidget *container);
 void create_genswindow_OptionsMenu(GtkWidget *container);
@@ -704,7 +705,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Country
 	NewMenuItem(CPUMenu_Country, "_Country", "CPUMenu_Country", CPUMenu);
 	// Country submenu
-	// TODO
+	create_genswindow_CPUMenu_Country_SubMenu(CPUMenu_Country);
 	
 	// Separator
 	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
@@ -810,6 +811,49 @@ void create_genswindow_CPUMenu_Debug_SubMenu(GtkWidget *container)
 	}
 }
 #endif
+
+
+/**
+ * create_genswindow_CPUMenu_Country_SubMenu(): Create the CPU, Country submenu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_CPUMenu_Country_SubMenu(GtkWidget *container)
+{
+	GtkWidget *SubMenu;
+	GtkWidget *CountryItem;
+	GSList *CountryGroup = NULL;
+	
+	// TODO: Move this array somewhere else.
+	const char* CountryCodes[5] =
+	{
+		"Auto Detect",
+		"Japan (NTSC)",
+		"USA (NTSC)",
+		"Europe (PAL)",
+		"Japan (PAL)",
+	};
+	
+	int i;
+	char CountryName[8];
+	char ObjName[64];
+	
+	// Create the submenu.
+	SubMenu = gtk_menu_new();
+	gtk_widget_set_name(SubMenu, "CPUMenu_Country_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	
+	// Create the bits per pixel entries.
+	for (i = 0; i < 5; i++)
+	{
+		if (i == 0)
+			strcpy(ObjName, "CPUMenu_Country_SubMenu_Auto");
+		else
+			sprintf(ObjName, "CPUMenu_Country_SubMenu_%d", i);
+		NewMenuItem_Radio(CountryItem, CountryCodes[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), CountryGroup);
+		g_signal_connect((gpointer)CountryItem, "activate",
+				 G_CALLBACK(on_CPUMenu_Country_activate), i - 1);
+	}
+}
 
 
 /**
