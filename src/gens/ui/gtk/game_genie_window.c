@@ -119,7 +119,7 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(vbox_gg, "vbox_gg");
 	gtk_widget_show(vbox_gg);
 	gtk_container_add(GTK_CONTAINER(game_genie_window), vbox_gg);
-	GLADE_HOOKUP_OBJECT(game_genie_window, vbox_gg, "vbox_gg");	
+	GLADE_HOOKUP_OBJECT(game_genie_window, vbox_gg, "vbox_gg");
 	
 	frame_gg = gtk_frame_new(NULL);
 	gtk_widget_set_name(frame_gg, "frame_gg");

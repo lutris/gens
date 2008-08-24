@@ -27,13 +27,19 @@ GtkAccelGroup *accel_group;
 GtkTooltips *tooltips;
 
 
+void AddControllerVBox(GtkWidget *vbox, int port);
+
+
 /**
- * create_game_genie(): Create the Controller Configuration Window.
+ * create_controller_config_window(): Create the Controller Configuration Window.
  * @return Game Genie Window.
  */
 GtkWidget* create_controller_config_window(void)
 {
 	GdkPixbuf *controller_config_window_icon_pixbuf;
+	GtkWidget *table_cc;
+	GtkWidget *frame_port_1;
+	GtkWidget *frame_port_2;
 	
 	if (controller_config_window)
 	{
@@ -59,6 +65,92 @@ GtkWidget* create_controller_config_window(void)
 		gdk_pixbuf_unref(controller_config_window_icon_pixbuf);
 	}
 	
+	// Main table.
+	table_cc = gtk_table_new(2, 2, FALSE);
+	gtk_widget_set_name(table_cc, "table_cc");
+	gtk_container_set_border_width(GTK_CONTAINER(table_cc), 5);
+	gtk_table_set_row_spacings(GTK_TABLE(table_cc), 5);
+	gtk_table_set_col_spacings(GTK_TABLE(table_cc), 5);
+	gtk_widget_show(table_cc);
+	gtk_container_add(GTK_CONTAINER(controller_config_window), table_cc);
+	GLADE_HOOKUP_OBJECT(controller_config_window, table_cc, "table_cc");
+	
+	// Frame for Port 1.
+	frame_port_1 = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_port_1, "frame_port_1");
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_port_1), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_port_1), 5);
+	gtk_widget_show(frame_port_1);
+	gtk_table_attach(GTK_TABLE(table_cc), frame_port_1, 0, 1, 0, 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_1, "frame_port_1");
+	
+	// Frame for Port 2.
+	frame_port_2 = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_port_2, "frame_port_2");
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_port_2), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_port_2), 5);
+	gtk_widget_show(frame_port_2);
+	gtk_table_attach(GTK_TABLE(table_cc), frame_port_2, 0, 1, 1, 2,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_2, "frame_port_2");
+	
+	// Add VBoxes for controller input.
+	AddControllerVBox(frame_port_1, 1);
+	AddControllerVBox(frame_port_2, 2);
+	
 	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;
+}
+
+
+/**
+ * AddControllerVBox(): Add a VBox containing controller configuration options.
+ * @param frame Frame to add the VBox to.
+ * @param port Port number (1 or 2).
+ */
+void AddControllerVBox(GtkWidget *frame, int port)
+{
+	GtkWidget *vbox;
+	GtkWidget *hbox;
+	GtkWidget *label_port;
+	GtkWidget *check_teamplayer;
+	char tmp[128];
+	
+	if (!frame || (port != 1 && port != 2))
+		return;
+	
+	// VBox for this controller
+	vbox = gtk_vbox_new(FALSE, 0);
+	sprintf(tmp, "vbox_port_%d", port);
+	gtk_widget_set_name(vbox, tmp);
+	gtk_widget_show(vbox);
+	gtk_container_add(GTK_CONTAINER(frame), vbox);
+	
+	// Create the hbox.
+	hbox = gtk_hbox_new(FALSE, 5);
+	sprintf(tmp, "hbox_controller_%d", port);
+	gtk_widget_set_name(hbox, tmp);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, hbox, tmp);
+	
+	// Port label
+	sprintf(tmp, "<b><i>Port %d</i></b>", port);
+	label_port = gtk_label_new(tmp);
+	sprintf(tmp, "label_port_%d", port);
+	gtk_widget_set_name(label_port, tmp);
+	gtk_label_set_use_markup(label_port, TRUE);
+	gtk_widget_show(label_port);
+	gtk_frame_set_label_widget(GTK_FRAME(frame), label_port);
+	
+	// Checkbox for enabling teamplayer.
+	check_teamplayer = gtk_check_button_new_with_label("Use Teamplayer");
+	sprintf(tmp, "check_teamplayer_%d", port);
+	gtk_widget_set_name(check_teamplayer, tmp);
+	gtk_widget_show(check_teamplayer);
+	gtk_box_pack_start(GTK_BOX(hbox), check_teamplayer, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, check_teamplayer, tmp);
 }
