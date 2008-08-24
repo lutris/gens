@@ -635,6 +635,18 @@ void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_d
 
 
 /**
+ * Options, Sega CD SRAM Size, #
+ */
+void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	if (!do_callbacks)
+		return;
+	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+		Change_SegaCD_SRAM_Size(GPOINTER_TO_INT(user_data));
+}
+
+
+/**
  * Options, Current CD Drive...
  */
 void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data)

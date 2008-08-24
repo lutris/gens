@@ -206,22 +206,28 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	Refresh_video(); 
 }
 
-int
-Change_SegaCD_SRAM_Size (int num)
+
+/**
+ * Change_SegaCD_SRAM_Size(): Change the Sega CD SRAM size.
+ * @param num Index of the SRAM size.
+ * @return 1 on success.
+ */
+int Change_SegaCD_SRAM_Size (int num)
 {
-  if (num == -1)
-    {
-      BRAM_Ex_State &= 1;
-    MESSAGE_L ("SegaCD SRAM cart removed", "SegaCD SRAM cart removed", 1500)}
-  else
-    {
-      char bsize[256];
-
-      BRAM_Ex_State |= 0x100;
-      BRAM_Ex_Size = num;
-
-      sprintf (bsize, "SegaCD SRAM cart plugged (%d Kb)", 8 << num);
-    MESSAGE_L (bsize, bsize, 1500)}
+	if (num == -1)
+	{
+		BRAM_Ex_State &= 1;
+		MESSAGE_L("SegaCD SRAM cart removed", "SegaCD SRAM cart removed", 1500);
+	}
+	else
+	{
+		char bsize[256];
+		
+		BRAM_Ex_State |= 0x100;
+		BRAM_Ex_Size = num;
+		
+		sprintf (bsize, "SegaCD SRAM cart plugged in (%d KB)", 8 << num);
+		MESSAGE_L (bsize, bsize, 1500)}
 
   return 1;
 }

@@ -52,6 +52,7 @@ void create_genswindow_CPUMenu_DebugSubMenu(GtkWidget *container);
 void create_genswindow_SoundMenu(GtkWidget *container);
 void create_genswindow_SoundMenu_RateSubMenu(GtkWidget *container);
 void create_genswindow_OptionsMenu(GtkWidget *container);
+void create_genswindow_OptionsMenu_SegaCDSRAMSizeSubMenu(GtkWidget *container);
 void create_genswindow_HelpMenu(GtkWidget *container);
 
 
@@ -985,7 +986,7 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_SDLSoundTest;	GtkWidget *OptionsMenu_SDLSoundTest_Icon;
 	GtkWidget *OptionsMenu_Separator2;
 	GtkWidget *OptionsMenu_CurrentCDDrive;	GtkWidget *OptionsMenu_CurrentCDDrive_Icon;
-	GtkWidget *OptionsMenu_SegaCDBRAMSize;	GtkWidget *OptionsMenu_SegaCDBRAMSize_Icon;
+	GtkWidget *OptionsMenu_SegaCDSRAMSize;	GtkWidget *OptionsMenu_SegaCDSRAMSize_Icon;
 	GtkWidget *OptionsMenu_Separator3;
 	GtkWidget *OptionsMenu_LoadConfig;	GtkWidget *OptionsMenu_LoadConfig_Icon;
 	GtkWidget *OptionsMenu_SaveConfigAs;	GtkWidget *OptionsMenu_SaveConfigAs_Icon;
@@ -1034,10 +1035,11 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 			 OptionsMenu_CurrentCDDrive_Icon, "cdrom2_unmount.png");
 	AddMenuCallback(OptionsMenu_CurrentCDDrive, on_OptionsMenu_CurrentCDDrive_activate);
 	
-	// Sega CD BRAM Size
-	NewMenuItem_Icon(OptionsMenu_SegaCDBRAMSize, "Sega CD B_RAM Size", "OptionsMenu_SegaCDBRAMSize", OptionsMenu,
-			 OptionsMenu_SegaCDBRAMSize_Icon, "memory.png");
-	// TODO: BRAM submenu
+	// Sega CD SRAM Size
+	NewMenuItem_Icon(OptionsMenu_SegaCDSRAMSize, "Sega CD S_RAM Size", "OptionsMenu_SegaCDSRAMSize", OptionsMenu,
+			 OptionsMenu_SegaCDSRAMSize_Icon, "memory.png");
+	// Sega CD SRAM Size submenu
+	create_genswindow_OptionsMenu_SegaCDSRAMSizeSubMenu(OptionsMenu_SegaCDSRAMSize);
 	
 	// Separator
 	NewMenuSeparator(OptionsMenu_Separator3, "OptionsMenu_Separator3", OptionsMenu);
@@ -1051,6 +1053,46 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_StockIcon(OptionsMenu_SaveConfigAs, "_Save Config As...", "OptionsMenu_SaveConfigAs", OptionsMenu,
 			      OptionsMenu_SaveConfigAs_Icon, "gtk-save-as");
 	AddMenuCallback(OptionsMenu_SaveConfigAs, on_OptionsMenu_SaveConfigAs_activate);
+}
+
+
+/**
+ * create_genswindow_SoundMenu_RateSubMenu(): Create the Options, Sega CD SRAM Size submenu.
+ * @param container Container for this menu.
+ */
+void create_genswindow_OptionsMenu_SegaCDSRAMSizeSubMenu(GtkWidget *container)
+{
+	GtkWidget *SubMenu;
+	GtkWidget *SRAMItem;
+	GSList *SRAMGroup = NULL;
+	
+	int i;
+	char SRAMName[16];
+	char ObjName[64];
+	
+	// Create the submenu.
+	SubMenu = gtk_menu_new();
+	gtk_widget_set_name(SubMenu, "OptionsMenu_SegaCDSRAMSize_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	
+	// Create the rate entries.
+	for (i = -1; i <= 3; i++)
+	{
+		if (i == -1)
+		{
+			strcpy(SRAMName, "None");
+			strcpy(ObjName, "OptionsMenu_SegaCDSRAMSize_SubMenu_None");
+		}
+		else
+		{
+			sprintf(SRAMName, "%d KB", 8 << i);	
+			sprintf(ObjName, "OptionsMenu_SegaCDSRAMSize_SubMenu_%d", 8 << i);
+		}
+		NewMenuItem_Radio(SRAMItem, SRAMName, ObjName, SubMenu, (i == -1 ? TRUE : FALSE), SRAMGroup);
+		g_signal_connect((gpointer)SRAMItem, "activate",
+				 G_CALLBACK(on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate),
+				 GINT_TO_POINTER(i));
+	}
 }
 
 
