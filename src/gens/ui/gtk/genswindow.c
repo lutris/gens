@@ -603,21 +603,6 @@ void create_genswindow_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 		"Scale2x",
 		"Hq2x",
 	};
-	const char* RenderTag[12] =
-	{
-		"normal",
-		"double",
-		"int",
-		"scan",
-		"50scan",
-		"25scan",
-		"intscan",
-		"int50scan",
-		"int25scan",
-		"2xsai",
-		"scale2x",
-		"hq2x",
-	};
 	
 	int i;
 	char ObjName[64];
@@ -630,8 +615,8 @@ void create_genswindow_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 	// Create the render entries.
 	for (i = 0; i < 12; i++)
 	{
-		sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%s", RenderTag[i]);
-		NewMenuItem_Radio(RenderItem, Render[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), RenderGroup);
+		sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i + 1);
+		NewMenuItem_Radio(RenderItem, Render[i], ObjName, SubMenu, (i == 1 ? TRUE : FALSE), RenderGroup);
 		g_signal_connect((gpointer)RenderItem, "activate",
 				 G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
 				 GINT_TO_POINTER(i + 1));
@@ -655,7 +640,7 @@ void create_genswindow_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container)
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicsMenu_bpp_FrameSkip_SubMenu");
+	gtk_widget_set_name(SubMenu, "GraphicsMenu_FrameSkip_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the frame skip entries.
