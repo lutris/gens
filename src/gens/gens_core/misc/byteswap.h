@@ -33,15 +33,15 @@ extern "C" {
 void __byte_swap_16(void *ptr, int n);
 
 #if GENS_BYTEORDER == GENS_LIL_ENDIAN
-#define be16_to_cpu_array(ptr, n) __byte_swap_16((ptr), (n));
+#define be16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 #define le16_to_cpu_array(ptr, n)
-#define cpu_to_be16_array(ptr, n) __byte_swap_16((ptr), (n));
+#define cpu_to_be16_array(ptr, n) __byte_swap_16_array((ptr), (n));
 #define cpu_to_le16_array(ptr, n)
 #else // GENS_BYTEORDER == GENS_BIG_ENDIAN
 #define be16_to_cpu_array(ptr, n)
-#define le16_to_cpu_array(ptr, n) __byte_swap_16((ptr), (n));
+#define le16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 #define cpu_to_be16_array(ptr, n)
-#define cpu_to_le16_array(ptr, n) __byte_swap_16((ptr), (n));
+#define cpu_to_le16_array(ptr, n) __byte_swap_16_array((ptr), (n));
 #endif
 
 

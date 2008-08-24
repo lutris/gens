@@ -6,11 +6,11 @@
 
 
 /**
- * __byte_swap_16(): Swap bytes in 16-bit chunks.
+ * __byte_swap_16_array(): Swaps an array of bytes in 16-bit chunks.
  * @param ptr Pointer to bytes.
  * @param n Number of bytes to swap.
  */
-void __byte_swap_16(void *ptr, int n)
+void __byte_swap_16_array(void *ptr, int n)
 {
 	int i;
 	unsigned char x;
