@@ -29,6 +29,11 @@ typedef enum
 #endif
 
 
+void UI_Set_Window_Title_Idle(void);
+void UI_Set_Window_Title_Game(const char* system, const char* game);
+void UI_Set_Window_Title_Init(const char* system, int reinit);
+
+
 #ifdef __cplusplus
 }
 #endif
