@@ -69,31 +69,21 @@ void Directory_Config_Change(int dir)
  */
 void Directory_Config_Save(void)
 {
-	// TODO
-	/*
-	int file = 0;
+	int dir = 0;
 	char tmp[64];
-	GtkWidget *entry_file;
+	GtkWidget *entry_direntry;
 	
-	// Go through the BIOSMiscFiles[] struct.
-	while (BIOSMiscFiles[file].title)
+	// Go through the DirEntries[] struct.
+	while (DirEntries[dir].title)
 	{
-		if (!BIOSMiscFiles[file].entry)
-		{
-			// Skip frame headers here. We just want to get file entries.
-			file++;
-			continue;
-		}
-		
 		// Get the entry object.
-		sprintf(tmp, "entry_%s", BIOSMiscFiles[file].tag);
-		entry_file = lookup_widget(directory_config_window, tmp);
+		sprintf(tmp, "entry_%s", DirEntries[dir].tag);
+		entry_direntry = lookup_widget(directory_config_window, tmp);
 		
 		// Get the entry text.
-		strncpy(BIOSMiscFiles[file].entry, gtk_entry_get_text(GTK_ENTRY(entry_file)), GENS_PATH_MAX);
+		strncpy(DirEntries[dir].entry, gtk_entry_get_text(GTK_ENTRY(entry_direntry)), GENS_PATH_MAX);
 		
-		// Increment the file counter.
-		file++;
+		// Increment the directory counter.
+		dir++;
 	}
-	*/
 }
