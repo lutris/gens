@@ -72,4 +72,8 @@ void Open_Controller_Config(void)
 	gtk_option_menu_set_history(GTK_OPTION_MENU(optionmenu_padtype_2C), (Controller_2C_Type & 0x01));
 	optionmenu_padtype_2D = lookup_widget(cc, "optionmenu_padtype_2D");
 	gtk_option_menu_set_history(GTK_OPTION_MENU(optionmenu_padtype_2D), (Controller_2D_Type & 0x01));
+	
+	// Initialize the Teamplayer state.
+	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_1), GINT_TO_POINTER(1));
+	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_2), GINT_TO_POINTER(2));
 }
