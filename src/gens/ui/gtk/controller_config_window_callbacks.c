@@ -81,5 +81,46 @@ void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 {
-	printf("Reconfigure: %d\n", GPOINTER_TO_INT(user_data));
+	int player, padtype;
+	char playerID[4];
+	char objID[64];
+	GtkWidget *optionmenu_padtype;
+	
+	player = GPOINTER_TO_INT(user_data);
+	
+	// Determine how many buttons are needed.
+	// TODO: Make a separate player numeric-to-string function.
+	switch (player)
+	{
+		case 0:
+			strcpy(playerID, "1");
+			break;
+		case 2:
+			strcpy(playerID, "1B");
+			break;
+		case 3:
+			strcpy(playerID, "1C");
+			break;
+		case 4:
+			strcpy(playerID, "1D");
+			break;
+		case 1:
+			strcpy(playerID, "2");
+			break;
+		case 5:
+			strcpy(playerID, "2B");
+			break;
+		case 6:
+			strcpy(playerID, "2C");
+			break;
+		case 7:
+			strcpy(playerID, "2D");
+			break;
+	}
+	
+	sprintf(objID, "optionmenu_padtype_%s", playerID);
+	optionmenu_padtype = lookup_widget(controller_config_window, objID);
+	padtype = gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype));
+	
+	printf("Reconfigure: %d, %d\n", player, padtype);
 }
