@@ -40,6 +40,9 @@ GtkWidget* create_controller_config_window(void)
 	GtkWidget *table_cc;
 	GtkWidget *frame_port_1;
 	GtkWidget *frame_port_2;
+	GtkWidget *frame_note;
+	GtkWidget *label_note_heading;
+	GtkWidget *label_note;
 	
 	if (controller_config_window)
 	{
@@ -72,8 +75,8 @@ GtkWidget* create_controller_config_window(void)
 	gtk_table_set_row_spacings(GTK_TABLE(table_cc), 5);
 	gtk_table_set_col_spacings(GTK_TABLE(table_cc), 5);
 	gtk_widget_show(table_cc);
-	gtk_container_add(GTK_CONTAINER(controller_config_window), table_cc);
 	GLADE_HOOKUP_OBJECT(controller_config_window, table_cc, "table_cc");
+	gtk_container_add(GTK_CONTAINER(controller_config_window), table_cc);
 	
 	// Frame for Port 1.
 	frame_port_1 = gtk_frame_new(NULL);
@@ -81,10 +84,10 @@ GtkWidget* create_controller_config_window(void)
 	gtk_frame_set_shadow_type(GTK_FRAME(frame_port_1), GTK_SHADOW_NONE);
 	gtk_container_set_border_width(GTK_CONTAINER(frame_port_1), 5);
 	gtk_widget_show(frame_port_1);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_1, "frame_port_1");
 	gtk_table_attach(GTK_TABLE(table_cc), frame_port_1, 0, 1, 0, 1,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_1, "frame_port_1");
 	
 	// Frame for Port 2.
 	frame_port_2 = gtk_frame_new(NULL);
@@ -92,14 +95,48 @@ GtkWidget* create_controller_config_window(void)
 	gtk_frame_set_shadow_type(GTK_FRAME(frame_port_2), GTK_SHADOW_NONE);
 	gtk_container_set_border_width(GTK_CONTAINER(frame_port_2), 5);
 	gtk_widget_show(frame_port_2);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_2, "frame_port_2");
 	gtk_table_attach(GTK_TABLE(table_cc), frame_port_2, 0, 1, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_2, "frame_port_2");
 	
 	// Add VBoxes for controller input.
 	AddControllerVBox(frame_port_1, 1);
 	AddControllerVBox(frame_port_2, 2);
+	
+	// Frame for the note about teamplayer.
+	frame_note = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_note, "frame_note");
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_note), GTK_SHADOW_NONE);
+	gtk_widget_show(frame_note);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_note), 5);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_note, "frame_note");
+	gtk_table_attach(GTK_TABLE(table_cc), frame_note, 1, 2, 0, 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_FILL), 0, 0);
+	
+	// Label with teamplayer note. (Heading)
+	label_note_heading = gtk_label_new("<b><i>Note</i></b>");
+	gtk_widget_set_name(label_note_heading, "label_note_heading");
+	gtk_label_set_use_markup(GTK_LABEL(label_note_heading), TRUE);
+	gtk_widget_show(label_note_heading);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_note_heading, "label_note_heading");
+	gtk_frame_set_label_widget(GTK_FRAME(frame_note), label_note_heading);
+	
+	// Label with teamplayer note.
+	label_note = gtk_label_new(
+		"Players 1B, 1C, and 1D are enabled only if\n"
+		"teamplayer is enabled on Port 1.\n\n"
+		"Players 2B, 2C, and 2D are enabled only if\n"
+		"teamplayer is enabled on Port 2.\n\n"
+		"Only a few games support teamplayer (games which\n"
+		"have 4 player support, so don't forget to use the\n"
+		"\"load config\" and \"save config\" options. :)"
+		);
+	gtk_widget_set_name(label_note, "label_note");
+	gtk_widget_show(label_note);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_note, "label_note");
+	gtk_container_add(GTK_CONTAINER(frame_note), label_note);
 	
 	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;
