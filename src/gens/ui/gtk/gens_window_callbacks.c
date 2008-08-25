@@ -637,8 +637,7 @@ void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user
  */
 void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Create another function to load the controller information.
-	create_controller_config_window();
+	Open_Controller_Config();
 }
 
 
