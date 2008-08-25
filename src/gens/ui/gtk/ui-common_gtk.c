@@ -14,16 +14,16 @@
 
 
 // File Chooser function
-int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType filterType,
-		       char* retSelectedFile, GtkFileChooserAction action);
+static int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType filterType,
+			      char* retSelectedFile, GtkFileChooserAction action);
 
 
 // Filename filters.
-void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog);
-void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog);
-void UI_GTK_AddFilter_CDImage(GtkWidget* dialog);
-void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog);
-void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
+static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog);
+static void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog);
+static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog);
+static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog);
+static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
 
 /**
  * UI_Set_Window_Title(): Sets the window title.
@@ -133,7 +133,7 @@ int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterTy
 
 
 /**
- * UI_GTK_FileChooser(): Show the File Chooser dialog. (Not external!)
+ * UI_GTK_FileChooser(): Show the File Chooser dialog.
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename fitler to use.
@@ -141,8 +141,8 @@ int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterTy
  * @param action Type of file chooser dialog.
  * @return 0 if a file was selected.
  */
-int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType filterType,
-		       char* retSelectedFile, GtkFileChooserAction action)
+static int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType filterType,
+			      char* retSelectedFile, GtkFileChooserAction action)
 {
 	gint res;
 	gchar *filename;
@@ -212,7 +212,7 @@ int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType f
  * UI_GTK_AddFilter_ROMFile(): Adds filename filters for "ROMFile".
  * @param dialog File chooser dialog.
  */
-void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
+static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 {
 	GtkFileFilter *filter;
 	const char* bin  = "*.[bB][iI][nN]";
@@ -275,7 +275,7 @@ void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
  * UI_GTK_AddFilter_SavestateFile(): Adds filename filters for "SavestateFile".
  * @param dialog File chooser dialog.
  */
-void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
+static void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
 {
 	GtkFileFilter *filter;
 	const char* gs = "*.[gG][sS]?";
@@ -292,7 +292,7 @@ void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
  * UI_GTK_AddFilter_CDImage(): Adds filename filters for "CDImage".
  * @param dialog File chooser dialog.
  */
-void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
+static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
 {
 	GtkFileFilter *filter;
 	const char* bin = "*.[bb][iI][nN]";
@@ -315,7 +315,7 @@ void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
  * UI_GTK_AddFilter_ConfigFile(): Adds filename filters for "ConfigFile".
  * @param dialog File chooser dialog.
  */
-void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
+static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
 {
 	GtkFileFilter *filter;
 	const char* cfg = "*.[cC][fF][gG]";
@@ -332,7 +332,7 @@ void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
  * UI_GTK_AddFilter_GYMFile(): Adds filename filters for "GYMFile".
  * @param dialog File chooser dialog.
  */
-void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
+static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
 {
 	GtkFileFilter *filter;
 	const char* cfg = "*.[gG][yY][mM]";
