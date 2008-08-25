@@ -94,8 +94,9 @@ void Input_KeyDown(int key)
 				close_gens();
 			if (Debug)
 			{
-				Change_Debug (0);
+				Change_Debug(0);
 				Paused = 0;
+				Sync_Gens_Window_CPUMenu();
 			}
 			else if (Paused)
 				Paused = 0;
