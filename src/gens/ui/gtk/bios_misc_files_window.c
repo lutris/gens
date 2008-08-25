@@ -3,6 +3,7 @@
  */
 
 #include "bios_misc_files_window.h"
+#include "bios_misc_files_window_callbacks.h"
 #include "gens_window.h"
 
 #ifdef HAVE_CONFIG_H
@@ -99,6 +100,12 @@ GtkWidget* create_bios_misc_files_window(void)
 		gtk_window_set_icon(GTK_WINDOW(bios_misc_files_window), bios_misc_files_window_icon_pixbuf);
 		gdk_pixbuf_unref(bios_misc_files_window_icon_pixbuf);
 	}
+	
+	// Callbacks for if the window is closed.
+	g_signal_connect((gpointer)bios_misc_files_window, "delete_event",
+			 G_CALLBACK(on_bios_misc_files_window_close), NULL);
+	g_signal_connect((gpointer)bios_misc_files_window, "destroy_event",
+			 G_CALLBACK(on_bios_misc_files_window_close), NULL);
 	
 	// Create the main VBox.
 	vbox_bmf = gtk_vbox_new(FALSE, 10);
@@ -207,6 +214,7 @@ GtkWidget* create_bios_misc_files_window(void)
 	gtk_widget_set_name(button_bmf_Cancel, "button_bmf_cancel");
 	gtk_widget_show(button_bmf_Cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Cancel, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_bmf_Cancel, on_button_bmf_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Cancel, "button_bmf_Cancel");
 	
 	// Save
