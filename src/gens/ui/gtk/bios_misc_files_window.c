@@ -77,21 +77,10 @@ GtkWidget* create_bios_misc_files_window(void)
 	accel_group = gtk_accel_group_new();
 	
 	// Create the BIOS/Misc Files window.
-	bios_misc_files_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_name(bios_misc_files_window, "bios_misc_files_window");
-	gtk_container_set_border_width(GTK_CONTAINER(bios_misc_files_window), 5);
-	gtk_window_set_title(GTK_WINDOW(bios_misc_files_window), "Configure BIOS/Misc Files");
-	gtk_window_set_position(GTK_WINDOW(bios_misc_files_window), GTK_WIN_POS_CENTER);
-	gtk_window_set_type_hint(GTK_WINDOW(bios_misc_files_window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	GLADE_HOOKUP_OBJECT_NO_REF(bios_misc_files_window, bios_misc_files_window, "bios_misc_files_window");
-	
-	// Load the window icon.
-	bios_misc_files_window_icon_pixbuf = create_pixbuf("Gens2.ico");
-	if (bios_misc_files_window_icon_pixbuf)
-	{
-		gtk_window_set_icon(GTK_WINDOW(bios_misc_files_window), bios_misc_files_window_icon_pixbuf);
-		gdk_pixbuf_unref(bios_misc_files_window_icon_pixbuf);
-	}
+	CREATE_GTK_WINDOW(bios_misc_files_window,
+			  "bios_misc_files_window",
+			  "Configure BIOS/Misc Files",
+			  bios_misc_files_window_icon_pixbuf, "Gens2.ico");
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)bios_misc_files_window, "delete_event",

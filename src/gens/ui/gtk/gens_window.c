@@ -160,22 +160,9 @@ GtkWidget* create_gens_window(void)
 	
 	accel_group = gtk_accel_group_new();
 	
-	// Create the GENS window.
-	gens_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_name(gens_window, "gens_window");
-	gtk_container_set_border_width(GTK_CONTAINER(gens_window), 5);
-	gtk_window_set_title(GTK_WINDOW(gens_window), "Gens");
-	gtk_window_set_position(GTK_WINDOW(gens_window), GTK_WIN_POS_CENTER);
-	gtk_window_set_default_size(GTK_WINDOW(gens_window), 640, 480);
-	GLADE_HOOKUP_OBJECT_NO_REF(gens_window, gens_window, "gens_window");
-	
-	// Load the window icon.
-	gens_window_icon_pixbuf = create_pixbuf("Gens2.ico");
-	if (gens_window_icon_pixbuf)
-	{
-		gtk_window_set_icon(GTK_WINDOW(gens_window), gens_window_icon_pixbuf);
-		gdk_pixbuf_unref(gens_window_icon_pixbuf);
-	}
+	// Create the Gens window.
+	CREATE_GTK_WINDOW(gens_window, "gens_window", "Gens",
+			  gens_window_icon_pixbuf, "Gens2.ico");
 	
 	// Layout objects.
 	vbox1 = gtk_vbox_new(FALSE, 0);
