@@ -246,7 +246,8 @@ GtkWidget* create_game_genie_window(void)
 	
 	// HButton Box for the row of buttons on the bottom of the window
 	hbutton_box_gg_buttonRow = gtk_hbutton_box_new();
-	gtk_widget_set_name(hbutton_box_gg_buttonRow, "hbox_gg_buttonRow");
+	gtk_widget_set_name(hbutton_box_gg_buttonRow, "hbutton_box_gg_buttonRow");
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_gg_buttonRow), GTK_BUTTONBOX_END);
 	gtk_widget_show(hbutton_box_gg_buttonRow);
 	gtk_box_pack_start(GTK_BOX(vbox_gg), hbutton_box_gg_buttonRow, FALSE, FALSE, 0);
 	GLADE_HOOKUP_OBJECT(game_genie_window, hbutton_box_gg_buttonRow, "hbutton_box_gg_buttonRow");
