@@ -6,6 +6,7 @@
 #include <string.h>
 #include "bios_misc_files_window.h"
 #include "bios_misc_files_window_callbacks.h"
+#include "bios_misc_files_window_misc.h"
 
 #include "gtk-misc.h"
 
@@ -42,9 +43,7 @@ void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_bmf_Save_clicked(GtkButton *button, gpointer user_data)
 {
-	// TODO
-	STUB;
-	//BIOSMiscFiles_Save();
+	BIOS_Misc_Files_Save();
 	gtk_widget_destroy(bios_misc_files_window);
 	bios_misc_files_window = NULL;
 }

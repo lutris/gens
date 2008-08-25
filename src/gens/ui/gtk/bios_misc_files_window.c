@@ -32,15 +32,6 @@ GtkAccelGroup *accel_group;
 GtkTooltips *tooltips;
 
 
-// If entry is NULL, it's a frame heading.
-struct BIOSMiscFileEntry_t
-{
-	const char* title;
-	const char* tag;
-	char* entry;
-};
-
-
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {

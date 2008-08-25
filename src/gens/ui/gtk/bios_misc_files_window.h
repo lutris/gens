@@ -11,6 +11,18 @@ extern "C" {
 
 #include <gtk/gtk.h>
 
+// BIOS/Misc File entries
+// If entry is NULL, it's a frame heading.
+struct BIOSMiscFileEntry_t
+{
+	const char* title;
+	const char* tag;
+	char* entry;
+};
+
+// Contains all the BIOS/Misc File entries.
+extern const struct BIOSMiscFileEntry_t BIOSMiscFiles[];
+
 GtkWidget* create_bios_misc_files_window(void); 
 extern GtkWidget *bios_misc_files_window;
 
