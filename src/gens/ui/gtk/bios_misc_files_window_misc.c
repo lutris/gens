@@ -93,5 +93,5 @@ void BIOS_Misc_Files_Save(void)
 		
 		// Increment the file counter.
 		file++;
-	}	
+	}
 }
