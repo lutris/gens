@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
+#include "ui-common.h"
 
 // BIOS/Misc File entries
 // If entry is NULL, it's a frame heading.

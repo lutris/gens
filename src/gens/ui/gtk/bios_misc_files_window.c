@@ -34,20 +34,20 @@ GtkAccelGroup *accel_group;
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {
-	{"<b><i>Configure Genesis BIOS File</i></b>", "md_bios", NULL},
-	{"Genesis", "md_bios", Genesis_Bios},
-	{"<b><i>Configure 32X BIOS Files</i></b>", "32x_bios", NULL},
-	{"MC68000", "mc68000", _32X_Genesis_Bios},
-	{"Master SH2", "msh2", _32X_Master_Bios},
-	{"Slave SH2", "ssh2", _32X_Slave_Bios},
-	{"<b><i>Configure SegaCD BIOS Files</i></b>", "mcd_bios", NULL},
-	{"USA", "mcd_bios_usa", US_CD_Bios},
-	{"Europe", "mcd_bios_eur", EU_CD_Bios},
-	{"Japan", "mcd_bios_jap", JA_CD_Bios},
-	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", NULL},
-	{"CGOffline", "cgoffline", Settings.PathNames.CGOffline_Path},
-	{"Manual", "manual", Settings.PathNames.Manual_Path},
-	{NULL, NULL, NULL},
+	{"<b><i>Configure Genesis BIOS File</i></b>", "md_bios", 0, NULL},
+	{"Genesis", "md_bios", ROMFile, Genesis_Bios},
+	{"<b><i>Configure 32X BIOS Files</i></b>", "32x_bios", 0, NULL},
+	{"MC68000", "mc68000", ROMFile, _32X_Genesis_Bios},
+	{"Master SH2", "msh2", ROMFile, _32X_Master_Bios},
+	{"Slave SH2", "ssh2", ROMFile, _32X_Slave_Bios},
+	{"<b><i>Configure SegaCD BIOS Files</i></b>", "mcd_bios", 0, NULL},
+	{"USA", "mcd_bios_usa", ROMFile, US_CD_Bios},
+	{"Europe", "mcd_bios_eur", ROMFile, EU_CD_Bios},
+	{"Japan", "mcd_bios_jap", ROMFile, JA_CD_Bios},
+	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", 0, NULL},
+	{"CGOffline", "cgoffline", AnyFile, Settings.PathNames.CGOffline_Path},
+	{"Manual", "manual", AnyFile, Settings.PathNames.Manual_Path},
+	{NULL, NULL, 0, NULL},
 };
 
 
