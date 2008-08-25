@@ -275,6 +275,8 @@ void AddControllerVBox(GtkWidget *frame, int port)
 	gtk_widget_show(check_teamplayer);
 	gtk_box_pack_start(GTK_BOX(hbox), check_teamplayer, FALSE, FALSE, 0);
 	GLADE_HOOKUP_OBJECT(controller_config_window, check_teamplayer, tmp);
+	g_signal_connect((gpointer)check_teamplayer, "clicked",
+			 G_CALLBACK(on_check_cc_Teamplayer_clicked), GINT_TO_POINTER(port));
 	
 	// Table for the player controls.
 	table_players = gtk_table_new(4, 3, FALSE);
