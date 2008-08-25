@@ -222,6 +222,7 @@ GtkWidget* create_bios_misc_files_window(void)
 	gtk_widget_set_name(button_bmf_Save, "button_bmf_Save");
 	gtk_widget_show(button_bmf_Save);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Save, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_bmf_Cancel, on_button_bmf_Save_clicked);
 	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Save, "button_bmf_Save");
 	
 	gtk_widget_show_all(bios_misc_files_window);

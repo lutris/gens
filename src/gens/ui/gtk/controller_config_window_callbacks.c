@@ -81,7 +81,9 @@ void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_cc_Save_clicked(GtkButton *button, gpointer user_data)
 {
-	Controller_Config_Save();
+	// TODO
+	STUB;
+	//Controller_Config_Save();
 	gtk_widget_destroy(controller_config_window);
 	controller_config_window = NULL;
 }
