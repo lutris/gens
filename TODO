@@ -19,3 +19,6 @@ Emulator TODO:
 - Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
 - Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
 - Set the border color to color 0 of palette 0. (See Sonic 1 GHZ for an example.)
+
+Miscellaneous Bugs:
+- GZipped SegaCD BIOSes work the first time, but on system reset it can't load it.
