@@ -171,6 +171,7 @@ void Sync_GensWindow_CPUMenu(void)
 	GtkWidget *MItem_Country;
 	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
 	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
+	GtkWidget *MItem_SegaCD_PerfectSync;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -223,6 +224,10 @@ void Sync_GensWindow_CPUMenu(void)
 		gtk_widget_hide(MItem_ResetMSH2);
 		gtk_widget_hide(MItem_ResetSSH2);
 	}
+	
+	// SegaCD Perfect Sync
+	MItem_SegaCD_PerfectSync = lookup_widget(gens_window, "CPUMenu_SegaCD_PerfectSync");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SegaCD_PerfectSync), SegaCD_Accurate);
 	
 	// Enable callbacks.
 	do_callbacks = 1;

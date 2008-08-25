@@ -732,7 +732,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	NewMenuSeparator(CPUMenu_Separator3, "CPUMenu_Separator3", CPUMenu);
 	
 	// SegaCD Perfect Sync
-	NewMenuItem_Check(CPUMenu_SegaCD_PerfectSync, "SegaCD Perfect Sync (SLOW)", "SegaCD Perfect Sync (SLOW)", CPUMenu, FALSE);
+	NewMenuItem_Check(CPUMenu_SegaCD_PerfectSync, "SegaCD Perfect Sync (SLOW)", "CPUMenu_SegaCD_PerfectSync", CPUMenu, FALSE);
 	AddMenuCallback(CPUMenu_SegaCD_PerfectSync, on_CPUMenu_SegaCD_PerfectSync_activate);
 }
 
