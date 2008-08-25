@@ -29,6 +29,16 @@ gboolean on_bios_misc_files_window_close(GtkWidget *widget, GdkEvent *event, gpo
 
 
 /**
+ * Change...
+ */
+void on_button_bmf_Change_clicked(GtkButton *button, gpointer user_data)
+{
+	int fileID = GPOINTER_TO_INT(user_data);
+	printf("CHANGE: File %d\n", fileID);
+}
+
+
+/**
  * Cancel
  */
 void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data)

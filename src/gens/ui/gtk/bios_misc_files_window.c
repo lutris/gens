@@ -175,6 +175,9 @@ GtkWidget* create_bios_misc_files_window(void)
 					 2, 3, table_row, table_row + 1,
 					 (GtkAttachOptions)(GTK_FILL),
 					 (GtkAttachOptions)(0), 0, 0);
+			g_signal_connect((gpointer)button_file, "clicked",
+					 G_CALLBACK(on_button_bmf_Change_clicked),
+					 GINT_TO_POINTER(file));
 			GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_file, tmp);
 			
 			table_row++;
