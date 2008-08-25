@@ -75,6 +75,8 @@ GtkWidget* create_bios_misc_files_window(void)
 		return NULL;
 	}
 	
+	accel_group = gtk_accel_group_new();
+	
 	// Create the BIOS/Misc Files window.
 	bios_misc_files_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_name(bios_misc_files_window, "bios_misc_files_window");
@@ -205,6 +207,8 @@ GtkWidget* create_bios_misc_files_window(void)
 	gtk_widget_set_name(button_bmf_Cancel, "button_bmf_cancel");
 	gtk_widget_show(button_bmf_Cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Cancel, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_bmf_Cancel, "activate", accel_group,
+				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_bmf_Cancel, on_button_bmf_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Cancel, "button_bmf_Cancel");
 	
@@ -214,7 +218,12 @@ GtkWidget* create_bios_misc_files_window(void)
 	gtk_widget_show(button_bmf_Save);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Save, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_bmf_Save, on_button_bmf_Save_clicked);
+	gtk_widget_add_accelerator(button_bmf_Save, "activate", accel_group,
+				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Save, "button_bmf_Save");
+	
+	// Add the accel group.
+	gtk_window_add_accel_group(GTK_WINDOW(bios_misc_files_window), accel_group);
 	
 	return bios_misc_files_window;
 }
