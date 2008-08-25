@@ -647,7 +647,7 @@ void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	Open_Directory_Config();
 }
 
 
