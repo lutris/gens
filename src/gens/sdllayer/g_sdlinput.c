@@ -24,7 +24,7 @@ unsigned char Keys[1024];
 unsigned char Kaillera_Keys[16];
 unsigned char joystate[0x530];
 
-SDL_Joystick *joy[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
+struct SDL_Joystick *joy[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
 
 void
 End_Input ()

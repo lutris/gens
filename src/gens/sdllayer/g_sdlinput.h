@@ -19,7 +19,7 @@ void Update_Controllers_Net(int num_player);
 void open_joystick();
 void close_joystick();
 
-extern SDL_Joystick* joy[6];
+extern struct SDL_Joystick* joy[6];
 
 #define CHECK_BUTTON(player, ctrl, button)				\
 	if (Check_Key_Pressed(Keys_Def[player].button)) 	\
