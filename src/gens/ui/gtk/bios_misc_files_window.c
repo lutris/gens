@@ -40,7 +40,8 @@ struct BIOSMiscFileEntry_t
 };
 
 
-struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
+// All textboxes to be displayed on the BIOS/Misc Files window are defined here.
+const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {
 	{"<b><i>Configure Genesis BIOS File</i></b>", "md_bios", NULL},
 	{"Genesis", "md_bios", Genesis_Bios},
