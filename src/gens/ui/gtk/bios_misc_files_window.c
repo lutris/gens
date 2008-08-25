@@ -211,6 +211,8 @@ GtkWidget* create_bios_misc_files_window(void)
 	AddButtonCallback_Clicked(button_bmf_Save, on_button_bmf_Save_clicked);
 	gtk_widget_add_accelerator(button_bmf_Save, "activate", accel_group,
 				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	gtk_widget_add_accelerator(button_bmf_Save, "activate", accel_group,
+				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Save, "button_bmf_Save");
 	
 	// Add the accel group.
