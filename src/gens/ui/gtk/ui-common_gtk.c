@@ -18,17 +18,6 @@ int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType f
 		       char* retSelectedFile, GtkFileChooserAction action);
 
 
-
-// Macro that adds the "All Files" filter.
-#define Add_All_Files_Filter(filter, dialog)					\
-{										\
-	filter = gtk_file_filter_new();						\
-	gtk_file_filter_set_name(filter, "All Files");				\
-	gtk_file_filter_add_pattern(filter, "*");				\
-	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);		\
-}
-
-
 // Filename filters.
 void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog);
 void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog);
@@ -158,7 +147,8 @@ int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType f
 	gint res;
 	gchar *filename;
 	gchar *acceptButton;
-	GtkWidget* dialog;
+	GtkWidget *dialog;
+	GtkFileFilter *all_files_filter;
 	
 	if (retSelectedFile == NULL)
 		return 1;
@@ -194,7 +184,10 @@ int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType f
 			break;
 	}
 	// All Files filter
-	Add_All_Files_Filter(filter, dialog);
+	all_files_filter = gtk_file_filter_new();
+	gtk_file_filter_set_name(all_files_filter, "All Files");
+	gtk_file_filter_add_pattern(all_files_filter, "*");
+	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), all_files_filter);
 	
 	res = gtk_dialog_run(GTK_DIALOG(dialog));
 	if (res == GTK_RESPONSE_ACCEPT)
@@ -221,7 +214,7 @@ int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType f
  */
 void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 {
-	GtkFileFilter* filter;
+	GtkFileFilter *filter;
 	const char* bin  = "*.[bB][iI][nN]";
 	const char* smd  = "*.[sS][mM][dD]";
 	const char* gen  = "*.[gG][eE][nN]";
@@ -284,7 +277,7 @@ void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
  */
 void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
 {
-	GtkFileFilter* filter;
+	GtkFileFilter *filter;
 	const char* gs = "*.[gG][sS]?";
 	
 	// Savestate Files
@@ -301,7 +294,7 @@ void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
  */
 void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
 {
-	GtkFileFilter* filter;
+	GtkFileFilter *filter;
 	const char* bin = "*.[bb][iI][nN]";
 	const char* iso = "*.[iI][sS][oO]";
 	const char* chd = "*.[cC][hH][dD]";
@@ -324,7 +317,7 @@ void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
  */
 void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
 {
-	GtkFileFilter* filter;
+	GtkFileFilter *filter;
 	const char* cfg = "*.[cC][fF][gG]";
 	
 	// Config files
@@ -341,7 +334,7 @@ void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
  */
 void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
 {
-	GtkFileFilter* filter;
+	GtkFileFilter *filter;
 	const char* cfg = "*.[gG][yY][mM]";
 	
 	// Config files
