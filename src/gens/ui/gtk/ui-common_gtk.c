@@ -133,6 +133,21 @@ int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterTy
 
 
 /**
+ * UI_SelectDir(): Show the Select Directory dialog.
+ * @param title Window title.
+ * @param initDir Initial directory.
+ * @param retSelectedDir Pointer to string buffer to store the directory in.
+ * @return 0 if successful.
+ */
+int UI_SelectDir(const char* title, const char* initDir, char* retSelectedDir)
+{
+	// TODO: Extend this function.
+	// Perhaps set the path to the last path for the function calling this...
+	return UI_GTK_FileChooser(title, initDir, AnyFile, retSelectedDir, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+}
+
+
+/**
  * UI_GTK_FileChooser(): Show the File Chooser dialog.
  * @param title Window title.
  * @param initFileName Initial filename.
