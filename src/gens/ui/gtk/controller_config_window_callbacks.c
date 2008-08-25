@@ -122,5 +122,5 @@ void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 	optionmenu_padtype = lookup_widget(controller_config_window, objID);
 	padtype = gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype));
 	
-	printf("Reconfigure: %d, %d\n", player, padtype);
+	Reconfigure_Input(player, padtype);
 }

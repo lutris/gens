@@ -14,6 +14,7 @@ extern "C" {
 
 
 void Open_Controller_Config(void);
+int Reconfigure_Input(int player, int padtype);
 
 
 #ifdef __cplusplus

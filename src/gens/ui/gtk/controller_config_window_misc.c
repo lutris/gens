@@ -10,6 +10,8 @@
 #include "controller_config_window_misc.h"
 #include "gens_window.h"
 
+#include "g_main.h"
+
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
@@ -76,4 +78,80 @@ void Open_Controller_Config(void)
 	// Initialize the Teamplayer state.
 	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_1), GINT_TO_POINTER(1));
 	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_2), GINT_TO_POINTER(2));
+}
+
+
+/**
+ * Reconfigure_Input(): Reconfigure an input device.
+ * @param player Player number.
+ * @param padtype Pad type. (0 == 3-button; 1 == 6-button.)
+ * @return 1 on success.
+ */
+int Reconfigure_Input(int player, int padtype)
+{
+	GtkWidget *label_echo = lookup_widget(controller_config_window, "label_echo");
+	
+	// TODO: Somehow condense this code.
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP");
+	Keys_Config[player].Up = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN");
+	Keys_Config[player].Down = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT");
+	Keys_Config[player].Left = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT");
+	Keys_Config[player].Right = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START");
+	Keys_Config[player].Start = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A");
+	Keys_Config[player].A = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B");
+	Keys_Config[player].B = Get_Key();
+	Sleep(250);
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C");
+	Keys_Config[player].C = Get_Key();
+	Sleep(250);
+	
+	if (padtype & 0x01)
+	{
+		// 6-button control pad. Get additional keys.
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE");
+		Keys_Config[player].Mode = Get_Key();
+		Sleep(250);
+		
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X");
+		Keys_Config[player].X = Get_Key();
+		Sleep(250);
+		
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y");
+		Keys_Config[player].Y = Get_Key();
+		Sleep(250);
+		
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z");
+		Keys_Config[player].Z = Get_Key();
+		Sleep(250);
+	}
+	
+	// Configuration successful.
+	gtk_label_set_text(GTK_LABEL(label_echo),
+			"CONFIGURATION SUCCESSFUL.\n"
+			"PRESS ANY KEY TO CONTINUE...");
+	Get_Key();
+	Sleep(500);
+	gtk_label_set_text(GTK_LABEL(label_echo), "");
+	
+	return 1;
 }
