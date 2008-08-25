@@ -9,8 +9,8 @@
 #include "gens_window_callbacks.h"
 #include "gens_window_sync.h"
 #include "game_genie_window_misc.h"
-#include "controller_config_window.h"
-#include "bios_misc_files_window.h"
+#include "controller_config_window_misc.h"
+#include "bios_misc_files_window_misc.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"

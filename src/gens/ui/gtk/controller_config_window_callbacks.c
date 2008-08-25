@@ -6,6 +6,7 @@
 #include <string.h>
 #include "controller_config_window.h"
 #include "controller_config_window_callbacks.h"
+#include "controller_config_window_misc.h"
 
 #include "gtk-misc.h"
 
