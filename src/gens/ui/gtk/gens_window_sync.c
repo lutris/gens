@@ -3,9 +3,9 @@
  */
 
 
-#include "genswindow.h"
-#include "genswindow_sync.h"
-#include "genswindow_callbacks.h"
+#include "gens_window.h"
+#include "gens_window_sync.h"
+#include "gens_window_callbacks.h"
 #include "gtk-misc.h"
 
 #include "g_main.h"
@@ -24,23 +24,23 @@
 
 
 /**
- * Sync_GensWindow(): Synchronize the GENS Main Window.
+ * Sync_Gens_Window(): Synchronize the GENS Main Window.
  */
-void Sync_GensWindow(void)
+void Sync_Gens_Window(void)
 {
 	// Synchronize all menus.
-	Sync_GensWindow_FileMenu();
-	Sync_GensWindow_GraphicsMenu();
-	Sync_GensWindow_CPUMenu();
-	Sync_GensWindow_SoundMenu();
-	Sync_GensWindow_OptionsMenu();
+	Sync_Gens_Window_FileMenu();
+	Sync_Gens_Window_GraphicsMenu();
+	Sync_Gens_Window_CPUMenu();
+	Sync_Gens_Window_SoundMenu();
+	Sync_Gens_Window_OptionsMenu();
 }
 
 
 /**
- * Sync_GensWindow_FileMenu(): Synchronize the File Menu.
+ * Sync_Gens_Window_FileMenu(): Synchronize the File Menu.
  */
-void Sync_GensWindow_FileMenu(void)
+void Sync_Gens_Window_FileMenu(void)
 {
 	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
 	GtkWidget *MItem_ROMHistory_SubMenu_Item, *MItem_SaveState;
@@ -115,9 +115,9 @@ void Sync_GensWindow_FileMenu(void)
 
 
 /**
- * Sync_GensWindow_GraphicsMenu(): Synchronize the Graphics menu.
+ * Sync_Gens_Window_GraphicsMenu(): Synchronize the Graphics menu.
  */
-void Sync_GensWindow_GraphicsMenu(void)
+void Sync_Gens_Window_GraphicsMenu(void)
 {
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_OpenGL, *MItem_SpriteLimit;
 	GtkWidget *MItem_OpenGL_Resolution, *MItem_bpp, *MItem_Render, *MItem_FrameSkip;
@@ -164,9 +164,9 @@ void Sync_GensWindow_GraphicsMenu(void)
 
 
 /**
- * Sync_GensWindow_CPUMenu(): Synchronize the CPU menu.
+ * Sync_Gens_Window_CPUMenu(): Synchronize the CPU menu.
  */
-void Sync_GensWindow_CPUMenu(void)
+void Sync_Gens_Window_CPUMenu(void)
 {
 #ifdef GENS_DEBUG
 	GtkWidget *MItem_Debug;
@@ -242,9 +242,9 @@ void Sync_GensWindow_CPUMenu(void)
 
 
 /**
- * Sync_GensWindow_SoundMenu(): Synchronize the Sound menu.
+ * Sync_Gens_Window_SoundMenu(): Synchronize the Sound menu.
  */
-void Sync_GensWindow_SoundMenu(void)
+void Sync_Gens_Window_SoundMenu(void)
 {
 	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
 	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
@@ -325,9 +325,9 @@ void Sync_GensWindow_SoundMenu(void)
 
 
 /**
- * Sync_GensWindow_SoundMenu(): Synchronize the Options menu.
+ * Sync_Gens_Window_SoundMenu(): Synchronize the Options menu.
  */
-void Sync_GensWindow_OptionsMenu(void)
+void Sync_Gens_Window_OptionsMenu(void)
 {
 	GtkWidget *SRAMSize;
 	

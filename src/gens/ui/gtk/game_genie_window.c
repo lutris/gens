@@ -4,7 +4,7 @@
  
 #include "game_genie_window.h"
 #include "game_genie_window_callbacks.h"
-#include "genswindow.h"
+#include "gens_window.h"
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>

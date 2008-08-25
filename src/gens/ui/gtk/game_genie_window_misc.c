@@ -8,7 +8,7 @@
 #include "game_genie_window.h"
 #include "game_genie_window_callbacks.h"
 #include "game_genie_window_misc.h"
-#include "genswindow.h"
+#include "gens_window.h"
 #include "ggenie.h"
 #include "mem_m68k.h"
 #include "vdp_io.h"

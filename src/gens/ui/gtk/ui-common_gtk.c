@@ -5,7 +5,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include "genswindow.h"
+#include "gens_window.h"
 
 #include "g_main.h"
 #include "ui-common.h"

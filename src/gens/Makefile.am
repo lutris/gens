@@ -173,12 +173,12 @@ gens_SOURCES = \
 		ui/gtk/ui-common_gtk.h \
 		ui/gtk/gtk-misc.c \
 		ui/gtk/gtk-misc.h \
-		ui/gtk/genswindow.c \
-		ui/gtk/genswindow.h \
-		ui/gtk/genswindow_callbacks.c \
-		ui/gtk/genswindow_callbacks.h \
-		ui/gtk/genswindow_sync.c \
-		ui/gtk/genswindow_sync.h \
+		ui/gtk/gens_window.c \
+		ui/gtk/gens_window.h \
+		ui/gtk/gens_window_callbacks.c \
+		ui/gtk/gens_window_callbacks.h \
+		ui/gtk/gens_window_sync.c \
+		ui/gtk/gens_window_sync.h \
 		ui/gtk/game_genie_window.c \
 		ui/gtk/game_genie_window.h \
 		ui/gtk/game_genie_window_callbacks.c \

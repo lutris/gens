@@ -36,8 +36,8 @@
 
 #include "ui-common.h"
 #include "gtk-misc.h"
-#include "genswindow.h"
-#include "genswindow_sync.h"
+#include "gens_window.h"
+#include "gens_window_sync.h"
 
 // GENS Settings struct
 struct GENS_Settings_t Settings;
@@ -395,7 +395,7 @@ int main(int argc, char *argv[])
 	Set_Render(Full_Screen,Render_Mode,1);
 	
 	// Synchronize the Gens window.
-	Sync_GensWindow();
+	Sync_Gens_Window();
 	
 	while (is_gens_running ())
 	{

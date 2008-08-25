@@ -2,8 +2,8 @@
  * GENS: (GTK+) Main Window.
  */
 
-#ifndef GENSWINDOW_H
-#define GENSWINDOW_H
+#ifndef GENS_WINDOW_H
+#define GENS_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {

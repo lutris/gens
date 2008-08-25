@@ -3,8 +3,8 @@
  */
 
 
-#ifndef GENSWINDOW_CALLBACKS_H
-#define GENSWINDOW_CALLBACKS_H
+#ifndef GENS_WINDOW_CALLBACKS_H
+#define GENS_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {

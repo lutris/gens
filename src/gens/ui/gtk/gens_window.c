@@ -2,8 +2,8 @@
  * GENS: (GTK+) Main Window.
  */
 
-#include "genswindow.h"
-#include "genswindow_callbacks.h"
+#include "gens_window.h"
+#include "gens_window_callbacks.h"
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -129,24 +129,24 @@ GtkTooltips *tooltips;
 }
 
 
-void create_genswindow_menubar(GtkWidget *container);
-void create_genswindow_FileMenu(GtkWidget *container);
-void create_genswindow_FileMenu_ChangeState_SubMenu(GtkWidget *container);
-void create_genswindow_GraphicsMenu(GtkWidget *container);
-void create_genswindow_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container);
-void create_genswindow_GraphicsMenu_bpp_SubMenu(GtkWidget *container);
-void create_genswindow_GraphicsMenu_Render_SubMenu(GtkWidget *container);
-void create_genswindow_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
-void create_genswindow_CPUMenu(GtkWidget *container);
+void create_gens_window_menubar(GtkWidget *container);
+void create_gens_window_FileMenu(GtkWidget *container);
+void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
+void create_gens_window_GraphicsMenu(GtkWidget *container);
+void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container);
+void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container);
+void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container);
+void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
+void create_gens_window_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUG
-void create_genswindow_CPUMenu_Debug_SubMenu(GtkWidget *container);
+void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif
-void create_genswindow_CPUMenu_Country_SubMenu(CPUMenu_Debug);
-void create_genswindow_SoundMenu(GtkWidget *container);
-void create_genswindow_SoundMenu_Rate_SubMenu(GtkWidget *container);
-void create_genswindow_OptionsMenu(GtkWidget *container);
-void create_genswindow_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
-void create_genswindow_HelpMenu(GtkWidget *container);
+void create_gens_window_CPUMenu_Country_SubMenu(CPUMenu_Debug);
+void create_gens_window_SoundMenu(GtkWidget *container);
+void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
+void create_gens_window_OptionsMenu(GtkWidget *container);
+void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
+void create_gens_window_HelpMenu(GtkWidget *container);
 
 
 // Set to 0 to temporarily disable callbacks.
@@ -195,7 +195,7 @@ GtkWidget* create_gens_window(void)
 	GLADE_HOOKUP_OBJECT(gens_window, vbox1, "handlebox1");
 	
 	// Create the menu bar.
-	create_genswindow_menubar(handlebox1);
+	create_gens_window_menubar(handlebox1);
 	
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(gens_window), accel_group);
@@ -211,10 +211,10 @@ GtkWidget* create_gens_window(void)
 
 
 /**
- * create_genswindow_menubar(): Create the menu bar.
+ * create_gens_window_menubar(): Create the menu bar.
  * @param container Container for the menu bar.
  */
-void create_genswindow_menubar(GtkWidget *container)
+void create_gens_window_menubar(GtkWidget *container)
 {
 	MenuBar = gtk_menu_bar_new();
 	gtk_widget_set_name(MenuBar, "MenuBar");
@@ -222,20 +222,20 @@ void create_genswindow_menubar(GtkWidget *container)
 	gtk_container_add(GTK_CONTAINER(container), MenuBar);
 	
 	// Menus
-	create_genswindow_FileMenu(MenuBar);
-	create_genswindow_GraphicsMenu(MenuBar);
-	create_genswindow_CPUMenu(MenuBar);
-	create_genswindow_SoundMenu(MenuBar);
-	create_genswindow_OptionsMenu(MenuBar);
-	create_genswindow_HelpMenu(MenuBar);
+	create_gens_window_FileMenu(MenuBar);
+	create_gens_window_GraphicsMenu(MenuBar);
+	create_gens_window_CPUMenu(MenuBar);
+	create_gens_window_SoundMenu(MenuBar);
+	create_gens_window_OptionsMenu(MenuBar);
+	create_gens_window_HelpMenu(MenuBar);
 }
 
 
 /**
- * create_genswindow_FileMenu(): Create the File menu.
+ * create_gens_window_FileMenu(): Create the File menu.
  * @param container Container for this menu.
  */
-void create_genswindow_FileMenu(GtkWidget *container)
+void create_gens_window_FileMenu(GtkWidget *container)
 {
 	GtkWidget *File;			GtkWidget *File_Icon;
 	GtkWidget *FileMenu;
@@ -282,7 +282,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	// ROM History
 	NewMenuItem_Icon(FileMenu_ROMHistory, "ROM _History", "FileMenu_ROMHistory", FileMenu,
 			 FileMenu_ROMHistory_Icon, "history.png");
-	// ROM History submenu is handled by Sync_GensWindow_FileMenu().
+	// ROM History submenu is handled by Sync_Gens_Window_FileMenu().
 	
 	// Close ROM
 	NewMenuItem_StockIcon(FileMenu_CloseROM, "_Close ROM", "FileMenu_CloseROM", FileMenu,
@@ -331,7 +331,7 @@ void create_genswindow_FileMenu(GtkWidget *container)
 	NewMenuItem_StockIcon(FileMenu_ChangeState, "Change State", "FileMenu_ChangeState", FileMenu,
 			      FileMenu_ChangeState_Icon, "gtk-revert-to-saved");
 	// Change State submenu
-	create_genswindow_FileMenu_ChangeState_SubMenu(FileMenu_ChangeState);
+	create_gens_window_FileMenu_ChangeState_SubMenu(FileMenu_ChangeState);
 	
 	// Quit
 	NewMenuItem_StockIcon(FileMenu_Quit, "_Quit", "FileMenu_Quit", FileMenu,
@@ -342,10 +342,10 @@ void create_genswindow_FileMenu(GtkWidget *container)
 
 
 /**
- * genswindow_FileMenu_ChangeState_SubMenu(): Create the File, Change State submenu.
+ * gens_window_FileMenu_ChangeState_SubMenu(): Create the File, Change State submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_FileMenu_ChangeState_SubMenu(GtkWidget *container)
+void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *SlotItem;
@@ -374,10 +374,10 @@ void create_genswindow_FileMenu_ChangeState_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu(): Create the Graphics menu.
+ * create_gens_window_GraphicsMenu(): Create the Graphics menu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicsMenu(GtkWidget *container)
+void create_gens_window_GraphicsMenu(GtkWidget *container)
 {
 	GtkWidget *Graphics;			GtkWidget *Graphics_Icon;
 	GtkWidget *GraphicsMenu;
@@ -433,12 +433,12 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	// OpenGL Resolution
 	NewMenuItem(GraphicsMenu_OpenGLRes, "OpenGL Resolution", "GraphicsMenu_OpenGLRes", GraphicsMenu);
 	// OpenGL Resolution submenu
-	create_genswindow_GraphicsMenu_OpenGLRes_SubMenu(GraphicsMenu_OpenGLRes);
+	create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GraphicsMenu_OpenGLRes);
 	
 	// Bits per pixel (OpenGL mode) [TODO: Where is this value actually used?]
 	NewMenuItem(GraphicsMenu_bpp, "Bits per pixel", "GraphicsMenu_bpp", GraphicsMenu);
 	// Bits per pixel submenu
-	create_genswindow_GraphicsMenu_bpp_SubMenu(GraphicsMenu_bpp);
+	create_gens_window_GraphicsMenu_bpp_SubMenu(GraphicsMenu_bpp);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator2, "GraphicsMenu_Separator2", GraphicsMenu);
@@ -452,7 +452,7 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	NewMenuItem_Icon(GraphicsMenu_Render, "_Render", "GraphicsMenu_Render", GraphicsMenu,
 			 GraphicsMenu_Render_Icon, "viewmag.png");
 	// Render submenu
-	create_genswindow_GraphicsMenu_Render_SubMenu(GraphicsMenu_Render);
+	create_gens_window_GraphicsMenu_Render_SubMenu(GraphicsMenu_Render);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator3, "GraphicsMenu_Separator3", GraphicsMenu);
@@ -468,7 +468,7 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 	NewMenuItem_Icon(GraphicsMenu_FrameSkip, "Frame Skip", "GraphicsMenu_FrameSkip", GraphicsMenu,
 			 GraphicsMenu_FrameSkip_Icon, "2rightarrow.png");
 	// Frame Skip submenu
-	create_genswindow_GraphicsMenu_FrameSkip_SubMenu(GraphicsMenu_FrameSkip);
+	create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GraphicsMenu_FrameSkip);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator5, "GraphicsMenu_Separator5", GraphicsMenu);
@@ -482,10 +482,10 @@ void create_genswindow_GraphicsMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_OpenGLRes_SubMenu(): Create the Graphics, OpenGL Resolution submenu.
+ * create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(): Create the Graphics, OpenGL Resolution submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container)
+void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *ResItem;
@@ -530,10 +530,10 @@ void create_genswindow_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_bpp_SubMenu(): Create the Graphics, Bits per pixel submenu.
+ * create_gens_window_GraphicsMenu_bpp_SubMenu(): Create the Graphics, Bits per pixel submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
+void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *bppItem;
@@ -565,10 +565,10 @@ void create_genswindow_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_Render_SubMenu(): Create the Graphics, Render submenu.
+ * create_gens_window_GraphicsMenu_Render_SubMenu(): Create the Graphics, Render submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicsMenu_Render_SubMenu(GtkWidget *container)
+void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *RenderItem;
@@ -612,10 +612,10 @@ void create_genswindow_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_GraphicsMenu_FrameSkip_SubMenu(): Create the Graphics, Frame Skip submenu.
+ * create_gens_window_GraphicsMenu_FrameSkip_SubMenu(): Create the Graphics, Frame Skip submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container)
+void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *FSItem;
@@ -647,10 +647,10 @@ void create_genswindow_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_CPUMenu(): Create the CPU menu.
+ * create_gens_window_CPUMenu(): Create the CPU menu.
  * @param container Container for this menu.
  */
-void create_genswindow_CPUMenu(GtkWidget *container)
+void create_gens_window_CPUMenu(GtkWidget *container)
 {
 	GtkWidget *CPU;				GtkWidget *CPU_Icon;
 	GtkWidget *CPUMenu;
@@ -682,7 +682,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Debug
 	NewMenuItem(CPUMenu_Debug, "_Debug", "CPUMenu_Debug", CPUMenu);
 	// Debug submenu
-	create_genswindow_CPUMenu_Debug_SubMenu(CPUMenu_Debug);
+	create_gens_window_CPUMenu_Debug_SubMenu(CPUMenu_Debug);
 	
 	// Separator
 	NewMenuSeparator(CPUMenu_Separator1, "CPUMenu_Separator1", CPUMenu);
@@ -691,7 +691,7 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 	// Country
 	NewMenuItem(CPUMenu_Country, "_Country", "CPUMenu_Country", CPUMenu);
 	// Country submenu
-	create_genswindow_CPUMenu_Country_SubMenu(CPUMenu_Country);
+	create_gens_window_CPUMenu_Country_SubMenu(CPUMenu_Country);
 	
 	// Separator
 	NewMenuSeparator(CPUMenu_Separator2, "CPUMenu_Separator2", CPUMenu);
@@ -739,10 +739,10 @@ void create_genswindow_CPUMenu(GtkWidget *container)
 
 #ifdef GENS_DEBUG
 /**
- * create_genswindow_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
+ * create_gens_window_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_CPUMenu_Debug_SubMenu(GtkWidget *container)
+void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	
@@ -800,10 +800,10 @@ void create_genswindow_CPUMenu_Debug_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_CPUMenu_Country_SubMenu(): Create the CPU, Country submenu.
+ * create_gens_window_CPUMenu_Country_SubMenu(): Create the CPU, Country submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_CPUMenu_Country_SubMenu(GtkWidget *container)
+void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *CountryItem;
@@ -852,10 +852,10 @@ void create_genswindow_CPUMenu_Country_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_SoundMenu(): Create the Sound menu.
+ * create_gens_window_SoundMenu(): Create the Sound menu.
  * @param container Container for this menu.
  */
-void create_genswindow_SoundMenu(GtkWidget *container)
+void create_gens_window_SoundMenu(GtkWidget *container)
 {
 	GtkWidget *Sound;			GtkWidget *Sound_Icon;
 	GtkWidget *SoundMenu;
@@ -897,7 +897,7 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 	// Rate
 	NewMenuItem(SoundMenu_Rate, "_Rate", "SoundMenu_Rate", SoundMenu);
 	// Rate submenu
-	create_genswindow_SoundMenu_Rate_SubMenu(SoundMenu_Rate);
+	create_gens_window_SoundMenu_Rate_SubMenu(SoundMenu_Rate);
 	
 	// Stereo
 	NewMenuItem_Check(SoundMenu_Stereo, "_Stereo", "SoundMenu_Stereo", SoundMenu, TRUE);
@@ -963,10 +963,10 @@ void create_genswindow_SoundMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_SoundMenu_Rate_SubMenu(): Create the Sound, Rate submenu.
+ * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Sound, Rate submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_SoundMenu_Rate_SubMenu(GtkWidget *container)
+void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *SndItem;
@@ -1004,10 +1004,10 @@ void create_genswindow_SoundMenu_Rate_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_OptionsMenu(): Create the Options menu.
+ * create_gens_window_OptionsMenu(): Create the Options menu.
  * @param container Container for this menu.
  */
-void create_genswindow_OptionsMenu(GtkWidget *container)
+void create_gens_window_OptionsMenu(GtkWidget *container)
 {
 	GtkWidget *Options;			GtkWidget *Options_Icon;
 	GtkWidget *OptionsMenu;
@@ -1062,7 +1062,7 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	NewMenuItem_Icon(OptionsMenu_SegaCDSRAMSize, "Sega CD S_RAM Size", "OptionsMenu_SegaCDSRAMSize", OptionsMenu,
 			 OptionsMenu_SegaCDSRAMSize_Icon, "memory.png");
 	// Sega CD SRAM Size submenu
-	create_genswindow_OptionsMenu_SegaCDSRAMSize_SubMenu(OptionsMenu_SegaCDSRAMSize);
+	create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(OptionsMenu_SegaCDSRAMSize);
 	
 	// Separator
 	NewMenuSeparator(OptionsMenu_Separator2, "OptionsMenu_Separator2", OptionsMenu);
@@ -1080,10 +1080,10 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_SoundMenu_Rate_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
+ * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
  * @param container Container for this menu.
  */
-void create_genswindow_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)
+void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *SRAMItem;
@@ -1120,10 +1120,10 @@ void create_genswindow_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)
 
 
 /**
- * create_genswindow_HelpMenu(): Create the Help menu.
+ * create_gens_window_HelpMenu(): Create the Help menu.
  * @param container Container for this menu.
  */
-void create_genswindow_HelpMenu(GtkWidget *container)
+void create_gens_window_HelpMenu(GtkWidget *container)
 {
 	GtkWidget *Help;			GtkWidget *Help_Icon;
 	GtkWidget *HelpMenu;

@@ -23,7 +23,7 @@
 #include "ym2612.h"
 #include "psg.h"
 
-#include "genswindow_sync.h"
+#include "gens_window_sync.h"
 #include "ui-common.h"
 
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
@@ -144,7 +144,7 @@ void Input_KeyDown(int key)
 				
 				Full_Screen = !Full_Screen;
 				Set_Render(Full_Screen, Render_Mode, 1);
-				Sync_GensWindow_GraphicsMenu();
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		
@@ -157,14 +157,14 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_Stretch();
-				Sync_GensWindow_GraphicsMenu();
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			else
 			*/
 			if (!mod)
 			{
 				Set_Frame_Skip(-1);
-				Sync_GensWindow_GraphicsMenu();
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		
@@ -173,7 +173,7 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_VSync(-1);
-				Sync_GensWindow_GraphicsMenu();
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			else */
 			if (!mod)
@@ -181,12 +181,12 @@ void Input_KeyDown(int key)
 				if (Frame_Skip == -1)
 				{
 					Set_Frame_Skip (0);
-					Sync_GensWindow_GraphicsMenu();
+					Sync_Gens_Window_GraphicsMenu();
 				}
 				else if (Frame_Skip > 0)
 				{
 					Set_Frame_Skip (Frame_Skip - 1);
-					Sync_GensWindow_GraphicsMenu();
+					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
 			break;
@@ -201,7 +201,7 @@ void Input_KeyDown(int key)
 					if (Frame_Skip < 8)
 						Set_Frame_Skip (Frame_Skip + 1);
 				}
-				Sync_GensWindow_GraphicsMenu();
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		
@@ -227,7 +227,7 @@ void Input_KeyDown(int key)
 			if (!mod)
 			{
 				Set_Current_State ((Current_State + 9) % 10);
-				Sync_GensWindow_FileMenu();
+				Sync_Gens_Window_FileMenu();
 			}
 			break;
 		
@@ -235,7 +235,7 @@ void Input_KeyDown(int key)
 			if (!mod)
 			{
 				Set_Current_State ((Current_State + 1) % 10);
-				Sync_GensWindow_FileMenu();
+				Sync_Gens_Window_FileMenu();
 			}
 			break;
 		
@@ -269,7 +269,7 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_DAC_Improved(!DAC_Improv);
-				Sync_GensWindow_SoundMenu();
+				Sync_Gens_Window_SoundMenu();
 			}
 			else //if (!mod)
 			{
@@ -281,14 +281,14 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_PSG_Improved(!PSG_Improv);
-				Sync_GensWindow_SoundMenu();
+				Sync_Gens_Window_SoundMenu();
 			}
 			else //if (!mod)
 			{
 				if (Render_Mode > 1)
 				{
 					Set_Render(Full_Screen, Render_Mode - 1, 0);
-					Sync_GensWindow_GraphicsMenu();
+					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
 			break;
@@ -297,14 +297,14 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_YM2612_Improved(!YM2612_Improv);
-				Sync_GensWindow_SoundMenu();
+				Sync_Gens_Window_SoundMenu();
 			}
 			else //if (!mod)
 			{
 				if (Render_Mode < NB_FILTER-1)
 				{
 					Set_Render(Full_Screen, Render_Mode + 1, 0);
-					Sync_GensWindow_GraphicsMenu();
+					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
 			break;
@@ -322,7 +322,7 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Set_Current_State (key - GENS_KEY_0);
-				Sync_GensWindow_FileMenu();
+				Sync_Gens_Window_FileMenu();
 			}
 			else if (key != GENS_KEY_0 && (mod & GENS_KMOD_CTRL))
 			{
@@ -330,7 +330,7 @@ void Input_KeyDown(int key)
 				if (GYM_Playing)
 					Stop_Play_GYM ();
 				Open_Rom(Recent_Rom[key - GENS_KEY_0]);
-				Sync_GensWindow();
+				Sync_Gens_Window();
 			}
 			break;
 		
@@ -358,7 +358,7 @@ void Input_KeyDown(int key)
 				{
 					//if (Full_Screen)
 						//Set_Render (0, -1, 1);
-					Sync_GensWindow();
+					Sync_Gens_Window();
 				}
 				Free_Rom (Game);
 			}
@@ -412,7 +412,7 @@ void Input_KeyDown(int key)
 						Stop_Play_GYM();
 					else
 						Start_Play_GYM();
-					Sync_GensWindow_SoundMenu();
+					Sync_Gens_Window_SoundMenu();
 				}
 			}
 			break;
@@ -422,7 +422,7 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				Change_OpenGL(!Opengl);
-				Sync_GensWindow_GraphicsMenu();
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		*/
@@ -442,7 +442,7 @@ void Input_KeyDown(int key)
 					Stop_WAV_Dump ();
 				else
 					Start_WAV_Dump ();
-				Sync_GensWindow_SoundMenu();
+				Sync_Gens_Window_SoundMenu();
 			}
 			break;
 		
