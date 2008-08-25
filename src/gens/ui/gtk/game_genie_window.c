@@ -274,7 +274,7 @@ GtkWidget* create_game_genie_window(void)
 	// OK
 	button_gg_OK = gtk_button_new_from_stock("gtk-ok");
 	gtk_widget_set_name(button_gg_OK, "button_gg_OK");
-	gtk_widget_show(button_gg_cancel);
+	gtk_widget_show(button_gg_OK);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_OK, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_gg_OK, on_button_gg_OK_clicked);
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_OK, "button_gg_OK");
