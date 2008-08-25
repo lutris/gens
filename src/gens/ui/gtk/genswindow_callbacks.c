@@ -661,15 +661,6 @@ void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_
 
 
 /**
- * Options, SDL Sound Test
- */
-void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	STUB;
-}
-
-
-/**
  * Options, Sega CD SRAM Size, #
  */
 void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)

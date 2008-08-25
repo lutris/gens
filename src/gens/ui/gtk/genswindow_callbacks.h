@@ -80,7 +80,6 @@ void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user
 void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data);
-void on_OptionsMenu_SDLSoundTest_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_data);

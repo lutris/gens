@@ -1016,11 +1016,9 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_Directories;	GtkWidget *OptionsMenu_Directories_Icon;
 	GtkWidget *OptionsMenu_BIOSMiscFiles;	GtkWidget *OptionsMenu_BIOSMiscFiles_Icon;
 	GtkWidget *OptionsMenu_Separator1;
-	GtkWidget *OptionsMenu_SDLSoundTest;	GtkWidget *OptionsMenu_SDLSoundTest_Icon;
-	GtkWidget *OptionsMenu_Separator2;
 	GtkWidget *OptionsMenu_CurrentCDDrive;	GtkWidget *OptionsMenu_CurrentCDDrive_Icon;
 	GtkWidget *OptionsMenu_SegaCDSRAMSize;	GtkWidget *OptionsMenu_SegaCDSRAMSize_Icon;
-	GtkWidget *OptionsMenu_Separator3;
+	GtkWidget *OptionsMenu_Separator2;
 	GtkWidget *OptionsMenu_LoadConfig;	GtkWidget *OptionsMenu_LoadConfig_Icon;
 	GtkWidget *OptionsMenu_SaveConfigAs;	GtkWidget *OptionsMenu_SaveConfigAs_Icon;
 	
@@ -1055,14 +1053,6 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	// Separator
 	NewMenuSeparator(OptionsMenu_Separator1, "OptionsMenu_Separator1", OptionsMenu);
 	
-	// SDL Sound Test
-	NewMenuItem_Icon(OptionsMenu_SDLSoundTest, "SDL Sound _Test", "OptionsMenu_SDLSoundTest", OptionsMenu,
-			 OptionsMenu_SDLSoundTest_Icon, "package_settings.png");
-	AddMenuCallback(OptionsMenu_SDLSoundTest, on_OptionsMenu_SDLSoundTest_activate);
-	
-	// Separator
-	NewMenuSeparator(OptionsMenu_Separator2, "OptionsMenu_Separator2", OptionsMenu);
-	
 	// Current CD Drive...
 	NewMenuItem_StockIcon(OptionsMenu_CurrentCDDrive, "Current _CD Drive...", "OptionsMenu_CurrentCDDrive", OptionsMenu,
 			      OptionsMenu_CurrentCDDrive_Icon, "gtk-cdrom");
@@ -1075,7 +1065,7 @@ void create_genswindow_OptionsMenu(GtkWidget *container)
 	create_genswindow_OptionsMenu_SegaCDSRAMSize_SubMenu(OptionsMenu_SegaCDSRAMSize);
 	
 	// Separator
-	NewMenuSeparator(OptionsMenu_Separator3, "OptionsMenu_Separator3", OptionsMenu);
+	NewMenuSeparator(OptionsMenu_Separator2, "OptionsMenu_Separator2", OptionsMenu);
 	
 	// Load Config...
 	NewMenuItem_StockIcon(OptionsMenu_LoadConfig, "_Load Config...", "OptionsMenu_LoadConfig", OptionsMenu,
