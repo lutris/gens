@@ -203,6 +203,10 @@ gens_SOURCES = \
 		ui/gtk/directory_config_window.callbacks.h \
 		ui/gtk/directory_config_window_misc.c \
 		ui/gtk/directory_config_window_misc.h \
+		ui/gtk/general_options_window.c \
+		ui/gtk/general_options_window.h \
+		ui/gtk/general_options_window_callbacks.c \
+		ui/gtk/general_options_window_callbacks.h \
 		emulator/parse.c \
 		emulator/parse.h
 ##		netplay/ccnet.c \

@@ -11,6 +11,7 @@
 #include "game_genie_window_misc.h"
 #include "controller_config_window_misc.h"
 #include "bios_misc_files_window_misc.h"
+#include "general_options_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -629,7 +630,7 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	create_general_options_window();
 }
 
 
