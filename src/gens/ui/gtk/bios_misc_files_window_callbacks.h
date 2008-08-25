@@ -2,8 +2,8 @@
  * GENS: (GTK+) BIOS/Misc Files Window Callbacks.
  */
 
-#ifndef BIOS_MISC_FILES_CALLBACKS_H
-#define BIOS_MISC_FILES_CALLBACKS_H
+#ifndef BIOS_MISC_FILES_WINDOW_CALLBACKS_H
+#define BIOS_MISC_FILES_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {
