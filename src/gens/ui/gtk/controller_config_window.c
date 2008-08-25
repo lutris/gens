@@ -49,8 +49,8 @@ GtkWidget* create_controller_config_window(void)
 	GtkWidget *vbox_setting_keys;
 	GtkWidget *frame_setting_keys;
 	GtkWidget *label_setting_keys, *label_cc_echo;
-	GtkWidget *hbutton_box_okcancel;
-	GtkWidget *button_cc_OK, *button_cc_Cancel;
+	GtkWidget *hbutton_box_savecancel;
+	GtkWidget *button_cc_Save, *button_cc_Cancel;
 	
 	if (controller_config_window)
 	{
@@ -145,7 +145,8 @@ GtkWidget* create_controller_config_window(void)
 		"teamplayer is enabled on Port 2.\n\n"
 		"Only a few games support teamplayer (games which\n"
 		"have 4 player support), so don't forget to use the\n"
-		"\"load config\" and \"save config\" options. :)"
+		"\"load config\" and \"save config\" options. :)\n\n"
+		"Controller configuration is applied when Save is clicked."
 		);
 	gtk_widget_set_name(label_note, "label_note");
 	gtk_widget_show(label_note);
@@ -186,28 +187,28 @@ GtkWidget* create_controller_config_window(void)
 	gtk_container_add(GTK_CONTAINER(frame_setting_keys), label_cc_echo);
 	
 	// HButton Box for the buttons.
-	hbutton_box_okcancel = gtk_hbutton_box_new();
-	gtk_widget_set_name(hbutton_box_okcancel, "hbutton_box_okcancel");
-	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_okcancel), GTK_BUTTONBOX_END);
-	gtk_widget_show(hbutton_box_okcancel);
-	GLADE_HOOKUP_OBJECT(controller_config_window, hbutton_box_okcancel, "hbutton_box_okcancel");
-	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), hbutton_box_okcancel, FALSE, TRUE, 0);
+	hbutton_box_savecancel = gtk_hbutton_box_new();
+	gtk_widget_set_name(hbutton_box_savecancel, "hbutton_box_savecancel");
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_savecancel), GTK_BUTTONBOX_END);
+	gtk_widget_show(hbutton_box_savecancel);
+	GLADE_HOOKUP_OBJECT(controller_config_window, hbutton_box_savecancel, "hbutton_box_savecancel");
+	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), hbutton_box_savecancel, FALSE, TRUE, 0);
 	
 	// Cancel button
 	button_cc_Cancel = gtk_button_new_from_stock("gtk-cancel");
 	gtk_widget_set_name(button_cc_Cancel, "button_cc_Cancel");
 	gtk_widget_show(button_cc_Cancel);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_cc_Cancel, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Cancel, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_cc_Cancel, on_button_cc_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Cancel, "button_cc_Cancel");
 	
 	// OK button
-	button_cc_OK = gtk_button_new_from_stock("gtk-ok");
-	gtk_widget_set_name(button_cc_OK, "button_cc_OK");
-	gtk_widget_show(button_cc_OK);
-	AddButtonCallback_Clicked(button_cc_OK, on_button_cc_OK_clicked);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_cc_OK, FALSE, FALSE, 0);
-	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_OK, "button_cc_OK");
+	button_cc_Save = gtk_button_new_from_stock("gtk-save");
+	gtk_widget_set_name(button_cc_Save, "button_cc_Save");
+	gtk_widget_show(button_cc_Save);
+	AddButtonCallback_Clicked(button_cc_Save, on_button_cc_Save_clicked);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Save, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Save, "button_cc_Save");
 	
 	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;
