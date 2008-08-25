@@ -33,6 +33,14 @@ GtkWidget *create_pixmap(GtkWidget *widget, const gchar *filename);
 };
 
 
+// Macro to add a "clicked" event callback to a button.
+#define AddButtonCallback_Clicked(ButtonWidget, CallbackFunction)				\
+{												\
+	g_signal_connect((gpointer)ButtonWidget, "clicked",					\
+			 G_CALLBACK(CallbackFunction), NULL);					\
+}
+
+
 #ifdef __cplusplus
 }
 #endif

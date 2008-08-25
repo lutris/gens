@@ -43,14 +43,6 @@ GtkTooltips *tooltips;
 }
 
 
-// Macro to add a clicked callback to a button
-#define AddButtonCallback_Clicked(ButtonWidget, CallbackFunction)				\
-{												\
-	g_signal_connect((gpointer)ButtonWidget, "clicked",					\
-			 G_CALLBACK(CallbackFunction), NULL);					\
-}
-
-
 /**
  * create_game_genie_window(): Create the Game Genie Window.
  * @return Game Genie Window.

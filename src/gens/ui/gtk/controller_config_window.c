@@ -3,6 +3,7 @@
  */
 
 #include "controller_config_window.h"
+#include "controller_config_window_callbacks.h"
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -43,9 +44,9 @@ GtkWidget* create_controller_config_window(void)
 	GtkWidget *label_note_heading, *label_note;
 	GtkWidget *vbox_setting_keys;
 	GtkWidget *frame_setting_keys;
-	GtkWidget *label_setting_keys, *label_echo;
+	GtkWidget *label_setting_keys, *label_cc_echo;
 	GtkWidget *hbutton_box_okcancel;
-	GtkWidget *button_OK, *button_Cancel;
+	GtkWidget *button_cc_OK, *button_cc_Cancel;
 	
 	if (controller_config_window)
 	{
@@ -70,6 +71,12 @@ GtkWidget* create_controller_config_window(void)
 		gtk_window_set_icon(GTK_WINDOW(controller_config_window), controller_config_window_icon_pixbuf);
 		gdk_pixbuf_unref(controller_config_window_icon_pixbuf);
 	}
+	
+	// Callbacks for if the window is closed.
+	g_signal_connect((gpointer)controller_config_window, "delete_event",
+			 G_CALLBACK(on_controller_config_window_close), NULL);
+	g_signal_connect((gpointer)controller_config_window, "destroy_event",
+			 G_CALLBACK(on_controller_config_window_close), NULL);
 	
 	// Main table.
 	table_cc = gtk_table_new(2, 2, FALSE);
@@ -168,11 +175,11 @@ GtkWidget* create_controller_config_window(void)
 	gtk_frame_set_label_widget(GTK_FRAME(frame_setting_keys), label_setting_keys);
 	
 	// Label indicating what key needs to be pressed.
-	label_echo = gtk_label_new("");
-	gtk_widget_set_name(label_echo, "label_echo");
-	gtk_widget_show(label_echo);
-	GLADE_HOOKUP_OBJECT(controller_config_window, label_echo, "label_echo");
-	gtk_container_add(GTK_CONTAINER(frame_setting_keys), label_echo);
+	label_cc_echo = gtk_label_new("");
+	gtk_widget_set_name(label_cc_echo, "label_echo");
+	gtk_widget_show(label_cc_echo);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_cc_echo, "label_echo");
+	gtk_container_add(GTK_CONTAINER(frame_setting_keys), label_cc_echo);
 	
 	// HButton Box for the buttons.
 	hbutton_box_okcancel = gtk_hbutton_box_new();
@@ -183,18 +190,19 @@ GtkWidget* create_controller_config_window(void)
 	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), hbutton_box_okcancel, FALSE, TRUE, 0);
 	
 	// Cancel button
-	button_Cancel = gtk_button_new_from_stock("gtk-cancel");
-	gtk_widget_set_name(button_Cancel, "button_Cancel");
-	gtk_widget_show(button_Cancel);
-	GLADE_HOOKUP_OBJECT(controller_config_window, button_Cancel, "button_Cancel");
-	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_Cancel, FALSE, FALSE, 0);
+	button_cc_Cancel = gtk_button_new_from_stock("gtk-cancel");
+	gtk_widget_set_name(button_cc_Cancel, "button_cc_Cancel");
+	gtk_widget_show(button_cc_Cancel);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_cc_Cancel, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_cc_Cancel, on_button_cc_Cancel_clicked);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Cancel, "button_cc_Cancel");
 	
 	// OK button
-	button_OK = gtk_button_new_from_stock("gtk-ok");
-	gtk_widget_set_name(button_OK, "button_OK");
-	gtk_widget_show(button_OK);
-	GLADE_HOOKUP_OBJECT(controller_config_window, button_OK, "button_OK");
-	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_OK, FALSE, FALSE, 0);
+	button_cc_OK = gtk_button_new_from_stock("gtk-ok");
+	gtk_widget_set_name(button_cc_OK, "button_cc_OK");
+	gtk_widget_show(button_cc_OK);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_OK, "button_cc_OK");
+	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_cc_OK, FALSE, FALSE, 0);
 	
 	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;

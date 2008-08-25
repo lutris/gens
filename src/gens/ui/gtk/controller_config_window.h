@@ -14,7 +14,7 @@ extern "C" {
 
 
 GtkWidget* create_controller_config_window(void); 
-extern GtkWidget *controller_Config_window;
+extern GtkWidget *controller_config_window;
 
 #ifdef __cplusplus
 }
