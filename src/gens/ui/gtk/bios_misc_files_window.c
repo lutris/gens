@@ -165,8 +165,9 @@ GtkWidget* create_bios_misc_files_window(void)
 			sprintf(tmp, "entry_%s", BIOSMiscFiles[file].tag);
 			entry_file = gtk_entry_new();
 			gtk_widget_set_name(entry_file, tmp);
-			gtk_widget_show(entry_file);
+			gtk_entry_set_max_length(entry_file, GENS_PATH_MAX - 1);
 			gtk_widget_set_size_request(entry_file, 250, -1);
+			gtk_widget_show(entry_file);
 			gtk_table_attach(GTK_TABLE(table_frame_file), entry_file,
 					 1, 2, table_row, table_row + 1,
 					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
