@@ -11,6 +11,7 @@
 
 
 #include "gtk-misc.h"
+#include "gens_window.h"
 
 
 //char Phrase[1024];
@@ -64,12 +65,24 @@ close_joystick ()
     }
 }
 
-static int
-keysnoop(GtkWidget *foo, GdkEventKey *ev, gpointer bar)
+
+/**
+ * keysnoop(): Keysnooping callback event for GTK+.
+ * @param grab_widget Widget this key was snooped from.
+ * @param event Event information.
+ * @param func_data User data.
+ * @return TRUE to stop processing this event; FALSE to allow GTK+ to process this event.
+ */
+static int keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
 {
 	SDL_Event sdlev;
-       
-	switch(ev->type) {
+	
+	// Only grab keys from the Gens Window.
+	if (grab != gens_window)
+		return 0;
+	
+	switch(event->type)
+	{
 		case GDK_KEY_PRESS:
 			sdlev.type = SDL_KEYDOWN;
 			sdlev.key.state = SDL_PRESSED;
@@ -82,10 +95,13 @@ keysnoop(GtkWidget *foo, GdkEventKey *ev, gpointer bar)
 			fputs("Can't happen: keysnoop got a bad type\n", stderr);
 			return 0;
 	}
-	sdlev.key.keysym.sym = gdk_to_sdl_keyval(ev->keyval);
-	if (sdlev.key.keysym.sym != -1) {
+	
+	// Convert this keypress from GDK to SDL.
+	// TODO: Use GENS key defines instead.
+	sdlev.key.keysym.sym = gdk_to_sdl_keyval(event->keyval);
+	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
-	}
+	
 	return 0;
 }
 
