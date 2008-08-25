@@ -10,6 +10,7 @@
 #include "gens_window_sync.h"
 #include "game_genie_window_misc.h"
 #include "controller_config_window.h"
+#include "bios_misc_files_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -655,7 +656,8 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
  */
 void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	// TODO: Handler function for this, if necessary.
+	create_bios_misc_files_window();
 }
 
 
