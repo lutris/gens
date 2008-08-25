@@ -70,6 +70,8 @@ GtkWidget* create_bios_misc_files_window(void)
 	GtkWidget *vbox_bmf;
 	GtkWidget *frame_file = NULL, *label_frame_file = NULL, *table_frame_file = NULL;
 	GtkWidget *label_file = NULL, *entry_file = NULL, *button_file = NULL;
+	GtkWidget *hbutton_box_bmf_buttonRow;
+	GtkWidget *button_bmf_Cancel, *button_bmf_Save;
 	
 	char tmp[64];
 	int file = 0, table_row = 0;
@@ -192,6 +194,27 @@ GtkWidget* create_bios_misc_files_window(void)
 		file++;
 	}
 	
+	// HButton Box for the row of buttons on the bottom of the window
+	hbutton_box_bmf_buttonRow = gtk_hbutton_box_new();
+	gtk_widget_set_name(hbutton_box_bmf_buttonRow, "hbutton_box_bmf_buttonRow");
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_bmf_buttonRow), GTK_BUTTONBOX_END);
+	gtk_widget_show(hbutton_box_bmf_buttonRow);
+	gtk_box_pack_start(GTK_BOX(vbox_bmf), hbutton_box_bmf_buttonRow, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(bios_misc_files_window, hbutton_box_bmf_buttonRow, "hbutton_box_bmf_buttonRow");
+	
+	// Cancel
+	button_bmf_Cancel = gtk_button_new_from_stock("gtk-cancel");
+	gtk_widget_set_name(button_bmf_Cancel, "button_bmf_cancel");
+	gtk_widget_show(button_bmf_Cancel);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Cancel, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Cancel, "button_bmf_Cancel");
+	
+	// Save
+	button_bmf_Save = gtk_button_new_from_stock("gtk-save");
+	gtk_widget_set_name(button_bmf_Save, "button_bmf_Save");
+	gtk_widget_show(button_bmf_Save);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Save, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Save, "button_bmf_Save");
 	
 	gtk_widget_show_all(bios_misc_files_window);
 	return bios_misc_files_window;
