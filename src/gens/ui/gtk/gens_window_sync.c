@@ -48,7 +48,7 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
-	const char* ROM_Format_Prefix[5] = {"[---]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
+	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
 	
 	// Temporary variables for ROM History.
 	int i, romFormat;
