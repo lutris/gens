@@ -228,7 +228,7 @@ void AddControllerVBox(GtkWidget *frame, int port)
 	GtkWidget *button_configure;
 	char tmp[128];
 	char player[4];
-	int i, j;
+	int i, j, callbackPort;
 	
 	// TODO: Move this somewhere else?
 	const char* PadTypes[2] =
@@ -337,9 +337,23 @@ void AddControllerVBox(GtkWidget *frame, int port)
 		sprintf(tmp, "button_configure_%s", player);
 		gtk_widget_set_name(button_configure, tmp);
 		gtk_widget_show(button_configure);
-		GLADE_HOOKUP_OBJECT(controller_config_window, button_configure, tmp);
 		gtk_table_attach(GTK_TABLE(table_players), button_configure, 2, 3, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
+		
+		// Determine the port number to use for the callback.
+		if (i == 0)
+			callbackPort = port - 1;
+		else
+		{
+			if (port == 1)
+				callbackPort = i + 1;
+			else // if (port == 2)
+				callbackPort = i + 4;
+		}
+		g_signal_connect(GTK_OBJECT(button_configure), "clicked",
+				 G_CALLBACK(on_button_cc_Reconfigure_clicked),
+				 GINT_TO_POINTER(callbackPort));
+		GLADE_HOOKUP_OBJECT(controller_config_window, button_configure, tmp);
 	}
 }
