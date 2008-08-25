@@ -37,6 +37,35 @@ void Open_BIOS_Misc_Files(void)
 
 
 /**
+ * BIOS_Misc_Files_Change(): Change a filename.
+ * @param file File ID.
+ */
+void BIOS_Misc_Files_Change(int file)
+{
+	GtkWidget *entry_file;
+	char tmp[64];
+	char newFile[GENS_PATH_MAX];
+	int ret;
+	
+	// Get the entry widget for this file.
+	sprintf(tmp, "entry_%s", BIOSMiscFiles[file].tag);
+	entry_file = lookup_widget(bios_misc_files_window, tmp);
+	
+	// Request a new file.
+	sprintf(tmp, "Select %s File", BIOSMiscFiles[file].title);
+	ret = UI_OpenFile(tmp, gtk_entry_get_text(GTK_ENTRY(entry_file)),
+			  BIOSMiscFiles[file].filter, newFile);
+	
+	// If Cancel was selected, don't do anything.
+	if (ret)
+		return;
+	
+	// Set the new file.
+	gtk_entry_set_text(GTK_ENTRY(entry_file), newFile);
+}
+
+
+/**
  * BIOS_Misc_Files_Save(): Save the BIOS/Misc Files.
  */
 void BIOS_Misc_Files_Save(void)

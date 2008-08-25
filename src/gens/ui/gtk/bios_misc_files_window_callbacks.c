@@ -33,8 +33,7 @@ gboolean on_bios_misc_files_window_close(GtkWidget *widget, GdkEvent *event, gpo
  */
 void on_button_bmf_Change_clicked(GtkButton *button, gpointer user_data)
 {
-	int fileID = GPOINTER_TO_INT(user_data);
-	printf("CHANGE: File %d\n", fileID);
+	BIOS_Misc_Files_Change(GPOINTER_TO_INT(user_data));
 }
 
 
