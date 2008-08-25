@@ -43,7 +43,7 @@ void Open_Controller_Config(void)
 	}
 	gtk_window_set_transient_for(GTK_WINDOW(cc), GTK_WINDOW(gens_window));
 	
-	// Copy the current controller configuration.
+	// Copy the current controller key configuration.
 	memcpy(Keys_Config, Keys_Def, sizeof(Keys_Def));
 	
 	// Set the controller types.
@@ -154,4 +154,91 @@ int Reconfigure_Input(int player, int padtype)
 	gtk_label_set_text(GTK_LABEL(label_echo), "");
 	
 	return 1;
+}
+
+
+/**
+ * Controller_Config_Save(): Copy the new controller config to the main Gens config.
+ */
+void Controller_Config_Save(void)
+{
+	GtkWidget *check_teamplayer_1, *check_teamplayer_2;
+	GtkWidget *optionmenu_padtype_1;
+	GtkWidget *optionmenu_padtype_1B;
+	GtkWidget *optionmenu_padtype_1C;
+	GtkWidget *optionmenu_padtype_1D;
+	GtkWidget *optionmenu_padtype_2;
+	GtkWidget *optionmenu_padtype_2B;
+	GtkWidget *optionmenu_padtype_2C;
+	GtkWidget *optionmenu_padtype_2D;
+	
+	// Copy the new controller key configuration.
+	memcpy(Keys_Def, Keys_Config, sizeof(Keys_Def));
+
+	// Set the controller types.
+	// (Controller_1_Type & 0x10) == Teamplayer enabled
+	// (Controller_1_Type & 0x01) == 6-button
+	// TODO: Clean up controller type handling.
+	
+	// Set the Teamplayer options.
+	check_teamplayer_1 = lookup_widget(controller_config_window, "check_teamplayer_1");
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_teamplayer_1)))
+		Controller_1_Type |= 0x10;
+	else
+		Controller_1_Type &= ~0x10;
+	
+	check_teamplayer_2 = lookup_widget(controller_config_window, "check_teamplayer_1");
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_teamplayer_2)))
+		Controller_2_Type |= 0x10;
+	else
+		Controller_2_Type &= ~0x10;
+	
+	// Set 3/6 button options.
+	optionmenu_padtype_1 = lookup_widget(controller_config_window, "optionmenu_padtype_1");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_1)) == 1)
+		Controller_1_Type |= 0x01;
+	else
+		Controller_1_Type &= ~0x01;
+	
+	optionmenu_padtype_1B = lookup_widget(controller_config_window, "optionmenu_padtype_1B");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_1B)) == 1)
+		Controller_1B_Type |= 0x01;
+	else
+		Controller_1B_Type &= ~0x01;
+	
+	optionmenu_padtype_1C = lookup_widget(controller_config_window, "optionmenu_padtype_1C");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_1C)) == 1)
+		Controller_1C_Type |= 0x01;
+	else
+		Controller_1C_Type &= ~0x01;
+	
+	optionmenu_padtype_1D = lookup_widget(controller_config_window, "optionmenu_padtype_1D");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_1D)) == 1)
+		Controller_1D_Type |= 0x01;
+	else
+		Controller_1D_Type &= ~0x01;
+	
+	optionmenu_padtype_2 = lookup_widget(controller_config_window, "optionmenu_padtype_2");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_2)) == 1)
+		Controller_2_Type |= 0x01;
+	else
+		Controller_2_Type &= ~0x01;
+	
+	optionmenu_padtype_2B = lookup_widget(controller_config_window, "optionmenu_padtype_2B");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_2B)) == 1)
+		Controller_2B_Type |= 0x01;
+	else
+		Controller_2B_Type &= ~0x01;
+	
+	optionmenu_padtype_2C = lookup_widget(controller_config_window, "optionmenu_padtype_2C");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_2C)) == 1)
+		Controller_2C_Type |= 0x01;
+	else
+		Controller_2C_Type &= ~0x01;
+	
+	optionmenu_padtype_2D = lookup_widget(controller_config_window, "optionmenu_padtype_2D");
+	if (gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype_2D)) == 1)
+		Controller_2D_Type |= 0x01;
+	else
+		Controller_2D_Type &= ~0x01;
 }

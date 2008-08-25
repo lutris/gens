@@ -205,8 +205,9 @@ GtkWidget* create_controller_config_window(void)
 	button_cc_OK = gtk_button_new_from_stock("gtk-ok");
 	gtk_widget_set_name(button_cc_OK, "button_cc_OK");
 	gtk_widget_show(button_cc_OK);
-	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_OK, "button_cc_OK");
+	AddButtonCallback_Clicked(button_cc_OK, on_button_cc_OK_clicked);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_cc_OK, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_OK, "button_cc_OK");
 	
 	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;

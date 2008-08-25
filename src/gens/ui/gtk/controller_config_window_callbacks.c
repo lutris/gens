@@ -77,6 +77,17 @@ void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
+ * OK
+ */
+void on_button_cc_OK_clicked(GtkButton *button, gpointer user_data)
+{
+	Controller_Config_Save();
+	gtk_widget_destroy(controller_config_window);
+	controller_config_window = NULL;
+}
+
+
+/**
  * "Reconfigure"
  */
 void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
