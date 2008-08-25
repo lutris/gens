@@ -28,6 +28,10 @@ GtkAccelGroup *accel_group;
 GtkTooltips *tooltips;
 
 
+// Internal copy of Keys_Def[], which is copied when OK is clicked.
+struct K_Def Keys_Config[8];
+
+
 void AddControllerVBox(GtkWidget *vbox, int port);
 
 
