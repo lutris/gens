@@ -12,10 +12,10 @@ extern "C" {
 
 #include <gtk/gtk.h>
 
-
 void Open_Controller_Config(void);
 int Reconfigure_Input(int player, int padtype);
 void Controller_Config_Save(void);
+
 
 #ifdef __cplusplus
 }

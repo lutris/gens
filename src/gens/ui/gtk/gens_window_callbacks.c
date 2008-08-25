@@ -656,8 +656,7 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
  */
 void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	// TODO: Handler function for this, if necessary.
-	create_bios_misc_files_window();
+	Open_BIOS_Misc_Files();
 }
 
 

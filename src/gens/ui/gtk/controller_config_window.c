@@ -210,7 +210,6 @@ GtkWidget* create_controller_config_window(void)
 	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Save, FALSE, FALSE, 0);
 	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Save, "button_cc_Save");
 	
-	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;
 }
 

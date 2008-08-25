@@ -87,6 +87,7 @@ void Open_Game_Genie(void)
 		}
 	}
 	
+	// Show the Game Genie window.
 	gtk_widget_show_all(gg);
 }
 

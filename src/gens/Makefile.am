@@ -195,6 +195,8 @@ gens_SOURCES = \
 		ui/gtk/bios_misc_files_window.h \
 		ui/gtk/bios_misc_files_window_callbacks.c \
 		ui/gtk/bios_misc_files_window.callbacks.h \
+		ui/gtk/bios_misc_files_window_misc.c \
+		ui/gtk/bios_misc_files_window_misc.h \
 		emulator/parse.c \
 		emulator/parse.h
 ##		netplay/ccnet.c \

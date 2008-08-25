@@ -78,6 +78,9 @@ void Open_Controller_Config(void)
 	// Initialize the Teamplayer state.
 	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_1), GINT_TO_POINTER(1));
 	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_2), GINT_TO_POINTER(2));
+	
+	// Show the Controller Configuration window.
+	gtk_widget_show_all(cc);
 }
 
 
