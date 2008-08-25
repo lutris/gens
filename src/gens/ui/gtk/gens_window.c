@@ -759,18 +759,6 @@ void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
 		"32X - Sub SH2",
 		"32X - VDP",
 	};
-	const char* DebugTag[9] =
-	{
-		"md_68000",
-		"md_Z80",
-		"md_VDP",
-		"mcd_68000",
-		"mcd_CDC",
-		"mcd_GFX",
-		"32X_MSH2",
-		"32X_SSH2",
-		"32X_VDP",
-	};
 	
 	int i;
 	char ObjName[64];
@@ -783,7 +771,7 @@ void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
 	// Create the render entries.
 	for (i = 0; i < 9; i++)
 	{
-		sprintf(ObjName, "CPUMenu_Debug_SubMenu_%s", DebugTag[i]);
+		sprintf(ObjName, "CPUMenu_Debug_SubMenu_%d", i + 1);
 		NewMenuItem_Check(debugMenuItems[i], DebugStr[i], ObjName, SubMenu, FALSE);
 		g_signal_connect((gpointer)debugMenuItems[i], "activate",
 				 G_CALLBACK(on_CPUMenu_Debug_SubMenu_activate),

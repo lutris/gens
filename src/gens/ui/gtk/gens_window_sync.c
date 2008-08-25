@@ -170,6 +170,8 @@ void Sync_Gens_Window_CPUMenu(void)
 {
 #ifdef GENS_DEBUG
 	GtkWidget *MItem_Debug;
+	GtkWidget *MItem_Debug_Item;
+	int i, checkDebug;
 #endif
 	GtkWidget *MItem_Country;
 	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
@@ -182,7 +184,50 @@ void Sync_Gens_Window_CPUMenu(void)
 #ifdef GENS_DEBUG
 	MItem_Debug = lookup_widget(gens_window, "CPUMenu_Debug");
 	gtk_widget_set_sensitive(MItem_Debug, (Genesis_Started || SegaCD_Started || _32X_Started));
-	// TODO: Hide/Show debug entries depending on the active console.
+	
+	// Hide/Show debug entries depending on the active console.
+	
+	if (Genesis_Started || SegaCD_Started || _32X_Started)
+	{
+		for (i = 1; i <= 9; i++)
+		{
+			sprintf(Str_Tmp, "CPUMenu_Debug_SubMenu_%d", i);
+			MItem_Debug_Item = lookup_widget(gens_window, Str_Tmp);
+			// TODO: Use debug constants instead?
+			if (i >= 1 && i <= 3)
+				checkDebug = 1;
+			else if (i >= 4 && i <= 6)
+				checkDebug = SegaCD_Started;
+			else if (i >= 7 && i <= 9)
+				checkDebug = _32X_Started;
+			else
+			{
+				// Shouldn't happen...
+				fprintf(stderr, "%s: ERROR: i == %d\n", __func__, i);
+				checkDebug = 0;
+			}
+			
+			if (checkDebug)
+				gtk_widget_show(MItem_Debug_Item);
+			else
+				gtk_widget_hide(MItem_Debug_Item);
+			
+			// Make sure the check state for this debug item is correct.
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Debug_Item), (Debug == i));
+		}
+		// Separators
+		MItem_Debug_Item = lookup_widget(gens_window, "CPUMenu_Debug_SubMenu_Sep1");
+		if (SegaCD_Started)
+			gtk_widget_show(MItem_Debug_Item);
+		else
+			gtk_widget_hide(MItem_Debug_Item);
+		
+		MItem_Debug_Item = lookup_widget(gens_window, "CPUMenu_Debug_SubMenu_Sep2");
+		if (_32X_Started)
+			gtk_widget_show(MItem_Debug_Item);
+		else
+			gtk_widget_hide(MItem_Debug_Item);
+	}
 #endif
 
 	// Country code
