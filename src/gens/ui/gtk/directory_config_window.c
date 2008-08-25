@@ -136,7 +136,7 @@ GtkWidget* create_directory_config_window(void)
 		sprintf(tmp, "label_%s", DirEntries[dir].tag);
 		label_direntry = gtk_label_new(DirEntries[dir].title);
 		gtk_widget_set_name(label_direntry, tmp);
-		gtk_widget_set_size_request(label_direntry, 85, -1);
+		gtk_widget_set_size_request(label_direntry, 100, -1);
 		gtk_misc_set_alignment(GTK_MISC(label_direntry), 0, 0.5);
 		gtk_widget_show(label_direntry);
 		gtk_table_attach(GTK_TABLE(table_frame_direntry), label_direntry,
