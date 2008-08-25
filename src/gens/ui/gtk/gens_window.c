@@ -158,7 +158,6 @@ GtkWidget* create_gens_window(void)
 	GtkWidget *vbox1;
 	GtkWidget *handlebox1;
 	
-	tooltips = gtk_tooltips_new();
 	accel_group = gtk_accel_group_new();
 	
 	// Create the GENS window.
