@@ -42,7 +42,9 @@ void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_bmf_Save_clicked(GtkButton *button, gpointer user_data)
 {
-	BIOSMiscFiles_Save();
-	gtk_widget_destroy(controller_config_window);
-	controller_config_window = NULL;
+	// TODO
+	STUB;
+	//BIOSMiscFiles_Save();
+	gtk_widget_destroy(bios_misc_files_window);
+	bios_misc_files_window = NULL;
 }
