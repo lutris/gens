@@ -144,7 +144,7 @@ GtkWidget* create_controller_config_window(void)
 		"Players 2B, 2C, and 2D are enabled only if\n"
 		"teamplayer is enabled on Port 2.\n\n"
 		"Only a few games support teamplayer (games which\n"
-		"have 4 player support, so don't forget to use the\n"
+		"have 4 player support), so don't forget to use the\n"
 		"\"load config\" and \"save config\" options. :)"
 		);
 	gtk_widget_set_name(label_note, "label_note");
