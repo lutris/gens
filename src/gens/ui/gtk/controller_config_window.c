@@ -38,11 +38,14 @@ GtkWidget* create_controller_config_window(void)
 {
 	GdkPixbuf *controller_config_window_icon_pixbuf;
 	GtkWidget *table_cc;
-	GtkWidget *frame_port_1;
-	GtkWidget *frame_port_2;
+	GtkWidget *frame_port_1, *frame_port_2;
 	GtkWidget *frame_note;
-	GtkWidget *label_note_heading;
-	GtkWidget *label_note;
+	GtkWidget *label_note_heading, *label_note;
+	GtkWidget *vbox_setting_keys;
+	GtkWidget *frame_setting_keys;
+	GtkWidget *label_setting_keys, *label_echo;
+	GtkWidget *hbutton_box_okcancel;
+	GtkWidget *button_OK, *button_Cancel;
 	
 	if (controller_config_window)
 	{
@@ -137,6 +140,61 @@ GtkWidget* create_controller_config_window(void)
 	gtk_widget_show(label_note);
 	GLADE_HOOKUP_OBJECT(controller_config_window, label_note, "label_note");
 	gtk_container_add(GTK_CONTAINER(frame_note), label_note);
+	
+	// VBox for the bottom right part of the Controller Configuration window.
+	vbox_setting_keys = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vbox_setting_keys, "vbox_setting_keys");
+	gtk_widget_show(vbox_setting_keys);
+	GLADE_HOOKUP_OBJECT(controller_config_window, vbox_setting_keys, "vbox_setting_keys");
+	gtk_table_attach(GTK_TABLE(table_cc), vbox_setting_keys, 1, 2, 1, 2,
+			 (GtkAttachOptions)(GTK_FILL),
+			 (GtkAttachOptions)(GTK_FILL), 0, 0);
+	
+	// Setting Keys frame.
+	frame_setting_keys = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_setting_keys, "frame_setting_keys");
+	gtk_container_set_border_width(GTK_CONTAINER(frame_setting_keys), 5);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_setting_keys), GTK_SHADOW_NONE);
+	gtk_widget_show(frame_setting_keys);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_setting_keys, "frame_setting_keys");
+	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), frame_setting_keys, TRUE, TRUE, 0);
+	
+	// Label for the Setting Keys frame.
+	label_setting_keys = gtk_label_new("<b><i>Setting Keys</i></b>");
+	gtk_widget_set_name(label_setting_keys, "label_setting_keys");
+	gtk_label_set_use_markup(GTK_LABEL(label_setting_keys), TRUE);
+	gtk_widget_show(label_setting_keys);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_setting_keys, "label_setting_keys");
+	gtk_frame_set_label_widget(GTK_FRAME(frame_setting_keys), label_setting_keys);
+	
+	// Label indicating what key needs to be pressed.
+	label_echo = gtk_label_new("");
+	gtk_widget_set_name(label_echo, "label_echo");
+	gtk_widget_show(label_echo);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_echo, "label_echo");
+	gtk_container_add(GTK_CONTAINER(frame_setting_keys), label_echo);
+	
+	// HButton Box for the buttons.
+	hbutton_box_okcancel = gtk_hbutton_box_new();
+	gtk_widget_set_name(hbutton_box_okcancel, "hbutton_box_okcancel");
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_okcancel), GTK_BUTTONBOX_END);
+	gtk_widget_show(hbutton_box_okcancel);
+	GLADE_HOOKUP_OBJECT(controller_config_window, hbutton_box_okcancel, "hbutton_box_okcancel");
+	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), hbutton_box_okcancel, FALSE, TRUE, 0);
+	
+	// Cancel button
+	button_Cancel = gtk_button_new_from_stock("gtk-cancel");
+	gtk_widget_set_name(button_Cancel, "button_Cancel");
+	gtk_widget_show(button_Cancel);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_Cancel, "button_Cancel");
+	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_Cancel, FALSE, FALSE, 0);
+	
+	// OK button
+	button_OK = gtk_button_new_from_stock("gtk-ok");
+	gtk_widget_set_name(button_OK, "button_OK");
+	gtk_widget_show(button_OK);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_OK, "button_OK");
+	gtk_box_pack_start(GTK_BOX(hbutton_box_okcancel), button_OK, FALSE, FALSE, 0);
 	
 	gtk_widget_show_all(controller_config_window);
 	return controller_config_window;
