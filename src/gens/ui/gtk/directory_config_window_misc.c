@@ -20,19 +20,19 @@
  */
 void Open_Directory_Config(void)
 {
-	GtkWidget *bmf;
+	GtkWidget *dc;
 	
-	bmf = create_directory_config_window();
-	if (!bmf)
+	dc = create_directory_config_window();
+	if (!dc)
 	{
 		// Either an error occurred while creating the Controller Configuration window,
 		// or the Controller Configuration window is already created.
 		return;
 	}
-	gtk_window_set_transient_for(GTK_WINDOW(bmf), GTK_WINDOW(gens_window));
+	gtk_window_set_transient_for(GTK_WINDOW(dc), GTK_WINDOW(gens_window));
 	
 	// Show the BIOS/Misc Files window.
-	gtk_widget_show_all(bmf);
+	gtk_widget_show_all(dc);
 }
 
 

@@ -1,5 +1,5 @@
 /**
- * GENS: (GTK+) BIOS/Misc Files Window Callbacks.
+ * GENS: (GTK+) Directory Configuration Window Callbacks.
  */
 
 #ifndef DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
