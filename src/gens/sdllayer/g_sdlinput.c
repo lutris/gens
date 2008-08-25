@@ -77,7 +77,7 @@ static int keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
 {
 	SDL_Event sdlev;
 	
-	// Only grab keys from the Gens Window.
+	// Only grab keys from the Gens window.
 	if (grab != gens_window)
 		return 0;
 	
