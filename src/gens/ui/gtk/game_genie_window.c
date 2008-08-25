@@ -28,9 +28,6 @@
 
 GtkWidget *game_genie_window = NULL;
 
-GtkAccelGroup *accel_group;
-GtkTooltips *tooltips;
-
 
 // Macro to add a stock icon to a GtkButton.
 #define Button_AddStockIcon(ButtonWidget, ButtonWidgetName, IconWidget, IconName)		\

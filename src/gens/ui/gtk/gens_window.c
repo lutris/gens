@@ -35,7 +35,6 @@ GtkWidget *debugSeparators[2];
 #endif
 
 GtkAccelGroup *accel_group;
-GtkTooltips *tooltips;
 
 
 // Macro to create a menu item easily.

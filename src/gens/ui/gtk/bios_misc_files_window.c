@@ -29,7 +29,6 @@
 GtkWidget *bios_misc_files_window = NULL;
 
 GtkAccelGroup *accel_group;
-GtkTooltips *tooltips;
 
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
