@@ -73,13 +73,13 @@ close_joystick ()
  * @param func_data User data.
  * @return TRUE to stop processing this event; FALSE to allow GTK+ to process this event.
  */
-static int keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
+static gint keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
 {
 	SDL_Event sdlev;
 	
 	// Only grab keys from the Gens window.
 	if (grab != gens_window)
-		return 0;
+		return FALSE;
 	
 	switch(event->type)
 	{
@@ -102,7 +102,7 @@ static int keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
 	
-	return 0;
+	return FALSE;
 }
 
 int
