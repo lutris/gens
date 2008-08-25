@@ -17,6 +17,7 @@ struct BIOSMiscFileEntry_t
 {
 	const char* title;
 	const char* tag;
+	FileFilterType filter;
 	char* entry;
 };
 

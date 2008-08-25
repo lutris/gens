@@ -193,6 +193,8 @@ int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType f
 			UI_GTK_AddFilter_GYMFile(dialog);
 			break;
 	}
+	// All Files filter
+	Add_All_Files_Filter(filter, dialog);
 	
 	res = gtk_dialog_run(GTK_DIALOG(dialog));
 	if (res == GTK_RESPONSE_ACCEPT)
@@ -274,8 +276,6 @@ void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, raw);
 	gtk_file_filter_add_pattern(filter, bin);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-	
-	Add_All_Files_Filter(filter, dialog);
 }
 
 /**
@@ -292,8 +292,6 @@ void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
 	gtk_file_filter_set_name(filter, "Savestate Files");
 	gtk_file_filter_add_pattern(filter, gs);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-
-	Add_All_Files_Filter(filter, dialog);
 }
 
 
@@ -317,8 +315,6 @@ void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, chd);
 	gtk_file_filter_add_pattern(filter, raw);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-	
-	Add_All_Files_Filter(filter, dialog);
 }
 
 
@@ -336,8 +332,6 @@ void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
 	gtk_file_filter_set_name(filter, "Gens Config File");
 	gtk_file_filter_add_pattern(filter, cfg);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-	
-	Add_All_Files_Filter(filter, dialog);
 }
 
 
@@ -355,6 +349,4 @@ void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
 	gtk_file_filter_set_name(filter, "GYM File");
 	gtk_file_filter_add_pattern(filter, cfg);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
-	
-	Add_All_Files_Filter(filter, dialog);
 }

@@ -12,11 +12,12 @@ extern "C" {
 
 typedef enum
 {
-	ROMFile		= 0,
-	SavestateFile	= 1,
-	CDImage		= 2,
-	ConfigFile	= 3,
-	GYMFile		= 4,
+	AnyFile		= 0,
+	ROMFile		= 1,
+	SavestateFile	= 2,
+	CDImage		= 3,
+	ConfigFile	= 4,
+	GYMFile		= 5,
 } FileFilterType;
 
 // Include the OS-specific common UI file.
