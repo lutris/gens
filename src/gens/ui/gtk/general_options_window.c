@@ -94,9 +94,9 @@ GtkAccelGroup *accel_group;
 const char* MsgColors[13] =
 {
 	"White", "#FFFFFF", "#000000",
-	"Blue",  "#FF0000", "#FFFFFF",
+	"Blue",  "#0000FF", "#FFFFFF",
 	"Green", "#00FF00", "#000000",
-	"Red",   "#0000FF", "#000000",
+	"Red",   "#FF0000", "#000000",
 	NULL,
 };
 
