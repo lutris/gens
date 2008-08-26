@@ -1,5 +1,5 @@
 /**
- * GENS: (GTK+) Color Adjust Window - Miscellaneous Functions.
+ * GENS: (GTK+) Select CD-ROM Window - Miscellaneous Functions.
  */
 
 #ifndef GTK_SELECT_CDROM_WINDOW_MISC_H
