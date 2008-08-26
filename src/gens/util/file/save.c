@@ -59,9 +59,9 @@ extern char preloaded_tracks [100], played_tracks_linear [101]; // added for syn
 #define DIR_SEPARATOR '/'
 
 int Current_State = 0;
-char State_Dir[1024] = "";
-char SRAM_Dir[1024] = "";
-char BRAM_Dir[1024] = "";
+char State_Dir[GENS_PATH_MAX] = "";
+char SRAM_Dir[GENS_PATH_MAX] = "";
+char BRAM_Dir[GENS_PATH_MAX] = "";
 unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
 
 
