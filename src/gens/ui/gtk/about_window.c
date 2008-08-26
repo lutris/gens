@@ -72,12 +72,10 @@ GtkWidget* create_about_window(void)
 	}
 	
 	// Callbacks for if the window is closed.
-	/*
 	g_signal_connect((gpointer)about_window, "delete_event",
 			 G_CALLBACK(on_about_window_close), NULL);
 	g_signal_connect((gpointer)about_window, "destroy_event",
 			 G_CALLBACK(on_about_window_close), NULL);
-	*/
 	
 	// Get the dialog VBox.
 	vbox_about_dialog = GTK_DIALOG(about_window)->vbox;
@@ -157,7 +155,7 @@ GtkWidget* create_about_window(void)
 	GTK_WIDGET_SET_FLAGS(button_about_OK, GTK_CAN_DEFAULT);
 	gtk_widget_show(button_about_OK);
 	gtk_dialog_add_action_widget(GTK_DIALOG(about_window), button_about_OK, GTK_RESPONSE_OK);
-	//AddButtonCallback_Clicked(button_about_OK, on_button_about_OK_clicked);
+	AddButtonCallback_Clicked(button_about_OK, on_button_about_OK_clicked);
 	gtk_widget_add_accelerator(button_about_OK, "activate", accel_group,
 				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	gtk_widget_add_accelerator(button_about_OK, "activate", accel_group,
@@ -169,4 +167,25 @@ GtkWidget* create_about_window(void)
 	
 	gtk_widget_show_all(about_window);
 	return about_window;
+}
+
+
+/**
+ * Window is closed.
+ */
+gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtk_widget_destroy(about_window);
+	about_window = NULL;
+	return FALSE;
+}
+
+
+/**
+ * OK
+ */
+void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
+{
+	gtk_widget_destroy(about_window);
+	about_window = NULL;
 }

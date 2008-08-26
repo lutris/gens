@@ -15,6 +15,9 @@ extern "C" {
 GtkWidget* create_about_window(void); 
 extern GtkWidget *about_window;
 
+gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+void on_button_about_OK_clicked(GtkButton *button, gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif
