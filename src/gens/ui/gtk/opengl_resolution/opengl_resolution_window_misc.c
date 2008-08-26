@@ -13,8 +13,6 @@
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "g_palette.h"
-#include "vdp_io.h"
 #include "g_main.h"
 #include "g_sdldraw.h"
 
@@ -25,6 +23,7 @@
 void Open_OpenGL_Resolution(void)
 {
 	GtkWidget *glres;
+	GtkWidget *spinbutton_width, *spinbutton_height;
 	
 	glres = create_opengl_resolution_window();
 	if (!glres)
@@ -36,7 +35,10 @@ void Open_OpenGL_Resolution(void)
 	gtk_window_set_transient_for(GTK_WINDOW(glres), GTK_WINDOW(gens_window));
 	
 	// Load settings.
-	// TODO
+	spinbutton_width = lookup_widget(glres, "spinbutton_width");
+	gtk_spin_button_set_value(spinbutton_width, Width_gl);
+	spinbutton_height = lookup_widget(glres, "spinbutton_height");
+	gtk_spin_button_set_value(spinbutton_height, Height_gl);
 	
 	// Show the OpenGL Resolution window.
 	gtk_widget_show_all(glres);
@@ -48,5 +50,14 @@ void Open_OpenGL_Resolution(void)
  */
 void GLRes_Save(void)
 {
-	// TODO
+	GtkWidget *spinbutton_width, *spinbutton_height;
+	
+	// Save settings.
+	// TODO: If this is a predefined resolution,
+	// uncheck "Custom" and check the predefined resolution.
+	spinbutton_width = lookup_widget(opengl_resolution_window, "spinbutton_width");
+	spinbutton_height = lookup_widget(opengl_resolution_window, "spinbutton_height");
+	
+	Set_GL_Resolution(gtk_spin_button_get_value(spinbutton_width),
+			  gtk_spin_button_get_value(spinbutton_height));
 }
