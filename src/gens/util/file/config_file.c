@@ -405,7 +405,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	}
 	
 	// SegaCD
-	GetPrivateProfileString("General", "CD Drive", Rom_Dir,
+	// TODO: Use a better default for the CD drive.
+	GetPrivateProfileString("General", "CD Drive", "/dev/sr0",
 				&CDROM_DEV[0], 16, Conf_File);
 	CDROM_SPEED = GetPrivateProfileInt("General", "CD Speed", 0, Conf_File);
 	
