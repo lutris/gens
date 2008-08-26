@@ -27,8 +27,8 @@ const char* CDROM_Prefix[4] = {"/dev/cdrom", "/dev/scd", "/dev/sr", NULL};
 void Open_Select_CDROM(void)
 {
 	GtkWidget *SelCD;
-	GtkWidget *combo_drive;
-	int curPrefix, i; char tmp[64];
+	GtkWidget *combo_drive, *combo_speed;
+	int curPrefix, driveSpeed, i; char tmp[64];
 	struct stat fileStat;
 	
 	SelCD = create_select_cdrom_window();
@@ -81,6 +81,21 @@ void Open_Select_CDROM(void)
 		// Next prefix.
 		curPrefix++;
 	}
+	
+	// Drive speed.
+	driveSpeed = 0;
+	for (i = 0; i < 14; i++)
+	{
+		if (CD_DriveSpeed[i] < 0)
+			break;
+		else if (CD_DriveSpeed[i] == CDROM_SPEED)
+		{
+			driveSpeed = i;
+			break;
+		}
+	}
+	combo_speed = lookup_widget(SelCD, "combo_speed");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_speed), driveSpeed);
 	
 	// Show the Select CD-ROM window.
 	gtk_widget_show_all(SelCD);
