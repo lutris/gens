@@ -391,8 +391,6 @@ static void Deinterleave_SMD(void)
  */
 void Fill_Infos(void)
 {
-	int i;
-	
 	// Finally we do the IPS patch here, we can have the translated game name
 	IPS_Patching ();
 	
@@ -404,36 +402,20 @@ void Fill_Infos(void)
 	memcpy(My_Rom->Rom_Name_W,	&Rom_Data[0x150], 48);
 	memcpy(My_Rom->Type,		&Rom_Data[0x180], 2);
 	memcpy(My_Rom->Version,		&Rom_Data[0x182], 12);
-	My_Rom->Checksum = (Rom_Data[398] << 8) | Rom_Data[399];
+	My_Rom->Checksum		= be16_to_cpu_from_ptr(&Rom_Data[0x18E]);
 	memcpy(My_Rom->IO_Support,	&Rom_Data[0x190], 16);
-	
-	My_Rom->Rom_Start_Adress = Rom_Data[416] << 24;
-	My_Rom->Rom_Start_Adress |= Rom_Data[417] << 16;
-	My_Rom->Rom_Start_Adress |= Rom_Data[418] << 8;
-	My_Rom->Rom_Start_Adress |= Rom_Data[419];
-	
-	My_Rom->Rom_End_Adress = Rom_Data[420] << 24;
-	My_Rom->Rom_End_Adress |= Rom_Data[421] << 16;
-	My_Rom->Rom_End_Adress |= Rom_Data[422] << 8;
-	My_Rom->Rom_End_Adress |= Rom_Data[423];
-	
-	My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
-	
+	My_Rom->Rom_Start_Adress	= be32_to_cpu_from_ptr(&Rom_Data[0x1A0]);
+	My_Rom->Rom_End_Adress		= be32_to_cpu_from_ptr(&Rom_Data[0x1A4]);
 	memcpy(My_Rom->Ram_Infos,	&Rom_Data[0x1A8], 12);
-	
-	My_Rom->Ram_Start_Adress = Rom_Data[436] << 24;
-	My_Rom->Ram_Start_Adress |= Rom_Data[437] << 16;
-	My_Rom->Ram_Start_Adress |= Rom_Data[438] << 8;
-	My_Rom->Ram_Start_Adress |= Rom_Data[439];
-	
-	My_Rom->Ram_End_Adress = Rom_Data[440] << 24;
-	My_Rom->Ram_End_Adress |= Rom_Data[441] << 16;
-	My_Rom->Ram_End_Adress |= Rom_Data[442] << 8;
-	My_Rom->Ram_End_Adress |= Rom_Data[443];
-	
+	My_Rom->Ram_Start_Adress	= be32_to_cpu_from_ptr(&Rom_Data[0x1B4]);
+	My_Rom->Ram_End_Adress		= be32_to_cpu_from_ptr(&Rom_Data[0x1B8]);
 	memcpy(My_Rom->Modem_Infos,	&Rom_Data[0x1BC], 12);
 	memcpy(My_Rom->Description,	&Rom_Data[0x1C8], 40);
 	memcpy(My_Rom->Countries,	&Rom_Data[0x1F0], 4);
+	
+	// Calculate internal ROM size using the ROM header's
+	// starting address and ending address.
+	My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
 	
 	// Null-terminate the strings.
 	My_Rom->Console_Name[16] = 0;
