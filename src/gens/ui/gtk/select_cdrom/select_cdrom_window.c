@@ -142,6 +142,7 @@ GtkWidget* create_select_cdrom_window(void)
 	// Add the dropdown for speed selection.
 	combo_speed = gtk_combo_box_new_text();
 	gtk_widget_set_name(combo_speed, "combo_speed");
+	gtk_widget_set_size_request(combo_speed, 100, -1);
 	for (i = 0; i < 14; i++)
 	{
 		if (CD_DriveSpeed[i] < 0)
