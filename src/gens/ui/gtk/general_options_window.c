@@ -91,12 +91,26 @@ GtkWidget *general_options_window = NULL;
 GtkAccelGroup *accel_group;
 
 // Message colors.
-const char* MsgColors[13] =
+const char* MsgColors[] =
 {
 	"White", "#FFFFFF", "#000000",
 	"Blue",  "#0000FF", "#FFFFFF",
 	"Green", "#00FF00", "#000000",
 	"Red",   "#FF0000", "#000000",
+	NULL,
+};
+
+// Intro effect colors.
+const char* IntroEffectColors[] =
+{
+	"Black",  "#000000", "#FFFFFF",
+	"Blue",   "#0000FF", "#FFFFFF",
+	"Green",  "#00FF00", "#000000",
+	"Cyan",   "#00FFFF", "#000000",
+	"Red",    "#FF0000", "#000000",
+	"Purple", "#FF00FF", "#000000",
+	"Yellow", "#FFFF00", "#000000",
+	"White",  "#FFFFFF", "#000000",
 	NULL,
 };
 
@@ -246,7 +260,7 @@ GtkWidget* create_general_options_window(void)
 	gtk_container_add(GTK_CONTAINER(frame_misc), hbox_misc_intro_colors);
 	GLADE_HOOKUP_OBJECT(general_options_window, hbox_misc_intro_colors, "hbox_misc_intro_colors");
 	create_color_radio_buttons("Intro Effect Color:", "misc_intro_color",
-				   MsgColors, 4, hbox_misc_intro_colors);
+				   IntroEffectColors, 8, hbox_misc_intro_colors);
 	
 	gtk_widget_show_all(general_options_window);
 	return general_options_window;
@@ -283,7 +297,7 @@ static void create_color_radio_buttons(const char* title,
 	// Color Buttons
 	for (i = 0; i < num; i++)
 	{
-		if (!MsgColors[i * 3])
+		if (!colors[i * 3])
 			return;
 		
 		sprintf(tmp, "%s_%s", groupName, colors[i * 3]);
