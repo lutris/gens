@@ -345,29 +345,44 @@ int Detect_Format(const char *Name)
 }
 
 
-void
-De_Interleave (void)
+/**
+ * Deinterleave_SMD(): Deinterleaves an SMD-format ROM.
+ */
+static void Deinterleave_SMD(void)
 {
-  unsigned char buf[16384];
-  unsigned char *Src;
-  int i, j, Nb_Blocks, ptr;
-
-  Src = &Rom_Data[0x200];
-
-  Rom_Size -= 512;
-
-  Nb_Blocks = Rom_Size / 16384;
-
-  for (ptr = 0, i = 0; i < Nb_Blocks; i++, ptr += 16384)
-    {
-      memcpy (buf, &Src[ptr], 16384);
-
-      for (j = 0; j < 8192; j++)
+	unsigned char buf[0x4000];
+	unsigned char *Src;
+	int i, j, Nb_Blocks, ptr;
+	
+	// SMD interleave format has a 512-byte header at the beginning of the ROM.
+	// After the header, the ROM is broken into 16 KB chunks.
+	// The first 8 KB of each 16 KB block are the odd bytes.
+	// The second 8 KB of each 16 KB block are the even bytes.
+	
+	// Start at 0x200 bytes (after the SMD header).
+	Src = &Rom_Data[0x200];
+	
+	// Subtract the SMD header length from the ROM size.
+	Rom_Size -= 0x200;
+	
+	// Determine how many 16 KB blocks are in the ROM.
+	Nb_Blocks = Rom_Size / 0x4000;
+	
+	// Deinterleave the blocks.
+	for (ptr = 0, i = 0; i < Nb_Blocks; i++, ptr += 0x4000)
 	{
-	  Rom_Data[ptr + (j << 1) + 1] = buf[j];
-	  Rom_Data[ptr + (j << 1)] = buf[j + 8192];
+		// Copy the current 16 KB block to a temporary buffer.
+		memcpy(buf, &Src[ptr], 0x4000);
+		
+		// Go through both 8 KB sub-blocks at the same time.
+		for (j = 0; j < 0x2000; j++)
+		{
+			// Odd byte, first 8 KB
+			Rom_Data[ptr + (j << 1) + 1] = buf[j];
+			// Even byte, second 8 KB
+			Rom_Data[ptr + (j << 1)] = buf[j + 0x2000];
+		}
 	}
-    }
 }
 
 
@@ -616,7 +631,7 @@ Load_Rom (char *Name, int inter)
 
   Rom_Size = Size;
   if (inter)
-    De_Interleave ();
+	Deinterleave_SMD();
   Fill_Infos ();
 
   return My_Rom;
@@ -678,7 +693,7 @@ struct Rom *Load_Rom_Gz(const char *filename, int interleaved)
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)
-		De_Interleave();
+		Deinterleave_SMD();
 	
 	Fill_Infos();
 	return My_Rom;
@@ -808,7 +823,7 @@ struct Rom *Load_Rom_Zipped(const char *Name, int interleaved)
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)
-		De_Interleave();
+		Deinterleave_SMD();
 	
 	Fill_Infos();
 	
