@@ -49,7 +49,6 @@ GtkWidget *create_pixmap(GtkWidget *widget, const gchar *filename);
 	gtk_container_set_border_width(GTK_CONTAINER(Widget), 5);				\
 	gtk_window_set_title(GTK_WINDOW(Widget), Title);					\
 	gtk_window_set_position(GTK_WINDOW(Widget), GTK_WIN_POS_CENTER);			\
-	gtk_window_set_type_hint(GTK_WINDOW(Widget), GDK_WINDOW_TYPE_HINT_DIALOG);		\
 	GLADE_HOOKUP_OBJECT_NO_REF(Widget, Widget, Name);					\
 												\
 	IconWidget = create_pixbuf(IconFilename);						\
