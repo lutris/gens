@@ -263,14 +263,6 @@ static void create_color_radio_buttons(const char* groupName,
 	gtk_box_pack_start(GTK_BOX(container), label_color, TRUE, TRUE, 0);
 	GLADE_HOOKUP_OBJECT(general_options_window, label_color, tmp);
 	
-	// HButtonBox
-	sprintf(tmp, "hbutton_box_%s", groupName);
-	hbutton_box_color = gtk_hbutton_box_new();
-	gtk_widget_set_name(hbutton_box_color, tmp);
-	gtk_widget_show(hbutton_box_color);
-	gtk_box_pack_start(GTK_BOX(container), hbutton_box_color, TRUE, TRUE, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbutton_box_color, tmp);
-	
 	// Color Buttons
 	for (i = 0; i < num; i++)
 	{
@@ -283,9 +275,8 @@ static void create_color_radio_buttons(const char* groupName,
 		gtk_widget_set_name(button_color, tmp);
 		gdk_color_parse(colors[(i * 2) + 1], &tmpColor);
 		gtk_widget_modify_bg(button_color, GTK_STATE_NORMAL, &tmpColor);
-		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(button_color), FALSE);
 		gtk_widget_show(button_color);
-		gtk_box_pack_start(GTK_BOX(hbutton_box_color), button_color, TRUE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(container), button_color, TRUE, TRUE, 0);
 		GLADE_HOOKUP_OBJECT(general_options_window, button_color, tmp);
 	}	
 }
