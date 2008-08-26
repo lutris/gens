@@ -1,6 +1,10 @@
 #ifndef _GENS_H
 #define _GENS_H
 
+// GENS version information
+#define GENS_APPNAME "Gens/GS"
+#define GENS_VERSION "2.15.2/GS-m0"
+
 #include "rom.h"
 
 //#define CLOCK_NTSC 53700000			// More accurate for division round
