@@ -36,9 +36,9 @@ void Open_OpenGL_Resolution(void)
 	
 	// Load settings.
 	spinbutton_width = lookup_widget(GLRes, "spinbutton_width");
-	gtk_spin_button_set_value(spinbutton_width, Width_gl);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbutton_width), Width_gl);
 	spinbutton_height = lookup_widget(GLRes, "spinbutton_height");
-	gtk_spin_button_set_value(spinbutton_height, Height_gl);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbutton_height), Height_gl);
 	
 	// Show the OpenGL Resolution window.
 	gtk_widget_show_all(GLRes);
@@ -58,6 +58,6 @@ void GLRes_Save(void)
 	spinbutton_width = lookup_widget(opengl_resolution_window, "spinbutton_width");
 	spinbutton_height = lookup_widget(opengl_resolution_window, "spinbutton_height");
 	
-	Set_GL_Resolution(gtk_spin_button_get_value(spinbutton_width),
-			  gtk_spin_button_get_value(spinbutton_height));
+	Set_GL_Resolution(gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbutton_width)),
+			  gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbutton_height)));
 }
