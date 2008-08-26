@@ -2,7 +2,7 @@
 #define _GENS_H
 
 // GENS version information
-#define GENS_APPNAME "Gens/GS"
+#define GENS_APPNAME "Gens"
 #define GENS_VERSION "2.15.2/GS-m0"
 
 #include "rom.h"
