@@ -42,8 +42,7 @@ void on_button_go_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_go_Save_clicked(GtkButton *button, gpointer user_data)
 {
-	STUB;
-	//General_Options_Save();
+	General_Options_Save();
 	gtk_widget_destroy(general_options_window);
 	general_options_window = NULL;
 }

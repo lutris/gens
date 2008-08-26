@@ -630,7 +630,7 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	create_general_options_window();
+	Open_General_Options();
 }
 
 

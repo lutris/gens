@@ -25,8 +25,8 @@ void Open_BIOS_Misc_Files(void)
 	bmf = create_bios_misc_files_window();
 	if (!bmf)
 	{
-		// Either an error occurred while creating the Controller Configuration window,
-		// or the Controller Configuration window is already created.
+		// Either an error occurred while creating the BIOS/Misc Files window,
+		// or the BIOS/Misc Files window is already created.
 		return;
 	}
 	gtk_window_set_transient_for(GTK_WINDOW(bmf), GTK_WINDOW(gens_window));

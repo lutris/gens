@@ -296,7 +296,6 @@ GtkWidget* create_general_options_window(void)
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(general_options_window), accel_group);
 	
-	gtk_widget_show_all(general_options_window);
 	return general_options_window;
 }
 
