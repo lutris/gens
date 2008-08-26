@@ -386,83 +386,84 @@ static void Deinterleave_SMD(void)
 }
 
 
-void
-Fill_Infos (void)
+/**
+ * Fill_Infos(): Fill in game information from the ROM header.
+ */
+void Fill_Infos(void)
 {
-  int i;
-
-  // Finally we do the IPS patch here, we can have the translated game name
-
-  IPS_Patching ();
-
-  for (i = 0; i < 16; i++)
-    My_Rom->Console_Name[i] = Rom_Data[i + 256];
-
-  for (i = 0; i < 16; i++)
-    My_Rom->Copyright[i] = Rom_Data[i + 272];
-
-  for (i = 0; i < 48; i++)
-    My_Rom->Rom_Name[i] = Rom_Data[i + 288];
-
-  for (i = 0; i < 48; i++)
-    My_Rom->Rom_Name_W[i] = Rom_Data[i + 336];
-
-  My_Rom->Type[0] = Rom_Data[384];
-  My_Rom->Type[1] = Rom_Data[385];
-
-  for (i = 0; i < 12; i++)
-    My_Rom->Version[i] = Rom_Data[i + 386];
-
-  My_Rom->Checksum = (Rom_Data[398] << 8) | Rom_Data[399];
-
-  for (i = 0; i < 16; i++)
-    My_Rom->IO_Support[i] = Rom_Data[i + 400];
-
-  My_Rom->Rom_Start_Adress = Rom_Data[416] << 24;
-  My_Rom->Rom_Start_Adress |= Rom_Data[417] << 16;
-  My_Rom->Rom_Start_Adress |= Rom_Data[418] << 8;
-  My_Rom->Rom_Start_Adress |= Rom_Data[419];
-
-  My_Rom->Rom_End_Adress = Rom_Data[420] << 24;
-  My_Rom->Rom_End_Adress |= Rom_Data[421] << 16;
-  My_Rom->Rom_End_Adress |= Rom_Data[422] << 8;
-  My_Rom->Rom_End_Adress |= Rom_Data[423];
-
-  My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
-
-  for (i = 0; i < 12; i++)
-    My_Rom->Ram_Infos[i] = Rom_Data[i + 424];
-
-  My_Rom->Ram_Start_Adress = Rom_Data[436] << 24;
-  My_Rom->Ram_Start_Adress |= Rom_Data[437] << 16;
-  My_Rom->Ram_Start_Adress |= Rom_Data[438] << 8;
-  My_Rom->Ram_Start_Adress |= Rom_Data[439];
-
-  My_Rom->Ram_End_Adress = Rom_Data[440] << 24;
-  My_Rom->Ram_End_Adress |= Rom_Data[441] << 16;
-  My_Rom->Ram_End_Adress |= Rom_Data[442] << 8;
-  My_Rom->Ram_End_Adress |= Rom_Data[443];
-
-  for (i = 0; i < 12; i++)
-    My_Rom->Modem_Infos[i] = Rom_Data[i + 444];
-
-  for (i = 0; i < 40; i++)
-    My_Rom->Description[i] = Rom_Data[i + 456];
-
-  for (i = 0; i < 3; i++)
-    My_Rom->Countries[i] = Rom_Data[i + 496];
-
-  My_Rom->Console_Name[16] = 0;
-  My_Rom->Copyright[16] = 0;
-  My_Rom->Rom_Name[48] = 0;
-  My_Rom->Rom_Name_W[48] = 0;
-  My_Rom->Type[2] = 0;
-  My_Rom->Version[12] = 0;
-  My_Rom->IO_Support[12] = 0;
-  My_Rom->Ram_Infos[12] = 0;
-  My_Rom->Modem_Infos[12] = 0;
-  My_Rom->Description[40] = 0;
-  My_Rom->Countries[3] = 0;
+	int i;
+	
+	// Finally we do the IPS patch here, we can have the translated game name
+	IPS_Patching ();
+	
+	for (i = 0; i < 16; i++)
+		My_Rom->Console_Name[i] = Rom_Data[i + 256];
+	
+	for (i = 0; i < 16; i++)
+		My_Rom->Copyright[i] = Rom_Data[i + 272];
+	
+	for (i = 0; i < 48; i++)
+		My_Rom->Rom_Name[i] = Rom_Data[i + 288];
+	
+	for (i = 0; i < 48; i++)
+		My_Rom->Rom_Name_W[i] = Rom_Data[i + 336];
+	
+	My_Rom->Type[0] = Rom_Data[384];
+	My_Rom->Type[1] = Rom_Data[385];
+	
+	for (i = 0; i < 12; i++)
+	My_Rom->Version[i] = Rom_Data[i + 386];
+	
+	My_Rom->Checksum = (Rom_Data[398] << 8) | Rom_Data[399];
+	
+	for (i = 0; i < 16; i++)
+		My_Rom->IO_Support[i] = Rom_Data[i + 400];
+	
+	My_Rom->Rom_Start_Adress = Rom_Data[416] << 24;
+	My_Rom->Rom_Start_Adress |= Rom_Data[417] << 16;
+	My_Rom->Rom_Start_Adress |= Rom_Data[418] << 8;
+	My_Rom->Rom_Start_Adress |= Rom_Data[419];
+	
+	My_Rom->Rom_End_Adress = Rom_Data[420] << 24;
+	My_Rom->Rom_End_Adress |= Rom_Data[421] << 16;
+	My_Rom->Rom_End_Adress |= Rom_Data[422] << 8;
+	My_Rom->Rom_End_Adress |= Rom_Data[423];
+	
+	My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
+	
+	for (i = 0; i < 12; i++)
+		My_Rom->Ram_Infos[i] = Rom_Data[i + 424];
+	
+	My_Rom->Ram_Start_Adress = Rom_Data[436] << 24;
+	My_Rom->Ram_Start_Adress |= Rom_Data[437] << 16;
+	My_Rom->Ram_Start_Adress |= Rom_Data[438] << 8;
+	My_Rom->Ram_Start_Adress |= Rom_Data[439];
+	
+	My_Rom->Ram_End_Adress = Rom_Data[440] << 24;
+	My_Rom->Ram_End_Adress |= Rom_Data[441] << 16;
+	My_Rom->Ram_End_Adress |= Rom_Data[442] << 8;
+	My_Rom->Ram_End_Adress |= Rom_Data[443];
+	
+	for (i = 0; i < 12; i++)
+		My_Rom->Modem_Infos[i] = Rom_Data[i + 444];
+	
+	for (i = 0; i < 40; i++)
+		My_Rom->Description[i] = Rom_Data[i + 456];
+	
+	for (i = 0; i < 3; i++)
+		My_Rom->Countries[i] = Rom_Data[i + 496];
+	
+	My_Rom->Console_Name[16] = 0;
+	My_Rom->Copyright[16] = 0;
+	My_Rom->Rom_Name[48] = 0;
+	My_Rom->Rom_Name_W[48] = 0;
+	My_Rom->Type[2] = 0;
+	My_Rom->Version[12] = 0;
+	My_Rom->IO_Support[12] = 0;
+	My_Rom->Ram_Infos[12] = 0;
+	My_Rom->Modem_Infos[12] = 0;
+	My_Rom->Description[40] = 0;
+	My_Rom->Countries[3] = 0;
 }
 
 
