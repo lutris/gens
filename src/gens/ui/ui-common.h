@@ -20,19 +20,24 @@ typedef enum
 	GYMFile		= 5,
 } FileFilterType;
 
-// Include the OS-specific common UI file.
-#if (defined(__linux__))
-#include "ui-common_gtk.h"
-#elif (defined(__WIN32__))
-#error TODO: Add Win32 support.
-#else
-#error Unsupported operating system.
-#endif
-
 
 void UI_Set_Window_Title_Idle(void);
 void UI_Set_Window_Title_Game(const char* system, const char* game);
 void UI_Set_Window_Title_Init(const char* system, int reinit);
+
+
+// The following functions are implemented by the OS-specific ui-common_*.c file.
+void UI_Set_Window_Title(const char* title);
+void UI_Set_Window_Visibility (int visibility);
+
+void UI_Hide_Embedded_Window(void);
+void UI_Show_Embedded_Window(int w, int h);
+int UI_Get_Embedded_WindowID(void);
+
+void UI_MsgBox(const char* msg, const char* title);
+int UI_OpenFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
+int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
+int UI_SelectDir(const char* title, const char* initDir, char* retSelectedDir);
 
 
 #ifdef __cplusplus

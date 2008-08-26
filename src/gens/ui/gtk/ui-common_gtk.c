@@ -9,7 +9,6 @@
 
 #include "g_main.h"
 #include "ui-common.h"
-#include "ui-common_gtk.h"
 #include "gtk-misc.h"
 
 
