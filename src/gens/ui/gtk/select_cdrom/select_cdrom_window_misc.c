@@ -3,6 +3,7 @@
  */
 
 
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -91,8 +92,17 @@ void Open_Select_CDROM(void)
  */
 void SelCD_Save(void)
 {
-	GtkWidget *spinbutton_width, *spinbutton_height;
-	
+	GtkWidget *combo_drive;
+	gchar *tmpDrive;
 	// Save settings.
-	// TODO
+	
+	// CD-ROM drive
+	combo_drive = lookup_widget(select_cdrom_window, "combo_drive");
+	tmpDrive = strdup(gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo_drive)));
+	if (strlen(tmpDrive))
+	{
+		strncpy(CDROM_DEV, tmpDrive, 63);
+		CDROM_DEV[63] = 0x00;
+	}
+	free(tmpDrive);
 }
