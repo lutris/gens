@@ -12,6 +12,8 @@ extern "C" {
 #include <gtk/gtk.h>
 #include "ui-common.h"
 
+extern int CD_DriveSpeed[15];
+
 GtkWidget* create_select_cdrom_window(void); 
 extern GtkWidget *select_cdrom_window;
 

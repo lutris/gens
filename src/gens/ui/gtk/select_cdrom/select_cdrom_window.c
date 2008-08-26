@@ -25,6 +25,9 @@
 #include "gtk-misc.h"
 
 
+// Drive speed definitions. 0 == automatic; -1 == end of list
+int CD_DriveSpeed[15] = {0, 1, 2, 4, 8, 10, 12, 20, 32, 36, 40, 48, 50, 52, -1};
+
 GtkWidget *select_cdrom_window = NULL;
 
 GtkAccelGroup *accel_group;
@@ -40,6 +43,7 @@ GtkWidget* create_select_cdrom_window(void)
 	GtkWidget *vbox_SelCD;
 	GtkWidget *frame_drive, *label_frame_drive;
 	GtkWidget *hbox_drive, *label_drive, *combo_drive;
+	GtkWidget *hbox_speed, *label_speed, *combo_speed;
 	GtkWidget *hbutton_box_bottomRow;
 	GtkWidget *button_SelCD_Cancel, *button_SelCD_Apply, *button_SelCD_Save;
 	
@@ -86,7 +90,8 @@ GtkWidget* create_select_cdrom_window(void)
 	// Add a label to the drive selection frame.
 	label_frame_drive = gtk_label_new(
 		"Typical values are <i>/dev/cdrom</i>, "
-		"<i>/dev/sr0</i>, or <i>/dev/hdc</i>");
+		"<i>/dev/sr0</i>, or <i>/dev/hdc</i>"
+		);
 	gtk_widget_set_name(label_frame_drive, "label_frame_drive");
 	gtk_label_set_use_markup(GTK_LABEL(label_frame_drive), TRUE);
 	gtk_widget_show(label_frame_drive);
@@ -113,7 +118,25 @@ GtkWidget* create_select_cdrom_window(void)
 	gtk_widget_show(combo_drive);
 	gtk_box_pack_start(GTK_BOX(hbox_drive), combo_drive, TRUE, TRUE, 0);
 	gtk_entry_set_max_length(GTK_ENTRY(GTK_BIN(combo_drive)->child), 63);
+	gtk_label_set_mnemonic_widget(GTK_LABEL(label_drive), combo_drive);
 	GLADE_HOOKUP_OBJECT(select_cdrom_window, combo_drive, "combo_drive");
+	
+	// Add an HBox for speed selection.
+	hbox_speed = gtk_hbox_new(FALSE, 0);
+	gtk_widget_set_name(hbox_speed, "hbox_speed");
+	gtk_widget_show(hbox_speed);
+	gtk_box_pack_start(GTK_BOX(vbox_SelCD), hbox_speed, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, hbox_speed, "hbox_speed");
+	
+	// Speed label
+	label_speed = gtk_label_new_with_mnemonic(
+		"Manual CD-ROM speed selection.\n"
+		"You may need to restart Gens for\n"
+		"this setting to take effect."
+		);
+	gtk_widget_show(label_speed);
+	gtk_box_pack_start(GTK_BOX(hbox_speed), label_speed, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, label_speed, "label_speed");
 	
 	// Create an HButton Box for the buttons on the bottom.
 	hbutton_box_bottomRow = gtk_hbutton_box_new();
