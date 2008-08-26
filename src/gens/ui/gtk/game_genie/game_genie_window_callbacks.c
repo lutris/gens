@@ -138,8 +138,6 @@ void on_button_gg_Cancel_clicked(GtkButton *button, gpointer user_data)
 void on_button_gg_Apply_clicked(GtkButton *button, gpointer user_data)
 {
 	GG_SaveCodes();
-	gtk_widget_destroy(game_genie_window);
-	game_genie_window = NULL;
 }
 
 
