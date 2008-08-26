@@ -503,7 +503,7 @@ void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container)
 		if (resolutions[i][0] > 0)
 			sprintf(ResName, "%dx%d", resolutions[i][0], resolutions[i][1]);
 		else
-			strcpy(ResName, "Custom");
+			strcpy(ResName, "Custom...");
 		
 		sprintf(ObjName, "GraphicsMenu_OpenGLRes_SubMenu_%s", ResName);
 		NewMenuItem_Radio(ResItem, ResName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), ResGroup);
