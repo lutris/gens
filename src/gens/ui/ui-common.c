@@ -12,7 +12,7 @@
  */
 void UI_Set_Window_Title_Idle(void)
 {
-	UI_Set_Window_Title(GENS_APPNAME " - Idle");
+	UI_Set_Window_Title(GENS_APPNAME " " GENS_VERSION " - Idle");
 }
 
 
@@ -40,7 +40,7 @@ void UI_Set_Window_Title_Game(const char* systemName, const char* gameName)
 	condGameName[cgni] = 0x00;
 	
 	// Create the title.
-	sprintf(title, GENS_APPNAME " - %s: %s", systemName, condGameName);
+	sprintf(title, GENS_APPNAME " " GENS_VERSION " - %s: %s", systemName, condGameName);
 	
 	// Set the title.
 	UI_Set_Window_Title(title);
@@ -57,7 +57,7 @@ void UI_Set_Window_Title_Init(const char* system, int reinit)
 	char title[128];
 	
 	// Create the title.
-	sprintf(title, GENS_APPNAME " - %s: %s, please wait...", system,
+	sprintf(title, GENS_APPNAME " " GENS_VERSION " - %s: %s, please wait...", system,
 		(reinit ? "Reinitializing" : "Initializing"));
 	
 	// Set the title.
