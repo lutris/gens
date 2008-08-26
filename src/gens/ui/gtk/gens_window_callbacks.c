@@ -12,6 +12,7 @@
 #include "controller_config_window_misc.h"
 #include "bios_misc_files_window_misc.h"
 #include "general_options_window.h"
+#include "about_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -700,5 +701,5 @@ void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_d
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	create_about_window();
 }

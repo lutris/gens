@@ -209,6 +209,8 @@ gens_SOURCES = \
 		ui/gtk/general_options_window_callbacks.h \
 		ui/gtk/general_options_window_misc.c \
 		ui/gtk/general_options_window_misc.h \
+		ui/gtk/about_window.c \
+		ui/gtk/about_window.h \
 		emulator/parse.c \
 		emulator/parse.h
 ##		netplay/ccnet.c \
