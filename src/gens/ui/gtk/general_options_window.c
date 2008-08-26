@@ -139,6 +139,7 @@ GtkWidget* create_general_options_window(void)
 	GtkWidget *check_message_enable, *check_message_doublesized;
 	GtkWidget *check_message_transparency, *hbox_message_colors;
 	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_colors;
+	GtkWidget *hbutton_box_go_buttonRow, *button_go_Cancel, *button_go_Save;
 	
 	if (general_options_window)
 	{
@@ -261,6 +262,39 @@ GtkWidget* create_general_options_window(void)
 	GLADE_HOOKUP_OBJECT(general_options_window, hbox_misc_intro_colors, "hbox_misc_intro_colors");
 	create_color_radio_buttons("Intro Effect Color:", "misc_intro_color",
 				   IntroEffectColors, 8, hbox_misc_intro_colors);
+	
+	// HButton Box for the row of buttons on the bottom of the window
+	hbutton_box_go_buttonRow = gtk_hbutton_box_new();
+	gtk_widget_set_name(hbutton_box_go_buttonRow, "hbutton_box_go_buttonRow");
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_go_buttonRow), GTK_BUTTONBOX_END);
+	gtk_widget_show(hbutton_box_go_buttonRow);
+	gtk_box_pack_start(GTK_BOX(vbox_go), hbutton_box_go_buttonRow, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(general_options_window, hbutton_box_go_buttonRow, "hbutton_box_go_buttonRow");
+	
+	// Cancel
+	button_go_Cancel = gtk_button_new_from_stock("gtk-cancel");
+	gtk_widget_set_name(button_go_Cancel, "button_go_cancel");
+	gtk_widget_show(button_go_Cancel);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Cancel, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_go_Cancel, "activate", accel_group,
+				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	AddButtonCallback_Clicked(button_go_Cancel, on_button_go_Cancel_clicked);
+	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Cancel, "button_go_Cancel");
+	
+	// Save
+	button_go_Save = gtk_button_new_from_stock("gtk-save");
+	gtk_widget_set_name(button_go_Save, "button_go_Save");
+	gtk_widget_show(button_go_Save);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Save, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_go_Save, on_button_go_Save_clicked);
+	gtk_widget_add_accelerator(button_go_Save, "activate", accel_group,
+				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	gtk_widget_add_accelerator(button_go_Save, "activate", accel_group,
+				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Save, "button_go_Save");
+	
+	// Add the accel group.
+	gtk_window_add_accel_group(GTK_WINDOW(general_options_window), accel_group);
 	
 	gtk_widget_show_all(general_options_window);
 	return general_options_window;

@@ -61,8 +61,7 @@ GtkWidget* create_bios_misc_files_window(void)
 	GtkWidget *vbox_bmf;
 	GtkWidget *frame_file = NULL, *label_frame_file = NULL, *table_frame_file = NULL;
 	GtkWidget *label_file = NULL, *entry_file = NULL, *button_file = NULL;
-	GtkWidget *hbutton_box_bmf_buttonRow;
-	GtkWidget *button_bmf_Cancel, *button_bmf_Save;
+	GtkWidget *hbutton_box_bmf_buttonRow, *button_bmf_Cancel, *button_bmf_Save;
 	
 	char tmp[64];
 	int file = 0, table_row = 0;
