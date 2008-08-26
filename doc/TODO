@@ -8,6 +8,7 @@ High-Level TODO:
 - Convert from automake to CMake
 - Add VGM dumping support
 - Add PNG screenshot support via libpng
+- Add more compression format support
 
 Low Priority:
 - Add MacOS X Aqua UI
