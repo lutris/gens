@@ -13,7 +13,8 @@
 #include "bios_misc_files/bios_misc_files_window_misc.h"
 #include "general_options/general_options_window.h"
 #include "about/about_window.h"
-#include "color_adjust/color_adjust_window.h"
+#include "color_adjust/color_adjust_window_misc.h"
+#include "opengl_resolution/opengl_resolution_window_misc.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -274,8 +275,8 @@ void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, g
 	resValue = GPOINTER_TO_INT(user_data);
 	if (resValue == 0)
 	{
-		// TODO: Custom Resolution window.
-		fprintf(stderr, "TODO: %s() - Custom Resolution Window\n", __func__);
+		// Custom Resolution.
+		Open_OpenGL_Resolution();
 		return;
 	}
 	
