@@ -1023,6 +1023,12 @@ void Set_GL_Resolution(int w,int h)
 	// OpenGL resolution has changed.
 	Width_gl = w;
 	Height_gl = h;
+	
+	// Print the resolution information.
+	MESSAGE_NUM_2L("Selected %dx%d resolution",
+		       "Selected %dx%d resolution", w, h, 1500);
+	
+	// If OpenGL mode isn't enabled, don't do anything.
 	if (!Opengl)
 		return;
 	

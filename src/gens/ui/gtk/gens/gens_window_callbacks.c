@@ -286,7 +286,6 @@ void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, g
 	
 	// Set the resolution.
 	Set_GL_Resolution(w, h);
-	MESSAGE_NUM_L("Seleted %dx[TODO] Resolution", "Selected %dx[TODO] Resolution", (w), 1500);
 }
 
 
