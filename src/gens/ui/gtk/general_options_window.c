@@ -119,8 +119,10 @@ GtkWidget* create_general_options_window(void)
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
 	GtkWidget *frame_fps, *label_fps, *table_fps;
 	GtkWidget *check_fps_enable, *check_fps_doublesized;
-	GtkWidget *check_fps_transparency;
-	GtkWidget *hbox_fps_color;
+	GtkWidget *check_fps_transparency, *hbox_fps_color;
+	GtkWidget *frame_message, *label_message, *table_message;
+	GtkWidget *check_message_enable, *check_message_doublesized;
+	GtkWidget *check_message_transparency, *hbox_message_color;
 	
 	if (general_options_window)
 	{
@@ -192,7 +194,7 @@ GtkWidget* create_general_options_window(void)
 	CREATE_TABLE_CHECKBOX(check_fps_transparency, "check_fps_transparency",
 			      "Transparency", table_fps, 0, 1, 1, 2);
 	
-	// FPS color
+	// FPS colors
 	hbox_fps_color = gtk_hbox_new(FALSE, 5);
 	gtk_widget_set_name(hbox_fps_color, "hbox_fps_color");
 	gtk_widget_show(hbox_fps_color);
@@ -200,9 +202,36 @@ GtkWidget* create_general_options_window(void)
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
 	GLADE_HOOKUP_OBJECT(general_options_window, hbox_fps_color, "hbox_fps_color");
-	
-	// FPS Colors
 	create_color_radio_buttons("fps_color", MsgColors, 4, hbox_fps_color);
+	
+	// Message frame
+	CREATE_BOX_FRAME(frame_message, "frame_message", vbox_go,
+			 label_message, "label_message", "<b><i>Message</i></b>");
+	
+	// Message table
+	CREATE_CONTAINER_TABLE(table_message, "table_message", frame_message, 2, 2, 91);
+	
+	// Message enable
+	CREATE_TABLE_CHECKBOX(check_message_enable, "check_message_enable",
+			      "Enable", table_message, 0, 1, 0, 1);
+	
+	// Message double sized
+	CREATE_TABLE_CHECKBOX(check_message_doublesized, "check_message_doublesized",
+			      "Double Sized", table_message, 1, 2, 0, 1);
+	
+	// Message transparency
+	CREATE_TABLE_CHECKBOX(check_message_transparency, "check_message_transparency",
+			      "Transparency", table_message, 0, 1, 1, 2);
+	
+	// Message colors
+	hbox_message_color = gtk_hbox_new(FALSE, 5);
+	gtk_widget_set_name(hbox_message_color, "hbox_message_color");
+	gtk_widget_show(hbox_message_color);
+	gtk_table_attach(GTK_TABLE(table_message), hbox_message_color, 1, 2, 1, 2,
+			 (GtkAttachOptions)(GTK_FILL),
+			 (GtkAttachOptions)(GTK_FILL), 0, 0);
+	GLADE_HOOKUP_OBJECT(general_options_window, hbox_message_color, "hbox_message_color");
+	create_color_radio_buttons("message_color", MsgColors, 4, hbox_message_color);
 	
 	gtk_widget_show_all(general_options_window);
 	return general_options_window;
