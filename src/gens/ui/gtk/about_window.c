@@ -158,12 +158,10 @@ GtkWidget* create_about_window(void)
 	gtk_widget_show(button_about_OK);
 	gtk_dialog_add_action_widget(GTK_DIALOG(about_window), button_about_OK, GTK_RESPONSE_OK);
 	//AddButtonCallback_Clicked(button_about_OK, on_button_about_OK_clicked);
-	/*
 	gtk_widget_add_accelerator(button_about_OK, "activate", accel_group,
 				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	gtk_widget_add_accelerator(button_about_OK, "activate", accel_group,
 				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	*/
 	GLADE_HOOKUP_OBJECT(about_window, button_about_OK, "button_about_OK");
 	
 	// Add the accel group.
