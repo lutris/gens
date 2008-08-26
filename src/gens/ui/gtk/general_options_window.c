@@ -183,7 +183,7 @@ GtkWidget* create_general_options_window(void)
 	CREATE_TABLE_CHECKBOX(check_system_autopause, "check_system_autopause",
 			      "Auto Pause", table_system, 1, 2, 0, 1);
 	
-	// Auto Fix Checksum
+	// Fast Blur
 	CREATE_TABLE_CHECKBOX(check_system_fastblur, "check_system_fastblur",
 			      "Fast Blur", table_system, 0, 1, 1, 2);
 	
