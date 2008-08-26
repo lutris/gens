@@ -8,7 +8,7 @@
 #include "directory_config_window.h"
 #include "directory_config_window_callbacks.h"
 #include "directory_config_window_misc.h"
-#include "gens_window/gens_window.h"
+#include "gens/gens_window.h"
 
 #include "g_main.h"
 

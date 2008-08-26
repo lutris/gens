@@ -26,7 +26,7 @@
 
 #include "ui_proxy.h"
 #include "ui-common.h"
-#include "gens_window/gens_window_sync.h"
+#include "gens/gens_window_sync.h"
 
 _filters filters;
 

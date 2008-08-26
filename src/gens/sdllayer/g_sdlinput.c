@@ -11,7 +11,7 @@
 
 
 #include "gtk-misc.h"
-#include "gens_window/gens_window.h"
+#include "gens/gens_window.h"
 
 
 //char Phrase[1024];

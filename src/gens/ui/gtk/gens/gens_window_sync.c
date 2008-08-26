@@ -3,9 +3,10 @@
  */
 
 
-#include "gens_window/gens_window.h"
-#include "gens_window/gens_window_sync.h"
-#include "gens_window/gens_window_callbacks.h"
+#include "gens_window.h"
+#include "gens_window_sync.h"
+#include "gens_window_callbacks.h"
+
 #include "gtk-misc.h"
 
 #include "g_main.h"

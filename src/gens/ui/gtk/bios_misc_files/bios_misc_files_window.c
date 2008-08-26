@@ -5,7 +5,7 @@
 
 #include "bios_misc_files_window.h"
 #include "bios_misc_files_window_callbacks.h"
-#include "gens_window/gens_window.h"
+#include "gens/gens_window.h"
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>

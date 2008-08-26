@@ -23,7 +23,7 @@
 #include "ym2612.h"
 #include "psg.h"
 
-#include "gens_window/gens_window_sync.h"
+#include "gens/gens_window_sync.h"
 #include "ui-common.h"
 
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.

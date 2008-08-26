@@ -8,7 +8,7 @@
 #include "bios_misc_files_window.h"
 #include "bios_misc_files_window_callbacks.h"
 #include "bios_misc_files_window_misc.h"
-#include "gens_window/gens_window.h"
+#include "gens/gens_window.h"
 
 #include "g_main.h"
 
