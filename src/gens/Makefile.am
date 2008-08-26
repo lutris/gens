@@ -221,6 +221,12 @@ gens_SOURCES = \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h \
+		ui/gtk/select_cdrom/select_cdrom_window.c \
+		ui/gtk/select_cdrom/select_cdrom_window.h \
+		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
+		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
+		ui/gtk/select_cdrom/select_cdrom_window_misc.c \
+		ui/gtk/select_cdrom/select_cdrom_window_misc.h \
 		ui/gtk/about/about_window.c \
 		ui/gtk/about/about_window.h \
 		emulator/parse.c \

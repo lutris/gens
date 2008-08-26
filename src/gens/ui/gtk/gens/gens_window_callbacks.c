@@ -15,6 +15,7 @@
 #include "about/about_window.h"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "opengl_resolution/opengl_resolution_window_misc.h"
+#include "select_cdrom/select_cdrom_window_misc.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -674,7 +675,7 @@ void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpoin
  */
 void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	Open_Select_CDROM();
 }
 
 
