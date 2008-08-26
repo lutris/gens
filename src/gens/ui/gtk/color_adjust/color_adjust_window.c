@@ -4,6 +4,7 @@
 
 
 #include "color_adjust_window.h"
+#include "color_adjust_window_callbacks.h"
 #include "gens/gens_window.h"
 
 #ifdef HAVE_CONFIG_H
@@ -107,12 +108,10 @@ GtkWidget* create_color_adjust_window(void)
 			  color_adjust_window_icon_pixbuf, "Gens2.ico");
 	
 	// Callbacks for if the window is closed.
-	/*
 	g_signal_connect((gpointer)color_adjust_window, "delete_event",
 			 G_CALLBACK(on_color_adjust_window_close), NULL);
 	g_signal_connect((gpointer)color_adjust_window, "destroy_event",
 			 G_CALLBACK(on_color_adjust_window_close), NULL);
-	*/
 	
 	// Create the main VBox.
 	vbox_ca = gtk_vbox_new(FALSE, 5);
@@ -170,7 +169,7 @@ GtkWidget* create_color_adjust_window(void)
 	gtk_widget_set_name(button_ca_Cancel, "button_ca_Cancel");
 	gtk_widget_show(button_ca_Cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_ca_Cancel, FALSE, FALSE, 0);
-	//AddButtonCallback_Clicked(button_ca_Cancel, on_button_ca_Cancel_clicked);
+	AddButtonCallback_Clicked(button_ca_Cancel, on_button_ca_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, button_ca_Cancel, "button_ca_Cancel");
 	
 	// Apply
@@ -178,7 +177,7 @@ GtkWidget* create_color_adjust_window(void)
 	gtk_widget_set_name(button_ca_Apply, "button_ca_Apply");
 	gtk_widget_show(button_ca_Apply);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_ca_Apply, FALSE, FALSE, 0);
-	//AddButtonCallback_Clicked(button_ca_Apply, on_button_ca_Apply_clicked);
+	AddButtonCallback_Clicked(button_ca_Apply, on_button_ca_Apply_clicked);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, button_ca_Apply, "button_ca_Apply");
 	
 	// Save
@@ -186,7 +185,7 @@ GtkWidget* create_color_adjust_window(void)
 	gtk_widget_set_name(button_ca_Save, "button_ca_Save");
 	gtk_widget_show(button_ca_Save);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_ca_Save, FALSE, FALSE, 0);
-	//AddButtonCallback_Clicked(button_ca_Save, on_button_ca_Save_clicked);
+	AddButtonCallback_Clicked(button_ca_Save, on_button_ca_Save_clicked);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, button_ca_Save, "button_ca_Save");
 	
 	gtk_widget_show_all(color_adjust_window);

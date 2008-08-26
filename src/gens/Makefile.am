@@ -211,6 +211,8 @@ gens_SOURCES = \
 		ui/gtk/general_options/general_options_window_misc.h \
 		ui/gtk/color_adjust/color_adjust_window.c \
 		ui/gtk/color_adjust/color_adjust_window.h \
+		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
+		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
 		ui/gtk/about/about_window.c \
 		ui/gtk/about/about_window.h \
 		emulator/parse.c \
