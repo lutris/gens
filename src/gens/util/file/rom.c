@@ -480,12 +480,12 @@ int Open_Rom(const char *Name)
 		if ((!strcasecmp ("zip", &Name[strlen (Name) - 3])) ||
 		    (!strcasecmp ("zsg", &Name[strlen (Name) - 3])))
 		{
-			Game = Load_Rom_Zipped (Name, sys & 1);
+			Game = Load_Rom_Zipped(Name, sys & 1);
 		}
 		else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
-			Game = Load_Rom_Gz (Name, sys & 1);
+			Game = Load_Rom_Gz(Name, sys & 1);
 		else
-			Game = Load_Rom (Name, sys & 1);
+			Game = Load_Rom(Name, sys & 1);
 	}
 	
 	switch (sys >> 1)
@@ -519,27 +519,30 @@ int Open_Rom(const char *Name)
 }
 
 
-// Rom is already in buffer, we just need to fill rom structure
-// and do init stuff...
-int
-Load_Rom_CC (char *Name, int Size)
+/**
+ * Load_Rom_CC(): Initialize a ROM that's already loaded into the memory buffer.
+ * @param Name ROM filename.
+ * @param Size ROM filesize.
+ * @return Genesis_Started.
+ */
+int Load_Rom_CC(const char *Name, const int Size)
 {
-  My_Rom = (Rom *) malloc (sizeof (Rom));
-
-  if (!My_Rom)
-    {
-      Game = NULL;
-      return 0;
-    }
-
-  Update_Rom_Name (Name);
-  Rom_Size = Size;
-  Fill_Infos ();
-
-  Game = My_Rom;
-
-  Genesis_Started = Init_Genesis (Game);
-  return Genesis_Started;
+	My_Rom = (Rom *) malloc (sizeof (Rom));
+	
+	if (!My_Rom)
+	{
+		Game = NULL;
+		return 0;
+	}
+	
+	Update_Rom_Name(Name);
+	Rom_Size = Size;
+	Fill_Infos();
+	
+	Game = My_Rom;
+	
+	Genesis_Started = Init_Genesis (Game);
+	return Genesis_Started;
 }
 
 
