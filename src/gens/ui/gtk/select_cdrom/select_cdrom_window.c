@@ -112,6 +112,7 @@ GtkWidget* create_select_cdrom_window(void)
 	gtk_widget_set_name(combo_drive, "combo_drive");
 	gtk_widget_show(combo_drive);
 	gtk_box_pack_start(GTK_BOX(hbox_drive), combo_drive, TRUE, TRUE, 0);
+	gtk_entry_set_max_length(GTK_ENTRY(GTK_BIN(combo_drive)->child), 63);
 	GLADE_HOOKUP_OBJECT(select_cdrom_window, combo_drive, "combo_drive");
 	
 	// Create an HButton Box for the buttons on the bottom.
