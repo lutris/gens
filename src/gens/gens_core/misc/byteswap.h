@@ -32,6 +32,16 @@ extern "C" {
 // 16-bit byteswap function.
 void __byte_swap_16_array(void *ptr, int n);
 
+// TODO: Optimize out ?e??_to_cpu_from_ptr on appropriate architectures.
+#define be16_to_cpu_from_ptr(ptr) \
+	(((ptr)[0] << 8) | ((ptr)[1])))
+#define le16_to_cpu_from_ptr(ptr) \
+	(((ptr)[1] << 8) | ((ptr)[0])))
+#define be32_to_cpu_from_ptr(ptr) \
+	(((ptr)[0] << 24) | ((ptr)[1] << 16) | ((ptr)[2] << 8) | ((ptr)[3]))
+#define be32_to_cpu_from_ptr(ptr) \
+	(((ptr)[3] << 24) | ((ptr)[2] << 16) | ((ptr)[1] << 8) | ((ptr)[0]))
+
 #if GENS_BYTEORDER == GENS_LIL_ENDIAN
 #define be16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 #define le16_to_cpu_array(ptr, n)
