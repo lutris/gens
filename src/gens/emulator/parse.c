@@ -41,8 +41,8 @@
 
 static void _usage()
 {
-	fprintf (stderr, "Gens for Linux v2.13alpha\n");
-	fprintf (stderr, "Usage : gens [options] romfilename\n");
+	fprintf (stderr, GENS_APPNAME " " GENS_VERSION "\n");
+	fprintf (stderr, "Usage: gens [options] romfilename\n");
 	print_usage(  HELP, "print this help");
 	
 	print_usage(GAME ,"ROM to load (from standard ROM directory)");

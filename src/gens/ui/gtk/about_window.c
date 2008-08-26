@@ -107,7 +107,7 @@ GtkWidget* create_about_window(void)
 	// Version information
 	label_gens_version = gtk_label_new(
 		"<b><i>Gens for Linux\n"
-		"Version [TODO]</i></b>\n\n"
+		"Version " GENS_VERSION "</i></b>\n\n"
 		"Sega Genesis / Mega Drive,\n"
 		"Sega CD / Mega CD,\n"
 		"Sega 32X emulator"

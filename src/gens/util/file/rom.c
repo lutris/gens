@@ -999,5 +999,5 @@ Free_Rom (Rom * Rom_MD)
   if (Intro_Style == 3)
     Init_Genesis_Bios ();
 
-  UI_Set_Window_Title("Gens - Idle");
+	UI_Set_Window_Title_Idle();
 }

@@ -2,11 +2,9 @@
  * GENS: Common UI functions.
  */
 
+
+#include "gens.h"
 #include "ui-common.h"
-
-
-// Application name.
-#define GENS_APPNAME "Gens"
 
 
 /**
