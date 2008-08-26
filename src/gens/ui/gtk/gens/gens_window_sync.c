@@ -121,7 +121,8 @@ void Sync_Gens_Window_FileMenu(void)
 void Sync_Gens_Window_GraphicsMenu(void)
 {
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_OpenGL, *MItem_SpriteLimit;
-	GtkWidget *MItem_OpenGL_Resolution, *MItem_bpp, *MItem_Render, *MItem_FrameSkip;
+	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
+	GtkWidget *MItem_bpp, *MItem_Render, *MItem_FrameSkip;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -137,7 +138,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
 	
 	// OpenGL Resolution
-	// Check if this is a custom resolution.
+	
+	// Get the Custom resolution menu item.
+	MItem_OpenGL_Resolution_Custom = lookup_widget(gens_window, "GraphicsMenu_OpenGLRes_SubMenu_Custom");
+	
+	// Check if the current GL resolution is a custom resolution.
 	// TODO: Make an array with predefined resolutions somewhere.
 	if ((Width_gl == 320 && Height_gl == 240) ||
 	    (Width_gl == 640 && Height_gl == 480) ||
@@ -146,13 +151,18 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	{
 		// Predefined resolution.
 		sprintf(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_%dx%d", Width_gl, Height_gl);
+		MItem_OpenGL_Resolution = lookup_widget(gens_window, Str_Tmp);
+		// Set the text of the Custom entry to "Custom..."
+		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), "Custom...");
 	}
 	else
 	{
 		// Custom resolution.
-		strcpy(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_Custom");
+		MItem_OpenGL_Resolution = MItem_OpenGL_Resolution_Custom;
+		// Set the text of the Custom entry to "Custom... (wxh)"
+		sprintf(Str_Tmp, "Custom... (%dx%d)", Width_gl, Height_gl);
+		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), Str_Tmp);
 	}
-	MItem_OpenGL_Resolution = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL_Resolution), TRUE);
 	
 	// Bits per pixel
