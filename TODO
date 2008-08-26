@@ -23,3 +23,4 @@ Emulator TODO:
 
 Miscellaneous Bugs:
 - GZipped SegaCD BIOSes work the first time, but on system reset it can't load it.
+- Auto Pause doesn't work.
