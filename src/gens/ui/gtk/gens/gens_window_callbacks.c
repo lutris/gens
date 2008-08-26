@@ -313,7 +313,7 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
  */
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	create_color_adjust_window();
+	Open_Color_Adjust();
 }
 
 

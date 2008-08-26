@@ -188,6 +188,5 @@ GtkWidget* create_color_adjust_window(void)
 	AddButtonCallback_Clicked(button_ca_Save, on_button_ca_Save_clicked);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, button_ca_Save, "button_ca_Save");
 	
-	gtk_widget_show_all(color_adjust_window);
 	return color_adjust_window;
 }
