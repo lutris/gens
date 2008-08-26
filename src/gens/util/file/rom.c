@@ -565,51 +565,61 @@ Load_Bios (char *Name)
 }
 
 
-Rom *
-Load_Rom (char *Name, int inter)
+/**
+ * Load_Rom(): Load a ROM file.
+ * @param filename Filename of the ROM file.
+ * @param interleaved If non-zero, the ROM is interleaved.
+ * @return Pointer to Rom struct with the ROM information.
+ */
+Rom *Load_Rom (const char *filename, const int interleaved)
 {
-
-  FILE *Rom_File;
-  int Size = 0;
-
-  //SetCurrentDirectory (Gens_Path);
-
-  if ((Rom_File = fopen (Name, "rb")) == 0)
-    {
-      Game = NULL;
-      return (NULL);
-    }
-
-  fseek (Rom_File, 0, SEEK_END);
-  Size = ftell (Rom_File);
-  fseek (Rom_File, 0, SEEK_SET);
-
-  if ((Size) > ((6 * 1024 * 1024) + 512))
-    {
-      Game = NULL;
-      fclose (Rom_File);
-      return (NULL);
-    }
-  My_Rom = (Rom *) malloc (sizeof (Rom));
-
-  if (!My_Rom)
-    {
-      Game = NULL;
-      fclose (Rom_File);
-      return (NULL);
-    }
-
-  memset (Rom_Data, 0, 6 * 1024 * 1024);
-  fread (Rom_Data, Size, 1, Rom_File);
-  fclose (Rom_File);
-  Update_Rom_Name (Name);
-
-  Rom_Size = Size;
-  if (inter)
-	Deinterleave_SMD();
-  Fill_Infos ();
-
-  return My_Rom;
+	FILE *Rom_File;
+	int Size = 0;
+	
+	//SetCurrentDirectory (Gens_Path);
+	
+	if ((Rom_File = fopen(filename, "rb")) == 0)
+	{
+		Game = NULL;
+		return NULL;
+	}
+	
+	fseek (Rom_File, 0, SEEK_END);
+	Size = ftell (Rom_File);
+	fseek (Rom_File, 0, SEEK_SET);
+	
+	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
+	if ((Size) > ((6 * 1024 * 1024) + 512))
+	{
+		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
+		fclose(Rom_File);
+		Game = NULL;
+		return NULL;
+	}
+	My_Rom = (Rom*)malloc(sizeof(Rom));
+	
+	if (!My_Rom)
+	{
+		// Memory allocation error
+		fclose(Rom_File);
+		Game = NULL;
+		return NULL;
+	}
+	
+	// Clear the ROM buffer and load the ROM.
+	memset(Rom_Data, 0, 6 * 1024 * 1024);
+	fread(Rom_Data, Size, 1, Rom_File);
+	fclose(Rom_File);
+	
+	Update_Rom_Name(filename);
+	Rom_Size = Size;
+	
+	// Deinterleave the ROM, if necessary.
+	if (interleaved)
+		Deinterleave_SMD();
+	
+	Fill_Infos ();
+	return My_Rom;
 }
 
 
@@ -636,7 +646,7 @@ struct Rom *Load_Rom_Gz(const char *filename, int interleaved)
 	// Determine the size of the GZip archive.
 	while (gzeof(Rom_File) == 0)
 	{
-		Size += gzread (Rom_File, read_buf, 1024);
+		Size += gzread(Rom_File, read_buf, 1024);
 	}
 	gzrewind (Rom_File);
 	
