@@ -91,12 +91,12 @@ int IsAsyncAllowed(void);
 #include <gtk/gtk.h>
 extern GtkWidget* gens_window;
 
+
 #define MESSAGE_L(str, def, time) \
 {\
 	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024, Settings.PathNames.Language_Path);	\
 	Put_Info(Str_Tmp, (time));\
 }
-
 
 
 #define MESSAGE_NUM_L(str, def, num, time)\
@@ -108,6 +108,26 @@ extern GtkWidget* gens_window;
 	Put_Info(mes_tmp, (time));\
 }
 
+
+/**
+ * MESSAGE_NUM_2L(): Print a message with two numbers in a printf()-formatted string.
+ * @param str String.
+ * @param def Default string if the string isn't found in the language file.
+ * @param num1 First number.
+ * @param num2 Second number.
+ * @param time Time to display the message (in milliseconds).
+ */
+#define MESSAGE_NUM_2L(str, def, num1, num2, time)					\
+{											\
+	char mes_tmp[1024];								\
+	Str_Tmp[0] = '\0';								\
+	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
+				Settings.PathNames.Language_Path);			\
+	sprintf(mes_tmp, Str_Tmp, (num1), (num2));					\
+	Put_Info(mes_tmp, (time));							\
+}
+
+
 #define MINIMIZE \
 {\
 	if (Sound_Initialised) Clear_Sound_Buffer();\
@@ -117,6 +137,7 @@ extern GtkWidget* gens_window;
 	}\
 }
 //		Set_Render(0, -1, 1);
+
 
 #if 0
 
