@@ -227,6 +227,12 @@ gens_SOURCES = \
 		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
 		ui/gtk/select_cdrom/select_cdrom_window_misc.c \
 		ui/gtk/select_cdrom/select_cdrom_window_misc.h \
+		ui/gtk/country_code/country_code_window.c \
+		ui/gtk/country_code/country_code_window.h \
+		ui/gtk/country_code/country_code_window_callbacks.c \
+		ui/gtk/country_code/country_code_window_callbacks.h \
+		ui/gtk/country_code/country_code_window_misc.c \
+		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/about/about_window.c \
 		ui/gtk/about/about_window.h \
 		emulator/parse.c \

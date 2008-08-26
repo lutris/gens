@@ -16,6 +16,7 @@
 #include "color_adjust/color_adjust_window_misc.h"
 #include "opengl_resolution/opengl_resolution_window_misc.h"
 #include "select_cdrom/select_cdrom_window_misc.h"
+#include "country_code/country_code_window_misc.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -420,7 +421,7 @@ void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	Open_Country_Code();
 }
 
 
