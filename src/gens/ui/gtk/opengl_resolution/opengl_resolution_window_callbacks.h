@@ -2,8 +2,8 @@
  * GENS: (GTK+) OpenGL Resolution Window Callbacks.
  */
 
-#ifndef OPENGL_RESOLUTION_WINDOW_CALLBACKS_H
-#define OPENGL_RESOLUTION_WINDOW_CALLBACKS_H
+#ifndef GTK_OPENGL_RESOLUTION_WINDOW_CALLBACKS_H
+#define GTK_OPENGL_RESOLUTION_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {
