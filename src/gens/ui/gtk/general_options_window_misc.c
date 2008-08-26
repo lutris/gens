@@ -97,30 +97,66 @@ void Open_General_Options(void)
  */
 void General_Options_Save(void)
 {
-	/*
-	int file = 0;
-	char tmp[64];
-	GtkWidget *entry_file;
+	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
+	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
+	GtkWidget *check_fps_enable, *check_fps_doublesized;
+	GtkWidget *check_fps_transparency, *radio_button_fps_color;
+	GtkWidget *check_message_enable, *check_message_doublesized;
+	GtkWidget *check_message_transparency, *radio_button_message_color;
+	GtkWidget *radio_button_intro_effect_color;
 	
-	// Go through the BIOSMiscFiles[] struct.
-	while (BIOSMiscFiles[file].title)
-	{
-		if (!BIOSMiscFiles[file].entry)
-		{
-			// Skip frame headers here. We just want to get file entries.
-			file++;
-			continue;
-		}
-		
-		// Get the entry object.
-		sprintf(tmp, "entry_%s", BIOSMiscFiles[file].tag);
-		entry_file = lookup_widget(general_options_window, tmp);
-		
-		// Get the entry text.
-		strncpy(BIOSMiscFiles[file].entry, gtk_entry_get_text(GTK_ENTRY(entry_file)), GENS_PATH_MAX);
-		
-		// Increment the file counter.
-		file++;
-	}
+	// Save the current options.
+	
+	// System
+	check_system_autofixchecksum = lookup_widget(general_options_window, "check_system_autofixchecksum");
+	Auto_Fix_CS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autofixchecksum));
+	check_system_autopause = lookup_widget(general_options_window, "check_system_autopause");
+	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autopause));
+	check_system_fastblur = lookup_widget(general_options_window, "check_system_fastblur");
+	Fast_Blur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_fastblur));
+	check_system_segacd_leds = lookup_widget(general_options_window, "check_system_segacd_leds");
+	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
+	
+	// FPS counter
+	check_fps_enable = lookup_widget(general_options_window, "check_fps_enable");
+	Show_FPS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable));
+	FPS_Style &= ~0x18;
+	check_fps_doublesized = lookup_widget(general_options_window, "check_fps_doublesized");
+	FPS_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
+	check_fps_transparency = lookup_widget(general_options_window, "check_fps_transparency");
+	FPS_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_transparency)) ? 0x08 : 0x00);
+	
+	// FPS counter color
+	// TODO
+	/*
+	sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[((FPS_Style & 0x06) >> 1) * 3]);
+	radio_button_fps_color = lookup_widget(general_options_window, tmp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_fps_color), TRUE);
+	*/
+	
+	// Message
+	check_message_enable = lookup_widget(general_options_window, "check_message_enable");
+	Show_Message = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable));
+	Message_Style &= ~0x18;
+	check_message_doublesized = lookup_widget(general_options_window, "check_message_doublesized");
+	Message_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
+	check_message_transparency = lookup_widget(general_options_window, "check_message_transparency");
+	Message_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_transparency)) ? 0x08 : 0x00);
+	
+	// Message color
+	// TODO
+	/*
+	sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[((Message_Style & 0x06) >> 1) * 3]);
+	radio_button_message_color = lookup_widget(general_options_window, tmp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_message_color), TRUE);
+	*/
+	
+	// Intro effect color
+	// TODO
+	/*
+	sprintf(tmp, "radio_button_misc_intro_effect_color_%s",
+		GO_IntroEffectColors[Effect_Color * 3]);
+	radio_button_intro_effect_color = lookup_widget(general_options_window, tmp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color), TRUE);
 	*/
 }
