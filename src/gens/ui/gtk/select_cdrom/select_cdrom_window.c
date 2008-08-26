@@ -38,6 +38,8 @@ GtkWidget* create_select_cdrom_window(void)
 {
 	GdkPixbuf *select_cdrom_window_icon_pixbuf;
 	GtkWidget *vbox_SelCD;
+	GtkWidget *frame_drive, *label_frame_drive;
+	GtkWidget *hbox_drive, *label_drive, *combo_drive;
 	GtkWidget *hbutton_box_bottomRow;
 	GtkWidget *button_SelCD_Cancel, *button_SelCD_Apply, *button_SelCD_Save;
 	
@@ -71,6 +73,46 @@ GtkWidget* create_select_cdrom_window(void)
 	gtk_widget_show(vbox_SelCD);
 	gtk_container_add(GTK_CONTAINER(select_cdrom_window), vbox_SelCD);
 	GLADE_HOOKUP_OBJECT(select_cdrom_window, vbox_SelCD, "vbox_SelCD");
+	
+	// Add a frame for drive selection.
+	frame_drive = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_drive, "frame_drive");
+	gtk_container_set_border_width(GTK_CONTAINER(frame_drive), 5);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_drive), GTK_SHADOW_NONE);
+	gtk_widget_show(frame_drive);
+	gtk_box_pack_start(GTK_BOX(vbox_SelCD), frame_drive, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, frame_drive, "frame_drive");
+	
+	// Add a label to the drive selection frame.
+	label_frame_drive = gtk_label_new(
+		"Typical values are <i>/dev/cdrom</i>, "
+		"<i>/dev/sr0</i>, or <i>/dev/hdc</i>");
+	gtk_widget_set_name(label_frame_drive, "label_frame_drive");
+	gtk_label_set_use_markup(GTK_LABEL(label_frame_drive), TRUE);
+	gtk_widget_show(label_frame_drive);
+	gtk_frame_set_label_widget(GTK_FRAME(frame_drive), label_frame_drive);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, label_frame_drive, "label_frame_drive");
+	
+	// HBox for the CD drive label and combo box.
+	hbox_drive = gtk_hbox_new(FALSE, 0);
+	gtk_widget_set_name(hbox_drive, "hbox_drive");
+	gtk_widget_show(hbox_drive);
+	gtk_container_add(GTK_CONTAINER(frame_drive), hbox_drive);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, hbox_drive, "hbox_drive");
+	
+	// CD drive label
+	label_drive = gtk_label_new_with_mnemonic("CD-_ROM drive:");
+	gtk_widget_set_name(label_drive, "label_drive");
+	gtk_widget_show(label_drive);
+	gtk_box_pack_start(GTK_BOX(hbox_drive), label_drive, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, label_drive, "label_drive");
+	
+	// Add an editable combo box for the CD drive.
+	combo_drive = gtk_combo_box_entry_new_text();
+	gtk_widget_set_name(combo_drive, "combo_drive");
+	gtk_widget_show(combo_drive);
+	gtk_box_pack_start(GTK_BOX(hbox_drive), combo_drive, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, combo_drive, "combo_drive");
 	
 	// Create an HButton Box for the buttons on the bottom.
 	hbutton_box_bottomRow = gtk_hbutton_box_new();
