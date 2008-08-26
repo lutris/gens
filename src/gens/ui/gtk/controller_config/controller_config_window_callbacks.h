@@ -2,8 +2,8 @@
  * GENS: (GTK+) Controller Configuration Window Callbacks.
  */
 
-#ifndef CONTROLLER_CONFIG_WINDOW_CALLBACKS_H
-#define CONTROLLER_CONFIG_WINDOW_CALLBACKS_H
+#ifndef GTK_CONTROLLER_CONFIG_WINDOW_CALLBACKS_H
+#define GTK_CONTROLLER_CONFIG_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {

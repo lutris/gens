@@ -2,8 +2,8 @@
  * GENS: (GTK+) About Window.
  */
 
-#ifndef ABOUT_WINDOW_H
-#define ABOUT_WINDOW_H
+#ifndef GTK_ABOUT_WINDOW_H
+#define GTK_ABOUT_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {

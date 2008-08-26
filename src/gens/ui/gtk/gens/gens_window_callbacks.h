@@ -2,18 +2,15 @@
  * GENS: (GTK+) Main Window Callbacks.
  */
 
-
-#ifndef GENS_WINDOW_CALLBACKS_H
-#define GENS_WINDOW_CALLBACKS_H
+#ifndef GTK_GENS_WINDOW_CALLBACKS_H
+#define GTK_GENS_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 #include <gtk/gtk.h>
 #include "gens.h"
-
 
 // Window is closed.
 gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data);
@@ -87,7 +84,6 @@ void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_d
 
 // Help menu
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);
-
 
 #ifdef __cplusplus
 }

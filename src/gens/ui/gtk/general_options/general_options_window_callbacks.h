@@ -2,8 +2,8 @@
  * GENS: (GTK+) General Options Window Callbacks.
  */
 
-#ifndef GENERAL_OPTIONS_WINDOW_CALLBACKS_H
-#define GENERAL_OPTIONS_WINDOW_CALLBACKS_H
+#ifndef GTK_GENERAL_OPTIONS_WINDOW_CALLBACKS_H
+#define GTK_GENERAL_OPTIONS_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {

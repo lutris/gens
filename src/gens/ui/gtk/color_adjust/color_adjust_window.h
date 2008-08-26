@@ -2,8 +2,8 @@
  * GENS: (GTK+) Color Adjust Window.
  */
 
-#ifndef COLOR_ADJUST_WINDOW_H
-#define COLOR_ADJUST_WINDOW_H
+#ifndef GTK_COLOR_ADJUST_WINDOW_H
+#define GTK_COLOR_ADJUST_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {

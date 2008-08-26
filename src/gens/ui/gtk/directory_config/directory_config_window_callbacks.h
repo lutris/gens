@@ -2,8 +2,8 @@
  * GENS: (GTK+) Directory Configuration Window Callbacks.
  */
 
-#ifndef DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
-#define DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
+#ifndef GTK_DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
+#define GTK_DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {

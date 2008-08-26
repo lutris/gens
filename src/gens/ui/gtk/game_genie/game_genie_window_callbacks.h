@@ -2,8 +2,8 @@
  * GENS: (GTK+) Game Genie Window Callbacks.
  */
 
-#ifndef GAME_GENIE_WINDOW_CALLBACKS_H
-#define GAME_GENIE_WINDOW_CALLBACKS_H
+#ifndef GTK_GAME_GENIE_WINDOW_CALLBACKS_H
+#define GTK_GAME_GENIE_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {

@@ -2,8 +2,8 @@
  * GENS: (GTK+) BIOS/Misc Files Window.
  */
 
-#ifndef DIRECTORY_CONFIG_WINDOW_H
-#define DIRECTORY_CONFIG_WINDOW_H
+#ifndef GTK_DIRECTORY_CONFIG_WINDOW_H
+#define GTK_DIRECTORY_CONFIG_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {

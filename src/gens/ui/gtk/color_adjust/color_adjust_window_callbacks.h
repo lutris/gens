@@ -2,8 +2,8 @@
  * GENS: (GTK+) Color Adjust Window Callbacks.
  */
 
-#ifndef COLOR_ADJUST_WINDOW_CALLBACKS_H
-#define COLOR_ADJUST_WINDOW_CALLBACKS_H
+#ifndef GTK_COLOR_ADJUST_WINDOW_CALLBACKS_H
+#define GTK_COLOR_ADJUST_WINDOW_CALLBACKS_H
 
 #ifdef __cplusplus
 extern "C" {

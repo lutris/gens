@@ -2,8 +2,8 @@
  * GENS: (GTK+) General Options Window.
  */
 
-#ifndef GENERAL_OPTIONS_WINDOW_H
-#define GENERAL_OPTIONS_WINDOW_H
+#ifndef GTK_GENERAL_OPTIONS_WINDOW_H
+#define GTK_GENERAL_OPTIONS_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {

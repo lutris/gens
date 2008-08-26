@@ -2,8 +2,8 @@
  * GENS: (GTK+) Game Genie Window.
  */
  
-#ifndef GAME_GENIE_WINDOW_H
-#define GAME_GENIE_WINDOW_H
+#ifndef GTK_GAME_GENIE_WINDOW_H
+#define GTK_GAME_GENIE_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {
