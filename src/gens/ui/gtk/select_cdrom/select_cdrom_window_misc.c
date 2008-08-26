@@ -17,9 +17,9 @@
 
 #include "rom.h"
 
-
 // CD-ROM device prefixes.
 const char* CDROM_Prefix[4] = {"/dev/cdrom", "/dev/scd", "/dev/sr", NULL};
+
 
 /**
  * Open_Select_CDROM(): Opens the Select CD-ROM window.
