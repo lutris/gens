@@ -285,6 +285,7 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }
 
+
 /**
  * UI_GTK_AddFilter_SavestateFile(): Adds filename filters for "SavestateFile".
  * @param dialog File chooser dialog.
