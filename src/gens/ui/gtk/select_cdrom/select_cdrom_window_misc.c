@@ -82,7 +82,7 @@ void Open_Select_CDROM(void)
 		curPrefix++;
 	}
 	
-	// Drive speed.
+	// Drive speed
 	driveSpeed = 0;
 	for (i = 0; i < 14; i++)
 	{
@@ -107,8 +107,9 @@ void Open_Select_CDROM(void)
  */
 void SelCD_Save(void)
 {
-	GtkWidget *combo_drive;
-	gchar *tmpDrive;
+	GtkWidget *combo_drive, *combo_speed;
+	gchar *tmpDrive; int driveSpeed;
+	
 	// Save settings.
 	
 	// CD-ROM drive
@@ -120,4 +121,11 @@ void SelCD_Save(void)
 		CDROM_DEV[63] = 0x00;
 	}
 	free(tmpDrive);
+	
+	// Drive speed
+	combo_speed = lookup_widget(select_cdrom_window, "combo_speed");
+	driveSpeed = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_speed));
+	if (driveSpeed < 0 || driveSpeed >= 14)
+		driveSpeed = 0;
+	CDROM_SPEED = CD_DriveSpeed[driveSpeed];
 }
