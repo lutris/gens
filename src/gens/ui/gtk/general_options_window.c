@@ -100,7 +100,8 @@ const char* MsgColors[13] =
 	NULL,
 };
 
-static void create_color_radio_buttons(const char* groupName, 
+static void create_color_radio_buttons(const char* title,
+				       const char* groupName, 
 				       const char** colors,
 				       const int num,
 				       GtkWidget* container);
@@ -119,10 +120,11 @@ GtkWidget* create_general_options_window(void)
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
 	GtkWidget *frame_fps, *label_fps, *table_fps;
 	GtkWidget *check_fps_enable, *check_fps_doublesized;
-	GtkWidget *check_fps_transparency, *hbox_fps_color;
+	GtkWidget *check_fps_transparency, *hbox_fps_colors;
 	GtkWidget *frame_message, *label_message, *table_message;
 	GtkWidget *check_message_enable, *check_message_doublesized;
-	GtkWidget *check_message_transparency, *hbox_message_color;
+	GtkWidget *check_message_transparency, *hbox_message_colors;
+	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_colors;
 	
 	if (general_options_window)
 	{
@@ -195,14 +197,14 @@ GtkWidget* create_general_options_window(void)
 			      "Transparency", table_fps, 0, 1, 1, 2);
 	
 	// FPS colors
-	hbox_fps_color = gtk_hbox_new(FALSE, 5);
-	gtk_widget_set_name(hbox_fps_color, "hbox_fps_color");
-	gtk_widget_show(hbox_fps_color);
-	gtk_table_attach(GTK_TABLE(table_fps), hbox_fps_color, 1, 2, 1, 2,
+	hbox_fps_colors = gtk_hbox_new(FALSE, 5);
+	gtk_widget_set_name(hbox_fps_colors, "hbox_fps_color");
+	gtk_widget_show(hbox_fps_colors);
+	gtk_table_attach(GTK_TABLE(table_fps), hbox_fps_colors, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbox_fps_color, "hbox_fps_color");
-	create_color_radio_buttons("fps_color", MsgColors, 4, hbox_fps_color);
+	GLADE_HOOKUP_OBJECT(general_options_window, hbox_fps_colors, "hbox_fps_color");
+	create_color_radio_buttons("Color:", "fps_color", MsgColors, 4, hbox_fps_colors);
 	
 	// Message frame
 	CREATE_BOX_FRAME(frame_message, "frame_message", vbox_go,
@@ -224,14 +226,27 @@ GtkWidget* create_general_options_window(void)
 			      "Transparency", table_message, 0, 1, 1, 2);
 	
 	// Message colors
-	hbox_message_color = gtk_hbox_new(FALSE, 5);
-	gtk_widget_set_name(hbox_message_color, "hbox_message_color");
-	gtk_widget_show(hbox_message_color);
-	gtk_table_attach(GTK_TABLE(table_message), hbox_message_color, 1, 2, 1, 2,
+	hbox_message_colors = gtk_hbox_new(FALSE, 5);
+	gtk_widget_set_name(hbox_message_colors, "hbox_message_color");
+	gtk_widget_show(hbox_message_colors);
+	gtk_table_attach(GTK_TABLE(table_message), hbox_message_colors, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbox_message_color, "hbox_message_color");
-	create_color_radio_buttons("message_color", MsgColors, 4, hbox_message_color);
+	GLADE_HOOKUP_OBJECT(general_options_window, hbox_message_colors, "hbox_message_color");
+	create_color_radio_buttons("Color:", "message_color", MsgColors, 4, hbox_message_colors);
+	
+	// Miscellaneous frame
+	CREATE_BOX_FRAME(frame_misc, "frame_misc", vbox_go,
+			 label_misc, "label_misc", "<b><i>Miscellaneous</i></b>");
+	
+	// Intro effect colors
+	hbox_misc_intro_colors = gtk_hbox_new(FALSE, 5);
+	gtk_widget_set_name(hbox_misc_intro_colors, "hbox_misc_intro_colors");
+	gtk_widget_show(hbox_misc_intro_colors);
+	gtk_container_add(GTK_CONTAINER(frame_misc), hbox_misc_intro_colors);
+	GLADE_HOOKUP_OBJECT(general_options_window, hbox_misc_intro_colors, "hbox_misc_intro_colors");
+	create_color_radio_buttons("Intro Effect Color:", "misc_intro_color",
+				   MsgColors, 4, hbox_misc_intro_colors);
 	
 	gtk_widget_show_all(general_options_window);
 	return general_options_window;
@@ -239,13 +254,15 @@ GtkWidget* create_general_options_window(void)
 
 
 /**
- * create_color_radio_buttons(): Create color radiobuttons.
+ * create_color_radio_buttons(): Create color radio buttons.
+ * @param title Title for this color button group.
  * @param groupName Prefix for each button's name.
  * @param colors Array of colors.
  * @param num Number of colors to use.
  * @param container Container for the radio buttons.
  */
-static void create_color_radio_buttons(const char* groupName, 
+static void create_color_radio_buttons(const char* title,
+				       const char* groupName,
 				       const char** colors,
 				       const int num,
 				       GtkWidget* container)
@@ -257,7 +274,7 @@ static void create_color_radio_buttons(const char* groupName,
 	
 	// Color label
 	sprintf(tmp, "label_%s", groupName);
-	label_color = gtk_label_new("Color:");
+	label_color = gtk_label_new(title);
 	gtk_widget_set_name(label_color, tmp);
 	gtk_widget_show(label_color);
 	gtk_box_pack_start(GTK_BOX(container), label_color, TRUE, TRUE, 0);
