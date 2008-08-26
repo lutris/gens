@@ -13,6 +13,7 @@
 #include "bios_misc_files/bios_misc_files_window_misc.h"
 #include "general_options/general_options_window.h"
 #include "about/about_window.h"
+#include "color_adjust/color_adjust_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -312,7 +313,7 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
  */
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	STUB;
+	create_color_adjust_window();
 }
 
 
