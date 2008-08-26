@@ -47,7 +47,6 @@ void Open_Select_CDROM(void)
 	
 	// Add CD-ROM drives to the dropdown.
 	// TODO: Improve this using udev or something.
-	
 	curPrefix = 0;
 	while (CDROM_Prefix[curPrefix])
 	{
