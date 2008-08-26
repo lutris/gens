@@ -2,6 +2,7 @@
  * GENS: (GTK+) Controller Configuration Window.
  */
 
+
 #include "controller_config_window.h"
 #include "controller_config_window_callbacks.h"
 

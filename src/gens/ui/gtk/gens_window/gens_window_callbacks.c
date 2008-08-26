@@ -1,18 +1,18 @@
 /**
  * GENS: (GTK+) Main Window Callbacks.
  */
- 
+
 
 #include "gens.h"
 #include "g_main.h"
 #include "gens_window.h"
 #include "gens_window_callbacks.h"
 #include "gens_window_sync.h"
-#include "game_genie_window_misc.h"
-#include "controller_config_window_misc.h"
-#include "bios_misc_files_window_misc.h"
-#include "general_options_window.h"
-#include "about_window.h"
+#include "game_genie_window/game_genie_window_misc.h"
+#include "controller_config_window/controller_config_window_misc.h"
+#include "bios_misc_files_window/bios_misc_files_window_misc.h"
+#include "general_options_window/general_options_window.h"
+#include "about_window/about_window.h"
 
 #include "ui_proxy.h"
 #include "ui-common.h"

@@ -1,8 +1,8 @@
 /**
  * GENS: (GTK+) Game Genie Window Callbacks.
  */
- 
- 
+
+
 #include <string.h>
 #include "game_genie_window.h"
 #include "game_genie_window_callbacks.h"

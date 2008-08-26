@@ -2,8 +2,9 @@
  * GENS: (GTK+) About Window.
  */
 
+
 #include "about_window.h"
-#include "gens_window.h"
+#include "gens_window/gens_window.h"
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>

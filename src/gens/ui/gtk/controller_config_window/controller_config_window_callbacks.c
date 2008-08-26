@@ -1,8 +1,8 @@
 /**
  * GENS: (GTK+) Controller Configuration Window Callbacks.
  */
- 
- 
+
+
 #include <string.h>
 #include "controller_config_window.h"
 #include "controller_config_window_callbacks.h"
