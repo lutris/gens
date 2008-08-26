@@ -2,8 +2,8 @@
  * GENS: (GTK+) OpenGL Resolution Window.
  */
 
-#ifndef OPENGL_RESOLUTION_WINDOW_H
-#define OPENGL_RESOLUTION_WINDOW_H
+#ifndef GTK_OPENGL_RESOLUTION_WINDOW_H
+#define GTK_OPENGL_RESOLUTION_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {
