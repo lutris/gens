@@ -36,7 +36,7 @@ void on_button_ca_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_ca_Apply_clicked(GtkButton *button, gpointer user_data)
 {
-	//GG_SaveCodes();
+	CA_Save();
 }
 
 
@@ -45,7 +45,7 @@ void on_button_ca_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_ca_Save_clicked(GtkButton *button, gpointer user_data)
 {
-	//GG_SaveCodes();
+	CA_Save();
 	gtk_widget_destroy(color_adjust_window);
 	color_adjust_window = NULL;
 }
