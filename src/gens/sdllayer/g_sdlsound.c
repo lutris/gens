@@ -11,6 +11,7 @@
 #include "vdp_io.h"
 #include "pcm.h"
 #include "misc.h"		// for Have_MMX flag
+#include "gens.h"
 
 int Seg_To_Buffer = 8; // for frame skip
 int Seg_L[882], Seg_R[882];
@@ -364,7 +365,7 @@ int Stop_Sound (void)
 
 int Start_WAV_Dump (void)
 {
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 #if 0
   char Name[1024] = "";
 
@@ -400,7 +401,7 @@ int Start_WAV_Dump (void)
 
 int Update_WAV_Dump (void)
 {
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 #if 0
   unsigned char Buf_Tmp[882 * 4 + 16];
   unsigned int length, Writted;
@@ -425,7 +426,7 @@ int Update_WAV_Dump (void)
 
 int Stop_WAV_Dump (void)
 {
-	fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+	STUB;
 #if 0
   if (!WAV_Dumping)
     {

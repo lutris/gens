@@ -22,6 +22,13 @@ void Check_Country_Order(void);
 
 void Set_Clock_Freq(int system);
 
+
+/**
+ * STUB: Indicates that this function is a stub.
+ */
+#define STUB fprintf(stderr, "TODO: STUB: %s()\n", __func__);
+
+
 /**
  * SET_VISIBLE_LINES: Sets the number of visible lines, depending on CPU mode and VDP setting.
  * If PAL and some VDP register are set, use 240 lines.
@@ -32,6 +39,7 @@ void Set_Clock_Freq(int system);
 		VDP_Num_Vis_Lines = 240;	\
 	else					\
 		VDP_Num_Vis_Lines = 224;
+
 
 /**
  * Z80_EXEC(): Z80 execution macro.
@@ -50,5 +58,6 @@ void Set_Clock_Freq(int system);
 	else								\
 		z80_Set_Odo (&M_Z80, Cycles_Z80 - (cyclesSubtract));
 #endif
+
 
 #endif

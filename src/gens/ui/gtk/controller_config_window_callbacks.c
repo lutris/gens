@@ -12,12 +12,6 @@
 
 
 /**
- * STUB: Indicates that this function is a stub.
- */
-#define STUB fprintf(stderr, "TODO: STUB: %s()\n", __func__);
-
-
-/**
  * Window is closed.
  */
 gboolean on_controller_config_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)

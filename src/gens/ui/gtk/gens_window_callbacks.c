@@ -55,12 +55,6 @@ void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
 
 
 /**
- * STUB: Indicates that this function is a stub.
- */
-#define STUB fprintf(stderr, "TODO: STUB: %s()\n", __func__);
-
-
-/**
  * Window is closed.
  */
 gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data)
