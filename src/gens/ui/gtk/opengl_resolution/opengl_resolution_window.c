@@ -60,13 +60,13 @@ GtkAccelGroup *accel_group;
 GtkWidget* create_opengl_resolution_window(void)
 {
 	GdkPixbuf *opengl_resolution_window_icon_pixbuf;
-	GtkWidget *vbox_glres;
+	GtkWidget *vbox_GLRes;
 	GtkWidget *hbox_resolution;
 	GtkWidget *label_width, *spinbutton_width;
 	GtkWidget *separator_resolution;
 	GtkWidget *label_height, *spinbutton_height;
 	GtkWidget *hbutton_box_bottomRow;
-	GtkWidget *button_glres_Cancel, *button_glres_Apply, *button_glres_Save;
+	GtkWidget *button_GLRes_Cancel, *button_GLRes_Apply, *button_GLRes_Save;
 	
 	if (opengl_resolution_window)
 	{
@@ -93,17 +93,17 @@ GtkWidget* create_opengl_resolution_window(void)
 			 G_CALLBACK(on_opengl_resolution_window_close), NULL);
 	
 	// Create the main VBox.
-	vbox_glres = gtk_vbox_new(FALSE, 5);
-	gtk_widget_set_name(vbox_glres, "vbox_glres");
-	gtk_widget_show(vbox_glres);
-	gtk_container_add(GTK_CONTAINER(opengl_resolution_window), vbox_glres);
-	GLADE_HOOKUP_OBJECT(opengl_resolution_window, vbox_glres, "vbox_glres");
+	vbox_GLRes = gtk_vbox_new(FALSE, 5);
+	gtk_widget_set_name(vbox_GLRes, "vbox_GLRes");
+	gtk_widget_show(vbox_GLRes);
+	gtk_container_add(GTK_CONTAINER(opengl_resolution_window), vbox_GLRes);
+	GLADE_HOOKUP_OBJECT(opengl_resolution_window, vbox_GLRes, "vbox_GLRes");
 	
 	// Create the HBox for the OpenGL resolution widgets.
 	hbox_resolution = gtk_hbox_new(FALSE, 5);
 	gtk_widget_set_name(hbox_resolution, "hbox_resolution");
 	gtk_widget_show(hbox_resolution);
-	gtk_box_pack_start(GTK_BOX(vbox_glres), hbox_resolution, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox_GLRes), hbox_resolution, TRUE, TRUE, 0);
 	GLADE_HOOKUP_OBJECT(opengl_resolution_window, hbox_resolution, "hbox_resolution");
 	
 	// Width
@@ -125,38 +125,38 @@ GtkWidget* create_opengl_resolution_window(void)
 	gtk_widget_set_name(hbutton_box_bottomRow, "hbutton_box_bottomRow");
 	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_bottomRow), GTK_BUTTONBOX_END);
 	gtk_widget_show(hbutton_box_bottomRow);
-	gtk_box_pack_start(GTK_BOX(vbox_glres), hbutton_box_bottomRow, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox_GLRes), hbutton_box_bottomRow, FALSE, FALSE, 0);
 	GLADE_HOOKUP_OBJECT(opengl_resolution_window, hbutton_box_bottomRow, "hbutton_box_bottomRow");
 	
 	// Cancel
-	button_glres_Cancel = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-	gtk_widget_set_name(button_glres_Cancel, "button_glres_Cancel");
-	gtk_widget_show(button_glres_Cancel);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_glres_Cancel, FALSE, FALSE, 0);
-	gtk_widget_add_accelerator(button_glres_Cancel, "activate", accel_group,
+	button_GLRes_Cancel = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+	gtk_widget_set_name(button_GLRes_Cancel, "button_GLRes_Cancel");
+	gtk_widget_show(button_GLRes_Cancel);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_GLRes_Cancel, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_GLRes_Cancel, "activate", accel_group,
 				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	AddButtonCallback_Clicked(button_glres_Cancel, on_button_glres_Cancel_clicked);
-	GLADE_HOOKUP_OBJECT(opengl_resolution_window, button_glres_Cancel, "button_glres_Cancel");
+	AddButtonCallback_Clicked(button_GLRes_Cancel, on_button_GLRes_Cancel_clicked);
+	GLADE_HOOKUP_OBJECT(opengl_resolution_window, button_GLRes_Cancel, "button_GLRes_Cancel");
 	
 	// Apply
-	button_glres_Apply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
-	gtk_widget_set_name(button_glres_Apply, "button_glres_Apply");
-	gtk_widget_show(button_glres_Apply);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_glres_Apply, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_glres_Apply, on_button_glres_Apply_clicked);
-	GLADE_HOOKUP_OBJECT(opengl_resolution_window, button_glres_Apply, "button_glres_Apply");
+	button_GLRes_Apply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+	gtk_widget_set_name(button_GLRes_Apply, "button_GLRes_Apply");
+	gtk_widget_show(button_GLRes_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_GLRes_Apply, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_GLRes_Apply, on_button_GLRes_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(opengl_resolution_window, button_GLRes_Apply, "button_GLRes_Apply");
 	
 	// Save
-	button_glres_Save = gtk_button_new_from_stock(GTK_STOCK_SAVE);
-	gtk_widget_set_name(button_glres_Save, "button_glres_Save");
-	gtk_widget_show(button_glres_Save);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_glres_Save, FALSE, FALSE, 0);
-	gtk_widget_add_accelerator(button_glres_Save, "activate", accel_group,
+	button_GLRes_Save = gtk_button_new_from_stock(GTK_STOCK_SAVE);
+	gtk_widget_set_name(button_GLRes_Save, "button_GLRes_Save");
+	gtk_widget_show(button_GLRes_Save);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_GLRes_Save, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_GLRes_Save, "activate", accel_group,
 				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	gtk_widget_add_accelerator(button_glres_Save, "activate", accel_group,
+	gtk_widget_add_accelerator(button_GLRes_Save, "activate", accel_group,
 				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	AddButtonCallback_Clicked(button_glres_Save, on_button_glres_Save_clicked);
-	GLADE_HOOKUP_OBJECT(opengl_resolution_window, button_glres_Save, "button_glres_Save");
+	AddButtonCallback_Clicked(button_GLRes_Save, on_button_GLRes_Save_clicked);
+	GLADE_HOOKUP_OBJECT(opengl_resolution_window, button_GLRes_Save, "button_GLRes_Save");
 	
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(opengl_resolution_window), accel_group);

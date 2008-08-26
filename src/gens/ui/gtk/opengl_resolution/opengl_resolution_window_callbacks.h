@@ -14,9 +14,9 @@ extern "C" {
 #include <gdk/gdkkeysyms.h>
 
 gboolean on_opengl_resolution_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_button_glres_Cancel_clicked(GtkButton *button, gpointer user_data);
-void on_button_glres_Apply_clicked(GtkButton *button, gpointer user_data);
-void on_button_glres_Save_clicked(GtkButton *button, gpointer user_data);
+void on_button_GLRes_Cancel_clicked(GtkButton *button, gpointer user_data);
+void on_button_GLRes_Apply_clicked(GtkButton *button, gpointer user_data);
+void on_button_GLRes_Save_clicked(GtkButton *button, gpointer user_data);
 
 #ifdef __cplusplus
 }

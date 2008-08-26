@@ -22,26 +22,26 @@
  */
 void Open_OpenGL_Resolution(void)
 {
-	GtkWidget *glres;
+	GtkWidget *GLRes;
 	GtkWidget *spinbutton_width, *spinbutton_height;
 	
-	glres = create_opengl_resolution_window();
-	if (!glres)
+	GLRes = create_opengl_resolution_window();
+	if (!GLRes)
 	{
 		// Either an error occurred while creating the OpenGL Resolution window,
 		// or the OpenGL Resolution window is already created.
 		return;
 	}
-	gtk_window_set_transient_for(GTK_WINDOW(glres), GTK_WINDOW(gens_window));
+	gtk_window_set_transient_for(GTK_WINDOW(GLRes), GTK_WINDOW(gens_window));
 	
 	// Load settings.
-	spinbutton_width = lookup_widget(glres, "spinbutton_width");
+	spinbutton_width = lookup_widget(GLRes, "spinbutton_width");
 	gtk_spin_button_set_value(spinbutton_width, Width_gl);
-	spinbutton_height = lookup_widget(glres, "spinbutton_height");
+	spinbutton_height = lookup_widget(GLRes, "spinbutton_height");
 	gtk_spin_button_set_value(spinbutton_height, Height_gl);
 	
 	// Show the OpenGL Resolution window.
-	gtk_widget_show_all(glres);
+	gtk_widget_show_all(GLRes);
 }
 
 

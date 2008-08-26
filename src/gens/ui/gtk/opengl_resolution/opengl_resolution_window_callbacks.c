@@ -24,7 +24,7 @@ gboolean on_opengl_resolution_window_close(GtkWidget *widget, GdkEvent *event, g
 /**
  * Cancel
  */
-void on_button_glres_Cancel_clicked(GtkButton *button, gpointer user_data)
+void on_button_GLRes_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
 	gtk_widget_destroy(opengl_resolution_window);
 	opengl_resolution_window = NULL;
@@ -34,7 +34,7 @@ void on_button_glres_Cancel_clicked(GtkButton *button, gpointer user_data)
 /**
  * Apply
  */
-void on_button_glres_Apply_clicked(GtkButton *button, gpointer user_data)
+void on_button_GLRes_Apply_clicked(GtkButton *button, gpointer user_data)
 {
 	GLRes_Save();
 }
@@ -43,7 +43,7 @@ void on_button_glres_Apply_clicked(GtkButton *button, gpointer user_data)
 /**
  * Save
  */
-void on_button_glres_Save_clicked(GtkButton *button, gpointer user_data)
+void on_button_GLRes_Save_clicked(GtkButton *button, gpointer user_data)
 {
 	GLRes_Save();
 	gtk_widget_destroy(opengl_resolution_window);
