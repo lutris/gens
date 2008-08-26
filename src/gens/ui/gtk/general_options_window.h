@@ -14,6 +14,8 @@ extern "C" {
 
 GtkWidget* create_general_options_window(void); 
 extern GtkWidget *general_options_window;
+extern const char* GO_MsgColors[13];
+extern const char* GO_IntroEffectColors[25];
 
 #ifdef __cplusplus
 }

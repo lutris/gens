@@ -91,26 +91,26 @@ GtkWidget *general_options_window = NULL;
 GtkAccelGroup *accel_group;
 
 // Message colors.
-const char* MsgColors[] =
+const char* GO_MsgColors[13] =
 {
-	"White", "#FFFFFF", "#000000",
-	"Blue",  "#0000FF", "#FFFFFF",
-	"Green", "#00FF00", "#000000",
-	"Red",   "#FF0000", "#000000",
+	"white", "#FFFFFF", "#000000",
+	"blue",  "#0000FF", "#FFFFFF",
+	"green", "#00FF00", "#000000",
+	"red",   "#FF0000", "#000000",
 	NULL,
 };
 
 // Intro effect colors.
-const char* IntroEffectColors[] =
+const char* GO_IntroEffectColors[25] =
 {
-	"Black",  "#000000", "#FFFFFF",
-	"Blue",   "#0000FF", "#FFFFFF",
-	"Green",  "#00FF00", "#000000",
-	"Cyan",   "#00FFFF", "#000000",
-	"Red",    "#FF0000", "#000000",
-	"Purple", "#FF00FF", "#000000",
-	"Yellow", "#FFFF00", "#000000",
-	"White",  "#FFFFFF", "#000000",
+	"black",  "#000000", "#FFFFFF",
+	"blue",   "#0000FF", "#FFFFFF",
+	"green",  "#00FF00", "#000000",
+	"cyan",   "#00FFFF", "#000000",
+	"red",    "#FF0000", "#000000",
+	"purple", "#FF00FF", "#000000",
+	"yellow", "#FFFF00", "#000000",
+	"white",  "#FFFFFF", "#000000",
 	NULL,
 };
 
@@ -138,7 +138,7 @@ GtkWidget* create_general_options_window(void)
 	GtkWidget *frame_message, *label_message, *table_message;
 	GtkWidget *check_message_enable, *check_message_doublesized;
 	GtkWidget *check_message_transparency, *hbox_message_colors;
-	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_colors;
+	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_effect_colors;
 	GtkWidget *hbutton_box_go_buttonRow, *button_go_Cancel, *button_go_Save;
 	
 	if (general_options_window)
@@ -219,7 +219,7 @@ GtkWidget* create_general_options_window(void)
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
 	GLADE_HOOKUP_OBJECT(general_options_window, hbox_fps_colors, "hbox_fps_color");
-	create_color_radio_buttons("Color:", "fps_color", MsgColors, 4, hbox_fps_colors);
+	create_color_radio_buttons("Color:", "fps", GO_MsgColors, 4, hbox_fps_colors);
 	
 	// Message frame
 	CREATE_BOX_FRAME(frame_message, "frame_message", vbox_go,
@@ -248,20 +248,22 @@ GtkWidget* create_general_options_window(void)
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
 	GLADE_HOOKUP_OBJECT(general_options_window, hbox_message_colors, "hbox_message_color");
-	create_color_radio_buttons("Color:", "message_color", MsgColors, 4, hbox_message_colors);
+	create_color_radio_buttons("Color:", "message", GO_MsgColors, 4, hbox_message_colors);
 	
 	// Miscellaneous frame
 	CREATE_BOX_FRAME(frame_misc, "frame_misc", vbox_go,
 			 label_misc, "label_misc", "<b><i>Miscellaneous</i></b>");
 	
 	// Intro effect colors
-	hbox_misc_intro_colors = gtk_hbox_new(FALSE, 5);
-	gtk_widget_set_name(hbox_misc_intro_colors, "hbox_misc_intro_colors");
-	gtk_widget_show(hbox_misc_intro_colors);
-	gtk_container_add(GTK_CONTAINER(frame_misc), hbox_misc_intro_colors);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbox_misc_intro_colors, "hbox_misc_intro_colors");
-	create_color_radio_buttons("Intro Effect Color:", "misc_intro_color",
-				   IntroEffectColors, 8, hbox_misc_intro_colors);
+	hbox_misc_intro_effect_colors = gtk_hbox_new(FALSE, 5);
+	gtk_widget_set_name(hbox_misc_intro_effect_colors, "hbox_misc_intro_effect_colors");
+	gtk_widget_show(hbox_misc_intro_effect_colors);
+	gtk_container_add(GTK_CONTAINER(frame_misc), hbox_misc_intro_effect_colors);
+	GLADE_HOOKUP_OBJECT(general_options_window, 
+			    hbox_misc_intro_effect_colors,
+			    "hbox_misc_intro_effect_colors");
+	create_color_radio_buttons("Intro Effect Color:", "misc_intro_effect",
+				   GO_IntroEffectColors, 8, hbox_misc_intro_effect_colors);
 	
 	// HButton Box for the row of buttons on the bottom of the window
 	hbutton_box_go_buttonRow = gtk_hbutton_box_new();
@@ -314,13 +316,13 @@ static void create_color_radio_buttons(const char* title,
 				       const int num,
 				       GtkWidget* container)
 {
-	GtkWidget *label_color, *button_color;
+	GtkWidget *label_color, *radio_button_color;
 	GSList *color_group = NULL;
 	GdkColor tmpColor; int i;
 	char tmp[64];
 	
 	// Color label
-	sprintf(tmp, "label_%s", groupName);
+	sprintf(tmp, "label_%s_color", groupName);
 	label_color = gtk_label_new(title);
 	gtk_widget_set_name(label_color, tmp);
 	gtk_widget_show(label_color);
@@ -333,16 +335,16 @@ static void create_color_radio_buttons(const char* title,
 		if (!colors[i * 3])
 			return;
 		
-		sprintf(tmp, "%s_%s", groupName, colors[i * 3]);
-		button_color = gtk_radio_button_new(color_group);
-		color_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button_color));
-		gtk_widget_set_name(button_color, tmp);
+		sprintf(tmp, "radio_button_%s_color_%s", groupName, colors[i * 3]);
+		radio_button_color = gtk_radio_button_new(color_group);
+		color_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_color));
+		gtk_widget_set_name(radio_button_color, tmp);
 		gdk_color_parse(colors[(i * 3) + 1], &tmpColor);
-		gtk_widget_modify_bg(button_color, GTK_STATE_NORMAL, &tmpColor);
+		gtk_widget_modify_bg(radio_button_color, GTK_STATE_NORMAL, &tmpColor);
 		gdk_color_parse(colors[(i * 3) + 2], &tmpColor);
-		gtk_widget_modify_fg(button_color, GTK_STATE_NORMAL, &tmpColor);
-		gtk_widget_show(button_color);
-		gtk_box_pack_start(GTK_BOX(container), button_color, TRUE, TRUE, 0);
-		GLADE_HOOKUP_OBJECT(general_options_window, button_color, tmp);
+		gtk_widget_modify_fg(radio_button_color, GTK_STATE_NORMAL, &tmpColor);
+		gtk_widget_show(radio_button_color);
+		gtk_box_pack_start(GTK_BOX(container), radio_button_color, TRUE, TRUE, 0);
+		GLADE_HOOKUP_OBJECT(general_options_window, radio_button_color, tmp);
 	}	
 }
