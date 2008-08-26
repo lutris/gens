@@ -26,6 +26,10 @@ void Sleep(int i);
 #include "cdda_mp3.h"
 
 
+// Needed to synchronize the Graphics menu after a GL resolution change.
+#include "gens/gens_window_sync.h"
+
+
 SDL_Surface *screen = NULL;
 
 
@@ -1027,6 +1031,9 @@ void Set_GL_Resolution(int w,int h)
 	// Print the resolution information.
 	MESSAGE_NUM_2L("Selected %dx%d resolution",
 		       "Selected %dx%d resolution", w, h, 1500);
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
 	
 	// If OpenGL mode isn't enabled, don't do anything.
 	if (!Opengl)
