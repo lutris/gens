@@ -62,7 +62,7 @@
 // Macro to add a checkbox to a Box.
 #define CREATE_BOX_CHECKBOX(Container, Caption, CheckWidget, CheckName)		\
 {										\
-	CheckWidget = gtk_check_button_new_with_label(Caption);			\
+	CheckWidget = gtk_check_button_new_with_mnemonic(Caption);		\
 	gtk_widget_set_name(CheckWidget, CheckName);				\
 	gtk_widget_show(CheckWidget);						\
 	gtk_box_pack_start(GTK_BOX(Container), CheckWidget, FALSE, FALSE, 0);	\
@@ -151,9 +151,9 @@ GtkWidget* create_color_adjust_window(void)
 	GLADE_HOOKUP_OBJECT(color_adjust_window, hbutton_box_options, "hbutton_box_options");
 	
 	// Miscellaneous options.
-	CREATE_BOX_CHECKBOX(hbutton_box_options, "Grayscale",
+	CREATE_BOX_CHECKBOX(hbutton_box_options, "_Grayscale",
 			    check_options_grayscale, "check_options_grayscale");
-	CREATE_BOX_CHECKBOX(hbutton_box_options, "Inverted",
+	CREATE_BOX_CHECKBOX(hbutton_box_options, "_Inverted",
 			    check_options_inverted, "check_options_inverted");
 	
 	// Create an HButton Box for the buttons on the bottom.
