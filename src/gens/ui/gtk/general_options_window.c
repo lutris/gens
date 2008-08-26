@@ -91,12 +91,12 @@ GtkWidget *general_options_window = NULL;
 GtkAccelGroup *accel_group;
 
 // Message colors.
-const char* MsgColors[9] =
+const char* MsgColors[13] =
 {
-	"White", "#FFFFFF",
-	"Blue",  "#FF0000",
-	"Green", "#00FF00",
-	"Red",   "#0000FF",
+	"White", "#FFFFFF", "#000000",
+	"Blue",  "#FF0000", "#FFFFFF",
+	"Green", "#00FF00", "#000000",
+	"Red",   "#0000FF", "#000000",
 	NULL,
 };
 
@@ -250,7 +250,7 @@ static void create_color_radio_buttons(const char* groupName,
 				       const int num,
 				       GtkWidget* container)
 {
-	GtkWidget *label_color, *hbutton_box_color, *button_color;
+	GtkWidget *label_color, *button_color;
 	GSList *color_group = NULL;
 	GdkColor tmpColor; int i;
 	char tmp[64];
@@ -266,15 +266,17 @@ static void create_color_radio_buttons(const char* groupName,
 	// Color Buttons
 	for (i = 0; i < num; i++)
 	{
-		if (!MsgColors[i * 2])
+		if (!MsgColors[i * 3])
 			return;
 		
-		sprintf(tmp, "%s_%s", groupName, colors[i * 2]);
+		sprintf(tmp, "%s_%s", groupName, colors[i * 3]);
 		button_color = gtk_radio_button_new(color_group);
 		color_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button_color));
 		gtk_widget_set_name(button_color, tmp);
-		gdk_color_parse(colors[(i * 2) + 1], &tmpColor);
+		gdk_color_parse(colors[(i * 3) + 1], &tmpColor);
 		gtk_widget_modify_bg(button_color, GTK_STATE_NORMAL, &tmpColor);
+		gdk_color_parse(colors[(i * 3) + 2], &tmpColor);
+		gtk_widget_modify_fg(button_color, GTK_STATE_NORMAL, &tmpColor);
 		gtk_widget_show(button_color);
 		gtk_box_pack_start(GTK_BOX(container), button_color, TRUE, TRUE, 0);
 		GLADE_HOOKUP_OBJECT(general_options_window, button_color, tmp);
