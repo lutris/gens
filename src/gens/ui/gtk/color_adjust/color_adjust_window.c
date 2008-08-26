@@ -169,6 +169,8 @@ GtkWidget* create_color_adjust_window(void)
 	gtk_widget_set_name(button_ca_Cancel, "button_ca_Cancel");
 	gtk_widget_show(button_ca_Cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_ca_Cancel, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_ca_Cancel, "activate", accel_group,
+				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_ca_Cancel, on_button_ca_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, button_ca_Cancel, "button_ca_Cancel");
 	
@@ -185,8 +187,15 @@ GtkWidget* create_color_adjust_window(void)
 	gtk_widget_set_name(button_ca_Save, "button_ca_Save");
 	gtk_widget_show(button_ca_Save);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_bottomRow), button_ca_Save, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_ca_Save, "activate", accel_group,
+				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	gtk_widget_add_accelerator(button_ca_Save, "activate", accel_group,
+				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_ca_Save, on_button_ca_Save_clicked);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, button_ca_Save, "button_ca_Save");
+	
+	// Add the accel group.
+	gtk_window_add_accel_group(GTK_WINDOW(color_adjust_window), accel_group);
 	
 	return color_adjust_window;
 }

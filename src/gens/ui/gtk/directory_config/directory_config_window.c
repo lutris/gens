@@ -211,11 +211,11 @@ GtkWidget* create_directory_config_window(void)
 	gtk_widget_set_name(button_dc_Save, "button_dc_Save");
 	gtk_widget_show(button_dc_Save);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_dc_buttonRow), button_dc_Save, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_dc_Save, on_button_dc_Save_clicked);
 	gtk_widget_add_accelerator(button_dc_Save, "activate", accel_group,
 				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	gtk_widget_add_accelerator(button_dc_Save, "activate", accel_group,
 				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	AddButtonCallback_Clicked(button_dc_Save, on_button_dc_Save_clicked);
 	GLADE_HOOKUP_OBJECT(directory_config_window, button_dc_Save, "button_dc_Save");
 	
 	// Add the accel group.
