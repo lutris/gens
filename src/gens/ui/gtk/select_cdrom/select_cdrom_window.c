@@ -46,6 +46,7 @@ GtkWidget* create_select_cdrom_window(void)
 	GtkWidget *hbox_speed, *label_speed, *combo_speed;
 	GtkWidget *hbutton_box_bottomRow;
 	GtkWidget *button_SelCD_Cancel, *button_SelCD_Apply, *button_SelCD_Save;
+	int i; char tmp[64];
 	
 	if (select_cdrom_window)
 	{
@@ -135,8 +136,25 @@ GtkWidget* create_select_cdrom_window(void)
 		"this setting to take effect."
 		);
 	gtk_widget_show(label_speed);
-	gtk_box_pack_start(GTK_BOX(hbox_speed), label_speed, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox_speed), label_speed, TRUE, TRUE, 0);
 	GLADE_HOOKUP_OBJECT(select_cdrom_window, label_speed, "label_speed");
+	
+	// Add the dropdown for speed selection.
+	combo_speed = gtk_combo_box_new_text();
+	gtk_widget_set_name(combo_speed, "combo_speed");
+	for (i = 0; i < 14; i++)
+	{
+		if (CD_DriveSpeed[i] < 0)
+			break;
+		else if (CD_DriveSpeed[i] == 0)
+			strcpy(tmp, "Auto");
+		else
+			sprintf(tmp, "%dx", CD_DriveSpeed[i]);
+		gtk_combo_box_append_text(GTK_COMBO_BOX(combo_speed), tmp);
+	}
+	gtk_widget_show(combo_speed);
+	gtk_box_pack_start(GTK_BOX(hbox_speed), combo_speed, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(select_cdrom_window, combo_speed, "combo_speed");
 	
 	// Create an HButton Box for the buttons on the bottom.
 	hbutton_box_bottomRow = gtk_hbutton_box_new();
