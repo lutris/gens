@@ -276,14 +276,14 @@ int Detect_Format(const char *Name)
 		// Other extension. Assuming this file is uncompressed.
 		strcpy(zname, Name);
 		
-		f = fopen (zname, "rb");
+		f = fopen(zname, "rb");
 		
 		if (f == NULL)
 			return -1;
 		
 		// Read the first 1024 bytes of the ROM file.
-		fread (buf, 1, 1024, f);
-		fclose (f);
+		fread(buf, 1, 1024, f);
+		fclose(f);
 	}
 	
 	// SegaCD check
@@ -301,7 +301,7 @@ int Detect_Format(const char *Name)
 	
 	i = 0;
 	
-	if (strncasecmp ("SEGA", &buf[0x100], 4))
+	if (strncasecmp("SEGA", &buf[0x100], 4))
 	{
 		// No "SEGA" text in the header. This might be an interleaved ROM.
 		// Maybe interleaved
