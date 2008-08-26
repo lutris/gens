@@ -61,7 +61,8 @@ GtkWidget* create_bios_misc_files_window(void)
 	GtkWidget *vbox_bmf;
 	GtkWidget *frame_file = NULL, *label_frame_file = NULL, *table_frame_file = NULL;
 	GtkWidget *label_file = NULL, *entry_file = NULL, *button_file = NULL;
-	GtkWidget *hbutton_box_bmf_buttonRow, *button_bmf_Cancel, *button_bmf_Save;
+	GtkWidget *hbutton_box_bmf_buttonRow;
+	GtkWidget *button_bmf_Cancel, *button_bmf_Apply, *button_bmf_Save;
 	
 	char tmp[64];
 	int file = 0, table_row = 0;
@@ -201,6 +202,14 @@ GtkWidget* create_bios_misc_files_window(void)
 				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_bmf_Cancel, on_button_bmf_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Cancel, "button_bmf_Cancel");
+	
+	// Apply
+	button_bmf_Apply = gtk_button_new_from_stock("gtk-apply");
+	gtk_widget_set_name(button_bmf_Apply, "button_bmf_Apply");
+	gtk_widget_show(button_bmf_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_bmf_buttonRow), button_bmf_Apply, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_bmf_Apply, on_button_bmf_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(bios_misc_files_window, button_bmf_Apply, "button_bmf_Apply");
 	
 	// Save
 	button_bmf_Save = gtk_button_new_from_stock("gtk-save");

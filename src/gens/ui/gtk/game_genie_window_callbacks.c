@@ -102,27 +102,6 @@ void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
- * Cancel
- */
-void on_button_gg_cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	gtk_widget_destroy(game_genie_window);
-	game_genie_window = NULL;
-}
-
-
-/**
- * OK
- */
-void on_button_gg_OK_clicked(GtkButton *button, gpointer user_data)
-{
-	GG_SaveCodes();
-	gtk_widget_destroy(game_genie_window);
-	game_genie_window = NULL;
-}
-
-
-/**
  * Code was toggled.
  */
 void on_treeview_gg_list_item_toggled(GtkCellRendererToggle *cell_renderer,
@@ -140,4 +119,36 @@ void on_treeview_gg_list_item_toggled(GtkCellRendererToggle *cell_renderer,
 	
 	// Set the inverted value.
 	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !curState, -1);
+}
+
+
+/**
+ * Cancel
+ */
+void on_button_gg_Cancel_clicked(GtkButton *button, gpointer user_data)
+{
+	gtk_widget_destroy(game_genie_window);
+	game_genie_window = NULL;
+}
+
+
+/**
+ * Apply
+ */
+void on_button_gg_Apply_clicked(GtkButton *button, gpointer user_data)
+{
+	GG_SaveCodes();
+	gtk_widget_destroy(game_genie_window);
+	game_genie_window = NULL;
+}
+
+
+/**
+ * Save
+ */
+void on_button_gg_Save_clicked(GtkButton *button, gpointer user_data)
+{
+	GG_SaveCodes();
+	gtk_widget_destroy(game_genie_window);
+	game_genie_window = NULL;
 }

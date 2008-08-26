@@ -32,6 +32,15 @@ void on_button_go_Cancel_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
+ * Apply
+ */
+void on_button_go_Apply_clicked(GtkButton *button, gpointer user_data)
+{
+	General_Options_Save();
+}
+
+
+/**
  * Save
  */
 void on_button_go_Save_clicked(GtkButton *button, gpointer user_data)

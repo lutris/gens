@@ -62,27 +62,6 @@ void on_check_cc_Teamplayer_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
- * Cancel
- */
-void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	gtk_widget_destroy(controller_config_window);
-	controller_config_window = NULL;
-}
-
-
-/**
- * Save
- */
-void on_button_cc_Save_clicked(GtkButton *button, gpointer user_data)
-{
-	Controller_Config_Save();
-	gtk_widget_destroy(controller_config_window);
-	controller_config_window = NULL;
-}
-
-
-/**
  * "Reconfigure"
  */
 void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
@@ -129,4 +108,34 @@ void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 	padtype = gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype));
 	
 	Reconfigure_Input(player, padtype);
+}
+
+
+/**
+ * Cancel
+ */
+void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
+{
+	gtk_widget_destroy(controller_config_window);
+	controller_config_window = NULL;
+}
+
+
+/**
+ * Apply
+ */
+void on_button_cc_Apply_clicked(GtkButton *button, gpointer user_data)
+{
+	Controller_Config_Save();
+}
+
+
+/**
+ * Save
+ */
+void on_button_cc_Save_clicked(GtkButton *button, gpointer user_data)
+{
+	Controller_Config_Save();
+	gtk_widget_destroy(controller_config_window);
+	controller_config_window = NULL;
 }

@@ -65,8 +65,9 @@ GtkWidget* create_game_genie_window(void)
 	GtkWidget *hbutton_box_gg_buttonRow;
 	GtkWidget *button_gg_delCode;
 	GtkWidget *button_gg_deactAllCodes;	GtkWidget *button_gg_deactAllCodes_Icon;
-	GtkWidget *button_gg_cancel;
-	GtkWidget *button_gg_OK;
+	GtkWidget *button_gg_Cancel;
+	GtkWidget *button_gg_Apply;
+	GtkWidget *button_gg_Save;
 	
 	// List of codes
 	GtkWidget *hbox_gg_list;
@@ -250,20 +251,28 @@ GtkWidget* create_game_genie_window(void)
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_deactAllCodes, "button_gg_deactAllCodes");
 	
 	// Cancel
-	button_gg_cancel = gtk_button_new_from_stock("gtk-cancel");
-	gtk_widget_set_name(button_gg_cancel, "button_gg_cancel");
-	gtk_widget_show(button_gg_cancel);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_cancel, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_gg_cancel, on_button_gg_cancel_clicked);
-	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_cancel, "button_gg_cancel");
+	button_gg_Cancel = gtk_button_new_from_stock("gtk-cancel");
+	gtk_widget_set_name(button_gg_Cancel, "button_gg_Cancel");
+	gtk_widget_show(button_gg_Cancel);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_Cancel, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_gg_Cancel, on_button_gg_Cancel_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_Cancel, "button_gg_Cancel");
 	
-	// OK
-	button_gg_OK = gtk_button_new_from_stock("gtk-ok");
-	gtk_widget_set_name(button_gg_OK, "button_gg_OK");
-	gtk_widget_show(button_gg_OK);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_OK, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_gg_OK, on_button_gg_OK_clicked);
-	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_OK, "button_gg_OK");
+	// Apply
+	button_gg_Apply = gtk_button_new_from_stock("gtk-apply");
+	gtk_widget_set_name(button_gg_Apply, "button_gg_Apply");
+	gtk_widget_show(button_gg_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_Apply, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_gg_Apply, on_button_gg_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_Apply, "button_gg_Apply");
+	
+	// Save
+	button_gg_Save = gtk_button_new_from_stock("gtk-save");
+	gtk_widget_set_name(button_gg_Save, "button_gg_Save");
+	gtk_widget_show(button_gg_Save);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_Save, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_gg_Save, on_button_gg_Save_clicked);
+	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_Save, "button_gg_Save");
 	
 	return game_genie_window;
 }

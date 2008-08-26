@@ -42,6 +42,15 @@ void on_button_dc_Cancel_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
+ * Apply
+ */
+void on_button_dc_Apply_clicked(GtkButton *button, gpointer user_data)
+{
+	Directory_Config_Save();
+}
+
+
+/**
  * Save
  */
 void on_button_dc_Save_clicked(GtkButton *button, gpointer user_data)

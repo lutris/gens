@@ -139,7 +139,8 @@ GtkWidget* create_general_options_window(void)
 	GtkWidget *check_message_enable, *check_message_doublesized;
 	GtkWidget *check_message_transparency, *hbox_message_colors;
 	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_effect_colors;
-	GtkWidget *hbutton_box_go_buttonRow, *button_go_Cancel, *button_go_Save;
+	GtkWidget *hbutton_box_go_buttonRow;
+	GtkWidget *button_go_Cancel, *button_go_Apply, *button_go_Save;
 	
 	if (general_options_window)
 	{
@@ -275,13 +276,21 @@ GtkWidget* create_general_options_window(void)
 	
 	// Cancel
 	button_go_Cancel = gtk_button_new_from_stock("gtk-cancel");
-	gtk_widget_set_name(button_go_Cancel, "button_go_cancel");
+	gtk_widget_set_name(button_go_Cancel, "button_go_Cancel");
 	gtk_widget_show(button_go_Cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Cancel, FALSE, FALSE, 0);
 	gtk_widget_add_accelerator(button_go_Cancel, "activate", accel_group,
 				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_go_Cancel, on_button_go_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Cancel, "button_go_Cancel");
+	
+	// Apply
+	button_go_Apply = gtk_button_new_from_stock("gtk-apply");
+	gtk_widget_set_name(button_go_Apply, "button_go_Apply");
+	gtk_widget_show(button_go_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Apply, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_go_Apply, on_button_go_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Apply, "button_go_Apply");
 	
 	// Save
 	button_go_Save = gtk_button_new_from_stock("gtk-save");

@@ -66,7 +66,7 @@ GtkWidget* create_directory_config_window(void)
 	GtkWidget *frame_direntry = NULL, *label_frame_direntry = NULL, *table_frame_direntry = NULL;
 	GtkWidget *label_direntry = NULL, *entry_direntry = NULL, *button_direntry = NULL;
 	GtkWidget *hbutton_box_dc_buttonRow;
-	GtkWidget *button_dc_Cancel, *button_dc_Save;
+	GtkWidget *button_dc_Cancel, *button_dc_Apply, *button_dc_Save;
 	
 	char tmp[64];
 	int dir = 0;
@@ -194,6 +194,16 @@ GtkWidget* create_directory_config_window(void)
 				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_dc_Cancel, on_button_dc_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(directory_config_window, button_dc_Cancel, "button_dc_Cancel");
+	
+	// Apply
+	button_dc_Apply = gtk_button_new_from_stock("gtk-apply");
+	gtk_widget_set_name(button_dc_Apply, "button_dc_Apply");
+	gtk_widget_show(button_dc_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_dc_buttonRow), button_dc_Apply, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_dc_Apply, "activate", accel_group,
+				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	AddButtonCallback_Clicked(button_dc_Apply, on_button_dc_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(directory_config_window, button_dc_Apply, "button_dc_Apply");
 	
 	// Save
 	button_dc_Save = gtk_button_new_from_stock("gtk-save");

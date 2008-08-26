@@ -42,6 +42,15 @@ void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data)
 
 
 /**
+ * Apply
+ */
+void on_button_bmf_Apply_clicked(GtkButton *button, gpointer user_data)
+{
+	BIOS_Misc_Files_Save();
+}
+
+
+/**
  * Save
  */
 void on_button_bmf_Save_clicked(GtkButton *button, gpointer user_data)

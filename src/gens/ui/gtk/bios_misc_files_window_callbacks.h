@@ -14,6 +14,7 @@ extern "C" {
 gboolean on_bios_misc_files_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 void on_button_bmf_Change_clicked(GtkButton *button, gpointer user_data);
 void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data);
+void on_button_bmf_Apply_clicked(GtkButton *button, gpointer user_data);
 void on_button_bmf_Save_clicked(GtkButton *button, gpointer user_data);
 
 #ifdef __cplusplus

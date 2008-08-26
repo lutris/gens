@@ -15,6 +15,7 @@ extern "C" {
 gboolean on_directory_config_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 void on_button_dc_Change_clicked(GtkButton *button, gpointer user_data);
 void on_button_dc_Cancel_clicked(GtkButton *button, gpointer user_data);
+void on_button_dc_Apply_clicked(GtkButton *button, gpointer user_data);
 void on_button_dc_Save_clicked(GtkButton *button, gpointer user_data);
 
 #ifdef __cplusplus

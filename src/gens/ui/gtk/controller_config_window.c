@@ -47,7 +47,7 @@ GtkWidget* create_controller_config_window(void)
 	GtkWidget *frame_setting_keys;
 	GtkWidget *label_setting_keys, *label_cc_echo;
 	GtkWidget *hbutton_box_savecancel;
-	GtkWidget *button_cc_Save, *button_cc_Cancel;
+	GtkWidget *button_cc_Cancel, *button_cc_Apply, *button_cc_Save;
 	
 	if (controller_config_window)
 	{
@@ -187,6 +187,14 @@ GtkWidget* create_controller_config_window(void)
 	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Cancel, FALSE, FALSE, 0);
 	AddButtonCallback_Clicked(button_cc_Cancel, on_button_cc_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Cancel, "button_cc_Cancel");
+	
+	// Apply button
+	button_cc_Apply = gtk_button_new_from_stock("gtk-apply");
+	gtk_widget_set_name(button_cc_Apply, "button_cc_Apply");
+	gtk_widget_show(button_cc_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Apply, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_cc_Apply, on_button_cc_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Apply, "button_cc_Apply");
 	
 	// OK button
 	button_cc_Save = gtk_button_new_from_stock("gtk-save");
