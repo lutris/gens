@@ -396,28 +396,16 @@ void Fill_Infos(void)
 	// Finally we do the IPS patch here, we can have the translated game name
 	IPS_Patching ();
 	
-	for (i = 0; i < 16; i++)
-		My_Rom->Console_Name[i] = Rom_Data[i + 256];
-	
-	for (i = 0; i < 16; i++)
-		My_Rom->Copyright[i] = Rom_Data[i + 272];
-	
-	for (i = 0; i < 48; i++)
-		My_Rom->Rom_Name[i] = Rom_Data[i + 288];
-	
-	for (i = 0; i < 48; i++)
-		My_Rom->Rom_Name_W[i] = Rom_Data[i + 336];
-	
-	My_Rom->Type[0] = Rom_Data[384];
-	My_Rom->Type[1] = Rom_Data[385];
-	
-	for (i = 0; i < 12; i++)
-	My_Rom->Version[i] = Rom_Data[i + 386];
-	
+	// Copy ROM text.
+	// TODO: Use constants for the ROM addresses.
+	memcpy(My_Rom->Console_Name,	&Rom_Data[0x100], 16);
+	memcpy(My_Rom->Copyright,	&Rom_Data[0x110], 16);
+	memcpy(My_Rom->Rom_Name,	&Rom_Data[0x120], 48);
+	memcpy(My_Rom->Rom_Name_W,	&Rom_Data[0x150], 48);
+	memcpy(My_Rom->Type,		&Rom_Data[0x180], 2);
+	memcpy(My_Rom->Version,		&Rom_Data[0x182], 12);
 	My_Rom->Checksum = (Rom_Data[398] << 8) | Rom_Data[399];
-	
-	for (i = 0; i < 16; i++)
-		My_Rom->IO_Support[i] = Rom_Data[i + 400];
+	memcpy(My_Rom->IO_Support,	&Rom_Data[0x190], 16);
 	
 	My_Rom->Rom_Start_Adress = Rom_Data[416] << 24;
 	My_Rom->Rom_Start_Adress |= Rom_Data[417] << 16;
@@ -431,8 +419,7 @@ void Fill_Infos(void)
 	
 	My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
 	
-	for (i = 0; i < 12; i++)
-		My_Rom->Ram_Infos[i] = Rom_Data[i + 424];
+	memcpy(My_Rom->Ram_Infos,	&Rom_Data[0x1A8], 12);
 	
 	My_Rom->Ram_Start_Adress = Rom_Data[436] << 24;
 	My_Rom->Ram_Start_Adress |= Rom_Data[437] << 16;
@@ -444,15 +431,11 @@ void Fill_Infos(void)
 	My_Rom->Ram_End_Adress |= Rom_Data[442] << 8;
 	My_Rom->Ram_End_Adress |= Rom_Data[443];
 	
-	for (i = 0; i < 12; i++)
-		My_Rom->Modem_Infos[i] = Rom_Data[i + 444];
+	memcpy(My_Rom->Modem_Infos,	&Rom_Data[0x1BC], 12);
+	memcpy(My_Rom->Description,	&Rom_Data[0x1C8], 40);
+	memcpy(My_Rom->Countries,	&Rom_Data[0x1F0], 4);
 	
-	for (i = 0; i < 40; i++)
-		My_Rom->Description[i] = Rom_Data[i + 456];
-	
-	for (i = 0; i < 3; i++)
-		My_Rom->Countries[i] = Rom_Data[i + 496];
-	
+	// Null-terminate the strings.
 	My_Rom->Console_Name[16] = 0;
 	My_Rom->Copyright[16] = 0;
 	My_Rom->Rom_Name[48] = 0;
