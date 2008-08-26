@@ -381,7 +381,8 @@ void Sync_Gens_Window_SoundMenu(void)
 	gtk_widget_set_sensitive(MItem_PWM, Sound_Enable);
 	gtk_widget_set_sensitive(MItem_CDDA, Sound_Enable);
 	gtk_widget_set_sensitive(MItem_GYMDump, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_WAVDump, Sound_Enable);
+	// TODO: Uncomment this line after WAV dumping has been reimplemented.
+	//gtk_widget_set_sensitive(MItem_WAVDump, Sound_Enable);
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
