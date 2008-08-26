@@ -19,6 +19,7 @@
 // Stores the entries in the TreeView.
 GtkListStore *listmodel = NULL;
 
+
 /**
  * Open_Game_Genie(): Opens the Game Genie window.
  */
