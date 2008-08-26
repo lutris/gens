@@ -67,25 +67,31 @@ Get_Name_From_Path (char *Full_Path, char *Name)
 }
 
 
-void
-Get_Dir_From_Path (char *Full_Path, char *Dir)
+/**
+ * Get_Dir_From_Path(): Get the directory part of a pathname.
+ * @param Full_Path Full pathname.
+ * @param Dir Buffer to store the directory part.
+ */
+void Get_Dir_From_Path(const char *Full_Path, char *Dir)
 {
-  int i = 0;
-
-  i = strlen (Full_Path) - 1;
-
-  while ((i >= 0) && (Full_Path[i] != G_DIR_SEPARATOR))
-    i--;
-
-  if (i <= 0)
-    {
-      Dir[0] = 0;
-    }
-  else
-    {
-      strncpy (Dir, Full_Path, ++i);
-      Dir[i] = 0;
-    }
+	int i = strlen(Full_Path) - 1;
+	
+	// TODO: G_DIR_SEPARATOR is GTK-specific.
+	// Add something else for cross-platform compatibility.
+	while ((i >= 0) && (Full_Path[i] != G_DIR_SEPARATOR))
+		i--;
+	
+	if (i <= 0)
+	{
+		// No directory found.
+		Dir[0] = 0;
+	}
+	else
+	{
+		// Directory found. Copy it to the output buffer.
+		strncpy(Dir, Full_Path, ++i);
+		Dir[i] = 0;
+	}
 }
 
 

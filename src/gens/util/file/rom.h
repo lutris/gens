@@ -49,7 +49,7 @@ extern char CDROM_DEV[64];
 extern int CDROM_SPEED;
 
 void Get_Name_From_Path(char *Full_Path, char *Name);
-void Get_Dir_From_Path(char *Full_Path, char *Dir);
+void Get_Dir_From_Path(const char *Full_Path, char *Dir);
 void Update_CD_Rom_Name(char *Name);
 int Detect_Format(const char *Name);
 
