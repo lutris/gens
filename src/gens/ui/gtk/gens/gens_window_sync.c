@@ -137,7 +137,21 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
 	
 	// OpenGL Resolution
-	sprintf(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_%dx%d", Width_gl, Height_gl);
+	// Check if this is a custom resolution.
+	// TODO: Make an array with predefined resolutions somewhere.
+	if ((Width_gl == 320 && Height_gl == 240) ||
+	    (Width_gl == 640 && Height_gl == 480) ||
+	    (Width_gl == 800 && Height_gl == 600) ||
+	    (Width_gl == 1024 && Height_gl == 768))
+	{
+		// Predefined resolution.
+		sprintf(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_%dx%d", Width_gl, Height_gl);
+	}
+	else
+	{
+		// Custom resolution.
+		strcpy(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_Custom");
+	}
 	MItem_OpenGL_Resolution = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL_Resolution), TRUE);
 	
