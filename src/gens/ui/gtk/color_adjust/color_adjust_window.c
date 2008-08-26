@@ -48,7 +48,7 @@
 	gtk_widget_set_name(SliderWidget, "hscale_slider_" SliderGroup);	\
 	gtk_scale_set_value_pos(GTK_SCALE(SliderWidget), GTK_POS_RIGHT);	\
 	gtk_scale_set_digits(GTK_SCALE(SliderWidget), 0);			\
-	gtk_widget_set_size_request(SliderWidget, 250, -1);			\
+	gtk_widget_set_size_request(SliderWidget, 300, -1);			\
 	gtk_widget_show(SliderWidget);						\
 	gtk_table_attach(GTK_TABLE(Table), SliderWidget,			\
 			 1, 2, TableRow, TableRow + 1,				\
