@@ -45,9 +45,13 @@
 #endif
 #endif
 
+// TODO: Fix the workaround for the zlib bug, which requires filenames to be
+// specified instead of FILE pointers for COMPRESS_Get_First_File_Size() and
+// COMPRESS_Get_First_File().
+
 /**
  * COMPRESS_Detect_Format(): Detects if a file is in this compression handler's format.
- * @param f File pointer of the file to check.
+ * @param filename Filename of the archive.
  * @return 0 if this is not in this handler's format; non-zero if it is.
  */
 typedef int (GENS_FNCALL *COMPRESS_Detect_Format)(FILE *f);
@@ -57,16 +61,16 @@ typedef int (GENS_FNCALL *COMPRESS_Detect_Format)(FILE *f);
  * @param f File pointer of the archive.
  * @return Filesize, or 0 on error.
  */
-typedef int (GENS_FNCALL *COMPRESS_Get_First_File_Size)(FILE *f);
+typedef int (GENS_FNCALL *COMPRESS_Get_First_File_Size)(const char *filename);
 
 /**
  * COMPRESS_Get_First_File(): Gets the first file from the specified archive.
- * @param f File pointer of the archive.
+ * @param filename Filename of the archive.
  * @param buf Buffer to write the file to.
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-typedef int (GENS_FNCALL *COMPRESS_Get_First_File)(FILE *f, void *buf, int size);
+typedef int (GENS_FNCALL *COMPRESS_Get_First_File)(const char *filename, void *buf, int size);
 
 /**
  * COMPRESS_Handler(): Struct containing function pointers for compression handlers.

@@ -26,7 +26,7 @@
 #include <stdio.h>
 
 int GZip_Detect_Format(FILE *f);
-int GZip_Get_First_File_Size(FILE *f);
-int GZip_Get_First_File(FILE *f, void *buf, int size);
+int GZip_Get_First_File_Size(const char *filename);
+int GZip_Get_First_File(const char *filename, void *buf, int size);
 
 #endif

@@ -32,25 +32,28 @@ int GZip_Detect_Format(FILE *f)
 {
 	// Magic Number for GZip:
 	// First two bytes: "\x1F\x8B"
-	
 	unsigned char buf[2];
 	fseek(f, 0, SEEK_SET);
 	fread(buf, 2, sizeof(unsigned char), f);
+	printf("%d %d\n", buf[0], buf[1]);
+	fseek(f, 0, SEEK_SET);
+	fread(buf, 2, sizeof(unsigned char), f);
+	printf("%d %d\n", buf[0], buf[1]);
 	return (buf[0] == 0x1F && buf[1] == 0x8B);
 }
 
 /**
  * GZIP_Get_First_File_Size(): Gets the filesize of the first file in the specified archive.
- * @param f File pointer of the archive.
+ * @param filename Filename of the archive.
  * @return Filesize, or 0 on error.
  */
-int GZip_Get_First_File_Size(FILE *f)
+int GZip_Get_First_File_Size(const char *filename)
 {
 	gzFile gzfd;
 	char buf[1024];
 	int filesize = 0;
 	
-	gzfd = gzdopen(dup(fileno(f)), "rb");
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
 		// Error obtaining a GZip file descriptor.
@@ -70,17 +73,17 @@ int GZip_Get_First_File_Size(FILE *f)
 
 /**
  * GZip_Get_First_File(): Gets the first file from the specified archive.
- * @param f File pointer of the archive.
+ * @param filename Filename of the archive.
  * @param buf Buffer to write the file to.
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int GZip_Get_First_File(FILE *f, void *buf, int size)
+int GZip_Get_First_File(const char *filename, void *buf, int size)
 {
 	gzFile gzfd;
 	int retval;
 	
-	gzfd = gzdopen(dup(fileno(f)), "rb");
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
 		// Error obtaining a GZip file descriptor.
