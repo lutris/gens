@@ -22,5 +22,5 @@ Emulator TODO:
 - Set the border color to color 0 of palette 0. (See Sonic 1 GHZ for an example.)
 
 Miscellaneous Bugs:
-- GZipped SegaCD BIOSes work the first time, but on system reset it can't load it.
 - Auto Pause doesn't work.
+- Clean up and optimize compression handlers for archives with multiple files.
