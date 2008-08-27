@@ -208,6 +208,8 @@ int Detect_Format(const char *Name)
 	unsigned char buf[GENS_PATH_MAX];
 	char zname[GENS_PATH_MAX];
 	
+	// TODO: Port this function to the new compression handler system.
+	
 	// SetCurrentDirectory (Gens_Path);
 	
 	memset (buf, 0, 1024);
