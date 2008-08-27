@@ -36,7 +36,7 @@ void on_button_Country_up_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_Country_down_clicked(GtkButton *button, gpointer user_data)
 {
-	STUB;
+	Country_MoveDown();
 }
 
 

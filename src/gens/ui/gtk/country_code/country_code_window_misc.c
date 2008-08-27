@@ -127,3 +127,40 @@ void Country_MoveUp(void)
 		}
 	}
 }
+
+
+/**
+ * Country_MoveDown(): Move the selected country down.
+ */
+void Country_MoveDown(void)
+{
+	GtkWidget *treeview;
+	GtkTreeSelection *selection;
+	GtkTreeIter iter, nextIter;
+	gboolean valid;
+	treeview = lookup_widget(country_code_window, "treeview_country_list");
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	
+	// Find the selection and swap it with the item immediately after it.
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_country), &iter);
+	while (valid)
+	{
+		if (gtk_tree_selection_iter_is_selected(selection, &iter))
+		{
+			// Found the selection. Check if there's another item after it.
+			nextIter = iter;
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &nextIter);
+			if (valid)
+			{
+				// Not the last item. Swap it with the next item.
+				gtk_list_store_swap(listmodel_country, &iter, &nextIter);
+			}
+			break;
+		}
+		else
+		{
+			// Not selected.
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &iter);
+		}
+	}
+}
