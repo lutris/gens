@@ -638,7 +638,14 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	//fseek(ROM_File, 0, SEEK_SET);
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	CompressMethods[cmp].get_first_file(filename, Rom_Data, filesize);
+	if (CompressMethods[cmp].get_first_file(filename, Rom_Data, filesize) <= 0)
+	{
+		// Error loading the ROM.
+		free(My_Rom);
+		My_Rom = NULL;
+		Game = NULL;
+		return NULL;		
+	}
 	//fclose(ROM_File);
 	
 	Update_Rom_Name(filename);
