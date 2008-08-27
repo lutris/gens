@@ -41,6 +41,16 @@ void __byte_swap_16_array(void *ptr, int n);
 	(((ptr)[0] << 24) | ((ptr)[1] << 16) | ((ptr)[2] << 8) | ((ptr)[3]))
 #define le32_to_cpu_from_ptr(ptr) \
 	(((ptr)[3] << 24) | ((ptr)[2] << 16) | ((ptr)[1] << 8) | ((ptr)[0]))
+#define cpu_to_le32_ucptr(ptr, val) \
+	(ptr)[0] = ((val) & 0xFF);  \
+	(ptr)[1] = (((val) >> 8) & 0xFF);  \
+	(ptr)[2] = (((val) >> 16) & 0xFF); \
+	(ptr)[3] = (((val) >> 24) & 0xFF);
+#define cpu_to_be32_ucptr(ptr, val) \
+	(ptr)[0] = (((val) >> 24) & 0xFF); \
+	(ptr)[1] = (((val) >> 16) & 0xFF); \
+	(ptr)[2] = (((val) >> 8) & 0xFF);  \
+	(ptr)[3] = ((val) & 0xFF);
 
 #if GENS_BYTEORDER == GENS_LIL_ENDIAN
 #define be16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
