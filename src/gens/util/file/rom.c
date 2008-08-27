@@ -29,6 +29,9 @@
 
 #include "ui-common.h"
 
+// New file compression handler.
+#include "compress/compress.h"
+
 Rom *My_Rom = NULL;
 struct Rom *Game = NULL;
 char Rom_Name[512];
@@ -573,46 +576,99 @@ Load_Bios (char *Name)
  */
 Rom *Load_ROM(const char *filename, const int interleaved)
 {
-	FILE *Rom_File;
-	int Size = 0;
+	FILE *ROM_File;
+	int filesize = 0;
+	int cmp = 0;
 	
 	//SetCurrentDirectory (Gens_Path);
 	
-	if ((Rom_File = fopen(filename, "rb")) == 0)
+	if ((ROM_File = fopen(filename, "rb")) == 0)
 	{
 		Game = NULL;
 		return NULL;
 	}
 	
-	fseek (Rom_File, 0, SEEK_END);
-	Size = ftell (Rom_File);
-	fseek (Rom_File, 0, SEEK_SET);
-	
-	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if ((Size) > ((6 * 1024 * 1024) + 512))
+	// Determine if the ROM is compressed.
+	while (CompressMethods[cmp].detect_format)
 	{
-		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
-		fclose(Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	My_Rom = (Rom*)malloc(sizeof(Rom));
-	
-	if (!My_Rom)
-	{
-		// Memory allocation error
-		fclose(Rom_File);
-		Game = NULL;
-		return NULL;
+		fseek(ROM_File, 0, SEEK_SET);
+		if (CompressMethods[cmp].detect_format(ROM_File))
+		{
+			// Found the correct compression handler.
+			break;
+		}
+		// Go to the next compression method.
+		cmp++;
 	}
 	
-	// Clear the ROM buffer and load the ROM.
-	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	fread(Rom_Data, Size, 1, Rom_File);
-	fclose(Rom_File);
+	// If no compression handler was found, simply read the ROM normally.
+	// TODO: Add a "dummy" compression handler so this extra code isn't needed.
+	if (CompressMethods[cmp].detect_format)
+	{
+		// Compression method found.
+		fclose(ROM_File);
+		
+		// Get the filesize of the first file in the archive.
+		filesize = CompressMethods[cmp].get_first_file_size(filename);
+		printf("SIZE: %d\n", filesize);
+		// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
+		if (filesize > ((6 * 1024 * 1024) + 512))
+		{
+			UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
+			//fclose(ROM_File);
+			Game = NULL;
+			return NULL;
+		}
+		
+		My_Rom = (Rom*)malloc(sizeof(Rom));
+		if (!My_Rom)
+		{
+			// Memory allocation error
+			//fclose(ROM_File);
+			Game = NULL;
+			return NULL;
+		}
+		//fseek(ROM_File, 0, SEEK_SET);
+		// Clear the ROM buffer and load the ROM.
+		memset(Rom_Data, 0, 6 * 1024 * 1024);
+		CompressMethods[cmp].get_first_file(filename, Rom_Data, filesize);
+		//fclose(ROM_File);
+	}
+	else
+	{
+		// No compression method found. Assume the ROM is uncompressed.
+		
+		// Get the filesize.
+		fseek(ROM_File, 0, SEEK_END);
+		filesize = ftell(ROM_File);
+		fseek(ROM_File, 0, SEEK_SET);
+		
+		// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
+		if (filesize > ((6 * 1024 * 1024) + 512))
+		{
+			UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
+			fclose(ROM_File);
+			Game = NULL;
+			return NULL;
+		}
+		
+		My_Rom = (Rom*)malloc(sizeof(Rom));
+		if (!My_Rom)
+		{
+			// Memory allocation error
+			fclose(ROM_File);
+			Game = NULL;
+			return NULL;
+		}
+		
+		// Clear the ROM buffer and load the ROM.
+		memset(Rom_Data, 0, 6 * 1024 * 1024);
+		fread(Rom_Data, filesize, 1, ROM_File);
+		fclose(ROM_File);
+	}
 	
 	Update_Rom_Name(filename);
-	Rom_Size = Size;
+	Rom_Size = filesize;
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)
@@ -633,6 +689,9 @@ struct Rom *Load_ROM_Gz(const char *filename, int interleaved)
 	FILE *Rom_File;
 	int Size = 0;
 	char *read_buf[1024];
+	
+	// TODO: Remove this function in favor of the new compression handlers.
+	return Load_ROM(filename, interleaved);
 	
 	//SetCurrentDirectory (Gens_Path);
 	
