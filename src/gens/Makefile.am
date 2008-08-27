@@ -3,6 +3,15 @@
 AUTOMAKE_OPTIONS = subdir-objects
 SUBDIRS = debug emulator gens_core mp3_dec port sdllayer segacd ui util
 
+NASM = \
+nasm -O1 -D __GCC2 -f elf \
+-I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
+-I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
+-I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
+
+%.o: %.asm
+	$(NASM) $< -o $@
+
 INCLUDES = \
 -I@srcdir@/gens_core/cpu/68k -I@srcdir@/gens_core/cpu/sh2 -I@srcdir@/gens_core/cpu/z80 \
 -I@srcdir@/gens_core/sound -I@srcdir@/gens_core/mem -I@srcdir@/gens_core/misc -I@srcdir@/gens_core/gfx \
@@ -47,11 +56,9 @@ gens_LDADD = \
 
 
 gens_DEPENDENCIES = \
-		$(ASMFILES) \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
 
 CLEANFILES = \
-		$(ASMFILES) \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
