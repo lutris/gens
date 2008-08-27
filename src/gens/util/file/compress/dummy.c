@@ -54,7 +54,7 @@ int Dummy_Get_First_File_Size(const char *filename)
 	
 	// Get the filesize.
 	fseek(f, 0, SEEK_END);
-	filesize = ftell(ROM_File);
+	filesize = ftell(f);
 	fclose(f);
 	return filesize;
 }
