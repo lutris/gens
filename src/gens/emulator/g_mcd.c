@@ -253,14 +253,8 @@ Reset_SegaCD ()
 	Paused = 0;
 	BRAM_Ex_State &= 0x100;
 	
-	if (!strcasecmp ("ZIP", &Bios_To_Use[strlen (Bios_To_Use) - 3]))
-	{
-		Game = Load_ROM_Zipped (Bios_To_Use, 0);
-	}
-	else
-	{
-		Game = Load_ROM(Bios_To_Use, 0);
-	}
+	// Load the BIOS file.
+	Game = Load_ROM(Bios_To_Use, 0);
 	
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
 	

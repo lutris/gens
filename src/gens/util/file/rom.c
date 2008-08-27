@@ -480,13 +480,7 @@ int Open_Rom(const char *Name)
 	
 	if ((sys >> 1) < 3)		// Have to load a rom
 	{
-		if ((!strcasecmp ("zip", &Name[strlen (Name) - 3])) ||
-		    (!strcasecmp ("zsg", &Name[strlen (Name) - 3])))
-		{
-			Game = Load_ROM_Zipped(Name, sys & 1);
-		}
-		else
-			Game = Load_ROM(Name, sys & 1);
+		Game = Load_ROM(Name, sys & 1);
 	}
 	
 	switch (sys >> 1)
@@ -557,10 +551,7 @@ Load_Bios (char *Name)
   fclose (Rom_File);
   Free_Rom (Game);
 
-  if (!strcasecmp ("ZIP", &Name[strlen (Name) - 3]))
-    return (Game = Load_ROM_Zipped (Name, 0));
-  else
-    return (Game = Load_ROM(Name, 0));
+  return (Game = Load_ROM(Name, 0));
 }
 
 
@@ -656,140 +647,6 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		Deinterleave_SMD();
 	
 	Fill_Infos ();
-	return My_Rom;
-}
-
-
-/**
- * Load_ROM_Zipped: Load a ROM file from a ZIP archive.
- * @param Name Filename of the ZIP archive containing the ROM file.
- * @param interleaved If 0, the ROM is not interleaved; otherwise, it is.
- */
-struct Rom *Load_ROM_Zipped(const char *Name, int interleaved)
-{
-	// TODO: Remove Load_ROM_Zipped().
-	return Load_ROM(Name, interleaved);
-	
-	int Size = 0;
-	int bResult;
-	int i;
-	char Tmp[256];
-	char File_Name[132];
-	unz_file_info Infos;
-	unzFile Rom_File;
-	
-	//SetCurrentDirectory (Gens_Path);
-	
-	Rom_File = unzOpen(Name);
-	if (!Rom_File)
-	{
-		UI_MsgBox("No Genesis or 32X ROM file found in ZIP archive.", "Error");
-		Game = NULL;
-		return NULL;
-	}
-	
-	i = unzGoToFirstFile (Rom_File);
-	
-	while (i == UNZ_OK)
-	{
-		unzGetCurrentFileInfo(Rom_File, &Infos, File_Name, 128, NULL, 0, NULL, 0);
-		
-		// The file extension of the file in the ZIP File must match one of these
-		// in order to be considered a ROM.
-		if ((!strncasecmp(".smd", &File_Name[strlen(File_Name) - 4], 4)) ||
-		    (!strncasecmp(".bin", &File_Name[strlen(File_Name) - 4], 4)) ||
-		    (!strncasecmp(".gen", &File_Name[strlen(File_Name) - 4], 4)) ||
-		    (!strncasecmp(".32x", &File_Name[strlen(File_Name) - 4], 4)))
-		{
-			Size = Infos.uncompressed_size;
-			break;
-		}
-		
-		i = unzGoToNextFile(Rom_File);
-	}
-	
-	// If i is at the end of the list or an error, no ROM was found.
-	if ((i != UNZ_END_OF_LIST_OF_FILE && i != UNZ_OK) || !Size)
-	{
-		UI_MsgBox("No Genesis or 32X ROM file found in ZIP archive.", "ZIP File Error");
-		unzClose(Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	
-	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if (Size > ((6 * 1024 * 1024) + 512))
-	{
-		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
-		unzClose(Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	
-	if (unzLocateFile(Rom_File, File_Name, 1) != UNZ_OK ||
-	    unzOpenCurrentFile (Rom_File) != UNZ_OK)
-	{
-		UI_MsgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");
-		unzClose(Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	
-	My_Rom = (Rom*)malloc(sizeof(Rom));
-	if (!My_Rom)
-	{
-		// Memory allocation error
-		unzClose(Rom_File);
-		Game = NULL;
-		return (NULL);
-	}
-	
-	// Clear the ROM buffer and load the ROM.
-	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	bResult = unzReadCurrentFile (Rom_File, Rom_Data, Size);
-	unzCloseCurrentFile (Rom_File);
-	
-	if ((bResult <= 0) || (bResult != Size))
-	{
-		sprintf(Tmp, "Error in ZIP file: \n");
-		
-		switch (bResult)
-		{
-			case UNZ_ERRNO:
-				strcat(Tmp, "Unknown...");
-				break;
-			case UNZ_EOF:
-				strcat(Tmp, "Unexpected end of file.");
-				break;
-			case UNZ_PARAMERROR:
-				strcat(Tmp, "Parameter error.");
-				break;
-			case UNZ_BADZIPFILE:
-				strcat(Tmp, "Bad ZIP file.");
-				break;
-			case UNZ_INTERNALERROR:
-				strcat(Tmp, "Internal error.");
-				break;
-			case UNZ_CRCERROR:
-				strcat(Tmp, "CRC error.");
-				break;
-		}
-		UI_MsgBox(Tmp, "ZIP File Error");
-		unzClose(Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	
-	unzClose(Rom_File);
-	Update_Rom_Name(File_Name);
-	Rom_Size = Size;
-	
-	// Deinterleave the ROM, if necessary.
-	if (interleaved)
-		Deinterleave_SMD();
-	
-	Fill_Infos();
-	
 	return My_Rom;
 }
 
