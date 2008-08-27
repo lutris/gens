@@ -51,7 +51,7 @@ void Open_Country_Code(void)
 	Check_Country_Order();
 	
 	// Populate the TreeView.
-	treeview = lookup_widget(Country, "treeview_country");
+	treeview = lookup_widget(Country, "treeview_country_list");
 	
 	// Check if the listmodel_country is already created.
 	// If it is, clear it; if not, create a new one.
@@ -87,4 +87,43 @@ void Country_Save(void)
 {
 	// Save settings.
 	// TODO
+}
+
+
+/**
+ * Country_MoveUp(): Move the selected country up.
+ */
+void Country_MoveUp(void)
+{
+	GtkWidget *treeview;
+	GtkTreeSelection *selection;
+	GtkTreeIter iter, prevIter;
+	gboolean notFirst, valid;
+	treeview = lookup_widget(country_code_window, "treeview_country_list");
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	
+	// Find the selection and swap it with the item immediately before it.
+	notFirst = FALSE;
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_country), &iter);
+	while (valid)
+	{
+		if (gtk_tree_selection_iter_is_selected(selection, &iter))
+		{
+			// Found the selection.
+			if (notFirst)
+			{
+				// Not the first item. Swap it with the previous item.
+				gtk_list_store_swap(listmodel_country, &iter, &prevIter);
+			}
+			break;
+		}
+		else
+		{
+			// Not selected. Store this iter as prevIter.
+			prevIter = iter;
+			// Since this isn't the first item, set notFirst.
+			notFirst = TRUE;
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &iter);
+		}
+	}
 }

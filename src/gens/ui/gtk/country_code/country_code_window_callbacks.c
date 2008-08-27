@@ -27,7 +27,7 @@ gboolean on_country_code_window_close(GtkWidget *widget, GdkEvent *event, gpoint
  */
 void on_button_Country_up_clicked(GtkButton *button, gpointer user_data)
 {
-	STUB;
+	Country_MoveUp();
 }
 
 

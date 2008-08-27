@@ -42,7 +42,7 @@ GtkWidget* create_country_code_window(void)
 	GdkPixbuf *country_code_window_icon_pixbuf;
 	GtkWidget *vbox_country;
 	GtkWidget *frame_country, *label_frame_country;
-	GtkWidget *hbox_list, *treeview_country;
+	GtkWidget *hbox_list, *treeview_country_list;
 	GtkWidget *vbox_updown, *button_up, *icon_up, *button_down, *icon_down;
 	GtkWidget *hbutton_box_bottomRow;
 	GtkWidget *button_Country_Cancel, *button_Country_Apply, *button_Country_Save;
@@ -103,13 +103,13 @@ GtkWidget* create_country_code_window(void)
 	GLADE_HOOKUP_OBJECT(country_code_window, hbox_list, "hbox_list");
 	
 	// Tree view containing the country codes
-	treeview_country = gtk_tree_view_new();
-	gtk_widget_set_name(treeview_country, "treeview_country");
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_country), TRUE);
-	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview_country), FALSE);
-	gtk_widget_show(treeview_country);
-	gtk_box_pack_start(GTK_BOX(hbox_list), treeview_country, TRUE, TRUE, 0);
-	GLADE_HOOKUP_OBJECT(country_code_window, treeview_country, "treeview_country");
+	treeview_country_list = gtk_tree_view_new();
+	gtk_widget_set_name(treeview_country_list, "treeview_country_list");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_country_list), TRUE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview_country_list), FALSE);
+	gtk_widget_show(treeview_country_list);
+	gtk_box_pack_start(GTK_BOX(hbox_list), treeview_country_list, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(country_code_window, treeview_country_list, "treeview_country_list");
 	
 	// VBox for the up/down buttons.
 	vbox_updown = gtk_vbox_new(TRUE, 0);

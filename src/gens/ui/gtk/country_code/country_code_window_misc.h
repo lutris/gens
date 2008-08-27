@@ -13,6 +13,7 @@ extern "C" {
 
 void Open_Country_Code(void);
 void Country_Save(void);
+void Country_MoveUp(void);
 
 #ifdef __cplusplus
 }
