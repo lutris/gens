@@ -78,4 +78,10 @@ struct COMPRESS_Handler_t
 	COMPRESS_Get_First_File		get_first_file;
 };
 
+// struct containing all of the available compression methods.
+extern const struct COMPRESS_Handler_t CompressMethods[];
+
+// Compression handler includes.
+#include "gzip.h"
+
 #endif

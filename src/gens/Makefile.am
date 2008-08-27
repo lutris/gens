@@ -128,6 +128,7 @@ gens_SOURCES = \
 		util/file/save.h \
 		util/file/ggenie.c \
 		util/file/ggenie.h \
+		util/file/compress/compress.c \
 		util/file/compress/compress.h \
 		util/file/compress/gzip.c \
 		util/file/compress/gzip.h \
