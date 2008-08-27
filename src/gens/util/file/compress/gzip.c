@@ -39,7 +39,7 @@ int GZip_Detect_Format(FILE *f)
 }
 
 /**
- * GZIP_Get_First_File_Size(): Gets the filesize of the first file in the specified archive.
+ * GZip_Get_First_File_Size(): Gets the filesize of the first file in the specified archive.
  * @param filename Filename of the archive.
  * @return Filesize, or 0 on error.
  */
