@@ -73,7 +73,7 @@ void Open_Country_Code(void)
 	for (i = 0; i < 3; i++)
 	{
 		gtk_list_store_append(listmodel_country, &iter);
-		gtk_list_store_set(GTK_LIST_STORE(listmodel_country), &iter, 0, Country_Code_String[i], 1, i, -1);
+		gtk_list_store_set(GTK_LIST_STORE(listmodel_country), &iter, 0, Country_Code_String[Country_Order[i]], 1, i, -1);
 	}
 	
 	// Show the Country Code window.
