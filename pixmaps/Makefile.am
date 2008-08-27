@@ -16,7 +16,6 @@ dist_pkgdata_DATA = \
 	package_games.png \
 	package_settings.png \
 	password.png \
-	reload.png \
 	resource.png \
 	viewmag.png \
 	xpaint.png
