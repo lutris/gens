@@ -34,11 +34,8 @@ int GZip_Detect_Format(FILE *f)
 	// First two bytes: "\x1F\x8B"
 	
 	unsigned char buf[2];
-	printf("1\n");
 	fseek(f, 0, SEEK_SET);
-	printf("2\n");
 	fread(buf, 2, sizeof(unsigned char), f);
-	printf("3\n");
 	return (buf[0] == 0x1F && buf[1] == 0x8B);
 }
 
