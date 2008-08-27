@@ -667,6 +667,9 @@ Rom *Load_ROM(const char *filename, const int interleaved)
  */
 struct Rom *Load_ROM_Zipped(const char *Name, int interleaved)
 {
+	// TODO: Remove Load_ROM_Zipped().
+	return Load_ROM(Name, interleaved);
+	
 	int Size = 0;
 	int bResult;
 	int i;
