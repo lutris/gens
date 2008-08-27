@@ -1,0 +1,59 @@
+Gens for Linux v2.15.2/GS-m1 (Gens/GS)
+
+Copyright (c) 1999-2002 by Stéphane Dallongeville
+Copyright (c) 2003-2004 by Stéphane Akhoun
+Copyright (c) 2008 by David Korth
+
+This version of Gens is maintained by David Korth.
+E-mail: gerbilsoft@verizon.net
+
+For news on Gens/GS, visit Sonic Retro:
+http://www.sonicretro.org
+
+================================================================
+
+What is Gens/GS?
+
+Gens for Linux v2.15.2/GS-m1 is David Korth's fork of Gens,
+initially based on Gens for Linux v2.15.2. The number after
+the "m" indicates the milestone. Releases are usually made
+after a significant new feature has been added.
+
+================================================================
+
+What's new in Gens for Linux v2.15.2/GS-m1?
+
+Milestone 1 introduces the following new features:
+
+- Massive code cleanup throughout the entire Gens codebase. Many
+  functions with duplicated code have been consolidated so that
+  the duplicated code is now shared between the functions. Also,
+  several large files have been split into smaller files. For instance,
+  gens.c has been split into gens.c, g_md.c, g_mcd.c, g_32x.c,
+  and g_palette.c.
+
+- Introduction of OS-independent functions, which will allow for the
+  integration of the Win32 version of Gens later on, so that one codebase
+  can be used to build a Gens executable for either operating system.
+
+- Gens v7 savestate format, ported from Gens Rerecording. This adds,
+  among other things, proper Sega CD savestate support.
+
+- Fixed the built-in debugger, which was broken due to changes in
+  the way text was written to the emulated screen.
+
+- Added enhanced Sega CD GFX debugging from Gens Rerecording.
+
+- VDP/GFX debugging now outlines the selected palette.
+
+- Initial attempt to consoldidate global variables into structs.
+  This will make it easier to figure out where everything is located.
+
+- Complete rewrite of the GTK+ UI. Among other things, the new UI
+  has much improved synchronization, so when a menu item is checked,
+  it actually means that item is enabled.
+  
+- Rewrite of the byteswapping functions so that they describe what is
+  being swapped (e.g. be16_to_cpu_array()).
+  
+- Fixed tons of compiler warnings.
