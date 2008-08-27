@@ -541,17 +541,27 @@ int Load_ROM_CC(const char *Name, const int Size)
 }
 
 
-Rom *
-Load_Bios (char *Name)
+/**
+ * Load_Bios(): Load a SegaCD BIOS ROM image.
+ * @param filename Filename of the SegaCD BIOS ROM image.
+ * @return Pointer to Rom struct with the ROM information.
+ */
+Rom *Load_Bios(const char *filename)
 {
-  FILE *Rom_File;
-  //SetCurrentDirectory (Gens_Path);
-  if ((Rom_File = fopen (Name, "rb")) == 0)
-    return 0;
-  fclose (Rom_File);
-  Free_Rom (Game);
-
-  return (Game = Load_ROM(Name, 0));
+	FILE *f;
+	//SetCurrentDirectory (Gens_Path);
+	
+	// This basically just checks if the BIOS ROM image can be opened.
+	// TODO: Show an error message if it can't be opened.
+	if ((f = fopen(filename, "rb")) == 0)
+		return 0;
+	fclose(f);
+	
+	// Close any ROM that's currently running.
+	Free_Rom(Game);
+	
+	// Load the SegaCD BIOS ROM image.
+	return (Game = Load_ROM(filename, 0));
 }
 
 

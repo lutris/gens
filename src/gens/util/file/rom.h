@@ -56,7 +56,7 @@ int Detect_Format(const char *Name);
 int Get_Rom(void);
 int Open_Rom(const char *Name);
 int Load_ROM_CC(const char *Name, const int Size);
-struct Rom *Load_Bios(char *Name);
+struct Rom *Load_Bios(const char *filename);
 struct Rom *Load_ROM(const char *filename, const int interleaved);
 void Fix_Checksum(void);
 unsigned int Calculate_CRC32(void);
