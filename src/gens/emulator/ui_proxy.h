@@ -5,7 +5,6 @@ int Set_Sprite_Limit(int newLimit);
 int Set_Current_State(int slot);
 int Set_Frame_Skip(int frames);
 int Change_Debug(int Debug_Mode);
-int Change_Country_Order(int Num);
 int Change_Country(int newCountry);
 int Change_SegaCD_PerfectSync(int newPerfectSync);
 

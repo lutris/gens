@@ -719,30 +719,6 @@ int Change_SegaCD_PerfectSync(int newPerfectSync)
 	return 1;
 }
 
-int
-Change_Country_Order (int Num)
-{
-  char c_str[4][4] = { "USA", "JAP", "EUR" };
-  char str_w[128];
-  int sav = Country_Order[Num];
-
-  if (Num == 1)
-    Country_Order[1] = Country_Order[0];
-  else if (Num == 2)
-    {
-      Country_Order[2] = Country_Order[1];
-      Country_Order[1] = Country_Order[0];
-    }
-  Country_Order[0] = sav;
-
-  if (Country == -1)
-    Change_Country (-1);	// Update Country
-
-  sprintf (str_w, "Country detec.order : %s %s %s", c_str[Country_Order[0]],
-	   c_str[Country_Order[1]], c_str[Country_Order[2]]);
-  MESSAGE_L (str_w, str_w, 1500) return (1);
-}
-
 
 /**
  * Set_Game_Name(): Sets the title of the window to the system name and the game name.
