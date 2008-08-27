@@ -42,7 +42,6 @@ void Put_Info(char *Message, int Duree);
 int Show_Genesis_Screen(void);
 int Flip(void);
 void Restore_Primary(void);
-int Take_Shot();
 void End_DDraw(void);
 void Refresh_gl();
 void Put_Info(char *,int);

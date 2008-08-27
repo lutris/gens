@@ -47,6 +47,7 @@
 #include "vdp_io.h"
 #include "save.h"
 #include "z80.h"
+#include "scrshot.h"
 
 // Sega CD
 #include "cd_aspi.h"
@@ -383,7 +384,7 @@ void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gp
 void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	Clear_Sound_Buffer();
-	Take_Shot();
+	Save_Shot();
 }
 
 

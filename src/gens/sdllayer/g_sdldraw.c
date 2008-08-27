@@ -19,7 +19,6 @@
 #include "vdp_rend.h"
 #include "misc.h"
 #include "blit.h"
-#include "scrshot.h"
 #include "ui_proxy.h"
 //#include "net.h"
 void Sleep(int i);
@@ -992,17 +991,6 @@ int Show_Genesis_Screen(void)
 	return 1;
 }
 
-
-int Take_Shot()
-{
-	if(Opengl)
-	Save_Shot((unsigned char *) filter_buffer, Mode_555 & 1, row_length, row_length*0.75, row_length*2);
-	
-	else
-	Save_Shot((unsigned char *) screen->pixels, Mode_555 & 1, screen->w, screen->h, screen->w*2);
-	
-  	return 0;
-}
 
 void Refresh_video()
 {

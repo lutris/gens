@@ -18,6 +18,7 @@
 #include "cd_aspi.h"
 #include "vdp_io.h"
 #include "debug.h"
+#include "scrshot.h"
 
 // Sound includes.
 #include "ym2612.h"
@@ -124,7 +125,7 @@ void Input_KeyDown(int key)
 			if (KMOD_SHIFT & mod)
 			{
 				Clear_Sound_Buffer ();
-				Take_Shot ();
+				Save_Shot();
 			}
 			break;
 		*/
