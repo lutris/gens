@@ -8,6 +8,7 @@
 #include "country_code_window_callbacks.h"
 
 #include "gtk-misc.h"
+#include "gens.h"
 
 
 /**
@@ -18,6 +19,24 @@ gboolean on_country_code_window_close(GtkWidget *widget, GdkEvent *event, gpoint
 	gtk_widget_destroy(country_code_window);
 	country_code_window = NULL;
 	return FALSE;
+}
+
+
+/**
+ * Up
+ */
+void on_button_Country_up_clicked(GtkButton *button, gpointer user_data)
+{
+	STUB;
+}
+
+
+/**
+ * Down
+ */
+void on_button_Country_down_clicked(GtkButton *button, gpointer user_data)
+{
+	STUB;
 }
 
 

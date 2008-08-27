@@ -123,6 +123,7 @@ GtkWidget* create_country_code_window(void)
 	gtk_widget_set_name(button_up, "button_up");
 	gtk_widget_show(button_up);
 	gtk_box_pack_start(GTK_BOX(vbox_updown), button_up, TRUE, TRUE, 0);
+	AddButtonCallback_Clicked(button_up, on_button_Country_up_clicked);
 	GLADE_HOOKUP_OBJECT(country_code_window, button_up, "button_up");
 	
 	// Up icon
@@ -137,6 +138,8 @@ GtkWidget* create_country_code_window(void)
 	gtk_widget_set_name(button_down, "button_down");
 	gtk_widget_show(button_down);
 	gtk_box_pack_start(GTK_BOX(vbox_updown), button_down, TRUE, TRUE, 0);
+	AddButtonCallback_Clicked(button_down, on_button_Country_down_clicked);
+	GLADE_HOOKUP_OBJECT(country_code_window, button_down, "button_down");
 	
 	// Down icon
 	icon_down = gtk_image_new_from_stock(GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_BUTTON);
