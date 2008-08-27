@@ -480,12 +480,12 @@ int Open_Rom(const char *Name)
 		if ((!strcasecmp ("zip", &Name[strlen (Name) - 3])) ||
 		    (!strcasecmp ("zsg", &Name[strlen (Name) - 3])))
 		{
-			Game = Load_Rom_Zipped(Name, sys & 1);
+			Game = Load_ROM_Zipped(Name, sys & 1);
 		}
 		else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
-			Game = Load_Rom_Gz(Name, sys & 1);
+			Game = Load_ROM_Gz(Name, sys & 1);
 		else
-			Game = Load_Rom(Name, sys & 1);
+			Game = Load_ROM(Name, sys & 1);
 	}
 	
 	switch (sys >> 1)
@@ -520,12 +520,12 @@ int Open_Rom(const char *Name)
 
 
 /**
- * Load_Rom_CC(): Initialize a ROM that's already loaded into the memory buffer.
+ * Load_ROM_CC(): Initialize a ROM that's already loaded into the memory buffer.
  * @param Name ROM filename.
  * @param Size ROM filesize.
  * @return Genesis_Started.
  */
-int Load_Rom_CC(const char *Name, const int Size)
+int Load_ROM_CC(const char *Name, const int Size)
 {
 	My_Rom = (Rom *) malloc (sizeof (Rom));
 	
@@ -557,21 +557,21 @@ Load_Bios (char *Name)
   Free_Rom (Game);
 
   if (!strcasecmp ("ZIP", &Name[strlen (Name) - 3]))
-    return (Game = Load_Rom_Zipped (Name, 0));
+    return (Game = Load_ROM_Zipped (Name, 0));
   else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
-    return Game = Load_Rom_Gz (Name, 0);
+    return Game = Load_ROM_Gz (Name, 0);
   else
-    return (Game = Load_Rom (Name, 0));
+    return (Game = Load_ROM(Name, 0));
 }
 
 
 /**
- * Load_Rom(): Load a ROM file.
+ * Load_ROM(): Load a ROM file.
  * @param filename Filename of the ROM file.
  * @param interleaved If non-zero, the ROM is interleaved.
  * @return Pointer to Rom struct with the ROM information.
  */
-Rom *Load_Rom (const char *filename, const int interleaved)
+Rom *Load_ROM(const char *filename, const int interleaved)
 {
 	FILE *Rom_File;
 	int Size = 0;
@@ -624,11 +624,11 @@ Rom *Load_Rom (const char *filename, const int interleaved)
 
 
 /**
- * Load_Rom_Gz: Load a ROM file from a GZip archive.
+ * Load_ROM_Gz: Load a ROM file from a GZip archive.
  * @param filename Filename of the GZip archive containing the ROM file.
  * @param interleaved If 0, the ROM is not interleaved; otherwise, it is.
  */
-struct Rom *Load_Rom_Gz(const char *filename, int interleaved)
+struct Rom *Load_ROM_Gz(const char *filename, int interleaved)
 {
 	FILE *Rom_File;
 	int Size = 0;
@@ -686,11 +686,11 @@ struct Rom *Load_Rom_Gz(const char *filename, int interleaved)
 
 
 /**
- * Load_Rom_Zipped: Load a ROM file from a ZIP archive.
+ * Load_ROM_Zipped: Load a ROM file from a ZIP archive.
  * @param Name Filename of the ZIP archive containing the ROM file.
  * @param interleaved If 0, the ROM is not interleaved; otherwise, it is.
  */
-struct Rom *Load_Rom_Zipped(const char *Name, int interleaved)
+struct Rom *Load_ROM_Zipped(const char *Name, int interleaved)
 {
 	int Size = 0;
 	int bResult;

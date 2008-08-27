@@ -255,11 +255,11 @@ Reset_SegaCD ()
 	
 	if (!strcasecmp ("ZIP", &Bios_To_Use[strlen (Bios_To_Use) - 3]))
 	{
-		Game = Load_Rom_Zipped (Bios_To_Use, 0);
+		Game = Load_ROM_Zipped (Bios_To_Use, 0);
 	}
 	else
 	{
-		Game = Load_Rom (Bios_To_Use, 0);
+		Game = Load_ROM(Bios_To_Use, 0);
 	}
 	
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
