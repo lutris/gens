@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_GZIP_H
-#define GENS_GZIP_H
+#ifndef GENS_COMPRESS_GZIP_H
+#define GENS_COMPRESS_GZIP_H
 
 #include <stdio.h>
 
