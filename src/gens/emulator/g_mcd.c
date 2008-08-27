@@ -118,7 +118,7 @@ int Init_SegaCD (char *iso_name)
 	}
 	
 	// Attempt to load the Sega CD BIOS.
-	if (Load_Bios(Bios_To_Use) == NULL)
+	if (Load_SegaCD_BIOS(Bios_To_Use) == NULL)
 	{
 		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
 			  "BIOS Configuration Error");

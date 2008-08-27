@@ -542,11 +542,11 @@ int Load_ROM_CC(const char *Name, const int Size)
 
 
 /**
- * Load_Bios(): Load a SegaCD BIOS ROM image.
+ * Load_SegaCD_BIOS(): Load a SegaCD BIOS ROM image.
  * @param filename Filename of the SegaCD BIOS ROM image.
  * @return Pointer to Rom struct with the ROM information.
  */
-Rom *Load_Bios(const char *filename)
+Rom *Load_SegaCD_BIOS(const char *filename)
 {
 	FILE *f;
 	//SetCurrentDirectory (Gens_Path);
