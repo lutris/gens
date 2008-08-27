@@ -21,12 +21,12 @@ ASMFILES = \
 
 NASM = \
 nasm -O1 -D __GCC2 -f elf \
--I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
--I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
--I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
+-I@srcdir@/ -I@srcdir@/io/ -I@srcdir@/misc/ \
+-I@srcdir@/vdp/ -I@srcdir@/sound/ -I@srcdir@/gfx/ \
+-I@srcdir@/cpu/sh2/ -I@srcdir@/cpu/z80/ -I@srcdir@/mem/
 
 %.o: %.asm
-	mkdir -p gfx io mem misc sound cpu/sh2 vdp cpu/z80 ;
+	mkdir -p gfx/ io/ mem/ misc/ sound/ cpu/sh2/ vdp/ cpu/z80/ ;
 	$(NASM) $< -o $@
 
 INCLUDES = \
