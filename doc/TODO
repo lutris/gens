@@ -23,4 +23,3 @@ Emulator TODO:
 
 Miscellaneous Bugs:
 - Auto Pause doesn't work.
-- Clean up and optimize compression handlers for archives with multiple files.
