@@ -19,7 +19,7 @@ int Save_Shot(void)
 {
 	FILE *ScrShot_File = 0;
 	unsigned char *Dest = NULL;
-	int i, j, num = -1, stated;
+	int i, j, num, stated;
 	char filename[GENS_PATH_MAX], ext[16];
 	struct stat sbuf;
 	
@@ -54,42 +54,15 @@ int Save_Shot(void)
 	memset(Dest, 0, bmpSize);
 	
 	// Build the filename.
+	num = -1;
 	do
 	{
-		if (num++ > 99999)
-		{
-			free (Dest);
-			return 0;
-		}
-		
-		ext[0] = '_';
-		i = 1;
-		
-		j = num / 10000;
-		if (j)
-			ext[i++] = '0' + j;
-		j = (num / 1000) % 10;
-		if (j)
-			ext[i++] = '0' + j;
-		j = (num / 100) % 10;
-		ext[i++] = '0' + j;
-		j = (num / 10) % 10;
-		ext[i++] = '0' + j;
-		j = num % 10;
-		ext[i++] = '0' + j;
-		ext[i++] = '.';
-		ext[i++] = 'b';
-		ext[i++] = 'm';
-		ext[i++] = 'p';
-		ext[i] = 0;
-		
-		strcpy (filename, ScrShot_Dir);
-		strcat (filename, Rom_Name);
-		strcat (filename, ext);
-		stated = stat(filename, &sbuf);
+		num++;
+		sprintf(filename, "%s%s_%03d.bmp", ScrShot_Dir, Rom_Name, num);
 	}
-	while (stated == 0);
+	while (!stat(filename, &sbuf));
 	
+	// Attempt to open the file.
 	if ((ScrShot_File = fopen(filename, "wb")) == 0)
 		return 0;
 	
