@@ -485,8 +485,6 @@ int Open_Rom(const char *Name)
 		{
 			Game = Load_ROM_Zipped(Name, sys & 1);
 		}
-		else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
-			Game = Load_ROM_Gz(Name, sys & 1);
 		else
 			Game = Load_ROM(Name, sys & 1);
 	}
@@ -561,8 +559,6 @@ Load_Bios (char *Name)
 
   if (!strcasecmp ("ZIP", &Name[strlen (Name) - 3]))
     return (Game = Load_ROM_Zipped (Name, 0));
-  else if (!strcasecmp ("gz", &Name[strlen (Name) - 2]))
-    return Game = Load_ROM_Gz (Name, 0);
   else
     return (Game = Load_ROM(Name, 0));
 }
@@ -606,11 +602,11 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (CompressMethods[cmp].detect_format)
 	{
 		// Compression method found.
+		// TODO: Fix the zlib workaround so the file doesn't have to be closed.
 		fclose(ROM_File);
 		
 		// Get the filesize of the first file in the archive.
 		filesize = CompressMethods[cmp].get_first_file_size(filename);
-		printf("SIZE: %d\n", filesize);
 		// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 		if (filesize > ((6 * 1024 * 1024) + 512))
 		{
@@ -675,71 +671,6 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		Deinterleave_SMD();
 	
 	Fill_Infos ();
-	return My_Rom;
-}
-
-
-/**
- * Load_ROM_Gz: Load a ROM file from a GZip archive.
- * @param filename Filename of the GZip archive containing the ROM file.
- * @param interleaved If 0, the ROM is not interleaved; otherwise, it is.
- */
-struct Rom *Load_ROM_Gz(const char *filename, int interleaved)
-{
-	FILE *Rom_File;
-	int Size = 0;
-	char *read_buf[1024];
-	
-	// TODO: Remove this function in favor of the new compression handlers.
-	return Load_ROM(filename, interleaved);
-	
-	//SetCurrentDirectory (Gens_Path);
-	
-	if ((Rom_File = (FILE*)gzopen(filename, "rb")) == 0)
-	{
-		UI_MsgBox("No Genesis or 32X ROM file found in GZip archive.", "Error");
-		Game = NULL;
-		return (NULL);
-	}
-	
-	// Determine the size of the GZip archive.
-	while (gzeof(Rom_File) == 0)
-	{
-		Size += gzread(Rom_File, read_buf, 1024);
-	}
-	gzrewind (Rom_File);
-	
-	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if (Size > ((6 * 1024 * 1024) + 512))
-	{
-		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
-		gzclose (Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	
-	My_Rom = (Rom*)malloc(sizeof(Rom));
-	if (!My_Rom)
-	{
-		// Memory allocation error
-		gzclose(Rom_File);
-		Game = NULL;
-		return NULL;
-	}
-	
-	// Clear the ROM buffer and load the ROM.
-	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	gzread(Rom_File, Rom_Data, Size);
-	gzclose(Rom_File);
-	
-	Update_Rom_Name(filename);
-	Rom_Size = Size;
-	
-	// Deinterleave the ROM, if necessary.
-	if (interleaved)
-		Deinterleave_SMD();
-	
-	Fill_Infos();
 	return My_Rom;
 }
 

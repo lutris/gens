@@ -59,7 +59,6 @@ int Load_ROM_CC(const char *Name, const int Size);
 struct Rom *Load_Bios(char *Name);
 struct Rom *Load_ROM(const char *filename, const int interleaved);
 struct Rom *Load_ROM_Zipped(const char *Name, int interleaved);
-struct Rom *Load_ROM_Gz(const char *filename, int interleaved);
 void Fix_Checksum(void);
 unsigned int Calculate_CRC32(void);
 int IPS_Patching();
