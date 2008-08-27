@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: File Compression Function Definitions.                            *
+ * Gens: Dummy File Compression Handler.                                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,11 +20,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "compress.h"
+#ifndef GENS_COMPRESS_DUMMY_H
+#define GENS_COMPRESS_DUMMY_H
 
-const struct COMPRESS_Handler_t CompressMethods[] =
-{
-	{GZip_Detect_Format, GZip_Get_First_File_Size, GZip_Get_First_File},
-	{Dummy_Detect_Format, Dummy_Get_First_File_Size, Dummy_Get_First_File},
-	{NULL, NULL, NULL},
-};
+#include <stdio.h>
+
+int Dummy_Detect_Format(FILE *f);
+int Dummy_Get_First_File_Size(const char *filename);
+int Dummy_Get_First_File(const char *filename, void *buf, int size);
+
+#endif

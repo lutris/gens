@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: File Compression Function Definitions.                            *
+ * Gens: Dummy File Compression Handler.                                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,11 +20,67 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+// This compression handler doesn't actually do any decompression.
+// Its purpose is to simplify the code in other parts of the program.
+
+#include <zlib.h>
 #include "compress.h"
 
-const struct COMPRESS_Handler_t CompressMethods[] =
+/**
+ * Dummy_Detect_Format(): Returns 1. All files can be handled by this module.
+ * @param f File pointer of the file to check.
+ * @return 1
+ */
+int Dummy_Detect_Format(FILE *f)
 {
-	{GZip_Detect_Format, GZip_Get_First_File_Size, GZip_Get_First_File},
-	{Dummy_Detect_Format, Dummy_Get_First_File_Size, Dummy_Get_First_File},
-	{NULL, NULL, NULL},
-};
+	return 1;
+}
+
+/**
+ * Dummy_Get_First_File_Size(): Gets the filesize of the specified file.
+ * @param filename Filename of the file to read.
+ * @return Filesize, or 0 on error.
+ */
+int Dummy_Get_First_File_Size(const char *filename)
+{
+	int filesize;
+	FILE *f;
+	
+	// Open the file.
+	f = fopen(filename, "rb");
+	// Return 0 if the file can't be read.
+	if (!f)
+		return 0;
+	
+	// Get the filesize.
+	fseek(f, 0, SEEK_END);
+	filesize = ftell(ROM_File);
+	fclose(f);
+	return filesize;
+}
+
+/**
+ * Dummy_Get_First_File(): Gets the file contents.
+ * @param filename Filename of the file to read.
+ * @param buf Buffer to write the file to.
+ * @param size Size of the buffer, in bytes.
+ * @return Number of bytes read, or -1 on error.
+ */
+int Dummy_Get_First_File(const char *filename, void *buf, int size)
+{
+	int filesize;
+	FILE *f;
+	
+	// Open the file.
+	f = fopen(filename, "rb");
+	// Return -1 if the file can't be read.
+	if (!f)
+		return 0;
+	
+	// Read the file.
+	filesize = fread(buf, size, 1, f);
+	
+	// Close the file and return the number of bytes read.
+	fclose(f);
+	return filesize;
+}

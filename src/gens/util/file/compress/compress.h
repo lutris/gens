@@ -87,5 +87,6 @@ extern const struct COMPRESS_Handler_t CompressMethods[];
 
 // Compression handler includes.
 #include "gzip.h"
+#include "dummy.h"
 
 #endif

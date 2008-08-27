@@ -132,6 +132,8 @@ gens_SOURCES = \
 		util/file/compress/compress.h \
 		util/file/compress/gzip.c \
 		util/file/compress/gzip.h \
+		util/file/compress/dummy.c \
+		util/file/compress/dummy.h \
 		util/sound/gym.c \
 		util/sound/gym.h \
 		util/gfx/scrshot.c \
