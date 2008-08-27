@@ -71,7 +71,7 @@ typedef int (GENS_FNCALL *COMPRESS_Get_First_File)(FILE *f, void *buf, int size)
 /**
  * COMPRESS_Handler(): Struct containing function pointers for compression handlers.
  */
-struct COMPRESS_Handler
+struct COMPRESS_Handler_t
 {
 	COMPRESS_Detect_Format		detect_format;
 	COMPRESS_Get_First_File_Size	get_first_file_size;
