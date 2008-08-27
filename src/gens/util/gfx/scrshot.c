@@ -1,51 +1,57 @@
+#include "scrshot.h"
 #include "port.h"
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#include "gens.h"
-#include "g_main.h"
-#include "g_sdldraw.h"
 #include "rom.h"
+#include "vdp_io.h"
+#include "vdp_rend.h"
+#include "g_sdldraw.h"
 
 char ScrShot_Dir[GENS_PATH_MAX] = "." G_DIR_SEPARATOR_S;
 
 /**
  * Save_Shot(): Save a screenshot.
- * @param Screen Screen to save.
- * @param mode
- * @param X
- * @param Y
- * @param Pitch
  * @return 1 on success; 0 on error.
  */
-int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch)
+int Save_Shot(void)
 {
 	FILE *ScrShot_File = 0;
-	unsigned char *Src = NULL, *Dest = NULL;
-	int i, j, tmp, offs, num = -1, stated;
+	unsigned char *Dest = NULL;
+	int i, j, num = -1, stated;
 	char filename[GENS_PATH_MAX], ext[16];
 	struct stat sbuf;
 	
-	// Set the current directory to the Gens directory.
-	// TODO: Use the screenshots directory instead?
-	// TODO: Is this even needed?
-	SetCurrentDirectory(Settings.PathNames.Gens_Path);
+	// Bitmap dimensions.
+	int w, h;
+	int x, y, bmpSize;
+	
+	// Used for converting the MD frame to standard bitmap format.
+	int pos;
+	unsigned short MD_Color;
 	
 	// If no game is running, don't do anything.
 	if (!Game)
 		return 0;
 	
+	// Variables used:
+	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
+	// MD_Screen: MD screen buffer.
+	// TODO: Find out where 256x224 mode is set.
+	w = 320;
+	h = VDP_Num_Vis_Lines;
+	
 	// Calculate the size of the bitmap image.
-	i = (X * Y * 3) + 54;
-	if ((Dest = (unsigned char *) malloc (i)) == NULL)
+	bmpSize = (w * h * 3) + 54;
+	if ((Dest = (unsigned char*)malloc(bmpSize)) == NULL)
 	{
 		// Could not allocate enough memory.
 		return 0;
 	}
 	
 	// Clear the bitmap memory.
-	memset(Dest, 0, i);
+	memset(Dest, 0, bmpSize);
 	
 	// Build the filename.
 	do
@@ -84,8 +90,6 @@ int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch)
 	}
 	while (stated == 0);
 	
-	i = (X * Y * 3) + 54;
-	
 	if ((ScrShot_File = fopen(filename, "wb")) == 0)
 		return 0;
 	
@@ -93,10 +97,10 @@ int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch)
 	Dest[0] = 'B';
 	Dest[1] = 'M';
 	
-	Dest[2] = (unsigned char) ((i >> 0) & 0xFF);
-	Dest[3] = (unsigned char) ((i >> 8) & 0xFF);
-	Dest[4] = (unsigned char) ((i >> 16) & 0xFF);
-	Dest[5] = (unsigned char) ((i >> 24) & 0xFF);
+	Dest[2] = (unsigned char) ((bmpSize >> 0) & 0xFF);
+	Dest[3] = (unsigned char) ((bmpSize >> 8) & 0xFF);
+	Dest[4] = (unsigned char) ((bmpSize >> 16) & 0xFF);
+	Dest[5] = (unsigned char) ((bmpSize >> 24) & 0xFF);
 	
 	Dest[6] = Dest[7] = Dest[8] = Dest[9] = 0;
 	
@@ -106,15 +110,15 @@ int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch)
 	Dest[14] = 40;
 	Dest[15] = Dest[16] = Dest[17] = 0;
 	
-	Dest[18] = (unsigned char) ((X >> 0) & 0xFF);
-	Dest[19] = (unsigned char) ((X >> 8) & 0xFF);
-	Dest[20] = (unsigned char) ((X >> 16) & 0xFF);
-	Dest[21] = (unsigned char) ((X >> 24) & 0xFF);
+	Dest[18] = (unsigned char) ((w >> 0) & 0xFF);
+	Dest[19] = (unsigned char) ((w >> 8) & 0xFF);
+	Dest[20] = (unsigned char) ((w >> 16) & 0xFF);
+	Dest[21] = (unsigned char) ((w >> 24) & 0xFF);
 	
-	Dest[22] = (unsigned char) ((Y >> 0) & 0xFF);
-	Dest[23] = (unsigned char) ((Y >> 8) & 0xFF);
-	Dest[24] = (unsigned char) ((Y >> 16) & 0xFF);
-	Dest[25] = (unsigned char) ((Y >> 24) & 0xFF);
+	Dest[22] = (unsigned char) ((h >> 0) & 0xFF);
+	Dest[23] = (unsigned char) ((h >> 8) & 0xFF);
+	Dest[24] = (unsigned char) ((h >> 16) & 0xFF);
+	Dest[25] = (unsigned char) ((h >> 24) & 0xFF);
 	
 	Dest[26] = 1;
 	Dest[27] = 0;
@@ -124,12 +128,10 @@ int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch)
 	
 	Dest[30] = Dest[31] = Dest[32] = Dest[33] = 0;
 	
-	i -= 54;
-	
-	Dest[34] = (unsigned char) ((i >> 0) & 0xFF);
-	Dest[35] = (unsigned char) ((i >> 8) & 0xFF);
-	Dest[36] = (unsigned char) ((i >> 16) & 0xFF);
-	Dest[37] = (unsigned char) ((i >> 24) & 0xFF);
+	Dest[34] = (unsigned char) ((bmpSize >> 0) & 0xFF);
+	Dest[35] = (unsigned char) ((bmpSize >> 8) & 0xFF);
+	Dest[36] = (unsigned char) ((bmpSize >> 16) & 0xFF);
+	Dest[37] = (unsigned char) ((bmpSize >> 24) & 0xFF);
 	
 	Dest[38] = Dest[42] = 0xC4;
 	Dest[39] = Dest[43] = 0x0E;
@@ -138,36 +140,45 @@ int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch)
 	Dest[46] = Dest[47] = Dest[48] = Dest[49] = 0;
 	Dest[50] = Dest[51] = Dest[52] = Dest[53] = 0;
 	
-	Src = (unsigned char *) (Screen);
-	Src += Pitch * (Y - 1);
+	// Start/end coordinates in the MD_Screen buffer.
+	// 320x224: start = 8, end = 328
+	// 256x224: start = 8, end = 262 (TODO: Determine when 256x224 mode is active.)
 	
-	if (mode)
+	//Src += Pitch * (Y - 1);
+	pos = 0;
+	// Bitmaps are stored upside-down.
+	if (!Mode_555)
 	{
-		for (offs = 54, j = 0; j < Y; j++, Src -= Pitch, offs += (3 * X))
+		// 16-bit color, 565 pixel format.
+		for (y = h - 1; y >= 0; y--)
 		{
-			for (i = 0; i < X; i++)
+			for (x = 8; x < 8 + w; x++)
 			{
-				tmp = (unsigned int) (Src[2 * i + 0] + (Src[2 * i + 1] << 8));
-				Dest[offs + (3 * i) + 2] = ((tmp >> 7) & 0xF8);
-				Dest[offs + (3 * i) + 1] = ((tmp >> 2) & 0xF8);
-				Dest[offs + (3 * i) + 0] = ((tmp << 3) & 0xF8);
+				MD_Color = MD_Screen[(y * 336) + x];
+				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0xF800) >> 8);
+				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x07E0) >> 3);
+				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
+				pos++;
 			}
 		}
 	}
 	else
 	{
-		for (offs = 54, j = 0; j < Y; j++, Src -= Pitch, offs += (3 * X))
+		// 16-bit color, 555 pixel format.
+		for (y = h - 1; y >= 0; y--)
 		{
-			for (i = 0; i < X; i++)
+			for (x = 8; x < 8 + w; x++)
 			{
-				tmp = (unsigned int) (Src[2 * i + 0] + (Src[2 * i + 1] << 8));
-				Dest[offs + (3 * i) + 2] = ((tmp >> 8) & 0xF8);
-				Dest[offs + (3 * i) + 1] = ((tmp >> 3) & 0xFC);
-				Dest[offs + (3 * i) + 0] = ((tmp << 3) & 0xF8);
+				MD_Color = MD_Screen[(y * 336) + x];
+				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0x7C00) >> 7);
+				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
+				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
+				pos++;
 			}
 		}
 	}
-	fwrite(Dest, 1, (X * Y * 3) + 54, ScrShot_File);
+	
+	fwrite(Dest, 1, bmpSize + 54, ScrShot_File);
 	fclose(ScrShot_File);
 	
 	if (Dest)

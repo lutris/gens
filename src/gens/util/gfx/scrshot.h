@@ -1,8 +1,10 @@
 #ifndef SCRSHOT_H
 #define SCRSHOT_H
 
-extern char ScrShot_Dir[1024];
+#include "g_main.h"
 
-int Save_Shot(unsigned char *Screen, int mode, int X, int Y, int Pitch);
+extern char ScrShot_Dir[GENS_PATH_MAX];
+
+int Save_Shot(void);
 
 #endif
