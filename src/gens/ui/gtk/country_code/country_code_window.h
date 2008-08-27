@@ -15,6 +15,8 @@ extern "C" {
 GtkWidget* create_country_code_window(void); 
 extern GtkWidget *country_code_window;
 
+extern const char* Country_Code_String[3];
+
 #ifdef __cplusplus
 }
 #endif

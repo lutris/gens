@@ -24,6 +24,9 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
+// Country codes
+// TODO: Move this somewhere else?
+const char* Country_Code_String[3] = {"USA", "Japan", "Europe"};
 
 GtkWidget *country_code_window = NULL;
 
@@ -39,7 +42,8 @@ GtkWidget* create_country_code_window(void)
 	GdkPixbuf *country_code_window_icon_pixbuf;
 	GtkWidget *vbox_country;
 	GtkWidget *frame_country, *label_frame_country;
-	GtkWidget *hbox_list;
+	GtkWidget *hbox_list, *treeview_country;
+	GtkWidget *vbox_updown, *button_up, *icon_up, *button_down, *icon_down;
 	GtkWidget *hbutton_box_bottomRow;
 	GtkWidget *button_Country_Cancel, *button_Country_Apply, *button_Country_Save;
 	
@@ -97,6 +101,49 @@ GtkWidget* create_country_code_window(void)
 	gtk_widget_show(hbox_list);
 	gtk_container_add(GTK_CONTAINER(frame_country), hbox_list);
 	GLADE_HOOKUP_OBJECT(country_code_window, hbox_list, "hbox_list");
+	
+	// Tree view containing the country codes
+	treeview_country = gtk_tree_view_new();
+	gtk_widget_set_name(treeview_country, "treeview_country");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_country), TRUE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview_country), FALSE);
+	gtk_widget_show(treeview_country);
+	gtk_box_pack_start(GTK_BOX(hbox_list), treeview_country, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(country_code_window, treeview_country, "treeview_country");
+	
+	// VBox for the up/down buttons.
+	vbox_updown = gtk_vbox_new(TRUE, 0);
+	gtk_widget_set_name(vbox_updown, "vbox_updown");
+	gtk_widget_show(vbox_updown);
+	gtk_box_pack_start(GTK_BOX(hbox_list), vbox_updown, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(country_code_window, vbox_updown, "vbox_updown");
+	
+	// Up button
+	button_up = gtk_button_new();
+	gtk_widget_set_name(button_up, "button_up");
+	gtk_widget_show(button_up);
+	gtk_box_pack_start(GTK_BOX(vbox_updown), button_up, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(country_code_window, button_up, "button_up");
+	
+	// Up icon
+	icon_up = gtk_image_new_from_stock(GTK_STOCK_GO_UP, GTK_ICON_SIZE_BUTTON);
+	gtk_widget_set_name(icon_up, "icon_up");
+	gtk_widget_show(icon_up);
+	gtk_button_set_image(GTK_BUTTON(button_up), icon_up);
+	GLADE_HOOKUP_OBJECT(country_code_window, icon_up, "icon_up");
+	
+	// Down button
+	button_down = gtk_button_new();
+	gtk_widget_set_name(button_down, "button_down");
+	gtk_widget_show(button_down);
+	gtk_box_pack_start(GTK_BOX(vbox_updown), button_down, TRUE, TRUE, 0);
+	
+	// Down icon
+	icon_down = gtk_image_new_from_stock(GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_BUTTON);
+	gtk_widget_set_name(icon_down, "icon_down");
+	gtk_widget_show(icon_down);
+	gtk_button_set_image(GTK_BUTTON(button_down), icon_down);
+	GLADE_HOOKUP_OBJECT(country_code_window, icon_down, "icon_down");
 	
 	// Create an HButton Box for the buttons on the bottom.
 	hbutton_box_bottomRow = gtk_hbutton_box_new();
