@@ -611,6 +611,13 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// Get the filesize of the first file in the archive.
 	filesize = CompressMethods[cmp].get_first_file_size(filename);
+	if (filesize == 0)
+	{
+		// 0 filesize indicates that there was a problem loading the ROM
+		Game = NULL;
+		return NULL;
+	}
+	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 	if (filesize > ((6 * 1024 * 1024) + 512))
 	{
