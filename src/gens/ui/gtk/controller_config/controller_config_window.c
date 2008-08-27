@@ -30,7 +30,7 @@ GtkWidget *controller_config_window = NULL;
 struct K_Def Keys_Config[8];
 
 
-void AddControllerVBox(GtkWidget *vbox, int port);
+static void AddControllerVBox(GtkWidget *vbox, int port);
 
 
 /**
@@ -214,7 +214,7 @@ GtkWidget* create_controller_config_window(void)
  * @param frame Frame to add the VBox to.
  * @param port Port number (1 or 2).
  */
-void AddControllerVBox(GtkWidget *frame, int port)
+static void AddControllerVBox(GtkWidget *frame, int port)
 {
 	GtkWidget *vbox;
 	GtkWidget *hbox;
