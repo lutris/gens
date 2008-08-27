@@ -576,7 +576,7 @@ Rom *Load_SegaCD_BIOS(const char *filename)
 Rom *Load_ROM(const char *filename, const int interleaved)
 {
 	FILE *ROM_File;
-	int filesize = 0;
+	struct COMPRESS_FileInfo_t fileInfo;
 	int cmp = 0;
 	
 	//SetCurrentDirectory (Gens_Path);
@@ -612,17 +612,16 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// Compression handler found.
 	
-	// Get the filesize of the first file in the archive.
-	filesize = CompressMethods[cmp].get_first_file_size(filename);
-	if (filesize == 0)
+	// Get information about the first file in the archive.
+	if (!CompressMethods[cmp].get_first_file_info(filename, &fileInfo))
 	{
-		// 0 filesize indicates that there was a problem loading the ROM
+		// Error loading the ROM and/or archive.
 		Game = NULL;
 		return NULL;
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if (filesize > ((6 * 1024 * 1024) + 512))
+	if (fileInfo.filesize > ((6 * 1024 * 1024) + 512))
 	{
 		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
 		//fclose(ROM_File);
@@ -639,9 +638,10 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		return NULL;
 	}
 	//fseek(ROM_File, 0, SEEK_SET);
+	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	if (CompressMethods[cmp].get_first_file(filename, Rom_Data, filesize) <= 0)
+	if (CompressMethods[cmp].get_file(filename, &fileInfo, Rom_Data, fileInfo.filesize) <= 0)
 	{
 		// Error loading the ROM.
 		free(My_Rom);
@@ -652,7 +652,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	//fclose(ROM_File);
 	
 	Update_Rom_Name(filename);
-	Rom_Size = filesize;
+	Rom_Size = fileInfo.filesize;
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)

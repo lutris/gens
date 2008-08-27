@@ -42,24 +42,28 @@ int Zip_Detect_Format(FILE *f)
 }
 
 /**
- * Zip_Get_First_File_Size(): Gets the filesize of the first file in the specified archive.
+ * Zip_Get_First_File_Info(): Gets information about the first file in the specified archive.
  * @param filename Filename of the archive.
- * @return Filesize, or 0 on error.
+ * @param retFileInfo Struct to store information about the file.
+ * @return 1 on success; 0 on error.
  */
-int Zip_Get_First_File_Size(const char *filename)
+int Zip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
 {
 	unzFile f;
 	unz_file_info zinfo;
 	int i, extpos;
-	int filesize = 0;
 	char ROMFileName[132];
 	
+	// Both parameters must be specified.
+	if (!filename || !retFileInfo)
+		return 0;
+	
+	// Open the Zip file.
 	f = unzOpen(filename);
 	if (!f)
 		return 0;
 	
-	// TODO: Figure out some way to optimize this so the program doesn't have to
-	// search through the Zip archive a second time to find the ROM file.
+	// Find the first ROM file in the Zip archive.
 	i = unzGoToFirstFile(f);
 	while (i == UNZ_OK)
 	{
@@ -73,7 +77,10 @@ int Zip_Get_First_File_Size(const char *filename)
 		    (!strncasecmp(".gen", &ROMFileName[extpos], 4)) ||
 		    (!strncasecmp(".32x", &ROMFileName[extpos], 4)))
 		{
-			filesize = zinfo.uncompressed_size;
+			// Store the ROM file informatio.
+			retFileInfo->filesize = zinfo.uncompressed_size;
+			strncpy(retFileInfo->filename, ROMFileName, 132);
+			retFileInfo->filename[131] = 0x00;
 			break;
 		}
 		
@@ -81,70 +88,40 @@ int Zip_Get_First_File_Size(const char *filename)
 	}
 	unzClose(f);
 	
-	if ((i != UNZ_END_OF_LIST_OF_FILE && i != UNZ_OK) || filesize == 0)
+	if ((i != UNZ_END_OF_LIST_OF_FILE && i != UNZ_OK) || retFileInfo->filesize == 0)
 	{
 		UI_MsgBox("No Genesis or 32X ROM file found in ZIP archive.", "ZIP File Error");
 		return 0;
 	}
 	
-	// Return the filesize.
-	return filesize;
+	// Return successfully.
+	return 1;
 }
 
 /**
- * Zip_Get_First_File(): Gets the first file from the specified archive.
+ * Zip_Get_File(): Gets the specified file from the specified archive.
  * @param filename Filename of the archive.
+ * @param fileInfo Information about the file to extract.
  * @param buf Buffer to write the file to.
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int Zip_Get_First_File(const char *filename, void *buf, int size)
+int Zip_Get_File(const char *filename, const struct COMPRESS_FileInfo_t *fileInfo, void *buf, int size)
 {
 	unzFile f;
-	unz_file_info zinfo;
-	int i, extpos, zResult;
-	int filesize = 0;
-	char ROMFileName[132];
+	int zResult;
 	char tmp[64];
+	
+	// All parameters must be specified.
+	if (!filename || !fileInfo || !buf || !size)
+		return 0;
 	
 	f = unzOpen(filename);
 	if (!f)
 		return 0;
 	
-	// TODO: Figure out some way to optimize this so the program doesn't have to
-	// search through the Zip archive a second time to find the ROM file.
-	i = unzGoToFirstFile(f);
-	while (i == UNZ_OK)
-	{
-		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
-		
-		// The file extension of the file in the Zip file must match one of these
-		// in order to be considered a ROM, since extracting each file to check
-		// based on contents is too resource-intensive.
-		extpos = strlen(ROMFileName) - 4;
-		if ((!strncasecmp(".smd", &ROMFileName[extpos], 4)) ||
-		    (!strncasecmp(".bin", &ROMFileName[extpos], 4)) ||
-		    (!strncasecmp(".gen", &ROMFileName[extpos], 4)) ||
-		    (!strncasecmp(".32x", &ROMFileName[extpos], 4)))
-		{
-			filesize = zinfo.uncompressed_size;
-			break;
-		}
-		
-		i = unzGoToNextFile(f);
-	}
-	
-	if ((i != UNZ_END_OF_LIST_OF_FILE && i != UNZ_OK) || filesize == 0)
-	{
-		// Error finding the ROM.
-		unzClose(f);
-		return -1;
-	}
-
-	// TODO: The above code needs to be consolidated somehow.
-	
 	// Locate the ROM in the Zip file.
-	if (unzLocateFile(f, ROMFileName, 1) != UNZ_OK ||
+	if (unzLocateFile(f, fileInfo->filename, 1) != UNZ_OK ||
 	    unzOpenCurrentFile(f) != UNZ_OK)
 	{
 		UI_MsgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");

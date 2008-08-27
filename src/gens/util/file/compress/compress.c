@@ -24,8 +24,8 @@
 
 const struct COMPRESS_Handler_t CompressMethods[] =
 {
-	{GZip_Detect_Format, GZip_Get_First_File_Size, GZip_Get_First_File},
-	{Zip_Detect_Format, Zip_Get_First_File_Size, Zip_Get_First_File},
-	{Dummy_Detect_Format, Dummy_Get_First_File_Size, Dummy_Get_First_File},
+	{GZip_Detect_Format,	GZip_Get_First_File_Info,	GZip_Get_File},
+	{Zip_Detect_Format,	Zip_Get_First_File_Info,	Zip_Get_File},
+	{Dummy_Detect_Format,	Dummy_Get_First_File_Info,	Dummy_Get_File},
 	{NULL, NULL, NULL},
 };

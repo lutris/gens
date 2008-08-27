@@ -39,15 +39,19 @@ int GZip_Detect_Format(FILE *f)
 }
 
 /**
- * GZip_Get_First_File_Size(): Gets the filesize of the first file in the specified archive.
+ * GZip_Get_First_File_Info(): Gets information about the first file in the specified archive.
  * @param filename Filename of the archive.
+ * @param retFileInfo Struct to store information about the file. (Unused in the GZip handler.)
  * @return Filesize, or 0 on error.
  */
-int GZip_Get_First_File_Size(const char *filename)
+int GZip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
 {
 	gzFile gzfd;
 	char buf[1024];
-	int filesize = 0;
+	
+	// Both parameters must be specified.
+	if (!filename || !retFileInfo)
+		return 0;
 	
 	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
@@ -57,27 +61,37 @@ int GZip_Get_First_File_Size(const char *filename)
 	}
 	
 	// Read through the GZip file until we hit an EOF.
+	retFileInfo->filesize = 0;
 	while (!gzeof(gzfd))
 	{
-		filesize += gzread(gzfd, buf, 1024);
+		retFileInfo->filesize += gzread(gzfd, buf, 1024);
 	}
 	
-	// Close the GZip fd and return the filesize.
+	// Copy the filename.
+	strncpy(retFileInfo->filename, filename, 256);
+	retFileInfo->filename[255] = 0x00;
+	
+	// Close the GZip fd and return successfully.
 	gzclose(gzfd);
-	return filesize;
+	return 1;
 }
 
 /**
- * GZip_Get_First_File(): Gets the first file from the specified archive.
+ * GZip_Get_File(): Gets the specified file from the specified archive.
  * @param filename Filename of the archive.
+ * @param fileInfo Information about the file to extract. (Unused in the GZip handler.)
  * @param buf Buffer to write the file to.
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int GZip_Get_First_File(const char *filename, void *buf, int size)
+int GZip_Get_File(const char *filename, const struct COMPRESS_FileInfo_t *fileInfo, void *buf, int size)
 {
 	gzFile gzfd;
 	int retval;
+	
+	// All parameters (except fileInfo) must be specified.
+	if (!filename || !buf || !size)
+		return 0;
 	
 	gzfd = gzopen(filename, "rb");
 	if (!gzfd)

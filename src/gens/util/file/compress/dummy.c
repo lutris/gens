@@ -37,14 +37,19 @@ int Dummy_Detect_Format(FILE *f)
 }
 
 /**
- * Dummy_Get_First_File_Size(): Gets the filesize of the specified file.
+ * Dummy_Get_First_File_Info(): Gets information about the specified file.
  * @param filename Filename of the file to read.
- * @return Filesize, or 0 on error.
+ * @param retFileInfo Struct to store information about the file.
+ * @return 1 on success; 0 on error.
  */
-int Dummy_Get_First_File_Size(const char *filename)
+int Dummy_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
 {
 	int filesize;
 	FILE *f;
+	
+	// Both parameters must be specified.
+	if (!filename || !retFileInfo)
+		return 0;
 	
 	// Open the file.
 	f = fopen(filename, "rb");
@@ -54,22 +59,33 @@ int Dummy_Get_First_File_Size(const char *filename)
 	
 	// Get the filesize.
 	fseek(f, 0, SEEK_END);
-	filesize = ftell(f);
+	retFileInfo->filesize = ftell(f);
 	fclose(f);
-	return filesize;
+	
+	// Copy the filename to retFileInfo.
+	strncpy(retFileInfo->filename, filename, 256);
+	retFileInfo->filename[255] = 0x00;
+	
+	// Done.
+	return 1;
 }
 
 /**
- * Dummy_Get_First_File(): Gets the file contents.
+ * Dummy_Get_File(): Gets the file contents.
  * @param filename Filename of the file to read.
+ * @param fileInfo Information about the file to extract. (Unused in the Dummy handler.)
  * @param buf Buffer to write the file to.
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int Dummy_Get_First_File(const char *filename, void *buf, int size)
+int Dummy_Get_File(const char *filename, const struct COMPRESS_FileInfo_t *fileInfo, void *buf, int size)
 {
 	int filesize;
 	FILE *f;
+	
+	// All parameters (except fileInfo) must be specified.
+	if (!filename || !buf || !size)
+		return 0;
 	
 	// Open the file.
 	f = fopen(filename, "rb");

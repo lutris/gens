@@ -26,7 +26,7 @@
 #include <stdio.h>
 
 int Zip_Detect_Format(FILE *f);
-int Zip_Get_First_File_Size(const char *filename);
-int Zip_Get_First_File(const char *filename, void *buf, int size);
+int Zip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo);
+int Zip_Get_File(const char *filename, const struct COMPRESS_FileInfo_t *fileInfo, void *buf, int size);
 
 #endif

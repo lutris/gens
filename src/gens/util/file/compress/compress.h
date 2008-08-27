@@ -50,6 +50,15 @@
 // COMPRESS_Get_First_File().
 
 /**
+ * Compress_Data_t: Data structure used for various functions.
+ */
+struct COMPRESS_FileInfo_t
+{
+	int filesize;
+	char filename[256];
+};
+
+/**
  * COMPRESS_Detect_Format(): Detects if a file is in this compression handler's format.
  * @param filename Filename of the archive.
  * @return 0 if this is not in this handler's format; non-zero if it is.
@@ -57,20 +66,22 @@
 typedef int (GENS_FNCALL *COMPRESS_Detect_Format)(FILE *f);
 
 /**
- * COMPRESS_Get_First_File_Size(): Gets the filesize of the first file in the specified archive.
- * @param f File pointer of the archive.
- * @return Filesize, or 0 on error.
+ * COMPRESS_Get_First_File_Info(): Gets information about the first file in the specified archive.
+ * @param filename Filename of the archive.
+ * @param retFileInfo Struct to store information about the file.
+ * @return 1 on success; 0 on error.
  */
-typedef int (GENS_FNCALL *COMPRESS_Get_First_File_Size)(const char *filename);
+typedef int (GENS_FNCALL *COMPRESS_Get_First_File_Info)(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo);
 
 /**
- * COMPRESS_Get_First_File(): Gets the first file from the specified archive.
+ * COMPRESS_Get_File(): Gets the specified file from the specified archive.
  * @param filename Filename of the archive.
+ * @param fileInfo Information about the file to extract.
  * @param buf Buffer to write the file to.
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-typedef int (GENS_FNCALL *COMPRESS_Get_First_File)(const char *filename, void *buf, int size);
+typedef int (GENS_FNCALL *COMPRESS_Get_File)(const char *filename, const struct COMPRESS_FileInfo_t *fileInfo, void *buf, int size);
 
 /**
  * COMPRESS_Handler(): Struct containing function pointers for compression handlers.
@@ -78,8 +89,8 @@ typedef int (GENS_FNCALL *COMPRESS_Get_First_File)(const char *filename, void *b
 struct COMPRESS_Handler_t
 {
 	COMPRESS_Detect_Format		detect_format;
-	COMPRESS_Get_First_File_Size	get_first_file_size;
-	COMPRESS_Get_First_File		get_first_file;
+	COMPRESS_Get_First_File_Info	get_first_file_info;
+	COMPRESS_Get_File		get_file;
 };
 
 // struct containing all of the available compression methods.
