@@ -52,6 +52,7 @@ void Open_Game_Genie(void)
 	else
 		listmodel = gtk_list_store_new(3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
 	
+	// Set the view model of the treeview.
 	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel));
 	
 	// Create the renderer and columns.
