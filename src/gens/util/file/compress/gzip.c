@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <zlib.h>
 #include "compress.h"
+#include <zlib.h>
 
 /**
  * GZip_Detect_Format(): Detects if a file is in GZip format.
