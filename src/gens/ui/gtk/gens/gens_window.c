@@ -796,7 +796,6 @@ void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
 	};
 	
 	int i;
-	char CountryName[8];
 	char ObjName[64];
 	
 	// Create the submenu.
