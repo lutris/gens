@@ -17,7 +17,7 @@
 #include "gtk-misc.h"
 
 // Stores the entries in the TreeView.
-GtkListStore *listmodel = NULL;
+GtkListStore *listmodel_gg = NULL;
 
 
 /**
@@ -45,15 +45,15 @@ void Open_Game_Genie(void)
 	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 	gtk_tree_selection_set_mode(select, GTK_SELECTION_MULTIPLE);
 	
-	// Check if the listmodel is already created.
+	// Check if the listmodel_gg is already created.
 	// If it is, clear it; if not, create a new one.
-	if (listmodel)
-		gtk_list_store_clear(listmodel);
+	if (listmodel_gg)
+		gtk_list_store_clear(listmodel_gg);
 	else
-		listmodel = gtk_list_store_new(3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
+		listmodel_gg = gtk_list_store_new(3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
 	
 	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel_gg));
 	
 	// Create the renderer and columns.
 	toggle_renderer = gtk_cell_renderer_toggle_new();
@@ -67,7 +67,7 @@ void Open_Game_Genie(void)
 	
 	// Connect the toggle renderer to the callback.
 	g_signal_connect((gpointer)toggle_renderer, "toggled",
-			 G_CALLBACK(on_treeview_gg_list_item_toggled), (gpointer)listmodel);
+			 G_CALLBACK(on_treeview_gg_list_item_toggled), (gpointer)listmodel_gg);
 	
 	// Go through the list of codes and add them to the treeview.
 	for (i = 0; i < 256; i++)
@@ -119,8 +119,8 @@ void GG_AddCode(GtkWidget *treeview, const char *name, const char *code, int ena
 			break;
 	}
 	
-	gtk_list_store_append(listmodel, &iter);
-	gtk_list_store_set(GTK_LIST_STORE(listmodel), &iter, 0, enabled, 1, upperCode, 2, name, -1);
+	gtk_list_store_append(listmodel_gg, &iter);
+	gtk_list_store_set(GTK_LIST_STORE(listmodel_gg), &iter, 0, enabled, 1, upperCode, 2, name, -1);
 	
 	// TODO: What is this for?
 	if (enabled && treeview)
@@ -150,16 +150,16 @@ void GG_DelSelectedCode(void)
 	while (need_check)
 	{
 		row_erased = FALSE;
-		valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
+		valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_gg), &iter);
 		while (valid && !row_erased)
 		{
 			if (gtk_tree_selection_iter_is_selected(selection, &iter))
 			{
-				gtk_list_store_remove(listmodel, &iter);
+				gtk_list_store_remove(listmodel_gg, &iter);
 				row_erased = TRUE;
 			}
 			else
-				valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+				valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_gg), &iter);
 		}
 		if (!valid && !row_erased)
 			need_check = FALSE;
@@ -179,11 +179,11 @@ void GG_DeactivateAllCodes(void)
 	treeview = lookup_widget(game_genie_window, "treeview_gg_list");
 	
 	// Deactivate all codes.
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_gg), &iter);
 	while (valid)
 	{
-		gtk_list_store_set(GTK_LIST_STORE(listmodel), &iter, 0, 0, -1);
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+		gtk_list_store_set(GTK_LIST_STORE(listmodel_gg), &iter, 0, 0, -1);
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_gg), &iter);
 	}
 }
 
@@ -202,15 +202,15 @@ void GG_SaveCodes(void)
 	Init_GameGenie();
 	
 	// Copy each item in the listview to the array.
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel), &iter);
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_gg), &iter);
 	i = 0;
 	while (valid && i < 256)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(listmodel), &iter, 0, &enabled, 1, &code, 2, &name, -1);
+		gtk_tree_model_get(GTK_TREE_MODEL(listmodel_gg), &iter, 0, &enabled, 1, &code, 2, &name, -1);
 		strcpy(Liste_GG[i].name, name);
 		strcpy(Liste_GG[i].code, code);
 		Liste_GG[i].active = (enabled ? 1 : 0);
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel), &iter);
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_gg), &iter);
 		i++;
 	}
 	
