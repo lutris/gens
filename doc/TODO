@@ -1,5 +1,4 @@
 High-Level TODO:
-- Rewrite GTK+ UI
 - Move most global variables to global Settings struct
 - Port all Gens ReRecording changes
 - Add Win32 support
