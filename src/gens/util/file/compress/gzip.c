@@ -35,10 +35,6 @@ int GZip_Detect_Format(FILE *f)
 	unsigned char buf[2];
 	fseek(f, 0, SEEK_SET);
 	fread(buf, 2, sizeof(unsigned char), f);
-	printf("%d %d\n", buf[0], buf[1]);
-	fseek(f, 0, SEEK_SET);
-	fread(buf, 2, sizeof(unsigned char), f);
-	printf("%d %d\n", buf[0], buf[1]);
 	return (buf[0] == 0x1F && buf[1] == 0x8B);
 }
 
