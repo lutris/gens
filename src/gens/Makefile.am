@@ -33,11 +33,12 @@ nasm -O1 -D __GCC2 -f elf \
 INCLUDES = \
 -I@srcdir@/gens_core/cpu/68k -I@srcdir@/gens_core/cpu/sh2 -I@srcdir@/gens_core/cpu/z80 \
 -I@srcdir@/gens_core/sound -I@srcdir@/gens_core/mem -I@srcdir@/gens_core/misc -I@srcdir@/gens_core/gfx \
--I@srcdir@/gens_core/io -I@srcdir@/gens_core/vdp -I@srcdir@/segacd -I@srcdir@/mp3_dec -I@srcdir@/sdllayer \
+-I@srcdir@/gens_core/io -I@srcdir@/gens_core/vdp -I@srcdir@/segacd -I@srcdir@/sdllayer \
 -I@srcdir@/util -I@srcdir@/util/gfx -I@srcdir@/util/sound -I@srcdir@/util/file \
 -I@srcdir@/port -I@srcdir@/emulator -I@srcdir@/debug -I@srcdir@/netplay \
 -I@srcdir@/ui -I@srcdir@/ui/gtk \
--I@srcdir@
+-I@srcdir@/../mp3_dec \
+-I@srcdir@/../ -I@srcdir@
 
 bin_PROGRAMS = gens
 gens_SOURCES = \
@@ -84,12 +85,6 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
-		mp3_dec/common.c \
-		mp3_dec/dct64_i386.c \
-		mp3_dec/decode_i386.c \
-		mp3_dec/interface.c \
-		mp3_dec/layer3.c \
-		mp3_dec/tabinit.c \
 		port/port.c \
 		port/timer.c \
 		sdllayer/g_sdldraw.c \
@@ -188,9 +183,6 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
-		mp3_dec/huffman.h \
-		mp3_dec/mpg123.h \
-		mp3_dec/mpglib.h \
 		port/port.h \
 		port/timer.h \
 		sdllayer/g_sdldraw.h \
@@ -249,14 +241,15 @@ noinst_HEADERS = \
 		util/sound/wave.c
 
 gens_CFLAGS = \
-			  -DDATADIR=\"@datadir@/@PACKAGE@\" \
-			  @SDL_CFLAGS@ \
-			  @GTK_CFLAGS@ \
-			  @CFLAGS@
+		-DDATADIR=\"@datadir@/@PACKAGE@\" \
+		@SDL_CFLAGS@ \
+		@GTK_CFLAGS@ \
+		@CFLAGS@
 
 
 gens_LDADD = \
 		${ASMFILES} \
+		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		-lm -lz @SDL_LIBS@ @GTK_LIBS@
@@ -267,6 +260,7 @@ gens_LDADD = \
 
 gens_DEPENDENCIES = \
 		${ASMFILES} \
+		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
 
