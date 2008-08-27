@@ -38,8 +38,8 @@ int Save_Shot(void)
 	// Variables used:
 	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
 	// MD_Screen: MD screen buffer.
-	// TODO: Find out where 256x224 mode is set.
-	w = 320;
+	// VDP_Reg.Set4: If 0x01 is set, 320 pixels width; otherwise, 256 pixels width.
+	w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
 	h = VDP_Num_Vis_Lines;
 	
 	// Calculate the size of the bitmap image.
