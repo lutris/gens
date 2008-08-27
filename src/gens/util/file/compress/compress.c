@@ -22,7 +22,7 @@
 
 #include "compress.h"
 
-const struct COMPRESS_Handler_t CompressFuncs[] =
+const struct COMPRESS_Handler_t CompressMethods[] =
 {
 	{GZip_Detect_Format, GZip_Get_First_File_Size, GZip_Get_First_File},
 	{NULL, NULL, NULL},
