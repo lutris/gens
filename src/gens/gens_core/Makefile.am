@@ -26,7 +26,7 @@ nasm -O1 -D __GCC2 -f elf \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
 %.o: %.asm
-	mkdir -p gens_core/gfx gens_core/io gens_core/mem gens_core/misc gens_core/sound gens_core/cpu/sh2 gens_core/vdp gens_core/cpu/z80 ;
+	mkdir -p gfx io mem misc sound cpu/sh2 vdp cpu/z80 ;
 	$(NASM) $< -o $@
 
 INCLUDES = \
