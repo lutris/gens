@@ -141,7 +141,7 @@ void create_gens_window_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUG
 void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif
-void create_gens_window_CPUMenu_Country_SubMenu(CPUMenu_Debug);
+void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
 void create_gens_window_SoundMenu(GtkWidget *container);
 void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
 void create_gens_window_OptionsMenu(GtkWidget *container);
