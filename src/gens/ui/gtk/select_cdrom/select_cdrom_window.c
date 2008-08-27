@@ -1,6 +1,24 @@
-/**
- * GENS: (GTK+) Select CD-ROM Window.
- */
+/***************************************************************************
+ * Gens: (GTK+) Select CD-ROM Drive Window.                                *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
 
 #include "select_cdrom_window.h"
@@ -34,8 +52,8 @@ GtkAccelGroup *accel_group;
 
 
 /**
- * create_select_cdrom_window(): Create the Select CD-ROM Window.
- * @return Select CD-ROM Window.
+ * create_select_cdrom_window(): Create the Select CD-ROM Drive Window.
+ * @return Select CD-ROM Drive Window.
  */
 GtkWidget* create_select_cdrom_window(void)
 {
@@ -50,14 +68,14 @@ GtkWidget* create_select_cdrom_window(void)
 	
 	if (select_cdrom_window)
 	{
-		// Select CD-ROM window is already created. Set focus.
+		// Select CD-ROM Drive Window is already created. Set focus.
 		gtk_widget_grab_focus(select_cdrom_window);
 		return NULL;
 	}
 	
 	accel_group = gtk_accel_group_new();
 	
-	// Create the Select CD-ROM window.
+	// Create the Select CD-ROM Drive Window.
 	CREATE_GTK_WINDOW(select_cdrom_window,
 			  "select_cdrom_window",
 			  "Select CD-ROM Drive",

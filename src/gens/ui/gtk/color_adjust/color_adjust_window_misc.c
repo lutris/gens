@@ -1,6 +1,24 @@
-/**
- * GENS: (GTK+) Color Adjust Window - Miscellaneous Functions.
- */
+/***************************************************************************
+ * Gens: (GTK+) Color Adjustment Window - Miscellaneous Functions.         *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
 
 #include <string.h>
@@ -20,7 +38,7 @@
 
 
 /**
- * Open_Color_Adjust(): Opens the Color Adjust window.
+ * Open_Color_Adjust(): Opens the Color Adjustment window.
  */
 void Open_Color_Adjust(void)
 {
@@ -31,8 +49,8 @@ void Open_Color_Adjust(void)
 	ca = create_color_adjust_window();
 	if (!ca)
 	{
-		// Either an error occurred while creating the Color Adjust window,
-		// or the Color Adjust window is already created.
+		// Either an error occurred while creating the Color Adjustment window,
+		// or the Color Adjustment window is already created.
 		return;
 	}
 	gtk_window_set_transient_for(GTK_WINDOW(ca), GTK_WINDOW(gens_window));
@@ -47,7 +65,7 @@ void Open_Color_Adjust(void)
 	check_options_inverted = lookup_widget(ca, "check_options_inverted");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_options_inverted), Invert_Color);
 	
-	// Show the Color Adjust window.
+	// Show the Color Adjustment window.
 	gtk_widget_show_all(ca);
 }
 

@@ -1,6 +1,24 @@
-/**
- * GENS: (GTK+) Color Adjust Window.
- */
+/***************************************************************************
+ * Gens: (GTK+) Color Adjustment Window.                                   *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
 
 #include "color_adjust_window.h"
@@ -76,8 +94,8 @@ GtkAccelGroup *accel_group;
 
 
 /**
- * create_color_adjust_window(): Create the Color Adjust Window.
- * @return Color Adjust Window.
+ * create_color_adjust_window(): Create the Color Adjustment Window.
+ * @return Color Adjustment Window.
  */
 GtkWidget* create_color_adjust_window(void)
 {
@@ -94,14 +112,14 @@ GtkWidget* create_color_adjust_window(void)
 	
 	if (color_adjust_window)
 	{
-		// Color Adjust window is already created. Set focus.
+		// Color Adjustment window is already created. Set focus.
 		gtk_widget_grab_focus(color_adjust_window);
 		return NULL;
 	}
 	
 	accel_group = gtk_accel_group_new();
 	
-	// Create the Color Adjust window.
+	// Create the Color Adjustment window.
 	CREATE_GTK_WINDOW(color_adjust_window,
 			  "color_adjust_window",
 			  "Color Adjustment",
