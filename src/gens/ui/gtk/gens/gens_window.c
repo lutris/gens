@@ -820,7 +820,7 @@ void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
 	NewMenuSeparator(CPUMenu_Country_SubMenu_Separator, "CPUMenu_Country_SubMenu_Separator", SubMenu);
 	
 	// Add the Auto-Detection Order configuration option.
-	NewMenuItem_Check(CPUMenu_Country_SubMenu_AutoDetectOrder, "Auto-Detection Order...", "Auto-Detection Order...", SubMenu, FALSE);
+	NewMenuItem(CPUMenu_Country_SubMenu_AutoDetectOrder, "Auto-Detection Order...", "Auto-Detection Order...", SubMenu);
 	AddMenuCallback(CPUMenu_Country_SubMenu_AutoDetectOrder, on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate);	
 }
 
