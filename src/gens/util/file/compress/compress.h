@@ -66,6 +66,13 @@ struct COMPRESS_FileInfo_t
 typedef int (GENS_FNCALL *COMPRESS_Detect_Format)(FILE *f);
 
 /**
+ * COMPRESS_Get_Num_Files(): Gets the number of files in the specified rchive.
+ * @param filename Filename of the archive.
+ * @return Number of files, or 0 on error.
+ */
+typedef int (GENS_FNCALL *COMPRESS_Get_Num_Files)(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo);
+
+/**
  * COMPRESS_Get_First_File_Info(): Gets information about the first file in the specified archive.
  * @param filename Filename of the archive.
  * @param retFileInfo Struct to store information about the file.
@@ -89,6 +96,7 @@ typedef int (GENS_FNCALL *COMPRESS_Get_File)(const char *filename, const struct 
 struct COMPRESS_Handler_t
 {
 	COMPRESS_Detect_Format		detect_format;
+	COMPRESS_Get_Num_Files		get_num_files;
 	COMPRESS_Get_First_File_Info	get_first_file_info;
 	COMPRESS_Get_File		get_file;
 };
