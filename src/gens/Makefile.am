@@ -107,6 +107,7 @@ gens_SOURCES = \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/blit.asm \
 		gens_core/gfx/blit1x.c \
+		gens_core/gfx/blit2x.c \
 		gens_core/gfx/scale2x.c \
 		gens_core/gfx/hqfilters.c \
 		gens_core/gfx/hq2x16.asm \
