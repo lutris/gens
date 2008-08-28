@@ -56,6 +56,7 @@ struct COMPRESS_FileInfo_t
 {
 	int filesize;
 	char filename[256];
+	struct COMPRESS_FileInfo_t *next;
 };
 
 /**
@@ -81,6 +82,13 @@ typedef int (GENS_FNCALL *COMPRESS_Get_Num_Files)(const char *filename);
 typedef int (GENS_FNCALL *COMPRESS_Get_First_File_Info)(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo);
 
 /**
+ * COMPRESS_Get_File_Info(): Gets information about all files in the specified archive.
+ * @param filename Filename of the archive.
+ * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.
+ */
+typedef struct COMPRESS_FileInfo_t* (GENS_FNCALL *COMPRESS_Get_File_Info)(const char *filename);
+
+/**
  * COMPRESS_Get_File(): Gets the specified file from the specified archive.
  * @param filename Filename of the archive.
  * @param fileInfo Information about the file to extract.
@@ -98,6 +106,7 @@ struct COMPRESS_Handler_t
 	COMPRESS_Detect_Format		detect_format;
 	COMPRESS_Get_Num_Files		get_num_files;
 	COMPRESS_Get_First_File_Info	get_first_file_info;
+	COMPRESS_Get_File_Info		get_file_info;
 	COMPRESS_Get_File		get_file;
 };
 

@@ -20,6 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include <stdlib.h>
 #include <string.h>
 #include "compress.h"
 #include "unzip.h"
@@ -51,7 +52,6 @@ int Zip_Detect_Format(FILE *f)
 int Zip_Get_Num_Files(const char *filename)
 {
 	unzFile f;
-	unz_file_info zinfo;
 	int i, numFiles;
 	
 	// Filename must be specified.
@@ -134,6 +134,83 @@ int Zip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *re
 	
 	// Return successfully.
 	return 1;
+}
+
+
+/**
+ * Zip_Get_File_Info(): Gets information about all files in the specified archive.
+ * @param filename Filename of the archive.
+ * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.
+ */
+struct COMPRESS_FileInfo_t*  Zip_Get_File_Info(const char *filename)
+{
+	unzFile f;
+	unz_file_info zinfo;
+	int i;
+	char ROMFileName[132];
+	struct COMPRESS_FileInfo_t *fileInfo_1 = NULL;
+	struct COMPRESS_FileInfo_t *fileInfo_cur = NULL;
+	struct COMPRESS_FileInfo_t *fileInfo_tmp = NULL;
+	
+	// The filename must be specified.
+	if (!filename)
+		return NULL;
+	
+	// Open the Zip file.
+	f = unzOpen(filename);
+	if (!f)
+		return 0;
+	
+	// Find the first ROM file in the Zip archive.
+	i = unzGoToFirstFile(f);
+	while (i == UNZ_OK)
+	{
+		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
+		
+		// Create a new FileInfo_t struct for this file.
+		if (fileInfo_cur == NULL)
+		{
+			// First file.
+			fileInfo_cur = (struct COMPRESS_FileInfo_t*)malloc(sizeof(struct COMPRESS_FileInfo_t));
+			if (!fileInfo_cur)
+				return NULL;
+			fileInfo_1 = fileInfo_cur;
+		}
+		else
+		{
+			// Not first file.
+			fileInfo_cur->next = (struct COMPRESS_FileInfo_t*)malloc(sizeof(struct COMPRESS_FileInfo_t));
+			if (!fileInfo_cur->next)
+			{
+				// Error allocating a fileInfo struct.
+				// Free all already-allocated fileInfo structs.
+				fileInfo_cur = fileInfo_1;
+				while (fileInfo_cur)
+				{
+					fileInfo_tmp = fileInfo_cur->next;
+					free(fileInfo_cur);
+					fileInfo_cur = fileInfo_tmp;
+				}
+				return NULL;
+			}
+			fileInfo_cur = fileInfo_cur->next;
+		}
+		
+		// Store the ROM file information.
+		fileInfo_cur->filesize = zinfo.uncompressed_size;
+		strncpy(fileInfo_cur->filename, ROMFileName, 132);
+		fileInfo_cur->filename[132] = 0x00;
+		
+		// Go to the next file.
+		i = unzGoToNextFile(f);
+	}
+	unzClose(f);
+	
+	// Set the next pointer in the current fileInfo to NULL.
+	fileInfo_cur->next = NULL;
+	
+	// Return the pointer to the first COMPRESS_FileInfo_t.
+	return fileInfo_1;
 }
 
 

@@ -85,6 +85,50 @@ int Dummy_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *
 
 
 /**
+ * Dummy_Get_File_Info(): Gets information about all files in the specified archive.
+ * @param filename Filename of the file to read.
+ * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.
+ */
+struct COMPRESS_FileInfo_t* Dummy_Get_File_Info(const char *filename)
+{
+	FILE *f;
+	int filesize;
+	struct COMPRESS_FileInfo_t *fileInfo;
+	
+	// The filename must be specified.
+	if (!filename)
+		return NULL;
+	
+	// Open the file.
+	f = fopen(filename, "rb");
+	// Return NULL if the file can't be read.
+	if (!f)
+		return NULL;
+	
+	// Get the filesize.
+	fseek(f, 0, SEEK_END);
+	filesize = ftell(f);
+	fclose(f);
+	
+	// Create a FileInfo_t struct.
+	fileInfo = (struct COMPRESS_FileInfo_t*)malloc(sizeof(struct COMPRESS_FileInfo_t));
+	if (!fileInfo)
+		return NULL;
+	
+	// Copy the filesize and filename to fileInfo.
+	fileInfo->filesize = filesize;
+	strncpy(fileInfo->filename, filename, 256);
+	fileInfo->filename[255] = 0x00;
+	
+	// Only one file, so set the *next variable to NULL.
+	fileInfo->next = NULL;
+	
+	// Done.
+	return fileInfo;
+}
+
+
+/**
  * Dummy_Get_File(): Gets the file contents.
  * @param filename Filename of the file to read.
  * @param fileInfo Information about the file to extract. (Unused in the Dummy handler.)

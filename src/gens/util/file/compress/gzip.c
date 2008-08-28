@@ -93,6 +93,57 @@ int GZip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *r
 
 
 /**
+ * GZip_Get_File_Info(): Gets information about all files in the specified archive.
+ * @param filename Filename of the archive.
+ * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.
+ */
+struct COMPRESS_FileInfo_t* GZip_Get_File_Info(const char *filename)
+{
+	gzFile gzfd;
+	char buf[1024];
+	int filesize;
+	struct COMPRESS_FileInfo_t *fileInfo;
+	
+	// The filename must be specified.
+	if (!filename)
+		return NULL;
+	
+	gzfd = gzopen(filename, "rb");
+	if (!gzfd)
+	{
+		// Error obtaining a GZip file descriptor.
+		return NULL;
+	}
+	
+	// Read through the GZip file until we hit an EOF.
+	filesize = 0;
+	while (!gzeof(gzfd))
+	{
+		filesize += gzread(gzfd, buf, 1024);
+	}
+	
+	// Close the GZip fd.
+	gzclose(gzfd);
+	
+	// Create a FileInfo_t struct.
+	fileInfo = (struct COMPRESS_FileInfo_t*)malloc(sizeof(struct COMPRESS_FileInfo_t));
+	if (!fileInfo)
+		return NULL;
+	
+	// Copy the filesize and filename to fileInfo.
+	fileInfo->filesize = filesize;
+	strncpy(fileInfo->filename, filename, 256);
+	fileInfo->filename[255] = 0x00;
+	
+	// Only one file, so set the *next variable to NULL.
+	fileInfo->next = NULL;
+	
+	// Done.
+	return fileInfo;
+}
+
+
+/**
  * GZip_Get_File(): Gets the specified file from the specified archive.
  * @param filename Filename of the archive.
  * @param fileInfo Information about the file to extract. (Unused in the GZip handler.)
