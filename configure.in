@@ -66,6 +66,25 @@ dnl               CFLAGS="$CFLAGS -D__OPENGL__"
        fi
 fi
 
+AC_ARG_WITH(png,[  --without-png           Build without PNG support ],with_png=$withval)
+AC_MSG_CHECKING(for PNG support)
+if test x$with_png != xno; then
+       with_png=no
+       AC_TRY_COMPILE([
+       #include <png.h>
+       /* Doesnt ac-try-compile ROCK? */
+       ],[
+       ],[
+       with_png=yes
+       ])      
+       AC_MSG_RESULT($with_png)
+       if test x$with_png = xyes; then
+               LDFLAGS="$LDFLAGS -lpng"
+dnl               CFLAGS="$CFLAGS -D__PNG__"
+               
+       fi
+fi
+
 CFLAGS="$CFLAGS -Wall -W"
 LDFLAGS="$LDFLAGS"
 AC_CHECK_LIB(rt, clock_gettime)
