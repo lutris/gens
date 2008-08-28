@@ -35,19 +35,6 @@ section .data align=64
 	MASK_DIV2_16:	dd 0x7BEF7BEF, 0x7BEF7BEF
 
 
-section .bss align=64
-
-	LineBuffer:	resb 32
-	Mask1:		resb 8
-	Mask2:		resb 8
-	ACPixel:	resb 8
-
-	Line1Int:	resb 640 * 2
-	Line2Int:	resb 640 * 2
-	Line1IntP:	resd 1
-	Line2IntP:	resb 1
-
-
 section .text align=64
 
 
