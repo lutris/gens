@@ -22,5 +22,6 @@ void Blit_Scale2x(unsigned char *Dest, int pitch, int x, int y, int offset);
 void _Blit_HQ2x(unsigned char *Dest, int pitch, int x, int y, int offset);
 int Blit_HQ2x_InitLUTs(void);
 
+void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset);
 
 #endif

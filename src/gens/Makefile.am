@@ -90,6 +90,7 @@ gens_SOURCES = \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
 		gens_core/gens_core/gfx/blit.asm \
+		gens_core/gfx/blit1x.c \
 		gens_core/gfx/scale2x.c \
 		gens_core/gfx/hqfilters.c \
 		gens_core/gfx/hq2x16.asm \

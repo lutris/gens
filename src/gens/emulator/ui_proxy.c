@@ -94,8 +94,9 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	{
 		case NORMAL:
 			*Rend = NORMAL;
-			if (Have_MMX) *Blit = Blit_X1_MMX;
-			else *Blit = Blit_X1;
+			//if (Have_MMX) *Blit = Blit_X1_MMX;
+			//else *Blit = Blit_X1;
+			*Blit = Blit_1x;
 			MESSAGE_L("Render selected : NORMAL", "Render selected : NORMAL", 1500)
 			break;
 
