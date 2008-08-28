@@ -131,11 +131,12 @@ int Save_Config(const char *File_Name)
 	WritePrivateProfileString("Graphics", "Invert", Str_Tmp, Conf_File);
 	
 	// Video settings
+	// Render_Mode is incremented by 1 for compatibility with old Gens.
 	// TODO: BUG: If "Full Scree VSync" is saved before "Full Screen",
 	// the Linux reimplementation of WritePrivateProfileString gets confused.
 	sprintf(Str_Tmp, "%d", Video.Full_Screen & 1);
 	WritePrivateProfileString("Graphics", "Full Screen", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Video.Render_Mode);
+	sprintf(Str_Tmp, "%d", Video.Render_Mode + 1);
 	WritePrivateProfileString("Graphics", "Render Mode", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", FS_VSync & 1);
 	WritePrivateProfileString("Graphics", "Full Screen VSync", Str_Tmp, Conf_File);
@@ -441,10 +442,11 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Recalculate_Palettes ();
 	
 	// Video settings
+	// Render_Mode is decremented by 1 for compatibility with old Gens.
 	FS_VSync = GetPrivateProfileInt("Graphics", "Full Screen VSync", 0, Conf_File);
 	W_VSync = GetPrivateProfileInt("Graphics", "Windows VSync", 0, Conf_File);
 	Video.Full_Screen = GetPrivateProfileInt("Graphics", "Full Screen", 0, Conf_File);
-	Video.Render_Mode = GetPrivateProfileInt ("Graphics", "Render Mode", 1, Conf_File);
+	Video.Render_Mode = GetPrivateProfileInt("Graphics", "Render Mode", 1, Conf_File) - 1;
 	Video.bpp = GetPrivateProfileInt("Graphics", "Bits Per Pixel", 16, Conf_File);
 	Video.OpenGL = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
 	Video.Width_GL = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);

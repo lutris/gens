@@ -31,43 +31,6 @@
 #include "misc.h"
 
 
-extern unsigned char Bits32;
-
-
-#ifndef GENS_X86_ASM
-static void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset);
-#endif
-static void Blit2x_32(unsigned char *screen, int pitch, int x, int y, int offset);
-
-
-/**
- * Blit2x(): Blits the image to the screen, double-sized.
- * @param Dest Destination buffer.
- * @param pitch Number of bytes per line.
- * @param x X coordinate for the image.
- * @param y Y coordinate for the image.
- * @param offset ???
- */
-// TODO: Return a function pointer so this can be set in ui_proxy.c:Set_Render().
-// That will reduce function call overhead.
-void Blit2x(unsigned char *screen, int pitch, int x, int y, int offset)
-{
-	if (Bits32)
-		Blit2x_32(screen, pitch, x, y, offset);
-	else
-	{
-#ifdef GENS_X86_ASM
-		if (Have_MMX)
-			Blit2x_16_asm_MMX(screen, pitch, x, y, offset);
-		else
-			Blit2x_16_asm(screen, pitch, x, y, offset);
-#else
-		Blit2x_16(screen, pitch, x, y, offset);
-#endif
-	}
-}
-
-
 #ifndef GENS_X86_ASM
 /**
  * Blit2x_16(): (16-bit) Blits the image to the screen, double-sized.
@@ -77,7 +40,7 @@ void Blit2x(unsigned char *screen, int pitch, int x, int y, int offset)
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
+void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	
@@ -123,7 +86,7 @@ static void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit2x_32(unsigned char *screen, int pitch, int x, int y, int offset)
+void Blit2x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	

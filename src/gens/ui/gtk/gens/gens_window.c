@@ -52,6 +52,11 @@ GtkWidget *debugMenuItems[9];
 GtkWidget *debugSeparators[2];
 #endif
 
+// Renderer / Blitter selection stuff.
+#include "renderers.h"
+#include "vdp_rend.h"
+#include "misc.h"
+
 GtkAccelGroup *accel_group;
 
 
@@ -571,31 +576,20 @@ static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
  * create_gens_window_GraphicsMenu_Render_SubMenu(): Create the Graphics, Render submenu.
  * @param container Container for this menu.
  */
-static void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
+void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 {
+	// This function may be called externally after a video mode change.
+	
 	GtkWidget *SubMenu;
 	GtkWidget *RenderItem;
 	GSList *RenderGroup = NULL;
-	
-	// TODO: Move this array somewhere else.
-	const char* Render[12] =
-	{
-		"Normal",
-		"Double",
-		"Interpolated",
-		"Scanline",
-		"50% Scanline",
-		"25% Scanline",
-		"Interpolated Scanline",
-		"Interpolated 50% Scanline",
-		"Interpolated 25% Scanline",
-		"2xSAI (Kreed)",
-		"Scale2x",
-		"Hq2x",
-	};
+	gboolean showRenderer;
 	
 	int i;
 	char ObjName[64];
+	
+	// Delete the submenu, if one already exists.
+	gtk_menu_item_remove_submenu(GTK_MENU_ITEM(container));
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
@@ -603,13 +597,40 @@ static void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
 	// Create the render entries.
-	for (i = 0; i < 12; i++)
+	i = 0;
+	while (Renderers[i].name)
 	{
-		sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i + 1);
-		NewMenuItem_Radio(RenderItem, Render[i], ObjName, SubMenu, (i == 1 ? TRUE : FALSE), RenderGroup);
-		g_signal_connect((gpointer)RenderItem, "activate",
-				 G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
-				 GINT_TO_POINTER(i + 1));
+		// Check if the current blitter exists for this video mode.
+		showRenderer = FALSE;
+		if (Bits32)
+		{
+			// 32-bit
+			if (Have_MMX && Renderers[i].blit_32_mmx)
+				showRenderer = TRUE;
+			else if (Renderers[i].blit_32)
+				showRenderer = TRUE;
+		}
+		else
+		{
+			// 15/16-bit
+			if (Have_MMX && Renderers[i].blit_16_mmx)
+				showRenderer = TRUE;
+			else if (Renderers[i].blit_16)
+				showRenderer = TRUE;
+		}
+		
+		if (showRenderer)
+		{
+			sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i);
+			NewMenuItem_Radio(RenderItem, Renderers[i].name, ObjName, SubMenu,
+					  (i == 1 ? TRUE : FALSE), RenderGroup);
+			g_signal_connect((gpointer)RenderItem, "activate",
+					 G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
+					 GINT_TO_POINTER(i));
+		}
+		
+		// Check the next renderer.
+		i++;
 	}
 }
 

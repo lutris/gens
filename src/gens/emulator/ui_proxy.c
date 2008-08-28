@@ -17,7 +17,6 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 #include "vdp_32x.h"
-#include "blit.h"
 #include "misc.h"
 #include "mem_sh2.h"
 #include "cpu_sh2.h"
@@ -27,6 +26,8 @@
 #include "ui_proxy.h"
 #include "ui-common.h"
 #include "gens/gens_window_sync.h"
+
+#include "renderers.h"
 
 _filters filters;
 
@@ -84,12 +85,13 @@ void system_reset(void)
 int Set_Render(int FullScreen, int Mode, int Force)
 {
 	int Old_Rend, *Rend;
-	void (**Blit)(unsigned char*, int, int, int, int);
+	BlitFn *Blit, testBlit;
 	
 	Blit = FullScreen ? &Blit_FS : &Blit_W;
 	Rend = &Video.Render_Mode;
 	Old_Rend = Video.Render_Mode;
 	
+	/*
 	switch (Mode)
 	{
 		case NORMAL:
@@ -199,14 +201,50 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500);
 			break;
 	}
+	*/
 	
-	shift = ((Video.Render_Mode) != 1);
+	// Checks if an invalid mode number was passed.
+	if (Mode < 0 || Mode >= Renderers_Count)
+	{
+		// Invalid mode number.
+		MESSAGE_NUM_L("Error: Render mode %d is not available.",
+			      "Error: Render mode %d is not available.",
+			      Mode, 1500);
+		return 0;
+	}
+	
+	// Check if a blit function exists for this renderer.
+	if (Bits32)
+		testBlit = (Have_MMX ? Renderers[Mode].blit_32_mmx : Renderers[Mode].blit_32);
+	else
+		testBlit = (Have_MMX ? Renderers[Mode].blit_16_mmx : Renderers[Mode].blit_16);
+	
+	if (!testBlit)
+	{
+		// Renderer function not found.
+		if (Renderers[Mode].name)
+		{
+			MESSAGE_NUM_L("Error: Render mode %s is not available.",
+				      "Error: Render mode %s is not available.",
+				      Renderers[Mode].name, 1500);
+		}
+		return 0;
+	}
+	
+	// Renderer function found.
+	*Rend = Mode;
+	*Blit = testBlit;
+	MESSAGE_NUM_L("Render Mode: %s", "Render Mode: %s", Renderers[Mode].name, 1500);
+	
+	shift = ((Video.Render_Mode) != 0);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
 	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
 	// this doesn't cover hq2x etc. properly. Let's just always refresh.
 	Refresh_Video(); 
+	
+	return 1;
 }
 
 

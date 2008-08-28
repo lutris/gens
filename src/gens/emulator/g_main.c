@@ -363,9 +363,13 @@ int main(int argc, char *argv[])
 	//putenv(sdlbuf);
 	GtkWidget *sdlsock;
 	
-	Init_Genesis_Bios ();
+	Init_Genesis_Bios();
 	
-	parseArgs (argc, argv);
+	parseArgs(argc, argv);
+	
+	// Initialize Gens.
+	if (!Init())
+		return 0;
 	
 	// TODO: Split out GTK+ stuff from main().
 	add_pixmap_directory(DATADIR);
@@ -383,9 +387,6 @@ int main(int argc, char *argv[])
 	gtk_widget_show(gens_window);
 	//initializeConsoleRomsView(); // not yet finished (? - wryun)
 	
-	if (!Init ())
-		return 0;
-	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
 		if (Open_Rom(PathNames.Start_Rom) == -1)
@@ -397,7 +398,16 @@ int main(int argc, char *argv[])
 	while (gtk_events_pending ())
 		gtk_main_iteration_do (0);
 	
-	Set_Render(Video.Full_Screen, Video.Render_Mode, 1);
+	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 1))
+	{
+		// Cannot initialize video mode. Try using render mode 0 (normal).
+		if (!Set_Render(Video.Full_Screen, 0, 1))
+		{
+			// Cannot initialize normal mode.
+			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
+			return 0;
+		}
+	}
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();

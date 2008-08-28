@@ -23,6 +23,7 @@
 //#include "net.h"
 void Sleep(int i);
 #include "cdda_mp3.h"
+#include "renderers.h"
 
 
 // Needed to synchronize the Graphics menu after a GL resolution change.
@@ -76,8 +77,10 @@ static char Info_String[1024] = "";
 static int Message_Showed = 0;
 static unsigned int Info_Time = 0;
 
-void (*Blit_FS)(unsigned char *Dest, int pitch, int x, int y, int offset);
-void (*Blit_W)(unsigned char *Dest, int pitch, int x, int y, int offset);
+// Blit functions for Full Screen and Windowed modes.
+BlitFn Blit_FS;
+BlitFn Blit_W;
+
 int (*Update_Frame)();
 int (*Update_Frame_Fast)();
 
@@ -136,7 +139,7 @@ int Init_draw_gl(int w, int h)
 		exit(0);
 	}
 
-	if (Video.Render_Mode == NORMAL) {
+	if (Video.Render_Mode == 0) {
 		row_length=320;
 		Texture_size=256;
 	} else {
@@ -204,7 +207,7 @@ int Init_DDraw()
 		w = Video.Width_GL;
 		h = Video.Height_GL;
 	} else {
-		if(Video.Render_Mode==1) //1 Equals normal render--> 320*240
+		if(Video.Render_Mode == 0) //1 Equals normal render--> 320*240
 		{
 			w=320;
 		}
@@ -254,7 +257,7 @@ int Init_DDraw()
 	}
 	Adjust_Stretch();
 	
-	shift=(Video.Render_Mode!=1);
+	shift=(Video.Render_Mode!=0);
 	
 	return x;
 }
