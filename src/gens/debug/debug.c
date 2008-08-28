@@ -999,7 +999,12 @@ void Update_Debug_Screen(void)
 	memset(MD_Screen, 0, 336 * 240 * 2);
 	
 	if (Debug & 0x100)
-		Do_VDP_Only ();
+	{
+		if (_32X_Started)
+			Do_32X_VDP_Only();
+		else
+			Do_VDP_Only();
+	}
 	else
 		switch (Debug)
 		{

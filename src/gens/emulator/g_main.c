@@ -9,6 +9,7 @@
 #include "gens.h"
 #include "g_md.h"
 #include "g_mcd.h"
+#include "g_32x.h"
 #include "port.h"
 #include "misc.h"
 #include "vdp_rend.h"
@@ -425,7 +426,10 @@ int main(int argc, char *argv[])
 			else
 			{
 				// EMULATION PAUSED
-				Do_VDP_Only();
+				if (_32X_Started)
+					Do_32X_VDP_Only();
+				else
+					Do_VDP_Only();
 				Pause_Screen();
 				Flip ();
 				Sleep (100);

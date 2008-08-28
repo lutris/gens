@@ -9,6 +9,7 @@
 
 int Init_32X(struct Rom *MD_Rom);
 void Reset_32X();
+int Do_32X_VDP_Only(void);
 int Do_32X_Frame_No_VDP(void);
 int Do_32X_Frame(void);
 

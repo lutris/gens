@@ -317,6 +317,26 @@ void Reset_32X (void)
 
 
 /**
+ * Do_32X_VDP_Only(): Updates the Genesis and 32X VDP.
+ * @return 0 if successful. TODO: Remove unnecessary return values.
+ */
+int Do_32X_VDP_Only (void)
+{
+	// Set the number of visible lines.
+	SET_VISIBLE_LINES;
+	
+	for (VDP_Current_Line = 0;
+	     VDP_Current_Line < VDP_Num_Vis_Lines;
+	     VDP_Current_Line++)
+	{
+		Render_Line_32X();
+	}
+
+	return 0;
+}
+
+
+/**
  * Do_32X_Frame_No_VDP(): Runs a 32X frame without updating the VDP.
  * @return 1 if successful.
  */
