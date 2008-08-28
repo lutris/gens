@@ -122,7 +122,7 @@ int Init_Fail(int hwnd, char *err)
 
 int Init_draw_gl(int w, int h)
 {
-	screen = SDL_SetVideoMode(w,h,Bpp,sdl_flags|SDL_OPENGL|(Full_Screen?SDL_FULLSCREEN:0));
+	screen = SDL_SetVideoMode(w,h,Video.bpp,sdl_flags|SDL_OPENGL|(Video.Full_Screen?SDL_FULLSCREEN:0));
 	
 	
 	
@@ -132,7 +132,7 @@ int Init_draw_gl(int w, int h)
 		exit(0);
 	}
 
-	if (Render_Mode == NORMAL) {
+	if (Video.Render_Mode == NORMAL) {
 		row_length=320;
 		Texture_size=256;
 	} else {
@@ -179,7 +179,7 @@ static gchar *WindowID = NULL;
 
 int Init_draw_sdl(int w, int h)
 {
-	screen = SDL_SetVideoMode(w,h,16,sdl_flags|(Full_Screen?SDL_FULLSCREEN:0));
+	screen = SDL_SetVideoMode(w,h,16,sdl_flags|(Video.Full_Screen?SDL_FULLSCREEN:0));
 	
 	if ( screen==NULL)
 	{
@@ -195,11 +195,11 @@ int Init_DDraw()
 	int x;
 	int w, h;
 	
-	if (Opengl) {
-		w = Width_gl;
-		h = Height_gl;
+	if (Video.OpenGL) {
+		w = Video.Width_GL;
+		h = Video.Height_GL;
 	} else {
-		if(Render_Mode==1) //1 Equals normal render--> 320*240
+		if(Video.Render_Mode==1) //1 Equals normal render--> 320*240
 		{
 			w=320;
 		}
@@ -210,7 +210,7 @@ int Init_DDraw()
 		h = w * 0.75; 	/*640*0.75 = 480 , 320*0.75 = 240*/
 	}
 	
-	if (Full_Screen) {
+	if (Video.Full_Screen) {
 		UI_Hide_Embedded_Window();
 		
 		if (WindowID) {
@@ -236,20 +236,20 @@ int Init_DDraw()
 		Init_Fail(0,"Couldn't init embedded SDL.\n");
 	Set_Game_Name();
 	
-	if(Opengl) {
+	if(Video.OpenGL) {
 	x=Init_draw_gl(w, h);
 	
 	}
 	else
 	x=Init_draw_sdl(w, h);
 	
-	if (Full_Screen )
+	if (Video.Full_Screen )
 	{
 		SDL_ShowCursor(SDL_DISABLE);
 	}
 	Adjust_Stretch();
 	
-	shift=(Render_Mode!=1);
+	shift=(Video.Render_Mode!=1);
 	
 	return x;
 }
@@ -274,7 +274,7 @@ void End_draw_sdl()
 
 void End_DDraw()
 {	
-	if(Opengl)
+	if(Video.OpenGL)
 	End_draw_gl();
 	
 	else
@@ -287,7 +287,7 @@ void Clear_Screen()
 {
 	
 	
-	if(Opengl)
+	if(Video.OpenGL)
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		memset(filter_buffer,0,640*480*2); //memset(filter_buffer,0,row_length*row_length*1.5); //row_length*row_length*1.5 size in bytes 
@@ -309,7 +309,7 @@ void Flip_gl()
 {
 	   
 	
-	if (Full_Screen)		
+	if (Video.Full_Screen)		
 	{	Blit_FS((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), row_length*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
 	}
 	else
@@ -499,7 +499,7 @@ void Flip_sdl()
 {
 	SDL_LockSurface(screen);
 	
-	if (Full_Screen)		
+	if (Video.Full_Screen)		
 	{	Blit_FS((unsigned char *) screen->pixels + (((screen->w*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), screen->w*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
 	}
 	else
@@ -593,7 +593,7 @@ int Flip(void)
 		Print_Text(Info_String, strlen(Info_String), 10, 210, FPS_Style);
 	}
 
-	if (Fast_Blur) Half_Blur();
+	if (Video.Fast_Blur) Half_Blur();
 
 	Old_Dep=Dep;
 	
@@ -616,7 +616,7 @@ int Flip(void)
 	}
 	
 	
-	if(Opengl)
+	if(Video.OpenGL)
 	Flip_gl();
 	
 	else
@@ -1009,12 +1009,13 @@ void Refresh_video()
  */
 void Set_GL_Resolution(int w,int h)
 {
-	if (Width_gl == w && Height_gl == h)
+	if (Video.Width_GL == w &&
+	    Video.Height_GL == h)
 		return;
 	
 	// OpenGL resolution has changed.
-	Width_gl = w;
-	Height_gl = h;
+	Video.Width_GL = w;
+	Video.Height_GL = h;
 	
 	// Print the resolution information.
 	MESSAGE_NUM_2L("Selected %dx%d resolution",
@@ -1024,27 +1025,25 @@ void Set_GL_Resolution(int w,int h)
 	Sync_Gens_Window_GraphicsMenu();
 	
 	// If OpenGL mode isn't enabled, don't do anything.
-	if (!Opengl)
+	if (!Video.OpenGL)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
 	End_DDraw();
 	Init_DDraw();
-	Set_Render(Full_Screen, Render_Mode, 0);
+	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
 	Refresh_video();
 }
 
+
 void Set_Bpp(int newbpp)
 {
-	if(Bpp!=newbpp)
+	if(Video.bpp !=newbpp)
 	{
-		Bpp=newbpp;
-		
+		Video.bpp = newbpp;
 		End_DDraw();
-		
 		Init_DDraw();
 	}
-	
 }
 
 
@@ -1055,11 +1054,11 @@ void Set_Bpp(int newbpp)
 void Change_OpenGL(int newOpenGL)
 {
 	End_DDraw();
-	Opengl = (newOpenGL == 1 ? 1 : 0);
+	Video.OpenGL = (newOpenGL == 1 ? 1 : 0);
 	Init_DDraw();
 	
-	if (Opengl)
-		MESSAGE_L("Selected Opengl Renderer", "Selected Opengl Renderer", 1500)
+	if (Video.OpenGL)
+		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500)
 	else
 		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500)
 }
@@ -1077,9 +1076,10 @@ else{
 }
 */
 
-void Adjust_Stretch(){
-	
-	if(Opengl){
+void Adjust_Stretch()
+{
+	if(Video.OpenGL)
+	{
 	
 		if(Stretch){
 		

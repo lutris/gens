@@ -87,8 +87,8 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	void (**Blit)(unsigned char*, int, int, int, int);
 	
 	Blit = FullScreen ? &Blit_FS : &Blit_W;
-	Rend = &Render_Mode;
-	Old_Rend=Render_Mode;
+	Rend = &Video.Render_Mode;
+	Old_Rend = Video.Render_Mode;
 	
 	switch (Mode)
 	{
@@ -198,7 +198,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			break;
 	}
 	
-	shift = ((Render_Mode) != 1);
+	shift = ((Video.Render_Mode) != 1);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
@@ -594,7 +594,7 @@ Change_Fast_Blur (void)
 {
   Flag_Clr_Scr = 1;
 
-  if ((Fast_Blur = (1 - Fast_Blur)))
+  if ((Video.Fast_Blur = (1 - Video.Fast_Blur)))
     MESSAGE_L ("Fast Blur Enabled", "Fast Blur Enabled", 1000)
     else
     MESSAGE_L ("Fast Blur Disabled", "Fast Blur Disabled", 1000) return (1);
@@ -916,7 +916,7 @@ int Change_Stretch(int newStretch)
 {
 	// TODO: Stretched mode seems to be broken, even though it is being set correctly...
 	
-	if ((Full_Screen) && (Render_Mode > 1))
+	if ((Video.Full_Screen) && (Video.Render_Mode > 1))
 		return 0;
 	
 	Flag_Clr_Scr = 1;
@@ -935,7 +935,7 @@ int Change_Stretch(int newStretch)
 
       int Change_Blit_Style (void)
       {
-	if ((!Full_Screen) || (Render_Mode > 1))
+	if ((!Video.Full_Screen) || (Video.Render_Mode > 1))
 	  return (0);
 
 	Flag_Clr_Scr = 1;
@@ -997,7 +997,7 @@ int Change_VSync(int newVSync)
 {
 	int *p_vsync;
 	
-	if (Full_Screen)
+	if (Video.Full_Screen)
 	{
 		End_DDraw ();
 		p_vsync = &FS_VSync;
@@ -1012,7 +1012,7 @@ int Change_VSync(int newVSync)
 	else
 		MESSAGE_L ("Vertical Sync Disabled", "Vertical Sync Disabled", 1000)
 	
-	if (Full_Screen)
+	if (Video.Full_Screen)
 		return Init_DDraw (640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 	else
 		return 1;

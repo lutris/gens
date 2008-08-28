@@ -138,14 +138,14 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_ALT)
 			{
 				/*
-				if (Full_Screen)
+				if (Settings.Full_Screen)
 					Set_Render (0, -1, 1);
 				else
 					Set_Render (1, Render_FS, 1);
 				*/
 				
-				Full_Screen = !Full_Screen;
-				Set_Render(Full_Screen, Render_Mode, 1);
+				Video.Full_Screen = !Video.Full_Screen;
+				Set_Render(Video.Full_Screen, Video.Render_Mode, 1);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
@@ -287,9 +287,9 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				if (Render_Mode > 1)
+				if (Video.Render_Mode > 1)
 				{
-					Set_Render(Full_Screen, Render_Mode - 1, 0);
+					Set_Render(Video.Full_Screen, Video.Render_Mode - 1, 0);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -303,9 +303,9 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				if (Render_Mode < NB_FILTER-1)
+				if (Video.Render_Mode < NB_FILTER-1)
 				{
-					Set_Render(Full_Screen, Render_Mode + 1, 0);
+					Set_Render(Video.Full_Screen, Video.Render_Mode + 1, 0);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}

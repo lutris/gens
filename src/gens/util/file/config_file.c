@@ -133,22 +133,22 @@ int Save_Config(const char *File_Name)
 	// Video settings
 	// TODO: BUG: If "Full Scree VSync" is saved before "Full Screen",
 	// the Linux reimplementation of WritePrivateProfileString gets confused.
-	sprintf(Str_Tmp, "%d", Full_Screen & 1);
+	sprintf(Str_Tmp, "%d", Video.Full_Screen & 1);
 	WritePrivateProfileString("Graphics", "Full Screen", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Render_Mode);
+	sprintf(Str_Tmp, "%d", Video.Render_Mode);
 	WritePrivateProfileString("Graphics", "Render Mode", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", FS_VSync & 1);
 	WritePrivateProfileString("Graphics", "Full Screen VSync", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", W_VSync & 1);
 	WritePrivateProfileString("Graphics", "Windows VSync", Str_Tmp, Conf_File);
 	
-	sprintf(Str_Tmp, "%d", Bpp);
+	sprintf(Str_Tmp, "%d", Video.bpp);
 	WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Opengl & 1);
+	sprintf(Str_Tmp, "%d", Video.OpenGL & 1);
 	WritePrivateProfileString("Graphics", "Render Opengl", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Width_gl);
+	sprintf(Str_Tmp, "%d", Video.Width_GL);
 	WritePrivateProfileString("Graphics", "Opengl Width", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Height_gl);
+	sprintf(Str_Tmp, "%d", Video.Height_GL);
 	WritePrivateProfileString("Graphics", "Opengl Height", Str_Tmp, Conf_File);
 	/*
 	sprintf(Str_Tmp, "%d", gl_linear_filter);
@@ -216,7 +216,7 @@ int Save_Config(const char *File_Name)
 	WritePrivateProfileString("CPU", "Slave SH2 Speed", Str_Tmp, Conf_File);
 	
 	// Various settings
-	sprintf(Str_Tmp, "%d", Fast_Blur & 1);
+	sprintf(Str_Tmp, "%d", Video.Fast_Blur & 1);
 	WritePrivateProfileString("Options", "Fast Blur", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Show_FPS & 1);
 	WritePrivateProfileString("Options", "FPS", Str_Tmp, Conf_File);
@@ -443,12 +443,12 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Video settings
 	FS_VSync = GetPrivateProfileInt("Graphics", "Full Screen VSync", 0, Conf_File);
 	W_VSync = GetPrivateProfileInt("Graphics", "Windows VSync", 0, Conf_File);
-	Full_Screen = GetPrivateProfileInt("Graphics", "Full Screen", 0, Conf_File);
-	Render_Mode = GetPrivateProfileInt ("Graphics", "Render Mode", 1, Conf_File);
-	Bpp = GetPrivateProfileInt("Graphics", "Bits Per Pixel", 16, Conf_File);
-	Opengl = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
-	Width_gl = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
-	Height_gl = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
+	Video.Full_Screen = GetPrivateProfileInt("Graphics", "Full Screen", 0, Conf_File);
+	Video.Render_Mode = GetPrivateProfileInt ("Graphics", "Render Mode", 1, Conf_File);
+	Video.bpp = GetPrivateProfileInt("Graphics", "Bits Per Pixel", 16, Conf_File);
+	Video.OpenGL = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
+	Video.Width_GL = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
+	Video.Height_GL = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
 	//gl_linear_filter = GetPrivateProfileInt("Graphics", "Opengl Filter", 1, Conf_File);
 	//Set_Render(Full_Screen, -1, 1);
 	
@@ -504,7 +504,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 		SSH2_Speed = 0;
 	
 	// Various settings
-	Fast_Blur = GetPrivateProfileInt("Options", "Fast Blur", 0, Conf_File);
+	Video.Fast_Blur = GetPrivateProfileInt("Options", "Fast Blur", 0, Conf_File);
 	Show_FPS = GetPrivateProfileInt("Options", "FPS", 0, Conf_File);
 	FPS_Style = GetPrivateProfileInt("Options", "FPS Style", 0, Conf_File);
 	Show_Message = GetPrivateProfileInt("Options", "Message", 1, Conf_File);

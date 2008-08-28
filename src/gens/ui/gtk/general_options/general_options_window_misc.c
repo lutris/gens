@@ -69,7 +69,7 @@ void Open_General_Options(void)
 	check_system_autopause = lookup_widget(go, "check_system_autopause");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_autopause), Auto_Pause);
 	check_system_fastblur = lookup_widget(go, "check_system_fastblur");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_fastblur), Fast_Blur);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_fastblur), Video.Fast_Blur);
 	check_system_segacd_leds = lookup_widget(go, "check_system_segacd_leds");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds), Show_LED);
 	
@@ -132,7 +132,7 @@ void General_Options_Save(void)
 	check_system_autopause = lookup_widget(general_options_window, "check_system_autopause");
 	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autopause));
 	check_system_fastblur = lookup_widget(general_options_window, "check_system_fastblur");
-	Fast_Blur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_fastblur));
+	Video.Fast_Blur = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_fastblur));
 	check_system_segacd_leds = lookup_widget(general_options_window, "check_system_segacd_leds");
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
 	

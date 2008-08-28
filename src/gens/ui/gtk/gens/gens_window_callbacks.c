@@ -154,8 +154,8 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	Debug = 0;
 	if (Net_Play)
 	{
-		if (Full_Screen)
-			Set_Render( 0, -1, 1);
+		if (Video.Full_Screen)
+			Set_Render(0, -1, 1);
 	}
 	Free_Rom(Game);
 	Sync_Gens_Window();
@@ -269,8 +269,8 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
 		Set_Render(1, Render_FS, 1);
 	*/
 	
-	Full_Screen = !Full_Screen;
-	Set_Render(Full_Screen, Render_Mode, 0);
+	Video.Full_Screen = !Video.Full_Screen;
+	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
 }
 
 
@@ -320,7 +320,7 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
 {
 	int bpp = GPOINTER_TO_INT(user_data);
 	
-	if (!do_callbacks || !Opengl)
+	if (!do_callbacks || !Video.OpenGL)
 		return;
 	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
 		return;
@@ -359,7 +359,7 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 		return;
 	
 	// Set the render mode.
-	Set_Render(Full_Screen, renderMode, 0);
+	Set_Render(Video.Full_Screen, renderMode, 0);
 }
 
 

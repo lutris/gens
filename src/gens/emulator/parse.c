@@ -300,11 +300,11 @@ parseArgs (int argc, char **argv)
 	}
       else if (!strcmp (long_options[option_index].name, FS))
 	{
-	  Full_Screen = 1;
+	  Video.Full_Screen = 1;
 	}
       else if (!strcmp (long_options[option_index].name, WINDOW))
 	{
-	  Full_Screen = 0;
+	  Video.Full_Screen = 0;
 	}
       else if (!strcmp (long_options[option_index].name, RENDERMODE))
 	{
@@ -317,7 +317,7 @@ parseArgs (int argc, char **argv)
 	  }
 	  else {
 	  	fprintf(stderr, "Render mode : %d\n", mode);
-	  	Render_Mode = mode;
+	  	Video.Render_Mode = mode;
 	  }
 	}
       else if (!strcmp (long_options[option_index].name, STRETCH_ENABLE))
@@ -503,11 +503,11 @@ parseArgs (int argc, char **argv)
 	}
       else if (!strcmp (long_options[option_index].name, FASTBLUR_ENABLE))
 	{
-	  Fast_Blur = 1;
+	  Video.Fast_Blur = 1;
 	}
       else if (!strcmp (long_options[option_index].name, FASTBLUR_DISABLE))
 	{
-	  Fast_Blur = 0;
+	  Video.Fast_Blur = 0;
 	}
       else if (!strcmp (long_options[option_index].name, FPS_ENABLE))
 	{

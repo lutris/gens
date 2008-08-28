@@ -33,10 +33,25 @@ struct PathNames_t
 };
 
 
+// Video settings
+struct VideoSettings_t
+{
+	int Full_Screen;
+	int Fast_Blur;
+	int Render_Mode;	// TODO: Make this an enum.
+	int OpenGL;
+	int Width_GL;
+	int Height_GL;
+	int bpp;
+};
+
+
 struct GENS_Settings_t
 {
 	struct PathNames_t PathNames;
 };
+
+struct VideoSettings_t Video;
 
 
 extern struct GENS_Settings_t Settings;
@@ -44,13 +59,6 @@ extern struct GENS_Settings_t Settings;
 extern int Paused;
 extern int Net_Play;
 extern int Current_State;
-extern int Full_Screen;
-extern int Fast_Blur;
-extern int Render_Mode;
-extern int Opengl;
-extern int Width_gl;
-extern int Height_gl;
-extern int Bpp;
 //extern int gl_linear_filter;
 extern int Show_FPS;
 extern int Show_Message;
@@ -146,7 +154,7 @@ extern GtkWidget* gens_window;
 #define MINIMIZE \
 {\
 	if (Sound_Initialised) Clear_Sound_Buffer();\
-	if (Full_Screen)\
+	if (Video.Full_Screen)\
 	{\
 		FS_Minimised = 1;\
 	}\
