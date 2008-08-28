@@ -1,3 +1,25 @@
+;
+; Gens: 2x interpolated 25% scanline renderer. (x86 ASM version)
+;
+; Copyright (c) 1999-2002 by Stéphane Dallongeville
+; Copyright (c) 2003-2004 by Stéphane Akhoun
+;
+; This program is free software; you can redistribute it and/or modify it
+; under the terms of the GNU General Public License as published by the
+; Free Software Foundation; either version 2 of the License, or (at your
+; option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+;
+
+
 %include "nasmhead.inc"
 
 	srcPtr        equ 8
@@ -106,8 +128,8 @@ section .text align=64
 	ALIGN64
 	
 	;*************************************************************************
-	;void Blit_2xSAI_MMX(unsigned char *Dest, int pitch, int x, int y, int offset)
-	DECL Blit_2xSAI_MMX
+	;void Blit_2xSAI_16_asm_MMX(unsigned char *Dest, int pitch, int x, int y, int offset)
+	DECL Blit_2xSAI_16_asm_MMX
 
 		push ebx
 		push ecx

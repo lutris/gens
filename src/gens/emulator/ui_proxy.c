@@ -173,7 +173,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 		case KREED:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(KREED, Blit_2xSAI_MMX, "2XSAI KREED'S ENGINE");
+				SELECT_RENDERER(KREED, Blit_2xSAI_16_asm_MMX, "2XSAI KREED'S ENGINE");
 			}
 			else
 			{
