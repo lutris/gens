@@ -12,8 +12,8 @@
 void Blit_Scale2x (unsigned char *Dest, int pitch, int x, int y, int offset) 
 {
 	int i, j;
-	int B, D, E, F, H;
-	int E0, E1, E2, E3;
+	unsigned short B, D, E, F, H;
+	unsigned short E0, E1, E2, E3;
 	
 	// A B C
 	// D E F
@@ -30,6 +30,7 @@ void Blit_Scale2x (unsigned char *Dest, int pitch, int x, int y, int offset)
 	
 	for (i = 0; i < y; i++)
 	{
+		if (Bits32)
 		E = MD_Screen[SrcOffs - 1];
 		F = MD_Screen[SrcOffs];
 		
@@ -47,20 +48,20 @@ void Blit_Scale2x (unsigned char *Dest, int pitch, int x, int y, int offset)
 			E3 = H == F && D != H && B != F ? F : E;
 			
 			// E0
-			Dest[DstOffs] = E0;
-			Dest[DstOffs + 1] = E0 >> 8;
+			Dest[DstOffs + 0] = (unsigned char)(E0 & 0xFF);
+			Dest[DstOffs + 1] = (unsigned char)(E0 >> 8);
 			
 			// E1
-			Dest[DstOffs + 2] = E1;
-			Dest[DstOffs + 3] = E1 >> 8;
+			Dest[DstOffs + 2] = (unsigned char)(E1 & 0xFF);
+			Dest[DstOffs + 3] = (unsigned char)(E1 >> 8);
 			
 			// E2
-			Dest[DstOffs + pitch] = E2;
-			Dest[DstOffs + pitch + 1] = E2 >> 8;
+			Dest[DstOffs + pitch + 0] = (unsigned char)(E2 & 0xFF);
+			Dest[DstOffs + pitch + 1] = (unsigned char)(E2 >> 8);
 			
 			// E3
-			Dest[DstOffs + pitch + 2] = E3;
-			Dest[DstOffs + pitch + 3] = E3 >> 8;
+			Dest[DstOffs + pitch + 2] = (unsigned char)(E3 & 0xFF);
+			Dest[DstOffs + pitch + 3] = (unsigned char)(E3 >> 8);
 			
 			DstOffs += 4;
 		}
