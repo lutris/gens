@@ -54,7 +54,7 @@ section .text align=64
 	ALIGN64
 
 	;*******************************************************************************
-	; void Blit_2x_Scanline_50_16_asm_MMX(unsigned char *Dest, int pitch, int x, int y, int offset)
+	; void Blit_2x_Scanline_50_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset)
 	DECL Blit_2x_Scanline_50_16_asm_MMX
 
 		push ebx
@@ -68,7 +68,7 @@ section .text align=64
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 5						; on transfert 32 bytes Dest � chaque boucle
+		shr ecx, 5						; on transfert 32 bytes screen � chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		test byte [Mode_555], 1
