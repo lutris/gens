@@ -101,8 +101,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 
 		case DOUBLE:
 			*Rend = DOUBLE;
-			if (Have_MMX) *Blit = Blit_2x_16_asm_MMX;
-			else *Blit = Blit_2x_16_asm;
+			*Blit = Blit_2x;
 			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500);
 			break;
 
@@ -192,8 +191,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			
 		default:
 			*Rend = DOUBLE;
-			if (Have_MMX) *Blit = Blit_2x_16_asm_MMX;
-			else *Blit = Blit_2x_16_asm;
+			*Blit = Blit_2x;
 			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500)
 			break;
 	}
