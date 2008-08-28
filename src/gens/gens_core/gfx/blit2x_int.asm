@@ -50,8 +50,8 @@ section .text align=64
 	ALIGN64
 	
 	;*********************************************************************************
-	; void Blit_2x_Int_16_asm(unsigned char **screen, int pitch, int x, int y, int offset)
-	DECL Blit_2x_Int_16_asm
+	; void Blit2x_Int_16_asm(unsigned char **screen, int pitch, int x, int y, int offset)
+	DECL Blit2x_Int_16_asm
 
 		push ebx
 		push ecx
@@ -230,8 +230,8 @@ section .text align=64
 	ALIGN64
 	
 	;*********************************************************************************
-	; void Blit_2x_Int_16_asm_MMX(unsigned char **screen, int pitch, int x, int y, int offset)
-	DECL Blit_2x_Int_16_asm_MMX
+	; void Blit2x_Int_16_asm_MMX(unsigned char **screen, int pitch, int x, int y, int offset)
+	DECL Blit2x_Int_16_asm_MMX
 
 		push ebx
 		push ecx
