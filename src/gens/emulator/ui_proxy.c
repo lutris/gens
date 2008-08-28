@@ -114,30 +114,30 @@ int Set_Render(int FullScreen, int Mode, int Force)
 
 		case FULL_SCANLINE:
 			*Rend = FULL_SCANLINE;
-			if (Have_MMX) *Blit = Blit_Scanline_MMX;
-			else *Blit = Blit_Scanline;
-			MESSAGE_L("Render selected : FULL SCANLINE", "Render selected : FULL SCANLINE", 1500)
+			if (Have_MMX) *Blit = Blit_2x_Scanline_16_asm_MMX;
+			else *Blit = Blit_2x_Scanline_16_asm;
+			MESSAGE_L("Render selected : FULL SCANLINE", "Render selected : FULL SCANLINE", 1500);
 			break;
 
 		case SCANLINE_50:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(SCANLINE_50, Blit_Scanline_50_MMX, "50% SCANLINE")
+				SELECT_RENDERER(SCANLINE_50, Blit_Scanline_50_MMX, "50% SCANLINE");
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE")
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
 			}
 			break;
 
 		case SCANLINE_25:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(SCANLINE_25, Blit_Scanline_25_MMX, "25% SCANLINE")
+				SELECT_RENDERER(SCANLINE_25, Blit_Scanline_25_MMX, "25% SCANLINE");
 			}
 			else
 			{
-				SELECT_RENDERER(FULL_SCANLINE, Blit_Scanline, "FULL SCANLINE")
+				SELECT_RENDERER(FULL_SCANLINE, Blit_2x_Scanline_16_asm, "FULL SCANLINE");
 			}
 			break;
 
@@ -145,54 +145,58 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			*Rend = INTERPOLATED_SCANLINE;
 			if (Have_MMX) *Blit = Blit_Scanline_Int_MMX;
 			else *Blit = Blit_Scanline_Int;
-			MESSAGE_L("Render selected : INTERPOLATED SCANLINE", "Render selected : INTERPOLATED SCANLINE", 1500)
+			MESSAGE_L("Render selected : INTERPOLATED SCANLINE", "Render selected : INTERPOLATED SCANLINE", 1500);
 			break;
 
 		case INTERPOLATED_SCANLINE_50:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE_50, Blit_Scanline_50_Int_MMX, "INTERPOLATED 50% SCANLINE")
+				SELECT_RENDERER(INTERPOLATED_SCANLINE_50, Blit_Scanline_50_Int_MMX, "INTERPOLATED 50% SCANLINE");
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE")
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
 			}
 			break;
 
 		case INTERPOLATED_SCANLINE_25:
-			if (Have_MMX)			
-				SELECT_RENDERER(INTERPOLATED_SCANLINE_25, Blit_Scanline_25_Int_MMX, "INTERPOLATED 25% SCANLINE")			
+			if (Have_MMX)
+			{
+				SELECT_RENDERER(INTERPOLATED_SCANLINE_25, Blit_Scanline_25_Int_MMX, "INTERPOLATED 25% SCANLINE");
+			}
 			else
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE")
+			{
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
+			}
 			break;
 			
 		case KREED:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(KREED, Blit_2xSAI_MMX, "2XSAI KREED'S ENGINE")
+				SELECT_RENDERER(KREED, Blit_2xSAI_MMX, "2XSAI KREED'S ENGINE");
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE")
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
 			}
 			break;
 
 			case SCALE2X:
 			*Rend = SCALE2X;
 			*Blit = Blit_Scale2x;
-			MESSAGE_L("Render selected : AdvanceMAME Scale2x", "Render selected : AdvanceMAME Scale2x", 1500)
+			MESSAGE_L("Render selected : AdvanceMAME Scale2x", "Render selected : AdvanceMAME Scale2x", 1500);
 			break;
 
 			case HQ2X:
 			*Rend = HQ2X;
 			*Blit = _Blit_HQ2x;
-			MESSAGE_L("Render selected : HQ2x", "Render selected : HQ2x", 1500)
+			MESSAGE_L("Render selected : HQ2x", "Render selected : HQ2x", 1500);
 			break;
 			
 		default:
 			*Rend = DOUBLE;
 			*Blit = Blit_2x;
-			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500)
+			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500);
 			break;
 	}
 	
