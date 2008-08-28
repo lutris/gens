@@ -23,105 +23,13 @@
 %include "nasmhead.inc"
 
 
-	srcPtr        equ 8
-	srcPitch      equ 12
-	width         equ 16
-	dstOffset     equ 20
-	dstPitch      equ 24
-	dstSegment    equ 28
-
-	colorI   equ -2
-	colorE   equ 0
-	colorF   equ 2
-	colorJ   equ 4
-
-	colorG   equ -2
-	colorA   equ 0
-	colorB   equ 2
-	colorK   equ 4
-
-	colorH   equ -2
-	colorC   equ 0
-	colorD   equ 2
-	colorL   equ 4
-
-	colorM   equ -2
-	colorN   equ 0
-	colorO   equ 2
-	colorP   equ 4
-
-
 section .data align=64
+
 
 	extern MD_Screen
 	extern TAB336
 	extern Have_MMX
 	extern Mode_555
-
-	Var:	dd 0
-	NB_X:	dd 0
-	NB_X2:	dd 0
-	NB_X4:	dd 0
-	MASK_DIV2:		dd 0x7BCF7BCF, 0x7BCF7BCF
-	MASK_DIV2_15:	dd 0x3DEF3DEF, 0x3DEF3DEF
-	MASK_DIV2_16:	dd 0x7BEF7BEF, 0x7BEF7BEF
-	MASK_DIV4_15:	dd 0x1CE71CE7, 0x1CEF1CE7
-	MASK_DIV4_16:	dd 0x39E739E7, 0x39E739E7
-	MASK_DIV8_15:	dd 0x0C630C63, 0x0C630C63
-	MASK_DIV8_16:	dd 0x18E318E3, 0x18E318E3
-	MASK_RBG_15:	dd 0x7C1F03E0, 0x7C1F03E0
-	MASK_GRB_15:	dd 0x03E07C1F, 0x03E07C1F
-	MASK_RBG_16:	dd 0xF81F07E0, 0xF81F07E0
-	MASK_GRB_16:	dd 0x07E0F81F, 0x07E0F81F
-	MASK_RBG_15_2:	dd 0x3C0F01E0, 0x3C0F01E0
-	MASK_GRB_15_2:	dd 0x01E03C0F, 0x01E03C0F
-	MASK_RBG_16_2:	dd 0x780F03E0, 0x780F03E0
-	MASK_GRB_16_2:	dd 0x03E0780F, 0x03E0780F
-	MASK_GG_15:		dd 0x03E003E0, 0x03E003E0
-	MASK_RBRB_15:	dd 0x7C1F7C1F, 0x7C1F7C1F
-	MASK_GG_16:		dd 0x07C007C0, 0x07C007C0
-	MASK_RBRB_16	dd 0xF81FF81F, 0xF81FF81F
-
-	; 2xSAI
-
-	ALIGNB32
-
-	colorMask:		dd 0xF7DEF7DE,0xF7DEF7DE
-	lowPixelMask:	dd 0x08210821,0x08210821
-
-	qcolorMask:		dd 0xE79CE79C,0xE79CE79C
-	qlowpixelMask:	dd 0x18631863,0x18631863
-
-	darkenMask:		dd 0xC718C718,0xC718C718
-	GreenMask:		dd 0x07E007E0,0x07E007E0
-	RedBlueMask:	dd 0xF81FF81F,0xF81FF81F
-
-	FALSE:			dd 0x00000000,0x00000000
-	TRUE:			dd 0xffffffff,0xffffffff
-	ONE:			dd 0x00010001,0x00010001
-
-	colorMask15		dd 0x7BDE7BDE,0x7BDE7BDE
-	lowPixelMask15	dd 0x04210421,0x04210421
-
-	qcolorMask15	dd 0x739C739C,0x739C739C
-	qlowpixelMask15	dd 0x0C630C63,0x0C630C63
-
-	darkenMask15	dd 0x63186318,0x63186318
-	GreenMask15		dd 0x03E003E0,0x03E003E0
-	RedBlueMask15	dd 0x7C1F7C1F,0x7C1F7C1F
-
-
-section .bss align=64
-
-	LineBuffer:	resb 32
-	Mask1:		resb 8
-	Mask2:		resb 8
-	ACPixel:	resb 8
-
-	Line1Int:	resb 640 * 2
-	Line2Int:	resb 640 * 2
-	Line1IntP:	resd 1
-	Line2IntP:	resb 1
 
 
 section .text align=64
