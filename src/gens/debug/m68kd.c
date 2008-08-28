@@ -12,7 +12,7 @@ static unsigned short (*Next_Word) ();
 static unsigned int (*Next_Long) ();
 
 
-char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
+static char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 {
 	int i;
 	
@@ -91,7 +91,7 @@ char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 }
 
 
-char* Make_Dbg_Size_Str(int Size)
+static char* Make_Dbg_Size_Str(int Size)
 {
 	switch (Size)
 	{
@@ -113,7 +113,7 @@ char* Make_Dbg_Size_Str(int Size)
 }
 
 
-char* Make_Dbg_Size_Str_2(int Size)
+static char* Make_Dbg_Size_Str_2(int Size)
 {
 	switch (Size)
 	{
@@ -132,7 +132,7 @@ char* Make_Dbg_Size_Str_2(int Size)
 }
 
 
-char* Make_Dbg_Cond_Str(int Cond)
+static char* Make_Dbg_Cond_Str(int Cond)
 {
 	const char* Conditions[] =
 	{
