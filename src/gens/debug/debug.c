@@ -1,10 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "gens.h"
-#ifdef GENS_DEBUG
-
 #include "port.h"
 #include <stdio.h>
 #include <string.h>
@@ -1077,8 +1070,3 @@ void Update_Debug_Screen(void)
 	
 	Sleep (10);
 }
-
-
-
-
-#endif //GENS_DEBUG

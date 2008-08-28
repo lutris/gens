@@ -1,6 +1,10 @@
 #ifndef _DEBUG_68K_H
 #define _DEBUG_68K_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef GENS_DEBUG
 
 extern int adr_mem;
@@ -26,6 +30,6 @@ enum DEBUG_MODE
 	DEBUG_32X_VDP		= 9,
 };
 
-#endif
+#endif /* GENS_DEBUG */
 
-#endif
+#endif /* _DEBUG_68K_H */

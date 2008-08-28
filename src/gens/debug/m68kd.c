@@ -1,11 +1,6 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include "mem_m68k.h"
 #include "mem_s68k.h"
-
 
 static char Dbg_Str[32];
 static char Dbg_EA_Str[16];

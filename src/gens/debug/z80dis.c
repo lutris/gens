@@ -1,15 +1,7 @@
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include "gens.h"
-#ifdef GENS_DEBUG
-
 #include <stdio.h>
 #include <string.h>
 
 #include "mem_z80.h"
-
 
 const char Mnemonics[256][16] =
 {
@@ -47,7 +39,6 @@ const char Mnemonics[256][16] =
 	"RET M", "LD SP,HL", "JP M,#h", "EI", "CALL M,#h", "PFX_FD", "CP *h", "RST 38h"
 };
 
-
 const char MnemonicsCB[256][16] =
 {
 	"RLC B", "RLC C", "RLC D", "RLC E", "RLC H", "RLC L", "RLC xHL", "RLC A",
@@ -83,7 +74,6 @@ const char MnemonicsCB[256][16] =
 	"SET 6,B", "SET 6,C", "SET 6,D", "SET 6,E", "SET 6,H", "SET 6,L", "SET 6,(HL)", "SET 6,A",
 	"SET 7,B", "SET 7,C", "SET 7,D", "SET 7,E", "SET 7,H", "SET 7,L", "SET 7,(HL)", "SET 7,A"
 };
-
 
 const char MnemonicsED[256][16] =
 {
@@ -121,7 +111,6 @@ const char MnemonicsED[256][16] =
 	"FUCKF8", "FUCKF9", "FUCKFA", "FUCKFB", "FUCKFC", "FUCKFD", "FUCKFE", "FUCKFF"
 };
 
-
 const char MnemonicsXX[256][16] =
 {
 	"NOP", "LD BC,#h", "LD (BC),A", "INC BC", "INC B", "DEC B", "LD B,*h", "RLCA",
@@ -157,7 +146,6 @@ const char MnemonicsXX[256][16] =
 	"RET P", "POP AF", "JP P,#h", "DI", "CALL P,#h", "PUSH AF", "OR *h", "RST 30h",
 	"RET M", "LD SP,I%", "JP M,#h", "EI", "CALL M,#h", "PFX_FD", "CP *h", "RST 38h"
 };
-
 
 /**
  * z80dis(): Disassemble Z80 code.
@@ -291,7 +279,6 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 	return 1;
 }
 
-
 /**
  * z80log(): ???
  * @param PC ???
@@ -311,6 +298,3 @@ int __fastcall z80log (unsigned int PC)
 	
 	return 0;
 }
-
-
-#endif // GENS_DEBUG
