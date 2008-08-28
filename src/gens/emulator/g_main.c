@@ -41,6 +41,7 @@
 
 // GENS Settings struct
 struct Gens_Settings_t Settings;
+struct Gens_PathNames_t PathNames;
 struct Gens_VideoSettings_t Video;
 
 int fast_forward = 0;
@@ -108,13 +109,13 @@ static int Build_Language_String (void)
 		language_name = NULL;
 	}
 	
-	language_name = (char **) malloc (sec_alloue * sizeof (char *));
+	language_name = (char **)malloc(sec_alloue * sizeof(char*));
 	language_name[0] = NULL;
 	
-	LFile = fopen (Settings.PathNames.Language_Path, "r");
+	LFile = fopen(PathNames.Language_Path, "r");
 	if (!LFile)
 	{
-		LFile = fopen (Settings.PathNames.Language_Path, "w");
+		LFile = fopen(PathNames.Language_Path, "w");
 	}
 	
 	while (nb_lue)
@@ -183,7 +184,7 @@ static int Build_Language_String (void)
 		language_name[0] = (char *) malloc (32 * sizeof (char));
 		strcpy (language_name[0], "English");
 		language_name[1] = NULL;
-		WritePrivateProfileString ("English", "Menu Language", "&English menu", Settings.PathNames.Language_Path);
+		WritePrivateProfileString ("English", "Menu Language", "&English menu", PathNames.Language_Path);
 	}
 	
 	return 0;
@@ -254,20 +255,20 @@ static void InitParameters (void)
 	Debug = 0;
 	CPU_Mode = 0;
 	
-	Get_Save_Path(Settings.PathNames.Gens_Path, GENS_PATH_MAX);
-	Create_Save_Directory(Settings.PathNames.Gens_Path);
+	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);
+	Create_Save_Directory(PathNames.Gens_Path);
 	
 	// Create default language filename.
-	strncpy (Settings.PathNames.Language_Path, Settings.PathNames.Gens_Path, GENS_PATH_MAX);
-	strcat (Settings.PathNames.Language_Path, "language.dat");
+	strncpy (PathNames.Language_Path, PathNames.Gens_Path, GENS_PATH_MAX);
+	strcat (PathNames.Language_Path, "language.dat");
 	
 	// Create default configuration filename.
-	strncpy (Str_Tmp, Settings.PathNames.Gens_Path, 1000);
+	strncpy (Str_Tmp, PathNames.Gens_Path, 1000);
 	strcat (Str_Tmp, "gens.cfg");
 	
 	// Default manual and CGOffline path is empty.
-	strcpy (Settings.PathNames.Manual_Path, "");
-	strcpy (Settings.PathNames.CGOffline_Path, "");
+	strcpy (PathNames.Manual_Path, "");
+	strcpy (PathNames.CGOffline_Path, "");
 	
 	// Build language strings and load the default configuration.
 	Build_Language_String ();
@@ -382,11 +383,11 @@ int main(int argc, char *argv[])
 	if (!Init ())
 		return 0;
 	
-	if (strcmp(Settings.PathNames.Start_Rom, "") != 0)
+	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
-		if (Open_Rom(Settings.PathNames.Start_Rom) == -1)
+		if (Open_Rom(PathNames.Start_Rom) == -1)
 		{
-			fprintf(stderr, "Failed to load %s\n", Settings.PathNames.Start_Rom);
+			fprintf(stderr, "Failed to load %s\n", PathNames.Start_Rom);
 		}
 	}
 	

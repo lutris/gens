@@ -21,7 +21,13 @@ extern "C" {
 #define UPDATE_GTK_SOUNDON 2
 
 
-// GENS Path Names
+// Gens settings
+struct Gens_Settings_t
+{
+};
+
+
+// Gens Pathnames
 #define GENS_PATH_MAX 1024
 struct Gens_PathNames_t
 {
@@ -46,14 +52,11 @@ struct Gens_VideoSettings_t
 };
 
 
-struct Gens_Settings_t
-{
-	struct Gens_PathNames_t PathNames;
-};
-
-
 extern struct Gens_Settings_t Settings;
+extern struct Gens_PathNames_t PathNames;
 extern struct Gens_VideoSettings_t Video;
+
+
 
 extern int Paused;
 extern int Net_Play;
@@ -108,7 +111,7 @@ extern GtkWidget* gens_window;
 #define MESSAGE_L(str, def, time)							\
 {											\
 	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
-				Settings.PathNames.Language_Path);			\
+				PathNames.Language_Path);			\
 	Put_Info(Str_Tmp, (time));							\
 }
 
@@ -125,7 +128,7 @@ extern GtkWidget* gens_window;
 	char mes_tmp[1024];								\
 	Str_Tmp[0] = '\0';								\
 	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
-				Settings.PathNames.Language_Path);			\
+				PathNames.Language_Path);			\
 	sprintf(mes_tmp, Str_Tmp, (num));						\
 	Put_Info(mes_tmp, (time));							\
 }
@@ -144,7 +147,7 @@ extern GtkWidget* gens_window;
 	char mes_tmp[1024];								\
 	Str_Tmp[0] = '\0';								\
 	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
-				Settings.PathNames.Language_Path);			\
+				PathNames.Language_Path);			\
 	sprintf(mes_tmp, Str_Tmp, (num1), (num2));					\
 	Put_Info(mes_tmp, (time));							\
 }

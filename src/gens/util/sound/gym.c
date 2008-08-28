@@ -37,7 +37,7 @@ Start_GYM_Dump (void)
   unsigned char YM_Save[0x200], t_buf[4];
   int num = -1, i, j;
 
-  SetCurrentDirectory (Settings.PathNames.Gens_Path);
+  SetCurrentDirectory (PathNames.Gens_Path);
 
   if (!Game)
     return 0;

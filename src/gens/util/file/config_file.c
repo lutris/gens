@@ -247,8 +247,8 @@ int Save_Config(const char *File_Name)
 	}
 	
 	// Manuals
-	WritePrivateProfileString("Options", "GCOffline path", Settings.PathNames.CGOffline_Path, Conf_File);
-	WritePrivateProfileString("Options", "Gens manual path", Settings.PathNames.Manual_Path, Conf_File);
+	WritePrivateProfileString("Options", "GCOffline path", PathNames.CGOffline_Path, Conf_File);
+	WritePrivateProfileString("Options", "Gens manual path", PathNames.Manual_Path, Conf_File);
 	
 	// Controller settings
 	sprintf(Str_Tmp, "%d", Controller_1_Type & 0x13);
@@ -359,21 +359,21 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Paths
 	GetPrivateProfileString("General", "Rom path", Save_Path,
 				&Rom_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Save path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "Save path", PathNames.Gens_Path,
 				 &State_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "SRAM path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "SRAM path", PathNames.Gens_Path,
 				&SRAM_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "BRAM path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "BRAM path", PathNames.Gens_Path,
 				&BRAM_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Dump path",	Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "Dump path",	PathNames.Gens_Path,
 				&Dump_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Dump GYM path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "Dump GYM path", PathNames.Gens_Path,
 				&Dump_GYM_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Screen Shot path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "Screen Shot path", PathNames.Gens_Path,
 				&ScrShot_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Patch path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "Patch path", PathNames.Gens_Path,
 				&Patch_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "IPS Patch path", Settings.PathNames.Gens_Path,
+	GetPrivateProfileString("General", "IPS Patch path", PathNames.Gens_Path,
 				&IPS_Dir[0], GENS_PATH_MAX, Conf_File);
 	
 	// Genesis BIOS
@@ -526,9 +526,9 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Manuals
 	GetPrivateProfileString("Options", "GCOffline path", "GCOffline.chm",
-				Settings.PathNames.CGOffline_Path, GENS_PATH_MAX, Conf_File);
+				PathNames.CGOffline_Path, GENS_PATH_MAX, Conf_File);
 	GetPrivateProfileString("Options", "Gens manual path", "manual.exe",
-				Settings.PathNames.Manual_Path, GENS_PATH_MAX, Conf_File);
+				PathNames.Manual_Path, GENS_PATH_MAX, Conf_File);
 	
 	// Controller settings
 	Controller_1_Type = GetPrivateProfileInt("Input", "P1.Type", 1, Conf_File);

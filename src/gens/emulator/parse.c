@@ -222,8 +222,8 @@ parseArgs (int argc, char **argv)
 	{
 		if (strcmp(optarg, "") != 0)
 		{
-			strcpy (Settings.PathNames.Start_Rom, Rom_Dir);
-			strcat (Settings.PathNames.Start_Rom, optarg);
+			strcpy (PathNames.Start_Rom, Rom_Dir);
+			strcat (PathNames.Start_Rom, optarg);
 		}
 	}
     else if (!strcmp (long_options[option_index].name, ROMPATH))
@@ -264,11 +264,11 @@ parseArgs (int argc, char **argv)
 	}
       else if (!strcmp (long_options[option_index].name, GCOFFPATH))
 	{
-	  strcpy (Settings.PathNames.CGOffline_Path, optarg);
+	  strcpy (PathNames.CGOffline_Path, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, GENSMANPATH))
 	{
-	  strcpy (Settings.PathNames.Manual_Path, optarg);
+	  strcpy (PathNames.Manual_Path, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, GENBIOS))
 	{
@@ -574,10 +574,10 @@ parseArgs (int argc, char **argv)
   else if (optind == argc - 1)
     {
       if (argv[optind][0] != '/') {
-        GetCurrentDirectory (900, Settings.PathNames.Start_Rom);
-        strcat (Settings.PathNames.Start_Rom, "/");
+        GetCurrentDirectory (900, PathNames.Start_Rom);
+        strcat (PathNames.Start_Rom, "/");
       }
-      strcat (Settings.PathNames.Start_Rom, argv[optind]);
+      strcat (PathNames.Start_Rom, argv[optind]);
     }
 }
 

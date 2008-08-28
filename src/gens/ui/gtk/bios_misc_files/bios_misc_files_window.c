@@ -59,8 +59,8 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 	{"Europe", "mcd_bios_eur", ROMFile, EU_CD_Bios},
 	{"Japan", "mcd_bios_jap", ROMFile, JA_CD_Bios},
 	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", 0, NULL},
-	{"CGOffline", "cgoffline", AnyFile, Settings.PathNames.CGOffline_Path},
-	{"Manual", "manual", AnyFile, Settings.PathNames.Manual_Path},
+	{"CGOffline", "cgoffline", AnyFile, PathNames.CGOffline_Path},
+	{"Manual", "manual", AnyFile, PathNames.Manual_Path},
 	{NULL, NULL, 0, NULL},
 };
 
