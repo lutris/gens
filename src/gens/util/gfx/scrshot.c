@@ -17,11 +17,11 @@
 
 char ScrShot_Dir[GENS_PATH_MAX] = "." G_DIR_SEPARATOR_S;
 
-#ifndef __GENS_PNG__
+#ifndef GENS_PNG
 static int Save_Shot_BMP(void);
-#else  /* __GENS_PNG__ */
+#else  /* GENS_PNG */
 static int Save_Shot_PNG(void);
-#endif /* __GENS_PNG__ */
+#endif /* GENS_PNG */
 
 /**
  * Save_Shot(): Saves a screenshot.
@@ -32,7 +32,7 @@ int Save_Shot()
 	// TODO: dlopen() libpng.
 	// If it's found, save as PNG; otherwise, BMP.
 	// For now, save as PNG or BMP depending on compile options.
-#ifdef __GENS_PNG__
+#ifdef GENS_PNG
 	return Save_Shot_PNG();
 #else
 	return Save_Shot_BMP();
@@ -40,7 +40,7 @@ int Save_Shot()
 }
 
 
-#ifndef __GENS_PNG__
+#ifndef GENS_PNG
 /**
  * Save_Shot_BMP(): Save a screenshot in BMP format.
  * @return 1 on success; 0 on error.
@@ -171,7 +171,7 @@ static int Save_Shot_BMP(void)
 }
 
 
-#else  /* __GENS_PNG__ */
+#else  /* GENS_PNG */
 
 
 /**
@@ -328,4 +328,4 @@ static int Save_Shot_PNG(void)
 	
 	return 1;
 }
-#endif /* __GENS_PNG__ */
+#endif /* GENS_PNG */

@@ -79,7 +79,7 @@ AC_MSG_CHECKING(for libpng)
 	AC_MSG_RESULT($with_png)
 	if test x$with_png = xyes; then
 		LDFLAGS="$LDFLAGS -lpng"
-		AC_DEFINE(__GENS_PNG__, 1, PNG support via libpng)
+		AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
 	fi
 fi
 
