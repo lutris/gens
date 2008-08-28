@@ -495,22 +495,29 @@ void Flip_gl()
 	
 }
 
-void Flip_sdl()
+
+/**
+ * Flip_SDL(): Blit the contents of the MD framebuffer to the screen. (SDL method)
+ */
+static void Flip_SDL()
 {
 	SDL_LockSurface(screen);
 	
+	// Start of the SDL framebuffer.
+	unsigned char *start = screen->pixels + (((screen->w * 2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift);
+	
 	if (Video.Full_Screen)		
-	{	Blit_FS((unsigned char *) screen->pixels + (((screen->w*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), screen->w*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
+	{
+		Blit_FS(start, screen->w*2 , 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
 	}
 	else
-	{	Blit_W((unsigned char *) screen->pixels + (((screen->w*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift), screen->w*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);		    
+	{
+		Blit_W(start, screen->w*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);		    
 	}
-	
 	
 	SDL_UnlockSurface(screen);
 	
 	SDL_Flip(screen);
-	
 }
 
 int Flip(void)
@@ -620,7 +627,7 @@ int Flip(void)
 	Flip_gl();
 	
 	else
-	Flip_sdl();
+	Flip_SDL();
 	
 	/*if(W_VSync || FS_VSync) vsync();*/
 	
