@@ -50,19 +50,19 @@ static void Blit_2x_32(unsigned char *screen, int pitch, int x, int y, int offse
  */
 // TODO: Return a function pointer so this can be set in ui_proxy.c:Set_Render().
 // That will reduce function call overhead.
-void Blit_2x(unsigned char *Dest, int pitch, int x, int y, int offset)
+void Blit_2x(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	if (Bits32)
-		Blit_2x_32(Dest, pitch, x, y, offset);
+		Blit_2x_32(screen, pitch, x, y, offset);
 	else
 	{
 #ifdef GENS_X86_ASM
 		if (Have_MMX)
-			Blit_2x_16_asm_MMX(Dest, pitch, x, y, offset);
+			Blit_2x_16_asm_MMX(screen, pitch, x, y, offset);
 		else
-			Blit_2x_16_asm(Dest, pitch, x, y, offset);
+			Blit_2x_16_asm(screen, pitch, x, y, offset);
 #else
-		Blit_2x_16(Dest, pitch, x, y, offset);
+		Blit_2x_16(screen, pitch, x, y, offset);
 #endif
 	}
 }

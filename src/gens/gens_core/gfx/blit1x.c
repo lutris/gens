@@ -35,14 +35,14 @@ extern unsigned char Bits32;
 
 
 #ifndef GENS_X86_ASM
-static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset);
+static void Blit_1x_16(unsigned char *screen, int pitch, int x, int y, int offset);
 #endif
-static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset);
+static void Blit_1x_32(unsigned char *screen, int pitch, int x, int y, int offset);
 
 
 /**
  * Blit_1x(): Blits the image to the screen, with no scaling.
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
@@ -50,19 +50,19 @@ static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
  */
 // TODO: Return a function pointer so this can be set in ui_proxy.c:Set_Render().
 // That will reduce function call overhead.
-void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset)
+void Blit_1x(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	if (Bits32)
-		Blit_1x_32(Dest, pitch, x, y, offset);
+		Blit_1x_32(screen, pitch, x, y, offset);
 	else
 	{
 #ifdef GENS_X86_ASM
 		if (Have_MMX)
-			Blit_1x_16_asm_MMX(Dest, pitch, x, y, offset);
+			Blit_1x_16_asm_MMX(screen, pitch, x, y, offset);
 		else
-			Blit_1x_16_asm(Dest, pitch, x, y, offset);
+			Blit_1x_16_asm(screen, pitch, x, y, offset);
 #else
-		Blit_1x_16(Dest, pitch, x, y, offset);
+		Blit_1x_16(screen, pitch, x, y, offset);
 #endif
 	}
 }
@@ -71,13 +71,13 @@ void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset)
 #ifndef GENS_X86_ASM
 /**
  * Blit_1x_16(): (16-bit) Blits the image to the screen, with no scaling.
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
+static void Blit_1x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i;
 	
@@ -94,7 +94,7 @@ static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 	{
 		//DstOffs = i * pitch * 2;
 		DstOffs = i * pitch;
-		memcpy(&Dest[DstOffs], &MD_Screen[SrcOffs], x * 2);
+		memcpy(&screen[DstOffs], &MD_Screen[SrcOffs], x * 2);
 		
 		// Next line.
 		// TODO: Make this a constant somewhere.
@@ -106,13 +106,13 @@ static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 
 /**
  * Blit_1x_32(): (32-bit) Blits the image to the screen, with no scaling.
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
+static void Blit_1x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i;
 	
@@ -129,7 +129,7 @@ static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
 	{
 		//DstOffs = i * pitch * 2;
 		DstOffs = i * pitch;
-		memcpy(&Dest[DstOffs], &MD_Screen32[SrcOffs], x * 4);
+		memcpy(&screen[DstOffs], &MD_Screen32[SrcOffs], x * 4);
 		
 		// Next line.
 		// TODO: Make this a constant somewhere.

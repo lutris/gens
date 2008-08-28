@@ -6,36 +6,36 @@
 extern unsigned char Bits32;
 
 
-static void Blit_Scale2x_16(unsigned char *Dest, int pitch, int x, int y, int offset);
-static void Blit_Scale2x_32(unsigned char *Dest, int pitch, int x, int y, int offset);
+static void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int offset);
+static void Blit_Scale2x_32(unsigned char *screen, int pitch, int x, int y, int offset);
 
 
 /**
  * Blit_Scale2x(): Blits the image to the screen, scaled to 2x its normal size (without filtering).
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-void Blit_Scale2x(unsigned char *Dest, int pitch, int x, int y, int offset)
+void Blit_Scale2x(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	if (Bits32)
-		Blit_Scale2x_32(Dest, pitch, x, y, offset);
+		Blit_Scale2x_32(screen, pitch, x, y, offset);
 	else
-		Blit_Scale2x_16(Dest, pitch, x, y, offset);
+		Blit_Scale2x_16(screen, pitch, x, y, offset);
 }
 
 
 /**
  * Blit_Scale2x_16(): (16-bit) Blits the image to the screen, scaled to 2x its normal size (without filtering).
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit_Scale2x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
+static void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	unsigned short B, D, E, F, H;
@@ -73,20 +73,20 @@ static void Blit_Scale2x_16(unsigned char *Dest, int pitch, int x, int y, int of
 			E3 = H == F && D != H && B != F ? F : E;
 			
 			// E0
-			Dest[DstOffs + 0] = (unsigned char)(E0 & 0xFF);
-			Dest[DstOffs + 1] = (unsigned char)(E0 >> 8);
+			screen[DstOffs + 0] = (unsigned char)(E0 & 0xFF);
+			screen[DstOffs + 1] = (unsigned char)(E0 >> 8);
 			
 			// E1
-			Dest[DstOffs + 2] = (unsigned char)(E1 & 0xFF);
-			Dest[DstOffs + 3] = (unsigned char)(E1 >> 8);
+			screen[DstOffs + 2] = (unsigned char)(E1 & 0xFF);
+			screen[DstOffs + 3] = (unsigned char)(E1 >> 8);
 			
 			// E2
-			Dest[DstOffs + pitch + 0] = (unsigned char)(E2 & 0xFF);
-			Dest[DstOffs + pitch + 1] = (unsigned char)(E2 >> 8);
+			screen[DstOffs + pitch + 0] = (unsigned char)(E2 & 0xFF);
+			screen[DstOffs + pitch + 1] = (unsigned char)(E2 >> 8);
 			
 			// E3
-			Dest[DstOffs + pitch + 2] = (unsigned char)(E3 & 0xFF);
-			Dest[DstOffs + pitch + 3] = (unsigned char)(E3 >> 8);
+			screen[DstOffs + pitch + 2] = (unsigned char)(E3 & 0xFF);
+			screen[DstOffs + pitch + 3] = (unsigned char)(E3 >> 8);
 			
 			DstOffs += 4;
 		}
@@ -98,13 +98,13 @@ static void Blit_Scale2x_16(unsigned char *Dest, int pitch, int x, int y, int of
 
 /**
  * Blit_Scale2x_32(): (32-bit) Blits the image to the screen, scaled to 2x its normal size (without filtering).
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit_Scale2x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
+static void Blit_Scale2x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	unsigned int B, D, E, F, H;
@@ -141,10 +141,10 @@ static void Blit_Scale2x_32(unsigned char *Dest, int pitch, int x, int y, int of
 			E2 = D == H && D != B && H != F ? D : E;
 			E3 = H == F && D != H && B != F ? F : E;
 			
-			cpu_to_le32_ucptr(&Dest[DstOffs], E0);
-			cpu_to_le32_ucptr(&Dest[DstOffs + 4], E1);
-			cpu_to_le32_ucptr(&Dest[DstOffs + pitch + 0], E2);
-			cpu_to_le32_ucptr(&Dest[DstOffs + pitch + 4], E3);
+			cpu_to_le32_ucptr(&screen[DstOffs], E0);
+			cpu_to_le32_ucptr(&screen[DstOffs + 4], E1);
+			cpu_to_le32_ucptr(&screen[DstOffs + pitch + 0], E2);
+			cpu_to_le32_ucptr(&screen[DstOffs + pitch + 4], E3);
 			
 			DstOffs += 8;
 		}
