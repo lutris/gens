@@ -24,6 +24,7 @@
 #include <string.h>
 #include <zlib.h>
 
+
 /**
  * GZip_Detect_Format(): Detects if a file is in GZip format.
  * @param f File pointer of the file to check.
@@ -38,6 +39,19 @@ int GZip_Detect_Format(FILE *f)
 	fread(buf, 2, sizeof(unsigned char), f);
 	return (buf[0] == 0x1F && buf[1] == 0x8B);
 }
+
+
+/**
+ * GZip_Get_Num_Files(): Gets the number of files in the specified archive.
+ * @param filename Filename of the archive.
+ * @return Number of files, or 0 on error.
+ */
+int GZip_Get_Num_Files(const char *filename)
+{
+	// GZip files always contain a single file.
+	return 1;
+}
+
 
 /**
  * GZip_Get_First_File_Info(): Gets information about the first file in the specified archive.
@@ -76,6 +90,7 @@ int GZip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *r
 	gzclose(gzfd);
 	return 1;
 }
+
 
 /**
  * GZip_Get_File(): Gets the specified file from the specified archive.

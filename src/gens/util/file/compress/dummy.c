@@ -26,6 +26,7 @@
 #include "compress.h"
 #include <string.h>
 
+
 /**
  * Dummy_Detect_Format(): Returns 1. All files can be handled by this module.
  * @param f File pointer of the file to check.
@@ -35,6 +36,19 @@ int Dummy_Detect_Format(FILE *f)
 {
 	return 1;
 }
+
+
+/**
+ * Dummy_Get_Num_Files(): Gets the number of files in the specified archive.
+ * @param filename Filename of the archive.
+ * @return Number of files, or 0 on error.
+ */
+int Dummy_Get_Num_Files(const char *filename)
+{
+	// Uncompressed or unsupported compression, so return 1.
+	return 1;
+}
+
 
 /**
  * Dummy_Get_First_File_Info(): Gets information about the specified file.
@@ -68,6 +82,7 @@ int Dummy_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *
 	// Done.
 	return 1;
 }
+
 
 /**
  * Dummy_Get_File(): Gets the file contents.
