@@ -1,11 +1,13 @@
 %include "nasmhead.inc"
 
+
 section .data align=64
 
 	extern MD_Screen
 	extern TAB336
 	extern Have_MMX
 	extern Mode_555
+
 
 section .text align=64
 
