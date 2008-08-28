@@ -122,7 +122,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 		case SCANLINE_50:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(SCANLINE_50, Blit_Scanline_50_MMX, "50% SCANLINE");
+				SELECT_RENDERER(SCANLINE_50, Blit_2x_Scanline_50_16_asm_MMX, "50% SCANLINE");
 			}
 			else
 			{
