@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "mem_m68k.h"
 #include "mem_s68k.h"
 
