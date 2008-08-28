@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "vdp_rend.h"
 #include "blit.h"
 #include "byteswap.h"
@@ -19,12 +23,23 @@ static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
  * @param y Y coordinate for the image.
  * @param offset ???
  */
+// TODO: Return a function pointer so this can be set in ui_proxy.c:Set_Render().
+// That will reduce function call overhead.
 void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset)
 {
 	if (Bits32)
 		Blit_1x_32(Dest, pitch, x, y, offset);
 	else
+	{
+#ifdef GENS_X86_ASM
+		if (Have_MMX)
+			Blit_1x_16_asm_MMX(Dest, pitch, x, y, offset);
+		else
+			Blit_1x_16_asm(Dest, pitch, x, y, offset);
+#else
 		Blit_1x_16(Dest, pitch, x, y, offset);
+#endif
+	}
 }
 
 
@@ -38,7 +53,7 @@ void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset)
  */
 static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 {
-	int i, j;
+	int i;
 	
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;
@@ -72,7 +87,7 @@ static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
  */
 static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
 {
-	int i, j;
+	int i;
 	
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;

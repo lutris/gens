@@ -1,7 +1,10 @@
 #ifndef _BLIT_H_
 #define _BLIT_H_
 
-void Blit_X1(unsigned char *Dest, int pitch, int x, int y, int offset);
+void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset);
+void Blit_1x_asm(unsigned char *Dest, int pitch, int x, int y, int offset);
+void Blit_1x_asm_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
+
 void Blit_X2(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_X2_Int(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_Scanline(unsigned char *Dest, int pitch, int x, int y, int offset);
@@ -21,7 +24,5 @@ void Blit_2xSAI_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_Scale2x(unsigned char *Dest, int pitch, int x, int y, int offset);
 void _Blit_HQ2x(unsigned char *Dest, int pitch, int x, int y, int offset);
 int Blit_HQ2x_InitLUTs(void);
-
-void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset);
 
 #endif
