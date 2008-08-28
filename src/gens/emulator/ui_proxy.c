@@ -204,7 +204,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	//Clear_Screen();
 	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
 	// this doesn't cover hq2x etc. properly. Let's just always refresh.
-	Refresh_video(); 
+	Refresh_Video(); 
 }
 
 

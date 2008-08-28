@@ -1038,13 +1038,14 @@ int Show_Genesis_Screen(void)
 }
 
 
-void Refresh_video()
+/**
+ * Refresh_Video(): Refresh the video subsystem.
+ */
+void Refresh_Video(void)
 {
 	End_DDraw();
-	
 	Init_DDraw();
-	 
-	Adjust_Stretch(); 
+	Adjust_Stretch();
 }
 
 
@@ -1078,7 +1079,7 @@ void Set_GL_Resolution(int w,int h)
 	End_DDraw();
 	Init_DDraw();
 	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
-	Refresh_video();
+	Refresh_Video();
 }
 
 

@@ -48,7 +48,7 @@ void Restore_Primary(void);
 void End_DDraw(void);
 void Refresh_gl();
 void Put_Info(char *,int);
-void Refresh_video();
+void Refresh_Video(void);
 void Set_GL_Resolution(int w,int h);
 void Set_Bpp(int newbpp);
 void Change_OpenGL(int newOpenGL);
