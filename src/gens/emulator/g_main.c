@@ -57,12 +57,6 @@ int Paused = 0;
 int Net_Play = 0;
 int Full_Screen = 0;
 int Resolution = 1;
-int Fast_Blur = 0;
-int Render_Mode = 1;
-int Opengl = 1;
-int Width_gl=640;
-int Height_gl=480;
-int Bpp=16;
 int Show_FPS = 0;
 int Show_Message = 1;
 int Show_LED = 0;
@@ -79,14 +73,6 @@ int Quick_Exit = 0;
 
 static int Gens_Running = 0;
 
-
-/**
- * Init_Settings(): Initialize the Settings struct.
- */
-void Init_Settings(void)
-{
-	// Nothing yet...
-}
 
 static int Build_Language_String (void)
 {
@@ -192,51 +178,23 @@ static int Build_Language_String (void)
 
 
 /**
- * Sleep(): Sleeps for i milliseconds.
- * @param i Milliseconds to sleep.
+ * Init_Settings(): Initialize the Settings struct.
  */
-void Sleep(int i)
+static void Init_Settings(void)
 {
-	//usleep(i * 1000);
-}
-
-
-/**
- * close_gens(): Close GENS.
- */
-void close_gens ()
-{
-	Gens_Running = 0;
-}
-
-/**
- * run_gens(): Run GENS.
- */
-void run_gens ()
-{
-	Gens_Running = 1;
-}
-
-/**
- * is_gens_running(): Is GENS running?!
- * @return 1 if it's running.
- */
-int is_gens_running ()
-{
-	return Gens_Running;
-}
-
-/**
- * InitParameters(): Initialize GENS configuration.
- * TODO: Use a struct, dammit!
- */
-static void InitParameters (void)
-{
+	// Initialize video settings.
+	Video.Fast_Blur = 0;
+	Video.Render_Mode = 1;
+	Video.OpenGL = 1;
+	Video.Width_GL = 640;
+	Video.Height_GL = 480;
+	Video.bpp = 16;
+	
+	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;
 	Net_Play = 0;
 	Stretch = 0;
 	Sprite_Over = 1;
-	Render_Mode = 0;
 	Show_Message = 1;
 	
 	Sound_Enable = 0;
@@ -271,11 +229,48 @@ static void InitParameters (void)
 	strcpy (PathNames.CGOffline_Path, "");
 	
 	// Build language strings and load the default configuration.
-	Build_Language_String ();
+	Build_Language_String();
 	Load_Config (Str_Tmp, NULL);
 	
 	Init_CD_Driver ();
 }
+
+
+/**
+ * Sleep(): Sleeps for i milliseconds.
+ * @param i Milliseconds to sleep.
+ */
+void Sleep(int i)
+{
+	//usleep(i * 1000);
+}
+
+
+/**
+ * close_gens(): Close GENS.
+ */
+void close_gens ()
+{
+	Gens_Running = 0;
+}
+
+/**
+ * run_gens(): Run GENS.
+ */
+void run_gens ()
+{
+	Gens_Running = 1;
+}
+
+/**
+ * is_gens_running(): Is GENS running?!
+ * @return 1 if it's running.
+ */
+int is_gens_running ()
+{
+	return Gens_Running;
+}
+
 
 /**
  * Init(): Initialize GENS.
@@ -361,7 +356,6 @@ int main(int argc, char *argv[])
 	
 	Init_Genesis_Bios ();
 	
-	InitParameters ();
 	parseArgs (argc, argv);
 	
 	// TODO: Split out GTK+ stuff from main().
@@ -394,7 +388,7 @@ int main(int argc, char *argv[])
 	while (gtk_events_pending ())
 		gtk_main_iteration_do (0);
 	
-	Set_Render(Full_Screen,Render_Mode,1);
+	Set_Render(Video.Full_Screen, Video.Render_Mode, 1);
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
