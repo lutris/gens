@@ -20,7 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include <string.h>
 #include "general_options_window.h"
 #include "general_options_window_callbacks.h"

@@ -20,7 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include <string.h>
 
 #include "game_genie_window.h"

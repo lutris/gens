@@ -20,13 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include "controller_config_window.h"
 #include "controller_config_window_callbacks.h"
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>

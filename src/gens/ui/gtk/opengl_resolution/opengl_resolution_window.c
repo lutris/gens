@@ -20,14 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include "opengl_resolution_window.h"
 #include "opengl_resolution_window_callbacks.h"
 #include "gens/gens_window.h"
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>

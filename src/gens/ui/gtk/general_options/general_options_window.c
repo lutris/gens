@@ -20,14 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include "general_options_window.h"
 #include "general_options_window_callbacks.h"
 #include "gens/gens_window.h"
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
