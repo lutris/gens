@@ -283,26 +283,22 @@ void End_DDraw()
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
+/**
+ * Clear_Screen(): Clear the screen.
+ */
 void Clear_Screen()
 {
-	
-	
-	if(Video.OpenGL)
+	if (Video.OpenGL)
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		memset(filter_buffer,0,640*480*2); //memset(filter_buffer,0,row_length*row_length*1.5); //row_length*row_length*1.5 size in bytes 
 	}
-	
 	else
 	{
 		SDL_LockSurface(screen);
-	
-		SDL_FillRect(screen,0,0);
-	
+		SDL_FillRect(screen, 0, 0);
 		SDL_UnlockSurface(screen);
-	
 	}
-	
 }
 
 void Flip_gl()
