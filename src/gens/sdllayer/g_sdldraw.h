@@ -21,6 +21,9 @@ extern int FPS_Style;
 extern int Message_Style;
 extern int Kaillera_Error;
 
+// Current border color. (16-bit)
+extern unsigned short BorderColor_16B;
+
 extern void (*Blit_FS)(unsigned char *Dest, int pitch, int x, int y, int offset);
 extern void (*Blit_W)(unsigned char *Dest, int pitch, int x, int y, int offset);
 extern int (*Update_Frame)(void);

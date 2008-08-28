@@ -68,6 +68,9 @@ float v_stretch = 0;
 
 int Dep = 0,Old_Dep=0;
 
+// Current border color. (16-bit)
+unsigned short BorderColor_16B = 0x0000;
+
 static char Info_String[1024] = "";
 static int Message_Showed = 0;
 static unsigned int Info_Time = 0;
@@ -303,7 +306,7 @@ void Clear_Screen()
 
 void Flip_gl()
 {
-	   
+	// TODO: Add border drawing, like in Flip_SDL().   
 	
 	if (Video.Full_Screen)		
 	{	Blit_FS((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), row_length*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
@@ -497,7 +500,47 @@ void Flip_gl()
  */
 static void Flip_SDL()
 {
+	SDL_Rect border;
+	
 	SDL_LockSurface(screen);
+	
+	// Draw the border.
+	// TODO: Make this more accurate and/or more efficient.
+	// In particular, it only works for 1x and 2x rendering.
+	if (BorderColor_16B != MD_Palette[0])
+	{
+		BorderColor_16B = MD_Palette[0];
+		if (VDP_Num_Vis_Lines < 240)
+		{
+			// Top/Bottom borders.
+			border.x = 0; border.w = screen->w;
+			border.h = 240 - VDP_Num_Vis_Lines;
+			if (screen->h == 240)
+				border.h >>= 1;
+			border.y = 0;
+			SDL_FillRect(screen, &border, BorderColor_16B);
+			border.y = screen->h - border.h;
+			SDL_FillRect(screen, &border, BorderColor_16B);
+		}
+		if (Dep > 0)
+		{
+			// Left/Right borders.
+			if (border.h != 0)
+			{
+				border.y = 0;
+				border.h = 240 - border.h;
+			}
+			
+			border.x = 0; border.h = screen->h;
+			border.w = Dep;
+			if (screen->w == 320)
+				border.w >>= 1;
+			border.y = 0;
+			SDL_FillRect(screen, &border, BorderColor_16B);
+			border.x = screen->w - border.w;
+			SDL_FillRect(screen, &border, BorderColor_16B);
+		}
+	}
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = screen->pixels + (((screen->w * 2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift);
