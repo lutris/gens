@@ -162,7 +162,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 		case INTERPOLATED_SCANLINE_25:
 			if (Have_MMX)
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE_25, Blit_Scanline_25_Int_MMX, "INTERPOLATED 25% SCANLINE");
+				SELECT_RENDERER(INTERPOLATED_SCANLINE_25, Blit_2x_Scanline_25_Int_16_asm_MMX, "INTERPOLATED 25% SCANLINE");
 			}
 			else
 			{

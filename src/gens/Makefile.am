@@ -11,7 +11,8 @@ gens_x86_asm_o = \
 		gens_core/gfx/blit2x_scanline_50.o \
 		gens_core/gfx/blit2x_scanline_25.o \
 		gens_core/gfx/blit2x_scanline_int.o \
-		gens_core/gfx/blit2x_scanline_50_int.o
+		gens_core/gfx/blit2x_scanline_50_int.o \
+		gens_core/gfx/blit2x_scanline_25_int.o
 gens_x86_asm_src = \
 		gens_core/gfx/blit1x.asm \
 		gens_core/gfx/blit2x.asm \
@@ -20,7 +21,8 @@ gens_x86_asm_src = \
 		gens_core/gfx/blit2x_scanline_50.asm \
 		gens_core/gfx/blit2x_scanline_25.asm \
 		gens_core/gfx/blit2x_scanline_int.asm \
-		gens_core/gfx/blit2x_scanline_50_int.asm
+		gens_core/gfx/blit2x_scanline_50_int.asm \
+		gens_core/gfx/blit2x_scanline_25_int.asm
 gens_x86_asm_h =
 else
 gens_x86_asm_o =
