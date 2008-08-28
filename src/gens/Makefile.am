@@ -5,10 +5,12 @@ AUTOMAKE_OPTIONS = subdir-objects
 if GENS_X86_ASM
 gens_x86_asm_o = \
 		gens_core/gfx/blit1x.o \
-		gens_core/gfx/blit2x.o
+		gens_core/gfx/blit2x.o \
+		gens_core/gfx/blit2x_int.o
 gens_x86_asm_src = \
 		gens_core/gfx/blit1x.asm \
-		gens_core/gfx/blit2x.asm
+		gens_core/gfx/blit2x.asm \
+		gens_core/gfx/blit2x_int.asm
 gens_x86_asm_h =
 else
 gens_x86_asm_o =
