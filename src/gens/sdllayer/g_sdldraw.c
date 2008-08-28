@@ -1043,6 +1043,9 @@ int Show_Genesis_Screen(void)
  */
 void Refresh_Video(void)
 {
+	// Reset the border color to make sure it's redrawn.
+	BorderColor_16B = ~MD_Palette[0];
+	
 	End_DDraw();
 	Init_DDraw();
 	Adjust_Stretch();
