@@ -80,64 +80,6 @@ int Zip_Get_Num_Files(const char *filename)
 
 
 /**
- * Zip_Get_First_File_Info(): Gets information about the first file in the specified archive.
- * @param filename Filename of the archive.
- * @param retFileInfo Struct to store information about the file.
- * @return 1 on success; 0 on error.
- */
-int Zip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
-{
-	unzFile f;
-	unz_file_info zinfo;
-	int i, extpos;
-	char ROMFileName[132];
-	
-	// Both parameters must be specified.
-	if (!filename || !retFileInfo)
-		return 0;
-	
-	// Open the Zip file.
-	f = unzOpen(filename);
-	if (!f)
-		return 0;
-	
-	// Find the first ROM file in the Zip archive.
-	i = unzGoToFirstFile(f);
-	while (i == UNZ_OK)
-	{
-		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
-		// The file extension of the file in the Zip file must match one of these
-		// in order to be considered a ROM, since extracting each file to check
-		// based on contents is too resource-intensive.
-		extpos = strlen(ROMFileName) - 4;
-		if ((!strncasecmp(".smd", &ROMFileName[extpos], 4)) ||
-		    (!strncasecmp(".bin", &ROMFileName[extpos], 4)) ||
-		    (!strncasecmp(".gen", &ROMFileName[extpos], 4)) ||
-		    (!strncasecmp(".32x", &ROMFileName[extpos], 4)))
-		{
-			// Store the ROM file informatio.
-			retFileInfo->filesize = zinfo.uncompressed_size;
-			strncpy(retFileInfo->filename, ROMFileName, 132);
-			retFileInfo->filename[131] = 0x00;
-			break;
-		}
-		
-		i = unzGoToNextFile(f);
-	}
-	unzClose(f);
-	
-	if ((i != UNZ_END_OF_LIST_OF_FILE && i != UNZ_OK) || retFileInfo->filesize == 0)
-	{
-		UI_MsgBox("No Genesis or 32X ROM file found in ZIP archive.", "ZIP File Error");
-		return 0;
-	}
-	
-	// Return successfully.
-	return 1;
-}
-
-
-/**
  * Zip_Get_File_Info(): Gets information about all files in the specified archive.
  * @param filename Filename of the archive.
  * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.

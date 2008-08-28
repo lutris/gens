@@ -51,40 +51,6 @@ int Dummy_Get_Num_Files(const char *filename)
 
 
 /**
- * Dummy_Get_First_File_Info(): Gets information about the specified file.
- * @param filename Filename of the file to read.
- * @param retFileInfo Struct to store information about the file.
- * @return 1 on success; 0 on error.
- */
-int Dummy_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
-{
-	FILE *f;
-	
-	// Both parameters must be specified.
-	if (!filename || !retFileInfo)
-		return 0;
-	
-	// Open the file.
-	f = fopen(filename, "rb");
-	// Return 0 if the file can't be read.
-	if (!f)
-		return 0;
-	
-	// Get the filesize.
-	fseek(f, 0, SEEK_END);
-	retFileInfo->filesize = ftell(f);
-	fclose(f);
-	
-	// Copy the filename to retFileInfo.
-	strncpy(retFileInfo->filename, filename, 256);
-	retFileInfo->filename[255] = 0x00;
-	
-	// Done.
-	return 1;
-}
-
-
-/**
  * Dummy_Get_File_Info(): Gets information about all files in the specified archive.
  * @param filename Filename of the file to read.
  * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.

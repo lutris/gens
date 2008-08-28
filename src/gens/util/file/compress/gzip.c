@@ -54,45 +54,6 @@ int GZip_Get_Num_Files(const char *filename)
 
 
 /**
- * GZip_Get_First_File_Info(): Gets information about the first file in the specified archive.
- * @param filename Filename of the archive.
- * @param retFileInfo Struct to store information about the file. (Unused in the GZip handler.)
- * @return Filesize, or 0 on error.
- */
-int GZip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
-{
-	gzFile gzfd;
-	char buf[1024];
-	
-	// Both parameters must be specified.
-	if (!filename || !retFileInfo)
-		return 0;
-	
-	gzfd = gzopen(filename, "rb");
-	if (!gzfd)
-	{
-		// Error obtaining a GZip file descriptor.
-		return 0;
-	}
-	
-	// Read through the GZip file until we hit an EOF.
-	retFileInfo->filesize = 0;
-	while (!gzeof(gzfd))
-	{
-		retFileInfo->filesize += gzread(gzfd, buf, 1024);
-	}
-	
-	// Copy the filename.
-	strncpy(retFileInfo->filename, filename, 256);
-	retFileInfo->filename[255] = 0x00;
-	
-	// Close the GZip fd and return successfully.
-	gzclose(gzfd);
-	return 1;
-}
-
-
-/**
  * GZip_Get_File_Info(): Gets information about all files in the specified archive.
  * @param filename Filename of the archive.
  * @return Pointer to the first COMPRESS_FileInfo_t, or NULL on error.
