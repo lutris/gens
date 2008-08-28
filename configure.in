@@ -73,7 +73,7 @@ AC_MSG_CHECKING(for libpng)
 	AC_TRY_COMPILE([
 		#include <png.h>
 	],[
-		png_structp png_ptr
+		png_structp png_ptr;
 	],[
 		with_png=yes
 	])      
