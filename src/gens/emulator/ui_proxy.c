@@ -126,7 +126,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
 			}
 			break;
 
@@ -143,8 +143,8 @@ int Set_Render(int FullScreen, int Mode, int Force)
 
 		case INTERPOLATED_SCANLINE:
 			*Rend = INTERPOLATED_SCANLINE;
-			if (Have_MMX) *Blit = Blit_Scanline_Int_MMX;
-			else *Blit = Blit_Scanline_Int;
+			if (Have_MMX) *Blit = Blit_2x_Scanline_Int_16_asm_MMX;
+			else *Blit = Blit_2x_Scanline_Int_16_asm;
 			MESSAGE_L("Render selected : INTERPOLATED SCANLINE", "Render selected : INTERPOLATED SCANLINE", 1500);
 			break;
 
@@ -155,7 +155,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
 			}
 			break;
 
@@ -166,7 +166,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
 			}
 			break;
 			
@@ -177,7 +177,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			}
 			else
 			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_Scanline_Int, "INTERPOLATED SCANLINE");
+				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit_2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
 			}
 			break;
 
