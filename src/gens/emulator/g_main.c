@@ -40,8 +40,8 @@
 #include "gens/gens_window_sync.h"
 
 // GENS Settings struct
-struct GENS_Settings_t Settings;
-struct VideoSettings_t Video;
+struct Gens_Settings_t Settings;
+struct Gens_VideoSettings_t Video;
 
 int fast_forward = 0;
 

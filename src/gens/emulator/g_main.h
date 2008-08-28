@@ -34,7 +34,7 @@ struct PathNames_t
 
 
 // Video settings
-struct VideoSettings_t
+struct Gens_VideoSettings_t
 {
 	int Full_Screen;
 	int Fast_Blur;
@@ -46,15 +46,14 @@ struct VideoSettings_t
 };
 
 
-struct GENS_Settings_t
+struct Gens_Settings_t
 {
 	struct PathNames_t PathNames;
 };
 
-struct VideoSettings_t Video;
 
-
-extern struct GENS_Settings_t Settings;
+extern struct Gens_Settings_t Settings;
+extern struct Gens_VideoSettings_t Video;
 
 extern int Paused;
 extern int Net_Play;
