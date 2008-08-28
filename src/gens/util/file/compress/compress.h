@@ -60,6 +60,12 @@ struct COMPRESS_FileInfo_t
 };
 
 /**
+ * COMPRESS_FileInfo_Free(): Convenience function to free a list of COMPRESS_FileInfo_t.
+ * @param fileInfo First element in the COMPRESS_FileInfo_t list.
+ */
+void COMPRESS_FileInfo_Free(struct COMPRESS_FileInfo_t *fileInfo);
+
+/**
  * COMPRESS_Detect_Format(): Detects if a file is in this compression handler's format.
  * @param filename Filename of the archive.
  * @return 0 if this is not in this handler's format; non-zero if it is.

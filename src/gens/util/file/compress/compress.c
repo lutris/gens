@@ -48,3 +48,20 @@ const struct COMPRESS_Handler_t CompressMethods[] =
 	// End of list
 	{NULL, NULL, NULL, NULL},
 };
+
+
+/**
+ * COMPRESS_FileInfo_Free(): Convenience function to free a list of COMPRESS_FileInfo_t.
+ * @param fileInfo First element in the COMPRESS_FileInfo_t list.
+ */
+void COMPRESS_FileInfo_Free(struct COMPRESS_FileInfo_t *fileInfo)
+{
+	struct COMPRESS_FileInfo_t *cur, *nxt;
+	cur = fileInfo;
+	while (cur)
+	{
+		nxt = cur->next;
+		free(cur);
+		cur = nxt;
+	}
+}
