@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+	#include <config.h>
+#endif
+
 #include "scrshot.h"
 #include "port.h"
 #include <stdio.h>
@@ -13,8 +17,11 @@
 
 char ScrShot_Dir[GENS_PATH_MAX] = "." G_DIR_SEPARATOR_S;
 
+#ifndef __GENS_PNG__
 static int Save_Shot_BMP(void);
+#else  /* __GENS_PNG__ */
 static int Save_Shot_PNG(void);
+#endif /* __GENS_PNG__ */
 
 /**
  * Save_Shot(): Saves a screenshot.
@@ -24,10 +31,16 @@ int Save_Shot()
 {
 	// TODO: dlopen() libpng.
 	// If it's found, save as PNG; otherwise, BMP.
-	Save_Shot_PNG();
+	// For now, save as PNG or BMP depending on compile options.
+#ifdef __GENS_PNG__
+	return Save_Shot_PNG();
+#else
+	return Save_Shot_BMP();
+#endif
 }
 
 
+#ifndef __GENS_PNG__
 /**
  * Save_Shot_BMP(): Save a screenshot in BMP format.
  * @return 1 on success; 0 on error.
@@ -158,6 +171,9 @@ static int Save_Shot_BMP(void)
 }
 
 
+#else  /* __GENS_PNG__ */
+
+
 /**
  * Save_Shot_PNG(): Save a screenshot in PNG format.
  * @return 1 on success; 0 on error.
@@ -175,7 +191,6 @@ static int Save_Shot_PNG(void)
 	
 	// Bitmap dimensions.
 	int w, h, x, y;
-	int bmpSize;
 	
 	// If no game is running, don't do anything.
 	if (!Game)
@@ -313,3 +328,4 @@ static int Save_Shot_PNG(void)
 	
 	return 1;
 }
+#endif /* __GENS_PNG__ */
