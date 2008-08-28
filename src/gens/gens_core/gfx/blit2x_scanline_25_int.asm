@@ -31,11 +31,6 @@ section .data align=64
 	extern Have_MMX
 	extern Mode_555
 
-	Var:	dd 0
-	NB_X:	dd 0
-	NB_X2:	dd 0
-	NB_X4:	dd 0
-	MASK_DIV2:		dd 0x7BCF7BCF, 0x7BCF7BCF
 	MASK_DIV2_15:	dd 0x3DEF3DEF, 0x3DEF3DEF
 	MASK_DIV2_16:	dd 0x7BEF7BEF, 0x7BEF7BEF
 	MASK_DIV4_15:	dd 0x1CE71CE7, 0x1CEF1CE7
