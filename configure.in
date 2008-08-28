@@ -80,7 +80,7 @@ if test x$with_png != xno; then
        AC_MSG_RESULT($with_png)
        if test x$with_png = xyes; then
                LDFLAGS="$LDFLAGS -lpng"
-dnl               CFLAGS="$CFLAGS -D_GENS_PNG_"
+dnl               CFLAGS="$CFLAGS -D__GENS_PNG__"
                
        fi
 fi
