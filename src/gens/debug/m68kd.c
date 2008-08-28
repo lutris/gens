@@ -16,84 +16,70 @@ char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 	int i;
 	Dbg_EA_Str[15] = 0;
 	
-	switch (EA_Num)
+	// printf format strings for EA_Num types 0-4
+	const char* EAStr_0_4[] =
 	{
-		case 0:
-			// 000 rrr  Dr
-			sprintf(Dbg_EA_Str, "D%.1d%c", Reg_Num, 0);
-			break;
-		case 1:
-			// 001 rrr  Ar
-			sprintf(Dbg_EA_Str, "A%.1d%c", Reg_Num, 0);
-			break;
-		case 2:
-			// 010 rrr  (Ar)
-			sprintf(Dbg_EA_Str, "(A%.1d)%c", Reg_Num, 0);
-			break;
-		case 3:
-			// 011 rrr  (Ar)+
-			sprintf(Dbg_EA_Str, "(A%.1d)+%c", Reg_Num, 0);
-			break;
-		case 4:
-			// 100 rrr  -(Ar)
-			sprintf(Dbg_EA_Str, "-(A%.1d)%c", Reg_Num, 0);
-			break;
-		case 5:
-			// 101 rrr  d16(Ar)     dddddddd dddddddd
-			sprintf(Dbg_EA_Str, "$%.4X(A%.1d)%c", Next_Word(), Reg_Num, 0);
-			break;
-		case 6:
-			// 110 rrr  d8(Ar,ix)   aiiizcc0 dddddddd
-			i = Next_Word () & 0xFFFF;
-			if (i & 0x8000)
-				sprintf(Dbg_EA_Str, "$%.2X(A%.1d,A%.1d)%c", i & 0xFF, Reg_Num,
-					(i >> 12) & 0x7, 0);
-			else
-				sprintf(Dbg_EA_Str, "$%.2X(A%.1d,D%.1d)%c", i & 0xFF, Reg_Num,
-					(i >> 12) & 0x7, 0);
-			break;
-		case 7:
-			switch (Reg_Num)
-			{
-				case 0:
-					// 111 000  addr16      dddddddd dddddddd
-					sprintf(Dbg_EA_Str, "($%.4X)%c", Next_Word(), 0);
-					break;
-				case 1:
-					// 111 001  addr32      dddddddd dddddddd ddddddddd dddddddd
-					sprintf(Dbg_EA_Str, "($%.8X)%c", Next_Long(), 0);
-					break;
-				case 2:
-					// 111 010  d16(PC)     dddddddd dddddddd
-					sprintf(Dbg_EA_Str, "$%.4X(PC)%c", Next_Word(), 0);
-					break;
-				case 3:
-					// 111 011  d8(PC,ix)   aiiiz000 dddddddd
-					i = Next_Word() & 0xFFFF;
-					if (i & 0x8000)
-						sprintf(Dbg_EA_Str, "$%.2X(PC,A%.1d)%c", i & 0xFF,
-							(i >> 12) & 0x7, 0);
-					else
-						sprintf(Dbg_EA_Str, "$%.2X(PC,D%.1d)%c", i & 0xFF,
-							(i >> 12) & 0x7, 0);
-					break;
-				case 4:
-					// 111 100  imm/implied
-					switch (Size)
-					{
-						case 0:
-							sprintf(Dbg_EA_Str, "#$%.2X%c", Next_Word () & 0xFF, 0);
-							break;
-						case 1:
-							sprintf(Dbg_EA_Str, "#$%.4X%c", Next_Word (), 0);
-							break;
-						case 2:
-							sprintf(Dbg_EA_Str, "#$%.8X%c", Next_Long (), 0);
-							break;
-					}
-					break;
-			}
-			break;
+		"D%.1d",	// 000 rrr  Dr
+		"A%.1d",	// 001 rrr  Ar
+		"(A%.1d)",	// 010 rrr  (Ar)
+		"(A%.1d)+",	// 011 rrr  (Ar)+
+		"-(A%.1d)",	// 100 rrr  -(Ar)
+	};
+	
+	if (EA_Num >= 0 && EA_Num <= 4)
+		sprintf(Dbg_EA_Str, EAStr_0_4[EA_Num], Reg_Num);
+	else if (EA_Num == 5)
+	{
+		// 101 rrr  d16(Ar)     dddddddd dddddddd
+		sprintf(Dbg_EA_Str, "$%.4X(A%.1d)", Next_Word(), Reg_Num);
+	}
+	else if (EA_Num == 6)
+	{
+		// 110 rrr  d8(Ar,ix)   aiiizcc0 dddddddd
+		i = Next_Word () & 0xFFFF;
+		// i & 0x8000: if true, dest is  an address register; otherwise, dest is a data register
+		sprintf(Dbg_EA_Str, "$%.2X(A%.1d,%c%.1d)", i & 0xFF, Reg_Num,
+			((i & 0x8000) ? 'A' : 'D'), (i >> 12) & 0x07);
+	}
+	else if (EA_Num == 7)
+	{
+		switch (Reg_Num)
+		{
+			case 0:
+				// 111 000  addr16      dddddddd dddddddd
+				sprintf(Dbg_EA_Str, "($%.4X)", Next_Word());
+				break;
+			case 1:
+				// 111 001  addr32      dddddddd dddddddd ddddddddd dddddddd
+				sprintf(Dbg_EA_Str, "($%.8X)", Next_Long());
+				break;
+			case 2:
+				// 111 010  d16(PC)     dddddddd dddddddd
+				sprintf(Dbg_EA_Str, "$%.4X(PC)", Next_Word());
+				break;
+			case 3:
+				// 111 011  d8(PC,ix)   aiiiz000 dddddddd
+				i = Next_Word() & 0xFFFF;
+				// i & 0x8000: if true, dest is  an address register; otherwise, dest is a data register
+				sprintf(Dbg_EA_Str, "$%.2X(PC,%c%.1d)", i & 0xFF,
+					((i & 0x8000) ? 'A' : 'D'), (i >> 12) & 0x07);
+				break;
+			case 4:
+				// 111 100  imm/implied
+				switch (Size)
+				{
+					case 0:
+						sprintf(Dbg_EA_Str, "#$%.2X", Next_Word () & 0xFF);
+						break;
+					case 1:
+						sprintf(Dbg_EA_Str, "#$%.4X", Next_Word ());
+						break;
+					case 2:
+						sprintf(Dbg_EA_Str, "#$%.8X", Next_Long ());
+						break;
+				}
+				break;
+		}
 	}
 	
 	return Dbg_EA_Str;
