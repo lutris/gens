@@ -25,6 +25,7 @@
 #include "unzip.h"
 #include "ui-common.h"
 
+
 /**
  * Zip_Detect_Format(): Detects if a file is in Zip format.
  * @param f File pointer of the file to check.
@@ -40,6 +41,43 @@ int Zip_Detect_Format(FILE *f)
 	return (buf[0] == 'P' && buf[1] == 'K' &&
 		buf[2] == 0x03 && buf[3] == 0x04);
 }
+
+
+/**
+ * Zip_Get_Num_Files(): Gets the number of files in the specified archive.
+ * @param filename Filename of the archive.
+ * @return Number of files, or 0 on error.
+ */
+int Zip_Get_Num_Files(const char *filename)
+{
+	unzFile f;
+	unz_file_info zinfo;
+	int i, numFiles;
+	
+	// Filename must be specified.
+	if (!filename)
+		return 0;
+	
+	// Open the Zip file.
+	f = unzOpen(filename);
+	if (!f)
+		return 0;
+	
+	// Count the number of files in the archive.
+	numFiles = 0;
+	i = unzGoToFirstFile(f);
+	while (i == UNZ_OK)
+	{
+		if (i == UNZ_OK)
+			numFiles++;
+		i = unzGoToNextFile(f);
+	}
+	unzClose(f);
+	
+	// Return the number of files found.
+	return numFiles;
+}
+
 
 /**
  * Zip_Get_First_File_Info(): Gets information about the first file in the specified archive.
@@ -97,6 +135,7 @@ int Zip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *re
 	// Return successfully.
 	return 1;
 }
+
 
 /**
  * Zip_Get_File(): Gets the specified file from the specified archive.

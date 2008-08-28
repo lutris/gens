@@ -34,7 +34,7 @@ const struct COMPRESS_Handler_t CompressMethods[] =
 	{
 		// Zip format
 		Zip_Detect_Format,
-		NULL,
+		Zip_Get_Num_Files,
 		Zip_Get_First_File_Info,
 		Zip_Get_File,
 	},
