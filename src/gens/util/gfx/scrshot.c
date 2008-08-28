@@ -8,6 +8,7 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 #include "g_sdldraw.h"
+#include "byteswap.h"
 
 char ScrShot_Dir[GENS_PATH_MAX] = "." G_DIR_SEPARATOR_S;
 
@@ -67,51 +68,26 @@ int Save_Shot(void)
 		return 0;
 	
 	// Build the bitmap image.
+	
+	// Bitmap header.
 	Dest[0] = 'B';
 	Dest[1] = 'M';
 	
-	Dest[2] = (unsigned char) ((bmpSize >> 0) & 0xFF);
-	Dest[3] = (unsigned char) ((bmpSize >> 8) & 0xFF);
-	Dest[4] = (unsigned char) ((bmpSize >> 16) & 0xFF);
-	Dest[5] = (unsigned char) ((bmpSize >> 24) & 0xFF);
-	
-	Dest[6] = Dest[7] = Dest[8] = Dest[9] = 0;
-	
-	Dest[10] = 54;
-	Dest[11] = Dest[12] = Dest[13] = 0;
-	
-	Dest[14] = 40;
-	Dest[15] = Dest[16] = Dest[17] = 0;
-	
-	Dest[18] = (unsigned char) ((w >> 0) & 0xFF);
-	Dest[19] = (unsigned char) ((w >> 8) & 0xFF);
-	Dest[20] = (unsigned char) ((w >> 16) & 0xFF);
-	Dest[21] = (unsigned char) ((w >> 24) & 0xFF);
-	
-	Dest[22] = (unsigned char) ((h >> 0) & 0xFF);
-	Dest[23] = (unsigned char) ((h >> 8) & 0xFF);
-	Dest[24] = (unsigned char) ((h >> 16) & 0xFF);
-	Dest[25] = (unsigned char) ((h >> 24) & 0xFF);
-	
-	Dest[26] = 1;
-	Dest[27] = 0;
-	
-	Dest[28] = 24;
-	Dest[29] = 0;
-	
-	Dest[30] = Dest[31] = Dest[32] = Dest[33] = 0;
-	
-	Dest[34] = (unsigned char) ((bmpSize >> 0) & 0xFF);
-	Dest[35] = (unsigned char) ((bmpSize >> 8) & 0xFF);
-	Dest[36] = (unsigned char) ((bmpSize >> 16) & 0xFF);
-	Dest[37] = (unsigned char) ((bmpSize >> 24) & 0xFF);
-	
-	Dest[38] = Dest[42] = 0xC4;
-	Dest[39] = Dest[43] = 0x0E;
-	Dest[40] = Dest[44] = Dest[41] = Dest[45] = 0;
-	
-	Dest[46] = Dest[47] = Dest[48] = Dest[49] = 0;
-	Dest[50] = Dest[51] = Dest[52] = Dest[53] = 0;
+	cpu_to_le32_ucptr(&Dest[2], bmpSize); // Size of the bitmap.
+	cpu_to_le16_ucptr(&Dest[6], 0); // Reserved.
+	cpu_to_le16_ucptr(&Dest[8], 0); // Reserved.
+	cpu_to_le32_ucptr(&Dest[10], 54); // Bitmap is located 54 bytes from the start of the file.
+	cpu_to_le32_ucptr(&Dest[14], 40); // Size of the bitmap header, in bytes. (lol win32)
+	cpu_to_le32_ucptr(&Dest[18], w); // Width (pixels)
+	cpu_to_le32_ucptr(&Dest[22], h); // Height (pixels)
+	cpu_to_le16_ucptr(&Dest[26], 1); // Number of planes. (always 1)
+	cpu_to_le16_ucptr(&Dest[28], 24); // bpp (24-bit is the most common.)
+	cpu_to_le32_ucptr(&Dest[30], 0); // Compression. (0 == no compression)
+	cpu_to_le32_ucptr(&Dest[34], bmpSize); // Size of the bitmap data, in bytes.
+	cpu_to_le32_ucptr(&Dest[38], 0x0EC4); // Pixels per meter, X
+	cpu_to_le32_ucptr(&Dest[39], 0x0EC4); // Pixels per meter, Y
+	cpu_to_le32_ucptr(&Dest[46], 0); // Colors used (0 on non-paletted bitmaps)
+	cpu_to_le32_ucptr(&Dest[50], 0); // "Important" colors (0 on non-paletted bitmaps)
 	
 	// Start/end coordinates in the MD_Screen buffer.
 	// 320x224: start = 8, end = 328
