@@ -19,7 +19,7 @@ void Blit_2x_Scanline_Int_16_asm(unsigned char *screen, int pitch, int x, int y,
 void Blit_2x_Scanline_Int_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
 
 void Blit_2x_Scanline_50_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
-void Blit_Scanline_50_Int_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
+void Blit_2x_Scanline_50_Int_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
 
 void Blit_2x_Scanline_25_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit_Scanline_25_Int_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
