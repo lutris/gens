@@ -20,9 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <string.h>
 #include "color_adjust_window.h"
 #include "color_adjust_window_callbacks.h"
+#include "color_adjust_window_misc.h"
 
 #include "gtk-misc.h"
 

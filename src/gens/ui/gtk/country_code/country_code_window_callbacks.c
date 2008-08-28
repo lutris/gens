@@ -21,11 +21,12 @@
  ***************************************************************************/
 
 #include <string.h>
+
 #include "country_code_window.h"
 #include "country_code_window_callbacks.h"
+#include "country_code_window_misc.h"
 
 #include "gtk-misc.h"
-#include "gens.h"
 
 
 /**

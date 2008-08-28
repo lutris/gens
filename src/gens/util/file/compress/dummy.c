@@ -23,8 +23,8 @@
 // This compression handler doesn't actually do any decompression.
 // Its purpose is to simplify the code in other parts of the program.
 
-#include <zlib.h>
 #include "compress.h"
+#include <string.h>
 
 /**
  * Dummy_Detect_Format(): Returns 1. All files can be handled by this module.
@@ -44,7 +44,6 @@ int Dummy_Detect_Format(FILE *f)
  */
 int Dummy_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo)
 {
-	int filesize;
 	FILE *f;
 	
 	// Both parameters must be specified.

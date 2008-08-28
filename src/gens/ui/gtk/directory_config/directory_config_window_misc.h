@@ -29,7 +29,7 @@ extern "C" {
 
 #include <gtk/gtk.h>
 
-void Open_BIOS_Misc_Files(void);
+void Open_Directory_Config(void);
 void Directory_Config_Change(int dir);
 void Directory_Config_Save(void);
 

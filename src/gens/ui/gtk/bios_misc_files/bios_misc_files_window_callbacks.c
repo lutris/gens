@@ -20,7 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <string.h>
 #include "bios_misc_files_window.h"
 #include "bios_misc_files_window_callbacks.h"
 #include "bios_misc_files_window_misc.h"

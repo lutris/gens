@@ -3,6 +3,7 @@
 #include <string.h>
 #include "g_main.h"
 #include "g_md.h"
+#include "g_32x.h"
 #include "g_input.h"
 #include "misc.h"
 #include "gens.h"
