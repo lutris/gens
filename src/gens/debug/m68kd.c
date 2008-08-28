@@ -130,80 +130,25 @@ char* Make_Dbg_Size_Str_2(int Size)
 	return Dbg_Size_Str;
 }
 
-char *
-Make_Dbg_Cond_Str (int Cond)
+
+char* Make_Dbg_Cond_Str(int Cond)
 {
-  Dbg_Cond_Str[2] = 0;
-  sprintf (Dbg_Cond_Str, "??");
-
-  switch (Cond)
-    {
-    case 0:
-      sprintf (Dbg_Cond_Str, "Tr");
-      break;
-
-    case 1:
-      sprintf (Dbg_Cond_Str, "Fa");
-      break;
-
-    case 2:
-      sprintf (Dbg_Cond_Str, "HI");
-      break;
-
-    case 3:
-      sprintf (Dbg_Cond_Str, "LS");
-      break;
-
-    case 4:
-      sprintf (Dbg_Cond_Str, "CC");
-      break;
-
-    case 5:
-      sprintf (Dbg_Cond_Str, "CS");
-      break;
-
-    case 6:
-      sprintf (Dbg_Cond_Str, "NE");
-      break;
-
-    case 7:
-      sprintf (Dbg_Cond_Str, "EQ");
-      break;
-
-    case 8:
-      sprintf (Dbg_Cond_Str, "VC");
-      break;
-
-    case 9:
-      sprintf (Dbg_Cond_Str, "VS");
-      break;
-
-    case 10:
-      sprintf (Dbg_Cond_Str, "PL");
-      break;
-
-    case 11:
-      sprintf (Dbg_Cond_Str, "MI");
-      break;
-
-    case 12:
-      sprintf (Dbg_Cond_Str, "GE");
-      break;
-
-    case 13:
-      sprintf (Dbg_Cond_Str, "LT");
-      break;
-
-    case 14:
-      sprintf (Dbg_Cond_Str, "GT");
-      break;
-
-    case 15:
-      sprintf (Dbg_Cond_Str, "LE");
-      break;
-    }
-
-  return (Dbg_Cond_Str);
+	const char* Conditions[] =
+	{
+		"Tr", "Fa", "HI", "LS",
+		"CC", "CS", "NE", "EQ",
+		"VC", "VS", "PL", "MI",
+		"GE", "LT", "GT", "LE",
+	};
+	
+	if (Cond < 0 || Cond > 15)
+	{
+		strcpy(Dbg_Cond_Str, "??");
+		return Dbg_Cond_Str;
+	}
+	
+	strcpy(Dbg_Cond_Str, Conditions[Cond]);
+	return Dbg_Cond_Str;
 }
 
 
