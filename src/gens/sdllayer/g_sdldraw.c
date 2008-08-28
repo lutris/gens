@@ -68,8 +68,9 @@ float v_stretch = 0;
 
 int Dep = 0,Old_Dep=0;
 
-// Current border color. (16-bit)
+// Current border color.
 unsigned short BorderColor_16B = 0x0000;
+unsigned int BorderColor_32B = 0x00000000;
 
 static char Info_String[1024] = "";
 static int Message_Showed = 0;
@@ -511,7 +512,7 @@ static void Flip_SDL()
 	// Draw the border.
 	// TODO: Make this more accurate and/or more efficient.
 	// In particular, it only works for 1x and 2x rendering.
-	if (BorderColor_16B != MD_Palette[0])
+	if (!Bits32 && (BorderColor_16B != MD_Palette[0]))
 	{
 		BorderColor_16B = MD_Palette[0];
 		if (VDP_Num_Vis_Lines < 240)
@@ -543,6 +544,40 @@ static void Flip_SDL()
 			SDL_FillRect(screen, &border, BorderColor_16B);
 			border.x = screen->w - border.w;
 			SDL_FillRect(screen, &border, BorderColor_16B);
+		}
+	}
+	else if (Bits32 && (BorderColor_32B != MD_Palette32[0]))
+	{
+		BorderColor_32B = MD_Palette32[0];
+		if (VDP_Num_Vis_Lines < 240)
+		{
+			// Top/Bottom borders.
+			border.x = 0; border.w = screen->w;
+			border.h = 240 - VDP_Num_Vis_Lines;
+			if (screen->h == 240)
+				border.h >>= 1;
+			border.y = 0;
+			SDL_FillRect(screen, &border, BorderColor_32B);
+			border.y = screen->h - border.h;
+			SDL_FillRect(screen, &border, BorderColor_32B);
+		}
+		if (Dep > 0)
+		{
+			// Left/Right borders.
+			if (border.h != 0)
+			{
+				border.y = 0;
+				border.h = 240 - border.h;
+			}
+			
+			border.x = 0; border.h = screen->h;
+			border.w = Dep;
+			if (screen->w == 320)
+				border.w >>= 1;
+			border.y = 0;
+			SDL_FillRect(screen, &border, BorderColor_32B);
+			border.x = screen->w - border.w;
+			SDL_FillRect(screen, &border, BorderColor_32B);
 		}
 	}
 	
@@ -1052,6 +1087,7 @@ void Refresh_Video(void)
 {
 	// Reset the border color to make sure it's redrawn.
 	BorderColor_16B = ~MD_Palette[0];
+	BorderColor_32B = ~MD_Palette32[0];
 	
 	End_DDraw();
 	Init_DDraw();
