@@ -11,106 +11,92 @@ static unsigned short (*Next_Word) ();
 static unsigned int (*Next_Long) ();
 
 
-char *
-Make_Dbg_EA_Str (int Size, int EA_Num, int Reg_Num)
+char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 {
-  int i;
-  Dbg_EA_Str[15] = 0;
-
-  switch (EA_Num)
-    {
-    case 0:
-      // 000 rrr  Dr
-      sprintf (Dbg_EA_Str, "D%.1d%c", Reg_Num, 0);
-      break;
-
-    case 1:
-      // 001 rrr  Ar
-      sprintf (Dbg_EA_Str, "A%.1d%c", Reg_Num, 0);
-      break;
-
-    case 2:
-      // 010 rrr  (Ar)
-      sprintf (Dbg_EA_Str, "(A%.1d)%c", Reg_Num, 0);
-      break;
-
-    case 3:
-      // 011 rrr  (Ar)+
-      sprintf (Dbg_EA_Str, "(A%.1d)+%c", Reg_Num, 0);
-      break;
-
-    case 4:
-      // 100 rrr  -(Ar)
-      sprintf (Dbg_EA_Str, "-(A%.1d)%c", Reg_Num, 0);
-      break;
-
-    case 5:
-      // 101 rrr  d16(Ar)     dddddddd dddddddd
-      sprintf (Dbg_EA_Str, "$%.4X(A%.1d)%c", Next_Word (), Reg_Num, 0);
-      break;
-
-    case 6:
-      // 110 rrr  d8(Ar,ix)   aiiizcc0 dddddddd
-      i = Next_Word () & 0xFFFF;
-      if (i & 0x8000)
-	sprintf (Dbg_EA_Str, "$%.2X(A%.1d,A%.1d)%c", i & 0xFF, Reg_Num,
-		 (i >> 12) & 0x7, 0);
-      else
-	sprintf (Dbg_EA_Str, "$%.2X(A%.1d,D%.1d)%c", i & 0xFF, Reg_Num,
-		 (i >> 12) & 0x7, 0);
-      break;
-
-    case 7:
-      switch (Reg_Num)
+	int i;
+	Dbg_EA_Str[15] = 0;
+	
+	switch (EA_Num)
 	{
-	case 0:
-	  // 111 000  addr16      dddddddd dddddddd
-	  sprintf (Dbg_EA_Str, "($%.4X)%c", Next_Word (), 0);
-	  break;
-
-	case 1:
-	  // 111 001  addr32      dddddddd dddddddd ddddddddd dddddddd
-	  sprintf (Dbg_EA_Str, "($%.8X)%c", Next_Long (), 0);
-	  break;
-
-	case 2:
-	  // 111 010  d16(PC)     dddddddd dddddddd
-	  sprintf (Dbg_EA_Str, "$%.4X(PC)%c", Next_Word (), 0);
-	  break;
-
-	case 3:
-	  // 111 011  d8(PC,ix)   aiiiz000 dddddddd
-	  i = Next_Word () & 0xFFFF;
-	  if (i & 0x8000)
-	    sprintf (Dbg_EA_Str, "$%.2X(PC,A%.1d)%c", i & 0xFF,
-		     (i >> 12) & 0x7, 0);
-	  else
-	    sprintf (Dbg_EA_Str, "$%.2X(PC,D%.1d)%c", i & 0xFF,
-		     (i >> 12) & 0x7, 0);
-	  break;
-
-	case 4:
-	  // 111 100  imm/implied
-	  switch (Size)
-	    {
-	    case 0:
-	      sprintf (Dbg_EA_Str, "#$%.2X%c", Next_Word () & 0xFF, 0);
-	      break;
-
-	    case 1:
-	      sprintf (Dbg_EA_Str, "#$%.4X%c", Next_Word (), 0);
-	      break;
-
-	    case 2:
-	      sprintf (Dbg_EA_Str, "#$%.8X%c", Next_Long (), 0);
-	      break;
-	    }
-	  break;
+		case 0:
+			// 000 rrr  Dr
+			sprintf(Dbg_EA_Str, "D%.1d%c", Reg_Num, 0);
+			break;
+		case 1:
+			// 001 rrr  Ar
+			sprintf(Dbg_EA_Str, "A%.1d%c", Reg_Num, 0);
+			break;
+		case 2:
+			// 010 rrr  (Ar)
+			sprintf(Dbg_EA_Str, "(A%.1d)%c", Reg_Num, 0);
+			break;
+		case 3:
+			// 011 rrr  (Ar)+
+			sprintf(Dbg_EA_Str, "(A%.1d)+%c", Reg_Num, 0);
+			break;
+		case 4:
+			// 100 rrr  -(Ar)
+			sprintf(Dbg_EA_Str, "-(A%.1d)%c", Reg_Num, 0);
+			break;
+		case 5:
+			// 101 rrr  d16(Ar)     dddddddd dddddddd
+			sprintf(Dbg_EA_Str, "$%.4X(A%.1d)%c", Next_Word(), Reg_Num, 0);
+			break;
+		case 6:
+			// 110 rrr  d8(Ar,ix)   aiiizcc0 dddddddd
+			i = Next_Word () & 0xFFFF;
+			if (i & 0x8000)
+				sprintf(Dbg_EA_Str, "$%.2X(A%.1d,A%.1d)%c", i & 0xFF, Reg_Num,
+					(i >> 12) & 0x7, 0);
+			else
+				sprintf(Dbg_EA_Str, "$%.2X(A%.1d,D%.1d)%c", i & 0xFF, Reg_Num,
+					(i >> 12) & 0x7, 0);
+			break;
+		case 7:
+			switch (Reg_Num)
+			{
+				case 0:
+					// 111 000  addr16      dddddddd dddddddd
+					sprintf(Dbg_EA_Str, "($%.4X)%c", Next_Word(), 0);
+					break;
+				case 1:
+					// 111 001  addr32      dddddddd dddddddd ddddddddd dddddddd
+					sprintf(Dbg_EA_Str, "($%.8X)%c", Next_Long(), 0);
+					break;
+				case 2:
+					// 111 010  d16(PC)     dddddddd dddddddd
+					sprintf(Dbg_EA_Str, "$%.4X(PC)%c", Next_Word(), 0);
+					break;
+				case 3:
+					// 111 011  d8(PC,ix)   aiiiz000 dddddddd
+					i = Next_Word() & 0xFFFF;
+					if (i & 0x8000)
+						sprintf(Dbg_EA_Str, "$%.2X(PC,A%.1d)%c", i & 0xFF,
+							(i >> 12) & 0x7, 0);
+					else
+						sprintf(Dbg_EA_Str, "$%.2X(PC,D%.1d)%c", i & 0xFF,
+							(i >> 12) & 0x7, 0);
+					break;
+				case 4:
+					// 111 100  imm/implied
+					switch (Size)
+					{
+						case 0:
+							sprintf(Dbg_EA_Str, "#$%.2X%c", Next_Word () & 0xFF, 0);
+							break;
+						case 1:
+							sprintf(Dbg_EA_Str, "#$%.4X%c", Next_Word (), 0);
+							break;
+						case 2:
+							sprintf(Dbg_EA_Str, "#$%.8X%c", Next_Long (), 0);
+							break;
+					}
+					break;
+			}
+			break;
 	}
-      break;
-    }
-
-  return (Dbg_EA_Str);
+	
+	return Dbg_EA_Str;
 }
 
 
