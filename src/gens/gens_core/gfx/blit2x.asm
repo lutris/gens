@@ -31,10 +31,10 @@ section .data align=64
 	extern Mode_555
 
 
-section .bss align=64
-
-
 section .text align=64
+
+
+	ALIGN64
 
 	;************************************************************************
 	; void Blit_2x_16_asm(unsigned char *Dest, int pitch, int x, int y, int offset)
