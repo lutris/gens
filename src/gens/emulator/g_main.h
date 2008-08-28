@@ -23,7 +23,7 @@ extern "C" {
 
 // GENS Path Names
 #define GENS_PATH_MAX 1024
-struct PathNames_t
+struct Gens_PathNames_t
 {
 	char Start_Rom[GENS_PATH_MAX];
 	char Gens_Path[GENS_PATH_MAX];
@@ -48,7 +48,7 @@ struct Gens_VideoSettings_t
 
 struct Gens_Settings_t
 {
-	struct PathNames_t PathNames;
+	struct Gens_PathNames_t PathNames;
 };
 
 
