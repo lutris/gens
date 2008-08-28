@@ -123,8 +123,9 @@ gens_SOURCES = \
 		gens_core/gfx/blit1x.c \
 		gens_core/gfx/blit2x.c \
 		gens_core/gfx/scale2x.c \
-		gens_core/gfx/hqfilters.c \
+		gens_core/gfx/hq2x_funcs.c \
 		gens_core/gfx/hq2x16.asm \
+		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.asm \
 		gens_core/vdp/vdp_io.asm \
@@ -224,6 +225,7 @@ noinst_HEADERS = \
 		$(gens_x86_asm_h) \
 		gens_core/gfx/blit.h \
 		gens_core/gfx/gfx_cd.h \
+		gens_core/gfx/renderers.h \
 		gens_core/io/io.h \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \

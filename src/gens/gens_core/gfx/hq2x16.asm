@@ -33,7 +33,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;GLOBAL _hq2x_16
-GLOBAL _Blit_HQ2x
+GLOBAL _Blit_HQ2x_16_asm
 
 EXTERN _LUT16to32
 EXTERN _RGBtoYUV
@@ -487,9 +487,9 @@ offset       equ  24 ;28
 
 	extern MD_Screen
 
-; void Blit_HQ2x(unsigned char *Dest, int pitch, int x, int y, int offset);
+; void Blit_HQ2x_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);
 ;_hq2x_16:
-_Blit_HQ2x:
+_Blit_HQ2x_16_asm:
     push ebp
     mov ebp,esp
     pushad
