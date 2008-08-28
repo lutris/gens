@@ -14,7 +14,6 @@ static unsigned int (*Next_Long) ();
 char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 {
 	int i;
-	Dbg_EA_Str[15] = 0;
 	
 	// printf format strings for EA_Num types 0-4
 	const char* EAStr_0_4[] =
@@ -81,33 +80,38 @@ char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 				break;
 		}
 	}
+	else
+	{
+		// Unknown.
+		Dbg_EA_Str[0] = 0;
+	}
 	
 	return Dbg_EA_Str;
 }
 
 
-char *
-Make_Dbg_Size_Str (int Size)
+char* Make_Dbg_Size_Str(int Size)
 {
-  Dbg_Size_Str[2] = 0;
-  sprintf (Dbg_Size_Str, ".?");
-
-  switch (Size)
-    {
-    case 0:
-      sprintf (Dbg_Size_Str, ".B");
-      break;
-
-    case 1:
-      sprintf (Dbg_Size_Str, ".W");
-      break;
-
-    case 2:
-      sprintf (Dbg_Size_Str, ".L");
-      break;
-    }
-
-  return (Dbg_Size_Str);
+	Dbg_Size_Str[2] = 0;
+	sprintf (Dbg_Size_Str, ".?");
+	
+	switch (Size)
+	{
+		case 0:
+			strcpy(Dbg_Size_Str, ".B");
+			break;
+		case 1:
+			strcpy(Dbg_Size_Str, ".W");
+			break;
+		case 2:
+			strcpy(Dbg_Size_Str, ".L");
+			break;
+		default:
+			strcpy(Dbg_Size_Str, ".?");
+			break;
+	}
+	
+	return Dbg_Size_Str;
 }
 
 
