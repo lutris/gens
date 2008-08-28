@@ -132,7 +132,7 @@ int Save_Shot(void)
 	
 	if (Dest)
 	{
-		free (Dest);
+		free(Dest);
 		Dest = NULL;
 	}
 	
