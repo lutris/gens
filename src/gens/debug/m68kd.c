@@ -92,9 +92,6 @@ char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 
 char* Make_Dbg_Size_Str(int Size)
 {
-	Dbg_Size_Str[2] = 0;
-	sprintf (Dbg_Size_Str, ".?");
-	
 	switch (Size)
 	{
 		case 0:
@@ -115,24 +112,22 @@ char* Make_Dbg_Size_Str(int Size)
 }
 
 
-char *
-Make_Dbg_Size_Str_2 (int Size)
+char* Make_Dbg_Size_Str_2(int Size)
 {
-  Dbg_Size_Str[2] = 0;
-  sprintf (Dbg_Size_Str, ".?");
-
-  switch (Size)
-    {
-    case 0:
-      sprintf (Dbg_Size_Str, ".W");
-      break;
-
-    case 1:
-      sprintf (Dbg_Size_Str, ".L");
-      break;
-    }
-
-  return (Dbg_Size_Str);
+	switch (Size)
+	{
+		case 0:
+			strcpy(Dbg_Size_Str, ".W");
+			break;
+		case 1:
+			strcpy(Dbg_Size_Str, ".L");
+			break;
+		default:
+			strcpy(Dbg_Size_Str, ".?");
+			break;
+	}
+	
+	return Dbg_Size_Str;
 }
 
 char *
