@@ -48,6 +48,9 @@ static void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int 
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;
 	
+	// Use an unsigned short* to make things easier.
+	unsigned short *dst = (unsigned short*)screen;
+	
 	ScrAdd = offset >> 1;
 	ScrWdth = x + ScrAdd;
 	
@@ -59,7 +62,7 @@ static void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int 
 		E = MD_Screen[SrcOffs - 1];
 		F = MD_Screen[SrcOffs];
 		
-		DstOffs = i * pitch * 2;
+		DstOffs = i * pitch;
 		
 		for (j = 0; j < x; j++)
 		{
@@ -72,23 +75,14 @@ static void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int 
 			E2 = D == H && D != B && H != F ? D : E;
 			E3 = H == F && D != H && B != F ? F : E;
 			
-			// E0
-			screen[DstOffs + 0] = (unsigned char)(E0 & 0xFF);
-			screen[DstOffs + 1] = (unsigned char)(E0 >> 8);
+			// Copy the new pixels.
+			dst[DstOffs + 0] = E0;
+			dst[DstOffs + 1] = E1;
+			dst[DstOffs + (pitch / 2) + 0] = E2;
+			dst[DstOffs + (pitch / 2) + 1] = E3;
 			
-			// E1
-			screen[DstOffs + 2] = (unsigned char)(E1 & 0xFF);
-			screen[DstOffs + 3] = (unsigned char)(E1 >> 8);
-			
-			// E2
-			screen[DstOffs + pitch + 0] = (unsigned char)(E2 & 0xFF);
-			screen[DstOffs + pitch + 1] = (unsigned char)(E2 >> 8);
-			
-			// E3
-			screen[DstOffs + pitch + 2] = (unsigned char)(E3 & 0xFF);
-			screen[DstOffs + pitch + 3] = (unsigned char)(E3 >> 8);
-			
-			DstOffs += 4;
+			// Next group of pixels.
+			DstOffs += 2;
 		}
 		
 		SrcOffs += ScrAdd;
@@ -117,6 +111,9 @@ static void Blit_Scale2x_32(unsigned char *screen, int pitch, int x, int y, int 
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;
 	
+	// Use an unsigned int* to make things easier.
+	unsigned int *dst = (unsigned int*)screen;
+	
 	ScrAdd = offset >> 1;
 	ScrWdth = x + ScrAdd;
 	
@@ -128,7 +125,7 @@ static void Blit_Scale2x_32(unsigned char *screen, int pitch, int x, int y, int 
 		E = MD_Screen32[SrcOffs - 1];
 		F = MD_Screen32[SrcOffs];
 		
-		DstOffs = i * pitch * 2;
+		DstOffs = i * (pitch / 2);
 		
 		for (j = 0; j < x; j++)
 		{
@@ -141,12 +138,14 @@ static void Blit_Scale2x_32(unsigned char *screen, int pitch, int x, int y, int 
 			E2 = D == H && D != B && H != F ? D : E;
 			E3 = H == F && D != H && B != F ? F : E;
 			
-			cpu_to_le32_ucptr(&screen[DstOffs], E0);
-			cpu_to_le32_ucptr(&screen[DstOffs + 4], E1);
-			cpu_to_le32_ucptr(&screen[DstOffs + pitch + 0], E2);
-			cpu_to_le32_ucptr(&screen[DstOffs + pitch + 4], E3);
+			// Copy the new pixels.
+			dst[DstOffs + 0] = E0;
+			dst[DstOffs + 1] = E1;
+			dst[DstOffs + (pitch / 4) + 0] = E2;
+			dst[DstOffs + (pitch / 4) + 1] = E3;
 			
-			DstOffs += 8;
+			// Next group of pixels.
+			DstOffs += 2;
 		}
 		
 		SrcOffs += ScrAdd;
