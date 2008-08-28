@@ -41,6 +41,7 @@
 
 // GENS Settings struct
 struct GENS_Settings_t Settings;
+struct VideoSettings_t Video;
 
 int fast_forward = 0;
 
