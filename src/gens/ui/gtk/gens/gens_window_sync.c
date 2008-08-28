@@ -20,6 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "gens_window.h"
 #include "gens_window_sync.h"
@@ -40,7 +43,6 @@
 #include "pwm.h"
 #include "cd_sys.h"
 #include "gym.h"
-
 
 /**
  * Sync_Gens_Window(): Synchronize the GENS Main Window.

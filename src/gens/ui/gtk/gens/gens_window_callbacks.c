@@ -20,6 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "gens.h"
 #include "g_main.h"
@@ -55,7 +58,6 @@
 
 // 32X
 #include "sh2.h"
-
 
 // For some reason, these aren't extern'd anywhere...
 void main68k_reset();

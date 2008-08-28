@@ -23,6 +23,10 @@
 #ifndef GTK_GENS_WINDOW_H
 #define GTK_GENS_WINDOW_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

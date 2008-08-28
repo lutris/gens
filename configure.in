@@ -47,6 +47,11 @@ dnl	fi
 	AC_MSG_ERROR([*** nasm not found!])
  fi
  
+AC_ARG_ENABLE(debugger, AC_HELP_STRING([--enable-debugger], [Enable the built-in debugger [[default=yes]]]), enable_debugger=$enableval, enable_debugger=yes)
+if test x$enable_debugger = xyes; then
+	AC_DEFINE(GENS_DEBUG, 1, Enable the built-in debugger)
+fi
+
 AC_ARG_WITH(png, AC_HELP_STRING([--without-opengl], [Build without OpenGL support [[default=no]]]), with_opengl=$withval, with_opengl=yes)
 if test x$with_opengl = xyes; then
 AC_MSG_CHECKING(for OpenGL support)
