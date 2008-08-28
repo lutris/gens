@@ -25,11 +25,6 @@ nasm -O1 -D __GCC2 -f elf \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-%.o: %.asm
-	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
-	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
-	$(NASM) $< -o $@
-
 INCLUDES = \
 -I@srcdir@/gens_core/cpu/68k -I@srcdir@/gens_core/cpu/sh2 -I@srcdir@/gens_core/cpu/z80 \
 -I@srcdir@/gens_core/sound -I@srcdir@/gens_core/mem -I@srcdir@/gens_core/misc -I@srcdir@/gens_core/gfx \
@@ -40,12 +35,30 @@ INCLUDES = \
 -I@srcdir@/../mp3_dec \
 -I@srcdir@/../ -I@srcdir@
 
+%.o: %.asm
+	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
+	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
+	$(NASM) $< -o $@
+
+if GENS_DEBUG
+gens_debug_src = \
+	debug/debug.c \
+	debug/m68kd.c \
+	debug/sh2d.c \
+	debug/z80dis.c
+gens_debug_h = \
+	debug/debug.h \
+	debug/m68kd.h \
+	debug/sh2d.h \
+	debug/z80dis.h
+else
+gens_debug_src =
+gens_debug_h =
+endif
+
 bin_PROGRAMS = gens
 gens_SOURCES = \
-		debug/debug.c \
-		debug/m68kd.c \
-		debug/sh2d.c \
-		debug/z80dis.c \
+		$(gens_debug_src) \
 		emulator/gens.c \
 		emulator/g_main.c \
 		emulator/g_main_linux.c \
@@ -146,10 +159,7 @@ gens_SOURCES = \
 ##		netplay/ccnet.h
 
 noinst_HEADERS = \
-		debug/debug.h \
-		debug/m68kd.h \
-		debug/sh2d.h \
-		debug/z80dis.h \
+		$(gens_debug_h) \
 		emulator/gens.h \
 		emulator/g_main.h \
 		emulator/g_main_linux.h \
