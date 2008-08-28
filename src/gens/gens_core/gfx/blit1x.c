@@ -2,16 +2,19 @@
 #include <config.h>
 #endif
 
+#include <string.h>
 #include "vdp_rend.h"
 #include "blit.h"
 #include "byteswap.h"
-#include <string.h>
+#include "misc.h"
 
 
 extern unsigned char Bits32;
 
 
+#ifndef GENS_X86_ASM
 static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset);
+#endif
 static void Blit_1x_32(unsigned char *Dest, int pitch, int x, int y, int offset);
 
 
@@ -43,6 +46,7 @@ void Blit_1x(unsigned char *Dest, int pitch, int x, int y, int offset)
 }
 
 
+#ifndef GENS_X86_ASM
 /**
  * Blit_1x_16(): (16-bit) Blits the image to the screen, with no scaling.
  * @param Dest Destination buffer.
@@ -75,6 +79,7 @@ static void Blit_1x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 		SrcOffs += 336;
 	}
 }
+#endif
 
 
 /**

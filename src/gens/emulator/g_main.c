@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
 	Init_GameGenie();
 	
 	// TODO: Get 32-bit color working.
-	Bits32 = 1;
+	Bits32 = 0;
 	
 	//char sdlbuf[32];
 	

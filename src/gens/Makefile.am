@@ -2,9 +2,21 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+if GENS_X86_ASM
+gens_x86_asm_o = \
+		gens_core/gfx/blit1x.o
+gens_x86_asm_src = \
+		gens_core/gfx/blit1x.asm
+gens_x86_asm_h =
+else
+gens_x86_asm_o =
+gens_x86_asm_src =
+gens_x86_asm_h =
+endif
+
 ASMFILES = \
+		$(gens_x86_asm_o) \
 		gens_core/gfx/blit.o \
-		gens_core/gfx/blit1x.o \
 		gens_core/gfx/hq2x16.o \
 		gens_core/gfx/gfx_cd.o \
 		gens_core/io/io.o \
@@ -90,8 +102,8 @@ gens_SOURCES = \
 		gens_core/mem/mem_m68k_cd.inc \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
+		$(gens_x86_asm_src) \
 		gens_core/gfx/blit.asm \
-		gens_core/gfx/blit1x.asm \
 		gens_core/gfx/blit1x.c \
 		gens_core/gfx/scale2x.c \
 		gens_core/gfx/hqfilters.c \
@@ -192,6 +204,7 @@ noinst_HEADERS = \
 		gens_core/mem/mem_z80.h \
 		gens_core/misc/byteswap.h \
 		gens_core/misc/misc.h \
+		$(gens_x86_asm_h) \
 		gens_core/gfx/blit.h \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
