@@ -576,7 +576,7 @@ Rom *Load_SegaCD_BIOS(const char *filename)
 Rom *Load_ROM(const char *filename, const int interleaved)
 {
 	FILE *ROM_File;
-	struct COMPRESS_FileInfo_t fileInfo;
+	struct COMPRESS_FileInfo_t *fileInfo;
 	int cmp = 0;
 	
 	//SetCurrentDirectory (Gens_Path);
@@ -610,20 +610,24 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		return NULL;
 	}
 	
-	// Compression handler found.
+	// Compression handler found. Get the file info.
 	
-	// Get information about the first file in the archive.
-	if (!CompressMethods[cmp].get_first_file_info(filename, &fileInfo))
+	// TODO: If more than one file is present, show a dialog.
+	// For now, just load the first file.
+	fileInfo = CompressMethods[cmp].get_file_info(filename);
+	if (!fileInfo)
 	{
 		// Error loading the ROM and/or archive.
+		// TODO: Show an error message.
 		Game = NULL;
 		return NULL;
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if (fileInfo.filesize > ((6 * 1024 * 1024) + 512))
+	if (fileInfo->filesize > ((6 * 1024 * 1024) + 512))
 	{
 		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
+		COMPRESS_FileInfo_Free(fileInfo);
 		//fclose(ROM_File);
 		Game = NULL;
 		return NULL;
@@ -633,6 +637,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (!My_Rom)
 	{
 		// Memory allocation error
+		COMPRESS_FileInfo_Free(fileInfo);
 		//fclose(ROM_File);
 		Game = NULL;
 		return NULL;
@@ -641,10 +646,11 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	if (CompressMethods[cmp].get_file(filename, &fileInfo, Rom_Data, fileInfo.filesize) <= 0)
+	if (CompressMethods[cmp].get_file(filename, fileInfo, Rom_Data, fileInfo->filesize) <= 0)
 	{
 		// Error loading the ROM.
 		free(My_Rom);
+		COMPRESS_FileInfo_Free(fileInfo);
 		My_Rom = NULL;
 		Game = NULL;
 		return NULL;		
@@ -652,7 +658,10 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	//fclose(ROM_File);
 	
 	Update_Rom_Name(filename);
-	Rom_Size = fileInfo.filesize;
+	Rom_Size = fileInfo->filesize;
+	
+	// The fileInfo list is no longer needed.
+	COMPRESS_FileInfo_Free(fileInfo);
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)
