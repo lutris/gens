@@ -101,9 +101,9 @@ int Set_Render(int FullScreen, int Mode, int Force)
 
 		case DOUBLE:
 			*Rend = DOUBLE;
-			if (Have_MMX) *Blit = Blit_X2_MMX;
-			else *Blit = Blit_X2;
-			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500)
+			if (Have_MMX) *Blit = Blit_2x_16_asm_MMX;
+			else *Blit = Blit_2x_16_asm;
+			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500);
 			break;
 
 		case INTERPOLATED:
@@ -192,8 +192,8 @@ int Set_Render(int FullScreen, int Mode, int Force)
 			
 		default:
 			*Rend = DOUBLE;
-			if (Have_MMX) *Blit = Blit_X2_MMX;
-			else *Blit = Blit_X2;
+			if (Have_MMX) *Blit = Blit_2x_16_asm_MMX;
+			else *Blit = Blit_2x_16_asm;
 			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500)
 			break;
 	}
