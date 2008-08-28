@@ -39,13 +39,22 @@
 /**
  * Get_Zip_Select(): Opens the Zip File Selection Dialog.
  */
-struct fileInfo_t* Open_Zip_Select_Dialog(struct fileInfo_t* fip)
+struct COMPRESS_FileInfo_t* Open_Zip_Select_Dialog(struct COMPRESS_FileInfo_t* fip)
 {
 	GtkWidget *Zip, *treeview;
 	GtkCellRenderer *text_renderer;
 	GtkTreeViewColumn *col_text;
 	GtkTreeIter iter;
-	int i;
+	gint dialogResponse;
+	GtkTreeSelection *selection;
+	gboolean valid;
+	struct COMPRESS_FileInfo_t* selectedFile = NULL;
+	
+	if (!fip)
+	{
+		// NULL fileInfo_t pointer passed. Don't do anything.
+		return NULL;
+	}
 	
 	// Stores the entries in the TreeView.
 	GtkListStore *listmodel_zip = NULL;
@@ -59,37 +68,57 @@ struct fileInfo_t* Open_Zip_Select_Dialog(struct fileInfo_t* fip)
 	}
 	
 	// Populate the TreeView.
-	/*
-	treeview = lookup_widget(Zip, "treeview_country_list");
+	treeview = lookup_widget(Zip, "treeview_zip_list");
 	
-	// Check if the listmodel_country is already created.
-	// If it is, clear it; if not, create a new one.
-	if (listmodel_country)
-		gtk_list_store_clear(listmodel_country);
-	else
-		listmodel_country = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);	
+	// Create a list model.
+	listmodel_zip = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 	
 	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel_country));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel_zip));
 	
 	// Create the renderer and the columns.
 	text_renderer = gtk_cell_renderer_text_new();
 	col_text = gtk_tree_view_column_new_with_attributes("Zip", text_renderer, "text", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_text);
 	
-	// Add the country codes to the treeview in the appropriate order.
-	for (i = 0; i < 3; i++)
+	// Add all files from the fileInfo_t list.
+	while (fip)
 	{
-		gtk_list_store_append(listmodel_country, &iter);
-		gtk_list_store_set(GTK_LIST_STORE(listmodel_country), &iter,
-						  0, Zip_Code_String[Zip_Order[i]],
-						  1, Zip_Order[i], -1);
+		gtk_list_store_append(listmodel_zip, &iter);
+		gtk_list_store_set(GTK_LIST_STORE(listmodel_zip), &iter,
+				   0, fip->filename, 1, fip, -1);
+		fip = fip->next;
 	}
-	*/
 	
 	// Run the dialog.
-	printf("RESPONSE: %d\n", gtk_dialog_run(GTK_DIALOG(Zip)));
+	dialogResponse = gtk_dialog_run(GTK_DIALOG(Zip));
+	if (dialogResponse != GTK_RESPONSE_OK)
+	{
+		// No file was selected.
+		return NULL;
+	}
+	
+	// Get the selected file.
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_zip), &iter);
+	while (valid)
+	{
+		if (gtk_tree_selection_iter_is_selected(selection, &iter))
+		{
+			// Found the selected file.
+			gtk_tree_model_get(GTK_TREE_MODEL(listmodel_zip), &iter, 1, &selectedFile, -1);
+			break;
+		}
+		else
+		{
+			// Didn't find the selected file yet.
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_zip), &iter);
+		}
+	}
 	
 	// Delete the dialog.
 	gtk_widget_destroy(Zip);
+	
+	// Return the selected fileInfo_t pointer.
+	return selectedFile;
 }

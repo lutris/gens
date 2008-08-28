@@ -141,6 +141,8 @@ gens_SOURCES = \
 		ui/gtk/country_code/country_code_window.c \
 		ui/gtk/country_code/country_code_window_callbacks.c \
 		ui/gtk/country_code/country_code_window_misc.c \
+		ui/gtk/zip_select/zip_select_dialog.c \
+		ui/gtk/zip_select/zip_select_dialog_misc.c \
 		ui/gtk/about/about_window.c \
 		util/file/chd.c \
 		util/file/config_file.c \
@@ -235,6 +237,8 @@ noinst_HEADERS = \
 		ui/gtk/country_code/country_code_window.h \
 		ui/gtk/country_code/country_code_window_callbacks.h \
 		ui/gtk/country_code/country_code_window_misc.h \
+		ui/gtk/zip_select/zip_select_dialog.h \
+		ui/gtk/zip_select/zip_select_dialog_misc.h \
 		ui/gtk/about/about_window.h \
 		util/file/chd.h \
 		util/file/config_file.h \

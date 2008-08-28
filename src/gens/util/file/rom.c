@@ -28,6 +28,7 @@
 #include "byteswap.h"
 
 #include "ui-common.h"
+#include "zip_select/zip_select_dialog_misc.h"
 
 // New file compression handler.
 #include "compress/compress.h"
@@ -576,7 +577,7 @@ Rom *Load_SegaCD_BIOS(const char *filename)
 Rom *Load_ROM(const char *filename, const int interleaved)
 {
 	FILE *ROM_File;
-	struct COMPRESS_FileInfo_t *fileInfo;
+	struct COMPRESS_FileInfo_t *fip, *selFile;
 	int cmp = 0;
 	
 	//SetCurrentDirectory (Gens_Path);
@@ -614,8 +615,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// TODO: If more than one file is present, show a dialog.
 	// For now, just load the first file.
-	fileInfo = CompressMethods[cmp].get_file_info(filename);
-	if (!fileInfo)
+	fip = CompressMethods[cmp].get_file_info(filename);
+	if (!fip)
 	{
 		// Error loading the ROM and/or archive.
 		// TODO: Show an error message.
@@ -623,11 +624,17 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		return NULL;
 	}
 	
+	// If more than one file is in the archive, show the selection dialog.
+	if (fip->next)
+		selFile = Open_Zip_Select_Dialog(fip);
+	else
+		selFile = fip;
+	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if (fileInfo->filesize > ((6 * 1024 * 1024) + 512))
+	if (selFile->filesize > ((6 * 1024 * 1024) + 512))
 	{
-		UI_MsgBox("ROM files larger than 6MB are not supported.", "ROM File Error");
-		COMPRESS_FileInfo_Free(fileInfo);
+		UI_MsgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
+		COMPRESS_FileInfo_Free(fip);
 		//fclose(ROM_File);
 		Game = NULL;
 		return NULL;
@@ -637,7 +644,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (!My_Rom)
 	{
 		// Memory allocation error
-		COMPRESS_FileInfo_Free(fileInfo);
+		COMPRESS_FileInfo_Free(fip);
 		//fclose(ROM_File);
 		Game = NULL;
 		return NULL;
@@ -646,11 +653,11 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	if (CompressMethods[cmp].get_file(filename, fileInfo, Rom_Data, fileInfo->filesize) <= 0)
+	if (CompressMethods[cmp].get_file(filename, selFile, Rom_Data, selFile->filesize) <= 0)
 	{
 		// Error loading the ROM.
 		free(My_Rom);
-		COMPRESS_FileInfo_Free(fileInfo);
+		COMPRESS_FileInfo_Free(fip);
 		My_Rom = NULL;
 		Game = NULL;
 		return NULL;		
@@ -658,10 +665,10 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	//fclose(ROM_File);
 	
 	Update_Rom_Name(filename);
-	Rom_Size = fileInfo->filesize;
+	Rom_Size = fip->filesize;
 	
-	// The fileInfo list is no longer needed.
-	COMPRESS_FileInfo_Free(fileInfo);
+	// The list of COMPRESS_FileInfo_t is no longer needed.
+	COMPRESS_FileInfo_Free(fip);
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)

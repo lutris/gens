@@ -29,7 +29,7 @@ extern "C" {
 
 #include <gtk/gtk.h>
 
-struct fileInfo_t* Open_Zip_Select_Dialog(struct fileInfo_t* fip);
+struct COMPRESS_FileInfo_t* Open_Zip_Select_Dialog(struct COMPRESS_FileInfo_t* fip);
 
 #ifdef __cplusplus
 }
