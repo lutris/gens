@@ -35,9 +35,9 @@ extern unsigned char Bits32;
 
 
 #ifndef GENS_X86_ASM
-static void Blit_2x_16(unsigned char *Dest, int pitch, int x, int y, int offset);
+static void Blit_2x_16(unsigned char *screen, int pitch, int x, int y, int offset);
 #endif
-static void Blit_2x_32(unsigned char *Dest, int pitch, int x, int y, int offset);
+static void Blit_2x_32(unsigned char *screen, int pitch, int x, int y, int offset);
 
 
 /**
@@ -71,18 +71,21 @@ void Blit_2x(unsigned char *Dest, int pitch, int x, int y, int offset)
 #ifndef GENS_X86_ASM
 /**
  * Blit_2x_16(): (16-bit) Blits the image to the screen, double-sized.
- * @param Dest Destination buffer.
+ * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit_2x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
+static void Blit_2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;
+	
+	// Use an unsigned short* to make things easier.
+	unsigned short *dst = (unsigned short*)screen;
 	
 	ScrAdd = offset >> 1;
 	ScrWdth = x + ScrAdd;
@@ -92,22 +95,17 @@ static void Blit_2x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 	
 	for (i = 0; i < y; i++)
 	{
-		//DstOffs = i * pitch * 2;
-		DstOffs = i * pitch * 2;
+		DstOffs = i * pitch;
 		for (j = 0; j < x; j++)
 		{
-			Dest[DstOffs + 0] = (unsigned char)(MD_Screen[SrcOffs] & 0xFF);
-			Dest[DstOffs + 1] = (unsigned char)(MD_Screen[SrcOffs] >> 8);
-			Dest[DstOffs + 2] = (unsigned char)(MD_Screen[SrcOffs] & 0xFF);
-			Dest[DstOffs + 3] = (unsigned char)(MD_Screen[SrcOffs] >> 8);
+			dst[DstOffs + 0] = MD_Screen[SrcOffs];
+			dst[DstOffs + 1] = MD_Screen[SrcOffs];
 			
-			Dest[DstOffs + pitch + 0] = (unsigned char)(MD_Screen[SrcOffs] & 0xFF);
-			Dest[DstOffs + pitch + 1] = (unsigned char)(MD_Screen[SrcOffs] >> 8);
-			Dest[DstOffs + pitch + 2] = (unsigned char)(MD_Screen[SrcOffs] & 0xFF);
-			Dest[DstOffs + pitch + 3] = (unsigned char)(MD_Screen[SrcOffs] >> 8);
+			dst[DstOffs + (pitch / 2) + 0] = MD_Screen[SrcOffs];
+			dst[DstOffs + (pitch / 2) + 1] = MD_Screen[SrcOffs];
 			
 			SrcOffs++;
-			DstOffs += 4;
+			DstOffs += 2;
 		}
 		
 		// Next line.
@@ -125,12 +123,15 @@ static void Blit_2x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-static void Blit_2x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
+static void Blit_2x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;
+	
+	// Use an unsigned int* to make things easier.
+	unsigned int *dst = (unsigned int*)screen;
 	
 	ScrAdd = offset >> 1;
 	ScrWdth = x + ScrAdd;
@@ -140,17 +141,17 @@ static void Blit_2x_32(unsigned char *Dest, int pitch, int x, int y, int offset)
 	
 	for (i = 0; i < y; i++)
 	{
-		//DstOffs = i * pitch * 2;
-		DstOffs = i * pitch * 2;
+		DstOffs = i * (pitch / 2);
 		for (j = 0; j < x; j++)
 		{
-			cpu_to_le32_ucptr(&Dest[DstOffs + 0], MD_Screen32[SrcOffs]);
-			cpu_to_le32_ucptr(&Dest[DstOffs + 4], MD_Screen32[SrcOffs]);
-			cpu_to_le32_ucptr(&Dest[DstOffs + pitch + 0], MD_Screen32[SrcOffs]);
-			cpu_to_le32_ucptr(&Dest[DstOffs + pitch + 4], MD_Screen32[SrcOffs]);
+			dst[DstOffs + 0] = MD_Screen32[SrcOffs];
+			dst[DstOffs + 1] = MD_Screen32[SrcOffs];
+			
+			dst[DstOffs + (pitch / 4) + 0] = MD_Screen32[SrcOffs];
+			dst[DstOffs + (pitch / 4) + 1] = MD_Screen32[SrcOffs];
 			
 			SrcOffs++;
-			DstOffs += 8;
+			DstOffs += 2;
 		}
 		
 		// Next line.
