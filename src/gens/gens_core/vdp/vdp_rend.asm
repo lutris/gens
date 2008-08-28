@@ -151,6 +151,11 @@ section .bss align=64
 	DECL Bits32 ; 32-bit color (TODO: Combine this with Video.bpp)
 	resb 1
 
+	; Debugging stuff
+	; TODO: Port all debugging stuff from Gens Rerecording
+	DECL PalLock
+	resb 1
+
 section .text align=64
 
 
@@ -952,6 +957,8 @@ ALIGN4
 
 %macro UPDATE_PALETTE 1
 
+	test byte [PalLock], 1
+	jnz near %%End
 	xor eax, eax
 	mov byte [CRam_Flag], 0						; on update la palette, on remet le flag a 0 pour modified
 	mov cx, 0x7BEF
@@ -1006,7 +1013,69 @@ ALIGN4
 		add ax, cx
 		mov [MD_Palette + 0 * 2 + 128 * 2], ax
 %endif
+%%End
+%endmacro
 
+
+; %1 = Highlight/Shadow Enable
+
+%macro UPDATE_PALETTE32 1
+
+	test byte [PalLock], 1
+	jnz near %%End
+	xor eax, eax
+	mov byte [CRam_Flag], 0						; one updates the palette, one gives the flag has 0 for modified
+	mov ecx, 0x007F7F7F
+	xor edx, edx
+	mov ebx, (64 / 2) - 1								; ebx = Number of Colours
+	jmp short %%Loop32
+	ALIGN32
+
+%%Loop32
+		mov ax, [CRam + ebx * 4 + 0]					; ax = data color
+		mov dx, [CRam + ebx * 4 + 2]					; dx = data color
+		and eax, 0x0FFF
+		and edx, 0x0FFF
+		mov eax, [Palette32 + eax * 4]
+		mov edx, [Palette32 + edx * 4]
+		mov [MD_Palette32 + ebx * 8 + 0], eax				; normal color
+		mov [MD_Palette32 + ebx * 8 + 4], edx				; normal color
+
+%if %1 > 0
+		mov [MD_Palette32 + ebx * 8 + 192 * 4 + 0], eax	; normal color
+		mov [MD_Palette32 + ebx * 8 + 192 * 4 + 4], edx	; normal color
+		shr eax, 1
+		shr edx, 1
+		and eax, ecx									; one divides by 2 the components for the shadow
+		and edx, ecx									; one divides by 2 the components for the shadow
+		mov [MD_Palette32 + ebx * 8 + 64 * 4 + 0], eax	; darkened color
+		mov [MD_Palette32 + ebx * 8 + 64 * 4 + 4], edx	; darkened color
+		add eax, ecx
+		add edx, ecx
+		mov [MD_Palette32 + ebx * 8 + 128 * 4 + 0], eax	; lightened color
+		mov [MD_Palette32 + ebx * 8 + 128 * 4 + 4], edx	; lightened color
+%endif
+
+		dec ebx										; if the 64 colors were not yet made
+		jns short %%Loop32							; then one continues
+
+		mov ebx, [VDP_Reg + 7 * 4]
+		and ebx, byte 0x3F
+		mov eax, [MD_Palette32 + ebx * 4]
+		mov [MD_Palette32 + 0 * 4], eax
+
+%if %1 > 0
+		mov [MD_Palette32 + 0 * 4 + 192 * 4], eax
+		shr eax, 1
+		and eax, ecx
+		mov [MD_Palette32 + 0 * 4 + 64 * 4], eax
+		add eax, ecx
+		mov [MD_Palette32 + 0 * 4 + 128 * 4], eax
+%endif
+
+	UPDATE_PALETTE %1
+
+%%End
 %endmacro
 
 
@@ -1771,13 +1840,13 @@ ALIGN4
 		test byte [VDP_Reg + 12 * 4], 8
 		jnz near .Palette_HS
 
-		UPDATE_PALETTE 0
+		UPDATE_PALETTE32 0
 		jmp .Palette_OK
 
 	ALIGN4
 		
 	.Palette_HS
-		UPDATE_PALETTE 1
+		UPDATE_PALETTE32 1
 
 	ALIGN4
 	
@@ -1958,7 +2027,7 @@ ALIGN4
 			RENDER_LINE 0, 0
 			test byte [CRam_Flag], 1		; teste si la palette a etait modifiee
 			jz near .VDP_OK
-			UPDATE_PALETTE 0
+			UPDATE_PALETTE32 0
 			jmp .VDP_OK
 
 	ALIGN32
@@ -1967,7 +2036,7 @@ ALIGN4
 			RENDER_LINE 0, 1
 			test byte [CRam_Flag], 1		; teste si la palette a etait modifiee
 			jz near .VDP_OK
-			UPDATE_PALETTE 1
+			UPDATE_PALETTE32 1
 
 	ALIGN4
 	

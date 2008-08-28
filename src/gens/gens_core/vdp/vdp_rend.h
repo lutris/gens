@@ -13,6 +13,10 @@ extern unsigned int MD_Palette32[256];
 // TODO: Combine this with Video.bpp
 extern unsigned char Bits32;
 
+// Debugging stuff
+// TODO: Port all debugging stuff from Gens Rerecording
+extern char PalLock;
+
 extern unsigned long TAB336[336];
 
 extern struct

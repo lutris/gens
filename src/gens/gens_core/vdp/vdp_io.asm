@@ -11,14 +11,20 @@ section .data align=64
 	extern Rom_Data
 	extern Rom_Size
 	extern Cell_Conv_Tab
-	extern MD_Palette
-	extern MD_Screen
 	extern Sprite_Struct
 	extern Sprite_Visible
 	extern CPL_M68K
 	extern Cycles_M68K
 	extern _main68k_context		; Starscream context (for interrupts)
 	extern Ram_Word_State
+
+	extern MD_Palette
+	extern MD_Palette32
+	extern MD_Screen
+	extern MD_Screen32
+
+	; If set, palette is locked.
+	extern PalLock
 
 	ALIGN64
 	
@@ -335,6 +341,14 @@ section .text align=64
 		dec ecx
 		jnz .loop_MD_Screen
 
+		mov ebx, MD_Screen32
+		mov ecx, (336 * 240 / 1)
+	.loop_MD_Screen32
+		mov [ebx], eax
+		add ebx, 4
+		dec ecx
+		jnz .loop_MD_Screen32
+		
 		mov ebx, VRam
 		mov ecx, (1024 * 16)
 	.loop_VRam
@@ -359,6 +373,8 @@ section .text align=64
 		dec ecx
 		jnz .loop_VSRam
 
+		test [PalLock], byte 1
+		jnz .palette_Locked
 		mov ebx, MD_Palette
 		mov ecx, (100 / 2)
 	.loop_Palette
@@ -367,6 +383,15 @@ section .text align=64
 		dec ecx
 		jnz .loop_Palette
 
+		mov ebx, MD_Palette32
+		mov ecx, 0x100
+	.loop_Palette32
+		mov [ebx], eax
+		add ebx, 4
+		dec ecx
+		jnz .loop_Palette32
+
+	.palette_Locked
 		mov ebx, Sprite_Struct
 		mov ecx, (100 * 8)
 	.loop_Sprite_Struct
