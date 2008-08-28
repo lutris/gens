@@ -66,7 +66,7 @@ dnl               CFLAGS="$CFLAGS -D__OPENGL__"
        fi
 fi
 
-AC_ARG_WITH(png, AC_HELP_STRING([--without-png], [Build without PNG support [[default=yes]]]), with_png=$withval, with_png=yes)
+AC_ARG_WITH(png, AC_HELP_STRING([--without-png], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
 if test x$with_png = xyes; then
 AC_MSG_CHECKING(for libpng)
 	with_png=no
