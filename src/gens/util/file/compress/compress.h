@@ -70,7 +70,7 @@ typedef int (GENS_FNCALL *COMPRESS_Detect_Format)(FILE *f);
  * @param filename Filename of the archive.
  * @return Number of files, or 0 on error.
  */
-typedef int (GENS_FNCALL *COMPRESS_Get_Num_Files)(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo);
+typedef int (GENS_FNCALL *COMPRESS_Get_Num_Files)(const char *filename);
 
 /**
  * COMPRESS_Get_First_File_Info(): Gets information about the first file in the specified archive.
