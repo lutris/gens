@@ -107,9 +107,9 @@ int Set_Render(int FullScreen, int Mode, int Force)
 
 		case INTERPOLATED:
 			*Rend = INTERPOLATED;
-			if (Have_MMX) *Blit = Blit_X2_Int_MMX;
-			else *Blit = Blit_X2_Int;
-			MESSAGE_L("Render selected : INTERPOLATED", "Render selected : INTERPOLATED", 1500)
+			if (Have_MMX) *Blit = Blit_2x_Int_16_asm_MMX;
+			else *Blit = Blit_2x_Int_16_asm;
+			MESSAGE_L("Render selected : INTERPOLATED", "Render selected : INTERPOLATED", 1500);
 			break;
 
 		case FULL_SCANLINE:

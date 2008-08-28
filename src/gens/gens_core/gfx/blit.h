@@ -9,11 +9,12 @@ void Blit_2x(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit_2x_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit_2x_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
 
-void Blit_X2_Int(unsigned char *Dest, int pitch, int x, int y, int offset);
+void Blit_2x_Int_16_asm(unsigned char *Dest, int pitch, int x, int y, int offset);
+void Blit_2x_Int_16_asm_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
+
 void Blit_Scanline(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_Scanline_Int(unsigned char *Dest, int pitch, int x, int y, int offset);
 
-void Blit_X2_Int_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_Scanline_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_Scanline_Int_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
 void Blit_Scanline_50_MMX(unsigned char *Dest, int pitch, int x, int y, int offset);
