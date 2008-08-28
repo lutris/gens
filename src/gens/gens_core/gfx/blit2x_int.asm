@@ -50,7 +50,7 @@ section .text align=64
 	ALIGN64
 	
 	;*********************************************************************************
-	; void Blit_2x_Int_16_asm(unsigned char *Dest, int pitch, int x, int y, int offset)
+	; void Blit_2x_Int_16_asm(unsigned char **screen, int pitch, int x, int y, int offset)
 	DECL Blit_2x_Int_16_asm
 
 		push ebx
@@ -61,16 +61,16 @@ section .text align=64
 		push ebp
 
 		mov ecx, [esp + 36]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 32]				; ebx = pitch de la surface Dest
+		mov ebx, [esp + 32]				; ebx = pitch de la surface *screen
 		mov eax, Line1Int				; eax = offset Line 1 Int buffer
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
+		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne *screen
 		mov [Line1IntP], eax			; store first buffer addr
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		mov eax, Line2Int				; eax = offset Line 2 Int buffer
 		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 2						; on transfert 4 bytes Dest � chaque boucle
+		shr ecx, 2						; on transfert 4 bytes *screen � chaque boucle
 		mov [Line2IntP], eax			; store second buffer addr
-		mov edi, [esp + 28]				; edi = Dest
+		mov edi, [esp + 28]				; edi = *screen
 		mov [esp + 32], ebx				; on stocke compl�ment offset pour ligne suivante
 		mov [esp + 36], ecx				; on stocke cette nouvelle valeur pour X
 		mov ebp, [Line1IntP]			; ebp = First Line buffer
@@ -99,7 +99,7 @@ section .text align=64
 		dec dword [esp + 40]			; une ligne en moins
 		jz near .Last_Line
 
-		mov ecx, [esp + 36]				; on transfert 4 octects Dest par it�ration...
+		mov ecx, [esp + 36]				; on transfert 4 octects *screen par it�ration...
 		add esi, [esp + 44]				; on augmente la source pour pointer sur la prochaine ligne
 		mov ebp, [Line2IntP]			; ebp = Second Line buffer
 		mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -124,9 +124,9 @@ section .text align=64
 				mov [ebp + 2 - 4], dx
 				jnz short .Loop_X1
 
-			mov ecx, [esp + 36]				; Dest num bytes / 4
+			mov ecx, [esp + 36]				; *screen num bytes / 4
 			add esi, [esp + 44]				; on augmente la source pour pointer sur la prochaine ligne
-			shr ecx, 1						; Dest num bytes / 8
+			shr ecx, 1						; *screen num bytes / 8
 			mov ebx, [Line1IntP]			; ebx = First Line buffer
 			jmp short .Loop_X2
 
@@ -142,8 +142,8 @@ section .text align=64
 				mov [edi + 4 - 8], edx
 				jnz short .Loop_X2
 
-			mov ecx, [esp + 36]				; Dest num bytes / 4
-			add edi, [esp + 32]				; Next Dest line
+			mov ecx, [esp + 36]				; *screen num bytes / 4
+			add edi, [esp + 32]				; Next *screen line
 			mov ebx, [Line1IntP]			; ebx = First Line buffer
 			mov ebp, [Line2IntP]			; ebp = Second Line buffer
 			jmp short .Loop_X3
@@ -165,21 +165,21 @@ section .text align=64
 				mov [edi - 4], eax
 				jnz short .Loop_X3
 
-			add edi, [esp + 32]				; Next Dest line
+			add edi, [esp + 32]				; Next *screen line
 			mov ebx, [Line1IntP]			; Swap line buffer
 			mov ebp, [Line2IntP]
 			mov [Line2IntP], ebx
 			mov [Line1IntP], ebp
-			mov ecx, [esp + 36]				; on transfert 4 octects Dest par it�ration...
+			mov ecx, [esp + 36]				; on transfert 4 octects *screen par it�ration...
 			dec dword [esp + 40]			; encore des lignes ?
 			mov ebp, [Line2IntP]			; ebp = Second Line buffer
 			mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
 			jnz near .Loop_Y
 
 	.Last_Line
-		mov ecx, [esp + 36]				; Dest num bytes / 4
+		mov ecx, [esp + 36]				; *screen num bytes / 4
 		mov ebx, [Line1IntP]			; ebx = First Line buffer
-		shr ecx, 1						; Dest num bytes / 8
+		shr ecx, 1						; *screen num bytes / 8
 		jmp short .Loop_X1_LL
 
 	ALIGN4
@@ -194,10 +194,10 @@ section .text align=64
 			mov [edi + 4 - 8], edx
 			jnz short .Loop_X1_LL
 
-		add edi, [esp + 32]				; Next Dest line
-		mov ecx, [esp + 36]				; Dest num bytes / 4
+		add edi, [esp + 32]				; Next *screen line
+		mov ecx, [esp + 36]				; *screen num bytes / 4
 		mov ebx, [Line1IntP]			; ebx = First Line buffer
-		shr ecx, 1						; Dest num bytes / 8
+		shr ecx, 1						; *screen num bytes / 8
 		jmp short .Loop_X2_LL
 
 	ALIGN4
@@ -230,7 +230,7 @@ section .text align=64
 	ALIGN64
 	
 	;*********************************************************************************
-	; void Blit_2x_Int_16_asm_MMX(unsigned char *Dest, int pitch, int x, int y, int offset)
+	; void Blit_2x_Int_16_asm_MMX(unsigned char **screen, int pitch, int x, int y, int offset)
 	DECL Blit_2x_Int_16_asm_MMX
 
 		push ebx
@@ -241,16 +241,16 @@ section .text align=64
 		push ebp
 
 		mov ecx, [esp + 36]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 32]				; ebx = pitch de la surface Dest
+		mov ebx, [esp + 32]				; ebx = pitch de la surface *screen
 		mov eax, Line1Int				; eax = offset Line 1 Int buffer
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
+		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne *screen
 		mov [Line1IntP], eax			; store first buffer addr
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		mov eax, Line2Int				; eax = offset Line 2 Int buffer
 		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes Dest � chaque boucle
+		shr ecx, 4						; on transfert 16 bytes *screen � chaque boucle
 		mov [Line2IntP], eax			; store second buffer addr
-		mov edi, [esp + 28]				; edi = Dest
+		mov edi, [esp + 28]				; edi = *screen
 		mov [esp + 32], ebx				; on stocke compl�ment offset pour ligne suivante
 		mov [esp + 36], ecx				; on stocke cette nouvelle valeur pour X
 		mov ebp, [Line1IntP]			; ebp = First Line buffer
@@ -288,7 +288,7 @@ section .text align=64
 		dec dword [esp + 40]			; une ligne en moins
 		jz near .Last_Line
 
-		mov ecx, [esp + 36]				; on transfert 16 octets Dest par it�ration...
+		mov ecx, [esp + 36]				; on transfert 16 octets *screen par it�ration...
 		add esi, [esp + 44]				; on augmente la source pour pointer sur la prochaine ligne
 		mov ebp, [Line2IntP]			; ebp = Second Line buffer
 		mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -316,7 +316,7 @@ section .text align=64
 				movq [ebp + 8 - 16], mm3
 				jnz short .Loop_X1
 
-			mov ecx, [esp + 36]				; Dest num bytes / 16
+			mov ecx, [esp + 36]				; *screen num bytes / 16
 			add esi, [esp + 44]				; on augmente la source pour pointer sur la prochaine ligne
 			mov ebx, [Line1IntP]			; ebx = First Line buffer
 			jmp short .Loop_X2
@@ -333,8 +333,8 @@ section .text align=64
 				movq [edi + 8 - 16], mm1
 				jnz short .Loop_X2
 
-			mov ecx, [esp + 36]				; Dest num bytes / 16
-			add edi, [esp + 32]				; Next Dest line
+			mov ecx, [esp + 36]				; *screen num bytes / 16
+			add edi, [esp + 32]				; Next *screen line
 			mov ebx, [Line1IntP]			; ebx = First Line buffer
 			mov ebp, [Line2IntP]			; ebp = Second Line buffer
 			jmp short .Loop_X3
@@ -364,19 +364,19 @@ section .text align=64
 				movq [edi + 8 - 16], mm1
 				jnz short .Loop_X3
 
-			add edi, [esp + 32]				; Next Dest line
+			add edi, [esp + 32]				; Next *screen line
 			mov ebx, [Line1IntP]			; Swap line buffer
 			mov ebp, [Line2IntP]
 			mov [Line2IntP], ebx
 			mov [Line1IntP], ebp
-			mov ecx, [esp + 36]				; on transfert 4 octects Dest par it�ration...
+			mov ecx, [esp + 36]				; on transfert 4 octects *screen par it�ration...
 			dec dword [esp + 40]			; encore des lignes ?
 			mov ebp, [Line2IntP]			; ebp = Second Line buffer
 			mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
 			jnz near .Loop_Y
 
 	.Last_Line
-		mov ecx, [esp + 36]				; Dest num bytes / 16
+		mov ecx, [esp + 36]				; *screen num bytes / 16
 		mov ebx, [Line1IntP]			; ebx = First Line buffer
 		jmp short .Loop_X1_LL
 
@@ -392,8 +392,8 @@ section .text align=64
 			movq [edi + 8 - 16], mm1
 			jnz short .Loop_X1_LL
 
-		add edi, [esp + 32]				; Next Dest line
-		mov ecx, [esp + 36]				; Dest num bytes / 16
+		add edi, [esp + 32]				; Next *screen line
+		mov ecx, [esp + 36]				; *screen num bytes / 16
 		mov ebx, [Line1IntP]			; ebx = First Line buffer
 		jmp short .Loop_X2_LL
 
