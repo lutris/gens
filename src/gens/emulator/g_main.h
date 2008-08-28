@@ -50,12 +50,15 @@ struct Gens_VideoSettings_t
 	int Height_GL;
 	int bpp;
 };
+// from gens-rerecording
+// TODO: Move somewhere else.
+extern int _XRay;
+extern unsigned int _Pal32_XRAY[0x10000];
 
 
 extern struct Gens_Settings_t Settings;
 extern struct Gens_PathNames_t PathNames;
 extern struct Gens_VideoSettings_t Video;
-
 
 
 extern int Paused;

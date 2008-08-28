@@ -45,6 +45,11 @@ struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
 struct Gens_VideoSettings_t Video;
 
+// from gens-rerecording
+// TODO: Move somewhere else.
+int _XRay = 0; // TODO: Port X-ray support from Gens Rerecording.
+unsigned int _Pal32_XRAY[0x10000];
+
 int fast_forward = 0;
 
 POINT Window_Pos;

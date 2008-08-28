@@ -76,6 +76,8 @@ section .bss align=64
 	extern _32X_VDP_CRam
 	extern _32X_VDP_CRam_Ajusted
 	extern _32X_VDP
+	extern _XRay
+	extern _Pal32_XRAY
 
 	struc vx
 		.Mode		resd 1
@@ -146,6 +148,8 @@ section .bss align=64
 	resd 1
 	DECL Mode_555
 	resd 1
+	DECL Bits32 ; 32-bit color (TODO: Combine this with Video.bpp)
+	resb 1
 
 section .text align=64
 
@@ -1778,11 +1782,53 @@ ALIGN4
 	ALIGN4
 	
 	.Palette_OK
+		test [Bits32], byte 1
+		jz short .Render16
+		
+	.Render32 ; 32-bit
 		mov ecx, 160
 		mov eax, [H_Pix_Begin]
 		mov edi, [esp]
 		sub ecx, eax
 		add esp, byte 4
+		lea edx, [MD_Screen + edi * 2 + 8 * 2]
+		shr ecx, 1
+		lea edi, [MD_Screen32 + edi * 4 + 8 * 4]
+		mov esi, MD_Palette32
+		test [_XRay], byte 1
+		jz short .Genesis_Loop32
+		mov esi, _Pal32_XRAY
+		jmp .Genesis_LoopXray		
+		ALIGN32
+		
+	.Genesis_Loop32
+		movzx eax, byte [edx + 0]
+		movzx ebx, byte [edx + 2]
+		mov eax, [esi + eax * 4]
+		mov ebx, [esi + ebx * 4]
+		mov [edi + 0], eax
+		mov [edi + 4], ebx
+		movzx ebp, byte [edx + 4]
+		movzx eax, byte [edx + 6]
+		mov ebp, [esi + ebp * 4]
+		mov eax, [esi + eax * 4]
+		mov [edi + 8], ebp
+		mov [edi + 12], eax
+		add edx, byte 8
+		add edi, byte 16
+		dec ecx
+		jnz short .Genesis_Loop32
+	popad
+	ret
+	
+	.Render16 ; 16-bit
+		mov ecx, 160
+		mov eax, [H_Pix_Begin]
+		mov edi, [esp]
+		sub ecx, eax
+		add esp, byte 4
+		test [_XRay], byte 1	; TODO: X-ray not properly implemented for 16-bit color.
+		jnz short .end
 		lea edi, [MD_Screen + edi * 2 + 8 * 2]
 		shr ecx, 1
 		mov esi, MD_Palette
@@ -1823,9 +1869,29 @@ ALIGN4
 
 			dec ecx
 			jnz short .Genesis_Loop
-
+	.end
 		popad
 		ret
+
+	.Genesis_LoopXray
+		movzx eax, word [edx + 0]
+		movzx ebx, word [edx + 2]
+		mov eax, [esi + eax * 4]
+		mov ebx, [esi + ebx * 4]
+		mov [edi + 0], eax
+		mov [edi + 4], ebx
+		movzx ebp, word [edx + 4]
+		movzx eax, word [edx + 6]
+		mov ebp, [esi + ebp * 4]
+		mov eax, [esi + eax * 4]
+		mov [edi + 8], ebp
+		mov [edi + 12], eax
+		add edx, byte 8
+		add edi, byte 16
+		dec ecx
+		jnz short .Genesis_LoopXray
+	popad
+	ret
 
 
 
