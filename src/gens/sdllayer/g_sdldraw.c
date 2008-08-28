@@ -182,7 +182,8 @@ static gchar *WindowID = NULL;
 
 int Init_draw_sdl(int w, int h)
 {
-	screen = SDL_SetVideoMode(w,h,16,sdl_flags|(Video.Full_Screen?SDL_FULLSCREEN:0));
+	// TODO: Proper bpp support.
+	screen = SDL_SetVideoMode(w, h, (Bits32 ? 32 : 16), sdl_flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
 	
 	if ( screen==NULL)
 	{
@@ -308,11 +309,14 @@ void Flip_gl()
 {
 	// TODO: Add border drawing, like in Flip_SDL().   
 	
+	// TODO: Proper bpp support.
+	int bytespp = (Bits32 ? 4 : 2);
+	
 	if (Video.Full_Screen)		
-	{	Blit_FS((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), row_length*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
+	{	Blit_FS((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), row_length*bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * bytespp);
 	}
 	else
-	{	Blit_W((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift), row_length*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);		    
+	{	Blit_W((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift), row_length*bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * bytespp);
 	}
 		
 	#ifdef GL_TEXTURE_RECTANGLE_NV
@@ -542,16 +546,19 @@ static void Flip_SDL()
 		}
 	}
 	
+	// TODO: Proper bpp support.
+	int bytespp = (Bits32 ? 4 : 2);
+	
 	// Start of the SDL framebuffer.
-	unsigned char *start = screen->pixels + (((screen->w * 2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift);
+	unsigned char *start = screen->pixels + (((screen->w * bytespp) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift);
 	
 	if (Video.Full_Screen)		
 	{
-		Blit_FS(start, screen->w*2 , 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
+		Blit_FS(start, screen->w * bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep*2);
 	}
 	else
 	{
-		Blit_W(start, screen->w*2, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);		    
+		Blit_W(start, screen->w * bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep*2);
 	}
 	
 	SDL_UnlockSurface(screen);

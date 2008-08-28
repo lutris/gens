@@ -354,6 +354,9 @@ int main(int argc, char *argv[])
 	// Initialize the Game Genie array.
 	Init_GameGenie();
 	
+	// TODO: Get 32-bit color working.
+	Bits32 = 1;
+	
 	//char sdlbuf[32];
 	
 	//sprintf(sdlbuf, "SDL_WINDOWID=%ld",  GDK_WINDOW_XWINDOW(gens_window->window));
