@@ -13,7 +13,8 @@ gens_x86_asm_o = \
 		gens_core/gfx/blit2x_scanline_int.o \
 		gens_core/gfx/blit2x_scanline_50_int.o \
 		gens_core/gfx/blit2x_scanline_25_int.o \
-		gens_core/gfx/blit_2xSAI.o
+		gens_core/gfx/blit_2xSAI.o \
+		gens_core/gfx/blit_hq2x_16.o
 gens_x86_asm_src = \
 		gens_core/gfx/blit1x.asm \
 		gens_core/gfx/blit2x.asm \
@@ -24,7 +25,8 @@ gens_x86_asm_src = \
 		gens_core/gfx/blit2x_scanline_int.asm \
 		gens_core/gfx/blit2x_scanline_50_int.asm \
 		gens_core/gfx/blit2x_scanline_25_int.asm \
-		gens_core/gfx/blit_2xSAI.asm
+		gens_core/gfx/blit_2xSAI.asm \
+		gens_core/gfx/blit_hq2x_16.asm
 gens_x86_asm_h =
 else
 gens_x86_asm_o =
@@ -34,7 +36,6 @@ endif
 
 ASMFILES = \
 		$(gens_x86_asm_o) \
-		gens_core/gfx/hq2x16.o \
 		gens_core/gfx/gfx_cd.o \
 		gens_core/io/io.o \
 		gens_core/mem/mem_m68k.o \
@@ -124,7 +125,6 @@ gens_SOURCES = \
 		gens_core/gfx/blit2x.c \
 		gens_core/gfx/scale2x.c \
 		gens_core/gfx/hq2x_funcs.c \
-		gens_core/gfx/hq2x16.asm \
 		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.asm \
