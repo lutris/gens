@@ -4,6 +4,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 ASMFILES = \
 		gens_core/gfx/blit.o \
+		gens_core/gfx/blit1x.o \
 		gens_core/gfx/hq2x16.o \
 		gens_core/gfx/gfx_cd.o \
 		gens_core/io/io.o \
@@ -89,7 +90,8 @@ gens_SOURCES = \
 		gens_core/mem/mem_m68k_cd.inc \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
-		gens_core/gens_core/gfx/blit.asm \
+		gens_core/gfx/blit.asm \
+		gens_core/gfx/blit1x.asm \
 		gens_core/gfx/blit1x.c \
 		gens_core/gfx/scale2x.c \
 		gens_core/gfx/hqfilters.c \

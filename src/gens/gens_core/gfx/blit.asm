@@ -104,117 +104,6 @@ section .text align=64
 
 
 	ALIGN64
-	
-	;************************************************************************
-	; void Blit_X1(unsigned char *Dest, int pitch, int x, int y, int offset)
-	DECL Blit_X1
-
-		push ebx
-		push ecx
-		push edx
-		push edi
-		push esi
-
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
-		add ecx, ecx					; ecx = Nb bytes par ligne
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 3						; on transfert 8 bytes à chaque boucle
-		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
-		jmp short .Loop_Y
-
-	ALIGN64
-
-	.Loop_Y
-	.Loop_X
-				mov eax, [esi]			; on transferts 2 pixels d'un coup	
-				mov edx, [esi + 4]		; on transferts 2 pixels d'un coup	
-				add esi, 8
-				mov [edi], eax
-				mov [edi + 4], edx
-				add edi, 8
-				dec ecx
-				jnz .Loop_X
-	
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
-			jnz .Loop_Y
-
-		pop esi
-		pop edi
-		pop edx
-		pop ecx
-		pop ebx
-		ret
-
-
-	ALIGN64
-	
-	;************************************************************************
-	; void Blit_X1_MMX(unsigned char *Dest, int pitch, int x, int y, int offset)
-	DECL Blit_X1_MMX
-
-		push ebx
-		push ecx
-		push edx
-		push edi
-		push esi
-
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
-		add ecx, ecx					; ecx = Nb bytes par ligne
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 6						; on transfert 64 bytes à chaque boucle
-		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
-		jmp short .Loop_Y
-
-	ALIGN64
-
-	.Loop_Y
-	.Loop_X
-				movq mm0, [esi]
-				add edi, 64
-				movq mm1, [esi + 8]
-				movq mm2, [esi + 16]
-				movq mm3, [esi + 24]
-				movq mm4, [esi + 32]
-				movq mm5, [esi + 40]
-				movq mm6, [esi + 48]
-				movq mm7, [esi + 56]
-				movq [edi + 0 - 64], mm0
-				add esi, 64
-				movq [edi + 8 - 64], mm1
-				movq [edi + 16 - 64], mm2
-				movq [edi + 24 - 64], mm3
-				movq [edi + 32 - 64], mm4
-				movq [edi + 40 - 64], mm5
-				movq [edi + 48 - 64], mm6
-				dec ecx
-				movq [edi + 56 - 64], mm7
-				jnz .Loop_X
-	
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
-			jnz .Loop_Y
-
-		pop esi
-		pop edi
-		pop edx
-		pop ecx
-		pop ebx
-		emms
-		ret
-
-
-	ALIGN64
 
 	;************************************************************************
 	; void Blit_X2(unsigned char *Dest, int pitch, int x, int y, int offset)
@@ -230,8 +119,8 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 4						; on transfert 16 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		jmp short .Loop_Y
@@ -314,8 +203,8 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 6						; on transfert 64 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 6						; on transfert 64 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		jmp short .Loop_Y
@@ -427,11 +316,11 @@ section .text align=64
 		mov [Line1IntP], eax			; store first buffer addr
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		mov eax, Line2Int				; eax = offset Line 2 Int buffer
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 2						; on transfert 4 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 2						; on transfert 4 bytes Dest ï¿½ chaque boucle
 		mov [Line2IntP], eax			; store second buffer addr
 		mov edi, [esp + 28]				; edi = Dest
-		mov [esp + 32], ebx				; on stocke complément offset pour ligne suivante
+		mov [esp + 32], ebx				; on stocke complï¿½ment offset pour ligne suivante
 		mov [esp + 36], ecx				; on stocke cette nouvelle valeur pour X
 		mov ebp, [Line1IntP]			; ebp = First Line buffer
 		mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -459,7 +348,7 @@ section .text align=64
 		dec dword [esp + 40]			; une ligne en moins
 		jz near .Last_Line
 
-		mov ecx, [esp + 36]				; on transfert 4 octects Dest par itération...
+		mov ecx, [esp + 36]				; on transfert 4 octects Dest par itï¿½ration...
 		add esi, [esp + 44]				; on augmente la source pour pointer sur la prochaine ligne
 		mov ebp, [Line2IntP]			; ebp = Second Line buffer
 		mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -530,7 +419,7 @@ section .text align=64
 			mov ebp, [Line2IntP]
 			mov [Line2IntP], ebx
 			mov [Line1IntP], ebp
-			mov ecx, [esp + 36]				; on transfert 4 octects Dest par itération...
+			mov ecx, [esp + 36]				; on transfert 4 octects Dest par itï¿½ration...
 			dec dword [esp + 40]			; encore des lignes ?
 			mov ebp, [Line2IntP]			; ebp = Second Line buffer
 			mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -607,11 +496,11 @@ section .text align=64
 		mov [Line1IntP], eax			; store first buffer addr
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		mov eax, Line2Int				; eax = offset Line 2 Int buffer
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 4						; on transfert 16 bytes Dest ï¿½ chaque boucle
 		mov [Line2IntP], eax			; store second buffer addr
 		mov edi, [esp + 28]				; edi = Dest
-		mov [esp + 32], ebx				; on stocke complément offset pour ligne suivante
+		mov [esp + 32], ebx				; on stocke complï¿½ment offset pour ligne suivante
 		mov [esp + 36], ecx				; on stocke cette nouvelle valeur pour X
 		mov ebp, [Line1IntP]			; ebp = First Line buffer
 		mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -648,7 +537,7 @@ section .text align=64
 		dec dword [esp + 40]			; une ligne en moins
 		jz near .Last_Line
 
-		mov ecx, [esp + 36]				; on transfert 16 octets Dest par itération...
+		mov ecx, [esp + 36]				; on transfert 16 octets Dest par itï¿½ration...
 		add esi, [esp + 44]				; on augmente la source pour pointer sur la prochaine ligne
 		mov ebp, [Line2IntP]			; ebp = Second Line buffer
 		mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -729,7 +618,7 @@ section .text align=64
 			mov ebp, [Line2IntP]
 			mov [Line2IntP], ebx
 			mov [Line1IntP], ebp
-			mov ecx, [esp + 36]				; on transfert 4 octects Dest par itération...
+			mov ecx, [esp + 36]				; on transfert 4 octects Dest par itï¿½ration...
 			dec dword [esp + 40]			; encore des lignes ?
 			mov ebp, [Line2IntP]			; ebp = Second Line buffer
 			mov word [esi + 320 * 2], 0		; clear last pixel for correct interpolation
@@ -800,8 +689,8 @@ section .text align=64
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		add ebx, ebx					; ebx = pitch * 2
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 4						; on transfert 16 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		jmp short .Loop_Y
@@ -860,8 +749,8 @@ section .text align=64
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		add ebx, ebx					; ebx = pitch * 2
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 5						; on transfert 32 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 5						; on transfert 32 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		jnp short .Loop_Y
@@ -918,8 +807,8 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 5						; on transfert 32 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 5						; on transfert 32 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		test byte [Mode_555], 1
@@ -1013,8 +902,8 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 5						; on transfert 32 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 5						; on transfert 32 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		test byte [Mode_555], 1
@@ -1118,8 +1007,8 @@ section .text align=64
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		add ebx, ebx					; ebx = pitch * 2
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 2						; on transfert 4 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 2						; on transfert 4 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		jmp short .Loop_Y
@@ -1192,8 +1081,8 @@ section .text align=64
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		add ebx, ebx					; ebx = pitch * 2
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 4						; on transfert 16 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 
@@ -1257,8 +1146,8 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 4						; on transfert 32 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 4						; on transfert 32 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		test byte [Mode_555], 1
@@ -1354,8 +1243,8 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Complément offset pour ligne suivante
-		shr ecx, 4						; on transfert 32 bytes Dest à chaque boucle
+		sub ebx, ecx					; ebx = Complï¿½ment offset pour ligne suivante
+		shr ecx, 4						; on transfert 32 bytes Dest ï¿½ chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 		test byte [Mode_555], 1
@@ -1461,7 +1350,7 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		mov edi, [esp + 24]				; edi = Destination
-		test byte [Have_MMX], 0xFF		; on teste la présence du MMX
+		test byte [Have_MMX], 0xFF		; on teste la prï¿½sence du MMX
 		jz near .End
 
 		sub esp, byte 4 * 5				; 5 params for _2xSaILine
