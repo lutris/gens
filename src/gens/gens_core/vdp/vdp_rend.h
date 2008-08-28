@@ -1,9 +1,16 @@
 #ifndef VDP_REND_H
 #define VDP_REND_H
 
+// 16-bit color
 extern unsigned short MD_Screen[336 * 240];
-extern unsigned short MD_Palette[256];
 extern unsigned short Palette[0x1000];
+extern unsigned short MD_Palette[256];
+
+// 32-bit color
+extern unsigned int MD_Screen32[336 * 240];
+extern unsigned int Palette32[0x1000];
+extern unsigned int MD_Palette32[256];
+
 extern unsigned long TAB336[336];
 
 extern struct

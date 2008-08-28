@@ -85,18 +85,33 @@ section .bss align=64
 		.AF_Len		resd 1
 	endstruc
 
+	; MD screen buffer (16-bit)
 	resw (320 + 32)
-
 	DECL MD_Screen
 	resw (336 * 240)
-	
 	resw (320 + 32)
 
+	; MD active palette (16-bit)
 	DECL MD_Palette
 	resw 0x100
 
+	; MD total palette (16-bit)
 	DECL Palette
 	resw 0x1000
+
+	; MD screen buffer (32-bit)
+	resd (320 + 32)
+	DECL MD_Screen32
+	resd (336 * 240)
+	resd (320 + 32)
+
+	; MD active palette (32-bit)
+	DECL MD_Palette32
+	resd 0x100
+
+	; MD total palette (32-bit)
+	DECL Palette32
+	resd 0x1000
 
 	DECL Sprite_Struct
 	resd (0x100 * 8)

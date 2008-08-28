@@ -58,6 +58,7 @@ void Recalculate_Palettes (void)
 	int r, g, b;
 	int rf, gf, bf;
 	int bright, cont;
+	unsigned short color;
 	
 	// Calculate the MD palette.
 	for (r = 0; r < 0x10; r++)
@@ -66,6 +67,8 @@ void Recalculate_Palettes (void)
 		{
 			for (b = 0; b < 0x10; b++)
 			{
+				color = (b << 8) | (g << 4) | r;
+				
 				rf = (r & 0xE) << 2;
 				gf = (g & 0xE) << 2;
 				bf = (b & 0xE) << 2;
@@ -99,6 +102,11 @@ void Recalculate_Palettes (void)
 				gf = Constrain_Color_Component(gf);
 				bf = Constrain_Color_Component(bf);
 				
+				// 32-bit palette
+				Palette32[color] = (rf << 18) | (gf << 10) | (bf << 2);
+				
+				// 16-bit palette
+				// TODO: Convert (Mode_555 & 1) to (bpp == 15)
 				if (Mode_555 & 1)
 				{
 					rf = (rf >> 1) << 10;
@@ -111,7 +119,7 @@ void Recalculate_Palettes (void)
 				}
 				bf = (bf >> 1) << 0;
 				
-				Palette[(b << 8) | (g << 4) | r] = rf | gf | bf;
+				Palette[color] = rf | gf | bf;
 			}
 		}
 	}
@@ -119,13 +127,13 @@ void Recalculate_Palettes (void)
 	// Calculate the 32X palette.
 	for (i = 0; i < 0x10000; i++)
 	{
-		b = ((i >> 10) & 0x1F) << 1;
-		g = ((i >> 5) & 0x1F) << 1;
-		r = ((i >> 0) & 0x1F) << 1;
+		bf = ((i >> 10) & 0x1F) << 1;
+		gf = ((i >> 5) & 0x1F) << 1;
+		rf = ((i >> 0) & 0x1F) << 1;
 		
-		r = (int) (double) (r) * (int) ((double) (RMax_Level) / 248.0);
-		g = (int) (double) (g) * (int) ((double) (GMax_Level) / 248.0);
-		b = (int) (double) (b) * (int) ((double) (BMax_Level) / 248.0);
+		rf = (int) (double) (rf) * (int) ((double) (RMax_Level) / 248.0);
+		gf = (int) (double) (gf) * (int) ((double) (GMax_Level) / 248.0);
+		bf = (int) (double) (bf) * (int) ((double) (BMax_Level) / 248.0);
 		
 		// Compute colors here (64 levels)
 		
@@ -134,24 +142,29 @@ void Recalculate_Palettes (void)
 		bright *= 32;
 		bright /= 100;
 		
-		r += bright;
-		g += bright;
-		b += bright;
+		rf += bright;
+		gf += bright;
+		bf += bright;
 		
-		r = Constrain_Color_Component(r);
-		g = Constrain_Color_Component(g);
-		b = Constrain_Color_Component(b);
+		rf = Constrain_Color_Component(rf);
+		gf = Constrain_Color_Component(gf);
+		bf = Constrain_Color_Component(bf);
 		
 		cont = Contrast_Level;
 		
-		r = (r * cont) / 100;
-		g = (g * cont) / 100;
-		b = (b * cont) / 100;
+		rf = (rf * cont) / 100;
+		gf = (gf * cont) / 100;
+		bf = (bf * cont) / 100;
 		
-		r = Constrain_Color_Component(r);
-		g = Constrain_Color_Component(g);
-		b = Constrain_Color_Component(b);
+		rf = Constrain_Color_Component(rf);
+		gf = Constrain_Color_Component(gf);
+		bf = Constrain_Color_Component(bf);
 		
+		// 32-bit palette
+		_32X_Palette_32B[i] = r | g | b;
+		
+		// 16-bit palette
+		// TODO: Convert (Mode_555 & 1) to (bpp == 15)
 		if (Mode_555 & 1)
 		{
 			r = (r >> 1) << 10;
