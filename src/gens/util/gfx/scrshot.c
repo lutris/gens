@@ -20,8 +20,8 @@ int Save_Shot(void)
 {
 	FILE *ScrShot_File = 0;
 	unsigned char *Dest = NULL;
-	int i, j, num, stated;
-	char filename[GENS_PATH_MAX], ext[16];
+	int num;
+	char filename[GENS_PATH_MAX];
 	struct stat sbuf;
 	
 	// Bitmap dimensions.
