@@ -73,23 +73,38 @@ INCLUDES = \
 
 if GENS_DEBUG
 gens_debug_src = \
-	debug/debug.c \
-	debug/m68kd.c \
-	debug/sh2d.c \
-	debug/z80dis.c
+		debug/debug.c \
+		debug/m68kd.c \
+		debug/sh2d.c \
+		debug/z80dis.c
 gens_debug_h = \
-	debug/debug.h \
-	debug/m68kd.h \
-	debug/sh2d.h \
-	debug/z80dis.h
+		debug/debug.h \
+		debug/m68kd.h \
+		debug/sh2d.h \
+		debug/z80dis.h
 else
 gens_debug_src =
 gens_debug_h =
 endif
 
+if GENS_OPENGL
+gens_opengl_src = \
+		sdllayer/g_opengl.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
+gens_opengl_h = \
+		sdllayer/g_opengl.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
+else
+gens_opengl_src =
+gens_opengl_h =
+endif
+
 bin_PROGRAMS = gens
 gens_SOURCES = \
-		$(gens_debug_src) \
 		emulator/gens.c \
 		emulator/g_main.c \
 		emulator/g_main_linux.c \
@@ -136,7 +151,6 @@ gens_SOURCES = \
 		sdllayer/g_sdldraw.c \
 		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
-		sdllayer/g_opengl.c \
 		sdllayer/g_effects.c \
 		segacd/cd_aspi.c \
 		segacd/cd_file.c \
@@ -167,9 +181,6 @@ gens_SOURCES = \
 		ui/gtk/color_adjust/color_adjust_window.c \
 		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
 		ui/gtk/color_adjust/color_adjust_window_misc.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c \
 		ui/gtk/select_cdrom/select_cdrom_window.c \
 		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
 		ui/gtk/select_cdrom/select_cdrom_window_misc.c \
@@ -191,12 +202,13 @@ gens_SOURCES = \
 		util/file/compress/Zip.c \
 		util/gfx/scrshot.c \
 		util/sound/gym.c \
-		util/sound/wave.c
+		util/sound/wave.c \
+		$(gens_debug_src) \
+		$(gens_opengl_src)
 ##		netplay/ccnet.c 
 ##		netplay/ccnet.h
 
 noinst_HEADERS = \
-		$(gens_debug_h) \
 		emulator/gens.h \
 		emulator/g_main.h \
 		emulator/g_main_linux.h \
@@ -237,7 +249,6 @@ noinst_HEADERS = \
 		sdllayer/g_sdldraw.h \
 		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \
-		sdllayer/g_opengl.h \
 		sdllayer/g_effects.h \
 		segacd/cd_aspi.h \
 		segacd/cd_file.h \
@@ -267,9 +278,6 @@ noinst_HEADERS = \
 		ui/gtk/color_adjust/color_adjust_window.h \
 		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
 		ui/gtk/color_adjust/color_adjust_window_misc.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h \
 		ui/gtk/select_cdrom/select_cdrom_window.h \
 		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
 		ui/gtk/select_cdrom/select_cdrom_window_misc.h \
@@ -291,7 +299,9 @@ noinst_HEADERS = \
 		util/file/compress/Zip.h \
 		util/gfx/scrshot.h \
 		util/sound/gym.c \
-		util/sound/wave.c
+		util/sound/wave.c \
+		$(gens_debug_h) \
+		$(gens_opengl_h)
 
 gens_CFLAGS = \
 		-DDATADIR=\"@datadir@/@PACKAGE@\" \
