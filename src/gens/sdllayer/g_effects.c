@@ -206,7 +206,6 @@ int Update_Crazy_Effect(void)
  */
 void Pause_Screen(void)
 {
-	// TODO: 32-bit support.
 	int i, j, offset;
 	unsigned char r, g, b, nr, ng, nb;
 	int sum;
