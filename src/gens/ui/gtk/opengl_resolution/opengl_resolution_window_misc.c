@@ -31,7 +31,7 @@
 #include "gtk-misc.h"
 
 #include "g_main.h"
-#include "g_sdldraw.h"
+#include "g_opengl.h"
 
 
 /**

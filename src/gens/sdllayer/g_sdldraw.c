@@ -34,10 +34,8 @@ void Sleep(int i);
 #include "renderers.h"
 #include "g_palette.h"
 
-
-// Needed to synchronize the Graphics menu after a GL resolution change.
+// Needed to synchronize the Graphics menu after a bpp change.
 #include "gens/gens_window_sync.h"
-
 
 SDL_Surface *screen = NULL;
 const int Gens_SDL_Flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL;

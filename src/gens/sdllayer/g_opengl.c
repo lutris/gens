@@ -27,6 +27,9 @@
 #include "g_sdldraw.h"
 #include "vdp_io.h"
 
+// Needed to synchronize the Graphics menu after a GL resolution change.
+#include "gens/gens_window_sync.h"
+
 GLuint textures[2] = {0, 0};
 
 unsigned short *filter_buffer = NULL;
