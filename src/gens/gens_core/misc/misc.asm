@@ -963,9 +963,12 @@ section .text align=64
 		
 		; 15/16-bit color functions.
 		lea edi, [MD_Screen + 8 * 2]	; edi = Dest
+		
+		; Print on the bottom of the screen.
 		mov ebx, 336 * 2				; Pitch Dest
 		mov eax, [esp + 36]				; eax = Pos Y
 		mul ebx
+		
 		mov ecx, [esp + 32]				; Pos X
 		lea edi, [edi + ecx * 2]		; offset pour Pos X
 		add edi, eax					; + offset Pos Y
@@ -1170,7 +1173,12 @@ section .text align=64
 
 		shl ebx, 1						; Pitch Dest
 		lea edi, [MD_Screen32 + 8 * 4]	; edi = Dest
+		
+		; print on the bottom of the screen
+		mov ebx, 336 * 4				; Pitch Dest
+		mov eax, [esp + 36]				; eax = Pos Y
 		mul ebx
+		
 		mov ecx, [esp + 32]				; Pos X
 		lea edi, [edi + ecx * 4]		; offset for Pos X
 		add edi, eax					; + offset Pos Y
