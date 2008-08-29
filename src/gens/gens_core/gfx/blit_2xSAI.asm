@@ -63,6 +63,9 @@ section .data align=64
 
 	ALIGNB32
 
+	; Current color masks.
+	; Default value is 16-bit.
+
 	colorMask:	dd 0xF7DEF7DE,0xF7DEF7DE
 	lowPixelMask:	dd 0x08210821,0x08210821
 
@@ -77,6 +80,8 @@ section .data align=64
 	TRUE:		dd 0xffffffff,0xffffffff
 	ONE:		dd 0x00010001,0x00010001
 
+	; 15-bit color masks
+
 	colorMask15	dd 0x7BDE7BDE,0x7BDE7BDE
 	lowPixelMask15	dd 0x04210421,0x04210421
 
@@ -87,6 +92,17 @@ section .data align=64
 	GreenMask15	dd 0x03E003E0,0x03E003E0
 	RedBlueMask15	dd 0x7C1F7C1F,0x7C1F7C1F
 
+	; 16-bit color masks
+
+	colorMask16	dd 0xF7DEF7DE,0xF7DEF7DE
+	lowPixelMask16:	dd 0x08210821,0x08210821
+
+	qcolorMask16	dd 0xE79CE79C,0xE79CE79C
+	qlowpixelMask16	dd 0x18631863,0x18631863
+
+	darkenMask16	dd 0xC718C718,0xC718C718
+	GreenMask16	dd 0x07E007E0,0x07E007E0
+	RedBlueMask16	dd 0xF81FF81F,0xF81FF81F
 
 section .bss align=64
 
@@ -134,11 +150,10 @@ section .text align=64
 		mov [esp + 16], ebx				; 5th Param = DestPitch
 		
 		; Check if this is 15-bit color mode.
-		; If it isn't don't apply 15-bit color masks.
-		; TODO: Bug where changing from 16 to 15 and back to 16 causes color problems.
 		cmp byte [bpp], 15
-		jne short .Loop
+		jne short .Mode_565
 
+	.Mode_555
 		; 15-bit: Apply 15-bit color masks.
 		movq mm0, [colorMask15]
 		movq mm1, [lowPixelMask15]
@@ -154,8 +169,25 @@ section .text align=64
 		movq [darkenMask], mm0
 		movq [GreenMask], mm1
 		movq [RedBlueMask], mm2
-		jmp short .Loop
+		jmp near .Loop
 
+	.Mode_565
+		; 16-bit: Apply 16-bit color masks.
+		movq mm0, [colorMask16]
+		movq mm1, [lowPixelMask16]
+		movq [colorMask], mm0
+		movq [lowPixelMask], mm1
+		movq mm0, [qcolorMask16]
+		movq mm1, [qlowpixelMask16]
+		movq [qcolorMask], mm0
+		movq [qlowpixelMask], mm1
+		movq mm0, [darkenMask16]
+		movq mm1, [GreenMask16]
+		movq mm2, [RedBlueMask16]
+		movq [darkenMask], mm0
+		movq [GreenMask], mm1
+		movq [RedBlueMask], mm2
+	
 	ALIGN64
 
 	.Loop
