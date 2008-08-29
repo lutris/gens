@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "port.h"
 
 // OS-specific includes.
@@ -45,9 +49,11 @@ struct Gens_VideoSettings_t
 	int Full_Screen;
 	int Fast_Blur;
 	int Render_Mode;	// TODO: Make this an enum.
+#ifdef GENS_OPENGL
 	int OpenGL;
 	int Width_GL;
 	int Height_GL;
+#endif
 };
 
 extern struct Gens_Settings_t Settings;

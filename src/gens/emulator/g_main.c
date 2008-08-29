@@ -35,6 +35,8 @@
 #include "g_sdldraw.h"
 #include "g_sdlinput.h"
 
+#include "g_effects.h"
+
 #include "ui-common.h"
 #include "gtk-misc.h"
 #include "gens/gens_window.h"
@@ -486,9 +488,8 @@ int main(int argc, char *argv[])
 			// BLANK SCREEN (MAX IDLE)
 			// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
 			// TODO: Fix this lag!
-			//Clear_Back_Screen();
-			Eff_Screen();
-			Flip ();
+			Clear_Screen_MD();
+			Flip();
 			Sleep (200);
 		}
 	}

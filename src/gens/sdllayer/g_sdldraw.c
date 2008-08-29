@@ -1,11 +1,17 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
-#include <GL/gl.h>
-#include <GL/glext.h>
+
+#ifdef GENS_OPENGL
+#include "g_opengl.h"
+#endif
 
 #include "port.h"
 #include "timer.h"
@@ -34,7 +40,7 @@ void Sleep(int i);
 
 
 SDL_Surface *screen = NULL;
-
+const int Gens_SDL_Flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL;
 
 #include "ui-common.h"
 
@@ -55,22 +61,15 @@ int FPS_Style = EMU_MODE | BLANC;
 int Message_Style = EMU_MODE | BLANC | SIZE_X2;
 int Kaillera_Error = 0;
 
-int sdl_flags=SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE|SDL_ASYNCBLIT|SDL_HWACCEL;
+static gchar *WindowID = NULL;
 
-
-unsigned short * filter_buffer=0;
-
-GLuint textures[2]={0,0};
-
-int Texture_size=256;
-int Nonpow2tex = 0 ;
-int row_length;
-int gl_linear_filter=1;
+// Screen shift in 1x rendering mode.
 int shift = 0;
-float h_stretch = 0;
-float v_stretch = 0;
 
-int Dep = 0,Old_Dep=0;
+// Screen width shrinkage.
+// 0 == full width; 64 == 256x224
+int Dep = 0;
+int Old_Dep = 0;
 
 // Current border color.
 unsigned short BorderColor_16B = 0x0000;
@@ -130,111 +129,75 @@ int Init_Fail(int hwnd, char *err)
 }
 
 
-int Init_draw_gl(int w, int h)
+static int Init_Draw_SDL(int w, int h)
 {
-	// SDL doesn't seem to recognize 15-bit color.
-	screen = SDL_SetVideoMode(w, h, bpp, sdl_flags | SDL_OPENGL | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
+	screen = SDL_SetVideoMode(w, h, bpp, Gens_SDL_Flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
 	
-	if ( screen == NULL)
+	if (screen == NULL)
 	{
-		fprintf(stderr, "Error creating SDL primary surface : %s\n", SDL_GetError());
-		exit(0);
-	}
-
-	if (Video.Render_Mode == 0) {
-		row_length=320;
-		Texture_size=256;
-	} else {
-		row_length=640;
-		Texture_size=512;
-	}
-
-	filter_buffer = (unsigned short *) malloc(
-			row_length*Texture_size*sizeof(unsigned short) );
-	
-	//filter_buffer=(unsigned short *) malloc(row_length *row_length*0.75*sizeof(unsigned short) );
-	
-	glViewport(0, 0, screen->w,screen->h);
-
-
-	
-	glEnable(GL_TEXTURE_2D);
-		
-	#ifdef GL_TEXTURE_RECTANGLE_NV
-	glEnable(GL_TEXTURE_RECTANGLE_NV);
-	
-	if(glIsEnabled(GL_TEXTURE_RECTANGLE_NV))
-	Nonpow2tex = 1;
-	#endif
-	
-	
-	glGenTextures(2,textures);
-	
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);	
-	
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-	
-	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 6 );
-	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE,0 );
-	
-	
-	return 1;
-	
-}
-
-static gchar *WindowID = NULL;
-
-int Init_draw_sdl(int w, int h)
-{
-	// TODO: Proper bpp support.
-	screen = SDL_SetVideoMode(w, h, bpp, sdl_flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
-	
-	if ( screen==NULL)
-	{
-		fprintf(stderr, "Error creating SDL primary surface : %s\n", SDL_GetError());
+		fprintf(stderr, "Error creating SDL primary surface: %s\n", SDL_GetError());
 		exit(0);
 	}
 	
 	return 1;
 }	
 
+static void End_Draw_SDL()
+{
+	// Placeholder function in case something needs to be added later.
+}
+
+
 int Init_DDraw()
 {	
 	int x;
 	int w, h;
 	
-	if (Video.OpenGL) {
+#ifdef GENS_OPENGL
+	if (Video.OpenGL)
+	{
 		w = Video.Width_GL;
 		h = Video.Height_GL;
-	} else {
-		if(Video.Render_Mode == 0) //1 Equals normal render--> 320*240
+	}
+	else
+	{
+#endif
+		if (Video.Render_Mode == 0)
 		{
-			w=320;
+			// Normal render mode. 320x240
+			w = 320;
+			h = 240;
 		}
 		else
 		{
-			w=640;
+			w = 640;
+			h = 480;
 		}
-		h = w * 0.75; 	/*640*0.75 = 480 , 320*0.75 = 240*/
+#ifdef GENS_OPENGL
 	}
+#endif
 	
-	if (Video.Full_Screen) {
+	// TODO: Move Linux/GTK-specific code somewhere else.
+	
+	if (Video.Full_Screen)
+	{
 		UI_Hide_Embedded_Window();
 		
-		if (WindowID) {
+		if (WindowID)
+		{
 			unsetenv("SDL_WINDOWID");
 			g_free(WindowID);
 			WindowID = NULL;
 		}
-	} else {
+	}
+	else
+	{
 		UI_Show_Embedded_Window(w, h);
 		
 		/* Let GTK catch up. */
 		while (gtk_events_pending())
 			gtk_main_iteration_do(FALSE);
-               
+		
 		if (!WindowID)
 		{
 			WindowID = g_strdup_printf("%d", UI_Get_Embedded_WindowID());
@@ -244,269 +207,73 @@ int Init_DDraw()
 	
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
 		Init_Fail(0,"Couldn't init embedded SDL.\n");
+	
 	Set_Game_Name();
 	
-	if(Video.OpenGL) {
-	x=Init_draw_gl(w, h);
-	
-	}
+#ifdef GENS_OPENGL
+	if (Video.OpenGL)
+		x = Init_Draw_GL(w, h);
 	else
-	x=Init_draw_sdl(w, h);
+#endif
+		x = Init_Draw_SDL(w, h);
 	
-	if (Video.Full_Screen )
-	{
+	// Disable the cursor in fullscreen mode.
+	if (Video.Full_Screen)
 		SDL_ShowCursor(SDL_DISABLE);
-	}
+	
+	// Adjust stretch parameters.
 	Adjust_Stretch();
 	
-	shift=(Video.Render_Mode!=0);
+	// If normal mode is set, disable the video shift.
+	shift = (Video.Render_Mode != 0);
 	
+	// Return the status code of the Init_Draw_* function.
 	return x;
 }
 
 
-void End_draw_gl()
-
-{
-	if (filter_buffer) {
-		glDeleteTextures(2, textures);
-		free(filter_buffer);
-		filter_buffer=NULL;
-	}
-	
-}
-
-void End_draw_sdl()
-
-{
-	
-}
-
 void End_DDraw()
 {	
-	if(Video.OpenGL)
-	End_draw_gl();
-	
+#ifdef GENS_OPENGL
+	if (Video.OpenGL)
+		End_Draw_GL();
 	else
-	End_draw_sdl();
+#endif
+		End_Draw_SDL();
 	
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
+
+
+/**
+ * Clear_Screen_SDL(): Clear the SDL screen.
+ */
+static void Clear_Screen_SDL(void)
+{
+	SDL_LockSurface(screen);
+	SDL_FillRect(screen, 0, 0);
+	SDL_UnlockSurface(screen);
+}
+
 
 /**
  * Clear_Screen(): Clear the screen.
  */
 void Clear_Screen()
 {
+#ifdef GENS_OPENGL
 	if (Video.OpenGL)
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		memset(filter_buffer,0,640*480*2); //memset(filter_buffer,0,row_length*row_length*1.5); //row_length*row_length*1.5 size in bytes 
-	}
+		Clear_Screen_GL();
 	else
-	{
-		SDL_LockSurface(screen);
-		SDL_FillRect(screen, 0, 0);
-		SDL_UnlockSurface(screen);
-	}
-}
-
-void Flip_gl()
-{
-	// TODO: Add border drawing, like in Flip_SDL().   
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
-	
-	if (Video.Full_Screen)		
-	{	Blit_FS((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), row_length*bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * bytespp);
-	}
-	else
-	{	Blit_W((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift), row_length*bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * bytespp);
-	}
-		
-	#ifdef GL_TEXTURE_RECTANGLE_NV
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_LINEAR);
-	
-	
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV,GL_TEXTURE_WRAP_S,GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV,GL_TEXTURE_WRAP_T,GL_CLAMP);
-	
-	
-	glPixelStorei(GL_UNPACK_ROW_LENGTH,row_length);		//Opengl needs to know the width of the texture data
-	
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	
-	
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
-		
-	glTexImage2D(GL_TEXTURE_RECTANGLE_NV,
-	0,3,row_length,row_length * 0.75f,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,filter_buffer);
-
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
-	
-	glBegin(GL_QUADS);			
-
-		glTexCoord2f(0.0f + h_stretch, v_stretch );	// Upleft corner of thetexture
-		glVertex2f(-1.0f, 1.0f);	// Upleft vertex of the quad
-
-
-		glTexCoord2f(row_length - h_stretch, v_stretch);// UpRight corner of the texture 
-		glVertex2f( 1.0f, 1.0f);		// UpRight vertex of the quad		
-
-
-		glTexCoord2f(row_length - h_stretch,row_length*0.75f - v_stretch);// DownRight corner of the texture  
-		glVertex2f( 1.0f , -1.0f);		// DownRight vertex of the quad
-
-
-		glTexCoord2f(0.0f + h_stretch, row_length*0.75f - v_stretch);	// DownLeft corner of the first texture 
-		glVertex2f(-1.0f,  -1.0f);	// DownLeft vertex of the quad
-	
-	glEnd();
-	
-	
-	#else
-
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	
-	gl_linear_filter ? glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR):
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-	
-	
-	glPixelStorei(GL_UNPACK_ROW_LENGTH,row_length);		//Opengl needs to know the width of the texture data
-	
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-		
-	glTexImage2D(GL_TEXTURE_2D,
-	0,3,Texture_size*2,Texture_size,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,filter_buffer);
-
-
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	
-	glBegin(GL_QUADS);			
-
-		glTexCoord2f(0.0f + h_stretch, v_stretch );	// Upleft corner of thetexture
-	glVertex2f(-1.0f, 1.0f);	// Upleft vertex of the quad
-
-
-		glTexCoord2f(0.625f - h_stretch, v_stretch );// UpRight corner of the texture 0.625 == 256/320 ,0.625 == 512/640
-	glVertex2f( 1, 1.0f);		// UpRight vertex of the quad		
-
-
-		glTexCoord2f(0.625f - h_stretch, 0.9375f - v_stretch );// DownRight corner of the texture  0.9375 == 256/240 .  0.9375 == 512/480
-	glVertex2f( 1 , -1.0f);		// DownRight vertex of the quad
-
-
-		glTexCoord2f(0.0f + h_stretch, 0.9375f - v_stretch );	// DownLeft corner of the first texture 
-	glVertex2f(-1.0f,  -1.0f);	// DownLeft vertex of the quad
-	
-	glEnd();
-	#endif
-	
-	/*
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	
-	gl_linear_filter ? glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR):
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-	
-	
-	glPixelStorei(GL_UNPACK_ROW_LENGTH,row_length);		//Opengl needs to know the width of the texture data
-	
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	
-	
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-		
-	glTexImage2D(GL_TEXTURE_2D,
-	0,3,Texture_size,Texture_size,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,filter_buffer);
-
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	
-	glBegin(GL_QUADS);			
-
-		glTexCoord2f(0.0f  , 0.0f);	// Upleft corner of thetexture
-		glVertex2f(-1.0f, 1.0f);	// Upleft vertex of the quad
-
-
-		glTexCoord2f(1.0f , 0);// UpRight corner of the texture 0.625 == 256/320 ,0.625 == 512/640
-		glVertex2f( 0.6f, 1.0f);		// UpRight vertex of the quad		
-
-
-		glTexCoord2f(1.0f, 1.0f);// DownRight corner of the texture  0.9375 == 256/240 .  0.9375 == 512/480
-		glVertex2f( 0.6f, -1.0f);		// DownRight vertex of the quad
-
-
-		glTexCoord2f(0.0f , 1.0f);	// DownLeft corner of the first texture 
-		glVertex2f(-1.0f,  -1.0f);	// DownLeft vertex of the quad
-	
-	glEnd();
-	
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	
-	gl_linear_filter ? glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR):
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-	
-	
-	glPixelStorei(GL_UNPACK_ROW_LENGTH,row_length);		//Opengl needs to know the width of the texture data
-	
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	
-	
-	
-	glTexImage2D(GL_TEXTURE_2D,
-	0,3,Texture_size/4,Texture_size,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,filter_buffer+256);
-
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	
-	glBegin(GL_QUADS);			
-
-		glTexCoord2f(0.0f  , 0.0f);	// Upleft corner of thetexture
-		glVertex2f(2.0f-1.4f, 1.0f);	// Upleft vertex of the quad
-
-
-		glTexCoord2f(1.0f , 0);// UpRight corner of the texture 0.625 == 256/320 ,0.625 == 512/640
-		glVertex2f( 1.0f, 1.0f);		// UpRight vertex of the quad		
-
-
-		glTexCoord2f(1.0f, 1.0f);// DownRight corner of the texture  0.9375 == 256/240 .  0.9375 == 512/480
-		glVertex2f( 1.0f , -1.0f);		// DownRight vertex of the quad
-
-
-		glTexCoord2f(0.0f , 1.0f);	// DownLeft corner of the first texture 
-		glVertex2f(2.0f-1.4f,  -1.0f);	// DownLeft vertex of the quad
-	
-	glEnd();
-	*/
-	
-	SDL_GL_SwapBuffers();
-
-	
+#endif
+		Clear_Screen_SDL();
 }
 
 
 /**
  * Flip_SDL(): Blit the contents of the MD framebuffer to the screen. (SDL method)
  */
-static void Flip_SDL()
+static void Flip_SDL(void)
 {
 	SDL_Rect border;
 	
@@ -603,6 +370,11 @@ static void Flip_SDL()
 	SDL_Flip(screen);
 }
 
+
+/**
+ * Flip(): Flip the screen buffer.
+ * @return 1 on success.
+ */
 int Flip(void)
 {
 	//float Ratio_X, Ratio_Y;
@@ -612,7 +384,10 @@ int Flip(void)
 	unsigned int new_time[2];
 	
 	
-
+	// TODO: Print the message and/or FPS counter on the screen buffer only.
+	// Don't print it on MD_Screen.
+	// Otherwise, messages and the FPS counter show up in screenshots.
+	
 	if (Message_Showed)
 	{
 		if (GetTickCount() > Info_Time)
@@ -624,7 +399,6 @@ int Flip(void)
 		{
 			Print_Text(Info_String, strlen(Info_String), 10, 210, Message_Style);
 		}
-
 	}
 	else if (Show_FPS && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{	
@@ -642,7 +416,7 @@ int Flip(void)
 				{
 					sprintf(Info_String, "too much...");
 				}
-
+				
 				old_time = new_time[0];
 				view_fps = 0;
 			}
@@ -652,21 +426,21 @@ int Flip(void)
 			if (++view_fps >= 10)
 			{
 				new_time[0] = GetTickCount();
-		
+				
 				if (new_time[0] != old_time) frames[index_fps] = 10000 / (float)(new_time[0] - old_time);
 				else frames[index_fps] = 2000;
-
+				
 				index_fps++;
 				index_fps &= 7;
 				FPS = 0.0f;
-
+				
 				for(i = 0; i < 8; i++) FPS += frames[i];
-
+				
 				FPS /= 8.0f;
 				old_time = new_time[0];
 				view_fps = 0;
 			}
-
+			
 			sprintf(Info_String, "%.1f", FPS);
 		}
 		else
@@ -679,199 +453,48 @@ int Flip(void)
 			//sprintf(Info_String, "", FPS);
 			Info_String[0] = 0;
 		}
-
+		
 		Print_Text(Info_String, strlen(Info_String), 10, 210, FPS_Style);
 	}
-
-	if (Video.Fast_Blur) Half_Blur();
-
-	Old_Dep=Dep;
 	
+	// Blur the screen if requested.
+	if (Video.Fast_Blur)
+		Half_Blur();
+	
+	// Check if the display width changed.
+	Old_Dep = Dep;
 	if ((VDP_Reg.Set4 & 0x1) || (Debug))
-	{
 		Dep = 0;
-	}
 	else
-	{
 		Dep = 64;
-	}
-	if(Dep!=Old_Dep){
-	Adjust_Stretch();
-		
 	
-	if(Dep==64 && Old_Dep==0)
-	Clear_Screen();
-	
-	
+	if (Dep != Old_Dep)
+	{
+		// Display width change. Adjust the stretch parameters.
+		Adjust_Stretch();
 	}
 	
+	if (Dep > Old_Dep)
+	{
+		// New screen width is smaller than old screen width.
+		// Clear the screen.
+		Clear_Screen();
+	}
 	
-	if(Video.OpenGL)
-	Flip_gl();
-	
+	// Flip the screen buffer.
+#ifdef GENS_OPENGL
+	if (Video.OpenGL)
+		Flip_GL();
 	else
-	Flip_SDL();
+#endif
+		Flip_SDL();
 	
-	/*if(W_VSync || FS_VSync) vsync();*/
+	// TODO: VSync
+	/*
+	if(W_VSync || FS_VSync)
+		vsync();
+	*/
 	
-	return 1;
-}
-
-
-int Update_Gens_Logo(void)
-{
-
-	int i, j, m, n;
-	static short tab[64000], Init = 0;
-	static float renv = 0, /*ang = 0,*/ zoom_x = 0, zoom_y = 0, pas;
-	unsigned short c;
-
-	if (!Init)
-	{
-		SDL_Surface* Logo;
-
-		Logo = SDL_LoadBMP(DATADIR "/gens_big.bmp");
-		
-		SDL_LockSurface(Logo);
-		memcpy(tab, Logo->pixels, 64000);
-		SDL_UnlockSurface(Logo);
-
-		pas = 0.05;
-		Init = 1;
-	}
-
-	renv += pas;
-	zoom_x = sin(renv);
-	if (zoom_x == 0.0) zoom_x = 0.0000001;
-	zoom_x = (1 / zoom_x) * 1;
-	zoom_y = 1;
-
-	if (VDP_Reg.Set4 & 0x1)
-	{
-		for(j = 0; j < 240; j++)
-		{
-			for(i = 0; i < 320; i++)
-			{
-				m = (float)(i - 160) * zoom_x;
-				n = (float)(j - 120) * zoom_y;
-
-				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
-				{
-					c = tab[m + 130 + (n + 90) * 260];
-					if ((c > 31) || (c < 5)) MD_Screen[TAB336[j] + i + 8] = c;
-				}
-			}
-		}
-	}
-	else
-	{
-		for(j = 0; j < 240; j++)
-		{
-			for(i = 0; i < 256; i++)
-			{
-				m = (float)(i - 128) * zoom_x;
-				n = (float)(j - 120) * zoom_y;
-
-				if ((m < 130) && (m >= -130) && (n < 90) && (n >= -90))
-				{
-					c = tab[m + 130 + (n + 90) * 260];
-					if ((c > 31) || (c < 5)) MD_Screen[TAB336[j] + i + 8] = c;
-				}
-			}
-		}
-	}
-
-	Half_Blur();
-	Flip();
-
-	return 1;
-}
-
-
-int Update_Crazy_Effect(void)
-{
-	int i, j, offset;
-	int r = 0, v = 0, b = 0, prev_l, prev_p;
-	int RB, G;
-
- 	for(offset = 336 * 240, j = 0; j < 240; j++)
-	{
-		for(i = 0; i < 336; i++, offset--)
-		{
-			prev_l = MD_Screen[offset - 336];
-			prev_p = MD_Screen[offset - 1];
-
-			if (bpp == 15)
-			{
-				RB = ((prev_l & 0x7C1F) + (prev_p & 0x7C1F)) >> 1;
-				G = ((prev_l & 0x03E0) + (prev_p & 0x03E0)) >> 1;
-
-				if (Effect_Color & 0x4)
-				{
-					r = RB & 0x7C00;
-					if (rand() > 0x2C00) r += 0x0400;
-					else r -= 0x0400;
-					if (r > 0x7C00) r = 0x7C00;
-					else if (r < 0x0400) r = 0;
-				}
-
-				if (Effect_Color & 0x2)
-				{
-					v = G & 0x03E0;
-					if (rand() > 0x2C00) v += 0x0020;
-					else v -= 0x0020;
-					if (v > 0x03E0) v = 0x03E0;
-					else if (v < 0x0020) v = 0;
-				}
-
-				if (Effect_Color & 0x1)
-				{
-					b = RB & 0x001F;
-					if (rand() > 0x2C00) b++;
-					else b--;
-					if (b > 0x1F) b = 0x1F;
-					else if (b < 0) b = 0;
-				}
-			}
-			else
-			{
-				RB = ((prev_l & 0xF81F) + (prev_p & 0xF81F)) >> 1;
-				G = ((prev_l & 0x07C0) + (prev_p & 0x07C0)) >> 1;
-
-				if (Effect_Color & 0x4)
-				{
-					r = RB & 0xF800;
-					if (rand() > 0x2C00) r += 0x0800;
-					else r -= 0x0800;
-					if (r > 0xF800) r = 0xF800;
-					else if (r < 0x0800) r = 0;
-				}
-
-				if (Effect_Color & 0x2)
-				{
-					v = G & 0x07C0;
-					if (rand() > 0x2C00) v += 0x0040;
-					else v -= 0x0040;
-					if (v > 0x07C0) v = 0x07C0;
-					else if (v < 0x0040) v = 0;
-				}
-
-				if (Effect_Color & 0x1)
-				{
-					b = RB & 0x001F;
-					if (rand() > 0x2C00) b++;
-					else b--;
-					if (b > 0x1F) b = 0x1F;
-					else if (b < 0) b = 0;
-				}
-			}
-
-			MD_Screen[offset] = r + v + b;
-		}
-	}
-
-	Flip();
-
 	return 1;
 }
 
@@ -966,9 +589,9 @@ int Update_Emulation_One(void)
 }
 
 
+#if 0
 int Update_Emulation_Netplay(int player, int num_player)
 {
-#if 0
 	static int Over_Time = 0;
 	int current_div;
 
@@ -1015,18 +638,19 @@ int Update_Emulation_Netplay(int player, int num_player)
 		Update_Frame();
 		Flip();
 	}
-#endif
 	return 1;
 }
+#endif
 
 
-int Eff_Screen(void)
+/**
+ * Clear_Screen_MD(): Clears the MD screen.
+ */
+void Clear_Screen_MD(void)
 {
-	int i;
-
-	for(i = 0; i < 336 * 240; i++) MD_Screen[i] = 0;
-
-	return 1;
+	// TODO: Figure out if sizeof(MD_Screen) is correct.
+	memset(MD_Screen, 0x00, sizeof(MD_Screen));
+	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
 }
 
 
@@ -1099,40 +723,6 @@ void Refresh_Video(void)
 
 
 /**
- * Set_GL_Resolution(): Set the OpenGL resolution.
- * @param w Width.
- * @param h Height.
- */
-void Set_GL_Resolution(int w,int h)
-{
-	if (Video.Width_GL == w &&
-	    Video.Height_GL == h)
-		return;
-	
-	// OpenGL resolution has changed.
-	Video.Width_GL = w;
-	Video.Height_GL = h;
-	
-	// Print the resolution information.
-	MESSAGE_NUM_2L("Selected %dx%d resolution",
-		       "Selected %dx%d resolution", w, h, 1500);
-	
-	// Synchronize the Graphics menu.
-	Sync_Gens_Window_GraphicsMenu();
-	
-	// If OpenGL mode isn't enabled, don't do anything.
-	if (!Video.OpenGL)
-		return;
-	
-	// OpenGL mode is currently enabled. Change the resolution.
-	End_DDraw();
-	Init_DDraw();
-	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
-	Refresh_Video();
-}
-
-
-/**
  * Set_bpp(): Sets the bpp value.
  * @param newbpp New bpp value.
  */
@@ -1174,59 +764,18 @@ void Set_bpp(int newbpp)
 }
 
 
-/**
- * Change_OpenGL(): Change the OpenGL setting.
- * @param stretch 0 to turn OpenGL off; 1 to turn OpenGL on.
- */
-void Change_OpenGL(int newOpenGL)
+void Adjust_Stretch(void)
 {
-	End_DDraw();
-	Video.OpenGL = (newOpenGL == 1 ? 1 : 0);
-	Init_DDraw();
-	
+#ifdef GENS_OPENGL
 	if (Video.OpenGL)
-		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500)
-	else
-		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500)
-}
-
-/*
-void vsync(){
-if(Opengl){
-	
-	
-}	
-else{
-	
-}
-	
-}
-*/
-
-void Adjust_Stretch()
-{
-	if(Video.OpenGL)
 	{
-	
-		if(Stretch){
-		
-			if(Nonpow2tex)
-			{
-				v_stretch = ( (240 - VDP_Num_Vis_Lines)/2.0f) *  row_length*0.75  * 	1/240;
-				h_stretch = Dep * 32.0f/64.0f * row_length/320;
-			}	
-		
-			else	
-			{
-				v_stretch = (240 - VDP_Num_Vis_Lines)/240.0f/2;
-				h_stretch = Dep * 0.0625f/64.0;	
-			}	
-		}
-	
-		else{
-		v_stretch = 0;
-		h_stretch = 0;	
-		}
+		Adjust_Stretch_GL();
 	}
-		
+	else
+	{
+#endif
+		// TODO: SDL stretch
+#ifdef GENS_OPENGL
+	}
+#endif
 }

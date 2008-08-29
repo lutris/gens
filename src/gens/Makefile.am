@@ -136,6 +136,8 @@ gens_SOURCES = \
 		sdllayer/g_sdldraw.c \
 		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
+		sdllayer/g_opengl.c \
+		sdllayer/g_effects.c \
 		segacd/cd_aspi.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.c \
@@ -235,6 +237,8 @@ noinst_HEADERS = \
 		sdllayer/g_sdldraw.h \
 		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \
+		sdllayer/g_opengl.h \
+		sdllayer/g_effects.h \
 		segacd/cd_aspi.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.h \

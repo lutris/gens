@@ -19,7 +19,6 @@ extern int Blit_Soft;
 extern int Effect_Color;
 extern int FPS_Style;
 extern int Message_Style;
-extern int Kaillera_Error;
 
 // Current border color. (16-bit)
 extern unsigned short BorderColor_16B;
@@ -29,17 +28,28 @@ extern void (*Blit_W)(unsigned char *Dest, int pitch, int x, int y, int offset);
 extern int (*Update_Frame)(void);
 extern int (*Update_Frame_Fast)(void);
 
+/*
+extern int Kaillera_Error;
+int Update_Emulation_Netplay(int player, int num_player);
+*/
+
+// SDL screen
+extern SDL_Surface *screen;
+
+// SDL flags
+extern const int Gens_SDL_Flags;
+
+extern int Dep;
+extern int Old_Dep;
+
 int Init_Fail(int hwnd, char *err);
 int Init_DDraw();
 int Clear_Primary_Screen(void);
 int Clear_Back_Screen(void);
 void Clear_Screen();
-int Update_Gens_Logo(void);
-int Update_Crazy_Effect(void);
 int Update_Emulation(void);
 int Update_Emulation_One(void);
-int Update_Emulation_Netplay(int player, int num_player);
-int Eff_Screen(void);
+void Clear_Screen_MD(void);
 int Pause_Screen(void);
 void Put_Info(char *Message, int Duree);
 int Show_Genesis_Screen(void);
@@ -49,10 +59,8 @@ void End_DDraw(void);
 void Refresh_gl();
 void Put_Info(char *,int);
 void Refresh_Video(void);
-void Set_GL_Resolution(int w,int h);
 void Set_bpp(int newbpp);
 void Change_OpenGL(int newOpenGL);
-void Adjust_Stretch();
-extern SDL_Surface *surface;
+void Adjust_Stretch(void);
 
 #endif
