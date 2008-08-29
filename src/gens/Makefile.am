@@ -112,6 +112,7 @@ gens_SOURCES = \
 		emulator/g_md.c \
 		emulator/g_mcd.c \
 		emulator/g_32x.c \
+		emulator/g_32x_32bit.c \
 		emulator/g_palette.c \
 		emulator/parse.c \
 		emulator/ui_proxy.c \
