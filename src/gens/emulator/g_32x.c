@@ -188,8 +188,8 @@ int Init_32X (struct Rom *MD_Rom)
 	}
 	
 	// Set the window title to the localized console name and the game name.
-	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		strcpy(Str_Err, "32X (PAL)");
+	if (CPU_Mode == 1)
+		strcpy(Str_Err, "32X (NTSC)");
 	else
 		strcpy(Str_Err, "32X (PAL)");
 	UI_Set_Window_Title_Game(Str_Err, MD_Rom->Rom_Name_W);
