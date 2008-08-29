@@ -1,4 +1,5 @@
 High-Level TODO:
+- BUG: 32X VDP doesn't work properly in 32-bit color
 - Move most global variables to global Settings struct
 - Port all Gens ReRecording changes
 - Add Win32 support
