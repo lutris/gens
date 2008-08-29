@@ -12,6 +12,24 @@ AM_PROG_CC_C_O
 AC_ISC_POSIX
 AC_HEADER_STDC
 
+# Check operating system.
+case $host in
+	*i686*linux*)
+		os=linux;
+		;;
+	*i686*mingw32*)
+		os=win32;
+		;;
+	*)
+		AC_MSG_ERROR([Unsupported operating system: $host]);
+		;;
+esac
+AM_CONDITIONAL([LINUX], [test x$os = xlinux])
+AM_CONDITIONAL([WIN32], [test x$os = xwin32])
+
+# Linux version requires GTK+ and SDL.
+if test x$os = xlinux; then
+
 GTK_VERSION=2.4.0
 AM_PATH_GTK_2_0($GTK_VERSION,
 		:,
@@ -22,6 +40,9 @@ AM_PATH_SDL($SDL_VERSION,
             :,
             AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 )
+
+fi
+# END: Linux: GTK+, SDL
 
 dnl GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
@@ -46,7 +67,7 @@ dnl	fi
  else
 	AC_MSG_ERROR([*** nasm not found!])
  fi
- 
+
 AC_ARG_ENABLE(x86_asm, AC_HELP_STRING([--enable-x86-asm], [Enable x86 assembly optimizations [[default=yes]]]), enable_x86_asm=$enableval, enable_x86_asm=yes)
 if test x$enable_x86_asm = xyes; then
 	AC_DEFINE(GENS_X86_ASM, 1, Enable x86 assembly optimizations)

@@ -71,38 +71,6 @@ INCLUDES = \
 	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
 	$(NASM) $< -o $@
 
-if GENS_DEBUG
-gens_debug_src = \
-		debug/debug.c \
-		debug/m68kd.c \
-		debug/sh2d.c \
-		debug/z80dis.c
-gens_debug_h = \
-		debug/debug.h \
-		debug/m68kd.h \
-		debug/sh2d.h \
-		debug/z80dis.h
-else
-gens_debug_src =
-gens_debug_h =
-endif
-
-if GENS_OPENGL
-gens_opengl_src = \
-		sdllayer/g_opengl.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
-gens_opengl_h = \
-		sdllayer/g_opengl.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
-else
-gens_opengl_src =
-gens_opengl_h =
-endif
-
 bin_PROGRAMS = gens
 gens_SOURCES = \
 		emulator/gens.c \
@@ -159,6 +127,40 @@ gens_SOURCES = \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/ui-common.c \
+		util/file/chd.c \
+		util/file/config_file.c \
+		util/file/rom.c \
+		util/file/save.c \
+		util/file/ggenie.c \
+		util/file/unzip.c \
+		util/file/compress/compress.c \
+		util/file/compress/gzip.c \
+		util/file/compress/dummy.c \
+		util/file/compress/Zip.c \
+		util/gfx/scrshot.c \
+		util/sound/gym.c \
+		util/sound/wave.c
+##		netplay/ccnet.c 
+##		netplay/ccnet.h
+
+if GENS_DEBUG
+gens_SOURCES += \
+		debug/debug.c \
+		debug/m68kd.c \
+		debug/sh2d.c \
+		debug/z80dis.c
+endif
+
+if GENS_OPENGL
+gens_SOURCES += \
+		sdllayer/g_opengl.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
+endif
+
+if LINUX
+gens_SOURCES += \
 		ui/gtk/ui-common_gtk.c \
 		ui/gtk/gtk-misc.c \
 		ui/gtk/gens/gens_window.c \
@@ -190,24 +192,8 @@ gens_SOURCES = \
 		ui/gtk/country_code/country_code_window_misc.c \
 		ui/gtk/zip_select/zip_select_dialog.c \
 		ui/gtk/zip_select/zip_select_dialog_misc.c \
-		ui/gtk/about/about_window.c \
-		util/file/chd.c \
-		util/file/config_file.c \
-		util/file/rom.c \
-		util/file/save.c \
-		util/file/ggenie.c \
-		util/file/unzip.c \
-		util/file/compress/compress.c \
-		util/file/compress/gzip.c \
-		util/file/compress/dummy.c \
-		util/file/compress/Zip.c \
-		util/gfx/scrshot.c \
-		util/sound/gym.c \
-		util/sound/wave.c \
-		$(gens_debug_src) \
-		$(gens_opengl_src)
-##		netplay/ccnet.c 
-##		netplay/ccnet.h
+		ui/gtk/about/about_window.c
+endif
 
 noinst_HEADERS = \
 		emulator/gens.h \
@@ -258,6 +244,38 @@ noinst_HEADERS = \
 		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
 		ui/ui-common.h \
+		util/file/chd.h \
+		util/file/config_file.h \
+		util/file/rom.h \
+		util/file/save.h \
+		util/file/ggenie.h \
+		util/file/unzip.h \
+		util/file/compress/compress.h \
+		util/file/compress/gzip.h \
+		util/file/compress/dummy.h \
+		util/file/compress/Zip.h \
+		util/gfx/scrshot.h \
+		util/sound/gym.c \
+		util/sound/wave.c
+
+if GENS_DEBUG
+noinst_HEADERS += \
+		debug/debug.h \
+		debug/m68kd.h \
+		debug/sh2d.h \
+		debug/z80dis.h
+endif
+
+if GENS_OPENGL
+noinst_HEADERS += \
+		sdllayer/g_opengl.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
+endif
+
+if LINUX
+noinst_HEADERS += \
 		ui/gtk/gtk-misc.h \
 		ui/gtk/gens/gens_window.h \
 		ui/gtk/gens/gens_window_callbacks.h \
@@ -288,22 +306,8 @@ noinst_HEADERS = \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.h \
 		ui/gtk/zip_select/zip_select_dialog_misc.h \
-		ui/gtk/about/about_window.h \
-		util/file/chd.h \
-		util/file/config_file.h \
-		util/file/rom.h \
-		util/file/save.h \
-		util/file/ggenie.h \
-		util/file/unzip.h \
-		util/file/compress/compress.h \
-		util/file/compress/gzip.h \
-		util/file/compress/dummy.h \
-		util/file/compress/Zip.h \
-		util/gfx/scrshot.h \
-		util/sound/gym.c \
-		util/sound/wave.c \
-		$(gens_debug_h) \
-		$(gens_opengl_h)
+		ui/gtk/about/about_window.h
+endif
 
 gens_CFLAGS = \
 		-DDATADIR=\"@datadir@/@PACKAGE@\" \
