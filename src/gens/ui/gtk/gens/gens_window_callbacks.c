@@ -280,9 +280,12 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
  */
 CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_VSync_activate, Change_VSync);
 CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_Stretch_activate, Change_Stretch);
+#ifdef GENS_OPENGL
 CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_OpenGL_activate, Change_OpenGL);
+#endif
 
 
+#ifdef GENS_OPENGL
 /**
  * Graphics, Resolution, #x# or Custom
  * TODO: Use this for SDL mode too, not just for OpenGL mode.
@@ -311,6 +314,7 @@ void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, g
 	// Set the resolution.
 	Set_GL_Resolution(w, h);
 }
+#endif
 
 
 /**

@@ -153,7 +153,9 @@ static void create_gens_window_menubar(GtkWidget *container);
 static void create_gens_window_FileMenu(GtkWidget *container);
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu(GtkWidget *container);
+#ifdef GENS_OPENGL
 static void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container);
+#endif
 static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
 static void create_gens_window_CPUMenu(GtkWidget *container);
@@ -390,8 +392,10 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	GtkWidget *GraphicsMenu_VSync;
 	GtkWidget *GraphicsMenu_Stretch;
 	GtkWidget *GraphicsMenu_Separator1;
+#ifdef GENS_OPENGL
 	GtkWidget *GraphicsMenu_OpenGL;
 	GtkWidget *GraphicsMenu_OpenGLRes;
+#endif
 	GtkWidget *GraphicsMenu_bpp;
 	GtkWidget *GraphicsMenu_Separator2;
 	GtkWidget *GraphicsMenu_ColorAdjust;	GtkWidget *GraphicsMenu_ColorAdjust_Icon;
@@ -430,6 +434,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator1, "GraphicsMenu_Separator1", GraphicsMenu);
 	
+#ifdef GENS_OPENGL
 	// OpenGL
 	NewMenuItem_Check(GraphicsMenu_OpenGL, "Open_GL", "GraphicsMenu_OpenGL", GraphicsMenu, FALSE);
 	AddMenuAccelerator(GraphicsMenu_OpenGL, GDK_r, GDK_SHIFT_MASK);
@@ -439,6 +444,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	NewMenuItem(GraphicsMenu_OpenGLRes, "OpenGL Resolution", "GraphicsMenu_OpenGLRes", GraphicsMenu);
 	// OpenGL Resolution submenu
 	create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GraphicsMenu_OpenGLRes);
+#endif
 	
 	// Bits per pixel (OpenGL mode) [TODO: Where is this value actually used?]
 	NewMenuItem(GraphicsMenu_bpp, "Bits per pixel", "GraphicsMenu_bpp", GraphicsMenu);
@@ -486,6 +492,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 }
 
 
+#ifdef GENS_OPENGL
 /**
  * create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(): Create the Graphics, OpenGL Resolution submenu.
  * @param container Container for this menu.
@@ -532,6 +539,7 @@ static void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *contain
 				 GINT_TO_POINTER(resValue));
 	}
 }
+#endif
 
 
 /**

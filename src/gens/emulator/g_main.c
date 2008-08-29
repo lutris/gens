@@ -197,9 +197,11 @@ static void Init_Settings(void)
 	// Initialize video settings.
 	Video.Fast_Blur = 0;
 	Video.Render_Mode = 1;
+#ifdef GENS_OPENGL
 	Video.OpenGL = 1;
 	Video.Width_GL = 640;
 	Video.Height_GL = 480;
+#endif
 	
 	// Default bpp.
 	bpp = 32;

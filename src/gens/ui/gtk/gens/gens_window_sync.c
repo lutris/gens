@@ -160,7 +160,6 @@ void Sync_Gens_Window_FileMenu(void)
 void Sync_Gens_Window_GraphicsMenu(void)
 {
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_OpenGL, *MItem_SpriteLimit;
-	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
 	
@@ -172,10 +171,35 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), W_VSync);
 	MItem_Stretch = lookup_widget(gens_window, "GraphicsMenu_Stretch");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), Stretch);
-	MItem_OpenGL = lookup_widget(gens_window, "GraphicsMenu_OpenGL");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL), Video.OpenGL);
 	MItem_SpriteLimit = lookup_widget(gens_window, "GraphicsMenu_SpriteLimit");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
+	
+	// Bits per pixel
+	sprintf(Str_Tmp, "GraphicsMenu_bpp_SubMenu_%d", bpp);
+	MItem_bpp = lookup_widget(gens_window, Str_Tmp);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_bpp), TRUE);
+	
+	// Rebuild the Render submenu
+	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
+	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(MItem_Render_SubMenu);
+	
+	// Selected Render Mode
+	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", Video.Render_Mode);
+	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
+	
+	// Frame Skip
+	if (Frame_Skip == -1)
+		strcpy(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_Auto");
+	else
+		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
+	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
+	
+#ifdef GENS_OPENGL
+	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
+	MItem_OpenGL = lookup_widget(gens_window, "GraphicsMenu_OpenGL");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL), Video.OpenGL);
 	
 	// OpenGL Resolution
 	
@@ -204,28 +228,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), Str_Tmp);
 	}
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL_Resolution), TRUE);
-	
-	// Bits per pixel
-	sprintf(Str_Tmp, "GraphicsMenu_bpp_SubMenu_%d", bpp);
-	MItem_bpp = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_bpp), TRUE);
-	
-	// Rebuild the Render submenu
-	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
-	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(MItem_Render_SubMenu);
-	
-	// Selected Render Mode
-	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", Video.Render_Mode);
-	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
-	
-	// Frame Skip
-	if (Frame_Skip == -1)
-		strcpy(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_Auto");
-	else
-		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
-	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
+#endif
 	
 	// Enable callbacks.
 	do_callbacks = 1;

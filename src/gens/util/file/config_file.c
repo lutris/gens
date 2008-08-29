@@ -145,6 +145,7 @@ int Save_Config(const char *File_Name)
 	
 	sprintf(Str_Tmp, "%d", bpp);
 	WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
+#ifdef GENS_OPENGL
 	sprintf(Str_Tmp, "%d", Video.OpenGL & 1);
 	WritePrivateProfileString("Graphics", "Render Opengl", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Video.Width_GL);
@@ -155,6 +156,7 @@ int Save_Config(const char *File_Name)
 	sprintf(Str_Tmp, "%d", gl_linear_filter);
 	WritePrivateProfileString("Graphics", "Opengl Filter", Str_Tmp, Conf_File);
 	*/
+#endif
 	
 	sprintf(Str_Tmp, "%d", Stretch & 1);  
 	WritePrivateProfileString("Graphics", "Stretch", Str_Tmp, Conf_File);
@@ -442,10 +444,12 @@ int Load_Config(const char *File_Name, void *Game_Active)
 		// Invalid bpp. Set it to 32 by default.
 		bpp = 32;
 	}
+#ifdef GENS_OPENGL
 	Video.OpenGL = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
 	Video.Width_GL = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
 	Video.Height_GL = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
 	//gl_linear_filter = GetPrivateProfileInt("Graphics", "Opengl Filter", 1, Conf_File);
+#endif
 	//Set_Render(Full_Screen, -1, 1);
 	
 	// Recalculate the MD and 32X palettes using the new color and video mode settings.
