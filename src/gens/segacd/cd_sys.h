@@ -100,14 +100,14 @@ int Track_to_LBA(int track);
 
 void Flush_CD_Command(void);
 void Check_CD_Command(void);
-int Init_CD_Driver(void);
+void Init_CD_Driver(void);
 void End_CD_Driver(void);
 
 int Reset_CD(char *buf, char *iso_name);
 void Stop_CD(void);
 void Change_CD(void);
 
-int Get_Status_CDD_c0(void);
+void Get_Status_CDD_c0(void);
 int Stop_CDD_c1(void);
 int Get_Pos_CDD_c20(void);
 int Get_Track_Pos_CDD_c21(void);

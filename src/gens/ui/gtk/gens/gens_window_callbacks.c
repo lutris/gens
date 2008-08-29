@@ -36,9 +36,16 @@
 #include "general_options/general_options_window_misc.h"
 #include "about/about_window.h"
 #include "color_adjust/color_adjust_window_misc.h"
-#include "opengl_resolution/opengl_resolution_window_misc.h"
-#include "select_cdrom/select_cdrom_window_misc.h"
 #include "country_code/country_code_window_misc.h"
+
+#ifdef GENS_OPENGL
+#include "opengl_resolution/opengl_resolution_window_misc.h"
+#include "g_opengl.h"
+#endif
+
+#ifdef GENS_CDROM
+#include "select_cdrom/select_cdrom_window_misc.h"
+#endif
 
 #include "ui_proxy.h"
 #include "ui-common.h"
@@ -53,8 +60,12 @@
 #include "z80.h"
 #include "scrshot.h"
 
-// Sega CD
+// CD-ROM drive access
+#ifdef GENS_CDROM
 #include "cd_aspi.h"
+#endif
+
+// Sega CD
 #include "g_mcd.h"
 
 // 32X
@@ -113,6 +124,7 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 }
 
 
+#ifdef GENS_CDROM
 /**
  * File, Boot CD
  */
@@ -131,6 +143,7 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 	SegaCD_Started = Init_SegaCD(NULL);
 	Sync_Gens_Window();
 }
+#endif
 
 
 /**
@@ -697,6 +710,7 @@ void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpoin
 }
 
 
+#ifdef GENS_CDROM
 /**
  * Options, Current CD Drive...
  */
@@ -704,6 +718,7 @@ void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user
 {
 	Open_Select_CDROM();
 }
+#endif
 
 
 /**

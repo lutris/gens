@@ -9,7 +9,6 @@
 #include "cpu_sh2.h"
 #include "sh2.h"
 #include "z80.h"
-#include "cd_aspi.h"
 #include "gens.h"
 #include "g_main.h"
 #include "g_sdldraw.h"
@@ -35,6 +34,11 @@
 #include "cd_sys.h"
 #include "parse.h"
 #include "ui_proxy.h"
+
+// CD-ROM drive access
+#ifdef GENS_CDROM
+#include "cd_aspi.h"
+#endif
 
 #define print_usage(option, helpmsg) fprintf(stderr, MM option " : " helpmsg "\n")
 #define print_usage2(option, helpmsg) fprintf(stderr, MM ENABLE "-" option ", " MM DISABLE "-" option " : " helpmsg "\n")

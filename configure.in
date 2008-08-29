@@ -80,6 +80,18 @@ if test x$enable_debugger = xyes; then
 fi
 AM_CONDITIONAL([GENS_DEBUG], [test x$enable_debugger = xyes])
 
+# CD-ROM drive access is currently limited to Linux.
+if test x$os = xlinux; then
+AC_ARG_ENABLE(cdrom, AC_HELP_STRING([--enable-cd-rom], [Enable CD-ROM drive access for SegaCD games [[default=yes]]]), enable_cdrom=$enableval, enable_cdrom=yes)
+if test x$enable_cdrom = xyes; then
+	AC_DEFINE(GENS_CDROM, 1, Enable CD-ROM drive access for SegaCD games)
+fi
+AM_CONDITIONAL([GENS_CDROM], [test x$enable_cdrom = xyes])
+else
+# TODO: Win32 CD-ROM drive access.
+AM_CONDITIONAL([GENS_CDROM], [test x$os = xlinux])
+fi
+
 AC_ARG_WITH(opengl, AC_HELP_STRING([--without-opengl], [Build without OpenGL support [[default=no]]]), with_opengl=$withval, with_opengl=yes)
 if test x$with_opengl = xyes; then
 AC_MSG_CHECKING(for OpenGL support)

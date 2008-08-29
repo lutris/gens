@@ -50,7 +50,11 @@
 #include "gfx_cd.h"
 #include "lc89510.h"
 #include "cd_file.h"
+
+// CD-ROM drive access
+#ifdef GENS_CDROM
 #include "cd_aspi.h"
+#endif
 
 // UI
 #include "ui_proxy.h"
@@ -235,8 +239,10 @@ int Save_Config(const char *File_Name)
 	WritePrivateProfileString("Options", "Auto Fix Checksum", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Auto_Pause & 1);
 	WritePrivateProfileString("Options", "Auto Pause", Str_Tmp, Conf_File);
+#ifdef GENS_CDROM
 	sprintf(Str_Tmp, "%d", CUR_DEV);
 	WritePrivateProfileString("Options", "CD Drive", Str_Tmp, Conf_File);
+#endif
 	
 	// SegaCD BRAM cartridge
 	if (BRAM_Ex_State & 0x100)
@@ -515,7 +521,9 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Show_LED = GetPrivateProfileInt("Options", "LED", 1, Conf_File);
 	Auto_Fix_CS = GetPrivateProfileInt("Options", "Auto Fix Checksum", 0, Conf_File);
 	Auto_Pause = GetPrivateProfileInt("Options", "Auto Pause", 0, Conf_File);
+#ifdef GENS_CDROM
 	CUR_DEV = GetPrivateProfileInt("Options", "CD Drive", 0, Conf_File);
+#endif
 	
 	// SegaCD BRAM cartridge size
 	BRAM_Ex_Size = GetPrivateProfileInt ("Options", "Ram Cart Size", 3, Conf_File);

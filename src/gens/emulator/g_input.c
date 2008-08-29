@@ -2,6 +2,10 @@
  * GENS: Input handler.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <SDL.h>
 #include <gtk/gtk.h>
@@ -15,7 +19,6 @@
 #include "ui_proxy.h"
 #include "save.h"
 #include "gym.h"
-#include "cd_aspi.h"
 #include "vdp_io.h"
 #include "debug.h"
 #include "scrshot.h"
@@ -24,6 +27,11 @@
 // Sound includes.
 #include "ym2612.h"
 #include "psg.h"
+
+// CD-ROM drive access
+#ifdef GENS_CDROM
+#include "cd_aspi.h"
+#endif
 
 #include "gens/gens_window_sync.h"
 #include "ui-common.h"
@@ -337,18 +345,21 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
+		/*
 		case GENS_KEY_b:
 			if (mod & GENS_KMOD_CTRL)
 			{
+				// Ctrl-B: Boot CD
 				if (Num_CD_Drive == 0)
 					return;	// return 1;
 				//if (Check_If_Kaillera_Running()) return 0;
 				if (GYM_Playing)
-					Stop_Play_GYM ();
+					Stop_Play_GYM();
 				Free_Rom (Game);	// Don't forget it !
-				SegaCD_Started = Init_SegaCD (NULL);
+				SegaCD_Started = Init_SegaCD(NULL);
 			}
 			break;
+		*/
 		
 		/*
 		case GENS_KEY_w:

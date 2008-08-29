@@ -13,6 +13,10 @@
 #define CLOCK_NTSC 53693175
 #define CLOCK_PAL  53203424
 
+// Maximum path name length.
+// TODO: Use PATH_MAX instead?
+#define GENS_PATH_MAX 1024
+
 extern int Debug;
 extern int Frame_Skip;
 extern int Frame_Number;

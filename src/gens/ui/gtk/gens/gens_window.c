@@ -247,7 +247,9 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 	GtkWidget *File;			GtkWidget *File_Icon;
 	GtkWidget *FileMenu;
 	GtkWidget *FileMenu_OpenROM;		GtkWidget *FileMenu_OpenROM_Icon;
+#ifdef GENS_CDROM
 	GtkWidget *FileMenu_BootCD;		GtkWidget *FileMenu_BootCD_Icon;
+#endif
 	GtkWidget *FileMenu_Netplay;		GtkWidget *FileMenu_Netplay_Icon;
 	GtkWidget *FileMenu_ROMHistory;		GtkWidget *FileMenu_ROMHistory_Icon;
 	GtkWidget *FileMenu_CloseROM;		GtkWidget *FileMenu_CloseROM_Icon;
@@ -275,11 +277,13 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 	AddMenuAccelerator(FileMenu_OpenROM, GDK_O, GDK_CONTROL_MASK);
 	AddMenuCallback(FileMenu_OpenROM, on_FileMenu_OpenROM_activate);
 	
+#ifdef GENS_CDROM
 	// Boot CD
 	NewMenuItem_StockIcon(FileMenu_BootCD, "_Boot CD", "FileMenu_BootCD", FileMenu,
 			      FileMenu_BootCD_Icon, "gtk-cdrom");
 	AddMenuAccelerator(FileMenu_BootCD, GDK_B, GDK_CONTROL_MASK);
 	AddMenuCallback(FileMenu_BootCD, on_FileMenu_BootCD_activate);
+#endif
 	
 	// Netplay (currently disabled)
 	NewMenuItem_Icon(FileMenu_Netplay, "_Netplay", "FileMenu_Netplay", FileMenu,
@@ -556,7 +560,6 @@ static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
 	int bpp[3] = {15, 16, 32};
 	const char* bppStr[3] = {"15 (555)", "16 (565)", "32"};
 	int i;
-	char bppName[8];
 	char ObjName[64];
 	
 	// Create the submenu.
@@ -970,7 +973,9 @@ static void create_gens_window_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_Directories;	GtkWidget *OptionsMenu_Directories_Icon;
 	GtkWidget *OptionsMenu_BIOSMiscFiles;	GtkWidget *OptionsMenu_BIOSMiscFiles_Icon;
 	GtkWidget *OptionsMenu_Separator1;
+#ifdef GENS_CDROM
 	GtkWidget *OptionsMenu_CurrentCDDrive;	GtkWidget *OptionsMenu_CurrentCDDrive_Icon;
+#endif
 	GtkWidget *OptionsMenu_SegaCDSRAMSize;	GtkWidget *OptionsMenu_SegaCDSRAMSize_Icon;
 	GtkWidget *OptionsMenu_Separator2;
 	GtkWidget *OptionsMenu_LoadConfig;	GtkWidget *OptionsMenu_LoadConfig_Icon;
@@ -1007,10 +1012,12 @@ static void create_gens_window_OptionsMenu(GtkWidget *container)
 	// Separator
 	NewMenuSeparator(OptionsMenu_Separator1, "OptionsMenu_Separator1", OptionsMenu);
 	
+#ifdef GENS_CDROM
 	// Current CD Drive...
 	NewMenuItem_StockIcon(OptionsMenu_CurrentCDDrive, "Current _CD Drive...", "OptionsMenu_CurrentCDDrive", OptionsMenu,
 			      OptionsMenu_CurrentCDDrive_Icon, "gtk-cdrom");
 	AddMenuCallback(OptionsMenu_CurrentCDDrive, on_OptionsMenu_CurrentCDDrive_activate);
+#endif
 	
 	// Sega CD SRAM Size
 	NewMenuItem_Icon(OptionsMenu_SegaCDSRAMSize, "Sega CD S_RAM Size", "OptionsMenu_SegaCDSRAMSize", OptionsMenu,

@@ -9,6 +9,7 @@ extern "C" {
 #include <config.h>
 #endif
 
+#include "gens.h"
 #include "port.h"
 
 // OS-specific includes.
@@ -32,7 +33,6 @@ struct Gens_Settings_t
 
 
 // Gens Pathnames
-#define GENS_PATH_MAX 1024
 struct Gens_PathNames_t
 {
 	char Start_Rom[GENS_PATH_MAX];

@@ -1,3 +1,11 @@
+/**
+ * Gens: Main module.
+ */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -15,7 +23,6 @@
 #include "vdp_rend.h"
 #include "save.h"
 #include "config_file.h"
-#include "cd_aspi.h"
 #include "vdp_io.h"
 #include "gym.h"
 #include "mem_m68k.h"
@@ -29,6 +36,11 @@
 #include "pwm.h"
 #include "debug.h"
 #include "ggenie.h"
+
+// CD-ROM drive access
+#ifdef GENS_CDROM
+#include "cd_aspi.h"
+#endif
 
 // TODO: Eliminate the dependency on these files.
 #include "g_sdlsound.h"
@@ -247,8 +259,6 @@ static void Init_Settings(void)
 	// Build language strings and load the default configuration.
 	Build_Language_String();
 	Load_Config (Str_Tmp, NULL);
-	
-	Init_CD_Driver ();
 }
 
 
@@ -292,30 +302,34 @@ int is_gens_running ()
  * Init(): Initialize GENS.
  * @return 1 if successful; 0 on errors.
  */
-int Init (void)
+int Init(void)
 {
 	if (Init_OS_Graphics() != 0)
 		return 0;
 	
-	init_timer ();
+	init_timer();
 	
-	Identify_CPU ();
+	Identify_CPU();
 	
-	MSH2_Init ();
-	SSH2_Init ();
-	M68K_Init ();
-	S68K_Init ();
-	Z80_Init ();
+	MSH2_Init();
+	SSH2_Init();
+	M68K_Init();
+	S68K_Init();
+	Z80_Init();
 	
-	YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
-	PWM_Init ();
+	YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+	PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+	PWM_Init();
 	
-	Init_Input ();
+	Init_Input();
 	
-	Init_CD_Driver ();
-	Init_Tab ();
-	run_gens ();
+	// Initialize the CD-ROM drive, if available.
+#ifdef GENS_CDROM
+	Init_CD_Driver();
+#endif
+	
+	Init_Tab();
+	run_gens();
 	
 	return 1;
 }
@@ -326,12 +340,14 @@ int Init (void)
  */
 void End_All (void)
 {
-	Free_Rom (Game);
-	End_DDraw ();
-	End_Input ();
-	YM2612_End ();
-	End_Sound ();
-	End_CD_Driver ();
+	Free_Rom(Game);
+	End_DDraw();
+	End_Input();
+	YM2612_End();
+	End_Sound();
+#ifdef GENS_CDROM
+	End_CD_Driver();
+#endif
 	End_OS_Graphics();
 }
 

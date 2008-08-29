@@ -3,208 +3,214 @@
 #include "port.h"
 #include "misc.h"
 #include "lc89510.h"
-#include "cd_aspi.h"
 #include "star_68k.h"
 #include "mem_s68k.h"
 #include "pcm.h"
+#include "cd_sys.h"
+
+// CD-ROM drive access
+#ifdef GENS_CDROM
+#include "cd_aspi.h"
+#endif
 
 #define CDC_DMA_SPEED 256
 
 int CDC_Decode_Reg_Read;
 
-void
-CDD_Reset (void)
+
+void CDD_Reset(void)
 {
-  int i;
-
-  // Reseting CDD
-
-  CDD.Fader = 0;
-  CDD.Control = 0;
-  CDD.Cur_Comm = 0;
-  CDD.Status = 0;
-  CDD.Minute = 0;
-  CDD.Seconde = 0;
-  CDD.Frame = 0;
-  CDD.Ext = 0;
-
-  for (i = 0; i < 10; i++)
-    {
-      CDD.Rcv_Status[i] = 0;
-      CDD.Trans_Comm[i] = 0;
-    }
-
-  CDD.Rcv_Status[8] = 0xF;	// Default checksum
-
-  SCD.Cur_Track = 0;
-  SCD.Cur_LBA = -150;
-  SCD.Status_CDD = READY;
+	int i;
+	
+	// Reseting CDD
+	
+	CDD.Fader = 0;
+	CDD.Control = 0;
+	CDD.Cur_Comm = 0;
+	CDD.Status = 0;
+	CDD.Minute = 0;
+	CDD.Seconde = 0;
+	CDD.Frame = 0;
+	CDD.Ext = 0;
+	
+	for (i = 0; i < 10; i++)
+	{
+		CDD.Rcv_Status[i] = 0;
+		CDD.Trans_Comm[i] = 0;
+	}
+	
+	// Default checksum
+	CDD.Rcv_Status[8] = 0xF;
+	
+	SCD.Cur_Track = 0;
+	SCD.Cur_LBA = -150;
+	SCD.Status_CDD = READY;
 }
 
 
-void
-CDC_Reset (void)
+void CDC_Reset(void)
 {
-  //int i;
-
-  // Reseting CDC
-
-  memset (CDC.Buffer, 0, (16 * 1024 * 2) + 2352);
-  CDC_Update_Header ();
-
-  CDC.COMIN = 0;
-  CDC.IFSTAT = 0xFF;
-  CDC.DAC.N = 0;
-  CDC.DBC.N = 0;
-  CDC.HEAD.N = 0x01000000;
-  CDC.PT.N = 0;
-  CDC.WA.N = 2352 * 2;
-  CDC.STAT.N = 0x00000080;
-  CDC.SBOUT = 0;
-  CDC.IFCTRL = 0;
-  CDC.CTRL.N = 0;
-
-  CDC_Decode_Reg_Read = 0;
+	//int i;
+	
+	// Reseting CDC
+	
+	memset(CDC.Buffer, 0, (16 * 1024 * 2) + 2352);
+	CDC_Update_Header();
+	
+	CDC.COMIN = 0;
+	CDC.IFSTAT = 0xFF;
+	CDC.DAC.N = 0;
+	CDC.DBC.N = 0;
+	CDC.HEAD.N = 0x01000000;
+	CDC.PT.N = 0;
+	CDC.WA.N = 2352 * 2;
+	CDC.STAT.N = 0x00000080;
+	CDC.SBOUT = 0;
+	CDC.IFCTRL = 0;
+	CDC.CTRL.N = 0;
+	
+	CDC_Decode_Reg_Read = 0;
 }
 
 
-void
-LC89510_Reset (void)
+void LC89510_Reset(void)
 {
-  CDD_Reset ();
-  CDC_Reset ();
-
-  CDC.RS0 = 0;
-  CDC.RS1 = 0;
-  CDC.Host_Data = 0;
-  CDC.DMA_Adr = 0;
-  CDC.Stop_Watch = 0;
-
-  SCD.Status_CDC = 0;
-  CDD_Complete = 0;
+	CDD_Reset();
+	CDC_Reset();
+	
+	CDC.RS0 = 0;
+	CDC.RS1 = 0;
+	CDC.Host_Data = 0;
+	CDC.DMA_Adr = 0;
+	CDC.Stop_Watch = 0;
+	
+	SCD.Status_CDC = 0;
+	CDD_Complete = 0;
 }
 
-void
-Update_CDC_TRansfert (void)
+void Update_CDC_TRansfert(void)
 {
-  unsigned int dep, length, add_dest;
-  unsigned char *dest;
-
-  if ((SCD.Status_CDC & 0x08) == 0)
-    return;
-
-  switch (CDC.RS0 & 0x0700)
-    {
-    case 0x0200:		// MAIN CPU
-    case 0x0300:		// SUB CPU
-      CDC.RS0 |= 0x4000;	// Data ready in host port
-      return;
-      break;
-
-    case 0x0400:		// PCM RAM
-      dest = (unsigned char *) Ram_PCM;
-      dep = ((CDC.DMA_Adr & 0x03FF) << 2) + PCM_Chip.Bank;
-      add_dest = 2;
-      break;
-
-    case 0x0500:		// PRG RAM
-      dest = (unsigned char *) Ram_Prg;
-      dep = (CDC.DMA_Adr & 0xFFFF) << 3;
-      add_dest = 2;
+	unsigned int dep, length, add_dest;
+	unsigned char *dest;
+	
+	if ((SCD.Status_CDC & 0x08) == 0)
+		return;
+	
+	switch (CDC.RS0 & 0x0700)
+	{
+		case 0x0200:	// MAIN CPU
+		case 0x0300:	// SUB CPU
+			// Data ready in host port
+			CDC.RS0 |= 0x4000;
+			return;
+			break;
+		
+		case 0x0400:		// PCM RAM
+			dest = (unsigned char *) Ram_PCM;
+			dep = ((CDC.DMA_Adr & 0x03FF) << 2) + PCM_Chip.Bank;
+			add_dest = 2;
+			break;
+		
+		case 0x0500:		// PRG RAM
+			dest = (unsigned char *) Ram_Prg;
+			dep = (CDC.DMA_Adr & 0xFFFF) << 3;
+			add_dest = 2;
 #ifdef DEBUG_CD
 //                      fprintf(debug_SCD_file, "DMA transfert PRG RAM : adr = %.8X  ", dep);
 #endif
-      break;
-
-    case 0x0700:		// WORD RAM
-      if (Ram_Word_State >= 2)
-	{
-	  dest = (unsigned char *) Ram_Word_1M;
-	  add_dest = 2;
-	  if (Ram_Word_State & 1)
-	    dep = ((CDC.DMA_Adr & 0x3FFF) << 3);
-	  else
-	    dep = ((CDC.DMA_Adr & 0x3FFF) << 3) + 0x20000;
+			break;
+		
+		case 0x0700:		// WORD RAM
+			if (Ram_Word_State >= 2)
+			{
+				dest = (unsigned char*)Ram_Word_1M;
+				add_dest = 2;
+				if (Ram_Word_State & 1)
+					dep = ((CDC.DMA_Adr & 0x3FFF) << 3);
+				else
+					dep = ((CDC.DMA_Adr & 0x3FFF) << 3) + 0x20000;
+			}
+			else
+			{
+				dest = (unsigned char*)Ram_Word_2M;
+				dep = ((CDC.DMA_Adr & 0x7FFF) << 3);
+				add_dest = 2;
+			}
+			break;
+		
+		default:
+			return;
 	}
-      else
+	
+	if (CDC.DBC.N <= (CDC_DMA_SPEED * 2))
 	{
-	  dest = (unsigned char *) Ram_Word_2M;
-	  dep = ((CDC.DMA_Adr & 0x7FFF) << 3);
-	  add_dest = 2;
-	}
-      break;
-
-    default:
-      return;
-    }
-
-  if (CDC.DBC.N <= (CDC_DMA_SPEED * 2))
-    {
-      length = (CDC.DBC.N + 1) >> 1;
-      SCD.Status_CDC &= ~0x08;	// Last transfert
-      CDC.RS0 |= 0x8000;	// End data transfert
-      CDC.RS0 &= ~0x4000;	// no more data ready
-      CDC.IFSTAT |= 0x08;	// No more data transfert in progress
-
-      if (CDC.IFCTRL & 0x40)	// DTEIEN = Data Trasnfert End Interrupt Enable ?
-	{
-	  CDC.IFSTAT &= ~0x40;
-
-	  if (Int_Mask_S68K & 0x20)
-	    sub68k_interrupt (5, -1);
-
+		length = (CDC.DBC.N + 1) >> 1;
+		SCD.Status_CDC &= ~0x08;	// Last transfert
+		CDC.RS0 |= 0x8000;		// End data transfert
+		CDC.RS0 &= ~0x4000;		// no more data ready
+		CDC.IFSTAT |= 0x08;		// No more data transfert in progress
+		
+		// DTEIEN = Data Trasnfert End Interrupt Enable ?
+		if (CDC.IFCTRL & 0x40)
+		{
+			CDC.IFSTAT &= ~0x40;
+			
+			if (Int_Mask_S68K & 0x20)
+				sub68k_interrupt (5, -1);
 #ifdef DEBUG_CD
-	  fprintf (debug_SCD_file, "CDC - DTE interrupt\n");
+			fprintf(debug_SCD_file, "CDC - DTE interrupt\n");
 #endif
+		}
 	}
-    }
-  else
-    length = CDC_DMA_SPEED;
+	else
+		length = CDC_DMA_SPEED;
 
 #ifdef DEBUG_CD
 //      fprintf(debug_SCD_file, "DMA length = %.4X\n", length);
 #endif
-
-
-  if ((CDC.RS0 & 0x0700) == 0x0400)	// PCM DMA
-    {
-      int len = length;
-      unsigned char *src = (unsigned char *) &CDC.Buffer[CDC.DAC.N];
-      unsigned char *dst = (unsigned char *) dest + dep;
-
-      while (len--)
+	
+	
+  	if ((CDC.RS0 & 0x0700) == 0x0400)
 	{
-	  *(unsigned short *) dst = *(unsigned short *) src;
-	  src += 2;
-	  dst += add_dest;
+		// PCM DMA
+		int len = length;
+		unsigned char *src = (unsigned char*)&CDC.Buffer[CDC.DAC.N];
+		unsigned char *dst = (unsigned char*)dest + dep;
+		
+		while (len--)
+		{
+			*(unsigned short*)dst = *(unsigned short*)src;
+			src += 2;
+			dst += add_dest;
+		}
+		length <<= 1;
+		CDC.DMA_Adr += length >> 2;
 	}
-      length <<= 1;
-      CDC.DMA_Adr += length >> 2;
-    }
-  else				// OTHER DMA
-    {
-      int len = length;
-      unsigned char *src = (unsigned char *) &CDC.Buffer[CDC.DAC.N];
-      unsigned char *dst = (unsigned char *) dest + dep;
-
-      while (len--)
+	else
 	{
-	  unsigned short outrol = *(unsigned short *) src;
-	  outrol = (outrol << 8) | (outrol >> 8);
-
-	  *(unsigned short *) dst = outrol;
-	  src += 2;
-	  dst += add_dest;
+		// OTHER DMA
+		int len = length;
+		unsigned char *src = (unsigned char*)&CDC.Buffer[CDC.DAC.N];
+		unsigned char *dst = (unsigned char*)dest + dep;
+		
+		while (len--)
+		{
+			unsigned short outrol = *(unsigned short *) src;
+			outrol = (outrol << 8) | (outrol >> 8);
+			
+			*(unsigned short*)dst = outrol;
+			src += 2;
+			dst += add_dest;
+		}
+		length <<= 1;
+		CDC.DMA_Adr += length >> 3;
 	}
-      length <<= 1;
-      CDC.DMA_Adr += length >> 3;
-    }
-
-  CDC.DAC.N = (CDC.DAC.N + length) & 0xFFFF;
-  if (SCD.Status_CDC & 0x08)
-    CDC.DBC.N -= length;
-  else
-    CDC.DBC.N = 0;
+	
+	CDC.DAC.N = (CDC.DAC.N + length) & 0xFFFF;
+	if (SCD.Status_CDC & 0x08)
+		CDC.DBC.N -= length;
+	else
+		CDC.DBC.N = 0;
 }
 
 

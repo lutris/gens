@@ -121,7 +121,6 @@ gens_SOURCES = \
 		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
 		sdllayer/g_effects.c \
-		segacd/cd_aspi.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.c \
 		segacd/cdda_mp3.c \
@@ -153,10 +152,12 @@ endif
 
 if GENS_OPENGL
 gens_SOURCES += \
-		sdllayer/g_opengl.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
+		sdllayer/g_opengl.c
+endif
+
+if GENS_CDROM
+gens_SOURCES += \
+		segacd/cd_aspi.c
 endif
 
 if LINUX
@@ -184,15 +185,27 @@ gens_SOURCES += \
 		ui/gtk/color_adjust/color_adjust_window.c \
 		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
 		ui/gtk/color_adjust/color_adjust_window_misc.c \
-		ui/gtk/select_cdrom/select_cdrom_window.c \
-		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.c \
 		ui/gtk/country_code/country_code_window.c \
 		ui/gtk/country_code/country_code_window_callbacks.c \
 		ui/gtk/country_code/country_code_window_misc.c \
 		ui/gtk/zip_select/zip_select_dialog.c \
 		ui/gtk/zip_select/zip_select_dialog_misc.c \
 		ui/gtk/about/about_window.c
+
+if GENS_OPENGL
+gens_SOURCES += \
+		ui/gtk/opengl_resolution/opengl_resolution_window.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
+endif
+
+if GENS_CDROM
+gens_SOURCES += \
+		ui/gtk/select_cdrom/select_cdrom_window.c \
+		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
+		ui/gtk/select_cdrom/select_cdrom_window_misc.c
+endif
+
 endif
 
 noinst_HEADERS = \
@@ -238,7 +251,6 @@ noinst_HEADERS = \
 		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \
 		sdllayer/g_effects.h \
-		segacd/cd_aspi.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.h \
 		segacd/cdda_mp3.h \
@@ -268,10 +280,12 @@ endif
 
 if GENS_OPENGL
 noinst_HEADERS += \
-		sdllayer/g_opengl.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
+		sdllayer/g_opengl.h
+endif
+
+if GENS_CDROM
+noinst_HEADERS += \
+		segacd/cd_aspi.h
 endif
 
 if LINUX
@@ -298,15 +312,27 @@ noinst_HEADERS += \
 		ui/gtk/color_adjust/color_adjust_window.h \
 		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
 		ui/gtk/color_adjust/color_adjust_window_misc.h \
-		ui/gtk/select_cdrom/select_cdrom_window.h \
-		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.h \
 		ui/gtk/country_code/country_code_window.h \
 		ui/gtk/country_code/country_code_window_callbacks.h \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.h \
 		ui/gtk/zip_select/zip_select_dialog_misc.h \
 		ui/gtk/about/about_window.h
+
+if GENS_OPENGL
+noinst_HEADERS += \
+		ui/gtk/opengl_resolution/opengl_resolution_window.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
+endif
+
+if GENS_CDROM
+noinst_HEADERS += \
+		ui/gtk/select_cdrom/select_cdrom_window.h \
+		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
+		ui/gtk/select_cdrom/select_cdrom_window_misc.h
+endif
+
 endif
 
 gens_CFLAGS = \
