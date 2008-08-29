@@ -57,6 +57,9 @@ Milestone 2 introduces the following new features:
 - Conditional compilation support for OpenGL, PNG, and x86 asm renderers.
   If PNG support is not enabled, screenshots will be taken in BMP format.
 
+- Border color emulation. The border color is set to color 0 of palette 0
+  from the MD's VDP.
+
 Milestone 2 fixes the following bugs:
 
 - Fixed a bug where the 32X VDP overlay disappeared when Gens was paused via
