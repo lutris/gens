@@ -60,6 +60,7 @@ static int Save_Shot_BMP(void)
 	// Used for converting the MD frame to standard bitmap format.
 	int pos;
 	unsigned short MD_Color;
+	unsigned int MD_Color32;
 	
 	// If no game is running, don't do anything.
 	if (!Game)
@@ -120,7 +121,9 @@ static int Save_Shot_BMP(void)
 	
 	// Start/end coordinates in the MD_Screen buffer.
 	// 320x224: start = 8, end = 328
-	// 256x224: start = 8, end = 262 (TODO: Determine when 256x224 mode is active.)
+	// 256x224: start = 8, end = 262
+	
+	// TODO: Verify endianness requirements.
 	
 	//Src += Pitch * (Y - 1);
 	pos = 0;
@@ -140,7 +143,7 @@ static int Save_Shot_BMP(void)
 			}
 		}
 	}
-	else
+	else if (bpp == 16)
 	{
 		// 16-bit color, 565 pixel format.
 		for (y = h - 1; y >= 0; y--)
@@ -151,6 +154,22 @@ static int Save_Shot_BMP(void)
 				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0xF800) >> 8);
 				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x07E0) >> 3);
 				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
+				pos++;
+			}
+		}
+	}
+	else // if (bpp == 32)
+	{
+		// 32-bit color.
+		// BMP uses 24-bit color, so a conversion is still necessary.
+		for (y = h - 1; y >= 0; y--)
+		{
+			for (x = 8; x < 8 + w; x++)
+			{
+				MD_Color32 = MD_Screen32[(y * 336) + x];
+				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color32 >> 16) & 0xFF);
+				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color32 >> 8) & 0xFF);
+				Dest[54 + (pos * 3) + 0] = (unsigned char)(MD_Color32 & 0xFF);
 				pos++;
 			}
 		}
@@ -280,7 +299,6 @@ static int Save_Shot_PNG(void)
 #endif
 	
 	// Write the image.
-	// TODO: 32-bit support.
 	if (bpp == 15)
 	{
 		// 15-bit color, 555 pixel format.
