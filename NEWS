@@ -101,5 +101,8 @@ Milestone 1 introduces the following new features:
   
 - Rewrite of the byteswapping functions so that they describe what is
   being swapped (e.g. be16_to_cpu_array()).
+
+- Extra spaces in game names in ROM headers are removed when the
+  game name is displayed on Gens' title bar.
   
 - Fixed tons of compiler warnings.
