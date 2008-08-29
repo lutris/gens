@@ -3,7 +3,9 @@
 section .data align=64
 
 	extern MD_Screen
+	extern MD_Screen32
 	extern MD_Palette
+	extern MD_Palette32
 	extern CDD.Control
 	extern CDD.Rcv_Status
 	extern CDD.Status
@@ -175,6 +177,38 @@ section .data align=64
 	%assign i i+1
 	%endrep
 
+	Palette_Blanc_32:
+
+	%assign i 128
+	%rep 16
+		dd (i * 65536 + i * 256 + i)
+	%assign i i+8
+	%endrep
+
+	Palette_Bleu_32:
+
+	%assign i 128
+	%rep 16
+		dd i
+	%assign i i+8
+	%endrep
+
+	Palette_Vert_32:
+
+	%assign i 128
+	%rep 16
+		dd (i * 256)
+	%assign i i+8
+	%endrep
+
+	Palette_Rouge_32:
+
+	%assign i 128
+	%rep 16
+		dd (i * 65536)
+	%assign i i+8
+	%endrep
+
 	Mask:			dd 0x00000000, 0x00000000
 	Mask_GG_15:		dd 0x03E003E0, 0x03E003E0
 	Mask_RBRB_15:	dd 0x7C1F7C1F, 0x7C1F7C1F
@@ -246,6 +280,41 @@ section .text align=64
 %endmacro
 
 
+%macro AFF_LINE_LETTER32 1
+
+	%%Pix0
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 0]
+		test dl, dl
+		jz %%Pix1
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 4 * %1) + 0], eax
+
+	%%Pix1
+		mov	dl, byte [Small_Police + ecx + (%1 * 4) + 1]
+		test dl, dl
+		jz %%Pix2
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 4 * %1) + 4], eax
+
+	%%Pix2
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 2]
+		test dl, dl
+		jz %%Pix3
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 4 * %1) + 8], eax
+
+	%%Pix3
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 3]
+		test dl, dl
+		jz %%End
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 4 * %1) + 12], eax
+
+	%%End
+
+%endmacro
+
+
 %macro AFF_LINE_LETTER_X2 1
 
 	%%Pix0
@@ -287,6 +356,53 @@ section .text align=64
 		mov ax, [ebx + edx * 2]
 		mov [edi + (336 * 4 * %1) + 12], eax
 		mov [edi + (336 * 4 * %1) + (336 * 2) + 12], eax
+
+	%%End
+
+%endmacro
+
+
+%macro AFF_LINE_LETTER32_X2 1
+
+	%%Pix0
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 0]
+		test dl, dl
+		jz %%Pix1
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 8 * %1) + 0], eax
+		mov [edi + (336 * 8 * %1) + 4], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 0], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 4], eax
+
+	%%Pix1
+		mov	dl, byte [Small_Police + ecx + (%1 * 4) + 1]
+		test dl, dl
+		jz %%Pix2
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 8 * %1) + 8], eax
+		mov [edi + (336 * 8 * %1) + 12], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 8], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 12], eax
+
+	%%Pix2
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 2]
+		test dl, dl
+		jz %%Pix3
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 8 * %1) + 16], eax
+		mov [edi + (336 * 8 * %1) + 20], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 16], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 20], eax
+
+	%%Pix3
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 3]
+		test dl, dl
+		jz %%End
+		mov eax, [ebx + edx * 4]
+		mov [edi + (336 * 8 * %1) + 24], eax
+		mov [edi + (336 * 8 * %1) + 28], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 24], eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 28], eax
 
 	%%End
 
@@ -350,6 +466,69 @@ section .text align=64
 		add ax, dx
 		xor dh, dh
 		mov [edi + (336 * 2 * %1) + 6], ax
+
+	%%End
+
+%endmacro
+
+
+%macro AFF_LINE_LETTER32_T 1
+
+	%%Pix0
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 0]
+		test dl, dl
+		jz %%Pix1
+		mov eax, [ebx + edx * 4]
+		mov edx, [edi + (336 * 4 * %1) + 0]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add eax, edx
+		xor edx, edx
+		mov [edi + (336 * 4 * %1) + 0], eax
+
+	%%Pix1
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 1]
+		test dl, dl
+		jz %%Pix2
+		mov eax, [ebx + edx * 4]
+		mov edx, [edi + (336 * 4 * %1) + 4]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add eax, edx
+		xor edx, edx
+		mov [edi + (336 * 4 * %1) + 4], eax
+
+	%%Pix2
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 2]
+		test dl, dl
+		jz %%Pix3
+		mov ax, [ebx + edx * 4]
+		mov dx, [edi + (336 * 4 * %1) + 8]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add eax, edx
+		xor edx, edx
+		mov [edi + (336 * 4 * %1) + 8], eax
+
+	%%Pix3
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 3]
+		test dl, dl
+		jz %%End
+		mov ax, [ebx + edx * 4]
+		mov dx, [edi + (336 * 4 * %1) + 12]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add eax, edx
+		xor edx, edx
+		mov [edi + (336 * 4 * %1) + 12], eax
 
 	%%End
 
@@ -473,6 +652,129 @@ section .text align=64
 		add ax, dx
 		mov [edi + (336 * 4 * %1) + (336 * 2) + 14], ax
 		xor dh, dh
+
+	%%End
+
+%endmacro
+
+
+%macro AFF_LINE_LETTER32_T_X2 1
+
+	%%Pix0
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 0]
+		test dl, dl
+		jz %%Pix1
+		mov eax, [ebx + edx * 4]
+		mov edx, [edi + (336 * 8 * %1) + 0]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 0], edx
+		mov edx, [edi + (336 * 8 * %1) + 4]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 4], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 4) + 0]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 0], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 2) + 4]
+		and edx, [Mask]
+		shr edx, 1
+		add eax, edx
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 4], eax
+		xor edx, edx
+
+	%%Pix1
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 1]
+		test dl, dl
+		jz %%Pix2
+		mov eax, [ebx + edx * 4]
+		mov edx, [edi + (336 * 8 * %1) + 8]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 8], edx
+		mov edx, [edi + (336 * 8 * %1) + 12]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 12], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 4) + 8]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 8], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 2) + 12]
+		and edx, [Mask]
+		shr edx, 1
+		add eax, edx
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 12], eax
+		xor edx, edx
+
+	%%Pix2
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 2]
+		test dl, dl
+		jz %%Pix3
+		mov eax, [ebx + edx * 4]
+		mov edx, [edi + (336 * 8 * %1) + 16]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 16], edx
+		mov edx, [edi + (336 * 8 * %1) + 20]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 20], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 4) + 16]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 16], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 2) + 20]
+		and edx, [Mask]
+		shr edx, 1
+		add eax, edx
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 20], eax
+		xor edx, edx
+
+	%%Pix3
+		mov dl, byte [Small_Police + ecx + (%1 * 4) + 3]
+		test dl, dl
+		jz %%End
+		mov eax, [ebx + edx * 4]
+		mov edx, [edi + (336 * 8 * %1) + 24]
+		and eax, [Mask]
+		and edx, [Mask]
+		shr eax, 1
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 24], edx
+		mov edx, [edi + (336 * 8 * %1) + 28]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + 28], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 4) + 24]
+		and edx, [Mask]
+		shr edx, 1
+		add edx, eax
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 24], edx
+		mov edx, [edi + (336 * 8 * %1) + (336 * 2) + 28]
+		and edx, [Mask]
+		shr edx, 1
+		add eax, edx
+		mov [edi + (336 * 8 * %1) + (336 * 4) + 28], eax
+		xor edx, edx
 
 	%%End
 
@@ -654,6 +956,12 @@ section .text align=64
 		push esi
 
 		mov esi, [esp + 24]				; esi = *string
+		
+		; Check if 32-bit color is in use.
+		cmp byte [bpp], 32
+		je Print_Text32
+		
+		; 15/16-bit color functions.
 		lea edi, [MD_Screen + 8 * 2]	; edi = Dest
 		mov ebx, 336 * 2				; Pitch Dest
 		mov eax, [esp + 36]				; eax = Pos Y
@@ -842,6 +1150,204 @@ section .text align=64
 	.Next_Letter_X2
 		inc esi
 		add edi, 8 * 2
+		test byte [esi], 0xFF
+		jz short .End
+		jmp [esp]
+
+	.End
+		add esp, 4
+		pop esi
+		pop edi
+		pop edx
+		pop ecx
+		pop ebx
+		ret
+
+
+	ALIGN4
+	
+	Print_Text32 ; 32-bit color text printing functions.
+
+		shl ebx, 1						; Pitch Dest
+		lea edi, [MD_Screen32 + 8 * 4]	; edi = Dest
+		mul ebx
+		mov ecx, [esp + 32]				; Pos X
+		lea edi, [edi + ecx * 4]		; offset for Pos X
+		add edi, eax					; + offset Pos Y
+		mov ebx, 320					; length of a row
+		mov eax, [esp + 40]				; eax = Style
+		mov ecx, [esp + 28]				; ecx = Size
+		test eax, 0x1					; test the emulation mode
+		jz short .No_Emulation
+
+		test byte [VDP_Reg + 12 * 4], 1	; on teste si on est en mode 32 ou 40 cells
+		jnz short .No_Emulation
+
+		mov ebx, 256					; Taille = 256
+
+	.No_Emulation
+		mov edx, [esp + 32]				; edx = Pos X
+		test eax, 0x10					; teste if mode x2
+		lea edx, [edx + ecx * 4]		; edx = Pos X finale
+		jz short .Size_x1
+
+		lea edx, [edx + ecx * 4]		; edx = Pos X finale
+
+	.Size_x1
+		sub edx, ebx					; on teste si la chaine n'est pas trop grande
+		jb short .String_OK				; si c ok on passe � la suite sinon
+
+		shr edx, 2
+		test eax, 0x10					; teste si mode x2
+		jz short .Size_x1_2
+
+		shr edx, 1
+
+	.Size_x1_2
+		inc edx							; edx = nombre de caract�re en trop
+		sub ecx, edx					; ecx = nouvelle taille pour �tre OK
+		mov byte [esi + ecx - 2], '.'	; on termine la chiane avec des points
+		mov byte [esi + ecx - 1], '.'
+
+	.String_OK
+		mov ebx, eax
+		mov byte [esi + ecx - 0], 0		; fin de la chaine pour �tre sur
+		shr ebx, 1
+		sub esp, 4
+		and ebx, 0x3					; on garde uniquement le type palette
+		mov dword [Mask], 0xFEFEFE
+		test byte [esi], 0xFF				; test the first byte
+		mov ebx, [.Palette_Table + ebx * 4]	; ebx pointe to the palette in use
+		jz near .End						; if NULL then we leave...
+		add ebx, 12							; ...a clear color
+
+		and eax, 0x18						; isolate the bits for copying
+		shr eax, 1
+		mov eax, [.Table_Style + eax]
+		mov [esp], eax
+		jmp [esp]
+
+	ALIGN4
+
+	.Palette_Table
+		dd Palette_Blanc_32, Palette_Bleu_32, Palette_Vert_32, Palette_Rouge_32
+
+	ALIGN4
+
+	.Table_Style
+		dd .Mode_Normal, .Mode_Trans
+		dd .Mode_Normal_X2, .Mode_Trans_X2
+
+	ALIGN4
+
+	.Mode_Normal
+		movzx eax, byte [esi]
+		sub eax, 32
+		jae .MN_Car_OK
+		xor eax, eax
+	.MN_Car_OK
+		mov ecx, eax
+		lea eax, [eax * 4]
+		shl ecx, 5
+		xor edx, edx
+		sub ecx, eax
+
+		AFF_LINE_LETTER32 0
+		AFF_LINE_LETTER32 1
+		AFF_LINE_LETTER32 2
+		AFF_LINE_LETTER32 3
+		AFF_LINE_LETTER32 4
+		AFF_LINE_LETTER32 5
+		AFF_LINE_LETTER32 6
+
+		jmp .Next_Letter
+
+	ALIGN4
+
+	.Mode_Trans
+		movzx eax, byte [esi]
+		sub eax, 32
+		jae .MT_Car_OK
+		xor eax, eax
+	.MT_Car_OK
+		mov ecx, eax
+		lea eax, [eax * 4]
+		shl ecx, 5
+		xor edx, edx
+		sub ecx, eax
+
+		AFF_LINE_LETTER32_T 0
+		AFF_LINE_LETTER32_T 1
+		AFF_LINE_LETTER32_T 2
+		AFF_LINE_LETTER32_T 3
+		AFF_LINE_LETTER32_T 4
+		AFF_LINE_LETTER32_T 5
+		AFF_LINE_LETTER32_T 6
+
+		jmp .Next_Letter
+
+	ALIGN4
+
+	.Mode_Normal_X2
+		movzx eax, byte [esi]
+		sub eax, 32
+		jae short .MN_X2_Car_OK
+		xor eax, eax
+	.MN_X2_Car_OK
+		mov ecx, eax
+		lea eax, [eax * 4]
+		shl ecx, 5
+		xor edx, edx
+		sub ecx, eax
+
+		AFF_LINE_LETTER32_X2 0
+		AFF_LINE_LETTER32_X2 1
+		AFF_LINE_LETTER32_X2 2
+		AFF_LINE_LETTER32_X2 3
+		AFF_LINE_LETTER32_X2 4
+		AFF_LINE_LETTER32_X2 5
+		AFF_LINE_LETTER32_X2 6
+
+		jmp .Next_Letter_X2
+
+	ALIGN4
+
+	.Mode_Trans_X2
+		movzx eax, byte [esi]
+		sub eax, 32
+		jae short .MT_X2_Car_OK
+		xor eax, eax
+	.MT_X2_Car_OK
+		mov ecx, eax
+		lea eax, [eax * 4]
+		shl ecx, 5
+		xor edx, edx
+		sub ecx, eax
+
+		AFF_LINE_LETTER32_T_X2 0
+		AFF_LINE_LETTER32_T_X2 1
+		AFF_LINE_LETTER32_T_X2 2
+		AFF_LINE_LETTER32_T_X2 3
+		AFF_LINE_LETTER32_T_X2 4
+		AFF_LINE_LETTER32_T_X2 5
+		AFF_LINE_LETTER32_T_X2 6
+
+		jmp .Next_Letter_X2
+
+	ALIGN4
+	
+	.Next_Letter
+		inc esi
+		add edi, 4 * 4
+		test byte [esi], 0xFF
+		jz short .End
+		jmp [esp]
+
+	ALIGN4
+	
+	.Next_Letter_X2
+		inc esi
+		add edi, 8 * 4
 		test byte [esi], 0xFF
 		jz short .End
 		jmp [esp]
