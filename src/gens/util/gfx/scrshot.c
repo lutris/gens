@@ -125,7 +125,22 @@ static int Save_Shot_BMP(void)
 	//Src += Pitch * (Y - 1);
 	pos = 0;
 	// Bitmaps are stored upside-down.
-	if (!Mode_555)
+	if (bpp == 15)
+	{
+		// 15-bit color, 555 pixel format.
+		for (y = h - 1; y >= 0; y--)
+		{
+			for (x = 8; x < 8 + w; x++)
+			{
+				MD_Color = MD_Screen[(y * 336) + x];
+				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0x7C00) >> 7);
+				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
+				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
+				pos++;
+			}
+		}
+	}
+	else
 	{
 		// 16-bit color, 565 pixel format.
 		for (y = h - 1; y >= 0; y--)
@@ -135,21 +150,6 @@ static int Save_Shot_BMP(void)
 				MD_Color = MD_Screen[(y * 336) + x];
 				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0xF800) >> 8);
 				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x07E0) >> 3);
-				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
-				pos++;
-			}
-		}
-	}
-	else
-	{
-		// 16-bit color, 555 pixel format.
-		for (y = h - 1; y >= 0; y--)
-		{
-			for (x = 8; x < 8 + w; x++)
-			{
-				MD_Color = MD_Screen[(y * 336) + x];
-				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0x7C00) >> 7);
-				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
 				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
 				pos++;
 			}
@@ -280,7 +280,24 @@ static int Save_Shot_PNG(void)
 #endif
 	
 	// Write the image.
-	if (!Mode_555)
+	// TODO: 32-bit support.
+	if (bpp == 15)
+	{
+		// 15-bit color, 555 pixel format.
+		for (y = 0; y < h; y++)
+		{
+			for (x = 0; x < w; x++)
+			{
+				MD_Color = MD_Screen[(y * 336) + x + 8];
+				rowBuffer[(x * 3) + 0] = (unsigned char)((MD_Color & 0x7C00) >> 7);
+				rowBuffer[(x * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
+				rowBuffer[(x * 3) + 2] = (unsigned char)((MD_Color & 0x001F) << 3);
+			}
+			// Write the row.
+			png_write_row(png_ptr, rowBuffer);
+		}
+	}
+	else
 	{
 		// 16-bit color, 565 pixel format.
 		for (y = 0; y < h; y++)
@@ -290,22 +307,6 @@ static int Save_Shot_PNG(void)
 				MD_Color = MD_Screen[(y * 336) + x + 8];
 				rowBuffer[(x * 3) + 0] = (unsigned char)((MD_Color & 0xF800) >> 8);
 				rowBuffer[(x * 3) + 1] = (unsigned char)((MD_Color & 0x07E0) >> 3);
-				rowBuffer[(x * 3) + 2] = (unsigned char)((MD_Color & 0x001F) << 3);
-			}
-			// Write the row.
-			png_write_row(png_ptr, rowBuffer);
-		}
-	}
-	else
-	{
-		// 16-bit color, 555 pixel format.
-		for (y = 0; y < h; y++)
-		{
-			for (x = 0; x < w; x++)
-			{
-				MD_Color = MD_Screen[(y * 336) + x + 8];
-				rowBuffer[(x * 3) + 0] = (unsigned char)((MD_Color & 0x7C00) >> 7);
-				rowBuffer[(x * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
 				rowBuffer[(x * 3) + 2] = (unsigned char)((MD_Color & 0x001F) << 3);
 			}
 			// Write the row.

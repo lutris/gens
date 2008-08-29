@@ -29,7 +29,7 @@ section .data align=64
 	extern MD_Screen
 	extern TAB336
 	extern Have_MMX
-	extern Mode_555
+	extern bpp
 
 	MASK_DIV2_15:	dd 0x3DEF3DEF, 0x3DEF3DEF
 	MASK_DIV2_16:	dd 0x7BEF7BEF, 0x7BEF7BEF
@@ -134,10 +134,12 @@ section .text align=64
 		mov edi, [esp + 24]				; edi = destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
 
-		test byte [Mode_555], 1			; set good mask for current video mode
 		movq mm7, [MASK_DIV2_15]
-		jnz short .Loop_Y
+		; Check if this is 15-bit color mode.
+		cmp byte [bpp], 15			; set good mask for current video mode
+		je short .Loop_Y
 
+		; 16-bit color mode.
 		movq mm7, [MASK_DIV2_16]
 		jmp short .Loop_Y
 

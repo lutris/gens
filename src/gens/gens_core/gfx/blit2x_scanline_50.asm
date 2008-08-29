@@ -29,7 +29,7 @@ section .data align=64
 	extern MD_Screen
 	extern TAB336
 	extern Have_MMX
-	extern Mode_555
+	extern bpp
 
 	MASK_DIV2_15:	dd 0x3DEF3DEF, 0x3DEF3DEF
 	MASK_DIV2_16:	dd 0x7BEF7BEF, 0x7BEF7BEF
@@ -58,10 +58,13 @@ section .text align=64
 		shr ecx, 5						; on transfert 32 bytes screen � chaque boucle
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
-		test byte [Mode_555], 1
-		movq mm7, [MASK_DIV2_15]
-		jnz short .Loop_Y
 
+		movq mm7, [MASK_DIV2_15]
+		; Check if this is 15-bit color mode.
+		cmp byte [bpp], 15
+		je short .Loop_Y
+
+		; 16-bit color mode
 		movq mm7, [MASK_DIV2_16]
 		jmp short .Loop_Y
 

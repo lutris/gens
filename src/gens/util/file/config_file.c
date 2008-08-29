@@ -143,7 +143,7 @@ int Save_Config(const char *File_Name)
 	sprintf(Str_Tmp, "%d", W_VSync & 1);
 	WritePrivateProfileString("Graphics", "Windows VSync", Str_Tmp, Conf_File);
 	
-	sprintf(Str_Tmp, "%d", Video.bpp);
+	sprintf(Str_Tmp, "%d", bpp);
 	WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
 	sprintf(Str_Tmp, "%d", Video.OpenGL & 1);
 	WritePrivateProfileString("Graphics", "Render Opengl", Str_Tmp, Conf_File);
@@ -419,14 +419,6 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Effect_Color = GetPrivateProfileInt("General", "Free Mode Color", 7, Conf_File);
 	Sleep_Time = GetPrivateProfileInt("General", "Allow Idle", 0, Conf_File) & 1;
 	
-	// 555 or 565 mode
-	if (GetPrivateProfileInt ("Graphics", "Force 555", 0, Conf_File))
-		Mode_555 = 3;
-	else if (GetPrivateProfileInt ("Graphics", "Force 565", 0, Conf_File))
-		Mode_555 = 2;
-	else
-		Mode_555 = 0;
-	
 	// Color settings
 	RMax_Level = GetPrivateProfileInt("Graphics", "Red Max", 255, Conf_File);
 	GMax_Level = GetPrivateProfileInt("Graphics", "Green Max", 255, Conf_File);
@@ -438,21 +430,26 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Greyscale = GetPrivateProfileInt("Graphics", "Greyscale", 0, Conf_File);
 	Invert_Color = GetPrivateProfileInt("Graphics", "Invert", 0, Conf_File);
 	
-	// Recalculate the MD and 32X palettes using the new color settings.
-	Recalculate_Palettes ();
-	
 	// Video settings
 	// Render_Mode is decremented by 1 for compatibility with old Gens.
 	FS_VSync = GetPrivateProfileInt("Graphics", "Full Screen VSync", 0, Conf_File);
 	W_VSync = GetPrivateProfileInt("Graphics", "Windows VSync", 0, Conf_File);
 	Video.Full_Screen = GetPrivateProfileInt("Graphics", "Full Screen", 0, Conf_File);
 	Video.Render_Mode = GetPrivateProfileInt("Graphics", "Render Mode", 1, Conf_File) - 1;
-	Video.bpp = GetPrivateProfileInt("Graphics", "Bits Per Pixel", 16, Conf_File);
+	bpp = (unsigned char)(GetPrivateProfileInt("Graphics", "Bits Per Pixel", 32, Conf_File));
+	if (bpp != 15 && bpp != 16 && bpp != 32)
+	{
+		// Invalid bpp. Set it to 32 by default.
+		bpp = 32;
+	}
 	Video.OpenGL = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
 	Video.Width_GL = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
 	Video.Height_GL = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
 	//gl_linear_filter = GetPrivateProfileInt("Graphics", "Opengl Filter", 1, Conf_File);
 	//Set_Render(Full_Screen, -1, 1);
+	
+	// Recalculate the MD and 32X palettes using the new color and video mode settings.
+	Recalculate_Palettes ();
 	
 	Stretch = GetPrivateProfileInt("Graphics", "Stretch", 0, Conf_File);
 	Blit_Soft = GetPrivateProfileInt("Graphics", "Software Blit", 0, Conf_File);

@@ -57,7 +57,7 @@ section .data align=64
 	extern MD_Screen
 	extern TAB336
 	extern Have_MMX
-	extern Mode_555
+	extern bpp
 
 	; 2xSAI
 
@@ -126,14 +126,20 @@ section .text align=64
 		jz near .End
 
 		sub esp, byte 4 * 5				; 5 params for _2xSaILine
-		test byte [Mode_555], 1
+		
 		mov [esp], esi					; 1st Param = *Src
 		mov [esp + 4], dword (336 * 2)	; 2nd Param = SrcPitch
 		mov [esp + 8], edx				; 3rd Param = width
 		mov [esp + 12], edi				; 4th Param = *Dest
 		mov [esp + 16], ebx				; 5th Param = DestPitch
-		jz short .Loop
+		
+		; Check if this is 15-bit color mode.
+		; If it isn't don't apply 15-bit color masks.
+		; TODO: Bug where changing from 16 to 15 and back to 16 causes color problems.
+		cmp byte [bpp], 15
+		jne short .Loop
 
+		; 15-bit: Apply 15-bit color masks.
 		movq mm0, [colorMask15]
 		movq mm1, [lowPixelMask15]
 		movq [colorMask], mm0

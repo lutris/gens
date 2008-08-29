@@ -214,10 +214,16 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	}
 	
 	// Check if a blit function exists for this renderer.
-	if (Bits32)
+	if (bpp == 32)
 		testBlit = (Have_MMX ? Renderers[Mode].blit_32_mmx : Renderers[Mode].blit_32);
-	else
+	else if (bpp == 15 || bpp == 16)
 		testBlit = (Have_MMX ? Renderers[Mode].blit_16_mmx : Renderers[Mode].blit_16);
+	else
+	{
+		// Invalid bpp.
+		fprintf(stderr, "Invalid bpp: %d\n", bpp);
+		return 0;
+	}
 	
 	if (!testBlit)
 	{

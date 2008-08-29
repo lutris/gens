@@ -26,6 +26,7 @@
 
 #include "gens_window.h"
 #include "gens_window_callbacks.h"
+#include "gens_window_sync.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,6 +42,7 @@
 #include "gtk-misc.h"
 
 #include "gens.h"
+#include "g_main.h"
 #include "debug.h"
 
 GtkWidget *gens_window;
@@ -52,10 +54,6 @@ GtkWidget *debugMenuItems[9];
 GtkWidget *debugSeparators[2];
 #endif
 
-// Renderer / Blitter selection stuff.
-#include "renderers.h"
-#include "vdp_rend.h"
-#include "misc.h"
 
 GtkAccelGroup *accel_group;
 
@@ -157,7 +155,6 @@ static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container
 static void create_gens_window_GraphicsMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container);
-static void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
 static void create_gens_window_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUG
@@ -460,7 +457,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	NewMenuItem_Icon(GraphicsMenu_Render, "_Render", "GraphicsMenu_Render", GraphicsMenu,
 			 GraphicsMenu_Render_Icon, "viewmag.png");
 	// Render submenu
-	create_gens_window_GraphicsMenu_Render_SubMenu(GraphicsMenu_Render);
+	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GraphicsMenu_Render);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator3, "GraphicsMenu_Separator3", GraphicsMenu);
@@ -548,8 +545,8 @@ static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
 	GSList *bppGroup = NULL;
 	
 	// TODO: Move this array somewhere else.
-	int bpp[3] = {16, 24, 32};
-	
+	int bpp[3] = {15, 16, 32};
+	const char* bppStr[3] = {"15 (555)", "16 (565)", "32"};
 	int i;
 	char bppName[8];
 	char ObjName[64];
@@ -562,75 +559,11 @@ static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container)
 	// Create the bits per pixel entries.
 	for (i = 0; i < 3; i++)
 	{
-		sprintf(bppName, "%d", bpp[i]);
-		sprintf(ObjName, "GraphicsMenu_bpp_SubMenu_%s", bppName);
-		NewMenuItem_Radio(bppItem, bppName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), bppGroup);
+		sprintf(ObjName, "GraphicsMenu_bpp_SubMenu_%d", bpp[i]);
+		NewMenuItem_Radio(bppItem, bppStr[i], ObjName, SubMenu, (i == 1 ? TRUE : FALSE), bppGroup);
 		g_signal_connect((gpointer)bppItem, "activate",
 				 G_CALLBACK(on_GraphicsMenu_bpp_SubMenu_bppItem_activate),
 				 GINT_TO_POINTER(bpp[i]));
-	}
-}
-
-
-/**
- * create_gens_window_GraphicsMenu_Render_SubMenu(): Create the Graphics, Render submenu.
- * @param container Container for this menu.
- */
-void create_gens_window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
-{
-	// This function may be called externally after a video mode change.
-	
-	GtkWidget *SubMenu;
-	GtkWidget *RenderItem;
-	GSList *RenderGroup = NULL;
-	gboolean showRenderer;
-	
-	int i;
-	char ObjName[64];
-	
-	// Delete the submenu, if one already exists.
-	gtk_menu_item_remove_submenu(GTK_MENU_ITEM(container));
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicsMenu_Render_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the render entries.
-	i = 0;
-	while (Renderers[i].name)
-	{
-		// Check if the current blitter exists for this video mode.
-		showRenderer = FALSE;
-		if (Bits32)
-		{
-			// 32-bit
-			if (Have_MMX && Renderers[i].blit_32_mmx)
-				showRenderer = TRUE;
-			else if (Renderers[i].blit_32)
-				showRenderer = TRUE;
-		}
-		else
-		{
-			// 15/16-bit
-			if (Have_MMX && Renderers[i].blit_16_mmx)
-				showRenderer = TRUE;
-			else if (Renderers[i].blit_16)
-				showRenderer = TRUE;
-		}
-		
-		if (showRenderer)
-		{
-			sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i);
-			NewMenuItem_Radio(RenderItem, Renderers[i].name, ObjName, SubMenu,
-					  (i == 1 ? TRUE : FALSE), RenderGroup);
-			g_signal_connect((gpointer)RenderItem, "activate",
-					 G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
-					 GINT_TO_POINTER(i));
-		}
-		
-		// Check the next renderer.
-		i++;
 	}
 }
 

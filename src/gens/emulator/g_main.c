@@ -45,6 +45,10 @@ struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
 struct Gens_VideoSettings_t Video;
 
+// Bits per pixel.
+// This is used by asm functions, so it can't be kept in a struct.
+unsigned char bpp;
+
 // from gens-rerecording
 // TODO: Move somewhere else.
 int _XRay = 0; // TODO: Port X-ray support from Gens Rerecording.
@@ -194,7 +198,9 @@ static void Init_Settings(void)
 	Video.OpenGL = 1;
 	Video.Width_GL = 640;
 	Video.Height_GL = 480;
-	Video.bpp = 16;
+	
+	// Default bpp.
+	bpp = 32;
 	
 	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;
@@ -354,9 +360,6 @@ int main(int argc, char *argv[])
 	// Initialize the Game Genie array.
 	Init_GameGenie();
 	
-	// TODO: Get 32-bit color working.
-	Bits32 = 0;
-	
 	//char sdlbuf[32];
 	
 	//sprintf(sdlbuf, "SDL_WINDOWID=%ld",  GDK_WINDOW_XWINDOW(gens_window->window));
@@ -405,7 +408,7 @@ int main(int argc, char *argv[])
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
-			return 0;
+			return 1;
 		}
 	}
 	

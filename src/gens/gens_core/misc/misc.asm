@@ -11,7 +11,7 @@ section .data align=64
 	extern CDD.Seconde
 	extern CDD.Frame
 	extern CDD.Ext
-
+	extern bpp
 
 	Small_Police:
 		dd 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000			; 32   
@@ -189,7 +189,6 @@ section .data align=64
 section .bss align=64
 
 	extern VDP_Reg
-	extern Mode_555
 	extern MD_Screen
 
 	DECL CPU_Model
@@ -541,8 +540,9 @@ section .text align=64
 		movq mm6, [Mask_RBRB_16]
 		movq mm7, [Mask_GG_16]
 
-		test byte [Mode_555], 1
-		jz short .MMX_Loop
+		; Only do the following conversions in 15-bit mode.
+		cmp byte [bpp], 15 ; 15 == mode 555; 16 == mode 565
+		jne short .MMX_Loop
 
 		movq mm6, [Mask_RBRB_15]
 		movq mm7, [Mask_GG_15]
@@ -588,9 +588,8 @@ section .text align=64
 		mov ecx, 336 * 240  ; nombre de pix 16 bits � rendre en blur
 		xor edi, edi
 		xor edx, edx
-		test byte [Mode_555], 1
-		jnz short .Loop_555
-		jmp short .Loop_565
+		cmp byte [bpp], 16  ; 15 == mode 555; 16 == mode 565
+		je short .Loop_565
 
 	ALIGN32
 
@@ -704,8 +703,8 @@ section .text align=64
 		sub esp, 4
 		and ebx, 0x3					; on garde uniquement le type palette
 		mov dword [Mask], 0xF7DE
-		test byte [Mode_555], 1			; on teste le mode courant
-		jz short .Mode_565
+		cmp byte [bpp], 15  ; 15 == mode 555; 16 == mode 565
+		jne short .Mode_565
 		or ebx, 0x4
 		mov dword [Mask], 0x7BDE
 

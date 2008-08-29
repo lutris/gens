@@ -321,13 +321,13 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
 {
 	int bpp = GPOINTER_TO_INT(user_data);
 	
-	if (!do_callbacks || !Video.OpenGL)
+	if (!do_callbacks)
 		return;
 	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
 		return;
 	
 	// Set the bits per pixel.
-	Set_Bpp(bpp);
+	Set_bpp(bpp);
 	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
 }
 

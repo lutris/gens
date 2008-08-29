@@ -48,18 +48,20 @@ struct Gens_VideoSettings_t
 	int OpenGL;
 	int Width_GL;
 	int Height_GL;
-	int bpp;
 };
-// from gens-rerecording
-// TODO: Move somewhere else.
-extern int _XRay;
-extern unsigned int _Pal32_XRAY[0x10000];
-
 
 extern struct Gens_Settings_t Settings;
 extern struct Gens_PathNames_t PathNames;
 extern struct Gens_VideoSettings_t Video;
 
+// Bits per pixel.
+// This is used by asm functions, so it can't be kept in a struct.
+extern unsigned char bpp;
+
+// from gens-rerecording
+// TODO: Move somewhere else.
+extern int _XRay;
+extern unsigned int _Pal32_XRAY[0x10000];
 
 extern int Paused;
 extern int Net_Play;

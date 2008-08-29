@@ -9,8 +9,8 @@ section .bss align=64
 
 	extern MD_Screen
 	extern MD_Screen32
-	extern _Bits32
-	
+	extern bpp
+
 	DECL _32X_Palette_16B
 	resw 0x10000
 
@@ -77,9 +77,13 @@ section .text align=64
 		xor ebp, ebp
 		lea esi, [eax + _32X_VDP_Ram]
 		xor ebx, ebx
-		test [_Bits32], byte 1
 		lea esi, [eax + _32X_VDP_Ram]
-		jnz	near .32BIT
+		
+		; Check if 32-bit color mode is enabled.
+		; If 32-bit is enabled, do 32-bit drawing.
+		cmp byte [bpp], 32
+		je	near .32BIT
+
 		lea edi, [MD_Screen + 8 * 2]
 
 	.Loop_Y

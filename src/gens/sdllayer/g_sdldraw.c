@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <math.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -14,6 +15,7 @@
 #include "g_main.h"
 #include "gens.h"
 #include "g_md.h"
+#include "g_32x.h"
 #include "mem_m68k.h"
 #include "vdp_io.h"
 #include "vdp_rend.h"
@@ -24,6 +26,7 @@
 void Sleep(int i);
 #include "cdda_mp3.h"
 #include "renderers.h"
+#include "g_palette.h"
 
 
 // Needed to synchronize the Graphics menu after a GL resolution change.
@@ -129,9 +132,8 @@ int Init_Fail(int hwnd, char *err)
 
 int Init_draw_gl(int w, int h)
 {
-	screen = SDL_SetVideoMode(w,h,Video.bpp,sdl_flags|SDL_OPENGL|(Video.Full_Screen?SDL_FULLSCREEN:0));
-	
-	
+	// SDL doesn't seem to recognize 15-bit color.
+	screen = SDL_SetVideoMode(w, h, bpp, sdl_flags | SDL_OPENGL | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
 	
 	if ( screen == NULL)
 	{
@@ -187,7 +189,7 @@ static gchar *WindowID = NULL;
 int Init_draw_sdl(int w, int h)
 {
 	// TODO: Proper bpp support.
-	screen = SDL_SetVideoMode(w, h, (Bits32 ? 32 : 16), sdl_flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
+	screen = SDL_SetVideoMode(w, h, bpp, sdl_flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
 	
 	if ( screen==NULL)
 	{
@@ -312,9 +314,7 @@ void Clear_Screen()
 void Flip_gl()
 {
 	// TODO: Add border drawing, like in Flip_SDL().   
-	
-	// TODO: Proper bpp support.
-	int bytespp = (Bits32 ? 4 : 2);
+	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
 	
 	if (Video.Full_Screen)		
 	{	Blit_FS((unsigned char *) filter_buffer + (((row_length*2) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift ), row_length*bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * bytespp);
@@ -515,7 +515,7 @@ static void Flip_SDL()
 	// Draw the border.
 	// TODO: Make this more accurate and/or more efficient.
 	// In particular, it only works for 1x and 2x rendering.
-	if (!Bits32 && (BorderColor_16B != MD_Palette[0]))
+	if ((bpp == 15 || bpp == 16) && (BorderColor_16B != MD_Palette[0]))
 	{
 		BorderColor_16B = MD_Palette[0];
 		if (VDP_Num_Vis_Lines < 240)
@@ -549,7 +549,7 @@ static void Flip_SDL()
 			SDL_FillRect(screen, &border, BorderColor_16B);
 		}
 	}
-	else if (Bits32 && (BorderColor_32B != MD_Palette32[0]))
+	else if ((bpp == 32) && (BorderColor_32B != MD_Palette32[0]))
 	{
 		BorderColor_32B = MD_Palette32[0];
 		if (VDP_Num_Vis_Lines < 240)
@@ -584,8 +584,7 @@ static void Flip_SDL()
 		}
 	}
 	
-	// TODO: Proper bpp support.
-	int bytespp = (Bits32 ? 4 : 2);
+	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = screen->pixels + (((screen->w * bytespp) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift);
@@ -802,7 +801,7 @@ int Update_Crazy_Effect(void)
 			prev_l = MD_Screen[offset - 336];
 			prev_p = MD_Screen[offset - 1];
 
-			if (Mode_555 & 1)
+			if (bpp == 15)
 			{
 				RB = ((prev_l & 0x7C1F) + (prev_p & 0x7C1F)) >> 1;
 				G = ((prev_l & 0x03E0) + (prev_p & 0x03E0)) >> 1;
@@ -1033,6 +1032,7 @@ int Eff_Screen(void)
 
 int Pause_Screen(void)
 {
+	// TODO: 32-bit support.
 	int i, j, offset;
 	int r, v, b, nr, nv, nb;
 
@@ -1042,7 +1042,7 @@ int Pause_Screen(void)
 	{
 		for(i = 0; i < 336; i++, offset++)
 		{
-			if (Mode_555 & 1)
+			if (bpp == 15)
 			{
 				r = (MD_Screen[offset] & 0x7C00) >> 10;
 				v = (MD_Screen[offset] & 0x03E0) >> 5;
@@ -1063,7 +1063,7 @@ int Pause_Screen(void)
 			nv &= 0x1E;
 			nb &= 0x1E;
 
-			if (Mode_555 & 1)
+			if (bpp == 15)
 				MD_Screen[offset] = (nr << 10) + (nv << 5) + nb;
 			else
 				MD_Screen[offset] = (nr << 11) + (nv << 6) + nb;
@@ -1132,14 +1132,45 @@ void Set_GL_Resolution(int w,int h)
 }
 
 
-void Set_Bpp(int newbpp)
+/**
+ * Set_bpp(): Sets the bpp value.
+ * @param newbpp New bpp value.
+ */
+void Set_bpp(int newbpp)
 {
-	if(Video.bpp !=newbpp)
+	if (bpp == newbpp)
+		return;
+	
+	bpp = newbpp;
+	End_DDraw();
+	Init_DDraw();
+	
+	// Reset the renderer.
+	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 0))
 	{
-		Video.bpp = newbpp;
-		End_DDraw();
-		Init_DDraw();
+		// Cannot initialize video mode. Try using render mode 0 (normal).
+		if (!Set_Render(Video.Full_Screen, 0, 1))
+		{
+			// Cannot initialize normal mode.
+			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
+			exit(1);
+		}
 	}
+	
+	// Recalculate palettes.
+	printf("NEW: %d\n", newbpp);
+	Recalculate_Palettes();
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// TODO: After switching color depths, the screen buffer isn't redrawn
+	// until something's updated. Figure out how to trick the renderer
+	// into updating anyway.
+	
+	// NOTE: This only seems to be a problem with 15-to-16 or 16-to-15 at the moment.
+	
+	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
 }
 
 

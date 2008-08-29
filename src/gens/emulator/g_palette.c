@@ -4,6 +4,7 @@
 
 
 #include "g_palette.h"
+#include "g_main.h"
 #include "vdp_rend.h"
 #include "vdp_32x.h"
 
@@ -52,14 +53,14 @@ inline int CalculateGrayScale_16B(int r, int g, int b)
 /**
  * Recalculate_Palettes(): Recalculates the MD and 32X palettes for brightness, contrast, and various effects.
  */
-void Recalculate_Palettes (void)
+void Recalculate_Palettes(void)
 {
 	int i;
 	int r, g, b;
 	int rf, gf, bf;
 	int bright, cont;
 	unsigned short color;
-	
+	printf("BPP: %d\n", bpp);
 	// Calculate the MD palette.
 	for (r = 0; r < 0x10; r++)
 	{
@@ -106,8 +107,7 @@ void Recalculate_Palettes (void)
 				Palette32[color] = (rf << 18) | (gf << 10) | (bf << 2);
 				
 				// 16-bit palette
-				// TODO: Convert (Mode_555 & 1) to (bpp == 15)
-				if (Mode_555 & 1)
+				if (bpp == 15)
 				{
 					rf = (rf >> 1) << 10;
 					gf = (gf >> 1) << 5;
@@ -164,8 +164,7 @@ void Recalculate_Palettes (void)
 		_32X_Palette_32B[i] = r | g | b;
 		
 		// 16-bit palette
-		// TODO: Convert (Mode_555 & 1) to (bpp == 15)
-		if (Mode_555 & 1)
+		if (bpp == 15)
 		{
 			r = (r >> 1) << 10;
 			g = (g >> 1) << 5;
@@ -186,7 +185,7 @@ void Recalculate_Palettes (void)
 		// MD palette.
 		for (i = 0; i < 0x1000; i++)
 		{
-			if (Mode_555 & 1)
+			if (bpp == 15)
 			{
 				r = ((Palette[i] >> 10) & 0x1F) << 1;
 				g = ((Palette[i] >> 5) & 0x1F) << 1;
@@ -201,7 +200,7 @@ void Recalculate_Palettes (void)
 			
 			r = g = b = CalculateGrayScale_16B(r, g, b);
 			
-			if (Mode_555 & 1)
+			if (bpp == 15)
 			{
 				r = (r >> 1) << 10;
 				g = (g >> 1) << 5;
@@ -220,7 +219,7 @@ void Recalculate_Palettes (void)
 		// 32X palette.
 		for (i = 0; i < 0x10000; i++)
 		{
-			if (Mode_555 & 1)
+			if (bpp == 15)
 			{
 				r = ((_32X_Palette_16B[i] >> 10) & 0x1F) << 1;
 				g = ((_32X_Palette_16B[i] >> 5) & 0x1F) << 1;
@@ -235,7 +234,7 @@ void Recalculate_Palettes (void)
 			
 			r = g = b = CalculateGrayScale_16B(r, g, b);
 			
-			if (Mode_555 & 1)
+			if (bpp == 15)
 			{
 				r = (r >> 1) << 10;
 				g = (g >> 1) << 5;

@@ -78,6 +78,7 @@ section .bss align=64
 	extern _32X_VDP
 	extern _XRay
 	extern _Pal32_XRAY
+	extern bpp
 
 	struc vx
 		.Mode		resd 1
@@ -146,10 +147,6 @@ section .bss align=64
 	
 	DECL Sprite_Over
 	resd 1
-	DECL Mode_555
-	resd 1
-	DECL Bits32 ; 32-bit color (TODO: Combine this with Video.bpp)
-	resb 1
 
 	; Debugging stuff
 	; TODO: Port all debugging stuff from Gens Rerecording
@@ -963,10 +960,11 @@ ALIGN4
 	mov byte [CRam_Flag], 0						; on update la palette, on remet le flag a 0 pour modified
 	mov cx, 0x7BEF
 	xor edx, edx
-	test byte [Mode_555], 1
-	mov ebx, (64 / 2) - 1								; ebx = Nombre de couleurs
-	jz short %%Loop
+	cmp byte [bpp], 15 ; check for 15-bit color (555)
+	mov ebx, (64 / 2) - 1			; ebx = Nombre de couleurs
+	je short %%Loop    ; jumps if 15-bit
 
+	; 15-bit color requires an extra step.
 	mov cx, 0x3DEF
 	jmp short %%Loop
 
@@ -1851,8 +1849,8 @@ ALIGN4
 	ALIGN4
 	
 	.Palette_OK
-		test [Bits32], byte 1
-		jz short .Render16
+		cmp byte [bpp], 32	; check if this is 32-bit color
+		jne short .Render16
 		
 	.Render32 ; 32-bit
 		mov ecx, 160

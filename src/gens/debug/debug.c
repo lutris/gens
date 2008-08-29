@@ -251,7 +251,8 @@ void Debug_Event(int key, int mod)
 			VDP_Status &= ~2;
 			for (i = 0; i < 16; i++)
 			{
-				if (Mode_555 & 1)
+				// TODO: 32-bit palette support.
+				if (bpp == 15)
 					MD_Palette[7 * 16 + i] =
 						((2 * i) << 10) + ((2 * i) << 5) + (2 * i);
 				else

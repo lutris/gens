@@ -44,6 +44,25 @@
 #include "cd_sys.h"
 #include "gym.h"
 
+// Renderer / Blitter selection stuff.
+#include "renderers.h"
+#include "vdp_rend.h"
+#include "misc.h"
+
+
+// Macro to create a menu item with radio buttons.
+#define NewMenuItem_Radio(MenuItemWidget, MenuItemCaption, MenuItemName, Container, State, RadioGroup)	\
+{												\
+	MenuItemWidget = gtk_radio_menu_item_new_with_mnemonic(RadioGroup, (MenuItemCaption));	\
+	RadioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(MenuItemWidget));	\
+	gtk_widget_set_name(MenuItemWidget, MenuItemName);					\
+	gtk_widget_show(MenuItemWidget);							\
+	gtk_container_add(GTK_CONTAINER(Container), MenuItemWidget);				\
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MenuItemWidget), State);		\
+	GLADE_HOOKUP_OBJECT(gens_window, MenuItemWidget, MenuItemName);				\
+}
+
+
 /**
  * Sync_Gens_Window(): Synchronize the GENS Main Window.
  */
@@ -142,7 +161,8 @@ void Sync_Gens_Window_GraphicsMenu(void)
 {
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_OpenGL, *MItem_SpriteLimit;
 	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
-	GtkWidget *MItem_bpp, *MItem_Render, *MItem_FrameSkip;
+	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
+	GtkWidget *MItem_FrameSkip;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -186,14 +206,18 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL_Resolution), TRUE);
 	
 	// Bits per pixel
-	sprintf(Str_Tmp, "GraphicsMenu_bpp_SubMenu_%d", Video.bpp);
+	sprintf(Str_Tmp, "GraphicsMenu_bpp_SubMenu_%d", bpp);
 	MItem_bpp = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_bpp), TRUE);
 	
-	// Render
+	// Rebuild the Render submenu
+	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
+	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(MItem_Render_SubMenu);
+	
+	// Selected Render Mode
 	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", Video.Render_Mode);
-	MItem_Render = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render), TRUE);
+	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
 	
 	// Frame Skip
 	if (Frame_Skip == -1)
@@ -205,6 +229,67 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+}
+
+
+/**
+ * Sync_Gens_Window_GraphicsMenu_Render_SubMenu(): Synchronize the Graphics, Render submenu.
+ * @param container Container for this menu.
+ */
+void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
+{
+	GtkWidget *SubMenu;
+	GtkWidget *RenderItem;
+	GSList *RenderGroup = NULL;
+	gboolean showRenderer;
+	
+	int i;
+	char ObjName[64];
+	
+	// Delete the submenu, if one already exists.
+	gtk_menu_item_remove_submenu(GTK_MENU_ITEM(container));
+	
+	// Create the submenu.
+	SubMenu = gtk_menu_new();
+	gtk_widget_set_name(SubMenu, "GraphicsMenu_Render_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	
+	// Create the render entries.
+	i = 0;
+	while (Renderers[i].name)
+	{
+		// Check if the current blitter exists for this video mode.
+		showRenderer = FALSE;
+		if (bpp == 32)
+		{
+			// 32-bit
+			if (Have_MMX && Renderers[i].blit_32_mmx)
+				showRenderer = TRUE;
+			else if (Renderers[i].blit_32)
+				showRenderer = TRUE;
+		}
+		else // if (bpp == 15 || bpp == 16)
+		{
+			// 15/16-bit
+			if (Have_MMX && Renderers[i].blit_16_mmx)
+				showRenderer = TRUE;
+			else if (Renderers[i].blit_16)
+				showRenderer = TRUE;
+		}
+		
+		if (showRenderer)
+		{
+			sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i);
+			NewMenuItem_Radio(RenderItem, Renderers[i].name, ObjName, SubMenu,
+					  (i == 1 ? TRUE : FALSE), RenderGroup);
+			g_signal_connect((gpointer)RenderItem, "activate",
+					  G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
+							  GINT_TO_POINTER(i));
+		}
+		
+		// Check the next renderer.
+		i++;
+	}
 }
 
 
