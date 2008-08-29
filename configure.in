@@ -59,7 +59,7 @@ if test x$enable_debugger = xyes; then
 fi
 AM_CONDITIONAL([GENS_DEBUG], [test x$enable_debugger = xyes])
 
-AC_ARG_WITH(png, AC_HELP_STRING([--without-opengl], [Build without OpenGL support [[default=no]]]), with_opengl=$withval, with_opengl=yes)
+AC_ARG_WITH(opengl, AC_HELP_STRING([--without-opengl], [Build without OpenGL support [[default=no]]]), with_opengl=$withval, with_opengl=yes)
 if test x$with_opengl = xyes; then
 AC_MSG_CHECKING(for OpenGL support)
 	with_opengl=no
@@ -76,6 +76,7 @@ AC_MSG_CHECKING(for OpenGL support)
 		AC_DEFINE(GENS_OPENGL, 1, OpenGL support)
 	fi
 fi
+AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
 
 AC_ARG_WITH(png, AC_HELP_STRING([--without-png], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
 if test x$with_png = xyes; then
