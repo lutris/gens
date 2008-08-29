@@ -297,7 +297,7 @@ static int Save_Shot_PNG(void)
 			png_write_row(png_ptr, rowBuffer);
 		}
 	}
-	else
+	else if (bpp == 16)
 	{
 		// 16-bit color, 565 pixel format.
 		for (y = 0; y < h; y++)
@@ -312,6 +312,20 @@ static int Save_Shot_PNG(void)
 			// Write the row.
 			png_write_row(png_ptr, rowBuffer);
 		}
+	}
+	else // if (bpp == 32)
+	{
+		// 32-bit color.
+		// libpng expects 24-bit data, but has a convenience function
+		// to automatically convert 32-bit to 24-bit.
+		// TODO: PNG_FILLER_AFTER, BGR mode - needed for little-endian.
+		 // Figure out what's needed on big-endian.
+		png_byte *row_pointers[240];
+		for (y = 0; y < h; y++)
+			row_pointers[y] = (unsigned char*)&MD_Screen32[(y * 336) + 8];
+		png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
+		png_set_bgr(png_ptr);
+		png_write_rows(png_ptr, row_pointers, h);
 	}
 	
 	// Finished writing.
