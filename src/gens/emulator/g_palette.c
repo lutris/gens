@@ -60,7 +60,7 @@ void Recalculate_Palettes(void)
 	int rf, gf, bf;
 	int bright, cont;
 	unsigned short color;
-	printf("BPP: %d\n", bpp);
+	
 	// Calculate the MD palette.
 	for (r = 0; r < 0x10; r++)
 	{

@@ -702,7 +702,6 @@ void Set_bpp(int newbpp)
 	}
 	
 	// Recalculate palettes.
-	printf("NEW: %d\n", newbpp);
 	Recalculate_Palettes();
 	
 	// Synchronize the Graphics menu.
