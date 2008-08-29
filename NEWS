@@ -36,6 +36,10 @@ Milestone 2 introduces the following new features:
   GZip and Zip files are supported (the same as before), but it's now
   much easier and simpler to add new formats.
 
+- The new compression handler detects compressed files by checking the
+  file's header instead of relying on the file's extension. This may help
+  in cases where a file is misnamed.
+
 - Multi-file Zip support. If a Zip file containing multiple files is
   selected, Gens will prompt you to select which file to open. The UI
   for selecting a file is currently not polished, but it will be improved
