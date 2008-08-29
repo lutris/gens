@@ -31,6 +31,9 @@
 
 #include "ui-common.h"
 
+// 32X 32-bit color macros
+#include "g_32x_32bit.h"
+
 
 #ifdef __RESULT__
 #define SH2_EXEC(cycM, cycS)						\
@@ -330,6 +333,7 @@ int Do_32X_VDP_Only (void)
 	     VDP_Current_Line++)
 	{
 		Render_Line_32X();
+		POST_LINE_32X;
 	}
 
 	return 0;
@@ -823,6 +827,7 @@ int Do_32X_Frame (void)
 		}
 		
 		Render_Line_32X ();
+		POST_LINE_32X;
 		
 		/* instruction by instruction execution */
 		

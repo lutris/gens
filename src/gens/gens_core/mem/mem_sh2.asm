@@ -960,7 +960,7 @@ section .text align=64
 		mov edx, eax
 		shl ecx, 1
 		rol edx, 16
-		and eax, 0xFF
+		and eax, 0xFFFF
 		and edx, 0xFFFF
 		mov eax, [_32X_Palette_32B + eax * 4]
 		mov edx, [_32X_Palette_32B + edx * 4]

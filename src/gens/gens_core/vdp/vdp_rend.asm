@@ -144,7 +144,12 @@ section .bss align=64
 	.Borne			resd 1
 
 	ALIGN_4
-	
+
+	; _32X_Rend_Mode is used for the 32X 32-bit color C macros.
+	; See g_32x_32bit.h
+	DECL _32X_Rend_Mode	
+	resb 1
+
 	DECL Sprite_Over
 	resd 1
 
@@ -960,8 +965,8 @@ ALIGN4
 	mov byte [CRam_Flag], 0						; on update la palette, on remet le flag a 0 pour modified
 	mov cx, 0x7BEF
 	xor edx, edx
-	cmp byte [bpp], 15 ; check for 15-bit color (555)
 	mov ebx, (64 / 2) - 1			; ebx = Nombre de couleurs
+	cmp byte [bpp], 15 ; check for 15-bit color (555)
 	je short %%Loop    ; jumps if 15-bit
 
 	; 15-bit color requires an extra step.
@@ -2060,6 +2065,13 @@ ALIGN4
 		mov bx, [_32X_VDP_Ram + esi + ebx * 2]
 		or edx, ebp
 		lea esi, [_32X_VDP_Ram + esi + ebx * 2]
+
+		; Set the 32X render mode for the 32-bit color C macros.
+		shr edx, 2
+		mov [_32X_Rend_Mode], al
+		or [_32X_Rend_Mode], dl
+		shl edx, 2
+
 		jmp [.Table_32X_Draw + eax * 4 + edx]
 
 	ALIGN4

@@ -161,22 +161,22 @@ void Recalculate_Palettes(void)
 		bf = Constrain_Color_Component(bf);
 		
 		// 32-bit palette
-		_32X_Palette_32B[i] = r | g | b;
+		_32X_Palette_32B[i] = (rf << 18) | (gf << 10) | (bf << 2);
 		
 		// 16-bit palette
 		if (bpp == 15)
 		{
-			r = (r >> 1) << 10;
-			g = (g >> 1) << 5;
+			rf = (rf >> 1) << 10;
+			gf = (gf >> 1) << 5;
 		}
 		else
 		{
-			r = (r >> 1) << 11;
-			g = (g >> 0) << 5;
+			rf = (rf >> 1) << 11;
+			gf = (gf >> 0) << 5;
 		}
-		b = (b >> 1) << 0;
+		bf = (bf >> 1) << 0;
 		
-		_32X_Palette_16B[i] = r | g | b;
+		_32X_Palette_16B[i] = rf | gf | bf;
 	}
 	
 	// Convert colors to grayscale, if necessary.
@@ -258,12 +258,14 @@ void Recalculate_Palettes(void)
 		for (i = 0; i < 0x1000; i++)
 		{
 			Palette[i] ^= 0xFFFF;
+			Palette32[i] ^= 0xFFFFFF;
 		}
 		
 		// 32X palette.
 		for (i = 0; i < 0x10000; i++)
 		{
 			_32X_Palette_16B[i] ^= 0xFFFF;
+			_32X_Palette_32B[i] ^= 0xFFFFFF;
 		}
 	}
 	
@@ -271,5 +273,6 @@ void Recalculate_Palettes(void)
 	for (i = 0; i < 0x100; i++)
 	{
 		_32X_VDP_CRam_Ajusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
+		_32X_VDP_CRam_Ajusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
 	}
 }

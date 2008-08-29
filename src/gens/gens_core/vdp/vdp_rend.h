@@ -11,6 +11,10 @@ extern unsigned int MD_Screen32[336 * 240];
 extern unsigned int Palette32[0x1000];
 extern unsigned int MD_Palette32[256];
 
+// _32X_Rend_Mode is used for the 32X 32-bit color C macros.
+// See g_32x_32bit.h
+extern unsigned char _32X_Rend_Mode;
+
 // Debugging stuff
 // TODO: Port all debugging stuff from Gens Rerecording
 extern char PalLock;

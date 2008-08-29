@@ -217,6 +217,7 @@ noinst_HEADERS = \
 		emulator/g_md.h \
 		emulator/g_mcd.h \
 		emulator/g_32x.h \
+		emulator/g_32x_32bit.h \
 		emulator/g_palette.h \
 		emulator/gens.h \
 		emulator/parse.h \

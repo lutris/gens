@@ -942,10 +942,10 @@
 		mov dword [Controller_1_Delay], ecx
 		mov dword [Controller_2_Counter], ecx
 		mov dword [Controller_2_Delay], ecx
-		jnz short .desactived
+		jnz short .deactivated
 
 		test ah, 2
-		jnz short .already_actived
+		jnz short .already_activated
 
 		or ah, 2
 		push edx
@@ -963,20 +963,20 @@
 		call z80_Set_Odo
 		pop edx
 
-	.already_actived
+	.already_activated
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.desactived
+	.deactivated
 		call _main68k_readOdometer
 		mov cl, [Z80_State]
 		mov [Last_BUS_REQ_Cnt], eax
 		test cl, 2
 		setnz [Last_BUS_REQ_St]
-		jz short .already_desactived
+		jz short .already_deactivated
 
 		push edx
 		mov ebx, [Cycles_M68K]
@@ -993,7 +993,7 @@
 		call z80_Exec
 		pop edx
 
-	.already_desactived
+	.already_deactivated
 		pop ecx
 		pop ebx
 		ret
@@ -1575,10 +1575,10 @@
 		mov dword [Controller_1_Delay], ecx
 		mov dword [Controller_2_Counter], ecx
 		mov dword [Controller_2_Delay], ecx
-		jnz short .desactived
+		jnz short .deactivated
 
 		test al, 2
-		jnz short .already_actived
+		jnz short .already_activated
 
 		or al, 2
 		push edx
@@ -1596,20 +1596,20 @@
 		call z80_Set_Odo
 		pop edx
 
-	.already_actived
+	.already_activated
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.desactived
+	.deactivated
 		call _main68k_readOdometer
 		mov cl, [Z80_State]
 		mov [Last_BUS_REQ_Cnt], eax
 		test cl, 2
 		setnz [Last_BUS_REQ_St]
-		jz short .already_desactived
+		jz short .already_deactivated
 
 		push edx
 		mov ebx, [Cycles_M68K]
@@ -1626,7 +1626,7 @@
 		call z80_Exec
 		pop edx
 
-	.already_desactived
+	.already_deactivated
 		pop ecx
 		pop ebx
 		ret
@@ -2268,11 +2268,16 @@
 		cmp ebx, 0xA15400
 		jae short .32X_bad
 
+		push edx
+
 		and eax, 0xFFFF
 		mov cx, [_32X_Palette_16B + eax * 2]
+		mov edx, [_32X_Palette_32B + eax * 4]
 		mov [_32X_VDP_CRam + ebx - 0xA15200], ax
 		mov [_32X_VDP_CRam_Ajusted + ebx - 0xA15200], cx
+		mov [_32X_VDP_CRam_Ajusted32 + (ebx - 0xA15200) * 2], edx
 
+		pop edx
 		pop ecx
 		pop ebx
 		ret

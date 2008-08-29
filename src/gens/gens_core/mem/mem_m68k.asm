@@ -390,9 +390,11 @@ section .bss align=64
 	extern _32X_MINT
 	extern _32X_SINT
 	extern _32X_Palette_16B
+	extern _32X_Palette_32B
 	extern _32X_VDP_Ram
 	extern _32X_VDP_CRam
 	extern _32X_VDP_CRam_Ajusted
+	extern _32X_VDP_CRam_Ajusted32
 	extern _32X_VDP
 
 	extern PWM_FIFO_R
