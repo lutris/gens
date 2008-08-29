@@ -333,7 +333,7 @@ int Do_32X_VDP_Only (void)
 	     VDP_Current_Line++)
 	{
 		Render_Line_32X();
-		POST_LINE_32X;
+		Post_Line_32X();
 	}
 
 	return 0;
@@ -826,8 +826,8 @@ int Do_32X_Frame (void)
 #endif
 		}
 		
-		Render_Line_32X ();
-		POST_LINE_32X;
+		Render_Line_32X();
+		Post_Line_32X();
 		
 		/* instruction by instruction execution */
 		

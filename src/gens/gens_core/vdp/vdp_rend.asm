@@ -2076,6 +2076,12 @@ ALIGN4
 
 	ALIGN4
 
+	; New 32X rendering functions from Gens Rerecording are available in g_32x_32bit.c.
+	; The new rendering functions support 15-bit, 16-bit, and 32-bit color.
+	; The following functions only support 15-bit and 16-bit color.
+	; Thus, they are marked obsolete and are scheduled for removal sometime
+	; in the near future.
+
 	.Table_32X_Draw
 		dd .32X_Draw_M00, .32X_Draw_M01, .32X_Draw_M10, .32X_Draw_M11
 		dd .32X_Draw_M00_P, .32X_Draw_M01_P, .32X_Draw_M10_P, .32X_Draw_M11_P
@@ -2087,8 +2093,11 @@ ALIGN4
 	.Genesis_Loop
 
 	ALIGN32
-
+	
 	.32X_Draw_M10
+			popad
+			ret
+	
 			movzx ebp, word [esi + 0]
 			movzx ebx, word [esi + 2]
 			test ebp, 0x8000
@@ -2130,6 +2139,9 @@ ALIGN4
 	ALIGN32
 	
 	.32X_Draw_M10_P
+			popad
+			ret
+
 			movzx ebp, word [esi + 0]
 			movzx ebx, word [esi + 2]
 			test ebp, 0x8000
@@ -2171,6 +2183,9 @@ ALIGN4
 	ALIGN32
 
 	.32X_Draw_M01
+			popad
+			ret
+
 			movzx ebp, byte [esi + 1]
 			movzx ebx, byte [esi + 0]
 			mov ax, [_32X_VDP_CRam + ebp * 2]
@@ -2215,6 +2230,9 @@ ALIGN4
 	ALIGN32
 	
 	.32X_Draw_M01_P
+			popad
+			ret
+
 			movzx ebp, byte [esi + 1]
 			movzx ebx, byte [esi + 0]
 			mov ax, [_32X_VDP_CRam + ebp * 2]
@@ -2259,6 +2277,9 @@ ALIGN4
 	ALIGN32
 
 	.32X_Draw_SM01
+			popad
+			ret
+
 			movzx ebp, byte [esi + 0]
 			movzx ebx, byte [esi + 3]
 			mov ax, [_32X_VDP_CRam + ebp * 2]
@@ -2302,6 +2323,9 @@ ALIGN4
 	ALIGN32
 	
 	.32X_Draw_SM01_P
+			popad
+			ret
+
 			movzx ebp, byte [esi + 0]
 			movzx ebx, byte [esi + 3]
 			mov ax, [_32X_VDP_CRam + ebp * 2]
@@ -2346,6 +2370,9 @@ ALIGN4
 	ALIGN32
 
 	.32X_Draw_M11
+			popad
+			ret
+
 			lea edx, [ecx * 2]
 			jmp short .32X_Draw_M11_Loop
 
@@ -2373,6 +2400,9 @@ ALIGN4
 	ALIGN32
 	
 	.32X_Draw_M11_P
+			popad
+			ret
+
 			lea edx, [ecx * 2]
 			jmp short .32X_Draw_M11_P_Loop
 
@@ -2401,6 +2431,9 @@ ALIGN4
 	
 	.32X_Draw_M00_P
 	.32X_Draw_M00
+			popad
+			ret
+
 			movzx eax, byte [edi + 0]
 			movzx ebx, byte [edi + 2]
 			mov ax, [MD_Palette + eax * 2]

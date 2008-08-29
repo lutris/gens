@@ -25,9 +25,9 @@ section .bss align=64
 
 	DECL _32X_VDP_CRam_Ajusted
 	resw 0x100
-	
-        DECL _32X_VDP_CRam_Ajusted32
-        resd 0x100
+
+	DECL _32X_VDP_CRam_Ajusted32
+	resd 0x100
 	
 	ALIGNB 32
 	
