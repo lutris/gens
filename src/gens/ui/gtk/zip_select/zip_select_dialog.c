@@ -35,7 +35,7 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-//GtkAccelGroup *accel_group;
+// TODO: Improve this dialog.
 
 
 /**

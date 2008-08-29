@@ -8,6 +8,7 @@ High-Level TODO:
 - Add VGM dumping support
 - Add more compression format support
 - Add more 32-bit color support
+- Improve the Zip File Selection Dialog.
 
 Low Priority:
 - Add MacOS X Aqua UI
