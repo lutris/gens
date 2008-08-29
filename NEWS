@@ -1,4 +1,4 @@
-Gens for Linux v2.15.2/GS-m1 (Gens/GS)
+Gens for Linux v2.15.2/GS-m2 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,10 +14,49 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens for Linux v2.15.2/GS-m1 is David Korth's fork of Gens,
+Gens for Linux v2.15.2/GS-m2 is David Korth's fork of Gens,
 initially based on Gens for Linux v2.15.2. The number after
 the "m" indicates the milestone. Releases are usually made
 after a significant new feature has been added.
+
+================================================================
+
+What's new in Gens for Linux v2.15.2/GS-m2?
+
+Milestone 2 introduces the following new features:
+
+- PNG screenshot support via libpng. This was apparently a wishlist item
+  for Gens for the past several years, but no one bothered to add it.
+
+- Screenshots now save the unfiltered image at the correct resolution.
+  For example, Sonic CD special stages now save as a 256x224 image.
+
+- Rewrite of the way compressed files are handled. Compressed files are
+  now handled using a generic COMPRESS_Handler interface. Currently, only
+  GZip and Zip files are supported (the same as before), but it's now
+  much easier and simpler to add new formats.
+
+- Multi-file Zip support. If a Zip file containing multiple files is
+  selected, Gens will prompt you to select which file to open. The UI
+  for selecting a file is currently not polished, but it will be improved
+  later on.
+
+- Rewrite of the way renderers are handled. The new rendering system uses
+  the same rendering code, but has a much simpler calling interface.
+
+- Initial 32-bit color support, ported from Gens Rerecording. Most of the
+  32-bit color renderers haven't been ported from Gens Rerecording yet,
+  so only three are available in 32-bit: Normal, Double, and Scale2x.
+  15-bit or 16-bit color is necessary for the others. To change color modes,
+  select Graphics, Bits Per Pixel, and the appropriate color mode.
+
+- Conditional compilation support for OpenGL, PNG, and x86 asm renderers.
+  If PNG support is not enabled, screenshots will be taken in BMP format.
+
+Milestone 2 fixes the following bugs:
+
+- Fixed a bug where the 32X VDP overlay disappeared when Gens was paused via
+  the Escape key. The overlay reappeared when Gens was unpaused, though.
 
 ================================================================
 
