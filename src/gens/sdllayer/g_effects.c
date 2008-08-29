@@ -208,7 +208,8 @@ void Pause_Screen(void)
 {
 	// TODO: 32-bit support.
 	int i, j, offset;
-	int r, g, b, nr, ng, nb;
+	unsigned char r, g, b, nr, ng, nb;
+	int sum;
 	
 	r = g = b = nr = ng = nb = 0;
 	
@@ -218,27 +219,31 @@ void Pause_Screen(void)
 		{
 			if (bpp == 15)
 			{
-				r = (MD_Screen[offset] & 0x7C00) >> 10;
-				g = (MD_Screen[offset] & 0x03E0) >> 5;
-				b = (MD_Screen[offset] & 0x001F);
+				r = (unsigned char)((MD_Screen[offset] & 0x7C00) >> 10);
+				g = (unsigned char)((MD_Screen[offset] & 0x03E0) >> 5);
+				b = (unsigned char)((MD_Screen[offset] & 0x001F));
 			}
 			else if (bpp == 16)
 			{
-				r = (MD_Screen[offset] & 0xF800) >> 11;
-				g = (MD_Screen[offset] & 0x07C0) >> 6;
-				b = (MD_Screen[offset] & 0x001F);
+				r = (unsigned char)((MD_Screen[offset] & 0xF800) >> 11);
+				g = (unsigned char)((MD_Screen[offset] & 0x07C0) >> 6);
+				b = (unsigned char)((MD_Screen[offset] & 0x001F));
 			}
 			else //if (bpp == 32)
 			{
-				r = ((MD_Screen32[offset] >> 16) & 0xFF) >> 3;
-				g = ((MD_Screen32[offset] >> 8) & 0xFF) >> 3;
-				b = ((MD_Screen32[offset] >> 0) & 0xFF) >> 3;
+				r = (unsigned char)(((MD_Screen32[offset] >> 16) & 0xFF) >> 3);
+				g = (unsigned char)(((MD_Screen32[offset] >> 8) & 0xFF) >> 3);
+				b = (unsigned char)(((MD_Screen32[offset] >> 0) & 0xFF) >> 3);
 			}
 			
-			nr = ng = nb = (r + g + b) / 3;
+			sum = r + g + b;
+			sum /= 3;
+			nr = ng = nb = (unsigned char)sum;
 			
-			if ((nb <<= 1) > 31)
-				nb = 31;
+			// L-shift the blue component to tint the image.
+			nb <<= 1;
+			if (nb > 0x1F)
+				nb = 0x1F;
 			
 			nr &= 0x1E;
 			ng &= 0x1E;
