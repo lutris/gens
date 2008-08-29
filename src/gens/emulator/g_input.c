@@ -19,6 +19,7 @@
 #include "vdp_io.h"
 #include "debug.h"
 #include "scrshot.h"
+#include "g_effects.h"
 
 // Sound includes.
 #include "ym2612.h"
@@ -104,8 +105,8 @@ void Input_KeyDown(int key)
 			else
 			{
 				Paused = 1;
-				Pause_Screen ();
-				Clear_Sound_Buffer ();
+				Pause_Screen();
+				Clear_Sound_Buffer();
 			}
 			break;
 		
@@ -115,8 +116,8 @@ void Input_KeyDown(int key)
 			else
 			{
 				Paused = 1;
-				Pause_Screen ();
-				Clear_Sound_Buffer ();
+				Pause_Screen();
+				Clear_Sound_Buffer();
 			}
 			break;
 		
@@ -124,7 +125,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_BACKSPACE:
 			if (KMOD_SHIFT & mod)
 			{
-				Clear_Sound_Buffer ();
+				Clear_Sound_Buffer();
 				Save_Shot();
 			}
 			break;

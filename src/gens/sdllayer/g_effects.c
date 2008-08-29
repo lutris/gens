@@ -199,3 +199,48 @@ int Update_Crazy_Effect(void)
 	
 	return 1;
 }
+
+
+/**
+ * Pause_Screen(): Tint the screen a purple hue to indicate that emulation is paused.
+ */
+void Pause_Screen(void)
+{
+	// TODO: 32-bit support.
+	int i, j, offset;
+	int r, v, b, nr, nv, nb;
+	
+	r = v = b = nr = nv = nb = 0;
+	
+	for (offset = j = 0; j < 240; j++)
+	{
+		for (i = 0; i < 336; i++, offset++)
+		{
+			if (bpp == 15)
+			{
+				r = (MD_Screen[offset] & 0x7C00) >> 10;
+				v = (MD_Screen[offset] & 0x03E0) >> 5;
+				b = (MD_Screen[offset] & 0x001F);
+			}
+			else
+			{
+				r = (MD_Screen[offset] & 0xF800) >> 11;
+				v = (MD_Screen[offset] & 0x07C0) >> 6;
+				b = (MD_Screen[offset] & 0x001F);
+			}
+
+			nr = nv = nb = (r + v + b) / 3;
+			
+			if ((nb <<= 1) > 31) nb = 31;
+
+			nr &= 0x1E;
+			nv &= 0x1E;
+			nb &= 0x1E;
+
+			if (bpp == 15)
+				MD_Screen[offset] = (nr << 10) + (nv << 5) + nb;
+			else
+				MD_Screen[offset] = (nr << 11) + (nv << 6) + nb;
+		}
+	}
+}

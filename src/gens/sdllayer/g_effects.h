@@ -25,5 +25,6 @@
 
 int Update_Gens_Logo(void);
 int Update_Crazy_Effect(void);
+void Pause_Screen(void);
 
 #endif

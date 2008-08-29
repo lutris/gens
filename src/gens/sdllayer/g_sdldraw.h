@@ -50,7 +50,6 @@ void Clear_Screen();
 int Update_Emulation(void);
 int Update_Emulation_One(void);
 void Clear_Screen_MD(void);
-int Pause_Screen(void);
 void Put_Info(char *Message, int Duree);
 int Show_Genesis_Screen(void);
 int Flip(void);
