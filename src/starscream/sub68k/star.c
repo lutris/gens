@@ -1,7 +1,7 @@
 /*
 ** Starscream 680x0 emulation library
 ** Copyright 1997, 1998, 1999 Neill Corlett
-** Modified by Stéphane Dallongeville (1999, 2000, 2001, 2002)
+** Modified by StÃ©phane Dallongeville (1999, 2000, 2001, 2002)
 ** Used for the sub 68000 CPU emulation in Gens
 **
 ** Refer to STARDOC.TXT for terms of use, API reference, and directions on
@@ -150,6 +150,7 @@ static int use_stack   = -1;
 static int hog         = -1;
 static int addressbits = -1;
 static int cputype     = -1;
+static int quiet       = 0;
 static char *sourcename = NULL;
 
 /* This counts the number of instruction handling routines.  There's not much
@@ -255,6 +256,28 @@ static void gen_variables(void) {
 	emit("section .data\n");
 	emit("bits 32\n");
 	emit("global %scontext\n", sourcename);
+
+// TODO: Port from Gens Rerecording
+#if 0
+	emit("\n");
+	emit("\textern Ram_68k\n");
+	emit("\textern _GensTrace_cd\n");
+
+	emit("\textern _hook_read_byte_cd\n");
+	emit("\textern _hook_read_word_cd\n");
+	emit("\textern _hook_read_dword_cd\n");
+	emit("\textern _hook_write_byte_cd\n");
+	emit("\textern _hook_write_word_cd\n");
+	emit("\textern _hook_write_dword_cd\n");
+	emit("\textern _hook_pc_cd\n");
+	emit("\textern _hook_address_cd\n");
+	emit("\textern _hook_value_cd\n");	
+
+	emit("\textern Rom_Data\n");
+	emit("\textern Rom_Size\n");
+	emit("\n");
+#endif
+	
 	emit("global _%scontext\n", sourcename);
 	align(8);
 	emit("%scontext:\n", sourcename);
@@ -394,7 +417,6 @@ static void gen_variables(void) {
 		emit("__xsp                  dd 0\n");
 	}
 /*	align(4);*/
-	emit("contextend:\n");
 	emit("__cycles_needed        dd 0\n");
 	emit("__cycles_leftover      dd 0\n");
 	emit("__fetch_region_start   dd 0\n");/* Fetch region cache */
@@ -423,7 +445,9 @@ static void gen_variables(void) {
 	emit("__io_fetchbased_pc     dd 0\n");
 	emit("__access_address       dd 0\n");
 
-emit("save_01				dd 0\n");		// Stef Add (Gens)
+	emit("save_01				dd 0\n");		// Stef Add (Gens)
+	emit("save_02				dd 0\n");
+	emit("contextend:\n");
 
 }
 
@@ -667,6 +691,10 @@ emit(".already_done\n");
 	/* Force an uncached re-base */
 	emit("call basefunction\n");
 	emit("add esi,ebp\n");
+
+emit("or edi,edi\n");
+emit("js near execquit\n");
+
 	emit("test byte[__execinfo],2\n"); /* Check for PC out of bounds */
 	emit("jnz near exec_bounderror\n");
 	emit(".noint:\n");
@@ -696,6 +724,17 @@ emit(".already_done\n");
 /*	emit("xor ebx,ebx\n");suffice to say, bits 16-31 should be zero... */
 	emit("mov bx,[esi]\n");
 	emit("add esi,byte 2\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+	emit("pushad\n");
+	emit("sub esi,ebp\n");
+	emit("sub esi,byte 2\n");
+	emit("mov [_hook_pc_cd],esi\n");
+	emit("call _GensTrace_cd\n");
+	emit("popad\n");
+#endif
+
 	emit("jmp dword[__jmptbl+ebx*4]\n");
 	/* Traditional loop - used when hog mode is off */
 	if(!hog) {
@@ -749,7 +788,7 @@ emit(".already_done\n");
 	*/
 	emit("add edi,[__cycles_leftover]\n");
 	emit("mov dword[__cycles_leftover],0\n");
-	emit("jns short execloop\n");
+	emit("jns execloop\n");
 
 	/* Leave s680x0exec with "Success" code. */
 	emit("mov ecx,80000000h\n");
@@ -1292,6 +1331,26 @@ static void ret_timing(int n) {
 		emit("js near execquit\n");
 		emit("mov bx,[esi]\n");
 		emit("add esi,byte 2\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+		emit("pushad\n");
+		emit("sub esi,ebp\n");
+		emit("sub esi,byte 2\n");
+		emit("mov [_hook_pc_cd],esi\n");
+		
+		emit("shr ah,1\n");
+		emit("adc ax,ax\n");
+		emit("and ax,0C003h\n");
+		emit("or ah,[__xflag]\n");
+		emit("ror ah,4\n");
+		emit("or al,ah\n");
+		emit("mov [__sr],al\n");
+		
+		emit("call _GensTrace_cd\n");
+		emit("popad\n");
+#endif
+
 		emit("jmp dword[__jmptbl+ebx*4]\n");
 	}
 }
@@ -1563,6 +1622,19 @@ static void gen_readbw(int size)
 		emit("\tmov esi, [__io_fetchbased_pc]\n");
 		emit("\tmov edx, [__access_address]\n");
 		emit("\tpop eax\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+		emit("pushad\n");
+		emit("sub esi,ebp\n");
+		emit("sub esi,byte 2\n");
+		emit("mov [_hook_pc_cd],esi\n");
+		emit("mov [_hook_address_cd],edx\n");
+		emit("mov [_hook_value_cd],ecx\n");
+		emit("call _hook_read_byte_cd\n");
+		emit("popad\n");
+#endif
+
 		emit("\tret\n");
 	}
 
@@ -1585,6 +1657,19 @@ static void gen_readbw(int size)
 		emit("\tmov esi, [__io_fetchbased_pc]\n");
 		emit("\tmov edx, [__access_address]\n");
 		emit("\tpop eax\n");
+
+// TODO: Port from Gens Rerecording
+#if 0		
+		emit("pushad\n");
+		emit("sub esi,ebp\n");
+		emit("sub esi,byte 2\n");
+		emit("mov [_hook_pc_cd],esi\n");
+		emit("mov [_hook_address_cd],edx\n");
+		emit("mov [_hook_value_cd],ecx\n");
+		emit("call _hook_read_word_cd\n");
+		emit("popad\n");
+#endif
+		
 		emit("\tret\n");
 	}
 }
@@ -1614,6 +1699,19 @@ static void gen_readl(void)
 	emit("\tmov esi, [__io_fetchbased_pc]\n");
 	emit("\tmov edx, [__access_address]\n");
 	emit("\tpop eax\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+	emit("pushad\n");
+	emit("sub esi,ebp\n");
+	emit("sub esi,byte 2\n");
+	emit("mov [_hook_pc_cd],esi\n");
+	emit("mov [_hook_address_cd],edx\n");
+	emit("mov [_hook_value_cd],ecx\n");
+	emit("call _hook_read_dword_cd\n");
+	emit("popad\n");
+#endif
+	
 	emit("\tret\n");
 }
 
@@ -1640,6 +1738,19 @@ static void gen_writebw(int size)
 		emit("\tmov esi, [__io_fetchbased_pc]\n");
 		emit("\tmov edx, [__access_address]\n");
 		emit("\tpop eax\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+		emit("pushad\n");
+		emit("sub esi,ebp\n");
+		emit("sub esi,byte 2\n");
+		emit("mov [_hook_pc_cd],esi\n");
+		emit("mov [_hook_address_cd],edx\n");
+		emit("mov [_hook_value_cd],ecx\n");
+		emit("call _hook_write_byte_cd\n");
+		emit("popad\n");
+#endif
+
 		emit("\tret\n");
 	}
 
@@ -1661,6 +1772,19 @@ static void gen_writebw(int size)
 		emit("\tmov esi, [__io_fetchbased_pc]\n");
 		emit("\tmov edx, [__access_address]\n");
 		emit("\tpop eax\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+		emit("pushad\n");
+		emit("sub esi,ebp\n");
+		emit("sub esi,byte 2\n");
+		emit("mov [_hook_pc_cd],esi\n");
+		emit("mov [_hook_address_cd],edx\n");
+		emit("mov [_hook_value_cd],ecx\n");
+		emit("call _hook_write_word_cd\n");
+		emit("popad\n");
+#endif
+
 		emit("\tret\n");
 	}
 }
@@ -1691,6 +1815,19 @@ static void gen_writel(void)
 	emit("\tmov esi, [__io_fetchbased_pc]\n");
 	emit("\tmov edx, [__access_address]\n");
 	emit("\tpop eax\n");
+
+// TODO: Port from Gens Rerecording
+#if 0
+	emit("pushad\n");
+	qemit("sub esi,ebp\n");
+	emit("sub esi,byte 2\n");
+	emit("mov [_hook_pc_cd],esi\n");
+	emit("mov [_hook_address_cd],edx\n");
+	emit("mov [_hook_value_cd],ecx\n");
+	emit("call _hook_write_dword_cd\n");
+	emit("popad\n");
+#endif
+
 	emit("\tret\n");
 }
 
@@ -4899,12 +5036,15 @@ static char *getparameter(int *ip, int argc, char **argv) {
 	return argv[i];
 }
 
+void printversion(void) {
+	if(!quiet)
+		fprintf(stderr, "STARSCREAM version " VERSION "\n");
+}
+
 int main(int argc, char **argv) {
 	int i, j, last, rl, bank;
 	char *codefilename = NULL;
 	char default_sourcename[10];
-
-	fprintf(stderr, "STARSCREAM version " VERSION "\n");
 
 	/* Read options from the command line */
 	for(i = 1; i < argc; i++) {
@@ -4915,12 +5055,14 @@ int main(int argc, char **argv) {
 			} else if(!strcmp("stackcall"  , a)) { use_stack = 1;
 			} else if(!strcmp("nohog"      , a)) { hog = 0;
 			} else if(!strcmp("hog"        , a)) { hog = 1;
+			} else if(!strcmp("quiet"      , a)) { quiet = 1;
 			} else if(!strcmp("addressbits", a)) {
 				int n;
 				char *s = getparameter(&i, argc, argv);
 				if(!s) return 1;
 				n = atol(s);
 				if(n < 1 || n > 32) {
+					printversion();
 					fprintf(stderr,
 						"Invalid number of address "
 						"bits: \"%s\"\n", argv[i]
@@ -4931,7 +5073,11 @@ int main(int argc, char **argv) {
 			} else if(!strcmp("cputype"    , a)) {
 				int n;
 				char *s = getparameter(&i, argc, argv);
-				if(!s) return 1;
+				if(!s) {
+					printversion();
+					fprintf(stderr, "Invalid (missing) cputype\n");
+					return 1;
+				}
 				n = atol(s);
 				switch(n) {
 				case 68000:
@@ -4940,6 +5086,7 @@ int main(int argc, char **argv) {
 					cputype = n;
 					break;
 				default:
+					printversion();
 					fprintf(stderr,
 						"Invalid CPU type: \"%s\"\n",
 						argv[i]
@@ -4948,8 +5095,13 @@ int main(int argc, char **argv) {
 				}
 			} else if(!strcmp("name"       , a)) {
 				sourcename = getparameter(&i, argc, argv);
-				if(!sourcename) return 1;
+				if(!sourcename) {
+					printversion();
+					fprintf(stderr, "Invalid (missing) name\n");
+					return 1;
+				}
 			} else {
+				printversion();
 				fprintf(stderr,
 					"\nUnrecognized option: \"%s\"\n",
 					argv[i]
@@ -4958,6 +5110,7 @@ int main(int argc, char **argv) {
 			}
 		} else {
 			if(codefilename) {
+				printversion();
 				fprintf(stderr,
 					"\n\"%s\": only one output filename "
 					"is allowed\n",
@@ -4968,6 +5121,8 @@ int main(int argc, char **argv) {
 			codefilename = argv[i];
 		}
 	}
+
+	printversion();
 
 	if(!codefilename) {
 		fprintf(stderr, "usage: %s outputfile [options]\n", argv[0]);
@@ -4998,10 +5153,12 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	fprintf(stderr, "Generating \"%s\" with the following options:\n",
-		codefilename
-	);
-	optiondump(stderr, " *  ");
+	if(!quiet) {
+		fprintf(stderr, "Generating \"%s\" with the following options:\n",
+			codefilename
+		);
+		optiondump(stderr, " *  ");
+	}
 	prefixes();
 	for(i = 0; i < 0x10000; i++) rproc[i] = -1;
 	/* Clear loop timings for 68010 */
@@ -5013,20 +5170,25 @@ int main(int argc, char **argv) {
 	** Decode instructions
 	** (this is where the vast majority of the code is emitted)
 	*/
-	fprintf(stderr, "Decoding instructions: ");
+	if(!quiet)
+		fprintf(stderr, "Decoding instructions: ");
 	for(bank = 0; bank <= 0xF; bank++) {
 		int bankend = (bank + 1) << 12;
 		void (*decoderoutine)(int n) = decodetable[bank];
-		fprintf(stderr, "%X", bank);
-		fflush(stderr);
+		if(!quiet) {
+			fprintf(stderr, "%X", bank);
+			fflush(stderr);
+		}
 		for(i = bank << 12; i < bankend; i++) decoderoutine(i);
 	}
-	fprintf(stderr, " done\n");
+	if(!quiet)
+		fprintf(stderr, " done\n");
 
 	/*
 	** Build the main jump table (all CPUs) / loop info table (68010)
 	*/
-	fprintf(stderr, "Building table: ");
+	if(!quiet)
+		fprintf(stderr, "Building table: ");
 	emit("section .bss\n");
 	emit("bits 32\n");
 	align(4);
@@ -5058,8 +5220,10 @@ int main(int argc, char **argv) {
 
 	/* Finish up */
 	suffixes();
-	fprintf(stderr, "done\n");
-	fprintf(stderr, "routine_counter = %d\n", routine_counter);
+	if(!quiet) {
+		fprintf(stderr, "done\n");
+		fprintf(stderr, "routine_counter = %d\n", routine_counter);
+	}
 	fclose(codefile);
 	return 0;
 }

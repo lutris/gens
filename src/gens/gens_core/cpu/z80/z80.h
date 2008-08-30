@@ -1,13 +1,17 @@
 /**********************************************************/
 /*                                                        */
 /* Z80 emulator 0.99                                      */
-/* Copyright 2002 Stéphane Dallongeville                  */
+/* Copyright 2002 Stï¿½phane Dallongeville                  */
 /* Used for the genesis emulation in Gens                 */
 /*                                                        */
 /**********************************************************/
 
 #ifndef _Z80_H_
 #define _Z80_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /******************************/
 /* Compiler dependant defines */
@@ -344,5 +348,9 @@ UINT32 FASTCALL z80_Get_AF2(Z80_CONTEXT *z80);
 UINT32 FASTCALL z80_Set_PC(Z80_CONTEXT *z80, UINT32 PC);
 UINT32 FASTCALL z80_Set_AF(Z80_CONTEXT *z80, UINT32 AF);
 UINT32 FASTCALL z80_Set_AF2(Z80_CONTEXT *z80, UINT32 AF2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

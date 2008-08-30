@@ -1,6 +1,8 @@
 /**
  * GENS: Save file handler.
  */
+#define _DEBUG
+#include <assert.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -234,8 +236,8 @@ int Load_State (char *Name)
 		VRam_Flag = 1;
 		*/
 		
-		sprintf (Str_Tmp, "STATE %d LOADED", Current_State);
-		Put_Info (Str_Tmp, 2000);
+		sprintf(Str_Tmp, "STATE %d LOADED", Current_State);
+		Put_Info(Str_Tmp, 2000);
 	}
 	
 	fclose (f);
@@ -314,8 +316,8 @@ unsigned char Version;
 // to go from import code to export code.
 inline void ImportData(void* into, const void* data, unsigned int offset, unsigned int numBytes)
 {
-	unsigned char* dst = (unsigned char *) into;
-	const unsigned char* src = ((const unsigned char*) data) + offset;
+	unsigned char* dst = (unsigned char*)into;
+	const unsigned char* src = ((const unsigned char*)data) + offset;
 	while(numBytes--) *dst++ = *src++;
 }
 inline void ExportData(const void* from, void* data, unsigned int offset, unsigned int numBytes)
@@ -333,12 +335,12 @@ inline void ExportData(const void* from, void* data, unsigned int offset, unsign
 #endif
 }
 // versions that auto-increment the offset
-inline void ImportDataAuto(void* into, const void* data, unsigned int* offset, unsigned int numBytes)
+inline void ImportDataAuto(void* into, const void* data, unsigned int *offset, unsigned int numBytes)
 {
 	ImportData(into, data, *offset, numBytes);
 	*offset += numBytes;
 }
-inline void ExportDataAuto(const void* from, void* data, unsigned int* offset, unsigned int numBytes)
+inline void ExportDataAuto(const void* from, void* data, unsigned int *offset, unsigned int numBytes)
 {
 	ExportData(from, data, *offset, numBytes);
 	*offset += numBytes;
@@ -391,7 +393,7 @@ int Import_Genesis (unsigned char *Data)
 	}
 	
 	ImportData(Reg_1, Data, 0x1E4, 0x200);
-	YM2612_Restore (Reg_1);
+	YM2612_Restore(Reg_1);
 	
 	// Version 2, 3, and 4 save files
 	if ((Version >= 2) && (Version < 4))
@@ -405,6 +407,8 @@ int Import_Genesis (unsigned char *Data)
 			Z80_State |= 4;
 		
 		ImportData(&Bank_Z80, Data, 0x448, 4);
+		
+		ImportData(&PSG_Save, Data, 0x224B8, 8 * 4);
 		PSG_Restore_State();
 	}
 	else if ((Version >= 4) || (Version == 0))
@@ -434,11 +438,12 @@ int Import_Genesis (unsigned char *Data)
 		for (i = 0; i < 7 * 4; i++)
 			*src++ = 0;
 		
-		Write_VDP_Ctrl (Data[0x40] + (Data[0x41] << 8));
-		Write_VDP_Ctrl (Data[0x42] + (Data[0x43] << 8));
+		Write_VDP_Ctrl(Data[0x40] + (Data[0x41] << 8));
+		Write_VDP_Ctrl(Data[0x42] + (Data[0x43] << 8));
 		
 		Ctrl.Flag = Data[0x44];
 		Ctrl.DMA = (Data[0x45] & 1) << 2;
+		Ctrl.Access = Data[0x46] + (Data[0x47] << 8); //Nitsuja added this
 		Ctrl.Address = Data[0x48] + (Data[0x49] << 8);
 		
 		ImportData(&Bank_Z80, Data, 0x43C, 4);
@@ -447,20 +452,20 @@ int Import_Genesis (unsigned char *Data)
 		{
 			for (i = 0; i < 8; i++)
 				PSG_Save[i] = Data[i * 2 + 0x60] + (Data[i * 2 + 0x61] << 8);
-			PSG_Restore_State ();
+			PSG_Restore_State();
 		}
 	}
-	
+
 	z80_Set_AF (&M_Z80, Data[0x404] + (Data[0x405] << 8));
-	M_Z80.AF.b.FXY = Data[0x406]; //Modif N [GENS Re-Recording]
+	M_Z80.AF.b.FXY = Data[0x406]; //Modif N [Gens Rerecording]
 	M_Z80.BC.w.BC = Data[0x408] + (Data[0x409] << 8);
 	M_Z80.DE.w.DE = Data[0x40C] + (Data[0x40D] << 8);
 	M_Z80.HL.w.HL = Data[0x410] + (Data[0x411] << 8);
 	M_Z80.IX.w.IX = Data[0x414] + (Data[0x415] << 8);
 	M_Z80.IY.w.IY = Data[0x418] + (Data[0x419] << 8);
-	z80_Set_PC (&M_Z80, Data[0x41C] + (Data[0x41D] << 8));
+	z80_Set_PC(&M_Z80, Data[0x41C] + (Data[0x41D] << 8));
 	M_Z80.SP.w.SP = Data[0x420] + (Data[0x421] << 8);
-	z80_Set_AF2 (&M_Z80, Data[0x424] + (Data[0x425] << 8));
+	z80_Set_AF2(&M_Z80, Data[0x424] + (Data[0x425] << 8));
 	M_Z80.BC2.w.BC2 = Data[0x428] + (Data[0x429] << 8);
 	M_Z80.DE2.w.DE2 = Data[0x42C] + (Data[0x42D] << 8);
 	M_Z80.HL2.w.HL2 = Data[0x430] + (Data[0x431] << 8);
@@ -473,7 +478,7 @@ int Import_Genesis (unsigned char *Data)
 	
 	// VDP registers
 	for (i = 0; i < 24; i++)
-		Set_VDP_Reg (i, Data[0xFA + i]);
+		Set_VDP_Reg(i, Data[0xFA + i]);
 	
 	// 68000 registers
 	ImportData(&Context_68K.dreg[0], Data, 0x80, 8 * 2 * 4);
@@ -634,14 +639,19 @@ int Import_Genesis (unsigned char *Data)
 	else if (Version >= 7)
 	{
 		// GENS v7 savestate
+		printf("Z80 context: %d\n", sizeof(Z80_CONTEXT));
 		unsigned char Reg_2[sizeof(ym2612_)];
 		ImportDataAuto(Reg_2, Data, &offset, sizeof(ym2612_)); // some important parts of this weren't saved above
 		YM2612_Restore_Full(Reg_2);
+		//return 1;
 		
 		ImportDataAuto(PSG_Save_Full, Data, &offset, sizeof(struct _psg)); // some important parts of this weren't saved above
 		PSG_Restore_State_Full();
 		
-		ImportDataAuto(&M_Z80, Data, &offset, 0x5C); // some important parts of this weren't saved above
+		// TODO: This segfaults with MK's Sonic 2 2P Vs. savestate,
+		// but if it's commented out, the savestate works...
+		//ImportDataAuto(&M_Z80, Data, &offset, 0x5C); // some important parts of this weren't saved above
+		offset += 0x5C;
 		ImportDataAuto(&M_Z80.RetIC, Data, &offset, 4); // not sure about the last two variables, might as well save them too
 		ImportDataAuto(&M_Z80.IntAckC, Data, &offset, 4);
 		
@@ -697,6 +707,7 @@ int Import_Genesis (unsigned char *Data)
 		
 #ifdef _DEBUG
 		int desiredoffset = GENESIS_STATE_LENGTH;
+		printf("desired: %d; obtained: %d\n", desiredoffset, offset);
 		assert(offset == desiredoffset);
 #endif		
 	}
@@ -710,7 +721,7 @@ int Import_Genesis (unsigned char *Data)
  * Export_Genesis(): Save Genesis data to a savestate. (Portions ported from GENS Re-Recording.)
  * @param Data Savestate data.
  */
-void Export_Genesis (unsigned char *Data)
+void Export_Genesis(unsigned char *Data)
 {
 	// This savestate function uses the GENS v7 savestate format.
 	// Note about GENS v7 savestate format:
@@ -725,8 +736,11 @@ void Export_Genesis (unsigned char *Data)
 	int i;
 	
 	// Be sure to finish DMA before save
+	// [from Gens Rerecording] commented out; this may cause the saving to change the current state
+	/*
 	while (DMAT_Length)
-		Update_DMA ();
+		Update_DMA();
+	*/
 	
 	// Genecyst savestate header
 	Data[0x00] = 'G';
@@ -741,18 +755,19 @@ void Export_Genesis (unsigned char *Data)
 	// Save the PSG state.
 	PSG_Save_State ();
 	
-#ifdef _DEBUG
-	int contextsize1 = main68k_GetContextSize();
-	int contextsize2 = sizeof(Context_68K);
-	assert(contextsize1 == contextsize2);
-#endif
-	
 	// Copy the PSG state into the savestate buffer.
 	for (i = 0; i < 8; i++)
 	{
 		Data[0x60 + i * 2] = PSG_Save[i] & 0xFF;
 		Data[0x61 + i * 2] = (PSG_Save[i] >> 8) & 0xFF;
 	}
+	
+#ifdef _DEBUG
+	int contextsize1 = main68k_GetContextSize();
+	int contextsize2 = sizeof(Context_68K);
+	printf("Context: %d, %d\n", contextsize1, contextsize2);
+	assert(contextsize1 == contextsize2);
+#endif
 	
 	main68k_GetContext (&Context_68K);
 	
@@ -803,11 +818,11 @@ void Export_Genesis (unsigned char *Data)
 	}
 	
 	for (i = 0; i < 0x80; i++)
-		Data[i + 0x112] = CRam[i];
+		Data[i + 0x112] = (CRam[i] & 0xFF);
 	for (i = 0; i < 0x50; i++)
 		Data[i + 0x192] = VSRam[i];
 	
-	YM2612_Save (Reg_1);
+	YM2612_Save(Reg_1);
 	for (i = 0; i < 0x200; i++)
 		Data[i + 0x1E4] = Reg_1[i];
 	
@@ -826,7 +841,7 @@ void Export_Genesis (unsigned char *Data)
 	Data[0x418] = (unsigned char) (M_Z80.IY.w.IY & 0xFF);
 	Data[0x419] = (unsigned char) (M_Z80.IY.w.IY >> 8);
 	Data[0x41C] = (unsigned char) (z80_Get_PC (&M_Z80) & 0xFF);
-	Data[0x41D] = (unsigned char) (z80_Get_PC (&M_Z80) >> 8);
+	Data[0x41D] = (unsigned char) ((z80_Get_PC (&M_Z80) >> 8) & 0xFF);
 	Data[0x420] = (unsigned char) (M_Z80.SP.w.SP & 0xFF);
 	Data[0x421] = (unsigned char) (M_Z80.SP.w.SP >> 8);
 	Data[0x424] = (unsigned char) (z80_Get_AF2 (&M_Z80) & 0xFF);
@@ -1689,8 +1704,8 @@ void Export_32X (unsigned char *Data)
 	ExportDataAuto(_32X_SSH2_Rom, Data, &offset, sizeof(_32X_SSH2_Rom));
 	
 #ifdef _DEBUG
-	int desired&offset = G32X_LENGTH_EX;
-	assert(&offset == desired&offset);
+	int desiredoffset = G32X_LENGTH_EX;
+	assert(offset == desiredoffset);
 #endif
 }
 

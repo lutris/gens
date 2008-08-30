@@ -224,9 +224,9 @@ void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Check_If_Kaillera_Running())
 		return 0;
 	*/
-	Str_Tmp[0] = 0;
-	Get_State_File_Name(Str_Tmp);
-	Load_State(Str_Tmp);
+	char SaveFile[GENS_PATH_MAX] = "";
+	Get_State_File_Name(SaveFile);
+	Load_State(SaveFile);
 }
 
 

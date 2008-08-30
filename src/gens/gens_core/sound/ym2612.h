@@ -48,6 +48,7 @@ typedef struct slot__ {
 	int ChgEnM;	// Change envelop mask.
 	int AMS;	// AMS depth level of this SLOT = degré de modulation de l'amplitude par le LFO
 	int AMSon;	// AMS enable flag = drapeau d'activation de l'AMS
+	
 } slot_;
 
 typedef struct channel__ {
@@ -86,10 +87,14 @@ typedef struct ym2612__ {
 	int Mode;			// Mode actuel des voie 3 et 6 (normal / spécial)
 	int DAC;			// DAC enabled flag
 	int DACdata;		// DAC data
+	
+	int dummy;		// Windows enforces 8-byte alignment on doubles.
 	double Frequence;	// Fréquence de base, se calcul par rapport à l'horlage et au sample rate
+	
 	unsigned int Inter_Cnt;			// Interpolation Counter
 	unsigned int Inter_Step;		// Interpolation Step
 	struct channel__ CHANNEL[6];	// Les 6 voies du YM2612
+	
 	int REG[2][0x100];	// Sauvegardes des valeurs de tout les registres, c'est facultatif
 						// cela nous rend le débuggage plus facile
 } ym2612_;
