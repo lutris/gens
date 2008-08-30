@@ -25,7 +25,7 @@ What's new in Gens for Linux v2.15.2/GS-m2.2?
 
 Milestone 2.2 fixes the following bugs:
 
-- Fixed several bugs in savestate support, including matching struct alignment
+- Fixed several bugs with savestate support, including matching struct alignment
   with Gens/Rerecording (Win32) and incorrectly reading x86 memory pointers
   for the emulated Z80 CPU. Please note that savestates from previous versions
   of Gens/GS will not work correctly on m2.2; however, you can load the
