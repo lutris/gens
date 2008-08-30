@@ -903,6 +903,24 @@ void Export_Genesis(unsigned char *Data)
 	ExportDataAuto(PSG_Save_Full, Data, &offset, sizeof(struct _psg));  // some important parts of this weren't saved above
 	
 	ExportDataAuto(&M_Z80, Data, &offset, 0x5C); // some important parts of this weren't saved above
+	
+	// BUG: The above ExportDataAuto call saves the PC and BasePC registers,
+	// which are based on x86 memory locations and not emulated memory.
+	// Set them to 0xDEADBEEF in the savestate, in big-endian format
+	// so it's readable by a hex editor.
+	
+	// PC
+	Data[offset - 0x5C + 0x18] = 0xDE;
+	Data[offset - 0x5C + 0x19] = 0xAD;
+	Data[offset - 0x5C + 0x1A] = 0xBE;
+	Data[offset - 0x5C + 0x1B] = 0xEF;
+	
+	// BasePC
+	Data[offset - 0x5C + 0x40] = 0xDE;
+	Data[offset - 0x5C + 0x41] = 0xAD;
+	Data[offset - 0x5C + 0x42] = 0xBE;
+	Data[offset - 0x5C + 0x43] = 0xEF;
+	
 	ExportDataAuto(&M_Z80.RetIC, Data, &offset, 4); // not sure about the last two variables, might as well save them too
 	ExportDataAuto(&M_Z80.IntAckC, Data, &offset, 4);
 	
