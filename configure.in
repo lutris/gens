@@ -82,7 +82,7 @@ AM_CONDITIONAL([GENS_DEBUG], [test x$enable_debugger = xyes])
 
 # CD-ROM drive access is currently limited to Linux.
 if test x$os = xlinux; then
-AC_ARG_ENABLE(cdrom, AC_HELP_STRING([--enable-cd-rom], [Enable CD-ROM drive access for SegaCD games [[default=yes]]]), enable_cdrom=$enableval, enable_cdrom=yes)
+AC_ARG_ENABLE(cdrom, AC_HELP_STRING([--enable-cdrom], [Enable CD-ROM drive access for SegaCD games [[default=yes]]]), enable_cdrom=$enableval, enable_cdrom=yes)
 if test x$enable_cdrom = xyes; then
 	AC_DEFINE(GENS_CDROM, 1, Enable CD-ROM drive access for SegaCD games)
 fi
