@@ -1,4 +1,4 @@
-Gens for Linux v2.15.2/GS-m2.1 (Gens/GS)
+Gens for Linux v2.15.2/GS-m2.2 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,10 +14,27 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens for Linux v2.15.2/GS-m2.1 is David Korth's fork of Gens,
+Gens for Linux v2.15.2/GS-m2.2 is David Korth's fork of Gens,
 initially based on Gens for Linux v2.15.2. The number after
 the "m" indicates the milestone. Releases are usually made
 after a significant new feature has been added.
+
+================================================================
+
+What's new in Gens for Linux v2.15.2/GS-m2.2?
+
+Milestone 2.2 fixes the following bugs:
+
+- Fixed several bugs in savestate support, including matching struct alignment
+  with Gens/Rerecording (Win32) and incorrectly reading x86 memory pointers
+  for the emulated Z80 CPU. Please note that savestates from previous versions
+  of Gens/GS will not work correctly on m2.2; however, you can load the
+  savestates in another emulator, such as the original Gens, and resave it in
+  the older format. The older format savestate will then work on Gens/GS.
+
+- CD-ROM drive support is now conditional via the ./configure script.
+
+- 32-bit color now works for 32X games.
 
 ================================================================
 
