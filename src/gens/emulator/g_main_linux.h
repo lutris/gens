@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
