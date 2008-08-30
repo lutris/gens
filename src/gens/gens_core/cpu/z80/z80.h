@@ -172,7 +172,7 @@ struct _Z80_context
 			UINT16 x;
 		} w;
 		UINT32 d;
-	} PC;
+	} PC;	// PC == BasePC + Z80 PC
 	union
 	{
 		struct
@@ -286,7 +286,7 @@ struct _Z80_context
 	UINT8 IntLine;
 
 	UINT32 Status;
-	UINT32 BasePC;
+	UINT32 BasePC;	// Pointer to x86 memory location where Z80 RAM starts.
 	UINT32 TmpSav0;
 	UINT32 TmpSav1;
 

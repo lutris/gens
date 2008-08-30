@@ -1,7 +1,7 @@
 ;****************************************
 ;
 ; Z80 emulator 0.99
-; Copyright 2002 Stéphane Dallongeville
+; Copyright 2002 StÃ©phane Dallongeville
 ; Used for the Genesis emulation in Gens
 ;
 ;****************************************
@@ -145,7 +145,7 @@ bits 32
 		.IYH   resb 1
 		       resw 1
 
-		.PC
+		.PC		; PC == BasePC + Z80 PC
 		.PCL   resb 1
 		.PCH   resb 1
 		       resw 1
@@ -189,7 +189,7 @@ bits 32
 		.IntLine  resb 1
 
 		.Status   resd 1
-		.BasePC   resd 1
+		.BasePC   resd 1	; Pointer to x86 memory location where Z80 RAM starts.
 		.TmpSav   resd 1
 		          resd 1
 

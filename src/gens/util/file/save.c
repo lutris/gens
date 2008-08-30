@@ -639,19 +639,22 @@ int Import_Genesis (unsigned char *Data)
 	else if (Version >= 7)
 	{
 		// GENS v7 savestate
-		printf("Z80 context: %d\n", sizeof(Z80_CONTEXT));
 		unsigned char Reg_2[sizeof(ym2612_)];
 		ImportDataAuto(Reg_2, Data, &offset, sizeof(ym2612_)); // some important parts of this weren't saved above
 		YM2612_Restore_Full(Reg_2);
-		//return 1;
 		
 		ImportDataAuto(PSG_Save_Full, Data, &offset, sizeof(struct _psg)); // some important parts of this weren't saved above
 		PSG_Restore_State_Full();
 		
-		// TODO: This segfaults with MK's Sonic 2 2P Vs. savestate,
-		// but if it's commented out, the savestate works...
-		//ImportDataAuto(&M_Z80, Data, &offset, 0x5C); // some important parts of this weren't saved above
-		offset += 0x5C;
+		// BUG: The Gens v7 savestate stores M_Z80.BasePC, which is a *real* pointer.
+		// Also, it stores M_Z80.PC, which is *relative* to M_Z80.BasePC.
+		// Workaround: Save M_Z80.BasePC and M_Z80.PC, and restore them after.
+		// The PC is set correctly by the older savestate code above via z80_Set_PC().
+		unsigned int oldBasePC = M_Z80.BasePC;
+		unsigned int oldPC = M_Z80.PC.d;
+		ImportDataAuto(&M_Z80, Data, &offset, 0x5C); // some important parts of this weren't saved above
+		M_Z80.PC.d = oldPC;
+		M_Z80.BasePC = oldBasePC;
 		ImportDataAuto(&M_Z80.RetIC, Data, &offset, 4); // not sure about the last two variables, might as well save them too
 		ImportDataAuto(&M_Z80.IntAckC, Data, &offset, 4);
 		
