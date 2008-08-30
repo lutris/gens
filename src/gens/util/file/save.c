@@ -1,8 +1,6 @@
 /**
  * GENS: Save file handler.
  */
-#define _DEBUG
-#include <assert.h>
 
 #include <stdio.h>
 #include <string.h>
