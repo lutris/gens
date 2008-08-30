@@ -723,27 +723,75 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
  */
 inline void SegaCD_Display_LED()
 {
+	// TODO: Optimize this function.
+	
+	const unsigned short ledReady15 = 0x03E0;
+	const unsigned short ledReady16 = 0x07C0;
+	unsigned short ledReady;
+	
+	const unsigned short ledAccess15 = 0x7C00;
+	const unsigned short ledAccess16 = 0xF800;
+	unsigned short ledAccess;
+	
+	const unsigned int ledReady32 = 0x00F800;
+	const unsigned int ledAccess32 = 0xF80000;
+	
+	const unsigned int ledRow1 = 336 * 220;
+	const unsigned int ledRow2 = 336 * 222;
+	
+	if (bpp == 15)
+	{
+		ledReady = ledReady15;
+		ledAccess = ledAccess15;
+	}
+	else
+	{
+		ledReady = ledReady16;
+		ledAccess = ledAccess16;
+	}
+	
+	// Ready LED
 	if (LED_Status & 2)
 	{
-		MD_Screen[336 * 220 + 12] = 0x03E0;
-		MD_Screen[336 * 220 + 13] = 0x03E0;
-		MD_Screen[336 * 220 + 14] = 0x03E0;
-		MD_Screen[336 * 220 + 15] = 0x03E0;
-		MD_Screen[336 * 222 + 12] = 0x03E0;
-		MD_Screen[336 * 222 + 13] = 0x03E0;
-		MD_Screen[336 * 222 + 14] = 0x03E0;
-		MD_Screen[336 * 222 + 15] = 0x03E0;
+		MD_Screen[ledRow1 + 12] = ledReady;
+		MD_Screen[ledRow1 + 13] = ledReady;
+		MD_Screen[ledRow1 + 14] = ledReady;
+		MD_Screen[ledRow1 + 15] = ledReady;
+		MD_Screen[ledRow2 + 12] = ledReady;
+		MD_Screen[ledRow2 + 13] = ledReady;
+		MD_Screen[ledRow2 + 14] = ledReady;
+		MD_Screen[ledRow2 + 15] = ledReady;
+		
+		MD_Screen32[ledRow1 + 12] = ledReady32;
+		MD_Screen32[ledRow1 + 13] = ledReady32;
+		MD_Screen32[ledRow1 + 14] = ledReady32;
+		MD_Screen32[ledRow1 + 15] = ledReady32;
+		MD_Screen32[ledRow2 + 12] = ledReady32;
+		MD_Screen32[ledRow2 + 13] = ledReady32;
+		MD_Screen32[ledRow2 + 14] = ledReady32;
+		MD_Screen32[ledRow2 + 15] = ledReady32;
 	}
+	
+	// Access LED
 	if (LED_Status & 1)
 	{
-		MD_Screen[336 * 220 + 12 + 8] = 0xF800;
-		MD_Screen[336 * 220 + 13 + 8] = 0xF800;
-		MD_Screen[336 * 220 + 14 + 8] = 0xF800;
-		MD_Screen[336 * 220 + 15 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 12 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 13 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 14 + 8] = 0xF800;
-		MD_Screen[336 * 222 + 15 + 8] = 0xF800;
+		MD_Screen[ledRow1 + 12 + 8] = ledAccess;
+		MD_Screen[ledRow1 + 13 + 8] = ledAccess;
+		MD_Screen[ledRow1 + 14 + 8] = ledAccess;
+		MD_Screen[ledRow1 + 15 + 8] = ledAccess;
+		MD_Screen[ledRow2 + 12 + 8] = ledAccess;
+		MD_Screen[ledRow2 + 13 + 8] = ledAccess;
+		MD_Screen[ledRow2 + 14 + 8] = ledAccess;
+		MD_Screen[ledRow2 + 15 + 8] = ledAccess;
+		
+		MD_Screen32[ledRow1 + 12 + 8] = ledAccess32;
+		MD_Screen32[ledRow1 + 13 + 8] = ledAccess32;
+		MD_Screen32[ledRow1 + 14 + 8] = ledAccess32;
+		MD_Screen32[ledRow1 + 15 + 8] = ledAccess32;
+		MD_Screen32[ledRow2 + 12 + 8] = ledAccess32;
+		MD_Screen32[ledRow2 + 13 + 8] = ledAccess32;
+		MD_Screen32[ledRow2 + 14 + 8] = ledAccess32;
+		MD_Screen32[ledRow2 + 15 + 8] = ledAccess32;
 	}
 }
 
