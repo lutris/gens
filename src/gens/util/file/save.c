@@ -708,7 +708,6 @@ int Import_Genesis (unsigned char *Data)
 		
 #ifdef _DEBUG
 		int desiredoffset = GENESIS_STATE_LENGTH;
-		printf("desired: %d; obtained: %d\n", desiredoffset, offset);
 		assert(offset == desiredoffset);
 #endif		
 	}
@@ -766,7 +765,6 @@ void Export_Genesis(unsigned char *Data)
 #ifdef _DEBUG
 	int contextsize1 = main68k_GetContextSize();
 	int contextsize2 = sizeof(Context_68K);
-	printf("Context: %d, %d\n", contextsize1, contextsize2);
 	assert(contextsize1 == contextsize2);
 #endif
 	
