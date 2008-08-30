@@ -1,5 +1,9 @@
-#ifndef _PWM_H_
-#define _PWM_H_
+#ifndef GENS_PWM_H
+#define GENS_PWM_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef __GNUC__
 
@@ -29,7 +33,6 @@ extern unsigned int PWM_Enable;
 extern unsigned int PWM_Out_R;
 extern unsigned int PWM_Out_L;
 
-
 void FASTCALL PWM_Init(void);
 void FASTCALL PWM_Set_Cycle(unsigned int cycle);
 void FASTCALL PWM_Set_Int(unsigned int int_time);
@@ -37,4 +40,8 @@ void FASTCALL PWM_Clear_Timer(void);
 void FASTCALL PWM_Update_Timer(unsigned int cycle);
 void FASTCALL PWM_Update(int **buf, int length);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_PWM_H */

@@ -1,7 +1,11 @@
 #include "star_68k.h"
 
-#ifndef _CPU_68K_H
-#define _CPU_68K_H
+#ifndef GENS_CPU_68K_H
+#define GENS_CPU_68K_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern struct S68000CONTEXT Context_68K;
 	
@@ -16,4 +20,8 @@ void M68K_Set_32X_Rom_Bank();
 void M68K_Set_Prg_Ram();
 void MS68K_Set_Word_Ram();
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_CPU_68K_H */

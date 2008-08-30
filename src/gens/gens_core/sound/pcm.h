@@ -1,5 +1,9 @@
-#ifndef _PCM_CD_H
-#define _PCM_CD_H
+#ifndef GENS_PCM_CD_H
+#define GENS_PCM_CD_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct pcm_chip_
 {
@@ -32,5 +36,9 @@ int Init_PCM(int Rate);
 void Set_Rate_PCM(int Rate);
 void Reset_PCM(void);
 int Update_PCM(int **buf, int Length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

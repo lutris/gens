@@ -1,7 +1,12 @@
-#ifndef SAVE_H_
-#define SAVE_H_
+#ifndef GENS_SAVE_H
+#define GENS_SAVE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
+#include "gens.h"
 
 #define GENESIS_LENGTH_EX1		0x2247C
 #define GENESIS_LENGTH_EX2		0x11ED2
@@ -24,9 +29,9 @@
 #define MAX_STATE_FILE_LENGTH        SCD32X_STATE_FILE_LENGTH
 */
 
-extern char State_Dir[1024];
-extern char SRAM_Dir[1024];
-extern char BRAM_Dir[1024];
+extern char State_Dir[GENS_PATH_MAX];
+extern char SRAM_Dir[GENS_PATH_MAX];
+extern char BRAM_Dir[GENS_PATH_MAX];
 
 int Change_File_S(char *Dest, char *Dir);
 int Change_File_L(char *Dest, char *Dir);
@@ -48,5 +53,8 @@ int Save_BRAM(void);
 void Format_Backup_Ram(void);
 int Change_File_L_CD (char *Dest, char *Dir);
 
+#ifdef __cplusplus
+}
 #endif
 
+#endif /* GENS_SAVE_H */

@@ -1,6 +1,10 @@
 #ifndef _PARSE_H
 #define _PARSE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MM					"--"
 #define ENABLE				"enable"
 #define DISABLE				"disable"
@@ -142,4 +146,9 @@
 #define HELP				"help"
 
 void parseArgs (int argc, char **argv);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

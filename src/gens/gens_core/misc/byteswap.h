@@ -5,8 +5,8 @@
  */
 
 
-#ifndef BYTESWAP_H
-#define BYTESWAP_H
+#ifndef GENS_BYTESWAP_H
+#define GENS_BYTESWAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,4 +75,4 @@ void __byte_swap_16_array(void *ptr, int n);
 }
 #endif
 
-#endif
+#endif /* GENS_BYTESWAP_H */

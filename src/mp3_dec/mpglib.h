@@ -1,3 +1,9 @@
+#ifndef MPG123_MPGLIB_H
+#define MPG123_MPGLIB_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct buf {
         unsigned char *pnt;
@@ -37,11 +43,6 @@ struct mpstr {
 #define MP3_OK  0
 #define MP3_NEED_MORE 1
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-  
 BOOL ResetMP3_Gens(struct mpstr *mp) ;
 BOOL InitMP3(struct mpstr *mp);
 int decodeMP3(struct mpstr *mp,char *inmemory,int inmemsize,
@@ -52,4 +53,4 @@ void ExitMP3(struct mpstr *mp);
 }
 #endif
 
-
+#endif

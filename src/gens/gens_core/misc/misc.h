@@ -1,5 +1,9 @@
-#ifndef MISC_H
-#define MISC_H
+#ifndef GENS_MISC_H
+#define GENS_MISC_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define EMU_MODE 0x01
 #define BLANC    0x00
@@ -25,7 +29,8 @@ void CDD_Export_Status(void);
 void Write_Sound_Mono_MMX(int *Left, int *Right, short *Dest, int length);
 void Write_Sound_Stereo_MMX(int *Left, int *Right, short *Dest, int length);
 
-
+#ifdef __cplusplus
+}
 #endif
 
-
+#endif /* GENS_MISC_H */

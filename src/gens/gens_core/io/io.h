@@ -1,3 +1,9 @@
+#ifndef GENS_IO_H
+#define GENS_IO_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern unsigned int Controller_1_Type;
 extern unsigned int Controller_1_State;
@@ -149,3 +155,9 @@ unsigned char WR_Controller_1(unsigned char data);
 unsigned char WR_Controller_2(unsigned char data);
 void Fix_Controllers(void);
 void Make_IO_Table(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_IO_H */

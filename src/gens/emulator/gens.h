@@ -5,6 +5,10 @@
 #define GENS_APPNAME "Gens"
 #define GENS_VERSION "2.15.2/GS-m2.2"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "rom.h"
 
 //#define CLOCK_NTSC 53700000			// More accurate for division round
@@ -65,5 +69,8 @@ void Set_Clock_Freq(int system);
 		z80_Set_Odo (&M_Z80, Cycles_Z80 - (cyclesSubtract));
 #endif
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

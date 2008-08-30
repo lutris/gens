@@ -1,5 +1,9 @@
-#ifndef _LC89510_H
-#define _LC89510_H
+#ifndef GENS_LC89510_H
+#define GENS_LC89510_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern struct
 {
@@ -118,4 +122,8 @@ void CDD_Import_Command(void);
 unsigned char SCD_Read_Byte(unsigned int Adr);
 unsigned short SCD_Read_Word(unsigned int Adr);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_LC89510_H */

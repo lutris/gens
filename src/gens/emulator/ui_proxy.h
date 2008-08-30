@@ -1,6 +1,10 @@
 #ifndef UI_PROXY_H
 #define UI_PROXY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int Set_Sprite_Limit(int newLimit);
 int Set_Current_State(int slot);
 int Set_Frame_Skip(int frames);
@@ -55,5 +59,9 @@ extern _filters filters;
  	*Blit = renderer_fn;\
 	MESSAGE_L("Render selected: " msg,"Render selected: " msg, 1500)\
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

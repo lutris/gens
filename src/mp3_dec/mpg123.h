@@ -1,3 +1,10 @@
+#ifndef MPG123_H
+#define MPG123_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include        <stdio.h>
 #include        <string.h>
 #include        <signal.h>
@@ -175,4 +182,8 @@ extern real *pnts[5];
 
 extern struct parameter param;
 
+#ifdef __cplusplus
+}
+#endif
 
+#endif

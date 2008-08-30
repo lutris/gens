@@ -1,5 +1,9 @@
-#ifndef VDP_32X_H
-#define VDP_32X_H
+#ifndef GENS_VDP_32X_H
+#define GENS_VDP_32X_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct VDP_32X_Type
 {
@@ -23,4 +27,8 @@ extern struct VDP_32X_Type _32X_VDP;
 void _32X_VDP_Reset();
 void _32X_VDP_Draw(int FB_Num);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_VDP_32X_H */

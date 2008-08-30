@@ -19,7 +19,6 @@ extern int Invert_Color;
 
 void Recalculate_Palettes(void);
 
-
 #ifdef __cplusplus
 }
 #endif

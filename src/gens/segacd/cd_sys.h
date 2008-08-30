@@ -1,5 +1,9 @@
-#ifndef _CD_SYS_H
-#define _CD_SYS_H
+#ifndef GENS_CD_SYS_H
+#define GENS_CD_SYS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define TRAY_OPEN	0x0500		// TRAY OPEN CDD status
 #define NOCD		0x0000		// CD removed CDD status
@@ -38,9 +42,9 @@
 
 typedef struct
 {
-  unsigned char M;
-  unsigned char S;
-  unsigned char F;
+	unsigned char M;
+	unsigned char S;
+	unsigned char F;
 } _msf;
 
 typedef struct
@@ -133,4 +137,8 @@ void Update_CD_Audio(int **Buf, int length);
 //void Stop_CD_Timer(void);
 //void Update_CD_Timer(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_CD_SYS_H */

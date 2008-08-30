@@ -30,6 +30,10 @@
 #ifndef GENS_COMPRESSION_H
 #define GENS_COMPRESSION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 
 // Function pointer calling conventions from SDL's begin_code.h
@@ -114,5 +118,9 @@ extern const struct COMPRESS_Handler_t CompressMethods[];
 #include "gzip.h"
 #include "dummy.h"
 #include "Zip.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

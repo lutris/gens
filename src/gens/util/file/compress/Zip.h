@@ -23,6 +23,10 @@
 #ifndef GENS_COMPRESS_ZIP_H
 #define GENS_COMPRESS_ZIP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 
 int Zip_Detect_Format(FILE *f);
@@ -30,5 +34,9 @@ int Zip_Get_Num_Files(const char *filename);
 int Zip_Get_First_File_Info(const char *filename, struct COMPRESS_FileInfo_t *retFileInfo);
 struct COMPRESS_FileInfo_t*  Zip_Get_File_Info(const char *filename);
 int Zip_Get_File(const char *filename, const struct COMPRESS_FileInfo_t *fileInfo, void *buf, int size);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

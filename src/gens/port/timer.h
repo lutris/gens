@@ -1,9 +1,17 @@
-#ifndef __TIMER_H__
-#define __TIMER_H__
+#ifndef GENS_TIMER_H
+#define GENS_TIMER_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void init_timer();
 void GetPerformanceFrequency(long long *freq);
 void GetPerformanceCounter(long long *now);
 unsigned long gettime();
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_TIMER_H */

@@ -1,4 +1,5 @@
-#ifndef HAD_CHD_H
+#ifndef GENS_CHD_H
+#define GENS_CHD_H
 
 /*
   NiH: chd.h,v 1.3 2004/06/25 23:31:08 dillo Exp
@@ -22,6 +23,10 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
 #include <zlib.h>
@@ -91,4 +96,8 @@ struct chd *chd_open(const char *, int *);
 int chd_read_hunk(struct chd *, int, char *);
 int chd_read_range(struct chd *, char *, int, int);
 
-#endif /* chd.h */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_CHD_H */

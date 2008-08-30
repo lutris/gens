@@ -1,5 +1,9 @@
-#ifndef _MEM_M68K_H
-#define _MEM_M68K_H
+#ifndef GENS_MEM_M68K_H
+#define GENS_MEM_M68K_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern unsigned char Ram_68k[64 * 1024];
 extern unsigned char Rom_Data[6 * 1024 * 1024];
@@ -58,4 +62,8 @@ void M68K_WB(unsigned int Adr, unsigned char Data);
 void M68K_WW(unsigned int Adr, unsigned short Data);
 void Update_SegaCD_Timer(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_MEM_M68K_H */

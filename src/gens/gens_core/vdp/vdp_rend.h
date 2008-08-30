@@ -1,7 +1,11 @@
-#ifndef VDP_REND_H
-#define VDP_REND_H
+#ifndef GENS_VDP_REND_H
+#define GENS_VDP_REND_H
 
-// 16-bit color
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// 15/16-bit color
 extern unsigned short MD_Screen[336 * 240];
 extern unsigned short Palette[0x1000];
 extern unsigned short MD_Palette[256];
@@ -11,7 +15,7 @@ extern unsigned int MD_Screen32[336 * 240];
 extern unsigned int Palette32[0x1000];
 extern unsigned int MD_Palette32[256];
 
-// _32X_Rend_Mode is used for the 32X 32-bit color C macros.
+// _32X_Rend_Mode is used for the 32X 32-bit color C functions.
 // See g_32x_32bit.h
 extern unsigned char _32X_Rend_Mode;
 
@@ -37,5 +41,9 @@ extern int Sprite_Over;
 
 void Render_Line();
 void Render_Line_32X();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

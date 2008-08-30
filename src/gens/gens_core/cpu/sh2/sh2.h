@@ -1,19 +1,22 @@
 /**********************************************************/
 /*                                                        */
 /* SH2 emulator 1.40 (Hearder part)                       */
-/* Copyright 2002 Stéphane Dallongeville                  */
+/* Copyright 2002 StÃ©phane Dallongeville                  */
 /* Used for the 32X emulation in Gens                     */
 /*                                                        */
 /**********************************************************/
 
 /* 20021106 sthief: slightly changed for GCC (FASTCALL, DECL_FASTCALL) */
 
-#ifndef _SH2_H_
-#define _SH2_H_
+#ifndef GENS_SH2_H
+#define GENS_SH2_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /******************************/
-/* Compiler dependant defines */
+/* Compiler dependent defines */
 /******************************/
 
 #ifndef UINT8
@@ -600,4 +603,8 @@ void SH2I_XORI_DS();
 void SH2I_XORM_DS();
 void SH2I_XTRCT_DS();
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_SH2_H */

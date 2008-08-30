@@ -1,7 +1,12 @@
-#include "port.h"
+#ifndef GENS_ROM_H
+#define GENS_ROM_H
 
-#ifndef ROM_H
-#define ROM_H
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+#include "port.h"
 
 
 #define GENESIS_ROM      2
@@ -63,4 +68,8 @@ unsigned int Calculate_CRC32(void);
 int IPS_Patching();
 void Free_Rom(struct Rom *Rom_Name);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_ROM_H */

@@ -23,6 +23,10 @@
 #ifndef GENS_OPENGL_H
 #define GENS_OPENGL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int Init_Draw_GL(int w, int h);
 void End_Draw_GL(void);
 void Set_GL_Resolution(int w,int h);
@@ -31,4 +35,8 @@ void Adjust_Stretch_GL(void);
 void Clear_Screen_GL(void);
 void Flip_GL(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_OPENGL_H */

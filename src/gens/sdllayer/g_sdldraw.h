@@ -1,5 +1,9 @@
-#ifndef G_DDRAW_H
-#define G_DDRAW_H
+#ifndef GENS_SDLDRAW_H
+#define GENS_SDLDRAW_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <time.h>
 #include <SDL.h>
@@ -62,4 +66,8 @@ void Set_bpp(int newbpp);
 void Change_OpenGL(int newOpenGL);
 void Adjust_Stretch(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_SDLDRAW_H */

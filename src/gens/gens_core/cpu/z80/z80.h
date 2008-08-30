@@ -6,8 +6,8 @@
 /*                                                        */
 /**********************************************************/
 
-#ifndef _Z80_H_
-#define _Z80_H_
+#ifndef GENS_Z80_H
+#define GENS_Z80_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -353,4 +353,4 @@ UINT32 FASTCALL z80_Set_AF2(Z80_CONTEXT *z80, UINT32 AF2);
 }
 #endif
 
-#endif
+#endif /* GENS_Z80_H */

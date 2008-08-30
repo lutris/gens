@@ -1,5 +1,5 @@
-#ifndef _CPU_Z80_H
-#define _CPU_Z80_H
+#ifndef GENS_CPU_Z80_H
+#define GENS_CPU_Z80_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,4 +12,4 @@ void Z80_Reset(void);
 }
 #endif
 
-#endif
+#endif /* GENS_CPU_Z80_H */

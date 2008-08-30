@@ -1,7 +1,7 @@
 ;****************************************
 ;
 ; SH2 emulator 1.60 (ASM source part)
-; Copyright 2002 Stéphane Dallongeville
+; Copyright 2002 StÃ©phane Dallongeville
 ;
 ;****************************************
 

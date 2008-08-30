@@ -23,8 +23,16 @@
 #ifndef GENS_EFFECTS_H
 #define GENS_EFFECTS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int Update_Gens_Logo(void);
 int Update_Crazy_Effect(void);
 void Pause_Screen(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_EFFECTS_H */

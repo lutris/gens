@@ -1,5 +1,9 @@
-#ifndef _YM2612_H_
-#define _YM2612_H_
+#ifndef GENS_YM2612_H
+#define GENS_YM2612_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Change it if you need to do long update
 #define	MAX_UPDATE_LENGTH   2000
@@ -10,7 +14,8 @@
 // VC++ inline
 #define INLINE              __inline
 
-typedef struct slot__ {
+typedef struct slot__
+{
 	int *DT;	// paramètre detune
 	int MUL;	// paramètre "multiple de fréquence"
 	int TL;		// Total Level = volume lorsque l'enveloppe est au plus haut
@@ -51,52 +56,55 @@ typedef struct slot__ {
 	
 } slot_;
 
-typedef struct channel__ {
+typedef struct channel__ 
+{
 	int S0_OUT[4];			// anciennes sorties slot 0 (pour le feed back)
 	int Old_OUTd;			// ancienne sortie de la voie (son brut)
-	int OUTd;				// sortie de la voie (son brut)
-	int LEFT;				// LEFT enable flag
-	int RIGHT;				// RIGHT enable flag
-	int ALGO;				// Algorythm = détermine les connections entre les opérateurs
-	int FB;					// shift count of self feed back = degré de "Feed-Back" du SLOT 1 (il est son unique entrée)
-	int FMS;				// Fréquency Modulation Sensitivity of channel = degré de modulation de la fréquence sur la voie par le LFO
-	int AMS;				// Amplitude Modulation Sensitivity of channel = degré de modulation de l'amplitude sur la voie par le LFO
+	int OUTd;			// sortie de la voie (son brut)
+	int LEFT;			// LEFT enable flag
+	int RIGHT;			// RIGHT enable flag
+	int ALGO;			// Algorythm = détermine les connections entre les opérateurs
+	int FB;				// shift count of self feed back = degré de "Feed-Back" du SLOT 1 (il est son unique entrée)
+	int FMS;			// Fréquency Modulation Sensitivity of channel = degré de modulation de la fréquence sur la voie par le LFO
+	int AMS;			// Amplitude Modulation Sensitivity of channel = degré de modulation de l'amplitude sur la voie par le LFO
 	int FNUM[4];			// hauteur fréquence de la voie (+ 3 pour le mode spécial)
 	int FOCT[4];			// octave de la voie (+ 3 pour le mode spécial)
-	int KC[4];				// Key Code = valeur fonction de la fréquence (voir KSR pour les slots, KSR = KC >> KSR_S)
-	struct slot__ SLOT[4];	// four slot.operators = les 4 slots de la voie
-	int FFlag;				// Frequency step recalculation flag
+	int KC[4];			// Key Code = valeur fonction de la fréquence (voir KSR pour les slots, KSR = KC >> KSR_S)
+	struct slot__ SLOT[4];		// four slot.operators = les 4 slots de la voie
+	int FFlag;			// Frequency step recalculation flag
 } channel_;
 
-typedef struct ym2612__ {
-	int Clock;			// Horloge YM2612
-	int Rate;			// Sample Rate (11025/22050/44100)
+typedef struct ym2612__
+{
+	int Clock;		// Horloge YM2612
+	int Rate;		// Sample Rate (11025/22050/44100)
 	int TimerBase;		// TimerBase calculation
-	int status;			// YM2612 Status (timer overflow)
+	int status;		// YM2612 Status (timer overflow)
 	int OPNAadr;		// addresse pour l'écriture dans l'OPN A (propre à l'émulateur)
 	int OPNBadr;		// addresse pour l'écriture dans l'OPN B (propre à l'émulateur)
-	int LFOcnt;			// LFO counter = compteur-fréquence pour le LFO
-	int LFOinc;			// LFO step counter = pas d'incrémentation du compteur-fréquence du LFO
-						// plus le pas est grand, plus la fréquence est grande
-	int TimerA;			// timerA limit = valeur jusqu'à laquelle le timer A doit compter
+	int LFOcnt;		// LFO counter = compteur-fréquence pour le LFO
+	int LFOinc;		// LFO step counter = pas d'incrémentation du compteur-fréquence du LFO
+					// plus le pas est grand, plus la fréquence est grande
+				
+	int TimerA;		// timerA limit = valeur jusqu'à laquelle le timer A doit compter
 	int TimerAL;
 	int TimerAcnt;		// timerA counter = valeur courante du Timer A
-	int TimerB;			// timerB limit = valeur jusqu'à laquelle le timer B doit compter
+	int TimerB;		// timerB limit = valeur jusqu'à laquelle le timer B doit compter
 	int TimerBL;
 	int TimerBcnt;		// timerB counter = valeur courante du Timer B
-	int Mode;			// Mode actuel des voie 3 et 6 (normal / spécial)
-	int DAC;			// DAC enabled flag
+	int Mode;		// Mode actuel des voie 3 et 6 (normal / spécial)
+	int DAC;		// DAC enabled flag
 	int DACdata;		// DAC data
 	
-	int dummy;		// Windows enforces 8-byte alignment on doubles.
+	int dummy;		// MSVC++ enforces 8-byte alignment on doubles. This forces said alignment on gcc.
 	double Frequence;	// Fréquence de base, se calcul par rapport à l'horlage et au sample rate
 	
-	unsigned int Inter_Cnt;			// Interpolation Counter
-	unsigned int Inter_Step;		// Interpolation Step
+	unsigned int Inter_Cnt;		// Interpolation Counter
+	unsigned int Inter_Step;	// Interpolation Step
 	struct channel__ CHANNEL[6];	// Les 6 voies du YM2612
 	
 	int REG[2][0x100];	// Sauvegardes des valeurs de tout les registres, c'est facultatif
-						// cela nous rend le débuggage plus facile
+				// cela nous rend le débuggage plus facile
 } ym2612_;
 
 /* Gens */
@@ -171,4 +179,8 @@ void Env_Substain_Next(slot_ *SL);
 void Env_Release_Next(slot_ *SL);
 void Env_NULL_Next(slot_ *SL);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_YM2612_H */

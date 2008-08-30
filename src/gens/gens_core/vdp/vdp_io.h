@@ -1,5 +1,12 @@
+#ifndef GENS_VDP_IO_H
+#define GENS_VDP_IO_H
 
-struct Reg_VDP_Type {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct Reg_VDP_Type
+{
 	unsigned int Set1;
 	unsigned int Set2;
 	unsigned int Pat_ScrA_Adr;
@@ -28,7 +35,7 @@ struct Reg_VDP_Type {
 	unsigned int DMA_Address;
 };
 
-extern unsigned char VRam[64000];
+extern unsigned char VRam[64 * 1024];
 extern unsigned char CRam[256];
 extern unsigned char VSRam[256];
 extern unsigned char H_Counter_Table[512 * 2];
@@ -48,7 +55,8 @@ extern int VDP_Status;
 extern int DMAT_Length;
 extern int DMAT_Type;
 extern int DMAT_Tmp;
-extern struct {
+extern struct 
+{
 	int Flag;
 	int Data;
 	int Write;
@@ -70,3 +78,9 @@ int Write_Word_VDP_Data(unsigned short Data);
 int Write_VDP_Ctrl(unsigned short Data);
 int Set_VDP_Reg(int Num_Reg, int Val);
 void Update_IRQ_Line(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_VDP_IO_H */

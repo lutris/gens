@@ -1,5 +1,9 @@
-#ifndef _MEM_S68K_H
-#define _MEM_S68K_H
+#ifndef GENS_MEM_S68K_H
+#define GENS_MEM_S68K_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern struct
 {
@@ -31,4 +35,8 @@ unsigned short S68K_RW(unsigned int Adr);
 void S68K_WB(unsigned int Adr, unsigned char Data);
 void S68K_WW(unsigned int Adr, unsigned short Data);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_MEM_S68K_H */

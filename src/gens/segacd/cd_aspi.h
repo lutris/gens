@@ -1,5 +1,9 @@
-#ifndef __CD_ASPI_H__
-#define __CD_ASPI_H__
+#ifndef GENS_CD_ASPI_H
+#define GENS_CD_ASPI_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "port.h"
 
@@ -119,4 +123,8 @@ void Fill_SCD_TOC_from_MSF_TOC(void);
 void Fill_SCD_TOC_Zero(void);
 
 
-#endif /* __CD_ASPI_H__ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_CD_ASPI_H */

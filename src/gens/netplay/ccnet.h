@@ -1,6 +1,10 @@
 #ifndef _CC_NETWORK_
 #define _CC_NETWORK_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //#define CC_SUPPORT
 
 typedef struct
@@ -16,5 +20,8 @@ int CC_Connect(char *Command, char *Rom, void (*Callback)(char mess[256]));
 int CC_Close(void);
 void CC_Idle(void (*Callback)(char mess[256]));
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

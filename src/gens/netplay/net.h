@@ -1,6 +1,10 @@
 #ifndef NET_GENS_H
 #define NET_GENS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "kailleraclient.h"
 
 extern int Kaillera_Initialised;
@@ -16,5 +20,9 @@ extern int (WINAPI *Kaillera_End_Game) ();
 
 int Init_Network(void);
 void End_Network(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef __PORT_H__
 #define __PORT_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
@@ -18,5 +22,9 @@ unsigned long GetTickCount();
 int GetPrivateProfileInt(const char *section, const char *var, int def, const char *filename);
 void GetPrivateProfileString(const char *section, const char *var, const char *def, char *get, int length, const char *filename);
 void WritePrivateProfileString(const char *section, const char *var, const char *var_name, const char *filename);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

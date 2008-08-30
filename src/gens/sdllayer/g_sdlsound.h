@@ -1,5 +1,9 @@
-#ifndef SOUND_H
-#define SOUND_H
+#ifndef GENS_SDLSOUND_H
+#define GENS_SDLSOUND_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern int Sound_Rate;
 extern int Sound_Segs;
@@ -33,4 +37,8 @@ int Lots_In_Audio_Buffer(void);
 
 extern int fast_forward;
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_SDLSOUND_H */

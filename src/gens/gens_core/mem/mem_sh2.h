@@ -1,5 +1,9 @@
-#ifndef _MEM_SH2_H
-#define _MEM_SH2_H
+#ifndef GENS_MEM_SH2_H
+#define GENS_MEM_SH2_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "sh2.h"
 
@@ -79,5 +83,8 @@ void FASTCALL SH2_Write_Byte_Ram(UINT32 adr, UINT8 data);
 void FASTCALL SH2_Write_Word_Ram(UINT32 adr, UINT16 data);
 void FASTCALL SH2_Write_Long_Ram(UINT32 adr, UINT32 data);
 
+#ifdef __cplusplus
+}
 #endif
 
+#endif /* GENS_MEM_SH2_H */

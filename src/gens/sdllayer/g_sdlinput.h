@@ -1,5 +1,9 @@
-#ifndef G_SDLINPUT_H
-#define G_SDLINPUT_H
+#ifndef GENS_SDLINPUT_H
+#define GENS_SDLINPUT_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <gtk/gtk.h>
 
@@ -65,5 +69,9 @@ extern struct SDL_Joystick* joy[6];
 #define CHECK_PLAYER_PAD(player, ctrl)	\
 	CHECK_DIR(player, ctrl)				\
 	CHECK_ALL_BUTTONS(player, ctrl)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

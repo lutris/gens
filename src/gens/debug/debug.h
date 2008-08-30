@@ -1,5 +1,9 @@
-#ifndef _DEBUG_68K_H
-#define _DEBUG_68K_H
+#ifndef GENS_DEBUG_H
+#define GENS_DEBUG_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -32,4 +36,8 @@ enum DEBUG_MODE
 
 #endif /* GENS_DEBUG */
 
-#endif /* _DEBUG_68K_H */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_DEBUG_H */

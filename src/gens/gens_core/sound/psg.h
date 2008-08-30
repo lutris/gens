@@ -1,5 +1,9 @@
-#ifndef _PSG_H
-#define _PSG_H
+#ifndef GENS_PSG_H
+#define GENS_PSG_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern unsigned int PSG_Save[8];
 
@@ -42,4 +46,8 @@ extern unsigned char PSG_Save_Full[sizeof(struct _psg)];
 void PSG_Save_State_Full(void);
 void PSG_Restore_State_Full(void); 
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_PSG_H */
