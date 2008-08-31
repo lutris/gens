@@ -287,10 +287,17 @@ void Fix_Controllers(void)
 {
 	if (Controller_1_Delay <= 25)
 		Controller_1_Delay++;
+	else
+	{
+		//Controller_1_Delay = 0; // commented out in asm
+		Controller_1_Counter = 0;
+	}
 	
 	if (Controller_2_Delay <= 25)
 		Controller_2_Delay++;
-	
-	Controller_1_Counter = 0;
-	Controller_2_Counter = 0;
+	else
+	{
+		//Controller_2_Delay = 0; // commented out in asm
+		Controller_2_Counter = 0;
+	}
 }
