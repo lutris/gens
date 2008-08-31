@@ -80,7 +80,13 @@ int _7z::getNumFiles(string zFilename)
 	string data;
 	int numFiles = 0;
 	
-	p_7z = popen("/usr/bin/7z l \"/home/david/ROMs/S1.7z\"", "r");
+	// Build the command line.
+	// TODO: Make "/usr/bin/7z" configurable.
+	string cmd = "/usr/bin/7z l ";
+	cmd += "\"" + zFilename + "\"";
+	
+	// Open the 7z file.
+	p_7z = popen(cmd.c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -176,7 +182,12 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	string data;
 	int numFiles = 0;
 	
-	p_7z = popen("/usr/bin/7z l \"/home/david/ROMs/S1.7z\"", "r");
+	// Build the command line.
+	// TODO: Make "/usr/bin/7z" configurable.
+	string cmd = "/usr/bin/7z l ";
+	cmd += "\"" + zFilename + "\"";
+	
+	p_7z = popen(cmd.c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -246,7 +257,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 		else
 		{
 			// File. Add this entry.
-			file.filename = curLine.substr(52);
+			file.filename = curLine.substr(53);
 			file.filesize = atoi(curLine.substr(26, 12).c_str());
 			lst->push_back(file);
 			numFiles++;
@@ -278,7 +289,14 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	string data;
 	int totalSize = 0;
 	
-	p_7z = popen("/usr/bin/7z e \"/home/david/ROMs/S1.7z\" \"Sonic the Hedgehog (W) (REV01) [!].gen\" -so 2>/dev/null", "r");
+	// Build the command line.
+	// TODO: Make "/usr/bin/7z" configurable.
+	string cmd = "/usr/bin/7z e ";
+	cmd += "\"" + zFilename + "\" ";
+	cmd += "\"" + fileInfo->filename + "\" ";
+	cmd += "-so 2>/dev/null";
+	
+	p_7z = popen(cmd.c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -295,7 +313,6 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	}
 	pclose(p_7z);
 	
-	printf("Total Size: %d\n", totalSize);
-	//return 0;
+	// Return the filesize.
 	return totalSize;
 }

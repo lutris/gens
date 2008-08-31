@@ -575,7 +575,6 @@ Rom *Load_SegaCD_BIOS(const char *filename)
  */
 Rom *Load_ROM(const char *filename, const int interleaved)
 {
-	FILE *ROM_File;
 	Compressor *cmp;
 	list<CompressedFile> *files;
 	CompressedFile* selFile;
@@ -594,7 +593,6 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	}
 	
 	// Get the file information.
-	int num = cmp->getNumFiles();
 	files = cmp->getFileInfo();
 	
 	// Check how many files are available.
@@ -656,9 +654,11 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	if (cmp->getFile(&(*selFile), Rom_Data, selFile->filesize) <= 0)
+	int loadedSize = cmp->getFile(&(*selFile), Rom_Data, selFile->filesize);
+	if (loadedSize != selFile->filesize)
 	{
-		// Error loading the ROM.
+		// Incorrect filesize.
+		UI_MsgBox("Error loading the ROM file.", "ROM File Error");
 		free(My_Rom);
 		delete files;
 		delete cmp;
