@@ -38,7 +38,6 @@ using std::list;
 #include "zip_select/zip_select_dialog_misc.hpp"
 
 // New file compression handler.
-#include "compress/compress.h"
 #include "compress/compressor.hpp"
 
 Rom *My_Rom = NULL;
