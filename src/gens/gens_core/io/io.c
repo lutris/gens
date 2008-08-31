@@ -6,24 +6,24 @@
 
 #include "io.h"
 
-#define CREATE_CONTROLLER_VARIABLES(player)		\
-	unsigned int Controller_ ## player ## _Type;	\
-	unsigned int Controller_ ## player ## _State;	\
-	unsigned int Controller_ ## player ## _COM;	\
-	unsigned int Controller_ ## player ## _Counter;	\
-	unsigned int Controller_ ## player ## _Delay;	\
-	unsigned int Controller_ ## player ## _Up;	\
-	unsigned int Controller_ ## player ## _Down;	\
-	unsigned int Controller_ ## player ## _Left;	\
-	unsigned int Controller_ ## player ## _Right;	\
-	unsigned int Controller_ ## player ## _Start;	\
-	unsigned int Controller_ ## player ## _Mode;	\
-	unsigned int Controller_ ## player ## _A;	\
-	unsigned int Controller_ ## player ## _B;	\
-	unsigned int Controller_ ## player ## _C;	\
-	unsigned int Controller_ ## player ## _X;	\
-	unsigned int Controller_ ## player ## _Y;	\
-	unsigned int Controller_ ## player ## _Z;	\
+#define CREATE_CONTROLLER_VARIABLES(player)			\
+	unsigned int Controller_ ## player ## _State	= 0x40;	\
+	unsigned int Controller_ ## player ## _COM	= 0;	\
+	unsigned int Controller_ ## player ## _Counter	= 0;	\
+	unsigned int Controller_ ## player ## _Delay	= 0;	\
+	unsigned int Controller_ ## player ## _Type	= 0;	\
+	unsigned int Controller_ ## player ## _Up	= 1;	\
+	unsigned int Controller_ ## player ## _Down	= 1;	\
+	unsigned int Controller_ ## player ## _Left	= 1;	\
+	unsigned int Controller_ ## player ## _Right	= 1;	\
+	unsigned int Controller_ ## player ## _Start	= 1;	\
+	unsigned int Controller_ ## player ## _Mode	= 1;	\
+	unsigned int Controller_ ## player ## _A	= 1;	\
+	unsigned int Controller_ ## player ## _B	= 1;	\
+	unsigned int Controller_ ## player ## _C	= 1;	\
+	unsigned int Controller_ ## player ## _X	= 1;	\
+	unsigned int Controller_ ## player ## _Y	= 1;	\
+	unsigned int Controller_ ## player ## _Z	= 1;	\
 
 CREATE_CONTROLLER_VARIABLES(1);
 CREATE_CONTROLLER_VARIABLES(1B);
