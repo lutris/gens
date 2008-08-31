@@ -260,4 +260,7 @@ void Controller_Config_Save(void)
 		Controller_2D_Type |= 0x01;
 	else
 		Controller_2D_Type &= ~0x01;
+	
+	// Rebuild the I/O table for teamplayer.
+	Make_IO_Table();
 }
