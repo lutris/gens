@@ -98,10 +98,7 @@ unsigned char RD_Controller_1(void)
 	if (Controller_1_Type & 0x10)
 	{
 		// TeamPlayer.
-		unsigned char x;
-		x = RD_Controller_1_TP();
-		printf("Teamplayer: 0x%02X; counter == %d\n", x, Controller_1_Counter);
-		return x;
+		return RD_Controller_1_TP();
 	}
 	
 	// Create the bitfields.
