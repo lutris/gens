@@ -111,6 +111,7 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_32x.asm \
 		port/port.c \
 		port/timer.c \
+		port/ini.cpp \
 		sdllayer/g_sdldraw.c \
 		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
@@ -244,6 +245,7 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_rend.h \
 		port/port.h \
 		port/timer.h \
+		port/ini.hpp \
 		sdllayer/g_sdldraw.h \
 		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \

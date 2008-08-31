@@ -15,6 +15,7 @@
 #include "g_main.h"
 #include "port/timer.h"
 #include "port/port.h"
+#include "port/ini.hpp"
 #include "gens.h"
 #include "g_md.h"
 #include "g_mcd.h"
@@ -200,7 +201,7 @@ static int Build_Language_String (void)
 		language_name[0] = (char *) malloc (32 * sizeof (char));
 		strcpy (language_name[0], "English");
 		language_name[1] = NULL;
-		WritePrivateProfileString ("English", "Menu Language", "&English menu", PathNames.Language_Path);
+		WritePrivateProfileString("English", "Menu Language", "&English menu", PathNames.Language_Path);
 	}
 	
 	return 0;
