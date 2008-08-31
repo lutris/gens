@@ -269,11 +269,11 @@ parseArgs (int argc, char **argv)
 	}
       else if (!strcmp (long_options[option_index].name, GCOFFPATH))
 	{
-	  strcpy (PathNames.CGOffline_Path, optarg);
+	  strcpy (Misc_Filenames.GCOffline, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, GENSMANPATH))
 	{
-	  strcpy (PathNames.Manual_Path, optarg);
+	  strcpy (Misc_Filenames.Manual, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, GENBIOS))
 	{

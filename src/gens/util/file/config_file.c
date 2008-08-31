@@ -255,9 +255,10 @@ int Save_Config(const char *File_Name)
 		WritePrivateProfileString ("Options", "Ram Cart Size", "-1", Conf_File);
 	}
 	
-	// Manuals
-	WritePrivateProfileString("Options", "GCOffline path", PathNames.CGOffline_Path, Conf_File);
-	WritePrivateProfileString("Options", "Gens manual path", PathNames.Manual_Path, Conf_File);
+	// Miscellaneous files
+	WritePrivateProfileString("Options", "7z Binary", Misc_Filenames._7z_Binary, Conf_File);
+	WritePrivateProfileString("Options", "GCOffline path", Misc_Filenames.GCOffline, Conf_File);
+	WritePrivateProfileString("Options", "Gens manual path", Misc_Filenames.Manual, Conf_File);
 	
 	// Controller settings
 	sprintf(Str_Tmp, "%d", Controller_1_Type & 0x13);
@@ -535,11 +536,18 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	else
 		BRAM_Ex_State |= 0x100;
 	
-	// Manuals
+	// Miscellaneous files
+#if defined(__WIN32__)
+	GetPrivateProfileString("Options", "7z Binary", "C:\\Program Files\\7-Zip\7z.exe",
+				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
+#else
+	GetPrivateProfileString("Options", "7z Binary", "/usr/bin/7z",
+				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
+#endif	
 	GetPrivateProfileString("Options", "GCOffline path", "GCOffline.chm",
-				PathNames.CGOffline_Path, GENS_PATH_MAX, Conf_File);
+				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
 	GetPrivateProfileString("Options", "Gens manual path", "manual.exe",
-				PathNames.Manual_Path, GENS_PATH_MAX, Conf_File);
+				Misc_Filenames.Manual, GENS_PATH_MAX, Conf_File);
 	
 	// Controller settings
 	Controller_1_Type = GetPrivateProfileInt("Input", "P1.Type", 1, Conf_File);

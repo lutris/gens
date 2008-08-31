@@ -62,6 +62,7 @@
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
 struct Gens_BIOS_Filenames_t BIOS_Filenames;
+struct Gens_Misc_Filenames_t Misc_Filenames;
 struct Gens_VideoSettings_t Video;
 
 // Bits per pixel.
@@ -257,12 +258,12 @@ static void Init_Settings(void)
 	strcat (PathNames.Language_Path, "language.dat");
 	
 	// Create default configuration filename.
-	strncpy (Str_Tmp, PathNames.Gens_Path, 1000);
-	strcat (Str_Tmp, "gens.cfg");
+	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);
+	strcat(Str_Tmp, "gens.cfg");
 	
 	// Default manual and CGOffline path is empty.
-	strcpy (PathNames.Manual_Path, "");
-	strcpy (PathNames.CGOffline_Path, "");
+	strcpy(Misc_Filenames.Manual, "");
+	strcpy(Misc_Filenames.GCOffline, "");
 	
 	// Build language strings and load the default configuration.
 	Build_Language_String();

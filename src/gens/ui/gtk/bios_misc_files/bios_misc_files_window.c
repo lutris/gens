@@ -59,8 +59,9 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 	{"Europe", "mcd_bios_eur", ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
 	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", 0, NULL},
-	{"CGOffline", "cgoffline", AnyFile, PathNames.CGOffline_Path},
-	{"Manual", "manual", AnyFile, PathNames.Manual_Path},
+	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
+	{"GCOffline", "gcoffline", AnyFile, Misc_Filenames.GCOffline},
+	{"Manual", "manual", AnyFile, Misc_Filenames.Manual},
 	{NULL, NULL, 0, NULL},
 };
 

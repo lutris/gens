@@ -38,8 +38,6 @@ struct Gens_PathNames_t
 	char Start_Rom[GENS_PATH_MAX];
 	char Gens_Path[GENS_PATH_MAX];
 	char Language_Path[GENS_PATH_MAX];
-	char CGOffline_Path[GENS_PATH_MAX];
-	char Manual_Path[GENS_PATH_MAX];
 };
 
 
@@ -53,6 +51,15 @@ struct Gens_BIOS_Filenames_t
 	char _32X_MC68000[GENS_PATH_MAX];
 	char _32X_MSH2[GENS_PATH_MAX];
 	char _32X_SSH2[GENS_PATH_MAX];
+};
+
+
+// Miscellaneous filenames
+struct Gens_Misc_Filenames_t
+{
+	char _7z_Binary[GENS_PATH_MAX];
+	char GCOffline[GENS_PATH_MAX];
+	char Manual[GENS_PATH_MAX];
 };
 
 
@@ -72,6 +79,7 @@ struct Gens_VideoSettings_t
 extern struct Gens_Settings_t Settings;
 extern struct Gens_PathNames_t PathNames;
 extern struct Gens_BIOS_Filenames_t BIOS_Filenames;
+extern struct Gens_Misc_Filenames_t Misc_Filenames;
 extern struct Gens_VideoSettings_t Video;
 
 // Bits per pixel.
