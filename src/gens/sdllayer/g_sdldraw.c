@@ -360,15 +360,21 @@ static void Flip_SDL(void)
 	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
 	
 	// Start of the SDL framebuffer.
-	unsigned char *start = screen->pixels + (((screen->w * bytespp) * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << shift);
+	int pitch = screen->w * bytespp;
+	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+	
+	int startPos = ((pitch * VBorder) + HBorder) << shift;	// Starting position from within the screen.
+	
+	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
 	if (Video.Full_Screen)		
 	{
-		Blit_FS(start, screen->w * bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep*2);
+		Blit_FS(start, pitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep*2);
 	}
 	else
 	{
-		Blit_W(start, screen->w * bytespp, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep*2);
+		Blit_W(start, pitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep*2);
 	}
 	
 	SDL_UnlockSurface(screen);
