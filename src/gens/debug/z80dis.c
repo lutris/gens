@@ -3,7 +3,7 @@
 
 #include "gens_core/mem/mem_z80.h"
 
-const char* Mnemonics[256] =
+const char Mnemonics[256][16] =
 {
 	"NOP", "LD BC,#h", "LD (BC),A", "INC BC", "INC B", "DEC B", "LD B,*h", "RLCA",
 	"EX AF,AF'", "ADD HL,BC", "LD A,(BC)", "DEC BC", "INC C", "DEC C", "LD C,*h", "RRCA",
@@ -39,7 +39,7 @@ const char* Mnemonics[256] =
 	"RET M", "LD SP,HL", "JP M,#h", "EI", "CALL M,#h", "PFX_FD", "CP *h", "RST 38h"
 };
 
-const char* MnemonicsCB[256] =
+const char MnemonicsCB[256][16] =
 {
 	"RLC B", "RLC C", "RLC D", "RLC E", "RLC H", "RLC L", "RLC xHL", "RLC A",
 	"RRC B", "RRC C", "RRC D", "RRC E", "RRC H", "RRC L", "RRC xHL", "RRC A",
@@ -75,7 +75,7 @@ const char* MnemonicsCB[256] =
 	"SET 7,B", "SET 7,C", "SET 7,D", "SET 7,E", "SET 7,H", "SET 7,L", "SET 7,(HL)", "SET 7,A"
 };
 
-const char* MnemonicsED[256] =
+const char MnemonicsED[256][16] =
 {
 	"FUCK00", "FUCK01", "FUCK02", "FUCK03", "FUCK04", "FUCK05", "FUCK06", "FUCK07",
 	"FUCK08", "FUCK09", "FUCK0A", "FUCK0B", "FUCK0C", "FUCK0D", "FUCK0E", "FUCK0F",
@@ -111,7 +111,7 @@ const char* MnemonicsED[256] =
 	"FUCKF8", "FUCKF9", "FUCKFA", "FUCKFB", "FUCKFC", "FUCKFD", "FUCKFE", "FUCKFF"
 };
 
-const char* MnemonicsXX[256] =
+const char MnemonicsXX[256][16] =
 {
 	"NOP", "LD BC,#h", "LD (BC),A", "INC BC", "INC B", "DEC B", "LD B,*h", "RLCA",
 	"EX AF,AF'", "ADD I%,BC", "LD A,(BC)", "DEC BC", "INC C", "DEC C", "LD C,*h", "RRCA",
