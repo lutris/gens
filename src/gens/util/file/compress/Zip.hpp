@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: File Compression Sub Class.                                       *
+ * Gens: Zip File Compression Class.                                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -19,34 +19,30 @@
  * with this program; if not, write to the Free Software Foundation, Inc., *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
- 
-#ifndef GENS_SUBCOMPRESSOR_HPP
-#define GENS_SUBCOMPRESSOR_HPP
+
+#ifndef GENS_ZIP_HPP
+#define GENS_ZIP_HPP
 
 #include <stdio.h>
 #include <string>
 #include <list>
 
-// Compressed file struct
-#include "compressedfile.hpp"
+// Subcompressor
+#include "subcompressor.hpp"
 
 using std::string;
 using std::list;
 
-class SubCompressor
+class Zip : public SubCompressor
 {
 	public:
-		SubCompressor();
-		virtual ~SubCompressor();
+		Zip();
+		~Zip();
 		
-		virtual bool detectFormat(FILE *f) = 0;
-		virtual int getNumFiles(string zFilename) = 0;
-		virtual list<CompressedFile>* getFileInfo(string zFilename) = 0;
-		virtual int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size) = 0;
+		bool detectFormat(FILE *f);
+		int getNumFiles(string zFilename);
+		list<CompressedFile>* getFileInfo(string zFilename);
+		int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size);
 };
-
-// Various subcompressors.
-#include "gzip.hpp"
-#include "Zip.hpp"
 
 #endif

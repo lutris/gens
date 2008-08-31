@@ -44,6 +44,7 @@ Compressor::Compressor(string zFilename)
 	SubCompressor* subCompTable[] =
 	{
 		new GZip(),
+		new Zip(),
 		NULL,
 	};
 	

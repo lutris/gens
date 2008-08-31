@@ -20,7 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "subcompressor.hpp"
+#include "gzip.hpp"
+
 #include <zlib.h>
 
 #include <string>
@@ -53,10 +54,10 @@ bool GZip::detectFormat(FILE *f)
 
 /**
  * getNumFiles(): Gets the number of files in the specified archive.
- * @param filename Filename of the archive.
+ * @param zFilename Filename of the archive.
  * @return Number of files, or 0 on error.
  */
-int GZip::getNumFiles(string filename)
+int GZip::getNumFiles(string zFilename)
 {
 	// GZip files always contain a single file.
 	return 1;
