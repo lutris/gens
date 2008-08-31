@@ -151,15 +151,17 @@ unsigned int Controller_2D_Y;
 unsigned int Controller_2D_Z;
 
 // Jump Table: Table_Cont (Controller status)
-#define First_Low	0x00
-#define First_High	0x04
-#define Second_Low	0x08
-#define Second_High	0x0C
-#define Third_Low	0x10
-#define Third_High	0x14
-#define Fourth_Low	0x18
-#define Fourth_High	0x1C
-
+enum SelectLine
+{
+	First_Low	= 0x00,
+	First_High	= 0x01,
+	Second_Low	= 0x02,
+	Second_High	= 0x03,
+	Third_Low	= 0x04,
+	Third_High	= 0x05,
+	Fourth_Low	= 0x06,
+	Fourth_High	= 0x07,
+};
 
 #define CONTROLLER_UP		0x00000001
 #define CONTROLLER_DOWN		0x00000002
@@ -327,10 +329,6 @@ static unsigned char RD_Controller(unsigned int state,
 {
 	// Read controller 1.
 	int eax, ebx;
-	int jmp;
-	
-	eax = state;
-	ebx = type;
 	
 	if (type & 0x10)
 	{
@@ -338,19 +336,14 @@ static unsigned char RD_Controller(unsigned int state,
 		return 0x00;
 	}
 	
-	eax >>= 4;
-	ebx = counter;
-	ebx &= 0x03;
-	eax &= 0x04;
-	
-	if (!(type & 0x01))
+	int SelectLine_State = ((state >> 6) & 0x01);
+	if (type & 0x01)
 	{
-		// 3-button controller.
-		ebx = 0;
+		// 6-button controller. Add the counter value.
+		SelectLine_State += ((counter & 0x03) * 2);
 	}
 	
-	jmp = (ebx * 8) + eax;
-	switch (jmp)
+	switch (SelectLine_State)
 	{
 		case First_High:
 		case Second_High:
@@ -410,7 +403,7 @@ static unsigned char RD_Controller(unsigned int state,
 	}
 	
 	// Shouldn't happen...
-	printf("%s: Invalid jump table entry: %d\n", __func__, jmp);
+	printf("%s: Invalid Select Line State: %d\n", __func__, SelectLine_State);
 }
 
 
