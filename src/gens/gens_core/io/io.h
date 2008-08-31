@@ -6,10 +6,6 @@ extern "C" {
 #endif
 
 #define CREATE_CONTROLLER_VARIABLES_EXTERN(player)		\
-	extern unsigned int Controller_ ## player ## _State;	\
-	extern unsigned int Controller_ ## player ## _COM;	\
-	extern unsigned int Controller_ ## player ## _Counter;	\
-	extern unsigned int Controller_ ## player ## _Delay;	\
 	extern unsigned int Controller_ ## player ## _Type;	\
 	extern unsigned int Controller_ ## player ## _Up;	\
 	extern unsigned int Controller_ ## player ## _Down;	\
@@ -23,6 +19,16 @@ extern "C" {
 	extern unsigned int Controller_ ## player ## _X;	\
 	extern unsigned int Controller_ ## player ## _Y;	\
 	extern unsigned int Controller_ ## player ## _Z;	\
+
+extern unsigned int Controller_1_State;
+extern unsigned int Controller_1_COM;
+extern unsigned int Controller_1_Counter;
+extern unsigned int Controller_1_Delay;
+
+extern unsigned int Controller_2_State;
+extern unsigned int Controller_2_COM;
+extern unsigned int Controller_2_Counter;
+extern unsigned int Controller_2_Delay;
 
 CREATE_CONTROLLER_VARIABLES_EXTERN(1);
 CREATE_CONTROLLER_VARIABLES_EXTERN(1B);

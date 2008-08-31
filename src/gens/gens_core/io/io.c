@@ -7,10 +7,6 @@
 #include "io.h"
 
 #define CREATE_CONTROLLER_VARIABLES(player)			\
-	unsigned int Controller_ ## player ## _State	= 0x40;	\
-	unsigned int Controller_ ## player ## _COM	= 0;	\
-	unsigned int Controller_ ## player ## _Counter	= 0;	\
-	unsigned int Controller_ ## player ## _Delay	= 0;	\
 	unsigned int Controller_ ## player ## _Type	= 0;	\
 	unsigned int Controller_ ## player ## _Up	= 1;	\
 	unsigned int Controller_ ## player ## _Down	= 1;	\
@@ -24,6 +20,16 @@
 	unsigned int Controller_ ## player ## _X	= 1;	\
 	unsigned int Controller_ ## player ## _Y	= 1;	\
 	unsigned int Controller_ ## player ## _Z	= 1;	\
+
+unsigned int Controller_1_State		= 0x40;
+unsigned int Controller_1_COM		= 0;
+unsigned int Controller_1_Counter	= 0;
+unsigned int Controller_1_Delay		= 0;
+
+unsigned int Controller_2_State		= 0x40;
+unsigned int Controller_2_COM		= 0;
+unsigned int Controller_2_Counter	= 0;
+unsigned int Controller_2_Delay		= 0;
 
 CREATE_CONTROLLER_VARIABLES(1);
 CREATE_CONTROLLER_VARIABLES(1B);
