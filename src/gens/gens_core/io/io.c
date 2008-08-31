@@ -350,12 +350,12 @@ static unsigned char RD_Controller(unsigned int state,
 		case Third_High:
 			eax = (buttons[0] & CONTROLLER_C ? 1 : 0);
 			ebx = (buttons[0] & CONTROLLER_B ? 1 : 0);
-			eax *= 4;
-			ebx *= 4;
+			eax <<= 2;
+			ebx <<= 2;
 			eax |= (buttons[0] & CONTROLLER_RIGHT ? 1 : 0);
 			ebx |= (buttons[0] & CONTROLLER_LEFT ? 1 : 0);
-			eax *= 4;
-			ebx *= 4;
+			eax <<= 2;
+			ebx <<= 2;
 			eax |= (buttons[0] & CONTROLLER_DOWN ? 1 : 0);
 			ebx |= (buttons[0] & CONTROLLER_UP ? 1 : 0);
 			eax = (eax * 2) + ebx + 0x40;
@@ -382,12 +382,12 @@ static unsigned char RD_Controller(unsigned int state,
 		case Fourth_High:
 			eax = (buttons[0] & CONTROLLER_C ? 1 : 0);
 			ebx = (buttons[0] & CONTROLLER_B ? 1 : 0);
-			eax *= 4;
-			ebx *= 4;
+			eax <<= 2;
+			ebx <<= 2;
 			eax |= (buttons[0] & CONTROLLER_MODE ? 1 : 0);
 			ebx |= (buttons[0] & CONTROLLER_X ? 1 : 0);
-			eax *= 4;
-			ebx *= 4;
+			eax <<= 2;
+			ebx <<= 2;
 			eax |= (buttons[0] & CONTROLLER_Y ? 1 : 0);
 			ebx |= (buttons[0] & CONTROLLER_Z ? 1 : 0);
 			eax = (eax * 2) + ebx + 0x40;
