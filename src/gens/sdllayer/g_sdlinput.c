@@ -628,23 +628,27 @@ Get_Key (void)
     }
 }
 
-void
-Update_Controllers ()
-{
-  CHECK_PLAYER_PAD (0, 1)
-  CHECK_PLAYER_PAD (1, 2)
-  if (Controller_1_Type & 0x10)	// TEAMPLAYER PORT 1
-    {
-    CHECK_PLAYER_PAD (2, 1B)
-	CHECK_PLAYER_PAD (3, 1C)
-	CHECK_PLAYER_PAD (4, 1D)
-	}
 
-  if (Controller_2_Type & 0x10)	// TEAMPLAYER PORT 2
-    {
-    CHECK_PLAYER_PAD (5, 2B)
-	CHECK_PLAYER_PAD (6, 2C)
-	CHECK_PLAYER_PAD (7, 2D)}
+void Update_Controllers(void)
+{
+	CHECK_PLAYER_PAD (0, 1);
+	CHECK_PLAYER_PAD (1, 2);
+	
+	if (Controller_1_Type & 0x10)
+	{
+		// TEAMPLAYER PORT 1
+		CHECK_PLAYER_PAD (2, 1B);
+		CHECK_PLAYER_PAD (3, 1C);
+		CHECK_PLAYER_PAD (4, 1D);
+	}
+	
+	if (Controller_2_Type & 0x10);
+	{
+		// TEAMPLAYER PORT 2
+		CHECK_PLAYER_PAD (5, 2B);
+		CHECK_PLAYER_PAD (6, 2C);
+		CHECK_PLAYER_PAD (7, 2D);
+	}
 }
 
 
