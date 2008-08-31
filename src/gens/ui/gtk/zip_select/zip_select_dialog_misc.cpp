@@ -98,6 +98,7 @@ CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 	if (dialogResponse != GTK_RESPONSE_OK)
 	{
 		// No file was selected.
+		gtk_widget_destroy(Zip);
 		return NULL;
 	}
 	

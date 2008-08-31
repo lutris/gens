@@ -624,6 +624,15 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		selFile = Open_Zip_Select_Dialog(files);
 	}
 	
+	if (!selFile)
+	{
+		// No file was selected and/or Cancel was clicked.
+		delete files;
+		delete cmp;
+		Game = NULL;
+		return NULL;
+	}
+	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 	if (selFile->filesize > ((6 * 1024 * 1024) + 512))
 	{
