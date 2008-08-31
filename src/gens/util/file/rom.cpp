@@ -594,15 +594,22 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	}
 	
 	// Get the file information.
+	int num = cmp->getNumFiles();
 	files = cmp->getFileInfo();
 	
 	// Check how many files are available.
-	if (files->empty())
+	if (!files || files->empty())
 	{
 		// No files in the archive.
 		UI_MsgBox("No files were detected in this archive.", "No Files Detected");
-		delete files;
-		delete cmp;
+		
+		if (files)
+			delete files;
+		if (cmp)
+			delete cmp;
+		
+		files = NULL;
+		cmp = NULL;
 		Game = NULL;
 		return NULL;
 	}
