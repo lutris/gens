@@ -5,8 +5,8 @@
 
 #include "g_palette.h"
 #include "g_main.h"
-#include "vdp_rend.h"
-#include "vdp_32x.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_32x.h"
 
 
 int RMax_Level;

@@ -1,39 +1,51 @@
-#include "port.h"
 #include <stdio.h>
 #include <string.h>
-#include "g_main.h"
-#include "g_md.h"
-#include "g_32x.h"
-#include "g_input.h"
-#include "misc.h"
-#include "gens.h"
 
-#include "debug.h"
-#include "cpu_68k.h"
-#include "star_68k.h"
+#include "port/port.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
+#include "emulator/g_md.h"
+#include "emulator/g_32x.h"
+#include "emulator/g_input.h"
+#include "gens_core/misc/misc.h"
+#include "emulator/gens.h"
+
+#include "debug/debug.h"
+
+// MC68000
+#include "gens_core/cpu/68k/cpu_68k.h"
+#include "gens_core/cpu/68k/star_68k.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_s68k.h"
 #include "m68kd.h"
-#include "cpu_z80.h"
-#include "z80.h"
+
+// Z80
+#include "gens_core/cpu/z80/cpu_z80.h"
+#include "gens_core/cpu/z80/z80.h"
+#include "gens_core/mem/mem_z80.h"
 #include "z80dis.h"
-#include "cpu_sh2.h"
-#include "sh2.h"
+
+// SH2
+#include "gens_core/cpu/sh2/cpu_sh2.h"
+#include "gens_core/cpu/sh2/sh2.h"
+#include "gens_core/mem/mem_sh2.h"
 #include "sh2d.h"
-#include "mem_m68k.h"
-#include "mem_s68k.h"
-#include "mem_z80.h"
-#include "mem_sh2.h"
-#include "vdp_io.h"
-#include "vdp_rend.h"
-#include "vdp_32x.h"
-#include "lc89510.h"
-#include "cd_aspi.h"
-#include "gfx_cd.h"
+
+// VDP
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_32x.h"
+
+// SegaCD
+#include "segacd/lc89510.h"
+#include "segacd/cd_aspi.h"
+#include "gens_core/gfx/gfx_cd.h"
 
 int Current_32X_FB = 0;
 int adr_mem = 0, nb_inst = 1, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal;
 int Current_PC;
 
-char _GString[1024];		// GString is a GLib type (Unix version)
+char _GString[GENS_PATH_MAX];		// GString is a GLib type (Unix version)
 char Dbg_Str[32];
 char Dbg_EA_Str[16];
 char Dbg_Size_Str[3];

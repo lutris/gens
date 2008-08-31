@@ -37,8 +37,8 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-#include "gens.h"
-#include "g_main.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
 
 
 // Macro to add a slider to the table.

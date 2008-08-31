@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#include "gens.h"
+#include "emulator/gens.h"
 
 struct patch { unsigned int addr, data; };
 

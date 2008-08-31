@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "rom.hpp"
+#include "util/file/rom.hpp"
 
 int Init_32X(struct Rom *MD_Rom);
 void Reset_32X();

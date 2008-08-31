@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include "cd_sys.h"
-#include "port.h"
+#include "port/port.h"
 #include "cd_file.h"
-#include "gens.h"
-#include "g_mcd.h"
-#include "g_sdlsound.h"
+#include "emulator/gens.h"
+#include "emulator/g_mcd.h"
+#include "sdllayer/g_sdlsound.h"
 #include "cdda_mp3.h"
 #include "lc89510.h"
-#include "star_68k.h"
-#include "mem_m68k.h"
-#include "mem_s68k.h"
-#include "save.h"
-#include "misc.h"
+#include "gens_core/cpu/68k/star_68k.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_s68k.h"
+#include "util/file/save.h"
+#include "gens_core/misc/misc.h"
 #include <string.h>
 
 // CD-ROM drive access

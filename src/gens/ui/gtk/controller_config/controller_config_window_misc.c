@@ -27,12 +27,11 @@
 #include "controller_config_window_misc.h"
 #include "gens/gens_window.h"
 
-#include "g_main.h"
-
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "io.h"
+#include "emulator/g_main.h"
+#include "gens_core/io/io.h"
 
 
 /**

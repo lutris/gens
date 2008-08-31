@@ -30,8 +30,8 @@
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "g_main.h"
-#include "g_opengl.h"
+#include "emulator/g_main.h"
+#include "sdllayer/g_opengl.h"
 
 
 /**

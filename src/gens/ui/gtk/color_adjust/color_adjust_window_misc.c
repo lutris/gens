@@ -30,10 +30,10 @@
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "g_palette.h"
-#include "vdp_io.h"
-#include "g_main.h"
-#include "g_sdldraw.h"
+#include "emulator/g_palette.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "emulator/g_main.h"
+#include "sdllayer/g_sdldraw.h"
 
 
 /**

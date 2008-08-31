@@ -1,7 +1,7 @@
 #ifndef SCRSHOT_H
 #define SCRSHOT_H
 
-#include "g_main.h"
+#include "emulator/g_main.h"
 
 extern char ScrShot_Dir[GENS_PATH_MAX];
 

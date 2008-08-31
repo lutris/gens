@@ -1,17 +1,18 @@
-#include "port.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
 #include <string.h>
+
 #include "g_sdlsound.h"
-#include "psg.h"
-#include "ym2612.h"
-#include "mem_m68k.h"
-#include "vdp_io.h"
-#include "pcm.h"
-#include "misc.h"		// for Have_MMX flag
-#include "gens.h"
+#include "port/port.h"
+#include "gens_core/sound/psg.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/sound/pcm.h"
+#include "gens_core/misc/misc.h"		/* for Have_MMX flag */
+#include "emulator/gens.h"
 
 int Seg_To_Buffer = 8; // for frame skip
 int Seg_L[882], Seg_R[882];

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "mem_m68k.h"
-#include "mem_s68k.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_s68k.h"
 
 static char Dbg_Str[32];
 static char Dbg_EA_Str[16];

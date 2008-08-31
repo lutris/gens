@@ -1,13 +1,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "port.h"
-#include "g_main.h"
-#include "rom.hpp"
-#include "star_68k.h"
-#include "lc89510.h"
-#include "cd_aspi.h"
-#include "mem_s68k.h"
+
+#include "port/port.h"
+#include "emulator/g_main.h"
+#include "util/file/rom.hpp"
+#include "gens_core/cpu/68k/star_68k.h"
+#include "segacd/lc89510.h"
+#include "segacd/cd_aspi.h"
+#include "gens_core/mem/mem_s68k.h"
 
 #define HIBYTE(x) x >> 8
 #define LOBYTE(x) x & 0xff

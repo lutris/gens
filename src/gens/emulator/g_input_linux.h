@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 #include <SDL/SDL_keysym.h>
-#include "g_sdlinput.h"
+#include "sdllayer/g_sdlinput.h"
 
 // Maps key symbols from SDL to OS-independent key symbols.
 #define GENS_KEY_BACKSPACE	SDLK_BACKSPACE

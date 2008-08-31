@@ -41,9 +41,9 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-#include "gens.h"
-#include "g_main.h"
-#include "debug.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
+#include "debug/debug.h"
 
 GtkWidget *gens_window;
 GtkWidget *MenuBar;

@@ -1,17 +1,17 @@
 #include <stdio.h>
 #include <string.h>
-#include "port.h"
+#include "port/port.h"
 #include "cpu_68k.h"
-#include "mem_m68k.h"
-#include "mem_s68k.h"
-#include "mem_sh2.h"
-#include "save.h"
-#include "ym2612.h"
-#include "misc.h"
-#include "gfx_cd.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_s68k.h"
+#include "gens_core/mem/mem_sh2.h"
+#include "util/file/save.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/misc/misc.h"
+#include "gens_core/gfx/gfx_cd.h"
 
-#include "io.h"
-#include "cd_sys.h"
+#include "gens_core/io/io.h"
+#include "segacd/cd_sys.h"
 
 
 #define GENESIS 0

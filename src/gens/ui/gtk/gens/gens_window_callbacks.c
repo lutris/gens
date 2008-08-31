@@ -24,8 +24,8 @@
 #include <config.h>
 #endif
 
-#include "gens.h"
-#include "g_main.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
 #include "gens_window.h"
 #include "gens_window_callbacks.h"
 #include "gens_window_sync.h"
@@ -40,36 +40,37 @@
 
 #ifdef GENS_OPENGL
 #include "opengl_resolution/opengl_resolution_window_misc.h"
-#include "g_opengl.h"
+#include "sdllayer/g_opengl.h"
 #endif
 
 #ifdef GENS_CDROM
 #include "select_cdrom/select_cdrom_window_misc.h"
 #endif
 
-#include "ui_proxy.h"
+#include "emulator/ui_proxy.h"
 #include "ui-common.h"
-#include "config_file.h"
+#include "util/file/config_file.h"
 
-#include "g_sdlsound.h"
-#include "g_sdldraw.h"
-#include "gym.h"
-#include "rom.hpp"
-#include "vdp_io.h"
-#include "save.h"
-#include "z80.h"
-#include "scrshot.h"
+#include "sdllayer/g_sdlsound.h"
+#include "sdllayer/g_sdldraw.h"
+#include "util/sound/gym.h"
+#include "util/file/rom.hpp"
+#include "gens_core/vdp/vdp_io.h"
+#include "util/file/save.h"
+#include "gens_core/cpu/z80/z80.h"
+#include "util/gfx/scrshot.h"
+
+// Sega CD
+#include "emulator/g_mcd.h"
+
+// 32X
+#include "gens_core/cpu/sh2/sh2.h"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "cd_aspi.h"
+#include "segacd/cd_aspi.h"
 #endif
 
-// Sega CD
-#include "g_mcd.h"
-
-// 32X
-#include "sh2.h"
 
 // For some reason, these aren't extern'd anywhere...
 void main68k_reset();

@@ -27,14 +27,13 @@
 #include "general_options_window_misc.h"
 #include "gens/gens_window.h"
 
-#include "g_main.h"
-
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
+#include "emulator/g_main.h"
 
 // Includes containing variables required for this dialog.
-#include "g_sdldraw.h"
+#include "sdllayer/g_sdldraw.h"
 
 
 /**

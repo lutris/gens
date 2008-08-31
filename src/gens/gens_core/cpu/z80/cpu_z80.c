@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-#include "port.h"
+#include "port/port.h"
 #include "z80.h"
 #include "cpu_z80.h"
-#include "mem_m68k.h"
-#include "mem_z80.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_z80.h"
 
 
 /*** Z80_Reset - reset z80 sub-unit ***/
@@ -75,7 +75,7 @@ Z80_Init (void)
 
 
 
-#include "cd_sys.h"
+#include "segacd/cd_sys.h"
 
 
 void

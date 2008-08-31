@@ -14,9 +14,9 @@
 
 
 #include "g_32x_32bit.h"
-#include "vdp_32x.h"
-#include "vdp_io.h"
-#include "vdp_rend.h"
+#include "gens_core/vdp/vdp_32x.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 
 
 /**

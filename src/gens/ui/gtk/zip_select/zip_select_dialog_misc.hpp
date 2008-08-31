@@ -24,7 +24,7 @@
 #define GTK_ZIP_SELECT_DIALOG_MISC_HPP
 
 #include <gtk/gtk.h>
-#include "compress/compressedfile.hpp"
+#include "util/file/compress/compressedfile.hpp"
 
 #include <list>
 using std::list;

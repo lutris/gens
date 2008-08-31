@@ -3,11 +3,11 @@
 #include <SDL.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include "port.h"
+#include "port/port.h"
 #include "g_sdlinput.h"
-#include "io.h"
-#include "g_main.h"
-#include "g_input.h"
+#include "gens_core/io/io.h"
+#include "emulator/g_main.h"
+#include "emulator/g_input.h"
 
 
 #include "gtk-misc.h"

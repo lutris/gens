@@ -17,9 +17,9 @@
 
 /* PROTOTYPES */
 
-#include "port.h"
 #include <stdio.h>
-#include "g_main.h"
+#include "port/port.h"
+#include "emulator/g_main.h"
 #include "wave.h"
 
 

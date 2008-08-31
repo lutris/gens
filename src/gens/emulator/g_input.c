@@ -14,23 +14,23 @@
 #include "g_main.h"
 #include "g_input.h"
 #include "g_mcd.h"
-#include "g_sdlsound.h"
-#include "g_sdldraw.h"
+#include "sdllayer/g_sdlsound.h"
+#include "sdllayer/g_sdldraw.h"
 #include "ui_proxy.h"
-#include "save.h"
-#include "gym.h"
-#include "vdp_io.h"
-#include "debug.h"
-#include "scrshot.h"
-#include "g_effects.h"
+#include "util/file/save.h"
+#include "util/sound/gym.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "debug/debug.h"
+#include "util/gfx/scrshot.h"
+#include "sdllayer/g_effects.h"
 
 // Sound includes.
-#include "ym2612.h"
-#include "psg.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/psg.h"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "cd_aspi.h"
+#include "segacd/cd_aspi.h"
 #endif
 
 #include "gens/gens_window_sync.h"

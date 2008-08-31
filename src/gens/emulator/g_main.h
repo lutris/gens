@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 #include "gens.h"
-#include "port.h"
+#include "port/port.h"
 
 // OS-specific includes.
 #if (defined(__linux__))

@@ -23,9 +23,9 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-#include "g_main.h"
+#include "emulator/g_main.h"
 #include "g_sdldraw.h"
-#include "vdp_io.h"
+#include "gens_core/vdp/vdp_io.h"
 
 // Needed to synchronize the Graphics menu after a GL resolution change.
 #include "gens/gens_window_sync.h"

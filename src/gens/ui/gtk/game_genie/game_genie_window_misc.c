@@ -26,9 +26,9 @@
 #include "game_genie_window_callbacks.h"
 #include "game_genie_window_misc.h"
 #include "gens/gens_window.h"
-#include "ggenie.h"
-#include "mem_m68k.h"
-#include "vdp_io.h"
+#include "util/file/ggenie.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/vdp/vdp_io.h"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"

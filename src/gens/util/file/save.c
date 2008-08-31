@@ -7,52 +7,52 @@
 #include <unistd.h>
 #include "save.h"
 
-#include "gens.h"
-#include "g_main.h"
-#include "g_input.h"
-#include "g_sdldraw.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
+#include "emulator/g_input.h"
+#include "sdllayer/g_sdldraw.h"
 
 // CPU
-#include "cpu_68k.h"
-#include "cpu_sh2.h"
-#include "sh2.h"
-#include "z80.h"
+#include "gens_core/cpu/68k/cpu_68k.h"
+#include "gens_core/cpu/sh2/cpu_sh2.h"
+#include "gens_core/cpu/sh2/sh2.h"
+#include "gens_core/cpu/z80/z80.h"
 
 // Memory
-#include "mem_m68k.h"
-#include "mem_s68k.h"
-#include "mem_sh2.h"
-#include "mem_z80.h"
-#include "io.h"
-#include "rom.hpp"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_s68k.h"
+#include "gens_core/mem/mem_sh2.h"
+#include "gens_core/mem/mem_z80.h"
+#include "gens_core/io/io.h"
+#include "util/file/rom.hpp"
 
 // VDP
-#include "vdp_io.h"
-#include "vdp_rend.h"
-#include "vdp_32x.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_32x.h"
 
 // Audio
-#include "ym2612.h"
-#include "psg.h"
-#include "pcm.h"
-#include "pwm.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/psg.h"
+#include "gens_core/sound/pcm.h"
+#include "gens_core/sound/pwm.h"
 
 // SegaCD
-#include "cd_sys.h"
-#include "gfx_cd.h"
-#include "lc89510.h"
-#include "cd_file.h"
+#include "segacd/cd_sys.h"
+#include "gens_core/gfx/gfx_cd.h"
+#include "segacd/lc89510.h"
+#include "segacd/cd_file.h"
 
 // UI
-#include "ui_proxy.h"
+#include "emulator/ui_proxy.h"
 #include "ui-common.h"
 
 
-// GENS Re-Recording
+// Gens Rerecording
 // fatal_mp3_error indicates an error occurred while reading an MP3 for a Sega CD game.
 extern int fatal_mp3_error;	// cdda_mp3.c
 
-// Various MP3 stuff, needed for GENS Re-Recording
+// Various MP3 stuff, needed for Gens Rerecording
 extern unsigned int Current_OUT_Pos, Current_OUT_Size;	// cdda_mp3.c
 extern char preloaded_tracks [100], played_tracks_linear [101]; // added for synchronous MP3 code
 

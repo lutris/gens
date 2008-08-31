@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "gens.h"
+#include "emulator/gens.h"
 
 // Window is closed.
 gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data);

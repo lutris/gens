@@ -1,14 +1,15 @@
 #include <string.h>
 #include <gtk/gtk.h>
+
 #include "gym.h"
-#include "g_main.h"
-#include "g_sdlsound.h"
-#include "rom.hpp"
-#include "mem_m68k.h"
-#include "gens.h"
-#include "ym2612.h"
-#include "psg.h"
-#include "g_sdldraw.h"
+#include "emulator/g_main.h"
+#include "sdllayer/g_sdlsound.h"
+#include "util/file/rom.hpp"
+#include "gens_core/mem/mem_m68k.h"
+#include "emulator/gens.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/psg.h"
+#include "sdllayer/g_sdldraw.h"
 
 #include "ui-common.h"
 

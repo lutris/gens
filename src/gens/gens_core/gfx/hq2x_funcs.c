@@ -12,10 +12,11 @@ unsigned int _LUT16to32[65536];
 unsigned int _RGBtoYUV[65536];
 
 //extern unsigned char MD_Screen;
-#include "vdp_rend.h"
-#include "misc.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/misc/misc.h"
+
 #ifdef __cplusplus
-} 
+}
 #endif
 
 

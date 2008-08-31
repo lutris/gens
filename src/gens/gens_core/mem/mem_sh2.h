@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "sh2.h"
+#include "gens_core/cpu/sh2/sh2.h"
 
 extern unsigned char _32X_Rom[4 * 1024 * 1024];
 extern unsigned char _32X_Ram[256 * 1024];

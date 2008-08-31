@@ -13,7 +13,7 @@ extern "C" {
 // TODO: Use PATH_MAX instead?
 #define GENS_PATH_MAX 1024
 
-#include "rom.hpp"
+#include "util/file/rom.hpp"
 
 //#define CLOCK_NTSC 53700000			// More accurate for division round
 //#define CLOCK_PAL  53200000

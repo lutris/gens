@@ -2,18 +2,21 @@
 #include <config.h>
 #endif
 
-#include "scrshot.h"
-#include "port.h"
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rom.hpp"
-#include "vdp_io.h"
-#include "vdp_rend.h"
-#include "g_sdldraw.h"
-#include "byteswap.h"
+
 #include <png.h>
+
+#include "scrshot.h"
+#include "emulator/gens.h"
+#include "port/port.h"
+#include "util/file/rom.hpp"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "sdllayer/g_sdldraw.h"
+#include "gens_core/misc/byteswap.h"
 
 char ScrShot_Dir[GENS_PATH_MAX] = "." G_DIR_SEPARATOR_S;
 

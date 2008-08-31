@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 
-#include "gens.h"
-#include "port.h"
+#include "emulator/gens.h"
+#include "port/port.h"
 
 
 #define GENESIS_ROM      2

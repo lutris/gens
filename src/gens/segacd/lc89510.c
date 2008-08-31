@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-#include "port.h"
-#include "misc.h"
+#include "port/port.h"
+#include "gens_core/misc/misc.h"
 #include "lc89510.h"
-#include "star_68k.h"
-#include "mem_s68k.h"
-#include "pcm.h"
+#include "gens_core/cpu/68k/star_68k.h"
+#include "gens_core/mem/mem_s68k.h"
+#include "gens_core/sound/pcm.h"
 #include "cd_sys.h"
 
 // CD-ROM drive access

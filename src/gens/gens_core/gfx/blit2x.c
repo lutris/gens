@@ -25,10 +25,9 @@
 #endif
 
 #include <string.h>
-#include "vdp_rend.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "blit.h"
-#include "byteswap.h"
-#include "misc.h"
+#include "gens_core/misc/misc.h"
 
 
 #ifndef GENS_X86_ASM

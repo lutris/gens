@@ -21,13 +21,12 @@
  ***************************************************************************/
 
 
-#include "vdp_rend.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "blit.h"
-#include "byteswap.h"
 
 
 /**
- * Blit_Scale2x_16(): (16-bit) Blits the image to the screen, scaled to 2x its normal size (without filtering).
+ * Blit_Scale2x_16(): (16-bit) Scale2x renderer.
  * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
@@ -90,7 +89,7 @@ void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 
 
 /**
- * Blit_Scale2x_32(): (32-bit) Blits the image to the screen, scaled to 2x its normal size (without filtering).
+ * Blit_Scale2x_32(): (32-bit) Scale2x renderer.
  * @param screen Screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.

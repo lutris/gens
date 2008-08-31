@@ -1,5 +1,3 @@
-#include "rom.hpp"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,34 +9,36 @@
 using std::string;
 using std::list;
 
-#include "port.h"
-#include "g_sdlsound.h"
-#include "g_main.h"
-#include "gens.h"
-#include "g_md.h"
-#include "g_mcd.h"
-#include "g_32x.h"
-#include "ggenie.h"
-#include "cpu_68k.h"
-#include "cd_sys.h"
-#include "mem_m68k.h"
-#include "mem_sh2.h"
-#include "vdp_io.h"
-#include "save.h"
-#include "ccnet.h"
-#include "unzip.h"
-#include "chd.h"
-#include "wave.h"
-#include "gym.h"
+#include "rom.hpp"
 
-#include "misc.h"
-#include "byteswap.h"
+#include "port/port.h"
+#include "sdllayer/g_sdlsound.h"
+#include "emulator/g_main.h"
+#include "emulator/gens.h"
+#include "emulator/g_md.h"
+#include "emulator/g_mcd.h"
+#include "emulator/g_32x.h"
+#include "util/file/ggenie.h"
+#include "gens_core/cpu/68k/cpu_68k.h"
+#include "segacd/cd_sys.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_sh2.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "util/file/save.h"
+//#include "ccnet.h"
+#include "util/file/unzip.h"
+#include "util/file/chd.h"
+#include "util/sound/wave.h"
+#include "util/sound/gym.h"
+
+#include "gens_core/misc/misc.h"
+#include "gens_core/misc/byteswap.h"
 
 #include "ui-common.h"
 #include "zip_select/zip_select_dialog_misc.hpp"
 
 // New file compression handler.
-#include "compress/compressor.hpp"
+#include "util/file/compress/compressor.hpp"
 
 Rom *My_Rom = NULL;
 struct Rom *Game = NULL;

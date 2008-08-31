@@ -23,18 +23,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "port.h"
-#include "g_main.h"
+#include "port/port.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
 #include "ggenie.h"
-#include "mem_m68k.h"
-#include "cpu_68k.h"
-#include "rom.hpp"
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/cpu/68k/cpu_68k.h"
+#include "util/file/rom.hpp"
 
 
 struct GG_Code Liste_GG[256];
 static char genie_chars[] =
   "AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
-char Patch_Dir[1024] = "\\";
+char Patch_Dir[GENS_PATH_MAX] = "/";
 
 
 /**

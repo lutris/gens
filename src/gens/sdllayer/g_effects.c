@@ -24,11 +24,11 @@
 
 #include "g_effects.h"
 #include "g_sdldraw.h"
-#include "misc.h"
+#include "gens_core/misc/misc.h"
 
-#include "g_main.h"
-#include "vdp_io.h"
-#include "vdp_rend.h"
+#include "emulator/g_main.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 
 
 /**

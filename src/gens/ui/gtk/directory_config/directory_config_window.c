@@ -37,16 +37,16 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-#include "gens.h"
-#include "g_main.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
 
 // Includes with directory defines.
 // TODO: Consolidate these into Settings.PathNames
-#include "save.h"
-#include "g_sdlsound.h"
-#include "scrshot.h"
-#include "ggenie.h"
-#include "rom.hpp"
+#include "util/file/save.h"
+#include "sdllayer/g_sdlsound.h"
+#include "util/gfx/scrshot.h"
+#include "util/file/ggenie.h"
+#include "util/file/rom.hpp"
 
 
 GtkWidget *directory_config_window = NULL;

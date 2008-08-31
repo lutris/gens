@@ -30,8 +30,8 @@
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "gens.h"
-#include "g_main.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
 
 #include <string>
 #include <list>

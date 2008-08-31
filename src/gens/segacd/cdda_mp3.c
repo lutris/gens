@@ -1,5 +1,5 @@
-#include "port.h"
-#include "mp3_dec/mpg123.h"	// include <stdio.h>
+#include "port/port.h"
+#include "mp3_dec/mpg123.h"
 #include "mp3_dec/mpglib.h"
 #include "cd_file.h"
 #include "cdda_mp3.h"

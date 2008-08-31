@@ -4,15 +4,15 @@
 #if defined(__WIN__)
 #include <windows.h>
 #else
-#include "port.h"
+#include "port/port.h"
 #endif
 #include "cd_sys.h"
 #include "cd_file.h"
 #include "lc89510.h"
 #include "cdda_mp3.h"
-#include "star_68k.h"
-#include "rom.hpp"
-#include "mem_s68k.h"
+#include "gens_core/cpu/68k/star_68k.h"
+#include "util/file/rom.hpp"
+#include "gens_core/mem/mem_s68k.h"
 
 struct _file_track Tracks[100];
 

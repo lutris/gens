@@ -10,10 +10,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "pcm.h"
-#include "cd_sys.h"
-#include "star_68k.h"
-#include "mem_m68k.h"
+#include "gens_core/sound/pcm.h"
+#include "segacd/cd_sys.h"
+#include "gens_core/cpu/68k/star_68k.h"
+#include "gens_core/mem/mem_m68k.h"
 
 #define PCM_STEP_SHIFT 11
 

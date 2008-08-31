@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mem_z80.h"
+#include "gens_core/mem/mem_z80.h"
 
 const char Mnemonics[256][16] =
 {

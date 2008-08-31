@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "rom.hpp"
+#include "util/file/rom.hpp"
 
 char* Detect_Country_SegaCD(void);
 

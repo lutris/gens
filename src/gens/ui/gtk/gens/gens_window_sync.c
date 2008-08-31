@@ -30,24 +30,24 @@
 
 #include "gtk-misc.h"
 
-#include "g_main.h"
-#include "g_sdldraw.h"
-#include "vdp_rend.h"
-#include "gens.h"
-#include "vdp_io.h"
-#include "mem_m68k.h"
-#include "g_sdlsound.h"
-#include "ym2612.h"
-#include "psg.h"
-#include "pcm.h"
-#include "pwm.h"
-#include "cd_sys.h"
-#include "gym.h"
+#include "emulator/gens.h"
+#include "emulator/g_main.h"
+#include "sdllayer/g_sdldraw.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/mem/mem_m68k.h"
+#include "sdllayer/g_sdlsound.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/psg.h"
+#include "gens_core/sound/pcm.h"
+#include "gens_core/sound/pwm.h"
+#include "segacd/cd_sys.h"
+#include "util/sound/gym.h"
 
 // Renderer / Blitter selection stuff.
-#include "renderers.h"
-#include "vdp_rend.h"
-#include "misc.h"
+#include "gens_core/gfx/renderers.h"
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/misc/misc.h"
 
 
 // Macro to create a menu item with radio buttons.

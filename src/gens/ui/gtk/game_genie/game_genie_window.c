@@ -37,8 +37,8 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-#include "gens.h"
-#include "debug.h"
+#include "emulator/gens.h"
+#include "debug/debug.h"
 
 GtkWidget *game_genie_window = NULL;
 

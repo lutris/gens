@@ -56,15 +56,7 @@ nasm -O1 -D __GCC2 -f elf \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-INCLUDES = \
--I@srcdir@/gens_core/cpu/68k -I@srcdir@/gens_core/cpu/sh2 -I@srcdir@/gens_core/cpu/z80 \
--I@srcdir@/gens_core/sound -I@srcdir@/gens_core/mem -I@srcdir@/gens_core/misc -I@srcdir@/gens_core/gfx \
--I@srcdir@/gens_core/io -I@srcdir@/gens_core/vdp -I@srcdir@/segacd -I@srcdir@/sdllayer \
--I@srcdir@/util -I@srcdir@/util/gfx -I@srcdir@/util/sound -I@srcdir@/util/file \
--I@srcdir@/port -I@srcdir@/emulator -I@srcdir@/debug -I@srcdir@/netplay \
--I@srcdir@/ui -I@srcdir@/ui/gtk \
--I@srcdir@/../mp3_dec \
--I@srcdir@/../ -I@srcdir@
+INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/ -I@srcdir@/ui/gtk/
 
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;

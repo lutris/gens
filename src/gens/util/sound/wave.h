@@ -8,7 +8,7 @@
  ***************************************************************************/ 
 #ifndef __WAVE_INCLUDED__ 
 #define __WAVE_INCLUDED__ 
-#include "port.h"
+#include "port/port.h"
  
 #ifdef __cplusplus
 extern "C" {
