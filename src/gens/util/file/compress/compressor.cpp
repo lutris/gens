@@ -65,6 +65,9 @@ Compressor::Compressor(string zFilename)
 	// TODO: Keep the file open, but there's a bug in zlib where
 	// it won't detect a compressed file if it's already been read.
 	fclose(m_zf);
+	
+	// File is loaded.
+	m_fileLoaded = true;
 }
 
 Compressor::~Compressor()
