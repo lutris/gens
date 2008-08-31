@@ -327,8 +327,7 @@ static unsigned char RD_Controller(unsigned int state,
 				   unsigned int counter,
 				   unsigned int buttons[4])
 {
-	// Read controller 1.
-	int eax, ebx;
+	// Read the specified controller.
 	
 	if (type & 0x10)
 	{
@@ -343,67 +342,81 @@ static unsigned char RD_Controller(unsigned int state,
 		SelectLine_State += ((counter & 0x03) * 2);
 	}
 	
+	unsigned char out = 0;
 	switch (SelectLine_State)
 	{
 		case First_High:
 		case Second_High:
 		case Third_High:
-			eax = (buttons[0] & CONTROLLER_C ? 1 : 0);
-			ebx = (buttons[0] & CONTROLLER_B ? 1 : 0);
-			eax <<= 2;
-			ebx <<= 2;
-			eax |= (buttons[0] & CONTROLLER_RIGHT ? 1 : 0);
-			ebx |= (buttons[0] & CONTROLLER_LEFT ? 1 : 0);
-			eax <<= 2;
-			ebx <<= 2;
-			eax |= (buttons[0] & CONTROLLER_DOWN ? 1 : 0);
-			ebx |= (buttons[0] & CONTROLLER_UP ? 1 : 0);
-			eax = (eax * 2) + ebx + 0x40;
-			return (unsigned char)eax;
+			// Format: 01CBRLDU
+			if (buttons[0] & CONTROLLER_UP)
+				out |= 0x01;
+			if (buttons[0] & CONTROLLER_DOWN)
+				out |= 0x02;
+			if (buttons[0] & CONTROLLER_LEFT)
+				out |= 0x04;
+			if (buttons[0] & CONTROLLER_RIGHT)
+				out |= 0x08;
+			if (buttons[0] & CONTROLLER_B)
+				out |= 0x10;
+			if (buttons[0] & CONTROLLER_C)
+				out |= 0x20;
+			
+			return (out | 0x40);
 		
 		case First_Low:
 		case Second_Low:
-			eax = (buttons[0] & CONTROLLER_START ? 1 : 0);
-			ebx = (buttons[0] & CONTROLLER_A ? 1 : 0);
-			eax <<= 4;
-			ebx <<= 4;
-			eax |= (buttons[0] & CONTROLLER_DOWN ? 1 : 0);
-			ebx |= (buttons[0] & CONTROLLER_UP ? 1 : 0);
-			eax = (eax * 2) + ebx;
-			return (unsigned char)eax;
+			// Format: 00SA00DU
+			if (buttons[0] & CONTROLLER_UP)
+				out |= 0x01;
+			if (buttons[0] & CONTROLLER_DOWN)
+				out |= 0x02;
+			if (buttons[0] & CONTROLLER_A)
+				out |= 0x10;
+			if (buttons[0] & CONTROLLER_START)
+				out |= 0x20;
+			
+			return out;
 		
 		case Third_Low:
-			eax = (buttons[0] & CONTROLLER_START ? 1 : 0);
-			ebx = (buttons[0] & CONTROLLER_A ? 1 : 0);
-			eax = (eax * 2) + ebx;
-			eax <<= 4;
-			return (unsigned char)eax;
+			// Format: 00SA0000
+			if (buttons[0] & CONTROLLER_A)
+				out |= 0x10;
+			if (buttons[0] & CONTROLLER_START)
+				out |= 0x20;
+			
+			return out;
 		
 		case Fourth_High:
-			eax = (buttons[0] & CONTROLLER_C ? 1 : 0);
-			ebx = (buttons[0] & CONTROLLER_B ? 1 : 0);
-			eax <<= 2;
-			ebx <<= 2;
-			eax |= (buttons[0] & CONTROLLER_MODE ? 1 : 0);
-			ebx |= (buttons[0] & CONTROLLER_X ? 1 : 0);
-			eax <<= 2;
-			ebx <<= 2;
-			eax |= (buttons[0] & CONTROLLER_Y ? 1 : 0);
-			ebx |= (buttons[0] & CONTROLLER_Z ? 1 : 0);
-			eax = (eax * 2) + ebx + 0x40;
-			return (unsigned char)eax;
+			// Format: 01CBMXYZ
+			if (buttons[0] & CONTROLLER_Z)
+				out |= 0x01;
+			if (buttons[0] & CONTROLLER_Y)
+				out |= 0x02;
+			if (buttons[0] & CONTROLLER_X)
+				out |= 0x04;
+			if (buttons[0] & CONTROLLER_MODE)
+				out |= 0x08;
+			if (buttons[0] & CONTROLLER_B)
+				out |= 0x10;
+			if (buttons[0] & CONTROLLER_C)
+				out |= 0x20;
+			
+			return (out | 0x40);
 		
 		case Fourth_Low:
-			eax = (buttons[0] & CONTROLLER_START ? 1 : 0);
-			ebx = (buttons[0] & CONTROLLER_A ? 1 : 0);
-			eax = (eax * 2) + eax;
-			eax <<= 4;
-			eax |= 0x0F;
-			return (unsigned char)eax;
+			// Format: 00SA1111
+			if (buttons[0] & CONTROLLER_A)
+				out |= 0x10;
+			if (buttons[0] & CONTROLLER_START)
+				out |= 0x20;
+			
+			return (out | 0x0F);
 	}
 	
 	// Shouldn't happen...
 	printf("%s: Invalid Select Line State: %d\n", __func__, SelectLine_State);
+	return 0x00;
 }
 
 
