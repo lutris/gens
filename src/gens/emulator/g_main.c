@@ -57,6 +57,7 @@
 // GENS Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
+struct Gens_BIOS_Filenames_t BIOS_Filenames;
 struct Gens_VideoSettings_t Video;
 
 // Bits per pixel.

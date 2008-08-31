@@ -126,14 +126,14 @@ void Init_Genesis_Bios (void)
 {
 	FILE *f;
 	
-	if ((f = fopen (Genesis_Bios, "rb")))
+	if ((f = fopen(BIOS_Filenames.MD_TMSS, "rb")))
 	{
-		fread (&Genesis_Rom[0], 1, 2 * 1024, f);
+		fread(&Genesis_Rom[0], 1, 2 * 1024, f);
 		be16_to_cpu_array(&Genesis_Rom[0], 2 * 1024);
 		fclose (f);
 	}
 	else
-		memset (Genesis_Rom, 0, 2 * 1024);
+		memset(Genesis_Rom, 0, 2 * 1024);
 	
 	
 	Rom_Size = 2 * 1024;

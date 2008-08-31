@@ -43,6 +43,19 @@ struct Gens_PathNames_t
 };
 
 
+// BIOS filenames
+struct Gens_BIOS_Filenames_t
+{
+	char MD_TMSS[GENS_PATH_MAX];
+	char SegaCD_US[GENS_PATH_MAX];
+	char MegaCD_EU[GENS_PATH_MAX];
+	char MegaCD_JP[GENS_PATH_MAX];
+	char _32X_MC68000[GENS_PATH_MAX];
+	char _32X_MSH2[GENS_PATH_MAX];
+	char _32X_SSH2[GENS_PATH_MAX];
+};
+
+
 // Video settings
 struct Gens_VideoSettings_t
 {
@@ -58,6 +71,7 @@ struct Gens_VideoSettings_t
 
 extern struct Gens_Settings_t Settings;
 extern struct Gens_PathNames_t PathNames;
+extern struct Gens_BIOS_Filenames_t BIOS_Filenames;
 extern struct Gens_VideoSettings_t Video;
 
 // Bits per pixel.

@@ -276,31 +276,31 @@ parseArgs (int argc, char **argv)
 	}
       else if (!strcmp (long_options[option_index].name, GENBIOS))
 	{
-	  strcpy (Genesis_Bios, optarg);
+	  strcpy (BIOS_Filenames.MD_TMSS, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, USABIOS))
 	{
-	  strcpy (US_CD_Bios, optarg);
+	  strcpy (BIOS_Filenames.SegaCD_US, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, EURBIOS))
 	{
-	  strcpy (EU_CD_Bios, optarg);
+	  strcpy (BIOS_Filenames.MegaCD_EU, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, JAPBIOS))
 	{
-	  strcpy (JA_CD_Bios, optarg);
+	  strcpy (BIOS_Filenames.MegaCD_JP, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, _32X68kBIOS))
 	{
-	  strcpy (_32X_Genesis_Bios, optarg);
+	  strcpy (BIOS_Filenames._32X_MC68000, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, _32XMBIOS))
 	{
-	  strcpy (_32X_Master_Bios, optarg);
+	  strcpy (BIOS_Filenames._32X_MSH2, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, _32XSBIOS))
 	{
-	  strcpy (_32X_Slave_Bios, optarg);
+	  strcpy (BIOS_Filenames._32X_SSH2, optarg);
 	}
       else if (!strcmp (long_options[option_index].name, FS))
 	{

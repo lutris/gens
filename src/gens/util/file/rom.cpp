@@ -46,13 +46,6 @@ char Rom_Name[512];
 char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
 char Recent_Rom[9][GENS_PATH_MAX];
-char US_CD_Bios[GENS_PATH_MAX];
-char EU_CD_Bios[GENS_PATH_MAX];
-char JA_CD_Bios[GENS_PATH_MAX];
-char _32X_Genesis_Bios[GENS_PATH_MAX];
-char _32X_Master_Bios[GENS_PATH_MAX];
-char _32X_Slave_Bios[GENS_PATH_MAX];
-char Genesis_Bios[GENS_PATH_MAX];
 char CDROM_DEV[64];
 int CDROM_SPEED;
 

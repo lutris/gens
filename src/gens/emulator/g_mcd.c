@@ -48,19 +48,19 @@ char* Detect_Country_SegaCD(void)
 	{
 		Game_Mode = 1;
 		CPU_Mode = 1;
-		return EU_CD_Bios;
+		return BIOS_Filenames.MegaCD_EU;
 	}
 	else if (CD_Data[0x10B] == 0xA1)
 	{
 		Game_Mode = 0;
 		CPU_Mode = 0;
-		return JA_CD_Bios;
+		return BIOS_Filenames.MegaCD_JP;
 	}
 	else
 	{
 		Game_Mode = 1;
 		CPU_Mode = 0;
-		return US_CD_Bios;
+		return BIOS_Filenames.SegaCD_US;
 	}
 }
 
@@ -95,25 +95,25 @@ int Init_SegaCD(const char *iso_name)
 		case 0: // Japan (NTSC)
 			Game_Mode = 0;
 			CPU_Mode = 0;
-			Bios_To_Use = JA_CD_Bios;
+			Bios_To_Use = BIOS_Filenames.MegaCD_JP;
 			break;
 		
 		case 1: // US (NTSC)
 			Game_Mode = 1;
 			CPU_Mode = 0;
-			Bios_To_Use = US_CD_Bios;
+			Bios_To_Use = BIOS_Filenames.MegaCD_EU;
 			break;
 		
 		case 2: // Europe (PAL)
 			Game_Mode = 1;
 			CPU_Mode = 1;
-			Bios_To_Use = EU_CD_Bios;
+			Bios_To_Use = BIOS_Filenames.MegaCD_EU;
 			break;
 		
 		case 3: // Japan (PAL)
 			Game_Mode = 0;
 			CPU_Mode = 1;
-			Bios_To_Use = JA_CD_Bios;
+			Bios_To_Use = BIOS_Filenames.MegaCD_JP;
 			break;
 	}
 	
@@ -233,18 +233,21 @@ Reset_SegaCD ()
 	char *Bios_To_Use;
 	
 	if (CPU_Mode)
-		Bios_To_Use = EU_CD_Bios;
+		Bios_To_Use = BIOS_Filenames.MegaCD_EU;
 	else if (Game_Mode)
-		Bios_To_Use = US_CD_Bios;
+		Bios_To_Use = BIOS_Filenames.SegaCD_US;
 	else
-		Bios_To_Use = JA_CD_Bios;
+		Bios_To_Use = BIOS_Filenames.MegaCD_JP;
 	
 	//SetCurrentDirectory(Gens_Path);
 	
 	if (Detect_Format (Bios_To_Use) == -1)
 	{
-		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
-			  "BIOS Configuration Error");
+		UI_MsgBox(
+			"Your Sega CD BIOS files aren't configured correctly.\n"
+			"Go to menu 'Options -> BIOS/Misc Files' to set them up.",
+			"BIOS Configuration Error"
+			);
 		return;
 	}
 	

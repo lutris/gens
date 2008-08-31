@@ -75,9 +75,9 @@ int Init_32X (struct Rom *MD_Rom)
 	*/
 	
 	// Read the Genesis 32X BIOS (usually "32X_G_BIOS.BIN")
-	if ((f = fopen (_32X_Genesis_Bios, "rb")))
+	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
 	{
-		fread (&_32X_Genesis_Rom[0], 1, 256, f);
+		fread(&_32X_Genesis_Rom[0], 1, 256, f);
 		be16_to_cpu_array(&_32X_Genesis_Rom[0], 256);
 		fclose (f);
 	}
@@ -88,10 +88,10 @@ int Init_32X (struct Rom *MD_Rom)
 	}
 	
 	// Read the Master SH2 BIOS (usually "32X_M_BIOS.BIN")	
-	if ((f = fopen (_32X_Master_Bios, "rb")))
+	if ((f = fopen(BIOS_Filenames._32X_MSH2, "rb")))
 	{
-		fread (&_32X_MSH2_Rom[0], 1, 2 * 1024, f);
-		fclose (f);
+		fread(&_32X_MSH2_Rom[0], 1, 2 * 1024, f);
+		fclose(f);
 	}
 	else
 	{
@@ -100,10 +100,10 @@ int Init_32X (struct Rom *MD_Rom)
 	}
 	
 	// Read the Slave SH2 BIOS (usually "32X_S_BIOS.BIN")
-	if ((f = fopen (_32X_Slave_Bios, "rb")))
+	if ((f = fopen(BIOS_Filenames._32X_SSH2, "rb")))
 	{
-		fread (&_32X_SSH2_Rom[0], 1, 1 * 1024, f);
-		fclose (f);
+		fread(&_32X_SSH2_Rom[0], 1, 1 * 1024, f);
+		fclose(f);
 	}
 	else
 	{

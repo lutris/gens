@@ -89,17 +89,17 @@ int Save_Config(const char *File_Name)
 	WritePrivateProfileString("General", "IPS Patch path", IPS_Dir, Conf_File);
 	
 	// Genesis BIOS
-	WritePrivateProfileString("General", "Genesis Bios", Genesis_Bios, Conf_File);
+	WritePrivateProfileString("General", "Genesis Bios", BIOS_Filenames.MD_TMSS, Conf_File);
 	
 	// SegaCD BIOSes
-	WritePrivateProfileString ("General", "USA CD Bios", US_CD_Bios, Conf_File);
-	WritePrivateProfileString ("General", "EUROPE CD Bios", EU_CD_Bios, Conf_File);
-	WritePrivateProfileString ("General", "JAPAN CD Bios", JA_CD_Bios, Conf_File);
+	WritePrivateProfileString ("General", "USA CD Bios", BIOS_Filenames.SegaCD_US, Conf_File);
+	WritePrivateProfileString ("General", "EUROPE CD Bios", BIOS_Filenames.MegaCD_EU, Conf_File);
+	WritePrivateProfileString ("General", "JAPAN CD Bios", BIOS_Filenames.MegaCD_JP, Conf_File);
 	
 	// 32X BIOSes
-	WritePrivateProfileString("General", "32X 68000 Bios", _32X_Genesis_Bios, Conf_File);
-	WritePrivateProfileString("General", "32X Master SH2 Bios", _32X_Master_Bios, Conf_File);
-	WritePrivateProfileString("General", "32X Slave SH2 Bios", _32X_Slave_Bios, Conf_File);
+	WritePrivateProfileString("General", "32X 68000 Bios", BIOS_Filenames._32X_MC68000, Conf_File);
+	WritePrivateProfileString("General", "32X Master SH2 Bios", BIOS_Filenames._32X_MSH2, Conf_File);
+	WritePrivateProfileString("General", "32X Slave SH2 Bios", BIOS_Filenames._32X_SSH2, Conf_File);
 	
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
@@ -387,23 +387,23 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Genesis BIOS
 	GetPrivateProfileString("General", "Genesis Bios", "",
-				&Genesis_Bios[0], GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames.MD_TMSS, GENS_PATH_MAX, Conf_File);
 	
 	// SegaCD BIOSes
 	GetPrivateProfileString("General", "USA CD Bios", "",
-				&US_CD_Bios[0],	GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames.SegaCD_US, GENS_PATH_MAX, Conf_File);
 	GetPrivateProfileString("General", "EUROPE CD Bios", "",
-				&EU_CD_Bios[0], GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames.MegaCD_EU, GENS_PATH_MAX, Conf_File);
 	GetPrivateProfileString("General", "JAPAN CD Bios", "",
-				&JA_CD_Bios[0], GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames.MegaCD_JP, GENS_PATH_MAX, Conf_File);
 	
 	// 32X BIOSes
 	GetPrivateProfileString("General", "32X 68000 Bios", "",
-				&_32X_Genesis_Bios[0], GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames._32X_MC68000, GENS_PATH_MAX, Conf_File);
 	GetPrivateProfileString("General", "32X Master SH2 Bios", "",
-				&_32X_Master_Bios[0], GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames._32X_MSH2, GENS_PATH_MAX, Conf_File);
 	GetPrivateProfileString("General", "32X Slave SH2 Bios", "",
-				&_32X_Slave_Bios[0], GENS_PATH_MAX, Conf_File);
+				BIOS_Filenames._32X_SSH2, GENS_PATH_MAX, Conf_File);
 	
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
