@@ -37,7 +37,6 @@ endif
 ASMFILES = \
 		$(gens_x86_asm_o) \
 		gens_core/gfx/gfx_cd.o \
-		gens_core/io/io.o \
 		gens_core/mem/mem_m68k.o \
 		gens_core/mem/mem_s68k.o \
 		gens_core/mem/mem_sh2.o \
@@ -103,7 +102,7 @@ gens_SOURCES = \
 		gens_core/gfx/hq2x_funcs.c \
 		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
-		gens_core/io/io.asm \
+		gens_core/io/io.c \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
