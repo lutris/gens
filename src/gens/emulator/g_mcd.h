@@ -9,12 +9,12 @@
 extern "C" {
 #endif
 
-#include "rom.h"
+#include "rom.hpp"
 
 char* Detect_Country_SegaCD(void);
 
-int Init_SegaCD(char *iso_name);
-int Reload_SegaCD(char *iso_name);
+int Init_SegaCD(const char *iso_name);
+int Reload_SegaCD(const char *iso_name);
 void Reset_SegaCD();
 int Do_SegaCD_Frame_No_VDP(void);
 int Do_SegaCD_Frame(void);

@@ -36,13 +36,13 @@
 #include "ui-common.h"
 
 
-unsigned char CD_Data[1024];	// Used for hard reset to know the game name
+unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name
 
 /**
  * Detect_Country_SegaCD(): Detect the country code of a SegaCD game.
  * @return BIOS file for the required country.
  */
-char* Detect_Country_SegaCD (void)
+char* Detect_Country_SegaCD(void)
 {
 	if (CD_Data[0x10B] == 0x64)
 	{
@@ -66,16 +66,16 @@ char* Detect_Country_SegaCD (void)
 
 /**
  * Init_SegaCD(): Initialize the Sega CD with the specified ISO image.
- * @param iso_name ISO image filename. (If NULL, use the actual CD drive.)
+ * @param iso_name Filename of the ISO, or NULL for physical CD-ROM.
  * @return 1 if successful; 0 if an error occurred.
  */
-int Init_SegaCD (char *iso_name)
+int Init_SegaCD(const char *iso_name)
 {
 	char Str_Err[256], *Bios_To_Use;
 	
 	UI_Set_Window_Title_Init("SegaCD", 0);
 	
-	if (Reset_CD ((char *) CD_Data, iso_name))
+	if (Reset_CD ((char*)CD_Data, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
 		// TODO: Show a message box.
@@ -126,7 +126,7 @@ int Init_SegaCD (char *iso_name)
 		return 0;
 	}
 	
-	Update_CD_Rom_Name ((char *) &CD_Data[32]);
+	Update_CD_Rom_Name((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
 	if ((CPU_Mode == 1) || (Game_Mode == 0))
@@ -197,9 +197,10 @@ int Init_SegaCD (char *iso_name)
 
 /**
  * Reload_SegaCD(): Reloads the Sega CD.
+ * @param iso_name Filename of the ISO, or NULL for physical CD-ROM.
  * @return 1 if successful.
  */
-int Reload_SegaCD(char *iso_name)
+int Reload_SegaCD(const char *iso_name)
 {
 	char Str_Err[256];
 	
