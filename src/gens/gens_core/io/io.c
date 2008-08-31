@@ -285,30 +285,12 @@ unsigned char WR_Controller_2(unsigned char data)
 
 void Fix_Controllers(void)
 {
-	if (Controller_1_Delay > 25)
-		goto Delay_1_Expired;
-	Controller_1_Delay++;
+	if (Controller_1_Delay <= 25)
+		Controller_1_Delay++;
 	
-	if (Controller_2_Delay > 25)
-		goto Delay_2_Expired_1;
-	Controller_2_Delay++;
-	return;
+	if (Controller_2_Delay <= 25)
+		Controller_2_Delay++;
 	
-Delay_2_Expired_1:
-	//Controller_2_Delay = 0;
-	Controller_2_Counter = 0;
-	return;
-	
-Delay_1_Expired:
-	//Controller_1_Delay = 0;
 	Controller_1_Counter = 0;
-	if (Controller_2_Delay > 25)
-		goto Delay_2_Expired_2;
-	Controller_2_Delay++;
-	return;
-	
-Delay_2_Expired_2:
-	//Controller_2_Delay = 0;
 	Controller_2_Counter = 0;
-	return;
 }
