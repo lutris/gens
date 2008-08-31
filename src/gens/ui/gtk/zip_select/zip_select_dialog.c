@@ -47,6 +47,7 @@ GtkWidget* create_zip_select_dialog(void)
 	GdkPixbuf *zip_select_dialog_icon_pixbuf;
 	GtkWidget *zip_select_dialog;
 	GtkWidget *frame_zip, *label_frame_zip;
+	GtkWidget *scroll_zip_list;
 	GtkWidget *treeview_zip_list;
 	GtkWidget *button_Zip_Cancel, *button_Zip_OK;
 	
@@ -72,7 +73,7 @@ GtkWidget* create_zip_select_dialog(void)
 		gdk_pixbuf_unref(zip_select_dialog_icon_pixbuf);
 	}
 	
-	// Add a frame for zip code selection.
+	// Add a frame for zip file selection.
 	frame_zip = gtk_frame_new(NULL);
 	gtk_widget_set_name(frame_zip, "frame_zip");
 	gtk_container_set_border_width(GTK_CONTAINER(frame_zip), 5);
@@ -81,7 +82,7 @@ GtkWidget* create_zip_select_dialog(void)
 	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(zip_select_dialog)->vbox), frame_zip);
 	GLADE_HOOKUP_OBJECT(zip_select_dialog, frame_zip, "frame_zip");
 	
-	// Add a label to the zip code selection frame.
+	// Add a label to the zip file selection frame.
 	label_frame_zip = gtk_label_new("This archive contains multiple files.\nSelect which file you want to load.");
 	gtk_widget_set_name(label_frame_zip, "label_frame_zip");
 	gtk_label_set_use_markup(GTK_LABEL(label_frame_zip), TRUE);
@@ -89,13 +90,23 @@ GtkWidget* create_zip_select_dialog(void)
 	gtk_frame_set_label_widget(GTK_FRAME(frame_zip), label_frame_zip);
 	GLADE_HOOKUP_OBJECT(zip_select_dialog, label_frame_zip, "label_frame_zip");
 	
+	// Scrolled Window for the file list
+	scroll_zip_list = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_name(scroll_zip_list, "scroll_zip_list");
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_zip_list),
+				       GTK_POLICY_AUTOMATIC,
+				       GTK_POLICY_AUTOMATIC);
+	gtk_widget_show(scroll_zip_list);
+	gtk_container_add(GTK_CONTAINER(frame_zip), scroll_zip_list);
+	GLADE_HOOKUP_OBJECT(zip_select_dialog, scroll_zip_list, "scroll_zip_list");
+	
 	// Tree view containing the files in the archive.
 	treeview_zip_list = gtk_tree_view_new();
 	gtk_widget_set_name(treeview_zip_list, "treeview_zip_list");
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_zip_list), TRUE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview_zip_list), FALSE);
 	gtk_widget_show(treeview_zip_list);
-	gtk_container_add(GTK_CONTAINER(frame_zip), treeview_zip_list);
+	gtk_container_add(GTK_CONTAINER(scroll_zip_list), treeview_zip_list);
 	GLADE_HOOKUP_OBJECT(zip_select_dialog, treeview_zip_list, "treeview_zip_list");
 	
 	// Dialog buttons

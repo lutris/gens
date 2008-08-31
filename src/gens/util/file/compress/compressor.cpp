@@ -45,6 +45,7 @@ Compressor::Compressor(string zFilename)
 	{
 		new GZip(),
 		new Zip(),
+		new _7z(),
 		NULL,
 	};
 	
