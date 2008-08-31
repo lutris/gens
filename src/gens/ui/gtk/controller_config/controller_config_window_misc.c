@@ -206,7 +206,7 @@ void Controller_Config_Save(void)
 	else
 		Controller_1_Type &= ~0x10;
 	
-	check_teamplayer_2 = lookup_widget(controller_config_window, "check_teamplayer_1");
+	check_teamplayer_2 = lookup_widget(controller_config_window, "check_teamplayer_2");
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_teamplayer_2)))
 		Controller_2_Type |= 0x10;
 	else
