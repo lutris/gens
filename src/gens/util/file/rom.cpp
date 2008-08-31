@@ -35,7 +35,7 @@ using std::list;
 #include "byteswap.h"
 
 #include "ui-common.h"
-#include "zip_select/zip_select_dialog_misc.h"
+#include "zip_select/zip_select_dialog_misc.hpp"
 
 // New file compression handler.
 #include "compress/compress.h"
@@ -586,7 +586,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	FILE *ROM_File;
 	Compressor *cmp;
 	list<CompressedFile> *files;
-	list<CompressedFile>::iterator selFile;
+	CompressedFile* selFile;
 	
 	//SetCurrentDirectory (Gens_Path);
 	
@@ -614,16 +614,15 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		Game = NULL;
 		return NULL;
 	}
-	else if (files->size() == 1 || true)
+	else if (files->size() == 1)
 	{
 		// One file is in the archive. Load it.
-		selFile = files->begin();
+		selFile = &(*files->begin());
 	}
 	else
 	{
 		// More than one file is in the archive. Load it.
-		// TODO: New C++ version.
-		//selFile = Open_Zip_Select_Dialog(fip);
+		selFile = Open_Zip_Select_Dialog(files);
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.

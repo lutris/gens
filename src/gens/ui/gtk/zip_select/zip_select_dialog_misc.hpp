@@ -20,19 +20,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_ZIP_SELECT_DIALOG_MISC_H
-#define GTK_ZIP_SELECT_DIALOG_MISC_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef GTK_ZIP_SELECT_DIALOG_MISC_HPP
+#define GTK_ZIP_SELECT_DIALOG_MISC_HPP
 
 #include <gtk/gtk.h>
+#include "compress/compressedfile.hpp"
 
-struct COMPRESS_FileInfo_t* Open_Zip_Select_Dialog(struct COMPRESS_FileInfo_t* fip);
+#include <list>
+using std::list;
 
-#ifdef __cplusplus
-}
-#endif
+CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst);
 
 #endif

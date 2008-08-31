@@ -135,6 +135,7 @@ gens_SOURCES = \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/gzip.cpp \
+		util/file/compress/Zip.cpp \
 		util/gfx/scrshot.c \
 		util/sound/gym.c \
 		util/sound/wave.c
@@ -188,7 +189,7 @@ gens_SOURCES += \
 		ui/gtk/country_code/country_code_window_callbacks.c \
 		ui/gtk/country_code/country_code_window_misc.c \
 		ui/gtk/zip_select/zip_select_dialog.c \
-		ui/gtk/zip_select/zip_select_dialog_misc.c \
+		ui/gtk/zip_select/zip_select_dialog_misc.cpp \
 		ui/gtk/about/about_window.c
 
 if GENS_OPENGL
@@ -264,6 +265,7 @@ noinst_HEADERS = \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/gzip.hpp \
+		util/file/compress/Zip.hpp \
 		util/gfx/scrshot.h \
 		util/sound/gym.c \
 		util/sound/wave.c
@@ -314,7 +316,7 @@ noinst_HEADERS += \
 		ui/gtk/country_code/country_code_window_callbacks.h \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.h \
-		ui/gtk/zip_select/zip_select_dialog_misc.h \
+		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
 		ui/gtk/about/about_window.h
 
 if GENS_OPENGL
