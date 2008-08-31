@@ -277,20 +277,23 @@ static void Flip_SDL(void)
 	
 	SDL_LockSurface(screen);
 	
-	if (!Genesis_Started && !SegaCD_Started && !_32X_Started)
+	unsigned short newBorderColor_16B = MD_Palette[0];
+	unsigned int newBorderColor_32B = MD_Palette32[0];
+	
+	if ((!Genesis_Started && !SegaCD_Started && !_32X_Started) || (Debug > 0))
 	{
-		// No system is active.
+		// Either no system is active or the debugger is enabled.
 		// Make sure the border color is black.
-		MD_Palette[0] = 0;
-		MD_Palette32[0] = 0;
+		newBorderColor_16B = 0;
+		newBorderColor_32B = 0;
 	}
 	
 	// Draw the border.
 	// TODO: Make this more accurate and/or more efficient.
 	// In particular, it only works for 1x and 2x rendering.
-	if ((bpp == 15 || bpp == 16) && (BorderColor_16B != MD_Palette[0]))
+	if ((bpp == 15 || bpp == 16) && (BorderColor_16B != newBorderColor_16B))
 	{
-		BorderColor_16B = MD_Palette[0];
+		BorderColor_16B = newBorderColor_16B;
 		if (VDP_Num_Vis_Lines < 240)
 		{
 			// Top/Bottom borders.
@@ -322,9 +325,9 @@ static void Flip_SDL(void)
 			SDL_FillRect(screen, &border, BorderColor_16B);
 		}
 	}
-	else if ((bpp == 32) && (BorderColor_32B != MD_Palette32[0]))
+	else if ((bpp == 32) && (BorderColor_32B != newBorderColor_32B))
 	{
-		BorderColor_32B = MD_Palette32[0];
+		BorderColor_32B = newBorderColor_32B;
 		if (VDP_Num_Vis_Lines < 240)
 		{
 			// Top/Bottom borders.
