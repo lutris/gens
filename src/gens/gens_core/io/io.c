@@ -98,7 +98,10 @@ unsigned char RD_Controller_1(void)
 	if (Controller_1_Type & 0x10)
 	{
 		// TeamPlayer.
-		//return RD_Controller_TP1();
+		unsigned char x;
+		x = RD_Controller_1_TP();
+		printf("Teamplayer: 0x%02X; counter == %d\n", x, Controller_1_Counter);
+		return x;
 	}
 	
 	// Create the bitfields.
@@ -118,6 +121,12 @@ unsigned char RD_Controller_1(void)
 unsigned char RD_Controller_2(void)
 {
 	// Read controller 2.
+	
+	if (Controller_2_Type & 0x10)
+	{
+		// TeamPlayer.
+		return RD_Controller_2_TP();
+	}
 	
 	// Create the bitfields.
 	// TODO: This will be unnecessary when controllers are converted to bitfields.
@@ -227,7 +236,7 @@ static unsigned char RD_Controller(unsigned int state,
 
 unsigned char WR_Controller_1(unsigned char data)
 {
-	if (!((Controller_1_State & 0x40) && (!(data & 0x40))))
+	if (!(Controller_1_State & 0x40) && (data & 0x40))
 		Controller_1_Counter++;
 	
 	Controller_1_Delay = 0;
@@ -240,7 +249,7 @@ unsigned char WR_Controller_1(unsigned char data)
 	}
 	
 	// Team Player adapter
-	if (!((Controller_1_State & 0x20) && (!(data & 0x20))))
+	if (!(Controller_1_State & 0x20) && (data & 0x20))
 		Controller_1_Counter += (1 << 16);
 	
 	Controller_1_State = data;
@@ -250,12 +259,12 @@ unsigned char WR_Controller_1(unsigned char data)
 
 unsigned char WR_Controller_2(unsigned char data)
 {
-	if (!((Controller_2_State & 0x40) && (!(data & 0x40))))
+	if (!(Controller_2_State & 0x40) && (data & 0x40))
 		Controller_2_Counter++;
 	
 	// Team Player on Port 1
 	// TODO: Why is this here?
-	if ((Controller_1_Type & 0x10) & (data & 0x0C))
+	if ((Controller_1_Type & 0x10) && (data & 0x0C))
 		Controller_1_Counter = 0;
 	
 	Controller_2_Delay = 0;
@@ -268,10 +277,8 @@ unsigned char WR_Controller_2(unsigned char data)
 	}
 	
 	// Team Player adapter
-	if (!((Controller_2_State & 0x20) && (!(data & 0x20))))
-	{
+	if (!(Controller_2_State & 0x20) && (data & 0x20))
 		Controller_2_Counter += (1 << 16);
-	}
 	
 	Controller_2_State = data;
 	return data;

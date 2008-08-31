@@ -215,7 +215,6 @@ section .text align=64
 
 	;unsigned char RD_Controller_1_TP(void)		ATTENTION, ebx est modifié et non sauvegardé ici !!!
 	DECL RD_Controller_1_TP
-																									
 		mov eax, [Controller_1_State]
 		mov ebx, [Controller_1_Counter]
 		test byte [Controller_2_State], 0xC
@@ -590,7 +589,7 @@ section .text align=64
 	.TP_Low
 		shl ebx, 3
 		and ebx, 0x70
-		jmp [Table_TP1 + eax]
+		jmp [Table_TP1 + eax]		; TODO: Should this be TP1 or TP2?
 
 	ALIGN4
 
