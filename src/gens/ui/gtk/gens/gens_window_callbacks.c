@@ -166,7 +166,9 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	if (Sound_Initialised)
 		Clear_Sound_Buffer();
+#ifdef GENS_DEBUGGER
 	Debug = 0;
+#endif /* GENS_DEBUGGER */
 	if (Net_Play)
 	{
 		if (Video.Full_Screen)
@@ -409,7 +411,7 @@ void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_da
 }
 
 
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 /**
  * CPU, Debug, #
  */
@@ -441,7 +443,7 @@ void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(debugMenuItems[i]), FALSE);
 	}	
 }
-#endif
+#endif /* GENS_DEBUGGER */
 
 
 /**

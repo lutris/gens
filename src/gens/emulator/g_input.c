@@ -20,9 +20,12 @@
 #include "util/file/save.h"
 #include "util/sound/gym.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "debug/debug.h"
 #include "util/gfx/scrshot.h"
 #include "sdllayer/g_effects.h"
+
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.h"
+#endif
 
 // Sound includes.
 #include "gens_core/sound/ym2612.h"

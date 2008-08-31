@@ -301,11 +301,11 @@ void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 	GtkWidget *MItem_Debug;
 	GtkWidget *MItem_Debug_Item;
 	int i, checkDebug;
-#endif
+#endif /* GENS_DEBUGGER */
 	GtkWidget *MItem_Country;
 	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
 	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
@@ -314,7 +314,7 @@ void Sync_Gens_Window_CPUMenu(void)
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 	MItem_Debug = lookup_widget(gens_window, "CPUMenu_Debug");
 	gtk_widget_set_sensitive(MItem_Debug, (Genesis_Started || SegaCD_Started || _32X_Started));
 	
@@ -361,7 +361,7 @@ void Sync_Gens_Window_CPUMenu(void)
 		else
 			gtk_widget_hide(MItem_Debug_Item);
 	}
-#endif
+#endif /* GENS_DEBUGGER */
 
 	// Country code
 	if (Country == -1)

@@ -60,9 +60,9 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 // CPU menu
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data);
-#endif
+#endif /* GENS_DEBUGGER */
 void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data);

@@ -43,16 +43,19 @@
 
 #include "emulator/gens.h"
 #include "emulator/g_main.h"
-#include "debug/debug.h"
+
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.h"
+#endif /* GENS_DEBUGGER */
 
 GtkWidget *gens_window;
 GtkWidget *MenuBar;
 
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 // Debug menu items
 GtkWidget *debugMenuItems[9];
 GtkWidget *debugSeparators[2];
-#endif
+#endif /* GENS_DEBUGGER */
 
 
 GtkAccelGroup *accel_group;
@@ -159,9 +162,9 @@ static void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *contain
 static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
 static void create_gens_window_CPUMenu(GtkWidget *container);
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
-#endif
+#endif /* GENS_DEBUGGER */
 static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
 static void create_gens_window_SoundMenu(GtkWidget *container);
 static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
@@ -622,10 +625,10 @@ static void create_gens_window_CPUMenu(GtkWidget *container)
 {
 	GtkWidget *CPU;				GtkWidget *CPU_Icon;
 	GtkWidget *CPUMenu;
-	#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 	GtkWidget *CPUMenu_Debug;
 	GtkWidget *CPUMenu_Separator1;
-	#endif
+#endif /* GENS_DEBUGGER */
 	GtkWidget *CPUMenu_Country;
 	GtkWidget *CPUMenu_Separator2;
 	GtkWidget *CPUMenu_HardReset;		GtkWidget *CPUMenu_HardReset_Icon;
@@ -646,7 +649,7 @@ static void create_gens_window_CPUMenu(GtkWidget *container)
 	gtk_widget_set_name(CPUMenu, "CPUMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(CPU), CPUMenu);
 	
-	#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 	// Debug
 	NewMenuItem(CPUMenu_Debug, "_Debug", "CPUMenu_Debug", CPUMenu);
 	// Debug submenu
@@ -654,7 +657,7 @@ static void create_gens_window_CPUMenu(GtkWidget *container)
 	
 	// Separator
 	NewMenuSeparator(CPUMenu_Separator1, "CPUMenu_Separator1", CPUMenu);
-	#endif
+#endif /* GENS_DEBUGGER */
 	
 	// Country
 	NewMenuItem(CPUMenu_Country, "_Country", "CPUMenu_Country", CPUMenu);
@@ -705,7 +708,7 @@ static void create_gens_window_CPUMenu(GtkWidget *container)
 }
 
 
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 /**
  * create_gens_window_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
  * @param container Container for this menu.
@@ -752,7 +755,7 @@ static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
 		}
 	}
 }
-#endif
+#endif /* GENS_DEBUGGER */
 
 
 /**

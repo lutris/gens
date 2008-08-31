@@ -34,9 +34,12 @@
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pwm.h"
-#include "debug/debug.h"
 #include "util/file/ggenie.h"
 #include "g_update.h"
+
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.h"
+#endif /* GENS_DEBUGGER */
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
@@ -240,8 +243,11 @@ static void Init_Settings(void)
 	Genesis_Started = 0;
 	SegaCD_Started = 0;
 	_32X_Started = 0;
-	Debug = 0;
 	CPU_Mode = 0;
+	
+#ifdef GENS_DEBUGGER
+	Debug = 0;
+#endif /* GENS_DEBUGGER */
 	
 	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);
 	Create_Save_Directory(PathNames.Gens_Path);
@@ -442,14 +448,14 @@ int main(int argc, char *argv[])
 		while (gtk_events_pending ())
 			gtk_main_iteration_do (0);
 		update_SDL_events ();
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 		if (Debug)		// DEBUG
 		{
 			Update_Debug_Screen();
 			Flip ();
 		}
 		else
-#endif
+#endif /* GENS_DEBUGGER */
 		if (Genesis_Started || _32X_Started || SegaCD_Started)
 		{
 			if ((Active) && (!Paused))

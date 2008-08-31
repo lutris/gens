@@ -38,7 +38,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/gens.h"
-#include "debug/debug.h"
+
 
 GtkWidget *game_genie_window = NULL;
 

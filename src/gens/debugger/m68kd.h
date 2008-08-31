@@ -9,11 +9,11 @@ extern "C" {
 #include <config.h>
 #endif
 
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 
 char *M68KDisasm(unsigned short (*NW)(), unsigned int (*NL)());
 
-#endif /* GENS_DEBUG */
+#endif /* GENS_DEBUGGER */
 
 #ifdef __cplusplus
 }

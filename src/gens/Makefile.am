@@ -136,12 +136,12 @@ gens_SOURCES = \
 ##		netplay/ccnet.c 
 ##		netplay/ccnet.h
 
-if GENS_DEBUG
+if GENS_DEBUGGER
 gens_SOURCES += \
-		debug/debug.c \
-		debug/m68kd.c \
-		debug/sh2d.c \
-		debug/z80dis.c
+		debugger/debugger.c \
+		debugger/m68kd.c \
+		debugger/sh2d.c \
+		debugger/z80dis.c
 endif
 
 if GENS_OPENGL
@@ -266,12 +266,12 @@ noinst_HEADERS = \
 		util/sound/gym.c \
 		util/sound/wave.c
 
-if GENS_DEBUG
+if GENS_DEBUGGER
 noinst_HEADERS += \
-		debug/debug.h \
-		debug/m68kd.h \
-		debug/sh2d.h \
-		debug/z80dis.h
+		debugger/debugger.h \
+		debugger/m68kd.h \
+		debugger/sh2d.h \
+		debugger/z80dis.h
 endif
 
 if GENS_OPENGL

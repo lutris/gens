@@ -9,7 +9,7 @@ extern "C" {
 #include <config.h>
 #endif
 
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 
 int z80dis(unsigned char *buf, int *Counter, char str[128]);
 
@@ -17,6 +17,6 @@ int z80dis(unsigned char *buf, int *Counter, char str[128]);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* GENS_DEBUGGER */
 
 #endif /* GENS_Z80DIS_H */
