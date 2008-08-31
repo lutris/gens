@@ -539,10 +539,10 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Miscellaneous files
 #if defined(__WIN32__)
 	GetPrivateProfileString("Options", "7z Binary", "C:\\Program Files\\7-Zip\7z.exe",
-				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
+				Misc_Filenames._7z_Binary, GENS_PATH_MAX, Conf_File);
 #else
 	GetPrivateProfileString("Options", "7z Binary", "/usr/bin/7z",
-				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
+				Misc_Filenames._7z_Binary, GENS_PATH_MAX, Conf_File);
 #endif	
 	GetPrivateProfileString("Options", "GCOffline path", "GCOffline.chm",
 				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
