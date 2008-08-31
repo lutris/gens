@@ -377,6 +377,72 @@ int IsAsyncAllowed(void)
 
 
 /**
+ * MESSAGE_L(): Print a localized message.
+ * @param str String.
+ * @param def Default string if the string isn't found in the language file.
+ * @param time Time to display the message (in milliseconds).
+ */
+void MESSAGE_L(const char* str, const char* def, int time)
+{
+	char buf[1024];
+	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
+	Put_Info(buf, time);
+}
+
+
+/**
+ * MESSAGE_NUM_L(): Print a localized message with one number in a printf()-formatted string.
+ * @param str String.
+ * @param def Default string if the string isn't found in the language file.
+ * @param num Number.
+ * @param time Time to display the message (in milliseconds).
+ */
+void MESSAGE_NUM_L(const char* str, const char* def, int num, int time)
+{
+	char msg_tmp[1024];
+	char buf[1024];
+	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
+	sprintf(msg_tmp, buf, num);
+	Put_Info(msg_tmp, time);
+}
+
+
+/**
+ * MESSAGE_STR_L(): Print a localized message with a substring in a printf()-formatted string.
+ * @param str String.
+ * @param def Default string if the string isn't found in the language file.
+ * @param str2 Substring.
+ * @param time Time to display the message (in milliseconds).
+ */
+void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time)
+{
+	char msg_tmp[1024];
+	char buf[1024];
+	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
+	sprintf(msg_tmp, buf, str2);
+	Put_Info(msg_tmp, time);
+}
+
+
+/**
+ * MESSAGE_NUM_2L(): Print a localized message with two numbers in a printf()-formatted string.
+ * @param str String.
+ * @param def Default string if the string isn't found in the language file.
+ * @param num1 First number.
+ * @param num2 Second number.
+ * @param time Time to display the message (in milliseconds).
+ */
+void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time)
+{
+	char msg_tmp[1024];
+	char buf[1024];
+	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
+	sprintf(msg_tmp, buf, num1, num2);
+	Put_Info(msg_tmp, time);
+}
+
+
+/**
  * main(): Main loop.
  * @param argc Number of arguments.
  * @param argv Array of arguments.

@@ -230,7 +230,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 		// Renderer function not found.
 		if (Renderers[Mode].name)
 		{
-			MESSAGE_NUM_L("Error: Render mode %s is not available.",
+			MESSAGE_STR_L("Error: Render mode %s is not available.",
 				      "Error: Render mode %s is not available.",
 				      Renderers[Mode].name, 1500);
 		}
@@ -240,7 +240,7 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	// Renderer function found.
 	*Rend = Mode;
 	*Blit = testBlit;
-	MESSAGE_NUM_L("Render Mode: %s", "Render Mode: %s", Renderers[Mode].name, 1500);
+	MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[Mode].name, 1500);
 	
 	shift = ((Video.Render_Mode) != 0);
 	
@@ -274,7 +274,8 @@ int Change_SegaCD_SRAM_Size (int num)
 		BRAM_Ex_Size = num;
 		
 		sprintf (bsize, "SegaCD SRAM cart plugged in (%d KB)", 8 << num);
-		MESSAGE_L (bsize, bsize, 1500)}
+		MESSAGE_L(bsize, bsize, 1500);
+	}
 
   return 1;
 }
@@ -296,7 +297,7 @@ int Change_Sound(int newSound)
 		PCM_Enable = 0;
 		PWM_Enable = 0;
 		CDDA_Enable = 0;
-		MESSAGE_L ("Sound Disabled", "Sound Disabled", 1500);
+		MESSAGE_L("Sound Disabled", "Sound Disabled", 1500);
 	}
 	else
 	{
@@ -624,26 +625,24 @@ int Change_CDDA(int newCDDA)
 	CDDA_Enable = newCDDA;
 	
 	if (CDDA_Enable)
-	{
 		MESSAGE_L("CD Audio Enabled", "CD Audio Enabled", 1000);
-	}
 	else
-	{
-		MESSAGE_L ("CD Audio Disabled", "CD Audio Disabled", 1000);
-	}
+		MESSAGE_L("CD Audio Disabled", "CD Audio Disabled", 1000);
 	
 	return 1;
 }
 
-int
-Change_Fast_Blur (void)
-{
-  Flag_Clr_Scr = 1;
 
-  if ((Video.Fast_Blur = (1 - Video.Fast_Blur)))
-    MESSAGE_L ("Fast Blur Enabled", "Fast Blur Enabled", 1000)
-    else
-    MESSAGE_L ("Fast Blur Disabled", "Fast Blur Disabled", 1000) return (1);
+int Change_Fast_Blur(void)
+{
+	Flag_Clr_Scr = 1;
+	
+	if ((Video.Fast_Blur = (1 - Video.Fast_Blur)))
+		MESSAGE_L("Fast Blur Enabled", "Fast Blur Enabled", 1000);
+	else
+		MESSAGE_L("Fast Blur Disabled", "Fast Blur Disabled", 1000);
+	
+	return 1;
 }
 
 
@@ -680,7 +679,7 @@ int Change_Sample_Rate(int Rate)
 			Sound_Rate = 48000;
 			break;
 	}
-	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", Sound_Rate, 2500)
+	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", Sound_Rate, 2500);
 	
 	// If sound isn't enabled, we're done.
 	if (!Sound_Enable)
@@ -970,29 +969,31 @@ int Change_Stretch(int newStretch)
 	Stretch = (newStretch == 1 ? 1 : 0);
 	
 	if (Stretch)
-		MESSAGE_L ("Stretched mode", "Stretched mode", 1000)
+		MESSAGE_L("Stretched mode", "Stretched mode", 1000);
 	else
-		MESSAGE_L ("Correct ratio mode", "Correct ratio mode", 1000)
+		MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
 	
 	Adjust_Stretch();
 	return 1;
 }
 
 
-      int Change_Blit_Style (void)
-      {
+int Change_Blit_Style (void)
+{
 	if ((!Video.Full_Screen) || (Video.Render_Mode > 1))
-	  return (0);
-
+		return 0;
+	
 	Flag_Clr_Scr = 1;
-
+	
 	if ((Blit_Soft = (1 - Blit_Soft)))
-	  MESSAGE_L ("Force software blit for Full-Screen",
-		     "Force software blit for Full-Screen", 1000)
-	  else
-	  MESSAGE_L ("Enable hardware blit for Full-Screen",
-		     "Enable hardware blit for Full-Screen", 1000) return (1);
-      }
+		MESSAGE_L("Force software blit for Full-Screen",
+			  "Force software blit for Full-Screen", 1000);
+	else
+		MESSAGE_L("Enable hardware blit for Full-Screen",
+			  "Enable hardware blit for Full-Screen", 1000);
+	
+	return 1;
+}
 
 
 /**
@@ -1005,9 +1006,9 @@ int Set_Sprite_Limit(int newLimit)
 	Sprite_Over = newLimit;
 	
 	if (Sprite_Over)
-		MESSAGE_L ("Sprite Limit Enabled", "Sprite Limit Enabled", 1000)
+		MESSAGE_L("Sprite Limit Enabled", "Sprite Limit Enabled", 1000);
 	else
-		MESSAGE_L ("Sprite Limit Disabled", "Sprite Limit Disabled", 1000)
+		MESSAGE_L("Sprite Limit Disabled", "Sprite Limit Disabled", 1000);
 	
 	return 1;
 }
@@ -1054,9 +1055,9 @@ int Change_VSync(int newVSync)
 	*p_vsync = (newVSync == 1 ? 1 : 0);
 	
 	if (*p_vsync)
-		MESSAGE_L ("Vertical Sync Enabled", "Vertical Sync Enabled", 1000)
+		MESSAGE_L("Vertical Sync Enabled", "Vertical Sync Enabled", 1000);
 	else
-		MESSAGE_L ("Vertical Sync Disabled", "Vertical Sync Disabled", 1000)
+ 		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
 	
 	if (Video.Full_Screen)
 		return Init_DDraw (640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -1075,9 +1076,10 @@ int Set_Frame_Skip(int frames)
 	Frame_Skip = frames;
 	
 	if (Frame_Skip != -1)
-		MESSAGE_NUM_L("Frame skip set to %d", "Frame skip set to %d", Frame_Skip, 1500)
+		MESSAGE_NUM_L("Frame skip set to %d", "Frame skip set to %d", Frame_Skip, 1500);
 	else
-		MESSAGE_L("Frame skip set to Auto", "Frame skip set to Auto", 1500)
+		MESSAGE_L("Frame skip set to Auto", "Frame skip set to Auto", 1500);
+	
 	return 1;
 }
 

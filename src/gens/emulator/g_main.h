@@ -135,55 +135,11 @@ int IsAsyncAllowed(void);
 extern GtkWidget* gens_window;
 
 
-/**
- * MESSAGE_L(): Print a localized message.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param time Time to display the message (in milliseconds).
- */
-#define MESSAGE_L(str, def, time)							\
-{											\
-	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
-				PathNames.Language_Path);			\
-	Put_Info(Str_Tmp, (time));							\
-}
-
-
-/**
- * MESSAGE_NUM_L(): Print a localized message with one number in a printf()-formatted string.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param num Number.
- * @param time Time to display the message (in milliseconds).
- */
-#define MESSAGE_NUM_L(str, def, num, time)						\
-{											\
-	char mes_tmp[1024];								\
-	Str_Tmp[0] = '\0';								\
-	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
-				PathNames.Language_Path);			\
-	sprintf(mes_tmp, Str_Tmp, (num));						\
-	Put_Info(mes_tmp, (time));							\
-}
-
-
-/**
- * MESSAGE_NUM_2L(): Print a localized message with two numbers in a printf()-formatted string.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param num1 First number.
- * @param num2 Second number.
- * @param time Time to display the message (in milliseconds).
- */
-#define MESSAGE_NUM_2L(str, def, num1, num2, time)					\
-{											\
-	char mes_tmp[1024];								\
-	Str_Tmp[0] = '\0';								\
-	GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024,	\
-				PathNames.Language_Path);			\
-	sprintf(mes_tmp, Str_Tmp, (num1), (num2));					\
-	Put_Info(mes_tmp, (time));							\
-}
+// MESSAGE_L functions.
+void MESSAGE_L(const char* str, const char* def, int time);
+void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
+void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time);
+void MESSAGE_NUM2_L(const char* str, const char* def, int num1, int num2, int time);
 
 
 #define MINIMIZE \
