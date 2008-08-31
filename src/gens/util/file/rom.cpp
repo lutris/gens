@@ -1,9 +1,10 @@
+#include "rom.hpp"
+
 #include "port.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include "rom.h"
 #include "g_sdlsound.h"
 #include "g_main.h"
 #include "gens.h"
@@ -135,23 +136,22 @@ void Update_Rom_Dir(const char *Path)
 }
 
 
-void
-Update_Rom_Name (char *Name)
+static void Update_Rom_Name(const char *Name)
 {
-  int i, leng;
-
-  leng = strlen (Name) - 1;
-
-  while ((leng >= 0) && (Name[leng] != G_DIR_SEPARATOR))
-    leng--;
-
-  leng++;
-  i = 0;
-
-  while ((Name[leng]) && (Name[leng] != '.'))
-    Rom_Name[i++] = Name[leng++];
-
-  Rom_Name[i] = 0;
+	int i, leng;
+	
+	leng = strlen (Name) - 1;
+	
+	while ((leng >= 0) && (Name[leng] != G_DIR_SEPARATOR))
+		leng--;
+	
+	leng++;
+	i = 0;
+	
+	while ((Name[leng]) && (Name[leng] != '.'))
+		Rom_Name[i++] = Name[leng++];
+	
+	Rom_Name[i] = 0;
 }
 
 
@@ -280,7 +280,7 @@ int Detect_Format(const char *Name)
 		if (cf == NULL)
 			return -1;
 		
-		chd_read_range(cf, buf, 0, 1024);
+		chd_read_range(cf, (char*)buf, 0, 1024);
 		chd_close(cf);
 	}
 	else
@@ -299,12 +299,12 @@ int Detect_Format(const char *Name)
 	}
 	
 	// SegaCD check
-	if (!strncasecmp("SEGADISCSYSTEM", &buf[0x00], 14))
+	if (!strncasecmp("SEGADISCSYSTEM", (char*)(&buf[0x00]), 14))
 	{
 		// SegaCD image, ISO9660 format.
 		return SEGACD_IMAGE;
 	}
-	else if (!strncasecmp("SEGADISCSYSTEM", &buf[0x10], 14))
+	else if (!strncasecmp("SEGADISCSYSTEM", (char*)(&buf[0x10]), 14))
 	{
 		// SegaCD image, BIN/CUE format.
 		// TODO: Proper BIN/CUE audio support, if it's not done already.
@@ -313,12 +313,12 @@ int Detect_Format(const char *Name)
 	
 	i = 0;
 	
-	if (strncasecmp("SEGA", &buf[0x100], 4))
+	if (strncasecmp("SEGA", (char*)(&buf[0x100]), 4))
 	{
 		// No "SEGA" text in the header. This might be an interleaved ROM.
 		// Maybe interleaved
 		
-		if (!strncasecmp("EA", &buf[0x200 + (0x100 / 2)], 2) ||
+		if (!strncasecmp("EA", (char*)(&buf[0x200 + (0x100 / 2)]), 2) ||
 		    ((buf[0x08] == 0xAA) && (buf[0x09] == 0xBB) && (buf[0x0A] == 0x06)))
 		{
 			// Interleaved.
@@ -332,7 +332,7 @@ int Detect_Format(const char *Name)
 		// Interleaved 32X check.
 		if (((!strncasecmp("32X", &zname[strlen(zname) - 3], 3)) &&
 		     (buf[0x200 / 2] == 0x4E)) ||
-		    (!strncasecmp ("3X", &buf[0x200 + (0x105 / 2)], 2)))
+		     (!strncasecmp("3X", (char*)(&buf[0x200 + (0x105 / 2)]), 2)))
 		{
 			// Interleaved 32X ROM.
 			return _32X_ROM + 1;
@@ -341,9 +341,9 @@ int Detect_Format(const char *Name)
 	else
 	{
 		// Non-interleaved 32X check.
-		if (((!strncasecmp ("32X", &zname[strlen (zname) - 3], 3)) &&
+		if (((!strncasecmp("32X", &zname[strlen(zname) - 3], 3)) &&
 		     (buf[0x200] == 0x4E)) ||
-		    (!strncasecmp ("32X", &buf[0x105], 3)))
+		     (!strncasecmp("32X", (char*)(&buf[0x105]), 3)))
 		{
 			// Non-interleaved 32X ROM.
 			return _32X_ROM;
@@ -491,20 +491,20 @@ int Open_Rom(const char *Name)
 		default:
 		case 1:			// Genesis rom
 			if (Game)
-				Genesis_Started = Init_Genesis (Game);
+				Genesis_Started = Init_Genesis(Game);
 			
 			return Genesis_Started;
 			break;
 	
 		case 2:			// 32X rom
 			if (Game)
-				_32X_Started = Init_32X (Game);
+				_32X_Started = Init_32X(Game);
 			
 			return _32X_Started;
 			break;
 		
 		case 3:			// Sega CD image
-			SegaCD_Started = Init_SegaCD (Name);
+			SegaCD_Started = Init_SegaCD(Name);
 			
 			return SegaCD_Started;
 			break;

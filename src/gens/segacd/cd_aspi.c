@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "port.h"
 #include "g_main.h"
-#include "rom.h"
+#include "rom.hpp"
 #include "star_68k.h"
 #include "lc89510.h"
 #include "cd_aspi.h"

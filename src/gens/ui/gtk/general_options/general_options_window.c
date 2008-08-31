@@ -46,7 +46,7 @@
 #include "g_sdlsound.h"
 #include "scrshot.h"
 #include "ggenie.h"
-#include "rom.h"
+#include "rom.hpp"
 
 
 // Macro to create a frame (with label) and add it toa a box.

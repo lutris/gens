@@ -46,7 +46,7 @@
 #include "g_sdlsound.h"
 #include "scrshot.h"
 #include "ggenie.h"
-#include "rom.h"
+#include "rom.hpp"
 
 
 GtkWidget *directory_config_window = NULL;

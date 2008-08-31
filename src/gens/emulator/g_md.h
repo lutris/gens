@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "rom.h"
+#include "rom.hpp"
 
 void Detect_Country_Genesis(void);
 

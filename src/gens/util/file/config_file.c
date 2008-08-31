@@ -32,7 +32,7 @@
 #include "mem_sh2.h"
 #include "mem_z80.h"
 #include "io.h"
-#include "rom.h"
+#include "rom.hpp"
 
 // VDP
 #include "vdp_io.h"

@@ -54,7 +54,7 @@
 #include "g_sdlsound.h"
 #include "g_sdldraw.h"
 #include "gym.h"
-#include "rom.h"
+#include "rom.hpp"
 #include "vdp_io.h"
 #include "save.h"
 #include "z80.h"

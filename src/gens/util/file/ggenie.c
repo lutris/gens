@@ -28,7 +28,7 @@
 #include "ggenie.h"
 #include "mem_m68k.h"
 #include "cpu_68k.h"
-#include "rom.h"
+#include "rom.hpp"
 
 
 struct GG_Code Liste_GG[256];

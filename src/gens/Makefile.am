@@ -128,7 +128,7 @@ gens_SOURCES = \
 		ui/ui-common.c \
 		util/file/chd.c \
 		util/file/config_file.c \
-		util/file/rom.c \
+		util/file/rom.cpp \
 		util/file/save.c \
 		util/file/ggenie.c \
 		util/file/unzip.c \
@@ -136,6 +136,8 @@ gens_SOURCES = \
 		util/file/compress/gzip.c \
 		util/file/compress/dummy.c \
 		util/file/compress/Zip.c \
+		util/file/compress/compressor.cpp \
+		util/file/compress/subcompressor.cpp \
 		util/gfx/scrshot.c \
 		util/sound/gym.c \
 		util/sound/wave.c
@@ -258,7 +260,7 @@ noinst_HEADERS = \
 		ui/ui-common.h \
 		util/file/chd.h \
 		util/file/config_file.h \
-		util/file/rom.h \
+		util/file/rom.hpp \
 		util/file/save.h \
 		util/file/ggenie.h \
 		util/file/unzip.h \
@@ -266,6 +268,8 @@ noinst_HEADERS = \
 		util/file/compress/gzip.h \
 		util/file/compress/dummy.h \
 		util/file/compress/Zip.h \
+		util/file/compress/compressor.hpp \
+		util/file/compress/subcompressor.hpp \
 		util/gfx/scrshot.h \
 		util/sound/gym.c \
 		util/sound/wave.c
@@ -340,6 +344,13 @@ gens_CFLAGS = \
 		@SDL_CFLAGS@ \
 		@GTK_CFLAGS@ \
 		@CFLAGS@
+
+gens_CXXFLAGS = \
+		-DDATADIR=\"@datadir@/@PACKAGE@\" \
+		@SDL_CFLAGS@ \
+		@GTK_CFLAGS@ \
+		@CFLAGS@ \
+		@CXXFLAGS@
 
 
 gens_LDADD = \

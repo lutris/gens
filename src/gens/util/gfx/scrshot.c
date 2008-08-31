@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rom.h"
+#include "rom.hpp"
 #include "vdp_io.h"
 #include "vdp_rend.h"
 #include "g_sdldraw.h"

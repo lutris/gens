@@ -3,7 +3,7 @@
 #include "gym.h"
 #include "g_main.h"
 #include "g_sdlsound.h"
-#include "rom.h"
+#include "rom.hpp"
 #include "mem_m68k.h"
 #include "gens.h"
 #include "ym2612.h"

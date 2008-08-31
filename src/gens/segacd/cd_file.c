@@ -11,7 +11,7 @@
 #include "lc89510.h"
 #include "cdda_mp3.h"
 #include "star_68k.h"
-#include "rom.h"
+#include "rom.hpp"
 #include "mem_s68k.h"
 
 struct _file_track Tracks[100];
