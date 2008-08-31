@@ -1,6 +1,10 @@
 #ifndef GYM_H
 #define GYM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 
 extern int GYM_Dumping;
@@ -12,5 +16,9 @@ int Stop_GYM_Dump(void);
 int Start_Play_GYM(void);
 int Play_GYM(void);
 int Stop_Play_GYM(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
