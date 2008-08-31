@@ -1010,7 +1010,10 @@ void Refresh_Word_RAM_Pattern(void)
 void Update_Debug_Screen(void)
 {
 	// Clear the MD screen.
-	memset(MD_Screen, 0, 336 * 240 * 2);
+	if (bpp == 15 || bpp == 16)
+		memset(MD_Screen, 0x00, sizeof(MD_Screen));
+	else // if (bpp == 32)
+		memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
 	
 	if (Debug & 0x100)
 	{
