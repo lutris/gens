@@ -36,6 +36,7 @@
 #include "gens_core/sound/pwm.h"
 #include "debug/debug.h"
 #include "util/file/ggenie.h"
+#include "g_update.h"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM

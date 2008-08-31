@@ -74,6 +74,7 @@ gens_SOURCES = \
 		emulator/g_32x.c \
 		emulator/g_32x_32bit.c \
 		emulator/g_palette.c \
+		emulator/g_update.c \
 		emulator/parse.c \
 		emulator/ui_proxy.c \
 		gens_core/nasmhead.inc \
@@ -212,6 +213,7 @@ noinst_HEADERS = \
 		emulator/g_32x.h \
 		emulator/g_32x_32bit.h \
 		emulator/g_palette.h \
+		emulator/g_update.h \
 		emulator/gens.h \
 		emulator/parse.h \
 		gens_core/cpu/68k/cpu_68k.h \

@@ -32,11 +32,6 @@ extern void (*Blit_W)(unsigned char *Dest, int pitch, int x, int y, int offset);
 extern int (*Update_Frame)(void);
 extern int (*Update_Frame_Fast)(void);
 
-/*
-extern int Kaillera_Error;
-int Update_Emulation_Netplay(int player, int num_player);
-*/
-
 // SDL screen
 extern SDL_Surface *screen;
 
@@ -51,8 +46,6 @@ int Init_DDraw();
 int Clear_Primary_Screen(void);
 int Clear_Back_Screen(void);
 void Clear_Screen();
-int Update_Emulation(void);
-int Update_Emulation_One(void);
 void Clear_Screen_MD(void);
 void Put_Info(char *Message, int Duree);
 int Show_Genesis_Screen(void);

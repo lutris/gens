@@ -33,7 +33,7 @@
 #include "emulator/g_palette.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "emulator/g_main.h"
-#include "sdllayer/g_sdldraw.h"
+#include "emulator/g_update.h"
 
 
 /**
