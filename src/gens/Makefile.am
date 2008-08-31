@@ -42,6 +42,7 @@ ASMFILES = \
 		gens_core/mem/mem_sh2.o \
 		gens_core/mem/mem_z80.o \
 		gens_core/misc/misc.o \
+		gens_core/io/io_old.o \
 		gens_core/sound/pwm.o \
 		gens_core/cpu/sh2/sh2a.o \
 		gens_core/vdp/vdp_32x.o \
@@ -103,6 +104,7 @@ gens_SOURCES = \
 		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
+		gens_core/io/io.asm \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
@@ -233,6 +235,7 @@ noinst_HEADERS = \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/gfx/renderers.h \
 		gens_core/io/io.h \
+		gens_core/io/io_old.h \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \

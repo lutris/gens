@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "io_old.h"
+
 #define CREATE_CONTROLLER_VARIABLES_EXTERN(player)		\
 	extern unsigned int Controller_ ## player ## _Type;	\
 	extern unsigned int Controller_ ## player ## _Up;	\
@@ -45,7 +47,6 @@ unsigned char RD_Controller_2(void);
 unsigned char WR_Controller_1(unsigned char data);
 unsigned char WR_Controller_2(unsigned char data);
 void Fix_Controllers(void);
-void Make_IO_Table(void);
 
 #ifdef __cplusplus
 }

@@ -91,11 +91,6 @@ static unsigned char RD_Controller(unsigned int state,
 }
 
 
-void Make_IO_Table(void)
-{
-}
-
-
 unsigned char RD_Controller_1(void)
 {
 	// Read controller 1.
