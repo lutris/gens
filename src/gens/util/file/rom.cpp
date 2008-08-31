@@ -1,10 +1,17 @@
 #include "rom.hpp"
 
-#include "port.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <assert.h>
+
+#include <string>
+#include <list>
+using std::string;
+using std::list;
+
+#include "port.h"
 #include "g_sdlsound.h"
 #include "g_main.h"
 #include "gens.h"
@@ -23,7 +30,6 @@
 #include "chd.h"
 #include "wave.h"
 #include "gym.h"
-#include <assert.h>
 
 #include "misc.h"
 #include "byteswap.h"
@@ -33,6 +39,7 @@
 
 // New file compression handler.
 #include "compress/compress.h"
+#include "compress/compressor.hpp"
 
 Rom *My_Rom = NULL;
 struct Rom *Game = NULL;
@@ -577,65 +584,54 @@ Rom *Load_SegaCD_BIOS(const char *filename)
 Rom *Load_ROM(const char *filename, const int interleaved)
 {
 	FILE *ROM_File;
-	struct COMPRESS_FileInfo_t *fip, *selFile;
-	int cmp = 0;
+	Compressor *cmp;
+	list<CompressedFile> *files;
+	list<CompressedFile>::iterator selFile;
 	
 	//SetCurrentDirectory (Gens_Path);
 	
-	if ((ROM_File = fopen(filename, "rb")) == 0)
+	// Set up the compressor.
+	cmp = new Compressor(filename);
+	if (!cmp->isFileLoaded())
 	{
+		// Error loading the file.
+		UI_MsgBox("Error loading the file.", "File Load Error");
+		delete cmp;
 		Game = NULL;
 		return NULL;
 	}
 	
-	// Determine if the ROM is compressed.
-	while (CompressMethods[cmp].detect_format)
-	{
-		fseek(ROM_File, 0, SEEK_SET);
-		if (CompressMethods[cmp].detect_format(ROM_File))
-		{
-			// Found the correct compression handler.
-			break;
-		}
-		// Go to the next compression method.
-		cmp++;
-	}
-	// TODO: Fix the zlib workaround so the file doesn't have to be closed.
-	fclose(ROM_File);
+	// Get the file information.
+	files = cmp->getFileInfo();
 	
-	// If no compression handler was found, show an error.
-	if (!CompressMethods[cmp].detect_format)
+	// Check how many files are available.
+	if (files->empty())
 	{
-		UI_MsgBox("No compression handlers found for this filetype.", "Compression Handler Error");
+		// No files in the archive.
+		UI_MsgBox("No files were detected in this archive.", "No Files Detected");
+		delete files;
+		delete cmp;
 		Game = NULL;
 		return NULL;
 	}
-	
-	// Compression handler found. Get the file info.
-	
-	// TODO: If more than one file is present, show a dialog.
-	// For now, just load the first file.
-	fip = CompressMethods[cmp].get_file_info(filename);
-	if (!fip)
+	else if (files->size() == 1 || true)
 	{
-		// Error loading the ROM and/or archive.
-		// TODO: Show an error message.
-		Game = NULL;
-		return NULL;
+		// One file is in the archive. Load it.
+		selFile = files->begin();
 	}
-	
-	// If more than one file is in the archive, show the selection dialog.
-	if (fip->next)
-		selFile = Open_Zip_Select_Dialog(fip);
 	else
-		selFile = fip;
+	{
+		// More than one file is in the archive. Load it.
+		// TODO: New C++ version.
+		//selFile = Open_Zip_Select_Dialog(fip);
+	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 	if (selFile->filesize > ((6 * 1024 * 1024) + 512))
 	{
 		UI_MsgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
-		COMPRESS_FileInfo_Free(fip);
-		//fclose(ROM_File);
+		delete files;
+		delete cmp;
 		Game = NULL;
 		return NULL;
 	}
@@ -644,8 +640,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (!My_Rom)
 	{
 		// Memory allocation error
-		COMPRESS_FileInfo_Free(fip);
-		//fclose(ROM_File);
+		delete files;
+		delete cmp;
 		Game = NULL;
 		return NULL;
 	}
@@ -653,11 +649,12 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	if (CompressMethods[cmp].get_file(filename, selFile, Rom_Data, selFile->filesize) <= 0)
+	if (cmp->getFile(&(*selFile), Rom_Data, selFile->filesize) <= 0)
 	{
 		// Error loading the ROM.
 		free(My_Rom);
-		COMPRESS_FileInfo_Free(fip);
+		delete files;
+		delete cmp;
 		My_Rom = NULL;
 		Game = NULL;
 		return NULL;		
@@ -665,10 +662,11 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	//fclose(ROM_File);
 	
 	Update_Rom_Name(filename);
-	Rom_Size = fip->filesize;
+	Rom_Size = selFile->filesize;
 	
-	// The list of COMPRESS_FileInfo_t is no longer needed.
-	COMPRESS_FileInfo_Free(fip);
+	// Delete the compression objects.
+	delete files;
+	delete cmp;
 	
 	// Deinterleave the ROM, if necessary.
 	if (interleaved)
