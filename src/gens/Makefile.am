@@ -132,12 +132,9 @@ gens_SOURCES = \
 		util/file/save.c \
 		util/file/ggenie.c \
 		util/file/unzip.c \
-		util/file/compress/compress.c \
-		util/file/compress/gzip.c \
-		util/file/compress/dummy.c \
-		util/file/compress/Zip.c \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
+		util/file/compress/gzip.cpp \
 		util/gfx/scrshot.c \
 		util/sound/gym.c \
 		util/sound/wave.c
@@ -264,12 +261,9 @@ noinst_HEADERS = \
 		util/file/save.h \
 		util/file/ggenie.h \
 		util/file/unzip.h \
-		util/file/compress/compress.h \
-		util/file/compress/gzip.h \
-		util/file/compress/dummy.h \
-		util/file/compress/Zip.h \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
+		util/file/compress/gzip.hpp \
 		util/gfx/scrshot.h \
 		util/sound/gym.c \
 		util/sound/wave.c

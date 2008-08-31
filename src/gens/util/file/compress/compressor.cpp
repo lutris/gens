@@ -41,7 +41,11 @@ Compressor::Compressor(string zFilename)
 	m_subCompressor = NULL;
 	
 	// Detect what type of file this is.
-	SubCompressor* subCompTable[] = { NULL, };
+	SubCompressor* subCompTable[] =
+	{
+		new GZip(),
+		NULL,
+	};
 	
 	int i = 0;
 	while (subCompTable[i])
@@ -50,7 +54,9 @@ Compressor::Compressor(string zFilename)
 		{
 			// Found the compressor.
 			m_subCompressor = subCompTable[i];
+			break;
 		}
+		i++;
 	}
 	
 	// Delete all unused subcompressors.
@@ -59,6 +65,7 @@ Compressor::Compressor(string zFilename)
 	{
 		if (subCompTable[i] != m_subCompressor)
 			delete subCompTable[i];
+		i++;
 	}
 	
 	// Close the file.
@@ -94,7 +101,7 @@ int Compressor::getNumFiles(void)
 
 /**
  * getFileInfo(): Get information about all files in the archive.
- * @return Pointer to list of CompressedFile structs.
+ * @return Pointer to list of CompressedFile structs, or NULL on error.
  */
 list<CompressedFile>* Compressor::getFileInfo(void)
 {

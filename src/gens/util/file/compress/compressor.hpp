@@ -19,7 +19,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc., *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
- 
+
 #ifndef GENS_COMPRESSOR_HPP
 #define GENS_COMPRESSOR_HPP
 
@@ -30,12 +30,8 @@
 using std::string;
 using std::list;
 
-// Data structure definition for file information
-struct CompressedFile
-{
-	int filesize;
-	string filename;
-};
+// Compressed file struct
+#include "compressedfile.hpp"
 
 // Subcompressor
 #include "subcompressor.hpp"

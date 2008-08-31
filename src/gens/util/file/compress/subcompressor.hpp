@@ -27,7 +27,8 @@
 #include <string>
 #include <list>
 
-#include "compressor.hpp"
+// Compressed file struct
+#include "compressedfile.hpp"
 
 using std::string;
 using std::list;
@@ -39,9 +40,12 @@ class SubCompressor
 		virtual ~SubCompressor();
 		
 		virtual bool detectFormat(FILE *f) = 0;
-		virtual int getNumFiles(string filename) = 0;
-		virtual list<CompressedFile>* getFileInfo(string filename) = 0;
-		virtual int getFile(string filename, const CompressedFile *fileInfo, unsigned char *buf, int size) = 0;
+		virtual int getNumFiles(string zFilename) = 0;
+		virtual list<CompressedFile>* getFileInfo(string zFilename) = 0;
+		virtual int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size) = 0;
 };
+
+// Various subcompressors.
+#include "gzip.hpp"
 
 #endif

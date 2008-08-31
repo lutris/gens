@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: File Compression Sub Class.                                       *
+ * Gens: GZip File Compression Class.                                      *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,12 +20,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_GZIP_HPP
+#define GENS_GZIP_HPP
+
+#include <stdio.h>
+#include <string>
+#include <list>
+
+// Subcompressor
 #include "subcompressor.hpp"
 
-SubCompressor::SubCompressor()
-{
-}
+using std::string;
+using std::list;
 
-SubCompressor::~SubCompressor()
+class GZip : public SubCompressor
 {
-}
+	public:
+		GZip();
+		~GZip();
+		
+		bool detectFormat(FILE *f);
+		int getNumFiles(string zFilename);
+		list<CompressedFile>* getFileInfo(string zFilename);
+		int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size);
+};
+
+#endif
