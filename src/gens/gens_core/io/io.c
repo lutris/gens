@@ -236,14 +236,17 @@ unsigned char WR_Controller_1(unsigned char data)
 		Controller_1_Counter++;
 	
 	Controller_1_Delay = 0;
-	if (Controller_1_Type & 0x10)
+	
+	if (!(Controller_1_Type & 0x10))
 	{
-		// Team Player adapter
-		if (!((Controller_1_State & 0x20) && (!(data & 0x20))))
-		{
-			Controller_1_Counter += (1 << 16);
-		}
+		// Not Team Player, so skip the rest of the function.
+		Controller_1_State = data;
+		return data;
 	}
+	
+	// Team Player adapter
+	if (!((Controller_1_State & 0x20) && (!(data & 0x20))))
+		Controller_1_Counter += (1 << 16);
 	
 	Controller_1_State = data;
 	return data;
@@ -255,14 +258,24 @@ unsigned char WR_Controller_2(unsigned char data)
 	if (!((Controller_2_State & 0x40) && (!(data & 0x40))))
 		Controller_2_Counter++;
 	
+	// Team Player on Port 1
+	// TODO: Why is this here?
+	if ((Controller_1_Type & 0x10) & (data & 0x0C))
+		Controller_1_Counter = 0;
+	
 	Controller_2_Delay = 0;
-	if (Controller_2_Type & 0x10)
+	
+	if (!(Controller_2_Type & 0x10))
 	{
-		// Team Player adapter
-		if (!((Controller_2_State & 0x20) && (!(data & 0x20))))
-		{
-			Controller_2_Counter += (1 << 16);
-		}
+		// Not Team Player, so skip the rest of the function.
+		Controller_2_State = data;
+		return data;
+	}
+	
+	// Team Player adapter
+	if (!((Controller_2_State & 0x20) && (!(data & 0x20))))
+	{
+		Controller_2_Counter += (1 << 16);
 	}
 	
 	Controller_2_State = data;
