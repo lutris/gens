@@ -65,6 +65,9 @@ GtkWidget* create_zip_select_dialog(void)
 	gtk_dialog_set_has_separator(GTK_DIALOG(zip_select_dialog), FALSE);
 	GLADE_HOOKUP_OBJECT_NO_REF(zip_select_dialog, zip_select_dialog, "zip_select_dialog");
 	
+	// Make the window a decent size.
+	gtk_widget_set_size_request(zip_select_dialog, 480, 280);
+	
 	// Load the Gens icon.
 	zip_select_dialog_icon_pixbuf = create_pixbuf("Gens2.ico");
 	if (zip_select_dialog_icon_pixbuf)
