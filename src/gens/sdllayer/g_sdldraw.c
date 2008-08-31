@@ -277,6 +277,14 @@ static void Flip_SDL(void)
 	
 	SDL_LockSurface(screen);
 	
+	if (!Genesis_Started && !SegaCD_Started && !_32X_Started)
+	{
+		// No system is active.
+		// Make sure the border color is black.
+		MD_Palette[0] = 0;
+		MD_Palette32[0] = 0;
+	}
+	
 	// Draw the border.
 	// TODO: Make this more accurate and/or more efficient.
 	// In particular, it only works for 1x and 2x rendering.
