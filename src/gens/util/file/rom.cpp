@@ -599,6 +599,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (!files || files->empty())
 	{
 		// No files in the archive.
+		// TODO: For 7z, suggest setting the 7z binary filename.
 		UI_MsgBox("No files were detected in this archive.", "No Files Detected");
 		
 		if (files)
