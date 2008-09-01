@@ -20,14 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_EFFECTS_H
-#define GENS_EFFECTS_H
+#ifndef GENS_V_EFFECTS_HPP
+#define GENS_V_EFFECTS_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern int Effect_Color;
 
 int Update_Gens_Logo(void);
 int Update_Crazy_Effect(void);

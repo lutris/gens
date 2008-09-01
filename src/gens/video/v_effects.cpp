@@ -22,7 +22,7 @@
 
 #include <math.h>
 
-#include "g_effects.hpp"
+#include "v_effects.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/fastblur.h"
 
@@ -106,7 +106,7 @@ int Update_Gens_Logo(void)
 	}
 	
 	Fast_Blur();
-	draw->Flip();
+	//draw->Flip();
 	
 	return 1;
 }
@@ -198,7 +198,7 @@ int Update_Crazy_Effect(void)
 		}
 	}
 	
-	draw->Flip();
+	//draw->Flip();
 	
 	return 1;
 }

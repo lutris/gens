@@ -52,8 +52,6 @@
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 
-#include "sdllayer/g_effects.hpp"
-
 #include "ui-common.h"
 #include "gtk-misc.h"
 #include "gens/gens_window.h"
@@ -562,44 +560,47 @@ int main(int argc, char *argv[])
 					Do_32X_VDP_Only();
 				else
 					Do_VDP_Only();
-				Pause_Screen();
+				//Pause_Screen();
 				draw->Flip();
-				Sleep (100);
+				Sleep(100);
 			}
-		}
-		else if (GYM_Playing)
-		{
-			// PLAY GYM
-			Play_GYM ();
-			Update_Gens_Logo ();
-		}
-		else if (Intro_Style == 1)
-		{
-			// GENS LOGO EFFECT
-			Update_Gens_Logo ();
-			Sleep(5);
-		}
-		else if (Intro_Style == 2)
-		{
-			// STRANGE EFFECT
-			Update_Crazy_Effect ();
-			Sleep(10);
-		}
-		else if (Intro_Style == 3)
-		{
-			// GENESIS BIOS
-			Do_Genesis_Frame ();
-			draw->Flip();
-			Sleep(20);
 		}
 		else
 		{
-			// BLANK SCREEN (MAX IDLE)
-			// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
-			// TODO: Fix this lag!
-			Clear_Screen_MD();
+			// No game is currently running.
+			
+			// Update the screen.
 			draw->Flip();
-			Sleep(200);
+			
+			// Determine how much sleep time to add, based on intro style.
+			// TODO: Move this to v_draw.cpp?
+			if (GYM_Playing)
+			{
+				// PLAY GYM
+				Play_GYM();
+			}
+			else if (Intro_Style == 1)
+			{
+				// Gens logo effect. (TODO: This is broken!)
+				Sleep(5);
+			}
+			else if (Intro_Style == 2)
+			{
+				// "Strange" effect. (TODO: This is broken!)
+				Sleep(10);
+			}
+			else if (Intro_Style == 3)
+			{
+				// Genesis BIOS. (TODO: This is broken!)
+				Sleep(20);
+			}
+			else
+			{
+				// Blank screen. (MAX IDLE)
+				// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
+				// TODO: Fix this lag!
+				Sleep(200);
+			}
 		}
 	}
 	

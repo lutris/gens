@@ -118,7 +118,6 @@ gens_SOURCES = \
 		port/ini.cpp \
 		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
-		sdllayer/g_effects.cpp \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
@@ -139,7 +138,8 @@ gens_SOURCES = \
 		util/sound/gym.c \
 		util/sound/wave.c \
 		video/v_draw.cpp \
-		video/v_draw_sdl.cpp
+		video/v_draw_sdl.cpp \
+		video/v_effects.cpp
 ##		netplay/ccnet.c 
 ##		netplay/ccnet.h
 
@@ -254,7 +254,6 @@ noinst_HEADERS = \
 		port/ini.hpp \
 		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \
-		sdllayer/g_effects.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \
@@ -275,7 +274,8 @@ noinst_HEADERS = \
 		util/sound/gym.h \
 		util/sound/wave.h \
 		video/v_draw.hpp \
-		video/v_draw_sdl.hpp
+		video/v_draw_sdl.hpp \
+		video/v_effects.cpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \

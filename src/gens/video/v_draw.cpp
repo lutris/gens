@@ -17,6 +17,9 @@
 
 #include "port/timer.h"
 
+// Miscellaneous Effects.
+#include "v_effects.hpp"
+
 
 VDraw::VDraw()
 {
@@ -90,6 +93,37 @@ int VDraw::Flip(void)
 	
 	// Temporary buffer for sprintf().
 	char tmp[64];
+	
+	// Check if any effects need to be applied.
+	// TODO: Make constnats for Intro_Style.
+	if (Genesis_Started || _32X_Started || SegaCD_Started)
+	{
+		if (!Active || Paused)
+		{
+			// Emulation is paused.
+			Pause_Screen();
+		}
+	}
+	else if (Intro_Style == 1)
+	{
+		// Gens logo effect. (TODO: This is broken!)
+		Update_Gens_Logo();
+	}
+	else if (Intro_Style == 2)
+	{
+		// "Strange" effect. (TODO: This is broken!)
+		Update_Crazy_Effect();
+	}
+	else if (Intro_Style == 3)
+	{
+		// Genesis BIOS. (TODO: This is broken!)
+		Do_Genesis_Frame();
+	}
+	else
+	{
+		// Blank screen.
+		Clear_Screen_MD();
+	}
 	
 	if (m_MsgVisible)
 	{

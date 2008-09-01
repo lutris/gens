@@ -20,7 +20,6 @@
 #include "util/sound/gym.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/gfx/scrshot.h"
-#include "sdllayer/g_effects.hpp"
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.h"
@@ -115,7 +114,7 @@ void Input_KeyDown(int key)
 			else
 			{
 				Paused = 1;
-				Pause_Screen();
+				//Pause_Screen();
 				Clear_Sound_Buffer();
 			}
 			break;
@@ -126,7 +125,7 @@ void Input_KeyDown(int key)
 			else
 			{
 				Paused = 1;
-				Pause_Screen();
+				//Pause_Screen();
 				Clear_Sound_Buffer();
 			}
 			break;
