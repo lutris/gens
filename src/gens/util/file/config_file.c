@@ -13,7 +13,6 @@
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_input.h"
-#include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 #include "util/gfx/scrshot.h"

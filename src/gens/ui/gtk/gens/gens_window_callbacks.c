@@ -52,7 +52,6 @@
 #include "util/file/config_file.h"
 
 #include "sdllayer/g_sdlsound.h"
-#include "sdllayer/g_sdldraw.h"
 #include "util/sound/gym.h"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"

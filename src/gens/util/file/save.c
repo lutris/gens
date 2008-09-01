@@ -10,7 +10,6 @@
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_input.h"
-#include "sdllayer/g_sdldraw.h"
 
 // CPU
 #include "gens_core/cpu/68k/cpu_68k.h"

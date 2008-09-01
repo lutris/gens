@@ -32,7 +32,6 @@
 
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
-#include "sdllayer/g_sdldraw.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/mem/mem_m68k.h"

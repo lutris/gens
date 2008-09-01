@@ -1,6 +1,8 @@
 #ifndef GENS_SDLDRAW_H
 #define GENS_SDLDRAW_H
 
+#error Remove g_sdldraw.h includes!
+
 #if 0
 
 #ifdef __cplusplus

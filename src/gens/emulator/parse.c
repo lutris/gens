@@ -12,7 +12,6 @@
 #include "gens_core/cpu/z80/z80.h"
 #include "gens.h"
 #include "g_main.hpp"
-#include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 #include "gens_core/vdp/vdp_io.h"

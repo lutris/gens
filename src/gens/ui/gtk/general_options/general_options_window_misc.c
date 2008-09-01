@@ -32,9 +32,6 @@
 
 #include "emulator/g_main.hpp"
 
-// Includes containing variables required for this dialog.
-#include "sdllayer/g_sdldraw.h"
-
 
 /**
  * Open_General_Options(): Opens the General Options window.

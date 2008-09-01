@@ -9,7 +9,6 @@
 #include "emulator/gens.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
-#include "sdllayer/g_sdldraw.h"
 
 #include "ui-common.h"
 
