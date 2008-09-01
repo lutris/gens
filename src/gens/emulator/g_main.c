@@ -105,6 +105,7 @@ int Quick_Exit = 0;
 static int Gens_Running = 0;
 
 
+// TODO: Rewrite the language system so it doesn't depend on the old INI functions.
 static int Build_Language_String (void)
 {
 	unsigned long nb_lue = 1;
