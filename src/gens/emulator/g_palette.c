@@ -34,13 +34,13 @@ inline int Constrain_Color_Component(int c)
 
 
 /**
- * CalculateGrayScale_16B(): Calculate the grayscale color values for 16-bit colors.
+ * CalculateGrayScale(): Calculates grayscale color values.
  * @param r Red component.
  * @param g Green component.
  * @param b Blue component.
  * @return Grayscale value.
  */
-inline int CalculateGrayScale_16B(int r, int g, int b)
+inline int CalculateGrayScale(int r, int g, int b)
 {
 	// Standard grayscale computation: Y = R*0.30 + G*0.59 + B*0.11
 	r = (r * (unsigned int) (0.30 * 65536.0)) >> 16;
@@ -185,33 +185,27 @@ void Recalculate_Palettes(void)
 		// MD palette.
 		for (i = 0; i < 0x1000; i++)
 		{
+			r = (Palette32[i] >> 16) & 0xFF;
+			g = (Palette32[i] >> 8) & 0xFF;
+			b = Palette32[i] & 0xFF;
+			
+			r = g = b = CalculateGrayScale(r, g, b);
+			
+			// 32-bit color
+			Palette32[i] = (r << 16) | (g << 8) | b;
+			
+			// 15/16-bit color
 			if (bpp == 15)
 			{
-				r = ((Palette[i] >> 10) & 0x1F) << 1;
-				g = ((Palette[i] >> 5) & 0x1F) << 1;
+				r = ((r >> 3) & 0x1F) << 10;
+				g = ((g >> 3) & 0x1F) << 5;
 			}
 			else
 			{
-				r = ((Palette[i] >> 11) & 0x1F) << 1;
-				g = (Palette[i] >> 5) & 0x3F;
+				r = ((r >> 3) & 0x1F) << 11;
+				g = ((g >> 2) & 0x3F) << 5;
 			}
-			
-			b = ((Palette[i] >> 0) & 0x1F) << 1;
-			
-			r = g = b = CalculateGrayScale_16B(r, g, b);
-			
-			if (bpp == 15)
-			{
-				r = (r >> 1) << 10;
-				g = (g >> 1) << 5;
-			}
-			else
-			{
-				r = (r >> 1) << 11;
-				g = (g >> 0) << 5;
-			}
-			
-			b = (b >> 1) << 0;
+			b = (b >> 3) & 0x1F;
 			
 			Palette[i] = r | g | b;
 		}
@@ -219,33 +213,27 @@ void Recalculate_Palettes(void)
 		// 32X palette.
 		for (i = 0; i < 0x10000; i++)
 		{
+			r = (_32X_Palette_32B[i] >> 16) & 0xFF;
+			g = (_32X_Palette_32B[i] >> 8) & 0xFF;
+			b = _32X_Palette_32B[i] & 0xFF;
+			
+			r = g = b = CalculateGrayScale(r, g, b);
+			
+			// 32-bit color
+			_32X_Palette_32B[i] = (r << 16) | (g << 8) | b;
+			
+			// 15/16-bit color
 			if (bpp == 15)
 			{
-				r = ((_32X_Palette_16B[i] >> 10) & 0x1F) << 1;
-				g = ((_32X_Palette_16B[i] >> 5) & 0x1F) << 1;
+				r = ((r >> 3) & 0x1F) << 10;
+				g = ((g >> 3) & 0x1F) << 5;
 			}
 			else
 			{
-				r = ((_32X_Palette_16B[i] >> 11) & 0x1F) << 1;
-				g = (_32X_Palette_16B[i] >> 5) & 0x3F;
+				r = ((r >> 3) & 0x1F) << 11;
+				g = ((g >> 2) & 0x3F) << 5;
 			}
-			
-			b = ((_32X_Palette_16B[i] >> 0) & 0x1F) << 1;
-			
-			r = g = b = CalculateGrayScale_16B(r, g, b);
-			
-			if (bpp == 15)
-			{
-				r = (r >> 1) << 10;
-				g = (g >> 1) << 5;
-			}
-			else
-			{
-				r = (r >> 1) << 11;
-				g = (g >> 0) << 5;
-			}
-			
-			b = (b >> 1) << 0;
+			b = (b >> 3) & 0x1F;
 			
 			_32X_Palette_16B[i] = r | g | b;
 		}
