@@ -160,12 +160,23 @@ int VDraw_SDL::Flip_internal(void)
 	
 	SDL_LockSurface(screen);
 	
+	unsigned short newBorderColor_16B = MD_Palette[0];
+	unsigned int newBorderColor_32B = MD_Palette32[0];
+	
+	if ((!Genesis_Started && !SegaCD_Started && !_32X_Started) || (Debug > 0))
+	{
+		// Either no system is active or the debugger is enabled.
+		// Make sure the border color is black.
+		newBorderColor_16B = 0;
+		newBorderColor_32B = 0;
+	}
+	
 	// Draw the border.
 	// TODO: Make this more accurate and/or more efficient.
 	// In particular, it only works for 1x and 2x rendering.
-	if ((bpp == 15 || bpp == 16) && (m_BorderColor_16B != MD_Palette[0]))
+	if ((bpp == 15 || bpp == 16) && (m_BorderColor_16B != newBorderColor_16B))
 	{
-		m_BorderColor_16B = MD_Palette[0];
+		m_BorderColor_16B = newBorderColor_16B;
 		if (VDP_Num_Vis_Lines < 240)
 		{
 			// Top/Bottom borders.
@@ -197,9 +208,9 @@ int VDraw_SDL::Flip_internal(void)
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 		}
 	}
-	else if ((bpp == 32) && (m_BorderColor_32B != MD_Palette32[0]))
+	else if ((bpp == 32) && (m_BorderColor_32B != newBorderColor_32B))
 	{
-		m_BorderColor_32B = MD_Palette32[0];
+		m_BorderColor_32B = newBorderColor_32B;
 		if (VDP_Num_Vis_Lines < 240)
 		{
 			// Top/Bottom borders.
@@ -235,16 +246,22 @@ int VDraw_SDL::Flip_internal(void)
 	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
 	
 	// Start of the SDL framebuffer.
-	int startPos = (((screen->w * bytespp) * ((240 - VDP_Num_Vis_Lines) >> 1) + m_HBorder) << m_shift);
-	unsigned char *start = (unsigned char*)(screen->pixels) + startPos;
+	int pitch = screen->w * bytespp;
+	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
+	
+	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
+	
+	// Start of the SDL framebuffer.
+	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
 	if (Video.Full_Screen)
 	{
-		Blit_FS(start, screen->w * bytespp, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + m_HBorder*2);
+		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + m_HBorder*2);
 	}
 	else
 	{
-		Blit_W(start, screen->w * bytespp, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + m_HBorder*2);
+		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + m_HBorder*2);
 	}
 	
 	SDL_UnlockSurface(screen);
