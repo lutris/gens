@@ -315,6 +315,20 @@ void VDraw::setMsgEnabled(bool newMsgEnabled)
 }
 
 
+bool VDraw::fpsEnabled(void)
+{
+	return m_FPSEnabled;
+}
+void VDraw::setFPSEnabled(bool newFPSEnabled)
+{
+	if (m_FPSEnabled == newFPSEnabled)
+		return;
+	m_FPSEnabled = newFPSEnabled;
+	
+	// TODO: Figure out what to do here...
+}
+
+
 // Style properties
 unsigned char VDraw::msgStyle(void)
 {

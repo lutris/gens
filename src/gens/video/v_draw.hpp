@@ -64,6 +64,8 @@ class VDraw
 		void setShift(int newShift);
 		bool msgEnabled(void);
 		void setMsgEnabled(bool newMsgEnable);
+		bool fpsEnabled(void);
+		void setFPSEnabled(bool newFPSEnable);
 		
 		// Style properties
 		unsigned char msgStyle(void);
@@ -93,13 +95,14 @@ class VDraw
 		virtual int flipInternal(void) = 0;
 		
 		// FPS counter
+		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?
 		float m_FPS, m_FPS_Frames[8];
 		unsigned int m_FPS_OldTime, m_FPS_ViewFPS, m_FPS_IndexFPS;
 		unsigned int m_FPS_FreqCPU[2], m_FPS_NewTime[2];
 		unsigned char m_FPSStyle;
 		
 		// On-screen message
-		bool m_MsgEnabled;  // Is the message function enabled by the user?
+		bool m_MsgEnabled; // Is the message function enabled by the user?
 		string m_MsgText;
 		bool m_MsgVisible; // Is the message currently visible onscreen?
 		int m_MsgTime;
