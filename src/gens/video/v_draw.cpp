@@ -17,6 +17,7 @@
 
 #include "port/timer.h"
 
+
 VDraw::VDraw()
 {
 	// Initialize variables.
@@ -39,7 +40,7 @@ VDraw::VDraw()
 	m_FPSStyle = EMU_MODE | BLANC;
 	
 	// Initialze the onscreen message.
-	strcpy(m_MsgText, "");
+	m_MsgText = "";
 	m_MsgVisible = false;
 	m_MsgTime = 0;
 	m_MsgStyle = EMU_MODE | BLANC | SIZE_X2;
@@ -86,16 +87,19 @@ int VDraw::Flip(void)
 	// Don't print it on MD_Screen.
 	// Otherwise, messages and the FPS counter show up in screenshots.
 	
+	// Temporary buffer for sprintf().
+	char tmp[64];
+	
 	if (m_MsgVisible)
 	{
 		if (GetTickCount() > m_MsgTime)
 		{
 			m_MsgVisible = false;
-			strcpy(m_MsgText, "");
+			m_MsgText = "";
 		}
 		else
 		{
-			Print_Text(m_MsgText, strlen(m_MsgText), 10, 210, m_MsgStyle);
+			Print_Text(m_MsgText.c_str(), m_MsgText.length(), 10, 210, m_MsgStyle);
 		}
 	}
 	else if (Show_FPS && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
@@ -108,12 +112,13 @@ int VDraw::Flip(void)
 				if (m_FPS_NewTime[0] != m_FPS_OldTime)
 				{
 					m_FPS = (float)(m_FPS_FreqCPU[0]) * 16.0f / (float)(m_FPS_NewTime[0] - m_FPS_OldTime);
-					sprintf(m_MsgText, "%.1f", m_FPS);
+					sprintf(tmp, "%.1f", m_FPS);
+					m_MsgText = tmp;
 				}
 				else
 				{
 					// IT'S OVER 9000 FPS!!!111!11!1
-					strcpy(m_MsgText, ">9000");
+					m_MsgText = ">9000";
 				}
 				
 				m_FPS_OldTime = m_FPS_NewTime[0];
@@ -142,7 +147,8 @@ int VDraw::Flip(void)
 				m_FPS_OldTime = m_FPS_NewTime[0];
 				m_FPS_ViewFPS = 0;
 			}
-			sprintf(m_MsgText, "%.1f", m_FPS);
+			sprintf(tmp, "%.1f", m_FPS);
+			m_MsgText = tmp;
 		}
 		else
 		{
@@ -153,10 +159,10 @@ int VDraw::Flip(void)
 			// TODO: WTF is this for?
 			// Assuming it just clears the string...
 			//sprintf(Info_String, "", FPS);
-			m_MsgText[0] = 0;
+			m_MsgText = "";
 		}
 		
-		Print_Text(m_MsgText, strlen(m_MsgText), 10, 210, m_FPSStyle);
+		Print_Text(m_MsgText.c_str(), m_MsgText.length(), 10, 210, m_FPSStyle);
 	}
 	
 	// Blur the screen if requested.
@@ -194,12 +200,9 @@ int VDraw::Flip(void)
  * @param msg Message to write.
  * @param duration Duration for the message to appear, in milliseconds.
  */
-void VDraw::writeText(const char* msg, int duration)
+void VDraw::writeText(string msg, int duration)
 {
-	if (!m_MsgVisible)
-		return;
-	
-	strncpy(m_MsgText, msg, sizeof(m_MsgText));
+	m_MsgText = msg;
 	m_MsgTime = GetTickCount() + duration;
 	m_MsgVisible = true;
 }

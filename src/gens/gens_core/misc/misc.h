@@ -17,7 +17,7 @@ extern int Have_MMX;
 extern int MMX_Enable;
 
 void Identify_CPU(void);
-void Print_Text(char *str, int Size, int Pos_X, int Pos_Y, int Style);
+void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
 
 void Cell_8x8_Dump(unsigned char *Adr, int Palette);
 void Cell_16x16_Dump(unsigned char *Adr, int Palette);

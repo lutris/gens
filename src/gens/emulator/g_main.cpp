@@ -659,10 +659,8 @@ void Put_Info(const char* msg, int duration)
 	// TODO: Figure out a better place to put this.
 	if (Show_Message)
 	{
-		strcpy(Info_String, msg);
-		win2linux(Info_String);
-		Info_Time = GetTickCount() + duration;
-		Message_Showed = 1;
+		win2linux(Info_String);		// TODO: Get rid of this.
+		draw->writeText(msg, duration);
 	}
 }
 

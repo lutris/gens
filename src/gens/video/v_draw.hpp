@@ -9,6 +9,10 @@
 
 #ifdef __cplusplus
 
+// C++ includes
+#include <string>
+using std::string;
+
 class VDraw
 {
 	public:
@@ -39,7 +43,7 @@ class VDraw
 		void Refresh_Video(void);
 		
 		// Write text to the screen.
-		void writeText(const char* msg, int duration);
+		void writeText(const string msg, int duration);
 		
 		// Properties
 		bool stretch(void);
@@ -77,7 +81,7 @@ class VDraw
 		int m_FPSStyle;	// TODO: Get constants for this.
 		
 		// On-screen message
-		char m_MsgText[1024];
+		string m_MsgText;
 		bool m_MsgVisible;
 		int m_MsgTime;
 		int m_MsgStyle;	// TODO: Get constants for this.
