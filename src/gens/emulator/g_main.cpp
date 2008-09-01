@@ -274,7 +274,7 @@ static void Init_Settings(void)
 	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
-	Load_Config (Str_Tmp, NULL);
+	Load_Config(Str_Tmp, NULL);
 }
 
 
@@ -308,7 +308,7 @@ void run_gens ()
  * is_gens_running(): Is GENS running?!
  * @return 1 if it's running.
  */
-int is_gens_running ()
+int is_gens_running()
 {
 	return Gens_Running;
 }
@@ -469,6 +469,12 @@ int main(int argc, char *argv[])
 	// Initialize the Game Genie array.
 	Init_GameGenie();
 	
+	// Parse command line arguments.
+	parseArgs(argc, argv);
+	
+	// Recalculate the palettes, in case a command line argument changed a video setting.
+	Recalculate_Palettes();
+	
 	//char sdlbuf[32];
 	
 	//sprintf(sdlbuf, "SDL_WINDOWID=%ld",  GDK_WINDOW_XWINDOW(gens_window->window));
@@ -476,8 +482,6 @@ int main(int argc, char *argv[])
 	GtkWidget *sdlsock;
 	
 	Init_Genesis_Bios();
-	
-	parseArgs(argc, argv);
 	
 	// Initialize Gens.
 	if (!Init())

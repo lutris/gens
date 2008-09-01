@@ -390,7 +390,11 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	//Set_Render(Full_Screen, -1, 1);
 	
 	// Recalculate the MD and 32X palettes using the new color and video mode settings.
-	Recalculate_Palettes();
+	// NOTE: This is only done if Gens is currently running.
+	// If Gens isn't running, then this is before Gens had a chance to parse
+	// command line arguments, so things may change later.
+	if (is_gens_running())
+		Recalculate_Palettes();
 	
 	// TODO: VDraw
 	/*
