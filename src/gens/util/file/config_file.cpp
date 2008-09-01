@@ -151,8 +151,8 @@ int Save_Config(const char *File_Name)
 	//INI_WriteInt("Graphics", "OpenGL Filter", gl_linear_filter);
 #endif
 	
-	INI_WriteInt("Graphics", "Stretch", (draw->stretch() ? 1 : 0));
-	INI_WriteInt("Graphics", "Software Blit", (draw->swRender() ? 1 : 0));
+	INI_WriteBool("Graphics", "Stretch", draw->stretch());
+	INI_WriteBool("Graphics", "Software Blit", draw->swRender());
 	INI_WriteInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	INI_WriteInt("Graphics", "Frame Skip", Frame_Skip);
 	
@@ -189,10 +189,10 @@ int Save_Config(const char *File_Name)
 	
 	// Various settings
 	INI_WriteInt("Options", "Fast Blur", Video.Fast_Blur & 1);
-	INI_WriteInt("Options", "FPS", (draw->fpsEnabled() ? 1 : 0));
+	INI_WriteBool("Options", "FPS", draw->fpsEnabled());
 	// TODO: VDraw
 	//INI_WriteInt("Options", "FPS Style", FPS_Style);
-	INI_WriteInt("Options", "Message", (draw->msgEnabled() ? 1 : 0));
+	INI_WriteBool("Options", "Message", draw->msgEnabled());
 	// TODO: VDraw
 	//INI_WriteInt("Options", "Message Style", Message_Style);
 	INI_WriteInt("Options", "LED", Show_LED & 1);
@@ -393,8 +393,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	if (is_gens_running())
 		Recalculate_Palettes();
 	
-	draw->setStretch(INI_GetInt("Graphics", "Stretch", 0));
-	draw->setSwRender(INI_GetInt("Graphics", "Software Blit", 0));
+	draw->setStretch(INI_GetBool("Graphics", "Stretch", false));
+	draw->setSwRender(INI_GetBool("Graphics", "Software Blit", false));
 	Sprite_Over = INI_GetInt("Graphics", "Sprite Limit", 1);
 	Frame_Skip = INI_GetInt("Graphics", "Frame Skip", -1);
 	
@@ -446,10 +446,10 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Various settings
 	Video.Fast_Blur = INI_GetInt("Options", "Fast Blur", 0);
-	draw->setFPSEnabled(INI_GetInt("Options", "FPS", 0));
+	draw->setFPSEnabled(INI_GetBool("Options", "FPS", false));
 	// TODO: VDraw
 	//FPS_Style = INI_GetInt("Options", "FPS Style", 0);
-	draw->setMsgEnabled(INI_GetInt("Options", "Message", 1));
+	draw->setMsgEnabled(INI_GetBool("Options", "Message", true));
 	// TODO: VDraw
 	//Message_Style = INI_GetInt("Options", "Message Style", 0);
 	Show_LED = INI_GetInt("Options", "LED", 1);
