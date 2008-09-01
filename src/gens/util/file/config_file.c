@@ -213,7 +213,7 @@ int Save_Config(const char *File_Name)
 	INI_WriteInt("Input", "P1B.Type", Controller_2B_Type & 0x13);
 	INI_WriteInt("Input", "P1C.Type", Controller_2C_Type & 0x13);
 	INI_WriteInt("Input", "P1D.Type", Controller_2D_Type & 0x13);
-	INI_WriteInt("Input", "P2.Type", Controller_1_Type & 0x13);
+	INI_WriteInt("Input", "P2.Type", Controller_2_Type & 0x13);
 	INI_WriteInt("Input", "P2B.Type", Controller_2B_Type & 0x13);
 	INI_WriteInt("Input", "P2C.Type", Controller_2C_Type & 0x13);
 	INI_WriteInt("Input", "P2D.Type", Controller_2D_Type & 0x13);
