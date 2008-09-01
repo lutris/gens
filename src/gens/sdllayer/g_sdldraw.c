@@ -33,6 +33,9 @@
 #include "gens_core/gfx/renderers.h"
 #include "emulator/g_palette.h"
 
+// New Fast Blur function
+#include "gens_core/misc/fastblur.h"
+
 // Needed to synchronize the Graphics menu after a bpp change.
 #include "gens/gens_window_sync.h"
 
@@ -473,7 +476,7 @@ int Flip(void)
 	
 	// Blur the screen if requested.
 	if (Video.Fast_Blur)
-		Half_Blur();
+		Fast_Blur();
 	
 	// Check if the display width changed.
 	Old_Dep = Dep;
