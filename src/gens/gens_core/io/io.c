@@ -6,6 +6,7 @@
 
 #include "io.h"
 
+// These are only for io_old.asm compatibility.
 #define CREATE_CONTROLLER_VARIABLES(player)			\
 	unsigned int Controller_ ## player ## _Type	= 0;	\
 	unsigned int Controller_ ## player ## _Up	= 1;	\
@@ -31,6 +32,16 @@ unsigned int Controller_2_COM		= 0;
 unsigned int Controller_2_Counter	= 0;
 unsigned int Controller_2_Delay		= 0;
 
+unsigned int Controller_1_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_1B_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_1C_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_1D_Buttons	= 0xFFFFFFFF;
+
+unsigned int Controller_2_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_2B_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_2C_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_2D_Buttons	= 0xFFFFFFFF;
+
 CREATE_CONTROLLER_VARIABLES(1);
 CREATE_CONTROLLER_VARIABLES(1B);
 CREATE_CONTROLLER_VARIABLES(1C);
@@ -54,19 +65,6 @@ enum SelectLine
 	Fourth_High	= 0x07,
 };
 
-#define CONTROLLER_UP		0x00000001
-#define CONTROLLER_DOWN		0x00000002
-#define CONTROLLER_LEFT		0x00000004
-#define CONTROLLER_RIGHT	0x00000008
-#define CONTROLLER_START	0x00000010
-#define CONTROLLER_A		0x00000020
-#define CONTROLLER_B		0x00000040
-#define CONTROLLER_C		0x00000080
-#define CONTROLLER_MODE		0x00000100
-#define CONTROLLER_X		0x00000200
-#define CONTROLLER_Y		0x00000400
-#define CONTROLLER_Z		0x00000800
-
 
 static unsigned char RD_Controller(unsigned int state,
 				   unsigned int type,
@@ -74,20 +72,20 @@ static unsigned char RD_Controller(unsigned int state,
 				   unsigned int buttons[4]);
 
 
-#define CREATE_CONTROLLER_BITFIELD(bitfield, player)				\
-{										\
-	bitfield |= CONTROLLER_UP	* Controller_ ## player ## _Up;		\
-	bitfield |= CONTROLLER_DOWN	* Controller_ ## player ## _Down;	\
-	bitfield |= CONTROLLER_LEFT	* Controller_ ## player ## _Left;	\
-	bitfield |= CONTROLLER_RIGHT	* Controller_ ## player ## _Right;	\
-	bitfield |= CONTROLLER_START	* Controller_ ## player ## _Start;	\
-	bitfield |= CONTROLLER_A	* Controller_ ## player ## _A;		\
-	bitfield |= CONTROLLER_B	* Controller_ ## player ## _B;		\
-	bitfield |= CONTROLLER_C	* Controller_ ## player ## _C;		\
-	bitfield |= CONTROLLER_MODE	* Controller_ ## player ## _Mode;	\
-	bitfield |= CONTROLLER_X	* Controller_ ## player ## _X;		\
-	bitfield |= CONTROLLER_Y	* Controller_ ## player ## _Y;		\
-	bitfield |= CONTROLLER_Z	* Controller_ ## player ## _Z;		\
+#define CREATE_CONTROLLER_OLD(player)											\
+{															\
+	Controller_ ## player ## _Up		= (Controller_ ## player ## _Buttons & CONTROLLER_UP) ? 1 : 0;		\
+	Controller_ ## player ## _Down		= (Controller_ ## player ## _Buttons & CONTROLLER_DOWN) ? 1 : 0;	\
+	Controller_ ## player ## _Left		= (Controller_ ## player ## _Buttons & CONTROLLER_LEFT) ? 1 : 0;	\
+	Controller_ ## player ## _Right		= (Controller_ ## player ## _Buttons & CONTROLLER_RIGHT) ? 1 : 0;	\
+	Controller_ ## player ## _Start		= (Controller_ ## player ## _Buttons & CONTROLLER_START) ? 1 : 0;	\
+	Controller_ ## player ## _A		= (Controller_ ## player ## _Buttons & CONTROLLER_A) ? 1 : 0;		\
+	Controller_ ## player ## _B		= (Controller_ ## player ## _Buttons & CONTROLLER_B) ? 1 : 0;		\
+	Controller_ ## player ## _C		= (Controller_ ## player ## _Buttons & CONTROLLER_C) ? 1 : 0;		\
+	Controller_ ## player ## _Mode		= (Controller_ ## player ## _Buttons & CONTROLLER_MODE) ? 1 : 0;	\
+	Controller_ ## player ## _X		= (Controller_ ## player ## _Buttons & CONTROLLER_X) ? 1 : 0;		\
+	Controller_ ## player ## _Y		= (Controller_ ## player ## _Buttons & CONTROLLER_Y) ? 1 : 0;		\
+	Controller_ ## player ## _Z		= (Controller_ ## player ## _Buttons & CONTROLLER_Z) ? 1 : 0;		\
 }
 
 
@@ -98,16 +96,26 @@ unsigned char RD_Controller_1(void)
 	if (Controller_1_Type & 0x10)
 	{
 		// TeamPlayer.
+		CREATE_CONTROLLER_OLD(1);
+		CREATE_CONTROLLER_OLD(1B);
+		CREATE_CONTROLLER_OLD(1C);
+		CREATE_CONTROLLER_OLD(1D);
+		CREATE_CONTROLLER_OLD(2);
+		CREATE_CONTROLLER_OLD(2B);
+		CREATE_CONTROLLER_OLD(2C);
+		CREATE_CONTROLLER_OLD(2D);
 		return RD_Controller_1_TP();
 	}
 	
 	// Create the bitfields.
 	// TODO: This will be unnecessary when controllers are converted to bitfields.
-	unsigned int buttons[4] = {0, 0, 0, 0};
-	CREATE_CONTROLLER_BITFIELD(buttons[0], 1);
-	CREATE_CONTROLLER_BITFIELD(buttons[1], 1B);
-	CREATE_CONTROLLER_BITFIELD(buttons[2], 1C);
-	CREATE_CONTROLLER_BITFIELD(buttons[3], 1D);
+	unsigned int buttons[4] =
+	{
+		Controller_1_Buttons,
+		Controller_1B_Buttons,
+		Controller_1C_Buttons,
+		Controller_1D_Buttons,
+	};
 	
 	// Read the controller data.
 	return RD_Controller(Controller_1_State, Controller_1_Type,
@@ -122,16 +130,26 @@ unsigned char RD_Controller_2(void)
 	if (Controller_2_Type & 0x10)
 	{
 		// TeamPlayer.
+		CREATE_CONTROLLER_OLD(1);
+		CREATE_CONTROLLER_OLD(1B);
+		CREATE_CONTROLLER_OLD(1C);
+		CREATE_CONTROLLER_OLD(1D);
+		CREATE_CONTROLLER_OLD(2);
+		CREATE_CONTROLLER_OLD(2B);
+		CREATE_CONTROLLER_OLD(2C);
+		CREATE_CONTROLLER_OLD(2D);
 		return RD_Controller_2_TP();
 	}
 	
 	// Create the bitfields.
 	// TODO: This will be unnecessary when controllers are converted to bitfields.
-	unsigned int buttons[4] = {0, 0, 0, 0};
-	CREATE_CONTROLLER_BITFIELD(buttons[0], 2);
-	CREATE_CONTROLLER_BITFIELD(buttons[1], 2B);
-	CREATE_CONTROLLER_BITFIELD(buttons[2], 2C);
-	CREATE_CONTROLLER_BITFIELD(buttons[3], 2D);
+	unsigned int buttons[4] =
+	{
+		Controller_2_Buttons,
+		Controller_2B_Buttons,
+		Controller_2C_Buttons,
+		Controller_2D_Buttons,
+	};
 	
 	// Read the controller data.
 	return RD_Controller(Controller_2_State, Controller_2_Type,

@@ -553,6 +553,9 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Memory_Control_Status, Data, &offset, 4);
 		ImportDataAuto(&Cell_Conv_Tab, Data, &offset, 4);
 		ImportDataAuto(&Controller_1_Type, Data, &offset, 4);
+		
+		/* TODO: Make this stuff use bitfields.
+		         For now, it's disabled, especially since v6 is rare.
 		ImportDataAuto(&Controller_1_Up, Data, &offset, 4);
 		ImportDataAuto(&Controller_1_Down, Data, &offset, 4);
 		ImportDataAuto(&Controller_1_Left, Data, &offset, 4);
@@ -578,6 +581,8 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Controller_2_X, Data, &offset, 4);
 		ImportDataAuto(&Controller_2_Y, Data, &offset, 4);
 		ImportDataAuto(&Controller_2_Z, Data, &offset, 4);
+		*/
+		offset += 100;
 		
 		ImportDataAuto(&DMAT_Length, Data, &offset, 4);
 		ImportDataAuto(&DMAT_Type, Data, &offset, 4);
