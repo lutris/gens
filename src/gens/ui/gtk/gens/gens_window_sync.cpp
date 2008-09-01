@@ -25,7 +25,7 @@
 #endif
 
 #include "gens_window.h"
-#include "gens_window_sync.h"
+#include "gens_window_sync.hpp"
 #include "gens_window_callbacks.h"
 
 #include "gtk-misc.h"
@@ -47,6 +47,10 @@
 #include "gens_core/gfx/renderers.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/misc.h"
+
+// C++ includes
+#include <string>
+using std::string;
 
 
 // Macro to create a menu item with radio buttons.
@@ -433,7 +437,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	GtkWidget *MItem_PCM, *MItem_PWM, *MItem_CDDA;
 	
 	GtkWidget *MItem_GYMDump, *MItem_WAVDump;
-	gchar *label; int allowGYMDump;
+	string label; int allowGYMDump;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -472,12 +476,12 @@ void Sync_Gens_Window_SoundMenu(void)
 	// GYM dumping
 	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
 	MItem_GYMDump = lookup_widget(gens_window, "SoundMenu_GYMDump");
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label);
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label.c_str());
 	
 	// WAV dumping
 	label = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
 	MItem_WAVDump = lookup_widget(gens_window, "SoundMenu_WAVDump");
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label);
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label.c_str());
 	
 	// Enable or disable items, depending on the Enable state.
 	gtk_widget_set_sensitive(MItem_Stereo, Sound_Enable);

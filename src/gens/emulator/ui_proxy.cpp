@@ -24,7 +24,7 @@
 
 #include "ui_proxy.hpp"
 #include "ui-common.h"
-#include "gens/gens_window_sync.h"
+#include "gens/gens_window_sync.hpp"
 
 #include "gens_core/gfx/renderers.h"
 

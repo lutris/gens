@@ -28,7 +28,7 @@
 #include "emulator/g_main.hpp"
 #include "gens_window.h"
 #include "gens_window_callbacks.h"
-#include "gens_window_sync.h"
+#include "gens_window_sync.hpp"
 #include "game_genie/game_genie_window_misc.h"
 #include "controller_config/controller_config_window_misc.h"
 #include "bios_misc_files/bios_misc_files_window_misc.h"

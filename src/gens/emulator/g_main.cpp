@@ -55,7 +55,7 @@
 #include "ui-common.h"
 #include "gtk-misc.h"
 #include "gens/gens_window.h"
-#include "gens/gens_window_sync.h"
+#include "gens/gens_window_sync.hpp"
 
 // GENS Settings struct
 struct Gens_Settings_t Settings;
