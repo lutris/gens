@@ -27,7 +27,7 @@
 #include <unistd.h>
 
 #include "port/port.h"
-#include "util/file//save.h"
+#include "util/file/save.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/sh2/sh2.h"
@@ -54,13 +54,15 @@
 #include "gens_core/io/io.h"
 #include "gens_core/misc/misc.h"
 #include "segacd/cd_sys.hpp"
-#include "parse.h"
 #include "ui_proxy.hpp"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
 #include "segacd/cd_aspi.h"
 #endif
+
+// Include this *last* to avoid naming conflicts.
+#include "parse.hpp"
 
 #define print_usage(option, helpmsg) fprintf(stderr, MM option " : " helpmsg "\n")
 #define print_usage2(option, helpmsg) fprintf(stderr, MM ENABLE "-" option ", " MM DISABLE "-" option " : " helpmsg "\n")

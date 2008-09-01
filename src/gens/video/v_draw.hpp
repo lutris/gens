@@ -52,6 +52,8 @@ class VDraw
 		void setSwRender(bool newSwRender);
 		int shift(void);
 		void setShift(int newShift);
+		bool msgEnable(void);
+		void setMsgEnable(bool newMsgEnable);
 		
 		// Renderers
 		// TODO: Make these properties.
@@ -81,8 +83,9 @@ class VDraw
 		int m_FPSStyle;	// TODO: Get constants for this.
 		
 		// On-screen message
+		bool m_MsgEnable;  // Is the message function enabled by the user?
 		string m_MsgText;
-		bool m_MsgVisible;
+		bool m_MsgVisible; // Is the message currently visible onscreen?
 		int m_MsgTime;
 		int m_MsgStyle;	// TODO: Get constants for this.
 		

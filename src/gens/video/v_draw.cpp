@@ -262,7 +262,21 @@ void VDraw::setShift(int newShift)
 	if (m_shift == newShift)
 		return;
 	m_shift = newShift;
-	printf("SHIFT: %d\n", m_shift);
+	
+	// TODO: Figure out what to do here...
+}
+
+
+bool VDraw::msgEnable(void)
+{
+	return m_MsgEnable;
+}
+
+void VDraw::setMsgEnable(bool newMsgEnable)
+{
+	if (m_MsgEnable == newMsgEnable)
+		return;
+	m_MsgEnable = newMsgEnable;
 	
 	// TODO: Figure out what to do here...
 }

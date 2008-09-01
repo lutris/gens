@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PARSE_H
-#define GENS_PARSE_H
+#ifndef GENS_PARSE_HPP
+#define GENS_PARSE_HPP
 
 #ifdef __cplusplus
 extern "C" {
