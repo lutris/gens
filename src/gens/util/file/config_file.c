@@ -8,6 +8,7 @@
 #include "save.h"
 #include "config_file.h"
 #include "port/port.h"
+#include "port/ini.hpp"
 
 #include "emulator/gens.h"
 #include "emulator/g_main.h"
@@ -357,7 +358,9 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	int new_val, i;
 	char Conf_File[GENS_PATH_MAX];
 	char Save_Path[GENS_PATH_MAX];
-
+	
+	INI_LoadConfig(File_Name);
+	
 	// String copy is needed, since the passed variable might be Str_Tmp.
 	strncpy(Conf_File, File_Name, GENS_PATH_MAX);
 	
@@ -367,145 +370,127 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	CRam_Flag = 1;
 	
 	// Paths
-	GetPrivateProfileString("General", "Rom path", Save_Path,
-				&Rom_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Save path", PathNames.Gens_Path,
-				 &State_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "SRAM path", PathNames.Gens_Path,
-				&SRAM_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "BRAM path", PathNames.Gens_Path,
-				&BRAM_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Dump path",	PathNames.Gens_Path,
-				&Dump_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Dump GYM path", PathNames.Gens_Path,
-				&Dump_GYM_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Screen Shot path", PathNames.Gens_Path,
-				&ScrShot_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "Patch path", PathNames.Gens_Path,
-				&Patch_Dir[0], GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "IPS Patch path", PathNames.Gens_Path,
-				&IPS_Dir[0], GENS_PATH_MAX, Conf_File);
+	INI_GetString("General", "ROM Path", PathNames.Gens_Path, Rom_Dir, sizeof(Rom_Dir));
+	INI_GetString("General", "Save Path", PathNames.Gens_Path, State_Dir, sizeof(State_Dir));
+	INI_GetString("General", "SRAM Path", PathNames.Gens_Path, SRAM_Dir, sizeof(SRAM_Dir));
+	INI_GetString("General", "BRAM Path", PathNames.Gens_Path, BRAM_Dir, sizeof(BRAM_Dir));
+	INI_GetString("General", "Dump Path", PathNames.Gens_Path, Dump_Dir, sizeof(Dump_Dir));
+	INI_GetString("General", "Dump GYM Path", PathNames.Gens_Path, Dump_GYM_Dir, sizeof(Dump_GYM_Dir));
+	INI_GetString("General", "Screen Shot Path", PathNames.Gens_Path, ScrShot_Dir, sizeof(ScrShot_Dir));
+	INI_GetString("General", "Patch Path", PathNames.Gens_Path, Patch_Dir, sizeof(Patch_Dir));
+	INI_GetString("General", "IPS Patch Path", PathNames.Gens_Path, IPS_Dir, sizeof(IPS_Dir));
 	
 	// Genesis BIOS
-	GetPrivateProfileString("General", "Genesis Bios", "",
-				BIOS_Filenames.MD_TMSS, GENS_PATH_MAX, Conf_File);
+	INI_GetString("General", "Genesis BIOS", "", BIOS_Filenames.MD_TMSS, sizeof(BIOS_Filenames.MD_TMSS));
 	
 	// SegaCD BIOSes
-	GetPrivateProfileString("General", "USA CD Bios", "",
-				BIOS_Filenames.SegaCD_US, GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "EUROPE CD Bios", "",
-				BIOS_Filenames.MegaCD_EU, GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "JAPAN CD Bios", "",
-				BIOS_Filenames.MegaCD_JP, GENS_PATH_MAX, Conf_File);
+	INI_GetString("General", "USA CD BIOS", "", BIOS_Filenames.SegaCD_US, sizeof(BIOS_Filenames.SegaCD_US));
+	INI_GetString("General", "EUROPE CD BIOS", "", BIOS_Filenames.MegaCD_EU, sizeof(BIOS_Filenames.MegaCD_EU));
+	INI_GetString("General", "JAPAN CD BIOS", "", BIOS_Filenames.MegaCD_JP, sizeof(BIOS_Filenames.MegaCD_JP));
 	
 	// 32X BIOSes
-	GetPrivateProfileString("General", "32X 68000 Bios", "",
-				BIOS_Filenames._32X_MC68000, GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "32X Master SH2 Bios", "",
-				BIOS_Filenames._32X_MSH2, GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("General", "32X Slave SH2 Bios", "",
-				BIOS_Filenames._32X_SSH2, GENS_PATH_MAX, Conf_File);
+	INI_GetString("General", "32X 68000 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MC68000));
+	INI_GetString("General", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MSH2));
+	INI_GetString("General", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_SSH2));
 	
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
 	{
-		sprintf(Str_Tmp, "Rom %d", i + 1);
-		GetPrivateProfileString("General", Str_Tmp, "",
-					&Recent_Rom[i][0], GENS_PATH_MAX, Conf_File);
+		sprintf(Str_Tmp, "ROM %d", i + 1);
+		INI_GetString("General", Str_Tmp, "", Recent_Rom[i], sizeof(Recent_Rom[i]));
 	}
 	
 	// SegaCD
 	// TODO: Use a better default for the CD drive.
-	GetPrivateProfileString("General", "CD Drive", "/dev/cdrom",
-				&CDROM_DEV[0], 16, Conf_File);
-	CDROM_SPEED = GetPrivateProfileInt("General", "CD Speed", 0, Conf_File);
+	INI_GetString("General", "CD Drive", "/dev/cdrom", CDROM_DEV, sizeof(CDROM_DEV));
+	CDROM_SPEED = INI_GetInt("General", "CD Speed", 0);
 	
-	Current_State = GetPrivateProfileInt("General", "State Number", 0, Conf_File);
-	Language = GetPrivateProfileInt("General", "Language", 0, Conf_File);
-	Window_Pos.x = GetPrivateProfileInt("General", "Window X", 0, Conf_File);
-	Window_Pos.y = GetPrivateProfileInt("General", "Window Y", 0, Conf_File);
-	Intro_Style = GetPrivateProfileInt("General", "Intro Style", 0, Conf_File);
-	Effect_Color = GetPrivateProfileInt("General", "Free Mode Color", 7, Conf_File);
-	Sleep_Time = GetPrivateProfileInt("General", "Allow Idle", 0, Conf_File) & 1;
+	Current_State = INI_GetInt("General", "State Number", 0);
+	Language = INI_GetInt("General", "Language", 0);
+	Window_Pos.x = INI_GetInt("General", "Window X", 0);
+	Window_Pos.y = INI_GetInt("General", "Window Y", 0);
+	Intro_Style = INI_GetInt("General", "Intro Style", 0);
+	Effect_Color = INI_GetInt("General", "Free Mode Color", 7);
+	Sleep_Time = INI_GetInt("General", "Allow Idle", 0) & 1;
 	
 	// Color settings
-	RMax_Level = GetPrivateProfileInt("Graphics", "Red Max", 255, Conf_File);
-	GMax_Level = GetPrivateProfileInt("Graphics", "Green Max", 255, Conf_File);
-	BMax_Level = GetPrivateProfileInt("Graphics", "Blue Max", 255, Conf_File);
+	RMax_Level = INI_GetInt("Graphics", "Red Max", 255);
+	GMax_Level = INI_GetInt("Graphics", "Green Max", 255);
+	BMax_Level = INI_GetInt("Graphics", "Blue Max", 255);
 	
 	// Video adjustments
-	Contrast_Level = GetPrivateProfileInt("Graphics", "Contrast", 100, Conf_File);
-	Brightness_Level = GetPrivateProfileInt("Graphics", "Brightness", 100, Conf_File);
-	Greyscale = GetPrivateProfileInt("Graphics", "Greyscale", 0, Conf_File);
-	Invert_Color = GetPrivateProfileInt("Graphics", "Invert", 0, Conf_File);
+	Contrast_Level = INI_GetInt("Graphics", "Contrast", 100);
+	Brightness_Level = INI_GetInt("Graphics", "Brightness", 100);
+	Greyscale = INI_GetInt("Graphics", "Greyscale", 0);
+	Invert_Color = INI_GetInt("Graphics", "Invert", 0);
 	
 	// Video settings
 	// Render_Mode is decremented by 1 for compatibility with old Gens.
-	FS_VSync = GetPrivateProfileInt("Graphics", "Full Screen VSync", 0, Conf_File);
-	W_VSync = GetPrivateProfileInt("Graphics", "Windows VSync", 0, Conf_File);
-	Video.Full_Screen = GetPrivateProfileInt("Graphics", "Full Screen", 0, Conf_File);
-	Video.Render_Mode = GetPrivateProfileInt("Graphics", "Render Mode", 1, Conf_File) - 1;
-	bpp = (unsigned char)(GetPrivateProfileInt("Graphics", "Bits Per Pixel", 32, Conf_File));
+	FS_VSync = INI_GetInt("Graphics", "Full Screen VSync", 0);
+	W_VSync = INI_GetInt("Graphics", "Windows VSync", 0);
+	Video.Full_Screen = INI_GetInt("Graphics", "Full Screen", 0);
+	Video.Render_Mode = INI_GetInt("Graphics", "Render Mode", 1) - 1;
+	bpp = (unsigned char)(INI_GetInt("Graphics", "Bits Per Pixel", 32));
 	if (bpp != 15 && bpp != 16 && bpp != 32)
 	{
 		// Invalid bpp. Set it to 32 by default.
 		bpp = 32;
 	}
 #ifdef GENS_OPENGL
-	Video.OpenGL = GetPrivateProfileInt("Graphics", "Render Opengl", 0, Conf_File);
-	Video.Width_GL = GetPrivateProfileInt("Graphics", "Opengl Width", 640, Conf_File);
-	Video.Height_GL = GetPrivateProfileInt("Graphics", "Opengl Height", 480, Conf_File);
-	//gl_linear_filter = GetPrivateProfileInt("Graphics", "Opengl Filter", 1, Conf_File);
+	Video.OpenGL = INI_GetInt("Graphics", "Render OpenGL", 0);
+	Video.Width_GL = INI_GetInt("Graphics", "OpenGL Width", 640);
+	Video.Height_GL = INI_GetInt("Graphics", "OpenGL Height", 480);
+	//gl_linear_filter = INI_GetInt("Graphics", "OpenGL Filter", 1);
 #endif
 	//Set_Render(Full_Screen, -1, 1);
 	
 	// Recalculate the MD and 32X palettes using the new color and video mode settings.
-	Recalculate_Palettes ();
+	Recalculate_Palettes();
 	
-	Stretch = GetPrivateProfileInt("Graphics", "Stretch", 0, Conf_File);
-	Blit_Soft = GetPrivateProfileInt("Graphics", "Software Blit", 0, Conf_File);
-	Sprite_Over = GetPrivateProfileInt("Graphics", "Sprite limit", 1, Conf_File);
-	Frame_Skip = GetPrivateProfileInt("Graphics", "Frame skip", -1, Conf_File);
+	Stretch = INI_GetInt("Graphics", "Stretch", 0);
+	Blit_Soft = INI_GetInt("Graphics", "Software Blit", 0);
+	Sprite_Over = INI_GetInt("Graphics", "Sprite limit", 1);
+	Frame_Skip = INI_GetInt("Graphics", "Frame skip", -1);
 	
 	// Sound settings
-	Sound_Rate = GetPrivateProfileInt("Sound", "Rate", 22050, Conf_File);
-	Sound_Stereo = GetPrivateProfileInt("Sound", "Stereo", 1, Conf_File);
+	Sound_Rate = INI_GetInt("Sound", "Rate", 22050);
+	Sound_Stereo = INI_GetInt("Sound", "Stereo", 1);
 	
-	if (GetPrivateProfileInt ("Sound", "Z80 State", 1, Conf_File))
+	if (INI_GetInt("Sound", "Z80 State", 1))
 		Z80_State |= 1;
 	else
 		Z80_State &= ~1;
 	
 	// Only load the IC sound settings if sound can be initialized.
-	new_val = GetPrivateProfileInt ("Sound", "State", 1, Conf_File);
+	new_val = INI_GetInt("Sound", "State", 1);
 	if (new_val == Sound_Enable ||
 	    (new_val != Sound_Enable && Change_Sound(1)))
 	{
-		YM2612_Enable = GetPrivateProfileInt("Sound", "YM2612 State", 1, Conf_File);
-		PSG_Enable = GetPrivateProfileInt("Sound", "PSG State", 1, Conf_File);
-		DAC_Enable = GetPrivateProfileInt("Sound", "DAC State", 1, Conf_File);
-		PCM_Enable = GetPrivateProfileInt("Sound", "PCM State", 1, Conf_File);
-		PWM_Enable = GetPrivateProfileInt("Sound", "PWM State", 1, Conf_File);
-		CDDA_Enable = GetPrivateProfileInt("Sound", "CDDA State", 1, Conf_File);
+		YM2612_Enable = INI_GetInt("Sound", "YM2612 State", 1);
+		PSG_Enable = INI_GetInt("Sound", "PSG State", 1);
+		DAC_Enable = INI_GetInt("Sound", "DAC State", 1);
+		PCM_Enable = INI_GetInt("Sound", "PCM State", 1);
+		PWM_Enable = INI_GetInt("Sound", "PWM State", 1);
+		CDDA_Enable = INI_GetInt("Sound", "CDDA State", 1);
 		
 		// Improved sound options
-		YM2612_Improv = GetPrivateProfileInt("Sound", "YM2612 Improvement", 0, Conf_File);
-		DAC_Improv = GetPrivateProfileInt("Sound", "DAC Improvement", 0, Conf_File);
-		PSG_Improv = GetPrivateProfileInt("Sound", "PSG Improvement", 0, Conf_File);
+		YM2612_Improv = INI_GetInt("Sound", "YM2612 Improvement", 0);
+		DAC_Improv = INI_GetInt("Sound", "DAC Improvement", 0);
+		PSG_Improv = INI_GetInt("Sound", "PSG Improvement", 0);
 	}
 	
 	// Country codes
-	Country = GetPrivateProfileInt("CPU", "Country", -1, Conf_File);
-	Country_Order[0] = GetPrivateProfileInt("CPU", "Prefered Country 1", 0, Conf_File);
-	Country_Order[1] = GetPrivateProfileInt("CPU", "Prefered Country 2", 1, Conf_File);
-	Country_Order[2] = GetPrivateProfileInt("CPU", "Prefered Country 3", 2, Conf_File);
+	Country = INI_GetInt("CPU", "Country", -1);
+	Country_Order[0] = INI_GetInt("CPU", "Prefered Country 1", 0);
+	Country_Order[1] = INI_GetInt("CPU", "Prefered Country 2", 1);
+	Country_Order[2] = INI_GetInt("CPU", "Prefered Country 3", 2);
 	Check_Country_Order();
 	
 	// CPU options
 	
-	SegaCD_Accurate = GetPrivateProfileInt("CPU", "Perfect synchro between main and sub CPU (Sega CD)", 0, Conf_File);
-	MSH2_Speed = GetPrivateProfileInt("CPU", "Main SH2 Speed", 100, Conf_File);
-	SSH2_Speed = GetPrivateProfileInt("CPU", "Slave SH2 Speed", 100, Conf_File);
+	SegaCD_Accurate = INI_GetInt("CPU", "Perfect synchro between main and sub CPU (Sega CD)", 0);
+	MSH2_Speed = INI_GetInt("CPU", "Main SH2 Speed", 100);
+	SSH2_Speed = INI_GetInt("CPU", "Slave SH2 Speed", 100);
 	
 	// Make sure the SH2 speeds aren't below 0.
 	if (MSH2_Speed < 0)
@@ -514,80 +499,85 @@ int Load_Config(const char *File_Name, void *Game_Active)
 		SSH2_Speed = 0;
 	
 	// Various settings
-	Video.Fast_Blur = GetPrivateProfileInt("Options", "Fast Blur", 0, Conf_File);
-	Show_FPS = GetPrivateProfileInt("Options", "FPS", 0, Conf_File);
-	FPS_Style = GetPrivateProfileInt("Options", "FPS Style", 0, Conf_File);
-	Show_Message = GetPrivateProfileInt("Options", "Message", 1, Conf_File);
-	Message_Style = GetPrivateProfileInt("Options", "Message Style", 0, Conf_File);
-	Show_LED = GetPrivateProfileInt("Options", "LED", 1, Conf_File);
-	Auto_Fix_CS = GetPrivateProfileInt("Options", "Auto Fix Checksum", 0, Conf_File);
-	Auto_Pause = GetPrivateProfileInt("Options", "Auto Pause", 0, Conf_File);
+	Video.Fast_Blur = INI_GetInt("Options", "Fast Blur", 0);
+	Show_FPS = INI_GetInt("Options", "FPS", 0);
+	FPS_Style = INI_GetInt("Options", "FPS Style", 0);
+	Show_Message = INI_GetInt("Options", "Message", 1);
+	Message_Style = INI_GetInt("Options", "Message Style", 0);
+	Show_LED = INI_GetInt("Options", "LED", 1);
+	Auto_Fix_CS = INI_GetInt("Options", "Auto Fix Checksum", 0);
+	Auto_Pause = INI_GetInt("Options", "Auto Pause", 0);
 #ifdef GENS_CDROM
-	CUR_DEV = GetPrivateProfileInt("Options", "CD Drive", 0, Conf_File);
+	CUR_DEV = INI_GetInt("Options", "CD Drive", 0);
 #endif
 	
 	// SegaCD BRAM cartridge size
-	BRAM_Ex_Size = GetPrivateProfileInt ("Options", "Ram Cart Size", 3, Conf_File);
+	BRAM_Ex_Size = INI_GetInt("Options", "RAM Cart Size", 3);
 	if (BRAM_Ex_Size == -1)
 	{
 		BRAM_Ex_State &= 1;
 		BRAM_Ex_Size = 0;
 	}
+	else if (BRAM_Ex_Size < -1 || BRAM_Ex_Size > 3)
+		BRAM_Ex_Size = 3;
 	else
 		BRAM_Ex_State |= 0x100;
 	
 	// Miscellaneous files
 #if defined(__WIN32__)
-	GetPrivateProfileString("Options", "7z Binary", "C:\\Program Files\\7-Zip\7z.exe",
-				Misc_Filenames._7z_Binary, GENS_PATH_MAX, Conf_File);
+	INI_GetString("Options", "7z Binary", "C:\\Program Files\\7-Zip\7z.exe",
+		      Misc_Filenames._7z_Binary, sizeof(Misc_Filenames._7z_Binary));
 #else
-	GetPrivateProfileString("Options", "7z Binary", "/usr/bin/7z",
-				Misc_Filenames._7z_Binary, GENS_PATH_MAX, Conf_File);
+	INI_GetString("Options", "7z Binary", "/usr/bin/7z",
+		      Misc_Filenames._7z_Binary, sizeof(Misc_Filenames._7z_Binary));
 #endif	
-	GetPrivateProfileString("Options", "GCOffline path", "GCOffline.chm",
-				Misc_Filenames.GCOffline, GENS_PATH_MAX, Conf_File);
-	GetPrivateProfileString("Options", "Gens manual path", "manual.exe",
-				Misc_Filenames.Manual, GENS_PATH_MAX, Conf_File);
+	INI_GetString("Options", "GCOffline path", "GCOffline.chm",
+		      Misc_Filenames.GCOffline, sizeof(Misc_Filenames.GCOffline));
+	INI_GetString("Options", "Gens manual path", "manual.exe",
+		      Misc_Filenames.Manual, sizeof(Misc_Filenames.Manual));
 	
 	// Controller settings
-	Controller_1_Type = GetPrivateProfileInt("Input", "P1.Type", 1, Conf_File);
-	Controller_1B_Type = GetPrivateProfileInt("Input", "P1B.Type", 1, Conf_File);
-	Controller_1C_Type = GetPrivateProfileInt("Input", "P1C.Type", 1, Conf_File);
-	Controller_1D_Type = GetPrivateProfileInt("Input", "P1D.Type", 1, Conf_File);
-	Controller_2_Type = GetPrivateProfileInt("Input", "P2.Type", 1, Conf_File);
-	Controller_2B_Type = GetPrivateProfileInt("Input", "P2B.Type", 1, Conf_File);
-	Controller_2C_Type = GetPrivateProfileInt("Input", "P2C.Type", 1, Conf_File);
-	Controller_2D_Type = GetPrivateProfileInt("Input", "P2D.Type", 1, Conf_File);
+	Controller_1_Type = INI_GetInt("Input", "P1.Type", 1);
+	Controller_1B_Type = INI_GetInt("Input", "P1B.Type", 1);
+	Controller_1C_Type = INI_GetInt("Input", "P1C.Type", 1);
+	Controller_1D_Type = INI_GetInt("Input", "P1D.Type", 1);
+	Controller_2_Type = INI_GetInt("Input", "P2.Type", 1);
+	Controller_2B_Type = INI_GetInt("Input", "P2B.Type", 1);
+	Controller_2C_Type = INI_GetInt("Input", "P2C.Type", 1);
+	Controller_2D_Type = INI_GetInt("Input", "P2D.Type", 1);
 	
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(Str_Tmp, "%s.Up", PlayerNames[i]);
-		Keys_Def[i].Up = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Up, Conf_File);
+		Keys_Def[i].Up = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Up);
 		sprintf(Str_Tmp, "%s.Down", PlayerNames[i]);
-		Keys_Def[i].Down = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Down, Conf_File);
+		Keys_Def[i].Down = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Down);
 		sprintf(Str_Tmp, "%s.Left", PlayerNames[i]);
-		Keys_Def[i].Left = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Left, Conf_File);
+		Keys_Def[i].Left = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Left);
 		sprintf(Str_Tmp, "%s.Right", PlayerNames[i]);
-		Keys_Def[i].Right = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Right, Conf_File);
+		Keys_Def[i].Right = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Right);
 		sprintf(Str_Tmp, "%s.Start", PlayerNames[i]);
-		Keys_Def[i].Start = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Start, Conf_File);
+		Keys_Def[i].Start = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Start);
 		sprintf(Str_Tmp, "%s.A", PlayerNames[i]);
-		Keys_Def[i].A = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].A, Conf_File);
+		Keys_Def[i].A = INI_GetInt("Input", Str_Tmp, Keys_Default[i].A);
 		sprintf(Str_Tmp, "%s.B", PlayerNames[i]);
-		Keys_Def[i].B = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].B, Conf_File);
+		Keys_Def[i].B = INI_GetInt("Input", Str_Tmp, Keys_Default[i].B);
 		sprintf(Str_Tmp, "%s.C", PlayerNames[i]);
-		Keys_Def[i].C = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].C, Conf_File);
+		Keys_Def[i].C = INI_GetInt("Input", Str_Tmp, Keys_Default[i].C);
 		sprintf(Str_Tmp, "%s.Mode", PlayerNames[i]);
-		Keys_Def[i].Mode = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Mode, Conf_File);
+		Keys_Def[i].Mode = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Mode);
 		sprintf(Str_Tmp, "%s.X", PlayerNames[i]);
-		Keys_Def[i].X = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].X, Conf_File);
+		Keys_Def[i].X = INI_GetInt("Input", Str_Tmp, Keys_Default[i].X);
 		sprintf(Str_Tmp, "%s.Y", PlayerNames[i]);
-		Keys_Def[i].Y = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Y, Conf_File);
+		Keys_Def[i].Y = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Y);
 		sprintf(Str_Tmp, "%s.Z", PlayerNames[i]);
-		Keys_Def[i].Z = GetPrivateProfileInt("Input", Str_Tmp, Keys_Default[i].Z, Conf_File);
+		Keys_Def[i].Z = INI_GetInt("Input", Str_Tmp, Keys_Default[i].Z);
 	}
 	
+	// Create the TeamPlayer I/O table.
 	Make_IO_Table();
+	
+	// Done.
 	return 1;
 }
 
