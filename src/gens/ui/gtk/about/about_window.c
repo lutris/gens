@@ -42,6 +42,7 @@ GtkWidget *about_window = NULL;
 
 GtkAccelGroup *accel_group;
 
+#include "about_window_data.h"
 
 /**
  * create_about_window(): Create the About Window.

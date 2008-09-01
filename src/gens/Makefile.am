@@ -325,7 +325,8 @@ noinst_HEADERS += \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.h \
 		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
-		ui/gtk/about/about_window.h
+		ui/gtk/about/about_window.h \
+		ui/gtk/about/about_window_data.h
 
 if GENS_OPENGL
 noinst_HEADERS += \
