@@ -41,8 +41,10 @@ void Open_General_Options(void)
 	GtkWidget *go;
 	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
+	unsigned char curFPSStyle;
 	GtkWidget *check_fps_enable, *check_fps_doublesized;
 	GtkWidget *check_fps_transparency, *radio_button_fps_color;
+	unsigned char curMsgStyle;
 	GtkWidget *check_message_enable, *check_message_doublesized;
 	GtkWidget *check_message_transparency, *radio_button_message_color;
 	GtkWidget *radio_button_intro_effect_color;
@@ -72,35 +74,35 @@ void Open_General_Options(void)
 	// FPS counter
 	check_fps_enable = lookup_widget(go, "check_fps_enable");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_enable), Show_FPS);
-	// TODO: VDraw
-	/*
+	
+	curFPSStyle = draw->fpsStyle();
 	check_fps_doublesized = lookup_widget(go, "check_fps_doublesized");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_doublesized), (FPS_Style & 0x10));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_doublesized), (curFPSStyle & 0x10));
 	check_fps_transparency = lookup_widget(go, "check_fps_transparency");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_transparency), (FPS_Style & 0x08));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_transparency), (curFPSStyle & 0x08));
 	
 	// FPS counter color
-	sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[((FPS_Style & 0x06) >> 1) * 3]);
+	sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[((curFPSStyle & 0x06) >> 1) * 3]);
 	radio_button_fps_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_fps_color), TRUE);
-	*/
 	
 	// Message
 	check_message_enable = lookup_widget(go, "check_message_enable");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_enable), (draw->msgEnabled() ? 1 : 0));
-	// TODO: VDraw
-	/*
+	
+	curMsgStyle = draw->msgStyle();
 	check_message_doublesized = lookup_widget(go, "check_message_doublesized");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_doublesized), (Message_Style & 0x10));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_doublesized), (curMsgStyle & 0x10));
 	check_message_transparency = lookup_widget(go, "check_message_transparency");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_transparency), (Message_Style & 0x08));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_transparency), (curMsgStyle & 0x08));
 	
 	// Message color
-	sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[((Message_Style & 0x06) >> 1) * 3]);
+	sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[((curMsgStyle & 0x06) >> 1) * 3]);
 	radio_button_message_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_message_color), TRUE);
 	
 	// Intro effect color
+	/* TODO: VDraw
 	sprintf(tmp, "radio_button_misc_intro_effect_color_%s",
 		GO_IntroEffectColors[Effect_Color * 3]);
 	radio_button_intro_effect_color = lookup_widget(go, tmp);
@@ -119,8 +121,10 @@ void General_Options_Save(void)
 {
 	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
+	unsigned char curFPSStyle;
 	GtkWidget *check_fps_enable, *check_fps_doublesized;
 	GtkWidget *check_fps_transparency, *radio_button_fps_color;
+	unsigned char curMsgStyle;
 	GtkWidget *check_message_enable, *check_message_doublesized;
 	GtkWidget *check_message_transparency, *radio_button_message_color;
 	GtkWidget *radio_button_intro_effect_color;
@@ -139,15 +143,15 @@ void General_Options_Save(void)
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
 	
 	// FPS counter
+	// TODO: VDraw for Show_FPS
 	check_fps_enable = lookup_widget(general_options_window, "check_fps_enable");
 	Show_FPS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable));
-	// TODO: VDraw
-	/*
-	FPS_Style &= ~0x18;
+	
+	curFPSStyle = draw->fpsStyle() & ~0x18;
 	check_fps_doublesized = lookup_widget(general_options_window, "check_fps_doublesized");
-	FPS_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
 	check_fps_transparency = lookup_widget(general_options_window, "check_fps_transparency");
-	FPS_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_transparency)) ? 0x08 : 0x00);
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_transparency)) ? 0x08 : 0x00);
 	
 	// FPS counter color
 	for (i = 0; i < 4; i++)
@@ -158,22 +162,23 @@ void General_Options_Save(void)
 		radio_button_fps_color = lookup_widget(general_options_window, tmp);
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_fps_color)))
 		{
-			FPS_Style &= ~0x06;
-			FPS_Style |= (i << 1);
+			curFPSStyle &= ~0x06;
+			curFPSStyle |= (i << 1);
+			break;
 		}
 	}
-	*/
+	
+	draw->setFPSStyle(curFPSStyle);
 	
 	// Message
 	check_message_enable = lookup_widget(general_options_window, "check_message_enable");
 	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable)));
-	// TODO: VDraw
-	/*
-	Message_Style &= ~0x18;
+	
+	curMsgStyle = draw->msgStyle() & ~0x18;
 	check_message_doublesized = lookup_widget(general_options_window, "check_message_doublesized");
-	Message_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
 	check_message_transparency = lookup_widget(general_options_window, "check_message_transparency");
-	Message_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_transparency)) ? 0x08 : 0x00);
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_transparency)) ? 0x08 : 0x00);
 	
 	// Message color
 	for (i = 0; i < 4; i++)
@@ -184,13 +189,16 @@ void General_Options_Save(void)
 		radio_button_message_color = lookup_widget(general_options_window, tmp);
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_message_color)))
 		{
-			Message_Style &= ~0x06;
-			Message_Style |= (i << 1);
+			curMsgStyle &= ~0x06;
+			curMsgStyle |= (i << 1);
 			break;
 		}
 	}
 	
+	draw->setMsgStyle(curMsgStyle);
+	
 	// Intro effect color
+	/* TODO: VDraw
 	for (i = 0; i < 8; i++)
 	{
 		if (!GO_IntroEffectColors[i])
