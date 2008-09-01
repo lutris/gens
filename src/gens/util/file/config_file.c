@@ -125,6 +125,7 @@ int Save_Config(const char *File_Name)
 	INI_WriteInt("General", "Language", Language);
 	INI_WriteInt("General", "Window X", Window_Pos.x);
 	INI_WriteInt("General", "Window Y", Window_Pos.y);
+	INI_WriteInt("General", "Intro Style", Intro_Style);
 	INI_WriteInt("General", "Free Mode Color", Effect_Color);
 	
 	// Video adjustments
