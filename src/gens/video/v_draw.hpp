@@ -13,6 +13,16 @@
 #include <string>
 using std::string;
 
+// Constants for m_MsgStyle and m_FPSStyle.
+// These match the #define's in gens_core/misc/misc.h.
+const unsigned char STYLE_EMU_MODE	= 0x01;
+const unsigned char STYLE_COLOR_WHITE	= 0x00;
+const unsigned char STYLE_COLOR_BLUE	= 0x02;
+const unsigned char STYLE_COLOR_GREEN	= 0x04;
+const unsigned char STYLE_COLOR_RED	= 0x06;
+const unsigned char STYLE_TRANSPARENT	= 0x08;
+const unsigned char STYLE_DOUBLESIZE	= 0x10;
+
 class VDraw
 {
 	public:
@@ -55,6 +65,12 @@ class VDraw
 		bool msgEnabled(void);
 		void setMsgEnabled(bool newMsgEnable);
 		
+		// Style properties
+		unsigned char msgStyle(void);
+		void setMsgStyle(unsigned char newMsgStyle);
+		unsigned char fpsStyle(void);
+		void setFPSStyle(unsigned char newFPSStyle);
+		
 		// Renderers
 		// TODO: Make these properties.
 		BlitFn Blit_FS;
@@ -80,14 +96,14 @@ class VDraw
 		float m_FPS, m_FPS_Frames[8];
 		unsigned int m_FPS_OldTime, m_FPS_ViewFPS, m_FPS_IndexFPS;
 		unsigned int m_FPS_FreqCPU[2], m_FPS_NewTime[2];
-		int m_FPSStyle;	// TODO: Get constants for this.
+		unsigned char m_FPSStyle;
 		
 		// On-screen message
 		bool m_MsgEnabled;  // Is the message function enabled by the user?
 		string m_MsgText;
 		bool m_MsgVisible; // Is the message currently visible onscreen?
 		int m_MsgTime;
-		int m_MsgStyle;	// TODO: Get constants for this.
+		unsigned char m_MsgStyle;
 		
 		// Screen HBorder.
 		// Usually 64 in 256x224 mode. (320 - 256 == 64)

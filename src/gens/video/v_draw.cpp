@@ -230,7 +230,6 @@ bool VDraw::stretch(void)
 {
 	return m_Stretch;
 }
-
 void VDraw::setStretch(bool newStretch)
 {
 	if (m_Stretch == newStretch)
@@ -244,7 +243,6 @@ bool VDraw::swRender(void)
 {
 	return m_swRender;
 }
-
 void VDraw::setSwRender(bool newSwRender)
 {
 	if (m_swRender == newSwRender)
@@ -259,7 +257,6 @@ int VDraw::shift(void)
 {
 	return m_shift;
 }
-
 void VDraw::setShift(int newShift)
 {
 	if (m_shift == newShift)
@@ -274,12 +271,40 @@ bool VDraw::msgEnabled(void)
 {
 	return m_MsgEnabled;
 }
-
 void VDraw::setMsgEnabled(bool newMsgEnabled)
 {
 	if (m_MsgEnabled == newMsgEnabled)
 		return;
 	m_MsgEnabled = newMsgEnabled;
+	
+	// TODO: Figure out what to do here...
+}
+
+
+// Style properties
+unsigned char VDraw::msgStyle(void)
+{
+	return m_MsgStyle;
+}
+void VDraw::setMsgStyle(unsigned char newMsgStyle)
+{
+	if (m_MsgStyle == newMsgStyle)
+		return;
+	m_MsgStyle = newMsgStyle;
+	
+	// TODO: Figure out what to do here...
+}
+
+
+unsigned char VDraw::fpsStyle(void)
+{
+	return m_FPSStyle;
+}
+void VDraw::setFPSStyle(unsigned char newFPSStyle)
+{
+	if (m_FPSStyle == newFPSStyle)
+		return;
+	m_FPSStyle = newFPSStyle;
 	
 	// TODO: Figure out what to do here...
 }
