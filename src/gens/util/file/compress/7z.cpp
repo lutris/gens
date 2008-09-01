@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "emulator/g_main.h"
 #include "util/file/unzip.h"
 #include "ui-common.h"
 
@@ -82,7 +83,8 @@ int _7z::getNumFiles(string zFilename)
 	
 	// Build the command line.
 	// TODO: Make "/usr/bin/7z" configurable.
-	string cmd = "/usr/bin/7z l ";
+	string cmd = Misc_Filenames._7z_Binary;
+	cmd += " l ";
 	cmd += "\"" + zFilename + "\"";
 	
 	// Open the 7z file.
@@ -184,7 +186,8 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	
 	// Build the command line.
 	// TODO: Make "/usr/bin/7z" configurable.
-	string cmd = "/usr/bin/7z l ";
+	string cmd = Misc_Filenames._7z_Binary;
+	cmd += " l ";
 	cmd += "\"" + zFilename + "\"";
 	
 	p_7z = popen(cmd.c_str(), "r");
@@ -291,7 +294,8 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	
 	// Build the command line.
 	// TODO: Make "/usr/bin/7z" configurable.
-	string cmd = "/usr/bin/7z e ";
+	string cmd = Misc_Filenames._7z_Binary;
+	cmd += " e ";
 	cmd += "\"" + zFilename + "\" ";
 	cmd += "\"" + fileInfo->filename + "\" ";
 	cmd += "-so 2>/dev/null";
