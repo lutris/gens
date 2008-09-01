@@ -93,7 +93,7 @@ typedef struct ym2612__
 	int TimerBL;
 	int TimerBcnt;		// timerB counter = valeur courante du Timer B
 	int Mode;		// Mode actuel des voie 3 et 6 (normal / spécial)
-	int DACenabled;		// DAC enabled flag
+	int DAC;		// DAC enabled flag
 	int DACdata;		// DAC data
 	
 	int dummy;		// MSVC++ enforces 8-byte alignment on doubles. This forces said alignment on gcc.
