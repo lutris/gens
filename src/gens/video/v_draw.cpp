@@ -37,13 +37,13 @@ VDraw::VDraw()
 	m_FPS_FreqCPU[1] = 0;
 	m_FPS_NewTime[0] = 0;
 	m_FPS_NewTime[1] = 0;
-	m_FPSStyle = EMU_MODE | BLANC;
+	m_FPSStyle = 0;
 	
 	// Initialze the onscreen message.
 	m_MsgText = "";
 	m_MsgVisible = false;
 	m_MsgTime = 0;
-	m_MsgStyle = EMU_MODE | BLANC | SIZE_X2;
+	m_MsgStyle = 0;
 	
 	// Others.
 	m_Stretch = false;
