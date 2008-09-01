@@ -466,7 +466,7 @@ void Input_KeyDown(int key)
 			break;
 	}
 	
-#ifdef GENS_DEBUG
+#ifdef GENS_DEBUGGER
 	// If debugging, pass the key to the debug handler.
 	if (Debug != DEBUG_NONE)
 		Debug_Event(key, mod);
