@@ -11,6 +11,222 @@
 
 #include "ini.hpp"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+using std::ios;
+using std::ifstream;
+using std::string;
+using std::map;
+using std::pair;
+
+
+// Case-insensitive search from http://www.experts-exchange.com/Programming/Languages/CPP/Q_23025401.html
+
+class __lesscasecmp
+{
+	public:
+		bool operator() (const std::string& a, const std::string& b) const
+		{
+			return (strcasecmp(a.c_str(), b.c_str()) < 0);
+		}
+};
+
+typedef map<string, string, __lesscasecmp> iniSection;
+typedef map<string, iniSection, __lesscasecmp> iniFile;
+
+
+iniFile gensCfg;
+
+
+/**
+ * INI_LoadConfig(): Load the specified INI file into gensCfg.
+ * @param filename Filename of the INI file to load.
+ */
+void INI_LoadConfig(const char* filename)
+{
+	// Load the specified INI file.
+	string tmp;
+	
+	// Clear the map.
+	gensCfg.clear();
+	
+	// Open the file.
+	ifstream cfgFile(filename);
+	
+	iniSection curSection; string curSectionName;
+	iniSection::iterator sectKeyIter;
+	iniFile::iterator iniSectIter;
+	
+	unsigned int commentPos;
+	unsigned int equalsPos;
+	string curKey, curValue;
+	
+	if (cfgFile.is_open())
+	{
+		while (!cfgFile.eof())
+		{
+			getline(cfgFile, tmp);
+			
+			// Parse the line.
+			
+			// Remove any comments from the line.
+			commentPos = tmp.find(";");
+			if (commentPos != string::npos)
+			{
+				// Comment found.
+				tmp = tmp.substr(0, commentPos - 1);
+			}
+			
+			if (tmp.length() == 0)
+			{
+				// Empty string.
+				continue;
+			}
+			
+			if (tmp.substr(0, 1) == "[" &&
+			    tmp.substr(tmp.length() - 1, 1) == "]")
+			{
+				// Section header.
+				
+				// If there's a section right now, add it to the map.
+				if (curSectionName.length() > 0)
+				{
+					gensCfg.insert(pair<string, iniSection>(curSectionName, curSection));
+					curSection.clear();
+					curSectionName.clear();
+				}
+				
+				// Set the section.
+				curSectionName = tmp.substr(1, tmp.length() - 2);
+				
+				// Check if this section already exists.
+				iniSectIter = gensCfg.find(curSectionName);
+				if (iniSectIter != gensCfg.end())
+				{
+					// Section already exists.
+					// Copy it and delete the one in the map.
+					curSectionName = (*sectKeyIter).first;
+					curSection = (*iniSectIter).second;
+					gensCfg.erase(iniSectIter);
+				}
+			}
+			else if (curSectionName.length() > 0)
+			{
+				// Check if there's an "=", indicating a key value.
+				equalsPos = tmp.find("=");
+				if (equalsPos == string::npos)
+				{
+					// No key value.
+					continue;
+				}
+				
+				// Key value.
+				curKey = tmp.substr(0, equalsPos);
+				curValue = tmp.substr(equalsPos + 1);
+				
+				// Check if this key already exists in the current section.
+				sectKeyIter = curSection.find(curKey);
+				if (sectKeyIter != curSection.end())
+				{
+					// Already exists. Delete the existing one.
+					curSection.erase(sectKeyIter);
+				}
+				
+				// Add the key.
+				curSection.insert(pair<string, string>(curKey, curValue));
+			}
+		}
+	}
+	
+	// If a section is still being added, add it to the config.
+	if (curSectionName.length() > 0)
+	{
+		gensCfg.insert(pair<string, iniSection>(curSectionName, curSection));
+		curSection.clear();
+		curSectionName.clear();
+	}
+	
+	cfgFile.close();
+}
+
+
+/**
+ * INI_Clear(): Clear the loaded INI file.
+ */
+void INI_Clear(void)
+{
+	gensCfg.clear();
+}
+
+
+/**
+ * INI_GetInt(): Get an integer value from the loaded INI file.
+ * @param section Section to get from.
+ * @param key Key to get from.
+ * @param def Default value if the key isn't found.
+ * @return Integer value.
+ */
+int INI_GetInt(const char* section, const char* key, const int def)
+{
+	iniFile::iterator iniSectIter;
+	iniSection::iterator sectKeyIter;
+	
+	iniSectIter = gensCfg.find(section);
+	if (iniSectIter == gensCfg.end())
+	{
+		// Section not found.
+		return def;
+	}
+	
+	sectKeyIter = (*iniSectIter).second.find(key);
+	if (sectKeyIter == (*iniSectIter).second.end())
+	{
+		// Key not found.
+		return def;
+	}
+	
+	// Found the key.
+	return atoi((*sectKeyIter).second.c_str());
+}
+
+
+/**
+ * INI_GetString(): Get a string value from the loaded INI file.
+ * @param section Section to get from.
+ * @param key Key to get from.
+ * @param def Default value if the key isn't found.
+ * @param buf Buffer to store the value in.
+ * @param size Size of the buffer.
+ */
+void INI_GetString(const char* section, const char* key, const char* def,
+		   char* buf, int size)
+{
+	iniFile::iterator iniSectIter;
+	iniSection::iterator sectKeyIter;
+	
+	iniSectIter = gensCfg.find(section);
+	if (iniSectIter == gensCfg.end())
+	{
+		// Section not found.
+		strncpy(buf, def, size);
+		return;
+	}
+	
+	sectKeyIter = (*iniSectIter).second.find(key);
+	if (sectKeyIter == (*iniSectIter).second.end())
+	{
+		// Key not found.
+		strncpy(buf, def, size);
+		return;
+	}
+	
+	// Found the key.
+	strncpy(buf, (*sectKeyIter).second.c_str(), size);
+}
+
+
 static void WriteKey(const char *var, const char *var_name, FILE * file)
 {
 	fwrite (var, strlen (var), 1, file);
