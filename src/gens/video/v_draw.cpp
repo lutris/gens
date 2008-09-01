@@ -33,6 +33,7 @@ VDraw::VDraw()
 	for (int i = 0; i < 8; i++)
 		m_FPS_Frames[i] = 0.0f;
 	
+	m_FPSEnabled = false;
 	m_FPS_OldTime = 0;
 	m_FPS_ViewFPS = 0;
 	m_FPS_IndexFPS = 0;
