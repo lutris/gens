@@ -14,7 +14,8 @@ gens_x86_asm_o = \
 		gens_core/gfx/blit2x_scanline_50_int.o \
 		gens_core/gfx/blit2x_scanline_25_int.o \
 		gens_core/gfx/blit_2xSAI.o \
-		gens_core/gfx/blit_hq2x_16.o
+		gens_core/gfx/blit_hq2x_16.o \
+		gens_core/misc/fastblur_16.o
 gens_x86_asm_src = \
 		gens_core/gfx/blit1x.asm \
 		gens_core/gfx/blit2x.asm \
@@ -26,8 +27,10 @@ gens_x86_asm_src = \
 		gens_core/gfx/blit2x_scanline_50_int.asm \
 		gens_core/gfx/blit2x_scanline_25_int.asm \
 		gens_core/gfx/blit_2xSAI.asm \
-		gens_core/gfx/blit_hq2x_16.asm
-gens_x86_asm_h =
+		gens_core/gfx/blit_hq2x_16.asm \
+		gens_core/misc/fastblur_16.asm
+gens_x86_asm_h = \
+		gens_core/misc/fastblur_16.h
 else
 gens_x86_asm_o =
 gens_x86_asm_src =

@@ -25,6 +25,7 @@
 #include "g_effects.h"
 #include "g_sdldraw.h"
 #include "gens_core/misc/misc.h"
+#include "gens_core/misc/fastblur.h"
 
 #include "emulator/g_main.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -102,7 +103,7 @@ int Update_Gens_Logo(void)
 		}
 	}
 	
-	Half_Blur();
+	Fast_Blur();
 	Flip();
 	
 	return 1;

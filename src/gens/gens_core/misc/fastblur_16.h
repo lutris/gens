@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Fast Blur function. (15/16/32-bit color, C version.)              *
+ * Gens: Fast Blur function. (15/16-bit color, x86 asm version.)           *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,14 +20,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_FASTBLUR_H
-#define GENS_FASTBLUR_H
+#ifndef GENS_FASTBLUR_16_H
+#define GENS_FASTBLUR_16_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void Fast_Blur(void);
+void Fast_Blur_16_asm(void);
+void Fast_Blur_16_asm_MMX(void);
 
 #ifdef __cplusplus
 }
