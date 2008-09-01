@@ -284,10 +284,12 @@ void Input_KeyDown(int key)
 				Change_DAC_Improved(!DAC_Improv);
 				Sync_Gens_Window_SoundMenu();
 			}
+			/*
 			else //if (!mod)
 			{
 				draw->setFPSEnabled(!draw->fpsEnabled());
 			}
+			*/
 			break;
 		
 		case GENS_KEY_F11:
