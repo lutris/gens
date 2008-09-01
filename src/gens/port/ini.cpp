@@ -228,7 +228,7 @@ bool INI_GetBool(const char* section, const char* key, const bool def)
 	}
 	
 	// Found the key.
-	return (def ? 1 : 0);
+	return (atoi((*sectKeyIter).second.c_str()));
 }
 
 
