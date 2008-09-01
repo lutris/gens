@@ -190,11 +190,9 @@ int Save_Config(const char *File_Name)
 	// Various settings
 	INI_WriteInt("Options", "Fast Blur", Video.Fast_Blur & 1);
 	INI_WriteBool("Options", "FPS", draw->fpsEnabled());
-	// TODO: VDraw
-	//INI_WriteInt("Options", "FPS Style", FPS_Style);
+	INI_WriteInt("Options", "FPS Style", draw->fpsStyle());
 	INI_WriteBool("Options", "Message", draw->msgEnabled());
-	// TODO: VDraw
-	//INI_WriteInt("Options", "Message Style", Message_Style);
+	INI_WriteInt("Options", "Message Style", draw->msgStyle());
 	INI_WriteInt("Options", "LED", Show_LED & 1);
 	INI_WriteInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	INI_WriteInt("Options", "Auto Pause", Auto_Pause & 1);
@@ -447,11 +445,9 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Various settings
 	Video.Fast_Blur = INI_GetInt("Options", "Fast Blur", 0);
 	draw->setFPSEnabled(INI_GetBool("Options", "FPS", false));
-	// TODO: VDraw
-	//FPS_Style = INI_GetInt("Options", "FPS Style", 0);
+	draw->setFPSStyle(INI_GetInt("Options", "FPS Style", 0));
 	draw->setMsgEnabled(INI_GetBool("Options", "Message", true));
-	// TODO: VDraw
-	//Message_Style = INI_GetInt("Options", "Message Style", 0);
+	draw->setMsgStyle(INI_GetInt("Options", "Message Style", 0));
 	Show_LED = INI_GetInt("Options", "LED", 1);
 	Auto_Fix_CS = INI_GetInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = INI_GetInt("Options", "Auto Pause", 0);
