@@ -152,8 +152,7 @@ int Save_Config(const char *File_Name)
 #endif
 	
 	INI_WriteInt("Graphics", "Stretch", (draw->stretch() ? 1 : 0));
-	// TODO: VDraw
-	//INI_WriteInt("Graphics", "Software Blit", Blit_Soft & 1);
+	INI_WriteInt("Graphics", "Software Blit", (draw->stretch() ? 1 : 0));
 	INI_WriteInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	INI_WriteInt("Graphics", "Frame Skip", Frame_Skip);
 	
@@ -394,9 +393,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	if (is_gens_running())
 		Recalculate_Palettes();
 	
-	// TODO: VDraw
 	draw->setStretch(INI_GetInt("Graphics", "Stretch", 0));
-	//Blit_Soft = INI_GetInt("Graphics", "Software Blit", 0);
+	draw->setSwRender(INI_GetInt("Graphics", "Software Blit", 0));
 	Sprite_Over = INI_GetInt("Graphics", "Sprite Limit", 1);
 	Frame_Skip = INI_GetInt("Graphics", "Frame Skip", -1);
 	
