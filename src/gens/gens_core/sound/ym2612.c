@@ -861,10 +861,10 @@ YM_SET (int Adr, unsigned char data)
       break;
 
     case 0x2B:
-      if (YM2612.DAC ^ (data & 0x80))
+      if (YM2612.DACenabled ^ (data & 0x80))
 	YM2612_Special_Update ();
 
-      YM2612.DAC = data & 0x80;	// activation/désactivation du DAC
+      YM2612.DACenabled = data & 0x80;	// activation/désactivation du DAC
       break;
     }
 
@@ -2242,7 +2242,7 @@ int YM2612_Reset(void)
 	YM2612.TimerB = 0;
 	YM2612.TimerBL = 0;
 	YM2612.TimerBcnt = 0;
-	YM2612.DAC = 0;
+	YM2612.DACenabled = 0;
 	YM2612.DACdata = 0;
 	
 	YM2612.status = 0;
@@ -2512,7 +2512,7 @@ void YM2612_Update(int **buf, int length)
 	UPDATE_CHAN[YM2612.CHANNEL[2].ALGO + algo_type](&(YM2612.CHANNEL[2]), buf, length);
 	UPDATE_CHAN[YM2612.CHANNEL[3].ALGO + algo_type](&(YM2612.CHANNEL[3]), buf, length);
 	UPDATE_CHAN[YM2612.CHANNEL[4].ALGO + algo_type](&(YM2612.CHANNEL[4]), buf, length);
-	if (!(YM2612.DAC))
+	if (!(YM2612.DACenabled))
 		UPDATE_CHAN[YM2612.CHANNEL[5].ALGO + algo_type](&(YM2612.CHANNEL[5]), buf, length);
 	
 	YM2612.Inter_Cnt = int_cnt;
@@ -2623,7 +2623,7 @@ void YM2612_DacAndTimers_Update(int **buffer, int length)
 	int *bufL, *bufR;
 	int i;
 	
-	if (YM2612.DAC && YM2612.DACdata && DAC_Enable)
+	if (YM2612.DACenabled && YM2612.DACdata && DAC_Enable)
 	{
 		bufL = buffer[0];
 		bufR = buffer[1];
