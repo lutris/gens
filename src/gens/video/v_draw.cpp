@@ -40,6 +40,7 @@ VDraw::VDraw()
 	m_FPSStyle = 0;
 	
 	// Initialze the onscreen message.
+	m_MsgEnabled = true;
 	m_MsgText = "";
 	m_MsgVisible = false;
 	m_MsgTime = 0;
@@ -202,6 +203,8 @@ int VDraw::Flip(void)
  */
 void VDraw::writeText(string msg, int duration)
 {
+	if (!m_MsgEnabled)
+		return;
 	m_MsgText = msg;
 	m_MsgTime = GetTickCount() + duration;
 	m_MsgVisible = true;
@@ -267,16 +270,16 @@ void VDraw::setShift(int newShift)
 }
 
 
-bool VDraw::msgEnable(void)
+bool VDraw::msgEnabled(void)
 {
-	return m_MsgEnable;
+	return m_MsgEnabled;
 }
 
-void VDraw::setMsgEnable(bool newMsgEnable)
+void VDraw::setMsgEnabled(bool newMsgEnabled)
 {
-	if (m_MsgEnable == newMsgEnable)
+	if (m_MsgEnabled == newMsgEnabled)
 		return;
-	m_MsgEnable = newMsgEnable;
+	m_MsgEnabled = newMsgEnabled;
 	
 	// TODO: Figure out what to do here...
 }

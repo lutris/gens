@@ -24,7 +24,7 @@
 
 #include "general_options_window.h"
 #include "general_options_window_callbacks.h"
-#include "general_options_window_misc.h"
+#include "general_options_window_misc.hpp"
 #include "gens/gens_window.h"
 
 #include <gtk/gtk.h>
@@ -87,7 +87,7 @@ void Open_General_Options(void)
 	
 	// Message
 	check_message_enable = lookup_widget(go, "check_message_enable");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_enable), Show_Message);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_enable), (draw->msgEnabled() ? 1 : 0));
 	// TODO: VDraw
 	/*
 	check_message_doublesized = lookup_widget(go, "check_message_doublesized");
@@ -166,7 +166,7 @@ void General_Options_Save(void)
 	
 	// Message
 	check_message_enable = lookup_widget(general_options_window, "check_message_enable");
-	Show_Message = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable));
+	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable)));
 	// TODO: VDraw
 	/*
 	Message_Style &= ~0x18;

@@ -33,7 +33,7 @@
 #include "controller_config/controller_config_window_misc.h"
 #include "bios_misc_files/bios_misc_files_window_misc.h"
 #include "directory_config/directory_config_window_misc.h"
-#include "general_options/general_options_window_misc.h"
+#include "general_options/general_options_window_misc.hpp"
 #include "about/about_window.h"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
@@ -49,7 +49,7 @@
 
 #include "emulator/ui_proxy.hpp"
 #include "ui-common.h"
-#include "util/file/config_file.h"
+#include "util/file/config_file.hpp"
 
 #include "sdllayer/g_sdlsound.h"
 #include "util/sound/gym.h"

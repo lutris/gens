@@ -125,7 +125,7 @@ gens_SOURCES = \
 		segacd/lc89510.c \
 		ui/ui-common.c \
 		util/file/chd.c \
-		util/file/config_file.c \
+		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.c \
 		util/file/ggenie.c \
@@ -182,7 +182,7 @@ gens_SOURCES += \
 		ui/gtk/directory_config/directory_config_window_misc.c \
 		ui/gtk/general_options/general_options_window.c \
 		ui/gtk/general_options/general_options_window_callbacks.c \
-		ui/gtk/general_options/general_options_window_misc.c \
+		ui/gtk/general_options/general_options_window_misc.cpp \
 		ui/gtk/color_adjust/color_adjust_window.c \
 		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
 		ui/gtk/color_adjust/color_adjust_window_misc.c \
@@ -261,7 +261,7 @@ noinst_HEADERS = \
 		segacd/lc89510.h \
 		ui/ui-common.h \
 		util/file/chd.h \
-		util/file/config_file.h \
+		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.h \
 		util/file/ggenie.h \
@@ -315,7 +315,7 @@ noinst_HEADERS += \
 		ui/gtk/directory_config/directory_config_window_misc.h \
 		ui/gtk/general_options/general_options_window.h \
 		ui/gtk/general_options/general_options_window_callbacks.h \
-		ui/gtk/general_options/general_options_window_misc.h \
+		ui/gtk/general_options/general_options_window_misc.hpp \
 		ui/gtk/color_adjust/color_adjust_window.h \
 		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
 		ui/gtk/color_adjust/color_adjust_window_misc.h \

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "save.h"
-#include "config_file.h"
+#include "config_file.hpp"
 #include "port/port.h"
 #include "port/ini.hpp"
 
@@ -195,7 +195,7 @@ int Save_Config(const char *File_Name)
 	INI_WriteInt("Options", "FPS", Show_FPS & 1);
 	// TODO: VDraw
 	//INI_WriteInt("Options", "FPS Style", FPS_Style);
-	INI_WriteInt("Options", "Message", Show_Message & 1);
+	INI_WriteInt("Options", "Message", (draw->msgEnabled() ? 1 : 0));
 	// TODO: VDraw
 	//INI_WriteInt("Options", "Message Style", Message_Style);
 	INI_WriteInt("Options", "LED", Show_LED & 1);
@@ -455,7 +455,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Show_FPS = INI_GetInt("Options", "FPS", 0);
 	// TODO: VDraw
 	//FPS_Style = INI_GetInt("Options", "FPS Style", 0);
-	Show_Message = INI_GetInt("Options", "Message", 1);
+	draw->setMsgEnabled(INI_GetInt("Options", "Message", 1));
 	// TODO: VDraw
 	//Message_Style = INI_GetInt("Options", "Message Style", 0);
 	Show_LED = INI_GetInt("Options", "LED", 1);

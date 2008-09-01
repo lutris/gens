@@ -23,7 +23,7 @@
 #include "gens_core/misc/misc.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.h"
-#include "util/file/config_file.h"
+#include "util/file/config_file.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/sound/gym.h"
 #include "gens_core/mem/mem_m68k.h"
@@ -89,7 +89,6 @@ int Net_Play = 0;
 int Full_Screen = 0;
 int Resolution = 1;
 int Show_FPS = 0;
-int Show_Message = 1;
 int Show_LED = 0;
 int FS_Minimised = 0;
 int Auto_Pause = 0;
@@ -236,7 +235,6 @@ static void Init_Settings(void)
 	Net_Play = 0;
 	draw->setStretch(false);
 	Sprite_Over = 1;
-	Show_Message = 1;
 	
 	Sound_Enable = 0;
 	Sound_Segs = 8;
@@ -657,11 +655,8 @@ unsigned int Info_Time = 0;
 void Put_Info(const char* msg, int duration)
 {
 	// TODO: Figure out a better place to put this.
-	if (Show_Message)
-	{
-		win2linux(Info_String);		// TODO: Get rid of this.
-		draw->writeText(msg, duration);
-	}
+	win2linux(Info_String);		// TODO: Get rid of this.
+	draw->writeText(msg, duration);
 }
 
 

@@ -99,7 +99,6 @@ extern int Net_Play;
 extern int Current_State;
 //extern int gl_linear_filter;
 extern int Show_FPS;
-extern int Show_Message;
 extern int Show_LED;
 extern int Auto_Pause;
 extern int Auto_Fix_CS;

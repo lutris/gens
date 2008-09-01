@@ -26,14 +26,17 @@
 #include <string.h>
 #include <unistd.h>
 
+// New video layer.
+#include "video/v_draw.hpp"
+
+#include "gens.h"
+#include "g_main.hpp"
 #include "port/port.h"
 #include "util/file/save.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/sh2/sh2.h"
 #include "gens_core/cpu/z80/z80.h"
-#include "gens.h"
-#include "g_main.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -333,14 +336,22 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_NUMERIC(SSH2SPEED, SSH2_Speed);
 		TEST_OPTION_ENABLE(FASTBLUR, Video.Fast_Blur);
 		TEST_OPTION_ENABLE(FPS, Show_FPS);
-		TEST_OPTION_ENABLE(MSG, Show_Message);
+		//TEST_OPTION_ENABLE(MSG, Show_Message);
 		TEST_OPTION_ENABLE(LED, Show_LED);
 		TEST_OPTION_ENABLE(FIXCHKSUM, Auto_Fix_CS);
 		TEST_OPTION_ENABLE(AUTOPAUSE, Auto_Pause);
 		TEST_OPTION_NUMERIC(RAMCARTSIZE, BRAM_Ex_Size);
 		
 		// Other options that can't be handled by macros.
-		if (!strcmp(long_options[option_index].name, FS))
+		if (!strcmp(long_options[option_index].name, MSG_ENABLE))
+		{
+			draw->setMsgEnabled(true);
+		}
+		else if (!strcmp(long_options[option_index].name, MSG_DISABLE))
+		{
+			draw->setMsgEnabled(false);
+		}
+		else if (!strcmp(long_options[option_index].name, FS))
 		{
 			Video.Full_Screen = 1;
 		}
