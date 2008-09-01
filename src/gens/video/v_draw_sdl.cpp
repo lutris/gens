@@ -257,11 +257,11 @@ int VDraw_SDL::flipInternal(void)
 	
 	if (Video.Full_Screen)
 	{
-		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + m_HBorder*2);
+		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
 	else
 	{
-		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + m_HBorder*2);
+		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
 	
 	SDL_UnlockSurface(screen);
