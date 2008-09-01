@@ -152,7 +152,7 @@ int Save_Config(const char *File_Name)
 #endif
 	
 	INI_WriteInt("Graphics", "Stretch", (draw->stretch() ? 1 : 0));
-	INI_WriteInt("Graphics", "Software Blit", (draw->stretch() ? 1 : 0));
+	INI_WriteInt("Graphics", "Software Blit", (draw->swRender() ? 1 : 0));
 	INI_WriteInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	INI_WriteInt("Graphics", "Frame Skip", Frame_Skip);
 	
