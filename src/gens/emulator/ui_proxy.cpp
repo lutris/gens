@@ -853,7 +853,7 @@ int Change_Stretch(int newStretch)
 	
 	Flag_Clr_Scr = 1;
 	
-	draw->setStretch(newStretch == 1 ? 1 : 0);
+	draw->setStretch(newStretch);
 	
 	if (draw->stretch())
 		MESSAGE_L("Stretched mode", "Stretched mode", 1000);
