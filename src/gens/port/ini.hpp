@@ -14,8 +14,10 @@ void INI_Clear(void);
 void INI_SaveConfig(const char* filename);
 
 int INI_GetInt(const char* section, const char* key, const int def);
+bool INI_GetBool(const char* section, const char* key, const bool def);
 void INI_GetString(const char* section, const char* key, const char* def, char* buf, const int size);
 void INI_WriteInt(const char* section, const char* key, const int value);
+void INI_WriteBool(const char* section, const char* key, const bool value);
 void INI_WriteString(const char* section, const char* key, const char* value);
 void INI_SaveConfig(const char* filename);
 

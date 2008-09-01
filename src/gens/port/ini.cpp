@@ -202,6 +202,37 @@ int INI_GetInt(const char* section, const char* key, const int def)
 
 
 /**
+ * INI_GetBool(): Get a boolean value from the loaded INI file.
+ * @param section Section to get from.
+ * @param key Key to get from.
+ * @param def Default value if the key isn't found.
+ * @return Boolean value.
+ */
+bool INI_GetBool(const char* section, const char* key, const bool def)
+{
+	iniFile::iterator iniSectIter;
+	iniSection::iterator sectKeyIter;
+	
+	iniSectIter = gensCfg.find(section);
+	if (iniSectIter == gensCfg.end())
+	{
+		// Section not found.
+		return def;
+	}
+	
+	sectKeyIter = (*iniSectIter).second.find(key);
+	if (sectKeyIter == (*iniSectIter).second.end())
+	{
+		// Key not found.
+		return def;
+	}
+	
+	// Found the key.
+	return (def ? 1 : 0);
+}
+
+
+/**
  * INI_GetString(): Get a string value from the loaded INI file.
  * @param section Section to get from.
  * @param key Key to get from.
@@ -247,6 +278,18 @@ void INI_WriteInt(const char* section, const char* key, const int value)
 	stringstream out;
 	out << value;
 	INI_WriteString(section, key, out.str().c_str());
+}
+
+
+/**
+ * INI_WriteBool(): Writes a boolean value to the loaded INI file.
+ * @param section Section to get from.
+ * @param key Key to get from.
+ * @param value Integer value to write.
+ */
+void INI_WriteBool(const char* section, const char* key, const bool value)
+{
+	INI_WriteString(section, key, (value ? "1" : "0"));
 }
 
 
