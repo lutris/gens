@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "gens_core/sound/pcm.h"
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/mem/mem_m68k.h"
 

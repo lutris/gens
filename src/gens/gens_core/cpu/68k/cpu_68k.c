@@ -11,7 +11,7 @@
 #include "gens_core/gfx/gfx_cd.h"
 
 #include "gens_core/io/io.h"
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 
 
 #define GENESIS 0

@@ -117,7 +117,7 @@ gens_SOURCES = \
 		sdllayer/g_sdlsound.c \
 		sdllayer/g_effects.c \
 		segacd/cd_file.c \
-		segacd/cd_sys.c \
+		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/ui-common.c \
@@ -251,7 +251,7 @@ noinst_HEADERS = \
 		sdllayer/g_sdlsound.h \
 		sdllayer/g_effects.h \
 		segacd/cd_file.h \
-		segacd/cd_sys.h \
+		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
 		ui/ui-common.h \

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "cd_sys.h"
+#include "cd_sys.hpp"
 #include "port/port.h"
 #include "cd_file.h"
 #include "emulator/gens.h"
@@ -255,8 +255,9 @@ void Check_CD_Command(void)
 	}
 }
 
-
-void _Check_CD_Command (void) __attribute__ ((alias ("Check_CD_Command")));
+// Alias to Check_CD_Command, needed by mem_s68k.asm
+void _Check_CD_Command(void)
+	__attribute__ ((alias ("Check_CD_Command")));
 
 
 void Init_CD_Driver(void)

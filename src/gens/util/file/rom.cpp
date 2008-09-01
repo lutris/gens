@@ -20,7 +20,7 @@ using std::list;
 #include "emulator/g_32x.h"
 #include "util/file/ggenie.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"

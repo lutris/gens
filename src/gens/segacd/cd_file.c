@@ -6,7 +6,7 @@
 #else
 #include "port/port.h"
 #endif
-#include "cd_sys.h"
+#include "cd_sys.hpp"
 #include "cd_file.h"
 #include "lc89510.h"
 #include "cdda_mp3.h"

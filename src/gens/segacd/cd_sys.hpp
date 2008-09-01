@@ -1,5 +1,5 @@
-#ifndef GENS_CD_SYS_H
-#define GENS_CD_SYS_H
+#ifndef GENS_CD_SYS_HPP
+#define GENS_CD_SYS_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -106,6 +106,9 @@ void Flush_CD_Command(void);
 void Check_CD_Command(void);
 void Init_CD_Driver(void);
 void End_CD_Driver(void);
+
+// Alias to Check_CD_Command, needed by mem_s68k.asm
+void _Check_CD_Command(void);
 
 int Reset_CD(char *buf, char *iso_name);
 void Stop_CD(void);

@@ -47,7 +47,7 @@
 #include "gens_core/sound/pwm.h"
 
 // SegaCD
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 #include "gens_core/gfx/gfx_cd.h"
 #include "segacd/lc89510.h"
 #include "segacd/cd_file.h"

@@ -6,7 +6,7 @@
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/mem/mem_s68k.h"
 #include "gens_core/sound/pcm.h"
-#include "cd_sys.h"
+#include "cd_sys.hpp"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM

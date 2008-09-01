@@ -75,7 +75,7 @@ Z80_Init (void)
 
 
 
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 
 
 void

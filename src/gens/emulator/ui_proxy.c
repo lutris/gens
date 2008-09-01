@@ -13,7 +13,7 @@
 #include "g_32x.h"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdldraw.h"
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"

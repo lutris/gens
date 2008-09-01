@@ -54,7 +54,7 @@ typedef struct tagSRB32_ExecSCSICmd {
   BYTE        SenseArea[SENSE_LEN+2];  /* Request sense buffer - var length */
 } SRB_ExecSCSICmd, *PSRB_ExecSCSICmd;
 
-#include "cd_sys.h"
+#include "cd_sys.hpp"
 
 #define STOP_DISC	0
 #define START_DISC	1

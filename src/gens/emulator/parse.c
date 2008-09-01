@@ -32,7 +32,7 @@
 #include "util/file/ggenie.h"
 #include "gens_core/io/io.h"
 #include "gens_core/misc/misc.h"
-#include "segacd/cd_sys.h"
+#include "segacd/cd_sys.hpp"
 #include "parse.h"
 #include "ui_proxy.h"
 
