@@ -162,9 +162,12 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
-	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_OpenGL, *MItem_SpriteLimit;
+	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
+#ifdef GENS_OPENGL
+	GtkWidget *MItem_OpenGL;
+#endif
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -172,11 +175,8 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Simple checkbox items
 	MItem_VSync = lookup_widget(gens_window, "GraphicsMenu_VSync");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), W_VSync);
-	// TODO: VDraw
-	/*
 	MItem_Stretch = lookup_widget(gens_window, "GraphicsMenu_Stretch");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), Stretch);
-	*/
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), draw->stretch());
 	MItem_SpriteLimit = lookup_widget(gens_window, "GraphicsMenu_SpriteLimit");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
 	
