@@ -5,7 +5,6 @@
 #include "emulator/gens.h"
 #include "emulator/g_mcd.h"
 #include "sdllayer/g_sdlsound.h"
-#include "cdda_mp3.h"
 #include "lc89510.h"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/mem/mem_m68k.h"
