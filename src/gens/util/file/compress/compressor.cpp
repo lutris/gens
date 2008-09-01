@@ -166,7 +166,7 @@ int Compressor::getFile(const CompressedFile *fileInfo, unsigned char *buf, int 
 		return 0;
 	
 	// Read the file.
-	bytesRead = fread(buf, size, 1, f);
+	bytesRead = fread(buf, 1, size, f);
 	
 	// Close the file and return the number of bytes read.
 	fclose(f);
