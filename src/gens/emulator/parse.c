@@ -229,6 +229,35 @@ static void _usage()
 }
 
 
+#define TEST_OPTION_STRING(option, strbuf)		\
+if (!strcmp(long_options[option_index].name, option))	\
+{							\
+	strcpy(strbuf, optarg);				\
+	continue;					\
+}
+
+
+#define TEST_OPTION_ENABLE(option, enablevar)					\
+if (!strcmp(long_options[option_index].name, option ## _ENABLE))		\
+{										\
+	enablevar = 1;								\
+	continue;								\
+}										\
+else if (!strcmp(long_options[option_index].name, option ## _DISABLE))		\
+{										\
+	enablevar = 0;								\
+	continue;								\
+}
+
+
+#define TEST_OPTION_NUMERIC(option, numvar)		\
+if (!strcmp(long_options[option_index].name, option))	\
+{							\
+	numvar = strtol(optarg, (char**)NULL, 10);	\
+	continue;					\
+}
+
+
 void parseArgs(int argc, char **argv)
 {
 	int c;
@@ -238,7 +267,7 @@ void parseArgs(int argc, char **argv)
 	{
 		int option_index = 0;
 		
-		c = getopt_long (argc, argv, "", long_options, &option_index);
+		c = getopt_long(argc, argv, "", long_options, &option_index);
 		if (c == -1)
 			break;
 		if (c == '?')
@@ -255,79 +284,61 @@ void parseArgs(int argc, char **argv)
 				strcat(PathNames.Start_Rom, optarg);
 			}
 		}
-		else if (!strcmp (long_options[option_index].name, ROMPATH))
-		{
-			strcpy(Rom_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, SAVEPATH))
-		{
-			strcpy(State_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, SRAMPATH))
-		{
-			strcpy(SRAM_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, BRAMPATH))
-		{
-			strcpy(BRAM_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, DUMPPATH))
-		{
-			strcpy(Dump_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, DUMPGYMPATH))
-		{
-			strcpy(Dump_GYM_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, SCRSHTPATH))
-		{
-			strcpy(ScrShot_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, PATPATH))
-		{
-			strcpy(Patch_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, IPSPATH))
-		{
-			strcpy(IPS_Dir, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, GCOFFPATH))
-		{
-			strcpy(Misc_Filenames.GCOffline, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, GENSMANPATH))
-		{
-			strcpy(Misc_Filenames.Manual, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, GENBIOS))
-		{
-			strcpy(BIOS_Filenames.MD_TMSS, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, USABIOS))
-		{
-			strcpy(BIOS_Filenames.SegaCD_US, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, EURBIOS))
-		{
-			strcpy(BIOS_Filenames.MegaCD_EU, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, JAPBIOS))
-		{
-			strcpy(BIOS_Filenames.MegaCD_JP, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, _32X68kBIOS))
-		{
-			strcpy(BIOS_Filenames._32X_MC68000, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, _32XMBIOS))
-		{
-			strcpy(BIOS_Filenames._32X_MSH2, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, _32XSBIOS))
-		{
-			strcpy(BIOS_Filenames._32X_SSH2, optarg);
-		}
-		else if (!strcmp(long_options[option_index].name, FS))
+		
+		// Test string options.
+		TEST_OPTION_STRING(ROMPATH, Rom_Dir);
+		TEST_OPTION_STRING(SAVEPATH, State_Dir);
+		TEST_OPTION_STRING(SRAMPATH, SRAM_Dir);
+		TEST_OPTION_STRING(BRAMPATH, BRAM_Dir);
+		TEST_OPTION_STRING(DUMPPATH, Dump_Dir);
+		TEST_OPTION_STRING(SCRSHTPATH, ScrShot_Dir);
+		TEST_OPTION_STRING(PATPATH, Patch_Dir);
+		TEST_OPTION_STRING(IPSPATH, IPS_Dir);
+		TEST_OPTION_STRING(GCOFFPATH, Misc_Filenames.GCOffline);
+		TEST_OPTION_STRING(GENSMANPATH, Misc_Filenames.Manual);
+		TEST_OPTION_STRING(GENBIOS, BIOS_Filenames.MD_TMSS);
+		TEST_OPTION_STRING(USABIOS, BIOS_Filenames.SegaCD_US);
+		TEST_OPTION_STRING(EURBIOS, BIOS_Filenames.MegaCD_EU);
+		TEST_OPTION_STRING(JAPBIOS, BIOS_Filenames.MegaCD_JP);
+		TEST_OPTION_STRING(_32X68kBIOS, BIOS_Filenames._32X_MC68000);
+		TEST_OPTION_STRING(_32XMBIOS, BIOS_Filenames._32X_MSH2);
+		TEST_OPTION_STRING(_32XSBIOS, BIOS_Filenames._32X_SSH2);
+		
+		/* TODO: C++ support
+		TEST_OPTION_ENABLE(STRETCH, Stretch);
+		TEST_OPTION_ENABLE(SWBLIT, Blit_Soft);
+		*/
+		TEST_OPTION_NUMERIC(CONTRAST, Contrast_Level);
+		TEST_OPTION_NUMERIC(BRIGHTNESS, Brightness_Level);
+		TEST_OPTION_ENABLE(GREYSCALE, Greyscale);
+		TEST_OPTION_ENABLE(INVERT, Invert_Color);
+		TEST_OPTION_ENABLE(SPRITELIMIT, Sprite_Over);
+		TEST_OPTION_NUMERIC(FRAMESKIP, Frame_Skip);
+		TEST_OPTION_ENABLE(SOUND, Sound_Enable);
+		TEST_OPTION_ENABLE(STEREO, Sound_Stereo);
+		TEST_OPTION_ENABLE(Z80, Z80_State);
+		TEST_OPTION_ENABLE(YM2612, YM2612_Enable);
+		TEST_OPTION_ENABLE(PSG, PSG_Enable);
+		TEST_OPTION_ENABLE(DAC, DAC_Enable);
+		TEST_OPTION_ENABLE(PCM, PCM_Enable);
+		TEST_OPTION_ENABLE(PWM, PWM_Enable);
+		TEST_OPTION_ENABLE(CDDA, CDDA_Enable);
+		TEST_OPTION_ENABLE(PSGIMPROVED, PSG_Improv);
+		TEST_OPTION_ENABLE(YMIMPROVED, YM2612_Improv);
+		TEST_OPTION_ENABLE(DACIMPROVED, DAC_Improv);
+		TEST_OPTION_ENABLE(PERFECTSYNC, SegaCD_Accurate);
+		TEST_OPTION_NUMERIC(MSH2SPEED, MSH2_Speed);
+		TEST_OPTION_NUMERIC(SSH2SPEED, SSH2_Speed);
+		TEST_OPTION_ENABLE(FASTBLUR, Video.Fast_Blur);
+		TEST_OPTION_ENABLE(FPS, Show_FPS);
+		TEST_OPTION_ENABLE(MSG, Show_Message);
+		TEST_OPTION_ENABLE(LED, Show_LED);
+		TEST_OPTION_ENABLE(FIXCHKSUM, Auto_Fix_CS);
+		TEST_OPTION_ENABLE(AUTOPAUSE, Auto_Pause);
+		TEST_OPTION_NUMERIC(RAMCARTSIZE, BRAM_Ex_Size);
+		
+		// Other options that can't be handled by macros.
+		if (!strcmp(long_options[option_index].name, FS))
 		{
 			Video.Full_Screen = 1;
 		}
@@ -351,68 +362,6 @@ void parseArgs(int argc, char **argv)
 				Video.Render_Mode = mode;
 			}
 		}
-		/* TODO: C++ support
-		else if (!strcmp(long_options[option_index].name, STRETCH_ENABLE))
-		{
-			Stretch = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, STRETCH_DISABLE))
-		{
-			Stretch = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, SWBLIT_ENABLE))
-		{
-			Blit_Soft = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, SWBLIT_DISABLE))
-		{
-			Blit_Soft = 0;
-		}
-		*/
-		else if (!strcmp(long_options[option_index].name, CONTRAST))
-		{
-			Contrast_Level = strtol(optarg, (char**)NULL, 10);
-		}
-		else if (!strcmp(long_options[option_index].name, BRIGHTNESS))
-		{
-			Brightness_Level = strtol(optarg, (char**)NULL, 10);
-		}
-		else if (!strcmp(long_options[option_index].name, GREYSCALE_ENABLE))
-		{
-			Greyscale = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, GREYSCALE_DISABLE))
-		{
-			Greyscale = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, INVERT_ENABLE))
-		{
-			Invert_Color = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, INVERT_DISABLE))
-		{
-			Invert_Color = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, SPRITELIMIT_ENABLE))
-		{
-			Sprite_Over = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, SPRITELIMIT_DISABLE))
-		{
-			Sprite_Over = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, FRAMESKIP))
-		{
-			Frame_Skip = strtol(optarg, (char**)NULL, 10);
-		}
-		else if (!strcmp(long_options[option_index].name, SOUND_ENABLE))
-		{
-			Sound_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, SOUND_DISABLE))
-		{
-			Sound_Enable = 0;
-		}
 		else if (!strcmp(long_options[option_index].name, SOUNDRATE))
 		{
 			int rate = strtol(optarg, (char**)NULL, 10);
@@ -431,162 +380,6 @@ void parseArgs(int argc, char **argv)
 					fprintf(stderr, "Invalid rate");
 					break;
 			}
-		}
-		else if (!strcmp(long_options[option_index].name, STEREO_ENABLE))
-		{
-			Sound_Stereo = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, STEREO_DISABLE))
-		{
-			Sound_Stereo = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, Z80_ENABLE))
-		{
-			Z80_State = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, Z80_DISABLE))
-		{
-			Z80_State = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, YM2612_ENABLE))
-		{
-			YM2612_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, YM2612_DISABLE))
-		{
-			YM2612_Enable = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, PSG_ENABLE))
-		{
-			PSG_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, PSG_DISABLE))
-		{
-			PSG_Enable = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, DAC_ENABLE))
-		{
-			DAC_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, DAC_DISABLE))
-		{
-			DAC_Enable = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, PCM_ENABLE))
-		{
-			PCM_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, PCM_DISABLE))
-		{
-			PCM_Enable = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, PWM_ENABLE))
-		{
-			PWM_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, PWM_DISABLE))
-		{
-			PWM_Enable = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, CDDA_ENABLE))
-		{
-			CDDA_Enable = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, CDDA_DISABLE))
-		{
-			CDDA_Enable = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, PSGIMPROVED_ENABLE))
-		{
-			PSG_Improv = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, PSGIMPROVED_DISABLE))
-		{
-			PSG_Improv = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, YMIMPROVED_ENABLE))
-		{
-			YM2612_Improv = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, YMIMPROVED_DISABLE))
-		{
-			YM2612_Improv = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, DACIMPROVED_ENABLE))
-		{
-			DAC_Improv = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, DACIMPROVED_DISABLE))
-		{
-			DAC_Improv = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, PERFECTSYNC_ENABLE))
-		{
-			SegaCD_Accurate = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, PERFECTSYNC_DISABLE))
-		{
-			SegaCD_Accurate = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, MSH2SPEED))
-		{
-			MSH2_Speed = strtol(optarg, (char**)NULL, 10);
-		}
-		else if (!strcmp(long_options[option_index].name, SSH2SPEED))
-		{
-			SSH2_Speed = strtol(optarg, (char**) NULL, 10);
-		}
-		else if (!strcmp(long_options[option_index].name, FASTBLUR_ENABLE))
-		{
-			Video.Fast_Blur = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, FASTBLUR_DISABLE))
-		{
-			Video.Fast_Blur = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, FPS_ENABLE))
-		{
-			Show_FPS = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, FPS_DISABLE))
-		{
-			Show_FPS = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, MSG_ENABLE))
-		{
-			Show_Message = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, MSG_DISABLE))
-		{
-			Show_Message = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, LED_ENABLE))
-		{
-			Show_LED = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, LED_DISABLE))
-		{
-			Show_LED = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, FIXCHKSUM_ENABLE))
-		{
-			Auto_Fix_CS = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, FIXCHKSUM_DISABLE))
-		{
-			Auto_Fix_CS = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, AUTOPAUSE_ENABLE))
-		{
-			Auto_Pause = 1;
-		}
-		else if (!strcmp(long_options[option_index].name, AUTOPAUSE_DISABLE))
-		{
-			Auto_Pause = 0;
-		}
-		else if (!strcmp(long_options[option_index].name, RAMCARTSIZE))
-		{
-			BRAM_Ex_Size = strtol(optarg, (char**)NULL, 10);
 		}
 		else if (!strcmp(long_options[option_index].name, QUICKEXIT))
 		{
