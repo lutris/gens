@@ -8,7 +8,7 @@
 #include "save.h"
 
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "emulator/g_input.h"
 #include "sdllayer/g_sdldraw.h"
 
@@ -44,7 +44,7 @@
 #include "segacd/cd_file.h"
 
 // UI
-#include "emulator/ui_proxy.h"
+#include "emulator/ui_proxy.hpp"
 #include "ui-common.h"
 
 

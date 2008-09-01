@@ -2,7 +2,11 @@
  * Gens: Update_Emulation functions.
  */
 
+#include <time.h>
+
+#include "g_update.hpp"
 #include "gens.h"
+#include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
@@ -14,6 +18,22 @@
 
 // TODO: Get rid of this.
 void Sleep(int i);
+
+clock_t Last_Time = 0;
+clock_t New_Time = 0;
+clock_t Used_Time = 0;
+int Sleep_Time;
+
+/**
+ * Reset_Update_Timers(): Reset the update timers.
+ */
+void Reset_Update_Timers(void)
+{
+	Last_Time = GetTickCount ();
+	New_Time = 0;
+	Used_Time = 0;
+}
+
 
 int Update_Emulation(void)
 {
@@ -37,7 +57,7 @@ int Update_Emulation(void)
 		{
 			Frame_Number = 0;
 			Update_Frame();
-			Flip();
+			draw->Flip();
 		}
 	}
 	else
@@ -58,7 +78,7 @@ int Update_Emulation(void)
 
 			Update_Controllers();
 			Update_Frame();
-			Flip();
+			draw->Flip();
 		} //If sound is enabled
 		
 		else
@@ -86,9 +106,12 @@ int Update_Emulation(void)
 			{
 				Update_Controllers();
 				Update_Frame();
-				Flip();
+				draw->Flip();
 			}
-			else {Sleep(Sleep_Time);}
+			else
+			{
+				Sleep(Sleep_Time);
+			}
 		} //If sound is not enabled
 		
 	}
@@ -101,8 +124,8 @@ int Update_Emulation_One(void)
 {
 	Update_Controllers();
 	Update_Frame();
-	Flip();
-
+	draw->Flip();
+	
 	return 1;
 }
 
@@ -154,7 +177,7 @@ int Update_Emulation_Netplay(int player, int num_player)
 		//Kaillera_Error = Kaillera_Modify_Play_Values((void *) (Kaillera_Keys), 2);
 		Update_Controllers_Net(num_player);
 		Update_Frame();
-		Flip();
+		draw->Flip();
 }
 	return 1;
 }

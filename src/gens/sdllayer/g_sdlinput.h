@@ -23,7 +23,11 @@ void Update_Controllers_Net(int num_player);
 void open_joystick();
 void close_joystick();
 
+#ifdef __cplusplus
+extern SDL_Joystick* joy[6];
+#else
 extern struct SDL_Joystick* joy[6];
+#endif
 
 
 #ifdef __cplusplus

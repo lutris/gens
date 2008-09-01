@@ -5,7 +5,8 @@
 #include "gens.h"
 #include "g_md.h"
 #include "g_mcd.h"
-#include "g_main.h"
+#include "g_main.hpp"
+#include "g_update.hpp"
 #include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
@@ -173,12 +174,10 @@ int Init_SegaCD(const char *iso_name)
 			Play_Sound ();
 	}
 	
-	Load_BRAM ();			// Initialise BRAM
-	Load_Patch_File ();		// Only used to reset Patch structure
+	Load_BRAM();			// Initialise BRAM
+	Load_Patch_File();		// Only used to reset Patch structure
 	
-	Last_Time = GetTickCount ();
-	New_Time = 0;
-	Used_Time = 0;
+	Reset_Update_Timers();
 	
 	if (SegaCD_Accurate)
 	{

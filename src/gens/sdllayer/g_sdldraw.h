@@ -1,6 +1,8 @@
 #ifndef GENS_SDLDRAW_H
 #define GENS_SDLDRAW_H
 
+#if 0
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,14 +15,10 @@ extern clock_t New_Time;
 extern clock_t Used_Time;
 
 extern int Flag_Clr_Scr;
-extern int Sleep_Time;
-extern int FS_VSync;
-extern int W_VSync;
 extern int row_length;
 extern int shift;
 extern int Stretch;
 extern int Blit_Soft;
-extern int Effect_Color;
 extern int FPS_Style;
 extern int Message_Style;
 
@@ -29,8 +27,6 @@ extern unsigned short BorderColor_16B;
 
 extern void (*Blit_FS)(unsigned char *Dest, int pitch, int x, int y, int offset);
 extern void (*Blit_W)(unsigned char *Dest, int pitch, int x, int y, int offset);
-extern int (*Update_Frame)(void);
-extern int (*Update_Frame_Fast)(void);
 
 // SDL screen
 extern SDL_Surface *screen;
@@ -46,8 +42,6 @@ int Init_DDraw();
 int Clear_Primary_Screen(void);
 int Clear_Back_Screen(void);
 void Clear_Screen();
-void Clear_Screen_MD(void);
-void Put_Info(char *Message, int Duree);
 int Show_Genesis_Screen(void);
 int Flip(void);
 void Restore_Primary(void);
@@ -61,6 +55,8 @@ void Adjust_Stretch(void);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif /* GENS_SDLDRAW_H */

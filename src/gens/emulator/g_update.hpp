@@ -2,12 +2,15 @@
  * Gens: Update_Emulation functions.
  */
 
-#ifndef GENS_UPDATE_H
-#define GENS_UPDATE_H
+#ifndef GENS_UPDATE_HPP
+#define GENS_UPDATE_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+void Reset_Update_Timers(void);
 
 int Update_Emulation(void);
 int Update_Emulation_One(void);

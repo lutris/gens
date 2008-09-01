@@ -13,7 +13,7 @@ using std::list;
 
 #include "port/port.h"
 #include "sdllayer/g_sdlsound.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "emulator/gens.h"
 #include "emulator/g_md.h"
 #include "emulator/g_mcd.h"

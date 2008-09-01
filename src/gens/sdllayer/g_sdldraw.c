@@ -27,7 +27,7 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/misc.h"
 #include "gens_core/gfx/blit.h"
-#include "emulator/ui_proxy.h"
+#include "emulator/ui_proxy.hpp"
 //#include "net.h"
 #include "segacd/cdda_mp3.h"
 #include "gens_core/gfx/renderers.h"
@@ -45,18 +45,10 @@ const int Gens_SDL_Flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_A
 #include "ui-common.h"
 
 
-clock_t Last_Time = 0, New_Time = 0;
-clock_t Used_Time = 0;
-
 int x_offset, y_offset = 0;
 
-int Flag_Clr_Scr = 0;
-int Sleep_Time;
-int FS_VSync;
-int W_VSync;
 int Stretch; 
 int Blit_Soft;
-int Effect_Color = 7;
 int FPS_Style = EMU_MODE | BLANC;
 int Message_Style = EMU_MODE | BLANC | SIZE_X2;
 int Kaillera_Error = 0;
@@ -75,47 +67,11 @@ int Old_Dep = 0;
 unsigned short BorderColor_16B = 0x0000;
 unsigned int BorderColor_32B = 0x00000000;
 
-static char Info_String[1024] = "";
-static int Message_Showed = 0;
-static unsigned int Info_Time = 0;
-
 // Blit functions for Full Screen and Windowed modes.
 BlitFn Blit_FS;
 BlitFn Blit_W;
 
-int (*Update_Frame)();
-int (*Update_Frame_Fast)();
-
 unsigned long GetTickCount();
-
-static void win2linux(char* str)
-{
-	char* tmp=str;
-	for (; *tmp; ++tmp)
-	{
-		switch((unsigned char)*tmp)
-		{
-			case 0xE7: *tmp='c';break;//ç
-			case 0xE8: *tmp='e';break;//è
-			case 0xE9: *tmp='e';break;//é
-			case 0xEA: *tmp='e';break;//ê
-			case 0xE0: *tmp='a';break;//à
-			case 0xEE: *tmp='i';break;//î
-			default:break;
-		}	
-	}
-}
-
-void Put_Info(char *Message, int Duree)
-{
-	if (Show_Message)
-	{
-		strcpy(Info_String, Message);
-		win2linux(Info_String);
-		Info_Time = GetTickCount() + Duree;
-		Message_Showed = 1;
-	}
-}
 
 
 int Init_Fail(int hwnd, char *err)
@@ -516,17 +472,6 @@ int Flip(void)
 }
 
 
-/**
- * Clear_Screen_MD(): Clears the MD screen.
- */
-void Clear_Screen_MD(void)
-{
-	// TODO: Figure out if sizeof(MD_Screen) is correct.
-	memset(MD_Screen, 0x00, sizeof(MD_Screen));
-	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
-}
-
-
 int Show_Genesis_Screen(void)
 {
 	Do_VDP_Only();
@@ -548,47 +493,6 @@ void Refresh_Video(void)
 	End_DDraw();
 	Init_DDraw();
 	Adjust_Stretch();
-}
-
-
-/**
- * Set_bpp(): Sets the bpp value.
- * @param newbpp New bpp value.
- */
-void Set_bpp(int newbpp)
-{
-	if (bpp == newbpp)
-		return;
-	
-	bpp = newbpp;
-	End_DDraw();
-	Init_DDraw();
-	
-	// Reset the renderer.
-	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 0))
-	{
-		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!Set_Render(Video.Full_Screen, 0, 1))
-		{
-			// Cannot initialize normal mode.
-			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
-			exit(1);
-		}
-	}
-	
-	// Recalculate palettes.
-	Recalculate_Palettes();
-	
-	// Synchronize the Graphics menu.
-	Sync_Gens_Window_GraphicsMenu();
-	
-	// TODO: After switching color depths, the screen buffer isn't redrawn
-	// until something's updated. Figure out how to trick the renderer
-	// into updating anyway.
-	
-	// NOTE: This only seems to be a problem with 15-to-16 or 16-to-15 at the moment.
-	
-	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
 }
 
 

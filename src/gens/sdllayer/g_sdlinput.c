@@ -6,7 +6,7 @@
 #include "port/port.h"
 #include "g_sdlinput.h"
 #include "gens_core/io/io.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "emulator/g_input.h"
 
 
@@ -688,7 +688,7 @@ void Update_Controllers(void)
 		CHECK_PLAYER_PAD(4, 1D);
 	}
 	
-	if (Controller_2_Type & 0x10);
+	if (Controller_2_Type & 0x10)
 	{
 		// TEAMPLAYER PORT 2
 		CHECK_PLAYER_PAD(5, 2B);

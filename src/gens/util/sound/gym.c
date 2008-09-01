@@ -2,7 +2,7 @@
 #include <gtk/gtk.h>
 
 #include "gym.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "util/file/rom.hpp"
 #include "gens_core/mem/mem_m68k.h"

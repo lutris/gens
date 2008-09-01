@@ -11,7 +11,7 @@
 #include "gens_core/cpu/sh2/sh2.h"
 #include "gens_core/cpu/z80/z80.h"
 #include "gens.h"
-#include "g_main.h"
+#include "g_main.hpp"
 #include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
@@ -34,7 +34,7 @@
 #include "gens_core/misc/misc.h"
 #include "segacd/cd_sys.hpp"
 #include "parse.h"
-#include "ui_proxy.h"
+#include "ui_proxy.hpp"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
@@ -325,6 +325,7 @@ parseArgs (int argc, char **argv)
 	  	Video.Render_Mode = mode;
 	  }
 	}
+	/* TODO: C++ support
       else if (!strcmp (long_options[option_index].name, STRETCH_ENABLE))
 	{
 	  Stretch = 1;
@@ -341,6 +342,7 @@ parseArgs (int argc, char **argv)
 	{
 	  Blit_Soft = 0;
 	}
+	*/
       else if (!strcmp (long_options[option_index].name, CONTRAST))
 	{
 	  Contrast_Level = strtol (optarg, (char **) NULL, 10);

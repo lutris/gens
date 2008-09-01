@@ -32,8 +32,8 @@
 
 #include "emulator/g_palette.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "emulator/g_main.h"
-#include "emulator/g_update.h"
+#include "emulator/g_main.hpp"
+#include "emulator/g_update.hpp"
 
 
 /**

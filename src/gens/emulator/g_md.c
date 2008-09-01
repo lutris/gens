@@ -4,7 +4,8 @@
 
 #include "gens.h"
 #include "g_md.h"
-#include "g_main.h"
+#include "g_main.hpp"
+#include "g_update.hpp"
 #include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
@@ -275,11 +276,9 @@ int Init_Genesis (struct Rom *MD_Rom)
 			Play_Sound ();
 	}
 	
-	Load_Patch_File ();
+	Load_Patch_File();
 	
-	Last_Time = GetTickCount ();
-	New_Time = 0;
-	Used_Time = 0;
+	Reset_Update_Timers();
 	
 	// Set the appropriate frame update function pointers.
 	Update_Frame = Do_Genesis_Frame;

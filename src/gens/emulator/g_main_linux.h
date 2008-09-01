@@ -13,8 +13,6 @@ extern "C" {
 
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
-int Init_OS_Graphics(void);
-void End_OS_Graphics(void);
 
 // TODO: This isn't OS-independent...
 void update_SDL_events(void);

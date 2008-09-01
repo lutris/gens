@@ -25,7 +25,7 @@
 #endif
 
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "gens_window.h"
 #include "gens_window_callbacks.h"
 #include "gens_window_sync.h"
@@ -47,7 +47,7 @@
 #include "select_cdrom/select_cdrom_window_misc.h"
 #endif
 
-#include "emulator/ui_proxy.h"
+#include "emulator/ui_proxy.hpp"
 #include "ui-common.h"
 #include "util/file/config_file.h"
 

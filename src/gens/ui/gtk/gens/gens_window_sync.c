@@ -31,7 +31,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "sdllayer/g_sdldraw.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -169,8 +169,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Simple checkbox items
 	MItem_VSync = lookup_widget(gens_window, "GraphicsMenu_VSync");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), W_VSync);
+	// TODO: VDraw
+	/*
 	MItem_Stretch = lookup_widget(gens_window, "GraphicsMenu_Stretch");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), Stretch);
+	*/
 	MItem_SpriteLimit = lookup_widget(gens_window, "GraphicsMenu_SpriteLimit");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
 	

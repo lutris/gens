@@ -11,7 +11,7 @@
 #include "port/ini.hpp"
 
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "emulator/g_input.h"
 #include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlsound.h"
@@ -58,7 +58,7 @@
 #endif
 
 // UI
-#include "emulator/ui_proxy.h"
+#include "emulator/ui_proxy.hpp"
 #include "ui-common.h"
 
 
@@ -126,7 +126,8 @@ int Save_Config(const char *File_Name)
 	INI_WriteInt("General", "Window X", Window_Pos.x);
 	INI_WriteInt("General", "Window Y", Window_Pos.y);
 	INI_WriteInt("General", "Intro Style", Intro_Style);
-	INI_WriteInt("General", "Free Mode Color", Effect_Color);
+	// TODO: VDraw
+	//INI_WriteInt("General", "Free Mode Color", Effect_Color);
 	
 	// Video adjustments
 	INI_WriteInt("Graphics", "Contrast", Contrast_Level);
@@ -151,8 +152,11 @@ int Save_Config(const char *File_Name)
 	//INI_WriteInt("Graphics", "OpenGL Filter", gl_linear_filter);
 #endif
 	
+	// TODO: VDraw
+	/*
 	INI_WriteInt("Graphics", "Stretch", Stretch & 1);
 	INI_WriteInt("Graphics", "Software Blit", Blit_Soft & 1);
+	*/
 	INI_WriteInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	INI_WriteInt("Graphics", "Frame Skip", Frame_Skip);
 	
@@ -190,9 +194,11 @@ int Save_Config(const char *File_Name)
 	// Various settings
 	INI_WriteInt("Options", "Fast Blur", Video.Fast_Blur & 1);
 	INI_WriteInt("Options", "FPS", Show_FPS & 1);
-	INI_WriteInt("Options", "FPS Style", FPS_Style);
+	// TODO: VDraw
+	//INI_WriteInt("Options", "FPS Style", FPS_Style);
 	INI_WriteInt("Options", "Message", Show_Message & 1);
-	INI_WriteInt("Options", "Message Style", Message_Style);
+	// TODO: VDraw
+	//INI_WriteInt("Options", "Message Style", Message_Style);
 	INI_WriteInt("Options", "LED", Show_LED & 1);
 	INI_WriteInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	INI_WriteInt("Options", "Auto Pause", Auto_Pause & 1);
@@ -349,7 +355,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Window_Pos.x = INI_GetInt("General", "Window X", 0);
 	Window_Pos.y = INI_GetInt("General", "Window Y", 0);
 	Intro_Style = INI_GetInt("General", "Intro Style", 0);
-	Effect_Color = INI_GetInt("General", "Free Mode Color", 7);
+	// TODO: VDraw
+	//Effect_Color = INI_GetInt("General", "Free Mode Color", 7);
 	Sleep_Time = INI_GetInt("General", "Allow Idle", 0) & 1;
 	
 	// Color settings
@@ -386,8 +393,11 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Recalculate the MD and 32X palettes using the new color and video mode settings.
 	Recalculate_Palettes();
 	
+	// TODO: VDraw
+	/*
 	Stretch = INI_GetInt("Graphics", "Stretch", 0);
 	Blit_Soft = INI_GetInt("Graphics", "Software Blit", 0);
+	*/
 	Sprite_Over = INI_GetInt("Graphics", "Sprite Limit", 1);
 	Frame_Skip = INI_GetInt("Graphics", "Frame Skip", -1);
 	
@@ -440,9 +450,11 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Various settings
 	Video.Fast_Blur = INI_GetInt("Options", "Fast Blur", 0);
 	Show_FPS = INI_GetInt("Options", "FPS", 0);
-	FPS_Style = INI_GetInt("Options", "FPS Style", 0);
+	// TODO: VDraw
+	//FPS_Style = INI_GetInt("Options", "FPS Style", 0);
 	Show_Message = INI_GetInt("Options", "Message", 1);
-	Message_Style = INI_GetInt("Options", "Message Style", 0);
+	// TODO: VDraw
+	//Message_Style = INI_GetInt("Options", "Message Style", 0);
 	Show_LED = INI_GetInt("Options", "LED", 1);
 	Auto_Fix_CS = INI_GetInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = INI_GetInt("Options", "Auto Pause", 0);

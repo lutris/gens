@@ -11,17 +11,16 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include "gens.h"
-#include "g_main.h"
+#include "g_main.hpp"
 #include "g_input.h"
 #include "g_mcd.h"
 #include "sdllayer/g_sdlsound.h"
-#include "sdllayer/g_sdldraw.h"
-#include "ui_proxy.h"
+#include "ui_proxy.hpp"
 #include "util/file/save.h"
 #include "util/sound/gym.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/gfx/scrshot.h"
-#include "sdllayer/g_effects.h"
+#include "sdllayer/g_effects.hpp"
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.h"

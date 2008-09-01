@@ -30,7 +30,7 @@
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 
 // Includes containing variables required for this dialog.
 #include "sdllayer/g_sdldraw.h"
@@ -75,6 +75,8 @@ void Open_General_Options(void)
 	// FPS counter
 	check_fps_enable = lookup_widget(go, "check_fps_enable");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_enable), Show_FPS);
+	// TODO: VDraw
+	/*
 	check_fps_doublesized = lookup_widget(go, "check_fps_doublesized");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_doublesized), (FPS_Style & 0x10));
 	check_fps_transparency = lookup_widget(go, "check_fps_transparency");
@@ -84,10 +86,13 @@ void Open_General_Options(void)
 	sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[((FPS_Style & 0x06) >> 1) * 3]);
 	radio_button_fps_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_fps_color), TRUE);
+	*/
 	
 	// Message
 	check_message_enable = lookup_widget(go, "check_message_enable");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_enable), Show_Message);
+	// TODO: VDraw
+	/*
 	check_message_doublesized = lookup_widget(go, "check_message_doublesized");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_doublesized), (Message_Style & 0x10));
 	check_message_transparency = lookup_widget(go, "check_message_transparency");
@@ -103,6 +108,7 @@ void Open_General_Options(void)
 		GO_IntroEffectColors[Effect_Color * 3]);
 	radio_button_intro_effect_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color), TRUE);
+	*/
 	
 	// Show the General Options window.
 	gtk_widget_show_all(go);
@@ -138,6 +144,8 @@ void General_Options_Save(void)
 	// FPS counter
 	check_fps_enable = lookup_widget(general_options_window, "check_fps_enable");
 	Show_FPS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable));
+	// TODO: VDraw
+	/*
 	FPS_Style &= ~0x18;
 	check_fps_doublesized = lookup_widget(general_options_window, "check_fps_doublesized");
 	FPS_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
@@ -157,10 +165,13 @@ void General_Options_Save(void)
 			FPS_Style |= (i << 1);
 		}
 	}
+	*/
 	
 	// Message
 	check_message_enable = lookup_widget(general_options_window, "check_message_enable");
 	Show_Message = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable));
+	// TODO: VDraw
+	/*
 	Message_Style &= ~0x18;
 	check_message_doublesized = lookup_widget(general_options_window, "check_message_doublesized");
 	Message_Style |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
@@ -195,4 +206,5 @@ void General_Options_Save(void)
 			break;
 		}
 	}
+	*/
 }

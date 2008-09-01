@@ -33,7 +33,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 
 // Stores the entries in the TreeView.
 GtkListStore *listmodel_country = NULL;

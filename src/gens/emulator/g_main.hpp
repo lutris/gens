@@ -1,5 +1,5 @@
-#ifndef G_MAIN_H
-#define G_MAIN_H
+#ifndef G_MAIN_HPP
+#define G_MAIN_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,6 +86,9 @@ extern struct Gens_VideoSettings_t Video;
 // This is used by asm functions, so it can't be kept in a struct.
 extern unsigned char bpp;
 
+// TODO: Only used for DirectDraw.
+extern int Flag_Clr_Scr;
+
 // from gens-rerecording
 // TODO: Move somewhere else.
 extern int _XRay;
@@ -167,8 +170,36 @@ SetDlgItemText(hDlg, id, Str_Tmp);
 
 #endif
 
+// TODO: Figure out where to put these.
+void Put_Info(const char* msg, int duration);
+extern char Info_String[1024];
+extern int Message_Showed;
+extern unsigned int Info_Time;
+extern int Sleep_Time;
+
+// Update Frame function pointers
+extern int (*Update_Frame)(void);
+extern int (*Update_Frame_Fast)(void);
+
+// VSync flags
+extern int FS_VSync;
+extern int W_VSync;
+
+void Clear_Screen_MD(void);
+void Set_bpp(int newbpp);
+
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __cplusplus
+
+// C++ classes
+
+// New VDraw object
+#include "video/v_draw.hpp"
+extern VDraw *draw;
+
 #endif
 
 #endif

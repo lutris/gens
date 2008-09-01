@@ -27,7 +27,7 @@
 #include "directory_config_window_misc.h"
 #include "gens/gens_window.h"
 
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"

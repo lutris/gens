@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 #include "port/port.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "wave.h"
 
 

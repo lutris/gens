@@ -22,14 +22,16 @@
 
 #include <math.h>
 
-#include "g_effects.h"
-#include "g_sdldraw.h"
+#include "g_effects.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/fastblur.h"
 
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+
+
+int Effect_Color = 7;
 
 
 /**
@@ -104,7 +106,7 @@ int Update_Gens_Logo(void)
 	}
 	
 	Fast_Blur();
-	Flip();
+	draw->Flip();
 	
 	return 1;
 }
@@ -196,7 +198,7 @@ int Update_Crazy_Effect(void)
 		}
 	}
 	
-	Flip();
+	draw->Flip();
 	
 	return 1;
 }

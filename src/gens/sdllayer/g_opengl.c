@@ -23,7 +23,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "g_sdldraw.h"
 #include "gens_core/vdp/vdp_io.h"
 

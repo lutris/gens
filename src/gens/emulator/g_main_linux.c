@@ -8,7 +8,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include "gens.h"
-#include "g_main.h"
+#include "g_main.hpp"
 #include "g_input.h"
 
 GtkWidget *gens_window = NULL;
@@ -185,51 +185,4 @@ void Get_Save_Path(char *buf, size_t n)
 void Create_Save_Directory(const char *dir)
 {
 	mkdir(dir, 0700);
-}
-
-/**
- * Init_OS_Graphics(): Initialize the OS-specific graphics library.
- * @return 0 on success; non-zero on error.
- */
-int Init_OS_Graphics(void)
-{
-	if (SDL_InitSubSystem (SDL_INIT_TIMER) < 0)
-	{
-		fprintf (stderr, SDL_GetError ());
-		return -1;
-	}
-	if (SDL_InitSubSystem (SDL_INIT_VIDEO) < 0)
-	{
-		fprintf (stderr, SDL_GetError ());
-		return -1;
-	}
-	
-	/* Take it back down now that we know it works. */
-	SDL_QuitSubSystem (SDL_INIT_VIDEO);
-	
-	// Initialize joysticks.
-	// TODO: If there's an error here, merely disable joystick functionality.
-	if (SDL_InitSubSystem (SDL_INIT_JOYSTICK) < 0)
-	{
-		fprintf (stderr, SDL_GetError ());
-		return -1;
-	}
-	
-	// Initialize CD-ROM.
-	// TODO: If there's an error here, merely disable CD-ROM functionality.
-	if (SDL_InitSubSystem (SDL_INIT_CDROM) < 0)
-	{
-		fprintf (stderr, SDL_GetError ());
-		return -1;
-	}
-	
-	return 0;
-}
-
-/**
- * End_OS_Graphics(): Shut down the OS-specific graphics library.
- */
-void End_OS_Graphics()
-{
-	SDL_Quit();
 }

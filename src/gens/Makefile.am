@@ -69,7 +69,7 @@ INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/ -I@srcdir@/ui/gtk/
 bin_PROGRAMS = gens
 gens_SOURCES = \
 		emulator/gens.c \
-		emulator/g_main.c \
+		emulator/g_main.cpp \
 		emulator/g_main_linux.c \
 		emulator/g_input.c \
 		emulator/g_md.c \
@@ -77,9 +77,9 @@ gens_SOURCES = \
 		emulator/g_32x.c \
 		emulator/g_32x_32bit.c \
 		emulator/g_palette.c \
-		emulator/g_update.c \
+		emulator/g_update.cpp \
 		emulator/parse.c \
-		emulator/ui_proxy.c \
+		emulator/ui_proxy.cpp \
 		gens_core/nasmhead.inc \
 		gens_core/cpu/68k/cpu_68k.c \
 		gens_core/cpu/sh2/cpu_sh2.c \
@@ -116,10 +116,9 @@ gens_SOURCES = \
 		port/port.c \
 		port/timer.c \
 		port/ini.cpp \
-		sdllayer/g_sdldraw.c \
 		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
-		sdllayer/g_effects.c \
+		sdllayer/g_effects.cpp \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
@@ -138,7 +137,9 @@ gens_SOURCES = \
 		util/file/compress/7z.cpp \
 		util/gfx/scrshot.c \
 		util/sound/gym.c \
-		util/sound/wave.c
+		util/sound/wave.c \
+		video/v_draw.cpp \
+		video/v_draw_sdl.cpp
 ##		netplay/ccnet.c 
 ##		netplay/ccnet.h
 
@@ -210,7 +211,7 @@ endif
 
 noinst_HEADERS = \
 		emulator/gens.h \
-		emulator/g_main.h \
+		emulator/g_main.hpp \
 		emulator/g_main_linux.h \
 		emulator/g_input.h \
 		emulator/g_input_linux.h \
@@ -219,9 +220,10 @@ noinst_HEADERS = \
 		emulator/g_32x.h \
 		emulator/g_32x_32bit.h \
 		emulator/g_palette.h \
-		emulator/g_update.h \
+		emulator/g_update.hpp \
 		emulator/gens.h \
 		emulator/parse.h \
+		emulator/ui_proxy.hpp \
 		gens_core/cpu/68k/cpu_68k.h \
 		gens_core/cpu/68k/star_68k.h \
 		gens_core/cpu/sh2/sh2.h \
@@ -251,10 +253,9 @@ noinst_HEADERS = \
 		port/port.h \
 		port/timer.h \
 		port/ini.hpp \
-		sdllayer/g_sdldraw.h \
 		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \
-		sdllayer/g_effects.h \
+		sdllayer/g_effects.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \
@@ -272,8 +273,10 @@ noinst_HEADERS = \
 		util/file/compress/Zip.hpp \
 		util/file/compress/7z.hpp \
 		util/gfx/scrshot.h \
-		util/sound/gym.c \
-		util/sound/wave.c
+		util/sound/gym.h \
+		util/sound/wave.h \
+		video/v_draw.hpp \
+		video/v_draw_sdl.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \

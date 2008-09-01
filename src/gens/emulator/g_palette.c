@@ -4,7 +4,7 @@
 
 
 #include "g_palette.h"
-#include "g_main.h"
+#include "g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 

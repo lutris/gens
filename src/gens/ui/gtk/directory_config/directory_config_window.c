@@ -38,7 +38,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 
 // Includes with directory defines.
 // TODO: Consolidate these into Settings.PathNames

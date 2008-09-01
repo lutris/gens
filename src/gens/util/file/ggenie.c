@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include "port/port.h"
 #include "emulator/gens.h"
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "ggenie.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/cpu/68k/cpu_68k.h"

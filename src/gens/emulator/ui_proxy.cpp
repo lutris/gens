@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "g_main.h"
+#include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
@@ -23,7 +23,7 @@
 #include "gens_core/mem/mem_s68k.h"
 #include "util/file/save.h"
 
-#include "ui_proxy.h"
+#include "ui_proxy.hpp"
 #include "ui-common.h"
 #include "gens/gens_window_sync.h"
 
@@ -87,121 +87,9 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	int Old_Rend, *Rend;
 	BlitFn *Blit, testBlit;
 	
-	Blit = FullScreen ? &Blit_FS : &Blit_W;
+	Blit = FullScreen ? &(draw->Blit_FS) : &(draw->Blit_W);
 	Rend = &Video.Render_Mode;
 	Old_Rend = Video.Render_Mode;
-	
-	/*
-	switch (Mode)
-	{
-		case NORMAL:
-			*Rend = NORMAL;
-			// TODO: Make Blit1x return a function pointer to the correct function.
-			*Blit = Blit1x;
-			MESSAGE_L("Render selected : NORMAL", "Render selected : NORMAL", 1500);
-			break;
-
-		case DOUBLE:
-			*Rend = DOUBLE;
-			*Blit = Blit2x;
-			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500);
-			break;
-
-		case INTERPOLATED:
-			*Rend = INTERPOLATED;
-			if (Have_MMX) *Blit = Blit2x_Int_16_asm_MMX;
-			else *Blit = Blit2x_Int_16_asm;
-			MESSAGE_L("Render selected : INTERPOLATED", "Render selected : INTERPOLATED", 1500);
-			break;
-
-		case FULL_SCANLINE:
-			*Rend = FULL_SCANLINE;
-			if (Have_MMX) *Blit = Blit2x_Scanline_16_asm_MMX;
-			else *Blit = Blit2x_Scanline_16_asm;
-			MESSAGE_L("Render selected : FULL SCANLINE", "Render selected : FULL SCANLINE", 1500);
-			break;
-
-		case SCANLINE_50:
-			if (Have_MMX)
-			{
-				SELECT_RENDERER(SCANLINE_50, Blit2x_Scanline_50_16_asm_MMX, "50% SCANLINE");
-			}
-			else
-			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
-			}
-			break;
-
-		case SCANLINE_25:
-			if (Have_MMX)
-			{
-				SELECT_RENDERER(SCANLINE_25, Blit2x_Scanline_25_16_asm_MMX, "25% SCANLINE");
-			}
-			else
-			{
-				SELECT_RENDERER(FULL_SCANLINE, Blit2x_Scanline_16_asm, "FULL SCANLINE");
-			}
-			break;
-
-		case INTERPOLATED_SCANLINE:
-			*Rend = INTERPOLATED_SCANLINE;
-			if (Have_MMX) *Blit = Blit2x_Scanline_Int_16_asm_MMX;
-			else *Blit = Blit2x_Scanline_Int_16_asm;
-			MESSAGE_L("Render selected : INTERPOLATED SCANLINE", "Render selected : INTERPOLATED SCANLINE", 1500);
-			break;
-
-		case INTERPOLATED_SCANLINE_50:
-			if (Have_MMX)
-			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE_50, Blit2x_Scanline_50_Int_16_asm_MMX, "INTERPOLATED 50% SCANLINE");
-			}
-			else
-			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
-			}
-			break;
-
-		case INTERPOLATED_SCANLINE_25:
-			if (Have_MMX)
-			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE_25, Blit2x_Scanline_25_Int_16_asm_MMX, "INTERPOLATED 25% SCANLINE");
-			}
-			else
-			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
-			}
-			break;
-			
-		case KREED:
-			if (Have_MMX)
-			{
-				SELECT_RENDERER(KREED, Blit_2xSAI_16_asm_MMX, "2XSAI KREED'S ENGINE");
-			}
-			else
-			{
-				SELECT_RENDERER(INTERPOLATED_SCANLINE, Blit2x_Scanline_Int_16_asm, "INTERPOLATED SCANLINE");
-			}
-			break;
-
-			case SCALE2X:
-			*Rend = SCALE2X;
-			*Blit = Blit_Scale2x;
-			MESSAGE_L("Render selected : AdvanceMAME Scale2x", "Render selected : AdvanceMAME Scale2x", 1500);
-			break;
-
-			case HQ2X:
-			*Rend = HQ2X;
-			*Blit = _Blit_HQ2x;
-			MESSAGE_L("Render selected : HQ2x", "Render selected : HQ2x", 1500);
-			break;
-			
-		default:
-			*Rend = DOUBLE;
-			*Blit = Blit2x;
-			MESSAGE_L("Render selected : DOUBLE", "Render selected : DOUBLE", 1500);
-			break;
-	}
-	*/
 	
 	// Checks if an invalid mode number was passed.
 	if (Mode < 0 || Mode >= Renderers_Count)
@@ -242,13 +130,13 @@ int Set_Render(int FullScreen, int Mode, int Force)
 	*Blit = testBlit;
 	MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[Mode].name, 1500);
 	
-	shift = ((Video.Render_Mode) != 0);
+	draw->setShift(Video.Render_Mode == 0 ? 0 : 1);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
 	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
 	// this doesn't cover hq2x etc. properly. Let's just always refresh.
-	Refresh_Video(); 
+	draw->Refresh_Video(); 
 	
 	return 1;
 }
@@ -966,26 +854,30 @@ int Change_Stretch(int newStretch)
 	
 	Flag_Clr_Scr = 1;
 	
-	Stretch = (newStretch == 1 ? 1 : 0);
+	draw->setStretch(newStretch == 1 ? 1 : 0);
 	
-	if (Stretch)
+	if (draw->stretch())
 		MESSAGE_L("Stretched mode", "Stretched mode", 1000);
 	else
 		MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
 	
-	Adjust_Stretch();
+	// TODO: Move the Adjust_Stretch() call to draw->setStretch()?
+	draw->Adjust_Stretch();
 	return 1;
 }
 
 
-int Change_Blit_Style (void)
+int Change_Blit_Style(void)
 {
+	// TODO: Specify software blit in the parameter.
+	
 	if ((!Video.Full_Screen) || (Video.Render_Mode > 1))
 		return 0;
 	
 	Flag_Clr_Scr = 1;
 	
-	if ((Blit_Soft = (1 - Blit_Soft)))
+	draw->setSwRender(!draw->swRender());
+	if (draw->swRender())
 		MESSAGE_L("Force software blit for Full-Screen",
 			  "Force software blit for Full-Screen", 1000);
 	else
@@ -1046,7 +938,7 @@ int Change_VSync(int newVSync)
 	
 	if (Video.Full_Screen)
 	{
-		End_DDraw ();
+		draw->End_Video();
 		p_vsync = &FS_VSync;
 	}
 	else
@@ -1060,7 +952,11 @@ int Change_VSync(int newVSync)
  		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
 	
 	if (Video.Full_Screen)
-		return Init_DDraw (640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+	{
+		// TODO: Parameters.
+		//return Init_DDraw(640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+		return draw->Init_Video();
+	}
 	else
 		return 1;
 }

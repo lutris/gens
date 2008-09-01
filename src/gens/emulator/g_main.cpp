@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include "g_main.h"
+#include "g_main.hpp"
 #include "port/timer.h"
 #include "port/port.h"
 #include "port/ini.hpp"
@@ -28,7 +28,7 @@
 #include "util/sound/gym.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
-#include "ui_proxy.h"
+#include "ui_proxy.hpp"
 #include "parse.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
@@ -36,7 +36,8 @@
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pwm.h"
 #include "util/file/ggenie.h"
-#include "g_update.h"
+#include "g_update.hpp"
+#include "g_palette.h"
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.h"
@@ -49,10 +50,9 @@
 
 // TODO: Eliminate the dependency on these files.
 #include "sdllayer/g_sdlsound.h"
-#include "sdllayer/g_sdldraw.h"
 #include "sdllayer/g_sdlinput.h"
 
-#include "sdllayer/g_effects.h"
+#include "sdllayer/g_effects.hpp"
 
 #include "ui-common.h"
 #include "gtk-misc.h"
@@ -103,6 +103,11 @@ int Kaillera_Client_Running = 0;
 int Quick_Exit = 0;
 
 static int Gens_Running = 0;
+
+// New video layer.
+#include "video/v_draw.hpp"
+#include "video/v_draw_sdl.hpp"
+VDraw *draw;
 
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
@@ -229,7 +234,7 @@ static void Init_Settings(void)
 	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;
 	Net_Play = 0;
-	Stretch = 0;
+	draw->setStretch(false);
 	Sprite_Over = 1;
 	Show_Message = 1;
 	
@@ -315,7 +320,7 @@ int is_gens_running ()
  */
 int Init(void)
 {
-	if (Init_OS_Graphics() != 0)
+	if (draw->Init_Subsystem() != 0)
 		return 0;
 	
 	init_timer();
@@ -349,17 +354,20 @@ int Init(void)
 /**
  * End_All(): Close all functions.
  */
-void End_All (void)
+void End_All(void)
 {
 	Free_Rom(Game);
-	End_DDraw();
 	End_Input();
 	YM2612_End();
 	End_Sound();
 #ifdef GENS_CDROM
 	End_CD_Driver();
 #endif
-	End_OS_Graphics();
+	
+	draw->End_Video();
+	draw->Shut_Down();
+	delete draw;
+	draw = NULL;
 }
 
 
@@ -451,6 +459,10 @@ void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int ti
  */
 int main(int argc, char *argv[])
 {
+	// Initialize the drawing object.
+	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
+	draw = new VDraw_SDL();
+	
 	// Initialize the Settings struct.
 	Init_Settings();
 	
@@ -521,7 +533,7 @@ int main(int argc, char *argv[])
 		if (Debug)		// DEBUG
 		{
 			Update_Debug_Screen();
-			Flip ();
+			draw->Flip();
 		}
 		else
 #endif /* GENS_DEBUGGER */
@@ -538,7 +550,7 @@ int main(int argc, char *argv[])
 				else
 				{
 				*/
-					Update_Emulation ();
+					Update_Emulation();
 				//}
 			}
 			else
@@ -549,7 +561,7 @@ int main(int argc, char *argv[])
 				else
 					Do_VDP_Only();
 				Pause_Screen();
-				Flip ();
+				draw->Flip();
 				Sleep (100);
 			}
 		}
@@ -563,20 +575,20 @@ int main(int argc, char *argv[])
 		{
 			// GENS LOGO EFFECT
 			Update_Gens_Logo ();
-			Sleep (5);
+			Sleep(5);
 		}
 		else if (Intro_Style == 2)
 		{
 			// STRANGE EFFECT
 			Update_Crazy_Effect ();
-			Sleep (10);
+			Sleep(10);
 		}
 		else if (Intro_Style == 3)
 		{
 			// GENESIS BIOS
 			Do_Genesis_Frame ();
-			Flip ();
-			Sleep (20);
+			draw->Flip();
+			Sleep(20);
 		}
 		else
 		{
@@ -584,8 +596,8 @@ int main(int argc, char *argv[])
 			// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
 			// TODO: Fix this lag!
 			Clear_Screen_MD();
-			Flip();
-			Sleep (200);
+			draw->Flip();
+			Sleep(200);
 		}
 	}
 	
@@ -595,4 +607,107 @@ int main(int argc, char *argv[])
 	
 	End_All ();
 	return 0;
+}
+
+
+// The following is stuff imported from g_sdldraw.c.
+// TODO: Figure out where to put it.
+int (*Update_Frame)(void);
+int (*Update_Frame_Fast)(void);
+
+// TODO: Only used for DirectDraw.
+int Flag_Clr_Scr = 0;
+
+// VSync flags
+int FS_VSync;
+int W_VSync;
+
+// TODO: Get rid of this.
+static void win2linux(char* str)
+{
+	char* tmp=str;
+	for (; *tmp; ++tmp)
+	{
+		switch((unsigned char)*tmp)
+		{
+			case 0xE7: *tmp='c';break;//ç
+			case 0xE8: *tmp='e';break;//è
+			case 0xE9: *tmp='e';break;//é
+			case 0xEA: *tmp='e';break;//ê
+			case 0xE0: *tmp='a';break;//à
+			case 0xEE: *tmp='i';break;//î
+			default:break;
+		}	
+	}
+}
+
+
+/**
+ * Put_Info(): Put a message on the screen.
+ * @param message Message to write to the screen.
+ * @param duration Duration for the message to appear, in milliseconds.
+ */
+char Info_String[1024];
+int Message_Showed = 0;
+unsigned int Info_Time = 0;
+void Put_Info(const char* msg, int duration)
+{
+	// TODO: Figure out a better place to put this.
+	if (Show_Message)
+	{
+		strcpy(Info_String, msg);
+		win2linux(Info_String);
+		Info_Time = GetTickCount() + duration;
+		Message_Showed = 1;
+	}
+}
+
+
+/**
+ * Clear_Screen_MD(): Clears the MD screen.
+ */
+void Clear_Screen_MD(void)
+{
+	memset(MD_Screen, 0x00, sizeof(MD_Screen));
+	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
+}
+
+/**
+ * Set_bpp(): Sets the bpp value.
+ * @param newbpp New bpp value.
+ */
+void Set_bpp(int newbpp)
+{
+	if (bpp == newbpp)
+		return;
+	
+	bpp = newbpp;
+	draw->End_Video();
+	draw->Init_Video();
+	
+	// Reset the renderer.
+	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 0))
+	{
+		// Cannot initialize video mode. Try using render mode 0 (normal).
+		if (!Set_Render(Video.Full_Screen, 0, 1))
+		{
+			// Cannot initialize normal mode.
+			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
+			exit(1);
+		}
+	}
+	
+	// Recalculate palettes.
+	Recalculate_Palettes();
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// TODO: After switching color depths, the screen buffer isn't redrawn
+	// until something's updated. Figure out how to trick the renderer
+	// into updating anyway.
+	
+	// NOTE: This only seems to be a problem with 15-to-16 or 16-to-15 at the moment.
+	
+	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
 }

@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "emulator/g_main.h"
+#include "emulator/g_main.hpp"
 #include "util/file/unzip.h"
 #include "ui-common.h"
 
