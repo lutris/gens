@@ -44,7 +44,7 @@ class VDraw
 		//virtual void Clear_Back_Screen(void) = 0;
 		
 		// Flip the screen bufer.
-		int Flip(void);
+		int flip(void);
 		
 		// Adjust stretch parameters.
 		virtual void Adjust_Stretch(void) = 0;
@@ -90,7 +90,7 @@ class VDraw
 		bool m_Stretch;
 		
 		// Flip the screen buffer. (Renderer-specific function)
-		virtual int Flip_internal(void) = 0;
+		virtual int flipInternal(void) = 0;
 		
 		// FPS counter
 		float m_FPS, m_FPS_Frames[8];

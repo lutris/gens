@@ -35,7 +35,7 @@ class VDraw_SDL : public VDraw
 		int Init_SDL_Renderer(int w, int h);
 		
 		// Flip the screen buffer. (Called by v_draw.)
-		int Flip_internal(void);
+		int flipInternal(void);
 		
 		// SDL flags
 		static const int SDL_Flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL;

@@ -154,7 +154,7 @@ void VDraw_SDL::Clear_Screen(void)
  * Flip_internal(): Flip the screen buffer. (Called by v_draw.)
  * @return 1 on success; 0 on error.
  */
-int VDraw_SDL::Flip_internal(void)
+int VDraw_SDL::flipInternal(void)
 {
 	SDL_Rect border;
 	

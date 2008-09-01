@@ -533,7 +533,7 @@ int main(int argc, char *argv[])
 		if (Debug)		// DEBUG
 		{
 			Update_Debug_Screen();
-			draw->Flip();
+			draw->flip();
 		}
 		else
 #endif /* GENS_DEBUGGER */
@@ -561,7 +561,7 @@ int main(int argc, char *argv[])
 				else
 					Do_VDP_Only();
 				//Pause_Screen();
-				draw->Flip();
+				draw->flip();
 				Sleep(100);
 			}
 		}
@@ -570,7 +570,7 @@ int main(int argc, char *argv[])
 			// No game is currently running.
 			
 			// Update the screen.
-			draw->Flip();
+			draw->flip();
 			
 			// Determine how much sleep time to add, based on intro style.
 			// TODO: Move this to v_draw.cpp?
