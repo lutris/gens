@@ -126,7 +126,7 @@ int VDraw_SDL::Init_SDL_Renderer(int w, int h)
  */
 void VDraw_SDL::End_Video(void)
 {
-	// Placeholder functio in case something needs to be added later.
+	// Placeholder function in case something needs to be added later.
 }
 
 
