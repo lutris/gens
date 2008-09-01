@@ -138,7 +138,7 @@ int VDraw::flip(void)
 			Print_Text(m_MsgText.c_str(), m_MsgText.length(), 10, 210, m_MsgStyle);
 		}
 	}
-	else if (Show_FPS && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{
 		if (m_FPS_FreqCPU[0] > 1)	// accurate timer ok
 		{

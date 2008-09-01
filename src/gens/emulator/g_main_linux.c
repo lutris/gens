@@ -9,7 +9,7 @@
 #include <gdk/gdkx.h>
 #include "gens.h"
 #include "g_main.hpp"
-#include "g_input.h"
+#include "g_input.hpp"
 
 GtkWidget *gens_window = NULL;
 

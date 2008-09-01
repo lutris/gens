@@ -12,7 +12,7 @@
 
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
-#include "emulator/g_input.h"
+#include "emulator/g_input.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 #include "util/gfx/scrshot.h"
@@ -192,7 +192,7 @@ int Save_Config(const char *File_Name)
 	
 	// Various settings
 	INI_WriteInt("Options", "Fast Blur", Video.Fast_Blur & 1);
-	INI_WriteInt("Options", "FPS", Show_FPS & 1);
+	INI_WriteInt("Options", "FPS", (draw->fpsEnabled() ? 1 : 0));
 	// TODO: VDraw
 	//INI_WriteInt("Options", "FPS Style", FPS_Style);
 	INI_WriteInt("Options", "Message", (draw->msgEnabled() ? 1 : 0));
@@ -452,7 +452,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Various settings
 	Video.Fast_Blur = INI_GetInt("Options", "Fast Blur", 0);
-	Show_FPS = INI_GetInt("Options", "FPS", 0);
+	draw->setFPSEnabled(INI_GetInt("Options", "FPS", 0));
 	// TODO: VDraw
 	//FPS_Style = INI_GetInt("Options", "FPS Style", 0);
 	draw->setMsgEnabled(INI_GetInt("Options", "Message", 1));

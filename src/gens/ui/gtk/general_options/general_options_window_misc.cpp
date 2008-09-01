@@ -73,7 +73,7 @@ void Open_General_Options(void)
 	
 	// FPS counter
 	check_fps_enable = lookup_widget(go, "check_fps_enable");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_enable), Show_FPS);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_enable), (draw->fpsEnabled() ? 1 : 0));
 	
 	curFPSStyle = draw->fpsStyle();
 	check_fps_doublesized = lookup_widget(go, "check_fps_doublesized");
@@ -145,7 +145,7 @@ void General_Options_Save(void)
 	// FPS counter
 	// TODO: VDraw for Show_FPS
 	check_fps_enable = lookup_widget(general_options_window, "check_fps_enable");
-	Show_FPS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable));
+	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable)));
 	
 	curFPSStyle = draw->fpsStyle() & ~0x18;
 	check_fps_doublesized = lookup_widget(general_options_window, "check_fps_doublesized");

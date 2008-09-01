@@ -71,7 +71,7 @@ gens_SOURCES = \
 		emulator/gens.c \
 		emulator/g_main.cpp \
 		emulator/g_main_linux.c \
-		emulator/g_input.c \
+		emulator/g_input.cpp \
 		emulator/g_md.c \
 		emulator/g_mcd.c \
 		emulator/g_32x.c \
@@ -213,7 +213,7 @@ noinst_HEADERS = \
 		emulator/gens.h \
 		emulator/g_main.hpp \
 		emulator/g_main_linux.h \
-		emulator/g_input.h \
+		emulator/g_input.hpp \
 		emulator/g_input_linux.h \
 		emulator/g_md.h \
 		emulator/g_mcd.h \

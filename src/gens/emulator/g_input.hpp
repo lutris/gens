@@ -2,8 +2,8 @@
  * GENS: Input handler.
  */
 
-#ifndef G_INPUT_H
-#define G_INPUT_H
+#ifndef GENS_INPUT_HPP
+#define GENS_INPUT_HPP
 
 #ifdef __cplusplus
 extern "C" {

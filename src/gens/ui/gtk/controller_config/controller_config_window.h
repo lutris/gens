@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-#include "emulator/g_input.h"
+#include "emulator/g_input.hpp"
 #include <gtk/gtk.h>
 
 GtkWidget* create_controller_config_window(void); 

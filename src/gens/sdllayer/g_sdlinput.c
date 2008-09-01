@@ -7,7 +7,7 @@
 #include "g_sdlinput.h"
 #include "gens_core/io/io.h"
 #include "emulator/g_main.hpp"
-#include "emulator/g_input.h"
+#include "emulator/g_input.hpp"
 
 
 #include "gtk-misc.h"

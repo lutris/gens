@@ -6,12 +6,11 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-
+#include <SDL/SDL.h>
 
 unsigned int Get_Key(void);
 int Check_Key_Pressed(unsigned int key);
 int Setting_Keys(GtkWidget* control_window, int Player, int TypeP);
-
 
 int Init_Input(void);
 void End_Input(void);
@@ -28,7 +27,6 @@ extern SDL_Joystick* joy[6];
 #else
 extern struct SDL_Joystick* joy[6];
 #endif
-
 
 #ifdef __cplusplus
 }

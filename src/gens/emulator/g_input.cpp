@@ -6,13 +6,14 @@
 #include <config.h>
 #endif
 
+#include "g_input.hpp"
+
 #include <stdio.h>
 #include <SDL.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include "gens.h"
 #include "g_main.hpp"
-#include "g_input.h"
 #include "g_mcd.h"
 #include "sdllayer/g_sdlsound.h"
 #include "ui_proxy.hpp"
@@ -285,7 +286,7 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				Show_FPS = !Show_FPS;
+				draw->setFPSEnabled(!draw->fpsEnabled());
 			}
 			break;
 		

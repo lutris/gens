@@ -86,7 +86,6 @@ int Paused = 0;
 int Net_Play = 0;
 int Full_Screen = 0;
 int Resolution = 1;
-int Show_FPS = 0;
 int Show_LED = 0;
 int FS_Minimised = 0;
 int Auto_Pause = 0;
