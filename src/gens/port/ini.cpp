@@ -14,10 +14,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <map>
+using std::endl;
 using std::ios;
 using std::ifstream;
+using std::ofstream;
 using std::string;
+using std::stringstream;
 using std::map;
 using std::pair;
 
@@ -55,88 +59,93 @@ void INI_LoadConfig(const char* filename)
 	// Open the file.
 	ifstream cfgFile(filename);
 	
+	iniFile::iterator iniSectIter;
 	iniSection curSection; string curSectionName;
 	iniSection::iterator sectKeyIter;
-	iniFile::iterator iniSectIter;
 	
 	unsigned int commentPos;
 	unsigned int equalsPos;
 	string curKey, curValue;
 	
-	if (cfgFile.is_open())
+	if (!cfgFile.is_open())
 	{
-		while (!cfgFile.eof())
+		// Error opening the INI file.
+		fprintf(stderr, "%s: Error opening INI file %s", __func__, filename);
+		return;
+	}
+	
+	
+	while (!cfgFile.eof())
+	{
+		getline(cfgFile, tmp);
+		
+		// Parse the line.
+		
+		// Remove any comments from the line.
+		commentPos = tmp.find(";");
+		if (commentPos != string::npos)
 		{
-			getline(cfgFile, tmp);
+			// Comment found.
+			tmp = tmp.substr(0, commentPos - 1);
+		}
+		
+		if (tmp.length() == 0)
+		{
+			// Empty string.
+			continue;
+		}
+		
+		if (tmp.substr(0, 1) == "[" &&
+			tmp.substr(tmp.length() - 1, 1) == "]")
+		{
+			// Section header.
 			
-			// Parse the line.
-			
-			// Remove any comments from the line.
-			commentPos = tmp.find(";");
-			if (commentPos != string::npos)
+			// If there's a section right now, add it to the map.
+			if (curSectionName.length() > 0)
 			{
-				// Comment found.
-				tmp = tmp.substr(0, commentPos - 1);
+				gensCfg.insert(pair<string, iniSection>(curSectionName, curSection));
+				curSection.clear();
+				curSectionName.clear();
 			}
 			
-			if (tmp.length() == 0)
+			// Set the section.
+			curSectionName = tmp.substr(1, tmp.length() - 2);
+			
+			// Check if this section already exists.
+			iniSectIter = gensCfg.find(curSectionName);
+			if (iniSectIter != gensCfg.end())
 			{
-				// Empty string.
+				// Section already exists.
+				// Copy it and delete the one in the map.
+				curSectionName = (*sectKeyIter).first;
+				curSection = (*iniSectIter).second;
+				gensCfg.erase(iniSectIter);
+			}
+		}
+		else if (curSectionName.length() > 0)
+		{
+			// Check if there's an "=", indicating a key value.
+			equalsPos = tmp.find("=");
+			if (equalsPos == string::npos)
+			{
+				// No key value.
 				continue;
 			}
 			
-			if (tmp.substr(0, 1) == "[" &&
-			    tmp.substr(tmp.length() - 1, 1) == "]")
+			// Key value.
+			curKey = tmp.substr(0, equalsPos);
+			curValue = tmp.substr(equalsPos + 1);
+			
+			// Check if this key already exists in the current section.
+			sectKeyIter = curSection.find(curKey);
+			if (sectKeyIter != curSection.end())
 			{
-				// Section header.
-				
-				// If there's a section right now, add it to the map.
-				if (curSectionName.length() > 0)
-				{
-					gensCfg.insert(pair<string, iniSection>(curSectionName, curSection));
-					curSection.clear();
-					curSectionName.clear();
-				}
-				
-				// Set the section.
-				curSectionName = tmp.substr(1, tmp.length() - 2);
-				
-				// Check if this section already exists.
-				iniSectIter = gensCfg.find(curSectionName);
-				if (iniSectIter != gensCfg.end())
-				{
-					// Section already exists.
-					// Copy it and delete the one in the map.
-					curSectionName = (*sectKeyIter).first;
-					curSection = (*iniSectIter).second;
-					gensCfg.erase(iniSectIter);
-				}
+				// Already exists. Delete the existing one.
+				curSection.erase(sectKeyIter);
 			}
-			else if (curSectionName.length() > 0)
-			{
-				// Check if there's an "=", indicating a key value.
-				equalsPos = tmp.find("=");
-				if (equalsPos == string::npos)
-				{
-					// No key value.
-					continue;
-				}
-				
-				// Key value.
-				curKey = tmp.substr(0, equalsPos);
-				curValue = tmp.substr(equalsPos + 1);
-				
-				// Check if this key already exists in the current section.
-				sectKeyIter = curSection.find(curKey);
-				if (sectKeyIter != curSection.end())
-				{
-					// Already exists. Delete the existing one.
-					curSection.erase(sectKeyIter);
-				}
-				
-				// Add the key.
-				curSection.insert(pair<string, string>(curKey, curValue));
-			}
+			
+			// Add the key.
+			curSection.insert(pair<string, string>(curKey, curValue));
 		}
 	}
 	
@@ -224,6 +233,108 @@ void INI_GetString(const char* section, const char* key, const char* def,
 	
 	// Found the key.
 	strncpy(buf, (*sectKeyIter).second.c_str(), size);
+}
+
+
+/**
+ * INI_WriteInt(): Writes an integer value to the loaded INI file.
+ * @param section Section to get from.
+ * @param key Key to get from.
+ * @param value Integer value to write.
+ */
+void INI_WriteInt(const char* section, const char* key, const int value)
+{
+	stringstream out;
+	out << value;
+	INI_WriteString(section, key, out.str().c_str());
+}
+
+
+/**
+ * INI_WriteString(): Writes a string value to the loaded INI file.
+ * @param section Section to get from.
+ * @param key Key to get from.
+ * @param value String value to write.
+ */
+void INI_WriteString(const char* section, const char* key, const char* value)
+{
+	iniFile::iterator iniSectIter;
+	iniSection::iterator sectKeyIter;
+	
+	iniSectIter = gensCfg.find(section);
+	if (iniSectIter == gensCfg.end())
+	{
+		// Section not found. Create it.
+		iniSection newSection;
+		gensCfg.insert(pair<string, iniSection>(section, newSection));
+		iniSectIter = gensCfg.find(section);
+		if (iniSectIter == gensCfg.end())
+		{
+			// Error creating the new section.
+			fprintf(stderr, "%s: Error creating new INI section: %s\n", __func__, section);
+			return;
+		}
+	}
+	
+	// Check if this key already exists.
+	sectKeyIter = (*iniSectIter).second.find(key);
+	if (sectKeyIter != (*iniSectIter).second.end())
+	{
+		// Key found. Delete it.
+		(*iniSectIter).second.erase(sectKeyIter);
+	}
+	
+	// Create the key.
+	(*iniSectIter).second.insert(pair<string, string>(key, value));
+	
+	// Found the key.
+	return;
+}
+
+
+/**
+ * INI_SaveConfig(): Save gensCfg to the specified INI file.
+ * @param filename Filename of the INI file to save to.
+ */
+void INI_SaveConfig(const char* filename)
+{
+	// Load the specified INI file.
+	string tmp;
+	
+	// Open the file.
+	ofstream cfgFile(filename);
+	
+	iniFile::iterator iniSectIter;
+	iniSection::iterator sectKeyIter;
+	
+	if (!cfgFile.is_open())
+	{
+		// Error opening the INI file.
+		fprintf(stderr, "%s: Error opening INI file %s", __func__, filename);
+		return;
+	}
+	
+	// Write to the INI file.
+	for (iniSectIter = gensCfg.begin(); iniSectIter != gensCfg.end(); iniSectIter++)
+	{
+		// Write the section header.
+		cfgFile << "[" << (*iniSectIter).first << "]" << endl;
+		
+		// Write all keys.
+		for (sectKeyIter = (*iniSectIter).second.begin();
+		     sectKeyIter != (*iniSectIter).second.end();
+		     sectKeyIter++)
+		{
+			cfgFile << (*sectKeyIter).first << "=" << (*sectKeyIter).second << endl;
+		}
+		
+		// Add a newline between sections.
+		cfgFile << endl;
+	}
+	
+	// Done.
+	
+	cfgFile.close();
 }
 
 

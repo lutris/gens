@@ -78,248 +78,181 @@ int Save_Config(const char *File_Name)
 	char Conf_File[GENS_PATH_MAX];
 	strncpy(Conf_File, File_Name, GENS_PATH_MAX);
 	
+	// Load the configuration file into the INI handler.
+	INI_LoadConfig(Conf_File);
+	
 	// Paths
-	WritePrivateProfileString("General", "Rom path", Rom_Dir, Conf_File);
-	WritePrivateProfileString("General", "Save path", State_Dir, Conf_File);
-	WritePrivateProfileString("General", "SRAM path", SRAM_Dir, Conf_File);
-	WritePrivateProfileString("General", "BRAM path", BRAM_Dir, Conf_File);
-	WritePrivateProfileString("General", "Dump path", Dump_Dir, Conf_File);
-	WritePrivateProfileString("General", "Dump GYM path", Dump_GYM_Dir, Conf_File);
-	WritePrivateProfileString("General", "Screen Shot path", ScrShot_Dir, Conf_File);
-	WritePrivateProfileString("General", "Patch path", Patch_Dir, Conf_File);
-	WritePrivateProfileString("General", "IPS Patch path", IPS_Dir, Conf_File);
+	INI_WriteString("General", "ROM Path", Rom_Dir);
+	INI_WriteString("General", "Save Path", State_Dir);
+	INI_WriteString("General", "SRAM Path", SRAM_Dir);
+	INI_WriteString("General", "BRAM Path", BRAM_Dir);
+	INI_WriteString("General", "Dump Path", Dump_Dir);
+	INI_WriteString("General", "Dump GYM Path", Dump_GYM_Dir);
+	INI_WriteString("General", "Screen Shot Path", ScrShot_Dir);
+	INI_WriteString("General", "Patch Path", Patch_Dir);
+	INI_WriteString("General", "IPS Patch Path", IPS_Dir);
 	
 	// Genesis BIOS
-	WritePrivateProfileString("General", "Genesis Bios", BIOS_Filenames.MD_TMSS, Conf_File);
+	INI_WriteString("General", "Genesis BIOS", BIOS_Filenames.MD_TMSS);
 	
 	// SegaCD BIOSes
-	WritePrivateProfileString ("General", "USA CD Bios", BIOS_Filenames.SegaCD_US, Conf_File);
-	WritePrivateProfileString ("General", "EUROPE CD Bios", BIOS_Filenames.MegaCD_EU, Conf_File);
-	WritePrivateProfileString ("General", "JAPAN CD Bios", BIOS_Filenames.MegaCD_JP, Conf_File);
+	INI_WriteString("General", "USA CD BIOS", BIOS_Filenames.SegaCD_US);
+	INI_WriteString("General", "Europe CD BIOS", BIOS_Filenames.MegaCD_EU);
+	INI_WriteString("General", "Japan CD BIOS", BIOS_Filenames.MegaCD_JP);
 	
 	// 32X BIOSes
-	WritePrivateProfileString("General", "32X 68000 Bios", BIOS_Filenames._32X_MC68000, Conf_File);
-	WritePrivateProfileString("General", "32X Master SH2 Bios", BIOS_Filenames._32X_MSH2, Conf_File);
-	WritePrivateProfileString("General", "32X Slave SH2 Bios", BIOS_Filenames._32X_SSH2, Conf_File);
+	INI_WriteString("General", "32X 68000 BIOS", BIOS_Filenames._32X_MC68000);
+	INI_WriteString("General", "32X Master SH2 BIOS", BIOS_Filenames._32X_MSH2);
+	INI_WriteString("General", "32X Slave SH2 BIOS", BIOS_Filenames._32X_SSH2);
 	
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
 	{
-		sprintf(Str_Tmp, "Rom %d", i + 1);
-		WritePrivateProfileString("General", Str_Tmp, Recent_Rom[i], Conf_File);
+		sprintf(Str_Tmp, "ROM %d", i + 1);
+		INI_WriteString("General", Str_Tmp, Recent_Rom[i]);
 	}
 	
+#ifdef GENS_CDROM
 	// SegaCD
-	WritePrivateProfileString("General", "CD Drive", CDROM_DEV, Conf_File);
-	sprintf(Str_Tmp, "%d", CDROM_SPEED);
-	WritePrivateProfileString("General", "CD Speed", Str_Tmp, Conf_File);
-	
-	sprintf(Str_Tmp, "%d", Current_State);
-	WritePrivateProfileString("General", "State Number", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Language);
-	WritePrivateProfileString("General", "Language", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Window_Pos.x);
-	WritePrivateProfileString("General", "Window X", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Window_Pos.y);
-	WritePrivateProfileString("General", "Window Y", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Effect_Color);
-	WritePrivateProfileString("General", "Free Mode Color", Str_Tmp, Conf_File);
-	
-	// Video adjustments
-	sprintf(Str_Tmp, "%d", Contrast_Level);
-	WritePrivateProfileString("Graphics", "Contrast", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Brightness_Level);
-	WritePrivateProfileString("Graphics", "Brightness", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Greyscale & 1);
-	WritePrivateProfileString("Graphics", "Greyscale", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Invert_Color & 1);
-	WritePrivateProfileString("Graphics", "Invert", Str_Tmp, Conf_File);
-	
-	// Video settings
-	// Render_Mode is incremented by 1 for compatibility with old Gens.
-	// TODO: BUG: If "Full Scree VSync" is saved before "Full Screen",
-	// the Linux reimplementation of WritePrivateProfileString gets confused.
-	sprintf(Str_Tmp, "%d", Video.Full_Screen & 1);
-	WritePrivateProfileString("Graphics", "Full Screen", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Video.Render_Mode + 1);
-	WritePrivateProfileString("Graphics", "Render Mode", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", FS_VSync & 1);
-	WritePrivateProfileString("Graphics", "Full Screen VSync", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", W_VSync & 1);
-	WritePrivateProfileString("Graphics", "Windows VSync", Str_Tmp, Conf_File);
-	
-	sprintf(Str_Tmp, "%d", bpp);
-	WritePrivateProfileString("Graphics", "Bits Per Pixel", Str_Tmp, Conf_File);
-#ifdef GENS_OPENGL
-	sprintf(Str_Tmp, "%d", Video.OpenGL & 1);
-	WritePrivateProfileString("Graphics", "Render Opengl", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Video.Width_GL);
-	WritePrivateProfileString("Graphics", "Opengl Width", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Video.Height_GL);
-	WritePrivateProfileString("Graphics", "Opengl Height", Str_Tmp, Conf_File);
-	/*
-	sprintf(Str_Tmp, "%d", gl_linear_filter);
-	WritePrivateProfileString("Graphics", "Opengl Filter", Str_Tmp, Conf_File);
+	INI_WriteString("General", "CD Drive", CDROM_DEV);
+	INI_WriteInt("General", "CD Speed", CDROM_SPEED);
+	/* TODO: I'm assuming this code is for Win32...
+	INI_WriteInt("Options", "CD Drive", CUR_DEV);
 	*/
 #endif
 	
-	sprintf(Str_Tmp, "%d", Stretch & 1);  
-	WritePrivateProfileString("Graphics", "Stretch", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Blit_Soft & 1);
-	WritePrivateProfileString("Graphics", "Software Blit", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Sprite_Over & 1);
-	WritePrivateProfileString("Graphics", "Sprite limit", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Frame_Skip);
-	WritePrivateProfileString("Graphics", "Frame skip", Str_Tmp, Conf_File);
+	INI_WriteInt("General", "State Number", Current_State);
+	INI_WriteInt("General", "Language", Language);
+	INI_WriteInt("General", "Window X", Window_Pos.x);
+	INI_WriteInt("General", "Window Y", Window_Pos.y);
+	INI_WriteInt("General", "Free Mode Color", Effect_Color);
+	
+	// Video adjustments
+	INI_WriteInt("Graphics", "Contrast", Contrast_Level);
+	INI_WriteInt("Graphics", "Brightness", Brightness_Level);
+	INI_WriteInt("Graphics", "Greyscale", Greyscale & 1);
+	INI_WriteInt("Graphics", "Invert", Invert_Color & 1);
+	
+	// Video settings
+	// Render_Mode is incremented by 1 for compatibility with old Gens.
+	// TODO: BUG: If "Full Screen VSync" is saved before "Full Screen",
+	// the Linux reimplementation of WritePrivateProfileString gets confused.
+	INI_WriteInt("Graphics", "Full Screen", Video.Full_Screen & 1);
+	INI_WriteInt("Graphics", "Render Mode", Video.Render_Mode + 1);
+	INI_WriteInt("Graphics", "Full Screen VSync", FS_VSync & 1);
+	INI_WriteInt("Graphics", "Windows VSync", W_VSync & 1);
+	
+	INI_WriteInt("Graphics", "Bits Per Pixel", bpp);
+#ifdef GENS_OPENGL
+	INI_WriteInt("Graphics", "Render OpenGL", Video.OpenGL & 1);
+	INI_WriteInt("Graphics", "OpenGL Width", Video.Width_GL);
+	INI_WriteInt("Graphics", "OpenGL Height", Video.Height_GL);
+	//INI_WriteInt("Graphics", "OpenGL Filter", gl_linear_filter);
+#endif
+	
+	INI_WriteInt("Graphics", "Stretch", Stretch & 1);
+	INI_WriteInt("Graphics", "Software Blit", Blit_Soft & 1);
+	INI_WriteInt("Graphics", "Sprite Limit", Sprite_Over & 1);
+	INI_WriteInt("Graphics", "Frame Skip", Frame_Skip);
 	
 	// Sound settings
-	sprintf(Str_Tmp, "%d", Sound_Enable & 1);
-	WritePrivateProfileString("Sound", "State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Sound_Rate);
-	WritePrivateProfileString("Sound", "Rate", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Sound_Stereo);
-	WritePrivateProfileString("Sound", "Stereo", Str_Tmp, Conf_File);
+	INI_WriteInt("Sound", "State", Sound_Enable);
+	INI_WriteInt("Sound", "Rate", Sound_Rate);
+	INI_WriteInt("Sound", "Stereo", Sound_Stereo);
 	
-	sprintf(Str_Tmp, "%d", Z80_State & 1);
-	WritePrivateProfileString("Sound", "Z80 State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", YM2612_Enable & 1);
-	WritePrivateProfileString("Sound", "YM2612 State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", PSG_Enable & 1);
-	WritePrivateProfileString("Sound", "PSG State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", DAC_Enable & 1);
-	WritePrivateProfileString("Sound", "DAC State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", PCM_Enable & 1);
-	WritePrivateProfileString("Sound", "PCM State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", PWM_Enable & 1);
-	WritePrivateProfileString("Sound", "PWM State", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", CDDA_Enable & 1);
-	WritePrivateProfileString("Sound", "CDDA State", Str_Tmp, Conf_File);
+	INI_WriteInt("Sound", "Z80 State", Z80_State & 1);
+	INI_WriteInt("Sound", "YM2612 State", YM2612_Enable & 1);
+	INI_WriteInt("Sound", "PSG State", PSG_Enable & 1);
+	INI_WriteInt("Sound", "DAC State", DAC_Enable & 1);
+	INI_WriteInt("Sound", "PCM State", PCM_Enable & 1);
+	INI_WriteInt("Sound", "PWM State", PWM_Enable & 1);
+	INI_WriteInt("Sound", "CDDA State", CDDA_Enable & 1);
 	
 	// Improved sound options
-	sprintf(Str_Tmp, "%d", YM2612_Improv & 1);
-	WritePrivateProfileString("Sound", "YM2612 Improvement", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", DAC_Improv & 1);
-	WritePrivateProfileString("Sound", "DAC Improvement", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", PSG_Improv & 1);
-	WritePrivateProfileString("Sound", "PSG Improvement", Str_Tmp, Conf_File);
+	INI_WriteInt("Sound", "YM2612 Improvement", YM2612_Improv & 1);
+	INI_WriteInt("Sound", "DAC Improvement", DAC_Improv & 1);
+	INI_WriteInt("Sound", "PSG Improvement", PSG_Improv & 1);
 	
 	// Country codes
-	sprintf(Str_Tmp, "%d", Country);
-	WritePrivateProfileString("CPU", "Country", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Country_Order[0]);
-	WritePrivateProfileString("CPU", "Prefered Country 1", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Country_Order[1]);
-	WritePrivateProfileString("CPU", "Prefered Country 2", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Country_Order[2]);
-	WritePrivateProfileString("CPU", "Prefered Country 3", Str_Tmp, Conf_File);
+	INI_WriteInt("CPU", "Country", Country);
+	INI_WriteInt("CPU", "Prefered Country 1", Country_Order[0]);
+	INI_WriteInt("CPU", "Prefered Country 2", Country_Order[1]);
+	INI_WriteInt("CPU", "Prefered Country 3", Country_Order[2]);
 	
 	// CPU options
 	
-	sprintf(Str_Tmp, "%d", SegaCD_Accurate);
-	WritePrivateProfileString("CPU", "Perfect synchro between main and sub CPU (Sega CD)", Str_Tmp, Conf_File);
+	INI_WriteInt("CPU", "Perfect synchro between main and sub CPU (Sega CD)", SegaCD_Accurate);
 	
-	sprintf(Str_Tmp, "%d", MSH2_Speed);
-	WritePrivateProfileString("CPU", "Main SH2 Speed", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", SSH2_Speed);
-	WritePrivateProfileString("CPU", "Slave SH2 Speed", Str_Tmp, Conf_File);
+	INI_WriteInt("CPU", "Main SH2 Speed", MSH2_Speed);
+	INI_WriteInt("CPU", "Slave SH2 Speed", SSH2_Speed);
 	
 	// Various settings
-	sprintf(Str_Tmp, "%d", Video.Fast_Blur & 1);
-	WritePrivateProfileString("Options", "Fast Blur", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Show_FPS & 1);
-	WritePrivateProfileString("Options", "FPS", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", FPS_Style);
-	WritePrivateProfileString("Options", "FPS Style", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Show_Message & 1);
-	WritePrivateProfileString("Options", "Message", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Message_Style);
-	WritePrivateProfileString("Options", "Message Style", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Show_LED & 1);
-	WritePrivateProfileString("Options", "LED", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Auto_Fix_CS & 1);
-	WritePrivateProfileString("Options", "Auto Fix Checksum", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Auto_Pause & 1);
-	WritePrivateProfileString("Options", "Auto Pause", Str_Tmp, Conf_File);
-#ifdef GENS_CDROM
-	sprintf(Str_Tmp, "%d", CUR_DEV);
-	WritePrivateProfileString("Options", "CD Drive", Str_Tmp, Conf_File);
-#endif
+	INI_WriteInt("Options", "Fast Blur", Video.Fast_Blur & 1);
+	INI_WriteInt("Options", "FPS", Show_FPS & 1);
+	INI_WriteInt("Options", "FPS Style", FPS_Style);
+	INI_WriteInt("Options", "Message", Show_Message & 1);
+	INI_WriteInt("Options", "Message Style", Message_Style);
+	INI_WriteInt("Options", "LED", Show_LED & 1);
+	INI_WriteInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
+	INI_WriteInt("Options", "Auto Pause", Auto_Pause & 1);
 	
 	// SegaCD BRAM cartridge
 	if (BRAM_Ex_State & 0x100)
-	{
-		sprintf (Str_Tmp, "%d", BRAM_Ex_Size);
-		WritePrivateProfileString ("Options", "Ram Cart Size", Str_Tmp, Conf_File);
-	}
+		INI_WriteInt("Options", "RAM Cart Size", BRAM_Ex_Size);
 	else
-	{
-		WritePrivateProfileString ("Options", "Ram Cart Size", "-1", Conf_File);
-	}
+		INI_WriteInt("Options", "RAM Cart Size", -1);
 	
 	// Miscellaneous files
-	WritePrivateProfileString("Options", "7z Binary", Misc_Filenames._7z_Binary, Conf_File);
-	WritePrivateProfileString("Options", "GCOffline path", Misc_Filenames.GCOffline, Conf_File);
-	WritePrivateProfileString("Options", "Gens manual path", Misc_Filenames.Manual, Conf_File);
+	INI_WriteString("Options", "7z Binary", Misc_Filenames._7z_Binary);
+	INI_WriteString("Options", "GCOffline path", Misc_Filenames.GCOffline);
+	INI_WriteString("Options", "Gens manual path", Misc_Filenames.Manual);
 	
 	// Controller settings
-	sprintf(Str_Tmp, "%d", Controller_1_Type & 0x13);
-	WritePrivateProfileString("Input", "P1.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_1B_Type & 0x13);
-	WritePrivateProfileString("Input", "P1B.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_1C_Type & 0x13);
-	WritePrivateProfileString("Input", "P1C.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_1D_Type & 0x13);
-	WritePrivateProfileString("Input", "P1D.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_2_Type & 0x13);
-	WritePrivateProfileString("Input", "P2.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_2B_Type & 0x13);
-	WritePrivateProfileString("Input", "P2B.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_2C_Type & 0x13);
-	WritePrivateProfileString("Input", "P2C.Type", Str_Tmp, Conf_File);
-	sprintf(Str_Tmp, "%d", Controller_2D_Type & 0x13);
-	WritePrivateProfileString("Input", "P2D.Type", Str_Tmp, Conf_File);
+	INI_WriteInt("Input", "P1.Type", Controller_1_Type & 0x13);
+	INI_WriteInt("Input", "P1B.Type", Controller_2B_Type & 0x13);
+	INI_WriteInt("Input", "P1C.Type", Controller_2C_Type & 0x13);
+	INI_WriteInt("Input", "P1D.Type", Controller_2D_Type & 0x13);
+	INI_WriteInt("Input", "P2.Type", Controller_1_Type & 0x13);
+	INI_WriteInt("Input", "P2B.Type", Controller_2B_Type & 0x13);
+	INI_WriteInt("Input", "P2C.Type", Controller_2C_Type & 0x13);
+	INI_WriteInt("Input", "P2D.Type", Controller_2D_Type & 0x13);
 	
 	char tmpKey[16];
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Up);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Up);
 		sprintf(tmpKey, "%s.Down", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Down);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Down);
 		sprintf(tmpKey, "%s.Left", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Left);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Left);
 		sprintf(tmpKey, "%s.Right", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Right);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Right);
 		sprintf(tmpKey, "%s.Start", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Start);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Start);
 		sprintf(tmpKey, "%s.A", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].A);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].A);
 		sprintf(tmpKey, "%s.B", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].B);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].B);
 		sprintf(tmpKey, "%s.C", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].C);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].C);
 		sprintf(tmpKey, "%s.Mode", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Mode);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Mode);
 		sprintf(tmpKey, "%s.X", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].X);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].X);
 		sprintf(tmpKey, "%s.Y", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Y);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Y);
 		sprintf(tmpKey, "%s.Z", PlayerNames[i]);
-		sprintf (Str_Tmp, "%d", Keys_Def[i].Z);
-		WritePrivateProfileString("Input", tmpKey, Str_Tmp, Conf_File);
+		INI_WriteInt("Input", tmpKey, Keys_Def[i].Z);
 	}
 	
+	// Save the INI file.
+	INI_SaveConfig(Conf_File);
+	
+	// Clear the loaded INI file.
+	INI_Clear();
+	
+	// Done.
 	return 1;
 }
 
@@ -385,8 +318,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// SegaCD BIOSes
 	INI_GetString("General", "USA CD BIOS", "", BIOS_Filenames.SegaCD_US, sizeof(BIOS_Filenames.SegaCD_US));
-	INI_GetString("General", "EUROPE CD BIOS", "", BIOS_Filenames.MegaCD_EU, sizeof(BIOS_Filenames.MegaCD_EU));
-	INI_GetString("General", "JAPAN CD BIOS", "", BIOS_Filenames.MegaCD_JP, sizeof(BIOS_Filenames.MegaCD_JP));
+	INI_GetString("General", "Europe CD BIOS", "", BIOS_Filenames.MegaCD_EU, sizeof(BIOS_Filenames.MegaCD_EU));
+	INI_GetString("General", "Japan CD BIOS", "", BIOS_Filenames.MegaCD_JP, sizeof(BIOS_Filenames.MegaCD_JP));
 	
 	// 32X BIOSes
 	INI_GetString("General", "32X 68000 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MC68000));
@@ -400,10 +333,15 @@ int Load_Config(const char *File_Name, void *Game_Active)
 		INI_GetString("General", Str_Tmp, "", Recent_Rom[i], sizeof(Recent_Rom[i]));
 	}
 	
+#ifdef GENS_CDROM
 	// SegaCD
 	// TODO: Use a better default for the CD drive.
 	INI_GetString("General", "CD Drive", "/dev/cdrom", CDROM_DEV, sizeof(CDROM_DEV));
 	CDROM_SPEED = INI_GetInt("General", "CD Speed", 0);
+	/* TODO: I'm assuming this code is for Win32...
+	CUR_DEV = INI_GetInt("Options", "CD Drive", 0);
+	*/
+#endif
 	
 	Current_State = INI_GetInt("General", "State Number", 0);
 	Language = INI_GetInt("General", "Language", 0);
@@ -449,8 +387,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	Stretch = INI_GetInt("Graphics", "Stretch", 0);
 	Blit_Soft = INI_GetInt("Graphics", "Software Blit", 0);
-	Sprite_Over = INI_GetInt("Graphics", "Sprite limit", 1);
-	Frame_Skip = INI_GetInt("Graphics", "Frame skip", -1);
+	Sprite_Over = INI_GetInt("Graphics", "Sprite Limit", 1);
+	Frame_Skip = INI_GetInt("Graphics", "Frame Skip", -1);
 	
 	// Sound settings
 	Sound_Rate = INI_GetInt("Sound", "Rate", 22050);
@@ -507,9 +445,6 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Show_LED = INI_GetInt("Options", "LED", 1);
 	Auto_Fix_CS = INI_GetInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = INI_GetInt("Options", "Auto Pause", 0);
-#ifdef GENS_CDROM
-	CUR_DEV = INI_GetInt("Options", "CD Drive", 0);
-#endif
 	
 	// SegaCD BRAM cartridge size
 	BRAM_Ex_Size = INI_GetInt("Options", "RAM Cart Size", 3);
