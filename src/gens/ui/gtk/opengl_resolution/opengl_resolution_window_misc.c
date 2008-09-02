@@ -31,7 +31,6 @@
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
-#include "sdllayer/g_opengl.h"
 
 
 /**

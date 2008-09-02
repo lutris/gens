@@ -40,7 +40,6 @@
 
 #ifdef GENS_OPENGL
 #include "opengl_resolution/opengl_resolution_window_misc.h"
-#include "sdllayer/g_opengl.h"
 #endif
 
 #ifdef GENS_CDROM
