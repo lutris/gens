@@ -148,9 +148,6 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h)
 	glGenTextures(2, textures);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	
-	// TODO: 32-bit color support.
-	// TODO: This appears to be 16-bit color (565 mode) only...
-	
 	if (bpp == 15)
 	{
 		// 15-bit color. (Mode 555)
@@ -266,6 +263,24 @@ int VDraw_SDL_GL::flipInternal(void)
 		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
 	
+	// Determine the pixel type and pixel format based on the bpp setting.
+	unsigned int pixelType, pixelFormat;
+	if (bpp == 15)
+	{
+		pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+		pixelFormat = GL_BGRA;
+	}
+	else if (bpp == 16)
+	{
+		pixelType = GL_UNSIGNED_SHORT_5_6_5;
+		pixelFormat = GL_RGB;
+	}
+	else //if (bpp == 32)
+	{
+		pixelType = GL_UNSIGNED_BYTE;
+		pixelFormat = GL_BGRA;
+	}
+	
 	// Bind the GL texture.
 	
 #ifdef GL_TEXTURE_RECTANGLE_NV
@@ -284,7 +299,7 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
 	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 3, rowLength, rowLength * 0.75f, 0,
-		     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, filterBuffer);
+		     pixelFormat, pixelType, filterBuffer);
 	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
 	
 	// Corners of the rectangle.
@@ -324,7 +339,7 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureSize * 2, textureSize, 0,
-		     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, filterBuffer);
+		     pixelFormat, pixelType, filterBuffer);
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
