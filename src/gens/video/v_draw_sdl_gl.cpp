@@ -27,6 +27,19 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 	filterBufferSize = 0;
 }
 
+VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
+	: VDraw(oldDraw)
+{
+	// Set the default GL values.
+	textures[0] = 0;
+	textures[1] = 0;
+	textureSize = 256;
+	nonpow2tex = 0;
+	glLinearFilter = 1;
+	filterBuffer = NULL;
+	filterBufferSize = 0;
+}
+
 VDraw_SDL_GL::~VDraw_SDL_GL()
 {
 }

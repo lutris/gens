@@ -19,6 +19,11 @@ VDraw_SDL::VDraw_SDL()
 {
 }
 
+VDraw_SDL::VDraw_SDL(VDraw *oldDraw)
+	: VDraw(oldDraw)
+{
+}
+
 VDraw_SDL::~VDraw_SDL()
 {
 }

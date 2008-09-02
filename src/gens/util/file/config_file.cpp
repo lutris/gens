@@ -145,7 +145,7 @@ int Save_Config(const char *File_Name)
 	
 	INI_WriteInt("Graphics", "Bits Per Pixel", bpp);
 #ifdef GENS_OPENGL
-	INI_WriteInt("Graphics", "Render OpenGL", Video.OpenGL & 1);
+	INI_WriteInt("Graphics", "Render OpenGL", (Video.OpenGL ? 1 : 0));
 	INI_WriteInt("Graphics", "OpenGL Width", Video.Width_GL);
 	INI_WriteInt("Graphics", "OpenGL Height", Video.Height_GL);
 	//INI_WriteInt("Graphics", "OpenGL Filter", gl_linear_filter);
@@ -382,6 +382,12 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Video.Height_GL = INI_GetInt("Graphics", "OpenGL Height", 480);
 	//gl_linear_filter = INI_GetInt("Graphics", "OpenGL Filter", 1);
 #endif
+	// Set the OpenGL renderer.
+	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
+	// because the window hasn't been created yet.
+	if (is_gens_running())
+		Change_OpenGL(Video.OpenGL);
+	
 	//Set_Render(Full_Screen, -1, 1);
 	
 	// Recalculate the MD and 32X palettes using the new color and video mode settings.

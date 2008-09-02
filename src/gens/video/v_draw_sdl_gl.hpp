@@ -16,6 +16,7 @@ class VDraw_SDL_GL : public VDraw
 {
 	public:
 		VDraw_SDL_GL();
+		VDraw_SDL_GL(VDraw *oldDraw);
 		~VDraw_SDL_GL();
 		
 		int Init_Video(void);

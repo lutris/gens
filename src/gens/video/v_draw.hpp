@@ -27,6 +27,7 @@ class VDraw
 {
 	public:
 		VDraw();
+		VDraw(VDraw *oldDraw);
 		virtual ~VDraw() = 0;
 		
 		virtual int Init_Video(void) = 0;

@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
 {
 	// Initialize the drawing object.
 	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
-	draw = new VDraw_SDL_GL();
+	draw = new VDraw_SDL();
 	
 	// Initialize the Settings struct.
 	Init_Settings();
@@ -498,6 +498,9 @@ int main(int argc, char *argv[])
 	
 	gtk_widget_show(gens_window);
 	//initializeConsoleRomsView(); // not yet finished (? - wryun)
+	
+	// Check if OpenGL needs to be enabled.
+	Change_OpenGL(Video.OpenGL);
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
@@ -679,20 +682,28 @@ void Change_OpenGL(int newOpenGL)
 {
 	// TODO
 	STUB;
-#if 0
-	End_DDraw();
-	Video.OpenGL = (newOpenGL == 1 ? 1 : 0);
-	Init_DDraw();
 	
+	// End the current drawing function.
+	draw->End_Video();
+	
+	Video.OpenGL = (newOpenGL == 0 ? 0 : 1);
+	VDraw *newDraw;
 	if (Video.OpenGL)
 	{
+		newDraw = new VDraw_SDL_GL(draw);
+		newDraw->Init_Video();
+		delete draw;
+		draw = newDraw;
 		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500);
 	}
 	else
 	{
+		newDraw = new VDraw_SDL(draw);
+		newDraw->Init_Video();
+		delete draw;
+		draw = newDraw;
 		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500);
 	}
-#endif
 }
 
 

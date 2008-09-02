@@ -58,6 +58,41 @@ VDraw::VDraw()
 	m_Stretch = false;
 }
 
+VDraw::VDraw(VDraw *oldDraw)
+{
+	// Initialize this VDraw based on an existing VDraw object.
+	m_shift = oldDraw->shift();
+	Blit_FS = oldDraw->Blit_FS;
+	Blit_W = oldDraw->Blit_W;
+	
+	// Initialize the FPS counter.
+	// TODO: Copy FPS variables from the other VDraw?
+	m_FPS = 0.0f;
+	for (int i = 0; i < 8; i++)
+		m_FPS_Frames[i] = 0.0f;
+	
+	m_FPSEnabled = oldDraw->fpsEnabled();
+	m_FPS_OldTime = 0;
+	m_FPS_ViewFPS = 0;
+	m_FPS_IndexFPS = 0;
+	m_FPS_FreqCPU[0] = 0;
+	m_FPS_FreqCPU[1] = 0;
+	m_FPS_NewTime[0] = 0;
+	m_FPS_NewTime[1] = 0;
+	m_FPSStyle = oldDraw->fpsStyle();
+	
+	// Initialize the onscreen message.
+	// TODO: Copy message variables from the other VDraw?
+	m_MsgEnabled = oldDraw->msgEnabled();
+	m_MsgText = "";
+	m_MsgVisible = false;
+	m_MsgTime = 0;
+	m_MsgStyle = oldDraw->msgStyle();
+	
+	// Others.
+	m_Stretch = oldDraw->stretch();
+}
+
 VDraw::~VDraw()
 {
 }
