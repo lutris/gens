@@ -24,6 +24,7 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 	nonpow2tex = 0;
 	glLinearFilter = 1;
 	filterBuffer = NULL;
+	filterBufferSize = 0;
 }
 
 VDraw_SDL_GL::~VDraw_SDL_GL()
@@ -131,8 +132,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h)
 		textureSize = 512;
 	}
 	
-	filterBuffer = (unsigned short*)malloc(rowLength * textureSize * sizeof(unsigned short));
-	//filterBuffer = (unsigned short*)malloc(rowLength * rowLength * 0.75 * sizeof(unsigned short));
+	filterBufferSize = rowLength * textureSize * sizeof(unsigned short);
+	filterBuffer = (unsigned short*)malloc(filterBufferSize);
 	
 	glViewport(0, 0, screen->w, screen->h);
 	glEnable(GL_TEXTURE_2D);
@@ -209,9 +210,7 @@ void VDraw_SDL_GL::Adjust_Stretch(void)
 void VDraw_SDL_GL::Clear_Screen(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	// WARNING: This appears to be the wrong size...
-	// TODO: Copy the size from Init_Video()?
-	memset(filterBuffer, 0, 640 * 480 * 2);
+	memset(filterBuffer, 0x00, filterBufferSize);
 }
 
 

@@ -60,6 +60,7 @@ class VDraw_SDL_GL : public VDraw
 		int nonpow2tex;
 		int glLinearFilter;
 		unsigned short *filterBuffer;
+		int filterBufferSize;
 		
 		// Stretch parameters.
 		float m_HStretch, m_VStretch;
