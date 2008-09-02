@@ -153,6 +153,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h)
 	glEnable(GL_TEXTURE_2D);
 	
 #ifdef GL_TEXTURE_RECTANGLE_NV
+	// nVidia rectangular texture extension
 	glEnable(GL_TEXTURE_RECTANGLE_NV);
 	if (glIsEnabled(GL_TEXTURE_RECTANGLE_NV))
 		nonpow2tex = 1;
