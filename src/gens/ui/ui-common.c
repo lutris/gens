@@ -43,7 +43,7 @@ void UI_Set_Window_Title_Idle(void)
 void UI_Set_Window_Title_Game(const char* systemName, const char* gameName)
 {
 	char title[128];
-	char condGameName[64];
+	char condGameName[65];
 	int gni, cgni = 0;
 	
 	// Condense the game name by removing excess spaces.
