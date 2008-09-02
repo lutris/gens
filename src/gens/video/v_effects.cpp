@@ -31,9 +31,6 @@
 #include "gens_core/vdp/vdp_rend.h"
 
 
-int Effect_Color = 7;
-
-
 /**
  * Update_Gens_Logo(): Update the Gens logo.
  * @return 1 on success.
@@ -116,7 +113,7 @@ int Update_Gens_Logo(void)
  * Update_Crazy_Effect(): Update the "Crazy" Effect.
  * @return 1 on success.
  */
-int Update_Crazy_Effect(void)
+int Update_Crazy_Effect(unsigned char introEffectColor)
 {
 	int i, j, offset;
 	int r = 0, v = 0, b = 0, prev_l, prev_p;
@@ -134,7 +131,7 @@ int Update_Crazy_Effect(void)
 				RB = ((prev_l & 0x7C1F) + (prev_p & 0x7C1F)) >> 1;
 				G = ((prev_l & 0x03E0) + (prev_p & 0x03E0)) >> 1;
 				
-				if (Effect_Color & 0x4)
+				if (introEffectColor & 0x4)
 				{
 					r = RB & 0x7C00;
 					if (rand() > 0x2C00) r += 0x0400;
@@ -143,7 +140,7 @@ int Update_Crazy_Effect(void)
 					else if (r < 0x0400) r = 0;
 				}
 				
-				if (Effect_Color & 0x2)
+				if (introEffectColor & 0x2)
 				{
 					v = G & 0x03E0;
 					if (rand() > 0x2C00) v += 0x0020;
@@ -152,7 +149,7 @@ int Update_Crazy_Effect(void)
 					else if (v < 0x0020) v = 0;
 				}
 				
-				if (Effect_Color & 0x1)
+				if (introEffectColor & 0x1)
 				{
 					b = RB & 0x001F;
 					if (rand() > 0x2C00) b++;
@@ -166,7 +163,7 @@ int Update_Crazy_Effect(void)
 				RB = ((prev_l & 0xF81F) + (prev_p & 0xF81F)) >> 1;
 				G = ((prev_l & 0x07C0) + (prev_p & 0x07C0)) >> 1;
 				
-				if (Effect_Color & 0x4)
+				if (introEffectColor & 0x4)
 				{
 					r = RB & 0xF800;
 					if (rand() > 0x2C00) r += 0x0800;
@@ -175,7 +172,7 @@ int Update_Crazy_Effect(void)
 					else if (r < 0x0800) r = 0;
 				}
 				
-				if (Effect_Color & 0x2)
+				if (introEffectColor & 0x2)
 				{
 					v = G & 0x07C0;
 					if (rand() > 0x2C00) v += 0x0040;
@@ -184,7 +181,7 @@ int Update_Crazy_Effect(void)
 					else if (v < 0x0040) v = 0;
 				}
 				
-				if (Effect_Color & 0x1)
+				if (introEffectColor & 0x1)
 				{
 					b = RB & 0x001F;
 					if (rand() > 0x2C00) b++;

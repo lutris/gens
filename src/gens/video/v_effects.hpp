@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 int Update_Gens_Logo(void);
-int Update_Crazy_Effect(void);
+int Update_Crazy_Effect(unsigned char introEffectColor);
 void Pause_Screen(void);
 
 #ifdef __cplusplus

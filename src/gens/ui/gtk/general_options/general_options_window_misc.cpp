@@ -102,12 +102,10 @@ void Open_General_Options(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_message_color), TRUE);
 	
 	// Intro effect color
-	/* TODO: VDraw
 	sprintf(tmp, "radio_button_misc_intro_effect_color_%s",
-		GO_IntroEffectColors[Effect_Color * 3]);
+		GO_IntroEffectColors[draw->introEffectColor() * 3]);
 	radio_button_intro_effect_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color), TRUE);
-	*/
 	
 	// Show the General Options window.
 	gtk_widget_show_all(go);
@@ -143,7 +141,6 @@ void General_Options_Save(void)
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
 	
 	// FPS counter
-	// TODO: VDraw for Show_FPS
 	check_fps_enable = lookup_widget(general_options_window, "check_fps_enable");
 	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable)));
 	
@@ -198,7 +195,6 @@ void General_Options_Save(void)
 	draw->setMsgStyle(curMsgStyle);
 	
 	// Intro effect color
-	/* TODO: VDraw
 	for (i = 0; i < 8; i++)
 	{
 		if (!GO_IntroEffectColors[i])
@@ -207,9 +203,8 @@ void General_Options_Save(void)
 		radio_button_intro_effect_color = lookup_widget(general_options_window, tmp);
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color)))
 		{
-			Effect_Color = i;
+			draw->setIntroEffectColor((unsigned char)i);
 			break;
 		}
 	}
-	*/
 }

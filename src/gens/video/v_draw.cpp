@@ -57,6 +57,7 @@ VDraw::VDraw()
 	
 	// Others.
 	m_Stretch = false;
+	m_IntroEffectColor = 7;
 }
 
 VDraw::VDraw(VDraw *oldDraw)
@@ -92,6 +93,7 @@ VDraw::VDraw(VDraw *oldDraw)
 	
 	// Others.
 	m_Stretch = oldDraw->stretch();
+	m_IntroEffectColor = oldDraw->introEffectColor();
 }
 
 VDraw::~VDraw()
@@ -153,7 +155,7 @@ int VDraw::flip(void)
 	else if (Intro_Style == 2)
 	{
 		// "Strange" effect. (TODO: This is broken!)
-		Update_Crazy_Effect();
+		Update_Crazy_Effect(m_IntroEffectColor);
 	}
 	else if (Intro_Style == 3)
 	{
@@ -444,6 +446,23 @@ void VDraw::setFPSStyle(unsigned char newFPSStyle)
 	if (m_FPSStyle == newFPSStyle)
 		return;
 	m_FPSStyle = newFPSStyle;
+	
+	// TODO: Figure out what to do here...
+}
+
+
+unsigned char VDraw::introEffectColor(void)
+{
+	return m_IntroEffectColor;
+}
+void VDraw::setIntroEffectColor(unsigned char newIntroEffectColor)
+{
+	if (m_IntroEffectColor == newIntroEffectColor)
+		return;
+	if (/*newIntroEffectColor < 0 ||*/ newIntroEffectColor > 7)
+		return;
+	
+	m_IntroEffectColor = newIntroEffectColor;
 	
 	// TODO: Figure out what to do here...
 }

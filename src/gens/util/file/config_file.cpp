@@ -125,8 +125,7 @@ int Save_Config(const char *File_Name)
 	INI_WriteInt("General", "Window X", Window_Pos.x);
 	INI_WriteInt("General", "Window Y", Window_Pos.y);
 	INI_WriteInt("General", "Intro Style", Intro_Style);
-	// TODO: VDraw
-	//INI_WriteInt("General", "Free Mode Color", Effect_Color);
+	INI_WriteInt("General", "Free Mode Color", draw->introEffectColor());
 	
 	// Video adjustments
 	INI_WriteInt("Graphics", "Contrast", Contrast_Level);
@@ -349,8 +348,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Window_Pos.x = INI_GetInt("General", "Window X", 0);
 	Window_Pos.y = INI_GetInt("General", "Window Y", 0);
 	Intro_Style = INI_GetInt("General", "Intro Style", 0);
-	// TODO: VDraw
-	//Effect_Color = INI_GetInt("General", "Free Mode Color", 7);
+	draw->setIntroEffectColor(INI_GetInt("General", "Free Mode Color", 7));
 	Sleep_Time = INI_GetInt("General", "Allow Idle", 0) & 1;
 	
 	// Color settings

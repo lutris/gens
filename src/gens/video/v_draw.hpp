@@ -73,6 +73,8 @@ class VDraw
 		void setMsgStyle(unsigned char newMsgStyle);
 		unsigned char fpsStyle(void);
 		void setFPSStyle(unsigned char newFPSStyle);
+		unsigned char introEffectColor(void);
+		void setIntroEffectColor(unsigned char newIntroEffectColor);
 		
 		// Renderers
 		// TODO: Make these properties.
@@ -111,6 +113,9 @@ class VDraw
 		bool m_MsgVisible; // Is the message currently visible onscreen?
 		int m_MsgTime;
 		unsigned char m_MsgStyle;
+		
+		// Intro effect color
+		unsigned char m_IntroEffectColor;
 		
 		// Screen HBorder.
 		// Usually 64 in 256x224 mode. (320 - 256 == 64)
