@@ -1,7 +1,7 @@
 High-Level TODO:
 - 32-bit color is partially broken in the debugger: patterns don't show up.
 - Move most global variables to global Settings struct
-- Port all Gens ReRecording changes
+- Port all Gens Rerecording changes
 - Add Win32 support
 - Add Qt4 UI
 - Convert all code to C++ with classes, etc
