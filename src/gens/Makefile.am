@@ -153,7 +153,7 @@ endif
 
 if GENS_OPENGL
 gens_SOURCES += \
-		sdllayer/g_opengl.c
+		video/v_draw_sdl_gl.cpp
 endif
 
 if GENS_CDROM
@@ -287,7 +287,7 @@ endif
 
 if GENS_OPENGL
 noinst_HEADERS += \
-		sdllayer/g_opengl.h
+		video/v_draw_sdl_gl.hpp
 endif
 
 if GENS_CDROM

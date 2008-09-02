@@ -103,6 +103,7 @@ static int Gens_Running = 0;
 // New video layer.
 #include "video/v_draw.hpp"
 #include "video/v_draw_sdl.hpp"
+#include "video/v_draw_sdl_gl.hpp"
 VDraw *draw;
 
 
@@ -456,7 +457,7 @@ int main(int argc, char *argv[])
 {
 	// Initialize the drawing object.
 	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
-	draw = new VDraw_SDL();
+	draw = new VDraw_SDL_GL();
 	
 	// Initialize the Settings struct.
 	Init_Settings();
@@ -707,4 +708,66 @@ void Set_bpp(int newbpp)
 	// NOTE: This only seems to be a problem with 15-to-16 or 16-to-15 at the moment.
 	
 	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
+}
+
+
+/**
+ * Change_OpenGL(): Change the OpenGL setting.
+ * @param stretch 0 to turn OpenGL off; 1 to turn OpenGL on.
+ */
+void Change_OpenGL(int newOpenGL)
+{
+	// TODO
+	STUB;
+#if 0
+	End_DDraw();
+	Video.OpenGL = (newOpenGL == 1 ? 1 : 0);
+	Init_DDraw();
+	
+	if (Video.OpenGL)
+	{
+		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500);
+	}
+	else
+	{
+		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500);
+	}
+#endif
+}
+
+
+/**
+ * Set_GL_Resolution(): Set the OpenGL resolution.
+ * @param w Width.
+ * @param h Height.
+ */
+void Set_GL_Resolution(int w, int h)
+{
+	// TODO
+	STUB;
+#if 0
+	if (Video.Width_GL == w && Video.Height_GL == h)
+		return;
+	
+	// OpenGL resolution has changed.
+	Video.Width_GL = w;
+	Video.Height_GL = h;
+	
+	// Print the resolution information.
+	MESSAGE_NUM_2L("Selected %dx%d resolution",
+		       "Selected %dx%d resolution", w, h, 1500);
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// If OpenGL mode isn't enabled, don't do anything.
+	if (!Video.OpenGL)
+		return;
+	
+	// OpenGL mode is currently enabled. Change the resolution.
+	End_DDraw();
+	Init_DDraw();
+	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
+	Refresh_Video();
+#endif
 }

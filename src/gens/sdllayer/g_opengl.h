@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#if 0
+
 int Init_Draw_GL(int w, int h);
 void End_Draw_GL(void);
 void Set_GL_Resolution(int w,int h);
@@ -34,6 +36,8 @@ void Change_OpenGL(int newOpenGL);
 void Adjust_Stretch_GL(void);
 void Clear_Screen_GL(void);
 void Flip_GL(void);
+
+#endif
 
 #ifdef __cplusplus
 }
