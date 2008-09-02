@@ -189,6 +189,7 @@ GtkWidget* create_gens_window(void)
 	CREATE_GTK_WINDOW(gens_window, "gens_window", "Gens",
 			  gens_window_icon_pixbuf, "Gens2.ico");
 	gtk_window_set_resizable(GTK_WINDOW(gens_window), FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(gens_window), 0);
 	
 	// Layout objects.
 	vbox1 = gtk_vbox_new(FALSE, 0);
