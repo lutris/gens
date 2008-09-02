@@ -19,6 +19,7 @@
 #include "util/file/ggenie.h"
 #include "gens_core/misc/misc.h"
 #include "emulator/g_palette.h"
+#include "emulator/g_update.hpp"
 
 // CPU
 #include "gens_core/cpu/68k/cpu_68k.h"

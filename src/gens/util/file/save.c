@@ -69,7 +69,7 @@ unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
  * @param Dir ???
  * @return 1 if a file was selected.
  */
-int Change_File_S (char *Dest, char *Dir)
+int Change_File_S(char *Dest, char *Dir)
 {
 	char filename[GENS_PATH_MAX];
 	
@@ -88,7 +88,7 @@ int Change_File_S (char *Dest, char *Dir)
  * @param Dir ???
  * @return 1 if a file was selected.
  */
-int Change_File_L (char *Dest, char *Dir)
+int Change_File_L(char *Dest, char *Dir)
 {
 	char filename[GENS_PATH_MAX];
 	
@@ -107,7 +107,7 @@ int Change_File_L (char *Dest, char *Dir)
  * @param Dir ???
  * @return 1 if a file is selected.
  */
-int Change_File_L_CD (char *Dest, char *Dir)
+int Change_File_L_CD(char *Dest, char *Dir)
 {
 	char filename[GENS_PATH_MAX];
 	
@@ -119,7 +119,8 @@ int Change_File_L_CD (char *Dest, char *Dir)
 	return 1;
 }
 
-/*int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
+/*
+int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
 {
 	int i;
 	gchar* filename=NULL;
@@ -144,8 +145,8 @@ int Change_File_L_CD (char *Dest, char *Dir)
 	}
 	return 0;
 }
-
 */
+
 FILE *
 Get_State_File ()
 {
@@ -182,11 +183,13 @@ Get_State_File_Name (char *name)
  * @param Name Filename of the savestate.
  * @return 1 if successful; 0 on error.
  */
-int Load_State (char *Name)
+int Load_State(char *Name)
 {
 	FILE *f;
 	unsigned char *buf;
 	int len;
+	
+	ice = 0;
 	
 	len = GENESIS_STATE_LENGTH;
 	if (Genesis_Started);
@@ -199,11 +202,11 @@ int Load_State (char *Name)
 	
 	buf = State_Buffer;
 	
-	if ((f = fopen (Name, "rb")) == NULL)
+	if ((f = fopen(Name, "rb")) == NULL)
 		return 0;
 	
-	memset (buf, 0, len);
-	if (fread (buf, 1, len, f))
+	memset(buf, 0, len);
+	if (fread(buf, 1, len, f))
 	{
 		//z80_Reset (&M_Z80); // Commented out in Gens Re-Recording...
 		/*
@@ -236,7 +239,7 @@ int Load_State (char *Name)
 		Put_Info(Str_Tmp, 2000);
 	}
 	
-	fclose (f);
+	fclose(f);
 	
 	return 1;
 }
@@ -247,16 +250,19 @@ int Load_State (char *Name)
  * @param Name Filename of the savestate.
  * @return 1 if successful; 0 on error.
  */
-int Save_State (char *Name)
+int Save_State(char *Name)
 {
 	if (Name == NULL)
 		return 0;
+	
 	FILE *f;
 	unsigned char *buf;
 	int len;
 	
+	ice = 0;
+	
 	buf = State_Buffer;
-	if ((f = fopen (Name, "wb")) == NULL)
+	if ((f = fopen(Name, "wb")) == NULL)
 		return 0;
 	
 	len = GENESIS_STATE_LENGTH;
@@ -270,7 +276,7 @@ int Save_State (char *Name)
 	
 	if (buf == NULL)
 		return 0;
-	memset (buf, 0, len);
+	memset(buf, 0, len);
 	
 	Export_Genesis(buf);
 	buf += GENESIS_STATE_LENGTH;
@@ -285,11 +291,11 @@ int Save_State (char *Name)
 		buf += G32X_LENGTH_EX;
 	}
 	
-	fwrite (State_Buffer, 1, len, f);
-	fclose (f);
+	fwrite(State_Buffer, 1, len, f);
+	fclose(f);
 	
-	sprintf (Str_Tmp, "STATE %d SAVED", Current_State);
-	Put_Info (Str_Tmp, 2000);
+	sprintf(Str_Tmp, "STATE %d SAVED", Current_State);
+	Put_Info(Str_Tmp, 2000);
 	
 	return 1;
 }

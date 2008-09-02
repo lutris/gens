@@ -256,4 +256,7 @@ void Pause_Screen(void)
 				MD_Screen32[offset] = (nr << 19) | (ng << 11) | (nb << 3);
 		}
 	}
+	
+	if (ice == 2)
+		ice = 3;
 }

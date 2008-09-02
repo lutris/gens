@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+extern int Sleep_Time;
 
 void Reset_Update_Timers(void);
 

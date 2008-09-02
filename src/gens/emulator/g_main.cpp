@@ -656,6 +656,7 @@ static void win2linux(char* str)
 char Info_String[1024];
 int Message_Showed = 0;
 unsigned int Info_Time = 0;
+int ice = 0;
 void Put_Info(const char* msg, int duration)
 {
 	// TODO: Figure out a better place to put this.

@@ -424,6 +424,13 @@ void Fill_Infos(void)
 	memcpy(My_Rom->Description,	&Rom_Data[0x1C8], 40);
 	memcpy(My_Rom->Countries,	&Rom_Data[0x1F0], 4);
 	
+	char tmp[15];
+	memcpy(&tmp[0], My_Rom->Type, 2);
+	memcpy(&tmp[2], My_Rom->Version, 12);
+	tmp[14] = 0;
+	if (strcmp(tmp, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060") == 0)
+		ice = 1;
+	
 	// Calculate internal ROM size using the ROM header's
 	// starting address and ending address.
 	My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
@@ -680,7 +687,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (interleaved)
 		Deinterleave_SMD();
 	
-	Fill_Infos ();
+	Fill_Infos();
 	return My_Rom;
 }
 
@@ -858,6 +865,7 @@ Free_Rom (Rom * Rom_MD)
   _32X_Started = 0;
   SegaCD_Started = 0;
   Game = NULL;
+  ice = 0;
 
   if (Rom_MD)
     {

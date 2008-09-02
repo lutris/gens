@@ -114,6 +114,24 @@ int Update_Emulation(void)
 		} //If sound is not enabled
 		
 	}
+	
+	if (ice >= 1)
+	{
+		if (ice >= 3)
+			ice = 1;
+		if (*((unsigned short*)&Ram_68k[0xFFB0]))
+		{
+			if (ice == 1)
+				ice = 2;
+		}
+		else
+		{
+			if (ice > 1)
+				ice = 1;
+		}
+		if (*((unsigned int*)&Ram_68k[0xFFD4]))
+			ice = 0;
+	}
 
 	return 1;
 }

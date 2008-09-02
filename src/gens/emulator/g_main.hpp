@@ -173,7 +173,7 @@ void Put_Info(const char* msg, int duration);
 extern char Info_String[1024];
 extern int Message_Showed;
 extern unsigned int Info_Time;
-extern int Sleep_Time;
+extern int ice;
 
 // Update Frame function pointers
 extern int (*Update_Frame)(void);

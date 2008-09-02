@@ -482,6 +482,9 @@ Load_Patch_File (void)
   fclose (Patch_File);
   free (Patch_String);
 
+  if (i_code > 0)
+    ice = 0;
+
   return (1);
 }
 

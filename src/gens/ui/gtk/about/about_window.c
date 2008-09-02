@@ -37,12 +37,18 @@
 #include "gtk-misc.h"
 
 #include "emulator/gens.h"
+#include "emulator/g_main.hpp"
 
 GtkWidget *about_window = NULL;
 
 GtkAccelGroup *accel_group;
 
 #include "about_window_data.h"
+GtkWidget *image_gens_logo = NULL;
+void updateIce(void);
+gboolean iceTime(gpointer data);
+
+int ax = 0, bx = 0, cx = 0;
 
 /**
  * create_about_window(): Create the About Window.
@@ -53,7 +59,7 @@ GtkWidget* create_about_window(void)
 	GdkPixbuf *about_window_icon_pixbuf;
 	GtkWidget *vbox_about_dialog, *vbox_about_main;
 	GtkWidget *hbox_about_logo;
-	GtkWidget *image_gens_logo, *label_gens_version;
+	GtkWidget *label_gens_version;
 	GtkWidget *frame_copyright, *label_copyright;
 	GtkWidget *about_dialog_action_area, *button_about_OK;
 	
@@ -118,6 +124,13 @@ GtkWidget* create_about_window(void)
 	gtk_widget_show(image_gens_logo);
 	gtk_box_pack_start(GTK_BOX(hbox_about_logo), image_gens_logo, TRUE, TRUE, 0);
 	GLADE_HOOKUP_OBJECT(about_window, image_gens_logo, "image_gens_logo");
+	
+	if (ice == 3)
+	{
+		ax = 0; bx = 0; cx = 1;
+		g_timeout_add(100, iceTime, NULL);
+		updateIce();
+	}
 	
 	// Version information
 	label_gens_version = gtk_label_new(
@@ -190,6 +203,7 @@ GtkWidget* create_about_window(void)
  */
 gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	cx = 0;
 	gtk_widget_destroy(about_window);
 	about_window = NULL;
 	return FALSE;
@@ -201,6 +215,72 @@ gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user
  */
 void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
 {
+	cx = 0;
 	gtk_widget_destroy(about_window);
 	about_window = NULL;
+}
+
+
+void updateIce(void)
+{
+	if (!image_gens_logo)
+		return;
+	
+	GdkPixbuf *icebuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 0120, 0120);
+	int x, y, r;
+	const unsigned char *src = &about_data[ax*01440];
+	const unsigned char *src2 = &about_dx[bx*040];
+	unsigned char px1, px2;
+	guchar *pixels = gdk_pixbuf_get_pixels(icebuf);
+	r = gdk_pixbuf_get_rowstride(icebuf);
+	
+	memset(pixels, 0, 062000);
+	for (y = 0; y < 0120; y += 2)
+	{
+		for (x = 0; x < 0120; x += 4)
+		{
+			px1 = (*src & 0360) >> 3;
+			px2 = (*src & 0017) << 1;
+			
+			pixels[y*r + x*4 + 0] = (src2[px1 + 1] & 0017) << 4;
+			pixels[y*r + x*4 + 1] = (src2[px1 + 1] & 0360);
+			pixels[y*r + x*4 + 2] = (src2[px1 + 0] & 0017) << 4;
+			pixels[y*r + x*4 + 3] = (px1 ? '\377' : '\000');
+			
+			pixels[y*r + x*4 + 4] = (src2[px1 + 1] & 0017) << 4;
+			pixels[y*r + x*4 + 5] = (src2[px1 + 1] & 0360);
+			pixels[y*r + x*4 + 6] = (src2[px1 + 0] & 0017) << 4;
+			pixels[y*r + x*4 + 7] = (px1 ? '\377' : '\000');
+			
+			pixels[y*r + x*4 + 8] = (src2[px2 + 1] & 0017) << 4;
+			pixels[y*r + x*4 + 9] = (src2[px2 + 1] & 0360);
+			pixels[y*r + x*4 + 10] = (src2[px2 + 0] & 0017) << 4;
+			pixels[y*r + x*4 + 11] = (px2 ? '\377' : '\000');
+			
+			pixels[y*r + x*4 + 12] = (src2[px2 + 1] & 0017) << 4;
+			pixels[y*r + x*4 + 13] = (src2[px2 + 1] & 0360);
+			pixels[y*r + x*4 + 14] = (src2[px2 + 0] & 0017) << 4;
+			pixels[y*r + x*4 + 15] = (px2 ? '\377' : '\000');
+			
+			memcpy(&pixels[(y+1)*r + x*4], &pixels[y*r + x*4], 16);
+			
+			src++;
+		}
+	}
+	gtk_image_set_from_pixbuf(GTK_IMAGE(image_gens_logo), icebuf);
+}
+
+gboolean iceTime(gpointer data)
+{
+	if (!cx)
+		return FALSE;
+	
+	ax ^= 1;
+	bx++;
+	if (bx >= 10)
+		bx = 0;
+	
+	updateIce();
+	
+	return TRUE;
 }

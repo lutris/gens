@@ -30,6 +30,8 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/vdp/vdp_io.h"
 
+#include "emulator/g_main.hpp"
+
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
@@ -47,6 +49,8 @@ void Open_Game_Genie(void)
 	GtkTreeViewColumn *col_enabled, *col_code, *col_name;
 	GtkTreeSelection *select;
 	int i;
+	
+	ice = 0;
 	
 	gg = create_game_genie_window();
 	if (!gg)
