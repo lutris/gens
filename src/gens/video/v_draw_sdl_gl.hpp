@@ -59,7 +59,7 @@ class VDraw_SDL_GL : public VDraw
 		int textureSize;
 		int nonpow2tex;
 		int glLinearFilter;
-		unsigned short *filterBuffer;
+		unsigned char *filterBuffer;
 		int filterBufferSize;
 		
 		// Stretch parameters.

@@ -132,8 +132,9 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h)
 		textureSize = 512;
 	}
 	
-	filterBufferSize = rowLength * textureSize * sizeof(unsigned short);
-	filterBuffer = (unsigned short*)malloc(filterBufferSize);
+	int bytespp = (bpp == 15 ? 2 : bpp / 8);
+	filterBufferSize = rowLength * textureSize * bytespp;
+	filterBuffer = (unsigned char*)malloc(filterBufferSize);
 	
 	glViewport(0, 0, screen->w, screen->h);
 	glEnable(GL_TEXTURE_2D);
@@ -150,11 +151,33 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h)
 	// TODO: 32-bit color support.
 	// TODO: This appears to be 16-bit color (565 mode) only...
 	
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+	if (bpp == 15)
+	{
+		// 15-bit color. (Mode 555)
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 15);
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  5);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+	}
+	else if (bpp == 16)
+	{
+		// 16-bit color. (Mode 565)
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+	}
+	else //if (bpp == 32)
+	{
+		// 32-bit color.
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+	}
 	
 	return 1;
 }
