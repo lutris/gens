@@ -37,9 +37,9 @@ Milestone 3 introduces the following new features:
 
 - The OpenGL renderer now supports 15-bit and 32-bit color modes.
 
-- New Fast Blur function, written in C, that supports 15, 16, and 32-bit color
-  modes. The old Fast Blur function is still used for 15 and 16-bit color if
-  x86 asm is enabled via --enable-x86-asm in the ./configure script.
+- Improved Fast Blur function, written in C, that supports 15, 16, and 32-bit
+  color modes. The old Fast Blur function is still used for 15 and 16-bit color
+  if x86 asm is enabled via --enable-x86-asm in the ./configure script.
 
 - 7z archives can now be used via an external 7z binary. You must have
   p7zip installed in order to use this feature.
