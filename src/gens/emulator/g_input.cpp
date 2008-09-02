@@ -131,15 +131,13 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
-		/*
 		case GENS_KEY_BACKSPACE:
-			if (KMOD_SHIFT & mod)
+			if (Video.Full_Screen && (KMOD_SHIFT & mod))
 			{
 				Clear_Sound_Buffer();
 				Save_Shot();
 			}
 			break;
-		*/
 		
 		case GENS_KEY_TAB:
 			system_reset ();
@@ -148,13 +146,6 @@ void Input_KeyDown(int key)
 		case GENS_KEY_RETURN:
 			if (Video.Full_Screen && (mod & GENS_KMOD_ALT))
 			{
-				/*
-				if (Settings.Full_Screen)
-					Set_Render (0, -1, 1);
-				else
-					Set_Render (1, Render_FS, 1);
-				*/
-				
 				Video.Full_Screen = !Video.Full_Screen;
 				Set_Render(Video.Full_Screen, Video.Render_Mode, 1);
 				Sync_Gens_Window_GraphicsMenu();
@@ -166,15 +157,12 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F2:
-			/*
-			if (mod & GENS_KMOD_SHIFT)
+			if (Video.Full_Screen && (mod & GENS_KMOD_SHIFT))
 			{
-				Change_Stretch();
+				Change_Stretch(!draw->stretch());
 				Sync_Gens_Window_GraphicsMenu();
 			}
-			else
-			*/
-			if (!mod)
+			else if (!mod)
 			{
 				Set_Frame_Skip(-1);
 				Sync_Gens_Window_GraphicsMenu();
@@ -182,14 +170,12 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F3:
-			/*
-			if (mod & GENS_KMOD_SHIFT)
+			if (Video.Full_Screen && (mod & GENS_KMOD_SHIFT))
 			{
 				Change_VSync(-1);
 				Sync_Gens_Window_GraphicsMenu();
 			}
-			else */
-			if (!mod)
+			else if (!mod)
 			{
 				if (Frame_Skip == -1)
 				{
@@ -218,23 +204,27 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
-		/*
 		case GENS_KEY_F5:
+			if (!Video.Full_Screen)
+				break;
+			
+			/* TODO: Make MINIMIZE work correctly.
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				//if (Check_If_Kaillera_Running()) return 0;
-				MINIMIZE Change_File_S (Str_Tmp, State_Dir);
-				Save_State (Str_Tmp);
+				MINIMIZE;
+				Change_File_S(Str_Tmp, State_Dir);
+				Save_State(Str_Tmp);
 			}
 			else // if (!mod)
 			{
+			*/
 				//if (Check_If_Kaillera_Running()) return 0;
 				Str_Tmp[0] = 0;
 				Get_State_File_Name (Str_Tmp);
 				Save_State (Str_Tmp);
-			}
+			//}
 			break;
-		*/
 		
 		case GENS_KEY_F6:
 			if (!mod)
@@ -252,24 +242,28 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
-		/*
 		case GENS_KEY_F8:
+			if (!Video.Full_Screen)
+				break;
+			
+			/* TODO: Make MINIMIZE work correctly.
 			if (mod & GENS_KMOD_SHIFT)
 			{
 				//if (Check_If_Kaillera_Running()) return 0;
-				MINIMIZE Str_Tmp[0] = 0;
+				MINIMIZE;
+				Str_Tmp[0] = 0;
 				Change_File_L (Str_Tmp, State_Dir);
 				Load_State (Str_Tmp);
 			}
 			else //if (!mod)
 			{
+			*/
 				//if (Check_If_Kaillera_Running()) return 0;
 				Str_Tmp[0] = 0;
 				Get_State_File_Name (Str_Tmp);
 				Load_State (Str_Tmp);
-			}
+			//}
 			break;
-		*/
 		
 		case GENS_KEY_F9:
 			if (mod & GENS_KMOD_SHIFT)
@@ -284,12 +278,10 @@ void Input_KeyDown(int key)
 				Change_DAC_Improved(!DAC_Improv);
 				Sync_Gens_Window_SoundMenu();
 			}
-			/*
-			else //if (!mod)
+			else if (Video.Full_Screen && !mod)
 			{
 				draw->setFPSEnabled(!draw->fpsEnabled());
 			}
-			*/
 			break;
 		
 		case GENS_KEY_F11:
@@ -349,9 +341,8 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
-		/*
 		case GENS_KEY_b:
-			if (mod & GENS_KMOD_CTRL)
+			if (Video.Full_Screen && (mod & GENS_KMOD_CTRL))
 			{
 				// Ctrl-B: Boot CD
 				if (Num_CD_Drive == 0)
@@ -363,7 +354,6 @@ void Input_KeyDown(int key)
 				SegaCD_Started = Init_SegaCD(NULL);
 			}
 			break;
-		*/
 		
 		/*
 		case GENS_KEY_w:
@@ -435,32 +425,19 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
-		/*
 		case GENS_KEY_r:
-			if (mod & GENS_KMOD_SHIFT)
+			if (Video.Full_Screen && (mod & GENS_KMOD_SHIFT))
 			{
-				Change_OpenGL(!Opengl);
+				Change_OpenGL(!Video.OpenGL);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
-		*/
 		
 		case GENS_KEY_v:
 			if (mod & GENS_KMOD_CTRL)
 			{
 				if (SegaCD_Started)
 				Change_CD ();
-			}
-			break;
-		
-		case GENS_KEY_w:
-			if (mod & GENS_KMOD_CTRL)
-			{
-				if (WAV_Dumping)
-					Stop_WAV_Dump ();
-				else
-					Start_WAV_Dump ();
-				Sync_Gens_Window_SoundMenu();
 			}
 			break;
 		

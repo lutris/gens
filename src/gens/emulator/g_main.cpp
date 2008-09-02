@@ -680,9 +680,6 @@ void Clear_Screen_MD(void)
  */
 void Change_OpenGL(int newOpenGL)
 {
-	// TODO
-	STUB;
-	
 	// End the current drawing function.
 	draw->End_Video();
 	

@@ -48,8 +48,6 @@ int VDraw_SDL::Init_Video(void)
 		w = 640; h = 480;
 	}
 	
-	printf("TESTING\n");
-	
 	if (Video.Full_Screen)
 	{
 		// Hide the embedded SDL window.
