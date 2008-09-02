@@ -711,9 +711,8 @@ void Change_OpenGL(int newOpenGL)
  */
 void Set_GL_Resolution(int w, int h)
 {
-	// TODO
-	STUB;
-#if 0
+	// TODO: Move this to VDraw_GL.
+	
 	if (Video.Width_GL == w && Video.Height_GL == h)
 		return;
 	
@@ -733,9 +732,5 @@ void Set_GL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	End_DDraw();
-	Init_DDraw();
 	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
-	Refresh_Video();
-#endif
 }
