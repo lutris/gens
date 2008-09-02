@@ -63,7 +63,7 @@ int VDraw_SDL_GL::Init_Video(void)
 		// Hide the embedded SDL window.
 		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
 		
-		if (strlen(SDL_WindowID) == 0)
+		if (strlen(SDL_WindowID) != 0)
 		{
 			unsetenv("SDL_WINDOWID");
 			strcpy(SDL_WindowID, "");
@@ -206,6 +206,8 @@ void VDraw_SDL_GL::End_Video(void)
 		free(filterBuffer);
 		filterBuffer = NULL;
 	}
+	
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 

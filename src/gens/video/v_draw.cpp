@@ -15,6 +15,7 @@
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "emulator/g_palette.h"
+#include "emulator/ui_proxy.hpp"
 
 #include "port/timer.h"
 

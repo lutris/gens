@@ -146,7 +146,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_RETURN:
-			if (mod & GENS_KMOD_ALT)
+			if (Video.Full_Screen && (mod & GENS_KMOD_ALT))
 			{
 				/*
 				if (Settings.Full_Screen)

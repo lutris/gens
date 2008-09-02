@@ -48,12 +48,14 @@ int VDraw_SDL::Init_Video(void)
 		w = 640; h = 480;
 	}
 	
+	printf("TESTING\n");
+	
 	if (Video.Full_Screen)
 	{
 		// Hide the embedded SDL window.
 		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
 		
-		if (strlen(SDL_WindowID) == 0)
+		if (strlen(SDL_WindowID) != 0)
 		{
 			unsetenv("SDL_WINDOWID");
 			strcpy(SDL_WindowID, "");
@@ -128,7 +130,7 @@ int VDraw_SDL::Init_SDL_Renderer(int w, int h)
  */
 void VDraw_SDL::End_Video(void)
 {
-	// Placeholder function in case something needs to be added later.
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 
