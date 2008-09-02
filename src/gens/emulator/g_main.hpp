@@ -185,7 +185,6 @@ extern int FS_VSync;
 extern int W_VSync;
 
 void Clear_Screen_MD(void);
-void Set_bpp(int newbpp);
 void Change_OpenGL(int newOpenGL);
 void Set_GL_Resolution(int w, int h);
 

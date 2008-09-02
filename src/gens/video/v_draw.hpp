@@ -43,8 +43,11 @@ class VDraw
 		//virtual void Clear_Primary_Screen(void) = 0;
 		//virtual void Clear_Back_Screen(void) = 0;
 		
-		// Flip the screen bufer.
+		// Flip the screen buffer.
 		int flip(void);
+		
+		// Sets the bpp value.
+		void setBpp(int newBpp);
 		
 		// Adjust stretch parameters.
 		virtual void Adjust_Stretch(void) = 0;

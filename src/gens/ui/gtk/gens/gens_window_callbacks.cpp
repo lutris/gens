@@ -27,7 +27,7 @@
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 #include "gens_window.h"
-#include "gens_window_callbacks.h"
+#include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 #include "game_genie/game_genie_window_misc.h"
 #include "controller_config/controller_config_window_misc.h"
@@ -69,10 +69,17 @@
 #include "segacd/cd_aspi.h"
 #endif
 
+// C++ includes
+#include <string>
+using std::string;
+
 
 // For some reason, these aren't extern'd anywhere...
-void main68k_reset();
-void sub68k_reset();
+extern "C"
+{
+	void main68k_reset();
+	void sub68k_reset();
+}
 
 
 /**
@@ -345,7 +352,7 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
 		return;
 	
 	// Set the bits per pixel.
-	Set_bpp(bpp);
+	draw->setBpp(bpp);
 	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
 }
 
@@ -626,7 +633,7 @@ CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_CDDA_activate, Change_CDDA);
  */
 void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	gchar* label;
+	string label;
 	
 	// Change WAV dump status.
 	if (!WAV_Dumping)
@@ -638,7 +645,7 @@ void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 	label = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
 	
 	// Set the text of the WAV dump menu item.
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label);
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label.c_str());
 }
 
 
@@ -647,7 +654,7 @@ void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	gchar* label;
+	string label;
 	
 	// Change GYM dump status.
 	if (!GYM_Dumping)
@@ -659,7 +666,7 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
 	
 	// Set the text of the GYM dump menu item.
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label);
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label.c_str());
 }
 
 

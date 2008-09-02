@@ -14,11 +14,15 @@
 #include "gens_core/misc/fastblur.h"
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
+#include "emulator/g_palette.h"
 
 #include "port/timer.h"
 
 // Miscellaneous Effects.
 #include "v_effects.hpp"
+
+// TODO: Add a wrapper call to sync the GraphicsMenu.
+#include "ui/gtk/gens/gens_window_sync.hpp"
 
 
 VDraw::VDraw()
@@ -228,6 +232,47 @@ int VDraw::flip(void)
 	// Flip the screen buffer.
 	// TODO: VSync.
 	return flipInternal();
+}
+
+
+/**
+ * setBpp(): Sets the bpp value.
+ * @param newbpp New bpp value.
+ */
+void VDraw::setBpp(int newBpp)
+{
+	if (bpp == newBpp)
+		return;
+	
+	bpp = newBpp;
+	End_Video();
+	Init_Video();
+	
+	// Reset the renderer.
+	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 0))
+	{
+		// Cannot initialize video mode. Try using render mode 0 (normal).
+		if (!Set_Render(Video.Full_Screen, 0, 1))
+		{
+			// Cannot initialize normal mode.
+			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);
+			exit(1);
+		}
+	}
+	
+	// Recalculate palettes.
+	Recalculate_Palettes();
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// TODO: After switching color depths, the screen buffer isn't redrawn
+	// until something's updated. Figure out how to trick the renderer
+	// into updating anyway.
+	
+	// NOTE: This only seems to be a problem with 15-to-16 or 16-to-15 at the moment.
+	
+	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
 }
 
 

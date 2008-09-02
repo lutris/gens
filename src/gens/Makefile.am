@@ -166,7 +166,7 @@ gens_SOURCES += \
 		ui/gtk/ui-common_gtk.c \
 		ui/gtk/gtk-misc.c \
 		ui/gtk/gens/gens_window.c \
-		ui/gtk/gens/gens_window_callbacks.c \
+		ui/gtk/gens/gens_window_callbacks.cpp \
 		ui/gtk/gens/gens_window_sync.cpp \
 		ui/gtk/game_genie/game_genie_window.c \
 		ui/gtk/game_genie/game_genie_window_callbacks.c \
@@ -299,7 +299,7 @@ if LINUX
 noinst_HEADERS += \
 		ui/gtk/gtk-misc.h \
 		ui/gtk/gens/gens_window.h \
-		ui/gtk/gens/gens_window_callbacks.h \
+		ui/gtk/gens/gens_window_callbacks.hpp \
 		ui/gtk/gens/gens_window_sync.hpp \
 		ui/gtk/game_genie/game_genie_window.h \
 		ui/gtk/game_genie/game_genie_window_callbacks.h \

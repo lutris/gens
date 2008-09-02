@@ -670,46 +670,6 @@ void Clear_Screen_MD(void)
 	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
 }
 
-/**
- * Set_bpp(): Sets the bpp value.
- * @param newbpp New bpp value.
- */
-void Set_bpp(int newbpp)
-{
-	if (bpp == newbpp)
-		return;
-	
-	bpp = newbpp;
-	draw->End_Video();
-	draw->Init_Video();
-	
-	// Reset the renderer.
-	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 0))
-	{
-		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!Set_Render(Video.Full_Screen, 0, 1))
-		{
-			// Cannot initialize normal mode.
-			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
-			exit(1);
-		}
-	}
-	
-	// Recalculate palettes.
-	Recalculate_Palettes();
-	
-	// Synchronize the Graphics menu.
-	Sync_Gens_Window_GraphicsMenu();
-	
-	// TODO: After switching color depths, the screen buffer isn't redrawn
-	// until something's updated. Figure out how to trick the renderer
-	// into updating anyway.
-	
-	// NOTE: This only seems to be a problem with 15-to-16 or 16-to-15 at the moment.
-	
-	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
-}
-
 
 /**
  * Change_OpenGL(): Change the OpenGL setting.

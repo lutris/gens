@@ -26,7 +26,7 @@
 
 #include "gens_window.h"
 #include "gens_window_sync.hpp"
-#include "gens_window_callbacks.h"
+#include "gens_window_callbacks.hpp"
 
 #include "gtk-misc.h"
 
