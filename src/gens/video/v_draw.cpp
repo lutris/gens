@@ -254,7 +254,7 @@ int VDraw::flip(void)
 	if (m_HBorder != m_HBorder_Old)
 	{
 		// Display width change. Adjust the stretch parameters.
-		Adjust_Stretch();
+		stretchAdjustInternal();
 	}
 	
 	if (m_HBorder > m_HBorder_Old)
@@ -327,6 +327,15 @@ void VDraw::writeText(string msg, int duration)
 
 
 /**
+ * stretchAdjustInternal(): Adjust the stretch parameters.
+ */
+void VDraw::stretchAdjustInternal(void)
+{
+	// VDraw doesn't do anything here by itself...
+}
+
+
+/**
  * Refresh_Video(): Refresh the video subsystem.
  */
 void VDraw::Refresh_Video(void)
@@ -337,7 +346,7 @@ void VDraw::Refresh_Video(void)
 	
 	End_Video();
 	Init_Video();
-	Adjust_Stretch();
+	stretchAdjustInternal();
 }
 
 
@@ -350,7 +359,7 @@ void VDraw::setStretch(bool newStretch)
 	if (m_Stretch == newStretch)
 		return;
 	m_Stretch = newStretch;
-	Adjust_Stretch();
+	stretchAdjustInternal();
 }
 
 

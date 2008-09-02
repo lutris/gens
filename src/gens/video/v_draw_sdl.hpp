@@ -29,9 +29,6 @@ class VDraw_SDL : public VDraw
 		//void Clear_Primary_Screen(void);
 		//void Clear_Back_Screen(void);
 		
-		// Adjust stretch parameters.
-		void Adjust_Stretch(void);
-		
 	protected:
 		int Init_SDL_Renderer(int w, int h);
 		

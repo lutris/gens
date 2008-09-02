@@ -94,9 +94,6 @@ int VDraw_SDL::Init_Video(void)
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(Video.Full_Screen ? SDL_DISABLE : SDL_ENABLE);
 	
-	// Adjust stretch parameters.
-	Adjust_Stretch();
-	
 	// If normal rendering mode is set, disable the video shift.
 	m_shift = (Video.Render_Mode != 0);
 	
@@ -132,15 +129,6 @@ int VDraw_SDL::Init_SDL_Renderer(int w, int h)
 void VDraw_SDL::End_Video(void)
 {
 	// Placeholder function in case something needs to be added later.
-}
-
-
-/**
- * Adjust_Stretch(): Adjust stretch parameters.
- */
-void VDraw_SDL::Adjust_Stretch(void)
-{
-	// TODO
 }
 
 

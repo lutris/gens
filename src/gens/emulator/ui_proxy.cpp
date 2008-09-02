@@ -860,8 +860,6 @@ int Change_Stretch(int newStretch)
 	else
 		MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
 	
-	// TODO: Move the Adjust_Stretch() call to draw->setStretch()?
-	draw->Adjust_Stretch();
 	return 1;
 }
 

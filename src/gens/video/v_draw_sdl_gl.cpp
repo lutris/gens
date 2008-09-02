@@ -105,7 +105,7 @@ int VDraw_SDL_GL::Init_Video(void)
 	SDL_ShowCursor(Video.Full_Screen ? SDL_DISABLE : SDL_ENABLE);
 	
 	// Adjust stretch parameters.
-	Adjust_Stretch();
+	stretchAdjustInternal();
 	
 	// If normal rendering mode is set, disable the video shift.
 	m_shift = (Video.Render_Mode != 0);
@@ -209,9 +209,10 @@ void VDraw_SDL_GL::End_Video(void)
 
 
 /**
- * Adjust_Stretch(): Adjust stretch parameters.
+ * stretchAdjustInternal(): Adjust stretch parameters.
+ * Called by either VDraw or another function in VDraw_SDL_GL.
  */
-void VDraw_SDL_GL::Adjust_Stretch(void)
+void VDraw_SDL_GL::stretchAdjustInternal(void)
 {
 	if (!stretch())
 	{

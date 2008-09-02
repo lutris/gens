@@ -50,9 +50,6 @@ class VDraw
 		// Sets the bpp value.
 		void setBpp(int newBpp);
 		
-		// Adjust stretch parameters.
-		virtual void Adjust_Stretch(void) = 0;
-		
 		// Refresh the video subsystem.
 		void Refresh_Video(void);
 		
@@ -97,6 +94,9 @@ class VDraw
 		
 		// Flip the screen buffer. (Renderer-specific function)
 		virtual int flipInternal(void) = 0;
+		
+		// Adjust stretch parameters.
+		virtual void stretchAdjustInternal(void);
 		
 		// FPS counter
 		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?

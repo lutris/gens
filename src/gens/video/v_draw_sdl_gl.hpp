@@ -33,14 +33,14 @@ class VDraw_SDL_GL : public VDraw
 		//void Clear_Primary_Screen(void);
 		//void Clear_Back_Screen(void);
 		
-		// Adjust stretch parameters.
-		void Adjust_Stretch(void);
-		
 	protected:
 		int Init_SDL_GL_Renderer(int w, int h);
 		
 		// Flip the screen buffer. (Called by v_draw.)
 		int flipInternal(void);
+		
+		// Adjust stretch parameters.
+		void stretchAdjustInternal(void);
 		
 		// SDL flags
 		static const int SDL_GL_Flags =
