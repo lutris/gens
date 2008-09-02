@@ -1,4 +1,4 @@
-Gens for Linux v2.15.2/GS-m2.2 (Gens/GS)
+Gens for Linux v2.15.2/GS-m3 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,10 +14,57 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens for Linux v2.15.2/GS-m2.2 is David Korth's fork of Gens,
+Gens for Linux v2.15.2/GS-m3 is David Korth's fork of Gens,
 initially based on Gens for Linux v2.15.2. The number after
 the "m" indicates the milestone. Releases are usually made
 after a significant new feature has been added.
+
+================================================================
+
+What's new in Gens for Linux v2.15.2/GS-m3?
+
+Milestone 3 introduces the following new features:
+
+- Completely rewritten video rendering subsystem. The new video rendering
+  subsystem abstracts the differences between plain SDL and SDL+OpenGL
+  and presents a standard interface to the rest of Gens. This will make
+  it easier to add in DirectDraw support later on.
+
+- The configuration file handler has been rewritten such that it no longer
+  fails to read or write certain configuration entries. Additionally,
+  section names and key names are now case-insensitive.
+
+- The OpenGL renderer now supports 15-bit and 32-bit color modes.
+
+- New Fast Blur function, written in C, that supports 15, 16, and 32-bit color
+  modes. The old Fast Blur function is still used for 15 and 16-bit color if
+  x86 asm is enabled via --enable-x86-asm in the ./configure script.
+
+- 7z archives can now be used via an external 7z binary. You must have
+  p7zip installed in order to use this feature.
+
+- SegaCD LED code has been updated to work correctly in all color modes.
+
+Milestone 3 fixes the following bugs:
+
+- The built-in debugger now properly updates the screen in 32-bit color.
+
+- Horizontal positioning for 256x224 video modes in 32-bit color was off
+  by 32 pixels.
+
+Milestone 3 has the following low-level code changes:
+
+- Standard controller I/O functionality has been ported to C. Additionally,
+  controller button presses are now stored in bitfields rather than reserving
+  an entire 32-bit int per button. Unfortunately, I could not figure out how
+  to port over the TeamPlayer code correctly, so that remains in x86 asm for
+  now, with compatibility wrappers with regards to the button format.
+
+- Compression handlers have been rewritten using C++ classes.
+
+- C++ code has been introduced into the Gens/GS codebase. With this change,
+  all header files have been updated to include "#ifdef __cplusplus"
+  barriers, so older C-only code will link correctly.
 
 ================================================================
 
