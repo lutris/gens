@@ -1,5 +1,5 @@
 High-Level TODO:
-- BUG: 32X VDP doesn't work properly in 32-bit color
+- 32-bit color is partially broken in the debugger: patterns don't show up.
 - Move most global variables to global Settings struct
 - Port all Gens ReRecording changes
 - Add Win32 support
@@ -8,7 +8,6 @@ High-Level TODO:
 - Convert from automake to CMake
 - Add VGM dumping support
 - Add more compression format support
-- Add more 32-bit color support
 - Improve the Zip File Selection Dialog
 - Screenshots: Remove messages and fps counter
 
@@ -23,6 +22,7 @@ Emulator TODO:
 - Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
 - Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
 - Set the border color to color 0 of palette 0. (See Sonic 1 GHZ for an example.)
+  - Works in SDL mode, but not in GL mode.
 
 Miscellaneous Bugs:
 - Auto Pause doesn't work.
