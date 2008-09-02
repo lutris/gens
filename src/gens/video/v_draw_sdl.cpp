@@ -53,11 +53,8 @@ int VDraw_SDL::Init_Video(void)
 		// Hide the embedded SDL window.
 		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
 		
-		if (strlen(SDL_WindowID) != 0)
-		{
-			unsetenv("SDL_WINDOWID");
-			strcpy(SDL_WindowID, "");
-		}
+		unsetenv("SDL_WINDOWID");
+		strcpy(SDL_WindowID, "");
 	}
 	else
 	{
@@ -72,12 +69,9 @@ int VDraw_SDL::Init_Video(void)
 		while (gtk_events_pending())
 			gtk_main_iteration_do(FALSE);
 		
-		if (strlen(SDL_WindowID) == 0)
-		{
-			// Get the Window ID of the SDL socket.
-			sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(sdlsock->window)));
-			setenv("SDL_WINDOWID", SDL_WindowID, 1);
-		}
+		// Get the Window ID of the SDL socket.
+		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(sdlsock->window)));
+		setenv("SDL_WINDOWID", SDL_WindowID, 1);
 	}
 	
 	// Initialize SDL.
