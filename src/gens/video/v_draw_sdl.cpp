@@ -135,7 +135,7 @@ void VDraw_SDL::clearScreen(void)
 {
 	// Clear the screen.
 	SDL_LockSurface(screen);
-	SDL_FillRect(screen, NULL, 0);
+	memset(screen->pixels, 0x00, screen->pitch * screen->h);
 	SDL_UnlockSurface(screen);
 	
 	// Reset the border color to make sure it's redrawn.
