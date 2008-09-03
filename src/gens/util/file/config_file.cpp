@@ -369,8 +369,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	FS_VSync = INI_GetInt("Graphics", "Full Screen VSync", 0);
 	W_VSync = INI_GetInt("Graphics", "Windows VSync", 0);
 	draw->setFullScreen(INI_GetBool("Graphics", "Full Screen", false));
-	Video.Render_FS = INI_GetInt("Graphics", "Render Fullscreen", 2) - 1;
-	Video.Render_W = INI_GetInt("Graphics", "Render Windowed", 2) - 1;
+	Video.Render_FS = INI_GetInt("Graphics", "Render Fullscreen", 2) - 1; // Default: Double
+	Video.Render_W = INI_GetInt("Graphics", "Render Windowed", 2) - 1;    // Default: Double
 	bpp = (unsigned char)(INI_GetInt("Graphics", "Bits Per Pixel", 32));
 	if (bpp != 15 && bpp != 16 && bpp != 32)
 	{
