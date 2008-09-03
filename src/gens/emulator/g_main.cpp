@@ -513,10 +513,10 @@ int main(int argc, char *argv[])
 	while (gtk_events_pending ())
 		gtk_main_iteration_do (0);
 	
-	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 1))
+	if (!draw->setRender(Video.Render_Mode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!Set_Render(Video.Full_Screen, 0, 1))
+		if (!draw->setRender(0))
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
@@ -733,5 +733,5 @@ void Set_GL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
+	draw->setRender(Video.Render_Mode);
 }

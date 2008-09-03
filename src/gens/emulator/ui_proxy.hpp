@@ -34,7 +34,6 @@ int Change_Blit_Style(void);
 int Change_SegaCD_SRAM_Size(int num);
 void system_reset(void);
 void Set_Game_Name(void);
-int Set_Render(int FullScreen, int Mode, int Force);
 
 typedef enum {
 	NORMAL = 1,

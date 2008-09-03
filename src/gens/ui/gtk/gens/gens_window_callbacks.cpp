@@ -174,11 +174,13 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 #ifdef GENS_DEBUGGER
 	Debug = 0;
 #endif /* GENS_DEBUGGER */
+	/* TODO: NetPlay
 	if (Net_Play)
 	{
 		if (Video.Full_Screen)
 			Set_Render(0, -1, 1);
 	}
+	*/
 	Free_Rom(Game);
 	Sync_Gens_Window();
 }
@@ -292,7 +294,7 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
 	*/
 	
 	Video.Full_Screen = !Video.Full_Screen;
-	Set_Render(Video.Full_Screen, Video.Render_Mode, 0);
+	draw->setRender(Video.Render_Mode);
 }
 
 
@@ -385,7 +387,7 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 		return;
 	
 	// Set the render mode.
-	Set_Render(Video.Full_Screen, renderMode, 0);
+	draw->setRender(renderMode);
 }
 
 

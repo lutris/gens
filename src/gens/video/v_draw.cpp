@@ -287,10 +287,10 @@ void VDraw::setBpp(int newBpp)
 	Init_Video();
 	
 	// Reset the renderer.
-	if (!Set_Render(Video.Full_Screen, Video.Render_Mode, 0))
+	if (!setRender(Video.Render_Mode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!Set_Render(Video.Full_Screen, 0, 1))
+		if (!setRender(0))
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);
@@ -350,6 +350,68 @@ void VDraw::Refresh_Video(void)
 	End_Video();
 	Init_Video();
 	stretchAdjustInternal();
+}
+
+
+/**
+ * setRender(): Set the rendering mode.
+ * @param Mode Rendering mode / filter.
+ */
+int VDraw::setRender(int newMode)
+{
+	int Old_Rend, *Rend;
+	BlitFn *Blit, testBlit;
+	
+	Blit = Video.Full_Screen ? &Blit_FS : &Blit_W;
+	Rend = &Video.Render_Mode;
+	Old_Rend = Video.Render_Mode;
+	
+	// Checks if an invalid mode number was passed.
+	if (newMode < 0 || newMode >= Renderers_Count)
+	{
+		// Invalid mode number.
+		MESSAGE_NUM_L("Error: Render mode %d is not available.",
+			      "Error: Render mode %d is not available.", newMode, 1500);
+		return 0;
+	}
+	
+	// Check if a blit function exists for this renderer.
+	if (bpp == 32)
+		testBlit = (Have_MMX ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
+	else if (bpp == 15 || bpp == 16)
+		testBlit = (Have_MMX ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
+	else
+	{
+		// Invalid bpp.
+		fprintf(stderr, "Invalid bpp: %d\n", bpp);
+		return 0;
+	}
+	
+	if (!testBlit)
+	{
+		// Renderer function not found.
+		if (Renderers[newMode].name)
+		{
+			MESSAGE_STR_L("Error: Render mode %s is not available.",
+				      "Error: Render mode %s is not available.", Renderers[newMode].name, 1500);
+		}
+		return 0;
+	}
+	
+	// Renderer function found.
+	*Rend = newMode;
+	*Blit = testBlit;
+	MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
+	
+	setShift(Video.Render_Mode == 0 ? 0 : 1);
+	
+	//if (Num>3 || Num<10)
+	//Clear_Screen();
+	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
+	// this doesn't cover hq2x etc. properly. Let's just always refresh.
+	Refresh_Video(); 
+	
+	return 1;
 }
 
 

@@ -147,7 +147,7 @@ void Input_KeyDown(int key)
 			if (Video.Full_Screen && (mod & GENS_KMOD_ALT))
 			{
 				Video.Full_Screen = !Video.Full_Screen;
-				Set_Render(Video.Full_Screen, Video.Render_Mode, 1);
+				draw->setRender(Video.Render_Mode);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
@@ -294,7 +294,7 @@ void Input_KeyDown(int key)
 			{
 				if (Video.Render_Mode > 0)
 				{
-					Set_Render(Video.Full_Screen, Video.Render_Mode - 1, 0);
+					draw->setRender(Video.Render_Mode - 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -312,7 +312,7 @@ void Input_KeyDown(int key)
 				// There's already NB_FILTER, but it has the wrong numbers...
 				if (Video.Render_Mode < 11)
 				{
-					Set_Render(Video.Full_Screen, Video.Render_Mode + 1, 0);
+					draw->setRender(Video.Render_Mode + 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}

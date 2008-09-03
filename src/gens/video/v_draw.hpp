@@ -53,6 +53,9 @@ class VDraw
 		// Refresh the video subsystem.
 		void Refresh_Video(void);
 		
+		// Set the rendering mode.
+		int setRender(int newMode);
+		
 		// Write text to the screen.
 		void writeText(const string msg, int duration);
 		
