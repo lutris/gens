@@ -292,7 +292,7 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				if (Video.Render_Mode > 1)
+				if (Video.Render_Mode > 0)
 				{
 					Set_Render(Video.Full_Screen, Video.Render_Mode - 1, 0);
 					Sync_Gens_Window_GraphicsMenu();
@@ -308,7 +308,9 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				if (Video.Render_Mode < NB_FILTER-1)
+				// TODO: Make filters constants.
+				// There's already NB_FILTER, but it has the wrong numbers...
+				if (Video.Render_Mode < 11)
 				{
 					Set_Render(Video.Full_Screen, Video.Render_Mode + 1, 0);
 					Sync_Gens_Window_GraphicsMenu();
