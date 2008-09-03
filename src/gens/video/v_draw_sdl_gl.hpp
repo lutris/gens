@@ -29,18 +29,21 @@ class VDraw_SDL_GL : public VDraw
 		int Shut_Down(void);
 		
 		// Clear the screen.
-		void Clear_Screen(void);
+		void clearScreen(void);
 		//void Clear_Primary_Screen(void);
 		//void Clear_Back_Screen(void);
 		
 	protected:
-		int Init_SDL_GL_Renderer(int w, int h);
+		int Init_SDL_GL_Renderer(int w, int h, bool reinitSDL = true);
 		
 		// Flip the screen buffer. (Called by v_draw.)
 		int flipInternal(void);
 		
 		// Adjust stretch parameters.
 		void stretchAdjustInternal(void);
+		
+		// Update the renderer.
+		void updateRenderer(void);
 		
 		// SDL flags
 		static const int SDL_GL_Flags =

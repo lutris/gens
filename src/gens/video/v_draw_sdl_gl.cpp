@@ -58,7 +58,7 @@ int VDraw_SDL_GL::Init_Video(void)
 	w = Video.Width_GL;
 	h = Video.Height_GL;
 	
-	if (Video.Full_Screen)
+	if (m_FullScreen)
 	{
 		// Hide the embedded SDL window.
 		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
@@ -96,13 +96,14 @@ int VDraw_SDL_GL::Init_Video(void)
 	x = Init_SDL_GL_Renderer(w, h);
 	
 	// Disable the cursor in fullscreen mode.
-	SDL_ShowCursor(Video.Full_Screen ? SDL_DISABLE : SDL_ENABLE);
+	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
 	
 	// Adjust stretch parameters.
 	stretchAdjustInternal();
 	
 	// If normal rendering mode is set, disable the video shift.
-	m_shift = (Video.Render_Mode != 0);
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	m_shift = (rendMode == 0) ? 0 : 1;
 	
 	// Return the status code from Init_SDL_GL_Renderer().
 	return x;
@@ -113,20 +114,25 @@ int VDraw_SDL_GL::Init_Video(void)
  * Init_SDL_GL_Renderer(): Initialize the SDL + OpenGL renderer.
  * @param w Width of the screen.
  * @param h Height of the screen.
+ * @param reinitSDL Reinitialize SDL.
  * @return 1 on success; 0 on error.
  */
-int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h)
+int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 {
-	screen = SDL_SetVideoMode(w, h, bpp, SDL_GL_Flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
-	
-	if (!screen)
+	if (reinitSDL)
 	{
-		// Error initializing SDL.
-		fprintf(stderr, "Error creating SDL primary surface: %s\n", SDL_GetError());
-		exit(0);
+		screen = SDL_SetVideoMode(w, h, bpp, SDL_GL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
+		
+		if (!screen)
+		{
+			// Error initializing SDL.
+			fprintf(stderr, "Error creating SDL primary surface: %s\n", SDL_GetError());
+			exit(0);
+		}
 	}
 	
-	if (Video.Render_Mode == 0)
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	if (rendMode == 0)
 	{
 		// 1x rendering.
 		rowLength = 320;
@@ -236,12 +242,17 @@ void VDraw_SDL_GL::stretchAdjustInternal(void)
 
 
 /**
- * Clear_Screen(): Clears the screen.
+ * clearScreen(): Clears the screen.
  */
-void VDraw_SDL_GL::Clear_Screen(void)
+void VDraw_SDL_GL::clearScreen(void)
 {
+	// Clear the screen.
 	glClear(GL_COLOR_BUFFER_BIT);
 	memset(filterBuffer, 0x00, filterBufferSize);
+	
+	// Reset the border color to make sure it's redrawn.
+	m_BorderColor_16B = ~MD_Palette[0];
+	m_BorderColor_32B = ~MD_Palette32[0];
 }
 
 
@@ -265,7 +276,7 @@ int VDraw_SDL_GL::flipInternal(void)
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
 	
-	if (Video.Full_Screen)
+	if (m_FullScreen)
 	{
 		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
@@ -426,4 +437,55 @@ int VDraw_SDL_GL::Shut_Down(void)
 {
 	SDL_Quit();
 	return 1;
+}
+
+
+/**
+ * updateRenderer(): Update the renderer.
+ */
+void VDraw_SDL_GL::updateRenderer(void)
+{
+	// Check if a resolution switch is needed.
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	if (rendMode == 0)
+	{
+		// 1x rendering.
+		if (rowLength == 320 && textureSize == 256)
+		{
+			// Already 1x rendering. Simply clear the screen.
+			clearScreen();
+			return;
+		}
+	}
+	else
+	{
+		// 2x rendering.
+		if (rowLength == 640 && textureSize == 512)
+		{
+			// Already 2x rendering. Simply clear the screen.
+			clearScreen();
+			return;
+		}
+	}
+	
+	// Resolution switch is needed.
+	
+	// Clear the GL buffers.
+	// TODO: Make this a separate function that is also called by End_Video().
+	if (filterBuffer)
+	{
+		// Delete the GL textures and filter buffer.
+		glDeleteTextures(2, textures);
+		free(filterBuffer);
+		filterBuffer = NULL;
+	}
+	
+	// Reinitialize the GL buffers without reinitializing SDL.
+	Init_SDL_GL_Renderer(Video.Width_GL, Video.Height_GL, false);
+	
+	// Clear the screen.
+	clearScreen();
+	
+	// Adjust stretch parameters.
+	stretchAdjustInternal();
 }

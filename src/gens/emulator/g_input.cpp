@@ -132,7 +132,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_BACKSPACE:
-			if (Video.Full_Screen && (KMOD_SHIFT & mod))
+			if (draw->fullScreen() && (KMOD_SHIFT & mod))
 			{
 				Clear_Sound_Buffer();
 				Save_Shot();
@@ -144,10 +144,9 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_RETURN:
-			if (Video.Full_Screen && (mod & GENS_KMOD_ALT))
+			if (draw->fullScreen() && (mod & GENS_KMOD_ALT))
 			{
-				Video.Full_Screen = !Video.Full_Screen;
-				draw->setRender(Video.Render_Mode);
+				draw->setFullScreen(!draw->fullScreen());
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
@@ -157,7 +156,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F2:
-			if (Video.Full_Screen && (mod & GENS_KMOD_SHIFT))
+			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
 				Change_Stretch(!draw->stretch());
 				Sync_Gens_Window_GraphicsMenu();
@@ -170,7 +169,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F3:
-			if (Video.Full_Screen && (mod & GENS_KMOD_SHIFT))
+			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
 				Change_VSync(-1);
 				Sync_Gens_Window_GraphicsMenu();
@@ -205,9 +204,6 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F5:
-			if (!Video.Full_Screen)
-				break;
-			
 			/* TODO: Make MINIMIZE work correctly.
 			if (mod & GENS_KMOD_SHIFT)
 			{
@@ -243,9 +239,6 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F8:
-			if (!Video.Full_Screen)
-				break;
-			
 			/* TODO: Make MINIMIZE work correctly.
 			if (mod & GENS_KMOD_SHIFT)
 			{
@@ -278,7 +271,7 @@ void Input_KeyDown(int key)
 				Change_DAC_Improved(!DAC_Improv);
 				Sync_Gens_Window_SoundMenu();
 			}
-			else if (Video.Full_Screen && !mod)
+			else if (draw->fullScreen() && !mod)
 			{
 				draw->setFPSEnabled(!draw->fpsEnabled());
 			}
@@ -292,9 +285,10 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				if (Video.Render_Mode > 0)
+				int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+				if (rendMode > 0)
 				{
-					draw->setRender(Video.Render_Mode - 1);
+					draw->setRender(rendMode - 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -310,9 +304,10 @@ void Input_KeyDown(int key)
 			{
 				// TODO: Make filters constants.
 				// There's already NB_FILTER, but it has the wrong numbers...
-				if (Video.Render_Mode < 11)
+				int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+				if (rendMode < 11)
 				{
-					draw->setRender(Video.Render_Mode + 1);
+					draw->setRender(rendMode + 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -344,7 +339,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_b:
-			if (Video.Full_Screen && (mod & GENS_KMOD_CTRL))
+			if (draw->fullScreen() && (mod & GENS_KMOD_CTRL))
 			{
 				// Ctrl-B: Boot CD
 				if (Num_CD_Drive == 0)
@@ -382,6 +377,7 @@ void Input_KeyDown(int key)
 			break;
 		*/
 		
+		/* TODO: Fix MINIMIZE.
 		case GENS_KEY_g:
 			if (mod & GENS_KMOD_CTRL)
 			{
@@ -391,6 +387,7 @@ void Input_KeyDown(int key)
 				//open_game_genie();
 			}
 			break;
+		*/
 		
 		case GENS_KEY_h:
 			if (mod & KMOD_CTRL)
@@ -412,6 +409,7 @@ void Input_KeyDown(int key)
 			break;
 		*/
 		
+		/* TODO: Fix MINIMIZE.
 		case GENS_KEY_p:
 			if (mod & (GENS_KMOD_CTRL | GENS_KMOD_SHIFT))
 			{
@@ -426,9 +424,10 @@ void Input_KeyDown(int key)
 				}
 			}
 			break;
+		*/
 		
 		case GENS_KEY_r:
-			if (Video.Full_Screen && (mod & GENS_KMOD_SHIFT))
+			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
 				Change_OpenGL(!Video.OpenGL);
 				Sync_Gens_Window_GraphicsMenu();

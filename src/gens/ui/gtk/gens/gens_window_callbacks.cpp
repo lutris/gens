@@ -293,8 +293,9 @@ void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_da
 		Set_Render(1, Render_FS, 1);
 	*/
 	
-	Video.Full_Screen = !Video.Full_Screen;
-	draw->setRender(Video.Render_Mode);
+	draw->setFullScreen(!draw->fullScreen());
+	// TODO: See if draw->setRender() is still needed.
+	//draw->setRender(Video.Render_Mode);
 }
 
 

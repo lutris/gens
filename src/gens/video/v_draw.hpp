@@ -40,7 +40,7 @@ class VDraw
 		virtual int Shut_Down(void) = 0;
 		
 		// Clear the screen.
-		virtual void Clear_Screen(void) = 0;
+		virtual void clearScreen(void) = 0;
 		//virtual void Clear_Primary_Screen(void) = 0;
 		//virtual void Clear_Back_Screen(void) = 0;
 		
@@ -54,7 +54,7 @@ class VDraw
 		void Refresh_Video(void);
 		
 		// Set the rendering mode.
-		int setRender(int newMode);
+		int setRender(int newMode, bool forceUpdate = true);
 		
 		// Write text to the screen.
 		void writeText(const string msg, int duration);
@@ -70,6 +70,8 @@ class VDraw
 		void setMsgEnabled(bool newMsgEnable);
 		bool fpsEnabled(void);
 		void setFPSEnabled(bool newFPSEnable);
+		bool fullScreen(void);
+		void setFullScreen(bool newFullScreen);
 		
 		// Style properties
 		unsigned char msgStyle(void);
@@ -103,6 +105,9 @@ class VDraw
 		// Adjust stretch parameters.
 		virtual void stretchAdjustInternal(void);
 		
+		// Update the renderer.
+		virtual void updateRenderer(void) = 0;
+		
 		// FPS counter
 		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?
 		float m_FPS, m_FPS_Frames[8];
@@ -119,6 +124,9 @@ class VDraw
 		
 		// Intro effect color
 		unsigned char m_IntroEffectColor;
+		
+		// Full Screen
+		bool m_FullScreen;
 		
 		// Screen HBorder.
 		// Usually 64 in 256x224 mode. (320 - 256 == 64)

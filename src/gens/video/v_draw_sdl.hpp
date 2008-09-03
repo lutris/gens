@@ -25,7 +25,7 @@ class VDraw_SDL : public VDraw
 		int Shut_Down(void);
 		
 		// Clear the screen.
-		void Clear_Screen(void);
+		void clearScreen(void);
 		//void Clear_Primary_Screen(void);
 		//void Clear_Back_Screen(void);
 		
@@ -35,8 +35,16 @@ class VDraw_SDL : public VDraw
 		// Flip the screen buffer. (Called by v_draw.)
 		int flipInternal(void);
 		
+		// Update the renderer.
+		void updateRenderer(void);
+		
 		// SDL flags
-		static const int SDL_Flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL;
+		static const int SDL_Flags =
+				SDL_DOUBLEBUF |
+				SDL_HWSURFACE |
+				SDL_HWPALETTE |
+				SDL_ASYNCBLIT |
+				SDL_HWACCEL;
 		
 		SDL_Surface *screen;
 		char SDL_WindowID[24];

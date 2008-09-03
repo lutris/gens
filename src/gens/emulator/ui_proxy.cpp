@@ -782,9 +782,6 @@ int Change_Stretch(int newStretch)
 {
 	// TODO: Stretched mode seems to be broken, even though it is being set correctly...
 	
-	if ((Video.Full_Screen) && (Video.Render_Mode > 1))
-		return 0;
-	
 	Flag_Clr_Scr = 1;
 	
 	draw->setStretch(newStretch);
@@ -801,9 +798,6 @@ int Change_Stretch(int newStretch)
 int Change_Blit_Style(void)
 {
 	// TODO: Specify software blit in the parameter.
-	
-	if ((!Video.Full_Screen) || (Video.Render_Mode > 1))
-		return 0;
 	
 	Flag_Clr_Scr = 1;
 	
@@ -867,7 +861,9 @@ int Change_VSync(int newVSync)
 {
 	int *p_vsync;
 	
-	if (Video.Full_Screen)
+	// TODO: Get this working.
+	
+	if (draw->fullScreen())
 	{
 		draw->End_Video();
 		p_vsync = &FS_VSync;
@@ -882,7 +878,7 @@ int Change_VSync(int newVSync)
 	else
  		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
 	
-	if (Video.Full_Screen)
+	if (draw->fullScreen())
 	{
 		// TODO: Parameters.
 		//return Init_DDraw(640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);

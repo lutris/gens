@@ -218,7 +218,8 @@ static void Init_Settings(void)
 {
 	// Initialize video settings.
 	Video.Fast_Blur = 0;
-	Video.Render_Mode = 1;
+	Video.Render_W = 1;	// Double
+	Video.Render_FS = 1;	// Double
 #ifdef GENS_OPENGL
 	Video.OpenGL = 1;
 	Video.Width_GL = 640;
@@ -513,7 +514,8 @@ int main(int argc, char *argv[])
 	while (gtk_events_pending ())
 		gtk_main_iteration_do (0);
 	
-	if (!draw->setRender(Video.Render_Mode))
+	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	if (!draw->setRender(rendMode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
 		if (!draw->setRender(0))
@@ -733,5 +735,6 @@ void Set_GL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	draw->setRender(Video.Render_Mode);
+	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	draw->setRender(rendMode);
 }

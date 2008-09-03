@@ -190,7 +190,8 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(MItem_Render_SubMenu);
 	
 	// Selected Render Mode
-	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", Video.Render_Mode);
+	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", rendMode);
 	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
 	

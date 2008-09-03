@@ -66,9 +66,9 @@ struct Gens_Misc_Filenames_t
 // Video settings
 struct Gens_VideoSettings_t
 {
-	int Full_Screen;
 	int Fast_Blur;
-	int Render_Mode;	// TODO: Make this an enum.
+	int Render_W;	// TODO: Make this an enum.
+	int Render_FS;	// TODO: Make this an enum.
 #ifdef GENS_OPENGL
 	int OpenGL;
 	int Width_GL;

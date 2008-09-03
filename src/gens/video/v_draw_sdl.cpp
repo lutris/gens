@@ -37,7 +37,9 @@ int VDraw_SDL::Init_Video(void)
 	int x;
 	int w, h;
 	
-	if (Video.Render_Mode == 0)
+	printf("%d\n", Video.Render_W);
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	if (rendMode == 0)
 	{
 		// Normal render mode. 320x240
 		w = 320; h = 240;
@@ -48,7 +50,7 @@ int VDraw_SDL::Init_Video(void)
 		w = 640; h = 480;
 	}
 	
-	if (Video.Full_Screen)
+	if (m_FullScreen)
 	{
 		// Hide the embedded SDL window.
 		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
@@ -86,10 +88,10 @@ int VDraw_SDL::Init_Video(void)
 	x = Init_SDL_Renderer(w, h);
 	
 	// Disable the cursor in fullscreen mode.
-	SDL_ShowCursor(Video.Full_Screen ? SDL_DISABLE : SDL_ENABLE);
+	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
 	
 	// If normal rendering mode is set, disable the video shift.
-	m_shift = (Video.Render_Mode != 0);
+	m_shift = (rendMode == 0) ? 0 : 1;
 	
 	// Return the status code from Init_SDL_Renderer().
 	return x;
@@ -104,7 +106,7 @@ int VDraw_SDL::Init_Video(void)
  */
 int VDraw_SDL::Init_SDL_Renderer(int w, int h)
 {
-	screen = SDL_SetVideoMode(w, h, bpp, SDL_Flags | (Video.Full_Screen ? SDL_FULLSCREEN : 0));
+	screen = SDL_SetVideoMode(w, h, bpp, SDL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
 	
 	if (!screen)
 	{
@@ -127,13 +129,18 @@ void VDraw_SDL::End_Video(void)
 
 
 /**
- * Clear_Screen(): Clears the screen.
+ * clearScreen(): Clears the screen.
  */
-void VDraw_SDL::Clear_Screen(void)
+void VDraw_SDL::clearScreen(void)
 {
+	// Clear the screen.
 	SDL_LockSurface(screen);
 	SDL_FillRect(screen, NULL, 0);
 	SDL_UnlockSurface(screen);
+	
+	// Reset the border color to make sure it's redrawn.
+	m_BorderColor_16B = ~MD_Palette[0];
+	m_BorderColor_32B = ~MD_Palette32[0];
 }
 
 
@@ -242,7 +249,7 @@ int VDraw_SDL::flipInternal(void)
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
-	if (Video.Full_Screen)
+	if (m_FullScreen)
 	{
 		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
@@ -307,4 +314,44 @@ int VDraw_SDL::Shut_Down(void)
 {
 	SDL_Quit();
 	return 1;
+}
+
+
+/**
+ * updateRenderer(): Update the renderer.
+ */
+void VDraw_SDL::updateRenderer(void)
+{
+	// Check if a resolution switch is needed.
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	if (rendMode == 0)
+	{
+		// 1x rendering.
+		if (screen->w == 320 && screen->h == 240)
+		{
+			// Already 1x rendering. Simply clear the screen.
+			clearScreen();
+			return;
+		}
+	}
+	else
+	{
+		// 2x rendering.
+		if (screen->w == 640 && screen->h == 480)
+		{
+			// Already 2x rendering. Simply clear the screen.
+			clearScreen();
+			return;
+		}
+	}
+	
+	// Resolution switch is needed.
+	End_Video();
+	Init_Video();
+	
+	// Clear the screen.
+	clearScreen();
+	
+	// Adjust stretch parameters.
+	stretchAdjustInternal();
 }

@@ -361,18 +361,18 @@ void parseArgs(int argc, char **argv)
 		}
 		else if (!strcmp(long_options[option_index].name, FS))
 		{
-			Video.Full_Screen = 1;
+			draw->setFullScreen(true);
 		}
 		else if (!strcmp(long_options[option_index].name, WINDOW))
 		{
-			Video.Full_Screen = 0;
+			draw->setFullScreen(false);
 		}
 		else if (!strcmp(long_options[option_index].name, RENDERMODE))
 		{
 			int mode = strtol (optarg, (char **) NULL, 10);
 			
 			// TODO: NB_FILTER?
-			if ((mode <0) || (mode>=NB_FILTER))
+			if ((mode < 0) || (mode>=NB_FILTER))
 			{
 				fprintf(stderr, "Invalid render mode : %d\n", mode);
 				exit(1);
@@ -380,7 +380,10 @@ void parseArgs(int argc, char **argv)
 			else
 			{
 				fprintf(stderr, "Render mode : %d\n", mode);
-				Video.Render_Mode = mode;
+				if (draw->fullScreen())
+					Video.Render_FS = mode;
+				else
+					Video.Render_W = mode;
 			}
 		}
 		else if (!strcmp(long_options[option_index].name, SOUNDRATE))

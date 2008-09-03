@@ -58,6 +58,7 @@ VDraw::VDraw()
 	// Others.
 	m_Stretch = false;
 	m_IntroEffectColor = 7;
+	m_FullScreen = false;
 }
 
 VDraw::VDraw(VDraw *oldDraw)
@@ -94,6 +95,7 @@ VDraw::VDraw(VDraw *oldDraw)
 	// Others.
 	m_Stretch = oldDraw->stretch();
 	m_IntroEffectColor = oldDraw->introEffectColor();
+	m_FullScreen = oldDraw->fullScreen();
 }
 
 VDraw::~VDraw()
@@ -264,7 +266,7 @@ int VDraw::flip(void)
 	{
 		// New screen width is smaller than old screen width.
 		// Clear the screen.
-		Clear_Screen();
+		clearScreen();
 	}
 	
 	// Flip the screen buffer.
@@ -287,7 +289,8 @@ void VDraw::setBpp(int newBpp)
 	Init_Video();
 	
 	// Reset the renderer.
-	if (!setRender(Video.Render_Mode))
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	if (!setRender(rendMode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
 		if (!setRender(0))
@@ -355,16 +358,26 @@ void VDraw::Refresh_Video(void)
 
 /**
  * setRender(): Set the rendering mode.
- * @param Mode Rendering mode / filter.
+ * @param newMode Rendering mode / filter.
+ * @param forceUpdate If true, forces a renderer update.
  */
-int VDraw::setRender(int newMode)
+int VDraw::setRender(int newMode, bool forceUpdate)
 {
 	int Old_Rend, *Rend;
 	BlitFn *Blit, testBlit;
 	
-	Blit = Video.Full_Screen ? &Blit_FS : &Blit_W;
-	Rend = &Video.Render_Mode;
-	Old_Rend = Video.Render_Mode;
+	if (m_FullScreen)
+	{
+		Blit = &Blit_FS;
+		Rend = &Video.Render_FS;
+		Old_Rend = Video.Render_FS;
+	}
+	else
+	{
+		Blit = &Blit_W;
+		Rend = &Video.Render_W;
+		Old_Rend = Video.Render_W;
+	}
 	
 	// Checks if an invalid mode number was passed.
 	if (newMode < 0 || newMode >= Renderers_Count)
@@ -403,13 +416,16 @@ int VDraw::setRender(int newMode)
 	*Blit = testBlit;
 	MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
 	
-	setShift(Video.Render_Mode == 0 ? 0 : 1);
+	setShift(newMode == 0 ? 0 : 1);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
 	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
 	// this doesn't cover hq2x etc. properly. Let's just always refresh.
-	Refresh_Video(); 
+	
+	// Update the renderer.
+	if (forceUpdate && is_gens_running())
+		updateRenderer();
 	
 	return 1;
 }
@@ -527,4 +543,25 @@ void VDraw::setIntroEffectColor(unsigned char newIntroEffectColor)
 	m_IntroEffectColor = newIntroEffectColor;
 	
 	// TODO: Figure out what to do here...
+}
+
+
+bool VDraw::fullScreen(void)
+{
+	return m_FullScreen;
+}
+void VDraw::setFullScreen(bool newFullScreen)
+{
+	if (m_FullScreen == newFullScreen)
+		return;
+	
+	m_FullScreen = newFullScreen;
+	
+	// Set the renderer.
+	int newRend = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	setRender(newRend, false);
+	
+	// Refresh the video subsystem, if Gens is running.
+	if (is_gens_running())
+		Refresh_Video();
 }
