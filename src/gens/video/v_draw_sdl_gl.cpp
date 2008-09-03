@@ -471,7 +471,8 @@ void VDraw_SDL_GL::updateRenderer(void)
 	if (rendMode == 0)
 	{
 		// 1x rendering.
-		if (rowLength == 320 && textureSize == 256)
+		if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
+		    rowLength == 320 && textureSize == 256)
 		{
 			// Already 1x rendering. Simply clear the screen.
 			clearScreen();
@@ -481,7 +482,8 @@ void VDraw_SDL_GL::updateRenderer(void)
 	else
 	{
 		// 2x rendering.
-		if (rowLength == 640 && textureSize == 512)
+		if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
+		    rowLength == 640 && textureSize == 512)
 		{
 			// Already 2x rendering. Simply clear the screen.
 			clearScreen();
@@ -501,8 +503,18 @@ void VDraw_SDL_GL::updateRenderer(void)
 		filterBuffer = NULL;
 	}
 	
-	// Reinitialize the GL buffers without reinitializing SDL.
-	Init_SDL_GL_Renderer(Video.Width_GL, Video.Height_GL, false);
+	// Reinitialize the GL buffers.
+	if (screen->w == Video.Width_GL && screen->h == Video.Height_GL)
+	{
+		// Output resolution is the same. Don't reinitialize SDL.
+		Init_SDL_GL_Renderer(Video.Width_GL, Video.Height_GL, false);
+	}
+	else
+	{
+		// Output resolution has changed. Reinitialize SDL.
+		End_Video();
+		Init_Video();
+	}
 	
 	// Clear the screen.
 	clearScreen();

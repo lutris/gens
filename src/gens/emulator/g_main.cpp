@@ -736,5 +736,5 @@ void Set_GL_Resolution(int w, int h)
 	
 	// OpenGL mode is currently enabled. Change the resolution.
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-	draw->setRender(rendMode);
+	draw->setRender(rendMode, true);
 }
