@@ -29,6 +29,9 @@ class VDraw_SDL : public VDraw
 		//void Clear_Primary_Screen(void);
 		//void Clear_Back_Screen(void);
 		
+		// Update VSync value.
+		void updateVSync(bool unused = false);
+		
 	protected:
 		int Init_SDL_Renderer(int w, int h);
 		

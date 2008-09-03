@@ -56,6 +56,9 @@ class VDraw
 		// Set the rendering mode.
 		int setRender(int newMode, bool forceUpdate = true);
 		
+		// Update VSync value.
+		virtual void updateVSync(bool data = false) = 0;
+		
 		// Write text to the screen.
 		void writeText(const string msg, int duration);
 		

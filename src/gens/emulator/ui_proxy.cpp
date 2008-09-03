@@ -863,13 +863,7 @@ int Change_VSync(int newVSync)
 	
 	// TODO: Get this working.
 	
-	if (draw->fullScreen())
-	{
-		draw->End_Video();
-		p_vsync = &FS_VSync;
-	}
-	else
-		p_vsync = &W_VSync;
+	p_vsync = (draw->fullScreen() ? &Video.VSync_FS : &Video.VSync_W);
 	
 	*p_vsync = (newVSync == 1 ? 1 : 0);
 	
@@ -878,14 +872,8 @@ int Change_VSync(int newVSync)
 	else
  		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
 	
-	if (draw->fullScreen())
-	{
-		// TODO: Parameters.
-		//return Init_DDraw(640, 480, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
-		return draw->Init_Video();
-	}
-	else
-		return 1;
+	// Update VSync.
+	draw->updateVSync();
 }
 
 

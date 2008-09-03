@@ -9,8 +9,29 @@
 #include "v_draw.hpp"
 
 // OpenGL includes
+#define GLX_GLXEXT_PROTOTYPES
 #include <GL/gl.h>
+#include <GL/glx.h>
 #include <GL/glext.h>
+
+// Needed for VSync on Linux.
+// Code copied from Mesa's glxswapcontrol.c
+// TODO: Make sure this works correctly on all drivers.
+
+#ifndef GLX_MESA_swap_control
+typedef GLint (*PFNGLXSWAPINTERVALMESAPROC)(unsigned interval);
+typedef GLint (*PFNGLXGETSWAPINTERVALMESAPROC)( void );
+#endif
+
+#if !defined(GLX_OML_sync_control) && defined(_STDINT_H)
+#define GLX_OML_sync_control 1
+typedef Bool (*PFNGLXGETMSCRATEOMLPROC)(Display *dpy, GLXDrawable drawable, int32_t *numerator, int32_t *denominator);
+#endif
+
+#ifndef GLX_MESA_swap_frame_usage
+#define GLX_MESA_swap_frame_usage 1
+typedef int (*PFNGLXGETFRAMEUSAGEMESAPROC)(Display *dpy, GLXDrawable drawable, float * usage);
+#endif
 
 class VDraw_SDL_GL : public VDraw
 {
@@ -32,6 +53,9 @@ class VDraw_SDL_GL : public VDraw
 		void clearScreen(void);
 		//void Clear_Primary_Screen(void);
 		//void Clear_Back_Screen(void);
+		
+		// Update VSync value.
+		void updateVSync(bool fromInitSDLGL = false);
 		
 	protected:
 		int Init_SDL_GL_Renderer(int w, int h, bool reinitSDL = true);
@@ -68,6 +92,11 @@ class VDraw_SDL_GL : public VDraw
 		
 		// Stretch parameters.
 		float m_HStretch, m_VStretch;
+		
+		// OpenGL VSync stuff
+		// Copied from Mesa's glxswapcontrol.c
+		PFNGLXSWAPINTERVALMESAPROC set_swap_interval;
+		PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval;
 };
 
 #endif

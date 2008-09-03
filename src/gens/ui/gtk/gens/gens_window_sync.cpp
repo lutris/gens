@@ -174,7 +174,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Simple checkbox items
 	MItem_VSync = lookup_widget(gens_window, "GraphicsMenu_VSync");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), W_VSync);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), Video.VSync_W);
 	MItem_Stretch = lookup_widget(gens_window, "GraphicsMenu_Stretch");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), draw->stretch());
 	MItem_SpriteLimit = lookup_widget(gens_window, "GraphicsMenu_SpriteLimit");

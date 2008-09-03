@@ -25,6 +25,15 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 	glLinearFilter = 1;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
+	
+	// TODO: Copy functions to test for VSync from Mesa's glxswapcontrol.c
+	/*
+	has_OML_sync_control = is_extension_supported("GLX_OML_sync_control");
+	has_SGI_swap_control = is_extension_supported("GLX_SGI_swap_control");
+	has_MESA_swap_control = is_extension_supported("GLX_MESA_swap_control");
+	*/
+	set_swap_interval = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalSGI");
+	get_swap_interval = (PFNGLXGETSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXGetSwapIntervalSGI");
 }
 
 VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
@@ -38,6 +47,15 @@ VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
 	glLinearFilter = 1;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
+	
+	// TODO: Copy functions to test for VSync from Mesa's glxswapcontrol.c
+	/*
+	has_OML_sync_control = is_extension_supported("GLX_OML_sync_control");
+	has_SGI_swap_control = is_extension_supported("GLX_SGI_swap_control");
+	has_MESA_swap_control = is_extension_supported("GLX_MESA_swap_control");
+	*/
+	set_swap_interval = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalSGI");
+	get_swap_interval = (PFNGLXGETSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXGetSwapIntervalSGI");
 }
 
 VDraw_SDL_GL::~VDraw_SDL_GL()
@@ -130,6 +148,9 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 			exit(0);
 		}
 	}
+	
+	// Update VSync.
+	updateVSync(true);
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
 	if (rendMode == 0)
@@ -488,4 +509,23 @@ void VDraw_SDL_GL::updateRenderer(void)
 	
 	// Adjust stretch parameters.
 	stretchAdjustInternal();
+}
+
+
+/**
+ * updateVSync(): Update VSync value.
+ * @param fromInitSDLGL True if being called from Init_SDL_GL_Renderer().
+ */
+void VDraw_SDL_GL::updateVSync(bool fromInitSDLGL)
+{
+	// Set the VSync value.
+	// TODO: Turning VSync off seems to require a refresh...
+	int vsync = (m_FullScreen ? Video.VSync_FS : Video.VSync_W);
+	if (set_swap_interval != NULL)
+	{
+		if (vsync)
+			set_swap_interval(1);
+		else if (!fromInitSDLGL)
+			Refresh_Video();
+	}
 }

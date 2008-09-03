@@ -69,6 +69,8 @@ struct Gens_VideoSettings_t
 	int Fast_Blur;
 	int Render_W;	// TODO: Make this an enum.
 	int Render_FS;	// TODO: Make this an enum.
+	int VSync_FS;
+	int VSync_W;
 #ifdef GENS_OPENGL
 	int OpenGL;
 	int Width_GL;
@@ -179,10 +181,7 @@ extern int ice;
 extern int (*Update_Frame)(void);
 extern int (*Update_Frame_Fast)(void);
 
-// VSync flags
-extern int FS_VSync;
-extern int W_VSync;
-
+// Miscellaneous.
 void Clear_Screen_MD(void);
 void Change_OpenGL(int newOpenGL);
 void Set_GL_Resolution(int w, int h);

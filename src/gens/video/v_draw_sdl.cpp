@@ -355,3 +355,14 @@ void VDraw_SDL::updateRenderer(void)
 	// Adjust stretch parameters.
 	stretchAdjustInternal();
 }
+
+
+/**
+ * updateVSync(): Update VSync value.
+ * @param unused Unused in this function.
+ */
+void VDraw_SDL::updateVSync(bool unused)
+{
+	// Unfortunately, plain old SDL doesn't support VSync. :(
+	return;
+}

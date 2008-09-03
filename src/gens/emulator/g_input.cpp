@@ -171,7 +171,8 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F3:
 			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
-				Change_VSync(-1);
+				int newVSync = !(draw->fullScreen() ? Video.VSync_FS : Video.VSync_W);
+				Change_VSync(newVSync);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else if (!mod)

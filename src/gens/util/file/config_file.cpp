@@ -140,8 +140,8 @@ int Save_Config(const char *File_Name)
 	// the Linux reimplementation of WritePrivateProfileString gets confused.
 	INI_WriteBool("Graphics", "Full Screen", draw->fullScreen());
 	INI_WriteInt("Graphics", "Render Fullscreen", Video.Render_FS + 1);
-	INI_WriteInt("Graphics", "Full Screen VSync", FS_VSync & 1);
-	INI_WriteInt("Graphics", "Windows VSync", W_VSync & 1);
+	INI_WriteInt("Graphics", "Full Screen VSync", Video.VSync_FS & 1);
+	INI_WriteInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	INI_WriteInt("Graphics", "Render Windowed", Video.Render_W + 1);
 	
 	INI_WriteInt("Graphics", "Bits Per Pixel", bpp);
@@ -366,8 +366,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Video settings
 	// Render_Mode is decremented by 1 for compatibility with old Gens.
-	FS_VSync = INI_GetInt("Graphics", "Full Screen VSync", 0);
-	W_VSync = INI_GetInt("Graphics", "Windows VSync", 0);
+	Video.VSync_FS = INI_GetInt("Graphics", "Full Screen VSync", 0) & 1;
+	Video.VSync_W = INI_GetInt("Graphics", "Windows VSync", 0) & 1;
 	draw->setFullScreen(INI_GetBool("Graphics", "Full Screen", false));
 	Video.Render_FS = INI_GetInt("Graphics", "Render Fullscreen", 2) - 1; // Default: Double
 	Video.Render_W = INI_GetInt("Graphics", "Render Windowed", 2) - 1;    // Default: Double
