@@ -37,7 +37,6 @@ int VDraw_SDL::Init_Video(void)
 	int x;
 	int w, h;
 	
-	printf("%d\n", Video.Render_W);
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
 	if (rendMode == 0)
 	{
