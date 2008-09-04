@@ -791,28 +791,53 @@ void Refresh_VDP_Palette(void)
 	unsigned int i, j, k;
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
-	for (i = 0; i < 16; i++)
+	if (bpp == 32)
 	{
-		for (j = 0; j < 8; j++)
+		// 32 bpp palette update
+		for (i = 0; i < 8; i++)
 		{
-			for (k = 0; k < 8; k++)
+			for (j = 0; j < 16; j++)
 			{
-				MD_Screen[(336 * 10) + (k * 336) + 180 + (i * 8) + j] =
-					MD_Palette[i + 0];
-				MD_Screen[(336 * 18) + (k * 336) + 180 + (i * 8) + j] =
-					MD_Palette[i + 16];
-				MD_Screen[(336 * 26) + (k * 336) + 180 + (i * 8) + j] =
-					MD_Palette[i + 32];
-				MD_Screen[(336 * 34) + (k * 336) + 180 + (i * 8) + j] =
-					MD_Palette[i + 48];
+				for (k = 0; k < 8; k++)
+				{
+					MD_Screen32[(336 * 10) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 0];
+					MD_Screen32[(336 * 18) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 16];
+					MD_Screen32[(336 * 26) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 32];
+					MD_Screen32[(336 * 34) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 48];
+				}
 			}
 		}
+		
+		// Outline the selected palette. Ported from GENS Re-Recording.
+		for (i = 0; i < 16 * 8; i++)
+		{
+			MD_Screen32[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFFFF;
+			MD_Screen32[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFFFF;
+		}
 	}
-	// Outline the selected palette. Ported from GENS Re-Recording.
-	for (i = 0; i < 16 * 8; i++)
+	else
 	{
-		MD_Screen[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
-		MD_Screen[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
+		// 15/16 bpp palette update
+		for (i = 0; i < 8; i++)
+		{
+			for (j = 0; j < 16; j++)
+			{
+				for (k = 0; k < 8; k++)
+				{
+					MD_Screen[(336 * 10) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 0];
+					MD_Screen[(336 * 18) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 16];
+					MD_Screen[(336 * 26) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 32];
+					MD_Screen[(336 * 34) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 48];
+				}
+			}
+		}
+		
+		// Outline the selected palette. Ported from GENS Re-Recording.
+		for (i = 0; i < 16 * 8; i++)
+		{
+			MD_Screen[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
+			MD_Screen[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
+		}
 	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
