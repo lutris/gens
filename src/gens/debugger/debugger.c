@@ -783,65 +783,52 @@ void Refresh_VDP_Pattern(void)
 }
 
 
+#define REFRESH_VDP_PALETTE_COLORS(Screen, Palette, OutlineColor)				\
+{												\
+	unsigned short i, j, k;									\
+	unsigned short col;									\
+	for (i = 0; i < 8; i++)									\
+	{											\
+		for (j = 0; j < 16; j++)							\
+		{										\
+			for (k = 0; k < 8; k++)							\
+			{									\
+				col = (i * 336) + 180 + (j * 8) + k;				\
+				Screen[(336 * 10) + col] = Palette[j + 0];			\
+				Screen[(336 * 18) + col] = Palette[j + 16];			\
+				Screen[(336 * 26) + col] = Palette[j + 32];			\
+				Screen[(336 * 34) + col] = Palette[j + 48];			\
+			}									\
+		}										\
+	}											\
+												\
+	/* Outline the selected palette. Ported from GENS Re-Recording. */			\
+	for (i = 0; i < 16 * 8; i++)								\
+	{											\
+		Screen[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = OutlineColor;		\
+		Screen[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = OutlineColor;	\
+	}											\
+}
+
+
 /**
  * Refresh_VDP_Pattern(): Refresh the VDP palette display.
  */
 void Refresh_VDP_Palette(void)
 {
-	unsigned int i, j, k;
-	unsigned int col;
+	unsigned int i;
 	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
 	if (bpp == 32)
 	{
-		// 32 bpp palette update
-		for (i = 0; i < 8; i++)
-		{
-			for (j = 0; j < 16; j++)
-			{
-				for (k = 0; k < 8; k++)
-				{
-					col = (i * 336) + 180 + (j * 8) + k;
-					MD_Screen32[(336 * 10) + col] = MD_Palette32[j + 0];
-					MD_Screen32[(336 * 18) + col] = MD_Palette32[j + 16];
-					MD_Screen32[(336 * 26) + col] = MD_Palette32[j + 32];
-					MD_Screen32[(336 * 34) + col] = MD_Palette32[j + 48];
-				}
-			}
-		}
-		
-		// Outline the selected palette. Ported from GENS Re-Recording.
-		for (i = 0; i < 16 * 8; i++)
-		{
-			MD_Screen32[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFFFF;
-			MD_Screen32[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFFFF;
-		}
+		// 32-bpp palette update
+		REFRESH_VDP_PALETTE_COLORS(MD_Screen32, MD_Palette32, 0xFFFFFF);
 	}
 	else
 	{
-		// 15/16 bpp palette update
-		for (i = 0; i < 8; i++)
-		{
-			for (j = 0; j < 16; j++)
-			{
-				for (k = 0; k < 8; k++)
-				{
-					col = (i * 336) + 180 + (j * 8) + k;
-					MD_Screen[(336 * 10) + col] = MD_Palette[j + 0];
-					MD_Screen[(336 * 18) + col] = MD_Palette[j + 16];
-					MD_Screen[(336 * 26) + col] = MD_Palette[j + 32];
-					MD_Screen[(336 * 34) + col] = MD_Palette[j + 48];
-				}
-			}
-		}
-		
-		// Outline the selected palette. Ported from GENS Re-Recording.
-		for (i = 0; i < 16 * 8; i++)
-		{
-			MD_Screen[(336 * (9 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
-			MD_Screen[(336 * (18 + ((pattern_pal & 3) * 8))) + 180 + i] = 0xFFFF;
-		}
+		// 15/16-bpp palette update
+		REFRESH_VDP_PALETTE_COLORS(MD_Screen, MD_Palette, 0xFFFF);
 	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
