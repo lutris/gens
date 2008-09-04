@@ -381,135 +381,141 @@ int Load_Patch_File(void)
 	}
 	
 	// TODO: Optimize this!
-	if (fread(Patch_String, Length, 1, Patch_File))
+	if (fread(Patch_String, Length, 1, Patch_File) == 0)
 	{
-		Bytes_Read = Length;
-		i = 0;
-		Ind_GG = 0;
+		// No data available from the patch file.
+		fclose(Patch_File);
+		free(Patch_String);
+		return 1;
+	}
+	
+	// Data read from the patch file. Process it.
+	Bytes_Read = Length;
+	i = 0;
+	Ind_GG = 0;
+	
+	while ((i < Bytes_Read) && (Ind_GG < 256))
+	{
+		c = Patch_String[i++];
 		
-		while ((i < Bytes_Read) && (Ind_GG < 256))
+		switch (etat)
 		{
-			c = Patch_String[i++];
-			
-			switch (etat)
-			{
-				case DEB_LIGNE:
-					switch (c)
-					{
-						case '\n':
-						case '\t':
-						case ' ':
-						case 13:
-							break;
-						
-						default:
-							etat = CODE;
-							i_code = 0;
-							Code[i_code++] = c;
-							break;
-					}
-					break;
-				
-				case CODE:
-					switch (c)
-					{
-						case '\n':
-						case 13:
-							Code[i_code] = 0;
-							if (check_code(Code, Ind_GG))
-								Ind_GG++;
-							etat = DEB_LIGNE;
-							break;
-						
-						case '\t':
-						case ' ':
-							Code[i_code] = 0;
-							if (check_code(Code, Ind_GG))
-								etat = BLANC;
-							else
-								etat = ERR;
-							break;
-						
-						default:
-							if (i_code < 14)
-								Code[i_code++] = c;
-							break;
-					}
-					break;
-					
-				case BLANC:
-					switch (c)
-					{
-						case '\n':
-							etat = DEB_LIGNE;
-							Ind_GG++;
-							break;
-						
-						case '\t':
-						case ' ':
-							break;
-						
-						default:
-							i_comment = 0;
-							Comment[i_comment++] = c;
-							etat = COMMENT;
-							break;
-					}
-					break;
-				
-				case COMMENT:
+			case DEB_LIGNE:
 				switch (c)
 				{
+					case '\n':
+					case '\t':
+					case ' ':
 					case 13:
 						break;
 					
+					default:
+						etat = CODE;
+						i_code = 0;
+						Code[i_code++] = c;
+						break;
+				}
+				break;
+			
+			case CODE:
+				switch (c)
+				{
 					case '\n':
-						Comment[i_comment] = 0;
-						strcpy(Liste_GG[Ind_GG].name, Comment);
-						Ind_GG++;
+					case 13:
+						Code[i_code] = 0;
+						if (check_code(Code, Ind_GG))
+							Ind_GG++;
 						etat = DEB_LIGNE;
 						break;
 					
+					case '\t':
+					case ' ':
+						Code[i_code] = 0;
+						if (check_code(Code, Ind_GG))
+							etat = BLANC;
+						else
+							etat = ERR;
+						break;
+					
 					default:
-						if (i_comment < 240)
-							Comment[i_comment++] = c;
+						if (i_code < 14)
+							Code[i_code++] = c;
 						break;
 				}
 				break;
 				
-				case ERR:
-					switch (c)
-					{
-						case '\n':
-							etat = DEB_LIGNE;
-							break;
-						
-						default:
-							break;
-					}
-					break;
-			}
-		}
-	
-		switch (etat)
-		{
-			case CODE:
-				Code[i_code] = 0;
-				if (check_code(Code, Ind_GG))
-					Ind_GG++;
+			case BLANC:
+				switch (c)
+				{
+					case '\n':
+						etat = DEB_LIGNE;
+						Ind_GG++;
+						break;
+					
+					case '\t':
+					case ' ':
+						break;
+					
+					default:
+						i_comment = 0;
+						Comment[i_comment++] = c;
+						etat = COMMENT;
+						break;
+				}
 				break;
 			
 			case COMMENT:
-				Comment[i_comment] = 0;
-				strcpy(Liste_GG[Ind_GG].name, Comment);
-				Ind_GG++;
-				break;
+			switch (c)
+			{
+				case 13:
+					break;
+				
+				case '\n':
+					Comment[i_comment] = 0;
+					strcpy(Liste_GG[Ind_GG].name, Comment);
+					Ind_GG++;
+					etat = DEB_LIGNE;
+					break;
+				
+				default:
+					if (i_comment < 240)
+						Comment[i_comment++] = c;
+					break;
+			}
+			break;
 			
-			case DEB_LIGNE:
-			case BLANC:
 			case ERR:
+				switch (c)
+				{
+					case '\n':
+						etat = DEB_LIGNE;
+						break;
+					
+					default:
+						break;
+				}
 				break;
 		}
+	}
+
+	switch (etat)
+	{
+		case CODE:
+			Code[i_code] = 0;
+			if (check_code(Code, Ind_GG))
+				Ind_GG++;
+			break;
+		
+		case COMMENT:
+			Comment[i_comment] = 0;
+			strcpy(Liste_GG[Ind_GG].name, Comment);
+			Ind_GG++;
+			break;
+		
+		case DEB_LIGNE:
+		case BLANC:
+		case ERR:
+			break;
 	}
 	
 	fclose(Patch_File);
