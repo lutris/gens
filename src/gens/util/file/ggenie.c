@@ -70,65 +70,68 @@ void Init_GameGenie(void)
  * by result. If an error results, both the address and data will be set to -1.
  */
 
-static void
-genie_decode (const char *code, struct patch *result)
+static void genie_decode(const char *code, struct patch *result)
 {
-  int i = 0, n;
-  char *x;
-
-  for (; i < 8; ++i)
-    {
-      /* If strchr returns NULL, we were given a bad character */
-      if (!(x = strchr (genie_chars, code[i])))
+	int i, n;
+	char *x;
+	
+	for (i = 0; i < 8; i++)
 	{
-	  result->addr = -1;
-	  result->data = -1;
-	  return;
+		/* If strchr returns NULL, we were given a bad character */
+		if (!(x = strchr(genie_chars, code[i])))
+		{
+			result->addr = -1;
+			result->data = -1;
+			return;
+		}
+		
+		// TODO: Pointer arithmetic is a bad thing. Clean this up.
+		n = (x - genie_chars) >> 1;
+		
+		/* Now, based on which character this is, fit it into the result */
+		switch (i)
+		{
+			case 0:
+				/* ____ ____ ____ ____ ____ ____ : ____ ____ ABCD E___ */
+				result->data |= n << 3;
+				break;
+			case 1:
+				/* ____ ____ DE__ ____ ____ ____ : ____ ____ ____ _ABC */
+				result->data |= n >> 2;
+				result->addr |= (n & 3) << 14;
+				break;
+			case 2:
+				/* ____ ____ __AB CDE_ ____ ____ : ____ ____ ____ ____ */
+				result->addr |= n << 9;
+				break;
+			case 3:
+				/* BCDE ____ ____ ___A ____ ____ : ____ ____ ____ ____ */
+				result->addr |= (n & 0xF) << 20 | (n >> 4) << 8;
+				break;
+			case 4:
+				/* ____ ABCD ____ ____ ____ ____ : ___E ____ ____ ____ */
+				result->data |= (n & 1) << 12;
+				result->addr |= (n >> 1) << 16;
+				break;
+			case 5:
+				/* ____ ____ ____ ____ ____ ____ : E___ ABCD ____ ____ */
+				result->data |= (n & 1) << 15 | (n >> 1) << 8;
+				break;
+			case 6:
+				/* ____ ____ ____ ____ CDE_ ____ : _AB_ ____ ____ ____ */
+				result->data |= (n >> 3) << 13;
+				result->addr |= (n & 7) << 5;
+				break;
+			case 7:
+				/* ____ ____ ____ ____ ___A BCDE : ____ ____ ____ ____ */
+				result->addr |= n;
+				break;
+		}
+		/* Go around again */
 	}
-      n = (x - genie_chars) >> 1;
-      /* Now, based on which character this is, fit it into the result */
-      switch (i)
-	{
-	case 0:
-	  /* ____ ____ ____ ____ ____ ____ : ____ ____ ABCD E___ */
-	  result->data |= n << 3;
-	  break;
-	case 1:
-	  /* ____ ____ DE__ ____ ____ ____ : ____ ____ ____ _ABC */
-	  result->data |= n >> 2;
-	  result->addr |= (n & 3) << 14;
-	  break;
-	case 2:
-	  /* ____ ____ __AB CDE_ ____ ____ : ____ ____ ____ ____ */
-	  result->addr |= n << 9;
-	  break;
-	case 3:
-	  /* BCDE ____ ____ ___A ____ ____ : ____ ____ ____ ____ */
-	  result->addr |= (n & 0xF) << 20 | (n >> 4) << 8;
-	  break;
-	case 4:
-	  /* ____ ABCD ____ ____ ____ ____ : ___E ____ ____ ____ */
-	  result->data |= (n & 1) << 12;
-	  result->addr |= (n >> 1) << 16;
-	  break;
-	case 5:
-	  /* ____ ____ ____ ____ ____ ____ : E___ ABCD ____ ____ */
-	  result->data |= (n & 1) << 15 | (n >> 1) << 8;
-	  break;
-	case 6:
-	  /* ____ ____ ____ ____ CDE_ ____ : _AB_ ____ ____ ____ */
-	  result->data |= (n >> 3) << 13;
-	  result->addr |= (n & 7) << 5;
-	  break;
-	case 7:
-	  /* ____ ____ ____ ____ ___A BCDE : ____ ____ ____ ____ */
-	  result->addr |= n;
-	  break;
-	}
-      /* Go around again */
-    }
-  return;
+	return;
 }
+
 
 /* "Decode" an address/data pair into a structure. This is for "012345:ABCD"
  * type codes. You're more likely to find Genie codes circulating around, but
@@ -138,385 +141,421 @@ genie_decode (const char *code, struct patch *result)
 
 static char hex_chars[] = "00112233445566778899AaBbCcDdEeFf";
 
-static void
-hex_decode (const char *code, struct patch *result)
+static void hex_decode(const char *code, struct patch *result)
 {
-  char *x;
-  int i;
-  /* 6 digits for address */
-  for (i = 0; i < 6; ++i)
-    {
-      if (!(x = strchr (hex_chars, code[i])))
+	char *x;
+	int i;
+	
+	/* 6 digits for address */
+	for (i = 0; i < 6; i++)
 	{
-	  result->addr = result->data = -1;
-	  return;
+		if (!(x = strchr(hex_chars, code[i])))
+		{
+			result->addr = result->data = -1;
+			return;
+		}
+		
+		// TODO: More pointer arithmetic. Get rid of it!
+		result->addr = (result->addr << 4) | ((x - hex_chars) >> 1);
 	}
-      result->addr = (result->addr << 4) | ((x - hex_chars) >> 1);
-    }
-  /* 4 digits for data */
-  for (i = 6; i < 10; ++i)
-    {
-      if (!(x = strchr (hex_chars, code[i])))
+	
+	/* 4 digits for data */
+	for (i = 6; i < 10; i++)
 	{
-	  result->addr = result->data = -1;
-	  return;
+		if (!(x = strchr(hex_chars, code[i])))
+		{
+			result->addr = result->data = -1;
+			return;
+		}
+		
+		// TODO: More pointer arithmetic. Get rid of it!
+		result->data = (result->data << 4) | ((x - hex_chars) >> 1);
 	}
-      result->data = (result->data << 4) | ((x - hex_chars) >> 1);
-    }
 }
+
 
 /* THIS is the function you call from the MegaDrive or whatever. This figures
  * out whether it's a genie or hex code, depunctuates it, and calls the proper
  * decoder. */
-void
-decode (const char *code, struct patch *result)
+void decode(const char *code, struct patch *result)
 {
-  int len = strlen (code), i, j;
-  char code_to_pass[16], *x;
-  const char *ad, *da;
-  int adl, dal;
-
-  /* Initialize the result */
-  result->addr = result->data = 0;
-
-  /* If it's 9 chars long and the 5th is a hyphen, we have a Game Genie
-   * code. */
-
-  if (len == 9 && code[4] == '-')
-    {
-      /* Remove the hyphen and pass to genie_decode */
-      code_to_pass[0] = code[0];
-      code_to_pass[1] = code[1];
-      code_to_pass[2] = code[2];
-      code_to_pass[3] = code[3];
-      code_to_pass[4] = code[5];
-      code_to_pass[5] = code[6];
-      code_to_pass[6] = code[7];
-      code_to_pass[7] = code[8];
-      code_to_pass[8] = '\0';
-      genie_decode (code_to_pass, result);
-      return;
-    }
-
-  /* Otherwise, we assume it's a hex code.
-   * Find the colon so we know where address ends and data starts. If there's
-   * no colon, then we haven't a code at all! */
-  if (!(x = strchr (code, ':')))
-    goto bad_code;
-  ad = code;
-  da = x + 1;
-  adl = x - code;
-  dal = len - adl - 1;
-
-  /* If a section is empty or too long, toss it */
-  if (adl == 0 || adl > 6 || dal == 0 || dal > 4)
-    goto bad_code;
-
-  /* Pad the address with zeros, then fill it with the value */
-  for (i = 0; i < (6 - adl); ++i)
-    code_to_pass[i] = '0';
-  for (j = 0; i < 6; ++i, ++j)
-    code_to_pass[i] = ad[j];
-
-  /* Do the same for data */
-  for (i = 6; i < (10 - dal); ++i)
-    code_to_pass[i] = '0';
-  for (j = 0; i < 10; ++i, ++j)
-    code_to_pass[i] = da[j];
-
-  code_to_pass[10] = '\0';
-
-  /* Decode and goodbye */
-  hex_decode (code_to_pass, result);
-  return;
-
+	int len, i, j;
+	char code_to_pass[16], *x;
+	const char *ad, *da;
+	int adl, dal;
+	
+	// Length of the code.
+	len = strlen(code);
+	
+	/* Initialize the result */
+	result->addr = result->data = 0;
+	
+	/* If it's 9 chars long and the 5th is a hyphen, we have a Game Genie
+	 * code. */
+	
+	if (len == 9 && code[4] == '-')
+	{
+		/* Remove the hyphen and pass to genie_decode */
+		code_to_pass[0] = code[0];
+		code_to_pass[1] = code[1];
+		code_to_pass[2] = code[2];
+		code_to_pass[3] = code[3];
+		code_to_pass[4] = code[5];
+		code_to_pass[5] = code[6];
+		code_to_pass[6] = code[7];
+		code_to_pass[7] = code[8];
+		code_to_pass[8] = '\0';
+		genie_decode(code_to_pass, result);
+		return;
+	}
+	
+	/* Otherwise, we assume it's a hex code.
+	 * Find the colon so we know where address ends and data starts. If there's
+	 * no colon, then we haven't a code at all! */
+	if (!(x = strchr(code, ':')))
+	{
+		// TODO: AHHHHHHH GOTOs
+		goto bad_code;
+	}
+	ad = code;
+	da = x + 1;
+	adl = x - code;
+	dal = len - adl - 1;
+	
+	/* If a section is empty or too long, toss it */
+	if (adl == 0 || adl > 6 || dal == 0 || dal > 4)
+		goto bad_code;
+	
+	/* Pad the address with zeros, then fill it with the value */
+	for (i = 0; i < (6 - adl); ++i)
+		code_to_pass[i] = '0';
+	for (j = 0; i < 6; ++i, ++j)
+		code_to_pass[i] = ad[j];
+	
+	/* Do the same for data */
+	for (i = 6; i < (10 - dal); ++i)
+		code_to_pass[i] = '0';
+	for (j = 0; i < 10; ++i, ++j)
+		code_to_pass[i] = da[j];
+	
+	code_to_pass[10] = '\0';
+	
+	/* Decode and goodbye */
+	hex_decode(code_to_pass, result);
+	return;
+	
 bad_code:
-
-  /* AGH! Invalid code! */
-  result->data = result->addr = -1;
-  return;
+	/* AGH! Invalid code! */
+	result->data = -1;
+	result->addr = -1;
+	return;
 }
 
 
-void
-Patch_Codes (void)
+void Patch_Codes(void)
 {
-  int i;
-
-  for (i = 0; i < 256; i++)
-    {
-      if ((Liste_GG[i].code[0] != 0) && (Liste_GG[i].addr != 0xFFFFFFFF)
-	  && (Liste_GG[i].active))
+	int i;
+	
+	for (i = 0; i < 256; i++)
 	{
-	  if (Liste_GG[i].addr < Rom_Size)
-	    {
-	      Rom_Data[Liste_GG[i].addr] = Liste_GG[i].data & 0xFF;
-	      Rom_Data[Liste_GG[i].addr + 1] =
-		(Liste_GG[i].data & 0xFF00) >> 8;
-	    }
-	  else
-	    M68K_WW (Liste_GG[i].addr, Liste_GG[i].data);
+		if ((Liste_GG[i].code[0] != 0) &&
+		    (Liste_GG[i].addr != 0xFFFFFFFF) &&
+		    (Liste_GG[i].active))
+		{
+			if (Liste_GG[i].addr < Rom_Size)
+			{
+				// ROM modifying code
+				Rom_Data[Liste_GG[i].addr] = Liste_GG[i].data & 0xFF;
+				Rom_Data[Liste_GG[i].addr + 1] = (Liste_GG[i].data & 0xFF00) >> 8;
+			}
+			else
+			{
+				// RAM modifying code
+				M68K_WW(Liste_GG[i].addr, Liste_GG[i].data);
+			}
+		}
 	}
-    }
-
-  return;
+	
+	return;
 }
 
 
-int
-check_code (char *Code, unsigned int ind)
+int check_code(char *Code, unsigned int ind)
 {
-  if ((strlen (Code) > 11) || (strlen (Code) < 8))
-    {
-      return (0);
-    }
-
-  if (strlen (Code) == 8)
-    {
-      Liste_GG[ind].code[0] = Code[0];
-      Liste_GG[ind].code[1] = Code[1];
-      Liste_GG[ind].code[2] = Code[2];
-      Liste_GG[ind].code[3] = Code[3];
-      Liste_GG[ind].code[4] = '-';
-      Liste_GG[ind].code[5] = Code[4];
-      Liste_GG[ind].code[6] = Code[5];
-      Liste_GG[ind].code[7] = Code[6];
-      Liste_GG[ind].code[8] = Code[7];
-      Liste_GG[ind].code[9] = 0;
-    }
-  else if (strlen (Code) == 10)
-    {
-      Liste_GG[ind].code[0] = Code[0];
-      Liste_GG[ind].code[1] = Code[1];
-      Liste_GG[ind].code[2] = Code[2];
-      Liste_GG[ind].code[3] = Code[3];
-      Liste_GG[ind].code[4] = Code[4];
-      Liste_GG[ind].code[5] = Code[5];
-      Liste_GG[ind].code[6] = ':';
-      Liste_GG[ind].code[7] = Code[6];
-      Liste_GG[ind].code[8] = Code[7];
-      Liste_GG[ind].code[9] = Code[8];
-      Liste_GG[ind].code[10] = Code[9];
-      Liste_GG[ind].code[11] = 0;
-    }
-  else
-    strcpy (Liste_GG[ind].code, Code);
-
-  return (1);
-}
-
-
-int
-Load_Patch_File (void)
-{
-  FILE *Patch_File = 0;
-  unsigned char *Patch_String;
-  char Name[2048], Code[16], Comment[256], c;
-  unsigned int i_code = 0, i_comment = 0, Ind_GG;
-  unsigned long Length, Bytes_Read, i;
-  enum etat_sec
-  { DEB_LIGNE, CODE, BLANC, COMMENT, ERR } etat = DEB_LIGNE;
-
-  SetCurrentDirectory (PathNames.Gens_Path);
-
-  for (i = 0; i < 256; i++)
-    {
-      Liste_GG[i].code[0] = 0;
-      Liste_GG[i].name[0] = 0;
-      Liste_GG[i].active = 0;
-      Liste_GG[i].addr = 0xFFFFFFFF;
-      Liste_GG[i].data = 0;
-      Liste_GG[i].restore = 0xFFFFFFFF;
-    }
-
-  strcpy (Name, Patch_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".pat");
-
-  if ((Patch_File = fopen (Name, "rb")) == 0)
-    return 0;
-
-  fseek (Patch_File, 0, SEEK_END);
-  Length = ftell (Patch_File);
-  fseek (Patch_File, 0, SEEK_SET);
-
-  Patch_String = (unsigned char *) malloc (Length);
-
-  if (!Patch_String)
-    {
-      fclose (Patch_File);
-      return (0);
-    }
-
-  if (fread (Patch_String, Length, 1, Patch_File))
-    {
-      Bytes_Read = Length;
-      i = 0;
-      Ind_GG = 0;
-
-      while ((i < Bytes_Read) && (Ind_GG < 256))
+	if ((strlen(Code) > 11) || (strlen(Code) < 8))
+		return 0;
+	
+	if (strlen(Code) == 8)
 	{
-	  c = Patch_String[i++];
-
-	  switch (etat)
-	    {
-	    case DEB_LIGNE:
-	      switch (c)
-		{
-		case '\n':
-		case '\t':
-		case ' ':
-		case 13:
-		  break;
-
-		default:
-		  etat = CODE;
-		  i_code = 0;
-		  Code[i_code++] = c;
-		  break;
-		}
-	      break;
-
-	    case CODE:
-	      switch (c)
-		{
-		case '\n':
-		case 13:
-		  Code[i_code] = 0;
-		  if (check_code (Code, Ind_GG))
-		    Ind_GG++;
-		  etat = DEB_LIGNE;
-		  break;
-
-		case '\t':
-		case ' ':
-		  Code[i_code] = 0;
-		  if (check_code (Code, Ind_GG))
-		    etat = BLANC;
-		  else
-		    etat = ERR;
-		  break;
-
-
-		default:
-		  if (i_code < 14)
-		    Code[i_code++] = c;
-		  break;
-		}
-	      break;
-
-	    case BLANC:
-	      switch (c)
-		{
-		case '\n':
-		  etat = DEB_LIGNE;
-		  Ind_GG++;
-		  break;
-
-		case '\t':
-		case ' ':
-		  break;
-
-		default:
-		  i_comment = 0;
-		  Comment[i_comment++] = c;
-		  etat = COMMENT;
-		  break;
-		}
-	      break;
-
-
-	    case COMMENT:
-	      switch (c)
-		{
-		case 13:
-		  break;
-
-		case '\n':
-		  Comment[i_comment] = 0;
-		  strcpy (Liste_GG[Ind_GG].name, Comment);
-		  Ind_GG++;
-		  etat = DEB_LIGNE;
-		  break;
-
-		default:
-		  if (i_comment < 240)
-		    Comment[i_comment++] = c;
-		  break;
-		}
-	      break;
-
-	    case ERR:
-	      switch (c)
-		{
-		case '\n':
-		  etat = DEB_LIGNE;
-		  break;
-
-		default:
-		  break;
-		}
-	      break;
-	    }
+		// Game Genie code, without hyphen.
+		Liste_GG[ind].code[0] = Code[0];
+		Liste_GG[ind].code[1] = Code[1];
+		Liste_GG[ind].code[2] = Code[2];
+		Liste_GG[ind].code[3] = Code[3];
+		Liste_GG[ind].code[4] = '-';
+		Liste_GG[ind].code[5] = Code[4];
+		Liste_GG[ind].code[6] = Code[5];
+		Liste_GG[ind].code[7] = Code[6];
+		Liste_GG[ind].code[8] = Code[7];
+		Liste_GG[ind].code[9] = 0;
 	}
-
-      switch (etat)
+	else if (strlen(Code) == 10)
 	{
-	case CODE:
-	  Code[i_code] = 0;
-	  if (check_code (Code, Ind_GG))
-	    Ind_GG++;
-	  break;
-
-	case COMMENT:
-	  Comment[i_comment] = 0;
-	  strcpy (Liste_GG[Ind_GG].name, Comment);
-	  Ind_GG++;
-	  break;
-	case DEB_LIGNE:
-	case BLANC:
-	case ERR:
-	  break;
+		// Hex code, without colon.
+		Liste_GG[ind].code[0] = Code[0];
+		Liste_GG[ind].code[1] = Code[1];
+		Liste_GG[ind].code[2] = Code[2];
+		Liste_GG[ind].code[3] = Code[3];
+		Liste_GG[ind].code[4] = Code[4];
+		Liste_GG[ind].code[5] = Code[5];
+		Liste_GG[ind].code[6] = ':';
+		Liste_GG[ind].code[7] = Code[6];
+		Liste_GG[ind].code[8] = Code[7];
+		Liste_GG[ind].code[9] = Code[8];
+		Liste_GG[ind].code[10] = Code[9];
+		Liste_GG[ind].code[11] = 0;
 	}
-    }
-  fclose (Patch_File);
-  free (Patch_String);
-
-  if (i_code > 0)
-    ice = 0;
-
-  return (1);
+	else
+	{
+		// Other type of code.
+		strcpy(Liste_GG[ind].code, Code);
+	}
+	
+	return 1;
 }
 
 
-int
-Save_Patch_File (void)
+/**
+ * Load_Patch_File(): Load a patch file.
+ * @return 1 on success; 0 on error.
+ */
+int Load_Patch_File(void)
 {
-  FILE *Patch_File;
-  char Name[2048];
-  int i;
+	FILE *Patch_File = 0;
+	unsigned char *Patch_String;
+	char Name[2048], Code[16], Comment[256], c;
+	unsigned int i_code = 0, i_comment = 0, Ind_GG;
+	unsigned long Length, Bytes_Read, i;
+	
+	enum etat_sec
+	{
+		DEB_LIGNE,
+		CODE,
+		BLANC,
+		COMMENT,
+		ERR
+	} etat = DEB_LIGNE;
+	
+	// TODO: This is probably not needed...
+	SetCurrentDirectory(PathNames.Gens_Path);
+	
+	for (i = 0; i < 256; i++)
+	{
+		Liste_GG[i].code[0] = 0;
+		Liste_GG[i].name[0] = 0;
+		Liste_GG[i].active = 0;
+		Liste_GG[i].addr = 0xFFFFFFFF;
+		Liste_GG[i].data = 0;
+		Liste_GG[i].restore = 0xFFFFFFFF;
+	}
+	
+	// Create the patch filename based on the ROM filename.
+	strcpy(Name, Patch_Dir);
+	strcat(Name, Rom_Name);
+	strcat(Name, ".pat");
+	
+	Patch_File = fopen(Name, "rb");
+	if (!Patch_File)
+		return 0;
+	
+	fseek(Patch_File, 0, SEEK_END);
+	Length = ftell(Patch_File);
+	fseek(Patch_File, 0, SEEK_SET);
+	
+	Patch_String = (unsigned char*)malloc(Length);
+	
+	if (!Patch_String)
+	{
+		fclose (Patch_File);
+		return (0);
+	}
+	
+	// TODO: Optimize this!
+	if (fread(Patch_String, Length, 1, Patch_File))
+	{
+		Bytes_Read = Length;
+		i = 0;
+		Ind_GG = 0;
+		
+		while ((i < Bytes_Read) && (Ind_GG < 256))
+		{
+			c = Patch_String[i++];
+			
+			switch (etat)
+			{
+				case DEB_LIGNE:
+					switch (c)
+					{
+						case '\n':
+						case '\t':
+						case ' ':
+						case 13:
+							break;
+						
+						default:
+							etat = CODE;
+							i_code = 0;
+							Code[i_code++] = c;
+							break;
+					}
+					break;
+				
+				case CODE:
+					switch (c)
+					{
+						case '\n':
+						case 13:
+							Code[i_code] = 0;
+							if (check_code(Code, Ind_GG))
+								Ind_GG++;
+							etat = DEB_LIGNE;
+							break;
+						
+						case '\t':
+						case ' ':
+							Code[i_code] = 0;
+							if (check_code(Code, Ind_GG))
+								etat = BLANC;
+							else
+								etat = ERR;
+							break;
+						
+						default:
+							if (i_code < 14)
+								Code[i_code++] = c;
+							break;
+					}
+					break;
+					
+				case BLANC:
+					switch (c)
+					{
+						case '\n':
+							etat = DEB_LIGNE;
+							Ind_GG++;
+							break;
+						
+						case '\t':
+						case ' ':
+							break;
+						
+						default:
+							i_comment = 0;
+							Comment[i_comment++] = c;
+							etat = COMMENT;
+							break;
+					}
+					break;
+				
+				case COMMENT:
+				switch (c)
+				{
+					case 13:
+						break;
+					
+					case '\n':
+						Comment[i_comment] = 0;
+						strcpy(Liste_GG[Ind_GG].name, Comment);
+						Ind_GG++;
+						etat = DEB_LIGNE;
+						break;
+					
+					default:
+						if (i_comment < 240)
+							Comment[i_comment++] = c;
+						break;
+				}
+				break;
+				
+				case ERR:
+					switch (c)
+					{
+						case '\n':
+							etat = DEB_LIGNE;
+							break;
+						
+						default:
+							break;
+					}
+					break;
+			}
+		}
+	
+		switch (etat)
+		{
+			case CODE:
+				Code[i_code] = 0;
+				if (check_code(Code, Ind_GG))
+					Ind_GG++;
+				break;
+			
+			case COMMENT:
+				Comment[i_comment] = 0;
+				strcpy(Liste_GG[Ind_GG].name, Comment);
+				Ind_GG++;
+				break;
+			
+			case DEB_LIGNE:
+			case BLANC:
+			case ERR:
+				break;
+		}
+	}
+	
+	fclose(Patch_File);
+	free(Patch_String);
+	
+	if (i_code > 0)
+		ice = 0;
+	
+	return 1;
+}
 
-  SetCurrentDirectory (PathNames.Gens_Path);
 
-  if (Liste_GG[0].code[0] == 0)
-    return 0;
-
-  strcpy (Name, Patch_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".pat");
-
-  Patch_File = fopen (Name, "w");
-
-  if (Patch_File == NULL)
-    return 0;
-
-  for (i = 0; i < 256; i++)
-    {
-      if (Liste_GG[i].code[0] != 0)
-	fprintf (Patch_File, "%s\t%s\n", Liste_GG[i].code, Liste_GG[i].name);
-    }
-
-  fclose (Patch_File);
-
-  return (1);
+/**
+ * Save_Patch_File(): Save a patch file.
+ * @return 1 on success; 0 on error.
+ */
+int Save_Patch_File(void)
+{
+	FILE *Patch_File;
+	char Name[2048];
+	int i;
+	
+	
+	// TODO: This is probably not needed...
+	SetCurrentDirectory (PathNames.Gens_Path);
+	
+	// Don't bother saving anything if there's no codes.
+	if (Liste_GG[0].code[0] == 0)
+		return 0;
+	
+	// Create the patch filename based on the ROM filename.
+	strcpy(Name, Patch_Dir);
+	strcat(Name, Rom_Name);
+	strcat(Name, ".pat");
+	
+	Patch_File = fopen(Name, "w");
+	if (!Patch_File)
+		return 0;
+	
+	for (i = 0; i < 256; i++)
+	{
+		if (Liste_GG[i].code[0] != 0)
+			fprintf(Patch_File, "%s\t%s\n", Liste_GG[i].code, Liste_GG[i].name);
+	}
+	
+	fclose(Patch_File);
+	
+	return 1;
 }
