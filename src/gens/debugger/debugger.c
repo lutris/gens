@@ -1033,72 +1033,74 @@ void Update_Debug_Screen(void)
 			Do_VDP_Only();
 	}
 	else
+	{
 		switch (Debug)
 		{
 			default:
 			case DEBUG_MAIN_68000:
 				// Main 68000
-				Refresh_M68k_Mem ();
-				Refresh_M68k_Inst ();
-				Refresh_M68k_State ();
-				Refresh_VDP_State ();
+				Refresh_M68k_Mem();
+				Refresh_M68k_Inst();
+				Refresh_M68k_State();
+				Refresh_VDP_State();
 				break;
 			
 			case DEBUG_Z80:
 				// Z80
-				Refresh_Z80_Mem ();
-				Refresh_Z80_Inst ();
-				Refresh_Z80_State ();
+				Refresh_Z80_Mem();
+				Refresh_Z80_Inst();
+				Refresh_Z80_State();
 				break;
 			
 			case DEBUG_GENESIS_VDP:
 				// Genesis VDP
-				Refresh_VDP_Pattern ();
-				Refresh_VDP_Palette ();
+				Refresh_VDP_Pattern();
+				Refresh_VDP_Palette();
 				break;
 			
 			case DEBUG_SUB_68000_REG:
 				// Sub 68000 reg
-				Refresh_S68k_Mem ();
-				Refresh_S68k_Inst ();
-				Refresh_S68k_State ();
-				Refresh_SegaCD_State ();
+				Refresh_S68k_Mem();
+				Refresh_S68k_Inst();
+				Refresh_S68k_State();
+				Refresh_SegaCD_State();
 				break;
 			
 			case DEBUG_SUB_68000_CDC:
 				// Sub 68000 CDC
-				Refresh_S68k_Mem ();
-				Refresh_S68k_Inst ();
-				Refresh_S68k_State ();
-				Refresh_CDC_State ();
+				Refresh_S68k_Mem();
+				Refresh_S68k_Inst();
+				Refresh_S68k_State();
+				Refresh_CDC_State();
 				break;
 			
 			case DEBUG_WORD_RAM_PATTERN:
 				// Word RAM pattern
-				Refresh_Word_RAM_Pattern ();
+				Refresh_Word_RAM_Pattern();
 				break;
 			
 			case DEBUG_MAIN_SH2:
 				// Main SH2
-				Refresh_SH2_Mem ();
-				Refresh_SH2_Inst (0);
-				Refresh_SH2_State (0);
-				Refresh_32X_State ();
+				Refresh_SH2_Mem();
+				Refresh_SH2_Inst(0);
+				Refresh_SH2_State(0);
+				Refresh_32X_State();
 				break;
 			
 			case DEBUG_SUB_SH2:
 				// Sub SH2
-				Refresh_SH2_Mem ();
-				Refresh_SH2_Inst (1);
-				Refresh_SH2_State (1);
-				Refresh_32X_State ();
+				Refresh_SH2_Mem();
+				Refresh_SH2_Inst(1);
+				Refresh_SH2_State(1);
+				Refresh_32X_State();
 				break;
 			
 			case DEBUG_32X_VDP:
 				// 32X VDP
-				_32X_VDP_Draw (Current_32X_FB);
+				_32X_VDP_Draw(Current_32X_FB);
 				break;
 		}
+	}
 	
-	Sleep (10);
+	Sleep(10);
 }
