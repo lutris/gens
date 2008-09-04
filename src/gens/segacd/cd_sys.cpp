@@ -308,7 +308,7 @@ void End_CD_Driver (void)
  * @param iso_name Filename of the ISO image to load, or NULL to use ASPI.
  * @return 0 on success; non-zero on error.
  */
-int Reset_CD(char *buf, char *iso_name)
+int Reset_CD(char *buf, const char *iso_name)
 {
 	// TODO: Return an error code if an error occurred.
 	

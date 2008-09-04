@@ -75,7 +75,7 @@ int Init_SegaCD(const char *iso_name)
 	
 	UI_Set_Window_Title_Init("SegaCD", 0);
 	
-	if (Reset_CD ((char*)CD_Data, iso_name))
+	if (Reset_CD((char*)CD_Data, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
 		// TODO: Show a message box.

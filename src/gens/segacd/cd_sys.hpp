@@ -110,7 +110,7 @@ void End_CD_Driver(void);
 // Alias to Check_CD_Command, needed by mem_s68k.asm
 void _Check_CD_Command(void);
 
-int Reset_CD(char *buf, char *iso_name);
+int Reset_CD(char *buf, const char *iso_name);
 void Stop_CD(void);
 void Change_CD(void);
 
