@@ -105,7 +105,7 @@ void Check_Country_Order (void)
 
 /**
  * Set_CPU_Freq(): Sets the CPU frequencies.
- * @param system System: 0 = MD only, 1 = MCD, 2 = 32X
+ * @param system System: 0 == MD only, 1 == MCD, 2 == 32X
  */
 void Set_Clock_Freq(int system)
 {

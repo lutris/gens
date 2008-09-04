@@ -133,23 +133,25 @@ void Init_Genesis_Bios (void)
 		fclose (f);
 	}
 	else
+	{
+		// No Genesis BIOS. Clear the Genesis ROM buffer.
 		memset(Genesis_Rom, 0, 2 * 1024);
-	
+	}
 	
 	Rom_Size = 2 * 1024;
 	memcpy (Rom_Data, Genesis_Rom, 2 * 1024);
 	Game_Mode = 0;
 	CPU_Mode = 0;
 	VDP_Num_Vis_Lines = 224;
-	M68K_Reset (0);
-	Z80_Reset ();
-	Reset_VDP ();
-	CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-	CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-	VDP_Num_Lines = 262;
-	VDP_Status &= 0xFFFE;
-	YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+	
+	// Set the clock frequencies.
+	Set_Clock_Freq(0);
+	
+	// Reset the CPUs.
+	M68K_Reset(0);
+	Z80_Reset();
+	Reset_VDP();
+	
 }
 
 
