@@ -812,7 +812,7 @@ void Refresh_VDP_Pattern(void)
 
 
 /**
- * Refresh_VDP_Pattern(): Refresh the VDP palette display.
+ * Refresh_VDP_Palette(): Refresh the VDP palette display.
  */
 void Refresh_VDP_Palette(void)
 {
