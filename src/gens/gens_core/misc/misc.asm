@@ -236,11 +236,23 @@ section .text align=64
 
 %macro AFF_PIXEL 2
 
-		mov eax, ebx							; eax = donn�es pixels
-		shr eax, %2								; on garde le premier
+		mov eax, ebx					; eax = data pixels
+		shr eax, %2					; keep the first
 		and eax, 0xF
-		mov ax, [MD_Palette + eax * 2 + ebp]	; conversion 8->16 bits palette
-		mov [edi + (%1 * 2)], ax				; on affiche le pixel dans Dest
+		mov ax, [MD_Palette + eax * 2 + ebp]		; conversion 8->16 bits palette
+		mov [edi + (%1 * 2)], ax			; write the pixel to Dest
+
+%endmacro
+
+
+; TODO: Gens Rerecording had additional jumps here...
+%macro AFF_PIXEL32 2
+
+		mov eax, ebx					; eax = data pixels
+		shr eax, %2					; keep the first
+		and eax, 0xF
+		mov eax, [MD_Palette32 + eax * 4 + ebp]		; conversion 8->16 bits palette
+		mov [edi + (%1 * 4)], eax			; write the pixel to Dest
 
 %endmacro
 
@@ -1260,17 +1272,22 @@ section .text align=64
 		push ebp
 
 		xor eax, eax					; eax = 0
-		mov ebp, [esp + 32]				; ebp = nb_pal
-		mov edx, 20						; edx = Nombre de lignes de pattern � afficher
-		mov esi, [esp + 28]				; esi = Adresse
-		shl ebp, 5						; ebp = nb_pal * 32
-		lea edi, [MD_Screen	+ 6780]		; edi = MD_Screen + marge pour l'affichage
+		mov ebp, [esp + 32]				; ebp = palette number
+		mov edx, 20					; edx = Number of rows of the pattern to be copied
+		mov esi, [esp + 28]				; esi = Address
+		
+		; Check for 32-bit.
+		cmp byte [bpp], 32
+		je .32BIT
+		
+		shl ebp, 5					; ebp = palette number * 32
+		lea edi, [MD_Screen	+ 6780]			; edi = MD_Screen + copy offset
 
 	.Loop_EDX
-		mov ecx, 16						; ecx = Nombre de pattern par ligne
+		mov ecx, 16						; ecx = Number of patterns per row
 
 	.Loop_ECX
-		mov ebx, 8						; ebx = Nombre de ligne de chaque pattern
+		mov ebx, 8						; ebx = Number of rows in each pattern
 
 	.Loop_EBX
 		push ebx
@@ -1296,7 +1313,43 @@ section .text align=64
 		add edi, ((336 * 8) - (8 * 16)) * 2		; on avance de 8 lignes et on recule de 16 * 8 pixels (pattern) pour Dest
 		dec edx
 		jnz near .Loop_EDX
+		jmp near .END
+	
+	.32BIT
+		shl ebp, 1
+		lea edi, [MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
 
+	.Loop_EDX32
+		mov ecx, 16						; ecx = Number of patterns per row
+
+	.Loop_ECX32
+		mov ebx, 8						; ebx = Number of rows in each pattern
+
+	.Loop_EBX32
+		push ebx
+		mov ebx, [esi]
+		AFF_PIXEL32 0, 12
+		AFF_PIXEL32 1, 8
+		AFF_PIXEL32 2, 4
+		AFF_PIXEL32 3, 0
+		AFF_PIXEL32 4, 28
+		AFF_PIXEL32 5, 24
+		AFF_PIXEL32 6, 20
+		AFF_PIXEL32 7, 16
+		pop ebx
+		add esi, 4						; advance Src by 4
+		add edi, 336 * 4				; go to the next Dest row
+		dec ebx							; if there are any more rows
+		jnz near .Loop_EBX32				; then keep going
+
+		sub edi, ((336 * 8) - 8) * 4	; we skip 8 rows from the top and 8 pixels from the left of Dest
+		dec ecx							; if there is more to copy on this row
+		jnz near .Loop_ECX32			; then keep going
+
+		add edi, ((336 * 8) - (8 * 16)) * 4		; we skip 8 rows from the top and 16*8 pixels from the left of Dest
+		dec edx
+		jnz near .Loop_EDX32
+	.END
 		pop ebp
 		pop esi
 		pop edi
