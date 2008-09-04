@@ -2,6 +2,10 @@
  * GENS: Save file handler.
  */
 
+// Turn this on to enable savestate debugging.
+#define _DEBUG
+#include <assert.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -45,6 +49,8 @@
 #include "emulator/ui_proxy.hpp"
 #include "ui-common.h"
 
+// Byteswapping
+#include "gens_core/misc/byteswap.h"
 
 // Gens Rerecording
 // fatal_mp3_error indicates an error occurred while reading an MP3 for a Sega CD game.
@@ -208,14 +214,14 @@ int Load_State(char *Name)
 	memset(buf, 0, len);
 	if (fread(buf, 1, len, f))
 	{
-		//z80_Reset (&M_Z80); // Commented out in Gens Re-Recording...
+		//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
 		/*
 		main68k_reset();
 		YM2612ResetChip(0);
 		Reset_VDP();
 		*/
 		
-		// Save functions updated from Gens Re-Recording
+		// Save functions updated from Gens Rerecording
 		buf += Import_Genesis(buf);
 		if (SegaCD_Started)
 		{
@@ -229,7 +235,7 @@ int Load_State(char *Name)
 		}
 		
 		/*
-		// Commented out in Gens Re-Recording...
+		// Commented out in Gens Rerecording...
 		Flag_Clr_Scr = 1;
 		CRam_Flag = 1;
 		VRam_Flag = 1;
@@ -348,8 +354,28 @@ inline void ExportDataAuto(const void* from, void* data, unsigned int *offset, u
 	*offset += numBytes;
 }
 
+// Save/load a 32-bit little-endian number.
+inline int ImportNumber_le32(void* data, unsigned int *offset)
+{
+	// Converts the input data to an int via pointer casting.
+	int tmp = *((int*)(&(((unsigned char*)data)[*offset])));
+	*offset += 4;
+	
+#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+	// Savestate is in little-endian format. Byteswap the data.
+	return (((tmp & 0xFF000000) >> 24) |
+		((tmp & 0x00FF0000) >> 8) |
+		((tmp & 0x0000FF00) << 8) |
+		 (tmp & 0x000000FF) << 24);
+#else /* GENS_BYTEORDER == GENS_LIL_ENDIAN */
+	// Savestate is in little-endian format. Return the data as-is.
+	return tmp;
+#endif
+}
+
+
 /**
- * Import_Genesis(): Load Genesis data from a savestate. (Portions ported from GENS Re-Recording.)
+ * Import_Genesis(): Load Genesis data from a savestate. (Portions ported from Gens Rerecording.)
  * @param Data Savestate data.
  * @return Number of bytes read.
  */
@@ -358,10 +384,10 @@ int Import_Genesis (unsigned char *Data)
 	unsigned char Reg_1[0x200], *src;
 	int i;
 	
-	// Savestate V6 and V7 code from Gens Re-Recording.
+	// Savestate V6 and V7 code from Gens Rerecording.
 	
 	/*
-	// Commented out in GENS Re-Recording.
+	// Commented out in Gens Rerecording.
 	VDP_Int = 0;
 	DMAT_Length = 0;
 	*/
@@ -473,7 +499,7 @@ int Import_Genesis (unsigned char *Data)
 	M_Z80.HL2.w.HL2 = Data[0x430] + (Data[0x431] << 8);
 	M_Z80.I = Data[0x434] & 0xFF;
 	
-	// GENS Re-Recording: This seems to only be used for movies (e.g. *.giz), so ignore it for now.
+	// Gens Rerecording: This seems to only be used for movies (e.g. *.giz), so ignore it for now.
 	//FrameCount = Data[0x22478] + (Data[0x22479] << 8) + (Data[0x2247A] << 16) + (Data[0x2247B] << 24);
 	
 	main68k_GetContext (&Context_68K);
@@ -502,7 +528,7 @@ int Import_Genesis (unsigned char *Data)
 	}
 	
 	// NEW AND IMPROVED! GENS v6 and v7 savestate formats are here!
-	// Ported from GENS Re-Recording.
+	// Ported from Gens Rerecording.
 	unsigned int offset = GENESIS_LENGTH_EX1;
 	if (Version == 6)
 	{
@@ -517,47 +543,47 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Context_68K.sr, Data, &offset, 2);
 		ImportDataAuto(&Context_68K.contextfiller00, Data, &offset, 2);
 		
-		ImportDataAuto(&VDP_Reg.H_Int, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Set1, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Set2, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_ScrA_Adr, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_ScrA_Adr, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_Win_Adr, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_ScrB_Adr, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Spr_Att_Adr, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg6, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.BG_Color, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg8, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg9, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.H_Int, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Set3, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Set4, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.H_Scr_Adr, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg14, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Auto_Inc, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Scr_Size, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Win_H_Pos, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Win_V_Pos, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_L, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_H, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Address, Data, &offset, 4);
+		VDP_Reg.H_Int = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Set1 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Set2 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Pat_ScrA_Adr = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Pat_ScrA_Adr = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Pat_Win_Adr = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Pat_ScrB_Adr = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Spr_Att_Adr = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Reg6 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.BG_Color = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Reg8 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Reg9 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.H_Int = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Set3 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Set4 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.H_Scr_Adr = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Reg14 = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Auto_Inc = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Scr_Size = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Win_H_Pos = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Win_V_Pos = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length_L = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length_H = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Src_Adr_L = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Src_Adr_M = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Src_Adr_H = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Address = ImportNumber_le32(Data, &offset);
 		
-		ImportDataAuto(&Controller_1_Counter, Data, &offset, 4);
-		ImportDataAuto(&Controller_1_Delay, Data, &offset, 4);
-		ImportDataAuto(&Controller_1_State, Data, &offset, 4);
-		ImportDataAuto(&Controller_1_COM, Data, &offset, 4);
-		ImportDataAuto(&Controller_2_Counter, Data, &offset, 4);
-		ImportDataAuto(&Controller_2_Delay, Data, &offset, 4);
-		ImportDataAuto(&Controller_2_State, Data, &offset, 4);
-		ImportDataAuto(&Controller_2_COM, Data, &offset, 4);
-		ImportDataAuto(&Memory_Control_Status, Data, &offset, 4);
+		Controller_1_Counter = ImportNumber_le32(Data, &offset);
+		Controller_1_Delay = ImportNumber_le32(Data, &offset);
+		Controller_1_State = ImportNumber_le32(Data, &offset);
+		Controller_1_COM = ImportNumber_le32(Data, &offset);
+		Controller_2_Counter = ImportNumber_le32(Data, &offset);
+		Controller_2_Delay = ImportNumber_le32(Data, &offset);
+		Controller_2_State = ImportNumber_le32(Data, &offset);
+		Controller_2_COM = ImportNumber_le32(Data, &offset);
+		Memory_Control_Status = ImportNumber_le32(Data, &offset);
 		ImportDataAuto(&Cell_Conv_Tab, Data, &offset, 4);
-		ImportDataAuto(&Controller_1_Type, Data, &offset, 4);
 		
+		Controller_1_Type = ImportNumber_le32(Data, &offset);
 		/* TODO: Make this stuff use bitfields.
 		         For now, it's disabled, especially since v6 is rare.
 		ImportDataAuto(&Controller_1_Up, Data, &offset, 4);
@@ -572,7 +598,12 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Controller_1_X, Data, &offset, 4);
 		ImportDataAuto(&Controller_1_Y, Data, &offset, 4);
 		ImportDataAuto(&Controller_1_Z, Data, &offset, 4);
-		ImportDataAuto(&Controller_2_Type, Data, &offset, 4);
+		*/
+		offset += 12*4;
+		
+		Controller_2_Type = ImportNumber_le32(Data, &offset);
+		/* TODO: Make this stuff use bitfields.
+		         For now, it's disabled, especially since v6 is rare.
 		ImportDataAuto(&Controller_2_Up, Data, &offset, 4);
 		ImportDataAuto(&Controller_2_Down, Data, &offset, 4);
 		ImportDataAuto(&Controller_2_Left, Data, &offset, 4);
@@ -586,61 +617,62 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Controller_2_Y, Data, &offset, 4);
 		ImportDataAuto(&Controller_2_Z, Data, &offset, 4);
 		*/
-		offset += 100;
+		offset += 12*4;
 		
-		ImportDataAuto(&DMAT_Length, Data, &offset, 4);
-		ImportDataAuto(&DMAT_Type, Data, &offset, 4);
-		ImportDataAuto(&DMAT_Tmp, Data, &offset, 4);
-		ImportDataAuto(&VDP_Current_Line, Data, &offset, 4);
-		ImportDataAuto(&VDP_Num_Vis_Lines, Data, &offset, 4);
-		ImportDataAuto(&VDP_Num_Vis_Lines, Data, &offset, 4);
-		ImportDataAuto(&Bank_M68K, Data, &offset, 4);
-		ImportDataAuto(&S68K_State, Data, &offset, 4);
-		ImportDataAuto(&Z80_State, Data, &offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_Cnt, Data, &offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_St, Data, &offset, 4);
-		ImportDataAuto(&Fake_Fetch, Data, &offset, 4);
-		ImportDataAuto(&Game_Mode, Data, &offset, 4);
-		ImportDataAuto(&CPU_Mode, Data, &offset, 4);
-		ImportDataAuto(&CPL_M68K, Data, &offset, 4);
-		ImportDataAuto(&CPL_S68K, Data, &offset, 4);
-		ImportDataAuto(&CPL_Z80, Data, &offset, 4);
-		ImportDataAuto(&Cycles_S68K, Data, &offset, 4);
-		ImportDataAuto(&Cycles_M68K, Data, &offset, 4);
-		ImportDataAuto(&Cycles_Z80, Data, &offset, 4);
-		ImportDataAuto(&VDP_Status, Data, &offset, 4);
-		ImportDataAuto(&VDP_Int, Data, &offset, 4);
-		ImportDataAuto(&Ctrl.Write, Data, &offset, 4);
-		ImportDataAuto(&Ctrl.DMA_Mode, Data, &offset, 4);
-		ImportDataAuto(&Ctrl.DMA, Data, &offset, 4);
-		//ImportDataAuto(&CRam_Flag, Data, &offset, 4); //Causes screen to blank
-		//&offset+=4;
-		// TODO: LagCount for GENS ReRecording.
-		//ImportDataAuto(&LagCount, Data, &offset, 4);
+		DMAT_Length = ImportNumber_le32(Data, &offset);
+		DMAT_Type = ImportNumber_le32(Data, &offset);
+		DMAT_Tmp = ImportNumber_le32(Data, &offset);
+		VDP_Current_Line = ImportNumber_le32(Data, &offset);
+		VDP_Num_Vis_Lines = ImportNumber_le32(Data, &offset);
+		VDP_Num_Vis_Lines = ImportNumber_le32(Data, &offset);
+		Bank_M68K = ImportNumber_le32(Data, &offset);
+		S68K_State = ImportNumber_le32(Data, &offset);
+		Z80_State = ImportNumber_le32(Data, &offset);
+		Last_BUS_REQ_Cnt = ImportNumber_le32(Data, &offset);
+		Last_BUS_REQ_St = ImportNumber_le32(Data, &offset);
+		Fake_Fetch = ImportNumber_le32(Data, &offset);
+		Game_Mode = ImportNumber_le32(Data, &offset);
+		CPU_Mode = ImportNumber_le32(Data, &offset);
+		CPL_M68K = ImportNumber_le32(Data, &offset);
+		CPL_S68K = ImportNumber_le32(Data, &offset);
+		CPL_Z80 = ImportNumber_le32(Data, &offset);
+		Cycles_S68K = ImportNumber_le32(Data, &offset);
+		Cycles_M68K = ImportNumber_le32(Data, &offset);
+		Cycles_Z80 = ImportNumber_le32(Data, &offset);
+		VDP_Status = ImportNumber_le32(Data, &offset);
+		VDP_Int = ImportNumber_le32(Data, &offset);
+		Ctrl.Write = ImportNumber_le32(Data, &offset);
+		Ctrl.DMA_Mode = ImportNumber_le32(Data, &offset);
+		Ctrl.DMA = ImportNumber_le32(Data, &offset);
+		//CRam_Flag = ImportNumber_le32(Data, &offset); //Causes screen to blank
+		//offset+=4;
+		
+		// TODO: LagCount from Gens Rerecording.
+		//LagCount = ImportNumber_le32(Data, &offset);
 		offset += 4;
-		ImportDataAuto(&VRam_Flag, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.Auto_Inc, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
-	////	ImportDataAuto(VRam, Data, &offset, 65536);
+		
+		VRam_Flag = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length = ImportNumber_le32(Data, &offset);
+		VDP_Reg.Auto_Inc = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length = ImportNumber_le32(Data, &offset);
+		//ImportDataAuto(VRam, Data, &offset, 65536);
 		ImportDataAuto(CRam, Data, &offset, 512);
-	////	ImportDataAuto(VSRam, Data, &offset, 64);
+		//ImportDataAuto(VSRam, Data, &offset, 64);
 		ImportDataAuto(H_Counter_Table, Data, &offset, 512 * 2);
-	////	ImportDataAuto(Spr_Link, Data, &offset, 4*256);
-	////	extern int DMAT_Tmp, VSRam_Over;
-	////	ImportDataAuto(&DMAT_Tmp, Data, &offset, 4);
-	////	ImportDataAuto(&VSRam_Over, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_L, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_H, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, Data, &offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Address, Data, &offset, 4);
+		//ImportDataAuto(Spr_Link, Data, &offset, 4*256);
+		//extern int DMAT_Tmp, VSRam_Over;
+		//ImportDataAuto(&DMAT_Tmp, Data, &offset, 4);
+		//ImportDataAuto(&VSRam_Over, Data, &offset, 4);
+		VDP_Reg.DMA_Length_L = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length_H = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Src_Adr_L = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Src_Adr_M = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Src_Adr_H = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Length = ImportNumber_le32(Data, &offset);
+		VDP_Reg.DMA_Address = ImportNumber_le32(Data, &offset);
 		
 #ifdef _DEBUG
-		int desiredoffset = GENESIS_V6_STATE_LENGTH;
-		assert(offset == desiredoffset);
+		assert(offset == GENESIS_V6_STATE_LENGTH);
 #endif
 	}
 	else if (Version >= 7)
@@ -662,53 +694,56 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&M_Z80, Data, &offset, 0x5C); // some important parts of this weren't saved above
 		M_Z80.PC.d = oldPC;
 		M_Z80.BasePC = oldBasePC;
-		ImportDataAuto(&M_Z80.RetIC, Data, &offset, 4); // not sure about the last two variables, might as well save them too
-		ImportDataAuto(&M_Z80.IntAckC, Data, &offset, 4);
+		
+		M_Z80.RetIC = ImportNumber_le32(Data, &offset); // not sure about the last two variables, might as well save them too
+		M_Z80.IntAckC = ImportNumber_le32(Data, &offset);
 		
 		ImportDataAuto(&Context_68K.dreg[0], Data, &offset, 86); // some important parts of this weren't saved above
 		
 		ImportDataAuto(&Controller_1_State, Data, &offset, 448); // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
 		
 		// apparently necessary
-		ImportDataAuto(&VDP_Status, Data, &offset, 4);
-		ImportDataAuto(&VDP_Int, Data, &offset, 4);
-		ImportDataAuto(&VDP_Current_Line, Data, &offset, 4);
-		ImportDataAuto(&VDP_Num_Lines, Data, &offset, 4);
-		ImportDataAuto(&VDP_Num_Vis_Lines, Data, &offset, 4);
-		ImportDataAuto(&DMAT_Length, Data, &offset, 4);
-		ImportDataAuto(&DMAT_Type, Data, &offset, 4);
-		//ImportDataAuto(&CRam_Flag, Data, &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
-		// TODO: LagCount for GENS ReRecording.
-		//ImportDataAuto(&LagCount, Data, &offset, 4);
+		VDP_Status = ImportNumber_le32(Data, &offset);
+		VDP_Int = ImportNumber_le32(Data, &offset);
+		VDP_Current_Line = ImportNumber_le32(Data, &offset);
+		VDP_Num_Lines = ImportNumber_le32(Data, &offset);
+		VDP_Num_Vis_Lines = ImportNumber_le32(Data, &offset);
+		DMAT_Length = ImportNumber_le32(Data, &offset);
+		DMAT_Type = ImportNumber_le32(Data, &offset);
+		//CRam_Flag = ImportNumber_le32(Data, &offset); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
+		
+		// TODO: LagCount for Gens Rerecording.
+		//LagCount = ImportNumber_le32(Data, &offset);
 		offset += 4;
-		ImportDataAuto(&VRam_Flag, Data, &offset, 4);
+		
+		VRam_Flag = ImportNumber_le32(Data, &offset);
 		ImportDataAuto(&CRam, Data, &offset, 256 * 2);
 		
 		// it's probably safer sync-wise to keep SRAM stuff in the savestate
 		ImportDataAuto(&SRAM, Data, &offset, sizeof(SRAM));
-		ImportDataAuto(&SRAM_Start, Data, &offset, 4);
-		ImportDataAuto(&SRAM_End, Data, &offset, 4);
-		ImportDataAuto(&SRAM_ON, Data, &offset, 4);
-		ImportDataAuto(&SRAM_Write, Data, &offset, 4);
-		ImportDataAuto(&SRAM_Custom, Data, &offset, 4);
+		SRAM_Start = ImportNumber_le32(Data, &offset);
+		SRAM_End = ImportNumber_le32(Data, &offset);
+		SRAM_ON = ImportNumber_le32(Data, &offset);
+		SRAM_Write = ImportNumber_le32(Data, &offset);
+		SRAM_Custom = ImportNumber_le32(Data, &offset);
 		
 		// this group I'm not sure about, they don't seem to be necessary but I'm keeping them around just in case
-		ImportDataAuto(&Bank_M68K, Data, &offset, 4);
-		ImportDataAuto(&S68K_State, Data, &offset, 4);
-		ImportDataAuto(&Z80_State, Data, &offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_Cnt, Data, &offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_St, Data, &offset, 4);
-		ImportDataAuto(&Fake_Fetch, Data, &offset, 4);
-		ImportDataAuto(&Game_Mode, Data, &offset, 4);
-		ImportDataAuto(&CPU_Mode, Data, &offset, 4);
-		ImportDataAuto(&CPL_M68K, Data, &offset, 4);
-		ImportDataAuto(&CPL_S68K, Data, &offset, 4);
-		ImportDataAuto(&CPL_Z80, Data, &offset, 4);
-		ImportDataAuto(&Cycles_S68K, Data, &offset, 4);
-		ImportDataAuto(&Cycles_M68K, Data, &offset, 4);
-		ImportDataAuto(&Cycles_Z80, Data, &offset, 4);
-		ImportDataAuto(&Gen_Mode, Data, &offset, 4);
-		ImportDataAuto(&Gen_Version, Data, &offset, 4);
+		Bank_M68K = ImportNumber_le32(Data, &offset);
+		S68K_State = ImportNumber_le32(Data, &offset);
+		Z80_State = ImportNumber_le32(Data, &offset);
+		Last_BUS_REQ_Cnt = ImportNumber_le32(Data, &offset);
+		Last_BUS_REQ_St = ImportNumber_le32(Data, &offset);
+		Fake_Fetch = ImportNumber_le32(Data, &offset);
+		Game_Mode = ImportNumber_le32(Data, &offset);
+		CPU_Mode = ImportNumber_le32(Data, &offset);
+		CPL_M68K = ImportNumber_le32(Data, &offset);
+		CPL_S68K = ImportNumber_le32(Data, &offset);
+		CPL_Z80 = ImportNumber_le32(Data, &offset);
+		Cycles_S68K = ImportNumber_le32(Data, &offset);
+		Cycles_M68K = ImportNumber_le32(Data, &offset);
+		Cycles_Z80 = ImportNumber_le32(Data, &offset);
+		Gen_Mode = ImportNumber_le32(Data, &offset);
+		Gen_Version = ImportNumber_le32(Data, &offset);
 		ImportDataAuto(H_Counter_Table, Data, &offset, 512 * 2);
 		ImportDataAuto(&VDP_Reg, Data, &offset, sizeof(VDP_Reg));
 		ImportDataAuto(&Ctrl, Data, &offset, sizeof(Ctrl));
@@ -716,8 +751,7 @@ int Import_Genesis (unsigned char *Data)
 		ImportDataAuto(&Context_68K.cycles_needed, Data, &offset, 44);
 		
 #ifdef _DEBUG
-		int desiredoffset = GENESIS_STATE_LENGTH;
-		assert(offset == desiredoffset);
+		assert(offset == GENESIS_STATE_LENGTH);
 #endif		
 	}
 	
@@ -727,7 +761,7 @@ int Import_Genesis (unsigned char *Data)
 
 
 /**
- * Export_Genesis(): Save Genesis data to a savestate. (Portions ported from GENS Re-Recording.)
+ * Export_Genesis(): Save Genesis data to a savestate. (Portions ported from Gens Rerecording.)
  * @param Data Savestate data.
  */
 void Export_Genesis(unsigned char *Data)
@@ -738,7 +772,7 @@ void Export_Genesis(unsigned char *Data)
 	// - Sega CD savestates won't work in older versions, but then again, older versions didn't properly support it.
 	// - 32X savestates will *not* work in older versions of GENS. :(
 	
-	// from GENS Re-Recording
+	// from Gens Rerecording
 	struct S68000CONTEXT Context_68K; // Modif N.: apparently no longer necessary but I'm leaving it here just to be safe: purposely shadows the global Context_68K variable with this local copy to avoid tampering with it while saving
 	
 	unsigned char Reg_1[0x200], *src;
@@ -802,7 +836,7 @@ void Export_Genesis(unsigned char *Data)
 	Data[0x44] = Ctrl.Flag;
 	Data[0x45] = (Ctrl.DMA >> 2) & 1;
 	
-	// GENS Re-Recording
+	// Gens Rerecording
 	Data[0x46] = Ctrl.Access & 0xFF; //Nitsuja added this
 	Data[0x47] = (Ctrl.Access >> 8) & 0xFF; //Nitsuja added this
 	
@@ -885,7 +919,7 @@ void Export_Genesis(unsigned char *Data)
 		Data[i + 0x12478 + 0] = VRam[i + 1];
 	}
 	
-	// TODO: This is from GENS Re-Recording, and is probably not any use right now.
+	// TODO: This is from Gens Rerecording, and is probably not any use right now.
 	/*
 	Data[0x22478]=unsigned char (FrameCount&0xFF);   //Modif
 	Data[0x22479]=unsigned char ((FrameCount>>8)&0xFF);   //Modif
@@ -982,14 +1016,13 @@ void Export_Genesis(unsigned char *Data)
 	#ifdef _DEBUG
 		// assert that the final offset value equals our savestate size, otherwise we screwed up
 		// if it fails, that probably means you have to add ((int)offset-(int)desiredoffset) to the last GENESIS_LENGTH_EX define
-		int desiredoffset = GENESIS_STATE_LENGTH;
-		assert(offset == desiredoffset);
+		assert(offset == GENESIS_STATE_LENGTH);
 	#endif	
 }
 
 
 /**
- * Import_SegaCD(): Load Sega CD data from a savestate. (Ported from GENS Re-Recording.)
+ * Import_SegaCD(): Load Sega CD data from a savestate. (Ported from Gens Rerecording.)
  * @param Data Savestate data.
  */
 void Import_SegaCD(unsigned char *Data)
@@ -1216,8 +1249,7 @@ void Import_SegaCD(unsigned char *Data)
 		//ImportDataAuto(&Current_IN_Pos, Data, &offset, 4)? // don't save this; bad things happen
 		
 #ifdef _DEBUG
-		int desiredoffset = SEGACD_LENGTH_EX;
-		assert(offset == desiredoffset);
+		assert(offset == SEGACD_LENGTH_EX);
 #endif
 	}
 	
@@ -1229,7 +1261,7 @@ void Import_SegaCD(unsigned char *Data)
 
 
 /**
- * Export_SegaCD(): Save Sega CD data to a savestate. (Uses GENS v7 format from GENS Re-Recording.)
+ * Export_SegaCD(): Save Sega CD data to a savestate. (Uses GENS v7 format from Gens Rerecording.)
  * @param Data Savestate data.
  */
 void Export_SegaCD (unsigned char *Data)
@@ -1438,14 +1470,13 @@ void Export_SegaCD (unsigned char *Data)
 	//ExportDataAuto(&Current_IN_Pos, Data, &offset, 4)? // don't save this; bad things happen
 	
 #ifdef _DEBUG
-	int desiredoffset = SEGACD_LENGTH_EX;
-	assert(offset == desiredoffset);
+	assert(offset == SEGACD_LENGTH_EX);
 #endif
 }
 
 
 /**
- * Import_32X(): Load 32X data from a savestate. (Ported from GENS Re-Recording.)
+ * Import_32X(): Load 32X data from a savestate. (Ported from Gens Rerecording.)
  * @param Data Savestate data.
  */
 void Import_32X (unsigned char *Data)
@@ -1589,14 +1620,13 @@ void Import_32X (unsigned char *Data)
 	}
 
 #ifdef _DEBUG
-	int desiredoffset = G32X_LENGTH_EX;
-	assert(offset == desiredoffset);
+	assert(offset == G32X_LENGTH_EX);
 #endif
 }
 
 
 /**
- * Export_32X(): Save 32X data to a savestate. (Ported from GENS Re-Recording.)
+ * Export_32X(): Save 32X data to a savestate. (Ported from Gens Rerecording.)
  * @param Data Savestate data.
  */
 void Export_32X (unsigned char *Data)
@@ -1730,8 +1760,7 @@ void Export_32X (unsigned char *Data)
 	ExportDataAuto(_32X_SSH2_Rom, Data, &offset, sizeof(_32X_SSH2_Rom));
 	
 #ifdef _DEBUG
-	int desiredoffset = G32X_LENGTH_EX;
-	assert(offset == desiredoffset);
+	assert(offset == G32X_LENGTH_EX);
 #endif
 }
 
