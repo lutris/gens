@@ -916,12 +916,13 @@ int Close_Tray_CDD_cC(void)
 		// TODO: Is this memset() really necessary?
 		memset(new_iso, 0, GENS_PATH_MAX);
 		
-		while (!Change_File_L_CD(new_iso, Rom_Dir));
-			Reload_SegaCD (new_iso);
+		if (Change_File_L_CD(new_iso, Rom_Dir))
+		{
+			Reload_SegaCD(new_iso);
+			CD_Present = 1;
+			SCD.Status_CDD = STOPPED;
+		}
 		
-		CD_Present = 1;
-		
-		SCD.Status_CDD = STOPPED;
 		CDD.Status = 0x0000;
 		
 		CDD.Minute = 0;
