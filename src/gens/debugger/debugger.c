@@ -789,6 +789,8 @@ void Refresh_VDP_Pattern(void)
 void Refresh_VDP_Palette(void)
 {
 	unsigned int i, j, k;
+	unsigned int col;
+	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
 	if (bpp == 32)
@@ -800,10 +802,11 @@ void Refresh_VDP_Palette(void)
 			{
 				for (k = 0; k < 8; k++)
 				{
-					MD_Screen32[(336 * 10) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 0];
-					MD_Screen32[(336 * 18) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 16];
-					MD_Screen32[(336 * 26) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 32];
-					MD_Screen32[(336 * 34) + (i * 336) + 180 + (j * 8) + k] = MD_Palette32[j + 48];
+					col = (i * 336) + 180 + (j * 8) + k;
+					MD_Screen32[(336 * 10) + col] = MD_Palette32[j + 0];
+					MD_Screen32[(336 * 18) + col] = MD_Palette32[j + 16];
+					MD_Screen32[(336 * 26) + col] = MD_Palette32[j + 32];
+					MD_Screen32[(336 * 34) + col] = MD_Palette32[j + 48];
 				}
 			}
 		}
@@ -824,10 +827,11 @@ void Refresh_VDP_Palette(void)
 			{
 				for (k = 0; k < 8; k++)
 				{
-					MD_Screen[(336 * 10) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 0];
-					MD_Screen[(336 * 18) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 16];
-					MD_Screen[(336 * 26) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 32];
-					MD_Screen[(336 * 34) + (i * 336) + 180 + (j * 8) + k] = MD_Palette[j + 48];
+					col = (i * 336) + 180 + (j * 8) + k;
+					MD_Screen[(336 * 10) + col] = MD_Palette[j + 0];
+					MD_Screen[(336 * 18) + col] = MD_Palette[j + 16];
+					MD_Screen[(336 * 26) + col] = MD_Palette[j + 32];
+					MD_Screen[(336 * 34) + col] = MD_Palette[j + 48];
 				}
 			}
 		}
