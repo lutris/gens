@@ -444,7 +444,7 @@ int Do_SegaCD_Frame_No_VDP (void)
 
 
 /**
- * Do_SegaCD_Frame_No_VDP(): Runs a cycle-accurate Sega CD frame without updating the VDP.
+ * Do_SegaCD_Frame_No_VDP_Cycle_Accurate(): Runs a cycle-accurate Sega CD frame without updating the VDP.
  * @return 1 if successful.
  */
 int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
@@ -799,10 +799,10 @@ inline void SegaCD_Display_LED()
 
 
 /**
- * Do_SegaCD_Frame_No_VDP(): Runs a Sega CD.
+ * Do_SegaCD_Frame(): Runs a Sega CD frame.
  * @return 1 if successful.
  */
-int Do_SegaCD_Frame (void)
+int Do_SegaCD_Frame(void)
 {
 	int *buf[2];
 	int HInt_Counter;
@@ -965,10 +965,10 @@ int Do_SegaCD_Frame (void)
 
 
 /**
- * Do_SegaCD_Frame_No_VDP(): Runs a cycle-accurate Sega CD frame.
+ * Do_SegaCD_Frame_Cycle_Accurate(): Runs a cycle-accurate Sega CD frame.
  * @return 1 if successful.
  */
-int Do_SegaCD_Frame_Cycle_Accurate (void)
+int Do_SegaCD_Frame_Cycle_Accurate(void)
 {
 	int *buf[2], i, j;
 	int HInt_Counter;
