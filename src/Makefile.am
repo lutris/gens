@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = starscream mp3_dec gens
+SUBDIRS = starscream mp3_dec minizip gens

@@ -26,7 +26,7 @@ using std::list;
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.h"
 //#include "ccnet.h"
-#include "util/file/unzip.h"
+#include "minizip/unzip.h"
 #include "util/file/chd.h"
 #include "util/sound/wave.h"
 #include "util/sound/gym.h"

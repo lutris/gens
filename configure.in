@@ -148,6 +148,7 @@ Makefile
 pixmaps/Makefile
 src/Makefile
 src/gens/Makefile
+src/minizip/Makefile
 src/mp3_dec/Makefile
 src/starscream/Makefile
 src/starscream/main68k/Makefile

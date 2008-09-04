@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "util/file/unzip.h"
+#include "minizip/unzip.h"
 #include "ui-common.h"
 
 #include <string>

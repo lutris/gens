@@ -128,7 +128,6 @@ gens_SOURCES = \
 		util/file/rom.cpp \
 		util/file/save.c \
 		util/file/ggenie.c \
-		util/file/unzip.c \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/gzip.cpp \
@@ -264,7 +263,6 @@ noinst_HEADERS = \
 		util/file/rom.hpp \
 		util/file/save.h \
 		util/file/ggenie.h \
-		util/file/unzip.h \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/gzip.hpp \
@@ -360,6 +358,7 @@ gens_CXXFLAGS = \
 gens_LDADD = \
 		${ASMFILES} \
 		../mp3_dec/libmp3_dec.a \
+		../minizip/libminizip.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		-lm -lz @SDL_LIBS@ @GTK_LIBS@
@@ -371,6 +370,7 @@ gens_LDADD = \
 gens_DEPENDENCIES = \
 		${ASMFILES} \
 		../mp3_dec/libmp3_dec.a \
+		../minizip/libminizip.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
 
