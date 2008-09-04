@@ -721,79 +721,61 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
 
 
 /**
+ * SEGACD_LED(): Macro used by SegaCD_Display_LED().
+ */
+#define SEGACD_LED(Screen, Color, StartCol)			\
+{								\
+	Screen[(336*220) + 12 + StartCol] = Color;		\
+	Screen[(336*220) + 13 + StartCol] = Color;		\
+	Screen[(336*220) + 14 + StartCol] = Color;		\
+	Screen[(336*220) + 15 + StartCol] = Color;		\
+								\
+	Screen[(336*222) + 12 + StartCol] = Color;		\
+	Screen[(336*222) + 13 + StartCol] = Color;		\
+	Screen[(336*222) + 14 + StartCol] = Color;		\
+	Screen[(336*222) + 15 + StartCol] = Color;		\
+}
+
+
+/**
  * SegaCD_Display_LED(): Display the LEDs on the Sega CD interface.
  */
-inline void SegaCD_Display_LED()
+void SegaCD_Display_LED()
 {
 	// TODO: Optimize this function.
-	
-	const unsigned short ledReady15 = 0x03E0;
-	const unsigned short ledReady16 = 0x07C0;
-	unsigned short ledReady;
-	
-	const unsigned short ledAccess15 = 0x7C00;
-	const unsigned short ledAccess16 = 0xF800;
-	unsigned short ledAccess;
-	
-	const unsigned int ledReady32 = 0x00F800;
-	const unsigned int ledAccess32 = 0xF80000;
-	
-	const unsigned int ledRow1 = 336 * 220;
-	const unsigned int ledRow2 = 336 * 222;
-	
-	if (bpp == 15)
-	{
-		ledReady = ledReady15;
-		ledAccess = ledAccess15;
-	}
-	else
-	{
-		ledReady = ledReady16;
-		ledAccess = ledAccess16;
-	}
 	
 	// Ready LED
 	if (LED_Status & 2)
 	{
-		MD_Screen[ledRow1 + 12] = ledReady;
-		MD_Screen[ledRow1 + 13] = ledReady;
-		MD_Screen[ledRow1 + 14] = ledReady;
-		MD_Screen[ledRow1 + 15] = ledReady;
-		MD_Screen[ledRow2 + 12] = ledReady;
-		MD_Screen[ledRow2 + 13] = ledReady;
-		MD_Screen[ledRow2 + 14] = ledReady;
-		MD_Screen[ledRow2 + 15] = ledReady;
-		
-		MD_Screen32[ledRow1 + 12] = ledReady32;
-		MD_Screen32[ledRow1 + 13] = ledReady32;
-		MD_Screen32[ledRow1 + 14] = ledReady32;
-		MD_Screen32[ledRow1 + 15] = ledReady32;
-		MD_Screen32[ledRow2 + 12] = ledReady32;
-		MD_Screen32[ledRow2 + 13] = ledReady32;
-		MD_Screen32[ledRow2 + 14] = ledReady32;
-		MD_Screen32[ledRow2 + 15] = ledReady32;
+		if (bpp == 15)
+		{
+			SEGACD_LED(MD_Screen, 0x03E0, 0);
+		}
+		else if (bpp == 16)
+		{
+			SEGACD_LED(MD_Screen, 0x07C0, 0);
+		}
+		else //if (bpp == 32)
+		{
+			SEGACD_LED(MD_Screen32, 0x00F800, 0);
+		}
 	}
 	
 	// Access LED
 	if (LED_Status & 1)
 	{
-		MD_Screen[ledRow1 + 12 + 8] = ledAccess;
-		MD_Screen[ledRow1 + 13 + 8] = ledAccess;
-		MD_Screen[ledRow1 + 14 + 8] = ledAccess;
-		MD_Screen[ledRow1 + 15 + 8] = ledAccess;
-		MD_Screen[ledRow2 + 12 + 8] = ledAccess;
-		MD_Screen[ledRow2 + 13 + 8] = ledAccess;
-		MD_Screen[ledRow2 + 14 + 8] = ledAccess;
-		MD_Screen[ledRow2 + 15 + 8] = ledAccess;
-		
-		MD_Screen32[ledRow1 + 12 + 8] = ledAccess32;
-		MD_Screen32[ledRow1 + 13 + 8] = ledAccess32;
-		MD_Screen32[ledRow1 + 14 + 8] = ledAccess32;
-		MD_Screen32[ledRow1 + 15 + 8] = ledAccess32;
-		MD_Screen32[ledRow2 + 12 + 8] = ledAccess32;
-		MD_Screen32[ledRow2 + 13 + 8] = ledAccess32;
-		MD_Screen32[ledRow2 + 14 + 8] = ledAccess32;
-		MD_Screen32[ledRow2 + 15 + 8] = ledAccess32;
+		if (bpp == 15)
+		{
+			SEGACD_LED(MD_Screen, 0x7C00, 8);
+		}
+		else if (bpp == 16)
+		{
+			SEGACD_LED(MD_Screen, 0xF800, 8);
+		}
+		else //if (bpp == 32)
+		{
+			SEGACD_LED(MD_Screen32, 0xF80000, 8);
+		}
 	}
 }
 
