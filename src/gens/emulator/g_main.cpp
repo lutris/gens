@@ -217,7 +217,6 @@ static int Build_Language_String (void)
 static void Init_Settings(void)
 {
 	// Initialize video settings.
-	Video.Fast_Blur = 0;
 	Video.Render_W = 1;	// Double
 	Video.Render_FS = 1;	// Double
 #ifdef GENS_OPENGL
@@ -232,7 +231,6 @@ static void Init_Settings(void)
 	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;
 	Net_Play = 0;
-	draw->setStretch(false);
 	Sprite_Over = 1;
 	
 	Sound_Enable = 0;

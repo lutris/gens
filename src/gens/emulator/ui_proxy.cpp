@@ -457,8 +457,9 @@ int Change_CDDA(int newCDDA)
 int Change_Fast_Blur(void)
 {
 	Flag_Clr_Scr = 1;
+	draw->setFastBlur(!draw->fastBlur());
 	
-	if ((Video.Fast_Blur = (1 - Video.Fast_Blur)))
+	if (draw->fastBlur())
 		MESSAGE_L("Fast Blur Enabled", "Fast Blur Enabled", 1000);
 	else
 		MESSAGE_L("Fast Blur Disabled", "Fast Blur Disabled", 1000);
@@ -874,6 +875,9 @@ int Change_VSync(int newVSync)
 	
 	// Update VSync.
 	draw->updateVSync();
+	
+	// Return success.
+	return 1;
 }
 
 

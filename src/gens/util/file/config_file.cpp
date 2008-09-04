@@ -189,7 +189,7 @@ int Save_Config(const char *File_Name)
 	INI_WriteInt("CPU", "Slave SH2 Speed", SSH2_Speed);
 	
 	// Various settings
-	INI_WriteInt("Options", "Fast Blur", Video.Fast_Blur & 1);
+	INI_WriteBool("Options", "Fast Blur", draw->fastBlur());
 	INI_WriteBool("Options", "FPS", draw->fpsEnabled());
 	INI_WriteInt("Options", "FPS Style", draw->fpsStyle());
 	INI_WriteBool("Options", "Message", draw->msgEnabled());
@@ -450,7 +450,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 		SSH2_Speed = 0;
 	
 	// Various settings
-	Video.Fast_Blur = INI_GetInt("Options", "Fast Blur", 0);
+	draw->setFastBlur(INI_GetBool("Options", "Fast Blur", false));
 	draw->setFPSEnabled(INI_GetBool("Options", "FPS", false));
 	draw->setFPSStyle(INI_GetInt("Options", "FPS Style", 0));
 	draw->setMsgEnabled(INI_GetBool("Options", "Message", true));

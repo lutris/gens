@@ -75,6 +75,8 @@ class VDraw
 		void setFPSEnabled(bool newFPSEnable);
 		bool fullScreen(void);
 		void setFullScreen(bool newFullScreen);
+		bool fastBlur(void);
+		void setFastBlur(bool newFastBlur);
 		
 		// Style properties
 		unsigned char msgStyle(void);
@@ -139,8 +141,9 @@ class VDraw
 		unsigned short m_BorderColor_16B;
 		unsigned int m_BorderColor_32B;
 		
-		// Software rendering.
+		// Miscellaneous settings.
 		bool m_swRender;
+		bool m_fastBlur;
 };
 
 #endif

@@ -334,7 +334,7 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_ENABLE(PERFECTSYNC, SegaCD_Accurate);
 		TEST_OPTION_NUMERIC(MSH2SPEED, MSH2_Speed);
 		TEST_OPTION_NUMERIC(SSH2SPEED, SSH2_Speed);
-		TEST_OPTION_ENABLE(FASTBLUR, Video.Fast_Blur);
+		//TEST_OPTION_ENABLE(FASTBLUR, Video.Fast_Blur);
 		//TEST_OPTION_ENABLE(FPS, Show_FPS);
 		//TEST_OPTION_ENABLE(MSG, Show_Message);
 		TEST_OPTION_ENABLE(LED, Show_LED);
@@ -343,7 +343,15 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_NUMERIC(RAMCARTSIZE, BRAM_Ex_Size);
 		
 		// Other options that can't be handled by macros.
-		if (!strcmp(long_options[option_index].name, FPS_ENABLE))
+		if (!strcmp(long_options[option_index].name, FASTBLUR_ENABLE))
+		{
+			draw->setFastBlur(true);
+		}
+		else if (!strcmp(long_options[option_index].name, FASTBLUR_DISABLE))
+		{
+			draw->setFastBlur(false);
+		}
+		else if (!strcmp(long_options[option_index].name, FPS_ENABLE))
 		{
 			draw->setFPSEnabled(true);
 		}

@@ -66,7 +66,6 @@ struct Gens_Misc_Filenames_t
 // Video settings
 struct Gens_VideoSettings_t
 {
-	int Fast_Blur;
 	int Render_W;	// TODO: Make this an enum.
 	int Render_FS;	// TODO: Make this an enum.
 	int VSync_FS;

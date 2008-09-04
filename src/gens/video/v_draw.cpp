@@ -59,6 +59,7 @@ VDraw::VDraw()
 	m_Stretch = false;
 	m_IntroEffectColor = 7;
 	m_FullScreen = false;
+	m_fastBlur = false;
 }
 
 VDraw::VDraw(VDraw *oldDraw)
@@ -96,6 +97,7 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_Stretch = oldDraw->stretch();
 	m_IntroEffectColor = oldDraw->introEffectColor();
 	m_FullScreen = oldDraw->fullScreen();
+	m_fastBlur = oldDraw->fastBlur();
 }
 
 VDraw::~VDraw()
@@ -246,7 +248,7 @@ int VDraw::flip(void)
 	}
 	
 	// Blur the screen if requested.
-	if (Video.Fast_Blur)
+	if (m_fastBlur)
 		Fast_Blur();
 	
 	// Check if the display width changed.
@@ -564,4 +566,17 @@ void VDraw::setFullScreen(bool newFullScreen)
 	// Refresh the video subsystem, if Gens is running.
 	if (is_gens_running())
 		Refresh_Video();
+}
+
+
+bool VDraw::fastBlur(void)
+{
+	return m_fastBlur;
+}
+void VDraw::setFastBlur(bool newFastBlur)
+{
+	if (m_fastBlur == newFastBlur)
+		return;
+	
+	m_fastBlur = newFastBlur;
 }
