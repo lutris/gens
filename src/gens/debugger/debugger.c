@@ -816,7 +816,7 @@ void Refresh_VDP_Pattern(void)
  */
 void Refresh_VDP_Palette(void)
 {
-	unsigned int i;
+	unsigned short i;
 	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
