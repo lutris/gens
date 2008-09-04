@@ -3,7 +3,7 @@
  */
 
 // Turn this on to enable savestate debugging.
-#define _DEBUG
+#define GENS_DEBUG_SAVESTATE
 #include <assert.h>
 
 #include <stdio.h>
@@ -332,7 +332,7 @@ inline void ExportData(const void* from, void* data, unsigned int offset, unsign
 {
 	const unsigned char* src = (const unsigned char *) from;
 	unsigned char* dst = ((unsigned char*) data) + offset;
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 	while(numBytes--)
 	{
 		assert((*dst == 0 || *dst == 0xFF) && "error: saved over the same byte twice");
@@ -671,7 +671,7 @@ int Import_Genesis (unsigned char *Data)
 		VDP_Reg.DMA_Length = ImportNumber_le32(Data, &offset);
 		VDP_Reg.DMA_Address = ImportNumber_le32(Data, &offset);
 		
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == GENESIS_V6_STATE_LENGTH);
 #endif
 	}
@@ -750,7 +750,7 @@ int Import_Genesis (unsigned char *Data)
 		
 		ImportDataAuto(&Context_68K.cycles_needed, Data, &offset, 44);
 		
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == GENESIS_STATE_LENGTH);
 #endif		
 	}
@@ -805,7 +805,7 @@ void Export_Genesis(unsigned char *Data)
 		Data[0x61 + i * 2] = (PSG_Save[i] >> 8) & 0xFF;
 	}
 	
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 	int contextsize1 = main68k_GetContextSize();
 	int contextsize2 = sizeof(Context_68K);
 	assert(contextsize1 == contextsize2);
@@ -1013,7 +1013,7 @@ void Export_Genesis(unsigned char *Data)
 	
 	ExportDataAuto(&Context_68K.cycles_needed, Data, &offset, 44);
 	
-	#ifdef _DEBUG
+	#ifdef GENS_DEBUG_SAVESTATE
 		// assert that the final offset value equals our savestate size, otherwise we screwed up
 		// if it fails, that probably means you have to add ((int)offset-(int)desiredoffset) to the last GENESIS_LENGTH_EX define
 		assert(offset == GENESIS_STATE_LENGTH);
@@ -1248,7 +1248,7 @@ void Import_SegaCD(unsigned char *Data)
 		ImportDataAuto(played_tracks_linear, Data, &offset, 100);
 		//ImportDataAuto(&Current_IN_Pos, Data, &offset, 4)? // don't save this; bad things happen
 		
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == SEGACD_LENGTH_EX);
 #endif
 	}
@@ -1469,7 +1469,7 @@ void Export_SegaCD (unsigned char *Data)
 	ExportDataAuto(played_tracks_linear, Data, &offset, 100);
 	//ExportDataAuto(&Current_IN_Pos, Data, &offset, 4)? // don't save this; bad things happen
 	
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == SEGACD_LENGTH_EX);
 #endif
 }
@@ -1619,7 +1619,7 @@ void Import_32X (unsigned char *Data)
 		_32X_VDP_CRam_Ajusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
 	}
 
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == G32X_LENGTH_EX);
 #endif
 }
@@ -1759,7 +1759,7 @@ void Export_32X (unsigned char *Data)
 	ExportDataAuto(_32X_MSH2_Rom, Data, &offset, sizeof(_32X_MSH2_Rom));
 	ExportDataAuto(_32X_SSH2_Rom, Data, &offset, sizeof(_32X_SSH2_Rom));
 	
-#ifdef _DEBUG
+#ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == G32X_LENGTH_EX);
 #endif
 }
