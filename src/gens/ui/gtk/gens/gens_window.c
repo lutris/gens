@@ -182,6 +182,7 @@ GtkWidget* create_gens_window(void)
 	GdkPixbuf *gens_window_icon_pixbuf;
 	GtkWidget *vbox1;
 	GtkWidget *handlebox1;
+	GtkWidget *sdlsock;
 	
 	accel_group = gtk_accel_group_new();
 	
@@ -208,6 +209,12 @@ GtkWidget* create_gens_window(void)
 	
 	// Create the menu bar.
 	create_gens_window_menubar(handlebox1);
+	
+	// Create the SDL socket.
+	sdlsock = gtk_event_box_new();
+	gtk_widget_set_name(sdlsock, "sdlsock");
+	gtk_box_pack_end(GTK_BOX(lookup_widget(gens_window, "vbox1")), sdlsock, 0, 0, 0);
+	GLADE_HOOKUP_OBJECT(gens_window, sdlsock, "sdlsock");
 	
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(gens_window), accel_group);

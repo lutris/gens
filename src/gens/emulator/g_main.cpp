@@ -53,8 +53,6 @@
 #include "sdllayer/g_sdlinput.h"
 
 #include "ui-common.h"
-#include "gtk-misc.h"
-#include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 
 // GENS Settings struct
@@ -470,33 +468,17 @@ int main(int argc, char *argv[])
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
 	
-	//char sdlbuf[32];
-	
-	//sprintf(sdlbuf, "SDL_WINDOWID=%ld",  GDK_WINDOW_XWINDOW(gens_window->window));
-	//putenv(sdlbuf);
-	GtkWidget *sdlsock;
-	
 	Init_Genesis_Bios();
 	
 	// Initialize Gens.
 	if (!Init())
 		return 0;
 	
-	// TODO: Split out GTK+ stuff from main().
-	add_pixmap_directory(DATADIR);
-	add_pixmap_directory("images");
-	gtk_init(&argc, &argv);
+	// Initialize the UI.
+	UI_Init(argc, argv);
 	
-	gens_window = create_gens_window ();
-	sdlsock = gtk_event_box_new();
-	gtk_widget_set_name(sdlsock, "sdlsock");
-	g_object_set_data_full(G_OBJECT(gens_window), "sdlsock",
-	gtk_widget_ref(sdlsock), (GDestroyNotify) gtk_widget_unref);
-	gtk_box_pack_end(GTK_BOX(lookup_widget(gens_window, "vbox1")), sdlsock, 0, 0, 0);
-	
-	
-	gtk_widget_show(gens_window);
-	//initializeConsoleRomsView(); // not yet finished (? - wryun)
+	// not yet finished (? - wryun)
+	//initializeConsoleRomsView();
 	
 	// Check if OpenGL needs to be enabled.
 	Change_OpenGL(Video.OpenGL);
@@ -529,8 +511,9 @@ int main(int argc, char *argv[])
 	
 	while (is_gens_running ())
 	{
-		while (gtk_events_pending ())
-			gtk_main_iteration_do (0);
+		// Update the UI.
+		UI_Update();
+		
 		update_SDL_events ();
 #ifdef GENS_DEBUGGER
 		if (Debug)		// DEBUG

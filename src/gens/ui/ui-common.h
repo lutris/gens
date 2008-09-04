@@ -38,6 +38,9 @@ typedef enum
 } FileFilterType;
 
 // The following functions are implemented by the OS-specific ui-common_*.c file.
+void UI_Init(int argc, char *argv[]);
+void UI_Update(void);
+
 void UI_Set_Window_Title(const char* title);
 void UI_Set_Window_Visibility (int visibility);
 

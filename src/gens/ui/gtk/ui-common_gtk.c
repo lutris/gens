@@ -44,6 +44,37 @@ static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog);
 static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog);
 static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
 
+
+/**
+ * UI_Init(): Initialize the GTK+ UI.
+ * @param argc main()'s argc.
+ * @param argv main()'s argv.
+ */
+void UI_Init(int argc, char *argv[])
+{
+	// Add the pixmap directories.
+	add_pixmap_directory(DATADIR);
+	add_pixmap_directory("images");
+	
+	// Initialize GTK+.
+	gtk_init(&argc, &argv);
+	
+	// Create and show the Gens window.
+	create_gens_window();
+	gtk_widget_show(gens_window);
+}
+
+
+/**
+ * UI_Update(): Update the UI.
+ */
+void UI_Update(void)
+{
+	while (gtk_events_pending())
+		gtk_main_iteration_do(FALSE);
+}
+
+
 /**
  * UI_Set_Window_Title(): Sets the window title.
  * @param title New window title.
