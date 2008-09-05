@@ -9,6 +9,7 @@
 #include "emulator/g_input.hpp"
 #include "gens_core/misc/misc.h"
 #include "emulator/gens.h"
+#include "ui/ui-common.h"
 
 #include "debugger.h"
 
@@ -1102,5 +1103,5 @@ void Update_Debug_Screen(void)
 		}
 	}
 	
-	Sleep(10);
+	UI_Sleep(10);
 }

@@ -8,15 +8,14 @@
 #include "gens.h"
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
+#include "ui/ui-common.h"
+
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 
 #ifndef NULL
 #define NULL 0
 #endif
-
-// TODO: Get rid of this.
-void Sleep(int i);
 
 clock_t Last_Time = 0;
 clock_t New_Time = 0;
@@ -109,7 +108,7 @@ int Update_Emulation(void)
 			}
 			else
 			{
-				Sleep(Sleep_Time);
+				UI_Sleep(Sleep_Time);
 			}
 		} //If sound is not enabled
 		

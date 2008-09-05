@@ -126,7 +126,6 @@ int Change_68K_Type(int hWnd, int Num, int Reset_SND);
 //extern void Read_To_68K_Space(int adr);
 
 void End_All(void);
-void Sleep(int i);
 int is_gens_running();
 void close_gens();
 

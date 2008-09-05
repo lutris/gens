@@ -272,16 +272,6 @@ static void Init_Settings(void)
 
 
 /**
- * Sleep(): Sleeps for i milliseconds.
- * @param i Milliseconds to sleep.
- */
-void Sleep(int i)
-{
-	//usleep(i * 1000);
-}
-
-
-/**
  * close_gens(): Close GENS.
  */
 void close_gens ()
@@ -548,7 +538,7 @@ int main(int argc, char *argv[])
 					Do_VDP_Only();
 				//Pause_Screen();
 				draw->flip();
-				Sleep(100);
+				UI_Sleep(100);
 			}
 		}
 		else
@@ -568,24 +558,24 @@ int main(int argc, char *argv[])
 			else if (Intro_Style == 1)
 			{
 				// Gens logo effect. (TODO: This is broken!)
-				Sleep(5);
+				UI_Sleep(5);
 			}
 			else if (Intro_Style == 2)
 			{
 				// "Strange" effect. (TODO: This is broken!)
-				Sleep(10);
+				UI_Sleep(10);
 			}
 			else if (Intro_Style == 3)
 			{
 				// Genesis BIOS. (TODO: This is broken!)
-				Sleep(20);
+				UI_Sleep(20);
 			}
 			else
 			{
 				// Blank screen. (MAX IDLE)
 				// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
 				// TODO: Fix this lag!
-				Sleep(200);
+				UI_Sleep(200);
 			}
 		}
 	}

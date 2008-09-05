@@ -4,6 +4,7 @@
 
 #include "port/port.h"
 #include "emulator/g_main.hpp"
+#include "ui/ui-common.h"
 #include "util/file/rom.hpp"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "segacd/lc89510.h"
@@ -161,7 +162,7 @@ int ASPI_Test_Unit_Ready (int timeout) //da verificare
 				return 3;
 		}
 		wait_time += 10;
-		Sleep (8);
+		UI_Sleep(8);
 	}
 	
 	return -1;
@@ -705,7 +706,7 @@ Wait_Read_Complete (void)
   int i = 0;
 
   while (Read_Complete == 0)
-    Sleep (1);
+    UI_Sleep(1);
 
 #ifdef DEBUG_CD
   fprintf (debug_SCD_file, "\n******* Wait Read %d ******\n", i);

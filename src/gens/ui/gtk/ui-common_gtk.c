@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 
+#include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
@@ -44,6 +45,10 @@ static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog);
 static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog);
 static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
 
+
+// Sleep handler
+static gboolean isSleeping = FALSE;
+gboolean UI_GLib_SleepCallback(gpointer data);
 
 /**
  * UI_Init(): Initialize the GTK+ UI.
@@ -72,6 +77,34 @@ void UI_Update(void)
 {
 	while (gtk_events_pending())
 		gtk_main_iteration_do(FALSE);
+}
+
+
+/**
+ * UI_GLib_SleepCallback(): GLib callback for the sleep function.
+ * @param data Pointer to data, specified in initial g_timeout_add() call.
+ * @return FALSE to disable the timer.
+ */
+gboolean UI_GLib_SleepCallback(gpointer data)
+{
+	isSleeping = FALSE;
+	return FALSE;
+}
+
+
+/**
+ * UI_Sleep(): Sleep, but keep the UI active.
+ * @param ms Interval to sleep, in milliseconds.
+ */
+void UI_Sleep(int ms)
+{
+	isSleeping = TRUE;
+	g_timeout_add(ms, UI_GLib_SleepCallback, NULL);
+	while (isSleeping)
+	{
+		usleep(1000);
+		UI_Update();
+	}
 }
 
 
