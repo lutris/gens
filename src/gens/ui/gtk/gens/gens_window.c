@@ -905,15 +905,15 @@ static void create_gens_window_SoundMenu(GtkWidget *container)
 	AddMenuCallback(SoundMenu_PSG_Improved, on_SoundMenu_PSG_Improved_activate);
 	
 	// PCM
-	NewMenuItem_Check(SoundMenu_PCM, "_PCM", "SoundMenu_PCM", SoundMenu, TRUE);
+	NewMenuItem_Check(SoundMenu_PCM, "P_CM", "SoundMenu_PCM", SoundMenu, TRUE);
 	AddMenuCallback(SoundMenu_PCM, on_SoundMenu_PCM_activate);
 	
 	// PWM
-	NewMenuItem_Check(SoundMenu_PWM, "_PWM", "SoundMenu_PWM", SoundMenu, TRUE);
+	NewMenuItem_Check(SoundMenu_PWM, "P_WM", "SoundMenu_PWM", SoundMenu, TRUE);
 	AddMenuCallback(SoundMenu_PWM, on_SoundMenu_PWM_activate);
 	
 	// CDDA
-	NewMenuItem_Check(SoundMenu_CDDA, "CDDA (CD Audio)", "SoundMenu_CDDA", SoundMenu, TRUE);
+	NewMenuItem_Check(SoundMenu_CDDA, "CDD_A (CD Audio)", "SoundMenu_CDDA", SoundMenu, TRUE);
 	AddMenuCallback(SoundMenu_CDDA, on_SoundMenu_CDDA_activate);
 	
 	// Separator
