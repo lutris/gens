@@ -50,7 +50,7 @@ void on_check_cc_Teamplayer_clicked(GtkButton *button, gpointer user_data)
 	int port; char player; gboolean thisChecked;
 	char tmpName[64];
 	GtkWidget *label_player;
-	GtkWidget *optionmenu_padtype;
+	GtkWidget *combobox_padtype;
 	GtkWidget *button_configure;
 	
 	// Get the port number.
@@ -68,9 +68,9 @@ void on_check_cc_Teamplayer_clicked(GtkButton *button, gpointer user_data)
 		gtk_widget_set_sensitive(label_player, thisChecked);
 		
 		// Pad type
-		sprintf(tmpName, "optionmenu_padtype_%d%c", port, player);
-		optionmenu_padtype = lookup_widget(controller_config_window, tmpName);
-		gtk_widget_set_sensitive(optionmenu_padtype, thisChecked);
+		sprintf(tmpName, "combobox_padtype_%d%c", port, player);
+		combobox_padtype = lookup_widget(controller_config_window, tmpName);
+		gtk_widget_set_sensitive(combobox_padtype, thisChecked);
 		
 		// Reconfigure button
 		sprintf(tmpName, "button_configure_%d%c", port, player);
@@ -88,7 +88,7 @@ void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 	int player, padtype;
 	char playerID[4];
 	char objID[64];
-	GtkWidget *optionmenu_padtype;
+	GtkWidget *combobox_padtype;
 	
 	player = GPOINTER_TO_INT(user_data);
 	
@@ -122,9 +122,13 @@ void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 			break;
 	}
 	
-	sprintf(objID, "optionmenu_padtype_%s", playerID);
-	optionmenu_padtype = lookup_widget(controller_config_window, objID);
-	padtype = gtk_option_menu_get_history(GTK_OPTION_MENU(optionmenu_padtype));
+	sprintf(objID, "combobox_padtype_%s", playerID);
+	combobox_padtype = lookup_widget(controller_config_window, objID);
+	
+	// Get the pad type.
+	padtype = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype));
+	if (padtype == -1)
+		return;
 	
 	Reconfigure_Input(player, padtype);
 }

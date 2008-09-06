@@ -235,9 +235,7 @@ static void AddControllerVBox(GtkWidget *frame, int port)
 	GtkWidget *check_teamplayer;
 	GtkWidget *table_players;
 	GtkWidget *label_player;
-	GtkWidget *optionmenu_padtype;
-	GtkWidget *optionmenu_padtype_menu;
-	GtkWidget *optionmenu_padtype_menuitem;
+	GtkWidget *combobox_padtype;
 	GtkWidget *button_configure;
 	char tmp[128];
 	char player[4];
@@ -317,35 +315,20 @@ static void AddControllerVBox(GtkWidget *frame, int port)
 				 (GtkAttachOptions)(0), 0, 0);
 		
 		// Pad type
-		optionmenu_padtype = gtk_option_menu_new();
-		sprintf(tmp, "optionmenu_padtype_%s", player);
-		gtk_widget_set_name(optionmenu_padtype, tmp);
-		gtk_widget_show(optionmenu_padtype);
-		GLADE_HOOKUP_OBJECT(controller_config_window, optionmenu_padtype, tmp);
-		gtk_table_attach(GTK_TABLE(table_players), optionmenu_padtype, 1, 2, i, i + 1,
+		combobox_padtype = gtk_combo_box_new_text();
+		sprintf(tmp, "combobox_padtype_%s", player);
+		gtk_widget_set_name(combobox_padtype, tmp);
+		gtk_widget_show(combobox_padtype);
+		GLADE_HOOKUP_OBJECT(controller_config_window, combobox_padtype, tmp);
+		gtk_table_attach(GTK_TABLE(table_players), combobox_padtype, 1, 2, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
 		
-		// Pad type menu
-		optionmenu_padtype_menu = gtk_menu_new();
-		sprintf(tmp, "optionmenu_padtype_menu_%s", player);
-		gtk_widget_set_name(optionmenu_padtype_menu, tmp);
-		gtk_widget_show(optionmenu_padtype_menu);
-		GLADE_HOOKUP_OBJECT(controller_config_window, optionmenu_padtype_menu, tmp);
-		
-		// Pad type submenu
+		// Pad type dropdown
 		for (j = 0; j < 2; j++)
 		{
-			optionmenu_padtype_menuitem = gtk_menu_item_new_with_label(PadTypes[j]);
-			sprintf(tmp, "optionmenu_padtype_menuitem_%s_%d", player, j);
-			gtk_widget_set_name(optionmenu_padtype_menuitem, tmp);
-			gtk_widget_show(optionmenu_padtype_menuitem);
-			GLADE_HOOKUP_OBJECT(controller_config_window, optionmenu_padtype_menuitem, tmp);
-			gtk_container_add(GTK_CONTAINER(optionmenu_padtype_menu), optionmenu_padtype_menuitem);
+			gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_padtype), PadTypes[j]);
 		}
-		
-		// Add the pad type submenu to the pad type dropdown.
-		gtk_option_menu_set_menu(GTK_OPTION_MENU(optionmenu_padtype), optionmenu_padtype_menu);
 		
 		// "Reconfigure" button
 		button_configure = gtk_button_new_with_label("Reconfigure");

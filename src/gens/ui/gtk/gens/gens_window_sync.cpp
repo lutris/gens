@@ -103,7 +103,6 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// ROM History
 	MItem_ROMHistory = lookup_widget(gens_window, "FileMenu_ROMHistory");
-	gtk_menu_item_remove_submenu(GTK_MENU_ITEM(MItem_ROMHistory));
 	MItem_ROMHistory_SubMenu = gtk_menu_new();
 	gtk_widget_set_name(MItem_ROMHistory_SubMenu, "FileMenu_ROMHistory_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(MItem_ROMHistory), MItem_ROMHistory_SubMenu);
@@ -255,9 +254,6 @@ void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 	
 	int i;
 	char ObjName[64];
-	
-	// Delete the submenu, if one already exists.
-	gtk_menu_item_remove_submenu(GTK_MENU_ITEM(container));
 	
 	// Create the submenu.
 	SubMenu = gtk_menu_new();
