@@ -32,6 +32,7 @@
 
 #include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
+#include "ui/ui-common.h"
 
 
 /**
