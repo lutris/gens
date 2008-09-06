@@ -59,7 +59,15 @@ nasm -O1 -D __GCC2 -f elf \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/ -I@srcdir@/ui/gtk/
+INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
+
+if GENS_UI_GTK
+INCLUDES += -I@srcdir@/ui/gtk/
+endif
+
+if GENS_UI_QT4
+INCLUDES += -I@srcdir@/ui/qt4/
+endif
 
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
@@ -67,6 +75,7 @@ INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/ -I@srcdir@/ui/gtk/
 	$(NASM) $< -o $@
 
 bin_PROGRAMS = gens
+
 gens_SOURCES = \
 		emulator/gens.c \
 		emulator/g_main.cpp \
@@ -142,6 +151,11 @@ gens_SOURCES = \
 ##		netplay/ccnet.c 
 ##		netplay/ccnet.h
 
+if GENS_UI_QT4
+$(gens_OBJECTS) : \
+		TODO.cpp
+endif
+
 if GENS_DEBUGGER
 gens_SOURCES += \
 		debugger/debugger.c \
@@ -161,6 +175,9 @@ gens_SOURCES += \
 endif
 
 if LINUX
+
+if GENS_UI_GTK
+
 gens_SOURCES += \
 		ui/gtk/ui-common_gtk.c \
 		ui/gtk/gtk-misc.c \
@@ -204,6 +221,8 @@ gens_SOURCES += \
 		ui/gtk/select_cdrom/select_cdrom_window.c \
 		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
 		ui/gtk/select_cdrom/select_cdrom_window_misc.c
+endif
+
 endif
 
 endif
@@ -294,6 +313,9 @@ noinst_HEADERS += \
 endif
 
 if LINUX
+
+if GENS_UI_GTK
+
 noinst_HEADERS += \
 		ui/gtk/gtk-misc.h \
 		ui/gtk/gens/gens_window.h \
@@ -341,18 +363,27 @@ endif
 
 endif
 
+endif
+
 gens_CFLAGS = \
 		-DDATADIR=\"@datadir@/@PACKAGE@\" \
-		@SDL_CFLAGS@ \
-		@GTK_CFLAGS@ \
-		@CFLAGS@
+		@SDL_CFLAGS@
+
+if GENS_UI_GTK
+gens_CFLAGS += @GTK_CFLAGS@
+endif
+
+gens_CFLAGS += @CFLAGS@
 
 gens_CXXFLAGS = \
 		-DDATADIR=\"@datadir@/@PACKAGE@\" \
-		@SDL_CFLAGS@ \
-		@GTK_CFLAGS@ \
-		@CFLAGS@ \
-		@CXXFLAGS@
+		@SDL_CFLAGS@
+
+if GENS_UI_GTK
+gens_CXXFLAGS += @GTK_CFLAGS@
+endif
+
+gens_CXXFLAGS += @CFLAGS@ @CXXFLAGS@
 
 
 gens_LDADD = \
@@ -361,7 +392,16 @@ gens_LDADD = \
 		../minizip/libminizip.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
-		-lm -lz @SDL_LIBS@ @GTK_LIBS@
+		-lm -lz @SDL_LIBS@
+
+if GENS_UI_GTK
+gens_LDADD += @GTK_LIBS@
+endif
+
+if GENS_UI_QT4
+gens_LDADD += @GENS_QTLIBS@
+endif
+
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
