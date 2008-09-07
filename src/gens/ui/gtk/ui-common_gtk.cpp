@@ -67,6 +67,9 @@ void UI_Init(int argc, char *argv[])
 	// Create and show the Gens window.
 	create_gens_window();
 	gtk_widget_show(gens_window);
+	
+	// Set the window title to Idle.
+	UI_Set_Window_Title_Idle();
 }
 
 
