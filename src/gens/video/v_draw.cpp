@@ -342,10 +342,11 @@ static inline void drawChar_2x(pixel *screen, const int x, const int y, const in
 				}
 				else
 				{
-					*screenPos = ((dotColor & transparentMask) >> 1) + ((*(screenPos) & transparentMask) >> 1);
-					*(screenPos + 1) = ((dotColor & transparentMask) >> 1) + ((*(screenPos + 1) & transparentMask) >> 1);
-					*(screenPos + w) = ((dotColor & transparentMask) >> 1) + ((*(screenPos + w) & transparentMask) >> 1);
-					*(screenPos + w + 1) = ((dotColor & transparentMask) >> 1) + ((*(screenPos + w + 1) & transparentMask) >> 1);
+					pixel trPix = (dotColor & transparentMask) >> 1;
+					*screenPos = trPix + ((*(screenPos) & transparentMask) >> 1);
+					*(screenPos + 1) = trPix + ((*(screenPos + 1) & transparentMask) >> 1);
+					*(screenPos + w) = trPix + ((*(screenPos + w) & transparentMask) >> 1);
+					*(screenPos + w + 1) = trPix + ((*(screenPos + w + 1) & transparentMask) >> 1);
 				}
 			}
 			cRow <<= 1;
