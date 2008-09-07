@@ -355,6 +355,8 @@ void VDraw::drawText(void *screen, const int w, const int h,
 	// Get the message length.
 	msgLength = strlen(msg);
 	
+	// TODO: Add linebreaks if the message is too long.
+	
 	// Calculate the dot color.
 	if (style & STYLE_COLOR_RED)
 		dotColor = 0xFF0000;
