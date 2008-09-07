@@ -627,9 +627,10 @@ int VDraw::setRender(int newMode, bool forceUpdate)
 	}
 	
 	// Renderer function found.
+	if (*Rend != newMode)
+		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
 	*Rend = newMode;
 	*Blit = testBlit;
-	MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
 	
 	setShift(newMode == 0 ? 0 : 1);
 	
