@@ -257,6 +257,18 @@ int VDraw_SDL::flipInternal(void)
 		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
 	
+	// Draw the message and/or FPS.
+	if (m_MsgVisible)
+	{
+		// Message is visible.
+		drawText(screen->pixels, screen->w, screen->h, m_MsgStyle, m_MsgText.c_str());
+	}
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	{
+		// FPS is enabled.
+		drawText(screen->pixels, screen->w, screen->h, m_FPSStyle, m_MsgText.c_str());
+	}
+	
 	SDL_UnlockSurface(screen);
 	
 	SDL_Flip(screen);
