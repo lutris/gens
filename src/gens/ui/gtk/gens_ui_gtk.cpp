@@ -34,8 +34,9 @@
 
 
 // File Chooser function
-static int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType filterType,
-			      char* retSelectedFile, GtkFileChooserAction action);
+static string UI_GTK_FileChooser(const string& title, const string& initFile,
+				 const FileFilterType filterType,
+				 const GtkFileChooserAction action);
 
 
 // Filename filters.
@@ -100,7 +101,7 @@ gboolean GensUI_GLib_SleepCallback(gpointer data)
  * sleep(): Sleep, but keep the UI active.
  * @param ms Interval to sleep, in milliseconds.
  */
-void GensUI::sleep(int ms)
+void GensUI::sleep(const int ms)
 {
 	sleeping = true;
 	g_timeout_add(ms, GensUI_GLib_SleepCallback, NULL);
@@ -116,9 +117,9 @@ void GensUI::sleep(int ms)
  * setWindowTitle(): Sets the window title.
  * @param title New window title.
  */
-void GensUI::setWindowTitle(const char *title)
+void GensUI::setWindowTitle(const string& title)
 {
-	gtk_window_set_title(GTK_WINDOW(gens_window), title);
+	gtk_window_set_title(GTK_WINDOW(gens_window), title.c_str());
 }
 
 
@@ -126,7 +127,7 @@ void GensUI::setWindowTitle(const char *title)
  * setWindowVisibility(): Sets window visibility.
  * @param visibility true to show; false to hide.
  */
-void GensUI::setWindowVisibility(bool visibility)
+void GensUI::setWindowVisibility(const bool visibility)
 {
 	if (visibility)
 		gtk_widget_show(gens_window);
@@ -149,7 +150,7 @@ void UI_Hide_Embedded_Window(void)
  * @param w Width of the embedded SDL window.
  * @param h Height of the embedded SDL window.
  */
-void UI_Show_Embedded_Window(int w, int h)
+void UI_Show_Embedded_Window(const int w, const int h)
 {
 	GtkWidget *sdlsock = lookup_widget(gens_window, "sdlsock");
 	gtk_widget_set_size_request(sdlsock, w, h);
@@ -174,14 +175,16 @@ int UI_Get_Embedded_WindowID(void)
  * @param msg Message.
  * @param title Title.
  */
-void GensUI::msgBox(const char* msg, const char* title)
+void GensUI::msgBox(const string& msg, const string& title)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
-	GtkWidget *dialog = gtk_message_dialog_new(GTK_WINDOW(gens_window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, msg);
-	gtk_window_set_title(GTK_WINDOW(dialog), title);
+	GtkWidget *dialog = gtk_message_dialog_new(
+			GTK_WINDOW(gens_window), GTK_DIALOG_MODAL,
+			GTK_MESSAGE_INFO, GTK_BUTTONS_OK, msg.c_str());
+	gtk_window_set_title(GTK_WINDOW(dialog), title.c_str());
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
 }
@@ -192,14 +195,13 @@ void GensUI::msgBox(const char* msg, const char* title)
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename filter to use.
- * @param retSelectedFile Pointer to string buffer to store the filename in.
- * @return 0 if successful.
+ * @return Filename if successful; otherwise, an empty string.
  */
-int GensUI::openFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile)
+string GensUI::openFile(const string& title, const string& initFile, const FileFilterType filterType)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initFile, filterType, retSelectedFile, GTK_FILE_CHOOSER_ACTION_OPEN);
+	return UI_GTK_FileChooser(title, initFile, filterType, GTK_FILE_CHOOSER_ACTION_OPEN);
 }
 
 
@@ -209,13 +211,13 @@ int GensUI::openFile(const char* title, const char* initFile, FileFilterType fil
  * @param initFileName Initial filename.
  * @param filterType of filename filter to use.
  * @param retSelectedFile Pointer to string buffer to store the filename in.
- * @return 0 if successful.
+ * @return Filename if successful; otherwise, an empty string.
  */
-int GensUI::saveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile)
+string GensUI::saveFile(const string& title, const string& initFile, const FileFilterType filterType)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initFile, filterType, retSelectedFile, GTK_FILE_CHOOSER_ACTION_SAVE);
+	return UI_GTK_FileChooser(title, initFile, filterType, GTK_FILE_CHOOSER_ACTION_SAVE);
 }
 
 
@@ -223,14 +225,13 @@ int GensUI::saveFile(const char* title, const char* initFile, FileFilterType fil
  * selectDir(): Show the Select Directory dialog.
  * @param title Window title.
  * @param initDir Initial directory.
- * @param retSelectedDir Pointer to string buffer to store the directory in.
- * @return 0 if successful.
+ * @return Directory name if successful; otherwise, an empty string.
  */
-int GensUI::selectDir(const char* title, const char* initDir, char* retSelectedDir)
+string GensUI::selectDir(const string& title, const string& initDir)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initDir, AnyFile, retSelectedDir, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	return UI_GTK_FileChooser(title, initDir, AnyFile, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
 }
 
 
@@ -239,32 +240,30 @@ int GensUI::selectDir(const char* title, const char* initDir, char* retSelectedD
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename fitler to use.
- * @param retSelectedFile Pointer to string buffer to store the filename in.
  * @param action Type of file chooser dialog.
- * @return 0 if a file was selected.
+ * @return Filename if successful; otherwise, an empty string.
  */
-static int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilterType filterType,
-			      char* retSelectedFile, GtkFileChooserAction action)
+static string UI_GTK_FileChooser(const string& title, const string& initFile,
+				 const FileFilterType filterType,
+				 const GtkFileChooserAction action)
 {
 	gint res;
 	gchar *filename;
 	gchar *acceptButton;
 	GtkWidget *dialog;
 	GtkFileFilter *all_files_filter;
-	
-	if (retSelectedFile == NULL)
-		return 1;
+	string retFilename;
 	
 	if (action == GTK_FILE_CHOOSER_ACTION_SAVE)
 		acceptButton = GTK_STOCK_SAVE;
 	else //if (action == GTK_FILE_CHOOSER_ACTION_OPEN)
 		acceptButton = GTK_STOCK_OPEN;
 	
-	dialog = gtk_file_chooser_dialog_new(title, GTK_WINDOW(gens_window), action,
+	dialog = gtk_file_chooser_dialog_new(title.c_str(), GTK_WINDOW(gens_window), action,
 					     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					     acceptButton, GTK_RESPONSE_ACCEPT, NULL);
 	
-	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), initFile);
+	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), initFile.c_str());
 	
 	// Add filters.
 	switch (filterType)
@@ -284,6 +283,8 @@ static int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilte
 		case GYMFile:
 			UI_GTK_AddFilter_GYMFile(dialog);
 			break;
+		default:
+			break;
 	}
 	// All Files filter
 	all_files_filter = gtk_file_filter_new();
@@ -296,17 +297,13 @@ static int UI_GTK_FileChooser(const char* title, const char* initFile, FileFilte
 	{
 		// File selected.
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		strncpy(retSelectedFile, filename, GENS_PATH_MAX);
+		retFilename = filename;
 		g_free(filename);
 	}
 	gtk_widget_destroy(dialog);
 	
-	// Return 0 if a file was selected.
-	if (res == GTK_RESPONSE_ACCEPT)
-		return 0;
-	
-	// No filename selected.
-	return 2;
+	// Return the filename.
+	return retFilename;
 }
 
 

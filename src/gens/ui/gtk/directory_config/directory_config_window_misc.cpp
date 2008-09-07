@@ -63,8 +63,7 @@ void Directory_Config_Change(int dir)
 {
 	GtkWidget *entry_direntry;
 	char tmp[64];
-	char newDir[GENS_PATH_MAX];
-	int ret;
+	string newDir;
 	
 	// Get the entry widget for this directory.
 	sprintf(tmp, "entry_%s", DirEntries[dir].tag);
@@ -72,14 +71,14 @@ void Directory_Config_Change(int dir)
 	
 	// Request a new directory.
 	sprintf(tmp, "Select %s Directory", DirEntries[dir].title);
-	ret = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(entry_direntry)), newDir);
+	newDir = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(entry_direntry)));
 	
 	// If Cancel was selected, don't do anything.
-	if (ret)
+	if (newDir.length() == 0)
 		return;
 	
 	// Set the new directory.
-	gtk_entry_set_text(GTK_ENTRY(entry_direntry), newDir);
+	gtk_entry_set_text(GTK_ENTRY(entry_direntry), newDir.c_str());
 }
 
 

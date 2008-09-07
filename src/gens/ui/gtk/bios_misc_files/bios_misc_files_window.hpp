@@ -23,10 +23,6 @@
 #ifndef GTK_BIOS_MISC_FILES_WINDOW_HPP
 #define GTK_BIOS_MISC_FILES_WINDOW_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <gtk/gtk.h>
 #include "ui/gens_ui.hpp"
 
@@ -39,6 +35,10 @@ struct BIOSMiscFileEntry_t
 	FileFilterType filter;
 	char* entry;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Contains all the BIOS/Misc File entries.
 extern const struct BIOSMiscFileEntry_t BIOSMiscFiles[];

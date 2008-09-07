@@ -43,30 +43,33 @@ typedef enum
 
 #ifdef __cplusplus
 
+#include <string>
+using std::string;
+
 class GensUI
 {
 	public:
 		// The following functions are implemented by ui/[ui]/gens_ui_[ui].cpp.
 		static void init(int argc, char *argv[]);
 		static void update(void);
-		static void sleep(int ms);
+		static void sleep(const int ms);
 		
-		static void setWindowTitle(const char* title);
-		static void setWindowVisibility(bool visibility);
+		static void setWindowTitle(const string& title);
+		static void setWindowVisibility(const bool visibility);
 		
 		static void UI_Hide_Embedded_Window(void);
-		static void UI_Show_Embedded_Window(int w, int h);
+		static void UI_Show_Embedded_Window(const int w, const int h);
 		static int UI_Get_Embedded_WindowID(void);
 		
-		static void msgBox(const char* msg, const char* title);
-		static int openFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
-		static int saveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
-		static int selectDir(const char* title, const char* initDir, char* retSelectedDir);
+		static void msgBox(const string& msg, const string& title);
+		static string openFile(const string& title, const string& initFile, const FileFilterType filterType);
+		static string saveFile(const string& title, const string& initFile, const FileFilterType filterType);
+		static string selectDir(const string& title, const string& initDir);
 		
 		// The following functions are implemented by ui/gens_ui.cpp.
 		static void setWindowTitle_Idle(void);
-		static void setWindowTitle_Game(const char* system, const char* game);
-		static void setWindowTitle_Init(const char* system, bool reinit);
+		static void setWindowTitle_Game(const string& system, const string& game);
+		static void setWindowTitle_Init(const string& system, const bool reinit);
 };
 
 #endif /* __cplusplus */

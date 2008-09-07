@@ -77,13 +77,14 @@ unsigned char State_Buffer[MAX_STATE_FILE_LENGTH];
  */
 int Change_File_S(char *Dest, char *Dir)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
-	if (GensUI::saveFile("Save Savetate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
+	filename = GensUI::saveFile("Save Savetate", NULL /*Rom_Dir*/, SavestateFile);
+	if (filename.length() == 0)
 		return 0;
 	
 	// Filename selected for the savestate.
-	strcpy(Dest, filename);
+	strcpy(Dest, filename.c_str());
 	return 1;
 }
 
@@ -96,13 +97,14 @@ int Change_File_S(char *Dest, char *Dir)
  */
 int Change_File_L(char *Dest, char *Dir)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
-	if (GensUI::openFile("Load Savestate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
+	filename = GensUI::openFile("Load Savestate", NULL /*Rom_Dir*/, SavestateFile);
+	if (filename.length() == 0)
 		return 0;
 	
 	// Filename selected for the savestate.
-	strcpy(Dest, filename);
+	strcpy(Dest, filename.c_str());
 	return 1;
 }
 
@@ -115,13 +117,14 @@ int Change_File_L(char *Dest, char *Dir)
  */
 int Change_File_L_CD(char *Dest, char *Dir)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
-	if (GensUI::openFile("Load SegaCD Disc Image", NULL /*Rom_Dir*/, CDImage, filename) != 0)
+	filename = GensUI::openFile("Load SegaCD Disc Image", NULL /*Rom_Dir*/, CDImage);
+	if (filename.length() == 0)
 		return 0;
 	
 	// Filename selected for the CD image.
-	strcpy(Dest, filename);
+	strcpy(Dest, filename.c_str());
 	return 1;
 }
 

@@ -455,16 +455,17 @@ void Fill_Infos(void)
  */
 int Get_Rom(void)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
-	if (GensUI::openFile("Open ROM", Rom_Dir, ROMFile, filename) != 0)
+	filename = GensUI::openFile("Open ROM", Rom_Dir, ROMFile);
+	if (filename.length() == 0)
 	{
 		// No ROM selected.
 		return 0;
 	}
 	
 	// Open the ROM.
-	return Open_Rom(filename);
+	return Open_Rom(filename.c_str());
 }
 
 

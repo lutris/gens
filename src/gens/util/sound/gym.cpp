@@ -166,7 +166,7 @@ Stop_GYM_Dump (void)
  */
 int Start_Play_GYM(void)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
 	if (Game || !(Sound_Enable))
 		return 0;
@@ -189,15 +189,12 @@ int Start_Play_GYM(void)
 	
 	Play_Sound ();
 	
-	if (GensUI::openFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile, filename) != 0)
-		return 0;
-	
-	// Make sure a filename was actually selected.
-	if (strlen(filename) == 0)
+	filename = GensUI::openFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile);
+	if (filename.length() == 0)
 		return 0;
 	
 	// Attempt to open the GYM file.
-	GYM_File = fopen (filename, "r");
+	GYM_File = fopen(filename.c_str(), "rb");
 	if (!GYM_File)
 		return 0;
 	

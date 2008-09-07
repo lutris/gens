@@ -265,20 +265,17 @@ int Save_Config(const char *File_Name)
  */
 int Save_As_Config(void)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
-	if (GensUI::saveFile("Save Config As", NULL, ConfigFile, filename) != 0)
-		return 0;
-	
-	// Make sure a filename was actually selected.
-	if (strlen(filename) == 0)
+	filename = GensUI::saveFile("Save Config As", NULL, ConfigFile);
+	if (filename.length() == 0)
 		return 0;
 	
 	// Filename selected for the config file.
-	Save_Config(filename);
-	strcpy (Str_Tmp, "config saved in ");
-	strcat (Str_Tmp, filename);
-	Put_Info (Str_Tmp, 2000);
+	Save_Config(filename.c_str());
+	strcpy(Str_Tmp, "config saved in ");
+	strcat(Str_Tmp, filename.c_str());
+	Put_Info(Str_Tmp, 2000);
 	return 1;
 }
 
@@ -537,19 +534,16 @@ int Load_Config(const char *File_Name, void *Game_Active)
  */
 int Load_As_Config(void *Game_Active)
 {
-	char filename[GENS_PATH_MAX];
+	string filename;
 	
-	if (GensUI::openFile("Load Config", NULL, ConfigFile, filename) != 0)
-		return 0;
-	
-	// Make sure a filename was actually selected.
-	if (strlen(filename) == 0)
+	filename = GensUI::openFile("Load Config", NULL, ConfigFile);
+	if (filename.length() == 0)
 		return 0;
 	
 	// Filename selected for the config file.
-	Load_Config (filename, Game_Active);
-	strcpy (Str_Tmp, "config loaded from ");
-	strcat (Str_Tmp, filename);
-	Put_Info (Str_Tmp, 2000);
+	Load_Config(filename.c_str(), Game_Active);
+	strcpy(Str_Tmp, "config loaded from ");
+	strcat(Str_Tmp, filename.c_str());
+	Put_Info(Str_Tmp, 2000);
 	return 1;
 }

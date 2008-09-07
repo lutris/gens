@@ -25,6 +25,9 @@
 #include "emulator/gens.h"
 #include "gens_ui.hpp"
 
+#include <sstream>
+using std::stringstream;
+
 
 /**
  * setWindowTitle_Idle(): Set the window title to "Idle".
@@ -40,26 +43,35 @@ void GensUI::setWindowTitle_Idle(void)
  * @param system System name.
  * @param game Game name.
  */
-void GensUI::setWindowTitle_Game(const char* systemName, const char* gameName)
+void GensUI::setWindowTitle_Game(const string& systemName, const string& gameName)
 {
-	char title[128];
-	char condGameName[65];
-	int gni, cgni = 0;
+	stringstream ss;
+	string title;
+	string condGameName;
+	char curChar = 0x00;
 	
 	// Condense the game name by removing excess spaces.
-	for (gni = 0; gni < 64; gni++)
+	for (unsigned int cpos = 0; cpos < gameName.length(); cpos++)
 	{
-		if (cgni != 0 && condGameName[cgni - 1] == ' ' && gameName[gni] == ' ')
+		if (curChar == ' ' && gameName.at(cpos) == ' ')
 			continue;
-		else if (cgni == 0 && gameName[gni] == ' ')
-			continue;
-		condGameName[cgni] = gameName[gni];
-		cgni++;
+		curChar = gameName.at(cpos);
+		ss << curChar;
 	}
-	condGameName[cgni] = 0x00;
+	
+	// Trim any excess spaces.
+	condGameName = ss.str();
+	if (condGameName.length() > 0)
+	{
+		if (condGameName.at(condGameName.length() - 1) == ' ')
+			condGameName = condGameName.substr(0, condGameName.length() - 1);
+		if (condGameName.at(0) == ' ')
+			condGameName = condGameName.substr(1, condGameName.length() - 1);
+
+	}
 	
 	// Create the title.
-	sprintf(title, GENS_APPNAME " " GENS_VERSION " - %s: %s", systemName, condGameName);
+	title = string(GENS_APPNAME) + " " + GENS_VERSION + " - " + systemName + ": " + condGameName;
 	
 	// Set the title.
 	setWindowTitle(title);
@@ -71,13 +83,13 @@ void GensUI::setWindowTitle_Game(const char* systemName, const char* gameName)
  * @param system System name.
  * @param reinit If true, sets the title to "Re-initializing" instead of "Initializing".
  */
-void GensUI::setWindowTitle_Init(const char* system, bool reinit)
+void GensUI::setWindowTitle_Init(const string& system, const bool reinit)
 {
-	char title[128];
+	string title;
 	
 	// Create the title.
-	sprintf(title, GENS_APPNAME " " GENS_VERSION " - %s: %s, please wait...", system,
-		(reinit ? "Reinitializing" : "Initializing"));
+	title = string(GENS_APPNAME) + " " + GENS_VERSION + " - " + system +
+		(reinit ? "Reinitializing" : "Initializing") + ", please wait...";
 	
 	// Set the title.
 	setWindowTitle(title);
