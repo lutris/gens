@@ -306,6 +306,13 @@ int VDraw_SDL_GL::flipInternal(void)
 		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
 	}
 	
+	// Draw the message and/or FPS.
+	if (m_MsgVisible)
+	{
+		// Message is visible.
+		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_MsgStyle, m_MsgText.c_str());
+	}
+	
 	// Determine the pixel type and pixel format based on the bpp setting.
 	unsigned int pixelType, pixelFormat;
 	if (bpp == 15)

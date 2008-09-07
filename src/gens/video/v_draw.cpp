@@ -179,10 +179,6 @@ int VDraw::flip(void)
 			m_MsgVisible = false;
 			m_MsgText = "";
 		}
-		else
-		{
-			Print_Text(m_MsgText.c_str(), m_MsgText.length(), 10, 210, m_MsgStyle);
-		}
 	}
 	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{
@@ -243,8 +239,6 @@ int VDraw::flip(void)
 			//sprintf(Info_String, "", FPS);
 			m_MsgText = "";
 		}
-		
-		Print_Text(m_MsgText.c_str(), m_MsgText.length(), 10, 210, m_FPSStyle);
 	}
 	
 	// Blur the screen if requested.
@@ -272,8 +266,116 @@ int VDraw::flip(void)
 	}
 	
 	// Flip the screen buffer.
-	// TODO: VSync.
 	return flipInternal();
+}
+
+
+#define DRAW_CHAR_32_1X(Screen32, x, y, w, dotColor, ch, cPos)						\
+{													\
+	unsigned short cx, cy;										\
+	unsigned int* screen32pos;									\
+	unsigned char cRow;										\
+													\
+	screen32pos = &Screen32[y*w + x + (cPos * 8)];							\
+	for (cy = 0; cy < 8; cy++)									\
+	{												\
+		/* Each character is 8 bytes, with each row representing 8 dots. */			\
+		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
+		cRow = C64_charset[ch][cy];								\
+		for (cx = 0; cx < 8; cx++)								\
+		{											\
+			if (cRow & 0x80)								\
+			{										\
+				/* Dot is opaque. Draw it. */						\
+				*screen32pos = dotColor;						\
+			}										\
+			cRow <<= 1;									\
+			screen32pos++;									\
+		}											\
+		screen32pos += (w - 8);									\
+	}												\
+}
+
+
+#define DRAW_CHAR_32_2X(Screen32, x, y, w, dotColor, ch, cPos)						\
+{													\
+	unsigned short cx, cy;										\
+	unsigned int* screen32pos;									\
+	unsigned char cRow;										\
+													\
+	screen32pos = &Screen32[y*w + x + (cPos * 16)];							\
+	for (cy = 0; cy < 8; cy++)									\
+	{												\
+		/* Each character is 8 bytes, with each row representing 8 dots. */			\
+		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
+		cRow = C64_charset[ch][cy];								\
+		for (cx = 0; cx < 8; cx++)								\
+		{											\
+			if (cRow & 0x80)								\
+			{										\
+				/* Dot is opaque. Draw it. */						\
+				*screen32pos = dotColor;						\
+				*(screen32pos + 1) = dotColor;						\
+				*(screen32pos + w) = dotColor;						\
+				*(screen32pos + w + 1) = dotColor;					\
+			}										\
+			cRow <<= 1;									\
+			screen32pos += 2;								\
+		}											\
+		screen32pos += (w*2 - 16);								\
+	}												\
+}
+
+
+void VDraw::drawText(void *screen, const int w, const int h,
+		     const unsigned char style, const char *msg)
+{
+	unsigned int *screen32;
+	int x, y, msgLength, cPos;
+	unsigned int dotColor;
+	
+	// The message must be specified.
+	if (!msg)
+		return;
+	
+	// Bottom-left of the screen.
+	x = m_HBorder + 8;
+	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+	
+	// Character size is 8x8 normal, 16x16 double.
+	if (style & STYLE_DOUBLESIZE)
+		y -= 24;
+	else
+		y -= 16;
+	
+	// Cast the screen to 32-bit.
+	// TODO: 15/16-bit support.
+	screen32 = (unsigned int*)screen;
+	
+	// Get the message length.
+	msgLength = strlen(msg);
+	
+	// Calculate the dot color.
+	if (style & STYLE_COLOR_RED)
+		dotColor = 0xFF0000;
+	else if (style & STYLE_COLOR_GREEN)
+		dotColor = 0x00FF00;
+	else if (style & STYLE_COLOR_BLUE)
+		dotColor = 0x0000FF;
+	else // if (style & STYLE_COLOR_WHITE)
+		dotColor = 0xFFFFFF;
+	
+	for (cPos = 0; cPos < msgLength; cPos++)
+	{
+		if (style & STYLE_DOUBLESIZE)
+		{
+			DRAW_CHAR_32_2X(screen32, x, y, w, dotColor, msg[cPos], cPos);
+		}
+		else
+		{
+			DRAW_CHAR_32_1X(screen32, x, y, w, dotColor, msg[cPos], cPos);
+		}
+	}
 }
 
 

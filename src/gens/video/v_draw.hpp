@@ -7,6 +7,9 @@
 
 #include "gens_core/gfx/renderers.h"
 
+// Font for onscreen messages
+#include "C64_charset.h"
+
 #ifdef __cplusplus
 
 // C++ includes
@@ -112,6 +115,10 @@ class VDraw
 		
 		// Update the renderer.
 		virtual void updateRenderer(void) = 0;
+		
+		// Draw a line of text on the screen.
+		void drawText(void *screen, const int w, const int h,
+			      const unsigned char style, const char *msg);
 		
 		// FPS counter
 		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?
