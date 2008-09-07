@@ -312,6 +312,11 @@ int VDraw_SDL_GL::flipInternal(void)
 		// Message is visible.
 		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_MsgStyle, m_MsgText.c_str());
 	}
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	{
+		// FPS is enabled.
+		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_FPSStyle, m_MsgText.c_str());
+	}
 	
 	// Determine the pixel type and pixel format based on the bpp setting.
 	unsigned int pixelType, pixelFormat;
