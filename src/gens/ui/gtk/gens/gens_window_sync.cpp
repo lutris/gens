@@ -179,6 +179,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
+	GtkWidget *MItem_ScreenShot;
 #ifdef GENS_OPENGL
 	GtkWidget *MItem_OpenGL;
 #endif
@@ -216,6 +217,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
 	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
+	
+	// Screen Shot
+	MItem_ScreenShot = lookup_widget(gens_window, "GraphicsMenu_ScreenShot");
+	gtk_widget_set_sensitive(MItem_ScreenShot,
+		(Genesis_Started || SegaCD_Started || _32X_Started));
 	
 #ifdef GENS_OPENGL
 	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
@@ -449,7 +455,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	GtkWidget *MItem_PCM, *MItem_PWM, *MItem_CDDA;
 	
 	GtkWidget *MItem_GYMDump, *MItem_WAVDump;
-	string label; int allowGYMDump;
+	string label; int allowAudioDump;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -506,15 +512,13 @@ void Sync_Gens_Window_SoundMenu(void)
 	gtk_widget_set_sensitive(MItem_PCM, Sound_Enable);
 	gtk_widget_set_sensitive(MItem_PWM, Sound_Enable);
 	gtk_widget_set_sensitive(MItem_CDDA, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_GYMDump, Sound_Enable);
-	// TODO: Uncomment this line after WAV dumping has been reimplemented.
-	//gtk_widget_set_sensitive(MItem_WAVDump, Sound_Enable);
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
-	allowGYMDump = (Genesis_Started || SegaCD_Started || _32X_Started) && Sound_Enable;
-	gtk_widget_set_sensitive(MItem_GYMDump, allowGYMDump);
-	gtk_widget_set_sensitive(MItem_WAVDump, allowGYMDump);
+	allowAudioDump = (Genesis_Started || SegaCD_Started || _32X_Started) && Sound_Enable;
+	gtk_widget_set_sensitive(MItem_GYMDump, allowAudioDump);
+	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.
+	gtk_widget_set_sensitive(MItem_WAVDump, FALSE);
 	
 	// Enable callbacks.
 	do_callbacks = 1;

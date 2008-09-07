@@ -922,8 +922,6 @@ static void create_gens_window_SoundMenu(GtkWidget *container)
 	// WAV Dump
 	NewMenuItem(SoundMenu_WAVDump, "Start WAV Dump", "SoundMenu_WAVDump", SoundMenu);
 	AddMenuCallback(SoundMenu_WAVDump, on_SoundMenu_WAVDump_activate);
-	// TODO: Remove this line after WAV dumping has been reimplemented.
-	gtk_widget_set_sensitive(SoundMenu_WAVDump, FALSE);
 	
 	// GYM Dump
 	NewMenuItem(SoundMenu_GYMDump, "Start GYM Dump", "SoundMenu_GYMDump", SoundMenu);
