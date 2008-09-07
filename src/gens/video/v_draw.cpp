@@ -272,7 +272,8 @@ int VDraw::flip(void)
 
 template<typename pixel>
 static inline void drawChar_1x(pixel *screen, const int x, const int y, const int w,
-			       pixel dotColor, const char ch, const int cPos)
+			       pixel dotColor, bool transparent, const pixel transparentMask,
+			       const char ch, const int cPos)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
@@ -288,8 +289,13 @@ static inline void drawChar_1x(pixel *screen, const int x, const int y, const in
 		{
 			if (cRow & 0x80)
 			{
-				/* Dot is opaque. Draw it. */
-				*screenPos = dotColor;
+				// Dot is opaque. Draw it.
+				// TODO: Original asm version had transparency in a separate function for performance.
+				// See if that would actually help.
+				if (!transparent)
+					*screenPos = dotColor;
+				else
+					*screenPos = (dotColor >> 1) + (*screenPos >> 1);
 			}
 			cRow <<= 1;
 			screenPos++;
@@ -301,7 +307,8 @@ static inline void drawChar_1x(pixel *screen, const int x, const int y, const in
 
 template<typename pixel>
 static inline void drawChar_2x(pixel *screen, const int x, const int y, const int w,
-			       pixel dotColor, const char ch, const int cPos)
+			       pixel dotColor, bool transparent, const pixel transparentMask,
+			       const char ch, const int cPos)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
@@ -317,11 +324,23 @@ static inline void drawChar_2x(pixel *screen, const int x, const int y, const in
 		{
 			if (cRow & 0x80)
 			{
-				/* Dot is opaque. Draw it. */
-				*screenPos = dotColor;
-				*(screenPos + 1) = dotColor;
-				*(screenPos + w) = dotColor;
-				*(screenPos + w + 1) = dotColor;
+				// Dot is opaque. Draw it.
+				// TODO: Original asm version had transparency in a separate function for performance.
+				// See if that would actually help.
+				if (!transparent)
+				{
+					*screenPos = dotColor;
+					*(screenPos + 1) = dotColor;
+					*(screenPos + w) = dotColor;
+					*(screenPos + w + 1) = dotColor;
+				}
+				else
+				{
+					*screenPos = ((dotColor & transparentMask) >> 1) + ((*(screenPos) & transparentMask) >> 1);
+					*(screenPos + 1) = ((dotColor & transparentMask) >> 1) + ((*(screenPos + 1) & transparentMask) >> 1);
+					*(screenPos + w) = ((dotColor & transparentMask) >> 1) + ((*(screenPos + w) & transparentMask) >> 1);
+					*(screenPos + w + 1) = ((dotColor & transparentMask) >> 1) + ((*(screenPos + w + 1) & transparentMask) >> 1);
+				}
 			}
 			cRow <<= 1;
 			screenPos += 2;
@@ -334,7 +353,7 @@ static inline void drawChar_2x(pixel *screen, const int x, const int y, const in
 template<typename pixel>
 void VDraw::drawText_int(pixel *screen, const int w, const int h,
 			 const pixel dotColor, const bool doubleSize,
-			 const char *msg)
+			 bool transparent, const pixel transparentMask, const char *msg)
 {
 	int x, y, msgLength, cPos;
 	
@@ -362,14 +381,14 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h,
 		if (doubleSize)
 		{
 			// TODO: Make text shadow an option.
-			drawChar_2x(screen, x+1, y+1, w, (pixel)0, msg[cPos], cPos);
-			drawChar_2x(screen, x-1, y-1, w, dotColor, msg[cPos], cPos);
+			drawChar_2x(screen, x+1, y+1, w, (pixel)0, transparent, transparentMask, msg[cPos], cPos);
+			drawChar_2x(screen, x-1, y-1, w, dotColor, transparent, transparentMask, msg[cPos], cPos);
 		}
 		else
 		{
 			// TODO: Make text shadow an option.
-			drawChar_1x(screen, x+1, y+1, w, (pixel)0, msg[cPos], cPos);
-			drawChar_1x(screen, x, y, w, dotColor, msg[cPos], cPos);
+			drawChar_1x(screen, x+1, y+1, w, (pixel)0, transparent, transparentMask, msg[cPos], cPos);
+			drawChar_1x(screen, x, y, w, dotColor, transparent, transparentMask, msg[cPos], cPos);
 		}
 		
 	}
@@ -383,43 +402,53 @@ void VDraw::drawText(void *screen, const int w, const int h,
 	{
 		// Calculate the dot color.
 		unsigned short dotColor;
+		unsigned short mask;
 		if (bpp == 15)
 		{
-			if ((style & 0x0F) == STYLE_COLOR_RED)
+			if ((style & 0x07) == STYLE_COLOR_RED)
 				dotColor = 0x7C00;
-			else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+			else if ((style & 0x07) == STYLE_COLOR_GREEN)
 				dotColor = 0x03E0;
-			else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+			else if ((style & 0x07) == STYLE_COLOR_BLUE)
 				dotColor = 0x001F;
 			else // if (style & STYLE_COLOR_WHITE)
 				dotColor = 0x7FFF;
+			mask = 0x7BDE;
 		}
 		else // if (bpp == 16)
 		{
-			if ((style & 0x0F) == STYLE_COLOR_RED)
+			if ((style & 0x07) == STYLE_COLOR_RED)
 				dotColor = 0xF800;
-			else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+			else if ((style & 0x07) == STYLE_COLOR_GREEN)
 				dotColor = 0x07E0;
-			else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+			else if ((style & 0x07) == STYLE_COLOR_BLUE)
 				dotColor = 0x001F;
 			else // if (style & STYLE_COLOR_WHITE)
 				dotColor = 0xFFFF;
+			mask = 0xF7DE;
 		}
-		drawText_int((unsigned short*)screen, w, h, dotColor, (style & STYLE_DOUBLESIZE), msg);
+		drawText_int((unsigned short*)screen, w, h, dotColor,
+			     (style & STYLE_DOUBLESIZE),
+			     (style & STYLE_TRANSPARENT), mask, msg);
 	}
 	else // if (bpp == 32)
 	{
 		// Calculate the dot color.
 		unsigned int dotColor;
-		if ((style & 0x0F) == STYLE_COLOR_RED)
+		unsigned int mask;
+		if ((style & 0x07) == STYLE_COLOR_RED)
 			dotColor = 0xFF0000;
-		else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+		else if ((style & 0x07) == STYLE_COLOR_GREEN)
 			dotColor = 0x00FF00;
-		else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+		else if ((style & 0x07) == STYLE_COLOR_BLUE)
 			dotColor = 0x0000FF;
 		else // if (style & STYLE_COLOR_WHITE)
 			dotColor = 0xFFFFFF;
-		drawText_int((unsigned int*)screen, w, h, dotColor, (style & STYLE_DOUBLESIZE), msg);
+		mask = 0xFEFEFE;
+		
+		drawText_int((unsigned int*)screen, w, h, dotColor,
+			     (style & STYLE_DOUBLESIZE),
+			     (style & STYLE_TRANSPARENT), mask, msg);
 	}
 }
 

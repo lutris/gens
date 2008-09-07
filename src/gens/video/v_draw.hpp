@@ -123,7 +123,7 @@ class VDraw
 		template<typename pixel>
 		void drawText_int(pixel *screen, const int w, const int h,
 				  const pixel dotColor, const bool doubleSize,
-				  const char *msg);
+				  const bool transparent, const pixel transparentMask, const char *msg);
 
 		// FPS counter
 		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?
