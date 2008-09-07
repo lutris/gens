@@ -270,254 +270,156 @@ int VDraw::flip(void)
 }
 
 
+template<typename pixel>
+static inline void drawChar_1x(pixel *screen, const int x, const int y, const int w,
+			       pixel dotColor, const char ch, const int cPos)
+{
+	unsigned short cx, cy;
+	pixel* screenPos;
+	unsigned char cRow;
+	
+	screenPos = &screen[y*w + x + (cPos * 8)];
+	for (cy = 0; cy < 8; cy++)
+	{
+		// Each character is 8 bytes, with each row representing 8 dots.
+		// A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.
+		cRow = C64_charset[ch][cy];
+		for (cx = 0; cx < 8; cx++)
+		{
+			if (cRow & 0x80)
+			{
+				/* Dot is opaque. Draw it. */
+				*screenPos = dotColor;
+			}
+			cRow <<= 1;
+			screenPos++;
+		}
+		screenPos += (w - 8);
+	}
+}
+
+
+template<typename pixel>
+static inline void drawChar_2x(pixel *screen, const int x, const int y, const int w,
+			       pixel dotColor, const char ch, const int cPos)
+{
+	unsigned short cx, cy;
+	pixel* screenPos;
+	unsigned char cRow;
+	
+	screenPos = &screen[y*w + x + (cPos * 16)];
+	for (cy = 0; cy < 8; cy++)
+	{
+		// Each character is 8 bytes, with each row representing 8 dots.
+		// A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.
+		cRow = C64_charset[ch][cy];
+		for (cx = 0; cx < 8; cx++)
+		{
+			if (cRow & 0x80)
+			{
+				/* Dot is opaque. Draw it. */
+				*screenPos = dotColor;
+				*(screenPos + 1) = dotColor;
+				*(screenPos + w) = dotColor;
+				*(screenPos + w + 1) = dotColor;
+			}
+			cRow <<= 1;
+			screenPos += 2;
+		}
+		screenPos += (w*2 - 16);
+	}
+}
+
+
+template<typename pixel>
+void VDraw::drawText_int(pixel *screen, const int w, const int h,
+			 const pixel dotColor, const bool doubleSize,
+			 const char *msg)
+{
+	int x, y, msgLength, cPos;
+	
+	// The message must be specified.
+	if (!msg)
+		return;
+	
+	// Bottom-left of the screen.
+	x = m_HBorder + 8;
+	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+	
+	// Character size is 8x8 normal, 16x16 double.
+	if (doubleSize)
+		y -= 24;
+	else
+		y -= 16;
+	
+	// Get the message length.
+	msgLength = strlen(msg);
+	
+	// TODO: Add linebreaks if the message is too long.
+	
+	for (cPos = 0; cPos < msgLength; cPos++)
+	{
+		if (doubleSize)
+		{
+			// TODO: Make text shadow an option.
+			drawChar_2x(screen, x+1, y+1, w, (pixel)0, msg[cPos], cPos);
+			drawChar_2x(screen, x-1, y-1, w, dotColor, msg[cPos], cPos);
+		}
+		else
+		{
+			// TODO: Make text shadow an option.
+			drawChar_1x(screen, x+1, y+1, w, (pixel)0, msg[cPos], cPos);
+			drawChar_1x(screen, x, y, w, dotColor, msg[cPos], cPos);
+		}
+		
+	}
+}
+
+
 void VDraw::drawText(void *screen, const int w, const int h,
 		     const unsigned char style, const char *msg)
 {
 	if (bpp == 15 || bpp == 16)
-		drawText16(screen, w, h, style, msg);
+	{
+		// Calculate the dot color.
+		unsigned short dotColor;
+		if (bpp == 15)
+		{
+			if ((style & 0x0F) == STYLE_COLOR_RED)
+				dotColor = 0x7C00;
+			else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+				dotColor = 0x03E0;
+			else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+				dotColor = 0x001F;
+			else // if (style & STYLE_COLOR_WHITE)
+				dotColor = 0x7FFF;
+		}
+		else // if (bpp == 16)
+		{
+			if ((style & 0x0F) == STYLE_COLOR_RED)
+				dotColor = 0xF800;
+			else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+				dotColor = 0x07E0;
+			else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+				dotColor = 0x001F;
+			else // if (style & STYLE_COLOR_WHITE)
+				dotColor = 0xFFFF;
+		}
+		drawText_int((unsigned short*)screen, w, h, dotColor, (style & STYLE_DOUBLESIZE), msg);
+	}
 	else // if (bpp == 32)
-		drawText32(screen, w, h, style, msg);
-}
-
-
-#define DRAW_CHAR_16_1X(Screen16, x, y, w, dotColor, ch, cPos)						\
-{													\
-	unsigned short cx, cy;										\
-	unsigned short* screen16pos;									\
-	unsigned char cRow;										\
-													\
-	screen16pos = &Screen16[(y)*(w) + (x) + ((cPos) * 8)];						\
-	for (cy = 0; cy < 8; cy++)									\
-	{												\
-		/* Each character is 8 bytes, with each row representing 8 dots. */			\
-		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
-		cRow = C64_charset[(ch)][cy];								\
-		for (cx = 0; cx < 8; cx++)								\
-		{											\
-			if (cRow & 0x80)								\
-			{										\
-				/* Dot is opaque. Draw it. */						\
-				*screen16pos = (dotColor);						\
-			}										\
-			cRow <<= 1;									\
-			screen16pos++;									\
-		}											\
-		screen16pos += ((w) - 8);								\
-	}												\
-}
-
-
-#define DRAW_CHAR_16_2X(Screen16, x, y, w, dotColor, ch, cPos)						\
-{													\
-	unsigned short cx, cy;										\
-	unsigned short* screen16pos;									\
-	unsigned char cRow;										\
-													\
-	screen16pos = &Screen16[(y)*(w) + (x) + ((cPos) * 16)];						\
-	for (cy = 0; cy < 8; cy++)									\
-	{												\
-		/* Each character is 8 bytes, with each row representing 8 dots. */			\
-		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
-		cRow = C64_charset[(ch)][cy];								\
-		for (cx = 0; cx < 8; cx++)								\
-		{											\
-			if (cRow & 0x80)								\
-			{										\
-				/* Dot is opaque. Draw it. */						\
-				*screen16pos = (dotColor);						\
-				*(screen16pos + 1) = (dotColor);					\
-				*(screen16pos + (w)) = (dotColor);					\
-				*(screen16pos + (w) + 1) = (dotColor);					\
-			}										\
-			cRow <<= 1;									\
-			screen16pos += 2;								\
-		}											\
-		screen16pos += ((w)*2 - 16);								\
-	}												\
-}
-
-
-void VDraw::drawText16(void *screen, const int w, const int h,
-		       const unsigned char style, const char *msg)
-{
-	unsigned short *screen16;
-	int x, y, msgLength, cPos;
-	unsigned short dotColor;
-	
-	// The message must be specified.
-	if (!msg)
-		return;
-	
-	// Bottom-left of the screen.
-	x = m_HBorder + 8;
-	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
-	
-	// Character size is 8x8 normal, 16x16 double.
-	if (style & STYLE_DOUBLESIZE)
-		y -= 24;
-	else
-		y -= 16;
-	
-	// Cast the screen to 16-bit.
-	screen16 = (unsigned short*)screen;
-	
-	// Get the message length.
-	msgLength = strlen(msg);
-	
-	// TODO: Add linebreaks if the message is too long.
-	
-	// Calculate the dot color.
-	if (bpp == 15)
 	{
+		// Calculate the dot color.
+		unsigned int dotColor;
 		if ((style & 0x0F) == STYLE_COLOR_RED)
-			dotColor = 0x7C00;
+			dotColor = 0xFF0000;
 		else if ((style & 0x0F) == STYLE_COLOR_GREEN)
-			dotColor = 0x03E0;
+			dotColor = 0x00FF00;
 		else if ((style & 0x0F) == STYLE_COLOR_BLUE)
-			dotColor = 0x001F;
+			dotColor = 0x0000FF;
 		else // if (style & STYLE_COLOR_WHITE)
-			dotColor = 0x7FFF;
-	}
-	else // if (bpp == 16)
-	{
-		if ((style & 0x0F) == STYLE_COLOR_RED)
-			dotColor = 0xF800;
-		else if ((style & 0x0F) == STYLE_COLOR_GREEN)
-			dotColor = 0x07E0;
-		else if ((style & 0x0F) == STYLE_COLOR_BLUE)
-			dotColor = 0x001F;
-		else // if (style & STYLE_COLOR_WHITE)
-			dotColor = 0xFFFF;
-	}
-	
-	for (cPos = 0; cPos < msgLength; cPos++)
-	{
-		if (style & STYLE_DOUBLESIZE)
-		{
-			// TODO: Make text shadow an option.
-			DRAW_CHAR_16_2X(screen16, x+1, y+1, w, 0x000000, msg[cPos], cPos);
-			DRAW_CHAR_16_2X(screen16, x-1, y-1, w, dotColor, msg[cPos], cPos);
-		}
-		else
-		{
-			// TODO: Make text shadow an option.
-			DRAW_CHAR_16_1X(screen16, x+1, y+1, w, 0x000000, msg[cPos], cPos);
-			DRAW_CHAR_16_1X(screen16, x, y, w, dotColor, msg[cPos], cPos);
-		}
-	}
-}
-
-
-#define DRAW_CHAR_32_1X(Screen32, x, y, w, dotColor, ch, cPos)						\
-{													\
-	unsigned short cx, cy;										\
-	unsigned int* screen32pos;									\
-	unsigned char cRow;										\
-													\
-	screen32pos = &Screen32[(y)*(w) + (x) + ((cPos) * 8)];						\
-	for (cy = 0; cy < 8; cy++)									\
-	{												\
-		/* Each character is 8 bytes, with each row representing 8 dots. */			\
-		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
-		cRow = C64_charset[(ch)][cy];								\
-		for (cx = 0; cx < 8; cx++)								\
-		{											\
-			if (cRow & 0x80)								\
-			{										\
-				/* Dot is opaque. Draw it. */						\
-				*screen32pos = (dotColor);						\
-			}										\
-			cRow <<= 1;									\
-			screen32pos++;									\
-		}											\
-		screen32pos += ((w) - 8);								\
-	}												\
-}
-
-
-#define DRAW_CHAR_32_2X(Screen32, x, y, w, dotColor, ch, cPos)						\
-{													\
-	unsigned short cx, cy;										\
-	unsigned int* screen32pos;									\
-	unsigned char cRow;										\
-													\
-	screen32pos = &Screen32[(y)*(w) + (x) + ((cPos) * 16)];						\
-	for (cy = 0; cy < 8; cy++)									\
-	{												\
-		/* Each character is 8 bytes, with each row representing 8 dots. */			\
-		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
-		cRow = C64_charset[(ch)][cy];								\
-		for (cx = 0; cx < 8; cx++)								\
-		{											\
-			if (cRow & 0x80)								\
-			{										\
-				/* Dot is opaque. Draw it. */						\
-				*screen32pos = (dotColor);						\
-				*(screen32pos + 1) = (dotColor);					\
-				*(screen32pos + (w)) = (dotColor);					\
-				*(screen32pos + (w) + 1) = (dotColor);					\
-			}										\
-			cRow <<= 1;									\
-			screen32pos += 2;								\
-		}											\
-		screen32pos += ((w)*2 - 16);								\
-	}												\
-}
-
-
-void VDraw::drawText32(void *screen, const int w, const int h,
-		       const unsigned char style, const char *msg)
-{
-	unsigned int *screen32;
-	int x, y, msgLength, cPos;
-	unsigned int dotColor;
-	
-	// The message must be specified.
-	if (!msg)
-		return;
-	
-	// Bottom-left of the screen.
-	x = m_HBorder + 8;
-	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
-	
-	// Character size is 8x8 normal, 16x16 double.
-	if (style & STYLE_DOUBLESIZE)
-		y -= 24;
-	else
-		y -= 16;
-	
-	// Cast the screen to 32-bit.
-	screen32 = (unsigned int*)screen;
-	
-	// Get the message length.
-	msgLength = strlen(msg);
-	
-	// TODO: Add linebreaks if the message is too long.
-	
-	// Calculate the dot color.
-	if ((style & 0x0F) == STYLE_COLOR_RED)
-		dotColor = 0xFF0000;
-	else if ((style & 0x0F) == STYLE_COLOR_GREEN)
-		dotColor = 0x00FF00;
-	else if ((style & 0x0F) == STYLE_COLOR_BLUE)
-		dotColor = 0x0000FF;
-	else // if (style & STYLE_COLOR_WHITE)
-		dotColor = 0xFFFFFF;
-	
-	for (cPos = 0; cPos < msgLength; cPos++)
-	{
-		if (style & STYLE_DOUBLESIZE)
-		{
-			// TODO: Make text shadow an option.
-			DRAW_CHAR_32_2X(screen32, x+1, y+1, w, 0x000000, msg[cPos], cPos);
-			DRAW_CHAR_32_2X(screen32, x-1, y-1, w, dotColor, msg[cPos], cPos);
-		}
-		else
-		{
-			// TODO: Make text shadow an option.
-			DRAW_CHAR_32_1X(screen32, x+1, y+1, w, 0x000000, msg[cPos], cPos);
-			DRAW_CHAR_32_1X(screen32, x, y, w, dotColor, msg[cPos], cPos);
-		}
+			dotColor = 0xFFFFFF;
+		drawText_int((unsigned int*)screen, w, h, dotColor, (style & STYLE_DOUBLESIZE), msg);
 	}
 }
 

@@ -119,11 +119,12 @@ class VDraw
 		// Draw a line of text on the screen.
 		void drawText(void *screen, const int w, const int h,
 			      const unsigned char style, const char *msg);
-		void drawText16(void *screen, const int w, const int h,
-			      const unsigned char style, const char *msg);
-		void drawText32(void *screen, const int w, const int h,
-			      const unsigned char style, const char *msg);
 		
+		template<typename pixel>
+		void drawText_int(pixel *screen, const int w, const int h,
+				  const pixel dotColor, const bool doubleSize,
+				  const char *msg);
+
 		// FPS counter
 		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?
 		float m_FPS, m_FPS_Frames[8];
