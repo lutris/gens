@@ -270,6 +270,144 @@ int VDraw::flip(void)
 }
 
 
+void VDraw::drawText(void *screen, const int w, const int h,
+		     const unsigned char style, const char *msg)
+{
+	if (bpp == 15 || bpp == 16)
+		drawText16(screen, w, h, style, msg);
+	else // if (bpp == 32)
+		drawText32(screen, w, h, style, msg);
+}
+
+
+#define DRAW_CHAR_16_1X(Screen16, x, y, w, dotColor, ch, cPos)						\
+{													\
+	unsigned short cx, cy;										\
+	unsigned short* screen16pos;									\
+	unsigned char cRow;										\
+													\
+	screen16pos = &Screen16[(y)*(w) + (x) + ((cPos) * 8)];						\
+	for (cy = 0; cy < 8; cy++)									\
+	{												\
+		/* Each character is 8 bytes, with each row representing 8 dots. */			\
+		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
+		cRow = C64_charset[(ch)][cy];								\
+		for (cx = 0; cx < 8; cx++)								\
+		{											\
+			if (cRow & 0x80)								\
+			{										\
+				/* Dot is opaque. Draw it. */						\
+				*screen16pos = (dotColor);						\
+			}										\
+			cRow <<= 1;									\
+			screen16pos++;									\
+		}											\
+		screen16pos += ((w) - 8);								\
+	}												\
+}
+
+
+#define DRAW_CHAR_16_2X(Screen16, x, y, w, dotColor, ch, cPos)						\
+{													\
+	unsigned short cx, cy;										\
+	unsigned short* screen16pos;									\
+	unsigned char cRow;										\
+													\
+	screen16pos = &Screen16[(y)*(w) + (x) + ((cPos) * 16)];						\
+	for (cy = 0; cy < 8; cy++)									\
+	{												\
+		/* Each character is 8 bytes, with each row representing 8 dots. */			\
+		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
+		cRow = C64_charset[(ch)][cy];								\
+		for (cx = 0; cx < 8; cx++)								\
+		{											\
+			if (cRow & 0x80)								\
+			{										\
+				/* Dot is opaque. Draw it. */						\
+				*screen16pos = (dotColor);						\
+				*(screen16pos + 1) = (dotColor);					\
+				*(screen16pos + (w)) = (dotColor);					\
+				*(screen16pos + (w) + 1) = (dotColor);					\
+			}										\
+			cRow <<= 1;									\
+			screen16pos += 2;								\
+		}											\
+		screen16pos += ((w)*2 - 16);								\
+	}												\
+}
+
+
+void VDraw::drawText16(void *screen, const int w, const int h,
+		       const unsigned char style, const char *msg)
+{
+	unsigned short *screen16;
+	int x, y, msgLength, cPos;
+	unsigned short dotColor;
+	
+	// The message must be specified.
+	if (!msg)
+		return;
+	
+	// Bottom-left of the screen.
+	x = m_HBorder + 8;
+	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+	
+	// Character size is 8x8 normal, 16x16 double.
+	if (style & STYLE_DOUBLESIZE)
+		y -= 24;
+	else
+		y -= 16;
+	
+	// Cast the screen to 16-bit.
+	screen16 = (unsigned short*)screen;
+	
+	// Get the message length.
+	msgLength = strlen(msg);
+	
+	// TODO: Add linebreaks if the message is too long.
+	
+	// Calculate the dot color.
+	if (bpp == 15)
+	{
+		if ((style & 0x0F) == STYLE_COLOR_RED)
+			dotColor = 0x7C00;
+		else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+			dotColor = 0x03E0;
+		else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+			dotColor = 0x001F;
+		else // if (style & STYLE_COLOR_WHITE)
+			dotColor = 0x7FFF;
+	}
+	else // if (bpp == 16)
+	{
+		if ((style & 0x0F) == STYLE_COLOR_RED)
+			dotColor = 0xF800;
+		else if ((style & 0x0F) == STYLE_COLOR_GREEN)
+			dotColor = 0x07E0;
+		else if ((style & 0x0F) == STYLE_COLOR_BLUE)
+			dotColor = 0x001F;
+		else // if (style & STYLE_COLOR_WHITE)
+			dotColor = 0xFFFF;
+	}
+	
+	for (cPos = 0; cPos < msgLength; cPos++)
+	{
+		if (style & STYLE_DOUBLESIZE)
+		{
+			// TODO: Make text shadow an option.
+			DRAW_CHAR_16_2X(screen16, x+1, y+1, w, 0x000000, msg[cPos], cPos);
+			DRAW_CHAR_16_2X(screen16, x-1, y-1, w, dotColor, msg[cPos], cPos);
+		}
+		else
+		{
+			// TODO: Make text shadow an option.
+			DRAW_CHAR_16_1X(screen16, x+1, y+1, w, 0x000000, msg[cPos], cPos);
+			DRAW_CHAR_16_1X(screen16, x, y, w, dotColor, msg[cPos], cPos);
+		}
+	}
+}
+
+
 #define DRAW_CHAR_32_1X(Screen32, x, y, w, dotColor, ch, cPos)						\
 {													\
 	unsigned short cx, cy;										\
@@ -327,8 +465,8 @@ int VDraw::flip(void)
 }
 
 
-void VDraw::drawText(void *screen, const int w, const int h,
-		     const unsigned char style, const char *msg)
+void VDraw::drawText32(void *screen, const int w, const int h,
+		       const unsigned char style, const char *msg)
 {
 	unsigned int *screen32;
 	int x, y, msgLength, cPos;
@@ -349,7 +487,6 @@ void VDraw::drawText(void *screen, const int w, const int h,
 		y -= 16;
 	
 	// Cast the screen to 32-bit.
-	// TODO: 15/16-bit support.
 	screen32 = (unsigned int*)screen;
 	
 	// Get the message length.
