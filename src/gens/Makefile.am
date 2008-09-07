@@ -65,10 +65,6 @@ if GENS_UI_GTK
 INCLUDES += -I@srcdir@/ui/gtk/
 endif
 
-if GENS_UI_QT4
-INCLUDES += -I@srcdir@/ui/qt4/
-endif
-
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
 	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
@@ -150,11 +146,6 @@ gens_SOURCES = \
 		video/v_effects.cpp
 ##		netplay/ccnet.c 
 ##		netplay/ccnet.h
-
-if GENS_UI_QT4
-$(gens_OBJECTS) : \
-		TODO.cpp
-endif
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -396,10 +387,6 @@ gens_LDADD = \
 
 if GENS_UI_GTK
 gens_LDADD += @GTK_LIBS@
-endif
-
-if GENS_UI_QT4
-gens_LDADD += @GENS_QTLIBS@
 endif
 
 

@@ -32,47 +32,12 @@ AM_CONDITIONAL([WIN32], [test x$os = xwin32])
 if test x$os = xlinux; then
 
 # Linux allows UI selection.
-AC_ARG_ENABLE(ui, AC_HELP_STRING([--enable-ui=[[ui]]], [Enable either the 'gtk' or 'qt4' UI [[default=gtk]]]), ui=$enableval, ui=gtk)
-if test x$ui != xgtk && test x$ui != xqt4; then
-	ui=gtk
-fi
-
-# Extra Qt4 stuff
-# TODO: Move to a separate include file?
-QTDIR=xxx
-QTPOSTFIX="-qt4"
-QTEXTRAINC="/usr/include/qt4"
-QTEXTRALIB="/usr/lib/qt4"
-
-AC_ARG_WITH([qt-dir],
-	AC_HELP_STRING([--with-qt-dir=/path/to/Qt-4.x.0], 
-		[to specify the path to the Qt-4.x.0 directory.]),
-	[QTPATHS="$withval"],
-	[QTPATHS="/usr/local/Trolltech/Qt-4.1.0 /c/Qt/4.1.0"])
-	
-AC_ARG_WITH([qt-postfix],
-	AC_HELP_STRING([--with-qt-postfix=[[postfix]]],
-		[Specify a postfix for Qt4 binaries]),
-	[QTPOSTFIX="-$withval"],
-	[QTPOSTFIX=""])
-
-AC_ARG_WITH([qt-include],
-	AC_HELP_STRING([--with-qt-include=/path/to/Qt-4.x include],
-		[to specify the path to the Qt-4. include directory]),
-	[QTEXTRAINC="$withval"],
-	[QTEXTRAINC="/usr/include/qt4"])
-	
-AC_ARG_WITH([qt-lib],
-	AC_HELP_STRING([--with-qt-lib=/path/to/Qt-4.x lib],
-		[to specify the path to the Qt-4. lib directory]),
-	[QTEXTRALIB="$withval"],
-	[QTEXTRALIB="$QTDIR/lib"])
-
-for x in $QTPATHS; do
-    if test -d $x ; then
-       QTDIR="$x"
-    fi
-done
+# TODO: Re-enable this eventually.
+#AC_ARG_ENABLE(ui, AC_HELP_STRING([--enable-ui=[[ui]]], [Enable either the 'gtk' or 'qt4' UI [[default=gtk]]]), ui=$enableval, ui=gtk)
+#if test x$ui != xgtk && test x$ui != xqt4; then
+#	ui=gtk
+#fi
+ui=gtk
 
 # Check which UI was selected.
 
@@ -90,136 +55,20 @@ AC_DEFINE(GENS_UI_GTK, 1, Enable the GTK+ UI)
 # TODO: Disable deprecated GTK+ features.
 GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
-elif test x$ui = xqt4; then
-
+#elif test x$ui = xqt4; then
+#
 # Qt4
-# Qt4 check copied from avidemux
-
-AC_MSG_CHECKING(Qt4 directory)
-if test $QTDIR = xxx; then
-	AC_MSG_ERROR([*** Could not locate Qt 4!])
-fi
-AC_MSG_RESULT($QTDIR)
-
-AC_MSG_CHECKING(Qt4 libraries)
-AC_MSG_RESULT($QTEXTRALIB)
-
-host=`uname -a` # AC_CANONICAL_HOST is broken at the time of this writing.
-case $host in
-  MINGW32*)
-    AC_MSG_NOTICE(MinGW detected.)
-    QTLIBS="-L$QTEXTRALIB -lopengl32 -lglu32 -lgdi32 -luser32 -lmingw32 -lqtmain -lQtOpenGL4 -lQtGui4 -lQtCore4 -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-subsystem,windows"
-    QTINC="-I$QTDIR/include -I$QTDIR/include/QtCore -I$QTDIR/include/QtGui -I$QTDIR/include/QtOpenGL -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DQT_NEEDS_QMAIN -frtti -fexceptions -I$QTEXTRAINC"
-    QTBIN="$QTDIR/bin"
-	QTPOSTFIX=""
-    ;;
-  *)
-    AC_MSG_NOTICE(I'm assuming this is Linux)
-    AC_PATH_XTRA
-    QTLIBS="-Wl,-rpath,$QTEXTRALIB -L$QTEXTRALIB -lQtGui  -lQtCore $X_LIBS -lX11 -lXext -lXmu -lXt -lXi $X_EXTRA_LIBS  -lpthread"
-    QTINC="-I$QTEXTRAINC -I$QTEXTRAINC/QtGui -I$QTEXTRAINC/QtCore -I$QTEXTRAINC/QtOpenGL $X_CFLAGS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I$QTEXTRAINC"
-    QTBIN="$QTDIR/bin"
-    ;;
-esac
-
-AC_MSG_CHECKING(QT4.x include)
-AC_MSG_RESULT($QTINC $QTEXTRAINC)
-
-GENS_QTLIBS="$QTLIBS"
-GENS_QTINCLUDES="$QTINC"
-GENS_QTCFLAGS="$QTINC"
-
-MOC="$QTBIN/moc$QTPOSTFIX"
-UIC="$QTBIN/uic$QTPOSTFIX"
-RCC="$QTBIN/rcc"
-AC_SUBST(MOC)
-AC_SUBST(UIC)
-AC_SUBST(RCC)
-
-# Now we check whether we can actually build a Qt app.
-cat > myqt.h << EOF
-	#include <QObject>
-
-	class Test : public QObject
-	{
-		Q_OBJECT
-		
-		public:
-			Test() {}
-			~Test() {}
-			
-		public slots:
-			void receive() {}
-			
-		signals:
-			void send();
-	};
-EOF
-
-cat > myqt.cpp << EOF
-	#include "myqt.h"
-	#include <QApplication>
-
-	int main( int argc, char **argv )
-	{
-		QApplication app( argc, argv );
-		Test t;
-		QObject::connect( &t, SIGNAL(send()), &t, SLOT(receive()) );
-	}
-EOF
-
-AC_MSG_CHECKING(does moc work?)
-bnv_try_1="$MOC myqt.h -o moc_myqt.cpp"
-AC_TRY_EVAL(bnv_try_1)
-
-if test x"$ac_status" != x0; then
-	AC_MSG_ERROR([*** Qt4 check failed: moc doesn't work])
-fi
-
-AC_MSG_RESULT(yes)
-AC_MSG_CHECKING(can I compile moc_myqt.cpp?)
-bnv_try_2="$CXX -c $CXXFLAGS $GENS_QTINCLUDES $GENS_QTCFLAGS -o moc_myqt.o moc_myqt.cpp"
-AC_TRY_EVAL(bnv_try_2)
-
-if test x"$ac_status" != x0; then
-	AC_MSG_ERROR([*** Qt4 check failed: couldn't compile moc_myqt.cpp])
-fi
-
-AC_MSG_RESULT(yes)
-AC_MSG_CHECKING(can I compile myqt.cpp?)
-bnv_try_3="$CXX $QTINC -c $CXXFLAGS $GENS_QTINCLUDES $GENS_QTCFLAGS -o myqt.o myqt.cpp"
-AC_TRY_EVAL(bnv_try_3)
-
-if test x"$ac_status" != x0; then
-	AC_MSG_ERROR([*** Qt4 check failed: couldn't compile myqt.cpp])
-fi
-
-AC_MSG_RESULT(yes)
-AC_MSG_CHECKING(can I link against QT?)
-nv_try_4="$CXX $LIBS $GENS_QTLIBS -o myqt myqt.o moc_myqt.o"
-AC_TRY_EVAL(bnv_try_4)
-
-if test x"$ac_status" != x0; then
-	AC_MSG_ERROR([*** Qt4 check failed: couldn't link])
-fi
-
-AC_MSG_RESULT(yes)
-AC_MSG_CHECKING(for mkoctfile)
-AC_TRY_EVAL(mkoctfile)
-
-if test x"$ac_status" != x0; then
-	AC_MSG_ERROR([*** Qt4 check failed: mkoctfile is not in the path])
-fi
-
-AC_MSG_RESULT(yes)
-rm -f moc_myqt.cpp myqt.h myqt.cpp myqt.o myqt moc_myqt.o
-
-AC_DEFINE(GENS_UI_QT4, 1, Enable the Qt4 UI)
-
+#PKG_CHECK_MODULES([Qt4], QtCore >= 4.2.0 QtGui >= 4.2.0)
+#AC_DEFINE(GENS_UI_QT4, 1, Enable the Qt4 UI)
+#Qt4_moc_location=`pkg-config QtCore --variable=moc_location`
+#Qt4_uic_location=`pkg-config QtCore --variable=uic_location`
+#AC_SUBST(Qt4_moc_location)
+#AC_SUBST(Qt4_uic_location)
+#
 fi
 
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
-AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
+#AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
 
 # SDL
 
