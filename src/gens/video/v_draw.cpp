@@ -276,23 +276,23 @@ int VDraw::flip(void)
 	unsigned int* screen32pos;									\
 	unsigned char cRow;										\
 													\
-	screen32pos = &Screen32[y*w + x + (cPos * 8)];							\
+	screen32pos = &Screen32[(y)*(w) + (x) + ((cPos) * 8)];						\
 	for (cy = 0; cy < 8; cy++)									\
 	{												\
 		/* Each character is 8 bytes, with each row representing 8 dots. */			\
 		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
-		cRow = C64_charset[ch][cy];								\
+		cRow = C64_charset[(ch)][cy];								\
 		for (cx = 0; cx < 8; cx++)								\
 		{											\
 			if (cRow & 0x80)								\
 			{										\
 				/* Dot is opaque. Draw it. */						\
-				*screen32pos = dotColor;						\
+				*screen32pos = (dotColor);						\
 			}										\
 			cRow <<= 1;									\
 			screen32pos++;									\
 		}											\
-		screen32pos += (w - 8);									\
+		screen32pos += ((w) - 8);								\
 	}												\
 }
 
@@ -303,26 +303,26 @@ int VDraw::flip(void)
 	unsigned int* screen32pos;									\
 	unsigned char cRow;										\
 													\
-	screen32pos = &Screen32[y*w + x + (cPos * 16)];							\
+	screen32pos = &Screen32[(y)*(w) + (x) + ((cPos) * 16)];						\
 	for (cy = 0; cy < 8; cy++)									\
 	{												\
 		/* Each character is 8 bytes, with each row representing 8 dots. */			\
 		/* A 1 indicates the dot is opaque, while a 0 indicates the dot is transparent.	*/	\
-		cRow = C64_charset[ch][cy];								\
+		cRow = C64_charset[(ch)][cy];								\
 		for (cx = 0; cx < 8; cx++)								\
 		{											\
 			if (cRow & 0x80)								\
 			{										\
 				/* Dot is opaque. Draw it. */						\
-				*screen32pos = dotColor;						\
-				*(screen32pos + 1) = dotColor;						\
-				*(screen32pos + w) = dotColor;						\
-				*(screen32pos + w + 1) = dotColor;					\
+				*screen32pos = (dotColor);						\
+				*(screen32pos + 1) = (dotColor);					\
+				*(screen32pos + (w)) = (dotColor);					\
+				*(screen32pos + (w) + 1) = (dotColor);					\
 			}										\
 			cRow <<= 1;									\
 			screen32pos += 2;								\
 		}											\
-		screen32pos += (w*2 - 16);								\
+		screen32pos += ((w)*2 - 16);								\
 	}												\
 }
 
@@ -369,10 +369,14 @@ void VDraw::drawText(void *screen, const int w, const int h,
 	{
 		if (style & STYLE_DOUBLESIZE)
 		{
-			DRAW_CHAR_32_2X(screen32, x, y, w, dotColor, msg[cPos], cPos);
+			// TODO: Make text shadow an option.
+			DRAW_CHAR_32_2X(screen32, x+1, y+1, w, 0x000000, msg[cPos], cPos);
+			DRAW_CHAR_32_2X(screen32, x-1, y-1, w, dotColor, msg[cPos], cPos);
 		}
 		else
 		{
+			// TODO: Make text shadow an option.
+			DRAW_CHAR_32_1X(screen32, x+1, y+1, w, 0x000000, msg[cPos], cPos);
 			DRAW_CHAR_32_1X(screen32, x, y, w, dotColor, msg[cPos], cPos);
 		}
 	}
