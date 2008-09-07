@@ -22,7 +22,7 @@
 
 #include "bios_misc_files_window.hpp"
 #include "bios_misc_files_window_callbacks.h"
-#include "bios_misc_files_window_misc.h"
+#include "bios_misc_files_window_misc.hpp"
 
 #include "gtk-misc.h"
 

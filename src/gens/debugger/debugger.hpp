@@ -1,5 +1,5 @@
-#ifndef GENS_DEBUGGER_H
-#define GENS_DEBUGGER_H
+#ifndef GENS_DEBUGGER_HPP
+#define GENS_DEBUGGER_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,4 +40,4 @@ enum DEBUG_MODE
 }
 #endif
 
-#endif /* GENS_DEBUG_H */
+#endif /* GENS_DEBUG_HPP */

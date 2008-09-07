@@ -13,14 +13,14 @@
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_s68k.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "gens_core/misc/misc.h"
 #include <string.h>
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "cd_aspi.h"
-#endif
+#include "cd_aspi.hpp"
+#endif /* GENS_CDROM */
 
 int File_Add_Delay = 0;
 

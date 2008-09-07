@@ -21,7 +21,7 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "util/file/ggenie.h"
 #include "gens_core/sound/pwm.h"
 #include "util/sound/gym.hpp"
@@ -54,7 +54,7 @@ void Error_32X_BIOS(const char *Str_BIOS)
 {
 	char Str_Err[256];
 	sprintf(Str_Err, "Your 32X BIOS files aren't correctly configured:\n%s\nGo to menu 'Options -> BIOS/Misc Files' to set them up.", Str_BIOS);
-	UI_MsgBox(Str_Err, "BIOS Configuration Error");
+	GensUI::msgBox(Str_Err, "BIOS Configuration Error");
 }
 
 /**
@@ -192,7 +192,7 @@ int Init_32X (struct Rom *MD_Rom)
 		strcpy(Str_Err, "32X (PAL)");
 	else
 		strcpy(Str_Err, "32X (NTSC)");
-	UI_Set_Window_Title_Game(Str_Err, MD_Rom->Rom_Name_W);
+	GensUI::setWindowTitle_Game(Str_Err, MD_Rom->Rom_Name_W);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)

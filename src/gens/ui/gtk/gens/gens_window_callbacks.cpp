@@ -31,7 +31,7 @@
 #include "gens_window_sync.hpp"
 #include "game_genie/game_genie_window_misc.h"
 #include "controller_config/controller_config_window_misc.hpp"
-#include "bios_misc_files/bios_misc_files_window_misc.h"
+#include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
 #include "about/about_window.h"
@@ -40,11 +40,11 @@
 
 #ifdef GENS_OPENGL
 #include "opengl_resolution/opengl_resolution_window_misc.h"
-#endif
+#endif /* GENS_OPENGL */
 
 #ifdef GENS_CDROM
 #include "select_cdrom/select_cdrom_window_misc.h"
-#endif
+#endif /* GENS_CDROM */
 
 #include "emulator/ui_proxy.hpp"
 #include "ui/gens_ui.hpp"
@@ -54,7 +54,7 @@
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "gens_core/cpu/z80/z80.h"
 #include "util/gfx/scrshot.h"
 
@@ -66,7 +66,7 @@
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "segacd/cd_aspi.h"
+#include "segacd/cd_aspi.hpp"
 #endif
 
 // C++ includes
@@ -126,7 +126,7 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Get_Rom() != -1)
 		Sync_Gens_Window();
 	else
-		UI_MsgBox("Error opening ROM.", "Error");
+		GensUI::msgBox("Error opening ROM.", "Error");
 }
 
 

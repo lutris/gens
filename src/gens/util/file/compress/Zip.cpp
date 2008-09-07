@@ -157,7 +157,7 @@ int Zip::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	if (unzLocateFile(f, fileInfo->filename.c_str(), 1) != UNZ_OK ||
 	    unzOpenCurrentFile(f) != UNZ_OK)
 	{
-		UI_MsgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");
+		GensUI::msgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");
 		unzClose(f);
 		return -1;
 	}
@@ -191,7 +191,7 @@ int Zip::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 				strcat(tmp, "CRC error.");
 				break;
 		}
-		UI_MsgBox(tmp, "ZIP File Error");
+		GensUI::msgBox(tmp, "ZIP File Error");
 		return -1;
 	}
 	

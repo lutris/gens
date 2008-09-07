@@ -20,7 +20,7 @@
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/mem/mem_s68k.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 
 #include "ui_proxy.hpp"
 #include "ui/gens_ui.hpp"
@@ -621,11 +621,11 @@ void Set_Game_Name()
 	}
 	else
 	{
-		UI_Set_Window_Title_Idle();
+		GensUI::setWindowTitle_Idle();
 		return;
 	}
 	
-	UI_Set_Window_Title_Game(SystemName, Title_Rom_Name);
+	GensUI::setWindowTitle_Game(SystemName, Title_Rom_Name);
 }
 
 

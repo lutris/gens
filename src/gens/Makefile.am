@@ -135,7 +135,7 @@ gens_SOURCES = \
 		util/file/chd.c \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
-		util/file/save.c \
+		util/file/save.cpp \
 		util/file/ggenie.c \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
@@ -158,7 +158,7 @@ endif
 
 if GENS_DEBUGGER
 gens_SOURCES += \
-		debugger/debugger.c \
+		debugger/debugger.cpp \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
 		debugger/z80dis.c
@@ -171,7 +171,7 @@ endif
 
 if GENS_CDROM
 gens_SOURCES += \
-		segacd/cd_aspi.c
+		segacd/cd_aspi.cpp
 endif
 
 if LINUX
@@ -179,7 +179,7 @@ if LINUX
 if GENS_UI_GTK
 
 gens_SOURCES += \
-		ui/gtk/ui-common_gtk.cpp \
+		ui/gtk/gens_ui_gtk.cpp \
 		ui/gtk/gtk-misc.c \
 		ui/gtk/gens/gens_window.c \
 		ui/gtk/gens/gens_window_callbacks.cpp \
@@ -192,7 +192,7 @@ gens_SOURCES += \
 		ui/gtk/controller_config/controller_config_window_misc.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
-		ui/gtk/bios_misc_files/bios_misc_files_window_misc.c \
+		ui/gtk/bios_misc_files/bios_misc_files_window_misc.cpp \
 		ui/gtk/directory_config/directory_config_window.c \
 		ui/gtk/directory_config/directory_config_window_callbacks.c \
 		ui/gtk/directory_config/directory_config_window_misc.cpp \
@@ -280,7 +280,7 @@ noinst_HEADERS = \
 		util/file/chd.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
-		util/file/save.h \
+		util/file/save.hpp \
 		util/file/ggenie.h \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
@@ -296,7 +296,7 @@ noinst_HEADERS = \
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
-		debugger/debugger.h \
+		debugger/debugger.hpp \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
 		debugger/z80dis.h
@@ -309,7 +309,7 @@ endif
 
 if GENS_CDROM
 noinst_HEADERS += \
-		segacd/cd_aspi.h
+		segacd/cd_aspi.hpp
 endif
 
 if LINUX
@@ -329,7 +329,7 @@ noinst_HEADERS += \
 		ui/gtk/controller_config/controller_config_window_misc.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \
-		ui/gtk/bios_misc_files/bios_misc_files_window_misc.h \
+		ui/gtk/bios_misc_files/bios_misc_files_window_misc.hpp \
 		ui/gtk/directory_config/directory_config_window.h \
 		ui/gtk/directory_config/directory_config_window_callbacks.h \
 		ui/gtk/directory_config/directory_config_window_misc.hpp \

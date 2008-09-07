@@ -1,5 +1,5 @@
-#ifndef GENS_SAVE_H
-#define GENS_SAVE_H
+#ifndef GENS_SAVE_HPP
+#define GENS_SAVE_HPP
 
 #ifdef __cplusplus
 extern "C" {

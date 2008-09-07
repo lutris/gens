@@ -24,7 +24,7 @@
 
 #include "bios_misc_files_window.hpp"
 #include "bios_misc_files_window_callbacks.h"
-#include "bios_misc_files_window_misc.h"
+#include "bios_misc_files_window_misc.hpp"
 #include "gens/gens_window.h"
 
 #include "emulator/g_main.hpp"
@@ -71,8 +71,8 @@ void BIOS_Misc_Files_Change(int file)
 	
 	// Request a new file.
 	sprintf(tmp, "Select %s File", BIOSMiscFiles[file].title);
-	ret = UI_OpenFile(tmp, gtk_entry_get_text(GTK_ENTRY(entry_file)),
-			  BIOSMiscFiles[file].filter, newFile);
+	ret = GensUI::openFile(tmp, gtk_entry_get_text(GTK_ENTRY(entry_file)),
+			       BIOSMiscFiles[file].filter, newFile);
 	
 	// If Cancel was selected, don't do anything.
 	if (ret)

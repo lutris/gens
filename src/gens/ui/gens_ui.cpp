@@ -27,20 +27,20 @@
 
 
 /**
- * UI_Set_Window_Title_Idle(): Set the window title to "Idle".
+ * setWindowTitle_Idle(): Set the window title to "Idle".
  */
-void UI_Set_Window_Title_Idle(void)
+void GensUI::setWindowTitle_Idle(void)
 {
-	UI_Set_Window_Title(GENS_APPNAME " " GENS_VERSION " - Idle");
+	setWindowTitle(GENS_APPNAME " " GENS_VERSION " - Idle");
 }
 
 
 /**
- * UI_Set_Window_Title_Game(): Set the window title to the system name, followed by the game name.
+ * setWindowTitle_Game(): Set the window title to the system name, followed by the game name.
  * @param system System name.
  * @param game Game name.
  */
-void UI_Set_Window_Title_Game(const char* systemName, const char* gameName)
+void GensUI::setWindowTitle_Game(const char* systemName, const char* gameName)
 {
 	char title[128];
 	char condGameName[65];
@@ -62,16 +62,16 @@ void UI_Set_Window_Title_Game(const char* systemName, const char* gameName)
 	sprintf(title, GENS_APPNAME " " GENS_VERSION " - %s: %s", systemName, condGameName);
 	
 	// Set the title.
-	UI_Set_Window_Title(title);
+	setWindowTitle(title);
 }
 
 
 /**
- * UI_Set_Window_Title_Init(): Set the window title to the system name, followed by "Initializing, please wait..."
+ * setWindowTitle_Init(): Set the window title to the system name, followed by "Initializing, please wait..."
  * @param system System name.
- * @param reinit If non-zero, sets the title to "Re-initializing" instead of "Initializing".
+ * @param reinit If true, sets the title to "Re-initializing" instead of "Initializing".
  */
-void UI_Set_Window_Title_Init(const char* system, int reinit)
+void GensUI::setWindowTitle_Init(const char* system, bool reinit)
 {
 	char title[128];
 	
@@ -80,5 +80,5 @@ void UI_Set_Window_Title_Init(const char* system, int reinit)
 		(reinit ? "Reinitializing" : "Initializing"));
 	
 	// Set the title.
-	UI_Set_Window_Title(title);
+	setWindowTitle(title);
 }

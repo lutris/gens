@@ -42,7 +42,7 @@
 
 // Includes with directory defines.
 // TODO: Consolidate these into Settings.PathNames
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "util/gfx/scrshot.h"
 #include "util/file/ggenie.h"

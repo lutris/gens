@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_BIOS_MISC_FILES_WINDOW_MISC_H
-#define GTK_BIOS_MISC_FILES_WINDOW_MISC_H
+#ifndef GTK_BIOS_MISC_FILES_WINDOW_MISC_HPP
+#define GTK_BIOS_MISC_FILES_WINDOW_MISC_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,4 +37,4 @@ void BIOS_Misc_Files_Save(void);
 }
 #endif
 
-#endif
+#endif /* GTK_BIOS_MISC_FILES_WINDOW_MISC_HPP */

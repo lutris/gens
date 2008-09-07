@@ -24,7 +24,7 @@ using std::list;
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 //#include "ccnet.h"
 #include "minizip/unzip.h"
 #include "util/file/chd.h"
@@ -47,7 +47,6 @@ char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
 char Recent_Rom[9][GENS_PATH_MAX];
 char CDROM_DEV[64];
-int CDROM_SPEED;
 
 
 void
@@ -458,7 +457,7 @@ int Get_Rom(void)
 {
 	char filename[GENS_PATH_MAX];
 	
-	if (UI_OpenFile("Open ROM", Rom_Dir, ROMFile, filename) != 0)
+	if (GensUI::openFile("Open ROM", Rom_Dir, ROMFile, filename) != 0)
 	{
 		// No ROM selected.
 		return 0;
@@ -593,7 +592,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (!cmp->isFileLoaded())
 	{
 		// Error loading the file.
-		UI_MsgBox("Error loading the file.", "File Load Error");
+		GensUI::msgBox("Error loading the file.", "File Load Error");
 		delete cmp;
 		Game = NULL;
 		return NULL;
@@ -607,7 +606,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	{
 		// No files in the archive.
 		// TODO: For 7z, suggest setting the 7z binary filename.
-		UI_MsgBox("No files were detected in this archive.", "No Files Detected");
+		GensUI::msgBox("No files were detected in this archive.", "No Files Detected");
 		
 		if (files)
 			delete files;
@@ -642,7 +641,7 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
 	if (selFile->filesize > ((6 * 1024 * 1024) + 512))
 	{
-		UI_MsgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
+		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
 		delete files;
 		delete cmp;
 		Game = NULL;
@@ -666,13 +665,13 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	if (loadedSize != selFile->filesize)
 	{
 		// Incorrect filesize.
-		UI_MsgBox("Error loading the ROM file.", "ROM File Error");
+		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
 		free(My_Rom);
 		delete files;
 		delete cmp;
 		My_Rom = NULL;
 		Game = NULL;
-		return NULL;		
+		return NULL;
 	}
 	//fclose(ROM_File);
 	
@@ -876,5 +875,5 @@ Free_Rom (Rom * Rom_MD)
   if (Intro_Style == 3)
     Init_Genesis_Bios ();
 
-	UI_Set_Window_Title_Idle();
+	GensUI::setWindowTitle_Idle();
 }

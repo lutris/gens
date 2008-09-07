@@ -17,23 +17,23 @@
 #include "g_mcd.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "ui_proxy.hpp"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "util/sound/gym.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/gfx/scrshot.h"
-
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.h"
-#endif
 
 // Sound includes.
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
+
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "segacd/cd_aspi.h"
-#endif
+#include "segacd/cd_aspi.hpp"
+#endif /* GENS_CDROM */
 
 #include "gens/gens_window_sync.hpp"
 #include "gens_ui.hpp"
@@ -392,9 +392,9 @@ void Input_KeyDown(int key)
 		
 		case GENS_KEY_h:
 			if (mod & KMOD_CTRL)
-				UI_Set_Window_Visibility(0);
+				GensUI::setWindowVisibility(false);
 			else
-				UI_Set_Window_Visibility(1);
+				GensUI::setWindowVisibility(true);
 			break;
 		
 		/*

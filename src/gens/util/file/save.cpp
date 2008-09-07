@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "save.h"
+#include "save.hpp"
 
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
@@ -79,7 +79,7 @@ int Change_File_S(char *Dest, char *Dir)
 {
 	char filename[GENS_PATH_MAX];
 	
-	if (UI_SaveFile("Save Savetate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
+	if (GensUI::saveFile("Save Savetate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
 		return 0;
 	
 	// Filename selected for the savestate.
@@ -98,7 +98,7 @@ int Change_File_L(char *Dest, char *Dir)
 {
 	char filename[GENS_PATH_MAX];
 	
-	if (UI_OpenFile("Load Savestate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
+	if (GensUI::openFile("Load Savestate", NULL /*Rom_Dir*/, SavestateFile, filename) != 0)
 		return 0;
 	
 	// Filename selected for the savestate.
@@ -117,7 +117,7 @@ int Change_File_L_CD(char *Dest, char *Dir)
 {
 	char filename[GENS_PATH_MAX];
 	
-	if (UI_OpenFile("Load SegaCD Disc Image", NULL /*Rom_Dir*/, CDImage, filename) != 0)
+	if (GensUI::openFile("Load SegaCD Disc Image", NULL /*Rom_Dir*/, CDImage, filename) != 0)
 		return 0;
 	
 	// Filename selected for the CD image.

@@ -47,15 +47,16 @@ static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
 
 
 // Sleep handler
-static gboolean isSleeping = FALSE;
-gboolean UI_GLib_SleepCallback(gpointer data);
+bool sleeping;
+gboolean GensUI_GLib_SleepCallback(gpointer data);
+
 
 /**
- * UI_Init(): Initialize the GTK+ UI.
+ * init(): Initialize the GTK+ UI.
  * @param argc main()'s argc.
  * @param argv main()'s argv.
  */
-void UI_Init(int argc, char *argv[])
+void GensUI::init(int argc, char *argv[])
 {
 	// Add the pixmap directories.
 	add_pixmap_directory(DATADIR);
@@ -69,14 +70,14 @@ void UI_Init(int argc, char *argv[])
 	gtk_widget_show(gens_window);
 	
 	// Set the window title to Idle.
-	UI_Set_Window_Title_Idle();
+	setWindowTitle_Idle();
 }
 
 
 /**
- * UI_Update(): Update the UI.
+ * update(): Update the UI.
  */
-void UI_Update(void)
+void GensUI::update(void)
 {
 	while (gtk_events_pending())
 		gtk_main_iteration_do(FALSE);
@@ -88,44 +89,44 @@ void UI_Update(void)
  * @param data Pointer to data, specified in initial g_timeout_add() call.
  * @return FALSE to disable the timer.
  */
-gboolean UI_GLib_SleepCallback(gpointer data)
+gboolean GensUI_GLib_SleepCallback(gpointer data)
 {
-	isSleeping = FALSE;
-	return FALSE;
+	sleeping = false;
+	return false;
 }
 
 
 /**
- * UI_Sleep(): Sleep, but keep the UI active.
+ * sleep(): Sleep, but keep the UI active.
  * @param ms Interval to sleep, in milliseconds.
  */
-void UI_Sleep(int ms)
+void GensUI::sleep(int ms)
 {
-	isSleeping = TRUE;
-	g_timeout_add(ms, UI_GLib_SleepCallback, NULL);
-	while (isSleeping)
+	sleeping = true;
+	g_timeout_add(ms, GensUI_GLib_SleepCallback, NULL);
+	while (sleeping)
 	{
 		usleep(1000);
-		UI_Update();
+		update();
 	}
 }
 
 
 /**
- * UI_Set_Window_Title(): Sets the window title.
+ * setWindowTitle(): Sets the window title.
  * @param title New window title.
  */
-void UI_Set_Window_Title(const char *title)
+void GensUI::setWindowTitle(const char *title)
 {
 	gtk_window_set_title(GTK_WINDOW(gens_window), title);
 }
 
 
 /**
- * UI_Set_Window_Visibility(): Sets window visibility.
- * @param visibility 0 to hide; anything else to show.
+ * setWindowVisibility(): Sets window visibility.
+ * @param visibility true to show; false to hide.
  */
-void UI_Set_Window_Visibility (int visibility)
+void GensUI::setWindowVisibility(bool visibility)
 {
 	if (visibility)
 		gtk_widget_show(gens_window);
@@ -169,11 +170,11 @@ int UI_Get_Embedded_WindowID(void)
 
 
 /**
- * UI_MsgBox(): Show a message box.
+ * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
  */
-void UI_MsgBox(const char* msg, const char* title)
+void GensUI::msgBox(const char* msg, const char* title)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
@@ -187,14 +188,14 @@ void UI_MsgBox(const char* msg, const char* title)
 
 
 /**
- * UI_OpenFile(): Show the File Open dialog.
+ * openFile(): Show the File Open dialog.
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename filter to use.
  * @param retSelectedFile Pointer to string buffer to store the filename in.
  * @return 0 if successful.
  */
-int UI_OpenFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile)
+int GensUI::openFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
@@ -203,14 +204,14 @@ int UI_OpenFile(const char* title, const char* initFile, FileFilterType filterTy
 
 
 /**
- * UI_SaveFile(): Show the File Save dialog.
+ * saveFile(): Show the File Save dialog.
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType of filename filter to use.
  * @param retSelectedFile Pointer to string buffer to store the filename in.
  * @return 0 if successful.
  */
-int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile)
+int GensUI::saveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
@@ -219,13 +220,13 @@ int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterTy
 
 
 /**
- * UI_SelectDir(): Show the Select Directory dialog.
+ * selectDir(): Show the Select Directory dialog.
  * @param title Window title.
  * @param initDir Initial directory.
  * @param retSelectedDir Pointer to string buffer to store the directory in.
  * @return 0 if successful.
  */
-int UI_SelectDir(const char* title, const char* initDir, char* retSelectedDir)
+int GensUI::selectDir(const char* title, const char* initDir, char* retSelectedDir)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...

@@ -115,54 +115,54 @@ int Reconfigure_Input(int player, int padtype)
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP");
 	Keys_Config[player].Up = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN");
 	Keys_Config[player].Down = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT");
 	Keys_Config[player].Left = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT");
 	Keys_Config[player].Right = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START");
 	Keys_Config[player].Start = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A");
 	Keys_Config[player].A = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B");
 	Keys_Config[player].B = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C");
 	Keys_Config[player].C = Get_Key();
-	UI_Sleep(250);
+	GensUI::sleep(250);
 	
 	if (padtype & 0x01)
 	{
 		// 6-button control pad. Get additional keys.
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE");
 		Keys_Config[player].Mode = Get_Key();
-		UI_Sleep(250);
+		GensUI::sleep(250);
 		
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X");
 		Keys_Config[player].X = Get_Key();
-		UI_Sleep(250);
+		GensUI::sleep(250);
 		
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y");
 		Keys_Config[player].Y = Get_Key();
-		UI_Sleep(250);
+		GensUI::sleep(250);
 		
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z");
 		Keys_Config[player].Z = Get_Key();
-		UI_Sleep(250);
+		GensUI::sleep(250);
 	}
 	
 	// Configuration successful.
@@ -170,7 +170,7 @@ int Reconfigure_Input(int player, int padtype)
 			"CONFIGURATION SUCCESSFUL.\n"
 			"PRESS ANY KEY TO CONTINUE...");
 	Get_Key();
-	UI_Sleep(500);
+	GensUI::sleep(500);
 	gtk_label_set_text(GTK_LABEL(label_echo), "");
 	
 	return 1;

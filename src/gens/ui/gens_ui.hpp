@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
  
-#ifndef UI_COMMON_H
-#define UI_COMMON_H
+#ifndef GENS_UI_HPP
+#define GENS_UI_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,31 +37,38 @@ typedef enum
 	GYMFile		= 5,
 } FileFilterType;
 
-// The following functions are implemented by the OS-specific ui-common_*.c file.
-void UI_Init(int argc, char *argv[]);
-void UI_Update(void);
-void UI_Sleep(int ms);
-
-void UI_Set_Window_Title(const char* title);
-void UI_Set_Window_Visibility (int visibility);
-
-void UI_Hide_Embedded_Window(void);
-void UI_Show_Embedded_Window(int w, int h);
-int UI_Get_Embedded_WindowID(void);
-
-void UI_MsgBox(const char* msg, const char* title);
-int UI_OpenFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
-int UI_SaveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
-int UI_SelectDir(const char* title, const char* initDir, char* retSelectedDir);
-
-// The following functions are implemented by ui-common.c.
-void UI_Set_Window_Title_Idle(void);
-void UI_Set_Window_Title_Game(const char* system, const char* game);
-void UI_Set_Window_Title_Init(const char* system, int reinit);
-
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#ifdef __cplusplus
+
+class GensUI
+{
+	public:
+		// The following functions are implemented by ui/[ui]/gens_ui_[ui].cpp.
+		static void init(int argc, char *argv[]);
+		static void update(void);
+		static void sleep(int ms);
+		
+		static void setWindowTitle(const char* title);
+		static void setWindowVisibility(bool visibility);
+		
+		static void UI_Hide_Embedded_Window(void);
+		static void UI_Show_Embedded_Window(int w, int h);
+		static int UI_Get_Embedded_WindowID(void);
+		
+		static void msgBox(const char* msg, const char* title);
+		static int openFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
+		static int saveFile(const char* title, const char* initFile, FileFilterType filterType, char* retSelectedFile);
+		static int selectDir(const char* title, const char* initDir, char* retSelectedDir);
+		
+		// The following functions are implemented by ui/gens_ui.cpp.
+		static void setWindowTitle_Idle(void);
+		static void setWindowTitle_Game(const char* system, const char* game);
+		static void setWindowTitle_Init(const char* system, bool reinit);
+};
+
+#endif /* __cplusplus */
+
+#endif /* GENS_UI_HPP */

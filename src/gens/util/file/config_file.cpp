@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "save.h"
+#include "save.hpp"
 #include "config_file.hpp"
 #include "port/port.h"
 #include "port/ini.hpp"
@@ -54,8 +54,8 @@
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "segacd/cd_aspi.h"
-#endif
+#include "segacd/cd_aspi.hpp"
+#endif /* GENS_CDROM */
 
 // UI
 #include "emulator/ui_proxy.hpp"
@@ -267,7 +267,7 @@ int Save_As_Config(void)
 {
 	char filename[GENS_PATH_MAX];
 	
-	if (UI_SaveFile("Save Config As", NULL, ConfigFile, filename) != 0)
+	if (GensUI::saveFile("Save Config As", NULL, ConfigFile, filename) != 0)
 		return 0;
 	
 	// Make sure a filename was actually selected.
@@ -539,7 +539,7 @@ int Load_As_Config(void *Game_Active)
 {
 	char filename[GENS_PATH_MAX];
 	
-	if (UI_OpenFile("Load Config", NULL, ConfigFile, filename) != 0)
+	if (GensUI::openFile("Load Config", NULL, ConfigFile, filename) != 0)
 		return 0;
 	
 	// Make sure a filename was actually selected.

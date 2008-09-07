@@ -1,5 +1,9 @@
-#ifndef _MEM_Z80_H
-#define _MEM_Z80_H
+#ifndef GENS_MEM_Z80_H
+#define GENS_MEM_Z80_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef __GNUC__
 #define __fastcall __attribute__ ((regparm(2)))
@@ -41,4 +45,8 @@ void __fastcall Z80_WriteW_YM2612(unsigned int Adr, unsigned short Data);
 void __fastcall Z80_WriteW_PSG(unsigned int Adr, unsigned short Data);
 void __fastcall Z80_WriteW_68K_Ram(unsigned int Adr, unsigned short Data);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* GENS_MEM_Z80_H */

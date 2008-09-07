@@ -22,7 +22,7 @@
 #include "g_32x.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "util/file/config_file.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/sound/gym.hpp"
@@ -40,13 +40,13 @@
 #include "g_palette.h"
 
 #ifdef GENS_DEBUGGER
-#include "debugger/debugger.h"
+#include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "segacd/cd_aspi.h"
-#endif
+#include "segacd/cd_aspi.hpp"
+#endif /* GENS_CDROM */
 
 // TODO: Eliminate the dependency on these files.
 #include "sdllayer/g_sdlsound.h"
@@ -465,7 +465,7 @@ int main(int argc, char *argv[])
 		return 0;
 	
 	// Initialize the UI.
-	UI_Init(argc, argv);
+	GensUI::init(argc, argv);
 	
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
@@ -502,7 +502,7 @@ int main(int argc, char *argv[])
 	while (is_gens_running ())
 	{
 		// Update the UI.
-		UI_Update();
+		GensUI::update();
 		
 		update_SDL_events ();
 #ifdef GENS_DEBUGGER
@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
 					Do_VDP_Only();
 				//Pause_Screen();
 				draw->flip();
-				UI_Sleep(100);
+				GensUI::sleep(100);
 			}
 		}
 		else
@@ -558,24 +558,24 @@ int main(int argc, char *argv[])
 			else if (Intro_Style == 1)
 			{
 				// Gens logo effect. (TODO: This is broken!)
-				UI_Sleep(5);
+				GensUI::sleep(5);
 			}
 			else if (Intro_Style == 2)
 			{
 				// "Strange" effect. (TODO: This is broken!)
-				UI_Sleep(10);
+				GensUI::sleep(10);
 			}
 			else if (Intro_Style == 3)
 			{
 				// Genesis BIOS. (TODO: This is broken!)
-				UI_Sleep(20);
+				GensUI::sleep(20);
 			}
 			else
 			{
 				// Blank screen. (MAX IDLE)
 				// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
 				// TODO: Fix this lag!
-				UI_Sleep(200);
+				GensUI::sleep(200);
 			}
 		}
 	}

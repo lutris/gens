@@ -18,7 +18,7 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "util/file/ggenie.h"
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -246,7 +246,7 @@ int Init_Genesis (struct Rom *MD_Rom)
 		strcpy(Str_Err, "Mega Drive");
 	else
 		strcpy(Str_Err, "Genesis");
-	UI_Set_Window_Title_Game(Str_Err, MD_Rom->Rom_Name_W);
+	GensUI::setWindowTitle_Game(Str_Err, MD_Rom->Rom_Name_W);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)

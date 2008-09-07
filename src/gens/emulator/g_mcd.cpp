@@ -19,7 +19,7 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/io/io.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "util/file/ggenie.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/lc89510.h"
@@ -73,13 +73,13 @@ int Init_SegaCD(const char *iso_name)
 {
 	char Str_Err[256], *Bios_To_Use;
 	
-	UI_Set_Window_Title_Init("SegaCD", 0);
+	GensUI::setWindowTitle_Init("SegaCD", false);
 	
 	if (Reset_CD((char*)CD_Data, iso_name))
 	{
 		// Error occured while setting up Sega CD emulation.
 		// TODO: Show a message box.
-		UI_Set_Window_Title_Idle();
+		GensUI::setWindowTitle_Idle();
 		return 0;
 	}
 	
@@ -120,9 +120,12 @@ int Init_SegaCD(const char *iso_name)
 	// Attempt to load the Sega CD BIOS.
 	if (Load_SegaCD_BIOS(Bios_To_Use) == NULL)
 	{
-		UI_MsgBox("Your Sega CD BIOS files aren't configured correctly.\nGo to menu 'Options -> BIOS/Misc Files' to set them up.",
-			  "BIOS Configuration Error");
-		UI_Set_Window_Title_Idle();
+		GensUI::msgBox(
+			"Your Sega CD BIOS files aren't configured correctly.\n"
+			"Go to menu 'Options -> BIOS/Misc Files' to set them up.",
+			"BIOS Configuration Error"
+			);
+		GensUI::setWindowTitle_Idle();
 		return 0;
 	}
 	
@@ -133,7 +136,7 @@ int Init_SegaCD(const char *iso_name)
 		strcpy(Str_Err, "MegaCD");
 	else
 		strcpy(Str_Err, "SegaCD");
-	UI_Set_Window_Title_Game(Str_Err, Rom_Name);
+	GensUI::setWindowTitle_Game(Str_Err, Rom_Name);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -153,12 +156,12 @@ int Init_SegaCD(const char *iso_name)
 	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
-	M68K_Reset (2);
-	S68K_Reset ();
-	Z80_Reset ();
-	Reset_VDP ();
-	LC89510_Reset ();
-	Init_RS_GFX ();
+	M68K_Reset(2);
+	S68K_Reset();
+	Z80_Reset();
+	Reset_VDP();
+	LC89510_Reset();
+	Init_RS_GFX();
 	
 	Init_PCM (Sound_Rate);
 	
@@ -204,7 +207,7 @@ int Reload_SegaCD(const char *iso_name)
 	
 	Save_BRAM ();
 	
-	UI_Set_Window_Title_Init("SegaCD", 1);
+	GensUI::setWindowTitle_Init("SegaCD", true);
 	
 	Reset_CD ((char *) CD_Data, iso_name);
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
@@ -214,7 +217,7 @@ int Reload_SegaCD(const char *iso_name)
 		strcpy(Str_Err, "MegaCD");
 	else
 		strcpy(Str_Err, "SegaCD");
-	UI_Set_Window_Title_Game(Str_Err, Rom_Name);
+	GensUI::setWindowTitle_Game(Str_Err, Rom_Name);
 	
 	Load_BRAM();
 	
@@ -241,7 +244,7 @@ Reset_SegaCD ()
 	
 	if (Detect_Format (Bios_To_Use) == -1)
 	{
-		UI_MsgBox(
+		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"
 			"Go to menu 'Options -> BIOS/Misc Files' to set them up.",
 			"BIOS Configuration Error"

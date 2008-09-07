@@ -32,7 +32,7 @@
 #include "gens.h"
 #include "g_main.hpp"
 #include "port/port.h"
-#include "util/file/save.h"
+#include "util/file/save.hpp"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/sh2/sh2.h"
@@ -61,8 +61,8 @@
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
-#include "segacd/cd_aspi.h"
-#endif
+#include "segacd/cd_aspi.hpp"
+#endif /* GENS_CDROM */
 
 // Include this *last* to avoid naming conflicts.
 #include "parse.hpp"

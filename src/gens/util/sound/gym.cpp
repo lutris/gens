@@ -189,7 +189,7 @@ int Start_Play_GYM(void)
 	
 	Play_Sound ();
 	
-	if (UI_OpenFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile, filename) != 0)
+	if (GensUI::openFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile, filename) != 0)
 		return 0;
 	
 	// Make sure a filename was actually selected.
@@ -201,11 +201,11 @@ int Start_Play_GYM(void)
 	if (!GYM_File)
 		return 0;
 	
-	YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+	YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+	PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
 	GYM_Playing = 1;
 	
-	Put_Info ("Starting to play GYM", 1000);
+	Put_Info("Starting to play GYM", 1000);
 	return 1;
 }
 

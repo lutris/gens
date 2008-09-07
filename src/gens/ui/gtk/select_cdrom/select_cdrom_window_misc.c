@@ -33,6 +33,7 @@
 #include "gtk-misc.h"
 
 #include "util/file/rom.hpp"
+#include "segacd/cd_aspi.hpp"
 
 // CD-ROM device prefixes.
 const char* CDROM_Prefix[4] = {"/dev/cdrom", "/dev/scd", "/dev/sr", NULL};

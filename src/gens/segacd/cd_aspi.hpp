@@ -1,5 +1,5 @@
-#ifndef GENS_CD_ASPI_H
-#define GENS_CD_ASPI_H
+#ifndef GENS_CD_ASPI_HPP
+#define GENS_CD_ASPI_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,6 +78,7 @@ typedef struct
   TOCTRACK tracks[100];
 } TOC, *PTOC, *LPTOC;
 
+extern int CDROM_SPEED;
 extern int Num_CD_Drive;
 extern int CUR_DEV; // a che serve?
 extern int DEV_PAR[8][3];
@@ -127,4 +128,4 @@ void Fill_SCD_TOC_Zero(void);
 }
 #endif
 
-#endif /* GENS_CD_ASPI_H */
+#endif /* GENS_CD_ASPI_HPP */

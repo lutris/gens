@@ -11,7 +11,7 @@
 #include "emulator/gens.h"
 #include "ui/gens_ui.hpp"
 
-#include "debugger.h"
+#include "debugger.hpp"
 
 // MC68000
 #include "gens_core/cpu/68k/cpu_68k.h"
@@ -39,7 +39,7 @@
 
 // SegaCD
 #include "segacd/lc89510.h"
-#include "segacd/cd_aspi.h"
+#include "segacd/cd_sys.hpp"
 #include "gens_core/gfx/gfx_cd.h"
 
 int Current_32X_FB = 0;
@@ -513,10 +513,10 @@ void Refresh_Z80_Mem(void)
 	for (k = 0, j = adr_mem & 0xFFFF; k < 7; k++, j = (j + 12) & 0xFFFF)
 	{
 		sprintf(_GString, "%.4X:%.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n", j,
-				Z80_ReadB (j + 0), Z80_ReadB (j + 1), Z80_ReadB (j + 2),
-				Z80_ReadB (j + 3), Z80_ReadB (j + 4), Z80_ReadB (j + 5),
-				Z80_ReadB (j + 6), Z80_ReadB (j + 7), Z80_ReadB (j + 8),
-				Z80_ReadB (j + 9), Z80_ReadB (j + 10), Z80_ReadB (j + 11));
+				Z80_ReadB(j + 0), Z80_ReadB(j + 1), Z80_ReadB(j + 2),
+				Z80_ReadB(j + 3), Z80_ReadB(j + 4), Z80_ReadB(j + 5),
+				Z80_ReadB(j + 6), Z80_ReadB(j + 7), Z80_ReadB(j + 8),
+				Z80_ReadB(j + 9), Z80_ReadB(j + 10), Z80_ReadB(j + 11));
 		Print_Text(_GString, 35, 1, 146 + (k << 3), BLANC);
 	}
 }
@@ -1103,5 +1103,5 @@ void Update_Debug_Screen(void)
 		}
 	}
 	
-	UI_Sleep(10);
+	GensUI::sleep(10);
 }

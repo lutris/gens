@@ -45,7 +45,7 @@
 #include "emulator/g_main.hpp"
 
 #ifdef GENS_DEBUGGER
-#include "debugger/debugger.h"
+#include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
 GtkWidget *gens_window;

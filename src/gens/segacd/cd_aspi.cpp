@@ -8,7 +8,7 @@
 #include "util/file/rom.hpp"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "segacd/lc89510.h"
-#include "segacd/cd_aspi.h"
+#include "segacd/cd_aspi.hpp"
 #include "gens_core/mem/mem_s68k.h"
 
 #define HIBYTE(x) x >> 8
@@ -52,9 +52,15 @@ static inline struct cdrom_msf0 LBA2MSF (int lba)
 
 //End By Ubi.
 
-DWORD (*Get_ASPI_Info) (void);
-DWORD (*Get_ASPI_Version) (void);
-DWORD (*Send_ASPI_Command) (LPSRB);
+/* TODO: Figure out if this stuff is actually needed.
+extern "C"
+{
+	DWORD (*Get_ASPI_Info) (void);
+	DWORD (*Get_ASPI_Version) (void);
+	DWORD (*Send_ASPI_Command) (LPSRB);
+}
+*/
+
 int ASPI_Command_Running;
 int CDROM_SPEED;
 int Num_CD_Drive;
@@ -162,7 +168,7 @@ int ASPI_Test_Unit_Ready (int timeout) //da verificare
 				return 3;
 		}
 		wait_time += 10;
-		UI_Sleep(8);
+		GensUI::sleep(8);
 	}
 	
 	return -1;
@@ -706,7 +712,7 @@ Wait_Read_Complete (void)
   int i = 0;
 
   while (Read_Complete == 0)
-    UI_Sleep(1);
+    GensUI::sleep(1);
 
 #ifdef DEBUG_CD
   fprintf (debug_SCD_file, "\n******* Wait Read %d ******\n", i);

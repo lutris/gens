@@ -72,7 +72,7 @@ void Directory_Config_Change(int dir)
 	
 	// Request a new directory.
 	sprintf(tmp, "Select %s Directory", DirEntries[dir].title);
-	ret = UI_SelectDir(tmp, gtk_entry_get_text(GTK_ENTRY(entry_direntry)), newDir);
+	ret = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(entry_direntry)), newDir);
 	
 	// If Cancel was selected, don't do anything.
 	if (ret)

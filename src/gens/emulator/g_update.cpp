@@ -108,7 +108,7 @@ int Update_Emulation(void)
 			}
 			else
 			{
-				UI_Sleep(Sleep_Time);
+				GensUI::sleep(Sleep_Time);
 			}
 		} //If sound is not enabled
 		
