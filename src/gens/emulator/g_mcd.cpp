@@ -3,8 +3,8 @@
  */
 
 #include "gens.h"
-#include "g_md.h"
-#include "g_mcd.h"
+#include "g_md.hpp"
+#include "g_mcd.hpp"
 #include "g_main.hpp"
 #include "g_update.hpp"
 #include "sdllayer/g_sdlsound.h"
@@ -28,12 +28,12 @@
 #include "gens_core/sound/pcm.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/cd_file.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/byteswap.h"
 
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 
 unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name

@@ -41,7 +41,7 @@
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"
 #include "segacd/cd_sys.hpp"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 
 // Renderer / Blitter selection stuff.
 #include "gens_core/gfx/renderers.h"

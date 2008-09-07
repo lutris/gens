@@ -8,9 +8,9 @@
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"
 #include "gens.h"
-#include "g_md.h"
-#include "g_mcd.h"
-#include "g_32x.h"
+#include "g_md.hpp"
+#include "g_mcd.hpp"
+#include "g_32x.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "segacd/cd_sys.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -23,7 +23,7 @@
 #include "util/file/save.h"
 
 #include "ui_proxy.hpp"
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
 
 #include "gens_core/gfx/renderers.h"

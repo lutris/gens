@@ -14,11 +14,11 @@
 #include <gdk/gdkx.h>
 #include "gens.h"
 #include "g_main.hpp"
-#include "g_mcd.h"
+#include "g_mcd.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "ui_proxy.hpp"
 #include "util/file/save.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/gfx/scrshot.h"
 
@@ -36,7 +36,7 @@
 #endif
 
 #include "gens/gens_window_sync.hpp"
-#include "ui-common.h"
+#include "gens_ui.hpp"
 
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.

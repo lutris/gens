@@ -11,7 +11,7 @@
 #include "gens_core/vdp/vdp_io.h"
 
 #include "emulator/g_main.hpp"
-#include "ui/ui-common.h"
+#include "ui/gens_ui.hpp"
 #include "ui/gtk/gtk-misc.h"
 #include "gens/gens_window.h"
 

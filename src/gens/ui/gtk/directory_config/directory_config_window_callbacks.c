@@ -22,7 +22,7 @@
 
 #include "directory_config_window.h"
 #include "directory_config_window_callbacks.h"
-#include "directory_config_window_misc.h"
+#include "directory_config_window_misc.hpp"
 
 #include "gtk-misc.h"
 

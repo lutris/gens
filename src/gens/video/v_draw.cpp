@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "v_draw.hpp"
 
-#include "emulator/g_md.h"
+#include "emulator/g_md.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/fastblur.h"

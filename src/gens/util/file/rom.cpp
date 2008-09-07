@@ -15,9 +15,9 @@ using std::list;
 #include "sdllayer/g_sdlsound.h"
 #include "emulator/g_main.hpp"
 #include "emulator/gens.h"
-#include "emulator/g_md.h"
-#include "emulator/g_mcd.h"
-#include "emulator/g_32x.h"
+#include "emulator/g_md.hpp"
+#include "emulator/g_mcd.hpp"
+#include "emulator/g_32x.hpp"
 #include "util/file/ggenie.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "segacd/cd_sys.hpp"
@@ -29,12 +29,12 @@ using std::list;
 #include "minizip/unzip.h"
 #include "util/file/chd.h"
 #include "util/sound/wave.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/byteswap.h"
 
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 #include "zip_select/zip_select_dialog_misc.hpp"
 
 // New file compression handler.

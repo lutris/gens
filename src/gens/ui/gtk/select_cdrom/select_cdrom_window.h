@@ -28,7 +28,6 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "ui-common.h"
 
 extern int CD_DriveSpeed[15];
 

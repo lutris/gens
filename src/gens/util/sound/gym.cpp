@@ -1,7 +1,8 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "gym.h"
+#include "gym.hpp"
+
 #include "emulator/g_main.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "util/file/rom.hpp"
@@ -10,7 +11,7 @@
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 FILE *GYM_File;
 int GYM_Dumping = 0;

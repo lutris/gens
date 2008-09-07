@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) BIOS/Misc Files Window                                     *
+ * Gens: (GTK+) Directory Configuration Window - Miscellaneous Functions.  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,31 +20,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_BIOS_MISC_FILES_WINDOW_H
-#define GTK_BIOS_MISC_FILES_WINDOW_H
+#ifndef GTK_DIRECTORY_CONFIG_WINDOW_MISC_HPP
+#define GTK_DIRECTORY_CONFIG_WINDOW_MISC_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "ui-common.h"
 
-// BIOS/Misc File entries
-// If entry is NULL, it's a frame heading.
-struct BIOSMiscFileEntry_t
-{
-	const char* title;
-	const char* tag;
-	FileFilterType filter;
-	char* entry;
-};
-
-// Contains all the BIOS/Misc File entries.
-extern const struct BIOSMiscFileEntry_t BIOSMiscFiles[];
-
-GtkWidget* create_bios_misc_files_window(void); 
-extern GtkWidget *bios_misc_files_window;
+void Open_Directory_Config(void);
+void Directory_Config_Change(int dir);
+void Directory_Config_Save(void);
 
 #ifdef __cplusplus
 }

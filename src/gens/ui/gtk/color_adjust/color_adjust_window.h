@@ -28,7 +28,6 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "ui-common.h"
 
 GtkWidget* create_color_adjust_window(void); 
 extern GtkWidget *color_adjust_window;

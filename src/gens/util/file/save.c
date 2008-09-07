@@ -47,7 +47,7 @@
 
 // UI
 #include "emulator/ui_proxy.hpp"
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 // Byteswapping
 #include "gens_core/misc/byteswap.h"

@@ -2,8 +2,8 @@
  * GENS: Genesis (Mega Drive) initialization and main loop code.
  */
 
-#ifndef _GENS_MD_H
-#define _GENS_MD_H
+#ifndef GENS_MD_HPP
+#define GENS_MD_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,4 +24,4 @@ int Do_Genesis_Frame(void);
 }
 #endif
 
-#endif
+#endif /* GENS_MD_HPP */

@@ -7,7 +7,7 @@
 #include "port/port.h"
 #include "cd_file.h"
 #include "emulator/gens.h"
-#include "emulator/g_mcd.h"
+#include "emulator/g_mcd.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "lc89510.h"
 #include "gens_core/cpu/68k/star_68k.h"

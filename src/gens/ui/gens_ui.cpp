@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 #include "emulator/gens.h"
-#include "ui-common.h"
+#include "gens_ui.hpp"
 
 
 /**

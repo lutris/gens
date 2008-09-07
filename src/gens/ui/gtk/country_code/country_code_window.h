@@ -28,7 +28,6 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "ui-common.h"
 
 GtkWidget* create_country_code_window(void); 
 extern GtkWidget *country_code_window;

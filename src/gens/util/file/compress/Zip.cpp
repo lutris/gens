@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "minizip/unzip.h"
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 #include <string>
 using std::string;

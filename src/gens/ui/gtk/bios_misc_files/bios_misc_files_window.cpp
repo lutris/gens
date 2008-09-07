@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "bios_misc_files_window.h"
+#include "bios_misc_files_window.hpp"
 #include "bios_misc_files_window_callbacks.h"
 #include "gens/gens_window.h"
 
@@ -48,21 +48,21 @@ GtkAccelGroup *accel_group;
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {
-	{"<b><i>Configure Genesis BIOS File</i></b>", "md_bios", 0, NULL},
+	{"<b><i>Configure Genesis BIOS File</i></b>", "md_bios", (FileFilterType)0, NULL},
 	{"Genesis", "md_bios", ROMFile, BIOS_Filenames.MD_TMSS},
-	{"<b><i>Configure 32X BIOS Files</i></b>", "32x_bios", 0, NULL},
+	{"<b><i>Configure 32X BIOS Files</i></b>", "32x_bios", (FileFilterType)0, NULL},
 	{"MC68000", "mc68000", ROMFile, BIOS_Filenames._32X_MC68000},
 	{"Master SH2", "msh2", ROMFile, BIOS_Filenames._32X_MSH2},
 	{"Slave SH2", "ssh2", ROMFile, BIOS_Filenames._32X_SSH2},
-	{"<b><i>Configure SegaCD BIOS Files</i></b>", "mcd_bios", 0, NULL},
+	{"<b><i>Configure SegaCD BIOS Files</i></b>", "mcd_bios", (FileFilterType)0, NULL},
 	{"USA", "mcd_bios_usa", ROMFile, BIOS_Filenames.SegaCD_US},
 	{"Europe", "mcd_bios_eur", ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
-	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", 0, NULL},
+	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", (FileFilterType)0, NULL},
 	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
 	{"GCOffline", "gcoffline", AnyFile, Misc_Filenames.GCOffline},
 	{"Manual", "manual", AnyFile, Misc_Filenames.Manual},
-	{NULL, NULL, 0, NULL},
+	{NULL, NULL, (FileFilterType)0, NULL},
 };
 
 

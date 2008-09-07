@@ -28,7 +28,6 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "ui-common.h"
 
 GtkWidget* create_general_options_window(void); 
 extern GtkWidget *general_options_window;

@@ -24,10 +24,11 @@
 
 #include "directory_config_window.h"
 #include "directory_config_window_callbacks.h"
-#include "directory_config_window_misc.h"
+#include "directory_config_window_misc.hpp"
 #include "gens/gens_window.h"
 
 #include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"

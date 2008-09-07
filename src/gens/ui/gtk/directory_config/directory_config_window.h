@@ -28,7 +28,6 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
-#include "ui-common.h"
 
 // Directory entries
 struct DirEntry_t

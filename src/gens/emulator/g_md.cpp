@@ -3,7 +3,7 @@
  */
 
 #include "gens.h"
-#include "g_md.h"
+#include "g_md.hpp"
 #include "g_main.hpp"
 #include "g_update.hpp"
 #include "sdllayer/g_sdlsound.h"
@@ -21,12 +21,12 @@
 #include "util/file/save.h"
 #include "util/file/ggenie.h"
 #include "util/sound/wave.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/byteswap.h"
 
-#include "ui-common.h"
+#include "gens_ui.hpp"
 
 
 /**

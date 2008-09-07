@@ -24,7 +24,7 @@
 
 #include "controller_config_window.h"
 #include "controller_config_window_callbacks.h"
-#include "controller_config_window_misc.h"
+#include "controller_config_window_misc.hpp"
 #include "gens/gens_window.h"
 
 #include <gtk/gtk.h>
@@ -32,7 +32,7 @@
 
 #include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
-#include "ui/ui-common.h"
+#include "ui/gens_ui.hpp"
 
 
 /**

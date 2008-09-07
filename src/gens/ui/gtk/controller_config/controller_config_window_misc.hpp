@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_CONTROLLER_CONFIG_WINDOW_MISC_H
-#define GTK_CONTROLLER_CONFIG_WINDOW_MISC_H
+#ifndef GTK_CONTROLLER_CONFIG_WINDOW_MISC_HPP
+#define GTK_CONTROLLER_CONFIG_WINDOW_MISC_HPP
 
 #ifdef __cplusplus
 extern "C" {

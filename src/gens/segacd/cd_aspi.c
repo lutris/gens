@@ -4,7 +4,7 @@
 
 #include "port/port.h"
 #include "emulator/g_main.hpp"
-#include "ui/ui-common.h"
+#include "ui/gens_ui.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "segacd/lc89510.h"

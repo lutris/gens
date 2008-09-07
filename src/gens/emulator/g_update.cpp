@@ -8,7 +8,7 @@
 #include "gens.h"
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
-#include "ui/ui-common.h"
+#include "ui/gens_ui.hpp"
 
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"

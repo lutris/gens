@@ -2,8 +2,8 @@
  * GENS: Sega 32X initialization and main loop code.
  */
 
-#ifndef _GENS_32X_H
-#define _GENS_32X_H
+#ifndef GENS_32X_HPP
+#define GENS_32X_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,4 +21,4 @@ int Do_32X_Frame(void);
 }
 #endif
 
-#endif
+#endif /* GENS_32X_HPP */

@@ -81,9 +81,9 @@ gens_SOURCES = \
 		emulator/g_main.cpp \
 		emulator/g_main_linux.c \
 		emulator/g_input.cpp \
-		emulator/g_md.c \
-		emulator/g_mcd.c \
-		emulator/g_32x.c \
+		emulator/g_md.cpp \
+		emulator/g_mcd.cpp \
+		emulator/g_32x.cpp \
 		emulator/g_32x_32bit.c \
 		emulator/g_palette.c \
 		emulator/g_update.cpp \
@@ -131,7 +131,7 @@ gens_SOURCES = \
 		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
-		ui/ui-common.c \
+		ui/gens_ui.cpp \
 		util/file/chd.c \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
@@ -143,7 +143,7 @@ gens_SOURCES = \
 		util/file/compress/Zip.cpp \
 		util/file/compress/7z.cpp \
 		util/gfx/scrshot.c \
-		util/sound/gym.c \
+		util/sound/gym.cpp \
 		util/sound/wave.c \
 		video/v_draw.cpp \
 		video/v_draw_sdl.cpp \
@@ -179,7 +179,7 @@ if LINUX
 if GENS_UI_GTK
 
 gens_SOURCES += \
-		ui/gtk/ui-common_gtk.c \
+		ui/gtk/ui-common_gtk.cpp \
 		ui/gtk/gtk-misc.c \
 		ui/gtk/gens/gens_window.c \
 		ui/gtk/gens/gens_window_callbacks.cpp \
@@ -189,13 +189,13 @@ gens_SOURCES += \
 		ui/gtk/game_genie/game_genie_window_misc.c \
 		ui/gtk/controller_config/controller_config_window.c \
 		ui/gtk/controller_config/controller_config_window_callbacks.c \
-		ui/gtk/controller_config/controller_config_window_misc.c \
-		ui/gtk/bios_misc_files/bios_misc_files_window.c \
+		ui/gtk/controller_config/controller_config_window_misc.cpp \
+		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
 		ui/gtk/bios_misc_files/bios_misc_files_window_misc.c \
 		ui/gtk/directory_config/directory_config_window.c \
 		ui/gtk/directory_config/directory_config_window_callbacks.c \
-		ui/gtk/directory_config/directory_config_window_misc.c \
+		ui/gtk/directory_config/directory_config_window_misc.cpp \
 		ui/gtk/general_options/general_options_window.c \
 		ui/gtk/general_options/general_options_window_callbacks.c \
 		ui/gtk/general_options/general_options_window_misc.cpp \
@@ -233,9 +233,9 @@ noinst_HEADERS = \
 		emulator/g_main_linux.h \
 		emulator/g_input.hpp \
 		emulator/g_input_linux.h \
-		emulator/g_md.h \
-		emulator/g_mcd.h \
-		emulator/g_32x.h \
+		emulator/g_md.hpp \
+		emulator/g_mcd.hpp \
+		emulator/g_32x.hpp \
 		emulator/g_32x_32bit.h \
 		emulator/g_palette.h \
 		emulator/g_update.hpp \
@@ -276,7 +276,7 @@ noinst_HEADERS = \
 		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
-		ui/ui-common.h \
+		ui/gens_ui.hpp \
 		util/file/chd.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
@@ -288,7 +288,7 @@ noinst_HEADERS = \
 		util/file/compress/Zip.hpp \
 		util/file/compress/7z.hpp \
 		util/gfx/scrshot.h \
-		util/sound/gym.h \
+		util/sound/gym.hpp \
 		util/sound/wave.h \
 		video/v_draw.hpp \
 		video/v_draw_sdl.hpp \
@@ -326,13 +326,13 @@ noinst_HEADERS += \
 		ui/gtk/game_genie/game_genie_window_misc.h \
 		ui/gtk/controller_config/controller_config_window.h \
 		ui/gtk/controller_config/controller_config_window_callbacks.h \
-		ui/gtk/controller_config/controller_config_window_misc.h \
-		ui/gtk/bios_misc_files/bios_misc_files_window.h \
+		ui/gtk/controller_config/controller_config_window_misc.hpp \
+		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \
 		ui/gtk/bios_misc_files/bios_misc_files_window_misc.h \
 		ui/gtk/directory_config/directory_config_window.h \
 		ui/gtk/directory_config/directory_config_window_callbacks.h \
-		ui/gtk/directory_config/directory_config_window_misc.h \
+		ui/gtk/directory_config/directory_config_window_misc.hpp \
 		ui/gtk/general_options/general_options_window.h \
 		ui/gtk/general_options/general_options_window_callbacks.h \
 		ui/gtk/general_options/general_options_window_misc.hpp \

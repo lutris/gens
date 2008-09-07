@@ -59,7 +59,7 @@
 
 // UI
 #include "emulator/ui_proxy.hpp"
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 
 // TODO: Make this a global array somewhere better.

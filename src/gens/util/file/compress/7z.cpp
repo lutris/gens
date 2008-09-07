@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "emulator/g_main.hpp"
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 // Pipe includes
 #include <fcntl.h>

@@ -4,12 +4,12 @@
 #include "port/port.h"
 #include "emulator/gens.h"
 #include "emulator/g_main.hpp"
-#include "emulator/g_md.h"
-#include "emulator/g_32x.h"
+#include "emulator/g_md.hpp"
+#include "emulator/g_32x.hpp"
 #include "emulator/g_input.hpp"
 #include "gens_core/misc/misc.h"
 #include "emulator/gens.h"
-#include "ui/ui-common.h"
+#include "ui/gens_ui.hpp"
 
 #include "debugger.h"
 

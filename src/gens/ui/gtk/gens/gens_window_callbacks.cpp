@@ -30,9 +30,9 @@
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 #include "game_genie/game_genie_window_misc.h"
-#include "controller_config/controller_config_window_misc.h"
+#include "controller_config/controller_config_window_misc.hpp"
 #include "bios_misc_files/bios_misc_files_window_misc.h"
-#include "directory_config/directory_config_window_misc.h"
+#include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
 #include "about/about_window.h"
 #include "color_adjust/color_adjust_window_misc.h"
@@ -47,11 +47,11 @@
 #endif
 
 #include "emulator/ui_proxy.hpp"
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 #include "util/file/config_file.hpp"
 
 #include "sdllayer/g_sdlsound.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.h"
@@ -59,7 +59,7 @@
 #include "util/gfx/scrshot.h"
 
 // Sega CD
-#include "emulator/g_mcd.h"
+#include "emulator/g_mcd.hpp"
 
 // 32X
 #include "gens_core/cpu/sh2/sh2.h"

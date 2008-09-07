@@ -2,8 +2,8 @@
  * GENS: Sega CD (Mega CD) initialization and main loop code.
  */
 
-#ifndef _GENS_MCD_H
-#define _GENS_MCD_H
+#ifndef GENS_MCD_HPP
+#define GENS_MCD_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,4 +25,4 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void);
 }
 #endif
 
-#endif
+#endif /* GENS_MCD_HPP */

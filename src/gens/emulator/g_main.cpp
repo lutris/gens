@@ -17,15 +17,15 @@
 #include "port/port.h"
 #include "port/ini.hpp"
 #include "gens.h"
-#include "g_md.h"
-#include "g_mcd.h"
-#include "g_32x.h"
+#include "g_md.hpp"
+#include "g_mcd.hpp"
+#include "g_32x.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.h"
 #include "util/file/config_file.hpp"
 #include "gens_core/vdp/vdp_io.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
 #include "ui_proxy.hpp"
@@ -52,7 +52,7 @@
 #include "sdllayer/g_sdlsound.h"
 #include "sdllayer/g_sdlinput.h"
 
-#include "ui-common.h"
+#include "gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
 
 // GENS Settings struct

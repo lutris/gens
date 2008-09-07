@@ -3,8 +3,8 @@
  */
 
 #include "gens.h"
-#include "g_32x.h"
-#include "g_md.h"
+#include "g_32x.hpp"
+#include "g_md.hpp"
 #include "g_main.hpp"
 #include "g_update.hpp"
 #include "sdllayer/g_sdlsound.h"
@@ -24,12 +24,12 @@
 #include "util/file/save.h"
 #include "util/file/ggenie.h"
 #include "gens_core/sound/pwm.h"
-#include "util/sound/gym.h"
+#include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/byteswap.h"
 
-#include "ui-common.h"
+#include "ui/gens_ui.hpp"
 
 // 32X 32-bit color functions
 #include "g_32x_32bit.h"
