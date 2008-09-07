@@ -86,8 +86,12 @@ void Sync_Gens_Window(void)
 void Sync_Gens_Window_FileMenu(void)
 {
 	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
-	GtkWidget *MItem_ROMHistory_SubMenu_Item, *MItem_SaveState;
+	GtkWidget *MItem_ROMHistory_SubMenu_Item;
+	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
+	GtkWidget *MItem_QuickLoad, *MItem_QuickSave;
+	GtkWidget *MItem_SaveState;
 	char ROM_Name[GENS_PATH_MAX];
+	gboolean saveStateEnable;
 	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
@@ -143,6 +147,17 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	gtk_widget_set_sensitive(MItem_ROMHistory, romsFound);
+	
+	// Savestate menu items
+	saveStateEnable = (Genesis_Started || SegaCD_Started || _32X_Started);
+	MItem_LoadState = lookup_widget(gens_window, "FileMenu_LoadState");
+	gtk_widget_set_sensitive(MItem_LoadState, saveStateEnable);
+	MItem_SaveStateAs = lookup_widget(gens_window, "FileMenu_SaveState");
+	gtk_widget_set_sensitive(MItem_SaveStateAs, saveStateEnable);
+	MItem_QuickLoad = lookup_widget(gens_window, "FileMenu_QuickLoad");
+	gtk_widget_set_sensitive(MItem_QuickLoad, saveStateEnable);
+	MItem_QuickSave = lookup_widget(gens_window, "FileMenu_QuickSave");
+	gtk_widget_set_sensitive(MItem_QuickSave, saveStateEnable);
 	
 	// Current savestate
 	sprintf(Str_Tmp, "FileMenu_ChangeState_SubMenu_%d", Current_State);
