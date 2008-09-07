@@ -141,6 +141,7 @@ gens_SOURCES = \
 		util/gfx/scrshot.c \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
+		video/C64_charset.c \
 		video/v_draw.cpp \
 		video/v_draw_sdl.cpp \
 		video/v_effects.cpp
@@ -281,6 +282,7 @@ noinst_HEADERS = \
 		util/gfx/scrshot.h \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
+		video/C64_charset.h \
 		video/v_draw.hpp \
 		video/v_draw_sdl.hpp \
 		video/v_effects.cpp
