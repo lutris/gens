@@ -301,7 +301,7 @@ static inline void drawChar_1x(pixel *screen, const int x, const int y, const in
 				if (!transparent)
 					*screenPos = dotColor;
 				else
-					*screenPos = (dotColor >> 1) + (*screenPos >> 1);
+					*screenPos = ((dotColor & transparentMask) >> 1) + ((*screenPos & transparentMask) >> 1);
 			}
 			cRow <<= 1;
 			screenPos++;
@@ -343,7 +343,7 @@ static inline void drawChar_2x(pixel *screen, const int x, const int y, const in
 				else
 				{
 					pixel trPix = (dotColor & transparentMask) >> 1;
-					*screenPos = trPix + ((*(screenPos) & transparentMask) >> 1);
+					*screenPos = trPix + ((*screenPos & transparentMask) >> 1);
 					*(screenPos + 1) = trPix + ((*(screenPos + 1) & transparentMask) >> 1);
 					*(screenPos + w) = trPix + ((*(screenPos + w) & transparentMask) >> 1);
 					*(screenPos + w + 1) = trPix + ((*(screenPos + w + 1) & transparentMask) >> 1);
