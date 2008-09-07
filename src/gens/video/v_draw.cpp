@@ -60,6 +60,9 @@ VDraw::VDraw()
 	m_IntroEffectColor = 7;
 	m_FullScreen = false;
 	m_fastBlur = false;
+	
+	// Calculate the text style.
+	calcTextStyle();
 }
 
 VDraw::VDraw(VDraw *oldDraw)
@@ -98,6 +101,9 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_IntroEffectColor = oldDraw->introEffectColor();
 	m_FullScreen = oldDraw->fullScreen();
 	m_fastBlur = oldDraw->fastBlur();
+	
+	// Calculate the text style.
+	calcTextStyle();
 }
 
 VDraw::~VDraw()
@@ -351,9 +357,9 @@ static inline void drawChar_2x(pixel *screen, const int x, const int y, const in
 
 
 template<typename pixel>
-void VDraw::drawText_int(pixel *screen, const int w, const int h,
+void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *msg,
 			 const pixel dotColor, const bool doubleSize,
-			 bool transparent, const pixel transparentMask, const char *msg)
+			 bool transparent, const pixel transparentMask)
 {
 	int x, y, msgLength, cPos;
 	
@@ -395,61 +401,88 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h,
 }
 
 
-void VDraw::drawText(void *screen, const int w, const int h,
-		     const unsigned char style, const char *msg)
+void VDraw::drawText(void *screen, const int w, const int h, const char *msg,
+		     const unsigned int color, const bool doubleSize, const bool transparent)
 {
 	if (bpp == 15 || bpp == 16)
 	{
-		// Calculate the dot color.
-		unsigned short dotColor;
-		unsigned short mask;
+		// 15/16-bit color.
+		drawText_int((unsigned short*)screen, w, h, msg, (unsigned short)color,
+			     doubleSize, transparent, (unsigned short)m_Transparency_Mask);
+	}
+	else // if (bpp == 32)
+	{
+		// 32-bit color.
+		drawText_int((unsigned int*)screen, w, h, msg, color,
+			      doubleSize, transparent, m_Transparency_Mask);
+	}
+}
+
+
+static inline void calcTextStyle_int(const unsigned char style,
+				     unsigned int *color,
+				     bool *doubleSize, bool *transparent)
+{
+	// Calculate the dot color.
+	
+	if (bpp == 15 || bpp == 16)
+	{
 		if (bpp == 15)
 		{
 			if ((style & 0x07) == STYLE_COLOR_RED)
-				dotColor = 0x7C00;
+				*color = 0x7C00;
 			else if ((style & 0x07) == STYLE_COLOR_GREEN)
-				dotColor = 0x03E0;
+				*color = 0x03E0;
 			else if ((style & 0x07) == STYLE_COLOR_BLUE)
-				dotColor = 0x001F;
-			else // if (style & STYLE_COLOR_WHITE)
-				dotColor = 0x7FFF;
-			mask = 0x7BDE;
+				*color = 0x001F;
+			else //if ((style & 0x07) == STYLE_COLOR_WHITE)
+				*color = 0x7FFF;
 		}
 		else // if (bpp == 16)
 		{
 			if ((style & 0x07) == STYLE_COLOR_RED)
-				dotColor = 0xF800;
+				*color = 0xF800;
 			else if ((style & 0x07) == STYLE_COLOR_GREEN)
-				dotColor = 0x07E0;
+				*color = 0x07E0;
 			else if ((style & 0x07) == STYLE_COLOR_BLUE)
-				dotColor = 0x001F;
-			else // if (style & STYLE_COLOR_WHITE)
-				dotColor = 0xFFFF;
-			mask = 0xF7DE;
+				*color = 0x001F;
+			else //if ((style & 0x07) == STYLE_COLOR_WHITE)
+				*color = 0xFFFF;
 		}
-		drawText_int((unsigned short*)screen, w, h, dotColor,
-			     (style & STYLE_DOUBLESIZE),
-			     (style & STYLE_TRANSPARENT), mask, msg);
 	}
-	else // if (bpp == 32)
+	else //if (bpp == 32)
 	{
-		// Calculate the dot color.
-		unsigned int dotColor;
-		unsigned int mask;
 		if ((style & 0x07) == STYLE_COLOR_RED)
-			dotColor = 0xFF0000;
+			*color = 0xFF0000;
 		else if ((style & 0x07) == STYLE_COLOR_GREEN)
-			dotColor = 0x00FF00;
+			*color = 0x00FF00;
 		else if ((style & 0x07) == STYLE_COLOR_BLUE)
-			dotColor = 0x0000FF;
-		else // if (style & STYLE_COLOR_WHITE)
-			dotColor = 0xFFFFFF;
-		mask = 0xFEFEFE;
-		
-		drawText_int((unsigned int*)screen, w, h, dotColor,
-			     (style & STYLE_DOUBLESIZE),
-			     (style & STYLE_TRANSPARENT), mask, msg);
+			*color = 0x0000FF;
+		else //if ((style & 0x07) == STYLE_COLOR_WHITE)
+			*color = 0xFFFFFF;
 	}
+	
+	*doubleSize = (style & STYLE_DOUBLESIZE);
+	*transparent = (style & STYLE_TRANSPARENT);
+}
+
+
+/**
+ * calcTextStyle(): Calculates the text style values
+ */
+void VDraw::calcTextStyle(void)
+{
+	// Calculate the transparency mask.
+	if (bpp == 15)
+		m_Transparency_Mask = 0x7BDE;
+	else if (bpp == 16)
+		m_Transparency_Mask = 0xF7DE;
+	else //if (bpp == 32)
+		m_Transparency_Mask = 0xFEFEFE;
+	
+	// Calculate the style values for FPS and Msg.
+	calcTextStyle_int(m_FPSStyle, &m_FPSColor, &m_FPSDoubleSize, &m_FPSTransparent);
+	calcTextStyle_int(m_MsgStyle, &m_MsgColor, &m_MsgDoubleSize, &m_MsgTransparent);
 }
 
 
@@ -481,6 +514,9 @@ void VDraw::setBpp(int newBpp)
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
+	
+	// Calculate the text style.
+	calcTextStyle();
 	
 	// Synchronize the Graphics menu.
 	Sync_Gens_Window_GraphicsMenu();
@@ -689,7 +725,8 @@ void VDraw::setMsgStyle(unsigned char newMsgStyle)
 		return;
 	m_MsgStyle = newMsgStyle;
 	
-	// TODO: Figure out what to do here...
+	// Calculate the text style.
+	calcTextStyle();
 }
 
 
@@ -703,7 +740,8 @@ void VDraw::setFPSStyle(unsigned char newFPSStyle)
 		return;
 	m_FPSStyle = newFPSStyle;
 	
-	// TODO: Figure out what to do here...
+	// Calculate the text style.
+	calcTextStyle();
 }
 
 

@@ -117,27 +117,43 @@ class VDraw
 		virtual void updateRenderer(void) = 0;
 		
 		// Draw a line of text on the screen.
-		void drawText(void *screen, const int w, const int h,
-			      const unsigned char style, const char *msg);
+		void drawText(void *screen, const int w, const int h, const char *msg,
+			      const unsigned int color, const bool doubleSize, const bool transparent);
 		
 		template<typename pixel>
-		void drawText_int(pixel *screen, const int w, const int h,
+		void drawText_int(pixel *screen, const int w, const int h, const char *msg,
 				  const pixel dotColor, const bool doubleSize,
-				  const bool transparent, const pixel transparentMask, const char *msg);
-
+				  const bool transparent, const pixel transparentMask);
+		
+		// Calculates the text style values.
+		void calcTextStyle(void);
+		
+		// Transparency mask
+		unsigned int m_Transparency_Mask;
+		
 		// FPS counter
 		bool m_FPSEnabled; // Is the FPS counter currently enabled by the user?
 		float m_FPS, m_FPS_Frames[8];
 		unsigned int m_FPS_OldTime, m_FPS_ViewFPS, m_FPS_IndexFPS;
 		unsigned int m_FPS_FreqCPU[2], m_FPS_NewTime[2];
+		
+		// FPS style values
 		unsigned char m_FPSStyle;
+		unsigned int m_FPSColor;
+		bool m_FPSDoubleSize;
+		bool m_FPSTransparent;
 		
 		// On-screen message
 		bool m_MsgEnabled; // Is the message function enabled by the user?
 		string m_MsgText;
 		bool m_MsgVisible; // Is the message currently visible onscreen?
 		int m_MsgTime;
+		
+		// Message style values
 		unsigned char m_MsgStyle;
+		unsigned int m_MsgColor;
+		bool m_MsgDoubleSize;
+		bool m_MsgTransparent;
 		
 		// Intro effect color
 		unsigned char m_IntroEffectColor;
