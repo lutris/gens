@@ -60,41 +60,31 @@ void Fast_Blur(void)
 static void Fast_Blur_16(void)
 {
 	int pixel;
-	unsigned short color = 0, colorRB, colorG;
-	unsigned short blurColorRB = 0, blurColorG = 0;
-	
-	unsigned short maskRB, maskG;
+	unsigned short color = 0;
+	unsigned short blurColor = 0;
+	unsigned short mask;
 	
 	// Check bpp.
 	if (bpp == 15)
-	{
-		maskRB = 0x3C0F;
-		maskG = 0x01E0;
-	}
+		mask = 0x3DEF;
 	else //if (bpp == 16)
-	{
-		maskRB = 0x780F;
-		maskG = 0x03E0;
-	}
+		mask = 0x7BEF;
 	
 	for (pixel = 1; pixel < (336 * 240); pixel++)
 	{
 		color = MD_Screen[pixel] >> 1;
 		
-		// Split the RB and G components.
-		colorRB = color & maskRB;
-		colorG = color & maskG;
+		// Mask off the MSB of each color component.
+		color &= mask;
 		
-		// Blur the colors with the previous pixels.
-		blurColorRB += colorRB;
-		blurColorG += colorG;
+		// Blur the color with the previous pixel.
+		blurColor += color;
 		
 		// Draw the new pixel.
-		MD_Screen[pixel - 1] = blurColorRB + blurColorG;
+		MD_Screen[pixel - 1] = blurColor;
 		
-		// Save the components for the next pixel.
-		blurColorRB = colorRB;
-		blurColorG = colorG;
+		// Save the color for the next pixel.
+		blurColor = color;
 	}
 }
 #endif
@@ -103,26 +93,23 @@ static void Fast_Blur_16(void)
 static void Fast_Blur_32(void)
 {
 	int pixel;
-	int color = 0, colorRB, colorG;
-	int blurColorRB = 0, blurColorG = 0;
+	unsigned int color = 0;
+	unsigned int blurColor = 0;
 	
 	for (pixel = 1; pixel < (336 * 240); pixel++)
 	{
 		color = MD_Screen32[pixel] >> 1;
 		
-		// Split the RB and G components.
-		colorRB = color & 0x7F007F;
-		colorG = color & 0x007F00;
+		// Mask off the MSB of each color component.
+		color &= 0x7F7F7F;
 		
-		// Blur the colors with the previous pixels.
-		blurColorRB += colorRB;
-		blurColorG += colorG;
+		// Blur the color with the previous pixel.
+		blurColor += color;
 		
 		// Draw the new pixel.
-		MD_Screen32[pixel - 1] = blurColorRB + blurColorG;
+		MD_Screen32[pixel - 1] = blurColor;//blurColorRB + blurColorG;
 		
-		// Save the components for the next pixel.
-		blurColorRB = colorRB;
-		blurColorG = colorG;
+		// Save the color for the next pixel.
+		blurColor = color;
 	}
 }
