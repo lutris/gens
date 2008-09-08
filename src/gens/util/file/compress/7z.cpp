@@ -222,8 +222,6 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 		return 0;
 	}
 	
-	printf("listStart: %d; listStartLF: %d\n", listStart, listStartLF);
-	
 	// Create the list.
 	lst = new list<CompressedFile>;
 	
