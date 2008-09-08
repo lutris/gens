@@ -111,8 +111,8 @@ static void Fast_Blur_32(void)
 		color = MD_Screen32[pixel] >> 1;
 		
 		// Split the RB and G components.
-		colorRB = color & 0xFF00FF;
-		colorG = color & 0x00FF00;
+		colorRB = color & 0x7F007F;
+		colorG = color & 0x007F00;
 		
 		// Blur the colors with the previous pixels.
 		blurColorRB += colorRB;
