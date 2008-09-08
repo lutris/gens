@@ -117,7 +117,7 @@ int Update_Emulation(void)
 	{
 		if (ice >= 3)
 			ice = 1;
-		if (*((unsigned short*)&Ram_68k[0xFFB0]))
+		if (*((unsigned short*)&Ram_68k[0xFFB0]) == 7)
 		{
 			if (ice == 1)
 				ice = 2;
