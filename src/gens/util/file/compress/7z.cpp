@@ -122,8 +122,6 @@ int _7z::getNumFiles(string zFilename)
 		return 0;
 	}
 	
-	printf("listStart: %d; listStartLF: %d\n", listStart, listStartLF);
-	
 	// Parse all lines until we hit another "---" (or EOF).
 	unsigned int curStartPos = listStartLF + 1;
 	unsigned int curEndPos;
