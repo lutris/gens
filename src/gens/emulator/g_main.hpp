@@ -21,10 +21,6 @@ extern "C" {
 #error Unsupported operating system.
 #endif
 
-#define UPDATE_GTK 0
-#define UPDATE_GTK_SOUNDOFF 1
-#define UPDATE_GTK_SOUNDON 2
-
 
 // Gens settings
 struct Gens_Settings_t
