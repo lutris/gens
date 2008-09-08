@@ -14,7 +14,6 @@
 #include "emulator/g_main.hpp"
 #include "emulator/g_input.hpp"
 #include "sdllayer/g_sdlsound.h"
-#include "sdllayer/g_sdlinput.h"
 #include "util/gfx/scrshot.h"
 #include "util/file/ggenie.h"
 #include "gens_core/misc/misc.h"

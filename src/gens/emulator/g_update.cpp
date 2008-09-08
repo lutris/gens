@@ -11,7 +11,6 @@
 #include "ui/gens_ui.hpp"
 
 #include "sdllayer/g_sdlsound.h"
-#include "sdllayer/g_sdlinput.h"
 
 #ifndef NULL
 #define NULL 0

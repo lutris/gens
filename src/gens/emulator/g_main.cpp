@@ -50,7 +50,6 @@
 
 // TODO: Eliminate the dependency on these files.
 #include "sdllayer/g_sdlsound.h"
-#include "sdllayer/g_sdlinput.h"
 
 #include "gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
