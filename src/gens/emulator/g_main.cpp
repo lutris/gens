@@ -225,6 +225,7 @@ static void Init_Settings(void)
 	Video.OpenGL = 1;
 	Video.Width_GL = 640;
 	Video.Height_GL = 480;
+	Video.glLinearFilter = 0;
 #endif
 	
 	// Default bpp.

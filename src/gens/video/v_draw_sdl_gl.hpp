@@ -86,7 +86,6 @@ class VDraw_SDL_GL : public VDraw
 		int rowLength;
 		int textureSize;
 		int nonpow2tex;
-		bool glLinearFilter;
 		unsigned char *filterBuffer;
 		int filterBufferSize;
 		

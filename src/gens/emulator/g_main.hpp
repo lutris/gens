@@ -70,6 +70,7 @@ struct Gens_VideoSettings_t
 	int OpenGL;
 	int Width_GL;
 	int Height_GL;
+	int glLinearFilter;
 #endif
 };
 

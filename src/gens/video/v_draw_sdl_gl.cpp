@@ -22,7 +22,6 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 	textures[1] = 0;
 	textureSize = 256;
 	nonpow2tex = 0;
-	glLinearFilter = false;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
 	
@@ -44,7 +43,6 @@ VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
 	textures[1] = 0;
 	textureSize = 256;
 	nonpow2tex = 0;
-	glLinearFilter = false;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
 	
@@ -345,7 +343,7 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
 	
-	if (glLinearFilter)
+	if (Video.glLinearFilter)
 		glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	else
 		glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -383,7 +381,7 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	
-	if (glLinearFilter)
+	if (Video.glLinearFilter)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	else
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
