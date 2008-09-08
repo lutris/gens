@@ -45,11 +45,11 @@ void update_SDL_events(void)
 				break;
 			
 			case SDL_JOYBUTTONDOWN:
-				joystate[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = 1;
+				input->m_joyState[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = 1;
 				break;
 			
 			case SDL_JOYBUTTONUP:
-				joystate[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = 0;
+				input->m_joyState[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = 0;
 				break;
 			
 			case SDL_JOYHATMOTION:
@@ -70,99 +70,99 @@ void SDL_Check_Joystick_Axis(SDL_Event *event)
 		{
 			if (event->jaxis.axis == 0)
 			{
-				joystate[0x100 * event->jaxis.which + 0x3] = 1;
-				joystate[0x100 * event->jaxis.which + 0x4] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x3] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x4] = 0;
 			}
 			else if (event->jaxis.axis == 1)
 			{
-				joystate[0x100 * event->jaxis.which + 0x1] = 1;
-				joystate[0x100 * event->jaxis.which + 0x2] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x1] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x2] = 0;
 			}
 			else if (event->jaxis.axis == 2)
 			{
-				joystate[0x100 * event->jaxis.which + 0x7] = 1;
-				joystate[0x100 * event->jaxis.which + 0x8] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x7] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x8] = 0;
 			}
 			else if (event->jaxis.axis == 3)
 			{
-				joystate[0x100 * event->jaxis.which + 0x5] = 1;
-				joystate[0x100 * event->jaxis.which + 0x6] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x5] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x6] = 0;
 			}
 			else if (event->jaxis.axis == 4)
 			{
-				joystate[0x100 * event->jaxis.which + 0xB] = 1;
-				joystate[0x100 * event->jaxis.which + 0xC] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0xB] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0xC] = 0;
 			}
 			else if (event->jaxis.axis == 5)
 			{
-				joystate[0x100 * event->jaxis.which + 0x9] = 1;
-				joystate[0x100 * event->jaxis.which + 0xA] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x9] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0xA] = 0;
 			}
 		}
 		else if (event->jaxis.value > 10000)
 		{
 			if (event->jaxis.axis == 0)
 			{
-				joystate[0x100 * event->jaxis.which + 0x3] = 0;
-				joystate[0x100 * event->jaxis.which + 0x4] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x3] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x4] = 1;
 			}
 			else if (event->jaxis.axis == 1)
 			{
-				joystate[0x100 * event->jaxis.which + 0x1] = 0;
-				joystate[0x100 * event->jaxis.which + 0x2] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x1] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x2] = 1;
 			}
 			else if (event->jaxis.axis == 2)
 			{
-				joystate[0x100 * event->jaxis.which + 0x7] = 0;
-				joystate[0x100 * event->jaxis.which + 0x8] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x7] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x8] = 1;
 			}
 			else if (event->jaxis.axis == 3)
 			{
-				joystate[0x100 * event->jaxis.which + 0x5] = 0;
-				joystate[0x100 * event->jaxis.which + 0x6] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x5] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x6] = 1;
 			}
 			else if (event->jaxis.axis == 4)
 			{
-				joystate[0x100 * event->jaxis.which + 0xB] = 0;
-				joystate[0x100 * event->jaxis.which + 0xC] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0xB] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0xC] = 1;
 			}
 			else if (event->jaxis.axis == 5)
 			{
-				joystate[0x100 * event->jaxis.which + 0x9] = 0;
-				joystate[0x100 * event->jaxis.which + 0xA] = 1;
+				input->m_joyState[0x100 * event->jaxis.which + 0x9] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0xA] = 1;
 			}
 		}
 		else
 		{
 			if (event->jaxis.axis == 0)
 			{
-				joystate[0x100 * event->jaxis.which + 0x4] = 0;
-				joystate[0x100 * event->jaxis.which + 0x3] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x4] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x3] = 0;
 			}
 			else if (event->jaxis.axis == 1)
 			{
-				joystate[0x100 * event->jaxis.which + 0x2] = 0;
-				joystate[0x100 * event->jaxis.which + 0x1] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x2] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x1] = 0;
 			}
 			else if (event->jaxis.axis == 2)
 			{
-				joystate[0x100 * event->jaxis.which + 0x8] = 0;
-				joystate[0x100 * event->jaxis.which + 0x7] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x8] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x7] = 0;
 			}
 			else if (event->jaxis.axis == 3)
 			{
-				joystate[0x100 * event->jaxis.which + 0x6] = 0;
-				joystate[0x100 * event->jaxis.which + 0x5] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x6] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x5] = 0;
 			}
 			else if (event->jaxis.axis == 4)
 			{
-				joystate[0x100 * event->jaxis.which + 0xC] = 0;
-				joystate[0x100 * event->jaxis.which + 0xB] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0xC] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0xB] = 0;
 			}
 			else if (event->jaxis.axis == 5)
 			{
-				joystate[0x100 * event->jaxis.which + 0xA] = 0;
-				joystate[0x100 * event->jaxis.which + 0x9] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0xA] = 0;
+				input->m_joyState[0x100 * event->jaxis.which + 0x9] = 0;
 			}
 		}
 	}

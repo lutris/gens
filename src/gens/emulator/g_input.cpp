@@ -43,44 +43,14 @@
 int mod = 0;
 
 
-// Controller layouts.
-struct K_Def Keys_Def[8];
-
-
-// Default controller layouts.
-const struct K_Def Keys_Default[8] =
-{
-	// Player 1
-	{GENS_KEY_RETURN, GENS_KEY_RSHIFT,
-	 GENS_KEY_a, GENS_KEY_s, GENS_KEY_d,
-	 GENS_KEY_z, GENS_KEY_x, GENS_KEY_c,
-	 GENS_KEY_UP, GENS_KEY_DOWN, GENS_KEY_LEFT, GENS_KEY_RIGHT},
-	
-	// Players 1B, 1C, 1D
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	
-	// Player 2
-	{GENS_KEY_u, GENS_KEY_t,
-	 GENS_KEY_k, GENS_KEY_l, GENS_KEY_m,
-	 GENS_KEY_i, GENS_KEY_o, GENS_KEY_p,
-	 GENS_KEY_y, GENS_KEY_h, GENS_KEY_h, GENS_KEY_j},
-
-	// Players 2B, 2C, 2D
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-};
-
-
 /**
  * Input_KeyDown(): Check if a key is pressed.
  * @param key Keycode.
  */
 void Input_KeyDown(int key)
 {
-	Keys[key] = 1;
+	input->keyDown(key);
+	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -461,7 +431,7 @@ void Input_KeyDown(int key)
  */
 void Input_KeyUp(int key)
 {
-	Keys[key] = 0;
+	input->keyUp(key);
 	
 	switch(key)
 	{

@@ -23,8 +23,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "controller_config_window.h"
-#include "controller_config_window_callbacks.h"
+#include "controller_config_window.hpp"
+#include "controller_config_window_callbacks.hpp"
 #include "controller_config_window_misc.hpp"
 
 #include "gtk-misc.h"

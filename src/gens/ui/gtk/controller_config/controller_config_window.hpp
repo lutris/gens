@@ -27,12 +27,12 @@
 extern "C" {
 #endif
 
-#include "emulator/g_input.hpp"
+#include "input/input.hpp"
 #include <gtk/gtk.h>
 
 GtkWidget* create_controller_config_window(void); 
 extern GtkWidget *controller_config_window;
-extern struct K_Def Keys_Config[8];
+extern struct KeyMap keyConfig[8];
 
 #ifdef __cplusplus
 }

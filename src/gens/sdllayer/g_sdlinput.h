@@ -1,3 +1,5 @@
+#if 0
+
 #ifndef GENS_SDLINPUT_H
 #define GENS_SDLINPUT_H
 
@@ -30,6 +32,8 @@ extern struct SDL_Joystick* joy[6];
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

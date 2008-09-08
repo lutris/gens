@@ -22,8 +22,8 @@
 
 #include <string.h>
 
-#include "controller_config_window.h"
-#include "controller_config_window_callbacks.h"
+#include "controller_config_window.hpp"
+#include "controller_config_window_callbacks.hpp"
 #include "controller_config_window_misc.hpp"
 #include "gens/gens_window.h"
 
@@ -33,7 +33,6 @@
 #include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
 #include "ui/gens_ui.hpp"
-#include "sdllayer/g_sdlinput.h"
 
 
 /**
@@ -62,7 +61,7 @@ void Open_Controller_Config(void)
 	gtk_window_set_transient_for(GTK_WINDOW(cc), GTK_WINDOW(gens_window));
 	
 	// Copy the current controller key configuration.
-	memcpy(Keys_Config, Keys_Def, sizeof(Keys_Def));
+	memcpy(keyConfig, input->m_keyMap, sizeof(keyConfig));
 	
 	// Set the controller types.
 	// (Controller_1_Type & 0x10) == Teamplayer enabled
@@ -115,54 +114,54 @@ int Reconfigure_Input(int player, int padtype)
 	// TODO: Somehow condense this code.
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP");
-	Keys_Config[player].Up = Get_Key();
+	keyConfig[player].Up = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN");
-	Keys_Config[player].Down = Get_Key();
+	keyConfig[player].Down = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT");
-	Keys_Config[player].Left = Get_Key();
+	keyConfig[player].Left = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT");
-	Keys_Config[player].Right = Get_Key();
+	keyConfig[player].Right = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START");
-	Keys_Config[player].Start = Get_Key();
+	keyConfig[player].Start = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A");
-	Keys_Config[player].A = Get_Key();
+	keyConfig[player].A = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B");
-	Keys_Config[player].B = Get_Key();
+	keyConfig[player].B = input->getKey();
 	GensUI::sleep(250);
 	
 	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C");
-	Keys_Config[player].C = Get_Key();
+	keyConfig[player].C = input->getKey();
 	GensUI::sleep(250);
 	
 	if (padtype & 0x01)
 	{
 		// 6-button control pad. Get additional keys.
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE");
-		Keys_Config[player].Mode = Get_Key();
+		keyConfig[player].Mode = input->getKey();
 		GensUI::sleep(250);
 		
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X");
-		Keys_Config[player].X = Get_Key();
+		keyConfig[player].X = input->getKey();
 		GensUI::sleep(250);
 		
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y");
-		Keys_Config[player].Y = Get_Key();
+		keyConfig[player].Y = input->getKey();
 		GensUI::sleep(250);
 		
 		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z");
-		Keys_Config[player].Z = Get_Key();
+		keyConfig[player].Z = input->getKey();
 		GensUI::sleep(250);
 	}
 	
@@ -170,7 +169,7 @@ int Reconfigure_Input(int player, int padtype)
 	gtk_label_set_text(GTK_LABEL(label_echo),
 			"CONFIGURATION SUCCESSFUL.\n"
 			"PRESS ANY KEY TO CONTINUE...");
-	Get_Key();
+	input->getKey();
 	GensUI::sleep(500);
 	gtk_label_set_text(GTK_LABEL(label_echo), "");
 	
@@ -194,7 +193,7 @@ void Controller_Config_Save(void)
 	GtkWidget *combobox_padtype_2D;
 	
 	// Copy the new controller key configuration.
-	memcpy(Keys_Def, Keys_Config, sizeof(Keys_Def));
+	memcpy(input->m_keyMap, keyConfig, sizeof(input->m_keyMap));
 
 	// Set the controller types.
 	// (Controller_1_Type & 0x10) == Teamplayer enabled

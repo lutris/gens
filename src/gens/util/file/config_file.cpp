@@ -223,29 +223,29 @@ int Save_Config(const char *File_Name)
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Up);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Up);
 		sprintf(tmpKey, "%s.Down", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Down);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Down);
 		sprintf(tmpKey, "%s.Left", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Left);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Left);
 		sprintf(tmpKey, "%s.Right", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Right);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Right);
 		sprintf(tmpKey, "%s.Start", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Start);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Start);
 		sprintf(tmpKey, "%s.A", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].A);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].A);
 		sprintf(tmpKey, "%s.B", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].B);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].B);
 		sprintf(tmpKey, "%s.C", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].C);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].C);
 		sprintf(tmpKey, "%s.Mode", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Mode);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Mode);
 		sprintf(tmpKey, "%s.X", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].X);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].X);
 		sprintf(tmpKey, "%s.Y", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Y);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Y);
 		sprintf(tmpKey, "%s.Z", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, Keys_Def[i].Z);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Z);
 	}
 	
 	// Save the INI file.
@@ -491,29 +491,29 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(Str_Tmp, "%s.Up", PlayerNames[i]);
-		Keys_Def[i].Up = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Up);
+		input->m_keyMap[i].Up = cfg.getInt("Input", Str_Tmp, keyDefault[i].Up);
 		sprintf(Str_Tmp, "%s.Down", PlayerNames[i]);
-		Keys_Def[i].Down = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Down);
+		input->m_keyMap[i].Down = cfg.getInt("Input", Str_Tmp, keyDefault[i].Down);
 		sprintf(Str_Tmp, "%s.Left", PlayerNames[i]);
-		Keys_Def[i].Left = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Left);
+		input->m_keyMap[i].Left = cfg.getInt("Input", Str_Tmp, keyDefault[i].Left);
 		sprintf(Str_Tmp, "%s.Right", PlayerNames[i]);
-		Keys_Def[i].Right = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Right);
+		input->m_keyMap[i].Right = cfg.getInt("Input", Str_Tmp, keyDefault[i].Right);
 		sprintf(Str_Tmp, "%s.Start", PlayerNames[i]);
-		Keys_Def[i].Start = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Start);
+		input->m_keyMap[i].Start = cfg.getInt("Input", Str_Tmp, keyDefault[i].Start);
 		sprintf(Str_Tmp, "%s.A", PlayerNames[i]);
-		Keys_Def[i].A = cfg.getInt("Input", Str_Tmp, Keys_Default[i].A);
+		input->m_keyMap[i].A = cfg.getInt("Input", Str_Tmp, keyDefault[i].A);
 		sprintf(Str_Tmp, "%s.B", PlayerNames[i]);
-		Keys_Def[i].B = cfg.getInt("Input", Str_Tmp, Keys_Default[i].B);
+		input->m_keyMap[i].B = cfg.getInt("Input", Str_Tmp, keyDefault[i].B);
 		sprintf(Str_Tmp, "%s.C", PlayerNames[i]);
-		Keys_Def[i].C = cfg.getInt("Input", Str_Tmp, Keys_Default[i].C);
+		input->m_keyMap[i].C = cfg.getInt("Input", Str_Tmp, keyDefault[i].C);
 		sprintf(Str_Tmp, "%s.Mode", PlayerNames[i]);
-		Keys_Def[i].Mode = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Mode);
+		input->m_keyMap[i].Mode = cfg.getInt("Input", Str_Tmp, keyDefault[i].Mode);
 		sprintf(Str_Tmp, "%s.X", PlayerNames[i]);
-		Keys_Def[i].X = cfg.getInt("Input", Str_Tmp, Keys_Default[i].X);
+		input->m_keyMap[i].X = cfg.getInt("Input", Str_Tmp, keyDefault[i].X);
 		sprintf(Str_Tmp, "%s.Y", PlayerNames[i]);
-		Keys_Def[i].Y = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Y);
+		input->m_keyMap[i].Y = cfg.getInt("Input", Str_Tmp, keyDefault[i].Y);
 		sprintf(Str_Tmp, "%s.Z", PlayerNames[i]);
-		Keys_Def[i].Z = cfg.getInt("Input", Str_Tmp, Keys_Default[i].Z);
+		input->m_keyMap[i].Z = cfg.getInt("Input", Str_Tmp, keyDefault[i].Z);
 	}
 	
 	// Create the TeamPlayer I/O table.

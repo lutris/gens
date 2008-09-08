@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "controller_config_window.h"
-#include "controller_config_window_callbacks.h"
+#include "controller_config_window.hpp"
+#include "controller_config_window_callbacks.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -40,7 +40,7 @@ GtkWidget *controller_config_window = NULL;
 
 
 // Internal copy of Keys_Def[], which is copied when OK is clicked.
-struct K_Def Keys_Config[8];
+struct KeyMap keyConfig[8];
 
 
 static void AddControllerVBox(GtkWidget *vbox, int port);

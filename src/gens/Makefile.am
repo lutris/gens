@@ -75,7 +75,7 @@ bin_PROGRAMS = gens
 gens_SOURCES = \
 		emulator/gens.c \
 		emulator/g_main.cpp \
-		emulator/g_main_linux.c \
+		emulator/g_main_linux.cpp \
 		emulator/g_input.cpp \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
@@ -123,7 +123,6 @@ gens_SOURCES = \
 		port/port.c \
 		port/timer.c \
 		port/ini.cpp \
-		sdllayer/g_sdlinput.c \
 		sdllayer/g_sdlsound.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
@@ -181,8 +180,8 @@ gens_SOURCES += \
 		ui/gtk/game_genie/game_genie_window.c \
 		ui/gtk/game_genie/game_genie_window_callbacks.c \
 		ui/gtk/game_genie/game_genie_window_misc.c \
-		ui/gtk/controller_config/controller_config_window.c \
-		ui/gtk/controller_config/controller_config_window_callbacks.c \
+		ui/gtk/controller_config/controller_config_window.cpp \
+		ui/gtk/controller_config/controller_config_window_callbacks.cpp \
 		ui/gtk/controller_config/controller_config_window_misc.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
@@ -224,7 +223,7 @@ endif
 noinst_HEADERS = \
 		emulator/gens.h \
 		emulator/g_main.hpp \
-		emulator/g_main_linux.h \
+		emulator/g_main_linux.hpp \
 		emulator/g_input.hpp \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
@@ -266,7 +265,6 @@ noinst_HEADERS = \
 		port/port.h \
 		port/timer.h \
 		port/ini.hpp \
-		sdllayer/g_sdlinput.h \
 		sdllayer/g_sdlsound.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
@@ -321,8 +319,8 @@ noinst_HEADERS += \
 		ui/gtk/game_genie/game_genie_window.h \
 		ui/gtk/game_genie/game_genie_window_callbacks.h \
 		ui/gtk/game_genie/game_genie_window_misc.h \
-		ui/gtk/controller_config/controller_config_window.h \
-		ui/gtk/controller_config/controller_config_window_callbacks.h \
+		ui/gtk/controller_config/controller_config_window.hpp \
+		ui/gtk/controller_config/controller_config_window_callbacks.hpp \
 		ui/gtk/controller_config/controller_config_window_misc.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \

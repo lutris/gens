@@ -10,6 +10,32 @@
 #include "gens_core/io/io.h"
 
 
+const struct KeyMap keyDefault[8] =
+{
+	// Player 1
+	{GENS_KEY_RETURN, GENS_KEY_RSHIFT,
+	GENS_KEY_a, GENS_KEY_s, GENS_KEY_d,
+	GENS_KEY_z, GENS_KEY_x, GENS_KEY_c,
+	GENS_KEY_UP, GENS_KEY_DOWN, GENS_KEY_LEFT, GENS_KEY_RIGHT},
+	
+	// Players 1B, 1C, 1D
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	
+	// Player 2
+	{GENS_KEY_u, GENS_KEY_t,
+	GENS_KEY_k, GENS_KEY_l, GENS_KEY_m,
+	GENS_KEY_i, GENS_KEY_o, GENS_KEY_p,
+	GENS_KEY_y, GENS_KEY_h, GENS_KEY_h, GENS_KEY_j},
+	
+	// Players 2B, 2C, 2D
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+
 Input::Input()
 {
 	// Initialize m_keys and m_joyState.
@@ -94,12 +120,12 @@ bool Input::checkKeyPressed(unsigned int key)
 
 
 #define CHECK_BUTTON(player, ctrl, button, mask)		\
-	if (checkKeyPressed(Keys_Def[player].button)) 		\
+	if (checkKeyPressed(m_keyMap[player].button)) 		\
 		Controller_ ## ctrl ## _Buttons &= ~mask;	\
 	else Controller_ ## ctrl ## _Buttons |= mask;
 
 #define CHECK_DIR(player, ctrl)						\
-	if (checkKeyPressed(Keys_Def[player].Up)) 			\
+	if (checkKeyPressed(m_keyMap[player].Up)) 			\
 	{					   			\
 		Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_UP;	\
 		Controller_ ## ctrl ## _Buttons |= CONTROLLER_DOWN;	\
@@ -109,7 +135,7 @@ bool Input::checkKeyPressed(unsigned int key)
 		Controller_ ## ctrl ## _Buttons |= CONTROLLER_UP;	\
 		CHECK_BUTTON(player, ctrl, Down, CONTROLLER_DOWN)	\
 	}								\
-	if (checkKeyPressed(Keys_Def[player].Left))			\
+	if (checkKeyPressed(m_keyMap[player].Left))			\
 	{					   			\
 		Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_LEFT;	\
 		Controller_ ## ctrl ## _Buttons |= CONTROLLER_RIGHT;	\

@@ -104,6 +104,11 @@ static int Gens_Running = 0;
 #include "video/v_draw_sdl_gl.hpp"
 VDraw *draw;
 
+// New input layer.
+#include "input/input.hpp"
+#include "input/input_sdl.hpp"
+Input *input;
+
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
 static int Build_Language_String (void)
@@ -320,8 +325,6 @@ int Init(void)
 	PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
 	PWM_Init();
 	
-	Init_Input();
-	
 	// Initialize the CD-ROM drive, if available.
 #ifdef GENS_CDROM
 	Init_CD_Driver();
@@ -340,17 +343,21 @@ int Init(void)
 void End_All(void)
 {
 	Free_Rom(Game);
-	End_Input();
 	YM2612_End();
 	End_Sound();
 #ifdef GENS_CDROM
 	End_CD_Driver();
 #endif
 	
+	// Shut down the video subsystem.
 	draw->End_Video();
 	draw->Shut_Down();
 	delete draw;
 	draw = NULL;
+	
+	// Shut down the input subsystem.
+	delete input;
+	input = NULL;
 }
 
 
@@ -445,6 +452,10 @@ int main(int argc, char *argv[])
 	// Initialize the drawing object.
 	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
 	draw = new VDraw_SDL();
+	
+	// Initialize the input object.
+	// TODO: Select Input_SDL() or Input_DInput() depending on other factors.
+	input = new Input_SDL();
 	
 	// Initialize the Settings struct.
 	Init_Settings();

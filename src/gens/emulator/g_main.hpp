@@ -14,7 +14,7 @@ extern "C" {
 
 // OS-specific includes.
 #if (defined(__linux__))
-#include "g_main_linux.h"
+#include "g_main_linux.hpp"
 #elif (defined(__WIN32__))
 #error TODO: Add Win32 support.
 #else
@@ -195,6 +195,10 @@ void Set_GL_Resolution(int w, int h);
 // New VDraw object
 #include "video/v_draw.hpp"
 extern VDraw *draw;
+
+// New Input object
+#include "input/input.hpp"
+extern Input *input;
 
 #endif
 

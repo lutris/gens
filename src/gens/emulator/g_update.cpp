@@ -45,7 +45,7 @@ int Update_Emulation(void)
 			Write_Sound_Buffer(NULL);
 		}
 
-		Update_Controllers();
+		input->updateControllers();
 
 		if (Frame_Number++ < Frame_Skip)
 		{
@@ -74,7 +74,7 @@ int Update_Emulation(void)
 				Write_Sound_Buffer(NULL);
 			}
 
-			Update_Controllers();
+			input->updateControllers();
 			Update_Frame();
 			draw->flip();
 		} //If sound is enabled
@@ -96,13 +96,13 @@ int Update_Emulation(void)
 
 			for (; Frame_Number > 1; Frame_Number--)
 			{
-				Update_Controllers();
+				input->updateControllers();
 				Update_Frame_Fast();
 			}
 
 			if (Frame_Number)
 			{
-				Update_Controllers();
+				input->updateControllers();
 				Update_Frame();
 				draw->flip();
 			}
@@ -138,7 +138,7 @@ int Update_Emulation(void)
 
 int Update_Emulation_One(void)
 {
-	Update_Controllers();
+	input->updateControllers();
 	Update_Frame();
 	draw->flip();
 	
