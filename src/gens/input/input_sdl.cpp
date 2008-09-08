@@ -7,6 +7,7 @@
 #include "input_sdl_keys.h"
 #include "gdk/gdkkeysyms.h"
 
+#include "emulator/g_input.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.h"
 
@@ -186,6 +187,171 @@ unsigned int Input_SDL::getKey(void)
 		event = gdk_event_get();
 		if (event && event->type == GDK_KEY_PRESS)
 			return gdk_to_sdl_keyval(event->key.keyval);
+	}
+}
+
+
+/**
+ * update(): Update the input subsystem.
+ */
+void Input_SDL::update(void)
+{
+	// Check for SDL events
+	SDL_Event event;
+	
+	while (SDL_PollEvent(&event))
+	{
+		switch (event.type)
+		{
+			/*
+			case SDL_VIDEORESIZE:
+				surface = SDL_SetVideoMode(event.resize.w, event.resize.h, 16, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_RESIZABLE);
+				break;
+			*/
+			
+			case SDL_KEYDOWN:
+				m_keys[event.key.keysym.sym] = true;
+				Input_KeyDown(event.key.keysym.sym);
+				break;
+				
+			case SDL_KEYUP:
+				m_keys[event.key.keysym.sym] = false;
+				Input_KeyUp(event.key.keysym.sym);
+				break;
+			
+			case SDL_JOYAXISMOTION:
+				checkJoystickAxis(&event);
+				break;
+			
+			case SDL_JOYBUTTONDOWN:
+				m_joyState[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = true;
+				break;
+			
+			case SDL_JOYBUTTONUP:
+				m_joyState[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = false;
+				break;
+			
+			case SDL_JOYHATMOTION:
+				break;
+			
+			default:
+				break;
+		}
+	}
+}
+
+
+/**
+ * checkJoystickAxis: Check the SDL_Event for a joystick axis event.
+ * @param event Pointer to SDL_Event.
+ */
+void Input_SDL::checkJoystickAxis(SDL_Event *event)
+{
+	if (event->jaxis.axis >= 6)
+	{
+		// Gens doesn't support more than 6 axes.
+		// TODO: Fix this sometime.
+		return;
+	}
+	
+	if (event->jaxis.value < -10000)
+	{
+		if (event->jaxis.axis == 0)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x3] = 1;
+			m_joyState[0x100 * event->jaxis.which + 0x4] = 0;
+		}
+		else if (event->jaxis.axis == 1)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x1] = 1;
+			m_joyState[0x100 * event->jaxis.which + 0x2] = 0;
+		}
+		else if (event->jaxis.axis == 2)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x7] = 1;
+			m_joyState[0x100 * event->jaxis.which + 0x8] = 0;
+		}
+		else if (event->jaxis.axis == 3)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x5] = 1;
+			m_joyState[0x100 * event->jaxis.which + 0x6] = 0;
+		}
+		else if (event->jaxis.axis == 4)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0xB] = 1;
+			m_joyState[0x100 * event->jaxis.which + 0xC] = 0;
+		}
+		else if (event->jaxis.axis == 5)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x9] = 1;
+			m_joyState[0x100 * event->jaxis.which + 0xA] = 0;
+		}
+	}
+	else if (event->jaxis.value > 10000)
+	{
+		if (event->jaxis.axis == 0)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x3] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x4] = 1;
+		}
+		else if (event->jaxis.axis == 1)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x1] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x2] = 1;
+		}
+		else if (event->jaxis.axis == 2)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x7] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x8] = 1;
+		}
+		else if (event->jaxis.axis == 3)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x5] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x6] = 1;
+		}
+		else if (event->jaxis.axis == 4)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0xB] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0xC] = 1;
+		}
+		else if (event->jaxis.axis == 5)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x9] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0xA] = 1;
+		}
+	}
+	else
+	{
+		if (event->jaxis.axis == 0)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x4] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x3] = 0;
+		}
+		else if (event->jaxis.axis == 1)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x2] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x1] = 0;
+		}
+		else if (event->jaxis.axis == 2)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x8] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x7] = 0;
+		}
+		else if (event->jaxis.axis == 3)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0x6] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x5] = 0;
+		}
+		else if (event->jaxis.axis == 4)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0xC] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0xB] = 0;
+		}
+		else if (event->jaxis.axis == 5)
+		{
+			m_joyState[0x100 * event->jaxis.which + 0xA] = 0;
+			m_joyState[0x100 * event->jaxis.which + 0x9] = 0;
+		}
 	}
 }
 

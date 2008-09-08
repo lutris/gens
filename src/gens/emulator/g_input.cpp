@@ -49,8 +49,6 @@ int mod = 0;
  */
 void Input_KeyDown(int key)
 {
-	input->keyDown(key);
-	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -431,8 +429,6 @@ void Input_KeyDown(int key)
  */
 void Input_KeyUp(int key)
 {
-	input->keyUp(key);
-	
 	switch(key)
 	{
 		case GENS_KEY_LCTRL:

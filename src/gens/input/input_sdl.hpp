@@ -18,6 +18,9 @@ class Input_SDL : public Input
 		Input_SDL();
 		~Input_SDL();
 		
+		// Update the input subsystem
+		void update(void);
+		
 		// Get a key. (Used for controller configuration.)
 		unsigned int getKey(void);
 		
@@ -26,6 +29,9 @@ class Input_SDL : public Input
 		
 		// Functions required by the Input class.
 		bool joyExists(int joyNum);
+		
+		// Check an SDL joystick axis.
+		void checkJoystickAxis(SDL_Event *event);
 		
 		// Number of joysticks connected
 		int m_numJoysticks;

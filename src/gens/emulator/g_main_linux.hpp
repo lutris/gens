@@ -14,9 +14,6 @@ extern "C" {
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
 
-// TODO: This isn't OS-independent...
-void update_SDL_events(void);
-
 #ifdef __cplusplus
 }
 #endif

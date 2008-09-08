@@ -514,7 +514,9 @@ int main(int argc, char *argv[])
 		// Update the UI.
 		GensUI::update();
 		
-		update_SDL_events ();
+		// Update physical controller inputs.
+		input->update();
+		
 #ifdef GENS_DEBUGGER
 		if (Debug)		// DEBUG
 		{
