@@ -402,17 +402,17 @@ int VDraw_SDL_GL::flipInternal(void)
 	glBegin(GL_QUADS);
 	
 	glTexCoord2f(0.0f + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
-	glVertex2f(-1.0f,  1.0f);			// Upper-left vertex of the quad.
+	glVertex2i(-1,  1);				// Upper-left vertex of the quad.
 	
 	glTexCoord2f(0.625f - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
-	glVertex2f( 1.0f,  1.0f);			// Upper-right vertex of the quad.
+	glVertex2i( 1,  1);				// Upper-right vertex of the quad.
 	
 	// 0.9375 = 256/240; 0.9375 = 512/480
 	glTexCoord2f(0.625f - m_HStretch, 0.9375f - m_VStretch);	// Lower-right corner of the texture.
-	glVertex2f( 1.0f, -1.0f);					// Lower-right vertex of the quad.
+	glVertex2i( 1, -1);						// Lower-right vertex of the quad.
 	
 	glTexCoord2f(0.0f + m_HStretch, 0.9375f - m_VStretch);	// Lower-left corner of the texture.
-	glVertex2f(-1.0f, -1.0f);				// Lower-left corner of the quad.
+	glVertex2i(-1, -1);					// Lower-left corner of the quad.
 	
 	glEnd();
 #endif
