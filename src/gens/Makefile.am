@@ -118,6 +118,8 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
+		input/input.cpp \
+		input/input_sdl.cpp \
 		port/port.c \
 		port/timer.c \
 		port/ini.cpp \
@@ -224,7 +226,6 @@ noinst_HEADERS = \
 		emulator/g_main.hpp \
 		emulator/g_main_linux.h \
 		emulator/g_input.hpp \
-		emulator/g_input_linux.h \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
 		emulator/g_32x.hpp \
@@ -259,6 +260,9 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
+		input/input.hpp \
+		input/input_sdl.hpp \
+		input/input_sdl_keys.h \
 		port/port.h \
 		port/timer.h \
 		port/ini.hpp \

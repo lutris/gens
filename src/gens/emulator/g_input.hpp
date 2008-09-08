@@ -2,8 +2,8 @@
  * GENS: Input handler.
  */
 
-#ifndef GENS_INPUT_HPP
-#define GENS_INPUT_HPP
+#ifndef GENS_G_INPUT_HPP
+#define GENS_G_INPUT_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,7 +11,7 @@ extern "C" {
 
 // OS-specific includes.
 #if (defined(__linux__))
-#include "g_input_linux.h"
+#include "input/input_sdl_keys.h"
 #elif (defined(__WIN32__))
 #error TODO: Add Win32 support.
 #else

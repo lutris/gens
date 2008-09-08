@@ -33,6 +33,7 @@
 #include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
 #include "ui/gens_ui.hpp"
+#include "sdllayer/g_sdlinput.h"
 
 
 /**
