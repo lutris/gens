@@ -148,7 +148,7 @@ int Save_Config(const char *File_Name)
 	cfg.writeInt("Graphics", "Render OpenGL", (Video.OpenGL ? 1 : 0));
 	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
-	//cfg.writeInt("Graphics", "OpenGL Filter", gl_linear_filter);
+	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
 #endif
 	
 	cfg.writeBool("Graphics", "Stretch", draw->stretch());
@@ -374,7 +374,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Video.OpenGL = cfg.getInt("Graphics", "Render OpenGL", 0);
 	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.Height_GL = cfg.getInt("Graphics", "OpenGL Height", 480);
-	//gl_linear_filter = cfg.getInt("Graphics", "OpenGL Filter", 1);
+	Video.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
 #endif
 	// Set the OpenGL renderer.
 	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
