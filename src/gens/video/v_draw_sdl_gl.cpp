@@ -22,7 +22,7 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 	textures[1] = 0;
 	textureSize = 256;
 	nonpow2tex = 0;
-	glLinearFilter = 1;
+	glLinearFilter = false;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
 	
@@ -44,7 +44,7 @@ VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
 	textures[1] = 0;
 	textureSize = 256;
 	nonpow2tex = 0;
-	glLinearFilter = 1;
+	glLinearFilter = false;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
 	
@@ -250,8 +250,8 @@ void VDraw_SDL_GL::stretchAdjustInternal(void)
 	if (nonpow2tex)
 	{
 		// Non Power of 2 textures are available.
-		m_VStretch = ((240 - VDP_Num_Vis_Lines) / 2.0f) * rowLength * 0.75f * (1.0f / 240.0f);
-		m_HStretch = m_HBorder * (32.0f / 64.0f) * (rowLength / 320.0f);
+		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 2) * ((rowLength / 4) * 3)) / 240;
+		m_HStretch = ((m_HBorder / 2) * rowLength) / 320;
 	}
 	else
 	{
@@ -344,35 +344,38 @@ int VDraw_SDL_GL::flipInternal(void)
 	// nVidia rectangular texture extension
 	
 	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 	
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	if (glLinearFilter)
+		glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	else
+		glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	
+	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	
 	// OpenGL needs to know the width of the texture data.
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 	
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
-	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 3, rowLength, rowLength * 0.75f, 0,
+	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 3, rowLength, (rowLength / 4) * 3, 0,
 		     pixelFormat, pixelType, filterBuffer);
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
 	
-	glTexCoord2f(0.0f + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
-	glVertex2f(-1.0f,  1.0f);			// Upper-left vertex of the quad.
+	glTexCoord2i(m_HStretch, m_VStretch);	// Upper-left corner of the texture.
+	glVertex2i(-1, 1);			// Upper-left vertex of the quad.
 	
-	glTexCoord2f(rowLength - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
-	glVertex2f( 1.0f,  1.0f);				// Upper-right vertex of the quad.
+	glTexCoord2i(rowLength - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
+	glVertex2i( 1, 1);					// Upper-right vertex of the quad.
 	
-	glTexCoord2f(rowLength - m_HStretch, (rowLength * 0.75f) - m_VStretch);	// Lower-right corner of the texture.
-	glVertex2f( 1.0f, -1.0f);						// Lower-right vertex of the quad.
+	glTexCoord2i(rowLength - m_HStretch, ((rowLength / 4) * 3) - m_VStretch);	// Lower-right corner of the texture.
+	glVertex2i( 1, -1);								// Lower-right vertex of the quad.
 	
-	glTexCoord2f(0.0f + m_HStretch, (rowLength * 0.75f) - m_VStretch);	// Lower-left corner of the texture.
-	glVertex2f(-1.0f, -1.0f);						// Lower-left vertex of the quad.
+	glTexCoord2i(m_HStretch, ((rowLength / 4) * 3) - m_VStretch);	// Lower-left corner of the texture.
+	glVertex2i(-1, -1);						// Lower-left vertex of the quad.
 	
 	glEnd();
 #else
@@ -387,14 +390,13 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	
 	// OpenGL needs to know the width of the texture data.
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 	
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureSize * 2, textureSize, 0,
 		     pixelFormat, pixelType, filterBuffer);
 	

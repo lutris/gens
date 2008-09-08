@@ -86,11 +86,11 @@ class VDraw_SDL_GL : public VDraw
 		int rowLength;
 		int textureSize;
 		int nonpow2tex;
-		int glLinearFilter;
+		bool glLinearFilter;
 		unsigned char *filterBuffer;
 		int filterBufferSize;
 		
-		// Stretch parameters.
+		// Stretch parameters
 		float m_HStretch, m_VStretch;
 		
 		// OpenGL VSync stuff
