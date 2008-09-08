@@ -79,7 +79,7 @@ int Change_File_S(char *Dest, char *Dir)
 {
 	string filename;
 	
-	filename = GensUI::saveFile("Save Savetate", NULL /*Rom_Dir*/, SavestateFile);
+	filename = GensUI::saveFile("Save Savetate", "" /*Rom_Dir*/, SavestateFile);
 	if (filename.length() == 0)
 		return 0;
 	
@@ -99,7 +99,7 @@ int Change_File_L(char *Dest, char *Dir)
 {
 	string filename;
 	
-	filename = GensUI::openFile("Load Savestate", NULL /*Rom_Dir*/, SavestateFile);
+	filename = GensUI::openFile("Load Savestate", "" /*Rom_Dir*/, SavestateFile);
 	if (filename.length() == 0)
 		return 0;
 	
@@ -119,7 +119,7 @@ int Change_File_L_CD(char *Dest, char *Dir)
 {
 	string filename;
 	
-	filename = GensUI::openFile("Load SegaCD Disc Image", NULL /*Rom_Dir*/, CDImage);
+	filename = GensUI::openFile("Load SegaCD Disc Image", "" /*Rom_Dir*/, CDImage);
 	if (filename.length() == 0)
 		return 0;
 	
