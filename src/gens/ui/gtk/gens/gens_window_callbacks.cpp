@@ -306,6 +306,16 @@ CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_VSync_activate, Change_VSync);
 CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_Stretch_activate, Change_Stretch);
 #ifdef GENS_OPENGL
 CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_OpenGL_activate, Change_OpenGL);
+
+void on_GraphicsMenu_OpenGLFilter_activate(GtkMenuItem *menuitem, gpointer user_data)
+{
+	Video.glLinearFilter = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
+	
+	if (Video.glLinearFilter)
+		MESSAGE_L("Enabled OpenGL Linear Filter", "Enabled OpenGL Linear Filter", 1500);
+	else
+		MESSAGE_L("Disabled OpenGL Linear Filter", "Disabled OpenGL Linear Filter", 1500);
+}
 #endif
 
 

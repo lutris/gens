@@ -180,9 +180,6 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
 	GtkWidget *MItem_ScreenShot;
-#ifdef GENS_OPENGL
-	GtkWidget *MItem_OpenGL;
-#endif
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
@@ -224,9 +221,13 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		(Genesis_Started || SegaCD_Started || _32X_Started));
 	
 #ifdef GENS_OPENGL
+	GtkWidget *MItem_OpenGL, *MItem_OpenGLFilter;
 	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
+	
 	MItem_OpenGL = lookup_widget(gens_window, "GraphicsMenu_OpenGL");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL), Video.OpenGL);
+	MItem_OpenGLFilter = lookup_widget(gens_window, "GraphicsMenu_OpenGLFilter");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGLFilter), Video.glLinearFilter);
 	
 	// OpenGL Resolution
 	

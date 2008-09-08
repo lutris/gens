@@ -410,6 +410,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	GtkWidget *GraphicsMenu_Separator1;
 #ifdef GENS_OPENGL
 	GtkWidget *GraphicsMenu_OpenGL;
+	GtkWidget *GraphicsMenu_OpenGLFilter;
 	GtkWidget *GraphicsMenu_OpenGLRes;
 #endif
 	GtkWidget *GraphicsMenu_bpp;
@@ -455,6 +456,10 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	NewMenuItem_Check(GraphicsMenu_OpenGL, "Open_GL", "GraphicsMenu_OpenGL", GraphicsMenu, FALSE);
 	AddMenuAccelerator(GraphicsMenu_OpenGL, GDK_r, GDK_SHIFT_MASK);
 	AddMenuCallback(GraphicsMenu_OpenGL, on_GraphicsMenu_OpenGL_activate);
+	
+	// OpenGL Linear Filter
+	NewMenuItem_Check(GraphicsMenu_OpenGLFilter, "OpenGL _Linear Filter", "GraphicsMenu_OpenGLFilter", GraphicsMenu, FALSE);
+	AddMenuCallback(GraphicsMenu_OpenGLFilter, on_GraphicsMenu_OpenGLFilter_activate);
 	
 	// OpenGL Resolution
 	NewMenuItem(GraphicsMenu_OpenGLRes, "OpenGL Resolution", "GraphicsMenu_OpenGLRes", GraphicsMenu);

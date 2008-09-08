@@ -50,8 +50,11 @@ void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_VSync_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_Stretch_activate(GtkMenuItem *menuitem, gpointer user_data);
+#ifdef GENS_OPENGL
 void on_GraphicsMenu_OpenGL_activate(GtkMenuItem *menuitem, gpointer user_data);
+void on_GraphicsMenu_OpenGLFilter_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, gpointer user_data);
+#endif
 void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data);
 void on_GraphicsMenu_SpriteLimit_activate(GtkMenuItem *menuitem, gpointer user_data);
