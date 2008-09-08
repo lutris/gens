@@ -348,15 +348,15 @@ void End_All(void)
 	End_CD_Driver();
 #endif
 	
+	// Shut down the input subsystem.
+	delete input;
+	input = NULL;
+	
 	// Shut down the video subsystem.
 	draw->End_Video();
 	draw->Shut_Down();
 	delete draw;
 	draw = NULL;
-	
-	// Shut down the input subsystem.
-	delete input;
-	input = NULL;
 }
 
 
