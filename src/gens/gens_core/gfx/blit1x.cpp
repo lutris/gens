@@ -42,23 +42,17 @@ static inline void Blit1x(pixel *screen, pixel *mdScreen, int pitch, int x, int 
 {
 	int i;
 	
-	int ScrWdth, ScrAdd;
-	int SrcOffs, DstOffs;
-	
-	ScrAdd = offset >> 1;
-	ScrWdth = x + ScrAdd;
-	
-	SrcOffs = 8;
-	DstOffs = 0;
+	// Adjust for the 8px border.
+	mdScreen += 8;
 	
 	for (i = 0; i < y; i++)
 	{
-		DstOffs = i * (pitch / sizeof(pixel));
-		memcpy(&screen[DstOffs], &mdScreen[SrcOffs], x * sizeof(pixel));
+		memcpy(screen, mdScreen, x * sizeof(pixel));
 		
 		// Next line.
 		// TODO: Make this a constant somewhere.
-		SrcOffs += 336;
+		mdScreen += 336;
+		screen += (pitch / sizeof(pixel));
 	}
 }
 
