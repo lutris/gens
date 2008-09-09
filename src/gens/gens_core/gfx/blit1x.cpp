@@ -27,10 +27,6 @@
 #include <string.h>
 #include "gens_core/vdp/vdp_rend.h"
 #include "blit.h"
-#include "byteswap.h"
-#include "gens_core/misc/misc.h"
-
-#include <stdio.h>
 
 /**
  * Blit1x: Blits the image to the screen, 1x size, no filtering.
