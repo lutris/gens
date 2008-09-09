@@ -109,7 +109,7 @@ gens_SOURCES = \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/blit1x.cpp \
 		gens_core/gfx/blit2x.cpp \
-		gens_core/gfx/scale2x.c \
+		gens_core/gfx/scale2x.cpp \
 		gens_core/gfx/hq2x_funcs.c \
 		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
