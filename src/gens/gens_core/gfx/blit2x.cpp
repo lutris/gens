@@ -27,27 +27,23 @@
 #include <string.h>
 #include "gens_core/vdp/vdp_rend.h"
 #include "blit.h"
-#include "gens_core/misc/misc.h"
 
-
-#ifndef GENS_X86_ASM
 /**
- * Blit2x_16(): (16-bit) Blits the image to the screen, double-sized.
- * @param screen Screen buffer.
+ * Blit2x: Blits the image to the screen, 2x size, no filtering.
+ * @param screen Pointer to the screen buffer.
+ * @param mdScreen Pointer to the MD screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
+template<typename pixel>
+static inline void Blit2x(pixel *screen, pixel *mdScreen, int pitch, int x, int y, int offset)
 {
 	int i, j;
 	
 	int ScrWdth, ScrAdd;
 	int SrcOffs, DstOffs;
-	
-	// Use an unsigned short* to make things easier.
-	unsigned short *dst = (unsigned short*)screen;
 	
 	ScrAdd = offset >> 1;
 	ScrWdth = x + ScrAdd;
@@ -57,14 +53,14 @@ void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 	
 	for (i = 0; i < y; i++)
 	{
-		DstOffs = i * pitch;
+		DstOffs = i * (pitch / sizeof(pixel)) * 2;
 		for (j = 0; j < x; j++)
 		{
-			dst[DstOffs + 0] = MD_Screen[SrcOffs];
-			dst[DstOffs + 1] = MD_Screen[SrcOffs];
+			screen[DstOffs + 0] = mdScreen[SrcOffs];
+			screen[DstOffs + 1] = mdScreen[SrcOffs];
 			
-			dst[DstOffs + (pitch / 2) + 0] = MD_Screen[SrcOffs];
-			dst[DstOffs + (pitch / 2) + 1] = MD_Screen[SrcOffs];
+			screen[DstOffs + (pitch / sizeof(pixel)) + 0] = mdScreen[SrcOffs];
+			screen[DstOffs + (pitch / sizeof(pixel)) + 1] = mdScreen[SrcOffs];
 			
 			SrcOffs++;
 			DstOffs += 2;
@@ -74,49 +70,15 @@ void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 		SrcOffs += ScrAdd;
 	}
 }
+
+#ifndef GENS_X86_ASM
+void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
+{
+	Blit2x((unsigned short*)screen, MD_Screen, pitch, x, y, offset);
+}
 #endif
 
-
-/**
- * Blit2x_32(): (32-bit) Blits the image to the screen, double-sized.
- * @param Dest Destination buffer.
- * @param pitch Number of bytes per line.
- * @param x X coordinate for the image.
- * @param y Y coordinate for the image.
- * @param offset ???
- */
 void Blit2x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {
-	int i, j;
-	
-	int ScrWdth, ScrAdd;
-	int SrcOffs, DstOffs;
-	
-	// Use an unsigned int* to make things easier.
-	unsigned int *dst = (unsigned int*)screen;
-	
-	ScrAdd = offset >> 1;
-	ScrWdth = x + ScrAdd;
-	
-	SrcOffs = 8;
-	DstOffs = 0;
-	
-	for (i = 0; i < y; i++)
-	{
-		DstOffs = i * (pitch / 2);
-		for (j = 0; j < x; j++)
-		{
-			dst[DstOffs + 0] = MD_Screen32[SrcOffs];
-			dst[DstOffs + 1] = MD_Screen32[SrcOffs];
-			
-			dst[DstOffs + (pitch / 4) + 0] = MD_Screen32[SrcOffs];
-			dst[DstOffs + (pitch / 4) + 1] = MD_Screen32[SrcOffs];
-			
-			SrcOffs++;
-			DstOffs += 2;
-		}
-		
-		// Next line.
-		SrcOffs += ScrAdd;
-	}
+	Blit2x((unsigned int*)screen, MD_Screen32, pitch, x, y, offset);
 }
