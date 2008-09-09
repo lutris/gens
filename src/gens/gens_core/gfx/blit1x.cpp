@@ -42,7 +42,7 @@ static inline void Blit1x(pixel *screen, pixel *mdScreen, int pitch, int x, int 
 {
 	int i;
 	
-	// Adjust for the 8px border.
+	// Adjust for the 8px border on the MD Screen.
 	mdScreen += 8;
 	
 	for (i = 0; i < y; i++)
