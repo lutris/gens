@@ -30,17 +30,19 @@
 #include "byteswap.h"
 #include "gens_core/misc/misc.h"
 
+#include <stdio.h>
 
-#ifndef GENS_X86_ASM
 /**
- * Blit1x_16(): (16-bit) Blits the image to the screen, with no scaling.
- * @param screen Screen buffer.
+ * Blit1x: Blits the image to the screen, 1x size, no filtering.
+ * @param screen Pointer to the screen buffer.
+ * @param mdScreen Pointer to the MD screen buffer.
  * @param pitch Number of bytes per line.
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
  */
-void Blit1x_16(unsigned char *screen, int pitch, int x, int y, int offset)
+template<typename pixel>
+static inline void Blit1x(pixel *screen, pixel *mdScreen, int pitch, int x, int y, int offset)
 {
 	int i;
 	
@@ -55,47 +57,23 @@ void Blit1x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 	
 	for (i = 0; i < y; i++)
 	{
-		//DstOffs = i * pitch * 2;
-		DstOffs = i * pitch;
-		memcpy(&screen[DstOffs], &MD_Screen[SrcOffs], x * 2);
+		DstOffs = i * (pitch / sizeof(pixel));
+		memcpy(&screen[DstOffs], &mdScreen[SrcOffs], x * sizeof(pixel));
 		
 		// Next line.
 		// TODO: Make this a constant somewhere.
 		SrcOffs += 336;
 	}
 }
+
+#ifndef GENS_X86_ASM
+void Blit1x_16(unsigned char *screen, int pitch, int x, int y, int offset)
+{
+	Blit1x((unsigned short*)screen, MD_Screen, pitch, x, y, offset);
+}
 #endif
 
-
-/**
- * Blit1x_32(): (32-bit) Blits the image to the screen, with no scaling.
- * @param screen Screen buffer.
- * @param pitch Number of bytes per line.
- * @param x X coordinate for the image.
- * @param y Y coordinate for the image.
- * @param offset ???
- */
 void Blit1x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {
-	int i;
-	
-	int ScrWdth, ScrAdd;
-	int SrcOffs, DstOffs;
-	
-	ScrAdd = offset >> 1;
-	ScrWdth = x + ScrAdd;
-	
-	SrcOffs = 8;
-	DstOffs = 0;
-	
-	for (i = 0; i < y; i++)
-	{
-		//DstOffs = i * pitch * 2;
-		DstOffs = i * pitch;
-		memcpy(&screen[DstOffs], &MD_Screen32[SrcOffs], x * 4);
-		
-		// Next line.
-		// TODO: Make this a constant somewhere.
-		SrcOffs += 336;
-	}
+	Blit1x((unsigned int*)screen, MD_Screen32, pitch, x, y, offset);
 }
