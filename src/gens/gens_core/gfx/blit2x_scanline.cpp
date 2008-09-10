@@ -41,33 +41,28 @@ template<typename pixel>
 static inline void Blit2x_Scanline(pixel *screen, pixel *mdScreen, int pitch, int x, int y, int offset)
 {
 	int i, j;
+	int dstOffs = 0;
 	
-	int ScrWdth, ScrAdd;
-	int SrcOffs, DstOffs;
-	
-	ScrAdd = offset >> 1;
-	ScrWdth = x + ScrAdd;
-	
-	SrcOffs = 8;
-	DstOffs = 0;
+	// Adjust for the 8px border on the MD Screen.
+	mdScreen += 8;
 	
 	for (i = 0; i < y; i++)
 	{
-		DstOffs = i * (pitch / sizeof(pixel)) * 2;
+		dstOffs = i * (pitch / sizeof(pixel)) * 2;
 		for (j = 0; j < x; j++)
 		{
-			screen[DstOffs + 0] = mdScreen[SrcOffs];
-			screen[DstOffs + 1] = mdScreen[SrcOffs];
+			screen[dstOffs + 0] = *mdScreen;
+			screen[dstOffs + 1] = *mdScreen;
 			
-			screen[DstOffs + (pitch / sizeof(pixel)) + 0] = 0;
-			screen[DstOffs + (pitch / sizeof(pixel)) + 1] = 0;
+			screen[dstOffs + (pitch / sizeof(pixel)) + 0] = 0;
+			screen[dstOffs + (pitch / sizeof(pixel)) + 1] = 0;
 			
-			SrcOffs++;
-			DstOffs += 2;
+			mdScreen++;
+			dstOffs += 2;
 		}
 		
 		// Next line.
-		SrcOffs += ScrAdd;
+		mdScreen += (offset >> 1);
 	}
 }
 
