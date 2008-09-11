@@ -6,6 +6,10 @@
  */
 
 #include <stdlib.h>
+
+#define __USE_XOPEN
+#include <math.h>
+
 #include "mpg123.h"
 #include "mpglib.h"
 #include "huffman.h"
