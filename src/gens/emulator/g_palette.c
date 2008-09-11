@@ -23,7 +23,7 @@ int Invert_Color;
  * @param c Color component.
  * @return Constrained color component.
  */
-inline int Constrain_Color_Component(int c)
+static inline int Constrain_Color_Component(int c)
 {
 	if (c < 0)
 		return 0;
@@ -40,7 +40,7 @@ inline int Constrain_Color_Component(int c)
  * @param b Blue component.
  * @return Grayscale value.
  */
-inline int CalculateGrayScale(int r, int g, int b)
+static inline int CalculateGrayScale(int r, int g, int b)
 {
 	// Standard grayscale computation: Y = R*0.30 + G*0.59 + B*0.11
 	r = (r * (unsigned int) (0.30 * 65536.0)) >> 16;
