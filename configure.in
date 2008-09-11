@@ -167,7 +167,7 @@ AC_MSG_CHECKING(for libpng)
 	fi
 fi
 
-CFLAGS="$CFLAGS -Wall -W"
+CFLAGS="$CFLAGS -Wall -W -std=c99"
 LDFLAGS="$LDFLAGS"
 AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
