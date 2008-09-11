@@ -31,16 +31,6 @@ extern "C" {
 #include <gtk/gtk.h>
 
 
-/** A macro to suppress some compilers' "Parameter is not used" warnings. Copied from Subversion */
-#ifndef GENS_UNUSED_PARAMETER
-#define GENS_UNUSED_PARAMETER(x) ((void)x)
-/* Possible alternative: 
- * 
- * #define GENS_UNUSED_PARAMETER(x) ((x) = (x)) 
- */ 
-#endif /* GENS_UNUSED_PARAMETER */
-
-
 GtkWidget *lookup_widget(GtkWidget *widget, const gchar *widget_name);
 void add_pixmap_directory(const gchar * directory);
 GdkPixbuf *create_pixbuf(const gchar *filename);

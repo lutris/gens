@@ -26,7 +26,7 @@
 #include "country_code_window_callbacks.h"
 #include "country_code_window_misc.h"
 
-#include "gtk-misc.h"
+#include "emulator/gens.h"
 
 
 /**

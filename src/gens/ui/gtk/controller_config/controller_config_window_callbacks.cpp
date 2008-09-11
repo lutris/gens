@@ -28,6 +28,7 @@
 #include "controller_config_window_misc.hpp"
 
 #include "gtk-misc.h"
+#include "emulator/gens.h"
 
 
 /**

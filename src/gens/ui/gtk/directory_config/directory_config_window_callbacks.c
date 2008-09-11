@@ -24,7 +24,7 @@
 #include "directory_config_window_callbacks.h"
 #include "directory_config_window_misc.hpp"
 
-#include "gtk-misc.h"
+#include "emulator/gens.h"
 
 
 /**

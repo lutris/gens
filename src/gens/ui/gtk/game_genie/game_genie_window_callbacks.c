@@ -27,6 +27,7 @@
 #include "game_genie_window_misc.h"
 
 #include "gtk-misc.h"
+#include "emulator/gens.h"
 
 
 /**

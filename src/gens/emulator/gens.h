@@ -40,6 +40,17 @@ void Set_Clock_Freq(int system);
 
 
 /**
+ * A macro to suppress some compilers' "Parameter is not used" warnings.
+ * Copied from Subversion.
+ */
+#define GENS_UNUSED_PARAMETER(x) ((void)x)
+/* Possible alternative:
+ *
+ * #define GENS_UNUSED_PARAMETER(x) ((x) = (x))
+ */
+
+
+/**
  * SET_VISIBLE_LINES: Sets the number of visible lines, depending on CPU mode and VDP setting.
  * If PAL and some VDP register are set, use 240 lines.
  * Otherwise, only 224 lines are visible.

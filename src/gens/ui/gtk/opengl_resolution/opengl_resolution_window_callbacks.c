@@ -24,7 +24,7 @@
 #include "opengl_resolution_window_callbacks.h"
 #include "opengl_resolution_window_misc.h"
 
-#include "gtk-misc.h"
+#include "emulator/gens.h"
 
 
 /**

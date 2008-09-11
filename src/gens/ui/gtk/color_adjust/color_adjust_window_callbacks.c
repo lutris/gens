@@ -24,7 +24,7 @@
 #include "color_adjust_window_callbacks.h"
 #include "color_adjust_window_misc.h"
 
-#include "gtk-misc.h"
+#include "emulator/gens.h"
 
 
 /**
