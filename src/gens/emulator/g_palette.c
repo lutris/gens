@@ -58,8 +58,11 @@ void Recalculate_Palettes(void)
 	int i;
 	int r, g, b;
 	int rf, gf, bf;
-	int bright, cont;
 	unsigned short color;
+	
+	// Brightness / Contrast
+	const int bright = ((Brightness_Level - 100) * 32) / 100;
+	const int cont = Contrast_Level;
 	
 	// Calculate the MD palette.
 	for (r = 0; r < 0x10; r++)
@@ -80,11 +83,6 @@ void Recalculate_Palettes(void)
 				
 				// Compute colors here (64 levels)
 				
-				bright = Brightness_Level;
-				bright -= 100;
-				bright *= 32;
-				bright /= 100;
-				
 				rf += bright;
 				gf += bright;
 				bf += bright;
@@ -92,8 +90,6 @@ void Recalculate_Palettes(void)
 				rf = Constrain_Color_Component(rf);
 				gf = Constrain_Color_Component(gf);
 				bf = Constrain_Color_Component(bf);
-				
-				cont = Contrast_Level;
 				
 				rf = (rf * cont) / 100;
 				gf = (gf * cont) / 100;
@@ -137,11 +133,6 @@ void Recalculate_Palettes(void)
 		
 		// Compute colors here (64 levels)
 		
-		bright = Brightness_Level;
-		bright -= 100;
-		bright *= 32;
-		bright /= 100;
-		
 		rf += bright;
 		gf += bright;
 		bf += bright;
@@ -149,8 +140,6 @@ void Recalculate_Palettes(void)
 		rf = Constrain_Color_Component(rf);
 		gf = Constrain_Color_Component(gf);
 		bf = Constrain_Color_Component(bf);
-		
-		cont = Contrast_Level;
 		
 		rf = (rf * cont) / 100;
 		gf = (gf * cont) / 100;
