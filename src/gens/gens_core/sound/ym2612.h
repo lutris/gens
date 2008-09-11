@@ -11,9 +11,6 @@ extern "C" {
 // Gens always uses 16 bits sound (in 32 bits buffer) and do the convertion later if needed.
 #define OUTPUT_BITS         16
 
-// VC++ inline
-#define INLINE              __inline
-
 typedef struct slot__
 {
 	int *DT;	// paramètre detune

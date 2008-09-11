@@ -262,7 +262,7 @@ int YM_Len = 0;
  ***********************************************/
 
 
-INLINE void CALC_FINC_SL(slot_ * SL, int finc, int kc)
+static inline void CALC_FINC_SL(slot_ * SL, int finc, int kc)
 {
 	int ksr;
 	
@@ -303,7 +303,7 @@ INLINE void CALC_FINC_SL(slot_ * SL, int finc, int kc)
 }
 
 
-INLINE void CALC_FINC_CH(channel_ * CH)
+static inline void CALC_FINC_CH(channel_ * CH)
 {
 	int finc, kc;
 	
@@ -323,7 +323,7 @@ INLINE void CALC_FINC_CH(channel_ * CH)
  ***********************************************/
 
 
-INLINE void KEY_ON(channel_ * CH, int nsl)
+static inline void KEY_ON(channel_ * CH, int nsl)
 {
 	slot_ *SL = &(CH->SLOT[nsl]);	// on recupère le bon pointeur de slot
 	
@@ -347,7 +347,7 @@ INLINE void KEY_ON(channel_ * CH, int nsl)
 }
 
 
-INLINE void KEY_OFF(channel_ * CH, int nsl)
+static inline void KEY_OFF(channel_ * CH, int nsl)
 {
 	slot_ *SL = &(CH->SLOT[nsl]);	// on recupère le bon pointeur de slot
 	
@@ -365,7 +365,7 @@ INLINE void KEY_OFF(channel_ * CH, int nsl)
 }
 
 
-INLINE void CSM_Key_Control()
+static inline void CSM_Key_Control()
 {
 	KEY_ON(&YM2612.CHANNEL[2], 0);
 	KEY_ON(&YM2612.CHANNEL[2], 1);
