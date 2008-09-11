@@ -41,10 +41,10 @@ extern "C" {
 #endif /* GENS_UNUSED_PARAMETER */
 
 
-GtkWidget *lookup_widget (GtkWidget *widget, const gchar *widget_name);
+GtkWidget *lookup_widget(GtkWidget *widget, const gchar *widget_name);
 void add_pixmap_directory(const gchar * directory);
 GdkPixbuf *create_pixbuf(const gchar *filename);
-GtkWidget *create_pixmap(GtkWidget *widget, const gchar *filename);
+GtkWidget *create_pixmap(const gchar *filename);
 
 
 // Macros from Glade used to store GtkWidget pointers.

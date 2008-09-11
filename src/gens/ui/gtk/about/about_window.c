@@ -119,7 +119,7 @@ GtkWidget* create_about_window(void)
 	GLADE_HOOKUP_OBJECT(about_window, hbox_about_logo, "hbox_about_logo");
 	
 	// Gens logo
-	image_gens_logo = create_pixmap(about_window, "gens_small.png");
+	image_gens_logo = create_pixmap("gens_small.png");
 	gtk_widget_set_name(image_gens_logo, "image_gens_logo");
 	gtk_widget_show(image_gens_logo);
 	gtk_box_pack_start(GTK_BOX(hbox_about_logo), image_gens_logo, TRUE, TRUE, 0);

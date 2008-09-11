@@ -77,7 +77,7 @@ GtkAccelGroup *accel_group;
 			 IconWidget, IconFilename)						\
 {												\
 	NewMenuItem(MenuItemWidget, MenuItemCaption, MenuItemName, Container);			\
-	IconWidget = create_pixmap(gens_window, IconFilename);					\
+	IconWidget = create_pixmap(IconFilename);						\
 	gtk_widget_set_name(IconWidget, MenuItemName "_Icon");					\
 	gtk_widget_show(IconWidget);								\
 	gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(MenuItemWidget), IconWidget);		\

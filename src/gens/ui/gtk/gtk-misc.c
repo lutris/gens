@@ -81,7 +81,7 @@ static gchar *find_pixmap_file(const gchar *filename)
 
 
 /* This is an internally used function to create pixmaps. */
-GtkWidget *create_pixmap(GtkWidget *widget, const gchar *filename)
+GtkWidget *create_pixmap(const gchar *filename)
 {
 	gchar *pathname = NULL;
 	GtkWidget *pixmap;
