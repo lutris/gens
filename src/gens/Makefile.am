@@ -379,7 +379,7 @@ if GENS_UI_GTK
 gens_CXXFLAGS += @GTK_CFLAGS@
 endif
 
-gens_CXXFLAGS += @CFLAGS@ @CXXFLAGS@
+gens_CXXFLAGS += @CXXFLAGS@
 
 
 gens_LDADD = \
