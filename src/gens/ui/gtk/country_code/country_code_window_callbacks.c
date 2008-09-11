@@ -34,6 +34,10 @@
  */
 gboolean on_country_code_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(country_code_window);
 	country_code_window = NULL;
 	return FALSE;
@@ -45,6 +49,9 @@ gboolean on_country_code_window_close(GtkWidget *widget, GdkEvent *event, gpoint
  */
 void on_button_Country_up_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Country_MoveUp();
 }
 
@@ -54,6 +61,9 @@ void on_button_Country_up_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_Country_down_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Country_MoveDown();
 }
 
@@ -63,6 +73,9 @@ void on_button_Country_down_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_Country_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(country_code_window);
 	country_code_window = NULL;
 }
@@ -73,6 +86,9 @@ void on_button_Country_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_Country_Apply_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Country_Save();
 }
 
@@ -82,6 +98,9 @@ void on_button_Country_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_Country_Save_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Country_Save();
 	gtk_widget_destroy(country_code_window);
 	country_code_window = NULL;

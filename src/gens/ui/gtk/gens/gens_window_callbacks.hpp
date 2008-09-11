@@ -31,7 +31,7 @@ extern "C" {
 #include "emulator/gens.h"
 
 // Window is closed.
-gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data);
+gboolean on_gens_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 
 // File menu
 void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data);

@@ -32,6 +32,10 @@
  */
 gboolean on_bios_misc_files_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(bios_misc_files_window);
 	bios_misc_files_window = NULL;
 	return FALSE;
@@ -43,6 +47,8 @@ gboolean on_bios_misc_files_window_close(GtkWidget *widget, GdkEvent *event, gpo
  */
 void on_button_bmf_Change_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	
 	BIOS_Misc_Files_Change(GPOINTER_TO_INT(user_data));
 }
 
@@ -52,6 +58,9 @@ void on_button_bmf_Change_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(bios_misc_files_window);
 	bios_misc_files_window = NULL;
 }
@@ -62,6 +71,9 @@ void on_button_bmf_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_bmf_Apply_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	BIOS_Misc_Files_Save();
 }
 
@@ -71,6 +83,9 @@ void on_button_bmf_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_bmf_Save_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	BIOS_Misc_Files_Save();
 	gtk_widget_destroy(bios_misc_files_window);
 	bios_misc_files_window = NULL;

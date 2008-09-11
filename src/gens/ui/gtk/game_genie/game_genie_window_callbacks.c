@@ -34,6 +34,10 @@
  */
 gboolean on_game_genie_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(game_genie_window);
 	game_genie_window = NULL;
 	return FALSE;
@@ -45,6 +49,8 @@ gboolean on_game_genie_window_close(GtkWidget *widget, GdkEvent *event, gpointer
  */
 void AddCode_Signal(GtkWidget *widget, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	GtkWidget *entry_gg_code, *entry_gg_name;
 	gchar *code, *name;
 	int length;
@@ -106,6 +112,9 @@ gboolean on_entry_gg_keypress(GtkWidget *widget, GdkEventKey *event, gpointer us
  */
 void on_button_gg_delCode_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	GG_DelSelectedCode();
 }
 
@@ -115,6 +124,9 @@ void on_button_gg_delCode_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	GG_DeactivateAllCodes();
 }
 
@@ -125,6 +137,8 @@ void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
 void on_treeview_gg_list_item_toggled(GtkCellRendererToggle *cell_renderer,
 				      gchar *path, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(cell_renderer);
+	
 	// Toggle the state of this item.
 	GtkTreeIter iter;
 	gboolean curState;
@@ -145,6 +159,9 @@ void on_treeview_gg_list_item_toggled(GtkCellRendererToggle *cell_renderer,
  */
 void on_button_gg_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(game_genie_window);
 	game_genie_window = NULL;
 }
@@ -155,6 +172,9 @@ void on_button_gg_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_Apply_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	GG_SaveCodes();
 }
 
@@ -164,6 +184,9 @@ void on_button_gg_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_gg_Save_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	GG_SaveCodes();
 	gtk_widget_destroy(game_genie_window);
 	game_genie_window = NULL;

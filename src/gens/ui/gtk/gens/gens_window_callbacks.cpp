@@ -47,8 +47,10 @@
 #endif /* GENS_CDROM */
 
 #include "emulator/ui_proxy.hpp"
-#include "ui/gens_ui.hpp"
 #include "util/file/config_file.hpp"
+
+#include "ui/gens_ui.hpp"
+#include "gtk-misc.h"
 
 #include "sdllayer/g_sdlsound.h"
 #include "util/sound/gym.hpp"
@@ -92,6 +94,8 @@ extern "C"
 #define CHECK_MENU_ITEM_CALLBACK(callbackFunction, uiProxyFunction)			\
 void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
 {											\
+	GENS_UNUSED_PARAMETER(user_data);						\
+											\
 	if (!do_callbacks)								\
 		return;									\
 	uiProxyFunction(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));	\
@@ -101,8 +105,12 @@ void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
 /**
  * Window is closed.
  */
-gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer user_data)
+gboolean on_gens_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	close_gens();
 	
 	// TRUE tells GTK+ not to close the window. This is needed
@@ -117,6 +125,9 @@ gboolean on_gens_window_close(GtkMenuItem *menuitem, GdkEvent *event, gpointer u
  */
 void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if ((Check_If_Kaillera_Running()))
 		return 0;
@@ -136,6 +147,9 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	if (!Num_CD_Drive)
 		return;
 	/*
@@ -157,6 +171,8 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	
 	if (GYM_Playing)
 		Stop_Play_GYM();
 	Open_Rom(Recent_Rom[GPOINTER_TO_INT(user_data)]);
@@ -169,6 +185,9 @@ void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	if (Sound_Initialised)
 		Clear_Sound_Buffer();
 #ifdef GENS_DEBUGGER
@@ -191,6 +210,9 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_Game_Genie();
 }
 
@@ -200,6 +222,9 @@ void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -215,6 +240,9 @@ void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_SaveState_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -230,6 +258,9 @@ void on_FileMenu_SaveState_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -245,6 +276,9 @@ void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -274,6 +308,9 @@ void on_FileMenu_ChangeState_SubMenu_SlotItem_activate(GtkMenuItem *menuitem, gp
  */
 void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	close_gens();
 }
 
@@ -283,6 +320,9 @@ void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	if (!do_callbacks)
 		return;
 
@@ -309,6 +349,8 @@ CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_OpenGL_activate, Change_OpenGL);
 
 void on_GraphicsMenu_OpenGLFilter_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Video.glLinearFilter = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
 	
 	if (Video.glLinearFilter)
@@ -375,6 +417,9 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
  */
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_Color_Adjust();
 }
 
@@ -424,6 +469,9 @@ void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gp
  */
 void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Clear_Sound_Buffer();
 	Save_Shot();
 }
@@ -481,6 +529,9 @@ void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_Country_Code();
 }
 
@@ -490,6 +541,9 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
  */
 void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	system_reset();
 }
 
@@ -499,6 +553,9 @@ void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_CPUMenu_ResetMain68000_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -525,6 +582,9 @@ void on_CPUMenu_ResetMain68000_activate(GtkMenuItem *menuitem, gpointer user_dat
  */
 void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -544,6 +604,9 @@ void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data
  */
 void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -563,6 +626,9 @@ void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -582,6 +648,9 @@ void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
@@ -606,6 +675,8 @@ CHECK_MENU_ITEM_CALLBACK(on_CPUMenu_SegaCD_PerfectSync_activate, Change_SegaCD_P
  */
 void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	if (!do_callbacks)
 		return;
 	Change_Sound(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
@@ -646,6 +717,8 @@ CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_CDDA_activate, Change_CDDA);
  */
 void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	string label;
 	
 	// Change WAV dump status.
@@ -667,6 +740,8 @@ void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	string label;
 	
 	// Change GYM dump status.
@@ -688,6 +763,9 @@ void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_General_Options();
 }
 
@@ -697,6 +775,9 @@ void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user
  */
 void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_Controller_Config();
 }
 
@@ -706,6 +787,9 @@ void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
  */
 void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_Directory_Config();
 }
 
@@ -715,6 +799,9 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
  */
 void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_BIOS_Misc_Files();
 }
 
@@ -737,6 +824,9 @@ void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpoin
  */
 void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Open_Select_CDROM();
 }
 #endif
@@ -747,6 +837,9 @@ void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user
  */
 void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Load_As_Config(Game);
 	Sync_Gens_Window();
 }
@@ -757,6 +850,9 @@ void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_dat
  */
 void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Save_As_Config();
 }
 
@@ -766,5 +862,8 @@ void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_d
  */
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(menuitem);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	create_about_window();
 }

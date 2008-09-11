@@ -32,6 +32,10 @@
  */
 gboolean on_color_adjust_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(color_adjust_window);
 	color_adjust_window = NULL;
 	return FALSE;
@@ -43,6 +47,9 @@ gboolean on_color_adjust_window_close(GtkWidget *widget, GdkEvent *event, gpoint
  */
 void on_button_ca_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(color_adjust_window);
 	color_adjust_window = NULL;
 }
@@ -53,6 +60,9 @@ void on_button_ca_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_ca_Apply_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	CA_Save();
 }
 
@@ -62,6 +72,9 @@ void on_button_ca_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_ca_Save_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	CA_Save();
 	gtk_widget_destroy(color_adjust_window);
 	color_adjust_window = NULL;

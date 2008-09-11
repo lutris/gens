@@ -32,6 +32,10 @@
  */
 gboolean on_directory_config_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(directory_config_window);
 	directory_config_window = NULL;
 	return FALSE;
@@ -43,6 +47,8 @@ gboolean on_directory_config_window_close(GtkWidget *widget, GdkEvent *event, gp
  */
 void on_button_dc_Change_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	
 	Directory_Config_Change(GPOINTER_TO_INT(user_data));
 }
 
@@ -52,6 +58,9 @@ void on_button_dc_Change_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_dc_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(directory_config_window);
 	directory_config_window = NULL;
 }
@@ -62,6 +71,9 @@ void on_button_dc_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_dc_Apply_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Directory_Config_Save();
 }
 
@@ -71,6 +83,9 @@ void on_button_dc_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_dc_Save_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Directory_Config_Save();
 	gtk_widget_destroy(directory_config_window);
 	directory_config_window = NULL;

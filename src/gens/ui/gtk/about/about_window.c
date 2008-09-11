@@ -203,6 +203,10 @@ GtkWidget* create_about_window(void)
  */
 gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	cx = 0;
 	gtk_widget_destroy(about_window);
 	about_window = NULL;
@@ -215,6 +219,9 @@ gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user
  */
 void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	cx = 0;
 	gtk_widget_destroy(about_window);
 	about_window = NULL;
@@ -272,6 +279,8 @@ void updateIce(void)
 
 gboolean iceTime(gpointer data)
 {
+	GENS_UNUSED_PARAMETER(data);
+	
 	if (!cx)
 		return FALSE;
 	

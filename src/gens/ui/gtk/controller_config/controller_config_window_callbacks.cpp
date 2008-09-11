@@ -35,6 +35,10 @@
  */
 gboolean on_controller_config_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(controller_config_window);
 	controller_config_window = NULL;
 	return FALSE;
@@ -85,6 +89,8 @@ void on_check_cc_Teamplayer_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	
 	int player, padtype;
 	char playerID[4];
 	char objID[64];
@@ -139,6 +145,9 @@ void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	gtk_widget_destroy(controller_config_window);
 	controller_config_window = NULL;
 }
@@ -149,6 +158,9 @@ void on_button_cc_Cancel_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_cc_Apply_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Controller_Config_Save();
 }
 
@@ -158,6 +170,9 @@ void on_button_cc_Apply_clicked(GtkButton *button, gpointer user_data)
  */
 void on_button_cc_Save_clicked(GtkButton *button, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Controller_Config_Save();
 	gtk_widget_destroy(controller_config_window);
 	controller_config_window = NULL;
