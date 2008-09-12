@@ -15,6 +15,17 @@
 static int gdk_to_sdl_keyval(int gdk_key);
 
 
+// Axis values.
+static const unsigned char JoyAxisValues[2][6] =
+{
+	// axis value < -10,000
+	{0x03, 0x01, 0x07, 0x05, 0x0B, 0x09},
+	
+	// axis value > 10,000
+	{0x04, 0x02, 0x08, 0x06, 0x0C, 0x0A},
+};
+
+
 Input_SDL::Input_SDL()
 {
 	// Install the GTK+ key snooper.
@@ -130,16 +141,6 @@ unsigned int Input_SDL::getKey(void)
 	// Update the UI.
 	GensUI::update();
 	
-	// Axis values.
-	const unsigned char axisValues[2][6] =
-	{
-		// axis value < -10,000
-		{0x03, 0x01, 0x07, 0x05, 0x0B, 0x09},
-		
-		// axis value > 10,000
-		{0x04, 0x02, 0x08, 0x06, 0x0C, 0x0A},
-	};
-	
 	while (true)
 	{
 		while (SDL_PollEvent (&sdl_event))
@@ -153,12 +154,12 @@ unsigned int Input_SDL::getKey(void)
 					if (sdl_event.jaxis.value < -10000)
 					{
 						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							axisValues[0][sdl_event.jaxis.axis]);
+							JoyAxisValues[0][sdl_event.jaxis.axis]);
 					}
 					else if (sdl_event.jaxis.value > 10000)
 					{
 						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							axisValues[1][sdl_event.jaxis.axis]);
+							JoyAxisValues[1][sdl_event.jaxis.axis]);
 					}
 					else
 					{
@@ -249,102 +250,24 @@ void Input_SDL::checkJoystickAxis(SDL_Event *event)
 	
 	if (event->jaxis.value < -10000)
 	{
-		if (event->jaxis.axis == 0)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x3] = 1;
-			m_joyState[0x100 * event->jaxis.which + 0x4] = 0;
-		}
-		else if (event->jaxis.axis == 1)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x1] = 1;
-			m_joyState[0x100 * event->jaxis.which + 0x2] = 0;
-		}
-		else if (event->jaxis.axis == 2)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x7] = 1;
-			m_joyState[0x100 * event->jaxis.which + 0x8] = 0;
-		}
-		else if (event->jaxis.axis == 3)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x5] = 1;
-			m_joyState[0x100 * event->jaxis.which + 0x6] = 0;
-		}
-		else if (event->jaxis.axis == 4)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0xB] = 1;
-			m_joyState[0x100 * event->jaxis.which + 0xC] = 0;
-		}
-		else if (event->jaxis.axis == 5)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x9] = 1;
-			m_joyState[0x100 * event->jaxis.which + 0xA] = 0;
-		}
+		m_joyState[(0x100 * event->jaxis.which) +
+			   JoyAxisValues[0][event->jaxis.which]] = true;
+		m_joyState[(0x100 * event->jaxis.which) +
+			   JoyAxisValues[1][event->jaxis.which]] = false;
 	}
 	else if (event->jaxis.value > 10000)
 	{
-		if (event->jaxis.axis == 0)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x3] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x4] = 1;
-		}
-		else if (event->jaxis.axis == 1)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x1] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x2] = 1;
-		}
-		else if (event->jaxis.axis == 2)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x7] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x8] = 1;
-		}
-		else if (event->jaxis.axis == 3)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x5] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x6] = 1;
-		}
-		else if (event->jaxis.axis == 4)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0xB] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0xC] = 1;
-		}
-		else if (event->jaxis.axis == 5)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x9] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0xA] = 1;
-		}
+		m_joyState[(0x100 * event->jaxis.which) +
+			   JoyAxisValues[0][event->jaxis.which]] = false;
+		m_joyState[(0x100 * event->jaxis.which) +
+			   JoyAxisValues[1][event->jaxis.which]] = true;
 	}
 	else
 	{
-		if (event->jaxis.axis == 0)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x4] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x3] = 0;
-		}
-		else if (event->jaxis.axis == 1)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x2] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x1] = 0;
-		}
-		else if (event->jaxis.axis == 2)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x8] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x7] = 0;
-		}
-		else if (event->jaxis.axis == 3)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0x6] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x5] = 0;
-		}
-		else if (event->jaxis.axis == 4)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0xC] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0xB] = 0;
-		}
-		else if (event->jaxis.axis == 5)
-		{
-			m_joyState[0x100 * event->jaxis.which + 0xA] = 0;
-			m_joyState[0x100 * event->jaxis.which + 0x9] = 0;
-		}
+		m_joyState[(0x100 * event->jaxis.which) +
+			   JoyAxisValues[0][event->jaxis.which]] = false;
+		m_joyState[(0x100 * event->jaxis.which) +
+			   JoyAxisValues[1][event->jaxis.which]] = false;
 	}
 }
 
