@@ -130,7 +130,6 @@ gens_SOURCES = \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
-		util/file/chd.c \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -270,7 +269,6 @@ noinst_HEADERS = \
 		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
 		ui/gens_ui.hpp \
-		util/file/chd.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \

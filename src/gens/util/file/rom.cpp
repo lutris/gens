@@ -26,7 +26,6 @@ using std::list;
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.hpp"
 #include "minizip/unzip.h"
-#include "util/file/chd.h"
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
@@ -201,7 +200,6 @@ int Detect_Format(const char *Name)
 	FILE *f;
 	unzFile zf;
 	unz_file_info zinf;
-	struct chd *cf;
 	int i;
 	unsigned char buf[GENS_PATH_MAX];
 	char zname[GENS_PATH_MAX];
@@ -265,20 +263,6 @@ int Detect_Format(const char *Name)
 			return -1;
 		gzread (f, buf, 1024);
 		gzclose (f);
-	}
-	else if (!strcasecmp(".chd", &Name[strlen(Name) - 4]))
-	{
-		// MAME Compressed Hard Disk file.
-		// Why does Gens support this?
-		//char *p;
-		//int n;
-		
-		cf = chd_open(Name, NULL);
-		if (cf == NULL)
-			return -1;
-		
-		chd_read_range(cf, (char*)buf, 0, 1024);
-		chd_close(cf);
 	}
 	else
 	{
