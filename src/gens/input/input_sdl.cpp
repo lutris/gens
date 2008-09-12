@@ -119,7 +119,7 @@ unsigned int Input_SDL::getKey(void)
 	GdkEvent *event;
 	SDL_Event sdl_event;
 	SDL_Joystick *js[6];
-	SDL_JoystickEventState (SDL_ENABLE);
+	SDL_JoystickEventState(SDL_ENABLE);
 	
 	// Open all 6 joysticks.
 	for (int i = 0; i < 6; i++)
@@ -130,42 +130,35 @@ unsigned int Input_SDL::getKey(void)
 	// Update the UI.
 	GensUI::update();
 	
-	while (1)
+	// Axis values.
+	const unsigned char axisValues[2][6] =
+	{
+		// axis value < -10,000
+		{0x03, 0x01, 0x07, 0x05, 0x0B, 0x09},
+		
+		// axis value > 10,000
+		{0x04, 0x02, 0x08, 0x06, 0x0C, 0x0A},
+	};
+	
+	while (true)
 	{
 		while (SDL_PollEvent (&sdl_event))
 		{
 			switch (sdl_event.type)
 			{
 				case SDL_JOYAXISMOTION:
+					if (/*sdl_event.jaxis.axis < 0 ||*/ sdl_event.jaxis.axis >= 6)
+						break;
+					
 					if (sdl_event.jaxis.value < -10000)
 					{
-						if (sdl_event.jaxis.axis == 0)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x3));
-						else if (sdl_event.jaxis.axis == 1)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x1));
-						else if (sdl_event.jaxis.axis == 2)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x7));
-						else if (sdl_event.jaxis.axis == 3)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x5));
-						else if (sdl_event.jaxis.axis == 4)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0xB));
-						else if (sdl_event.jaxis.axis == 5)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x9));
+						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
+							axisValues[0][sdl_event.jaxis.axis]);
 					}
 					else if (sdl_event.jaxis.value > 10000)
 					{
-						if (sdl_event.jaxis.axis == 0)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x4));
-						else if (sdl_event.jaxis.axis == 1)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x2));
-						else if (sdl_event.jaxis.axis == 2)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x8));
-						else if (sdl_event.jaxis.axis == 3)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0x6));
-						else if (sdl_event.jaxis.axis == 4)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0xC));
-						else if (sdl_event.jaxis.axis == 5)
-							return (0x1000 + (0x100 * sdl_event.jaxis.which + 0xA));
+						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
+							axisValues[1][sdl_event.jaxis.axis]);
 					}
 					else
 					{
