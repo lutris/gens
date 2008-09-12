@@ -147,8 +147,6 @@ gens_SOURCES = \
 		video/v_draw.cpp \
 		video/v_draw_sdl.cpp \
 		video/v_effects.cpp
-##		netplay/ccnet.c 
-##		netplay/ccnet.h
 
 if GENS_DEBUGGER
 gens_SOURCES += \

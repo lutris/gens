@@ -25,7 +25,6 @@ using std::list;
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.hpp"
-//#include "ccnet.h"
 #include "minizip/unzip.h"
 #include "util/file/chd.h"
 #include "util/sound/wave.h"
@@ -520,33 +519,6 @@ int Open_Rom(const char *Name)
 	}
 	
 	return -1;
-}
-
-
-/**
- * Load_ROM_CC(): Initialize a ROM that's already loaded into the memory buffer.
- * @param Name ROM filename.
- * @param Size ROM filesize.
- * @return Genesis_Started.
- */
-int Load_ROM_CC(const char *Name, const int Size)
-{
-	My_Rom = (Rom *) malloc (sizeof (Rom));
-	
-	if (!My_Rom)
-	{
-		Game = NULL;
-		return 0;
-	}
-	
-	Update_Rom_Name(Name);
-	Rom_Size = Size;
-	Fill_Infos();
-	
-	Game = My_Rom;
-	
-	Genesis_Started = Init_Genesis (Game);
-	return Genesis_Started;
 }
 
 
