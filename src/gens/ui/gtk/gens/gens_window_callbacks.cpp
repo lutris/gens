@@ -136,8 +136,10 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 		Stop_Play_GYM();
 	if (Get_Rom() != -1)
 		Sync_Gens_Window();
+	/* Removed: Get_Rom() and related show an error by themselves.
 	else
 		GensUI::msgBox("Error opening ROM.", "Error");
+	*/
 }
 
 

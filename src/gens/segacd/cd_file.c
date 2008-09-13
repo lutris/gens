@@ -37,9 +37,10 @@ FILE_End (void)
 
 int Load_ISO(char* buf, const char* iso_name)
 {
-	FILE *File_Size;
+	FILE *isoFile;
 	int i, j, num_track, Cur_LBA;
 	FILE *tmp_file;
+	unsigned char detectBuf[1024];
 	char tmp_name[1024], tmp_ext[10];
 	
 	const char exts[20][16] =
@@ -52,24 +53,35 @@ int Load_ISO(char* buf, const char* iso_name)
 	
 	Unload_ISO();
 	
-	if (Detect_Format (iso_name) == SEGACD_IMAGE + 1)
-		Tracks[0].Type = TYPE_BIN;
-	else if (Detect_Format (iso_name) == SEGACD_IMAGE)
-		Tracks[0].Type = TYPE_ISO;
-	else
+	isoFile = fopen(iso_name, "rb");
+	if (!isoFile)
 		return -2;
 	
-	File_Size = fopen(iso_name, "rb");
-	fseek(File_Size, 0, SEEK_END);
-	Tracks[0].Length = ftell(File_Size);
-	fseek(File_Size, 0, SEEK_SET);
+	// Detect the disc image format.
+	fread(detectBuf, 1, 1024, isoFile);
+	switch (detectFormat(detectBuf))
+	{
+		case SegaCD_Image:
+			Tracks[0].Type = TYPE_ISO;
+			break;
+		case SegaCD_Image_BIN:
+			Tracks[0].Type = TYPE_BIN;
+			break;
+		default:
+			fclose(isoFile);
+			return -2;
+	}
+	
+	fseek(isoFile, 0, SEEK_END);
+	Tracks[0].Length = ftell(isoFile);
+	fseek(isoFile, 0, SEEK_SET);
 	
 	if (Tracks[0].Type == TYPE_ISO)
 		Tracks[0].Length >>= 11;	// size in sectors
 	else
 		Tracks[0].Length /= 2352;	// size in sectors
 	
-	fclose(File_Size);
+	fclose(isoFile);
 	
 	Tracks[0].F = fopen(iso_name, "rb");
 	

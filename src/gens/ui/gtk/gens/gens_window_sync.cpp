@@ -122,7 +122,7 @@ void Sync_Gens_Window_FileMenu(void)
 		
 		// Determine the ROM format.
 		// TODO: Improve the return variable from Detect_Format()
-		romFormat = Detect_Format(Recent_Rom[i]) >> 1;
+		romFormat = detectFormat_fopen(Recent_Rom[i]) >> 1;
 		if (romFormat >= 1 && romFormat <= 4)
 			strcpy(ROM_Name, ROM_Format_Prefix[romFormat]);
 		else

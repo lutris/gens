@@ -241,7 +241,8 @@ Reset_SegaCD ()
 	
 	//SetCurrentDirectory(Gens_Path);
 	
-	if (Detect_Format (Bios_To_Use) == -1)
+	// Load the BIOS file.
+	if (Load_ROM(Bios_To_Use, &Game) <= 0)
 	{
 		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"
@@ -256,9 +257,6 @@ Reset_SegaCD ()
 	SRAM_Write = 0;
 	Paused = 0;
 	BRAM_Ex_State &= 0x100;
-	
-	// Load the BIOS file.
-	Game = Load_ROM(Bios_To_Use, 0);
 	
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
 	

@@ -191,108 +191,26 @@ Update_CD_Rom_Name (char *Name)
 
 
 /**
- * Detect_Format(): Detect the format of a given ROM file.
- * @param Name Filename of the ROM file.
- * @return TODO: Document the return codes for this function.
+ * Detect_Format(): Detect the format of a given ROM header.
+ * @param buf Buffer containing the first 1024 bytes of the ROM file.
+ * @return ROMType.
  */
-int Detect_Format(const char *Name)
+ROMType detectFormat(const unsigned char *buf)
 {
-	FILE *f;
-	unzFile zf;
-	unz_file_info zinf;
-	int i;
-	unsigned char buf[GENS_PATH_MAX];
-	char zname[GENS_PATH_MAX];
-	
-	// TODO: Port this function to the new compression handler system.
-	
-	// SetCurrentDirectory (Gens_Path);
-	
-	memset (buf, 0, 1024);
-	
-	if ((!strcasecmp("zip", &Name[strlen(Name) - 3])) ||
-	    (!strcasecmp("zsg", &Name[strlen(Name) - 3])))
-	{
-		// ZIP format. Check inside the ZIP.
-		zf = unzOpen (Name);
-		
-		if (!zf)
-			return -1;
-		
-		i = unzGoToFirstFile (zf);
-		
-		while (i == UNZ_OK)
-		{
-			unzGetCurrentFileInfo (zf, &zinf, zname, 128, NULL, 0, NULL, 0);
-			
-			// The file extension of the file in the ZIP File must match one of these
-			// in order to be considered a ROM.
-			if ((!strncasecmp(".smd", &zname[strlen(zname) - 4], 4)) ||
-			    (!strncasecmp(".bin", &zname[strlen(zname) - 4], 4)) ||
-			    (!strncasecmp(".gen", &zname[strlen(zname) - 4], 4)) ||
-			    (!strncasecmp(".32x", &zname[strlen(zname) - 4], 4)) ||
-			    (!strncasecmp(".iso", &zname[strlen(zname) - 4], 4)))
-			{
-				i = 0;
-				break;
-			}
-			
-			i = unzGoToNextFile (zf);
-		}
-		
-		// If i is not zero, no ROM file was found.
-		if (i)
-			return 0;
-		
-		if (unzLocateFile (zf, zname, 1) != UNZ_OK)
-			return 0;
-		if (unzOpenCurrentFile (zf) != UNZ_OK)
-			return 0;
-		
-		// Read the first 1024 bytes of the ROM file.
-		unzReadCurrentFile (zf, buf, 1024);
-		
-		unzCloseCurrentFile (zf);
-		unzClose (zf);
-	}
-	else if (!strcasecmp (".gz", &Name[strlen(Name) - 3]))
-	{
-		// GZip format. Decompress the first 1024 bytes.
-		f = (FILE*)gzopen (Name, "rb");
-		if (f == NULL)
-			return -1;
-		gzread (f, buf, 1024);
-		gzclose (f);
-	}
-	else
-	{
-		// Other extension. Assuming this file is uncompressed.
-		strcpy(zname, Name);
-		
-		f = fopen(zname, "rb");
-		
-		if (f == NULL)
-			return -1;
-		
-		// Read the first 1024 bytes of the ROM file.
-		fread(buf, 1, 1024, f);
-		fclose(f);
-	}
+	int i = 0;
 	
 	// SegaCD check
 	if (!strncasecmp("SEGADISCSYSTEM", (char*)(&buf[0x00]), 14))
 	{
 		// SegaCD image, ISO9660 format.
-		return SEGACD_IMAGE;
+		return SegaCD_Image;
 	}
 	else if (!strncasecmp("SEGADISCSYSTEM", (char*)(&buf[0x10]), 14))
 	{
 		// SegaCD image, BIN/CUE format.
 		// TODO: Proper BIN/CUE audio support, if it's not done already.
-		return SEGACD_IMAGE + 1;
+		return SegaCD_Image_BIN;
 	}
-	
-	i = 0;
 	
 	if (strncasecmp("SEGA", (char*)(&buf[0x100]), 4))
 	{
@@ -311,20 +229,18 @@ int Detect_Format(const char *Name)
 	if (i)
 	{
 		// Interleaved 32X check.
-		if (((!strncasecmp("32X", &zname[strlen(zname) - 3], 3)) &&
-		     (buf[0x200 / 2] == 0x4E)) ||
-		     (!strncasecmp("3X", (char*)(&buf[0x200 + (0x105 / 2)]), 2)))
+		if ((buf[0x200 / 2] == 0x4E) &&
+		    (!strncasecmp("3X", (char*)(&buf[0x200 + (0x105 / 2)]), 2)))
 		{
 			// Interleaved 32X ROM.
-			return _32X_ROM + 1;
+			return _32X_ROM_Interleaved;
 		}
 	}
 	else
 	{
 		// Non-interleaved 32X check.
-		if (((!strncasecmp("32X", &zname[strlen(zname) - 3], 3)) &&
-		     (buf[0x200] == 0x4E)) ||
-		     (!strncasecmp("32X", (char*)(&buf[0x105]), 3)))
+		if ((buf[0x200] == 0x4E) &&
+		    (!strncasecmp("32X", (char*)(&buf[0x105]), 3)))
 		{
 			// Non-interleaved 32X ROM.
 			return _32X_ROM;
@@ -334,7 +250,55 @@ int Detect_Format(const char *Name)
 	// Assuming this is a Genesis ROM.
 	// If it is interleaved, i == 1.
 	// Otherwise, i == 0.
-	return GENESIS_ROM + i;
+	if (i)
+		return MD_ROM_Interleaved;
+	
+	return MD_ROM;
+}
+
+
+/**
+ * detectFormat_fopen(): Detect the format of a given ROM file.
+ * @param filename Filename of the ROM file.
+ * @return ROMType.
+ */
+ROMType detectFormat_fopen(const char* filename)
+{
+	Compressor *cmp;
+	list<CompressedFile> *files;
+	unsigned char buf[1024];
+	ROMType rtype;
+	
+	// Open the ROM file using the compressor functions.
+	cmp = new Compressor(filename);
+	if (!cmp->isFileLoaded())
+	{
+		// Cannot load the file.
+		delete cmp;
+		return (ROMType)0;
+	}
+	
+	// Get the file information.
+	files = cmp->getFileInfo();
+	
+	// Check how many files are available.
+	if (!files || files->empty())
+	{
+		// No files.
+		delete files;
+		delete cmp;
+		return (ROMType)0;
+	}
+	
+	// Get the first file in the archive.
+	// TODO: Store the compressed filename in ROM history.
+	cmp->getFile(&(*files->begin()), buf, 1024);
+	rtype = detectFormat(buf);
+	
+	// Return the ROM type.
+	delete files;
+	delete cmp;
+	return rtype;
 }
 
 
@@ -461,44 +425,52 @@ int Open_Rom(const char *Name)
 {
 	int sys;
 	
+	/*
 	Free_Rom(Game);
 	sys = Detect_Format(Name);
 	
 	if (sys < 1)
 		return -1;
+	*/
+	
+	// Close any loaded ROM first.
+	Free_Rom(Game);
+	
+	sys = Load_ROM(Name, &Game);
+	if (sys <= 0)
+		return -1;
 	
 	Update_Recent_Rom(Name);
 	Update_Rom_Dir(Name);
 	
-	if ((sys >> 1) < 3)		// Have to load a rom
-	{
-		Game = Load_ROM(Name, sys & 1);
-	}
-	
-	switch (sys >> 1)
+	switch (sys)
 	{
 		default:
-		case 1:			// Genesis rom
+		case MD_ROM:
+		case MD_ROM_Interleaved:
 			if (Game)
 				Genesis_Started = Init_Genesis(Game);
 			
 			return Genesis_Started;
 			break;
 	
-		case 2:			// 32X rom
+		case _32X_ROM:
+		case _32X_ROM_Interleaved:
 			if (Game)
 				_32X_Started = Init_32X(Game);
 			
 			return _32X_Started;
 			break;
 		
-		case 3:			// Sega CD image
+		case SegaCD_Image:
+		case SegaCD_Image_BIN:
 			SegaCD_Started = Init_SegaCD(Name);
 			
 			return SegaCD_Started;
 			break;
 		
-		case 4:			// Sega CD 32X image
+		case SegaCD_32X_Image:
+		case SegaCD_32X_Image_BIN:
 			break;
 	}
 	
@@ -526,7 +498,8 @@ Rom *Load_SegaCD_BIOS(const char *filename)
 	Free_Rom(Game);
 	
 	// Load the SegaCD BIOS ROM image.
-	return (Game = Load_ROM(filename, 0));
+	Load_ROM(filename, &Game);
+	return Game;
 }
 
 
@@ -536,11 +509,13 @@ Rom *Load_SegaCD_BIOS(const char *filename)
  * @param interleaved If non-zero, the ROM is interleaved.
  * @return Pointer to Rom struct with the ROM information.
  */
-Rom *Load_ROM(const char *filename, const int interleaved)
+ROMType Load_ROM(const char *filename, struct Rom **retROM)
 {
 	Compressor *cmp;
 	list<CompressedFile> *files;
 	CompressedFile* selFile;
+	unsigned char buf[1024];
+	ROMType rtype;
 	
 	//SetCurrentDirectory (Gens_Path);
 	
@@ -552,7 +527,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		GensUI::msgBox("Error loading the file.", "File Load Error");
 		delete cmp;
 		Game = NULL;
-		return NULL;
+		*retROM = NULL;
+		return (ROMType)0;
 	}
 	
 	// Get the file information.
@@ -573,7 +549,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		files = NULL;
 		cmp = NULL;
 		Game = NULL;
-		return NULL;
+		*retROM = NULL;
+		return (ROMType)0;
 	}
 	else if (files->size() == 1)
 	{
@@ -592,7 +569,22 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		delete files;
 		delete cmp;
 		Game = NULL;
-		return NULL;
+		*retROM = NULL;
+		return (ROMType)0;
+	}
+	
+	// Determine the ROM type.
+	cmp->getFile(&(*selFile), buf, 1024);
+	rtype = detectFormat(buf);
+	if (rtype < MD_ROM ||
+	    rtype >= SegaCD_Image)
+	{
+		// Unknown ROM type, or this is a SegaCD image.
+		delete files;
+		delete cmp;
+		Game = NULL;
+		*retROM = NULL;
+		return rtype;
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
@@ -602,7 +594,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		delete files;
 		delete cmp;
 		Game = NULL;
-		return NULL;
+		*retROM = NULL;
+		return (ROMType)0;
 	}
 	
 	My_Rom = (Rom*)malloc(sizeof(Rom));
@@ -612,7 +605,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		delete files;
 		delete cmp;
 		Game = NULL;
-		return NULL;
+		*retROM = NULL;
+		return (ROMType)0;
 	}
 	//fseek(ROM_File, 0, SEEK_SET);
 	
@@ -628,7 +622,8 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 		delete cmp;
 		My_Rom = NULL;
 		Game = NULL;
-		return NULL;
+		*retROM = NULL;
+		return (ROMType)0;
 	}
 	//fclose(ROM_File);
 	
@@ -640,11 +635,14 @@ Rom *Load_ROM(const char *filename, const int interleaved)
 	delete cmp;
 	
 	// Deinterleave the ROM, if necessary.
-	if (interleaved)
+	if (rtype == MD_ROM_Interleaved ||
+	    rtype == _32X_ROM_Interleaved)
 		Deinterleave_SMD();
 	
 	Fill_Infos();
-	return My_Rom;
+	
+	*retROM = My_Rom;
+	return rtype;
 }
 
 
