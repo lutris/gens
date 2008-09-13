@@ -33,7 +33,7 @@ typedef struct
 	int sh2;		/* SH-2 specific */
 } i_descr;
 
-i_descr tab[] =
+static i_descr tab[] =
 {
 	{ZERO_F, "clrt", 0xFFFF, 0x8, 0, 0},
 	{ZERO_F, "clrmac", 0xFFFF, 0x28, 0, 0},
