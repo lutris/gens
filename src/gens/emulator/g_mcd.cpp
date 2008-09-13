@@ -100,7 +100,7 @@ int Init_SegaCD(const char *iso_name)
 		case 1: // US (NTSC)
 			Game_Mode = 1;
 			CPU_Mode = 0;
-			Bios_To_Use = BIOS_Filenames.MegaCD_EU;
+			Bios_To_Use = BIOS_Filenames.SegaCD_US;
 			break;
 		
 		case 2: // Europe (PAL)
@@ -232,12 +232,12 @@ Reset_SegaCD ()
 {
 	char *Bios_To_Use;
 	
-	if (CPU_Mode)
-		Bios_To_Use = BIOS_Filenames.MegaCD_EU;
-	else if (Game_Mode)
-		Bios_To_Use = BIOS_Filenames.SegaCD_US;
-	else
+	if (Game_Mode == 0)
 		Bios_To_Use = BIOS_Filenames.MegaCD_JP;
+	else if (CPU_Mode)
+		Bios_To_Use = BIOS_Filenames.MegaCD_EU;
+	else
+		Bios_To_Use = BIOS_Filenames.SegaCD_US;
 	
 	//SetCurrentDirectory(Gens_Path);
 	
