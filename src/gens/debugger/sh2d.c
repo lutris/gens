@@ -214,7 +214,7 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 		switch (tab[i].format)
 		{
 			case ZERO_F:
-				strcpy(s_op, tabi].mnem);
+				strcpy(s_op, tab[i].mnem);
 				break;
 			
 			case N_F:
