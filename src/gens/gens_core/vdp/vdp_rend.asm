@@ -966,8 +966,10 @@ ALIGN4
 	mov cx, 0x7BEF
 	xor edx, edx
 	mov ebx, (64 / 2) - 1			; ebx = Nombre de couleurs
-	cmp byte [bpp], 15 ; check for 15-bit color (555)
-	je short %%Loop    ; jumps if 15-bit
+	
+	; Check for 15-bit color (555)
+	cmp byte [bpp], 15
+	jne short %%Loop
 
 	; 15-bit color requires an extra step.
 	mov cx, 0x3DEF
