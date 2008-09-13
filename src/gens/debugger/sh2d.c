@@ -192,6 +192,9 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 	int i;
 	char s_addr[32], s_op[128];
 	
+	// Invalid Opcode
+	const char* InvalidOpcode = "Invalid Opcode";
+	
 	sprintf (s_addr, "%08X:%04X   ", v_addr, op);
 	
 	for (i = 0; tab[i].mnem != NULL; i++)	/* 0 format */
@@ -201,8 +204,9 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 		
 		if (tab[i].sh2 && mode)
 		{
-			// SH-2 instruction in SH-1 mode.
-			sprintf(cdeb, "%s%s", s_addr, "unrecognized");
+			// SH-2 instruction in SH-1 mode. This is invalid!
+			strcpy(cdeb, s_addr);
+			strcat(cdeb, InvalidOpcode);
 			return;
 		}
 		
@@ -210,7 +214,7 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 		switch (tab[i].format)
 		{
 			case ZERO_F:
-				sprintf(s_op, "%s", tab[i].mnem);
+				strcpy(s_op, tabi].mnem);
 				break;
 			
 			case N_F:
@@ -286,7 +290,7 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 				break;
 			
 			default:
-				sprintf(s_op, "unrecognized");
+				strcpy(s_op, InvalidOpcode);
 				break;
 		}
 		
@@ -295,9 +299,7 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 		return;
 	}
 	
-	// Unknown opcode.
-	sprintf(s_op, "unrecognized");
-	
+	// Invalid Opcode
 	strcpy(cdeb, s_addr);
-	strcat(cdeb, s_op);
+	strcat(cdeb, InvalidOpcode);
 }
