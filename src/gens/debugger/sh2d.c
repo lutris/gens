@@ -196,41 +196,57 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 	
 	for (i = 0; tab[i].mnem != NULL; i++)	/* 0 format */
 	{
-		if ((op & tab[i].mask) == tab[i].bits)
+		if ((op & tab[i].mask) != tab[i].bits)
+			continue;
+		
+		if (tab[i].sh2 && mode)
 		{
-			if (tab[i].sh2 && mode)	/* if SH-1 mode, no SH-2 instructions are allowed */
-				strcpy(s_op, "unrecognized");
-			else if (tab[i].format == ZERO_F)
+			// SH-2 instruction in SH-1 mode.
+			sprintf(cdeb, "%s%s", s_addr, "unrecognized");
+			return;
+		}
+		
+		// Check the instruction format.
+		switch (tab[i].format)
+		{
+			case ZERO_F:
 				sprintf(s_op, "%s", tab[i].mnem);
-			else if (tab[i].format == N_F)
+				break;
+			
+			case N_F:
 				sprintf(s_op, tab[i].mnem, (op >> 8) & 0xF);
-			else if (tab[i].format == M_F)
+				break;
+			
+			case M_F:
 				sprintf(s_op, tab[i].mnem, (op >> 8) & 0xF);
-			else if (tab[i].format == NM_F)
+				break;
+			
+			case NM_F:
 				sprintf(s_op, tab[i].mnem, (op >> 4) & 0xF, (op >> 8) & 0xF);
-			else if (tab[i].format == MD_F)
-			{
+				break;
+			
+			case MD_F:
 				if (op & 0x100)
 					sprintf(s_op, tab[i].mnem, (op & 0xF) * 2, (op >> 4) & 0xF);
 				else
 					sprintf(s_op, tab[i].mnem, op & 0xF, (op >> 4) & 0xF);
-			}
-			else if (tab[i].format == ND4_F)
-			{
+				break;
+			
+			case ND4_F:
 				if (op & 0x100)
 					sprintf(s_op, tab[i].mnem, (op & 0xF) * 2, (op >> 4) & 0xF);
 				else
 					sprintf(s_op, tab[i].mnem, (op & 0xF), (op >> 4) & 0xF);
-			}
-			else if (tab[i].format == NMD_F)
-			{
+				break;
+			
+			case NMD_F:
 				if ((op & 0xF000) == 0x1000)
 					sprintf(s_op, tab[i].mnem, (op >> 4) & 0xF, (op & 0xF) * 4, (op >> 8) & 0xF);
 				else
 					sprintf(s_op, tab[i].mnem, (op & 0xF) * 4, (op >> 4) & 0xF, (op >> 8) & 0xF);
-			}
-			else if (tab[i].format == D_F)
-			{
+				break;
+			
+			case D_F:
 				if (tab[i].dat <= 4)
 				{
 					if ((op & 0xFF00) == 0xC700)
@@ -245,36 +261,42 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 					else
 						sprintf(s_op, tab[i].mnem, ((op & 0xFF) * 2) + v_addr + 4);
 				}
-			}
-			else if (tab[i].format == D12_F)
-			{
+				break;
+			
+			case D12_F:
 				if (op & 0x800)	/* sign extend */
 					sprintf(s_op, tab[i].mnem, ((op & 0xFFF) + 0xFFFFF000) * 2 + v_addr + 4);
 				else
 					sprintf(s_op, tab[i].mnem, (op & 0xFFF) * 2 + v_addr + 4);
-			}
-			else if (tab[i].format == ND8_F)
-			{
+				break;
+			
+			case ND8_F:
 				if ((op & 0xF000) == 0x9000) /* .W */
 					sprintf(s_op, tab[i].mnem, (op & 0xFF) * tab[i].dat + 4, (op >> 8) & 0xF);
 				else /* .L */
 					sprintf(s_op, tab[i].mnem, (op & 0xFF) * tab[i].dat + 4, (op >> 8) & 0xF);
-			}
-			else if (tab[i].format == I_F)
-				sprintf(s_op, tab[i].mnem, op & 0xFF);
-			else if (tab[i].format == NI_F)
-				sprintf(s_op, tab[i].mnem, op & 0xFF, (op >> 8) & 0xF);
-			else
-				sprintf(s_op, "unrecognized");
+				break;
 			
-			strcpy (cdeb, s_addr);
-			strcat (cdeb, s_op);
-			return;
+			case I_F:
+				sprintf(s_op, tab[i].mnem, op & 0xFF);
+				break;
+			
+			case NI_F:
+				sprintf(s_op, tab[i].mnem, op & 0xFF, (op >> 8) & 0xF);
+				break;
+			
+			default:
+				sprintf(s_op, "unrecognized");
+				break;
 		}
+		
+		strcpy(cdeb, s_addr);
+		strcat(cdeb, s_op);
+		return;
 	}
 	
 	// Unknown opcode.
-	sprintf (s_op, "unrecognized");
+	sprintf(s_op, "unrecognized");
 	
 	strcpy(cdeb, s_addr);
 	strcat(cdeb, s_op);
