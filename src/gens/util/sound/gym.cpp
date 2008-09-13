@@ -45,7 +45,7 @@ Start_GYM_Dump (void)
 
   if (GYM_Dumping)
     {
-      Put_Info ("GYM sound is already dumping", 1000);
+      draw->writeText("GYM sound is already dumping", 1000);
       return 0;
     }
 
@@ -56,7 +56,7 @@ Start_GYM_Dump (void)
     {
       if (num++ > 99999)
 	{
-	  Put_Info ("Too much GYM files in your GYM directory", 1000);
+	  draw->writeText("Too much GYM files in your GYM directory", 1000);
 	  GYM_File = NULL;
 	  return (0);
 	}
@@ -133,7 +133,7 @@ Start_GYM_Dump (void)
   t_buf[2] = YM_Save[0x28];
   fwrite (t_buf, 3, 1, GYM_File);
 
-  Put_Info ("Starting to dump GYM sound", 1000);
+  draw->writeText("Starting to dump GYM sound", 1000);
   GYM_Dumping = 1;
 
   return 1;
@@ -145,7 +145,7 @@ Stop_GYM_Dump (void)
 {
   if (!GYM_Dumping)
     {
-      Put_Info ("Already stopped", 1000);
+      draw->writeText("Already stopped", 1000);
       return 0;
     }
 
@@ -153,7 +153,7 @@ Stop_GYM_Dump (void)
     fclose (GYM_File);
   Clear_Sound_Buffer ();
 
-  Put_Info ("GYM dump stopped", 1000);
+  draw->writeText("GYM dump stopped", 1000);
   GYM_Dumping = 0;
 
   return 1;
@@ -173,7 +173,7 @@ int Start_Play_GYM(void)
 	
 	if (GYM_Playing)
 	{
-		Put_Info ("Already playing GYM", 1000);
+		draw->writeText("Already playing GYM", 1000);
 		return 0;
 	}
 	
@@ -183,7 +183,7 @@ int Start_Play_GYM(void)
 	if (!Init_Sound())
 	{
 		Sound_Enable = 0;
-		Put_Info ("Can't initialise SDL Sound", 1000);
+		draw->writeText("Can't initialize SDL Sound", 1000);
 		return 0;
 	}
 	
@@ -202,7 +202,7 @@ int Start_Play_GYM(void)
 	PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
 	GYM_Playing = 1;
 	
-	Put_Info("Starting to play GYM", 1000);
+	draw->writeText("Starting to play GYM", 1000);
 	return 1;
 }
 
@@ -213,7 +213,7 @@ Stop_Play_GYM (void)
 
   if (!GYM_Playing)
     {
-      Put_Info ("Already stopped", 1000);
+      draw->writeText("Already stopped", 1000);
       return 0;
     }
   if (GYM_File)
@@ -221,7 +221,7 @@ Stop_Play_GYM (void)
   Clear_Sound_Buffer ();
   GYM_Playing = 0;
 
-  Put_Info ("Stop playing GYM", 1000);
+  draw->writeText("Stopped playing GYM", 1000);
 
   return 1;
 }

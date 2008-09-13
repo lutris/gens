@@ -385,7 +385,7 @@ void MESSAGE_L(const char* str, const char* def, int time)
 {
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	Put_Info(buf, time);
+	draw->writeText(buf, time);
 }
 
 
@@ -402,7 +402,7 @@ void MESSAGE_NUM_L(const char* str, const char* def, int num, int time)
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, num);
-	Put_Info(msg_tmp, time);
+	draw->writeText(msg_tmp, time);
 }
 
 
@@ -419,7 +419,7 @@ void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time)
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, str2);
-	Put_Info(msg_tmp, time);
+	draw->writeText(msg_tmp, time);
 }
 
 
@@ -437,7 +437,7 @@ void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int ti
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, num1, num2);
-	Put_Info(msg_tmp, time);
+	draw->writeText(msg_tmp, time);
 }
 
 
@@ -635,18 +635,17 @@ static void win2linux(char* str)
 
 
 /**
- * Put_Info(): Put a message on the screen.
+ * Put_Info(): Put a message on the screen. [DEPRECATED; use draw->writeText() instead]
  * @param message Message to write to the screen.
  * @param duration Duration for the message to appear, in milliseconds.
  */
-char Info_String[1024];
-int Message_Showed = 0;
-unsigned int Info_Time = 0;
 int ice = 0;
 void Put_Info(const char* msg, int duration)
 {
 	// TODO: Figure out a better place to put this.
-	win2linux(Info_String);		// TODO: Get rid of this.
+	
+	// TODO: Reimplement win2linux somewhere else.
+	//win2linux(Info_String);
 	draw->writeText(msg, duration);
 }
 

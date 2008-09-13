@@ -245,7 +245,7 @@ int Load_State(char *Name)
 		*/
 		
 		sprintf(Str_Tmp, "STATE %d LOADED", Current_State);
-		Put_Info(Str_Tmp, 2000);
+		draw->writeText(Str_Tmp, 2000);
 	}
 	
 	fclose(f);
@@ -304,7 +304,7 @@ int Save_State(char *Name)
 	fclose(f);
 	
 	sprintf(Str_Tmp, "STATE %d SAVED", Current_State);
-	Put_Info(Str_Tmp, 2000);
+	draw->writeText(Str_Tmp, 2000);
 	
 	return 1;
 }
@@ -1787,7 +1787,7 @@ Load_SRAM (void)
 
   strcpy (Str_Tmp, "SRAM loaded from ");
   strcat (Str_Tmp, Name);
-  Put_Info (Str_Tmp, 2000);
+  draw->writeText(Str_Tmp, 2000);
   return 1;
 }
 
@@ -1823,7 +1823,7 @@ Save_SRAM (void)
 
   strcpy (Str_Tmp, "SRAM saved in ");
   strcat (Str_Tmp, Name);
-  Put_Info (Str_Tmp, 2000);
+  draw->writeText(Str_Tmp, 2000);
 
   return 1;
 }
@@ -1888,7 +1888,7 @@ Load_BRAM (void)
 
   strcpy (Str_Tmp, "BRAM loaded from ");
   strcat (Str_Tmp, Name);
-  Put_Info (Str_Tmp, 2000);
+  draw->writeText(Str_Tmp, 2000);
   return 1;
 }
 
@@ -1911,6 +1911,6 @@ Save_BRAM (void)
 
   strcpy (Str_Tmp, "BRAM saved in ");
   strcat (Str_Tmp, Name);
-  Put_Info (Str_Tmp, 2000);
+  draw->writeText(Str_Tmp, 2000);
   return 1;
 }

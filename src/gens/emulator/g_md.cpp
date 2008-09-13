@@ -31,24 +31,26 @@
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.
  */
-void Detect_Country_Genesis (void)
+void Detect_Country_Genesis(void)
 {
-	int c_tab[3] = { 4, 1, 8 };
-	int gm_tab[3] = { 1, 0, 1 };
-	int cm_tab[3] = { 0, 0, 1 };
+	const int c_tab[3] = { 4, 1, 8 };
+	const int gm_tab[3] = { 1, 0, 1 };
+	const int cm_tab[3] = { 0, 0, 1 };
+	
 	int i, coun = 0;
 	char c;
 	
-	if (!strncasecmp ((char *) &Rom_Data[0x1F0], "eur", 3))
+	if (!strncasecmp((char*)&Rom_Data[0x1F0], "eur", 3))
 		coun |= 8;
-	else if (!strncasecmp ((char *) &Rom_Data[0x1F0], "usa", 3))
+	else if (!strncasecmp((char*)&Rom_Data[0x1F0], "usa", 3))
 		coun |= 4;
-	else if (!strncasecmp ((char *) &Rom_Data[0x1F0], "jap", 3))
+	else if (!strncasecmp((char*)&Rom_Data[0x1F0], "jap", 3))
 		coun |= 1;
 	else
+	{
 		for (i = 0; i < 4; i++)
 		{
-			c = toupper (Rom_Data[0x1F0 + i]);
+			c = toupper(Rom_Data[0x1F0 + i]);
 			
 			if (c == 'U')
 				coun |= 4;
@@ -63,6 +65,7 @@ void Detect_Country_Genesis (void)
 			else if ((c >= 'A') && (c <= 'F'))
 				coun |= c - 'A' + 10;
 		}
+	}
 	
 	// Check what country should be set.
 	if (coun & c_tab[Country_Order[0]])
@@ -94,16 +97,16 @@ void Detect_Country_Genesis (void)
 	if (Game_Mode)
 	{
 		if (CPU_Mode)
-			Put_Info ("Europe system (50 FPS)", 1500);
+			draw->writeText("Europe system (50 FPS)", 1500);
 		else
-			Put_Info ("USA system (60 FPS)", 1500);
+			draw->writeText("USA system (60 FPS)", 1500);
 	}
 	else
 	{
 		if (CPU_Mode)
-			Put_Info ("Japan system (50 FPS)", 1500);
+			draw->writeText("Japan system (50 FPS)", 1500);
 		else
-			Put_Info ("Japan system (60 FPS)", 1500);
+			draw->writeText("Japan system (60 FPS)", 1500);
 	}
 	
 	if (CPU_Mode)

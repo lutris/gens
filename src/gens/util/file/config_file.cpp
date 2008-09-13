@@ -271,7 +271,7 @@ int Save_As_Config(void)
 	Save_Config(filename.c_str());
 	strcpy(Str_Tmp, "config saved in ");
 	strcat(Str_Tmp, filename.c_str());
-	Put_Info(Str_Tmp, 2000);
+	draw->writeText(Str_Tmp, 2000);
 	return 1;
 }
 
@@ -540,6 +540,6 @@ int Load_As_Config(void *Game_Active)
 	Load_Config(filename.c_str(), Game_Active);
 	strcpy(Str_Tmp, "config loaded from ");
 	strcat(Str_Tmp, filename.c_str());
-	Put_Info(Str_Tmp, 2000);
+	draw->writeText(Str_Tmp, 2000);
 	return 1;
 }
