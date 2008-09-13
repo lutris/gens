@@ -167,9 +167,12 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 	
 	OPC = Next_Word();
 	
+	// Invalid Opcode
+	const char* InvalidOpcode = "Invalid Opcode";
+	
 	// Set the debug string to Unknown Opcode initially.
 	// TODO: Move this to the end of the function instead?
-	strcpy(Dbg_Str, "Unknown Opcode");
+	strcpy(Dbg_Str, InvalidOpcode);
 	
 	switch (OPC >> 12)
 	{
@@ -539,8 +542,8 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 					
 					case 48:
 					case 49:
-						//Bad Opcode
-						strcpy(Dbg_Str, "Bad Opcode");
+						// Invalid Opcode
+						strcpy(Dbg_Str, InvalidOpcode);
 						break;
 					
 					case 50:
@@ -605,8 +608,8 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 										break;
 									
 									case 4:
-										//Bad Opcode
-										strcpy(Dbg_Str, "Bad Opcode");
+										// Invalid Opcode
+										strcpy(Dbg_Str, InvalidOpcode);
 										break;
 									
 									case 5:
@@ -833,8 +836,8 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 			break;
 		
 		case 10:
-			//Bad Opcode
-			strcpy(Dbg_Str, "Bad Opcode");
+			// Invalid Opcode
+			strcpy(Dbg_Str, InvalidOpcode);
 			break;
 		
 		case 11:
@@ -1206,8 +1209,8 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 			break;
 		
 		case 15:
-			//Bad Opcode
-			strcpy(Dbg_Str, "Bad Opcode");
+			// Invalid Opcode
+			strcpy(Dbg_Str, InvalidOpcode);
 			break;
 	}
 	
