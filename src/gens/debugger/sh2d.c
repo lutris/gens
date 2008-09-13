@@ -26,7 +26,7 @@
 typedef struct
 {
   int format;
-  unsigned char *mnem;
+  char *mnem;
   unsigned short mask;		/* mask used to obtain opcode bits */
   unsigned short bits;		/* opcode bits */
   int dat;			/* specific data for situation */
