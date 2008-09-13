@@ -276,19 +276,6 @@ int Play_GYM(void)
 }
 
 
-int Play_GYM_Bench(void)
-{
-	if (!GYM_Next())
-	{
-		Stop_Play_GYM();
-		return 0;
-	}
-	
-	Write_Sound_Buffer(NULL);
-	return 1;
-}
-
-
 int Update_GYM_Dump(int v0, int v1, unsigned char v2)
 {
 	int bResult;
