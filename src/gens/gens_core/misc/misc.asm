@@ -1316,7 +1316,7 @@ section .text align=64
 		jmp near .END
 	
 	.32BIT
-		shl ebp, 1
+		shl ebp, 6
 		lea edi, [MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
 
 	.Loop_EDX32
