@@ -784,37 +784,39 @@ void Refresh_VDP_Pattern(void)
 }
 
 
-#define REFRESH_VDP_PALETTE_COLORS(Screen, Palette)				\
-{										\
-	unsigned short i, j, k;							\
-	unsigned short col;							\
-	for (i = 0; i < 8; i++)							\
-	{									\
-		for (j = 0; j < 16; j++)					\
-		{								\
-			for (k = 0; k < 8; k++)					\
-			{							\
-				col = (i * 336) + 180 + (j * 8) + k;		\
-				Screen[(336 * 10) + col] = Palette[j + 0];	\
-				Screen[(336 * 18) + col] = Palette[j + 16];	\
-				Screen[(336 * 26) + col] = Palette[j + 32];	\
-				Screen[(336 * 34) + col] = Palette[j + 48];	\
-			}							\
-		}								\
-	}									\
+template<typename pixel>
+static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette)
+{
+	unsigned short i, j, k;
+	unsigned short col;
+	for (i = 0; i < 8; i++)
+	{
+		for (j = 0; j < 16; j++)
+		{
+			for (k = 0; k < 8; k++)
+			{
+				col = (i * 336) + 180 + (j * 8) + k;
+				screen[(336 * 10) + col] = palette[j + 0];
+				screen[(336 * 18) + col] = palette[j + 16];
+				screen[(336 * 26) + col] = palette[j + 32];
+				screen[(336 * 34) + col] = palette[j + 48];
+			}
+		}
+	}
 }
 
-
-#define REFRESH_VDP_PALETTE_OUTLINE(Screen, PaletteMask, OutlineColor)					\
-{													\
-	/* Outline the selected palette. Ported from GENS Re-Recording. */				\
-	for (i = 0; i < 16 * 8; i++)									\
-	{												\
-		Screen[(336 * (9 + ((pattern_pal & PaletteMask) * 8))) + 180 + i] = OutlineColor;	\
-		Screen[(336 * (18 + ((pattern_pal & PaletteMask) * 8))) + 180 + i] = OutlineColor;	\
-	}												\
+template<typename pixel>
+static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned short paletteMask, pixel outlineColor)
+{
+	// Outline the selected palette. Ported from Gens Rerecording.
+	unsigned short i;
+	
+	for (i = 0; i < 16 * 8; i++)
+	{
+		screen[(336 * (9 + ((pattern_pal & paletteMask) * 8))) + 180 + i] = outlineColor;
+		screen[(336 * (18 + ((pattern_pal & paletteMask) * 8))) + 180 + i] = outlineColor;
+	}
 }
-
 
 /**
  * Refresh_VDP_Palette(): Refresh the VDP palette display.
@@ -828,14 +830,14 @@ void Refresh_VDP_Palette(void)
 	if (bpp == 32)
 	{
 		// 32-bit color palette update
-		REFRESH_VDP_PALETTE_COLORS(MD_Screen32, MD_Palette32);
-		REFRESH_VDP_PALETTE_OUTLINE(MD_Screen32, 0x03, 0xFFFFFF)
+		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32);
+		Refresh_VDP_Palette_Outline(MD_Screen32, 0x03, (unsigned int)0xFFFFFF);
 	}
 	else
 	{
 		// 15/16-bit color palette update
-		REFRESH_VDP_PALETTE_COLORS(MD_Screen, MD_Palette);
-		REFRESH_VDP_PALETTE_OUTLINE(MD_Screen, 0x03, 0xFFFF)
+		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette);
+		Refresh_VDP_Palette_Outline(MD_Screen, 0x03, (unsigned short)0xFFFF);
 	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
@@ -1003,14 +1005,14 @@ void Refresh_Word_RAM_Pattern(void)
 	if (bpp == 32)
 	{
 		// 32-bit color palette update
-		REFRESH_VDP_PALETTE_COLORS(MD_Screen32, MD_Palette32);
-		REFRESH_VDP_PALETTE_OUTLINE(MD_Screen32, 0x0F, 0xFFFFFF)
+		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32);
+		Refresh_VDP_Palette_Outline(MD_Screen32, 0x0F, (unsigned int)0xFFFFFF);
 	}
 	else
 	{
 		// 15/16-bit color palette update
-		REFRESH_VDP_PALETTE_COLORS(MD_Screen, MD_Palette);
-		REFRESH_VDP_PALETTE_OUTLINE(MD_Screen, 0x0F, 0xFFFF)
+		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette);
+		Refresh_VDP_Palette_Outline(MD_Screen, 0x0F, (unsigned short)0xFFFF);
 	}
 }
 
