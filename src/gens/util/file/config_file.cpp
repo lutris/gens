@@ -318,8 +318,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// 32X BIOSes
 	cfg.getString("General", "32X 68000 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MC68000));
-	cfg.getString("General", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MSH2));
-	cfg.getString("General", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_SSH2));
+	cfg.getString("General", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MSH2, sizeof(BIOS_Filenames._32X_MSH2));
+	cfg.getString("General", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_SSH2, sizeof(BIOS_Filenames._32X_SSH2));
 	
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
