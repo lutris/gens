@@ -11,7 +11,7 @@ extern "C" {
 
 #ifdef GENS_DEBUGGER
 
-void SH2Disasm(char *c, unsigned v_addr, unsigned short op_norm, int mode);
+void SH2Disasm(char *c, unsigned int v_addr, unsigned short op_norm, int mode);
 
 #endif /* GENS_DEBUGGER */
 
