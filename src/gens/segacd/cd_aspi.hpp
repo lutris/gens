@@ -32,26 +32,27 @@ extern "C" {
 #define SS_COMP				0x01
 
 /* SRB - EXECUTE SCSI COMMAND - SC_EXEC_SCSI_CMD */
-typedef struct tagSRB32_ExecSCSICmd {
-  BYTE        SRB_Cmd;            /* ASPI command code = SC_EXEC_SCSI_CMD */
-  BYTE        SRB_Status;         /* ASPI command status byte */
-  BYTE        SRB_HaId;           /* ASPI host adapter number */
-  BYTE        SRB_Flags;          /* ASPI request flags */
-  DWORD       SRB_Hdr_Rsvd;       /* Reserved */
-  BYTE        SRB_Target;         /* Target's SCSI ID */
-  BYTE        SRB_Lun;            /* Target's LUN number */
-  WORD        SRB_Rsvd1;          /* Reserved for Alignment */
-  DWORD       SRB_BufLen;         /* Data Allocation Length */
-  BYTE        *SRB_BufPointer;    /* Data Buffer Point */
-  BYTE        SRB_SenseLen;       /* Sense Allocation Length */
-  BYTE        SRB_CDBLen;         /* CDB Length */
-  BYTE        SRB_HaStat;         /* Host Adapter Status */
-  BYTE        SRB_TargStat;       /* Target Status */
-  int        (*SRB_PostProc)(struct tagSRB32_ExecSCSICmd *s);		  /* Post routine */
-  void        *SRB_Rsvd2;         /* Reserved */
-  BYTE        SRB_Rsvd3[16];      /* Reserved for expansion */
-  BYTE        CDBByte[16];        /* SCSI CDB */
-  BYTE        SenseArea[SENSE_LEN+2];  /* Request sense buffer - var length */
+typedef struct tagSRB32_ExecSCSICmd
+{
+	unsigned char  SRB_Cmd;		// ASPI command code = SC_EXEC_SCSI_CMD
+	unsigned char  SRB_Status;	// ASPI command status byte
+	unsigned char  SRB_HaId;	// ASPI host adapter number
+	unsigned char  SRB_Flags;	// ASPI request flags
+	unsigned int   SRB_Hdr_Rsvd;	// Reserved
+	unsigned char  SRB_Target;	// Target's SCSI ID
+	unsigned char  SRB_Lun;		// Target's LUN number
+	unsigned short SRB_Rsvd1;	// Reserved for Alignment
+	unsigned int   SRB_BufLen;	// Data Allocation Length
+	unsigned char  *SRB_BufPointer;	// Data Buffer Point
+	unsigned char  SRB_SenseLen;	// Sense Allocation Length
+	unsigned char  SRB_CDBLen;	// CDB Length
+	unsigned char  SRB_HaStat;	// Host Adapter Status
+	unsigned char  SRB_TargStat;	// Target Status
+	int (*SRB_PostProc)(struct tagSRB32_ExecSCSICmd *s);  // Post routine
+	void *SRB_Rsvd2;		// Reserved
+	unsigned char  SRB_Rsvd3[16];	// Reserved for expansion
+	unsigned char  CDBByte[16];	// SCSI CDB
+	unsigned char  SenseArea[SENSE_LEN+2];  // Request sense buffer - var length
 } SRB_ExecSCSICmd, *PSRB_ExecSCSICmd;
 
 #include "cd_sys.hpp"
@@ -63,19 +64,19 @@ typedef struct tagSRB32_ExecSCSICmd {
 
 typedef struct
 {
-  BYTE      rsvd;
-  BYTE      ADR;
-  BYTE      trackNumber;
-  BYTE      rsvd2;
-  BYTE      addr[4];
+	unsigned char rsvd;
+	unsigned char ADR;
+	unsigned char trackNumber;
+	unsigned char rsvd2;
+	unsigned char addr[4];
 } TOCTRACK;
 
 typedef struct
 {
-  WORD      tocLen;
-  BYTE      firstTrack;
-  BYTE      lastTrack;
-  TOCTRACK tracks[100];
+	unsigned short tocLen;
+	unsigned char  firstTrack;
+	unsigned char  lastTrack;
+	TOCTRACK       tracks[100];
 } TOC, *PTOC, *LPTOC;
 
 extern int CDROM_SPEED;

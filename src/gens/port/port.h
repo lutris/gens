@@ -5,17 +5,11 @@
 extern "C" {
 #endif
 
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
-typedef void VOID;
-
 typedef struct _POINT {
 	int x;
 	int y;
 } POINT;
 
-enum { MB_OK, MB_ICONEXCLAMATION };
 void SetCurrentDirectory(const char *directory);
 int GetCurrentDirectory(int size,char* buf);
 unsigned long GetTickCount();

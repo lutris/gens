@@ -67,7 +67,7 @@ int Num_CD_Drive;
 int CUR_DEV; // a che serve?
 int DEV_PAR[8][3];
 unsigned int Current_LBA;
-BYTE Buf_Stat[256];
+unsigned char Buf_Stat[256];
 SRB_ExecSCSICmd se;
 TOC toc;
 
