@@ -590,7 +590,7 @@ int Change_SegaCD_PerfectSync(int newPerfectSync)
 /**
  * Set_Game_Name(): Sets the title of the window to the system name and the game name.
  */
-void Set_Game_Name()
+void Set_Game_Name(void)
 {
 	char SystemName[16];
 	char *Title_Rom_Name;

@@ -33,6 +33,7 @@
 #include "gens_core/misc/byteswap.h"
 
 #include "ui/gens_ui.hpp"
+#include "ui_proxy.hpp"
 
 
 unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name
@@ -70,7 +71,7 @@ char* Detect_Country_SegaCD(void)
  */
 int Init_SegaCD(const char *iso_name)
 {
-	char Str_Err[256], *Bios_To_Use;
+	char *Bios_To_Use;
 	
 	GensUI::setWindowTitle_Init("SegaCD", false);
 	
@@ -88,7 +89,7 @@ int Init_SegaCD(const char *iso_name)
 	{
 		default:
 		case -1: // Autodetection.
-			Bios_To_Use = Detect_Country_SegaCD ();
+			Bios_To_Use = Detect_Country_SegaCD();
 			break;
 		
 		case 0: // Japan (NTSC)
@@ -131,11 +132,7 @@ int Init_SegaCD(const char *iso_name)
 	Update_CD_Rom_Name((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
-	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		strcpy(Str_Err, "MegaCD");
-	else
-		strcpy(Str_Err, "SegaCD");
-	GensUI::setWindowTitle_Game(Str_Err, Rom_Name);
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), Rom_Name);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -202,21 +199,15 @@ int Init_SegaCD(const char *iso_name)
  */
 int Reload_SegaCD(const char *iso_name)
 {
-	char Str_Err[256];
-	
 	Save_BRAM ();
 	
-	GensUI::setWindowTitle_Init("SegaCD", true);
+	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
 	
 	Reset_CD ((char *) CD_Data, iso_name);
 	Update_CD_Rom_Name ((char *) &CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
-	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		strcpy(Str_Err, "MegaCD");
-	else
-		strcpy(Str_Err, "SegaCD");
-	GensUI::setWindowTitle_Game(Str_Err, Rom_Name);
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), Rom_Name);
 	
 	Load_BRAM();
 	
