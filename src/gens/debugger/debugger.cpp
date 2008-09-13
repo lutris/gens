@@ -805,7 +805,7 @@ void Refresh_VDP_Pattern(void)
 }
 
 
-#define REFRESH_VDP_PALETTE_OUTLINE(Screen, PaletteMask, OutlineColor)						\
+#define REFRESH_VDP_PALETTE_OUTLINE(Screen, PaletteMask, OutlineColor)					\
 {													\
 	/* Outline the selected palette. Ported from GENS Re-Recording. */				\
 	for (i = 0; i < 16 * 8; i++)									\
@@ -835,7 +835,7 @@ void Refresh_VDP_Palette(void)
 	{
 		// 15/16-bit color palette update
 		REFRESH_VDP_PALETTE_COLORS(MD_Screen, MD_Palette);
-		REFRESH_VDP_PALETTE_OUTLINE(MD_Screen32, 0x03, 0xFFFF)
+		REFRESH_VDP_PALETTE_OUTLINE(MD_Screen, 0x03, 0xFFFF)
 	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
