@@ -120,6 +120,7 @@ void GensUI::sleep(const int ms)
 void GensUI::setWindowTitle(const string& title)
 {
 	gtk_window_set_title(GTK_WINDOW(gens_window), title.c_str());
+	update();
 }
 
 
