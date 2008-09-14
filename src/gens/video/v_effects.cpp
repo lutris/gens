@@ -202,38 +202,31 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 
 
 /**
- * Pause_Screen(): Tint the screen a purple hue to indicate that emulation is paused.
+ * Pause_Screen_int(): Tint the screen a purple hue to indicate that emulation is paused.
+ * @param screen Pointer to the MD screen buffer.
+ * @param RMask Red component mask.
+ * @param GMask Green component mask.
+ * @param BMask Blue component mask.
+ * @param RShift Red component shift.
+ * @param GShift Green component shift.
+ * @param BShift Blue component shift.
  */
-void Pause_Screen(void)
+template<typename pixel>
+static void Pause_Screen_int(pixel *mdScreen, pixel RMask, pixel GMask, pixel BMask,
+			     unsigned char RShift, unsigned char GShift, unsigned char BShift)
 {
-	int i, j, offset;
 	unsigned char r, g, b, nr, ng, nb;
-	int sum;
+	unsigned short x, y;
+	unsigned int offset = 0;
+	unsigned short sum;
 	
-	r = g = b = nr = ng = nb = 0;
-	
-	for (offset = j = 0; j < 240; j++)
+	for (y = 0; y < 240; y++)
 	{
-		for (i = 0; i < 336; i++, offset++)
+		for (x = 0; x < 336; x++, offset++)
 		{
-			if (bpp == 15)
-			{
-				r = (unsigned char)((MD_Screen[offset] & 0x7C00) >> 10);
-				g = (unsigned char)((MD_Screen[offset] & 0x03E0) >> 5);
-				b = (unsigned char)((MD_Screen[offset] & 0x001F));
-			}
-			else if (bpp == 16)
-			{
-				r = (unsigned char)((MD_Screen[offset] & 0xF800) >> 11);
-				g = (unsigned char)((MD_Screen[offset] & 0x07C0) >> 6);
-				b = (unsigned char)((MD_Screen[offset] & 0x001F));
-			}
-			else //if (bpp == 32)
-			{
-				r = (unsigned char)(((MD_Screen32[offset] >> 16) & 0xFF) >> 3);
-				g = (unsigned char)(((MD_Screen32[offset] >> 8) & 0xFF) >> 3);
-				b = (unsigned char)(((MD_Screen32[offset] >> 0) & 0xFF) >> 3);
-			}
+			r = (unsigned char)((mdScreen[offset] & RMask) >> RShift);
+			g = (unsigned char)((mdScreen[offset] & GMask) >> GShift);
+			b = (unsigned char)((mdScreen[offset] & BMask) >> BShift);
 			
 			sum = r + g + b;
 			sum /= 3;
@@ -244,18 +237,28 @@ void Pause_Screen(void)
 			if (nb > 0x1F)
 				nb = 0x1F;
 			
+			// Mask off the LSB.
 			nr &= 0x1E;
 			ng &= 0x1E;
 			nb &= 0x1E;
 			
-			if (bpp == 15)
-				MD_Screen[offset] = (nr << 10) | (ng << 5) | nb;
-			else if (bpp == 16)
-				MD_Screen[offset] = (nr << 11) | (ng << 6) | nb;
-			else //if (bpp == 32)
-				MD_Screen32[offset] = (nr << 19) | (ng << 11) | (nb << 3);
+			mdScreen[offset] = (nr << RShift) | (ng << GShift) | (nb << BShift);
 		}
 	}
+}
+
+
+/**
+ * Pause_Screen(): Tint the screen a purple hue to indicate that emulation is paused.
+ */
+void Pause_Screen(void)
+{
+	if (bpp == 15)
+		Pause_Screen_int(MD_Screen, (unsigned short)0x7C00, (unsigned short)0x03E0, (unsigned short)0x001F, 10, 5, 0);
+	else if (bpp == 16)
+		Pause_Screen_int(MD_Screen, (unsigned short)0xF800, (unsigned short)0x07C0, (unsigned short)0x001F, 11, 6, 0);
+	else //if (bpp == 32)
+		Pause_Screen_int(MD_Screen32, (unsigned int)0xFF0000, (unsigned int)0x00FF00, (unsigned int)0x0000FF, 16+3, 8+3, 0+3);
 	
 	if (ice == 2)
 		ice = 3;
