@@ -4,12 +4,10 @@
 #include "port.h"
 #include "timer.h"
 
-
-unsigned long GetTickCount()
+unsigned int GetTickCount()
 {
 	return gettime();
 }
-
 
 void SetCurrentDirectory(const char *directory)
 {
