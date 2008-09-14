@@ -169,6 +169,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	
 	// GL Orthographic Projection code imported from Gens/Linux 2.15.4.
 	// TODO: Is this stuff really necessary?
+	// NOTE: Disabled for now due to garbage problems.
+#if 0
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	
@@ -192,6 +194,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+#endif
+	
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, textures);
