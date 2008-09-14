@@ -13,7 +13,7 @@ static long long cpu_speed = 0;
 
 
 // return time in micro-second
-static inline long long system_time()
+static inline long long system_time(void)
 {
 #if HAVE_LIBRT
 	struct timespec tv;
@@ -39,50 +39,51 @@ static inline long long read_rdtsc(void)
 }
 
 
-static long long
-get_cpu_speed ()		// based on mame
+// based on mame
+static inline long long get_cpu_speed(void)
 {
-  long long a, b, start, end;
-
-  a = system_time ();
-  do
-    {
-      b = system_time ();
-    }
-  while (a == b);
-
-  start = read_rdtsc ();
-
-  do
-    {
-      a = system_time ();
-    }
-  while (a - b < UCLOCKS_PER_SEC / 4);
-
-  end = read_rdtsc ();
-
-  return (end - start) * 4;
+	long long a, b, start, end;
+	
+	a = system_time();
+	do
+	{
+		b = system_time();
+	}
+	while (a == b);
+	
+	start = read_rdtsc();
+	
+	do
+	{
+		a = system_time();
+	}
+	while (a - b < UCLOCKS_PER_SEC / 4);
+	
+	end = read_rdtsc();
+	
+	return (end - start) * 4;
 }
 
-unsigned int gettime()
+
+unsigned int gettime(void)
 {
 	return system_time() / 1000;
 }
 
-void
-init_timer ()
+
+void init_timer(void)
 {
-  cpu_speed = get_cpu_speed ();
+	cpu_speed = get_cpu_speed();
 }
 
-void
-GetPerformanceFrequency (long long *freq)
+
+void GetPerformanceFrequency(long long *freq)
 {
-  *freq = cpu_speed;
+	*freq = cpu_speed;
 }
 
-void
-GetPerformanceCounter (long long *now)
+
+void GetPerformanceCounter(long long *now)
 {
-  *now = read_rdtsc ();
+	*now = read_rdtsc();
 }
