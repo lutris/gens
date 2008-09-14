@@ -117,7 +117,11 @@ int Update_Emulation(void)
 	{
 		if (ice >= 3)
 			ice = 1;
-		if (*((unsigned short*)&Ram_68k[0xFFB0]) == 7)
+#ifdef GENS_BYTE_ORDER == GENS_LIL_ENDIAN
+		if (Ram_68k[0xFFB0] == 7)
+#else // GENS_BYTE_ORDER == GENS_BIG_ENDIAN
+		if (Ram_68k[0xFFB1] == 7)
+#endif
 		{
 			if (ice == 1)
 				ice = 2;
