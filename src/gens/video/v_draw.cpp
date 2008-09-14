@@ -279,7 +279,7 @@ int VDraw::flip(void)
 template<typename pixel>
 static inline void drawChar_1x(pixel *screen, int x, int y, const int w,
 			       pixel dotColor, bool transparent,
-			       const pixel transparentMask, const char ch)
+			       const pixel transparentMask, const unsigned char ch)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
@@ -314,7 +314,7 @@ static inline void drawChar_1x(pixel *screen, int x, int y, const int w,
 template<typename pixel>
 static inline void drawChar_2x(pixel *screen, const int x, const int y, const int w,
 			       pixel dotColor, bool transparent,
-			       const pixel transparentMask, const char ch)
+			       const pixel transparentMask, const unsigned char ch)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
@@ -398,14 +398,14 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *ms
 		if (doubleSize)
 		{
 			// TODO: Make text shadow an option.
-			drawChar_2x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, msg[cPos]);
-			drawChar_2x(screen, cx-1, cy-1, w, dotColor, transparent, transparentMask, msg[cPos]);
+			drawChar_2x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, (unsigned char)msg[cPos]);
+			drawChar_2x(screen, cx-1, cy-1, w, dotColor, transparent, transparentMask, (unsigned char)msg[cPos]);
 		}
 		else
 		{
 			// TODO: Make text shadow an option.
-			drawChar_1x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, msg[cPos]);
-			drawChar_1x(screen, cx, cy, w, dotColor, transparent, transparentMask, msg[cPos]);
+			drawChar_1x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, (unsigned char)msg[cPos]);
+			drawChar_1x(screen, cx, cy, w, dotColor, transparent, transparentMask, (unsigned char)msg[cPos]);
 		}
 		
 		cx += charSize;
