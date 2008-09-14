@@ -277,15 +277,15 @@ int VDraw::flip(void)
 
 
 template<typename pixel>
-static inline void drawChar_1x(pixel *screen, const int x, const int y, const int w,
-			       pixel dotColor, bool transparent, const pixel transparentMask,
-			       const char ch, const int cPos)
+static inline void drawChar_1x(pixel *screen, int x, int y, const int w,
+			       pixel dotColor, bool transparent,
+			       const pixel transparentMask, const char ch)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
 	unsigned char cRow;
 	
-	screenPos = &screen[y*w + x + (cPos * 8)];
+	screenPos = &screen[y*w + x];
 	for (cy = 0; cy < 8; cy++)
 	{
 		// Each character is 8 bytes, with each row representing 8 dots.
@@ -313,14 +313,14 @@ static inline void drawChar_1x(pixel *screen, const int x, const int y, const in
 
 template<typename pixel>
 static inline void drawChar_2x(pixel *screen, const int x, const int y, const int w,
-			       pixel dotColor, bool transparent, const pixel transparentMask,
-			       const char ch, const int cPos)
+			       pixel dotColor, bool transparent,
+			       const pixel transparentMask, const char ch)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
 	unsigned char cRow;
 	
-	screenPos = &screen[y*w + x + (cPos * 16)];
+	screenPos = &screen[y*w + x];
 	for (cy = 0; cy < 8; cy++)
 	{
 		// Each character is 8 bytes, with each row representing 8 dots.
@@ -362,42 +362,58 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *ms
 			 const pixel dotColor, const bool doubleSize,
 			 bool transparent, const pixel transparentMask)
 {
-	int x, y, msgLength, cPos;
+	int msgLength, cPos;
+	unsigned short linebreaks, msgWidth;
+	unsigned short x, y, cx, cy;
+	unsigned char charSize;
 	
 	// The message must be specified.
 	if (!msg)
 		return;
+	
+	// Character size
+	if (doubleSize)
+		charSize = 16;
+	else
+		charSize = 8;
 	
 	// Bottom-left of the screen.
 	x = m_HBorder + 8;
 	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
 	
 	// Character size is 8x8 normal, 16x16 double.
-	if (doubleSize)
-		y -= 24;
-	else
-		y -= 16;
+	y -= (8 + charSize);
 	
 	// Get the message length.
 	msgLength = strlen(msg);
 	
-	// TODO: Add linebreaks if the message is too long.
+	// Determine how many linebreaks are needed.
+	msgWidth = w - 16 - (m_HBorder * 2);
+	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
+	y -= (linebreaks * charSize);
 	
+	cx = x; cy = y;
 	for (cPos = 0; cPos < msgLength; cPos++)
 	{
 		if (doubleSize)
 		{
 			// TODO: Make text shadow an option.
-			drawChar_2x(screen, x+1, y+1, w, (pixel)0, transparent, transparentMask, msg[cPos], cPos);
-			drawChar_2x(screen, x-1, y-1, w, dotColor, transparent, transparentMask, msg[cPos], cPos);
+			drawChar_2x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, msg[cPos]);
+			drawChar_2x(screen, cx-1, cy-1, w, dotColor, transparent, transparentMask, msg[cPos]);
 		}
 		else
 		{
 			// TODO: Make text shadow an option.
-			drawChar_1x(screen, x+1, y+1, w, (pixel)0, transparent, transparentMask, msg[cPos], cPos);
-			drawChar_1x(screen, x, y, w, dotColor, transparent, transparentMask, msg[cPos], cPos);
+			drawChar_1x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, msg[cPos]);
+			drawChar_1x(screen, cx, cy, w, dotColor, transparent, transparentMask, msg[cPos]);
 		}
 		
+		cx += charSize;
+		if (cx - x >= msgWidth)
+		{
+			cx = x;
+			cy += charSize;
+		}
 	}
 }
 
