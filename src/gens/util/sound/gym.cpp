@@ -215,7 +215,7 @@ int Stop_Play_GYM(void)
 int GYM_Next(void)
 {
 	unsigned char c, c2;
-	unsigned long l;
+	unsigned int l;
 	int *buf[2];
 	
 	if (!GYM_Playing || !GYM_File)
@@ -280,7 +280,7 @@ int Update_GYM_Dump(int v0, int v1, unsigned char v2)
 {
 	int bResult;
 	char buf_tmp[4];
-	unsigned long l;
+	unsigned int l;
 	
 	if (!GYM_Dumping || !GYM_File)
 		return 0;

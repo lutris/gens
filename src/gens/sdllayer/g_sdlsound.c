@@ -150,7 +150,7 @@ int Get_Current_Seg (void)
 	// We aren't using DIRECTX so these won't work :(
 	
 	/* 
-	unsigned long R;
+	unsigned int R;
 	
 	lpDSBuffer->GetCurrentPosition(&R, NULL);
 	return(R / (Seg_Length * Bytes_Per_Unit));

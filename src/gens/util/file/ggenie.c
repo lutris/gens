@@ -335,7 +335,7 @@ int Load_Patch_File(void)
 	unsigned char *Patch_String;
 	char Name[2048], Code[16], Comment[256], c;
 	unsigned int i_code = 0, i_comment = 0, Ind_GG;
-	unsigned long Length, Bytes_Read, i;
+	unsigned int Length, Bytes_Read, i;
 	
 	enum etat_sec
 	{
