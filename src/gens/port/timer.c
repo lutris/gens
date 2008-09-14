@@ -13,18 +13,16 @@ static long long cpu_speed = 0;
 
 
 // return time in micro-second
-static inline long long
-system_time ()
+static inline long long system_time()
 {
-
 #if HAVE_LIBRT
-  struct timespec tv;
-  clock_gettime (CLOCK_REALTIME, &tv);
-  return (tv.tv_sec * 1000000) + (tv.tv_nsec / 1000);
+	struct timespec tv;
+	clock_gettime(CLOCK_REALTIME, &tv);
+	return (tv.tv_sec * 1000000) + (tv.tv_nsec / 1000);
 #else
-  struct timeval tv;
-  gettimeofday (&tv, NULL);
-  return (tv.tv_sec * 1000000) + (tv.tv_usec);
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000000) + (tv.tv_usec);
 #endif
 }
 
@@ -66,10 +64,9 @@ get_cpu_speed ()		// based on mame
   return (end - start) * 4;
 }
 
-unsigned long
-gettime ()
+unsigned int gettime()
 {
-  return system_time () / 1000;
+	return system_time() / 1000;
 }
 
 void

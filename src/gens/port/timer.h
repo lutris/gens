@@ -8,7 +8,7 @@ extern "C" {
 void init_timer();
 void GetPerformanceFrequency(long long *freq);
 void GetPerformanceCounter(long long *now);
-unsigned long gettime();
+unsigned int gettime();
 
 #ifdef __cplusplus
 }
