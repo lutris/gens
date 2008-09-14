@@ -63,7 +63,7 @@ class VDraw
 		virtual void updateVSync(bool data = false) = 0;
 		
 		// Write text to the screen.
-		void writeText(const string msg, int duration);
+		void writeText(const string msg, unsigned short duration);
 		
 		// Properties
 		bool stretch(void);
@@ -147,7 +147,7 @@ class VDraw
 		bool m_MsgEnabled; // Is the message function enabled by the user?
 		string m_MsgText;
 		bool m_MsgVisible; // Is the message currently visible onscreen?
-		int m_MsgTime;
+		unsigned int m_MsgTime;
 		
 		// Message style values
 		unsigned char m_MsgStyle;

@@ -553,7 +553,7 @@ void VDraw::setBpp(int newBpp)
  * @param msg Message to write.
  * @param duration Duration for the message to appear, in milliseconds.
  */
-void VDraw::writeText(string msg, int duration)
+void VDraw::writeText(string msg, unsigned short duration)
 {
 	if (!m_MsgEnabled)
 		return;
