@@ -19,9 +19,7 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 {
 	// Set the default GL values.
 	textures[0] = 0;
-	textures[1] = 0;
 	textureSize = 256;
-	nonpow2tex = 0;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
 	
@@ -42,7 +40,6 @@ VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
 	textures[0] = 0;
 	textures[1] = 0;
 	textureSize = 256;
-	nonpow2tex = 0;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
 	
@@ -169,18 +166,40 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	filterBuffer = (unsigned char*)malloc(filterBufferSize);
 	
 	glViewport(0, 0, screen->w, screen->h);
+	
+	// GL Orthographic Projection code imported from Gens/Linux 2.15.4.
+	// TODO: Is this stuff really necessary?
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	if ((Video.Width_GL * 3 > Video.Height_GL * 4) && Video.Height_GL != 0)
+	{
+		glOrtho(-((float)Video.Width_GL * 3) / ((float)Video.Height_GL * 4),
+			((float)Video.Width_GL * 3) / ((float)Video.Height_GL * 4),
+			-1, 1, -1, 1);
+	}
+	else if ((Video.Width_GL * 3 < Video.Height_GL * 4) && Video.Width_GL != 0)
+	{
+		glOrtho(-1, 1,
+			-((float)Video.Height_GL * 4) / ((float)Video.Width_GL * 3),
+			((float)Video.Height_GL * 3) / ((float)Video.Width_GL * 3),
+			-1, 1);
+	}
+	else
+	{
+		glOrtho(-1, 1, -1, 1, -1, 1);
+	}
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, textures);
 	
-#ifdef GL_TEXTURE_RECTANGLE_NV
-	// nVidia rectangular texture extension
-	glEnable(GL_TEXTURE_RECTANGLE_NV);
-	if (glIsEnabled(GL_TEXTURE_RECTANGLE_NV))
-		nonpow2tex = 1;
-#endif
-	
-	glGenTextures(2, textures);
+	// Enable double buffering.
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	
+	// Color depth values.
 	if (bpp == 15)
 	{
 		// 15-bit color. (Mode 555)
@@ -189,6 +208,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  5);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
 		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+		m_pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+		m_pixelFormat = GL_BGRA;
 	}
 	else if (bpp == 16)
 	{
@@ -198,6 +219,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
 		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+		m_pixelType = GL_UNSIGNED_SHORT_5_6_5;
+		m_pixelFormat = GL_RGB;
 	}
 	else //if (bpp == 32)
 	{
@@ -207,7 +230,26 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
 		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+		m_pixelType = GL_UNSIGNED_BYTE;
+		m_pixelFormat = GL_BGRA;
 	}
+	
+	// Initialize the texture.
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	clearScreen();
+	
+	// Set GL clamping parameters.
+	// TODO: GL_CLAMP_TO_EDGE or GL_CLAMP?
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	
+	// GL filters.
+	// TODO: Set MAG filter when the linear filter setting is changed.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
+	// Set the texture format.
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureSize * 2, textureSize, 0,
+		     m_pixelFormat, m_pixelType, NULL);
 	
 	return 1;
 }
@@ -245,18 +287,8 @@ void VDraw_SDL_GL::stretchAdjustInternal(void)
 	}
 	
 	// Stretch is enabled.
-	if (nonpow2tex)
-	{
-		// Non Power of 2 textures are available.
-		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 2) * ((rowLength / 4) * 3)) / 240;
-		m_HStretch = ((m_HBorder / 2) * rowLength) / 320;
-	}
-	else
-	{
-		// Non Power of 2 textures are not available.
-		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
-		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
-	}
+	m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
+	m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
 }
 
 
@@ -318,85 +350,26 @@ int VDraw_SDL_GL::flipInternal(void)
 			 m_FPSColor, m_FPSDoubleSize, m_FPSTransparent);
 	}
 	
-	// Determine the pixel type and pixel format based on the bpp setting.
-	unsigned int pixelType, pixelFormat;
-	if (bpp == 15)
-	{
-		pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
-		pixelFormat = GL_BGRA;
-	}
-	else if (bpp == 16)
-	{
-		pixelType = GL_UNSIGNED_SHORT_5_6_5;
-		pixelFormat = GL_RGB;
-	}
-	else //if (bpp == 32)
-	{
-		pixelType = GL_UNSIGNED_BYTE;
-		pixelFormat = GL_BGRA;
-	}
-	
-	// Bind the GL texture.
-	
-#ifdef GL_TEXTURE_RECTANGLE_NV
-	// nVidia rectangular texture extension
-	
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, textures[0]);
-	
-	if (Video.glLinearFilter)
-		glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	else
-		glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
-	// OpenGL needs to know the width of the texture data.
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	
-	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, 3, rowLength, (rowLength / 4) * 3, 0,
-		     pixelFormat, pixelType, filterBuffer);
-	
-	// Corners of the rectangle.
-	glBegin(GL_QUADS);
-	
-	glTexCoord2i(m_HStretch, m_VStretch);	// Upper-left corner of the texture.
-	glVertex2i(-1, 1);			// Upper-left vertex of the quad.
-	
-	glTexCoord2i(rowLength - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
-	glVertex2i( 1, 1);					// Upper-right vertex of the quad.
-	
-	glTexCoord2i(rowLength - m_HStretch, ((rowLength / 4) * 3) - m_VStretch);	// Lower-right corner of the texture.
-	glVertex2i( 1, -1);								// Lower-right vertex of the quad.
-	
-	glTexCoord2i(m_HStretch, ((rowLength / 4) * 3) - m_VStretch);	// Lower-left corner of the texture.
-	glVertex2i(-1, -1);						// Lower-left vertex of the quad.
-	
-	glEnd();
-#else
-	// Regular 2D textures.
-	
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	
+	// Set the GL MAG filter.
+	// TODO: Only do this when the linear filter setting is changed.
 	if (Video.glLinearFilter)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	else
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	
 	// OpenGL needs to know the width of the texture data.
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureSize * 2, textureSize, 0,
-		     pixelFormat, pixelType, filterBuffer);
+	// Set the texture data.
+	glTexSubImage2D(GL_TEXTURE_2D, 0,
+			0,						// x offset
+			((240 - VDP_Num_Vis_Lines) >> 1) << m_shift,	// y offsets
+			rowLength,					// width
+			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) << m_shift),	// height
+			m_pixelFormat, m_pixelType,
+			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) << m_shift));
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
@@ -415,7 +388,6 @@ int VDraw_SDL_GL::flipInternal(void)
 	glVertex2i(-1, -1);					// Lower-left corner of the quad.
 	
 	glEnd();
-#endif
 	
 	// Swap the SDL GL buffers.
 	SDL_GL_SwapBuffers();

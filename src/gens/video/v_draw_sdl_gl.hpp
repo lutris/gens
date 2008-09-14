@@ -82,12 +82,13 @@ class VDraw_SDL_GL : public VDraw
 		char SDL_WindowID[24];
 		
 		// GL variables.
-		GLuint textures[2];
+		GLuint textures[1];
 		int rowLength;
 		int textureSize;
-		int nonpow2tex;
 		unsigned char *filterBuffer;
 		int filterBufferSize;
+		unsigned int m_pixelFormat;
+		unsigned int m_pixelType;
 		
 		// Stretch parameters
 		float m_HStretch, m_VStretch;
