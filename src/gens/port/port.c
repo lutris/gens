@@ -4,7 +4,7 @@
 #include "port.h"
 #include "timer.h"
 
-unsigned int GetTickCount()
+unsigned int GetTickCount(void)
 {
 	return gettime();
 }

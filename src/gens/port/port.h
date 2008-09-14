@@ -12,7 +12,7 @@ typedef struct _POINT {
 
 void SetCurrentDirectory(const char *directory);
 int GetCurrentDirectory(int size,char* buf);
-unsigned int GetTickCount();
+unsigned int GetTickCount(void);
 
 #ifdef __cplusplus
 }
