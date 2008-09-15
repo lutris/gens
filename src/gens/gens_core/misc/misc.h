@@ -25,9 +25,6 @@ void Cell_32x32_Dump(unsigned char *Adr, int Palette);
 
 void CDD_Export_Status(void);
 
-void Write_Sound_Mono_MMX(int *Left, int *Right, short *Dest, int length);
-void Write_Sound_Stereo_MMX(int *Left, int *Right, short *Dest, int length);
-
 #ifdef __cplusplus
 }
 #endif

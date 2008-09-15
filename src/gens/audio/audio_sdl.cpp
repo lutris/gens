@@ -19,6 +19,10 @@
 #include "gens_core/sound/pcm.h"
 #include "gens_core/misc/misc.h" // for Have_MMX flag
 
+#ifdef GENS_X86_ASM
+#include "audio_mmx.h" // MMX audio functions
+#endif
+
 
 Audio_SDL::Audio_SDL()
 {
@@ -209,16 +213,20 @@ int Audio_SDL::writeSoundBuffer(void *dumpBuf)
 	
 	if (m_stereo)
 	{
+#ifdef GENS_X86_ASM
 		if (Have_MMX)
-			Write_Sound_Stereo_MMX(Seg_L, Seg_R, (short*)pMsndOut, m_segLength);
+			writeSoundStereo_MMX(Seg_L, Seg_R, (short*)pMsndOut, m_segLength);
 		else
+#endif
 			writeSoundStereo((short*)pMsndOut, m_segLength);
 	}
 	else
 	{
+#ifdef GENS_X86_ASM
 		if (Have_MMX)
-			Write_Sound_Mono_MMX(Seg_L, Seg_R, (short*)pMsndOut, m_segLength);
+			writeSoundMono_MMX(Seg_L, Seg_R, (short*)pMsndOut, m_segLength);
 		else
+#endif
 			writeSoundMono((short*)pMsndOut, m_segLength);
 	}
 	
