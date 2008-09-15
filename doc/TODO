@@ -22,6 +22,7 @@ Emulator TODO:
 - Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
 - Set the border color to color 0 of palette 0. (See Sonic 1 GHZ for an example.)
   - Works in SDL mode, but not in GL mode.
+- Erase the entire MD palette when a new ROM is loaded.
 
 Miscellaneous Bugs:
 - Auto Pause doesn't work.
