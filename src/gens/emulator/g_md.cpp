@@ -126,15 +126,16 @@ void Detect_Country_Genesis(void)
 /**
  * Init_Genesis_Bios(): Initialize the Genesis BIOS.
  */
-void Init_Genesis_Bios (void)
+void Init_Genesis_Bios(void)
 {
+	// TODO: Compressor support.
 	FILE *f;
 	
 	if ((f = fopen(BIOS_Filenames.MD_TMSS, "rb")))
 	{
 		fread(&Genesis_Rom[0], 1, 2 * 1024, f);
 		be16_to_cpu_array(&Genesis_Rom[0], 2 * 1024);
-		fclose (f);
+		fclose(f);
 	}
 	else
 	{
@@ -143,7 +144,7 @@ void Init_Genesis_Bios (void)
 	}
 	
 	Rom_Size = 2 * 1024;
-	memcpy (Rom_Data, Genesis_Rom, 2 * 1024);
+	memcpy(Rom_Data, Genesis_Rom, 2 * 1024);
 	Game_Mode = 0;
 	CPU_Mode = 0;
 	VDP_Num_Vis_Lines = 224;
