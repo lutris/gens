@@ -52,13 +52,6 @@ typedef enum {
 	
 extern _filters filters;
 
-#define SELECT_RENDERER(renderer_nb, renderer_fn,msg) \
-{\
-	*Rend = renderer_nb;\
- 	*Blit = renderer_fn;\
-	MESSAGE_L("Render selected: " msg,"Render selected: " msg, 1500)\
-}
-
 #ifdef __cplusplus
 }
 #endif
