@@ -54,6 +54,9 @@ Milestone 4 introduces the following new features:
   uses GLX_SGI_swap_control extension, so it may not work on all systems.
   Support for other VSync extensions will be added later on.
 
+- The GTK+ window border is now set to 0. This allows a window manager to
+  remove the window border for pseudo-full-screen.
+
 Milestone 4 fixes the following bugs:
 
 - Shadow/Highlight colors were incorrect in 16-bit color.
