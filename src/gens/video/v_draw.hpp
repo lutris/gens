@@ -51,43 +51,43 @@ class VDraw
 		int flip(void);
 		
 		// Sets the bpp value.
-		void setBpp(int newBpp);
+		void setBpp(const int newBpp);
 		
 		// Refresh the video subsystem.
 		void Refresh_Video(void);
 		
 		// Set the rendering mode.
-		int setRender(int newMode, bool forceUpdate = true);
+		int setRender(const int newMode, const bool forceUpdate = true);
 		
 		// Update VSync value.
-		virtual void updateVSync(bool data = false) = 0;
+		virtual void updateVSync(const bool data = false) = 0;
 		
 		// Write text to the screen.
-		void writeText(const string msg, unsigned short duration);
+		void writeText(const string& msg, const unsigned short duration);
 		
 		// Properties
 		bool stretch(void);
-		void setStretch(bool newStretch);
+		void setStretch(const bool newStretch);
 		bool swRender(void);
-		void setSwRender(bool newSwRender);
+		void setSwRender(const bool newSwRender);
 		int shift(void);
-		void setShift(int newShift);
+		void setShift(const int newShift);
 		bool msgEnabled(void);
-		void setMsgEnabled(bool newMsgEnable);
+		void setMsgEnabled(const bool newMsgEnable);
 		bool fpsEnabled(void);
-		void setFPSEnabled(bool newFPSEnable);
+		void setFPSEnabled(const bool newFPSEnable);
 		bool fullScreen(void);
-		void setFullScreen(bool newFullScreen);
+		void setFullScreen(const bool newFullScreen);
 		bool fastBlur(void);
-		void setFastBlur(bool newFastBlur);
+		void setFastBlur(const bool newFastBlur);
 		
 		// Style properties
 		unsigned char msgStyle(void);
-		void setMsgStyle(unsigned char newMsgStyle);
+		void setMsgStyle(const unsigned char newMsgStyle);
 		unsigned char fpsStyle(void);
-		void setFPSStyle(unsigned char newFPSStyle);
+		void setFPSStyle(const unsigned char newFPSStyle);
 		unsigned char introEffectColor(void);
-		void setIntroEffectColor(unsigned char newIntroEffectColor);
+		void setIntroEffectColor(const unsigned char newIntroEffectColor);
 		
 		// Renderers
 		// TODO: Make these properties.

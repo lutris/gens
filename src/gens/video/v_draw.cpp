@@ -507,7 +507,7 @@ void VDraw::calcTextStyle(void)
  * setBpp(): Sets the bpp value.
  * @param newbpp New bpp value.
  */
-void VDraw::setBpp(int newBpp)
+void VDraw::setBpp(const int newBpp)
 {
 	if (bpp == newBpp)
 		return;
@@ -553,7 +553,7 @@ void VDraw::setBpp(int newBpp)
  * @param msg Message to write.
  * @param duration Duration for the message to appear, in milliseconds.
  */
-void VDraw::writeText(string msg, unsigned short duration)
+void VDraw::writeText(const string& msg, const unsigned short duration)
 {
 	if (!m_MsgEnabled)
 		return;
@@ -592,7 +592,7 @@ void VDraw::Refresh_Video(void)
  * @param newMode Rendering mode / filter.
  * @param forceUpdate If true, forces a renderer update.
  */
-int VDraw::setRender(int newMode, bool forceUpdate)
+int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
 	int Old_Rend, *Rend;
 	BlitFn *Blit, testBlit;
@@ -667,7 +667,7 @@ bool VDraw::stretch(void)
 {
 	return m_Stretch;
 }
-void VDraw::setStretch(bool newStretch)
+void VDraw::setStretch(const bool newStretch)
 {
 	if (m_Stretch == newStretch)
 		return;
@@ -680,7 +680,7 @@ bool VDraw::swRender(void)
 {
 	return m_swRender;
 }
-void VDraw::setSwRender(bool newSwRender)
+void VDraw::setSwRender(const bool newSwRender)
 {
 	if (m_swRender == newSwRender)
 		return;
@@ -694,7 +694,7 @@ int VDraw::shift(void)
 {
 	return m_shift;
 }
-void VDraw::setShift(int newShift)
+void VDraw::setShift(const int newShift)
 {
 	if (m_shift == newShift)
 		return;
@@ -708,7 +708,7 @@ bool VDraw::msgEnabled(void)
 {
 	return m_MsgEnabled;
 }
-void VDraw::setMsgEnabled(bool newMsgEnabled)
+void VDraw::setMsgEnabled(const bool newMsgEnabled)
 {
 	if (m_MsgEnabled == newMsgEnabled)
 		return;
@@ -722,7 +722,7 @@ bool VDraw::fpsEnabled(void)
 {
 	return m_FPSEnabled;
 }
-void VDraw::setFPSEnabled(bool newFPSEnabled)
+void VDraw::setFPSEnabled(const bool newFPSEnabled)
 {
 	if (m_FPSEnabled == newFPSEnabled)
 		return;
@@ -737,7 +737,7 @@ unsigned char VDraw::msgStyle(void)
 {
 	return m_MsgStyle;
 }
-void VDraw::setMsgStyle(unsigned char newMsgStyle)
+void VDraw::setMsgStyle(const unsigned char newMsgStyle)
 {
 	if (m_MsgStyle == newMsgStyle)
 		return;
@@ -752,7 +752,7 @@ unsigned char VDraw::fpsStyle(void)
 {
 	return m_FPSStyle;
 }
-void VDraw::setFPSStyle(unsigned char newFPSStyle)
+void VDraw::setFPSStyle(const unsigned char newFPSStyle)
 {
 	if (m_FPSStyle == newFPSStyle)
 		return;
@@ -767,7 +767,7 @@ unsigned char VDraw::introEffectColor(void)
 {
 	return m_IntroEffectColor;
 }
-void VDraw::setIntroEffectColor(unsigned char newIntroEffectColor)
+void VDraw::setIntroEffectColor(const unsigned char newIntroEffectColor)
 {
 	if (m_IntroEffectColor == newIntroEffectColor)
 		return;
@@ -784,7 +784,7 @@ bool VDraw::fullScreen(void)
 {
 	return m_FullScreen;
 }
-void VDraw::setFullScreen(bool newFullScreen)
+void VDraw::setFullScreen(const bool newFullScreen)
 {
 	if (m_FullScreen == newFullScreen)
 		return;
@@ -805,7 +805,7 @@ bool VDraw::fastBlur(void)
 {
 	return m_fastBlur;
 }
-void VDraw::setFastBlur(bool newFastBlur)
+void VDraw::setFastBlur(const bool newFastBlur)
 {
 	if (m_fastBlur == newFastBlur)
 		return;
