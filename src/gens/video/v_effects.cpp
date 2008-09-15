@@ -22,6 +22,8 @@
 
 #include <math.h>
 
+#include <SDL/SDL.h>
+
 #include "v_effects.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/fastblur.h"

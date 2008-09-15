@@ -1,6 +1,8 @@
 /**
- * GENS: Sega 32X initialization and main loop code.
+ * Gens: Sega 32X initialization and main loop code.
  */
+
+#include <string.h>
 
 #include "gens.h"
 #include "g_32x.hpp"

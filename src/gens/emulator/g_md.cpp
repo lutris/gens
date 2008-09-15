@@ -1,6 +1,8 @@
 /**
- * GENS: Genesis (Mega Drive) initialization and main loop code.
+ * Gens: Genesis (Mega Drive) initialization and main loop code.
  */
+
+#include <string.h>
 
 #include "gens.h"
 #include "g_md.hpp"

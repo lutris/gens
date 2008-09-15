@@ -1,5 +1,10 @@
+/**
+ * Gens: UI proxy functions.
+ */
+
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"

@@ -1,5 +1,9 @@
-#ifndef UI_PROXY_H
-#define UI_PROXY_H
+/**
+ * Gens: UI proxy functions.
+ */
+
+#ifndef UI_PROXY_HPP
+#define UI_PROXY_HPP
 
 #ifdef __cplusplus
 extern "C" {
