@@ -8,6 +8,7 @@
 
 #include "audio.hpp"
 #include "emulator/gens.hpp"
+#include "emulator/g_main.hpp"
 
 
 // TODO: Should these be kept out of the Audio class?
@@ -180,7 +181,7 @@ int Audio::startWAVDump(void)
 	
 	if (WAV_Dumping)
 	{
-		Put_Info("WAV sound is already dumping", 1000);
+		draw->writeText("WAV sound is already dumping", 1000);
 		return 0;
 	}
 	
@@ -189,17 +190,17 @@ int Audio::startWAVDump(void)
 	
 	if (WaveCreateFile(Name, &MMIOOut, &MainWfx, &CkOut, &CkRIFF))
 	{
-		Put_Info("Error in WAV dumping", 1000);
+		draw->writeText("Error in WAV dumping", 1000);
 		return 0;
 	}
 	
 	if (WaveStartDataWrite(&MMIOOut, &CkOut, &MMIOInfoOut))
 	{
-		Put_Info("Error in WAV dumping", 1000);
+		draw->writeText("Error in WAV dumping", 1000);
 		return 0;
 	}
 	
-	Put_Info("Starting to dump WAV sound", 1000);
+	draw->writeText("Starting to dump WAV sound", 1000);
 	WAV_Dumping = 1;
 #endif
 	return 1;
@@ -225,7 +226,7 @@ int Audio::updateWAVDump(void)
 	
 	if (WaveWriteFile(MMIOOut, length, &Buf_Tmp[0], &CkOut, &Writted, &MMIOInfoOut))
 	{
-		Put_Info("Error in WAV dumping", 1000);
+		draw->writeText("Error in WAV dumping", 1000);
 		return 0;
 	}
 #endif
@@ -239,14 +240,14 @@ int Audio::stopWAVDump(void)
 #if 0
 	if (!WAV_Dumping)
 	{
-		Put_Info("Already stopped", 1000);
+		draw->writeText("Already stopped", 1000);
 		return 0;
 	}
 	
 	if (WaveCloseWriteFile(&MMIOOut, &CkOut, &CkRIFF, &MMIOInfoOut, 0))
 		return 0;
 	
-	Put_Info("WAV dump stopped", 1000);
+	draw->writeText("WAV dump stopped", 1000);
 	WAV_Dumping = 0;
 #endif
 	return 1;
