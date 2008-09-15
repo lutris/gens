@@ -48,8 +48,9 @@ typedef enum {
 	KREED = 10,
 	SCALE2X = 11,
 	HQ2X = 12,
-	NB_FILTER = 13} _filters;
-	
+	NB_FILTER = 13
+} _filters;
+
 extern _filters filters;
 
 #ifdef __cplusplus
