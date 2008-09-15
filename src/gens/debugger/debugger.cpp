@@ -783,9 +783,9 @@ void Refresh_VDP_Pattern(void)
 
 
 template<typename pixel>
-static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette)
+static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned short numPalettes)
 {
-	unsigned short i, j, k;
+	unsigned short i, j, k, l;
 	unsigned short col;
 	for (i = 0; i < 8; i++)
 	{
@@ -794,10 +794,10 @@ static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette)
 			for (k = 0; k < 8; k++)
 			{
 				col = (i * 336) + 180 + (j * 8) + k;
-				screen[(336 * 10) + col] = palette[j + 0];
-				screen[(336 * 18) + col] = palette[j + 16];
-				screen[(336 * 26) + col] = palette[j + 32];
-				screen[(336 * 34) + col] = palette[j + 48];
+				for (l = 0; l < numPalettes; l++)
+				{
+					screen[(336 * (10 + (l * 8))) + col] = palette[j + (16 * l)];
+				}
 			}
 		}
 	}
@@ -828,13 +828,13 @@ void Refresh_VDP_Palette(void)
 	if (bpp == 32)
 	{
 		// 32-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32);
+		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 4);
 		Refresh_VDP_Palette_Outline(MD_Screen32, 0x03, (unsigned int)0xFFFFFF);
 	}
 	else
 	{
 		// 15/16-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette);
+		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette, 4);
 		Refresh_VDP_Palette_Outline(MD_Screen, 0x03, (unsigned short)0xFFFF);
 	}
 	
@@ -1003,13 +1003,13 @@ void Refresh_Word_RAM_Pattern(void)
 	if (bpp == 32)
 	{
 		// 32-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32);
+		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 16);
 		Refresh_VDP_Palette_Outline(MD_Screen32, 0x0F, (unsigned int)0xFFFFFF);
 	}
 	else
 	{
 		// 15/16-bit color palette update
-		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette);
+		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette, 16);
 		Refresh_VDP_Palette_Outline(MD_Screen, 0x0F, (unsigned short)0xFFFF);
 	}
 }
