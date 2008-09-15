@@ -45,8 +45,8 @@ void Post_Line_32X(void)
 			//POST_LINE_32X_M00;
 			for (pixel = TAB336[VDP_Current_Line] + 8; pixel < TAB336[VDP_Current_Line] + 336; pixel++)
 			{
-					MD_Screen32[pixel] = MD_Palette32[MD_Screen[pixel] & 0xFF];
-					MD_Screen[pixel] = MD_Palette[MD_Screen[pixel] & 0xFF];
+				MD_Screen32[pixel] = MD_Palette32[MD_Screen[pixel] & 0xFF];
+				MD_Screen[pixel] = MD_Palette[MD_Screen[pixel] & 0xFF];
 			}
 			
 			break;
