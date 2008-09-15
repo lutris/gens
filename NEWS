@@ -56,6 +56,8 @@ Milestone 4 introduces the following new features:
 
 Milestone 4 fixes the following bugs:
 
+- Shadow/Highlight colors were incorrect in 16-bit color.
+
 - If the country code was set to US, Gens would incorrectly attempt to
   load the EU MegaCD BIOS if a SegaCD game was loaded, resulting in a
   region coding error. This has been fixed.
