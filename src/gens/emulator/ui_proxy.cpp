@@ -30,22 +30,6 @@
 
 _filters filters;
 
-void
-save_state ()
-{
-  Str_Tmp[0] = 0;
-  Get_State_File_Name (Str_Tmp);
-  Save_State (Str_Tmp);
-}
-
-void
-load_state ()
-{
-  Str_Tmp[0] = 0;
-  Get_State_File_Name (Str_Tmp);
-  Load_State (Str_Tmp);
-}
-
 
 /**
  * system_reset(): Reset the active system.
