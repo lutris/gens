@@ -156,7 +156,6 @@ void Init_Genesis_Bios(void)
 	M68K_Reset(0);
 	Z80_Reset();
 	Reset_VDP();
-	
 }
 
 
