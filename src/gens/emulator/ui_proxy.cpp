@@ -68,7 +68,7 @@ void system_reset(void)
  * @param num Index of the SRAM size.
  * @return 1 on success.
  */
-int Change_SegaCD_SRAM_Size (int num)
+int Change_SegaCD_SRAM_Size(const int num)
 {
 	if (num == -1)
 	{
@@ -94,7 +94,7 @@ int Change_SegaCD_SRAM_Size (int num)
  * @param newSound New sound enable setting.
  * @return 1 on success.
  */
-int Change_Sound(int newSound)
+int Change_Sound(const int newSound)
 {
 	audio->setEnabled(newSound);
 	
@@ -149,7 +149,7 @@ int Change_Sound(int newSound)
  * @param newStereo New stereo sound enable setting.
  * @return 1 on success.
  */
-int Change_Sound_Stereo(int newStereo)
+int Change_Sound_Stereo(const int newStereo)
 {
 	unsigned char Reg_1[0x200];
 	
@@ -213,7 +213,7 @@ int Change_Sound_Stereo(int newStereo)
  * @param newZ80 New Z80 sound enable setting.
  * @return 1 on success.
  */
-int Change_Z80(int newZ80)
+int Change_Z80(const int newZ80)
 {
 	if (newZ80)
 		Z80_State |= 1;
@@ -238,7 +238,7 @@ int Change_Z80(int newZ80)
  * @param newYM2612 New YM2612 sound enable setting.
  * @return 1 on success.
  */
-int Change_YM2612(int newYM2612)
+int Change_YM2612(const int newYM2612)
 {
 	YM2612_Enable = newYM2612;
 	
@@ -260,7 +260,7 @@ int Change_YM2612(int newYM2612)
  * @param newYM2612Improved New improved YM2612 sound enable setting.
  * @return 1 on success.
  */
-int Change_YM2612_Improved(int newYM2612Improved)
+int Change_YM2612_Improved(const int newYM2612Improved)
 {
 	unsigned char Reg_1[0x200];
 	
@@ -297,7 +297,7 @@ int Change_YM2612_Improved(int newYM2612Improved)
  * @param newDAC New DAC sound emulation setting.
  * @return 1 on success.
  */
-int Change_DAC(int newDAC)
+int Change_DAC(const int newDAC)
 {
 	DAC_Enable = newDAC;
 	
@@ -320,7 +320,7 @@ int Change_DAC(int newDAC)
  * @return 1 on success.
  */
 
-int Change_DAC_Improved(int newDACImproved)
+int Change_DAC_Improved(const int newDACImproved)
 {
 	DAC_Improv = newDACImproved;
 	
@@ -344,7 +344,7 @@ int Change_DAC_Improved(int newDACImproved)
  * @param newPSG New PSG sound emulation setting.
  * @return 1 on success.
  */
-int Change_PSG(int newPSG)
+int Change_PSG(const int newPSG)
 {
 	PSG_Enable = newPSG;
 	
@@ -366,7 +366,7 @@ int Change_PSG(int newPSG)
  * @param newPSGImproved New improved PSG sound emulation setting.
  * @return 1 on success.
  */
-int Change_PSG_Improved(int newPSGImproved)
+int Change_PSG_Improved(const int newPSGImproved)
 {
 	PSG_Improv = newPSGImproved;
 	
@@ -388,7 +388,7 @@ int Change_PSG_Improved(int newPSGImproved)
  * @param newPCM New PCM sound emulation setting.
  * @return 1 on success.
  */
-int Change_PCM(int newPCM)
+int Change_PCM(const int newPCM)
 {
 	PCM_Enable = newPCM;
 	if (PCM_Enable)
@@ -409,7 +409,7 @@ int Change_PCM(int newPCM)
  * @param newPWM New PWM sound emulation setting.
  * @return 1 on success.
  */
-int Change_PWM(int newPWM)
+int Change_PWM(const int newPWM)
 {
 	PWM_Enable = newPWM;
 	if (PWM_Enable)
@@ -430,7 +430,7 @@ int Change_PWM(int newPWM)
  * @param newCDDA New CDDA setting.
  * @return 1 on success.
  */
-int Change_CDDA(int newCDDA)
+int Change_CDDA(const int newCDDA)
 {
 	CDDA_Enable = newCDDA;
 	
@@ -462,7 +462,7 @@ int Change_Fast_Blur(void)
  * @param Rate Rate ID. (TODO: Make an enum containing the rate IDs.
  * @return 1 on success.
  */
-int Change_Sample_Rate(int Rate)
+int Change_Sample_Rate(const int Rate)
 {
 	unsigned char Reg_1[0x200];
 	
@@ -543,7 +543,7 @@ int Change_Sample_Rate(int Rate)
  * @param newPerfectSync New accuracy level value.
  * @return 1 on success.
  */
-int Change_SegaCD_PerfectSync(int newPerfectSync)
+int Change_SegaCD_PerfectSync(const int newPerfectSync)
 {
 	SegaCD_Accurate = newPerfectSync;
 	
@@ -623,7 +623,7 @@ void Set_Game_Name(void)
  * @param newCountry New country code.
  * @return 1 on success.
  */
-int Change_Country(int newCountry)
+int Change_Country(const int newCountry)
 {
 	unsigned char Reg_1[0x200];
 	
@@ -768,7 +768,7 @@ int Change_Country(int newCountry)
  * @param stretch 0 to turn Stretch off; 1 to turn Stretch on.
  * @return 1 on success.
  */
-int Change_Stretch(int newStretch)
+int Change_Stretch(const int newStretch)
 {
 	// TODO: Stretched mode seems to be broken, even though it is being set correctly...
 	
@@ -808,7 +808,7 @@ int Change_Blit_Style(void)
  * @param newLimit 0 to disable; 1 to enable.
  * @return 1 on success. 
  */
-int Set_Sprite_Limit(int newLimit)
+int Set_Sprite_Limit(const int newLimit)
 {
 	Sprite_Over = newLimit;
 	
@@ -826,7 +826,7 @@ int Set_Sprite_Limit(int newLimit)
  * @param Debug_Mode New debug mode.
  * @return 1 on success.
  */
-int Change_Debug(int Debug_Mode)
+int Change_Debug(const int Debug_Mode)
 {
 	if (!Game)
 		return 0;
@@ -847,14 +847,11 @@ int Change_Debug(int Debug_Mode)
  * @param vsync 0 to turn VSync off; 1 to turn VSync on.
  * @return 1 on success.
  */
-int Change_VSync(int newVSync)
+int Change_VSync(const int newVSync)
 {
 	int *p_vsync;
 	
-	// TODO: Get this working.
-	
 	p_vsync = (draw->fullScreen() ? &Video.VSync_FS : &Video.VSync_W);
-	
 	*p_vsync = (newVSync == 1 ? 1 : 0);
 	
 	if (*p_vsync)
@@ -875,7 +872,7 @@ int Change_VSync(int newVSync)
  * @param frames Frames to skip. (-1 == Auto)
  * @return 1 on success.
  */
-int Set_Frame_Skip(int frames)
+int Set_Frame_Skip(const int frames)
 {
 	Frame_Skip = frames;
 	
@@ -892,7 +889,7 @@ int Set_Frame_Skip(int frames)
  * @param slot Savestate slot.
  * @return 1 on success.
  */
-int Set_Current_State(int slot)
+int Set_Current_State(const int slot)
 {
 	FILE *f;
 	
