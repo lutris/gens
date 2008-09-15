@@ -452,7 +452,7 @@ void parseArgs(int argc, char **argv)
 			GetCurrentDirectory(900, PathNames.Start_Rom);
 			strcat(PathNames.Start_Rom, "/");
 		}
-		strcat (PathNames.Start_Rom, argv[optind]);
+		strcat(PathNames.Start_Rom, argv[optind]);
 	}
 }
 
