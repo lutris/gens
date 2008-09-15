@@ -1,4 +1,4 @@
-Gens for Linux v2.15.4/GS-m3+ (Gens/GS)
+Gens for Linux v2.15.4/GS-m4 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,11 +14,64 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens for Linux v2.15.4/GS-m3+ is David Korth's fork of Gens,
+Gens for Linux v2.15.4/GS-m4 is David Korth's fork of Gens,
 initially based on Gens for Linux v2.15.4. The number after
 the "m" indicates the milestone. Releases are usually made
 after a significant new feature has been added, with minor
 releases if a major bug is found.
+
+================================================================
+
+What's new in Gens for Linux v2.15.4/GS-m4?
+
+Milestone 4 introduces the following new features:
+
+- MAME CHD and CCnet support have been removed. They weren't used for
+  anything and simply took up extra space.
+
+- OpenGL linear filtering can now be enabled/disabled via a menu item.
+
+- New generic input and audio layers, which are located in src/gens/input/
+  and src/gens/audio/. Like VDraw, which was implemented in Milestone 3,
+  this will make it easier to add support for DirectInput and DirectSound,
+  respectively. src/gens/sdllayer/ is now completely gone.
+
+- New onscreen text drawing function. The new function draws text to the
+  display framebuffer rather than to the emulated framebuffer. Among other
+  things, this means that messages and the FPS counter no longer show up
+  in screenshots. The font currently used is the Commodore 64 font, but
+  more fonts may be added later on.
+
+- 32-bit color support in the VDP debugger.
+
+- Improved OpenGL renderer. The improved renderer takes some fixes from
+  Gens/Linux 2.15.4, as well as improving the VSync functionality. VSync
+  uses GLX_SGI_swap_control extension, so it may not work on all systems.
+  Support for other VSync extensions will be added later on.
+
+Milestone 4 fixes the following bugs:
+
+- If the country code was set to US, Gens would incorrectly attempt to
+  load the EU MegaCD BIOS if a SegaCD game was loaded, resulting in a
+  region coding error. This has been fixed.
+
+- Physical CD-ROM support via ASPI works again. I accidentally broke it
+  when CD-ROM support was made conditional.
+
+Milestone 4 has the following low-level code changes:
+
+- C99 mode is now used by default for C-language code.
+
+- The new INI handler has been converted to a C++ class.
+
+- Deprecated GTK+ functions have been disabled via the
+  -DGTK_DISABLE_DEPRECATED CFLAG.
+
+- New GensUI C++ class, which replaces the old ui-common.c and
+  ui-common_gtk.c files.
+
+- Minizip has been upgraded to the latest version (v1.01e) and is now in
+  a separate subdirectory in src/.
 
 ================================================================
 
