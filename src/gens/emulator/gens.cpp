@@ -1,4 +1,4 @@
-#include "gens.h"
+#include "gens.hpp"
 #include "g_main.hpp"
 #include "sdllayer/g_sdlsound.h"
 #include "gens_core/mem/mem_m68k.h"
@@ -132,8 +132,8 @@ void Set_Clock_Freq(int system)
 		if (system == 2) // 32X
 			_32X_VDP.Mode &= ~0x8000;
 		
-		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_PAL / 15, Sound_Rate);
+		YM2612_Init(CLOCK_PAL / 7, audio->soundRate(), YM2612_Improv);
+		PSG_Init(CLOCK_PAL / 15, audio->soundRate());
 	}
 	else
 	{
@@ -159,8 +159,8 @@ void Set_Clock_Freq(int system)
 		if (system == 2) // 32X
 			_32X_VDP.Mode |= 0x8000;
 		
-		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init (CLOCK_NTSC / 15, Sound_Rate);
+		YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
+		PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
 	}
 	
 	if (system == 2) // 32X

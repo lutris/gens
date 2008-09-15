@@ -5,8 +5,8 @@
 /* Noise define constantes taken from MAME                 */
 /*                                                         */
 /* This source is a part of Gens project                   */
-/* Written by Stéphane Dallongeville (gens@consolemul.com) */
-/* Copyright (c) 2002 by Stéphane Dallongeville            */
+/* Written by Stï¿½phane Dallongeville (gens@consolemul.com) */
+/* Copyright (c) 2002 by Stï¿½phane Dallongeville            */
 /*                                                         */
 /***********************************************************/
 
@@ -75,9 +75,7 @@ FILE *psg_debug_file = NULL;
 
 
 /* Gens specific extern and variables */
-
-extern unsigned int Sound_Extrapol[312][2];
-extern int Seg_L[882], Seg_R[882];
+#include "audio/audio.hpp"
 extern int VDP_Current_Line;
 extern int GYM_Dumping;
 

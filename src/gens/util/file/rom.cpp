@@ -14,7 +14,7 @@ using std::list;
 #include "port/port.h"
 #include "sdllayer/g_sdlsound.h"
 #include "emulator/g_main.hpp"
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 #include "emulator/g_md.hpp"
 #include "emulator/g_mcd.hpp"
 #include "emulator/g_32x.hpp"
@@ -808,8 +808,8 @@ Free_Rom (Rom * Rom_MD)
     Save_BRAM ();
   Save_SRAM ();
   Save_Patch_File ();
-  if (WAV_Dumping)
-    Stop_WAV_Dump ();
+  if (audio->dumpingWAV())
+    audio->stopWAVDump();
   if (GYM_Dumping)
     Stop_GYM_Dump ();
   if (SegaCD_Started)

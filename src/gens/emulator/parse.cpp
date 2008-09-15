@@ -29,7 +29,7 @@
 // New video layer.
 #include "video/v_draw.hpp"
 
-#include "gens.h"
+#include "gens.hpp"
 #include "g_main.hpp"
 #include "port/port.h"
 #include "util/file/save.hpp"
@@ -294,7 +294,7 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_STRING(SAVEPATH, State_Dir);
 		TEST_OPTION_STRING(SRAMPATH, SRAM_Dir);
 		TEST_OPTION_STRING(BRAMPATH, BRAM_Dir);
-		TEST_OPTION_STRING(DUMPPATH, Dump_Dir);
+		TEST_OPTION_STRING(DUMPPATH, PathNames.Dump_WAV_Dir);
 		TEST_OPTION_STRING(SCRSHTPATH, ScrShot_Dir);
 		TEST_OPTION_STRING(PATPATH, Patch_Dir);
 		TEST_OPTION_STRING(IPSPATH, IPS_Dir);
@@ -316,8 +316,8 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_ENABLE(INVERT, Invert_Color);
 		TEST_OPTION_ENABLE(SPRITELIMIT, Sprite_Over);
 		TEST_OPTION_NUMERIC(FRAMESKIP, Frame_Skip);
-		TEST_OPTION_ENABLE(SOUND, Sound_Enable);
-		TEST_OPTION_ENABLE(STEREO, Sound_Stereo);
+		//TEST_OPTION_ENABLE(SOUND, Sound_Enable);
+		//TEST_OPTION_ENABLE(STEREO, Sound_Stereo);
 		TEST_OPTION_ENABLE(Z80, Z80_State);
 		TEST_OPTION_ENABLE(YM2612, YM2612_Enable);
 		TEST_OPTION_ENABLE(PSG, PSG_Enable);
@@ -347,6 +347,22 @@ void parseArgs(int argc, char **argv)
 		else if (!strcmp(long_options[option_index].name, STRETCH_DISABLE))
 		{
 			draw->setStretch(false);
+		}
+		else if (!strcmp(long_options[option_index].name, SOUND_ENABLE))
+		{
+			audio->setEnabled(true);
+		}
+		else if (!strcmp(long_options[option_index].name, SOUND_DISABLE))
+		{
+			audio->setEnabled(false);
+		}
+		else if (!strcmp(long_options[option_index].name, STEREO_ENABLE))
+		{
+			audio->setStereo(true);
+		}
+		else if (!strcmp(long_options[option_index].name, STEREO_DISABLE))
+		{
+			audio->setStereo(false);
 		}
 		else if (!strcmp(long_options[option_index].name, SWBLIT_ENABLE))
 		{
@@ -418,7 +434,7 @@ void parseArgs(int argc, char **argv)
 				case 32000:
 				case 44100:
 				case 48000:
-					Sound_Rate = rate;
+					audio->setSoundRate(rate);
 					break;
 				
 				default:

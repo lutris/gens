@@ -38,10 +38,9 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
-// GENS GTK+ miscellaneous functions
+// Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-#include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 
 #ifdef GENS_DEBUGGER

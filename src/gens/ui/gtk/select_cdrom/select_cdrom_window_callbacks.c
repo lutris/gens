@@ -24,7 +24,7 @@
 #include "select_cdrom_window_callbacks.h"
 #include "select_cdrom_window_misc.h"
 
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 
 
 /**

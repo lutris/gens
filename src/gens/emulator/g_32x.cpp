@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-#include "gens.h"
+#include "gens.hpp"
 #include "g_32x.hpp"
 #include "g_md.hpp"
 #include "g_main.hpp"
@@ -168,34 +168,34 @@ int Init_32X(struct Rom *MD_Rom)
 	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
-	MSH2_Reset ();
-	SSH2_Reset ();
-	M68K_Reset (1);
-	Z80_Reset ();
-	Reset_VDP ();
-	_32X_VDP_Reset ();
-	_32X_Set_FB ();
-	PWM_Init ();
+	MSH2_Reset();
+	SSH2_Reset();
+	M68K_Reset(1);
+	Z80_Reset();
+	Reset_VDP();
+	_32X_VDP_Reset();
+	_32X_Set_FB();
+	PWM_Init();
 	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
 	Set_Clock_Freq(2);
 	
 	// If auto-fix checksum is enabled, fix the ROM checksum.
 	if (Auto_Fix_CS)
-		Fix_Checksum ();
+		Fix_Checksum();
 	
 	// Initialize sound.
-	if (Sound_Enable)
+	if (audio->enabled())
 	{
-		End_Sound ();
+		audio->endSound();
 		
-		if (!Init_Sound ())
-			Sound_Enable = 0;
+		if (!audio->initSound())
+			audio->setEnabled(false);
 		else
-			Play_Sound ();
+			audio->playSound();
 	}
 	
-	Load_Patch_File ();
+	Load_Patch_File();
 	
 	Reset_Update_Timers();
 	
@@ -299,7 +299,7 @@ int Do_32X_VDP_Only (void)
  * Do_32X_Frame_No_VDP(): Runs a 32X frame without updating the VDP.
  * @return 1 if successful.
  */
-int Do_32X_Frame_No_VDP (void)
+int Do_32X_Frame_No_VDP(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
@@ -604,10 +604,10 @@ int Do_32X_Frame_No_VDP (void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (WAV_Dumping)
-		Update_WAV_Dump ();
+	if (audio->dumpingWAV())
+		audio->updateWAVDump();
 	if (GYM_Dumping)
-		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
 	return 1;
 }
@@ -617,7 +617,7 @@ int Do_32X_Frame_No_VDP (void)
  * Do_32X_Frame(): Runs a 32X frame.
  * @return 1 if successful.
  */
-int Do_32X_Frame (void)
+int Do_32X_Frame(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
@@ -936,10 +936,10 @@ int Do_32X_Frame (void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (WAV_Dumping)
-		Update_WAV_Dump ();
+	if (audio->dumpingWAV())
+		audio->updateWAVDump();
 	if (GYM_Dumping)
-		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
 	return 1;
 }

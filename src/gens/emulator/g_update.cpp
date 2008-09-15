@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include "g_update.hpp"
-#include "gens.h"
+#include "gens.hpp"
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "ui/gens_ui.hpp"
@@ -39,9 +39,9 @@ int Update_Emulation(void)
 
 	if (Frame_Skip != -1)
 	{
-		if (Sound_Enable)
+		if (audio->enabled())
 		{
-			Write_Sound_Buffer(NULL);
+			audio->writeSoundBuffer(NULL);
 		}
 
 		input->updateControllers();
@@ -59,18 +59,18 @@ int Update_Emulation(void)
 	}
 	else
 	{
-		if (Sound_Enable)
+		if (audio->enabled())
 		{
 			// This does auto-frame skip in a fairly dodgy way -
 			// only updating the frame when we have 'lots' in
 			// the audio buffer. Hence the audio is a couple of
 			// cycles ahead of the graphics.
 			
-			Write_Sound_Buffer(NULL);
-			while (!Lots_In_Audio_Buffer())
+			audio->writeSoundBuffer(NULL);
+			while (!audio->lotsInAudioBuffer())
 			{
 				Update_Frame_Fast();
-				Write_Sound_Buffer(NULL);
+				audio->writeSoundBuffer(NULL);
 			}
 
 			input->updateControllers();

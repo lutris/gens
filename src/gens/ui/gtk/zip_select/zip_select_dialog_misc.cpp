@@ -30,7 +30,6 @@
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
-#include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 
 #include <string>

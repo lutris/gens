@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include "save.hpp"
 
-#include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 
 // CPU

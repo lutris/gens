@@ -73,7 +73,7 @@ endif
 bin_PROGRAMS = gens
 
 gens_SOURCES = \
-		emulator/gens.c \
+		emulator/gens.cpp \
 		emulator/g_main.cpp \
 		emulator/g_main_linux.cpp \
 		emulator/g_input.cpp \
@@ -122,7 +122,6 @@ gens_SOURCES = \
 		port/port.c \
 		port/timer.c \
 		port/ini.cpp \
-		sdllayer/g_sdlsound.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
@@ -221,7 +220,7 @@ endif
 endif
 
 noinst_HEADERS = \
-		emulator/gens.h \
+		emulator/gens.hpp \
 		emulator/g_main.hpp \
 		emulator/g_main_linux.hpp \
 		emulator/g_input.hpp \
@@ -262,7 +261,6 @@ noinst_HEADERS = \
 		port/port.h \
 		port/timer.h \
 		port/ini.hpp \
-		sdllayer/g_sdlsound.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \

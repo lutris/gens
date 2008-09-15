@@ -6,9 +6,9 @@
 #include "cd_sys.hpp"
 #include "port/port.h"
 #include "cd_file.h"
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
+#include "emulator/g_main.hpp"
 #include "emulator/g_mcd.hpp"
-#include "sdllayer/g_sdlsound.h"
 #include "lc89510.h"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/mem/mem_m68k.h"
@@ -888,7 +888,7 @@ int Fast_Rewind_CDD_c9(void)
 
 int Close_Tray_CDD_cC(void)
 {
-	Clear_Sound_Buffer();
+	audio->clearSoundBuffer();
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -952,7 +952,7 @@ int Open_Tray_CDD_cD(void)
 #ifdef GENS_CDROM
 	if (CD_Load_System == CDROM_)
 	{
-		Clear_Sound_Buffer();
+		audio->clearSoundBuffer();
 		
 		ASPI_Lock(0);
 		ASPI_Star_Stop_Unit(OPEN_TRAY, ASPI_Open_Tray_CDD_cD_COMP);
@@ -1032,7 +1032,7 @@ void Write_CD_Audio(short *Buf, int rate, int channel, int length)
 	
 	if (rate == 0)
 		return;
-	if (Sound_Rate == 0)
+	if (audio->soundRate() == 0)
 		return;
 	
 	if (CD_Audio_Starting)
@@ -1043,8 +1043,8 @@ void Write_CD_Audio(short *Buf, int rate, int channel, int length)
 		CD_Audio_Buffer_Write_Pos = (CD_Audio_Buffer_Read_Pos + 2000) & 0xFFF;
 	}
 	
-	length_src = rate / 75;		// 75th of a second
-	length_dst = Sound_Rate / 75;	// 75th of a second
+	length_src = rate / 75;			// 75th of a second
+	length_dst = audio->soundRate() / 75;	// 75th of a second
 	
 	pas_src = (length_src << 16) / length_dst;
 	pos_src = 0;

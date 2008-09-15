@@ -12,7 +12,7 @@
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"
-#include "gens.h"
+#include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
@@ -97,10 +97,11 @@ int Change_SegaCD_SRAM_Size (int num)
  */
 int Change_Sound(int newSound)
 {
-	Sound_Enable = newSound;
-	if (!Sound_Enable)
+	audio->setEnabled(newSound);
+	
+	if (!audio->enabled())
 	{
-		End_Sound ();
+		audio->endSound();
 		YM2612_Enable = 0;
 		PSG_Enable = 0;
 		DAC_Enable = 0;
@@ -111,10 +112,10 @@ int Change_Sound(int newSound)
 	}
 	else
 	{
-		if (!Init_Sound())
+		if (!audio->initSound())
 		{
 			// Error initializing sound.
-			Sound_Enable = 0;
+			audio->setEnabled(false);
 			YM2612_Enable = 0;
 			PSG_Enable = 0;
 			DAC_Enable = 0;
@@ -124,7 +125,7 @@ int Change_Sound(int newSound)
 			return 0;
 		}
 		
-		Play_Sound();
+		audio->playSound();
 		
 		// Make sure Z80 sound emulation is enabled.
 		if (!(Z80_State & 1))
@@ -153,8 +154,8 @@ int Change_Sound_Stereo(int newStereo)
 {
 	unsigned char Reg_1[0x200];
 	
-	Sound_Stereo = newStereo;
-	if (!Sound_Stereo)
+	audio->setStereo(newStereo);
+	if (!audio->stereo())
 	{
 		MESSAGE_L("Mono sound", "Mono sound", 1000);
 	}
@@ -163,7 +164,7 @@ int Change_Sound_Stereo(int newStereo)
 		MESSAGE_L("Stereo sound", "Stereo sound", 1000);
 	}
 	
-	if (!Sound_Enable)
+	if (!audio->enabled())
 	{
 		// Sound isn't enabled, so nothing needs to be changed.
 		return 1;
@@ -175,35 +176,35 @@ int Change_Sound_Stereo(int newStereo)
 	YM2612_Save(Reg_1);
 	
 	// Temporarily disable sound.
-	End_Sound();
-	Sound_Enable = 0;
+	audio->endSound();
+	audio->setEnabled(false);
 	
 	// Reinitialize the sound processors.
 	if (CPU_Mode)
 	{
-		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init(CLOCK_PAL / 15, Sound_Rate);
+		YM2612_Init(CLOCK_PAL / 7, audio->soundRate(), YM2612_Improv);
+		PSG_Init(CLOCK_PAL / 15, audio->soundRate());
 	}
 	else
 	{
-		YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+		YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
+		PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
 	}
 	
 	if (SegaCD_Started)
-		Set_Rate_PCM(Sound_Rate);
+		Set_Rate_PCM(audio->soundRate());
 	
 	// Restore the sound state.
 	YM2612_Restore(Reg_1);
 	PSG_Restore_State();
 	
 	// Attempt to re-enable sound.
-	if (!Init_Sound())
+	if (!audio->initSound())
 		return (0);
 	
 	// Sound enabled.
-	Sound_Enable = 1;
-	Play_Sound();
+	audio->setEnabled(true);
+	audio->playSound();
 	return 1;
 }
 
@@ -281,9 +282,9 @@ int Change_YM2612_Improved(int newYM2612Improved)
 	YM2612_Save (Reg_1);
 	
 	if (CPU_Mode)
-		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+		YM2612_Init(CLOCK_PAL / 7, audio->soundRate(), YM2612_Improv);
 	else
-		YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+		YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
 	
 	// Restore the YM2612 registers.
 	YM2612_Restore (Reg_1);
@@ -472,28 +473,28 @@ int Change_Sample_Rate(int Rate)
 	switch (Rate)
 	{
 		case 0:
-			Sound_Rate = 11025;
+			audio->setSoundRate(11025);
 			break;
 		case 1:
-			Sound_Rate = 22050;
+			audio->setSoundRate(22050);
 			break;
 		case 2:
-			Sound_Rate = 44100;
+			audio->setSoundRate(44100);
 			break;
 		case 3:
-			Sound_Rate = 16000;
+			audio->setSoundRate(16000);
 			break;
 		case 4:
-			Sound_Rate = 32000;
+			audio->setSoundRate(32000);
 			break;
 		case 5:
-			Sound_Rate = 48000;
+			audio->setSoundRate(48000);
 			break;
 	}
-	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", Sound_Rate, 2500);
+	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", audio->soundRate(), 2500);
 	
 	// If sound isn't enabled, we're done.
-	if (!Sound_Enable)
+	if (!audio->enabled())
 		return 1;
 	
 	// Sound's enabled. Reinitialize it.
@@ -504,35 +505,35 @@ int Change_Sample_Rate(int Rate)
 	YM2612_Save(Reg_1);
 	
 	// Stop sound.
-	End_Sound();
-	Sound_Enable = 0;
+	audio->endSound();
+	audio->setEnabled(false);
 	
 	// Reinitialize the sound processors.
 	if (CPU_Mode)
 	{
-		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init(CLOCK_PAL / 15, Sound_Rate);
+		YM2612_Init(CLOCK_PAL / 7, audio->soundRate(), YM2612_Improv);
+		PSG_Init(CLOCK_PAL / 15, audio->soundRate());
 	}
 	else
 	{
-		YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-		PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+		YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
+		PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
 	}
 
 	if (SegaCD_Started)
-		Set_Rate_PCM(Sound_Rate);
+		Set_Rate_PCM(audio->soundRate());
 	
 	// Restore the sound registers
 	YM2612_Restore(Reg_1);
 	PSG_Restore_State();
 	
 	// Attempt to reinitialize sound.
-	if (!Init_Sound())
+	if (!audio->initSound())
 		return 0;
 	
 	// Sound is reinitialized.
-	Sound_Enable = 1;
-	Play_Sound();
+	audio->setEnabled(true);
+	audio->playSound();
 	
 	return 1;
 }
@@ -703,36 +704,36 @@ int Change_Country(int newCountry)
 		Timer_Step = 135708;
 	}
 	
-	if (Sound_Enable)
+	if (audio->enabled())
 	{
 		PSG_Save_State();
 		YM2612_Save(Reg_1);
 		
-		End_Sound();
-		Sound_Enable = 0;
+		audio->endSound();
+		audio->setEnabled(false);
 		
 		if (CPU_Mode)
 		{
-			YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
-			PSG_Init(CLOCK_PAL / 15, Sound_Rate);
+			YM2612_Init(CLOCK_PAL / 7, audio->soundRate(), YM2612_Improv);
+			PSG_Init(CLOCK_PAL / 15, audio->soundRate());
 		}
 		else
 		{
-			YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-			PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+			YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
+			PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
 		}
 		
 		if (SegaCD_Started)
-			Set_Rate_PCM(Sound_Rate);
+			Set_Rate_PCM(audio->soundRate());
 		
 		YM2612_Restore (Reg_1);
 		PSG_Restore_State();
 		
-		if (!Init_Sound())
+		if (!audio->initSound())
 			return 0;
 		
-		Sound_Enable = 1;
-		Play_Sound();
+		audio->setEnabled(true);
+		audio->playSound();
 	}
 	
 	if (Game_Mode)
@@ -832,7 +833,7 @@ int Change_Debug(int Debug_Mode)
 		return 0;
 	
 	Flag_Clr_Scr = 1;
-	Clear_Sound_Buffer ();
+	audio->clearSoundBuffer();
 	
 	if (Debug_Mode == Debug)
 		Debug = 0;

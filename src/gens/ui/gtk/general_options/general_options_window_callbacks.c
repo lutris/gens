@@ -24,7 +24,7 @@
 #include "general_options_window_callbacks.h"
 #include "general_options_window_misc.hpp"
 
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 
 
 /**

@@ -9,7 +9,7 @@ extern "C" {
 #include <config.h>
 #endif
 
-#include "gens.h"
+#include "gens.hpp"
 #include "port/port.h"
 
 // OS-specific includes.
@@ -34,6 +34,8 @@ struct Gens_PathNames_t
 	char Start_Rom[GENS_PATH_MAX];
 	char Gens_Path[GENS_PATH_MAX];
 	char Language_Path[GENS_PATH_MAX];
+	char Dump_WAV_Dir[GENS_PATH_MAX];
+	char Dump_GYM_Dir[GENS_PATH_MAX];
 };
 
 
@@ -108,6 +110,7 @@ extern int SegaCD_Accurate;
 extern int Active;
 extern int Quick_Exit;
 extern int FS_Minimised;
+extern int fast_forward;
 
 extern POINT Window_Pos;
 
@@ -193,6 +196,10 @@ extern VDraw *draw;
 // New Input object
 #include "input/input.hpp"
 extern Input *input;
+
+// New Audio object
+#include "audio/audio.hpp"
+extern Audio *audio;
 
 #endif
 

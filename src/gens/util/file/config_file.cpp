@@ -10,7 +10,7 @@
 #include "port/port.h"
 #include "port/ini.hpp"
 
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 #include "emulator/g_input.hpp"
 #include "sdllayer/g_sdlsound.h"
@@ -85,8 +85,8 @@ int Save_Config(const char *File_Name)
 	cfg.writeString("General", "Save Path", State_Dir);
 	cfg.writeString("General", "SRAM Path", SRAM_Dir);
 	cfg.writeString("General", "BRAM Path", BRAM_Dir);
-	cfg.writeString("General", "Dump Path", Dump_Dir);
-	cfg.writeString("General", "Dump GYM Path", Dump_GYM_Dir);
+	cfg.writeString("General", "Dump Path", PathNames.Dump_WAV_Dir);
+	cfg.writeString("General", "Dump GYM Path", PathNames.Dump_GYM_Dir);
 	cfg.writeString("General", "Screen Shot Path", ScrShot_Dir);
 	cfg.writeString("General", "Patch Path", Patch_Dir);
 	cfg.writeString("General", "IPS Patch Path", IPS_Dir);
@@ -157,9 +157,9 @@ int Save_Config(const char *File_Name)
 	cfg.writeInt("Graphics", "Frame Skip", Frame_Skip);
 	
 	// Sound settings
-	cfg.writeInt("Sound", "State", Sound_Enable);
-	cfg.writeInt("Sound", "Rate", Sound_Rate);
-	cfg.writeInt("Sound", "Stereo", Sound_Stereo);
+	cfg.writeBool("Sound", "State", audio->enabled());
+	cfg.writeInt("Sound", "Rate", audio->soundRate());
+	cfg.writeBool("Sound", "Stereo", audio->stereo());
 	
 	cfg.writeInt("Sound", "Z80 State", Z80_State & 1);
 	cfg.writeInt("Sound", "YM2612 State", YM2612_Enable & 1);
@@ -302,8 +302,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	cfg.getString("General", "Save Path", PathNames.Gens_Path, State_Dir, sizeof(State_Dir));
 	cfg.getString("General", "SRAM Path", PathNames.Gens_Path, SRAM_Dir, sizeof(SRAM_Dir));
 	cfg.getString("General", "BRAM Path", PathNames.Gens_Path, BRAM_Dir, sizeof(BRAM_Dir));
-	cfg.getString("General", "Dump Path", PathNames.Gens_Path, Dump_Dir, sizeof(Dump_Dir));
-	cfg.getString("General", "Dump GYM Path", PathNames.Gens_Path, Dump_GYM_Dir, sizeof(Dump_GYM_Dir));
+	cfg.getString("General", "Dump Path", PathNames.Gens_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
+	cfg.getString("General", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
 	cfg.getString("General", "Screen Shot Path", PathNames.Gens_Path, ScrShot_Dir, sizeof(ScrShot_Dir));
 	cfg.getString("General", "Patch Path", PathNames.Gens_Path, Patch_Dir, sizeof(Patch_Dir));
 	cfg.getString("General", "IPS Patch Path", PathNames.Gens_Path, IPS_Dir, sizeof(IPS_Dir));
@@ -397,8 +397,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Frame_Skip = cfg.getInt("Graphics", "Frame Skip", -1);
 	
 	// Sound settings
-	Sound_Rate = cfg.getInt("Sound", "Rate", 22050);
-	Sound_Stereo = cfg.getInt("Sound", "Stereo", 1);
+	audio->setSoundRate(cfg.getInt("Sound", "Rate", 22050));
+	audio->setStereo(cfg.getBool("Sound", "Stereo", true));
 	
 	if (cfg.getInt("Sound", "Z80 State", 1))
 		Z80_State |= 1;
@@ -407,8 +407,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Only load the IC sound settings if sound can be initialized.
 	new_val = cfg.getInt("Sound", "State", 1);
-	if (new_val == Sound_Enable ||
-	    (new_val != Sound_Enable && Change_Sound(1)))
+	if (new_val == audio->enabled() ||
+	    (new_val != audio->enabled() && Change_Sound(1)))
 	{
 		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
 		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);

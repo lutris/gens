@@ -16,7 +16,7 @@
 #include "port/timer.h"
 #include "port/port.h"
 #include "port/ini.hpp"
-#include "gens.h"
+#include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
@@ -47,9 +47,6 @@
 #ifdef GENS_CDROM
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
-
-// TODO: Eliminate the dependency on these files.
-#include "sdllayer/g_sdlsound.h"
 
 #include "gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
@@ -108,6 +105,10 @@ VDraw *draw;
 #include "input/input_sdl.hpp"
 Input *input;
 
+// New audio layer.
+#include "audio/audio.hpp"
+#include "audio/audio_sdl.hpp"
+Audio *audio;
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
 static int Build_Language_String (void)
@@ -236,12 +237,6 @@ static void Init_Settings(void)
 	Net_Play = 0;
 	Sprite_Over = 1;
 	
-	Sound_Enable = 0;
-	Sound_Segs = 8;
-	Sound_Stereo = 1;
-	Sound_Initialised = 0;
-	Sound_Is_Playing = 0;
-	WAV_Dumping = 0;
 	GYM_Dumping = 0;
 	
 	FS_Minimised = 0;
@@ -321,8 +316,8 @@ int Init(void)
 	S68K_Init();
 	Z80_Init();
 	
-	YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
+	YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
+	PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
 	PWM_Init();
 	
 	// Initialize the CD-ROM drive, if available.
@@ -344,7 +339,6 @@ void End_All(void)
 {
 	Free_Rom(Game);
 	YM2612_End();
-	End_Sound();
 #ifdef GENS_CDROM
 	End_CD_Driver();
 #endif
@@ -352,6 +346,11 @@ void End_All(void)
 	// Shut down the input subsystem.
 	delete input;
 	input = NULL;
+	
+	// Shut down the audio subsystem.
+	audio->endSound();
+	delete audio;
+	audio = NULL;
 	
 	// Shut down the video subsystem.
 	draw->End_Video();
@@ -456,6 +455,10 @@ int main(int argc, char *argv[])
 	// Initialize the input object.
 	// TODO: Select Input_SDL() or Input_DInput() depending on other factors.
 	input = new Input_SDL();
+	
+	// Initialize the audio object.
+	// TODO: Select Audio_SDL() or Audio_DSound() depending on other factors.
+	audio = new Audio_SDL();
 	
 	// Initialize the Settings struct.
 	Init_Settings();
@@ -563,7 +566,7 @@ int main(int argc, char *argv[])
 			
 			// Determine how much sleep time to add, based on intro style.
 			// TODO: Move this to v_draw.cpp?
-			if (GYM_Playing)
+			if (audio->playingGYM())
 			{
 				// PLAY GYM
 				Play_GYM();

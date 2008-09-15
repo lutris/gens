@@ -10,8 +10,6 @@
 #include <png.h>
 
 #include "scrshot.h"
-#include "emulator/gens.h"
-#include "port/port.h"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"

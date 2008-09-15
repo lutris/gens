@@ -22,7 +22,7 @@
 
 
 #include <stdio.h>
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 #include "gens_ui.hpp"
 
 #include <sstream>

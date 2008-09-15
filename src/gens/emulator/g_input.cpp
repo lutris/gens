@@ -12,7 +12,7 @@
 #include <SDL.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include "gens.h"
+#include "gens.hpp"
 #include "g_main.hpp"
 #include "g_mcd.hpp"
 #include "sdllayer/g_sdlsound.h"
@@ -84,7 +84,7 @@ void Input_KeyDown(int key)
 			{
 				Paused = 1;
 				//Pause_Screen();
-				Clear_Sound_Buffer();
+				audio->clearSoundBuffer();
 			}
 			break;
 		
@@ -95,14 +95,14 @@ void Input_KeyDown(int key)
 			{
 				Paused = 1;
 				//Pause_Screen();
-				Clear_Sound_Buffer();
+				audio->clearSoundBuffer();
 			}
 			break;
 		
 		case GENS_KEY_BACKSPACE:
 			if (draw->fullScreen() && (KMOD_SHIFT & mod))
 			{
-				Clear_Sound_Buffer();
+				audio->clearSoundBuffer();
 				Save_Shot();
 			}
 			break;
@@ -300,8 +300,8 @@ void Input_KeyDown(int key)
 			else if (key != GENS_KEY_0 && (mod & GENS_KMOD_CTRL))
 			{
 				//if ((Check_If_Kaillera_Running())) return 0;
-				if (GYM_Playing)
-					Stop_Play_GYM ();
+				if (audio->playingGYM())
+					Stop_Play_GYM();
 				Open_Rom(Recent_Rom[key - GENS_KEY_0]);
 				Sync_Gens_Window();
 			}
@@ -314,7 +314,7 @@ void Input_KeyDown(int key)
 				if (Num_CD_Drive == 0)
 					return;	// return 1;
 				//if (Check_If_Kaillera_Running()) return 0;
-				if (GYM_Playing)
+				if (audio->playingGYM())
 					Stop_Play_GYM();
 				Free_Rom (Game);	// Don't forget it !
 				SegaCD_Started = Init_SegaCD(NULL);

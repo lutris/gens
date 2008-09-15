@@ -10,6 +10,11 @@
 #include "emulator/gens.hpp"
 
 
+// TODO: Should these be kept out of the Audio class?
+int Seg_L[882], Seg_R[882];
+unsigned int Sound_Extrapol[312][2];
+
+
 Audio::Audio()
 {
 	// Initialize variables.

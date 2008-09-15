@@ -27,8 +27,6 @@
 #include <gdk/gdkx.h>
 #include "gens/gens_window.h"
 
-#include "emulator/gens.h"
-#include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 #include "gtk-misc.h"
 

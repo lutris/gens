@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 
 #define GENESIS_LENGTH_EX1		0x2247C
 #define GENESIS_LENGTH_EX2		0x11ED2

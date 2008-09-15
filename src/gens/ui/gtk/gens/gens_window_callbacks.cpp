@@ -24,7 +24,6 @@
 #include <config.h>
 #endif
 
-#include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 #include "gens_window.h"
 #include "gens_window_callbacks.hpp"
@@ -132,7 +131,7 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if ((Check_If_Kaillera_Running()))
 		return 0;
 	*/
-	if (GYM_Playing)
+	if (audio->playingGYM())
 		Stop_Play_GYM();
 	if (Get_Rom() != -1)
 		Sync_Gens_Window();
@@ -158,7 +157,7 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Check_If_Kaillera_Running())
 		return 0;
 	*/
-	if (GYM_Playing)
+	if (audio->playingGYM())
 		Stop_Play_GYM();
 	
 	Free_Rom(Game); // Don't forget it !
@@ -175,7 +174,7 @@ void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(menuitem);
 	
-	if (GYM_Playing)
+	if (audio->playingGYM())
 		Stop_Play_GYM();
 	Open_Rom(Recent_Rom[GPOINTER_TO_INT(user_data)]);
 	Sync_Gens_Window();
@@ -190,11 +189,13 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	if (Sound_Initialised)
-		Clear_Sound_Buffer();
+	if (audio->soundInitialized())
+		audio->clearSoundBuffer();
+	
 #ifdef GENS_DEBUGGER
 	Debug = 0;
 #endif /* GENS_DEBUGGER */
+	
 	/* TODO: NetPlay
 	if (Net_Play)
 	{
@@ -202,6 +203,7 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 			Set_Render(0, -1, 1);
 	}
 	*/
+	
 	Free_Rom(Game);
 	Sync_Gens_Window();
 }
@@ -474,7 +476,7 @@ void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_da
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	Clear_Sound_Buffer();
+	audio->clearSoundBuffer();
 	Save_Shot();
 }
 
@@ -724,13 +726,13 @@ void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
 	string label;
 	
 	// Change WAV dump status.
-	if (!WAV_Dumping)
-		Start_WAV_Dump();
+	if (!audio->dumpingWAV())
+		audio->startWAVDump();
 	else
-		Stop_WAV_Dump();
+		audio->stopWAVDump();
 	
 	// Check the status again to determine what to set the label to.
-	label = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
+	label = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
 	
 	// Set the text of the WAV dump menu item.
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label.c_str());

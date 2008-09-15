@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 
-#include "emulator/gens.h"
+#include "emulator/gens.hpp"
 #include "port/port.h"
 
 

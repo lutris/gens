@@ -37,7 +37,6 @@
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
-#include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 
 // Includes with directory defines.
@@ -60,8 +59,8 @@ const struct DirEntry_t DirEntries[] =
 	{"Savestates", "savestates", State_Dir},
 	{"SRAM Backup", "sram", SRAM_Dir},
 	{"BRAM Backup", "bram", BRAM_Dir},
-	{"WAV Dump", "wavdump", Dump_Dir},
-	{"GYM Dump", "gymdump", Dump_GYM_Dir},
+	{"WAV Dump", "wavdump", PathNames.Dump_WAV_Dir},
+	{"GYM Dump", "gymdump", PathNames.Dump_GYM_Dir},
 	{"Screenshots", "screenshots", ScrShot_Dir},
 	{"PAT patches", "pat_patches", Patch_Dir},
 	{"IPS patches", "ips_patches", IPS_Dir},

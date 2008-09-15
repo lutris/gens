@@ -238,15 +238,11 @@ FILE *debug_file = NULL;
 
 
 /* Gens */
-
-extern unsigned int Sound_Extrapol[312][2];
-extern int Seg_L[882], Seg_R[882];
+#include "audio/audio.hpp"
+#include "util/sound/gym.hpp"
 extern int VDP_Current_Line;
-extern int GYM_Dumping;
 extern int YM2612_Enable;
 extern int DAC_Enable;
-
-int Update_GYM_Dump(char v0, char v1, char v2);
 
 int YM2612_Enable;
 int YM2612_Improv;

@@ -5,6 +5,19 @@
 #ifndef GENS_AUDIO_HPP
 #define GENS_AUDIO_HPP
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// TODO: Should these be kept out of the Audio class?
+extern int Seg_L[882], Seg_R[882];
+extern unsigned int Sound_Extrapol[312][2];
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
 class Audio
 {
 	public:
@@ -44,10 +57,6 @@ class Audio
 		int segLength(void);
 		bool soundInitialized(void);
 		
-		// TODO: Write property access functions for these variables.
-		int Seg_L[882], Seg_R[882];
-		unsigned int Sound_Extrapol[312][2];
-		
 	protected:
 		void writeSoundStereo(short *dest, int length);
 		void dumpSoundStereo(short *dest, int length);
@@ -73,5 +82,6 @@ class Audio
 		unsigned char *pMsndOut;
 		unsigned char *audiobuf;
 };
+#endif /* __cplusplus */
 
 #endif /* GENS_AUDIO_HPP */

@@ -1,6 +1,8 @@
 #ifndef GENS_SDLSOUND_H
 #define GENS_SDLSOUND_H
 
+#if 0
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,5 +42,7 @@ extern int fast_forward;
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* 0 */
 
 #endif /* GENS_SDLSOUND_H */

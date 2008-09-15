@@ -1,5 +1,5 @@
-#ifndef _GENS_H
-#define _GENS_H
+#ifndef GENS_HPP
+#define GENS_HPP
 
 // GENS version information
 #define GENS_APPNAME "Gens"
@@ -84,4 +84,4 @@ void Set_Clock_Freq(int system);
 }
 #endif
 
-#endif
+#endif /* GENS_HPP */

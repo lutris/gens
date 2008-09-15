@@ -32,7 +32,6 @@
 
 #include "gtk-misc.h"
 
-#include "emulator/gens.h"
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -465,9 +464,9 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// Simple checkbox items
 	MItem_Enable = lookup_widget(gens_window, "SoundMenu_Enable");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Enable), Sound_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Enable), audio->enabled());
 	MItem_Stereo = lookup_widget(gens_window, "SoundMenu_Stereo");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stereo), Sound_Stereo);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stereo), audio->stereo());
 	MItem_Z80 = lookup_widget(gens_window, "SoundMenu_Z80");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Z80), Z80_State & 1);
 	MItem_YM2612 = lookup_widget(gens_window, "SoundMenu_YM2612");
@@ -490,7 +489,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_CDDA), CDDA_Enable);
 	
 	// Rate
-	sprintf(Str_Tmp, "SoundMenu_Rate_SubMenu_%d", Sound_Rate);
+	sprintf(Str_Tmp, "SoundMenu_Rate_SubMenu_%d", audio->soundRate());
 	MItem_Rate = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Rate), TRUE);
 	
@@ -500,25 +499,25 @@ void Sync_Gens_Window_SoundMenu(void)
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label.c_str());
 	
 	// WAV dumping
-	label = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
+	label = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
 	MItem_WAVDump = lookup_widget(gens_window, "SoundMenu_WAVDump");
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label.c_str());
 	
 	// Enable or disable items, depending on the Enable state.
-	gtk_widget_set_sensitive(MItem_Stereo, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_YM2612, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_YM2612_Improved, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_DAC, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_DAC_Improved, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_PSG, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_PSG_Improved, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_PCM, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_PWM, Sound_Enable);
-	gtk_widget_set_sensitive(MItem_CDDA, Sound_Enable);
+	gtk_widget_set_sensitive(MItem_Stereo, audio->enabled());
+	gtk_widget_set_sensitive(MItem_YM2612, audio->enabled());
+	gtk_widget_set_sensitive(MItem_YM2612_Improved, audio->enabled());
+	gtk_widget_set_sensitive(MItem_DAC, audio->enabled());
+	gtk_widget_set_sensitive(MItem_DAC_Improved, audio->enabled());
+	gtk_widget_set_sensitive(MItem_PSG, audio->enabled());
+	gtk_widget_set_sensitive(MItem_PSG_Improved, audio->enabled());
+	gtk_widget_set_sensitive(MItem_PCM, audio->enabled());
+	gtk_widget_set_sensitive(MItem_PWM, audio->enabled());
+	gtk_widget_set_sensitive(MItem_CDDA, audio->enabled());
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
-	allowAudioDump = (Genesis_Started || SegaCD_Started || _32X_Started) && Sound_Enable;
+	allowAudioDump = (Genesis_Started || SegaCD_Started || _32X_Started) && audio->enabled();
 	gtk_widget_set_sensitive(MItem_GYMDump, allowAudioDump);
 	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.
 	gtk_widget_set_sensitive(MItem_WAVDump, FALSE);

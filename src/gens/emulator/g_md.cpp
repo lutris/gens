@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-#include "gens.h"
+#include "gens.hpp"
 #include "g_md.hpp"
 #include "g_main.hpp"
 #include "g_update.hpp"
@@ -289,14 +289,14 @@ int Init_Genesis(struct Rom *MD_Rom)
 		Fix_Checksum ();
 	
 	// Initialize sound.
-	if (Sound_Enable)
+	if (audio->enabled())
 	{
-		End_Sound ();
+		audio->endSound();
 		
-		if (!Init_Sound ())
-			Sound_Enable = 0;
+		if (!audio->initSound())
+			audio->setEnabled(false);
 		else
-			Play_Sound ();
+			audio->playSound();
 	}
 	
 	Load_Patch_File();
@@ -373,7 +373,7 @@ int Do_VDP_Only (void)
  * Do_Genesis_Frame_No_VDP(): Runs a Genesis frame without updating the VDP.
  * @return 1 if successful.
  */
-int Do_Genesis_Frame_No_VDP (void)
+int Do_Genesis_Frame_No_VDP(void)
 {
 	int *buf[2];
 	int HInt_Counter;
@@ -390,7 +390,7 @@ int Do_Genesis_Frame_No_VDP (void)
 	main68k_tripOdometer ();
 	z80_Clear_Odo (&M_Z80);
 	
-	Patch_Codes ();
+	Patch_Codes();
 	
 	VRam_Flag = 1;
 	
@@ -406,11 +406,11 @@ int Do_Genesis_Frame_No_VDP (void)
 	{
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
+		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		
-		Fix_Controllers ();
+		Fix_Controllers();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (DMAT_Length)
@@ -438,7 +438,7 @@ int Do_Genesis_Frame_No_VDP (void)
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 	
-	Fix_Controllers ();
+	Fix_Controllers();
 	Cycles_M68K += CPL_M68K;
 	Cycles_Z80 += CPL_Z80;
 	if (DMAT_Length)
@@ -473,18 +473,18 @@ int Do_Genesis_Frame_No_VDP (void)
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		
-		Fix_Controllers ();
+		Fix_Controllers();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
+			main68k_addCycles(Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 //		main68k_exec(Cycles_M68K - 436);
-		main68k_exec (Cycles_M68K - 404);
+		main68k_exec(Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
-		main68k_exec (Cycles_M68K);
+		main68k_exec(Cycles_M68K);
 		Z80_EXEC(0);
 	}
 	
@@ -493,10 +493,10 @@ int Do_Genesis_Frame_No_VDP (void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (WAV_Dumping)
-		Update_WAV_Dump ();
+	if (audio->dumpingWAV())
+		audio->updateWAVDump();
 	if (GYM_Dumping)
-		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
 	return 1;
 }
@@ -506,7 +506,7 @@ int Do_Genesis_Frame_No_VDP (void)
  * Do_Genesis_Frame(): Runs a Genesis frame.
  * @return 1 if successful.
  */
-int Do_Genesis_Frame (void)
+int Do_Genesis_Frame(void)
 {
 	int *buf[2];
 	int HInt_Counter;
@@ -520,10 +520,10 @@ int Do_Genesis_Frame (void)
 	
 	Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
+	main68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
 	
-	Patch_Codes ();
+	Patch_Codes();
 	
 	VRam_Flag = 1;
 	
@@ -543,26 +543,26 @@ int Do_Genesis_Frame (void)
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		
-		Fix_Controllers ();
+		Fix_Controllers();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
+			main68k_addCycles(Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec (Cycles_M68K - 404);
+		main68k_exec(Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
 		if (--HInt_Counter < 0)
 		{
 			HInt_Counter = VDP_Reg.H_Int;
 			VDP_Int |= 0x4;
-			Update_IRQ_Line ();
+			Update_IRQ_Line();
 		}
 		
-		Render_Line ();
+		Render_Line();
 		
-		main68k_exec (Cycles_M68K);
+		main68k_exec(Cycles_M68K);
 		Z80_EXEC(0);
 	}
 	
@@ -572,11 +572,11 @@ int Do_Genesis_Frame (void)
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 	
-	Fix_Controllers ();
+	Fix_Controllers();
 	Cycles_M68K += CPL_M68K;
 	Cycles_Z80 += CPL_Z80;
 	if (DMAT_Length)
-		main68k_addCycles (Update_DMA ());
+		main68k_addCycles(Update_DMA ());
 	
 	if (--HInt_Counter < 0)
 	{
@@ -592,10 +592,10 @@ int Do_Genesis_Frame (void)
 	VDP_Status |= 0x0080;		// V Int happened
 	
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
+	Update_IRQ_Line();
 	z80_Interrupt (&M_Z80, 0xFF);
 	
-	main68k_exec (Cycles_M68K);
+	main68k_exec(Cycles_M68K);
 	Z80_EXEC(0);
 	
 	for (VDP_Current_Line++;
@@ -608,29 +608,29 @@ int Do_Genesis_Frame (void)
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		
-		Fix_Controllers ();
+		Fix_Controllers();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
+			main68k_addCycles(Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
 //		main68k_exec(Cycles_M68K - 436);
 		main68k_exec (Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
-		main68k_exec (Cycles_M68K);
+		main68k_exec(Cycles_M68K);
 		
 		Z80_EXEC(0);
 	}
 	
-	PSG_Special_Update ();
-	YM2612_Special_Update ();
+	PSG_Special_Update();
+	YM2612_Special_Update();
 	
-	if (WAV_Dumping)
-		Update_WAV_Dump ();
+	if (audio->dumpingWAV())
+		audio->updateWAVDump();
 	if (GYM_Dumping)
-		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
 	return 1;
 }

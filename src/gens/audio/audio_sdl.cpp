@@ -20,6 +20,15 @@
 #include "gens_core/misc/misc.h" // for Have_MMX flag
 
 
+Audio_SDL::Audio_SDL()
+{
+}
+
+Audio_SDL::~Audio_SDL()
+{
+}
+
+
 /**
  * AudioCallback(): SDL audio callback. (Static function)
  * @param user Pointer to Audio_SDL class.
@@ -117,7 +126,8 @@ int Audio_SDL::initSound(void)
 	spec.callback = AudioCallback;
 	audiobuf = (unsigned char*)malloc((spec.samples * spec.channels * 2 * 4) * sizeof(short));
 	
-	spec.userdata = audiobuf;
+	// "user" parameter for the callback function is a pointer to this object.
+	spec.userdata = this;
 	
 	memset(audiobuf, 0, (spec.samples * spec.channels * 2 * 4) * sizeof(short));
 	if (SDL_OpenAudio(&spec, 0) != 0)
@@ -220,10 +230,11 @@ int Audio_SDL::writeSoundBuffer(void *dumpBuf)
 	// TODO: Figure out if there's a way to get rid of this.
 	while (audio_len > 1024 * 2 * 2 * 4)
 	{
-		nanosleep (&rqtp, NULL);	
+		nanosleep(&rqtp, NULL);	
 		if (fast_forward)
 			audio_len = 1024;
 	} //SDL_Delay(1); 
+	
 	return 1;
 }
 

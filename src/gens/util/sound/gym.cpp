@@ -7,9 +7,7 @@
 #include <string.h>
 
 #include "emulator/g_main.hpp"
-#include "sdllayer/g_sdlsound.h"
 #include "gens_core/mem/mem_m68k.h"
-#include "emulator/gens.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 
@@ -63,7 +61,7 @@ int Start_GYM_Dump(void)
 	do
 	{
 		num++;
-		sprintf(filename, "%s%s_%03d.gym", Dump_GYM_Dir, Rom_Name, num);
+		sprintf(filename, "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, Rom_Name, num);
 	} while (fileExists(filename));
 	
 	GYM_File = fopen(filename, "w");
@@ -135,7 +133,7 @@ int Stop_GYM_Dump(void)
 	
 	if (GYM_File)
 		fclose(GYM_File);
-	Clear_Sound_Buffer();
+	audio->clearSoundBuffer();
 	GYM_Dumping = 0;
 	
 	draw->writeText("GYM dump stopped", 1000);
@@ -151,26 +149,26 @@ int Start_Play_GYM(void)
 {
 	string filename;
 	
-	if (Game || !(Sound_Enable))
+	if (Game || !audio->enabled())
 		return 0;
 	
-	if (GYM_Playing)
+	if (audio->playingGYM())
 	{
 		draw->writeText("Already playing GYM", 1000);
 		return 0;
 	}
 	
-	End_Sound();
+	audio->endSound();
 	CPU_Mode = 0;
 	
-	if (!Init_Sound())
+	if (!audio->initSound())
 	{
-		Sound_Enable = 0;
+		audio->setEnabled(false);
 		draw->writeText("Can't initialize SDL Sound", 1000);
 		return 0;
 	}
 	
-	Play_Sound ();
+	audio->playSound();
 	
 	filename = GensUI::openFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile);
 	if (filename.length() == 0)
@@ -181,9 +179,9 @@ int Start_Play_GYM(void)
 	if (!GYM_File)
 		return 0;
 	
-	YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
-	PSG_Init(CLOCK_NTSC / 15, Sound_Rate);
-	GYM_Playing = 1;
+	YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
+	PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
+	audio->setPlayingGYM(true);
 	
 	draw->writeText("Starting to play GYM", 1000);
 	return 1;
@@ -196,7 +194,7 @@ int Start_Play_GYM(void)
  */
 int Stop_Play_GYM(void)
 {
-	if (!GYM_Playing)
+	if (!audio->playingGYM())
 	{
 		draw->writeText("Already stopped", 1000);
 		return 0;
@@ -204,8 +202,8 @@ int Stop_Play_GYM(void)
 	
 	if (GYM_File)
 		fclose(GYM_File);
-	Clear_Sound_Buffer();
-	GYM_Playing = 0;
+	audio->clearSoundBuffer();
+	audio->setPlayingGYM(false);
 	
 	draw->writeText("Stopped playing GYM", 1000);
 	return 1;
@@ -218,7 +216,7 @@ int GYM_Next(void)
 	unsigned int l;
 	int *buf[2];
 	
-	if (!GYM_Playing || !GYM_File)
+	if (!audio->playingGYM() || !GYM_File)
 		return 0;
 	
 	buf[0] = Seg_L;
@@ -233,9 +231,9 @@ int GYM_Next(void)
 		switch (c)
 		{
 			case 0:
-				PSG_Update(buf, Seg_Length);
+				PSG_Update(buf, audio->segLength());
 				if (YM2612_Enable)
-					YM2612_Update(buf, Seg_Length);
+					YM2612_Update(buf, audio->segLength());
 				break;
 			
 			case 1:
@@ -271,7 +269,7 @@ int Play_GYM(void)
 		return 0;
 	}
 	
-	Write_Sound_Buffer(NULL);
+	audio->writeSoundBuffer(NULL);
 	return 1;
 }
 
