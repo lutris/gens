@@ -8,7 +8,6 @@
 #include "g_md.hpp"
 #include "g_main.hpp"
 #include "g_update.hpp"
-#include "sdllayer/g_sdlsound.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"

@@ -13,7 +13,6 @@
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 #include "emulator/g_input.hpp"
-#include "sdllayer/g_sdlsound.h"
 #include "util/gfx/scrshot.h"
 #include "util/file/ggenie.h"
 #include "gens_core/misc/misc.h"

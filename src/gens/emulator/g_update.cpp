@@ -10,8 +10,6 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "ui/gens_ui.hpp"
 
-#include "sdllayer/g_sdlsound.h"
-
 #ifndef NULL
 #define NULL 0
 #endif

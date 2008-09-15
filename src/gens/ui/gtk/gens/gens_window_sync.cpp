@@ -36,7 +36,6 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/mem/mem_m68k.h"
-#include "sdllayer/g_sdlsound.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"

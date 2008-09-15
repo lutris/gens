@@ -1,6 +1,5 @@
 #include "gens.hpp"
 #include "g_main.hpp"
-#include "sdllayer/g_sdlsound.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_s68k.h"
 #include "gens_core/mem/mem_sh2.h"

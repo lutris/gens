@@ -51,7 +51,6 @@
 #include "ui/gens_ui.hpp"
 #include "gtk-misc.h"
 
-#include "sdllayer/g_sdlsound.h"
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"

@@ -15,7 +15,6 @@
 #include "gens.hpp"
 #include "g_main.hpp"
 #include "g_mcd.hpp"
-#include "sdllayer/g_sdlsound.h"
 #include "ui_proxy.hpp"
 #include "util/file/save.hpp"
 #include "util/sound/gym.hpp"

@@ -37,7 +37,6 @@
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/sh2/sh2.h"
 #include "gens_core/cpu/z80/z80.h"
-#include "sdllayer/g_sdlsound.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
