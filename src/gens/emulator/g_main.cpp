@@ -484,8 +484,14 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
+#ifdef GENS_OPENGL
 	// Check if OpenGL needs to be enabled.
+	// This also initializes SDL or SDL+GL.
 	Change_OpenGL(Video.OpenGL);
+#else
+	// Initialize SDL.
+	draw->Init_Video();
+#endif
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
@@ -629,6 +635,7 @@ void Clear_Screen_MD(void)
 }
 
 
+#ifdef GENS_OPENGL
 /**
  * Change_OpenGL(): Change the OpenGL setting.
  * @param stretch 0 to turn OpenGL off; 1 to turn OpenGL on.
@@ -690,3 +697,4 @@ void Set_GL_Resolution(int w, int h)
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
 	draw->setRender(rendMode, true);
 }
+#endif /* GENS_OPENGL */

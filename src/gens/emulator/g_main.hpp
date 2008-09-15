@@ -176,8 +176,11 @@ extern int (*Update_Frame_Fast)(void);
 
 // Miscellaneous.
 void Clear_Screen_MD(void);
+
+#ifdef GENS_OPENGL
 void Change_OpenGL(int newOpenGL);
 void Set_GL_Resolution(int w, int h);
+#endif /* GENS_OPENGL */
 
 #ifdef __cplusplus
 }

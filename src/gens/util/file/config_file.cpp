@@ -374,12 +374,13 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.Height_GL = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
-#endif
+	
 	// Set the OpenGL renderer.
 	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
 	// because the window hasn't been created yet.
 	if (is_gens_running())
 		Change_OpenGL(Video.OpenGL);
+#endif
 	
 	//Set_Render(Full_Screen, -1, 1);
 	

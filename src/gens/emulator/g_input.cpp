@@ -388,6 +388,7 @@ void Input_KeyDown(int key)
 			break;
 		*/
 		
+#ifdef GENS_OPENGL
 		case GENS_KEY_r:
 			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
@@ -395,6 +396,7 @@ void Input_KeyDown(int key)
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
+#endif
 		
 		case GENS_KEY_v:
 			if (mod & GENS_KMOD_CTRL)
