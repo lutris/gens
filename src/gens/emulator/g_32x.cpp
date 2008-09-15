@@ -69,18 +69,12 @@ int Init_32X(struct Rom *MD_Rom)
 	FILE *f;
 	int i;
 	
-	/*
-	strcpy(_32X_Genesis_Bios, "32X_G_BIOS.BIN");
-	strcpy(_32X_Master_Bios, "32X_M_BIOS.BIN");
-	strcpy(_32X_Slave_Bios, "32X_S_BIOS.BIN");
-	*/
-	
 	// Read the Genesis 32X BIOS (usually "32X_G_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
 	{
 		fread(&_32X_Genesis_Rom[0], 1, 256, f);
 		be16_to_cpu_array(&_32X_Genesis_Rom[0], 256);
-		fclose (f);
+		fclose(f);
 	}
 	else
 	{
