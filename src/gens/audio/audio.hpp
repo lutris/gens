@@ -45,15 +45,15 @@ class Audio
 		
 		// Properties
 		int soundRate(void);
-		void setSoundRate(int newSoundRate);
+		void setSoundRate(const int newSoundRate);
 		bool dumpingWAV(void);
-		void setDumpingWAV(bool newDumpingWAV);
+		void setDumpingWAV(const bool newDumpingWAV);
 		bool playingGYM(void);
-		void setPlayingGYM(bool newPlayingGYM);
+		void setPlayingGYM(const bool newPlayingGYM);
 		bool enabled(void);
-		void setEnabled(bool newEnabled);
+		void setEnabled(const bool newEnabled);
 		bool stereo(void);
-		void setStereo(bool newStereo);
+		void setStereo(const bool newStereo);
 		int segLength(void);
 		bool soundInitialized(void);
 		

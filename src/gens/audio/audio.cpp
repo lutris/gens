@@ -260,7 +260,7 @@ int Audio::soundRate(void)
 {
 	return m_soundRate;
 }
-void Audio::setSoundRate(int newSoundRate)
+void Audio::setSoundRate(const int newSoundRate)
 {
 	m_soundRate = newSoundRate;
 	// TODO: Adjust the audio subsystem to use the new rate.
@@ -271,7 +271,7 @@ bool Audio::dumpingWAV(void)
 {
 	return m_dumpingWAV;
 }
-void Audio::setDumpingWAV(bool newDumpingWAV)
+void Audio::setDumpingWAV(const bool newDumpingWAV)
 {
 	m_dumpingWAV = newDumpingWAV;
 	// TODO: WAV code.
@@ -282,7 +282,7 @@ bool Audio::playingGYM(void)
 {
 	return m_playingGYM;
 }
-void Audio::setPlayingGYM(bool newPlayingGYM)
+void Audio::setPlayingGYM(const bool newPlayingGYM)
 {
 	m_playingGYM = newPlayingGYM;
 	// TODO: GYM code.
@@ -293,7 +293,7 @@ bool Audio::enabled(void)
 {
 	return m_enabled;
 }
-void Audio::setEnabled(bool newEnabled)
+void Audio::setEnabled(const bool newEnabled)
 {
 	m_enabled = newEnabled;
 	// TODO: Enabled code.
@@ -304,7 +304,7 @@ bool Audio::stereo(void)
 {
 	return m_stereo;
 }
-void Audio::setStereo(bool newStereo)
+void Audio::setStereo(const bool newStereo)
 {
 	m_stereo = newStereo;
 	// TODO: Stereo code.
