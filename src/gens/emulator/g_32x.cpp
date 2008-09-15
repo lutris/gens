@@ -42,8 +42,8 @@
 	asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (cycS));
 #else
 #define SH2_EXEC(cycM, cycS)						\
-	SH2_Exec (&M_SH2, cycM);					\
-	SH2_Exec (&S_SH2, cycS);
+	SH2_Exec(&M_SH2, cycM);					\
+	SH2_Exec(&S_SH2, cycS);
 #endif
 
 
@@ -374,13 +374,7 @@ int Do_32X_Frame_No_VDP (void)
 		_32X_VDP.State |= 0x6000;
 		
 		main68k_exec (i - p_i);
-#ifdef __RESULT__
-		asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (j - p_j));
-		asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (k - p_k));
-#else
-		SH2_Exec (&M_SH2, j - p_j);
-		SH2_Exec (&S_SH2, k - p_k);
-#endif
+		SH2_EXEC(j - p_j, k - p_k);
 		PWM_Update_Timer (l - p_l);
 		
 		VDP_Status &= ~0x0004;	// HBlank = 0
@@ -414,13 +408,7 @@ int Do_32X_Frame_No_VDP (void)
 		while (i < Cycles_M68K)
 		{
 			main68k_exec (i);
-#ifdef __RESULT__
-			asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (j));
-			asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (k));
-#else
-			SH2_Exec (&M_SH2, j);
-			SH2_Exec (&S_SH2, k);
-#endif
+			SH2_EXEC(j, k);
 			PWM_Update_Timer (l);
 			i += p_i;
 			j += p_j;
@@ -429,13 +417,7 @@ int Do_32X_Frame_No_VDP (void)
 		}
 		
 		main68k_exec (Cycles_M68K);
-#ifdef __RESULT__
-		asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (Cycles_MSH2));
-		asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (Cycles_SSH2));
-#else
-		SH2_Exec (&M_SH2, Cycles_MSH2);
-		SH2_Exec (&S_SH2, Cycles_SSH2);
-#endif
+		SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
 		PWM_Update_Timer (PWM_Cycles);
 		
 		Z80_EXEC(0);
@@ -497,13 +479,7 @@ int Do_32X_Frame_No_VDP (void)
 	while (i < (Cycles_M68K - 360))
 	{
 		main68k_exec (i);
-#ifdef __RESULT__
-		asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (j));
-		asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (k));
-#else
-		SH2_Exec (&M_SH2, j);
-		SH2_Exec (&S_SH2, k);
-#endif
+		SH2_EXEC(j, k);
 		PWM_Update_Timer (l);
 		i += p_i;
 		j += p_j;
@@ -538,13 +514,7 @@ int Do_32X_Frame_No_VDP (void)
 	while (i < Cycles_M68K)
 	{
 		main68k_exec (i);
-#ifdef __RESULT__
-		asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (j));
-		asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (k));
-#else
-		SH2_Exec (&M_SH2, j);
-		SH2_Exec (&S_SH2, k);
-#endif
+		SH2_EXEC(j, k);
 		PWM_Update_Timer (l);
 		i += p_i;
 		j += p_j;
@@ -553,15 +523,7 @@ int Do_32X_Frame_No_VDP (void)
 	}
 	
 	main68k_exec (Cycles_M68K);
-	
-#ifdef __RESULT__
-	asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (Cycles_MSH2));
-	asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (Cycles_SSH2));
-#else
-	SH2_Exec (&M_SH2, Cycles_MSH2);
-	SH2_Exec (&S_SH2, Cycles_SSH2);
-#endif
-	
+	SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
 	PWM_Update_Timer (PWM_Cycles);
 	
 	Z80_EXEC(0);
@@ -595,14 +557,7 @@ int Do_32X_Frame_No_VDP (void)
 		_32X_VDP.State |= 0x6000;
 		
 		main68k_exec (i - p_i);
-		
-#ifdef __RESULT__
-		asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (j - p_j));
-		asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (k - p_k));
-#else
-		SH2_Exec (&M_SH2, j - p_j);
-		SH2_Exec (&S_SH2, k - p_k);
-#endif
+		SH2_EXEC(j - p_j, k - p_k);
 		PWM_Update_Timer (l - p_l);
 		
 		VDP_Status &= ~0x0004;	// HBlank = 0
@@ -629,14 +584,7 @@ int Do_32X_Frame_No_VDP (void)
 		while (i < Cycles_M68K)
 		{
 			main68k_exec (i);
-#ifdef __RESULT__
-			asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (j));
-			asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (k));
-#else
-			SH2_Exec (&M_SH2, j);
-			SH2_Exec (&S_SH2, k);
-#endif
-		
+			SH2_EXEC(j, k);
 			PWM_Update_Timer (l);
 			i += p_i;
 			j += p_j;
@@ -645,15 +593,7 @@ int Do_32X_Frame_No_VDP (void)
 		}
 		
 		main68k_exec (Cycles_M68K);
-		
-#ifdef __RESULT__
-		asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (Cycles_MSH2));
-		asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (Cycles_SSH2));
-#else
-		SH2_Exec (&M_SH2, Cycles_MSH2);
-		SH2_Exec (&S_SH2, Cycles_SSH2);
-#endif
-		
+		SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
 		PWM_Update_Timer (PWM_Cycles);
 		
 		Z80_EXEC(0);
@@ -899,7 +839,6 @@ int Do_32X_Frame (void)
 	{
 		main68k_exec (i);
 		SH2_EXEC(j, k);
-		
 		PWM_Update_Timer (l);
 		i += p_i;
 		j += p_j;
@@ -907,12 +846,12 @@ int Do_32X_Frame (void)
 		l += p_l;
 	}
 	
-	main68k_exec (Cycles_M68K);
+	main68k_exec(Cycles_M68K);
 	SH2_EXEC(Cycles_MSH2, Cycles_MSH2); // TODO: Potential bug? Cycles_MSH2 instead of Cycles_SSH2
 	//SH2_Exec(&M_SH2, Cycles_MSH2);
 	//SH2_Exec(&S_SH2, Cycles_SSH2);
 	
-	PWM_Update_Timer (PWM_Cycles);
+	PWM_Update_Timer(PWM_Cycles);
 	
 	Z80_EXEC(0);
 	//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80);
