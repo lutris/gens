@@ -119,8 +119,6 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
-		input/input.cpp \
-		input/input_sdl.cpp \
 		port/port.c \
 		port/timer.c \
 		port/ini.cpp \
@@ -145,7 +143,11 @@ gens_SOURCES = \
 		video/C64_charset.c \
 		video/v_draw.cpp \
 		video/v_draw_sdl.cpp \
-		video/v_effects.cpp
+		video/v_effects.cpp \
+		input/input.cpp \
+		input/input_sdl.cpp \
+		audio/audio.cpp \
+		audio/audio_sdl.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -257,9 +259,6 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
-		input/input.hpp \
-		input/input_sdl.hpp \
-		input/input_sdl_keys.h \
 		port/port.h \
 		port/timer.h \
 		port/ini.hpp \
@@ -284,7 +283,12 @@ noinst_HEADERS = \
 		video/C64_charset.h \
 		video/v_draw.hpp \
 		video/v_draw_sdl.hpp \
-		video/v_effects.cpp
+		video/v_effects.hpp \
+		input/input.hpp \
+		input/input_sdl.hpp \
+		input/input_sdl_keys.h \
+		audio/audio.hpp \
+		audio/audio_sdl.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
