@@ -6,6 +6,15 @@
 #ifndef GENS_INPUT_HPP
 #define GENS_INPUT_HPP
 
+// OS-specific includes.
+#if (defined(__linux__))
+#include "input_sdl_keys.h"
+#elif (defined(__WIN32__))
+#error TODO: Add Win32 support.
+#else
+#error Unsupported operating system.
+#endif
+
 // Controller key mapping.
 struct KeyMap
 {

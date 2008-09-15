@@ -1,5 +1,5 @@
 /**
- * GENS: Input handler.
+ * Gens: Input handler.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -7,13 +7,6 @@
 #endif
 
 #include "g_input.hpp"
-
-#include <stdio.h>
-#include <SDL.h>
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
-#include "gens.hpp"
-#include "g_main.hpp"
 #include "g_mcd.hpp"
 #include "ui_proxy.hpp"
 #include "util/file/save.hpp"
@@ -39,6 +32,7 @@
 
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
+// TODO: This isn't actually a bug with SDL/GTK - it's an issue with keysnooping...
 int mod = 0;
 
 
