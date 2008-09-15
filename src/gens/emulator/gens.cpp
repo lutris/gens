@@ -18,7 +18,8 @@ int Frame_Skip;
 int Frame_Number;
 int DAC_Improv;
 
-int Round_Double (double val)
+
+int Round_Double(const double val)
 {
 	if ((val - (double) (int) val) > 0.5)
 		return (int) (val + 1);
@@ -26,7 +27,8 @@ int Round_Double (double val)
 		return (int) val;
 }
 
-void Init_Tab (void)
+
+void Init_Tab(void)
 {
 	int x, y, dep;
 	
@@ -84,7 +86,7 @@ void Init_Tab (void)
 }
 
 
-void Check_Country_Order (void)
+void Check_Country_Order(void)
 {
 	if ((Country_Order[0] == Country_Order[1])
 	    || (Country_Order[0] == Country_Order[2])
@@ -105,7 +107,7 @@ void Check_Country_Order (void)
  * Set_CPU_Freq(): Sets the CPU frequencies.
  * @param system System: 0 == MD only, 1 == MCD, 2 == 32X
  */
-void Set_Clock_Freq(int system)
+void Set_Clock_Freq(const int system)
 {
 	if (CPU_Mode)
 	{

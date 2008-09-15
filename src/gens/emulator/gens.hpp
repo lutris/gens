@@ -26,11 +26,11 @@ extern int Frame_Skip;
 extern int Frame_Number;
 extern int DAC_Improv;
 
-int Round_Double(double val);
+int Round_Double(const double val);
 void Init_Tab(void);
 void Check_Country_Order(void);
 
-void Set_Clock_Freq(int system);
+void Set_Clock_Freq(const int system);
 
 
 /**
