@@ -376,6 +376,8 @@ void VDraw_SDL::updateRenderer(void)
  */
 void VDraw_SDL::updateVSync(bool unused)
 {
+	GENS_UNUSED_PARAMETER(unused);
+	
 	// Unfortunately, plain old SDL doesn't support VSync. :(
 	return;
 }
