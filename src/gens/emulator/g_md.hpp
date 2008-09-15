@@ -14,6 +14,7 @@ extern "C" {
 void Detect_Country_Genesis(void);
 
 void Init_Genesis_Bios(void);
+void Init_Genesis_SRAM(struct Rom *MD_Rom);
 int Init_Genesis(struct Rom *MD_Rom);
 void Reset_Genesis();
 int Do_VDP_Only(void);

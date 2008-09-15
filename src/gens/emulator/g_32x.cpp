@@ -63,7 +63,7 @@ void Error_32X_BIOS(const char *Str_BIOS)
  * @param MD_Rom ROM image struct.
  * @return 1 if successful; 0 if an error occurred.
  */
-int Init_32X (struct Rom *MD_Rom)
+int Init_32X(struct Rom *MD_Rom)
 {
 	char Str_Err[256];
 	FILE *f;
@@ -118,45 +118,7 @@ int Init_32X (struct Rom *MD_Rom)
 	Controller_1_COM = Controller_2_COM = 0;
 	
 	if (!Kaillera_Client_Running)
-	{
-		if ((MD_Rom->Ram_Infos[8] == 'R') && (MD_Rom->Ram_Infos[9] == 'A')
-			&& (MD_Rom->Ram_Infos[10] & 0x40))
-		{
-			// SRAM specified in the ROM header. Use this address.
-			SRAM_Start = MD_Rom->Ram_Start_Adress & 0x0F80000;	// multiple de 0x080000
-			SRAM_End = MD_Rom->Ram_End_Adress;
-		}
-		else
-		{
-			SRAM_Start = 0x200000;
-			SRAM_End = 0x200000 + (64 * 1024) - 1;
-		}
-		
-		if ((SRAM_Start > SRAM_End) || ((SRAM_End - SRAM_Start) >= (64 * 1024)))
-			SRAM_End = SRAM_Start + (64 * 1024) - 1;
-		
-		// If the ROM is smaller than the SRAM starting address, always enable SRAM.
-		// TODO: Instead of hardcoding 2MB, use SRAM_Start.
-		if (Rom_Size <= (2 * 1024 * 1024))
-		{
-			SRAM_ON = 1;
-			SRAM_Write = 1;
-		}
-		
-		// Make sure SRAM starts on an even byte and ends on an odd byte.
-		SRAM_Start &= 0xFFFFFFFE;
-		SRAM_End |= 0x00000001;
-		
-//		sprintf(Str_Err, "deb = %.8X end = %.8X", SRAM_Start, SRAM_End);
-//		MessageBox(NULL, Str_Err, "", MB_OK);
-		
-		if ((SRAM_End - SRAM_Start) <= 2)
-			SRAM_Custom = 1;
-		else
-			SRAM_Custom = 0;
-		
-		Load_SRAM ();
-	}
+		Init_Genesis_SRAM(MD_Rom);
 	
 	// Check what country code should be used.
 	// TODO: Get rid of magic numbers.
