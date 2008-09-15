@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include <sys/stat.h>
+#include <stdlib.h>
 
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
