@@ -78,7 +78,7 @@ int Change_SegaCD_SRAM_Size (int num)
 		BRAM_Ex_State |= 0x100;
 		BRAM_Ex_Size = num;
 		
-		sprintf (bsize, "SegaCD SRAM cart plugged in (%d KB)", 8 << num);
+		sprintf(bsize, "SegaCD SRAM cart plugged in (%d KB)", 8 << num);
 		MESSAGE_L(bsize, bsize, 1500);
 	}
 
@@ -119,7 +119,7 @@ int Change_Sound(int newSound)
 			return 0;
 		}
 		
-		Play_Sound ();
+		Play_Sound();
 		
 		// Make sure Z80 sound emulation is enabled.
 		if (!(Z80_State & 1))
@@ -132,7 +132,7 @@ int Change_Sound(int newSound)
 		PWM_Enable = 1;
 		CDDA_Enable = 1;
 		
-		MESSAGE_L ("Sound Enabled", "Sound Enabled", 1500);
+		MESSAGE_L("Sound Enabled", "Sound Enabled", 1500);
 	}
 	
 	return 1;
@@ -155,7 +155,7 @@ int Change_Sound_Stereo(int newStereo)
 	}
 	else
 	{
-		MESSAGE_L ("Stereo sound", "Stereo sound", 1000);
+		MESSAGE_L("Stereo sound", "Stereo sound", 1000);
 	}
 	
 	if (!Sound_Enable)
@@ -276,9 +276,9 @@ int Change_YM2612_Improved(int newYM2612Improved)
 	YM2612_Save (Reg_1);
 	
 	if (CPU_Mode)
-		YM2612_Init (CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
+		YM2612_Init(CLOCK_PAL / 7, Sound_Rate, YM2612_Improv);
 	else
-		YM2612_Init (CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
+		YM2612_Init(CLOCK_NTSC / 7, Sound_Rate, YM2612_Improv);
 	
 	// Restore the YM2612 registers.
 	YM2612_Restore (Reg_1);
@@ -462,7 +462,7 @@ int Change_Sample_Rate(int Rate)
 	unsigned char Reg_1[0x200];
 	
 	// Make sure the rate ID is valid.
-	assert (Rate >= 0 && Rate <= 5);
+	assert(Rate >= 0 && Rate <= 5);
 	
 	switch (Rate)
 	{
@@ -495,8 +495,8 @@ int Change_Sample_Rate(int Rate)
 	
 	// Save the sound registers.
 	// TODO: Use a full save instead of a partial save?
-	PSG_Save_State ();
-	YM2612_Save (Reg_1);
+	PSG_Save_State();
+	YM2612_Save(Reg_1);
 	
 	// Stop sound.
 	End_Sound();
@@ -515,10 +515,10 @@ int Change_Sample_Rate(int Rate)
 	}
 
 	if (SegaCD_Started)
-		Set_Rate_PCM (Sound_Rate);
+		Set_Rate_PCM(Sound_Rate);
 	
 	// Restore the sound registers
-	YM2612_Restore (Reg_1);
+	YM2612_Restore(Reg_1);
 	PSG_Restore_State();
 	
 	// Attempt to reinitialize sound.
@@ -663,14 +663,14 @@ int Change_Country(int newCountry)
 	
 	if (CPU_Mode)
 	{
-		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
+		CPL_Z80 = Round_Double((((double)CLOCK_PAL / 15.0) / 50.0) / 312.0);
+		CPL_M68K = Round_Double((((double)CLOCK_PAL / 7.0) / 50.0) / 312.0);
 		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) MSH2_Speed) / 100.0);
+			Round_Double(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+				(double)MSH2_Speed) / 100.0);
 		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) SSH2_Speed) / 100.0);
+			Round_Double(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+				(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 312;
 		VDP_Status |= 0x0001;
@@ -681,14 +681,14 @@ int Change_Country(int newCountry)
 	}
 	else
 	{
-		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
+		CPL_Z80 = Round_Double((((double)CLOCK_NTSC / 15.0) / 60.0) / 262.0);
+		CPL_M68K = Round_Double((((double)CLOCK_NTSC / 7.0) / 60.0) / 262.0);
 		CPL_MSH2 =
-		Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) MSH2_Speed) / 100.0);
+			Round_Double(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+				(double)MSH2_Speed) / 100.0);
 		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) SSH2_Speed) / 100.0);
+			Round_Double(((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+				(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 262;
 		VDP_Status &= 0xFFFE;
@@ -718,12 +718,12 @@ int Change_Country(int newCountry)
 		}
 		
 		if (SegaCD_Started)
-			Set_Rate_PCM (Sound_Rate);
+			Set_Rate_PCM(Sound_Rate);
 		
 		YM2612_Restore (Reg_1);
-		PSG_Restore_State ();
+		PSG_Restore_State();
 		
-		if (!Init_Sound ())
+		if (!Init_Sound())
 			return 0;
 		
 		Sound_Enable = 1;
