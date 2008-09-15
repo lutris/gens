@@ -26,6 +26,11 @@ What's new in Gens for Linux v2.15.4/GS-m4?
 
 Milestone 4 introduces the following new features:
 
+- The SegaCD GFX debugger now shows all 16 virtual palette lines. The
+  virtual palette lines include highlight and shadow. Previously, these
+  lines were selectable, and the patterns did reflect the palettes, but
+  the color lines didn't actually show up.
+
 - MAME CHD and CCnet support have been removed. They weren't used for
   anything and simply took up extra space.
 
