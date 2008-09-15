@@ -51,8 +51,8 @@ Milestone 4 introduces the following new features:
 
 - Improved OpenGL renderer. The improved renderer takes some fixes from
   Gens/Linux 2.15.4, as well as improving the VSync functionality. VSync
-  uses GLX_SGI_swap_control extension, so it may not work on all systems.
-  Support for other VSync extensions will be added later on.
+  uses the GLX_SGI_swap_control extension, so it may not work on all
+  systems. Support for other VSync extensions will be added later on.
 
 - The GTK+ window border is now set to 0. This allows a window manager to
   remove the window border for pseudo-full-screen.
