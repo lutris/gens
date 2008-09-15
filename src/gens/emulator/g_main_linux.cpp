@@ -1,17 +1,14 @@
 /**
- * GENS: Main loop. (Linux specific code)
+ * Gens: Main loop. (Linux specific code)
  */
+
 
 #include <sys/stat.h>
 #include <stdio.h>
-#include <SDL.h>
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
-#include "gens.h"
-#include "g_main.hpp"
-#include "g_input.hpp"
+#include <stdlib.h>
+#include <string.h>
+#include "g_main_linux.hpp"
 
-GtkWidget *gens_window = NULL;
 
 /**
  * GENS_Default_Save_Path(): Create the default save path.
@@ -19,8 +16,8 @@ GtkWidget *gens_window = NULL;
  */
 void Get_Save_Path(char *buf, size_t n)
 {
-	strncpy (buf, getenv ("HOME"), n);
-	strcat (buf, "/.gens/");
+	strncpy(buf, getenv ("HOME"), n);
+	strcat(buf, "/.gens/");
 }
 
 /**
