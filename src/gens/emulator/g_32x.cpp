@@ -847,10 +847,7 @@ int Do_32X_Frame (void)
 	}
 	
 	main68k_exec(Cycles_M68K);
-	SH2_EXEC(Cycles_MSH2, Cycles_MSH2); // TODO: Potential bug? Cycles_MSH2 instead of Cycles_SSH2
-	//SH2_Exec(&M_SH2, Cycles_MSH2);
-	//SH2_Exec(&S_SH2, Cycles_SSH2);
-	
+	SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
 	PWM_Update_Timer(PWM_Cycles);
 	
 	Z80_EXEC(0);
