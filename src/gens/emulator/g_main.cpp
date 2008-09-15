@@ -619,24 +619,9 @@ int W_VSync;
 
 
 /**
- * Put_Info(): Put a message on the screen. [DEPRECATED; use draw->writeText() instead]
- * @param message Message to write to the screen.
- * @param duration Duration for the message to appear, in milliseconds.
- */
-int ice = 0;
-void Put_Info(const char* msg, int duration)
-{
-	// TODO: Figure out a better place to put this.
-	
-	// TODO: Reimplement win2linux somewhere else.
-	//win2linux(Info_String);
-	draw->writeText(msg, duration);
-}
-
-
-/**
  * Clear_Screen_MD(): Clears the MD screen.
  */
+int ice = 0;
 void Clear_Screen_MD(void)
 {
 	memset(MD_Screen, 0x00, sizeof(MD_Screen));

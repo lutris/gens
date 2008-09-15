@@ -168,8 +168,6 @@ SetDlgItemText(hDlg, id, Str_Tmp);
 
 #endif
 
-// TODO: Figure out where to put these.
-void Put_Info(const char* msg, int duration) __attribute__ ((deprecated));
 extern int ice;
 
 // Update Frame function pointers
