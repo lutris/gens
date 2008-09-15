@@ -308,10 +308,8 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_STRING(_32XMBIOS, BIOS_Filenames._32X_MSH2);
 		TEST_OPTION_STRING(_32XSBIOS, BIOS_Filenames._32X_SSH2);
 		
-		/* TODO: C++ support
-		TEST_OPTION_ENABLE(STRETCH, Stretch);
-		TEST_OPTION_ENABLE(SWBLIT, Blit_Soft);
-		*/
+		//TEST_OPTION_ENABLE(STRETCH, Stretch);
+		//TEST_OPTION_ENABLE(SWBLIT, Blit_Soft);
 		TEST_OPTION_NUMERIC(CONTRAST, Contrast_Level);
 		TEST_OPTION_NUMERIC(BRIGHTNESS, Brightness_Level);
 		TEST_OPTION_ENABLE(GREYSCALE, Greyscale);
@@ -342,7 +340,23 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_NUMERIC(RAMCARTSIZE, BRAM_Ex_Size);
 		
 		// Other options that can't be handled by macros.
-		if (!strcmp(long_options[option_index].name, FASTBLUR_ENABLE))
+		if (!strcmp(long_options[option_index].name, STRETCH_ENABLE))
+		{
+			draw->setStretch(true);
+		}
+		else if (!strcmp(long_options[option_index].name, STRETCH_DISABLE))
+		{
+			draw->setStretch(false);
+		}
+		else if (!strcmp(long_options[option_index].name, SWBLIT_ENABLE))
+		{
+			draw->setSwRender(true);
+		}
+		else if (!strcmp(long_options[option_index].name, SWBLIT_DISABLE))
+		{
+			draw->setSwRender(false);
+		}
+		else if (!strcmp(long_options[option_index].name, FASTBLUR_ENABLE))
 		{
 			draw->setFastBlur(true);
 		}
