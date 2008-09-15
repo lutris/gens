@@ -14,6 +14,9 @@ extern "C" {
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
 
+// TODO: Get rid of this.
+void win2linux(char* str);
+
 #ifdef __cplusplus
 }
 #endif

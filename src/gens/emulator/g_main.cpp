@@ -614,25 +614,6 @@ int Flag_Clr_Scr = 0;
 int FS_VSync;
 int W_VSync;
 
-// TODO: Get rid of this.
-static void win2linux(char* str)
-{
-	char* tmp=str;
-	for (; *tmp; ++tmp)
-	{
-		switch((unsigned char)*tmp)
-		{
-			case 0xE7: *tmp='c';break;//ç
-			case 0xE8: *tmp='e';break;//è
-			case 0xE9: *tmp='e';break;//é
-			case 0xEA: *tmp='e';break;//ê
-			case 0xE0: *tmp='a';break;//à
-			case 0xEE: *tmp='i';break;//î
-			default:break;
-		}	
-	}
-}
-
 
 /**
  * Put_Info(): Put a message on the screen. [DEPRECATED; use draw->writeText() instead]
