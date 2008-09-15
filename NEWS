@@ -34,6 +34,10 @@ Milestone 4 introduces the following new features:
 - MAME CHD and CCnet support have been removed. They weren't used for
   anything and simply took up extra space.
 
+- The scanline renderer is now available in 32-bit color. Note that the
+  x86 asm scanline renderers don't erase the scanlines on every frame,
+  so garbage is left behind by the new text drawing function.
+
 - OpenGL linear filtering can now be enabled/disabled via a menu item.
 
 - New generic input and audio layers, which are located in src/gens/input/
