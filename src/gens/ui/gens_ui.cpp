@@ -88,7 +88,7 @@ void GensUI::setWindowTitle_Init(const string& system, const bool reinit)
 	string title;
 	
 	// Create the title.
-	title = string(GENS_APPNAME) + " " + GENS_VERSION + " - " + system +
+	title = string(GENS_APPNAME) + " " + GENS_VERSION + " - " + system + ": " +
 		(reinit ? "Reinitializing" : "Initializing") + ", please wait...";
 	
 	// Set the title.
