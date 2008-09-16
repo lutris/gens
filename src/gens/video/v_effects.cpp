@@ -51,7 +51,7 @@ int Update_Gens_Logo(void)
 		// TODO: Don't use SDL for image loading.
 		SDL_Surface* Logo;
 		
-		Logo = SDL_LoadBMP(DATADIR "/gens_big.bmp");
+		Logo = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
 		
 		SDL_LockSurface(Logo);
 		memcpy(tab, Logo->pixels, 64000);
