@@ -9,11 +9,18 @@ extern "C" {
 #include        <string.h>
 #include        <signal.h>
 
-#include        <sys/signal.h>
+//#include        <sys/signal.h>
 #include        <unistd.h>
 
 #include        <math.h>
 
+#ifndef M_PI
+#define M_PI            3.14159265358979323846
+#endif /* M_PI */
+
+#ifndef M_SQRT2
+#define M_SQRT2         1.41421356237309504880
+#endif /* M_SQRT2 */
 
 #ifdef REAL_IS_FLOAT
 #  define real float
