@@ -24,7 +24,6 @@ using std::list;
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.hpp"
-#include "minizip/unzip.h"
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
@@ -695,24 +694,6 @@ void Fix_Checksum(void)
 		_32X_Rom[0x18E] = checks >> 8;;
 		_32X_Rom[0x18F] = checks & 0xFF;
 	}
-}
-
-
-/**
- * Calculate_CRC32(): Calculate the CRC32 of the loaded ROM.
- * @return CRC32 of the loaded ROM.
- */
-unsigned int Calculate_CRC32(void)
-{
-	unsigned int crc = 0;
-	
-	// For some reason, the CRC32 function requires byteswapped data...
-	// TODO: Determine if this must be little-endian or if it must be host-endian.
-	be16_to_cpu_array(Rom_Data, Rom_Size);
-	crc = crc32(0, Rom_Data, Rom_Size);
-	cpu_to_be16_array(Rom_Data, Rom_Size);
-	
-	return crc;
 }
 
 
