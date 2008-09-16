@@ -23,7 +23,7 @@
 #include "v_effects.hpp"
 
 // TODO: Add a wrapper call to sync the GraphicsMenu.
-#include "ui/gtk/gens/gens_window_sync.hpp"
+#include "gens/gens_window_sync.hpp"
 
 
 VDraw::VDraw()
