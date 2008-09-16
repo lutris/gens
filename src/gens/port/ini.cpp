@@ -372,6 +372,7 @@ void INI::save(const string& filename)
 
 /* Old INI code below here. */
 
+#ifndef __WIN32__
 
 static void WriteKey(const char *var, const char *var_name, FILE * file)
 {
@@ -611,3 +612,5 @@ void WritePrivateProfileString(const char *section, const char *var,
 		}
 	}
 }
+
+#endif /* __WIN32__ */
