@@ -539,16 +539,10 @@ int main(int argc, char *argv[])
 			if ((Active) && (!Paused))
 			{
 				// EMULATION ACTIVE
-				/*
-				if (fast_forward == 1)
-				{
-					Update_Emulation_One ();
-				}
+				if (fast_forward)
+					Update_Emulation_One();
 				else
-				{
-				*/
 					Update_Emulation();
-				//}
 			}
 			else
 			{
