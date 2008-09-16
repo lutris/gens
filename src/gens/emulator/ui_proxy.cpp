@@ -32,8 +32,6 @@
 
 #include "gens_core/gfx/renderers.h"
 
-_filters filters;
-
 
 /**
  * system_reset(): Reset the active system.
