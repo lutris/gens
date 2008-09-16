@@ -166,6 +166,26 @@ AC_MSG_CHECKING(for libpng)
 		AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
 	fi
 fi
+AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
+
+AC_ARG_WITH(zlib, AC_HELP_STRING([--without-zlib], [Build without zlib support [[default=no]]]), with_zlib=$withval, with_zlib=yes)
+if test x$with_zlib = xyes; then
+AC_MSG_CHECKING(for zlib)
+	with_zlib=no
+	AC_TRY_COMPILE([
+		#include <zlib.h>
+	],[
+		gzFile gzfd;
+	],[
+		with_zlib=yes
+	])
+	AC_MSG_RESULT($with_zlib)
+	if test x$with_zlib = xyes; then
+		LDFLAGS="$LDFLAGS -lz"
+		AC_DEFINE(GENS_ZLIB, 1, Compression support via libz)
+	fi
+fi
+AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
 
 CFLAGS="$CFLAGS -Wall -W -std=c99"
 CXXFLAGS="$CXXFLAGS -Wall -W"
