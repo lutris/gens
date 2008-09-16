@@ -292,8 +292,6 @@ noinst_HEADERS = \
 		video/v_draw_sdl.hpp \
 		video/v_effects.hpp \
 		input/input.hpp \
-		input/input_sdl.hpp \
-		input/input_sdl_keys.h \
 		audio/audio.hpp \
 		audio/audio_mmx.h \
 		audio/audio_sdl.hpp
@@ -327,7 +325,9 @@ if LINUX
 noinst_HEADERS +=
 		emulator/g_main_linux.hpp \
 		port/port.h \
-		port/timer.h
+		port/timer.h \
+		input/input_sdl.hpp \
+		input/input_sdl_keys.h
 
 if GENS_UI_GTK
 
@@ -382,7 +382,8 @@ endif
 
 if WIN32
 noinst_HEADERS +=
-		emulator/g_main_win32.hpp
+		emulator/g_main_win32.hpp \
+		input/input_win32_keys.h
 endif
 
 gens_CFLAGS = \

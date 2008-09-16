@@ -10,7 +10,7 @@
 #if (defined(__linux__))
 #include "input_sdl_keys.h"
 #elif (defined(__WIN32__))
-#error TODO: Add Win32 support.
+#include "input_win32_keys.h"
 #else
 #error Unsupported operating system.
 #endif
