@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include <gtk/gtk.h>
+
 void Sync_Gens_Window(void);
 void Sync_Gens_Window_FileMenu(void);
 void Sync_Gens_Window_GraphicsMenu(void);
