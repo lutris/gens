@@ -62,7 +62,7 @@ nasm -O1 -D __GCC2 -f elf \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
+INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/ -I/usr/include/wine/windows/
 
 if GENS_UI_GTK
 INCLUDES += -I@srcdir@/ui/gtk/
