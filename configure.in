@@ -75,12 +75,18 @@ AM_PATH_SDL($SDL_VERSION,
             AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 )
 
-fi
-
 # END: Linux
+
+elif test x$os = xwin32; then
+
+# Win32
+AC_DEFINE(GENS_UI_WIN32, 1, Enable the Win32 UI)
+
+fi
 
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
 #AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
+AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
 
 dnl GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
