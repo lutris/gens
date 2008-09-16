@@ -63,7 +63,6 @@ ROMType detectFormat(const unsigned char *buf);
 ROMType detectFormat_fopen(const char* filename);
 ROMType Load_ROM(const char *filename, struct Rom **retROM);
 void Fix_Checksum(void);
-unsigned int Calculate_CRC32(void);
 int IPS_Patching();
 void Free_Rom(struct Rom *Rom_Name);
 
