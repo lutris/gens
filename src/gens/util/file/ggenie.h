@@ -8,7 +8,11 @@ extern "C" {
 
 #include "emulator/gens.hpp"
 
-struct patch { unsigned int addr, data; };
+struct patch
+{
+	unsigned int addr;
+	unsigned short data;
+};
 
 struct GG_Code
 {
