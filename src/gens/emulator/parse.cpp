@@ -407,8 +407,9 @@ void parseArgs(int argc, char **argv)
 		{
 			int mode = strtol (optarg, (char **) NULL, 10);
 			
-			// TODO: NB_FILTER used to be defined as 13. Make a define somewhere else.
-			if ((mode < 0) || (mode >= 13))
+			// TODO: NB_FILTER used to be defined as 13, but the real maximum value is 11.
+			// Make a define somewhere else.
+			if ((mode < 0) || (mode > 11))
 			{
 				fprintf(stderr, "Invalid render mode : %d\n", mode);
 				exit(1);
