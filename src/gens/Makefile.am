@@ -78,7 +78,6 @@ bin_PROGRAMS = gens
 gens_SOURCES = \
 		emulator/gens.cpp \
 		emulator/g_main.cpp \
-		emulator/g_main_linux.cpp \
 		emulator/g_input.cpp \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
@@ -175,6 +174,9 @@ endif
 
 if LINUX
 
+gens_SOURCES += \
+		emulator/g_main_linux.cpp
+
 if GENS_UI_GTK
 
 gens_SOURCES += \
@@ -226,10 +228,14 @@ endif
 
 endif
 
+if WIN32
+gens_SOURCES += \
+		emulator/g_main_win32.cpp
+endif
+
 noinst_HEADERS = \
 		emulator/gens.hpp \
 		emulator/g_main.hpp \
-		emulator/g_main_linux.hpp \
 		emulator/g_input.hpp \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
@@ -320,6 +326,9 @@ endif
 
 if LINUX
 
+noinst_HEADERS +=
+		emulator/g_main_linux.hpp
+
 if GENS_UI_GTK
 
 noinst_HEADERS += \
@@ -369,6 +378,11 @@ endif
 
 endif
 
+endif
+
+if WIN32
+noinst_HEADERS +=
+		emulator/g_main_win32.hpp
 endif
 
 gens_CFLAGS = \

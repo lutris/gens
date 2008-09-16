@@ -16,7 +16,7 @@ extern "C" {
 #if (defined(__linux__))
 #include "g_main_linux.hpp"
 #elif (defined(__WIN32__))
-#error TODO: Add Win32 support.
+#include "g_main_win32.hpp"
 #else
 #error Unsupported operating system.
 #endif
