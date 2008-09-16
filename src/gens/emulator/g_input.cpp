@@ -300,6 +300,7 @@ void Input_KeyDown(int key)
 			}
 			break;
 		
+#ifdef GENS_CDROM
 		case GENS_KEY_b:
 			if (draw->fullScreen() && (mod & GENS_KMOD_CTRL))
 			{
@@ -313,6 +314,7 @@ void Input_KeyDown(int key)
 				SegaCD_Started = Init_SegaCD(NULL);
 			}
 			break;
+#endif /* GENS_CDROM */
 		
 		/*
 		case GENS_KEY_w:
@@ -398,6 +400,7 @@ void Input_KeyDown(int key)
 			break;
 #endif
 		
+#ifdef GENS_CDROM
 		case GENS_KEY_v:
 			if (mod & GENS_KMOD_CTRL)
 			{
@@ -405,6 +408,7 @@ void Input_KeyDown(int key)
 				Change_CD ();
 			}
 			break;
+#endif /* GENS_CDROM */
 		
 		default:
 			break;
