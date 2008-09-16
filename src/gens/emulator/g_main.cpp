@@ -95,18 +95,30 @@ static int Gens_Running = 0;
 
 // New video layer.
 #include "video/v_draw.hpp"
+#if (defined(__linux__))
 #include "video/v_draw_sdl.hpp"
 #include "video/v_draw_sdl_gl.hpp"
+#elif (defined(__WIN32__))
+#include "video/v_draw_ddraw.hpp"
+#endif
 VDraw *draw;
 
 // New input layer.
 #include "input/input.hpp"
+#if (defined(__linux__))
 #include "input/input_sdl.hpp"
+#elif (defined(__WIN32__))
+#warning TODO: Win32 Input Layer
+#endif
 Input *input;
 
 // New audio layer.
 #include "audio/audio.hpp"
+#if (defined(__linux__))
 #include "audio/audio_sdl.hpp"
+#elif (defined(__WIN32__))
+#warning TODO: Win32 Audio Layer
+#endif
 Audio *audio;
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
