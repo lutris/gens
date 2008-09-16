@@ -543,6 +543,11 @@ int main(int argc, char *argv[])
 					Update_Emulation_One();
 				else
 					Update_Emulation();
+				
+				// Prevent 100% CPU usage.
+				// The Linux CPU scheduler will take away CPU time from Gens/GS
+				// if it notices that the process is eating up too much CPU time.
+				GensUI::sleep(1);
 			}
 			else
 			{
