@@ -5,6 +5,11 @@
 extern "C" {
 #endif
 
+
+#ifndef __WIN32__
+// FASTCALL is already defined on Win32, so we're only going to
+// define it on non-Win32 systems.
+
 #ifndef __GNUC__
 
 #define FASTCALL				__fastcall
@@ -16,6 +21,8 @@ extern "C" {
 #define DECL_FASTCALL(type, name)	type name __attribute__ ((regparm(2)))
 
 #endif //!__GNUC__
+
+#endif /* __WIN32__ */
 
 extern unsigned short PWM_FIFO_R[8];
 extern unsigned short PWM_FIFO_L[8];
