@@ -27,8 +27,6 @@ class VDraw_DDraw : public VDraw
 		
 		// Clear the screen.
 		void clearScreen(void);
-		//void Clear_Primary_Screen(void);
-		//void Clear_Back_Screen(void);
 		
 		// Update VSync value.
 		void updateVSync(bool fromInitSDLGL = false);
