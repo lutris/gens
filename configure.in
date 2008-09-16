@@ -67,9 +67,6 @@ GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 #
 fi
 
-AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
-#AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
-
 # SDL
 
 SDL_VERSION=1.1.3
@@ -81,6 +78,9 @@ AM_PATH_SDL($SDL_VERSION,
 fi
 
 # END: Linux
+
+AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
+#AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
 
 dnl GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
