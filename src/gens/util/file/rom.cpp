@@ -53,7 +53,7 @@ Get_Name_From_Path (char *Full_Path, char *Name)
 
   i = strlen (Full_Path) - 1;
 
-  while ((i >= 0) && (Full_Path[i] != G_DIR_SEPARATOR))
+  while ((i >= 0) && (Full_Path[i] != GENS_DIR_SEPARATOR_CHR))
     i--;
 
   if (i <= 0)
@@ -76,9 +76,7 @@ void Get_Dir_From_Path(const char *Full_Path, char *Dir)
 {
 	int i = strlen(Full_Path) - 1;
 	
-	// TODO: G_DIR_SEPARATOR is GTK-specific.
-	// Add something else for cross-platform compatibility.
-	while ((i >= 0) && (Full_Path[i] != G_DIR_SEPARATOR))
+	while ((i >= 0) && (Full_Path[i] != GENS_DIR_SEPARATOR_CHR))
 		i--;
 	
 	if (i <= 0)
@@ -137,7 +135,7 @@ static void Update_Rom_Name(const char *Name)
 	
 	leng = strlen (Name) - 1;
 	
-	while ((leng >= 0) && (Name[leng] != G_DIR_SEPARATOR))
+	while ((leng >= 0) && (Name[leng] != GENS_DIR_SEPARATOR_CHR))
 		leng--;
 	
 	leng++;

@@ -59,8 +59,6 @@ extern int fatal_mp3_error;	// cdda_mp3.c
 extern unsigned int Current_OUT_Pos, Current_OUT_Size;	// cdda_mp3.c
 extern char preloaded_tracks [100], played_tracks_linear [101]; // added for synchronous MP3 code
 
-#define DIR_SEPARATOR '/'
-
 int Current_State = 0;
 char State_Dir[GENS_PATH_MAX] = "";
 char SRAM_Dir[GENS_PATH_MAX] = "";
@@ -145,7 +143,7 @@ int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
 	if (filename)
 		{
 		i = strlen(Dest) - 1;
-		while ((i > 0) && (Dest[i] != DIR_SEPARATOR)) i--;
+		while ((i > 0) && (Dest[i] != GENS_DIR_SEPARATOR_CHR)) i--;
 		if (!i) return 0;
 		Dest[++i] = 0;
 		g_free(filename);

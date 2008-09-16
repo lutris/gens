@@ -15,7 +15,7 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
 
-char ScrShot_Dir[GENS_PATH_MAX] = "." G_DIR_SEPARATOR_S;
+char ScrShot_Dir[GENS_PATH_MAX] = "." GENS_DIR_SEPARATOR_STR;
 
 #ifndef GENS_PNG
 static int Save_Shot_BMP(void);
