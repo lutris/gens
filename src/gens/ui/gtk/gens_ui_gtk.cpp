@@ -21,6 +21,10 @@
  ***************************************************************************/
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -320,9 +324,11 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	const char* iso  = "*.[iI][sS][oO]";
 	const char* chd  = "*.[cC][hH][dD]";
 	const char* raw  = "*.[rR][aA][wW]";
+#ifdef GENS_ZLIB
 	const char* zip  = "*.[zZ][iI][pP]";
 	const char* gz   = "*.[gG][zZ]";
 	const char* zsg  = "*.[zZ][sS][gG]";
+#endif /* GENS_ZLIB */
 	const char* _7z  = "*.7[zZ]";
 	
 	filter = gtk_file_filter_new();
@@ -336,9 +342,11 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, iso);
 	gtk_file_filter_add_pattern(filter, chd);
 	gtk_file_filter_add_pattern(filter, raw);
+#ifdef GENS_ZLIB
 	gtk_file_filter_add_pattern(filter, zip);
 	gtk_file_filter_add_pattern(filter, gz);
 	gtk_file_filter_add_pattern(filter, zsg);
+#endif /* GENS_ZLIB */
 	gtk_file_filter_add_pattern(filter, _7z);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	
@@ -348,17 +356,21 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, bin);
 	gtk_file_filter_add_pattern(filter, smd);
 	gtk_file_filter_add_pattern(filter, gen);
+#ifdef GENS_ZLIB
 	gtk_file_filter_add_pattern(filter, zip);
 	gtk_file_filter_add_pattern(filter, gz);
 	gtk_file_filter_add_pattern(filter, zsg);
+#endif /* GENS_ZLIB */
 	gtk_file_filter_add_pattern(filter, _7z);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);	
 	
 	// 32X ROM files only
 	filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "32X ROMs");
+#ifdef GENS_ZLIB
 	gtk_file_filter_add_pattern(filter, zip);
 	gtk_file_filter_add_pattern(filter, gz);
+#endif /* GENS_ZLIB */
 	gtk_file_filter_add_pattern(filter, _32x);
 	gtk_file_filter_add_pattern(filter, _7z);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
