@@ -19,7 +19,7 @@ struct GG_Code
 	char code[16];
 	char name[240];
 	unsigned int active;
-	unsigned int restore;
+	unsigned short restore;
 	unsigned int addr;
 	unsigned short data;
 };

@@ -250,8 +250,10 @@ void GG_SaveCodes(void)
 			    (Game_Genie_Codes[i].addr < Rom_Size) &&
 			    (Genesis_Started))
 			{
-				Game_Genie_Codes[i].restore = (unsigned int)(Rom_Data[Game_Genie_Codes[i].addr] & 0xFF) +
-						      (unsigned int)((Rom_Data[Game_Genie_Codes[i].addr + 1] & 0xFF) << 8);
+				// TODO: Make this endian-neutral. This currently only works on little-endian.
+				Game_Genie_Codes[i].restore =
+					(unsigned short)(Rom_Data[Game_Genie_Codes[i].addr] & 0xFF) |
+					(unsigned short)((Rom_Data[Game_Genie_Codes[i].addr + 1] & 0xFF) << 8);
 			}
 		}
 	}
