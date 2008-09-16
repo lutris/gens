@@ -48,7 +48,8 @@
 #endif /* GENS_CDROM */
 
 #include "gens_ui.hpp"
-#include "gens/gens_window_sync.hpp"
+// TODO: Gens Window Sync on Win32
+//#include "gens/gens_window_sync.hpp"
 
 // GENS Settings struct
 struct Gens_Settings_t Settings;
@@ -95,29 +96,29 @@ static int Gens_Running = 0;
 
 // New video layer.
 #include "video/v_draw.hpp"
-#if (defined(__linux__))
+#if (defined(__WIN32__))
+#include "video/v_draw_ddraw.hpp"
+#else
 #include "video/v_draw_sdl.hpp"
 #include "video/v_draw_sdl_gl.hpp"
-#elif (defined(__WIN32__))
-#include "video/v_draw_ddraw.hpp"
 #endif
 VDraw *draw;
 
 // New input layer.
 #include "input/input.hpp"
-#if (defined(__linux__))
-#include "input/input_sdl.hpp"
-#elif (defined(__WIN32__))
+#if (defined(__WIN32__))
 #warning TODO: Win32 Input Layer
+#else
+#include "input/input_sdl.hpp"
 #endif
 Input *input;
 
 // New audio layer.
 #include "audio/audio.hpp"
-#if (defined(__linux__))
-#include "audio/audio_sdl.hpp"
-#elif (defined(__WIN32__))
+#if (defined(__WIN32__))
 #warning TODO: Win32 Audio Layer
+#else
+#include "audio/audio_sdl.hpp"
 #endif
 Audio *audio;
 
@@ -461,7 +462,11 @@ int main(int argc, char *argv[])
 {
 	// Initialize the drawing object.
 	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
+#if (defined(__WIN32__))
+	draw = new VDraw_DDraw();
+#else
 	draw = new VDraw_SDL();
+#endif
 	
 	// Initialize the input object.
 	// TODO: Select Input_SDL() or Input_DInput() depending on other factors.

@@ -16,7 +16,7 @@ class VDraw_DDraw : public VDraw
 		VDraw_DDraw(VDraw *oldDraw);
 		~VDraw_DDraw();
 		
-		int Init_Video(HWND hWnd);
+		int Init_Video(void);
 		void End_Video(void);
 		
 		// Initialize the graphics subsystem.
