@@ -16,6 +16,9 @@ extern "C" {
 
 extern HWND Gens_hWnd;
 
+void Get_Save_Path(char *buf, size_t n);
+void Create_Save_Directory(const char *dir);
+
 #ifdef __cplusplus
 }
 #endif
