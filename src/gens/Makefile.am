@@ -139,12 +139,9 @@ gens_SOURCES = \
 		util/sound/wave.c \
 		video/C64_charset.c \
 		video/v_draw.cpp \
-		video/v_draw_sdl.cpp \
 		video/v_effects.cpp \
 		input/input.cpp \
-		input/input_sdl.cpp \
-		audio/audio.cpp \
-		audio/audio_sdl.cpp
+		audio/audio.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -152,11 +149,6 @@ gens_SOURCES += \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
 		debugger/z80dis.c
-endif
-
-if GENS_OPENGL
-gens_SOURCES += \
-		video/v_draw_sdl_gl.cpp
 endif
 
 if GENS_CDROM
@@ -175,7 +167,10 @@ if LINUX
 gens_SOURCES += \
 		emulator/g_main_linux.cpp \
 		port/port.c \
-		port/timer.c
+		port/timer.c \
+		video/v_draw_sdl.cpp \
+		input/input_sdl.cpp \
+		audio/audio_sdl.cpp
 
 if GENS_UI_GTK
 
@@ -212,6 +207,7 @@ gens_SOURCES += \
 
 if GENS_OPENGL
 gens_SOURCES += \
+		video/v_draw_sdl_gl.cpp \
 		ui/gtk/opengl_resolution/opengl_resolution_window.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
@@ -289,12 +285,10 @@ noinst_HEADERS = \
 		util/sound/wave.h \
 		video/C64_charset.h \
 		video/v_draw.hpp \
-		video/v_draw_sdl.hpp \
 		video/v_effects.hpp \
 		input/input.hpp \
 		audio/audio.hpp \
-		audio/audio_mmx.h \
-		audio/audio_sdl.hpp
+		audio/audio_mmx.h
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
@@ -302,11 +296,6 @@ noinst_HEADERS += \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
 		debugger/z80dis.h
-endif
-
-if GENS_OPENGL
-noinst_HEADERS += \
-		video/v_draw_sdl_gl.hpp
 endif
 
 if GENS_CDROM
@@ -326,8 +315,10 @@ noinst_HEADERS +=
 		emulator/g_main_linux.hpp \
 		port/port.h \
 		port/timer.h \
+		video/v_draw_sdl.hpp \
 		input/input_sdl.hpp \
-		input/input_sdl_keys.h
+		input/input_sdl_keys.h \
+		audio/audio_sdl.hpp
 
 if GENS_UI_GTK
 
@@ -364,6 +355,7 @@ noinst_HEADERS += \
 
 if GENS_OPENGL
 noinst_HEADERS += \
+		video/v_draw_sdl_gl.hpp \
 		ui/gtk/opengl_resolution/opengl_resolution_window.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
