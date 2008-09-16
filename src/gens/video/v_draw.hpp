@@ -10,6 +10,12 @@
 // Font for onscreen messages
 #include "C64_charset.h"
 
+#ifndef __WIN32__
+#ifndef HWND
+#define HWND int
+#endif /* HWND */
+#endif /* __WIN32__ */
+
 #ifdef __cplusplus
 
 // C++ includes
@@ -98,7 +104,7 @@ class VDraw
 		static int Show_Genesis_Screen(void);
 	
 	protected:
-		// Called if initializatio fails.
+		// Called if initialization fails.
 		void Init_Fail(const char *err);
 		
 		// Screen shift in 1x rendering mode.
@@ -172,6 +178,9 @@ class VDraw
 		// Miscellaneous settings.
 		bool m_swRender;
 		bool m_fastBlur;
+		
+		// Win32 stuff
+		virtual void reinitGensWindow(void);
 };
 
 #endif

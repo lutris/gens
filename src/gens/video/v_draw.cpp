@@ -596,6 +596,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
 	int Old_Rend, *Rend;
 	BlitFn *Blit, testBlit;
+	bool reinit = false;
 	
 	if (m_FullScreen)
 	{
@@ -645,6 +646,8 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	// Renderer function found.
 	if (*Rend != newMode)
 		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
+	else
+		reinit = true;
 	*Rend = newMode;
 	*Blit = testBlit;
 	
@@ -659,7 +662,19 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (forceUpdate && is_gens_running())
 		updateRenderer();
 	
+	if (reinit)
+	{
+		// The Gens window must be reinitialized.
+		reinitGensWindow();
+	}
+	
 	return 1;
+}
+
+
+void VDraw::reinitGensWindow(void)
+{
+	// Does nothing by default...
 }
 
 
@@ -794,6 +809,10 @@ void VDraw::setFullScreen(const bool newFullScreen)
 	// Set the renderer.
 	int newRend = (m_FullScreen ? Video.Render_FS : Video.Render_W);
 	setRender(newRend, false);
+	
+	// Reinitialize the Gens window, if necessary.
+	if (Video.Render_FS == Video.Render_W)
+		reinitGensWindow();
 	
 	// Refresh the video subsystem, if Gens is running.
 	if (is_gens_running())
