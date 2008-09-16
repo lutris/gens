@@ -14,7 +14,6 @@
 #include <string.h>
 #include "g_main.hpp"
 #include "port/timer.h"
-#include "port/port.h"
 #include "port/ini.hpp"
 #include "gens.hpp"
 #include "g_md.hpp"
