@@ -31,14 +31,14 @@
 #include "util/file/rom.hpp"
 
 
-struct GG_Code Liste_GG[256];
+struct GG_Code Game_Genie_Codes[256];
 static char genie_chars[] =
   "AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 char Patch_Dir[GENS_PATH_MAX] = "/";
 
 
 /**
- * Init_GameGenie(): Initialize the Liste_GG[] array.
+ * Init_GameGenie(): Initialize the Game_Genie_Codes[] array.
  */
 void Init_GameGenie(void)
 {
@@ -47,12 +47,12 @@ void Init_GameGenie(void)
 	// Address and restore values are both 0xFFFFFFFF when the entry is unused.
 	for (i = 0; i < 256; i++)
 	{
-		Liste_GG[i].code[0] = 0;
-		Liste_GG[i].name[0] = 0;
-		Liste_GG[i].active = 0;
-		Liste_GG[i].addr = 0xFFFFFFFF;
-		Liste_GG[i].data = 0;
-		Liste_GG[i].restore = 0xFFFFFFFF;
+		Game_Genie_Codes[i].code[0] = 0;
+		Game_Genie_Codes[i].name[0] = 0;
+		Game_Genie_Codes[i].active = 0;
+		Game_Genie_Codes[i].addr = 0xFFFFFFFF;
+		Game_Genie_Codes[i].data = 0;
+		Game_Genie_Codes[i].restore = 0xFFFFFFFF;
 	}
 }
 
@@ -257,20 +257,20 @@ void Patch_Codes(void)
 	
 	for (i = 0; i < 256; i++)
 	{
-		if ((Liste_GG[i].code[0] != 0) &&
-		    (Liste_GG[i].addr != 0xFFFFFFFF) &&
-		    (Liste_GG[i].active))
+		if ((Game_Genie_Codes[i].code[0] != 0) &&
+		    (Game_Genie_Codes[i].addr != 0xFFFFFFFF) &&
+		    (Game_Genie_Codes[i].active))
 		{
-			if (Liste_GG[i].addr < Rom_Size)
+			if (Game_Genie_Codes[i].addr < Rom_Size)
 			{
 				// ROM modifying code
-				Rom_Data[Liste_GG[i].addr] = Liste_GG[i].data & 0xFF;
-				Rom_Data[Liste_GG[i].addr + 1] = (Liste_GG[i].data & 0xFF00) >> 8;
+				Rom_Data[Game_Genie_Codes[i].addr] = Game_Genie_Codes[i].data & 0xFF;
+				Rom_Data[Game_Genie_Codes[i].addr + 1] = (Game_Genie_Codes[i].data & 0xFF00) >> 8;
 			}
 			else
 			{
 				// RAM modifying code
-				M68K_WW(Liste_GG[i].addr, Liste_GG[i].data);
+				M68K_WW(Game_Genie_Codes[i].addr, Game_Genie_Codes[i].data);
 			}
 		}
 	}
@@ -287,37 +287,37 @@ int check_code(char *Code, unsigned int ind)
 	if (strlen(Code) == 8)
 	{
 		// Game Genie code, without hyphen.
-		Liste_GG[ind].code[0] = Code[0];
-		Liste_GG[ind].code[1] = Code[1];
-		Liste_GG[ind].code[2] = Code[2];
-		Liste_GG[ind].code[3] = Code[3];
-		Liste_GG[ind].code[4] = '-';
-		Liste_GG[ind].code[5] = Code[4];
-		Liste_GG[ind].code[6] = Code[5];
-		Liste_GG[ind].code[7] = Code[6];
-		Liste_GG[ind].code[8] = Code[7];
-		Liste_GG[ind].code[9] = 0;
+		Game_Genie_Codes[ind].code[0] = Code[0];
+		Game_Genie_Codes[ind].code[1] = Code[1];
+		Game_Genie_Codes[ind].code[2] = Code[2];
+		Game_Genie_Codes[ind].code[3] = Code[3];
+		Game_Genie_Codes[ind].code[4] = '-';
+		Game_Genie_Codes[ind].code[5] = Code[4];
+		Game_Genie_Codes[ind].code[6] = Code[5];
+		Game_Genie_Codes[ind].code[7] = Code[6];
+		Game_Genie_Codes[ind].code[8] = Code[7];
+		Game_Genie_Codes[ind].code[9] = 0;
 	}
 	else if (strlen(Code) == 10)
 	{
 		// Hex code, without colon.
-		Liste_GG[ind].code[0] = Code[0];
-		Liste_GG[ind].code[1] = Code[1];
-		Liste_GG[ind].code[2] = Code[2];
-		Liste_GG[ind].code[3] = Code[3];
-		Liste_GG[ind].code[4] = Code[4];
-		Liste_GG[ind].code[5] = Code[5];
-		Liste_GG[ind].code[6] = ':';
-		Liste_GG[ind].code[7] = Code[6];
-		Liste_GG[ind].code[8] = Code[7];
-		Liste_GG[ind].code[9] = Code[8];
-		Liste_GG[ind].code[10] = Code[9];
-		Liste_GG[ind].code[11] = 0;
+		Game_Genie_Codes[ind].code[0] = Code[0];
+		Game_Genie_Codes[ind].code[1] = Code[1];
+		Game_Genie_Codes[ind].code[2] = Code[2];
+		Game_Genie_Codes[ind].code[3] = Code[3];
+		Game_Genie_Codes[ind].code[4] = Code[4];
+		Game_Genie_Codes[ind].code[5] = Code[5];
+		Game_Genie_Codes[ind].code[6] = ':';
+		Game_Genie_Codes[ind].code[7] = Code[6];
+		Game_Genie_Codes[ind].code[8] = Code[7];
+		Game_Genie_Codes[ind].code[9] = Code[8];
+		Game_Genie_Codes[ind].code[10] = Code[9];
+		Game_Genie_Codes[ind].code[11] = 0;
 	}
 	else
 	{
 		// Other type of code.
-		strcpy(Liste_GG[ind].code, Code);
+		strcpy(Game_Genie_Codes[ind].code, Code);
 	}
 	
 	return 1;
@@ -350,12 +350,12 @@ int Load_Patch_File(void)
 	
 	for (i = 0; i < 256; i++)
 	{
-		Liste_GG[i].code[0] = 0;
-		Liste_GG[i].name[0] = 0;
-		Liste_GG[i].active = 0;
-		Liste_GG[i].addr = 0xFFFFFFFF;
-		Liste_GG[i].data = 0;
-		Liste_GG[i].restore = 0xFFFFFFFF;
+		Game_Genie_Codes[i].code[0] = 0;
+		Game_Genie_Codes[i].name[0] = 0;
+		Game_Genie_Codes[i].active = 0;
+		Game_Genie_Codes[i].addr = 0xFFFFFFFF;
+		Game_Genie_Codes[i].data = 0;
+		Game_Genie_Codes[i].restore = 0xFFFFFFFF;
 	}
 	
 	// Create the patch filename based on the ROM filename.
@@ -471,7 +471,7 @@ int Load_Patch_File(void)
 				
 				case '\n':
 					Comment[i_comment] = 0;
-					strcpy(Liste_GG[Ind_GG].name, Comment);
+					strcpy(Game_Genie_Codes[Ind_GG].name, Comment);
 					Ind_GG++;
 					etat = DEB_LIGNE;
 					break;
@@ -507,7 +507,7 @@ int Load_Patch_File(void)
 		
 		case COMMENT:
 			Comment[i_comment] = 0;
-			strcpy(Liste_GG[Ind_GG].name, Comment);
+			strcpy(Game_Genie_Codes[Ind_GG].name, Comment);
 			Ind_GG++;
 			break;
 		
@@ -542,7 +542,7 @@ int Save_Patch_File(void)
 	SetCurrentDirectory (PathNames.Gens_Path);
 	
 	// Don't bother saving anything if there's no codes.
-	if (Liste_GG[0].code[0] == 0)
+	if (Game_Genie_Codes[0].code[0] == 0)
 		return 0;
 	
 	// Create the patch filename based on the ROM filename.
@@ -556,8 +556,8 @@ int Save_Patch_File(void)
 	
 	for (i = 0; i < 256; i++)
 	{
-		if (Liste_GG[i].code[0] != 0)
-			fprintf(Patch_File, "%s\t%s\n", Liste_GG[i].code, Liste_GG[i].name);
+		if (Game_Genie_Codes[i].code[0] != 0)
+			fprintf(Patch_File, "%s\t%s\n", Game_Genie_Codes[i].code, Game_Genie_Codes[i].name);
 	}
 	
 	fclose(Patch_File);

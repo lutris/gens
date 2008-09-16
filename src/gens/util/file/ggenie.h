@@ -20,7 +20,7 @@ struct GG_Code
 	unsigned short data;
 };
 
-extern struct GG_Code Liste_GG[256];
+extern struct GG_Code Game_Genie_Codes[256];
 extern char Patch_Dir[GENS_PATH_MAX];
 
 void Init_GameGenie(void);

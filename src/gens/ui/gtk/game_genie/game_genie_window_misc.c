@@ -93,20 +93,20 @@ void Open_Game_Genie(void)
 	// Go through the list of codes and add them to the treeview.
 	for (i = 0; i < 256; i++)
 	{
-		if (Liste_GG[i].code[0] == 0)
+		if (Game_Genie_Codes[i].code[0] == 0)
 			continue;
 		
-		GG_AddCode(treeview, Liste_GG[i].name, Liste_GG[i].code, Liste_GG[i].active);
+		GG_AddCode(treeview, Game_Genie_Codes[i].name, Game_Genie_Codes[i].code, Game_Genie_Codes[i].active);
 		
 		// If the ROM is loaded, and this code applies to ROM data, apply the code.
 		// Or something.
 		// TODO: Figure out what this actually does.
-		if ((Liste_GG[i].restore != 0xFFFFFFFF) &&
-		    (Liste_GG[i].addr < Rom_Size) &&
+		if ((Game_Genie_Codes[i].restore != 0xFFFFFFFF) &&
+		    (Game_Genie_Codes[i].addr < Rom_Size) &&
 		    (Genesis_Started))
 		{
-			Rom_Data[Liste_GG[i].addr] = (unsigned char)(Liste_GG[i].restore & 0xFF);
-			Rom_Data[Liste_GG[i + 1].addr] = (unsigned char)((Liste_GG[i].restore & 0xFF00) >> 8);
+			Rom_Data[Game_Genie_Codes[i].addr] = (unsigned char)(Game_Genie_Codes[i].restore & 0xFF);
+			Rom_Data[Game_Genie_Codes[i + 1].addr] = (unsigned char)((Game_Genie_Codes[i].restore & 0xFF00) >> 8);
 		}
 	}
 	
@@ -210,7 +210,7 @@ void GG_DeactivateAllCodes(void)
 
 
 /**
- * GG_SaveCodes(): Save the codes from the GtkTreeView to Liste_GG[].
+ * GG_SaveCodes(): Save the codes from the GtkTreeView to Game_Genie_Codes[].
  */
 void GG_SaveCodes(void)
 {
@@ -228,9 +228,9 @@ void GG_SaveCodes(void)
 	while (valid && i < 256)
 	{
 		gtk_tree_model_get(GTK_TREE_MODEL(listmodel_gg), &iter, 0, &enabled, 1, &code, 2, &name, -1);
-		strcpy(Liste_GG[i].name, name);
-		strcpy(Liste_GG[i].code, code);
-		Liste_GG[i].active = (enabled ? 1 : 0);
+		strcpy(Game_Genie_Codes[i].name, name);
+		strcpy(Game_Genie_Codes[i].code, code);
+		Game_Genie_Codes[i].active = (enabled ? 1 : 0);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_gg), &iter);
 		i++;
 	}
@@ -239,19 +239,19 @@ void GG_SaveCodes(void)
 	// TODO: Move this somewhere else?
 	for (i = 0; i < 256; i++)
 	{
-		if ((Liste_GG[i].code[0] != 0) &&
-		    (Liste_GG[i].addr == 0xFFFFFFFF) &&
-		    (Liste_GG[i].data == 0))
+		if ((Game_Genie_Codes[i].code[0] != 0) &&
+		    (Game_Genie_Codes[i].addr == 0xFFFFFFFF) &&
+		    (Game_Genie_Codes[i].data == 0))
 		{
 			// Decode this entry.
-			decode(Liste_GG[i].code, (struct patch*)(&(Liste_GG[i].addr)));
+			decode(Game_Genie_Codes[i].code, (struct patch*)(&(Game_Genie_Codes[i].addr)));
 			
-			if ((Liste_GG[i].restore = 0xFFFFFFFF) &&
-			    (Liste_GG[i].addr < Rom_Size) &&
+			if ((Game_Genie_Codes[i].restore = 0xFFFFFFFF) &&
+			    (Game_Genie_Codes[i].addr < Rom_Size) &&
 			    (Genesis_Started))
 			{
-				Liste_GG[i].restore = (unsigned int)(Rom_Data[Liste_GG[i].addr] & 0xFF) +
-						      (unsigned int)((Rom_Data[Liste_GG[i].addr + 1] & 0xFF) << 8);
+				Game_Genie_Codes[i].restore = (unsigned int)(Rom_Data[Game_Genie_Codes[i].addr] & 0xFF) +
+						      (unsigned int)((Rom_Data[Game_Genie_Codes[i].addr + 1] & 0xFF) << 8);
 			}
 		}
 	}
