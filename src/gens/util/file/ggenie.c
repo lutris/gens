@@ -32,8 +32,9 @@
 
 
 struct GG_Code Game_Genie_Codes[256];
-static char genie_chars[] =
+static const char genie_chars[] =
   "AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
+static const char hex_chars[] = "00112233445566778899AaBbCcDdEeFf";
 char Patch_Dir[GENS_PATH_MAX] = "/";
 
 
@@ -137,8 +138,6 @@ static void genie_decode(const char *code, struct patch *result)
  * there's a chance you could come on to one of these. Which is nice, since
  * they're MUCH easier to implement ;) Once again, the input should be depunc-
  * tuated already. */
-
-static char hex_chars[] = "00112233445566778899AaBbCcDdEeFf";
 
 static void hex_decode(const char *code, struct patch *result)
 {
