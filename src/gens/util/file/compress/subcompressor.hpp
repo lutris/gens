@@ -19,9 +19,13 @@
  * with this program; if not, write to the Free Software Foundation, Inc., *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
- 
+
 #ifndef GENS_SUBCOMPRESSOR_HPP
 #define GENS_SUBCOMPRESSOR_HPP
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <string>
@@ -46,8 +50,13 @@ class SubCompressor
 };
 
 // Various subcompressors.
+
+// Subcompressors that require zlib.
+#ifdef GENS_ZLIB
 #include "gzip.hpp"
 #include "Zip.hpp"
+#endif /* GENS_ZLIB */
+
 #include "7z.hpp"
 
-#endif
+#endif /* GENS_SUBCOMPRESSOR_HPP */

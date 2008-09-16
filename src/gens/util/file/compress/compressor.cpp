@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include "compressor.hpp"
 
 Compressor::Compressor(string zFilename)
@@ -43,8 +47,10 @@ Compressor::Compressor(string zFilename)
 	// Detect what type of file this is.
 	SubCompressor* subCompTable[] =
 	{
+#ifdef GENS_ZLIB
 		new GZip(),
 		new Zip(),
+#endif /* GENS_ZLIB */
 		new _7z(),
 		NULL,
 	};

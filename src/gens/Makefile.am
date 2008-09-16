@@ -136,8 +136,6 @@ gens_SOURCES = \
 		util/file/ggenie.c \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
-		util/file/compress/gzip.cpp \
-		util/file/compress/Zip.cpp \
 		util/file/compress/7z.cpp \
 		util/gfx/scrshot.c \
 		util/sound/gym.cpp \
@@ -167,6 +165,12 @@ endif
 if GENS_CDROM
 gens_SOURCES += \
 		segacd/cd_aspi.cpp
+endif
+
+if GENS_ZLIB
+gens_SOURCES += \
+		util/file/compress/gzip.cpp \
+		util/file/compress/Zip.cpp
 endif
 
 if LINUX
@@ -275,8 +279,6 @@ noinst_HEADERS = \
 		util/file/ggenie.h \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
-		util/file/compress/gzip.hpp \
-		util/file/compress/Zip.hpp \
 		util/file/compress/7z.hpp \
 		util/gfx/scrshot.h \
 		util/sound/gym.hpp \
@@ -308,6 +310,12 @@ endif
 if GENS_CDROM
 noinst_HEADERS += \
 		segacd/cd_aspi.hpp
+endif
+
+if GENS_ZLIB
+noinst_HEADERS += \
+		util/file/compress/gzip.hpp \
+		util/file/compress/Zip.hpp
 endif
 
 if LINUX
@@ -387,7 +395,6 @@ gens_CXXFLAGS += @CXXFLAGS@
 gens_LDADD = \
 		${ASMFILES} \
 		../mp3_dec/libmp3_dec.a \
-		../minizip/libminizip.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		-lm -lz @SDL_LIBS@
@@ -396,6 +403,9 @@ if GENS_UI_GTK
 gens_LDADD += @GTK_LIBS@
 endif
 
+if GENS_ZLIB
+gens_LDADD += ../minizip/libminizip.a
+endif
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
@@ -404,9 +414,13 @@ endif
 gens_DEPENDENCIES = \
 		${ASMFILES} \
 		../mp3_dec/libmp3_dec.a \
-		../minizip/libminizip.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
+
+if GENS_ZLIB
+gens_DEPENDENCIES += \
+		../minizip/libminizip.a
+endif
 
 CLEANFILES = \
 		${ASMFILES} \
