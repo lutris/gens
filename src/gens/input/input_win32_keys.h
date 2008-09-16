@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include <winuser.h>
+#include <windows.h>
 
 // Win32 virtual keycodes reported in WM_KEYDOWN's wParam parameter.
 #define GENS_KEY_BACKSPACE	VK_BACK
