@@ -132,9 +132,6 @@ void close_gens();
 // GENS Re-Recording
 int IsAsyncAllowed(void);
 
-#include <gtk/gtk.h>
-extern GtkWidget* gens_window;
-
 
 // MESSAGE_L functions.
 void MESSAGE_L(const char* str, const char* def, int time);
