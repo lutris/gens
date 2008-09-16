@@ -62,7 +62,7 @@ gboolean GensUI_GLib_SleepCallback(gpointer data);
 void GensUI::init(int argc, char *argv[])
 {
 	// Add the pixmap directories.
-	add_pixmap_directory(DATADIR);
+	add_pixmap_directory(GENS_DATADIR);
 	add_pixmap_directory("images");
 	
 	// Initialize GTK+.

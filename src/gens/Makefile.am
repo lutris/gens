@@ -372,7 +372,7 @@ endif
 endif
 
 gens_CFLAGS = \
-		-DDATADIR=\"@datadir@/@PACKAGE@\" \
+		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
 		@SDL_CFLAGS@
 
 if GENS_UI_GTK
@@ -382,7 +382,7 @@ endif
 gens_CFLAGS += @CFLAGS@
 
 gens_CXXFLAGS = \
-		-DDATADIR=\"@datadir@/@PACKAGE@\" \
+		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
 		@SDL_CFLAGS@
 
 if GENS_UI_GTK
