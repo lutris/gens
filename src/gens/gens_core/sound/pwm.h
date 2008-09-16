@@ -22,6 +22,12 @@ extern "C" {
 
 #endif //!__GNUC__
 
+#else /* __WIN32__ */
+
+#ifndef FASTCALL
+#define FASTCALL __fastcall
+#endif /* FASTCALL */
+
 #endif /* __WIN32__ */
 
 extern unsigned short PWM_FIFO_R[8];
