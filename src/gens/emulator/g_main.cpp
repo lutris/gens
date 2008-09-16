@@ -500,8 +500,8 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	while (gtk_events_pending ())
-		gtk_main_iteration_do (0);
+	// Update the UI.
+	GensUI::update();
 	
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
 	if (!draw->setRender(rendMode))
