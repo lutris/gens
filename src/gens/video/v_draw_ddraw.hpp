@@ -34,9 +34,9 @@ class VDraw_DDraw : public VDraw
 		void updateVSync(bool fromInitSDLGL = false);
 		
 		// DirectDraw functions.
-		int VDraw_DDraw::clearPrimaryScreen(void);
-		int VDraw_DDraw::clearBackScreen(void);
-		void VDraw_DDraw::restorePrimary(void);
+		int clearPrimaryScreen(void);
+		int clearBackScreen(void);
+		void restorePrimary(void);
 		
 	protected:
 		int Init_Fail(HWND hWnd, const char *err);
