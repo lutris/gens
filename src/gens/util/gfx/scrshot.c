@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <png.h>
-
 #include "scrshot.h"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -20,6 +18,7 @@ char ScrShot_Dir[GENS_PATH_MAX] = "." GENS_DIR_SEPARATOR_STR;
 #ifndef GENS_PNG
 static int Save_Shot_BMP(void);
 #else  /* GENS_PNG */
+#include <png.h>
 static int Save_Shot_PNG(void);
 #endif /* GENS_PNG */
 
