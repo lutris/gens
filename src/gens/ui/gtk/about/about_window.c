@@ -77,7 +77,6 @@ GtkWidget* create_about_window(void)
 	gtk_container_set_border_width(GTK_CONTAINER(about_window), 5);
 	gtk_window_set_title(GTK_WINDOW(about_window), "About Gens");
 	gtk_window_set_position(GTK_WINDOW(about_window), GTK_WIN_POS_CENTER);
-	gtk_window_set_modal(GTK_WINDOW(about_window), TRUE);
 	gtk_window_set_resizable(GTK_WINDOW(about_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(about_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(about_window), FALSE);

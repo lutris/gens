@@ -31,9 +31,17 @@ Input_SDL::Input_SDL()
 	// Install the GTK+ key snooper.
 	gtk_key_snooper_install(GDK_KeySnoop, this);
 	
+	// Initialize joysticks.
+	m_numJoysticks = 0;
+	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
+	{
+		// Error initializing SDL.
+		fprintf(stderr, "%s: Error initializing SDL's joystick handler: %s\n", __func__, SDL_GetError());
+		return;
+	}
+	
 	// If any joysticks are connected, set them up.
 	// TODO: Increase number of joysticks from 6?
-	m_numJoysticks = 0;
 	if (SDL_NumJoysticks() > 0)
 	{
 		SDL_JoystickEventState(SDL_ENABLE);

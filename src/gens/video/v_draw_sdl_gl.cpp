@@ -409,33 +409,17 @@ int VDraw_SDL_GL::Init_Subsystem(void)
 {
 	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
 	{
-		fprintf (stderr, SDL_GetError ());
+		fprintf (stderr, SDL_GetError());
 		return -1;
 	}
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
 	{
-		fprintf(stderr, SDL_GetError ());
+		fprintf(stderr, SDL_GetError());
 		return -1;
 	}
 	
 	/* Take it back down now that we know it works. */
-	SDL_QuitSubSystem (SDL_INIT_VIDEO);
-	
-	// Initialize joysticks.
-	// TODO: If there's an error here, merely disable joystick functionality.
-	if (SDL_InitSubSystem (SDL_INIT_JOYSTICK) < 0)
-	{
-		fprintf (stderr, SDL_GetError ());
-		return -1;
-	}
-	
-	// Initialize CD-ROM.
-	// TODO: If there's an error here, merely disable CD-ROM functionality.
-	if (SDL_InitSubSystem(SDL_INIT_CDROM) < 0)
-	{
-		fprintf(stderr, SDL_GetError ());
-		return -1;
-	}
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	
 	return 0;
 }
