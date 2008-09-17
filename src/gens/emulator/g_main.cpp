@@ -107,7 +107,7 @@ VDraw *draw;
 // New input layer.
 #include "input/input.hpp"
 #if (defined(__WIN32__))
-#warning TODO: Win32 Input Layer
+#include "input/input_dinput.hpp"
 #else
 #include "input/input_sdl.hpp"
 #endif
@@ -469,8 +469,11 @@ int main(int argc, char *argv[])
 #endif
 	
 	// Initialize the input object.
-	// TODO: Select Input_SDL() or Input_DInput() depending on other factors.
+#if (defined(__WIN32__))
+	input = new Input_DInput();
+#else
 	input = new Input_SDL();
+#endif
 	
 	// Initialize the audio object.
 	// TODO: Select Audio_SDL() or Audio_DSound() depending on other factors.
