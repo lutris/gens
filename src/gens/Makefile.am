@@ -373,7 +373,7 @@ endif
 endif
 
 if WIN32
-noinst_HEADERS +=
+noinst_HEADERS += \
 		emulator/g_main_win32.hpp \
 		input/input_win32_keys.h
 endif
