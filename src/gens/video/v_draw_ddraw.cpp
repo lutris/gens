@@ -116,7 +116,7 @@ int VDraw_DDraw::Init_Video(void)
 	// TODO: Figure out what FS_No_Res_Change is for.
 	if (m_FullScreen /* && !FS_No_Res_Change*/)
 	{
-		if (FAILED(lpDD->SetDisplayMode(w, h, bpp, 0, 0)))
+		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, bpp, 0, 0)))
 			return Init_Fail(Gens_hWnd, "Error with lpDD->SetDisplayMode()!");
 	}
 	
