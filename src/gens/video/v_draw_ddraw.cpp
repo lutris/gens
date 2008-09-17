@@ -384,12 +384,9 @@ void VDraw_DDraw::stretchAdjustInternal(void)
  */
 void VDraw_DDraw::clearScreen(void)
 {
-	// Clear the screen.
-	// TODO: Figure out the DirectDraw method.
-#if 0
-	glClear(GL_COLOR_BUFFER_BIT);
-	memset(filterBuffer, 0x00, filterBufferSize);
-#endif
+	// Clear both screen buffers.
+	clearPrimaryScreen();
+	clearBackScreen();
 	
 	// Reset the border color to make sure it's redrawn.
 	m_BorderColor_16B = ~MD_Palette[0];
@@ -399,7 +396,7 @@ void VDraw_DDraw::clearScreen(void)
 
 int VDraw_DDraw::clearPrimaryScreen(void)
 {
-	if (!lpDD)
+	if (!lpDD || !lpDDS_Primary)
 		return 0;
 	
 	DDSURFACEDESC2 ddsd;
@@ -453,7 +450,7 @@ int VDraw_DDraw::clearPrimaryScreen(void)
 
 int VDraw_DDraw::clearBackScreen(void)
 {
-	if (!lpDD)
+	if (!lpDD || !lpDDS_Back)
 		return 0;
 	
 	DDSURFACEDESC2 ddsd;
