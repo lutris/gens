@@ -37,7 +37,7 @@ class Input
 		virtual void update(void) = 0;
 		
 		// Check if the specified key is pressed.
-		bool checkKeyPressed(unsigned int key);
+		virtual bool checkKeyPressed(unsigned int key) = 0;
 		
 		// Update the controller bitfields.
 		void updateControllers(void);
@@ -50,9 +50,6 @@ class Input
 		KeyMap m_keyMap[8];
 		
 	protected:
-		bool m_keys[1024];
-		bool m_joyState[0x530];
-		
 		// Functions that need to be implemented by child classes.
 		virtual bool joyExists(int joyNum) = 0;
 };
