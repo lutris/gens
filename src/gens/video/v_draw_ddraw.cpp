@@ -419,14 +419,14 @@ int VDraw_DDraw::clearPrimaryScreen(void)
 	{
 		if (Video.VSync_FS)
 		{
-			lpDDS_Flip->Blt(NULL, NJULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Flip->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 			lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 			
-			lpDDS_Flip->Blt(NULL, NJULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
-			lpDDS_Primary->Flip(NULL, DDFILP_WAIT);
+			lpDDS_Flip->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 			
-			lpDDS_Flip->Blt(NULL, NJULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
-			lpDDS_Primary->Flip(NULL, DDFILP_WAIT);
+			lpDDS_Flip->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 		}
 		else
 		{
