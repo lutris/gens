@@ -226,11 +226,11 @@ void Input_SDL::update(void)
 				break;
 			
 			case SDL_JOYBUTTONDOWN:
-				m_joyState[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = true;
+				m_joyState[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = true;
 				break;
 			
 			case SDL_JOYBUTTONUP:
-				m_joyState[0x10 + 0x100 * event.jbutton.which + event.jbutton.button] = false;
+				m_joyState[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = false;
 				break;
 			
 			case SDL_JOYHATMOTION:
@@ -259,23 +259,23 @@ void Input_SDL::checkJoystickAxis(SDL_Event *event)
 	if (event->jaxis.value < -10000)
 	{
 		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.which]] = true;
+			   JoyAxisValues[0][event->jaxis.axis]] = true;
 		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.which]] = false;
+			   JoyAxisValues[1][event->jaxis.axis]] = false;
 	}
 	else if (event->jaxis.value > 10000)
 	{
 		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.which]] = false;
+			   JoyAxisValues[0][event->jaxis.axis]] = false;
 		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.which]] = true;
+			   JoyAxisValues[1][event->jaxis.axis]] = true;
 	}
 	else
 	{
 		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.which]] = false;
+			   JoyAxisValues[0][event->jaxis.axis]] = false;
 		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.which]] = false;
+			   JoyAxisValues[1][event->jaxis.axis]] = false;
 	}
 }
 

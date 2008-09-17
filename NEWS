@@ -1,4 +1,4 @@
-Gens for Linux v2.15.4/GS-m4.1 (Gens/GS)
+Gens for Linux v2.15.4/GS-m4.2 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,11 +14,21 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens for Linux v2.15.4/GS-m4.1 is David Korth's fork of Gens,
+Gens for Linux v2.15.4/GS-m4.2 is David Korth's fork of Gens,
 initially based on Gens for Linux v2.15.4. The number after
 the "m" indicates the milestone. Releases are usually made
 after a significant new feature has been added, with minor
 releases if a major bug is found.
+
+================================================================
+
+What's new in Gens for Linux v2.15.4/GS-m4.2?
+
+Milestone 4.2 fixes the following bugs:
+
+- Joystick input was still completely broken due to an accidental swapping
+  of "which" (device number) and "axis" (axis number). This bug was
+  reported by Techokami in #retro.
 
 ================================================================
 
@@ -33,10 +43,11 @@ Milestone 4.1 fixes the following bugs:
 
 - SDL's joystick handler wasn't being initialized properly. Joysticks
   were properly detected in the Controller Configuration window, but
-  didn't work in-game.
+  didn't work in-game. This bug was reported by Techokami in #retro.
 
 - A missing #include <stdlib.h> line has been added to g_main_linux.hpp.
   Lack of this line led to compilation failures on some machines.
+  This bug was reported by SOTI in #retro.
 
 - zlib support can now be conditionally compiled. This only affects the
   GZip and Zip functionality; PNG support implies zlib, but enabling PNG
