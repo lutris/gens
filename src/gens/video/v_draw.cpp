@@ -665,16 +665,21 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (reinit)
 	{
 		// The Gens window must be reinitialized.
-		reinitGensWindow();
+		return reinitGensWindow();
 	}
 	
 	return 1;
 }
 
 
-void VDraw::reinitGensWindow(void)
+/**
+ * reinitGensWindow(): Reinitialize the Gens window.
+ * @return 1 on success; 0 on error.
+ */
+int VDraw::reinitGensWindow(void)
 {
 	// Does nothing by default...
+	return 1;
 }
 
 

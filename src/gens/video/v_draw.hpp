@@ -180,7 +180,7 @@ class VDraw
 		bool m_fastBlur;
 		
 		// Win32 stuff
-		virtual void reinitGensWindow(void);
+		virtual int reinitGensWindow(void);
 };
 
 #endif
