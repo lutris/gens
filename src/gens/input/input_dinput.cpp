@@ -3,7 +3,7 @@
  */
 
 
-#include "input_ddraw.hpp"
+#include "input_dinput.hpp"
 #include "input_win32_keys.h"
 
 #include "emulator/g_input.hpp"
