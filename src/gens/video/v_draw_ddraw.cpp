@@ -29,7 +29,7 @@
 VDraw_DDraw::VDraw_DDraw()
 {
 	// Initialize the X and Y resolutions.
-	if (Render_FS > 0)
+	if (Video.Render_FS > 0)
 	{
 		Res_X = 640;
 		Res_Y = 480;
@@ -67,8 +67,6 @@ int VDraw_DDraw::Init_Fail(HWND hWnd, const char *err)
  */
 int VDraw_DDraw::Init_Video(void)
 {
-	int x;
-	
 	int Rend;
 	HRESULT rval;
 	DDSURFACEDESC2 ddsd;
