@@ -7,6 +7,7 @@
 
 
 HWND Gens_hWnd;
+HINSTANCE ghInstance;
 
 
 /**
