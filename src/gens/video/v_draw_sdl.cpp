@@ -298,15 +298,7 @@ int VDraw_SDL::Init_Subsystem(void)
 	}
 	
 	/* Take it back down now that we know it works. */
-	SDL_QuitSubSystem (SDL_INIT_VIDEO);
-	
-	// Initialize CD-ROM.
-	// TODO: If there's an error here, merely disable CD-ROM functionality.
-	if (SDL_InitSubSystem(SDL_INIT_CDROM) < 0)
-	{
-		fprintf(stderr, SDL_GetError());
-		return -1;
-	}
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	
 	return 0;
 }
