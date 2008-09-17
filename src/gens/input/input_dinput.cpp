@@ -322,14 +322,14 @@ bool Input_DInput::joyExists(int joyNum)
  */
 unsigned int Input_DInput::getKey(void)
 {
-	InputButton tempButton;
-	tempButton.diKey = 0;
+	InputButton button;
+	button.diKey = 0;
 	
 	int i, j, joyIndex;
 	
 	bool prevReady = false;
 	
-	int prevMod;
+	int prevMod = 0;
 	BOOL prevDiKeys[256];
 	BOOL prevVirtKeys[256];
 	BOOL prevJoyKeys[256];
@@ -421,7 +421,7 @@ unsigned int Input_DInput::getKey(void)
 				// Check for new DirectInput key presses.
 				for (i = 1; i < 255; i++)
 				{
-					if (curDiKey[i] && !prevDiKeys[i])
+					if (curDiKeys[i] && !prevDiKeys[i])
 					{
 						if (/*allowVirtual &&*/ (i == DIK_LWIN || i == DIK_RWIN ||
 						    i == DIK_LSHIFT || i == DIK_RSHIFT || i == DIK_LCONTROL ||
@@ -561,7 +561,7 @@ void Input_DInput::update(void)
 		Keys[0xC5] |= 0x80;
 	
 	if ((rval == DIERR_INPUTLOST) | (rval == DIERR_NOTACQUIRED))
-		Restore_Input();
+		restoreInput();
 	
 	for (i = 0; i < m_numJoysticks; i++)
 	{
@@ -581,6 +581,8 @@ void Input_DInput::update(void)
 	//MouseX = MouseState.lX;
 	//MouseY = MouseState.lY;
 	
+	// TODO: This is from Gens/Rerecording's hotkey remapping system.
+#if 0
 	int numInputButtons = GetNumHotkeys();
 	for(int i = 0; i < numInputButtons; i++)
 	{
@@ -613,6 +615,7 @@ void Input_DInput::update(void)
 		if (pressed && !oldPressed && button.eventID && !button.ShouldUseAccelerator())
 			SendMessage(Gens_hWnd, WM_COMMAND, button.eventID, 0);
 	}
+#endif
 }
 
 
@@ -666,7 +669,7 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 	else if (key & 0x70)
 	{
 		// Joystick buttons
-		if (m_joyState[joyNum].rgbButtons[(key & 0xFF) - 0x10)])
+		if (m_joyState[joyNum].rgbButtons[(key & 0xFF) - 0x10])
 			return true;
 	}
 	else
