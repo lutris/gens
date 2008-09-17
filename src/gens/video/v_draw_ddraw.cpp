@@ -192,7 +192,7 @@ int VDraw_DDraw::Init_Video(void)
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL)))
 		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()!");
 	
-	if (!m_FullScreen || (Rend >= 2 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
+	if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
 		lpDDS_Blit = lpDDS_Back;
 	
 	if (rendMode == 0)
