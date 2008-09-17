@@ -10,6 +10,7 @@
 // DirectInput 5 is required for joystick support.
 #define DIRECTINPUT_VERSION 0x0500
 
+#include <windows.h>
 #include <dinput.h>
 //#include <mmsystem.h>
 

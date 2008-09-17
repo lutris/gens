@@ -5,6 +5,7 @@
 #ifndef GENS_V_DRAW_DDRAW_HPP
 #define GENS_V_DRAW_DDRAW_HPP
 
+#include <windows.h>
 #include <ddraw.h>
 
 #include "v_draw.hpp"
