@@ -12,6 +12,32 @@
 #include "gens/gens_window.h"
 
 
+const struct KeyMap keyDefault[8] =
+{
+	// Player 1
+	{GENS_KEY_RETURN, GENS_KEY_RSHIFT,
+	GENS_KEY_a, GENS_KEY_s, GENS_KEY_d,
+	GENS_KEY_z, GENS_KEY_x, GENS_KEY_c,
+	GENS_KEY_UP, GENS_KEY_DOWN, GENS_KEY_LEFT, GENS_KEY_RIGHT},
+	
+	// Players 1B, 1C, 1D
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	
+	// Player 2
+	{GENS_KEY_u, GENS_KEY_t,
+	GENS_KEY_k, GENS_KEY_l, GENS_KEY_m,
+	GENS_KEY_i, GENS_KEY_o, GENS_KEY_p,
+	GENS_KEY_y, GENS_KEY_h, GENS_KEY_h, GENS_KEY_j},
+	
+	// Players 2B, 2C, 2D
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+
 static int gdk_to_sdl_keyval(int gdk_key);
 
 
@@ -28,6 +54,10 @@ static const unsigned char JoyAxisValues[2][6] =
 
 Input_SDL::Input_SDL()
 {
+	// Initialize m_keys and m_joyState.
+	memset(m_keys, 0x00, sizeof(m_keys));
+	memset(m_joyState, 0x00, sizeof(m_joyState));
+	
 	// Install the GTK+ key snooper.
 	gtk_key_snooper_install(GDK_KeySnoop, this);
 	
@@ -277,6 +307,72 @@ void Input_SDL::checkJoystickAxis(SDL_Event *event)
 		m_joyState[(0x100 * event->jaxis.which) +
 			   JoyAxisValues[1][event->jaxis.axis]] = false;
 	}
+}
+
+
+/**
+ * checkKeyPressed(): Checks if the specified key is pressed.
+ * @param key Key to check.
+ * @return True if the key is pressed.
+ */
+bool Input_SDL::checkKeyPressed(unsigned int key)
+{
+	// If the key value is <1024, it's a keyboard key.
+	if (key < 1024)
+		return m_keys[key];
+	
+	// Joystick "key" check.
+	
+	// Determine which joystick we're looking for.
+	int joyNum = ((key >> 8) & 0xF);
+	
+	// Check that this joystick exists.
+	if (!joyExists(joyNum))
+		return false;
+	
+	// Joystick exists. Check the state.
+	if (key & 0x80)
+	{
+		// Joystick POV
+		// TODO: This doesn't seem to be implemented in Gens/Linux for some reason...
+#if 0
+		switch (key & 0xF)
+		{
+			case 1:
+					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 0) return(1); break;
+					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 0) return(1); break;
+			case 2:
+					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 9000) return(1); break;
+					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 9000) return(1); break;
+			case 3:
+					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 18000) return(1); break;
+					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 18000) return(1); break;
+			case 4:
+					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 27000) return(1); break;
+					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 27000) return(1); break;
+			default:
+			break;
+		}
+#endif
+	}
+	else if (key & 0x70)
+	{
+		// Joystick buttons
+		if (m_joyState[0x10 + (0x100 * joyNum) + ((key & 0xFF) - 0x10)])
+			return true;
+	}
+	else
+	{
+		// Joystick axes
+		if (((key & 0xF) >= 1) && ((key & 0xF) <= 12))
+		{
+			if (m_joyState[(0x100 * joyNum) + (key & 0xF)])
+				return true;
+		}
+	}
+	
+	// Key is not pressed.
+	return false;
 }
 
 
