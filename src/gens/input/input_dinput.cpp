@@ -49,6 +49,54 @@ static const unsigned char JoyAxisValues[2][6] =
 };
 
 
+#define MOD_NONE 0
+#define VK_NONE 0
+#define ID_NONE 0
+
+
+struct InputButton
+{
+	int modifiers; // ex: MOD_ALT | MOD_CONTROL | MOD_SHIFT
+	
+	int virtKey; // ex: VK_ESCAPE or 'O'
+	WORD eventID; // send message on press
+	
+	int diKey; // ex: DIK_ESCAPE
+	BOOL* alias; // set value = held
+	
+	const char* description; // for user display... feel free to change it
+	const char* saveIDString; // for config file... please do not ever change these names or you will break backward compatibility
+	
+	BOOL heldNow;
+	
+	bool ShouldUseAccelerator(void)
+	{
+		return eventID && (virtKey > 0x07) && !(modifiers & MOD_WIN);
+	}
+	
+	void CopyConfigurablePartsTo(InputButton& button)
+	{
+		button.modifiers = modifiers;
+		button.virtKey = virtKey;
+		button.diKey = diKey;
+	}
+	
+	void SetAsDIK(int dik, int mods = 0)
+	{
+		modifiers = mods;
+		virtKey = VK_NONE;
+		diKey = dik;
+	}
+	
+	void SetAsVirt(int virt, int mods = 0)
+	{
+		modifiers = mods;
+		virtKey = virt;
+		diKey = 0;
+	}
+};
+
+
 Input_DInput::Input_DInput()
 {
 	// TODO: HINSTANCE ghInstance; HWND Gens_hWnd
