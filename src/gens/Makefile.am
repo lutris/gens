@@ -226,7 +226,9 @@ endif
 
 if WIN32
 gens_SOURCES += \
-		emulator/g_main_win32.cpp
+		emulator/g_main_win32.cpp \
+		video/v_draw_ddraw.cpp \
+		input/input_dinput.cpp
 endif
 
 noinst_HEADERS = \
@@ -375,6 +377,8 @@ endif
 if WIN32
 noinst_HEADERS += \
 		emulator/g_main_win32.hpp \
+		video/v_draw_ddraw.hpp \
+		input/input_dinput.hpp \
 		input/input_win32_keys.h
 endif
 
