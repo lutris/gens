@@ -67,13 +67,13 @@ int VDraw_DDraw::Init_Fail(HWND hWnd, const char *err)
  */
 int VDraw_DDraw::Init_Video(void)
 {
-	int Rend;
+	int rendMode;
 	HRESULT rval;
 	DDSURFACEDESC2 ddsd;
 	
 	End_Video();
 	
-	Rend = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
 	
 	if (FAILED(DirectDrawCreate(NULL, &lpDD_Init, NULL)))
 		return Init_Fail(Gens_hWnd, "Error with DirectDrawCreate!");
@@ -192,7 +192,7 @@ int VDraw_DDraw::Init_Video(void)
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL)))
 		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()!");
 	
-	if (!Full_Screen || (Rend >= 2 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
+	if (!m_FullScreen || (Rend >= 2 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
 		lpDDS_Blit = lpDDS_Back;
 	
 	if (rendMode == 0)
@@ -250,10 +250,7 @@ int VDraw_DDraw::Init_Video(void)
 #endif
 	
 	// Reset the render mode.
-	if (m_FullScreen)
-		setRender(Video.Render_FS, false);
-	else
-		setRender(Video.Render_W, false);
+	setRender(rendMode, false);
 	
 	// Synchronize menus.
 	Sync_Gens_Window();
@@ -356,7 +353,7 @@ HRESULT VDraw_DDraw::RestoreGraphics(void)
 	
 	// Modif N. -- fixes lost surface handling when the color depth has changed
 	if (rval1 == DDERR_WRONGMODE || rval2 == DDERR_WRONGMODE)
-		return Init_DDraw() ? DD_OK : DDERR_GENERIC;
+		return Init_Video() ? DD_OK : DDERR_GENERIC;
 	
 	return SUCCEEDED(rval2) ? rval1 : rval2;
 }
@@ -438,16 +435,16 @@ int VDraw_DDraw::clearPrimaryScreen(void)
 	else
 	{
 		p.x = p.y = 0;
-		GetClientRect(Gens_hWnd, &RD);
+		GetClientRect(Gens_hWnd, &rd);
 		ClientToScreen(Gens_hWnd, &p);
 		
-		RD.left = p.x;
-		RD.top = p.y;
-		RD.right += p.x;
-		RD.bottom += p.y;
+		rd.left = p.x;
+		rd.top = p.y;
+		rd.right += p.x;
+		rd.bottom += p.y;
 		
-		if (RD.top < RD.bottom)
-			lpDDS_Primary->Blt(&RD, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+		if (rd.top < rd.bottom)
+			lpDDS_Primary->Blt(&rd, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 	}
 	
 	return 1;
@@ -593,10 +590,10 @@ int VDraw_DDraw::flipInternal(void)
 		//Upth-Add - So we can set the fullscreen resolution to the current res without changing the value that gets saved to the config
 		int FS_X, FS_Y;
 		
-		if (Res_X < (320 << (int)(Render_FS > 0)))
-			Res_X = 320 << (int)(Render_FS > 0); //Upth-Add - Flooring the resolution to 320x240
-		if (Res_Y < (240 << (int)(Render_FS > 0)))
-			Res_Y = 240 << (int)(Render_FS > 0); //Upth-Add - or 640x480, as appropriate
+		if (Res_X < (320 << (int)(Video.Render_FS > 0)))
+			Res_X = 320 << (int)(Video.Render_FS > 0); //Upth-Add - Flooring the resolution to 320x240
+		if (Res_Y < (240 << (int)(Video.Render_FS > 0)))
+			Res_Y = 240 << (int)(Video.Render_FS > 0); //Upth-Add - or 640x480, as appropriate
 		
 		// TODO: FS_No_Res_Change
 #if 0
@@ -706,7 +703,7 @@ int VDraw_DDraw::flipInternal(void)
 				RectDest.left = (int) ((FS_X - (320 * Ratio_X))/2); //Upth-Add - Centering left-right
 				RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - I wonder why I had to change the center-stuff three times...
 
-				if (FS_VSync)
+				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
@@ -721,7 +718,7 @@ int VDraw_DDraw::flipInternal(void)
 		else if (Video.Render_FS == 0)
 		{
 			//Upth-Add - If the render is "single" we don't stretch it
-			if (Blit_Soft == 1)
+			if (m_swRender == 1)
 			{
 				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 
@@ -735,7 +732,7 @@ int VDraw_DDraw::flipInternal(void)
 
 				lpDDS_Blit->Unlock(NULL);
 
-				if (FS_VSync)
+				if (Video.VSync_FS)
 				{
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
@@ -758,7 +755,7 @@ int VDraw_DDraw::flipInternal(void)
 				RectDest.left = (int) ((FS_X - 320)/2); //Upth-Add - and along the
 				RectDest.right = 320 + RectDest.left;   //Upth-Add - x axis, also
 
-				if (FS_VSync)
+				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
@@ -806,7 +803,7 @@ int VDraw_DDraw::flipInternal(void)
 			}
 			else
 			{
-				if (FS_VSync)
+				if (Video.VSync_FS)
 				{
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
