@@ -6,6 +6,7 @@
 #include "input_dinput.hpp"
 #include "input_win32_keys.h"
 
+#include "emulator/g_main.hpp"
 #include "emulator/g_input.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.h"
@@ -58,7 +59,7 @@ Input_DInput::Input_DInput()
 	rval = DirectInputCreate(ghInstance, DIRECTINPUT_VERSION, &lpDI, NULL);
 	if (rval != DI_OK)
 	{
-		MessageBox(hWnd, "DirectInput failed ...You must have DirectX 5", "Error", MB_OK);
+		MessageBox(Gens_hWnd, "DirectInput failed ...You must have DirectX 5", "Error", MB_OK);
 		// TODO: Error handling.
 		return;
 	}
@@ -71,7 +72,7 @@ Input_DInput::Input_DInput()
 	
 	m_CallbackHandleObject = this;
 	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &InitJoystick, Gens_hWnd, DIEDFL_ATTACHEDONLY);
-	if (rval ! DI_OK)
+	if (rval != DI_OK)
 	{
 		// TODO: Error handling.
 		return;
