@@ -71,8 +71,8 @@ class Input_DInput : public Input
 		LPDIRECTINPUT lpDI;
 		LPDIRECTINPUTDEVICE lpDIDKeyboard;
 		LPDIRECTINPUTDEVICE lpDIDMouse;
-		static IDirectInputDevice2 *Joy_ID[MAX_JOYS] = {NULL};
-		static DIJOYSTATE Joy_State[MAX_JOYS] = {{0}};
+		IDirectInputDevice2 *m_joyID[MAX_JOYS];
+		DIJOYSTATE m_joyState[MAX_JOYS];
 		
 		// DirectInput Keys array
 		unsigned char m_DIKeys[256];

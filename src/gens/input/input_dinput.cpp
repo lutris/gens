@@ -66,7 +66,7 @@ Input_DInput::Input_DInput()
 	m_numJoysticks = 0;
 	for (i = 0; i < MAX_JOYS; i++)
 	{
-		Joy_ID[i] = NULL;
+		m_joyID[i] = NULL;
 	}
 	
 	m_CallbackHandleObject = this;
@@ -110,8 +110,10 @@ Input_DInput::Input_DInput()
 		GensUI::sleep(10);
 	}
 	
-	// Clear the DirectInput keys array.
+	// Clear the DirectInput arrays.
 	memset(m_DIKeys, 0x00, sizeof(m_DIKeys));
+	memset(m_joyID, 0x00, sizeof(m_joyID));
+	memset(m_joyState, 0x00, sizeof(m_joyState));
 	
 	return;
 }
@@ -138,10 +140,10 @@ Input_DInput::~Input_DInput()
 	
 	for (i = 0; i < MAX_JOYS; i++)
 	{
-		if (Joy_ID[i])
+		if (m_joyID[i])
 		{
-			Joy_ID[i]->Unacquire();
-			Joy_ID[i]->Release();
+			m_joyID[i]->Unacquire();
+			m_joyID[i]->Release();
 		}
 	}
 	
@@ -167,7 +169,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	if (m_numJoysticks >= MAX_JOYS)
 		return DIENUM_STOP;
 		
-	Joy_ID[m_numJoysticks] = NULL;
+	m_joyID[m_numJoysticks] = NULL;
 
 	rval = lpDI->CreateDevice(lpDIIJoy->guidInstance, &lpDIJoy, NULL);
 	if (rval != DI_OK)
@@ -176,31 +178,31 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 		return(DIENUM_CONTINUE);
 	}
 
-	rval = lpDIJoy->QueryInterface(IID_IDirectInputDevice2, (void **)&Joy_ID[m_numJoysticks]);
+	rval = lpDIJoy->QueryInterface(IID_IDirectInputDevice2, (void **)&m_joyID[m_numJoysticks]);
 	lpDIJoy->Release();
 	if (rval != DI_OK)
 	{
 		MessageBox(Gens_hWnd, "IDirectInputDevice2::QueryInterface FAILED", "erreur joystick", MB_OK);
-		Joy_ID[m_numJoysticks] = NULL;
+		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
 
-	rval = Joy_ID[m_numJoysticks]->SetDataFormat(&c_dfDIJoystick);
+	rval = m_joyID[m_numJoysticks]->SetDataFormat(&c_dfDIJoystick);
 	if (rval != DI_OK)
 	{
 		MessageBox(Gens_hWnd, "IDirectInputDevice::SetDataFormat FAILED", "erreur joystick", MB_OK);
-		Joy_ID[m_numJoysticks]->Release();
-		Joy_ID[m_numJoysticks] = NULL;
+		m_joyID[m_numJoysticks]->Release();
+		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
 
-	rval = Joy_ID[m_numJoysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	rval = m_joyID[m_numJoysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 
 	if (rval != DI_OK)
 	{ 
 		MessageBox(Gens_hWnd, "IDirectInputDevice::SetCooperativeLevel FAILED", "erreur joystick", MB_OK);
-		Joy_ID[m_numJoysticks]->Release();
-		Joy_ID[m_numJoysticks] = NULL;
+		m_joyID[m_numJoysticks]->Release();
+		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
  
@@ -211,7 +213,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	diprg.lMin = -1000; 
 	diprg.lMax = +1000;
  
-	rval = Joy_ID[m_numJoysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
+	rval = m_joyID[m_numJoysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT)) 
 		MessageBox(Gens_hWnd, "IDirectInputDevice::SetProperty() (X-Axis) FAILED", "erreur joystick", MB_OK);
 
@@ -222,13 +224,13 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	diprg.lMin = -1000; 
 	diprg.lMax = +1000;
  
-	rval = Joy_ID[m_numJoysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
+	rval = m_joyID[m_numJoysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT)) 
 		MessageBox(Gens_hWnd, "IDirectInputDevice::SetProperty() (Y-Axis) FAILED", "erreur joystick", MB_OK);
 
 	for(i = 0; i < 10; i++)
 	{
-		rval = Joy_ID[m_numJoysticks]->Acquire();
+		rval = m_joyID[m_numJoysticks]->Acquire();
 		if (rval == DI_OK)
 			break;
 		GensUI::sleep(10);
@@ -257,7 +259,7 @@ bool Input_DInput::joyExists(int joyNum)
 	if (joyNum < 0 || joyNum >= MAX_JOYS)
 		return false;
 	
-	if (Joy_ID[joyNum])
+	if (m_joyID[joyNum])
 		return true;
 	
 	// Joystick does not exist.
@@ -319,30 +321,30 @@ unsigned int Input_DInput::getKey(void)
 			if (!joyExists(i))
 				continue;
 			
-			curJoyKeys[joyIndex++] = (Joy_State[i].lY < -500);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lY > +500);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lX < -500);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lX > +500);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lY < -500);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lY > +500);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lX < -500);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lX > +500);
 			
 			for (j = 0; j < 4; j++)
 			{
-				curJoyKeys[joyIndex++] = (Joy_State[i].rgdwPOV[j] == 0);
-				curJoyKeys[joyIndex++] = (Joy_State[i].rgdwPOV[j] == 9000);
-				curJoyKeys[joyIndex++] = (Joy_State[i].rgdwPOV[j] == 18000);
-				curJoyKeys[joyIndex++] = (Joy_State[i].rgdwPOV[j] == 27000);
+				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 0);
+				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 9000);
+				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 18000);
+				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 27000);
 			}
 			
 			for (j = 0; j < 32; j++)
 			{
-				curJoyKeys[joyIndex++] = (Joy_State[i].rgbButtons[j]);
+				curJoyKeys[joyIndex++] = (m_joyState[i].rgbButtons[j]);
 			}
 			
-			curJoyKeys[joyIndex++] = (Joy_State[i].lRx < 0x3FFF);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lRx > 0xBFFF);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lRy < 0x3FFF);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lRy > 0xBFFF);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lZ < 0x3FFF);
-			curJoyKeys[joyIndex++] = (Joy_State[i].lZ > 0xBFFF);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lRx < 0x3FFF);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lRx > 0xBFFF);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lRy < 0x3FFF);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lRy > 0xBFFF);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lZ < 0x3FFF);
+			curJoyKeys[joyIndex++] = (m_joyState[i].lZ > 0xBFFF);
 		}
 		
 		// Compare buttons against the previous state to determine
@@ -514,11 +516,11 @@ void Input_DInput::update(void)
 	
 	for (i = 0; i < m_numJoysticks; i++)
 	{
-		if (Joy_ID[i])
+		if (m_joyID[i])
 		{
-			Joy_ID[i]->Poll();
-			rval = Joy_ID[i]->GetDeviceState(sizeof(Joy_State[i]), &Joy_State[i]);
-			if (rval != DI_OK) Joy_ID[i]->Acquire();
+			m_joyID[i]->Poll();
+			rval = m_joyID[i]->GetDeviceState(sizeof(m_joyState[i]), &m_joyState[i]);
+			if (rval != DI_OK) m_joyID[i]->Acquire();
 		}
 	}
 	
@@ -589,7 +591,7 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 	if (key & 0x80)
 	{
 		// Joystick POV
-		int value = Joy_State[joyNum].rgdwPOV[(key >> 4) & 3];
+		int value = m_joyState[joyNum].rgdwPOV[(key >> 4) & 3];
 		if (value == -1)
 			return false;
 		
@@ -624,43 +626,43 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 		switch (key & 0xF)
 		{
 			case 1:
-				if (Joy_State[joyNum].lY < -500)
+				if (m_joyState[joyNum].lY < -500)
 					return true;
 				break;
 			case 2:
-				if (Joy_State[joyNum].lY > +500)
+				if (m_joyState[joyNum].lY > +500)
 					return true;
 				break;
 			case 3:
-				if (Joy_State[joyNum].lX < -500)
+				if (m_joyState[joyNum].lX < -500)
 					return true;
 				break;
 			case 4:
-				if (Joy_State[joyNum].lX > +500)
+				if (m_joyState[joyNum].lX > +500)
 					return true;
 				break;
 			case 5:
-				if (Joy_State[joyNum].lRx < 0x3FFF)
+				if (m_joyState[joyNum].lRx < 0x3FFF)
 					return true;
 				break;
 			case 6:
-				if (Joy_State[joyNum].lRx > 0xBFFF)
+				if (m_joyState[joyNum].lRx > 0xBFFF)
 					return true;
 				break;
 			case 7:
-				if (Joy_State[joyNum].lRy < 0x3FFF)
+				if (m_joyState[joyNum].lRy < 0x3FFF)
 					return true;
 				break;
 			case 8:
-				if (Joy_State[joyNum].lRy > 0xBFFF)
+				if (m_joyState[joyNum].lRy > 0xBFFF)
 					return true;
 				break;
 			case 9:
-				if (Joy_State[joyNum].lZ < 0x3FFF)
+				if (m_joyState[joyNum].lZ < 0x3FFF)
 					return true;
 				break;
 			case 10:
-				if (Joy_State[joyNum].lZ > 0xBFFF)
+				if (m_joyState[joyNum].lZ > 0xBFFF)
 					return true;
 				break;
 		}
