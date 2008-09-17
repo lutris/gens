@@ -725,7 +725,7 @@ int VDraw_DDraw::flipInternal(void)
 				if (FAILED(rval))
 					goto cleanup_flip;
 
-				if (Render_FS == 0)
+				if (Video.Render_FS == 0)
 					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * (240 - VDP_Num_Vis_Lines) >> 1) + Dep), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
 				else
 					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << 1), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
@@ -819,8 +819,8 @@ int VDraw_DDraw::flipInternal(void)
 		int Clr_Cmp_Val = IS_FULL_X_RESOLUTION ? 40 : 32;
 		if (Flag_Clr_Scr != Clr_Cmp_Val)
 		{
-			Clear_Primary_Screen(Gens_hWnd);
-			Clear_Back_Screen(Gens_hWnd);
+			clearPrimaryScreen();
+			clearBackScreen();
 			Flag_Clr_Scr = Clr_Cmp_Val;
 		}
 
