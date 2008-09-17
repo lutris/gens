@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-lib_LIBRARIES = libminizip.a
+noinst_LIBRARIES = libminizip.a
 libminizip_a_SOURCES = \
 		ioapi.c \
 		unzip.c
