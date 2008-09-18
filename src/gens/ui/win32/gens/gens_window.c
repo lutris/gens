@@ -93,8 +93,8 @@ HWND create_gens_window(void)
 	WndClass.lpfnWndProc = Gens_Window_WinProc;
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
-	WndClass.hInstance = hInst;
-	//WndClass.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_SONIC));
+	WndClass.hInstance = ghInstance;
+	//WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
 	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	WndClass.hbrBackground = NULL;
 	WndClass.lpszMenuName = NULL;
