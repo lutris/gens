@@ -32,11 +32,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-;GLOBAL _hq2x_16
-GLOBAL _Blit_HQ2x_16_asm
-
-EXTERN _LUT16to32
-EXTERN _RGBtoYUV
+%include "nasmhead.inc"
 
 SECTION .bss
 linesleft resd 1
@@ -53,6 +49,12 @@ w6        resd 1
 w7        resd 1
 w8        resd 1
 w9        resd 1
+
+DECL LUT16to32
+resd 65536
+
+DECL RGBtoYUV
+resd 65536
 
 SECTION .data
 
@@ -71,7 +73,7 @@ SECTION .text
     mov     edx,[%1]
     cmp     edx,[%2]
     je      %%fin
-    mov     ecx,_RGBtoYUV
+    mov     ecx,RGBtoYUV
     movd    mm1,[ecx+edx*4]
     movq    mm5,mm1
     mov     edx,[%2]
@@ -193,7 +195,7 @@ SECTION .text
 %endmacro
 
 %macro Interp6 3
-    mov        ecx, _LUT16to32
+    mov        ecx, LUT16to32
     movd       mm1, [ecx+eax*4]
     mov        edx, %2
     movd       mm2, [ecx+edx*4]
@@ -217,7 +219,7 @@ SECTION .text
 %endmacro
 
 %macro Interp7 3
-    mov        ecx, _LUT16to32
+    mov        ecx, LUT16to32
     movd       mm1, [ecx+eax*4]
     mov        edx, %2
     movd       mm2, [ecx+edx*4]
@@ -240,7 +242,7 @@ SECTION .text
 %endmacro
 
 %macro Interp9 3
-    mov        ecx, _LUT16to32
+    mov        ecx, LUT16to32
     movd       mm1, [ecx+eax*4]
     mov        edx, %2
     movd       mm2, [ecx+edx*4]
@@ -264,7 +266,7 @@ SECTION .text
 %endmacro
 
 %macro Interp10 3
-    mov        ecx, _LUT16to32
+    mov        ecx, LUT16to32
     movd       mm1, [ecx+eax*4]
     mov        edx, %2
     movd       mm2, [ecx+edx*4]
@@ -488,8 +490,8 @@ offset       equ  24 ;28
 	extern MD_Screen
 
 ; void Blit_HQ2x_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);
-;_hq2x_16:
-_Blit_HQ2x_16_asm:
+;hq2x_16:
+DECL Blit_HQ2x_16_asm
     push ebp
     mov ebp,esp
     pushad
@@ -565,7 +567,7 @@ _Blit_HQ2x_16_asm:
     movzx   edx,ax  
     mov     [w9],edx
 .flags
-    mov     ebx,_RGBtoYUV
+    mov     ebx,RGBtoYUV
     mov     eax,[w5]
     xor     ecx,ecx
     movd    mm5,[ebx+eax*4]

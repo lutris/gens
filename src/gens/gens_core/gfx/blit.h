@@ -46,7 +46,8 @@ void Blit_2xSAI_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int o
 void Blit_Scale2x_16(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit_Scale2x_32(unsigned char *screen, int pitch, int x, int y, int offset);
 
-void _Blit_HQ2x_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);
+void Blit_HQ2x_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);
+
 int Blit_HQ2x_InitLUTs(void);
 
 #ifdef __cplusplus
