@@ -34,9 +34,6 @@
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pwm.h"
-#include "util/file/ggenie.h"
-#include "g_update.hpp"
-#include "g_palette.h"
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
@@ -47,7 +44,6 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
-#include "gens_ui.hpp"
 // TODO: Gens Window Sync on Win32
 //#include "gens/gens_window_sync.hpp"
 
@@ -96,30 +92,14 @@ static int Gens_Running = 0;
 
 // New video layer.
 #include "video/v_draw.hpp"
-#if (defined(__WIN32__))
-#include "video/v_draw_ddraw.hpp"
-#else
-#include "video/v_draw_sdl.hpp"
-#include "video/v_draw_sdl_gl.hpp"
-#endif
 VDraw *draw;
 
 // New input layer.
 #include "input/input.hpp"
-#if (defined(__WIN32__))
-#include "input/input_dinput.hpp"
-#else
-#include "input/input_sdl.hpp"
-#endif
 Input *input;
 
 // New audio layer.
 #include "audio/audio.hpp"
-#if (defined(__WIN32__))
-#include "audio/audio_dsound.hpp"
-#else
-#include "audio/audio_sdl.hpp"
-#endif
 Audio *audio;
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.

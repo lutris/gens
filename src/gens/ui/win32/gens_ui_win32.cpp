@@ -27,12 +27,10 @@
 
 #include <unistd.h>
 #include <string.h>
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include "gens/gens_window.h"
 
+#include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
-#include "gtk-misc.h"
 
 
 #if 0
@@ -228,6 +226,7 @@ string GensUI::selectDir(const string& title, const string& initDir)
 }
 
 
+#if 0
 /**
  * UI_GTK_FileChooser(): Show the File Chooser dialog.
  * @param title Window title.
@@ -240,8 +239,6 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 				 const FileFilterType filterType,
 				 const GtkFileChooserAction action)
 {
-	STUB;
-#if 0
 	gint res;
 	gchar *filename;
 	gchar *acceptButton;
@@ -299,12 +296,9 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 	
 	// Return the filename.
 	return retFilename;
-#endif
-	return "";
 }
 
 
-#if 0
 /**
  * UI_GTK_AddFilter_ROMFile(): Adds filename filters for "ROMFile".
  * @param dialog File chooser dialog.

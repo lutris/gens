@@ -9,6 +9,25 @@
 #include <string.h>
 #include "g_main_linux.hpp"
 
+#include "g_update.hpp"
+#include "g_palette.h"
+#include "gens_ui.hpp"
+#include "g_md.hpp"
+
+#include "gens_core/vdp/vdp_io.h"
+#include "util/file/config_file.hpp"
+#include "util/file/ggenie.h"
+#include "util/sound/gym.hpp"
+
+#include "video/v_draw_sdl.hpp"
+#include "video/v_draw_sdl_gl.hpp"
+#include "input/input_sdl.hpp"
+#include "audio/audio_sdl.hpp"
+
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
+
 
 /**
  * GENS_Default_Save_Path(): Create the default save path.

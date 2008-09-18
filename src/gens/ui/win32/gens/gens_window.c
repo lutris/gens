@@ -26,6 +26,7 @@
 
 #include "gens_window.h"
 #include "gens_window_sync.hpp"
+#include "gens_window_callbacks.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,6 +40,7 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+WNDCLASS WndClass;
 HWND Gens_hWnd;
 
 #ifdef GENS_DEBUGGER
@@ -87,6 +89,19 @@ int do_callbacks = 1;
 
 HWND create_gens_window(void)
 {
+	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	WndClass.lpfnWndProc = Gens_Window_WinProc;
+	WndClass.cbClsExtra = 0;
+	WndClass.cbWndExtra = 0;
+	WndClass.hInstance = hInst;
+	//WndClass.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_SONIC));
+	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	WndClass.hbrBackground = NULL;
+	WndClass.lpszMenuName = NULL;
+	WndClass.lpszClassName = "Gens";
+	
+	RegisterClass(&WndClass);
+	
 	Gens_hWnd = CreateWindowEx(NULL, "Gens", "Gens - Idle", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 				   320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
 	if (!Gens_hWnd)

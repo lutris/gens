@@ -133,7 +133,8 @@ void close_gens();
 int IsAsyncAllowed(void);
 
 
-// Initialize settings.
+// Initialization functions.
+int Init(void);
 void Init_Settings(void);
 
 

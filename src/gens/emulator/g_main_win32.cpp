@@ -3,7 +3,28 @@
  */
 
 
+#include "g_main.hpp"
 #include "g_main_win32.hpp"
+
+#include "g_update.hpp"
+#include "g_palette.h"
+#include "gens_ui.hpp"
+#include "g_md.hpp"
+#include "g_mcd.hpp"
+#include "g_32x.hpp"
+
+#include "gens_core/vdp/vdp_io.h"
+#include "util/file/config_file.hpp"
+#include "util/file/ggenie.h"
+#include "util/sound/gym.hpp"
+
+#include "video/v_draw_ddraw.hpp"
+#include "input/input_dinput.hpp"
+#include "audio/audio_dsound.hpp"
+
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
 
 
 HINSTANCE ghInstance;
@@ -55,7 +76,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Init_GameGenie();
 	
 	// Parse command line arguments.
-	parseArgs(argc, argv);
+	// TODO: Implement a Win32 version.
+	//parseArgs(argc, argv);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
