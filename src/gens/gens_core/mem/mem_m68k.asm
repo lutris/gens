@@ -523,10 +523,10 @@ section .text align=64
 	extern Write_Byte_VDP_Data
 	extern Write_Word_VDP_Data
 	extern Write_VDP_Ctrl
-	extern RD_Controller_1
-	extern RD_Controller_2 
-	extern WR_Controller_1
-	extern WR_Controller_2
+	extern _RD_Controller_1
+	extern _RD_Controller_2 
+	extern _WR_Controller_1
+	extern _WR_Controller_2
 	extern SH2_Reset
 	extern SH2_Interrupt
 	extern SH2_DMA0_Request
@@ -961,14 +961,14 @@ section .text align=64
 	ALIGN4
 
 	.Pad_1
-		call RD_Controller_1
+		call _RD_Controller_1
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Pad_2
-		call RD_Controller_2
+		call _RD_Controller_2
 		pop ebx
 		ret
 
@@ -1290,14 +1290,14 @@ section .text align=64
 	ALIGN4
 
 	.Pad_1
-		call RD_Controller_1
+		call _RD_Controller_1
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Pad_2
-		call RD_Controller_2
+		call _RD_Controller_2
 		pop ebx
 		ret
 
@@ -1559,7 +1559,7 @@ section .text align=64
 
 	.Pad_1
 		push eax
-		call WR_Controller_1
+		call _WR_Controller_1
 		pop eax
 		pop ecx
 		pop ebx
@@ -1569,7 +1569,7 @@ section .text align=64
 
 	.Pad_2
 		push eax
-		call WR_Controller_2
+		call _WR_Controller_2
 		pop eax
 		pop ecx
 		pop ebx
@@ -1833,7 +1833,7 @@ section .text align=64
 
 	.Pad_1
 		push eax
-		call WR_Controller_1
+		call _WR_Controller_1
 		pop eax
 		pop ecx
 		pop ebx
@@ -1843,7 +1843,7 @@ section .text align=64
 
 	.Pad_2
 		push eax
-		call WR_Controller_2
+		call _WR_Controller_2
 		pop eax
 		pop ecx
 		pop ebx
