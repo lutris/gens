@@ -71,7 +71,7 @@ class VDraw_DDraw : public VDraw
 		void CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
 		
 		// Win32 stuff
-		virtual void reinitGensWindow(HWND hWnd);
+		virtual int reinitGensWindow(void);
 };
 
 #endif /* GENS_V_DRAW_DDRAW_HPP */

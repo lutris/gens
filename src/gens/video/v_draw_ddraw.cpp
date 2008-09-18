@@ -264,7 +264,7 @@ int VDraw_DDraw::Init_Video(void)
  * reinitGensWindow(): Reinitialize the Gens window.
  * @return 1 on success; 0 on error.
  */
-int VDraw::reinitGensWindow(void)
+int VDraw_DDraw::reinitGensWindow(void)
 {
 	// Reinitialize the Gens window.
 	RECT r;
