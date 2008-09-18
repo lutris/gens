@@ -199,7 +199,7 @@ CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
 LDFLAGS="$LDFLAGS"
 
-if test x$os != win32; then
+if test x$os != xwin32; then
 	CFLAGS="$CFLAGS -std=c99"
 fi
 
