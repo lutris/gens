@@ -64,6 +64,10 @@ void Create_Save_Directory(const char *dir)
  */
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+	// Gens_hWnd is needed before anything else is set up.
+	// Initialize the Gens hWnd.
+	initGens_hWnd();
+	
 	// Initialize the drawing object.
 	draw = new VDraw_DDraw();
 	

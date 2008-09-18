@@ -95,13 +95,7 @@ int Audio_DSound::initSound(void)
 	if (rval != DS_OK)
 		return 0;
 	
-	rval = lpDS->SetCooperativeLevel(Gens_hWnd, DSSCL_PRIORITY);
-	if (rval != DS_OK)
-	{
-		lpDS->Release();
-		lpDS = NULL;
-		return 0;
-	}
+	setCooperativeLevel();
 	
 	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
 	dsbdesc.dwSize = sizeof(DSBUFFERDESC);
@@ -126,6 +120,7 @@ int Audio_DSound::initSound(void)
 	rval = lpDSPrimary->SetFormat(&wfx);
 	if (rval != DS_OK)
 	{
+		printf("ERR: 0x%X\n", rval);
 		lpDSPrimary->Release();
 		lpDSPrimary = NULL;
 		lpDS->Release();
@@ -388,5 +383,27 @@ void Audio_DSound::waitForAudioBuffer(void)
 		writeSoundBuffer(NULL);
 		WP = (WP + 1) & (Sound_Segs - 1);
 		input->updateControllers();
+	}
+}
+
+
+/**
+ * setCooperativeLevel(): Sets the cooperative level.
+ */
+void Audio_DSound::setCooperativeLevel(void)
+{
+	if (!Gens_hWnd || !lpDS)
+		return;
+	
+	HRESULT rval;
+	rval = lpDS->SetCooperativeLevel(Gens_hWnd, DSSCL_PRIORITY);
+	if (rval != DS_OK)
+	{
+		printf("%s: lpDS->SetCooperativeLevel() failed.\n", __func__);
+		// TODO: Error handling code.
+	}
+	else
+	{
+		printf("%s: lpDS->SetCooperativeLevel() succeeded.\n", __func__);
 	}
 }

@@ -33,6 +33,7 @@ extern "C" {
 
 #include <windows.h>
 
+HWND initGens_hWnd(void);
 HWND create_gens_window(void);
 extern HWND Gens_hWnd;
 

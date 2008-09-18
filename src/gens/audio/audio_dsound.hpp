@@ -51,6 +51,9 @@ class Audio_DSound : public Audio
 		
 		// TODO: Figure out what these things do.
 		int WP, RP;
+		
+		// Cooperative level (Win32)
+		void setCooperativeLevel(void);
 };
 
 #endif /* GENS_AUDIO_DSOUND_HPP */

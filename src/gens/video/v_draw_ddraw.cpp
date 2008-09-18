@@ -76,7 +76,6 @@ int VDraw_DDraw::Init_Fail(HWND hWnd, const char *err)
 int VDraw_DDraw::Init_Video(void)
 {
 	int rendMode;
-	HRESULT rval;
 	DDSURFACEDESC2 ddsd;
 	
 	End_Video();
@@ -107,22 +106,8 @@ int VDraw_DDraw::Init_Video(void)
 		Recalculate_Palettes();
 	}
 #endif
-
-	// TODO: This doesn't work on Wine, so disable it for now.
-#if 0
-#ifdef DISABLE_EXCLUSIVE_FULLSCREEN_LOCK
-	Video.VSync_FS = 0;
-	rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
-#else
-	if (m_FullScreen)
-		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
-	else
-		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
-#endif
 	
-	if (FAILED(rval))
-		return Init_Fail(Gens_hWnd, "Error with lpDD->SetCooperativeLevel()!");
-#endif
+	setCooperativeLevel();
 	
 	// TODO: Figure out what FS_No_Res_Change is for.
 	if (m_FullScreen /* && !FS_No_Res_Change*/)
@@ -936,4 +921,35 @@ void VDraw_DDraw::updateRenderer(void)
 void VDraw_DDraw::updateVSync(bool fromInitSDLGL)
 {
 	// Does nothing...
+}
+
+
+/**
+ * setCooperativeLevel(): Sets the cooperative level.
+ */
+void VDraw_DDraw::setCooperativeLevel(void)
+{
+	if (!Gens_hWnd || !lpDD)
+		return;
+	
+	HRESULT rval;
+#ifdef DISABLE_EXCLUSIVE_FULLSCREEN_LOCK
+	Video.VSync_FS = 0;
+	rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
+#else
+	if (m_FullScreen)
+		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
+	else
+		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
+#endif
+	
+	if (FAILED(rval))
+	{
+		printf("%s: lpDD->SetCooperativeLevel() failed.\n", __func__);
+		// TODO: Error handling code.
+	}
+	else
+	{
+		printf("%s: lpDD->SetCooperativeLevel() succeeded.\n", __func__);
+	}
 }

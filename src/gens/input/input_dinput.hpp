@@ -78,6 +78,10 @@ class Input_DInput : public Input
 		unsigned char m_DIKeys[256];
 		
 		void restoreInput(void);
+		
+		// Cooperative level (Win32)
+		void setCooperativeLevel(void);
+		
 };
 
 #endif

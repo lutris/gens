@@ -140,16 +140,7 @@ Input_DInput::Input_DInput()
 		return;
 	}
 	
-	// TODO: WINE doesn't like SetCooperativeLevel.
-#if 0
-	//rval = lpDIDMouse->SetCooperativeLevel(Gens_hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-	rval = lpDIDKeyboard->SetCooperativeLevel(Gens_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-	if (rval != DI_OK)
-	{
-		// TODO: Error handling.
-		return;
-	}
-#endif
+	setCooperativeLevel();
 	
 	//rval = lpDIDMouse->SetDataFormat(&c_dfDIMouse);
 	rval = lpDIDKeyboard->SetDataFormat(&c_dfDIKeyboard);
@@ -735,4 +726,27 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 	
 	// Key is not pressed.
 	return false;
+}
+
+
+/**
+ * setCooperativeLevel(): Sets the cooperative level.
+ */
+void Input_DInput::setCooperativeLevel(void)
+{
+	if (!Gens_hWnd || !lpDIDKeyboard /*|| lpDIDMouse*/)
+		return;
+	
+	HRESULT rval;
+	//rval = lpDIDMouse->SetCooperativeLevel(Gens_hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+	rval = lpDIDKeyboard->SetCooperativeLevel(Gens_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	if (rval != DI_OK)
+	{
+		printf("%s: lpDIDKeyboard->SetCooperativeLevel() failed.\n", __func__);
+		// TODO: Error handling code.
+	}
+	else
+	{
+		printf("%s: lpDIDKeyboard->SetCooperativeLevel() succeeded.\n", __func__);
+	}
 }

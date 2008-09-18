@@ -41,7 +41,7 @@
 #endif /* GENS_DEBUGGER */
 
 WNDCLASS WndClass;
-HWND Gens_hWnd;
+HWND Gens_hWnd = NULL;
 
 #ifdef GENS_DEBUGGER
 // Debug menu items
@@ -87,8 +87,15 @@ static void create_gens_window_HelpMenu(GtkWidget *container);
 int do_callbacks = 1;
 
 
-HWND create_gens_window(void)
+/**
+ * initGens_hWnd(): Initialize the Gens window.
+ * @return hWnd.
+ */
+HWND initGens_hWnd(void)
 {
+	// This function simply initializes the base window.
+	// It's needed because DirectX needs the window handle to set cooperative levels.
+	
 	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	WndClass.lpfnWndProc = Gens_Window_WinProc;
 	WndClass.cbClsExtra = 0;
@@ -106,7 +113,11 @@ HWND create_gens_window(void)
 				   320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
 	if (!Gens_hWnd)
 		return NULL;
-	
+}
+
+
+HWND create_gens_window(void)
+{
 	// Create the menu bar.
 	create_gens_window_menubar();
 	SetMenu(Gens_hWnd, MainMenu);

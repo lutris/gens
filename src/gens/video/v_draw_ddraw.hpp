@@ -72,6 +72,9 @@ class VDraw_DDraw : public VDraw
 		
 		// Win32 stuff
 		virtual int reinitGensWindow(void);
+		
+		// Cooperative level (Win32)
+		void setCooperativeLevel(void);
 };
 
 #endif /* GENS_V_DRAW_DDRAW_HPP */
