@@ -505,7 +505,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	q.x = RectDest.right; //Upth-Add - we need to get
 	q.y = RectDest.bottom; //Upth-Add - the bottom-right corner
 
-	if (Render_Mode < 2)
+	if (Render_Mode == 0)
 	{
 		RectSrc.top = 0;
 		RectSrc.bottom = VDP_Num_Vis_Lines;
@@ -540,7 +540,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	{
 		Dep = 0;
 
-		if (Render_Mode < 2)
+		if (Render_Mode == 0)
 		{
 			RectSrc.left = 8 + 0 ;
 			RectSrc.right = 8 + 320;
@@ -563,7 +563,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 			RectDest.right = (int) (ALT_X_RATIO_RES * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
 		}
 
-		if (Render_Mode < 2)
+		if (Render_Mode == 0)
 		{
 			RectSrc.left = 8 + 0;
 			RectSrc.right = 8 + 256;
@@ -836,13 +836,14 @@ int VDraw_DDraw::flipInternal(void)
 			Flag_Clr_Scr = Clr_Cmp_Val;
 		}
 
-		if (Video.Render_W >= 2)
+		if (Video.Render_W >= 1)
 		{
 			rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 
-			if (FAILED(rval)) goto cleanup_flip;
+			if (FAILED(rval))
+				goto cleanup_flip;
 
-			Blit_W((unsigned char *) ddsd.lpSurface + ddsd.lPitch * (240 - VDP_Num_Vis_Lines) + Dep * bpp, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, (16 + Dep) * bpp);
+			Blit_W((unsigned char *) ddsd.lpSurface + ddsd.lPitch * (240 - VDP_Num_Vis_Lines) + Dep * bytespp, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
 
 			lpDDS_Blit->Unlock(NULL);
 		}
