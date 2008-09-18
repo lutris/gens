@@ -204,7 +204,8 @@ Input_DInput::~Input_DInput()
 
 BOOL CALLBACK Input_DInput::InitJoystick(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
-	return m_CallbackHandleObject->InitJoystick_int(lpDIIJoy, pvRef);
+	// TODO: Fix this bad hack!
+	return ((Input_DInput*)input)->m_CallbackHandleObject->InitJoystick_int(lpDIIJoy, pvRef);
 }
 
 
