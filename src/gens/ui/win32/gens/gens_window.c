@@ -109,6 +109,7 @@ HWND create_gens_window(void)
 	
 	// Create the menu bar.
 	create_gens_window_menubar();
+	SetMenu(Gens_hWnd, MainMenu);
 	
 	return Gens_hWnd;
 }
