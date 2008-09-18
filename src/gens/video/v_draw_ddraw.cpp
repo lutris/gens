@@ -29,6 +29,13 @@
 
 VDraw_DDraw::VDraw_DDraw()
 {
+	// Initialize DDraw buffers to NULL.
+	lpDD = NULL;
+	lpDDS_Primary = NULL;
+	lpDDS_Flip = NULL;
+	lpDDS_Back = NULL;
+	lpDDC_Clipper = NULL;
+	
 	// Initialize the X and Y resolutions.
 	if (Video.Render_FS > 0)
 	{
@@ -75,7 +82,7 @@ int VDraw_DDraw::Init_Video(void)
 	End_Video();
 	
 	rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	
+
 	if (FAILED(DirectDrawCreate(NULL, &lpDD_Init, NULL)))
 		return Init_Fail(Gens_hWnd, "Error with DirectDrawCreate!");
 	
