@@ -142,7 +142,7 @@ void Init_Settings(void);
 void MESSAGE_L(const char* str, const char* def, int time);
 void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
 void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time);
-void MESSAGE_NUM2_L(const char* str, const char* def, int num1, int num2, int time);
+void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time);
 
 
 #define MINIMIZE \
@@ -178,11 +178,6 @@ extern int (*Update_Frame_Fast)(void);
 
 // Miscellaneous.
 void Clear_Screen_MD(void);
-
-#ifdef GENS_OPENGL
-void Change_OpenGL(int newOpenGL);
-void Set_GL_Resolution(int w, int h);
-#endif /* GENS_OPENGL */
 
 #ifdef __cplusplus
 }

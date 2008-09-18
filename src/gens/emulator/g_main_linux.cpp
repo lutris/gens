@@ -7,12 +7,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "g_main.hpp"
 #include "g_main_linux.hpp"
 
 #include "g_update.hpp"
 #include "g_palette.h"
 #include "gens_ui.hpp"
+#include "parse.hpp"
 #include "g_md.hpp"
+#include "g_32x.hpp"
 
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/config_file.hpp"
@@ -238,3 +242,68 @@ int main(int argc, char *argv[])
 	End_All();
 	return 0;
 }
+
+
+#ifdef GENS_OPENGL
+/**
+ * Change_OpenGL(): Change the OpenGL setting.
+ * @param stretch 0 to turn OpenGL off; 1 to turn OpenGL on.
+ */
+void Change_OpenGL(int newOpenGL)
+{
+	// End the current drawing function.
+	draw->End_Video();
+	
+	Video.OpenGL = (newOpenGL == 0 ? 0 : 1);
+	VDraw *newDraw;
+	if (Video.OpenGL)
+	{
+		newDraw = new VDraw_SDL_GL(draw);
+		newDraw->Init_Video();
+		delete draw;
+		draw = newDraw;
+		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500);
+	}
+	else
+	{
+		newDraw = new VDraw_SDL(draw);
+		newDraw->Init_Video();
+		delete draw;
+		draw = newDraw;
+		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500);
+	}
+}
+
+
+/**
+ * Set_GL_Resolution(): Set the OpenGL resolution.
+ * @param w Width.
+ * @param h Height.
+ */
+void Set_GL_Resolution(int w, int h)
+{
+	// TODO: Move this to VDraw_GL.
+	
+	if (Video.Width_GL == w && Video.Height_GL == h)
+		return;
+	
+	// OpenGL resolution has changed.
+	Video.Width_GL = w;
+	Video.Height_GL = h;
+	
+	// Print the resolution information.
+	MESSAGE_NUM_2L("Selected %dx%d resolution",
+		       "Selected %dx%d resolution", w, h, 1500);
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// If OpenGL mode isn't enabled, don't do anything.
+	if (!Video.OpenGL)
+		return;
+	
+	// OpenGL mode is currently enabled. Change the resolution.
+	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	draw->setRender(rendMode, true);
+}
+#endif /* GENS_OPENGL */

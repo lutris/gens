@@ -332,7 +332,7 @@ endif
 
 if LINUX
 
-noinst_HEADERS +=
+noinst_HEADERS += \
 		emulator/g_main_linux.hpp \
 		port/port.h \
 		video/v_draw_sdl.hpp \
