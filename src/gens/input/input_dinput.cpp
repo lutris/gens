@@ -12,6 +12,11 @@
 #include "gens/gens_window.h"
 
 
+// Input_DInput being handled by InitJoystick at the moment.
+// TODO: This is a REALLY bad hack.
+static Input_DInput *DInput_Callback_Handler_Object;
+
+
 const struct KeyMap keyDefault[8] =
 {
 	// Player 1
@@ -118,7 +123,7 @@ Input_DInput::Input_DInput()
 		m_joyID[i] = NULL;
 	}
 	
-	m_CallbackHandleObject = this;
+	DInput_Callback_Handler_Object = this;
 	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &InitJoystick, Gens_hWnd, DIEDFL_ATTACHEDONLY);
 	if (rval != DI_OK)
 	{
@@ -204,8 +209,7 @@ Input_DInput::~Input_DInput()
 
 BOOL CALLBACK Input_DInput::InitJoystick(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
-	// TODO: Fix this bad hack!
-	return ((Input_DInput*)input)->m_CallbackHandleObject->InitJoystick_int(lpDIIJoy, pvRef);
+	return DInput_Callback_Handler_Object->InitJoystick_int(lpDIIJoy, pvRef);
 }
 
 

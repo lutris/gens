@@ -60,10 +60,6 @@ class Input_DInput : public Input
 		static BOOL CALLBACK InitJoystick(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 		BOOL InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 		
-		// Input_DInput being handled by InitJoystick at the moment.
-		// TODO: This is a REALLY bad hack.
-		Input_DInput *m_CallbackHandleObject;
-		
 	protected:
 		// Functions required by the Input class.
 		bool joyExists(int joyNum);
