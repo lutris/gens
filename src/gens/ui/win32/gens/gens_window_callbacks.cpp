@@ -84,7 +84,7 @@ extern "C"
 
 
 #include "video/v_draw_ddraw.hpp"
-static bool PaintsEnabled;
+static bool PaintsEnabled = true;
 
 
 static void on_gens_window_close(void);
@@ -94,7 +94,7 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 {
 	RECT r;
 	int t;
-
+	
 	switch(message)
 	{
 		case WM_CLOSE:

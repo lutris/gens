@@ -22,6 +22,7 @@
 #include "input/input_dinput.hpp"
 #include "audio/audio_dsound.hpp"
 
+#include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 
 #ifdef GENS_DEBUGGER
@@ -106,7 +107,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Initialize DirectDraw.
 	draw->Init_Video();
 #endif
-	
+
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
 		if (Open_Rom(PathNames.Start_Rom) == -1)
@@ -117,7 +118,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Update the UI.
 	GensUI::update();
-	
+
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
 	if (!draw->setRender(rendMode))
 	{
@@ -133,8 +134,17 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
-	while (is_gens_running ())
+	MSG msg;
+	
+	while (is_gens_running())
 	{
+		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+		{
+			if (!GetMessage(&msg, NULL, 0, 0))
+				close_gens();
+			DispatchMessage(&msg);
+		}
+		
 		// Update the UI.
 		GensUI::update();
 		
@@ -218,7 +228,19 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
 	strcat(Str_Tmp, "gens.cfg");
 	Save_Config(Str_Tmp);
+	printf("OMG\n");
 	
-	End_All ();
+	End_All();
+	ChangeDisplaySettings(NULL, 0);
+	DestroyWindow(Gens_hWnd);
+	
+	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	{
+		if (!GetMessage(&msg, NULL, 0, 0))
+			return msg.wParam;
+	}
+	
+	TerminateProcess(GetCurrentProcess(), 0); //Modif N
+	
 	return 0;
 }
