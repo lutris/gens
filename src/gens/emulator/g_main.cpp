@@ -116,7 +116,7 @@ Input *input;
 // New audio layer.
 #include "audio/audio.hpp"
 #if (defined(__WIN32__))
-#warning TODO: Win32 Audio Layer
+#include "audio/audio_dsound.hpp"
 #else
 #include "audio/audio_sdl.hpp"
 #endif
@@ -476,8 +476,11 @@ int main(int argc, char *argv[])
 #endif
 	
 	// Initialize the audio object.
-	// TODO: Select Audio_SDL() or Audio_DSound() depending on other factors.
+#if (defined(__WIN32__))
+	audio = new Audio_DSound();
+#else
 	audio = new Audio_SDL();
+#endif
 	
 	// Initialize the Settings struct.
 	Init_Settings();

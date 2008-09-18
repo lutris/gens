@@ -25,6 +25,7 @@ class Audio_DSound : public Audio
 		
 		// Miscellaneous functions that need to be sorted through.
 		int getCurrentSeg(void);
+		bool lotsInAudioBuffer(void);
 		int checkSoundTiming(void);
 		int writeSoundBuffer(void *dumpBuf);
 		int clearSoundBuffer(void);

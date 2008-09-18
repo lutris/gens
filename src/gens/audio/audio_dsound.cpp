@@ -351,3 +351,10 @@ int Audio_DSound::stopSound(void)
 	m_soundIsPlaying = false;
 	return 1;
 }
+
+
+bool Audio_DSound::lotsInAudioBuffer(void)
+{
+	// TODO: Figure out what to do here for DSound...
+	return false;
+}
