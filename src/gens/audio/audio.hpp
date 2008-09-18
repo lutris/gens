@@ -30,7 +30,7 @@ class Audio
 		
 		// Miscellaneous functions that need to be sorted through.
 		virtual int getCurrentSeg(void) = 0;
-		bool lotsInAudioBuffer(void);
+		virtual bool lotsInAudioBuffer(void) = 0;
 		virtual int checkSoundTiming(void) = 0;
 		virtual int writeSoundBuffer(void *dumpBuf) = 0;
 		virtual int clearSoundBuffer(void) = 0;
@@ -77,10 +77,6 @@ class Audio
 		bool m_playingGYM;
 		unsigned int Sound_Interpol[882];
 		//unsigned int Sound_Extrapol[312][2];
-		
-		int audio_len;
-		unsigned char *pMsndOut;
-		unsigned char *audiobuf;
 };
 #endif /* __cplusplus */
 

@@ -26,6 +26,9 @@
 
 Audio_SDL::Audio_SDL()
 {
+	audio_len = 0;
+	pMsndOut = NULL;
+	audiobuf = NULL;
 }
 
 Audio_SDL::~Audio_SDL()
@@ -311,8 +314,18 @@ int Audio_SDL::stopSound(void)
 	rval = lpDSBuffer->Stop ();
 
 	if (rval != DS_OK) return 0;
-
-	Sound_Is_Playing = 0;
 #endif
+	m_soundIsPlaying = false;
 	return 1;
+}
+
+
+/**
+ * lotsInAudioBuffer(): Check if there's "lots" in the audio buffer.
+ * @return True if there's "lots" in the audio buffer; false otherwise.
+ */
+bool Audio_SDL::lotsInAudioBuffer(void)
+{
+	// TODO: Figure out how this works with DirectSound.
+	return (audio_len > (m_segLength * Seg_To_Buffer));
 }
