@@ -84,7 +84,7 @@ extern "C"
 }
 
 
-long PASCAL Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT r;
 	int t;
