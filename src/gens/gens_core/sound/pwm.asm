@@ -470,6 +470,11 @@ section .text align=64
 		and edx, 0xFFFF
 		sub eax, 0x4000
 		sub edx, 0x4000
+
+		; Multiply volume by 4. (Suggested by Puto in #retro)
+		shl eax, 2
+		shl edx, 2
+
 		test ecx, ecx
 		mov ebx, [ebx]
 		jnz short .Loop
