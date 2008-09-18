@@ -65,7 +65,9 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Create and show the Gens window.
+	// TODO: Use nCmdShow from WinMain for ShowWindow()'s second parameter.
 	create_gens_window();
+	ShowWindow(Gens_hWnd, 1);
 	
 	// Set the window title to Idle.
 	setWindowTitle_Idle();
