@@ -135,6 +135,7 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
 		port/ini.cpp \
+		port/timer.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
@@ -180,7 +181,6 @@ if LINUX
 gens_SOURCES += \
 		emulator/g_main_linux.cpp \
 		port/port.c \
-		port/timer.c \
 		video/v_draw_sdl.cpp \
 		input/input_sdl.cpp \
 		audio/audio_sdl.cpp
@@ -288,6 +288,7 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		port/ini.hpp \
+		port/timer.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \
@@ -334,7 +335,6 @@ if LINUX
 noinst_HEADERS +=
 		emulator/g_main_linux.hpp \
 		port/port.h \
-		port/timer.h \
 		video/v_draw_sdl.hpp \
 		input/input_sdl.hpp \
 		input/input_sdl_keys.h \
