@@ -76,8 +76,6 @@ section .bss align=64
 	extern _32X_VDP_CRam
 	extern _32X_VDP_CRam_Ajusted
 	extern _32X_VDP
-	extern _XRay
-	extern _Pal32_XRAY
 	extern bpp
 
 	struc vx
@@ -1869,11 +1867,6 @@ ALIGN4
 		shr ecx, 1
 		lea edi, [MD_Screen32 + edi * 4 + 8 * 4]
 		mov esi, MD_Palette32
-		test [_XRay], byte 1
-		jz short .Genesis_Loop32
-		mov esi, _Pal32_XRAY
-		jmp .Genesis_LoopXray		
-		ALIGN32
 		
 	.Genesis_Loop32
 		movzx eax, byte [edx + 0]
@@ -1901,8 +1894,6 @@ ALIGN4
 		mov edi, [esp]
 		sub ecx, eax
 		add esp, byte 4
-		test [_XRay], byte 1	; TODO: X-ray not properly implemented for 16-bit color.
-		jnz short .end
 		lea edi, [MD_Screen + edi * 2 + 8 * 2]
 		shr ecx, 1
 		mov esi, MD_Palette
@@ -1946,27 +1937,6 @@ ALIGN4
 	.end
 		popad
 		ret
-
-	.Genesis_LoopXray
-		movzx eax, word [edx + 0]
-		movzx ebx, word [edx + 2]
-		mov eax, [esi + eax * 4]
-		mov ebx, [esi + ebx * 4]
-		mov [edi + 0], eax
-		mov [edi + 4], ebx
-		movzx ebp, word [edx + 4]
-		movzx eax, word [edx + 6]
-		mov ebp, [esi + ebp * 4]
-		mov eax, [esi + eax * 4]
-		mov [edi + 8], ebp
-		mov [edi + 12], eax
-		add edx, byte 8
-		add edi, byte 16
-		dec ecx
-		jnz short .Genesis_LoopXray
-	popad
-	ret
-
 
 
 ; *******************************************************

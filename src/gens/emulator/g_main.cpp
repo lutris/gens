@@ -55,11 +55,6 @@ struct Gens_VideoSettings_t Video;
 // This is used by asm functions, so it can't be kept in a struct.
 unsigned char bpp;
 
-// from gens-rerecording
-// TODO: Move somewhere else.
-int _XRay = 0; // TODO: Port X-ray support from Gens Rerecording.
-unsigned int _Pal32_XRAY[0x10000];
-
 int fast_forward = 0;
 
 POINT Window_Pos;

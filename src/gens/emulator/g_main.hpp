@@ -89,11 +89,6 @@ extern unsigned char bpp;
 // TODO: Only used for DirectDraw.
 extern int Flag_Clr_Scr;
 
-// from gens-rerecording
-// TODO: Move somewhere else.
-extern int _XRay;
-extern unsigned int _Pal32_XRAY[0x10000];
-
 extern int Paused;
 extern int Net_Play;
 extern int Current_State;
