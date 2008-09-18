@@ -430,7 +430,7 @@ gens_LDADD = \
 		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
-		-lm -lz @SDL_LIBS@
+		-lm @SDL_LIBS@
 
 if GENS_UI_GTK
 gens_LDADD += @GTK_LIBS@
