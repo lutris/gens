@@ -1,7 +1,7 @@
-NASM = nasm -O3 -D __GCC2 -w-orphan-labels
+NASM = nasm -O3 -w-orphan-labels
 
 if LINUX
-NASM += -f elf
+NASM += -D __GCC2 -f elf
 endif
 
 if WIN32
