@@ -321,11 +321,15 @@ int Audio_SDL::stopSound(void)
 
 
 /**
- * lotsInAudioBuffer(): Check if there's "lots" in the audio buffer.
- * @return True if there's "lots" in the audio buffer; false otherwise.
+ * waitForAudioBuffer(): Wait for the audio buffer to empty out.
+ * This function is used for Auto Frame Skip.
  */
-bool Audio_SDL::lotsInAudioBuffer(void)
+void Audio_SDL::waitForAudioBuffer(void)
 {
-	// TODO: Figure out how this works with DirectSound.
-	return (audio_len > (m_segLength * Seg_To_Buffer));
+	writeSoundBuffer(NULL);
+	while (audio_len > (m_segLength * Seg_To_Buffer))
+	{
+		Update_Frame_Fast();
+		writeSoundBuffer(NULL);
+	}
 }

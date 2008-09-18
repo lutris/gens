@@ -30,6 +30,10 @@ class Audio_SDL : public Audio
 		int playSound(void);
 		int stopSound(void);
 		
+		// Auto Frame Skip functions
+		//void wpSegWait(void) { }
+		void waitForAudioBuffer(void);
+		
 	protected:
 		int audio_len;
 		unsigned char *pMsndOut;

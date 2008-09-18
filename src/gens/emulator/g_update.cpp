@@ -64,18 +64,17 @@ int Update_Emulation(void)
 			// the audio buffer. Hence the audio is a couple of
 			// cycles ahead of the graphics.
 			
-			audio->writeSoundBuffer(NULL);
-			while (!audio->lotsInAudioBuffer())
-			{
-				Update_Frame_Fast();
-				audio->writeSoundBuffer(NULL);
-			}
-
+			// Win32 specific.
+			audio->wpSegWait();
+			
+			// Wait for the audio buffer to empty out.
+			audio->waitForAudioBuffer();
+			
+			// Audio buffer is empty.
 			input->updateControllers();
 			Update_Frame();
 			draw->flip();
-		} //If sound is enabled
-		
+		}
 		else
 		{
 			if (CPU_Mode)

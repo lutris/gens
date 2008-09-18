@@ -10,6 +10,7 @@
 
 #include "audio_dsound.hpp"
 #include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
 
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/ym2612.h"
@@ -357,4 +358,29 @@ bool Audio_DSound::lotsInAudioBuffer(void)
 {
 	// TODO: Figure out what to do here for DSound...
 	return false;
+}
+
+
+void Audio_DSound::wpSegWait(void)
+{
+	while (WP == getCurrentSeg())
+	{
+		GensUI::sleep(1);
+	}
+}
+
+
+/**
+ * waitForAudioBuffer(): Wait for the audio buffer to empty out.
+ * This function is used for Auto Frame Skip.
+ */
+void Audio_DSound::waitForAudioBuffer(void)
+{
+	RP = getCurrentSeg();
+	while (WP != RP)
+	{
+		writeSoundBuffer(NULL);
+		WP = (WP + 1) & (Sound_Segs - 1);
+		input->updateControllers();
+	}
 }

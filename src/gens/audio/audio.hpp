@@ -30,12 +30,15 @@ class Audio
 		
 		// Miscellaneous functions that need to be sorted through.
 		virtual int getCurrentSeg(void) = 0;
-		virtual bool lotsInAudioBuffer(void) = 0;
 		virtual int checkSoundTiming(void) = 0;
 		virtual int writeSoundBuffer(void *dumpBuf) = 0;
 		virtual int clearSoundBuffer(void) = 0;
 		virtual int playSound(void) = 0;
 		virtual int stopSound(void) = 0;
+		
+		// Auto Frame Skip functions
+		virtual void wpSegWait(void) { }
+		virtual void waitForAudioBuffer(void) = 0;
 		
 		// WAV dumping.
 		// TODO: Move to util/sound/wav.c(pp)

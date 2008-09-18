@@ -32,6 +32,10 @@ class Audio_DSound : public Audio
 		int playSound(void);
 		int stopSound(void);
 		
+		// Auto Frame Skip functions
+		void wpSegWait(void);
+		void waitForAudioBuffer(void);
+		
 	protected:
 		// DirectSound stuff
 		LPDIRECTSOUND lpDS;
