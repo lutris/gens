@@ -1,4 +1,12 @@
-NASM = nasm -O3 -D __GCC2 -f elf
+NASM = nasm -O3 -D __GCC2
+
+if LINUX
+NASM += -f elf
+endif
+
+if WIN32
+NASM += -f win32
+endif
 
 BUILT_SOURCES = sub68k.asm
 CLEANFILES = star sub68k.asm

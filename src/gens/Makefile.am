@@ -56,11 +56,20 @@ ASMFILES = \
 		gens_core/vdp/vdp_rend.o \
 		gens_core/cpu/z80/z80.o
 
-NASM = \
-nasm -O1 -D __GCC2 -f elf \
+NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
+
+NASM = nasm -O1 -D __GCC2 $(NASM_INCLUDES)
+
+if LINUX
+NASM += -f elf
+endif
+
+if WIN32
+NASM += -f win32
+endif
 
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
