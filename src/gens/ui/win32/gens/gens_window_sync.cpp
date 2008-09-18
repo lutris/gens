@@ -25,12 +25,11 @@
 #endif
 
 #include <string.h>
+#include <windows.h>
 
 #include "gens_window.h"
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
-
-#include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
@@ -53,21 +52,8 @@
 using std::string;
 
 
-// Macro to create a menu item with radio buttons.
-#define NewMenuItem_Radio(MenuItemWidget, MenuItemCaption, MenuItemName, Container, State, RadioGroup)	\
-{												\
-	MenuItemWidget = gtk_radio_menu_item_new_with_mnemonic(RadioGroup, (MenuItemCaption));	\
-	RadioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(MenuItemWidget));	\
-	gtk_widget_set_name(MenuItemWidget, MenuItemName);					\
-	gtk_widget_show(MenuItemWidget);							\
-	gtk_container_add(GTK_CONTAINER(Container), MenuItemWidget);				\
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MenuItemWidget), State);		\
-	GLADE_HOOKUP_OBJECT(gens_window, MenuItemWidget, MenuItemName);				\
-}
-
-
 /**
- * Sync_Gens_Window(): Synchronize the GENS Main Window.
+ * Sync_Gens_Window(): Synchronize the Gens Main Window.
  */
 void Sync_Gens_Window(void)
 {
@@ -85,6 +71,7 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
+#if 0
 	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
 	GtkWidget *MItem_ROMHistory_SubMenu_Item;
 	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
@@ -168,6 +155,7 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -176,6 +164,7 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
+#if 0
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
@@ -260,9 +249,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
+#if 0
 /**
  * Sync_Gens_Window_GraphicsMenu_Render_SubMenu(): Synchronize the Graphics, Render submenu.
  * @param container Container for this menu.
@@ -319,6 +310,7 @@ void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
 		i++;
 	}
 }
+#endif
 
 
 /**
@@ -326,6 +318,7 @@ void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
+#if 0
 #ifdef GENS_DEBUGGER
 	GtkWidget *MItem_Debug;
 	GtkWidget *MItem_Debug_Item;
@@ -441,6 +434,7 @@ void Sync_Gens_Window_CPUMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -449,6 +443,7 @@ void Sync_Gens_Window_CPUMenu(void)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
+#if 0
 	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
 	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
 	GtkWidget *MItem_DAC, *MItem_DAC_Improved;
@@ -523,6 +518,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -531,6 +527,7 @@ void Sync_Gens_Window_SoundMenu(void)
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {
+#if 0
 	GtkWidget *SRAMSize;
 	
 	// Disable callbacks so nothing gets screwed up.
@@ -551,4 +548,5 @@ void Sync_Gens_Window_OptionsMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }

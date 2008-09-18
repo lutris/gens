@@ -44,10 +44,7 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
-// TODO: Gens Window Sync on Win32
-//#include "gens/gens_window_sync.hpp"
-
-// GENS Settings struct
+// Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
 struct Gens_BIOS_Filenames_t BIOS_Filenames;

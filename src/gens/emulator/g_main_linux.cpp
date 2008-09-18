@@ -24,6 +24,8 @@
 #include "input/input_sdl.hpp"
 #include "audio/audio_sdl.hpp"
 
+#include "gens/gens_window_sync.hpp"
+
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */

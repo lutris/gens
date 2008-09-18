@@ -51,7 +51,6 @@
 #include "util/file/config_file.hpp"
 
 #include "ui/gens_ui.hpp"
-#include "gtk-misc.h"
 
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
@@ -69,7 +68,7 @@
 // CD-ROM drive access
 #ifdef GENS_CDROM
 #include "segacd/cd_aspi.hpp"
-#endif
+#endif /* GENS_CDROM */
 
 // C++ includes
 #include <string>
@@ -84,7 +83,7 @@ extern "C"
 }
 
 
-#include "video/vdraw_ddraw.hpp"
+#include "video/v_draw_ddraw.hpp"
 static bool PaintsEnabled;
 
 
@@ -125,6 +124,7 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			// TODO: Menu items.
 			break;
 		
+#if 0
 #ifdef GENS_DEBUGGER
 		case WM_KEYDOWN:
 			// TODO: Make sure this is correct.
@@ -132,6 +132,7 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				Debug_Event(wParam, 0);
 			break;
 #endif /* GENS_DEBUGGER */
+#endif
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
