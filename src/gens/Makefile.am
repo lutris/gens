@@ -237,7 +237,8 @@ if WIN32
 gens_SOURCES += \
 		emulator/g_main_win32.cpp \
 		video/v_draw_ddraw.cpp \
-		input/input_dinput.cpp
+		input/input_dinput.cpp \
+		audio/audio_dsound.cpp
 endif
 
 noinst_HEADERS = \
@@ -388,7 +389,8 @@ noinst_HEADERS += \
 		emulator/g_main_win32.hpp \
 		video/v_draw_ddraw.hpp \
 		input/input_dinput.hpp \
-		input/input_win32_keys.h
+		input/input_win32_keys.h \
+		audio/audio_dsound.hpp
 endif
 
 gens_CFLAGS = \
