@@ -7,16 +7,6 @@ extern "C" {
 
 #include "io_old.h"
 
-extern unsigned int Controller_1_State;
-extern unsigned int Controller_1_COM;
-extern unsigned int Controller_1_Counter;
-extern unsigned int Controller_1_Delay;
-
-extern unsigned int Controller_2_State;
-extern unsigned int Controller_2_COM;
-extern unsigned int Controller_2_Counter;
-extern unsigned int Controller_2_Delay;
-
 #define CONTROLLER_UP		0x00000001
 #define CONTROLLER_DOWN		0x00000002
 #define CONTROLLER_LEFT		0x00000004
