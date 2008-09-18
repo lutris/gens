@@ -255,7 +255,7 @@ static void create_gens_window_menubar(GtkWidget *container)
  */
 static void create_gens_window_FileMenu(GtkWidget *container)
 {
-	GtkWidget *File;			GtkWidget *File_Icon;
+	GtkWidget *File;
 	GtkWidget *FileMenu;
 	GtkWidget *FileMenu_OpenROM;		GtkWidget *FileMenu_OpenROM_Icon;
 #ifdef GENS_CDROM
@@ -275,7 +275,7 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 	GtkWidget *FileMenu_Quit;		GtkWidget *FileMenu_Quit_Icon;
 	
 	// File
-	NewMenuItem_Icon(File, "_File", "File", container, File_Icon, "resource.png");
+	NewMenuItem(File, "_File", "File", container);
 	
 	// Menu object for the FileMenu
 	FileMenu = gtk_menu_new();
@@ -401,7 +401,7 @@ static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container
  */
 static void create_gens_window_GraphicsMenu(GtkWidget *container)
 {
-	GtkWidget *Graphics;			GtkWidget *Graphics_Icon;
+	GtkWidget *Graphics;
 	GtkWidget *GraphicsMenu;
 	GtkWidget *GraphicsMenu_FullScreen;	GtkWidget *GraphicsMenu_FullScreen_Icon;
 	GtkWidget *GraphicsMenu_VSync;
@@ -424,7 +424,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	GtkWidget *GraphicsMenu_ScreenShot;	GtkWidget *GraphicsMenu_ScreenShot_Icon;
 	
 	// Graphics
-	NewMenuItem_Icon(Graphics, "_Graphics", "Graphics", container, Graphics_Icon, "xpaint.png");
+	NewMenuItem(Graphics, "_Graphics", "Graphics", container);
 	
 	// Menu object for the GraphicsMenu
 	GraphicsMenu = gtk_menu_new();
@@ -636,7 +636,7 @@ static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *contain
  */
 static void create_gens_window_CPUMenu(GtkWidget *container)
 {
-	GtkWidget *CPU;				GtkWidget *CPU_Icon;
+	GtkWidget *CPU;
 	GtkWidget *CPUMenu;
 #ifdef GENS_DEBUGGER
 	GtkWidget *CPUMenu_Debug;
@@ -655,7 +655,7 @@ static void create_gens_window_CPUMenu(GtkWidget *container)
 	GtkWidget *CPUMenu_SegaCD_PerfectSync;
 	
 	// CPU
-	NewMenuItem_Icon(CPU, "_CPU", "CPU", container, CPU_Icon, "memory.png");
+	NewMenuItem(CPU, "_CPU", "CPU", container);
 	
 	// Menu object for the CPUMenu
 	CPUMenu = gtk_menu_new();
@@ -828,7 +828,7 @@ static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
  */
 static void create_gens_window_SoundMenu(GtkWidget *container)
 {
-	GtkWidget *Sound;			GtkWidget *Sound_Icon;
+	GtkWidget *Sound;
 	GtkWidget *SoundMenu;
 	GtkWidget *SoundMenu_Enable;
 	GtkWidget *SoundMenu_Separator1;
@@ -851,7 +851,7 @@ static void create_gens_window_SoundMenu(GtkWidget *container)
 	GtkWidget *SoundMenu_GYMDump;
 	
 	// Sound
-	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
+	NewMenuItem(Sound, "_Sound", "Sound", container);
 	
 	// Menu object for the SoundMenu
 	SoundMenu = gtk_menu_new();
@@ -980,7 +980,7 @@ static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container)
  */
 static void create_gens_window_OptionsMenu(GtkWidget *container)
 {
-	GtkWidget *Options;			GtkWidget *Options_Icon;
+	GtkWidget *Options;
 	GtkWidget *OptionsMenu;
 	GtkWidget *OptionsMenu_GeneralOptions;	GtkWidget *OptionsMenu_GeneralOptions_Icon;
 	GtkWidget *OptionsMenu_Joypads;		GtkWidget *OptionsMenu_Joypads_Icon;
@@ -996,7 +996,7 @@ static void create_gens_window_OptionsMenu(GtkWidget *container)
 	GtkWidget *OptionsMenu_SaveConfigAs;	GtkWidget *OptionsMenu_SaveConfigAs_Icon;
 	
 	// Options
-	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
+	NewMenuItem(Options, "_Options", "Options", container);
 	
 	// Menu object for the OptionsMenu
 	OptionsMenu = gtk_menu_new();
@@ -1100,12 +1100,12 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *con
  */
 static void create_gens_window_HelpMenu(GtkWidget *container)
 {
-	GtkWidget *Help;			GtkWidget *Help_Icon;
+	GtkWidget *Help;
 	GtkWidget *HelpMenu;
 	GtkWidget *HelpMenu_About;		GtkWidget *HelpMenu_About_Icon;
 	
 	// Help
-	NewMenuItem_StockIcon(Help, "_Help", "Help", container, Help_Icon, "gtk-help");
+	NewMenuItem(Help, "_Help", "Help", container);
 	
 	// Menu object for the HelpMenu
 	HelpMenu = gtk_menu_new();
