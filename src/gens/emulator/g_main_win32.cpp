@@ -103,7 +103,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// This also initializes SDL or SDL+GL.
 	Change_OpenGL(Video.OpenGL);
 #else
-	// Initialize SDL.
+	// Initialize DirectDraw.
 	draw->Init_Video();
 #endif
 	

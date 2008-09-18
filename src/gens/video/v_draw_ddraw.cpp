@@ -100,7 +100,9 @@ int VDraw_DDraw::Init_Video(void)
 		Recalculate_Palettes();
 	}
 #endif
-	
+
+	// TODO: This doesn't work on Wine, so disable it for now.
+#if 0
 #ifdef DISABLE_EXCLUSIVE_FULLSCREEN_LOCK
 	Video.VSync_FS = 0;
 	rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
@@ -113,6 +115,7 @@ int VDraw_DDraw::Init_Video(void)
 	
 	if (FAILED(rval))
 		return Init_Fail(Gens_hWnd, "Error with lpDD->SetCooperativeLevel()!");
+#endif
 	
 	// TODO: Figure out what FS_No_Res_Change is for.
 	if (m_FullScreen /* && !FS_No_Res_Change*/)

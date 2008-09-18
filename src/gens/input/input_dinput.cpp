@@ -250,6 +250,8 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 		return(DIENUM_CONTINUE);
 	}
 
+	// TODO: This doesn't work on Wine, so disable it for now.
+#if 0
 	rval = m_joyID[m_numJoysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 
 	if (rval != DI_OK)
@@ -259,6 +261,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
+#endif
  
 	diprg.diph.dwSize = sizeof(diprg); 
 	diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
