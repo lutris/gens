@@ -662,7 +662,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (forceUpdate && is_gens_running())
 		updateRenderer();
 	
-	if (reinit)
+	if (reinit && forceUpdate)
 	{
 		// The Gens window must be reinitialized.
 		return reinitGensWindow();
