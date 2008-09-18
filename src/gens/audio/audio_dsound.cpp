@@ -27,7 +27,12 @@
 
 Audio_DSound::Audio_DSound()
 {
+	// Initialize DSound buffers to NULL.
+	lpDS = NULL;
+	lpDSPrimary = NULL;
+	lpDSBuffer = NULL;
 }
+
 
 Audio_DSound::~Audio_DSound()
 {
