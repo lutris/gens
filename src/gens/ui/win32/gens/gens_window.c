@@ -150,15 +150,15 @@ static void create_gens_window_FileMenu(HMENU parent)
 	FileMenu = CreatePopupMenu();
 	InsertMenu(parent, 0, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
 	
-	FLAGS = MF_BYPOSITION | MF_STRING;
+	flags = MF_BYPOSITION | MF_STRING;
 	
-	InsertMenu(FileMenu, i++, Flags, /*ID_MENU_OPENROM*/ 0, "&Open ROM...");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_OPENROM*/ 0, "&Open ROM...");
 #ifdef GENS_CDROM
-	InsertMenu(FileMenu, i++, Flags, /*ID_MENU_BOOTCD*/ 0, "&Boot CD");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_BOOTCD*/ 0, "&Boot CD");
 #endif /* GENS_CDROM */
-	InsertMenu(FileMenu, i++, Flags, /*ID_MENU_NETPLAY*/ 0, "&Netplay");
-	InsertMenu(FileMenu, i++, Flags, /*ID_MENU_ROMHISTORY*/ 0, "ROM &History");
-	InsertMenu(FileMenu, i++, Flags, /*ID_MENU_CLOSEROM*/ 0, "&Close ROM");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_NETPLAY*/ 0, "&Netplay");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_ROMHISTORY*/ 0, "ROM &History");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_CLOSEROM*/ 0, "&Close ROM");
 	
 	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	

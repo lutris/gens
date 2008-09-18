@@ -77,6 +77,10 @@ if GENS_UI_GTK
 INCLUDES += -I@srcdir@/ui/gtk/
 endif
 
+if GENS_UI_WIN32
+INCLUDES += -I@srcdir@/ui/win32/
+endif
+
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
 	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
