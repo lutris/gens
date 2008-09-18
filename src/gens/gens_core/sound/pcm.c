@@ -225,13 +225,13 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 			fprintf (debug_SCD_file, "PCM : Channel Enable = %.2X\n", Data);
 #endif
 			
-			for (i = 0; i < 7; i++)
+			for (i = 0; i < 8; i++)
 			{
 				if (!PCM_Chip.Channel[i].Enable)
 					PCM_Chip.Channel[i].Addr = PCM_Chip.Channel[i].St_Addr;
 			}
 			
-			for (i = 0; i < 7; i++)
+			for (i = 0; i < 8; i++)
 			{
 				PCM_Chip.Channel[i].Enable = Data & (1 << i);
 			}
