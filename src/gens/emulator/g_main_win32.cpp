@@ -6,7 +6,6 @@
 #include "g_main_win32.hpp"
 
 
-HWND Gens_hWnd;
 HINSTANCE ghInstance;
 
 
@@ -69,7 +68,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		return 0;
 	
 	// Initialize the UI.
-	GensUI::init(argc, argv);
+	GensUI::init(0, NULL);
 	
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();

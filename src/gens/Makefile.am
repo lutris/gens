@@ -238,7 +238,9 @@ gens_SOURCES += \
 		emulator/g_main_win32.cpp \
 		video/v_draw_ddraw.cpp \
 		input/input_dinput.cpp \
-		audio/audio_dsound.cpp
+		audio/audio_dsound.cpp \
+		ui/win32/gens_ui_win32.cpp \
+		ui/win32/gens/gens_window.c
 endif
 
 noinst_HEADERS = \
@@ -390,7 +392,8 @@ noinst_HEADERS += \
 		video/v_draw_ddraw.hpp \
 		input/input_dinput.hpp \
 		input/input_win32_keys.h \
-		audio/audio_dsound.hpp
+		audio/audio_dsound.hpp \
+		ui/win32/gens/gens_window.c
 endif
 
 gens_CFLAGS = \

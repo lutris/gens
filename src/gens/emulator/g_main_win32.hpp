@@ -14,7 +14,6 @@ extern "C" {
 
 #include <windows.h>
 
-extern HWND Gens_hWnd;
 extern HINSTANCE ghInstance;
 
 void Get_Save_Path(char *buf, size_t n);
