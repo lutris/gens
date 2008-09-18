@@ -1,16 +1,19 @@
 NASM = nasm -O3 -D __GCC2 -f elf
 
-noinst_PROGRAMS = star
-star_SOURCES = star.c
-
 BUILT_SOURCES = sub68k.asm
-CLEANFILES = sub68k.asm
+CLEANFILES = star sub68k.asm
 
 EXTRA_DIST = STARDOC.TXT STARCPU.H
 SUFFIXES = .asm
 
 %.o:	%.asm
 	$(NASM) $< -o $@
+
+# Hack to get Starscream to build using the BUILD compiler when
+# cross-compiling for Win32.
+# NOTE: This will only work with gcc.
+star:
+	${build_alias}-gcc -o star ${srcdir}/star.c
 
 sub68k.asm:	star
 		./star sub68k.asm -hog -name sub68k_
