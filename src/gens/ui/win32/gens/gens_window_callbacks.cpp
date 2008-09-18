@@ -84,6 +84,13 @@ extern "C"
 }
 
 
+#include "video/vdraw_ddraw.hpp"
+static bool PaintsEnabled;
+
+
+static void on_gens_window_close(void);
+
+
 LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT r;
@@ -91,29 +98,60 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 
 	switch(message)
 	{
+		case WM_CLOSE:
+			on_gens_window_close();
+			return 0;
+		
+		case WM_CREATE:
+			Active = 1;
+			break;
+		
+		case WM_PAINT:
+			HDC hDC;
+			PAINTSTRUCT ps;
+			
+			hDC = BeginPaint(hWnd, &ps);
+			
+			if (PaintsEnabled)
+			{
+				((VDraw_DDraw*)draw)->clearPrimaryScreen();
+				draw->flip();
+			}
+			
+			EndPaint(hWnd, &ps);
+			break;
+		
+		case WM_COMMAND:
+			// TODO: Menu items.
+			break;
+		
+#ifdef GENS_DEBUGGER
+		case WM_KEYDOWN:
+			// TODO: Make sure this is correct.
+			if (Debug)
+				Debug_Event(wParam, 0);
+			break;
+#endif /* GENS_DEBUGGER */
 	}
+	
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+/**
+ * Window is closed.
+ */
+void on_gens_window_close(void)
+{
+	//Modif N - making sure sound doesn't stutter on exit
+	if (audio->soundInitialized())
+		audio->clearSoundBuffer();
+	
+	close_gens();
 }
 
 
 #if 0
-/**
- * Window is closed.
- */
-gboolean on_gens_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	close_gens();
-	
-	// TRUE tells GTK+ not to close the window. This is needed
-	// in order to prevent an X11 error from occurring due to
-	// the embedded SDL window.
-	return TRUE;
-}
-
-
 /**
  * File, Open ROM...
  */
