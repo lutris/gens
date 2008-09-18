@@ -140,6 +140,8 @@ Input_DInput::Input_DInput()
 		return;
 	}
 	
+	// TODO: WINE doesn't like SetCooperativeLevel.
+#if 0
 	//rval = lpDIDMouse->SetCooperativeLevel(Gens_hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 	rval = lpDIDKeyboard->SetCooperativeLevel(Gens_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	if (rval != DI_OK)
@@ -147,6 +149,7 @@ Input_DInput::Input_DInput()
 		// TODO: Error handling.
 		return;
 	}
+#endif
 	
 	//rval = lpDIDMouse->SetDataFormat(&c_dfDIMouse);
 	rval = lpDIDKeyboard->SetDataFormat(&c_dfDIKeyboard);
@@ -199,6 +202,7 @@ Input_DInput::~Input_DInput()
 		{
 			m_joyID[i]->Unacquire();
 			m_joyID[i]->Release();
+			m_joyID[i] = NULL;
 		}
 	}
 	
