@@ -61,7 +61,7 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-NASM = nasm -O1 -D __GCC2 $(NASM_INCLUDES)
+NASM = nasm -O1 -D __GCC2 -w-orphan-labels $(NASM_INCLUDES)
 
 if LINUX
 NASM += -f elf

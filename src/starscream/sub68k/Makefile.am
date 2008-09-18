@@ -1,4 +1,4 @@
-NASM = nasm -O3 -D __GCC2
+NASM = nasm -O3 -D __GCC2 -w-orphan-labels
 
 if LINUX
 NASM += -f elf
