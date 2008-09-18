@@ -65,7 +65,7 @@ void INI::load(const string& filename)
 	if (!cfgFile.is_open())
 	{
 		// Error opening the INI file.
-		fprintf(stderr, "%s: Error opening INI file %s", __func__, filename.c_str());
+		fprintf(stderr, "%s: Error opening INI file %s\n", __func__, filename.c_str());
 		return;
 	}
 	
