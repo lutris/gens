@@ -229,7 +229,7 @@ static int Build_Language_String (void)
 /**
  * Init_Settings(): Initialize the Settings struct.
  */
-static void Init_Settings(void)
+void Init_Settings(void)
 {
 	// Initialize video settings.
 	Video.Render_W = 1;	// Double
@@ -266,8 +266,8 @@ static void Init_Settings(void)
 	Create_Save_Directory(PathNames.Gens_Path);
 	
 	// Create default language filename.
-	strncpy (PathNames.Language_Path, PathNames.Gens_Path, GENS_PATH_MAX);
-	strcat (PathNames.Language_Path, "language.dat");
+	strncpy(PathNames.Language_Path, PathNames.Gens_Path, GENS_PATH_MAX);
+	strcat(PathNames.Language_Path, "language.dat");
 	
 	// Create default configuration filename.
 	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);

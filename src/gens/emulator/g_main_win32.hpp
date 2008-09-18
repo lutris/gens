@@ -20,6 +20,8 @@ extern HINSTANCE ghInstance;
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
 
+int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow);
+
 #ifdef __cplusplus
 }
 #endif

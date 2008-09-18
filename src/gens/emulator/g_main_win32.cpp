@@ -38,7 +38,7 @@ void Create_Save_Directory(const char *dir)
  * @param nCmdShow ???
  * @return Error code.
  */
-int PASCAL WinMain(HINSTANCE hinst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
+int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
 	// Initialize the drawing object.
 	draw = new VDraw_DDraw();
@@ -64,6 +64,7 @@ int PASCAL WinMain(HINSTANCE hinst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Init_Genesis_Bios();
 	
 	// Initialize Gens.
+	ghInstance = hInst;
 	if (!Init())
 		return 0;
 	

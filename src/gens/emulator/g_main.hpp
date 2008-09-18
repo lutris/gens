@@ -133,6 +133,10 @@ void close_gens();
 int IsAsyncAllowed(void);
 
 
+// Initialize settings.
+void Init_Settings(void);
+
+
 // MESSAGE_L functions.
 void MESSAGE_L(const char* str, const char* def, int time);
 void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
