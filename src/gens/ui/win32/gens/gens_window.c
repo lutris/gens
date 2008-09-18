@@ -102,7 +102,7 @@ HWND create_gens_window(void)
 	
 	RegisterClass(&WndClass);
 	
-	Gens_hWnd = CreateWindowEx(NULL, "Gens", "Gens - Idle", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+	Gens_hWnd = CreateWindowEx(NULL, "Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 				   320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
 	if (!Gens_hWnd)
 		return NULL;
