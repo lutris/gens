@@ -558,7 +558,7 @@ void Input_DInput::update(void)
 	// HACK because DirectInput is totally wacky about recognizing the PAUSE/BREAK key
 	// still not perfect with this, but at least it goes above a 25% success rate
 	if(GetAsyncKeyState(VK_PAUSE)) // normally this should have & 0x8000, but apparently this key is too special for that to work
-		Keys[0xC5] |= 0x80;
+		m_DIKeys[0xC5] |= 0x80;
 	
 	if ((rval == DIERR_INPUTLOST) | (rval == DIERR_NOTACQUIRED))
 		restoreInput();
