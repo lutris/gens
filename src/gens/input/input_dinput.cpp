@@ -132,6 +132,7 @@ Input_DInput::Input_DInput()
 	}
 	
 	//rval = lpDI->CreateDevice(GUID_SysMouse, &lpDIDMouse, NULL);
+	lpDIDMouse = NULL;
 	rval = lpDI->CreateDevice(GUID_SysKeyboard, &lpDIDKeyboard, NULL);
 	if (rval != DI_OK)
 	{

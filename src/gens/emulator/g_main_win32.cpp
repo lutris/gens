@@ -228,7 +228,6 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
 	strcat(Str_Tmp, "gens.cfg");
 	Save_Config(Str_Tmp);
-	printf("OMG\n");
 	
 	End_All();
 	ChangeDisplaySettings(NULL, 0);
