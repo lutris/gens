@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
-	while (is_gens_running ())
+	while (is_gens_running())
 	{
 		// Update the UI.
 		GensUI::update();

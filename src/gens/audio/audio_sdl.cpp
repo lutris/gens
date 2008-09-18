@@ -327,7 +327,7 @@ int Audio_SDL::stopSound(void)
 void Audio_SDL::waitForAudioBuffer(void)
 {
 	writeSoundBuffer(NULL);
-	while (audio_len > (m_segLength * Seg_To_Buffer))
+	while (audio_len <= (m_segLength * Seg_To_Buffer))
 	{
 		Update_Frame_Fast();
 		writeSoundBuffer(NULL);
