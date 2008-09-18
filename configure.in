@@ -195,9 +195,14 @@ AC_MSG_CHECKING(for zlib)
 fi
 AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
 
-CFLAGS="$CFLAGS -Wall -W -std=c99"
+CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
 LDFLAGS="$LDFLAGS"
+
+if test x$os != win32; then
+	CFLAGS="$CFLAGS -std=c99"
+fi
+
 AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
 AC_SUBST(SDL_CFLAGS)
