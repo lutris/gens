@@ -76,7 +76,6 @@ section .bss align=64
 	extern _32X_VDP_CRam
 	extern _32X_VDP_CRam_Ajusted
 	extern _32X_VDP
-	extern bpp
 
 	struc vx
 		.Mode		resd 1
@@ -142,6 +141,10 @@ section .bss align=64
 	.Borne			resd 1
 
 	ALIGN_4
+
+	; Color depth
+	DECL bpp
+	resb 32
 
 	; _32X_Rend_Mode is used for the 32X 32-bit color C macros.
 	; See g_32x_32bit.h

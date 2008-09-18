@@ -51,10 +51,6 @@ struct Gens_BIOS_Filenames_t BIOS_Filenames;
 struct Gens_Misc_Filenames_t Misc_Filenames;
 struct Gens_VideoSettings_t Video;
 
-// Bits per pixel.
-// This is used by asm functions, so it can't be kept in a struct.
-unsigned char bpp;
-
 int fast_forward = 0;
 
 POINT Window_Pos;
