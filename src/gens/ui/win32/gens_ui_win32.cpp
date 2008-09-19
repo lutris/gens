@@ -33,25 +33,32 @@
 #include "ui/gens_ui.hpp"
 
 
-#if 0
-// File Chooser function
-static string UI_GTK_FileChooser(const string& title, const string& initFile,
-				 const FileFilterType filterType,
-				 const GtkFileChooserAction action);
-
-
 // Filename filters.
-static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog);
-static void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog);
-static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog);
-static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog);
-static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
+static const char* UI_Win32_FileFilter_AllFiles =
+	"All Files\0*.*\0\0";
 
+static const char* UI_Win32_FileFilter_ROMFile =
+	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;*.zip;*.zsg;*.gz;*.7z\0"
+	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z\0"
+	"32X ROMs\0*.32x;*.zip;*.gz;*.7z"
+	"SegaCD Disc Images\0*.cue;*.iso;*.bin;*.raw\0"
+	"All Files\0*.*\0\0";
 
-// Sleep handler
-bool sleeping;
-gboolean GensUI_GLib_SleepCallback(gpointer data);
-#endif
+static const char* UI_Win32_FileFilter_SavestateFile =
+	"Savestate Files\0*.gs?\0"
+	"All Files\0*.*\0\0";
+
+static const char* UI_Win32_FileFilter_CDImage =
+	"SegaCD Disc Images\0*.bin;*.iso;*.cue\0"
+	"All Files\0*.*\0\0";
+
+static const char* UI_Win32_FileFilter_ConfigFile =
+	"Gens Config Files\0*.cfg\0\0"
+	"All Files\0*.*\0\0";
+
+static const char* UI_Win32_FileFilter_GYMFile =
+	"GYM Files\0*.gym\0\0"
+	"All Files\0*.*\0\0";
 
 
 /**
@@ -177,13 +184,53 @@ void GensUI::msgBox(const string& msg, const string& title)
  */
 string GensUI::openFile(const string& title, const string& initFile, const FileFilterType filterType)
 {
-	STUB;
-#if 0
-	// TODO: Extend this function.
-	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initFile, filterType, GTK_FILE_CHOOSER_ACTION_OPEN);
-#endif
-	return "";
+	char filename[GENS_PATH_MAX];
+	OPENFILENAME ofn;
+	
+	SetCurrentDirectory(PathNames.Gens_Path);
+	
+	memset(filename, 0, sizeof(filename));
+	memset(&ofn, 0, sizeof(OPENFILENAME));
+	
+	// Open Filename dialog settings
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = Gens_hWnd;
+	ofn.hInstance = ghInstance;
+	ofn.lpstrFile = filename;
+	ofn.nMaxFile = GENS_PATH_MAX - 1;
+	ofn.lpstrTitle = title.c_str();
+	ofn.lpstrInitialDir = initFile.c_str();
+	
+	switch (filterType)
+	{
+		case ROMFile:
+			ofn.lpstrFilter = UI_Win32_FileFilter_ROMFile;
+			break;
+		case SavestateFile:
+			ofn.lpstrFilter = UI_Win32_FileFilter_SavestateFile;
+			break;
+		case CDImage:
+			ofn.lpstrFilter = UI_Win32_FileFilter_CDImage;
+			break;
+		case ConfigFile:
+			ofn.lpstrFilter = UI_Win32_FileFilter_ConfigFile;
+			break;
+		case GYMFile:
+			ofn.lpstrFilter = UI_Win32_FileFilter_GYMFile;
+			break;
+		default:
+			ofn.lpstrFilter = UI_Win32_FileFilter_AllFiles;
+			break;
+	}
+	
+	ofn.nFilterIndex = 0;
+	ofn.lpstrInitialDir = initFile.c_str();
+	ofn.Flags = OFN_FILEMUSTEXIST;
+	
+	if (!GetOpenFileName(&ofn))
+		return "";
+	
+	return ofn.lpstrFile;
 }
 
 
