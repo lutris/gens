@@ -156,7 +156,6 @@ static void create_gens_window_menubar(void)
 static void create_gens_window_FileMenu(HMENU parent)
 {
 	unsigned int flags;
-	int i = 0;
 	
 	// File
 	FileMenu = CreatePopupMenu();
@@ -164,29 +163,29 @@ static void create_gens_window_FileMenu(HMENU parent)
 	
 	flags = MF_BYPOSITION | MF_STRING;
 	
-	InsertMenu(FileMenu, i++, flags, ID_FILE_OPENROM, "&Open ROM...");
+	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
 #ifdef GENS_CDROM
-	InsertMenu(FileMenu, i++, flags, ID_FILE_BOOTCD, "&Boot CD");
+	InsertMenu(FileMenu, 1, flags, ID_FILE_BOOTCD, "&Boot CD");
 #endif /* GENS_CDROM */
-	InsertMenu(FileMenu, i++, flags | MF_GRAYED, ID_FILE_NETPLAY, "&Netplay");
-	InsertMenu(FileMenu, i++, flags, ID_FILE_ROMHISTORY, "ROM &History");
-	InsertMenu(FileMenu, i++, flags, ID_FILE_CLOSEROM, "&Close ROM");
+	InsertMenu(FileMenu, 2, flags | MF_GRAYED, ID_FILE_NETPLAY, "&Netplay");
+	InsertMenu(FileMenu, 3, flags, ID_FILE_ROMHISTORY, "ROM &History");
+	InsertMenu(FileMenu, 4, flags, ID_FILE_CLOSEROM, "&Close ROM");
 	
-	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(FileMenu, 5, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, i++, flags, ID_FILE_GAMEGENIE, "&Game Genie");
+	InsertMenu(FileMenu, 6, flags, ID_FILE_GAMEGENIE, "&Game Genie");
 	
-	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(FileMenu, 7, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, i++, flags, ID_FILE_LOADSTATE, "&Load State...");
-	InsertMenu(FileMenu, i++, flags, ID_FILE_SAVESTATE, "&Save State As...");
-	InsertMenu(FileMenu, i++, flags, ID_FILE_QUICKLOAD, "Quick Load");
-	InsertMenu(FileMenu, i++, flags, ID_FILE_QUICKSAVE, "Quick Save");
-	InsertMenu(FileMenu, i++, flags, ID_FILE_CHANGESTATE, "Change State");
+	InsertMenu(FileMenu, 8, flags, ID_FILE_LOADSTATE, "&Load State...");
+	InsertMenu(FileMenu, 9, flags, ID_FILE_SAVESTATE, "&Save State As...");
+	InsertMenu(FileMenu, 10, flags, ID_FILE_QUICKLOAD, "Quick Load");
+	InsertMenu(FileMenu, 11, flags, ID_FILE_QUICKSAVE, "Quick Save");
+	InsertMenu(FileMenu, 12, flags, ID_FILE_CHANGESTATE, "Change State");
 	
-	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(FileMenu, 13, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, i++, flags, ID_FILE_QUIT, "Quit");
+	InsertMenu(FileMenu, 14, flags, ID_FILE_QUIT, "&Quit");
 }
 
 
@@ -197,7 +196,6 @@ static void create_gens_window_FileMenu(HMENU parent)
 static void create_gens_window_GraphicsMenu(HMENU parent)
 {
 	unsigned int flags;
-	int i = 0;
 	
 	// Graphics
 	GraphicsMenu = CreatePopupMenu();
@@ -205,26 +203,26 @@ static void create_gens_window_GraphicsMenu(HMENU parent)
 	
 	flags = MF_BYPOSITION | MF_STRING;
 	
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_VSYNC, "&VSync");
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_STRETCH, "&Stretch");
+	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
+	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync");
+	InsertMenu(GraphicsMenu, 2, flags, ID_GRAPHICS_STRETCH, "&Stretch");
 	
-	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(GraphicsMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_COLORADJUST, "&Color Adjust...");
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_RENDER, "&Render");
+	InsertMenu(GraphicsMenu, 4, flags, ID_GRAPHICS_COLORADJUST, "&Color Adjust...");
+	InsertMenu(GraphicsMenu, 5, flags, ID_GRAPHICS_RENDER, "&Render");
 	
-	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(GraphicsMenu, 6, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_SPRITELIMIT, "Sprite Limit");
+	InsertMenu(GraphicsMenu, 7, flags, ID_GRAPHICS_SPRITELIMIT, "Sprite Limit");
 	
-	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(GraphicsMenu, 8, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_FRAMESKIP, "Frame Skip");
+	InsertMenu(GraphicsMenu, 9, flags, ID_GRAPHICS_FRAMESKIP, "Frame Skip");
 	
-	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(GraphicsMenu, 10, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot");
+	InsertMenu(GraphicsMenu, 11, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot");
 }
 
 
@@ -235,7 +233,6 @@ static void create_gens_window_GraphicsMenu(HMENU parent)
 static void create_gens_window_CPUMenu(HMENU parent)
 {
 	unsigned int flags;
-	int i = 0;
 	
 	// CPU
 	CPUMenu = CreatePopupMenu();
@@ -244,25 +241,25 @@ static void create_gens_window_CPUMenu(HMENU parent)
 	flags = MF_BYPOSITION | MF_STRING;
 	
 #ifdef GENS_DEBUGGER
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_DEBUG, "&Debug");
-	InsertMenu(CPUMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(CPUMenu, 0, flags, ID_CPU_DEBUG, "&Debug");
+	InsertMenu(CPUMenu, 1, MF_SEPARATOR, NULL, NULL);
 #endif /* GENS_DEBUGGER */
 	
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_COUNTRY, "&Country");
+	InsertMenu(CPUMenu, 2, flags, ID_CPU_COUNTRY, "&Country");
 	
-	InsertMenu(CPUMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(CPUMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_HARDRESET, "Hard &Reset");
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESET68K, "Reset 68000");
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETMAIN68K, "Reset Main 68000");
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETSUB68K, "Reset Sub 68000");
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETMAINSH2, "Reset Main SH2");
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETZ80, "Reset Z80");
+	InsertMenu(CPUMenu, 4, flags, ID_CPU_HARDRESET, "Hard &Reset");
+	InsertMenu(CPUMenu, 5, flags, ID_CPU_RESET68K, "Reset 68000");
+	InsertMenu(CPUMenu, 6, flags, ID_CPU_RESETMAIN68K, "Reset Main 68000");
+	InsertMenu(CPUMenu, 7, flags, ID_CPU_RESETSUB68K, "Reset Sub 68000");
+	InsertMenu(CPUMenu, 8, flags, ID_CPU_RESETMAINSH2, "Reset Main SH2");
+	InsertMenu(CPUMenu, 9, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
+	InsertMenu(CPUMenu, 10, flags, ID_CPU_RESETZ80, "Reset Z80");
 	
-	InsertMenu(CPUMenu, i++, MF_SEPARATOR, NULL, NULL);
+	InsertMenu(CPUMenu, 11, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(CPUMenu, i++, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
+	InsertMenu(CPUMenu, 12, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
 }
 
 
