@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Main Window - Callback Functions.                          *
+ * Gens: (Win32) Main Window - Callback Functions.                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -179,34 +179,31 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			if (Get_Rom() != -1)
 				Sync_Gens_Window();
 			break;
+		
+		case ID_FILE_CLOSEROM:
+			if (audio->soundInitialized())
+				audio->clearSoundBuffer();
+	
+#ifdef GENS_DEBUGGER
+			Debug = 0;
+#endif /* GENS_DEBUGGER */
+	
+			/* TODO: NetPlay
+			if (Net_Play)
+			{
+				if (Video.Full_Screen)
+					Set_Render(0, -1, 1);
+			}
+			*/
+			
+			Free_Rom(Game);
+			Sync_Gens_Window();
+			break;
 	}
 }
 
 
 #if 0
-/**
- * File, Open ROM...
- */
-void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if ((Check_If_Kaillera_Running()))
-		return 0;
-	*/
-	if (audio->playingGYM())
-		Stop_Play_GYM();
-	if (Get_Rom() != -1)
-		Sync_Gens_Window();
-	/* Removed: Get_Rom() and related show an error by themselves.
-	else
-		GensUI::msgBox("Error opening ROM.", "Error");
-	*/
-}
-
-
 #ifdef GENS_CDROM
 /**
  * File, Boot CD
@@ -242,34 +239,6 @@ void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (audio->playingGYM())
 		Stop_Play_GYM();
 	Open_Rom(Recent_Rom[GPOINTER_TO_INT(user_data)]);
-	Sync_Gens_Window();
-}
-
-
-/**
- * File, Close ROM
- */
-void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	if (audio->soundInitialized())
-		audio->clearSoundBuffer();
-	
-#ifdef GENS_DEBUGGER
-	Debug = 0;
-#endif /* GENS_DEBUGGER */
-	
-	/* TODO: NetPlay
-	if (Net_Play)
-	{
-		if (Video.Full_Screen)
-			Set_Render(0, -1, 1);
-	}
-	*/
-	
-	Free_Rom(Game);
 	Sync_Gens_Window();
 }
 
