@@ -279,7 +279,7 @@ void Init_CD_Driver(void)
 	/*
 	if (ASPI_Init() == 0)
 	{
-		MessageBox(NULL, "No CD Drive or ASPI not correctly initialised\nTry to upgrade your ASPI drivers", "Warning", MB_ICONWARNING); 
+		GensUI::msgBox("No CD Drive or ASPI not correctly initialised\nTry to upgrade your ASPI drivers", "ASPI Error", MSGBOX_ICON_WARNING);
 	}
 	*/
 #endif	

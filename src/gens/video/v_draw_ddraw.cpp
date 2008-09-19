@@ -63,7 +63,7 @@ VDraw_DDraw::~VDraw_DDraw()
 int VDraw_DDraw::Init_Fail(HWND hWnd, const char *err)
 {
 	End_Video();
-	MessageBox(hWnd, err, "Oops ...", MB_OK);
+	GensUI::msgBox(err, "DirectDraw Error", MSGBOX_ICON_ERROR);
 	DestroyWindow(hWnd);
 	return 0;
 }

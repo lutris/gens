@@ -82,7 +82,7 @@ void Blit_HQ2x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 	
 	char b[100];
 	sprintf(b,"pitch=%d x=%d y=%d offset=%d", pitch, x, y, offset);
-	MessageBox(0,b,NULL,0);
+	GensUI::msgBox(b, "");
 	hq2x_16( MD_Screen+16, Dest, x, y, pitch, offset);
 	return;
 }
