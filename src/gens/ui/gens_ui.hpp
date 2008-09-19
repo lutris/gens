@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include "emulator/gens.hpp"
+
 typedef enum
 {
 	AnyFile		= 0,
@@ -46,6 +48,7 @@ typedef enum
 #include <string>
 using std::string;
 
+// Message box icons for GensUI::msgBox().
 enum MSGBOX_ICON
 {
 	MSGBOX_ICON_NONE = 0,
@@ -70,7 +73,7 @@ class GensUI
 		static void UI_Show_Embedded_Window(const int w, const int h);
 		static int UI_Get_Embedded_WindowID(void);
 		
-		static void msgBox(const string& msg, const string& title, const MSGBOX_ICON icon = MSGBOX_ICON_INFO);
+		static void msgBox(const string& msg, const string& title = GENS_APPNAME, const MSGBOX_ICON icon = MSGBOX_ICON_INFO);
 		static string openFile(const string& title, const string& initFile, const FileFilterType filterType);
 		static string saveFile(const string& title, const string& initFile, const FileFilterType filterType);
 		static string selectDir(const string& title, const string& initDir);
