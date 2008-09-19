@@ -64,6 +64,9 @@ void Create_Save_Directory(const char *dir)
  */
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+	// Save hInst for other functions.
+	ghInstance = hInst;
+	
 	// Gens_hWnd is needed before anything else is set up.
 	// Initialize the Gens hWnd.
 	initGens_hWnd();
@@ -93,7 +96,6 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Init_Genesis_Bios();
 	
 	// Initialize Gens.
-	ghInstance = hInst;
 	if (!Init())
 		return 0;
 	
