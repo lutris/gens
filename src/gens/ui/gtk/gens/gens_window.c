@@ -272,6 +272,7 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 	GtkWidget *FileMenu_QuickLoad;		GtkWidget *FileMenu_QuickLoad_Icon;
 	GtkWidget *FileMenu_QuickSave;		GtkWidget *FileMenu_QuickSave_Icon;
 	GtkWidget *FileMenu_ChangeState;	GtkWidget *FileMenu_ChangeState_Icon;
+	GtkWidget *FileMenu_Separator3;
 	GtkWidget *FileMenu_Quit;		GtkWidget *FileMenu_Quit_Icon;
 	
 	// File
@@ -354,6 +355,9 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 			      FileMenu_ChangeState_Icon, "gtk-revert-to-saved");
 	// Change State submenu
 	create_gens_window_FileMenu_ChangeState_SubMenu(FileMenu_ChangeState);
+	
+	// Separator
+	NewMenuSeparator(FileMenu_Separator3, "FileMenu_Separator3", FileMenu);
 	
 	// Quit
 	NewMenuItem_StockIcon(FileMenu_Quit, "_Quit", "FileMenu_Quit", FileMenu,
