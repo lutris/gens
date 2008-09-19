@@ -199,6 +199,10 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Free_Rom(Game);
 			Sync_Gens_Window();
 			break;
+		
+		case ID_FILE_QUIT:
+			close_gens();
+			break;
 	}
 }
 
@@ -338,18 +342,6 @@ void on_FileMenu_ChangeState_SubMenu_SlotItem_activate(GtkMenuItem *menuitem, gp
 		return;
 	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
 		Set_Current_State(slot);
-}
-
-
-/**
- * File, Quit
- */
-void on_FileMenu_Quit_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	close_gens();
 }
 
 
