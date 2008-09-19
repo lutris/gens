@@ -120,6 +120,12 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			EndPaint(hWnd, &ps);
 			break;
 		
+		case WM_MENUSELECT:
+		case WM_ENTERSIZEMOVE:
+			// Prevent audio stuttering when a menu is opened or the window is resized.
+			audio->clearSoundBuffer();
+			break;
+		
 		case WM_COMMAND:
 			// TODO: Menu items.
 			break;
