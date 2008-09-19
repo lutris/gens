@@ -27,8 +27,8 @@
 #include "emulator/g_main.hpp"
 #include "gens_window.h"
 #include "gens_window_callbacks.hpp"
-#if 0
 #include "gens_window_sync.hpp"
+#if 0
 #include "game_genie/game_genie_window_misc.h"
 #include "controller_config/controller_config_window_misc.hpp"
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
@@ -171,7 +171,15 @@ static void on_gens_window_close(void)
 
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	printf("File Menu: 0x%04X\n", LOWORD(wParam));
+	switch (LOWORD(wParam))
+	{
+		case ID_FILE_OPENROM:
+			if (audio->playingGYM())
+				Stop_Play_GYM();
+			if (Get_Rom() != -1)
+				Sync_Gens_Window();
+			break;
+	}
 }
 
 
