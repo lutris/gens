@@ -104,8 +104,6 @@ struct InputButton
 
 Input_DInput::Input_DInput()
 {
-	// TODO: HINSTANCE ghInstance; HWND Gens_hWnd
-	
 	int i;
 	HRESULT rval;
 	
