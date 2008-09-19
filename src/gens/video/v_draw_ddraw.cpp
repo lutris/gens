@@ -65,6 +65,7 @@ int VDraw_DDraw::Init_Fail(HWND hWnd, const char *err)
 	End_Video();
 	GensUI::msgBox(err, "DirectDraw Error", MSGBOX_ICON_ERROR);
 	DestroyWindow(hWnd);
+	TerminateProcess(GetCurrentProcess(), 1); //Modif N
 	return 0;
 }
 
@@ -133,7 +134,7 @@ int VDraw_DDraw::Init_Video(void)
 	}
 	
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Primary, NULL)))
-		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()!");
+		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()! [lpDDS_Primary]");
 	
 	if (m_FullScreen)
 	{
@@ -186,7 +187,7 @@ int VDraw_DDraw::Init_Video(void)
 	}
 	
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL)))
-		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()!");
+		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()! [lpDDS_Back]");
 	
 	if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
 		lpDDS_Blit = lpDDS_Back;
