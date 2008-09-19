@@ -203,6 +203,11 @@ if test x$os != xwin32; then
 	CFLAGS="$CFLAGS -std=c99"
 fi
 
+# Compile as a GUI program on Win32.
+if test x$os = xwin32; then
+	LDFLAGS="$LDFLAGS -Wl,-subsystem,windows"
+fi
+
 AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
 AC_SUBST(SDL_CFLAGS)
