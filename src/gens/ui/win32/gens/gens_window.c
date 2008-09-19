@@ -66,9 +66,9 @@ HMENU HelpMenu;
 
 static void create_gens_window_menubar(void);
 static void create_gens_window_FileMenu(HMENU parent);
+static void create_gens_window_GraphicsMenu(HMENU parent);
 #if 0
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
-static void create_gens_window_GraphicsMenu(GtkWidget *container);
 #ifdef GENS_OPENGL
 static void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container);
 #endif
@@ -115,8 +115,8 @@ HWND initGens_hWnd(void)
 	
 	Gens_hWnd = CreateWindowEx(NULL, "Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 				   320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
-	if (!Gens_hWnd)
-		return NULL;
+	
+	return Gens_hWnd;
 }
 
 
@@ -143,8 +143,8 @@ static void create_gens_window_menubar(void)
 	
 	// Menus
 	create_gens_window_FileMenu(MainMenu);
+	create_gens_window_GraphicsMenu(MainMenu);
 	/*
-	create_gens_window_GraphicsMenu(MenuBar);
 	create_gens_window_CPUMenu(MenuBar);
 	create_gens_window_SoundMenu(MenuBar);
 	create_gens_window_OptionsMenu(MenuBar);
@@ -191,6 +191,44 @@ static void create_gens_window_FileMenu(HMENU parent)
 	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(FileMenu, i++, flags, ID_FILE_QUIT, "Quit");
+}
+
+
+/**
+ * create_gens_window_GraphicsMenu(): Create the Graphics menu.
+ * @param parent Parent menu.
+ */
+static void create_gens_window_GraphicsMenu(HMENU parent)
+{
+	unsigned int flags;
+	int i = 0;
+	
+	// Graphics
+	GraphicsMenu = CreatePopupMenu();
+	InsertMenu(parent, 1, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
+	
+	flags = MF_BYPOSITION | MF_STRING;
+	
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_VSYNC, "&VSync");
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_STRETCH, "&Stretch");
+	
+	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_COLORADJUST, "&Color Adjust...");
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_RENDER, "&Render");
+	
+	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_SPRITELIMIT, "Sprite Limit");
+	
+	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_FRAMESKIP, "Frame Skip");
+	
+	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot");
 }
 
 

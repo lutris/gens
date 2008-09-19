@@ -27,8 +27,9 @@
 extern "C" {
 #endif
 
-// Menu identifier & 0x1000 == the menu it's from
+// Menu identifier & 0xF000 == the menu it's from
 
+// File Menu
 #define ID_FILE_MENU			0x1000
 #define ID_FILE_OPENROM			0x1001
 #define ID_FILE_BOOTCD			0x1002
@@ -42,6 +43,17 @@ extern "C" {
 #define ID_FILE_QUICKSAVE		0x100A
 #define ID_FILE_CHANGESTATE		0x100B
 #define ID_FILE_QUIT			0x1FFF
+
+// Graphics Menu
+#define ID_GRAPHICS_MENU		0x2000
+#define ID_GRAPHICS_FULLSCREEN		0x2001
+#define ID_GRAPHICS_VSYNC		0x2002
+#define ID_GRAPHICS_STRETCH		0x2003
+#define ID_GRAPHICS_COLORADJUST		0x2004
+#define ID_GRAPHICS_RENDER		0x2005
+#define ID_GRAPHICS_SPRITELIMIT		0x2006
+#define ID_GRAPHICS_FRAMESKIP		0x2007
+#define ID_GRAPHICS_SCREENSHOT		0x2008
 
 #ifdef __cplusplus
 }
