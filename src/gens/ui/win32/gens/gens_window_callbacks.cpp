@@ -83,11 +83,16 @@ extern "C"
 }
 
 
+// Menu identifier definitions
+#include "gens_window_menu.h"
+
+
 #include "video/v_draw_ddraw.hpp"
 static bool PaintsEnabled = true;
 
 
 static void on_gens_window_close(void);
+static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -127,7 +132,13 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 		
 		case WM_COMMAND:
-			// TODO: Menu items.
+			// Menu item.
+			switch (LOWORD(wParam) & 0xF000)
+			{
+				case ID_FILE_MENU:
+					on_gens_window_FileMenu(hWnd, message, wParam, lParam);
+					break;
+			}
 			break;
 		
 #if 0
@@ -148,13 +159,19 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 /**
  * Window is closed.
  */
-void on_gens_window_close(void)
+static void on_gens_window_close(void)
 {
 	//Modif N - making sure sound doesn't stutter on exit
 	if (audio->soundInitialized())
 		audio->clearSoundBuffer();
 	
 	close_gens();
+}
+
+
+static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	printf("File Menu: 0x%04X\n", LOWORD(wParam));
 }
 
 
