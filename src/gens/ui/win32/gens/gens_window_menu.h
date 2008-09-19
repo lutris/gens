@@ -23,6 +23,10 @@
 #ifndef GTK_WIN32_GENS_WINDOW_MENU_H
 #define GTK_WIN32_GENS_WINDOW_MENU_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,7 +36,9 @@ extern "C" {
 // File Menu
 #define ID_FILE_MENU			0x1000
 #define ID_FILE_OPENROM			0x1001
+#ifdef GENS_CDROM
 #define ID_FILE_BOOTCD			0x1002
+#endif /* GENS_CDROM */
 #define ID_FILE_NETPLAY			0x1003
 #define ID_FILE_ROMHISTORY		0x1004
 #define ID_FILE_CLOSEROM		0x1005
@@ -54,6 +60,21 @@ extern "C" {
 #define ID_GRAPHICS_SPRITELIMIT		0x2006
 #define ID_GRAPHICS_FRAMESKIP		0x2007
 #define ID_GRAPHICS_SCREENSHOT		0x2008
+
+// CPU Menu
+#define ID_CPU_MENU			0x3000
+#ifdef GENS_DEBUGGER
+#define ID_CPU_DEBUG			0x3001
+#endif /* GENS_DEBUGGER */
+#define ID_CPU_COUNTRY			0x3002
+#define ID_CPU_HARDRESET		0x3003
+#define ID_CPU_RESET68K			0x3004
+#define ID_CPU_RESETMAIN68K		0x3005
+#define ID_CPU_RESETSUB68K		0x3006
+#define ID_CPU_RESETMAINSH2		0x3007
+#define ID_CPU_RESETSUBSH2		0x3008
+#define ID_CPU_RESETZ80			0x3009
+#define ID_CPU_SEGACDPERFECTSYNC	0x300A
 
 #ifdef __cplusplus
 }

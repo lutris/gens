@@ -67,14 +67,10 @@ HMENU HelpMenu;
 static void create_gens_window_menubar(void);
 static void create_gens_window_FileMenu(HMENU parent);
 static void create_gens_window_GraphicsMenu(HMENU parent);
+static void create_gens_window_CPUMenu(HMENU parent);
 #if 0
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
-#ifdef GENS_OPENGL
-static void create_gens_window_GraphicsMenu_OpenGLRes_SubMenu(GtkWidget *container);
-#endif
-static void create_gens_window_GraphicsMenu_bpp_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
-static void create_gens_window_CPUMenu(GtkWidget *container);
 #ifdef GENS_DEBUGGER
 static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif /* GENS_DEBUGGER */
@@ -144,8 +140,8 @@ static void create_gens_window_menubar(void)
 	// Menus
 	create_gens_window_FileMenu(MainMenu);
 	create_gens_window_GraphicsMenu(MainMenu);
+	create_gens_window_CPUMenu(MainMenu);
 	/*
-	create_gens_window_CPUMenu(MenuBar);
 	create_gens_window_SoundMenu(MenuBar);
 	create_gens_window_OptionsMenu(MenuBar);
 	create_gens_window_HelpMenu(MenuBar);
@@ -229,6 +225,44 @@ static void create_gens_window_GraphicsMenu(HMENU parent)
 	InsertMenu(GraphicsMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(GraphicsMenu, i++, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot");
+}
+
+
+/**
+ * create_gens_window_CPUMenu(): Create the CPU menu.
+ * @param parent Parent menu.
+ */
+static void create_gens_window_CPUMenu(HMENU parent)
+{
+	unsigned int flags;
+	int i = 0;
+	
+	// CPU
+	CPUMenu = CreatePopupMenu();
+	InsertMenu(parent, 2, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
+	
+	flags = MF_BYPOSITION | MF_STRING;
+	
+#ifdef GENS_DEBUGGER
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_DEBUG, "&Debug");
+	InsertMenu(CPUMenu, i++, MF_SEPARATOR, NULL, NULL);
+#endif /* GENS_DEBUGGER */
+	
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_COUNTRY, "&Country");
+	
+	InsertMenu(CPUMenu, i++, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_HARDRESET, "Hard &Reset");
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESET68K, "Reset 68000");
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETMAIN68K, "Reset Main 68000");
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETSUB68K, "Reset Sub 68000");
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETMAINSH2, "Reset Main SH2");
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_RESETZ80, "Reset Z80");
+	
+	InsertMenu(CPUMenu, i++, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(CPUMenu, i++, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
 }
 
 
