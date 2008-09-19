@@ -174,51 +174,19 @@ static void create_gens_window_FileMenu(HMENU parent)
 	
 	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
-#if 0
-	// Game Genie
-	NewMenuItem_Icon(FileMenu_GameGenie, "_Game Genie", "FileMenu_GameGenie", FileMenu,
-			 FileMenu_GameGenie_Icon, "password.png");
-	AddMenuCallback(FileMenu_GameGenie, on_FileMenu_GameGenie_activate);
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_GAMEGENIE*/ 0, "&Game Genie");
 	
-	// Separator
-	NewMenuSeparator(FileMenu_Separator2, "FileMenu_Separator2", FileMenu);
+	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
-	// Load State...
-	NewMenuItem_StockIcon(FileMenu_LoadState, "_Load State...", "FileMenu_LoadState", FileMenu,
-			      FileMenu_LoadState_Icon, "gtk-open");
-	AddMenuAccelerator(FileMenu_LoadState, GDK_F8, GDK_SHIFT_MASK);
-	AddMenuCallback(FileMenu_LoadState, on_FileMenu_LoadState_activate);
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_LOADSTATE*/ 0, "&Load State...");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_SAVESTATE*/ 0, "&Save State As...");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_QUICKLOAD*/ 0, "Quick Load");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_QUICKSAVE*/ 0, "Quick Save");
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_CHANGESTATE*/ 0, "Change State");
 	
-	// Save State As...
-	NewMenuItem_StockIcon(FileMenu_SaveState, "_Save State As...", "FileMenu_SaveState", FileMenu,
-			      FileMenu_SaveState_Icon, "gtk-save-as");
-	AddMenuAccelerator(FileMenu_SaveState, GDK_F5, GDK_SHIFT_MASK);
-	AddMenuCallback(FileMenu_SaveState, on_FileMenu_SaveState_activate);
+	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
-	// Quick Load
-	NewMenuItem_StockIcon(FileMenu_QuickLoad, "Quick Load", "FileMenu_QuickLoad", FileMenu,
-			      FileMenu_QuickLoad_Icon, "gtk-refresh");
-	AddMenuAccelerator(FileMenu_QuickLoad, GDK_F8, 0);
-	AddMenuCallback(FileMenu_QuickLoad, on_FileMenu_QuickLoad_activate);
-	
-	// Quick Save
-	NewMenuItem_StockIcon(FileMenu_QuickSave, "Quick Save", "FileMenu_QuickSave", FileMenu,
-			      FileMenu_QuickSave_Icon, "gtk-save");
-	AddMenuAccelerator(FileMenu_QuickSave, GDK_F5, 0);
-	AddMenuCallback(FileMenu_QuickSave, on_FileMenu_QuickSave_activate);
-	
-	// Change State
-	NewMenuItem_StockIcon(FileMenu_ChangeState, "Change State", "FileMenu_ChangeState", FileMenu,
-			      FileMenu_ChangeState_Icon, "gtk-revert-to-saved");
-	// Change State submenu
-	create_gens_window_FileMenu_ChangeState_SubMenu(FileMenu_ChangeState);
-	
-	// Quit
-	NewMenuItem_StockIcon(FileMenu_Quit, "_Quit", "FileMenu_Quit", FileMenu,
-			      FileMenu_Quit_Icon, "gtk-quit");
-	AddMenuAccelerator(FileMenu_Quit, GDK_Q, GDK_CONTROL_MASK);
-	AddMenuCallback(FileMenu_Quit, on_FileMenu_Quit_activate);
-#endif
+	InsertMenu(FileMenu, i++, flags, /*ID_MENU_QUIT*/ 0, "Quit");
 }
 
 
