@@ -50,6 +50,10 @@ HWND Gens_hWnd = NULL;
 #endif /* GENS_DEBUGGER */
 
 
+// Menu identifier definitions
+#include "gens_window_menu.h"
+
+
 // Menu objects
 HMENU MainMenu;
 HMENU FileMenu;
@@ -164,29 +168,29 @@ static void create_gens_window_FileMenu(HMENU parent)
 	
 	flags = MF_BYPOSITION | MF_STRING;
 	
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_OPENROM*/ 0, "&Open ROM...");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_OPENROM, "&Open ROM...");
 #ifdef GENS_CDROM
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_BOOTCD*/ 0, "&Boot CD");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_BOOTCD, "&Boot CD");
 #endif /* GENS_CDROM */
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_NETPLAY*/ 0, "&Netplay");
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_ROMHISTORY*/ 0, "ROM &History");
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_CLOSEROM*/ 0, "&Close ROM");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_NETPLAY, "&Netplay");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_ROMHISTORY, "ROM &History");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_CLOSEROM, "&Close ROM");
 	
 	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_GAMEGENIE*/ 0, "&Game Genie");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_GAMEGENIE, "&Game Genie");
 	
 	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_LOADSTATE*/ 0, "&Load State...");
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_SAVESTATE*/ 0, "&Save State As...");
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_QUICKLOAD*/ 0, "Quick Load");
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_QUICKSAVE*/ 0, "Quick Save");
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_CHANGESTATE*/ 0, "Change State");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_LOADSTATE, "&Load State...");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_SAVESTATE, "&Save State As...");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_QUICKLOAD, "Quick Load");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_QUICKSAVE, "Quick Save");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_CHANGESTATE, "Change State");
 	
 	InsertMenu(FileMenu, i++, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, i++, flags, /*ID_FILE_QUIT*/ 0, "Quit");
+	InsertMenu(FileMenu, i++, flags, ID_FILE_QUIT, "Quit");
 }
 
 

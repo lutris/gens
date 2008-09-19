@@ -401,7 +401,8 @@ noinst_HEADERS += \
 		audio/audio_dsound.hpp \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
-		ui/win32/gens/gens_window_sync.hpp
+		ui/win32/gens/gens_window_sync.hpp \
+		ui/win32/gens/gens_window_menu.h
 endif
 
 gens_CFLAGS = \
