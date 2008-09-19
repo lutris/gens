@@ -172,7 +172,7 @@ static void create_gens_window_FileMenu(HMENU parent)
 #ifdef GENS_CDROM
 	InsertMenu(FileMenu, i++, flags, ID_FILE_BOOTCD, "&Boot CD");
 #endif /* GENS_CDROM */
-	InsertMenu(FileMenu, i++, flags, ID_FILE_NETPLAY, "&Netplay");
+	InsertMenu(FileMenu, i++, flags | MF_GRAYED, ID_FILE_NETPLAY, "&Netplay");
 	InsertMenu(FileMenu, i++, flags, ID_FILE_ROMHISTORY, "ROM &History");
 	InsertMenu(FileMenu, i++, flags, ID_FILE_CLOSEROM, "&Close ROM");
 	
