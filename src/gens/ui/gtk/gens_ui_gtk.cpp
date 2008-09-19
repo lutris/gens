@@ -189,7 +189,7 @@ void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON ic
 	switch (icon)
 	{
 		case MSGBOX_ICON_INFO:
-			gtkMsgIcon = GTK_MESSAGE_ICON;
+			gtkMsgIcon = GTK_MESSAGE_INFO;
 			break;
 		case MSGBOX_ICON_QUESTION:
 			gtkMsgIcon = GTK_MESSAGE_QUESTION;
