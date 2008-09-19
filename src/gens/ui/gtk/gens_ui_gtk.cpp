@@ -177,16 +177,38 @@ int UI_Get_Embedded_WindowID(void)
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
+ * @param icon Icon.
  */
-void GensUI::msgBox(const string& msg, const string& title)
+void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON icon)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
+	GtkMessageType gtkMsgIcon;
+	switch (icon)
+	{
+		case MSGBOX_ICON_INFO:
+			gtkMsgIcon = GTK_MESSAGE_ICON;
+			break;
+		case MSGBOX_ICON_QUESTION:
+			gtkMsgIcon = GTK_MESSAGE_QUESTION;
+			break;
+		case MSGBOX_ICON_WARNING:
+			gtkMsgIcon = GTK_MESSAGE_WARNING;
+			break;
+		case MSGBOX_ICON_ERROR:
+			gtkMsgIcon = GTK_MESSAGE_ERROR;
+			break;
+		case MSGBOX_ICON_NONE:
+		default:
+			gtkMsgIcon = GTK_MESSAGE_OTHER;
+			break;
+	}
+	
 	GtkWidget *dialog = gtk_message_dialog_new(
 			GTK_WINDOW(gens_window), GTK_DIALOG_MODAL,
-			GTK_MESSAGE_INFO, GTK_BUTTONS_OK, msg.c_str());
+			gtkMsgIcon, GTK_BUTTONS_OK, msg.c_str());
 	gtk_window_set_title(GTK_WINDOW(dialog), title.c_str());
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);

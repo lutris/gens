@@ -46,6 +46,15 @@ typedef enum
 #include <string>
 using std::string;
 
+enum MSGBOX_ICON
+{
+	MSGBOX_ICON_NONE = 0,
+	MSGBOX_ICON_INFO = 1,
+	MSGBOX_ICON_QUESTION = 2,
+	MSGBOX_ICON_WARNING = 3,
+	MSGBOX_ICON_ERROR = 4,
+};
+
 class GensUI
 {
 	public:
@@ -61,7 +70,7 @@ class GensUI
 		static void UI_Show_Embedded_Window(const int w, const int h);
 		static int UI_Get_Embedded_WindowID(void);
 		
-		static void msgBox(const string& msg, const string& title);
+		static void msgBox(const string& msg, const string& title, const MSGBOX_ICON icon = MSGBOX_ICON_INFO);
 		static string openFile(const string& title, const string& initFile, const FileFilterType filterType);
 		static string saveFile(const string& title, const string& initFile, const FileFilterType filterType);
 		static string selectDir(const string& title, const string& initDir);

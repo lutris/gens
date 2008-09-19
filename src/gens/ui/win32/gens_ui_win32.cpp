@@ -156,22 +156,36 @@ void GensUI::setWindowVisibility(const bool visibility)
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
+ * @param icon Icon.
  */
-void GensUI::msgBox(const string& msg, const string& title)
+void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON icon)
 {
-	STUB;
-#if 0
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
-	GtkWidget *dialog = gtk_message_dialog_new(
-			GTK_WINDOW(gens_window), GTK_DIALOG_MODAL,
-			GTK_MESSAGE_INFO, GTK_BUTTONS_OK, msg.c_str());
-	gtk_window_set_title(GTK_WINDOW(dialog), title.c_str());
-	gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(dialog);
-#endif
+	unsigned int win32MsgIcon;
+	switch (icon)
+	{
+		case MSGBOX_ICON_INFO:
+			win32MsgIcon = MB_ICONINFORMATION;
+			break;
+		case MSGBOX_ICON_QUESTION:
+			win32MsgIcon = MB_ICONQUESTION;
+			break;
+		case MSGBOX_ICON_WARNING:
+			win32MsgIcon = MB_ICONWARNING;
+			break;
+		case MSGBOX_ICON_ERROR:
+			win32MsgIcon = MB_ICONSTOP;
+			break;
+		case MSGBOX_ICON_NONE:
+		default:
+			win32MsgIcon = 0;
+			break;
+	}
+	
+	MessageBox(Gens_hWnd, msg.c_str(), title.c_str(), win32MsgIcon | MB_OK);
 }
 
 
