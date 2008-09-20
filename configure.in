@@ -16,11 +16,14 @@ AC_HEADER_STDC
 
 # Check operating system.
 case $host in
-	*i686*linux*)
+	i?86*mingw32*)
+		os=win32;
+		;;
+	i?86*)
 		os=linux;
 		;;
-	*i686*mingw32*)
-		os=win32;
+	x86_64*)
+		AC_MSG_ERROR([64-bit is currently not supported.]);
 		;;
 	*)
 		AC_MSG_ERROR([Unsupported operating system: $host]);
