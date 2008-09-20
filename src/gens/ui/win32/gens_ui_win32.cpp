@@ -153,6 +153,49 @@ void GensUI::setWindowVisibility(const bool visibility)
 
 
 /**
+ * UI_Hide_Embedded_Window(): Hides the embedded SDL window.
+ */
+void UI_Hide_Embedded_Window(void)
+{
+	STUB;
+#if 0
+	gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
+#endif
+}
+
+
+/**
+ * UI_Show_Embedded_Window(): Shows the embedded SDL window.
+ * @param w Width of the embedded SDL window.
+ * @param h Height of the embedded SDL window.
+ */
+void UI_Show_Embedded_Window(const int w, const int h)
+{
+	STUB;
+#if 0
+	GtkWidget *sdlsock = lookup_widget(gens_window, "sdlsock");
+	gtk_widget_set_size_request(sdlsock, w, h);
+	gtk_widget_realize(sdlsock);
+	gtk_widget_show(sdlsock);
+#endif
+}
+
+
+/**
+ * UI_Get_Embedded_WindowID(): Gets the window ID of the embedded SDL window.
+ * @return Window ID of the embedded SDL window.
+ */
+int UI_Get_Embedded_WindowID(void)
+{
+	STUB;
+#if 0
+	GtkWidget *sdlsock = lookup_widget(gens_window, "sdlsock");
+	return GDK_WINDOW_XWINDOW(sdlsock->window);
+#endif
+}
+
+
+/**
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
