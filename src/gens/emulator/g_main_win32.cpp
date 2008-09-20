@@ -150,6 +150,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		{
 			if (!GetMessage(&msg, NULL, 0, 0))
 				close_gens();
+			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 		
