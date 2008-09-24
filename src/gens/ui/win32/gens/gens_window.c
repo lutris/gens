@@ -158,6 +158,7 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// File
+	DestroyMenu(FileMenu);
 	FileMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
 	
@@ -196,6 +197,7 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 {
 	// File, Change State
+	DestroyMenu(FileMenu_ChangeState);
 	FileMenu_ChangeState = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu_ChangeState, "Change State");
 	
@@ -236,6 +238,7 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Graphics
+	DestroyMenu(GraphicsMenu);
 	GraphicsMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
 	
@@ -272,6 +275,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// CPU
+	DestroyMenu(CPUMenu);
 	CPUMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
 	
@@ -308,6 +312,7 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Sound
+	DestroyMenu(SoundMenu);
 	SoundMenu = CreatePopupMenu();
 	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu, "&Sound");
 	
@@ -351,6 +356,7 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Options
+	DestroyMenu(OptionsMenu);
 	OptionsMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
 	
@@ -383,6 +389,7 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Help
+	DestroyMenu(HelpMenu);
 	HelpMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
 	
