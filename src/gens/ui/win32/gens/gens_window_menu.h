@@ -76,6 +76,24 @@ extern "C" {
 #define ID_CPU_RESETZ80			0x3009
 #define ID_CPU_SEGACDPERFECTSYNC	0x300A
 
+// Sound Menu
+#define ID_SOUND_MENU			0x4000
+#define ID_SOUND_ENABLE			0x4001
+#define ID_SOUND_RATE			0x4002
+#define ID_SOUND_STEREO			0x4003
+#define ID_SOUND_Z80			0x4004
+#define ID_SOUND_YM2612			0x4005
+#define ID_SOUND_YM2612_IMPROVED	0x4006
+#define ID_SOUND_DAC			0x4007
+#define ID_SOUND_DAC_IMPROVED		0x4008
+#define ID_SOUND_PSG			0x4009
+#define ID_SOUND_PSG_IMPROVED		0x400A
+#define ID_SOUND_PCM			0x400B
+#define ID_SOUND_PWM			0x400C
+#define ID_SOUND_CDDA			0x400D
+#define ID_SOUND_WAVDUMP		0x400E
+#define ID_SOUND_GYMDUMP		0x400F
+
 #ifdef __cplusplus
 }
 #endif

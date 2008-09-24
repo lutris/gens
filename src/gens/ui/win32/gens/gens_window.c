@@ -68,6 +68,7 @@ static void create_gens_window_menubar(void);
 static void create_gens_window_FileMenu(HMENU parent);
 static void create_gens_window_GraphicsMenu(HMENU parent);
 static void create_gens_window_CPUMenu(HMENU parent);
+static void create_gens_window_SoundMenu(HMENU parent);
 #if 0
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
@@ -75,7 +76,6 @@ static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *contain
 static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif /* GENS_DEBUGGER */
 static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
-static void create_gens_window_SoundMenu(GtkWidget *container);
 static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
 static void create_gens_window_OptionsMenu(GtkWidget *container);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
@@ -141,8 +141,8 @@ static void create_gens_window_menubar(void)
 	create_gens_window_FileMenu(MainMenu);
 	create_gens_window_GraphicsMenu(MainMenu);
 	create_gens_window_CPUMenu(MainMenu);
+	create_gens_window_SoundMenu(MainMenu);
 	/*
-	create_gens_window_SoundMenu(MenuBar);
 	create_gens_window_OptionsMenu(MenuBar);
 	create_gens_window_HelpMenu(MenuBar);
 	*/
@@ -260,6 +260,48 @@ static void create_gens_window_CPUMenu(HMENU parent)
 	InsertMenu(CPUMenu, 11, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(CPUMenu, 12, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
+}
+
+
+/**
+ * create_gens_window_SoundMenu(): Create the Sound menu.
+ * @param parent Parent menu.
+ */
+static void create_gens_window_SoundMenu(HMENU parent)
+{
+	unsigned int flags;
+	
+	// Sound
+	SoundMenu = CreatePopupMenu();
+	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu, "&Sound");
+	
+	InsertMenu(SoundMenu, 0, flags, ID_SOUND_ENABLE, "&Enable");
+	
+	InsertMenu(SoundMenu, 1, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(SoundMenu, 2, flags, ID_SOUND_RATE, "&Rate");
+	InsertMenu(SoundMenu, 3, flags, ID_SOUND_STEREO, "&Stereo");
+	
+	InsertMenu(SoundMenu, 4, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(SoundMenu, 5, flags, ID_SOUND_Z80, "&Z80");
+	
+	InsertMenu(SoundMenu, 6, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(SoundMenu, 7, flags, ID_SOUND_YM2612, "&YM2612");
+	InsertMenu(SoundMenu, 8, flags, ID_SOUND_YM2612_IMPROVED, "YM2612 Improved");
+	InsertMenu(SoundMenu, 9, flags, ID_SOUND_DAC, "&DAC");
+	InsertMenu(SoundMenu, 10, flags, ID_SOUND_DAC_IMPROVED, "DAC Improved");
+	InsertMenu(SoundMenu, 11, flags, ID_SOUND_PSG, "&PSG");
+	InsertMenu(SoundMenu, 12, flags, ID_SOUND_PSG_IMPROVED, "PSG Improved");
+	InsertMenu(SoundMenu, 13, flags, ID_SOUND_PCM, "P&CM");
+	InsertMenu(SoundMenu, 14, flags, ID_SOUND_PWM, "P&WM");
+	InsertMenu(SoundMenu, 15, flags, ID_SOUND_CDDA, "CDDA");
+	
+	InsertMenu(SoundMenu, 16, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(SoundMenu, 17, flags, ID_SOUND_WAVDUMP, "Start WAV Dump");
+	InsertMenu(SoundMenu, 18, flags, ID_SOUND_GYMDUMP, "Start GYM Dump");
 }
 
 
@@ -429,117 +471,6 @@ static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
 	// Add the Auto-Detection Order configuration option.
 	NewMenuItem(CPUMenu_Country_SubMenu_AutoDetectOrder, "Auto-Detection Order...", "Auto-Detection Order...", SubMenu);
 	AddMenuCallback(CPUMenu_Country_SubMenu_AutoDetectOrder, on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate);	
-}
-
-
-/**
- * create_gens_window_SoundMenu(): Create the Sound menu.
- * @param container Container for this menu.
- */
-static void create_gens_window_SoundMenu(GtkWidget *container)
-{
-	GtkWidget *Sound;			GtkWidget *Sound_Icon;
-	GtkWidget *SoundMenu;
-	GtkWidget *SoundMenu_Enable;
-	GtkWidget *SoundMenu_Separator1;
-	GtkWidget *SoundMenu_Rate;
-	GtkWidget *SoundMenu_Stereo;
-	GtkWidget *SoundMenu_Separator2;
-	GtkWidget *SoundMenu_Z80;
-	GtkWidget *SoundMenu_Separator3;
-	GtkWidget *SoundMenu_YM2612;
-	GtkWidget *SoundMenu_YM2612_Improved;
-	GtkWidget *SoundMenu_DAC;
-	GtkWidget *SoundMenu_DAC_Improved;
-	GtkWidget *SoundMenu_PSG;
-	GtkWidget *SoundMenu_PSG_Improved;
-	GtkWidget *SoundMenu_PCM;
-	GtkWidget *SoundMenu_PWM;
-	GtkWidget *SoundMenu_CDDA;
-	GtkWidget *SoundMenu_Separator4;
-	GtkWidget *SoundMenu_WAVDump;
-	GtkWidget *SoundMenu_GYMDump;
-	
-	// Sound
-	NewMenuItem_Icon(Sound, "_Sound", "Sound", container, Sound_Icon, "kmix.png");
-	
-	// Menu object for the SoundMenu
-	SoundMenu = gtk_menu_new();
-	gtk_widget_set_name(SoundMenu, "SoundMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Sound), SoundMenu);
-	
-	// Enable
-	NewMenuItem_Check(SoundMenu_Enable, "_Enable", "SoundMenu_Enable", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_Enable, on_SoundMenu_Enable_activate);
-	
-	// Separator
-	NewMenuSeparator(SoundMenu_Separator1, "SoundMenu_Separator1", SoundMenu);
-
-	// Rate
-	NewMenuItem(SoundMenu_Rate, "_Rate", "SoundMenu_Rate", SoundMenu);
-	// Rate submenu
-	create_gens_window_SoundMenu_Rate_SubMenu(SoundMenu_Rate);
-	
-	// Stereo
-	NewMenuItem_Check(SoundMenu_Stereo, "_Stereo", "SoundMenu_Stereo", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_Stereo, on_SoundMenu_Stereo_activate);
-	
-	// Separator
-	NewMenuSeparator(SoundMenu_Separator2, "SoundMenu_Separator2", SoundMenu);
-	
-	// Z80
-	NewMenuItem_Check(SoundMenu_Z80, "_Z80", "SoundMenu_Z80", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_Z80, on_SoundMenu_Z80_activate);
-	
-	// Separator
-	NewMenuSeparator(SoundMenu_Separator3, "SoundMenu_Separator3", SoundMenu);
-	
-	// YM2612
-	NewMenuItem_Check(SoundMenu_YM2612, "_YM2612", "SoundMenu_YM2612", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_YM2612, on_SoundMenu_YM2612_activate);
-	
-	// YM2612 Improved
-	NewMenuItem_Check(SoundMenu_YM2612_Improved, "YM2612 Improved", "SoundMenu_YM2612_Improved", SoundMenu, FALSE);
-	AddMenuCallback(SoundMenu_YM2612_Improved, on_SoundMenu_YM2612_Improved_activate);
-	
-	// DAC
-	NewMenuItem_Check(SoundMenu_DAC, "_DAC", "SoundMenu_DAC", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_DAC, on_SoundMenu_DAC_activate);
-	
-	// DAC Improved
-	NewMenuItem_Check(SoundMenu_DAC_Improved, "DAC Improved", "SoundMenu_DAC_Improved", SoundMenu, FALSE);
-	AddMenuCallback(SoundMenu_DAC_Improved, on_SoundMenu_DAC_Improved_activate);
-	
-	// PSG
-	NewMenuItem_Check(SoundMenu_PSG, "_PSG", "SoundMenu_PSG", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_PSG, on_SoundMenu_PSG_activate);
-	
-	// PSG Improved
-	NewMenuItem_Check(SoundMenu_PSG_Improved, "PSG Improved", "SoundMenu_PSG_Improved", SoundMenu, FALSE);
-	AddMenuCallback(SoundMenu_PSG_Improved, on_SoundMenu_PSG_Improved_activate);
-	
-	// PCM
-	NewMenuItem_Check(SoundMenu_PCM, "P_CM", "SoundMenu_PCM", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_PCM, on_SoundMenu_PCM_activate);
-	
-	// PWM
-	NewMenuItem_Check(SoundMenu_PWM, "P_WM", "SoundMenu_PWM", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_PWM, on_SoundMenu_PWM_activate);
-	
-	// CDDA
-	NewMenuItem_Check(SoundMenu_CDDA, "CDD_A (CD Audio)", "SoundMenu_CDDA", SoundMenu, TRUE);
-	AddMenuCallback(SoundMenu_CDDA, on_SoundMenu_CDDA_activate);
-	
-	// Separator
-	NewMenuSeparator(SoundMenu_Separator4, "SoundMenu_Separator4", SoundMenu);
-	
-	// WAV Dump
-	NewMenuItem(SoundMenu_WAVDump, "Start WAV Dump", "SoundMenu_WAVDump", SoundMenu);
-	AddMenuCallback(SoundMenu_WAVDump, on_SoundMenu_WAVDump_activate);
-	
-	// GYM Dump
-	NewMenuItem(SoundMenu_GYMDump, "Start GYM Dump", "SoundMenu_GYMDump", SoundMenu);
-	AddMenuCallback(SoundMenu_GYMDump, on_SoundMenu_GYMDump_activate);
 }
 
 
