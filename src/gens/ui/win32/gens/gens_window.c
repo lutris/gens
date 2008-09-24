@@ -207,7 +207,7 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	
 	memset(&mnuStateItem, 0x00, sizeof(mnuStateItem));
 	mnuStateItem.cbSize = sizeof(mnuStateItem);
-	mnuStateItem.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_STRING;
+	mnuStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
 	mnuStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
 	mnuStateItem.hSubMenu = 0;
 	mnuStateItem.hbmpChecked = 0;
@@ -217,7 +217,6 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	for (i = 0; i < 10; i++)
 	{
 		mnuStateItem.wID = ID_FILE_CHANGESTATE + i;
-		mnuStateItem.dwItemData = 0;
 		mnuStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
 		mnuTitle[0] = '0' + i;
 		mnuTitle[1] = 0;
