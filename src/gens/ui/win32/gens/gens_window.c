@@ -57,6 +57,7 @@ HWND Gens_hWnd = NULL;
 // Menu objects
 HMENU MainMenu;
 HMENU FileMenu;
+HMENU FileMenu_ChangeState;
 HMENU GraphicsMenu;
 HMENU CPUMenu;
 HMENU SoundMenu;
@@ -66,13 +67,13 @@ HMENU HelpMenu;
 
 static void create_gens_window_menubar(void);
 static void create_gens_window_FileMenu(HMENU parent, int position);
+static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
 static void create_gens_window_CPUMenu(HMENU parent, int position);
 static void create_gens_window_SoundMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
 #if 0
-static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
 #ifdef GENS_DEBUGGER
 static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
@@ -178,11 +179,50 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	InsertMenu(FileMenu, 9, flags, ID_FILE_SAVESTATE, "&Save State As...");
 	InsertMenu(FileMenu, 10, flags, ID_FILE_QUICKLOAD, "Quick Load");
 	InsertMenu(FileMenu, 11, flags, ID_FILE_QUICKSAVE, "Quick Save");
-	InsertMenu(FileMenu, 12, flags, ID_FILE_CHANGESTATE, "Change State");
+	//InsertMenu(FileMenu, 12, flags, ID_FILE_CHANGESTATE, "Change State");
+	create_gens_window_FileMenu_ChangeState(FileMenu, 12);
 	
 	InsertMenu(FileMenu, 13, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(FileMenu, 14, flags, ID_FILE_QUIT, "&Quit");
+}
+
+
+/**
+ * create_gens_window_FileMenu_ChangeState(): Create the File, Change State submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
+{
+	// File, Change State
+	FileMenu_ChangeState = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu_ChangeState, "Change State");
+	
+	MENUITEMINFO mnuStateItem;
+	char mnuTitle[2];
+	int i;
+	
+	memset(&mnuStateItem, 0x00, sizeof(mnuStateItem));
+	mnuStateItem.cbSize = sizeof(mnuStateItem);
+	mnuStateItem.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_STRING;
+	mnuStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	mnuStateItem.hSubMenu = 0;
+	mnuStateItem.hbmpChecked = 0;
+	mnuStateItem.hbmpUnchecked = 0;
+	
+	// Create the save slot entries.
+	for (i = 0; i < 10; i++)
+	{
+		mnuStateItem.wID = ID_FILE_CHANGESTATE + i;
+		mnuStateItem.dwItemData = 0;
+		mnuStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
+		mnuTitle[0] = '0' + i;
+		mnuTitle[1] = 0;
+		mnuStateItem.dwTypeData = &mnuTitle;
+		mnuStateItem.cch = 1;
+		InsertMenuItem(FileMenu_ChangeState, i, TRUE, &mnuStateItem);
+	}
 }
 
 
@@ -351,38 +391,6 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 
 
 #if 0
-/**
- * gens_window_FileMenu_ChangeState_SubMenu(): Create the File, Change State submenu.
- * @param container Container for this menu.
- */
-static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container)
-{
-	GtkWidget *SubMenu;
-	GtkWidget *SlotItem;
-	GSList *SlotGroup = NULL;
-	
-	int i;
-	char ObjName[64];
-	char SlotName[8];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "FileMenu_ChangeState_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the save slot entries.
-	for (i = 0; i < 10; i++)
-	{
-		sprintf(SlotName, "%d", i);
-		sprintf(ObjName, "FileMenu_ChangeState_SubMenu_%s", SlotName);
-		NewMenuItem_Radio(SlotItem, SlotName, ObjName, SubMenu, (i == 0 ? TRUE : FALSE), SlotGroup);
-		g_signal_connect((gpointer)SlotItem, "activate",
-				 G_CALLBACK(on_FileMenu_ChangeState_SubMenu_SlotItem_activate),
-				 GINT_TO_POINTER(i));
-	}
-}
-
-
 /**
  * create_gens_window_GraphicsMenu_FrameSkip_SubMenu(): Create the Graphics, Frame Skip submenu.
  * @param container Container for this menu.
