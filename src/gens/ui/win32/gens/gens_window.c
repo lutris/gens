@@ -65,12 +65,12 @@ HMENU HelpMenu;
 
 
 static void create_gens_window_menubar(void);
-static void create_gens_window_FileMenu(HMENU parent);
-static void create_gens_window_GraphicsMenu(HMENU parent);
-static void create_gens_window_CPUMenu(HMENU parent);
-static void create_gens_window_SoundMenu(HMENU parent);
-static void create_gens_window_OptionsMenu(HMENU parent);
-static void create_gens_window_HelpMenu(HMENU parent);
+static void create_gens_window_FileMenu(HMENU parent, int position);
+static void create_gens_window_GraphicsMenu(HMENU parent, int position);
+static void create_gens_window_CPUMenu(HMENU parent, int position);
+static void create_gens_window_SoundMenu(HMENU parent, int position);
+static void create_gens_window_OptionsMenu(HMENU parent, int position);
+static void create_gens_window_HelpMenu(HMENU parent, int position);
 #if 0
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
@@ -138,26 +138,27 @@ static void create_gens_window_menubar(void)
 	MainMenu = CreateMenu();
 	
 	// Menus
-	create_gens_window_FileMenu(MainMenu);
-	create_gens_window_GraphicsMenu(MainMenu);
-	create_gens_window_CPUMenu(MainMenu);
-	create_gens_window_SoundMenu(MainMenu);
-	create_gens_window_OptionsMenu(MainMenu);
-	create_gens_window_HelpMenu(MainMenu);
+	create_gens_window_FileMenu(MainMenu, 0);
+	create_gens_window_GraphicsMenu(MainMenu, 1);
+	create_gens_window_CPUMenu(MainMenu, 2);
+	create_gens_window_SoundMenu(MainMenu, 3);
+	create_gens_window_OptionsMenu(MainMenu, 4);
+	create_gens_window_HelpMenu(MainMenu, 5);
 }
 
 
 /**
  * create_gens_window_FileMenu(): Create the File menu.
  * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-static void create_gens_window_FileMenu(HMENU parent)
+static void create_gens_window_FileMenu(HMENU parent, int position)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// File
 	FileMenu = CreatePopupMenu();
-	InsertMenu(parent, 0, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
 	
 	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
 #ifdef GENS_CDROM
@@ -188,14 +189,15 @@ static void create_gens_window_FileMenu(HMENU parent)
 /**
  * create_gens_window_GraphicsMenu(): Create the Graphics menu.
  * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-static void create_gens_window_GraphicsMenu(HMENU parent)
+static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Graphics
 	GraphicsMenu = CreatePopupMenu();
-	InsertMenu(parent, 1, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
 	
 	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
 	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync");
@@ -223,14 +225,15 @@ static void create_gens_window_GraphicsMenu(HMENU parent)
 /**
  * create_gens_window_CPUMenu(): Create the CPU menu.
  * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-static void create_gens_window_CPUMenu(HMENU parent)
+static void create_gens_window_CPUMenu(HMENU parent, int position)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// CPU
 	CPUMenu = CreatePopupMenu();
-	InsertMenu(parent, 2, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
 	
 #ifdef GENS_DEBUGGER
 	InsertMenu(CPUMenu, 0, flags, ID_CPU_DEBUG, "&Debug");
@@ -258,8 +261,9 @@ static void create_gens_window_CPUMenu(HMENU parent)
 /**
  * create_gens_window_SoundMenu(): Create the Sound menu.
  * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-static void create_gens_window_SoundMenu(HMENU parent)
+static void create_gens_window_SoundMenu(HMENU parent, int position)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
@@ -300,14 +304,15 @@ static void create_gens_window_SoundMenu(HMENU parent)
 /**
  * create_gens_window_OptionsMenu(): Create the Options menu.
  * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-static void create_gens_window_OptionsMenu(HMENU parent)
+static void create_gens_window_OptionsMenu(HMENU parent, int position)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Options
 	OptionsMenu = CreatePopupMenu();
-	InsertMenu(parent, 4, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
 	
 	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
 	InsertMenu(OptionsMenu, 1, flags, ID_OPTIONS_JOYPADS, "&Joypads...");
@@ -331,14 +336,15 @@ static void create_gens_window_OptionsMenu(HMENU parent)
 /**
  * create_gens_window_HelpMenu(): Create the Help menu.
  * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-static void create_gens_window_HelpMenu(HMENU parent)
+static void create_gens_window_HelpMenu(HMENU parent, int position)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Help
 	HelpMenu = CreatePopupMenu();
-	InsertMenu(parent, 5, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
 	
 	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
 }
