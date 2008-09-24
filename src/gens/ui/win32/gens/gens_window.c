@@ -69,6 +69,7 @@ static void create_gens_window_FileMenu(HMENU parent);
 static void create_gens_window_GraphicsMenu(HMENU parent);
 static void create_gens_window_CPUMenu(HMENU parent);
 static void create_gens_window_SoundMenu(HMENU parent);
+static void create_gens_window_OptionsMenu(HMENU parent);
 #if 0
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
@@ -77,7 +78,6 @@ static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif /* GENS_DEBUGGER */
 static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
 static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
-static void create_gens_window_OptionsMenu(GtkWidget *container);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
 static void create_gens_window_HelpMenu(GtkWidget *container);
 #endif
@@ -142,8 +142,8 @@ static void create_gens_window_menubar(void)
 	create_gens_window_GraphicsMenu(MainMenu);
 	create_gens_window_CPUMenu(MainMenu);
 	create_gens_window_SoundMenu(MainMenu);
+	create_gens_window_OptionsMenu(MainMenu);
 	/*
-	create_gens_window_OptionsMenu(MenuBar);
 	create_gens_window_HelpMenu(MenuBar);
 	*/
 }
@@ -296,6 +296,37 @@ static void create_gens_window_SoundMenu(HMENU parent)
 	
 	InsertMenu(SoundMenu, 17, flags, ID_SOUND_WAVDUMP, "Start WAV Dump");
 	InsertMenu(SoundMenu, 18, flags, ID_SOUND_GYMDUMP, "Start GYM Dump");
+}
+
+
+/**
+ * create_gens_window_OptionsMenu(): Create the Options menu.
+ * @param parent Parent menu.
+ */
+static void create_gens_window_OptionsMenu(HMENU parent)
+{
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
+	
+	// Options
+	OptionsMenu = CreatePopupMenu();
+	InsertMenu(parent, 4, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
+	
+	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
+	InsertMenu(OptionsMenu, 1, flags, ID_OPTIONS_JOYPADS, "&Joypads...");
+	InsertMenu(OptionsMenu, 2, flags, ID_OPTIONS_DIRECTORIES, "&Directories...");
+	InsertMenu(OptionsMenu, 3, flags, ID_OPTIONS_BIOS_MISC_FILES, "&BIOS/Misc Files...");
+	
+	InsertMenu(OptionsMenu, 4, MF_SEPARATOR, NULL, NULL);
+	
+#ifdef GENS_CDROM
+	InsertMenu(OptionsMenu, 5, flags, ID_OPTIONS_CURRENT_CD_DRIVE, "Current &CD Drive...");
+#endif /* GENS_CDROM */
+	InsertMenu(OptionsMenu, 6, flags, ID_OPTIONS_SEGACD_SRAM_SIZE, "SegaCD S&RAM Size");
+	
+	InsertMenu(OptionsMenu, 7, MF_SEPARATOR, NULL, NULL);
+	
+	InsertMenu(OptionsMenu, 8, flags, ID_OPTIONS_LOADCONFIG, "&Load Config...");
+	InsertMenu(OptionsMenu, 9, flags, ID_OPTIONS_SAVECONFIGAS, "&Save Config As...");
 }
 
 
@@ -506,86 +537,6 @@ static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container)
 				 G_CALLBACK(on_SoundMenu_Rate_SubMenu_activate),
 				 GINT_TO_POINTER(SndRates[i][0]));
 	}
-}
-
-
-/**
- * create_gens_window_OptionsMenu(): Create the Options menu.
- * @param container Container for this menu.
- */
-static void create_gens_window_OptionsMenu(GtkWidget *container)
-{
-	GtkWidget *Options;			GtkWidget *Options_Icon;
-	GtkWidget *OptionsMenu;
-	GtkWidget *OptionsMenu_GeneralOptions;	GtkWidget *OptionsMenu_GeneralOptions_Icon;
-	GtkWidget *OptionsMenu_Joypads;		GtkWidget *OptionsMenu_Joypads_Icon;
-	GtkWidget *OptionsMenu_Directories;	GtkWidget *OptionsMenu_Directories_Icon;
-	GtkWidget *OptionsMenu_BIOSMiscFiles;	GtkWidget *OptionsMenu_BIOSMiscFiles_Icon;
-	GtkWidget *OptionsMenu_Separator1;
-#ifdef GENS_CDROM
-	GtkWidget *OptionsMenu_CurrentCDDrive;	GtkWidget *OptionsMenu_CurrentCDDrive_Icon;
-#endif
-	GtkWidget *OptionsMenu_SegaCDSRAMSize;	GtkWidget *OptionsMenu_SegaCDSRAMSize_Icon;
-	GtkWidget *OptionsMenu_Separator2;
-	GtkWidget *OptionsMenu_LoadConfig;	GtkWidget *OptionsMenu_LoadConfig_Icon;
-	GtkWidget *OptionsMenu_SaveConfigAs;	GtkWidget *OptionsMenu_SaveConfigAs_Icon;
-	
-	// Options
-	NewMenuItem_Icon(Options, "_Options", "Options", container, Options_Icon, "package_settings.png");
-	
-	// Menu object for the OptionsMenu
-	OptionsMenu = gtk_menu_new();
-	gtk_widget_set_name(OptionsMenu, "OptionsMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Options), OptionsMenu);
-	
-	// General Options
-	NewMenuItem_Icon(OptionsMenu_GeneralOptions, "_General Options...", "OptionsMenu_GeneralOptions", OptionsMenu,
-			 OptionsMenu_GeneralOptions_Icon, "ksysguard.png");
-	AddMenuCallback(OptionsMenu_GeneralOptions, on_OptionsMenu_GeneralOptions_activate);
-	
-	// Joypads
-	NewMenuItem_Icon(OptionsMenu_Joypads, "_Joypads...", "OptionsMenu_Joypads", OptionsMenu,
-			 OptionsMenu_Joypads_Icon, "package_games.png");
-	AddMenuCallback(OptionsMenu_Joypads, on_OptionsMenu_Joypads_activate);
-	
-	// Directories
-	NewMenuItem_Icon(OptionsMenu_Directories, "_Directories...", "OptionsMenu_Directories", OptionsMenu,
-			 OptionsMenu_Directories_Icon, "folder_slin_open.png");
-	AddMenuCallback(OptionsMenu_Directories, on_OptionsMenu_Directories_activate);
-	
-	// BIOS/Misc Files...
-	NewMenuItem_Icon(OptionsMenu_BIOSMiscFiles, "_BIOS/Misc Files...", "OptionsMenu_BIOSMiscFiles", OptionsMenu,
-			 OptionsMenu_BIOSMiscFiles_Icon, "binary.png");
-	AddMenuCallback(OptionsMenu_BIOSMiscFiles, on_OptionsMenu_BIOSMiscFiles_activate);
-	
-	// Separator
-	NewMenuSeparator(OptionsMenu_Separator1, "OptionsMenu_Separator1", OptionsMenu);
-	
-#ifdef GENS_CDROM
-	// Current CD Drive...
-	NewMenuItem_StockIcon(OptionsMenu_CurrentCDDrive, "Current _CD Drive...", "OptionsMenu_CurrentCDDrive", OptionsMenu,
-			      OptionsMenu_CurrentCDDrive_Icon, "gtk-cdrom");
-	AddMenuCallback(OptionsMenu_CurrentCDDrive, on_OptionsMenu_CurrentCDDrive_activate);
-#endif
-	
-	// Sega CD SRAM Size
-	NewMenuItem_Icon(OptionsMenu_SegaCDSRAMSize, "Sega CD S_RAM Size", "OptionsMenu_SegaCDSRAMSize", OptionsMenu,
-			 OptionsMenu_SegaCDSRAMSize_Icon, "memory.png");
-	// Sega CD SRAM Size submenu
-	create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(OptionsMenu_SegaCDSRAMSize);
-	
-	// Separator
-	NewMenuSeparator(OptionsMenu_Separator2, "OptionsMenu_Separator2", OptionsMenu);
-	
-	// Load Config...
-	NewMenuItem_StockIcon(OptionsMenu_LoadConfig, "_Load Config...", "OptionsMenu_LoadConfig", OptionsMenu,
-			      OptionsMenu_LoadConfig_Icon, "gtk-open");
-	AddMenuCallback(OptionsMenu_LoadConfig, on_OptionsMenu_LoadConfig_activate);
-	
-	// Save Config As...
-	NewMenuItem_StockIcon(OptionsMenu_SaveConfigAs, "_Save Config As...", "OptionsMenu_SaveConfigAs", OptionsMenu,
-			      OptionsMenu_SaveConfigAs_Icon, "gtk-save-as");
-	AddMenuCallback(OptionsMenu_SaveConfigAs, on_OptionsMenu_SaveConfigAs_activate);
 }
 
 
