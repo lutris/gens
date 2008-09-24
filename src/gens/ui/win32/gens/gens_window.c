@@ -155,13 +155,11 @@ static void create_gens_window_menubar(void)
  */
 static void create_gens_window_FileMenu(HMENU parent)
 {
-	unsigned int flags;
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// File
 	FileMenu = CreatePopupMenu();
 	InsertMenu(parent, 0, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
-	
-	flags = MF_BYPOSITION | MF_STRING;
 	
 	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
 #ifdef GENS_CDROM
@@ -195,13 +193,11 @@ static void create_gens_window_FileMenu(HMENU parent)
  */
 static void create_gens_window_GraphicsMenu(HMENU parent)
 {
-	unsigned int flags;
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Graphics
 	GraphicsMenu = CreatePopupMenu();
 	InsertMenu(parent, 1, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
-	
-	flags = MF_BYPOSITION | MF_STRING;
 	
 	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
 	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync");
@@ -232,13 +228,11 @@ static void create_gens_window_GraphicsMenu(HMENU parent)
  */
 static void create_gens_window_CPUMenu(HMENU parent)
 {
-	unsigned int flags;
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// CPU
 	CPUMenu = CreatePopupMenu();
 	InsertMenu(parent, 2, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
-	
-	flags = MF_BYPOSITION | MF_STRING;
 	
 #ifdef GENS_DEBUGGER
 	InsertMenu(CPUMenu, 0, flags, ID_CPU_DEBUG, "&Debug");
@@ -269,7 +263,7 @@ static void create_gens_window_CPUMenu(HMENU parent)
  */
 static void create_gens_window_SoundMenu(HMENU parent)
 {
-	unsigned int flags;
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Sound
 	SoundMenu = CreatePopupMenu();
