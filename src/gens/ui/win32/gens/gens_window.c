@@ -70,6 +70,7 @@ static void create_gens_window_GraphicsMenu(HMENU parent);
 static void create_gens_window_CPUMenu(HMENU parent);
 static void create_gens_window_SoundMenu(HMENU parent);
 static void create_gens_window_OptionsMenu(HMENU parent);
+static void create_gens_window_HelpMenu(HMENU parent);
 #if 0
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
@@ -79,7 +80,6 @@ static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
 static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
-static void create_gens_window_HelpMenu(GtkWidget *container);
 #endif
 
 
@@ -143,9 +143,7 @@ static void create_gens_window_menubar(void)
 	create_gens_window_CPUMenu(MainMenu);
 	create_gens_window_SoundMenu(MainMenu);
 	create_gens_window_OptionsMenu(MainMenu);
-	/*
-	create_gens_window_HelpMenu(MenuBar);
-	*/
+	create_gens_window_HelpMenu(MainMenu);
 }
 
 
@@ -327,6 +325,22 @@ static void create_gens_window_OptionsMenu(HMENU parent)
 	
 	InsertMenu(OptionsMenu, 8, flags, ID_OPTIONS_LOADCONFIG, "&Load Config...");
 	InsertMenu(OptionsMenu, 9, flags, ID_OPTIONS_SAVECONFIGAS, "&Save Config As...");
+}
+
+
+/**
+ * create_gens_window_HelpMenu(): Create the Help menu.
+ * @param parent Parent menu.
+ */
+static void create_gens_window_HelpMenu(HMENU parent)
+{
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
+	
+	// Help
+	HelpMenu = CreatePopupMenu();
+	InsertMenu(parent, 5, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
+	
+	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
 }
 
 
@@ -577,29 +591,5 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *con
 				 G_CALLBACK(on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate),
 				 GINT_TO_POINTER(i));
 	}
-}
-
-
-/**
- * create_gens_window_HelpMenu(): Create the Help menu.
- * @param container Container for this menu.
- */
-static void create_gens_window_HelpMenu(GtkWidget *container)
-{
-	GtkWidget *Help;			GtkWidget *Help_Icon;
-	GtkWidget *HelpMenu;
-	GtkWidget *HelpMenu_About;		GtkWidget *HelpMenu_About_Icon;
-	
-	// Help
-	NewMenuItem_StockIcon(Help, "_Help", "Help", container, Help_Icon, "gtk-help");
-	
-	// Menu object for the HelpMenu
-	HelpMenu = gtk_menu_new();
-	gtk_widget_set_name(HelpMenu, "HelpMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(Help), HelpMenu);
-	
-	// About
-	NewMenuItem_StockIcon(HelpMenu_About, "_About", "About", HelpMenu, HelpMenu_About_Icon, "gtk-help");
-	AddMenuCallback(HelpMenu_About, on_HelpMenu_About_activate);
 }
 #endif

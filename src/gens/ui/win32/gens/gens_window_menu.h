@@ -107,6 +107,10 @@ extern "C" {
 #define ID_OPTIONS_LOADCONFIG		0x5007
 #define ID_OPTIONS_SAVECONFIGAS		0x5008
 
+// Help Menu
+#define ID_HELP_MENU			0x6000
+#define ID_HELP_ABOUT			0x6001
+
 #ifdef __cplusplus
 }
 #endif
