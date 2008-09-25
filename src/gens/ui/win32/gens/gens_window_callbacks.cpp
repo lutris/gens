@@ -203,6 +203,22 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case ID_FILE_QUIT:
 			close_gens();
 			break;
+			
+		case ID_FILE_CHANGESTATE_0:
+		case ID_FILE_CHANGESTATE_1:
+		case ID_FILE_CHANGESTATE_2:
+		case ID_FILE_CHANGESTATE_3:
+		case ID_FILE_CHANGESTATE_4:
+		case ID_FILE_CHANGESTATE_5:
+		case ID_FILE_CHANGESTATE_6:
+		case ID_FILE_CHANGESTATE_7:
+		case ID_FILE_CHANGESTATE_8:
+		case ID_FILE_CHANGESTATE_9:
+			// Change state.
+			printf("New state: %d\n", LOWORD(wParam) - ID_FILE_CHANGESTATE);
+			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
+			Sync_Gens_Window_FileMenu();
+			break;
 	}
 }
 
@@ -328,20 +344,6 @@ void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data)
 	Str_Tmp[0] = 0;
 	Get_State_File_Name(Str_Tmp);
 	Save_State(Str_Tmp);
-}
-
-
-/**
- * File, Change State, #
- */
-void on_FileMenu_ChangeState_SubMenu_SlotItem_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	int slot = GPOINTER_TO_INT(user_data);
-	
-	if (!do_callbacks)
-		return;
-	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		Set_Current_State(slot);
 }
 
 
