@@ -160,6 +160,7 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	// File
 	DestroyMenu(FileMenu);
 	FileMenu = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
 	
 	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
@@ -199,6 +200,7 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	// File, Change State
 	DestroyMenu(FileMenu_ChangeState);
 	FileMenu_ChangeState = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu_ChangeState, "Change State");
 	
 	MENUITEMINFO mnuStateItem;
@@ -239,6 +241,7 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	// Graphics
 	DestroyMenu(GraphicsMenu);
 	GraphicsMenu = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
 	
 	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
@@ -276,6 +279,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	// CPU
 	DestroyMenu(CPUMenu);
 	CPUMenu = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
 	
 #ifdef GENS_DEBUGGER
@@ -313,6 +317,7 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	// Sound
 	DestroyMenu(SoundMenu);
 	SoundMenu = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu, "&Sound");
 	
 	InsertMenu(SoundMenu, 0, flags, ID_SOUND_ENABLE, "&Enable");
@@ -357,6 +362,7 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 	// Options
 	DestroyMenu(OptionsMenu);
 	OptionsMenu = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
 	
 	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
@@ -390,6 +396,7 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	// Help
 	DestroyMenu(HelpMenu);
 	HelpMenu = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
 	
 	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
