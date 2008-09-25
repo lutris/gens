@@ -217,7 +217,6 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			// Change state.
 			printf("New state: %d\n", LOWORD(wParam) - ID_FILE_CHANGESTATE);
 			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
-			Sync_Gens_Window_FileMenu();
 			break;
 	}
 }
