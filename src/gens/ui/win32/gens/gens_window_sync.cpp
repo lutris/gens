@@ -31,6 +31,9 @@
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
 
+// Menu identifier definitions
+#include "gens_window_menu.h"
+
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -71,6 +74,21 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
+	int i;
+	
+	// Current savestate
+	MENUITEMINFO miimStateItem;
+	
+	memset(&miimStateItem, 0x00, sizeof(miimStateItem));
+	miimStateItem.cbSize = sizeof(miimStateItem);
+	miimStateItem.fMask = MIIM_STATE;
+	
+	for (i = 0; i < 10; i++)
+	{
+		miimStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimStateItem);
+	}
+	
 #if 0
 	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
 	GtkWidget *MItem_ROMHistory_SubMenu_Item;
@@ -145,11 +163,6 @@ void Sync_Gens_Window_FileMenu(void)
 	gtk_widget_set_sensitive(MItem_QuickLoad, saveStateEnable);
 	MItem_QuickSave = lookup_widget(gens_window, "FileMenu_QuickSave");
 	gtk_widget_set_sensitive(MItem_QuickSave, saveStateEnable);
-	
-	// Current savestate
-	sprintf(Str_Tmp, "FileMenu_ChangeState_SubMenu_%d", Current_State);
-	MItem_SaveState = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SaveState), TRUE);
 	
 	// TODO: Disable Close ROM if no ROM is loaded.
 	

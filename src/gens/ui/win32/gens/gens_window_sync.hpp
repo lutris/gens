@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Main Window - Synchronization Functions.                   *
+ * Gens: (Win32) Main Window - Synchronization Functions.                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_GENS_WINDOW_SYNC_H
-#define GTK_GENS_WINDOW_SYNC_H
+#ifndef GTK_GENS_WINDOW_SYNC_HPP
+#define GTK_GENS_WINDOW_SYNC_HPP
 
 #ifdef __cplusplus
 extern "C" {

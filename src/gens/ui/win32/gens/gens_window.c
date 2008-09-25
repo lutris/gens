@@ -203,28 +203,28 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu_ChangeState, "Change State");
 	
-	MENUITEMINFO mnuStateItem;
+	MENUITEMINFO miimStateItem;
 	char mnuTitle[2];
 	int i;
 	
-	memset(&mnuStateItem, 0x00, sizeof(mnuStateItem));
-	mnuStateItem.cbSize = sizeof(mnuStateItem);
-	mnuStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	mnuStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
-	mnuStateItem.hSubMenu = 0;
-	mnuStateItem.hbmpChecked = 0;
-	mnuStateItem.hbmpUnchecked = 0;
+	memset(&miimStateItem, 0x00, sizeof(miimStateItem));
+	miimStateItem.cbSize = sizeof(miimStateItem);
+	miimStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	miimStateItem.hSubMenu = 0;
+	miimStateItem.hbmpChecked = 0;
+	miimStateItem.hbmpUnchecked = 0;
 	
 	// Create the save slot entries.
 	for (i = 0; i < 10; i++)
 	{
-		mnuStateItem.wID = ID_FILE_CHANGESTATE + i;
-		mnuStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
+		miimStateItem.wID = ID_FILE_CHANGESTATE + i;
+		miimStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
 		mnuTitle[0] = '0' + i;
 		mnuTitle[1] = 0;
-		mnuStateItem.dwTypeData = &mnuTitle;
-		mnuStateItem.cch = 1;
-		InsertMenuItem(FileMenu_ChangeState, i, TRUE, &mnuStateItem);
+		miimStateItem.dwTypeData = &mnuTitle;
+		miimStateItem.cch = 1;
+		InsertMenuItem(FileMenu_ChangeState, i, TRUE, &miimStateItem);
 	}
 }
 

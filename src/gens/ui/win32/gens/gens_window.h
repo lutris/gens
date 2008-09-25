@@ -37,6 +37,15 @@ HWND initGens_hWnd(void);
 HWND create_gens_window(void);
 extern HWND Gens_hWnd;
 
+extern HMENU MainMenu;
+extern HMENU FileMenu;
+extern HMENU FileMenu_ChangeState;
+extern HMENU GraphicsMenu;
+extern HMENU CPUMenu;
+extern HMENU SoundMenu;
+extern HMENU OptionsMenu;
+extern HMENU HelpMenu;
+
 #ifdef GENS_DEBUGGER
 // Debug menu items
 //extern GtkWidget *debugMenuItems[9];
