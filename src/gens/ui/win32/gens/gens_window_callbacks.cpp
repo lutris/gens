@@ -215,7 +215,6 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case ID_FILE_CHANGESTATE_8:
 		case ID_FILE_CHANGESTATE_9:
 			// Change state.
-			printf("New state: %d\n", LOWORD(wParam) - ID_FILE_CHANGESTATE);
 			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
 			break;
 	}
