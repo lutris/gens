@@ -76,17 +76,26 @@ void Sync_Gens_Window_FileMenu(void)
 {
 	int i;
 	
+	MENUITEMINFO miimMenuItem;
+	
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_STATE;
+	
+	// TODO: Disable Close ROM if no ROM is loaded.
+	
+	// Savestate menu items
+	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
+	SetMenuItemInfo(FileMenu, ID_FILE_LOADSTATE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, ID_FILE_SAVESTATE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, ID_FILE_QUICKLOAD, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, ID_FILE_QUICKSAVE, FALSE, &miimMenuItem);
+	
 	// Current savestate
-	MENUITEMINFO miimStateItem;
-	
-	memset(&miimStateItem, 0x00, sizeof(miimStateItem));
-	miimStateItem.cbSize = sizeof(miimStateItem);
-	miimStateItem.fMask = MIIM_STATE;
-	
 	for (i = 0; i < 10; i++)
 	{
-		miimStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimStateItem);
+		miimMenuItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
 	}
 	
 #if 0
@@ -152,19 +161,6 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	gtk_widget_set_sensitive(MItem_ROMHistory, romsFound);
-	
-	// Savestate menu items
-	saveStateEnable = (Genesis_Started || SegaCD_Started || _32X_Started);
-	MItem_LoadState = lookup_widget(gens_window, "FileMenu_LoadState");
-	gtk_widget_set_sensitive(MItem_LoadState, saveStateEnable);
-	MItem_SaveStateAs = lookup_widget(gens_window, "FileMenu_SaveState");
-	gtk_widget_set_sensitive(MItem_SaveStateAs, saveStateEnable);
-	MItem_QuickLoad = lookup_widget(gens_window, "FileMenu_QuickLoad");
-	gtk_widget_set_sensitive(MItem_QuickLoad, saveStateEnable);
-	MItem_QuickSave = lookup_widget(gens_window, "FileMenu_QuickSave");
-	gtk_widget_set_sensitive(MItem_QuickSave, saveStateEnable);
-	
-	// TODO: Disable Close ROM if no ROM is loaded.
 	
 	// Enable callbacks.
 	do_callbacks = 1;
