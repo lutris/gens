@@ -202,6 +202,10 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			DestroyWindow(about_window);
 			return 0;
 		
+		case WM_PAINT:
+			updateIce();
+			break;
+			
 		case WM_DESTROY:
 			if (about_window == hWnd)
 				about_window = NULL;
@@ -265,22 +269,25 @@ void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
 	gtk_widget_destroy(about_window);
 	about_window = NULL;
 }
+#endif
 
 
 void updateIce(void)
 {
-	if (!image_gens_logo)
-		return;
+	HDC hDC;
+	PAINTSTRUCT ps;
 	
-	GdkPixbuf *icebuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 0120, 0120);
+	hDC = BeginPaint(about_window, &ps);
+	
 	int x, y, r;
 	const unsigned char *src = &about_data[ax*01440];
 	const unsigned char *src2 = &about_dx[bx*040];
 	unsigned char px1, px2;
-	guchar *pixels = gdk_pixbuf_get_pixels(icebuf);
-	r = gdk_pixbuf_get_rowstride(icebuf);
 	
-	memset(pixels, 0, 062000);
+	int bgc = GetSysColor(COLOR_3DFACE);
+	int pxc;
+	const int offset = 8;
+	
 	for (y = 0; y < 0120; y += 2)
 	{
 		for (x = 0; x < 0120; x += 4)
@@ -288,34 +295,45 @@ void updateIce(void)
 			px1 = (*src & 0360) >> 3;
 			px2 = (*src & 0017) << 1;
 			
-			pixels[y*r + x*4 + 0] = (src2[px1 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 1] = (src2[px1 + 1] & 0360);
-			pixels[y*r + x*4 + 2] = (src2[px1 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 3] = (px1 ? '\377' : '\000');
+			if (!px1)
+			{
+				pxc = bgc;
+			}
+			else
+			{
+				pxc = RGB((src2[px1 + 1] & 0017) << 4,
+					  (src2[px1 + 1] & 0360),
+					  (src2[px1 + 0] & 0017) << 4);
+			}
 			
-			pixels[y*r + x*4 + 4] = (src2[px1 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 5] = (src2[px1 + 1] & 0360);
-			pixels[y*r + x*4 + 6] = (src2[px1 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 7] = (px1 ? '\377' : '\000');
+			SetPixel(hDC, x + 0 + offset, y + 0 + offset, pxc);
+			SetPixel(hDC, x + 1 + offset, y + 0 + offset, pxc);
+			SetPixel(hDC, x + 0 + offset, y + 1 + offset, pxc);
+			SetPixel(hDC, x + 1 + offset, y + 1 + offset, pxc);
 			
-			pixels[y*r + x*4 + 8] = (src2[px2 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 9] = (src2[px2 + 1] & 0360);
-			pixels[y*r + x*4 + 10] = (src2[px2 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 11] = (px2 ? '\377' : '\000');
-			
-			pixels[y*r + x*4 + 12] = (src2[px2 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 13] = (src2[px2 + 1] & 0360);
-			pixels[y*r + x*4 + 14] = (src2[px2 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 15] = (px2 ? '\377' : '\000');
-			
-			memcpy(&pixels[(y+1)*r + x*4], &pixels[y*r + x*4], 16);
+			if (!px2)
+			{
+				pxc = bgc;
+			}
+			else
+			{
+				pxc = RGB((src2[px2 + 1] & 0017) << 4,
+					  (src2[px2 + 1] & 0360),
+					  (src2[px2 + 0] & 0017) << 4);
+			}
+			SetPixel(hDC, x + 2 + offset, y + 0 + offset, pxc);
+			SetPixel(hDC, x + 3 + offset, y + 0 + offset, pxc);
+			SetPixel(hDC, x + 2 + offset, y + 1 + offset, pxc);
+			SetPixel(hDC, x + 3 + offset, y + 1 + offset, pxc);
 			
 			src++;
 		}
 	}
-	gtk_image_set_from_pixbuf(GTK_IMAGE(image_gens_logo), icebuf);
+	
+	EndPaint(about_window, &ps);
 }
 
+#if 0
 bool iceTime(gpointer data)
 {
 	GENS_UNUSED_PARAMETER(data);
