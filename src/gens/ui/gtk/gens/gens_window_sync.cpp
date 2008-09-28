@@ -536,6 +536,7 @@ void Sync_Gens_Window_OptionsMenu(void)
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
+	// SegaCD SRAM Size
 	if (BRAM_Ex_State & 0x100)
 	{
 		// RAM cart selected.
