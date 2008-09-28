@@ -756,7 +756,7 @@ static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
 	gtk_widget_set_name(SubMenu, "CPUMenu_Debug_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
-	// Create the render entries.
+	// Create the debug entries.
 	for (i = 0; i < 9; i++)
 	{
 		sprintf(ObjName, "CPUMenu_Debug_SubMenu_%d", i + 1);
