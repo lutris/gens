@@ -265,11 +265,6 @@ void Sync_Gens_Window_CPUMenu(void)
 {
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_STATE;
-	
 #ifdef GENS_DEBUGGER
 	// Synchronize the Debug submenu.
 	Sync_Gens_Window_CPUMenu_Debug(CPUMenu, 0);
@@ -301,6 +296,19 @@ void Sync_Gens_Window_CPUMenu(void)
 		InsertMenu(CPUMenu, 9, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
 	}
 	
+	// Country code
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_STATE;
+	
+	int i;
+	for (i = -1; i < 4; i++)
+	{
+		miimMenuItem.fState = (i == Country ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(CPUMenu_Country, ID_CPU_COUNTRY + (i + 1), FALSE, &miimMenuItem);
+	}
+	
 #if 0
 #ifdef GENS_DEBUGGER
 	GtkWidget *MItem_Debug;
@@ -315,18 +323,6 @@ void Sync_Gens_Window_CPUMenu(void)
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 
-	// Country code
-	if (Country == -1)
-		MItem_Country = lookup_widget(gens_window, "CPUMenu_Country_SubMenu_Auto");
-	else
-	{
-		sprintf(Str_Tmp, "CPUMenu_Country_SubMenu_%d", Country);
-		MItem_Country = lookup_widget(gens_window, Str_Tmp);
-	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Country), TRUE);
-	
-	// TODO: Country order (maybe?)
-	
 	// SegaCD Perfect Sync
 	MItem_SegaCD_PerfectSync = lookup_widget(gens_window, "CPUMenu_SegaCD_PerfectSync");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SegaCD_PerfectSync), SegaCD_Accurate);

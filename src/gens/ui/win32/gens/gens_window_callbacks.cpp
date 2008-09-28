@@ -390,6 +390,14 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 {
 	switch (LOWORD(wParam))
 	{
+		case ID_CPU_COUNTRY_AUTO:
+		case ID_CPU_COUNTRY_JAPAN_NTSC:
+		case ID_CPU_COUNTRY_USA:
+		case ID_CPU_COUNTRY_EUROPE:
+		case ID_CPU_COUNTRY_JAPAN_PAL:
+			Change_Country(LOWORD(wParam) - ID_CPU_COUNTRY - 1);
+			break;
+			
 		case ID_CPU_HARDRESET:
 			system_reset();
 			break;
@@ -530,18 +538,6 @@ void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_d
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Color_Adjust();
-}
-
-
-/**
- * CPU, Country, #
- */
-void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		Change_Country(GPOINTER_TO_INT(user_data));
 }
 
 

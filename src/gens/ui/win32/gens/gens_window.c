@@ -64,6 +64,7 @@ HMENU GraphicsMenu_Render;
 HMENU GraphicsMenu_FrameSkip;
 HMENU CPUMenu;
 HMENU CPUMenu_Debug;
+HMENU CPUMenu_Country;
 HMENU SoundMenu;
 HMENU OptionsMenu;
 HMENU HelpMenu;
@@ -75,6 +76,7 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position);
 static void create_gens_window_CPUMenu(HMENU parent, int position);
+static void create_gens_window_CPUMenu_Country(HMENU parent, int position);
 static void create_gens_window_SoundMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
@@ -270,14 +272,14 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 	GraphicsMenu_FrameSkip = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu_FrameSkip, "Frame Skip");
 	
-	MENUITEMINFO miimStateItem;
 	char mnuTitle[8];
 	int i;
 	
-	memset(&miimStateItem, 0x00, sizeof(miimStateItem));
-	miimStateItem.cbSize = sizeof(miimStateItem);
-	miimStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
 	
 	// Create the frame skip entries.
 	for (i = -1; i <= 8; i++)
@@ -285,18 +287,18 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 		if (i >= 0)
 		{
 			sprintf(mnuTitle, "%d", i);
-			miimStateItem.cch = 1;
+			miimMenuItem.cch = 1;
 		}
 		else
 		{
 			strcpy(mnuTitle, "Auto");
-			miimStateItem.cch = 4;
+			miimMenuItem.cch = 4;
 		}
 		
-		miimStateItem.wID = ID_GRAPHICS_FRAMESKIP + (i + 1);
-		miimStateItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
-		miimStateItem.dwTypeData = &mnuTitle;
-		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimStateItem);
+		miimMenuItem.wID = ID_GRAPHICS_FRAMESKIP + (i + 1);
+		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
+		miimMenuItem.dwTypeData = &mnuTitle;
+		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimMenuItem);
 	}
 }
 
@@ -320,7 +322,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	InsertMenu(CPUMenu, 1, MF_SEPARATOR, NULL, NULL);
 #endif /* GENS_DEBUGGER */
 	
-	InsertMenu(CPUMenu, 2, flags, ID_CPU_COUNTRY, "&Country");
+	create_gens_window_CPUMenu_Country(CPUMenu, 2);
 	
 	InsertMenu(CPUMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
@@ -331,6 +333,54 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	InsertMenu(CPUMenu, 11, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(CPUMenu, 12, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
+}
+
+
+/**
+ * create_gens_window_CPUMenu_Country_SubMenu(): Create the CPU, Country submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void create_gens_window_CPUMenu_Country(HMENU parent, int position)
+{
+	// TODO: Move this array somewhere else.
+	const char* CountryCodes[5] =
+	{
+		"Auto Detect",
+		"Japan (NTSC)",
+		"USA (NTSC)",
+		"Europe (PAL)",
+		"Japan (PAL)",
+	};
+	
+	// CPU, Country
+	DeleteMenu(parent, position, MF_BYPOSITION);
+	CPUMenu_Country = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu_Country, "&Country");
+	
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	
+	// Create the country code entries.
+	int i;
+	for (i = 0; i < 5; i++)
+	{
+		miimMenuItem.wID = ID_CPU_COUNTRY + i;
+		miimMenuItem.fState = (i == 0 ? MFS_CHECKED : MFS_UNCHECKED);
+		miimMenuItem.dwTypeData = CountryCodes[i];
+		miimMenuItem.cch = strlen(CountryCodes[i]);
+		
+		InsertMenuItem(CPUMenu_Country, i, TRUE, &miimMenuItem);
+	}
+	
+	// Separator
+	InsertMenu(CPUMenu_Country, 5, MF_SEPARATOR, NULL, NULL);
+	
+	// Add the Auto-Detection Order configuration option.
+	InsertMenu(CPUMenu_Country, 6, MF_BYPOSITION | MF_STRING, ID_CPU_COUNTRY_ORDER, "Auto-Detection Order...");
 }
 
 
@@ -430,57 +480,6 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 
 
 #if 0
-/**
- * create_gens_window_CPUMenu_Country_SubMenu(): Create the CPU, Country submenu.
- * @param container Container for this menu.
- */
-static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
-{
-	GtkWidget *SubMenu;
-	GtkWidget *CountryItem;
-	GSList *CountryGroup = NULL;
-	GtkWidget *CPUMenu_Country_SubMenu_Separator;
-	GtkWidget *CPUMenu_Country_SubMenu_AutoDetectOrder;
-	
-	// TODO: Move this array somewhere else.
-	const char* CountryCodes[5] =
-	{
-		"Auto Detect",
-		"Japan (NTSC)",
-		"USA (NTSC)",
-		"Europe (PAL)",
-		"Japan (PAL)",
-	};
-	
-	int i;
-	char ObjName[64];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "CPUMenu_Country_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the bits per pixel entries.
-	for (i = 0; i < 5; i++)
-	{
-		if (i == 0)
-			strcpy(ObjName, "CPUMenu_Country_SubMenu_Auto");
-		else
-			sprintf(ObjName, "CPUMenu_Country_SubMenu_%d", i - 1);
-		NewMenuItem_Radio(CountryItem, CountryCodes[i], ObjName, SubMenu, (i == 0 ? TRUE : FALSE), CountryGroup);
-		g_signal_connect((gpointer)CountryItem, "activate",
-				 G_CALLBACK(on_CPUMenu_Country_activate), GINT_TO_POINTER(i - 1));
-	}
-	
-	// Separator
-	NewMenuSeparator(CPUMenu_Country_SubMenu_Separator, "CPUMenu_Country_SubMenu_Separator", SubMenu);
-	
-	// Add the Auto-Detection Order configuration option.
-	NewMenuItem(CPUMenu_Country_SubMenu_AutoDetectOrder, "Auto-Detection Order...", "Auto-Detection Order...", SubMenu);
-	AddMenuCallback(CPUMenu_Country_SubMenu_AutoDetectOrder, on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate);	
-}
-
-
 /**
  * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Sound, Rate submenu.
  * @param container Container for this menu.

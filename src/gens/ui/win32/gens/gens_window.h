@@ -46,6 +46,7 @@ extern HMENU GraphicsMenu_Render;
 extern HMENU GraphicsMenu_FrameSkip;
 extern HMENU CPUMenu;
 extern HMENU CPUMenu_Debug;
+extern HMENU CPUMenu_Country;
 extern HMENU SoundMenu;
 extern HMENU OptionsMenu;
 extern HMENU HelpMenu;
