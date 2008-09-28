@@ -98,6 +98,9 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
+// TODO: If a radio menu item is selected but is already enabled, don't do anything.
+
+
 /**
  * Gens_Window_WinProc(): The Gens window procedure.
  * @param hWnd hWnd of the object sending a message.
