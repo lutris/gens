@@ -84,10 +84,6 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *con
 #endif
 
 
-// Set to 0 to temporarily disable callbacks.
-int do_callbacks = 1;
-
-
 /**
  * initGens_hWnd(): Initialize the Gens window.
  * @return hWnd.

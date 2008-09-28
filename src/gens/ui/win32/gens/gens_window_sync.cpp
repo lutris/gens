@@ -149,19 +149,6 @@ void Sync_Gens_Window_FileMenu(void)
 		miimMenuItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
 		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
 	}
-	
-#if 0
-	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
-	GtkWidget *MItem_ROMHistory_SubMenu_Item;
-	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
-	GtkWidget *MItem_QuickLoad, *MItem_QuickSave;
-	GtkWidget *MItem_SaveState;
-	gboolean saveStateEnable;
-	
-	
-	// Enable callbacks.
-	do_callbacks = 1;
-#endif
 }
 
 
