@@ -34,7 +34,9 @@
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
+#endif
 #include "about/about_window.h"
+#if 0
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
 
@@ -106,6 +108,7 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -173,6 +176,9 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					break;
 				case ID_OPTIONS_MENU:
 					on_gens_window_OptionsMenu(hWnd, message, wParam, lParam);
+					break;
+				case ID_HELP_MENU:
+					on_gens_window_HelpMenu(hWnd, message, wParam, lParam);
 					break;
 			}
 			break;
@@ -650,6 +656,24 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 }
 
 
+/**
+ * on_gens_window_HelpMenu(): Help Menu item has been selected.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Selected menu item.
+ * @param lParam
+ */
+static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case ID_HELP_ABOUT:
+			create_about_window();
+			break;
+	}
+}
+
+
 #if 0
 #ifdef GENS_CDROM
 /**
@@ -772,16 +796,4 @@ void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user
 	Open_Select_CDROM();
 }
 #endif
-
-
-/**
- * Help, About
- */
-void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	create_about_window();
-}
 #endif

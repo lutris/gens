@@ -141,6 +141,7 @@ gens_SOURCES = \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
+		ui/about_window_data.h \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -246,7 +247,8 @@ gens_SOURCES += \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
-		ui/win32/gens/gens_window_sync.cpp
+		ui/win32/gens/gens_window_sync.cpp \
+		ui/win32/about/about_window.c
 endif
 
 noinst_HEADERS = \
@@ -370,8 +372,7 @@ noinst_HEADERS += \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.h \
 		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
-		ui/gtk/about/about_window.h \
-		ui/gtk/about/about_window_data.h
+		ui/gtk/about/about_window.h
 
 if GENS_OPENGL
 noinst_HEADERS += \
@@ -402,7 +403,8 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
-		ui/win32/gens/gens_window_menu.h
+		ui/win32/gens/gens_window_menu.h \
+		ui/win32/about/about_window.h
 endif
 
 gens_CFLAGS = \
