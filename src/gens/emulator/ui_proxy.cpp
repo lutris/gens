@@ -879,6 +879,7 @@ int Set_Frame_Skip(const int frames)
 	else
 		MESSAGE_L("Frame skip set to Auto", "Frame skip set to Auto", 1500);
 	
+	Sync_Gens_Window_GraphicsMenu();
 	return 1;
 }
 
@@ -908,7 +909,7 @@ int Set_Current_State(const int slot)
 	{
 		MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
 	}
-	Sync_Gens_Window_FileMenu();
 	
+	Sync_Gens_Window_FileMenu();
 	return 1;
 }

@@ -93,6 +93,7 @@ static bool PaintsEnabled = true;
 
 static void on_gens_window_close(void);
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -137,6 +138,9 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			{
 				case ID_FILE_MENU:
 					on_gens_window_FileMenu(hWnd, message, wParam, lParam);
+					break;
+				case ID_GRAPHICS_MENU:
+					on_gens_window_GraphicsMenu(hWnd, message, wParam, lParam);
 					break;
 			}
 			break;
@@ -273,6 +277,27 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case ID_FILE_CHANGESTATE_9:
 			// Change state.
 			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
+			break;
+	}
+}
+
+
+static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case ID_GRAPHICS_FRAMESKIP_AUTO:
+		case ID_GRAPHICS_FRAMESKIP_0:
+		case ID_GRAPHICS_FRAMESKIP_1:
+		case ID_GRAPHICS_FRAMESKIP_2:
+		case ID_GRAPHICS_FRAMESKIP_3:
+		case ID_GRAPHICS_FRAMESKIP_4:
+		case ID_GRAPHICS_FRAMESKIP_5:
+		case ID_GRAPHICS_FRAMESKIP_6:
+		case ID_GRAPHICS_FRAMESKIP_7:
+		case ID_GRAPHICS_FRAMESKIP_8:
+			// Set the frame skip value.
+			Set_Frame_Skip(LOWORD(wParam) - ID_GRAPHICS_FRAMESKIP - 1);
 			break;
 	}
 }
