@@ -325,11 +325,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	InsertMenu(CPUMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(CPUMenu, 4, flags, ID_CPU_HARDRESET, "Hard &Reset");
-	InsertMenu(CPUMenu, 5, flags, ID_CPU_RESET68K, "Reset 68000");
-	InsertMenu(CPUMenu, 6, flags, ID_CPU_RESETMAIN68K, "Reset Main 68000");
-	InsertMenu(CPUMenu, 7, flags, ID_CPU_RESETSUB68K, "Reset Sub 68000");
-	InsertMenu(CPUMenu, 8, flags, ID_CPU_RESETMAINSH2, "Reset Main SH2");
-	InsertMenu(CPUMenu, 9, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
+	// SegaCD and 32X menu items are handled in the Sync_Gens_Window_CPUMenu() function.
 	InsertMenu(CPUMenu, 10, flags, ID_CPU_RESETZ80, "Reset Z80");
 	
 	InsertMenu(CPUMenu, 11, MF_SEPARATOR, NULL, NULL);

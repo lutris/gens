@@ -263,6 +263,8 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
+	unsigned int flags = MF_BYPOSITION | MF_STRING;
+	
 	MENUITEMINFO miimMenuItem;
 	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
 	miimMenuItem.cbSize = sizeof(miimMenuItem);
@@ -272,6 +274,32 @@ void Sync_Gens_Window_CPUMenu(void)
 	// Synchronize the Debug submenu.
 	Sync_Gens_Window_CPUMenu_Debug(CPUMenu, 0);
 #endif /* GENS_DEBUGGER */
+	
+	// Hide and show appropriate RESET items.
+	RemoveMenu(CPUMenu, ID_CPU_RESET68K, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, ID_CPU_RESETMAIN68K, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, ID_CPU_RESETSUB68K, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, ID_CPU_RESETMAINSH2, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, ID_CPU_RESETSUBSH2, MF_BYCOMMAND);
+	
+	if (SegaCD_Started)
+	{
+		// SegaCD: Show Main 68000 and Sub 68000.
+		InsertMenu(CPUMenu, 6, flags, ID_CPU_RESETMAIN68K, "Reset Main 68000");
+		InsertMenu(CPUMenu, 7, flags, ID_CPU_RESETSUB68K, "Reset Sub 68000");
+	}
+	else
+	{
+		// No SegaCD: Only show one 68000.
+		InsertMenu(CPUMenu, 5, flags, ID_CPU_RESET68K, "Reset 68000");
+	}
+	
+	if (_32X_Started)
+	{
+		// 32X: Show Main SH2 and Sub SH2.
+		InsertMenu(CPUMenu, 8, flags, ID_CPU_RESETMAINSH2, "Reset Main SH2");
+		InsertMenu(CPUMenu, 9, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
+	}
 	
 #if 0
 #ifdef GENS_DEBUGGER
@@ -345,41 +373,6 @@ void Sync_Gens_Window_CPUMenu(void)
 	
 	// TODO: Country order (maybe?)
 	
-	// Hide and show appropriate RESET items.
-	MItem_Reset68K = lookup_widget(gens_window, "CPUMenu_Reset68000");
-	MItem_ResetM68K = lookup_widget(gens_window, "CPUMenu_ResetMain68000");
-	MItem_ResetS68K = lookup_widget(gens_window, "CPUMenu_ResetSub68000");
-	MItem_ResetMSH2 = lookup_widget(gens_window, "CPUMenu_ResetMainSH2");
-	MItem_ResetSSH2 = lookup_widget(gens_window, "CPUMenu_ResetSubSH2");
-	
-	if (SegaCD_Started)
-	{
-		// SegaCD: Hide regular 68000; show Main 68000 and Sub 68000.
-		gtk_widget_hide(MItem_Reset68K);
-		gtk_widget_show(MItem_ResetM68K);
-		gtk_widget_show(MItem_ResetS68K);
-	}
-	else
-	{
-		// No SegaCD: Show regular 68000; hide Main 68000 and Sub 68000;
-		gtk_widget_show(MItem_Reset68K);
-		gtk_widget_hide(MItem_ResetM68K);
-		gtk_widget_hide(MItem_ResetS68K);
-	}
-	
-	if (_32X_Started)
-	{
-		// 32X: Show Main SH2 and Sub SH2.
-		gtk_widget_show(MItem_ResetMSH2);
-		gtk_widget_show(MItem_ResetSSH2);
-	}
-	else
-	{
-		// 32X: Hide Main SH2 and Sub SH2.
-		gtk_widget_hide(MItem_ResetMSH2);
-		gtk_widget_hide(MItem_ResetSSH2);
-	}
-	
 	// SegaCD Perfect Sync
 	MItem_SegaCD_PerfectSync = lookup_widget(gens_window, "CPUMenu_SegaCD_PerfectSync");
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SegaCD_PerfectSync), SegaCD_Accurate);
@@ -399,7 +392,7 @@ void Sync_Gens_Window_CPUMenu(void)
 void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 {
 	// Debug submenu
-	int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;
+	unsigned int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;
 	if (!(Genesis_Started || SegaCD_Started || _32X_Started))
 		flags |= MF_GRAYED;
 	
