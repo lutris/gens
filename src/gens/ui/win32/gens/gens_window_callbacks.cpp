@@ -278,6 +278,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case ID_FILE_CHANGESTATE_9:
 			// Change state.
 			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 	}
 }
@@ -298,6 +299,7 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 			draw->setFullScreen(!draw->fullScreen());
 			// TODO: See if draw->setRender() is still needed.
 			//draw->setRender(Video.Render_Mode);
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case ID_GRAPHICS_VSYNC:
@@ -305,15 +307,18 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 				Change_VSync(!Video.VSync_FS);
 			else
 				Change_VSync(!Video.VSync_W);
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case ID_GRAPHICS_STRETCH:
 			Change_Stretch(!draw->stretch());
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case ID_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
 			Set_Sprite_Limit(!Sprite_Over);
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 			
 		case ID_GRAPHICS_FRAMESKIP_AUTO:
@@ -328,11 +333,21 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 		case ID_GRAPHICS_FRAMESKIP_8:
 			// Set the frame skip value.
 			Set_Frame_Skip(LOWORD(wParam) - ID_GRAPHICS_FRAMESKIP - 1);
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case ID_GRAPHICS_SCREENSHOT:
 			audio->clearSoundBuffer();
 			Save_Shot();
+			break;
+		
+		default:
+			if ((LOWORD(wParam) & 0xFF00) == ID_GRAPHICS_RENDER)
+			{
+				// Render mode change.
+				draw->setRender(LOWORD(wParam) - ID_GRAPHICS_RENDER);
+				Sync_Gens_Window_GraphicsMenu();
+			}
 			break;
 	}
 }

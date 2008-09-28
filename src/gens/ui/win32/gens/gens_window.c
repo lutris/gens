@@ -60,6 +60,7 @@ HMENU FileMenu;
 HMENU FileMenu_ROMHistory;
 HMENU FileMenu_ChangeState;
 HMENU GraphicsMenu;
+HMENU GraphicsMenu_Render;
 HMENU GraphicsMenu_FrameSkip;
 HMENU CPUMenu;
 HMENU SoundMenu;
@@ -243,7 +244,7 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	InsertMenu(GraphicsMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(GraphicsMenu, 4, flags, ID_GRAPHICS_COLORADJUST, "&Color Adjust...");
-	InsertMenu(GraphicsMenu, 5, flags, ID_GRAPHICS_RENDER, "&Render");
+	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu, 5);
 	
 	InsertMenu(GraphicsMenu, 6, MF_SEPARATOR, NULL, NULL);
 	

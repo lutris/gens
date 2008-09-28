@@ -176,6 +176,9 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	miimMenuItem.fState = (draw->stretch() ? MFS_CHECKED : MFS_UNCHECKED);
 	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_STRETCH, FALSE, &miimMenuItem);
 	
+	// Render
+	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu, 5);
+	
 	// Sprite Limit
 	miimMenuItem.fState = (Sprite_Over ? MFS_CHECKED : MFS_UNCHECKED);
 	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SPRITELIMIT, FALSE, &miimMenuItem);
@@ -190,84 +193,69 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Screen Shot
 	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
 	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SCREENSHOT, FALSE, &miimMenuItem);
-	
-#if 0
-	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
-	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
-	GtkWidget *MItem_FrameSkip;
-	GtkWidget *MItem_ScreenShot;
-	
-	// Rebuild the Render submenu
-	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
-	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(MItem_Render_SubMenu);
-	
-	// Selected Render Mode
-	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", rendMode);
-	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
-#endif
 }
 
 
-#if 0
 /**
- * Sync_Gens_Window_GraphicsMenu_Render_SubMenu(): Synchronize the Graphics, Render submenu.
- * @param container Container for this menu.
+ * Sync_Gens_Window_GraphicsMenu_Render(): Synchronize the Graphics, Render submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
  */
-void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
+void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
-	GtkWidget *SubMenu;
-	GtkWidget *RenderItem;
-	GSList *RenderGroup = NULL;
-	gboolean showRenderer;
+	// Render submenu
+	DeleteMenu(parent, position, MF_BYPOSITION);
+	GraphicsMenu_Render = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)GraphicsMenu_Render, "&Render");
 	
-	int i;
-	char ObjName[64];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicsMenu_Render_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
 	
 	// Create the render entries.
-	i = 0;
+	int i = 0;
+	bool showRenderer;
+	
 	while (Renderers[i].name)
 	{
 		// Check if the current blitter exists for this video mode.
-		showRenderer = FALSE;
+		showRenderer = false;
 		if (bpp == 32)
 		{
 			// 32-bit
 			if (Have_MMX && Renderers[i].blit_32_mmx)
-				showRenderer = TRUE;
+				showRenderer = true;
 			else if (Renderers[i].blit_32)
-				showRenderer = TRUE;
+				showRenderer = true;
 		}
 		else // if (bpp == 15 || bpp == 16)
 		{
 			// 15/16-bit
 			if (Have_MMX && Renderers[i].blit_16_mmx)
-				showRenderer = TRUE;
+				showRenderer = true;
 			else if (Renderers[i].blit_16)
-				showRenderer = TRUE;
+				showRenderer = true;
 		}
 		
 		if (showRenderer)
 		{
-			sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i);
-			NewMenuItem_Radio(RenderItem, Renderers[i].name, ObjName, SubMenu,
-					  (i == 1 ? TRUE : FALSE), RenderGroup);
-			g_signal_connect((gpointer)RenderItem, "activate",
-					  G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
-							  GINT_TO_POINTER(i));
+			miimMenuItem.wID = ID_GRAPHICS_RENDER + i;
+			if (draw->fullScreen())
+				miimMenuItem.fState = (Video.Render_FS == i ? MFS_CHECKED : MFS_UNCHECKED);
+			else
+				miimMenuItem.fState = (Video.Render_W == i ? MFS_CHECKED : MFS_UNCHECKED);
+			
+			miimMenuItem.dwTypeData = Renderers[i].name;
+			miimMenuItem.cch = strlen(Renderers[i].name);
+			InsertMenuItem(GraphicsMenu_Render, i, TRUE, &miimMenuItem);
 		}
 		
 		// Check the next renderer.
 		i++;
 	}
 }
-#endif
 
 
 /**
