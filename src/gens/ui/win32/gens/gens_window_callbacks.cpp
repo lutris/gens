@@ -481,7 +481,12 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			z80_Reset(&M_Z80);
 			MESSAGE_L("Z80 reset", "Z80 reset", 1000);
 			break;
-			
+		
+		case ID_CPU_SEGACDPERFECTSYNC:
+			Change_SegaCD_PerfectSync(!SegaCD_Accurate);
+			Sync_Gens_Window_CPUMenu();
+			break;
+		
 		default:
 			if ((LOWORD(wParam) & 0xFF00) == ID_CPU_DEBUG)
 			{
@@ -554,12 +559,6 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 	
 	Open_Country_Code();
 }
-
-
-/**
- * CPU, SegaCD Perfect Sync
- */
-CHECK_MENU_ITEM_CALLBACK(on_CPUMenu_SegaCD_PerfectSync_activate, Change_SegaCD_PerfectSync);
 
 
 /**

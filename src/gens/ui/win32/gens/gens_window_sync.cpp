@@ -309,27 +309,9 @@ void Sync_Gens_Window_CPUMenu(void)
 		SetMenuItemInfo(CPUMenu_Country, ID_CPU_COUNTRY + (i + 1), FALSE, &miimMenuItem);
 	}
 	
-#if 0
-#ifdef GENS_DEBUGGER
-	GtkWidget *MItem_Debug;
-	GtkWidget *MItem_Debug_Item;
-	int i, checkDebug;
-#endif /* GENS_DEBUGGER */
-	GtkWidget *MItem_Country;
-	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
-	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
-	GtkWidget *MItem_SegaCD_PerfectSync;
-	
-	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
-
 	// SegaCD Perfect Sync
-	MItem_SegaCD_PerfectSync = lookup_widget(gens_window, "CPUMenu_SegaCD_PerfectSync");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SegaCD_PerfectSync), SegaCD_Accurate);
-	
-	// Enable callbacks.
-	do_callbacks = 1;
-#endif
+	miimMenuItem.fState = (SegaCD_Accurate ? MFS_CHECKED : MFS_UNCHECKED);
+	SetMenuItemInfo(CPUMenu, ID_CPU_SEGACDPERFECTSYNC, FALSE, &miimMenuItem);
 }
 
 
