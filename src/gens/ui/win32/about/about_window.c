@@ -36,9 +36,13 @@ HWND about_window = NULL;
 
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
+#define ID_TIMER_ICE 0x1234
+UINT_PTR tmrIce = NULL;
 void updateIce(void);
-//gboolean iceTime(gpointer data);
+void iceTime(void);
 
+const int iceOffset = 8;
+int iceLastTicks = 0;
 int ax = 0, bx = 0, cx = 0;
 
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -78,6 +82,15 @@ HWND create_about_window(void)
 				      280, 320, NULL, NULL, ghInstance, NULL);
 	
 #if 0
+	// Gens logo
+	image_gens_logo = create_pixmap("gens_small.png");
+	gtk_widget_set_name(image_gens_logo, "image_gens_logo");
+	gtk_widget_show(image_gens_logo);
+	gtk_box_pack_start(GTK_BOX(hbox_about_logo), image_gens_logo, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(about_window, image_gens_logo, "image_gens_logo");
+#endif
+
+#if 0
 	// Get the dialog VBox.
 	vbox_about_dialog = GTK_DIALOG(about_window)->vbox;
 	gtk_widget_set_name(vbox_about_dialog, "vbox_about_dialog");
@@ -97,20 +110,6 @@ HWND create_about_window(void)
 	gtk_widget_show(hbox_about_logo);
 	gtk_box_pack_start(GTK_BOX(vbox_about_main), hbox_about_logo, TRUE, TRUE, 0);
 	GLADE_HOOKUP_OBJECT(about_window, hbox_about_logo, "hbox_about_logo");
-	
-	// Gens logo
-	image_gens_logo = create_pixmap("gens_small.png");
-	gtk_widget_set_name(image_gens_logo, "image_gens_logo");
-	gtk_widget_show(image_gens_logo);
-	gtk_box_pack_start(GTK_BOX(hbox_about_logo), image_gens_logo, TRUE, TRUE, 0);
-	GLADE_HOOKUP_OBJECT(about_window, image_gens_logo, "image_gens_logo");
-	
-	if (ice == 3)
-	{
-		ax = 0; bx = 0; cx = 1;
-		g_timeout_add(100, iceTime, NULL);
-		updateIce();
-	}
 	
 	// Version information
 	label_gens_version = gtk_label_new(
@@ -205,10 +204,22 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		case WM_PAINT:
 			updateIce();
 			break;
-			
+		
+		case WM_TIMER:
+			if (wParam == ID_TIMER_ICE)
+				iceTime();
+			break;
+		
 		case WM_DESTROY:
 			if (about_window == hWnd)
+			{
+				if (tmrIce)
+				{
+					KillTimer(about_window, tmrIce);
+					tmrIce = 0;
+				}
 				about_window = NULL;
+			}
 			break;
 	}
 	
@@ -226,8 +237,6 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 			"Sega CD / Mega CD,\n"
 			"Sega 32X emulator";
 	
-	HDC hDC = GetDC(about_window);
-	
 	HWND lblGensTitle, lblGensVersion;
 	
 	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
@@ -237,6 +246,14 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	lblGensVersion = CreateWindow("Static", gensVersionInfo, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				      100, 24, 172, 100, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensVersion, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// "ice" timer
+	if (ice == 3 || TRUE)
+	{
+		ax = 0; bx = 0; cx = 1;
+		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, NULL);
+		updateIce();
+	}
 }
 
 
@@ -279,14 +296,13 @@ void updateIce(void)
 	
 	hDC = BeginPaint(about_window, &ps);
 	
-	int x, y, r;
+	int x, y;
 	const unsigned char *src = &about_data[ax*01440];
 	const unsigned char *src2 = &about_dx[bx*040];
 	unsigned char px1, px2;
 	
 	int bgc = GetSysColor(COLOR_3DFACE);
 	int pxc;
-	const int offset = 8;
 	
 	for (y = 0; y < 0120; y += 2)
 	{
@@ -306,10 +322,10 @@ void updateIce(void)
 					  (src2[px1 + 0] & 0017) << 4);
 			}
 			
-			SetPixel(hDC, x + 0 + offset, y + 0 + offset, pxc);
-			SetPixel(hDC, x + 1 + offset, y + 0 + offset, pxc);
-			SetPixel(hDC, x + 0 + offset, y + 1 + offset, pxc);
-			SetPixel(hDC, x + 1 + offset, y + 1 + offset, pxc);
+			SetPixel(hDC, x + 0 + iceOffset, y + 0 + iceOffset, pxc);
+			SetPixel(hDC, x + 1 + iceOffset, y + 0 + iceOffset, pxc);
+			SetPixel(hDC, x + 0 + iceOffset, y + 1 + iceOffset, pxc);
+			SetPixel(hDC, x + 1 + iceOffset, y + 1 + iceOffset, pxc);
 			
 			if (!px2)
 			{
@@ -321,10 +337,10 @@ void updateIce(void)
 					  (src2[px2 + 1] & 0360),
 					  (src2[px2 + 0] & 0017) << 4);
 			}
-			SetPixel(hDC, x + 2 + offset, y + 0 + offset, pxc);
-			SetPixel(hDC, x + 3 + offset, y + 0 + offset, pxc);
-			SetPixel(hDC, x + 2 + offset, y + 1 + offset, pxc);
-			SetPixel(hDC, x + 3 + offset, y + 1 + offset, pxc);
+			SetPixel(hDC, x + 2 + iceOffset, y + 0 + iceOffset, pxc);
+			SetPixel(hDC, x + 3 + iceOffset, y + 0 + iceOffset, pxc);
+			SetPixel(hDC, x + 2 + iceOffset, y + 1 + iceOffset, pxc);
+			SetPixel(hDC, x + 3 + iceOffset, y + 1 + iceOffset, pxc);
 			
 			src++;
 		}
@@ -333,21 +349,25 @@ void updateIce(void)
 	EndPaint(about_window, &ps);
 }
 
-#if 0
-bool iceTime(gpointer data)
+
+void iceTime(void)
 {
-	GENS_UNUSED_PARAMETER(data);
-	
-	if (!cx)
-		return FALSE;
+	if (iceLastTicks + 100 > GetTickCount())
+		return;
 	
 	ax ^= 1;
 	bx++;
 	if (bx >= 10)
 		bx = 0;
 	
-	updateIce();
+	// Force a repaint.
+	RECT rIce;
+	rIce.left = iceOffset;
+	rIce.top = iceOffset;
+	rIce.right = iceOffset + 80 - 1;
+	rIce.bottom = iceOffset + 80 - 1;
+	InvalidateRect(about_window, &rIce, FALSE);
+	SendMessage(about_window, WM_PAINT, 0, 0);
 	
-	return TRUE;
+	iceLastTicks = GetTickCount();
 }
-#endif
