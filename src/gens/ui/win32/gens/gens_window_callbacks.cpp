@@ -221,6 +221,46 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Sync_Gens_Window();
 			break;
 		
+		case ID_FILE_LOADSTATE:
+			/*
+			if (Check_If_Kaillera_Running())
+			return 0;
+			*/
+			Str_Tmp[0] = 0;
+			if (Change_File_L(Str_Tmp, State_Dir) == 1)
+				Load_State(Str_Tmp);
+			break;
+		
+		case ID_FILE_SAVESTATE:
+			/*
+			if (Check_If_Kaillera_Running())
+			return 0;
+			*/
+			Str_Tmp[0] = 0;
+			if (Change_File_S(Str_Tmp, State_Dir) == 1)
+				Save_State(Str_Tmp);
+			break;
+		
+		case ID_FILE_QUICKLOAD:
+			/*
+			if (Check_If_Kaillera_Running())
+			return 0;
+			*/
+			Str_Tmp[0] = 0;
+			Get_State_File_Name(Str_Tmp);
+			Load_State(Str_Tmp);
+			break;
+		
+		case ID_FILE_QUICKSAVE:
+			/*
+			if (Check_If_Kaillera_Running())
+			return 0;
+			*/
+			Str_Tmp[0] = 0;
+			Get_State_File_Name(Str_Tmp);
+			Save_State(Str_Tmp);
+			break;
+		
 		case ID_FILE_CHANGESTATE_0:
 		case ID_FILE_CHANGESTATE_1:
 		case ID_FILE_CHANGESTATE_2:
@@ -273,78 +313,6 @@ void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Game_Genie();
-}
-
-
-/**
- * File, Load State...
- */
-void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	Str_Tmp[0] = 0;
-	if (Change_File_L(Str_Tmp, State_Dir) == 1)
-		Load_State(Str_Tmp);
-}
-
-
-/**
- * File, Save State As...
- */
-void on_FileMenu_SaveState_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	Str_Tmp[0] = 0;
-	if (Change_File_S(Str_Tmp, State_Dir) == 1)
-		Save_State(Str_Tmp);
-}
-
-
-/**
- * File, Quick Load
- */
-void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	char SaveFile[GENS_PATH_MAX] = "";
-	Get_State_File_Name(SaveFile);
-	Load_State(SaveFile);
-}
-
-
-/**
- * File, Quick Save
- */
-void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	Str_Tmp[0] = 0;
-	Get_State_File_Name(Str_Tmp);
-	Save_State(Str_Tmp);
 }
 
 
