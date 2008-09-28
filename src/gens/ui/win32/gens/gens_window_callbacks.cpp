@@ -286,6 +286,30 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 {
 	switch (LOWORD(wParam))
 	{
+		case ID_GRAPHICS_FULLSCREEN:
+			/*
+			if (Full_Screen)
+				Set_Render(0, -1, 1);
+			else
+				Set_Render(1, Render_FS, 1);
+			*/
+			
+			draw->setFullScreen(!draw->fullScreen());
+			// TODO: See if draw->setRender() is still needed.
+			//draw->setRender(Video.Render_Mode);
+			break;
+		
+		case ID_GRAPHICS_VSYNC:
+			if (draw->fullScreen())
+				Change_VSync(!Video.VSync_FS);
+			else
+				Change_VSync(!Video.VSync_W);
+			break;
+		
+		case ID_GRAPHICS_STRETCH:
+			Change_Stretch(!draw->stretch());
+			break;
+		
 		case ID_GRAPHICS_FRAMESKIP_AUTO:
 		case ID_GRAPHICS_FRAMESKIP_0:
 		case ID_GRAPHICS_FRAMESKIP_1:
@@ -342,103 +366,6 @@ void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
- * Graphics, Full Screen
- */
-void on_GraphicsMenu_FullScreen_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	if (!do_callbacks)
-		return;
-
-	/*
-	if (Full_Screen)
-		Set_Render(0, -1, 1);
-	else
-		Set_Render(1, Render_FS, 1);
-	*/
-	
-	draw->setFullScreen(!draw->fullScreen());
-	// TODO: See if draw->setRender() is still needed.
-	//draw->setRender(Video.Render_Mode);
-}
-
-
-/**
- * Various items in the Graphics menu.
- */
-CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_VSync_activate, Change_VSync);
-CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_Stretch_activate, Change_Stretch);
-#ifdef GENS_OPENGL
-CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_OpenGL_activate, Change_OpenGL);
-
-void on_GraphicsMenu_OpenGLFilter_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Video.glLinearFilter = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
-	
-	if (Video.glLinearFilter)
-		MESSAGE_L("Enabled OpenGL Linear Filter", "Enabled OpenGL Linear Filter", 1500);
-	else
-		MESSAGE_L("Disabled OpenGL Linear Filter", "Disabled OpenGL Linear Filter", 1500);
-}
-#endif
-
-
-#ifdef GENS_OPENGL
-/**
- * Graphics, Resolution, #x# or Custom
- * TODO: Use this for SDL mode too, not just for OpenGL mode.
- */
-void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	int resValue, w, h;
-	
-	if (!do_callbacks)
-		return;
-	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		return;
-	
-	resValue = GPOINTER_TO_INT(user_data);
-	if (resValue == 0)
-	{
-		// Custom Resolution.
-		Open_OpenGL_Resolution();
-		return;
-	}
-	
-	// Get the resolution.
-	w = (resValue >> 16);
-	h = (resValue & 0xFFFF);
-	
-	// Set the resolution.
-	Set_GL_Resolution(w, h);
-}
-#endif
-
-
-/**
- * Graphics, Bits per pixel, #
- * TODO: Use this for SDL mode too, not just for OpenGL mode.
- */
-void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	int bpp = GPOINTER_TO_INT(user_data);
-	
-	if (!do_callbacks)
-		return;
-	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		return;
-	
-	// Set the bits per pixel.
-	draw->setBpp(bpp);
-	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
-}
-
-
-/**
  * Graphics, Color Adjust...
  */
 void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
@@ -470,23 +397,6 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 	
 	// Set the render mode.
 	draw->setRender(renderMode);
-}
-
-
-/**
- * Graphics, Frame Skip, #
- */
-void on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	int fs = GPOINTER_TO_INT(user_data);
-	
-	if (!do_callbacks)
-		return;
-	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		return;
-	
-	// Set the frame skip value.
-	Set_Frame_Skip(fs);
 }
 
 

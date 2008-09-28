@@ -779,6 +779,7 @@ int Change_Stretch(const int newStretch)
 	else
 		MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
 	
+	Sync_Gens_Window_GraphicsMenu();
 	return 1;
 }
 
@@ -860,7 +861,7 @@ int Change_VSync(const int newVSync)
 	// Update VSync.
 	draw->updateVSync();
 	
-	// Return success.
+	Sync_Gens_Window_GraphicsMenu();
 	return 1;
 }
 

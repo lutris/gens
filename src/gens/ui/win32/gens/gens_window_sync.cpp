@@ -161,6 +161,21 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	miimMenuItem.cbSize = sizeof(miimMenuItem);
 	miimMenuItem.fMask = MIIM_STATE;
 	
+	// Full Screen
+	miimMenuItem.fState = (draw->fullScreen() ? MFS_CHECKED : MFS_UNCHECKED);
+	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_FULLSCREEN, FALSE, &miimMenuItem);
+	
+	// VSync
+	if (draw->fullScreen())
+		miimMenuItem.fState = (Video.VSync_FS ? MFS_CHECKED : MFS_UNCHECKED);
+	else
+		miimMenuItem.fState = (Video.VSync_W ? MFS_CHECKED : MFS_UNCHECKED);
+	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_VSYNC, FALSE, &miimMenuItem);
+	
+	// Stretch
+	miimMenuItem.fState = (draw->stretch() ? MFS_CHECKED : MFS_UNCHECKED);
+	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_STRETCH, FALSE, &miimMenuItem);
+	
 	// Frame Skip
 	for (i = -1; i < 8; i++)
 	{
