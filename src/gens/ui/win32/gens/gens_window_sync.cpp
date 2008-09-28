@@ -35,8 +35,8 @@
 #include "gens_window_menu.h"
 
 #include "emulator/g_main.hpp"
-#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
@@ -176,6 +176,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	miimMenuItem.fState = (draw->stretch() ? MFS_CHECKED : MFS_UNCHECKED);
 	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_STRETCH, FALSE, &miimMenuItem);
 	
+	// Sprite Limit
+	miimMenuItem.fState = (Sprite_Over ? MFS_CHECKED : MFS_UNCHECKED);
+	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SPRITELIMIT, FALSE, &miimMenuItem);
+	
 	// Frame Skip
 	for (i = -1; i < 8; i++)
 	{
@@ -183,27 +187,15 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		SetMenuItemInfo(GraphicsMenu_FrameSkip, ID_GRAPHICS_FRAMESKIP + (i + 1), FALSE, &miimMenuItem);
 	}
 	
+	// Screen Shot
+	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
+	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SCREENSHOT, FALSE, &miimMenuItem);
+	
 #if 0
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
 	GtkWidget *MItem_ScreenShot;
-	
-	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
-	
-	// Simple checkbox items
-	MItem_VSync = lookup_widget(gens_window, "GraphicsMenu_VSync");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), Video.VSync_W);
-	MItem_Stretch = lookup_widget(gens_window, "GraphicsMenu_Stretch");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), draw->stretch());
-	MItem_SpriteLimit = lookup_widget(gens_window, "GraphicsMenu_SpriteLimit");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
-	
-	// Bits per pixel
-	sprintf(Str_Tmp, "GraphicsMenu_bpp_SubMenu_%d", bpp);
-	MItem_bpp = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_bpp), TRUE);
 	
 	// Rebuild the Render submenu
 	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
@@ -214,52 +206,6 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", rendMode);
 	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
-	
-	// Screen Shot
-	MItem_ScreenShot = lookup_widget(gens_window, "GraphicsMenu_ScreenShot");
-	gtk_widget_set_sensitive(MItem_ScreenShot,
-		(Genesis_Started || SegaCD_Started || _32X_Started));
-	
-#ifdef GENS_OPENGL
-	GtkWidget *MItem_OpenGL, *MItem_OpenGLFilter;
-	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
-	
-	MItem_OpenGL = lookup_widget(gens_window, "GraphicsMenu_OpenGL");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL), Video.OpenGL);
-	MItem_OpenGLFilter = lookup_widget(gens_window, "GraphicsMenu_OpenGLFilter");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGLFilter), Video.glLinearFilter);
-	
-	// OpenGL Resolution
-	
-	// Get the Custom resolution menu item.
-	MItem_OpenGL_Resolution_Custom = lookup_widget(gens_window, "GraphicsMenu_OpenGLRes_SubMenu_Custom");
-	
-	// Check if the current GL resolution is a custom resolution.
-	// TODO: Make an array with predefined resolutions somewhere.
-	if ((Video.Width_GL == 320 && Video.Height_GL == 240) ||
-	    (Video.Width_GL == 640 && Video.Height_GL == 480) ||
-	    (Video.Width_GL == 800 && Video.Height_GL == 600) ||
-	    (Video.Width_GL == 1024 && Video.Height_GL == 768))
-	{
-		// Predefined resolution.
-		sprintf(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_%dx%d", Video.Width_GL, Video.Height_GL);
-		MItem_OpenGL_Resolution = lookup_widget(gens_window, Str_Tmp);
-		// Set the text of the Custom entry to "Custom..."
-		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), "Custom...");
-	}
-	else
-	{
-		// Custom resolution.
-		MItem_OpenGL_Resolution = MItem_OpenGL_Resolution_Custom;
-		// Set the text of the Custom entry to "Custom... (wxh)"
-		sprintf(Str_Tmp, "Custom... (%dx%d)", Video.Width_GL, Video.Height_GL);
-		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), Str_Tmp);
-	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL_Resolution), TRUE);
-#endif
-	
-	// Enable callbacks.
-	do_callbacks = 1;
 #endif
 }
 

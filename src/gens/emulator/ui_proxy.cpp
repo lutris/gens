@@ -816,6 +816,7 @@ int Set_Sprite_Limit(const int newLimit)
 	else
 		MESSAGE_L("Sprite Limit Disabled", "Sprite Limit Disabled", 1000);
 	
+	Sync_Gens_Window_GraphicsMenu();
 	return 1;
 }
 

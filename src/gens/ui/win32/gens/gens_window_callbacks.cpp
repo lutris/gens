@@ -55,6 +55,7 @@
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"
 #include "gens_core/cpu/z80/z80.h"
 #include "util/gfx/scrshot.h"
@@ -310,6 +311,11 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 			Change_Stretch(!draw->stretch());
 			break;
 		
+		case ID_GRAPHICS_SPRITELIMIT:
+			// Sprite Limit
+			Set_Sprite_Limit(!Sprite_Over);
+			break;
+			
 		case ID_GRAPHICS_FRAMESKIP_AUTO:
 		case ID_GRAPHICS_FRAMESKIP_0:
 		case ID_GRAPHICS_FRAMESKIP_1:
@@ -322,6 +328,11 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 		case ID_GRAPHICS_FRAMESKIP_8:
 			// Set the frame skip value.
 			Set_Frame_Skip(LOWORD(wParam) - ID_GRAPHICS_FRAMESKIP - 1);
+			break;
+		
+		case ID_GRAPHICS_SCREENSHOT:
+			audio->clearSoundBuffer();
+			Save_Shot();
 			break;
 	}
 }
@@ -397,19 +408,6 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 	
 	// Set the render mode.
 	draw->setRender(renderMode);
-}
-
-
-/**
- * Graphics, Screen Shot
- */
-void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	audio->clearSoundBuffer();
-	Save_Shot();
 }
 
 
