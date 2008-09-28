@@ -202,6 +202,7 @@ CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
 LDFLAGS="$LDFLAGS"
 
+# C99 doesn't work for Win32 for some reason.
 if test x$os != xwin32; then
 	CFLAGS="$CFLAGS -std=c99"
 fi
@@ -209,6 +210,13 @@ fi
 # Compile as a GUI program on Win32.
 if test x$os = xwin32; then
 	LDFLAGS="$LDFLAGS -Wl,-subsystem,windows"
+fi
+
+# Windows NT target version
+if test x$os = xwin32; then
+	NT_TARGET="-D_WIN32_WINNT=0x0400"
+	CFLAGS="$CFLAGS $NT_TARGET"
+	CXXFLAGS="$CXXFLAGS $NT_TARGET"
 fi
 
 AC_CHECK_LIB(rt, clock_gettime)
