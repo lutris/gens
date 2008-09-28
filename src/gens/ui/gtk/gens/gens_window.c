@@ -805,7 +805,7 @@ static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
 	gtk_widget_set_name(SubMenu, "CPUMenu_Country_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
-	// Create the bits per pixel entries.
+	// Create the country code entries.
 	for (i = 0; i < 5; i++)
 	{
 		if (i == 0)
