@@ -61,6 +61,11 @@ static const char* UI_Win32_FileFilter_GYMFile =
 	"All Files\0*.*\0\0";
 
 
+static string UI_Win32_OpenFile_int(const string& title,
+				    const string& initFile,
+				    const FileFilterType filterType,
+				    const bool openOrSave);
+
 /**
  * init(): Initialize the Win32 UI.
  * @param argc main()'s argc. (unused)
@@ -241,6 +246,37 @@ void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON ic
  */
 string GensUI::openFile(const string& title, const string& initFile, const FileFilterType filterType)
 {
+	return UI_Win32_OpenFile_int(title, initFile, filterType, false);
+}
+
+
+/**
+ * saveFile(): Show the File Save dialog.
+ * @param title Window title.
+ * @param initFileName Initial filename.
+ * @param filterType of filename filter to use.
+ * @param retSelectedFile Pointer to string buffer to store the filename in.
+ * @return Filename if successful; otherwise, an empty string.
+ */
+string GensUI::saveFile(const string& title, const string& initFile, const FileFilterType filterType)
+{
+	return UI_Win32_OpenFile_int(title, initFile, filterType, true);
+}
+
+
+/**
+ * UI_Win32_OpenFile_int(): Show the File Open/Save dialog.
+ * @param title Window title.
+ * @param initFileName Initial filename.
+ * @param filterType Type of filename filter to use.
+ * @param openOrSave false for Open; true for Save.
+ * @return Filename if successful; otherwise, an empty string.
+ */
+static string UI_Win32_OpenFile_int(const string& title,
+				    const string& initFile,
+				    const FileFilterType filterType,
+				    const bool openOrSave)
+{
 	char filename[GENS_PATH_MAX];
 	OPENFILENAME ofn;
 	
@@ -282,32 +318,24 @@ string GensUI::openFile(const string& title, const string& initFile, const FileF
 	
 	ofn.nFilterIndex = 0;
 	ofn.lpstrInitialDir = initFile.c_str();
-	ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
 	
-	if (!GetOpenFileName(&ofn))
-		return "";
+	ofn.Flags = OFN_HIDEREADONLY;
+	if (!openOrSave)
+	{
+		// Open Dialog
+		ofn.Flags |= OFN_FILEMUSTEXIST;
+		if (!GetOpenFileName(&ofn))
+			return "";
+	}
+	else
+	{
+		// Save Dialog
+		ofn.Flags |= OFN_OVERWRITEPROMPT;
+		if (!GetSaveFileName(&ofn))
+			return "";
+	}
 	
 	return ofn.lpstrFile;
-}
-
-
-/**
- * saveFile(): Show the File Save dialog.
- * @param title Window title.
- * @param initFileName Initial filename.
- * @param filterType of filename filter to use.
- * @param retSelectedFile Pointer to string buffer to store the filename in.
- * @return Filename if successful; otherwise, an empty string.
- */
-string GensUI::saveFile(const string& title, const string& initFile, const FileFilterType filterType)
-{
-	STUB;
-#if 0
-	// TODO: Extend this function.
-	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initFile, filterType, GTK_FILE_CHOOSER_ACTION_SAVE);
-#endif
-	return "";
 }
 
 
