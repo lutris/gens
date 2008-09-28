@@ -50,6 +50,7 @@ extern HMENU CPUMenu_Country;
 extern HMENU SoundMenu;
 extern HMENU SoundMenu_Rate;
 extern HMENU OptionsMenu;
+extern HMENU OptionsMenu_SegaCDSRAMSize;
 extern HMENU HelpMenu;
 
 #ifdef GENS_DEBUGGER
