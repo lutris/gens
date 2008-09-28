@@ -105,6 +105,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -169,6 +170,9 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					break;
 				case ID_SOUND_MENU:
 					on_gens_window_SoundMenu(hWnd, message, wParam, lParam);
+					break;
+				case ID_OPTIONS_MENU:
+					on_gens_window_OptionsMenu(hWnd, message, wParam, lParam);
 					break;
 			}
 			break;
@@ -594,6 +598,29 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 }
 
 
+/**
+ * on_gens_window_OptionsMenu(): Options Menu item has been selected.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Selected menu item.
+ * @param lParam
+ */
+static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		default:
+			if ((LOWORD(wParam) & 0xFF00) == ID_OPTIONS_SEGACDSRAMSIZE)
+			{
+				// SegaCD SRAM Size change.
+				Change_SegaCD_SRAM_Size(LOWORD(wParam) - ID_OPTIONS_SEGACDSRAMSIZE - 1);
+				Sync_Gens_Window_OptionsMenu();
+			}
+			break;
+	}
+}
+
+
 #if 0
 #ifdef GENS_CDROM
 /**
@@ -653,18 +680,6 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Country_Code();
-}
-
-
-/**
- * CPU, Rate, #
- */
-void on_SoundMenu_Rate_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		Change_Sample_Rate(GPOINTER_TO_INT(user_data));
 }
 
 
@@ -759,18 +774,6 @@ void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_BIOS_Misc_Files();
-}
-
-
-/**
- * Options, Sega CD SRAM Size, #
- */
-void on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		Change_SegaCD_SRAM_Size(GPOINTER_TO_INT(user_data));
 }
 
 
