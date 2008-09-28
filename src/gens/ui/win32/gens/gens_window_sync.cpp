@@ -410,7 +410,22 @@ void Sync_Gens_Window_SoundMenu(void)
 		miimMenuItem.fState = flags | (soundMenuItems[i][0] ? MFS_CHECKED : MFS_UNCHECKED);
 		SetMenuItemInfo(SoundMenu, soundMenuItems[i][1], FALSE, &miimMenuItem);
 	}
-
+	
+	// Rate
+	// TODO: This const array is from gens_window.c.
+	// Move it somewhere else.
+	const int SndRates[6][2] =
+	{
+		{0, 11025}, {3, 16000}, {1, 22050},
+		{4, 32000}, {2, 44100}, {5, 48000},
+	};
+	
+	for (i = 0; i < 6; i++)
+	{
+		miimMenuItem.fState = (audio->soundRate() == SndRates[i][1] ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(SoundMenu, ID_SOUND_RATE + SndRates[i][0], FALSE, &miimMenuItem);
+	}
+	
 #if 0
 	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
 	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;

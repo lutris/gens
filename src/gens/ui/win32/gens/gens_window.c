@@ -463,7 +463,7 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position)
 	{
 		sprintf(SndName, "%d Hz", SndRates[i][1]);
 		
-		miimMenuItem.wID = ID_SOUND_RATE + SndRates[0];
+		miimMenuItem.wID = ID_SOUND_RATE + SndRates[i][0];
 		miimMenuItem.fState = (SndRates[i][1] == 22050 ? MFS_CHECKED : MFS_UNCHECKED);
 		miimMenuItem.dwTypeData = &SndName;
 		miimMenuItem.cch = strlen(SndName);
