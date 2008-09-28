@@ -376,6 +376,41 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
+	int i;
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_STATE;
+	
+	// Get the Enabled flag for the other menu items.
+	bool soundEnabled = audio->enabled();
+	unsigned int flags = (soundEnabled ? MFS_ENABLED : MFS_DISABLED);
+	
+	// Enabled
+	miimMenuItem.fState = (soundEnabled ? MFS_CHECKED : MFS_UNCHECKED);
+	SetMenuItemInfo(SoundMenu, ID_SOUND_ENABLE, FALSE, &miimMenuItem);
+	
+	const int soundMenuItems[11][2] =
+	{
+		{audio->stereo(), ID_SOUND_STEREO},
+		{Z80_State & 1, ID_SOUND_Z80},
+		{YM2612_Enable, ID_SOUND_YM2612},
+		{YM2612_Improv, ID_SOUND_YM2612_IMPROVED},
+		{DAC_Enable, ID_SOUND_DAC},
+		{DAC_Improv, ID_SOUND_DAC_IMPROVED},
+		{PSG_Enable, ID_SOUND_PSG},
+		{PSG_Improv, ID_SOUND_PSG_IMPROVED},
+		{PCM_Enable, ID_SOUND_PCM},
+		{PWM_Enable, ID_SOUND_PWM},
+		{CDDA_Enable, ID_SOUND_CDDA},
+	};
+	
+	for (i = 0; i < 11; i++)
+	{
+		miimMenuItem.fState = flags | (soundMenuItems[i][0] ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(SoundMenu, soundMenuItems[i][1], FALSE, &miimMenuItem);
+	}
+
 #if 0
 	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
 	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
@@ -388,32 +423,6 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
-	
-	// Simple checkbox items
-	MItem_Enable = lookup_widget(gens_window, "SoundMenu_Enable");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Enable), audio->enabled());
-	MItem_Stereo = lookup_widget(gens_window, "SoundMenu_Stereo");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stereo), audio->stereo());
-	MItem_Z80 = lookup_widget(gens_window, "SoundMenu_Z80");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Z80), Z80_State & 1);
-	MItem_YM2612 = lookup_widget(gens_window, "SoundMenu_YM2612");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_YM2612), YM2612_Enable);
-	MItem_YM2612_Improved = lookup_widget(gens_window, "SoundMenu_YM2612_Improved");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_YM2612_Improved), YM2612_Improv);
-	MItem_DAC = lookup_widget(gens_window, "SoundMenu_DAC");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_DAC), DAC_Enable);
-	MItem_DAC_Improved = lookup_widget(gens_window, "SoundMenu_DAC_Improved");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_DAC_Improved), DAC_Improv);
-	MItem_PSG = lookup_widget(gens_window, "SoundMenu_PSG");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PSG), PSG_Enable);
-	MItem_PSG_Improved = lookup_widget(gens_window, "SoundMenu_PSG_Improved");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PSG_Improved), PSG_Improv);
-	MItem_PCM = lookup_widget(gens_window, "SoundMenu_PCM");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PCM), PCM_Enable);
-	MItem_PWM = lookup_widget(gens_window, "SoundMenu_PWM");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PWM), PWM_Enable);
-	MItem_CDDA = lookup_widget(gens_window, "SoundMenu_CDDA");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_CDDA), CDDA_Enable);
 	
 	// Rate
 	sprintf(Str_Tmp, "SoundMenu_Rate_SubMenu_%d", audio->soundRate());
