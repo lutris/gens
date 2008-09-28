@@ -594,7 +594,7 @@ void VDraw::Refresh_Video(void)
  */
 int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
-	int Old_Rend, *Rend;
+	int oldRend, *Rend;
 	BlitFn *Blit, testBlit;
 	bool reinit = false;
 	
@@ -602,13 +602,13 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	{
 		Blit = &Blit_FS;
 		Rend = &Video.Render_FS;
-		Old_Rend = Video.Render_FS;
+		oldRend = Video.Render_FS;
 	}
 	else
 	{
 		Blit = &Blit_W;
 		Rend = &Video.Render_W;
-		Old_Rend = Video.Render_W;
+		oldRend = Video.Render_W;
 	}
 	
 	// Checks if an invalid mode number was passed.
@@ -662,7 +662,9 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (forceUpdate && is_gens_running())
 		updateRenderer();
 	
-	if (reinit && forceUpdate)
+	if ((reinit && forceUpdate) ||
+	    (oldRend == 0 && newMode != 0) ||
+	    (oldRend != 0 && newMode == 0))
 	{
 		// The Gens window must be reinitialized.
 		return reinitGensWindow();

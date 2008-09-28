@@ -299,7 +299,7 @@ int VDraw_DDraw::reinitGensWindow(void)
 	
 	// TODO: 32-bit color stuff.
 	DEVMODE dm;
-	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&dm);
+	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS, &dm);
 	//Bits32 = ((dm.dmBitsPerPel > 16) ? 1: 0);
 	
 	Sync_Gens_Window();
