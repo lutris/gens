@@ -42,7 +42,7 @@ GtkWidget *about_window = NULL;
 
 GtkAccelGroup *accel_group;
 
-#include "about_window_data.h"
+#include "ui/about_window_data.h"
 GtkWidget *image_gens_logo = NULL;
 void updateIce(void);
 gboolean iceTime(gpointer data);
