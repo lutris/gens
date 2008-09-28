@@ -627,6 +627,17 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 {
 	switch (LOWORD(wParam))
 	{
+		case ID_OPTIONS_LOADCONFIG:
+			printf("ENABLE: %d\n", audio->enabled());
+			Load_As_Config(Game);
+			printf("ENABLE: %d\n", audio->enabled());
+			Sync_Gens_Window();
+			break;
+		
+		case ID_OPTIONS_SAVECONFIGAS:
+			Save_As_Config();
+			break;
+		
 		default:
 			if ((LOWORD(wParam) & 0xFF00) == ID_OPTIONS_SEGACDSRAMSIZE)
 			{
@@ -761,31 +772,6 @@ void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user
 	Open_Select_CDROM();
 }
 #endif
-
-
-/**
- * Options, Load Config...
- */
-void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Load_As_Config(Game);
-	Sync_Gens_Window();
-}
-
-
-/**
- * Options, Save Config As...
- */
-void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Save_As_Config();
-}
 
 
 /**
