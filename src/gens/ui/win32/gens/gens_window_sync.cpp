@@ -54,6 +54,7 @@
 #include <string>
 using std::string;
 
+HMENU FileMenu_ROMHistory;
 
 /**
  * Sync_Gens_Window(): Synchronize the Gens Main Window.
@@ -82,48 +83,21 @@ void Sync_Gens_Window_FileMenu(void)
 	miimMenuItem.cbSize = sizeof(miimMenuItem);
 	miimMenuItem.fMask = MIIM_STATE;
 	
-	// TODO: Disable Close ROM if no ROM is loaded.
-	
-	// Savestate menu items
-	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	SetMenuItemInfo(FileMenu, ID_FILE_LOADSTATE, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, ID_FILE_SAVESTATE, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, ID_FILE_QUICKLOAD, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, ID_FILE_QUICKSAVE, FALSE, &miimMenuItem);
-	
-	// Current savestate
-	for (i = 0; i < 10; i++)
-	{
-		miimMenuItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
-	}
-	
-#if 0
-	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
-	GtkWidget *MItem_ROMHistory_SubMenu_Item;
-	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
-	GtkWidget *MItem_QuickLoad, *MItem_QuickSave;
-	GtkWidget *MItem_SaveState;
-	char ROM_Name[GENS_PATH_MAX];
-	gboolean saveStateEnable;
-	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
 	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
 	
 	// Temporary variables for ROM History.
-	int i, romFormat;
+	int romFormat;
+	char ROM_Name[GENS_PATH_MAX];
 	// Number of ROMs found for ROM History.
 	int romsFound = 0;
 	
-	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
-	
-	// ROM History
-	MItem_ROMHistory = lookup_widget(gens_window, "FileMenu_ROMHistory");
-	MItem_ROMHistory_SubMenu = gtk_menu_new();
-	gtk_widget_set_name(MItem_ROMHistory_SubMenu, "FileMenu_ROMHistory_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(MItem_ROMHistory), MItem_ROMHistory_SubMenu);
+	// ROM History submenu
+	DestroyMenu(FileMenu_ROMHistory);
+	FileMenu_ROMHistory = CreatePopupMenu();
+	RemoveMenu(FileMenu, 3, MF_BYPOSITION);
+	InsertMenu(FileMenu, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)FileMenu_ROMHistory, "ROM &History");
 	
 	for (i = 0; i < 9; i++)
 	{
@@ -150,17 +124,40 @@ void Sync_Gens_Window_FileMenu(void)
 		strcat(ROM_Name, Str_Tmp);
 		
 		// Add the ROM item to the ROM History submenu.
-		MItem_ROMHistory_SubMenu_Item = gtk_menu_item_new_with_label(ROM_Name);
-		gtk_widget_show(MItem_ROMHistory_SubMenu_Item);
-		gtk_container_add(GTK_CONTAINER(MItem_ROMHistory_SubMenu),
-				  MItem_ROMHistory_SubMenu_Item);
-		g_signal_connect((gpointer)MItem_ROMHistory_SubMenu_Item, "activate",
-				 G_CALLBACK(on_FileMenu_ROMHistory_activate),
-				 GINT_TO_POINTER(i));
+		InsertMenu(FileMenu_ROMHistory, i, MF_BYPOSITION | MF_STRING, ID_FILE_ROMHISTORY + i, ROM_Name);
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
-	gtk_widget_set_sensitive(MItem_ROMHistory, romsFound);
+	if (romsFound == 0)
+	{
+		miimMenuItem.fState = MFS_DISABLED;
+		SetMenuItemInfo(FileMenu, 3, TRUE, &miimMenuItem);
+	}
+	
+	// TODO: Disable Close ROM if no ROM is loaded.
+	
+	// Savestate menu items
+	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
+	SetMenuItemInfo(FileMenu, ID_FILE_LOADSTATE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, ID_FILE_SAVESTATE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, ID_FILE_QUICKLOAD, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, ID_FILE_QUICKSAVE, FALSE, &miimMenuItem);
+	
+	// Current savestate
+	for (i = 0; i < 10; i++)
+	{
+		miimMenuItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
+	}
+	
+#if 0
+	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
+	GtkWidget *MItem_ROMHistory_SubMenu_Item;
+	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
+	GtkWidget *MItem_QuickLoad, *MItem_QuickSave;
+	GtkWidget *MItem_SaveState;
+	gboolean saveStateEnable;
+	
 	
 	// Enable callbacks.
 	do_callbacks = 1;

@@ -168,7 +168,7 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	InsertMenu(FileMenu, 1, flags, ID_FILE_BOOTCD, "&Boot CD");
 #endif /* GENS_CDROM */
 	InsertMenu(FileMenu, 2, flags | MF_GRAYED, ID_FILE_NETPLAY, "&Netplay");
-	InsertMenu(FileMenu, 3, flags, ID_FILE_ROMHISTORY, "ROM &History");
+	// ROM History submenu is handled by Sync_Gens_Window_FileMenu().
 	InsertMenu(FileMenu, 4, flags, ID_FILE_CLOSEROM, "&Close ROM");
 	
 	InsertMenu(FileMenu, 5, MF_SEPARATOR, NULL, NULL);
