@@ -1059,7 +1059,7 @@ static void create_gens_window_OptionsMenu(GtkWidget *container)
 
 
 /**
- * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
+ * create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
  * @param container Container for this menu.
  */
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)
