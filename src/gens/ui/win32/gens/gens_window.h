@@ -39,8 +39,10 @@ extern HWND Gens_hWnd;
 
 extern HMENU MainMenu;
 extern HMENU FileMenu;
+extern HMENU FileMenu_ROMHistory;
 extern HMENU FileMenu_ChangeState;
 extern HMENU GraphicsMenu;
+extern HMENU GraphicsMenu_FrameSkip;
 extern HMENU CPUMenu;
 extern HMENU SoundMenu;
 extern HMENU OptionsMenu;

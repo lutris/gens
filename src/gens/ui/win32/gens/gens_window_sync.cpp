@@ -54,7 +54,6 @@
 #include <string>
 using std::string;
 
-HMENU FileMenu_ROMHistory;
 
 /**
  * Sync_Gens_Window(): Synchronize the Gens Main Window.
@@ -78,7 +77,6 @@ void Sync_Gens_Window_FileMenu(void)
 	int i;
 	
 	MENUITEMINFO miimMenuItem;
-	
 	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
 	miimMenuItem.cbSize = sizeof(miimMenuItem);
 	miimMenuItem.fMask = MIIM_STATE;
@@ -157,6 +155,20 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
+	int i;
+	
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_STATE;
+	
+	// Frame Skip
+	for (i = -1; i < 8; i++)
+	{
+		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
+		SetMenuItemInfo(GraphicsMenu_FrameSkip, ID_GRAPHICS_FRAMESKIP + (i + 1), FALSE, &miimMenuItem);
+	}
+	
 #if 0
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
@@ -188,14 +200,6 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", rendMode);
 	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
-	
-	// Frame Skip
-	if (Frame_Skip == -1)
-		strcpy(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_Auto");
-	else
-		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
-	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
 	
 	// Screen Shot
 	MItem_ScreenShot = lookup_widget(gens_window, "GraphicsMenu_ScreenShot");

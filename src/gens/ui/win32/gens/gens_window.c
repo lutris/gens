@@ -57,6 +57,7 @@ HWND Gens_hWnd = NULL;
 // Menu objects
 HMENU MainMenu;
 HMENU FileMenu;
+HMENU FileMenu_ROMHistory;
 HMENU FileMenu_ChangeState;
 HMENU GraphicsMenu;
 HMENU GraphicsMenu_FrameSkip;
