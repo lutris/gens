@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_WIN32_GENS_WINDOW_CALLBACKS_HPP
-#define GTK_WIN32_GENS_WINDOW_CALLBACKS_HPP
+#ifndef WIN32_GENS_WINDOW_CALLBACKS_HPP
+#define WIN32_GENS_WINDOW_CALLBACKS_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,4 +35,4 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 }
 #endif
 
-#endif
+#endif /* WIN32_GENS_WINDOW_CALLBACKS_HPP */

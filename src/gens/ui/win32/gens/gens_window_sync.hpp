@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_GENS_WINDOW_SYNC_HPP
-#define GTK_GENS_WINDOW_SYNC_HPP
+#ifndef WIN32_GENS_WINDOW_SYNC_HPP
+#define WIN32_GENS_WINDOW_SYNC_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,4 +40,4 @@ void Sync_Gens_Window_OptionsMenu(void);
 }
 #endif
 
-#endif
+#endif /* WIN32_GENS_WINDOW_SYNC_HPP */
