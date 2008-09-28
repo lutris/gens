@@ -390,6 +390,87 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 {
 	switch (LOWORD(wParam))
 	{
+		case ID_CPU_HARDRESET:
+			system_reset();
+			break;
+		
+		case ID_CPU_RESET68K:
+		case ID_CPU_RESETMAIN68K:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game)
+				return;
+			
+			Paused = 0;
+			main68k_reset();
+			if (Genesis_Started || _32X_Started)
+			{
+				MESSAGE_L("68000 CPU reset", "68000 CPU reset", 1000);
+			}
+			else if(SegaCD_Started)
+			{
+				MESSAGE_L("Main 68000 CPU reset", "Main 68000 CPU reset", 1000);
+			}
+			break;
+		
+		case ID_CPU_RESETSUB68K:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game || !SegaCD_Started)
+				return;
+			
+			Paused = 0;
+			sub68k_reset();
+			MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
+			break;
+		
+		case ID_CPU_RESETMAINSH2:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game || !_32X_Started)
+				return;
+			
+			Paused = 0;
+			SH2_Reset(&M_SH2, 1);
+			MESSAGE_L("Master SH2 reset", "Master SH2 reset", 1000);
+			break;
+		
+		case ID_CPU_RESETSUBSH2:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game || !_32X_Started)
+				return;
+			
+			Paused = 0;
+			SH2_Reset(&S_SH2, 1);
+			MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
+			break;
+		
+		case ID_CPU_RESETZ80:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game)
+				return;
+			
+			z80_Reset(&M_Z80);
+			MESSAGE_L("Z80 reset", "Z80 reset", 1000);
+			break;
+			
 		default:
 			if ((LOWORD(wParam) & 0xFF00) == ID_CPU_DEBUG)
 			{
@@ -453,29 +534,6 @@ void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_d
 
 
 /**
- * Graphics, Sprite Limit
- */
-CHECK_MENU_ITEM_CALLBACK(on_GraphicsMenu_SpriteLimit_activate, Set_Sprite_Limit);
-
-
-/**
- * Graphics, Render, #
- */
-void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	int renderMode = GPOINTER_TO_INT(user_data);
-	
-	if (!do_callbacks)
-		return;
-	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-		return;
-	
-	// Set the render mode.
-	draw->setRender(renderMode);
-}
-
-
-/**
  * CPU, Country, #
  */
 void on_CPUMenu_Country_activate(GtkMenuItem *menuitem, gpointer user_data)
@@ -496,134 +554,6 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Country_Code();
-}
-
-
-/**
- * CPU, Hard Reset
- */
-void on_CPUMenu_HardReset_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	system_reset();
-}
-
-
-/**
- * CPU, Reset Main 68000
- */
-void on_CPUMenu_ResetMain68000_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	
-	if (!Game)
-		return;
-	
-	Paused = 0;
-	main68k_reset();
-	if (Genesis_Started || _32X_Started)
-	{
-		MESSAGE_L("68000 CPU reset", "68000 CPU reset", 1000);
-	}
-	else if(SegaCD_Started)
-	{
-		MESSAGE_L("Main 68000 CPU reset", "Main 68000 CPU reset", 1000);
-	}
-}
-
-
-/**
- * CPU, Reset Sub 68000
- */
-void on_CPUMenu_ResetSub68000_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	
-	if (!Game || !SegaCD_Started)
-		return;
-	
-	Paused = 0;
-	sub68k_reset();
-	MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
-}
-
-
-/**
- * CPU, Reset Main SH2
- */
-void on_CPUMenu_ResetMainSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	
-	if (!Game || !_32X_Started)
-		return;
-	
-	Paused = 0;
-	SH2_Reset(&M_SH2, 1);
-	MESSAGE_L("Master SH2 reset", "Master SH2 reset", 1000);
-}
-
-
-/**
- * CPU, Reset Sub SH2
- */
-void on_CPUMenu_ResetSubSH2_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	
-	if (!Game || !_32X_Started)
-		return;
-	
-	Paused = 0;
-	SH2_Reset(&S_SH2, 1);
-	MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
-}
-
-
-/**
- * CPU, Reset Z80
- */
-void on_CPUMenu_ResetZ80_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	
-	if (!Game)
-		return;
-	
-	z80_Reset(&M_Z80);
-	MESSAGE_L("Z80 reset", "Z80 reset", 1000);
 }
 
 
