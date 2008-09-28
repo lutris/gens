@@ -262,7 +262,7 @@ int Save_As_Config(void)
 {
 	string filename;
 	
-	filename = GensUI::saveFile("Save Config As", NULL, ConfigFile);
+	filename = GensUI::saveFile("Save Config As", "", ConfigFile);
 	if (filename.length() == 0)
 		return 0;
 	
@@ -532,7 +532,7 @@ int Load_As_Config(void *Game_Active)
 {
 	string filename;
 	
-	filename = GensUI::openFile("Load Config", NULL, ConfigFile);
+	filename = GensUI::openFile("Load Config", "", ConfigFile);
 	if (filename.length() == 0)
 		return 0;
 	
