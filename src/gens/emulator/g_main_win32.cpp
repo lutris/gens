@@ -122,8 +122,6 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		}
 	}
 	
-	Open_Rom("Z:\\home\\david\\ROMs\\S2.gen");
-	
 	// Update the UI.
 	GensUI::update();
 
