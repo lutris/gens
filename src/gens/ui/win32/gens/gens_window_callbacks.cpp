@@ -203,7 +203,24 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case ID_FILE_QUIT:
 			close_gens();
 			break;
-			
+		
+		case ID_FILE_ROMHISTORY_0:
+		case ID_FILE_ROMHISTORY_1:
+		case ID_FILE_ROMHISTORY_2:
+		case ID_FILE_ROMHISTORY_3:
+		case ID_FILE_ROMHISTORY_4:
+		case ID_FILE_ROMHISTORY_5:
+		case ID_FILE_ROMHISTORY_6:
+		case ID_FILE_ROMHISTORY_7:
+		case ID_FILE_ROMHISTORY_8:
+		case ID_FILE_ROMHISTORY_9:
+			// ROM History.
+			if (audio->playingGYM())
+				Stop_Play_GYM();
+			Open_Rom(Recent_Rom[LOWORD(wParam) - ID_FILE_ROMHISTORY]);
+			Sync_Gens_Window();
+			break;
+		
 		case ID_FILE_CHANGESTATE_0:
 		case ID_FILE_CHANGESTATE_1:
 		case ID_FILE_CHANGESTATE_2:
@@ -245,20 +262,6 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 	Sync_Gens_Window();
 }
 #endif
-
-
-/**
- * File, ROM History, #
- */
-void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	
-	if (audio->playingGYM())
-		Stop_Play_GYM();
-	Open_Rom(Recent_Rom[GPOINTER_TO_INT(user_data)]);
-	Sync_Gens_Window();
-}
 
 
 /**
