@@ -586,6 +586,24 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
+		case ID_SOUND_WAVDUMP:
+			// Change WAV dump status.
+			if (!audio->dumpingWAV())
+				audio->startWAVDump();
+			else
+				audio->stopWAVDump();
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_GYMDUMP:
+			// Change GYM dump status.
+			if (!GYM_Dumping)
+				Start_GYM_Dump();
+			else
+				Stop_GYM_Dump();
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
 		default:
 			if ((LOWORD(wParam) & 0xFF00) == ID_SOUND_RATE)
 			{
@@ -680,52 +698,6 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Country_Code();
-}
-
-
-/**
- * Sound, WAV Dump
- */
-void on_SoundMenu_WAVDump_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	string label;
-	
-	// Change WAV dump status.
-	if (!audio->dumpingWAV())
-		audio->startWAVDump();
-	else
-		audio->stopWAVDump();
-	
-	// Check the status again to determine what to set the label to.
-	label = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
-	
-	// Set the text of the WAV dump menu item.
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label.c_str());
-}
-
-
-/**
- * Sound, GYM Dump
- */
-void on_SoundMenu_GYMDump_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	string label;
-	
-	// Change GYM dump status.
-	if (!GYM_Dumping)
-		Start_GYM_Dump();
-	else
-		Stop_GYM_Dump();
-	
-	// Check the status again to determine what to set the label to.
-	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
-	
-	// Set the text of the GYM dump menu item.
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(menuitem)->child), label.c_str());
 }
 
 
