@@ -112,14 +112,14 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 
 
 /**
- * Gens_Window_WinProc(): The Gens window procedure.
+ * Gens_Window_WndProc(): The Gens window procedure.
  * @param hWnd hWnd of the object sending a message.
  * @param message Message being sent by the object.
  * @param wParam
  * @param lParam
  * @return
  */
-LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT r;
 	int t;

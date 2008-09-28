@@ -29,7 +29,7 @@ extern "C" {
 
 #include <windows.h>
 
-LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #ifdef __cplusplus
 }
