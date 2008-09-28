@@ -402,7 +402,7 @@ void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, g
  */
 void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	int bpp = GPOINTER_TO_INT(user_data);
+	int newBpp = GPOINTER_TO_INT(user_data);
 	
 	if (!do_callbacks)
 		return;
@@ -410,8 +410,8 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
 		return;
 	
 	// Set the bits per pixel.
-	draw->setBpp(bpp);
-	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
+	draw->setBpp(newBpp);
+	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", newBpp, 1500);
 }
 
 
