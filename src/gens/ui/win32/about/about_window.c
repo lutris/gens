@@ -34,6 +34,10 @@
 WNDCLASS WndClass;
 HWND about_window = NULL;
 
+// Fonts
+HFONT fntMain = NULL;
+HFONT fntTitle = NULL;
+
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
 void updateIce(void);
@@ -42,6 +46,8 @@ void updateIce(void);
 int ax = 0, bx = 0, cx = 0;
 
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void About_Window_CreateChildWindows(HWND hWnd);
+
 
 /**
  * create_about_window(): Create the About Window.
@@ -56,6 +62,23 @@ HWND create_about_window(void)
 		ShowWindow(about_window, 1);
 		return about_window;
 	}
+	
+	// Determine how tall an 8pt font is.
+	
+	// Create the main font.
+	// Main font is simply the default GUI font.
+	HFONT fntDefaultGUIFont = GetStockObject(DEFAULT_GUI_FONT);
+	fntMain = fntDefaultGUIFont;
+	
+	// Create the title font.
+	// Title font is the main font with bold and italics.
+	LOGFONT lf;
+	GetObject(fntDefaultGUIFont, sizeof(LOGFONT), &lf);
+	lf.lfItalic = 1;
+	lf.lfWeight = FW_BOLD;
+	fntTitle = CreateFontIndirect(&lf);
+	
+	printf("0x%08X 0x%08X 0x%08X\n", fntDefaultGUIFont, fntMain, fntTitle);
 	
 	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	WndClass.lpfnWndProc = About_Window_WndProc;
@@ -73,7 +96,7 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      240, 320, NULL, NULL, ghInstance, NULL);
+				      280, 320, NULL, NULL, ghInstance, NULL);
 	
 #if 0
 	// Get the dialog VBox.
@@ -190,26 +213,47 @@ HWND create_about_window(void)
  */
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	HDC hDC;
-	PAINTSTRUCT ps;
-	
 	switch(message)
 	{
-		case WM_CLOSE:
-			if (hWnd == about_window)
-			{
-				DestroyWindow(about_window);
-				return 0;
-			}
+		case WM_CREATE:
+			About_Window_CreateChildWindows(hWnd);
 			break;
 		
+		case WM_CLOSE:
+			DestroyWindow(about_window);
+			return 0;
+		
 		case WM_DESTROY:
-			printf("Destroy'd.\n");
-			about_window = NULL;
+			if (about_window == hWnd)
+				about_window = NULL;
 			break;
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+static void About_Window_CreateChildWindows(HWND hWnd)
+{
+	// Version information
+	static const char* gensTitle = "Gens/GS [Win32]";
+	static const char* gensVersionInfo =
+			"Version " GENS_VERSION "\n\n"
+			"Sega Genesis / Mega Drive,\n"
+			"Sega CD / Mega CD,\n"
+			"Sega 32X emulator";
+	
+	HDC hDC = GetDC(about_window);
+	
+	HWND lblGensTitle, lblGensVersion;
+	
+	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				    100, 8, 172, 16, hWnd, NULL, ghInstance, NULL);
+	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
+	
+	lblGensVersion = CreateWindow("Static", gensVersionInfo, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				      100, 24, 172, 100, hWnd, NULL, ghInstance, NULL);
+	SendMessage(lblGensVersion, WM_SETFONT, (WPARAM)fntMain, 1);
 }
 
 
