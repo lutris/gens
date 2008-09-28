@@ -297,7 +297,7 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 			miimStateItem.cch = 4;
 		}
 		
-		miimStateItem.wID = ID_FILE_CHANGESTATE + (i + 1);
+		miimStateItem.wID = ID_GRAPHICS_FRAMESKIP + (i + 1);
 		miimStateItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
 		miimStateItem.dwTypeData = &mnuTitle;
 		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimStateItem);
