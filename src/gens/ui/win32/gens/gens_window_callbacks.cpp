@@ -71,6 +71,14 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
+// Needed on Win32
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/psg.h"
+#include "gens_core/sound/pcm.h"
+#include "gens_core/sound/pwm.h"
+#include "segacd/cd_sys.hpp"
+
 // C++ includes
 #include <string>
 using std::string;
@@ -96,6 +104,7 @@ static void on_gens_window_close(void);
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -157,6 +166,9 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					break;
 				case ID_CPU_MENU:
 					on_gens_window_CPUMenu(hWnd, message, wParam, lParam);
+					break;
+				case ID_SOUND_MENU:
+					on_gens_window_SoundMenu(hWnd, message, wParam, lParam);
 					break;
 			}
 			break;
@@ -499,6 +511,80 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 }
 
 
+/**
+ * on_gens_window_SoundMenu(): Sound Menu item has been selected.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Selected menu item.
+ * @param lParam
+ */
+static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case ID_SOUND_ENABLE:
+			Change_Sound(!audio->enabled());
+			Sync_Gens_Window();
+			break;
+		
+		case ID_SOUND_STEREO:
+			Change_Sound_Stereo(!audio->stereo());
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_Z80:
+			Change_Z80(!(Z80_State & 1));
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_YM2612:
+			Change_YM2612(!YM2612_Enable);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_YM2612_IMPROVED:
+			Change_YM2612_Improved(!YM2612_Improv);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_DAC:
+			Change_DAC(!DAC_Enable);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_DAC_IMPROVED:
+			Change_DAC_Improved(!DAC_Improv);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_PSG:
+			Change_PSG(!PSG_Enable);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_PSG_IMPROVED:
+			Change_PSG_Improved(!PSG_Improv);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_PCM:
+			Change_PCM(!PCM_Enable);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_PWM:
+			Change_PWM(!PWM_Enable);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case ID_SOUND_CDDA:
+			Change_CDDA(!CDDA_Enable);
+			Sync_Gens_Window_SoundMenu();
+			break;
+	}
+}
+
+
 #if 0
 #ifdef GENS_CDROM
 /**
@@ -562,20 +648,6 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 
 
 /**
- * Sound, Enable
- */
-void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	if (!do_callbacks)
-		return;
-	Change_Sound(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));
-	Sync_Gens_Window();
-}
-
-
-/**
  * CPU, Rate, #
  */
 void on_SoundMenu_Rate_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
@@ -585,22 +657,6 @@ void on_SoundMenu_Rate_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_dat
 	if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
 		Change_Sample_Rate(GPOINTER_TO_INT(user_data));
 }
-
-
-/**
- * Various items in the Sound menu.
- */
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_Stereo_activate, Change_Sound_Stereo);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_Z80_activate, Change_Z80);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_YM2612_activate, Change_YM2612);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_YM2612_Improved_activate, Change_YM2612_Improved);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_DAC_activate, Change_DAC);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_DAC_Improved_activate, Change_DAC_Improved);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PSG_activate, Change_PSG);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PSG_Improved_activate, Change_PSG_Improved);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PCM_activate, Change_PCM);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_PWM_activate, Change_PWM);
-CHECK_MENU_ITEM_CALLBACK(on_SoundMenu_CDDA_activate, Change_CDDA);
 
 
 /**
