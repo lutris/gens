@@ -426,56 +426,24 @@ void Sync_Gens_Window_SoundMenu(void)
 		SetMenuItemInfo(SoundMenu, ID_SOUND_RATE + SndRates[i][0], FALSE, &miimMenuItem);
 	}
 	
-#if 0
-	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
-	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
-	GtkWidget *MItem_DAC, *MItem_DAC_Improved;
-	GtkWidget *MItem_PSG, *MItem_PSG_Improved;
-	GtkWidget *MItem_PCM, *MItem_PWM, *MItem_CDDA;
-	
-	GtkWidget *MItem_GYMDump, *MItem_WAVDump;
-	string label; int allowAudioDump;
-	
-	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
-	
-	// Rate
-	sprintf(Str_Tmp, "SoundMenu_Rate_SubMenu_%d", audio->soundRate());
-	MItem_Rate = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Rate), TRUE);
-	
-	// GYM dumping
-	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
-	MItem_GYMDump = lookup_widget(gens_window, "SoundMenu_GYMDump");
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label.c_str());
+	char dumpLabel[16];
+	miimMenuItem.fMask = MIIM_STATE | MIIM_STRING;
+	//miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
 	
 	// WAV dumping
-	label = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
-	MItem_WAVDump = lookup_widget(gens_window, "SoundMenu_WAVDump");
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label.c_str());
+	// TODO: Always disabled for now, since WAV dumping isn't implemented yet.
+	strcpy(dumpLabel, (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump"));
+	miimMenuItem.fState = MFS_DISABLED;
+	miimMenuItem.dwTypeData = dumpLabel;
+	miimMenuItem.cch = strlen(dumpLabel);
+	SetMenuItemInfo(SoundMenu, ID_SOUND_WAVDUMP, FALSE, &miimMenuItem);
 	
-	// Enable or disable items, depending on the Enable state.
-	gtk_widget_set_sensitive(MItem_Stereo, audio->enabled());
-	gtk_widget_set_sensitive(MItem_YM2612, audio->enabled());
-	gtk_widget_set_sensitive(MItem_YM2612_Improved, audio->enabled());
-	gtk_widget_set_sensitive(MItem_DAC, audio->enabled());
-	gtk_widget_set_sensitive(MItem_DAC_Improved, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PSG, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PSG_Improved, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PCM, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PWM, audio->enabled());
-	gtk_widget_set_sensitive(MItem_CDDA, audio->enabled());
-	
-	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
-	// Also, don't enable this if sound is disabled.
-	allowAudioDump = (Genesis_Started || SegaCD_Started || _32X_Started) && audio->enabled();
-	gtk_widget_set_sensitive(MItem_GYMDump, allowAudioDump);
-	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.
-	gtk_widget_set_sensitive(MItem_WAVDump, FALSE);
-	
-	// Enable callbacks.
-	do_callbacks = 1;
-#endif
+	// GYM dumping
+	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
+	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
+	miimMenuItem.dwTypeData = dumpLabel;
+	miimMenuItem.cch = strlen(dumpLabel);
+	SetMenuItemInfo(SoundMenu, ID_SOUND_GYMDUMP, FALSE, &miimMenuItem);
 }
 
 
