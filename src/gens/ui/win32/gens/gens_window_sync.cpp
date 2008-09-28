@@ -263,6 +263,17 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_STATE;
+	
+#ifdef GENS_DEBUGGER
+	// Enable/Disable the Debug entry, depending on if a game is loaded or not.
+	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
+	SetMenuItemInfo(CPUMenu, 0, TRUE, &miimMenuItem);
+#endif /* GENS_DEBUGGER */
+
 #if 0
 #ifdef GENS_DEBUGGER
 	GtkWidget *MItem_Debug;
@@ -278,9 +289,6 @@ void Sync_Gens_Window_CPUMenu(void)
 	do_callbacks = 0;
 	
 #ifdef GENS_DEBUGGER
-	MItem_Debug = lookup_widget(gens_window, "CPUMenu_Debug");
-	gtk_widget_set_sensitive(MItem_Debug, (Genesis_Started || SegaCD_Started || _32X_Started));
-	
 	// Hide/Show debug entries depending on the active console.
 	
 	if (Genesis_Started || SegaCD_Started || _32X_Started)

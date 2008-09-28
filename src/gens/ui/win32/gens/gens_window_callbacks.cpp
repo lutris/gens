@@ -95,6 +95,7 @@ static bool PaintsEnabled = true;
 static void on_gens_window_close(void);
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -142,6 +143,9 @@ LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					break;
 				case ID_GRAPHICS_MENU:
 					on_gens_window_GraphicsMenu(hWnd, message, wParam, lParam);
+					break;
+				case ID_CPU_MENU:
+					on_gens_window_CPUMenu(hWnd, message, wParam, lParam);
 					break;
 			}
 			break;
@@ -353,6 +357,22 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 }
 
 
+static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (LOWORD(wParam))
+	{
+		default:
+			if ((LOWORD(wParam) & 0xFF00) == ID_CPU_DEBUG)
+			{
+				// Debug mode change.
+				Change_Debug((LOWORD(wParam) - ID_CPU_DEBUG) + 1);
+				Sync_Gens_Window_CPUMenu();
+			}
+			break;
+	}
+}
+
+
 #if 0
 #ifdef GENS_CDROM
 /**
@@ -424,41 +444,6 @@ void on_GraphicsMenu_Render_SubMenu_RenderItem_activate(GtkMenuItem *menuitem, g
 	// Set the render mode.
 	draw->setRender(renderMode);
 }
-
-
-#ifdef GENS_DEBUGGER
-/**
- * CPU, Debug, #
- */
-void on_CPUMenu_Debug_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	int newDebug = GPOINTER_TO_INT(user_data);
-	int i;
-	
-	if (!do_callbacks)
-		return;
-	if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-	{
-		// Debug mode is unchecked.
-		if (newDebug == Debug)
-		{
-			// This debugging mode is being turned off.
-			Change_Debug(newDebug);
-		}
-		return;
-	}
-	
-	// Set the debug mode.
-	Change_Debug(newDebug);
-	
-	// Uncheck all other Debug items.
-	for (i = 0; i < 9; i++)
-	{
-		if (i + 1 != newDebug)
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(debugMenuItems[i]), FALSE);
-	}	
-}
-#endif /* GENS_DEBUGGER */
 
 
 /**

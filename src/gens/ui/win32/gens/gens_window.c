@@ -63,6 +63,7 @@ HMENU GraphicsMenu;
 HMENU GraphicsMenu_Render;
 HMENU GraphicsMenu_FrameSkip;
 HMENU CPUMenu;
+HMENU CPUMenu_Debug;
 HMENU SoundMenu;
 HMENU OptionsMenu;
 HMENU HelpMenu;
@@ -74,13 +75,13 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position);
 static void create_gens_window_CPUMenu(HMENU parent, int position);
+#ifdef GENS_DEBUGGER
+static void create_gens_window_CPUMenu_Debug(HMENU parent, int position);
+#endif /* GENS_DEBUGGER */
 static void create_gens_window_SoundMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
 #if 0
-#ifdef GENS_DEBUGGER
-static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
-#endif /* GENS_DEBUGGER */
 static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
 static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
@@ -318,7 +319,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
 	
 #ifdef GENS_DEBUGGER
-	InsertMenu(CPUMenu, 0, flags, ID_CPU_DEBUG, "&Debug");
+	create_gens_window_CPUMenu_Debug(CPUMenu, 0);
 	InsertMenu(CPUMenu, 1, MF_SEPARATOR, NULL, NULL);
 #endif /* GENS_DEBUGGER */
 	
@@ -338,6 +339,50 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	
 	InsertMenu(CPUMenu, 12, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
 }
+
+
+#ifdef GENS_DEBUGGER
+/**
+ * create_gens_window_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void create_gens_window_CPUMenu_Debug(HMENU parent, int position)
+{
+	// TODO: Move this array somewhere else.
+	const char* DebugStr[9] =
+	{
+		"&Genesis - 68000",
+		"Genesis - &Z80",
+		"Genesis - &VDP",
+		"&SegaCD - 68000",
+		"SegaCD - &CDC",
+		"SegaCD - GF&X",
+		"32X - Main SH2",
+		"32X - Sub SH2",
+		"32X - VDP",
+	};
+	
+	int i;
+	
+	// CPU, Debug
+	DeleteMenu(parent, position, MF_BYPOSITION);
+	CPUMenu_Debug = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu_Debug, "&Debug");
+	
+	// Create the render entries.
+	for (i = 0; i < 9; i++)
+	{
+		InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, ID_CPU_DEBUG + i, DebugStr[i]);
+		
+		if (i % 3 == 2 && i < 6)
+		{
+			// Every three entires, add a separator.
+			InsertMenu(CPUMenu_Debug, i + 1, MF_SEPARATOR, NULL, NULL);
+		}
+	}
+}
+#endif /* GENS_DEBUGGER */
 
 
 /**
@@ -436,56 +481,6 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 
 
 #if 0
-#ifdef GENS_DEBUGGER
-/**
- * create_gens_window_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
- * @param container Container for this menu.
- */
-static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
-{
-	GtkWidget *SubMenu;
-	
-	// TODO: Move this array somewhere else.
-	const char* DebugStr[9] =
-	{
-		"_Genesis - 68000",
-		"Genesis - _Z80",
-		"Genesis - _VDP",
-		"_SegaCD - 68000",
-		"SegaCD - _CDC",
-		"SegaCD - GF_X",
-		"32X - Main SH2",
-		"32X - Sub SH2",
-		"32X - VDP",
-	};
-	
-	int i;
-	char ObjName[64];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "CPUMenu_Debug_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the render entries.
-	for (i = 0; i < 9; i++)
-	{
-		sprintf(ObjName, "CPUMenu_Debug_SubMenu_%d", i + 1);
-		NewMenuItem_Check(debugMenuItems[i], DebugStr[i], ObjName, SubMenu, FALSE);
-		g_signal_connect((gpointer)debugMenuItems[i], "activate",
-				 G_CALLBACK(on_CPUMenu_Debug_SubMenu_activate),
-				 GINT_TO_POINTER(i + 1));
-		if (i % 3 == 2 && i < 6)
-		{
-			// Every three entires, add a separator.
-			sprintf(ObjName, "CPUMenu_Debug_SubMenu_Sep%d", (i / 3) + 1);
-			NewMenuSeparator(debugSeparators[i / 3], ObjName, SubMenu);
-		}
-	}
-}
-#endif /* GENS_DEBUGGER */
-
-
 /**
  * create_gens_window_CPUMenu_Country_SubMenu(): Create the CPU, Country submenu.
  * @param container Container for this menu.
