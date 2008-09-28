@@ -275,6 +275,7 @@ void updateIce(void)
 	gtk_image_set_from_pixbuf(GTK_IMAGE(image_gens_logo), icebuf);
 }
 
+
 gboolean iceTime(gpointer data)
 {
 	GENS_UNUSED_PARAMETER(data);
