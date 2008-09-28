@@ -330,7 +330,7 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 	
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	CPUMenu_Debug = CreatePopupMenu();
-	InsertMenu(parent, position, flags, (UINT_PTR)GraphicsMenu_Render, "&Debug");
+	InsertMenu(parent, position, flags, (UINT_PTR)CPUMenu_Debug, "&Debug");
 	
 	if (flags & MF_GRAYED)
 		return;
