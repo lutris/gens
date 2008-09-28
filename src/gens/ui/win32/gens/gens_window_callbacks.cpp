@@ -98,6 +98,14 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
+/**
+ * Gens_Window_WinProc(): The Gens window procedure.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam
+ * @param lParam
+ * @return
+ */
 LRESULT CALLBACK Gens_Window_WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT r;
@@ -178,6 +186,13 @@ static void on_gens_window_close(void)
 }
 
 
+/**
+ * on_gens_window_FileMenu(): File Menu item has been selected.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Selected menu item.
+ * @param lParam
+ */
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (LOWORD(wParam))
@@ -288,6 +303,13 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 }
 
 
+/**
+ * on_gens_window_GraphicsMenu(): Graphics Menu item has been selected.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Selected menu item.
+ * @param lParam
+ */
 static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (LOWORD(wParam))
@@ -357,6 +379,13 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 }
 
 
+/**
+ * on_gens_window_CPUMenu(): CPU Menu item has been selected.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Selected menu item.
+ * @param lParam
+ */
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (LOWORD(wParam))
