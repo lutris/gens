@@ -33,8 +33,8 @@
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
-#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
