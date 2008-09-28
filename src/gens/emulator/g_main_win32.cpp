@@ -30,7 +30,13 @@
 #endif /* GENS_DEBUGGER */
 
 
-HINSTANCE ghInstance;
+// Win32 instance
+HINSTANCE ghInstance = NULL;
+
+
+// Fonts
+HFONT fntMain = NULL;
+HFONT fntTitle = NULL;
 
 
 /**
@@ -239,6 +245,9 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	End_All();
 	ChangeDisplaySettings(NULL, 0);
 	DestroyWindow(Gens_hWnd);
+	
+	// Delete the title font.
+	DeleteObject(fntTitle);
 	
 	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{

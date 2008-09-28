@@ -66,6 +66,7 @@ static string UI_Win32_OpenFile_int(const string& title,
 				    const FileFilterType filterType,
 				    const bool openOrSave);
 
+
 /**
  * init(): Initialize the Win32 UI.
  * @param argc main()'s argc. (unused)
@@ -75,6 +76,18 @@ void GensUI::init(int argc, char *argv[])
 {
 	GENS_UNUSED_PARAMETER(argc);
 	GENS_UNUSED_PARAMETER(argv);
+	
+	// Create the fonts used by the rest of the program.
+	HFONT fntDefaultGUIFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	fntMain = fntDefaultGUIFont;
+	
+	// Create the title font.
+	// Title font is the main font with bold and italics.
+	LOGFONT lf;
+	GetObject(fntDefaultGUIFont, sizeof(LOGFONT), &lf);
+	lf.lfItalic = 1;
+	lf.lfWeight = FW_BOLD;
+	fntTitle = CreateFontIndirect(&lf);
 	
 	// Create and show the Gens window.
 	// TODO: Use nCmdShow from WinMain for ShowWindow()'s second parameter.

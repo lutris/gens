@@ -16,6 +16,10 @@ extern "C" {
 
 extern HINSTANCE ghInstance;
 
+// Fonts
+extern HFONT fntMain;
+extern HFONT fntTitle;
+
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
 

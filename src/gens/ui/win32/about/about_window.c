@@ -34,10 +34,6 @@
 WNDCLASS WndClass;
 HWND about_window = NULL;
 
-// Fonts
-HFONT fntMain = NULL;
-HFONT fntTitle = NULL;
-
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
 void updateIce(void);
@@ -62,23 +58,6 @@ HWND create_about_window(void)
 		ShowWindow(about_window, 1);
 		return about_window;
 	}
-	
-	// Determine how tall an 8pt font is.
-	
-	// Create the main font.
-	// Main font is simply the default GUI font.
-	HFONT fntDefaultGUIFont = GetStockObject(DEFAULT_GUI_FONT);
-	fntMain = fntDefaultGUIFont;
-	
-	// Create the title font.
-	// Title font is the main font with bold and italics.
-	LOGFONT lf;
-	GetObject(fntDefaultGUIFont, sizeof(LOGFONT), &lf);
-	lf.lfItalic = 1;
-	lf.lfWeight = FW_BOLD;
-	fntTitle = CreateFontIndirect(&lf);
-	
-	printf("0x%08X 0x%08X 0x%08X\n", fntDefaultGUIFont, fntMain, fntTitle);
 	
 	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	WndClass.lpfnWndProc = About_Window_WndProc;
