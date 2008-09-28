@@ -581,6 +581,15 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Change_CDDA(!CDDA_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
+		
+		default:
+			if ((LOWORD(wParam) & 0xFF00) == ID_SOUND_RATE)
+			{
+				// Sample rate change.
+				Change_Sample_Rate(LOWORD(wParam) - ID_SOUND_RATE);
+				Sync_Gens_Window_SoundMenu();
+			}
+			break;
 	}
 }
 
