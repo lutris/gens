@@ -269,11 +269,10 @@ void Sync_Gens_Window_CPUMenu(void)
 	miimMenuItem.fMask = MIIM_STATE;
 	
 #ifdef GENS_DEBUGGER
-	// Enable/Disable the Debug entry, depending on if a game is loaded or not.
-	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	SetMenuItemInfo(CPUMenu, 0, TRUE, &miimMenuItem);
+	// Synchronize the Debug submenu.
+	Sync_Gens_Window_CPUMenu_Debug(CPUMenu, 0);
 #endif /* GENS_DEBUGGER */
-
+	
 #if 0
 #ifdef GENS_DEBUGGER
 	GtkWidget *MItem_Debug;
@@ -389,6 +388,62 @@ void Sync_Gens_Window_CPUMenu(void)
 	do_callbacks = 1;
 #endif
 }
+
+
+#ifdef GENS_DEBUGGER
+/**
+ * Sync_Gens_Window_CPUMenu_Debug(): Synchronize the Graphics, Render submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
+{
+	// Debug submenu
+	int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;
+	if (!(Genesis_Started || SegaCD_Started || _32X_Started))
+		flags |= MF_GRAYED;
+	
+	DeleteMenu(parent, position, MF_BYPOSITION);
+	CPUMenu_Debug = CreatePopupMenu();
+	InsertMenu(parent, position, flags, (UINT_PTR)GraphicsMenu_Render, "&Debug");
+	
+	if (flags & MF_GRAYED)
+		return;
+	
+	// TODO: Move this array somewhere else.
+	const char* DebugStr[9] =
+	{
+		"&Genesis - 68000",
+		"Genesis - &Z80",
+		"Genesis - &VDP",
+		"&SegaCD - 68000",
+		"SegaCD - &CDC",
+		"SegaCD - GF&X",
+		"32X - Main SH2",
+		"32X - Sub SH2",
+		"32X - VDP",
+	};
+	
+	int i;
+	
+	// Create the debug entries.
+	for (i = 0; i < 9; i++)
+	{
+		if ((i >= 0 && i <= 2) ||
+		    (i >= 3 && i <= 5 && SegaCD_Started) ||
+		    (i >= 6 && i <= 8 && _32X_Started))
+		{
+			if (i % 3 == 0 && (i >= 3 && i <= 6))
+			{
+				// Every three entires, add a separator.
+				InsertMenu(CPUMenu_Debug, i + 1, MF_SEPARATOR, NULL, NULL);
+			}
+			
+			InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, ID_CPU_DEBUG + i, DebugStr[i]);
+		}
+	}
+}
+#endif /* GENS_DEBUGGER */
 
 
 /**

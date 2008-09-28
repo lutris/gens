@@ -75,9 +75,6 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position);
 static void create_gens_window_CPUMenu(HMENU parent, int position);
-#ifdef GENS_DEBUGGER
-static void create_gens_window_CPUMenu_Debug(HMENU parent, int position);
-#endif /* GENS_DEBUGGER */
 static void create_gens_window_SoundMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
@@ -319,7 +316,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
 	
 #ifdef GENS_DEBUGGER
-	create_gens_window_CPUMenu_Debug(CPUMenu, 0);
+	Sync_Gens_Window_CPUMenu_Debug(CPUMenu, 0);
 	InsertMenu(CPUMenu, 1, MF_SEPARATOR, NULL, NULL);
 #endif /* GENS_DEBUGGER */
 	
@@ -339,50 +336,6 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	
 	InsertMenu(CPUMenu, 12, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
 }
-
-
-#ifdef GENS_DEBUGGER
-/**
- * create_gens_window_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
- * @param parent Parent menu.
- * @param position Position in the parent menu.
- */
-static void create_gens_window_CPUMenu_Debug(HMENU parent, int position)
-{
-	// TODO: Move this array somewhere else.
-	const char* DebugStr[9] =
-	{
-		"&Genesis - 68000",
-		"Genesis - &Z80",
-		"Genesis - &VDP",
-		"&SegaCD - 68000",
-		"SegaCD - &CDC",
-		"SegaCD - GF&X",
-		"32X - Main SH2",
-		"32X - Sub SH2",
-		"32X - VDP",
-	};
-	
-	int i;
-	
-	// CPU, Debug
-	DeleteMenu(parent, position, MF_BYPOSITION);
-	CPUMenu_Debug = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu_Debug, "&Debug");
-	
-	// Create the render entries.
-	for (i = 0; i < 9; i++)
-	{
-		InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, ID_CPU_DEBUG + i, DebugStr[i]);
-		
-		if (i % 3 == 2 && i < 6)
-		{
-			// Every three entires, add a separator.
-			InsertMenu(CPUMenu_Debug, i + 1, MF_SEPARATOR, NULL, NULL);
-		}
-	}
-}
-#endif /* GENS_DEBUGGER */
 
 
 /**
