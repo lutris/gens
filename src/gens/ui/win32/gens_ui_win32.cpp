@@ -282,7 +282,7 @@ string GensUI::openFile(const string& title, const string& initFile, const FileF
 	
 	ofn.nFilterIndex = 0;
 	ofn.lpstrInitialDir = initFile.c_str();
-	ofn.Flags = OFN_FILEMUSTEXIST;
+	ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
 	
 	if (!GetOpenFileName(&ofn))
 		return "";
