@@ -66,6 +66,7 @@ HMENU CPUMenu;
 HMENU CPUMenu_Debug;
 HMENU CPUMenu_Country;
 HMENU SoundMenu;
+HMENU SoundMenu_Rate;
 HMENU OptionsMenu;
 HMENU HelpMenu;
 
@@ -78,11 +79,10 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 static void create_gens_window_CPUMenu(HMENU parent, int position);
 static void create_gens_window_CPUMenu_Country(HMENU parent, int position);
 static void create_gens_window_SoundMenu(HMENU parent, int position);
+static void create_gens_window_SoundMenu_Rate(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
 #if 0
-static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container);
-static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
 #endif
 
@@ -402,7 +402,7 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	
 	InsertMenu(SoundMenu, 1, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(SoundMenu, 2, flags, ID_SOUND_RATE, "&Rate");
+	create_gens_window_SoundMenu_Rate(SoundMenu, 2);
 	InsertMenu(SoundMenu, 3, flags, ID_SOUND_STEREO, "&Stereo");
 	
 	InsertMenu(SoundMenu, 4, MF_SEPARATOR, NULL, NULL);
@@ -425,6 +425,51 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	
 	InsertMenu(SoundMenu, 17, flags, ID_SOUND_WAVDUMP, "Start WAV Dump");
 	InsertMenu(SoundMenu, 18, flags, ID_SOUND_GYMDUMP, "Start GYM Dump");
+}
+
+
+/**
+ * create_gens_window_SoundMenu_Rate(): Create the Sound, Rate submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void create_gens_window_SoundMenu_Rate(HMENU parent, int position)
+{
+	// Sample rates are referenced by an index.
+	// The index is not sorted by rate; the xx000 rates are 3, 4, 5.
+	// This is probably for backwards-compatibilty with older Gens.
+	const int SndRates[6][2] =
+	{
+		{0, 11025}, {3, 16000}, {1, 22050},
+		{4, 32000}, {2, 44100}, {5, 48000},
+	};
+	
+	int i;
+	char SndName[16];
+	
+	// Sound, Rate
+	DeleteMenu(parent, position, MF_BYPOSITION);
+	SoundMenu_Rate = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu_Rate, "&Rate");
+	
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	
+	// Create the rate entries.
+	for (i = 0; i < 6; i++)
+	{
+		sprintf(SndName, "%d Hz", SndRates[i][1]);
+		
+		miimMenuItem.wID = ID_SOUND_RATE + SndRates[0];
+		miimMenuItem.fState = (SndRates[i][1] == 22050 ? MFS_CHECKED : MFS_UNCHECKED);
+		miimMenuItem.dwTypeData = &SndName;
+		miimMenuItem.cch = strlen(SndName);
+		
+		InsertMenuItem(SoundMenu_Rate, i, TRUE, &miimMenuItem);
+	}
 }
 
 
@@ -480,47 +525,6 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 
 
 #if 0
-/**
- * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Sound, Rate submenu.
- * @param container Container for this menu.
- */
-static void create_gens_window_SoundMenu_Rate_SubMenu(GtkWidget *container)
-{
-	GtkWidget *SubMenu;
-	GtkWidget *SndItem;
-	GSList *SndGroup = NULL;
-	
-	// Sample rates are referenced by an index.
-	// The index is not sorted by rate; the xx000 rates are 3, 4, 5.
-	// This is probably for backwards-compatibilty with older Gens.
-	const int SndRates[6][2] =
-	{
-		{0, 11025}, {3, 16000}, {1, 22050},
-		{4, 32000}, {2, 44100}, {5, 48000},
-	};
-	
-	int i;
-	char SndName[16];
-	char ObjName[64];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "SoundMenu_Rate_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the rate entries.
-	for (i = 0; i < 6; i++)
-	{
-		sprintf(SndName, "%d Hz", SndRates[i][1]);
-		sprintf(ObjName, "SoundMenu_Rate_SubMenu_%d", SndRates[i][1]);
-		NewMenuItem_Radio(SndItem, SndName, ObjName, SubMenu, (SndRates[i][1] == 22050 ? TRUE : FALSE), SndGroup);
-		g_signal_connect((gpointer)SndItem, "activate",
-				 G_CALLBACK(on_SoundMenu_Rate_SubMenu_activate),
-				 GINT_TO_POINTER(SndRates[i][0]));
-	}
-}
-
-
 /**
  * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
  * @param container Container for this menu.

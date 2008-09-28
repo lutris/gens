@@ -48,6 +48,7 @@ extern HMENU CPUMenu;
 extern HMENU CPUMenu_Debug;
 extern HMENU CPUMenu_Country;
 extern HMENU SoundMenu;
+extern HMENU SoundMenu_Rate;
 extern HMENU OptionsMenu;
 extern HMENU HelpMenu;
 
