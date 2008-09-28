@@ -688,7 +688,7 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
- * CPU, Rate, #
+ * Sound, Rate, #
  */
 void on_SoundMenu_Rate_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
