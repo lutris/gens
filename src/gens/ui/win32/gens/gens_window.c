@@ -68,6 +68,7 @@ HMENU CPUMenu_Country;
 HMENU SoundMenu;
 HMENU SoundMenu_Rate;
 HMENU OptionsMenu;
+HMENU OptionsMenu_SegaCDSRAMSize;
 HMENU HelpMenu;
 
 
@@ -81,6 +82,7 @@ static void create_gens_window_CPUMenu_Country(HMENU parent, int position);
 static void create_gens_window_SoundMenu(HMENU parent, int position);
 static void create_gens_window_SoundMenu_Rate(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
+static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
 #if 0
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
@@ -497,12 +499,51 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 #ifdef GENS_CDROM
 	InsertMenu(OptionsMenu, 5, flags, ID_OPTIONS_CURRENT_CD_DRIVE, "Current &CD Drive...");
 #endif /* GENS_CDROM */
-	InsertMenu(OptionsMenu, 6, flags, ID_OPTIONS_SEGACD_SRAM_SIZE, "SegaCD S&RAM Size");
+	create_gens_window_OptionsMenu_SegaCDSRAMSize(OptionsMenu, 6);
 	
 	InsertMenu(OptionsMenu, 7, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(OptionsMenu, 8, flags, ID_OPTIONS_LOADCONFIG, "&Load Config...");
 	InsertMenu(OptionsMenu, 9, flags, ID_OPTIONS_SAVECONFIGAS, "&Save Config As...");
+}
+
+
+/**
+ * create_gens_window_OptionsMenu_SegaCDSRAMSize(): Create the Options, Sega CD SRAM Size submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int position)
+{
+	int i;
+	char SRAMName[16];
+	
+	// Options, SegaCD SRAM Size
+	DeleteMenu(parent, position, MF_BYPOSITION);
+	OptionsMenu_SegaCDSRAMSize = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu_SegaCDSRAMSize, "SegaCD S&RAM Size");
+	
+	MENUITEMINFO miimMenuItem;
+	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
+	miimMenuItem.cbSize = sizeof(miimMenuItem);
+	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	
+	// Create the rate entries.
+	for (i = -1; i <= 3; i++)
+	{
+		if (i == -1)
+			strcpy(SRAMName, "None");
+		else
+			sprintf(SRAMName, "%d KB", 8 << i);
+		
+		miimMenuItem.wID = ID_OPTIONS_SEGACDSRAMSIZE + (i + 1);
+		miimMenuItem.fState = (i == -1 ? MFS_CHECKED : MFS_UNCHECKED);
+		miimMenuItem.dwTypeData = SRAMName;
+		miimMenuItem.cch = strlen(SRAMName);
+		
+		InsertMenuItem(OptionsMenu_SegaCDSRAMSize, i + 1, TRUE, &miimMenuItem);
+	}
 }
 
 
@@ -522,45 +563,3 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	
 	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
 }
-
-
-#if 0
-/**
- * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
- * @param container Container for this menu.
- */
-static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)
-{
-	GtkWidget *SubMenu;
-	GtkWidget *SRAMItem;
-	GSList *SRAMGroup = NULL;
-	
-	int i;
-	char SRAMName[16];
-	char ObjName[64];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "OptionsMenu_SegaCDSRAMSize_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the rate entries.
-	for (i = -1; i <= 3; i++)
-	{
-		if (i == -1)
-		{
-			strcpy(SRAMName, "None");
-			strcpy(ObjName, "OptionsMenu_SegaCDSRAMSize_SubMenu_None");
-		}
-		else
-		{
-			sprintf(SRAMName, "%d KB", 8 << i);	
-			sprintf(ObjName, "OptionsMenu_SegaCDSRAMSize_SubMenu_%d", i);
-		}
-		NewMenuItem_Radio(SRAMItem, SRAMName, ObjName, SubMenu, (i == -1 ? TRUE : FALSE), SRAMGroup);
-		g_signal_connect((gpointer)SRAMItem, "activate",
-				 G_CALLBACK(on_OptionsMenu_SegaCDSRAMSize_SubMenu_activate),
-				 GINT_TO_POINTER(i));
-	}
-}
-#endif
