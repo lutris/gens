@@ -92,9 +92,8 @@ void Sync_Gens_Window_FileMenu(void)
 	int romsFound = 0;
 	
 	// ROM History submenu
-	DestroyMenu(FileMenu_ROMHistory);
+	DeleteMenu(FileMenu, 3, MF_BYPOSITION);
 	FileMenu_ROMHistory = CreatePopupMenu();
-	RemoveMenu(FileMenu, 3, MF_BYPOSITION);
 	InsertMenu(FileMenu, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)FileMenu_ROMHistory, "ROM &History");
 	
 	for (i = 0; i < 9; i++)

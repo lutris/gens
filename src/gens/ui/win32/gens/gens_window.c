@@ -156,9 +156,8 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// File
-	DestroyMenu(FileMenu);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	FileMenu = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
 	
 	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
@@ -196,9 +195,8 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 {
 	// File, Change State
-	DestroyMenu(FileMenu_ChangeState);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	FileMenu_ChangeState = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu_ChangeState, "Change State");
 	
 	MENUITEMINFO miimStateItem;
@@ -234,9 +232,8 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Graphics
-	DestroyMenu(GraphicsMenu);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	GraphicsMenu = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
 	
 	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
@@ -270,9 +267,8 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position)
 {
 	// Graphics, Frame Skip
-	DestroyMenu(GraphicsMenu_FrameSkip);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	GraphicsMenu_FrameSkip = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu_FrameSkip, "Frame Skip");
 	
 	MENUITEMINFO miimStateItem;
@@ -316,9 +312,8 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// CPU
-	DestroyMenu(CPUMenu);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	CPUMenu = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
 	
 #ifdef GENS_DEBUGGER
@@ -354,9 +349,8 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Sound
-	DestroyMenu(SoundMenu);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	SoundMenu = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu, "&Sound");
 	
 	InsertMenu(SoundMenu, 0, flags, ID_SOUND_ENABLE, "&Enable");
@@ -399,9 +393,8 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Options
-	DestroyMenu(OptionsMenu);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	OptionsMenu = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
 	
 	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
@@ -433,9 +426,8 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 	// Help
-	DestroyMenu(HelpMenu);
+	DeleteMenu(parent, position, MF_BYPOSITION);
 	HelpMenu = CreatePopupMenu();
-	RemoveMenu(parent, position, MF_BYPOSITION);
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
 	
 	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
