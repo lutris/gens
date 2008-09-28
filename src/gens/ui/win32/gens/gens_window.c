@@ -59,6 +59,7 @@ HMENU MainMenu;
 HMENU FileMenu;
 HMENU FileMenu_ChangeState;
 HMENU GraphicsMenu;
+HMENU GraphicsMenu_FrameSkip;
 HMENU CPUMenu;
 HMENU SoundMenu;
 HMENU OptionsMenu;
@@ -69,12 +70,12 @@ static void create_gens_window_menubar(void);
 static void create_gens_window_FileMenu(HMENU parent, int position);
 static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
+static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position);
 static void create_gens_window_CPUMenu(HMENU parent, int position);
 static void create_gens_window_SoundMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
 #if 0
-static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container);
 #ifdef GENS_DEBUGGER
 static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container);
 #endif /* GENS_DEBUGGER */
@@ -207,9 +208,6 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	miimStateItem.cbSize = sizeof(miimStateItem);
 	miimStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
 	miimStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
-	miimStateItem.hSubMenu = 0;
-	miimStateItem.hbmpChecked = 0;
-	miimStateItem.hbmpUnchecked = 0;
 	
 	// Create the save slot entries.
 	for (i = 0; i < 10; i++)
@@ -255,11 +253,55 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	
 	InsertMenu(GraphicsMenu, 8, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, 9, flags, ID_GRAPHICS_FRAMESKIP, "Frame Skip");
+	create_gens_window_GraphicsMenu_FrameSkip(GraphicsMenu, 9);
 	
 	InsertMenu(GraphicsMenu, 10, MF_SEPARATOR, NULL, NULL);
 	
 	InsertMenu(GraphicsMenu, 11, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot");
+}
+
+
+/**
+ * create_gens_window_GraphicsMenu_FrameSkip(): Create the Graphics, Frame Skip submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position)
+{
+	// Graphics, Frame Skip
+	DestroyMenu(GraphicsMenu_FrameSkip);
+	GraphicsMenu_FrameSkip = CreatePopupMenu();
+	RemoveMenu(parent, position, MF_BYPOSITION);
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu_FrameSkip, "Frame Skip");
+	
+	MENUITEMINFO miimStateItem;
+	char mnuTitle[8];
+	int i;
+	
+	memset(&miimStateItem, 0x00, sizeof(miimStateItem));
+	miimStateItem.cbSize = sizeof(miimStateItem);
+	miimStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+	miimStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	
+	// Create the frame skip entries.
+	for (i = -1; i <= 8; i++)
+	{
+		if (i >= 0)
+		{
+			sprintf(mnuTitle, "%d", i);
+			miimStateItem.cch = 1;
+		}
+		else
+		{
+			strcpy(mnuTitle, "Auto");
+			miimStateItem.cch = 4;
+		}
+		
+		miimStateItem.wID = ID_FILE_CHANGESTATE + (i + 1);
+		miimStateItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
+		miimStateItem.dwTypeData = &mnuTitle;
+		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimStateItem);
+	}
 }
 
 
@@ -400,41 +442,6 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 
 
 #if 0
-/**
- * create_gens_window_GraphicsMenu_FrameSkip_SubMenu(): Create the Graphics, Frame Skip submenu.
- * @param container Container for this menu.
- */
-static void create_gens_window_GraphicsMenu_FrameSkip_SubMenu(GtkWidget *container)
-{
-	GtkWidget *SubMenu;
-	GtkWidget *FSItem;
-	GSList *FSGroup = NULL;
-	
-	int i;
-	char FSName[8];
-	char ObjName[64];
-	
-	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicsMenu_FrameSkip_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
-	
-	// Create the frame skip entries.
-	for (i = -1; i <= 8; i++)
-	{
-		if (i >= 0)
-			sprintf(FSName, "%d", i);
-		else
-			strcpy(FSName, "Auto");
-		sprintf(ObjName, "GraphicsMenu_FrameSkip_SubMenu_%s", FSName);
-		NewMenuItem_Radio(FSItem, FSName, ObjName, SubMenu, (i == -1 ? TRUE : FALSE), FSGroup);
-		g_signal_connect((gpointer)FSItem, "activate",
-				 G_CALLBACK(on_GraphicsMenu_FrameSkip_SubMenu_FSItem_activate),
-				 GINT_TO_POINTER(i));
-	}
-}
-
-
 #ifdef GENS_DEBUGGER
 /**
  * create_gens_window_CPUMenu_Debug_SubMenu(): Create the CPU, Debug submenu.
