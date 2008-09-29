@@ -248,7 +248,8 @@ gens_SOURCES += \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
-		ui/win32/about/about_window.c
+		ui/win32/about/about_window.c \
+		ui/win32/resource.rc
 endif
 
 noinst_HEADERS = \
@@ -466,3 +467,9 @@ CLEANFILES = \
 		${ASMFILES} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
+
+# Win32 resources
+.rc.o:
+	$(host_alias)-windres $< -o $@
+%.o: %.rc
+	$(host_alias)-windres $< -o $@
