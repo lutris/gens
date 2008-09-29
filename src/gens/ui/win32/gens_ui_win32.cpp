@@ -109,7 +109,7 @@ void GensUI::init(int argc, char *argv[])
 	GetWindowRect(Gens_hWnd, &rWindowArea);
 	
 	Win32_dw = (rWindowArea.right - rWindowArea.left) - rClientArea.right;
-	Win32_dh = (rWindowArea.bottom - rWindowArea.top) - rClientArea.bottom;
+	Win32_dh = ((rWindowArea.bottom - rWindowArea.top) - rClientArea.bottom) / 2;
 	
 	// TODO: Gens Priority
 #if 0

@@ -95,7 +95,7 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320 + Win32_dw, 288 + Win32_dh, NULL, NULL, ghInstance, NULL);
+				      320 + Win32_dw, 288 + 4 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 #if 0
 	// Gens logo
