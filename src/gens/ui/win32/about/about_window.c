@@ -46,7 +46,9 @@ static const char* gensVersionInfo =
 		"Sega CD / Mega CD,\n"
 		"Sega 32X emulator";
 
+// Gens Win32 resources
 #include "ui/win32/resource.h"
+
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
 #define ID_TIMER_ICE 0x1234
@@ -82,7 +84,7 @@ HWND create_about_window(void)
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
 	WndClass.hInstance = ghInstance;
-	//WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+	WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
 	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 	WndClass.lpszMenuName = NULL;

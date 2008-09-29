@@ -50,6 +50,9 @@ HWND Gens_hWnd = NULL;
 #endif /* GENS_DEBUGGER */
 
 
+// Gens Win32 resources
+#include "ui/win32/resource.h"
+
 // Menu identifier definitions
 #include "gens_window_menu.h"
 
@@ -103,7 +106,7 @@ HWND initGens_hWnd(void)
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
 	WndClass.hInstance = ghInstance;
-	//WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+	WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
 	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	WndClass.hbrBackground = NULL;
 	WndClass.lpszMenuName = NULL;
