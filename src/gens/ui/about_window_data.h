@@ -1,6 +1,14 @@
 #ifndef GENS_GTK_ABOUT_DATA_H
 #define GENS_GTK_ABOUT_DATA_H
 
+#include "emulator/gens.hpp"
+
+static const char* aboutTitle = "Gens/GS\nVersion " GENS_VERSION;
+static const char* aboutDesc =
+		"Sega Genesis / Mega Drive,\n"
+		"Sega CD / Mega CD,\n"
+		"Sega 32X emulator";
+
 static const unsigned char about_data[] =
 {
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',

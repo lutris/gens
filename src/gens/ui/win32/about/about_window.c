@@ -41,13 +41,6 @@ HWND lblGensDesc = NULL;
 // Gens logo
 HBITMAP bmpGensLogo = NULL;
 
-// Version information
-static const char* gensTitle = "Gens/GS [Win32]\nVersion " GENS_VERSION;
-static const char* gensDesc =
-		"Sega Genesis / Mega Drive,\n"
-		"Sega CD / Mega CD,\n"
-		"Sega 32X emulator";
-
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -292,11 +285,11 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	}
 	
 	// Title and version information.
-	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensTitle = CreateWindow("Static", aboutTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				    128, 8, 184, 24, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
 	
-	lblGensDesc = CreateWindow("Static", gensDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensDesc = CreateWindow("Static", aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				   128, 44, 184, 100, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensDesc, WM_SETFONT, (WPARAM)fntMain, 1);
 }

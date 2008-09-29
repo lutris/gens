@@ -131,13 +131,13 @@ GtkWidget* create_about_window(void)
 	}
 	
 	// Version information
-	label_gens_version = gtk_label_new(
-		"<b><i>Gens for Linux\n"
-		"Version " GENS_VERSION "</i></b>\n\n"
-		"Sega Genesis / Mega Drive,\n"
-		"Sega CD / Mega CD,\n"
-		"Sega 32X emulator"
-		);
+	char versionString[128];
+	strcpy(versionString, "<b><i>");
+	strcat(versionString, aboutTitle);
+	strcat(versionString, "</i></b>\n\n");
+	strcat(versionString, aboutDesc);
+	label_gens_version = gtk_label_new(versionString);
+	
 	gtk_widget_set_name(label_gens_version, "label_gens_version");
 	gtk_label_set_use_markup(GTK_LABEL(label_gens_version), TRUE);
 	gtk_label_set_justify(GTK_LABEL(label_gens_version), GTK_JUSTIFY_CENTER);
