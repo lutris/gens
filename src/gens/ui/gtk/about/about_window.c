@@ -47,7 +47,7 @@ GtkWidget *image_gens_logo = NULL;
 void updateIce(void);
 gboolean iceTime(gpointer data);
 
-int ax = 0, bx = 0, cx = 0;
+unsigned short ax = 0, bx = 0, cx = 0;
 
 /**
  * create_about_window(): Create the About Window.

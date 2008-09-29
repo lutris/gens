@@ -58,8 +58,8 @@ void iceTime(void);
 
 const unsigned short iceOffsetX = 20;
 const unsigned short iceOffsetY = 8;
-int iceLastTicks = 0;
-int ax = 0, bx = 0, cx = 0;
+unsigned int iceLastTicks = 0;
+unsigned short ax = 0, bx = 0, cx = 0;
 
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void About_Window_CreateChildWindows(HWND hWnd);
@@ -260,6 +260,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				DeleteObject(bmpGensLogo);
 				bmpGensLogo = NULL;
 			}
+			cx = 0;
 			lblGensTitle = NULL;
 			lblGensDesc = NULL;
 			grpGensCopyright = NULL;
@@ -321,38 +322,6 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	// Set focus to the OK button.
 	SetFocus(btnOK);
 }
-
-
-#if 0
-/**
- * Window is closed.
- */
-gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	cx = 0;
-	gtk_widget_destroy(about_window);
-	about_window = NULL;
-	return FALSE;
-}
-
-
-/**
- * OK
- */
-void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	cx = 0;
-	gtk_widget_destroy(about_window);
-	about_window = NULL;
-}
-#endif
 
 
 void updateIce(void)
@@ -419,6 +388,9 @@ void updateIce(void)
 void iceTime(void)
 {
 	if (iceLastTicks + 100 > GetTickCount())
+		return;
+	
+	if (!cx)
 		return;
 	
 	ax ^= 1;
