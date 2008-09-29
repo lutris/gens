@@ -90,7 +90,7 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320, 320, NULL, NULL, ghInstance, NULL);
+				      320 + Win32_dw, 320 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 #if 0
 	// Gens logo
@@ -222,7 +222,6 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				iceTime();
 			break;
 		
-		
 		case WM_CTLCOLORSTATIC:
 			if (hWnd != about_window)
 				break;
@@ -263,7 +262,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 static void About_Window_CreateChildWindows(HWND hWnd)
 {
-	centerOnGensWindow(hWnd);
+	Win32_centerOnGensWindow(hWnd);
 	
 	if (ice != 3)
 	{

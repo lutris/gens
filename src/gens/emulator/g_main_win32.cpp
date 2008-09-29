@@ -66,10 +66,10 @@ void Create_Save_Directory(const char *dir)
 
 
 /**
- * centerOnGensWindow(): Center the specified window on the Gens window.
+ * Win32_centerOnGensWindow(): Center the specified window on the Gens window.
  * @param hWnd Window handle.
  */
-void centerOnGensWindow(HWND hWnd)
+void Win32_centerOnGensWindow(HWND hWnd)
 {
 	// TODO: Move this to GensUI.
 	

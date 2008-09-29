@@ -16,6 +16,11 @@ extern "C" {
 
 extern HINSTANCE ghInstance;
 
+
+// Difference between client window size and actual window size.
+extern int Win32_dw;
+extern int Win32_dh;
+
 // Fonts
 extern HFONT fntMain;
 extern HFONT fntTitle;
@@ -23,8 +28,9 @@ extern HFONT fntTitle;
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
 
-// TODO: Move this to GensUI.
-void centerOnGensWindow(HWND hWnd);
+// TODO: Move this stuff to GensUI.
+void Win32_centerOnGensWindow(HWND hWnd);
+void Win32_clientResize(HWND hWnd, int width, int height);
 
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow);
 

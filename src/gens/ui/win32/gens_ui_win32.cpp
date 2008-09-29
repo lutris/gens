@@ -33,6 +33,10 @@
 #include "ui/gens_ui.hpp"
 
 
+int Win32_dw;
+int Win32_dh;
+
+
 // Filename filters.
 static const char* UI_Win32_FileFilter_AllFiles =
 	"All Files\0*.*\0\0";
@@ -96,6 +100,16 @@ void GensUI::init(int argc, char *argv[])
 	
 	// Set the window title to Idle.
 	setWindowTitle_Idle();
+	
+	// Calculate the difference between the client window size and the actual window size.
+	RECT rClientArea, rWindowArea;
+	int dw, dh;
+	
+	GetClientRect(Gens_hWnd, &rClientArea);
+	GetWindowRect(Gens_hWnd, &rWindowArea);
+	
+	Win32_dw = (rWindowArea.right - rWindowArea.left) - rClientArea.right;
+	Win32_dh = (rWindowArea.bottom - rWindowArea.top) - rClientArea.bottom;
 	
 	// TODO: Gens Priority
 #if 0
