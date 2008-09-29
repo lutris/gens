@@ -16,7 +16,7 @@ static const char* aboutCopyright =
 		"http://gens.consolemul.com\n\n"
 		"For news on Gens/GS, visit Sonic Retro:\n"
 		"http://www.sonicretro.org";
-static const char* aboutCopyright_CP1252 =
+static const char* aboutCopyright_cp1252 =
 		"(c) 1999-2002 by St\xE9phane Dallongeville\n"
 		"(c) 2003-2004 by St\xE9phane Akhoun\n\n"
 		"Gens/GS (c) 2008 by David Korth\n\n"

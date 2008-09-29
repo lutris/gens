@@ -34,9 +34,11 @@
 WNDCLASS WndClass;
 HWND about_window = NULL;
 
-// Labels
+// Labels and boxes
 HWND lblGensTitle = NULL;
 HWND lblGensDesc = NULL;
+HWND grpGensCopyright = NULL;
+HWND lblGensCopyright = NULL;
 
 // Gens logo
 HBITMAP bmpGensLogo = NULL;
@@ -252,6 +254,8 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			}
 			lblGensTitle = NULL;
 			lblGensDesc = NULL;
+			grpGensCopyright = NULL;
+			lblGensCopyright = NULL;
 			about_window = NULL;
 			break;
 	}
@@ -291,6 +295,15 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	lblGensDesc = CreateWindow("Static", aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				   128, 44, 184, 100, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensDesc, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// Box for the copyright message.
+	grpGensCopyright = CreateWindow("Button", "", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					8, 88, 304, 160, hWnd, NULL, ghInstance, NULL);
+	
+	// Copyright message.
+	lblGensCopyright = CreateWindow("Static", aboutCopyright_cp1252, WS_CHILD | WS_VISIBLE | SS_LEFT,
+					8, 16, 288, 136, grpGensCopyright, NULL, ghInstance, NULL);
+	SendMessage(lblGensCopyright, WM_SETFONT, (WPARAM)fntMain, 1);
 }
 
 
