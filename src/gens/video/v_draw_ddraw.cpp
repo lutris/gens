@@ -371,6 +371,10 @@ void VDraw_DDraw::stretchAdjustInternal(void)
 		// Stretch is disabled.
 		m_VStretch = 0;
 		m_HStretch = 0;
+		
+		// Clear the screen.
+		clearScreen();
+		
 		return;
 	}
 	
