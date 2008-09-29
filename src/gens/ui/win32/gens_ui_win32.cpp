@@ -103,7 +103,6 @@ void GensUI::init(int argc, char *argv[])
 	
 	// Calculate the difference between the client window size and the actual window size.
 	RECT rClientArea, rWindowArea;
-	int dw, dh;
 	
 	GetClientRect(Gens_hWnd, &rClientArea);
 	GetWindowRect(Gens_hWnd, &rWindowArea);

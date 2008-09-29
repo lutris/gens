@@ -40,6 +40,9 @@ HWND lblGensDesc = NULL;
 HWND grpGensCopyright = NULL;
 HWND lblGensCopyright = NULL;
 
+// OK button
+HWND btnOK = NULL;
+
 // Gens logo
 HBITMAP bmpGensLogo = NULL;
 
@@ -92,7 +95,7 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320 + Win32_dw, 320 + Win32_dh, NULL, NULL, ghInstance, NULL);
+				      320 + Win32_dw, 288 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 #if 0
 	// Gens logo
@@ -238,6 +241,11 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			return TRUE;
 			break;
 		
+		case WM_COMMAND:
+			if (LOWORD(wParam) == 0x8472)
+				DestroyWindow(about_window);
+			break;
+		
 		case WM_DESTROY:
 			if (hWnd != about_window)
 				break;
@@ -275,8 +283,8 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   0, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
 		bmpGensLogo = LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
-					        IMAGE_BITMAP, 0, 0,
-						LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
+					IMAGE_BITMAP, 0, 0,
+					LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpGensLogo);
 	}
 	else
@@ -304,6 +312,14 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	lblGensCopyright = CreateWindow("Static", aboutCopyright_cp1252, WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 288, 136, grpGensCopyright, NULL, ghInstance, NULL);
 	SendMessage(lblGensCopyright, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// OK button
+	btnOK = CreateWindow("Button", "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 312 - 75, 256, 75, 23,
+			     hWnd, (HMENU)0x8472, ghInstance, NULL);
+	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// Set focus to the OK button.
+	SetFocus(btnOK);
 }
 
 
