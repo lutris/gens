@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef WIN32_GENS_WINDOW_MENU_H
-#define WIN32_GENS_WINDOW_MENU_H
+#ifndef GENS_WIN32_GENS_WINDOW_MENU_H
+#define GENS_WIN32_GENS_WINDOW_MENU_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -173,4 +173,4 @@ extern "C" {
 }
 #endif
 
-#endif /* WIN32_GENS_WINDOW_MENU_H */
+#endif /* GENS_WIN32_GENS_WINDOW_MENU_H */
