@@ -38,7 +38,10 @@ HWND about_window = NULL;
 HWND lblGensTitle = NULL;
 HWND lblGensVersion = NULL;
 
-	// Version information
+// Gens logo
+HBITMAP bmpGensLogo = NULL;
+
+// Version information
 static const char* gensTitle = "Gens/GS [Win32]";
 static const char* gensVersionInfo =
 		"Version " GENS_VERSION "\n\n"
@@ -56,7 +59,7 @@ UINT_PTR tmrIce = NULL;
 void updateIce(void);
 void iceTime(void);
 
-const unsigned short iceOffsetX = 16;
+const unsigned short iceOffsetX = 20;
 const unsigned short iceOffsetY = 8;
 int iceLastTicks = 0;
 int ax = 0, bx = 0, cx = 0;
@@ -95,7 +98,7 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      280, 320, NULL, NULL, ghInstance, NULL);
+				      288, 320, NULL, NULL, ghInstance, NULL);
 	
 #if 0
 	// Gens logo
@@ -218,13 +221,15 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			return 0;
 		
 		case WM_PAINT:
-			updateIce();
+			if (ice == 3)
+				updateIce();
 			break;
 		
 		case WM_TIMER:
-			if (wParam == ID_TIMER_ICE)
+			if (wParam == ID_TIMER_ICE && ice == 3)
 				iceTime();
 			break;
+		
 		
 		case WM_CTLCOLORSTATIC:
 			if (hWnd != about_window)
@@ -239,7 +244,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			}
 			return TRUE;
 			break;
-			
+		
 		case WM_DESTROY:
 			if (hWnd != about_window)
 				break;
@@ -248,6 +253,11 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			{
 				KillTimer(about_window, tmrIce);
 				tmrIce = 0;
+			}
+			if (bmpGensLogo)
+			{
+				DeleteObject(bmpGensLogo);
+				bmpGensLogo = NULL;
 			}
 			lblGensTitle = NULL;
 			lblGensVersion = NULL;
@@ -261,16 +271,32 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 static void About_Window_CreateChildWindows(HWND hWnd)
 {
+	// Center the About window on the Gens window.
+	RECT r, r2;
+	int dx1, dy1, dx2, dy2;
+	
+	GetWindowRect(Gens_hWnd, &r);
+	dx1 = (r.right - r.left) / 2;
+	dy1 = (r.bottom - r.top) / 2;
+	
+	GetWindowRect(hWnd, &r2);
+	dx2 = (r2.right - r2.left) / 2;
+	dy2 = (r2.bottom - r2.top) / 2;
+	
+	SetWindowPos(hWnd, NULL,
+		     max(0, r.left + (dx1 - dx2)),
+		     max(0, r.top + (dy1 - dy2)), 0, 0,
+		     SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
+	
 	if (ice != 3)
 	{
 		// Gens logo
 		HWND imgGensLogo;
 		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   -8, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		HBITMAP bmpGensLogo = LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+		bmpGensLogo = LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 					        IMAGE_BITMAP, 0, 0,
-						LR_DEFAULTSIZE | LR_SHARED |
-							LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
+						LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpGensLogo);
 	}
 	else
@@ -283,11 +309,11 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	
 	// Title and version information.
 	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    112, 8, 160, 16, hWnd, NULL, ghInstance, NULL);
+				    120, 8, 160, 16, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
 	
 	lblGensVersion = CreateWindow("Static", gensVersionInfo, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				      112, 24, 160, 100, hWnd, NULL, ghInstance, NULL);
+				      120, 24, 160, 100, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensVersion, WM_SETFONT, (WPARAM)fntMain, 1);
 }
 
