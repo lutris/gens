@@ -82,6 +82,7 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Create the fonts used by the rest of the program.
+	// TODO: Get the theme font instead of the default (MS Sans Serif).
 	HFONT fntDefaultGUIFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	fntMain = fntDefaultGUIFont;
 	
