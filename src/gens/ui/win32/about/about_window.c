@@ -271,22 +271,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 static void About_Window_CreateChildWindows(HWND hWnd)
 {
-	// Center the About window on the Gens window.
-	RECT r, r2;
-	int dx1, dy1, dx2, dy2;
-	
-	GetWindowRect(Gens_hWnd, &r);
-	dx1 = (r.right - r.left) / 2;
-	dy1 = (r.bottom - r.top) / 2;
-	
-	GetWindowRect(hWnd, &r2);
-	dx2 = (r2.right - r2.left) / 2;
-	dy2 = (r2.bottom - r2.top) / 2;
-	
-	SetWindowPos(hWnd, NULL,
-		     max(0, r.left + (dx1 - dx2)),
-		     max(0, r.top + (dy1 - dy2)), 0, 0,
-		     SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
+	centerOnGensWindow(hWnd);
 	
 	if (ice != 3)
 	{

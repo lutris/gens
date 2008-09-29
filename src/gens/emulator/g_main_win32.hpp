@@ -23,6 +23,9 @@ extern HFONT fntTitle;
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
 
+// TODO: Move this to GensUI.
+void centerOnGensWindow(HWND hWnd);
+
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow);
 
 #ifdef __cplusplus

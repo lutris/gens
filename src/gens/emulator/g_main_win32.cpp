@@ -39,6 +39,11 @@ HFONT fntMain = NULL;
 HFONT fntTitle = NULL;
 
 
+#ifndef max
+#define max(a,b)   (((a) > (b)) ? (a) : (b))
+#endif /* max */
+
+
 /**
  * Get_Save_Path(): Get the default save path.
  * @param *buf Buffer to store the default save path in.
@@ -57,6 +62,32 @@ void Get_Save_Path(char *buf, size_t n)
 void Create_Save_Directory(const char *dir)
 {
 	// Does nothing on Win32.
+}
+
+
+/**
+ * centerOnGensWindow(): Center the specified window on the Gens window.
+ * @param hWnd Window handle.
+ */
+void centerOnGensWindow(HWND hWnd)
+{
+	// TODO: Move this to GensUI.
+	
+	RECT r, r2;
+	int dx1, dy1, dx2, dy2;
+	
+	GetWindowRect(Gens_hWnd, &r);
+	dx1 = (r.right - r.left) / 2;
+	dy1 = (r.bottom - r.top) / 2;
+	
+	GetWindowRect(hWnd, &r2);
+	dx2 = (r2.right - r2.left) / 2;
+	dy2 = (r2.bottom - r2.top) / 2;
+	
+	SetWindowPos(hWnd, NULL,
+		     max(0, r.left + (dx1 - dx2)),
+		     max(0, r.top + (dy1 - dy2)), 0, 0,
+		     SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
 }
 
 
