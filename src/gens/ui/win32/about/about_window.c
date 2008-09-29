@@ -34,6 +34,19 @@
 WNDCLASS WndClass;
 HWND about_window = NULL;
 
+// Labels
+HWND lblGensTitle = NULL;
+HWND lblGensVersion = NULL;
+
+	// Version information
+static const char* gensTitle = "Gens/GS [Win32]";
+static const char* gensVersionInfo =
+		"Version " GENS_VERSION "\n\n"
+		"Sega Genesis / Mega Drive,\n"
+		"Sega CD / Mega CD,\n"
+		"Sega 32X emulator";
+
+#include "ui/win32/resource.h"
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
 #define ID_TIMER_ICE 0x1234
@@ -41,7 +54,8 @@ UINT_PTR tmrIce = NULL;
 void updateIce(void);
 void iceTime(void);
 
-const int iceOffset = 8;
+const unsigned short iceOffsetX = 16;
+const unsigned short iceOffsetY = 8;
 int iceLastTicks = 0;
 int ax = 0, bx = 0, cx = 0;
 
@@ -210,16 +224,32 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				iceTime();
 			break;
 		
-		case WM_DESTROY:
-			if (about_window == hWnd)
+		case WM_CTLCOLORSTATIC:
+			if (hWnd != about_window)
+				break;
+			
+			// Set the title and version labels to transparent.
+			if ((HWND)lParam == lblGensVersion ||
+			    (HWND)lParam == lblGensTitle)
 			{
-				if (tmrIce)
-				{
-					KillTimer(about_window, tmrIce);
-					tmrIce = 0;
-				}
-				about_window = NULL;
+				SetBkMode((HDC)wParam, TRANSPARENT);
+				return (LRESULT)GetStockObject(NULL_BRUSH);
 			}
+			return TRUE;
+			break;
+			
+		case WM_DESTROY:
+			if (hWnd != about_window)
+				break;
+			
+			if (tmrIce)
+			{
+				KillTimer(about_window, tmrIce);
+				tmrIce = 0;
+			}
+			lblGensTitle = NULL;
+			lblGensVersion = NULL;
+			about_window = NULL;
 			break;
 	}
 	
@@ -229,31 +259,34 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 static void About_Window_CreateChildWindows(HWND hWnd)
 {
-	// Version information
-	static const char* gensTitle = "Gens/GS [Win32]";
-	static const char* gensVersionInfo =
-			"Version " GENS_VERSION "\n\n"
-			"Sega Genesis / Mega Drive,\n"
-			"Sega CD / Mega CD,\n"
-			"Sega 32X emulator";
-	
-	HWND lblGensTitle, lblGensVersion;
-	
-	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    100, 8, 172, 16, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
-	
-	lblGensVersion = CreateWindow("Static", gensVersionInfo, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				      100, 24, 172, 100, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblGensVersion, WM_SETFONT, (WPARAM)fntMain, 1);
-	
-	// "ice" timer
-	if (ice == 3 || TRUE)
+	if (ice != 3)
 	{
+		// Gens logo
+		HWND imgGensLogo;
+		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
+					   -8, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
+		HBITMAP bmpGensLogo = LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+					        IMAGE_BITMAP, 0, 0,
+						LR_DEFAULTSIZE | LR_SHARED |
+							LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
+		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpGensLogo);
+	}
+	else
+	{
+		// "ice" timer
 		ax = 0; bx = 0; cx = 1;
 		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, NULL);
 		updateIce();
 	}
+	
+	// Title and version information.
+	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				    112, 8, 160, 16, hWnd, NULL, ghInstance, NULL);
+	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
+	
+	lblGensVersion = CreateWindow("Static", gensVersionInfo, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				      112, 24, 160, 100, hWnd, NULL, ghInstance, NULL);
+	SendMessage(lblGensVersion, WM_SETFONT, (WPARAM)fntMain, 1);
 }
 
 
@@ -322,10 +355,10 @@ void updateIce(void)
 					  (src2[px1 + 0] & 0017) << 4);
 			}
 			
-			SetPixel(hDC, x + 0 + iceOffset, y + 0 + iceOffset, pxc);
-			SetPixel(hDC, x + 1 + iceOffset, y + 0 + iceOffset, pxc);
-			SetPixel(hDC, x + 0 + iceOffset, y + 1 + iceOffset, pxc);
-			SetPixel(hDC, x + 1 + iceOffset, y + 1 + iceOffset, pxc);
+			SetPixel(hDC, x + 0 + iceOffsetX, y + 0 + iceOffsetY, pxc);
+			SetPixel(hDC, x + 1 + iceOffsetX, y + 0 + iceOffsetY, pxc);
+			SetPixel(hDC, x + 0 + iceOffsetX, y + 1 + iceOffsetY, pxc);
+			SetPixel(hDC, x + 1 + iceOffsetX, y + 1 + iceOffsetY, pxc);
 			
 			if (!px2)
 			{
@@ -337,10 +370,10 @@ void updateIce(void)
 					  (src2[px2 + 1] & 0360),
 					  (src2[px2 + 0] & 0017) << 4);
 			}
-			SetPixel(hDC, x + 2 + iceOffset, y + 0 + iceOffset, pxc);
-			SetPixel(hDC, x + 3 + iceOffset, y + 0 + iceOffset, pxc);
-			SetPixel(hDC, x + 2 + iceOffset, y + 1 + iceOffset, pxc);
-			SetPixel(hDC, x + 3 + iceOffset, y + 1 + iceOffset, pxc);
+			SetPixel(hDC, x + 2 + iceOffsetX, y + 0 + iceOffsetY, pxc);
+			SetPixel(hDC, x + 3 + iceOffsetX, y + 0 + iceOffsetY, pxc);
+			SetPixel(hDC, x + 2 + iceOffsetX, y + 1 + iceOffsetY, pxc);
+			SetPixel(hDC, x + 3 + iceOffsetX, y + 1 + iceOffsetY, pxc);
 			
 			src++;
 		}
@@ -362,10 +395,10 @@ void iceTime(void)
 	
 	// Force a repaint.
 	RECT rIce;
-	rIce.left = iceOffset;
-	rIce.top = iceOffset;
-	rIce.right = iceOffset + 80 - 1;
-	rIce.bottom = iceOffset + 80 - 1;
+	rIce.left = iceOffsetX;
+	rIce.top = iceOffsetY;
+	rIce.right = iceOffsetX + 80 - 1;
+	rIce.bottom = iceOffsetY + 80 - 1;
 	InvalidateRect(about_window, &rIce, FALSE);
 	SendMessage(about_window, WM_PAINT, 0, 0);
 	
