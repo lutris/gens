@@ -487,7 +487,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	NewMenuItem_Icon(GraphicsMenu_Render, "_Render", "GraphicsMenu_Render", GraphicsMenu,
 			 GraphicsMenu_Render_Icon, "viewmag.png");
 	// Render submenu
-	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GraphicsMenu_Render);
+	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu_Render);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator3, "GraphicsMenu_Separator3", GraphicsMenu);
