@@ -8,6 +8,14 @@ static const char* aboutDesc =
 		"Sega Genesis / Mega Drive,\n"
 		"Sega CD / Mega CD,\n"
 		"Sega 32X emulator";
+static const char* aboutCopyright =
+		"(c) 1999-2002 by Stéphane Dallongeville\n"
+		"(c) 2003-2004 by Stéphane Akhoun\n\n"
+		"Gens/GS (c) 2008 by David Korth\n\n"
+		"Visit the Gens homepage:\n"
+		"http://gens.consolemul.com\n\n"
+		"For news on Gens/GS, visit Sonic Retro:\n"
+		"http://www.sonicretro.org";
 
 static const unsigned char about_data[] =
 {

@@ -155,15 +155,7 @@ GtkWidget* create_about_window(void)
 	GLADE_HOOKUP_OBJECT(about_window, frame_copyright, "frame_copyright");
 	
 	// Copyright label
-	label_copyright = gtk_label_new (
-		"(c) 1999-2002 by Stéphane Dallongeville\n"
-		"(c) 2003-2004 by Stéphane Akhoun\n\n"
-		"Gens/GS (c) 2008 by David Korth\n\n"
-		"Visit the Gens homepage:\n"
-		"http://gens.consolemul.com\n\n"
-		"For news on Gens/GS, visit Sonic Retro:\n"
-		"http://www.sonicretro.org"
-		);
+	label_copyright = gtk_label_new (aboutCopyright);
 	gtk_widget_set_name(label_copyright, "label_copyright");
 	gtk_widget_show(label_copyright);
 	gtk_container_add(GTK_CONTAINER(frame_copyright), label_copyright);
