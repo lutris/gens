@@ -36,15 +36,14 @@ HWND about_window = NULL;
 
 // Labels
 HWND lblGensTitle = NULL;
-HWND lblGensVersion = NULL;
+HWND lblGensDesc = NULL;
 
 // Gens logo
 HBITMAP bmpGensLogo = NULL;
 
 // Version information
-static const char* gensTitle = "Gens/GS [Win32]";
-static const char* gensVersionInfo =
-		"Version " GENS_VERSION "\n\n"
+static const char* gensTitle = "Gens/GS [Win32]\nVersion " GENS_VERSION;
+static const char* gensDesc =
 		"Sega Genesis / Mega Drive,\n"
 		"Sega CD / Mega CD,\n"
 		"Sega 32X emulator";
@@ -98,7 +97,7 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      288, 320, NULL, NULL, ghInstance, NULL);
+				      320, 320, NULL, NULL, ghInstance, NULL);
 	
 #if 0
 	// Gens logo
@@ -236,8 +235,8 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				break;
 			
 			// Set the title and version labels to transparent.
-			if ((HWND)lParam == lblGensVersion ||
-			    (HWND)lParam == lblGensTitle)
+			if ((HWND)lParam == lblGensTitle ||
+			    (HWND)lParam == lblGensDesc)
 			{
 				SetBkMode((HDC)wParam, TRANSPARENT);
 				return (LRESULT)GetStockObject(NULL_BRUSH);
@@ -260,7 +259,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				bmpGensLogo = NULL;
 			}
 			lblGensTitle = NULL;
-			lblGensVersion = NULL;
+			lblGensDesc = NULL;
 			about_window = NULL;
 			break;
 	}
@@ -278,7 +277,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 		// Gens logo
 		HWND imgGensLogo;
 		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
-					   -8, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
+					   0, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
 		bmpGensLogo = LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 					        IMAGE_BITMAP, 0, 0,
 						LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
@@ -294,12 +293,12 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	
 	// Title and version information.
 	lblGensTitle = CreateWindow("Static", gensTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    120, 8, 160, 16, hWnd, NULL, ghInstance, NULL);
+				    128, 8, 184, 24, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
 	
-	lblGensVersion = CreateWindow("Static", gensVersionInfo, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				      120, 24, 160, 100, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblGensVersion, WM_SETFONT, (WPARAM)fntMain, 1);
+	lblGensDesc = CreateWindow("Static", gensDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				   128, 44, 184, 100, hWnd, NULL, ghInstance, NULL);
+	SendMessage(lblGensDesc, WM_SETFONT, (WPARAM)fntMain, 1);
 }
 
 
