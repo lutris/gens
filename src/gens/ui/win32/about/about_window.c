@@ -54,7 +54,7 @@ HBITMAP bmpGensLogo = NULL;
 #define ID_TIMER_ICE 0x1234
 UINT_PTR tmrIce = NULL;
 void updateIce(void);
-void iceTime(void);
+void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 
 const unsigned short iceOffsetX = 20;
 const unsigned short iceOffsetY = 8;
@@ -222,11 +222,6 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				updateIce();
 			break;
 		
-		case WM_TIMER:
-			if (wParam == ID_TIMER_ICE && ice == 3)
-				iceTime();
-			break;
-		
 		case WM_CTLCOLORSTATIC:
 			if (hWnd != about_window)
 				break;
@@ -292,7 +287,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	{
 		// "ice" timer
 		ax = 0; bx = 0; cx = 1;
-		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, NULL);
+		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, iceTime);
 		updateIce();
 	}
 	
@@ -385,9 +380,12 @@ void updateIce(void)
 }
 
 
-void iceTime(void)
+void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-	if (iceLastTicks + 100 > GetTickCount())
+	if (!(hWnd == about_window && idEvent == ID_TIMER_ICE && ice == 3))
+		return;
+	
+	if (iceLastTicks + 100 > dwTime)
 		return;
 	
 	if (!cx)
@@ -407,5 +405,5 @@ void iceTime(void)
 	InvalidateRect(about_window, &rIce, FALSE);
 	SendMessage(about_window, WM_PAINT, 0, 0);
 	
-	iceLastTicks = GetTickCount();
+	iceLastTicks = dwTime;
 }
