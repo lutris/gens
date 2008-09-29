@@ -39,6 +39,11 @@ HFONT fntMain = NULL;
 HFONT fntTitle = NULL;
 
 
+// Windows
+#include "about/about_window.h"
+
+
+// Maximum value function
 #ifndef max
 #define max(a,b)   (((a) > (b)) ? (a) : (b))
 #endif /* max */
@@ -185,6 +190,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		{
 			if (!GetMessage(&msg, NULL, 0, 0))
 				close_gens();
+			if (about_window && IsDialogMessage(about_window, &msg))
+				continue;
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
