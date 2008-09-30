@@ -210,7 +210,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		}
 		else
 #endif /* GENS_DEBUGGER */
-			if (Genesis_Started || _32X_Started || SegaCD_Started)
+		if (Genesis_Started || _32X_Started || SegaCD_Started)
 		{
 			if ((Active) && (!Paused))
 			{

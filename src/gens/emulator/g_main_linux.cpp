@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 		}
 		else
 #endif /* GENS_DEBUGGER */
-			if (Genesis_Started || _32X_Started || SegaCD_Started)
+		if (Genesis_Started || _32X_Started || SegaCD_Started)
 		{
 			if ((Active) && (!Paused))
 			{
