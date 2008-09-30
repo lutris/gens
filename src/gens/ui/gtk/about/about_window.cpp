@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "about_window.h"
+#include "about_window.hpp"
 #include "gens/gens_window.h"
 
 #include <sys/types.h>

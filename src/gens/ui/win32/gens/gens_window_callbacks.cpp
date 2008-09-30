@@ -35,7 +35,7 @@
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
 #endif
-#include "about/about_window.h"
+#include "about/about_window.hpp"
 #if 0
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"

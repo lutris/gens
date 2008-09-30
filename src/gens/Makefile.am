@@ -141,7 +141,7 @@ gens_SOURCES = \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
-		ui/about_window_data.h \
+		ui/charset.cpp \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -217,7 +217,7 @@ gens_SOURCES += \
 		ui/gtk/country_code/country_code_window_misc.c \
 		ui/gtk/zip_select/zip_select_dialog.c \
 		ui/gtk/zip_select/zip_select_dialog_misc.cpp \
-		ui/gtk/about/about_window.c
+		ui/gtk/about/about_window.cpp
 
 if GENS_OPENGL
 gens_SOURCES += \
@@ -248,7 +248,7 @@ gens_SOURCES += \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
-		ui/win32/about/about_window.c \
+		ui/win32/about/about_window.cpp \
 		ui/win32/resource.rc
 endif
 
@@ -297,6 +297,8 @@ noinst_HEADERS = \
 		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
 		ui/gens_ui.hpp \
+		ui/charset.hpp \
+		ui/about_window_data.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
@@ -373,7 +375,7 @@ noinst_HEADERS += \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.h \
 		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
-		ui/gtk/about/about_window.h
+		ui/gtk/about/about_window.hpp
 
 if GENS_OPENGL
 noinst_HEADERS += \
@@ -405,7 +407,7 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
 		ui/win32/gens/gens_window_menu.h \
-		ui/win32/about/about_window.h
+		ui/win32/about/about_window.hpp
 endif
 
 gens_CFLAGS = \

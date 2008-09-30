@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_ABOUT_WINDOW_H
-#define GTK_ABOUT_WINDOW_H
+#ifndef GENS_GTK_ABOUT_WINDOW_HPP
+#define GENS_GTK_ABOUT_WINDOW_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,4 +39,4 @@ void on_button_about_OK_clicked(GtkButton *button, gpointer user_data);
 }
 #endif
 
-#endif
+#endif /* GENS_GTK_ABOUT_WINDOW_HPP */

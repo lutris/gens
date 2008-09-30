@@ -29,6 +29,7 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+#include "ui/charset.hpp"
 
 // Win32 instance
 HINSTANCE ghInstance = NULL;
@@ -40,7 +41,7 @@ HFONT fntTitle = NULL;
 
 
 // Windows
-#include "about/about_window.h"
+#include "about/about_window.hpp"
 
 
 // Maximum value function

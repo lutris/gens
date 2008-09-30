@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "about_window.h"
+#include "about_window.hpp"
 #include "gens/gens_window.h"
 
 #include <sys/types.h>
@@ -30,6 +30,9 @@
 #include <stdio.h>
 
 #include "emulator/g_main.hpp"
+
+// Character set conversion
+#include "ui/charset.hpp"
 
 WNDCLASS WndClass;
 HWND about_window = NULL;
@@ -184,16 +187,16 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 		HWND imgGensLogo;
 		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   0, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		bmpGensLogo = LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
-					IMAGE_BITMAP, 0, 0,
-					LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
+		bmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+						 IMAGE_BITMAP, 0, 0,
+						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
 		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpGensLogo);
 	}
 	else
 	{
 		// "ice" timer
 		ax = 0; bx = 0; cx = 1;
-		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, iceTime);
+		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, (TIMERPROC)iceTime);
 		updateIce();
 	}
 	
@@ -211,7 +214,8 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 					8, 88, 304, 160, hWnd, NULL, ghInstance, NULL);
 	
 	// Copyright message.
-	lblGensCopyright = CreateWindow("Static", aboutCopyright_cp1252, WS_CHILD | WS_VISIBLE | SS_LEFT,
+	string sCopyright = charset_utf8_to_cp1252(aboutCopyright);
+	lblGensCopyright = CreateWindow("Static", sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 288, 136, grpGensCopyright, NULL, ghInstance, NULL);
 	SendMessage(lblGensCopyright, WM_SETFONT, (WPARAM)fntMain, 1);
 	
