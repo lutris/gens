@@ -155,7 +155,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Initialize DirectDraw.
 	draw->Init_Video();
 #endif
-
+	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
 		if (Open_Rom(PathNames.Start_Rom) == -1)
@@ -166,7 +166,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Update the UI.
 	GensUI::update();
-
+	
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
 	if (!draw->setRender(rendMode))
 	{
