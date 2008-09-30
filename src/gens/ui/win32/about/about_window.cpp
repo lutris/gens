@@ -34,20 +34,20 @@
 // Character set conversion
 #include "ui/charset.hpp"
 
-WNDCLASS WndClass;
+static WNDCLASS WndClass;
 HWND about_window = NULL;
 
 // Labels and boxes
-HWND lblGensTitle = NULL;
-HWND lblGensDesc = NULL;
-HWND grpGensCopyright = NULL;
-HWND lblGensCopyright = NULL;
+static HWND lblGensTitle = NULL;
+static HWND lblGensDesc = NULL;
+static HWND grpGensCopyright = NULL;
+static HWND lblGensCopyright = NULL;
 
 // OK button
-HWND btnOK = NULL;
+static HWND btnOK = NULL;
 
 // Gens logo
-HBITMAP bmpGensLogo = NULL;
+static HBITMAP bmpGensLogo = NULL;
 
 // Gens Win32 resources
 #include "ui/win32/resource.h"
@@ -55,9 +55,9 @@ HBITMAP bmpGensLogo = NULL;
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
 #define ID_TIMER_ICE 0x1234
-UINT_PTR tmrIce = NULL;
-void updateIce(void);
-void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+static UINT_PTR tmrIce = NULL;
+static void updateIce(void);
+static void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 
 const unsigned short iceOffsetX = 20;
 const unsigned short iceOffsetY = 8;
@@ -229,7 +229,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 }
 
 
-void updateIce(void)
+static void updateIce(void)
 {
 	HDC hDC;
 	PAINTSTRUCT ps;
@@ -290,7 +290,7 @@ void updateIce(void)
 }
 
 
-void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+static void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
 	if (!(hWnd == about_window && idEvent == ID_TIMER_ICE && ice == 3))
 		return;

@@ -40,12 +40,12 @@
 
 GtkWidget *about_window = NULL;
 
-GtkAccelGroup *accel_group;
+static GtkAccelGroup *accel_group;
 
 #include "ui/about_window_data.h"
-GtkWidget *image_gens_logo = NULL;
-void updateIce(void);
-gboolean iceTime(gpointer data);
+static GtkWidget *image_gens_logo = NULL;
+static void updateIce(void);
+static gboolean iceTime(gpointer data);
 
 unsigned short ax = 0, bx = 0, cx = 0;
 
@@ -218,7 +218,7 @@ void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
 }
 
 
-void updateIce(void)
+static void updateIce(void)
 {
 	if (!image_gens_logo)
 		return;
@@ -268,7 +268,7 @@ void updateIce(void)
 }
 
 
-gboolean iceTime(gpointer data)
+static gboolean iceTime(gpointer data)
 {
 	GENS_UNUSED_PARAMETER(data);
 	
