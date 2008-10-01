@@ -52,6 +52,9 @@ static HBITMAP bmpGensLogo = NULL;
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
+// Win32 common controls
+#include "commctrl.h"
+
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
 #define ID_TIMER_ICE 0x1234
@@ -201,26 +204,26 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	}
 	
 	// Title and version information.
-	lblGensTitle = CreateWindow("Static", aboutTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensTitle = CreateWindow(WC_STATIC, aboutTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				    128, 8, 184, 24, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
 	
-	lblGensDesc = CreateWindow("Static", aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				   128, 44, 184, 100, hWnd, NULL, ghInstance, NULL);
 	SendMessage(lblGensDesc, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// Box for the copyright message.
-	grpGensCopyright = CreateWindow("Button", "", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+	grpGensCopyright = CreateWindow(WC_BUTTON, "", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					8, 88, 304, 160, hWnd, NULL, ghInstance, NULL);
 	
 	// Copyright message.
 	string sCopyright = charset_utf8_to_cp1252(aboutCopyright);
-	lblGensCopyright = CreateWindow("Static", sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
+	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 288, 136, grpGensCopyright, NULL, ghInstance, NULL);
 	SendMessage(lblGensCopyright, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// OK button
-	btnOK = CreateWindow("Button", "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 312 - 75, 256, 75, 23,
+	btnOK = CreateWindow(WC_STATIC, "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 312 - 75, 256, 75, 23,
 			     hWnd, (HMENU)0x8472, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
 	
