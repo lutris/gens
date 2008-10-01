@@ -53,7 +53,7 @@ static HBITMAP bmpGensLogo = NULL;
 #include "ui/win32/resource.h"
 
 // Win32 common controls
-#include "commctrl.h"
+#include <commctrl.h>
 
 #include "ui/about_window_data.h"
 //GtkWidget *image_gens_logo = NULL;
