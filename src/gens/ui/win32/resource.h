@@ -9,3 +9,9 @@
 // Bitmaps
 #define IDB_GENS_LOGO_SMALL	0x0101
 #define IDB_GENS_LOGO_BIG	0x0102
+
+// Buttons
+#define ID_BTN_OK		0x1001
+#define ID_BTN_CANCEL		0x1002
+#define ID_BTN_APPLY		0x1003
+#define ID_BTN_SAVE		0x1004
