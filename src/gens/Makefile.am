@@ -453,7 +453,7 @@ gens_LDADD += ../minizip/libminizip.a
 endif
 
 if GENS_UI_WIN32
-gens_LDADD += -lgdi32 -lcomdlg32 -ldxguid -lddraw -ldinput -ldsound
+gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -ldxguid -lddraw -ldinput -ldsound
 endif
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 

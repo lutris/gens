@@ -32,7 +32,10 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
+// Win32 common controls
+#include <commctrl.h>
 
+// Difference between window size and client-area size
 int Win32_dw;
 int Win32_dh;
 
@@ -80,6 +83,9 @@ void GensUI::init(int argc, char *argv[])
 {
 	GENS_UNUSED_PARAMETER(argc);
 	GENS_UNUSED_PARAMETER(argv);
+	
+	// Initialize the Common Controls library.
+	InitCommonControls();
 	
 	// Create the fonts used by the rest of the program.
 	// TODO: Get the theme font instead of the default (MS Sans Serif).
