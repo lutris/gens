@@ -101,12 +101,17 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	SendMessage(ca_lblContrastDesc, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	ca_trkContrast = CreateWindow(TRACKBAR_CLASS, "", trkStyle,
-				      64, 14, 192, 24, hWnd,
+				      8+56, 14, 192, 24, hWnd,
 				      (HMENU)ID_TRK_CA_CONTRAST, ghInstance, NULL);
 	SendMessage(ca_trkContrast, TBM_SETPAGESIZE, 0, 10);
 	SendMessage(ca_trkContrast, TBM_SETTICFREQ, 25, 0);
 	SendMessage(ca_trkContrast, TBM_SETRANGE, 0, MAKELONG(-100, 100));
 	SendMessage(ca_trkContrast, TBM_SETPOS, 0, 0);
+	
+	ca_lblContrastVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
+					 8+56+192, 16, 32, 16, hWnd, NULL, ghInstance, NULL);
+	SendMessage(ca_lblContrastVal, WM_SETFONT, (WPARAM)fntMain, 1);
+	
 #if 0
 	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
 	128, 44, 184, 100, hWnd, NULL, ghInstance, NULL);
@@ -119,10 +124,14 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	SendMessage(ca_lblBrightnessDesc, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	ca_trkBrightness = CreateWindow(TRACKBAR_CLASS, "", trkStyle,
-					64, 14+32, 192, 24, hWnd,
+					8+56, 14+32, 192, 24, hWnd,
 					(HMENU)ID_TRK_CA_BRIGHTNESS, ghInstance, NULL);
 	SendMessage(ca_trkBrightness, TBM_SETPAGESIZE, 0, 10);
 	SendMessage(ca_trkBrightness, TBM_SETTICFREQ, 25, 0);
 	SendMessage(ca_trkBrightness, TBM_SETRANGE, 0, MAKELONG(-100, 100));
 	SendMessage(ca_trkBrightness, TBM_SETPOS, 0, 0);
+	
+	ca_lblBrightnessVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
+					   8+56+192, 16, 32, 16, hWnd, NULL, ghInstance, NULL);
+	SendMessage(ca_lblBrightnessVal, WM_SETFONT, (WPARAM)fntMain, 1);
 }
