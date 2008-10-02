@@ -63,7 +63,6 @@ void Open_Color_Adjust(void)
 #endif
 	
 	// Show the Color Adjustment window.
-	printf("test\n");
 	ShowWindow(ca, 1);
 }
 

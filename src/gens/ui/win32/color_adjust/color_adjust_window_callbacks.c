@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include <stdio.h>
+
 #include "color_adjust_window.h"
 #include "color_adjust_window_callbacks.h"
 #include "color_adjust_window_misc.h"
@@ -30,9 +32,15 @@
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
+// Win32 common controls
+#include <commctrl.h>
+
 
 LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	char buf[16];
+	int scrlPos;
+	
 	switch(message)
 	{
 		case WM_CREATE:
@@ -43,27 +51,38 @@ LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			DestroyWindow(color_adjust_window);
 			return 0;
 		
-		case WM_CTLCOLORSTATIC:
-			if (hWnd != color_adjust_window)
-				break;
-			
-#if 0
-			// Set the title and version labels to transparent.
-			if ((HWND)lParam == lblGensTitle ||
-				(HWND)lParam == lblGensDesc)
-			{
-				SetBkMode((HDC)wParam, TRANSPARENT);
-				return (LRESULT)GetStockObject(NULL_BRUSH);
-			}
-			return TRUE;
-#endif
-			break;
-		
 		case WM_COMMAND:
 #if 0
 			if (LOWORD(wParam) == 0x8472)
 				DestroyWindow(about_window);
 #endif
+			break;
+		
+		case WM_HSCROLL:
+			// Trackbar scroll
+			switch (LOWORD(wParam))
+			{
+				case TB_THUMBPOSITION:
+				case TB_THUMBTRACK:
+					// Scroll position is in the high word of wParam.
+					scrlPos = (signed short)HIWORD(wParam);
+					break;
+				
+				default:
+					// Send TBM_GETPOS to the trackbar to get the position.
+					scrlPos = SendMessage((HWND)lParam, TBM_GETPOS, 0, 0);
+					break;
+			}
+			
+			// Convert the scroll position to a string.
+			sprintf(buf, "%d", scrlPos);
+			
+			// Set the value label.
+			if ((HWND)lParam == ca_trkContrast)
+				SetWindowText(ca_lblContrastVal, buf);
+			else if ((HWND)lParam == ca_trkBrightness)
+				SetWindowText(ca_lblBrightnessVal, buf);
+			
 			break;
 		
 		case WM_DESTROY:
