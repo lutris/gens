@@ -82,7 +82,7 @@ HWND create_color_adjust_window(void)
 	color_adjust_window = CreateWindowEx(NULL, "Gens_Color_Adjust", "Color Adjustment",
 					     (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     320 + Win32_dw, 288 + 4 + Win32_dh, NULL, NULL, ghInstance, NULL);
+					     304 + Win32_dw, 288 + 4 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 	UpdateWindow(color_adjust_window);
 	return color_adjust_window;
@@ -105,19 +105,13 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 				      (HMENU)ID_TRK_CA_CONTRAST, ghInstance, NULL);
 	SendMessage(ca_trkContrast, TBM_SETPAGESIZE, 0, 10);
 	SendMessage(ca_trkContrast, TBM_SETTICFREQ, 25, 0);
-	SendMessage(ca_trkContrast, TBM_SETRANGE, TRUE, MAKELONG(-101, 100));
+	SendMessage(ca_trkContrast, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
 	SendMessage(ca_trkContrast, TBM_SETPOS, TRUE, 0);
 	SetFocus(ca_trkContrast);
 	
 	ca_lblContrastVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
 					 8+56+192+8, 16, 32, 16, hWnd, NULL, ghInstance, NULL);
 	SendMessage(ca_lblContrastVal, WM_SETFONT, (WPARAM)fntMain, 1);
-	
-#if 0
-	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
-	128, 44, 184, 100, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblGensDesc, WM_SETFONT, (WPARAM)fntMain, 1);
-#endif
 	
 	// Brightness
 	ca_lblBrightnessDesc = CreateWindow(WC_STATIC, "Brightness", WS_CHILD | WS_VISIBLE | SS_LEFT,
@@ -129,7 +123,7 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 					(HMENU)ID_TRK_CA_BRIGHTNESS, ghInstance, NULL);
 	SendMessage(ca_trkBrightness, TBM_SETPAGESIZE, 0, 10);
 	SendMessage(ca_trkBrightness, TBM_SETTICFREQ, 25, 0);
-	SendMessage(ca_trkBrightness, TBM_SETRANGE, TRUE, MAKELONG(-101, 100));
+	SendMessage(ca_trkBrightness, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
 	SendMessage(ca_trkBrightness, TBM_SETPOS, TRUE, 0);
 	
 	ca_lblBrightnessVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
