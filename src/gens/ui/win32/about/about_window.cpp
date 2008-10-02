@@ -82,7 +82,7 @@ HWND create_about_window(void)
 		// About window is already created. Set focus.
 		// TODO: Figure out how to do this.
 		ShowWindow(about_window, 1);
-		return about_window;
+		return NULL;
 	}
 	
 	// Create the window class.

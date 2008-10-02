@@ -36,8 +36,8 @@
 #include "general_options/general_options_window_misc.hpp"
 #endif
 #include "about/about_window.hpp"
-#if 0
 #include "color_adjust/color_adjust_window_misc.h"
+#if 0
 #include "country_code/country_code_window_misc.h"
 
 #ifdef GENS_OPENGL
@@ -366,6 +366,10 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
+		case ID_GRAPHICS_COLORADJUST:
+			Open_Color_Adjust();
+			break;
+				
 		case ID_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
 			Set_Sprite_Limit(!Sprite_Over);
@@ -709,18 +713,6 @@ void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Game_Genie();
-}
-
-
-/**
- * Graphics, Color Adjust...
- */
-void on_GraphicsMenu_ColorAdjust_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_Color_Adjust();
 }
 
 

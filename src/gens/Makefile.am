@@ -248,6 +248,9 @@ gens_SOURCES += \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
+		ui/win32/color_adjust/color_adjust_window.c \
+		ui/win32/color_adjust/color_adjust_window_callbacks.c \
+		ui/win32/color_adjust/color_adjust_window_misc.c \
 		ui/win32/about/about_window.cpp \
 		ui/win32/resource.rc
 endif
@@ -407,6 +410,9 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
 		ui/win32/gens/gens_window_menu.h \
+		ui/win32/color_adjust/color_adjust_window.h \
+		ui/win32/color_adjust/color_adjust_window_callbacks.h \
+		ui/win32/color_adjust/color_adjust_window_misc.h \
 		ui/win32/about/about_window.hpp
 endif
 
