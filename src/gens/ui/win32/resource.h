@@ -15,3 +15,7 @@
 #define ID_BTN_CANCEL		0x1002
 #define ID_BTN_APPLY		0x1003
 #define ID_BTN_SAVE		0x1004
+
+// Trackbars
+#define ID_TRK_CA_CONTRAST	0x2001
+#define ID_TRK_CA_BRIGHTNESS	0x2002
