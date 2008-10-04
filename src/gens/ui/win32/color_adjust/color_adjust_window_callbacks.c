@@ -55,6 +55,7 @@ LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			// Button press
 			switch (LOWORD(wParam))
 			{
+				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
 					CA_Save();
@@ -65,6 +66,7 @@ LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 					CA_Save();
 					break;
 				
+				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
 					break;
