@@ -52,10 +52,23 @@ LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			return 0;
 		
 		case WM_COMMAND:
-#if 0
-			if (LOWORD(wParam) == 0x8472)
-				DestroyWindow(about_window);
-#endif
+			// Button press
+			switch (LOWORD(wParam))
+			{
+				case IDC_BTN_OK:
+				case IDC_BTN_SAVE:
+					CA_Save();
+					DestroyWindow(hWnd);
+					break;
+				
+				case IDC_BTN_APPLY:
+					CA_Save();
+					break;
+				
+				case IDC_BTN_CANCEL:
+					DestroyWindow(hWnd);
+					break;
+			}
 			break;
 		
 		case WM_HSCROLL:
@@ -95,59 +108,3 @@ LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
-
-#if 0
-/**
- * Window is closed.
- */
-gboolean on_color_adjust_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(color_adjust_window);
-	color_adjust_window = NULL;
-	return FALSE;
-}
-
-
-/**
- * Cancel
- */
-void on_button_ca_Cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(color_adjust_window);
-	color_adjust_window = NULL;
-}
-
-
-/**
- * Apply
- */
-void on_button_ca_Apply_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	CA_Save();
-}
-
-
-/**
- * Save
- */
-void on_button_ca_Save_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	CA_Save();
-	gtk_widget_destroy(color_adjust_window);
-	color_adjust_window = NULL;
-}
-#endif
