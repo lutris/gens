@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LIBRARIES = libz.a
-libminizip_a_SOURCES = \
+libz_a_SOURCES = \
 		adler32.c \
 		compress.c \
 		crc32.c \
