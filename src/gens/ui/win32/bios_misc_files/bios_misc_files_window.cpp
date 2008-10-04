@@ -160,7 +160,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			
 			// Create the textbox for the entry.
 			txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, BIOSMiscFiles[file].entry,
-						  WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | SS_LEFT,
+						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT,
 						  8+56+8, entryTop, frameWidth - (8+56+8+16+64), 20,
 						  grpBox, NULL, ghInstance, NULL);
 			

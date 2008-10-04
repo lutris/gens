@@ -41,8 +41,9 @@ HFONT fntTitle = NULL;
 
 
 // Windows
-#include "about/about_window.hpp"
+#include "bios_misc_files/bios_misc_files_window.hpp"
 #include "color_adjust/color_adjust_window.h"
+#include "about/about_window.hpp"
 
 
 // Maximum value function
@@ -194,8 +195,9 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 				close_gens();
 			
 			// Check for dialog messages.
-			if ((about_window && IsDialogMessage(about_window, &msg)) ||
-			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)))
+			if ((bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
+			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
+			    (about_window && IsDialogMessage(about_window, &msg)))
 			{
 				continue;
 			}
