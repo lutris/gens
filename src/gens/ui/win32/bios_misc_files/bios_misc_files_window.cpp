@@ -35,8 +35,15 @@
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
+// Win32 common controls
+#include <commctrl.h>
+
 static WNDCLASS WndClass;
 HWND bios_misc_files_window = NULL;
+
+
+// Frame width.
+static const int frameWidth = 360;
 
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
@@ -92,7 +99,7 @@ HWND create_bios_misc_files_window(void)
 	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
 						(WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						360 + Win32_dw, 480 + Win32_dh, NULL, NULL, ghInstance, NULL);
+						frameWidth + 16 + Win32_dw, 480 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 	UpdateWindow(bios_misc_files_window);
 	return bios_misc_files_window;
@@ -102,4 +109,34 @@ HWND create_bios_misc_files_window(void)
 void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 {
 	Win32_centerOnGensWindow(hWnd);
+	
+	// Create all frames. This will be fun!
+	HWND grpBox;
+	HWND lblTitle, txtEntry;
+	
+	// Positioning.
+	int grpBox_Top = 0, grpBox_Height = 0, grpBox_Entry = 0;
+	int file = 0;
+	
+	while (BIOSMiscFiles[file].title)
+	{
+		if (!BIOSMiscFiles[file].entry)
+		{
+			// No entry buffer. This is a new frame.
+			grpBox_Top += grpBox_Height + 8;
+			grpBox_Height = 16;
+			grpBox_Entry = 0;
+			
+			grpBox = CreateWindow(WC_BUTTON, BIOSMiscFiles[file].title,
+					      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					      8, grpBox_Top, frameWidth, grpBox_Height,
+					      hWnd, NULL, ghInstance, NULL);
+			
+			// Set the font for the groupbox title.
+			SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+		}
+		
+		// Next file.
+		file++;
+	}
 }
