@@ -318,11 +318,11 @@ gens_CXXFLAGS =
 # OS-specific includes
 
 if GENS_OS_LINUX
-include $(srcdir)/Makefile.linux.am.inc
+include $(srcdir)/Makefile.linux.inc.am
 endif # GENS_OS_LINUX
 
 if GENS_OS_WIN32
-include $(srcdir)/Makefile.win32.am.inc
+include $(srcdir)/Makefile.win32.inc.am
 endif # GENS_OS_WIN32
 
 # Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
