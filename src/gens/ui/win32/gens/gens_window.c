@@ -495,7 +495,7 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
 	InsertMenu(OptionsMenu, 1, flags, ID_OPTIONS_JOYPADS, "&Joypads...");
 	InsertMenu(OptionsMenu, 2, flags, ID_OPTIONS_DIRECTORIES, "&Directories...");
-	InsertMenu(OptionsMenu, 3, flags, ID_OPTIONS_BIOS_MISC_FILES, "&BIOS/Misc Files...");
+	InsertMenu(OptionsMenu, 3, flags, ID_OPTIONS_BIOSMISCFILES, "&BIOS/Misc Files...");
 	
 	InsertMenu(OptionsMenu, 4, MF_SEPARATOR, NULL, NULL);
 	

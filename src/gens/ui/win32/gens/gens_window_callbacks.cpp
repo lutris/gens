@@ -31,7 +31,9 @@
 #if 0
 #include "game_genie/game_genie_window_misc.h"
 #include "controller_config/controller_config_window_misc.hpp"
+#endif
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
+#if 0
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
 #endif
@@ -637,6 +639,10 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 {
 	switch (LOWORD(wParam))
 	{
+		case ID_OPTIONS_BIOSMISCFILES:
+			Open_BIOS_Misc_Files();
+			break;
+		
 		case ID_OPTIONS_LOADCONFIG:
 			printf("ENABLE: %d\n", audio->enabled());
 			Load_As_Config(Game);
@@ -761,18 +767,6 @@ void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_da
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Directory_Config();
-}
-
-
-/**
- * Options, BIOS/Misc Files...
- */
-void on_OptionsMenu_BIOSMiscFiles_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_BIOS_Misc_Files();
 }
 
 

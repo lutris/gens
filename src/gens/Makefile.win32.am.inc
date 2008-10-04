@@ -12,6 +12,9 @@ gens_SOURCES += \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
+		ui/win32/bios_misc_files/bios_misc_files_window.cpp \
+		ui/win32/bios_misc_files/bios_misc_files_window_callbacks.c \
+		ui/win32/bios_misc_files/bios_misc_files_window_misc.cpp \
 		ui/win32/color_adjust/color_adjust_window.c \
 		ui/win32/color_adjust/color_adjust_window_callbacks.c \
 		ui/win32/color_adjust/color_adjust_window_misc.c \
