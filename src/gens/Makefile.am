@@ -68,6 +68,9 @@ if GENS_ZLIB_INTERNAL
 INCLUDES += -I@srcdir@/../zlib/
 endif # GENS_ZLIB_INTERNAL
 
+if GENS_PNG_INTERNAL
+INCLUDES += -I@srcdir@/../libpng/
+endif # GENS_PNG_INTERNAL
 
 # x86 assembly language (using nasm)
 %.o: %.asm
@@ -273,6 +276,14 @@ gens_LDADD += -lz
 endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
+if GENS_PNG
+if GENS_PNG_INTERNAL
+gens_LDADD += ../libpng/libpng.a
+else
+gens_LDADD += -lpng
+endif # GENS_PNG_INTERNAL
+endif # GENS_PNG
+
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
 
@@ -284,17 +295,21 @@ gens_DEPENDENCIES = \
 
 if GENS_ZLIB
 gens_DEPENDENCIES += ../minizip/libminizip.a
-endif
+if GENS_ZLIB_INTERNAL
+gens_DEPENDENCIES += ../zlib/libz.a
+endif # GENS_ZLIB_INTERNAL
+endif # GENS_ZLIB
+
+if GENS_PNG
+if GENS_PNG_INTERNAL
+gens_DEPENDENCIES += ../libpng/libpng.a
+endif # GENS_PNG_INTERNAL
+endif # GENS_PNG
 
 CLEANFILES = \
 		${ASMFILES} \
-		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
-
-if GENS_ZLIB
-CLEANFILES += ../minizip/libminizip.a
-endif
 
 # Initialize CFLAGS and CXXFLAGS.
 gens_CFLAGS =

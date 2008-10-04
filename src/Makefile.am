@@ -3,13 +3,16 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = starscream mp3_dec
 
 if GENS_ZLIB
-
 if GENS_ZLIB_INTERNAL
 SUBDIRS += zlib
-endif
-
+endif # GENS_ZLIB_INTERNAL
 SUBDIRS += minizip
-
 endif # GENS_ZLIB
+
+if GENS_PNG
+if GENS_PNG_INTERNAL
+SUBDIRS += libpng
+endif # GENS_PNG_INTERNAL
+endif # GENS_PNG
 
 SUBDIRS += gens

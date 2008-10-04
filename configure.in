@@ -162,24 +162,9 @@ AC_MSG_CHECKING(for OpenGL support)
 fi
 AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
 
-AC_ARG_WITH(png, AC_HELP_STRING([--without-png], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
-if test x$with_png = xyes; then
-AC_MSG_CHECKING(for libpng)
-	with_png=no
-	AC_TRY_COMPILE([
-		#include <png.h>
-	],[
-		png_structp png_ptr;
-	],[
-		with_png=yes
-	])      
-	AC_MSG_RESULT($with_png)
-	if test x$with_png = xyes; then
-		LDFLAGS="$LDFLAGS -lpng"
-		AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
-	fi
-fi
-AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
+###
+# zlib
+###
 
 AC_ARG_WITH(zlib, AC_HELP_STRING([--without-zlib], [Build without zlib support [[default=no]]]), with_zlib=$withval, with_zlib=yes)
 AC_ARG_WITH(internal_zlib, AC_HELP_STRING([--with-internal-zlib], [Use internal zlib [[default=no]]]), with_internal_zlib=$withval, with_internal_zlib=no)
@@ -224,6 +209,57 @@ fi # GENS_ZLIB
 AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
 AM_CONDITIONAL([GENS_ZLIB_INTERNAL], [test x$with_internal_zlib = xyes])
 
+###
+# libpng
+###
+
+AC_ARG_WITH(png, AC_HELP_STRING([--without-libpng], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
+AC_ARG_WITH(internal_png, AC_HELP_STRING([--with-internal-libpng], [Use internal libpng [[default=no]]]), with_internal_png=$withval, with_internal_png=no)
+
+# If internal libpng was enabled, but PNG was disabled, enable PNG.
+# The user may have thought that the plain libpng option was for shared libpng.
+if test x$with_internal_png = xyes; then
+	with_png=yes
+fi
+
+if test x$with_png = xno; then
+	# libpng disabled; disable internal libpng library.
+	with_internal_png=no
+else
+	# libpng enabled; check if internal libpng library is eanbled.
+if test x$with_internal_png = xno; then
+AC_MSG_CHECKING(for system libpng)
+	with_png=no
+	AC_TRY_COMPILE([
+		#include <png.h>
+	],[
+		png_structp png_ptr;
+	],[
+		with_png=yes
+	])
+	AC_MSG_RESULT($with_png)
+	if test x$with_png = xno; then
+		# External libpng not found. Use the internal version.
+		with_png=yes
+		with_internal_png=yes
+	fi
+fi
+
+fi
+
+if test x$with_png = xyes; then
+AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
+if test x$with_internal_png = xyes; then
+AC_DEFINE(GENS_PNG_INTERNAL, 1, Use internal libpng instead of system libpng)
+fi # GENS_PNG_INTERNAL
+fi # GENS_PNG
+AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
+AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
+
+###
+# Miscellaneous
+###
+
 CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
 LDFLAGS="$LDFLAGS"
@@ -264,6 +300,7 @@ src/Makefile
 src/gens/Makefile
 src/zlib/Makefile
 src/minizip/Makefile
+src/libpng/Makefile
 src/mp3_dec/Makefile
 src/starscream/Makefile
 src/starscream/main68k/Makefile
