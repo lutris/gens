@@ -22,23 +22,28 @@
 
 #include "charset.hpp"
 
+// C includes
+#include <cstring>
+
+// C++ includes
 #include <string>
 #include <sstream>
+
 using std::string;
 using std::stringstream;
 
 /**
  * charset_utf8_to_cp1252(): Convert a UTF-8 string to cp1252.
- * s_utf8 UTF-8 string.
+ * @param s_utf8 UTF-8 string.
  * repChar Replacement character for symbols not available in cp1252.
  * @return cp1252 string.
  */
-string charset_utf8_to_cp1252(const string& s_utf8, const char repChar)
+string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 {
 	stringstream ss;
 	int i, j;
 	
-	int sLen = s_utf8.length();
+	int sLen = strlen(s_utf8);
 	
 	// Current Unicode character.
 	unsigned int utf8char;
@@ -82,10 +87,10 @@ string charset_utf8_to_cp1252(const string& s_utf8, const char repChar)
 		
 	for (i = 0; i < sLen; i++)
 	{
-		if (!(s_utf8.at(i) & 0x80))
+		if (!(s_utf8[i] & 0x80))
 		{
 			// 0x00 - 0x7F - regular ASCII character, same as cp1252.
-			utf8char = s_utf8.at(i);
+			utf8char = s_utf8[i];
 		}
 		else
 		{
@@ -93,36 +98,36 @@ string charset_utf8_to_cp1252(const string& s_utf8, const char repChar)
 			
 			// Check for 2-byte character.
 			if ((i + 1 < sLen) &&
-			    ((s_utf8.at(i) & 0xE0) == 0xC0) &&
-			    ((s_utf8.at(i + 1) & 0xC0) == 0x80))
+			    ((s_utf8[i] & 0xE0) == 0xC0) &&
+			    ((s_utf8[i + 1] & 0xC0) == 0x80))
 			{
 				// 2-byte character.
-				utf8char = ((s_utf8.at(i) & 0x1F) << 6) |
-					   ((s_utf8.at(i + 1) & 0x3F));
+				utf8char = ((s_utf8[i] & 0x1F) << 6) |
+					   ((s_utf8[i + 1] & 0x3F));
 				i++;
 			}
 			else if ((i + 2 < sLen) &&
-				 ((s_utf8.at(i) & 0xF0) == 0xE0) &&
-				 ((s_utf8.at(i + 1) & 0xC0) == 0x80) &&
-				 ((s_utf8.at(i + 2) & 0xC0) == 0x80))
+				 ((s_utf8[i] & 0xF0) == 0xE0) &&
+				 ((s_utf8[i + 1] & 0xC0) == 0x80) &&
+				 ((s_utf8[i + 2] & 0xC0) == 0x80))
 			{
 				// 3-byte character.
-				utf8char = ((s_utf8.at(i) & 0x0F) << 12) |
-					   ((s_utf8.at(i + 1) & 0x3F) << 6) |
-					   ((s_utf8.at(i + 2) & 0x3F));
+				utf8char = ((s_utf8[i] & 0x0F) << 12) |
+					   ((s_utf8[i + 1] & 0x3F) << 6) |
+					   ((s_utf8[i + 2] & 0x3F));
 				i += 2;
 			}
 			else if ((i + 3 < sLen) &&
-				 ((s_utf8.at(i) & 0xF8) == 0xF0) &&
-				 ((s_utf8.at(i + 1) & 0xC0) == 0x80) &&
-				 ((s_utf8.at(i + 2) & 0xC0) == 0x80) &&
-				 ((s_utf8.at(i + 3) & 0xC0) == 0x80))
+				 ((s_utf8[i] & 0xF8) == 0xF0) &&
+				 ((s_utf8[i + 1] & 0xC0) == 0x80) &&
+				 ((s_utf8[i + 2] & 0xC0) == 0x80) &&
+				 ((s_utf8[i + 3] & 0xC0) == 0x80))
 			{
 				// 4-byte character.
-				utf8char = ((s_utf8.at(i) & 0x07) << 18) |
-					   ((s_utf8.at(i + 1) & 0x3F) << 12) |
-					   ((s_utf8.at(i + 2) & 0x3F) << 6) |
-					   ((s_utf8.at(i + 3) & 0x3F));
+				utf8char = ((s_utf8[i] & 0x07) << 18) |
+					   ((s_utf8[i + 1] & 0x3F) << 12) |
+					   ((s_utf8[i + 2] & 0x3F) << 6) |
+					   ((s_utf8[i + 3] & 0x3F));
 				i += 2;
 			}
 			else

@@ -25,6 +25,6 @@
 
 #include <string>
 
-std::string charset_utf8_to_cp1252(const std::string& s_utf8, const char repChar = '?');
+std::string charset_utf8_to_cp1252(const char* s_utf8, const char repChar = '?');
 
 #endif /* GENS_CHARSET_HPP */
