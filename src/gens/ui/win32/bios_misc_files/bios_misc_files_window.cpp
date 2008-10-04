@@ -120,6 +120,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 	HWND lblTitle, txtEntry, btnChange;
 	
 	// Positioning.
+	const int grpBox_Left = 8;
 	int grpBox_Top = 0, grpBox_Height = 0, grpBox_Entry = 0;
 	int entryTop;
 	int file = 0;
@@ -136,7 +137,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			
 			grpBox = CreateWindow(WC_BUTTON, BIOSMiscFiles[file].title,
 					      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					      8, grpBox_Top, frameWidth, grpBox_Height,
+					      grpBox_Left, grpBox_Top, frameWidth, grpBox_Height,
 					      hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the groupbox title.
@@ -152,8 +153,8 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// Create the label for the title.
 			lblTitle = CreateWindow(WC_STATIC, BIOSMiscFiles[file].title,
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						8, entryTop, 56, 16,
-						grpBox, NULL, ghInstance, NULL);
+						grpBox_Left + 8, grpBox_Top + entryTop, 56, 16,
+						hWnd, NULL, ghInstance, NULL);
 						
 			// Set the font for the label.
 			SendMessage(lblTitle, WM_SETFONT, (WPARAM)fntMain, 1);
@@ -161,8 +162,9 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// Create the textbox for the entry.
 			txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, BIOSMiscFiles[file].entry,
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT,
-						  8+56+8, entryTop, frameWidth - (8+56+8+16+64), 20,
-						  grpBox, NULL, ghInstance, NULL);
+						  grpBox_Left + 8+56+8, grpBox_Top + entryTop,
+						  frameWidth - (8+56+8+16+64), 20,
+						  hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the entry.
 			SendMessage(txtEntry, WM_SETFONT, (WPARAM)fntMain, 1);
@@ -170,8 +172,8 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// Create the change button for the entry.
 			btnChange = CreateWindow(WC_BUTTON, "Change...",
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						 frameWidth - (8+8+56), entryTop, 64, 20,
-						 grpBox, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
+						 grpBox_Left + frameWidth - (8+8+56), grpBox_Top + entryTop, 64, 20,
+						 hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 						 
 			// Set the font for the button.
 			SendMessage(btnChange, WM_SETFONT, (WPARAM)fntMain, 1);
