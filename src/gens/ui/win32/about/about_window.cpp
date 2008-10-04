@@ -229,7 +229,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	SendMessage(lblGensCopyright, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// OK button
-	btnOK = CreateWindow(WC_STATIC, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     312 - 75, 256, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
