@@ -196,7 +196,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     btnLeft, btnTop, 75, 23,
-	hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
