@@ -44,26 +44,32 @@ LRESULT CALLBACK BIOS_Misc_Files_Window_WndProc(HWND hWnd, UINT message, WPARAM 
 		
 		case WM_COMMAND:
 			// Button press
-#if 0
 			switch (LOWORD(wParam))
 			{
 				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
-					CA_Save();
+					BIOS_Misc_Files_Save();
 					DestroyWindow(hWnd);
 					break;
 				
 				case IDC_BTN_APPLY:
-					CA_Save();
+					BIOS_Misc_Files_Save();
 					break;
 				
 				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
 					break;
+				
+				default:
+					if ((LOWORD(wParam) & 0xFF00) == IDC_BTN_CHANGE)
+					{
+						// Change a file.
+						BIOS_Misc_Files_Change(LOWORD(wParam) & 0xFF);
+					}
+					break;
 			}
-#endif
 			break;
 		
 		case WM_DESTROY:

@@ -59,27 +59,23 @@ void Open_BIOS_Misc_Files(void)
  */
 void BIOS_Misc_Files_Change(int file)
 {
-#if 0
-	GtkWidget *entry_file;
+	char curFile[GENS_PATH_MAX];
 	char tmp[64];
 	string newFile;
 	
-	// Get the entry widget for this file.
-	sprintf(tmp, "entry_%s", BIOSMiscFiles[file].tag);
-	entry_file = lookup_widget(bios_misc_files_window, tmp);
+	// Get the currently entered filename.
+	GetWindowText(bmf_txtEntry[file], curFile, sizeof(curFile));
 	
 	// Request a new file.
 	sprintf(tmp, "Select %s File", BIOSMiscFiles[file].title);
-	newFile = GensUI::openFile(tmp, gtk_entry_get_text(GTK_ENTRY(entry_file)),
-				   BIOSMiscFiles[file].filter);
+	newFile = GensUI::openFile(tmp, curFile, BIOSMiscFiles[file].filter);
 	
 	// If Cancel was selected, don't do anything.
 	if (newFile.length() == 0)
 		return;
 	
 	// Set the new file.
-	gtk_entry_set_text(GTK_ENTRY(entry_file), newFile.c_str());
-#endif
+	SetWindowText(bmf_txtEntry[file], newFile.c_str());
 }
 
 
