@@ -104,7 +104,7 @@ HWND create_bios_misc_files_window(void)
 	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
 						(WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16 + Win32_dw, 480 + Win32_dh, NULL, NULL, ghInstance, NULL);
+						frameWidth + 16 + Win32_dw, 408 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 	UpdateWindow(bios_misc_files_window);
 	return bios_misc_files_window;
@@ -188,4 +188,24 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 		// Next file.
 		file++;
 	}
+	
+	// Buttons
+	int btnTop = grpBox_Top + grpBox_Height + 8;
+	const int btnLeft = ((frameWidth - (75+8+75+8+75)) / 2) + 8;
+	HWND btnOK, btnApply, btnCancel;
+	
+	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+			     btnLeft, btnTop, 75, 23,
+	hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				btnLeft+75+8, btnTop, 75, 23,
+				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				 btnLeft+75+8+75+8, btnTop, 75, 23,
+				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
 }
