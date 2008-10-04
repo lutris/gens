@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include <stdio.h>
+
 #include "color_adjust_window.h"
 #include "color_adjust_window_callbacks.h"
 #include "color_adjust_window_misc.h"
@@ -51,8 +53,17 @@ void Open_Color_Adjust(void)
 	//gtk_window_set_transient_for(GTK_WINDOW(ca), GTK_WINDOW(gens_window));
 	
 	// Load settings.
+	char buf[16];
+	
+	// Contrast
 	SendMessage(ca_trkContrast, TBM_SETPOS, TRUE, Contrast_Level - 100);
+	sprintf(buf, "%d", Contrast_Level - 100);
+	SetWindowText(ca_lblContrastVal, buf);
+	
+	// Brightness
 	SendMessage(ca_trkBrightness, TBM_SETPOS, TRUE, Brightness_Level - 100);
+	sprintf(buf, "%d", Brightness_Level - 100);
+	SetWindowText(ca_lblBrightnessVal, buf);
 	
 	// Show the Color Adjustment window.
 	ShowWindow(ca, 1);

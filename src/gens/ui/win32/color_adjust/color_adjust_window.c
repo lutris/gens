@@ -82,7 +82,7 @@ HWND create_color_adjust_window(void)
 	color_adjust_window = CreateWindowEx(NULL, "Gens_Color_Adjust", "Color Adjustment",
 					     (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     280 + Win32_dw, 112 + Win32_dh, NULL, NULL, ghInstance, NULL);
+					     296 + Win32_dw, 112 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 	UpdateWindow(color_adjust_window);
 	return color_adjust_window;
@@ -131,9 +131,20 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	SendMessage(ca_lblBrightnessVal, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// Buttons
-	HWND btnOK;
-	btnOK = CreateWindow(WC_BUTTON, "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-			     8, 80, 75, 23,
+	HWND btnOK, btnApply, btnCancel;
+	
+	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+			     28, 80, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE,
+				28+75+8, 80, 75, 23,
+				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE,
+				 28+75+8+75+8, 80, 75, 23,
+				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
 }
