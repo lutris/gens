@@ -84,10 +84,7 @@ void BIOS_Misc_Files_Change(int file)
  */
 void BIOS_Misc_Files_Save(void)
 {
-#if 0
 	int file = 0;
-	char tmp[64];
-	GtkWidget *entry_file;
 	
 	// Go through the BIOSMiscFiles[] struct.
 	while (BIOSMiscFiles[file].title)
@@ -99,15 +96,10 @@ void BIOS_Misc_Files_Save(void)
 			continue;
 		}
 		
-		// Get the entry object.
-		sprintf(tmp, "entry_%s", BIOSMiscFiles[file].tag);
-		entry_file = lookup_widget(bios_misc_files_window, tmp);
-		
 		// Get the entry text.
-		strncpy(BIOSMiscFiles[file].entry, gtk_entry_get_text(GTK_ENTRY(entry_file)), GENS_PATH_MAX);
+		GetWindowText(bmf_txtEntry[file], BIOSMiscFiles[file].entry, GENS_PATH_MAX);
 		
 		// Increment the file counter.
 		file++;
 	}
-#endif
 }
