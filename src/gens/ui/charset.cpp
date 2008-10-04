@@ -29,8 +29,53 @@
 #include <string>
 #include <sstream>
 
+#include <utility>
+#include <tr1/unordered_map>
+
 using std::string;
 using std::stringstream;
+using std::pair;
+using std::tr1::unordered_map;
+
+// Character set arrays.
+
+// CP1252 to UTF-8 mapping.
+// Only used for characters 0x80 - 0x9F.
+typedef pair<unsigned int, unsigned char> charConversion;
+typedef unordered_map<unsigned int, unsigned char> charMap;
+charMap charset_map_utf8_to_cp1252;
+
+static const unsigned short charset_map_utf8_to_cp1252_array[][2] =
+{
+	{0x20AC, 0x80},
+	{0x201A, 0x82},
+	{0x0192, 0x83},
+	{0x201E, 0x84},
+	{0x2026, 0x85},
+	{0x2020, 0x86},
+	{0x2021, 0x87},
+	{0x02C6, 0x88},
+	{0x2030, 0x89},
+	{0x0160, 0x8A},
+	{0x2039, 0x8B},
+	{0x0152, 0x8C},
+	{0x017D, 0x8E},
+	{0x2018, 0x91},
+	{0x2019, 0x92},
+	{0x201C, 0x93},
+	{0x201D, 0x94},
+	{0x2022, 0x95},
+	{0x2013, 0x96},
+	{0x2014, 0x97},
+	{0x02DC, 0x98},
+	{0x2122, 0x99},
+	{0x0161, 0x9A},
+	{0x203A, 0x9B},
+	{0x0153, 0x9C},
+	{0x017E, 0x9E},
+	{0x0178, 0x9F},
+	{NULL, NULL},
+};
 
 /**
  * charset_utf8_to_cp1252(): Convert a UTF-8 string to cp1252.
@@ -41,7 +86,7 @@ using std::stringstream;
 string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 {
 	stringstream ss;
-	int i, j;
+	int i;
 	
 	int sLen = strlen(s_utf8);
 	
@@ -51,40 +96,6 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 	// Current CP1252 character.
 	unsigned char cp1252char;
 	
-	// CP1252 to UTF-8 mapping.
-	// Only used for characters 0x80 - 0x9F.
-	unsigned int charMap[][2] =
-	{
-		{0x20AC, 0x80},
-		{0x201A, 0x82},
-		{0x0192, 0x83},
-		{0x201E, 0x84},
-		{0x2026, 0x85},
-		{0x2020, 0x86},
-		{0x2021, 0x87},
-		{0x02C6, 0x88},
-		{0x2030, 0x89},
-		{0x0160, 0x8A},
-		{0x2039, 0x8B},
-		{0x0152, 0x8C},
-		{0x017D, 0x8E},
-		{0x2018, 0x91},
-		{0x2019, 0x92},
-		{0x201C, 0x93},
-		{0x201D, 0x94},
-		{0x2022, 0x95},
-		{0x2013, 0x96},
-		{0x2014, 0x97},
-		{0x02DC, 0x98},
-		{0x2122, 0x99},
-		{0x0161, 0x9A},
-		{0x203A, 0x9B},
-		{0x0153, 0x9C},
-		{0x017E, 0x9E},
-		{0x0178, 0x9F},
-		{0x00000000, 0x00000000},
-	};
-		
 	for (i = 0; i < sLen; i++)
 	{
 		if (!(s_utf8[i] & 0x80))
@@ -128,7 +139,7 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 					   ((s_utf8[i + 1] & 0x3F) << 12) |
 					   ((s_utf8[i + 2] & 0x3F) << 6) |
 					   ((s_utf8[i + 3] & 0x3F));
-				i += 2;
+				i += 3;
 			}
 			else
 			{
@@ -151,21 +162,34 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 		else
 		{
 			// Check the conversion table.
-			// TODO: Use an unordered_map instead of an array.
-			j = 0;
-			while (charMap[j][0])
+			if (charset_map_utf8_to_cp1252.empty())
 			{
-				if (charMap[j][0] == utf8char)
+				// Fill the conversion table.
+				int j = 0;
+				
+				while (charset_map_utf8_to_cp1252_array[j][0])
 				{
-					cp1252char = charMap[j][1];
-					break;
+					charset_map_utf8_to_cp1252.insert(charConversion(
+							charset_map_utf8_to_cp1252_array[j][0],
+							charset_map_utf8_to_cp1252_array[j][1]
+										));
+					j++;
 				}
 			}
 			
-			if (!charMap[j][0])
+			// Check the map for the character.
+			charMap::iterator charIter;
+			charIter = charset_map_utf8_to_cp1252.find(utf8char);
+			
+			if (charIter == charset_map_utf8_to_cp1252.end())
 			{
-				// Character not found. Use the replacement character.
+				// Character not found.
 				cp1252char = repChar;
+			}
+			else
+			{
+				// Character found.
+				cp1252char = (*charIter).second;
 			}
 		}
 		
