@@ -11,11 +11,11 @@
 #define IDB_GENS_LOGO_BIG	0x0102
 
 // Buttons
-#define ID_BTN_OK		0x1001
-#define ID_BTN_CANCEL		0x1002
-#define ID_BTN_APPLY		0x1003
-#define ID_BTN_SAVE		0x1004
+#define IDC_BTN_OK		0x1001
+#define IDC_BTN_CANCEL		0x1002
+#define IDC_BTN_APPLY		0x1003
+#define IDC_BTN_SAVE		0x1004
 
 // Trackbars
-#define ID_TRK_CA_CONTRAST	0x2001
-#define ID_TRK_CA_BRIGHTNESS	0x2002
+#define IDC_TRK_CA_CONTRAST	0x2001
+#define IDC_TRK_CA_BRIGHTNESS	0x2002

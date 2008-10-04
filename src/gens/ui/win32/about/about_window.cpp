@@ -151,7 +151,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case WM_COMMAND:
-			if (LOWORD(wParam) == ID_BTN_OK)
+			if (LOWORD(wParam) == IDC_BTN_OK)
 				DestroyWindow(about_window);
 			break;
 		
@@ -226,7 +226,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	
 	// OK button
 	btnOK = CreateWindow(WC_STATIC, "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 312 - 75, 256, 75, 23,
-			     hWnd, (HMENU)ID_BTN_OK, ghInstance, NULL);
+			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// Set focus to the OK button.

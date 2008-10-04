@@ -102,7 +102,7 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	
 	ca_trkContrast = CreateWindow(TRACKBAR_CLASS, "", trkStyle,
 				      8+56, 14, 192, 24, hWnd,
-				      (HMENU)ID_TRK_CA_CONTRAST, ghInstance, NULL);
+				      (HMENU)IDC_TRK_CA_CONTRAST, ghInstance, NULL);
 	SendMessage(ca_trkContrast, TBM_SETPAGESIZE, 0, 10);
 	SendMessage(ca_trkContrast, TBM_SETTICFREQ, 25, 0);
 	SendMessage(ca_trkContrast, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
@@ -120,7 +120,7 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	
 	ca_trkBrightness = CreateWindow(TRACKBAR_CLASS, "", trkStyle,
 					8+56, 14+32, 192, 24, hWnd,
-					(HMENU)ID_TRK_CA_BRIGHTNESS, ghInstance, NULL);
+					(HMENU)IDC_TRK_CA_BRIGHTNESS, ghInstance, NULL);
 	SendMessage(ca_trkBrightness, TBM_SETPAGESIZE, 0, 10);
 	SendMessage(ca_trkBrightness, TBM_SETTICFREQ, 25, 0);
 	SendMessage(ca_trkBrightness, TBM_SETRANGE, TRUE, MAKELONG(-100, 100));
@@ -134,6 +134,6 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	HWND btnOK;
 	btnOK = CreateWindow(WC_BUTTON, "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
 			     8, 80, 75, 23,
-			     hWnd, (HMENU)ID_BTN_OK, ghInstance, NULL);
+			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
 }
