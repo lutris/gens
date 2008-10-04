@@ -93,7 +93,7 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 {
 	Win32_centerOnGensWindow(hWnd);
 	
-	unsigned int trkStyle = WS_CHILD | WS_VISIBLE | TBS_HORZ | TBS_BOTTOM;
+	unsigned int trkStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM;
 	
 	// Contrast
 	ca_lblContrastDesc = CreateWindow(WC_STATIC, "Contrast", WS_CHILD | WS_VISIBLE | SS_LEFT,
@@ -133,17 +133,17 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	// Buttons
 	HWND btnOK, btnApply, btnCancel;
 	
-	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     28, 80, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
 	
-	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE,
+	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				28+75+8, 80, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
 	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
 	
-	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE,
+	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 28+75+8+75+8, 80, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
