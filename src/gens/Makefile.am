@@ -64,6 +64,11 @@ NASM_INCLUDES = \
 NASM = nasm -O1 -w-orphan-labels $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
+if GENS_ZLIB_INTERNAL
+INCLUDES += -I@srcdir@/../zlib/
+endif # GENS_ZLIB_INTERNAL
+
+
 # x86 assembly language (using nasm)
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
@@ -261,7 +266,12 @@ gens_LDADD = \
 
 if GENS_ZLIB
 gens_LDADD += ../minizip/libminizip.a
-endif
+if GENS_ZLIB_INTERNAL
+gens_LDADD += ../zlib/libz.a
+else
+gens_LDADD += -lz
+endif # GENS_ZLIB_INTERNAL
+endif # GENS_ZLIB
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!

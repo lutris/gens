@@ -182,8 +182,21 @@ fi
 AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
 
 AC_ARG_WITH(zlib, AC_HELP_STRING([--without-zlib], [Build without zlib support [[default=no]]]), with_zlib=$withval, with_zlib=yes)
-if test x$with_zlib = xyes; then
-AC_MSG_CHECKING(for zlib)
+AC_ARG_WITH(internal_zlib, AC_HELP_STRING([--with-internal-zlib], [Use internal zlib [[default=no]]]), with_internal_zlib=$withval, with_internal_zlib=no)
+
+# If internal zlib was enabled, but zlib was disabled, enable zlib.
+# The user may have thought that the plain zlib option was for shared zlib.
+if test x$with_internal_zlib = xyes; then
+	with_zlib=yes
+fi
+
+if test x$with_zlib = xno; then
+	# zlib disabled; disable internal zlib library.
+	with_internal_zlib=no
+else
+	# zlib enabled; check if internal zlib library is eanbled.
+if test x$with_internal_zlib = xno; then
+AC_MSG_CHECKING(for system zlib)
 	with_zlib=no
 	AC_TRY_COMPILE([
 		#include <zlib.h>
@@ -193,12 +206,23 @@ AC_MSG_CHECKING(for zlib)
 		with_zlib=yes
 	])
 	AC_MSG_RESULT($with_zlib)
-	if test x$with_zlib = xyes; then
-		LDFLAGS="$LDFLAGS -lz"
-		AC_DEFINE(GENS_ZLIB, 1, Compression support via libz)
+	if test x$with_zlib = xno; then
+		# External zlib not found. Use the internal version.
+		with_zlib=yes
+		with_internal_zlib=yes
 	fi
 fi
+
+fi
+
+if test x$with_zlib = xyes; then
+AC_DEFINE(GENS_ZLIB, 1, Compression support via zlib)
+if test x$with_internal_zlib = xyes; then
+AC_DEFINE(GENS_ZLIB_INTERNAL, 1, Use internal zlib instead of system zlib)
+fi # GENS_ZLIB_INTERNAL
+fi # GENS_ZLIB
 AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
+AM_CONDITIONAL([GENS_ZLIB_INTERNAL], [test x$with_internal_zlib = xyes])
 
 CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
@@ -238,6 +262,7 @@ Makefile
 pixmaps/Makefile
 src/Makefile
 src/gens/Makefile
+src/zlib/Makefile
 src/minizip/Makefile
 src/mp3_dec/Makefile
 src/starscream/Makefile

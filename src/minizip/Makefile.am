@@ -2,6 +2,10 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+if GENS_ZLIB_INTERNAL
+INCLUDES = -I@srcdir@/../zlib/
+endif # GENS_ZLIB_INTERNAL
+
 noinst_LIBRARIES = libminizip.a
 libminizip_a_SOURCES = \
 		ioapi.c \
