@@ -1,0 +1,143 @@
+# Linux-specific Makefile.am
+
+NASM += -D __GCC2 -f elf
+
+if GENS_UI_GTK
+INCLUDES += -I@srcdir@/ui/gtk/
+endif
+
+gens_SOURCES += \
+		emulator/g_main_linux.cpp \
+		port/port.c \
+		video/v_draw_sdl.cpp \
+		input/input_sdl.cpp \
+		audio/audio_sdl.cpp
+
+if GENS_UI_GTK
+
+gens_SOURCES += \
+		ui/gtk/gens_ui_gtk.cpp \
+		ui/gtk/gtk-misc.c \
+		ui/gtk/gens/gens_window.c \
+		ui/gtk/gens/gens_window_callbacks.cpp \
+		ui/gtk/gens/gens_window_sync.cpp \
+		ui/gtk/game_genie/game_genie_window.c \
+		ui/gtk/game_genie/game_genie_window_callbacks.c \
+		ui/gtk/game_genie/game_genie_window_misc.c \
+		ui/gtk/controller_config/controller_config_window.cpp \
+		ui/gtk/controller_config/controller_config_window_callbacks.cpp \
+		ui/gtk/controller_config/controller_config_window_misc.cpp \
+		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
+		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
+		ui/gtk/bios_misc_files/bios_misc_files_window_misc.cpp \
+		ui/gtk/directory_config/directory_config_window.c \
+		ui/gtk/directory_config/directory_config_window_callbacks.c \
+		ui/gtk/directory_config/directory_config_window_misc.cpp \
+		ui/gtk/general_options/general_options_window.c \
+		ui/gtk/general_options/general_options_window_callbacks.c \
+		ui/gtk/general_options/general_options_window_misc.cpp \
+		ui/gtk/color_adjust/color_adjust_window.c \
+		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
+		ui/gtk/color_adjust/color_adjust_window_misc.c \
+		ui/gtk/country_code/country_code_window.c \
+		ui/gtk/country_code/country_code_window_callbacks.c \
+		ui/gtk/country_code/country_code_window_misc.c \
+		ui/gtk/zip_select/zip_select_dialog.c \
+		ui/gtk/zip_select/zip_select_dialog_misc.cpp \
+		ui/gtk/about/about_window.cpp
+
+if GENS_OPENGL
+gens_SOURCES += \
+		video/v_draw_sdl_gl.cpp \
+		ui/gtk/opengl_resolution/opengl_resolution_window.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
+endif # GENS_OPENGL
+
+if GENS_CDROM
+gens_SOURCES += \
+		ui/gtk/select_cdrom/select_cdrom_window.c \
+		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
+		ui/gtk/select_cdrom/select_cdrom_window_misc.c
+endif # GENS_CDROM
+
+endif # GENS_UI_GTK
+
+noinst_HEADERS += \
+		emulator/g_main_linux.hpp \
+		port/port.h \
+		video/v_draw_sdl.hpp \
+		input/input_sdl.hpp \
+		input/input_sdl_keys.h \
+		audio/audio_sdl.hpp
+
+if GENS_UI_GTK
+
+noinst_HEADERS += \
+		ui/gtk/gtk-misc.h \
+		ui/gtk/gens/gens_window.h \
+		ui/gtk/gens/gens_window_callbacks.hpp \
+		ui/gtk/gens/gens_window_sync.hpp \
+		ui/gtk/game_genie/game_genie_window.h \
+		ui/gtk/game_genie/game_genie_window_callbacks.h \
+		ui/gtk/game_genie/game_genie_window_misc.h \
+		ui/gtk/controller_config/controller_config_window.hpp \
+		ui/gtk/controller_config/controller_config_window_callbacks.hpp \
+		ui/gtk/controller_config/controller_config_window_misc.hpp \
+		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
+		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \
+		ui/gtk/bios_misc_files/bios_misc_files_window_misc.hpp \
+		ui/gtk/directory_config/directory_config_window.h \
+		ui/gtk/directory_config/directory_config_window_callbacks.h \
+		ui/gtk/directory_config/directory_config_window_misc.hpp \
+		ui/gtk/general_options/general_options_window.h \
+		ui/gtk/general_options/general_options_window_callbacks.h \
+		ui/gtk/general_options/general_options_window_misc.hpp \
+		ui/gtk/color_adjust/color_adjust_window.h \
+		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
+		ui/gtk/color_adjust/color_adjust_window_misc.h \
+		ui/gtk/country_code/country_code_window.h \
+		ui/gtk/country_code/country_code_window_callbacks.h \
+		ui/gtk/country_code/country_code_window_misc.h \
+		ui/gtk/zip_select/zip_select_dialog.h \
+		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
+		ui/gtk/about/about_window.hpp
+
+if GENS_OPENGL
+noinst_HEADERS += \
+		video/v_draw_sdl_gl.hpp \
+		ui/gtk/opengl_resolution/opengl_resolution_window.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
+endif # GENS_OPENGL
+
+if GENS_CDROM
+noinst_HEADERS += \
+		ui/gtk/select_cdrom/select_cdrom_window.h \
+		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
+		ui/gtk/select_cdrom/select_cdrom_window_misc.h
+endif # GENS_CDROM
+
+endif # GENS_UI_GTK
+
+gens_CFLAGS += \
+		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
+		@SDL_CFLAGS@
+
+if GENS_UI_GTK
+gens_CFLAGS += @GTK_CFLAGS@
+endif
+
+gens_CXXFLAGS += \
+		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
+		@SDL_CFLAGS@
+
+if GENS_UI_GTK
+gens_CXXFLAGS += @GTK_CFLAGS@
+endif
+
+gens_LDADD += @SDL_LIBS@
+
+if GENS_UI_GTK
+gens_LDADD += @GTK_LIBS@
+endif

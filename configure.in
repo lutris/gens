@@ -18,9 +18,11 @@ AC_HEADER_STDC
 case $host in
 	i?86*mingw32*)
 		os=win32;
+		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		;;
 	i?86*)
 		os=linux;
+		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		;;
 	x86_64*)
 		AC_MSG_ERROR([64-bit is currently not supported.]);
@@ -29,8 +31,8 @@ case $host in
 		AC_MSG_ERROR([Unsupported operating system: $host]);
 		;;
 esac
-AM_CONDITIONAL([LINUX], [test x$os = xlinux])
-AM_CONDITIONAL([WIN32], [test x$os = xwin32])
+AM_CONDITIONAL([GENS_OS_LINUX], [test x$os = xlinux])
+AM_CONDITIONAL([GENS_OS_WIN32], [test x$os = xwin32])
 
 # BEGIN: Linux
 

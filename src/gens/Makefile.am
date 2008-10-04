@@ -62,29 +62,19 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
 NASM = nasm -O1 -w-orphan-labels $(NASM_INCLUDES)
-
-if LINUX
-NASM += -D __GCC2 -f elf
-endif
-
-if WIN32
-NASM += -f win32
-endif
-
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
-if GENS_UI_GTK
-INCLUDES += -I@srcdir@/ui/gtk/
-endif
-
-if GENS_UI_WIN32
-INCLUDES += -I@srcdir@/ui/win32/
-endif
-
+# x86 assembly language (using nasm)
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
 	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
 	$(NASM) $< -o $@
+
+# Win32 resources
+.rc.o:
+	$(host_alias)-windres $< -o $@
+%.o: %.rc
+	$(host_alias)-windres $< -o $@
 
 bin_PROGRAMS = gens
 
@@ -177,84 +167,6 @@ gens_SOURCES += \
 		util/file/compress/Zip.cpp
 endif
 
-if LINUX
-
-gens_SOURCES += \
-		emulator/g_main_linux.cpp \
-		port/port.c \
-		video/v_draw_sdl.cpp \
-		input/input_sdl.cpp \
-		audio/audio_sdl.cpp
-
-if GENS_UI_GTK
-
-gens_SOURCES += \
-		ui/gtk/gens_ui_gtk.cpp \
-		ui/gtk/gtk-misc.c \
-		ui/gtk/gens/gens_window.c \
-		ui/gtk/gens/gens_window_callbacks.cpp \
-		ui/gtk/gens/gens_window_sync.cpp \
-		ui/gtk/game_genie/game_genie_window.c \
-		ui/gtk/game_genie/game_genie_window_callbacks.c \
-		ui/gtk/game_genie/game_genie_window_misc.c \
-		ui/gtk/controller_config/controller_config_window.cpp \
-		ui/gtk/controller_config/controller_config_window_callbacks.cpp \
-		ui/gtk/controller_config/controller_config_window_misc.cpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
-		ui/gtk/bios_misc_files/bios_misc_files_window_misc.cpp \
-		ui/gtk/directory_config/directory_config_window.c \
-		ui/gtk/directory_config/directory_config_window_callbacks.c \
-		ui/gtk/directory_config/directory_config_window_misc.cpp \
-		ui/gtk/general_options/general_options_window.c \
-		ui/gtk/general_options/general_options_window_callbacks.c \
-		ui/gtk/general_options/general_options_window_misc.cpp \
-		ui/gtk/color_adjust/color_adjust_window.c \
-		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
-		ui/gtk/color_adjust/color_adjust_window_misc.c \
-		ui/gtk/country_code/country_code_window.c \
-		ui/gtk/country_code/country_code_window_callbacks.c \
-		ui/gtk/country_code/country_code_window_misc.c \
-		ui/gtk/zip_select/zip_select_dialog.c \
-		ui/gtk/zip_select/zip_select_dialog_misc.cpp \
-		ui/gtk/about/about_window.cpp
-
-if GENS_OPENGL
-gens_SOURCES += \
-		video/v_draw_sdl_gl.cpp \
-		ui/gtk/opengl_resolution/opengl_resolution_window.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
-endif
-
-if GENS_CDROM
-gens_SOURCES += \
-		ui/gtk/select_cdrom/select_cdrom_window.c \
-		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.c
-endif
-
-endif
-
-endif
-
-if WIN32
-gens_SOURCES += \
-		emulator/g_main_win32.cpp \
-		video/v_draw_ddraw.cpp \
-		input/input_dinput.cpp \
-		audio/audio_dsound.cpp \
-		ui/win32/gens_ui_win32.cpp \
-		ui/win32/gens/gens_window.c \
-		ui/win32/gens/gens_window_callbacks.cpp \
-		ui/win32/gens/gens_window_sync.cpp \
-		ui/win32/color_adjust/color_adjust_window.c \
-		ui/win32/color_adjust/color_adjust_window_callbacks.c \
-		ui/win32/color_adjust/color_adjust_window_misc.c \
-		ui/win32/about/about_window.cpp \
-		ui/win32/resource.rc
-endif
-
 noinst_HEADERS = \
 		emulator/gens.hpp \
 		emulator/g_main.hpp \
@@ -338,103 +250,6 @@ noinst_HEADERS += \
 		util/file/compress/Zip.hpp
 endif
 
-if LINUX
-
-noinst_HEADERS += \
-		emulator/g_main_linux.hpp \
-		port/port.h \
-		video/v_draw_sdl.hpp \
-		input/input_sdl.hpp \
-		input/input_sdl_keys.h \
-		audio/audio_sdl.hpp
-
-if GENS_UI_GTK
-
-noinst_HEADERS += \
-		ui/gtk/gtk-misc.h \
-		ui/gtk/gens/gens_window.h \
-		ui/gtk/gens/gens_window_callbacks.hpp \
-		ui/gtk/gens/gens_window_sync.hpp \
-		ui/gtk/game_genie/game_genie_window.h \
-		ui/gtk/game_genie/game_genie_window_callbacks.h \
-		ui/gtk/game_genie/game_genie_window_misc.h \
-		ui/gtk/controller_config/controller_config_window.hpp \
-		ui/gtk/controller_config/controller_config_window_callbacks.hpp \
-		ui/gtk/controller_config/controller_config_window_misc.hpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \
-		ui/gtk/bios_misc_files/bios_misc_files_window_misc.hpp \
-		ui/gtk/directory_config/directory_config_window.h \
-		ui/gtk/directory_config/directory_config_window_callbacks.h \
-		ui/gtk/directory_config/directory_config_window_misc.hpp \
-		ui/gtk/general_options/general_options_window.h \
-		ui/gtk/general_options/general_options_window_callbacks.h \
-		ui/gtk/general_options/general_options_window_misc.hpp \
-		ui/gtk/color_adjust/color_adjust_window.h \
-		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
-		ui/gtk/color_adjust/color_adjust_window_misc.h \
-		ui/gtk/country_code/country_code_window.h \
-		ui/gtk/country_code/country_code_window_callbacks.h \
-		ui/gtk/country_code/country_code_window_misc.h \
-		ui/gtk/zip_select/zip_select_dialog.h \
-		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
-		ui/gtk/about/about_window.hpp
-
-if GENS_OPENGL
-noinst_HEADERS += \
-		video/v_draw_sdl_gl.hpp \
-		ui/gtk/opengl_resolution/opengl_resolution_window.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
-endif
-
-if GENS_CDROM
-noinst_HEADERS += \
-		ui/gtk/select_cdrom/select_cdrom_window.h \
-		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.h
-endif
-
-endif
-
-endif
-
-if WIN32
-noinst_HEADERS += \
-		emulator/g_main_win32.hpp \
-		video/v_draw_ddraw.hpp \
-		input/input_dinput.hpp \
-		input/input_win32_keys.h \
-		audio/audio_dsound.hpp \
-		ui/win32/gens/gens_window.h \
-		ui/win32/gens/gens_window_callbacks.hpp \
-		ui/win32/gens/gens_window_sync.hpp \
-		ui/win32/gens/gens_window_menu.h \
-		ui/win32/color_adjust/color_adjust_window.h \
-		ui/win32/color_adjust/color_adjust_window_callbacks.h \
-		ui/win32/color_adjust/color_adjust_window_misc.h \
-		ui/win32/about/about_window.hpp
-endif
-
-gens_CFLAGS = \
-		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
-		@SDL_CFLAGS@
-
-if GENS_UI_GTK
-gens_CFLAGS += @GTK_CFLAGS@
-endif
-
-gens_CFLAGS += @CFLAGS@
-
-gens_CXXFLAGS = \
-		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
-		@SDL_CFLAGS@
-
-if GENS_UI_GTK
-gens_CXXFLAGS += @GTK_CFLAGS@
-endif
-
-gens_CXXFLAGS += @CXXFLAGS@
 
 
 gens_LDADD = \
@@ -442,23 +257,14 @@ gens_LDADD = \
 		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
-		-lm @SDL_LIBS@
-
-if GENS_UI_GTK
-gens_LDADD += @GTK_LIBS@
-endif
+		-lm
 
 if GENS_ZLIB
 gens_LDADD += ../minizip/libminizip.a
 endif
 
-if GENS_UI_WIN32
-gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -ldxguid -lddraw -ldinput -ldsound
-endif
-
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
-
 
 gens_DEPENDENCIES = \
 		${ASMFILES} \
@@ -467,17 +273,33 @@ gens_DEPENDENCIES = \
 		../starscream/sub68k/sub68k.o
 
 if GENS_ZLIB
-gens_DEPENDENCIES += \
-		../minizip/libminizip.a
+gens_DEPENDENCIES += ../minizip/libminizip.a
 endif
 
 CLEANFILES = \
 		${ASMFILES} \
+		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
 
-# Win32 resources
-.rc.o:
-	$(host_alias)-windres $< -o $@
-%.o: %.rc
-	$(host_alias)-windres $< -o $@
+if GENS_ZLIB
+CLEANFILES += ../minizip/libminizip.a
+endif
+
+# Initialize CFLAGS and CXXFLAGS.
+gens_CFLAGS =
+gens_CXXFLAGS =
+
+# OS-specific includes
+
+if GENS_OS_LINUX
+include $(srcdir)/Makefile.linux.am.inc
+endif # GENS_OS_LINUX
+
+if GENS_OS_WIN32
+include $(srcdir)/Makefile.win32.am.inc
+endif # GENS_OS_WIN32
+
+# Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
+gens_CFLAGS += @CFLAGS@
+gens_CXXFLAGS += @CXXFLAGS@

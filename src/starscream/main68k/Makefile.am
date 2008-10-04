@@ -1,10 +1,10 @@
 NASM = nasm -O3 -w-orphan-labels
 
-if LINUX
+if GENS_OS_LINUX
 NASM += -D __GCC2 -f elf
 endif
 
-if WIN32
+if GENS_OS_WIN32
 NASM += -f win32
 endif
 

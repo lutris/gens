@@ -1,0 +1,38 @@
+# Win32-specific Makefile.am
+
+NASM += -f win32
+INCLUDES += -I@srcdir@/ui/win32/
+
+gens_SOURCES += \
+		emulator/g_main_win32.cpp \
+		video/v_draw_ddraw.cpp \
+		input/input_dinput.cpp \
+		audio/audio_dsound.cpp \
+		ui/win32/gens_ui_win32.cpp \
+		ui/win32/gens/gens_window.c \
+		ui/win32/gens/gens_window_callbacks.cpp \
+		ui/win32/gens/gens_window_sync.cpp \
+		ui/win32/color_adjust/color_adjust_window.c \
+		ui/win32/color_adjust/color_adjust_window_callbacks.c \
+		ui/win32/color_adjust/color_adjust_window_misc.c \
+		ui/win32/about/about_window.cpp \
+		ui/win32/resource.rc
+
+noinst_HEADERS += \
+		emulator/g_main_win32.hpp \
+		video/v_draw_ddraw.hpp \
+		input/input_dinput.hpp \
+		input/input_win32_keys.h \
+		audio/audio_dsound.hpp \
+		ui/win32/gens/gens_window.h \
+		ui/win32/gens/gens_window_callbacks.hpp \
+		ui/win32/gens/gens_window_sync.hpp \
+		ui/win32/gens/gens_window_menu.h \
+		ui/win32/color_adjust/color_adjust_window.h \
+		ui/win32/color_adjust/color_adjust_window_callbacks.h \
+		ui/win32/color_adjust/color_adjust_window_misc.h \
+		ui/win32/about/about_window.hpp
+
+if GENS_UI_WIN32
+gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -ldxguid -lddraw -ldinput -ldsound
+endif
