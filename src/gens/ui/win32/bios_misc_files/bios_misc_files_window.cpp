@@ -47,7 +47,8 @@ static const int frameWidth = 360;
 
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
-const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
+const unsigned short BIOSMiscFiles_Count = 14;
+const struct BIOSMiscFileEntry_t BIOSMiscFiles[BIOSMiscFiles_Count + 1] =
 {
 	{"Configure Genesis BIOS File", "md_bios", (FileFilterType)0, NULL},
 	{"Genesis", "md_bios", ROMFile, BIOS_Filenames.MD_TMSS},
@@ -65,6 +66,10 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 	{"Manual", "manual", AnyFile, Misc_Filenames.Manual},
 	{NULL, NULL, (FileFilterType)0, NULL},
 };
+
+
+// Handles for the Win32 textboxes.
+HWND bmf_txtEntry[BIOSMiscFiles_Count];
 
 
 /**
@@ -111,11 +116,12 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 	Win32_centerOnGensWindow(hWnd);
 	
 	// Create all frames. This will be fun!
-	HWND grpBox;
-	HWND lblTitle, txtEntry;
+	HWND grpBox = NULL;
+	HWND lblTitle, txtEntry, btnChange;
 	
 	// Positioning.
 	int grpBox_Top = 0, grpBox_Height = 0, grpBox_Entry = 0;
+	int entryTop;
 	int file = 0;
 	
 	while (BIOSMiscFiles[file].title)
@@ -124,8 +130,9 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 		{
 			// No entry buffer. This is a new frame.
 			grpBox_Top += grpBox_Height + 8;
-			grpBox_Height = 16;
+			grpBox_Height = 24;
 			grpBox_Entry = 0;
+			bmf_txtEntry[file] = NULL;
 			
 			grpBox = CreateWindow(WC_BUTTON, BIOSMiscFiles[file].title,
 					      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
@@ -134,6 +141,46 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			
 			// Set the font for the groupbox title.
 			SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+		}
+		else
+		{
+			// File entry.
+			grpBox_Height += 24;
+			entryTop = 20 + (grpBox_Entry * 24);
+			SetWindowPos(grpBox, NULL, 0, 0, frameWidth, grpBox_Height, SWP_NOMOVE | SWP_NOZORDER);
+			
+			// Create the label for the title.
+			lblTitle = CreateWindow(WC_STATIC, BIOSMiscFiles[file].title,
+						WS_CHILD | WS_VISIBLE | SS_LEFT,
+						8, entryTop, 56, 16,
+						grpBox, NULL, ghInstance, NULL);
+						
+			// Set the font for the label.
+			SendMessage(lblTitle, WM_SETFONT, (WPARAM)fntMain, 1);
+			
+			// Create the textbox for the entry.
+			txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, BIOSMiscFiles[file].entry,
+						  WS_CHILD | WS_VISIBLE | WS_GROUP | WS_TABSTOP | SS_LEFT,
+						  8+56+8, entryTop, frameWidth - (8+56+8+16+64), 20,
+						  grpBox, NULL, ghInstance, NULL);
+			
+			// Set the font for the entry.
+			SendMessage(txtEntry, WM_SETFONT, (WPARAM)fntMain, 1);
+			
+			// Create the change button for the entry.
+			btnChange = CreateWindow(WC_BUTTON, "Change...",
+						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+						 frameWidth - (8+8+56), entryTop, 64, 20,
+						 grpBox, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
+						 
+			// Set the font for the button.
+			SendMessage(btnChange, WM_SETFONT, (WPARAM)fntMain, 1);
+			
+			// Save the text entry hWnd for later.
+			bmf_txtEntry[file] = txtEntry;
+			
+			// Next entry.
+			grpBox_Entry++;
 		}
 		
 		// Next file.

@@ -42,7 +42,9 @@ extern "C" {
 #include <windows.h>
 
 // Contains all the BIOS/Misc File entries.
+extern const unsigned short BIOSMiscFiles_Count;
 extern const struct BIOSMiscFileEntry_t BIOSMiscFiles[];
+extern HWND bmf_txtEntry[/*BIOSMiscFiles_Count*/];
 
 HWND create_bios_misc_files_window(void); 
 extern HWND bios_misc_files_window;

@@ -16,6 +16,9 @@
 #define IDC_BTN_APPLY		0x1003
 #define IDC_BTN_SAVE		0x1004
 
+// Change Button. (LOWORD(wParam) & 0xFF) == file ID.
+#define IDC_BTN_CHANGE		0x1100
+
 // Trackbars
 #define IDC_TRK_CA_CONTRAST	0x2001
 #define IDC_TRK_CA_BRIGHTNESS	0x2002
