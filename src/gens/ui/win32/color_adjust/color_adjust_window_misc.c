@@ -31,6 +31,7 @@
 #include "emulator/g_update.hpp"
 
 #include <windows.h>
+#include <commctrl.h>
 
 
 /**
@@ -50,17 +51,8 @@ void Open_Color_Adjust(void)
 	//gtk_window_set_transient_for(GTK_WINDOW(ca), GTK_WINDOW(gens_window));
 	
 	// Load settings.
-	// TODO
-#if 0
-	hscale_slider_contrast = lookup_widget(ca, "hscale_slider_contrast");
-	gtk_range_set_value(GTK_RANGE(hscale_slider_contrast), Contrast_Level - 100);
-	hscale_slider_brightness = lookup_widget(ca, "hscale_slider_brightness");
-	gtk_range_set_value(GTK_RANGE(hscale_slider_brightness), Brightness_Level - 100);
-	check_options_grayscale = lookup_widget(ca, "check_options_grayscale");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_options_grayscale), Greyscale);
-	check_options_inverted = lookup_widget(ca, "check_options_inverted");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_options_inverted), Invert_Color);
-#endif
+	SendMessage(ca_trkContrast, TBM_SETPOS, TRUE, Contrast_Level - 100);
+	SendMessage(ca_trkBrightness, TBM_SETPOS, TRUE, Brightness_Level - 100);
 	
 	// Show the Color Adjustment window.
 	ShowWindow(ca, 1);
@@ -72,20 +64,9 @@ void Open_Color_Adjust(void)
  */
 void CA_Save(void)
 {
-	// TODO
-#if 0
-	GtkWidget *hscale_slider_contrast, *hscale_slider_brightness;
-	GtkWidget *check_options_grayscale, *check_options_inverted;
-	
 	// Save settings.
-	hscale_slider_contrast = lookup_widget(color_adjust_window, "hscale_slider_contrast");
-	Contrast_Level = gtk_range_get_value(GTK_RANGE(hscale_slider_contrast)) + 100;
-	hscale_slider_brightness = lookup_widget(color_adjust_window, "hscale_slider_brightness");
-	Brightness_Level = gtk_range_get_value(GTK_RANGE(hscale_slider_brightness)) + 100;
-	check_options_grayscale = lookup_widget(color_adjust_window, "check_options_grayscale");
-	Greyscale = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_options_grayscale));
-	check_options_inverted = lookup_widget(color_adjust_window, "check_options_inverted");
-	Invert_Color = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_options_inverted));
+	Contrast_Level = SendMessage(ca_trkContrast, TBM_GETPOS, 0, 0) + 100;
+	Brightness_Level = SendMessage(ca_trkBrightness, TBM_GETPOS, 0, 0) + 100;
 	
 	// Recalculate palettes.
 	Recalculate_Palettes();
@@ -96,5 +77,4 @@ void CA_Save(void)
 		if (!Paused)
 			Update_Emulation_One();
 	}
-#endif
 }

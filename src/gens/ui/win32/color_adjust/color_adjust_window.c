@@ -82,7 +82,7 @@ HWND create_color_adjust_window(void)
 	color_adjust_window = CreateWindowEx(NULL, "Gens_Color_Adjust", "Color Adjustment",
 					     (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     304 + Win32_dw, 288 + 4 + Win32_dh, NULL, NULL, ghInstance, NULL);
+					     280 + Win32_dw, 112 + Win32_dh, NULL, NULL, ghInstance, NULL);
 	
 	UpdateWindow(color_adjust_window);
 	return color_adjust_window;
@@ -129,4 +129,11 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	ca_lblBrightnessVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
 					   8+56+192+8, 48, 32, 16, hWnd, NULL, ghInstance, NULL);
 	SendMessage(ca_lblBrightnessVal, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// Buttons
+	HWND btnOK;
+	btnOK = CreateWindow(WC_BUTTON, "OK", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+			     8, 80, 75, 23,
+			     hWnd, (HMENU)ID_BTN_OK, ghInstance, NULL);
+	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
 }
