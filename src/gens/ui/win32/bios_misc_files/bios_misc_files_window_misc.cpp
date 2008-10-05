@@ -68,7 +68,7 @@ void BIOS_Misc_Files_Change(int file)
 	
 	// Request a new file.
 	sprintf(tmp, "Select %s File", BIOSMiscFiles[file].title);
-	newFile = GensUI::openFile(tmp, curFile, BIOSMiscFiles[file].filter);
+	newFile = GensUI::openFile(tmp, curFile, BIOSMiscFiles[file].filter, bios_misc_files_window);
 	
 	// If Cancel was selected, don't do anything.
 	if (newFile.length() == 0)
