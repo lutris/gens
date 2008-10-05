@@ -42,6 +42,7 @@ using std::list;
 
 
 static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst);
+static inline int getCurListItem(HWND hWndDlg, int nIDDlgItem);
 
 
 LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -56,6 +57,7 @@ CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 	result = DialogBoxParam(ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
 				Gens_hWnd, reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
 				reinterpret_cast<LPARAM>(lst));
+	printf("Result: %d\n", result);
 	return NULL;
 #if 0
 	GtkWidget *Zip, *treeview;
@@ -156,11 +158,18 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 			switch (LOWORD(wParam))
 			{
 				case IDOK:
-					EndDialog(hWndDlg, IDOK);
+					EndDialog(hWndDlg, getCurListItem(hWndDlg, IDC_ZIPSELECT_LSTFILES));
 					return TRUE;
 				case IDCANCEL:
-					EndDialog(hWndDlg, IDCANCEL);
+					EndDialog(hWndDlg, -1);
 					return TRUE;
+				case IDC_ZIPSELECT_LSTFILES:
+					if (HIWORD(wParam) == LBN_DBLCLK)
+					{
+						// Listbox double-click. Interpret this as "OK".
+						EndDialog(hWndDlg, getCurListItem(hWndDlg, IDC_ZIPSELECT_LSTFILES));
+						return TRUE;
+					}
 			}
 			break;
 	}
@@ -192,4 +201,17 @@ static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
 		SendMessage(lstFiles, LB_ADDSTRING, static_cast<WPARAM>(NULL),
 			    reinterpret_cast<LPARAM>((*lstIter).filename.c_str()));
 	}
+}
+
+
+/**
+ * getCurListItem(): Gets the index of the selected list item.
+ * @param hWndDlg Dialog containing the listbox.
+ * @param nIDDlgItem ID of the listbox.
+ * @return Index of the selected list item. (-1 if nothing is selected.)
+ */
+static inline int getCurListItem(HWND hWndDlg, int nIDDlgItem)
+{
+	HWND lstBox = GetDlgItem(hWndDlg, nIDDlgItem);
+	return SendMessage(lstBox, LB_GETCURSEL, NULL, NULL);
 }
