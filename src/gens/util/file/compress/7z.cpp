@@ -22,22 +22,32 @@
 
 #include "7z.hpp"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
-// Pipe includes
-#include <fcntl.h>
-#include <signal.h>
-#include <unistd.h>
+// Error number variable.
 #include <errno.h>
+
+// popen wrapper
+#include "popen_wrapper.h"
 
 #include <string>
 #include <sstream>
 using std::string;
 using std::stringstream;
+
+// Newline constant: "\r\n" on Win32, "\n" on everything else.
+#ifdef GENS_OS_WIN32
+#define _7Z_NEWLINE "\r\n"
+#define _7Z_NEWLINE_LENGTH 2
+#else
+#define _7Z_NEWLINE "\n"
+#define _7Z_NEWLINE_LENGTH 1
+#endif
 
 _7z::_7z()
 {
@@ -85,7 +95,7 @@ int _7z::getNumFiles(string zFilename)
 	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" l \"" << zFilename << "\"";
 	
 	// Open the 7z file.
-	p_7z = popen(ssCmd.str().c_str(), "r");
+	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -98,7 +108,7 @@ int _7z::getNumFiles(string zFilename)
 		buf[rv] = 0x00;
 		ss << buf;
 	}
-	pclose(p_7z);
+	gens_pclose(p_7z);
 	
 	// Get the string and go through it to get the number of files.
 	data = ss.str();
@@ -113,7 +123,7 @@ int _7z::getNumFiles(string zFilename)
 	}
 	
 	// Find the newline after the list start.
-	unsigned int listStartLF = data.find("\n", listStart);
+	unsigned int listStartLF = data.find(_7Z_NEWLINE, listStart);
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
@@ -121,13 +131,13 @@ int _7z::getNumFiles(string zFilename)
 	}
 	
 	// Parse all lines until we hit another "---" (or EOF).
-	unsigned int curStartPos = listStartLF + 1;
+	unsigned int curStartPos = listStartLF + _7Z_NEWLINE_LENGTH;
 	unsigned int curEndPos;
 	string curLine;
 	bool endOf7z = false;
 	while (!endOf7z)
 	{
-		curEndPos = data.find("\n", curStartPos);
+		curEndPos = data.find(_7Z_NEWLINE, curStartPos);
 		if (curEndPos == string::npos)
 		{
 			// End of list.
@@ -154,7 +164,7 @@ int _7z::getNumFiles(string zFilename)
 		}
 		
 		// Go to the next file in the listing.
-		curStartPos = curEndPos + 1;
+		curStartPos = curEndPos + _7Z_NEWLINE_LENGTH;
 	}
 	
 	// Return the number of files found.
@@ -183,7 +193,8 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	stringstream ssCmd;
 	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" l \"" << zFilename << "\"";
 	
-	p_7z = popen(ssCmd.str().c_str(), "r");
+	// Open the 7z file.
+	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -196,7 +207,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 		buf[rv] = 0x00;
 		ss << buf;
 	}
-	pclose(p_7z);
+	gens_pclose(p_7z);
 	
 	// Get the string and go through it to get the number of files.
 	data = ss.str();
@@ -211,7 +222,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	}
 	
 	// Find the newline after the list start.
-	unsigned int listStartLF = data.find("\n", listStart);
+	unsigned int listStartLF = data.find(_7Z_NEWLINE, listStart);
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
@@ -222,13 +233,13 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	lst = new list<CompressedFile>;
 	
 	// Parse all lines until we hit another "---" (or EOF).
-	unsigned int curStartPos = listStartLF + 1;
+	unsigned int curStartPos = listStartLF + _7Z_NEWLINE_LENGTH;
 	unsigned int curEndPos;
 	string curLine;
 	bool endOf7z = false;
 	while (!endOf7z)
 	{
-		curEndPos = data.find("\n", curStartPos);
+		curEndPos = data.find(_7Z_NEWLINE, curStartPos);
 		if (curEndPos == string::npos)
 		{
 			// End of list.
@@ -258,7 +269,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 		}
 		
 		// Go to the next file in the listing.
-		curStartPos = curEndPos + 1;
+		curStartPos = curEndPos + _7Z_NEWLINE_LENGTH;
 	}
 	
 	// Return the list of files.
@@ -288,7 +299,7 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" e \"" << zFilename
 	      << "\" \"" << fileInfo->filename << "\" -so 2>/dev/null";
 	
-	p_7z = popen(ssCmd.str().c_str(), "r");
+	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -303,7 +314,7 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 		memcpy(&buf[totalSize], &buf7z, rv);
 		totalSize += rv;
 	}
-	pclose(p_7z);
+	gens_pclose(p_7z);
 	
 	// Return the filesize.
 	return totalSize;

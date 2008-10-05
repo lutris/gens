@@ -229,6 +229,7 @@ noinst_HEADERS = \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/7z.hpp \
+		util/file/compress/popen_wrapper.h \
 		util/gfx/scrshot.h \
 		util/sound/gym.hpp \
 		util/sound/wave.h \

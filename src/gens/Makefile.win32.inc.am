@@ -8,6 +8,7 @@ gens_SOURCES += \
 		video/v_draw_ddraw.cpp \
 		input/input_dinput.cpp \
 		audio/audio_dsound.cpp \
+		util/file/compress/popen_wrapper.c \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
