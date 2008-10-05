@@ -31,11 +31,14 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
 		ui/win32/gens/gens_window_menu.h \
+		ui/win32/bios_misc_files/bios_misc_files_window.hpp \
+		ui/win32/bios_misc_files/bios_misc_files_window_callbacks.h \
+		ui/win32/bios_misc_files/bios_misc_files_window_misc.hpp \
 		ui/win32/color_adjust/color_adjust_window.h \
 		ui/win32/color_adjust/color_adjust_window_callbacks.h \
 		ui/win32/color_adjust/color_adjust_window_misc.h \
 		ui/win32/about/about_window.hpp
 
 if GENS_UI_WIN32
-gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -ldxguid -lddraw -ldinput -ldsound
+gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound
 endif
