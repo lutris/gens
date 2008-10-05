@@ -20,12 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef WIN32_GENS_WINDOW_SYNC_HPP
-#define WIN32_GENS_WINDOW_SYNC_HPP
+#ifndef GENS_WIN32_GENS_WINDOW_SYNC_HPP
+#define GENS_WIN32_GENS_WINDOW_SYNC_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <windows.h>
 
 void Sync_Gens_Window(void);
 void Sync_Gens_Window_FileMenu(void);
@@ -40,4 +42,4 @@ void Sync_Gens_Window_OptionsMenu(void);
 }
 #endif
 
-#endif /* WIN32_GENS_WINDOW_SYNC_HPP */
+#endif /* GENS_WIN32_GENS_WINDOW_SYNC_HPP */
