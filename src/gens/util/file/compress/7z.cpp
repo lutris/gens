@@ -81,13 +81,11 @@ int _7z::getNumFiles(string zFilename)
 	int numFiles = 0;
 	
 	// Build the command line.
-	// TODO: Make "/usr/bin/7z" configurable.
-	string cmd = Misc_Filenames._7z_Binary;
-	cmd += " l ";
-	cmd += "\"" + zFilename + "\"";
+	stringstream ssCmd;
+	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" l \"" << zFilename << "\"";
 	
 	// Open the 7z file.
-	p_7z = popen(cmd.c_str(), "r");
+	p_7z = popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -182,12 +180,10 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	int numFiles = 0;
 	
 	// Build the command line.
-	// TODO: Make "/usr/bin/7z" configurable.
-	string cmd = Misc_Filenames._7z_Binary;
-	cmd += " l ";
-	cmd += "\"" + zFilename + "\"";
+	stringstream ssCmd;
+	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" l \"" << zFilename << "\"";
 	
-	p_7z = popen(cmd.c_str(), "r");
+	p_7z = popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
@@ -288,14 +284,11 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	int totalSize = 0;
 	
 	// Build the command line.
-	// TODO: Make "/usr/bin/7z" configurable.
-	string cmd = Misc_Filenames._7z_Binary;
-	cmd += " e ";
-	cmd += "\"" + zFilename + "\" ";
-	cmd += "\"" + fileInfo->filename + "\" ";
-	cmd += "-so 2>/dev/null";
+	stringstream ssCmd;
+	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" e \"" << zFilename
+	      << "\" \"" << fileInfo->filename << "\" -so 2>/dev/null";
 	
-	p_7z = popen(cmd.c_str(), "r");
+	p_7z = popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
 		printf("Error opening p_7z: error %s.\n", strerror(errno));
