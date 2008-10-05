@@ -33,7 +33,6 @@
 // New video layer.
 #include "video/v_draw.hpp"
 
-#include "gens.hpp"
 #include "g_main.hpp"
 #include "port/port.h"
 #include "util/file/save.hpp"

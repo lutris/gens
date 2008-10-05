@@ -26,7 +26,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
-#include "emulator/gens.hpp"
 #include "gens_ui.hpp"
 
 #include <sstream>

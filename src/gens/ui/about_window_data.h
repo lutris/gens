@@ -5,8 +5,6 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-#include "emulator/gens.hpp"
-
 #ifdef VERSION
 static const char* aboutTitle = "Gens/GS\nVersion " VERSION;
 #else
