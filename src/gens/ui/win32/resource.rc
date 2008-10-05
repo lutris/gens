@@ -14,7 +14,7 @@ IDB_GENS_LOGO_SMALL	BITMAP		"../../../../pixmaps/gens_small.bmp"
 IDB_GENS_LOGO_BIG	BITMAP		"../../../../pixmaps/gens_big.bmp"
 
 // Dialogs
-IDD_ZIPSELECT		DIALOGEX	0, 0, 224, 144
+IDD_ZIPSELECT		DIALOGEX	0, 0, 224, 148
 STYLE			DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 0, 0, 0
 CAPTION "Archive File Selection"
