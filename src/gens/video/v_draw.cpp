@@ -506,22 +506,26 @@ void VDraw::calcTextStyle(void)
 /**
  * setBpp(): Sets the bpp value.
  * @param newbpp New bpp value.
+ * @param resetVideo If true, resets the video subsystem if bpp needs to be changed.
  */
-void VDraw::setBpp(const int newBpp)
+void VDraw::setBpp(const int newBpp, const bool resetVideo)
 {
 	if (bpp == newBpp)
 		return;
 	
 	bpp = newBpp;
-	End_Video();
-	Init_Video();
+	if (resetVideo)
+	{
+		End_Video();
+		Init_Video();
+	}
 	
 	// Reset the renderer.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (!setRender(rendMode))
+	if (!setRender(rendMode, resetVideo))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!setRender(0))
+		if (!setRender(0, resetVideo))
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);

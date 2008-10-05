@@ -57,7 +57,7 @@ class VDraw
 		int flip(void);
 		
 		// Sets the bpp value.
-		void setBpp(const int newBpp);
+		void setBpp(const int newBpp, const bool resetVideo = true);
 		
 		// Refresh the video subsystem.
 		void Refresh_Video(void);

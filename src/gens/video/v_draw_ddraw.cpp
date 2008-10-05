@@ -92,25 +92,37 @@ int VDraw_DDraw::Init_Video(void)
 	lpDD_Init->Release();
 	lpDD_Init = NULL;
 	
-	// TODO: Automatic 15-bit color detection.
-#if 0
-	if (!(Mode_555 & 2))
+	// TODO: 15-bit color override ("Force 555" or "Force 565" in the config file).
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	
+	lpDD->GetDisplayMode(&ddsd);
+	
+	unsigned char newBpp;
+	switch (ddsd.ddpfPixelFormat.dwGBitMask)
 	{
-		memset(&ddsd, 0, sizeof(ddsd));
-		ddsd.dwSize = sizeof(ddsd);
-		
-		lpDD->GetDisplayMode(&ddsd);
-		
-		if (ddsd.ddpfPixelFormat.dwGBitMask == 0x03E0) Mode_555 = 1;
-		else Mode_555 = 0;
-		
-		Recalculate_Palettes();
+		case 0x03E0:
+			// 15-bit color.
+			newBpp = 15;
+			break;
+		case 0x07E0:
+			// 16-bit color.
+			newBpp = 16;
+			break;
+		case 0x00FF00:
+		default:
+			// 32-bit color.
+			newBpp = 32;
+			break;
 	}
-#endif
+	
+	if (newBpp != bpp)
+		setBpp(newBpp, false);
 	
 	setCooperativeLevel();
 	
 	// TODO: Figure out what FS_No_Res_Change is for.
+	// TODO: Figure out if this is correct.
 	if (m_FullScreen /* && !FS_No_Res_Change*/)
 	{
 		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, bpp, 0, 0)))
@@ -134,7 +146,9 @@ int VDraw_DDraw::Init_Video(void)
 	}
 	
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Primary, NULL)))
+	{
 		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()! [lpDDS_Primary]");
+	}
 	
 	if (m_FullScreen)
 	{
@@ -296,11 +310,6 @@ int VDraw_DDraw::reinitGensWindow(void)
 		AdjustWindowRectEx(&r, GetWindowLong(Gens_hWnd, GWL_STYLE), 1, GetWindowLong(Gens_hWnd, GWL_EXSTYLE));
 		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, r.right - r.left, r.bottom - r.top, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
-	
-	// TODO: 32-bit color stuff.
-	DEVMODE dm;
-	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS, &dm);
-	//Bits32 = ((dm.dmBitsPerPel > 16) ? 1: 0);
 	
 	Sync_Gens_Window();
 	return Init_Video();
