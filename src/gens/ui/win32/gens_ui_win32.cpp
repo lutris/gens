@@ -78,6 +78,9 @@ static string UI_Win32_OpenFile_int(const string& title,
 				    const bool openOrSave);
 
 
+static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
+
+
 /**
  * init(): Initialize the Win32 UI.
  * @param argc main()'s argc. (unused)
@@ -417,6 +420,8 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	bi.ulFlags = BIF_RETURNONLYFSDIRS;
 	bi.lParam = NULL;
 	bi.iImage = 0;
+	bi.lpfn = selectDir_SetSelProc;
+	bi.lParam = (LPARAM)(initDir.c_str());
 	
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if (!pidl)
@@ -430,6 +435,24 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 		return "";
 	
 	return selDir;
+}
+
+
+/**
+ * selectDir_SetSelProc(): Set the initial directory in GensUI::selectDir().
+ * @param hWnd Window handle of the "Browse for Folder" dialog.
+ * @param uMsg Message.
+ * @param lParam lParam.
+ * @param lpData Pointer to C string containing the initial directory.
+ * @return 0.
+ */
+static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	if (uMsg == BFFM_INITIALIZED)
+	{
+		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);
+	}
+	return 0;
 }
 
 
