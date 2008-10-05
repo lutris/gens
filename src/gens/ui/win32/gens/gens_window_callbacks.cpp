@@ -33,8 +33,8 @@
 #include "controller_config/controller_config_window_misc.hpp"
 #endif
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
-#if 0
 #include "directory_config/directory_config_window_misc.hpp"
+#if 0
 #include "general_options/general_options_window_misc.hpp"
 #endif
 #include "about/about_window.hpp"
@@ -650,6 +650,10 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 			Sync_Gens_Window();
 			break;
 		
+		case ID_OPTIONS_DIRECTORIES:
+			Open_Directory_Config();
+			break;
+		
 		case ID_OPTIONS_SAVECONFIGAS:
 			Save_As_Config();
 			break;
@@ -755,18 +759,6 @@ void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Controller_Config();
-}
-
-
-/**
- * Options, Directories...
- */
-void on_OptionsMenu_Directories_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_Directory_Config();
 }
 
 
