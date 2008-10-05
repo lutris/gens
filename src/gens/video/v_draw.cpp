@@ -360,7 +360,8 @@ static inline void drawChar_2x(pixel *screen, const int fullW, const int x, cons
 
 template<typename pixel>
 void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int h,
-			 const char *msg, const pixel transparentMask, const VDraw_Style& style)
+			 const char *msg, const pixel transparentMask, const VDraw_Style& style,
+			 const bool adjustForScreenSize)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
@@ -378,9 +379,19 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		charSize = 8;
 	
 	// Bottom-left of the screen.
-	x = m_HBorder + 8;
-	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
-	printf("text: x == %d, y == %d\n", x, y);
+	if (adjustForScreenSize)
+	{
+		// Adjust for screen size. (SDL/GL)
+		x = ((m_HBorder / 2) << m_shift) + 8;
+		y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+		printf("text: x == %d, y == %d\n", x, y);
+	}
+	else
+	{
+		// Don't adjust for screen size. (DDraw)
+		x = 8;
+		y = VDP_Num_Vis_Lines;
+	}
 	
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
@@ -389,7 +400,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	msgLength = strlen(msg);
 	
 	// Determine how many linebreaks are needed.
-	msgWidth = w - 16 - (m_HBorder * 2);
+	msgWidth = w - 16 - (m_HBorder << m_shift);
 	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
 	y -= (linebreaks * charSize);
 	
@@ -429,19 +440,22 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 
 
 void VDraw::drawText(void *screen, const int fullW, const int w, const int h,
-		     const char *msg, const VDraw_Style& style)
+		     const char *msg, const VDraw_Style& style,
+		     const bool adjustForScreenSize)
 {
 	if (bpp == 15 || bpp == 16)
 	{
 		// 15/16-bit color.
 		drawText_int((unsigned short*)screen, fullW, w, h, msg,
-			     (unsigned short)m_Transparency_Mask, style);
+			     (unsigned short)m_Transparency_Mask, style,
+			     adjustForScreenSize);
 	}
 	else // if (bpp == 32)
 	{
 		// 32-bit color.
 		drawText_int((unsigned int*)screen, fullW, w, h, msg,
-			     m_Transparency_Mask, style);
+			     m_Transparency_Mask, style,
+			     adjustForScreenSize);
 	}
 }
 

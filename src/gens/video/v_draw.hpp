@@ -134,11 +134,13 @@ class VDraw
 		
 		// Draw a line of text on the screen.
 		void drawText(void *screen, const int fullW, const int w, const int h,
-			      const char *msg, const VDraw_Style& style);
+			      const char *msg, const VDraw_Style& style,
+			      const bool adjustForScreenSize = true);
 		
 		template<typename pixel>
 		void drawText_int(pixel *screen, const int fullW, const int w, const int h,
-				  const char *msg, const pixel transparentMask, const VDraw_Style& style);
+				  const char *msg, const pixel transparentMask, const VDraw_Style& style,
+				  const bool adjustForScreenSize = true);
 		
 		// Calculates the text style values.
 		void calcTextStyle(void);

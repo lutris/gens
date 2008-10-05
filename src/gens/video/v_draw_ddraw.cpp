@@ -15,7 +15,7 @@
 #include "gens/gens_window_sync.hpp"
 
 // Modif N. -- added
-#define CORRECT_256_ASPECT_RATIO
+#undef CORRECT_256_ASPECT_RATIO
 #ifndef CORRECT_256_ASPECT_RATIO
 	// actually wrong, the genesis image is not supposed to get thinner in this mode
 	#define ALT_X_RATIO_RES 256
@@ -26,6 +26,35 @@
 
 #define IS_FULL_X_RESOLUTION ((VDP_Reg.Set4 & 0x1) || Debug || !Game /*|| !FrameCount*/)
 #define IS_FULL_Y_RESOLUTION ((VDP_Reg.Set2 & 0x8) || Debug || !Game /*|| !FrameCount*/)
+
+
+inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, int renderMode)
+{
+	lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
+	
+	const int w = (renderMode == 0 ? 320 : 640);
+	const int h = (renderMode == 0 ? 240 : 480);
+	
+	// +8 is needed for the lpSurface pointer because the DDraw module
+	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
+	// so they won't show up at all.
+	
+	if (m_MsgVisible)
+	{
+		// Message is visible.
+		drawText((unsigned char*)pddsd->lpSurface + 8, pddsd->dwWidth,
+			 w, h, m_MsgText.c_str(), m_MsgStyle, false);
+	}
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	{
+		// FPS is enabled.
+		drawText((unsigned char*)pddsd->lpSurface + 8, pddsd->dwWidth,
+			 w, h, m_MsgText.c_str(), m_FPSStyle, false);
+	}
+	
+	lpDDS_Surface->Unlock(NULL);
+}
+
 
 VDraw_DDraw::VDraw_DDraw()
 {
@@ -838,18 +867,26 @@ int VDraw_DDraw::flipInternal(void)
 		if (Video.Render_W >= 1)
 		{
 			rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-
+			
 			if (FAILED(rval))
 				goto cleanup_flip;
-
-			Blit_W((unsigned char *) ddsd.lpSurface + ddsd.lPitch * (240 - VDP_Num_Vis_Lines) + Dep * bytespp, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
-
+			
+			int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+			int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+			int startPos = (ddsd.lPitch * VBorder) + HBorder;
+			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			
+			Blit_W(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+			
 			lpDDS_Blit->Unlock(NULL);
 		}
-
+		
+		// Draw the text.
+		DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_W);
+		
 		p.x = p.y = 0;
 		ClientToScreen(Gens_hWnd, &p);
-
+		
 		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
 		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
 		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
@@ -875,26 +912,6 @@ cleanup_flip:
 		rval = RestoreGraphics();
 	
 	return 1;
-	
-	// Draw the message and/or FPS.
-	// TODO
-#if 0
-	if (m_MsgVisible)
-	{
-		// Message is visible.
-		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(),
-			 m_MsgColor, m_MsgDoubleSize, m_MsgTransparent);
-	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
-	{
-		// FPS is enabled.
-		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(),
-			 m_FPSColor, m_FPSDoubleSize, m_FPSTransparent);
-	}
-	
-	// TODO: Return appropriate error code.
-	return 1;
-#endif
 }
 
 

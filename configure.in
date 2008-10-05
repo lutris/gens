@@ -270,9 +270,9 @@ if test x$os != xwin32; then
 fi
 
 # Compile as a GUI program on Win32.
-if test x$os = xwin32; then
-	LDFLAGS="$LDFLAGS -Wl,-subsystem,windows"
-fi
+#if test x$os = xwin32; then
+#	LDFLAGS="$LDFLAGS -Wl,-subsystem,windows"
+#fi
 
 # Windows NT target version
 if test x$os = xwin32; then
