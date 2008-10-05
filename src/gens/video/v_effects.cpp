@@ -22,7 +22,9 @@
 
 #include <math.h>
 
+#ifdef __linux__
 #include <SDL/SDL.h>
+#endif /* __linux__ */
 
 #include "v_effects.hpp"
 #include "gens_core/misc/misc.h"
@@ -49,6 +51,8 @@ int Update_Gens_Logo(void)
 	if (!Init)
 	{
 		// TODO: Don't use SDL for image loading.
+		// TODO: Fix this for Win32.
+#ifdef __linux__
 		SDL_Surface* Logo;
 		
 		Logo = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");
@@ -59,6 +63,7 @@ int Update_Gens_Logo(void)
 		
 		pas = 0.05;
 		Init = 1;
+#endif
 	}
 	
 	renv += pas;

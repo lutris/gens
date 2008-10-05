@@ -33,8 +33,8 @@
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
-#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
@@ -199,7 +199,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Rebuild the Render submenu
 	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
-	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(MItem_Render_SubMenu);
+	Sync_Gens_Window_GraphicsMenu_Render(MItem_Render_SubMenu);
 	
 	// Selected Render Mode
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
@@ -264,10 +264,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 
 
 /**
- * Sync_Gens_Window_GraphicsMenu_Render_SubMenu(): Synchronize the Graphics, Render submenu.
+ * Sync_Gens_Window_GraphicsMenu_Render(): Synchronize the Graphics, Render submenu.
  * @param container Container for this menu.
  */
-void Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GtkWidget *container)
+void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 {
 	GtkWidget *SubMenu;
 	GtkWidget *RenderItem;
@@ -536,6 +536,7 @@ void Sync_Gens_Window_OptionsMenu(void)
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
+	// SegaCD SRAM Size
 	if (BRAM_Ex_State & 0x100)
 	{
 		// RAM cart selected.

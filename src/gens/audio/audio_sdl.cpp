@@ -26,6 +26,9 @@
 
 Audio_SDL::Audio_SDL()
 {
+	audio_len = 0;
+	pMsndOut = NULL;
+	audiobuf = NULL;
 }
 
 Audio_SDL::~Audio_SDL()
@@ -311,8 +314,22 @@ int Audio_SDL::stopSound(void)
 	rval = lpDSBuffer->Stop ();
 
 	if (rval != DS_OK) return 0;
-
-	Sound_Is_Playing = 0;
 #endif
+	m_soundIsPlaying = false;
 	return 1;
+}
+
+
+/**
+ * waitForAudioBuffer(): Wait for the audio buffer to empty out.
+ * This function is used for Auto Frame Skip.
+ */
+void Audio_SDL::waitForAudioBuffer(void)
+{
+	writeSoundBuffer(NULL);
+	while (audio_len <= (m_segLength * Seg_To_Buffer))
+	{
+		Update_Frame_Fast();
+		writeSoundBuffer(NULL);
+	}
 }

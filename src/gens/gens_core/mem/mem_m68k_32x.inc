@@ -130,14 +130,14 @@
 	ALIGN4
 
 	.Pad_1
-		call RD_Controller_1
+		call _RD_Controller_1
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Pad_2
-		call RD_Controller_2
+		call _RD_Controller_2
 		pop ebx
 		ret
 
@@ -578,14 +578,14 @@
 	ALIGN4
 
 	.Pad_1
-		call RD_Controller_1
+		call _RD_Controller_1
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Pad_2
-		call RD_Controller_2
+		call _RD_Controller_2
 		pop ebx
 		ret
 
@@ -1051,7 +1051,7 @@
 
 	.Pad_1
 		push eax
-		call WR_Controller_1
+		call _WR_Controller_1
 		pop eax
 		pop ecx
 		pop ebx
@@ -1061,7 +1061,7 @@
 
 	.Pad_2
 		push eax
-		call WR_Controller_2
+		call _WR_Controller_2
 		pop eax
 		pop ecx
 		pop ebx
@@ -1684,7 +1684,7 @@
 
 	.Pad_1
 		push eax
-		call WR_Controller_1
+		call _WR_Controller_1
 		pop eax
 		pop ecx
 		pop ebx
@@ -1694,7 +1694,7 @@
 
 	.Pad_2
 		push eax
-		call WR_Controller_2
+		call _WR_Controller_2
 		pop eax
 		pop ecx
 		pop ebx

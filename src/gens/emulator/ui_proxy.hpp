@@ -39,24 +39,6 @@ int Change_SegaCD_SRAM_Size(const int num);
 void system_reset(void);
 void Set_Game_Name(void);
 
-typedef enum {
-	NORMAL = 1,
-	DOUBLE = 2,
-	INTERPOLATED = 3,
-	FULL_SCANLINE = 4,
-	SCANLINE_50 = 5,
-	SCANLINE_25 = 6,
-	INTERPOLATED_SCANLINE = 7,
-	INTERPOLATED_SCANLINE_50 = 8,
-	INTERPOLATED_SCANLINE_25 = 9,
-	KREED = 10,
-	SCALE2X = 11,
-	HQ2X = 12,
-	NB_FILTER = 13
-} _filters;
-
-extern _filters filters;
-
 #ifdef __cplusplus
 }
 #endif

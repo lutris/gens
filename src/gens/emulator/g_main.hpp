@@ -16,7 +16,7 @@ extern "C" {
 #if (defined(__linux__))
 #include "g_main_linux.hpp"
 #elif (defined(__WIN32__))
-#error TODO: Add Win32 support.
+#include "g_main_win32.hpp"
 #else
 #error Unsupported operating system.
 #endif
@@ -82,17 +82,8 @@ extern struct Gens_BIOS_Filenames_t BIOS_Filenames;
 extern struct Gens_Misc_Filenames_t Misc_Filenames;
 extern struct Gens_VideoSettings_t Video;
 
-// Bits per pixel.
-// This is used by asm functions, so it can't be kept in a struct.
-extern unsigned char bpp;
-
 // TODO: Only used for DirectDraw.
 extern int Flag_Clr_Scr;
-
-// from gens-rerecording
-// TODO: Move somewhere else.
-extern int _XRay;
-extern unsigned int _Pal32_XRAY[0x10000];
 
 extern int Paused;
 extern int Net_Play;
@@ -133,11 +124,16 @@ void close_gens();
 int IsAsyncAllowed(void);
 
 
+// Initialization functions.
+int Init(void);
+void Init_Settings(void);
+
+
 // MESSAGE_L functions.
 void MESSAGE_L(const char* str, const char* def, int time);
 void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
 void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time);
-void MESSAGE_NUM2_L(const char* str, const char* def, int num1, int num2, int time);
+void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time);
 
 
 #define MINIMIZE \
@@ -173,11 +169,6 @@ extern int (*Update_Frame_Fast)(void);
 
 // Miscellaneous.
 void Clear_Screen_MD(void);
-
-#ifdef GENS_OPENGL
-void Change_OpenGL(int newOpenGL);
-void Set_GL_Resolution(int w, int h);
-#endif /* GENS_OPENGL */
 
 #ifdef __cplusplus
 }

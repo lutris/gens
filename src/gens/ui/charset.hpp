@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) About Window.                                              *
+ * Gens: Character set conversion functions.                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,23 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_ABOUT_WINDOW_H
-#define GTK_ABOUT_WINDOW_H
+#ifndef GENS_CHARSET_HPP
+#define GENS_CHARSET_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
 
-#include <gtk/gtk.h>
+std::string charset_utf8_to_cp1252(const char* s_utf8, const char repChar = '?');
 
-GtkWidget* create_about_window(void); 
-extern GtkWidget *about_window;
-
-gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_button_about_OK_clicked(GtkButton *button, gpointer user_data);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif /* GENS_CHARSET_HPP */

@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include "emulator/gens.hpp"
+
 typedef enum
 {
 	AnyFile		= 0,
@@ -46,6 +48,16 @@ typedef enum
 #include <string>
 using std::string;
 
+// Message box icons for GensUI::msgBox().
+enum MSGBOX_ICON
+{
+	MSGBOX_ICON_NONE = 0,
+	MSGBOX_ICON_INFO = 1,
+	MSGBOX_ICON_QUESTION = 2,
+	MSGBOX_ICON_WARNING = 3,
+	MSGBOX_ICON_ERROR = 4,
+};
+
 class GensUI
 {
 	public:
@@ -61,10 +73,13 @@ class GensUI
 		static void UI_Show_Embedded_Window(const int w, const int h);
 		static int UI_Get_Embedded_WindowID(void);
 		
-		static void msgBox(const string& msg, const string& title);
-		static string openFile(const string& title, const string& initFile, const FileFilterType filterType);
-		static string saveFile(const string& title, const string& initFile, const FileFilterType filterType);
-		static string selectDir(const string& title, const string& initDir);
+		static void msgBox(const string& msg, const string& title = GENS_APPNAME,
+				   const MSGBOX_ICON icon = MSGBOX_ICON_INFO, void* owner = NULL);
+		static string openFile(const string& title, const string& initFile,
+				       const FileFilterType filterType, void* owner = NULL);
+		static string saveFile(const string& title, const string& initFile,
+				       const FileFilterType filterType, void* owner = NULL);
+		static string selectDir(const string& title, const string& initDir, void* owner = NULL);
 		
 		// The following functions are implemented by ui/gens_ui.cpp.
 		static void setWindowTitle_Idle(void);

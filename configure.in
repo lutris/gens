@@ -2,9 +2,11 @@ AC_INIT(configure.in)
 
 AC_PREREQ(2.5)
 AC_CONFIG_HEADER(config.h)
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([configure.in])
-AM_INIT_AUTOMAKE(gens, 2.15.4/GS-m4.2)
+AM_INIT_AUTOMAKE(gens, 2.15.4/GS-m4.2+Win32)
 AC_PROG_LIBTOOL
 
 AC_PROG_CC
@@ -16,9 +18,11 @@ AC_HEADER_STDC
 case $host in
 	i?86*mingw32*)
 		os=win32;
+		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		;;
 	i?86*)
 		os=linux;
+		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		;;
 	x86_64*)
 		AC_MSG_ERROR([64-bit is currently not supported.]);
@@ -27,8 +31,8 @@ case $host in
 		AC_MSG_ERROR([Unsupported operating system: $host]);
 		;;
 esac
-AM_CONDITIONAL([LINUX], [test x$os = xlinux])
-AM_CONDITIONAL([WIN32], [test x$os = xwin32])
+AM_CONDITIONAL([GENS_OS_LINUX], [test x$os = xlinux])
+AM_CONDITIONAL([GENS_OS_WIN32], [test x$os = xwin32])
 
 # BEGIN: Linux
 
@@ -78,12 +82,18 @@ AM_PATH_SDL($SDL_VERSION,
             AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 )
 
-fi
-
 # END: Linux
+
+elif test x$os = xwin32; then
+
+# Win32
+AC_DEFINE(GENS_UI_WIN32, 1, Enable the Win32 UI)
+
+fi
 
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
 #AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
+AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
 
 dnl GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
@@ -152,28 +162,26 @@ AC_MSG_CHECKING(for OpenGL support)
 fi
 AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
 
-AC_ARG_WITH(png, AC_HELP_STRING([--without-png], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
-if test x$with_png = xyes; then
-AC_MSG_CHECKING(for libpng)
-	with_png=no
-	AC_TRY_COMPILE([
-		#include <png.h>
-	],[
-		png_structp png_ptr;
-	],[
-		with_png=yes
-	])      
-	AC_MSG_RESULT($with_png)
-	if test x$with_png = xyes; then
-		LDFLAGS="$LDFLAGS -lpng"
-		AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
-	fi
-fi
-AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
+###
+# zlib
+###
 
 AC_ARG_WITH(zlib, AC_HELP_STRING([--without-zlib], [Build without zlib support [[default=no]]]), with_zlib=$withval, with_zlib=yes)
-if test x$with_zlib = xyes; then
-AC_MSG_CHECKING(for zlib)
+AC_ARG_WITH(internal_zlib, AC_HELP_STRING([--with-internal-zlib], [Use internal zlib [[default=no]]]), with_internal_zlib=$withval, with_internal_zlib=no)
+
+# If internal zlib was enabled, but zlib was disabled, enable zlib.
+# The user may have thought that the plain zlib option was for shared zlib.
+if test x$with_internal_zlib = xyes; then
+	with_zlib=yes
+fi
+
+if test x$with_zlib = xno; then
+	# zlib disabled; disable internal zlib library.
+	with_internal_zlib=no
+else
+	# zlib enabled; check if internal zlib library is eanbled.
+if test x$with_internal_zlib = xno; then
+AC_MSG_CHECKING(for system zlib)
 	with_zlib=no
 	AC_TRY_COMPILE([
 		#include <zlib.h>
@@ -183,16 +191,96 @@ AC_MSG_CHECKING(for zlib)
 		with_zlib=yes
 	])
 	AC_MSG_RESULT($with_zlib)
-	if test x$with_zlib = xyes; then
-		LDFLAGS="$LDFLAGS -lz"
-		AC_DEFINE(GENS_ZLIB, 1, Compression support via libz)
+	if test x$with_zlib = xno; then
+		# External zlib not found. Use the internal version.
+		with_zlib=yes
+		with_internal_zlib=yes
 	fi
 fi
-AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
 
-CFLAGS="$CFLAGS -Wall -W -std=c99"
+fi
+
+if test x$with_zlib = xyes; then
+AC_DEFINE(GENS_ZLIB, 1, Compression support via zlib)
+if test x$with_internal_zlib = xyes; then
+AC_DEFINE(GENS_ZLIB_INTERNAL, 1, Use internal zlib instead of system zlib)
+fi # GENS_ZLIB_INTERNAL
+fi # GENS_ZLIB
+AM_CONDITIONAL([GENS_ZLIB], [test x$with_zlib = xyes])
+AM_CONDITIONAL([GENS_ZLIB_INTERNAL], [test x$with_internal_zlib = xyes])
+
+###
+# libpng
+###
+
+AC_ARG_WITH(png, AC_HELP_STRING([--without-libpng], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
+AC_ARG_WITH(internal_png, AC_HELP_STRING([--with-internal-libpng], [Use internal libpng [[default=no]]]), with_internal_png=$withval, with_internal_png=no)
+
+# If internal libpng was enabled, but PNG was disabled, enable PNG.
+# The user may have thought that the plain libpng option was for shared libpng.
+if test x$with_internal_png = xyes; then
+	with_png=yes
+fi
+
+if test x$with_png = xno; then
+	# libpng disabled; disable internal libpng library.
+	with_internal_png=no
+else
+	# libpng enabled; check if internal libpng library is eanbled.
+if test x$with_internal_png = xno; then
+AC_MSG_CHECKING(for system libpng)
+	with_png=no
+	AC_TRY_COMPILE([
+		#include <png.h>
+	],[
+		png_structp png_ptr;
+	],[
+		with_png=yes
+	])
+	AC_MSG_RESULT($with_png)
+	if test x$with_png = xno; then
+		# External libpng not found. Use the internal version.
+		with_png=yes
+		with_internal_png=yes
+	fi
+fi
+
+fi
+
+if test x$with_png = xyes; then
+AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
+if test x$with_internal_png = xyes; then
+AC_DEFINE(GENS_PNG_INTERNAL, 1, Use internal libpng instead of system libpng)
+fi # GENS_PNG_INTERNAL
+fi # GENS_PNG
+AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
+AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
+
+###
+# Miscellaneous
+###
+
+CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
 LDFLAGS="$LDFLAGS"
+
+# C99 doesn't work for Win32 for some reason.
+if test x$os != xwin32; then
+	CFLAGS="$CFLAGS -std=c99"
+fi
+
+# Compile as a GUI program on Win32.
+if test x$os = xwin32; then
+	LDFLAGS="$LDFLAGS -Wl,-subsystem,windows"
+fi
+
+# Windows NT target version
+if test x$os = xwin32; then
+	NT_TARGET="-D_WIN32_WINNT=0x0400"
+	CFLAGS="$CFLAGS $NT_TARGET"
+	CXXFLAGS="$CXXFLAGS $NT_TARGET"
+fi
+
 AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
 AC_SUBST(SDL_CFLAGS)
@@ -210,7 +298,9 @@ Makefile
 pixmaps/Makefile
 src/Makefile
 src/gens/Makefile
+src/zlib/Makefile
 src/minizip/Makefile
+src/libpng/Makefile
 src/mp3_dec/Makefile
 src/starscream/Makefile
 src/starscream/main68k/Makefile

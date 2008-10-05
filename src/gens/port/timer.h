@@ -6,9 +6,10 @@ extern "C" {
 #endif
 
 void init_timer(void);
+unsigned int gettime(void);
+
 void GetPerformanceFrequency(long long *freq);
 void GetPerformanceCounter(long long *now);
-unsigned int gettime(void);
 
 #ifdef __cplusplus
 }

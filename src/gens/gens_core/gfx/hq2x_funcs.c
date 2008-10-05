@@ -8,8 +8,8 @@ extern "C" {
 //void Blit_HQ2x_16(unsigned char *screen, int pitch, int x, int y, int offset);
 
 // Color conversion tables
-unsigned int _LUT16to32[65536];
-unsigned int _RGBtoYUV[65536];
+extern unsigned int LUT16to32[65536];
+extern unsigned int RGBtoYUV[65536];
 
 //extern unsigned char MD_Screen;
 #include "gens_core/vdp/vdp_rend.h"
@@ -29,7 +29,7 @@ int Blit_HQ2x_InitLUTs(void)
 	int i, j, k, r, g, b, Y, u, v;
 	
 	for (i = 0; i < 65536; i++)
-		_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
+		LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
 	
 	for (i = 0; i < 32; i++)
 	{
@@ -43,7 +43,7 @@ int Blit_HQ2x_InitLUTs(void)
 				Y = (r + g + b) >> 2;
 				u = 128 + ((r - b) >> 2);
 				v = 128 + ((-r + 2 * g - b) >> 3);
-				_RGBtoYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
+				RGBtoYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
 			}
 		}
 	}
@@ -82,7 +82,7 @@ void Blit_HQ2x_16(unsigned char *Dest, int pitch, int x, int y, int offset)
 	
 	char b[100];
 	sprintf(b,"pitch=%d x=%d y=%d offset=%d", pitch, x, y, offset);
-	MessageBox(0,b,NULL,0);
+	GensUI::msgBox(b);
 	hq2x_16( MD_Screen+16, Dest, x, y, pitch, offset);
 	return;
 }

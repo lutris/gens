@@ -33,7 +33,7 @@
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
-#include "about/about_window.h"
+#include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
 
@@ -402,7 +402,7 @@ void on_GraphicsMenu_OpenGLRes_SubMenu_ResItem_activate(GtkMenuItem *menuitem, g
  */
 void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-	int bpp = GPOINTER_TO_INT(user_data);
+	int newBpp = GPOINTER_TO_INT(user_data);
 	
 	if (!do_callbacks)
 		return;
@@ -410,8 +410,8 @@ void on_GraphicsMenu_bpp_SubMenu_bppItem_activate(GtkMenuItem *menuitem, gpointe
 		return;
 	
 	// Set the bits per pixel.
-	draw->setBpp(bpp);
-	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", (bpp), 1500);
+	draw->setBpp(newBpp);
+	MESSAGE_NUM_L("Selected %d-bit color depth", "Selected %d-bit color depth", newBpp, 1500);
 }
 
 
@@ -688,7 +688,7 @@ void on_SoundMenu_Enable_activate(GtkMenuItem *menuitem, gpointer user_data)
 
 
 /**
- * CPU, Rate, #
+ * Sound, Rate, #
  */
 void on_SoundMenu_Rate_SubMenu_activate(GtkMenuItem *menuitem, gpointer user_data)
 {

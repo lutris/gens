@@ -82,7 +82,6 @@ void GetPerformanceFrequency(long long *freq)
 	*freq = cpu_speed;
 }
 
-
 void GetPerformanceCounter(long long *now)
 {
 	*now = read_rdtsc();

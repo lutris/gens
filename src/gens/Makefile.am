@@ -56,29 +56,39 @@ ASMFILES = \
 		gens_core/vdp/vdp_rend.o \
 		gens_core/cpu/z80/z80.o
 
-NASM = \
-nasm -O1 -D __GCC2 -f elf \
+NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
+NASM = nasm -O1 -w-orphan-labels $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
-if GENS_UI_GTK
-INCLUDES += -I@srcdir@/ui/gtk/
-endif
+if GENS_ZLIB_INTERNAL
+INCLUDES += -I@srcdir@/../zlib/
+endif # GENS_ZLIB_INTERNAL
 
+if GENS_PNG_INTERNAL
+INCLUDES += -I@srcdir@/../libpng/
+endif # GENS_PNG_INTERNAL
+
+# x86 assembly language (using nasm)
 %.o: %.asm
 	mkdir -p gens_core/gfx/ gens_core/io/ gens_core/mem/ gens_core/misc/ ;
 	mkdir -p gens_core/sound/ gens_core/cpu/sh2/ gens_core/vdp/ gens_core/cpu/z80/ ;
 	$(NASM) $< -o $@
+
+# Win32 resources
+.rc.o:
+	$(host_alias)-windres $< -o $@
+%.o: %.rc
+	$(host_alias)-windres $< -o $@
 
 bin_PROGRAMS = gens
 
 gens_SOURCES = \
 		emulator/gens.cpp \
 		emulator/g_main.cpp \
-		emulator/g_main_linux.cpp \
 		emulator/g_input.cpp \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
@@ -122,14 +132,14 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
-		port/port.c \
-		port/timer.c \
 		port/ini.cpp \
+		port/timer.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
 		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
+		ui/charset.cpp \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -142,12 +152,9 @@ gens_SOURCES = \
 		util/sound/wave.c \
 		video/C64_charset.c \
 		video/v_draw.cpp \
-		video/v_draw_sdl.cpp \
 		video/v_effects.cpp \
 		input/input.cpp \
-		input/input_sdl.cpp \
-		audio/audio.cpp \
-		audio/audio_sdl.cpp
+		audio/audio.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -155,11 +162,6 @@ gens_SOURCES += \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
 		debugger/z80dis.c
-endif
-
-if GENS_OPENGL
-gens_SOURCES += \
-		video/v_draw_sdl_gl.cpp
 endif
 
 if GENS_CDROM
@@ -173,63 +175,9 @@ gens_SOURCES += \
 		util/file/compress/Zip.cpp
 endif
 
-if LINUX
-
-if GENS_UI_GTK
-
-gens_SOURCES += \
-		ui/gtk/gens_ui_gtk.cpp \
-		ui/gtk/gtk-misc.c \
-		ui/gtk/gens/gens_window.c \
-		ui/gtk/gens/gens_window_callbacks.cpp \
-		ui/gtk/gens/gens_window_sync.cpp \
-		ui/gtk/game_genie/game_genie_window.c \
-		ui/gtk/game_genie/game_genie_window_callbacks.c \
-		ui/gtk/game_genie/game_genie_window_misc.c \
-		ui/gtk/controller_config/controller_config_window.cpp \
-		ui/gtk/controller_config/controller_config_window_callbacks.cpp \
-		ui/gtk/controller_config/controller_config_window_misc.cpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
-		ui/gtk/bios_misc_files/bios_misc_files_window_misc.cpp \
-		ui/gtk/directory_config/directory_config_window.c \
-		ui/gtk/directory_config/directory_config_window_callbacks.c \
-		ui/gtk/directory_config/directory_config_window_misc.cpp \
-		ui/gtk/general_options/general_options_window.c \
-		ui/gtk/general_options/general_options_window_callbacks.c \
-		ui/gtk/general_options/general_options_window_misc.cpp \
-		ui/gtk/color_adjust/color_adjust_window.c \
-		ui/gtk/color_adjust/color_adjust_window_callbacks.c \
-		ui/gtk/color_adjust/color_adjust_window_misc.c \
-		ui/gtk/country_code/country_code_window.c \
-		ui/gtk/country_code/country_code_window_callbacks.c \
-		ui/gtk/country_code/country_code_window_misc.c \
-		ui/gtk/zip_select/zip_select_dialog.c \
-		ui/gtk/zip_select/zip_select_dialog_misc.cpp \
-		ui/gtk/about/about_window.c
-
-if GENS_OPENGL
-gens_SOURCES += \
-		ui/gtk/opengl_resolution/opengl_resolution_window.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
-endif
-
-if GENS_CDROM
-gens_SOURCES += \
-		ui/gtk/select_cdrom/select_cdrom_window.c \
-		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.c
-endif
-
-endif
-
-endif
-
 noinst_HEADERS = \
 		emulator/gens.hpp \
 		emulator/g_main.hpp \
-		emulator/g_main_linux.hpp \
 		emulator/g_input.hpp \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
@@ -265,14 +213,15 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
-		port/port.h \
-		port/timer.h \
 		port/ini.hpp \
+		port/timer.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
 		ui/gens_ui.hpp \
+		ui/charset.hpp \
+		ui/about_window_data.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
@@ -285,14 +234,10 @@ noinst_HEADERS = \
 		util/sound/wave.h \
 		video/C64_charset.h \
 		video/v_draw.hpp \
-		video/v_draw_sdl.hpp \
 		video/v_effects.hpp \
 		input/input.hpp \
-		input/input_sdl.hpp \
-		input/input_sdl_keys.h \
 		audio/audio.hpp \
-		audio/audio_mmx.h \
-		audio/audio_sdl.hpp
+		audio/audio_mmx.h
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
@@ -300,11 +245,6 @@ noinst_HEADERS += \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
 		debugger/z80dis.h
-endif
-
-if GENS_OPENGL
-noinst_HEADERS += \
-		video/v_draw_sdl_gl.hpp
 endif
 
 if GENS_CDROM
@@ -318,78 +258,6 @@ noinst_HEADERS += \
 		util/file/compress/Zip.hpp
 endif
 
-if LINUX
-
-if GENS_UI_GTK
-
-noinst_HEADERS += \
-		ui/gtk/gtk-misc.h \
-		ui/gtk/gens/gens_window.h \
-		ui/gtk/gens/gens_window_callbacks.hpp \
-		ui/gtk/gens/gens_window_sync.hpp \
-		ui/gtk/game_genie/game_genie_window.h \
-		ui/gtk/game_genie/game_genie_window_callbacks.h \
-		ui/gtk/game_genie/game_genie_window_misc.h \
-		ui/gtk/controller_config/controller_config_window.hpp \
-		ui/gtk/controller_config/controller_config_window_callbacks.hpp \
-		ui/gtk/controller_config/controller_config_window_misc.hpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
-		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \
-		ui/gtk/bios_misc_files/bios_misc_files_window_misc.hpp \
-		ui/gtk/directory_config/directory_config_window.h \
-		ui/gtk/directory_config/directory_config_window_callbacks.h \
-		ui/gtk/directory_config/directory_config_window_misc.hpp \
-		ui/gtk/general_options/general_options_window.h \
-		ui/gtk/general_options/general_options_window_callbacks.h \
-		ui/gtk/general_options/general_options_window_misc.hpp \
-		ui/gtk/color_adjust/color_adjust_window.h \
-		ui/gtk/color_adjust/color_adjust_window_callbacks.h \
-		ui/gtk/color_adjust/color_adjust_window_misc.h \
-		ui/gtk/country_code/country_code_window.h \
-		ui/gtk/country_code/country_code_window_callbacks.h \
-		ui/gtk/country_code/country_code_window_misc.h \
-		ui/gtk/zip_select/zip_select_dialog.h \
-		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
-		ui/gtk/about/about_window.h \
-		ui/gtk/about/about_window_data.h
-
-if GENS_OPENGL
-noinst_HEADERS += \
-		ui/gtk/opengl_resolution/opengl_resolution_window.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
-endif
-
-if GENS_CDROM
-noinst_HEADERS += \
-		ui/gtk/select_cdrom/select_cdrom_window.h \
-		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.h
-endif
-
-endif
-
-endif
-
-gens_CFLAGS = \
-		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
-		@SDL_CFLAGS@
-
-if GENS_UI_GTK
-gens_CFLAGS += @GTK_CFLAGS@
-endif
-
-gens_CFLAGS += @CFLAGS@
-
-gens_CXXFLAGS = \
-		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
-		@SDL_CFLAGS@
-
-if GENS_UI_GTK
-gens_CXXFLAGS += @GTK_CFLAGS@
-endif
-
-gens_CXXFLAGS += @CXXFLAGS@
 
 
 gens_LDADD = \
@@ -397,19 +265,27 @@ gens_LDADD = \
 		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
-		-lm -lz @SDL_LIBS@
-
-if GENS_UI_GTK
-gens_LDADD += @GTK_LIBS@
-endif
+		-lm
 
 if GENS_ZLIB
 gens_LDADD += ../minizip/libminizip.a
-endif
+if GENS_ZLIB_INTERNAL
+gens_LDADD += ../zlib/libz.a
+else
+gens_LDADD += -lz
+endif # GENS_ZLIB_INTERNAL
+endif # GENS_ZLIB
+
+if GENS_PNG
+if GENS_PNG_INTERNAL
+gens_LDADD += ../libpng/libpng.a
+else
+gens_LDADD += -lpng
+endif # GENS_PNG_INTERNAL
+endif # GENS_PNG
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
-
 
 gens_DEPENDENCIES = \
 		${ASMFILES} \
@@ -418,11 +294,37 @@ gens_DEPENDENCIES = \
 		../starscream/sub68k/sub68k.o
 
 if GENS_ZLIB
-gens_DEPENDENCIES += \
-		../minizip/libminizip.a
-endif
+gens_DEPENDENCIES += ../minizip/libminizip.a
+if GENS_ZLIB_INTERNAL
+gens_DEPENDENCIES += ../zlib/libz.a
+endif # GENS_ZLIB_INTERNAL
+endif # GENS_ZLIB
+
+if GENS_PNG
+if GENS_PNG_INTERNAL
+gens_DEPENDENCIES += ../libpng/libpng.a
+endif # GENS_PNG_INTERNAL
+endif # GENS_PNG
 
 CLEANFILES = \
 		${ASMFILES} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
+
+# Initialize CFLAGS and CXXFLAGS.
+gens_CFLAGS =
+gens_CXXFLAGS =
+
+# OS-specific includes
+
+if GENS_OS_LINUX
+include $(srcdir)/Makefile.linux.inc.am
+endif # GENS_OS_LINUX
+
+if GENS_OS_WIN32
+include $(srcdir)/Makefile.win32.inc.am
+endif # GENS_OS_WIN32
+
+# Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
+gens_CFLAGS += @CFLAGS@
+gens_CXXFLAGS += @CXXFLAGS@

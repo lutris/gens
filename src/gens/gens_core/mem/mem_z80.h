@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__fastcall)
 #define __fastcall __attribute__ ((regparm(2)))
 #endif
 

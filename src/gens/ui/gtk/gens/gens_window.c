@@ -272,6 +272,7 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 	GtkWidget *FileMenu_QuickLoad;		GtkWidget *FileMenu_QuickLoad_Icon;
 	GtkWidget *FileMenu_QuickSave;		GtkWidget *FileMenu_QuickSave_Icon;
 	GtkWidget *FileMenu_ChangeState;	GtkWidget *FileMenu_ChangeState_Icon;
+	GtkWidget *FileMenu_Separator3;
 	GtkWidget *FileMenu_Quit;		GtkWidget *FileMenu_Quit_Icon;
 	
 	// File
@@ -354,6 +355,9 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 			      FileMenu_ChangeState_Icon, "gtk-revert-to-saved");
 	// Change State submenu
 	create_gens_window_FileMenu_ChangeState_SubMenu(FileMenu_ChangeState);
+	
+	// Separator
+	NewMenuSeparator(FileMenu_Separator3, "FileMenu_Separator3", FileMenu);
 	
 	// Quit
 	NewMenuItem_StockIcon(FileMenu_Quit, "_Quit", "FileMenu_Quit", FileMenu,
@@ -483,7 +487,7 @@ static void create_gens_window_GraphicsMenu(GtkWidget *container)
 	NewMenuItem_Icon(GraphicsMenu_Render, "_Render", "GraphicsMenu_Render", GraphicsMenu,
 			 GraphicsMenu_Render_Icon, "viewmag.png");
 	// Render submenu
-	Sync_Gens_Window_GraphicsMenu_Render_SubMenu(GraphicsMenu_Render);
+	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu_Render);
 	
 	// Separator
 	NewMenuSeparator(GraphicsMenu_Separator3, "GraphicsMenu_Separator3", GraphicsMenu);
@@ -752,7 +756,7 @@ static void create_gens_window_CPUMenu_Debug_SubMenu(GtkWidget *container)
 	gtk_widget_set_name(SubMenu, "CPUMenu_Debug_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
-	// Create the render entries.
+	// Create the debug entries.
 	for (i = 0; i < 9; i++)
 	{
 		sprintf(ObjName, "CPUMenu_Debug_SubMenu_%d", i + 1);
@@ -801,7 +805,7 @@ static void create_gens_window_CPUMenu_Country_SubMenu(GtkWidget *container)
 	gtk_widget_set_name(SubMenu, "CPUMenu_Country_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
 	
-	// Create the bits per pixel entries.
+	// Create the country code entries.
 	for (i = 0; i < 5; i++)
 	{
 		if (i == 0)
@@ -1055,7 +1059,7 @@ static void create_gens_window_OptionsMenu(GtkWidget *container)
 
 
 /**
- * create_gens_window_SoundMenu_Rate_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
+ * create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(): Create the Options, Sega CD SRAM Size submenu.
  * @param container Container for this menu.
  */
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container)

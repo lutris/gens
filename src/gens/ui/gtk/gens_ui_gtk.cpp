@@ -38,6 +38,7 @@
 // File Chooser function
 static string UI_GTK_FileChooser(const string& title, const string& initFile,
 				 const FileFilterType filterType,
+				 GtkWidget* owner,
 				 const GtkFileChooserAction action);
 
 
@@ -177,16 +178,43 @@ int UI_Get_Embedded_WindowID(void)
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
+ * @param icon Icon.
+ * @param owner Window that owns this dialog.
  */
-void GensUI::msgBox(const string& msg, const string& title)
+void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON icon, void* owner)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
+	GtkMessageType gtkMsgIcon;
+	switch (icon)
+	{
+		case MSGBOX_ICON_INFO:
+			gtkMsgIcon = GTK_MESSAGE_INFO;
+			break;
+		case MSGBOX_ICON_QUESTION:
+			gtkMsgIcon = GTK_MESSAGE_QUESTION;
+			break;
+		case MSGBOX_ICON_WARNING:
+			gtkMsgIcon = GTK_MESSAGE_WARNING;
+			break;
+		case MSGBOX_ICON_ERROR:
+			gtkMsgIcon = GTK_MESSAGE_ERROR;
+			break;
+		case MSGBOX_ICON_NONE:
+		default:
+			gtkMsgIcon = GTK_MESSAGE_OTHER;
+			break;
+	}
+	
+	// If no owner was specified, use the Gens window.
+	if (!owner)
+		owner = gens_window;
+	
 	GtkWidget *dialog = gtk_message_dialog_new(
-			GTK_WINDOW(gens_window), GTK_DIALOG_MODAL,
-			GTK_MESSAGE_INFO, GTK_BUTTONS_OK, msg.c_str());
+			GTK_WINDOW(owner), GTK_DIALOG_MODAL,
+			gtkMsgIcon, GTK_BUTTONS_OK, msg.c_str());
 	gtk_window_set_title(GTK_WINDOW(dialog), title.c_str());
 	gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
@@ -198,13 +226,15 @@ void GensUI::msgBox(const string& msg, const string& title)
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename filter to use.
+ * @param owner Window that owns this dialog.
  * @return Filename if successful; otherwise, an empty string.
  */
-string GensUI::openFile(const string& title, const string& initFile, const FileFilterType filterType)
+string GensUI::openFile(const string& title, const string& initFile,
+			const FileFilterType filterType, void* owner)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initFile, filterType, GTK_FILE_CHOOSER_ACTION_OPEN);
+	return UI_GTK_FileChooser(title, initFile, filterType, static_cast<GtkWidget*>(owner), GTK_FILE_CHOOSER_ACTION_OPEN);
 }
 
 
@@ -213,14 +243,15 @@ string GensUI::openFile(const string& title, const string& initFile, const FileF
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType of filename filter to use.
- * @param retSelectedFile Pointer to string buffer to store the filename in.
+ * @param owner Window that owns this dialog.
  * @return Filename if successful; otherwise, an empty string.
  */
-string GensUI::saveFile(const string& title, const string& initFile, const FileFilterType filterType)
+string GensUI::saveFile(const string& title, const string& initFile,
+			const FileFilterType filterType, void* owner)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initFile, filterType, GTK_FILE_CHOOSER_ACTION_SAVE);
+	return UI_GTK_FileChooser(title, initFile, filterType, static_cast<GtkWidget*>(owner), GTK_FILE_CHOOSER_ACTION_SAVE);
 }
 
 
@@ -228,13 +259,14 @@ string GensUI::saveFile(const string& title, const string& initFile, const FileF
  * selectDir(): Show the Select Directory dialog.
  * @param title Window title.
  * @param initDir Initial directory.
+ * @param owner Window that owns this dialog.
  * @return Directory name if successful; otherwise, an empty string.
  */
-string GensUI::selectDir(const string& title, const string& initDir)
+string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
 	// TODO: Extend this function.
 	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initDir, AnyFile, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	return UI_GTK_FileChooser(title, initDir, AnyFile, static_cast<GtkWidget*>(owner), GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
 }
 
 
@@ -243,11 +275,12 @@ string GensUI::selectDir(const string& title, const string& initDir)
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename fitler to use.
+ * @param owner Window that owns this dialog.
  * @param action Type of file chooser dialog.
  * @return Filename if successful; otherwise, an empty string.
  */
 static string UI_GTK_FileChooser(const string& title, const string& initFile,
-				 const FileFilterType filterType,
+				 const FileFilterType filterType, GtkWidget* owner,
 				 const GtkFileChooserAction action)
 {
 	gint res;
@@ -257,12 +290,16 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 	GtkFileFilter *all_files_filter;
 	string retFilename;
 	
+	// If no owner was specified, use the Gens window.
+	if (!owner)
+		owner = gens_window;
+	
 	if (action == GTK_FILE_CHOOSER_ACTION_SAVE)
 		acceptButton = GTK_STOCK_SAVE;
 	else //if (action == GTK_FILE_CHOOSER_ACTION_OPEN)
 		acceptButton = GTK_STOCK_OPEN;
 	
-	dialog = gtk_file_chooser_dialog_new(title.c_str(), GTK_WINDOW(gens_window), action,
+	dialog = gtk_file_chooser_dialog_new(title.c_str(), GTK_WINDOW(owner), action,
 					     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					     acceptButton, GTK_RESPONSE_ACCEPT, NULL);
 	

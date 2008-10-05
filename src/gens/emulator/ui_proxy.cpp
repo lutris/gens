@@ -32,8 +32,6 @@
 
 #include "gens_core/gfx/renderers.h"
 
-_filters filters;
-
 
 /**
  * system_reset(): Reset the active system.
@@ -862,7 +860,6 @@ int Change_VSync(const int newVSync)
 	// Update VSync.
 	draw->updateVSync();
 	
-	// Return success.
 	return 1;
 }
 
@@ -910,7 +907,6 @@ int Set_Current_State(const int slot)
 	{
 		MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
 	}
-	Sync_Gens_Window_FileMenu();
 	
 	return 1;
 }

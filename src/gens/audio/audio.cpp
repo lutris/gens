@@ -28,25 +28,11 @@ Audio::Audio()
 	m_soundIsPlaying = false;
 	m_dumpingWAV = false;
 	m_playingGYM = false;
-	
-	audio_len = 0;
-	pMsndOut = NULL;
-	audiobuf = NULL;
 }
 
 
 Audio::~Audio()
 {
-}
-
-
-/**
- * lotsInAudioBuffer(): Check if there's "lots" in the audio buffer.
- * @return True if there's "lots" in the audio buffer; false otherwise.
- */
-bool Audio::lotsInAudioBuffer(void)
-{
-	return (audio_len > (m_segLength * Seg_To_Buffer));
 }
 
 

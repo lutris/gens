@@ -23,11 +23,21 @@ class Audio_SDL : public Audio
 		
 		// Miscellaneous functions that need to be sorted through.
 		int getCurrentSeg(void);
+		bool lotsInAudioBuffer(void);
 		int checkSoundTiming(void);
 		int writeSoundBuffer(void *dumpBuf);
 		int clearSoundBuffer(void);
 		int playSound(void);
 		int stopSound(void);
+		
+		// Auto Frame Skip functions
+		//void wpSegWait(void) { }
+		void waitForAudioBuffer(void);
+		
+	protected:
+		int audio_len;
+		unsigned char *pMsndOut;
+		unsigned char *audiobuf;
 };
 
 #endif /* GENS_AUDIO_SDL_HPP */

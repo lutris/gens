@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "about_window.h"
+#include "about_window.hpp"
 #include "gens/gens_window.h"
 
 #include <sys/types.h>
@@ -40,14 +40,14 @@
 
 GtkWidget *about_window = NULL;
 
-GtkAccelGroup *accel_group;
+static GtkAccelGroup *accel_group;
 
-#include "about_window_data.h"
-GtkWidget *image_gens_logo = NULL;
-void updateIce(void);
-gboolean iceTime(gpointer data);
+#include "ui/about_window_data.h"
+static GtkWidget *image_gens_logo = NULL;
+static void updateIce(void);
+static gboolean iceTime(gpointer data);
 
-int ax = 0, bx = 0, cx = 0;
+unsigned short ax = 0, bx = 0, cx = 0;
 
 /**
  * create_about_window(): Create the About Window.
@@ -131,13 +131,13 @@ GtkWidget* create_about_window(void)
 	}
 	
 	// Version information
-	label_gens_version = gtk_label_new(
-		"<b><i>Gens for Linux\n"
-		"Version " GENS_VERSION "</i></b>\n\n"
-		"Sega Genesis / Mega Drive,\n"
-		"Sega CD / Mega CD,\n"
-		"Sega 32X emulator"
-		);
+	char versionString[128];
+	strcpy(versionString, "<b><i>");
+	strcat(versionString, aboutTitle);
+	strcat(versionString, "</i></b>\n\n");
+	strcat(versionString, aboutDesc);
+	label_gens_version = gtk_label_new(versionString);
+	
 	gtk_widget_set_name(label_gens_version, "label_gens_version");
 	gtk_label_set_use_markup(GTK_LABEL(label_gens_version), TRUE);
 	gtk_label_set_justify(GTK_LABEL(label_gens_version), GTK_JUSTIFY_CENTER);
@@ -155,15 +155,7 @@ GtkWidget* create_about_window(void)
 	GLADE_HOOKUP_OBJECT(about_window, frame_copyright, "frame_copyright");
 	
 	// Copyright label
-	label_copyright = gtk_label_new (
-		"(c) 1999-2002 by Stéphane Dallongeville\n"
-		"(c) 2003-2004 by Stéphane Akhoun\n\n"
-		"Gens/GS (c) 2008 by David Korth\n\n"
-		"Visit the Gens homepage:\n"
-		"http://gens.consolemul.com\n\n"
-		"For news on Gens/GS, visit Sonic Retro:\n"
-		"http://www.sonicretro.org"
-		);
+	label_copyright = gtk_label_new (aboutCopyright);
 	gtk_widget_set_name(label_copyright, "label_copyright");
 	gtk_widget_show(label_copyright);
 	gtk_container_add(GTK_CONTAINER(frame_copyright), label_copyright);
@@ -226,7 +218,7 @@ void on_button_about_OK_clicked(GtkButton *button, gpointer user_data)
 }
 
 
-void updateIce(void)
+static void updateIce(void)
 {
 	if (!image_gens_logo)
 		return;
@@ -275,7 +267,8 @@ void updateIce(void)
 	gtk_image_set_from_pixbuf(GTK_IMAGE(image_gens_logo), icebuf);
 }
 
-gboolean iceTime(gpointer data)
+
+static gboolean iceTime(gpointer data)
 {
 	GENS_UNUSED_PARAMETER(data);
 	

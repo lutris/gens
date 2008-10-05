@@ -262,7 +262,7 @@ int Save_As_Config(void)
 {
 	string filename;
 	
-	filename = GensUI::saveFile("Save Config As", NULL, ConfigFile);
+	filename = GensUI::saveFile("Save Config As", "", ConfigFile);
 	if (filename.length() == 0)
 		return 0;
 	
@@ -466,7 +466,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	// Miscellaneous files
 #if defined(__WIN32__)
-	cfg.getString("Options", "7z Binary", "C:\\Program Files\\7-Zip\7z.exe",
+	cfg.getString("Options", "7z Binary", "C:\\Program Files\\7-Zip\\7z.exe",
 		      Misc_Filenames._7z_Binary, sizeof(Misc_Filenames._7z_Binary));
 #else
 	cfg.getString("Options", "7z Binary", "/usr/bin/7z",
@@ -532,7 +532,7 @@ int Load_As_Config(void *Game_Active)
 {
 	string filename;
 	
-	filename = GensUI::openFile("Load Config", NULL, ConfigFile);
+	filename = GensUI::openFile("Load Config", "", ConfigFile);
 	if (filename.length() == 0)
 		return 0;
 	

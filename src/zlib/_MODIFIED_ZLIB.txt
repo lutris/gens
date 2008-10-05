@@ -1,0 +1,5 @@
+This copy of zlib-1.2.3 is a modified version of the original.
+In particular, the shared library functionality has been removed.
+Also, several patches from the Gentoo source tree have been included.
+
+To obtain the original zlib-1.2.3, visit http://www.zlib.net

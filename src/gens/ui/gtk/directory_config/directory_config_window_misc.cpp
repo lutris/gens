@@ -101,6 +101,12 @@ void Directory_Config_Save(void)
 		// Get the entry text.
 		strncpy(DirEntries[dir].entry, gtk_entry_get_text(GTK_ENTRY(entry_direntry)), GENS_PATH_MAX);
 		
+		// Make sure the end of the directory has a slash.
+		// TODO: Do this in functions that use pathnames.
+		int len = strlen(DirEntries[dir].entry);
+		if (len > 0 && DirEntries[dir].entry[len - 1] != GENS_DIR_SEPARATOR_CHR)
+			strcat(DirEntries[dir].entry, GENS_DIR_SEPARATOR_STR);
+		
 		// Increment the directory counter.
 		dir++;
 	}
