@@ -53,12 +53,34 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
  */
 CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 {
-	int result;
-	result = DialogBoxParam(ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
-				Gens_hWnd, reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
-				reinterpret_cast<LPARAM>(lst));
-	printf("Result: %d\n", result);
-	return NULL;
+	if (!lst)
+	{
+		// NULL list pointer passed. Don't do anything.
+		return NULL;
+	}
+	
+	int file = DialogBoxParam(ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
+				  Gens_hWnd, reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
+				  reinterpret_cast<LPARAM>(lst));
+	if (file < 0)
+	{
+		// No file was selected.
+		return NULL;
+	}
+	
+	// File was selected.
+	if (static_cast<unsigned int>(file) >= lst->size())
+	{
+		// File index is out of range.
+		return NULL;
+	}
+	
+	// Return the file.
+	list<CompressedFile>::iterator lstIter = lst->begin();
+	for (int i = 0; i < file; i++)
+		lstIter++;
+	
+	return &(*lstIter);
 #if 0
 	GtkWidget *Zip, *treeview;
 	GtkCellRenderer *text_renderer;
