@@ -42,6 +42,7 @@ HFONT fntTitle = NULL;
 
 // Windows
 #include "bios_misc_files/bios_misc_files_window.hpp"
+#include "directory_config/directory_config_window.h"
 #include "color_adjust/color_adjust_window.h"
 #include "about/about_window.hpp"
 
@@ -196,6 +197,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			
 			// Check for dialog messages.
 			if ((bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
+			    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
 			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 			    (about_window && IsDialogMessage(about_window, &msg)))
 			{
