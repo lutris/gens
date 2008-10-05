@@ -156,7 +156,12 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		
 		case WM_MENUSELECT:
 		case WM_ENTERSIZEMOVE:
-			// Prevent audio stuttering when a menu is opened or the window is resized.
+		case WM_NCLBUTTONDOWN:
+		case WM_NCRBUTTONDOWN:
+			// Prevent audio stuttering when one of the following events occurs:
+			// - Menu is opened.
+			// - Window is resized.
+			// - Left/Right mouse button down on title bar.
 			audio->clearSoundBuffer();
 			break;
 		
