@@ -31,8 +31,7 @@ using std::list;
 #include "gens_core/misc/byteswap.h"
 
 #include "ui/gens_ui.hpp"
-// TODO
- //#include "zip_select/zip_select_dialog_misc.hpp"
+#include "zip_select/zip_select_dialog_misc.hpp"
 
 // New file compression handler.
 #include "util/file/compress/compressor.hpp"
@@ -549,18 +548,16 @@ ROMType Load_ROM(const char *filename, struct Rom **retROM)
 		*retROM = NULL;
 		return (ROMType)0;
 	}
-	else //if (files->size() == 1)
+	else if (files->size() == 1)
 	{
 		// One file is in the archive. Load it.
 		selFile = &(*files->begin());
 	}
-	/* TODO
 	else
 	{
 		// More than one file is in the archive. Load it.
 		selFile = Open_Zip_Select_Dialog(files);
 	}
-	*/
 	
 	if (!selFile)
 	{

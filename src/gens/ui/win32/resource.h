@@ -22,3 +22,7 @@
 // Trackbars
 #define IDC_TRK_CA_CONTRAST	0x2001
 #define IDC_TRK_CA_BRIGHTNESS	0x2002
+
+// Zip Select Dialog
+#define IDD_ZIPSELECT		0x3000
+#define IDC_ZIPSELECT_LSTFILES	0x3001
