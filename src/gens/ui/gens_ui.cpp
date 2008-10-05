@@ -33,15 +33,25 @@ using std::stringstream;
 
 
 /**
+ * setWindowTitle_withAppVersion(): Set the window title with the app name and version at the beginning.
+ * @param title Window title.
+ */
+static inline void setWindowTitle_withAppVersion(const string& title)
+{
+#ifdef VERSION
+	GensUI::setWindowTitle(GENS_APPNAME " " VERSION " - " + title);
+#else
+	GensUI::setWindowTitle(GENS_APPNAME " - " + title);
+#endif
+}
+
+
+/**
  * setWindowTitle_Idle(): Set the window title to "Idle".
  */
 void GensUI::setWindowTitle_Idle(void)
 {
-#ifdef VERSION
-	setWindowTitle(GENS_APPNAME " " VERSION " - Idle");
-#else
-	setWindowTitle(GENS_APPNAME " - Idle");
-#endif /* VERSION */
+	setWindowTitle_withAppVersion("Idle");
 }
 
 
@@ -53,7 +63,6 @@ void GensUI::setWindowTitle_Idle(void)
 void GensUI::setWindowTitle_Game(const string& systemName, const string& gameName)
 {
 	stringstream ss;
-	string title;
 	string condGameName;
 	char curChar = 0x00;
 	
@@ -77,15 +86,8 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 
 	}
 	
-	// Create the title.
-#ifdef VERSION
-	title = string(GENS_APPNAME) + " " + VERSION + " - " + systemName + ": " + condGameName;
-#else
-	title = string(GENS_APPNAME) + " - " + systemName + ": " + condGameName;
-#endif /* VERSION */
-	
 	// Set the title.
-	setWindowTitle(title);
+	setWindowTitle_withAppVersion(systemName + ": " + condGameName);
 }
 
 
@@ -96,17 +98,5 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
  */
 void GensUI::setWindowTitle_Init(const string& system, const bool reinit)
 {
-	string title;
-	
-	// Create the title.
-#ifdef VERSION
-	title = string(GENS_APPNAME) + " " + VERSION + " - " + system + ": " +
-		(reinit ? "Reinitializing" : "Initializing") + ", please wait...";
-#else
-	title = string(GENS_APPNAME) + " - " + system + ": " +
-		(reinit ? "Reinitializing" : "Initializing") + ", please wait...";
-#endif /* VERSION */
-	
-	// Set the title.
-	setWindowTitle(title);
+	setWindowTitle_withAppVersion(system + ": " + (reinit ? "Rei" : "I") + "nitializing, please wait...");
 }
