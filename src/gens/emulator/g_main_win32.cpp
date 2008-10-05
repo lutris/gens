@@ -281,9 +281,20 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			else
 			{
 				// Blank screen. (MAX IDLE)
-				// NOTE: GTK+ is running in the same thread, so this causes GTK+ to be laggy.
-				// TODO: Fix this lag!
-				GensUI::sleep(200);
+				if (bios_misc_files_window ||
+				    directory_config_window ||
+				    color_adjust_window ||
+				    about_window)
+				{
+					// A dialog is open, so don't sleep that much.
+					// Otherwise, the dialog won't be very responsive.
+					GensUI::sleep(10);
+				}
+				else
+				{
+					// No dialog is open.
+					GensUI::sleep(200);
+				}
 			}
 		}
 	}
