@@ -94,9 +94,11 @@ GtkWidget* create_zip_select_dialog(void)
 	// Add a label to the zip file selection frame.
 	label_frame_zip = gtk_label_new("This archive contains multiple files.\nSelect which file you want to load.");
 	gtk_widget_set_name(label_frame_zip, "label_frame_zip");
-	gtk_label_set_use_markup(GTK_LABEL(label_frame_zip), TRUE);
+	gtk_label_set_justify(GTK_LABEL(label_frame_zip), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(label_frame_zip);
 	gtk_frame_set_label_widget(GTK_FRAME(frame_zip), label_frame_zip);
+	gtk_frame_set_label_align(GTK_FRAME(frame_zip), 0.5, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_zip), GTK_SHADOW_NONE);
 	GLADE_HOOKUP_OBJECT(zip_select_dialog, label_frame_zip, "label_frame_zip");
 	
 	// Scrolled Window for the file list
