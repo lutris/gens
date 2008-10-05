@@ -41,6 +41,9 @@ using std::string;
 using std::list;
 
 
+static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst);
+
+
 LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 
@@ -50,8 +53,9 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 {
 	int result;
-	result = DialogBox(ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
-			   Gens_hWnd, reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc));
+	result = DialogBoxParam(ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
+				Gens_hWnd, reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
+				reinterpret_cast<LPARAM>(lst));
 	return NULL;
 #if 0
 	GtkWidget *Zip, *treeview;
@@ -145,7 +149,7 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 	switch (message)
 	{
 		case WM_INITDIALOG:
-			Win32_centerOnGensWindow(hWndDlg);
+			Init_Zip_Select_Dialog(hWndDlg, reinterpret_cast<list<CompressedFile>*>(lParam));
 			return TRUE;
 		
 		case WM_COMMAND:
@@ -162,4 +166,30 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 	}
 	
 	return FALSE;
+}
+
+
+/**
+ * Init_Zip_Select_Dialog(): Initialize the Zip Select dialog.
+ * @param hWndDlg hWnd of the Zip Select dialog.
+ * @param lst List of files in the archive.
+ */
+static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
+{
+	Win32_centerOnGensWindow(hWndDlg);
+	
+	// Get the listbox hWnd.
+	HWND lstFiles = GetDlgItem(hWndDlg, IDC_ZIPSELECT_LSTFILES);
+	
+	// Reserve space in the listbox for the file listing.
+	// Assuming maximum of 128 bytes per filename.
+	SendMessage(lstFiles, LB_INITSTORAGE, static_cast<WPARAM>(lst->size()), 128);
+	
+	// Add all strings.
+	list<CompressedFile>::iterator lstIter;
+	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
+	{
+		SendMessage(lstFiles, LB_ADDSTRING, static_cast<WPARAM>(NULL),
+			    reinterpret_cast<LPARAM>((*lstIter).filename.c_str()));
+	}
 }
