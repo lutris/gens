@@ -35,20 +35,22 @@ inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	const int w = (renderMode == 0 ? 320 : 640);
 	const int h = (renderMode == 0 ? 240 : 480);
 	
-	// +8 is needed for the lpSurface pointer because the DDraw module
+	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
 	// so they won't show up at all.
+	
+	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
 	
 	if (m_MsgVisible)
 	{
 		// Message is visible.
-		drawText((unsigned char*)pddsd->lpSurface + 8, pddsd->dwWidth,
+		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->dwWidth,
 			 w, h, m_MsgText.c_str(), m_MsgStyle, false);
 	}
 	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{
 		// FPS is enabled.
-		drawText((unsigned char*)pddsd->lpSurface + 8, pddsd->dwWidth,
+		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->dwWidth,
 			 w, h, m_MsgText.c_str(), m_FPSStyle, false);
 	}
 	
