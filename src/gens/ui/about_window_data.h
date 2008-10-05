@@ -1,9 +1,18 @@
 #ifndef GENS_GTK_ABOUT_DATA_H
 #define GENS_GTK_ABOUT_DATA_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include "emulator/gens.hpp"
 
-static const char* aboutTitle = "Gens/GS\nVersion " GENS_VERSION;
+#ifdef VERSION
+static const char* aboutTitle = "Gens/GS\nVersion " VERSION;
+#else
+static const char* aboutTitle = "Gens/GS";
+#endif /* VERSION */
+
 static const char* aboutDesc =
 		"Sega Genesis / Mega Drive,\n"
 		"Sega CD / Mega CD,\n"

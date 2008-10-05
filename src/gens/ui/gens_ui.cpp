@@ -21,6 +21,10 @@
  ***************************************************************************/
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include "emulator/gens.hpp"
 #include "gens_ui.hpp"
@@ -34,7 +38,11 @@ using std::stringstream;
  */
 void GensUI::setWindowTitle_Idle(void)
 {
-	setWindowTitle(GENS_APPNAME " " GENS_VERSION " - Idle");
+#ifdef VERSION
+	setWindowTitle(GENS_APPNAME " " VERSION " - Idle");
+#else
+	setWindowTitle(GENS_APPNAME " - Idle");
+#endif /* VERSION */
 }
 
 
@@ -71,7 +79,11 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 	}
 	
 	// Create the title.
-	title = string(GENS_APPNAME) + " " + GENS_VERSION + " - " + systemName + ": " + condGameName;
+#ifdef VERSION
+	title = string(GENS_APPNAME) + " " + VERSION + " - " + systemName + ": " + condGameName;
+#else
+	title = string(GENS_APPNAME) + " - " + systemName + ": " + condGameName;
+#endif /* VERSION */
 	
 	// Set the title.
 	setWindowTitle(title);
@@ -88,8 +100,13 @@ void GensUI::setWindowTitle_Init(const string& system, const bool reinit)
 	string title;
 	
 	// Create the title.
-	title = string(GENS_APPNAME) + " " + GENS_VERSION + " - " + system + ": " +
+#ifdef VERSION
+	title = string(GENS_APPNAME) + " " + VERSION + " - " + system + ": " +
 		(reinit ? "Reinitializing" : "Initializing") + ", please wait...";
+#else
+	title = string(GENS_APPNAME) + " - " + system + ": " +
+		(reinit ? "Reinitializing" : "Initializing") + ", please wait...";
+#endif /* VERSION */
 	
 	// Set the title.
 	setWindowTitle(title);

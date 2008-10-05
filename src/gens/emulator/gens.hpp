@@ -3,7 +3,6 @@
 
 // GENS version information
 #define GENS_APPNAME "Gens"
-#define GENS_VERSION "2.15.4/GS-m4.2+Win32"
 
 #ifdef __cplusplus
 extern "C" {

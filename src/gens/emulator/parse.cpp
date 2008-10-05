@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
@@ -155,7 +159,12 @@ static const struct option long_options[] =
 
 static void _usage()
 {
-	fprintf (stderr, GENS_APPNAME " " GENS_VERSION "\n");
+#ifdef VERSION
+	fprintf(stderr, GENS_APPNAME " " VERSION "\n");
+#else
+	fprintf(stderr, GENS_APPNAME "\n");
+#endif /* VERSION */
+	
 	fprintf (stderr, "Usage: gens [options] romfilename\n");
 	print_usage(  HELP, "print this help");
 	
