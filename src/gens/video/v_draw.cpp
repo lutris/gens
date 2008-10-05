@@ -46,14 +46,14 @@ VDraw::VDraw()
 	m_FPS_FreqCPU[1] = 0;
 	m_FPS_NewTime[0] = 0;
 	m_FPS_NewTime[1] = 0;
-	m_FPSStyle = 0;
+	m_FPSStyle.style = 0;
 	
 	// Initialze the onscreen message.
 	m_MsgEnabled = true;
 	m_MsgText = "";
 	m_MsgVisible = false;
 	m_MsgTime = 0;
-	m_MsgStyle = 0;
+	m_MsgStyle.style = 0;
 	
 	// Others.
 	m_Stretch = false;
@@ -86,7 +86,7 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_FPS_FreqCPU[1] = 0;
 	m_FPS_NewTime[0] = 0;
 	m_FPS_NewTime[1] = 0;
-	m_FPSStyle = oldDraw->fpsStyle();
+	m_FPSStyle.style = oldDraw->fpsStyle();
 	
 	// Initialize the onscreen message.
 	// TODO: Copy message variables from the other VDraw?
@@ -94,7 +94,7 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_MsgText = "";
 	m_MsgVisible = false;
 	m_MsgTime = 0;
-	m_MsgStyle = oldDraw->msgStyle();
+	m_MsgStyle.style = oldDraw->msgStyle();
 	
 	// Others.
 	m_Stretch = oldDraw->stretch();
@@ -277,15 +277,15 @@ int VDraw::flip(void)
 
 
 template<typename pixel>
-static inline void drawChar_1x(pixel *screen, int x, int y, const int w,
-			       pixel dotColor, bool transparent,
-			       const pixel transparentMask, const unsigned char ch)
+static inline void drawChar_1x(pixel *screen, const int fullW, const int x, const int y,
+			       const VDraw::VDraw_Style& style, const pixel transparentMask,
+			       const unsigned char ch)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
 	unsigned char cRow;
 	
-	screenPos = &screen[y*w + x];
+	screenPos = &screen[y*fullW + x];
 	for (cy = 0; cy < 8; cy++)
 	{
 		// Each character is 8 bytes, with each row representing 8 dots.
@@ -298,29 +298,30 @@ static inline void drawChar_1x(pixel *screen, int x, int y, const int w,
 				// Dot is opaque. Draw it.
 				// TODO: Original asm version had transparency in a separate function for performance.
 				// See if that would actually help.
-				if (!transparent)
-					*screenPos = dotColor;
+				if (!style.transparent)
+					*screenPos = style.dotColor;
 				else
-					*screenPos = ((dotColor & transparentMask) >> 1) + ((*screenPos & transparentMask) >> 1);
+					*screenPos = ((style.dotColor & transparentMask) >> 1) +
+						     ((*screenPos & transparentMask) >> 1);
 			}
 			cRow <<= 1;
 			screenPos++;
 		}
-		screenPos += (w - 8);
+		screenPos += (fullW - 8);
 	}
 }
 
 
 template<typename pixel>
-static inline void drawChar_2x(pixel *screen, const int x, const int y, const int w,
-			       pixel dotColor, bool transparent,
-			       const pixel transparentMask, const unsigned char ch)
+static inline void drawChar_2x(pixel *screen, const int fullW, const int x, const int y,
+			       const VDraw::VDraw_Style& style, const pixel transparentMask,
+			       const unsigned char ch)
 {
 	unsigned short cx, cy;
 	pixel* screenPos;
 	unsigned char cRow;
 	
-	screenPos = &screen[y*w + x];
+	screenPos = &screen[y*fullW + x];
 	for (cy = 0; cy < 8; cy++)
 	{
 		// Each character is 8 bytes, with each row representing 8 dots.
@@ -333,34 +334,33 @@ static inline void drawChar_2x(pixel *screen, const int x, const int y, const in
 				// Dot is opaque. Draw it.
 				// TODO: Original asm version had transparency in a separate function for performance.
 				// See if that would actually help.
-				if (!transparent)
+				if (!style.transparent)
 				{
-					*screenPos = dotColor;
-					*(screenPos + 1) = dotColor;
-					*(screenPos + w) = dotColor;
-					*(screenPos + w + 1) = dotColor;
+					*screenPos = style.dotColor;
+					*(screenPos + 1) = style.dotColor;
+					*(screenPos + fullW) = style.dotColor;
+					*(screenPos + fullW + 1) = style.dotColor;
 				}
 				else
 				{
-					pixel trPix = (dotColor & transparentMask) >> 1;
+					pixel trPix = (style.dotColor & transparentMask) >> 1;
 					*screenPos = trPix + ((*screenPos & transparentMask) >> 1);
 					*(screenPos + 1) = trPix + ((*(screenPos + 1) & transparentMask) >> 1);
-					*(screenPos + w) = trPix + ((*(screenPos + w) & transparentMask) >> 1);
-					*(screenPos + w + 1) = trPix + ((*(screenPos + w + 1) & transparentMask) >> 1);
+					*(screenPos + fullW) = trPix + ((*(screenPos + fullW) & transparentMask) >> 1);
+					*(screenPos + fullW + 1) = trPix + ((*(screenPos + fullW + 1) & transparentMask) >> 1);
 				}
 			}
 			cRow <<= 1;
 			screenPos += 2;
 		}
-		screenPos += (w*2 - 16);
+		screenPos += (fullW*2 - 16);
 	}
 }
 
 
 template<typename pixel>
-void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *msg,
-			 const pixel dotColor, const bool doubleSize,
-			 bool transparent, const pixel transparentMask)
+void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int h,
+			 const char *msg, const pixel transparentMask, const VDraw_Style& style)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
@@ -372,7 +372,7 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *ms
 		return;
 	
 	// Character size
-	if (doubleSize)
+	if (style.doubleSize)
 		charSize = 16;
 	else
 		charSize = 8;
@@ -380,6 +380,7 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *ms
 	// Bottom-left of the screen.
 	x = m_HBorder + 8;
 	y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+	printf("text: x == %d, y == %d\n", x, y);
 	
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
@@ -392,20 +393,29 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *ms
 	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
 	y -= (linebreaks * charSize);
 	
+	VDraw_Style textShadowStyle = style;
+	textShadowStyle.dotColor = 0;
+	
 	cx = x; cy = y;
 	for (cPos = 0; cPos < msgLength; cPos++)
 	{
-		if (doubleSize)
+		if (style.doubleSize)
 		{
 			// TODO: Make text shadow an option.
-			drawChar_2x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, (unsigned char)msg[cPos]);
-			drawChar_2x(screen, cx-1, cy-1, w, dotColor, transparent, transparentMask, (unsigned char)msg[cPos]);
+			drawChar_2x(screen, fullW, cx+1, cy+1, textShadowStyle,
+				    transparentMask, (unsigned char)msg[cPos]);
+			
+			drawChar_2x(screen, fullW, cx-1, cy-1, style,
+				    transparentMask, (unsigned char)msg[cPos]);
 		}
 		else
 		{
 			// TODO: Make text shadow an option.
-			drawChar_1x(screen, cx+1, cy+1, w, (pixel)0, transparent, transparentMask, (unsigned char)msg[cPos]);
-			drawChar_1x(screen, cx, cy, w, dotColor, transparent, transparentMask, (unsigned char)msg[cPos]);
+			drawChar_1x(screen, fullW, cx+1, cy+1, textShadowStyle,
+				    transparentMask, (unsigned char)msg[cPos]);
+			
+			drawChar_1x(screen, fullW, cx, cy, style,
+				    transparentMask, (unsigned char)msg[cPos]);
 		}
 		
 		cx += charSize;
@@ -418,27 +428,25 @@ void VDraw::drawText_int(pixel *screen, const int w, const int h, const char *ms
 }
 
 
-void VDraw::drawText(void *screen, const int w, const int h, const char *msg,
-		     const unsigned int color, const bool doubleSize, const bool transparent)
+void VDraw::drawText(void *screen, const int fullW, const int w, const int h,
+		     const char *msg, const VDraw_Style& style)
 {
 	if (bpp == 15 || bpp == 16)
 	{
 		// 15/16-bit color.
-		drawText_int((unsigned short*)screen, w, h, msg, (unsigned short)color,
-			     doubleSize, transparent, (unsigned short)m_Transparency_Mask);
+		drawText_int((unsigned short*)screen, fullW, w, h, msg,
+			     (unsigned short)m_Transparency_Mask, style);
 	}
 	else // if (bpp == 32)
 	{
 		// 32-bit color.
-		drawText_int((unsigned int*)screen, w, h, msg, color,
-			      doubleSize, transparent, m_Transparency_Mask);
+		drawText_int((unsigned int*)screen, fullW, w, h, msg,
+			     m_Transparency_Mask, style);
 	}
 }
 
 
-static inline void calcTextStyle_int(const unsigned char style,
-				     unsigned int *color,
-				     bool *doubleSize, bool *transparent)
+static inline void calcTextStyle_int(VDraw::VDraw_Style& style)
 {
 	// Calculate the dot color.
 	
@@ -446,41 +454,41 @@ static inline void calcTextStyle_int(const unsigned char style,
 	{
 		if (bpp == 15)
 		{
-			if ((style & 0x07) == STYLE_COLOR_RED)
-				*color = 0x7C00;
-			else if ((style & 0x07) == STYLE_COLOR_GREEN)
-				*color = 0x03E0;
-			else if ((style & 0x07) == STYLE_COLOR_BLUE)
-				*color = 0x001F;
-			else //if ((style & 0x07) == STYLE_COLOR_WHITE)
-				*color = 0x7FFF;
+			if ((style.style & 0x07) == STYLE_COLOR_RED)
+				style.dotColor = 0x7C00;
+			else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+				style.dotColor = 0x03E0;
+			else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+				style.dotColor = 0x001F;
+			else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+				style.dotColor = 0x7FFF;
 		}
 		else // if (bpp == 16)
 		{
-			if ((style & 0x07) == STYLE_COLOR_RED)
-				*color = 0xF800;
-			else if ((style & 0x07) == STYLE_COLOR_GREEN)
-				*color = 0x07E0;
-			else if ((style & 0x07) == STYLE_COLOR_BLUE)
-				*color = 0x001F;
-			else //if ((style & 0x07) == STYLE_COLOR_WHITE)
-				*color = 0xFFFF;
+			if ((style.style & 0x07) == STYLE_COLOR_RED)
+				style.dotColor = 0xF800;
+			else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+				style.dotColor = 0x07E0;
+			else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+				style.dotColor = 0x001F;
+			else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+				style.dotColor = 0xFFFF;
 		}
 	}
 	else //if (bpp == 32)
 	{
-		if ((style & 0x07) == STYLE_COLOR_RED)
-			*color = 0xFF0000;
-		else if ((style & 0x07) == STYLE_COLOR_GREEN)
-			*color = 0x00FF00;
-		else if ((style & 0x07) == STYLE_COLOR_BLUE)
-			*color = 0x0000FF;
-		else //if ((style & 0x07) == STYLE_COLOR_WHITE)
-			*color = 0xFFFFFF;
+		if ((style.style & 0x07) == STYLE_COLOR_RED)
+			style.dotColor = 0xFF0000;
+		else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+			style.dotColor = 0x00FF00;
+		else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+			style.dotColor = 0x0000FF;
+		else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+			style.dotColor = 0xFFFFFF;
 	}
 	
-	*doubleSize = (style & STYLE_DOUBLESIZE);
-	*transparent = (style & STYLE_TRANSPARENT);
+	style.doubleSize = (style.style & STYLE_DOUBLESIZE);
+	style.transparent = (style.style & STYLE_TRANSPARENT);
 }
 
 
@@ -498,8 +506,8 @@ void VDraw::calcTextStyle(void)
 		m_Transparency_Mask = 0xFEFEFE;
 	
 	// Calculate the style values for FPS and Msg.
-	calcTextStyle_int(m_FPSStyle, &m_FPSColor, &m_FPSDoubleSize, &m_FPSTransparent);
-	calcTextStyle_int(m_MsgStyle, &m_MsgColor, &m_MsgDoubleSize, &m_MsgTransparent);
+	calcTextStyle_int(m_FPSStyle);
+	calcTextStyle_int(m_MsgStyle);
 }
 
 
@@ -761,31 +769,31 @@ void VDraw::setFPSEnabled(const bool newFPSEnabled)
 // Style properties
 unsigned char VDraw::msgStyle(void)
 {
-	return m_MsgStyle;
+	return m_MsgStyle.style;
 }
 void VDraw::setMsgStyle(const unsigned char newMsgStyle)
 {
-	if (m_MsgStyle == newMsgStyle)
+	if (m_MsgStyle.style == newMsgStyle)
 		return;
-	m_MsgStyle = newMsgStyle;
+	m_MsgStyle.style = newMsgStyle;
 	
 	// Calculate the text style.
-	calcTextStyle();
+	calcTextStyle_int(m_MsgStyle);
 }
 
 
 unsigned char VDraw::fpsStyle(void)
 {
-	return m_FPSStyle;
+	return m_FPSStyle.style;
 }
 void VDraw::setFPSStyle(const unsigned char newFPSStyle)
 {
-	if (m_FPSStyle == newFPSStyle)
+	if (m_FPSStyle.style == newFPSStyle)
 		return;
-	m_FPSStyle = newFPSStyle;
+	m_FPSStyle.style = newFPSStyle;
 	
 	// Calculate the text style.
-	calcTextStyle();
+	calcTextStyle_int(m_FPSStyle);
 }
 
 

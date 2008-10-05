@@ -344,14 +344,12 @@ int VDraw_SDL_GL::flipInternal(void)
 	if (m_MsgVisible)
 	{
 		// Message is visible.
-		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(),
-			 m_MsgColor, m_MsgDoubleSize, m_MsgTransparent);
+		drawText(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(), m_MsgStyle);
 	}
 	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{
 		// FPS is enabled.
-		drawText(filterBuffer, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(),
-			 m_FPSColor, m_FPSDoubleSize, m_FPSTransparent);
+		drawText(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(), m_FPSStyle);
 	}
 	
 	// Set the GL MAG filter.

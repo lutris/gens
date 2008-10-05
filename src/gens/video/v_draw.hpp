@@ -32,6 +32,7 @@ const unsigned char STYLE_COLOR_RED	= 0x06;
 const unsigned char STYLE_TRANSPARENT	= 0x08;
 const unsigned char STYLE_DOUBLESIZE	= 0x10;
 
+
 class VDraw
 {
 	public:
@@ -102,6 +103,15 @@ class VDraw
 		
 		// TODO: Move these functions out of v_draw.cpp.
 		static int Show_Genesis_Screen(void);
+		
+		struct VDraw_Style
+		{
+			unsigned char style;
+			unsigned char color;	// STYLE_COLOR_* values
+			unsigned int dotColor;	// Actual RGB color value
+			bool doubleSize;
+			bool transparent;
+		};
 	
 	protected:
 		// Called if initialization fails.
@@ -123,13 +133,12 @@ class VDraw
 		virtual void updateRenderer(void) = 0;
 		
 		// Draw a line of text on the screen.
-		void drawText(void *screen, const int w, const int h, const char *msg,
-			      const unsigned int color, const bool doubleSize, const bool transparent);
+		void drawText(void *screen, const int fullW, const int w, const int h,
+			      const char *msg, const VDraw_Style& style);
 		
 		template<typename pixel>
-		void drawText_int(pixel *screen, const int w, const int h, const char *msg,
-				  const pixel dotColor, const bool doubleSize,
-				  const bool transparent, const pixel transparentMask);
+		void drawText_int(pixel *screen, const int fullW, const int w, const int h,
+				  const char *msg, const pixel transparentMask, const VDraw_Style& style);
 		
 		// Calculates the text style values.
 		void calcTextStyle(void);
@@ -143,23 +152,15 @@ class VDraw
 		unsigned int m_FPS_OldTime, m_FPS_ViewFPS, m_FPS_IndexFPS;
 		unsigned int m_FPS_FreqCPU[2], m_FPS_NewTime[2];
 		
-		// FPS style values
-		unsigned char m_FPSStyle;
-		unsigned int m_FPSColor;
-		bool m_FPSDoubleSize;
-		bool m_FPSTransparent;
-		
 		// On-screen message
 		bool m_MsgEnabled; // Is the message function enabled by the user?
 		string m_MsgText;
 		bool m_MsgVisible; // Is the message currently visible onscreen?
 		unsigned int m_MsgTime;
 		
-		// Message style values
-		unsigned char m_MsgStyle;
-		unsigned int m_MsgColor;
-		bool m_MsgDoubleSize;
-		bool m_MsgTransparent;
+		// Style values
+		VDraw_Style m_MsgStyle;
+		VDraw_Style m_FPSStyle;
 		
 		// Intro effect color
 		unsigned char m_IntroEffectColor;

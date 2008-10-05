@@ -261,14 +261,12 @@ int VDraw_SDL::flipInternal(void)
 	if (m_MsgVisible)
 	{
 		// Message is visible.
-		drawText(screen->pixels, screen->w, screen->h, m_MsgText.c_str(),
-			 m_MsgColor, m_MsgDoubleSize, m_MsgTransparent);
+		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_MsgStyle);
 	}
 	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{
 		// FPS is enabled.
-		drawText(screen->pixels, screen->w, screen->h, m_MsgText.c_str(),
-			 m_FPSColor, m_FPSDoubleSize, m_FPSTransparent);
+		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_FPSStyle);
 	}
 	
 	SDL_UnlockSurface(screen);
