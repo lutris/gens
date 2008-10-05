@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define VERSION "0.2"
+#define SH2D_VERSION "0.2"
 
 #define ZERO_F  0	/* 0 format */
 #define N_F     1	/* n format */
