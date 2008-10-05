@@ -71,6 +71,7 @@ static const char* UI_Win32_FileFilter_GYMFile =
 static string UI_Win32_OpenFile_int(const string& title,
 				    const string& initFile,
 				    const FileFilterType filterType,
+				    HWND owner,
 				    const bool openOrSave);
 
 
@@ -86,6 +87,9 @@ void GensUI::init(int argc, char *argv[])
 	
 	// Initialize the Common Controls library.
 	InitCommonControls();
+	
+	// Initialize COM.
+	CoInitialize(NULL);
 	
 	// Create the fonts used by the rest of the program.
 	// TODO: Get the theme font instead of the default (MS Sans Serif).
@@ -238,8 +242,9 @@ int UI_Get_Embedded_WindowID(void)
  * @param msg Message.
  * @param title Title.
  * @param icon Icon.
+ * @param owner Window that owns this dialog.
  */
-void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON icon)
+void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON icon, void* owner)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
@@ -266,7 +271,11 @@ void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON ic
 			break;
 	}
 	
-	MessageBox(Gens_hWnd, msg.c_str(), title.c_str(), win32MsgIcon | MB_OK);
+	// If no owner was specified, use the Gens window.
+	if (!owner)
+		owner = static_cast<void*>(Gens_hWnd);
+	
+	MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), win32MsgIcon | MB_OK);
 }
 
 
@@ -275,11 +284,13 @@ void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON ic
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename filter to use.
+ * @param owner Window that owns this dialog.
  * @return Filename if successful; otherwise, an empty string.
  */
-string GensUI::openFile(const string& title, const string& initFile, const FileFilterType filterType)
+string GensUI::openFile(const string& title, const string& initFile,
+			const FileFilterType filterType, void* owner)
 {
-	return UI_Win32_OpenFile_int(title, initFile, filterType, false);
+	return UI_Win32_OpenFile_int(title, initFile, filterType, static_cast<HWND>(owner), false);
 }
 
 
@@ -288,12 +299,13 @@ string GensUI::openFile(const string& title, const string& initFile, const FileF
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType of filename filter to use.
- * @param retSelectedFile Pointer to string buffer to store the filename in.
+ * @param owner Window that owns this dialog.
  * @return Filename if successful; otherwise, an empty string.
  */
-string GensUI::saveFile(const string& title, const string& initFile, const FileFilterType filterType)
+string GensUI::saveFile(const string& title, const string& initFile,
+			const FileFilterType filterType, void* owner)
 {
-	return UI_Win32_OpenFile_int(title, initFile, filterType, true);
+	return UI_Win32_OpenFile_int(title, initFile, filterType, static_cast<HWND>(owner), true);
 }
 
 
@@ -302,12 +314,12 @@ string GensUI::saveFile(const string& title, const string& initFile, const FileF
  * @param title Window title.
  * @param initFileName Initial filename.
  * @param filterType Type of filename filter to use.
+ * @param owner Window that owns this dialog.
  * @param openOrSave false for Open; true for Save.
  * @return Filename if successful; otherwise, an empty string.
  */
-static string UI_Win32_OpenFile_int(const string& title,
-				    const string& initFile,
-				    const FileFilterType filterType,
+static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
+				    const FileFilterType filterType, HWND owner,
 				    const bool openOrSave)
 {
 	char filename[GENS_PATH_MAX];
@@ -318,9 +330,13 @@ static string UI_Win32_OpenFile_int(const string& title,
 	memset(filename, 0, sizeof(filename));
 	memset(&ofn, 0, sizeof(OPENFILENAME));
 	
+	// If no owner was specified, use the Gens window.
+	if (!owner)
+		owner = Gens_hWnd;
+	
 	// Open Filename dialog settings
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = Gens_hWnd;
+	ofn.hwndOwner = owner;
 	ofn.hInstance = ghInstance;
 	ofn.lpstrFile = filename;
 	ofn.nMaxFile = GENS_PATH_MAX - 1;
@@ -376,9 +392,10 @@ static string UI_Win32_OpenFile_int(const string& title,
  * selectDir(): Show the Select Directory dialog.
  * @param title Window title.
  * @param initDir Initial directory.
+ * @param owner Window that owns this dialog.
  * @return Directory name if successful; otherwise, an empty string.
  */
-string GensUI::selectDir(const string& title, const string& initDir)
+string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
 	STUB;
 #if 0

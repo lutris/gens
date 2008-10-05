@@ -73,10 +73,13 @@ class GensUI
 		static void UI_Show_Embedded_Window(const int w, const int h);
 		static int UI_Get_Embedded_WindowID(void);
 		
-		static void msgBox(const string& msg, const string& title = GENS_APPNAME, const MSGBOX_ICON icon = MSGBOX_ICON_INFO);
-		static string openFile(const string& title, const string& initFile, const FileFilterType filterType);
-		static string saveFile(const string& title, const string& initFile, const FileFilterType filterType);
-		static string selectDir(const string& title, const string& initDir);
+		static void msgBox(const string& msg, const string& title = GENS_APPNAME,
+				   const MSGBOX_ICON icon = MSGBOX_ICON_INFO, void* owner = NULL);
+		static string openFile(const string& title, const string& initFile,
+				       const FileFilterType filterType, void* owner = NULL);
+		static string saveFile(const string& title, const string& initFile,
+				       const FileFilterType filterType, void* owner = NULL);
+		static string selectDir(const string& title, const string& initDir, void* owner = NULL);
 		
 		// The following functions are implemented by ui/gens_ui.cpp.
 		static void setWindowTitle_Idle(void);
