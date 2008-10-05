@@ -35,6 +35,9 @@
 // Win32 common controls
 #include <commctrl.h>
 
+// Shell objects
+#include <shlobj.h>
+
 // Difference between window size and client-area size
 int Win32_dw;
 int Win32_dh;
@@ -397,13 +400,36 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
  */
 string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
-	STUB;
-#if 0
-	// TODO: Extend this function.
-	// Perhaps set the path to the last path for the function calling this...
-	return UI_GTK_FileChooser(title, initDir, AnyFile, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-#endif
-	return "";
+	char displayName[GENS_PATH_MAX];
+	char selDir[GENS_PATH_MAX];
+	
+	BROWSEINFO bi;
+	memset(&bi, 0x00, sizeof(bi));
+	
+	// If no owner was specified, use the Gens window.
+	if (!owner)
+		owner = static_cast<void*>(Gens_hWnd);
+	
+	bi.hwndOwner = static_cast<HWND>(owner);
+	bi.pidlRoot = NULL;
+	bi.pszDisplayName = displayName;
+	bi.lpszTitle = title.c_str();
+	bi.ulFlags = BIF_RETURNONLYFSDIRS;
+	bi.lParam = NULL;
+	bi.iImage = 0;
+	
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (!pidl)
+	{
+		// No directory was selected.
+		return "";
+	}
+	
+	bool bRet = SHGetPathFromIDList(pidl, selDir);
+	if (!bRet)
+		return "";
+	
+	return selDir;
 }
 
 
