@@ -85,23 +85,15 @@ void Directory_Config_Change(int dir)
  */
 void Directory_Config_Save(void)
 {
-#if 0
 	int dir = 0;
-	char tmp[64];
-	GtkWidget *entry_direntry;
 	
 	// Go through the DirEntries[] struct.
 	while (DirEntries[dir].title)
 	{
-		// Get the entry object.
-		sprintf(tmp, "entry_%s", DirEntries[dir].tag);
-		entry_direntry = lookup_widget(directory_config_window, tmp);
-		
 		// Get the entry text.
-		strncpy(DirEntries[dir].entry, gtk_entry_get_text(GTK_ENTRY(entry_direntry)), GENS_PATH_MAX);
+		GetWindowText(dc_txtEntry[dir], DirEntries[dir].entry, GENS_PATH_MAX);
 		
 		// Increment the directory counter.
 		dir++;
 	}
-#endif
 }
