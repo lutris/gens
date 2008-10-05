@@ -32,8 +32,15 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+#include "emulator/gens.hpp"
+
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
+
+static GtkWidget *zip_select_dialog;
+
+static gboolean on_treeview_zip_list_button_press(GtkWidget *widget, GdkEventButton *event);
+static gboolean on_treeview_zip_list_key_press(GtkWidget *widget, GdkEventKey *event);
 
 // TODO: Improve this dialog.
 
@@ -45,7 +52,6 @@
 GtkWidget* create_zip_select_dialog(void)
 {
 	GdkPixbuf *zip_select_dialog_icon_pixbuf;
-	GtkWidget *zip_select_dialog;
 	GtkWidget *frame_zip, *label_frame_zip;
 	GtkWidget *scroll_zip_list;
 	GtkWidget *treeview_zip_list;
@@ -110,6 +116,10 @@ GtkWidget* create_zip_select_dialog(void)
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview_zip_list), FALSE);
 	gtk_widget_show(treeview_zip_list);
 	gtk_container_add(GTK_CONTAINER(scroll_zip_list), treeview_zip_list);
+	g_signal_connect((gpointer)treeview_zip_list, "button_press_event",
+			  G_CALLBACK(on_treeview_zip_list_button_press), NULL);
+	g_signal_connect((gpointer)treeview_zip_list, "key_press_event",
+			  G_CALLBACK(on_treeview_zip_list_key_press), NULL);
 	GLADE_HOOKUP_OBJECT(zip_select_dialog, treeview_zip_list, "treeview_zip_list");
 	
 	// Dialog buttons
@@ -128,4 +138,36 @@ GtkWidget* create_zip_select_dialog(void)
 //	gtk_window_add_accel_group(GTK_WINDOW(zip_select_dialog), accel_group);
 	
 	return zip_select_dialog;
+}
+
+
+static gboolean on_treeview_zip_list_button_press(GtkWidget *widget, GdkEventButton *event)
+{
+	GENS_UNUSED_PARAMETER(widget);
+	
+	if (zip_select_dialog && event->type == GDK_2BUTTON_PRESS)
+	{
+		// Item was double-clicked in the treeview.
+		// Select the current item.
+		gtk_dialog_response(GTK_DIALOG(zip_select_dialog), GTK_RESPONSE_OK);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+static gboolean on_treeview_zip_list_key_press(GtkWidget *widget, GdkEventKey *event)
+{
+	GENS_UNUSED_PARAMETER(widget);
+	
+	if (zip_select_dialog &&
+	    (event->keyval == GDK_Return ||
+	     event->keyval == GDK_KP_Enter))
+	{
+		// Enter was pressed in the treeview.
+		// Select the current item.
+		gtk_dialog_response(GTK_DIALOG(zip_select_dialog), GTK_RESPONSE_OK);
+		return TRUE;
+	}
+	return FALSE;
 }
