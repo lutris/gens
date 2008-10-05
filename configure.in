@@ -262,7 +262,7 @@ AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
 
 CFLAGS="$CFLAGS -Wall -W"
 CXXFLAGS="$CXXFLAGS -Wall -W"
-LDFLAGS="$LDFLAGS"
+LDFLAGS="$LDFLAGS -Wl,--as-needed"
 
 # C99 doesn't work for Win32 for some reason.
 if test x$os != xwin32; then
