@@ -60,26 +60,23 @@ void Open_Directory_Config(void)
  */
 void Directory_Config_Change(int dir)
 {
-#if 0
-	GtkWidget *entry_direntry;
+	char curDir[GENS_PATH_MAX];
 	char tmp[64];
 	string newDir;
 	
-	// Get the entry widget for this directory.
-	sprintf(tmp, "entry_%s", DirEntries[dir].tag);
-	entry_direntry = lookup_widget(directory_config_window, tmp);
+	// Get the currently entered directory.
+	GetWindowText(dc_txtEntry[dir], curDir, sizeof(curDir));
 	
-	// Request a new directory.
+	// Request a new file.
 	sprintf(tmp, "Select %s Directory", DirEntries[dir].title);
-	newDir = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(entry_direntry)));
+	newDir = GensUI::selectDir(tmp, curDir, directory_config_window);
 	
 	// If Cancel was selected, don't do anything.
 	if (newDir.length() == 0)
 		return;
 	
 	// Set the new directory.
-	gtk_entry_set_text(GTK_ENTRY(entry_direntry), newDir.c_str());
-#endif
+	SetWindowText(dc_txtEntry[dir], newDir.c_str());
 }
 
 
