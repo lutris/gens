@@ -57,7 +57,7 @@ LRESULT CALLBACK Directory_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM
 					Directory_Config_Save();
 					break;
 				
-					case IDCANCEL: // Standard dialog button ID
+				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
 					break;
