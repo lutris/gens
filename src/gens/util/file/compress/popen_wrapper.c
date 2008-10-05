@@ -14,6 +14,7 @@
 
 HANDLE my_pipein[2], my_pipeout[2], my_pipeerr[2];
 char   my_popenmode = ' ';
+PROCESS_INFORMATION piProcInfo;
 
 static int my_pipe(HANDLE *readwrite)
 {
@@ -41,7 +42,6 @@ static int my_pipe(HANDLE *readwrite)
 FILE* gens_popen(const char *cmd, const char *mode)
 {
 	FILE *fptr = (FILE *)0;
-	PROCESS_INFORMATION piProcInfo;
 	STARTUPINFO siStartInfo;
 	int success, umlenkung;
 
@@ -137,7 +137,17 @@ int gens_pclose(FILE *fle)
 			CloseHandle(my_pipein[1]);
 		else
 			CloseHandle(my_pipeout[0]);
+		
+		// Terminate the child process.
+		if (piProcInfo.hProcess)
+		{
+			TerminateProcess(piProcInfo.hProcess, 0);
+			piProcInfo.hProcess = NULL;
+		}
+		
 		return 0;
 	}
+	
+	// Pipe isn't open.
 	return -1;
 }
