@@ -384,7 +384,6 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		// Adjust for screen size. (SDL/GL)
 		x = ((m_HBorder / 2) << m_shift) + 8;
 		y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
-		printf("text: x == %d, y == %d\n", x, y);
 	}
 	else
 	{
