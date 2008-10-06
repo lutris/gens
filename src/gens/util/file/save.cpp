@@ -51,12 +51,15 @@
 // Byteswapping
 #include "gens_core/misc/byteswap.h"
 
+#ifdef GENS_MP3
 // Gens Rerecording
 // fatal_mp3_error indicates an error occurred while reading an MP3 for a Sega CD game.
 extern int fatal_mp3_error;	// cdda_mp3.c
 
 // Various MP3 stuff, needed for Gens Rerecording
 extern unsigned int Current_OUT_Pos, Current_OUT_Size;	// cdda_mp3.c
+#endif /* GENS_MP3 */
+
 extern char preloaded_tracks [100], played_tracks_linear [101]; // added for synchronous MP3 code
 
 int Current_State = 0;
@@ -1241,9 +1244,11 @@ void Import_SegaCD(unsigned char *Data)
 		ImportDataAuto(&Context_sub68K.cycles_needed, Data, &offset, 44);
 		ImportDataAuto(&Rom_Data[0x72], Data, &offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 		
+#ifdef GENS_MP3
 		ImportDataAuto(&fatal_mp3_error, Data, &offset, 4);
 		ImportDataAuto(&Current_OUT_Pos, Data, &offset, 4);
 		ImportDataAuto(&Current_OUT_Size, Data, &offset, 4);
+#endif /* GENS_MP3 */
 		ImportDataAuto(&Track_Played, Data, &offset, 1);
 		ImportDataAuto(played_tracks_linear, Data, &offset, 100);
 		//ImportDataAuto(&Current_IN_Pos, Data, &offset, 4)? // don't save this; bad things happen
@@ -1462,9 +1467,16 @@ void Export_SegaCD (unsigned char *Data)
 	ExportDataAuto(&Context_sub68K.cycles_needed, Data, &offset, 44);
 	ExportDataAuto(&Rom_Data[0x72], Data, &offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 	
+#ifdef GENS_MP3
 	ExportDataAuto(&fatal_mp3_error, Data, &offset, 4);
 	ExportDataAuto(&Current_OUT_Pos, Data, &offset, 4);
 	ExportDataAuto(&Current_OUT_Size, Data, &offset, 4);
+#else
+	int dummy = 0;
+	ExportDataAuto(&dummy, Data, &offset, 4);
+	ExportDataAuto(&dummy, Data, &offset, 4);
+	ExportDataAuto(&dummy, Data, &offset, 4);
+#endif /* GENS_MP3 */
 	ExportDataAuto(&Track_Played, Data, &offset, 1);
 	ExportDataAuto(played_tracks_linear, Data, &offset, 100);
 	//ExportDataAuto(&Current_IN_Pos, Data, &offset, 4)? // don't save this; bad things happen

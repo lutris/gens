@@ -1,6 +1,10 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = starscream mp3_dec
+SUBDIRS = starscream
+
+if GENS_MP3
+SUBDIRS += mp3_dec
+endif # GENS_MP3
 
 if GENS_ZLIB
 if GENS_ZLIB_INTERNAL

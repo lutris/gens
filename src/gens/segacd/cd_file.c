@@ -1,18 +1,27 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#if defined(__WIN__)
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
+#ifdef GENS_OS_WIN32
 #include <windows.h>
 #else
 #include "port/port.h"
-#endif
+#endif /* GENS_OS_WIN32 */
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
 #include "cd_sys.hpp"
 #include "cd_file.h"
 #include "lc89510.h"
-#include "cdda_mp3.h"
 #include "gens_core/cpu/68k/star_68k.h"
 #include "util/file/rom.hpp"
 #include "gens_core/mem/mem_s68k.h"
+
+// MP3 support
+#ifdef GENS_MP3
+#include "cdda_mp3.h"
+#endif /* GENS_MP3 */
 
 struct _file_track Tracks[100];
 
@@ -21,7 +30,9 @@ char Track_Played;
 
 int FILE_Init(void)
 {
+#ifdef GENS_MP3
 	MP3_Init();
+#endif /* GENS_MP3 */
 	Unload_ISO();
 	
 	return 0;
@@ -162,6 +173,7 @@ int Load_ISO(char* buf, const char* iso_name)
 					fprintf(debug_SCD_file, "AUDIO\n");
 #endif
 				
+#ifdef GENS_MP3
 				if (j < 10)
 				{
 					// MP3 File
@@ -173,11 +185,14 @@ int Load_ISO(char* buf, const char* iso_name)
 				}
 				else
 				{
+#endif /* GENS_MP3 */
 					// WAV File
 					Tracks[num_track - SCD.TOC.First_Track].Type = TYPE_WAV;
 					Tracks[num_track - SCD.TOC.First_Track].Length = 1000;
 					Cur_LBA += Tracks[num_track - SCD.TOC.First_Track].Length;
+#ifdef GENS_MP3
 				}
+#endif /* GENS_MP3 */
 				
 				j = 1000;
 				num_track++;
@@ -272,11 +287,13 @@ int FILE_Read_One_LBA_CDC(void)
 		// AUDIO
 		int rate, channel;
 		
+#ifdef GENS_MP3
 		if (Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type == TYPE_MP3)
 		{
 			MP3_Update (cp_buf, &rate, &channel, 0);
 			Write_CD_Audio ((short *) cp_buf, rate, channel, 588);
 		}
+#endif /* GENS_MP3 */
 
 #ifdef DEBUG_CD
 		fprintf (debug_SCD_file, "\n\nRead file CDC 1 audio sector :\n");
@@ -413,9 +430,12 @@ int FILE_Play_CD_LBA (int async)
 	if (Track_LBA_Pos < 0)
 		Track_LBA_Pos = 0;
 	
+#ifdef GENS_MP3
 	if (Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type == TYPE_MP3)
 		MP3_Play(SCD.Cur_Track - SCD.TOC.First_Track, Track_LBA_Pos, async);
-	else if (Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type == TYPE_WAV)
+	else
+#endif /* GENS_MP3 */
+	if (Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type == TYPE_WAV)
 		return 2;
 	else
 		return 3;

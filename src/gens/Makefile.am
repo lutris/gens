@@ -136,7 +136,6 @@ gens_SOURCES = \
 		port/timer.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
-		segacd/cdda_mp3.c \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
 		ui/charset.cpp \
@@ -167,6 +166,11 @@ endif
 if GENS_CDROM
 gens_SOURCES += \
 		segacd/cd_aspi.cpp
+endif
+
+if GENS_MP3
+gens_SOURCES += \
+		segacd/cdda_mp3.c
 endif
 
 if GENS_ZLIB
@@ -217,7 +221,6 @@ noinst_HEADERS = \
 		port/timer.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
-		segacd/cdda_mp3.h \
 		segacd/lc89510.h \
 		ui/gens_ui.hpp \
 		ui/charset.hpp \
@@ -253,6 +256,11 @@ noinst_HEADERS += \
 		segacd/cd_aspi.hpp
 endif
 
+if GENS_MP3
+noinst_HEADERS += \
+		segacd/cdda_mp3.h
+endif
+
 if GENS_ZLIB
 noinst_HEADERS += \
 		util/file/compress/gzip.hpp \
@@ -263,10 +271,14 @@ endif
 
 gens_LDADD = \
 		${ASMFILES} \
-		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		-lm
+
+if GENS_MP3
+gens_LDADD += \
+		../mp3_dec/libmp3_dec.a
+endif 
 
 if GENS_ZLIB
 gens_LDADD += ../minizip/libminizip.a
@@ -290,9 +302,13 @@ endif # GENS_PNG
 
 gens_DEPENDENCIES = \
 		${ASMFILES} \
-		../mp3_dec/libmp3_dec.a \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o
+
+if GENS_MP3
+gens_DEPENDENCIES += \
+		../mp3_dec/libmp3_dec.a
+endif
 
 if GENS_ZLIB
 gens_DEPENDENCIES += ../minizip/libminizip.a
