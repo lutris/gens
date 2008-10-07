@@ -46,7 +46,6 @@ typedef struct
 extern int CDROM_SPEED;
 extern int Num_CD_Drive;
 extern int CUR_DEV; // a che serve?
-extern int DEV_PAR[8][3];
 
 // If ASPI is initialized, this is set.
 extern int ASPI_Initialized;
