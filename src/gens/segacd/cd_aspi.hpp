@@ -1,82 +1,46 @@
 #ifndef GENS_CD_ASPI_HPP
 #define GENS_CD_ASPI_HPP
 
+/* This file should be 100% source compatible according to MSes docs and
+ * Adaptecs docs */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// Needed for uint_*.
+#include <stdint.h>
+
+#ifdef GENS_OS_LINUX
 #include "port/port.h"
+#endif /* GENS_OS_LINUX */
 
+// ASPI definitions
+#include "aspi.h"
 
-//***************************************************************************
-//                          %%% TARGET STATUS VALUES %%%
-//***************************************************************************
-#define STATUS_GOOD     0x00    // Status Good
-
-//***************************************************************************
-//                %%% Commands Unique to CD-ROM Devices %%%
-//***************************************************************************
-#define SCSI_READ_MSF   0xB9    // Read CD MSF format (O)
-
-
-/* SCSI Miscellaneous Stuff */
-#define SENSE_LEN			14
-#define SRB_POSTING			0x01
-#define SRB_DIR_IN			0x08
-
-/* ASPI Command Definitions */
-#define SC_EXEC_SCSI_CMD		0x02
-
-/* SRB status codes */
-#define SS_PENDING			0x00
-#define SS_COMP				0x01
-
-/* SRB - EXECUTE SCSI COMMAND - SC_EXEC_SCSI_CMD */
-typedef struct tagSRB32_ExecSCSICmd
-{
-	unsigned char  SRB_Cmd;		// ASPI command code = SC_EXEC_SCSI_CMD
-	unsigned char  SRB_Status;	// ASPI command status byte
-	unsigned char  SRB_HaId;	// ASPI host adapter number
-	unsigned char  SRB_Flags;	// ASPI request flags
-	unsigned int   SRB_Hdr_Rsvd;	// Reserved
-	unsigned char  SRB_Target;	// Target's SCSI ID
-	unsigned char  SRB_Lun;		// Target's LUN number
-	unsigned short SRB_Rsvd1;	// Reserved for Alignment
-	unsigned int   SRB_BufLen;	// Data Allocation Length
-	unsigned char  *SRB_BufPointer;	// Data Buffer Point
-	unsigned char  SRB_SenseLen;	// Sense Allocation Length
-	unsigned char  SRB_CDBLen;	// CDB Length
-	unsigned char  SRB_HaStat;	// Host Adapter Status
-	unsigned char  SRB_TargStat;	// Target Status
-	int (*SRB_PostProc)(struct tagSRB32_ExecSCSICmd *s);  // Post routine
-	void *SRB_Rsvd2;		// Reserved
-	unsigned char  SRB_Rsvd3[16];	// Reserved for expansion
-	unsigned char  CDBByte[16];	// SCSI CDB
-	unsigned char  SenseArea[SENSE_LEN+2];  // Request sense buffer - var length
-} SRB_ExecSCSICmd, *PSRB_ExecSCSICmd;
-
+// SegaCD system
 #include "cd_sys.hpp"
 
 #define STOP_DISC	0
 #define START_DISC	1
-#define OPEN_TRAY   2
-#define CLOSE_TRAY  3
+#define OPEN_TRAY	2
+#define CLOSE_TRAY	3
 
 typedef struct
 {
-	unsigned char rsvd;
-	unsigned char ADR;
-	unsigned char trackNumber;
-	unsigned char rsvd2;
-	unsigned char addr[4];
+	uint8_t rsvd;
+	uint8_t ADR;
+	uint8_t trackNumber;
+	uint8_t rsvd2;
+	uint8_t addr[4];
 } TOCTRACK;
 
 typedef struct
 {
-	unsigned short tocLen;
-	unsigned char  firstTrack;
-	unsigned char  lastTrack;
-	TOCTRACK       tracks[100];
+	uint16_t tocLen;
+	uint8_t  firstTrack;
+	uint8_t  lastTrack;
+	TOCTRACK tracks[100];
 } TOC, *PTOC, *LPTOC;
 
 extern int CDROM_SPEED;
@@ -89,10 +53,21 @@ int ASPI_End(void);
 
 void ASPI_Reset_Drive(char *buf);
 
+#ifdef GENS_OS_WIN32
+void ASPI_Scan_Drives(void);
+int ASPI_Get_Drive_Info(int dev, unsigned char *Inf);
+int ASPI_Set_Timeout(int sec);
+#endif /* GENS_OS_WIN32 */
+
 int ASPI_Test_Unit_Ready(int timeout);
+#ifdef GENS_OS_WIN32
+int ASPI_Set_CD_Speed(int rate, int wait);
+#endif /* GENS_OS_WIN32 */
+#ifdef GENS_OS_LINUX
+void LINUXCD_Select_Speed(void);
+#endif /* GENS_OS_LINUX */
 int ASPI_Lock(int flock);
 int ASPI_Star_Stop_Unit(int op, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
-void LINUXCD_Select_Speed(void);
 int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Stop_Play_Scan(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Seek(int pos, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));

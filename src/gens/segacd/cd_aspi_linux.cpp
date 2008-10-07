@@ -7,13 +7,12 @@
 #include "ui/gens_ui.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/cpu/68k/star_68k.h"
-#include "segacd/lc89510.h"
-#include "segacd/cd_aspi.hpp"
+#include "lc89510.h"
+#include "cd_aspi.hpp"
 #include "gens_core/mem/mem_s68k.h"
 
 #define HIBYTE(x) x >> 8
 #define LOBYTE(x) x & 0xff
-void Sleep (int i);
 
 //By Ubi: Using cdrom linux.
 //Not needed use all ASPI functions, we can delete it...
@@ -136,9 +135,9 @@ ASPI_Reset_Drive (char *buf)
 	ASPI_Read_TOC (1, 0, 0, 0, NULL);
 	
 	if (CD_Present)
-		while (ASPI_Read_CD_LBA (0, 1, 0, 0, 0, 0, NULL) == -1);
+		while (ASPI_Read_CD_LBA(0, 1, 0, 0, 0, 0, NULL) == -1) { }
 	else
-		ASPI_Read_CD_LBA (0, 1, 0, 0, 0, 0, NULL);
+		ASPI_Read_CD_LBA(0, 1, 0, 0, 0, 0, NULL);
 	
 	memcpy (buf, &Buf_Read[0x100], 0x200);
 	CDD_Complete = 1;

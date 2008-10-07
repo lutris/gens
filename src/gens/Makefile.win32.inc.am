@@ -26,6 +26,11 @@ gens_SOURCES += \
 		ui/win32/about/about_window.cpp \
 		ui/win32/resource.rc
 
+if GENS_CDROM
+gens_SOURCES += \
+                segacd/cd_aspi_linux.cpp
+endif
+
 noinst_HEADERS += \
 		emulator/g_main_win32.hpp \
 		video/v_draw_ddraw.hpp \
@@ -48,6 +53,10 @@ noinst_HEADERS += \
 		ui/win32/zip_select/zip_select_dialog_misc.hpp \
 		ui/win32/about/about_window.hpp
 
-if GENS_UI_WIN32
-gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound
+if GENS_CDROM
+noinst_HEADERS += \
+                segacd/cd_aspi.hpp \
+		segacd/aspi.h
 endif
+
+gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound

@@ -163,11 +163,6 @@ gens_SOURCES += \
 		debugger/z80dis.c
 endif
 
-if GENS_CDROM
-gens_SOURCES += \
-		segacd/cd_aspi.cpp
-endif
-
 if GENS_MP3
 gens_SOURCES += \
 		segacd/cdda_mp3.c

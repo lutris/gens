@@ -13,6 +13,11 @@ gens_SOURCES += \
 		input/input_sdl.cpp \
 		audio/audio_sdl.cpp
 
+if GENS_CDROM
+gens_SOURCES += \
+                segacd/cd_aspi_linux.cpp
+endif
+
 if GENS_UI_GTK
 
 gens_SOURCES += \
@@ -70,6 +75,12 @@ noinst_HEADERS += \
 		input/input_sdl.hpp \
 		input/input_sdl_keys.h \
 		audio/audio_sdl.hpp
+
+if GENS_CDROM
+noinst_HEADERS += \
+                segacd/cd_aspi.hpp \
+		segacd/aspi.h
+endif
 
 if GENS_UI_GTK
 
