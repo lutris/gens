@@ -20,6 +20,9 @@
 #include <sys/ioctl.h>
 #include <linux/cdrom.h>
 
+// If ASPI is initialized, this is set.
+int ASPI_Initialized = 0;
+
 //char CDROM_DEV[64] = "/dev/hdc";
 //cdrd: to read from ioctl.
 union cdrd
@@ -96,6 +99,9 @@ int ASPI_Init (void)
 		return 0; // !1 !!!!!!!!!!!!!!!!!!!!!!
 	}
 	//Ubi End.
+	
+	// "ASPI" is initialized.
+	ASPI_Initialized = 1;
 	
 	// useless...
 	return Num_CD_Drive;

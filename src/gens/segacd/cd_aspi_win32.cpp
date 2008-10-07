@@ -12,10 +12,11 @@
 #include "cd_aspi.hpp"
 #include "mem_s68k.h"
 
-HINSTANCE hDLL = NULL;               // Handle to DLL
-DWORD (*Get_ASPI_Info) (void);
-DWORD (*Get_ASPI_Version) (void);
-DWORD (*Send_ASPI_Command) (LPSRB);
+
+static HINSTANCE hASPI_DLL = NULL;               // Handle to DLL
+DWORD (*Get_ASPI_Info)(void);
+DWORD (*Get_ASPI_Version)(void);
+DWORD (*Send_ASPI_Command)(LPSRB);
 int ASPI_Command_Running;
 int Num_CD_Drive;
 int CUR_DEV;
@@ -24,16 +25,24 @@ unsigned int Current_LBA;
 BYTE Buf_Stat[256];
 SRB_ExecSCSICmd se;
 TOC toc;
-int failed_to_load_wnaspi_dll = 0;
+
+
+// If ASPI is initialized, this is set.
+int ASPI_Initialized = 0;
+
 
 inline bool IsAsyncAllowed()
 {
+	// TODO
+#if 0
 	if(MainMovie.Status == MOVIE_RECORDING)
 		return false;
 	if(MainMovie.Status == MOVIE_PLAYING)
 		return false;
+#endif
 	return true;
 }
+
 
 // for CDC functions
 
@@ -47,7 +56,7 @@ int ASPI_Init(void)
 {
 	unsigned int ASPI_Status;
 
-	hDLL = LoadLibrary("wnaspi32.dll");
+	hASPI_DLL = LoadLibrary("wnaspi32.dll");
 
 	ASPI_Command_Running = 0;
 	Num_CD_Drive = 0;
@@ -56,24 +65,24 @@ int ASPI_Init(void)
 	Get_ASPI_Info = Get_ASPI_Version = NULL;
 	Send_ASPI_Command = NULL;
 
-	if (hDLL != NULL)
+	if (hASPI_DLL)
 	{
-		Get_ASPI_Info = (DWORD(*)(void)) GetProcAddress(hDLL, "GetASPI32SupportInfo");
-		Get_ASPI_Version = (DWORD(*)(void)) GetProcAddress(hDLL, "GetASPI32DLLVersion");
-		Send_ASPI_Command = (DWORD(*)(LPSRB lpsrb)) GetProcAddress(hDLL, "SendASPI32Command");
-		failed_to_load_wnaspi_dll = 0;
+		Get_ASPI_Info = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32SupportInfo");
+		Get_ASPI_Version = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32DLLVersion");
+		Send_ASPI_Command = (DWORD(*)(LPSRB lpsrb))GetProcAddress(hASPI_DLL, "SendASPI32Command");
+		ASPI_Initialized = 1;
 	}
 	else
 	{
-		failed_to_load_wnaspi_dll = 1;
+		ASPI_Initialized = 0;
 	}
 
 	if ((!Get_ASPI_Info) || (!Send_ASPI_Command))
 	{
-		if (hDLL)
+		if (hASPI_DLL)
 		{
-			FreeLibrary(hDLL);
-			hDLL = NULL;
+			FreeLibrary(hASPI_DLL);
+			hASPI_DLL = NULL;
 		}
 
 		// MessageBox(NULL, "Error loading WNASPI32.DLL\nCD device will not be supported", "ASPI error", MB_ICONSTOP);
@@ -136,11 +145,11 @@ int ASPI_End(void)
 {
 	int i = 0;
 
-	if (hDLL)
+	if (hASPI_DLL)
 	{
 		while ((ASPI_Command_Running == 1) && (i++ < 3000)) Sleep(1);
 		ASPI_Star_Stop_Unit(STOP_DISC, 0, 0, NULL);
-		FreeLibrary(hDLL);
+		FreeLibrary(hASPI_DLL);
 
 #ifdef DEBUG_CD
 		fprintf(debug_SCD_file, "ASPI driver unloaded\n");
