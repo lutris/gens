@@ -111,7 +111,8 @@ int ASPI_End(void)
 {
 	if (FD_CDROM == -1)
 		return -1;
-	close (FD_CDROM);
+	close(FD_CDROM);
+	FD_CDROM = 0;
 	Num_CD_Drive = 0;
 	//By Ubi
 	return 0;

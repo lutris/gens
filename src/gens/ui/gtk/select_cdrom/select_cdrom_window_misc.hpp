@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_SELECT_CDROM_WINDOW_MISC_H
-#define GTK_SELECT_CDROM_WINDOW_MISC_H
+#ifndef GENS_GTK_SELECT_CDROM_WINDOW_MISC_HPP
+#define GENS_GTK_SELECT_CDROM_WINDOW_MISC_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,10 +30,10 @@ extern "C" {
 #include <gtk/gtk.h>
 
 void Open_Select_CDROM(void);
-void SelCD_Save(void);
+int SelCD_Save(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* GENS_GTK_SELECT_CDROM_WINDOW_MISC_HPP */

@@ -63,7 +63,7 @@ if GENS_CDROM
 gens_SOURCES += \
 		ui/gtk/select_cdrom/select_cdrom_window.c \
 		ui/gtk/select_cdrom/select_cdrom_window_callbacks.c \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.c
+		ui/gtk/select_cdrom/select_cdrom_window_misc.cpp
 endif # GENS_CDROM
 
 endif # GENS_UI_GTK
@@ -126,7 +126,7 @@ if GENS_CDROM
 noinst_HEADERS += \
 		ui/gtk/select_cdrom/select_cdrom_window.h \
 		ui/gtk/select_cdrom/select_cdrom_window_callbacks.h \
-		ui/gtk/select_cdrom/select_cdrom_window_misc.h
+		ui/gtk/select_cdrom/select_cdrom_window_misc.hpp
 endif # GENS_CDROM
 
 endif # GENS_UI_GTK

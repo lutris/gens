@@ -42,7 +42,7 @@
 #endif /* GENS_OPENGL */
 
 #ifdef GENS_CDROM
-#include "select_cdrom/select_cdrom_window_misc.h"
+#include "select_cdrom/select_cdrom_window_misc.hpp"
 #endif /* GENS_CDROM */
 
 #include "emulator/ui_proxy.hpp"

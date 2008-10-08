@@ -22,7 +22,7 @@
 
 #include "select_cdrom_window.h"
 #include "select_cdrom_window_callbacks.h"
-#include "select_cdrom_window_misc.h"
+#include "select_cdrom_window_misc.hpp"
 
 #include "emulator/gens.hpp"
 
@@ -75,7 +75,9 @@ void on_button_SelCD_Save_clicked(GtkButton *button, gpointer user_data)
 	GENS_UNUSED_PARAMETER(button);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	SelCD_Save();
+	if (!SelCD_Save())
+		return;
+	
 	gtk_widget_destroy(select_cdrom_window);
 	select_cdrom_window = NULL;
 }
