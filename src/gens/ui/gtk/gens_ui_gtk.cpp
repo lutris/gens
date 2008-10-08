@@ -178,17 +178,18 @@ int UI_Get_Embedded_WindowID(void)
  * msgBox(): Show a message box.
  * @param msg Message.
  * @param title Title.
- * @param icon Icon.
+ * @param style Style, such as icons and buttons.
  * @param owner Window that owns this dialog.
  */
-void GensUI::msgBox(const string& msg, const string& title, const MSGBOX_ICON icon, void* owner)
+void GensUI::msgBox(const string& msg, const string& title,
+		    const unsigned int style, void* owner)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
 	GtkMessageType gtkMsgIcon;
-	switch (icon)
+	switch (style & MSGBOX_ICON_MASK)
 	{
 		case MSGBOX_ICON_INFO:
 			gtkMsgIcon = GTK_MESSAGE_INFO;

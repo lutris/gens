@@ -110,7 +110,7 @@ Input_DInput::Input_DInput()
 	rval = DirectInputCreate(ghInstance, DIRECTINPUT_VERSION, &lpDI, NULL);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("Input_DInput(): DirectInputCreate() failed. You must have DirectX 5.", "DirectInput Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("Input_DInput(): DirectInputCreate() failed. You must have DirectX 5.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
 		// TODO: Error handling.
 		return;
 	}
@@ -125,7 +125,7 @@ Input_DInput::Input_DInput()
 	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &InitJoystick, Gens_hWnd, DIEDFL_ATTACHEDONLY);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("Input_DInput(): EnumDevices() failed.", "DirectInput Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("Input_DInput(): EnumDevices() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
 		// TODO: Error handling.
 		return;
 	}
@@ -135,7 +135,7 @@ Input_DInput::Input_DInput()
 	rval = lpDI->CreateDevice(GUID_SysKeyboard, &lpDIDKeyboard, NULL);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("Input_DInput(): CreateDevice() failed.", "DirectInput Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("Input_DInput(): CreateDevice() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
 		// TODO: Error handling.
 		return;
 	}
@@ -146,7 +146,7 @@ Input_DInput::Input_DInput()
 	rval = lpDIDKeyboard->SetDataFormat(&c_dfDIKeyboard);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("Input_DInput(): SetDataFormat() failed.", "DirectInput Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("Input_DInput(): SetDataFormat() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
 		// TODO: Error handling.
 		return;
 	}
@@ -225,7 +225,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	rval = lpDI->CreateDevice(lpDIIJoy->guidInstance, &lpDIJoy, NULL);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInput::CreateDevice() FAILED", "Joystick Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("IDirectInput::CreateDevice() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		return(DIENUM_CONTINUE);
 	}
 
@@ -233,7 +233,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	lpDIJoy->Release();
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInputDevice2::QueryInterface() FAILED", "Joystick Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("IDirectInputDevice2::QueryInterface() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
@@ -241,7 +241,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	rval = m_joyID[m_numJoysticks]->SetDataFormat(&c_dfDIJoystick);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInputDevice::SetDataFormat() FAILED", "Joystick Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("IDirectInputDevice::SetDataFormat() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		m_joyID[m_numJoysticks]->Release();
 		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
@@ -251,7 +251,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInputDevice::SetCooperativeLevel() FAILED", "Joystick Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("IDirectInputDevice::SetCooperativeLevel() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		m_joyID[m_numJoysticks]->Release();
 		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
@@ -267,7 +267,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	rval = m_joyID[m_numJoysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
 	{
-		GensUI::msgBox("IDirectInputDevice::SetProperty() (X-Axis) FAILED", "Joystick Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("IDirectInputDevice::SetProperty() (X-Axis) FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 	}
 	
 	diprg.diph.dwSize = sizeof(diprg); 
@@ -280,7 +280,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 	rval = m_joyID[m_numJoysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
 	{
-		GensUI::msgBox("IDirectInputDevice::SetProperty() (Y-Axis) FAILED", "Joystick Error", MSGBOX_ICON_ERROR);
+		GensUI::msgBox("IDirectInputDevice::SetProperty() (Y-Axis) FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 	}
 	
 	for(i = 0; i < 10; i++)
