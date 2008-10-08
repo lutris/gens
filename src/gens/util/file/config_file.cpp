@@ -111,13 +111,16 @@ int Save_Config(const char *File_Name)
 	}
 	
 #ifdef GENS_CDROM
-	// SegaCD
-	cfg.writeString("General", "CD Drive", CDROM_DEV);
-	cfg.writeInt("General", "CD Speed", CDROM_SPEED);
-	/* TODO: I'm assuming this code is for Win32...
-	cfg.writeInt("Options", "CD Drive", CUR_DEV);
-	*/
-#endif
+	// Physical CD-ROM support for SegaCD
+#if defined(GENS_OS_WIN32)
+	// Win32 ASPI uses a device ID number.
+	cfg.writeInt("Options", "CD Drive", cdromDeviceID);
+#elif defined(GENS_OS_LINUX)
+	// Linux uses a device name.
+	cfg.writeString("General", "CD Drive", cdromDeviceName);
+#endif /* GENS_OS_WIN32 / GENS_OS_LINUX */
+	cfg.writeInt("General", "CD Speed", cdromSpeed);
+#endif /* GENS_CDROM */
 	
 	cfg.writeInt("General", "State Number", Current_State);
 	cfg.writeInt("General", "Language", Language);
@@ -328,14 +331,16 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	}
 	
 #ifdef GENS_CDROM
-	// SegaCD
-	// TODO: Use a better default for the CD drive.
-	cfg.getString("General", "CD Drive", "/dev/cdrom", CDROM_DEV, sizeof(CDROM_DEV));
-	CDROM_SPEED = cfg.getInt("General", "CD Speed", 0);
-	/* TODO: I'm assuming this code is for Win32...
-	CUR_DEV = cfg.getInt("Options", "CD Drive", 0);
-	*/
-#endif
+	// Physical CD-ROM support for SegaCD
+#if defined(GENS_OS_WIN32)
+	// Win32 ASPI uses a device ID number.
+	cdromDeviceID = cfg.getInt("Options", "CD Drive", 0);
+#elif defined(GENS_OS_LINUX)
+	// Linux uses a device name.
+	cfg.getString("General", "CD Drive", "/dev/cdrom", cdromDeviceName, sizeof(cdromDeviceName));
+#endif /* GENS_OS_WIN32 / GENS_OS_LINUX */
+	cdromSpeed = cfg.getInt("General", "CD Speed", 0);
+#endif /* GENS_CDROM */
 	
 	Current_State = cfg.getInt("General", "State Number", 0);
 	Language = cfg.getInt("General", "Language", 0);

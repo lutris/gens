@@ -42,7 +42,6 @@ char Rom_Name[512];
 char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
 char Recent_Rom[9][GENS_PATH_MAX];
-char CDROM_DEV[64];
 
 
 void

@@ -20,7 +20,6 @@
 #include <sys/ioctl.h>
 #include <linux/cdrom.h>
 
-//char CDROM_DEV[64] = "/dev/hdc";
 //cdrd: to read from ioctl.
 union cdrd
 {
@@ -63,9 +62,9 @@ extern "C"
 
 // External variables
 int ASPI_Initialized = 0;	// If ASPI is initialized, this is set.
-int CDROM_SPEED;		// Speed of the CD-ROM drive. (TODO: Is this really necessary?)
+int cdromSpeed;			// Speed of the CD-ROM drive. (TODO: Is this really necessary?)
 int Num_CD_Drive;		// Number of CD-ROM drives detected. (TODO: Is this correct?)
-int CUR_DEV; // a che serve?
+char cdromDeviceName[64];	// CD-ROM device name
 
 static int ASPI_Command_Running;
 static unsigned int Current_LBA;
@@ -87,7 +86,7 @@ int ASPI_Init(void)
 	Current_LBA = 0;
 	
 	//By Ubi Start:
-	FD_CDROM = open (CDROM_DEV, O_RDONLY | O_NONBLOCK);
+	FD_CDROM = open(cdromDeviceName, O_RDONLY | O_NONBLOCK);
 	if (FD_CDROM >= 0)
 	{
 		LINUXCD_Select_Speed();
@@ -239,18 +238,27 @@ int ASPI_Star_Stop_Unit(int op, int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
 void LINUXCD_Select_Speed()
 {
 	int ret = -1;
-	int speed[6] = {20,12,10,8,4,0};
-	int i = 0;
 	
-	if(CDROM_SPEED)
-	{
-		ret = ioctl(FD_CDROM, CDROM_SELECT_SPEED, CDROM_SPEED);
-	}
+	// Default CD-ROM speeds.
+	const int speed[6] = {20, 12, 10, 8, 4, 0};
 	
-	while(ret < 0 && i < 6)
+	// If a CD-ROM speed is set, use it.
+	if (cdromSpeed)
+		ret = ioctl(FD_CDROM, CDROM_SELECT_SPEED, cdromSpeed);
+	
+	// If the CD-ROM speed was set successfully,
+	// don't attempt to set the default speeds.
+	if (ret >= 0)
+		return;
+	
+	// Either the CD-ROM speed is set to Auto,
+	// or an error occurred while setting speed.
+	// Try the default speeds.
+	for (unsigned short i = 0; i < 6; i++)
 	{
 		ret = ioctl(FD_CDROM, CDROM_SELECT_SPEED, speed[i]);
-		i++;
+		if (ret >= 0)
+			break;
 	}
 }
 

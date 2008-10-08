@@ -43,9 +43,13 @@ typedef struct
 	TOCTRACK tracks[100];
 } TOC, *PTOC, *LPTOC;
 
-extern int CDROM_SPEED;
+extern int cdromSpeed;
 extern int Num_CD_Drive;
-extern int CUR_DEV; // a che serve?
+#if defined(GENS_OS_WIN32)
+extern int cdromDeviceID;
+#elif defined(GENS_OS_LINUX)
+extern char cdromDeviceName[64];
+#endif /* GENS_OS_WIN32 / GENS_OS_LINUX */
 
 // If ASPI is initialized, this is set.
 extern int ASPI_Initialized;

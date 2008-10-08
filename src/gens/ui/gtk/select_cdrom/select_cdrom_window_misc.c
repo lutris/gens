@@ -62,7 +62,7 @@ void Open_Select_CDROM(void)
 	
 	// CD-ROM drive
 	combo_drive = lookup_widget(SelCD, "combo_drive");
-	gtk_entry_set_text(GTK_ENTRY(GTK_BIN(combo_drive)->child), CDROM_DEV);
+	gtk_entry_set_text(GTK_ENTRY(GTK_BIN(combo_drive)->child), cdromDeviceName);
 	
 	// Add CD-ROM drives to the dropdown.
 	// TODO: Improve this using udev or something.
@@ -106,7 +106,7 @@ void Open_Select_CDROM(void)
 	{
 		if (CD_DriveSpeed[i] < 0)
 			break;
-		else if (CD_DriveSpeed[i] == CDROM_SPEED)
+		else if (CD_DriveSpeed[i] == cdromSpeed)
 		{
 			driveSpeed = i;
 			break;
@@ -135,8 +135,8 @@ void SelCD_Save(void)
 	tmpDrive = strdup(gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo_drive)));
 	if (strlen(tmpDrive))
 	{
-		strncpy(CDROM_DEV, tmpDrive, 63);
-		CDROM_DEV[63] = 0x00;
+		strncpy(cdromDeviceName, tmpDrive, sizeof(cdromDeviceName) - 1);
+		cdromDeviceName[63] = 0x00;
 	}
 	free(tmpDrive);
 	
@@ -145,5 +145,5 @@ void SelCD_Save(void)
 	driveSpeed = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_speed));
 	if (driveSpeed < 0 || driveSpeed >= 14)
 		driveSpeed = 0;
-	CDROM_SPEED = CD_DriveSpeed[driveSpeed];
+	cdromSpeed = CD_DriveSpeed[driveSpeed];
 }
