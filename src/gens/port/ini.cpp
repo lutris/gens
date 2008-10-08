@@ -248,11 +248,18 @@ string INI::getString(const string& section, const string& key, const string& de
  * @param buf Buffer to store the string value in.
  * @param size Size of the buffer.
  */
-void INI::getString(const string& section, const string& key, const string& def, char *buf, int size)
+void INI::getString(const string& section, const string& key, const string& def,
+		    char *buf, unsigned int size)
 {
 	string tmp;
 	tmp = getString(section, key, def);
 	strncpy(buf, tmp.c_str(), size);
+	
+	if (tmp.length() >= size)
+	{
+		// String size exceeds the buffer. Set the last byte in the buffer to NULL.
+		buf[size - 1] = 0x00;
+	}
 }
 
 

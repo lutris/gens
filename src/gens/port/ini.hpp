@@ -48,7 +48,8 @@ class INI
 		int getInt(const string& section, const string& key, const int def);
 		bool getBool(const string& section, const string& key, const bool def);
 		string getString(const string& section, const string& key, const string& def);
-		void getString(const string& section, const string& key, const string& def, char *buf, int size);
+		void getString(const string& section, const string& key, const string& def,
+			       char *buf, unsigned int size);
 		
 		// Write settings to the loaded INI file.
 		void writeInt(const string& section, const string& key, const int value);
