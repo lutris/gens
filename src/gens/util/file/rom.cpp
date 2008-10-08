@@ -146,42 +146,41 @@ static void Update_Rom_Name(const char *Name)
 }
 
 
-void
-Update_CD_Rom_Name (char *Name)
+void Update_CD_Rom_Name(char *Name)
 {
-  int i, j;
-
-  memcpy (Rom_Name, Name, 48);
-
-  for (i = 0; i < 48; i++)
-    {
-      if ((Rom_Name[i] >= '0') && (Rom_Name[i] <= '9'))
-	continue;
-      if (Rom_Name[i] == ' ')
-	continue;
-      if ((Rom_Name[i] >= 'A') && (Rom_Name[i] <= 'Z'))
-	continue;
-      if ((Rom_Name[i] >= 'a') && (Rom_Name[i] <= 'z'))
-	continue;
-      Rom_Name[i] = ' ';
-    }
-
-  for (i = 0; i < 48; i++)
-    {
-      if (Rom_Name[i] != ' ')
-	i = 100;
-    }
-
-  if (i < 100)
-    strcpy (Rom_Name, "no name");
-
-  for (i = 47, j = 48; i >= 0; i--, j--)
-    {
-      if (Rom_Name[i] != ' ')
-	i = -1;
-    }
-
-  Rom_Name[j + 1] = 0;
+	int i, j;
+	
+	memcpy(Rom_Name, Name, 48);
+	
+	for (i = 0; i < 48; i++)
+	{
+		if ((Rom_Name[i] >= '0') && (Rom_Name[i] <= '9'))
+			continue;
+		if (Rom_Name[i] == ' ')
+			continue;
+		if ((Rom_Name[i] >= 'A') && (Rom_Name[i] <= 'Z'))
+			continue;
+		if ((Rom_Name[i] >= 'a') && (Rom_Name[i] <= 'z'))
+			continue;
+		Rom_Name[i] = ' ';
+	}
+	
+	for (i = 0; i < 48; i++)
+	{
+		if (Rom_Name[i] != ' ')
+			i = 100;
+	}
+	
+	if (i < 100)
+		strcpy(Rom_Name, "no name");
+	
+	for (i = 47, j = 48; i >= 0; i--, j--)
+	{
+		if (Rom_Name[i] != ' ')
+			i = -1;
+	}
+	
+	Rom_Name[j + 1] = 0;
 }
 
 
