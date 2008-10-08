@@ -2,6 +2,8 @@
  * GENS: Sega CD (Mega CD) initialization and main loop code.
  */
 
+#include <cstring>
+
 #include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"
@@ -73,6 +75,9 @@ int Init_SegaCD(const char *iso_name)
 	char *Bios_To_Use;
 	
 	GensUI::setWindowTitle_Init("SegaCD", false);
+	
+	// Clear the SCD struct.
+	memset(&SCD, 0x00, sizeof(SCD));
 	
 	if (Reset_CD((char*)CD_Data, iso_name))
 	{

@@ -114,6 +114,7 @@ int ASPI_End(void)
 	close(FD_CDROM);
 	FD_CDROM = 0;
 	Num_CD_Drive = 0;
+	
 	//By Ubi
 	return 0;
 }
@@ -131,6 +132,10 @@ void ASPI_Reset_Drive(char *buf)
 	ASPI_Star_Stop_Unit (CLOSE_TRAY, NULL);
 	ASPI_Test_Unit_Ready (7000);
 	ASPI_Star_Stop_Unit (START_DISC, NULL);
+	
+	// Clear the TOC and read buffer.
+	memset(&toc, 0x00, sizeof(toc));
+	memset(Buf_Read, 0x00, sizeof(Buf_Read));
 	
 	// Fill the TOC and set the CD_Present flag
 	ASPI_Read_TOC (1, 0, 0, 0, NULL);
