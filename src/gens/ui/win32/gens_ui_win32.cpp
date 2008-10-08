@@ -249,32 +249,50 @@ int UI_Get_Embedded_WindowID(void)
  * @param title Title.
  * @param style Style, such as icons and buttons.
  * @param owner Window that owns this dialog.
+ * @return Button pressed.
  */
-void GensUI::msgBox(const string& msg, const string& title,
-		    const unsigned int style, void* owner)
+GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
+				       const unsigned int style, void* owner)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
-	unsigned int win32MsgIcon;
+	unsigned int msgStyle = 0;
+	
+	// Determine the Win32 message icon.
 	switch (style & MSGBOX_ICON_MASK)
 	{
 		case MSGBOX_ICON_INFO:
-			win32MsgIcon = MB_ICONINFORMATION;
+			msgStyle |= MB_ICONINFORMATION;
 			break;
 		case MSGBOX_ICON_QUESTION:
-			win32MsgIcon = MB_ICONQUESTION;
+			msgStyle |= MB_ICONQUESTION;
 			break;
 		case MSGBOX_ICON_WARNING:
-			win32MsgIcon = MB_ICONWARNING;
+			msgStyle |= MB_ICONWARNING;
 			break;
 		case MSGBOX_ICON_ERROR:
-			win32MsgIcon = MB_ICONSTOP;
+			msgStyle |= MB_ICONSTOP;
 			break;
 		case MSGBOX_ICON_NONE:
 		default:
-			win32MsgIcon = 0;
+			msgStyle |= 0;
+			break;
+	}
+	
+	// Determine the Win32 message buttons.
+	switch (style & MSGBOX_BUTTONS_MASK)
+	{
+		case MSGBOX_BUTTONS_OK_CANCEL:
+			msgStyle |= MB_OKCANCEL;
+			break;
+		case MSGBOX_BUTTONS_YES_NO:
+			msgStyle |= MB_YESNO;
+			break;
+		case MSGBOX_BUTTONS_OK:
+		default:
+			msgStyle |= MB_OK;
 			break;
 	}
 	
@@ -282,7 +300,20 @@ void GensUI::msgBox(const string& msg, const string& title,
 	if (!owner)
 		owner = static_cast<void*>(Gens_hWnd);
 	
-	MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), win32MsgIcon | MB_OK);
+	int response = MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
+	
+	switch (response)
+	{
+		case IDYES:
+			return MSGBOX_RESPONSE_YES;
+		case IDNO:
+			return MSGBOX_RESPONSE_NO;
+		case IDCANCEL:
+			return MSGBOX_RESPONSE_CANCEL;
+		case IDOK:
+		default:
+			return MSGBOX_RESPONSE_OK;
+	}
 }
 
 

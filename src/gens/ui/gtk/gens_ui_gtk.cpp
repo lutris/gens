@@ -180,14 +180,16 @@ int UI_Get_Embedded_WindowID(void)
  * @param title Title.
  * @param style Style, such as icons and buttons.
  * @param owner Window that owns this dialog.
+ * @return Button pressed.
  */
-void GensUI::msgBox(const string& msg, const string& title,
-		    const unsigned int style, void* owner)
+GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
+				       const unsigned int style, void* owner)
 {
 	// TODO: Extend this function.
 	// This function is currently merely a copy of the Glade auto-generated open_msgbox() function.
 	// (Well, with an added "title" parameter.)
 	
+	// Determine the GTK+ message icon.
 	GtkMessageType gtkMsgIcon;
 	switch (style & MSGBOX_ICON_MASK)
 	{
@@ -209,16 +211,47 @@ void GensUI::msgBox(const string& msg, const string& title,
 			break;
 	}
 	
+	// Determine the GTK+ message buttons.
+	GtkButtonsType gtkButtons;
+	switch (style & MSGBOX_BUTTONS_MASK)
+	{
+		case MSGBOX_BUTTONS_OK_CANCEL:
+			gtkButtons = GTK_BUTTONS_OK_CANCEL;
+			break;
+		case MSGBOX_BUTTONS_YES_NO:
+			gtkButtons = GTK_BUTTONS_YES_NO;
+			break;
+		case MSGBOX_BUTTONS_OK:
+		default:
+			gtkButtons = GTK_BUTTONS_OK;
+			break;
+	}
+	
 	// If no owner was specified, use the Gens window.
 	if (!owner)
 		owner = gens_window;
 	
+	gint response;
 	GtkWidget *dialog = gtk_message_dialog_new(
 			GTK_WINDOW(owner), GTK_DIALOG_MODAL,
-			gtkMsgIcon, GTK_BUTTONS_OK, msg.c_str());
+			gtkMsgIcon, gtkButtons, msg.c_str());
 	gtk_window_set_title(GTK_WINDOW(dialog), title.c_str());
-	gtk_dialog_run(GTK_DIALOG(dialog));
+	response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
+	
+	// Check the response.
+	switch (response)
+	{
+		case GTK_RESPONSE_YES:
+			return MSGBOX_RESPONSE_YES;
+		case GTK_RESPONSE_NO:
+			return MSGBOX_RESPONSE_NO;
+		case GTK_RESPONSE_CANCEL:
+			return MSGBOX_RESPONSE_CANCEL;
+		case GTK_RESPONSE_OK:
+		default:
+			return MSGBOX_RESPONSE_OK;
+	}
 }
 
 

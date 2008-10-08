@@ -63,9 +63,6 @@ class GensUI
 		static void UI_Show_Embedded_Window(const int w, const int h);
 		static int UI_Get_Embedded_WindowID(void);
 		
-		static void msgBox(const string& msg, const string& title = GENS_APPNAME,
-				   const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
-				   void* owner = NULL);
 		static string openFile(const string& title, const string& initFile,
 				       const FileFilterType filterType, void* owner = NULL);
 		static string saveFile(const string& title, const string& initFile,
@@ -95,6 +92,20 @@ class GensUI
 		static const unsigned int MSGBOX_ICON_QUESTION		= (2 << 4);
 		static const unsigned int MSGBOX_ICON_WARNING 		= (3 << 4);
 		static const unsigned int MSGBOX_ICON_INFO		= (4 << 4);
+		
+		// Responses
+		enum MsgBox_Response
+		{
+			MSGBOX_RESPONSE_OK	= 0,
+			MSGBOX_RESPONSE_CANCEL	= 1,
+			MSGBOX_RESPONSE_YES	= 2,
+			MSGBOX_RESPONSE_NO	= 3,
+		};
+		
+		// msgBox function
+		static MsgBox_Response msgBox(const string& msg, const string& title = GENS_APPNAME,
+					      const unsigned int style = MSGBOX_ICON_INFO | MSGBOX_BUTTONS_OK,
+					      void* owner = NULL);
 };
 
 #endif /* __cplusplus */
