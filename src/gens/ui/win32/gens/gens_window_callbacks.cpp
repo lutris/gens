@@ -28,8 +28,8 @@
 #include "gens_window.h"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
-#if 0
 #include "game_genie/game_genie_window_misc.h"
+#if 0
 #include "controller_config/controller_config_window_misc.hpp"
 #endif
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
@@ -236,26 +236,6 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 				Sync_Gens_Window();
 			break;
 		
-		case ID_FILE_CLOSEROM:
-			if (audio->soundInitialized())
-				audio->clearSoundBuffer();
-	
-#ifdef GENS_DEBUGGER
-			Debug = 0;
-#endif /* GENS_DEBUGGER */
-	
-			/* TODO: NetPlay
-			if (Net_Play)
-			{
-				if (Video.Full_Screen)
-					Set_Render(0, -1, 1);
-			}
-			*/
-			
-			Free_Rom(Game);
-			Sync_Gens_Window();
-			break;
-		
 #ifdef GENS_CDROM
 		case ID_FILE_BOOTCD:
 			if (!ASPI_Initialized || !Num_CD_Drive)
@@ -277,8 +257,24 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			break;
 #endif /* GENS_CDROM */
 		
-		case ID_FILE_QUIT:
-			close_gens();
+		case ID_FILE_CLOSEROM:
+			if (audio->soundInitialized())
+				audio->clearSoundBuffer();
+	
+#ifdef GENS_DEBUGGER
+			Debug = 0;
+#endif /* GENS_DEBUGGER */
+	
+			/* TODO: NetPlay
+			if (Net_Play)
+			{
+			if (Video.Full_Screen)
+			Set_Render(0, -1, 1);
+	}
+			*/
+			
+			Free_Rom(Game);
+			Sync_Gens_Window();
 			break;
 		
 		case ID_FILE_ROMHISTORY_0:
@@ -351,6 +347,10 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			// Change state.
 			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
 			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case ID_FILE_QUIT:
+			close_gens();
 			break;
 	}
 }
