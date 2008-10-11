@@ -77,15 +77,14 @@ int ASPI_Init(void)
 		return 0;
 	}
 	
-	// ASPI is initialized.
-	ASPI_Initialized = 1;
-	
 	ASPI_Status = Get_ASPI_Info();
 	
 	switch (HIBYTE(ASPI_Status))
 	{
 		case SS_COMP:
+			// ASPI is initialized.
 			Num_CD_Drive = LOBYTE(ASPI_Status);
+			ASPI_Initialized = 1;
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "ASPI driver initialised : %d device(s) detected\n\n", Num_CD_Drive);
 #endif
