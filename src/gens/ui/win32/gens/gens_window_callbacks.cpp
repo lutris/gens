@@ -256,6 +256,24 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Sync_Gens_Window();
 			break;
 		
+		case ID_FILE_BOOTCD:
+			if (!ASPI_Initialized || !Num_CD_Drive)
+			{
+				printf("ASPI not initialized and/or no CD-ROM drive(s) detected.\n");
+				return;
+			}
+			
+			/*
+			if (Check_If_Kaillera_Running())
+			return 0;
+			*/
+			if (audio->playingGYM())
+				Stop_Play_GYM();
+	
+			Free_Rom(Game); // Don't forget it !
+			SegaCD_Started = Init_SegaCD(NULL);
+			Sync_Gens_Window();
+		
 		case ID_FILE_QUIT:
 			close_gens();
 			break;

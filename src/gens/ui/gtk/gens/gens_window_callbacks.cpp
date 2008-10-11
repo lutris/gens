@@ -150,8 +150,12 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	if (!Num_CD_Drive)
+	if (!ASPI_Initialized || !Num_CD_Drive)
+	{
+		printf("ASPI not initialized and/or no CD-ROM drive(s) detected.\n");
 		return;
+	}
+	
 	/*
 	if (Check_If_Kaillera_Running())
 		return 0;
