@@ -28,7 +28,7 @@ gens_SOURCES += \
 
 if GENS_CDROM
 gens_SOURCES += \
-                segacd/cd_aspi_linux.cpp
+                segacd/cd_aspi_win32.cpp
 endif
 
 noinst_HEADERS += \
