@@ -52,6 +52,7 @@ int ASPI_Init(void)
 	Send_ASPI_Command = NULL;
 	
 	// Attempt to load the ASPI DLL.
+	ASPI_Initialized = 0;
 	hASPI_DLL = LoadLibrary("wnaspi32.dll");
 	if (hASPI_DLL)
 	{
@@ -59,12 +60,6 @@ int ASPI_Init(void)
 		Get_ASPI_Info = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32SupportInfo");
 		Get_ASPI_Version = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32DLLVersion");
 		Send_ASPI_Command = (DWORD(*)(LPSRB lpsrb))GetProcAddress(hASPI_DLL, "SendASPI32Command");
-		ASPI_Initialized = 1;
-	}
-	else
-	{
-		// ASPI could not be loaded.
-		ASPI_Initialized = 0;
 	}
 
 	if ((!Get_ASPI_Info) || (!Send_ASPI_Command))
@@ -81,9 +76,12 @@ int ASPI_Init(void)
 #endif
 		return 0;
 	}
-
+	
+	// ASPI is initialized.
+	ASPI_Initialized = 1;
+	
 	ASPI_Status = Get_ASPI_Info();
-
+	
 	switch (HIBYTE(ASPI_Status))
 	{
 		case SS_COMP:
@@ -122,7 +120,8 @@ int ASPI_Init(void)
 			break;
 	}
 
-	if (Num_CD_Drive > 8) Num_CD_Drive = 8;
+	if (Num_CD_Drive > 8)
+		Num_CD_Drive = 8;
 
 	ASPI_Scan_Drives();
 //	ASPI_Set_Timeout(10);			// crashe sur certaines machines
