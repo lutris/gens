@@ -10,7 +10,7 @@
 #include "gens_core/cpu/68k/star_68k.h"
 #include "lc89510.h"
 #include "cd_aspi.hpp"
-#include "mem_s68k.h"
+#include "gens_core/mem/mem_s68k.h"
 
 
 static HINSTANCE hASPI_DLL = NULL;               // Handle to DLL
@@ -18,8 +18,6 @@ DWORD (*Get_ASPI_Info)(void);
 DWORD (*Get_ASPI_Version)(void);
 DWORD (*Send_ASPI_Command)(LPSRB);
 int ASPI_Command_Running;
-int Num_CD_Drive;
-int CUR_DEV;
 int DEV_PAR[8][3];
 unsigned int Current_LBA;
 BYTE Buf_Stat[256];
@@ -27,21 +25,11 @@ SRB_ExecSCSICmd se;
 TOC toc;
 
 
-// If ASPI is initialized, this is set.
-int ASPI_Initialized = 0;
-
-
-inline bool IsAsyncAllowed()
-{
-	// TODO
-#if 0
-	if(MainMovie.Status == MOVIE_RECORDING)
-		return false;
-	if(MainMovie.Status == MOVIE_PLAYING)
-		return false;
-#endif
-	return true;
-}
+// External variables
+int ASPI_Initialized = 0;	// If ASPI is initialized, this is set.
+int cdromSpeed;			// Speed of the CD-ROM drive. (TODO: Is this really necessary?)
+int Num_CD_Drive;		// Number of CD-ROM drives detected. (TODO: Is this correct?)
+int cdromDeviceID;		// CD-ROM device ID
 
 
 // for CDC functions
@@ -55,18 +43,19 @@ SRB_ExecSCSICmd sread;
 int ASPI_Init(void)
 {
 	unsigned int ASPI_Status;
-
-	hASPI_DLL = LoadLibrary("wnaspi32.dll");
-
+	
 	ASPI_Command_Running = 0;
 	Num_CD_Drive = 0;
 	Current_LBA = 0;
-
+	
 	Get_ASPI_Info = Get_ASPI_Version = NULL;
 	Send_ASPI_Command = NULL;
-
+	
+	// Attempt to load the ASPI DLL.
+	hASPI_DLL = LoadLibrary("wnaspi32.dll");
 	if (hASPI_DLL)
 	{
+		// ASPI loaded.
 		Get_ASPI_Info = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32SupportInfo");
 		Get_ASPI_Version = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32DLLVersion");
 		Send_ASPI_Command = (DWORD(*)(LPSRB lpsrb))GetProcAddress(hASPI_DLL, "SendASPI32Command");
@@ -74,6 +63,7 @@ int ASPI_Init(void)
 	}
 	else
 	{
+		// ASPI could not be loaded.
 		ASPI_Initialized = 0;
 	}
 
@@ -314,7 +304,8 @@ int ASPI_Set_Timeout(int sec)
 		DWORD SRB_Timeout;
 	} s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	memset(&s, 0, sizeof(s));
 
@@ -339,16 +330,17 @@ int ASPI_Test_Unit_Ready(int timeout)
 	SRB_ExecSCSICmd s;
 	int wait_time = 0;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	while (wait_time < timeout)
 	{
 		memset(&s, 0, sizeof(s));
 
 		s.SRB_Cmd        = SC_EXEC_SCSI_CMD;
-		s.SRB_HaId       = DEV_PAR[CUR_DEV][0];
-		s.SRB_Target     = DEV_PAR[CUR_DEV][1];
-		s.SRB_Lun        = DEV_PAR[CUR_DEV][2];
+		s.SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+		s.SRB_Target     = DEV_PAR[cdromDeviceID][1];
+		s.SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 		s.SRB_Flags      = SRB_DIR_IN;
 		s.SRB_BufLen     = 0;
 		s.SRB_BufPointer = NULL;
@@ -384,14 +376,15 @@ int ASPI_Set_CD_Speed(int rate, int wait)
 {
 	SRB_ExecSCSICmd s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	memset(&s, 0, sizeof(s));
 
 	s.SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s.SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s.SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s.SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s.SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s.SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s.SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s.SRB_Flags      = SRB_DIR_IN;
 	s.SRB_BufLen     = 0;
 	s.SRB_BufPointer = NULL;
@@ -426,14 +419,15 @@ int ASPI_Lock(int flock)
 {
 	SRB_ExecSCSICmd s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	memset(&s, 0, sizeof(s));
 
 	s.SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s.SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s.SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s.SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s.SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s.SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s.SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s.SRB_Flags      = SRB_DIR_IN;
 	s.SRB_BufLen     = 0;
 	s.SRB_BufPointer = NULL;
@@ -456,7 +450,8 @@ int ASPI_Star_Stop_Unit(int op, int imm, int async, int (*PostProc) (struct tagS
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -471,9 +466,9 @@ int ASPI_Star_Stop_Unit(int op, int imm, int async, int (*PostProc) (struct tagS
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0;
 	s->SRB_BufPointer = NULL;
@@ -510,7 +505,8 @@ int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struc
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "Read TOC command pass 1 ");
@@ -530,8 +526,10 @@ int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struc
 
 	if (PostProc == NULL)
 	{
-		if (MSF) PostProc = ASPI_Read_TOC_MSF_COMP;
-		else PostProc = ASPI_Read_TOC_LBA_COMP;
+		if (MSF)
+			PostProc = ASPI_Read_TOC_MSF_COMP;
+		else
+			PostProc = ASPI_Read_TOC_LBA_COMP;
 	}
 
 	memset(s, 0, sizeof(s_loc));
@@ -542,9 +540,9 @@ int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struc
 #endif
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0x324;
 	s->SRB_BufPointer = (BYTE FAR *) &toc;
@@ -592,7 +590,8 @@ int ASPI_Mechanism_State(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -602,15 +601,16 @@ int ASPI_Mechanism_State(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd
 	}
 	else s = &s_loc;
 
-	if (PostProc == NULL) PostProc = ASPI_Mechanism_State_COMP;
+	if (PostProc == NULL)
+		PostProc = ASPI_Mechanism_State_COMP;
 
 	memset(s, 0, sizeof(s_loc));
 	memset(Buf_Stat, 0, 0x100);
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0x100;
 	s->SRB_BufPointer = Buf_Stat;
@@ -647,7 +647,8 @@ int ASPI_Play_CD_MSF(_msf *start, _msf *end, int async, int (*PostProc) (struct 
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -662,9 +663,9 @@ int ASPI_Play_CD_MSF(_msf *start, _msf *end, int async, int (*PostProc) (struct 
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0;
 	s->SRB_BufPointer = NULL;
@@ -721,7 +722,8 @@ int ASPI_Stop_Play_Scan(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd 
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -736,9 +738,9 @@ int ASPI_Stop_Play_Scan(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd 
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0;
 	s->SRB_BufPointer = NULL;
@@ -773,7 +775,8 @@ int ASPI_Pause_Resume(int resume, int async, int (*PostProc) (struct tagSRB32_Ex
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -788,9 +791,9 @@ int ASPI_Pause_Resume(int resume, int async, int (*PostProc) (struct tagSRB32_Ex
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0;
 	s->SRB_BufPointer = NULL;
@@ -828,7 +831,8 @@ int ASPI_Seek(int pos, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -845,9 +849,9 @@ int ASPI_Seek(int pos, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *
 	if (pos < 0) pos = 0;
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0;
 	s->SRB_BufPointer = NULL;
@@ -886,7 +890,8 @@ int ASPI_Read_CD_LBA(int adr, int length, unsigned char sector, unsigned char fl
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -905,9 +910,9 @@ int ASPI_Read_CD_LBA(int adr, int length, unsigned char sector, unsigned char fl
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = length * 2366;
 	s->SRB_BufPointer = Buf_Read;
@@ -961,7 +966,8 @@ int ASPI_Read_One_CD_LBA(int adr, unsigned char flag, unsigned char sub_chan, in
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -978,9 +984,9 @@ int ASPI_Read_One_CD_LBA(int adr, unsigned char flag, unsigned char sub_chan, in
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 2366;
 	s->SRB_BufPointer = Buf_Read;
@@ -1031,7 +1037,8 @@ int ASPI_Read_CD_MSF(_msf *start, _msf *end, unsigned char sector, unsigned char
 	SRB_ExecSCSICmd s_loc, *s;
 	_msf MSF_S, MSF_E;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -1071,9 +1078,9 @@ int ASPI_Read_CD_MSF(_msf *start, _msf *end, unsigned char sector, unsigned char
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 8 * 2366;
 	s->SRB_BufPointer = Buf_Read;
@@ -1123,7 +1130,8 @@ int ASPI_Read_One_CD_MSF(_msf *start, unsigned char flag, unsigned char sub_chan
 	SRB_ExecSCSICmd s_loc, *s;
 	_msf MSF_S, MSF_E;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -1175,9 +1183,9 @@ int ASPI_Read_One_CD_MSF(_msf *start, unsigned char flag, unsigned char sub_chan
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 2366;
 	s->SRB_BufPointer = Buf_Read;
@@ -1264,7 +1272,8 @@ int ASPI_Get_Position(int async, void (*PostProc) (struct tagSRB32_ExecSCSICmd))
 {
 	SRB_ExecSCSICmd s_loc, *s;
 
-	if ((CUR_DEV + 1) > Num_CD_Drive) return 5;
+	if ((cdromDeviceID + 1) > Num_CD_Drive)
+		return 5;
 
 	if (async && IsAsyncAllowed())
 	{
@@ -1279,9 +1288,9 @@ int ASPI_Get_Position(int async, void (*PostProc) (struct tagSRB32_ExecSCSICmd))
 	memset(s, 0, sizeof(s_loc));
 
 	s->SRB_Cmd        = SC_EXEC_SCSI_CMD;
-	s->SRB_HaId       = DEV_PAR[CUR_DEV][0];
-	s->SRB_Target     = DEV_PAR[CUR_DEV][1];
-	s->SRB_Lun        = DEV_PAR[CUR_DEV][2];
+	s->SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+	s->SRB_Target     = DEV_PAR[cdromDeviceID][1];
+	s->SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 	s->SRB_Flags      = SRB_DIR_IN;
 	s->SRB_BufLen     = 0;
 	s->SRB_BufPointer = NULL;
@@ -1991,9 +2000,9 @@ void ASPI_Read_One_LBA_CDC(void)
 		memset(&sread, 0, sizeof(sread));
 
 		sread.SRB_Cmd        = SC_EXEC_SCSI_CMD;
-		sread.SRB_HaId       = DEV_PAR[CUR_DEV][0];
-		sread.SRB_Target     = DEV_PAR[CUR_DEV][1];
-		sread.SRB_Lun        = DEV_PAR[CUR_DEV][2];
+		sread.SRB_HaId       = DEV_PAR[cdromDeviceID][0];
+		sread.SRB_Target     = DEV_PAR[cdromDeviceID][1];
+		sread.SRB_Lun        = DEV_PAR[cdromDeviceID][2];
 		sread.SRB_Flags      = SRB_DIR_IN | SRB_POSTING;
 
 		sread.SRB_PostProc   = ASPI_Read_One_CDC_COMP;

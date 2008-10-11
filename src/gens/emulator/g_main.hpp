@@ -120,7 +120,7 @@ void End_All(void);
 int is_gens_running();
 void close_gens();
 
-// GENS Re-Recording
+// Gens Rerecording
 int IsAsyncAllowed(void);
 
 

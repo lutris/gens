@@ -128,10 +128,10 @@ void ASPI_Reset_Drive(char *buf)
 {
 	Read_Complete = 1;
 	
-	ASPI_Star_Stop_Unit (STOP_DISC, NULL);
-	ASPI_Star_Stop_Unit (CLOSE_TRAY, NULL);
-	ASPI_Test_Unit_Ready (7000);
-	ASPI_Star_Stop_Unit (START_DISC, NULL);
+	ASPI_Star_Stop_Unit(STOP_DISC, 0, 0, NULL);
+	ASPI_Star_Stop_Unit(CLOSE_TRAY, 0, 0, NULL);
+	ASPI_Test_Unit_Ready(7000);
+	ASPI_Star_Stop_Unit(START_DISC, 0, 0, NULL);
 	
 	// Clear the TOC and read buffer.
 	memset(&toc, 0x00, sizeof(toc));
@@ -199,10 +199,12 @@ int ASPI_Lock(int flock)
 /**
  * ASPI_Star_Stop_Unit(): Start, Stop, Eject, or Close the CD-ROM drive.
  * @param op Operation.
+ * @param imm ??? (TODO: Port from cd_aspi_win32.cpp)
+ * @param async ??? (TODO: Port from cd_aspi_win32.cpp)
  * @param PostProc Post-processing SCSI command to run.
  * @return 0 on success; -1 on error. (On second thought, WTF does this function return?!)
  */
-int ASPI_Star_Stop_Unit(int op, int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
+int ASPI_Star_Stop_Unit(int op, int imm, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *))
 {
 	SRB_ExecSCSICmd s_loc, *s;
 	//By Ubi Start
@@ -565,6 +567,12 @@ int ASPI_Open_Tray_CDD_cD_COMP(SRB_ExecSCSICmd *s)
 /*******************************
  *        CDC functions        *
  *******************************/
+
+
+void ASPI_Flush_Cache_CDC(void)
+{
+	// TODO: Import Cache code from cd_aspi_win32.cpp
+}
 
 
 void ASPI_Read_One_LBA_CDC(void)

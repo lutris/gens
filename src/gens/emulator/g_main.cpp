@@ -351,6 +351,14 @@ int IsAsyncAllowed(void)
 	// - A movie is being played or recorded.
 	// Since none of the above applies here, async is allowed.
 	return 1;
+
+	// TODO
+#if 0
+	if(MainMovie.Status == MOVIE_RECORDING)
+		return false;
+	if(MainMovie.Status == MOVIE_PLAYING)
+		return false;
+#endif
 }
 
 

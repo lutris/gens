@@ -114,7 +114,7 @@ int Reset_CD(char *buf, const char *iso_name);
 void Stop_CD(void);
 void Change_CD(void);
 
-void Get_Status_CDD_c0(void);
+int Get_Status_CDD_c0(void);
 int Stop_CDD_c1(void);
 int Get_Pos_CDD_c20(void);
 int Get_Track_Pos_CDD_c21(void);

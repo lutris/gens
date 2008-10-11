@@ -44,7 +44,7 @@ unsigned int CD_timer_st;	// Used for CD timer
 unsigned int CD_LBA_st;		// Used for CD timer
 
 // GENS Re-Recording
-char played_tracks_linear [101] = {0};
+char played_tracks_linear[101] = {0};
 
 _scd SCD;
 
@@ -122,74 +122,85 @@ LBA_to_MSF (int lba, _msf * MSF)
 }
 
 
-unsigned int
-MSF_to_Track (_msf * MSF)
+// Modif N. -- extracted function
+static inline int MSF_to_Ordered(_msf *MSF)
 {
-  int i, Start, Cur;
+	//return MSF_to_LBA(MSF);
+	return (MSF->M << 16) + (MSF->S << 8) + MSF->F;
+}
 
-  Start = (MSF->M << 16) + (MSF->S << 8) + MSF->F;
 
-  for (i = SCD.TOC.First_Track; i <= (SCD.TOC.Last_Track + 1); i++)
-    {
-      Cur = SCD.TOC.Tracks[i - SCD.TOC.First_Track].MSF.M << 16;
-      Cur += SCD.TOC.Tracks[i - SCD.TOC.First_Track].MSF.S << 8;
-      Cur += SCD.TOC.Tracks[i - SCD.TOC.First_Track].MSF.F;
+unsigned int MSF_to_Track(_msf * MSF)
+{
+	// Modif N. -- changed to give better results (nothing goes silent) if the tracks are out of order
+	int i, Start, Cur = 0, BestIndex = -1;
+	unsigned int BestValue = ~0;
+	
+	Start = MSF_to_Ordered(MSF);
+	
+	for (i = SCD.TOC.First_Track; i <= (SCD.TOC.Last_Track + 1); i++)
+	{
+		if (i > SCD.TOC.First_Track)
+			Cur = MSF_to_Ordered(&SCD.TOC.Tracks[i - SCD.TOC.First_Track].MSF);
+		
 #ifdef DEBUG_CD
-//      fprintf(debug_SCD_file, " i = %d  start = %.8X  cur = %.8X\n", i, Start, Cur);
+		//fprintf(debug_SCD_file, " i = %d  start = %.8X  cur = %.8X\n", i, Start, Cur);
 #endif
-      if (Cur > Start)
-	break;
-    }
-
-  --i;
-
-  if (i > SCD.TOC.Last_Track)
-    return 100;
-  if (i < SCD.TOC.First_Track)
-    i = SCD.TOC.First_Track;
-
-  return (unsigned) i;
+		if (Start >= Cur && (unsigned int)(Start - Cur) < BestValue)
+		{
+			BestIndex = i;
+			BestValue = Start - Cur;
+		}
+	}
+	
+	if (BestIndex != -1)
+		i = BestIndex;
+	else
+		return SCD.TOC.Last_Track;
+	
+	if (i > SCD.TOC.Last_Track)
+		return SCD.TOC.Last_Track;
+	if (i < SCD.TOC.First_Track)
+		i = SCD.TOC.First_Track;
+	
+	return (unsigned int)i;
 }
 
 
-unsigned int
-LBA_to_Track (int lba)
+unsigned int LBA_to_Track(int lba)
 {
-  _msf MSF;
-
-  LBA_to_MSF (lba, &MSF);
-  return MSF_to_Track (&MSF);
+	_msf MSF;
+	
+	LBA_to_MSF(lba, &MSF);
+	return MSF_to_Track(&MSF);
 }
 
 
-void
-Track_to_MSF (int track, _msf * MSF)
+void Track_to_MSF(int track, _msf * MSF)
 {
-  if (track < SCD.TOC.First_Track)
-    track = SCD.TOC.First_Track;
-  else if (track > SCD.TOC.Last_Track)
-    track = SCD.TOC.Last_Track;
-
-  MSF->M = SCD.TOC.Tracks[track - SCD.TOC.First_Track].MSF.M;
-  MSF->S = SCD.TOC.Tracks[track - SCD.TOC.First_Track].MSF.S;
-  MSF->F = SCD.TOC.Tracks[track - SCD.TOC.First_Track].MSF.F;
+	if (track < SCD.TOC.First_Track)
+		track = SCD.TOC.First_Track;
+	else if (track > SCD.TOC.Last_Track)
+		track = SCD.TOC.Last_Track;
+	
+	MSF->M = SCD.TOC.Tracks[track - SCD.TOC.First_Track].MSF.M;
+	MSF->S = SCD.TOC.Tracks[track - SCD.TOC.First_Track].MSF.S;
+	MSF->F = SCD.TOC.Tracks[track - SCD.TOC.First_Track].MSF.F;
 }
 
 
-int
-Track_to_LBA (int track)
+int Track_to_LBA(int track)
 {
-  _msf MSF;
-
-  Track_to_MSF (track, &MSF);
-  return MSF_to_LBA (&MSF);
+	_msf MSF;
+	
+	Track_to_MSF(track, &MSF);
+	return MSF_to_LBA(&MSF);
 }
 
 
-void
-Flush_CD_Command (void)
+void Flush_CD_Command(void)
 {
-  CDD_Complete = 0;
+	CDD_Complete = 0;
 }
 
 
@@ -212,7 +223,7 @@ void Check_CD_Command(void)
 			CDD.Status, CDD.Minute, CDD.Seconde, CDD.Frame, CDD.Ext);
 #endif
 		
-		CDD_Export_Status ();
+		CDD_Export_Status();
 		
 		if (Int_Mask_S68K & 0x10)
 			sub68k_interrupt(4, -1);
@@ -259,9 +270,11 @@ void Check_CD_Command(void)
 	}
 }
 
-// Alias to Check_CD_Command, needed by mem_s68k.asm
+// Alias to Check_CD_Command, needed by mem_s68k.asm (on Linux, at least)
+#ifdef GENS_OS_LINUX
 void _Check_CD_Command(void)
 	__attribute__ ((alias ("Check_CD_Command")));
+#endif
 
 
 void Init_CD_Driver(void)
@@ -270,7 +283,7 @@ void Init_CD_Driver(void)
 	debug_SCD_file = fopen("SCD.log", "w");
 #endif
 	
-	// TODO: Create a struct of function pointers for different CD-ROM readers.
+	// TODO: Create classes for different CD-ROM readers.
 #ifdef GENS_CDROM
 	// ASPI support
 	ASPI_Init();
@@ -284,13 +297,13 @@ void Init_CD_Driver(void)
 	*/
 #endif	
 	// FILE ISO support
-	FILE_Init ();
+	FILE_Init();
 	
 	return;
 }
 
 
-void End_CD_Driver (void)
+void End_CD_Driver(void)
 {
 #ifdef DEBUG_CD
 	fclose(debug_SCD_file);
@@ -363,7 +376,7 @@ void Change_CD(void)
 }
 
 
-void Get_Status_CDD_c0 (void)
+int Get_Status_CDD_c0(void)
 {
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "Status command : Cur LBA = %d\n", SCD.Cur_LBA);
@@ -389,20 +402,24 @@ void Get_Status_CDD_c0 (void)
 	
 	CDD_Complete = 1;
 	
-	return;
+	return 0;
 }
 
 
 int Stop_CDD_c1(void)
 {
-	CHECK_TRAY_OPEN SCD.Status_CDC &= ~1;	// Stop CDC read
+	CHECK_TRAY_OPEN;
+	
+	SCD.Status_CDC &= ~1;	// Stop CDC read
 	
 #ifdef GENS_CDROM
 	if (CD_Load_System == CDROM_)
-		return ASPI_Stop_Play_Scan (1, ASPI_Stop_CDD_c1_COMP);
-	else
 	{
+		return ASPI_Stop_Play_Scan(1, ASPI_Stop_CDD_c1_COMP);
+	}
+	else
 #endif
+	{
 		if (CD_Present)
 			SCD.Status_CDD = STOPPED;
 		else
@@ -415,9 +432,7 @@ int Stop_CDD_c1(void)
 		CDD.Seconde = 0;
 		CDD.Frame = 0;
 		CDD.Ext = 0;
-#ifdef GENS_CDROM
 	}
-#endif
 	
 	CDD_Complete = 1;
 	return 0;
@@ -432,7 +447,9 @@ int Get_Pos_CDD_c20(void)
 	fprintf(debug_SCD_file, "command 200 : Cur LBA = %d\n", SCD.Cur_LBA);
 #endif
 	
-	CHECK_TRAY_OPEN CDD.Status &= 0xFF;
+	CHECK_TRAY_OPEN;
+	
+	CDD.Status &= 0xFF;
 	if (!CD_Present)
 	{
 		SCD.Status_CDD = NOCD;
@@ -449,11 +466,11 @@ int Get_Pos_CDD_c20(void)
 		SCD.Status_CDD, CDD.Status);
 #endif
 	
-	LBA_to_MSF (SCD.Cur_LBA, &MSF);
+	LBA_to_MSF(SCD.Cur_LBA, &MSF);
 	
 	CDD.Minute = INT_TO_BCDW(MSF.M);
 	CDD.Seconde = INT_TO_BCDW(MSF.S);
-	CDD.Frame = INT_TO_BCDW (MSF.F);
+	CDD.Frame = INT_TO_BCDW(MSF.F);
 	CDD.Ext = 0;
 	
 	CDD_Complete = 1;
@@ -470,7 +487,9 @@ int Get_Track_Pos_CDD_c21(void)
 	fprintf(debug_SCD_file, "command 201 : Cur LBA = %d", SCD.Cur_LBA);
 #endif
 	
-	CHECK_TRAY_OPEN CDD.Status &= 0xFF;
+	CHECK_TRAY_OPEN;
+	
+	CDD.Status &= 0xFF;
 	if (!CD_Present)
 	{
 		SCD.Status_CDD = NOCD;
@@ -482,7 +501,7 @@ int Get_Track_Pos_CDD_c21(void)
 	*/
 	CDD.Status |= SCD.Status_CDD;
 	
-	elapsed_time = SCD.Cur_LBA - Track_to_LBA (LBA_to_Track (SCD.Cur_LBA));
+	elapsed_time = SCD.Cur_LBA - Track_to_LBA(LBA_to_Track(SCD.Cur_LBA));
 	LBA_to_MSF (elapsed_time - 150, &MSF);
 	
 #ifdef DEBUG_CD
@@ -506,7 +525,9 @@ int Get_Current_Track_CDD_c22(void)
 		SCD.Status_CDD, CDD.Status);
 #endif
 	
-	CHECK_TRAY_OPEN CDD.Status &= 0xFF;
+	CHECK_TRAY_OPEN;
+	
+	CDD.Status &= 0xFF;
 	if (!CD_Present)
 	{
 		SCD.Status_CDD = NOCD;
@@ -519,6 +540,7 @@ int Get_Current_Track_CDD_c22(void)
 	CDD.Status |= SCD.Status_CDD;
 	
 	SCD.Cur_Track = LBA_to_Track(SCD.Cur_LBA);
+	played_tracks_linear[SCD.Cur_Track - SCD.TOC.First_Track] = 1;
 	
 	if (SCD.Cur_Track == 100)
 		CDD.Minute = 0x0A02;
@@ -535,7 +557,9 @@ int Get_Current_Track_CDD_c22(void)
 
 int Get_Total_Length_CDD_c23(void)
 {
-	CHECK_TRAY_OPEN CDD.Status &= 0xFF;
+	CHECK_TRAY_OPEN;
+	
+	CDD.Status &= 0xFF;
 	if (!CD_Present)
 	{
 		SCD.Status_CDD = NOCD;
@@ -547,7 +571,7 @@ int Get_Total_Length_CDD_c23(void)
 	*/
 	CDD.Status |= SCD.Status_CDD;
 	
-	CDD.Minute = INT_TO_BCDW(SCD.TOC.Tracks[SCD.TOC.Last_Track - SCD.TOC.First_Track + 1]. MSF.M);
+	CDD.Minute = INT_TO_BCDW(SCD.TOC.Tracks[SCD.TOC.Last_Track - SCD.TOC.First_Track + 1].MSF.M);
 	CDD.Seconde = INT_TO_BCDW(SCD.TOC.Tracks[SCD.TOC.Last_Track - SCD.TOC.First_Track + 1].MSF.S);
 	CDD.Frame = INT_TO_BCDW(SCD.TOC.Tracks[SCD.TOC.Last_Track - SCD.TOC.First_Track + 1].MSF.F);
 	CDD.Ext = 0;
@@ -559,7 +583,9 @@ int Get_Total_Length_CDD_c23(void)
 
 int Get_First_Last_Track_CDD_c24(void)
 {
-	CHECK_TRAY_OPEN CDD.Status &= 0xFF;
+	CHECK_TRAY_OPEN;
+	
+	CDD.Status &= 0xFF;
 	if (!CD_Present)
 	{
 		SCD.Status_CDD = NOCD;
@@ -583,7 +609,7 @@ int Get_First_Last_Track_CDD_c24(void)
 
 int Get_Track_Adr_CDD_c25(void)
 {
-	CHECK_TRAY_OPEN
+	CHECK_TRAY_OPEN;
 	
 	// track number in TC4 & TC5
 	track_number = (CDD.Trans_Comm[4] & 0xF) + (CDD.Trans_Comm[5] & 0xF) * 10;
@@ -623,7 +649,10 @@ int Play_CDD_c3(void)
 	_msf MSF;
 	int delay, new_lba;
 	
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT if (CD_Load_System == CDROM_) //aggiunta
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
+	
+	if (CD_Load_System == CDROM_) //aggiunta
 	{
 		SCD.Status_CDC &= ~1;	// Stop read data with CDC
 #ifdef GENS_CDROM
@@ -637,16 +666,20 @@ int Play_CDD_c3(void)
 	MSF.S = (CDD.Trans_Comm[4] & 0xF) + (CDD.Trans_Comm[5] & 0xF) * 10;
 	MSF.F = (CDD.Trans_Comm[6] & 0xF) + (CDD.Trans_Comm[7] & 0xF) * 10;
 	
-	SCD.Cur_Track = MSF_to_Track (&MSF);
+	SCD.Cur_Track = MSF_to_Track(&MSF);
+	played_tracks_linear[SCD.Cur_Track - SCD.TOC.First_Track] = 1;
 	
-	new_lba = MSF_to_LBA (&MSF);
+	new_lba = MSF_to_LBA(&MSF);
+	delay = 0;		//upth mod - for consistency given varying track lengths
+	/*
 	delay = new_lba - SCD.Cur_LBA;
 	if (delay < 0)
 		delay = -delay;
 	delay >>= 12;
+	*/
 	
 	SCD.Cur_LBA = new_lba;
-	CDC_Update_Header ();
+	CDC_Update_Header();
 	
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "Read : Cur LBA = %d, M=%d, S=%d, F=%d\n",
@@ -657,13 +690,17 @@ int Play_CDD_c3(void)
 	if (CD_Load_System == CDROM_)
 	{
 		delay += 20;
-		//delay >>= 2;
-		//ASPI_Seek (SCD.Cur_LBA, 1, ASPI_Fast_Seek_COMP); //aggiunta
+		delay >>= 2;
+		ASPI_Seek(SCD.Cur_LBA, 1, ASPI_Fast_Seek_COMP); //aggiunta
+		ASPI_Flush_Cache_CDC();
 	}
 	else
-#endif
+#endif /* GENS_CDROM */
 	if (SCD.Status_CDD != PLAYING)
+	{
 		delay += 20;
+		delay >>= 2; // Modif N. -- added for consistency
+	}
 	
 	SCD.Status_CDD = PLAYING;
 	CDD.Status = 0x0102;
@@ -684,6 +721,7 @@ int Play_CDD_c3(void)
 		CD_Audio_Starting = 1;
 		if (CD_Load_System == FILE_ISO)
 			FILE_Play_CD_LBA(1);
+		played_tracks_linear[SCD.Cur_Track - SCD.TOC.First_Track] = 1;
 	}
 	
 	if (SCD.Cur_Track == 100)
@@ -706,15 +744,18 @@ int Seek_CDD_c4(void)
 {
 	_msf MSF;
 	
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
+	
 	// MSF to seek in TC buffer
 	MSF.M = (CDD.Trans_Comm[2] & 0xF) + (CDD.Trans_Comm[3] & 0xF) * 10;
 	MSF.S = (CDD.Trans_Comm[4] & 0xF) + (CDD.Trans_Comm[5] & 0xF) * 10;
 	MSF.F = (CDD.Trans_Comm[6] & 0xF) + (CDD.Trans_Comm[7] & 0xF) * 10;
 	
-	SCD.Cur_Track = MSF_to_Track (&MSF);
-	SCD.Cur_LBA = MSF_to_LBA (&MSF);
-	CDC_Update_Header ();
+	SCD.Cur_Track = MSF_to_Track(&MSF);
+	played_tracks_linear[SCD.Cur_Track - SCD.TOC.First_Track] = 1;
+	SCD.Cur_LBA = MSF_to_LBA(&MSF);
+	CDC_Update_Header();
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -723,6 +764,9 @@ int Seek_CDD_c4(void)
 	if (CD_Load_System == CDROM_)
 	{
 		ASPI_Seek (SCD.Cur_LBA, 1, ASPI_Seek_CDD_c4_COMP);
+#ifdef GENS_OS_LINUX
+		// For some reason, this code isn't in Gens Rerecording.
+		// To be safe, keep it for the Linux version.
 		SCD.Status_CDD = READY;
 		CDD.Status = 0x0200;
 		
@@ -736,10 +780,11 @@ int Seek_CDD_c4(void)
 		CDD.Seconde = 0;
 		CDD.Frame = 0;
 		CDD.Ext = 0;
+#endif /* GENS_OS_LINUX */
 	}
 	else
+#endif /* GENS_CDROM */
 	{
-#endif
 		SCD.Status_CDD = READY;
 		CDD.Status = 0x0200;
 		
@@ -753,9 +798,7 @@ int Seek_CDD_c4(void)
 		CDD.Seconde = 0;
 		CDD.Frame = 0;
 		CDD.Ext = 0;
-#ifdef GENS_CDROM
 	}
-#endif
 	
 	CDD_Complete = 1;
 	return 0;
@@ -765,7 +808,11 @@ int Seek_CDD_c4(void)
 int Pause_CDD_c6(void)
 {
 	// Stop CDC read to start a new one if raw data
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT SCD.Status_CDC &= ~1;
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
+	
+	// Stop CDC read to start a new one if raw data
+	SCD.Status_CDC &= ~1;
 	
 	SCD.Status_CDD = READY;
 	CDD.Status = SCD.Status_CDD;
@@ -785,9 +832,12 @@ int Pause_CDD_c6(void)
 
 int Resume_CDD_c7(void)
 {
-	//_msf MSF;
+#ifdef DEBUG_CD
+	_msf MSF;
+#endif /* DEBUG_CD */
 	
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
 	
 #ifdef GENS_CDROM
 	if (CD_Load_System == CDROM_)
@@ -796,15 +846,18 @@ int Resume_CDD_c7(void)
 		SCD.Status_CDC &= ~1;
 		Wait_Read_Complete ();
 	}
-#endif
+#endif /* GENS_CDROM */
+	else //if(CD_Load_System == FILE_CUE) // Modif N. -- added
+		SCD.Status_CDC &= ~1;
 	
-	SCD.Cur_Track = LBA_to_Track (SCD.Cur_LBA);
+	SCD.Cur_Track = LBA_to_Track(SCD.Cur_LBA);
+	played_tracks_linear[SCD.Cur_Track - SCD.TOC.First_Track] = 1;
 	
 #ifdef DEBUG_CD
 	LBA_to_MSF(SCD.Cur_LBA, &MSF);
 	fprintf(debug_SCD_file, "Resume read : Cur LBA = %d, M=%d, S=%d, F=%d\n",
 		SCD.Cur_LBA, MSF.M, MSF.S, MSF.F);
-#endif
+#endif /* DEBUG_CD */
 	
 	SCD.Status_CDD = PLAYING;
 	CDD.Status = 0x0102;
@@ -812,9 +865,10 @@ int Resume_CDD_c7(void)
 #ifdef GENS_CDROM
 	if (CD_Load_System == CDROM_)
 	{
-		//ASPI_Seek (SCD.Cur_LBA, 1, ASPI_Fast_Seek_COMP);
+		ASPI_Seek(SCD.Cur_LBA, 1, ASPI_Fast_Seek_COMP);
+		ASPI_Flush_Cache_CDC();
 	}
-#endif
+#endif /* GENS_CDROM */
 	
 	if (SCD.TOC.Tracks[SCD.Cur_Track - SCD.TOC.First_Track].Type)
 	{
@@ -848,7 +902,8 @@ int Resume_CDD_c7(void)
 
 int Fast_Foward_CDD_c8(void)
 {
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -856,7 +911,7 @@ int Fast_Foward_CDD_c8(void)
 	SCD.Status_CDD = FAST_FOW;
 	CDD.Status = SCD.Status_CDD | 2;
 	
-	CDD.Minute = INT_TO_BCDW (SCD.Cur_Track);
+	CDD.Minute = INT_TO_BCDW(SCD.Cur_Track);
 	CDD.Seconde = 0;
 	CDD.Frame = 0;
 	CDD.Ext = 0;
@@ -868,7 +923,8 @@ int Fast_Foward_CDD_c8(void)
 
 int Fast_Rewind_CDD_c9(void)
 {
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -876,7 +932,7 @@ int Fast_Rewind_CDD_c9(void)
 	SCD.Status_CDD = FAST_REV;
 	CDD.Status = SCD.Status_CDD | 2;
 	
-	CDD.Minute = INT_TO_BCDW (SCD.Cur_Track);
+	CDD.Minute = INT_TO_BCDW(SCD.Cur_Track);
 	CDD.Seconde = 0;
 	CDD.Frame = 0;
 	CDD.Ext = 0;
@@ -897,7 +953,7 @@ int Close_Tray_CDD_cC(void)
 	if (CD_Load_System == CDROM_)
 	{
 		ASPI_Lock(0);
-		ASPI_Star_Stop_Unit(CLOSE_TRAY, ASPI_Close_Tray_CDD_cC_COMP);
+		ASPI_Star_Stop_Unit(CLOSE_TRAY, 0, 0, ASPI_Close_Tray_CDD_cC_COMP);
 		
 		Reload_SegaCD(NULL);
 		
@@ -913,8 +969,8 @@ int Close_Tray_CDD_cC(void)
 		CDD.Ext = 0;
 	}
 	else
+#endif /* GENS_CDROM */
 	{
-#endif
 		char new_iso[GENS_PATH_MAX];
 		
 		// TODO: Is this memset() really necessary?
@@ -933,10 +989,8 @@ int Close_Tray_CDD_cC(void)
 		CDD.Seconde = 0;
 		CDD.Frame = 0;
 		CDD.Ext = 0;
-#ifdef GENS_CDROM
 	}
-#endif
-	
+		
 	CDD_Complete = 1;
 	return 0;
 }
@@ -955,7 +1009,7 @@ int Open_Tray_CDD_cD(void)
 		audio->clearSoundBuffer();
 		
 		ASPI_Lock(0);
-		ASPI_Star_Stop_Unit(OPEN_TRAY, ASPI_Open_Tray_CDD_cD_COMP);
+		ASPI_Star_Stop_Unit(OPEN_TRAY, 0, 0, ASPI_Open_Tray_CDD_cD_COMP);
 		
 		ASPI_Lock(1);
 		return 0;
@@ -984,7 +1038,8 @@ int Open_Tray_CDD_cD(void)
 
 int CDD_cA(void)
 {
-	CHECK_TRAY_OPEN CHECK_CD_PRESENT
+	CHECK_TRAY_OPEN;
+	CHECK_CD_PRESENT;
 	
 	SCD.Status_CDC &= ~1;
 	
@@ -1091,7 +1146,6 @@ void Update_CD_Audio(int **buf, int length)
 {
 	int *Buf_L, *Buf_R;
 	int diff;
-	int i;
 	
 	Buf_L = buf[0];
 	Buf_R = buf[1];
@@ -1130,6 +1184,7 @@ void Update_CD_Audio(int **buf, int length)
 	
 	if (CDDA_Enable)
 	{
+		int i;
 		for (length--, i = 0; length > 0; length--, i++)
 		{
 			Buf_L[i] += CD_Audio_Buffer_L[CD_Audio_Buffer_Read_Pos];

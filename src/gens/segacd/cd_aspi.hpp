@@ -49,7 +49,7 @@ extern int Num_CD_Drive;
 extern int cdromDeviceID;
 #elif defined(GENS_OS_LINUX)
 extern char cdromDeviceName[64];
-#endif /* GENS_OS_WIN32 / GENS_OS_LINUX */
+#endif
 
 // If ASPI is initialized, this is set.
 extern int ASPI_Initialized;
@@ -63,17 +63,17 @@ void ASPI_Reset_Drive(char *buf);
 void ASPI_Scan_Drives(void);
 int ASPI_Get_Drive_Info(int dev, unsigned char *Inf);
 int ASPI_Set_Timeout(int sec);
-#endif /* GENS_OS_WIN32 */
+#endif
 
 int ASPI_Test_Unit_Ready(int timeout);
 #ifdef GENS_OS_WIN32
 int ASPI_Set_CD_Speed(int rate, int wait);
-#endif /* GENS_OS_WIN32 */
+#endif
 #ifdef GENS_OS_LINUX
 void LINUXCD_Select_Speed(void);
-#endif /* GENS_OS_LINUX */
+#endif
 int ASPI_Lock(int flock);
-int ASPI_Star_Stop_Unit(int op, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
+int ASPI_Star_Stop_Unit(int op, int imm, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Read_TOC(int MSF, int format, int st, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Stop_Play_Scan(int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
 int ASPI_Seek(int pos, int async, int (*PostProc) (struct tagSRB32_ExecSCSICmd *));
@@ -82,8 +82,21 @@ int ASPI_Read_CD_LBA(int adr, int length, unsigned char sector, unsigned char fl
 // Default Callback
 
 int ASPI_Star_Stop_Unit_COMP(SRB_ExecSCSICmd *s);
+#ifdef GENS_OS_WIN32
+int ASPI_Read_TOC_LBA_COMP(SRB_ExecSCSICmd *s);
+int ASPI_Read_TOC_MSF_COMP(SRB_ExecSCSICmd *s);
+int ASPI_Mechanism_State_COMP(SRB_ExecSCSICmd *s);
+int ASPI_Play_CD_MSF_COMP(SRB_ExecSCSICmd *s);
+#endif
 int ASPI_Stop_Play_Scan_COMP(SRB_ExecSCSICmd *s);
+#ifdef GENS_OS_WIN32
+int ASPI_Pause_Resume_COMP(SRB_ExecSCSICmd *s);
+#endif
 int ASPI_Seek_COMP(SRB_ExecSCSICmd *s);
+#ifdef GENS_OS_WIN32
+int ASPI_Read_CD_LBA_COMP(SRB_ExecSCSICmd *s);
+int ASPI_Read_CD_MSF_COMP(SRB_ExecSCSICmd *s);
+#endif
 
 // Customize Callback
 
@@ -96,7 +109,12 @@ int ASPI_Open_Tray_CDD_cD_COMP(SRB_ExecSCSICmd *s);
 
 // CDC functions
 
+void ASPI_Flush_Cache_CDC(void);
 void ASPI_Read_One_LBA_CDC(void);
+#ifdef GENS_OS_WIN32
+int ASPI_Read_One_CDC_COMP(SRB_ExecSCSICmd *s);
+int ASPI_Read_One_CDC_Cache(void);
+#endif
 void Wait_Read_Complete(void);
 
 
