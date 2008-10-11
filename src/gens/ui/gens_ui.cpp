@@ -77,13 +77,16 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 	
 	// Trim any excess spaces.
 	condGameName = ss.str();
-	if (condGameName.length() > 0)
+	
+	if (condGameName.length() > 0 &&
+	    condGameName.at(condGameName.length() - 1) == ' ')
 	{
-		if (condGameName.at(condGameName.length() - 1) == ' ')
-			condGameName = condGameName.substr(0, condGameName.length() - 1);
-		if (condGameName.at(0) == ' ')
-			condGameName = condGameName.substr(1, condGameName.length() - 1);
-
+		condGameName = condGameName.substr(0, condGameName.length() - 1);
+	}
+	
+	if (condGameName.length() > 0 && condGameName.at(0) == ' ')
+	{
+		condGameName = condGameName.substr(1, condGameName.length() - 1);
 	}
 	
 	// Set the title.
