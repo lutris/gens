@@ -148,7 +148,7 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 		
 		// Create the textbox for the entry.
 		txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, DirEntries[dir].entry,
-					  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT,
+					  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 					  grpBox_Left + 8+64+8, grpBox_Top + entryTop,
 					  frameWidth - (8+64+8+16+64), 20,
 					  hWnd, NULL, ghInstance, NULL);
