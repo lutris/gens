@@ -59,8 +59,7 @@ HFONT fntTitle = NULL;
  */
 void Get_Save_Path(char *buf, size_t n)
 {
-	GetCurrentDirectory(n, buf);
-	strcat(buf, GENS_DIR_SEPARATOR_STR);
+	strncpy(buf, ".\\", n);
 }
 
 
