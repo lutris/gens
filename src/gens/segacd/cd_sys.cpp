@@ -54,36 +54,54 @@ FILE *debug_SCD_file;
 #endif
 
 
-#define CHECK_TRAY_OPEN				\
-if (SCD.Status_CDD == TRAY_OPEN)	\
-{									\
-	CDD.Status = SCD.Status_CDD;	\
-									\
-	CDD.Minute = 0;					\
-	CDD.Seconde = 0;				\
-	CDD.Frame = 0;					\
-	CDD.Ext = 0;					\
-									\
-	CDD_Complete = 1;				\
-									\
-	return 2;						\
+// CDERR_TRAY_OPEN == KEY_NOTREADY [ASPI]
+#define CDERR_TRAY_OPEN 2
+/**
+ * checkTrayOpen(): Check if the CD tray is open.
+ * @return true if the tray is open; false if the tray is closed.
+ */
+static inline bool checkTrayOpen(void)
+{
+	if (SCD.Status_CDD != TRAY_OPEN)
+		return false;
+	
+	// CD tray is open.
+	CDD.Status = SCD.Status_CDD;
+	
+	CDD.Minute = 0;
+	CDD.Seconde = 0;
+	CDD.Frame = 0;
+	CDD.Ext = 0;
+	
+	CDD_Complete = 1;
+	
+	return true;
 }
 
 
-#define CHECK_CD_PRESENT			\
-if (!CD_Present)					\
-{									\
-	SCD.Status_CDD = NOCD;			\
-	CDD.Status = SCD.Status_CDD;	\
-									\
-	CDD.Minute = 0;					\
-	CDD.Seconde = 0;				\
-	CDD.Frame = 0;					\
-	CDD.Ext = 0;					\
-									\
-	CDD_Complete = 1;				\
-									\
-	return 3;						\
+// CDERR_NO_DISC == KEY_MEDIUMERR [ASPI]
+#define CDERR_NO_DISC 3
+/**
+ * checkCDPresent(): Check if a CD is present.
+ * @return true if a CD is present; false if a CD is not present.
+ */
+static inline bool checkCDPresent(void)
+{
+	if (CD_Present)
+		return true;
+	
+	// CD is not present.
+	SCD.Status_CDD = NOCD;
+	CDD.Status = SCD.Status_CDD;
+	
+	CDD.Minute = 0;
+	CDD.Seconde = 0;
+	CDD.Frame = 0;
+	CDD.Ext = 0;
+	
+	CDD_Complete = 1;
+	
+	return false;
 }
 
 
@@ -408,7 +426,8 @@ int Get_Status_CDD_c0(void)
 
 int Stop_CDD_c1(void)
 {
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	SCD.Status_CDC &= ~1;	// Stop CDC read
 	
@@ -447,7 +466,8 @@ int Get_Pos_CDD_c20(void)
 	fprintf(debug_SCD_file, "command 200 : Cur LBA = %d\n", SCD.Cur_LBA);
 #endif
 	
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	CDD.Status &= 0xFF;
 	if (!CD_Present)
@@ -487,7 +507,8 @@ int Get_Track_Pos_CDD_c21(void)
 	fprintf(debug_SCD_file, "command 201 : Cur LBA = %d", SCD.Cur_LBA);
 #endif
 	
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	CDD.Status &= 0xFF;
 	if (!CD_Present)
@@ -525,7 +546,8 @@ int Get_Current_Track_CDD_c22(void)
 		SCD.Status_CDD, CDD.Status);
 #endif
 	
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	CDD.Status &= 0xFF;
 	if (!CD_Present)
@@ -557,7 +579,8 @@ int Get_Current_Track_CDD_c22(void)
 
 int Get_Total_Length_CDD_c23(void)
 {
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	CDD.Status &= 0xFF;
 	if (!CD_Present)
@@ -583,7 +606,8 @@ int Get_Total_Length_CDD_c23(void)
 
 int Get_First_Last_Track_CDD_c24(void)
 {
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	CDD.Status &= 0xFF;
 	if (!CD_Present)
@@ -609,7 +633,8 @@ int Get_First_Last_Track_CDD_c24(void)
 
 int Get_Track_Adr_CDD_c25(void)
 {
-	CHECK_TRAY_OPEN;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	// track number in TC4 & TC5
 	track_number = (CDD.Trans_Comm[4] & 0xF) + (CDD.Trans_Comm[5] & 0xF) * 10;
@@ -649,8 +674,10 @@ int Play_CDD_c3(void)
 	_msf MSF;
 	int delay, new_lba;
 	
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 	if (CD_Load_System == CDROM_) //aggiunta
 	{
@@ -744,8 +771,10 @@ int Seek_CDD_c4(void)
 {
 	_msf MSF;
 	
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 	// MSF to seek in TC buffer
 	MSF.M = (CDD.Trans_Comm[2] & 0xF) + (CDD.Trans_Comm[3] & 0xF) * 10;
@@ -808,8 +837,10 @@ int Seek_CDD_c4(void)
 int Pause_CDD_c6(void)
 {
 	// Stop CDC read to start a new one if raw data
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 	// Stop CDC read to start a new one if raw data
 	SCD.Status_CDC &= ~1;
@@ -836,8 +867,10 @@ int Resume_CDD_c7(void)
 	_msf MSF;
 #endif /* DEBUG_CD */
 	
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 #ifdef GENS_CDROM
 	if (CD_Load_System == CDROM_)
@@ -902,8 +935,10 @@ int Resume_CDD_c7(void)
 
 int Fast_Foward_CDD_c8(void)
 {
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -923,8 +958,10 @@ int Fast_Foward_CDD_c8(void)
 
 int Fast_Rewind_CDD_c9(void)
 {
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -998,7 +1035,8 @@ int Close_Tray_CDD_cC(void)
 
 int Open_Tray_CDD_cD(void)
 {
-	CHECK_TRAY_OPEN
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -1038,8 +1076,10 @@ int Open_Tray_CDD_cD(void)
 
 int CDD_cA(void)
 {
-	CHECK_TRAY_OPEN;
-	CHECK_CD_PRESENT;
+	if (checkTrayOpen())
+		return CDERR_TRAY_OPEN;
+	if (!checkCDPresent())
+		return CDERR_NO_DISC;
 	
 	SCD.Status_CDC &= ~1;
 	
