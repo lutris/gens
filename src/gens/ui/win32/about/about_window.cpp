@@ -62,7 +62,7 @@ static UINT_PTR tmrIce = NULL;
 static void updateIce(void);
 static void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 
-const unsigned short iceOffsetX = 20;
+const unsigned short iceOffsetX = 32;
 const unsigned short iceOffsetY = 8;
 unsigned int iceLastTicks = 0;
 unsigned short ax = 0, bx = 0, cx = 0;
@@ -191,7 +191,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 		// Gens logo
 		HWND imgGensLogo;
 		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
-					   0, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
+					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
 		bmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 						 IMAGE_BITMAP, 0, 0,
 						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
