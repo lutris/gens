@@ -85,9 +85,10 @@ HWND create_game_genie_window(void)
 	
 	// Create the window.
 	game_genie_window = CreateWindowEx(NULL, "Gens_Game_Genie", "Game Genie",
-					   (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
+					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					   CW_USEDEFAULT, CW_USEDEFAULT,
-					   wndWidth, 300, NULL, NULL, ghInstance, NULL);
+					   wndWidth, 300,
+					   Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(game_genie_window, wndWidth, 300);

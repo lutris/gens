@@ -101,9 +101,10 @@ HWND create_about_window(void)
 	
 	// Create the window.
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
-				      WS_POPUPWINDOW | WS_CAPTION,
+				      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320, 288 + 4, NULL, NULL, ghInstance, NULL);
+				      320, 288 + 4,
+				      Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(about_window, 320, 288);

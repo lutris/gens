@@ -134,9 +134,10 @@ HWND create_general_options_window(void)
 	
 	// Create the window.
 	general_options_window = CreateWindowEx(NULL, "Gens_General_Options", "General Options",
-						(WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
+						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16, (frameHeight * 5) - 12, NULL, NULL, ghInstance, NULL);
+						frameWidth + 16, (frameHeight * 5) - 12,
+						Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(general_options_window, frameWidth + 16, (frameHeight * 5) - 12);
