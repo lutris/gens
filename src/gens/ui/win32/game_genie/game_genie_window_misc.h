@@ -31,9 +31,7 @@ void Open_Game_Genie(void);
 void GG_AddCode(const char *name, const char *code, int enabled);
 void GG_DelSelectedCode(void);
 void GG_DeactivateAllCodes(void);
-#if 0
 void GG_SaveCodes(void);
-#endif
 
 #ifdef __cplusplus
 }

@@ -203,7 +203,6 @@ void GG_DelSelectedCode(void)
 void GG_DeactivateAllCodes(void)
 {
 	int lvItems = SendMessage(gg_lstvCodes, LVM_GETITEMCOUNT, 0, 0);
-	unsigned int state;
 	int i;
 	
 	for (i = 0; i < lvItems; i++)
@@ -213,31 +212,43 @@ void GG_DeactivateAllCodes(void)
 }
 
 
-#if 0
 /**
- * GG_SaveCodes(): Save the codes from the GtkTreeView to Game_Genie_Codes[].
+ * GG_SaveCodes(): Save the codes from the ListView to Game_Genie_Codes[].
  */
 void GG_SaveCodes(void)
 {
-	gboolean valid, enabled;
-	GtkTreeIter iter;
-	gchar *code, *name;
-	int i;
+	int lvItems, i, state;
+	LV_ITEM lviCode;
 	
 	// Reinitialize the Game Genie array.
 	Init_GameGenie();
 	
-	// Copy each item in the listview to the array.
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_gg), &iter);
-	i = 0;
-	while (valid && i < 256)
+	// Get the number of items in the listview.
+	lvItems = SendMessage(gg_lstvCodes, LVM_GETITEMCOUNT, 0, 0);
+	
+	// Set up the LV_ITEM.
+	memset(&lviCode, 0x00, sizeof(lviCode));
+	lviCode.mask = LVIF_TEXT;
+	
+	for (i = 0; i < lvItems; i++)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(listmodel_gg), &iter, 0, &enabled, 1, &code, 2, &name, -1);
-		strcpy(Game_Genie_Codes[i].name, name);
-		strcpy(Game_Genie_Codes[i].code, code);
-		Game_Genie_Codes[i].active = (enabled ? 1 : 0);
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_gg), &iter);
-		i++;
+		lviCode.iItem = i;
+		
+		// Code
+		lviCode.iSubItem = 0;
+		lviCode.pszText = Game_Genie_Codes[i].code;
+		lviCode.cchTextMax = sizeof(Game_Genie_Codes[i].code) - 1;
+		SendMessage(gg_lstvCodes, LVM_GETITEMTEXT, i, (LPARAM)&lviCode);
+		
+		// Name
+		lviCode.iSubItem = 1;
+		lviCode.pszText = Game_Genie_Codes[i].name;
+		lviCode.cchTextMax = sizeof(Game_Genie_Codes[i].name) - 1;
+		SendMessage(gg_lstvCodes, LVM_GETITEMTEXT, i, (LPARAM)&lviCode);
+		
+		// State
+		state = ListView_GetCheckState(gg_lstvCodes, i);
+		Game_Genie_Codes[i].active = (state ? 1 : 0);
 	}
 	
 	// Decode and apply Game Genie codes.
@@ -261,4 +272,3 @@ void GG_SaveCodes(void)
 		}
 	}
 }
-#endif
