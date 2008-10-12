@@ -265,7 +265,7 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	
 	if (m_stereo)
 	{
-#if 0//def GENS_X86_ASM
+#ifdef GENS_X86_ASM
 		if (Have_MMX)
 			writeSoundStereo_MMX(Seg_L, Seg_R, (short*)lpvPtr1, m_segLength);
 		else
@@ -274,7 +274,7 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	}
 	else
 	{
-#if 0//def GENS_X86_ASM
+#ifdef GENS_X86_ASM
 		if (Have_MMX)
 			writeSoundMono_MMX(Seg_L, Seg_R, (short*)lpvPtr1, m_segLength);
 		else
