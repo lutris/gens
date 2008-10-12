@@ -1,6 +1,6 @@
-#include <string.h>
-#include <stdio.h>
-#include <unistd.h>
+#include <cstring>
+#include <cstdio>
+#include <climits>
 
 #include "port/port.h"
 #include "emulator/g_main.hpp"
