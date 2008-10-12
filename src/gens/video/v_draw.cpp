@@ -393,7 +393,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		if (m_shift)
 			y += 8;
 	}
-	printf("y position: %d\n", y);
+	
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
 	
