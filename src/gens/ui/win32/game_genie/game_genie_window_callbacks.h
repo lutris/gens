@@ -30,6 +30,7 @@ extern "C" {
 #include <windows.h>
 
 LRESULT CALLBACK Game_Genie_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK Game_Genie_TextBox_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #if 0
 gboolean on_game_genie_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);

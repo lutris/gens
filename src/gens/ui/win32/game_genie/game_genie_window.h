@@ -38,6 +38,10 @@ extern HWND gg_txtCode;
 extern HWND gg_txtName;
 extern HWND gg_lstvCodes;
 
+// Old window procedures for gg_txtCode and gg_txtName.
+WNDPROC gg_txtCode_oldProc;
+WNDPROC gg_txtName_oldProc;
+
 #ifdef __cplusplus
 }
 #endif

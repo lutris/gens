@@ -42,12 +42,14 @@
 static WNDCLASS WndClass;
 HWND game_genie_window = NULL;
 
-
 // Controls
 HWND gg_txtCode = NULL;
 HWND gg_txtName = NULL;
 HWND gg_lstvCodes = NULL;
 
+// Old window procedures for gg_txtCode and gg_txtName.
+WNDPROC gg_txtCode_oldProc;
+WNDPROC gg_txtName_oldProc;
 
 // Window width.
 static const int wndWidth = 416;
@@ -133,8 +135,9 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	gg_txtCode = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 				    8+32+8, 24+52+8, wndWidth - (8+32+8+64+8), 20,
-				     hWnd, NULL, ghInstance, NULL);
+				    hWnd, NULL, ghInstance, NULL);
 	SendMessage(gg_txtCode, WM_SETFONT, (WPARAM)fntMain, 1);
+	gg_txtCode_oldProc = (WNDPROC)SetWindowLong(gg_txtCode, GWL_WNDPROC, (long)Game_Genie_TextBox_WndProc);
 	
 	// Add Code
 	btnAddCode = CreateWindow(WC_BUTTON, "&Add Code",
@@ -156,6 +159,7 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 				    8+32+8, 24+52+8+24, wndWidth - (8+32+8+64+8), 20,
 				    hWnd, NULL, ghInstance, NULL);
 	SendMessage(gg_txtName, WM_SETFONT, (WPARAM)fntMain, 1);
+	gg_txtName_oldProc = (WNDPROC)SetWindowLong(gg_txtName, GWL_WNDPROC, (long)Game_Genie_TextBox_WndProc);
 	
 	// ListView
 	gg_lstvCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "",

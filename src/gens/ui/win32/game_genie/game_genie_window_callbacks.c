@@ -33,7 +33,6 @@
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
-
 void AddCode_Signal(HWND hWnd);
 
 
@@ -50,7 +49,7 @@ LRESULT CALLBACK Game_Genie_Window_WndProc(HWND hWnd, UINT message, WPARAM wPara
 			return 0;
 		
 		case WM_COMMAND:
-			// Button press
+			// Button press, or Enter pressed in textbox
 			switch (LOWORD(wParam))
 			{
 #if 0
@@ -88,6 +87,31 @@ LRESULT CALLBACK Game_Genie_Window_WndProc(HWND hWnd, UINT message, WPARAM wPara
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+LRESULT CALLBACK Game_Genie_TextBox_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// Game Genie textbox subclassing
+	// This is only used to capture the Enter keypress.
+	
+	// Note: WM_GETDLGCODE may show up instead of WM_KEYDOWN,
+	// since this window handles dialog messages.
+	if ((message == WM_KEYDOWN || message == WM_GETDLGCODE) && wParam == VK_RETURN)
+	{
+		// Enter is pressed. Add the code.
+		AddCode_Signal(game_genie_window);
+		return FALSE;
+	}
+	
+	// Not Enter. Run the regular procedure.
+	if (hWnd == gg_txtCode)
+		return CallWindowProc(gg_txtCode_oldProc, hWnd, message, wParam, lParam);
+	else if (hWnd == gg_txtName)
+		return CallWindowProc(gg_txtName_oldProc, hWnd, message, wParam, lParam);
+	
+	// Unknown control.
+	return FALSE;
 }
 
 
