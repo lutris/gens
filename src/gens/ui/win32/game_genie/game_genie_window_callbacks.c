@@ -63,12 +63,11 @@ LRESULT CALLBACK Game_Genie_Window_WndProc(HWND hWnd, UINT message, WPARAM wPara
 				case IDC_BTN_APPLY:
 					BIOS_Misc_Files_Save();
 					break;
-				
-					case IDCANCEL: // Standard dialog button ID
+#endif
+				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
 					break;
-#endif
 				case IDC_BTN_ADD:
 					AddCode_Signal(hWnd);
 					break;
@@ -169,19 +168,6 @@ void on_treeview_gg_list_item_toggled(GtkCellRendererToggle *cell_renderer,
 	
 	// Set the inverted value.
 	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !curState, -1);
-}
-
-
-/**
- * Cancel
- */
-void on_button_gg_Cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(game_genie_window);
-	game_genie_window = NULL;
 }
 
 
