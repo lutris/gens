@@ -230,6 +230,11 @@ void Init_Settings(void)
 	Debug = 0;
 #endif /* GENS_DEBUGGER */
 	
+#ifdef GENS_OS_WIN32
+	// Win32 needs the current directory.
+	GetCurrentDirectory(sizeof(PathNames.Gens_EXE_Path), PathNames.Gens_EXE_Path);
+#endif
+	
 	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);
 	Create_Save_Directory(PathNames.Gens_Path);
 	

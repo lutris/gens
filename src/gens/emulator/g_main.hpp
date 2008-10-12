@@ -13,9 +13,9 @@ extern "C" {
 #include "port/port.h"
 
 // OS-specific includes.
-#if (defined(__linux__))
+#if defined(GENS_OS_LINUX)
 #include "g_main_linux.hpp"
-#elif (defined(__WIN32__))
+#elif defined(GENS_OS_WIN32)
 #include "g_main_win32.hpp"
 #else
 #error Unsupported operating system.
@@ -31,8 +31,11 @@ struct Gens_Settings_t
 // Gens Pathnames
 struct Gens_PathNames_t
 {
+	char Gens_Path[GENS_PATH_MAX];	// TODO: Rename to Gens_Save_Path.
+#ifdef GENS_OS_WIN32
+	char Gens_EXE_Path[GENS_PATH_MAX];
+#endif
 	char Start_Rom[GENS_PATH_MAX];
-	char Gens_Path[GENS_PATH_MAX];
 	char Language_Path[GENS_PATH_MAX];
 	char Dump_WAV_Dir[GENS_PATH_MAX];
 	char Dump_GYM_Dir[GENS_PATH_MAX];

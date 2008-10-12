@@ -480,7 +480,6 @@ int Open_Rom(const char *Name)
 Rom *Load_SegaCD_BIOS(const char *filename)
 {
 	FILE *f;
-	//SetCurrentDirectory (Gens_Path);
 	
 	// This basically just checks if the BIOS ROM image can be opened.
 	// TODO: Show an error message if it can't be opened.
@@ -510,8 +509,6 @@ ROMType Load_ROM(const char *filename, struct Rom **retROM)
 	CompressedFile* selFile;
 	unsigned char buf[1024];
 	ROMType rtype;
-	
-	//SetCurrentDirectory (Gens_Path);
 	
 	// Set up the compressor.
 	cmp = new Compressor(filename);
@@ -702,8 +699,6 @@ IPS_Patching (void)
   char Name[1024];
   unsigned char buf[16];
   unsigned int adr, len, i;
-
-  //SetCurrentDirectory (Gens_Path);
 
   strcpy (Name, IPS_Dir);
   strcat (Name, Rom_Name);

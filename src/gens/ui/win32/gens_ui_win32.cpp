@@ -363,8 +363,6 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	char filename[GENS_PATH_MAX];
 	OPENFILENAME ofn;
 	
-	SetCurrentDirectory(PathNames.Gens_Path);
-	
 	memset(filename, 0, sizeof(filename));
 	memset(&ofn, 0, sizeof(OPENFILENAME));
 	
@@ -407,20 +405,27 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	ofn.lpstrInitialDir = initFile.c_str();
 	
 	ofn.Flags = OFN_HIDEREADONLY;
+	BOOL ret;
+	
 	if (!openOrSave)
 	{
 		// Open Dialog
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		if (!GetOpenFileName(&ofn))
-			return "";
+		ret = GetOpenFileName(&ofn);
 	}
 	else
 	{
 		// Save Dialog
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		if (!GetSaveFileName(&ofn))
-			return "";
+		ret = GetSaveFileName(&ofn);
 	}
+	
+	// Reset the current directory to PathNames.Gens_EXE_Path.
+	// (Why do GetOpenFIleName() and GetSaveFileName change it?)
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	
+	if (!ret)
+		return "";
 	
 	return ofn.lpstrFile;
 }
@@ -463,6 +468,11 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	}
 	
 	bool bRet = SHGetPathFromIDList(pidl, selDir);
+	
+	// Reset the current directory to PathNames.Gens_EXE_Path.
+	// I'm not sure if SHGetPathFromIDList() changes it, but it might.
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	
 	if (!bRet)
 		return "";
 	

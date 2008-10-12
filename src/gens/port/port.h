@@ -11,8 +11,6 @@ typedef struct _POINT {
 	int y;
 } POINT;
 
-void SetCurrentDirectory(const char *directory);
-int GetCurrentDirectory(int size,char* buf);
 unsigned int GetTickCount(void);
 #endif /* __WIN32__ */
 

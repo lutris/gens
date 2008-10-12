@@ -344,9 +344,6 @@ int Load_Patch_File(void)
 		ERR
 	} etat = DEB_LIGNE;
 	
-	// TODO: This is probably not needed...
-	SetCurrentDirectory(PathNames.Gens_Path);
-	
 	for (i = 0; i < 256; i++)
 	{
 		Game_Genie_Codes[i].code[0] = 0;
@@ -361,8 +358,9 @@ int Load_Patch_File(void)
 	strcpy(Name, Patch_Dir);
 	strcat(Name, Rom_Name);
 	strcat(Name, ".pat");
+	printf("Patch file: %s\n", Name);
 	
-	Patch_File = fopen(Name, "rb");
+	Patch_File = fopen(Name, "r");
 	if (!Patch_File)
 		return 0;
 	
@@ -402,9 +400,9 @@ int Load_Patch_File(void)
 				switch (c)
 				{
 					case '\n':
+					case '\r':
 					case '\t':
 					case ' ':
-					case 13:
 						break;
 					
 					default:
@@ -419,7 +417,7 @@ int Load_Patch_File(void)
 				switch (c)
 				{
 					case '\n':
-					case 13:
+					case '\r':
 						Code[i_code] = 0;
 						if (check_code(Code, Ind_GG))
 							Ind_GG++;
@@ -465,7 +463,7 @@ int Load_Patch_File(void)
 			case COMMENT:
 			switch (c)
 			{
-				case 13:
+				case '\r':
 					break;
 				
 				case '\n':
@@ -536,10 +534,6 @@ int Save_Patch_File(void)
 	char Name[2048];
 	int i;
 	
-	
-	// TODO: This is probably not needed...
-	SetCurrentDirectory (PathNames.Gens_Path);
-	
 	// Don't bother saving anything if there's no codes.
 	if (Game_Genie_Codes[0].code[0] == 0)
 		return 0;
@@ -548,10 +542,14 @@ int Save_Patch_File(void)
 	strcpy(Name, Patch_Dir);
 	strcat(Name, Rom_Name);
 	strcat(Name, ".pat");
+	printf("Patch file: %s\n", Name);
 	
 	Patch_File = fopen(Name, "w");
 	if (!Patch_File)
+	{
+		printf("Error: %s\n", strerror(errno));
 		return 0;
+	}
 	
 	for (i = 0; i < 256; i++)
 	{

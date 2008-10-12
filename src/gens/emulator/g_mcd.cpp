@@ -234,8 +234,6 @@ Reset_SegaCD ()
 	else
 		Bios_To_Use = BIOS_Filenames.SegaCD_US;
 	
-	//SetCurrentDirectory(Gens_Path);
-	
 	// Load the BIOS file.
 	if (Load_ROM(Bios_To_Use, &Game) <= 0)
 	{

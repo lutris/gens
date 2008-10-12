@@ -162,8 +162,6 @@ Get_State_File ()
   char Name[2048];
   char Ext[5] = ".gsX";
 
-  //SetCurrentDirectory (Gens_Path);
-
   Ext[3] = '0' + Current_State;
   strcpy (Name, State_Dir);
   strcat (Name, Rom_Name);
@@ -177,8 +175,6 @@ void
 Get_State_File_Name (char *name)
 {
   char Ext[5] = ".gsX";
-
-  //SetCurrentDirectory (Gens_Path);
 
   Ext[3] = '0' + Current_State;
   strcpy (name, State_Dir);

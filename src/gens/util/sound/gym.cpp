@@ -44,8 +44,6 @@ int Start_GYM_Dump(void)
 	unsigned char YM_Save[0x200], t_buf[4];
 	int num, i;
 	
-	SetCurrentDirectory (PathNames.Gens_Path);
-	
 	// A game must be loaded in order to dump a GYM.
 	if (!Game)
 		return 0;
