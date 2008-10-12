@@ -126,7 +126,7 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
  */
 LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	RECT r;
+	RECT rectGensWindow;
 	int t;
 	
 	switch(message)
@@ -165,6 +165,16 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			audio->clearSoundBuffer();
 			break;
 		
+		case WM_EXITSIZEMOVE:
+			if (draw->fullScreen())
+				break;
+			
+			// Save the window coordinates.
+			GetWindowRect(hWnd, &rectGensWindow);
+			Window_Pos.x = rectGensWindow.left;
+			Window_Pos.y = rectGensWindow.top;
+			break;
+			
 		case WM_COMMAND:
 			// Menu item.
 			switch (LOWORD(wParam) & 0xF000)
