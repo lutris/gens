@@ -29,3 +29,6 @@
 // Zip Select Dialog
 #define IDD_ZIPSELECT		0x3000
 #define IDC_ZIPSELECT_LSTFILES	0x3001
+
+// Manifest
+#define APP_MANIFEST		1

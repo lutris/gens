@@ -24,3 +24,6 @@ BEGIN
 	DEFPUSHBUTTON	"&OK", IDOK, (224-(65*2+8))/2, 24+104+2, 65, 13
 	PUSHBUTTON	"&Cancel", IDCANCEL, ((224-(65*2+8))/2)+65+8, 24+104+2, 65, 13
 END
+
+// Manifest
+APP_MANIFEST		RT_MANIFEST	"gens.exe.manifest"
