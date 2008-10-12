@@ -59,18 +59,17 @@ LRESULT CALLBACK General_Options_Window_WndProc(HWND hWnd, UINT message, WPARAM 
 			// Button press
 			switch (LOWORD(wParam))
 			{
-#if 0
 				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
-					BIOS_Misc_Files_Save();
+					General_Options_Save();
 					DestroyWindow(hWnd);
 					break;
 				
 				case IDC_BTN_APPLY:
-					BIOS_Misc_Files_Save();
+					General_Options_Save();
 					break;
-#endif
+				
 				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);

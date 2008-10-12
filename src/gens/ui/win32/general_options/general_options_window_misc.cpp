@@ -80,12 +80,12 @@ void Open_General_Options(void)
 }
 
 
-#if 0
 /**
  * General_Options_Save(): Save the General Options.
  */
 void General_Options_Save(void)
 {
+#if 0
 	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
 	unsigned char curFPSStyle;
@@ -176,5 +176,5 @@ void General_Options_Save(void)
 			break;
 		}
 	}
-}
 #endif
+}

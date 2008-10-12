@@ -136,10 +136,10 @@ HWND create_general_options_window(void)
 	general_options_window = CreateWindowEx(NULL, "Gens_General_Options", "General Options",
 						(WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16, (frameHeight * 5) + 16, NULL, NULL, ghInstance, NULL);
+						frameWidth + 16, (frameHeight * 5) - 12, NULL, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(general_options_window, frameWidth + 16, (frameHeight * 5) + 16);
+	Win32_setActualWindowSize(general_options_window, frameWidth + 16, (frameHeight * 5) - 12);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(general_options_window);
@@ -247,6 +247,26 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 				frameLeft+8+92+8+(i*(16+8)), frameTop+16+2, 16, 16,
 				hWnd, (HMENU)(0xA010 + i), ghInstance, NULL);
 	}
+	
+	// Buttons
+	frameTop += ((frameHeight * 3) / 4) + 8;
+	const int btnLeft = ((frameWidth - (75+8+75+8+75)) / 2) + 8;
+	HWND btnOK, btnApply, btnCancel;
+	
+	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+			     btnLeft, frameTop, 75, 23,
+			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				btnLeft+75+8, frameTop, 75, 23,
+				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				 btnLeft+75+8+75+8, frameTop, 75, 23,
+				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
 #if 0
 	// Cancel
 	button_go_Cancel = gtk_button_new_from_stock("gtk-cancel");
