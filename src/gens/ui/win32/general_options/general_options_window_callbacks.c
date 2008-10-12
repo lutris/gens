@@ -216,31 +216,3 @@ static void selectRadioButton(int identifier)
 		InvalidateRect(go_stcIntroEffectColor[button], NULL, FALSE);
 	}
 }
-
-
-#if 0
-/**
- * Apply
- */
-void on_button_go_Apply_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	General_Options_Save();
-}
-
-
-/**
- * Save
- */
-void on_button_go_Save_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	General_Options_Save();
-	gtk_widget_destroy(general_options_window);
-	general_options_window = NULL;
-}
-#endif

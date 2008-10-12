@@ -32,13 +32,6 @@ extern "C" {
 LRESULT CALLBACK General_Options_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK General_Options_MsgColor_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-#if 0
-gboolean on_general_options_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_button_go_Cancel_clicked(GtkButton *button, gpointer user_data);
-void on_button_go_Apply_clicked(GtkButton *button, gpointer user_data);
-void on_button_go_Save_clicked(GtkButton *button, gpointer user_data);
-#endif
-
 #ifdef __cplusplus
 }
 #endif
