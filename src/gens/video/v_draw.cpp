@@ -389,9 +389,11 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	{
 		// Don't adjust for screen size. (DDraw)
 		x = 8;
-		y = VDP_Num_Vis_Lines;
+		y = VDP_Num_Vis_Lines << m_shift;
+		if (m_shift)
+			y += 8;
 	}
-	
+	printf("y position: %d\n", y);
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
 	
