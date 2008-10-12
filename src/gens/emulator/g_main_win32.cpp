@@ -41,6 +41,7 @@ HFONT fntTitle = NULL;
 
 
 // Windows
+#include "game_genie/game_genie_window.h"
 #include "bios_misc_files/bios_misc_files_window.hpp"
 #include "directory_config/directory_config_window.h"
 #include "color_adjust/color_adjust_window.h"
@@ -195,7 +196,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 				close_gens();
 			
 			// Check for dialog messages.
-			if ((bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
+			if ((game_genie_window && IsDialogMessage(game_genie_window, &msg)) ||
+			    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 			    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
 			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 			    (about_window && IsDialogMessage(about_window, &msg)))
@@ -280,7 +282,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			else
 			{
 				// Blank screen. (MAX IDLE)
-				if (bios_misc_files_window ||
+				if (game_genie_window ||
+				    bios_misc_files_window ||
 				    directory_config_window ||
 				    color_adjust_window ||
 				    about_window)
