@@ -473,7 +473,7 @@ void parseArgs(int argc, char **argv)
 	{
 		if (argv[optind][0] != '/')
 		{
-			GetCurrentDirectory(900, PathNames.Start_Rom);
+			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));
 			strcat(PathNames.Start_Rom, "/");
 		}
 		strcat(PathNames.Start_Rom, argv[optind]);
