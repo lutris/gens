@@ -49,14 +49,14 @@ BEGIN
 			//VALUE "Comments", "\0"
 			//VALUE "CompanyName", "\0"
 			VALUE "FileDescription", "Gens 2.15.4/GS-m4.2+\0"
-			VALUE "FileVersion", "4, 2, 0, 1\0"
+			VALUE "FileVersion", "2.15.4/GS-m4.2+\0"
 			VALUE "InternalName", "Gens/GS\0"
 			//VALUE "LegalCopyright", "\0"
 			//VALUE "LegalTrademarks", "\0"
 			//VALUE "OriginalFilename", "\0"
 			//VALUE "PrivateBuild", "\0"
 			VALUE "ProductName", "Gens/GS\0"
-			VALUE "ProductVersion", "4, 2, 0, 1\0"
+			VALUE "ProductVersion", "2.15.4/GS-m4.2+\0"
 			//VALUE "SpecialBuild", "\0"
 		END
 	END
