@@ -2,6 +2,10 @@
  * Gens: Update_Emulation functions.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <time.h>
 
 #include "g_update.hpp"
@@ -37,11 +41,13 @@ int Update_Emulation(void)
 
 	if (Frame_Skip != -1)
 	{
+#ifdef GENS_OS_LINUX
 		if (audio->enabled())
 		{
 			audio->writeSoundBuffer(NULL);
 		}
-
+#endif /* GENS_OS_LINUX */
+		
 		input->updateControllers();
 
 		if (Frame_Number++ < Frame_Skip)
@@ -50,6 +56,10 @@ int Update_Emulation(void)
 		}
 		else
 		{
+#ifdef GENS_OS_WIN32
+			audio->wpInc();
+			audio->writeSoundBuffer(NULL);
+#endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
 			Update_Frame();
 			draw->flip();
@@ -64,8 +74,10 @@ int Update_Emulation(void)
 			// the audio buffer. Hence the audio is a couple of
 			// cycles ahead of the graphics.
 			
+#ifdef GENS_OS_WIN32
 			// Win32 specific.
 			audio->wpSegWait();
+#endif /* GENS_OS_WIN32 */
 			
 			// Wait for the audio buffer to empty out.
 			audio->waitForAudioBuffer();

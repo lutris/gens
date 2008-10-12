@@ -109,12 +109,14 @@ int Audio_DSound::initSound(void)
 		return 0;
 	}
 	
+	Bytes_Per_Unit = 2 * (m_stereo ? 2 : 1);
+	
 	memset(&wfx, 0, sizeof(WAVEFORMATEX));
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
 	wfx.nChannels = (m_stereo ? 2 : 1);
 	wfx.nSamplesPerSec = m_soundRate;
 	wfx.wBitsPerSample = 16;
-	wfx.nBlockAlign = Bytes_Per_Unit = (wfx.wBitsPerSample / 8) * wfx.nChannels;
+	wfx.nBlockAlign = Bytes_Per_Unit;
 	wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * Bytes_Per_Unit;
 	
 	rval = lpDSPrimary->SetFormat(&wfx);
@@ -133,7 +135,7 @@ int Audio_DSound::initSound(void)
 	MainWfx.nChannels = (m_stereo ? 2 : 1);
 	MainWfx.nSamplesPerSec = m_soundRate;
 	MainWfx.wBitsPerSample = 16;
-	MainWfx.nBlockAlign = Bytes_Per_Unit = (MainWfx.wBitsPerSample / 8) * MainWfx.nChannels;
+	MainWfx.nBlockAlign = Bytes_Per_Unit;
 	MainWfx.nAvgBytesPerSec = MainWfx.nSamplesPerSec * Bytes_Per_Unit;
 	
 	memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
@@ -263,7 +265,7 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	
 	if (m_stereo)
 	{
-#ifdef GENS_X86_ASM
+#if 0//def GENS_X86_ASM
 		if (Have_MMX)
 			writeSoundStereo_MMX(Seg_L, Seg_R, (short*)lpvPtr1, m_segLength);
 		else
@@ -272,7 +274,7 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	}
 	else
 	{
-#ifdef GENS_X86_ASM
+#if 0//def GENS_X86_ASM
 		if (Have_MMX)
 			writeSoundMono_MMX(Seg_L, Seg_R, (short*)lpvPtr1, m_segLength);
 		else
@@ -368,6 +370,14 @@ void Audio_DSound::wpSegWait(void)
 	{
 		GensUI::sleep(1);
 	}
+}
+
+
+void Audio_DSound::wpInc(void)
+{
+	WP = (WP + 1) & (Sound_Segs - 1);
+	if (WP == getCurrentSeg())
+		WP = (WP + Sound_Segs - 1) & (Sound_Segs - 1);
 }
 
 

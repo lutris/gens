@@ -34,6 +34,7 @@ class Audio_DSound : public Audio
 		
 		// Auto Frame Skip functions
 		void wpSegWait(void);
+		void wpInc(void);
 		void waitForAudioBuffer(void);
 		
 	protected:
