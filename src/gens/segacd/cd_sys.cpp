@@ -22,6 +22,12 @@
 #include "cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
+// Define GENS_NO_CD_AUDIO_DELAY to disable the delay between
+// the time the SegaCD game requests playing an Audio CD track
+// and the time the track begins to play.
+//#define GENS_NO_CD_AUDIO_DELAY
+#undef GENS_NO_CD_AUDIO_DELAY
+
 int File_Add_Delay = 0;
 
 int CDDA_Enable;
@@ -697,13 +703,14 @@ int Play_CDD_c3(void)
 	played_tracks_linear[SCD.Cur_Track - SCD.TOC.First_Track] = 1;
 	
 	new_lba = MSF_to_LBA(&MSF);
+#ifdef GENS_NO_CD_AUDIO_DELAY
 	delay = 0;		//upth mod - for consistency given varying track lengths
-	/*
+#else
 	delay = new_lba - SCD.Cur_LBA;
 	if (delay < 0)
 		delay = -delay;
 	delay >>= 12;
-	*/
+#endif /* GENS_NO_CD_AUDIO_DELAY */
 	
 	SCD.Cur_LBA = new_lba;
 	CDC_Update_Header();
@@ -717,8 +724,10 @@ int Play_CDD_c3(void)
 	if (CD_Load_System == CDROM_)
 	{
 		delay += 20;
+#ifdef GENS_NO_CD_AUDIO_DELAY
 		delay >>= 2;
 		ASPI_Seek(SCD.Cur_LBA, 1, ASPI_Fast_Seek_COMP); //aggiunta
+#endif /* GENS_NO_CD_AUDIO_DELAY */
 		ASPI_Flush_Cache_CDC();
 	}
 	else
@@ -726,7 +735,9 @@ int Play_CDD_c3(void)
 	if (SCD.Status_CDD != PLAYING)
 	{
 		delay += 20;
+#ifdef GENS_NO_CD_AUDIO_DELAY
 		delay >>= 2; // Modif N. -- added for consistency
+#endif /* GENS_NO_CD_AUDIO_DELAY */
 	}
 	
 	SCD.Status_CDD = PLAYING;
