@@ -64,16 +64,20 @@ LRESULT CALLBACK Game_Genie_Window_WndProc(HWND hWnd, UINT message, WPARAM wPara
 					BIOS_Misc_Files_Save();
 					break;
 #endif
+				
 				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
 					break;
+				
 				case IDC_BTN_ADD:
 					AddCode_Signal(hWnd);
 					break;
+				
 				case IDC_BTN_DELETE:
 					GG_DelSelectedCode();
 					break;
+				
 				case IDC_BTN_DEACTIVATEALL:
 					GG_DeactivateAllCodes();
 					break;
@@ -103,7 +107,10 @@ LRESULT CALLBACK Game_Genie_TextBox_WndProc(HWND hWnd, UINT message, WPARAM wPar
 	{
 		// Enter is pressed. Add the code.
 		AddCode_Signal(game_genie_window);
-		return FALSE;
+		if (message == WM_GETDLGCODE)
+			return DLGC_WANTALLKEYS;
+		else //if (message == WM_KEYDOWN)
+			return TRUE;
 	}
 	
 	// Not Enter. Run the regular procedure.
