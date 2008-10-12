@@ -85,96 +85,33 @@ void Open_General_Options(void)
  */
 void General_Options_Save(void)
 {
-#if 0
-	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
-	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
-	unsigned char curFPSStyle;
-	GtkWidget *check_fps_enable, *check_fps_doublesized;
-	GtkWidget *check_fps_transparency, *radio_button_fps_color;
-	unsigned char curMsgStyle;
-	GtkWidget *check_message_enable, *check_message_doublesized;
-	GtkWidget *check_message_transparency, *radio_button_message_color;
-	GtkWidget *radio_button_intro_effect_color;
-	char tmp[64]; short i;
-	
 	// Save the current options.
+	unsigned char curFPSStyle, curMsgStyle;
 	
 	// System
-	check_system_autofixchecksum = lookup_widget(general_options_window, "check_system_autofixchecksum");
-	Auto_Fix_CS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autofixchecksum));
-	check_system_autopause = lookup_widget(general_options_window, "check_system_autopause");
-	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autopause));
-	check_system_fastblur = lookup_widget(general_options_window, "check_system_fastblur");
-	draw->setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_fastblur)));
-	check_system_segacd_leds = lookup_widget(general_options_window, "check_system_segacd_leds");
-	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
+	Auto_Fix_CS = (Button_GetCheck(go_chkAutoFixChecksum) == BST_CHECKED);
+	Auto_Pause = (Button_GetCheck(go_chkAutoPause) == BST_CHECKED);
+	draw->setFastBlur(Button_GetCheck(go_chkFastBlur) == BST_CHECKED);
+	Show_LED = (Button_GetCheck(go_chkSegaCDLEDs) == BST_CHECKED);
 	
 	// FPS counter
-	check_fps_enable = lookup_widget(general_options_window, "check_fps_enable");
-	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable)));
-	
+	draw->setFPSEnabled(Button_GetCheck(go_chkMsgEnable[0]) == BST_CHECKED);
 	curFPSStyle = draw->fpsStyle() & ~0x18;
-	check_fps_doublesized = lookup_widget(general_options_window, "check_fps_doublesized");
-	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
-	check_fps_transparency = lookup_widget(general_options_window, "check_fps_transparency");
-	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_transparency)) ? 0x08 : 0x00);
-	
-	// FPS counter color
-	for (i = 0; i < 4; i++)
-	{
-		if (!GO_MsgColors[i])
-			break;
-		sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[i * 3]);
-		radio_button_fps_color = lookup_widget(general_options_window, tmp);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_fps_color)))
-		{
-			curFPSStyle &= ~0x06;
-			curFPSStyle |= (i << 1);
-			break;
-		}
-	}
-	
+	curFPSStyle |= ((Button_GetCheck(go_chkMsgDoubleSized[0]) == BST_CHECKED) ? 0x10 : 0x00);
+	curFPSStyle |= ((Button_GetCheck(go_chkMsgTransparency[0]) == BST_CHECKED) ? 0x08 : 0x00);
+	curFPSStyle &= ~0x06;
+	curFPSStyle |= go_stcColor_State[0] << 1;
 	draw->setFPSStyle(curFPSStyle);
 	
 	// Message
-	check_message_enable = lookup_widget(general_options_window, "check_message_enable");
-	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable)));
-	
+	draw->setMsgEnabled(Button_GetCheck(go_chkMsgEnable[1]) == BST_CHECKED);
 	curMsgStyle = draw->msgStyle() & ~0x18;
-	check_message_doublesized = lookup_widget(general_options_window, "check_message_doublesized");
-	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
-	check_message_transparency = lookup_widget(general_options_window, "check_message_transparency");
-	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_transparency)) ? 0x08 : 0x00);
-	
-	// Message color
-	for (i = 0; i < 4; i++)
-	{
-		if (!GO_MsgColors[i])
-			break;
-		sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[i * 3]);
-		radio_button_message_color = lookup_widget(general_options_window, tmp);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_message_color)))
-		{
-			curMsgStyle &= ~0x06;
-			curMsgStyle |= (i << 1);
-			break;
-		}
-	}
-	
+	curMsgStyle |= ((Button_GetCheck(go_chkMsgDoubleSized[1]) == BST_CHECKED) ? 0x10 : 0x00);
+	curMsgStyle |= ((Button_GetCheck(go_chkMsgTransparency[1]) == BST_CHECKED) ? 0x08 : 0x00);
+	curMsgStyle &= ~0x06;
+	curMsgStyle |= go_stcColor_State[1] << 1;
 	draw->setMsgStyle(curMsgStyle);
 	
 	// Intro effect color
-	for (i = 0; i < 8; i++)
-	{
-		if (!GO_IntroEffectColors[i])
-			break;
-		sprintf(tmp, "radio_button_misc_intro_effect_color_%s", GO_IntroEffectColors[i * 3]);
-		radio_button_intro_effect_color = lookup_widget(general_options_window, tmp);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color)))
-		{
-			draw->setIntroEffectColor((unsigned char)i);
-			break;
-		}
-	}
-#endif
+	draw->setIntroEffectColor(static_cast<unsigned char>(go_stcColor_State[2]));
 }
