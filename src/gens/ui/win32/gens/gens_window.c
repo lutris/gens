@@ -184,7 +184,6 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	InsertMenu(FileMenu, 9, flags, ID_FILE_SAVESTATE, "&Save State As...");
 	InsertMenu(FileMenu, 10, flags, ID_FILE_QUICKLOAD, "Quick Load");
 	InsertMenu(FileMenu, 11, flags, ID_FILE_QUICKSAVE, "Quick Save");
-	//InsertMenu(FileMenu, 12, flags, ID_FILE_CHANGESTATE, "Change State");
 	create_gens_window_FileMenu_ChangeState(FileMenu, 12);
 	
 	InsertMenu(FileMenu, 13, MF_SEPARATOR, NULL, NULL);
