@@ -197,28 +197,23 @@ void GG_DelSelectedCode(void)
 }
 
 
-#if 0
 /**
  * GG_DeactivateAllCodes(): Deactivate all codes.
  */
 void GG_DeactivateAllCodes(void)
 {
-	GtkWidget *treeview;
-	GtkTreeIter iter;
-	gboolean valid;
+	int lvItems = SendMessage(gg_lstvCodes, LVM_GETITEMCOUNT, 0, 0);
+	unsigned int state;
+	int i;
 	
-	treeview = lookup_widget(game_genie_window, "treeview_gg_list");
-	
-	// Deactivate all codes.
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_gg), &iter);
-	while (valid)
+	for (i = 0; i < lvItems; i++)
 	{
-		gtk_list_store_set(GTK_LIST_STORE(listmodel_gg), &iter, 0, 0, -1);
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_gg), &iter);
+		ListView_SetCheckState(gg_lstvCodes, i, FALSE);
 	}
 }
 
 
+#if 0
 /**
  * GG_SaveCodes(): Save the codes from the GtkTreeView to Game_Genie_Codes[].
  */

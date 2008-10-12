@@ -75,6 +75,9 @@ LRESULT CALLBACK Game_Genie_Window_WndProc(HWND hWnd, UINT message, WPARAM wPara
 				case IDC_BTN_DELETE:
 					GG_DelSelectedCode();
 					break;
+				case IDC_BTN_DEACTIVATEALL:
+					GG_DeactivateAllCodes();
+					break;
 			}
 			break;
 		
@@ -146,53 +149,6 @@ void AddCode_Signal(HWND hWnd)
 
 
 #if 0
-/**
- * Add Code button
- */
-void on_button_gg_addCode_clicked(GtkButton *button, gpointer user_data)
-{
-	AddCode_Signal(GTK_WIDGET(button), user_data);
-}
-
-
-/**
- * Key press event in either the code entry widget or the name entry widget.
- */
-gboolean on_entry_gg_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
-{
-	if (event->keyval == GDK_Return || event->keyval == GDK_KP_Enter)
-	{
-		AddCode_Signal(widget, user_data);
-		return TRUE;
-	}
-	return FALSE;
-}
-
-
-/**
- * Delete Code
- */
-void on_button_gg_delCode_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	GG_DelSelectedCode();
-}
-
-
-/**
- * Deactivate All Codes
- */
-void on_button_gg_deactAllCodes_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	GG_DeactivateAllCodes();
-}
-
-
 /**
  * Code was toggled.
  */
