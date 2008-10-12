@@ -14,7 +14,6 @@
 #include <string.h>
 #include "g_main.hpp"
 #include "port/timer.h"
-#include "port/ini.hpp"
 #include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"
@@ -34,6 +33,13 @@
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pwm.h"
+
+// INI handling
+#include "port/ini.hpp"
+#ifndef GENS_OS_WIN32
+// Old INI handling functions are still needed for now.
+#include "port/ini_old.h"
+#endif /* GENS_OS_WIN32 */
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
