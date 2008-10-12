@@ -32,7 +32,7 @@
 
 LRESULT CALLBACK Directory_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch(message)
+	switch (message)
 	{
 		case WM_CREATE:
 			Directory_Config_Window_CreateChildWindows(hWnd);
