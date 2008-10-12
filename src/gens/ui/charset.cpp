@@ -24,16 +24,15 @@
 
 // C includes
 #include <cstring>
+#include <cstdlib>
 
 // C++ includes
 #include <string>
-#include <sstream>
 
 #include <utility>
 #include <tr1/unordered_map>
 
 using std::string;
-using std::stringstream;
 using std::pair;
 using std::tr1::unordered_map;
 
@@ -85,18 +84,16 @@ static const unsigned short charset_map_utf8_to_cp1252_array[][2] =
  */
 string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 {
-	stringstream ss;
-	int i;
-	
 	int sLen = strlen(s_utf8);
-	
-	// Current Unicode character.
 	unsigned int utf8char;
-	
-	// Current CP1252 character.
 	unsigned char cp1252char;
 	
-	for (i = 0; i < sLen; i++)
+	// Output buffer.
+	unsigned char *outBuf = static_cast<unsigned char*>(malloc(sLen));
+	int outBufPos = 0;
+	outBuf[0] = 0;
+	
+	for (int i = 0; i < sLen; i++)
 	{
 		if (!(s_utf8[i] & 0x80))
 		{
@@ -193,8 +190,11 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 			}
 		}
 		
-		ss << cp1252char;
+		outBuf[outBufPos] = cp1252char;
+		outBufPos++;
 	}
 	
-	return ss.str();
+	string retString = reinterpret_cast<char*>(outBuf);
+	free(outBuf);
+	return retString;
 }
