@@ -15,6 +15,9 @@
 #define IDC_BTN_CANCEL		0x1002
 #define IDC_BTN_APPLY		0x1003
 #define IDC_BTN_SAVE		0x1004
+#define IDC_BTN_ADD		0x1005
+#define IDC_BTN_DELETE		0x1006
+#define IDC_BTN_DEACTIVATEALL	0x1007
 
 // Change Button. (LOWORD(wParam) & 0xFF) == file ID.
 #define IDC_BTN_CHANGE		0x1100

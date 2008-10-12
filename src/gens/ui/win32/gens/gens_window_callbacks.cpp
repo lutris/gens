@@ -268,13 +268,17 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			/* TODO: NetPlay
 			if (Net_Play)
 			{
-			if (Video.Full_Screen)
-			Set_Render(0, -1, 1);
-	}
+				if (Video.Full_Screen)
+				Set_Render(0, -1, 1);
+			}
 			*/
 			
 			Free_Rom(Game);
 			Sync_Gens_Window();
+			break;
+		
+		case ID_FILE_GAMEGENIE:
+			Open_Game_Genie();
 			break;
 		
 		case ID_FILE_ROMHISTORY_0:

@@ -13,6 +13,9 @@ gens_SOURCES += \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
+		ui/win32/game_genie/game_genie_window.c \
+		ui/win32/game_genie/game_genie_window_callbacks.c \
+		ui/win32/game_genie/game_genie_window_misc.c \
 		ui/win32/bios_misc_files/bios_misc_files_window.cpp \
 		ui/win32/bios_misc_files/bios_misc_files_window_callbacks.c \
 		ui/win32/bios_misc_files/bios_misc_files_window_misc.cpp \
@@ -41,6 +44,9 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
 		ui/win32/gens/gens_window_menu.h \
+		ui/win32/game_genie/game_genie_window.h \
+		ui/win32/game_genie/game_genie_window_callbacks.h \
+		ui/win32/game_genie/game_genie_window_misc.h \
 		ui/win32/bios_misc_files/bios_misc_files_window.hpp \
 		ui/win32/bios_misc_files/bios_misc_files_window_callbacks.h \
 		ui/win32/bios_misc_files/bios_misc_files_window_misc.hpp \
