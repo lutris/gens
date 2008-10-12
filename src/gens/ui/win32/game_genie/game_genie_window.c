@@ -139,13 +139,6 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	SendMessage(gg_txtCode, WM_SETFONT, (WPARAM)fntMain, 1);
 	gg_txtCode_oldProc = (WNDPROC)SetWindowLong(gg_txtCode, GWL_WNDPROC, (long)Game_Genie_TextBox_WndProc);
 	
-	// Add Code
-	btnAddCode = CreateWindow(WC_BUTTON, "&Add Code",
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				  wndWidth - 64, 24+52+8, 64, 20,
-				  hWnd, IDC_BTN_ADD, ghInstance, NULL);
-	SendMessage(btnAddCode, WM_SETFONT, (WPARAM)fntMain, 1);
-	
 	// Name label
 	lblName = CreateWindow(WC_STATIC, "Name",
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
@@ -160,6 +153,13 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 				    hWnd, NULL, ghInstance, NULL);
 	SendMessage(gg_txtName, WM_SETFONT, (WPARAM)fntMain, 1);
 	gg_txtName_oldProc = (WNDPROC)SetWindowLong(gg_txtName, GWL_WNDPROC, (long)Game_Genie_TextBox_WndProc);
+	
+	// Add Code
+	btnAddCode = CreateWindow(WC_BUTTON, "&Add Code",
+				  WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				  wndWidth - 64, 24+52+8, 64, 20,
+				  hWnd, IDC_BTN_ADD, ghInstance, NULL);
+	SendMessage(btnAddCode, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// ListView
 	gg_lstvCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "",
