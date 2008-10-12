@@ -324,8 +324,8 @@ int VDraw_DDraw::reinitGensWindow(void)
 		
 		w = (Video.Render_FS == 0 ? 320 : 640);
 		h = (Video.Render_FS == 0 ? 240 : 480);
-		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 		SetWindowLong(Gens_hWnd, GWL_STYLE, NULL);
+		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else
 	{
@@ -337,9 +337,9 @@ int VDraw_DDraw::reinitGensWindow(void)
 		
 		// MoveWindow / ResizeWindow code
 		SetWindowLong(Gens_hWnd, GWL_STYLE, GetWindowLong(Gens_hWnd, GWL_STYLE) | WS_OVERLAPPEDWINDOW);
-		SetRect(&r, 0, 0, w, h);
-		AdjustWindowRectEx(&r, GetWindowLong(Gens_hWnd, GWL_STYLE), 1, GetWindowLong(Gens_hWnd, GWL_EXSTYLE));
-		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, r.right - r.left, r.bottom - r.top, SWP_NOZORDER | SWP_NOACTIVATE);
+		Win32_setActualWindowSize(Gens_hWnd, w, h);
+		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 	
 	Sync_Gens_Window();

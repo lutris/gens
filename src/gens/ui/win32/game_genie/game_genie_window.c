@@ -52,7 +52,7 @@ WNDPROC gg_txtCode_oldProc;
 WNDPROC gg_txtName_oldProc;
 
 // Window width.
-static const int wndWidth = 416;
+static const int wndWidth = 424;
 
 
 /**
@@ -87,7 +87,13 @@ HWND create_game_genie_window(void)
 	game_genie_window = CreateWindowEx(NULL, "Gens_Game_Genie", "Game Genie",
 					   (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 					   CW_USEDEFAULT, CW_USEDEFAULT,
-					   wndWidth + 8 + Win32_dw, 300 + Win32_dh, NULL, NULL, ghInstance, NULL);
+					   wndWidth, 300, NULL, NULL, ghInstance, NULL);
+	
+	// Set the actual window size.
+	Win32_setActualWindowSize(game_genie_window, wndWidth, 300);
+	
+	// Center the window on the Gens window.
+	Win32_centerOnGensWindow(game_genie_window);
 	
 	UpdateWindow(game_genie_window);
 	return game_genie_window;
@@ -96,8 +102,6 @@ HWND create_game_genie_window(void)
 
 void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 {
-	Win32_centerOnGensWindow(hWnd);
-	
 	// Description labels.
 	HWND lblInfoTitle, lblInfo;
 	
@@ -134,7 +138,7 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Code entry
 	gg_txtCode = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-				    8+32+8, 24+52+8, wndWidth - (8+32+8+64+8), 20,
+				    8+32+8, 24+52+8, wndWidth - (8+32+8+64+8+8), 20,
 				    hWnd, NULL, ghInstance, NULL);
 	SendMessage(gg_txtCode, WM_SETFONT, (WPARAM)fntMain, 1);
 	gg_txtCode_oldProc = (WNDPROC)SetWindowLongPtr(gg_txtCode, GWL_WNDPROC, (LONG_PTR)Game_Genie_TextBox_WndProc);
@@ -149,7 +153,7 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Name entry
 	gg_txtName = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-				    8+32+8, 24+52+8+24, wndWidth - (8+32+8+64+8), 20,
+				    8+32+8, 24+52+8+24, wndWidth - (8+32+8+64+8+8), 20,
 				    hWnd, NULL, ghInstance, NULL);
 	SendMessage(gg_txtName, WM_SETFONT, (WPARAM)fntMain, 1);
 	gg_txtName_oldProc = (WNDPROC)SetWindowLongPtr(gg_txtName, GWL_WNDPROC, (LONG_PTR)Game_Genie_TextBox_WndProc);
@@ -157,14 +161,14 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Add Code
 	btnAddCode = CreateWindow(WC_BUTTON, "&Add Code",
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				  wndWidth - 64, 24+52+8, 64, 20,
+				  wndWidth - (64+8), 24+52+8, 64, 20,
 				  hWnd, IDC_BTN_ADD, ghInstance, NULL);
 	SendMessage(btnAddCode, WM_SETFONT, (WPARAM)fntMain, 1);
 	
 	// ListView
 	gg_lstvCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT,
-				      8, 24+52+8+24+24, wndWidth - 8, 128,
+				      8, 24+52+8+24+24, wndWidth - (8+8), 128,
 				      hWnd, NULL, ghInstance, NULL);
 	SendMessage(gg_lstvCodes, WM_SETFONT, (WPARAM)fntMain, 1);
 	SendMessage(gg_lstvCodes, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);

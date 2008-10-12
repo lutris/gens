@@ -16,10 +16,8 @@ extern "C" {
 
 extern HINSTANCE ghInstance;
 
-
-// Difference between client window size and actual window size.
-extern int Win32_dw;
-extern int Win32_dh;
+// Set actual window size.
+void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH);
 
 // Fonts
 extern HFONT fntMain;

@@ -82,7 +82,13 @@ HWND create_color_adjust_window(void)
 	color_adjust_window = CreateWindowEx(NULL, "Gens_Color_Adjust", "Color Adjustment",
 					     (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     296 + Win32_dw, 112 + Win32_dh, NULL, NULL, ghInstance, NULL);
+					     296, 112, NULL, NULL, ghInstance, NULL);
+	
+	// Set the actual window size.
+	Win32_setActualWindowSize(color_adjust_window, 296, 112);
+	
+	// Center the window on the Gens window.
+	Win32_centerOnGensWindow(color_adjust_window);
 	
 	UpdateWindow(color_adjust_window);
 	return color_adjust_window;
@@ -91,8 +97,6 @@ HWND create_color_adjust_window(void)
 
 void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 {
-	Win32_centerOnGensWindow(hWnd);
-	
 	unsigned int trkStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM;
 	
 	// Contrast

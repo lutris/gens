@@ -104,7 +104,13 @@ HWND create_bios_misc_files_window(void)
 	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
 						(WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16 + Win32_dw, 408 + Win32_dh, NULL, NULL, ghInstance, NULL);
+						frameWidth + 16, 408, NULL, NULL, ghInstance, NULL);
+	
+	// Set the actual window size.
+	Win32_setActualWindowSize(bios_misc_files_window, frameWidth + 16, 408);
+	
+	// Center the window on the Gens window.
+	Win32_centerOnGensWindow(bios_misc_files_window);
 	
 	UpdateWindow(bios_misc_files_window);
 	return bios_misc_files_window;
@@ -113,8 +119,6 @@ HWND create_bios_misc_files_window(void)
 
 void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 {
-	Win32_centerOnGensWindow(hWnd);
-	
 	// Create all frames. This will be fun!
 	HWND grpBox = NULL;
 	HWND lblTitle, txtEntry, btnChange;

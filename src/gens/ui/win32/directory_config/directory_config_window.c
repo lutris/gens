@@ -101,7 +101,13 @@ HWND create_directory_config_window(void)
 	directory_config_window = CreateWindowEx(NULL, "Gens_Directory_Config", "Configure Directories",
 						 (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
 						 CW_USEDEFAULT, CW_USEDEFAULT,
-						 frameWidth + 16 + Win32_dw, 264 + Win32_dh, NULL, NULL, ghInstance, NULL);	
+						 frameWidth + 16, 264, NULL, NULL, ghInstance, NULL);	
+	
+	// Set the actual window size.
+	Win32_setActualWindowSize(directory_config_window, frameWidth + 16, 264);
+	
+	// Center the window on the Gens window.
+	Win32_centerOnGensWindow(directory_config_window);
 	
 	UpdateWindow(directory_config_window);
 	return directory_config_window;
@@ -110,8 +116,6 @@ HWND create_directory_config_window(void)
 
 void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 {
-	Win32_centerOnGensWindow(hWnd);
-	
 	// Unlike BIOS/Misc Files, there's only one frame.
 	HWND grpBox = NULL;
 	HWND lblTitle, txtEntry, btnChange;

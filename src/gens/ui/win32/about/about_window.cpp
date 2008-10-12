@@ -101,12 +101,18 @@ HWND create_about_window(void)
 	
 	// Create the window.
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
-				      (WS_POPUP | WS_SYSMENU | WS_CAPTION) & ~(WS_MINIMIZE),
+				      WS_POPUPWINDOW | WS_CAPTION,
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320 + Win32_dw, 288 + 4 + Win32_dh, NULL, NULL, ghInstance, NULL);
+				      320, 288 + 4, NULL, NULL, ghInstance, NULL);
 	
-	ShowWindow(about_window, 1);
+	// Set the actual window size.
+	Win32_setActualWindowSize(about_window, 320, 288);
+	
+	// Center the window on the Gens window.
+	Win32_centerOnGensWindow(about_window);
+	
 	UpdateWindow(about_window);
+	ShowWindow(about_window, 1);
 	return about_window;
 }
 
@@ -184,8 +190,6 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 static void About_Window_CreateChildWindows(HWND hWnd)
 {
-	Win32_centerOnGensWindow(hWnd);
-	
 	if (ice != 3)
 	{
 		// Gens logo

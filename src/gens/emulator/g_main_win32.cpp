@@ -34,11 +34,9 @@
 // Win32 instance
 HINSTANCE ghInstance = NULL;
 
-
 // Fonts
 HFONT fntMain = NULL;
 HFONT fntTitle = NULL;
-
 
 // Windows
 #include "game_genie/game_genie_window.h"
@@ -47,11 +45,13 @@ HFONT fntTitle = NULL;
 #include "color_adjust/color_adjust_window.h"
 #include "about/about_window.hpp"
 
-
 // Maximum value function
 #ifndef max
 #define max(a,b)   (((a) > (b)) ? (a) : (b))
 #endif /* max */
+
+// Needed for some macros
+#include <windowsx.h>
 
 
 /**
@@ -96,7 +96,27 @@ void Win32_centerOnGensWindow(HWND hWnd)
 	SetWindowPos(hWnd, NULL,
 		     max(0, r.left + (dx1 - dx2)),
 		     max(0, r.top + (dy1 - dy2)), 0, 0,
-		     SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW);
+		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+
+/**
+ * Win32_setActualWindowSize(): Set the actual window size, including the non-client area.
+ * @param hWnd Window handle.
+ * @param reqW Required width.
+ * @param reqH Required height.
+ */
+void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
+{
+	RECT r;
+	SetRect(&r, 0, 0, reqW, reqH);
+	
+	// Adjust the rectangle.
+	AdjustWindowRectEx(&r, GetWindowStyle(hWnd), (GetMenu(hWnd) != NULL), GetWindowExStyle(hWnd));
+	
+	// Set the window size.
+	SetWindowPos(hWnd, NULL, 0, 0, r.right - r.left, r.bottom - r.top,
+		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
 
