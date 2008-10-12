@@ -34,9 +34,7 @@
 #endif
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
-#if 0
 #include "general_options/general_options_window_misc.hpp"
-#endif
 #include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #if 0
@@ -679,6 +677,10 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 {
 	switch (LOWORD(wParam))
 	{
+		case ID_OPTIONS_GENERAL:
+			Open_General_Options();
+			break;
+		
 		case ID_OPTIONS_BIOSMISCFILES:
 			Open_BIOS_Misc_Files();
 			break;
@@ -729,43 +731,6 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 
 #if 0
-#ifdef GENS_CDROM
-/**
- * File, Boot CD
- */
-void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	if (!Num_CD_Drive)
-		return;
-	/*
-	if (Check_If_Kaillera_Running())
-		return 0;
-	*/
-	if (audio->playingGYM())
-		Stop_Play_GYM();
-	
-	Free_Rom(Game); // Don't forget it !
-	SegaCD_Started = Init_SegaCD(NULL);
-	Sync_Gens_Window();
-}
-#endif
-
-
-/**
- * File, Game Genie
- */
-void on_FileMenu_GameGenie_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_Game_Genie();
-}
-
-
 /**
  * CPU, Country, Auto-Detect Order...
  */
@@ -775,18 +740,6 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Open_Country_Code();
-}
-
-
-/**
- * Options, General Options...
- */
-void on_OptionsMenu_GeneralOptions_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_General_Options();
 }
 
 
