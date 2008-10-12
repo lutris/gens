@@ -212,4 +212,8 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 				 btnLeft+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// Set focus to the first textbox.
+	// (Index 0 is the frame; Index 1 is the textbox.)
+	SetFocus(bmf_txtEntry[1]);
 }

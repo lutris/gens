@@ -198,4 +198,7 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 				 btnLeft+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// Set focus to the first textbox.
+	SetFocus(dc_txtEntry[0]);
 }
