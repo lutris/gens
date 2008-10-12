@@ -443,7 +443,7 @@ typedef struct tagSRB32_ExecSCSICmd2
 	uint8_t  SRB_CDBLen;		/* CDB Length */
 	uint8_t  SRB_HaStat;		/* Host Adapter Status */
 	uint8_t  SRB_TargStat;		/* Target Status */
-	void     (*SRB_PostProc);	/* Post routine */
+	void     (*SRB_PostProc)();	/* Post routine */
 	void     *SRB_Rsvd2;		/* Reserved */
 	uint8_t  SRB_Rsvd3[16];		/* Reserved for expansion */
 	uint8_t  CDBByte[16];		/* SCSI CDB */
