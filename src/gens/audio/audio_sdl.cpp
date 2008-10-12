@@ -63,7 +63,7 @@ void Audio_SDL::audioCallback_int(Uint8 *buffer, int len)
 	}
 	memcpy(buffer, audiobuf, len);
 	audio_len -= len;
-	memcpy(audiobuf, (unsigned char*)audiobuf + len, audio_len);
+	memcpy(audiobuf, audiobuf + len, audio_len);
 }
 
 
@@ -122,7 +122,7 @@ int Audio_SDL::initSound(void)
 		return 0;
 	
 	// Allocate the segment buffer.
-	pMsndOut = (unsigned char*)malloc(m_segLength << 2);
+	pMsndOut = static_cast<unsigned char*>(malloc(m_segLength << 2));
 	
 	// Set up the SDL audio specification.
 	SDL_AudioSpec spec;
@@ -131,7 +131,7 @@ int Audio_SDL::initSound(void)
 	spec.channels = !m_stereo ? 1 : 2; // TODO: Initializing 1 channel seems to double-free if it's later changed...
 	spec.samples = 1024;
 	spec.callback = AudioCallback;
-	audiobuf = (unsigned char*)malloc((spec.samples * spec.channels * 2 * 4) * sizeof(short));
+	audiobuf = static_cast<unsigned char*>(malloc((spec.samples * spec.channels * 2 * 4) * sizeof(short)));
 	
 	// "user" parameter for the callback function is a pointer to this object.
 	spec.userdata = this;
@@ -218,19 +218,19 @@ int Audio_SDL::writeSoundBuffer(void *dumpBuf)
 	{
 #ifdef GENS_X86_ASM
 		if (Have_MMX)
-			writeSoundStereo_MMX(Seg_L, Seg_R, (short*)pMsndOut, m_segLength);
+			writeSoundStereo_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(pMsndOut), m_segLength);
 		else
 #endif
-			writeSoundStereo((short*)pMsndOut, m_segLength);
+			writeSoundStereo(reinterpret_cast<short*>(pMsndOut), m_segLength);
 	}
 	else
 	{
 #ifdef GENS_X86_ASM
 		if (Have_MMX)
-			writeSoundMono_MMX(Seg_L, Seg_R, (short*)pMsndOut, m_segLength);
+			writeSoundMono_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(pMsndOut), m_segLength);
 		else
 #endif
-			writeSoundMono((short*)pMsndOut, m_segLength);
+			writeSoundMono(reinterpret_cast<short*>(pMsndOut), m_segLength);
 	}
 	
 	memcpy(audiobuf + audio_len, pMsndOut, m_segLength * 4);

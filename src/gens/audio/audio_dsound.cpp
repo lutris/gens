@@ -233,9 +233,9 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	if (dumpBuf)
 	{
 		if (m_stereo)
-			dumpSoundStereo((short*)dumpBuf, m_segLength);
+			dumpSoundStereo(reinterpret_cast<short*>(dumpBuf), m_segLength);
 		else
-			dumpSoundMono((short*)dumpBuf, m_segLength);
+			dumpSoundMono(reinterpret_cast<short*>(dumpBuf), m_segLength);
 		return 1;
 	}
 	
@@ -267,19 +267,19 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	{
 #ifdef GENS_X86_ASM
 		if (Have_MMX)
-			writeSoundStereo_MMX(Seg_L, Seg_R, (short*)lpvPtr1, m_segLength);
+			writeSoundStereo_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), m_segLength);
 		else
 #endif
-			writeSoundStereo((short*)lpvPtr1, m_segLength);
+			writeSoundStereo(reinterpret_cast<short*>(lpvPtr1), m_segLength);
 	}
 	else
 	{
 #ifdef GENS_X86_ASM
 		if (Have_MMX)
-			writeSoundMono_MMX(Seg_L, Seg_R, (short*)lpvPtr1, m_segLength);
+			writeSoundMono_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), m_segLength);
 		else
 #endif
-			writeSoundMono((short*)lpvPtr1, m_segLength);
+			writeSoundMono(reinterpret_cast<short*>(lpvPtr1), m_segLength);
 	}
 	
 	lpDSBuffer->Unlock(lpvPtr1, dwBytes1, NULL, NULL);
@@ -309,11 +309,11 @@ int Audio_DSound::clearSoundBuffer(void)
 	if (rval != DS_OK)
 		return 0;
 	
-	signed short *w = (signed short*)lpvPtr1;
+	signed short *w = reinterpret_cast<signed short*>(lpvPtr1);
 	
 	for (i = 0; i < (m_segLength * Sound_Segs * Bytes_Per_Unit); i += 2)
 	{
-		*w++ = (signed short)0;
+		*w++ = 0;
 	}
 	
 	rval = lpDSBuffer->Unlock(lpvPtr1, dwBytes1, NULL, NULL);

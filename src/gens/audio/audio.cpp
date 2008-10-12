@@ -56,7 +56,7 @@ void Audio::writeSoundStereo(short *dest, int length)
 		else if (out_L > 0x7FFF)
 			*dest++ = 0x7FFF;
 		else
-			*dest++ = (short)out_L;
+			*dest++ = static_cast<short>(out_L);
 		
 		// Right channel
 		out_R = Seg_R[i];
@@ -67,7 +67,7 @@ void Audio::writeSoundStereo(short *dest, int length)
 		else if (out_R > 0x7FFF)
 			*dest++ = 0x7FFF;
 		else
-			*dest++ = (short)out_R;
+			*dest++ = static_cast<short>(out_R);
 	}
 }
 
@@ -91,7 +91,7 @@ void Audio::dumpSoundStereo(short *dest, int length)
 		else if (out_L > 0x7FFF)
 			*dest++ = 0x7FFF;
 		else
-			*dest++ = (short)out_L;
+			*dest++ = static_cast<short>(out_L);
 		
 		// Right channel
 		out_R = Seg_R[i];
@@ -101,7 +101,7 @@ void Audio::dumpSoundStereo(short *dest, int length)
 		else if (out_R > 0x7FFF)
 			*dest++ = 0x7FFF;
 		else
-			*dest++ = (short) out_R;
+			*dest++ = static_cast<short>(out_R);
 	}
 }
 
@@ -125,7 +125,7 @@ void Audio::writeSoundMono(short *dest, int length)
 		else if (out > 0xFFFF)
 			*dest++ = 0x7FFF;
 		else
-			*dest++ = (short)(out >> 1);
+			*dest++ = static_cast<short>(out >> 1);
 	}
 }
 
@@ -148,7 +148,7 @@ void Audio::dumpSoundMono(short *dest, int length)
 		else if (out > 0xFFFF)
 			*dest++ = 0x7FFF;
 		else
-			*dest++ = (short)(out >> 1);
+			*dest++ = static_cast<short>(out >> 1);
 	}
 }
 
