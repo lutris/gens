@@ -360,7 +360,7 @@ int Load_Patch_File(void)
 	strcat(Name, ".pat");
 	printf("Patch file: %s\n", Name);
 	
-	Patch_File = fopen(Name, "r");
+	Patch_File = fopen(Name, "rb");
 	if (!Patch_File)
 		return 0;
 	
@@ -372,8 +372,8 @@ int Load_Patch_File(void)
 	
 	if (!Patch_String)
 	{
-		fclose (Patch_File);
-		return (0);
+		fclose(Patch_File);
+		return(0);
 	}
 	
 	// TODO: Optimize this!
