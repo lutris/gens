@@ -208,4 +208,7 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 					8+75+8+75+8+75+8+75+8, btnTop, 75, 23,
 					hWnd, (HMENU)IDC_BTN_DEACTIVATEALL, ghInstance, NULL);
 	SendMessage(btnDeactivateAll, WM_SETFONT, (WPARAM)fntMain, 1);
+	
+	// Set focus to the Code textbox.
+	SetFocus(gg_txtCode);
 }
