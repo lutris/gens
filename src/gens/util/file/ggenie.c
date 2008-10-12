@@ -20,9 +20,12 @@
  * So, then, we dutifully change memory location 059C44 to B078!
  * (of course, that's handled by a different source file :)
  */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+
 #include "port/port.h"
 #include "emulator/g_main.hpp"
 #include "ggenie.h"
