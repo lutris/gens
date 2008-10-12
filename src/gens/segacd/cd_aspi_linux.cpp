@@ -89,14 +89,14 @@ int ASPI_Init(void)
 	FD_CDROM = open(cdromDeviceName, O_RDONLY | O_NONBLOCK);
 	if (FD_CDROM >= 0)
 	{
+		// "ASPI" is initialized.
+		ASPI_Initialized = 1;
+		
 		LINUXCD_Select_Speed();
 		Num_CD_Drive = 1;
 		return 0; // !1 !!!!!!!!!!!!!!!!!!!!!!
 	}
 	//Ubi End.
-	
-	// "ASPI" is initialized.
-	ASPI_Initialized = 1;
 	
 	// useless...
 	return Num_CD_Drive;
