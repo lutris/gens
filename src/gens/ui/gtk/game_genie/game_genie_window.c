@@ -88,6 +88,14 @@ GtkWidget* create_game_genie_window(void)
 	GtkWidget *scroll_gg_list;
 	GtkWidget *treeview_gg_list;
 	
+	// Strings
+	const char* strInfoTitle = "<b><i>Information about Game Genie / Patch codes</i></b>";
+	const char* strInfo =
+			"Both Game Genie codes and Patch codes are supported.\n"
+			"Check the box next to the code to activate it.\n"
+			"Syntax for Game Genie codes: XXXX-YYYY\n"
+			"Syntax for Patch codes: AAAAAA-DDDD (address-data)";
+	
 	if (game_genie_window)
 	{
 		// Game Genie window is already created. Set focus.
@@ -122,7 +130,7 @@ GtkWidget* create_game_genie_window(void)
 	GLADE_HOOKUP_OBJECT(game_genie_window, frame_gg, "frame_gg");
 	
 	// Header label
-	label_gg_header = gtk_label_new("<b><i>Information about Game Genie / Patch codes</i></b>");
+	label_gg_header = gtk_label_new(strInfoTitle);
 	gtk_widget_set_name(label_gg_header, "label_gg_header");
 	gtk_label_set_use_markup(GTK_LABEL(label_gg_header), TRUE);
 	gtk_widget_show(label_gg_header);
@@ -130,12 +138,7 @@ GtkWidget* create_game_genie_window(void)
 	GLADE_HOOKUP_OBJECT(game_genie_window, label_gg_header, "label_gg_header");
 	
 	// Description label
-	label_gg_description = gtk_label_new(
-		"Both Game Genie codes and Patch codes are supported.\n"
-		"Highlight a code to activate it.\n"
-		"Syntax for Game Genie codes: XXXX-YYYY\n"
-		"Syntax for Patch codes: AAAAAA-DDDD (address-data)"
-		);
+	label_gg_description = gtk_label_new(strInfo);
 	gtk_widget_set_name(label_gg_description, "label_gg_description");
 	gtk_label_set_use_markup(GTK_LABEL(label_gg_description), TRUE);
 	gtk_widget_show(label_gg_description);
