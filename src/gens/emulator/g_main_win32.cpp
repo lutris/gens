@@ -186,6 +186,10 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
+	// Show the Gens window.
+	ShowWindow(Gens_hWnd, nCmdShow);
+	
+	// Window message variable.
 	MSG msg;
 	
 	while (is_gens_running())

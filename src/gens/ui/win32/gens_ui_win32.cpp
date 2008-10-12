@@ -111,9 +111,7 @@ void GensUI::init(int argc, char *argv[])
 	fntTitle = CreateFontIndirect(&lf);
 	
 	// Create and show the Gens window.
-	// TODO: Use nCmdShow from WinMain for ShowWindow()'s second parameter.
 	create_gens_window();
-	ShowWindow(Gens_hWnd, 1);
 	
 	// Set the window title to Idle.
 	setWindowTitle_Idle();
