@@ -361,7 +361,6 @@ int Load_Patch_File(void)
 	strcpy(Name, Patch_Dir);
 	strcat(Name, Rom_Name);
 	strcat(Name, ".pat");
-	printf("Patch file: %s\n", Name);
 	
 	Patch_File = fopen(Name, "rb");
 	if (!Patch_File)
@@ -545,7 +544,6 @@ int Save_Patch_File(void)
 	strcpy(Name, Patch_Dir);
 	strcat(Name, Rom_Name);
 	strcat(Name, ".pat");
-	printf("Patch file: %s\n", Name);
 	
 	Patch_File = fopen(Name, "w");
 	if (!Patch_File)
