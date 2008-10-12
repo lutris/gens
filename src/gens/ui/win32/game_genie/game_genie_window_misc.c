@@ -63,54 +63,16 @@ void Open_Game_Genie(void)
 	// TODO: Make the window modal.
 	//gtk_window_set_transient_for(GTK_WINDOW(bmf), GTK_WINDOW(gens_window));
 	
-	// Show the BIOS/Misc Files window.
-	ShowWindow(gg, 1);
-	
-#if 0
-	GtkWidget *gg, *treeview;
-	GtkCellRenderer *toggle_renderer, *text_renderer;
-	GtkTreeViewColumn *col_enabled, *col_code, *col_name;
-	GtkTreeSelection *select;
 	int i;
-	
 	ice = 0;
 	
-	// Populate the TreeView.
-	treeview = lookup_widget(gg, "treeview_gg_list");
-	select = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
-	gtk_tree_selection_set_mode(select, GTK_SELECTION_MULTIPLE);
-	
-	// Check if the listmodel_gg is already created.
-	// If it is, clear it; if not, create a new one.
-	if (listmodel_gg)
-		gtk_list_store_clear(listmodel_gg);
-	else
-		listmodel_gg = gtk_list_store_new(3, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING);
-	
-	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel_gg));
-	
-	// Create the renderer and columns.
-	toggle_renderer = gtk_cell_renderer_toggle_new();
-	col_enabled = gtk_tree_view_column_new_with_attributes("Enabled", toggle_renderer, "active", 0, NULL);
-	text_renderer = gtk_cell_renderer_text_new();
-	col_code = gtk_tree_view_column_new_with_attributes("Code", text_renderer, "text", 1, NULL);
-	col_name = gtk_tree_view_column_new_with_attributes("Name", text_renderer, "text", 2, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_enabled);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_code);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_name);
-	
-	// Connect the toggle renderer to the callback.
-	g_signal_connect((gpointer)toggle_renderer, "toggled",
-			 G_CALLBACK(on_treeview_gg_list_item_toggled), (gpointer)listmodel_gg);
-	
-	// Go through the list of codes and add them to the treeview.
+	// Go through the list of codes and add them to the listview.
 	for (i = 0; i < 256; i++)
 	{
 		if (Game_Genie_Codes[i].code[0] == 0)
 			continue;
 		
-		GG_AddCode(treeview, Game_Genie_Codes[i].name, Game_Genie_Codes[i].code, Game_Genie_Codes[i].active);
+		GG_AddCode(Game_Genie_Codes[i].name, Game_Genie_Codes[i].code, Game_Genie_Codes[i].active);
 		
 		// If the ROM is loaded, and this code applies to ROM data, apply the code.
 		// Or something.
@@ -123,7 +85,9 @@ void Open_Game_Genie(void)
 			Rom_Data[Game_Genie_Codes[i + 1].addr] = (unsigned char)((Game_Genie_Codes[i].restore & 0xFF00) >> 8);
 		}
 	}
-#endif
+	
+	// Show the BIOS/Misc Files window.
+	ShowWindow(gg, 1);
 }
 
 
