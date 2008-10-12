@@ -367,6 +367,5 @@ void INI::save(const string& filename)
 	}
 	
 	// Done.
-	
 	cfgFile.close();
 }
