@@ -86,7 +86,7 @@ void Open_Game_Genie(void)
 		}
 	}
 	
-	// Show the BIOS/Misc Files window.
+	// Show the Game Genie window.
 	ShowWindow(gg, 1);
 }
 
