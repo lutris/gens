@@ -7,10 +7,10 @@
 #include "input_sdl_keys.h"
 #include "gdk/gdkkeysyms.h"
 
+#include "emulator/g_main.hpp"
 #include "emulator/g_input.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.h"
-
 
 const struct KeyMap keyDefault[8] =
 {
@@ -235,7 +235,11 @@ void Input_SDL::update(void)
 	{
 		switch (event.type)
 		{
-			/*
+			case SDL_QUIT:
+				close_gens();
+				return;
+			
+			/* TODO: SDL_VIDEORESIZE should work in GL mode.
 			case SDL_VIDEORESIZE:
 				surface = SDL_SetVideoMode(event.resize.w, event.resize.h, 16, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_RESIZABLE);
 				break;
