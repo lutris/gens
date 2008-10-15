@@ -7,7 +7,7 @@
 		processorArchitecture="x86"
 	/>
 	
-	<description>Gens 2.15.4/GS-m4.2+</description>
+	<description>Gens 2.15.5/GS-m4.2+</description>
 	<dependency>
 		<dependentAssembly>
 			<assemblyIdentity
