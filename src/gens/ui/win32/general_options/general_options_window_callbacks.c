@@ -93,8 +93,8 @@ LRESULT CALLBACK General_Options_Window_WndProc(HWND hWnd, UINT message, WPARAM 
 			{
 				for (j = 0; j < 2; j++)
 				{
-					DeleteObject(go_MsgColors_brushes[i][j]);
-					DeleteObject(go_MsgColors_pens[i][j]);
+					DeleteBrush(go_MsgColors_brushes[i][j]);
+					DeletePen(go_MsgColors_pens[i][j]);
 				}
 			}
 			
@@ -103,8 +103,8 @@ LRESULT CALLBACK General_Options_Window_WndProc(HWND hWnd, UINT message, WPARAM 
 			{
 				for (j = 0; j < 2; j++)
 				{
-					DeleteObject(go_IntroEffectColors_brushes[i][j]);
-					DeleteObject(go_IntroEffectColors_pens[i][j]);
+					DeleteBrush(go_IntroEffectColors_brushes[i][j]);
+					DeletePen(go_IntroEffectColors_pens[i][j]);
 				}
 			}
 			
