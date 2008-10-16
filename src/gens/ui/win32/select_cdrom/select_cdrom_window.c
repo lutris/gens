@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #include <windowsx.h>
 
@@ -78,11 +79,11 @@ HWND create_select_cdrom_window(void)
 	select_cdrom_window = CreateWindowEx(NULL, "Gens_Select_CDROM", "Select CD-ROM Drive",
 					     WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     256, 80,
+					     288, 80,
 					     Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(select_cdrom_window, 256, 68);
+	Win32_setActualWindowSize(select_cdrom_window, 288, 68);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(select_cdrom_window);
@@ -236,22 +237,46 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	// CD-ROM Drive dropdown box
 	SelCD_cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
 					      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					      16+80+8, 8, 256-80-16-16, 23,
+					      16+80+8, 8, 288-80-16-16, 23,
 					      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(SelCD_cdromDropdownBox, fntMain, TRUE);
 	
 	// Populate the dropdown box.
 	char cdromDriveStrings[128];
+	char drvLetter[3] = {' ', ':', '\0'};
+	char drvDropdownString[128];
 	unsigned short cpos = 0;
+	SHFILEINFO drvInfo;
+	
+	// Get all logical drive strings.
 	GetLogicalDriveStrings(sizeof(cdromDriveStrings), cdromDriveStrings);
 	
 	while (cdromDriveStrings[cpos] && cpos < sizeof(cdromDriveStrings))
 	{
-		printf("Drive: %s\n", &cdromDriveStrings[cpos]);
 		if (GetDriveType(&cdromDriveStrings[cpos]) == DRIVE_CDROM)
 		{
-			// CD-ROM drive. Add it to the dropdown.
-			ComboBox_AddString(SelCD_cdromDropdownBox, &cdromDriveStrings[cpos]);
+			// CD-ROM drive.
+			
+			// Format the drive letter.
+			drvLetter[0] = toupper(cdromDriveStrings[cpos]);
+			
+			// Create the dropdown string.
+			strcpy(drvDropdownString, drvLetter);
+			
+			// Get drive information.
+			SHGetFileInfo(&cdromDriveStrings[cpos], 0, &drvInfo, sizeof(drvInfo),
+				      SHGFI_DISPLAYNAME | SHGFI_ICON | SHGFI_SMALLICON);
+			
+			// If a disc label is found, show it.
+			if (drvInfo.szDisplayName[0])
+			{
+				strcat(drvDropdownString, " (");
+				strcat(drvDropdownString, drvInfo.szDisplayName);
+				strcat(drvDropdownString, ")");
+			}
+			
+			// Add the drive to the dropdown.
+			ComboBox_AddString(SelCD_cdromDropdownBox, drvDropdownString);
 		}
 		cpos += strlen(&cdromDriveStrings[cpos]) + 1;
 	}
@@ -261,17 +286,17 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	HWND btnOK, btnApply, btnCancel;
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     8, btnTop, 75, 23,
+			     18+8, btnTop, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				8+75+8, btnTop, 75, 23,
+				18+8+75+8, btnTop, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				 8+75+8+75+8, btnTop, 75, 23,
+				 18+8+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 }
