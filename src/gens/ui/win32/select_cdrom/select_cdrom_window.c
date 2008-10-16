@@ -234,11 +234,27 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	SetWindowFont(cdromDriveTitle, fntMain, TRUE);
 	
 	// CD-ROM Drive dropdown box
-	cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
-					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					16+80+8, 8, 256-80-16-16, 23,
-					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(cdromDropdownBox, fntMain, TRUE);
+	SelCD_cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
+					      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+					      16+80+8, 8, 256-80-16-16, 23,
+					      hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(SelCD_cdromDropdownBox, fntMain, TRUE);
+	
+	// Populate the dropdown box.
+	char cdromDriveStrings[128];
+	unsigned short cpos = 0;
+	GetLogicalDriveStrings(sizeof(cdromDriveStrings), cdromDriveStrings);
+	
+	while (cdromDriveStrings[cpos] && cpos < sizeof(cdromDriveStrings))
+	{
+		printf("Drive: %s\n", &cdromDriveStrings[cpos]);
+		if (GetDriveType(&cdromDriveStrings[cpos]) == DRIVE_CDROM)
+		{
+			// CD-ROM drive. Add it to the dropdown.
+			ComboBox_AddString(SelCD_cdromDropdownBox, &cdromDriveStrings[cpos]);
+		}
+		cpos += strlen(&cdromDriveStrings[cpos]) + 1;
+	}
 	
 	// Buttons
 	const int btnTop = 40;
