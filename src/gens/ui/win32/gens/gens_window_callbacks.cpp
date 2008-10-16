@@ -43,11 +43,11 @@
 #ifdef GENS_OPENGL
 #include "opengl_resolution/opengl_resolution_window_misc.h"
 #endif /* GENS_OPENGL */
+#endif
 
 #ifdef GENS_CDROM
-#include "select_cdrom/select_cdrom_window_misc.h"
+#include "select_cdrom/select_cdrom_window_misc.hpp"
 #endif /* GENS_CDROM */
-#endif
 
 #include "emulator/ui_proxy.hpp"
 #include "util/file/config_file.hpp"
@@ -683,6 +683,10 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 		
 		case ID_OPTIONS_BIOSMISCFILES:
 			Open_BIOS_Misc_Files();
+			break;
+		
+		case ID_OPTIONS_CURRENT_CD_DRIVE:
+			Open_Select_CDROM();
 			break;
 		
 		case ID_OPTIONS_LOADCONFIG:

@@ -34,7 +34,10 @@ gens_SOURCES += \
 
 if GENS_CDROM
 gens_SOURCES += \
-                segacd/cd_aspi_win32.cpp
+                segacd/cd_aspi_win32.cpp \
+		ui/win32/select_cdrom/select_cdrom_window.c \
+		ui/win32/select_cdrom/select_cdrom_window_callbacks.c \
+		ui/win32/select_cdrom/select_cdrom_window_misc.cpp
 endif
 
 noinst_HEADERS += \
@@ -68,7 +71,10 @@ noinst_HEADERS += \
 if GENS_CDROM
 noinst_HEADERS += \
                 segacd/cd_aspi.hpp \
-		segacd/aspi.h
+		segacd/aspi.h \
+		ui/win32/select_cdrom/select_cdrom_window.h \
+		ui/win32/select_cdrom/select_cdrom_window_callbacks.h \
+		ui/win32/select_cdrom/select_cdrom_window_misc.hpp
 endif
 
 gens_LDADD += -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -ldxguid -lddraw -ldinput -ldsound

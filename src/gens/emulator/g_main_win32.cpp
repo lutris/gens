@@ -44,6 +44,7 @@ HFONT fntTitle = NULL;
 #include "directory_config/directory_config_window.h"
 #include "general_options/general_options_window.h"
 #include "color_adjust/color_adjust_window.h"
+#include "select_cdrom/select_cdrom_window.h"
 #include "about/about_window.hpp"
 
 // Maximum value function
@@ -226,6 +227,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
 			    (general_options_window && IsDialogMessage(general_options_window, &msg)) ||
 			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
+			    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 			    (about_window && IsDialogMessage(about_window, &msg)))
 			{
 				continue;
@@ -313,6 +315,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 				    directory_config_window ||
 				    general_options_window ||
 				    color_adjust_window ||
+				    select_cdrom_window ||
 				    about_window)
 				{
 					// A dialog is open, so don't sleep that much.
