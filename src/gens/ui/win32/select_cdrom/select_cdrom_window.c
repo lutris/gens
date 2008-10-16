@@ -43,6 +43,8 @@
 static WNDCLASS WndClass;
 HWND select_cdrom_window = NULL;
 
+// Controls
+HWND SelCD_cdromDropdownBox = NULL;
 
 /**
  * create_select_cdrom_window(): Create the Select CD-ROM Drive Window.
@@ -227,8 +229,16 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	// CD-ROM Drive title
 	cdromDriveTitle = CreateWindow(WC_STATIC, "CD-ROM Drive:",
 				       WS_CHILD | WS_VISIBLE | SS_LEFT,
-				       16, 8+2, 80, 12, hWnd, NULL, ghInstance, NULL);
+				       16, 8+2, 80, 12,
+				       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(cdromDriveTitle, fntMain, TRUE);
+	
+	// CD-ROM Drive dropdown box
+	cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
+					WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+					16+80+8, 8, 256-80-16-16, 23,
+					hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(cdromDropdownBox, fntMain, TRUE);
 	
 	// Buttons
 	const int btnTop = 40;
