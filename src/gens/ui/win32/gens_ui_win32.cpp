@@ -88,7 +88,14 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Initialize the Common Controls library.
-	InitCommonControls();
+	// TODO: InitCommonControls() on 9x; InitCommonControlsEx() on 98 and later
+	//InitCommonControls();
+	INITCOMMONCONTROLSEX iccx;
+	iccx.dwSize = sizeof(iccx);
+	iccx.dwICC = ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES | ICC_BAR_CLASSES |
+		     ICC_LISTVIEW_CLASSES | ICC_USEREX_CLASSES;
+	// TODO: Check the return value.
+	InitCommonControlsEx(&iccx);
 	
 	// Initialize COM.
 	CoInitialize(NULL);
