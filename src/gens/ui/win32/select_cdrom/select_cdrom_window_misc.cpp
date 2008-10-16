@@ -41,8 +41,8 @@
 // Synchronization.
 #include "gens/gens_window_sync.hpp"
 
-
 #include <windows.h>
+#include <windowsx.h>
 
 
 /**
@@ -61,70 +61,16 @@ void Open_Select_CDROM(void)
 	// TODO: Make the window modal.
 	//gtk_window_set_transient_for(GTK_WINDOW(SelCD), GTK_WINDOW(gens_window));
 	
+	// Set the current CD-ROM drive.
+	ComboBox_SetCurSel(SelCD_cdromDropdownBox, cdromDeviceID);
+	if (ComboBox_GetCurSel(SelCD_cdromDropdownBox) == -1)
+	{
+		// Invalid CD-ROM drive ID. Select the first drive.
+		ComboBox_SetCurSel(SelCD_cdromDropdownBox, 0);
+	}
+	
 	// Show the Select CD-ROM Drive window.
 	ShowWindow(SelCD, 1);
-
-#if 0
-	// Load settings.
-	
-	// CD-ROM drive
-	combo_drive = lookup_widget(SelCD, "combo_drive");
-	gtk_entry_set_text(GTK_ENTRY(GTK_BIN(combo_drive)->child), cdromDeviceName);
-	
-	// Add CD-ROM drives to the dropdown.
-	// TODO: Improve this using udev or something.
-	curPrefix = 0;
-	while (CDROM_Prefix[curPrefix])
-	{
-		for (i = -1; i <= 9; i++)
-		{
-			if (i == -1)
-				strcpy(tmp, CDROM_Prefix[curPrefix]);
-			else
-				sprintf(tmp, "%s%d", CDROM_Prefix[curPrefix], i);
-				
-			if (lstat(tmp, &fileStat))
-			{
-				// Error occurred while stat'ing this file. Skip it.
-				continue;
-			}
-			
-			// File exists.
-			
-			// If this isn't "/dev/cdrom*", don't add it if it's a symlink.
-			if (curPrefix != 0 && S_ISLNK(fileStat.st_mode))
-				continue;
-			
-			// If this is neither a symlink nor a block device, don't add it.
-			if (!S_ISLNK(fileStat.st_mode) && !S_ISBLK(fileStat.st_mode))
-				continue;
-			
-			// Add the device file.
-			gtk_combo_box_append_text(GTK_COMBO_BOX(combo_drive), tmp);
-		}
-		
-		// Next prefix.
-		curPrefix++;
-	}
-	
-	// Drive speed
-	driveSpeed = 0;
-	for (i = 0; i < 14; i++)
-	{
-		if (CD_DriveSpeed[i] < 0)
-			break;
-		else if (CD_DriveSpeed[i] == cdromSpeed)
-		{
-			driveSpeed = i;
-			break;
-		}
-	}
-	combo_speed = lookup_widget(SelCD, "combo_speed");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_speed), driveSpeed);
-	
-	// Show the Select CD-ROM Drive Window.
-	gtk_widget_show_all(SelCD);
-#endif
 }
 
 
