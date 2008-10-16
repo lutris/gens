@@ -332,8 +332,6 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	// TODO: Figure out why ComboBoxEx didn't drop down properly on WinXP SP3.
 	//SendMessage(SelCD_cdromDropdownBox, CBEM_SETIMAGELIST, 0, (LPARAM)hSysImgList);
 	
-	ComboBox_SetCurSel(SelCD_cdromDropdownBox, 0);
-	
 	// Buttons
 	const int btnTop = 40;
 	HWND btnOK, btnApply, btnCancel;
