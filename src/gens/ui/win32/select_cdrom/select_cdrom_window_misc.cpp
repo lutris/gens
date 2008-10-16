@@ -80,70 +80,55 @@ void Open_Select_CDROM(void)
  */
 int SelCD_Save(void)
 {
-#if 0
-	GtkWidget *combo_drive, *combo_speed;
-	gchar *tmpDrive; int driveSpeed;
-	
 	// Save settings.
-	bool restartASPI = false;
+	int tmpDrive;
 	bool restartCD = false;
 	
 	// CD-ROM drive
-	combo_drive = lookup_widget(select_cdrom_window, "combo_drive");
-	tmpDrive = strdup(gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo_drive)));
-	if (strlen(tmpDrive))
+	tmpDrive = ComboBox_GetCurSel(SelCD_cdromDropdownBox);
+	
+	// Check if the drive ID was changed.
+	if (tmpDrive == cdromDeviceID)
 	{
-		// Check if the drive name was changed.
-		if (strncmp(tmpDrive, cdromDeviceName, sizeof(cdromDeviceName)) != 0)
+		// Drive ID wasn't changed. Don't do anything.
+		return 1;
+	}
+	
+	// Drive ID was changed.
+	// This will cause a reset of the ASPI subsystem.
+	if (SegaCD_Started && (CD_Load_System == CDROM_))
+	{
+		// ASPI is currently in use. Ask the user if they want to restart emulation.
+		GensUI::MsgBox_Response response;
+		response = GensUI::msgBox(
+			"The CD-ROM drive is currently in use.\n"
+			"Chanigng the CD-ROM drive will force the emulator to reset.\n"
+			"Are you sure you want to do this?",
+			"CD-ROM Drive in Use",
+			GensUI::MSGBOX_ICON_WARNING | GensUI::MSGBOX_BUTTONS_YES_NO,
+			select_cdrom_window);
+		
+		if (response == GensUI::MSGBOX_RESPONSE_NO)
 		{
-			// Drive name changed.
-			// This will cause a reset of the ASPI subsystem.
-			if (SegaCD_Started && (CD_Load_System == CDROM_))
-			{
-				// ASPI is currently in use. Ask the user if they want to restart emulation.
-				GensUI::MsgBox_Response response;
-				response = GensUI::msgBox(
-					"The CD-ROM drive is currently in use.\n"
-					"Chanigng the CD-ROM drive will force the emulator to reset.\n"
-					"Are you sure you want to do this?",
-					"CD-ROM Drive in Use",
-					GensUI::MSGBOX_ICON_WARNING | GensUI::MSGBOX_BUTTONS_YES_NO,
-					select_cdrom_window);
-				
-				if (response == GensUI::MSGBOX_RESPONSE_NO)
-				{
-					// Don't change anything.
-					return 0;
-				}
-				
-				// Stop SegaCD emulation.
-				// TODO: Don't allow this if Netplay is enabled.
-				restartCD = true;
-				Free_Rom(Game);
-			}
+			// Don't change anything.
+			return 0;
 		}
 		
-		// Stop ASPI.
-		ASPI_End();
-		restartASPI = true;
-		
-		strncpy(cdromDeviceName, tmpDrive, sizeof(cdromDeviceName) - 1);
-		cdromDeviceName[63] = 0x00;
+		// Stop SegaCD emulation.
+		// TODO: Don't allow this if Netplay is enabled.
+		restartCD = true;
+		Free_Rom(Game);
 	}
-	free(tmpDrive);
 	
-	// Drive speed
-	combo_speed = lookup_widget(select_cdrom_window, "combo_speed");
-	driveSpeed = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_speed));
-	if (driveSpeed < 0 || driveSpeed >= 14)
-		driveSpeed = 0;
-	cdromSpeed = CD_DriveSpeed[driveSpeed];
+	// Stop ASPI.
+	ASPI_End();
 	
-	if (restartASPI)
-	{
-		// Restart ASPI.
-		ASPI_Init();
-	}
+	cdromDeviceID = tmpDrive;
+	
+	// TODO: Drive speed (maybe)
+	
+	// Restart ASPI.
+	ASPI_Init();
 	
 	if (restartCD)
 	{
@@ -154,5 +139,4 @@ int SelCD_Save(void)
 	
 	// Settings saved.
 	return 1;
-#endif
 }
