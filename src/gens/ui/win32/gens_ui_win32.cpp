@@ -101,14 +101,16 @@ void GensUI::init(int argc, char *argv[])
 	CoInitialize(NULL);
 	
 	// Create the fonts used by the rest of the program.
-	// TODO: Get the theme font instead of the default (MS Sans Serif).
-	HFONT fntDefaultGUIFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-	fntMain = fntDefaultGUIFont;
+	NONCLIENTMETRICS ncm;
+	ncm.cbSize = sizeof(ncm);
+	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
+	
+	// Main font.
+	fntMain = static_cast<HFONT>(CreateFontIndirect(&ncm.lfMessageFont));
 	
 	// Create the title font.
 	// Title font is the main font with bold and italics.
-	LOGFONT lf;
-	GetObject(fntDefaultGUIFont, sizeof(LOGFONT), &lf);
+	LOGFONT lf = ncm.lfMessageFont;
 	lf.lfItalic = 1;
 	lf.lfWeight = FW_BOLD;
 	fntTitle = CreateFontIndirect(&lf);

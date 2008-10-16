@@ -340,8 +340,9 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	ChangeDisplaySettings(NULL, 0);
 	DestroyWindow(Gens_hWnd);
 	
-	// Delete the title font.
-	DeleteObject(fntTitle);
+	// Delete the fonts.
+	DeleteFont(fntMain);
+	DeleteFont(fntTitle);
 	
 	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
