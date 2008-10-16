@@ -42,7 +42,7 @@ static HWND lblGensTitle = NULL;
 static HWND lblGensDesc = NULL;
 static HWND grpGensCopyright = NULL;
 static HWND lblGensCopyright = NULL;
-
+static HWND imgGensLogo = NULL;
 // OK button
 static HWND btnOK = NULL;
 
@@ -149,7 +149,8 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			
 			// Set the title and version labels to transparent.
 			if ((HWND)lParam == lblGensTitle ||
-			    (HWND)lParam == lblGensDesc)
+			    (HWND)lParam == lblGensDesc ||
+			    (HWND)lParam == imgGensLogo)
 			{
 				SetBkMode((HDC)wParam, TRANSPARENT);
 				return (LRESULT)GetStockObject(NULL_BRUSH);
@@ -181,6 +182,7 @@ LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			lblGensDesc = NULL;
 			grpGensCopyright = NULL;
 			lblGensCopyright = NULL;
+			imgGensLogo = NULL;
 			about_window = NULL;
 			break;
 	}
@@ -194,7 +196,6 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	if (ice != 3)
 	{
 		// Gens logo
-		HWND imgGensLogo;
 		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
 		bmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
