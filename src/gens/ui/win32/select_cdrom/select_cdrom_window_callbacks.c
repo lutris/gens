@@ -50,16 +50,12 @@ LRESULT CALLBACK Select_CDROM_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
-#if 0
-					GG_SaveCodes();
-#endif
+					SelCD_Save();
 					DestroyWindow(hWnd);
 					break;
 				
 				case IDC_BTN_APPLY:
-#if 0
-					GG_SaveCodes();
-#endif
+					SelCD_Save();
 					break;
 				
 					case IDCANCEL: // Standard dialog button ID
@@ -79,60 +75,3 @@ LRESULT CALLBACK Select_CDROM_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
-#if 0
-/**
- * Window is closed.
- */
-gboolean on_select_cdrom_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(select_cdrom_window);
-	select_cdrom_window = NULL;
-	return FALSE;
-}
-
-
-/**
- * Cancel
- */
-void on_button_SelCD_Cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(select_cdrom_window);
-	select_cdrom_window = NULL;
-}
-
-
-/**
- * Apply
- */
-void on_button_SelCD_Apply_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	SelCD_Save();
-}
-
-
-/**
- * Save
- */
-void on_button_SelCD_Save_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	if (!SelCD_Save())
-		return;
-	
-	gtk_widget_destroy(select_cdrom_window);
-	select_cdrom_window = NULL;
-}
-#endif
