@@ -16,6 +16,9 @@ extern "C" {
 
 extern HINSTANCE ghInstance;
 
+// If extended Common Controls are enabled, this is set to non-zero.
+extern int win32_CommCtrlEx;
+
 // Set actual window size.
 void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH);
 

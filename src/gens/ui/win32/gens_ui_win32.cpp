@@ -92,6 +92,9 @@ void GensUI::init(int argc, char *argv[])
 	version.dwOSVersionInfoSize = sizeof(version);
 	GetVersionEx(&version);
 	
+	// CommCtrlEx is initially disabled.
+	win32_CommCtrlEx = 0;
+	
 	if (version.dwMajorVersion >= 5 ||
 	    (version.dwMajorVersion == 4 && version.dwMinorVersion >= 10))
 	{
@@ -101,14 +104,25 @@ void GensUI::init(int argc, char *argv[])
 		iccx.dwSize = sizeof(iccx);
 		iccx.dwICC = ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES | ICC_BAR_CLASSES |
 			     ICC_LISTVIEW_CLASSES | ICC_USEREX_CLASSES;
-		// TODO: Check the return value.
-		InitCommonControlsEx(&iccx);
+		
+		if (InitCommonControlsEx(&iccx))
+		{
+			// CommCtrlEx initialized.
+			win32_CommCtrlEx = 1;
+		}
+		else
+		{
+			// Can't initialize extended common controls. Try regular common controls.
+			// TODO: Check the return value.
+			InitCommonControls();
+		}
 	}
 	else
 	{
 		// Windows 95, Windows NT 4.0, or earlier.
 		// Use InitCommonControls().
-		// TODO: If NT4 or 95 and IE3 is installed, use InitCommonControlsEx().
+		// TODO: If NT4 or 95 is installed, and IE3 is installed, use InitCommonControlsEx().
+		// TODO: Check the return value.
 		InitCommonControls();
 	}
 	

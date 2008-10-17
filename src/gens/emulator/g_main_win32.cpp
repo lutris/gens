@@ -34,6 +34,9 @@
 // Win32 instance
 HINSTANCE ghInstance = NULL;
 
+// If extended Common Controls are enabled, this is set to non-zero.
+int win32_CommCtrlEx = 0;
+
 // Fonts
 HFONT fntMain = NULL;
 HFONT fntTitle = NULL;
