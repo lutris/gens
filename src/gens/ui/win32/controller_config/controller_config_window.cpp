@@ -343,4 +343,18 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 			       8, 16, grpBox_Note_Width-8-8, grpBox_Note_Height-16-8,
 			       grpBox, NULL, ghInstance, NULL);
 	SetWindowFont(lblNote, fntMain, TRUE);
+	
+	// Create the Setting Keys group box.
+	grpBox = CreateWindow(WC_BUTTON, "Setting Keys",
+			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+			      8+grpBox_Width+8, 8+grpBox_Note_Height+8, grpBox_Note_Width, 40,
+			      hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(grpBox, fntMain, TRUE);
+	
+	// Create the Setting Keys label.
+	cc_lblSettingKeys = CreateWindow(WC_STATIC, NULL,
+					 WS_CHILD | WS_VISIBLE | SS_CENTER,
+					 8, 16, grpBox_Note_Width-8-8, 16,
+					 grpBox, NULL, ghInstance, NULL);
+	SetWindowFont(cc_lblSettingKeys, fntMain, TRUE);
 }
