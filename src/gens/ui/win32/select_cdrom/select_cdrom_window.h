@@ -35,6 +35,8 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd);
 
 // Controls
 extern HWND SelCD_cdromDropdownBox;
+extern HWND SelCD_btnOK;
+extern HWND SelCD_btnApply;
 
 #ifdef __cplusplus
 }

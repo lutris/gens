@@ -50,11 +50,17 @@ LRESULT CALLBACK Select_CDROM_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
+					if (!IsWindowEnabled(SelCD_btnOK))
+						break;
+					
 					SelCD_Save();
 					DestroyWindow(hWnd);
 					break;
 				
 				case IDC_BTN_APPLY:
+					if (!IsWindowEnabled(SelCD_btnApply))
+						break;
+					
 					SelCD_Save();
 					break;
 				

@@ -46,6 +46,8 @@ HWND select_cdrom_window = NULL;
 
 // Controls
 HWND SelCD_cdromDropdownBox = NULL;
+HWND SelCD_btnOK = NULL;
+HWND SelCD_btnApply = NULL;
 
 /**
  * create_select_cdrom_window(): Create the Select CD-ROM Drive Window.
@@ -217,20 +219,47 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	
 	// Buttons
 	const int btnTop = 40;
-	HWND btnOK, btnApply, btnCancel;
+	HWND btnCancel;
 	
-	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     16+8, btnTop, 75, 23,
-			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	SelCD_btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+				   16+8, btnTop, 75, 23,
+				   hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+	SetWindowFont(SelCD_btnOK, fntMain, TRUE);
 	
-	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				16+8+75+8, btnTop, 75, 23,
-				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, TRUE);
+	SelCD_btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				      16+8+75+8, btnTop, 75, 23,
+				      hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+	SetWindowFont(SelCD_btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 16+8+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
+	
+	// Check number of drives.
+	if (ComboBox_GetCount(SelCD_cdromDropdownBox) == 0)
+	{
+		// No drives detected.
+		// TODO: Use GensUI::msgBox() instead of adding a ComboBox item.
+		
+		const char* strNoCDROMDrives = "No CD-ROM drives detected.";
+		
+		if (win32_CommCtrlEx)
+		{
+			// ComboBoxEx.
+			cbeiDrive.iImage = -1;
+			cbeiDrive.iSelectedImage = -1;
+			cbeiDrive.pszText = strNoCDROMDrives;
+			cbeiDrive.cchTextMax = sizeof(strNoCDROMDrives);
+			SendMessage(SelCD_cdromDropdownBox, CBEM_INSERTITEM, 0, (LPARAM)&cbeiDrive);
+		}
+		else
+		{
+			// Regular ComboBox.
+			ComboBox_AddString(SelCD_cdromDropdownBox, strNoCDROMDrives);
+		}
+		
+		Button_Enable(SelCD_btnOK, FALSE);
+		Button_Enable(SelCD_btnApply, FALSE);
+	}
 }
