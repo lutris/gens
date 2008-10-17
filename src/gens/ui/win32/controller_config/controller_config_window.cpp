@@ -45,6 +45,7 @@ HWND cc_chkTeamPlayer[2];
 HWND cc_lblPlayer[8];
 HWND cc_cboControllerType[8];
 HWND cc_btnReconfigure[8];
+HWND cc_lblSettingKeys;
 
 static WNDCLASS WndClass;
 HWND controller_config_window = NULL;
@@ -52,8 +53,17 @@ HWND controller_config_window = NULL;
 // Internal copy of Keys_Def[], which is copied when OK is clicked.
 struct KeyMap keyConfig[8];
 
-// Group Box height
-const unsigned short grpBox_Height = 140;
+// Controller Group Box size.
+static const unsigned short grpBox_Height = 140;
+static const unsigned short grpBox_Width = 240;
+
+// Note Group Box size.
+static const unsigned short grpBox_Note_Width = 288;
+static const unsigned short grpBox_Note_Height = 168;
+
+// Window size.
+static const unsigned short wndWidth = 8+grpBox_Width+8+grpBox_Note_Width+8;
+static const unsigned short wndHeight = (grpBox_Height*2)+24;
 
 /**
  * create_controller_config_window(): Create the Controller Configuration Window.
@@ -87,11 +97,11 @@ HWND create_controller_config_window(void)
 	controller_config_window = CreateWindowEx(NULL, "Gens_Controller_Config", "Controller Configuration",
 						  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 						  CW_USEDEFAULT, CW_USEDEFAULT,
-						  640, (grpBox_Height*2)+24,
+						  wndWidth, wndHeight,
 						  Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(controller_config_window, 640, (grpBox_Height*2)+24);
+	Win32_setActualWindowSize(controller_config_window, wndWidth, wndHeight);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(controller_config_window);
@@ -157,14 +167,6 @@ HWND create_controller_config_window(void)
 	
 	// Label with teamplayer note.
 	label_note = gtk_label_new(
-		"Players 1B, 1C, and 1D are enabled only if\n"
-		"teamplayer is enabled on Port 1.\n\n"
-		"Players 2B, 2C, and 2D are enabled only if\n"
-		"teamplayer is enabled on Port 2.\n\n"
-		"Only a few games support teamplayer (games which\n"
-		"have 4 player support), so don't forget to use the\n"
-		"\"load config\" and \"save config\" options. :)\n\n"
-		"Controller configuration is applied when Save is clicked."
 		);
 	gtk_widget_set_name(label_note, "label_note");
 	gtk_widget_show(label_note);
@@ -246,7 +248,7 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 	// Create the two port boxes.
 	unsigned short i, j, k;
 	char tmp[64];
-	HWND grpBox;
+	HWND grpBox, lblNote;
 	
 	const unsigned short controllerOrder[2][4] = {{0, 2, 3, 4}, {1, 5, 6, 7}};
 	unsigned short curOrder;
@@ -258,7 +260,6 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 		"6 buttons",
 	};
 	
-	
 	unsigned short grpBox_Top = 8;
 	for (i = 0; i < 2; i++)
 	{
@@ -266,7 +267,7 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 		sprintf(tmp, "Port %d", i + 1);
 		grpBox = CreateWindow(WC_BUTTON, tmp,
 				      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				      8, grpBox_Top, 240, grpBox_Height,
+				      8, grpBox_Top, grpBox_Width, grpBox_Height,
 				      hWnd, NULL, ghInstance, NULL);
 		SetWindowFont(grpBox, fntMain, TRUE);
 		
@@ -317,4 +318,29 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 		// Next group box.
 		grpBox_Top += grpBox_Height + 8;
 	}
+	
+	// Note.
+	const char* strNote =
+			"Players 1B, 1C, and 1D are enabled only if\n"
+			"teamplayer is enabled on Port 1.\n\n"
+			"Players 2B, 2C, and 2D are enabled only if\n"
+			"teamplayer is enabled on Port 2.\n\n"
+			"Only a few games support teamplayer (games which\n"
+			"have 4 player support), so don't forget to use the\n"
+			"\"load config\" and \"save config\" options. :)\n\n"
+			"Controller configuration is applied when Save is clicked.";
+	
+	// Create the Note group box.
+	grpBox = CreateWindow(WC_BUTTON, "Note",
+			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+			      8+grpBox_Width+8, 8, grpBox_Note_Width, grpBox_Note_Height,
+			      hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(grpBox, fntMain, TRUE);
+	
+	// Create the note label inside of the group box.
+	lblNote = CreateWindow(WC_STATIC, strNote,
+			       WS_CHILD | WS_VISIBLE | SS_LEFT,
+			       8, 16, grpBox_Note_Width-8-8, grpBox_Note_Height-16-8,
+			       grpBox, NULL, ghInstance, NULL);
+	SetWindowFont(lblNote, fntMain, TRUE);
 }

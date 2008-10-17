@@ -41,6 +41,7 @@ extern HWND cc_chkTeamPlayer[2];
 extern HWND cc_lblPlayer[8];
 extern HWND cc_cboControllerType[8];
 extern HWND cc_btnReconfigure[8];
+extern HWND cc_lblSettingKeys;
 
 #ifdef __cplusplus
 }
