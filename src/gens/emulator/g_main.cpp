@@ -13,7 +13,6 @@
 #include <unistd.h>
 #include <string.h>
 #include "g_main.hpp"
-#include "port/timer.h"
 #include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"
@@ -37,8 +36,9 @@
 // INI handling
 #include "port/ini.hpp"
 #ifndef GENS_OS_WIN32
-// Old INI handling functions are still needed for now.
+// Old INI handling and timer functions are still needed for now.
 #include "port/ini_old.h"
+#include "port/timer.h"
 #endif /* GENS_OS_WIN32 */
 
 #ifdef GENS_DEBUGGER
@@ -297,7 +297,10 @@ int Init(void)
 	if (draw->Init_Subsystem() != 0)
 		return 0;
 	
+#ifndef GENS_OS_WIN32
+	// TODO: Make this unnecessary.
 	init_timer();
+#endif
 	
 	Identify_CPU();
 	

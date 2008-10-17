@@ -133,7 +133,6 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
 		port/ini.cpp \
-		port/timer.c \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
 		segacd/lc89510.c \
@@ -213,7 +212,6 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		port/ini.hpp \
-		port/timer.h \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/lc89510.h \

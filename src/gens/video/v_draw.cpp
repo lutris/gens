@@ -17,7 +17,9 @@
 #include "emulator/g_palette.h"
 #include "emulator/ui_proxy.hpp"
 
+#ifndef GENS_OS_WIN32
 #include "port/timer.h"
+#endif /* GENS_OS_WIN32 */
 
 // Miscellaneous Effects.
 #include "v_effects.hpp"
@@ -192,7 +194,11 @@ int VDraw::flip(void)
 		{
 			if (++m_FPS_ViewFPS >= 16)
 			{
-				GetPerformanceCounter((long long*)m_FPS_NewTime);
+#ifdef GENS_OS_WIN32
+				QueryPerformanceCounter((LARGE_INTEGER*)m_FPS_NewTime);
+#else
+				QueryPerformanceCounter((long long*)m_FPS_NewTime);
+#endif
 				if (m_FPS_NewTime[0] != m_FPS_OldTime)
 				{
 					m_FPS = (float)(m_FPS_FreqCPU[0]) * 16.0f / (float)(m_FPS_NewTime[0] - m_FPS_OldTime);
@@ -236,7 +242,11 @@ int VDraw::flip(void)
 		}
 		else
 		{
-			GetPerformanceFrequency((long long *)m_FPS_FreqCPU);
+#ifdef GENS_OS_WIN32
+			QueryPerformanceFrequency((LARGE_INTEGER*)m_FPS_FreqCPU);
+#else
+			QueryPerformanceFrequency((long long*)m_FPS_FreqCPU);
+#endif
 			if (m_FPS_FreqCPU[0] == 0)
 				m_FPS_FreqCPU[0] = 1;
 			

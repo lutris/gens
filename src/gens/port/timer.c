@@ -77,12 +77,12 @@ void init_timer(void)
 }
 
 
-void GetPerformanceFrequency(long long *freq)
+void QueryPerformanceFrequency(long long *freq)
 {
 	*freq = cpu_speed;
 }
 
-void GetPerformanceCounter(long long *now)
+void QueryPerformanceCounter(long long *now)
 {
 	*now = read_rdtsc();
 }

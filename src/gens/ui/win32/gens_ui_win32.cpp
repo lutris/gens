@@ -88,14 +88,29 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Initialize the Common Controls library.
-	// TODO: InitCommonControls() on 9x; InitCommonControlsEx() on 98 and later
-	//InitCommonControls();
-	INITCOMMONCONTROLSEX iccx;
-	iccx.dwSize = sizeof(iccx);
-	iccx.dwICC = ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES | ICC_BAR_CLASSES |
-		     ICC_LISTVIEW_CLASSES | ICC_USEREX_CLASSES;
-	// TODO: Check the return value.
-	InitCommonControlsEx(&iccx);
+	OSVERSIONINFO version;
+	version.dwOSVersionInfoSize = sizeof(version);
+	GetVersionEx(&version);
+	
+	if (version.dwMajorVersion >= 5 ||
+	    (version.dwMajorVersion == 4 && version.dwMinorVersion >= 10))
+	{
+		// Windows 98, Windows Me, Windows 2000, Windows XP, Windows Vista, or later.
+		// Use InitCommonControlsEx().
+		INITCOMMONCONTROLSEX iccx;
+		iccx.dwSize = sizeof(iccx);
+		iccx.dwICC = ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES | ICC_BAR_CLASSES |
+			     ICC_LISTVIEW_CLASSES | ICC_USEREX_CLASSES;
+		// TODO: Check the return value.
+		InitCommonControlsEx(&iccx);
+	}
+	else
+	{
+		// Windows 95, Windows NT 4.0, or earlier.
+		// Use InitCommonControls().
+		// TODO: If NT4 or 95 and IE3 is installed, use InitCommonControlsEx().
+		InitCommonControls();
+	}
 	
 	// Initialize COM.
 	CoInitialize(NULL);
