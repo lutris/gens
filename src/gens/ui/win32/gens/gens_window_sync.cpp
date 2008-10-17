@@ -184,7 +184,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SPRITELIMIT, FALSE, &miimMenuItem);
 	
 	// Frame Skip
-	for (i = -1; i < 8; i++)
+	for (i = -1; i <= 8; i++)
 	{
 		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
 		SetMenuItemInfo(GraphicsMenu_FrameSkip, ID_GRAPHICS_FRAMESKIP + (i + 1), FALSE, &miimMenuItem);
