@@ -107,7 +107,7 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	// CD-ROM Drive dropdown box
 	SelCD_cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
 					      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					      16+80-4, 8, 288-8-80-16+4, 23,
+					      16+80-4, 8, 288-8-80-16+4, 23*5,
 					      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(SelCD_cdromDropdownBox, fntMain, TRUE);
 	
@@ -207,17 +207,17 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	HWND btnOK, btnApply, btnCancel;
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     18+8, btnTop, 75, 23,
+			     16+8, btnTop, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				18+8+75+8, btnTop, 75, 23,
+				16+8+75+8, btnTop, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				 18+8+75+8+75+8, btnTop, 75, 23,
+				 16+8+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 }
