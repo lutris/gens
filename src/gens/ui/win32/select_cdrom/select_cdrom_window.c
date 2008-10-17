@@ -105,7 +105,7 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	SetWindowFont(cdromDriveTitle, fntMain, TRUE);
 	
 	// CD-ROM Drive dropdown box
-	SelCD_cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
+	SelCD_cdromDropdownBox = CreateWindow((win32_CommCtrlEx ? WC_COMBOBOXEX : WC_COMBOBOX), NULL,
 					      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
 					      16+80-4, 8, 288-8-80-16+4, 23*5,
 					      hWnd, NULL, ghInstance, NULL);
@@ -116,19 +116,19 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	char drvLetter[4];
 	char drvDropdownString[128];
 	
-	//COMBOBOXEXITEM cbeiDrive;
+	COMBOBOXEXITEM cbeiDrive;
 	HIMAGELIST hSysImgList;
 	SHFILEINFO drvInfo;
 	
-	// Set up the COMBOBOXEXITEM.
-	// TODO: Figure out why ComboBoxEx didn't drop down properly on WinXP SP3.
-#if 0
-	cbeiDrive.pszText = drvDropdownString;
-	cbeiDrive.mask = CBEIF_TEXT | CBEIF_INDENT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE;
-	cbeiDrive.cchTextMax = sizeof(drvDropdownString);
-	cbeiDrive.iItem = -1;
-	cbeiDrive.iIndent = 0;
-#endif
+	if (win32_CommCtrlEx)
+	{
+		// Set up the COMBOBOXEXITEM.
+		cbeiDrive.pszText = drvDropdownString;
+		cbeiDrive.mask = CBEIF_TEXT | CBEIF_INDENT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE;
+		cbeiDrive.cchTextMax = sizeof(drvDropdownString);
+		cbeiDrive.iItem = -1;
+		cbeiDrive.iIndent = 0;
+	}
 	
 	// Get all logical drives.
 	drives = GetLogicalDrives();
@@ -159,9 +159,11 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 								SHGFI_DISPLAYNAME | SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
 			
 			// Set the combobox item image.
-			// TODO: Figure out why ComboBoxEx didn't drop down properly on WinXP SP3.
-			//cbeiDrive.iImage = drvInfo.iIcon;
-			//cbeiDrive.iSelectedImage = drvInfo.iIcon;
+			if (win32_CommCtrlEx)
+			{
+				cbeiDrive.iImage = drvInfo.iIcon;
+				cbeiDrive.iSelectedImage = drvInfo.iIcon;
+			}
 			
 			// Create the dropdown string.
 			drvLetter[2] = '\0';
@@ -191,16 +193,27 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 			}
 			
 			// Add the drive to the dropdown.
-			ComboBox_AddString(SelCD_cdromDropdownBox, drvDropdownString);
+			if (win32_CommCtrlEx)
+			{
+				// ComboBoxEx.
+				SendMessage(SelCD_cdromDropdownBox, CBEM_INSERTITEM, 0, (LPARAM)&cbeiDrive);
+			}
+			else
+			{
+				// Regular ComboBox.
+				ComboBox_AddString(SelCD_cdromDropdownBox, drvDropdownString);
+			}
 		}
 		
 		// Next drive.
 		drives >>= 1;
 	}
 	
-	// Set the image list of the dropdown to the system image list.
-	// TODO: Figure out why ComboBoxEx didn't drop down properly on WinXP SP3.
-	//SendMessage(SelCD_cdromDropdownBox, CBEM_SETIMAGELIST, 0, (LPARAM)hSysImgList);
+	if (win32_CommCtrlEx)
+	{
+		// Set the image list of the dropdown to the system image list.
+		SendMessage(SelCD_cdromDropdownBox, CBEM_SETIMAGELIST, 0, (LPARAM)hSysImgList);
+	}
 	
 	// Buttons
 	const int btnTop = 40;
