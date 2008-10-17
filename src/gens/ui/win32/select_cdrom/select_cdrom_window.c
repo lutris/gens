@@ -172,7 +172,8 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 			strcpy(drvDropdownString, drvLetter);
 			
 			// If a disc label is found, show it.
-			if (drvInfo.szDisplayName[0])
+			if (drvInfo.szDisplayName[0] != '\0' &&
+			    drvInfo.szDisplayName[0] != ' ')
 			{
 				strcat(drvDropdownString, " (");
 				strcat(drvDropdownString, drvInfo.szDisplayName);
