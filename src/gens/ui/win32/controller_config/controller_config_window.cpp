@@ -263,12 +263,6 @@ static void AddControllerVBox(GtkWidget *frame, int port)
 	char player[4];
 	int i, j, callbackPort;
 	
-	// TODO: Move this somewhere else?
-	const char* PadTypes[2] =
-	{
-		"3 buttons",
-		"6 buttons",
-	};
 	
 	if (!frame || (port != 1 && port != 2))
 		return;
@@ -383,12 +377,20 @@ static void AddControllerVBox(GtkWidget *frame, int port)
 void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 {
 	// Create the two port boxes.
-	unsigned short i, j;
+	unsigned short i, j, k;
 	char tmp[64];
 	HWND grpBox;
 	
-	unsigned short controllerOrder[2][4] = {{0, 2, 3, 4}, {1, 5, 6, 7}};
+	const unsigned short controllerOrder[2][4] = {{0, 2, 3, 4}, {1, 5, 6, 7}};
 	unsigned short curOrder;
+	
+	// TODO: Move this somewhere else?
+	const char* PadTypes[2] =
+	{
+		"3 buttons",
+		"6 buttons",
+	};
+	
 	
 	unsigned short grpBox_Top = 8;
 	for (i = 0; i < 2; i++)
@@ -429,8 +431,11 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 								8+8+48+8, grpBox_Top+16+16+4+(j*24), 80, 23*2,
 								hWnd, NULL, ghInstance, NULL);
 			SetWindowFont(cc_cboControllerType[curOrder], fntMain, TRUE);
-			ComboBox_AddString(cc_cboControllerType[curOrder], "3 buttons");
-			ComboBox_AddString(cc_cboControllerType[curOrder], "6 buttons");
+			
+			for (k = 0; k < 2; k++)
+			{
+				ComboBox_AddString(cc_cboControllerType[curOrder], PadTypes[k]);
+			}
 			
 			// Reconfigure button
 			cc_btnReconfigure[curOrder] = CreateWindow(
