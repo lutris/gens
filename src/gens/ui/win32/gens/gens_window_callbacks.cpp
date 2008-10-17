@@ -28,10 +28,9 @@
 #include "gens_window.h"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
+
 #include "game_genie/game_genie_window_misc.h"
-#if 0
 #include "controller_config/controller_config_window_misc.hpp"
-#endif
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
@@ -681,6 +680,10 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 			Open_General_Options();
 			break;
 		
+		case ID_OPTIONS_JOYPADS:
+			Open_Controller_Config();
+			break;
+		
 		case ID_OPTIONS_BIOSMISCFILES:
 			Open_BIOS_Misc_Files();
 			break;
@@ -745,30 +748,4 @@ void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, 
 	
 	Open_Country_Code();
 }
-
-
-/**
- * Options, Joypads...
- */
-void on_OptionsMenu_Joypads_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_Controller_Config();
-}
-
-
-#ifdef GENS_CDROM
-/**
- * Options, Current CD Drive...
- */
-void on_OptionsMenu_CurrentCDDrive_activate(GtkMenuItem *menuitem, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Open_Select_CDROM();
-}
-#endif
 #endif

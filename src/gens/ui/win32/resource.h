@@ -30,5 +30,11 @@
 #define IDD_ZIPSELECT		0x3000
 #define IDC_ZIPSELECT_LSTFILES	0x3001
 
+// Controller Configuration Dialog
+#define IDD_CONTROLLER_CONFIG	0x4000
+
+// Controller Configuration Dialog - Reconfigure. (LOWORD(wParam) & 0xFF) == controller ID.
+#define IDD_CONTROLLER_CONFIG_RECONFIGURE	0x4100
+
 // Manifest
 #define APP_MANIFEST		1

@@ -1,0 +1,448 @@
+/***************************************************************************
+ * Gens: (Win32) Controller Configuration Window.                          *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
+#include "controller_config_window.hpp"
+#include "controller_config_window_callbacks.hpp"
+#include "gens/gens_window.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "emulator/g_main.hpp"
+
+#include <windowsx.h>
+
+// Gens Win32 resources
+#include "ui/win32/resource.h"
+
+// Win32 common controls
+#include <commctrl.h>
+
+// Controls
+HWND cc_chkTeamPlayer[2];
+HWND cc_lblPlayer[8];
+HWND cc_cboControllerType[8];
+HWND cc_btnReconfigure[8];
+
+static WNDCLASS WndClass;
+HWND controller_config_window = NULL;
+
+// Internal copy of Keys_Def[], which is copied when OK is clicked.
+struct KeyMap keyConfig[8];
+
+//static void AddControllerVBox(GtkWidget *vbox, int port);
+
+// Group Box height
+const unsigned short grpBox_Height = 140;
+
+/**
+ * create_controller_config_window(): Create the Controller Configuration Window.
+ * @return Game Genie Window.
+ */
+HWND create_controller_config_window(void)
+{
+	if (controller_config_window)
+	{
+		// Controller Configuration window is already created. Set focus.
+		// TODO: Figure out how to do this.
+		ShowWindow(controller_config_window, 1);
+		return NULL;
+	}
+	
+	// Create the window class.
+	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	WndClass.lpfnWndProc = Controller_Config_Window_WndProc;
+	WndClass.cbClsExtra = 0;
+	WndClass.cbWndExtra = 0;
+	WndClass.hInstance = ghInstance;
+	WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
+	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+	WndClass.lpszMenuName = NULL;
+	WndClass.lpszClassName = "Gens_Controller_Config";
+	
+	RegisterClass(&WndClass);
+	
+	// Create the window.
+	controller_config_window = CreateWindowEx(NULL, "Gens_Controller_Config", "Controller Configuration",
+						  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+						  CW_USEDEFAULT, CW_USEDEFAULT,
+						  640, (grpBox_Height*2)+24,
+						  Gens_hWnd, NULL, ghInstance, NULL);
+	
+	// Set the actual window size.
+	Win32_setActualWindowSize(controller_config_window, 640, (grpBox_Height*2)+24);
+	
+	// Center the window on the Gens window.
+	Win32_centerOnGensWindow(controller_config_window);
+	
+	UpdateWindow(controller_config_window);
+	return controller_config_window;
+	
+#if 0
+	// Main table.
+	table_cc = gtk_table_new(2, 2, FALSE);
+	gtk_widget_set_name(table_cc, "table_cc");
+	gtk_container_set_border_width(GTK_CONTAINER(table_cc), 5);
+	gtk_table_set_row_spacings(GTK_TABLE(table_cc), 5);
+	gtk_table_set_col_spacings(GTK_TABLE(table_cc), 5);
+	gtk_widget_show(table_cc);
+	GLADE_HOOKUP_OBJECT(controller_config_window, table_cc, "table_cc");
+	gtk_container_add(GTK_CONTAINER(controller_config_window), table_cc);
+	
+	// Frame for Port 1.
+	frame_port_1 = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_port_1, "frame_port_1");
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_port_1), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_port_1), 5);
+	gtk_widget_show(frame_port_1);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_1, "frame_port_1");
+	gtk_table_attach(GTK_TABLE(table_cc), frame_port_1, 0, 1, 0, 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	
+	// Frame for Port 2.
+	frame_port_2 = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_port_2, "frame_port_2");
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_port_2), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_port_2), 5);
+	gtk_widget_show(frame_port_2);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_port_2, "frame_port_2");
+	gtk_table_attach(GTK_TABLE(table_cc), frame_port_2, 0, 1, 1, 2,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	
+	// Add VBoxes for controller input.
+	AddControllerVBox(frame_port_1, 1);
+	AddControllerVBox(frame_port_2, 2);
+	
+	// Frame for the note about teamplayer.
+	frame_note = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_note, "frame_note");
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_note), GTK_SHADOW_NONE);
+	gtk_widget_show(frame_note);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_note), 5);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_note, "frame_note");
+	gtk_table_attach(GTK_TABLE(table_cc), frame_note, 1, 2, 0, 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_FILL), 0, 0);
+	
+	// Label with teamplayer note. (Heading)
+	label_note_heading = gtk_label_new("<b><i>Note</i></b>");
+	gtk_widget_set_name(label_note_heading, "label_note_heading");
+	gtk_label_set_use_markup(GTK_LABEL(label_note_heading), TRUE);
+	gtk_widget_show(label_note_heading);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_note_heading, "label_note_heading");
+	gtk_frame_set_label_widget(GTK_FRAME(frame_note), label_note_heading);
+	
+	// Label with teamplayer note.
+	label_note = gtk_label_new(
+		"Players 1B, 1C, and 1D are enabled only if\n"
+		"teamplayer is enabled on Port 1.\n\n"
+		"Players 2B, 2C, and 2D are enabled only if\n"
+		"teamplayer is enabled on Port 2.\n\n"
+		"Only a few games support teamplayer (games which\n"
+		"have 4 player support), so don't forget to use the\n"
+		"\"load config\" and \"save config\" options. :)\n\n"
+		"Controller configuration is applied when Save is clicked."
+		);
+	gtk_widget_set_name(label_note, "label_note");
+	gtk_widget_show(label_note);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_note, "label_note");
+	gtk_container_add(GTK_CONTAINER(frame_note), label_note);
+	
+	// VBox for the bottom right part of the Controller Configuration window.
+	vbox_setting_keys = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vbox_setting_keys, "vbox_setting_keys");
+	gtk_widget_show(vbox_setting_keys);
+	GLADE_HOOKUP_OBJECT(controller_config_window, vbox_setting_keys, "vbox_setting_keys");
+	gtk_table_attach(GTK_TABLE(table_cc), vbox_setting_keys, 1, 2, 1, 2,
+			 (GtkAttachOptions)(GTK_FILL),
+			 (GtkAttachOptions)(GTK_FILL), 0, 0);
+	
+	// Setting Keys frame.
+	frame_setting_keys = gtk_frame_new(NULL);
+	gtk_widget_set_name(frame_setting_keys, "frame_setting_keys");
+	gtk_container_set_border_width(GTK_CONTAINER(frame_setting_keys), 5);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_setting_keys), GTK_SHADOW_NONE);
+	gtk_widget_show(frame_setting_keys);
+	GLADE_HOOKUP_OBJECT(controller_config_window, frame_setting_keys, "frame_setting_keys");
+	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), frame_setting_keys, TRUE, TRUE, 0);
+	
+	// Label for the Setting Keys frame.
+	label_setting_keys = gtk_label_new("<b><i>Setting Keys</i></b>");
+	gtk_widget_set_name(label_setting_keys, "label_setting_keys");
+	gtk_label_set_use_markup(GTK_LABEL(label_setting_keys), TRUE);
+	gtk_widget_show(label_setting_keys);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_setting_keys, "label_setting_keys");
+	gtk_frame_set_label_widget(GTK_FRAME(frame_setting_keys), label_setting_keys);
+	
+	// Label indicating what key needs to be pressed.
+	label_cc_echo = gtk_label_new("");
+	gtk_widget_set_name(label_cc_echo, "label_echo");
+	gtk_widget_show(label_cc_echo);
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_cc_echo, "label_echo");
+	gtk_container_add(GTK_CONTAINER(frame_setting_keys), label_cc_echo);
+	
+	// HButton Box for the buttons.
+	hbutton_box_savecancel = gtk_hbutton_box_new();
+	gtk_widget_set_name(hbutton_box_savecancel, "hbutton_box_savecancel");
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_savecancel), GTK_BUTTONBOX_END);
+	gtk_widget_show(hbutton_box_savecancel);
+	GLADE_HOOKUP_OBJECT(controller_config_window, hbutton_box_savecancel, "hbutton_box_savecancel");
+	gtk_box_pack_start(GTK_BOX(vbox_setting_keys), hbutton_box_savecancel, FALSE, TRUE, 0);
+	
+	// Cancel button
+	button_cc_Cancel = gtk_button_new_from_stock("gtk-cancel");
+	gtk_widget_set_name(button_cc_Cancel, "button_cc_Cancel");
+	gtk_widget_show(button_cc_Cancel);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Cancel, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_cc_Cancel, on_button_cc_Cancel_clicked);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Cancel, "button_cc_Cancel");
+	
+	// Apply button
+	button_cc_Apply = gtk_button_new_from_stock("gtk-apply");
+	gtk_widget_set_name(button_cc_Apply, "button_cc_Apply");
+	gtk_widget_show(button_cc_Apply);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Apply, FALSE, FALSE, 0);
+	AddButtonCallback_Clicked(button_cc_Apply, on_button_cc_Apply_clicked);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Apply, "button_cc_Apply");
+	
+	// OK button
+	button_cc_Save = gtk_button_new_from_stock("gtk-save");
+	gtk_widget_set_name(button_cc_Save, "button_cc_Save");
+	gtk_widget_show(button_cc_Save);
+	AddButtonCallback_Clicked(button_cc_Save, on_button_cc_Save_clicked);
+	gtk_box_pack_start(GTK_BOX(hbutton_box_savecancel), button_cc_Save, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, button_cc_Save, "button_cc_Save");
+	
+	return controller_config_window;
+#endif
+}
+
+
+#if 0
+/**
+ * AddControllerVBox(): Add a VBox containing controller configuration options.
+ * @param frame Frame to add the VBox to.
+ * @param port Port number (1 or 2).
+ */
+static void AddControllerVBox(GtkWidget *frame, int port)
+{
+	GtkWidget *vbox;
+	GtkWidget *hbox;
+	GtkWidget *label_port;
+	GtkWidget *check_teamplayer;
+	GtkWidget *table_players;
+	GtkWidget *label_player;
+	GtkWidget *combobox_padtype;
+	GtkWidget *button_configure;
+	char tmp[128];
+	char player[4];
+	int i, j, callbackPort;
+	
+	// TODO: Move this somewhere else?
+	const char* PadTypes[2] =
+	{
+		"3 buttons",
+		"6 buttons",
+	};
+	
+	if (!frame || (port != 1 && port != 2))
+		return;
+	
+	// VBox for this controller
+	vbox = gtk_vbox_new(FALSE, 0);
+	sprintf(tmp, "vbox_port_%d", port);
+	gtk_widget_set_name(vbox, tmp);
+	gtk_widget_show(vbox);
+	gtk_container_add(GTK_CONTAINER(frame), vbox);
+	
+	// Create the hbox.
+	hbox = gtk_hbox_new(FALSE, 5);
+	sprintf(tmp, "hbox_controller_%d", port);
+	gtk_widget_set_name(hbox, tmp);
+	gtk_widget_show(hbox);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, hbox, tmp);
+	
+	// Port label
+	sprintf(tmp, "<b><i>Port %d</i></b>", port);
+	label_port = gtk_label_new(tmp);
+	sprintf(tmp, "label_port_%d", port);
+	gtk_widget_set_name(label_port, tmp);
+	gtk_label_set_use_markup(GTK_LABEL(label_port), TRUE);
+	gtk_widget_show(label_port);
+	gtk_frame_set_label_widget(GTK_FRAME(frame), label_port);
+	
+	// Checkbox for enabling teamplayer.
+	check_teamplayer = gtk_check_button_new_with_label("Use Teamplayer");
+	sprintf(tmp, "check_teamplayer_%d", port);
+	gtk_widget_set_name(check_teamplayer, tmp);
+	gtk_widget_show(check_teamplayer);
+	gtk_box_pack_start(GTK_BOX(hbox), check_teamplayer, FALSE, FALSE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, check_teamplayer, tmp);
+	g_signal_connect((gpointer)check_teamplayer, "clicked",
+			 G_CALLBACK(on_check_cc_Teamplayer_clicked), GINT_TO_POINTER(port));
+	
+	// Table for the player controls.
+	table_players = gtk_table_new(4, 3, FALSE);
+	sprintf(tmp, "table_players_%d", port);
+	gtk_widget_set_name(table_players, tmp);
+	gtk_table_set_col_spacings(GTK_TABLE(table_players), 10);
+	gtk_widget_show(table_players);
+	gtk_box_pack_start(GTK_BOX(vbox), table_players, TRUE, TRUE, 0);
+	GLADE_HOOKUP_OBJECT(controller_config_window, table_players, tmp);
+	
+	// Player inputs
+	for (i = 0; i < 4; i++)
+	{
+		if (i == 0)
+			sprintf(player, "%d", port);
+		else
+			sprintf(player, "%d%c", port, 'A' + (char)i);
+		
+		// Player label
+		sprintf(tmp, "Player %s", player);
+		label_player = gtk_label_new(tmp);
+		sprintf(tmp, "label_player_%s", player);
+		gtk_widget_set_name(label_player, tmp);
+		gtk_misc_set_alignment(GTK_MISC(label_player), 0, 0.5);
+		gtk_widget_show(label_player);
+		GLADE_HOOKUP_OBJECT(controller_config_window, label_player, tmp);
+		gtk_table_attach(GTK_TABLE(table_players), label_player, 0, 1, i, i + 1,
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(0), 0, 0);
+		
+		// Pad type
+		combobox_padtype = gtk_combo_box_new_text();
+		sprintf(tmp, "combobox_padtype_%s", player);
+		gtk_widget_set_name(combobox_padtype, tmp);
+		gtk_widget_show(combobox_padtype);
+		GLADE_HOOKUP_OBJECT(controller_config_window, combobox_padtype, tmp);
+		gtk_table_attach(GTK_TABLE(table_players), combobox_padtype, 1, 2, i, i + 1,
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(0), 0, 0);
+		
+		// Pad type dropdown
+		for (j = 0; j < 2; j++)
+		{
+			gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_padtype), PadTypes[j]);
+		}
+		
+		// "Reconfigure" button
+		button_configure = gtk_button_new_with_label("Reconfigure");
+		sprintf(tmp, "button_configure_%s", player);
+		gtk_widget_set_name(button_configure, tmp);
+		gtk_widget_show(button_configure);
+		gtk_table_attach(GTK_TABLE(table_players), button_configure, 2, 3, i, i + 1,
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(0), 0, 0);
+		
+		// Determine the port number to use for the callback.
+		if (i == 0)
+			callbackPort = port - 1;
+		else
+		{
+			if (port == 1)
+				callbackPort = i + 1;
+			else // if (port == 2)
+				callbackPort = i + 4;
+		}
+		g_signal_connect(GTK_OBJECT(button_configure), "clicked",
+				 G_CALLBACK(on_button_cc_Reconfigure_clicked),
+				 GINT_TO_POINTER(callbackPort));
+		GLADE_HOOKUP_OBJECT(controller_config_window, button_configure, tmp);
+	}
+}
+#endif
+
+
+void Controller_Config_Window_CreateChildWindows(HWND hWnd)
+{
+	// Create the two port boxes.
+	unsigned short i, j;
+	char tmp[64];
+	HWND grpBox;
+	
+	unsigned short controllerOrder[2][4] = {{0, 2, 3, 4}, {1, 5, 6, 7}};
+	unsigned short curOrder;
+	
+	unsigned short grpBox_Top = 8;
+	for (i = 0; i < 2; i++)
+	{
+		// Create the groupbox.
+		sprintf(tmp, "Port %d", i + 1);
+		grpBox = CreateWindow(WC_BUTTON, tmp,
+				      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				      8, grpBox_Top, 240, grpBox_Height,
+				      hWnd, NULL, ghInstance, NULL);
+		SetWindowFont(grpBox, fntMain, TRUE);
+		
+		// Create the Teamplayer checkbox.
+		cc_chkTeamPlayer[i] = CreateWindow(WC_BUTTON, "Use Teamplayer",
+						   WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+						   8+8, grpBox_Top+16, 96, 16,
+						   hWnd, NULL, ghInstance, NULL);
+		SetWindowFont(cc_chkTeamPlayer[i], fntMain, TRUE);
+		
+		// Create the four players.
+		for (j = 0; j < 4; j++)
+		{
+			curOrder = controllerOrder[i][j];
+			
+			// Label
+			sprintf(tmp, "Player %d%c", i + 1, (j == 0 ? 0x00 : 'A' + j));
+			cc_lblPlayer[curOrder] = CreateWindow(
+							WC_STATIC, tmp,
+							WS_CHILD | WS_VISIBLE | SS_LEFT,
+							8+8, grpBox_Top+16+16+4+(j*24)+4, 48, 16,
+							hWnd, NULL, ghInstance, NULL);
+			SetWindowFont(cc_lblPlayer[curOrder], fntMain, TRUE);
+			
+			// Controller type dropdown
+			cc_cboControllerType[curOrder] = CreateWindow(
+								WC_COMBOBOX, tmp,
+								WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+								8+8+48+8, grpBox_Top+16+16+4+(j*24), 80, 23*2,
+								hWnd, NULL, ghInstance, NULL);
+			SetWindowFont(cc_cboControllerType[curOrder], fntMain, TRUE);
+			ComboBox_AddString(cc_cboControllerType[curOrder], "3 buttons");
+			ComboBox_AddString(cc_cboControllerType[curOrder], "6 buttons");
+			
+			// Reconfigure button
+			cc_btnReconfigure[curOrder] = CreateWindow(
+								WC_BUTTON, "Reconfigure",
+								WS_CHILD | WS_VISIBLE,
+								8+8+48+8+80+8, grpBox_Top+16+16+4+(j*24), 75, 23,
+								hWnd, (HMENU)(IDD_CONTROLLER_CONFIG_RECONFIGURE + curOrder),
+								ghInstance, NULL);
+			SetWindowFont(cc_btnReconfigure[curOrder], fntMain, TRUE);
+		}
+		
+		// Next group box.
+		grpBox_Top += grpBox_Height + 8;
+	}
+}
