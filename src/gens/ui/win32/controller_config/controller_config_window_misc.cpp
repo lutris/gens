@@ -32,6 +32,7 @@
 #include "ui/gens_ui.hpp"
 
 #include <windows.h>
+#include <windowsx.h>
 
 // Win32 common controls
 #include <commctrl.h>
@@ -53,50 +54,27 @@ void Open_Controller_Config(void)
 	// TODO: Make the window modal.
 	//gtk_window_set_transient_for(GTK_WINDOW(cc), GTK_WINDOW(gens_window));
 	
-	// Show the Controlle rConfiguration window.
-	ShowWindow(cc, 1);
-	
-	// TODO
-#if 0
-	// Copy the current controller key configuration.
-	memcpy(keyConfig, input->m_keyMap, sizeof(keyConfig));
-	
-	// Set the controller types.
-	// (Controller_1_Type & 0x10) == Teamplayer enabled
-	// (Controller_1_Type & 0x01) == 6-button
-	// TODO: Clean up controller type handling.
-	
 	// Set the Teamplayer options.
-	check_teamplayer_1 = lookup_widget(cc, "check_teamplayer_1");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_teamplayer_1), (Controller_1_Type & 0x10));
-	check_teamplayer_2 = lookup_widget(cc, "check_teamplayer_2");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_teamplayer_2), (Controller_2_Type & 0x10));
+	Button_SetCheck(cc_chkTeamPlayer[0], (Controller_1_Type & 0x10));
+	Button_SetCheck(cc_chkTeamPlayer[1], (Controller_2_Type & 0x10));
 	
 	// Set 3/6 button options.
-	combobox_padtype_1 = lookup_widget(cc, "combobox_padtype_1");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1), (Controller_1_Type & 0x01));
-	combobox_padtype_1B = lookup_widget(cc, "combobox_padtype_1B");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1B), (Controller_1B_Type & 0x01));
-	combobox_padtype_1C = lookup_widget(cc, "combobox_padtype_1C");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1C), (Controller_1C_Type & 0x01));
-	combobox_padtype_1D = lookup_widget(cc, "combobox_padtype_1D");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1D), (Controller_1D_Type & 0x01));
-	combobox_padtype_2 = lookup_widget(cc, "combobox_padtype_2");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2), (Controller_2_Type & 0x01));
-	combobox_padtype_2B = lookup_widget(cc, "combobox_padtype_2B");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2B), (Controller_2B_Type & 0x01));
-	combobox_padtype_2C = lookup_widget(cc, "combobox_padtype_2C");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2C), (Controller_2C_Type & 0x01));
-	combobox_padtype_2D = lookup_widget(cc, "combobox_padtype_2D");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2D), (Controller_2D_Type & 0x01));
+	ComboBox_SetCurSel(cc_cboControllerType[0], ((Controller_1_Type & 0x01) ? 1 : 0));
+	ComboBox_SetCurSel(cc_cboControllerType[2], ((Controller_1B_Type & 0x01) ? 1 : 0));
+	ComboBox_SetCurSel(cc_cboControllerType[3], ((Controller_1C_Type & 0x01) ? 1 : 0));
+	ComboBox_SetCurSel(cc_cboControllerType[4], ((Controller_1D_Type & 0x01) ? 1 : 0));
+	
+	ComboBox_SetCurSel(cc_cboControllerType[1], ((Controller_2_Type & 0x01) ? 1 : 0));
+	ComboBox_SetCurSel(cc_cboControllerType[5], ((Controller_2B_Type & 0x01) ? 1 : 0));
+	ComboBox_SetCurSel(cc_cboControllerType[6], ((Controller_2C_Type & 0x01) ? 1 : 0));
+	ComboBox_SetCurSel(cc_cboControllerType[7], ((Controller_2D_Type & 0x01) ? 1 : 0));
 	
 	// Initialize the Teamplayer state.
-	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_1), GINT_TO_POINTER(1));
-	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_2), GINT_TO_POINTER(2));
+	adjustTeamplayer(0);
+	adjustTeamplayer(1);
 	
 	// Show the Controller Configuration window.
-	gtk_widget_show_all(cc);
-#endif
+	ShowWindow(cc, 1);
 }
 
 

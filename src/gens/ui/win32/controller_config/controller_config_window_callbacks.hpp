@@ -30,6 +30,7 @@ extern "C" {
 #include <windows.h>
 
 LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+void adjustTeamplayer(unsigned short player);
 
 #ifdef __cplusplus
 }

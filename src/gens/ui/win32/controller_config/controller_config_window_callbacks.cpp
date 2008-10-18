@@ -35,8 +35,6 @@
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
-void adjustTeamplayer(unsigned short player);
-
 
 LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
