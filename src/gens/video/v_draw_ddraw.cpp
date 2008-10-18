@@ -319,6 +319,10 @@ int VDraw_DDraw::reinitGensWindow(void)
 	
 	int w, h;
 	
+	// Rebuild the menu bar.
+	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
+	create_gens_window_menubar();
+	
 	if (m_FullScreen)
 	{
 		while (ShowCursor(true) < 1) { }
@@ -360,10 +364,6 @@ int VDraw_DDraw::reinitGensWindow(void)
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 		Win32_setActualWindowSize(Gens_hWnd, w, h);
 	}
-	
-	// Rebuild the menu bar.
-	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
-	create_gens_window_menubar();
 	
 	return Init_Video();
 }
