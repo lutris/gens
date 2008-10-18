@@ -47,7 +47,7 @@
 // Country Code Dialog
 #define IDD_COUNTRY_CODE	0x5000
 #define IDC_COUNTRY_CODE_UP	0x5001
-#define IDC_COUNTRY_CODE_DOWN	0x5001
+#define IDC_COUNTRY_CODE_DOWN	0x5002
 
 // Manifest
 #define APP_MANIFEST		1
