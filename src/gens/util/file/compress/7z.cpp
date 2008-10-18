@@ -22,15 +22,15 @@
 
 #include "7z.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
 // Error number variable.
-#include <errno.h>
+#include <cerrno>
 
 // popen wrapper
 #include "popen_wrapper.h"
@@ -49,12 +49,29 @@ using std::stringstream;
 #define _7Z_NEWLINE_LENGTH 1
 #endif
 
-_7z::_7z()
+
+_7z::_7z(bool showErrMsg)
 {
+	m_showErrMsg = showErrMsg;
 }
 
 _7z::~_7z()
 {
+}
+
+
+void _7z::errOpening7z(int errorNumber)
+{
+	fprintf(stderr, "Error opening p_7z: %s.\n", strerror(errorNumber));
+	
+	if (m_showErrMsg)
+	{
+		string sErr = "Could not open 7-Zip. Please make sure 7-Zip is installed\n"
+			      "and is configured properly in the \"BIOS/Misc Files\" window.\n\n"
+			      "Error description: " + string(strerror(errorNumber)) + ".";
+		
+		GensUI::msgBox(sErr, "7-Zip Error", GensUI::MSGBOX_ICON_WARNING);
+	}
 }
 
 
@@ -76,10 +93,55 @@ bool _7z::detectFormat(FILE *f)
 }
 
 
+bool _7z::checkExternalExec(void)
+{
+	// Check that the external 7z executable is working.
+	FILE *p_7z;
+	char buf[512];
+	
+	// Build the command line.
+	stringstream ssCmd;
+	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\"";
+#ifndef GENS_OS_WIN32
+	ssCmd << " 2>&1";
+#endif
+	
+	p_7z = gens_popen(ssCmd.str().c_str(), "r");
+	if (!p_7z)
+	{
+		// External 7z executable is broken.
+		errOpening7z(errno);
+		return false;
+	}
+	
+	// Read the first 512 bytes from the pipe.
+	fread(buf, 1, sizeof(buf), p_7z);
+	gens_pclose(p_7z);
+	
+	// Check if the header matches 7-Zip's header.
+#ifdef GENS_OS_WIN32
+	const char* str7zHeader = "\r\n7-Zip";
+#else
+	const char* str7zHeader = "\n7-Zip";
+#endif
+	if (strncmp(buf, str7zHeader, strlen(str7zHeader)) != 0)
+	{
+		// Incorrect header. External 7z executable is broken.
+		// Assume that this means the file wasn't found.
+		// TODO: More comprehensive error handling.
+		errOpening7z(ENOENT);
+		return false;
+	}
+	
+	// Correct header. External 7z executable is working.
+	return true;
+}
+
+
 /**
  * getNumFiles(): Gets the number of files in the specified archive.
  * @param filename Filename of the archive.
- * @return Number of files, or 0 on error.
+ * @return Number of files, or 0 on error. (-1 if 7-Zip couldn't be opened.)
  */
 int _7z::getNumFiles(string zFilename)
 {
@@ -98,8 +160,8 @@ int _7z::getNumFiles(string zFilename)
 	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
-		printf("Error opening p_7z: error %s.\n", strerror(errno));
-		return 0;
+		errOpening7z(errno);
+		return -1;
 	}
 	
 	// Read from the pipe.
@@ -197,7 +259,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
-		printf("Error opening p_7z: error %s.\n", strerror(errno));
+		errOpening7z(errno);
 		return 0;
 	}
 	
@@ -218,7 +280,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
-		return 0;
+		return NULL;
 	}
 	
 	// Find the newline after the list start.
@@ -226,7 +288,7 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
-		return 0;
+		return NULL;
 	}
 	
 	// Create the list.
@@ -302,7 +364,7 @@ int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char
 	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
 	{
-		printf("Error opening p_7z: error %s.\n", strerror(errno));
+		errOpening7z(errno);
 		return -1;
 	}
 	

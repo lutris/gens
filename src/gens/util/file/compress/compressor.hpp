@@ -36,10 +36,12 @@ using std::list;
 // Subcompressor
 #include "subcompressor.hpp"
 
+string fileNameOnly(const string& filename);
+
 class Compressor
 {
 	public:
-		Compressor(string filename);
+		Compressor(string filename, bool showErrMsg = false);
 		~Compressor();
 		
 		bool isFileLoaded(void);

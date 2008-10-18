@@ -26,13 +26,46 @@
 
 #include "compressor.hpp"
 
-Compressor::Compressor(string zFilename)
+#include "emulator/g_main.hpp"
+#include "gens_ui.hpp"
+
+#include <cstring>
+#include <cerrno>
+
+#include <string>
+using std::string;
+
+
+string fileNameOnly(const string& filename)
+{
+	size_t pos = filename.rfind(GENS_DIR_SEPARATOR_STR);
+	if (pos == string::npos)
+		return filename;
+	else if (filename.length() > 1 && pos < (filename.length() - 1))
+		return filename.substr(pos + 1);
+	else
+		return filename;
+}
+
+
+/**
+ * Compressor(): Opens a compressed file for reading.
+ * @param zFilename Filename of the compressed file.
+ * @param showErrMsg If true, shows an error message in an msgBox if an error occurs.
+ */
+Compressor::Compressor(string zFilename, bool showErrMsg)
 {
 	// Open the file for reading.
 	m_zf = fopen(zFilename.c_str(), "rb");
 	if (!m_zf)
 	{
 		// Error opening the file.
+		if (showErrMsg)
+		{
+			string loadErr = "Error opening " + fileNameOnly(zFilename) +
+					 ".\n\nError description: " + strerror(errno);
+			GensUI::msgBox(loadErr, "File Load Error", GensUI::MSGBOX_ICON_WARNING);
+		}
 		m_subCompressor = NULL;
 		m_fileLoaded = false;
 		return;
@@ -48,10 +81,10 @@ Compressor::Compressor(string zFilename)
 	SubCompressor* subCompTable[] =
 	{
 #ifdef GENS_ZLIB
-		new GZip(),
-		new Zip(),
+		new GZip(showErrMsg),
+		new Zip(showErrMsg),
 #endif /* GENS_ZLIB */
-		new _7z(),
+		new _7z(showErrMsg),
 		NULL,
 	};
 	
@@ -80,6 +113,14 @@ Compressor::Compressor(string zFilename)
 	// TODO: Keep the file open, but there's a bug in zlib where
 	// it won't detect a compressed file if it's already been read.
 	fclose(m_zf);
+	
+	// If the compressor uses an external executable, check that it's working.
+	if (m_subCompressor && !m_subCompressor->checkExternalExec())
+	{
+		// External executable is broken.
+		m_fileLoaded = false;
+		return;
+	}
 	
 	// File is loaded.
 	m_fileLoaded = true;

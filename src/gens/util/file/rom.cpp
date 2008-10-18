@@ -1,8 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cassert>
+
 #include <fcntl.h>
-#include <assert.h>
 
 #include <string>
 #include <list>
@@ -511,11 +512,10 @@ ROMType Load_ROM(const char *filename, struct Rom **retROM)
 	ROMType rtype;
 	
 	// Set up the compressor.
-	cmp = new Compressor(filename);
+	cmp = new Compressor(filename, true);
 	if (!cmp->isFileLoaded())
 	{
 		// Error loading the file.
-		GensUI::msgBox("Error loading the file.", "File Load Error");
 		delete cmp;
 		Game = NULL;
 		*retROM = NULL;

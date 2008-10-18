@@ -36,13 +36,18 @@ using std::list;
 class _7z : public SubCompressor
 {
 	public:
-		_7z();
+		_7z(bool showErrMsg = false);
 		~_7z();
 		
 		bool detectFormat(FILE *f);
 		int getNumFiles(string zFilename);
 		list<CompressedFile>* getFileInfo(string zFilename);
 		int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size);
+		
+		bool checkExternalExec(void);
+	
+	protected:
+		void errOpening7z(int errorNumber);
 };
 
 #endif

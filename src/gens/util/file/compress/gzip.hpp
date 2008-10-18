@@ -36,7 +36,7 @@ using std::list;
 class GZip : public SubCompressor
 {
 	public:
-		GZip();
+		GZip(bool showErrMsg = false);
 		~GZip();
 		
 		bool detectFormat(FILE *f);

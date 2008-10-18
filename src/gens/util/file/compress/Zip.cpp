@@ -31,8 +31,9 @@
 #include <string>
 using std::string;
 
-Zip::Zip()
+Zip::Zip(bool showErrMsg)
 {
+	m_showErrMsg = showErrMsg;
 }
 
 Zip::~Zip()

@@ -22,8 +22,9 @@
 
 #include "subcompressor.hpp"
 
-SubCompressor::SubCompressor()
+SubCompressor::SubCompressor(bool showErrMsg)
 {
+	m_showErrMsg = showErrMsg;
 }
 
 SubCompressor::~SubCompressor()

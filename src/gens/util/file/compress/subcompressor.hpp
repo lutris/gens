@@ -40,13 +40,18 @@ using std::list;
 class SubCompressor
 {
 	public:
-		SubCompressor();
+		SubCompressor(bool showErrMsg = false);
 		virtual ~SubCompressor();
 		
 		virtual bool detectFormat(FILE *f) = 0;
 		virtual int getNumFiles(string zFilename) = 0;
 		virtual list<CompressedFile>* getFileInfo(string zFilename) = 0;
 		virtual int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size) = 0;
+		
+		virtual bool checkExternalExec(void) { return true; }
+	
+	protected:
+		bool m_showErrMsg;
 };
 
 // Various subcompressors.
