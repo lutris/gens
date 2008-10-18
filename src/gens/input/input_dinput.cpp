@@ -12,6 +12,9 @@
 #include "gens/gens_window.h"
 
 
+#include "controller_config/controller_config_window.hpp"
+
+
 // Input_DInput being handled by InitJoystick at the moment.
 // TODO: This is a REALLY bad hack.
 static Input_DInput *DInput_Callback_Handler_Object;
@@ -57,49 +60,6 @@ static const unsigned char JoyAxisValues[2][6] =
 #define MOD_NONE 0
 #define VK_NONE 0
 #define ID_NONE 0
-
-
-struct InputButton
-{
-	int modifiers; // ex: MOD_ALT | MOD_CONTROL | MOD_SHIFT
-	
-	int virtKey; // ex: VK_ESCAPE or 'O'
-	WORD eventID; // send message on press
-	
-	int diKey; // ex: DIK_ESCAPE
-	BOOL* alias; // set value = held
-	
-	const char* description; // for user display... feel free to change it
-	const char* saveIDString; // for config file... please do not ever change these names or you will break backward compatibility
-	
-	BOOL heldNow;
-	
-	bool ShouldUseAccelerator(void)
-	{
-		return eventID && (virtKey > 0x07) && !(modifiers & MOD_WIN);
-	}
-	
-	void CopyConfigurablePartsTo(InputButton& button)
-	{
-		button.modifiers = modifiers;
-		button.virtKey = virtKey;
-		button.diKey = diKey;
-	}
-	
-	void SetAsDIK(int dik, int mods = 0)
-	{
-		modifiers = mods;
-		virtKey = VK_NONE;
-		diKey = dik;
-	}
-	
-	void SetAsVirt(int virt, int mods = 0)
-	{
-		modifiers = mods;
-		virtKey = virt;
-		diKey = 0;
-	}
-};
 
 
 Input_DInput::Input_DInput()
@@ -328,21 +288,14 @@ bool Input_DInput::joyExists(int joyNum)
  */
 unsigned int Input_DInput::getKey(void)
 {
-	InputButton button;
-	button.diKey = 0;
-	
 	int i, j, joyIndex;
 	
 	bool prevReady = false;
 	
-	int prevMod = 0;
 	BOOL prevDiKeys[256];
-	BOOL prevVirtKeys[256];
 	BOOL prevJoyKeys[256];
 	
-	int curMod;
 	BOOL curDiKeys[256];
-	BOOL curVirtKeys[256];
 	BOOL curJoyKeys[256];
 	
 	while (true)
@@ -350,23 +303,8 @@ unsigned int Input_DInput::getKey(void)
 		// Compute the current state of all buttons.
 		update();
 		
-		// Current state of modifier keys.
-		curMod = 0;
-		if (GetAsyncKeyState(VK_CONTROL) & 0x8000)
-			curMod |= MOD_CONTROL;
-		if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
-			curMod |= MOD_SHIFT;
-		if (GetAsyncKeyState(VK_MENU) & 0x8000)
-			curMod |= MOD_ALT;
-		if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & 0x8000)
-			curMod |= MOD_WIN;
-		
-		// Current state of virtual Windows keys
-		for(i = 0; i < 256; i++)
-			curVirtKeys[i] = (GetAsyncKeyState(i) & 0x8000);
-		
 		// Current state of DirectInput keys
-		for(i = 0; i < 256; i++)
+		for (i = 0; i < 256; i++)
 			curDiKeys[i] = (m_DIKeys[i] & 0x80);
 		
 		// Current state of recognized buttons on joypad
@@ -407,48 +345,11 @@ unsigned int Input_DInput::getKey(void)
 		
 		if (prevReady)
 		{
-			// Check for new virtual key presses.
-			for (i = 1; i < 255; i++)
-			{
-				if (curVirtKeys[i] && !prevVirtKeys[i] /*&& allowVirtual*/)
-				{
-					if (i == VK_CONTROL || i == VK_SHIFT || i == VK_MENU ||
-					    i == VK_LWIN || i == VK_RWIN || i == VK_LSHIFT ||
-					    i == VK_RSHIFT || i == VK_LCONTROL || i == VK_RCONTROL ||
-					    i == VK_LMENU || i == VK_RMENU)
-					{
-						// Don't allow modifier keys here.
-						continue;
-					}
-					button.SetAsVirt(i, curMod);
-					return button.diKey;
-				}
-			}
-			
 			// Check for new DirectInput key presses.
 			for (i = 1; i < 255; i++)
 			{
 				if (curDiKeys[i] && !prevDiKeys[i])
-				{
-					if (/*allowVirtual &&*/
-					    (i == DIK_LWIN || i == DIK_RWIN || i == DIK_LSHIFT ||
-					     i == DIK_RSHIFT || i == DIK_LCONTROL || i == DIK_RCONTROL ||
-					     i == DIK_LMENU || i == DIK_RMENU))
-					{
-						// Don't allow modifier keys here.
-						continue;
-					}
-					button.SetAsDIK(i, curMod);
-					return button.diKey;
-				}
-			}
-				
-			// Check for modifier key releases.
-			// This allows a modifier key to be used as a hotkey on its own, as some people like to do.
-			if (!curMod && prevMod /*&& allowVirtual*/)
-			{
-				button.SetAsVirt(VK_NONE, prevMod);
-				return button.diKey;
+					return i;
 			}
 			
 			// Check for new recognized joypad button presses.
@@ -464,46 +365,38 @@ unsigned int Input_DInput::getKey(void)
 						
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x1, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x1);
 						}
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x2, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x2);
 						}
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x3, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x3);
 						}
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x4, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x4);
 						}
 						
 						for (j = 0; j < 4; j++)
 						{
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x1, curMod);
-								return button.diKey;
+								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x1);
 							}
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x2, curMod);
-								return button.diKey;
+								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x2);
 							}
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x3, curMod);
-								return button.diKey;
+								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x3);
 							}
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x4, curMod);
-								return button.diKey;
+								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x4);
 							}
 						}
 						
@@ -511,30 +404,25 @@ unsigned int Input_DInput::getKey(void)
 						{
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1010 + (0x100 * i) + j, curMod);
-								return button.diKey;
+								return (0x1010 + (0x100 * i) + j);
 							}
 						}
 						
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x5, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x5);
 						}
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x6, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x6);
 						}
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x7, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x7);
 						}
 						if (index == joyIndex2++)
 						{
-							button.SetAsDIK(0x1000 + (0x100 * i) + 0x8, curMod);
-							return button.diKey;
+							return (0x1000 + (0x100 * i) + 0x8);
 						}
 					}
 				}
@@ -542,10 +430,8 @@ unsigned int Input_DInput::getKey(void)
 		}
 		
 		// Update previous state.
-		memcpy(prevVirtKeys, curVirtKeys, sizeof(prevVirtKeys));
 		memcpy(prevDiKeys, curDiKeys, sizeof(prevDiKeys));
 		memcpy(prevJoyKeys, curJoyKeys, sizeof(prevJoyKeys));
-		prevMod = curMod;
 		prevReady = true;
 	}
 }
