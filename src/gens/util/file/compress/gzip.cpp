@@ -27,6 +27,7 @@
 #include <string>
 using std::string;
 
+
 GZip::GZip(const bool showErrMsg)
 {
 	m_showErrMsg = showErrMsg;

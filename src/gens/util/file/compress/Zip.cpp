@@ -31,6 +31,7 @@
 #include <string>
 using std::string;
 
+
 Zip::Zip(const bool showErrMsg)
 {
 	m_showErrMsg = showErrMsg;
