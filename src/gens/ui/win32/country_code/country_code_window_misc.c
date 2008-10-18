@@ -81,26 +81,16 @@ void Open_Country_Code(void)
  */
 void Country_Save(void)
 {
-#if 0
 	// Save settings.
-	gboolean valid;
-	GtkTreeIter iter;
 	int i, countryID;
 	
-	// Copy each item in the listview to the array.
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_country), &iter);
-	i = 0;
-	while (valid && i < 3)
+	for (i = 0; i < 3; i++)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(listmodel_country), &iter, 1, &countryID, -1);
-		Country_Order[i] = countryID;
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &iter);
-		i++;
+		Country_Order[i] = ListBox_GetItemData(cc_lstCountryCodes, i);
 	}
 	
 	// Validate the country code order.
 	Check_Country_Order();
-#endif
 }
 
 
