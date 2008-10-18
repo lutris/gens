@@ -727,20 +727,27 @@ int VDraw_DDraw::flipInternal(void)
 			RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
 		}
 		
+		// TODO: Figure out how to get this working.
+		// Until I can get it working, fall back to the standard 2x renderer.
+#if 0
 		if (Video.Render_FS == 1)
 		{
-			//Upth-Modif - If we're using the render "Double" we apply the stretching
+			// 2x rendering.
 			if (m_swRender)
 			{
+				// Software rendering is enabled.
+				// Ignore the Stretch setting.
 				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 				
 				if (FAILED(rval))
 					goto cleanup_flip;
 				
-				if (Video.Render_FS == 0)
-					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * (240 - VDP_Num_Vis_Lines) >> 1) + Dep), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
-				else
-					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << 1), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
+				int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
+				int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
+				int startPos = (ddsd.lPitch * VBorder) + HBorder;
+				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			
+				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
 				
 				lpDDS_Blit->Unlock(NULL);
 				
@@ -779,23 +786,28 @@ int VDraw_DDraw::flipInternal(void)
 				}
 			}
 		}
-		else if (Video.Render_FS == 0)
+		else
+#endif
+		if (Video.Render_FS == 0)
 		{
-			//Upth-Add - If the render is "single" we don't stretch it
-			if (m_swRender == 1)
+			// 1x rendering.
+			if (m_swRender)
 			{
+				// Software rendering is enabled.
+				// Ignore the Stretch setting.
+				
 				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-
+				
 				if (FAILED(rval))
 					goto cleanup_flip;
-
+				
 				if (Video.Render_FS == 0)
 					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * (240 - VDP_Num_Vis_Lines) >> 1) + Dep), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
 				else
 					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << 1), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
-
+				
 				lpDDS_Blit->Unlock(NULL);
-
+				
 				if (Video.VSync_FS)
 				{
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
@@ -803,6 +815,9 @@ int VDraw_DDraw::flipInternal(void)
 			}
 			else
 			{
+				// Software rendering is disabled.
+				// If Stretch is enabled, stretch the image.
+				
 				RectSrc.top = 0;
 				RectSrc.bottom = VDP_Num_Vis_Lines;
 
@@ -833,17 +848,26 @@ int VDraw_DDraw::flipInternal(void)
 		}
 		else
 		{
+			// Other renderer.
+			
 			LPDIRECTDRAWSURFACE4 curBlit = lpDDS_Blit;
 #ifdef CORRECT_256_ASPECT_RATIO
 			if(!IS_FULL_X_RESOLUTION)
 				curBlit = lpDDS_Back; // have to use it or the aspect ratio will be way off
 #endif
 			rval = curBlit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
-
+			
 			if (FAILED(rval))
 				goto cleanup_flip;
-
-			Blit_FS((unsigned char *) ddsd.lpSurface + ddsd.lPitch * (240 - VDP_Num_Vis_Lines) + Dep * bytespp, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, (16 + Dep) * bytespp);
+			
+			int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
+			int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
+			int startPos = (ddsd.lPitch * VBorder) + HBorder;
+			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			
+			Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+			
+			//Blit_FS((unsigned char *) ddsd.lpSurface + ddsd.lPitch * (240 - VDP_Num_Vis_Lines) + Dep * bytespp, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, (16 + Dep) * bytespp);
 
 			curBlit->Unlock(NULL);
 
@@ -895,8 +919,8 @@ int VDraw_DDraw::flipInternal(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-			int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+			int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
+			int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
 			int startPos = (ddsd.lPitch * VBorder) + HBorder;
 			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 			
