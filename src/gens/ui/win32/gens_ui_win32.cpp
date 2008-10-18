@@ -87,10 +87,11 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argc);
 	GENS_UNUSED_PARAMETER(argv);
 	
-	// Initialize the Common Controls library.
-	OSVERSIONINFO version;
-	version.dwOSVersionInfoSize = sizeof(version);
+	// Get the Windows version.
+	winVersion.dwOSVersionInfoSize = sizeof(winVersion);
 	GetVersionEx(&version);
+	
+	// Initialize the Common Controls library.
 	
 	// CommCtrlEx is initially disabled.
 	win32_CommCtrlEx = 0;

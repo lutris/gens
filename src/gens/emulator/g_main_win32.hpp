@@ -14,7 +14,11 @@ extern "C" {
 
 #include <windows.h>
 
+// Win32 instance
 extern HINSTANCE ghInstance;
+
+// Windows version
+extern OSVERSIONINFO winVersion;
 
 // If extended Common Controls are enabled, this is set to non-zero.
 extern int win32_CommCtrlEx;
