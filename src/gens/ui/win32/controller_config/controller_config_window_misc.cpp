@@ -86,73 +86,69 @@ void Open_Controller_Config(void)
  */
 int Reconfigure_Input(int player, int padtype)
 {
-#if 0
-	GtkWidget *label_echo = lookup_widget(controller_config_window, "label_echo");
-	
 	// TODO: Somehow condense this code.
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
 	keyConfig[player].Up = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR DOWN");
 	keyConfig[player].Down = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR LEFT");
 	keyConfig[player].Left = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR RIGHT");
 	keyConfig[player].Right = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR START");
 	keyConfig[player].Start = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR A");
 	keyConfig[player].A = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR B");
 	keyConfig[player].B = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C");
+	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR C");
 	keyConfig[player].C = input->getKey();
 	GensUI::sleep(250);
 	
 	if (padtype & 0x01)
 	{
 		// 6-button control pad. Get additional keys.
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE");
+		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR MODE");
 		keyConfig[player].Mode = input->getKey();
 		GensUI::sleep(250);
 		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X");
+		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR X");
 		keyConfig[player].X = input->getKey();
 		GensUI::sleep(250);
 		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y");
+		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Y");
 		keyConfig[player].Y = input->getKey();
 		GensUI::sleep(250);
 		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z");
+		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Z");
 		keyConfig[player].Z = input->getKey();
 		GensUI::sleep(250);
 	}
 	
 	// Configuration successful.
-	gtk_label_set_text(GTK_LABEL(label_echo),
+	SetWindowText(cc_lblSettingKeys,
 			"CONFIGURATION SUCCESSFUL.\n"
 			"PRESS ANY KEY TO CONTINUE...");
 	input->getKey();
 	GensUI::sleep(500);
-	gtk_label_set_text(GTK_LABEL(label_echo), "");
+	SetWindowText(cc_lblSettingKeys, "");
 	
 	return 1;
-#endif
 }
 
 
