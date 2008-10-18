@@ -58,7 +58,7 @@ struct KeyMap keyConfig[8];
 
 // Controller Group Box size.
 static const unsigned short grpBox_Height = 140;
-static const unsigned short grpBox_Width = 240;
+static const unsigned short grpBox_Width = 248;
 
 // Note Group Box size.
 static const unsigned short grpBox_Note_Width = 288;
@@ -181,7 +181,7 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 			cc_btnReconfigure[curOrder] = CreateWindow(
 								WC_BUTTON, "Reconfigure",
 								WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-								8+8+48+8+80+8, grpBox_Top+16+16+4+(j*24), 75, 23,
+								8+8+48+8+80+8, grpBox_Top+16+16+4+(j*24), 75+8, 23,
 								hWnd, (HMENU)(IDD_CONTROLLER_CONFIG_RECONFIGURE + curOrder),
 								ghInstance, NULL);
 			SetWindowFont(cc_btnReconfigure[curOrder], fntMain, TRUE);
