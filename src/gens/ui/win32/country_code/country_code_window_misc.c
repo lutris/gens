@@ -142,35 +142,29 @@ void Country_MoveUp(void)
  */
 void Country_MoveDown(void)
 {
-#if 0
-	GtkWidget *treeview;
-	GtkTreeSelection *selection;
-	GtkTreeIter iter, nextIter;
-	gboolean valid;
-	treeview = lookup_widget(country_code_window, "treeview_country_list");
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	int curIndex = ListBox_GetCurSel(cc_lstCountryCodes);
+	if (curIndex == -1 || curIndex >= (ListBox_GetCount(cc_lstCountryCodes) - 1))
+		return;
 	
-	// Find the selection and swap it with the item immediately after it.
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_country), &iter);
-	while (valid)
-	{
-		if (gtk_tree_selection_iter_is_selected(selection, &iter))
-		{
-			// Found the selection. Check if there's another item after it.
-			nextIter = iter;
-			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &nextIter);
-			if (valid)
-			{
-				// Not the last item. Swap it with the next item.
-				gtk_list_store_swap(listmodel_country, &iter, &nextIter);
-			}
-			break;
-		}
-		else
-		{
-			// Not selected.
-			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &iter);
-		}
-	}
-#endif
+	// Swap the current item and the one below it.
+	char curItem[32];   int curItemData;
+	char belowItem[32]; int belowItemData;
+	
+	// Get the current text and data for each item.
+	ListBox_GetText(cc_lstCountryCodes, curIndex, curItem);
+	ListBox_GetText(cc_lstCountryCodes, curIndex + 1, belowItem);
+	curItemData = ListBox_GetItemData(cc_lstCountryCodes, curIndex);
+	belowItemData = ListBox_GetItemData(cc_lstCountryCodes, curIndex + 1);
+	
+	// Swap the strings and data.
+	ListBox_DeleteString(cc_lstCountryCodes, curIndex);
+	ListBox_InsertString(cc_lstCountryCodes, curIndex, belowItem);
+	ListBox_SetItemData(cc_lstCountryCodes, curIndex, belowItemData);
+	
+	ListBox_DeleteString(cc_lstCountryCodes, curIndex + 1);
+	ListBox_InsertString(cc_lstCountryCodes, curIndex + 1, curItem);
+	ListBox_SetItemData(cc_lstCountryCodes, curIndex + 1, curItemData);
+	
+	// Set the current selection.
+	ListBox_SetCurSel(cc_lstCountryCodes, curIndex + 1);
 }
