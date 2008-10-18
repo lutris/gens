@@ -91,6 +91,9 @@ int Reconfigure_Input(int player, int padtype)
 {
 	// TODO: Somehow condense this code.
 	
+	if (player < 0 || player >= 8 || padtype < 0 || padtype > 1)
+		return 0;
+	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
 	keyConfig[player].Up = input->getKey();
 	GensUI::sleep(250);

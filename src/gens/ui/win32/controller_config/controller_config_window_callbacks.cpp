@@ -73,6 +73,15 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
 					break;
+				
+				default:
+					if ((LOWORD(wParam) & 0xFF00) == IDD_CONTROLLER_CONFIG_RECONFIGURE)
+					{
+						// Reconfigure a controller.
+						int player = LOWORD(wParam) & 0xFF;
+						Reconfigure_Input(player, ComboBox_GetCurSel(cc_cboControllerType[player]));
+					}
+					break;
 			}
 			break;
 		
