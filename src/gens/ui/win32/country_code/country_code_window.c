@@ -190,7 +190,7 @@ void Country_Code_Window_CreateChildWindows(HWND hWnd)
 	btnDown = CreateWindow(WC_BUTTON, NULL,
 			       WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_ICON,
 			       8+8+lstBox_Width+8, 8+16+lstBox_Height_New-btnSize, btnSize, btnSize,
-			       hWnd, (HMENU)IDC_COUNTRY_CODE_UP, ghInstance, NULL);
+			       hWnd, (HMENU)IDC_COUNTRY_CODE_DOWN, ghInstance, NULL);
 	SetWindowFont(btnDown, fntMain, TRUE);
 	
 	if (winVersion.dwMajorVersion > 5 ||
