@@ -801,10 +801,12 @@ int VDraw_DDraw::flipInternal(void)
 				if (FAILED(rval))
 					goto cleanup_flip;
 				
-				if (Video.Render_FS == 0)
-					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * (240 - VDP_Num_Vis_Lines) >> 1) + Dep), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
-				else
-					Blit_FS((unsigned char *) ddsd.lpSurface + ((ddsd.lPitch * ((240 - VDP_Num_Vis_Lines) >> 1) + Dep) << 1), ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + Dep * 2);
+				int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
+				int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
+				int startPos = (ddsd.lPitch * VBorder) + HBorder;
+				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+				
+				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
 				
 				lpDDS_Blit->Unlock(NULL);
 				
