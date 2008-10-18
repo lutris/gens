@@ -273,9 +273,10 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 		
 		// Create the Teamplayer checkbox.
 		cc_chkTeamPlayer[i] = CreateWindow(WC_BUTTON, "Use Teamplayer",
-						   WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+						   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						   8+8, grpBox_Top+16, 96, 16,
-						   hWnd, NULL, ghInstance, NULL);
+						   hWnd, (HMENU)(IDC_CONTROLLER_CONFIG_CHKTEAMPLAYER + (i+1)),
+						   ghInstance, NULL);
 		SetWindowFont(cc_chkTeamPlayer[i], fntMain, TRUE);
 		
 		// Create the four players.
@@ -295,7 +296,7 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 			// Controller type dropdown
 			cc_cboControllerType[curOrder] = CreateWindow(
 								WC_COMBOBOX, tmp,
-								WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
+								WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
 								8+8+48+8, grpBox_Top+16+16+4+(j*24), 80, 23*2,
 								hWnd, NULL, ghInstance, NULL);
 			SetWindowFont(cc_cboControllerType[curOrder], fntMain, TRUE);
@@ -308,7 +309,7 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 			// Reconfigure button
 			cc_btnReconfigure[curOrder] = CreateWindow(
 								WC_BUTTON, "Reconfigure",
-								WS_CHILD | WS_VISIBLE,
+								WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 								8+8+48+8+80+8, grpBox_Top+16+16+4+(j*24), 75, 23,
 								hWnd, (HMENU)(IDD_CONTROLLER_CONFIG_RECONFIGURE + curOrder),
 								ghInstance, NULL);
