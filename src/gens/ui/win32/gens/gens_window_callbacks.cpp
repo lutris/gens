@@ -577,7 +577,7 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 	{
 		case ID_SOUND_ENABLE:
 			Change_Sound(!audio->enabled());
-			Sync_Gens_Window();
+			Sync_Gens_Window_SoundMenu();
 			break;
 		
 		case ID_SOUND_STEREO:
