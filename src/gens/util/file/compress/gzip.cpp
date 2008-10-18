@@ -27,7 +27,7 @@
 #include <string>
 using std::string;
 
-GZip::GZip(bool showErrMsg)
+GZip::GZip(const bool showErrMsg)
 {
 	m_showErrMsg = showErrMsg;
 }
@@ -58,7 +58,7 @@ bool GZip::detectFormat(FILE *f)
  * @param zFilename Filename of the archive.
  * @return Number of files, or 0 on error.
  */
-int GZip::getNumFiles(string zFilename)
+int GZip::getNumFiles(const string& zFilename)
 {
 	// GZip files always contain a single file.
 	return 1;
@@ -70,7 +70,7 @@ int GZip::getNumFiles(string zFilename)
  * @param zFilename Filename of the archive.
  * @return Pointer to list of CompressedFile structs, or NULL on error.
  */
-list<CompressedFile>* GZip::getFileInfo(string zFilename)
+list<CompressedFile>* GZip::getFileInfo(const string& zFilename)
 {
 	list<CompressedFile> *lst;
 	CompressedFile file;
@@ -115,7 +115,8 @@ list<CompressedFile>* GZip::getFileInfo(string zFilename)
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int GZip::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size)
+int GZip::getFile(const string& zFilename, const CompressedFile *fileInfo,
+		  unsigned char *buf, const int size)
 {
 	gzFile gzfd;
 	int retval;

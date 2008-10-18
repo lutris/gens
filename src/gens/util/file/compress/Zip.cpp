@@ -31,7 +31,7 @@
 #include <string>
 using std::string;
 
-Zip::Zip(bool showErrMsg)
+Zip::Zip(const bool showErrMsg)
 {
 	m_showErrMsg = showErrMsg;
 }
@@ -63,7 +63,7 @@ bool Zip::detectFormat(FILE *f)
  * @param filename Filename of the archive.
  * @return Number of files, or 0 on error.
  */
-int Zip::getNumFiles(string zFilename)
+int Zip::getNumFiles(const string& zFilename)
 {
 	unzFile f;
 	int i, numFiles;
@@ -94,7 +94,7 @@ int Zip::getNumFiles(string zFilename)
  * @param zFilename Filename of the archive.
  * @return Pointer to list of CompressedFile structs, or NULL on error.
  */
-list<CompressedFile>* Zip::getFileInfo(string zFilename)
+list<CompressedFile>* Zip::getFileInfo(const string& zFilename)
 {
 	list<CompressedFile> *lst;
 	CompressedFile file;
@@ -141,7 +141,8 @@ list<CompressedFile>* Zip::getFileInfo(string zFilename)
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int Zip::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size)
+int Zip::getFile(const string& zFilename, const CompressedFile *fileInfo,
+		 unsigned char *buf, const int size)
 {
 	unzFile f;
 	int zResult;

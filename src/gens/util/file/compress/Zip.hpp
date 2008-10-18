@@ -36,13 +36,14 @@ using std::list;
 class Zip : public SubCompressor
 {
 	public:
-		Zip(bool showErrMsg = false);
+		Zip(const bool showErrMsg = false);
 		~Zip();
 		
 		bool detectFormat(FILE *f);
-		int getNumFiles(string zFilename);
-		list<CompressedFile>* getFileInfo(string zFilename);
-		int getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size);
+		int getNumFiles(const string& zFilename);
+		list<CompressedFile>* getFileInfo(const string& zFilename);
+		int getFile(const string& zFilename, const CompressedFile *fileInfo,
+			    unsigned char *buf, const int size);
 };
 
 #endif

@@ -50,7 +50,7 @@ using std::stringstream;
 #endif
 
 
-_7z::_7z(bool showErrMsg)
+_7z::_7z(const bool showErrMsg)
 {
 	m_showErrMsg = showErrMsg;
 }
@@ -143,7 +143,7 @@ bool _7z::checkExternalExec(void)
  * @param filename Filename of the archive.
  * @return Number of files, or 0 on error. (-1 if 7-Zip couldn't be opened.)
  */
-int _7z::getNumFiles(string zFilename)
+int _7z::getNumFiles(const string& zFilename)
 {
 	FILE *p_7z;
 	char buf[1025];
@@ -239,7 +239,7 @@ int _7z::getNumFiles(string zFilename)
  * @param zFilename Filename of the archive.
  * @return Pointer to list of CompressedFile structs, or NULL on error.
  */
-list<CompressedFile>* _7z::getFileInfo(string zFilename)
+list<CompressedFile>* _7z::getFileInfo(const string& zFilename)
 {
 	list<CompressedFile> *lst;
 	CompressedFile file;
@@ -347,7 +347,8 @@ list<CompressedFile>* _7z::getFileInfo(string zFilename)
  * @param size Size of the buffer, in bytes.
  * @return Number of bytes read, or -1 on error.
  */
-int _7z::getFile(string zFilename, const CompressedFile *fileInfo, unsigned char *buf, int size)
+int _7z::getFile(const string& zFilename, const CompressedFile *fileInfo,
+		 unsigned char *buf, const int size)
 {
 	FILE *p_7z;
 	char buf7z[1024];

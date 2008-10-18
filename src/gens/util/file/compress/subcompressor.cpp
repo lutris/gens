@@ -22,7 +22,7 @@
 
 #include "subcompressor.hpp"
 
-SubCompressor::SubCompressor(bool showErrMsg)
+SubCompressor::SubCompressor(const bool showErrMsg)
 {
 	m_showErrMsg = showErrMsg;
 }
