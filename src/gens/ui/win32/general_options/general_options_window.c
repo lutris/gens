@@ -39,6 +39,8 @@
 #include "util/file/ggenie.h"
 #include "util/file/rom.hpp"
 
+#include <windowsx.h>
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -187,35 +189,35 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      frameLeft, frameTop, frameWidth, frameHeight,
 			      hWnd, NULL, ghInstance, NULL);
-	SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Auto Fix Checksum
 	go_chkAutoFixChecksum = CreateWindow(WC_BUTTON, "Auto Fix Checksum",
 					     WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 					     frameLeft+8, frameTop+16, 128, 20,
 					     hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkAutoFixChecksum, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkAutoFixChecksum, fntMain, TRUE);
 	
 	// Auto Pause
 	go_chkAutoPause = CreateWindow(WC_BUTTON, "Auto Pause",
 				       WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 				       frameLeft+8+128+8+16, frameTop+16, 128, 20,
 				       hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkAutoPause, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkAutoPause, fntMain, TRUE);
 	
 	// Fast Blur
 	go_chkFastBlur = CreateWindow(WC_BUTTON, "Fast Blur",
 				      WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 				      frameLeft+8, frameTop+16+20, 128, 20,
 				      hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkFastBlur, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkFastBlur, fntMain, TRUE);
 	
 	// Show SegaCD LEDs
 	go_chkSegaCDLEDs = CreateWindow(WC_BUTTON, "Show SegaCD LEDs",
 				        WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 				        frameLeft+8+128+8+16, frameTop+16+20, 128, 20,
 				        hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkSegaCDLEDs, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkSegaCDLEDs, fntMain, TRUE);
 	
 	// FPS counter frame
 	frameTop += frameHeight + 8;
@@ -231,14 +233,14 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      frameLeft, frameTop, frameWidth, (frameHeight * 3) / 4,
 			      hWnd, NULL, ghInstance, NULL);
-	SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Intro effect color label
 	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
 					   WS_CHILD | WS_VISIBLE | SS_LEFT,
 					   frameLeft+8, frameTop+16+2, 92, 12,
 					   hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblIntroEffectColor, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblIntroEffectColor, fntMain, TRUE);
 	
 	// Radio buttons
 	for (i = 0; i < 8; i++)
@@ -257,17 +259,17 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     btnLeft, frameTop, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				btnLeft+75+8, frameTop, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 btnLeft+75+8+75+8, frameTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
-	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnCancel, fntMain, TRUE);
 }
 
 
@@ -283,35 +285,35 @@ static void createMsgFrame(HWND hWnd, const int index,
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      frameLeft, frameTop, frameWidth, frameHeight,
 			      hWnd, NULL, ghInstance, NULL);
-	SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Enable
 	go_chkMsgEnable[index] = CreateWindow(WC_BUTTON, "Enable",
 					      WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 					      frameLeft+8, frameTop+16, 128, 20,
 					      hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkMsgEnable[index], WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkMsgEnable[index], fntMain, TRUE);
 	
 	// Double Sized
 	go_chkMsgDoubleSized[index] = CreateWindow(WC_BUTTON, "Double Sized",
 						   WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 						   frameLeft+8+128+8+16, frameTop+16, 128, 20,
 						   hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkMsgDoubleSized[index], WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkMsgDoubleSized[index], fntMain, TRUE);
 	
 	// Transparency
 	go_chkMsgTransparency[index] = CreateWindow(WC_BUTTON, "Transparency",
 						    WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
 						    frameLeft+8, frameTop+16+20, 128, 20,
 						    hWnd, NULL, ghInstance, NULL);
-	SendMessage(go_chkMsgTransparency[index], WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(go_chkMsgTransparency[index], fntMain, TRUE);
 	
 	// Color label
 	lblColor = CreateWindow(WC_STATIC, "Color:",
 				WS_CHILD | WS_VISIBLE | SS_LEFT,
 				frameLeft+8+128+8+16, frameTop+16+20+2, 32, 12,
 				hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblColor, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblColor, fntMain, TRUE);
 	
 	// Radio buttons
 	for (i = 0; i < 4; i++)

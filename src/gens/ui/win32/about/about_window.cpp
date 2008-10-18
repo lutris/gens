@@ -49,6 +49,8 @@ static HWND btnOK = NULL;
 // Gens logo
 static HBITMAP bmpGensLogo = NULL;
 
+#include <windowsx.h>
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -215,12 +217,12 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	lblGensTitle = CreateWindow(WC_STATIC, aboutTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				    128, 8, 184, 24,
 				    hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblGensTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
+	SetWindowFont(lblGensTitle, fntTitle, TRUE);
 	
 	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				   128, 44, 184, 100,
 				   hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblGensDesc, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblGensDesc, fntMain, TRUE);
 	
 	// Box for the copyright message.
 	grpGensCopyright = CreateWindow(WC_BUTTON, "", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
@@ -232,13 +234,13 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 288, 136,
 					grpGensCopyright, NULL, ghInstance, NULL);
-	SendMessage(lblGensCopyright, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblGensCopyright, fntMain, TRUE);
 	
 	// OK button
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     312 - 75, 256, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Set focus to the OK button.
 	SetFocus(btnOK);

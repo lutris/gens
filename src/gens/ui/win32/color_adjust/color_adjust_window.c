@@ -32,6 +32,8 @@
 
 #include "emulator/g_main.hpp"
 
+#include <windowsx.h>
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -103,7 +105,7 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	// Contrast
 	ca_lblContrastDesc = CreateWindow(WC_STATIC, "Contrast", WS_CHILD | WS_VISIBLE | SS_LEFT,
 					  8, 16, 56, 16, hWnd, NULL, ghInstance, NULL);
-	SendMessage(ca_lblContrastDesc, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(ca_lblContrastDesc, fntMain, TRUE);
 	
 	ca_trkContrast = CreateWindow(TRACKBAR_CLASS, "", trkStyle,
 				      8+56, 14, 192, 24, hWnd,
@@ -116,12 +118,12 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	
 	ca_lblContrastVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
 					 8+56+192+8, 16, 32, 16, hWnd, NULL, ghInstance, NULL);
-	SendMessage(ca_lblContrastVal, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(ca_lblContrastVal, fntMain, TRUE);
 	
 	// Brightness
 	ca_lblBrightnessDesc = CreateWindow(WC_STATIC, "Brightness", WS_CHILD | WS_VISIBLE | SS_LEFT,
 					    8, 48, 56, 16, hWnd, NULL, ghInstance, NULL);
-	SendMessage(ca_lblBrightnessDesc, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(ca_lblBrightnessDesc, fntMain, TRUE);
 	
 	ca_trkBrightness = CreateWindow(TRACKBAR_CLASS, "", trkStyle,
 					8+56, 14+32, 192, 24, hWnd,
@@ -133,7 +135,7 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	
 	ca_lblBrightnessVal = CreateWindow(WC_STATIC, "0", WS_CHILD | WS_VISIBLE | SS_LEFT,
 					   8+56+192+8, 48, 32, 16, hWnd, NULL, ghInstance, NULL);
-	SendMessage(ca_lblBrightnessVal, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(ca_lblBrightnessVal, fntMain, TRUE);
 	
 	// Buttons
 	HWND btnOK, btnApply, btnCancel;
@@ -141,15 +143,15 @@ void Color_Adjust_Window_CreateChildWindows(HWND hWnd)
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     28, 80, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				28+75+8, 80, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 28+75+8+75+8, 80, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
-	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnCancel, fntMain, TRUE);
 }

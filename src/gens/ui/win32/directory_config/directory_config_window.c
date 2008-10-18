@@ -30,6 +30,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <windowsx.h>
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -134,7 +136,7 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 			      hWnd, NULL, ghInstance, NULL);
 	
 	// Set the font for the groupbox title.
-	SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Add the directory entries.
 	while (DirEntries[dir].title)
@@ -149,7 +151,7 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 					hWnd, NULL, ghInstance, NULL);
 		
 		// Set the font for the label.
-		SendMessage(lblTitle, WM_SETFONT, (WPARAM)fntMain, 1);
+		SetWindowFont(lblTitle, fntMain, TRUE);
 		
 		// Create the textbox for the entry.
 		txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, DirEntries[dir].entry,
@@ -159,7 +161,7 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 					  hWnd, NULL, ghInstance, NULL);
 		
 		// Set the font for the entry.
-		SendMessage(txtEntry, WM_SETFONT, (WPARAM)fntMain, 1);
+		SetWindowFont(txtEntry, fntMain, TRUE);
 		
 		// Create the change button for the entry.
 		btnChange = CreateWindow(WC_BUTTON, "Change...",
@@ -168,7 +170,7 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 					 hWnd, (HMENU)(IDC_BTN_CHANGE + dir), ghInstance, NULL);
 		
 		// Set the font for the button.
-		SendMessage(btnChange, WM_SETFONT, (WPARAM)fntMain, 1);
+		SetWindowFont(btnChange, fntMain, TRUE);
 		
 		// Save the text entry hWnd for later.
 		dc_txtEntry[dir] = txtEntry;
@@ -188,17 +190,17 @@ void Directory_Config_Window_CreateChildWindows(HWND hWnd)
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     btnLeft, btnTop, 75, 23,
 	hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				btnLeft+75+8, btnTop, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 btnLeft+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
-	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Set focus to the first textbox.
 	SetFocus(dc_txtEntry[0]);

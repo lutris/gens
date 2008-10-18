@@ -33,6 +33,8 @@
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 
+#include <windowsx.h>
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -118,13 +120,13 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	lblInfoTitle = CreateWindow(WC_STATIC, strInfoTitle,
 				    WS_CHILD | WS_VISIBLE | SS_LEFT,
 				    8, 8, 256, 12, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblInfoTitle, WM_SETFONT, (WPARAM)fntTitle, 1);
+	SetWindowFont(lblInfoTitle, fntTitle, TRUE);
 	
 	// Info
 	lblInfo = CreateWindow(WC_STATIC, strInfo,
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
 			       8, 24, 288, 52, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblInfo, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblInfo, fntMain, TRUE);
 	
 	// Code and Name boxes, plus "Add Code" button.
 	HWND lblCode, btnAddCode;
@@ -134,14 +136,14 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	lblCode = CreateWindow(WC_STATIC, "Code",
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
 			       8, 24+52+8+2, 32, 12, hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblCode, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblCode, fntMain, TRUE);
 	
 	// Code entry
 	gg_txtCode = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 				    8+32+8, 24+52+8, wndWidth - (8+32+8+64+8+8), 20,
 				    hWnd, NULL, ghInstance, NULL);
-	SendMessage(gg_txtCode, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(gg_txtCode, fntMain, TRUE);
 	gg_txtCode_oldProc = (WNDPROC)SetWindowLongPtr(gg_txtCode, GWL_WNDPROC, (LONG_PTR)Game_Genie_TextBox_WndProc);
 	
 	// Name label
@@ -149,14 +151,14 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
 			       8, 24+52+8+2+24, 32, 12,
 			       hWnd, NULL, ghInstance, NULL);
-	SendMessage(lblName, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(lblName, fntMain, TRUE);
 	
 	// Name entry
 	gg_txtName = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 				    8+32+8, 24+52+8+24, wndWidth - (8+32+8+64+8+8), 20,
 				    hWnd, NULL, ghInstance, NULL);
-	SendMessage(gg_txtName, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(gg_txtName, fntMain, TRUE);
 	gg_txtName_oldProc = (WNDPROC)SetWindowLongPtr(gg_txtName, GWL_WNDPROC, (LONG_PTR)Game_Genie_TextBox_WndProc);
 	
 	// Add Code
@@ -164,14 +166,14 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				  wndWidth - (64+8), 24+52+8, 64, 20,
 				  hWnd, IDC_BTN_ADD, ghInstance, NULL);
-	SendMessage(btnAddCode, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnAddCode, fntMain, TRUE);
 	
 	// ListView
 	gg_lstvCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT,
 				      8, 24+52+8+24+24, wndWidth - (8+8), 128,
 				      hWnd, NULL, ghInstance, NULL);
-	SendMessage(gg_lstvCodes, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(gg_lstvCodes, fntMain, TRUE);
 	SendMessage(gg_lstvCodes, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	
 	// Create the ListView columns.
@@ -196,27 +198,27 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     8, btnTop, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				8+75+8, btnTop, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 8+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
-	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	btnDelete = CreateWindow(WC_BUTTON, "&Delete", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 8+75+8+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_DELETE, ghInstance, NULL);
-	SendMessage(btnDelete, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnDelete, fntMain, TRUE);
 	
 	btnDeactivateAll = CreateWindow(WC_BUTTON, "Deac&tivate All", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					8+75+8+75+8+75+8+75+8, btnTop, 75, 23,
 					hWnd, (HMENU)IDC_BTN_DEACTIVATEALL, ghInstance, NULL);
-	SendMessage(btnDeactivateAll, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnDeactivateAll, fntMain, TRUE);
 	
 	// Set focus to the Code textbox.
 	SetFocus(gg_txtCode);

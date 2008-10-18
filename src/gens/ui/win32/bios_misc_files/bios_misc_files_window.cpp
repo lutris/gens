@@ -32,6 +32,8 @@
 
 #include "emulator/g_main.hpp"
 
+#include <windowsx.h>
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -41,10 +43,8 @@
 static WNDCLASS WndClass;
 HWND bios_misc_files_window = NULL;
 
-
 // Frame width.
 static const int frameWidth = 360;
-
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const unsigned short BIOSMiscFiles_Count = 14;
@@ -66,7 +66,6 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[BIOSMiscFiles_Count + 1] =
 	{"Manual", "manual", AnyFile, Misc_Filenames.Manual},
 	{NULL, NULL, (FileFilterType)0, NULL},
 };
-
 
 // Handles for the Win32 textboxes.
 HWND bmf_txtEntry[BIOSMiscFiles_Count];
@@ -146,7 +145,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 					      hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the groupbox title.
-			SendMessage(grpBox, WM_SETFONT, (WPARAM)fntMain, 1);
+			SetWindowFont(grpBox, fntMain, TRUE);
 		}
 		else
 		{
@@ -162,7 +161,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 						hWnd, NULL, ghInstance, NULL);
 						
 			// Set the font for the label.
-			SendMessage(lblTitle, WM_SETFONT, (WPARAM)fntMain, 1);
+			SetWindowFont(lblTitle, fntMain, TRUE);
 			
 			// Create the textbox for the entry.
 			txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, BIOSMiscFiles[file].entry,
@@ -172,7 +171,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 						  hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the entry.
-			SendMessage(txtEntry, WM_SETFONT, (WPARAM)fntMain, 1);
+			SetWindowFont(txtEntry, fntMain, TRUE);
 			
 			// Create the change button for the entry.
 			btnChange = CreateWindow(WC_BUTTON, "Change...",
@@ -181,7 +180,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 						 hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 						 
 			// Set the font for the button.
-			SendMessage(btnChange, WM_SETFONT, (WPARAM)fntMain, 1);
+			SetWindowFont(btnChange, fntMain, TRUE);
 			
 			// Save the text entry hWnd for later.
 			bmf_txtEntry[file] = txtEntry;
@@ -202,17 +201,17 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     btnLeft, btnTop, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SendMessage(btnOK, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				btnLeft+75+8, btnTop, 75, 23,
 				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SendMessage(btnApply, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 btnLeft+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
-	SendMessage(btnCancel, WM_SETFONT, (WPARAM)fntMain, 1);
+	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Set focus to the first textbox.
 	// (Index 0 is the frame; Index 1 is the textbox.)
