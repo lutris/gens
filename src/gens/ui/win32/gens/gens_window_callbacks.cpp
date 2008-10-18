@@ -464,6 +464,7 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		case ID_CPU_COUNTRY_EUROPE:
 		case ID_CPU_COUNTRY_JAPAN_PAL:
 			Change_Country(LOWORD(wParam) - ID_CPU_COUNTRY - 1);
+			Sync_Gens_Window_CPUMenu();
 			break;
 		
 		case ID_CPU_COUNTRY_ORDER:
