@@ -66,18 +66,6 @@ VDraw_DDraw::VDraw_DDraw()
 	lpDDS_Flip = NULL;
 	lpDDS_Back = NULL;
 	lpDDC_Clipper = NULL;
-	
-	// Initialize the X and Y resolutions.
-	if (Video.Render_FS > 0)
-	{
-		Res_X = 640;
-		Res_Y = 480;
-	}
-	else
-	{
-		Res_X = 320;
-		Res_Y = 240;
-	}
 }
 
 VDraw_DDraw::~VDraw_DDraw()
@@ -113,7 +101,21 @@ int VDraw_DDraw::Init_Video(void)
 	End_Video();
 	
 	rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-
+	
+	if (m_FullScreen)
+	{
+		if (rendMode == 0)
+		{
+			Res_X = 320;
+			Res_Y = 240;
+		}
+		else
+		{
+			Res_X = 640;
+			Res_Y = 480;
+		}
+	}
+	
 	if (FAILED(DirectDrawCreate(NULL, &lpDD_Init, NULL)))
 		return Init_Fail(Gens_hWnd, "Error with DirectDrawCreate!");
 	
@@ -322,8 +324,17 @@ int VDraw_DDraw::reinitGensWindow(void)
 		while (ShowCursor(true) < 1) { }
 		while (ShowCursor(false) >= 0) { }
 		
-		w = (Video.Render_FS == 0 ? 320 : 640);
-		h = (Video.Render_FS == 0 ? 240 : 480);
+		if (Video.Render_FS == 0)
+		{
+			w = 320;
+			h = 240;
+		}
+		else
+		{
+			w = 640;
+			h = 480;
+		}
+		
 		SetWindowLong(Gens_hWnd, GWL_STYLE, NULL);
 		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
