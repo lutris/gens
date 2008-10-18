@@ -612,7 +612,7 @@ void parseArgs(int argc, char **argv)
 		if (argv[optind][0] != '/')
 		{
 			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));
-			strcat(PathNames.Start_Rom, "/");
+			strcat(PathNames.Start_Rom, GENS_DIR_SEPARATOR_STR);
 		}
 		strcat(PathNames.Start_Rom, argv[optind]);
 	}
