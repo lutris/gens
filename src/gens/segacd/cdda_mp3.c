@@ -276,8 +276,11 @@ int MP3_Play (int track, int lba_pos, int async)
       return -1;
     }
 
+	// TODO
+#if 0
 	if (!IsAsyncAllowed())
 		async = 0;
+#endif
 	
 /*	if (!async)
 	{
