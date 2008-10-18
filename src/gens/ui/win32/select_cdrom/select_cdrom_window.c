@@ -81,11 +81,11 @@ HWND create_select_cdrom_window(void)
 	select_cdrom_window = CreateWindowEx(NULL, "Gens_Select_CDROM", "Select CD-ROM Drive",
 					     WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     288, 72,
+					     304, 72,
 					     Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(select_cdrom_window, 288, 72);
+	Win32_setActualWindowSize(select_cdrom_window, 304, 72);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(select_cdrom_window);
@@ -102,14 +102,14 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	// CD-ROM Drive title
 	cdromDriveTitle = CreateWindow(WC_STATIC, "CD-ROM Drive:",
 				       WS_CHILD | WS_VISIBLE | SS_LEFT,
-				       8, 8+3, 80, 12,
+				       8, 8+3, 96, 16,
 				       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(cdromDriveTitle, fntMain, TRUE);
 	
 	// CD-ROM Drive dropdown box
 	SelCD_cdromDropdownBox = CreateWindow((win32_CommCtrlEx ? WC_COMBOBOXEX : WC_COMBOBOX), NULL,
 					      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					      16+80-4, 8, 288-8-80-16+4, 23*5,
+					      16+96-8, 8, 304-8-96-16+8, 23*5,
 					      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(SelCD_cdromDropdownBox, fntMain, TRUE);
 	
