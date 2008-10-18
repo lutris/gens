@@ -361,14 +361,12 @@ static void _usage()
 	exit(0);
 }
 
-
 #define TEST_OPTION_STRING(option, strbuf)		\
 if (!strcmp(long_options[option_index].name, option))	\
 {							\
 	strcpy(strbuf, optarg);				\
 	continue;					\
 }
-
 
 #define TEST_OPTION_ENABLE(option, enablevar)					\
 if (!strcmp(long_options[option_index].name, option[0]))			\
@@ -382,7 +380,6 @@ else if (!strcmp(long_options[option_index].name, option[1]))			\
 	continue;								\
 }
 
-
 #define TEST_OPTION_NUMERIC(option, numvar)		\
 if (!strcmp(long_options[option_index].name, option))	\
 {							\
@@ -390,6 +387,12 @@ if (!strcmp(long_options[option_index].name, option))	\
 	continue;					\
 }
 
+#define TEST_OPTION_NUMERIC_SCALE(option, numvar, scale)	\
+if (!strcmp(long_options[option_index].name, option))		\
+{								\
+	numvar = strtol(optarg, (char**)NULL, 10) + scale;	\
+	continue;						\
+}
 
 void parseArgs(int argc, char **argv)
 {
@@ -439,8 +442,6 @@ void parseArgs(int argc, char **argv)
 		
 		//TEST_OPTION_ENABLE(opt1arg_str[OPT1_STRETCH], Stretch);
 		//TEST_OPTION_ENABLE(opt1arg_str[OPT1_SWBLIT], Blit_Soft);
-		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_CONTRAST][0], Contrast_Level);
-		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_BRIGHTNESS][0], Brightness_Level);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_GREYSCALE], Greyscale);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_INVERT], Invert_Color);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_SPRITELIMIT], Sprite_Over);
@@ -467,6 +468,21 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_FIXCHKSUM], Auto_Fix_CS);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_AUTOPAUSE], Auto_Pause);
 		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_RAMCART_SIZE][0], BRAM_Ex_Size);
+		
+		// Contrast / Brightness
+		TEST_OPTION_NUMERIC_SCALE(opt1arg_str[OPT1_CONTRAST][0], Contrast_Level, 100);
+		TEST_OPTION_NUMERIC_SCALE(opt1arg_str[OPT1_BRIGHTNESS][0], Brightness_Level, 100);
+		
+		// Make sure the values are in range.
+		if (Contrast_Level < 0)
+			Contrast_Level = 0;
+		else if (Contrast_Level > 200)
+			Contrast_Level = 200;
+		
+		if (Brightness_Level < 0)
+			Brightness_Level = 0;
+		else if (Brightness_Level > 200)
+			Brightness_Level = 200;
 		
 		// Other options that can't be handled by macros.
 		if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][0]))
