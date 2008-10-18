@@ -68,93 +68,262 @@
 // Include this *last* to avoid naming confflicts.
 #include "parse.hpp"
 
-#define print_usage(option, helpmsg) fprintf(stderr, MM option " : " helpmsg "\n")
-#define print_usage2(option, helpmsg) fprintf(stderr, MM ENABLE "-" option ", " MM DISABLE "-" option " : " helpmsg "\n")
+static const char* sFileName = "filename";
+static const char* sPathName = "pathname";
+
+// 1-argument parameters.
+// Index: 0 = parameter; 1 = argument description; 2 = description
+static const char* opt1arg_str[][3] =
+{
+	{"game",		sFileName,	"ROM to load (from standard ROM directory)"},
+	{"rompath",		sPathName,	"Path where your ROMs are stored"},
+	{"savepath",		sPathName,	"Path where to save your states files"},
+	{"srampath",		sPathName,	"Path where to save your SRAM files"},
+	{"brampath",		sPathName,	"Path where to save your BRAM files"},
+	{"dumppath",		sPathName,	"unused"},
+	{"dumpgympath",		sPathName,	"Path where to save your GYM files"},
+	{"screenshotpath",	sPathName,	"Path where to save your screenshot files"},
+	{"patchpath",		sPathName,	"Path where to save your patch files"},
+	{"ipspath",		sPathName,	"Path where to save your IPS files"},
+	{"gcofflinepath",	sPathName,	"unused"},
+	{"gensmanpath",		sPathName,	"unused"},
+	{"genesisbios",		sFileName,	"Genesis BIOS"},
+	{"usacdbios",		sFileName,	"USA SegaCD BIOS"},
+	{"europecdbios",	sFileName,	"European MegaCD BIOS"},
+	{"japancdbios",		sFileName,	"Japanese MegaCD BIOS"},
+	{"32x68kbios",		sFileName,	"32X MC68000 BIOS"},
+	{"32xmsh2bios",		sFileName,	"32X Main SH2 BIOS"},
+	{"32xssh2bios",		sFileName,	"32X Slave SH2 BIOS"},
+	{"contrast",		"number",	"Contrast (-100 -> 100)"},
+	{"brightness",		"number",	"Brightness (-100 -> 100)"},
+	{"rendermode",		"mode",		"Render mode options\n"
+						"\t 1: Normal\n"
+						"\t 2: Double\n"
+						"\t 3: Interpolated\n"
+						"\t 4: Full Scanline\n"
+						"\t 5: Scanline 50%\n"
+						"\t 6: Scanline 25%\n"
+						"\t 7; Interpolated Scanline\n"
+						"\t 8: Interpolated Scanline 50%\n"
+						"\t 9: Interpolated Scanline 25%\n"
+						"\t10: 2xSAI Kreed\n"
+						"\t11: AdvanceMAME Scale2x\n"
+						"\t12: HQ2x"},
+	{"frameskip",		"number",	"Frameskip (-1 [Auto] -> 9)"},
+	{"soundrate",		"rate",		"Sound Rate (11025, 16000, 22050, 32000, 44100, 48000 Hz)"},
+	{"msh2-speed",		"percentage"	"Master SH2 Speed"},
+	{"ssh2-speed",		"percentage",	"Slave SH2 Speed"},
+	{"ramcart-size",	"number",	"SegaCD RAM cart size"},
+	{NULL, NULL, NULL}
+};
+
+enum opt1arg_enum
+{
+	OPT1_GAME = 0,
+	OPT1_ROMPATH,
+	OPT1_SAVEPATH,
+	OPT1_SRAMPATH,
+	OPT1_BRAMPATH,
+	OPT1_DUMPPATH,
+	OPT1_DUMPGYMPATH,
+	OPT1_SCREENSHOTPATH,
+	OPT1_PATCHPATH,
+	OPT1_IPSPATH,
+	OPT1_GCOFFLINEPATH,
+	OPT1_GENSMANPATH,
+	OPT1_GENESISBIOS,
+	OPT1_USACDBIOS,
+	OPT1_EUROPECDBIOS,
+	OPT1_JAPANCDBIOS,
+	OPT1_32X68KBIOS,
+	OPT1_32XMSH2BIOS,
+	OPT1_32XSSH2BIOS,
+	OPT1_CONTRAST,
+	OPT1_BRIGHTNESS,
+	OPT1_RENDERMODE,
+	OPT1_FRAMESKIP,
+	OPT1_SOUNDRATE,
+	OPT1_MSH2_SPEED,
+	OPT1_SSH2_SPEED,
+	OPT1_RAMCART_SIZE,
+	OPT1_TOTAL
+};
+
+// 0-argument parameters.
+// Index: 0 = parameter; 1 = description
+static const char* opt0arg_str[][2] =
+{
+	{"help",		"Help"},
+	{"fs",			"Run in full screen mode"},
+	{"window",		"Run in windowed mode"},
+	{"quickexit",		"Quick exit with ESC"},
+	{NULL, NULL}
+};
+
+enum opt0arg_enum
+{
+	OPT0_HELP = 0,
+	OPT0_FS,
+	OPT0_WINDOW,
+	OPT0_QUICKEXIT,
+	OPT0_TOTAL
+};
+
+// Boolean parameters.
+// Index: 0 = enable parameter; 1 = disable parameter; 2 = description
+#define OPTBARG_STR(parameter, description) \
+	{"enable-" parameter, "disable-" parameter, description}
+
+static const char* optBarg_str[][3] =
+{
+	OPTBARG_STR("stretch",		"Stretch mode"),
+	OPTBARG_STR("swblit",		"Software blitting"),
+	OPTBARG_STR("greyscale",	"Greyscale"),
+	OPTBARG_STR("invert",		"Invert color"),
+	OPTBARG_STR("spritelimit",	"Sprite limit"),
+	OPTBARG_STR("sound",		"Sound"),
+	OPTBARG_STR("stereo",		"Stereo"),
+	OPTBARG_STR("z80",		"Z80"),
+	OPTBARG_STR("ym2612",		"YM2612"),
+	OPTBARG_STR("ym2612-improved",	"YM2612 Improved"),
+	OPTBARG_STR("dac",		"DAC"),
+	OPTBARG_STR("dac-improved",	"DAC Improved"),
+	OPTBARG_STR("psg",		"PSG"),
+	OPTBARG_STR("psg-improved",	"PSG Improved"),
+	OPTBARG_STR("pcm",		"PCM"),
+	OPTBARG_STR("pwm",		"PWM"),
+	OPTBARG_STR("cdda",		"CDDA"),
+	OPTBARG_STR("perfect-sync",	"SegaCD Perfect Sync"),
+	OPTBARG_STR("fastblur",		"Fast Blur"),
+	OPTBARG_STR("fps",		"FPS counter"),
+	OPTBARG_STR("message",		"Message Display"),
+	OPTBARG_STR("led",		"SegaCD LEDs"),
+	OPTBARG_STR("fixchksum",	"Auto Fix Checksum"),
+	OPTBARG_STR("autopause",	"Auto Pause"),
+	{NULL, NULL, NULL}
+};
+
+enum optBarg_enum
+{
+	OPTB_STRETCH = 0,
+	OPTB_SWBLIT,
+	OPTB_GREYSCALE,
+	OPTB_INVERT,
+	OPTB_SPRITELIMIT,
+	OPTB_SOUND,
+	OPTB_STEREO,
+	OPTB_Z80,
+	OPTB_YM2612,
+	OPTB_YM2612_IMPROVED,
+	OPTB_DAC,
+	OPTB_DAC_IMPROVED,
+	OPTB_PSG,
+	OPTB_PSG_IMPROVED,
+	OPTB_PCM,
+	OPTB_PWM,
+	OPTB_CDDA,
+	OPTB_PERFECT_SYNC,
+	OPTB_FASTBLUR,
+	OPTB_FPS,
+	OPTB_MSG,
+	OPTB_LED,
+	OPTB_FIXCHKSUM,
+	OPTB_AUTOPAUSE,
+	OPTB_TOTAL
+};
+
+#define LONGOPT_1ARG(index) \
+	{opt1arg_str[(index)][0], required_argument, NULL, 0}
+
+#define LONGOPT_0ARG(index) \
+	{opt0arg_str[(index)][0], no_argument, NULL, 0}
+
+#define LONGOPT_BARG(index) \
+	{optBarg_str[(index)][0], no_argument, NULL, 0}, \
+	{optBarg_str[(index)][1], no_argument, NULL, 0}
 
 static const struct option long_options[] =
 {
-	{GAME,			required_argument, 0, 0},
-	{ROMPATH,		required_argument, 0, 0},
-	{SAVEPATH,		required_argument, 0, 0},
-	{SRAMPATH,		required_argument, 0, 0},
-	{BRAMPATH,		required_argument, 0, 0},
-	{DUMPPATH,		required_argument, 0, 0},
-	{DUMPGYMPATH,		required_argument, 0, 0},
-	{SCRSHTPATH,		required_argument, 0, 0},
-	{PATPATH,		required_argument, 0, 0},
-	{IPSPATH,		required_argument, 0, 0},
-	{GCOFFPATH,		required_argument, 0, 0},
-	{GENSMANPATH,		required_argument, 0, 0},
-	{GENBIOS,		required_argument, 0, 0},
-	{USABIOS,		required_argument, 0, 0},
-	{EURBIOS,		required_argument, 0, 0},
-	{JAPBIOS,		required_argument, 0, 0},
-	{_32X68kBIOS,		required_argument, 0, 0},
-	{_32XMBIOS,		required_argument, 0, 0},
-	{_32XSBIOS,		required_argument, 0, 0},
-	{FS,			no_argument, 0, 0},
-	{WINDOW,		no_argument, 0, 0},
-	{RENDERMODE,		required_argument, 0, 0},
-	{STRETCH_ENABLE,	no_argument, 0, 0},
-	{STRETCH_DISABLE,	no_argument, 0, 0},
-	{SWBLIT_ENABLE,		no_argument, 0, 0},
-	{SWBLIT_DISABLE,	no_argument, 0, 0},
-	{CONTRAST,		required_argument, 0, 0},
-	{BRIGHTNESS,		required_argument, 0, 0},
-	{GREYSCALE_ENABLE,	no_argument, 0, 0},
-	{GREYSCALE_DISABLE,	no_argument, 0, 0},
-	{INVERT_ENABLE,		no_argument, 0, 0},
-	{INVERT_DISABLE,	no_argument, 0, 0},
-	{SPRITELIMIT_ENABLE,	no_argument, 0, 0},
-	{SPRITELIMIT_DISABLE,	no_argument, 0, 0},
-	{FRAMESKIP,		required_argument, 0, 0},
-	{SOUND_ENABLE,		no_argument, 0, 0},
-	{SOUND_DISABLE,		no_argument, 0, 0},
-	{SOUNDRATE,		required_argument, 0, 0},
-	{STEREO_ENABLE,		no_argument, 0, 0},
-	{STEREO_DISABLE,	no_argument, 0, 0},
-	{Z80_ENABLE,		no_argument, 0, 0},
-	{Z80_DISABLE,		no_argument, 0, 0},
-	{YM2612_ENABLE,		no_argument, 0, 0},
-	{YM2612_DISABLE,	no_argument, 0, 0},
-	{PSG_ENABLE,		no_argument, 0, 0},
-	{PSG_DISABLE,		no_argument, 0, 0},
-	{DAC_ENABLE,		no_argument, 0, 0},
-	{DAC_DISABLE,		no_argument, 0, 0},
-	{PCM_ENABLE,		no_argument, 0, 0},
-	{PCM_DISABLE,		no_argument, 0, 0},
-	{PWM_ENABLE,		no_argument, 0, 0},
-	{PWM_DISABLE,		no_argument, 0, 0},
-	{CDDA_ENABLE,		no_argument, 0, 0},
-	{CDDA_DISABLE,		no_argument, 0, 0},
-	{PSGIMPROVED_ENABLE,	no_argument, 0, 0},
-	{PSGIMPROVED_DISABLE,	no_argument, 0, 0},
-	{YMIMPROVED_ENABLE,	no_argument, 0, 0},
-	{YMIMPROVED_DISABLE,	no_argument, 0, 0},
-	{DACIMPROVED_ENABLE,	no_argument, 0, 0},
-	{DACIMPROVED_DISABLE,	no_argument, 0, 0},
-	{PERFECTSYNC_ENABLE,	no_argument, 0, 0},
-	{PERFECTSYNC_DISABLE,	no_argument, 0, 0},
-	{MSH2SPEED,		required_argument, 0, 0},
-	{SSH2SPEED,		required_argument, 0, 0},
-	{FASTBLUR_ENABLE,	no_argument, 0, 0},
-	{FASTBLUR_DISABLE,	no_argument, 0, 0},
-	{FPS_ENABLE,		no_argument, 0, 0},
-	{FPS_DISABLE,		no_argument, 0, 0},
-	{PARSE_MSG_ENABLE,	no_argument, 0, 0},
-	{PARSE_MSG_DISABLE,	no_argument, 0, 0},
-	{LED_ENABLE,		no_argument, 0, 0},
-	{LED_DISABLE,		no_argument, 0, 0},
-	{FIXCHKSUM_ENABLE,	no_argument, 0, 0},
-	{FIXCHKSUM_DISABLE,	no_argument, 0, 0},
-	{AUTOPAUSE_ENABLE,	no_argument, 0, 0},
-	{AUTOPAUSE_DISABLE,	no_argument, 0, 0},
-	{RAMCARTSIZE,		required_argument, 0, 0},
-	{QUICKEXIT,		no_argument, 0, 0},
-	{HELP,			no_argument, 0, 0},
-	{0, 0, 0, 0}
+	// 1-argument parameters.
+	LONGOPT_1ARG(OPT1_GAME),
+	LONGOPT_1ARG(OPT1_ROMPATH),
+	LONGOPT_1ARG(OPT1_SAVEPATH),
+	LONGOPT_1ARG(OPT1_SRAMPATH),
+	LONGOPT_1ARG(OPT1_BRAMPATH),
+	LONGOPT_1ARG(OPT1_DUMPPATH),
+	LONGOPT_1ARG(OPT1_DUMPGYMPATH),
+	LONGOPT_1ARG(OPT1_SCREENSHOTPATH),
+	LONGOPT_1ARG(OPT1_PATCHPATH),
+	LONGOPT_1ARG(OPT1_IPSPATH),
+	LONGOPT_1ARG(OPT1_GCOFFLINEPATH),
+	LONGOPT_1ARG(OPT1_GENSMANPATH),
+	LONGOPT_1ARG(OPT1_GENESISBIOS),
+	LONGOPT_1ARG(OPT1_USACDBIOS),
+	LONGOPT_1ARG(OPT1_EUROPECDBIOS),
+	LONGOPT_1ARG(OPT1_JAPANCDBIOS),
+	LONGOPT_1ARG(OPT1_32X68KBIOS),
+	LONGOPT_1ARG(OPT1_32XMSH2BIOS),
+	LONGOPT_1ARG(OPT1_32XSSH2BIOS),
+	LONGOPT_1ARG(OPT1_CONTRAST),
+	LONGOPT_1ARG(OPT1_BRIGHTNESS),
+	LONGOPT_1ARG(OPT1_RENDERMODE),
+	LONGOPT_1ARG(OPT1_FRAMESKIP),
+	LONGOPT_1ARG(OPT1_SOUNDRATE),
+	LONGOPT_1ARG(OPT1_MSH2_SPEED),
+	LONGOPT_1ARG(OPT1_SSH2_SPEED),
+	LONGOPT_1ARG(OPT1_RAMCART_SIZE),
+	
+	// 0-argument parameters.
+	LONGOPT_0ARG(OPT0_HELP),
+	LONGOPT_0ARG(OPT0_FS),
+	LONGOPT_0ARG(OPT0_WINDOW),
+	LONGOPT_0ARG(OPT0_QUICKEXIT),
+	
+	// Boolean parameters.
+	LONGOPT_BARG(OPTB_STRETCH),
+	LONGOPT_BARG(OPTB_SWBLIT),
+	LONGOPT_BARG(OPTB_GREYSCALE),
+	LONGOPT_BARG(OPTB_INVERT),
+	LONGOPT_BARG(OPTB_SPRITELIMIT),
+	LONGOPT_BARG(OPTB_SOUND),
+	LONGOPT_BARG(OPTB_STEREO),
+	LONGOPT_BARG(OPTB_Z80),
+	LONGOPT_BARG(OPTB_YM2612),
+	LONGOPT_BARG(OPTB_YM2612_IMPROVED),
+	LONGOPT_BARG(OPTB_DAC),
+	LONGOPT_BARG(OPTB_DAC_IMPROVED),
+	LONGOPT_BARG(OPTB_PSG),
+	LONGOPT_BARG(OPTB_PSG_IMPROVED),
+	LONGOPT_BARG(OPTB_PCM),
+	LONGOPT_BARG(OPTB_PWM),
+	LONGOPT_BARG(OPTB_CDDA),
+	LONGOPT_BARG(OPTB_PERFECT_SYNC),
+	LONGOPT_BARG(OPTB_FASTBLUR),
+	LONGOPT_BARG(OPTB_FPS),
+	LONGOPT_BARG(OPTB_MSG),
+	LONGOPT_BARG(OPTB_LED),
+	LONGOPT_BARG(OPTB_FIXCHKSUM),
+	LONGOPT_BARG(OPTB_AUTOPAUSE),
+	{NULL, 0, NULL, 0}
 };
 
+#define print_usage(option, helpmsg) fprintf(stderr, MM option " : " helpmsg "\n")
+#define print_usage2(option, helpmsg) fprintf(stderr, MM ENABLE "-" option ", " MM DISABLE "-" option " : " helpmsg "\n")
+
+static inline void printOpt1Arg(opt1arg_enum opt)
+{
+	fprintf(stderr, "--%s [%s]: %s\n", opt1arg_str[opt][0], opt1arg_str[opt][1], opt1arg_str[opt][2]);
+}
+
+static inline void printOpt0Arg(opt0arg_enum opt)
+{
+	fprintf(stderr, "--%s: %s\n", opt0arg_str[opt][0], opt0arg_str[opt][1]);
+}
+
+static inline void printOptBArg(optBarg_enum opt)
+{
+	fprintf(stderr, "--%s, --%s: %s\n", optBarg_str[opt][0], optBarg_str[opt][1], optBarg_str[opt][2]);
+}
 
 static void _usage()
 {
@@ -164,77 +333,30 @@ static void _usage()
 	fprintf(stderr, GENS_APPNAME "\n");
 #endif /* VERSION */
 	
-	fprintf (stderr, "Usage: gens [options] romfilename\n");
-	print_usage(  HELP, "print this help");
+	fprintf(stderr, "Usage: gens [options] romfilename\n\nOptions:\n");
 	
-	print_usage(GAME ,"ROM to load (from standard ROM directory)");
-	print_usage(ROMPATH ,"Path where your roms are stored");
-	print_usage(SAVEPATH ,"Path where to save your states files");
-	print_usage(SRAMPATH ,"Path where to save your SRAM files");
-	print_usage(BRAMPATH ,"Path where to save your BRAM files");	
-	print_usage(DUMPPATH ,"unused");
-	print_usage(DUMPGYMPATH ,"Path where to save your GYM files");
-	print_usage(SCRSHTPATH ,"Path where to save your screenshot files");
-	print_usage(PATPATH ,"Path where to save your patch files");	
-	print_usage(IPSPATH ,"Path where to save your IPS files");
-	print_usage(GCOFFPATH ,"unused");
-	print_usage(GENSMANPATH ,"unused");
-	print_usage(GENBIOS ,"Genesis bios");	
-	print_usage(USABIOS ,"US cd bios");
-	print_usage(EURBIOS ,"European cd bios");
-	print_usage(JAPBIOS ,"Japan cd bios");
-	print_usage(_32X68kBIOS ,"32X Genesis bios");
-	print_usage(_32XMBIOS ,"32X Master SH2 bios");
-	print_usage(_32XSBIOS ,"32X Slave SH2 bios");
-	print_usage(CONTRAST ,"Contrast (-100 -> 100)");
-	print_usage(BRIGHTNESS ,"Brightness (-100 -> 100)");	
-	print_usage(FS, "Run in full screen mode");
-	print_usage(WINDOW, "Run in window mode");
-	print_usage(RENDERMODE ,"Render mode options\n"
-				"   Normal : 1\n"
-				"   Double : 2\n"
-				"   Interpolated : 3\n"
-				"   Full Scanline : 4\n"
-				"   Scanline 50%% : 5\n"
-				"   Scanline 25%% : 6\n"
-				"   Interpolated Scanline : 7\n"
-				"   Interpolated Scanline 50%% : 8\n"
-				"   Interpolated Scanline 25%% : 9\n"
-				"   2XSai Kreed : 10\n"
-				"   AdvanceMAME Scale2x : 11\n"
-				"   HQ2X : 12"
-				);
-	print_usage(FRAMESKIP ,"Frameskip (0 -> 9)");
-	print_usage(SOUNDRATE ,"Soundrate (11025, 16000, 22050, 32000, 44100, 48000 kHz)");	
-	print_usage(MSH2SPEED ,"Master SH2 speed");
-	print_usage(SSH2SPEED ,"Slave SH2 speed");
-	print_usage(RAMCARTSIZE,"Ram cart size");
-	print_usage(QUICKEXIT, "Quick exit with ESC");
-
-	print_usage2(STRETCH,"Stretch mode");
-	print_usage2(SWBLIT,"Software blitting");
-	print_usage2(GREYSCALE,"Greyscale");
-	print_usage2(INVERT,"Invert color");
-	print_usage2(SPRITELIMIT,"Sprite limit");
-	print_usage2(SOUND,"Sound");
-	print_usage2(STEREO,"Stereo");
-	print_usage2(Z80,"Z80");
-	print_usage2(YM2612,"Yamaha 2612");
-	print_usage2(PSG,"psg");
-	print_usage2(DAC,"Digital to analogic converter");
-	print_usage2(PCM,"pcm");
-	print_usage2(PWM,"pwm");
-	print_usage2(CDDA,"cdda");
-	print_usage2(PSGIMPROVED,"psg improved");
-	print_usage2(YMIMPROVED,"ym2612 improved");
-	print_usage2(DACIMPROVED,"dac improved");
-	print_usage2(PERFECTSYNC,"Perfect Synchro");
-	print_usage2(FASTBLUR,"Fast blur");
-	print_usage2(FPS,"Frame per second");
-	print_usage2(PARSE_MSG_ENABLE,"Message");
-	print_usage2(LED,"SegaCD led");
-	print_usage2(FIXCHKSUM,"Fix checksum");
-	print_usage2(AUTOPAUSE,"Auto-pause");
+	// Print the Help option first.
+	printOpt0Arg(OPT0_HELP);
+	
+	int i;
+	
+	// 1-argument parameters.
+	for (i = 0; i < static_cast<int>(OPT1_TOTAL); i++)
+	{
+		printOpt1Arg(static_cast<opt1arg_enum>(i));
+	}
+	
+	// 0-argument parameters (except OPT1_HELP).
+	for (i = 1; i < static_cast<int>(OPT0_TOTAL); i++)
+	{
+		printOpt0Arg(static_cast<opt0arg_enum>(i));
+	}
+	
+	// Boolean parameters.
+	for (i = 0; i < static_cast<int>(OPTB_TOTAL); i++)
+	{
+		printOptBArg(static_cast<optBarg_enum>(i));
+	}
 	
 	exit(0);
 }
@@ -249,12 +371,12 @@ if (!strcmp(long_options[option_index].name, option))	\
 
 
 #define TEST_OPTION_ENABLE(option, enablevar)					\
-if (!strcmp(long_options[option_index].name, option ## _ENABLE))		\
+if (!strcmp(long_options[option_index].name, option[0]))			\
 {										\
 	enablevar = 1;								\
 	continue;								\
 }										\
-else if (!strcmp(long_options[option_index].name, option ## _DISABLE))		\
+else if (!strcmp(long_options[option_index].name, option[1]))			\
 {										\
 	enablevar = 0;								\
 	continue;								\
@@ -287,7 +409,7 @@ void parseArgs(int argc, char **argv)
 			continue;
 		}
 			
-		if (!strcmp (long_options[option_index].name, GAME))
+		if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_GAME][0]))
 		{
 			if (strcmp(optarg, "") != 0)
 			{
@@ -297,121 +419,121 @@ void parseArgs(int argc, char **argv)
 		}
 		
 		// Test string options.
-		TEST_OPTION_STRING(ROMPATH, Rom_Dir);
-		TEST_OPTION_STRING(SAVEPATH, State_Dir);
-		TEST_OPTION_STRING(SRAMPATH, SRAM_Dir);
-		TEST_OPTION_STRING(BRAMPATH, BRAM_Dir);
-		TEST_OPTION_STRING(DUMPPATH, PathNames.Dump_WAV_Dir);
-		TEST_OPTION_STRING(SCRSHTPATH, ScrShot_Dir);
-		TEST_OPTION_STRING(PATPATH, Patch_Dir);
-		TEST_OPTION_STRING(IPSPATH, IPS_Dir);
-		TEST_OPTION_STRING(GCOFFPATH, Misc_Filenames.GCOffline);
-		TEST_OPTION_STRING(GENSMANPATH, Misc_Filenames.Manual);
-		TEST_OPTION_STRING(GENBIOS, BIOS_Filenames.MD_TMSS);
-		TEST_OPTION_STRING(USABIOS, BIOS_Filenames.SegaCD_US);
-		TEST_OPTION_STRING(EURBIOS, BIOS_Filenames.MegaCD_EU);
-		TEST_OPTION_STRING(JAPBIOS, BIOS_Filenames.MegaCD_JP);
-		TEST_OPTION_STRING(_32X68kBIOS, BIOS_Filenames._32X_MC68000);
-		TEST_OPTION_STRING(_32XMBIOS, BIOS_Filenames._32X_MSH2);
-		TEST_OPTION_STRING(_32XSBIOS, BIOS_Filenames._32X_SSH2);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_ROMPATH][0], Rom_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_SAVEPATH][0], State_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_SRAMPATH][0], SRAM_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_BRAMPATH][0], BRAM_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_DUMPPATH][0], PathNames.Dump_WAV_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH][0], ScrShot_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_PATCHPATH][0], Patch_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_IPSPATH][0], IPS_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_GCOFFLINEPATH][0], Misc_Filenames.GCOffline);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_GENSMANPATH][0], Misc_Filenames.Manual);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_GENESISBIOS][0], BIOS_Filenames.MD_TMSS);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_USACDBIOS][0], BIOS_Filenames.SegaCD_US);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_EUROPECDBIOS][0], BIOS_Filenames.MegaCD_EU);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_JAPANCDBIOS][0], BIOS_Filenames.MegaCD_JP);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_32X68KBIOS][0], BIOS_Filenames._32X_MC68000);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_32XMSH2BIOS][0], BIOS_Filenames._32X_MSH2);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_32XSSH2BIOS][0], BIOS_Filenames._32X_SSH2);
 		
-		//TEST_OPTION_ENABLE(STRETCH, Stretch);
-		//TEST_OPTION_ENABLE(SWBLIT, Blit_Soft);
-		TEST_OPTION_NUMERIC(CONTRAST, Contrast_Level);
-		TEST_OPTION_NUMERIC(BRIGHTNESS, Brightness_Level);
-		TEST_OPTION_ENABLE(GREYSCALE, Greyscale);
-		TEST_OPTION_ENABLE(INVERT, Invert_Color);
-		TEST_OPTION_ENABLE(SPRITELIMIT, Sprite_Over);
-		TEST_OPTION_NUMERIC(FRAMESKIP, Frame_Skip);
-		//TEST_OPTION_ENABLE(SOUND, Sound_Enable);
-		//TEST_OPTION_ENABLE(STEREO, Sound_Stereo);
-		TEST_OPTION_ENABLE(Z80, Z80_State);
-		TEST_OPTION_ENABLE(YM2612, YM2612_Enable);
-		TEST_OPTION_ENABLE(PSG, PSG_Enable);
-		TEST_OPTION_ENABLE(DAC, DAC_Enable);
-		TEST_OPTION_ENABLE(PCM, PCM_Enable);
-		TEST_OPTION_ENABLE(PWM, PWM_Enable);
-		TEST_OPTION_ENABLE(CDDA, CDDA_Enable);
-		TEST_OPTION_ENABLE(PSGIMPROVED, PSG_Improv);
-		TEST_OPTION_ENABLE(YMIMPROVED, YM2612_Improv);
-		TEST_OPTION_ENABLE(DACIMPROVED, DAC_Improv);
-		TEST_OPTION_ENABLE(PERFECTSYNC, SegaCD_Accurate);
-		TEST_OPTION_NUMERIC(MSH2SPEED, MSH2_Speed);
-		TEST_OPTION_NUMERIC(SSH2SPEED, SSH2_Speed);
-		//TEST_OPTION_ENABLE(FASTBLUR, Video.Fast_Blur);
-		//TEST_OPTION_ENABLE(FPS, Show_FPS);
-		//TEST_OPTION_ENABLE(PARSE_MSG, Show_Message);
-		TEST_OPTION_ENABLE(LED, Show_LED);
-		TEST_OPTION_ENABLE(FIXCHKSUM, Auto_Fix_CS);
-		TEST_OPTION_ENABLE(AUTOPAUSE, Auto_Pause);
-		TEST_OPTION_NUMERIC(RAMCARTSIZE, BRAM_Ex_Size);
+		//TEST_OPTION_ENABLE(opt1arg_str[OPT1_STRETCH], Stretch);
+		//TEST_OPTION_ENABLE(opt1arg_str[OPT1_SWBLIT], Blit_Soft);
+		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_CONTRAST][0], Contrast_Level);
+		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_BRIGHTNESS][0], Brightness_Level);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_GREYSCALE], Greyscale);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_INVERT], Invert_Color);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_SPRITELIMIT], Sprite_Over);
+		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_FRAMESKIP][0], Frame_Skip);
+		//TEST_OPTION_ENABLE(opt1arg_str[OPTB_SOUND][0], Sound_Enable);
+		//TEST_OPTION_ENABLE(opt1arg_str[OPTB_STEREO][0], Sound_Stereo);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_Z80], Z80_State);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_YM2612], YM2612_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_YM2612_IMPROVED], YM2612_Improv);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_DAC], DAC_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_DAC_IMPROVED], DAC_Improv);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG], PSG_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG_IMPROVED], PSG_Improv);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PCM], PCM_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PWM], PWM_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_CDDA], CDDA_Enable);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PERFECT_SYNC], SegaCD_Accurate);
+		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_MSH2_SPEED][0], MSH2_Speed);
+		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_SSH2_SPEED][0], SSH2_Speed);
+		//TEST_OPTION_ENABLE(optBarg_str[OPTB_FASTBLUR], Video.Fast_Blur);
+		//TEST_OPTION_ENABLE(optBarg_str[OPTB_FPS], Show_FPS);
+		//TEST_OPTION_ENABLE(optBarg_str[OPTB_MSG], Show_Message);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_LED], Show_LED);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_FIXCHKSUM], Auto_Fix_CS);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_AUTOPAUSE], Auto_Pause);
+		TEST_OPTION_NUMERIC(opt1arg_str[OPT1_RAMCART_SIZE][0], BRAM_Ex_Size);
 		
 		// Other options that can't be handled by macros.
-		if (!strcmp(long_options[option_index].name, STRETCH_ENABLE))
+		if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][0]))
 		{
 			draw->setStretch(true);
 		}
-		else if (!strcmp(long_options[option_index].name, STRETCH_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][1]))
 		{
 			draw->setStretch(false);
 		}
-		else if (!strcmp(long_options[option_index].name, SOUND_ENABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SOUND][0]))
 		{
 			audio->setEnabled(true);
 		}
-		else if (!strcmp(long_options[option_index].name, SOUND_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SOUND][1]))
 		{
 			audio->setEnabled(false);
 		}
-		else if (!strcmp(long_options[option_index].name, STEREO_ENABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STEREO][0]))
 		{
 			audio->setStereo(true);
 		}
-		else if (!strcmp(long_options[option_index].name, STEREO_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STEREO][1]))
 		{
 			audio->setStereo(false);
 		}
-		else if (!strcmp(long_options[option_index].name, SWBLIT_ENABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT][0]))
 		{
 			draw->setSwRender(true);
 		}
-		else if (!strcmp(long_options[option_index].name, SWBLIT_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT][1]))
 		{
 			draw->setSwRender(false);
 		}
-		else if (!strcmp(long_options[option_index].name, FASTBLUR_ENABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FASTBLUR][0]))
 		{
 			draw->setFastBlur(true);
 		}
-		else if (!strcmp(long_options[option_index].name, FASTBLUR_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FASTBLUR][1]))
 		{
 			draw->setFastBlur(false);
 		}
-		else if (!strcmp(long_options[option_index].name, FPS_ENABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FPS][0]))
 		{
 			draw->setFPSEnabled(true);
 		}
-		else if (!strcmp(long_options[option_index].name, FPS_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FPS][1]))
 		{
 			draw->setFPSEnabled(false);
 		}
-		else if (!strcmp(long_options[option_index].name, PARSE_MSG_ENABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_MSG][0]))
 		{
 			draw->setMsgEnabled(true);
 		}
-		else if (!strcmp(long_options[option_index].name, PARSE_MSG_DISABLE))
+		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_MSG][1]))
 		{
 			draw->setMsgEnabled(false);
 		}
-		else if (!strcmp(long_options[option_index].name, FS))
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_FS][0]))
 		{
 			draw->setFullScreen(true);
 		}
-		else if (!strcmp(long_options[option_index].name, WINDOW))
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_WINDOW][0]))
 		{
 			draw->setFullScreen(false);
 		}
-		else if (!strcmp(long_options[option_index].name, RENDERMODE))
+		else if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_RENDERMODE][0]))
 		{
 			int mode = strtol (optarg, (char **) NULL, 10);
 			
@@ -431,7 +553,7 @@ void parseArgs(int argc, char **argv)
 					Video.Render_W = mode;
 			}
 		}
-		else if (!strcmp(long_options[option_index].name, SOUNDRATE))
+		else if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_SOUNDRATE][0]))
 		{
 			int rate = strtol(optarg, (char**)NULL, 10);
 			switch(rate)
@@ -450,11 +572,11 @@ void parseArgs(int argc, char **argv)
 					break;
 			}
 		}
-		else if (!strcmp(long_options[option_index].name, QUICKEXIT))
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_QUICKEXIT][0]))
 		{
 			Quick_Exit = 1;
 		}
-		else if (!strcmp(long_options[option_index].name, HELP))
+		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_HELP][0]))
 		{
 			_usage();
 		}
