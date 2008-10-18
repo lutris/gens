@@ -70,7 +70,8 @@ void Open_Country_Code(void)
 	int i;
 	for (i = 0; i < 3; i++)
 	{
-		ListBox_InsertString(cc_lstCountryCodes, -1, Country_Code_String[Country_Order[i]]);
+		ListBox_InsertString(cc_lstCountryCodes, i, Country_Code_String[Country_Order[i]]);
+		ListBox_SetItemData(cc_lstCountryCodes, i, Country_Order[i]);
 	}
 }
 
@@ -108,39 +109,31 @@ void Country_Save(void)
  */
 void Country_MoveUp(void)
 {
-#if 0
-	GtkWidget *treeview;
-	GtkTreeSelection *selection;
-	GtkTreeIter iter, prevIter;
-	gboolean notFirst, valid;
-	treeview = lookup_widget(country_code_window, "treeview_country_list");
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	int curIndex = ListBox_GetCurSel(cc_lstCountryCodes);
+	if (curIndex == -1 || curIndex == 0)
+		return;
 	
-	// Find the selection and swap it with the item immediately before it.
-	notFirst = FALSE;
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(listmodel_country), &iter);
-	while (valid)
-	{
-		if (gtk_tree_selection_iter_is_selected(selection, &iter))
-		{
-			// Found the selection.
-			if (notFirst)
-			{
-				// Not the first item. Swap it with the previous item.
-				gtk_list_store_swap(listmodel_country, &iter, &prevIter);
-			}
-			break;
-		}
-		else
-		{
-			// Not selected. Store this iter as prevIter.
-			prevIter = iter;
-			// Since this isn't the first item, set notFirst.
-			notFirst = TRUE;
-			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(listmodel_country), &iter);
-		}
-	}
-#endif
+	// Swap the current item and the one above it.
+	char aboveItem[32]; int aboveItemData;
+	char curItem[32];   int curItemData;
+	
+	// Get the current text and data for each item.
+	ListBox_GetText(cc_lstCountryCodes, curIndex - 1, aboveItem);
+	ListBox_GetText(cc_lstCountryCodes, curIndex, curItem);
+	aboveItemData = ListBox_GetItemData(cc_lstCountryCodes, curIndex - 1);
+	curItemData = ListBox_GetItemData(cc_lstCountryCodes, curIndex);
+	
+	// Swap the strings and data.
+	ListBox_DeleteString(cc_lstCountryCodes, curIndex - 1);
+	ListBox_InsertString(cc_lstCountryCodes, curIndex - 1, curItem);
+	ListBox_SetItemData(cc_lstCountryCodes, curIndex - 1, curItemData);
+	
+	ListBox_DeleteString(cc_lstCountryCodes, curIndex);
+	ListBox_InsertString(cc_lstCountryCodes, curIndex, aboveItem);
+	ListBox_SetItemData(cc_lstCountryCodes, curIndex, aboveItemData);
+	
+	// Set the current selection.
+	ListBox_SetCurSel(cc_lstCountryCodes, curIndex - 1);
 }
 
 
