@@ -975,7 +975,9 @@ void VDraw_DDraw::updateRenderer(void)
  */
 void VDraw_DDraw::updateVSync(bool fromInitSDLGL)
 {
-	// Does nothing...
+	// If Full Screen, reinitialize the video subsystem.
+	if (m_FullScreen)
+		Refresh_Video();
 }
 
 
