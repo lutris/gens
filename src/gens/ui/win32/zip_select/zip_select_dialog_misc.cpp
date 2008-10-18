@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 
 #include "zip_select_dialog_misc.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include "emulator/g_main.hpp"
 

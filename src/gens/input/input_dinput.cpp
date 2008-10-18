@@ -9,7 +9,7 @@
 #include "emulator/g_main.hpp"
 #include "emulator/g_input.hpp"
 #include "ui/gens_ui.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 
 #include "controller_config/controller_config_window.hpp"

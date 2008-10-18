@@ -27,7 +27,7 @@
 #include "select_cdrom_window.h"
 #include "select_cdrom_window_callbacks.h"
 #include "select_cdrom_window_misc.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include "ui/gens_ui.hpp"
 

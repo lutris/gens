@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "gens_window.h"
+#include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 

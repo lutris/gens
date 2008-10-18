@@ -10,7 +10,7 @@ gens_SOURCES += \
 		audio/audio_dsound.cpp \
 		util/file/compress/popen_wrapper.c \
 		ui/win32/gens_ui_win32.cpp \
-		ui/win32/gens/gens_window.c \
+		ui/win32/gens/gens_window.cpp \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
 		ui/win32/game_genie/game_genie_window.c \
@@ -52,7 +52,7 @@ noinst_HEADERS += \
 		input/input_dinput.hpp \
 		input/input_win32_keys.h \
 		audio/audio_dsound.hpp \
-		ui/win32/gens/gens_window.h \
+		ui/win32/gens/gens_window.hpp \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
 		ui/win32/gens/gens_window_menu.h \

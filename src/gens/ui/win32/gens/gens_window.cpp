@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "gens_window.h"
+#include "gens_window.hpp"
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
 
@@ -164,7 +164,7 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	// File
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	FileMenu = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu, "&File");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)FileMenu, "&File");
 	
 	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
 #ifdef GENS_CDROM
@@ -202,7 +202,8 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	// File, Change State
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	FileMenu_ChangeState = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, FileMenu_ChangeState, "Change State");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)FileMenu_ChangeState, "Change State");
 	
 	MENUITEMINFO miimStateItem;
 	char mnuTitle[2];
@@ -220,7 +221,7 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 		miimStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
 		mnuTitle[0] = '0' + i;
 		mnuTitle[1] = 0;
-		miimStateItem.dwTypeData = &mnuTitle;
+		miimStateItem.dwTypeData = &mnuTitle[0];
 		miimStateItem.cch = 1;
 		InsertMenuItem(FileMenu_ChangeState, i, TRUE, &miimStateItem);
 	}
@@ -239,7 +240,8 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	// Graphics
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	GraphicsMenu = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu, "&Graphics");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)GraphicsMenu, "&Graphics");
 	
 	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
 	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync");
@@ -274,7 +276,8 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 	// Graphics, Frame Skip
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	GraphicsMenu_FrameSkip = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, GraphicsMenu_FrameSkip, "Frame Skip");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)GraphicsMenu_FrameSkip, "Frame Skip");
 	
 	char mnuTitle[8];
 	int i;
@@ -301,7 +304,7 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 		
 		miimMenuItem.wID = ID_GRAPHICS_FRAMESKIP + (i + 1);
 		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
-		miimMenuItem.dwTypeData = &mnuTitle;
+		miimMenuItem.dwTypeData = &mnuTitle[0];
 		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimMenuItem);
 	}
 }
@@ -319,7 +322,8 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	// CPU
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	CPUMenu = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu, "&CPU");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)CPUMenu, "&CPU");
 	
 #ifdef GENS_DEBUGGER
 	Sync_Gens_Window_CPUMenu_Debug(CPUMenu, 0);
@@ -348,7 +352,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 static void create_gens_window_CPUMenu_Country(HMENU parent, int position)
 {
 	// TODO: Move this array somewhere else.
-	const char* CountryCodes[5] =
+	char* CountryCodes[5] =
 	{
 		"Auto Detect",
 		"Japan (NTSC)",
@@ -360,7 +364,8 @@ static void create_gens_window_CPUMenu_Country(HMENU parent, int position)
 	// CPU, Country
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	CPUMenu_Country = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, CPUMenu_Country, "&Country");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)CPUMenu_Country, "&Country");
 	
 	MENUITEMINFO miimMenuItem;
 	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
@@ -400,7 +405,8 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	// Sound
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	SoundMenu = CreatePopupMenu();
-	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu, "&Sound");
+	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)SoundMenu, "&Sound");
 	
 	InsertMenu(SoundMenu, 0, flags, ID_SOUND_ENABLE, "&Enable");
 	
@@ -454,7 +460,8 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position)
 	// Sound, Rate
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	SoundMenu_Rate = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, SoundMenu_Rate, "&Rate");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)SoundMenu_Rate, "&Rate");
 	
 	MENUITEMINFO miimMenuItem;
 	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
@@ -469,7 +476,7 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position)
 		
 		miimMenuItem.wID = ID_SOUND_RATE + SndRates[i][0];
 		miimMenuItem.fState = (SndRates[i][1] == 22050 ? MFS_CHECKED : MFS_UNCHECKED);
-		miimMenuItem.dwTypeData = &SndName;
+		miimMenuItem.dwTypeData = &SndName[0];
 		miimMenuItem.cch = strlen(SndName);
 		
 		InsertMenuItem(SoundMenu_Rate, i, TRUE, &miimMenuItem);
@@ -489,7 +496,8 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 	// Options
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	OptionsMenu = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu, "&Options");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)OptionsMenu, "&Options");
 	
 	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
 	InsertMenu(OptionsMenu, 1, flags, ID_OPTIONS_JOYPADS, "&Joypads...");
@@ -523,7 +531,8 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int posi
 	// Options, SegaCD SRAM Size
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	OptionsMenu_SegaCDSRAMSize = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, OptionsMenu_SegaCDSRAMSize, "SegaCD S&RAM Size");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)OptionsMenu_SegaCDSRAMSize, "SegaCD S&RAM Size");
 	
 	MENUITEMINFO miimMenuItem;
 	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
@@ -561,7 +570,8 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	// Help
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	HelpMenu = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, HelpMenu, "&Help");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)HelpMenu, "&Help");
 	
 	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
 }

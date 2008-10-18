@@ -13,7 +13,7 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 #include "ui/gtk/gtk-misc.h"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 VDraw_SDL::VDraw_SDL()
 {

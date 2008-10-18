@@ -25,7 +25,7 @@
 #endif
 
 #include "emulator/g_main.hpp"
-#include "gens_window.h"
+#include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 #include "game_genie/game_genie_window_misc.h"

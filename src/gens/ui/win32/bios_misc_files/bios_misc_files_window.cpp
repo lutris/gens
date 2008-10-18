@@ -22,7 +22,7 @@
 
 #include "bios_misc_files_window.hpp"
 #include "bios_misc_files_window_callbacks.h"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>

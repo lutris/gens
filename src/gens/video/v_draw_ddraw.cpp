@@ -11,7 +11,7 @@
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
 
 // Modif N. -- added

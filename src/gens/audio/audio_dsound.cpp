@@ -11,7 +11,7 @@
 #include "audio_dsound.hpp"
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/ym2612.h"

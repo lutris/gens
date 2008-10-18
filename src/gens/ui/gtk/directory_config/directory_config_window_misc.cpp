@@ -25,7 +25,7 @@
 #include "directory_config_window.h"
 #include "directory_config_window_callbacks.h"
 #include "directory_config_window_misc.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"

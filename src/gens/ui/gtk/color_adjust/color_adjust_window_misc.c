@@ -25,7 +25,7 @@
 #include "color_adjust_window.h"
 #include "color_adjust_window_callbacks.h"
 #include "color_adjust_window_misc.h"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"

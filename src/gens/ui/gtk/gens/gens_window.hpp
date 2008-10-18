@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_GENS_WINDOW_H
-#define GTK_GENS_WINDOW_H
+#ifndef GENS_GTK_GENS_WINDOW_HPP
+#define GENS_GTK_GENS_WINDOW_HPP
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -47,4 +47,4 @@ extern GtkWidget *debugSeparators[2];
 }
 #endif
 
-#endif
+#endif /* GENS_GTK_GENS_WINDOW_HPP */

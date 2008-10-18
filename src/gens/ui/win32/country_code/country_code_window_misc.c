@@ -27,7 +27,7 @@
 #include "country_code_window.h"
 #include "country_code_window_callbacks.h"
 #include "country_code_window_misc.h"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include "emulator/g_main.hpp"
 

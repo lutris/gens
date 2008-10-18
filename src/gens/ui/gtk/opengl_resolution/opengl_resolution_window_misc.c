@@ -25,7 +25,7 @@
 #include "opengl_resolution_window.h"
 #include "opengl_resolution_window_callbacks.h"
 #include "opengl_resolution_window_misc.h"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"

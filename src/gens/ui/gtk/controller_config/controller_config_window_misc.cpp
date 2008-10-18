@@ -25,7 +25,7 @@
 #include "controller_config_window.hpp"
 #include "controller_config_window_callbacks.hpp"
 #include "controller_config_window_misc.hpp"
-#include "gens/gens_window.h"
+#include "gens/gens_window.hpp"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
