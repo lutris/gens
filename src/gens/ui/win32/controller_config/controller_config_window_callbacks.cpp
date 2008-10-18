@@ -61,12 +61,12 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
-					//Controller_Config_Save();
+					Controller_Config_Save();
 					DestroyWindow(hWnd);
 					break;
 				
 				case IDC_BTN_APPLY:
-					//Controller_Config_Save();
+					Controller_Config_Save();
 					break;
 				
 				case IDCANCEL: // Standard dialog button ID

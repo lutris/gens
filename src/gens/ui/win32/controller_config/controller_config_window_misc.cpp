@@ -163,17 +163,6 @@ int Reconfigure_Input(int player, int padtype)
  */
 void Controller_Config_Save(void)
 {
-#if 0
-	GtkWidget *check_teamplayer_1, *check_teamplayer_2;
-	GtkWidget *combobox_padtype_1;
-	GtkWidget *combobox_padtype_1B;
-	GtkWidget *combobox_padtype_1C;
-	GtkWidget *combobox_padtype_1D;
-	GtkWidget *combobox_padtype_2;
-	GtkWidget *combobox_padtype_2B;
-	GtkWidget *combobox_padtype_2C;
-	GtkWidget *combobox_padtype_2D;
-	
 	// Copy the new controller key configuration.
 	memcpy(input->m_keyMap, keyConfig, sizeof(input->m_keyMap));
 
@@ -183,68 +172,57 @@ void Controller_Config_Save(void)
 	// TODO: Clean up controller type handling.
 	
 	// Set the Teamplayer options.
-	check_teamplayer_1 = lookup_widget(controller_config_window, "check_teamplayer_1");
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_teamplayer_1)))
+	if (Button_GetCheck(cc_chkTeamPlayer[0]) == BST_CHECKED)
 		Controller_1_Type |= 0x10;
 	else
 		Controller_1_Type &= ~0x10;
 	
-	check_teamplayer_2 = lookup_widget(controller_config_window, "check_teamplayer_2");
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_teamplayer_2)))
+	if (Button_GetCheck(cc_chkTeamPlayer[1]) == BST_CHECKED)
 		Controller_2_Type |= 0x10;
 	else
 		Controller_2_Type &= ~0x10;
 	
 	// Set 3/6 button options.
-	combobox_padtype_1 = lookup_widget(controller_config_window, "combobox_padtype_1");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[0]) == 1)
 		Controller_1_Type |= 0x01;
 	else
 		Controller_1_Type &= ~0x01;
 	
-	combobox_padtype_1B = lookup_widget(controller_config_window, "combobox_padtype_1B");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1B)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[2]) == 1)
 		Controller_1B_Type |= 0x01;
 	else
 		Controller_1B_Type &= ~0x01;
 	
-	combobox_padtype_1C = lookup_widget(controller_config_window, "combobox_padtype_1C");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1C)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[3]) == 1)
 		Controller_1C_Type |= 0x01;
 	else
 		Controller_1C_Type &= ~0x01;
 	
-	combobox_padtype_1D = lookup_widget(controller_config_window, "combobox_padtype_1D");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1D)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[4]) == 1)
 		Controller_1D_Type |= 0x01;
 	else
 		Controller_1D_Type &= ~0x01;
 	
-	combobox_padtype_2 = lookup_widget(controller_config_window, "combobox_padtype_2");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[1]) == 1)
 		Controller_2_Type |= 0x01;
 	else
 		Controller_2_Type &= ~0x01;
 	
-	combobox_padtype_2B = lookup_widget(controller_config_window, "combobox_padtype_2B");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2B)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[5]) == 1)
 		Controller_2B_Type |= 0x01;
 	else
 		Controller_2B_Type &= ~0x01;
 	
-	combobox_padtype_2C = lookup_widget(controller_config_window, "combobox_padtype_2C");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2C)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[6]) == 1)
 		Controller_2C_Type |= 0x01;
 	else
 		Controller_2C_Type &= ~0x01;
 	
-	combobox_padtype_2D = lookup_widget(controller_config_window, "combobox_padtype_2D");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2D)) == 1)
+	if (ComboBox_GetCurSel(cc_cboControllerType[7]) == 1)
 		Controller_2D_Type |= 0x01;
 	else
 		Controller_2D_Type &= ~0x01;
 	
 	// Rebuild the I/O table for teamplayer.
 	Make_IO_Table();
-#endif
 }
