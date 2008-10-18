@@ -154,6 +154,10 @@ int Reconfigure_Input(int player, int padtype)
 	GensUI::sleep(500);
 	SetWindowText(cc_lblSettingKeys, "");
 	
+	// Remove all WM_KEYDOWN messages from the window message queue.
+	MSG msg;
+	while (PeekMessage(&msg, controller_config_window, WM_KEYDOWN, WM_KEYDOWN, PM_REMOVE)) { }
+	
 	return 1;
 }
 
