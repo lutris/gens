@@ -33,6 +33,11 @@
 // Controller Configuration Dialog
 #define IDD_CONTROLLER_CONFIG	0x4000
 
+// Controller Configuration Dialog - Teamplayer checkboxes
+#define IDC_CONTROLLER_CONFIG_CHKTEAMPLAYER	0x4010
+#define IDC_CONTROLLER_CONFIG_CHKTEAMPLAYER1	0x4011
+#define IDC_CONTROLLER_CONFIG_CHKTEAMPLAYER2	0x4012
+
 // Controller Configuration Dialog - Reconfigure. (LOWORD(wParam) & 0xFF) == controller ID.
 #define IDD_CONTROLLER_CONFIG_RECONFIGURE	0x4100
 

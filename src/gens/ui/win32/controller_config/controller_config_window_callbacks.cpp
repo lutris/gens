@@ -30,9 +30,12 @@
 #include "emulator/gens.hpp"
 
 #include <windows.h>
+#include <windowsx.h>
 
 // Gens Win32 resources
 #include "ui/win32/resource.h"
+
+void adjustTeamplayer(unsigned short player);
 
 
 LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -51,6 +54,12 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 			// Button press, or Enter pressed in textbox
 			switch (LOWORD(wParam))
 			{
+				case IDC_CONTROLLER_CONFIG_CHKTEAMPLAYER1:
+				case IDC_CONTROLLER_CONFIG_CHKTEAMPLAYER2:
+					// Teamplayer. Adjust the teamplayer settings.
+					adjustTeamplayer((LOWORD(wParam) & 0x0F) - 1);
+					break;
+				
 				case IDOK: // Standard dialog button ID
 				case IDC_BTN_OK:
 				case IDC_BTN_SAVE:
@@ -81,22 +90,34 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 }
 
 
-#if 0
 /**
- * Window is closed.
+ * adjustTeamplayer(): Adjust Teamplayer settings.
+ * @param player 0 == player 1; 1 == player 2
  */
-gboolean on_controller_config_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+void adjustTeamplayer(unsigned short player)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
+	if (player >= 2)
+		return;
 	
-	gtk_widget_destroy(controller_config_window);
-	controller_config_window = NULL;
-	return FALSE;
+	// Enable/Disable the appropriate controller options depending on the port number.
+	
+	// Get whether this checkbox is checked or not.
+	bool thisChecked = Button_GetCheck(cc_chkTeamPlayer[player]);
+	
+	// Loop for players xB through xD.
+	unsigned short tpPlayer;
+	const unsigned short tpPlayerMin = (player == 0 ? 2 : 5);
+	const unsigned short tpPlayerMax = (player == 0 ? 4 : 7);
+	for (tpPlayer = tpPlayerMin; tpPlayer <= tpPlayerMax; tpPlayer++)
+	{
+		Static_Enable(cc_lblPlayer[tpPlayer], thisChecked);
+		ComboBox_Enable(cc_cboControllerType[tpPlayer], thisChecked);
+		Button_Enable(cc_btnReconfigure[tpPlayer], thisChecked);
+	}
 }
 
 
+#if 0
 /**
  * Teamplayer check box
  */
