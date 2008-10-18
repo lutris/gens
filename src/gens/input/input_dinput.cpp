@@ -423,117 +423,118 @@ unsigned int Input_DInput::getKey(void)
 					button.SetAsVirt(i, curMod);
 					return button.diKey;
 				}
-				
-				// Check for new DirectInput key presses.
-				for (i = 1; i < 255; i++)
+			}
+			
+			// Check for new DirectInput key presses.
+			for (i = 1; i < 255; i++)
+			{
+				if (curDiKeys[i] && !prevDiKeys[i])
 				{
-					if (curDiKeys[i] && !prevDiKeys[i])
+					if (/*allowVirtual &&*/
+					    (i == DIK_LWIN || i == DIK_RWIN || i == DIK_LSHIFT ||
+					     i == DIK_RSHIFT || i == DIK_LCONTROL || i == DIK_RCONTROL ||
+					     i == DIK_LMENU || i == DIK_RMENU))
 					{
-						if (/*allowVirtual &&*/ (i == DIK_LWIN || i == DIK_RWIN ||
-						    i == DIK_LSHIFT || i == DIK_RSHIFT || i == DIK_LCONTROL ||
-						    i == DIK_RCONTROL || i == DIK_LMENU || i == DIK_RMENU))
-						{
-							// Don't allow modifier keys here.
-							continue;
-						}
-						button.SetAsDIK(i, curMod);
-						return button.diKey;
+						// Don't allow modifier keys here.
+						continue;
 					}
-				}
-				
-				// Check for modifier key releases.
-				// This allows a modifier key to be used as a hotkey on its own, as some people like to do.
-				if (!curMod && prevMod /*&& allowVirtual*/)
-				{
-					button.SetAsVirt(VK_NONE, prevMod);
+					button.SetAsDIK(i, curMod);
 					return button.diKey;
 				}
+			}
 				
-				// Check for new recognized joypad button presses.
-				for (int index = 0; index < joyIndex; index++)
+			// Check for modifier key releases.
+			// This allows a modifier key to be used as a hotkey on its own, as some people like to do.
+			if (!curMod && prevMod /*&& allowVirtual*/)
+			{
+				button.SetAsVirt(VK_NONE, prevMod);
+				return button.diKey;
+			}
+			
+			// Check for new recognized joypad button presses.
+			for (int index = 0; index < joyIndex; index++)
+			{
+				if (curJoyKeys[index] && !prevJoyKeys[index])
 				{
-					if (curJoyKeys[index] && !prevJoyKeys[index])
+					int joyIndex2 = 0;
+					for (i = 0; i < m_numJoysticks; i++)
 					{
-						int joyIndex2 = 0;
-						for (i = 0; i < m_numJoysticks; i++)
+						if (!joyExists(i))
+							continue;
+						
+						if (index == joyIndex2++)
 						{
-							if (!joyExists(i))
-								continue;
-							
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x1, curMod);
+							return button.diKey;
+						}
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x2, curMod);
+							return button.diKey;
+						}
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x3, curMod);
+							return button.diKey;
+						}
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x4, curMod);
+							return button.diKey;
+						}
+						
+						for (j = 0; j < 4; j++)
+						{
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x1, curMod);
+								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x1, curMod);
 								return button.diKey;
 							}
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x2, curMod);
+								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x2, curMod);
 								return button.diKey;
 							}
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x3, curMod);
+								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x3, curMod);
 								return button.diKey;
 							}
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x4, curMod);
+								button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x4, curMod);
 								return button.diKey;
 							}
-							
-							for (j = 0; j < 4; j++)
-							{
-								if (index == joyIndex2++)
-								{
-									button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x1, curMod);
-									return button.diKey;
-								}
-								if (index == joyIndex2++)
-								{
-									button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x2, curMod);
-									return button.diKey;
-								}
-								if (index == joyIndex2++)
-								{
-									button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x3, curMod);
-									return button.diKey;
-								}
-								if (index == joyIndex2++)
-								{
-									button.SetAsDIK(0x1080 + (0x100 * i) + (0x10 * j) + 0x4, curMod);
-									return button.diKey;
-								}
-							}
-							
-							for (j = 0; j < 32; j++)
-							{
-								if (index == joyIndex2++)
-								{
-									button.SetAsDIK(0x1010 + (0x100 * i) + j, curMod);
-									return button.diKey;
-								}
-							}
-							
+						}
+						
+						for (j = 0; j < 32; j++)
+						{
 							if (index == joyIndex2++)
 							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x5, curMod);
+								button.SetAsDIK(0x1010 + (0x100 * i) + j, curMod);
 								return button.diKey;
 							}
-							if (index == joyIndex2++)
-							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x6, curMod);
-								return button.diKey;
-							}
-							if (index == joyIndex2++)
-							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x7, curMod);
-								return button.diKey;
-							}
-							if (index == joyIndex2++)
-							{
-								button.SetAsDIK(0x1000 + (0x100 * i) + 0x8, curMod);
-								return button.diKey;
-							}
+						}
+						
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x5, curMod);
+							return button.diKey;
+						}
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x6, curMod);
+							return button.diKey;
+						}
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x7, curMod);
+							return button.diKey;
+						}
+						if (index == joyIndex2++)
+						{
+							button.SetAsDIK(0x1000 + (0x100 * i) + 0x8, curMod);
+							return button.diKey;
 						}
 					}
 				}
