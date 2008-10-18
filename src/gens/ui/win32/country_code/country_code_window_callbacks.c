@@ -59,9 +59,17 @@ LRESULT CALLBACK Country_Code_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 					Country_Save();
 					break;
 				
-					case IDCANCEL: // Standard dialog button ID
+				case IDCANCEL: // Standard dialog button ID
 				case IDC_BTN_CANCEL:
 					DestroyWindow(hWnd);
+					break;
+				
+				case IDC_COUNTRY_CODE_UP:
+					Country_MoveUp();
+					break;
+				
+				case IDC_COUNTRY_CODE_DOWN:
+					Country_MoveDown();
 					break;
 			}
 			break;
@@ -91,29 +99,3 @@ LRESULT CALLBACK Country_Code_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
-
-#if 0
-/**
- * Up
- */
-void on_button_Country_up_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Country_MoveUp();
-}
-
-
-/**
- * Down
- */
-void on_button_Country_down_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	Country_MoveDown();
-}
-#endif
