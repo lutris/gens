@@ -854,13 +854,17 @@ void VDraw::setFullScreen(const bool newFullScreen)
 	int newRend = (m_FullScreen ? Video.Render_FS : Video.Render_W);
 	setRender(newRend, false);
 	
+#ifdef GENS_OS_WIN32
 	// Reinitialize the Gens window, if necessary.
-	if (Video.Render_FS == Video.Render_W)
+	//if (Video.Render_FS == Video.Render_W)
 		reinitGensWindow();
+#endif
 	
+#ifndef GENS_OS_WIN32
 	// Refresh the video subsystem, if Gens is running.
 	if (is_gens_running())
 		Refresh_Video();
+#endif
 }
 
 

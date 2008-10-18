@@ -98,7 +98,7 @@ extern "C"
 
 
 #include "video/v_draw_ddraw.hpp"
-static bool PaintsEnabled = true;
+static bool paintsEnabled = true;
 
 
 static void on_gens_window_close(void);
@@ -108,6 +108,8 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+static void fullScreenPopupMenu(HWND hWnd);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -124,7 +126,6 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT rectGensWindow;
-	int t;
 	
 	switch(message)
 	{
@@ -142,7 +143,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			
 			hDC = BeginPaint(hWnd, &ps);
 			
-			if (PaintsEnabled)
+			if (paintsEnabled)
 			{
 				((VDraw_DDraw*)draw)->clearPrimaryScreen();
 				draw->flip();
@@ -171,7 +172,12 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Window_Pos.x = rectGensWindow.left;
 			Window_Pos.y = rectGensWindow.top;
 			break;
-			
+		
+		case WM_RBUTTONDOWN:
+			if (draw->fullScreen())
+				fullScreenPopupMenu(hWnd);
+			break;
+		
 		case WM_COMMAND:
 			// Menu item.
 			switch (LOWORD(wParam) & 0xF000)
@@ -742,15 +748,31 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 }
 
 
-#if 0
 /**
- * CPU, Country, Auto-Detect Order...
+ * fullScreenPopupMenu(): Show the Popup Menu while in fullscreen mode.
+ * @param hWnd Window handle.
  */
-void on_CPUMenu_Country_SubMenu_AutoDetectOrder_activate(GtkMenuItem *menuitem, gpointer user_data)
+static void fullScreenPopupMenu(HWND hWnd)
 {
-	GENS_UNUSED_PARAMETER(menuitem);
-	GENS_UNUSED_PARAMETER(user_data);
+	// Full Screen, right mouse button click.
+	// Show the popup menu.
+	audio->clearSoundBuffer();
 	
-	Open_Country_Code();
+	// Show the mouse pointer.
+	while (ShowCursor(false) >= 0) { }
+	while (ShowCursor(true) < 0) { }
+	
+	POINT pt;
+	GetCursorPos(&pt);
+	SendMessage(hWnd, WM_PAINT, 0, 0);
+	reinterpret_cast<VDraw_DDraw*>(draw)->restorePrimary();
+	
+	// Disable painting while the popup menu is open.
+	paintsEnabled = false;
+	TrackPopupMenu(MainMenu, TPM_LEFTALIGN | TPM_TOPALIGN, pt.x, pt.y, NULL, hWnd, NULL);
+	paintsEnabled = true;
+	
+	// Hide the mouse pointer.
+	while (ShowCursor(true) < 0) { }
+	while (ShowCursor(false) >= 0) { }
 }
-#endif

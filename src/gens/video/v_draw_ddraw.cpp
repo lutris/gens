@@ -332,17 +332,28 @@ int VDraw_DDraw::reinitGensWindow(void)
 		while (ShowCursor(false) >= 0) { }
 		while (ShowCursor(true) < 1) { }
 		
-		w = (Video.Render_W == 0 ? 320 : 640);
-		h = (Video.Render_W == 0 ? 240 : 480);
+		if (Video.Render_W == 0)
+		{
+			w = 320;
+			h = 240;
+		}
+		else
+		{
+			w = 640;
+			h = 480;
+		}
 		
 		// MoveWindow / ResizeWindow code
 		SetWindowLong(Gens_hWnd, GWL_STYLE, GetWindowLong(Gens_hWnd, GWL_STYLE) | WS_OVERLAPPEDWINDOW);
-		Win32_setActualWindowSize(Gens_hWnd, w, h);
 		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+		Win32_setActualWindowSize(Gens_hWnd, w, h);
 	}
 	
-	Sync_Gens_Window();
+	// Rebuild the menu bar.
+	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
+	create_gens_window_menubar();
+	
 	return Init_Video();
 }
 

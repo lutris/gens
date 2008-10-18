@@ -49,13 +49,11 @@ HWND Gens_hWnd = NULL;
 //GtkWidget *debugSeparators[2];
 #endif /* GENS_DEBUGGER */
 
-
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
 // Menu identifier definitions
 #include "gens_window_menu.h"
-
 
 // Menu objects
 HMENU MainMenu;
@@ -74,8 +72,8 @@ HMENU OptionsMenu;
 HMENU OptionsMenu_SegaCDSRAMSize;
 HMENU HelpMenu;
 
+void create_gens_window_menubar(void);
 
-static void create_gens_window_menubar(void);
 static void create_gens_window_FileMenu(HMENU parent, int position);
 static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
@@ -87,9 +85,6 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
-#if 0
-static void create_gens_window_OptionsMenu_SegaCDSRAMSize_SubMenu(GtkWidget *container);
-#endif
 
 
 /**
@@ -125,7 +120,6 @@ HWND create_gens_window(void)
 {
 	// Create the menu bar.
 	create_gens_window_menubar();
-	SetMenu(Gens_hWnd, MainMenu);
 	
 	return Gens_hWnd;
 }
@@ -134,13 +128,16 @@ HWND create_gens_window(void)
 /**
  * create_gens_window_menubar(): Create the menu bar.
  */
-static void create_gens_window_menubar(void)
+void create_gens_window_menubar(void)
 {
 	// TODO: Popup menu if fullscreen.
 	DestroyMenu(MainMenu);
 	
 	// Create the main menu.
-	MainMenu = CreateMenu();
+	if (draw->fullScreen())
+		MainMenu = CreatePopupMenu();
+	else
+		MainMenu = CreateMenu();
 	
 	// Menus
 	create_gens_window_FileMenu(MainMenu, 0);
@@ -149,6 +146,12 @@ static void create_gens_window_menubar(void)
 	create_gens_window_SoundMenu(MainMenu, 3);
 	create_gens_window_OptionsMenu(MainMenu, 4);
 	create_gens_window_HelpMenu(MainMenu, 5);
+	
+	// Set the menu bar.
+	if (draw->fullScreen())
+		SetMenu(Gens_hWnd, NULL);
+	else
+		SetMenu(Gens_hWnd, MainMenu);
 }
 
 
