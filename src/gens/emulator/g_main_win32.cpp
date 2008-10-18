@@ -54,6 +54,7 @@ HFONT fntTitle = NULL;
 #include "general_options/general_options_window.h"
 #include "color_adjust/color_adjust_window.h"
 #include "select_cdrom/select_cdrom_window.h"
+#include "country_code/country_code_window.h"
 #include "about/about_window.hpp"
 
 // Maximum value function
@@ -368,6 +369,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			    (general_options_window && IsDialogMessage(general_options_window, &msg)) ||
 			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 			    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
+			    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
 			    (about_window && IsDialogMessage(about_window, &msg)))
 			{
 				continue;
@@ -457,6 +459,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 				    general_options_window ||
 				    color_adjust_window ||
 				    select_cdrom_window ||
+				    country_code_window ||
 				    about_window)
 				{
 					// A dialog is open, so don't sleep that much.

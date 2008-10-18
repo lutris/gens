@@ -36,9 +36,9 @@
 #include "general_options/general_options_window_misc.hpp"
 #include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
-#if 0
 #include "country_code/country_code_window_misc.h"
 
+#if 0
 #ifdef GENS_OPENGL
 #include "opengl_resolution/opengl_resolution_window_misc.h"
 #endif /* GENS_OPENGL */
@@ -465,7 +465,11 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		case ID_CPU_COUNTRY_JAPAN_PAL:
 			Change_Country(LOWORD(wParam) - ID_CPU_COUNTRY - 1);
 			break;
-			
+		
+		case ID_CPU_COUNTRY_ORDER:
+			Open_Country_Code();
+			break;
+		
 		case ID_CPU_HARDRESET:
 			system_reset();
 			break;

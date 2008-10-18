@@ -89,15 +89,15 @@ void GensUI::init(int argc, char *argv[])
 	
 	// Get the Windows version.
 	winVersion.dwOSVersionInfoSize = sizeof(winVersion);
-	GetVersionEx(&version);
+	GetVersionEx(&winVersion);
 	
 	// Initialize the Common Controls library.
 	
 	// CommCtrlEx is initially disabled.
 	win32_CommCtrlEx = 0;
 	
-	if (version.dwMajorVersion >= 5 ||
-	    (version.dwMajorVersion == 4 && version.dwMinorVersion >= 10))
+	if (winVersion.dwMajorVersion >= 5 ||
+	    (winVersion.dwMajorVersion == 4 && winVersion.dwMinorVersion >= 10))
 	{
 		// Windows 98, Windows Me, Windows 2000, Windows XP, Windows Vista, or later.
 		// Use InitCommonControlsEx().
