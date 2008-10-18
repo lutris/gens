@@ -9,6 +9,9 @@ IDI_GENS_MD		ICON		"../../../../pixmaps/gens.ico"
 IDI_SONIC_HEAD		ICON		"../../../../pixmaps/sonic.ico"
 IDI_SONIC_WAITING	ICON		"../../../../pixmaps/sonic2.ico"
 
+IDI_ARROW_UP		ICON		"../../../../pixmaps/ARW07UP.ico"
+IDI_ARROW_DOWN		ICON		"../../../../pixmaps/ARW07DN.ico"
+
 // Bitmaps
 IDB_GENS_LOGO_SMALL	BITMAP		"../../../../pixmaps/gens_small.bmp"
 IDB_GENS_LOGO_BIG	BITMAP		"../../../../pixmaps/gens_big.bmp"

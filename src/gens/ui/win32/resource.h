@@ -6,6 +6,9 @@
 #define IDI_SONIC_HEAD		0x0003
 #define IDI_SONIC_WAITING	0x0004
 
+#define IDI_ARROW_UP		0x0011
+#define IDI_ARROW_DOWN		0x0012
+
 // Bitmaps
 #define IDB_GENS_LOGO_SMALL	0x0101
 #define IDB_GENS_LOGO_BIG	0x0102
