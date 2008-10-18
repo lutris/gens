@@ -57,8 +57,6 @@ void Open_Country_Code(void)
 	// Show the Country Code window.
 	ShowWindow(Country, 1);
 	
-	// TODO
-#if 0
 	// Set up the country order treeview.
 	// Elements in Country_Order[3] can have one of three values:
 	// - 0 [USA]
@@ -68,33 +66,12 @@ void Open_Country_Code(void)
 	// Make sure the country code order is valid.
 	Check_Country_Order();
 	
-	// Populate the TreeView.
-	treeview = lookup_widget(Country, "treeview_country_list");
-	
-	// Check if the listmodel_country is already created.
-	// If it is, clear it; if not, create a new one.
-	if (listmodel_country)
-		gtk_list_store_clear(listmodel_country);
-	else
-		listmodel_country = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);	
-	
-	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(listmodel_country));
-	
-	// Create the renderer and the columns.
-	text_renderer = gtk_cell_renderer_text_new();
-	col_text = gtk_tree_view_column_new_with_attributes("Country", text_renderer, "text", 0, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col_text);
-	
-	// Add the country codes to the treeview in the appropriate order.
+	// Add the country codes to the listbox in the appropriate order.
+	int i;
 	for (i = 0; i < 3; i++)
 	{
-		gtk_list_store_append(listmodel_country, &iter);
-		gtk_list_store_set(GTK_LIST_STORE(listmodel_country), &iter,
-						  0, Country_Code_String[Country_Order[i]],
-						  1, Country_Order[i], -1);
+		ListBox_InsertString(cc_lstCountryCodes, -1, Country_Code_String[Country_Order[i]]);
 	}
-#endif	
 }
 
 
