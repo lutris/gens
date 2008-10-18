@@ -138,11 +138,11 @@ HWND create_general_options_window(void)
 	general_options_window = CreateWindowEx(NULL, "Gens_General_Options", "General Options",
 						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16, (frameHeight * 5) - 12,
+						frameWidth + 16, (frameHeight * 5) + 8,
 						Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(general_options_window, frameWidth + 16, (frameHeight * 5) - 12);
+	Win32_setActualWindowSize(general_options_window, frameWidth + 16, (frameHeight * 5) + 8);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(general_options_window);
