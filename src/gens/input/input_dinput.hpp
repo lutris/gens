@@ -60,6 +60,9 @@ class Input_DInput : public Input
 		static BOOL CALLBACK InitJoystick(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 		BOOL InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 		
+		// Cooperative level (Win32)
+		void setCooperativeLevel(HWND hWnd = NULL);
+	
 	protected:
 		// Functions required by the Input class.
 		bool joyExists(int joyNum);
@@ -78,10 +81,6 @@ class Input_DInput : public Input
 		unsigned char m_DIKeys[256];
 		
 		void restoreInput(void);
-		
-		// Cooperative level (Win32)
-		void setCooperativeLevel(void);
-		
 };
 
 #endif

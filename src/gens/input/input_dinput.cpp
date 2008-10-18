@@ -620,15 +620,20 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 
 /**
  * setCooperativeLevel(): Sets the cooperative level.
+ * @param hWnd Window to set cooperative level on.
  */
-void Input_DInput::setCooperativeLevel(void)
+void Input_DInput::setCooperativeLevel(HWND hWnd)
 {
-	if (!Gens_hWnd || !lpDIDKeyboard /*|| lpDIDMouse*/)
+	// If no hWnd was specified, use the Gens window.
+	if (!hWnd)
+		hWnd = Gens_hWnd;
+	
+	if (!hWnd || !lpDIDKeyboard /*|| lpDIDMouse*/)
 		return;
 	
 	HRESULT rval;
-	//rval = lpDIDMouse->SetCooperativeLevel(Gens_hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-	rval = lpDIDKeyboard->SetCooperativeLevel(Gens_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	//rval = lpDIDMouse->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+	rval = lpDIDKeyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	if (rval != DI_OK)
 	{
 		printf("%s: lpDIDKeyboard->SetCooperativeLevel() failed.\n", __func__);
