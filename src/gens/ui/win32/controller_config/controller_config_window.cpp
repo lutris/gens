@@ -357,4 +357,30 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 					 8, 16, grpBox_Note_Width-8-8, 16,
 					 grpBox, NULL, ghInstance, NULL);
 	SetWindowFont(cc_lblSettingKeys, fntMain, TRUE);
+	
+	// Buttons
+	const unsigned short btnTop = wndHeight-8-23;
+	const unsigned short btnLeft = wndWidth-8-75-8-75-8-75;
+	HWND btnOK, btnApply, btnCancel;
+	
+	btnOK = CreateWindow(WC_BUTTON, "&OK",
+			     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+			     btnLeft, btnTop, 75, 23,
+			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, TRUE);
+	
+	btnApply = CreateWindow(WC_BUTTON, "&Apply",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				btnLeft+75+8, btnTop, 75, 23,
+				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+	SetWindowFont(btnApply, fntMain, TRUE);
+	
+	btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+				 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				 btnLeft+75+8+75+8, btnTop, 75, 23,
+				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+	SetWindowFont(btnCancel, fntMain, TRUE);
+	
+	// Set focus to Player 1's "Reconfigure" button.
+	SetFocus(cc_btnReconfigure[0]);
 }
