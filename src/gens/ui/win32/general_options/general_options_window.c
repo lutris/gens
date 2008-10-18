@@ -231,14 +231,14 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 	frameTop += frameHeight + 8;
 	grpBox = CreateWindow(WC_BUTTON, "Miscellaneous",
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-			      frameLeft, frameTop, frameWidth, (frameHeight * 3) / 4,
+			      frameLeft, frameTop, frameWidth, frameHeight,
 			      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Intro effect color label
 	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
 					   WS_CHILD | WS_VISIBLE | SS_LEFT,
-					   frameLeft+8, frameTop+16+2, 92, 12,
+					   frameLeft+8, frameTop+16+2, 64, 32,
 					   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblIntroEffectColor, fntMain, TRUE);
 	
@@ -247,12 +247,12 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 	{
 		go_stcIntroEffectColor[i] = CreateWindow(
 				WC_STATIC, "", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				frameLeft+8+92+8+(i*(16+8)), frameTop+16+2, 16, 16,
+				frameLeft+8+92+8+(i*(16+8)), frameTop+16+2+8, 16, 16,
 				hWnd, (HMENU)(0xA010 + i), ghInstance, NULL);
 	}
 	
 	// Buttons
-	frameTop += ((frameHeight * 3) / 4) + 8;
+	frameTop += frameHeight + 8;
 	const int btnLeft = ((frameWidth - (75+8+75+8+75)) / 2) + 8;
 	HWND btnOK, btnApply, btnCancel;
 	
@@ -311,7 +311,7 @@ static void createMsgFrame(HWND hWnd, const int index,
 	// Color label
 	lblColor = CreateWindow(WC_STATIC, "Color:",
 				WS_CHILD | WS_VISIBLE | SS_LEFT,
-				frameLeft+8+128+8+16, frameTop+16+20+2, 32, 12,
+				frameLeft+8+128+8+16, frameTop+16+20+2, 36, 16,
 				hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblColor, fntMain, TRUE);
 	
@@ -320,7 +320,7 @@ static void createMsgFrame(HWND hWnd, const int index,
 	{
 		go_stcMsgColor[index][i] = CreateWindow(
 				WC_STATIC, "", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				frameLeft+8+128+8+32+4+16+(i*(16+8)), frameTop+16+20+2, 16, 16,
+				frameLeft+8+128+8+32+4+16+4+(i*(16+8)), frameTop+16+20+2, 16, 16,
 				hWnd, (HMENU)(0xA000 + ((index * 4) + i)), ghInstance, NULL);
 	}
 }
