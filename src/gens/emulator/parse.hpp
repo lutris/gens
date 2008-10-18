@@ -149,9 +149,9 @@ extern "C" {
 #define FPS_ENABLE		ENABLE "-" FPS
 #define FPS_DISABLE		DISABLE "-" FPS
 
-#define MSG			"message"
-#define MSG_ENABLE		ENABLE "-" MSG
-#define MSG_DISABLE		DISABLE "-" MSG
+#define PARSE_MSG		"message"
+#define PARSE_MSG_ENABLE	ENABLE "-" PARSE_MSG
+#define PARSE_MSG_DISABLE	DISABLE "-" PARSE_MSG
 
 #define LED			"led"
 #define LED_ENABLE		ENABLE "-" LED

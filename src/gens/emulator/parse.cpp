@@ -65,7 +65,7 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
-// Include this *last* to avoid naming conflicts.
+// Include this *last* to avoid naming confflicts.
 #include "parse.hpp"
 
 #define print_usage(option, helpmsg) fprintf(stderr, MM option " : " helpmsg "\n")
@@ -141,8 +141,8 @@ static const struct option long_options[] =
 	{FASTBLUR_DISABLE,	no_argument, 0, 0},
 	{FPS_ENABLE,		no_argument, 0, 0},
 	{FPS_DISABLE,		no_argument, 0, 0},
-	{MSG_ENABLE,		no_argument, 0, 0},
-	{MSG_DISABLE,		no_argument, 0, 0},
+	{PARSE_MSG_ENABLE,	no_argument, 0, 0},
+	{PARSE_MSG_DISABLE,	no_argument, 0, 0},
 	{LED_ENABLE,		no_argument, 0, 0},
 	{LED_DISABLE,		no_argument, 0, 0},
 	{FIXCHKSUM_ENABLE,	no_argument, 0, 0},
@@ -231,7 +231,7 @@ static void _usage()
 	print_usage2(PERFECTSYNC,"Perfect Synchro");
 	print_usage2(FASTBLUR,"Fast blur");
 	print_usage2(FPS,"Frame per second");
-	print_usage2(MSG,"Message");
+	print_usage2(PARSE_MSG_ENABLE,"Message");
 	print_usage2(LED,"SegaCD led");
 	print_usage2(FIXCHKSUM,"Fix checksum");
 	print_usage2(AUTOPAUSE,"Auto-pause");
@@ -340,7 +340,7 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_NUMERIC(SSH2SPEED, SSH2_Speed);
 		//TEST_OPTION_ENABLE(FASTBLUR, Video.Fast_Blur);
 		//TEST_OPTION_ENABLE(FPS, Show_FPS);
-		//TEST_OPTION_ENABLE(MSG, Show_Message);
+		//TEST_OPTION_ENABLE(PARSE_MSG, Show_Message);
 		TEST_OPTION_ENABLE(LED, Show_LED);
 		TEST_OPTION_ENABLE(FIXCHKSUM, Auto_Fix_CS);
 		TEST_OPTION_ENABLE(AUTOPAUSE, Auto_Pause);
@@ -395,11 +395,11 @@ void parseArgs(int argc, char **argv)
 		{
 			draw->setFPSEnabled(false);
 		}
-		else if (!strcmp(long_options[option_index].name, MSG_ENABLE))
+		else if (!strcmp(long_options[option_index].name, PARSE_MSG_ENABLE))
 		{
 			draw->setMsgEnabled(true);
 		}
-		else if (!strcmp(long_options[option_index].name, MSG_DISABLE))
+		else if (!strcmp(long_options[option_index].name, PARSE_MSG_DISABLE))
 		{
 			draw->setMsgEnabled(false);
 		}

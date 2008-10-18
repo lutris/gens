@@ -9,6 +9,8 @@
 #include "g_update.hpp"
 #include "g_palette.h"
 #include "gens_ui.hpp"
+#include "parse.hpp"
+
 #include "g_md.hpp"
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
@@ -127,6 +129,135 @@ void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
 
 
 /**
+ * Struct for argc/argv conversion.
+ */
+struct argc_argv
+{
+	int    c;
+	char** v;
+};
+
+
+/**
+ * convertCmdLineToArgv: Convert lpCmdLine to argc and argv.
+ * Originally from http://www.cmake.org/pipermail/cmake/2004-June/005172.html
+ * @param lpCmdLine Command line.
+ */
+static argc_argv convertCmdLineToArgv(LPSTR lpCmdLine)
+{
+	argc_argv	arg;
+	unsigned int	i;
+	int		j;
+	unsigned int	cmdLen = strlen(lpCmdLine);
+	
+	// parse a few of the command line arguments 
+	// a space delimites an argument except when it is inside a quote 
+	
+	arg.c = 1;
+	int pos = 0; 
+	for (i = 0; i < cmdLen; i++) 
+	{ 
+		while (lpCmdLine[i] == ' ' && i < cmdLen) 
+		{
+			i++; 
+		}
+		if (lpCmdLine[i] == '\"')
+		{
+			i++;
+			while (lpCmdLine[i] != '\"' && i < cmdLen)
+			{
+				i++;
+				pos++;
+			}
+			arg.c++;
+			pos = 0;
+		}
+		else
+		{
+			while (lpCmdLine[i] != ' ' && i < cmdLen)
+			{
+				i++;
+				pos++;
+			}
+			arg.c++;
+			pos = 0;
+		}
+	}
+	
+	arg.v = (char**)malloc(sizeof(char*)*(arg.c + 1));
+	
+	arg.v[0] = (char*)malloc(1024);
+	GetModuleFileName(NULL, arg.v[0], 1024); 
+	
+	for (j = 1; j < arg.c; j++)
+	{
+		arg.v[j] = (char*)malloc(cmdLen + 10);
+	}
+	arg.v[arg.c] = NULL;
+	
+	arg.c = 1;
+	pos = 0;
+	for (i = 0; i < strlen(lpCmdLine); i++)
+	{
+		while (lpCmdLine[i] == ' ' && i < strlen(lpCmdLine))
+		{
+			i++;
+		}
+		if (lpCmdLine[i] == '\"')
+		{
+			i++;
+			while (lpCmdLine[i] != '\"' && i < cmdLen)
+			{ 
+				arg.v[arg.c][pos] = lpCmdLine[i];
+				i++;
+				pos++;
+			}
+			arg.v[arg.c][pos] = '\0';
+			arg.c++;
+			pos = 0;
+		}
+		else 
+		{
+			while (lpCmdLine[i] != ' ' && i < strlen(lpCmdLine))
+			{
+				arg.v[arg.c][pos] = lpCmdLine[i];
+				i++;
+				pos++;
+			}
+			arg.v[arg.c][pos] = '\0';
+			arg.c++;
+			pos = 0;
+		}
+	}
+	arg.v[arg.c] = NULL;
+	
+	return arg;
+}
+
+
+/**
+ * deleteArgcArgv(): Delete all arguments in an argc_argv struct.
+ * @param arg Pointer to argc_argv struct.
+ */
+static void deleteArgcArgv(argc_argv* arg)
+{
+	if (!arg)
+		return;
+	
+	// Delete all parameters.
+	int i;
+	for (i = 0; i < arg->c; i++)
+	{
+		free(arg->v[i]);
+	}
+	
+	free(arg->v);
+	
+	arg->c = 0;
+}
+
+
+/**
  * WinMain: Win32 main loop.
  * @param hinst ???
  * @param hPrevInst ???
@@ -159,8 +290,9 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Init_GameGenie();
 	
 	// Parse command line arguments.
-	// TODO: Implement a Win32 version.
-	//parseArgs(argc, argv);
+	argc_argv arg = convertCmdLineToArgv(lpCmdLine);
+	parseArgs(arg.c, arg.v);
+	deleteArgcArgv(&arg);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
