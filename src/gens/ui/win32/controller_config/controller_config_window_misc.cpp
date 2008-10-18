@@ -54,6 +54,9 @@ void Open_Controller_Config(void)
 	// TODO: Make the window modal.
 	//gtk_window_set_transient_for(GTK_WINDOW(cc), GTK_WINDOW(gens_window));
 	
+	// Copy the current controller key configuration.
+	memcpy(keyConfig, input->m_keyMap, sizeof(keyConfig));
+	
 	// Set the Teamplayer options.
 	Button_SetCheck(cc_chkTeamPlayer[0], (Controller_1_Type & 0x10));
 	Button_SetCheck(cc_chkTeamPlayer[1], (Controller_2_Type & 0x10));
