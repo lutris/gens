@@ -119,11 +119,7 @@ bool _7z::checkExternalExec(void)
 	gens_pclose(p_7z);
 	
 	// Check if the header matches 7-Zip's header.
-#ifdef GENS_OS_WIN32
-	const char* str7zHeader = "\r\n7-Zip";
-#else
-	const char* str7zHeader = "\n7-Zip";
-#endif
+	const char* str7zHeader = _7Z_NEWLINE "7-Zip";
 	if (strncmp(buf, str7zHeader, strlen(str7zHeader)) != 0)
 	{
 		// Incorrect header. External 7z executable is broken.
