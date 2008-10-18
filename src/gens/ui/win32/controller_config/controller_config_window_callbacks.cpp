@@ -109,7 +109,7 @@ void adjustTeamplayer(unsigned short player)
 	// Enable/Disable the appropriate controller options depending on the port number.
 	
 	// Get whether this checkbox is checked or not.
-	bool thisChecked = Button_GetCheck(cc_chkTeamPlayer[player]);
+	bool thisChecked = (Button_GetCheck(cc_chkTeamPlayer[player]) == BST_CHECKED);
 	
 	// Loop for players xB through xD.
 	unsigned short tpPlayer;
