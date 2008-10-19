@@ -13,9 +13,9 @@
 #include "gens_core/misc/misc.h"
 #include "gens_core/misc/fastblur.h"
 #include "emulator/g_main.hpp"
-#include "gens_core/vdp/vdp_io.h"
 #include "emulator/g_palette.h"
 #include "emulator/ui_proxy.hpp"
+#include "gens_core/vdp/vdp_io.h"
 
 #ifndef GENS_OS_WIN32
 #include "port/timer.h"
@@ -263,7 +263,7 @@ int VDraw::flip(void)
 	
 	// Check if the display width changed.
 	m_HBorder_Old = m_HBorder;
-	if ((VDP_Reg.Set4 & 0x1) || (Debug))
+	if (isFullXRes())
 		m_HBorder = 0;	// 320x224
 	else
 		m_HBorder = 64;	// 256x224
@@ -721,6 +721,19 @@ int VDraw::reinitGensWindow(void)
 	return 1;
 }
 
+
+// Inline functions for determining MD resolution settings.
+inline bool VDraw::isFullXRes(void)
+{
+	return ((VDP_Reg.Set4 & 0x1) || Debug || !Game /*|| !FrameCount*/);
+}
+inline bool VDraw::isFullYRes(void)
+{
+	return ((VDP_Reg.Set2 & 0x8) || Debug || !Game /*|| !FrameCount*/);
+}
+
+
+/** Properties **/
 
 bool VDraw::stretch(void)
 {

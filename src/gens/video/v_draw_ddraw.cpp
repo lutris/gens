@@ -24,9 +24,6 @@
 	#define ALT_X_RATIO_RES 320
 #endif
 
-#define IS_FULL_X_RESOLUTION ((VDP_Reg.Set4 & 0x1) || Debug || !Game /*|| !FrameCount*/)
-#define IS_FULL_Y_RESOLUTION ((VDP_Reg.Set2 & 0x8) || Debug || !Game /*|| !FrameCount*/)
-
 
 inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface,
 					 const int renderMode, const bool lock)
@@ -595,7 +592,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		}
 	}
 
-	if (IS_FULL_X_RESOLUTION)
+	if (isFullXRes())
 	{
 		Dep = 0;
 
@@ -691,7 +688,7 @@ int VDraw_DDraw::flipInternal(void)
 		
 		Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - Floor them to the smaller value for correct ratio display
 		
-		if (IS_FULL_X_RESOLUTION)
+		if (isFullXRes())
 		{
 			if (Flag_Clr_Scr != 40)
 			{
@@ -919,7 +916,7 @@ int VDraw_DDraw::flipInternal(void)
 		GetClientRect(Gens_hWnd, &RectDest);
 		CalculateDrawArea(Video.Render_W, RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 
-		int Clr_Cmp_Val = IS_FULL_X_RESOLUTION ? 40 : 32;
+		int Clr_Cmp_Val = isFullXRes() ? 40 : 32;
 		if (Flag_Clr_Scr != Clr_Cmp_Val)
 		{
 			clearPrimaryScreen();
