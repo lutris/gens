@@ -372,7 +372,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 				close_gens();
 			
 			// Check for an accelerator.
-			if (Gens_hWnd && TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
+			if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
+			    TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
 			{
 				// Accelerator. Don't process it as a regular message.
 				continue;
