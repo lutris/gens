@@ -13,6 +13,9 @@
 #define IDB_GENS_LOGO_SMALL	0x0101
 #define IDB_GENS_LOGO_BIG	0x0102
 
+// Accelerator Table
+#define IDR_GENS_WINDOW_ACCEL	0x0201
+
 // Buttons
 #define IDC_BTN_OK		0x1001
 #define IDC_BTN_CANCEL		0x1002

@@ -39,8 +39,14 @@ HINSTANCE ghInstance = NULL;
 // Windows version
 OSVERSIONINFO winVersion;
 
-// If extended Common Controls are enabled, this is set to non-zero.
+// If extended Common Controls are enabled, this is set to a non-zero value.
 int win32_CommCtrlEx = 0;
+
+// Gens Win32 resources
+#include "ui/win32/resource.h"
+
+// Accelerator table for the main Gens window.
+HACCEL hAccelTable;
 
 // Fonts
 HFONT fntMain = NULL;
@@ -348,6 +354,9 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
+	// Load the accelerator table.
+	hAccelTable = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL));
+	
 	// Show the Gens window.
 	ShowWindow(Gens_hWnd, nCmdShow);
 	
@@ -361,6 +370,13 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			if (!GetMessage(&msg, NULL, 0, 0))
 				close_gens();
 			
+			// Check for an accelerator.
+			if (Gens_hWnd && TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
+			{
+				// Accelerator. Don't process it as a regular message.
+				continue;
+			}
+			
 			// Check for dialog messages.
 			if ((game_genie_window && IsDialogMessage(game_genie_window, &msg)) ||
 			    (controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
@@ -372,6 +388,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
 			    (about_window && IsDialogMessage(about_window, &msg)))
 			{
+				// Dialog message. Don't process it as a regular message.
 				continue;
 			}
 			
