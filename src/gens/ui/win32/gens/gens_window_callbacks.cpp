@@ -283,6 +283,19 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			break;
 #endif /* GENS_CDROM */
 		
+		case IDM_FILE_NETPLAY:
+			// Netplay isn't supported yet in Gens/GS.
+			// There are only two ways this message could be received:
+			// 1. Someone sent the message using another program.
+			// 2. Someone used a Win32 API tool to remove the MF_GRAYED style.
+			//
+			// So, let's give them what they want: A Rick Roll! :)
+			Paused = 1;
+			//Pause_Screen();
+			audio->clearSoundBuffer();
+			ShellExecute(NULL, NULL, "http://www.youtube.com/watch?v=oHg5SJYRHA0", NULL, NULL, SW_MAXIMIZE);
+			break;
+		
 		case IDM_FILE_CLOSEROM:
 			if (audio->soundInitialized())
 				audio->clearSoundBuffer();
