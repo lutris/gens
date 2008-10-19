@@ -68,6 +68,9 @@ int Init_32X(struct Rom *MD_Rom)
 	FILE *f;
 	int i;
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	// Read the Genesis 32X BIOS (usually "32X_G_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
 	{
@@ -229,9 +232,12 @@ int Init_32X(struct Rom *MD_Rom)
 /**
  * Reset_32X(): Resets the 32X.
  */
-void Reset_32X (void)
+void Reset_32X(void)
 {
 	int i;
+	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
 	
 	Paused = 0;
 	Controller_1_COM = Controller_2_COM = 0;

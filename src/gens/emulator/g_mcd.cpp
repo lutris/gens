@@ -74,6 +74,9 @@ int Init_SegaCD(const char *iso_name)
 {
 	char *Bios_To_Use;
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	GensUI::setWindowTitle_Init("SegaCD", false);
 	
 	// Clear the SCD struct.
@@ -203,12 +206,12 @@ int Init_SegaCD(const char *iso_name)
  */
 int Reload_SegaCD(const char *iso_name)
 {
-	Save_BRAM ();
+	Save_BRAM();
 	
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
 	
-	Reset_CD ((char *) CD_Data, iso_name);
-	Update_CD_Rom_Name ((char *) &CD_Data[32]);
+	Reset_CD((char*)CD_Data, iso_name);
+	Update_CD_Rom_Name((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
 	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), Rom_Name);
@@ -226,6 +229,9 @@ void
 Reset_SegaCD ()
 {
 	char *Bios_To_Use;
+	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
 	
 	if (Game_Mode == 0)
 		Bios_To_Use = BIOS_Filenames.MegaCD_JP;

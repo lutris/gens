@@ -130,6 +130,9 @@ void Init_Genesis_Bios(void)
 	// TODO: Compressor support.
 	FILE *f;
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	if ((f = fopen(BIOS_Filenames.MD_TMSS, "rb")))
 	{
 		fread(&Genesis_Rom[0], 1, 2 * 1024, f);
@@ -223,6 +226,9 @@ void Init_Genesis_SRAM(struct Rom *MD_Rom)
 int Init_Genesis(struct Rom *MD_Rom)
 {
 	char Str_Err[256];
+	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -329,6 +335,9 @@ int Init_Genesis(struct Rom *MD_Rom)
  */
 void Reset_Genesis (void)
 {
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	Controller_1_COM = Controller_2_COM = 0;
 	Paused = 0;
 	

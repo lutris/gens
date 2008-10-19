@@ -769,6 +769,9 @@ void Free_Rom(Rom* Rom_MD)
 	if (Game == NULL)
 		return;
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	if (SegaCD_Started)
 		Save_BRAM();
 	
