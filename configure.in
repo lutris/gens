@@ -290,7 +290,7 @@ CFLAGS="$CFLAGS -Wall -Wextra"
 CXXFLAGS="$CXXFLAGS -Wall -Wextra"
 LDFLAGS="$LDFLAGS -Wl,--as-needed"
 
-# C99 doesn't work for Win32 for some reason.
+# C99 doesn't work on the Win32 build for some reason.
 if test x$os != xwin32; then
 	CFLAGS="$CFLAGS -std=c99"
 fi
