@@ -103,9 +103,18 @@ gboolean GensUI_GLib_SleepCallback(gpointer data)
 /**
  * sleep(): Sleep, but keep the UI active.
  * @param ms Interval to sleep, in milliseconds.
+ * @param noUpdate If true, don't check for GUI updates.
  */
-void GensUI::sleep(const int ms)
+void GensUI::sleep(const int ms, const bool noUpdate)
 {
+	if (noUpdate)
+	{
+		// Don't process GTK+ events.
+		usleep(ms * 1000);
+		return;
+	}
+	
+	// Sleep 10 ms, then check for GTK+ events.
 	sleeping = true;
 	g_timeout_add(ms, GensUI_GLib_SleepCallback, NULL);
 	while (sleeping)

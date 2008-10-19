@@ -59,7 +59,7 @@ class GensUI
 		// The following functions are implemented by ui/[ui]/gens_ui_[ui].cpp.
 		static void init(int argc, char *argv[]);
 		static void update(void);
-		static void sleep(const int ms);
+		static void sleep(const int ms, const bool noUpdate = false);
 		
 		static void setWindowTitle(const string& title);
 		static void setWindowVisibility(const bool visibility);

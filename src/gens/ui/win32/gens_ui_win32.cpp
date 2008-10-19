@@ -207,9 +207,17 @@ void GensUI::update(void)
 /**
  * sleep(): Sleep, but keep the UI active.
  * @param ms Interval to sleep, in milliseconds.
+ * @param noUpdate If true, don't check for GUI updates.
  */
-void GensUI::sleep(const int ms)
+void GensUI::sleep(const int ms, const bool noUpdate)
 {
+	if (noUpdate)
+	{
+		// Don't check for messages.
+		Sleep(ms);
+		return;
+	}
+	
 	// Sleep 10 ms, then check for messages.
 	int loops = ms / 10;
 	for (int i = 0; i < loops; i++)
