@@ -343,8 +343,6 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	while (is_gens_running())
 	{
-		Win32_CheckMessages();
-		
 		// Update the UI.
 		GensUI::update();
 		
