@@ -48,9 +48,7 @@ extern "C" {
 #define IDCMD_FPS			0x700D
 #define IDCMD_RENDERMODE_DEC		0x700E
 #define IDCMD_RENDERMODE_INC		0x700F
-#ifdef GENS_CDROM
 #define IDCMD_CHANGE_CD			0x7010
-#endif /* GENS_CDROM */
 
 // Non-Menu Commands - Save SLot Numbers
 #define IDCMD_SAVESLOT_NUMERIC		0x7100 // Same as IDCMD_SAVESLOT_NUMERIC_0

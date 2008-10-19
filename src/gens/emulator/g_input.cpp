@@ -399,15 +399,13 @@ void Input_KeyDown(int key)
 			break;
 #endif
 		
-#ifdef GENS_CDROM
 		case GENS_KEY_v:
 			if (mod & GENS_KMOD_CTRL)
 			{
 				if (SegaCD_Started)
-				Change_CD();
+					Change_CD();
 			}
 			break;
-#endif /* GENS_CDROM */
 		
 		default:
 			break;
