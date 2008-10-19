@@ -764,41 +764,42 @@ IPS_Patching (void)
 }
 
 
-void
-Free_Rom (Rom * Rom_MD)
+void Free_Rom(Rom* Rom_MD)
 {
-  if (Game == NULL)
-    return;
+	if (Game == NULL)
+		return;
+	
+	if (SegaCD_Started)
+		Save_BRAM();
+	
+	Save_SRAM();
+	Save_Patch_File();
+	
+	// Audio dumping.
+	if (audio->dumpingWAV())
+		audio->stopWAVDump();
+	if (GYM_Dumping)
+		Stop_GYM_Dump();
 
-#ifdef CC_SUPPORT
-  CC_Close ();
-#endif
-
-  if (SegaCD_Started)
-    Save_BRAM ();
-  Save_SRAM ();
-  Save_Patch_File ();
-  if (audio->dumpingWAV())
-    audio->stopWAVDump();
-  if (GYM_Dumping)
-    Stop_GYM_Dump ();
-  if (SegaCD_Started)
-    Stop_CD ();
-  Net_Play = 0;
-  Genesis_Started = 0;
-  _32X_Started = 0;
-  SegaCD_Started = 0;
-  Game = NULL;
-  ice = 0;
-
-  if (Rom_MD)
-    {
-      free (Rom_MD);
-      Rom_MD = NULL;
-    }
-
-  if (Intro_Style == 3)
-    Init_Genesis_Bios ();
-
+	if (SegaCD_Started)
+		Stop_CD();
+	
+	Net_Play = 0;
+	Genesis_Started = 0;
+	_32X_Started = 0;
+	SegaCD_Started = 0;
+	
+	Game = NULL;
+	ice = 0;
+	
+	if (Rom_MD)
+	{
+		free(Rom_MD);
+		Rom_MD = NULL;
+	}
+	
+	if (Intro_Style == 3)
+		Init_Genesis_Bios();
+	
 	GensUI::setWindowTitle_Idle();
 }
