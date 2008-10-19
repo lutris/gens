@@ -894,11 +894,30 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		default:
-			if ((LOWORD(wParam) & 0xFF00) == IDCMD_SAVESLOT_NUMERIC)
+			int value = LOWORD(wParam) & 0x0F;
+			
+			switch (LOWORD(wParam) & 0xFF00)
 			{
-				// Change the save slot.
-				Set_Current_State(LOWORD(wParam) & 0x0F);
-				Sync_Gens_Window_FileMenu();
+				case IDCMD_SAVESLOT_NUMERIC:
+					// Change the save slot.
+					if (value > 9)
+						break;
+					
+					Set_Current_State(value);
+					Sync_Gens_Window_FileMenu();
+					break;
+				
+				case IDCMD_ROMHISTORY_NUMERIC:
+					// Load a ROM from the ROM History submenu.
+					if (value == 0 || value > 9)
+						break;
+					
+					//if ((Check_If_Kaillera_Running())) return 0;
+					if (audio->playingGYM())
+						Stop_Play_GYM();
+					Open_Rom(Recent_Rom[value - 1]);
+					Sync_Gens_Window();
+					break;
 			}
 	}
 }
