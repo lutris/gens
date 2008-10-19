@@ -169,29 +169,29 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	FileMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)FileMenu, "&File");
 	
-	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...\tCtrl+O");
+	InsertMenu(FileMenu, 0, flags, IDM_FILE_OPENROM, "&Open ROM...\tCtrl+O");
 #ifdef GENS_CDROM
-	InsertMenu(FileMenu, 1, flags, ID_FILE_BOOTCD, "&Boot CD\tCtrl+B");
+	InsertMenu(FileMenu, 1, flags, IDM_FILE_BOOTCD, "&Boot CD\tCtrl+B");
 #endif /* GENS_CDROM */
-	InsertMenu(FileMenu, 2, flags | MF_GRAYED, ID_FILE_NETPLAY, "&Netplay");
+	InsertMenu(FileMenu, 2, flags | MF_GRAYED, IDM_FILE_NETPLAY, "&Netplay");
 	InsertMenu(FileMenu, 3, flags, NULL, "ROM &History"); // DUMMY menu item
-	InsertMenu(FileMenu, 4, flags, ID_FILE_CLOSEROM, "&Close ROM\tCtrl+W");
+	InsertMenu(FileMenu, 4, flags, IDM_FILE_CLOSEROM, "&Close ROM\tCtrl+W");
 	
 	InsertMenu(FileMenu, 5, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, 6, flags, ID_FILE_GAMEGENIE, "&Game Genie");
+	InsertMenu(FileMenu, 6, flags, IDM_FILE_GAMEGENIE, "&Game Genie");
 	
 	InsertMenu(FileMenu, 7, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, 8, flags, ID_FILE_LOADSTATE, "&Load State...\tShift+F8");
-	InsertMenu(FileMenu, 9, flags, ID_FILE_SAVESTATE, "&Save State As...\tShift+F5");
-	InsertMenu(FileMenu, 10, flags, ID_FILE_QUICKLOAD, "Quick Load\tF8");
-	InsertMenu(FileMenu, 11, flags, ID_FILE_QUICKSAVE, "Quick Save\tF5");
+	InsertMenu(FileMenu, 8, flags, IDM_FILE_LOADSTATE, "&Load State...\tShift+F8");
+	InsertMenu(FileMenu, 9, flags, IDM_FILE_SAVESTATE, "&Save State As...\tShift+F5");
+	InsertMenu(FileMenu, 10, flags, IDM_FILE_QUICKLOAD, "Quick Load\tF8");
+	InsertMenu(FileMenu, 11, flags, IDM_FILE_QUICKSAVE, "Quick Save\tF5");
 	create_gens_window_FileMenu_ChangeState(FileMenu, 12);
 	
 	InsertMenu(FileMenu, 13, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, 14, flags, ID_FILE_EXIT, "E&xit\tCtrl+Q");
+	InsertMenu(FileMenu, 14, flags, IDM_FILE_EXIT, "E&xit\tCtrl+Q");
 }
 
 
@@ -220,7 +220,7 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	// Create the save slot entries.
 	for (i = 0; i < 10; i++)
 	{
-		miimStateItem.wID = ID_FILE_CHANGESTATE + i;
+		miimStateItem.wID = IDM_FILE_CHANGESTATE + i;
 		miimStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
 		mnuTitle[0] = '0' + i;
 		mnuTitle[1] = 0;
@@ -246,18 +246,18 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)GraphicsMenu, "&Graphics");
 	
-	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen\tAlt+Enter");
-	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync\tShift+F3");
-	InsertMenu(GraphicsMenu, 2, flags, ID_GRAPHICS_STRETCH, "&Stretch\tShift+F2");
+	InsertMenu(GraphicsMenu, 0, flags, IDM_GRAPHICS_FULLSCREEN, "&Full Screen\tAlt+Enter");
+	InsertMenu(GraphicsMenu, 1, flags, IDM_GRAPHICS_VSYNC, "&VSync\tShift+F3");
+	InsertMenu(GraphicsMenu, 2, flags, IDM_GRAPHICS_STRETCH, "&Stretch\tShift+F2");
 	
 	InsertMenu(GraphicsMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, 4, flags, ID_GRAPHICS_COLORADJUST, "&Color Adjust...");
+	InsertMenu(GraphicsMenu, 4, flags, IDM_GRAPHICS_COLORADJUST, "&Color Adjust...");
 	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu, 5);
 	
 	InsertMenu(GraphicsMenu, 6, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, 7, flags, ID_GRAPHICS_SPRITELIMIT, "Sprite Limit");
+	InsertMenu(GraphicsMenu, 7, flags, IDM_GRAPHICS_SPRITELIMIT, "Sprite Limit");
 	
 	InsertMenu(GraphicsMenu, 8, MF_SEPARATOR, NULL, NULL);
 	
@@ -265,7 +265,7 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	
 	InsertMenu(GraphicsMenu, 10, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, 11, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot\tShift+Backspace");
+	InsertMenu(GraphicsMenu, 11, flags, IDM_GRAPHICS_SCREENSHOT, "Screen Shot\tShift+Backspace");
 }
 
 
@@ -305,7 +305,7 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 			miimMenuItem.cch = 4;
 		}
 		
-		miimMenuItem.wID = ID_GRAPHICS_FRAMESKIP + (i + 1);
+		miimMenuItem.wID = IDM_GRAPHICS_FRAMESKIP + (i + 1);
 		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
 		miimMenuItem.dwTypeData = &mnuTitle[0];
 		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimMenuItem);
@@ -337,13 +337,13 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	
 	InsertMenu(CPUMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(CPUMenu, 4, flags, ID_CPU_HARDRESET, "Hard &Reset\tTab");
+	InsertMenu(CPUMenu, 4, flags, IDM_CPU_HARDRESET, "Hard &Reset\tTab");
 	// SegaCD and 32X menu items are handled in the Sync_Gens_Window_CPUMenu() function.
-	InsertMenu(CPUMenu, 10, flags, ID_CPU_RESETZ80, "Reset Z80");
+	InsertMenu(CPUMenu, 10, flags, IDM_CPU_RESETZ80, "Reset Z80");
 	
 	InsertMenu(CPUMenu, 11, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(CPUMenu, 12, flags, ID_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
+	InsertMenu(CPUMenu, 12, flags, IDM_CPU_SEGACDPERFECTSYNC, "SegaCD Perfect Sync (SLOW)");
 }
 
 
@@ -380,7 +380,7 @@ static void create_gens_window_CPUMenu_Country(HMENU parent, int position)
 	int i;
 	for (i = 0; i < 5; i++)
 	{
-		miimMenuItem.wID = ID_CPU_COUNTRY + i;
+		miimMenuItem.wID = IDM_CPU_COUNTRY + i;
 		miimMenuItem.fState = (i == 0 ? MFS_CHECKED : MFS_UNCHECKED);
 		miimMenuItem.dwTypeData = CountryCodes[i];
 		miimMenuItem.cch = strlen(CountryCodes[i]);
@@ -392,7 +392,7 @@ static void create_gens_window_CPUMenu_Country(HMENU parent, int position)
 	InsertMenu(CPUMenu_Country, 5, MF_SEPARATOR, NULL, NULL);
 	
 	// Add the Auto-Detection Order configuration option.
-	InsertMenu(CPUMenu_Country, 6, MF_BYPOSITION | MF_STRING, ID_CPU_COUNTRY_ORDER, "Auto-Detection Order...");
+	InsertMenu(CPUMenu_Country, 6, MF_BYPOSITION | MF_STRING, IDM_CPU_COUNTRY_ORDER, "Auto-Detection Order...");
 }
 
 
@@ -411,33 +411,33 @@ static void create_gens_window_SoundMenu(HMENU parent, int position)
 	InsertMenu(parent, 3, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)SoundMenu, "&Sound");
 	
-	InsertMenu(SoundMenu, 0, flags, ID_SOUND_ENABLE, "&Enable");
+	InsertMenu(SoundMenu, 0, flags, IDM_SOUND_ENABLE, "&Enable");
 	
 	InsertMenu(SoundMenu, 1, MF_SEPARATOR, NULL, NULL);
 	
 	create_gens_window_SoundMenu_Rate(SoundMenu, 2);
-	InsertMenu(SoundMenu, 3, flags, ID_SOUND_STEREO, "&Stereo");
+	InsertMenu(SoundMenu, 3, flags, IDM_SOUND_STEREO, "&Stereo");
 	
 	InsertMenu(SoundMenu, 4, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(SoundMenu, 5, flags, ID_SOUND_Z80, "&Z80");
+	InsertMenu(SoundMenu, 5, flags, IDM_SOUND_Z80, "&Z80");
 	
 	InsertMenu(SoundMenu, 6, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(SoundMenu, 7, flags, ID_SOUND_YM2612, "&YM2612");
-	InsertMenu(SoundMenu, 8, flags, ID_SOUND_YM2612_IMPROVED, "YM2612 Improved");
-	InsertMenu(SoundMenu, 9, flags, ID_SOUND_DAC, "&DAC");
-	InsertMenu(SoundMenu, 10, flags, ID_SOUND_DAC_IMPROVED, "DAC Improved");
-	InsertMenu(SoundMenu, 11, flags, ID_SOUND_PSG, "&PSG");
-	InsertMenu(SoundMenu, 12, flags, ID_SOUND_PSG_IMPROVED, "PSG Improved");
-	InsertMenu(SoundMenu, 13, flags, ID_SOUND_PCM, "P&CM");
-	InsertMenu(SoundMenu, 14, flags, ID_SOUND_PWM, "P&WM");
-	InsertMenu(SoundMenu, 15, flags, ID_SOUND_CDDA, "CDDA");
+	InsertMenu(SoundMenu, 7, flags, IDM_SOUND_YM2612, "&YM2612");
+	InsertMenu(SoundMenu, 8, flags, IDM_SOUND_YM2612_IMPROVED, "YM2612 Improved");
+	InsertMenu(SoundMenu, 9, flags, IDM_SOUND_DAC, "&DAC");
+	InsertMenu(SoundMenu, 10, flags, IDM_SOUND_DAC_IMPROVED, "DAC Improved");
+	InsertMenu(SoundMenu, 11, flags, IDM_SOUND_PSG, "&PSG");
+	InsertMenu(SoundMenu, 12, flags, IDM_SOUND_PSG_IMPROVED, "PSG Improved");
+	InsertMenu(SoundMenu, 13, flags, IDM_SOUND_PCM, "P&CM");
+	InsertMenu(SoundMenu, 14, flags, IDM_SOUND_PWM, "P&WM");
+	InsertMenu(SoundMenu, 15, flags, IDM_SOUND_CDDA, "CDDA");
 	
 	InsertMenu(SoundMenu, 16, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(SoundMenu, 17, flags, ID_SOUND_WAVDUMP, "Start WAV Dump");
-	InsertMenu(SoundMenu, 18, flags, ID_SOUND_GYMDUMP, "Start GYM Dump");
+	InsertMenu(SoundMenu, 17, flags, IDM_SOUND_WAVDUMP, "Start WAV Dump");
+	InsertMenu(SoundMenu, 18, flags, IDM_SOUND_GYMDUMP, "Start GYM Dump");
 }
 
 
@@ -477,7 +477,7 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position)
 	{
 		sprintf(SndName, "%d Hz", SndRates[i][1]);
 		
-		miimMenuItem.wID = ID_SOUND_RATE + SndRates[i][0];
+		miimMenuItem.wID = IDM_SOUND_RATE + SndRates[i][0];
 		miimMenuItem.fState = (SndRates[i][1] == 22050 ? MFS_CHECKED : MFS_UNCHECKED);
 		miimMenuItem.dwTypeData = &SndName[0];
 		miimMenuItem.cch = strlen(SndName);
@@ -502,22 +502,22 @@ static void create_gens_window_OptionsMenu(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)OptionsMenu, "&Options");
 	
-	InsertMenu(OptionsMenu, 0, flags, ID_OPTIONS_GENERAL, "&General Options...");
-	InsertMenu(OptionsMenu, 1, flags, ID_OPTIONS_JOYPADS, "&Joypads...");
-	InsertMenu(OptionsMenu, 2, flags, ID_OPTIONS_DIRECTORIES, "&Directories...");
-	InsertMenu(OptionsMenu, 3, flags, ID_OPTIONS_BIOSMISCFILES, "&BIOS/Misc Files...");
+	InsertMenu(OptionsMenu, 0, flags, IDM_OPTIONS_GENERAL, "&General Options...");
+	InsertMenu(OptionsMenu, 1, flags, IDM_OPTIONS_JOYPADS, "&Joypads...");
+	InsertMenu(OptionsMenu, 2, flags, IDM_OPTIONS_DIRECTORIES, "&Directories...");
+	InsertMenu(OptionsMenu, 3, flags, IDM_OPTIONS_BIOSMISCFILES, "&BIOS/Misc Files...");
 	
 	InsertMenu(OptionsMenu, 4, MF_SEPARATOR, NULL, NULL);
 	
 #ifdef GENS_CDROM
-	InsertMenu(OptionsMenu, 5, flags, ID_OPTIONS_CURRENT_CD_DRIVE, "Current &CD Drive...");
+	InsertMenu(OptionsMenu, 5, flags, IDM_OPTIONS_CURRENT_CD_DRIVE, "Current &CD Drive...");
 #endif /* GENS_CDROM */
 	create_gens_window_OptionsMenu_SegaCDSRAMSize(OptionsMenu, 6);
 	
 	InsertMenu(OptionsMenu, 7, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(OptionsMenu, 8, flags, ID_OPTIONS_LOADCONFIG, "&Load Config...");
-	InsertMenu(OptionsMenu, 9, flags, ID_OPTIONS_SAVECONFIGAS, "&Save Config As...");
+	InsertMenu(OptionsMenu, 8, flags, IDM_OPTIONS_LOADCONFIG, "&Load Config...");
+	InsertMenu(OptionsMenu, 9, flags, IDM_OPTIONS_SAVECONFIGAS, "&Save Config As...");
 }
 
 
@@ -551,7 +551,7 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int posi
 		else
 			sprintf(SRAMName, "%d KB", 8 << i);
 		
-		miimMenuItem.wID = ID_OPTIONS_SEGACDSRAMSIZE + (i + 1);
+		miimMenuItem.wID = IDM_OPTIONS_SEGACDSRAMSIZE + (i + 1);
 		miimMenuItem.fState = (i == -1 ? MFS_CHECKED : MFS_UNCHECKED);
 		miimMenuItem.dwTypeData = SRAMName;
 		miimMenuItem.cch = strlen(SRAMName);
@@ -576,5 +576,5 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)HelpMenu, "&Help");
 	
-	InsertMenu(HelpMenu, 0, flags, ID_HELP_ABOUT, "&About");
+	InsertMenu(HelpMenu, 0, flags, IDM_HELP_ABOUT, "&About");
 }

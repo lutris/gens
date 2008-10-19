@@ -182,22 +182,22 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			// Menu item.
 			switch (LOWORD(wParam) & 0xF000)
 			{
-				case ID_FILE_MENU:
+				case IDM_FILE_MENU:
 					on_gens_window_FileMenu(hWnd, message, wParam, lParam);
 					break;
-				case ID_GRAPHICS_MENU:
+				case IDM_GRAPHICS_MENU:
 					on_gens_window_GraphicsMenu(hWnd, message, wParam, lParam);
 					break;
-				case ID_CPU_MENU:
+				case IDM_CPU_MENU:
 					on_gens_window_CPUMenu(hWnd, message, wParam, lParam);
 					break;
-				case ID_SOUND_MENU:
+				case IDM_SOUND_MENU:
 					on_gens_window_SoundMenu(hWnd, message, wParam, lParam);
 					break;
-				case ID_OPTIONS_MENU:
+				case IDM_OPTIONS_MENU:
 					on_gens_window_OptionsMenu(hWnd, message, wParam, lParam);
 					break;
-				case ID_HELP_MENU:
+				case IDM_HELP_MENU:
 					on_gens_window_HelpMenu(hWnd, message, wParam, lParam);
 					break;
 			}
@@ -242,7 +242,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 {
 	switch (LOWORD(wParam))
 	{
-		case ID_FILE_OPENROM:
+		case IDM_FILE_OPENROM:
 			if (audio->playingGYM())
 				Stop_Play_GYM();
 			if (Get_Rom() != -1)
@@ -250,7 +250,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			break;
 		
 #ifdef GENS_CDROM
-		case ID_FILE_BOOTCD:
+		case IDM_FILE_BOOTCD:
 			if (!ASPI_Initialized || !Num_CD_Drive)
 			{
 				printf("ASPI not initialized and/or no CD-ROM drive(s) detected.\n");
@@ -270,7 +270,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			break;
 #endif /* GENS_CDROM */
 		
-		case ID_FILE_CLOSEROM:
+		case IDM_FILE_CLOSEROM:
 			if (audio->soundInitialized())
 				audio->clearSoundBuffer();
 	
@@ -290,28 +290,28 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Sync_Gens_Window();
 			break;
 		
-		case ID_FILE_GAMEGENIE:
+		case IDM_FILE_GAMEGENIE:
 			Open_Game_Genie();
 			break;
 		
-		case ID_FILE_ROMHISTORY_0:
-		case ID_FILE_ROMHISTORY_1:
-		case ID_FILE_ROMHISTORY_2:
-		case ID_FILE_ROMHISTORY_3:
-		case ID_FILE_ROMHISTORY_4:
-		case ID_FILE_ROMHISTORY_5:
-		case ID_FILE_ROMHISTORY_6:
-		case ID_FILE_ROMHISTORY_7:
-		case ID_FILE_ROMHISTORY_8:
-		case ID_FILE_ROMHISTORY_9:
+		case IDM_FILE_ROMHISTORY_0:
+		case IDM_FILE_ROMHISTORY_1:
+		case IDM_FILE_ROMHISTORY_2:
+		case IDM_FILE_ROMHISTORY_3:
+		case IDM_FILE_ROMHISTORY_4:
+		case IDM_FILE_ROMHISTORY_5:
+		case IDM_FILE_ROMHISTORY_6:
+		case IDM_FILE_ROMHISTORY_7:
+		case IDM_FILE_ROMHISTORY_8:
+		case IDM_FILE_ROMHISTORY_9:
 			// ROM History.
 			if (audio->playingGYM())
 				Stop_Play_GYM();
-			Open_Rom(Recent_Rom[LOWORD(wParam) - ID_FILE_ROMHISTORY]);
+			Open_Rom(Recent_Rom[LOWORD(wParam) - IDM_FILE_ROMHISTORY]);
 			Sync_Gens_Window();
 			break;
 		
-		case ID_FILE_LOADSTATE:
+		case IDM_FILE_LOADSTATE:
 			/*
 			if (Check_If_Kaillera_Running())
 			return 0;
@@ -321,7 +321,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 				Load_State(Str_Tmp);
 			break;
 		
-		case ID_FILE_SAVESTATE:
+		case IDM_FILE_SAVESTATE:
 			/*
 			if (Check_If_Kaillera_Running())
 			return 0;
@@ -331,7 +331,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 				Save_State(Str_Tmp);
 			break;
 		
-		case ID_FILE_QUICKLOAD:
+		case IDM_FILE_QUICKLOAD:
 			/*
 			if (Check_If_Kaillera_Running())
 			return 0;
@@ -341,7 +341,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Load_State(Str_Tmp);
 			break;
 		
-		case ID_FILE_QUICKSAVE:
+		case IDM_FILE_QUICKSAVE:
 			/*
 			if (Check_If_Kaillera_Running())
 			return 0;
@@ -351,22 +351,22 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Save_State(Str_Tmp);
 			break;
 		
-		case ID_FILE_CHANGESTATE_0:
-		case ID_FILE_CHANGESTATE_1:
-		case ID_FILE_CHANGESTATE_2:
-		case ID_FILE_CHANGESTATE_3:
-		case ID_FILE_CHANGESTATE_4:
-		case ID_FILE_CHANGESTATE_5:
-		case ID_FILE_CHANGESTATE_6:
-		case ID_FILE_CHANGESTATE_7:
-		case ID_FILE_CHANGESTATE_8:
-		case ID_FILE_CHANGESTATE_9:
+		case IDM_FILE_CHANGESTATE_0:
+		case IDM_FILE_CHANGESTATE_1:
+		case IDM_FILE_CHANGESTATE_2:
+		case IDM_FILE_CHANGESTATE_3:
+		case IDM_FILE_CHANGESTATE_4:
+		case IDM_FILE_CHANGESTATE_5:
+		case IDM_FILE_CHANGESTATE_6:
+		case IDM_FILE_CHANGESTATE_7:
+		case IDM_FILE_CHANGESTATE_8:
+		case IDM_FILE_CHANGESTATE_9:
 			// Change state.
-			Set_Current_State(LOWORD(wParam) - ID_FILE_CHANGESTATE);
+			Set_Current_State(LOWORD(wParam) - IDM_FILE_CHANGESTATE);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case ID_FILE_EXIT:
+		case IDM_FILE_EXIT:
 			close_gens();
 			break;
 	}
@@ -384,7 +384,7 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 {
 	switch (LOWORD(wParam))
 	{
-		case ID_GRAPHICS_FULLSCREEN:
+		case IDM_GRAPHICS_FULLSCREEN:
 			/*
 			if (Full_Screen)
 				Set_Render(0, -1, 1);
@@ -398,7 +398,7 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case ID_GRAPHICS_VSYNC:
+		case IDM_GRAPHICS_VSYNC:
 			if (draw->fullScreen())
 				Change_VSync(!Video.VSync_FS);
 			else
@@ -406,46 +406,46 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case ID_GRAPHICS_STRETCH:
+		case IDM_GRAPHICS_STRETCH:
 			Change_Stretch(!draw->stretch());
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case ID_GRAPHICS_COLORADJUST:
+		case IDM_GRAPHICS_COLORADJUST:
 			Open_Color_Adjust();
 			break;
 				
-		case ID_GRAPHICS_SPRITELIMIT:
+		case IDM_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
 			Set_Sprite_Limit(!Sprite_Over);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 			
-		case ID_GRAPHICS_FRAMESKIP_AUTO:
-		case ID_GRAPHICS_FRAMESKIP_0:
-		case ID_GRAPHICS_FRAMESKIP_1:
-		case ID_GRAPHICS_FRAMESKIP_2:
-		case ID_GRAPHICS_FRAMESKIP_3:
-		case ID_GRAPHICS_FRAMESKIP_4:
-		case ID_GRAPHICS_FRAMESKIP_5:
-		case ID_GRAPHICS_FRAMESKIP_6:
-		case ID_GRAPHICS_FRAMESKIP_7:
-		case ID_GRAPHICS_FRAMESKIP_8:
+		case IDM_GRAPHICS_FRAMESKIP_AUTO:
+		case IDM_GRAPHICS_FRAMESKIP_0:
+		case IDM_GRAPHICS_FRAMESKIP_1:
+		case IDM_GRAPHICS_FRAMESKIP_2:
+		case IDM_GRAPHICS_FRAMESKIP_3:
+		case IDM_GRAPHICS_FRAMESKIP_4:
+		case IDM_GRAPHICS_FRAMESKIP_5:
+		case IDM_GRAPHICS_FRAMESKIP_6:
+		case IDM_GRAPHICS_FRAMESKIP_7:
+		case IDM_GRAPHICS_FRAMESKIP_8:
 			// Set the frame skip value.
-			Set_Frame_Skip(LOWORD(wParam) - ID_GRAPHICS_FRAMESKIP - 1);
+			Set_Frame_Skip(LOWORD(wParam) - IDM_GRAPHICS_FRAMESKIP - 1);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case ID_GRAPHICS_SCREENSHOT:
+		case IDM_GRAPHICS_SCREENSHOT:
 			audio->clearSoundBuffer();
 			Save_Shot();
 			break;
 		
 		default:
-			if ((LOWORD(wParam) & 0xFF00) == ID_GRAPHICS_RENDER)
+			if ((LOWORD(wParam) & 0xFF00) == IDM_GRAPHICS_RENDER)
 			{
 				// Render mode change.
-				draw->setRender(LOWORD(wParam) - ID_GRAPHICS_RENDER);
+				draw->setRender(LOWORD(wParam) - IDM_GRAPHICS_RENDER);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
@@ -464,25 +464,25 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 {
 	switch (LOWORD(wParam))
 	{
-		case ID_CPU_COUNTRY_AUTO:
-		case ID_CPU_COUNTRY_JAPAN_NTSC:
-		case ID_CPU_COUNTRY_USA:
-		case ID_CPU_COUNTRY_EUROPE:
-		case ID_CPU_COUNTRY_JAPAN_PAL:
-			Change_Country(LOWORD(wParam) - ID_CPU_COUNTRY - 1);
+		case IDM_CPU_COUNTRY_AUTO:
+		case IDM_CPU_COUNTRY_JAPAN_NTSC:
+		case IDM_CPU_COUNTRY_USA:
+		case IDM_CPU_COUNTRY_EUROPE:
+		case IDM_CPU_COUNTRY_JAPAN_PAL:
+			Change_Country(LOWORD(wParam) - IDM_CPU_COUNTRY - 1);
 			Sync_Gens_Window_CPUMenu();
 			break;
 		
-		case ID_CPU_COUNTRY_ORDER:
+		case IDM_CPU_COUNTRY_ORDER:
 			Open_Country_Code();
 			break;
 		
-		case ID_CPU_HARDRESET:
+		case IDM_CPU_HARDRESET:
 			system_reset();
 			break;
 		
-		case ID_CPU_RESET68K:
-		case ID_CPU_RESETMAIN68K:
+		case IDM_CPU_RESET68K:
+		case IDM_CPU_RESETMAIN68K:
 			/*
 			if (Check_If_Kaillera_Running())
 				return 0;
@@ -503,7 +503,7 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			}
 			break;
 		
-		case ID_CPU_RESETSUB68K:
+		case IDM_CPU_RESETSUB68K:
 			/*
 			if (Check_If_Kaillera_Running())
 				return 0;
@@ -517,7 +517,7 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
 			break;
 		
-		case ID_CPU_RESETMAINSH2:
+		case IDM_CPU_RESETMAINSH2:
 			/*
 			if (Check_If_Kaillera_Running())
 				return 0;
@@ -531,7 +531,7 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			MESSAGE_L("Master SH2 reset", "Master SH2 reset", 1000);
 			break;
 		
-		case ID_CPU_RESETSUBSH2:
+		case IDM_CPU_RESETSUBSH2:
 			/*
 			if (Check_If_Kaillera_Running())
 				return 0;
@@ -545,7 +545,7 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
 			break;
 		
-		case ID_CPU_RESETZ80:
+		case IDM_CPU_RESETZ80:
 			/*
 			if (Check_If_Kaillera_Running())
 				return 0;
@@ -558,16 +558,16 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 			MESSAGE_L("Z80 reset", "Z80 reset", 1000);
 			break;
 		
-		case ID_CPU_SEGACDPERFECTSYNC:
+		case IDM_CPU_SEGACDPERFECTSYNC:
 			Change_SegaCD_PerfectSync(!SegaCD_Accurate);
 			Sync_Gens_Window_CPUMenu();
 			break;
 		
 		default:
-			if ((LOWORD(wParam) & 0xFF00) == ID_CPU_DEBUG)
+			if ((LOWORD(wParam) & 0xFF00) == IDM_CPU_DEBUG)
 			{
 				// Debug mode change.
-				Change_Debug((LOWORD(wParam) - ID_CPU_DEBUG) + 1);
+				Change_Debug((LOWORD(wParam) - IDM_CPU_DEBUG) + 1);
 				Sync_Gens_Window_CPUMenu();
 			}
 			break;
@@ -586,67 +586,67 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 {
 	switch (LOWORD(wParam))
 	{
-		case ID_SOUND_ENABLE:
+		case IDM_SOUND_ENABLE:
 			Change_Sound(!audio->enabled());
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_STEREO:
+		case IDM_SOUND_STEREO:
 			Change_Sound_Stereo(!audio->stereo());
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_Z80:
+		case IDM_SOUND_Z80:
 			Change_Z80(!(Z80_State & 1));
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_YM2612:
+		case IDM_SOUND_YM2612:
 			Change_YM2612(!YM2612_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_YM2612_IMPROVED:
+		case IDM_SOUND_YM2612_IMPROVED:
 			Change_YM2612_Improved(!YM2612_Improv);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_DAC:
+		case IDM_SOUND_DAC:
 			Change_DAC(!DAC_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_DAC_IMPROVED:
+		case IDM_SOUND_DAC_IMPROVED:
 			Change_DAC_Improved(!DAC_Improv);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_PSG:
+		case IDM_SOUND_PSG:
 			Change_PSG(!PSG_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_PSG_IMPROVED:
+		case IDM_SOUND_PSG_IMPROVED:
 			Change_PSG_Improved(!PSG_Improv);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_PCM:
+		case IDM_SOUND_PCM:
 			Change_PCM(!PCM_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_PWM:
+		case IDM_SOUND_PWM:
 			Change_PWM(!PWM_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_CDDA:
+		case IDM_SOUND_CDDA:
 			Change_CDDA(!CDDA_Enable);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_WAVDUMP:
+		case IDM_SOUND_WAVDUMP:
 			// Change WAV dump status.
 			if (!audio->dumpingWAV())
 				audio->startWAVDump();
@@ -655,7 +655,7 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case ID_SOUND_GYMDUMP:
+		case IDM_SOUND_GYMDUMP:
 			// Change GYM dump status.
 			if (!GYM_Dumping)
 				Start_GYM_Dump();
@@ -665,10 +665,10 @@ static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 		
 		default:
-			if ((LOWORD(wParam) & 0xFF00) == ID_SOUND_RATE)
+			if ((LOWORD(wParam) & 0xFF00) == IDM_SOUND_RATE)
 			{
 				// Sample rate change.
-				Change_Sample_Rate(LOWORD(wParam) - ID_SOUND_RATE);
+				Change_Sample_Rate(LOWORD(wParam) - IDM_SOUND_RATE);
 				Sync_Gens_Window_SoundMenu();
 			}
 			break;
@@ -687,42 +687,42 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 {
 	switch (LOWORD(wParam))
 	{
-		case ID_OPTIONS_GENERAL:
+		case IDM_OPTIONS_GENERAL:
 			Open_General_Options();
 			break;
 		
-		case ID_OPTIONS_JOYPADS:
+		case IDM_OPTIONS_JOYPADS:
 			Open_Controller_Config();
 			break;
 		
-		case ID_OPTIONS_BIOSMISCFILES:
+		case IDM_OPTIONS_BIOSMISCFILES:
 			Open_BIOS_Misc_Files();
 			break;
 		
-		case ID_OPTIONS_CURRENT_CD_DRIVE:
+		case IDM_OPTIONS_CURRENT_CD_DRIVE:
 			Open_Select_CDROM();
 			break;
 		
-		case ID_OPTIONS_LOADCONFIG:
+		case IDM_OPTIONS_LOADCONFIG:
 			printf("ENABLE: %d\n", audio->enabled());
 			Load_As_Config(Game);
 			printf("ENABLE: %d\n", audio->enabled());
 			Sync_Gens_Window();
 			break;
 		
-		case ID_OPTIONS_DIRECTORIES:
+		case IDM_OPTIONS_DIRECTORIES:
 			Open_Directory_Config();
 			break;
 		
-		case ID_OPTIONS_SAVECONFIGAS:
+		case IDM_OPTIONS_SAVECONFIGAS:
 			Save_As_Config();
 			break;
 		
 		default:
-			if ((LOWORD(wParam) & 0xFF00) == ID_OPTIONS_SEGACDSRAMSIZE)
+			if ((LOWORD(wParam) & 0xFF00) == IDM_OPTIONS_SEGACDSRAMSIZE)
 			{
 				// SegaCD SRAM Size change.
-				Change_SegaCD_SRAM_Size(LOWORD(wParam) - ID_OPTIONS_SEGACDSRAMSIZE - 1);
+				Change_SegaCD_SRAM_Size(LOWORD(wParam) - IDM_OPTIONS_SEGACDSRAMSIZE - 1);
 				Sync_Gens_Window_OptionsMenu();
 			}
 			break;
@@ -741,7 +741,7 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 {
 	switch (LOWORD(wParam))
 	{
-		case ID_HELP_ABOUT:
+		case IDM_HELP_ABOUT:
 			create_about_window();
 			break;
 	}

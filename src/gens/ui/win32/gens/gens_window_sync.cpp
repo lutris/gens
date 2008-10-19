@@ -121,7 +121,7 @@ void Sync_Gens_Window_FileMenu(void)
 		strcat(ROM_Name, Str_Tmp);
 		
 		// Add the ROM item to the ROM History submenu.
-		InsertMenu(FileMenu_ROMHistory, i, MF_BYPOSITION | MF_STRING, ID_FILE_ROMHISTORY + i, ROM_Name);
+		InsertMenu(FileMenu_ROMHistory, i, MF_BYPOSITION | MF_STRING, IDM_FILE_ROMHISTORY + i, ROM_Name);
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
@@ -135,16 +135,16 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// Savestate menu items
 	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	SetMenuItemInfo(FileMenu, ID_FILE_LOADSTATE, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, ID_FILE_SAVESTATE, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, ID_FILE_QUICKLOAD, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, ID_FILE_QUICKSAVE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, IDM_FILE_LOADSTATE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, IDM_FILE_SAVESTATE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, IDM_FILE_QUICKLOAD, FALSE, &miimMenuItem);
+	SetMenuItemInfo(FileMenu, IDM_FILE_QUICKSAVE, FALSE, &miimMenuItem);
 	
 	// Current savestate
 	for (i = 0; i < 10; i++)
 	{
 		miimMenuItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(FileMenu_ChangeState, ID_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
+		SetMenuItemInfo(FileMenu_ChangeState, IDM_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
 	}
 }
 
@@ -163,36 +163,36 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Full Screen
 	miimMenuItem.fState = (draw->fullScreen() ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_FULLSCREEN, FALSE, &miimMenuItem);
+	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_FULLSCREEN, FALSE, &miimMenuItem);
 	
 	// VSync
 	if (draw->fullScreen())
 		miimMenuItem.fState = (Video.VSync_FS ? MFS_CHECKED : MFS_UNCHECKED);
 	else
 		miimMenuItem.fState = (Video.VSync_W ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_VSYNC, FALSE, &miimMenuItem);
+	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_VSYNC, FALSE, &miimMenuItem);
 	
 	// Stretch
 	miimMenuItem.fState = (draw->stretch() ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_STRETCH, FALSE, &miimMenuItem);
+	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_STRETCH, FALSE, &miimMenuItem);
 	
 	// Render
 	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu, 5);
 	
 	// Sprite Limit
 	miimMenuItem.fState = (Sprite_Over ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SPRITELIMIT, FALSE, &miimMenuItem);
+	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_SPRITELIMIT, FALSE, &miimMenuItem);
 	
 	// Frame Skip
 	for (i = -1; i <= 8; i++)
 	{
 		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(GraphicsMenu_FrameSkip, ID_GRAPHICS_FRAMESKIP + (i + 1), FALSE, &miimMenuItem);
+		SetMenuItemInfo(GraphicsMenu_FrameSkip, IDM_GRAPHICS_FRAMESKIP + (i + 1), FALSE, &miimMenuItem);
 	}
 	
 	// Screen Shot
 	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	SetMenuItemInfo(GraphicsMenu, ID_GRAPHICS_SCREENSHOT, FALSE, &miimMenuItem);
+	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_SCREENSHOT, FALSE, &miimMenuItem);
 }
 
 
@@ -241,7 +241,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		
 		if (showRenderer)
 		{
-			miimMenuItem.wID = ID_GRAPHICS_RENDER + i;
+			miimMenuItem.wID = IDM_GRAPHICS_RENDER + i;
 			if (draw->fullScreen())
 				miimMenuItem.fState = (Video.Render_FS == i ? MFS_CHECKED : MFS_UNCHECKED);
 			else
@@ -271,29 +271,29 @@ void Sync_Gens_Window_CPUMenu(void)
 #endif /* GENS_DEBUGGER */
 	
 	// Hide and show appropriate RESET items.
-	RemoveMenu(CPUMenu, ID_CPU_RESET68K, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, ID_CPU_RESETMAIN68K, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, ID_CPU_RESETSUB68K, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, ID_CPU_RESETMAINSH2, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, ID_CPU_RESETSUBSH2, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, IDM_CPU_RESET68K, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, IDM_CPU_RESETMAIN68K, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, IDM_CPU_RESETSUB68K, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, IDM_CPU_RESETMAINSH2, MF_BYCOMMAND);
+	RemoveMenu(CPUMenu, IDM_CPU_RESETSUBSH2, MF_BYCOMMAND);
 	
 	if (SegaCD_Started)
 	{
 		// SegaCD: Show Main 68000 and Sub 68000.
-		InsertMenu(CPUMenu, 6, flags, ID_CPU_RESETMAIN68K, "Reset Main 68000");
-		InsertMenu(CPUMenu, 7, flags, ID_CPU_RESETSUB68K, "Reset Sub 68000");
+		InsertMenu(CPUMenu, 6, flags, IDM_CPU_RESETMAIN68K, "Reset Main 68000");
+		InsertMenu(CPUMenu, 7, flags, IDM_CPU_RESETSUB68K, "Reset Sub 68000");
 	}
 	else
 	{
 		// No SegaCD: Only show one 68000.
-		InsertMenu(CPUMenu, 5, flags, ID_CPU_RESET68K, "Reset 68000");
+		InsertMenu(CPUMenu, 5, flags, IDM_CPU_RESET68K, "Reset 68000");
 	}
 	
 	if (_32X_Started)
 	{
 		// 32X: Show Main SH2 and Sub SH2.
-		InsertMenu(CPUMenu, 8, flags, ID_CPU_RESETMAINSH2, "Reset Main SH2");
-		InsertMenu(CPUMenu, 9, flags, ID_CPU_RESETSUBSH2, "Reset Sub SH2");
+		InsertMenu(CPUMenu, 8, flags, IDM_CPU_RESETMAINSH2, "Reset Main SH2");
+		InsertMenu(CPUMenu, 9, flags, IDM_CPU_RESETSUBSH2, "Reset Sub SH2");
 	}
 	
 	// Country code
@@ -306,12 +306,12 @@ void Sync_Gens_Window_CPUMenu(void)
 	for (i = -1; i < 4; i++)
 	{
 		miimMenuItem.fState = (i == Country ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(CPUMenu_Country, ID_CPU_COUNTRY + (i + 1), FALSE, &miimMenuItem);
+		SetMenuItemInfo(CPUMenu_Country, IDM_CPU_COUNTRY + (i + 1), FALSE, &miimMenuItem);
 	}
 	
 	// SegaCD Perfect Sync
 	miimMenuItem.fState = (SegaCD_Accurate ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(CPUMenu, ID_CPU_SEGACDPERFECTSYNC, FALSE, &miimMenuItem);
+	SetMenuItemInfo(CPUMenu, IDM_CPU_SEGACDPERFECTSYNC, FALSE, &miimMenuItem);
 }
 
 
@@ -364,7 +364,7 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 				InsertMenu(CPUMenu_Debug, i + 1, MF_SEPARATOR, NULL, NULL);
 			}
 			
-			InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, ID_CPU_DEBUG + i, DebugStr[i]);
+			InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, IDM_CPU_DEBUG + i, DebugStr[i]);
 		}
 	}
 }
@@ -388,21 +388,21 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// Enabled
 	miimMenuItem.fState = (soundEnabled ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(SoundMenu, ID_SOUND_ENABLE, FALSE, &miimMenuItem);
+	SetMenuItemInfo(SoundMenu, IDM_SOUND_ENABLE, FALSE, &miimMenuItem);
 	
 	const int soundMenuItems[11][2] =
 	{
-		{audio->stereo(), ID_SOUND_STEREO},
-		{Z80_State & 1, ID_SOUND_Z80},
-		{YM2612_Enable, ID_SOUND_YM2612},
-		{YM2612_Improv, ID_SOUND_YM2612_IMPROVED},
-		{DAC_Enable, ID_SOUND_DAC},
-		{DAC_Improv, ID_SOUND_DAC_IMPROVED},
-		{PSG_Enable, ID_SOUND_PSG},
-		{PSG_Improv, ID_SOUND_PSG_IMPROVED},
-		{PCM_Enable, ID_SOUND_PCM},
-		{PWM_Enable, ID_SOUND_PWM},
-		{CDDA_Enable, ID_SOUND_CDDA},
+		{audio->stereo(), IDM_SOUND_STEREO},
+		{Z80_State & 1, IDM_SOUND_Z80},
+		{YM2612_Enable, IDM_SOUND_YM2612},
+		{YM2612_Improv, IDM_SOUND_YM2612_IMPROVED},
+		{DAC_Enable, IDM_SOUND_DAC},
+		{DAC_Improv, IDM_SOUND_DAC_IMPROVED},
+		{PSG_Enable, IDM_SOUND_PSG},
+		{PSG_Improv, IDM_SOUND_PSG_IMPROVED},
+		{PCM_Enable, IDM_SOUND_PCM},
+		{PWM_Enable, IDM_SOUND_PWM},
+		{CDDA_Enable, IDM_SOUND_CDDA},
 	};
 	
 	for (i = 0; i < 11; i++)
@@ -423,7 +423,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	for (i = 0; i < 6; i++)
 	{
 		miimMenuItem.fState = (audio->soundRate() == SndRates[i][1] ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(SoundMenu, ID_SOUND_RATE + SndRates[i][0], FALSE, &miimMenuItem);
+		SetMenuItemInfo(SoundMenu, IDM_SOUND_RATE + SndRates[i][0], FALSE, &miimMenuItem);
 	}
 	
 	char dumpLabel[16];
@@ -436,14 +436,14 @@ void Sync_Gens_Window_SoundMenu(void)
 	miimMenuItem.fState = MFS_DISABLED;
 	miimMenuItem.dwTypeData = dumpLabel;
 	miimMenuItem.cch = strlen(dumpLabel);
-	SetMenuItemInfo(SoundMenu, ID_SOUND_WAVDUMP, FALSE, &miimMenuItem);
+	SetMenuItemInfo(SoundMenu, IDM_SOUND_WAVDUMP, FALSE, &miimMenuItem);
 	
 	// GYM dumping
 	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
 	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
 	miimMenuItem.dwTypeData = dumpLabel;
 	miimMenuItem.cch = strlen(dumpLabel);
-	SetMenuItemInfo(SoundMenu, ID_SOUND_GYMDUMP, FALSE, &miimMenuItem);
+	SetMenuItemInfo(SoundMenu, IDM_SOUND_GYMDUMP, FALSE, &miimMenuItem);
 }
 
 
@@ -464,6 +464,6 @@ void Sync_Gens_Window_OptionsMenu(void)
 	for (i = -1; i <= 3; i++)
 	{
 		miimMenuItem.fState = (i == SRAM_ID ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(OptionsMenu_SegaCDSRAMSize, ID_OPTIONS_SEGACDSRAMSIZE + (i + 1), FALSE, &miimMenuItem);
+		SetMenuItemInfo(OptionsMenu_SegaCDSRAMSize, IDM_OPTIONS_SEGACDSRAMSIZE + (i + 1), FALSE, &miimMenuItem);
 	}
 }
