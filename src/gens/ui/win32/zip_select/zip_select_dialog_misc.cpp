@@ -88,7 +88,7 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 					EndDialog(hWndDlg, getCurListItemData(hWndDlg, IDC_ZIPSELECT_LSTFILES));
 					return TRUE;
 				case IDCANCEL:
-					EndDialog(hWndDlg, -1);
+					EndDialog(hWndDlg, NULL);
 					return TRUE;
 				case IDC_ZIPSELECT_LSTFILES:
 					if (HIWORD(wParam) == LBN_DBLCLK)
