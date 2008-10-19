@@ -89,7 +89,7 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 	unsigned char cp1252char;
 	
 	// Output buffer.
-	unsigned char *outBuf = static_cast<unsigned char*>(malloc(sLen));
+	unsigned char *outBuf = static_cast<unsigned char*>(malloc(sLen + 1));
 	int outBufPos = 0;
 	outBuf[0] = 0;
 	
@@ -194,6 +194,10 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 		outBufPos++;
 	}
 	
+	// Set the last character in the output buffer to 0.
+	outBuf[outBufPos] = 0x00;
+	
+	// Return the string.
 	string retString = reinterpret_cast<char*>(outBuf);
 	free(outBuf);
 	return retString;
