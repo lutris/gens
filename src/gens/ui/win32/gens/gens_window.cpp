@@ -169,13 +169,13 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	FileMenu = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)FileMenu, "&File");
 	
-	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...");
+	InsertMenu(FileMenu, 0, flags, ID_FILE_OPENROM, "&Open ROM...\tCtrl+O");
 #ifdef GENS_CDROM
-	InsertMenu(FileMenu, 1, flags, ID_FILE_BOOTCD, "&Boot CD");
+	InsertMenu(FileMenu, 1, flags, ID_FILE_BOOTCD, "&Boot CD\tCtrl+B");
 #endif /* GENS_CDROM */
 	InsertMenu(FileMenu, 2, flags | MF_GRAYED, ID_FILE_NETPLAY, "&Netplay");
 	InsertMenu(FileMenu, 3, flags, NULL, "ROM &History"); // DUMMY menu item
-	InsertMenu(FileMenu, 4, flags, ID_FILE_CLOSEROM, "&Close ROM");
+	InsertMenu(FileMenu, 4, flags, ID_FILE_CLOSEROM, "&Close ROM\tCtrl+W");
 	
 	InsertMenu(FileMenu, 5, MF_SEPARATOR, NULL, NULL);
 	
@@ -183,15 +183,15 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	
 	InsertMenu(FileMenu, 7, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, 8, flags, ID_FILE_LOADSTATE, "&Load State...");
-	InsertMenu(FileMenu, 9, flags, ID_FILE_SAVESTATE, "&Save State As...");
-	InsertMenu(FileMenu, 10, flags, ID_FILE_QUICKLOAD, "Quick Load");
-	InsertMenu(FileMenu, 11, flags, ID_FILE_QUICKSAVE, "Quick Save");
+	InsertMenu(FileMenu, 8, flags, ID_FILE_LOADSTATE, "&Load State...\tShift+F8");
+	InsertMenu(FileMenu, 9, flags, ID_FILE_SAVESTATE, "&Save State As...\tShift+F5");
+	InsertMenu(FileMenu, 10, flags, ID_FILE_QUICKLOAD, "Quick Load\tF8");
+	InsertMenu(FileMenu, 11, flags, ID_FILE_QUICKSAVE, "Quick Save\tF5");
 	create_gens_window_FileMenu_ChangeState(FileMenu, 12);
 	
 	InsertMenu(FileMenu, 13, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, 14, flags, ID_FILE_QUIT, "&Quit");
+	InsertMenu(FileMenu, 14, flags, ID_FILE_EXIT, "E&xit\tCtrl+Q");
 }
 
 
@@ -246,9 +246,9 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)GraphicsMenu, "&Graphics");
 	
-	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen");
-	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync");
-	InsertMenu(GraphicsMenu, 2, flags, ID_GRAPHICS_STRETCH, "&Stretch");
+	InsertMenu(GraphicsMenu, 0, flags, ID_GRAPHICS_FULLSCREEN, "&Full Screen\tAlt+Enter");
+	InsertMenu(GraphicsMenu, 1, flags, ID_GRAPHICS_VSYNC, "&VSync\tShift+F3");
+	InsertMenu(GraphicsMenu, 2, flags, ID_GRAPHICS_STRETCH, "&Stretch\tShift+F2");
 	
 	InsertMenu(GraphicsMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
@@ -265,7 +265,7 @@ static void create_gens_window_GraphicsMenu(HMENU parent, int position)
 	
 	InsertMenu(GraphicsMenu, 10, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(GraphicsMenu, 11, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot");
+	InsertMenu(GraphicsMenu, 11, flags, ID_GRAPHICS_SCREENSHOT, "Screen Shot\tShift+Backspace");
 }
 
 
@@ -337,7 +337,7 @@ static void create_gens_window_CPUMenu(HMENU parent, int position)
 	
 	InsertMenu(CPUMenu, 3, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(CPUMenu, 4, flags, ID_CPU_HARDRESET, "Hard &Reset");
+	InsertMenu(CPUMenu, 4, flags, ID_CPU_HARDRESET, "Hard &Reset\tTab");
 	// SegaCD and 32X menu items are handled in the Sync_Gens_Window_CPUMenu() function.
 	InsertMenu(CPUMenu, 10, flags, ID_CPU_RESETZ80, "Reset Z80");
 	

@@ -68,7 +68,7 @@ extern "C" {
 #define ID_FILE_CHANGESTATE_7		0x1207
 #define ID_FILE_CHANGESTATE_8		0x1208
 #define ID_FILE_CHANGESTATE_9		0x1209
-#define ID_FILE_QUIT			0x1FFF
+#define ID_FILE_EXIT			0x1FFF
 
 // Graphics Menu
 #define ID_GRAPHICS_MENU		0x2000

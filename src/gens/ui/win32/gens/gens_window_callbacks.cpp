@@ -366,7 +366,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case ID_FILE_QUIT:
+		case ID_FILE_EXIT:
 			close_gens();
 			break;
 	}
