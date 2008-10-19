@@ -54,8 +54,10 @@ HFONT fntTitle = NULL;
 // Needed for some macros
 #include <windowsx.h>
 
+#if 0
 // argc/argv conversion.
 #include "port/argc_argv.h"
+#endif
 
 /**
  * Get_Save_Path(): Get the default save path.
@@ -157,10 +159,12 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Parse command line arguments.
 	// TODO: This causes a crash.
+#if 0
 	argc_argv arg;
 	convertCmdLineToArgv(lpCmdLine, &arg);
 	parseArgs(arg.c, arg.v);
 	deleteArgcArgv(&arg);
+#endif
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
