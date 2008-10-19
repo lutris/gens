@@ -418,7 +418,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		
 		y = VDP_Num_Vis_Lines << m_shift;
 		if (m_shift)
-			y += 8;
+			y += 16;
 	}
 	
 	// Character size is 8x8 normal, 16x16 double.
