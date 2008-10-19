@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Main Window - Menu Definitions.                           *
+ * Gens: (Win32) Main Window - Menu Command Definitions.                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
