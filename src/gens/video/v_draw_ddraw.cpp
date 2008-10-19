@@ -14,6 +14,9 @@
 #include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
 
+// Inline video functions.
+#include "v_inline.h"
+
 // Modif N. -- added
 #undef CORRECT_256_ASPECT_RATIO
 #ifndef CORRECT_256_ASPECT_RATIO

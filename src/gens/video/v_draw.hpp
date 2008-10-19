@@ -145,10 +145,6 @@ class VDraw
 		// Calculates the text style values.
 		void calcTextStyle(void);
 		
-		// Inline functions for determining MD resolution settings.
-		bool isFullXRes(void);
-		bool isFullYRes(void);
-		
 		// Transparency mask
 		unsigned int m_Transparency_Mask;
 		
@@ -190,6 +186,6 @@ class VDraw
 		virtual int reinitGensWindow(void);
 };
 
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* GENS_V_DRAW_HPP */

@@ -24,6 +24,9 @@
 // Miscellaneous Effects.
 #include "v_effects.hpp"
 
+// Inline video functions.
+#include "v_inline.h"
+
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
@@ -722,18 +725,8 @@ int VDraw::reinitGensWindow(void)
 }
 
 
-// Inline functions for determining MD resolution settings.
-inline bool VDraw::isFullXRes(void)
-{
-	return ((VDP_Reg.Set4 & 0x1) || Debug || !Game /*|| !FrameCount*/);
-}
-inline bool VDraw::isFullYRes(void)
-{
-	return ((VDP_Reg.Set2 & 0x8) || Debug || !Game /*|| !FrameCount*/);
-}
-
-
 /** Properties **/
+
 
 bool VDraw::stretch(void)
 {
