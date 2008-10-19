@@ -193,28 +193,28 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 	
 	// Auto Fix Checksum
 	go_chkAutoFixChecksum = CreateWindow(WC_BUTTON, "Auto Fix Checksum",
-					     WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+					     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					     frameLeft+8, frameTop+16, 128, 20,
 					     hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkAutoFixChecksum, fntMain, TRUE);
 	
 	// Auto Pause
 	go_chkAutoPause = CreateWindow(WC_BUTTON, "Auto Pause",
-				       WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+				       WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 				       frameLeft+8+128+8+16, frameTop+16, 128, 20,
 				       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkAutoPause, fntMain, TRUE);
 	
 	// Fast Blur
 	go_chkFastBlur = CreateWindow(WC_BUTTON, "Fast Blur",
-				      WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+				      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 				      frameLeft+8, frameTop+16+20, 128, 20,
 				      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkFastBlur, fntMain, TRUE);
 	
 	// Show SegaCD LEDs
 	go_chkSegaCDLEDs = CreateWindow(WC_BUTTON, "Show SegaCD LEDs",
-				        WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+				        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 				        frameLeft+8+128+8+16, frameTop+16+20, 128, 20,
 				        hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkSegaCDLEDs, fntMain, TRUE);
@@ -270,6 +270,9 @@ void General_Options_Window_CreateChildWindows(HWND hWnd)
 				 btnLeft+75+8+75+8, frameTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
+	
+	// Set focus to "Auto Fix Checksum".
+	SetFocus(go_chkAutoFixChecksum);
 }
 
 
@@ -282,28 +285,28 @@ static void createMsgFrame(HWND hWnd, const int index,
 	int i;
 	
 	grpBox = CreateWindow(WC_BUTTON, title,
-			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+			      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
 			      frameLeft, frameTop, frameWidth, frameHeight,
 			      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Enable
 	go_chkMsgEnable[index] = CreateWindow(WC_BUTTON, "Enable",
-					      WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+					      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					      frameLeft+8, frameTop+16, 128, 20,
 					      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkMsgEnable[index], fntMain, TRUE);
 	
 	// Double Sized
 	go_chkMsgDoubleSized[index] = CreateWindow(WC_BUTTON, "Double Sized",
-						   WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+						   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						   frameLeft+8+128+8+16, frameTop+16, 128, 20,
 						   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkMsgDoubleSized[index], fntMain, TRUE);
 	
 	// Transparency
 	go_chkMsgTransparency[index] = CreateWindow(WC_BUTTON, "Transparency",
-						    WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						    frameLeft+8, frameTop+16+20, 128, 20,
 						    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(go_chkMsgTransparency[index], fntMain, TRUE);
