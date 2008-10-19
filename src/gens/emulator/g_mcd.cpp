@@ -72,7 +72,7 @@ char* Detect_Country_SegaCD(void)
  */
 int Init_SegaCD(const char *iso_name)
 {
-	char *Bios_To_Use;
+	char *BIOS_To_Use;
 	
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();
@@ -96,36 +96,36 @@ int Init_SegaCD(const char *iso_name)
 	{
 		default:
 		case -1: // Autodetection.
-			Bios_To_Use = Detect_Country_SegaCD();
+			BIOS_To_Use = Detect_Country_SegaCD();
 			break;
 		
 		case 0: // Japan (NTSC)
 			Game_Mode = 0;
 			CPU_Mode = 0;
-			Bios_To_Use = BIOS_Filenames.MegaCD_JP;
+			BIOS_To_Use = BIOS_Filenames.MegaCD_JP;
 			break;
 		
 		case 1: // US (NTSC)
 			Game_Mode = 1;
 			CPU_Mode = 0;
-			Bios_To_Use = BIOS_Filenames.SegaCD_US;
+			BIOS_To_Use = BIOS_Filenames.SegaCD_US;
 			break;
 		
 		case 2: // Europe (PAL)
 			Game_Mode = 1;
 			CPU_Mode = 1;
-			Bios_To_Use = BIOS_Filenames.MegaCD_EU;
+			BIOS_To_Use = BIOS_Filenames.MegaCD_EU;
 			break;
 		
 		case 3: // Japan (PAL)
 			Game_Mode = 0;
 			CPU_Mode = 1;
-			Bios_To_Use = BIOS_Filenames.MegaCD_JP;
+			BIOS_To_Use = BIOS_Filenames.MegaCD_JP;
 			break;
 	}
 	
 	// Attempt to load the Sega CD BIOS.
-	if (Load_SegaCD_BIOS(Bios_To_Use) == NULL)
+	if (Load_SegaCD_BIOS(BIOS_To_Use) == NULL)
 	{
 		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"
@@ -231,20 +231,20 @@ int Reload_SegaCD(const char *iso_name)
 void
 Reset_SegaCD ()
 {
-	char *Bios_To_Use;
+	char *BIOS_To_Use;
 	
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();
 	
 	if (Game_Mode == 0)
-		Bios_To_Use = BIOS_Filenames.MegaCD_JP;
+		BIOS_To_Use = BIOS_Filenames.MegaCD_JP;
 	else if (CPU_Mode)
-		Bios_To_Use = BIOS_Filenames.MegaCD_EU;
+		BIOS_To_Use = BIOS_Filenames.MegaCD_EU;
 	else
-		Bios_To_Use = BIOS_Filenames.SegaCD_US;
+		BIOS_To_Use = BIOS_Filenames.SegaCD_US;
 	
 	// Load the BIOS file.
-	if (Load_ROM(Bios_To_Use, &Game) <= 0)
+	if (Load_ROM(BIOS_To_Use, &Game) <= 0)
 	{
 		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"
