@@ -94,6 +94,9 @@ int Reconfigure_Input(int player, int padtype)
 	if (player < 0 || player >= 8 || padtype < 0 || padtype > 1)
 		return 0;
 	
+	// Prevent audio stuttering.
+	audio->clearSoundBuffer();
+	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
 	keyConfig[player].Up = input->getKey();
 	GensUI::sleep(250);
