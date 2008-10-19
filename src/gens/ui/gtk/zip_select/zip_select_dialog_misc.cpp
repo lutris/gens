@@ -92,6 +92,13 @@ CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 				   0, (*lstIter).filename.c_str(), 1, &(*lstIter), -1);
 	}
 	
+	// Select the first item by default.
+	GtkTreePath *path;
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+	path = gtk_tree_path_new_from_string("0");
+	gtk_tree_selection_select_path(selection, path);
+	gtk_tree_path_free(path);
+	
 	// Run the dialog.
 	dialogResponse = gtk_dialog_run(GTK_DIALOG(Zip));
 	if (dialogResponse != GTK_RESPONSE_OK)

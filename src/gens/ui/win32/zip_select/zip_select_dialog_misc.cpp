@@ -129,6 +129,9 @@ static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
 		index = ListBox_AddString(lstFiles, (*lstIter).filename.c_str());
 		ListBox_SetItemData(lstFiles, index, &(*lstIter));
 	}
+	
+	// Select the first item by default.
+	ListBox_SetCurSel(lstFiles, 0);
 }
 
 
