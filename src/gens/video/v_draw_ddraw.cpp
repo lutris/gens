@@ -43,6 +43,10 @@ inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	
 	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
 	
+	// NOTE: fullW must be (pddsd->lPitch / bytespp).
+	// DirectDraw likes to use absurdly large line lengths in full screen mode.
+	// (pddsd->lPitch / bytespp) does match pddsd->dwWidth in windowed mode, though.
+	
 	if (m_MsgVisible)
 	{
 		// Message is visible.
