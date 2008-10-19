@@ -31,6 +31,9 @@
 
 #include "emulator/g_main.hpp"
 
+// git version
+#include "git_version.h"
+
 // Character set conversion
 #include "ui/charset.hpp"
 
@@ -72,6 +75,11 @@ unsigned short ax = 0, bx = 0, cx = 0;
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void About_Window_CreateChildWindows(HWND hWnd);
 
+#ifdef GIT_VERSION
+const unsigned short lblTitle_HeightInc = 16;
+#else
+const unsigned short lblTitle_HeightInc = 0;
+#endif /* GIT_VERSION */
 
 /**
  * create_about_window(): Create the About Window.
@@ -105,11 +113,11 @@ HWND create_about_window(void)
 	about_window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320, 288 + 4,
+				      320, 320+lblTitle_HeightInc,
 				      Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(about_window, 320, 288);
+	Win32_setActualWindowSize(about_window, 320, 320+lblTitle_HeightInc);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(about_window);
@@ -213,32 +221,50 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 		updateIce();
 	}
 	
+	// Version information
+	char versionString[256];
+	strcpy(versionString, aboutTitle);
+	strcat(versionString, "\n");
+	// Append the git revision, if available.
+#ifdef GIT_VERSION
+	strcat(versionString, "git: ");
+#ifdef GIT_BRANCH
+	strcat(versionString, GIT_BRANCH);
+#if defined(GIT_BRANCH) && defined(GIT_SHAID)
+	strcat(versionString, "/");
+#endif
+#endif /* GIT_BRANCH */
+#ifdef GIT_SHAID
+	strcat(versionString, GIT_SHAID);
+#endif /* GIT_SHAID */
+#endif /* GIT_VERSION */
+	
 	// Title and version information.
-	lblGensTitle = CreateWindow(WC_STATIC, aboutTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    128, 8, 184, 24,
+	lblGensTitle = CreateWindow(WC_STATIC, versionString, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				    128, 8, 184, 32+lblTitle_HeightInc,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensTitle, fntTitle, TRUE);
 	
 	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				   128, 44, 184, 100,
+				   128, 42+lblTitle_HeightInc, 184, 100,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, TRUE);
 	
 	// Box for the copyright message.
-	grpGensCopyright = CreateWindow(WC_BUTTON, "", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 88, 304, 160,
+	grpGensCopyright = CreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					8, 88+lblTitle_HeightInc, 304, 192,
 					hWnd, NULL, ghInstance, NULL);
 	
 	// Copyright message.
 	string sCopyright = charset_utf8_to_cp1252(aboutCopyright);
 	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 16, 288, 136,
+					8, 16, 288, 168,
 					grpGensCopyright, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensCopyright, fntMain, TRUE);
 	
 	// OK button
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     312 - 75, 256, 75, 23,
+			     312 - 75, 288+lblTitle_HeightInc, 75, 23,
 			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	

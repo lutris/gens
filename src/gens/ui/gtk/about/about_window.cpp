@@ -38,6 +38,9 @@
 
 #include "emulator/g_main.hpp"
 
+// git version
+#include "git_version.h"
+
 GtkWidget *about_window = NULL;
 
 static GtkAccelGroup *accel_group;
@@ -131,9 +134,23 @@ GtkWidget* create_about_window(void)
 	}
 	
 	// Version information
-	char versionString[128];
+	char versionString[256];
 	strcpy(versionString, "<b><i>");
 	strcat(versionString, aboutTitle);
+	strcat(versionString, "\n");
+	// Append the git revision, if available.
+#ifdef GIT_VERSION
+	strcat(versionString, "git: ");
+#ifdef GIT_BRANCH
+	strcat(versionString, GIT_BRANCH);
+#if defined(GIT_BRANCH) && defined(GIT_SHAID)
+	strcat(versionString, "/");
+#endif
+#endif /* GIT_BRANCH */
+#ifdef GIT_SHAID
+	strcat(versionString, GIT_SHAID);
+#endif /* GIT_SHAID */
+#endif /* GIT_VERSION */
 	strcat(versionString, "</i></b>\n\n");
 	strcat(versionString, aboutDesc);
 	label_gens_version = gtk_label_new(versionString);
