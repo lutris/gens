@@ -1056,11 +1056,11 @@ void VDraw_DDraw::setCooperativeLevel(void)
 	
 	if (FAILED(rval))
 	{
-		printf("%s: lpDD->SetCooperativeLevel() failed.\n", __func__);
+		fprintf(stderr, "%s(): lpDD->SetCooperativeLevel() failed.\n", __func__);
 		// TODO: Error handling code.
 	}
 	else
 	{
-		printf("%s: lpDD->SetCooperativeLevel() succeeded.\n", __func__);
+		fprintf(stderr, "%s(): lpDD->SetCooperativeLevel() succeeded.\n", __func__);
 	}
 }

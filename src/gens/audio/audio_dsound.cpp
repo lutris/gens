@@ -409,11 +409,11 @@ void Audio_DSound::setCooperativeLevel(void)
 	rval = lpDS->SetCooperativeLevel(Gens_hWnd, DSSCL_PRIORITY);
 	if (rval != DS_OK)
 	{
-		printf("%s: lpDS->SetCooperativeLevel() failed.\n", __func__);
+		fprintf(stderr, "%s(): lpDS->SetCooperativeLevel() failed.\n", __func__);
 		// TODO: Error handling code.
 	}
 	else
 	{
-		printf("%s: lpDS->SetCooperativeLevel() succeeded.\n", __func__);
+		fprintf(stderr, "%s(): lpDS->SetCooperativeLevel() succeeded.\n", __func__);
 	}
 }

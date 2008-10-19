@@ -636,11 +636,11 @@ void Input_DInput::setCooperativeLevel(HWND hWnd)
 	rval = lpDIDKeyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	if (rval != DI_OK)
 	{
-		printf("%s: lpDIDKeyboard->SetCooperativeLevel() failed.\n", __func__);
+		fprintf(stderr, "%s(): lpDIDKeyboard->SetCooperativeLevel() failed.\n", __func__);
 		// TODO: Error handling code.
 	}
 	else
 	{
-		printf("%s: lpDIDKeyboard->SetCooperativeLevel() succeeded.\n", __func__);
+		fprintf(stderr, "%s(): lpDIDKeyboard->SetCooperativeLevel() succeeded.\n", __func__);
 	}
 }
