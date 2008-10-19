@@ -248,6 +248,9 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 #ifdef GIT_SHAID
 	strcat(versionString, GIT_SHAID);
 #endif /* GIT_SHAID */
+#ifdef GIT_DIRTY
+	strcat(versionString, "+");
+#endif /* GIT_DIRTY */
 #endif /* GIT_REPO */
 	
 	// Title and version information.

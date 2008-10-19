@@ -150,6 +150,9 @@ GtkWidget* create_about_window(void)
 #ifdef GIT_SHAID
 	strcat(versionString, GIT_SHAID);
 #endif /* GIT_SHAID */
+#ifdef GIT_DIRTY
+	strcat(versionString, "+");
+#endif /* GIT_DIRTY */
 #endif /* GIT_REPO */
 	strcat(versionString, "</i></b>\n\n");
 	strcat(versionString, aboutDesc);
