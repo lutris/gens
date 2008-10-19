@@ -321,6 +321,9 @@ static void create_gens_window_FileMenu(GtkWidget *container)
 	// Game Genie
 	NewMenuItem_Icon(FileMenu_GameGenie, "_Game Genie", "FileMenu_GameGenie", FileMenu,
 			 FileMenu_GameGenie_Icon, "password.png");
+	gtk_widget_add_accelerator(FileMenu_GameGenie, "activate", accel_group,
+				   GDK_G, (GdkModifierType)GDK_CONTROL_MASK,
+				   GTK_ACCEL_VISIBLE);
 	AddMenuCallback(FileMenu_GameGenie, on_FileMenu_GameGenie_activate);
 	
 	// Separator

@@ -179,7 +179,7 @@ static void create_gens_window_FileMenu(HMENU parent, int position)
 	
 	InsertMenu(FileMenu, 5, MF_SEPARATOR, NULL, NULL);
 	
-	InsertMenu(FileMenu, 6, flags, IDM_FILE_GAMEGENIE, "&Game Genie");
+	InsertMenu(FileMenu, 6, flags, IDM_FILE_GAMEGENIE, "&Game Genie\tCtrl+G");
 	
 	InsertMenu(FileMenu, 7, MF_SEPARATOR, NULL, NULL);
 	
