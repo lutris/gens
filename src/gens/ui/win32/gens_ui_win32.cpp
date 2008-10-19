@@ -347,6 +347,10 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 	if (!owner)
 		owner = static_cast<void*>(Gens_hWnd);
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
+	// Show the message box.
 	int response = MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
 	
 	switch (response)
@@ -454,6 +458,9 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	ofn.Flags = OFN_HIDEREADONLY;
 	BOOL ret;
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	if (!openOrSave)
 	{
 		// Open Dialog
@@ -507,6 +514,9 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	bi.lpfn = selectDir_SetSelProc;
 	bi.lParam = (LPARAM)(initDir.c_str());
 	
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if (!pidl)
 	{
@@ -538,9 +548,8 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
 	if (uMsg == BFFM_INITIALIZED)
-	{
 		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);
-	}
+	
 	return 0;
 }
 
