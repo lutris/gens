@@ -855,16 +855,17 @@ int VDraw_DDraw::flipInternal(void)
 					RectDest.right = 320 + RectDest.left;   //Upth-Add - x axis, also
 				}
 				
+				DDraw_Draw_Text(&ddsd, lpDDS_Back, Video.Render_FS, true);
 				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					DDraw_Draw_Text(&ddsd, lpDDS_Flip, Video.Render_FS, true);
+					//DDraw_Draw_Text(&ddsd, lpDDS_Flip, Video.Render_FS, true);
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 				else
 				{
 					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					DDraw_Draw_Text(&ddsd, lpDDS_Primary, Video.Render_FS, true);
+					//DDraw_Draw_Text(&ddsd, lpDDS_Primary, Video.Render_FS, true);
 //					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 				}
 			}

@@ -39,6 +39,11 @@ typedef enum
 	GYMFile		= 5,
 } FileFilterType;
 
+#ifdef GENS_OS_WIN32
+// TODO: Move this to a Win32-specific header.
+void Win32_CheckMessages(void);
+#endif /* GENS_OS_WIN32 */
+
 #ifdef __cplusplus
 }
 #endif

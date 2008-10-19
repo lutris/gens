@@ -42,26 +42,9 @@ OSVERSIONINFO winVersion;
 // If extended Common Controls are enabled, this is set to a non-zero value.
 int win32_CommCtrlEx = 0;
 
-// Gens Win32 resources
-#include "ui/win32/resource.h"
-
-// Accelerator table for the main Gens window.
-HACCEL hAccelTable;
-
 // Fonts
 HFONT fntMain = NULL;
 HFONT fntTitle = NULL;
-
-// Windows
-#include "game_genie/game_genie_window.h"
-#include "controller_config/controller_config_window.hpp"
-#include "bios_misc_files/bios_misc_files_window.hpp"
-#include "directory_config/directory_config_window.h"
-#include "general_options/general_options_window.h"
-#include "color_adjust/color_adjust_window.h"
-#include "select_cdrom/select_cdrom_window.h"
-#include "country_code/country_code_window.h"
-#include "about/about_window.hpp"
 
 // Maximum value function
 #ifndef max
@@ -355,48 +338,12 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
 	
-	// Load the accelerator table.
-	hAccelTable = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL));
-	
 	// Show the Gens window.
 	ShowWindow(Gens_hWnd, nCmdShow);
 	
-	// Window message variable.
-	MSG msg;
-	
 	while (is_gens_running())
 	{
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
-		{
-			if (!GetMessage(&msg, NULL, 0, 0))
-				close_gens();
-			
-			// Check for an accelerator.
-			if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
-			    TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
-			{
-				// Accelerator. Don't process it as a regular message.
-				continue;
-			}
-			
-			// Check for dialog messages.
-			if ((game_genie_window && IsDialogMessage(game_genie_window, &msg)) ||
-			    (controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
-			    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
-			    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
-			    (general_options_window && IsDialogMessage(general_options_window, &msg)) ||
-			    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
-			    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
-			    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
-			    (about_window && IsDialogMessage(about_window, &msg)))
-			{
-				// Dialog message. Don't process it as a regular message.
-				continue;
-			}
-			
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		Win32_CheckMessages();
 		
 		// Update the UI.
 		GensUI::update();
@@ -471,25 +418,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			else
 			{
 				// Blank screen. (MAX IDLE)
-				if (game_genie_window ||
-				    controller_config_window ||
-				    bios_misc_files_window ||
-				    directory_config_window ||
-				    general_options_window ||
-				    color_adjust_window ||
-				    select_cdrom_window ||
-				    country_code_window ||
-				    about_window)
-				{
-					// A dialog is open, so don't sleep that much.
-					// Otherwise, the dialog won't be very responsive.
-					GensUI::sleep(10);
-				}
-				else
-				{
-					// No dialog is open.
-					GensUI::sleep(200);
-				}
+				GensUI::sleep(10);
 			}
 		}
 	}
@@ -507,6 +436,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	DeleteFont(fntMain);
 	DeleteFont(fntTitle);
 	
+	// Empty the message queue.
+	MSG msg;
 	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
 		if (!GetMessage(&msg, NULL, 0, 0))

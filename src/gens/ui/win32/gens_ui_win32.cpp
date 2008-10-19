@@ -38,6 +38,19 @@
 // Shell objects
 #include <shlobj.h>
 
+// Gens Win32 resources
+#include "ui/win32/resource.h"
+
+// Windows
+#include "game_genie/game_genie_window.h"
+#include "controller_config/controller_config_window.hpp"
+#include "bios_misc_files/bios_misc_files_window.hpp"
+#include "directory_config/directory_config_window.h"
+#include "general_options/general_options_window.h"
+#include "color_adjust/color_adjust_window.h"
+#include "select_cdrom/select_cdrom_window.h"
+#include "country_code/country_code_window.h"
+#include "about/about_window.hpp"
 
 // Filename filters.
 static const char* UI_Win32_FileFilter_AllFiles =
@@ -66,15 +79,16 @@ static const char* UI_Win32_FileFilter_GYMFile =
 	"GYM Files\0*.gym\0\0"
 	"All Files\0*.*\0\0";
 
-
 static string UI_Win32_OpenFile_int(const string& title,
 				    const string& initFile,
 				    const FileFilterType filterType,
 				    HWND owner,
 				    const bool openOrSave);
 
-
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
+
+// Accelerator table for the main Gens window.
+HACCEL hAccelTable;
 
 
 /**
@@ -145,6 +159,9 @@ void GensUI::init(int argc, char *argv[])
 	lf.lfWeight = FW_BOLD;
 	fntTitle = CreateFontIndirect(&lf);
 	
+	// Load the accelerator table.
+	hAccelTable = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL));
+	
 	// Create and show the Gens window.
 	create_gens_window();
 	
@@ -193,7 +210,13 @@ void GensUI::update(void)
  */
 void GensUI::sleep(const int ms)
 {
-	Sleep(ms);
+	// Sleep 10 ms, then check for messages.
+	int loops = ms / 10;
+	for (int i = 0; i < loops; i++)
+	{
+		Sleep(10);
+		Win32_CheckMessages();
+	}
 }
 
 
@@ -519,4 +542,45 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);
 	}
 	return 0;
+}
+
+
+/**
+ * Win32_CheckMessages(): Check for Win32 messages.
+ */
+void Win32_CheckMessages(void)
+{
+	MSG msg;
+	
+	while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+	{
+		if (!GetMessage(&msg, NULL, 0, 0))
+			close_gens();
+			
+			// Check for an accelerator.
+		if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
+		    TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
+		{
+			// Accelerator. Don't process it as a regular message.
+			continue;
+		}
+			
+			// Check for dialog messages.
+		if ((game_genie_window && IsDialogMessage(game_genie_window, &msg)) ||
+		    (controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
+		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
+		    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
+		    (general_options_window && IsDialogMessage(general_options_window, &msg)) ||
+		    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
+		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
+		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
+		    (about_window && IsDialogMessage(about_window, &msg)))
+		{
+			// Dialog message. Don't process it as a regular message.
+			continue;
+		}
+			
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 }
