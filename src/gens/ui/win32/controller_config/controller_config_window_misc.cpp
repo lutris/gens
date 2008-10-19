@@ -99,54 +99,54 @@ int Reconfigure_Input(int player, int padtype)
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
 	keyConfig[player].Up = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR DOWN");
 	keyConfig[player].Down = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR LEFT");
 	keyConfig[player].Left = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR RIGHT");
 	keyConfig[player].Right = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR START");
 	keyConfig[player].Start = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR A");
 	keyConfig[player].A = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR B");
 	keyConfig[player].B = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR C");
 	keyConfig[player].C = input->getKey();
-	GensUI::sleep(250);
+	GensUI::sleep(250, true);
 	
 	if (padtype & 0x01)
 	{
 		// 6-button control pad. Get additional keys.
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR MODE");
 		keyConfig[player].Mode = input->getKey();
-		GensUI::sleep(250);
+		GensUI::sleep(250, true);
 		
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR X");
 		keyConfig[player].X = input->getKey();
-		GensUI::sleep(250);
+		GensUI::sleep(250, true);
 		
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Y");
 		keyConfig[player].Y = input->getKey();
-		GensUI::sleep(250);
+		GensUI::sleep(250, true);
 		
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Z");
 		keyConfig[player].Z = input->getKey();
-		GensUI::sleep(250);
+		GensUI::sleep(250, true);
 	}
 	
 	// Configuration successful.
@@ -154,7 +154,7 @@ int Reconfigure_Input(int player, int padtype)
 			"CONFIGURATION SUCCESSFUL.\n"
 			"PRESS ANY KEY TO CONTINUE...");
 	input->getKey();
-	GensUI::sleep(500);
+	GensUI::sleep(500, true);
 	SetWindowText(cc_lblSettingKeys, "");
 	
 	// Remove all WM_KEYDOWN messages from the window message queue.
