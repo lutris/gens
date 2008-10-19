@@ -300,6 +300,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Init_GameGenie();
 	
 	// Parse command line arguments.
+	// TODO: This causes a crash.
 	argc_argv arg = convertCmdLineToArgv(lpCmdLine);
 	parseArgs(arg.c, arg.v);
 	deleteArgcArgv(&arg);
