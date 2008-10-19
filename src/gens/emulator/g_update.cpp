@@ -14,6 +14,10 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "ui/gens_ui.hpp"
 
+#ifdef GENS_OS_LINUX
+#include "port/timer.h"
+#endif /* GENS_OS_LINUX */
+
 #ifndef NULL
 #define NULL 0
 #endif

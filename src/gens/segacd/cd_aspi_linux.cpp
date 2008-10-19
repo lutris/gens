@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <climits>
 
-#include "port/port.h"
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 #include "util/file/rom.hpp"

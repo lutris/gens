@@ -11,10 +11,6 @@ extern "C" {
 // Needed for uint_*.
 #include <stdint.h>
 
-#ifdef GENS_OS_LINUX
-#include "port/port.h"
-#endif /* GENS_OS_LINUX */
-
 // ASPI definitions
 #include "aspi.h"
 

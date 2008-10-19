@@ -4,8 +4,6 @@
 
 #ifdef GENS_OS_WIN32
 #include <windows.h>
-#else
-#include "port/port.h"
 #endif /* GENS_OS_WIN32 */
 
 #include <stdio.h>
