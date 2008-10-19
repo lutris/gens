@@ -54,7 +54,7 @@ WNDPROC gg_txtCode_oldProc;
 WNDPROC gg_txtName_oldProc;
 
 // Window width.
-static const int wndWidth = 424;
+static const int wndWidth = 438;
 
 
 /**
@@ -89,11 +89,11 @@ HWND create_game_genie_window(void)
 	game_genie_window = CreateWindowEx(NULL, "Gens_Game_Genie", "Game Genie",
 					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					   CW_USEDEFAULT, CW_USEDEFAULT,
-					   wndWidth, 300,
+					   wndWidth, 316,
 					   Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(game_genie_window, wndWidth, 300);
+	Win32_setActualWindowSize(game_genie_window, wndWidth, 316);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(game_genie_window);
@@ -119,13 +119,13 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Info Title
 	lblInfoTitle = CreateWindow(WC_STATIC, strInfoTitle,
 				    WS_CHILD | WS_VISIBLE | SS_LEFT,
-				    8, 8, 256, 12, hWnd, NULL, ghInstance, NULL);
+				    8, 8, 256, 16, hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblInfoTitle, fntTitle, TRUE);
 	
 	// Info
 	lblInfo = CreateWindow(WC_STATIC, strInfo,
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
-			       8, 24, 288, 52, hWnd, NULL, ghInstance, NULL);
+			       8, 24, wndWidth-16, 68, hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblInfo, fntMain, TRUE);
 	
 	// Code and Name boxes, plus "Add Code" button.
@@ -135,13 +135,13 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Code label
 	lblCode = CreateWindow(WC_STATIC, "Code",
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
-			       8, 24+52+8+2, 32, 12, hWnd, NULL, ghInstance, NULL);
+			       8, 24+68+8, 32, 16, hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblCode, fntMain, TRUE);
 	
 	// Code entry
 	gg_txtCode = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-				    8+32+8, 24+52+8, wndWidth - (8+32+8+64+8+8), 20,
+				    8+32+8, 24+68+8, wndWidth - (8+32+8+64+8+8+16), 20,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(gg_txtCode, fntMain, TRUE);
 	gg_txtCode_oldProc = (WNDPROC)SetWindowLongPtr(gg_txtCode, GWL_WNDPROC, (LONG_PTR)Game_Genie_TextBox_WndProc);
@@ -149,14 +149,14 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Name label
 	lblName = CreateWindow(WC_STATIC, "Name",
 			       WS_CHILD | WS_VISIBLE | SS_LEFT,
-			       8, 24+52+8+2+24, 32, 12,
+			       8, 24+68+8+24, 32, 16,
 			       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblName, fntMain, TRUE);
 	
 	// Name entry
 	gg_txtName = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
-				    8+32+8, 24+52+8+24, wndWidth - (8+32+8+64+8+8), 20,
+				    8+32+8, 24+68+8+24, wndWidth - (8+32+8+64+8+8+16), 20,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(gg_txtName, fntMain, TRUE);
 	gg_txtName_oldProc = (WNDPROC)SetWindowLongPtr(gg_txtName, GWL_WNDPROC, (LONG_PTR)Game_Genie_TextBox_WndProc);
@@ -164,14 +164,14 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	// Add Code
 	btnAddCode = CreateWindow(WC_BUTTON, "&Add Code",
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				  wndWidth - (64+8), 24+52+8, 64, 20,
+				  wndWidth - (64+8+16), 24+68+8, 63+16, 20,
 				  hWnd, IDC_BTN_ADD, ghInstance, NULL);
 	SetWindowFont(btnAddCode, fntMain, TRUE);
 	
 	// ListView
 	gg_lstvCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT,
-				      8, 24+52+8+24+24, wndWidth - (8+8), 128,
+				      8, 24+68+8+24+24, wndWidth - (8+8), 128,
 				      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(gg_lstvCodes, fntMain, TRUE);
 	SendMessage(gg_lstvCodes, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
@@ -192,7 +192,7 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	SendMessage(gg_lstvCodes, LVM_INSERTCOLUMN, 1, (LPARAM)&lvCol);
 	
 	// Buttons
-	const int btnTop = 24+52+8+24+24+128+8;
+	const int btnTop = 24+68+8+24+24+128+8;
 	HWND btnOK, btnApply, btnCancel, btnDeactivateAll, btnDelete;
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
@@ -216,7 +216,7 @@ void Game_Genie_Window_CreateChildWindows(HWND hWnd)
 	SetWindowFont(btnDelete, fntMain, TRUE);
 	
 	btnDeactivateAll = CreateWindow(WC_BUTTON, "Deac&tivate All", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					8+75+8+75+8+75+8+75+8, btnTop, 75, 23,
+					8+75+8+75+8+75+8+75+8, btnTop, 75+16, 23,
 					hWnd, (HMENU)IDC_BTN_DEACTIVATEALL, ghInstance, NULL);
 	SetWindowFont(btnDeactivateAll, fntMain, TRUE);
 	
