@@ -99,6 +99,7 @@ extern "C"
 #include "gens_window_cmds.h"
 
 #include "video/v_draw_ddraw.hpp"
+#include "input/input_dinput.hpp"
 static bool paintsEnabled = true;
 
 static void on_gens_window_close(void);
@@ -136,6 +137,14 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		
 		case WM_CREATE:
 			Active = 1;
+			break;
+		
+		case WM_ACTIVATE:
+			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
+			{
+				// Set the DirectInput cooperative level.
+				reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
+			}
 			break;
 		
 		case WM_PAINT:

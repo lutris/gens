@@ -255,7 +255,4 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 	
 	// Set focus to Player 1's "Reconfigure" button.
 	SetFocus(cc_btnReconfigure[0]);
-	
-	// Set the DirectInput cooperative level.
-	reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
 }

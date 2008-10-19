@@ -28,12 +28,16 @@
 #include "controller_config_window_misc.hpp"
 
 #include "emulator/gens.hpp"
+#include "emulator/g_main.hpp"
 
 #include <windows.h>
 #include <windowsx.h>
 
 // Gens Win32 resources
 #include "ui/win32/resource.h"
+
+// DirectInput access is needed.
+#include "input/input_dinput.hpp"
 
 
 LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -47,6 +51,14 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 		case WM_CLOSE:
 			DestroyWindow(controller_config_window);
 			return 0;
+		
+		case WM_ACTIVATE:
+			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
+			{
+				// Set the DirectInput cooperative level.
+				reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
+			}
+			break;
 		
 		case WM_COMMAND:
 			// Button press, or Enter pressed in textbox
