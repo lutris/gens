@@ -410,7 +410,7 @@ void parseArgs(int argc, char **argv)
 			error = 1;
 			continue;
 		}
-			
+		
 		if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_GAME][0]))
 		{
 			if (strcmp(optarg, "") != 0)
