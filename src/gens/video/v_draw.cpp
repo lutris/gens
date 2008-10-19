@@ -421,6 +421,13 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 			y += 16;
 	}
 	
+	// Move the text down by another 2px in 1x rendering.
+	if ((!m_FullScreen && Video.Render_W == 0) ||
+	    (m_FullScreen && Video.Render_FS == 0))
+	{
+		y += 2;
+	}
+	
 	// Character size is 8x8 normal, 16x16 double.
 	y -= (8 + charSize);
 	
