@@ -8,81 +8,94 @@
 #include "timer.h"
 
 
-#define UCLOCKS_PER_SEC		1000000
-static long long cpu_speed = 0;
+// Time #defines from WINE's dlls/ntdll/time.c
+#define TICKSPERSEC        10000000
+#define SECSPERDAY         86400
+#define SECS_1601_TO_1970  ((369 * 365 + 89) * (unsigned long long)SECSPERDAY)
+#define TICKS_1601_TO_1970 (SECS_1601_TO_1970 * TICKSPERSEC)
+
+static long long start_time;
 
 
-// return time in micro-second
-static inline long long system_time(void)
+/**
+ * NtQuerySystemTime(): Retrieves the current system time.
+ * @param time Pointer to 64-bit variable to store the time in.
+ */
+static void NtQuerySystemTime(long long* time)
 {
+	// Originally from Wine 1.1.6
+	// dlls/ntdll/time.c
+	
+	if (!time)
+		return;
+	
 #if HAVE_LIBRT
-	struct timespec tv;
-	clock_gettime(CLOCK_REALTIME, &tv);
-	return (tv.tv_sec * 1000000) + (tv.tv_nsec / 1000);
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+	*time = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
+	*time += (now.tv_nsec / 1000) * 10;
 #else
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000000) + (tv.tv_usec);
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	*time = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
+	*time += now.tv_usec * 10;
 #endif
 }
 
 
 /**
- * read_rdtsc(): Read the time stamp counter.
- * @return Time stamp counter.
+ * init_timer(): Initialize the Wine timer functions.
  */
-static inline long long read_rdtsc(void)
-{
-	long long result;
-	__asm__ __volatile__ ("rdtsc":"=A" (result));
-	return result;
-}
-
-
-// based on mame
-static inline long long get_cpu_speed(void)
-{
-	long long a, b, start, end;
-	
-	a = system_time();
-	do
-	{
-		b = system_time();
-	}
-	while (a == b);
-	
-	start = read_rdtsc();
-	
-	do
-	{
-		a = system_time();
-	}
-	while (a - b < UCLOCKS_PER_SEC / 4);
-	
-	end = read_rdtsc();
-	
-	return (end - start) * 4;
-}
-
-
-unsigned int gettime(void)
-{
-	return system_time() / 1000;
-}
-
-
 void init_timer(void)
 {
-	cpu_speed = get_cpu_speed();
+	NtQuerySystemTime(&start_time);
 }
 
 
-void QueryPerformanceFrequency(long long *freq)
+/**
+ * GetTickCount() Get the number of milliseconds that have elapsed since Gens was started.
+ * @return Milliseconds since Gens was started.
+ */
+unsigned int GetTickCount(void)
 {
-	*freq = cpu_speed;
+	// Originally from Wine 1.1.6
+	// dlls/ntdll/time.c
+	
+	long long now;
+	NtQuerySystemTime(&now);
+	return (now - start_time) / 10000;
 }
 
-void QueryPerformanceCounter(long long *now)
+
+/**
+ * QueryPerformanceFrequency(): Get the frequency of the high-resolution performance counter.
+ * @param freq Pointer to 64-bit variable to store the frequency in.
+ */
+void QueryPerformanceFrequency(long long *frequency)
 {
-	*now = read_rdtsc();
+	// Originally from Wine 1.1.6
+	// dlls/ntdll/time.c
+	
+	// The frequency is always reported as 1,193,182 Hz.
+	// My XP Pro VM reports the frequency as 3,579,545 Hz (NTSC color subcarrier),
+	// but it doesn't really make a difference.
+	*frequency = 1193182;
+}
+
+
+/**
+ * QueryPerformanceCounter(): Get the high-resolution performance counter value.
+ * @param counter Pointer to 64-bit variable to store the counter in.
+ */
+void QueryPerformanceCounter(long long *counter)
+{
+	// Originally from Wine 1.1.6
+	// dlls/ntdll/time.c
+	
+	if (!counter)
+		return;
+	
+	long long now;
+	NtQuerySystemTime(&now);
+	*counter = ((now - start_time) * 21) / 176;
 }

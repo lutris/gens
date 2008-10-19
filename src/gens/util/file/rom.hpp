@@ -5,10 +5,7 @@
 extern "C" {
 #endif
 
-
 #include "emulator/gens.hpp"
-#include "port/port.h"
-
 
 typedef enum
 {

@@ -8,7 +8,6 @@ endif
 
 gens_SOURCES += \
 		emulator/g_main_linux.cpp \
-		port/port.c \
 		port/ini_old.c \
 		port/timer.c \
 		video/v_draw_sdl.cpp \
@@ -72,7 +71,6 @@ endif # GENS_UI_GTK
 
 noinst_HEADERS += \
 		emulator/g_main_linux.hpp \
-		port/port.h \
 		port/ini_old.h \
 		port/timer.h \
 		video/v_draw_sdl.hpp \

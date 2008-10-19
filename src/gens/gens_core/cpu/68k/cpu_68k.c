@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "port/port.h"
 #include "cpu_68k.h"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_s68k.h"

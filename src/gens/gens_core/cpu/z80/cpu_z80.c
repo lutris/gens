@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "port/port.h"
 #include "z80.h"
 #include "cpu_z80.h"
 #include "gens_core/mem/mem_m68k.h"

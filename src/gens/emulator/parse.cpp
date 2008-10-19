@@ -34,7 +34,6 @@
 #include "video/v_draw.hpp"
 
 #include "g_main.hpp"
-#include "port/port.h"
 #include "util/file/save.hpp"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"

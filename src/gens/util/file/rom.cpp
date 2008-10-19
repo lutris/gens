@@ -12,7 +12,6 @@ using std::list;
 
 #include "rom.hpp"
 
-#include "port/port.h"
 #include "emulator/g_main.hpp"
 #include "emulator/gens.hpp"
 #include "emulator/g_md.hpp"

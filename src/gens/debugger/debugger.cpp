@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "port/port.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_md.hpp"
 #include "emulator/g_32x.hpp"

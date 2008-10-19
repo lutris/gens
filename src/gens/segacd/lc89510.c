@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include "port/port.h"
 #include "gens_core/misc/misc.h"
 #include "lc89510.h"
 #include "gens_core/cpu/68k/star_68k.h"

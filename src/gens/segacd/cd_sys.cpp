@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include "cd_sys.hpp"
-#include "port/port.h"
 #include "cd_file.h"
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"

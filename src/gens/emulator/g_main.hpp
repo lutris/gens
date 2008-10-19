@@ -10,7 +10,6 @@ extern "C" {
 #endif
 
 #include "gens.hpp"
-#include "port/port.h"
 
 // OS-specific includes.
 #if defined(GENS_OS_LINUX)
@@ -106,6 +105,13 @@ extern int Quick_Exit;
 extern int FS_Minimised;
 extern int fast_forward;
 
+#ifndef GENS_OS_WIN32
+typedef struct _POINT
+{
+	int x;
+	int y;
+} POINT;
+#endif /* GENS_OS_WIN32 */
 extern POINT Window_Pos;
 
 extern char **language_name;

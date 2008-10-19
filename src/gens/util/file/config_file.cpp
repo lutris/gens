@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include "save.hpp"
 #include "config_file.hpp"
-#include "port/port.h"
 #include "port/ini.hpp"
 
 #include "emulator/gens.hpp"
