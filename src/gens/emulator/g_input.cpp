@@ -94,7 +94,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_BACKSPACE:
-			if (draw->fullScreen() && (KMOD_SHIFT & mod))
+			if (draw->fullScreen() && (mod & KMOD_SHIFT))
 			{
 				audio->clearSoundBuffer();
 				Save_Shot();
@@ -102,7 +102,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_TAB:
-			system_reset ();
+			system_reset();
 			break;
 		
 		case GENS_KEY_RETURN:
@@ -141,12 +141,12 @@ void Input_KeyDown(int key)
 			{
 				if (Frame_Skip == -1)
 				{
-					Set_Frame_Skip (0);
+					Set_Frame_Skip(0);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 				else if (Frame_Skip > 0)
 				{
-					Set_Frame_Skip (Frame_Skip - 1);
+					Set_Frame_Skip(Frame_Skip - 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -156,39 +156,42 @@ void Input_KeyDown(int key)
 			if (!mod)
 			{
 				if (Frame_Skip == -1)
-					Set_Frame_Skip (1);
-				else
 				{
-					if (Frame_Skip < 8)
-						Set_Frame_Skip (Frame_Skip + 1);
+					Set_Frame_Skip(1);
+					Sync_Gens_Window_GraphicsMenu();
 				}
-				Sync_Gens_Window_GraphicsMenu();
+				else if (Frame_Skip < 8)
+				{
+					Set_Frame_Skip(Frame_Skip + 1);
+					Sync_Gens_Window_GraphicsMenu();
+				}
 			}
 			break;
 		
 		case GENS_KEY_F5:
-			/* TODO: Make MINIMIZE work correctly.
-			if (mod & GENS_KMOD_SHIFT)
+			if (!draw->fullScreen())
+				break;
+			
+			//if (Check_If_Kaillera_Running()) return 0;
+			
+			if (mod == KMOD_SHIFT)
 			{
-				//if (Check_If_Kaillera_Running()) return 0;
-				MINIMIZE;
-				Change_File_S(Str_Tmp, State_Dir);
+				Str_Tmp[0] = 0;
+				if (Change_File_S(Str_Tmp, State_Dir) == 1)
+					Save_State(Str_Tmp);
+			}
+			else if (!mod)
+			{
+				Str_Tmp[0] = 0;
+				Get_State_File_Name(Str_Tmp);
 				Save_State(Str_Tmp);
 			}
-			else // if (!mod)
-			{
-			*/
-				//if (Check_If_Kaillera_Running()) return 0;
-				Str_Tmp[0] = 0;
-				Get_State_File_Name (Str_Tmp);
-				Save_State (Str_Tmp);
-			//}
 			break;
 		
 		case GENS_KEY_F6:
 			if (!mod)
 			{
-				Set_Current_State ((Current_State + 9) % 10);
+				Set_Current_State((Current_State + 9) % 10);
 				Sync_Gens_Window_FileMenu();
 			}
 			break;
@@ -196,29 +199,29 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F7:
 			if (!mod)
 			{
-				Set_Current_State ((Current_State + 1) % 10);
+				Set_Current_State((Current_State + 1) % 10);
 				Sync_Gens_Window_FileMenu();
 			}
 			break;
 		
 		case GENS_KEY_F8:
-			/* TODO: Make MINIMIZE work correctly.
-			if (mod & GENS_KMOD_SHIFT)
+			if (!draw->fullScreen())
+				break;
+			
+			//if (Check_If_Kaillera_Running()) return 0;
+			
+			if (mod == KMOD_SHIFT)
 			{
-				//if (Check_If_Kaillera_Running()) return 0;
-				MINIMIZE;
 				Str_Tmp[0] = 0;
-				Change_File_L (Str_Tmp, State_Dir);
-				Load_State (Str_Tmp);
+				if (Change_File_L(Str_Tmp, State_Dir) == 1)
+					Load_State(Str_Tmp);
 			}
-			else //if (!mod)
+			else if (!mod)
 			{
-			*/
-				//if (Check_If_Kaillera_Running()) return 0;
 				Str_Tmp[0] = 0;
-				Get_State_File_Name (Str_Tmp);
-				Load_State (Str_Tmp);
-			//}
+				Get_State_File_Name(Str_Tmp);
+				Load_State(Str_Tmp);
+			}
 			break;
 		
 		case GENS_KEY_F9:
@@ -354,13 +357,6 @@ void Input_KeyDown(int key)
 			break;
 		*/
 		
-		case GENS_KEY_h:
-			if (mod & KMOD_CTRL)
-				GensUI::setWindowVisibility(false);
-			else
-				GensUI::setWindowVisibility(true);
-			break;
-		
 		/*
 		case GENS_KEY_o:
 			if (mod & GENS_KMOD_CTRL)
@@ -406,7 +402,7 @@ void Input_KeyDown(int key)
 			if (mod & GENS_KMOD_CTRL)
 			{
 				if (SegaCD_Started)
-				Change_CD ();
+				Change_CD();
 			}
 			break;
 #endif /* GENS_CDROM */
