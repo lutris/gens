@@ -49,7 +49,15 @@ Milestone 5 fixes the following bugs:
 
 - The "Save Config" and "Load Config As" functions incorrectly passed a
   NULL value to the GensUI class when a C++ string was expected, resulting
-  in a crash. This has been fixed.
+  in a crash.
+
+- Clicking "OK" in the "Archive File Selection" dialog with no file selected
+  resulted in a crash.
+
+- Some 32X ROMs were misdetected as Genesis ROMs. In particular, drx's
+  "Sonic 32X" does not say "SEGA 32X" in the header. However, the ROM does
+  have "MARS" at 0x040E. The detection function has been updated to take
+  this into account, so "Sonic 32X" is now properly detected as a 32X ROM.
 
 Milestone 5 has the following low-level code changes:
 
