@@ -61,8 +61,11 @@ int Update_Emulation(void)
 		else
 		{
 #ifdef GENS_OS_WIN32
-			audio->wpInc();
-			audio->writeSoundBuffer(NULL);
+			if (audio->enabled())
+			{
+				audio->wpInc();
+				audio->writeSoundBuffer(NULL);
+			}
 #endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
 			Update_Frame();
