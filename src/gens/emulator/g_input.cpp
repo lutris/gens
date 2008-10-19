@@ -73,7 +73,9 @@ void Input_KeyDown(int key)
 				Sync_Gens_Window_CPUMenu();
 			}
 			else if (Paused)
+			{
 				Paused = 0;
+			}
 			else
 			{
 				Paused = 1;
