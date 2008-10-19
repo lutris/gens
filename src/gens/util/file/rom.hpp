@@ -55,7 +55,7 @@ void Update_CD_Rom_Name(char *Name);
 int Get_Rom(void);
 int Open_Rom(const char *Name);
 struct Rom *Load_SegaCD_BIOS(const char *filename);
-ROMType detectFormat(const unsigned char *buf);
+ROMType detectFormat(const unsigned char buf[2048]);
 ROMType detectFormat_fopen(const char* filename);
 ROMType Load_ROM(const char *filename, struct Rom **retROM);
 void Fix_Checksum(void);

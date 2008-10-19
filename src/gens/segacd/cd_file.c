@@ -49,7 +49,7 @@ int Load_ISO(char* buf, const char* iso_name)
 	FILE *isoFile;
 	int i, j, num_track, Cur_LBA;
 	FILE *tmp_file;
-	unsigned char detectBuf[1024];
+	unsigned char detectBuf[2048];
 	char tmp_name[1024], tmp_ext[10];
 	
 	const char exts[20][16] =
@@ -67,7 +67,7 @@ int Load_ISO(char* buf, const char* iso_name)
 		return -2;
 	
 	// Detect the disc image format.
-	fread(detectBuf, 1, 1024, isoFile);
+	fread(detectBuf, 1, sizeof(detectBuf), isoFile);
 	switch (detectFormat(detectBuf))
 	{
 		case SegaCD_Image:
