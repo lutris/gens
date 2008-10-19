@@ -401,7 +401,21 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	else
 	{
 		// Don't adjust for screen size. (DDraw)
-		x = 8;
+		if (!m_FullScreen && Video.Render_W == 0)
+		{
+			// Hack for windowed 1x rendering.
+			x = 8;
+		}
+		else if (m_FullScreen && Video.Render_FS == 0 && m_Stretch)
+		{
+			// Hacks for fullscreen 1x rendering.
+			x = 0;
+		}
+		else
+		{
+			x = ((m_HBorder / 2) << m_shift);
+		}
+		
 		y = VDP_Num_Vis_Lines << m_shift;
 		if (m_shift)
 			y += 8;

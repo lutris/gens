@@ -835,17 +835,26 @@ int VDraw_DDraw::flipInternal(void)
 
 				if ((VDP_Num_Vis_Lines == 224) && !m_Stretch)
 				{
-					RectDest.top = (int) ((FS_Y - 224)/2); //Upth-Add - But we still
-					RectDest.bottom = 224 + RectDest.top;  //Upth-Add - center the screen
+					RectDest.top = (int)((FS_Y - 224)/2); //Upth-Add - But we still
+					RectDest.bottom = RectDest.top + 224;  //Upth-Add - center the screen
 				}
 				else
 				{
-					RectDest.top = (int) ((FS_Y - 240)/2); //Upth-Add - for both of the
-					RectDest.bottom = 240 + RectDest.top;  //Upth-Add - predefined conditions
+					RectDest.top = (int)((FS_Y - 240)/2); //Upth-Add - for both of the
+					RectDest.bottom = RectDest.top + 240;  //Upth-Add - predefined conditions
 				}
-				RectDest.left = (int) ((FS_X - 320)/2); //Upth-Add - and along the
-				RectDest.right = 320 + RectDest.left;   //Upth-Add - x axis, also
-
+				
+				if (!isFullXRes() && !m_Stretch)
+				{
+					RectDest.left = (int)((FS_X - 256)/2); //Upth-Add - and along the
+					RectDest.right = 256 + RectDest.left;   //Upth-Add - x axis, also
+				}
+				else
+				{
+					RectDest.left = (int)((FS_X - 320)/2); //Upth-Add - and along the
+					RectDest.right = 320 + RectDest.left;   //Upth-Add - x axis, also
+				}
+				
 				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
