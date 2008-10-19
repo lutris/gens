@@ -44,7 +44,7 @@ static WNDCLASS WndClass;
 HWND bios_misc_files_window = NULL;
 
 // Frame width.
-static const int frameWidth = 360;
+static const int frameWidth = 376;
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const unsigned short BIOSMiscFiles_Count = 14;
@@ -157,7 +157,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// Create the label for the title.
 			lblTitle = CreateWindow(WC_STATIC, BIOSMiscFiles[file].title,
 						WS_CHILD | WS_VISIBLE | SS_LEFT,
-						grpBox_Left + 8, grpBox_Top + entryTop, 56, 16,
+						grpBox_Left + 8, grpBox_Top + entryTop, 64, 16,
 						hWnd, NULL, ghInstance, NULL);
 						
 			// Set the font for the label.
@@ -167,7 +167,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, BIOSMiscFiles[file].entry,
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 						  grpBox_Left + 8+56+8, grpBox_Top + entryTop,
-						  frameWidth - (8+56+8+16+64), 20,
+						  frameWidth - (8+64+8+72+8), 20,
 						  hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the entry.
@@ -176,7 +176,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// Create the change button for the entry.
 			btnChange = CreateWindow(WC_BUTTON, "Change...",
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						 grpBox_Left + frameWidth - (8+8+56), grpBox_Top + entryTop, 64, 20,
+						 grpBox_Left + frameWidth - (8+72), grpBox_Top + entryTop, 72, 20,
 						 hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 						 
 			// Set the font for the button.
