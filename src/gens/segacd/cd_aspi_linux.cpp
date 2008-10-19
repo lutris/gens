@@ -84,6 +84,10 @@ int ASPI_Init(void)
 	Num_CD_Drive = 0;
 	Current_LBA = 0;
 	
+	// Clear the TOC and read buffer.
+	memset(&toc, 0x00, sizeof(toc));
+	memset(Buf_Read, 0x00, sizeof(Buf_Read));
+	
 	//By Ubi Start:
 	FD_CDROM = open(cdromDeviceName, O_RDONLY | O_NONBLOCK);
 	if (FD_CDROM >= 0)

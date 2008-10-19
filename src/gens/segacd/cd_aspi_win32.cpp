@@ -44,10 +44,16 @@ int ASPI_Init(void)
 {
 	unsigned int ASPI_Status;
 	
+	// Clear the ASPI variables.
 	ASPI_Command_Running = 0;
 	Num_CD_Drive = 0;
 	Current_LBA = 0;
 	
+	// Clear the TOC and read buffer.
+	memset(&toc, 0x00, sizeof(toc));
+	memset(Buf_Read, 0x00, sizeof(Buf_Read));
+	
+	// Clear the ASPI pointers.
 	Get_ASPI_Info = Get_ASPI_Version = NULL;
 	Send_ASPI_Command = NULL;
 	
