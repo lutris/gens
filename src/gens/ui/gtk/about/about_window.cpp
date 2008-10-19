@@ -139,7 +139,7 @@ GtkWidget* create_about_window(void)
 	strcat(versionString, aboutTitle);
 	strcat(versionString, "\n");
 	// Append the git revision, if available.
-#ifdef GIT_VERSION
+#ifdef GIT_REPO
 	strcat(versionString, "git: ");
 #ifdef GIT_BRANCH
 	strcat(versionString, GIT_BRANCH);
@@ -150,7 +150,7 @@ GtkWidget* create_about_window(void)
 #ifdef GIT_SHAID
 	strcat(versionString, GIT_SHAID);
 #endif /* GIT_SHAID */
-#endif /* GIT_VERSION */
+#endif /* GIT_REPO */
 	strcat(versionString, "</i></b>\n\n");
 	strcat(versionString, aboutDesc);
 	label_gens_version = gtk_label_new(versionString);

@@ -75,11 +75,11 @@ unsigned short ax = 0, bx = 0, cx = 0;
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void About_Window_CreateChildWindows(HWND hWnd);
 
-#ifdef GIT_VERSION
+#ifdef GIT_REPO
 const unsigned short lblTitle_HeightInc = 16;
 #else
 const unsigned short lblTitle_HeightInc = 0;
-#endif /* GIT_VERSION */
+#endif /* GIT_REPO */
 
 /**
  * create_about_window(): Create the About Window.
@@ -226,7 +226,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	strcpy(versionString, aboutTitle);
 	strcat(versionString, "\n");
 	// Append the git revision, if available.
-#ifdef GIT_VERSION
+#ifdef GIT_REPO
 	strcat(versionString, "git: ");
 #ifdef GIT_BRANCH
 	strcat(versionString, GIT_BRANCH);
@@ -237,7 +237,7 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 #ifdef GIT_SHAID
 	strcat(versionString, GIT_SHAID);
 #endif /* GIT_SHAID */
-#endif /* GIT_VERSION */
+#endif /* GIT_REPO */
 	
 	// Title and version information.
 	lblGensTitle = CreateWindow(WC_STATIC, versionString, WS_CHILD | WS_VISIBLE | SS_CENTER,
