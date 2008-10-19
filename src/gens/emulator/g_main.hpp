@@ -138,6 +138,7 @@ void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
 void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time);
 void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time);
 
+#if 0
 
 #define MINIMIZE \
 {\
@@ -148,9 +149,6 @@ void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int ti
 	}\
 }
 //		Set_Render(0, -1, 1);
-
-
-#if 0
 
 #define MENU_L(smenu, pos, flags, id, str, suffixe, def)\
 GetPrivateProfileString(language_name[Language], (str), (def), Str_Tmp, 1024, Language_Path);	\
