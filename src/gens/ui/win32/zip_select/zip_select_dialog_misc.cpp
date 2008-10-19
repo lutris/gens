@@ -35,6 +35,8 @@
 // Win32 common controls
 #include <commctrl.h>
 
+#include <windowsx.h>
+
 #include <string>
 #include <list>
 using std::string;
@@ -136,8 +138,7 @@ static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
 	list<CompressedFile>::iterator lstIter;
 	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
 	{
-		SendMessage(lstFiles, LB_ADDSTRING, static_cast<WPARAM>(NULL),
-			    reinterpret_cast<LPARAM>((*lstIter).filename.c_str()));
+		ListBox_AddString(lstFiles, (*lstIter).filename.c_str());
 	}
 }
 
@@ -151,5 +152,5 @@ static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
 static inline int getCurListItem(HWND hWndDlg, int nIDDlgItem)
 {
 	HWND lstBox = GetDlgItem(hWndDlg, nIDDlgItem);
-	return SendMessage(lstBox, LB_GETCURSEL, NULL, NULL);
+	return ListBox_GetCurSel(lstBox);
 }
