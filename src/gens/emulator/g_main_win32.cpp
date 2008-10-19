@@ -331,7 +331,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 			else
 			{
 				// Blank screen. (MAX IDLE)
-				GensUI::sleep(10);
+				GensUI::sleep(200);
 			}
 		}
 	}
