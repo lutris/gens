@@ -92,14 +92,14 @@ extern "C"
 	void sub68k_reset();
 }
 
-
-// Menu identifier definitions
+// Menu Command Definitions
 #include "gens_window_menu.h"
 
+// Non-Menu Command Definitions
+#include "gens_window_cmds.h"
 
 #include "video/v_draw_ddraw.hpp"
 static bool paintsEnabled = true;
-
 
 static void on_gens_window_close(void);
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -108,6 +108,7 @@ static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARA
 static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 static void fullScreenPopupMenu(HWND hWnd);
 
@@ -199,6 +200,9 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					break;
 				case IDM_HELP_MENU:
 					on_gens_window_HelpMenu(hWnd, message, wParam, lParam);
+					break;
+				case IDCMD_NONMENU_COMMANDS:
+					on_gens_window_NonMenuCmd(hWnd, message, wParam, lParam);
 					break;
 			}
 			break;
@@ -744,6 +748,158 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case IDM_HELP_ABOUT:
 			create_about_window();
 			break;
+	}
+}
+
+
+/**
+ * on_gens_window_NonMenuCmd(): Non-Menu Command has been activated.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam LOWORD(wParam) == Command.
+ * @param lParam
+ */
+static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	int rendMode;
+	
+	switch (LOWORD(wParam))
+	{
+		case IDCMD_ESC:
+			if (Quick_Exit)
+				close_gens();
+			
+			if (Debug)
+			{
+				Change_Debug(0);
+				Paused = 0;
+				Sync_Gens_Window_CPUMenu();
+			}
+			else if (Paused)
+			{
+				Paused = 0;
+			}
+			else
+			{
+				Paused = 1;
+				//Pause_Screen();
+				audio->clearSoundBuffer();
+			}
+			break;
+		
+		case IDCMD_PAUSE:
+			if (Paused)
+			{
+				Paused = 0;
+			}
+			else
+			{
+				Paused = 1;
+				//Pause_Screen();
+				audio->clearSoundBuffer();
+			}
+			break;
+		
+		case IDCMD_FRAMESKIP_AUTO:
+			Set_Frame_Skip(-1);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDCMD_FRAMESKIP_DEC:
+			if (Frame_Skip == -1)
+			{
+				Set_Frame_Skip(0);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			else if (Frame_Skip > 0)
+			{
+				Set_Frame_Skip(Frame_Skip - 1);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			break;
+		
+		case IDCMD_FRAMESKIP_INC:
+			if (Frame_Skip == -1)
+			{
+				Set_Frame_Skip(1);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			else if (Frame_Skip < 8)
+			{
+				Set_Frame_Skip(Frame_Skip + 1);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			break;
+		
+		case IDCMD_SAVESLOT_DEC:
+			Set_Current_State((Current_State + 9) % 10);
+			Sync_Gens_Window_FileMenu();
+			break;
+		
+		case IDCMD_SAVESLOT_INC:
+			Set_Current_State((Current_State + 1) % 10);
+			Sync_Gens_Window_FileMenu();
+			break;
+		
+		case IDCMD_SWBLIT:
+			Change_Blit_Style();
+			break;
+		
+		case IDCMD_FASTBLUR:
+			Change_Fast_Blur();
+			break;
+		
+		case IDCMD_YM2612_IMPROVED:
+			Change_YM2612_Improved(!YM2612_Improv);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case IDCMD_DAC_IMPROVED:
+			Change_DAC_Improved(!DAC_Improv);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case IDCMD_PSG_IMPROVED:
+			Change_PSG_Improved(!PSG_Improv);
+			Sync_Gens_Window_SoundMenu();
+			break;
+		
+		case IDCMD_FPS:
+			draw->setFPSEnabled(!draw->fpsEnabled());
+			break;
+		
+		case IDCMD_RENDERMODE_DEC:
+			rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+			if (rendMode > 0)
+			{
+				draw->setRender(rendMode - 1);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			break;
+		
+		case IDCMD_RENDERMODE_INC:
+			// TODO: Make filters constants.
+			// There's already NB_FILTER, but it has the wrong numbers...
+			rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+			if (rendMode < 11)
+			{
+				draw->setRender(rendMode + 1);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			break;
+		
+		case IDCMD_CHANGE_CD:
+			if (SegaCD_Started)
+				Change_CD();
+			break;
+		
+		default:
+			if ((LOWORD(wParam) & 0xFF00) == IDCMD_SAVESLOT_NUMERIC)
+			{
+				// Change the save slot.
+				Set_Current_State(LOWORD(wParam) & 0x0F);
+				Sync_Gens_Window_FileMenu();
+			}
 	}
 }
 
