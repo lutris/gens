@@ -28,9 +28,11 @@
 #define IS_FULL_Y_RESOLUTION ((VDP_Reg.Set2 & 0x8) || Debug || !Game /*|| !FrameCount*/)
 
 
-inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, int renderMode)
+inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface,
+					 const int renderMode, const bool lock)
 {
-	lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
+	if (lock)
+		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	const int w = (renderMode == 0 ? 320 : 640);
 	const int h = (renderMode == 0 ? 240 : 480);
@@ -44,17 +46,18 @@ inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	if (m_MsgVisible)
 	{
 		// Message is visible.
-		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->dwWidth,
+		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
 			 w, h, m_MsgText.c_str(), m_MsgStyle, false);
 	}
 	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
 	{
 		// FPS is enabled.
-		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->dwWidth,
+		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
 			 w, h, m_MsgText.c_str(), m_FPSStyle, false);
 	}
 	
-	lpDDS_Surface->Unlock(NULL);
+	if (lock)
+		lpDDS_Surface->Unlock(NULL);
 }
 
 
@@ -808,6 +811,9 @@ int VDraw_DDraw::flipInternal(void)
 				
 				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
 				
+				// Draw the text.
+				DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_FS, false);
+				
 				lpDDS_Blit->Unlock(NULL);
 				
 				if (Video.VSync_FS)
@@ -839,11 +845,13 @@ int VDraw_DDraw::flipInternal(void)
 				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					DDraw_Draw_Text(&ddsd, lpDDS_Flip, Video.Render_FS, true);
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 				else
 				{
 					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					DDraw_Draw_Text(&ddsd, lpDDS_Primary, Video.Render_FS, true);
 //					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 				}
 			}
@@ -869,10 +877,11 @@ int VDraw_DDraw::flipInternal(void)
 			
 			Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
 			
-			//Blit_FS((unsigned char *) ddsd.lpSurface + ddsd.lPitch * (240 - VDP_Num_Vis_Lines) + Dep * bytespp, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, (16 + Dep) * bytespp);
-
+			// Draw the text.
+			DDraw_Draw_Text(&ddsd, curBlit, Video.Render_FS, false);
+			
 			curBlit->Unlock(NULL);
-
+			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
 				RectDest.left = 0;
@@ -928,11 +937,16 @@ int VDraw_DDraw::flipInternal(void)
 			
 			Blit_W(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
 			
+			// Draw the text.
+			DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_W, false);
+			
 			lpDDS_Blit->Unlock(NULL);
 		}
-		
-		// Draw the text.
-		DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_W);
+		else
+		{
+			// Draw the text.
+			DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_W, true);
+		}
 		
 		p.x = p.y = 0;
 		ClientToScreen(Gens_hWnd, &p);
