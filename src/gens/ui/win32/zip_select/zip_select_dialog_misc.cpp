@@ -44,7 +44,7 @@ using std::list;
 
 
 static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst);
-static inline int getCurListItem(HWND hWndDlg, int nIDDlgItem);
+static inline int getCurListItemData(HWND hWndDlg, int nIDDlgItem);
 
 
 LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -61,28 +61,15 @@ CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 		return NULL;
 	}
 	
-	int file = DialogBoxParam(ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
-				  Gens_hWnd, reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
-				  reinterpret_cast<LPARAM>(lst));
-	if (file < 0)
-	{
-		// No file was selected.
-		return NULL;
-	}
+	CompressedFile* file;
+	file = reinterpret_cast<CompressedFile*>(DialogBoxParam(
+				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
+				  Gens_hWnd,
+				  reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
+				  reinterpret_cast<LPARAM>(lst)));
 	
 	// File was selected.
-	if (static_cast<unsigned int>(file) >= lst->size())
-	{
-		// File index is out of range.
-		return NULL;
-	}
-	
-	// Return the file.
-	list<CompressedFile>::iterator lstIter = lst->begin();
-	for (int i = 0; i < file; i++)
-		lstIter++;
-	
-	return &(*lstIter);
+	return file;
 }
 
 
@@ -98,7 +85,7 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 			switch (LOWORD(wParam))
 			{
 				case IDOK:
-					EndDialog(hWndDlg, getCurListItem(hWndDlg, IDC_ZIPSELECT_LSTFILES));
+					EndDialog(hWndDlg, getCurListItemData(hWndDlg, IDC_ZIPSELECT_LSTFILES));
 					return TRUE;
 				case IDCANCEL:
 					EndDialog(hWndDlg, -1);
@@ -107,7 +94,7 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 					if (HIWORD(wParam) == LBN_DBLCLK)
 					{
 						// Listbox double-click. Interpret this as "OK".
-						EndDialog(hWndDlg, getCurListItem(hWndDlg, IDC_ZIPSELECT_LSTFILES));
+						EndDialog(hWndDlg, getCurListItemData(hWndDlg, IDC_ZIPSELECT_LSTFILES));
 						return TRUE;
 					}
 			}
@@ -136,21 +123,24 @@ static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
 	
 	// Add all strings.
 	list<CompressedFile>::iterator lstIter;
+	int index;
 	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
 	{
-		ListBox_AddString(lstFiles, (*lstIter).filename.c_str());
+		index = ListBox_AddString(lstFiles, (*lstIter).filename.c_str());
+		ListBox_SetItemData(lstFiles, index, &(*lstIter));
 	}
 }
 
 
 /**
- * getCurListItem(): Gets the index of the selected list item.
+ * getCurListItemData(): Gets the data of the selected list item.
  * @param hWndDlg Dialog containing the listbox.
  * @param nIDDlgItem ID of the listbox.
- * @return Index of the selected list item. (-1 if nothing is selected.)
+ * @return Data of the selected list item. (-1 if nothing is selected.)
  */
-static inline int getCurListItem(HWND hWndDlg, int nIDDlgItem)
+static inline int getCurListItemData(HWND hWndDlg, int nIDDlgItem)
 {
 	HWND lstBox = GetDlgItem(hWndDlg, nIDDlgItem);
-	return ListBox_GetCurSel(lstBox);
+	int index = ListBox_GetCurSel(lstBox);
+	return ListBox_GetItemData(lstBox, index);
 }
