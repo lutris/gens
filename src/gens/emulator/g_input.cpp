@@ -291,9 +291,9 @@ void Input_KeyDown(int key)
 		case GENS_KEY_7:
 		case GENS_KEY_8:
 		case GENS_KEY_9:
-			if (mod & GENS_KMOD_SHIFT)
+			if (!mod)
 			{
-				Set_Current_State (key - GENS_KEY_0);
+				Set_Current_State(key - GENS_KEY_0);
 				Sync_Gens_Window_FileMenu();
 			}
 			else if (key != GENS_KEY_0 && (mod & GENS_KMOD_CTRL))
