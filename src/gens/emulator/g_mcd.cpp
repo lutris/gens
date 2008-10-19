@@ -206,6 +206,9 @@ int Init_SegaCD(const char *iso_name)
  */
 int Reload_SegaCD(const char *iso_name)
 {
+	// Clear the sound buffer.
+	audio->clearSoundBuffer();
+	
 	Save_BRAM();
 	
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
