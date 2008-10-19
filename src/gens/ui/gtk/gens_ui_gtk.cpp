@@ -110,7 +110,7 @@ void GensUI::sleep(const int ms)
 	g_timeout_add(ms, GensUI_GLib_SleepCallback, NULL);
 	while (sleeping)
 	{
-		usleep(1000);
+		usleep(10000);
 		update();
 	}
 }
