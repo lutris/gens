@@ -39,6 +39,13 @@ typedef enum
 	GYMFile		= 5,
 } FileFilterType;
 
+/**
+ * Win32_ClearSoundBuffer(): Clear the sound buffer.
+ * NOTE: TEMPORARY wrapper function for C files.
+ * Remove this when all the windows are converted to C++.
+ */
+void Win32_ClearSoundBuffer(void);
+
 #ifdef __cplusplus
 }
 #endif

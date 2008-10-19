@@ -589,3 +589,14 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 	
 	return 0;
 }
+
+
+/**
+ * Win32_ClearSoundBuffer(): Clear the sound buffer.
+ * NOTE: TEMPORARY wrapper function for C files.
+ * Remove this when all the windows are converted to C++.
+ */
+void Win32_ClearSoundBuffer(void)
+{
+	audio->clearSoundBuffer();
+}

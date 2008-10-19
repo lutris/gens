@@ -139,6 +139,27 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Active = 1;
 			break;
 		
+		case WM_MENUSELECT:
+		case WM_ENTERSIZEMOVE:
+		case WM_NCLBUTTONDOWN:
+		case WM_NCRBUTTONDOWN:
+			// Prevent audio stuttering when one of the following events occurs:
+			// - Menu is opened.
+			// - Window is resized.
+			// - Left/Right mouse button down on title bar.
+			audio->clearSoundBuffer();
+			break;
+		
+		case WM_EXITSIZEMOVE:
+			if (draw->fullScreen())
+				break;
+			
+			// Save the window coordinates.
+			GetWindowRect(hWnd, &rectGensWindow);
+			Window_Pos.x = rectGensWindow.left;
+			Window_Pos.y = rectGensWindow.top;
+			break;
+		
 		case WM_ACTIVATE:
 			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
 			{
@@ -160,27 +181,6 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			}
 			
 			EndPaint(hWnd, &ps);
-			break;
-		
-		case WM_MENUSELECT:
-		case WM_ENTERSIZEMOVE:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCRBUTTONDOWN:
-			// Prevent audio stuttering when one of the following events occurs:
-			// - Menu is opened.
-			// - Window is resized.
-			// - Left/Right mouse button down on title bar.
-			audio->clearSoundBuffer();
-			break;
-		
-		case WM_EXITSIZEMOVE:
-			if (draw->fullScreen())
-				break;
-			
-			// Save the window coordinates.
-			GetWindowRect(hWnd, &rectGensWindow);
-			Window_Pos.x = rectGensWindow.left;
-			Window_Pos.y = rectGensWindow.top;
 			break;
 		
 		case WM_RBUTTONDOWN:

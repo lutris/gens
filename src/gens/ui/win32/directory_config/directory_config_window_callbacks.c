@@ -42,6 +42,17 @@ LRESULT CALLBACK Directory_Config_Window_WndProc(HWND hWnd, UINT message, WPARAM
 			DestroyWindow(directory_config_window);
 			return 0;
 		
+		case WM_MENUSELECT:
+		case WM_ENTERSIZEMOVE:
+		case WM_NCLBUTTONDOWN:
+		case WM_NCRBUTTONDOWN:
+			// Prevent audio stuttering when one of the following events occurs:
+			// - Menu is opened.
+			// - Window is resized.
+			// - Left/Right mouse button down on title bar.
+			Win32_ClearSoundBuffer();
+			break;
+		
 		case WM_COMMAND:
 			// Button press
 			switch (LOWORD(wParam))
