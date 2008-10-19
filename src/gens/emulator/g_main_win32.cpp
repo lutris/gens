@@ -126,6 +126,39 @@ void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
 
 
 /**
+ * parseCmdLine_Old(): Old command line parser from Gens/Win32.
+ * @param lpCmdLine Command line.
+ */
+static void parseCmdLine_Old(LPSTR lpCmdLine)
+{
+	if (!lpCmdLine || !lpCmdLine[0])
+		return;
+	
+	int src = 0;
+	
+	if (lpCmdLine[src] == '\"')
+	{
+		// Quoted name.
+		src++;
+		
+		while ((lpCmdLine[src] != '\"') && (lpCmdLine[src]))
+		{
+			PathNames.Start_Rom[src - 1] = lpCmdLine[src];
+			src++;
+		}
+		
+		PathNames.Start_Rom[src - 1] = 0x00;
+	}
+	else
+	{
+		// Non-quoted name. Copy it verbatim.
+		strncpy(PathNames.Start_Rom, lpCmdLine, GENS_PATH_MAX);
+		PathNames.Start_Rom[GENS_PATH_MAX - 1] = 0x00;
+	}
+}
+
+
+/**
  * WinMain: Win32 main loop.
  * @param hinst ???
  * @param hPrevInst ???
@@ -165,6 +198,10 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	parseArgs(arg.c, arg.v);
 	deleteArgcArgv(&arg);
 #endif
+	
+	// Old Gens/Win32 command line parser.
+	// It merely checks for a ROM filename.
+	parseCmdLine_Old(lpCmdLine);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
