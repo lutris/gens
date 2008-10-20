@@ -67,7 +67,12 @@
 // CD-ROM drive access
 #ifdef GENS_CDROM
 #include "segacd/cd_aspi.hpp"
-#endif
+#endif /* GENS_CDROM */
+
+// Debugger
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
 
 // C++ includes
 #include <string>
