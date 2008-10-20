@@ -59,7 +59,7 @@ int Start_GYM_Dump(void)
 	do
 	{
 		num++;
-		sprintf(filename, "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, Rom_Name, num);
+		sprintf(filename, "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, ROM_Name, num);
 	} while (fileExists(filename));
 	
 	GYM_File = fopen(filename, "w");

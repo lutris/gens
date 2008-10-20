@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "emulator/gens.hpp"
+#include <stdlib.h>
 
 typedef enum
 {
@@ -20,47 +21,78 @@ typedef enum
 } ROMType;
 
 
-typedef struct Rom
+typedef struct _ROM_t
 {
 	char Console_Name[17];
 	char Copyright[17];
-	char Rom_Name[49];
-	char Rom_Name_W[49];
+	char ROM_Name[49];
+	char ROM_Name_W[49];
 	char Type[3];
 	char Version[13];
 	unsigned int Checksum;
 	char IO_Support[17];
-	unsigned int Rom_Start_Adress;
-	unsigned int Rom_End_Adress;
+	unsigned int ROM_Start_Address;
+	unsigned int ROM_End_Address;
 	unsigned int R_Size;
-	char Ram_Infos[13];
-	unsigned int Ram_Start_Adress;
-	unsigned int Ram_End_Adress;
-	char Modem_Infos[13];
+	char RAM_Info[13];
+	unsigned int RAM_Start_Address;
+	unsigned int RAM_End_Address;
+	char Modem_Info[13];
 	char Description[41];
 	char Countries[4];
-} Rom;
+} ROM_t;
 
 
-extern struct Rom *Game;
-extern char Rom_Name[512];
 extern char Recent_Rom[9][GENS_PATH_MAX];
 extern char IPS_Dir[GENS_PATH_MAX];
 extern char Rom_Dir[GENS_PATH_MAX];
 
-void Get_Name_From_Path(const char* fullPath, char* retFileName);
-void Get_Dir_From_Path(const char *fullPath, char *retDirName);
-void Update_CD_Rom_Name(const char *cdromName);
+extern ROM_t* Game;
+extern char ROM_Name[512];
 
-int Get_Rom(void);
-int Open_Rom(const char *Name);
-struct Rom *Load_SegaCD_BIOS(const char *filename);
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+// New C++ ROM class.
+class ROM
+{
+	public:
+		static void getNameFromPath(const char* fullPath, char* retFilename);
+		static void getDirFromPath(const char *fullPath, char *retDirName);
+		static void updateCDROMName(const char *cdromName);
+		
+		
+		static int getROM(void);
+		static int openROM(const char *Name);
+		static ROM_t* loadSegaCD_BIOS(const char *filename);
+		
+		static ROMType detectFormat(const unsigned char buf[2048]);
+		static ROMType detectFormat_fopen(const char* filename);
+		
+		static ROMType loadROM(const char* filename, ROM_t** retROM);
+		static void fixChecksum(void);
+		static int applyIPSPatch(void);
+		static void freeROM(ROM_t* ROM_MD);
+		
+	protected:
+		static void updateRecentROMList(const char* filename);
+		static void updateROMDir(const char *filename);
+		static void updateROMName(const char *filename);
+		static void deinterleaveSMD(void);
+		static void fillROMInfo(void);
+		static unsigned short calcChecksum(void);
+};
+#endif /* __cplusplus */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Temporary C wrapper functions.
+// TODO: Eliminate these.
 ROMType detectFormat(const unsigned char buf[2048]);
-ROMType detectFormat_fopen(const char* filename);
-ROMType Load_ROM(const char *filename, struct Rom **retROM);
-void Fix_Checksum(void);
-int IPS_Patching();
-void Free_Rom(struct Rom *Rom_Name);
 
 #ifdef __cplusplus
 }

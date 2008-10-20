@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
-		if (Open_Rom(PathNames.Start_Rom) == -1)
+		if (ROM::openROM(PathNames.Start_Rom) == -1)
 		{
 			fprintf(stderr, "Failed to load %s\n", PathNames.Start_Rom);
 		}

@@ -358,7 +358,7 @@ int Load_Patch_File(void)
 	
 	// Create the patch filename based on the ROM filename.
 	strcpy(Name, Patch_Dir);
-	strcat(Name, Rom_Name);
+	strcat(Name, ROM_Name);
 	strcat(Name, ".pat");
 	
 	Patch_File = fopen(Name, "rb");
@@ -541,7 +541,7 @@ int Save_Patch_File(void)
 	
 	// Create the patch filename based on the ROM filename.
 	strcpy(Name, Patch_Dir);
-	strcat(Name, Rom_Name);
+	strcat(Name, ROM_Name);
 	strcat(Name, ".pat");
 	
 	Patch_File = fopen(Name, "w");

@@ -228,7 +228,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
-		if (Open_Rom(PathNames.Start_Rom) == -1)
+		if (ROM::openROM(PathNames.Start_Rom) == -1)
 		{
 			fprintf(stderr, "Failed to load %s\n", PathNames.Start_Rom);
 		}

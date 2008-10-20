@@ -301,7 +301,7 @@ void Input_KeyDown(int key)
 				//if ((Check_If_Kaillera_Running())) return 0;
 				if (audio->playingGYM())
 					Stop_Play_GYM();
-				Open_Rom(Recent_Rom[key - GENS_KEY_0]);
+				ROM::openROM(Recent_Rom[key - GENS_KEY_0]);
 				Sync_Gens_Window();
 			}
 			break;
@@ -316,7 +316,7 @@ void Input_KeyDown(int key)
 				//if (Check_If_Kaillera_Running()) return 0;
 				if (audio->playingGYM())
 					Stop_Play_GYM();
-				Free_Rom (Game);	// Don't forget it !
+				ROM::freeROM(Game);	// Don't forget it !
 				SegaCD_Started = Init_SegaCD(NULL);
 			}
 			break;

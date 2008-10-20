@@ -163,18 +163,18 @@ void Init_Genesis_Bios(void)
 
 /**
  * Init_Genesis_SRAM(): Initialize the Genesis SRAM.
- * @param MD_Rom Pointer to the MD_Rom struct.
+ * @param MD_ROM Pointer to the MD_ROM struct.
  */
-void Init_Genesis_SRAM(struct Rom *MD_Rom)
+void Init_Genesis_SRAM(ROM_t* MD_ROM)
 {
-	if (MD_Rom->Ram_Infos[8] == 'R' &&
-	    MD_Rom->Ram_Infos[9] == 'A' &&
-	    (MD_Rom->Ram_Infos[10] & 0x40))
+	if (MD_ROM->RAM_Info[8] == 'R' &&
+	    MD_ROM->RAM_Info[9] == 'A' &&
+	    (MD_ROM->RAM_Info[10] & 0x40))
 	{
 		// SRAM specified in the ROM header. Use this address.
 		// SRAM starting position must be a multiple of 0x080000.
-		SRAM_Start = MD_Rom->Ram_Start_Adress & 0xF80000;
-		SRAM_End = MD_Rom->Ram_End_Adress;
+		SRAM_Start = MD_ROM->RAM_Start_Address & 0xF80000;
+		SRAM_End = MD_ROM->RAM_End_Address;
 	}
 	else
 	{
@@ -220,10 +220,10 @@ void Init_Genesis_SRAM(struct Rom *MD_Rom)
 
 /**
  * Init_Genesis(): Initialize the Genesis with the specified ROM image.
- * @param MD_Rom ROM image struct.
+ * @param MD_ROM ROM image struct.
  * @return 1 if successful.
  */
-int Init_Genesis(struct Rom *MD_Rom)
+int Init_Genesis(ROM_t* MD_ROM)
 {
 	char Str_Err[256];
 	
@@ -236,7 +236,7 @@ int Init_Genesis(struct Rom *MD_Rom)
 	Controller_1_COM = Controller_2_COM = 0;
 	
 	if (!Kaillera_Client_Running)
-		Init_Genesis_SRAM(MD_Rom);
+		Init_Genesis_SRAM(MD_ROM);
 	
 	// Check what country code should be used.
 	// TODO: Get rid of magic numbers.
@@ -275,15 +275,15 @@ int Init_Genesis(struct Rom *MD_Rom)
 		strcpy(Str_Err, "Genesis");
 	
 	// Check which ROM name should be used.
-	// Default: Rom_Name_W
-	// If Rom_Name_W is blank (i.e. all characters are <= 0x20), use Rom_Name.
-	char* ROM_Name = MD_Rom->Rom_Name;
-	for (unsigned short cpos = 0; cpos < sizeof(MD_Rom->Rom_Name_W); cpos++)
+	// Default: ROM_Name_W
+	// If ROM_Name_W is blank (i.e. all characters are <= 0x20), use ROM_Name.
+	char* ROM_Name = MD_ROM->ROM_Name;
+	for (unsigned short cpos = 0; cpos < sizeof(MD_ROM->ROM_Name_W); cpos++)
 	{
-		if (MD_Rom->Rom_Name_W[cpos] > 0x20)
+		if (MD_ROM->ROM_Name_W[cpos] > 0x20)
 		{
-			// Rom_Name_W isn't blank. Use it.
-			ROM_Name = MD_Rom->Rom_Name_W;
+			// ROM_Name_W isn't blank. Use it.
+			ROM_Name = MD_ROM->ROM_Name_W;
 			break;
 		}
 	}
@@ -305,7 +305,7 @@ int Init_Genesis(struct Rom *MD_Rom)
 	
 	// If auto-fix checksum is enabled, fix the ROM checksum.
 	if (Auto_Fix_CS)
-		Fix_Checksum ();
+		ROM::fixChecksum();
 	
 	// Initialize sound.
 	if (audio->enabled())
@@ -367,7 +367,7 @@ void Reset_Genesis (void)
 		VDP_Status &= ~1;
 	
 	if (Auto_Fix_CS)
-		Fix_Checksum ();
+		ROM::fixChecksum();
 }
 
 

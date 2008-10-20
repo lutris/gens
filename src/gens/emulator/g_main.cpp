@@ -337,7 +337,7 @@ int Init(void)
  */
 void End_All(void)
 {
-	Free_Rom(Game);
+	ROM::freeROM(Game);
 	YM2612_End();
 #ifdef GENS_CDROM
 	End_CD_Driver();

@@ -88,7 +88,7 @@ static int Save_Shot_BMP(void)
 	do
 	{
 		num++;
-		sprintf(filename, "%s%s_%03d.bmp", ScrShot_Dir, Rom_Name, num);
+		sprintf(filename, "%s%s_%03d.bmp", ScrShot_Dir, ROM_Name, num);
 	} while (!stat(filename, &sbuf));
 	
 	// Attempt to open the file.
@@ -232,7 +232,7 @@ static int Save_Shot_PNG(void)
 	do
 	{
 		num++;
-		sprintf(filename, "%s%s_%03d.png", ScrShot_Dir, Rom_Name, num);
+		sprintf(filename, "%s%s_%03d.png", ScrShot_Dir, ROM_Name, num);
 	} while (!stat(filename, &sbuf));
 	
 	// Initialize libpng.

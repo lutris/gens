@@ -107,7 +107,7 @@ void Sync_Gens_Window_FileMenu(void)
 		
 		// Determine the ROM format.
 		// TODO: Improve the return variable from Detect_Format()
-		romFormat = detectFormat_fopen(Recent_Rom[i]) >> 1;
+		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
 		if (romFormat >= 1 && romFormat <= 4)
 			strcpy(ROM_Name, ROM_Format_Prefix[romFormat]);
 		else
@@ -117,7 +117,7 @@ void Sync_Gens_Window_FileMenu(void)
 		strcat(ROM_Name, "\t- ");
 		
 		// Get the ROM filename.
-		Get_Name_From_Path(Recent_Rom[i], Str_Tmp);
+		ROM::getNameFromPath(Recent_Rom[i], Str_Tmp);
 		strcat(ROM_Name, Str_Tmp);
 		
 		// Add the ROM item to the ROM History submenu.

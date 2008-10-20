@@ -156,30 +156,28 @@ int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
 }
 */
 
-FILE *
-Get_State_File ()
+FILE* Get_State_File(void)
 {
-  char Name[2048];
-  char Ext[5] = ".gsX";
-
-  Ext[3] = '0' + Current_State;
-  strcpy (Name, State_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, Ext);
-
-  return fopen (Name, "rb");
+	char filename[GENS_PATH_MAX];
+	char ext[5] = ".gsX";
+	
+	ext[3] = '0' + Current_State;
+	strcpy(filename, State_Dir);
+	strcat(filename, ROM_Name);
+	strcat(filename, ext);
+	
+	return fopen(filename, "rb");
 }
 
 
-void
-Get_State_File_Name (char *name)
+void Get_State_File_Name(char *retFilename)
 {
-  char Ext[5] = ".gsX";
-
-  Ext[3] = '0' + Current_State;
-  strcpy (name, State_Dir);
-  strcat (name, Rom_Name);
-  strcat (name, Ext);
+	char ext[5] = ".gsX";
+	
+	ext[3] = '0' + Current_State;
+	strcpy(retFilename, State_Dir);
+	strcat(retFilename, ROM_Name);
+	strcat(retFilename, ext);
 }
 
 
@@ -1773,64 +1771,63 @@ void Export_32X (unsigned char *Data)
 }
 
 
-int
-Load_SRAM (void)
+int Load_SRAM(void)
 {
-  FILE *SRAM_File = 0;
-  char Name[2048];
-
-  memset (SRAM, 0, 64 * 1024);
-
-  strcpy (Name, SRAM_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".srm");
-
-  if ((SRAM_File = fopen (Name, "rb")) == 0)
-    return 0;
-  fread (SRAM, 64 * 1024, 1, SRAM_File);
-  fclose (SRAM_File);
-
-  strcpy (Str_Tmp, "SRAM loaded from ");
-  strcat (Str_Tmp, Name);
-  draw->writeText(Str_Tmp, 2000);
-  return 1;
+	FILE* SRAM_File = 0;
+	char filename[GENS_PATH_MAX];
+	
+	memset (SRAM, 0, 64 * 1024);
+	
+	strcpy(filename, SRAM_Dir);
+	strcat(filename, ROM_Name);
+	strcat(filename, ".srm");
+	
+	if ((SRAM_File = fopen(filename, "rb")) == 0)
+		return 0;
+	
+	fread(SRAM, 64 * 1024, 1, SRAM_File);
+	fclose(SRAM_File);
+	
+	strcpy(Str_Tmp, "SRAM loaded from ");
+	strcat(Str_Tmp, filename);
+	draw->writeText(Str_Tmp, 2000);
+	return 1;
 }
 
-int
-Save_SRAM (void)
+
+int Save_SRAM(void)
 {
-  FILE *SRAM_File = 0;
-  int size_to_save, i;
-  char Name[2048];
-
-  i = (64 * 1024) - 1;
-  while ((i >= 0) && (SRAM[i] == 0))
-    i--;
-
-  if (i < 0)
-    return 0;
-
-  i++;
-
-  size_to_save = 1;
-  while (i > size_to_save)
-    size_to_save <<= 1;
-
-  strcpy (Name, SRAM_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".srm");
-
-  if ((SRAM_File = fopen (Name, "wb")) == 0)
-    return 0;
-
-  fwrite (SRAM, size_to_save, 1, SRAM_File);
-  fclose (SRAM_File);
-
-  strcpy (Str_Tmp, "SRAM saved in ");
-  strcat (Str_Tmp, Name);
-  draw->writeText(Str_Tmp, 2000);
-
-  return 1;
+	FILE* SRAM_File = 0;
+	int size_to_save, i;
+	char filename[GENS_PATH_MAX];
+	
+	i = (64 * 1024) - 1;
+	while ((i >= 0) && (SRAM[i] == 0))
+		i--;
+	
+	if (i < 0)
+		return 0;
+	
+	i++;
+	
+	size_to_save = 1;
+	while (i > size_to_save)
+		size_to_save <<= 1;
+	
+	strcpy(filename, SRAM_Dir);
+	strcat(filename, ROM_Name);
+	strcat(filename, ".srm");
+	
+	if ((SRAM_File = fopen(filename, "wb")) == 0)
+		return 0;
+	
+	fwrite(SRAM, size_to_save, 1, SRAM_File);
+	fclose(SRAM_File);
+	
+	strcpy(Str_Tmp, "SRAM saved in ");
+	strcat(Str_Tmp, filename);
+	draw->writeText(Str_Tmp, 2000);
+	return 1;
 }
 
 
@@ -1872,50 +1869,48 @@ Format_Backup_Ram (void)
 }
 
 
-int
-Load_BRAM (void)
+int Load_BRAM(void)
 {
-  FILE *BRAM_File = 0;
-  char Name[2048];
-
-  Format_Backup_Ram ();
-
-  strcpy (Name, BRAM_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".brm");
-
-  if ((BRAM_File = fopen (Name, "rb")) == 0)
-    return 0;
-
-  fread (Ram_Backup, 8 * 1024, 1, BRAM_File);
-  fread (Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
-  fclose (BRAM_File);
-
-  strcpy (Str_Tmp, "BRAM loaded from ");
-  strcat (Str_Tmp, Name);
-  draw->writeText(Str_Tmp, 2000);
-  return 1;
+	FILE* BRAM_File = 0;
+	char filename[GENS_PATH_MAX];
+	
+	Format_Backup_Ram();
+	
+	strcpy(filename, BRAM_Dir);
+	strcat(filename, ROM_Name);
+	strcat(filename, ".brm");
+	
+	if ((BRAM_File = fopen(filename, "rb")) == 0)
+		return 0;
+	
+	fread(Ram_Backup, 8 * 1024, 1, BRAM_File);
+	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
+	fclose(BRAM_File);
+	
+	strcpy(Str_Tmp, "BRAM loaded from ");
+	strcat(Str_Tmp, filename);
+	draw->writeText(Str_Tmp, 2000);
+	return 1;
 }
 
-int
-Save_BRAM (void)
+int Save_BRAM (void)
 {
-  FILE *BRAM_File = 0;
-  char Name[2048];
-
-  strcpy (Name, BRAM_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".brm");
-
-  if ((BRAM_File = fopen (Name, "wb")) == 0)
-    return 0;
-
-  fwrite (Ram_Backup, 8 * 1024, 1, BRAM_File);
-  fwrite (Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
-  fclose (BRAM_File);
-
-  strcpy (Str_Tmp, "BRAM saved in ");
-  strcat (Str_Tmp, Name);
-  draw->writeText(Str_Tmp, 2000);
-  return 1;
+	FILE* BRAM_File = 0;
+	char filename[GENS_PATH_MAX];
+	
+	strcpy(filename, BRAM_Dir);
+	strcat(filename, ROM_Name);
+	strcat(filename, ".brm");
+	
+	if ((BRAM_File = fopen(filename, "wb")) == 0)
+		return 0;
+	
+	fwrite(Ram_Backup, 8 * 1024, 1, BRAM_File);
+	fwrite(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
+	fclose(BRAM_File);
+	
+	strcpy(Str_Tmp, "BRAM saved in ");
+	strcat(Str_Tmp, filename);
+	draw->writeText(Str_Tmp, 2000);
+	return 1;
 }

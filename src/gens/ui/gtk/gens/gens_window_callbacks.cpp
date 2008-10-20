@@ -137,7 +137,7 @@ void on_FileMenu_OpenROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	*/
 	if (audio->playingGYM())
 		Stop_Play_GYM();
-	if (Get_Rom() != -1)
+	if (ROM::getROM() != -1)
 		Sync_Gens_Window();
 	/* Removed: Get_Rom() and related show an error by themselves.
 	else
@@ -168,7 +168,7 @@ void on_FileMenu_BootCD_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (audio->playingGYM())
 		Stop_Play_GYM();
 	
-	Free_Rom(Game); // Don't forget it !
+	ROM::freeROM(Game); // Don't forget it !
 	SegaCD_Started = Init_SegaCD(NULL);
 	Sync_Gens_Window();
 }
@@ -184,7 +184,7 @@ void on_FileMenu_ROMHistory_activate(GtkMenuItem *menuitem, gpointer user_data)
 	
 	if (audio->playingGYM())
 		Stop_Play_GYM();
-	Open_Rom(Recent_Rom[GPOINTER_TO_INT(user_data)]);
+	ROM::openROM(Recent_Rom[GPOINTER_TO_INT(user_data)]);
 	Sync_Gens_Window();
 }
 
@@ -212,7 +212,7 @@ void on_FileMenu_CloseROM_activate(GtkMenuItem *menuitem, gpointer user_data)
 	}
 	*/
 	
-	Free_Rom(Game);
+	ROM::freeROM(Game);
 	Sync_Gens_Window();
 }
 

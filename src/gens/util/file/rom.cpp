@@ -37,21 +37,23 @@ using std::list;
 // New file compression handler.
 #include "util/file/compress/compressor.hpp"
 
-Rom *My_Rom = NULL;
-struct Rom *Game = NULL;
-char Rom_Name[512];
+char Recent_Rom[9][GENS_PATH_MAX];
 char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
-char Recent_Rom[9][GENS_PATH_MAX];
+
+ROM_t* Game = NULL;
+char ROM_Name[512];
+
+ROM_t* myROM = NULL;
 
 
 /**
- * Get_Dir_From_Path(): Get the filename part of a pathname.
+ * getNameFromPath(): Get the filename part of a pathname.
  * @param Full_Path Full pathname.
- * @param retFileName Buffer to store the filename part.
+ * @param retFilename Buffer to store the filename part.
  */
 // FIXME: This function is poorly written.
-void Get_Name_From_Path(const char* fullPath, char* retFileName)
+void ROM::getNameFromPath(const char* fullPath, char* retFilename)
 {
 	int i = strlen(fullPath) - 1;
 	
@@ -61,24 +63,23 @@ void Get_Name_From_Path(const char* fullPath, char* retFileName)
 	if (i <= 0)
 	{
 		// No filename found.
-		retFileName[0] = 0;
+		retFilename[0] = 0;
 	}
 	else
 	{
 		// Filename found. Copy it to the output buffer.
-		strcpy(retFileName, &fullPath[++i]);
-		retFileName[i] = 0;
+		strcpy(retFilename, &fullPath[++i]);
 	}
 }
 
 
 /**
- * Get_Dir_From_Path(): Get the directory part of a pathname.
+ * getDirFromPath(): Get the directory part of a pathname.
  * @param Full_Path Full pathname.
  * @param Dir Buffer to store the directory part.
  */
 // FIXME: This function is poorly written.
-void Get_Dir_From_Path(const char *fullPath, char *retDirName)
+void ROM::getDirFromPath(const char *fullPath, char *retDirName)
 {
 	int i = strlen(fullPath) - 1;
 	
@@ -94,16 +95,15 @@ void Get_Dir_From_Path(const char *fullPath, char *retDirName)
 	{
 		// Directory found. Copy it to the output buffer.
 		strncpy(retDirName, fullPath, ++i);
-		retDirName[i] = 0;
 	}
 }
 
 
 /**
- * Update_Recent_Rom(): Update the Recent ROM list with the given ROM filename.
- * @param Path Full pathname to a ROM file.
+ * updateRecentROMList(): Update the Recent ROM list with the given ROM filename.
+ * @param filename Full pathname to a ROM file.
  */
-void Update_Recent_Rom(const char *Path)
+void ROM::updateRecentROMList(const char* filename)
 {
 	int i;
 	
@@ -112,7 +112,7 @@ void Update_Recent_Rom(const char *Path)
 		// Check if the ROM exists in the Recent ROM list.
 		// If it does, don't do anything.
 		// TODO: If it does, move it up to position 1.
-		if (!(strcmp(Recent_Rom[i], Path)))
+		if (!(strcmp(Recent_Rom[i], filename)))
 			return;
 	}
 	
@@ -121,22 +121,22 @@ void Update_Recent_Rom(const char *Path)
 		strcpy(Recent_Rom[i], Recent_Rom[i - 1]);
 	
 	// Add this ROM to the recent ROM list.
-	strcpy(Recent_Rom[0], Path);
+	strcpy(Recent_Rom[0], filename);
 }
 
 
 /**
  * Update_Rom_Dir(): Update the Rom_Dir using the path of the specified ROM file.
- * @param Path Full pathname to a ROM file.
+ * @param filename Full pathname to a ROM file.
  */
-void Update_Rom_Dir(const char *Path)
+void ROM::updateROMDir(const char *filename)
 {
-	Get_Dir_From_Path(Path, Rom_Dir);
+	getDirFromPath(filename, Rom_Dir);
 }
 
 
 // FIXME: This function is poorly written.
-static void Update_Rom_Name(const char *filename)
+void ROM::updateROMName(const char *filename)
 {
 	int length = strlen(filename) - 1;
 	
@@ -147,28 +147,28 @@ static void Update_Rom_Name(const char *filename)
 	
 	int i = 0;
 	while ((filename[length]) && (filename[length] != '.'))
-		Rom_Name[i++] = filename[length++];
+		ROM_Name[i++] = filename[length++];
 	
-	Rom_Name[i] = 0;
+	ROM_Name[i] = 0;
 }
 
 
 /**
- * Update_CD_Rom_Name(): Update the name of a SegaCD game.
+ * updateCDROMName(): Update the name of a SegaCD game.
  * @param cdromName Name of the SegaCD game.
  */
-void Update_CD_Rom_Name(const char *cdromName)
+void ROM::updateCDROMName(const char *cdromName)
 {
 	int i, j;
 	bool validName = false;
 	
-	// Copy the CD-ROM name to Rom_Name.
-	memcpy(Rom_Name, cdromName, 48);
+	// Copy the CD-ROM name to ROM_Name.
+	memcpy(ROM_Name, cdromName, 48);
 	
 	// Check for invalid characters.
 	for (i = 0; i < 48; i++)
 	{
-		if (isalnum(Rom_Name[i]) || Rom_Name[i] == ' ')
+		if (isalnum(ROM_Name[i]) || ROM_Name[i] == ' ')
 		{
 			// Valid character.
 			validName = true;
@@ -176,25 +176,32 @@ void Update_CD_Rom_Name(const char *cdromName)
 		}
 		
 		// Invalid character. Replace it with a space.
-		Rom_Name[i] = ' ';
+		ROM_Name[i] = ' ';
 	}
 	
 	if (!validName)
 	{
 		// CD-ROM name is invalid. Assume that no disc is inserted.
-		strcpy(Rom_Name, "No Disc");
+		strcpy(ROM_Name, "No Disc");
 	}
 	else
 	{
 		// Make sure the name is null-terminated.
-		Rom_Name[47] = 0x00;
+		ROM_Name[47] = 0x00;
 		for (i = 47, j = 48; i >= 0; i--, j--)
 		{
-			if (Rom_Name[i] != ' ')
+			if (ROM_Name[i] != ' ')
 				i = -1;
 		}
-		Rom_Name[j + 1] = 0;
+		ROM_Name[j + 1] = 0;
 	}
+}
+
+// Temporary C wrapper functions.
+// TODO: Eliminate this.
+ROMType detectFormat(const unsigned char buf[2048])
+{
+	return ROM::detectFormat(buf);
 }
 
 
@@ -203,7 +210,7 @@ void Update_CD_Rom_Name(const char *cdromName)
  * @param buf Buffer containing the first 2048 bytes of the ROM file.
  * @return ROMType.
  */
-ROMType detectFormat(const unsigned char buf[2048])
+ROMType ROM::detectFormat(const unsigned char buf[2048])
 {
 	bool interleaved = false;
 	
@@ -274,7 +281,7 @@ ROMType detectFormat(const unsigned char buf[2048])
  * @param filename Filename of the ROM file.
  * @return ROMType.
  */
-ROMType detectFormat_fopen(const char* filename)
+ROMType ROM::detectFormat_fopen(const char* filename)
 {
 	Compressor *cmp;
 	list<CompressedFile> *files;
@@ -315,9 +322,9 @@ ROMType detectFormat_fopen(const char* filename)
 
 
 /**
- * Deinterleave_SMD(): Deinterleaves an SMD-format ROM.
+ * deinterleaveSMD(): Deinterleaves an SMD-format ROM.
  */
-static void Deinterleave_SMD(void)
+void ROM::deinterleaveSMD(void)
 {
 	unsigned char buf[0x4000];
 	unsigned char *Src;
@@ -356,63 +363,63 @@ static void Deinterleave_SMD(void)
 
 
 /**
- * Fill_Infos(): Fill in game information from the ROM header.
+ * fillROMInfo(): Fill in game information from the ROM header.
  */
-void Fill_Infos(void)
+void ROM::fillROMInfo(void)
 {
 	// Finally we do the IPS patch here, we can have the translated game name
-	IPS_Patching ();
+	applyIPSPatch();
 	
 	// Copy ROM text.
 	// TODO: Use constants for the ROM addresses.
-	memcpy(My_Rom->Console_Name,	&Rom_Data[0x100], 16);
-	memcpy(My_Rom->Copyright,	&Rom_Data[0x110], 16);
-	memcpy(My_Rom->Rom_Name,	&Rom_Data[0x120], 48);
-	memcpy(My_Rom->Rom_Name_W,	&Rom_Data[0x150], 48);
-	memcpy(My_Rom->Type,		&Rom_Data[0x180], 2);
-	memcpy(My_Rom->Version,		&Rom_Data[0x182], 12);
-	My_Rom->Checksum		= be16_to_cpu_from_ptr(&Rom_Data[0x18E]);
-	memcpy(My_Rom->IO_Support,	&Rom_Data[0x190], 16);
-	My_Rom->Rom_Start_Adress	= be32_to_cpu_from_ptr(&Rom_Data[0x1A0]);
-	My_Rom->Rom_End_Adress		= be32_to_cpu_from_ptr(&Rom_Data[0x1A4]);
-	memcpy(My_Rom->Ram_Infos,	&Rom_Data[0x1A8], 12);
-	My_Rom->Ram_Start_Adress	= be32_to_cpu_from_ptr(&Rom_Data[0x1B4]);
-	My_Rom->Ram_End_Adress		= be32_to_cpu_from_ptr(&Rom_Data[0x1B8]);
-	memcpy(My_Rom->Modem_Infos,	&Rom_Data[0x1BC], 12);
-	memcpy(My_Rom->Description,	&Rom_Data[0x1C8], 40);
-	memcpy(My_Rom->Countries,	&Rom_Data[0x1F0], 4);
+	memcpy(myROM->Console_Name,	&Rom_Data[0x100], 16);
+	memcpy(myROM->Copyright,	&Rom_Data[0x110], 16);
+	memcpy(myROM->ROM_Name,		&Rom_Data[0x120], 48);
+	memcpy(myROM->ROM_Name_W,	&Rom_Data[0x150], 48);
+	memcpy(myROM->Type,		&Rom_Data[0x180], 2);
+	memcpy(myROM->Version,		&Rom_Data[0x182], 12);
+	myROM->Checksum			= be16_to_cpu_from_ptr(&Rom_Data[0x18E]);
+	memcpy(myROM->IO_Support,	&Rom_Data[0x190], 16);
+	myROM->ROM_Start_Address	= be32_to_cpu_from_ptr(&Rom_Data[0x1A0]);
+	myROM->ROM_End_Address		= be32_to_cpu_from_ptr(&Rom_Data[0x1A4]);
+	memcpy(myROM->RAM_Info,		&Rom_Data[0x1A8], 12);
+	myROM->RAM_Start_Address	= be32_to_cpu_from_ptr(&Rom_Data[0x1B4]);
+	myROM->RAM_End_Address		= be32_to_cpu_from_ptr(&Rom_Data[0x1B8]);
+	memcpy(myROM->Modem_Info,	&Rom_Data[0x1BC], 12);
+	memcpy(myROM->Description,	&Rom_Data[0x1C8], 40);
+	memcpy(myROM->Countries,	&Rom_Data[0x1F0], 4);
 	
 	char tmp[15];
-	memcpy(&tmp[0], My_Rom->Type, 2);
-	memcpy(&tmp[2], My_Rom->Version, 12);
+	memcpy(&tmp[0], myROM->Type, 2);
+	memcpy(&tmp[2], myROM->Version, 12);
 	tmp[14] = 0;
 	if (strcmp(tmp, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060") == 0)
 		ice = 1;
 	
 	// Calculate internal ROM size using the ROM header's
 	// starting address and ending address.
-	My_Rom->R_Size = My_Rom->Rom_End_Adress - My_Rom->Rom_Start_Adress + 1;
+	myROM->R_Size = myROM->ROM_End_Address - myROM->ROM_Start_Address + 1;
 	
 	// Null-terminate the strings.
-	My_Rom->Console_Name[16] = 0;
-	My_Rom->Copyright[16] = 0;
-	My_Rom->Rom_Name[48] = 0;
-	My_Rom->Rom_Name_W[48] = 0;
-	My_Rom->Type[2] = 0;
-	My_Rom->Version[12] = 0;
-	My_Rom->IO_Support[12] = 0;
-	My_Rom->Ram_Infos[12] = 0;
-	My_Rom->Modem_Infos[12] = 0;
-	My_Rom->Description[40] = 0;
-	My_Rom->Countries[3] = 0;
+	myROM->Console_Name[16] = 0;
+	myROM->Copyright[16] = 0;
+	myROM->ROM_Name[48] = 0;
+	myROM->ROM_Name_W[48] = 0;
+	myROM->Type[2] = 0;
+	myROM->Version[12] = 0;
+	myROM->IO_Support[12] = 0;
+	myROM->RAM_Info[12] = 0;
+	myROM->Modem_Info[12] = 0;
+	myROM->Description[40] = 0;
+	myROM->Countries[3] = 0;
 }
 
 
 /**
- * Get_Rom(): Show the OpenFile dialog and load the selected ROM file.
+ * getROM(): Show the OpenFile dialog and load the selected ROM file.
  * @return Error code from Open_Rom().
  */
-int Get_Rom(void)
+int ROM::getROM(void)
 {
 	string filename;
 	
@@ -424,7 +431,7 @@ int Get_Rom(void)
 	}
 	
 	// Open the ROM.
-	return Open_Rom(filename.c_str());
+	return openROM(filename.c_str());
 }
 
 
@@ -433,7 +440,7 @@ int Get_Rom(void)
  * @param Name Filename of the ROM file.
  * @return Unknown.
  */
-int Open_Rom(const char *Name)
+int ROM::openROM(const char *Name)
 {
 	int sys;
 	
@@ -446,14 +453,14 @@ int Open_Rom(const char *Name)
 	*/
 	
 	// Close any loaded ROM first.
-	Free_Rom(Game);
+	freeROM(Game);
 	
-	sys = Load_ROM(Name, &Game);
+	sys = loadROM(Name, &Game);
 	if (sys <= 0)
 		return -1;
 	
-	Update_Recent_Rom(Name);
-	Update_Rom_Dir(Name);
+	updateRecentROMList(Name);
+	updateROMDir(Name);
 	
 	switch (sys)
 	{
@@ -491,11 +498,11 @@ int Open_Rom(const char *Name)
 
 
 /**
- * Load_SegaCD_BIOS(): Load a SegaCD BIOS ROM image.
+ * loadSegaCD_BIOS(): Load a SegaCD BIOS ROM image.
  * @param filename Filename of the SegaCD BIOS ROM image.
  * @return Pointer to Rom struct with the ROM information.
  */
-Rom *Load_SegaCD_BIOS(const char *filename)
+ROM_t* ROM::loadSegaCD_BIOS(const char *filename)
 {
 	FILE *f;
 	
@@ -506,21 +513,21 @@ Rom *Load_SegaCD_BIOS(const char *filename)
 	fclose(f);
 	
 	// Close any ROM that's currently running.
-	Free_Rom(Game);
+	freeROM(Game);
 	
 	// Load the SegaCD BIOS ROM image.
-	Load_ROM(filename, &Game);
+	loadROM(filename, &Game);
 	return Game;
 }
 
 
 /**
- * Load_ROM(): Load a ROM file.
+ * loadROM(): Load a ROM file.
  * @param filename Filename of the ROM file.
  * @param interleaved If non-zero, the ROM is interleaved.
  * @return Pointer to Rom struct with the ROM information.
  */
-ROMType Load_ROM(const char *filename, struct Rom **retROM)
+ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 {
 	Compressor *cmp;
 	list<CompressedFile> *files;
@@ -606,8 +613,8 @@ ROMType Load_ROM(const char *filename, struct Rom **retROM)
 		return (ROMType)0;
 	}
 	
-	My_Rom = (Rom*)malloc(sizeof(Rom));
-	if (!My_Rom)
+	myROM = (ROM_t*)malloc(sizeof(ROM_t));
+	if (!myROM)
 	{
 		// Memory allocation error
 		delete files;
@@ -625,17 +632,17 @@ ROMType Load_ROM(const char *filename, struct Rom **retROM)
 	{
 		// Incorrect filesize.
 		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
-		free(My_Rom);
+		free(myROM);
 		delete files;
 		delete cmp;
-		My_Rom = NULL;
+		myROM = NULL;
 		Game = NULL;
 		*retROM = NULL;
 		return (ROMType)0;
 	}
 	//fclose(ROM_File);
 	
-	Update_Rom_Name(filename);
+	updateROMName(filename);
 	Rom_Size = selFile->filesize;
 	
 	// Delete the compression objects.
@@ -645,20 +652,20 @@ ROMType Load_ROM(const char *filename, struct Rom **retROM)
 	// Deinterleave the ROM, if necessary.
 	if (rtype == MD_ROM_Interleaved ||
 	    rtype == _32X_ROM_Interleaved)
-		Deinterleave_SMD();
+		deinterleaveSMD();
 	
-	Fill_Infos();
+	fillROMInfo();
 	
-	*retROM = My_Rom;
+	*retROM = myROM;
 	return rtype;
 }
 
 
 /**
- * Calculate_Checksum(): Calculates the checksum of the loaded ROM.
+ * calcChecksum(): Calculates the checksum of the loaded ROM.
  * @return Checksum of the loaded ROM.
  */
-unsigned short Calculate_Checksum(void)
+unsigned short ROM::calcChecksum(void)
 {
 	unsigned short checksum = 0;
 	unsigned int i;
@@ -681,9 +688,9 @@ unsigned short Calculate_Checksum(void)
 
 
 /**
- * Fix_Checksum(): Fixes the checksum of the loaded ROM.
+ * fixChecksum(): Fixes the checksum of the loaded ROM.
  */
-void Fix_Checksum(void)
+void ROM::fixChecksum(void)
 {
 	unsigned short checks;
 	
@@ -691,7 +698,7 @@ void Fix_Checksum(void)
 		return;
 	
 	// Get the checksum.
-	checks = Calculate_Checksum ();
+	checks = calcChecksum();
 	
 	if (Rom_Size)
 	{
@@ -709,82 +716,76 @@ void Fix_Checksum(void)
 }
 
 
-int
-IPS_Patching (void)
+int ROM::applyIPSPatch(void)
 {
-  FILE *IPS_File;
-  char Name[1024];
-  unsigned char buf[16];
-  unsigned int adr, len, i;
-
-  strcpy (Name, IPS_Dir);
-  strcat (Name, Rom_Name);
-  strcat (Name, ".ips");
-
-  IPS_File = fopen (Name, "rb");
-
-  if (IPS_File == NULL)
-    return 1;
-
-  fseek (IPS_File, 0, SEEK_SET);
-
-  fread (buf, 1, 5, IPS_File);
-  buf[5] = 0;
-
-  if (strcasecmp ((char *) buf, "patch"))
-    {
-      fclose (IPS_File);
-      return 2;
-    }
-
-  fread (buf, 1, 3, IPS_File);
-  buf[3] = 0;
-
-  while (strcasecmp ((char *) buf, "eof"))
-    {
-      adr = (unsigned int) buf[2];
-      adr += (unsigned int) (buf[1] << 8);
-      adr += (unsigned int) (buf[0] << 16);
-
-      if (fread (buf, 1, 2, IPS_File) == 0)
+	FILE* IPS_File;
+	char filename[GENS_PATH_MAX];
+	unsigned char buf[16];
+	unsigned int adr, len, i;
+	
+	strcpy(filename, IPS_Dir);
+	strcat(filename, ROM_Name);
+	strcat(filename, ".ips");
+	
+	IPS_File = fopen(filename, "rb");
+	
+	if (!IPS_File)
+		return 1;
+	
+	fseek(IPS_File, 0, SEEK_SET);
+	fread(buf, 1, 5, IPS_File);
+	buf[5] = 0;
+	
+	// Check the "magic number".
+	if (strcasecmp((char*)buf, "patch"))
 	{
-	  fclose (IPS_File);
-	  return 3;
+		fclose(IPS_File);
+		return 2;
 	}
-
-      len = (unsigned int) buf[1];
-      len += (unsigned int) (buf[0] << 8);
-
-      for (i = 0; i < len; i++)
+	
+	fread(buf, 1, 3, IPS_File);
+	buf[3] = 0;
+	
+	while (strcasecmp((char*)buf, "eof"))
 	{
-	  if (fread (buf, 1, 1, IPS_File) == 0)
-	    {
-	      fclose (IPS_File);
-	      return 3;
-	    }
-
-	  if (adr < Rom_Size)
-	    Rom_Data[adr++] = buf[0];
+		adr = (unsigned int)(buf[2] + (buf[1] << 8) + (buf[0] << 16));
+		
+		if (fread(buf, 1, 2, IPS_File) == 0)
+		{
+			fclose(IPS_File);
+			return 3;
+		}
+		
+		len = (unsigned int)(buf[1] + (buf[0] << 8));
+		for (i = 0; i < len; i++)
+		{
+			if (fread(buf, 1, 1, IPS_File) == 0)
+			{
+				fclose(IPS_File);
+				return 3;
+			}
+			
+			if (adr < Rom_Size)
+				Rom_Data[adr++] = buf[0];
+		}
+		
+		if (fread(buf, 1, 3, IPS_File) == 0)
+		{
+			fclose(IPS_File);
+			return 3;
+		}
+		
+		buf[3] = 0;
 	}
-
-      if (fread (buf, 1, 3, IPS_File) == 0)
-	{
-	  fclose (IPS_File);
-	  return 3;
-	}
-
-      buf[3] = 0;
-    }
-
-  fclose (IPS_File);
-
-  return 0;
+	
+	fclose(IPS_File);
+	return 0;
 }
 
 
-void Free_Rom(Rom* Rom_MD)
+void ROM::freeROM(ROM_t* ROM_MD)
 {
-	if (Game == NULL)
+	if (!Game)
 		return;
 	
 	// Clear the sound buffer.
@@ -813,10 +814,10 @@ void Free_Rom(Rom* Rom_MD)
 	Game = NULL;
 	ice = 0;
 	
-	if (Rom_MD)
+	if (ROM_MD)
 	{
-		free(Rom_MD);
-		Rom_MD = NULL;
+		free(ROM_MD);
+		ROM_MD = NULL;
 	}
 	
 	if (Intro_Style == 3)

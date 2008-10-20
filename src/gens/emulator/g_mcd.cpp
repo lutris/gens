@@ -125,7 +125,7 @@ int Init_SegaCD(const char *iso_name)
 	}
 	
 	// Attempt to load the Sega CD BIOS.
-	if (Load_SegaCD_BIOS(BIOS_To_Use) == NULL)
+	if (ROM::loadSegaCD_BIOS(BIOS_To_Use) == NULL)
 	{
 		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"
@@ -136,10 +136,11 @@ int Init_SegaCD(const char *iso_name)
 		return 0;
 	}
 	
-	Update_CD_Rom_Name((char*)&CD_Data[32]);
+	// FIXME: ROM::updateCDROMName() expects 48 bytes.
+	ROM::updateCDROMName((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), Rom_Name);
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name);
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -214,10 +215,11 @@ int Reload_SegaCD(const char *iso_name)
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
 	
 	Reset_CD((char*)CD_Data, iso_name);
-	Update_CD_Rom_Name((char*)&CD_Data[32]);
+	// FIXME: ROM::updateCDROMName() expects 48 bytes.
+	ROM::updateCDROMName((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), Rom_Name);
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name);
 	
 	Load_BRAM();
 	
@@ -244,7 +246,7 @@ Reset_SegaCD ()
 		BIOS_To_Use = BIOS_Filenames.SegaCD_US;
 	
 	// Load the BIOS file.
-	if (Load_ROM(BIOS_To_Use, &Game) <= 0)
+	if (ROM::loadROM(BIOS_To_Use, &Game) <= 0)
 	{
 		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"
@@ -260,7 +262,8 @@ Reset_SegaCD ()
 	Paused = 0;
 	BRAM_Ex_State &= 0x100;
 	
-	Update_CD_Rom_Name ((char *) &CD_Data[32]);
+	// FIXME: ROM::updateCDROMName() expects 48 bytes.
+	ROM::updateCDROMName((char*)&CD_Data[32]);
 	
 	// TODO: Why are these two bytes set to 0xFF?
 	Rom_Data[0x72] = 0xFF;

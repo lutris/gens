@@ -270,7 +270,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case IDM_FILE_OPENROM:
 			if (audio->playingGYM())
 				Stop_Play_GYM();
-			if (Get_Rom() != -1)
+			if (ROM::getROM() != -1)
 				Sync_Gens_Window();
 			break;
 		
@@ -289,7 +289,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			if (audio->playingGYM())
 				Stop_Play_GYM();
 	
-			Free_Rom(Game); // Don't forget it !
+			ROM::freeROM(Game); // Don't forget it !
 			SegaCD_Started = Init_SegaCD(NULL);
 			Sync_Gens_Window();
 			break;
@@ -324,7 +324,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			}
 			*/
 			
-			Free_Rom(Game);
+			ROM::freeROM(Game);
 			Sync_Gens_Window();
 			break;
 		
@@ -345,7 +345,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			// ROM History.
 			if (audio->playingGYM())
 				Stop_Play_GYM();
-			Open_Rom(Recent_Rom[LOWORD(wParam) - IDM_FILE_ROMHISTORY]);
+			ROM::openROM(Recent_Rom[LOWORD(wParam) - IDM_FILE_ROMHISTORY]);
 			Sync_Gens_Window();
 			break;
 		
@@ -949,7 +949,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 					//if ((Check_If_Kaillera_Running())) return 0;
 					if (audio->playingGYM())
 						Stop_Play_GYM();
-					Open_Rom(Recent_Rom[value - 1]);
+					ROM::openROM(Recent_Rom[value - 1]);
 					Sync_Gens_Window();
 					break;
 			}

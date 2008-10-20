@@ -173,7 +173,7 @@ int SelCD_Save(void)
 				// Stop SegaCD emulation.
 				// TODO: Don't allow this if Netplay is enabled.
 				restartCD = true;
-				Free_Rom(Game);
+				ROM::freeROM(Game);
 			}
 		}
 		

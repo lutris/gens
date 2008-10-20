@@ -59,10 +59,10 @@ void Error_32X_BIOS(const char *Str_BIOS)
 
 /**
  * Init_32X(): Initialize the 32X with the specified ROM image.
- * @param MD_Rom ROM image struct.
+ * @param MD_ROM ROM image struct.
  * @return 1 if successful; 0 if an error occurred.
  */
-int Init_32X(struct Rom *MD_Rom)
+int Init_32X(ROM_t* MD_ROM)
 {
 	char Str_Err[256];
 	FILE *f;
@@ -114,7 +114,7 @@ int Init_32X(struct Rom *MD_Rom)
 	Controller_1_COM = Controller_2_COM = 0;
 	
 	if (!Kaillera_Client_Running)
-		Init_Genesis_SRAM(MD_Rom);
+		Init_Genesis_SRAM(MD_ROM);
 	
 	// Check what country code should be used.
 	// TODO: Get rid of magic numbers.
@@ -153,15 +153,15 @@ int Init_32X(struct Rom *MD_Rom)
 		strcpy(Str_Err, "32X (NTSC)");
 	
 	// Check which ROM name should be used.
-	// Default: Rom_Name_W
-	// If Rom_Name_W is blank (i.e. all characters are <= 0x20), use Rom_Name.
-	char* ROM_Name = MD_Rom->Rom_Name;
-	for (unsigned short cpos = 0; cpos < sizeof(MD_Rom->Rom_Name_W); cpos++)
+	// Default: ROM_Name_W
+	// If ROM_Name_W is blank (i.e. all characters are <= 0x20), use ROM_Name.
+	char* ROM_Name = MD_ROM->ROM_Name;
+	for (unsigned short cpos = 0; cpos < sizeof(MD_ROM->ROM_Name_W); cpos++)
 	{
-		if (MD_Rom->Rom_Name_W[cpos] > 0x20)
+		if (MD_ROM->ROM_Name_W[cpos] > 0x20)
 		{
-			// Rom_Name_W isn't blank. Use it.
-			ROM_Name = MD_Rom->Rom_Name_W;
+			// ROM_Name_W isn't blank. Use it.
+			ROM_Name = MD_ROM->ROM_Name_W;
 			break;
 		}
 	}
@@ -198,7 +198,7 @@ int Init_32X(struct Rom *MD_Rom)
 	
 	// If auto-fix checksum is enabled, fix the ROM checksum.
 	if (Auto_Fix_CS)
-		Fix_Checksum();
+		ROM::fixChecksum();
 	
 	// Initialize sound.
 	if (audio->enabled())
@@ -282,7 +282,7 @@ void Reset_32X(void)
 	_32X_VDP.State |= 0x2000;
 	
 	if (Auto_Fix_CS)
-		Fix_Checksum ();
+		ROM::fixChecksum();
 	
 	// We patch the Master SH2 bios with ROM bios
 	// this permit 32X games with older BIOS version to run correctly
