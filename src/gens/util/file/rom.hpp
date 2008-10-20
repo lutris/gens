@@ -48,8 +48,8 @@ extern char Recent_Rom[9][GENS_PATH_MAX];
 extern char IPS_Dir[GENS_PATH_MAX];
 extern char Rom_Dir[GENS_PATH_MAX];
 
-void Get_Name_From_Path(char *Full_Path, char *Name);
-void Get_Dir_From_Path(const char *Full_Path, char *Dir);
+void Get_Name_From_Path(const char* fullPath, char* retFileName);
+void Get_Dir_From_Path(const char *fullPath, char *retDirName);
 void Update_CD_Rom_Name(char *Name);
 
 int Get_Rom(void);

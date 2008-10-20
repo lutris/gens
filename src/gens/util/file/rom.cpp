@@ -44,24 +44,30 @@ char IPS_Dir[GENS_PATH_MAX];
 char Recent_Rom[9][GENS_PATH_MAX];
 
 
-void
-Get_Name_From_Path (char *Full_Path, char *Name)
+/**
+ * Get_Dir_From_Path(): Get the filename part of a pathname.
+ * @param Full_Path Full pathname.
+ * @param retFileName Buffer to store the filename part.
+ */
+// FIXME: This function is poorly written.
+void Get_Name_From_Path(const char* fullPath, char* retFileName)
 {
-  int i = 0;
-
-  i = strlen (Full_Path) - 1;
-
-  while ((i >= 0) && (Full_Path[i] != GENS_DIR_SEPARATOR_CHR))
-    i--;
-
-  if (i <= 0)
-    {
-      Name[0] = 0;
-    }
-  else
-    {
-      strcpy (Name, &Full_Path[++i]);
-    }
+	int i = strlen(fullPath) - 1;
+	
+	while ((i >= 0) && (fullPath[i] != GENS_DIR_SEPARATOR_CHR))
+		i--;
+	
+	if (i <= 0)
+	{
+		// No filename found.
+		retFileName[0] = 0;
+	}
+	else
+	{
+		// Filename found. Copy it to the output buffer.
+		strcpy(retFileName, &fullPath[++i]);
+		retFileName[i] = 0;
+	}
 }
 
 
@@ -70,23 +76,24 @@ Get_Name_From_Path (char *Full_Path, char *Name)
  * @param Full_Path Full pathname.
  * @param Dir Buffer to store the directory part.
  */
-void Get_Dir_From_Path(const char *Full_Path, char *Dir)
+// FIXME: This function is poorly written.
+void Get_Dir_From_Path(const char *fullPath, char *retDirName)
 {
-	int i = strlen(Full_Path) - 1;
+	int i = strlen(fullPath) - 1;
 	
-	while ((i >= 0) && (Full_Path[i] != GENS_DIR_SEPARATOR_CHR))
+	while ((i >= 0) && (fullPath[i] != GENS_DIR_SEPARATOR_CHR))
 		i--;
 	
 	if (i <= 0)
 	{
 		// No directory found.
-		Dir[0] = 0;
+		retDirName[0] = 0;
 	}
 	else
 	{
 		// Directory found. Copy it to the output buffer.
-		strncpy(Dir, Full_Path, ++i);
-		Dir[i] = 0;
+		strncpy(retDirName, fullPath, ++i);
+		retDirName[i] = 0;
 	}
 }
 
@@ -127,20 +134,19 @@ void Update_Rom_Dir(const char *Path)
 }
 
 
-static void Update_Rom_Name(const char *Name)
+// FIXME: This function is poorly written.
+static void Update_Rom_Name(const char *filename)
 {
-	int i, leng;
+	int length = strlen(filename) - 1;
 	
-	leng = strlen (Name) - 1;
+	while ((length >= 0) && (filename[length] != GENS_DIR_SEPARATOR_CHR))
+		length--;
 	
-	while ((leng >= 0) && (Name[leng] != GENS_DIR_SEPARATOR_CHR))
-		leng--;
+	length++;
 	
-	leng++;
-	i = 0;
-	
-	while ((Name[leng]) && (Name[leng] != '.'))
-		Rom_Name[i++] = Name[leng++];
+	int i = 0;
+	while ((filename[length]) && (filename[length] != '.'))
+		Rom_Name[i++] = filename[length++];
 	
 	Rom_Name[i] = 0;
 }
