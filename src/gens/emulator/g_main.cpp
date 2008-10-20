@@ -50,6 +50,12 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
+// Gens UI
+#include "gens_ui.hpp"
+
+// Update Emulation functions
+#include "g_update.hpp"
+
 // Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
@@ -463,4 +469,92 @@ void Clear_Screen_MD(void)
 {
 	memset(MD_Screen, 0x00, sizeof(MD_Screen));
 	memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
+}
+
+
+/**
+ * GensMainLoop(): The main program loop.
+ */
+void GensMainLoop(void)
+{
+	while (is_gens_running())
+	{
+		// Update the UI.
+		GensUI::update();
+		
+		// Update physical controller inputs.
+		input->update();
+		
+#ifdef GENS_DEBUGGER
+		if (Debug)
+		{
+			// DEBUG
+			Update_Debug_Screen();
+			draw->flip();
+		}
+		else
+#endif /* GENS_DEBUGGER */
+		if (Genesis_Started || _32X_Started || SegaCD_Started)
+		{
+			if ((Active) && (!Paused))
+			{
+				// EMULATION ACTIVE
+				if (fast_forward)
+					Update_Emulation_One();
+				else
+					Update_Emulation();
+				
+				// Prevent 100% CPU usage.
+				// The CPU scheduler will take away CPU time from Gens/GS if
+				// it notices that the process is eating up too much CPU time.
+				GensUI::sleep(1);
+			}
+			else
+			{
+				// EMULATION PAUSED
+				if (_32X_Started)
+					Do_32X_VDP_Only();
+				else
+					Do_VDP_Only();
+				//Pause_Screen();
+				draw->flip();
+				GensUI::sleep(100);
+			}
+		}
+		else
+		{
+			// No game is currently running.
+			
+			// Update the screen.
+			draw->flip();
+			
+			// Determine how much sleep time to add, based on intro style.
+			// TODO: Move this to v_draw.cpp?
+			if (audio->playingGYM())
+			{
+				// PLAY GYM
+				Play_GYM();
+			}
+			else if (Intro_Style == 1)
+			{
+				// Gens logo effect. (TODO: This is broken!)
+				GensUI::sleep(5);
+			}
+			else if (Intro_Style == 2)
+			{
+				// "Strange" effect. (TODO: This is broken!)
+				GensUI::sleep(10);
+			}
+			else if (Intro_Style == 3)
+			{
+				// Genesis BIOS. (TODO: This is broken!)
+				GensUI::sleep(20);
+			}
+			else
+			{
+				// Blank screen. (MAX IDLE)
+				GensUI::sleep(200);
+			}
+		}
+	}
 }

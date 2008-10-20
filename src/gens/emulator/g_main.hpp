@@ -132,11 +132,9 @@ void close_gens();
 // Gens Rerecording
 int IsAsyncAllowed(void);
 
-
 // Initialization functions.
 int Init(void);
 void Init_Settings(void);
-
 
 // MESSAGE_L functions.
 void MESSAGE_L(const char* str, const char* def, int time);
@@ -176,6 +174,9 @@ extern int (*Update_Frame_Fast)(void);
 
 // Miscellaneous.
 void Clear_Screen_MD(void);
+
+// The main program loop.
+void GensMainLoop(void);
 
 #ifdef __cplusplus
 }
