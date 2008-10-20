@@ -507,7 +507,7 @@ void GensMainLoop(void)
 				// Prevent 100% CPU usage.
 				// The CPU scheduler will take away CPU time from Gens/GS if
 				// it notices that the process is eating up too much CPU time.
-				GensUI::sleep(1);
+				GensUI::sleep(1, true);
 			}
 			else
 			{
