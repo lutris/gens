@@ -247,11 +247,11 @@ void GensUI::sleep(const int ms, const bool noUpdate)
 		return;
 	}
 	
-	// Sleep 10 ms, then check for messages.
-	int loops = ms / 10;
+	// Sleep 5 ms, then check for messages.
+	int loops = ms / 5;
 	for (int i = 0; i < loops; i++)
 	{
-		Sleep(10);
+		Sleep(5);
 		update();
 	}
 }
