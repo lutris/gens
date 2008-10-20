@@ -173,16 +173,16 @@ extern "C" {
 //#define GENS_KEY_UNDO		SDLK_UNDO
 
 // Maps key modifiers from SDL to OS-independent key modifiers.
-// TODO
+// TODO: Separate L and R keys.
 #define GENS_KMOD_NONE		0
-#define GENS_KMOD_LSHIFT	0
-#define GENS_KMOD_RSHIFT	0
-#define GENS_KMOD_LCTRL		0
-#define GENS_KMOD_RCTRL		0
-#define GENS_KMOD_LALT		0
-#define GENS_KMOD_RALT		0
-#define GENS_KMOD_LMETA		0
-#define GENS_KMOD_RMETA		0
+#define GENS_KMOD_LSHIFT	MOD_SHIFT
+#define GENS_KMOD_RSHIFT	MOD_SHIFT
+#define GENS_KMOD_LCTRL		MOD_CONTROL
+#define GENS_KMOD_RCTRL		MOD_CONTROL
+#define GENS_KMOD_LALT		MOD_ALT
+#define GENS_KMOD_RALT		MOD_ALT
+#define GENS_KMOD_LMETA		MOD_WIN
+#define GENS_KMOD_RMETA		MOD_WIN
 #define GENS_KMOD_NUM		0
 #define GENS_KMOD_CAPS		0
 #define GENS_KMOD_MODE		0

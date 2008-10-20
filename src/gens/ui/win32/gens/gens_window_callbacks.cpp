@@ -72,6 +72,11 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
+// Debugger
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
+
 // Needed on Win32
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
@@ -216,15 +221,22 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			}
 			break;
 		
-#if 0
 #ifdef GENS_DEBUGGER
 		case WM_KEYDOWN:
-			// TODO: Make sure this is correct.
 			if (Debug)
-				Debug_Event(wParam, 0);
+			{
+				// Get modifiers.
+				int mod = 0;
+				if (GetAsyncKeyState(VK_CONTROL) & 0x8000)
+					mod |= GENS_KMOD_CTRL;
+				if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+					mod |= GENS_KMOD_SHIFT;
+				// TODO: Other modifiers: Alt, Win/Meta, etc.
+				
+				Debug_Event(wParam, mod);
+			}
 			break;
 #endif /* GENS_DEBUGGER */
-#endif
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
