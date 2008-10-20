@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <ctype.h>
 
 #include <fcntl.h>
 
@@ -152,41 +153,48 @@ static void Update_Rom_Name(const char *filename)
 }
 
 
-void Update_CD_Rom_Name(char *Name)
+/**
+ * Update_CD_Rom_Name(): Update the name of a SegaCD game.
+ * @param cdromName Name of the SegaCD game.
+ */
+void Update_CD_Rom_Name(const char *cdromName)
 {
 	int i, j;
+	bool validName = false;
 	
-	memcpy(Rom_Name, Name, 48);
+	// Copy the CD-ROM name to Rom_Name.
+	memcpy(Rom_Name, cdromName, 48);
 	
+	// Check for invalid characters.
 	for (i = 0; i < 48; i++)
 	{
-		if ((Rom_Name[i] >= '0') && (Rom_Name[i] <= '9'))
+		if (isalnum(Rom_Name[i]) || Rom_Name[i] == ' ')
+		{
+			// Valid character.
+			validName = true;
 			continue;
-		if (Rom_Name[i] == ' ')
-			continue;
-		if ((Rom_Name[i] >= 'A') && (Rom_Name[i] <= 'Z'))
-			continue;
-		if ((Rom_Name[i] >= 'a') && (Rom_Name[i] <= 'z'))
-			continue;
+		}
+		
+		// Invalid character. Replace it with a space.
 		Rom_Name[i] = ' ';
 	}
 	
-	for (i = 0; i < 48; i++)
+	if (!validName)
 	{
-		if (Rom_Name[i] != ' ')
-			i = 100;
+		// CD-ROM name is invalid. Assume that no disc is inserted.
+		strcpy(Rom_Name, "No Disc");
 	}
-	
-	if (i < 100)
-		strcpy(Rom_Name, "no name");
-	
-	for (i = 47, j = 48; i >= 0; i--, j--)
+	else
 	{
-		if (Rom_Name[i] != ' ')
-			i = -1;
+		// Make sure the name is null-terminated.
+		Rom_Name[47] = 0x00;
+		for (i = 47, j = 48; i >= 0; i--, j--)
+		{
+			if (Rom_Name[i] != ' ')
+				i = -1;
+		}
+		Rom_Name[j + 1] = 0;
 	}
-	
-	Rom_Name[j + 1] = 0;
 }
 
 

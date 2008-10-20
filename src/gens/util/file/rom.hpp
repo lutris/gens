@@ -50,7 +50,7 @@ extern char Rom_Dir[GENS_PATH_MAX];
 
 void Get_Name_From_Path(const char* fullPath, char* retFileName);
 void Get_Dir_From_Path(const char *fullPath, char *retDirName);
-void Update_CD_Rom_Name(char *Name);
+void Update_CD_Rom_Name(const char *cdromName);
 
 int Get_Rom(void);
 int Open_Rom(const char *Name);
