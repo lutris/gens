@@ -55,26 +55,6 @@ void Create_Save_Directory(const char *dir)
 }
 
 
-// TODO: Get rid of this.
-void win2linux(char* str)
-{
-	char* tmp=str;
-	for (; *tmp; ++tmp)
-	{
-		switch((unsigned char)*tmp)
-		{
-			case 0xE7: *tmp='c';break;//ç
-			case 0xE8: *tmp='e';break;//è
-			case 0xE9: *tmp='e';break;//é
-			case 0xEA: *tmp='e';break;//ê
-			case 0xE0: *tmp='a';break;//à
-			case 0xEE: *tmp='i';break;//î
-			default:break;
-		}	
-	}
-}
-
-
 /**
  * main(): Main loop.
  * @param argc Number of arguments.
