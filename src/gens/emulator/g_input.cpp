@@ -301,7 +301,7 @@ void Input_KeyDown(int key)
 				//if ((Check_If_Kaillera_Running())) return 0;
 				if (audio->playingGYM())
 					Stop_Play_GYM();
-				ROM::openROM(Recent_Rom[key - GENS_KEY_0]);
+				ROM::openROM(Recent_Rom[key - GENS_KEY_1]);
 				Sync_Gens_Window();
 			}
 			break;
