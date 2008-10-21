@@ -238,9 +238,8 @@ void Init_Settings(void)
 	_32X_Started = 0;
 	CPU_Mode = 0;
 	
-#ifdef GENS_DEBUGGER
+	// This is needed even if the built-in debugger isn't compiled in.
 	Debug = 0;
-#endif /* GENS_DEBUGGER */
 	
 #ifdef GENS_OS_WIN32
 	// Win32 needs the current directory.
