@@ -349,11 +349,6 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	draw->setIntroEffectColor(cfg.getInt("General", "Free Mode Color", 7));
 	Sleep_Time = cfg.getInt("General", "Allow Idle", 0) & 1;
 	
-	// Color settings
-	RMax_Level = cfg.getInt("Graphics", "Red Max", 255);
-	GMax_Level = cfg.getInt("Graphics", "Green Max", 255);
-	BMax_Level = cfg.getInt("Graphics", "Blue Max", 255);
-	
 	// Video adjustments
 	Contrast_Level = cfg.getInt("Graphics", "Contrast", 100);
 	Brightness_Level = cfg.getInt("Graphics", "Brightness", 100);
