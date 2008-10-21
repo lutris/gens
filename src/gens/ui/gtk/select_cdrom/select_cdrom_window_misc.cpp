@@ -135,7 +135,7 @@ void Open_Select_CDROM(void)
  */
 int SelCD_Save(void)
 {
-	GtkWidget *combo_drive, *combo_speed;
+	GtkWidget *combo_drive, *entry_combo_drive, *combo_speed;
 	gchar *tmpDrive; int driveSpeed;
 	
 	// Save settings.
@@ -144,7 +144,9 @@ int SelCD_Save(void)
 	
 	// CD-ROM drive
 	combo_drive = lookup_widget(select_cdrom_window, "combo_drive");
-	tmpDrive = strdup(gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo_drive)));
+	
+	entry_combo_drive = gtk_bin_get_child(GTK_BIN(combo_drive));
+	tmpDrive = strdup(gtk_entry_get_text(GTK_ENTRY(entry_combo_drive)));
 	if (strlen(tmpDrive))
 	{
 		// Check if the drive name was changed.

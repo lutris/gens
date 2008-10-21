@@ -157,7 +157,7 @@ GtkWidget* create_color_adjust_window(void)
 	// Create an HButton Box for some miscellaneous options.
 	hbutton_box_options = gtk_hbutton_box_new();
 	gtk_widget_set_name(hbutton_box_options, "hbutton_box_options");
-	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_options), GTK_BUTTONBOX_CENTER);
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_options), GTK_BUTTONBOX_SPREAD);
 	gtk_widget_show(hbutton_box_options);
 	gtk_box_pack_start(GTK_BOX(vbox_ca), hbutton_box_options, FALSE, FALSE, 0);
 	GLADE_HOOKUP_OBJECT(color_adjust_window, hbutton_box_options, "hbutton_box_options");

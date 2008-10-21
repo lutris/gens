@@ -216,9 +216,16 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 			break;
 		case MSGBOX_ICON_NONE:
 		default:
+			// GTK_MESSAGE_OTHER was added in GTK+ 2.10
+			// for custom message box icons.
+#ifdef GTK_MESSAGE_OTHER
 			gtkMsgIcon = GTK_MESSAGE_OTHER;
+#else  /* GTK_MESSAGE_OTHER */
+			gtkMsgIcon = GTK_MESSAGE_INFO;
+#endif /* GTK_MESSAGE_OTHER */
 			break;
 	}
+	gtkMsgIcon = gtkMsgIcon;
 	
 	// Determine the GTK+ message buttons.
 	GtkButtonsType gtkButtons;
