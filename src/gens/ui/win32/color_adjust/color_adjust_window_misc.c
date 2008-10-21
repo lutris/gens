@@ -35,6 +35,10 @@
 #include <windows.h>
 #include <commctrl.h>
 
+#ifdef GENS_DEBUGGER
+#include "debugger/debugger.hpp"
+#endif /* GENS_DEBUGGER */
+
 
 /**
  * Open_Color_Adjust(): Opens the Color Adjustment window.
@@ -85,7 +89,15 @@ void CA_Save(void)
 	{
 		// Emulation is running. Update the CRAM.
 		CRam_Flag = 1;
+		
 		if (!Paused)
+		{
+			// TODO: Just update CRAM. Don't update the frame.
 			Update_Emulation_One();
+#ifdef GENS_DEBUGGER
+			if (Debug)
+				Update_Debug_Screen();
+#endif /* GENS_DEBUGGER */
+		}
 	}
 }

@@ -69,7 +69,10 @@ int Update_Emulation(void)
 #endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
 			Update_Frame();
-			draw->flip();
+#ifdef GENS_DEBUGGER
+			if (!Debug)
+#endif /* GENS_DEBUGGER */
+				draw->flip();
 		}
 	}
 	else
@@ -92,7 +95,10 @@ int Update_Emulation(void)
 			// Audio buffer is empty.
 			input->updateControllers();
 			Update_Frame();
-			draw->flip();
+#ifdef GENS_DEBUGGER
+			if (!Debug)
+#endif /* GENS_DEBUGGER */
+				draw->flip();
 		}
 		else
 		{
@@ -119,7 +125,10 @@ int Update_Emulation(void)
 			{
 				input->updateControllers();
 				Update_Frame();
-				draw->flip();
+#ifdef GENS_DEBUGGER
+				if (!Debug)
+#endif /* GENS_DEBUGGER */
+					draw->flip();
 			}
 			else
 			{
@@ -159,7 +168,11 @@ int Update_Emulation_One(void)
 {
 	input->updateControllers();
 	Update_Frame();
-	draw->flip();
+	
+#ifdef GENS_DEBUGGER
+	if (!Debug)
+#endif /* GENS_DEBUGGER */
+		draw->flip();
 	
 	return 1;
 }
