@@ -276,30 +276,6 @@ int VDraw_DDraw::Init_Video(void)
 			return Init_Fail(Gens_hWnd, "Error with lpDD_Back->SetSurfaceDesc()!");
 	}
 	
-	// TODO: See if this is necessary.
-#if 0
-	// make sure Bits32 is correct (which it could easily not be at this point)
-	{
-		memset(&ddsd, 0, sizeof(ddsd));
-		ddsd.dwSize = sizeof(ddsd);
-
-		if (FAILED(lpDDS_Blit->GetSurfaceDesc(&ddsd)))
-			return Init_Fail(Gens_hWnd, "Error with lpDDS_Blit->GetSurfaceDesc !");
-
-		Bits32 = (ddsd.ddpfPixelFormat.dwRGBBitCount > 16) ? 1 : 0;
-
-		// also prevent the colors from sometimes being messed up for 1 frame if we changed color depth
-
-		if(Bits32 && !oldBits32)
-			for(int i = 0 ; i < 336 * 240 ; i++)
-				MD_Screen32[i] = DrawUtil::Pix16To32(MD_Screen[i]);
-
-		if(!Bits32 && oldBits32)
-			for(int i = 0 ; i < 336 * 240 ; i++)
-				MD_Screen[i] = DrawUtil::Pix32To16(MD_Screen32[i]);
-	}
-#endif
-	
 	// Reset the render mode.
 	setRender(rendMode, false);
 	
