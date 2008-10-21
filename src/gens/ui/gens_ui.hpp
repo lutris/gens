@@ -66,10 +66,6 @@ class GensUI
 		static void setWindowTitle(const string& title);
 		static void setWindowVisibility(const bool visibility);
 		
-		static void UI_Hide_Embedded_Window(void);
-		static void UI_Show_Embedded_Window(const int w, const int h);
-		static int UI_Get_Embedded_WindowID(void);
-		
 		static string openFile(const string& title, const string& initFile,
 				       const FileFilterType filterType, void* owner = NULL);
 		static string saveFile(const string& title, const string& initFile,
