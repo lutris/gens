@@ -59,6 +59,8 @@ Milestone 5 fixes the following bugs:
   have "MARS" at 0x040E. The detection function has been updated to take
   this into account, so "Sonic 32X" is now properly detected as a 32X ROM.
 
+- [GTK+] Fixed GTK+ 2.4 compatibility issues.
+
 Milestone 5 has the following low-level code changes:
 
 - -Wl,--as-needed has been added to LDFLAGS. This eliminates unnecessary
