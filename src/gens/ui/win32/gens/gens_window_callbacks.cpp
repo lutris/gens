@@ -85,6 +85,8 @@
 #include "gens_core/sound/pwm.h"
 #include "segacd/cd_sys.hpp"
 
+#include <cstring>
+
 // C++ includes
 #include <string>
 using std::string;
@@ -345,7 +347,10 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			// ROM History.
 			if (audio->playingGYM())
 				Stop_Play_GYM();
-			ROM::openROM(Recent_Rom[LOWORD(wParam) - IDM_FILE_ROMHISTORY]);
+			
+			if (strlen(Recent_Rom[LOWORD(wParam) - IDM_FILE_ROMHISTORY]) > 0)
+				ROM::openROM(Recent_Rom[LOWORD(wParam) - IDM_FILE_ROMHISTORY]);
+			
 			Sync_Gens_Window();
 			break;
 		
