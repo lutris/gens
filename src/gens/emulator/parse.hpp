@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-void parseArgs (int argc, char **argv);
+void parseArgs(int argc, char **argv);
 
 #ifdef __cplusplus
 }
