@@ -26,6 +26,10 @@
 #include "select_cdrom_window_callbacks.h"
 #include "gens/gens_window.hpp"
 
+// SegaCD
+#include "emulator/g_mcd.hpp"
+#include "segacd/cd_aspi.hpp"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -81,11 +85,11 @@ HWND create_select_cdrom_window(void)
 	select_cdrom_window = CreateWindowEx(NULL, "Gens_Select_CDROM", "Select CD-ROM Drive",
 					     WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     304, 72,
+					     320, 72,
 					     Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(select_cdrom_window, 304, 72);
+	Win32_setActualWindowSize(select_cdrom_window, 320, 72);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(select_cdrom_window);
@@ -107,160 +111,48 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	SetWindowFont(cdromDriveTitle, fntMain, TRUE);
 	
 	// CD-ROM Drive dropdown box
-	SelCD_cdromDropdownBox = CreateWindow((win32_CommCtrlEx ? WC_COMBOBOXEX : WC_COMBOBOX), NULL,
+	SelCD_cdromDropdownBox = CreateWindow(WC_COMBOBOX, NULL,
 					      WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
-					      16+96-8, 8, 304-8-96-16+8, 23*5,
+					      16+96-8, 8, 320-8-96-16+8, 23*5,
 					      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(SelCD_cdromDropdownBox, fntMain, TRUE);
 	
-	// Populate the dropdown box.
-	unsigned int drives;
-	char drvLetter[4];
-	char drvDropdownString[128];
-	
-	COMBOBOXEXITEM cbeiDrive;
-	HIMAGELIST hSysImgList;
-	SHFILEINFO drvInfo;
-	
-	if (win32_CommCtrlEx)
-	{
-		// Set up the COMBOBOXEXITEM.
-		cbeiDrive.pszText = drvDropdownString;
-		cbeiDrive.mask = CBEIF_TEXT | CBEIF_INDENT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE;
-		cbeiDrive.cchTextMax = sizeof(drvDropdownString);
-		cbeiDrive.iItem = -1;
-		cbeiDrive.iIndent = 0;
-	}
-	
-	// Get all logical drives.
-	drives = GetLogicalDrives();
-	
-	char i;
-	for (i = 0; i < 26; i++)
-	{
-		if (!(drives & 1))
-		{
-			// Drive doesn't exist.
-			drives >>= 1;
-			continue;
-		}
-		
-		// Drive exists. Check the type.
-		drvLetter[0] = 'A' + i;
-		drvLetter[1] = ':';
-		drvLetter[2] = '\\';
-		drvLetter[3] = '\0';
-		
-		if (GetDriveType(drvLetter) == DRIVE_CDROM)
-		{
-			// CD-ROM drive.
-			
-			// Get drive information.
-			hSysImgList = (HIMAGELIST)SHGetFileInfo(drvLetter, 0,
-								&drvInfo, sizeof(drvInfo),
-								SHGFI_DISPLAYNAME | SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
-			
-			// Set the combobox item image.
-			if (win32_CommCtrlEx)
-			{
-				cbeiDrive.iImage = drvInfo.iIcon;
-				cbeiDrive.iSelectedImage = drvInfo.iIcon;
-			}
-			
-			// Create the dropdown string.
-			drvLetter[2] = '\0';
-			strcpy(drvDropdownString, drvLetter);
-			
-			// If a disc label is found, show it.
-			if (drvInfo.szDisplayName[0] != '\0' &&
-			    drvInfo.szDisplayName[0] != ' ')
-			{
-				strcat(drvDropdownString, " (");
-				strcat(drvDropdownString, drvInfo.szDisplayName);
-				
-				// Check if the display name has the drive letter in it already.
-				// WINE doesn't, but Windows does.
-				unsigned int l = strlen(drvDropdownString);
-				if (l >= 5)
-				{
-					char compare[] = " ( :)";
-					compare[2] = drvLetter[0];
-					if (strncasecmp(&drvDropdownString[l - 5], compare, 5) == 0)
-					{
-						// Display name already has the drive letter.
-						drvDropdownString[l - 5] = '\0';
-					}
-				}
-				
-				strcat(drvDropdownString, ")");
-			}
-			
-			// Add the drive to the dropdown.
-			if (win32_CommCtrlEx)
-			{
-				// ComboBoxEx.
-				SendMessage(SelCD_cdromDropdownBox, CBEM_INSERTITEM, 0, (LPARAM)&cbeiDrive);
-			}
-			else
-			{
-				// Regular ComboBox.
-				ComboBox_AddString(SelCD_cdromDropdownBox, drvDropdownString);
-			}
-		}
-		
-		// Next drive.
-		drives >>= 1;
-	}
-	
-	if (win32_CommCtrlEx)
-	{
-		// Set the image list of the dropdown to the system image list.
-		SendMessage(SelCD_cdromDropdownBox, CBEM_SETIMAGELIST, 0, (LPARAM)hSysImgList);
-	}
-	
 	// Buttons
-	const int btnTop = 40;
+	const unsigned short btnTop = 40;
+	const unsigned short btnLeft = (320-(8+75+8+75+8+75+8))/2;
 	HWND btnCancel;
 	
 	SelCD_btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				   16+8, btnTop, 75, 23,
+				   btnLeft+8, btnTop, 75, 23,
 				   hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
 	SetWindowFont(SelCD_btnOK, fntMain, TRUE);
 	
 	SelCD_btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      16+8+75+8, btnTop, 75, 23,
+				      btnLeft+8+75+8, btnTop, 75, 23,
 				      hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
 	SetWindowFont(SelCD_btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				 16+8+75+8+75+8, btnTop, 75, 23,
+				 btnLeft+8+75+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
-	// Check number of drives.
-	if (ComboBox_GetCount(SelCD_cdromDropdownBox) == 0)
+	if (Num_CD_Drive == 0)
 	{
-		// No drives detected.
-		// TODO: Use GensUI::msgBox() instead of adding a ComboBox item.
-		
-		const char* strNoCDROMDrives = "No CD-ROM drives detected.";
-		
-		if (win32_CommCtrlEx)
-		{
-			// ComboBoxEx.
-			cbeiDrive.iImage = -1;
-			cbeiDrive.iSelectedImage = -1;
-			cbeiDrive.pszText = strNoCDROMDrives;
-			cbeiDrive.cchTextMax = sizeof(strNoCDROMDrives);
-			SendMessage(SelCD_cdromDropdownBox, CBEM_INSERTITEM, 0, (LPARAM)&cbeiDrive);
-		}
-		else
-		{
-			// Regular ComboBox.
-			ComboBox_AddString(SelCD_cdromDropdownBox, strNoCDROMDrives);
-		}
-		
+		// No CD-ROM drives detected.
+		ComboBox_AddString(SelCD_cdromDropdownBox, "No CD-ROM drives detected.");
 		Button_Enable(SelCD_btnOK, FALSE);
 		Button_Enable(SelCD_btnApply, FALSE);
+		
+		return;
+	}
+	
+	// Populate the dropdown box.
+	char driveName[100];
+	int i;
+	for (i = 0; i < Num_CD_Drive; i++)
+	{
+		ASPI_Get_Drive_Info(i, (unsigned char*)driveName);
+		ComboBox_AddString(SelCD_cdromDropdownBox, &driveName[8]);
 	}
 }
