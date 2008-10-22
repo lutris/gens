@@ -81,8 +81,6 @@ class Savestate
 					   unsigned int *pOffset,
 					   const unsigned int numBytes);
 		
-		static int importNumber_le32(const void* data, unsigned int *pOffset);
-		
 		static int gsxImportGenesis(const unsigned char* data);
 		static void gsxExportGenesis(unsigned char* data);
 		static void gsxImportSegaCD(const unsigned char* data);

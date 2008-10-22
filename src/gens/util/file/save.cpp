@@ -338,26 +338,6 @@ inline void Savestate::exportDataAuto(const void* from, void* data,
 }
 
 
-// Save/load a 32-bit little-endian number.
-inline int Savestate::importNumber_le32(const void* data, unsigned int *pOffset)
-{
-	// Converts the input data to an int via pointer casting.
-	int tmp = *((int*)(&(((unsigned char*)data)[*pOffset])));
-	*pOffset += 4;
-	
-#if GENS_BYTEORDER == GENS_BIG_ENDIAN
-	// Savestate is in little-endian format. Byteswap the data.
-	return (((tmp & 0xFF000000) >> 24) |
-		((tmp & 0x00FF0000) >> 8) |
-		((tmp & 0x0000FF00) << 8) |
-		 (tmp & 0x000000FF) << 24);
-#else /* GENS_BYTEORDER == GENS_LIL_ENDIAN */
-	// Savestate is in little-endian format. Return the data as-is.
-	return tmp;
-#endif
-}
-
-
 /**
  * gsxImportGenesis(): Load Genesis data from a GSX savestate.
  * (Portions ported from Gens Rerecording.)
@@ -528,47 +508,47 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		importDataAuto(&Context_68K.sr, data, &offset, 2);
 		importDataAuto(&Context_68K.contextfiller00, data, &offset, 2);
 		
-		VDP_Reg.H_Int = importNumber_le32(data, &offset);
-		VDP_Reg.Set1 = importNumber_le32(data, &offset);
-		VDP_Reg.Set2 = importNumber_le32(data, &offset);
-		VDP_Reg.Pat_ScrA_Adr = importNumber_le32(data, &offset);
-		VDP_Reg.Pat_ScrA_Adr = importNumber_le32(data, &offset);
-		VDP_Reg.Pat_Win_Adr = importNumber_le32(data, &offset);
-		VDP_Reg.Pat_ScrB_Adr = importNumber_le32(data, &offset);
-		VDP_Reg.Spr_Att_Adr = importNumber_le32(data, &offset);
-		VDP_Reg.Reg6 = importNumber_le32(data, &offset);
-		VDP_Reg.BG_Color = importNumber_le32(data, &offset);
-		VDP_Reg.Reg8 = importNumber_le32(data, &offset);
-		VDP_Reg.Reg9 = importNumber_le32(data, &offset);
-		VDP_Reg.H_Int = importNumber_le32(data, &offset);
-		VDP_Reg.Set3 = importNumber_le32(data, &offset);
-		VDP_Reg.Set4 = importNumber_le32(data, &offset);
-		VDP_Reg.H_Scr_Adr = importNumber_le32(data, &offset);
-		VDP_Reg.Reg14 = importNumber_le32(data, &offset);
-		VDP_Reg.Auto_Inc = importNumber_le32(data, &offset);
-		VDP_Reg.Scr_Size = importNumber_le32(data, &offset);
-		VDP_Reg.Win_H_Pos = importNumber_le32(data, &offset);
-		VDP_Reg.Win_V_Pos = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length_L = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length_H = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Src_Adr_L = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Src_Adr_M = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Src_Adr_H = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Address = importNumber_le32(data, &offset);
+		importDataAuto(&VDP_Reg.H_Int, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Set1, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Set2, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Pat_Win_Adr, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Pat_ScrB_Adr, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Spr_Att_Adr, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Reg6, data, &offset, 4);
+		importDataAuto(&VDP_Reg.BG_Color, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Reg8, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Reg9, data, &offset, 4);
+		importDataAuto(&VDP_Reg.H_Int, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Set3, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Set4, data, &offset, 4);
+		importDataAuto(&VDP_Reg.H_Scr_Adr, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Reg14, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Auto_Inc, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Scr_Size, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Win_H_Pos, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Win_V_Pos, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length_L, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length_H, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Address, data, &offset, 4);
 		
-		Controller_1_Counter = importNumber_le32(data, &offset);
-		Controller_1_Delay = importNumber_le32(data, &offset);
-		Controller_1_State = importNumber_le32(data, &offset);
-		Controller_1_COM = importNumber_le32(data, &offset);
-		Controller_2_Counter = importNumber_le32(data, &offset);
-		Controller_2_Delay = importNumber_le32(data, &offset);
-		Controller_2_State = importNumber_le32(data, &offset);
-		Controller_2_COM = importNumber_le32(data, &offset);
-		Memory_Control_Status = importNumber_le32(data, &offset);
+		importDataAuto(&Controller_1_Counter, data, &offset, 4);
+		importDataAuto(&Controller_1_Delay, data, &offset, 4);
+		importDataAuto(&Controller_1_State, data, &offset, 4);
+		importDataAuto(&Controller_1_COM, data, &offset, 4);
+		importDataAuto(&Controller_2_Counter, data, &offset, 4);
+		importDataAuto(&Controller_2_Delay, data, &offset, 4);
+		importDataAuto(&Controller_2_State, data, &offset, 4);
+		importDataAuto(&Controller_2_COM, data, &offset, 4);
+		importDataAuto(&Memory_Control_Status, data, &offset, 4);
 		importDataAuto(&Cell_Conv_Tab, data, &offset, 4);
 		
-		Controller_1_Type = importNumber_le32(data, &offset);
+		importDataAuto(&Controller_1_Type, data, &offset, 4);
 		/* TODO: Make this stuff use bitfields.
 		         For now, it's disabled, especially since v6 is rare.
 		importDataAuto(&Controller_1_Up, data, &offset, 4);
@@ -586,7 +566,7 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		*/
 		offset += 12*4;
 		
-		Controller_2_Type = importNumber_le32(data, &offset);
+		importDataAuto(&Controller_2_Type, data, &offset, 4);
 		/* TODO: Make this stuff use bitfields.
 		         For now, it's disabled, especially since v6 is rare.
 		importDataAuto(&Controller_2_Up, data, &offset, 4);
@@ -604,42 +584,42 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		*/
 		offset += 12*4;
 		
-		DMAT_Length = importNumber_le32(data, &offset);
-		DMAT_Type = importNumber_le32(data, &offset);
-		DMAT_Tmp = importNumber_le32(data, &offset);
-		VDP_Current_Line = importNumber_le32(data, &offset);
-		VDP_Num_Vis_Lines = importNumber_le32(data, &offset);
-		VDP_Num_Vis_Lines = importNumber_le32(data, &offset);
-		Bank_M68K = importNumber_le32(data, &offset);
-		S68K_State = importNumber_le32(data, &offset);
-		Z80_State = importNumber_le32(data, &offset);
-		Last_BUS_REQ_Cnt = importNumber_le32(data, &offset);
-		Last_BUS_REQ_St = importNumber_le32(data, &offset);
-		Fake_Fetch = importNumber_le32(data, &offset);
-		Game_Mode = importNumber_le32(data, &offset);
-		CPU_Mode = importNumber_le32(data, &offset);
-		CPL_M68K = importNumber_le32(data, &offset);
-		CPL_S68K = importNumber_le32(data, &offset);
-		CPL_Z80 = importNumber_le32(data, &offset);
-		Cycles_S68K = importNumber_le32(data, &offset);
-		Cycles_M68K = importNumber_le32(data, &offset);
-		Cycles_Z80 = importNumber_le32(data, &offset);
-		VDP_Status = importNumber_le32(data, &offset);
-		VDP_Int = importNumber_le32(data, &offset);
-		Ctrl.Write = importNumber_le32(data, &offset);
-		Ctrl.DMA_Mode = importNumber_le32(data, &offset);
-		Ctrl.DMA = importNumber_le32(data, &offset);
-		//CRam_Flag = importNumber_le32(data, &offset); //Causes screen to blank
+		importDataAuto(&DMAT_Length, data, &offset, 4);
+		importDataAuto(&DMAT_Type, data, &offset, 4);
+		importDataAuto(&DMAT_Tmp, data, &offset, 4);
+		importDataAuto(&VDP_Current_Line, data, &offset, 4);
+		importDataAuto(&VDP_Num_Vis_Lines, data, &offset, 4);
+		importDataAuto(&VDP_Num_Vis_Lines, data, &offset, 4);
+		importDataAuto(&Bank_M68K, data, &offset, 4);
+		importDataAuto(&S68K_State, data, &offset, 4);
+		importDataAuto(&Z80_State, data, &offset, 4);
+		importDataAuto(&Last_BUS_REQ_Cnt, data, &offset, 4);
+		importDataAuto(&Last_BUS_REQ_St, data, &offset, 4);
+		importDataAuto(&Fake_Fetch, data, &offset, 4);
+		importDataAuto(&Game_Mode, data, &offset, 4);
+		importDataAuto(&CPU_Mode, data, &offset, 4);
+		importDataAuto(&CPL_M68K, data, &offset, 4);
+		importDataAuto(&CPL_S68K, data, &offset, 4);
+		importDataAuto(&CPL_Z80, data, &offset, 4);
+		importDataAuto(&Cycles_S68K, data, &offset, 4);
+		importDataAuto(&Cycles_M68K, data, &offset, 4);
+		importDataAuto(&Cycles_Z80, data, &offset, 4);
+		importDataAuto(&VDP_Status, data, &offset, 4);
+		importDataAuto(&VDP_Int, data, &offset, 4);
+		importDataAuto(&Ctrl.Write, data, &offset, 4);
+		importDataAuto(&Ctrl.DMA_Mode, data, &offset, 4);
+		importDataAuto(&Ctrl.DMA, data, &offset, 4);
+		//importDataAuto(&CRam_Flag, data, &offset, 4); //Causes screen to blank
 		//offset+=4;
 		
 		// TODO: LagCount from Gens Rerecording.
 		//LagCount = importNumber_le32(data, &offset);
 		offset += 4;
 		
-		VRam_Flag = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length = importNumber_le32(data, &offset);
-		VDP_Reg.Auto_Inc = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length = importNumber_le32(data, &offset);
+		importDataAuto(&VRam_Flag, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length, data, &offset, 4);
+		importDataAuto(&VDP_Reg.Auto_Inc, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length, data, &offset, 4);
 		//importDataAuto(VRam, data, &offset, 65536);
 		importDataAuto(CRam, data, &offset, 512);
 		//importDataAuto(VSRam, data, &offset, 64);
@@ -648,13 +628,13 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		//extern int DMAT_Tmp, VSRam_Over;
 		//importDataAuto(&DMAT_Tmp, data, &offset, 4);
 		//importDataAuto(&VSRam_Over, data, &offset, 4);
-		VDP_Reg.DMA_Length_L = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length_H = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Src_Adr_L = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Src_Adr_M = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Src_Adr_H = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Length = importNumber_le32(data, &offset);
-		VDP_Reg.DMA_Address = importNumber_le32(data, &offset);
+		importDataAuto(&VDP_Reg.DMA_Length_L, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length_H, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Length, data, &offset, 4);
+		importDataAuto(&VDP_Reg.DMA_Address, data, &offset, 4);
 		
 #ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == GENESIS_V6_STATE_LENGTH);
@@ -680,55 +660,55 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		M_Z80.PC.d = oldPC;
 		M_Z80.BasePC = oldBasePC;
 		
-		M_Z80.RetIC = importNumber_le32(data, &offset); // not sure about the last two variables, might as well save them too
-		M_Z80.IntAckC = importNumber_le32(data, &offset);
+		importDataAuto(&M_Z80.RetIC, data, &offset, 4); // not sure about the last two variables, might as well save them too
+		importDataAuto(&M_Z80.IntAckC, data, &offset, 4);
 		
 		importDataAuto(&Context_68K.dreg[0], data, &offset, 86); // some important parts of this weren't saved above
 		
 		importDataAuto(&Controller_1_State, data, &offset, 448); // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
 		
 		// apparently necessary
-		VDP_Status = importNumber_le32(data, &offset);
-		VDP_Int = importNumber_le32(data, &offset);
-		VDP_Current_Line = importNumber_le32(data, &offset);
-		VDP_Num_Lines = importNumber_le32(data, &offset);
-		VDP_Num_Vis_Lines = importNumber_le32(data, &offset);
-		DMAT_Length = importNumber_le32(data, &offset);
-		DMAT_Type = importNumber_le32(data, &offset);
-		//CRam_Flag = importNumber_le32(data, &offset); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
+		importDataAuto(&VDP_Status, data, &offset, 4);
+		importDataAuto(&VDP_Int, data, &offset, 4);
+		importDataAuto(&VDP_Current_Line, data, &offset, 4);
+		importDataAuto(&VDP_Num_Lines, data, &offset, 4);
+		importDataAuto(&VDP_Num_Vis_Lines, data, &offset, 4);
+		importDataAuto(&DMAT_Length, data, &offset, 4);
+		importDataAuto(&DMAT_Type, data, &offset, 4);
+		//importDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
-		//LagCount = importNumber_le32(data, &offset);
+		//importDataAuto(&LagCount, data, &offset, 4);
 		offset += 4;
 		
-		VRam_Flag = importNumber_le32(data, &offset);
+		importDataAuto(&VRam_Flag, data, &offset, 4);
 		importDataAuto(&CRam, data, &offset, 256 * 2);
 		
 		// it's probably safer sync-wise to keep SRAM stuff in the savestate
 		importDataAuto(&SRAM, data, &offset, sizeof(SRAM));
-		SRAM_Start = importNumber_le32(data, &offset);
-		SRAM_End = importNumber_le32(data, &offset);
-		SRAM_ON = importNumber_le32(data, &offset);
-		SRAM_Write = importNumber_le32(data, &offset);
-		SRAM_Custom = importNumber_le32(data, &offset);
+		importDataAuto(&SRAM_Start, data, &offset, 4);
+		importDataAuto(&SRAM_End, data, &offset, 4);
+		importDataAuto(&SRAM_ON, data, &offset, 4);
+		importDataAuto(&SRAM_Write, data, &offset, 4);
+		importDataAuto(&SRAM_Custom, data, &offset, 4);
 		
 		// this group I'm not sure about, they don't seem to be necessary but I'm keeping them around just in case
-		Bank_M68K = importNumber_le32(data, &offset);
-		S68K_State = importNumber_le32(data, &offset);
-		Z80_State = importNumber_le32(data, &offset);
-		Last_BUS_REQ_Cnt = importNumber_le32(data, &offset);
-		Last_BUS_REQ_St = importNumber_le32(data, &offset);
-		Fake_Fetch = importNumber_le32(data, &offset);
-		Game_Mode = importNumber_le32(data, &offset);
-		CPU_Mode = importNumber_le32(data, &offset);
-		CPL_M68K = importNumber_le32(data, &offset);
-		CPL_S68K = importNumber_le32(data, &offset);
-		CPL_Z80 = importNumber_le32(data, &offset);
-		Cycles_S68K = importNumber_le32(data, &offset);
-		Cycles_M68K = importNumber_le32(data, &offset);
-		Cycles_Z80 = importNumber_le32(data, &offset);
-		Gen_Mode = importNumber_le32(data, &offset);
-		Gen_Version = importNumber_le32(data, &offset);
+		importDataAuto(&Bank_M68K, data, &offset, 4);
+		importDataAuto(&S68K_State, data, &offset, 4);
+		importDataAuto(&Z80_State, data, &offset, 4);
+		importDataAuto(&Last_BUS_REQ_Cnt, data, &offset, 4);
+		importDataAuto(&Last_BUS_REQ_St, data, &offset, 4);
+		importDataAuto(&Fake_Fetch, data, &offset, 4);
+		importDataAuto(&Game_Mode, data, &offset, 4);
+		importDataAuto(&CPU_Mode, data, &offset, 4);
+		importDataAuto(&CPL_M68K, data, &offset, 4);
+		importDataAuto(&CPL_S68K, data, &offset, 4);
+		importDataAuto(&CPL_Z80, data, &offset, 4);
+		importDataAuto(&Cycles_S68K, data, &offset, 4);
+		importDataAuto(&Cycles_M68K, data, &offset, 4);
+		importDataAuto(&Cycles_Z80, data, &offset, 4);
+		importDataAuto(&Gen_Mode, data, &offset, 4);
+		importDataAuto(&Gen_Version, data, &offset, 4);
 		importDataAuto(H_Counter_Table, data, &offset, 512 * 2);
 		importDataAuto(&VDP_Reg, data, &offset, sizeof(VDP_Reg));
 		importDataAuto(&Ctrl, data, &offset, sizeof(Ctrl));
