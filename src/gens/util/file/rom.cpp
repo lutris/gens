@@ -171,7 +171,7 @@ void ROM::updateCDROMName(const char *cdromName)
 	// Check for invalid characters.
 	for (i = 0; i < 48; i++)
 	{
-		if (isalnum(ROM_Name[i]) || ROM_Name[i] == ' ')
+		if (isalnum(ROM_Name[i]))
 		{
 			// Valid character.
 			validName = true;
@@ -185,19 +185,18 @@ void ROM::updateCDROMName(const char *cdromName)
 	if (!validName)
 	{
 		// CD-ROM name is invalid. Assume that no disc is inserted.
-		strcpy(ROM_Name, "No Disc");
+		ROM_Name[0] = 0x00;
+		return;
 	}
-	else
+	
+	// Make sure the name is null-terminated.
+	ROM_Name[48] = 0x00;
+	for (i = 47, j = 48; i >= 0; i--, j--)
 	{
-		// Make sure the name is null-terminated.
-		ROM_Name[48] = 0x00;
-		for (i = 47, j = 48; i >= 0; i--, j--)
-		{
-			if (ROM_Name[i] != ' ')
-				i = -1;
-		}
-		ROM_Name[j + 1] = 0;
+		if (ROM_Name[i] != ' ')
+			i = -1;
 	}
+	ROM_Name[j + 1] = 0;
 }
 
 // Temporary C wrapper functions.

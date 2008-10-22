@@ -57,10 +57,12 @@ void GensUI::setWindowTitle_Idle(void)
 
 /**
  * setWindowTitle_Game(): Set the window title to the system name, followed by the game name.
- * @param system System name.
- * @param game Game name.
+ * @param systemName System name.
+ * @param gameName Game name.
+ * @param emptyGameName String to use for the game name if gameName is empty.
  */
-void GensUI::setWindowTitle_Game(const string& systemName, const string& gameName)
+void GensUI::setWindowTitle_Game(const string& systemName, const string& gameName,
+				 const string& emptyGameName)
 {
 	stringstream ss;
 	string condGameName;
@@ -87,6 +89,14 @@ void GensUI::setWindowTitle_Game(const string& systemName, const string& gameNam
 	if (condGameName.length() > 0 && condGameName.at(0) == ' ')
 	{
 		condGameName = condGameName.substr(1, condGameName.length() - 1);
+	}
+	
+	// Check if the condensed game name is empty.
+	if (condGameName.empty())
+	{
+		// Condensed game name is empty.
+		// Replace it with emptyGameName.
+		condGameName = emptyGameName;
 	}
 	
 	// Set the title.

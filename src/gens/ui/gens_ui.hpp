@@ -74,7 +74,8 @@ class GensUI
 		
 		// The following functions are implemented by ui/gens_ui.cpp.
 		static void setWindowTitle_Idle(void);
-		static void setWindowTitle_Game(const string& system, const string& game);
+		static void setWindowTitle_Game(const string& system, const string& game,
+						const string& emptyGameName = "");
 		static void setWindowTitle_Init(const string& system, const bool reinit);
 		
 		// Message box styles for GensUI::msgBox().

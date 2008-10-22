@@ -140,7 +140,7 @@ int Init_SegaCD(const char *iso_name)
 	ROM::updateCDROMName((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name);
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name, "No Disc");
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -219,7 +219,7 @@ int Reload_SegaCD(const char *iso_name)
 	ROM::updateCDROMName((char*)&CD_Data[32]);
 	
 	// Set the window title to the localized console name and the game name.
-	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name);
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name, "No Disc");
 	
 	Savestate::loadBRAM();
 	

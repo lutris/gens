@@ -579,32 +579,34 @@ int Change_SegaCD_PerfectSync(const int newPerfectSync)
  */
 void Set_Game_Name(void)
 {
-	char SystemName[16];
-	char *Title_ROM_Name;
+	string systemName;
+	string gameName;
+	string emptyGameName;
 	
 	if (Genesis_Started)
 	{
 		if ((CPU_Mode == 1) || (Game_Mode == 0))
-			strcpy(SystemName, "Mega Drive");
+			systemName = "Mega Drive";
 		else
-			strcpy(SystemName, "Genesis");
-		Title_ROM_Name = Game->ROM_Name_W;
+			systemName = "Genesis";
+		gameName = Game->ROM_Name_W;
 	}
 	else if (_32X_Started)
 	{
 		if (CPU_Mode == 1)
-			strcpy(SystemName, "32X (PAL)");
+			systemName = "32X (PAL)";
 		else
-			strcpy(SystemName, "32X (NTSC)");
-		Title_ROM_Name = Game->ROM_Name_W;
+			systemName = "32X (NTSC)";
+		gameName = Game->ROM_Name_W;
 	}
 	else if (SegaCD_Started)
 	{
 		if ((CPU_Mode == 1) || (Game_Mode == 0))
-			strcpy(SystemName, "MegaCD");
+			systemName = "MegaCD";
 		else
-			strcpy(SystemName, "SegaCD");
-		Title_ROM_Name = ROM_Name;
+			systemName = "SegaCD";
+		gameName = ROM_Name;
+		emptyGameName = "No Disc";
 	}
 	else
 	{
@@ -612,7 +614,7 @@ void Set_Game_Name(void)
 		return;
 	}
 	
-	GensUI::setWindowTitle_Game(SystemName, Title_ROM_Name);
+	GensUI::setWindowTitle_Game(systemName, gameName, emptyGameName);
 }
 
 
