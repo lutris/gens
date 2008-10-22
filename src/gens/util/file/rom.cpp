@@ -795,9 +795,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	audio->clearSoundBuffer();
 	
 	if (SegaCD_Started)
-		Save_BRAM();
+		Savestate::saveBRAM();
 	
-	Save_SRAM();
+	Savestate::saveSRAM();
 	Save_Patch_File();
 	
 	// Audio dumping.

@@ -267,6 +267,8 @@ static void on_gens_window_close(void)
  */
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	string filename;
+	
 	switch (LOWORD(wParam))
 	{
 		case IDM_FILE_OPENROM:
@@ -359,9 +361,10 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			if (Check_If_Kaillera_Running())
 			return 0;
 			*/
-			Str_Tmp[0] = 0;
-			if (Change_File_L(Str_Tmp, State_Dir) == 1)
-				Load_State(Str_Tmp);
+			filename = Savestate::selectFile(false, State_Dir);
+			if (!filename.empty())
+				Savestate::loadState(filename.c_str());
+			
 			break;
 		
 		case IDM_FILE_SAVESTATE:
@@ -369,9 +372,10 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			if (Check_If_Kaillera_Running())
 			return 0;
 			*/
-			Str_Tmp[0] = 0;
-			if (Change_File_S(Str_Tmp, State_Dir) == 1)
-				Save_State(Str_Tmp);
+			filename = Savestate::selectFile(true, State_Dir);
+			if (!filename.empty())
+				Savestate::saveState(filename.c_str());
+			
 			break;
 		
 		case IDM_FILE_QUICKLOAD:
@@ -379,9 +383,8 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			if (Check_If_Kaillera_Running())
 			return 0;
 			*/
-			Str_Tmp[0] = 0;
-			Get_State_File_Name(Str_Tmp);
-			Load_State(Str_Tmp);
+			filename = Savestate::getStateFilename();
+			Savestate::loadState(filename);
 			break;
 		
 		case IDM_FILE_QUICKSAVE:
@@ -389,9 +392,8 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			if (Check_If_Kaillera_Running())
 			return 0;
 			*/
-			Str_Tmp[0] = 0;
-			Get_State_File_Name(Str_Tmp);
-			Save_State(Str_Tmp);
+			filename = Savestate::getStateFilename();
+			Savestate::saveState(filename.c_str());
 			break;
 		
 		case IDM_FILE_CHANGESTATE_0:

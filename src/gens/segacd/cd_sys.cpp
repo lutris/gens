@@ -1018,14 +1018,10 @@ int Close_Tray_CDD_cC(void)
 	else
 #endif /* GENS_CDROM */
 	{
-		char new_iso[GENS_PATH_MAX];
-		
-		// TODO: Is this memset() really necessary?
-		memset(new_iso, 0, GENS_PATH_MAX);
-		
-		if (Change_File_L_CD(new_iso, Rom_Dir))
+		string new_iso = Savestate::selectCDImage(Rom_Dir);
+		if (!new_iso.empty())
 		{
-			Reload_SegaCD(new_iso);
+			Reload_SegaCD(new_iso.c_str());
 			CD_Present = 1;
 			SCD.Status_CDD = STOPPED;
 		}

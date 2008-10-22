@@ -898,7 +898,7 @@ int Set_Current_State(const int slot)
 	Current_State = slot;
 	
 	// TODO: Change this to just check if the file exists.
-	if ((f = Get_State_File()))
+	if ((f = Savestate::getStateFile()))
 	{
 		fclose(f);
 		MESSAGE_NUM_L("SLOT %d [OCCUPIED]", "SLOT %d [OCCUPIED]", Current_State, 1500);

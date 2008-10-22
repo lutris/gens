@@ -33,28 +33,72 @@ extern char State_Dir[GENS_PATH_MAX];
 extern char SRAM_Dir[GENS_PATH_MAX];
 extern char BRAM_Dir[GENS_PATH_MAX];
 
-int Change_File_S(char *Dest, char *Dir);
-int Change_File_L(char *Dest, char *Dir);
-//int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext);
-FILE* Get_State_File(void);
-void Get_State_File_Name(char *retFilename);
-int Load_State(char *Name);
-int Save_State(char *Name);
-int Import_Genesis(unsigned char *Data);
-void Export_Genesis(unsigned char *Data);
-void Import_SegaCD(unsigned char *Data);
-void Export_SegaCD(unsigned char *Data);
-void Import_32X(unsigned char *Data);
-void Export_32X(unsigned char *Data);
-int Load_SRAM(void);
-int Save_SRAM(void);
-int Load_BRAM(void);
-int Save_BRAM(void);
-void Format_Backup_Ram(void);
-int Change_File_L_CD (char *Dest, char *Dir);
-
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+// C++ includes
+#include <string>
+
+class Savestate
+{
+	public:
+		static std::string selectFile(const bool save = false, const std::string& dir = "");
+		static std::string selectCDImage(const std::string& dir);
+		
+		static FILE* getStateFile(void);
+		static std::string getStateFilename(void);
+		
+		static int loadState(const std::string& filename);
+		static int saveState(const std::string& filename);
+		
+		static int loadSRAM(void);
+		static int saveSRAM(void);
+		
+		static void formatSegaCD_BackupRAM(void);
+		
+		static int loadBRAM(void);
+		static int saveBRAM(void);
+		
+	protected:
+		// ImportData / ExportData functions from Gens Rerecording
+		
+		static void importData(void* into, const void* data, 
+				       const unsigned int offset,
+				       unsigned int numBytes);
+		
+		static void exportData(const void* from, void* data,
+				       const unsigned int offset,
+				       unsigned int numBytes);
+		
+		static void importDataAuto(void* into, const void* data,
+					   unsigned int* pOffset,
+					   const unsigned int numBytes);
+		
+		static void exportDataAuto(const void* from, void* data,
+					   unsigned int *pOffset,
+					   const unsigned int numBytes);
+		
+		static int importNumber_le32(const void* data, unsigned int *pOffset);
+		
+		static int gsxImportGenesis(const unsigned char* data);
+		static void gsxExportGenesis(unsigned char* data);
+		static void gsxImportSegaCD(const unsigned char* data);
+		static void gsxExportSegaCD(unsigned char* data);
+		static void gsxImport32X(const unsigned char* data);
+		static void gsxExport32X(unsigned char* data);
+		
+		static std::string getSRAMFilename(void);
+		
+		static void formatSegaCD_BRAM(unsigned char *buf);
+		
+		static std::string getBRAMFilename(void);
+};
+
+//int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext);
+
+#endif /* __cplusplus */
 
 #endif /* GENS_SAVE_H */

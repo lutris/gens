@@ -241,9 +241,10 @@ void on_FileMenu_LoadState_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Check_If_Kaillera_Running())
 		return 0;
 	*/
-	Str_Tmp[0] = 0;
-	if (Change_File_L(Str_Tmp, State_Dir) == 1)
-		Load_State(Str_Tmp);
+	
+	string filename = Savestate::selectFile(false, State_Dir);
+	if (!filename.empty())
+		Savestate::loadState(filename.c_str());
 }
 
 
@@ -259,9 +260,10 @@ void on_FileMenu_SaveState_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Check_If_Kaillera_Running())
 		return 0;
 	*/
-	Str_Tmp[0] = 0;
-	if (Change_File_S(Str_Tmp, State_Dir) == 1)
-		Save_State(Str_Tmp);
+	
+	string filename = Savestate::selectFile(true, State_Dir);
+	if (!filename.empty())
+		Savestate::saveState(filename);
 }
 
 
@@ -277,9 +279,9 @@ void on_FileMenu_QuickLoad_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Check_If_Kaillera_Running())
 		return 0;
 	*/
-	char SaveFile[GENS_PATH_MAX] = "";
-	Get_State_File_Name(SaveFile);
-	Load_State(SaveFile);
+	
+	string filename = Savestate::getStateFilename();
+	Savestate::loadState(filename.c_str());
 }
 
 
@@ -295,9 +297,9 @@ void on_FileMenu_QuickSave_activate(GtkMenuItem *menuitem, gpointer user_data)
 	if (Check_If_Kaillera_Running())
 		return 0;
 	*/
-	Str_Tmp[0] = 0;
-	Get_State_File_Name(Str_Tmp);
-	Save_State(Str_Tmp);
+	
+	string filename = Savestate::getStateFilename();
+	Savestate::saveState(filename);
 }
 
 

@@ -45,6 +45,8 @@ int mod = 0;
 void Input_KeyDown(int key)
 {
 #ifdef GENS_OS_LINUX
+	string filename;
+	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -180,15 +182,14 @@ void Input_KeyDown(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				Str_Tmp[0] = 0;
-				if (Change_File_S(Str_Tmp, State_Dir) == 1)
-					Save_State(Str_Tmp);
+				filename = Savestate::selectFile(true, State_Dir);
+				if (!filename.empty())
+					Savestate::saveState(filename);
 			}
 			else if (!mod)
 			{
-				Str_Tmp[0] = 0;
-				Get_State_File_Name(Str_Tmp);
-				Save_State(Str_Tmp);
+				filename = Savestate::getStateFilename();
+				Savestate::saveState(filename);
 			}
 			break;
 		
@@ -216,15 +217,14 @@ void Input_KeyDown(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				Str_Tmp[0] = 0;
-				if (Change_File_L(Str_Tmp, State_Dir) == 1)
-					Load_State(Str_Tmp);
+				filename = Savestate::selectFile(false, State_Dir);
+				if (!filename.empty())
+					Savestate::loadState(filename);
 			}
 			else if (!mod)
 			{
-				Str_Tmp[0] = 0;
-				Get_State_File_Name(Str_Tmp);
-				Load_State(Str_Tmp);
+				filename = Savestate::getStateFilename();
+				Savestate::loadState(filename);
 			}
 			break;
 		
