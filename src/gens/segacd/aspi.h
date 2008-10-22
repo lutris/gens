@@ -17,7 +17,7 @@ extern "C" {
 // Needed for uint_*.
 #include <stdint.h>
 
-// On Windows, pshpack1.h is needed to byte-pack structs.
+// On Windows, pshpack1.h is needed to byte-align structs.
 #ifdef GENS_OS_WIN32
 #include "pshpack1.h"
 #endif /* GENS_OS_WIN32 */
@@ -401,6 +401,10 @@ typedef struct tagSRB32_GDEVBlock
 	uint8_t  SRB_Lun;		/* Target's LUN number */
 	uint8_t  SRB_DeviceType;	/* Target's peripheral device type */
 	uint8_t  SRB_Rsvd1;
+	
+	// TODO: There seems to be an 8-byte overflow here,
+	// which causes a crash with the default Win98SE ASPI driver.
+	uint8_t  reserved[8];
 } SRB_GDEVBlock, *PSRB_GDEVBlock;
 
 /* SRB - EXECUTE SCSI COMMAND - SC_EXEC_SCSI_CMD */

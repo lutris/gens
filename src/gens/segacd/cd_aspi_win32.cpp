@@ -20,7 +20,7 @@ DWORD (*Send_ASPI_Command)(LPSRB);
 int ASPI_Command_Running;
 int DEV_PAR[8][3];
 unsigned int Current_LBA;
-BYTE Buf_Stat[256];
+unsigned char Buf_Stat[256];
 SRB_ExecSCSICmd se;
 TOC toc;
 
@@ -40,6 +40,12 @@ unsigned char Buf_Read[2366 * 64];
 SRB_ExecSCSICmd sread;
 
 
+// WNASPI32.dll version numbers
+static const unsigned int WNASPI32_VERSION_NERO    = 0xAF010002;
+static const unsigned int WNASPI32_ADAPTEC_471a2   = 0x00003C04;
+static const unsigned int WNASPI32_VERSION_WIN98SE = 0x00000001;
+
+
 int ASPI_Init(void)
 {
 	unsigned int ASPI_Status;
@@ -54,7 +60,8 @@ int ASPI_Init(void)
 	memset(Buf_Read, 0x00, sizeof(Buf_Read));
 	
 	// Clear the ASPI pointers.
-	Get_ASPI_Info = Get_ASPI_Version = NULL;
+	Get_ASPI_Info = NULL;
+	Get_ASPI_Version = NULL;
 	Send_ASPI_Command = NULL;
 	
 	// Attempt to load the ASPI DLL.
@@ -67,15 +74,19 @@ int ASPI_Init(void)
 		Get_ASPI_Version = (DWORD(*)(void))GetProcAddress(hASPI_DLL, "GetASPI32DLLVersion");
 		Send_ASPI_Command = (DWORD(*)(LPSRB lpsrb))GetProcAddress(hASPI_DLL, "SendASPI32Command");
 	}
-
-	if ((!Get_ASPI_Info) || (!Send_ASPI_Command))
+	
+	if (!Get_ASPI_Info || !Get_ASPI_Version || !Send_ASPI_Command)
 	{
 		if (hASPI_DLL)
 		{
 			FreeLibrary(hASPI_DLL);
 			hASPI_DLL = NULL;
 		}
-
+		
+		Get_ASPI_Info = NULL;
+		Get_ASPI_Version = NULL;
+		Send_ASPI_Command = NULL;
+		
 		// MessageBox(NULL, "Error loading WNASPI32.DLL\nCD device will not be supported", "ASPI error", MB_ICONSTOP);
 #ifdef DEBUG_CD
 		fprintf(debug_SCD_file, "error : can't load WNASPI32.DLL\n\n");
@@ -95,7 +106,7 @@ int ASPI_Init(void)
 	fprintf(debug_SCD_file, "ASPI driver initialised : %d device(s) detected\n\n", Num_CD_Drive);
 #endif
 			break;
-
+		
 		case SS_NO_ASPI:
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "error : no ASPI managers were found\n\n");
@@ -116,7 +127,7 @@ int ASPI_Init(void)
 #endif
 			return 0;
 			break;
-
+		
 		default:
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "error : ASPI for Windows is not initialized\n\n");
@@ -124,14 +135,14 @@ int ASPI_Init(void)
 			return 0;
 			break;
 	}
-
+	
 	if (Num_CD_Drive > 8)
 		Num_CD_Drive = 8;
-
+	
 	ASPI_Scan_Drives();
 //	ASPI_Set_Timeout(10);			// crashe sur certaines machines
-
-	return(Num_CD_Drive);
+	
+	return Num_CD_Drive;
 }
 
 
@@ -228,7 +239,6 @@ void ASPI_Scan_Drives(void)
 			sd.SRB_Target = j;
 
 			Send_ASPI_Command((LPSRB) &sd);
-
 			if (sd.SRB_Status == SS_COMP)
 			{
 #ifdef DEBUG_CD
@@ -249,9 +259,9 @@ void ASPI_Scan_Drives(void)
 			}
 		}
 	}
-
+	
 	Num_CD_Drive = k;
-
+	
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "%d drive(s) validated\n", Num_CD_Drive);
 #endif
