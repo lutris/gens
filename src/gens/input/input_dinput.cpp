@@ -1,7 +1,24 @@
-/**
- * Gens: Input class - SDL
- */
-
+/***************************************************************************
+ * Gens: Input Class - DirectInput 5                                       *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
 #include "input_dinput.hpp"
 #include "input_win32_keys.h"
@@ -11,14 +28,11 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
 
-
 #include "controller_config/controller_config_window.hpp"
-
 
 // Input_DInput being handled by InitJoystick at the moment.
 // TODO: This is a REALLY bad hack.
 static Input_DInput *DInput_Callback_Handler_Object;
-
 
 const struct KeyMap keyDefault[8] =
 {
@@ -45,7 +59,6 @@ const struct KeyMap keyDefault[8] =
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-
 // Axis values.
 static const unsigned char JoyAxisValues[2][6] =
 {
@@ -55,7 +68,6 @@ static const unsigned char JoyAxisValues[2][6] =
 	// axis value > 10,000
 	{0x04, 0x02, 0x08, 0x06, 0x0C, 0x0A},
 };
-
 
 #define MOD_NONE 0
 #define VK_NONE 0
