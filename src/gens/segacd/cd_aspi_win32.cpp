@@ -41,9 +41,9 @@ SRB_ExecSCSICmd sread;
 
 
 // WNASPI32.dll version numbers
-static const unsigned int WNASPI32_VERSION_NERO    = 0xAF010002;
-static const unsigned int WNASPI32_ADAPTEC_471a2   = 0x00003C04;
-static const unsigned int WNASPI32_VERSION_WIN98SE = 0x00000001;
+static const unsigned int WNASPI32_VERSION_WIN98SE		= 0x00000001;
+static const unsigned int WNASPI32_VERSION_ADAPTEC_471a2	= 0x00003C04;
+static const unsigned int WNASPI32_VERSION_NERO_2_01_50		= 0xAF010002;
 
 
 int ASPI_Init(void)
