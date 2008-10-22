@@ -1772,6 +1772,8 @@ void Savestate::gsxExport32X(unsigned char* data)
  */
 inline string Savestate::getSRAMFilename(void)
 {
+	if (strlen(ROM_Name) == 0)
+		return "";
 	return string(State_Dir) + string(ROM_Name) + ".srm";
 }
 
@@ -1787,6 +1789,8 @@ int Savestate::loadSRAM(void)
 	memset(SRAM, 0, 64 * 1024);
 	
 	string filename = getSRAMFilename();
+	if (filename.empty())
+		return 0;
 	if ((SRAM_File = fopen(filename.c_str(), "rb")) == 0)
 		return 0;
 	
@@ -1808,6 +1812,12 @@ int Savestate::saveSRAM(void)
 	FILE* SRAM_File = 0;
 	int size_to_save, i;
 	
+	string filename = getSRAMFilename();
+	if (filename.empty())
+		return 0;
+	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
+		return 0;
+	
 	i = (64 * 1024) - 1;
 	while ((i >= 0) && (SRAM[i] == 0))
 		i--;
@@ -1820,10 +1830,6 @@ int Savestate::saveSRAM(void)
 	size_to_save = 1;
 	while (i > size_to_save)
 		size_to_save <<= 1;
-	
-	string filename = getSRAMFilename();
-	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
-		return 0;
 	
 	fwrite(SRAM, size_to_save, 1, SRAM_File);
 	fclose(SRAM_File);
@@ -1876,6 +1882,8 @@ void Savestate::formatSegaCD_BackupRAM(void)
  */
 inline string Savestate::getBRAMFilename(void)
 {
+	if (strlen(ROM_Name) == 0)
+		return "";
 	return string(State_Dir) + string(ROM_Name) + ".brm";
 }
 
@@ -1891,6 +1899,8 @@ int Savestate::loadBRAM(void)
 	Savestate::formatSegaCD_BackupRAM();
 	
 	string filename = getBRAMFilename();
+	if (filename.empty())
+		return 0;
 	if ((BRAM_File = fopen(filename.c_str(), "rb")) == 0)
 		return 0;
 	
@@ -1911,6 +1921,8 @@ int Savestate::saveBRAM(void)
 	FILE* BRAM_File = 0;
 	
 	string filename = getBRAMFilename();
+	if (filename.empty())
+		return 0;
 	if ((BRAM_File = fopen(filename.c_str(), "wb")) == 0)
 		return 0;
 	
