@@ -405,18 +405,28 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		{
 			// Hack for windowed 1x rendering.
 			x = 8;
+			y = VDP_Num_Vis_Lines << m_shift;
 		}
-		else if (m_FullScreen && Video.Render_FS == 0 && m_Stretch)
+		else if (m_FullScreen && Video.Render_FS == 0)
 		{
 			// Hacks for fullscreen 1x rendering.
-			x = 0;
+			if (m_swRender)
+			{
+				x = ((m_HBorder / 2) << m_shift);
+				y = VDP_Num_Vis_Lines + 8;
+			}
+			else
+			{
+				x = 8;
+				y = VDP_Num_Vis_Lines;
+			}
 		}
 		else
 		{
 			x = ((m_HBorder / 2) << m_shift);
+			y = VDP_Num_Vis_Lines << m_shift;
 		}
 		
-		y = VDP_Num_Vis_Lines << m_shift;
 		if (m_shift)
 			y += 16;
 	}

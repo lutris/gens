@@ -774,7 +774,7 @@ int VDraw_DDraw::flipInternal(void)
 		}
 		else
 #endif
-		if (Video.Render_FS == 0)
+		if (!m_swRender && Video.Render_FS == 0)
 		{
 			// 1x rendering.
 			if (m_swRender)
