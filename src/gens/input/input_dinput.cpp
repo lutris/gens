@@ -88,10 +88,7 @@ Input_DInput::Input_DInput()
 	}
 	
 	m_numJoysticks = 0;
-	for (i = 0; i < MAX_JOYS; i++)
-	{
-		m_joyID[i] = NULL;
-	}
+	memset(m_joyID, 0x00, sizeof(m_joyID));
 	
 	DInput_Callback_Handler_Object = this;
 	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &InitJoystick, Gens_hWnd, DIEDFL_ATTACHEDONLY);
