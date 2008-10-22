@@ -243,7 +243,10 @@ int VDraw_DDraw::Init_Video(void)
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL)))
 		return Init_Fail(Gens_hWnd, "Error with lpDD->CreateSurface()! [lpDDS_Back]");
 	
-	if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
+	// TODO: Check if this is right.
+	// I think this might be causing the frame counter flicker in full screen mode.
+	//if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
+	if (!(m_FullScreen && rendMode == 0))
 		lpDDS_Blit = lpDDS_Back;
 	
 	if (rendMode == 0)
