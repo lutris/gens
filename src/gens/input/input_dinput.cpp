@@ -87,17 +87,10 @@ Input_DInput::Input_DInput()
 		return;
 	}
 	
+	joysticksInitialized = false;
+	joystickError = false;
 	m_numJoysticks = 0;
 	memset(m_joyID, 0x00, sizeof(m_joyID));
-	
-	DInput_Callback_Handler_Object = this;
-	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &InitJoystick, Gens_hWnd, DIEDFL_ATTACHEDONLY);
-	if (rval != DI_OK)
-	{
-		GensUI::msgBox("Input_DInput(): EnumDevices() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
-		// TODO: Error handling.
-		return;
-	}
 	
 	//rval = lpDI->CreateDevice(GUID_SysMouse, &lpDIDMouse, NULL);
 	lpDIDMouse = NULL;
@@ -173,13 +166,47 @@ Input_DInput::~Input_DInput()
 }
 
 
-BOOL CALLBACK Input_DInput::InitJoystick(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
+/**
+ * initJoysticks(): Initialize joysticks.
+ * @param hWnd Window handle where the joysticks should be acquired initially.
+ */
+void Input_DInput::initJoysticks(HWND hWnd)
 {
-	return DInput_Callback_Handler_Object->InitJoystick_int(lpDIIJoy, pvRef);
+	if (joystickError)
+		return;
+	
+	if (joysticksInitialized)
+	{
+		// Joysticks are already initialized.
+		// Set the cooperative level.
+		// TODO: If set to DISCL_BACKGROUND, don't run setCooperativeLevel_Joysticks().
+		setCooperativeLevel_Joysticks(hWnd);
+		return;
+	}
+	
+	// Joysticks are being initialized.
+	joysticksInitialized = true;
+	DInput_Callback_Handler_Object = this;
+	
+	HRESULT rval;
+	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &EnumDevices_Joysticks, hWnd, DIEDFL_ATTACHEDONLY);
+	if (rval != DI_OK)
+	{
+		joystickError = true;
+		GensUI::msgBox("Input_DInput::initJoysticks(): EnumDevices() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
+		// TODO: Error handling.
+		return;
+	}
 }
 
 
-BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
+BOOL CALLBACK Input_DInput::EnumDevices_Joysticks(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
+{
+	return DInput_Callback_Handler_Object->EnumDevices_Joysticks_int(lpDIIJoy, pvRef);
+}
+
+
+BOOL Input_DInput::EnumDevices_Joysticks_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
 	HRESULT rval;
 	LPDIRECTINPUTDEVICE	lpDIJoy;
@@ -190,14 +217,14 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 		return DIENUM_STOP;
 		
 	m_joyID[m_numJoysticks] = NULL;
-
+	
 	rval = lpDI->CreateDevice(lpDIIJoy->guidInstance, &lpDIJoy, NULL);
 	if (rval != DI_OK)
 	{
 		GensUI::msgBox("IDirectInput::CreateDevice() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		return(DIENUM_CONTINUE);
 	}
-
+	
 	rval = lpDIJoy->QueryInterface(IID_IDirectInputDevice2, (void **)&m_joyID[m_numJoysticks]);
 	lpDIJoy->Release();
 	if (rval != DI_OK)
@@ -206,7 +233,7 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
-
+	
 	rval = m_joyID[m_numJoysticks]->SetDataFormat(&c_dfDIJoystick);
 	if (rval != DI_OK)
 	{
@@ -215,9 +242,10 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 		m_joyID[m_numJoysticks] = NULL;
 		return(DIENUM_CONTINUE);
 	}
-
+	
+	// TODO: Set to DISCL_BACKGROUND to allow use of the joystick when the Gens window isn't active.
 	rval = m_joyID[m_numJoysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-
+	
 	if (rval != DI_OK)
 	{
 		GensUI::msgBox("IDirectInputDevice::SetCooperativeLevel() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
@@ -259,9 +287,9 @@ BOOL Input_DInput::InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 			break;
 		GensUI::sleep(10);
 	}
-
+	
 	m_numJoysticks++;
-
+	
 	return(DIENUM_CONTINUE);
 }
 
@@ -629,7 +657,7 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 
 /**
  * setCooperativeLevel(): Sets the cooperative level.
- * @param hWnd Window to set cooperative level on.
+ * @param hWnd Window to set the cooperative level on.
  */
 void Input_DInput::setCooperativeLevel(HWND hWnd)
 {
@@ -651,5 +679,37 @@ void Input_DInput::setCooperativeLevel(HWND hWnd)
 	else
 	{
 		fprintf(stderr, "%s(): lpDIDKeyboard->SetCooperativeLevel() succeeded.\n", __func__);
+	}
+}
+
+
+/**
+ * setCooperativeLevel_Joysticks(): Sets the cooperative level on joysticks.
+ * @param hWnd Window to set the cooperative level on.
+ */
+void Input_DInput::setCooperativeLevel_Joysticks(HWND hWnd)
+{
+	// If no hWnd was specified, use the Gens window.
+	if (!hWnd)
+		hWnd = Gens_hWnd;
+	
+	HRESULT rval;
+	for (int i = 0; i < MAX_JOYS; i++)
+	{
+		if (!m_joyID[i])
+			continue;
+		
+		rval = m_joyID[i]->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+		
+		if (rval != DI_OK)
+		{
+			fprintf(stderr, "%s(): SetCooperativeLevel() failed on joystick %d.\n", __func__, i);
+			m_joyID[m_numJoysticks]->Release();
+			m_joyID[m_numJoysticks] = NULL;
+		}
+		else
+		{
+			fprintf(stderr, "%s(): SetCooperativeLevel() succeeded on joystick %d.\n", __func__, i);
+		}
 	}
 }

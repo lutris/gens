@@ -172,6 +172,9 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			{
 				// Set the DirectInput cooperative level.
 				reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
+				
+				// Initialize joysticks.
+				reinterpret_cast<Input_DInput*>(input)->initJoysticks(hWnd);
 			}
 			break;
 		

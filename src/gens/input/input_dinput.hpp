@@ -65,7 +65,11 @@ class Input_DInput : public Input
 		Input_DInput();
 		~Input_DInput();
 		
-		// Update the input subsystem
+		// DirectInput only acquires joysticks if the window is visible.
+		// So, this function is called when the Gens window is made visible.
+		void initJoysticks(HWND hWnd);
+		
+		// Update the input subsystem.
 		void update(void);
 		
 		// Check if the specified key is pressed.
@@ -74,9 +78,9 @@ class Input_DInput : public Input
 		// Get a key. (Used for controller configuration.)
 		unsigned int getKey(void);
 		
-		// InitJoystick callback
-		static BOOL CALLBACK InitJoystick(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
-		BOOL InitJoystick_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
+		// EnumDevices callback for joysticks.
+		static BOOL CALLBACK EnumDevices_Joysticks(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
+		BOOL EnumDevices_Joysticks_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 		
 		// Cooperative level (Win32)
 		void setCooperativeLevel(HWND hWnd = NULL);
@@ -99,6 +103,11 @@ class Input_DInput : public Input
 		unsigned char m_DIKeys[256];
 		
 		void restoreInput(void);
+		
+		// Joysticks
+		void setCooperativeLevel_Joysticks(HWND hWnd = NULL);
+		bool joysticksInitialized;
+		bool joystickError;
 };
 
 #endif
