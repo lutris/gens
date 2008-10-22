@@ -752,9 +752,7 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 			break;
 		
 		case IDM_OPTIONS_LOADCONFIG:
-			printf("ENABLE: %d\n", audio->enabled());
-			Load_As_Config(Game);
-			printf("ENABLE: %d\n", audio->enabled());
+			Config::loadAs(Game);
 			Sync_Gens_Window();
 			break;
 		
@@ -763,7 +761,7 @@ static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, L
 			break;
 		
 		case IDM_OPTIONS_SAVECONFIGAS:
-			Save_As_Config();
+			Config::saveAs();
 			break;
 		
 		default:

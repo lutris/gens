@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 	
 	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
 	strcat(Str_Tmp, "gens.cfg");
-	Save_Config(Str_Tmp);
+	Config::save(Str_Tmp);
 	
 	End_All();
 	return 0;

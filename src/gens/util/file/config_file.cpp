@@ -82,19 +82,16 @@ const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2
 
 
 /**
- * Save_Config(): Save GENS configuration.
- * @param File_Name Configuration filename.
+ * save(): Save Gens configuration.
+ * @param filename Configuration filename.
  */
-int Save_Config(const char *File_Name)
+int Config::save(const string& filename)
 {
 	int i;
-	
-	// String copy is needed, since the passed variable might be Str_Tmp.
-	char Conf_File[GENS_PATH_MAX];
-	strncpy(Conf_File, File_Name, GENS_PATH_MAX);
+	char buf[256];
 	
 	// Load the configuration file into the INI handler.
-	INI cfg(Conf_File);
+	INI cfg(filename);
 	
 	// Paths
 	cfg.writeString("General", "ROM Path", Rom_Dir);
@@ -123,8 +120,8 @@ int Save_Config(const char *File_Name)
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
 	{
-		sprintf(Str_Tmp, "ROM %d", i + 1);
-		cfg.writeString("General", Str_Tmp, Recent_Rom[i]);
+		sprintf(buf, "ROM %d", i + 1);
+		cfg.writeString("General", buf, Recent_Rom[i]);
 	}
 	
 #ifdef GENS_CDROM
@@ -267,7 +264,7 @@ int Save_Config(const char *File_Name)
 	}
 	
 	// Save the INI file.
-	cfg.save(Conf_File);
+	cfg.save(filename);
 	
 	// Done.
 	return 1;
@@ -275,10 +272,10 @@ int Save_Config(const char *File_Name)
 
 
 /**
- * Save_As_Config(): Save the current configuration using a user-selected filename.
+ * saveAs(): Save the current configuration using a user-selected filename.
  * @return 1 if a file was selected.
  */
-int Save_As_Config(void)
+int Config::saveAs(void)
 {
 	string filename;
 	
@@ -287,32 +284,23 @@ int Save_As_Config(void)
 		return 0;
 	
 	// Filename selected for the config file.
-	Save_Config(filename.c_str());
-	strcpy(Str_Tmp, "config saved in ");
-	strcat(Str_Tmp, filename.c_str());
-	draw->writeText(Str_Tmp, 2000);
+	save(filename);
+	draw->writeText("Config saved in " + filename, 2000);
 	return 1;
 }
 
 
 /**
- * Load_Config(): Load GENS configuration.
- * @param Conf_File Configuration filename.
+ * load(): Load Gens configuration.
+ * @param filename Configuration filename.
  * @param Game_Active ???
  */
-int Load_Config(const char *File_Name, void *Game_Active)
+int Config::load(const string& filename, void* gameActive)
 {
 	int new_val, i;
-	char Conf_File[GENS_PATH_MAX];
-	char Save_Path[GENS_PATH_MAX];
+	char buf[256];
 	
-	INI cfg(File_Name);
-	
-	// String copy is needed, since the passed variable might be Str_Tmp.
-	strncpy(Conf_File, File_Name, GENS_PATH_MAX);
-	
-	// Get the default save path.
-	Get_Save_Path(Save_Path, GENS_PATH_MAX);
+	INI cfg(filename);
 	
 	CRam_Flag = 1;
 	
@@ -343,8 +331,8 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	// Last 9 ROMs
 	for (i = 0; i < 9; i++)
 	{
-		sprintf(Str_Tmp, "ROM %d", i + 1);
-		cfg.getString("General", Str_Tmp, "", Recent_Rom[i], sizeof(Recent_Rom[i]));
+		sprintf(buf, "ROM %d", i + 1);
+		cfg.getString("General", buf, "", Recent_Rom[i], sizeof(Recent_Rom[i]));
 	}
 	
 #ifdef GENS_CDROM
@@ -506,30 +494,30 @@ int Load_Config(const char *File_Name, void *Game_Active)
 	
 	for (i = 0; i < 8; i++)
 	{
-		sprintf(Str_Tmp, "%s.Up", PlayerNames[i]);
-		input->m_keyMap[i].Up = cfg.getInt("Input", Str_Tmp, keyDefault[i].Up);
-		sprintf(Str_Tmp, "%s.Down", PlayerNames[i]);
-		input->m_keyMap[i].Down = cfg.getInt("Input", Str_Tmp, keyDefault[i].Down);
-		sprintf(Str_Tmp, "%s.Left", PlayerNames[i]);
-		input->m_keyMap[i].Left = cfg.getInt("Input", Str_Tmp, keyDefault[i].Left);
-		sprintf(Str_Tmp, "%s.Right", PlayerNames[i]);
-		input->m_keyMap[i].Right = cfg.getInt("Input", Str_Tmp, keyDefault[i].Right);
-		sprintf(Str_Tmp, "%s.Start", PlayerNames[i]);
-		input->m_keyMap[i].Start = cfg.getInt("Input", Str_Tmp, keyDefault[i].Start);
-		sprintf(Str_Tmp, "%s.A", PlayerNames[i]);
-		input->m_keyMap[i].A = cfg.getInt("Input", Str_Tmp, keyDefault[i].A);
-		sprintf(Str_Tmp, "%s.B", PlayerNames[i]);
-		input->m_keyMap[i].B = cfg.getInt("Input", Str_Tmp, keyDefault[i].B);
-		sprintf(Str_Tmp, "%s.C", PlayerNames[i]);
-		input->m_keyMap[i].C = cfg.getInt("Input", Str_Tmp, keyDefault[i].C);
-		sprintf(Str_Tmp, "%s.Mode", PlayerNames[i]);
-		input->m_keyMap[i].Mode = cfg.getInt("Input", Str_Tmp, keyDefault[i].Mode);
-		sprintf(Str_Tmp, "%s.X", PlayerNames[i]);
-		input->m_keyMap[i].X = cfg.getInt("Input", Str_Tmp, keyDefault[i].X);
-		sprintf(Str_Tmp, "%s.Y", PlayerNames[i]);
-		input->m_keyMap[i].Y = cfg.getInt("Input", Str_Tmp, keyDefault[i].Y);
-		sprintf(Str_Tmp, "%s.Z", PlayerNames[i]);
-		input->m_keyMap[i].Z = cfg.getInt("Input", Str_Tmp, keyDefault[i].Z);
+		sprintf(buf, "%s.Up", PlayerNames[i]);
+		input->m_keyMap[i].Up = cfg.getInt("Input", buf, keyDefault[i].Up);
+		sprintf(buf, "%s.Down", PlayerNames[i]);
+		input->m_keyMap[i].Down = cfg.getInt("Input", buf, keyDefault[i].Down);
+		sprintf(buf, "%s.Left", PlayerNames[i]);
+		input->m_keyMap[i].Left = cfg.getInt("Input", buf, keyDefault[i].Left);
+		sprintf(buf, "%s.Right", PlayerNames[i]);
+		input->m_keyMap[i].Right = cfg.getInt("Input", buf, keyDefault[i].Right);
+		sprintf(buf, "%s.Start", PlayerNames[i]);
+		input->m_keyMap[i].Start = cfg.getInt("Input", buf, keyDefault[i].Start);
+		sprintf(buf, "%s.A", PlayerNames[i]);
+		input->m_keyMap[i].A = cfg.getInt("Input", buf, keyDefault[i].A);
+		sprintf(buf, "%s.B", PlayerNames[i]);
+		input->m_keyMap[i].B = cfg.getInt("Input", buf, keyDefault[i].B);
+		sprintf(buf, "%s.C", PlayerNames[i]);
+		input->m_keyMap[i].C = cfg.getInt("Input", buf, keyDefault[i].C);
+		sprintf(buf, "%s.Mode", PlayerNames[i]);
+		input->m_keyMap[i].Mode = cfg.getInt("Input", buf, keyDefault[i].Mode);
+		sprintf(buf, "%s.X", PlayerNames[i]);
+		input->m_keyMap[i].X = cfg.getInt("Input", buf, keyDefault[i].X);
+		sprintf(buf, "%s.Y", PlayerNames[i]);
+		input->m_keyMap[i].Y = cfg.getInt("Input", buf, keyDefault[i].Y);
+		sprintf(buf, "%s.Z", PlayerNames[i]);
+		input->m_keyMap[i].Z = cfg.getInt("Input", buf, keyDefault[i].Z);
 	}
 	
 	// Create the TeamPlayer I/O table.
@@ -545,7 +533,7 @@ int Load_Config(const char *File_Name, void *Game_Active)
  * @param Game_Active ???
  * @return 1 if a file was selected.
  */
-int Load_As_Config(void *Game_Active)
+int Config::loadAs(void* gameActive)
 {
 	string filename;
 	
@@ -554,9 +542,7 @@ int Load_As_Config(void *Game_Active)
 		return 0;
 	
 	// Filename selected for the config file.
-	Load_Config(filename.c_str(), Game_Active);
-	strcpy(Str_Tmp, "config loaded from ");
-	strcat(Str_Tmp, filename.c_str());
-	draw->writeText(Str_Tmp, 2000);
+	load(filename, gameActive);
+	draw->writeText("Config loaded from " + filename, 2000);
 	return 1;
 }

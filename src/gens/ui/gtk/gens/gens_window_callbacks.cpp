@@ -854,7 +854,7 @@ void on_OptionsMenu_LoadConfig_activate(GtkMenuItem *menuitem, gpointer user_dat
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	Load_As_Config(Game);
+	Config::loadAs(Game);
 	Sync_Gens_Window();
 }
 
@@ -867,7 +867,7 @@ void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_d
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	Save_As_Config();
+	Config::saveAs();
 }
 
 

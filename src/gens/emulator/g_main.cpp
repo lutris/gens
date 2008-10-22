@@ -263,7 +263,7 @@ void Init_Settings(void)
 	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
-	Load_Config(Str_Tmp, NULL);
+	Config::load(Str_Tmp, NULL);
 }
 
 

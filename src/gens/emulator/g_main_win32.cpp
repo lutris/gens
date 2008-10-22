@@ -225,7 +225,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	audio->clearSoundBuffer();
 	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
 	strcat(Str_Tmp, "gens.cfg");
-	Save_Config(Str_Tmp);
+	Config::save(Str_Tmp);
 	
 	End_All();
 	ChangeDisplaySettings(NULL, 0);

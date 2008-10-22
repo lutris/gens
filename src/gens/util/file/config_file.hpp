@@ -24,16 +24,19 @@
 #define GENS_CONFIG_FILE_HPP
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
-int Save_Config(const char *File_Name);
-int Save_As_Config(void);
-int Load_Config(const char *File_Name, void *Game_Active);
-int Load_As_Config(void *Game_Active);
+#include <string>
 
-#ifdef __cplusplus
-}
-#endif
+class Config
+{
+	public:
+		static int save(const std::string& filename);
+		static int saveAs(void);
+		
+		static int load(const std::string& filename, void* gameActive);
+		static int loadAs(void* gameActive);
+};
+
+#endif /* __cplusplus */
 
 #endif /* GENS_CONFIG_FILE_HPP */
