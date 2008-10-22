@@ -179,8 +179,10 @@ void Input_DInput::initJoysticks(HWND hWnd)
 	{
 		// Joysticks are already initialized.
 		// Set the cooperative level.
+		// TODO: If set to DISCL_FOREGROUND, run setCooperativeLevel_Joysticks().
 		// TODO: If set to DISCL_BACKGROUND, don't run setCooperativeLevel_Joysticks().
-		setCooperativeLevel_Joysticks(hWnd);
+		// Currently hard-coded for DISCL_BACKGROUND.
+		//setCooperativeLevel_Joysticks(hWnd);
 		return;
 	}
 	
@@ -243,8 +245,8 @@ BOOL Input_DInput::EnumDevices_Joysticks_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOI
 		return(DIENUM_CONTINUE);
 	}
 	
-	// TODO: Set to DISCL_BACKGROUND to allow use of the joystick when the Gens window isn't active.
-	rval = m_joyID[m_numJoysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+	// TODO: Add an option to specify DISCL_FOREGROUND so the joysticks only work when the Gens window is active.
+	rval = m_joyID[m_numJoysticks]->SetCooperativeLevel((HWND)pvRef, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
 	
 	if (rval != DI_OK)
 	{
