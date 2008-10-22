@@ -61,6 +61,9 @@ Milestone 5 fixes the following bugs:
 
 - [GTK+] Fixed GTK+ 2.4 compatibility issues.
 
+- [GTK+] Added accelerators for the "Cancel" and "Save" buttons in the
+  Game Genie window.
+
 Milestone 5 has the following low-level code changes:
 
 - -Wl,--as-needed has been added to LDFLAGS. This eliminates unnecessary
