@@ -40,9 +40,6 @@
 #include "emulator/gens.hpp"
 
 
-GtkWidget *game_genie_window = NULL;
-
-
 // Macro to add a stock icon to a GtkButton.
 #define Button_AddStockIcon(ButtonWidget, ButtonWidgetName, IconWidget, IconName)		\
 {												\
@@ -52,6 +49,11 @@ GtkWidget *game_genie_window = NULL;
 	gtk_button_set_image(GTK_BUTTON(ButtonWidget), IconWidget);				\
 	GLADE_HOOKUP_OBJECT(game_genie_window, IconWidget, ButtonWidgetName "_Icon");		\
 }
+
+
+GtkWidget *game_genie_window = NULL;
+
+GtkAccelGroup *accel_group;
 
 
 /**
@@ -102,6 +104,8 @@ GtkWidget* create_game_genie_window(void)
 		gtk_widget_grab_focus(game_genie_window);
 		return NULL;
 	}
+	
+	accel_group = gtk_accel_group_new();
 	
 	// Create the Game Genie window.
 	CREATE_GTK_WINDOW(game_genie_window,
@@ -272,6 +276,8 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(button_gg_Cancel, "button_gg_Cancel");
 	gtk_widget_show(button_gg_Cancel);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_Cancel, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_gg_Cancel, "activate", accel_group,
+				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_gg_Cancel, on_button_gg_Cancel_clicked);
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_Cancel, "button_gg_Cancel");
 	
@@ -288,8 +294,15 @@ GtkWidget* create_game_genie_window(void)
 	gtk_widget_set_name(button_gg_Save, "button_gg_Save");
 	gtk_widget_show(button_gg_Save);
 	gtk_box_pack_start(GTK_BOX(hbutton_box_gg_buttonRow), button_gg_Save, FALSE, FALSE, 0);
+	gtk_widget_add_accelerator(button_gg_Save, "activate", accel_group,
+				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
+	gtk_widget_add_accelerator(button_gg_Save, "activate", accel_group,
+				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
 	AddButtonCallback_Clicked(button_gg_Save, on_button_gg_Save_clicked);
 	GLADE_HOOKUP_OBJECT(game_genie_window, button_gg_Save, "button_gg_Save");
+	
+	// Add the accel group.
+	gtk_window_add_accel_group(GTK_WINDOW(game_genie_window), accel_group);
 	
 	return game_genie_window;
 }
