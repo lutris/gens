@@ -77,6 +77,8 @@ Milestone 5 has the following low-level code changes:
 
 - MP3 playback support can now be disabled in the ./configure script.
 
+- rom.cpp and save.cpp have been converted to static C++ classes.
+
 Milestone 5 has the following known issues:
 
 - [Win32] MP3 support is currently disabled due to problems with the MP3
