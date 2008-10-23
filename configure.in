@@ -330,6 +330,7 @@ AC_SUBST(LDFLAGS)
 AC_CONFIG_FILES([
 Makefile
 pixmaps/Makefile
+xdg/Makefile
 src/Makefile
 src/gens/Makefile
 src/zlib/Makefile

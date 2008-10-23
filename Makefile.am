@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = src pixmaps
+SUBDIRS = src pixmaps xdg
 
 BUILT_SOURCES =
 CLEANFILES =
