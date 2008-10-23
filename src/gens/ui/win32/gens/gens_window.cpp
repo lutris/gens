@@ -208,25 +208,14 @@ static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)FileMenu_ChangeState, "Change State");
 	
-	MENUITEMINFO miimStateItem;
-	char mnuTitle[2];
-	int i;
-	
-	memset(&miimStateItem, 0x00, sizeof(miimStateItem));
-	miimStateItem.cbSize = sizeof(miimStateItem);
-	miimStateItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimStateItem.fType = MFT_RADIOCHECK | MFT_STRING;
+	char mnuTitle[2] = {'\0', '\0'};
 	
 	// Create the save slot entries.
-	for (i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		miimStateItem.wID = IDM_FILE_CHANGESTATE + i;
-		miimStateItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
-		mnuTitle[0] = '0' + i;
-		mnuTitle[1] = 0;
-		miimStateItem.dwTypeData = &mnuTitle[0];
-		miimStateItem.cch = 1;
-		InsertMenuItem(FileMenu_ChangeState, i, TRUE, &miimStateItem);
+		mnuTitle[0] = '0' + (char)i;
+		InsertMenu(FileMenu_ChangeState, i, MF_BYPOSITION | MF_STRING,
+			   IDM_FILE_CHANGESTATE + i, mnuTitle);
 	}
 }
 
@@ -283,32 +272,17 @@ static void create_gens_window_GraphicsMenu_FrameSkip(HMENU parent, int position
 		   (UINT_PTR)GraphicsMenu_FrameSkip, "Frame Skip");
 	
 	char mnuTitle[8];
-	int i;
-	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
 	
 	// Create the frame skip entries.
-	for (i = -1; i <= 8; i++)
+	for (int i = -1; i <= 8; i++)
 	{
 		if (i >= 0)
-		{
 			sprintf(mnuTitle, "%d", i);
-			miimMenuItem.cch = 1;
-		}
 		else
-		{
 			strcpy(mnuTitle, "Auto");
-			miimMenuItem.cch = 4;
-		}
 		
-		miimMenuItem.wID = IDM_GRAPHICS_FRAMESKIP + (i + 1);
-		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
-		miimMenuItem.dwTypeData = &mnuTitle[0];
-		InsertMenuItem(GraphicsMenu_FrameSkip, i + 1, TRUE, &miimMenuItem);
+		InsertMenu(GraphicsMenu_FrameSkip, i + 1, MF_BYPOSITION | MF_STRING,
+			   IDM_GRAPHICS_FRAMESKIP + (i + 1), mnuTitle);
 	}
 }
 
@@ -370,22 +344,11 @@ static void create_gens_window_CPUMenu_Country(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)CPUMenu_Country, "&Country");
 	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
-	
 	// Create the country code entries.
-	int i;
-	for (i = 0; i < 5; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		miimMenuItem.wID = IDM_CPU_COUNTRY + i;
-		miimMenuItem.fState = (i == 0 ? MFS_CHECKED : MFS_UNCHECKED);
-		miimMenuItem.dwTypeData = CountryCodes[i];
-		miimMenuItem.cch = strlen(CountryCodes[i]);
-		
-		InsertMenuItem(CPUMenu_Country, i, TRUE, &miimMenuItem);
+		InsertMenu(CPUMenu_Country, i, MF_BYPOSITION | MF_STRING,
+			   IDM_CPU_COUNTRY + i, CountryCodes[i]);
 	}
 	
 	// Separator
@@ -466,23 +429,12 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position)
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)SoundMenu_Rate, "&Rate");
 	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
-	
 	// Create the rate entries.
 	for (i = 0; i < 6; i++)
 	{
 		sprintf(SndName, "%d Hz", SndRates[i][1]);
-		
-		miimMenuItem.wID = IDM_SOUND_RATE + SndRates[i][0];
-		miimMenuItem.fState = (SndRates[i][1] == 22050 ? MFS_CHECKED : MFS_UNCHECKED);
-		miimMenuItem.dwTypeData = &SndName[0];
-		miimMenuItem.cch = strlen(SndName);
-		
-		InsertMenuItem(SoundMenu_Rate, i, TRUE, &miimMenuItem);
+		InsertMenu(SoundMenu_Rate, i, MF_BYPOSITION | MF_STRING,
+			   IDM_SOUND_RATE + SndRates[i][0], &SndName[0]);
 	}
 }
 
@@ -537,12 +489,6 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int posi
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)OptionsMenu_SegaCDSRAMSize, "SegaCD S&RAM Size");
 	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
-	
 	// Create the rate entries.
 	for (i = -1; i <= 3; i++)
 	{
@@ -551,12 +497,8 @@ static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int posi
 		else
 			sprintf(SRAMName, "%d KB", 8 << i);
 		
-		miimMenuItem.wID = IDM_OPTIONS_SEGACDSRAMSIZE + (i + 1);
-		miimMenuItem.fState = (i == -1 ? MFS_CHECKED : MFS_UNCHECKED);
-		miimMenuItem.dwTypeData = SRAMName;
-		miimMenuItem.cch = strlen(SRAMName);
-		
-		InsertMenuItem(OptionsMenu_SegaCDSRAMSize, i + 1, TRUE, &miimMenuItem);
+		InsertMenu(OptionsMenu_SegaCDSRAMSize, i + 1, MF_BYPOSITION | MF_STRING,
+			   IDM_OPTIONS_SEGACDSRAMSIZE + (i + 1), SRAMName);
 	}
 }
 

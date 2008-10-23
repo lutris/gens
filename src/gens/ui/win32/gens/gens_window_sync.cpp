@@ -76,11 +76,6 @@ void Sync_Gens_Window_FileMenu(void)
 {
 	int i;
 	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_STATE;
-	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
 	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
@@ -126,26 +121,23 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	if (romsFound == 0)
-	{
-		miimMenuItem.fState = MFS_DISABLED;
-		SetMenuItemInfo(FileMenu, 3, TRUE, &miimMenuItem);
-	}
+		EnableMenuItem(FileMenu, 3, MF_BYPOSITION | MF_GRAYED);
 	
 	// TODO: Disable Close ROM if no ROM is loaded.
 	
 	// Savestate menu items
-	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	SetMenuItemInfo(FileMenu, IDM_FILE_LOADSTATE, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, IDM_FILE_SAVESTATE, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, IDM_FILE_QUICKLOAD, FALSE, &miimMenuItem);
-	SetMenuItemInfo(FileMenu, IDM_FILE_QUICKSAVE, FALSE, &miimMenuItem);
+	unsigned int enableFlags = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_ENABLED : MF_GRAYED);
+	EnableMenuItem(FileMenu, IDM_FILE_LOADSTATE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(FileMenu, IDM_FILE_SAVESTATE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(FileMenu, IDM_FILE_QUICKLOAD, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(FileMenu, IDM_FILE_QUICKSAVE, MF_BYCOMMAND | enableFlags);
 	
 	// Current savestate
-	for (i = 0; i < 10; i++)
-	{
-		miimMenuItem.fState = (Current_State == i ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(FileMenu_ChangeState, IDM_FILE_CHANGESTATE + i, FALSE, &miimMenuItem);
-	}
+	CheckMenuRadioItem(FileMenu_ChangeState,
+			   IDM_FILE_CHANGESTATE_0,
+			   IDM_FILE_CHANGESTATE_9,
+			   IDM_FILE_CHANGESTATE + Current_State,
+			   MF_BYCOMMAND);
 }
 
 
@@ -154,45 +146,39 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
-	int i;
-	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_STATE;
-	
 	// Full Screen
-	miimMenuItem.fState = (draw->fullScreen() ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_FULLSCREEN, FALSE, &miimMenuItem);
+	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_FULLSCREEN,
+		      MF_BYCOMMAND | (draw->fullScreen() ? MF_CHECKED : MF_UNCHECKED));
 	
 	// VSync
+	unsigned int checkFlags;
 	if (draw->fullScreen())
-		miimMenuItem.fState = (Video.VSync_FS ? MFS_CHECKED : MFS_UNCHECKED);
+		checkFlags = (Video.VSync_FS ? MF_CHECKED : MF_UNCHECKED);
 	else
-		miimMenuItem.fState = (Video.VSync_W ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_VSYNC, FALSE, &miimMenuItem);
+		checkFlags = (Video.VSync_W ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | checkFlags);
 	
 	// Stretch
-	miimMenuItem.fState = (draw->stretch() ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_STRETCH, FALSE, &miimMenuItem);
+	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_STRETCH,
+		      MF_BYCOMMAND | (draw->stretch() ? MF_CHECKED : MF_UNCHECKED));
 	
 	// Render
 	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu, 5);
 	
 	// Sprite Limit
-	miimMenuItem.fState = (Sprite_Over ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_SPRITELIMIT, FALSE, &miimMenuItem);
+	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_SPRITELIMIT,
+		      MF_BYCOMMAND | (Sprite_Over ? MF_CHECKED : MF_UNCHECKED));
 	
 	// Frame Skip
-	for (i = -1; i <= 8; i++)
-	{
-		miimMenuItem.fState = (Frame_Skip == i ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(GraphicsMenu_FrameSkip, IDM_GRAPHICS_FRAMESKIP + (i + 1), FALSE, &miimMenuItem);
-	}
+	CheckMenuRadioItem(GraphicsMenu_FrameSkip,
+			   IDM_GRAPHICS_FRAMESKIP_AUTO,
+			   IDM_GRAPHICS_FRAMESKIP_8,
+			   IDM_GRAPHICS_FRAMESKIP + (Frame_Skip + 1),
+			   MF_BYCOMMAND);
 	
 	// Screen Shot
-	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	SetMenuItemInfo(GraphicsMenu, IDM_GRAPHICS_SCREENSHOT, FALSE, &miimMenuItem);
+	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_SCREENSHOT,
+		      MF_BYCOMMAND | ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_CHECKED : MF_UNCHECKED));
 }
 
 
@@ -208,13 +194,8 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	GraphicsMenu_Render = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)GraphicsMenu_Render, "&Render");
 	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
-	miimMenuItem.fType = MFT_RADIOCHECK | MFT_STRING;
-	
 	// Create the render entries.
+	bool renderSelected = false;
 	int i = 0;
 	bool showRenderer;
 	
@@ -241,15 +222,22 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		
 		if (showRenderer)
 		{
-			miimMenuItem.wID = IDM_GRAPHICS_RENDER + i;
 			if (draw->fullScreen())
-				miimMenuItem.fState = (Video.Render_FS == i ? MFS_CHECKED : MFS_UNCHECKED);
+				renderSelected = (Video.Render_FS == i);
 			else
-				miimMenuItem.fState = (Video.Render_W == i ? MFS_CHECKED : MFS_UNCHECKED);
+				renderSelected = (Video.Render_W == i);
 			
-			miimMenuItem.dwTypeData = Renderers[i].name;
-			miimMenuItem.cch = strlen(Renderers[i].name);
-			InsertMenuItem(GraphicsMenu_Render, i, TRUE, &miimMenuItem);
+			InsertMenu(GraphicsMenu_Render, i, MF_BYPOSITION | MF_STRING,
+				   IDM_GRAPHICS_RENDER + i, Renderers[i].name);
+			
+			if (renderSelected)
+			{
+				CheckMenuRadioItem(GraphicsMenu_Render,
+						   IDM_GRAPHICS_RENDER,
+						   IDM_GRAPHICS_RENDER + (Renderers_Count - 1),
+						   IDM_GRAPHICS_RENDER + i,
+						   MF_BYCOMMAND);
+			}
 		}
 		
 		// Check the next renderer.
@@ -297,21 +285,15 @@ void Sync_Gens_Window_CPUMenu(void)
 	}
 	
 	// Country code
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_STATE;
-	
-	int i;
-	for (i = -1; i < 4; i++)
-	{
-		miimMenuItem.fState = (i == Country ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(CPUMenu_Country, IDM_CPU_COUNTRY + (i + 1), FALSE, &miimMenuItem);
-	}
+	CheckMenuRadioItem(CPUMenu_Country,
+			   IDM_CPU_COUNTRY_AUTO,
+			   IDM_CPU_COUNTRY_JAPAN_PAL,
+			   IDM_CPU_COUNTRY + (Country + 1),
+			   MF_BYCOMMAND);
 	
 	// SegaCD Perfect Sync
-	miimMenuItem.fState = (SegaCD_Accurate ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(CPUMenu, IDM_CPU_SEGACDPERFECTSYNC, FALSE, &miimMenuItem);
+	CheckMenuItem(CPUMenu, IDM_CPU_SEGACDPERFECTSYNC,
+		      MF_BYCOMMAND | (SegaCD_Accurate ? MF_CHECKED : MF_UNCHECKED));
 }
 
 
@@ -376,19 +358,12 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
-	int i;
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_STATE;
-	
 	// Get the Enabled flag for the other menu items.
 	bool soundEnabled = audio->enabled();
-	unsigned int flags = (soundEnabled ? MFS_ENABLED : MFS_DISABLED);
 	
 	// Enabled
-	miimMenuItem.fState = (soundEnabled ? MFS_CHECKED : MFS_UNCHECKED);
-	SetMenuItemInfo(SoundMenu, IDM_SOUND_ENABLE, FALSE, &miimMenuItem);
+	CheckMenuItem(SoundMenu, IDM_SOUND_ENABLE,
+		      MF_BYCOMMAND | (soundEnabled ? MF_CHECKED : MF_UNCHECKED));
 	
 	const int soundMenuItems[11][2] =
 	{
@@ -405,10 +380,13 @@ void Sync_Gens_Window_SoundMenu(void)
 		{CDDA_Enable, IDM_SOUND_CDDA},
 	};
 	
-	for (i = 0; i < 11; i++)
+	for (int i = 0; i < 11; i++)
 	{
-		miimMenuItem.fState = flags | (soundMenuItems[i][0] ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(SoundMenu, soundMenuItems[i][1], FALSE, &miimMenuItem);
+		EnableMenuItem(SoundMenu, soundMenuItems[i][1],
+			       MF_BYCOMMAND | (soundEnabled ? MF_ENABLED : MF_GRAYED));
+		
+		CheckMenuItem(SoundMenu, soundMenuItems[i][1],
+			      MF_BYCOMMAND | (soundMenuItems[i][0] ? MF_CHECKED : MF_UNCHECKED));
 	}
 	
 	// Rate
@@ -420,30 +398,32 @@ void Sync_Gens_Window_SoundMenu(void)
 		{4, 32000}, {2, 44100}, {5, 48000},
 	};
 	
-	for (i = 0; i < 6; i++)
+	for (int i = 0; i < 6; i++)
 	{
-		miimMenuItem.fState = (audio->soundRate() == SndRates[i][1] ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(SoundMenu, IDM_SOUND_RATE + SndRates[i][0], FALSE, &miimMenuItem);
+		if (SndRates[i][1] == audio->soundRate())
+		{
+			CheckMenuRadioItem(SoundMenu,
+					   IDM_SOUND_RATE_11025,
+					   IDM_SOUND_RATE_48000,
+					   IDM_SOUND_RATE + SndRates[i][0],
+					   MF_BYCOMMAND);
+			break;
+		}
 	}
 	
 	char dumpLabel[16];
-	miimMenuItem.fMask = MIIM_STATE | MIIM_STRING;
-	//miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
 	
 	// WAV dumping
 	// TODO: Always disabled for now, since WAV dumping isn't implemented yet.
 	strcpy(dumpLabel, (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump"));
-	miimMenuItem.fState = MFS_DISABLED;
-	miimMenuItem.dwTypeData = dumpLabel;
-	miimMenuItem.cch = strlen(dumpLabel);
-	SetMenuItemInfo(SoundMenu, IDM_SOUND_WAVDUMP, FALSE, &miimMenuItem);
+	ModifyMenu(SoundMenu, IDM_SOUND_WAVDUMP, MF_BYCOMMAND | MF_STRING, IDM_SOUND_WAVDUMP, dumpLabel);
+	EnableMenuItem(SoundMenu, IDM_SOUND_WAVDUMP, MF_BYCOMMAND | MF_GRAYED);
 	
 	// GYM dumping
 	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
-	miimMenuItem.fState = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MFS_ENABLED : MFS_DISABLED);
-	miimMenuItem.dwTypeData = dumpLabel;
-	miimMenuItem.cch = strlen(dumpLabel);
-	SetMenuItemInfo(SoundMenu, IDM_SOUND_GYMDUMP, FALSE, &miimMenuItem);
+	ModifyMenu(SoundMenu, IDM_SOUND_GYMDUMP, MF_BYCOMMAND | MF_STRING, IDM_SOUND_GYMDUMP, dumpLabel);
+	EnableMenuItem(SoundMenu, IDM_SOUND_GYMDUMP,
+		       MF_BYCOMMAND | ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_ENABLED : MF_GRAYED));
 }
 
 
@@ -454,16 +434,9 @@ void Sync_Gens_Window_OptionsMenu(void)
 {
 	// SegaCD SRAM Size
 	int SRAM_ID = (BRAM_Ex_State & 0x100 ? BRAM_Ex_Size : -1);
-	int i;
-	
-	MENUITEMINFO miimMenuItem;
-	memset(&miimMenuItem, 0x00, sizeof(miimMenuItem));
-	miimMenuItem.cbSize = sizeof(miimMenuItem);
-	miimMenuItem.fMask = MIIM_STATE;
-	
-	for (i = -1; i <= 3; i++)
-	{
-		miimMenuItem.fState = (i == SRAM_ID ? MFS_CHECKED : MFS_UNCHECKED);
-		SetMenuItemInfo(OptionsMenu_SegaCDSRAMSize, IDM_OPTIONS_SEGACDSRAMSIZE + (i + 1), FALSE, &miimMenuItem);
-	}
+	CheckMenuRadioItem(OptionsMenu_SegaCDSRAMSize,
+			   IDM_OPTIONS_SEGACDSRAMSIZE_NONE,
+			   IDM_OPTIONS_SEGACDSRAMSIZE_64KB,
+			   IDM_OPTIONS_SEGACDSRAMSIZE + (SRAM_ID + 1),
+			   MF_BYCOMMAND);
 }
