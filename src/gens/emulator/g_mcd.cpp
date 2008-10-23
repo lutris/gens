@@ -728,19 +728,23 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 
 
 /**
- * SEGACD_LED(): Macro used by SegaCD_Display_LED().
+ * draw_SegaCD_LED(): Draw a SegaCD LED.
+ * @param screen Screen buffer.
+ * @param color LED color.
+ * @param startCol Left-most column of the LED.
  */
-#define SEGACD_LED(Screen, Color, StartCol)			\
-{								\
-	Screen[(336*220) + 12 + StartCol] = Color;		\
-	Screen[(336*220) + 13 + StartCol] = Color;		\
-	Screen[(336*220) + 14 + StartCol] = Color;		\
-	Screen[(336*220) + 15 + StartCol] = Color;		\
-								\
-	Screen[(336*222) + 12 + StartCol] = Color;		\
-	Screen[(336*222) + 13 + StartCol] = Color;		\
-	Screen[(336*222) + 14 + StartCol] = Color;		\
-	Screen[(336*222) + 15 + StartCol] = Color;		\
+template<typename Pixel>
+static inline void draw_SegaCD_LED(Pixel* screen, Pixel color, unsigned short startCol)
+{
+	screen[(336*220) + 12 + startCol] = color;
+	screen[(336*220) + 13 + startCol] = color;
+	screen[(336*220) + 14 + startCol] = color;
+	screen[(336*220) + 15 + startCol] = color;
+	
+	screen[(336*222) + 12 + startCol] = color;
+	screen[(336*222) + 13 + startCol] = color;
+	screen[(336*222) + 14 + startCol] = color;
+	screen[(336*222) + 15 + startCol] = color;
 }
 
 
@@ -751,38 +755,36 @@ void SegaCD_Display_LED()
 {
 	// TODO: Optimize this function.
 	
+	// Ready LED (green)
+	static const unsigned short ledReady_15 = 0x03E0;
+	static const unsigned short ledReady_16 = 0x07C0;
+	static const unsigned int ledReady_32 = 0x00F800;
+	
+	// Access LED (red)
+	static const unsigned short ledAccess_15 = 0x7C00;
+	static const unsigned short ledAccess_16 = 0xF800;
+	static const unsigned int ledAccess_32 = 0xF80000;
+	
 	// Ready LED
 	if (LED_Status & 2)
 	{
 		if (bpp == 15)
-		{
-			SEGACD_LED(MD_Screen, 0x03E0, 0);
-		}
+			draw_SegaCD_LED(MD_Screen, ledReady_15, 0);
 		else if (bpp == 16)
-		{
-			SEGACD_LED(MD_Screen, 0x07C0, 0);
-		}
+			draw_SegaCD_LED(MD_Screen, ledReady_16, 0);
 		else //if (bpp == 32)
-		{
-			SEGACD_LED(MD_Screen32, 0x00F800, 0);
-		}
+			draw_SegaCD_LED(MD_Screen32, ledReady_32, 0);
 	}
 	
 	// Access LED
 	if (LED_Status & 1)
 	{
 		if (bpp == 15)
-		{
-			SEGACD_LED(MD_Screen, 0x7C00, 8);
-		}
+			draw_SegaCD_LED(MD_Screen, ledAccess_15, 8);
 		else if (bpp == 16)
-		{
-			SEGACD_LED(MD_Screen, 0xF800, 8);
-		}
+			draw_SegaCD_LED(MD_Screen, ledAccess_16, 8);
 		else //if (bpp == 32)
-		{
-			SEGACD_LED(MD_Screen32, 0xF80000, 8);
-		}
+			draw_SegaCD_LED(MD_Screen32, ledAccess_32, 8);
 	}
 }
 
