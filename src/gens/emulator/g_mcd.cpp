@@ -43,7 +43,7 @@ unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game na
  * Detect_Country_SegaCD(): Detect the country code of a SegaCD game.
  * @return BIOS file for the required country.
  */
-char* Detect_Country_SegaCD(void)
+const char* Detect_Country_SegaCD(void)
 {
 	if (CD_Data[0x10B] == 0x64)
 	{
@@ -70,9 +70,9 @@ char* Detect_Country_SegaCD(void)
  * @param iso_name Filename of the ISO, or NULL for physical CD-ROM.
  * @return 1 if successful; 0 if an error occurred.
  */
-int Init_SegaCD(const char *iso_name)
+int Init_SegaCD(const char* iso_name)
 {
-	char *BIOS_To_Use;
+	const char* BIOS_To_Use;
 	
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();
@@ -205,7 +205,7 @@ int Init_SegaCD(const char *iso_name)
  * @param iso_name Filename of the ISO, or NULL for physical CD-ROM.
  * @return 1 if successful.
  */
-int Reload_SegaCD(const char *iso_name)
+int Reload_SegaCD(const char* iso_name)
 {
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();

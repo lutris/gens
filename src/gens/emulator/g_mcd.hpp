@@ -11,10 +11,10 @@ extern "C" {
 
 #include "util/file/rom.hpp"
 
-char* Detect_Country_SegaCD(void);
+const char* Detect_Country_SegaCD(void);
 
-int Init_SegaCD(const char *iso_name);
-int Reload_SegaCD(const char *iso_name);
+int Init_SegaCD(const char* iso_name);
+int Reload_SegaCD(const char* iso_name);
 void Reset_SegaCD();
 int Do_SegaCD_Frame_No_VDP(void);
 int Do_SegaCD_Frame(void);
