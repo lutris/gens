@@ -754,6 +754,7 @@ static inline void draw_SegaCD_LED(Pixel* screen, Pixel color, unsigned short st
 void SegaCD_Display_LED()
 {
 	// TODO: Optimize this function.
+	// TODO: Draw the LEDs on the screen buffer, not the MD screen.
 	
 	// Ready LED (green)
 	static const unsigned short ledReady_15 = 0x03E0;
