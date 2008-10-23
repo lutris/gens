@@ -39,6 +39,7 @@
 
 unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name
 
+
 /**
  * Detect_Country_SegaCD(): Detect the country code of a SegaCD game.
  * @return BIOS file for the required country.
@@ -64,6 +65,7 @@ const char* Detect_Country_SegaCD(void)
 		return BIOS_Filenames.SegaCD_US;
 	}
 }
+
 
 /**
  * Init_SegaCD(): Initialize the Sega CD with the specified ISO image.
@@ -291,7 +293,7 @@ Reset_SegaCD ()
  * Do_SegaCD_Frame_No_VDP(): Runs a Sega CD frame without updating the VDP.
  * @return 1 if successful.
  */
-int Do_SegaCD_Frame_No_VDP (void)
+int Do_SegaCD_Frame_No_VDP(void)
 {
 	int *buf[2];
 	int HInt_Counter;
@@ -452,7 +454,7 @@ int Do_SegaCD_Frame_No_VDP (void)
  * Do_SegaCD_Frame_No_VDP_Cycle_Accurate(): Runs a cycle-accurate Sega CD frame without updating the VDP.
  * @return 1 if successful.
  */
-int Do_SegaCD_Frame_No_VDP_Cycle_Accurate (void)
+int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 {
 	int *buf[2], i, j;
 	int HInt_Counter;
