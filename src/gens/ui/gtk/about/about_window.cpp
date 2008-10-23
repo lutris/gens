@@ -29,17 +29,17 @@
 #include <string.h>
 #include <stdio.h>
 
+// git version
+#include "macros/git.h"
+
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
-// GENS GTK+ miscellaneous functions
+// Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
-
-// git version
-#include "git_version.h"
 
 GtkWidget *about_window = NULL;
 
@@ -137,23 +137,9 @@ GtkWidget* create_about_window(void)
 	char versionString[256];
 	strcpy(versionString, "<b><i>");
 	strcat(versionString, aboutTitle);
-	strcat(versionString, "\n");
-	// Append the git revision, if available.
-#ifdef GIT_REPO
-	strcat(versionString, "git: ");
-#ifdef GIT_BRANCH
-	strcat(versionString, GIT_BRANCH);
-#if defined(GIT_BRANCH) && defined(GIT_SHAID)
-	strcat(versionString, "/");
-#endif
-#endif /* GIT_BRANCH */
-#ifdef GIT_SHAID
-	strcat(versionString, GIT_SHAID);
-#endif /* GIT_SHAID */
-#ifdef GIT_DIRTY
-	strcat(versionString, "+");
-#endif /* GIT_DIRTY */
-#endif /* GIT_REPO */
+#ifdef GENS_GIT_VERSION
+	strcat(versionString, "\n" GENS_GIT_VERSION);
+#endif /* GENS_GIT_VERSION */
 	strcat(versionString, "</i></b>\n\n");
 	strcat(versionString, aboutDesc);
 	label_gens_version = gtk_label_new(versionString);

@@ -29,10 +29,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "emulator/g_main.hpp"
-
 // git version
-#include "git_version.h"
+#include "macros/git.h"
+
+#include "emulator/g_main.hpp"
 
 // Character set conversion
 #include "ui/charset.hpp"
@@ -75,11 +75,11 @@ unsigned short ax = 0, bx = 0, cx = 0;
 LRESULT CALLBACK About_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void About_Window_CreateChildWindows(HWND hWnd);
 
-#ifdef GIT_REPO
+#ifdef GENS_GIT_VERSION
 const unsigned short lblTitle_HeightInc = 16;
 #else
 const unsigned short lblTitle_HeightInc = 0;
-#endif /* GIT_REPO */
+#endif /* GENS_GIT_VERSION */
 
 /**
  * create_about_window(): Create the About Window.
@@ -235,23 +235,9 @@ static void About_Window_CreateChildWindows(HWND hWnd)
 	// Version information
 	char versionString[256];
 	strcpy(versionString, aboutTitle);
-	strcat(versionString, "\n");
-	// Append the git revision, if available.
-#ifdef GIT_REPO
-	strcat(versionString, "git: ");
-#ifdef GIT_BRANCH
-	strcat(versionString, GIT_BRANCH);
-#if defined(GIT_BRANCH) && defined(GIT_SHAID)
-	strcat(versionString, "/");
-#endif
-#endif /* GIT_BRANCH */
-#ifdef GIT_SHAID
-	strcat(versionString, GIT_SHAID);
-#endif /* GIT_SHAID */
-#ifdef GIT_DIRTY
-	strcat(versionString, "+");
-#endif /* GIT_DIRTY */
-#endif /* GIT_REPO */
+#ifdef GENS_GIT_VERSION
+	strcat(versionString, "\n" GENS_GIT_VERSION);
+#endif /* GENS_GIT_VERSION */
 	
 	// Title and version information.
 	lblGensTitle = CreateWindow(WC_STATIC, versionString, WS_CHILD | WS_VISIBLE | SS_CENTER,
