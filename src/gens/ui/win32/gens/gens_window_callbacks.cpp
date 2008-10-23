@@ -411,7 +411,7 @@ static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 		case IDM_FILE_CHANGESTATE_9:
 			// Change state.
 			Set_Current_State(LOWORD(wParam) - IDM_FILE_CHANGESTATE);
-			Sync_Gens_Window_GraphicsMenu();
+			Sync_Gens_Window_FileMenu();
 			break;
 		
 		case IDM_FILE_EXIT:
