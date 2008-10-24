@@ -14,146 +14,106 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
 
-char ScrShot_Dir[GENS_PATH_MAX] = "." GENS_DIR_SEPARATOR_STR;
 
-#ifndef GENS_PNG
-static int Save_Shot_BMP(void);
-#else  /* GENS_PNG */
+char ScrShot_Dir[GENS_PATH_MAX];
+
+
+#ifdef GENS_PNG
 #include <png.h>
-static int Save_Shot_PNG(void);
 #endif /* GENS_PNG */
 
+
 /**
- * Save_Shot(): Saves a screenshot.
+ * writeBMP(): Write a BMP image.
+ * @param fImg File handle to save the image to.
+ * @param w Width of the image.
+ * @param h Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
+ * @param screen Pointer to screen buffer.
+ * @param bpp Bits per pixel.
  * @return 1 on success; 0 on error.
  */
-int Save_Shot()
+int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
+			const void *screen, const uint8_t bpp)
 {
-	// TODO: dlopen() libpng.
-	// If it's found, save as PNG; otherwise, BMP.
-	// For now, save as PNG or BMP depending on compile options.
-#ifdef GENS_PNG
-	return Save_Shot_PNG();
-#else
-	return Save_Shot_BMP();
-#endif
-}
-
-
-#ifndef GENS_PNG
-/**
- * Save_Shot_BMP(): Save a screenshot in BMP format.
- * @return 1 on success; 0 on error.
- */
-static int Save_Shot_BMP(void)
-{
-	FILE *ScrShot_File = 0;
-	unsigned char *Dest = NULL;
-	int num;
-	char filename[GENS_PATH_MAX];
-	struct stat sbuf;
-	
-	// Bitmap dimensions.
-	int w, h;
-	int x, y, bmpSize;
-	
-	// Used for converting the MD frame to standard bitmap format.
-	int pos;
-	unsigned short MD_Color;
-	unsigned int MD_Color32;
-	
-	// If no game is running, don't do anything.
-	if (!Game)
+	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
 		return 0;
 	
-	// Variables used:
-	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
-	// MD_Screen: MD screen buffer.
-	// VDP_Reg.Set4: If 0x01 is set, 320 pixels width; otherwise, 256 pixels width.
-	w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
-	h = VDP_Num_Vis_Lines;
+	unsigned char *bmpData = NULL;
 	
 	// Calculate the size of the bitmap image.
-	bmpSize = (w * h * 3) + 54;
-	if ((Dest = (unsigned char*)malloc(bmpSize)) == NULL)
+	int bmpSize = (w * h * 3) + 54;
+	bmpData = static_cast<unsigned char*>(malloc(bmpSize));
+	if (!bmpData)
 	{
 		// Could not allocate enough memory.
+		fprintf(stderr, "writeBMP): Could not allocate enough memory for the bitmap data.\n");
 		return 0;
 	}
-	
-	// Clear the bitmap memory.
-	memset(Dest, 0, bmpSize);
-	
-	// Build the filename.
-	num = -1;
-	do
-	{
-		num++;
-		sprintf(filename, "%s%s_%03d.bmp", ScrShot_Dir, ROM_Name, num);
-	} while (!stat(filename, &sbuf));
-	
-	// Attempt to open the file.
-	if ((ScrShot_File = fopen(filename, "wb")) == 0)
-		return 0;
 	
 	// Build the bitmap image.
 	
 	// Bitmap header.
-	Dest[0] = 'B';
-	Dest[1] = 'M';
+	bmpData[0] = 'B';
+	bmpData[1] = 'M';
 	
-	cpu_to_le32_ucptr(&Dest[2], bmpSize); // Size of the bitmap.
-	cpu_to_le16_ucptr(&Dest[6], 0); // Reserved.
-	cpu_to_le16_ucptr(&Dest[8], 0); // Reserved.
-	cpu_to_le32_ucptr(&Dest[10], 54); // Bitmap is located 54 bytes from the start of the file.
-	cpu_to_le32_ucptr(&Dest[14], 40); // Size of the bitmap header, in bytes. (lol win32)
-	cpu_to_le32_ucptr(&Dest[18], w); // Width (pixels)
-	cpu_to_le32_ucptr(&Dest[22], h); // Height (pixels)
-	cpu_to_le16_ucptr(&Dest[26], 1); // Number of planes. (always 1)
-	cpu_to_le16_ucptr(&Dest[28], 24); // bpp (24-bit is the most common.)
-	cpu_to_le32_ucptr(&Dest[30], 0); // Compression. (0 == no compression)
-	cpu_to_le32_ucptr(&Dest[34], bmpSize); // Size of the bitmap data, in bytes.
-	cpu_to_le32_ucptr(&Dest[38], 0x0EC4); // Pixels per meter, X
-	cpu_to_le32_ucptr(&Dest[39], 0x0EC4); // Pixels per meter, Y
-	cpu_to_le32_ucptr(&Dest[46], 0); // Colors used (0 on non-paletted bitmaps)
-	cpu_to_le32_ucptr(&Dest[50], 0); // "Important" colors (0 on non-paletted bitmaps)
-	
-	// Start/end coordinates in the MD_Screen buffer.
-	// 320x224: start = 8, end = 328
-	// 256x224: start = 8, end = 262
+	cpu_to_le32_ucptr(&bmpData[2], bmpSize); // Size of the bitmap.
+	cpu_to_le16_ucptr(&bmpData[6], 0); // Reserved.
+	cpu_to_le16_ucptr(&bmpData[8], 0); // Reserved.
+	cpu_to_le32_ucptr(&bmpData[10], 54); // Bitmap is located 54 bytes from the start of the file.
+	cpu_to_le32_ucptr(&bmpData[14], 40); // Size of the bitmap header, in bytes. (lol win32)
+	cpu_to_le32_ucptr(&bmpData[18], w); // Width (pixels)
+	cpu_to_le32_ucptr(&bmpData[22], h); // Height (pixels)
+	cpu_to_le16_ucptr(&bmpData[26], 1); // Number of planes. (always 1)
+	cpu_to_le16_ucptr(&bmpData[28], 24); // bpp (24-bit is the most common.)
+	cpu_to_le32_ucptr(&bmpData[30], 0); // Compression. (0 == no compression)
+	cpu_to_le32_ucptr(&bmpData[34], bmpSize); // Size of the bitmap data, in bytes.
+	cpu_to_le32_ucptr(&bmpData[38], 0x0EC4); // Pixels per meter, X
+	cpu_to_le32_ucptr(&bmpData[39], 0x0EC4); // Pixels per meter, Y
+	cpu_to_le32_ucptr(&bmpData[46], 0); // Colors used (0 on non-paletted bitmaps)
+	cpu_to_le32_ucptr(&bmpData[50], 0); // "Important" colors (0 on non-paletted bitmaps)
 	
 	// TODO: Verify endianness requirements.
 	
 	//Src += Pitch * (Y - 1);
-	pos = 0;
+	int pos = 0;
+	int x, y;
+	
 	// Bitmaps are stored upside-down.
-	if (bpp == 15)
+	if (bpp == 15 || bpp == 16)
 	{
-		// 15-bit color, 555 pixel format.
-		for (y = h - 1; y >= 0; y--)
+		// 15-bit or 16-bit color.
+		uint16_t MD_Color;
+		const uint16_t *screen16 = static_cast<const uint16_t*>(screen);
+		
+		if (bpp == 15)
 		{
-			for (x = 8; x < 8 + w; x++)
+			// 15-bit color, 555 pixel format.
+			for (y = h - 1; y >= 0; y--)
 			{
-				MD_Color = MD_Screen[(y * 336) + x];
-				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0x7C00) >> 7);
-				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
-				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
-				pos++;
+				for (x = 0; x < w; x++)
+				{
+					MD_Color = screen16[(y * pitch) + x];
+					bmpData[54 + (pos * 3) + 2] = (uint8_t)((MD_Color & 0x7C00) >> 7);
+					bmpData[54 + (pos * 3) + 1] = (uint8_t)((MD_Color & 0x03E0) >> 2);
+					bmpData[54 + (pos * 3) + 0] = (uint8_t)((MD_Color & 0x001F) << 3);
+					pos++;
+				}
 			}
 		}
-	}
-	else if (bpp == 16)
-	{
-		// 16-bit color, 565 pixel format.
-		for (y = h - 1; y >= 0; y--)
+		else if (bpp == 16)
 		{
-			for (x = 8; x < 8 + w; x++)
+			// 16-bit color, 565 pixel format.
+			for (y = h - 1; y >= 0; y--)
 			{
-				MD_Color = MD_Screen[(y * 336) + x];
-				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color & 0xF800) >> 8);
-				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color & 0x07E0) >> 3);
-				Dest[54 + (pos * 3) + 0] = (unsigned char)((MD_Color & 0x001F) << 3);
-				pos++;
+				for (x = 0; x < w; x++)
+				{
+					MD_Color = screen16[(y * pitch) + x];
+					bmpData[54 + (pos * 3) + 2] = (uint8_t)((MD_Color & 0xF800) >> 8);
+					bmpData[54 + (pos * 3) + 1] = (uint8_t)((MD_Color & 0x07E0) >> 3);
+					bmpData[54 + (pos * 3) + 0] = (uint8_t)((MD_Color & 0x001F) << 3);
+					pos++;
+				}
 			}
 		}
 	}
@@ -161,117 +121,72 @@ static int Save_Shot_BMP(void)
 	{
 		// 32-bit color.
 		// BMP uses 24-bit color, so a conversion is still necessary.
+		uint32_t MD_Color32;
+		const uint32_t *screen32 = static_cast<const uint32_t*>(screen);
 		for (y = h - 1; y >= 0; y--)
 		{
-			for (x = 8; x < 8 + w; x++)
+			for (x = 0; x < w; x++)
 			{
-				MD_Color32 = MD_Screen32[(y * 336) + x];
-				Dest[54 + (pos * 3) + 2] = (unsigned char)((MD_Color32 >> 16) & 0xFF);
-				Dest[54 + (pos * 3) + 1] = (unsigned char)((MD_Color32 >> 8) & 0xFF);
-				Dest[54 + (pos * 3) + 0] = (unsigned char)(MD_Color32 & 0xFF);
+				MD_Color32 = screen32[(y * pitch) + x];
+				bmpData[54 + (pos * 3) + 2] = (uint8_t)((MD_Color32 >> 16) & 0xFF);
+				bmpData[54 + (pos * 3) + 1] = (uint8_t)((MD_Color32 >> 8) & 0xFF);
+				bmpData[54 + (pos * 3) + 0] = (uint8_t)(MD_Color32 & 0xFF);
 				pos++;
 			}
 		}
 	}
 	
-	fwrite(Dest, 1, bmpSize + 54, ScrShot_File);
-	fclose(ScrShot_File);
-	
-	if (Dest)
-	{
-		free(Dest);
-		Dest = NULL;
-	}
-	
-	MESSAGE_NUM_L("Screen shot %d saved", "Screen shot %d saved", num, 1500);
+	fwrite(bmpData, 1, bmpSize + 54, fImg);
+	free(bmpData);
 	
 	return 1;
 }
 
 
-#else  /* GENS_PNG */
-
-
+#ifdef GENS_PNG
 /**
- * Save_Shot_PNG(): Save a screenshot in PNG format.
+ * writePNG(): Write a PNG image.
+ * @param fImg File handle to save the image to.
+ * @param w Width of the image.
+ * @param h Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
+ * @param screen Pointer to screen buffer.
+ * @param bpp Bits per pixel.
  * @return 1 on success; 0 on error.
  */
-static int Save_Shot_PNG(void)
+int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
+			const void *screen, const uint8_t bpp)
 {
-	FILE *ScrShot_File = 0;
-	int num;
-	char filename[GENS_PATH_MAX];
-	struct stat sbuf;
+	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
+		return 0;
+	
 	png_structp png_ptr;
 	png_infop info_ptr;
-	unsigned char *rowBuffer;
-	unsigned short MD_Color;
-	
-	// Bitmap dimensions.
-	int w, h, x, y;
-	
-	// If no game is running, don't do anything.
-	if (!Game)
-		return 0;
-	
-	// Variables used:
-	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
-	// MD_Screen: MD screen buffer.
-	// VDP_Reg.Set4: If 0x01 is set, 320 pixels width; otherwise, 256 pixels width.
-	w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
-	h = VDP_Num_Vis_Lines;
-	
-	// Allocate the row buffer.
-	if ((rowBuffer = (unsigned char*)malloc(w * 3)) == NULL)
-	{
-		// Could not allocate enough memory.
-		return 0;
-	}
-	
-	// Build the filename.
-	num = -1;
-	do
-	{
-		num++;
-		sprintf(filename, "%s%s_%03d.png", ScrShot_Dir, ROM_Name, num);
-	} while (!stat(filename, &sbuf));
 	
 	// Initialize libpng.
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 	{
-		printf("Error initializing the PNG pointer.\n");
-		free(rowBuffer);
+		fprintf(stderr, "writePNG(): Error initializing the PNG pointer.\n");
 		return 0;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
-		printf("Error initializing the PNG info pointer.\n");
+		fprintf(stderr, "writePNG(): Error initializing the PNG info pointer.\n");
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-		free(rowBuffer);
 		return 0;
 	}
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
-		printf("Error initializing the PNG setjmp pointer.\n");
+		// TODO: Is setjmp() really necessary?
+		fprintf(stderr, "writePNG(): Error initializing the PNG setjmp pointer.\n");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		free(rowBuffer);
-		return 0;
-	}
-	
-	// Attempt to open the file.
-	if ((ScrShot_File = fopen(filename, "wb")) == 0)
-	{
-		// Error opening the file.
-		printf("Error opening the PNG file.\n");
-		png_destroy_write_struct(&png_ptr, &info_ptr);
-		free(rowBuffer);
 		return 0;
 	}
 	
 	// Initialize libpng I/O.
-	png_init_io(png_ptr, ScrShot_File);
+	png_init_io(png_ptr, fImg);
 	
 	// Disable PNG filters.
 	png_set_filter(png_ptr, 0, PNG_FILTER_NONE);
@@ -288,46 +203,76 @@ static int Save_Shot_PNG(void)
 	// Write the PNG information to the file.
 	png_write_info(png_ptr, info_ptr);
 	
-	// 16-bit (565) functions.
-	
 #ifdef GENS_LIL_ENDIAN
 	// PNG stores data in big-endian format.
 	// On little-endian systems, byteswapping needs to be enabled.
+	// TODO: Check if this really isn't needed on big-endian systems.
 	png_set_swap(png_ptr);
 #endif
 	
 	// Write the image.
-	if (bpp == 15)
+	int x, y;
+	if (bpp == 15 || bpp == 16)
 	{
-		// 15-bit color, 555 pixel format.
-		for (y = 0; y < h; y++)
+		// 15-bit or 16-bit color.
+		uint16_t MD_Color;
+		uint16_t *screen16 = (uint16_t*)screen;
+		
+		// Allocate the row buffer.
+		uint8_t *rowBuffer;
+		if ((rowBuffer = (uint8_t*)malloc(w * 3)) == NULL)
 		{
-			for (x = 0; x < w; x++)
-			{
-				MD_Color = MD_Screen[(y * 336) + x + 8];
-				rowBuffer[(x * 3) + 0] = (unsigned char)((MD_Color & 0x7C00) >> 7);
-				rowBuffer[(x * 3) + 1] = (unsigned char)((MD_Color & 0x03E0) >> 2);
-				rowBuffer[(x * 3) + 2] = (unsigned char)((MD_Color & 0x001F) << 3);
-			}
-			// Write the row.
-			png_write_row(png_ptr, rowBuffer);
+			// Could not allocate enough memory.
+			fprintf(stderr, "writePNG(): Could not allocate enough memory for the row buffer.\n");
+			png_destroy_write_struct(&png_ptr, &info_ptr);
+			return 0;
 		}
-	}
-	else if (bpp == 16)
-	{
-		// 16-bit color, 565 pixel format.
-		for (y = 0; y < h; y++)
+		
+		if (bpp == 15)
 		{
-			for (x = 0; x < w; x++)
+			// 15-bit color, 555 pixel format.
+			for (y = 0; y < h; y++)
 			{
-				MD_Color = MD_Screen[(y * 336) + x + 8];
-				rowBuffer[(x * 3) + 0] = (unsigned char)((MD_Color & 0xF800) >> 8);
-				rowBuffer[(x * 3) + 1] = (unsigned char)((MD_Color & 0x07E0) >> 3);
-				rowBuffer[(x * 3) + 2] = (unsigned char)((MD_Color & 0x001F) << 3);
+				for (x = 0; x < w; x++)
+				{
+					MD_Color = *screen16;
+					rowBuffer[(x * 3) + 0] = (uint8_t)((MD_Color & 0x7C00) >> 7);
+					rowBuffer[(x * 3) + 1] = (uint8_t)((MD_Color & 0x03E0) >> 2);
+					rowBuffer[(x * 3) + 2] = (uint8_t)((MD_Color & 0x001F) << 3);
+					screen16++;
+				}
+				
+				// Write the row.
+				png_write_row(png_ptr, rowBuffer);
+				
+				// Next row.
+				screen16 += (pitch - w);
 			}
-			// Write the row.
-			png_write_row(png_ptr, rowBuffer);
 		}
+		else if (bpp == 16)
+		{
+			// 16-bit color, 565 pixel format.
+			for (y = 0; y < h; y++)
+			{
+				for (x = 0; x < w; x++)
+				{
+					MD_Color = *screen16;
+					rowBuffer[(x * 3) + 0] = (uint8_t)((MD_Color & 0xF800) >> 8);
+					rowBuffer[(x * 3) + 1] = (uint8_t)((MD_Color & 0x07E0) >> 3);
+					rowBuffer[(x * 3) + 2] = (uint8_t)((MD_Color & 0x001F) << 3);
+					screen16++;
+				}
+				
+				// Write the row.
+				png_write_row(png_ptr, rowBuffer);
+				
+				// Next row.
+				screen16 += (pitch - w);
+			}
+		}
+		
+		// Free the row buffer.
+		free(rowBuffer);
 	}
 	else // if (bpp == 32)
 	{
@@ -337,8 +282,13 @@ static int Save_Shot_PNG(void)
 		// TODO: PNG_FILLER_AFTER, BGR mode - needed for little-endian.
 		 // Figure out what's needed on big-endian.
 		png_byte *row_pointers[240];
+		uint32_t *screen32 = (uint32_t*)screen;
+		
 		for (y = 0; y < h; y++)
-			row_pointers[y] = (unsigned char*)&MD_Screen32[(y * 336) + 8];
+		{			
+			row_pointers[y] = (uint8_t*)&screen32[(y * pitch)];//&MD_Screen32[(y * 336) + 8];
+		}
+		
 		png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
 		png_set_bgr(png_ptr);
 		png_write_rows(png_ptr, row_pointers, h);
@@ -347,16 +297,103 @@ static int Save_Shot_PNG(void)
 	// Finished writing.
 	png_write_end(png_ptr, info_ptr);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
-	fclose(ScrShot_File);
-	
-	if (rowBuffer)
-	{
-		free(rowBuffer);
-		rowBuffer = NULL;
-	}
-	
-	MESSAGE_NUM_L("Screen shot %d saved", "Screen shot %d saved", num, 1500);
 	
 	return 1;
 }
 #endif /* GENS_PNG */
+
+
+int ImageUtil::write(const string& filename, const ImageFormat format,
+		     const int w, const int h, const int pitch,
+		     const void *screen, const uint8_t bpp)
+{
+	// Write an image file.
+	FILE *fImg = fopen(filename.c_str(), "wb");
+	if (!fImg)
+	{
+		fprintf(stderr, "Image::write(): Error opening %s.\n", filename.c_str());
+		return 0;
+	}
+	
+	int rval;
+#ifdef GENS_PNG
+	if (format == IMAGEFORMAT_PNG)
+	{
+		rval = writePNG(fImg, w, h, pitch, screen, bpp);
+	}
+	else
+#endif /* GENS_PNG */
+	{
+//		rval = writeBMP(fImg, w, h, pitch, screen, bpp);
+	}
+	
+	fclose(fImg);
+	return rval;
+}
+
+
+/**
+ * screenShot(): Convenience function to take a screenshot of the game.
+ * @return 1 on success; 0 on error.
+ */
+int ImageUtil::screenShot(void)
+{
+	// If no game is running, don't do anything.
+	if (!Game)
+		return 0;
+	
+	// Variables used:
+	// VDP_Num_Vis_Lines: Number of lines visible on the screen. (bitmap height)
+	// MD_Screen: MD screen buffer.
+	// VDP_Reg.Set4: If 0x01 is set, 320 pixels width; otherwise, 256 pixels width.
+	// TODO: Use macros in video/v_inline.h
+	const int w = (VDP_Reg.Set4 & 0x01 ? 320 : 256);
+	const int h = VDP_Num_Vis_Lines;
+	
+	// Build the filename.
+	int num = -1;
+	char filename[GENS_PATH_MAX];
+	struct stat sbuf;
+#ifdef GENS_PNG
+	const char* ext = "png";
+#else /* !GENS_PNG */
+	const char* ext = "bmp";
+#endif /* GENS_PNG */
+	
+	do
+	{
+		num++;
+		sprintf(filename, "%s%s_%03d.%s", ScrShot_Dir, ROM_Name, num, ext);
+	} while (!stat(filename, &sbuf));
+	
+	// Attempt to open the file.
+	FILE *img = fopen(filename, "wb");
+	if (!img)
+	{
+		// Error opening the file.
+		fprintf(stderr, "ImageUtil::screenShot(): Error opening %s\n", filename);
+		return 0;
+	}
+	
+	// Save the image.
+	void *screen;
+	if (bpp == 15 || bpp == 16)
+		screen = (void*)(&MD_Screen[8]);
+	else //if (bpp == 32)
+		screen = (void*)(&MD_Screen32[8]);
+	
+	int rval;
+#ifdef GENS_PNG
+	rval = writePNG(img, w, h, 336, screen, bpp);
+#else /* !GENS_PNG */
+	rval = writeBMP(img, w, h, 336, screen, bpp);
+#endif /* GENS_PNG */
+	
+	// Close the file.
+	fclose(img);
+	
+	if (rval == 1)
+		MESSAGE_NUM_L("Screen shot %d saved", "Screen shot %d saved", num, 1500);
+	
+	return rval;
+}

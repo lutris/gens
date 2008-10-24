@@ -487,7 +487,7 @@ void on_GraphicsMenu_ScreenShot_activate(GtkMenuItem *menuitem, gpointer user_da
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	audio->clearSoundBuffer();
-	Save_Shot();
+	ImageUtil::screenShot();
 }
 
 

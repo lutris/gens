@@ -104,7 +104,7 @@ void Input_KeyDown(int key)
 			if (draw->fullScreen() && (mod & KMOD_SHIFT))
 			{
 				audio->clearSoundBuffer();
-				Save_Shot();
+				ImageUtil::screenShot();
 			}
 			break;
 		

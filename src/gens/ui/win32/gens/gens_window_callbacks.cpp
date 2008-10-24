@@ -489,7 +489,7 @@ static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, 
 		
 		case IDM_GRAPHICS_SCREENSHOT:
 			audio->clearSoundBuffer();
-			Save_Shot();
+			ImageUtil::screenShot();
 			break;
 		
 		default:
