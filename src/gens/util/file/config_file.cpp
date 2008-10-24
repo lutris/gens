@@ -238,29 +238,29 @@ int Config::save(const string& filename)
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Up);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Up, true, 4);
 		sprintf(tmpKey, "%s.Down", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Down);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Down, true, 4);
 		sprintf(tmpKey, "%s.Left", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Left);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Left, true, 4);
 		sprintf(tmpKey, "%s.Right", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Right);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Right, true, 4);
 		sprintf(tmpKey, "%s.Start", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Start);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Start, true, 4);
 		sprintf(tmpKey, "%s.A", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].A);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].A, true, 4);
 		sprintf(tmpKey, "%s.B", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].B);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].B, true, 4);
 		sprintf(tmpKey, "%s.C", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].C);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].C, true, 4);
 		sprintf(tmpKey, "%s.Mode", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Mode);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Mode, true, 4);
 		sprintf(tmpKey, "%s.X", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].X);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].X, true, 4);
 		sprintf(tmpKey, "%s.Y", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Y);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Y, true, 4);
 		sprintf(tmpKey, "%s.Z", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Z);
+		cfg.writeInt("Input", tmpKey, input->m_keyMap[i].Z, true, 4);
 	}
 	
 	// Save the INI file.
