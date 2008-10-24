@@ -79,6 +79,11 @@ Milestone 5 has the following low-level code changes:
 
 - rom.cpp and save.cpp have been converted to static C++ classes.
 
+- The INI parser now supports hexadecimal and octal numbers. These numbers
+  are identified by prefixes. (Hexadecimal: "0x" or "0X"; Octal: "0".)
+  
+- Controller mappings are now saved as hexadecimal numbers in gens.cfg.
+
 Milestone 5 has the following known issues:
 
 - [Win32] MP3 support is currently disabled due to problems with the MP3
