@@ -23,7 +23,7 @@ feature has been added, with minor releases if a major bug is found.
 
 What's new in Gens/GS v2.15.5/GS-m5?
 
-Among other things, Gens/GS v2.15.5/GS-m5 introduces Windows support.
+The major new feature in Gens/GS v2.15.5/GS-m5 is Windows support.
 There are also a bunch of bugfixes. A full list can be found in the
 ChangeLog file.
 
