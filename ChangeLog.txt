@@ -77,7 +77,8 @@ Milestone 5 has the following low-level code changes:
 
 - MP3 playback support can now be disabled in the ./configure script.
 
-- rom.cpp and save.cpp have been converted to static C++ classes.
+- rom.cpp, save.cpp, and imageutil.cpp (formerly scrshot.c) have been
+  converted to static C++ classes.
 
 - The INI parser now supports hexadecimal and octal numbers. These numbers
   are identified by prefixes. (Hexadecimal: "0x" or "0X"; Octal: "0".)
