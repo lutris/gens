@@ -26,6 +26,7 @@
 #ifdef __cplusplus
 
 #include <string.h>
+#include <stdint.h>
 
 #include <string>
 #include <map>
@@ -70,7 +71,8 @@ class INI
 			       char *buf, unsigned int size);
 		
 		// Write settings to the loaded INI file.
-		void writeInt(const string& section, const string& key, const int value);
+		void writeInt(const string& section, const string& key, const int value,
+			      const bool hex = false, const uint8_t hexFieldWidth = 0);
 		void writeBool(const string& section, const string& key, const bool value);
 		void writeString(const string& section, const string& key, const string& value);
 	

@@ -25,6 +25,7 @@
 #include "ini.hpp"
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 using std::endl;
@@ -281,11 +282,31 @@ void INI::getString(const string& section, const string& key, const string& def,
  * @param section Section to get from.
  * @param key Key to get from.
  * @param value Integer value to write.
+ * @param hex If true, writes the value as a hexadecimal number.
+ * @param hexFieldWidth Specifies the minimum field width, in characters,for hexadecimal numbers.
  */
-void INI::writeInt(const string& section, const string& key, const int value)
+void INI::writeInt(const string& section, const string& key, const int value,
+		   const bool hex, const uint8_t hexFieldWidth)
 {
 	stringstream out;
-	out << value;
+	
+	if (hex)
+	{
+		// Hexadecimal.
+		out << "0x" << std::uppercase << std::hex;
+		
+		// Field width, if requested.
+		if (hexFieldWidth > 0)
+			out << std::setw(hexFieldWidth) << std::setfill('0');
+		
+		out << value;
+	}
+	else
+	{
+		// Decimal.
+		out << value;
+	}
+	
 	writeString(section, key, out.str().c_str());
 }
 
