@@ -205,7 +205,7 @@ int INI::getInt(const string& section, const string& key, const int def)
 	}
 	
 	// Found the key.
-	return atoi((*sectKeyIter).second.c_str());
+	return strtol((*sectKeyIter).second.c_str(), NULL, 0);
 }
 
 
