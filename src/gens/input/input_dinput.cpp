@@ -83,8 +83,8 @@ Input_DInput::Input_DInput()
 	if (rval != DI_OK)
 	{
 		GensUI::msgBox("Input_DInput(): DirectInputCreate() failed. You must have DirectX 5.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
-		// TODO: Error handling.
-		return;
+		// TODO: Use cross-platform error numbers, not just DirectInput return values.
+		throw rval;
 	}
 	
 	joysticksInitialized = false;
@@ -98,8 +98,8 @@ Input_DInput::Input_DInput()
 	if (rval != DI_OK)
 	{
 		GensUI::msgBox("Input_DInput(): CreateDevice() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
-		// TODO: Error handling.
-		return;
+		// TODO: Use cross-platform error numbers, not just DirectInput return values.
+		throw rval;
 	}
 	
 	setCooperativeLevel();
@@ -109,8 +109,8 @@ Input_DInput::Input_DInput()
 	if (rval != DI_OK)
 	{
 		GensUI::msgBox("Input_DInput(): SetDataFormat() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
-		// TODO: Error handling.
-		return;
+		// TODO: Use cross-platform error numbers, not just DirectInput return values.
+		throw rval;
 	}
 	
 	//rval = lpDIDMouse->Acquire();

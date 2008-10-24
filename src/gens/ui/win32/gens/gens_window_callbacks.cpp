@@ -168,6 +168,9 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 		
 		case WM_ACTIVATE:
+			if (!input)
+				break;
+			
 			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
 			{
 				// Set the DirectInput cooperative level.

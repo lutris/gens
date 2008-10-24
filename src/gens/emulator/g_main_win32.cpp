@@ -144,7 +144,15 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	draw = new VDraw_DDraw();
 	
 	// Initialize the input object.
-	input = new Input_DInput();
+	try
+	{
+		input = new Input_DInput();
+	}
+	catch (LRESULT rval)
+	{
+		// DirectInput could not be initialized for some reason.
+		exit(rval);
+	}
 	
 	// Initialize the audio object.
 	audio = new Audio_DSound();
