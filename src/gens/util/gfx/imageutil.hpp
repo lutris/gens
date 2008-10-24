@@ -1,6 +1,8 @@
-#ifndef SCRSHOT_H
-#define SCRSHOT_H
+#ifndef GENS_IMAGEUTIL_HPP
+#define GENS_IMAGEUTIL_HPP
 
+// TODO: Eliminate this include.
+// Move GENS_PATH_MAX somewhere else.
 #include "emulator/g_main.hpp"
 
 #ifdef __cplusplus
@@ -15,4 +17,4 @@ int Save_Shot(void);
 }
 #endif
 
-#endif
+#endif /* GENS_IMAGEUTIL_HPP */

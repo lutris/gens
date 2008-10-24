@@ -56,7 +56,7 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.hpp"
 #include "gens_core/cpu/z80/z80.h"
-#include "util/gfx/scrshot.h"
+#include "util/gfx/imageutil.hpp"
 
 // Sega CD
 #include "emulator/g_mcd.hpp"

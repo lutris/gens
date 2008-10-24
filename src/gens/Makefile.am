@@ -145,7 +145,7 @@ gens_SOURCES = \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/7z.cpp \
-		util/gfx/scrshot.c \
+		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
 		video/C64_charset.c \
@@ -227,7 +227,7 @@ noinst_HEADERS = \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/7z.hpp \
 		util/file/compress/popen_wrapper.h \
-		util/gfx/scrshot.h \
+		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
 		video/C64_charset.h \

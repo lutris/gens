@@ -39,13 +39,6 @@
 
 #include "emulator/g_main.hpp"
 
-// Includes with directory defines.
-// TODO: Consolidate these into Settings.PathNames
-#include "util/file/save.hpp"
-#include "util/gfx/scrshot.h"
-#include "util/file/ggenie.h"
-#include "util/file/rom.hpp"
-
 
 // Macro to create a frame (with label) and add it toa a box.
 #define CREATE_BOX_FRAME(FrameWidget, FrameName, Box,				\

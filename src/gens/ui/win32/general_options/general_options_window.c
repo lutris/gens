@@ -32,13 +32,6 @@
 
 #include "emulator/g_main.hpp"
 
-// Includes with directory defines.
-// TODO: Consolidate these into Settings.PathNames
-#include "util/file/save.hpp"
-#include "util/gfx/scrshot.h"
-#include "util/file/ggenie.h"
-#include "util/file/rom.hpp"
-
 #include <windowsx.h>
 
 // Gens Win32 resources

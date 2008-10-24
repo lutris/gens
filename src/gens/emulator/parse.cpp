@@ -52,7 +52,7 @@
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"
-#include "util/gfx/scrshot.h"
+#include "util/gfx/imageutil.hpp"
 #include "util/file/ggenie.h"
 #include "gens_core/io/io.h"
 #include "gens_core/misc/misc.h"

@@ -9,12 +9,13 @@
 #include <cstring>
 
 #include "g_input.hpp"
+#include "g_main.hpp"
 #include "g_mcd.hpp"
 #include "ui_proxy.hpp"
 #include "util/file/save.hpp"
 #include "util/sound/gym.hpp"
 #include "gens_core/vdp/vdp_io.h"
-#include "util/gfx/scrshot.h"
+#include "util/gfx/imageutil.hpp"
 
 // Sound includes.
 #include "gens_core/sound/ym2612.h"

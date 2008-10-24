@@ -7,7 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "scrshot.h"
+#include "imageutil.hpp"
+#include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
