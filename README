@@ -1,114 +1,79 @@
-Summary
--------
+Gens/GS v2.15.5/GS-m5 (Gens/GS)
 
-1) What is it ?
-2) Why this emulator ?
-3) Who've done it ?
-4) So, what are the requirements ?
-5) There are some glitches. Why that ?
-6) What does it emulate ?
-7) Will it run at the same speed than the Windows version ?
-8) How do I compile it ?
-9) Then, how do I run it ?
-10) Where are language.dat and gens.cfg ?
-11) What is the syntax of gens.cfg ?
-12) How to configure inputs without the GTK interface ?
+Copyright (c) 1999-2002 by Stéphane Dallongeville
+Copyright (c) 2003-2004 by Stéphane Akhoun
+Copyright (c) 2008 by David Korth
 
-1) What is it ?
----------------
+This version of Gens is maintained by David Korth.
+E-mail: gerbilsoft@verizon.net
 
-This is a Linux port (x86 processors) based on the Sega Genesis Emulator "Gens" version 2.12a
+For news on Gens/GS, visit Sonic Retro:
+http://www.sonicretro.org
 
+================================================================
 
-2) Why this emulator ?
-----------------------
+1. What is Gens/GS?
 
-Because it was a pity that Gens wasn't available on Linux platforms.
+Gens v2.15.5/GS-m5 is David Korth's fork of Gens, initially based
+on Gens for Linux v2.15.5. The number after the "m" indicates the
+milestone. Releases are usually made after a significant new
+feature has been added, with minor releases if a major bug is found.
 
+================================================================
 
-3) Who've done it ?
--------------------
+2. Short History of Gens/GS (mostly taken from the Gens for Linux readme)
 
 Stephane Dallongeville is the author of Gens (Windows version).
-Caz has made a BeOS port, using Allegro. But this port was command line oriented. And though Allegro is a great library, 
-its GUI part is ... well ... rather ugly.
-Thus, I (Stephane Akhoun) wanted to use GTK+ for the GUI. But as mixing Allegro and GTK+ events loop was a bit of challenge
-(though possible) I decided to switch to SDL. Fortunately, it was very easy (only 2 function calls to change !).
-Finally, in the port process, my main work is the GTK+ GUI, and some work here and there.
-Caz ported the gens core : I wanted to thank him/her one more time for his/her pieces of advice.
+Caz has made a BeOS port, using Allegro. But this port was command line
+oriented. And though Allegro is a great library, its GUI part is ... well ... rather ugly.
 
-Thanks also for Lester Barrows (aryarya) and El Pelos (wah wah 69) for their contribution, patches, joystick support, ...
+Thus, I (Stephane Akhoun) wanted to use GTK+ for the GUI. But as mixing
+Allegro and GTK+ events loop was a bit of challenge (though possible) I
+decided to switch to SDL. Fortunately, it was very easy (only 2 function 
+calls to change !).
+
+Finally, in the port process, my main work is the GTK+ GUI, and some work
+here and there. Caz ported the gens core : I wanted to thank him/her one
+more time for his/her pieces of advice.
+
+Thanks also for Lester Barrows (aryarya) and El Pelos (wah wah 69) for
+their contribution, patches, joystick support, ...
 For all users that helped and help us in the porting process : thank you very much !
 
+Gens/GS picks up where Gens for Linux left off. Among other things, it
+integrates the Windows version into the same codebase. See the ChangeLog
+file for a comprehensive version history of Gens/GS.
 
-4) So, what are the requirements ?
-----------------------------------
+================================================================
 
-You must have at least :
+3. Minimum System Software Requirements
 
-- SDL 1.2 (SDL 1.1.3 reported to work)
-
+Linux: [runtime requirements]
+- SDL 1.2 (SDL 1.1.3 has been reported to work previously.)
 - GTK+ 2.4
 
-- gcc >= 2.95
+Linux: [build requirements]
+- gcc 2.95
+  - gcc 4.x recommended [there may be some unknown 2.95/3.x compatibility issues]
+- nasm 0.98.38
 
-- nasm 0.98.38 (older version may work. Didn't try.)
+Windows: [runtime requirements]
+- Windows 9x, Me, 2000 or later.
+  - Tested on 95, 98SE, 2000, and XP.
+- DirectX 6
 
+================================================================
 
-5) There are some glitches. Why that ?
---------------------------------------
+4. Where are gens.cfg and language.dat stored?
 
-You are very welcome to :
-	- report bugs
-	- notify incomplete features and strange behaviour (ie that differs from the original version)
+On Linux: ~/.gens/
+On Windows: the same directory as gens.exe
 
-on Sourceforge site.
-For more specific stuff (ie : only stuff related to gens for unix), you can contact me at yabdeo@free.fr
-Please, check on Sourceforge that your bug/request feature is not already taken in account ! Thanks by advance !
+================================================================
 
+5. What is the syntax of gens.cfg ?
 
-6) What does it emulate ?
--------------------------
-
-It emulates Genesis, Sega CD (iso/mp3, not real CD) and 32X roms.
-
-
-7) Will it run at the same speed than the Windows version ?
------------------------------------------------------------
-
-It will.
-32X games run slowly at full definition (2xSAI, 44kHz, all improvements on). But maybe my PC is not powerful enough.
-
-
-8) How do I compile it ?
-------------------------
-
-First, uncompress the archive gens.tar.gz in an empty directory :
-'tar xvzf gens.tar.gz'
-In all cases, make sure that you use GNU Make.
-
-Then type :
-'configure'
-'make'
-'make install'
-
-You should also have a look at the INSTALL file, if you're not comfortable with this.
-
-
-9) Then, how do I run it ?
---------------------------
-
-After a successful compilation, you should have a file named 'gens' in your 'gens' directory. Just type './gens' and enjoy !
-
-
-10) Where are language.dat and gens.cfg ?
-----------------------------------------
-
-In ~/.gens/
-
-
-11) What is the syntax of gens.cfg ?
-------------------------------------
+gens.cfg uses the standard INI format, which looks like this:
 
 [section1]
 key=value
@@ -119,11 +84,11 @@ key=value
 key=value
 ...
 
+================================================================
 
-12) How to configure inputs without the GTK interface ?
--------------------------------------------------------
+6. How do I configure controller inputs without the GUI?
 
-If you must edit gens.cfg by hand to configure your joystick :
+If you must edit gens.cfg by hand to configure your joystick:
 
 Down  : 4096 + 256*which + 1
 Up    : 4096 + 256*which + 2
@@ -131,7 +96,6 @@ Left  : 4096 + 256*which + 3
 Right : 4096 + 256*which + 4
 
 Buttons : 4112 + 256*which + x 
-
 
 where which = 0 for first joystick,
             = 1 for second joystick,
