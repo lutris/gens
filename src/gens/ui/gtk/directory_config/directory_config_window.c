@@ -60,7 +60,7 @@ const struct DirEntry_t DirEntries[] =
 	{"BRAM Backup", "bram", BRAM_Dir},
 	{"WAV Dump", "wavdump", PathNames.Dump_WAV_Dir},
 	{"GYM Dump", "gymdump", PathNames.Dump_GYM_Dir},
-	{"Screenshots", "screenshots", ScrShot_Dir},
+	{"Screenshots", "screenshots", PathNames.Screenshot_Dir},
 	{"PAT patches", "pat_patches", Patch_Dir},
 	{"IPS patches", "ips_patches", IPS_Dir},
 	{NULL, NULL, NULL},

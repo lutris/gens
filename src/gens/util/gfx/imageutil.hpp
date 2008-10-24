@@ -11,8 +11,6 @@ extern "C" {
 
 #include <stdint.h>
 
-extern char ScrShot_Dir[GENS_PATH_MAX];
-
 #ifdef __cplusplus
 }
 #endif

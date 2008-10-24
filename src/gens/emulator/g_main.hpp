@@ -38,6 +38,7 @@ struct Gens_PathNames_t
 	char Language_Path[GENS_PATH_MAX];
 	char Dump_WAV_Dir[GENS_PATH_MAX];
 	char Dump_GYM_Dir[GENS_PATH_MAX];
+	char Screenshot_Dir[GENS_PATH_MAX];
 };
 
 

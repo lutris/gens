@@ -14,10 +14,6 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
 
-
-char ScrShot_Dir[GENS_PATH_MAX];
-
-
 #ifdef GENS_PNG
 #include <png.h>
 #endif /* GENS_PNG */
@@ -363,7 +359,7 @@ int ImageUtil::screenShot(void)
 	do
 	{
 		num++;
-		sprintf(filename, "%s%s_%03d.%s", ScrShot_Dir, ROM_Name, num, ext);
+		sprintf(filename, "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Name, num, ext);
 	} while (!stat(filename, &sbuf));
 	
 	// Attempt to open the file.

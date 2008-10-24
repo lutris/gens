@@ -426,7 +426,7 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SRAMPATH][0], SRAM_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_BRAMPATH][0], BRAM_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_DUMPPATH][0], PathNames.Dump_WAV_Dir);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH][0], ScrShot_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH][0], PathNames.Screenshot_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_PATCHPATH][0], Patch_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_IPSPATH][0], IPS_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_GCOFFLINEPATH][0], Misc_Filenames.GCOffline);
