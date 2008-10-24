@@ -326,7 +326,8 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 		owner = static_cast<void*>(Gens_hWnd);
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	if (audio)
+		audio->clearSoundBuffer();
 	
 	// Show the message box.
 	int response = MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);

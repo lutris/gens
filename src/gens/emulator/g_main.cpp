@@ -92,15 +92,15 @@ static int Gens_Running = 0;
 
 // New video layer.
 #include "video/v_draw.hpp"
-VDraw *draw;
+VDraw *draw = NULL;
 
 // New input layer.
 #include "input/input.hpp"
-Input *input;
+Input *input = NULL;
 
 // New audio layer.
 #include "audio/audio.hpp"
-Audio *audio;
+Audio *audio = NULL;
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
 static int Build_Language_String (void)
