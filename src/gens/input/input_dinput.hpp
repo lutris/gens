@@ -25,9 +25,6 @@
 
 #include "input.hpp"
 
-// DirectInput 5 is required for joystick support.
-#define DIRECTINPUT_VERSION 0x0500
-
 #include <windows.h>
 #include <dinput.h>
 //#include <mmsystem.h>
@@ -92,12 +89,19 @@ class Input_DInput : public Input
 		// Number of joysticks connected
 		int m_numJoysticks;
 		
+		// DirectInput versions.
+		static const unsigned short DIRECTINPUT_VERSION_5 = 0x0500;
+		static const unsigned short DIRECTINPUT_VERSION_3 = 0x0300;
+		
 		// DirectInput variables
 		LPDIRECTINPUT lpDI;
 		LPDIRECTINPUTDEVICE lpDIDKeyboard;
 		LPDIRECTINPUTDEVICE lpDIDMouse;
 		IDirectInputDevice2 *m_joyID[MAX_JOYS];
 		DIJOYSTATE m_joyState[MAX_JOYS];
+		
+		// DirectInput version
+		unsigned short m_diVersion;
 		
 		// DirectInput Keys array
 		unsigned char m_DIKeys[256];

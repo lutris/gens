@@ -79,12 +79,34 @@ Input_DInput::Input_DInput()
 	int i;
 	HRESULT rval;
 	
-	rval = DirectInputCreate(ghInstance, DIRECTINPUT_VERSION, &lpDI, NULL);
-	if (rval != DI_OK)
+	// Attempt to initialize DirectInput 5.
+	m_diVersion = 0;
+	rval = DirectInputCreate(ghInstance, DIRECTINPUT_VERSION_5, &lpDI, NULL);
+	if (rval == DI_OK)
 	{
-		GensUI::msgBox("Input_DInput(): DirectInputCreate() failed. You must have DirectX 5.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
-		// TODO: Use cross-platform error numbers, not just DirectInput return values.
-		throw rval;
+		// DirectInput 5 initialized.
+		fprintf(stderr, "Input_DInput(): Initialized DirectInput 5.\n");
+		m_diVersion = DIRECTINPUT_VERSION_5;
+	}
+	else
+	{
+		// Attempt to initialize DirectInput 3.
+		rval = DirectInputCreate(ghInstance, DIRECTINPUT_VERSION_3, &lpDI, NULL);
+		if (rval == DI_OK)
+		{
+			// DirectInput 3 initialized.
+			fprintf(stderr, "Input_DInput(): Initialized DirectInput 3.\n");
+			m_diVersion = DIRECTINPUT_VERSION_3;
+		}
+		else
+		{
+			// DirectInput could not be initialized.
+			fprintf(stderr, "Input_DInput(): Could not initialize DirectInput 3 or DirectInput 5.\n");
+			GensUI::msgBox("Input_DInput(): DirectInputCreate() failed.\n\nYou must have DirectX 3 or later.",
+				       "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
+			// TODO: Use cross-platform error numbers, not just DirectInput return values.
+			throw rval;
+		}
 	}
 	
 	joysticksInitialized = false;
@@ -172,6 +194,7 @@ Input_DInput::~Input_DInput()
  */
 void Input_DInput::initJoysticks(HWND hWnd)
 {
+	// TODO: Check if joysticks work with DirectInput 3.
 	if (joystickError)
 		return;
 	
