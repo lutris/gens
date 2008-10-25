@@ -62,6 +62,13 @@ Windows: [runtime requirements]
   - Tested on 95, 98SE, 2000, and XP.
 - DirectX 6
 
+Windows: [build requirements]
+- MinGW and mSYS
+- MinGW Runtime 3.14, 3.15.1, or later
+  - MinGW Runtime 3.15 has a bug that causes command-line parsing to crash.
+- Windows platform SDK (or headers from the Wine project)
+- nasm 0.98.38
+
 ================================================================
 
 4. Where are gens.cfg and language.dat stored?
