@@ -69,6 +69,10 @@ Milestone 5 fixes the following bugs:
 - [GTK+] Added accelerators for the "Cancel" and "Save" buttons in the
   Game Genie window.
 
+- Color Adjust: If both Contrast and Brightness are set to 0, then no color
+  adjustment calculations will take place. This prevents inaccuracies due to
+  rounding errors.
+
 Milestone 5 has the following low-level code changes:
 
 - -Wl,--as-needed has been added to LDFLAGS. This eliminates unnecessary
