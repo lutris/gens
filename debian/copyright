@@ -1,0 +1,21 @@
+This package was debianized by David Korth <gerbilsoft@verizon.net> on
+Wed, 22 Oct 2008 22:20:33 -0400.
+
+It was downloaded from <http://info.sonicretro.org/Gens/GS>
+
+Upstream Author(s): 
+
+    Stéphane Dallongeville
+    Stéphane Akhoun
+    David Korth <gerbilsoft@verizon.net>
+
+Copyright: 
+
+    (c) 1999-2002 by Stéphane Dallongeville
+    (c) 2003-2004 by Stéphane Akhoun
+    Gens/GS (c) 2008 by David Korth
+
+License: GNU General Public License v2
+
+The Debian packaging is (C) 2008, David Korth <gerbilsoft@verizon.net> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
