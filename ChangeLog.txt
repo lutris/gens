@@ -36,6 +36,11 @@ Milestone 5 introduces the following new features:
 - 7z: A warning dialog is now shown if the 7z binary cannot be run. This
   usually occurs if 7-Zip isn't installed.
 
+- [GTK+] The "General Options" dialog now has regular buttons instead of
+  radio buttons for selecting colors. It seems that most GTK+ themes don't
+  properly support changing the colors of radio buttons, so changing them
+  to regular buttons enables proper color support.
+
 Milestone 5 fixes the following bugs:
 
 - [32X] PWM audio volume has been increased by a factor of 4, making it audible.
