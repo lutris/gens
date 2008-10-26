@@ -82,7 +82,7 @@ void Open_General_Options(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_transparency), (curFPSStyle & 0x08));
 	
 	// FPS counter color
-	sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[((curFPSStyle & 0x06) >> 1) * 3]);
+	sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[(curFPSStyle & 0x06) >> 1][0]);
 	radio_button_fps_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_fps_color), TRUE);
 	
@@ -97,13 +97,13 @@ void Open_General_Options(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_transparency), (curMsgStyle & 0x08));
 	
 	// Message color
-	sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[((curMsgStyle & 0x06) >> 1) * 3]);
+	sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[(curMsgStyle & 0x06) >> 1][0]);
 	radio_button_message_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_message_color), TRUE);
 	
 	// Intro effect color
 	sprintf(tmp, "radio_button_misc_intro_effect_color_%s",
-		GO_IntroEffectColors[draw->introEffectColor() * 3]);
+		GO_IntroEffectColors[draw->introEffectColor()][0]);
 	radio_button_intro_effect_color = lookup_widget(go, tmp);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color), TRUE);
 	
@@ -153,9 +153,9 @@ void General_Options_Save(void)
 	// FPS counter color
 	for (i = 0; i < 4; i++)
 	{
-		if (!GO_MsgColors[i])
+		if (!GO_MsgColors[i][0])
 			break;
-		sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[i * 3]);
+		sprintf(tmp, "radio_button_fps_color_%s", GO_MsgColors[i][0]);
 		radio_button_fps_color = lookup_widget(general_options_window, tmp);
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_fps_color)))
 		{
@@ -180,9 +180,9 @@ void General_Options_Save(void)
 	// Message color
 	for (i = 0; i < 4; i++)
 	{
-		if (!GO_MsgColors[i])
+		if (!GO_MsgColors[i][0])
 			break;
-		sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[i * 3]);
+		sprintf(tmp, "radio_button_message_color_%s", GO_MsgColors[i][0]);
 		radio_button_message_color = lookup_widget(general_options_window, tmp);
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_message_color)))
 		{
@@ -197,9 +197,9 @@ void General_Options_Save(void)
 	// Intro effect color
 	for (i = 0; i < 8; i++)
 	{
-		if (!GO_IntroEffectColors[i])
+		if (!GO_IntroEffectColors[i][0])
 			break;
-		sprintf(tmp, "radio_button_misc_intro_effect_color_%s", GO_IntroEffectColors[i * 3]);
+		sprintf(tmp, "radio_button_misc_intro_effect_color_%s", GO_IntroEffectColors[i][0]);
 		radio_button_intro_effect_color = lookup_widget(general_options_window, tmp);
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color)))
 		{
