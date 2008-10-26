@@ -5,6 +5,9 @@
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
  *                                                                         *
+ * Original code from the CMake mailing list:                              *
+ * http://www.cmake.org/pipermail/cmake/2004-June/005172.html              *
+ *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
  * Free Software Foundation; either version 2 of the License, or (at your  *
@@ -24,6 +27,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 
 /**
  * convertCmdLineToArgv: Convert lpCmdLine to argc and argv.
