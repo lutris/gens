@@ -24,19 +24,42 @@
 #define GENS_GTK_ABOUT_WINDOW_HPP
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <gtk/gtk.h>
 
-GtkWidget* create_about_window(void); 
-extern GtkWidget *about_window;
+class AboutWindow
+{
+	public:
+		static AboutWindow* Instance(GtkWidget *parent = NULL);
+		
+		void setFocus(void);
+		void setModal(GtkWidget *parent);
+		
+		gboolean close(void);
+		
+		gboolean iceTime(void);
+	
+	protected:
+		AboutWindow();
+		~AboutWindow();
+		
+		GtkWidget *m_Window;
+		GtkAccelGroup *m_AccelTable;
+		
+		GtkWidget *m_imgGensLogo;
+		
+		// Static functions required for GTK+ callbacks.
+		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+		static void GTK_OK(GtkButton *button, gpointer user_data);
+		
+		unsigned short ax, bx, cx;
+		static gboolean GTK_iceTime(gpointer user_data);
+		void updateIce(void);
+	
+	private:
+		static AboutWindow *m_Instance;
+};
 
-gboolean on_about_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_button_about_OK_clicked(GtkButton *button, gpointer user_data);
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* GENS_GTK_ABOUT_WINDOW_HPP */

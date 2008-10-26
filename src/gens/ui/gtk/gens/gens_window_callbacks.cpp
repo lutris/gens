@@ -105,6 +105,10 @@ void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
 }
 
 
+// Windows.
+AboutWindow *about;
+
+
 /**
  * Window is closed.
  */
@@ -879,5 +883,5 @@ void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	create_about_window();
+	AboutWindow::Instance();
 }

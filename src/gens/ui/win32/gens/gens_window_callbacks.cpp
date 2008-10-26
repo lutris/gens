@@ -791,7 +791,7 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	switch (LOWORD(wParam))
 	{
 		case IDM_HELP_ABOUT:
-			create_about_window();
+			AboutWindow::Instance();
 			break;
 	}
 }

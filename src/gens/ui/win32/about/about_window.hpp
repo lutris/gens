@@ -24,16 +24,51 @@
 #define GENS_WIN32_ABOUT_WINDOW_HPP
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <windows.h>
 
-HWND create_about_window(void); 
-extern HWND about_window;
+ class AboutWindow
+{
+	public:
+		static AboutWindow* Instance(HWND parent = NULL);
+		static bool isOpen(void) { return (m_Instance != NULL); }
+		
+		bool isDialogMessage(MSG *msg) { return IsDialogMessage(m_Window, msg); }
+		
+		void setFocus(void);
+		void setModal(HWND parent);
+	
+	protected:
+		AboutWindow();
+		~AboutWindow();
+		
+		HWND m_Window;
+		HWND m_imgGensLogo;
+		
+		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		void CreateChildWindows(HWND hWnd);
+		
+		unsigned int iceLastTicks;
+		unsigned short ax, bx, cx;
+		UINT_PTR tmrIce;
+		
+		static void iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+		void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+		void updateIce(void);
+		
+		// Labels and boxes
+		HWND lblGensTitle;
+		HWND lblGensDesc;
+		HWND imgGensLogo;
+		
+		// Gens logo
+		HBITMAP bmpGensLogo;
+	
+	private:
+		static AboutWindow *m_Instance;
+};
 
-#ifdef __cplusplus
-}
-#endif
+#endif /* __cplusplus */
 
 #endif /* GENS_WIN32_ABOUT_WINDOW_HPP */
