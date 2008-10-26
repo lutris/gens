@@ -242,8 +242,8 @@ AM_CONDITIONAL([GENS_ZLIB_INTERNAL], [test x$with_internal_zlib = xyes])
 # libpng
 ###
 
-AC_ARG_WITH(png, AC_HELP_STRING([--without-libpng], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
-AC_ARG_WITH(internal_png, AC_HELP_STRING([--with-internal-libpng], [Use internal libpng [[default=no]]]), with_internal_png=$withval, with_internal_png=no)
+AC_ARG_WITH(png, AC_HELP_STRING([--without-png], [Build without PNG support [[default=no]]]), with_png=$withval, with_png=yes)
+AC_ARG_WITH(internal_png, AC_HELP_STRING([--with-internal-png], [Use internal libpng [[default=no]]]), with_internal_png=$withval, with_internal_png=no)
 
 # If internal libpng was enabled, but PNG was disabled, enable PNG.
 # The user may have thought that the plain libpng option was for shared libpng.
