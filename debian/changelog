@@ -1,4 +1,4 @@
-gens (2.15.5-gens-m5-1) unstable; urgency=low
+gens (2.15.5-gs-m5-1) unstable; urgency=low
 
   * Initial Debian package.
 
