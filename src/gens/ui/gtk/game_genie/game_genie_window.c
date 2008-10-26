@@ -218,6 +218,15 @@ GtkWidget* create_game_genie_window(void)
 	Button_AddStockIcon(button_gg_addCode, "button_gg_addCode", button_gg_addCode_Icon, "gtk-add");
 	AddButtonCallback_Clicked(button_gg_addCode, on_button_gg_addCode_clicked);
 	
+	// Set the focus chain for the entry boxes.
+	GList *lFocusChain = NULL;
+	lFocusChain = g_list_append(lFocusChain, entry_gg_code);
+	lFocusChain = g_list_append(lFocusChain, entry_gg_name);
+	lFocusChain = g_list_append(lFocusChain, button_gg_addCode);
+	lFocusChain = g_list_first(lFocusChain);
+	gtk_container_set_focus_chain(GTK_CONTAINER(table_gg), lFocusChain);
+	g_list_free(lFocusChain);
+	
 	// HBox for the code list
 	hbox_gg_list = gtk_hbox_new(FALSE, 0);
 	gtk_widget_set_name(hbox_gg_list, "hbox_gg_list");
