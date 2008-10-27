@@ -466,9 +466,13 @@ S68K_Reset_CPU ()
   sub68k_reset ();
 }
 
-void _M68K_Set_32X_Rom_Bank ()
-  __attribute__ ((alias ("M68K_Set_32X_Rom_Bank")));
-void _M68K_Set_Prg_Ram () __attribute__ ((alias ("M68K_Set_Prg_Ram")));
-void _M68K_32X_Mode () __attribute__ ((alias ("M68K_32X_Mode")));
-void _MS68K_Set_Word_Ram (void)
-  __attribute__ ((alias ("MS68K_Set_Word_Ram")));
+
+// Symbol aliases for cross-OS asm compatibility.
+void _M68K_Set_32X_Rom_Bank(void)
+	__attribute__ ((weak, alias ("M68K_Set_32X_Rom_Bank")));
+void _M68K_Set_Prg_Ram(void)
+	__attribute__ ((weak, alias ("M68K_Set_Prg_Ram")));
+void _M68K_32X_Mode(void)
+	__attribute__ ((weak, alias ("M68K_32X_Mode")));
+void _MS68K_Set_Word_Ram(void)
+	__attribute__ ((weak, alias ("MS68K_Set_Word_Ram")));

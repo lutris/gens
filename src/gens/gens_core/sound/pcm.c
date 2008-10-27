@@ -18,6 +18,7 @@
 #define PCM_STEP_SHIFT 11
 
 struct pcm_chip_ PCM_Chip;
+
 unsigned char Ram_PCM[64 * 1024];
 int PCM_Volume_Tab[256 * 256];
 int PCM_Enable;
@@ -402,5 +403,7 @@ int Update_PCM (int **buf, int Length)
 	return 0;
 }
 
-void _Write_PCM_Reg (unsigned int Reg, unsigned int Data)
-  __attribute__ ((alias ("Write_PCM_Reg")));
+
+// Symbol aliases for cross-OS asm compatibility.
+void _Write_PCM_Reg(unsigned int Reg, unsigned int Data)
+	__attribute__ ((weak, alias ("Write_PCM_Reg")));

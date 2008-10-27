@@ -2,14 +2,17 @@
  * Gens: Input base class.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #ifndef GENS_INPUT_HPP
 #define GENS_INPUT_HPP
 
 // OS-specific includes.
-#if (defined(__linux__))
+#if (defined(GENS_OS_LINUX))
 #include "input_sdl_keys.h"
-#elif (defined(__WIN32__))
+#elif (defined(GENS_OS_WIN32))
 #include "input_win32_keys.h"
 #else
 #error Unsupported operating system.

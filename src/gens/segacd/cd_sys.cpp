@@ -293,12 +293,6 @@ void Check_CD_Command(void)
 	}
 }
 
-// Alias to Check_CD_Command, needed by mem_s68k.asm (on Linux, at least)
-#ifdef GENS_OS_LINUX
-void _Check_CD_Command(void)
-	__attribute__ ((alias ("Check_CD_Command")));
-#endif
-
 
 void Init_CD_Driver(void)
 {
@@ -1249,3 +1243,7 @@ void Update_CD_Audio(int **buf, int length)
 	fprintf(debug_SCD_file, "Read Pos 2 = %d\n\n", CD_Audio_Buffer_Read_Pos);
 #endif
 }
+
+
+// Symbol aliases for cross-OS asm compatibility.
+void _Check_CD_Command(void) __attribute__ ((weak, alias ("Check_CD_Command")));
