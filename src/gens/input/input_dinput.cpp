@@ -611,6 +611,7 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 			case 2:
 				if (value >= 2250 && value <= 15750)
 					return true;
+				break;
 			case 3:
 				if (value >= 11250 && value <= 24750)
 					return true;
