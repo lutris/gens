@@ -29,7 +29,7 @@ extern "C" {
 
 #include "plugins/plugin.h"
 
-void Blit1x(GensPlugin_Render_Info_t *renderInfo);
+void Blit1x(MDP_Render_Info_t *renderInfo);
 
 #ifdef __cplusplus
 }

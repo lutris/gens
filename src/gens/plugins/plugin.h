@@ -31,11 +31,11 @@ extern "C" {
 
 
 // Version number macro.
-#define GP_VERSION(major, minor, revision) \
+#define MDP_VERSION(major, minor, revision) \
 	((((major) & 0xFF) << 24) | (((minor) & 0xFF) << 16) | ((revision) & 0xFFFF))
 
 // Gens Plugin interface version.
-#define GENSPLUGIN_VERSION GP_VERSION(0, 0, 1)
+#define MDP_INTERFACE_VERSION MDP_VERSION(0, 0, 1)
 
 
 // Function pointer calling conventions from SDL's begin_code.h
@@ -59,11 +59,11 @@ typedef struct
 	const char name[256];
 	const char author[256];
 	const char description[1024];
-} GensPlugin_Desc_t;
+} MDP_Desc_t;
 
 
 // Plugin types.
-enum GensPlugin_Type
+enum MDP_Type
 {
 	GENSPLUGIN_RENDER,
 };
@@ -85,11 +85,11 @@ typedef struct
 	int y;
 	int pitch;
 	int offset;
-} GensPlugin_Render_Info_t;
+} MDP_Render_Info_t;
 
 
 // Render plugin definition.
-typedef void (GENS_FNCALL *BlitFn)(GensPlugin_Render_Info_t *renderInfo);
+typedef void (GENS_FNCALL *BlitFn)(MDP_Render_Info_t *renderInfo);
 typedef struct
 {
 	// Blit function.
@@ -100,7 +100,7 @@ typedef struct
 	
 	// Render tag.
 	const char tag[64];
-} GensPlugin_Render_t;
+} MDP_Render_t;
 
 
 // Basic plugin definition struct.
@@ -116,11 +116,11 @@ typedef struct
 	const uint32_t type;
 	
 	// Description struct.
-	const GensPlugin_Desc_t *desc;
+	const MDP_Desc_t *desc;
 	
 	// Struct definition for the specified plugin type.
 	const void *plugin_t;
-} GensPlugin_t;
+} MDP_t;
 
 
 #ifdef __cplusplus

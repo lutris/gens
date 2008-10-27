@@ -58,7 +58,7 @@ static inline void Blit1x_int(pixel *screen, pixel *mdScreen, int pitch, int x, 
 }
 
 
-void Blit1x(GensPlugin_Render_Info_t *renderInfo)
+void Blit1x(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;

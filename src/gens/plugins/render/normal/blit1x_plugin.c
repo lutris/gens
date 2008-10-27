@@ -26,25 +26,25 @@
 
 #include "blit1x.hpp"
 
-static GensPlugin_Desc_t GP_Desc =
+static MDP_Desc_t MDP_Desc =
 {
 	.name = "Normal Renderer",
 	.author = "David Korth",
 	.description = "Normal 1x renderer."
 };
 
-static GensPlugin_Render_t GP_Render =
+static MDP_Render_t MDP_Render =
 {
 	.blit = Blit1x,
 	.scale = 1,
 	.tag = "Normal"
 };
 
-GensPlugin_t GP_Render_1x =
+MDP_t MDP_Render_1x =
 {
-	.interfaceVersion = GENSPLUGIN_VERSION,
-	.pluginVersion = GP_VERSION(0, 0, 1),
+	.interfaceVersion = MDP_INTERFACE_VERSION,
+	.pluginVersion = MDP_VERSION(0, 0, 1),
 	.type = GENSPLUGIN_RENDER,
-	.desc = &GP_Desc,
-	.plugin_t = (void*)&GP_Render
+	.desc = &MDP_Desc,
+	.plugin_t = (void*)&MDP_Render
 };
