@@ -8,13 +8,13 @@ extern "C" {
 extern int MSH2_Speed;
 extern int SSH2_Speed;
 
-int MSH2_Init();
-int SSH2_Init();
-void MSH2_Reset();
-void SSH2_Reset();
-void MSH2_Reset_CPU();
-void SSH2_Reset_CPU();
-void _32X_Set_FB();
+int MSH2_Init(void);
+int SSH2_Init(void);
+void MSH2_Reset(void);
+void SSH2_Reset(void);
+void MSH2_Reset_CPU(void);
+void SSH2_Reset_CPU(void);
+void _32X_Set_FB(void);
 
 #ifdef __cplusplus
 }
