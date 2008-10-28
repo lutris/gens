@@ -23,6 +23,8 @@
 #ifndef GENS_UI_WNDBASE_HPP
 #define GENS_UI_WNDBASE_HPP
 
+#include <stdint.h>
+
 #include <unistd.h>
 #ifndef NULL
 #define NULL 0
@@ -35,10 +37,32 @@ class WndBase
 	public:
 		void setFocus(void);
 		void setModal(void *parent);
-	
+		
+		// Button constants
+		static const uint32_t BUTTON_OK		= (1 << 0);
+		static const uint32_t BUTTON_SAVE	= (1 << 1);
+		static const uint32_t BUTTON_APPLY	= (1 << 2);
+		static const uint32_t BUTTON_CANCEL	= (1 << 3);
+		static const uint32_t BUTTON_ALL	= ~0;
+		
+		// GTK+ only.
+		virtual void dlgButtonPress(uint32_t button) { };
+		
 	protected:
 		WndBase() { }
 		~WndBase() { }
+		
+		enum ButtonAlignment
+		{
+			BAlign_Default = 0,
+			BAlign_Left = 1,
+			BAlign_Center = 2,
+			BAlign_Right = 3,
+		};
+		
+		void addDialogButtons(void *container, ButtonAlignment alignment,
+				      uint32_t buttons, uint32_t buttonFocus = 0,
+				      uint32_t addAccel = BUTTON_ALL);
 		
 		void *m_Window;
 		void *m_AccelTable;

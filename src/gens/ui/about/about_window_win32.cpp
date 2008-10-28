@@ -266,15 +266,9 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 					grpGensCopyright, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensCopyright, fntMain, TRUE);
 	
-	// OK button
-	HWND btnOK;
-	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     312 - 75, 288+lblTitle_HeightInc, 75, 23,
-			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
-	
-	// Set focus to the OK button.
-	SetFocus(btnOK);
+	// Add the OK button.
+	addDialogButtons(hWnd, WndBase::BAlign_Right,
+			 WndBase::BUTTON_OK, WndBase::BUTTON_OK);
 	
 	// Child windows created.
 	m_ChildWindowsCreated = true;

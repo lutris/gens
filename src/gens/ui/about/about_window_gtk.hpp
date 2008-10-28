@@ -42,9 +42,10 @@ class AboutWindow : public AboutWindow_Base
 		
 		static AboutWindow* m_Instance;
 		
+		void dlgButtonPress(uint32_t button);
+		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		static void GTK_OK(GtkButton *button, gpointer user_data);
 		
 		static gboolean GTK_iceTime(gpointer user_data);
 		void updateIce(void);

@@ -25,9 +25,7 @@
 
 #include "emulator/g_main.hpp"
 
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
@@ -163,28 +161,15 @@ AboutWindow::AboutWindow()
 			       g_object_ref(lblCopyright), (GDestroyNotify)g_object_unref);
 	
 	// Create an accelerator group.
-	GtkAccelGroup *accel_group = gtk_accel_group_new();
+	m_AccelTable = gtk_accel_group_new();
 	
-	// Add the OK button to the dialog action area.
-	GtkWidget *btnOK = gtk_button_new_from_stock("gtk-ok");
-	gtk_widget_set_name(btnOK, "btnOK");
-	GTK_WIDGET_SET_FLAGS(btnOK, GTK_CAN_DEFAULT);
-	gtk_widget_show(btnOK);
-	gtk_dialog_add_action_widget(GTK_DIALOG(m_Window), btnOK, GTK_RESPONSE_OK);
+	// Add the OK button.
+	addDialogButtons(m_Window, WndBase::BAlign_Default,
+			 WndBase::BUTTON_OK, WndBase::BUTTON_OK,
+			 WndBase::BUTTON_ALL);
 	
-	g_signal_connect((gpointer)btnOK, "clicked",
-			 G_CALLBACK(AboutWindow::GTK_OK), this);
-	
-	gtk_widget_add_accelerator(btnOK, "activate", accel_group,
-				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	gtk_widget_add_accelerator(btnOK, "activate", accel_group,
-				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	
-	g_object_set_data_full(G_OBJECT(m_Window), "btnOK",
-			       g_object_ref(btnOK), (GDestroyNotify)g_object_unref);
-	
-	// Add the accel group.
-	gtk_window_add_accel_group(GTK_WINDOW(m_Window), accel_group);
+	// Add the accel group to the window.
+	gtk_window_add_accel_group(GTK_WINDOW(m_Window), GTK_ACCEL_GROUP(m_AccelTable));
 	
 	// Show the window.
 	gtk_widget_show_all(GTK_WIDGET(m_Window));
@@ -207,9 +192,10 @@ gboolean AboutWindow::GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer use
 }
 
 
-void AboutWindow::GTK_OK(GtkButton *button, gpointer user_data)
+void AboutWindow::dlgButtonPress(uint32_t button)
 {
-	reinterpret_cast<AboutWindow*>(user_data)->close();
+	if (button == WndBase::BUTTON_OK)
+		close();
 }
 
 
