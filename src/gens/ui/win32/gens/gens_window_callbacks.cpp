@@ -85,6 +85,10 @@
 #include "gens_core/sound/pwm.h"
 #include "segacd/cd_sys.hpp"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <cstring>
 
 // C++ includes
@@ -119,6 +123,8 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 static void fullScreenPopupMenu(HWND hWnd);
+
+static void dragDropFile(HDROP hDrop);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -245,6 +251,11 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			}
 			break;
 #endif /* GENS_DEBUGGER */
+		
+		case WM_DROPFILES:
+			// A file was dragged onto the Gens window.
+			dragDropFile((HDROP)wParam);
+			break;
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -995,4 +1006,29 @@ static void fullScreenPopupMenu(HWND hWnd)
 	// Hide the mouse pointer.
 	while (ShowCursor(true) < 0) { }
 	while (ShowCursor(false) >= 0) { }
+}
+
+
+/**
+ * dragDropFile(): Called when a file is dragged onto the Gens window.
+ */
+static void dragDropFile(HDROP hDrop)
+{
+	char filename[GENS_PATH_MAX];
+	unsigned int rval;
+	
+	rval = DragQueryFile(hDrop, 0, filename, sizeof(filename));
+	
+	if (rval > 0 && rval < GENS_PATH_MAX)
+	{
+		// Check that the file exists.
+		struct stat sbuf;
+		if (!stat(filename, &sbuf))
+		{
+			// File exists. Open it as a ROM image.
+			ROM::openROM(filename);
+		}
+	}
+	
+	DragFinish(hDrop);
 }

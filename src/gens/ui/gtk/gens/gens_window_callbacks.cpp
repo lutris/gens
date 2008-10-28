@@ -74,6 +74,10 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 // C++ includes
 #include <string>
 using std::string;

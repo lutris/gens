@@ -94,7 +94,7 @@ static void create_gens_window_HelpMenu(HMENU parent, int position);
 HWND initGens_hWnd(void)
 {
 	// This function simply initializes the base window.
-	// It's needed because DirectX needs the window handle to set cooperative levels.
+	// It's needed because DirectX needs the window handle in order to set cooperative levels.
 	
 	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 	WndClass.lpfnWndProc = Gens_Window_WndProc;
@@ -111,6 +111,9 @@ HWND initGens_hWnd(void)
 	
 	Gens_hWnd = CreateWindowEx(NULL, "Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 				   320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
+	
+	// Accept dragged files.
+	DragAcceptFiles(Gens_hWnd, TRUE);
 	
 	return Gens_hWnd;
 }
