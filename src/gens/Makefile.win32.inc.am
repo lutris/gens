@@ -37,7 +37,8 @@ gens_SOURCES += \
 		ui/win32/country_code/country_code_window_callbacks.c \
 		ui/win32/country_code/country_code_window_misc.c \
 		ui/win32/zip_select/zip_select_dialog_misc.cpp \
-		ui/win32/about/about_window.cpp \
+		ui/wndbase_win32.cpp \
+		ui/about/about_window_win32.cpp \
 		ui/win32/resource.rc
 
 if GENS_CDROM
@@ -82,7 +83,7 @@ noinst_HEADERS += \
 		ui/win32/country_code/country_code_window_callbacks.h \
 		ui/win32/country_code/country_code_window_misc.h \
 		ui/win32/zip_select/zip_select_dialog_misc.hpp \
-		ui/win32/about/about_window.hpp
+		ui/about/about_window_win32.hpp
 
 if GENS_CDROM
 noinst_HEADERS += \
