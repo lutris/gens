@@ -50,7 +50,7 @@
 #include "color_adjust/color_adjust_window.h"
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/country_code_window.h"
-#include "about/about_window.hpp"
+#include "about/about_window_win32.hpp"
 
 // Filename filters.
 static const char* UI_Win32_FileFilter_AllFiles =

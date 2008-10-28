@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) About Window.                                              *
+ * Gens: Window base class.                                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,46 +20,30 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_GTK_ABOUT_WINDOW_HPP
-#define GENS_GTK_ABOUT_WINDOW_HPP
+#ifndef GENS_UI_WNDBASE_HPP
+#define GENS_UI_WNDBASE_HPP
+
+#include <unistd.h>
+#ifndef NULL
+#define NULL 0
+#endif
 
 #ifdef __cplusplus
 
-#include <gtk/gtk.h>
-
-class AboutWindow
+class WndBase
 {
 	public:
-		static AboutWindow* Instance(GtkWidget *parent = NULL);
-		
 		void setFocus(void);
-		void setModal(GtkWidget *parent);
-		
-		gboolean close(void);
-		
-		gboolean iceTime(void);
+		void setModal(void *parent);
 	
 	protected:
-		AboutWindow();
-		~AboutWindow();
+		WndBase() { }
+		~WndBase() { }
 		
-		GtkWidget *m_Window;
-		GtkAccelGroup *m_AccelTable;
-		
-		GtkWidget *m_imgGensLogo;
-		
-		// Static functions required for GTK+ callbacks.
-		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		static void GTK_OK(GtkButton *button, gpointer user_data);
-		
-		unsigned short ax, bx, cx;
-		static gboolean GTK_iceTime(gpointer user_data);
-		void updateIce(void);
-	
-	private:
-		static AboutWindow *m_Instance;
+		void *m_Window;
+		void *m_AccelTable;
 };
 
-#endif
+#endif /* __cplusplus */
 
-#endif /* GENS_GTK_ABOUT_WINDOW_HPP */
+#endif /* GENS_UI_WNDBASE_HPP */

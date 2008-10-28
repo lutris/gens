@@ -20,11 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "about_window.hpp"
+#include "about_window_gtk.hpp"
 #include "gens/gens_window.hpp"
-
-// git version
-#include "macros/git.h"
 
 #include "emulator/g_main.hpp"
 
@@ -34,8 +31,6 @@
 
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
-
-#include "ui/about_window_data.h"
 
 // C includes
 #include <cstring>
@@ -73,7 +68,7 @@ AboutWindow::AboutWindow()
 {
 	// Create the About window.
 	m_Window = gtk_dialog_new();
-	gtk_widget_set_name(m_Window, "about_window");
+	gtk_widget_set_name(GTK_WIDGET(m_Window), "about_window");
 	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 0);
 	gtk_window_set_title(GTK_WINDOW(m_Window), "About Gens");
 	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
@@ -123,9 +118,9 @@ AboutWindow::AboutWindow()
 	
 	// Gens logo
 	m_imgGensLogo = create_pixmap("gens_small.png");
-	gtk_widget_set_name(m_imgGensLogo, "m_imgGensLogo");
-	gtk_widget_show(m_imgGensLogo);
-	gtk_box_pack_start(GTK_BOX(hboxLogo), m_imgGensLogo, TRUE, TRUE, 0);
+	gtk_widget_set_name(GTK_WIDGET(m_imgGensLogo), "m_imgGensLogo");
+	gtk_widget_show(GTK_WIDGET(m_imgGensLogo));
+	gtk_box_pack_start(GTK_BOX(hboxLogo), GTK_WIDGET(m_imgGensLogo), TRUE, TRUE, 0);
 	g_object_set_data_full(G_OBJECT(m_Window), "imgGensLogo",
 			       g_object_ref(m_imgGensLogo), (GDestroyNotify)g_object_unref);
 	
@@ -138,14 +133,8 @@ AboutWindow::AboutWindow()
 	}
 	
 	// Version information
-	stringstream version;
-	version << "<b><i>" << aboutTitle;
-#ifdef GENS_GIT_VERSION
-	version << "\n" << GENS_GIT_VERSION;
-#endif /* GENS_GIT_VERSION */
-	version << "</i></b>\n\n" << aboutDesc;
-	
-	GtkWidget *lblVersion = gtk_label_new(version.str().c_str());
+	const string title = "<b><i>" + string(StrTitle) + "</i></b>\n<small>\n</small>" + string(StrDescription);
+	GtkWidget *lblVersion = gtk_label_new(title.c_str());
 	gtk_widget_set_name(lblVersion, "lblVersion");
 	gtk_label_set_use_markup(GTK_LABEL(lblVersion), TRUE);
 	gtk_label_set_justify(GTK_LABEL(lblVersion), GTK_JUSTIFY_CENTER);
@@ -158,27 +147,20 @@ AboutWindow::AboutWindow()
 	GtkWidget *fraCopyright = gtk_frame_new(NULL);
 	gtk_widget_set_name(fraCopyright, "fraCopyright");
 	gtk_container_set_border_width(GTK_CONTAINER(fraCopyright), 5);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraCopyright), GTK_SHADOW_NONE);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraCopyright), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraCopyright);
 	gtk_box_pack_start(GTK_BOX(vboxMain), fraCopyright, FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(m_Window), "fraCopyright",
 			       g_object_ref(fraCopyright), (GDestroyNotify)g_object_unref);
 	
 	// Copyright label
-	GtkWidget *lblCopyright = gtk_label_new(aboutCopyright);
+	GtkWidget *lblCopyright = gtk_label_new(StrCopyright);
 	gtk_widget_set_name(lblCopyright, "lblCopyright");
+	gtk_misc_set_padding(GTK_MISC(lblCopyright), 8, 8);
 	gtk_widget_show(lblCopyright);
 	gtk_container_add(GTK_CONTAINER(fraCopyright), lblCopyright);
 	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyright",
 			       g_object_ref(lblCopyright), (GDestroyNotify)g_object_unref);
-	
-#if 0
-	// Get the dialog action area.
-	about_dialog_action_area = GTK_DIALOG(about_window)->action_area;
-	gtk_widget_set_name(about_dialog_action_area, "about_dialog_action_area");
-	gtk_widget_show(about_dialog_action_area);
-	GLADE_HOOKUP_OBJECT_NO_REF(about_window, about_dialog_action_area, "about_dialog_action_area");
-#endif
 	
 	// Create an accelerator group.
 	GtkAccelGroup *accel_group = gtk_accel_group_new();
@@ -205,7 +187,7 @@ AboutWindow::AboutWindow()
 	gtk_window_add_accel_group(GTK_WINDOW(m_Window), accel_group);
 	
 	// Show the window.
-	gtk_widget_show_all(m_Window);
+	gtk_widget_show_all(GTK_WIDGET(m_Window));
 }
 
 AboutWindow::~AboutWindow()
@@ -213,23 +195,9 @@ AboutWindow::~AboutWindow()
 	cx = 0;
 	
 	if (m_Window)
-		gtk_widget_destroy(m_Window);
+		gtk_widget_destroy(GTK_WIDGET(m_Window));
 	
 	m_Instance = NULL;
-}
-
-
-void AboutWindow::setFocus(void)
-{
-	if (m_Window)
-		gtk_widget_grab_focus(m_Window);
-}
-
-
-void AboutWindow::setModal(GtkWidget *parent)
-{
-	if (m_Window)
-		gtk_window_set_transient_for(GTK_WINDOW(m_Window), GTK_WINDOW(parent));
 }
 
 
@@ -268,8 +236,8 @@ void AboutWindow::updateIce(void)
 	
 	GdkPixbuf *icebuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 0120, 0120);
 	int x, y, r;
-	const unsigned char *src = &about_data[ax*01440];
-	const unsigned char *src2 = &about_dx[bx*040];
+	const unsigned char *src = &Data[ax*01440];
+	const unsigned char *src2 = &DX[bx*040];
 	unsigned char px1, px2;
 	guchar *pixels = gdk_pixbuf_get_pixels(icebuf);
 	r = gdk_pixbuf_get_rowstride(icebuf);

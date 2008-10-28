@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) About Window.                                             *
+ * Gens: About Window base class.                                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,55 +20,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_ABOUT_WINDOW_HPP
-#define GENS_WIN32_ABOUT_WINDOW_HPP
+#ifndef GENS_UI_ABOUT_WINDOW_BASE_HPP
+#define GENS_UI_ABOUT_WINDOW_BASE_HPP
+
+#include "ui/wndbase.hpp"
 
 #ifdef __cplusplus
 
-#include <windows.h>
-
- class AboutWindow
+class AboutWindow_Base : public WndBase
 {
-	public:
-		static AboutWindow* Instance(HWND parent = NULL);
-		static bool isOpen(void) { return (m_Instance != NULL); }
-		
-		bool isDialogMessage(MSG *msg) { return IsDialogMessage(m_Window, msg); }
-		
-		void setFocus(void);
-		void setModal(HWND parent);
-	
 	protected:
-		AboutWindow();
-		~AboutWindow();
+		AboutWindow_Base() { }
+		~AboutWindow_Base() { }
 		
-		HWND m_Window;
-		HWND m_imgGensLogo;
-		
-		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		void CreateChildWindows(HWND hWnd);
-		
-		unsigned int iceLastTicks;
+		void *m_imgGensLogo;
 		unsigned short ax, bx, cx;
-		UINT_PTR tmrIce;
+		virtual void updateIce(void) = 0;
 		
-		static void iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-		void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-		void updateIce(void);
+		// Strings
+		static const char* StrTitle;
+		static const char* StrDescription;
+		static const char* StrCopyright;
 		
-		// Labels and boxes
-		HWND lblGensTitle;
-		HWND lblGensDesc;
-		HWND imgGensLogo;
-		
-		// Gens logo
-		HBITMAP bmpGensLogo;
-	
-	private:
-		static AboutWindow *m_Instance;
+		static const unsigned char Data[];
+		static const unsigned char DX[];
 };
 
 #endif /* __cplusplus */
 
-#endif /* GENS_WIN32_ABOUT_WINDOW_HPP */
+#endif /* GENS_UI_ABOUT_WINDOW_BASE_HPP */

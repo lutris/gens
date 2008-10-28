@@ -1,21 +1,50 @@
-#ifndef GENS_GTK_ABOUT_DATA_H
-#define GENS_GTK_ABOUT_DATA_H
+/***************************************************************************
+ * Gens: About Window base class.                                          *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-#ifdef VERSION
-static const char* aboutTitle = "Gens/GS\nVersion " VERSION;
-#else
-static const char* aboutTitle = "Gens/GS";
-#endif /* VERSION */
+#include "about_window_base.hpp"
 
-static const char* aboutDesc =
+// git version
+#include "macros/git.h"
+
+const char* AboutWindow_Base::StrTitle =
+		"Gens/GS"
+#ifdef VERSION
+		"\nVersion " VERSION
+#endif
+#ifdef GENS_GIT_VERSION
+		"\n" GENS_GIT_VERSION
+#endif
+		;
+
+const char* AboutWindow_Base::StrDescription =
 		"Sega Genesis / Mega Drive,\n"
 		"Sega CD / Mega CD,\n"
 		"Sega 32X emulator";
-static const char* aboutCopyright =
+
+const char* AboutWindow_Base::StrCopyright =
 		"(c) 1999-2002 by Stéphane Dallongeville\n"
 		"(c) 2003-2004 by Stéphane Akhoun\n\n"
 		"Gens/GS (c) 2008 by David Korth\n\n"
@@ -24,7 +53,7 @@ static const char* aboutCopyright =
 		"For news on Gens/GS, visit Sonic Retro:\n"
 		"http://www.sonicretro.org";
 
-static const unsigned char about_data[] =
+const unsigned char AboutWindow_Base::Data[] =
 {
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
@@ -188,7 +217,7 @@ static const unsigned char about_data[] =
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
 };
 
-static const unsigned char about_dx[] =
+const unsigned char AboutWindow_Base::DX[] =
 {
 	'\000', '\000', '\000', '\000', '\004', '\356', '\012', '\356', '\016', '\356',
 	'\016', '\356', '\016', '\356', '\012', '\252', '\010', '\210', '\004', '\104',
@@ -223,5 +252,3 @@ static const unsigned char about_dx[] =
 	'\016', '\356', '\012', '\252', '\010', '\210', '\004', '\104', '\010', '\256',
 	'\004', '\152', '\000', '\016', '\000', '\010', '\000', '\256', '\000', '\216',
 };
-
-#endif /* GENS_GTK_ABOUT_DATA_H */

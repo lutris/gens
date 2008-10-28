@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "about_window.hpp"
+#include "about_window_win32.hpp"
 #include "gens/gens_window.hpp"
 
 #include <sys/types.h>
@@ -40,8 +40,6 @@
 #include <windowsx.h>
 #include <commctrl.h>
 
-#include "ui/about_window_data.h"
-
 #define ID_TIMER_ICE 0x1234
 
 #ifdef GENS_GIT_VERSION
@@ -55,6 +53,7 @@ static const unsigned short iceOffsetY = 8;
 
 
 static WNDCLASS m_WndClass;
+
 
 AboutWindow* AboutWindow::m_Instance = NULL;
 AboutWindow* AboutWindow::Instance(HWND parent)
@@ -84,6 +83,7 @@ AboutWindow::AboutWindow()
 {
 	tmrIce = NULL;
 	bmpGensLogo = NULL;
+	m_ChildWindowsCreated = false;
 	
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
@@ -102,6 +102,10 @@ AboutWindow::AboutWindow()
 		RegisterClass(&m_WndClass);
 	}
 	
+	// Messages are processed before the object is finished being created,
+	// so this assignment is needed.
+	m_Instance = this;
+	
 	// Create the window.
 	// TODO: Don't hardcode the parent window.
 	m_Window = CreateWindowEx(NULL, "Gens_About", "About Gens",
@@ -111,13 +115,13 @@ AboutWindow::AboutWindow()
 				  Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, 320, 320+lblTitle_HeightInc);
+	Win32_setActualWindowSize((HWND)m_Window, 320, 320+lblTitle_HeightInc);
 	
 	// Center the window on the Gens window.
-	Win32_centerOnGensWindow(m_Window);
+	Win32_centerOnGensWindow((HWND)m_Window);
 	
-	UpdateWindow(m_Window);
-	ShowWindow(m_Window, 1);
+	UpdateWindow((HWND)m_Window);
+	ShowWindow((HWND)m_Window, 1);
 }
 
 
@@ -127,18 +131,6 @@ AboutWindow::~AboutWindow()
 		DeleteObject(bmpGensLogo);
 	
 	m_Instance = NULL;
-}
-
-
-void AboutWindow::setFocus(void)
-{
-	// TODO
-}
-
-
-void AboutWindow::setModal(HWND parent)
-{
-	// TODO
 }
 
 
@@ -161,11 +153,12 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	switch(message)
 	{
 		case WM_CREATE:
-			CreateChildWindows(hWnd);
+			if (!m_ChildWindowsCreated)
+				CreateChildWindows(hWnd);
 			break;
 		
 		case WM_CLOSE:
-			DestroyWindow(m_Window);
+			DestroyWindow((HWND)m_Window);
 			return 0;
 		
 		case WM_MENUSELECT:
@@ -201,7 +194,7 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		
 		case WM_COMMAND:
 			if (LOWORD(wParam) == IDC_BTN_OK || LOWORD(wParam) == IDOK)
-				DestroyWindow(m_Window);
+				DestroyWindow((HWND)m_Window);
 			break;
 		
 		case WM_DESTROY:
@@ -210,7 +203,7 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			
 			if (tmrIce)
 			{
-				KillTimer(m_Window, tmrIce);
+				KillTimer((HWND)m_Window, tmrIce);
 				tmrIce = 0;
 			}
 			
@@ -224,6 +217,10 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void AboutWindow::CreateChildWindows(HWND hWnd)
 {
+	if (m_ChildWindowsCreated)
+		return;
+	
+	cx = 0; iceLastTicks = 0;
 	if (ice != 3)
 	{
 		// Gens logo
@@ -239,23 +236,18 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 		// "ice" timer
 		ax = 0; bx = 0; cx = 1;
 		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, (TIMERPROC)iceTime_STATIC);
+		
+		m_Window = hWnd;
 		updateIce();
 	}
 	
-	// Version information
-	char versionString[256];
-	strcpy(versionString, aboutTitle);
-#ifdef GENS_GIT_VERSION
-	strcat(versionString, "\n" GENS_GIT_VERSION);
-#endif /* GENS_GIT_VERSION */
-	
 	// Title and version information.
-	lblGensTitle = CreateWindow(WC_STATIC, versionString, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensTitle = CreateWindow(WC_STATIC, StrTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				    128, 8, 184, 32+lblTitle_HeightInc,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensTitle, fntTitle, TRUE);
 	
-	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensDesc = CreateWindow(WC_STATIC, StrDescription, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				   128, 42+lblTitle_HeightInc, 184, 100,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, TRUE);
@@ -268,7 +260,7 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 	
 	// Copyright message.
 	HWND lblGensCopyright;
-	string sCopyright = charset_utf8_to_cp1252(aboutCopyright);
+	string sCopyright = charset_utf8_to_cp1252(StrCopyright);
 	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 288, 168,
 					grpGensCopyright, NULL, ghInstance, NULL);
@@ -283,6 +275,9 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 	
 	// Set focus to the OK button.
 	SetFocus(btnOK);
+	
+	// Child windows created.
+	m_ChildWindowsCreated = true;
 }
 
 
@@ -291,11 +286,11 @@ void AboutWindow::updateIce(void)
 	HDC hDC;
 	PAINTSTRUCT ps;
 	
-	hDC = BeginPaint(m_Window, &ps);
+	hDC = BeginPaint((HWND)m_Window, &ps);
 	
 	int x, y;
-	const unsigned char *src = &about_data[ax*01440];
-	const unsigned char *src2 = &about_dx[bx*040];
+	const unsigned char *src = &Data[ax*01440];
+	const unsigned char *src2 = &DX[bx*040];
 	unsigned char px1, px2;
 	
 	int bgc = GetSysColor(COLOR_3DFACE);
@@ -343,7 +338,7 @@ void AboutWindow::updateIce(void)
 		}
 	}
 	
-	EndPaint(m_Window, &ps);
+	EndPaint((HWND)m_Window, &ps);
 }
 
 
@@ -355,7 +350,7 @@ void AboutWindow::iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD d
 
 void AboutWindow::iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-	if (!(hWnd == m_Window && idEvent == ID_TIMER_ICE && ice == 3))
+	if (!(hWnd == (HWND)m_Window && idEvent == ID_TIMER_ICE && ice == 3))
 		return;
 	
 	if (iceLastTicks + 100 > dwTime)
@@ -375,8 +370,8 @@ void AboutWindow::iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 	rIce.top = iceOffsetY;
 	rIce.right = iceOffsetX + 80 - 1;
 	rIce.bottom = iceOffsetY + 80 - 1;
-	InvalidateRect(m_Window, &rIce, FALSE);
-	SendMessage(m_Window, WM_PAINT, 0, 0);
+	InvalidateRect((HWND)m_Window, &rIce, FALSE);
+	SendMessage((HWND)m_Window, WM_PAINT, 0, 0);
 	
 	iceLastTicks = dwTime;
 }

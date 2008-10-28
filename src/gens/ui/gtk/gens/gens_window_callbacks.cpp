@@ -33,7 +33,7 @@
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
-#include "about/about_window.hpp"
+#include "about/about_window_gtk.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
 
@@ -107,10 +107,6 @@ void callbackFunction(GtkMenuItem *menuitem, gpointer user_data)			\
 		return;									\
 	uiProxyFunction(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)));	\
 }
-
-
-// Windows.
-AboutWindow *about;
 
 
 /**
@@ -887,7 +883,7 @@ void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
 	GENS_UNUSED_PARAMETER(menuitem);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	AboutWindow::Instance();
+	AboutWindow::Instance(gens_window);
 }
 
 
