@@ -105,6 +105,14 @@ void on_OptionsMenu_SaveConfigAs_activate(GtkMenuItem *menuitem, gpointer user_d
 // Help menu
 void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data);
 
+// Drag & Drop callbacks
+void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
+				    GtkSelectionData *selection_data, guint target_type, guint time,
+				    gpointer data);
+
+gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
+			       gint x, gint y, guint time, gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif

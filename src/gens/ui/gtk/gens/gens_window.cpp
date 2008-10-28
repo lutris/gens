@@ -224,6 +224,28 @@ GtkWidget* create_gens_window(void)
 	g_signal_connect((gpointer)gens_window, "destroy-event",
 			 G_CALLBACK(on_gens_window_close), NULL);
 	
+	// Enable drag & drop for ROM loading.
+	const GtkTargetEntry target_list[] =
+	{
+		{"text/plain", 0, 0},
+		{"text/uri-list", 0, 1},
+	};
+	
+	gtk_drag_dest_set
+	(
+		sdlsock,
+		(GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT),
+		target_list,
+		G_N_ELEMENTS(target_list),
+		(GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK | GDK_ACTION_PRIVATE | GDK_ACTION_ASK)
+	);
+	
+	// Set drag & drop callbacks.
+	g_signal_connect(sdlsock, "drag-data-received",
+			 G_CALLBACK(gens_window_drag_data_received), NULL);
+	g_signal_connect(sdlsock, "drag-drop",
+			 G_CALLBACK(gens_window_drag_drop), NULL);
+	
 	return gens_window;
 }
 

@@ -885,3 +885,77 @@ void on_HelpMenu_About_activate(GtkMenuItem *menuitem, gpointer user_data)
 	
 	AboutWindow::Instance();
 }
+
+
+/** Drag & Drop callbacks **/
+
+
+void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
+				    GtkSelectionData *selection_data, guint target_type, guint time,
+				    gpointer data)
+{
+	gboolean dnd_success = FALSE;
+	gboolean delete_selection_data = FALSE;
+	
+	if ((selection_data != NULL) && (selection_data->length >= 0))
+	{
+		string filename;
+		dnd_success = TRUE;
+		
+		filename = string((gchar*)(selection_data->data));
+		
+		if (filename.length() >= 8 && filename.substr(0, 8) == "file:///")
+		{
+			// "file:///" prefix. Remove the prefix.
+			filename = filename.substr(7);
+		}
+		else if (filename.length() >= 7 && filename.substr(0, 7) == "file://")
+		{
+			// "file://" prefix. Remove the prefix.
+			filename = filename.substr(6);
+		}
+		else if (filename.length() >= 6 && filename.substr(0, 6) == "file:/")
+		{
+			// "file:/" prefix. Remove the prefix.
+			filename = filename.substr(5);
+		}
+		else if (filename.length() >= 10 && filename.substr(0, 9) == "desktop:/")
+		{
+			// "desktop:/" prefix. Remove the prefix and prepend the user's desktop directory.
+			filename = string(getenv("HOME")) + "/Desktop/" + filename.substr(9);
+		}
+		
+		// Unescape the URI.
+		char* unescaped = g_uri_unescape_string(filename.c_str(), NULL);
+		filename = string(unescaped);
+		g_free(unescaped);
+		
+		// Check that the file actually exists.
+		struct stat sbuf;
+		if (!stat(filename.c_str(), &sbuf))
+		{
+			// File exists. Open it as a ROM image.
+			ROM::openROM(filename.c_str());
+		}
+		else
+		{
+			// File does not exist.
+			dnd_success = FALSE;
+		}
+	}
+	
+	gtk_drag_finish(context, dnd_success, delete_selection_data, time);
+}
+
+
+gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
+			       gint x, gint y, guint time, gpointer user_data)
+{
+	if (context->targets)
+	{
+		GdkAtom target_type = GDK_POINTER_TO_ATOM(g_list_nth_data(context->targets, 0));
+		gtk_drag_get_data(widget, context, target_type, time);
+		return TRUE;
+	}
+	return FALSE;
+}
