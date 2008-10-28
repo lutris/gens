@@ -25,13 +25,12 @@
 
 #ifdef __cplusplus
 
-#include "about_window_base.hpp"
-#include <gtk/gtk.h>
+#include "wndbase.hpp"
 
-class AboutWindow : public AboutWindow_Base
+class AboutWindow : public WndBase
 {
 	public:
-		static AboutWindow* Instance(GtkWidget *parent = NULL);
+		static AboutWindow* Instance(GtkWindow *parent = NULL);
 		
 		gboolean close(void);
 		gboolean iceTime(void);
@@ -46,9 +45,21 @@ class AboutWindow : public AboutWindow_Base
 		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		
 		static gboolean GTK_iceTime(gpointer user_data);
+		
+		GtkWidget *m_imgGensLogo;
+		unsigned short ax, bx, cx;
+		
 		void updateIce(void);
+		
+		// Strings
+		static const char* StrTitle;
+		static const char* StrDescription;
+		static const char* StrCopyright;
+		
+		// Data
+		static const unsigned char Data[];
+		static const unsigned char DX[];
 };
 
 #endif

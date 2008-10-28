@@ -137,7 +137,7 @@ gens_SOURCES = \
 		segacd/cd_sys.cpp \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
-		ui/about/about_window_base.cpp \
+		ui/common/about_window_data.cpp \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -217,8 +217,6 @@ noinst_HEADERS = \
 		segacd/cd_sys.hpp \
 		segacd/lc89510.h \
 		ui/gens_ui.hpp \
-		ui/wndbase.hpp \
-		ui/about/about_window_base.hpp \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \

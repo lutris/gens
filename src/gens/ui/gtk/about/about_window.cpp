@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "about_window_gtk.hpp"
+#include "about_window.hpp"
 #include "gens/gens_window.hpp"
 
 #include "emulator/g_main.hpp"
@@ -39,7 +39,7 @@ using std::stringstream;
 
 
 AboutWindow* AboutWindow::m_Instance = NULL;
-AboutWindow* AboutWindow::Instance(GtkWidget *parent)
+AboutWindow* AboutWindow::Instance(GtkWindow *parent)
 {
 	if (m_Instance == NULL)
 	{

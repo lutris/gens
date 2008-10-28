@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: About Window base class.                                          *
+ * Gens: About Window data.                                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -24,27 +24,27 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-#include "about_window_base.hpp"
+#include "about/about_window.hpp"
 
 // git version
 #include "macros/git.h"
 
-const char* AboutWindow_Base::StrTitle =
+const char* AboutWindow::StrTitle =
 		"Gens/GS"
-#ifdef VERSION
+		#ifdef VERSION
 		"\nVersion " VERSION
-#endif
-#ifdef GENS_GIT_VERSION
+		#endif
+		#ifdef GENS_GIT_VERSION
 		"\n" GENS_GIT_VERSION
-#endif
+		#endif
 		;
 
-const char* AboutWindow_Base::StrDescription =
+const char* AboutWindow::StrDescription =
 		"Sega Genesis / Mega Drive,\n"
 		"Sega CD / Mega CD,\n"
 		"Sega 32X emulator";
 
-const char* AboutWindow_Base::StrCopyright =
+const char* AboutWindow::StrCopyright =
 		"(c) 1999-2002 by Stéphane Dallongeville\n"
 		"(c) 2003-2004 by Stéphane Akhoun\n\n"
 		"Gens/GS (c) 2008 by David Korth\n\n"
@@ -53,7 +53,7 @@ const char* AboutWindow_Base::StrCopyright =
 		"For news on Gens/GS, visit Sonic Retro:\n"
 		"http://www.sonicretro.org";
 
-const unsigned char AboutWindow_Base::Data[] =
+const unsigned char AboutWindow::Data[] =
 {
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
@@ -217,7 +217,7 @@ const unsigned char AboutWindow_Base::Data[] =
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
 };
 
-const unsigned char AboutWindow_Base::DX[] =
+const unsigned char AboutWindow::DX[] =
 {
 	'\000', '\000', '\000', '\000', '\004', '\356', '\012', '\356', '\016', '\356',
 	'\016', '\356', '\016', '\356', '\012', '\252', '\010', '\210', '\004', '\104',

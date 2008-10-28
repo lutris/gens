@@ -28,14 +28,14 @@
 void WndBase::setFocus(void)
 {
 	if (m_Window)
-		gtk_widget_grab_focus(GTK_WIDGET(m_Window));
+		gtk_widget_grab_focus(m_Window);
 }
 
 
-void WndBase::setModal(void *parent)
+void WndBase::setModal(GtkWindow *parent)
 {
 	if (m_Window)
-		gtk_window_set_transient_for(GTK_WINDOW(m_Window), GTK_WINDOW(parent));
+		gtk_window_set_transient_for(GTK_WINDOW(m_Window), parent);
 }
 
 
@@ -97,7 +97,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		// Accelerator
 		if (buttonAccel & BUTTON_CANCEL)
 		{
-			gtk_widget_add_accelerator(btnCancel, "activate", GTK_ACCEL_GROUP(m_AccelTable),
+			gtk_widget_add_accelerator(btnCancel, "activate", m_AccelTable,
 						   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
 		}
 		
@@ -160,9 +160,9 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		// Accelerators
 		if (buttonAccel & (BUTTON_SAVE | BUTTON_OK))
 		{
-			gtk_widget_add_accelerator(btnOK, "activate", GTK_ACCEL_GROUP(m_AccelTable),
+			gtk_widget_add_accelerator(btnOK, "activate", m_AccelTable,
 						   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
-			gtk_widget_add_accelerator(btnOK, "activate", GTK_ACCEL_GROUP(m_AccelTable),
+			gtk_widget_add_accelerator(btnOK, "activate", m_AccelTable,
 						   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
 		}
 		

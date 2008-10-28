@@ -60,15 +60,10 @@ static inline uint8_t numOneBits(uint32_t number)
  * @param alignment Button alignment.
  * @param buttons Bitfield containing the buttons to add.
  * @param buttonFocus Button to set focus to, if any.
- * @param buttonAccel Not used on Win32.
  */
 void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
-			       uint32_t buttons, uint32_t buttonFocus,
-			       uint32_t buttonAccel)
+			       uint32_t buttons, uint32_t buttonFocus)
 {
-	GENS_UNUSED_PARAMETER(buttonAccel);
-	GENS_UNUSED_PARAMETER(containerType);
-	
 	RECT r;
 	GetWindowRect((HWND)container, &r);
 	

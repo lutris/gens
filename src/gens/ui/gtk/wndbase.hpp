@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: About Window base class.                                          *
+ * Gens: (GTK+) Window base class.                                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,32 +20,51 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_ABOUT_WINDOW_BASE_HPP
-#define GENS_UI_ABOUT_WINDOW_BASE_HPP
+#ifndef GENS_GTK_WNDBASE_HPP
+#define GENS_GTK_WNDBASE_HPP
 
-#include "ui/wndbase.hpp"
+#include <stdint.h>
+#include <unistd.h>
+
+#include <gtk/gtk.h>
 
 #ifdef __cplusplus
 
-class AboutWindow_Base : public WndBase
+class WndBase
 {
+	public:
+		void setFocus(void);
+		void setModal(GtkWindow *parent);
+		
+		// Button constants
+		static const uint32_t BUTTON_OK		= (1 << 0);
+		static const uint32_t BUTTON_SAVE	= (1 << 1);
+		static const uint32_t BUTTON_APPLY	= (1 << 2);
+		static const uint32_t BUTTON_CANCEL	= (1 << 3);
+		static const uint32_t BUTTON_ALL	= ~0;
+		
+		virtual void dlgButtonPress(uint32_t button) { };
+		
 	protected:
-		AboutWindow_Base() { }
-		~AboutWindow_Base() { }
+		WndBase() { }
+		~WndBase() { }
 		
-		void *m_imgGensLogo;
-		unsigned short ax, bx, cx;
-		virtual void updateIce(void) = 0;
+		enum ButtonAlignment
+		{
+			BAlign_Default = 0,
+			BAlign_Left = 1,
+			BAlign_Center = 2,
+			BAlign_Right = 3,
+		};
 		
-		// Strings
-		static const char* StrTitle;
-		static const char* StrDescription;
-		static const char* StrCopyright;
+		void addDialogButtons(void *container, ButtonAlignment alignment,
+				      uint32_t buttons, uint32_t buttonFocus = 0,
+				      uint32_t addAccel = BUTTON_ALL);
 		
-		static const unsigned char Data[];
-		static const unsigned char DX[];
+		GtkWidget *m_Window;
+		GtkAccelGroup *m_AccelTable;
 };
 
 #endif /* __cplusplus */
 
-#endif /* GENS_UI_ABOUT_WINDOW_BASE_HPP */
+#endif /* GENS_GTK_WNDBASE_HPP */

@@ -20,15 +20,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_WNDBASE_HPP
-#define GENS_UI_WNDBASE_HPP
+#ifndef GENS_WIN32_WNDBASE_HPP
+#define GENS_WIN32_WNDBASE_HPP
 
 #include <stdint.h>
-
 #include <unistd.h>
-#ifndef NULL
-#define NULL 0
-#endif
+
+#include <windows.h>
 
 #ifdef __cplusplus
 
@@ -61,13 +59,12 @@ class WndBase
 		};
 		
 		void addDialogButtons(void *container, ButtonAlignment alignment,
-				      uint32_t buttons, uint32_t buttonFocus = 0,
-				      uint32_t addAccel = BUTTON_ALL);
+				      uint32_t buttons, uint32_t buttonFocus = 0);
 		
-		void *m_Window;
-		void *m_AccelTable;
+		HWND m_Window;
+		HACCEL m_AccelTable;
 };
 
 #endif /* __cplusplus */
 
-#endif /* GENS_UI_WNDBASE_HPP */
+#endif /* GENS_WIN32_WNDBASE_HPP */

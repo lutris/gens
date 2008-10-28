@@ -34,7 +34,7 @@
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window_misc.hpp"
-#include "about/about_window_win32.hpp"
+#include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
 
