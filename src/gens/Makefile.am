@@ -61,7 +61,19 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-NASM = nasm -O1 -w-orphan-labels $(NASM_INCLUDES)
+if GENS_OBJ_WIN32
+NASM_OBJ_FORMAT = -f win32 -D __OBJ_WIN32
+endif
+
+if GENS_OBJ_ELF32
+NASM_OBJ_FORMAT = -f elf -D __GCC2 -D __OBJ_ELF
+endif
+
+if GENS_OBJ_MACHO
+NASM_OBJ_FORMAT = -f macho -D __GCC2 -D __OBJ_MACHO
+endif
+
+NASM = nasm -O1 -w-orphan-labels $(NASM_OBJ_FORMAT) $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
 if GENS_ZLIB_INTERNAL
@@ -326,9 +338,9 @@ gens_CXXFLAGS =
 
 # OS-specific includes
 
-if GENS_OS_LINUX
-include $(srcdir)/Makefile.linux.inc.am
-endif # GENS_OS_LINUX
+if GENS_OS_UNIX
+include $(srcdir)/Makefile.unix.inc.am
+endif # GENS_OS_UNIX
 
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am

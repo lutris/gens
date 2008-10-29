@@ -1,13 +1,11 @@
 # Linux-specific Makefile.am
 
-NASM += -D __GCC2 -f elf
-
 if GENS_UI_GTK
 INCLUDES += -I@srcdir@/ui/gtk/
 endif
 
 gens_SOURCES += \
-		emulator/g_main_linux.cpp \
+		emulator/g_main_unix.cpp \
 		port/ini_old.c \
 		port/timer.c \
 		video/v_draw_sdl.cpp \
@@ -15,9 +13,11 @@ gens_SOURCES += \
 		audio/audio_sdl.cpp
 
 if GENS_CDROM
+if GENS_OS_LINUX
 gens_SOURCES += \
                 segacd/cd_aspi_linux.cpp
-endif
+endif # GENS_OS_LINUX
+endif # GENS_CDROM
 
 if GENS_UI_GTK
 
@@ -71,7 +71,7 @@ endif # GENS_CDROM
 endif # GENS_UI_GTK
 
 noinst_HEADERS += \
-		emulator/g_main_linux.hpp \
+		emulator/g_main_unix.hpp \
 		port/ini_old.h \
 		port/timer.h \
 		video/v_draw_sdl.hpp \

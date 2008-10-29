@@ -3,8 +3,7 @@
 	extern _Write_To_68K_Space
 	extern _Read_To_68K_Space
 
-; TODO: This only applies for Linux, not OS X.
-%ifdef __GCC2
+%ifdef __OBJ_ELF
 %define _PCM_Chip PCM_Chip
 %define _Ram_PCM Ram_PCM
 %define _CD_Timer_Counter CD_Timer_Counter

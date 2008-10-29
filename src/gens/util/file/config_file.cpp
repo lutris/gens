@@ -129,10 +129,10 @@ int Config::save(const string& filename)
 #if defined(GENS_OS_WIN32)
 	// Win32 ASPI uses a device ID number.
 	cfg.writeInt("Options", "CD Drive", cdromDeviceID);
-#elif defined(GENS_OS_LINUX)
-	// Linux uses a device name.
+#elif defined(GENS_OS_UNIX)
+	// Unix uses a device name.
 	cfg.writeString("General", "CD Drive", cdromDeviceName);
-#endif /* GENS_OS_WIN32 / GENS_OS_LINUX */
+#endif /* GENS_OS_WIN32 / GENS_OS_UNIX */
 	cfg.writeInt("General", "CD Speed", cdromSpeed);
 #endif /* GENS_CDROM */
 	
@@ -340,10 +340,10 @@ int Config::load(const string& filename, void* gameActive)
 #if defined(GENS_OS_WIN32)
 	// Win32 ASPI uses a device ID number.
 	cdromDeviceID = cfg.getInt("Options", "CD Drive", 0);
-#elif defined(GENS_OS_LINUX)
-	// Linux uses a device name.
+#elif defined(GENS_OS_UNIX)
+	// Unix uses a device name.
 	cfg.getString("General", "CD Drive", "/dev/cdrom", cdromDeviceName, sizeof(cdromDeviceName));
-#endif /* GENS_OS_WIN32 / GENS_OS_LINUX */
+#endif /* GENS_OS_WIN32 / GENS_OS_UNIX */
 	cdromSpeed = cfg.getInt("General", "CD Speed", 0);
 #endif /* GENS_CDROM */
 	

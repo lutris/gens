@@ -1,6 +1,5 @@
 # Win32-specific Makefile.am
 
-NASM += -f win32
 INCLUDES += -I@srcdir@/ui/win32/
 
 gens_SOURCES += \

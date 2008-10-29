@@ -14,9 +14,9 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "ui/gens_ui.hpp"
 
-#ifdef GENS_OS_LINUX
+#ifndef GENS_OS_WIN32
 #include "port/timer.h"
-#endif /* GENS_OS_LINUX */
+#endif /* !GENS_OS_WIN32 */
 
 #ifndef NULL
 #define NULL 0
@@ -45,12 +45,12 @@ int Update_Emulation(void)
 
 	if (Frame_Skip != -1)
 	{
-#ifdef GENS_OS_LINUX
+#ifdef GENS_OS_UNIX
 		if (audio->enabled())
 		{
 			audio->writeSoundBuffer(NULL);
 		}
-#endif /* GENS_OS_LINUX */
+#endif /* GENS_OS_UNIX */
 		
 		input->updateControllers();
 

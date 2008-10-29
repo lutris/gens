@@ -12,8 +12,8 @@ extern "C" {
 #include "gens.hpp"
 
 // OS-specific includes.
-#if defined(GENS_OS_LINUX)
-#include "g_main_linux.hpp"
+#if defined(GENS_OS_UNIX)
+#include "g_main_unix.hpp"
 #elif defined(GENS_OS_WIN32)
 #include "g_main_win32.hpp"
 #else

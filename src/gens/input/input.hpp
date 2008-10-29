@@ -10,7 +10,7 @@
 #define GENS_INPUT_HPP
 
 // OS-specific includes.
-#if (defined(GENS_OS_LINUX))
+#if (defined(GENS_OS_UNIX))
 #include "input_sdl_keys.h"
 #elif (defined(GENS_OS_WIN32))
 #include "input_win32_keys.h"

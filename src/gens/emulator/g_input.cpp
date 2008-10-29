@@ -45,7 +45,7 @@ int mod = 0;
  */
 void Input_KeyDown(int key)
 {
-#ifdef GENS_OS_LINUX
+#ifdef GENS_OS_UNIX
 	string filename;
 	
 	switch (key)
@@ -425,7 +425,7 @@ void Input_KeyDown(int key)
 		Debug_Event(key, mod);
 #endif /* GENS_DEBUGGER */
 
-#endif /* GENS_OS_LINUX */
+#endif /* GENS_OS_UNIX */
 }
 
 
@@ -435,7 +435,7 @@ void Input_KeyDown(int key)
  */
 void Input_KeyUp(int key)
 {
-#ifdef GENS_OS_LINUX
+#ifdef GENS_OS_UNIX
 	switch(key)
 	{
 		case GENS_KEY_LCTRL:
@@ -462,5 +462,5 @@ void Input_KeyUp(int key)
 		default:
 			break;
 	}
-#endif /* GENS_OS_LINUX */
+#endif /* GENS_OS_UNIX */
 }
