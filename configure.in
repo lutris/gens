@@ -24,6 +24,12 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		;;
+	i?86*cygwin*)
+		os=win32;
+		obj_format=win32;
+		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
+		CFLAGS="$CFLAGS -mno-cygwin"
+		CXXFLAGS="$CFLAGS -mno-cygwin"
 	i?86*darwin*)
 		os=macosx;
 		obj_format=macho;
