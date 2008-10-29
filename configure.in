@@ -24,7 +24,7 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		;;
-	i?86*apple*darwin*)
+	i?86*darwin*)
 		os=macosx;
 		obj_format=macho;
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
