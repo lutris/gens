@@ -15,7 +15,8 @@ AM_PROG_CC_C_O
 AC_ISC_POSIX
 AC_HEADER_STDC
 
-CS_PROG_LINK
+# TODO: Figure out where this is from.
+#CS_PROG_LINK
 
 # Check operating system.
 case $host in
