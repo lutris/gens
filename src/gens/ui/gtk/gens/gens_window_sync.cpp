@@ -466,82 +466,112 @@ void Sync_Gens_Window_CPUMenu(void)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
-#if 0
-	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
-	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
-	GtkWidget *MItem_DAC, *MItem_DAC_Improved;
-	GtkWidget *MItem_PSG, *MItem_PSG_Improved;
-	GtkWidget *MItem_PCM, *MItem_PWM, *MItem_CDDA;
-	
-	GtkWidget *MItem_GYMDump, *MItem_WAVDump;
-	string label; int allowAudioDump;
+	GtkWidget *mnuEnable, *mnuStereo, *mnuZ80;
+	GtkWidget *mnuYM2612, *mnuYM2612_Improved;
+	GtkWidget *mnuDAC, *mnuDAC_Improved;
+	GtkWidget *mnuPSG, *mnuPSG_Improved;
+	GtkWidget *mnuPCM, *mnuPWM, *mnuCDDA;
+	GtkWidget *mnuWAVDump, *mnuGYMDump;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
+	// Look up all the checkbox items first.
+	mnuEnable = findMenuItem(IDM_SOUND_ENABLE);
+	mnuStereo = findMenuItem(IDM_SOUND_STEREO);
+	mnuZ80 = findMenuItem(IDM_SOUND_Z80);
+	mnuYM2612 = findMenuItem(IDM_SOUND_YM2612);
+	mnuYM2612_Improved = findMenuItem(IDM_SOUND_YM2612_IMPROVED);
+	mnuDAC = findMenuItem(IDM_SOUND_DAC);
+	mnuDAC_Improved = findMenuItem(IDM_SOUND_DAC_IMPROVED);
+	mnuPSG = findMenuItem(IDM_SOUND_PSG);
+	mnuPSG_Improved = findMenuItem(IDM_SOUND_PSG_IMPROVED);
+	mnuPCM = findMenuItem(IDM_SOUND_PCM);
+	mnuPWM = findMenuItem(IDM_SOUND_PWM);
+	mnuCDDA = findMenuItem(IDM_SOUND_CDDA);
+	
 	// Simple checkbox items
-	MItem_Enable = lookup_widget(gens_window, "SoundMenu_Enable");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Enable), audio->enabled());
-	MItem_Stereo = lookup_widget(gens_window, "SoundMenu_Stereo");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stereo), audio->stereo());
-	MItem_Z80 = lookup_widget(gens_window, "SoundMenu_Z80");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Z80), Z80_State & 1);
-	MItem_YM2612 = lookup_widget(gens_window, "SoundMenu_YM2612");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_YM2612), YM2612_Enable);
-	MItem_YM2612_Improved = lookup_widget(gens_window, "SoundMenu_YM2612_Improved");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_YM2612_Improved), YM2612_Improv);
-	MItem_DAC = lookup_widget(gens_window, "SoundMenu_DAC");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_DAC), DAC_Enable);
-	MItem_DAC_Improved = lookup_widget(gens_window, "SoundMenu_DAC_Improved");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_DAC_Improved), DAC_Improv);
-	MItem_PSG = lookup_widget(gens_window, "SoundMenu_PSG");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PSG), PSG_Enable);
-	MItem_PSG_Improved = lookup_widget(gens_window, "SoundMenu_PSG_Improved");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PSG_Improved), PSG_Improv);
-	MItem_PCM = lookup_widget(gens_window, "SoundMenu_PCM");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PCM), PCM_Enable);
-	MItem_PWM = lookup_widget(gens_window, "SoundMenu_PWM");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_PWM), PWM_Enable);
-	MItem_CDDA = lookup_widget(gens_window, "SoundMenu_CDDA");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_CDDA), CDDA_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuEnable), audio->enabled());
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuStereo), audio->stereo());
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuZ80), Z80_State & 1);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuYM2612), YM2612_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuYM2612_Improved), YM2612_Improv);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDAC), DAC_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDAC_Improved), DAC_Improv);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuPSG), PSG_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuPSG_Improved), PSG_Improv);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuPCM), PCM_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuPWM), PWM_Enable);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuCDDA), CDDA_Enable);
 	
 	// Rate
-	sprintf(Str_Tmp, "SoundMenu_Rate_SubMenu_%d", audio->soundRate());
-	MItem_Rate = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Rate), TRUE);
+	// TODO: Improve this by using a hash or something.
+	uint16_t id;
+	switch (audio->soundRate())
+	{
+		case 11025:
+			id = IDM_SOUND_RATE_11025;
+			break;
+		case 22050:
+			id = IDM_SOUND_RATE_22050;
+			break;
+		case 44100:
+			id = IDM_SOUND_RATE_44100;
+			break;
+		case 16000:
+			id = IDM_SOUND_RATE_16000;
+			break;
+		case 32000:
+			id = IDM_SOUND_RATE_32000;
+			break;
+		case 48000:
+			id = IDM_SOUND_RATE_48000;
+			break;
+		default:
+			// Default to 22,050 Hz.
+			id = IDM_SOUND_RATE_22050;
+			break;
+	}
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
-	// GYM dumping
-	label = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
-	MItem_GYMDump = lookup_widget(gens_window, "SoundMenu_GYMDump");
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_GYMDump)->child), label.c_str());
+	const char* sLabel;
 	
 	// WAV dumping
-	label = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
-	MItem_WAVDump = lookup_widget(gens_window, "SoundMenu_WAVDump");
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_WAVDump)->child), label.c_str());
+	sLabel = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
+	mnuWAVDump = findMenuItem(IDM_SOUND_WAVDUMP);
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuWAVDump)->child), sLabel);
+	
+	// GYM dumping
+	sLabel = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
+	mnuGYMDump = findMenuItem(IDM_SOUND_GYMDUMP);
+	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGYMDump)->child), sLabel);
 	
 	// Enable or disable items, depending on the Enable state.
-	gtk_widget_set_sensitive(MItem_Stereo, audio->enabled());
-	gtk_widget_set_sensitive(MItem_YM2612, audio->enabled());
-	gtk_widget_set_sensitive(MItem_YM2612_Improved, audio->enabled());
-	gtk_widget_set_sensitive(MItem_DAC, audio->enabled());
-	gtk_widget_set_sensitive(MItem_DAC_Improved, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PSG, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PSG_Improved, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PCM, audio->enabled());
-	gtk_widget_set_sensitive(MItem_PWM, audio->enabled());
-	gtk_widget_set_sensitive(MItem_CDDA, audio->enabled());
+	gtk_widget_set_sensitive(mnuStereo, audio->enabled());
+	gtk_widget_set_sensitive(mnuYM2612, audio->enabled());
+	gtk_widget_set_sensitive(mnuYM2612_Improved, audio->enabled());
+	gtk_widget_set_sensitive(mnuDAC, audio->enabled());
+	gtk_widget_set_sensitive(mnuDAC_Improved, audio->enabled());
+	gtk_widget_set_sensitive(mnuPSG, audio->enabled());
+	gtk_widget_set_sensitive(mnuPSG_Improved, audio->enabled());
+	gtk_widget_set_sensitive(mnuPCM, audio->enabled());
+	gtk_widget_set_sensitive(mnuPWM, audio->enabled());
+	gtk_widget_set_sensitive(mnuCDDA, audio->enabled());
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
-	allowAudioDump = (Game != NULL) && audio->enabled();
-	gtk_widget_set_sensitive(MItem_GYMDump, allowAudioDump);
+		
+	bool allowAudioDump = (Game != NULL) && audio->enabled();
+	
+	// WAV dump
 	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.
-	gtk_widget_set_sensitive(MItem_WAVDump, FALSE);
+	gtk_widget_set_sensitive(mnuWAVDump, FALSE);
+	
+	// GYM dump
+	gtk_widget_set_sensitive(mnuGYMDump, allowAudioDump);
 	
 	// Enable callbacks.
 	do_callbacks = 1;
-#endif
 }
 
 
