@@ -415,6 +415,54 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 			}
 		}
 		
+		// Check for an accelerator.
+		if (menu->accelKey != 0)
+		{
+			// Accelerator specified.
+			int accelModifier = 0;
+			guint accelKey;
+			
+			// Determine the modifier.
+			if (menu->accelModifier & GMAM_CTRL)
+				accelModifier |= GDK_CONTROL_MASK;
+			if (menu->accelModifier & GMAM_ALT)
+				accelModifier |= GDK_MOD1_MASK;
+			if (menu->accelModifier & GMAM_SHIFT)
+				accelModifier |= GDK_SHIFT_MASK;
+			
+			// Determine the key.
+			// TODO: Add more special keys.
+			switch (menu->accelKey)
+			{
+				case GMAK_BACKSPACE:
+					accelKey = GDK_BackSpace;
+					break;
+				
+				case GMAK_ENTER:
+					accelKey = GDK_Return;
+					break;
+				
+				case GMAK_TAB:
+					accelKey = GDK_Tab;
+					break;
+				
+				case GMAK_F1: case GMAK_F2:  case GMAK_F3:  case GMAK_F4:
+				case GMAK_F5: case GMAK_F6:  case GMAK_F7:  case GMAK_F8:
+				case GMAK_F9: case GMAK_F10: case GMAK_F11: case GMAK_F12:
+					accelKey = (menu->accelKey - GMAK_F1) + GDK_F1;
+					break;
+					
+				default:
+					accelKey = menu->accelKey;
+					break;
+			}
+			
+			// ADd the accelerator.
+			gtk_widget_add_accelerator(mnuItem, "activate", accel_group,
+						   accelKey, (GdkModifierType)accelModifier,
+						   GTK_ACCEL_VISIBLE);
+		}
+		
 		// Check for a submenu.
 		if (((menu->flags & GMF_ITEM_MASK) == GMF_ITEM_SUBMENU) && (menu->submenu))
 		{
