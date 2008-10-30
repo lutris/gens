@@ -363,32 +363,19 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
-#if 0
-#ifdef GENS_DEBUGGER
-	GtkWidget *MItem_Debug;
-	GtkWidget *MItem_Debug_Item;
-	int i, checkDebug;
-#endif /* GENS_DEBUGGER */
-	GtkWidget *MItem_Country;
-	GtkWidget *MItem_Reset68K, *MItem_ResetM68K, *MItem_ResetS68K;
-	GtkWidget *MItem_ResetMSH2, *MItem_ResetSSH2;
-	GtkWidget *MItem_SegaCD_PerfectSync;
-	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
 #ifdef GENS_DEBUGGER
-	MItem_Debug = lookup_widget(gens_window, "CPUMenu_Debug");
-	gtk_widget_set_sensitive(MItem_Debug, (Game != NULL));
+	gtk_widget_set_sensitive(findMenuItem(IDM_CPU_DEBUG), (Game != NULL));
 	
 	// Hide/Show debug entries depending on the active console.
-	
 	if (Game != NULL)
 	{
-		for (i = 1; i <= 9; i++)
+		GtkWidget *mnuDebugItem;
+		bool checkDebug;
+		for (unsigned short i = 1; i <= 9; i++)
 		{
-			sprintf(Str_Tmp, "CPUMenu_Debug_SubMenu_%d", i);
-			MItem_Debug_Item = lookup_widget(gens_window, Str_Tmp);
 			// TODO: Use debug constants instead?
 			if (i >= 1 && i <= 3)
 				checkDebug = 1;
@@ -403,83 +390,74 @@ void Sync_Gens_Window_CPUMenu(void)
 				checkDebug = 0;
 			}
 			
+			mnuDebugItem = findMenuItem(IDM_CPU_DEBUG + i);
 			if (checkDebug)
-				gtk_widget_show(MItem_Debug_Item);
+				gtk_widget_show(mnuDebugItem);
 			else
-				gtk_widget_hide(MItem_Debug_Item);
+				gtk_widget_hide(mnuDebugItem);
 			
 			// Make sure the check state for this debug item is correct.
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Debug_Item), (Debug == i));
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDebugItem), (Debug == i));
 		}
-		// Separators
-		MItem_Debug_Item = lookup_widget(gens_window, "CPUMenu_Debug_SubMenu_Sep1");
-		if (SegaCD_Started)
-			gtk_widget_show(MItem_Debug_Item);
-		else
-			gtk_widget_hide(MItem_Debug_Item);
 		
-		MItem_Debug_Item = lookup_widget(gens_window, "CPUMenu_Debug_SubMenu_Sep2");
-		if (_32X_Started)
-			gtk_widget_show(MItem_Debug_Item);
+		// Separators
+		mnuDebugItem = findMenuItem(IDM_CPU_DEBUG_SEGACD_SEPARATOR);
+		if (SegaCD_Started)
+			gtk_widget_show(mnuDebugItem);
 		else
-			gtk_widget_hide(MItem_Debug_Item);
+			gtk_widget_hide(mnuDebugItem);
+		
+		mnuDebugItem = findMenuItem(IDM_CPU_DEBUG_32X_SEPARATOR);
+		if (_32X_Started)
+			gtk_widget_show(mnuDebugItem);
+		else
+			gtk_widget_hide(mnuDebugItem);
 	}
 #endif /* GENS_DEBUGGER */
-
+	
 	// Country code
-	if (Country == -1)
-		MItem_Country = lookup_widget(gens_window, "CPUMenu_Country_SubMenu_Auto");
-	else
-	{
-		sprintf(Str_Tmp, "CPUMenu_Country_SubMenu_%d", Country);
-		MItem_Country = lookup_widget(gens_window, Str_Tmp);
-	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Country), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_CPU_COUNTRY_AUTO + Country + 1)), TRUE);
 	
-	// TODO: Country order (maybe?)
-	
-	// Hide and show appropriate RESET items.
-	MItem_Reset68K = lookup_widget(gens_window, "CPUMenu_Reset68000");
-	MItem_ResetM68K = lookup_widget(gens_window, "CPUMenu_ResetMain68000");
-	MItem_ResetS68K = lookup_widget(gens_window, "CPUMenu_ResetSub68000");
-	MItem_ResetMSH2 = lookup_widget(gens_window, "CPUMenu_ResetMainSH2");
-	MItem_ResetSSH2 = lookup_widget(gens_window, "CPUMenu_ResetSubSH2");
+	// Hide and show the appropriate RESET items.
+	GtkWidget *mnuReset68K  = findMenuItem(IDM_CPU_RESET68K);
+	GtkWidget *mnuResetM68K = findMenuItem(IDM_CPU_RESETMAIN68K);
+	GtkWidget *mnuResetS68K = findMenuItem(IDM_CPU_RESETSUB68K);
+	GtkWidget *mnuResetMSH2 = findMenuItem(IDM_CPU_RESETMAINSH2);
+	GtkWidget *mnuResetSSH2 = findMenuItem(IDM_CPU_RESETSUBSH2);
 	
 	if (SegaCD_Started)
 	{
 		// SegaCD: Hide regular 68000; show Main 68000 and Sub 68000.
-		gtk_widget_hide(MItem_Reset68K);
-		gtk_widget_show(MItem_ResetM68K);
-		gtk_widget_show(MItem_ResetS68K);
+		gtk_widget_hide(mnuReset68K);
+		gtk_widget_show(mnuResetM68K);
+		gtk_widget_show(mnuResetS68K);
 	}
 	else
 	{
 		// No SegaCD: Show regular 68000; hide Main 68000 and Sub 68000;
-		gtk_widget_show(MItem_Reset68K);
-		gtk_widget_hide(MItem_ResetM68K);
-		gtk_widget_hide(MItem_ResetS68K);
+		gtk_widget_show(mnuReset68K);
+		gtk_widget_hide(mnuResetM68K);
+		gtk_widget_hide(mnuResetS68K);
 	}
 	
 	if (_32X_Started)
 	{
 		// 32X: Show Main SH2 and Sub SH2.
-		gtk_widget_show(MItem_ResetMSH2);
-		gtk_widget_show(MItem_ResetSSH2);
+		gtk_widget_show(mnuResetMSH2);
+		gtk_widget_show(mnuResetSSH2);
 	}
 	else
 	{
 		// 32X: Hide Main SH2 and Sub SH2.
-		gtk_widget_hide(MItem_ResetMSH2);
-		gtk_widget_hide(MItem_ResetSSH2);
+		gtk_widget_hide(mnuResetMSH2);
+		gtk_widget_hide(mnuResetSSH2);
 	}
 	
 	// SegaCD Perfect Sync
-	MItem_SegaCD_PerfectSync = lookup_widget(gens_window, "CPUMenu_SegaCD_PerfectSync");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SegaCD_PerfectSync), SegaCD_Accurate);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_CPU_SEGACDPERFECTSYNC)), SegaCD_Accurate);
 	
 	// Enable callbacks.
 	do_callbacks = 1;
-#endif
 }
 
 
