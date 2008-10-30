@@ -51,8 +51,11 @@ extern int do_callbacks;
 #include <tr1/unordered_map>
 #include <utility>
 #include <stdint.h>
-extern std::tr1::unordered_map<uint16_t, GtkWidget*> gensMenuMap;
-typedef std::pair<uint16_t, GtkWidget*> gensMenuMapItem;
+typedef std::tr1::unordered_map<uint16_t, GtkWidget*> gtkMenuMap;
+extern gtkMenuMap gensMenuMap;
+typedef std::pair<uint16_t, GtkWidget*> gtkMenuMapItem;
+
+GtkWidget* findMenuItem(uint16_t id);
 
 #endif /* __cplusplus */
 

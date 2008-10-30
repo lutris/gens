@@ -28,7 +28,7 @@
 
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
-#include "gens_window_callbacks.hpp"
+#include "ui/common/gens/gens_menu.h"
 
 #include "gtk-misc.h"
 
@@ -178,28 +178,37 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
-#if 0
-	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
-	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
-	GtkWidget *MItem_FrameSkip;
-	GtkWidget *MItem_ScreenShot;
+	uint16_t id;
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
 	// Simple checkbox items
-	MItem_VSync = lookup_widget(gens_window, "GraphicsMenu_VSync");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_VSync), Video.VSync_W);
-	MItem_Stretch = lookup_widget(gens_window, "GraphicsMenu_Stretch");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Stretch), draw->stretch());
-	MItem_SpriteLimit = lookup_widget(gens_window, "GraphicsMenu_SpriteLimit");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SpriteLimit), Sprite_Over);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_VSYNC)), Video.VSync_W);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH)), draw->stretch());
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_SPRITELIMIT)), Sprite_Over);
 	
 	// Bits per pixel
-	sprintf(Str_Tmp, "GraphicsMenu_bpp_SubMenu_%d", bpp);
-	MItem_bpp = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_bpp), TRUE);
+	switch (bpp)
+	{
+		case 15:
+			id = IDM_GRAPHICS_BPP_15;
+			break;
+		case 16:
+			id = IDM_GRAPHICS_BPP_16;
+			break;
+		case 32:
+			id = IDM_GRAPHICS_BPP_32;
+			break;
+		default:
+			id = 0;
+			break;
+	}
 	
+	if (id != 0)
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
+	
+	/*
 	// Rebuild the Render submenu
 	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
 	Sync_Gens_Window_GraphicsMenu_Render(MItem_Render_SubMenu);
@@ -209,61 +218,53 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", rendMode);
 	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
+	*/
 	
 	// Frame Skip
-	if (Frame_Skip == -1)
-		strcpy(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_Auto");
-	else
-		sprintf(Str_Tmp, "GraphicsMenu_FrameSkip_SubMenu_%d", Frame_Skip);
-	MItem_FrameSkip = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_FrameSkip), TRUE);
+	id = (IDM_GRAPHICS_FRAMESKIP + 1) + Frame_Skip;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
 	// Screen Shot
-	MItem_ScreenShot = lookup_widget(gens_window, "GraphicsMenu_ScreenShot");
-	gtk_widget_set_sensitive(MItem_ScreenShot,
-		(Genesis_Started || SegaCD_Started || _32X_Started));
+	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH),
+				 (Genesis_Started || SegaCD_Started || _32X_Started));
 	
 #ifdef GENS_OPENGL
-	GtkWidget *MItem_OpenGL, *MItem_OpenGLFilter;
-	GtkWidget *MItem_OpenGL_Resolution, *MItem_OpenGL_Resolution_Custom;
-	
-	MItem_OpenGL = lookup_widget(gens_window, "GraphicsMenu_OpenGL");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL), Video.OpenGL);
-	MItem_OpenGLFilter = lookup_widget(gens_window, "GraphicsMenu_OpenGLFilter");
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGLFilter), Video.glLinearFilter);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL_FILTER)), Video.glLinearFilter);
 	
 	// OpenGL Resolution
 	
-	// Get the Custom resolution menu item.
-	MItem_OpenGL_Resolution_Custom = lookup_widget(gens_window, "GraphicsMenu_OpenGLRes_SubMenu_Custom");
+	if (Video.Width_GL == 320 && Video.Height_GL == 240)
+		id = IDM_GRAPHICS_OPENGL_RES_320;
+	else if (Video.Width_GL == 640 && Video.Height_GL == 480)
+		id = IDM_GRAPHICS_OPENGL_RES_640;
+	else if (Video.Width_GL == 800 && Video.Height_GL == 600)
+		id = IDM_GRAPHICS_OPENGL_RES_800;
+	else if (Video.Width_GL == 1024 && Video.Height_GL == 768)
+		id = IDM_GRAPHICS_OPENGL_RES_1024;
+	else
+		id = IDM_GRAPHICS_OPENGL_RES_CUSTOM;
 	
-	// Check if the current GL resolution is a custom resolution.
-	// TODO: Make an array with predefined resolutions somewhere.
-	if ((Video.Width_GL == 320 && Video.Height_GL == 240) ||
-	    (Video.Width_GL == 640 && Video.Height_GL == 480) ||
-	    (Video.Width_GL == 800 && Video.Height_GL == 600) ||
-	    (Video.Width_GL == 1024 && Video.Height_GL == 768))
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
+	
+	// Set the text of the custom resolution item.
+	GtkWidget *mnuGLResCustom = findMenuItem(IDM_GRAPHICS_OPENGL_RES_CUSTOM);
+	if (id == IDM_GRAPHICS_OPENGL_RES_CUSTOM)
 	{
-		// Predefined resolution.
-		sprintf(Str_Tmp, "GraphicsMenu_OpenGLRes_SubMenu_%dx%d", Video.Width_GL, Video.Height_GL);
-		MItem_OpenGL_Resolution = lookup_widget(gens_window, Str_Tmp);
-		// Set the text of the Custom entry to "Custom..."
-		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), "Custom...");
+		// Custom resolution. Set the text.
+		char sCustomRes[32];
+		sprintf(sCustomRes, "Custom... (%dx%d)", Video.Width_GL, Video.Height_GL);
+		gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGLResCustom)->child), sCustomRes);
 	}
 	else
 	{
-		// Custom resolution.
-		MItem_OpenGL_Resolution = MItem_OpenGL_Resolution_Custom;
-		// Set the text of the Custom entry to "Custom... (wxh)"
-		sprintf(Str_Tmp, "Custom... (%dx%d)", Video.Width_GL, Video.Height_GL);
-		gtk_label_set_text(GTK_LABEL(GTK_BIN(MItem_OpenGL_Resolution_Custom)->child), Str_Tmp);
+		// Predefined resolution.
+		gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGLResCustom)->child), "Custom...");
 	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_OpenGL_Resolution), TRUE);
 #endif
 	
 	// Enable callbacks.
 	do_callbacks = 1;
-#endif
 }
 
 
