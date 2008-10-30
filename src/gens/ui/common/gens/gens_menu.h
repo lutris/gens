@@ -53,6 +53,7 @@ extern "C" {
 
 // Accelerator keys
 #define GMAK_BACKSPACE		0x08
+#define GMAK_TAB		0x09
 #define GMAK_ENTER		0x0D
 #define GMAK_F1			0x201
 #define GMAK_F2			0x202
