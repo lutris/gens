@@ -87,8 +87,8 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
-/*
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
+/*
 static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state);
 */
 
@@ -115,10 +115,10 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 		case IDM_SOUND_MENU:
 			return GensWindow_MenuItemCallback_SoundMenu(menuID, state);
 			break;
-		/*
 		case IDM_OPTIONS_MENU:
 			return GensWindow_MenuItemCallback_OptionsMenu(menuID, state);
 			break;
+		/*
 		case IDM_HELP_MENU:
 			return GensWindow_MenuItemCallback_HelpMenu(menuID, state);
 			break;
@@ -642,6 +642,59 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 	// Synchronize the Sound Menu
 	Sync_Gens_Window_SoundMenu();
 	
+	// Menu item handled.
+	return 1;
+}
+
+
+static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state)
+{
+	switch (menuID)
+	{
+		case IDM_OPTIONS_GENERAL:
+			Open_General_Options();
+			break;
+		
+		case IDM_OPTIONS_JOYPADS:
+			Open_Controller_Config();
+			break;
+		
+		case IDM_OPTIONS_BIOSMISCFILES:
+			Open_BIOS_Misc_Files();
+			break;
+		
+		case IDM_OPTIONS_CURRENT_CD_DRIVE:
+			Open_Select_CDROM();
+			break;
+		
+		case IDM_OPTIONS_LOADCONFIG:
+			Config::loadAs(Game);
+			Sync_Gens_Window();
+			break;
+		
+		case IDM_OPTIONS_DIRECTORIES:
+			Open_Directory_Config();
+			break;
+		
+		case IDM_OPTIONS_SAVECONFIGAS:
+			Config::saveAs();
+			break;
+		
+		default:
+			if ((menuID & 0xFF00) == IDM_OPTIONS_SEGACDSRAMSIZE)
+			{
+				// SegaCD SRAM Size change.
+				Change_SegaCD_SRAM_Size(menuID - IDM_OPTIONS_SEGACDSRAMSIZE - 1);
+				Sync_Gens_Window_OptionsMenu();
+			}
+			else
+			{
+				// Unknown menu item ID.
+				return 0;
+			}
+			break;
+	}
+
 	// Menu item handled.
 	return 1;
 }
