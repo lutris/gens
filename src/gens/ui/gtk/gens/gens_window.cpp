@@ -62,8 +62,8 @@ GtkAccelGroup *accel_group;
 static void create_gens_window_menubar(GtkWidget *container);
 
 #include "ui/common/gens/gens_menu.h"
-static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
-static void GensWindow_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
+static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
+static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
 
 
 // Set to 0 to temporarily disable callbacks.
@@ -156,16 +156,16 @@ static void create_gens_window_menubar(GtkWidget *container)
 	gtk_container_add(GTK_CONTAINER(container), MenuBar);
 	
 	// Menus
-	ParseMenu(&gmiMain[0], MenuBar);
+	GTK_ParseMenu(&gmiMain[0], MenuBar);
 }
 
 
 /**
- * ParseMenu(): Parse the menu structs.
+ * GTK_ParseMenu(): Parse the menu structs.
  * @param menu First item of the array of menu structs to parse.
  * @param container Container to add the menu items to.
  */
-static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
+static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 {
 	GtkWidget *mnuItem, *subMenu;
 	GtkWidget *icon;
@@ -366,14 +366,14 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 					       (GDestroyNotify)g_object_unref);
 			
 			// Parse the submenu.
-			ParseMenu(menu->submenu, subMenu);
+			GTK_ParseMenu(menu->submenu, subMenu);
 		}
 		
 		if (bSetCallbackHandler)
 		{
 			// Set the callback handler.
 			g_signal_connect((gpointer)mnuItem, "activate",
-					 G_CALLBACK(GensWindow_MenuItemCallback), GINT_TO_POINTER(menu->id));
+					 G_CALLBACK(GensWindow_GTK_MenuItemCallback), GINT_TO_POINTER(menu->id));
 		}
 		
 		// Next menu item.
@@ -383,11 +383,11 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 
 
 /**
- * GensWindow_MenuItemCallback(): Menu item callback.
+ * GensWindow_GTK_MenuItemCallback(): Menu item callback.
  * @param menuitem Menu item widget.
  * @param user_data Menu item ID.
  */
-static void GensWindow_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
+static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
 {
 	printf("Menu selection: 0x%04X\n", GPOINTER_TO_INT(user_data));
 };
