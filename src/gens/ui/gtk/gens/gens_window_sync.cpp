@@ -53,19 +53,6 @@
 using std::string;
 
 
-// Macro to create a menu item with radio buttons.
-#define NewMenuItem_Radio(MenuItemWidget, MenuItemCaption, MenuItemName, Container, State, RadioGroup)	\
-{												\
-	MenuItemWidget = gtk_radio_menu_item_new_with_mnemonic(RadioGroup, (MenuItemCaption));	\
-	RadioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(MenuItemWidget));	\
-	gtk_widget_set_name(MenuItemWidget, MenuItemName);					\
-	gtk_widget_show(MenuItemWidget);							\
-	gtk_container_add(GTK_CONTAINER(Container), MenuItemWidget);				\
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MenuItemWidget), State);		\
-	GLADE_HOOKUP_OBJECT(gens_window, MenuItemWidget, MenuItemName);				\
-}
-
-
 /**
  * Sync_Gens_Window(): Synchronize the GENS Main Window.
  */
