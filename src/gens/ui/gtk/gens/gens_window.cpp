@@ -289,43 +289,72 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 	GtkWidget *mnuItem, *subMenu;
 	GtkWidget *icon;
 	char widgetName[64];
-	char *mnuText, *mnemonicPos;
+	char *sMenuText, *mnemonicPos;
+	bool bMenuTextSet, bMenuHasIcon;
+	GSList *radioGroup = NULL;
 	
 	while (menu->id != 0)
 	{
-		if ((menu->flags & GMF_ITEM_MASK) == GMF_ITEM_SEPARATOR)
+		// Convert the Win32/Qt mnemonic symbol ("&") to the GTK+ mnemonic symbol ("_").
+		if (menu->text)
 		{
-			// Separator.
-			mnuItem = gtk_separator_menu_item_new();
-			
-			sprintf(widgetName, "mnu_sep_0x%08X_0x%04X", (unsigned int)menu, menu->id);
-			gtk_widget_set_name(mnuItem, widgetName);
-			
-			gtk_widget_set_sensitive(mnuItem, FALSE);
-			gtk_widget_show(mnuItem);
-			gtk_container_add(GTK_CONTAINER(container), mnuItem);
-			
-			g_object_set_data_full(G_OBJECT(gens_window), widgetName,
-					       g_object_ref(mnuItem),
-					       (GDestroyNotify)g_object_unref);
-			
-			// Next menu item.
-			menu++;
-			continue;
+			// Menu text specified.
+			bMenuTextSet = true;
+			sMenuText = strdup(menu->text);
+			mnemonicPos = strchr(sMenuText, '&');
+			if (mnemonicPos)
+				*mnemonicPos = '_';
+		}
+		else
+		{
+			// No menu text.
+			sMenuText = "";
+			bMenuTextSet = false;
 		}
 		
-		// Convert the Win32/Qt mnemonic symbol ("&") to the GTK+ mnemonic symbol ("_").
-		mnuText = strdup(menu->text);
-		mnemonicPos = strchr(mnuText, '&');
-		if (mnemonicPos)
-			*mnemonicPos = '_';
-		
 		// TODO: Radio/Check support.
-		if (menu->flags & GMF_ICON_MASK)
-			mnuItem = gtk_image_menu_item_new_with_mnemonic(mnuText);
-		else
-			mnuItem = gtk_menu_item_new_with_mnemonic(mnuText);
-		free(mnuText);
+		bMenuHasIcon = false;
+		switch ((menu->flags & GMF_ITEM_MASK))
+		{
+			case GMF_ITEM_SEPARATOR:
+				// Separator.
+				mnuItem = gtk_separator_menu_item_new();
+				gtk_widget_set_sensitive(mnuItem, FALSE);
+				radioGroup = NULL;
+				break;
+			
+			case GMF_ITEM_CHECK:
+				// Check menu item.
+				mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText);
+				radioGroup = NULL;
+				break;
+			
+			case GMF_ITEM_RADIO:
+				// Radio menu item.
+				mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, sMenuText);
+				radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
+				break;
+				
+			default:
+				// Not a special menu item.
+				radioGroup = NULL;
+				
+				// Check if an icon was specified.
+				if (menu->flags & GMF_ICON_MASK)
+				{
+					bMenuHasIcon = true;
+					mnuItem = gtk_image_menu_item_new_with_mnemonic(sMenuText);
+				}
+				else
+				{
+					mnuItem = gtk_menu_item_new_with_mnemonic(sMenuText);
+				}
+				
+				break;
+		}
+		
+		if (bMenuTextSet)
+			free(sMenuText);
 		
 		sprintf(widgetName, "mnu_0x%08X_0x%04X", (unsigned int)menu, menu->id);
 		gtk_widget_set_name(mnuItem, widgetName);
@@ -337,7 +366,7 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 				       (GDestroyNotify)g_object_unref);
 		
 		// Check if an icon is specified.
-		if (menu->flags & GMF_ICON_MASK)
+		if (bMenuHasIcon)
 		{
 			// Icon specified.
 			if (!menu->iconName)
