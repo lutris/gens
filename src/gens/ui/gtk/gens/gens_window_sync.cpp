@@ -580,27 +580,14 @@ void Sync_Gens_Window_SoundMenu(void)
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {
-#if 0
-	GtkWidget *SRAMSize;
-	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
 	// SegaCD SRAM Size
-	if (BRAM_Ex_State & 0x100)
-	{
-		// RAM cart selected.
-		sprintf(Str_Tmp, "OptionsMenu_SegaCDSRAMSize_SubMenu_%d", BRAM_Ex_Size);
-	}
-	else
-	{
-		// No RAM cart selected.
-		strcpy(Str_Tmp, "OptionsMenu_SegaCDSRAMSize_SubMenu_None");
-	}
-	SRAMSize = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(SRAMSize), TRUE);
+	int bramID = ((BRAM_Ex_State & 0x100) ? BRAM_Ex_Size : -1);
+	GtkWidget *mnuBRAMSize = findMenuItem(IDM_OPTIONS_SEGACDSRAMSIZE_NONE + (bramID + 1));
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuBRAMSize), TRUE);
 	
 	// Enable callbacks.
 	do_callbacks = 1;
-#endif
 }
