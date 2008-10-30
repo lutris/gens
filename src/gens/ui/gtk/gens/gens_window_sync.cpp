@@ -85,8 +85,6 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-	gboolean saveStateEnable;
-	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
 	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
@@ -164,25 +162,17 @@ void Sync_Gens_Window_FileMenu(void)
 	// If no recent ROMs were found, disable the ROM History menu.
 	gtk_widget_set_sensitive(mnuROMHistory, romsFound);
 	
-#if 0
 	// Savestate menu items
-	saveStateEnable = (Genesis_Started || SegaCD_Started || _32X_Started);
-	MItem_LoadState = lookup_widget(gens_window, "FileMenu_LoadState");
-	gtk_widget_set_sensitive(MItem_LoadState, saveStateEnable);
-	MItem_SaveStateAs = lookup_widget(gens_window, "FileMenu_SaveState");
-	gtk_widget_set_sensitive(MItem_SaveStateAs, saveStateEnable);
-	MItem_QuickLoad = lookup_widget(gens_window, "FileMenu_QuickLoad");
-	gtk_widget_set_sensitive(MItem_QuickLoad, saveStateEnable);
-	MItem_QuickSave = lookup_widget(gens_window, "FileMenu_QuickSave");
-	gtk_widget_set_sensitive(MItem_QuickSave, saveStateEnable);
+	gboolean saveStateEnable = (Genesis_Started || SegaCD_Started || _32X_Started);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKSAVE), saveStateEnable);
 	
 	// Current savestate
-	sprintf(Str_Tmp, "FileMenu_ChangeState_SubMenu_%d", Current_State);
-	MItem_SaveState = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SaveState), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
 	
 	// TODO: Disable Close ROM if no ROM is loaded.
-#endif
 	
 	// Enable callbacks.
 	do_callbacks = 1;
