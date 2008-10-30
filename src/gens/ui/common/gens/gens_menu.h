@@ -54,6 +54,18 @@ extern "C" {
 // Accelerator keys
 #define GMAK_BACKSPACE		0x08
 #define GMAK_ENTER		0x0D
+#define GMAK_F1			0x201
+#define GMAK_F2			0x202
+#define GMAK_F3			0x203
+#define GMAK_F4			0x204
+#define GMAK_F5			0x205
+#define GMAK_F6			0x206
+#define GMAK_F7			0x207
+#define GMAK_F8			0x208
+#define GMAK_F9			0x209
+#define GMAK_F10		0x20A
+#define GMAK_F11		0x20B
+#define GMAK_F12		0x20C
 
 struct GensMenuItem_t
 {
