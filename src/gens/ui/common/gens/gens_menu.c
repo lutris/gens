@@ -50,7 +50,7 @@ struct GensMenuItem_t gmiMain[] =
 	{IDM_SOUND_MENU,	GMF_ITEM_SUBMENU,	"&Sound",		&gmiSound[0],		0, 0, NULL},
 	{IDM_OPTIONS_MENU,	GMF_ITEM_SUBMENU,	"&Options",		&gmiOptions[0],		0, 0, NULL},
 	{IDM_HELP_MENU,		GMF_ITEM_SUBMENU,	"&Help",		&gmiHelp[0],		0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -80,7 +80,7 @@ static struct GensMenuItem_t gmiFile[] =
 #else /* !GENS_OS_WIN32 */
  	{IDM_FILE_QUIT,		GMF_ICON_STOCK,		"&Quit",		NULL,	GMAM_CTRL, 'Q', "gtk-quit"},
 #endif /* GENS_OS_WIN32 */
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 static struct GensMenuItem_t gmiFile_ChgState[] =
@@ -95,7 +95,7 @@ static struct GensMenuItem_t gmiFile_ChgState[] =
 	{IDM_FILE_CHANGESTATE_7, GMF_ITEM_RADIO, "7", NULL, 0, 0, NULL},
 	{IDM_FILE_CHANGESTATE_8, GMF_ITEM_RADIO, "8", NULL, 0, 0, NULL},
 	{IDM_FILE_CHANGESTATE_9, GMF_ITEM_RADIO, "9", NULL, 0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -135,7 +135,7 @@ static struct GensMenuItem_t gmiGraphics[] =
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_FRAMESKIP,	GMF_ICON_FILE | GMF_ITEM_SUBMENU, "Frame Skip",		&gmiGraphics_FrameSkip[0], 0, 0, "2rightarrow.png"},
 	{IDM_GRAPHICS_SCREENSHOT,	GMF_ICON_STOCK,		"Screen Shot",			NULL,	GMAM_SHIFT, GMAK_BACKSPACE, "gtk-copy"},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 #ifdef GENS_OPENGL
@@ -146,7 +146,7 @@ static struct GensMenuItem_t gmiGraphics_GLRes[] =
 	{IDM_GRAPHICS_OPENGL_RES_800,		GMF_ITEM_RADIO,		"800x600",	NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_OPENGL_RES_1024,		GMF_ITEM_RADIO,		"1024x768",	NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_OPENGL_RES_CUSTOM,	GMF_ITEM_RADIO,		"Custom",	NULL,	0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 #endif
 
@@ -156,7 +156,7 @@ static struct GensMenuItem_t gmiGraphics_bpp[] =
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (555)",	NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32",		NULL,	0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 #endif
 
@@ -172,7 +172,7 @@ static struct GensMenuItem_t gmiGraphics_FrameSkip[] =
 	{IDM_GRAPHICS_FRAMESKIP_6,	GMF_ITEM_RADIO,		"6",		NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_FRAMESKIP_7,	GMF_ITEM_RADIO,		"7",		NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_FRAMESKIP_8,	GMF_ITEM_RADIO,		"8",		NULL,	0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -200,7 +200,7 @@ static struct GensMenuItem_t gmiCPU[] =
 	{IDM_CPU_RESETZ80,		GMF_ITEM_NORMAL,	"Reset Z80",			NULL,	0, 0, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 	{IDM_CPU_SEGACDPERFECTSYNC,	GMF_ITEM_CHECK,		"SegaCD Perfect Sync (SLOW)",	NULL,	0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 #ifdef GENS_DEBUGGER
@@ -217,7 +217,7 @@ static struct GensMenuItem_t gmiCPU_Debug[] =
 	{IDM_CPU_DEBUG_32X_MSH2,		GMF_ITEM_CHECK,		"32X - Main SH2",	NULL, 0, 0, NULL},
 	{IDM_CPU_DEBUG_32X_SSH2,		GMF_ITEM_CHECK,		"32X - Sub SH2",	NULL, 0, 0, NULL},
 	{IDM_CPU_DEBUG_32X_VDP,			GMF_ITEM_CHECK,		"32X - VDP",		NULL, 0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 #endif /* GENS_DEBUGGER */
 
@@ -230,7 +230,7 @@ static struct GensMenuItem_t gmiCPU_Country[] =
 	{IDM_CPU_COUNTRY_JAPAN_PAL,	GMF_ITEM_RADIO,		"Japan (PAL)",		NULL, 0, 0, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, NULL},
 	{IDM_CPU_COUNTRY_ORDER,		GMF_ITEM_NORMAL,	"Auto-Detection Order...", NULL, 0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -260,7 +260,7 @@ static struct GensMenuItem_t gmiSound[] =
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, NULL},
 	{IDM_SOUND_WAVDUMP,		GMF_ITEM_NORMAL,	"Start WAV Dump",	NULL, 0, 0, NULL},
 	{IDM_SOUND_GYMDUMP,		GMF_ITEM_NORMAL,	"Start GYM Dump",	NULL, 0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 static struct GensMenuItem_t gmiSound_Rate[] =
@@ -271,7 +271,7 @@ static struct GensMenuItem_t gmiSound_Rate[] =
 	{IDM_SOUND_RATE_24000,		GMF_ITEM_RADIO,		"24,000 Hz",		NULL, 0, 0, NULL},
 	{IDM_SOUND_RATE_44100,		GMF_ITEM_RADIO,		"44,100 Hz",		NULL, 0, 0, NULL},
 	{IDM_SOUND_RATE_48000,		GMF_ITEM_RADIO,		"48,000 Hz",		NULL, 0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -294,7 +294,7 @@ static struct GensMenuItem_t gmiOptions[] =
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, NULL},
 	{IDM_OPTIONS_LOADCONFIG,	GMF_ICON_STOCK,		"&Load Config...",	NULL, 0, 0, "gtk-open"},
 	{IDM_OPTIONS_SAVECONFIGAS,	GMF_ICON_STOCK,		"&Save Config As...",	NULL, 0, 0, "gtk-save-as"},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 static struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
@@ -304,7 +304,7 @@ static struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 	{IDM_OPTIONS_SEGACDSRAMSIZE_16KB,	GMF_ITEM_RADIO, "16 KB", NULL, 0, 0, NULL},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_32KB,	GMF_ITEM_RADIO, "32 KB", NULL, 0, 0, NULL},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_64KB,	GMF_ITEM_RADIO, "64 KB", NULL, 0, 0, NULL},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -314,5 +314,5 @@ static struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 static struct GensMenuItem_t gmiHelp[] =
 {
 	{IDM_HELP_ABOUT,	GMF_ICON_STOCK,		"&About",	NULL,	0, 0, "gtk-help"},
-	{0, 0, NULL, NULL, NULL}
+	{0, 0, NULL, NULL, 0, 0, NULL}
 };
