@@ -64,7 +64,7 @@ static struct GensMenuItem_t gmiFile[] =
 	{IDM_FILE_OPENROM,	GMF_ICON_STOCK,		"&Open ROM...",		NULL,	GMAM_CTRL, 'O', "gtk-open"},
 	{IDM_FILE_BOOTCD,	GMF_ICON_STOCK,		"&Boot CD",		NULL,	GMAM_CTRL, 'B', "gtk-cdrom"},
 	{IDM_FILE_NETPLAY,	GMF_ICON_FILE,		"&Netplay",		NULL,	0, 0, "modem.png"},
-	{IDM_FILE_ROMHISTORY,	GMF_ICON_FILE,		"ROM &History",		NULL,	0, 0, "history.png"},
+	{IDM_FILE_ROMHISTORY,	GMF_ICON_FILE | GMF_ITEM_SUBMENU, "ROM &History", NULL, 0, 0, "history.png"},
 	{IDM_FILE_CLOSEROM,	GMF_ICON_STOCK,		"&Close ROM",		NULL,	GMAM_CTRL, 'W', "gtk-close"},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, NULL},
 	{IDM_FILE_GAMEGENIE,	GMF_ICON_FILE,		"&Game Genie",		NULL,	GMAM_CTRL, 'G', "password.png"},
@@ -129,7 +129,7 @@ static struct GensMenuItem_t gmiGraphics[] =
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 #endif /* GENS_OS_UNIX */
 	{IDM_GRAPHICS_COLORADJUST,	GMF_ICON_STOCK,		"Color Adjust...",		NULL,	0, 0, "gtk-select-color"},
-	{IDM_GRAPHICS_RENDER,		GMF_ICON_FILE,		"&Render",			NULL,	0, 0, "viewmag.png"},
+	{IDM_GRAPHICS_RENDER,		GMF_ICON_FILE | GMF_ITEM_SUBMENU, "&Render",		NULL,	0, 0, "viewmag.png"},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_SPRITELIMIT,	GMF_ITEM_CHECK,		"Sprite Limit",			NULL,	0, 0, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
