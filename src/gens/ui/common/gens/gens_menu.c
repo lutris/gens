@@ -290,7 +290,7 @@ static struct GensMenuItem_t gmiOptions[] =
 #ifdef GENS_CDROM
 	{IDM_OPTIONS_CURRENT_CD_DRIVE,	GMF_ICON_STOCK,		"Current &CD Drive...",	NULL, 0, 0, "gtk-cdrom"},
 #endif /* GENS_CDROM */
-	{IDM_OPTIONS_SEGACDSRAMSIZE,	GMF_ITEM_SEPARATOR | GMF_ICON_FILE, "Sega CD S&RAM Size", &gmiOptions_SegaCDSRAMSize[0], 0, 0, "memory.png"},
+	{IDM_OPTIONS_SEGACDSRAMSIZE,	GMF_ICON_FILE | GMF_ITEM_SUBMENU, "Sega CD S&RAM Size", &gmiOptions_SegaCDSRAMSize[0], 0, 0, "memory.png"},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, NULL},
 	{IDM_OPTIONS_LOADCONFIG,	GMF_ICON_STOCK,		"&Load Config...",	NULL, 0, 0, "gtk-open"},
 	{IDM_OPTIONS_SAVECONFIGAS,	GMF_ICON_STOCK,		"&Save Config As...",	NULL, 0, 0, "gtk-save-as"},
