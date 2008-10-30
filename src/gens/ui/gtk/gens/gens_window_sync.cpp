@@ -163,7 +163,7 @@ void Sync_Gens_Window_FileMenu(void)
 	gtk_widget_set_sensitive(mnuROMHistory, romsFound);
 	
 	// Savestate menu items
-	gboolean saveStateEnable = (Genesis_Started || SegaCD_Started || _32X_Started);
+	gboolean saveStateEnable = (Game != NULL);
 	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
 	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
 	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
@@ -226,8 +226,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
 	// Screen Shot
-	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH),
-				 (Genesis_Started || SegaCD_Started || _32X_Started));
+	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH), (Game != NULL));
 	
 #ifdef GENS_OPENGL
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
@@ -379,11 +378,11 @@ void Sync_Gens_Window_CPUMenu(void)
 	
 #ifdef GENS_DEBUGGER
 	MItem_Debug = lookup_widget(gens_window, "CPUMenu_Debug");
-	gtk_widget_set_sensitive(MItem_Debug, (Genesis_Started || SegaCD_Started || _32X_Started));
+	gtk_widget_set_sensitive(MItem_Debug, (Game != NULL));
 	
 	// Hide/Show debug entries depending on the active console.
 	
-	if (Genesis_Started || SegaCD_Started || _32X_Started)
+	if (Game != NULL)
 	{
 		for (i = 1; i <= 9; i++)
 		{
@@ -556,7 +555,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
-	allowAudioDump = (Genesis_Started || SegaCD_Started || _32X_Started) && audio->enabled();
+	allowAudioDump = (Game != NULL) && audio->enabled();
 	gtk_widget_set_sensitive(MItem_GYMDump, allowAudioDump);
 	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.
 	gtk_widget_set_sensitive(MItem_WAVDump, FALSE);
