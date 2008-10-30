@@ -86,8 +86,8 @@ using std::string;
 static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
-/*
 static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
+/*
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state);
 */
@@ -112,10 +112,10 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 		case IDM_CPU_MENU:
 			return GensWindow_MenuItemCallback_CPUMenu(menuID, state);
 			break;
-		/*
 		case IDM_SOUND_MENU:
 			return GensWindow_MenuItemCallback_SoundMenu(menuID, state);
 			break;
+		/*
 		case IDM_OPTIONS_MENU:
 			return GensWindow_MenuItemCallback_OptionsMenu(menuID, state);
 			break;
@@ -551,6 +551,96 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 			}
 			break;
 	}
+	
+	// Menu item handled.
+	return 1;
+}
+
+
+static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state)
+{
+	switch (menuID)
+	{
+		case IDM_SOUND_ENABLE:
+			Change_Sound(!state);
+			break;
+		
+		case IDM_SOUND_STEREO:
+			Change_Sound_Stereo(!state);
+			break;
+		
+		case IDM_SOUND_Z80:
+			Change_Z80(!state);
+			break;
+		
+		case IDM_SOUND_YM2612:
+			Change_YM2612(!state);
+			break;
+		
+		case IDM_SOUND_YM2612_IMPROVED:
+			Change_YM2612_Improved(!state);
+			break;
+		
+		case IDM_SOUND_DAC:
+			Change_DAC(!state);
+			break;
+		
+		case IDM_SOUND_DAC_IMPROVED:
+			Change_DAC_Improved(!state);
+			break;
+		
+		case IDM_SOUND_PSG:
+			Change_PSG(!state);
+			break;
+		
+		case IDM_SOUND_PSG_IMPROVED:
+			Change_PSG_Improved(!state);
+			break;
+		
+		case IDM_SOUND_PCM:
+			Change_PCM(!state);
+			break;
+		
+		case IDM_SOUND_PWM:
+			Change_PWM(!state);
+			break;
+		
+		case IDM_SOUND_CDDA:
+			Change_CDDA(!state);
+			break;
+		
+		case IDM_SOUND_WAVDUMP:
+			// Change WAV dump status.
+			if (!state)
+				audio->startWAVDump();
+			else
+				audio->stopWAVDump();
+			break;
+		
+		case IDM_SOUND_GYMDUMP:
+			// Change GYM dump status.
+			if (!state)
+				Start_GYM_Dump();
+			else
+				Stop_GYM_Dump();
+			break;
+		
+		default:
+			if ((menuID & 0xFF00) == IDM_SOUND_RATE)
+			{
+				// Sample rate change.
+				Change_Sample_Rate(menuID - IDM_SOUND_RATE);
+			}
+			else
+			{
+				// Unknown menu item ID.
+				return 0;
+			}
+			break;
+	}
+	
+	// Synchronize the Sound Menu
+	Sync_Gens_Window_SoundMenu();
 	
 	// Menu item handled.
 	return 1;
