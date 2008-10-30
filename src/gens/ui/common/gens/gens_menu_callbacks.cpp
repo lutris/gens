@@ -361,19 +361,19 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 		case IDM_GRAPHICS_BPP_15:
 			draw->setBpp(15);
 			Sync_Gens_Window_GraphicsMenu();
-			MESSAGE_NUM_L("Selected 15-bit color depth", "Selected 15-bit color depth", 1500);
+			MESSAGE_L("Selected 15-bit color depth", "Selected 15-bit color depth", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_16:
 			draw->setBpp(16);
 			Sync_Gens_Window_GraphicsMenu();
-			MESSAGE_NUM_L("Selected 16-bit color depth", "Selected 16-bit color depth", 1500);
+			MESSAGE_L("Selected 16-bit color depth", "Selected 16-bit color depth", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_32:
 			draw->setBpp(32);
 			Sync_Gens_Window_GraphicsMenu();
-			MESSAGE_NUM_L("Selected 32-bit color depth", "Selected 32-bit color depth", 1500);
+			MESSAGE_L("Selected 32-bit color depth", "Selected 32-bit color depth", 1500);
 			break;
 #endif /* GENS_OS_UNIX */
 		
