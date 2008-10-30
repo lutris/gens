@@ -46,12 +46,25 @@ extern "C" {
 #define GMF_ITEM_RADIO		0x0040
 #define GMF_ITEM_MASK		0x00F0
 
+// Accelerator modifiers
+#define GMAM_CTRL		0x0001
+#define GMAM_ALT		0x0002
+#define GMAM_SHIFT		0x0004
+
+// Accelerator keys
+#define GMAK_BACKSPACE		0x08
+#define GMAK_ENTER		0x0D
+
 struct GensMenuItem_t
 {
 	uint16_t id;				// Menu identifier. (0xFFFF == separator)
 	uint16_t flags;				// Menu item flags.
 	char* text;				// Menu text.
 	struct GensMenuItem_t* submenu;		// First element of submenu.
+	
+	// Accelerator. (Set both values to 0 for no accelerator.)
+	uint16_t accelModifier;
+	uint16_t accelKey;
 	
 	// GTK+ only. TODO: Add Win32 support.
 	char* iconName;				// Icon name
