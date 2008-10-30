@@ -611,7 +611,7 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 		
 		case IDM_SOUND_WAVDUMP:
 			// Change WAV dump status.
-			if (!state)
+			if (!audio->dumpingWAV())
 				audio->startWAVDump();
 			else
 				audio->stopWAVDump();
@@ -619,7 +619,7 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 		
 		case IDM_SOUND_GYMDUMP:
 			// Change GYM dump status.
-			if (!state)
+			if (!GYM_Dumping)
 				Start_GYM_Dump();
 			else
 				Stop_GYM_Dump();
