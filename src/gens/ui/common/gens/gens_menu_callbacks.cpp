@@ -77,8 +77,8 @@
 using std::string;
 
 static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state);
-/*
 static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state);
+/*
 static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
@@ -99,10 +99,10 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 		case IDM_FILE_MENU:
 			return GensWindow_MenuItemCallback_FileMenu(menuID, state);
 			break;
-		/*
 		case IDM_GRAPHICS_MENU:
 			return GensWindow_MenuItemCallback_GraphicsMenu(menuID, state);
 			break;
+		/*
 		case IDM_CPU_MENU:
 			return GensWindow_MenuItemCallback_CPUMenu(menuID, state);
 			break;
@@ -280,6 +280,146 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 		default:
 			// Unknown menu item ID.
 			return 0;
+	}
+	
+	// Menu item handled.
+	return 1;
+}
+
+
+static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state)
+{
+	switch (menuID)
+	{
+		case IDM_GRAPHICS_FULLSCREEN:
+			/*
+			if (Full_Screen)
+				Set_Render(0, -1, 1);
+			else
+				Set_Render(1, Render_FS, 1);
+			*/
+			
+			draw->setFullScreen(!draw->fullScreen());
+			// TODO: See if draw->setRender() is still needed.
+			//draw->setRender(Video.Render_Mode);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_VSYNC:
+			Change_VSync(!state);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_STRETCH:
+			Change_Stretch(!state);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+#ifdef GENS_OPENGL
+		case IDM_GRAPHICS_OPENGL:
+			Change_OpenGL(!state);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_FILTER:
+			Video.glLinearFilter = !state;
+			
+			if (Video.glLinearFilter)
+				MESSAGE_L("Enabled OpenGL Linear Filter", "Enabled OpenGL Linear Filter", 1500);
+			else
+				MESSAGE_L("Disabled OpenGL Linear Filter", "Disabled OpenGL Linear Filter", 1500);
+			
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_320:
+			Set_GL_Resolution(320, 240);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_640:
+			Set_GL_Resolution(640, 480);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_800:
+			Set_GL_Resolution(800, 600);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_1024:
+			Set_GL_Resolution(1024, 768);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_CUSTOM:
+			Open_OpenGL_Resolution();
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+#endif /* GENS_OPENGL */
+		
+#ifdef GENS_OS_UNIX
+		case IDM_GRAPHICS_BPP_15:
+			draw->setBpp(15);
+			Sync_Gens_Window_GraphicsMenu();
+			MESSAGE_NUM_L("Selected 15-bit color depth", "Selected 15-bit color depth", 1500);
+			break;
+		
+		case IDM_GRAPHICS_BPP_16:
+			draw->setBpp(16);
+			Sync_Gens_Window_GraphicsMenu();
+			MESSAGE_NUM_L("Selected 16-bit color depth", "Selected 16-bit color depth", 1500);
+			break;
+		
+		case IDM_GRAPHICS_BPP_32:
+			draw->setBpp(32);
+			Sync_Gens_Window_GraphicsMenu();
+			MESSAGE_NUM_L("Selected 32-bit color depth", "Selected 32-bit color depth", 1500);
+			break;
+#endif /* GENS_OS_UNIX */
+		
+		case IDM_GRAPHICS_COLORADJUST:
+			Open_Color_Adjust();
+			break;
+				
+		case IDM_GRAPHICS_SPRITELIMIT:
+			// Sprite Limit
+			Set_Sprite_Limit(!state);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+			
+		case IDM_GRAPHICS_FRAMESKIP_AUTO:
+		case IDM_GRAPHICS_FRAMESKIP_0:
+		case IDM_GRAPHICS_FRAMESKIP_1:
+		case IDM_GRAPHICS_FRAMESKIP_2:
+		case IDM_GRAPHICS_FRAMESKIP_3:
+		case IDM_GRAPHICS_FRAMESKIP_4:
+		case IDM_GRAPHICS_FRAMESKIP_5:
+		case IDM_GRAPHICS_FRAMESKIP_6:
+		case IDM_GRAPHICS_FRAMESKIP_7:
+		case IDM_GRAPHICS_FRAMESKIP_8:
+			// Set the frame skip value.
+			Set_Frame_Skip(menuID - IDM_GRAPHICS_FRAMESKIP - 1);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_SCREENSHOT:
+			audio->clearSoundBuffer();
+			ImageUtil::screenShot();
+			break;
+		
+		default:
+			if ((menuID & 0xFF00) == IDM_GRAPHICS_RENDER)
+			{
+				// Render mode change.
+				draw->setRender(menuID - IDM_GRAPHICS_RENDER);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			else
+			{
+				// Unknown menu item ID.
+				return 0;
+			}
+			break;
 	}
 	
 	// Menu item handled.
