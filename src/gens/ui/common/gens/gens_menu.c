@@ -188,6 +188,7 @@ static struct GensMenuItem_t gmiCPU[] =
 {
 #ifdef GENS_DEBUGGER
 	{IDM_CPU_DEBUG,			GMF_ITEM_SUBMENU,	"&Debug",			&gmiCPU_Debug[0], 0, 0, NULL},
+	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 #endif /* GENS_DEBUGGER */
 	{IDM_CPU_COUNTRY,		GMF_ITEM_SUBMENU,	"&Country",			&gmiCPU_Country[0], 0, 0, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
