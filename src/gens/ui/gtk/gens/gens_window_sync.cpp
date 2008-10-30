@@ -172,7 +172,8 @@ void Sync_Gens_Window_FileMenu(void)
 	// Current savestate
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
 	
-	// TODO: Disable Close ROM if no ROM is loaded.
+	// Disable "Close ROM" if no ROM is loaded.
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_CLOSEROM), (Game != NULL));
 	
 	// Enable callbacks.
 	do_callbacks = 1;
