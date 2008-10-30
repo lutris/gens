@@ -286,10 +286,125 @@ static void create_gens_window_menubar(GtkWidget *container)
  */
 static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 {
+	GtkWidget *mnuItem, *subMenu;
+	GtkWidget *icon;
+	char widgetName[64];
+	char *mnuText, *mnemonicPos;
+	
 	while (menu->id != 0)
 	{
+		if ((menu->flags & GMF_ITEM_MASK) == GMF_ITEM_SEPARATOR)
+		{
+			// Separator.
+			mnuItem = gtk_separator_menu_item_new();
+			
+			sprintf(widgetName, "mnu_sep_0x%08X_0x%04X", (unsigned int)menu, menu->id);
+			gtk_widget_set_name(mnuItem, widgetName);
+			
+			gtk_widget_set_sensitive(mnuItem, FALSE);
+			gtk_widget_show(mnuItem);
+			gtk_container_add(GTK_CONTAINER(container), mnuItem);
+			
+			g_object_set_data_full(G_OBJECT(gens_window), widgetName,
+					       g_object_ref(mnuItem),
+					       (GDestroyNotify)g_object_unref);
+			
+			// Next menu item.
+			menu++;
+			continue;
+		}
+		
+		// Convert the Win32/Qt mnemonic symbol ("&") to the GTK+ mnemonic symbol ("_").
+		mnuText = strdup(menu->text);
+		mnemonicPos = strchr(mnuText, '&');
+		if (mnemonicPos)
+			*mnemonicPos = '_';
+		
+		// TODO: Radio/Check support.
+		if (menu->flags & GMF_ICON_MASK)
+			mnuItem = gtk_image_menu_item_new_with_mnemonic(mnuText);
+		else
+			mnuItem = gtk_menu_item_new_with_mnemonic(mnuText);
+		free(mnuText);
+		
+		sprintf(widgetName, "mnu_0x%08X_0x%04X", (unsigned int)menu, menu->id);
+		gtk_widget_set_name(mnuItem, widgetName);
+		gtk_widget_show(mnuItem);
+		gtk_container_add(GTK_CONTAINER(container), mnuItem);
+		
+		g_object_set_data_full(G_OBJECT(gens_window), widgetName,
+				       g_object_ref(mnuItem),
+				       (GDestroyNotify)g_object_unref);
+		
+		// Check if an icon is specified.
+		if (menu->flags & GMF_ICON_MASK)
+		{
+			// Icon specified.
+			if (!menu->iconName)
+				break;
+			
+			icon = NULL;
+			switch (menu->flags & GMF_ICON_MASK)
+			{
+				case GMF_ICON_STOCK:
+					// GTK+ stock icon.
+					icon = gtk_image_new_from_stock(menu->iconName, GTK_ICON_SIZE_MENU);
+					if (!icon)
+					{
+						// Icon not found.
+						fprintf(stderr, "%s: GTK+ stock icon not found: %s\n", __func__, menu->iconName);
+					}
+					break;
+				
+				case GMF_ICON_FILE:
+					// Load an icon from a file.
+					icon = create_pixmap(menu->iconName);
+					if (!icon)
+					{
+						// Icon not found.
+						fprintf(stderr, "%s: Icon file not found: %s\n", __func__, menu->iconName);
+					}
+					break;
+				
+				default:
+					// Unknown icon type.
+					fprintf(stderr, "%s: Unknown icon type: 0x%04X\n", __func__, (menu->flags & GMF_ICON_MASK));
+					break;
+			}
+			
+			if (icon)
+			{
+				// Icon loaded.
+				sprintf(widgetName, "mnu_icon_0x%08X_0x%04X", (unsigned int)menu, menu->id);
+				gtk_widget_set_name(icon, widgetName);
+				gtk_widget_show(icon);
+				gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(mnuItem), icon);
+				
+				g_object_set_data_full(G_OBJECT(gens_window), widgetName,
+						       g_object_ref(icon),
+						       (GDestroyNotify)g_object_unref);
+			}
+		}
+		
+		// Check for a submenu.
+		if (((menu->flags & GMF_ITEM_MASK) == GMF_ITEM_SUBMENU) && (menu->submenu))
+		{
+			// Submenu.
+			subMenu = gtk_menu_new();
+			
+			sprintf(widgetName, "mnu_sub_0x%08X_0x%04X", (unsigned int)menu, menu->id);
+			gtk_widget_set_name(subMenu, widgetName);
+			gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuItem), subMenu);
+			
+			g_object_set_data_full(G_OBJECT(gens_window), widgetName,
+					       g_object_ref(subMenu),
+					       (GDestroyNotify)g_object_unref);
+			
+			// Parse the submenu.
+			ParseMenu(menu->submenu, subMenu);
+		}
+		
 		// Next menu item.
-		printf("X\n");
 		menu++;
 	}
 }
