@@ -69,6 +69,13 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+// For some reason, these aren't extern'd anywhere...
+extern "C"
+{
+	void main68k_reset();
+	void sub68k_reset();
+}
+
 // C includes
 #include <cstring>
 
@@ -78,8 +85,8 @@ using std::string;
 
 static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state);
-/*
 static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
+/*
 static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state);
@@ -102,10 +109,10 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 		case IDM_GRAPHICS_MENU:
 			return GensWindow_MenuItemCallback_GraphicsMenu(menuID, state);
 			break;
-		/*
 		case IDM_CPU_MENU:
 			return GensWindow_MenuItemCallback_CPUMenu(menuID, state);
 			break;
+		/*
 		case IDM_SOUND_MENU:
 			return GensWindow_MenuItemCallback_SoundMenu(menuID, state);
 			break;
@@ -413,6 +420,129 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 				// Render mode change.
 				draw->setRender(menuID - IDM_GRAPHICS_RENDER);
 				Sync_Gens_Window_GraphicsMenu();
+			}
+			else
+			{
+				// Unknown menu item ID.
+				return 0;
+			}
+			break;
+	}
+	
+	// Menu item handled.
+	return 1;
+}
+
+
+static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
+{
+	switch (menuID)
+	{
+		case IDM_CPU_COUNTRY_AUTO:
+		case IDM_CPU_COUNTRY_JAPAN_NTSC:
+		case IDM_CPU_COUNTRY_USA:
+		case IDM_CPU_COUNTRY_EUROPE:
+		case IDM_CPU_COUNTRY_JAPAN_PAL:
+			Change_Country(menuID - IDM_CPU_COUNTRY - 1);
+			Sync_Gens_Window_CPUMenu();
+			break;
+		
+		case IDM_CPU_COUNTRY_ORDER:
+			Open_Country_Code();
+			break;
+		
+		case IDM_CPU_HARDRESET:
+			system_reset();
+			break;
+		
+		case IDM_CPU_RESET68K:
+		case IDM_CPU_RESETMAIN68K:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game)
+				break;
+			
+			Paused = 0;
+			main68k_reset();
+			if (Genesis_Started || _32X_Started)
+			{
+				MESSAGE_L("68000 CPU reset", "68000 CPU reset", 1000);
+			}
+			else if (SegaCD_Started)
+			{
+				MESSAGE_L("Main 68000 CPU reset", "Main 68000 CPU reset", 1000);
+			}
+			break;
+		
+		case IDM_CPU_RESETSUB68K:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game || !SegaCD_Started)
+				break;
+			
+			Paused = 0;
+			sub68k_reset();
+			MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
+			break;
+		
+		case IDM_CPU_RESETMAINSH2:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game || !_32X_Started)
+				break;
+			
+			Paused = 0;
+			SH2_Reset(&M_SH2, 1);
+			MESSAGE_L("Master SH2 reset", "Master SH2 reset", 1000);
+			break;
+		
+		case IDM_CPU_RESETSUBSH2:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game || !_32X_Started)
+				break;
+			
+			Paused = 0;
+			SH2_Reset(&S_SH2, 1);
+			MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
+			break;
+		
+		case IDM_CPU_RESETZ80:
+			/*
+			if (Check_If_Kaillera_Running())
+				return 0;
+			*/
+			
+			if (!Game)
+				break;
+			
+			z80_Reset(&M_Z80);
+			MESSAGE_L("Z80 reset", "Z80 reset", 1000);
+			break;
+		
+		case IDM_CPU_SEGACDPERFECTSYNC:
+			Change_SegaCD_PerfectSync(!state);
+			Sync_Gens_Window_CPUMenu();
+			break;
+		
+		default:
+			if ((menuID & 0xFF00) == IDM_CPU_DEBUG)
+			{
+				// Debug mode change.
+				Change_Debug((menuID - IDM_CPU_DEBUG) + 1);
+				Sync_Gens_Window_CPUMenu();
 			}
 			else
 			{
