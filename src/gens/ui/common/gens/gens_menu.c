@@ -61,24 +61,24 @@ static struct GensMenuItem_t gmiFile_ChgState[];
 
 static struct GensMenuItem_t gmiFile[] =
 {
-	{IDM_FILE_OPENROM,	GMF_ICON_STOCK,		"&Open ROM...",		NULL,	0, 0, "gtk-open"},
-	{IDM_FILE_BOOTCD,	GMF_ICON_STOCK,		"&Boot CD",		NULL,	0, 0, "gtk-cdrom"},
+	{IDM_FILE_OPENROM,	GMF_ICON_STOCK,		"&Open ROM...",		NULL,	GMAM_CTRL, 'O', "gtk-open"},
+	{IDM_FILE_BOOTCD,	GMF_ICON_STOCK,		"&Boot CD",		NULL,	GMAM_CTRL, 'B', "gtk-cdrom"},
 	{IDM_FILE_NETPLAY,	GMF_ICON_FILE,		"&Netplay",		NULL,	0, 0, "modem.png"},
 	{IDM_FILE_ROMHISTORY,	GMF_ICON_FILE,		"ROM &History",		NULL,	0, 0, "history.png"},
-	{IDM_FILE_CLOSEROM,	GMF_ICON_STOCK,		"&Close ROM",		NULL,	0, 0, "gtk-close"},
+	{IDM_FILE_CLOSEROM,	GMF_ICON_STOCK,		"&Close ROM",		NULL,	GMAM_CTRL, 'W', "gtk-close"},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, NULL},
-	{IDM_FILE_GAMEGENIE,	GMF_ICON_FILE,		"&Game Genie",		NULL,	0, 0, "password.png"},
+	{IDM_FILE_GAMEGENIE,	GMF_ICON_FILE,		"&Game Genie",		NULL,	GMAM_CTRL, 'G', "password.png"},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, NULL},
-	{IDM_FILE_LOADSTATE,	GMF_ICON_STOCK,		"&Load State...",	NULL,	0, 0, "gtk-open"},
-	{IDM_FILE_SAVESTATE,	GMF_ICON_STOCK,		"&Save State As...",	NULL,	0, 0, "gtk-save-as"},
-	{IDM_FILE_QUICKLOAD,	GMF_ICON_STOCK,		"Quick Load",		NULL,	0, 0, "gtk-refresh"},
-	{IDM_FILE_QUICKSAVE,	GMF_ICON_STOCK,		"Quick Save",		NULL,	0, 0, "gtk-save"},
+	{IDM_FILE_LOADSTATE,	GMF_ICON_STOCK,		"&Load State...",	NULL,	GMAM_SHIFT, GMAK_F8, "gtk-open"},
+	{IDM_FILE_SAVESTATE,	GMF_ICON_STOCK,		"&Save State As...",	NULL,	GMAM_SHIFT, GMAK_F5, "gtk-save-as"},
+	{IDM_FILE_QUICKLOAD,	GMF_ICON_STOCK,		"Quick Load",		NULL,	0, GMAK_F8, "gtk-refresh"},
+	{IDM_FILE_QUICKSAVE,	GMF_ICON_STOCK,		"Quick Save",		NULL,	0, GMAK_F5, "gtk-save"},
 	{IDM_FILE_CHANGESTATE,	GMF_ICON_STOCK | GMF_ITEM_SUBMENU, "Change State", &gmiFile_ChgState[0], 0, 0, "gtk-revert-to-saved"},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,	0, 0, NULL},
 #ifdef GENS_OS_WIN32
-	{IDM_FILE_EXIT,		GMF_ICON_STOCK,		"E&xit",		NULL,	0, 0, "gtk-quit"},
+	{IDM_FILE_EXIT,		GMF_ICON_STOCK,		"E&xit",		NULL,	GMAM_CTRL, 'Q', "gtk-quit"},
 #else /* !GENS_OS_WIN32 */
-	{IDM_FILE_QUIT,		GMF_ICON_STOCK,		"&Quit",		NULL,	0, 0, "gtk-quit"},
+ 	{IDM_FILE_QUIT,		GMF_ICON_STOCK,		"&Quit",		NULL,	GMAM_CTRL, 'Q', "gtk-quit"},
 #endif /* GENS_OS_WIN32 */
 	{0, 0, NULL, NULL, NULL}
 };
@@ -112,12 +112,12 @@ static struct GensMenuItem_t gmiGraphics_FrameSkip[];
 
 static struct GensMenuItem_t gmiGraphics[] =
 {
-	{IDM_GRAPHICS_FULLSCREEN,	GMF_ICON_STOCK,		"&Full Screen",			NULL,	0, 0, "gtk-fullscreen"},
-	{IDM_GRAPHICS_VSYNC,		GMF_ITEM_CHECK,		"&VSync",			NULL,	0, 0, NULL},
-	{IDM_GRAPHICS_STRETCH,		GMF_ITEM_CHECK,		"&Stretch",			NULL,	0, 0, NULL},
+	{IDM_GRAPHICS_FULLSCREEN,	GMF_ICON_STOCK,		"&Full Screen",			NULL,	GMAM_ALT, GMAK_ENTER, "gtk-fullscreen"},
+	{IDM_GRAPHICS_VSYNC,		GMF_ITEM_CHECK,		"&VSync",			NULL,	GMAM_SHIFT, GMAK_F3, NULL},
+	{IDM_GRAPHICS_STRETCH,		GMF_ITEM_CHECK,		"&Stretch",			NULL,	GMAM_SHIFT, GMAK_F2, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 #ifdef GENS_OPENGL
-	{IDM_GRAPHICS_OPENGL,		GMF_ITEM_CHECK,		"Open&GL",			NULL,	0, 0, NULL},
+	{IDM_GRAPHICS_OPENGL,		GMF_ITEM_CHECK,		"Open&GL",			NULL,	GMAM_SHIFT, 'R', NULL},
 	{IDM_GRAPHICS_OPENGL_FILTER,	GMF_ITEM_CHECK,		"OpenGL &Linear Filter",	NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_OPENGL_RES,	GMF_ITEM_SUBMENU,	"OpenGL Resolution",		&gmiGraphics_GLRes[0],	0, 0, NULL},
 #ifndef GENS_OS_UNIX
@@ -134,7 +134,7 @@ static struct GensMenuItem_t gmiGraphics[] =
 	{IDM_GRAPHICS_SPRITELIMIT,	GMF_ITEM_CHECK,		"Sprite Limit",			NULL,	0, 0, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
 	{IDM_GRAPHICS_FRAMESKIP,	GMF_ICON_FILE | GMF_ITEM_SUBMENU, "Frame Skip",		&gmiGraphics_FrameSkip[0], 0, 0, "2rightarrow.png"},
-	{IDM_GRAPHICS_SCREENSHOT,	GMF_ICON_STOCK,		"Screen Shot",			NULL,	0, 0, "gtk-copy"},
+	{IDM_GRAPHICS_SCREENSHOT,	GMF_ICON_STOCK,		"Screen Shot",			NULL,	GMAM_SHIFT, GMAK_BACKSPACE, "gtk-copy"},
 	{0, 0, NULL, NULL, NULL}
 };
 
@@ -191,7 +191,7 @@ static struct GensMenuItem_t gmiCPU[] =
 #endif /* GENS_DEBUGGER */
 	{IDM_CPU_COUNTRY,		GMF_ITEM_SUBMENU,	"&Country",			&gmiCPU_Country[0], 0, 0, NULL},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, NULL},
-	{IDM_CPU_HARDRESET,		GMF_ICON_STOCK,		"Hard &Reset",			NULL,	0, 0, "gtk-refresh"},
+	{IDM_CPU_HARDRESET,		GMF_ICON_STOCK,		"Hard &Reset",			NULL,	0, GMAK_TAB, "gtk-refresh"},
 	{IDM_CPU_RESET68K,		GMF_ITEM_NORMAL,	"Reset 68000",			NULL,	0, 0, NULL},
 	{IDM_CPU_RESETMAIN68K,		GMF_ITEM_NORMAL,	"Reset Main 68000",		NULL,	0, 0, NULL},
 	{IDM_CPU_RESETSUB68K,		GMF_ITEM_NORMAL,	"Reset Sub 68000",		NULL,	0, 0, NULL},
