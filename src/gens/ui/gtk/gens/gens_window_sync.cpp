@@ -208,20 +208,15 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	if (id != 0)
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
-	/*
 	// Rebuild the Render submenu
-	MItem_Render_SubMenu = lookup_widget(gens_window, "GraphicsMenu_Render");
-	Sync_Gens_Window_GraphicsMenu_Render(MItem_Render_SubMenu);
+	Sync_Gens_Window_GraphicsMenu_Render(findMenuItem(IDM_GRAPHICS_RENDER));
 	
 	// Selected Render Mode
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-	sprintf(Str_Tmp, "GraphicsMenu_Render_SubMenu_%d", rendMode);
-	MItem_Render_Selected = lookup_widget(gens_window, Str_Tmp);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_Render_Selected), TRUE);
-	*/
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_RENDER_NORMAL + rendMode)), TRUE);
 	
 	// Frame Skip
-	id = (IDM_GRAPHICS_FRAMESKIP + 1) + Frame_Skip;
+	id = (IDM_GRAPHICS_FRAMESKIP_AUTO + 1) + Frame_Skip;
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
 	// Screen Shot
@@ -274,24 +269,29 @@ void Sync_Gens_Window_GraphicsMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 {
-#if 0
-	GtkWidget *SubMenu;
-	GtkWidget *RenderItem;
-	GSList *RenderGroup = NULL;
+	if (!container)
+		return;
+	
+	GtkWidget *mnuSubMenu;
+	GtkWidget *mnuItem;
+	GSList *radioGroup = NULL;
 	gboolean showRenderer;
 	
 	int i;
-	char ObjName[64];
+	char sObjName[64];
 	
 	// Create the submenu.
-	SubMenu = gtk_menu_new();
-	gtk_widget_set_name(SubMenu, "GraphicsMenu_Render_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), SubMenu);
+	mnuSubMenu = gtk_menu_new();
+	gtk_widget_set_name(mnuSubMenu, "GraphicsMenu_Render_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), mnuSubMenu);
 	
 	// Create the render entries.
 	i = 0;
 	while (Renderers[i].name)
 	{
+		// Delete the menu item from the map, if it exists.
+		gensMenuMap.erase(IDM_GRAPHICS_RENDER_NORMAL + i);
+		
 		// Check if the current blitter exists for this video mode.
 		showRenderer = FALSE;
 		if (bpp == 32)
@@ -313,18 +313,25 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		
 		if (showRenderer)
 		{
-			sprintf(ObjName, "GraphicsMenu_Render_SubMenu_%d", i);
-			NewMenuItem_Radio(RenderItem, Renderers[i].name, ObjName, SubMenu,
-					  (i == 1 ? TRUE : FALSE), RenderGroup);
-			g_signal_connect((gpointer)RenderItem, "activate",
-					  G_CALLBACK(on_GraphicsMenu_Render_SubMenu_RenderItem_activate),
-							  GINT_TO_POINTER(i));
+			sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
+			
+			mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, Renderers[i].name);
+			radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
+			gtk_widget_set_name(mnuItem, sObjName);
+			gtk_widget_show(mnuItem);
+			gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
+			
+			g_signal_connect((gpointer)mnuItem, "activate",
+					  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+					  GINT_TO_POINTER(IDM_GRAPHICS_RENDER_NORMAL + i));
+			
+			// Add the menu item to the map.
+			gensMenuMap.insert(gtkMenuMapItem(IDM_GRAPHICS_RENDER_NORMAL + i, mnuItem));
 		}
 		
 		// Check the next renderer.
 		i++;
 	}
-#endif
 }
 
 

@@ -37,6 +37,9 @@ GtkWidget* create_gens_window(void);
 extern GtkWidget *gens_window;
 extern int do_callbacks;
 
+// New menu handler.
+void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif

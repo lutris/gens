@@ -50,12 +50,6 @@
 GtkWidget *gens_window;
 GtkWidget *MenuBar;
 
-#ifdef GENS_DEBUGGER
-// Debug menu items
-GtkWidget *debugMenuItems[9];
-GtkWidget *debugSeparators[2];
-#endif /* GENS_DEBUGGER */
-
 
 GtkAccelGroup *accel_group;
 
@@ -65,7 +59,6 @@ static void create_gens_window_menubar(GtkWidget *container);
 #include "ui/common/gens/gens_menu.h"
 #include "ui/common/gens/gens_menu_callbacks.hpp"
 static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
-static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
 
 // Unordered map containing all the menu items.
 // Map key is the menu ID.
@@ -403,7 +396,7 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
  * @param menuitem Menu item widget.
  * @param user_data Menu item ID.
  */
-static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
+void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
 {
 	if (!do_callbacks)
 		return;
@@ -431,7 +424,7 @@ static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user
 
 /**
  * findMenuItem(): Find a menu item in the menu map.
- * @param id Menu ID.
+ * @param id Menu item ID.
  * @return Menu item.
  */
 GtkWidget* findMenuItem(uint16_t id)
