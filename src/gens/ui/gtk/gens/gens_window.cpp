@@ -61,7 +61,9 @@ GtkAccelGroup *accel_group;
 
 static void create_gens_window_menubar(GtkWidget *container);
 
+// New menu handler.
 #include "ui/common/gens/gens_menu.h"
+#include "ui/common/gens/gens_menu_callbacks.hpp"
 static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
 static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
 
@@ -389,5 +391,25 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
  */
 static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
 {
-	printf("Menu selection: 0x%04X\n", GPOINTER_TO_INT(user_data));
+	if (!do_callbacks)
+		return;
+	
+	bool state = false;
+	
+	if (GTK_IS_RADIO_MENU_ITEM(menuitem))
+	{
+		// Radio menu items should only trigger the callback if they're selected.
+		if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
+			return;
+		state = true;
+	}
+	else if (GTK_IS_CHECK_MENU_ITEM(menuitem))
+	{
+		// Check menu items automatically toggle, so the state value should be
+		// the opposite value of its current state.
+		state = !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
+	}
+	
+	// Run the callback function.
+	GensWindow_MenuItemCallback((uint16_t)(GPOINTER_TO_INT(user_data)), state);
 };
