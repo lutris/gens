@@ -85,6 +85,7 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
+#if 0
 	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
 	GtkWidget *MItem_ROMHistory_SubMenu_Item;
 	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
@@ -168,6 +169,7 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -176,6 +178,7 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
+#if 0
 	GtkWidget *MItem_VSync, *MItem_Stretch, *MItem_SpriteLimit;
 	GtkWidget *MItem_bpp, *MItem_Render_SubMenu, *MItem_Render_Selected;
 	GtkWidget *MItem_FrameSkip;
@@ -260,6 +263,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -269,6 +273,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 {
+#if 0
 	GtkWidget *SubMenu;
 	GtkWidget *RenderItem;
 	GSList *RenderGroup = NULL;
@@ -318,6 +323,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		// Check the next renderer.
 		i++;
 	}
+#endif
 }
 
 
@@ -326,6 +332,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
+#if 0
 #ifdef GENS_DEBUGGER
 	GtkWidget *MItem_Debug;
 	GtkWidget *MItem_Debug_Item;
@@ -441,6 +448,7 @@ void Sync_Gens_Window_CPUMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -449,6 +457,7 @@ void Sync_Gens_Window_CPUMenu(void)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
+#if 0
 	GtkWidget *MItem_Enable, *MItem_Rate, *MItem_Stereo, *MItem_Z80;
 	GtkWidget *MItem_YM2612, *MItem_YM2612_Improved;
 	GtkWidget *MItem_DAC, *MItem_DAC_Improved;
@@ -523,6 +532,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }
 
 
@@ -531,6 +541,7 @@ void Sync_Gens_Window_SoundMenu(void)
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {
+#if 0
 	GtkWidget *SRAMSize;
 	
 	// Disable callbacks so nothing gets screwed up.
@@ -552,4 +563,5 @@ void Sync_Gens_Window_OptionsMenu(void)
 	
 	// Enable callbacks.
 	do_callbacks = 1;
+#endif
 }

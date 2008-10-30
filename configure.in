@@ -54,7 +54,7 @@ case $host in
 		AC_MSG_ERROR([64-bit is currently not supported.]);
 		;;
 	*)
-		AC_MSG_ERROR([Unsupported operating system: $host]);
+		AC_MSG_ERROR([Unsupported system architecture: $host]);
 		;;
 esac
 

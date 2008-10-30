@@ -152,6 +152,11 @@ GtkAccelGroup *accel_group;
 
 
 static void create_gens_window_menubar(GtkWidget *container);
+
+#include "ui/common/gens/gens_menu.h"
+static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
+
+
 static void create_gens_window_FileMenu(GtkWidget *container);
 static void create_gens_window_FileMenu_ChangeState_SubMenu(GtkWidget *container);
 static void create_gens_window_GraphicsMenu(GtkWidget *container);
@@ -262,12 +267,31 @@ static void create_gens_window_menubar(GtkWidget *container)
 	gtk_container_add(GTK_CONTAINER(container), MenuBar);
 	
 	// Menus
+	ParseMenu(&gmiMain[0], MenuBar);
+#if 0
 	create_gens_window_FileMenu(MenuBar);
 	create_gens_window_GraphicsMenu(MenuBar);
 	create_gens_window_CPUMenu(MenuBar);
 	create_gens_window_SoundMenu(MenuBar);
 	create_gens_window_OptionsMenu(MenuBar);
 	create_gens_window_HelpMenu(MenuBar);
+#endif
+}
+
+
+/**
+ * ParseMenu(): Parse the menu structs.
+ * @param menu First item of the array of menu structs to parse.
+ * @param container Container to add the menu items to.
+ */
+static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
+{
+	while (menu->id != 0)
+	{
+		// Next menu item.
+		printf("X\n");
+		menu++;
+	}
 }
 
 

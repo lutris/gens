@@ -57,7 +57,7 @@ struct GensMenuItem_t
 	char* iconName;				// Icon name
 };
 
-extern struct GensMenuItem_t MainMenu[];
+extern struct GensMenuItem_t gmiMain[];
 
 // Menu #defines
 // Menu identifier & 0xF000 == the menu it's from
