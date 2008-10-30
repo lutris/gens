@@ -85,34 +85,42 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-#if 0
-	GtkWidget *MItem_ROMHistory, *MItem_ROMHistory_SubMenu;
-	GtkWidget *MItem_ROMHistory_SubMenu_Item;
-	GtkWidget *MItem_LoadState, *MItem_SaveStateAs;
-	GtkWidget *MItem_QuickLoad, *MItem_QuickSave;
-	GtkWidget *MItem_SaveState;
-	char ROM_Name[GENS_PATH_MAX];
 	gboolean saveStateEnable;
 	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
 	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
 	
-	// Temporary variables for ROM History.
-	int i, romFormat;
-	// Number of ROMs found for ROM History.
-	int romsFound = 0;
-	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
 	// ROM History
-	MItem_ROMHistory = lookup_widget(gens_window, "FileMenu_ROMHistory");
-	MItem_ROMHistory_SubMenu = gtk_menu_new();
-	gtk_widget_set_name(MItem_ROMHistory_SubMenu, "FileMenu_ROMHistory_SubMenu");
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(MItem_ROMHistory), MItem_ROMHistory_SubMenu);
+	GtkWidget *mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
 	
-	for (i = 0; i < 9; i++)
+	// Check if the ROM History submenu already exists.
+	GtkWidget *mnuROMHistory_sub = gtk_menu_item_get_submenu(GTK_MENU_ITEM(mnuROMHistory));
+	if (mnuROMHistory_sub)
+	{
+		// Submenu currently exists. Delete it.
+		gtk_widget_destroy(mnuROMHistory_sub);
+	}
+	
+	// Create a new submenu.
+	mnuROMHistory_sub = gtk_menu_new();
+	gtk_widget_set_name(mnuROMHistory_sub, "FileMenu_ROMHistory_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuROMHistory), mnuROMHistory_sub);
+	
+	g_object_set_data_full(G_OBJECT(mnuROMHistory), "FileMenu_ROMHistory_SubMenu",
+			       g_object_ref(mnuROMHistory_sub),
+			       (GDestroyNotify)g_object_unref);
+	
+	GtkWidget *mnuROMHistory_item;
+	string sROMHistoryEntry;
+	char sTmpROMFilename[GENS_PATH_MAX];
+	char sMenuKey[24];
+	int romFormat;
+	int romsFound = 0;
+	for (unsigned short i = 0; i < 9; i++)
 	{
 		// Make sure this Recent ROM entry actually has an entry.
 		if (strlen(Recent_Rom[i]) == 0)
@@ -125,30 +133,38 @@ void Sync_Gens_Window_FileMenu(void)
 		// TODO: Improve the return variable from Detect_Format()
 		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
 		if (romFormat >= 1 && romFormat <= 4)
-			strcpy(ROM_Name, ROM_Format_Prefix[romFormat]);
+			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
 		else
-			strcpy(ROM_Name, ROM_Format_Prefix[0]);
+			sROMHistoryEntry = ROM_Format_Prefix[0];
 		
 		// Add a tab, a dash, and a space.
-		strcat(ROM_Name, "\t- ");
+		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		ROM::getNameFromPath(Recent_Rom[i], Str_Tmp);
-		strcat(ROM_Name, Str_Tmp);
+		ROM::getNameFromPath(Recent_Rom[i], sTmpROMFilename);
+		sROMHistoryEntry += sTmpROMFilename;
 		
 		// Add the ROM item to the ROM History submenu.
-		MItem_ROMHistory_SubMenu_Item = gtk_menu_item_new_with_label(ROM_Name);
-		gtk_widget_show(MItem_ROMHistory_SubMenu_Item);
-		gtk_container_add(GTK_CONTAINER(MItem_ROMHistory_SubMenu),
-				  MItem_ROMHistory_SubMenu_Item);
-		g_signal_connect((gpointer)MItem_ROMHistory_SubMenu_Item, "activate",
-				 G_CALLBACK(on_FileMenu_ROMHistory_activate),
-				 GINT_TO_POINTER(i));
+		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());
+		gtk_widget_show(mnuROMHistory_item);
+		gtk_container_add(GTK_CONTAINER(mnuROMHistory_sub), mnuROMHistory_item);
+		
+		// Make sure the menu item is deleted when the submenu is deleted.
+		sprintf(sMenuKey, "ROMHistory_Sub_%d", i);
+		g_object_set_data_full(G_OBJECT(mnuROMHistory_sub), sMenuKey,
+				       g_object_ref(mnuROMHistory_item),
+				       (GDestroyNotify)g_object_unref);
+		
+		// Connect the signal.
+		g_signal_connect((gpointer)mnuROMHistory_item, "activate",
+				 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+					    GINT_TO_POINTER(IDM_FILE_ROMHISTORY_0 + i));
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
-	gtk_widget_set_sensitive(MItem_ROMHistory, romsFound);
+	gtk_widget_set_sensitive(mnuROMHistory, romsFound);
 	
+#if 0
 	// Savestate menu items
 	saveStateEnable = (Genesis_Started || SegaCD_Started || _32X_Started);
 	MItem_LoadState = lookup_widget(gens_window, "FileMenu_LoadState");
@@ -166,10 +182,10 @@ void Sync_Gens_Window_FileMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(MItem_SaveState), TRUE);
 	
 	// TODO: Disable Close ROM if no ROM is loaded.
+#endif
 	
 	// Enable callbacks.
 	do_callbacks = 1;
-#endif
 }
 
 
