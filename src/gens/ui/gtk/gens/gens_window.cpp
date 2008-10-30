@@ -155,6 +155,7 @@ static void create_gens_window_menubar(GtkWidget *container);
 
 #include "ui/common/gens/gens_menu.h"
 static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
+static void GensWindow_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
 
 
 static void create_gens_window_FileMenu(GtkWidget *container);
@@ -292,6 +293,7 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 	char *sMenuText, *mnemonicPos;
 	bool bMenuTextSet, bMenuHasIcon;
 	GSList *radioGroup = NULL;
+	bool bSetCallbackHandler;
 	
 	while (menu->id != 0)
 	{
@@ -321,23 +323,29 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 				mnuItem = gtk_separator_menu_item_new();
 				gtk_widget_set_sensitive(mnuItem, FALSE);
 				radioGroup = NULL;
+				bSetCallbackHandler = false;
 				break;
 			
 			case GMF_ITEM_CHECK:
 				// Check menu item.
 				mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText);
 				radioGroup = NULL;
+				bSetCallbackHandler = true;
 				break;
 			
 			case GMF_ITEM_RADIO:
 				// Radio menu item.
 				mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, sMenuText);
 				radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
+				bSetCallbackHandler = true;
 				break;
 				
 			default:
 				// Not a special menu item.
 				radioGroup = NULL;
+				
+				// If this isn't a submenu, set the callback handler.
+				bSetCallbackHandler = ((menu->flags & GMF_ITEM_MASK) != GMF_ITEM_SUBMENU);
 				
 				// Check if an icon was specified.
 				if (menu->flags & GMF_ICON_MASK)
@@ -481,10 +489,28 @@ static void ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 			ParseMenu(menu->submenu, subMenu);
 		}
 		
+		if (bSetCallbackHandler)
+		{
+			// Set the callback handler.
+			g_signal_connect((gpointer)mnuItem, "activate",
+					 G_CALLBACK(GensWindow_MenuItemCallback), GINT_TO_POINTER(menu->id));
+		}
+		
 		// Next menu item.
 		menu++;
 	}
 }
+
+
+/**
+ * GensWindow_MenuItemCallback(): Menu item callback.
+ * @param menuitem Menu item widget.
+ * @param user_data Menu item ID.
+ */
+static void GensWindow_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
+{
+	printf("Menu selection: 0x%04X\n", GPOINTER_TO_INT(user_data));
+};
 
 
 /**
