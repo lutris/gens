@@ -227,7 +227,7 @@ extern struct GensMenuItem_t gmiMain[];
 #define IDM_SOUND_RATE_22050		(IDM_SOUND_RATE + 2)
 #define IDM_SOUND_RATE_44100		(IDM_SOUND_RATE + 3)
 #define IDM_SOUND_RATE_16000		(IDM_SOUND_RATE + 4)
-#define IDM_SOUND_RATE_24000		(IDM_SOUND_RATE + 5)
+#define IDM_SOUND_RATE_32000		(IDM_SOUND_RATE + 5)
 #define IDM_SOUND_RATE_48000		(IDM_SOUND_RATE + 6)
 
 // Options Menu

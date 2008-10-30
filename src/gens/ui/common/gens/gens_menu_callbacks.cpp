@@ -221,8 +221,8 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (audio->playingGYM())
 				Stop_Play_GYM();
 			
-			if (strlen(Recent_Rom[menuID - IDM_FILE_ROMHISTORY]) > 0)
-				ROM::openROM(Recent_Rom[menuID - IDM_FILE_ROMHISTORY]);
+			if (strlen(Recent_Rom[menuID - IDM_FILE_ROMHISTORY_0]) > 0)
+				ROM::openROM(Recent_Rom[menuID - IDM_FILE_ROMHISTORY_0]);
 			
 			Sync_Gens_Window();
 			break;
@@ -276,7 +276,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 		case IDM_FILE_CHANGESTATE_8:
 		case IDM_FILE_CHANGESTATE_9:
 			// Change state.
-			Set_Current_State(menuID - IDM_FILE_CHANGESTATE);
+			Set_Current_State(menuID - IDM_FILE_CHANGESTATE_0);
 			Sync_Gens_Window_FileMenu();
 			break;
 		
@@ -405,7 +405,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 		case IDM_GRAPHICS_FRAMESKIP_7:
 		case IDM_GRAPHICS_FRAMESKIP_8:
 			// Set the frame skip value.
-			Set_Frame_Skip(menuID - IDM_GRAPHICS_FRAMESKIP - 1);
+			Set_Frame_Skip(menuID - IDM_GRAPHICS_FRAMESKIP_AUTO - 1);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
@@ -418,7 +418,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			if ((menuID & 0xFF00) == IDM_GRAPHICS_RENDER)
 			{
 				// Render mode change.
-				draw->setRender(menuID - IDM_GRAPHICS_RENDER);
+				draw->setRender(menuID - IDM_GRAPHICS_RENDER_NORMAL);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else
@@ -443,7 +443,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 		case IDM_CPU_COUNTRY_USA:
 		case IDM_CPU_COUNTRY_EUROPE:
 		case IDM_CPU_COUNTRY_JAPAN_PAL:
-			Change_Country(menuID - IDM_CPU_COUNTRY - 1);
+			Change_Country(menuID - IDM_CPU_COUNTRY_AUTO);
 			Sync_Gens_Window_CPUMenu();
 			break;
 		
@@ -541,7 +541,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 			if ((menuID & 0xFF00) == IDM_CPU_DEBUG)
 			{
 				// Debug mode change.
-				Change_Debug((menuID - IDM_CPU_DEBUG) + 1);
+				Change_Debug(menuID - IDM_CPU_DEBUG);
 				Sync_Gens_Window_CPUMenu();
 			}
 			else
@@ -629,7 +629,7 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 			if ((menuID & 0xFF00) == IDM_SOUND_RATE)
 			{
 				// Sample rate change.
-				Change_Sample_Rate(menuID - IDM_SOUND_RATE);
+				Change_Sample_Rate(menuID - IDM_SOUND_RATE_11025);
 			}
 			else
 			{
@@ -684,7 +684,7 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			if ((menuID & 0xFF00) == IDM_OPTIONS_SEGACDSRAMSIZE)
 			{
 				// SegaCD SRAM Size change.
-				Change_SegaCD_SRAM_Size(menuID - IDM_OPTIONS_SEGACDSRAMSIZE - 1);
+				Change_SegaCD_SRAM_Size(menuID - IDM_OPTIONS_SEGACDSRAMSIZE_NONE - 1);
 				Sync_Gens_Window_OptionsMenu();
 			}
 			else
