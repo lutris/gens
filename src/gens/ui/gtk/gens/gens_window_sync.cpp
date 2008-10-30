@@ -288,7 +288,6 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	if (!container)
 		return;
 	
-	GtkWidget *mnuSubMenu;
 	GtkWidget *mnuItem;
 	GSList *radioGroup = NULL;
 	gboolean showRenderer;
@@ -296,10 +295,22 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	int i;
 	char sObjName[64];
 	
-	// Create the submenu.
+	// Check if the Render submenu already exists.
+	GtkWidget *mnuSubMenu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(container));
+	if (mnuSubMenu)
+	{
+		// Submenu currently exists. Delete it.
+		gtk_widget_destroy(mnuSubMenu);
+	}
+	
+	// Create a new submenu.
 	mnuSubMenu = gtk_menu_new();
 	gtk_widget_set_name(mnuSubMenu, "GraphicsMenu_Render_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), mnuSubMenu);
+	
+	g_object_set_data_full(G_OBJECT(container), "GraphicsMenu_Render_SubMenu",
+			       g_object_ref(mnuSubMenu),
+			       (GDestroyNotify)g_object_unref);
 	
 	// Create the render entries.
 	i = 0;
@@ -337,6 +348,12 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 			gtk_widget_show(mnuItem);
 			gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
 			
+			// Make sure the menu item is deleted when the submenu is deleted.
+			g_object_set_data_full(G_OBJECT(mnuSubMenu), sObjName,
+					       g_object_ref(mnuItem),
+					       (GDestroyNotify)g_object_unref);
+			
+			// Connect the signal.
 			g_signal_connect((gpointer)mnuItem, "activate",
 					  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
 					  GINT_TO_POINTER(IDM_GRAPHICS_RENDER_NORMAL + i));
