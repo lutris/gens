@@ -73,7 +73,7 @@ static struct GensMenuItem_t gmiFile[] =
 	{IDM_FILE_SAVESTATE,	GMF_ICON_STOCK,		"&Save State As...",	NULL,			"gtk-save-as"},
 	{IDM_FILE_QUICKLOAD,	GMF_ICON_STOCK,		"Quick Load",		NULL,			"gtk-refresh"},
 	{IDM_FILE_QUICKSAVE,	GMF_ICON_STOCK,		"Quick Save",		NULL,			"gtk-save"},
-	{IDM_FILE_CHANGESTATE,	GMF_ICON_STOCK,		"Change State",		&gmiFile_ChgState[0],	"gtk-revert-to-saved"},
+	{IDM_FILE_CHANGESTATE,	GMF_ICON_STOCK | GMF_ITEM_SUBMENU, "Change State", &gmiFile_ChgState[0], "gtk-revert-to-saved"},
 	{IDM_SEPARATOR,		GMF_ITEM_SEPARATOR,	NULL,			NULL,			NULL},
 #ifdef GENS_OS_WIN32
 	{IDM_FILE_EXIT,		GMF_ICON_STOCK,		"E&xit",		NULL,			"gtk-quit"},
@@ -155,7 +155,7 @@ static struct GensMenuItem_t gmiGraphics_bpp[] =
 {
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	NULL},
 	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (555)",	NULL,	NULL},
-	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32)",		NULL,	NULL},
+	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32",		NULL,	NULL},
 	{0, 0, NULL, NULL, NULL}
 };
 #endif
