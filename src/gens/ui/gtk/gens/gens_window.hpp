@@ -37,14 +37,23 @@ GtkWidget* create_gens_window(void);
 extern GtkWidget *gens_window;
 extern int do_callbacks;
 
-#ifdef GENS_DEBUGGER
-// Debug menu items
-extern GtkWidget *debugMenuItems[9];
-extern GtkWidget *debugSeparators[2];
-#endif /* GENS_DEBUGGER */
-
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+// Unordered map containing all the menu items.
+// Map key is the menu ID.
+// TODO: unordered_map is gcc-4.x and later.
+// For gcc-3.x, use __gnu_cxx::hash_map.
+
+#include <tr1/unordered_map>
+#include <utility>
+#include <stdint.h>
+extern std::tr1::unordered_map<uint16_t, GtkWidget*> gensMenuMap;
+typedef std::pair<uint16_t, GtkWidget*> gensMenuMapItem;
+
+#endif /* __cplusplus */
 
 #endif /* GENS_GTK_GENS_WINDOW_HPP */

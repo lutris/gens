@@ -67,6 +67,14 @@ static void create_gens_window_menubar(GtkWidget *container);
 static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
 static void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
 
+// Unordered map containing all the menu items.
+// Map key is the menu ID.
+// TODO: unordered_map is gcc-4.x and later.
+// For gcc-3.x, use __gnu_cxx::hash_map.
+#include <tr1/unordered_map>
+using std::tr1::unordered_map;
+unordered_map<uint16_t, GtkWidget*> gensMenuMap;
+
 
 // Set to 0 to temporarily disable callbacks.
 int do_callbacks = 1;
@@ -376,6 +384,12 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 			// Set the callback handler.
 			g_signal_connect((gpointer)mnuItem, "activate",
 					 G_CALLBACK(GensWindow_GTK_MenuItemCallback), GINT_TO_POINTER(menu->id));
+		}
+		
+		// Add the menu to the menu map. (Exception is if id is 0 or IDM_SEPARATOR.)
+		if (menu->id != 0 && menu->id != IDM_SEPARATOR)
+		{
+			gensMenuMap.insert(gensMenuMapItem(menu->id, mnuItem));
 		}
 		
 		// Next menu item.
