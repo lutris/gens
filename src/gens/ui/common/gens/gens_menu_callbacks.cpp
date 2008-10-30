@@ -443,7 +443,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 		case IDM_CPU_COUNTRY_USA:
 		case IDM_CPU_COUNTRY_EUROPE:
 		case IDM_CPU_COUNTRY_JAPAN_PAL:
-			Change_Country(menuID - IDM_CPU_COUNTRY_AUTO);
+			Change_Country(menuID - IDM_CPU_COUNTRY_AUTO - 1);
 			Sync_Gens_Window_CPUMenu();
 			break;
 		
