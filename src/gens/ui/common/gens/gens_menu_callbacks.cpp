@@ -88,9 +88,8 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
-/*
 static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state);
-*/
+
 
 /**
  * GensWindow_MenuItemCallback(): Menu item callback handler.
@@ -118,11 +117,12 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 		case IDM_OPTIONS_MENU:
 			return GensWindow_MenuItemCallback_OptionsMenu(menuID, state);
 			break;
-		/*
 		case IDM_HELP_MENU:
 			return GensWindow_MenuItemCallback_HelpMenu(menuID, state);
 			break;
-		*/
+		default:
+			// Menu item not handled.
+			return 0;
 	}
 	
 	// Menu item not handled.
@@ -695,6 +695,24 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			break;
 	}
 
+	// Menu item handled.
+	return 1;
+}
+
+
+static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state)
+{
+	switch (menuID)
+	{
+		case IDM_HELP_ABOUT:
+			AboutWindow::Instance();
+			break;
+			
+		default:
+			// Unknown menu item ID.
+			return 0;
+	}
+	
 	// Menu item handled.
 	return 1;
 }
