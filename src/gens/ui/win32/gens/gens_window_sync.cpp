@@ -74,25 +74,30 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-#if 0
-	int i;
-	
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
 	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
 	
-	// Temporary variables for ROM History.
+	// Find the file menu and ROM History submenu.
+	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
+	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
+	
+	// Delete and/or recreate the ROM History submenu.
+	DeleteMenu(mnuFile, 3, MF_BYPOSITION);
+	gensMenuMap.erase(IDM_FILE_ROMHISTORY);
+	if (mnuROMHistory)
+		DestroyMenu(mnuROMHistory);
+	
+	mnuROMHistory = CreatePopupMenu();
+	InsertMenu(mnuFile, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
+	gensMenuMap.insert(win32MenuMapItem(IDM_FILE_ROMHISTORY, mnuROMHistory));
+	
+	string sROMHistoryEntry;
+	char sTmpROMFilename[GENS_PATH_MAX];
+	char sMenuKey[24];
 	int romFormat;
-	char ROM_Name[GENS_PATH_MAX];
-	// Number of ROMs found for ROM History.
 	int romsFound = 0;
-	
-	// ROM History submenu
-	DeleteMenu(FileMenu, 3, MF_BYPOSITION);
-	FileMenu_ROMHistory = CreatePopupMenu();
-	InsertMenu(FileMenu, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)FileMenu_ROMHistory, "ROM &History");
-	
-	for (i = 0; i < 9; i++)
+	for (unsigned short i = 0; i < 9; i++)
 	{
 		// Make sure this Recent ROM entry actually has an entry.
 		if (strlen(Recent_Rom[i]) == 0)
@@ -105,41 +110,45 @@ void Sync_Gens_Window_FileMenu(void)
 		// TODO: Improve the return variable from Detect_Format()
 		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
 		if (romFormat >= 1 && romFormat <= 4)
-			strcpy(ROM_Name, ROM_Format_Prefix[romFormat]);
+			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
 		else
-			strcpy(ROM_Name, ROM_Format_Prefix[0]);
+			sROMHistoryEntry = ROM_Format_Prefix[0];
 		
 		// Add a tab, a dash, and a space.
-		strcat(ROM_Name, "\t- ");
+		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		ROM::getNameFromPath(Recent_Rom[i], Str_Tmp);
-		strcat(ROM_Name, Str_Tmp);
+		ROM::getNameFromPath(Recent_Rom[i], sTmpROMFilename);
+		sROMHistoryEntry += sTmpROMFilename;
 		
 		// Add the ROM item to the ROM History submenu.
-		InsertMenu(FileMenu_ROMHistory, i, MF_BYPOSITION | MF_STRING, IDM_FILE_ROMHISTORY + i, ROM_Name);
+		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,
+			   IDM_FILE_ROMHISTORY_0 + i, sROMHistoryEntry.c_str());
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	if (romsFound == 0)
-		EnableMenuItem(FileMenu, 3, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(mnuFile, 3, MF_BYPOSITION | MF_GRAYED);
 	
-	// TODO: Disable Close ROM if no ROM is loaded.
+	// Some menu items should be enabled or disabled, depending on if a game is loaded or not.
+	const unsigned int enableFlags = ((Game != NULL) ? MF_ENABLED : MF_GRAYED);
+	
+	// Disable "Close ROM" if no ROM is loaded.
+	EnableMenuItem(mnuFile, IDM_FILE_CLOSEROM, MF_BYCOMMAND | enableFlags);
 	
 	// Savestate menu items
-	unsigned int enableFlags = ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_ENABLED : MF_GRAYED);
-	EnableMenuItem(FileMenu, IDM_FILE_LOADSTATE, MF_BYCOMMAND | enableFlags);
-	EnableMenuItem(FileMenu, IDM_FILE_SAVESTATE, MF_BYCOMMAND | enableFlags);
-	EnableMenuItem(FileMenu, IDM_FILE_QUICKLOAD, MF_BYCOMMAND | enableFlags);
-	EnableMenuItem(FileMenu, IDM_FILE_QUICKSAVE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_LOADSTATE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_SAVESTATE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_QUICKLOAD, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_QUICKSAVE, MF_BYCOMMAND | enableFlags);
 	
 	// Current savestate
-	CheckMenuRadioItem(FileMenu_ChangeState,
+	HMENU mnuChangeState = findMenuItem(IDM_FILE_CHANGESTATE);
+	CheckMenuRadioItem(mnuChangeState,
 			   IDM_FILE_CHANGESTATE_0,
 			   IDM_FILE_CHANGESTATE_9,
-			   IDM_FILE_CHANGESTATE + Current_State,
+			   IDM_FILE_CHANGESTATE_0 + Current_State,
 			   MF_BYCOMMAND);
-#endif
 }
 
 
