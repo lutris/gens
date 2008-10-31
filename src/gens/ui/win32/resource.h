@@ -10,8 +10,8 @@
 #define IDI_ARROW_DOWN		0x0012
 
 // Bitmaps
-#define IDB_GENS_LOGO_SMALL	0x0101
-#define IDB_GENS_LOGO_BIG	0x0102
+#define IDB_GENS_LOGO_SMALL	0x0501
+#define IDB_GENS_LOGO_BIG	0x0502
 
 // Accelerator Table for non-menu commands
 #define IDR_GENS_WINDOW_ACCEL_NONMENU	0x0201
