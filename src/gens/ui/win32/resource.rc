@@ -11,6 +11,7 @@
 #include "macros/git.h"
 
 // Menu and Command ID definitions
+#include "ui/common/gens/gens_menu.h"
 #include "gens/gens_window_cmds.h"
 
 // Icons
