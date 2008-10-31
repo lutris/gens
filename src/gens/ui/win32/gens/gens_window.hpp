@@ -60,6 +60,9 @@ extern HMENU HelpMenu;
 // New menu handler.
 HMENU findMenuItem(uint16_t id);
 
+// Accelerator table for the main Gens window. [Menu commands.]
+extern HACCEL hAccelTable_Menu;
+
 #ifdef __cplusplus
 }
 #endif

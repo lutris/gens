@@ -156,6 +156,15 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			Active = 1;
 			break;
 		
+		case WM_DESTROY:
+			// Delete the menu command accelerator table.
+			if (hAccelTable_Menu)
+			{
+				DestroyAcceleratorTable(hAccelTable_Menu);
+				hAccelTable_Menu = NULL;
+			}
+			break;
+		
 		case WM_MENUSELECT:
 		case WM_ENTERSIZEMOVE:
 		case WM_NCLBUTTONDOWN:

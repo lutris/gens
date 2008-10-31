@@ -51,6 +51,9 @@ HWND Gens_hWnd = NULL;
 #include "ui/common/gens/gens_menu_callbacks.hpp"
 static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container);
 
+// Accelerator table for the main Gens window. [Menu commands.]
+HACCEL hAccelTable_Menu = NULL;
+
 // Unordered map containing all the menu items.
 // Map key is the menu ID.
 // TODO: unordered_map is gcc-4.x and later.

@@ -87,7 +87,7 @@ static string UI_Win32_OpenFile_int(const string& title,
 
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 
-// Accelerator tables for the main Gens window.
+// Accelerator table for the main Gens window. [Non-menu commands.]
 HACCEL hAccelTable_NonMenu;
 
 
