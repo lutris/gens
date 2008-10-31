@@ -397,19 +397,37 @@ section .bss align=64
 	extern _32X_VDP_CRam_Ajusted32
 	extern _32X_VDP
 
-	extern PWM_FIFO_R
-	extern PWM_FIFO_L
-	extern PWM_FULL_TAB
-	extern PWM_RP_R
-	extern PWM_WP_R
-	extern PWM_RP_L
-	extern PWM_WP_L
-	extern PWM_Mode
+	%ifdef __OBJ_ELF
+	%define _PWM_FIFO_R PWM_FIFO_R
+	%define _PWM_FIFO_L PWM_FIFO_L
+	%define _PWM_FULL_TAB PWM_FULL_TAB
+	%define _PWM_RP_R PWM_RP_R
+	%define _PWM_WP_R PWM_WP_R
+	%define _PWM_RP_L PWM_RP_L
+	%define _PWM_WP_L PWM_WP_L
+	%define _PWM_Mode PWM_Mode
+	%endif
 
-	extern PWM_Cycle_Tmp
-	extern PWM_Int_Tmp
-	extern PWM_FIFO_L_Tmp
-	extern PWM_FIFO_R_Tmp
+	extern _PWM_FIFO_R
+	extern _PWM_FIFO_L
+	extern _PWM_FULL_TAB
+	extern _PWM_RP_R
+	extern _PWM_WP_R
+	extern _PWM_RP_L
+	extern _PWM_WP_L
+	extern _PWM_Mode
+
+	%ifdef __OBJ_ELF
+	%define _PWM_Cycle_Tmp PWM_Cycle_Tmp
+	%define _PWM_Int_Tmp PWM_Int_Tmp
+	%define _PWM_FIFO_L_Tmp PWM_FIFO_L_Tmp
+	%define _PWM_FIFO_R_Tmp PWM_FIFO_R_Tmp
+	%endif
+
+	extern _PWM_Cycle_Tmp
+	extern _PWM_Int_Tmp
+	extern _PWM_FIFO_L_Tmp
+	extern _PWM_FIFO_R_Tmp
 
 	extern COMM.Flag
 	extern COMM.Command
@@ -547,8 +565,8 @@ section .text align=64
 	extern _M68K_32X_Mode
 	extern _M68K_Set_32X_Rom_Bank
 	extern __32X_Set_FB
-	extern PWM_Set_Cycle
-	extern PWM_Set_Int
+	extern _PWM_Set_Cycle
+	extern _PWM_Set_Int
 
 
 	;void Init_Memory_M68K(int System_ID)

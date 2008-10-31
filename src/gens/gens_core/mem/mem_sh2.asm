@@ -148,19 +148,37 @@ section .bss align=64
 	extern _32X_VDP_CRam_Ajusted32
 	extern _32X_VDP
 
-	extern PWM_FIFO_R
-	extern PWM_FIFO_L
-	extern PWM_FULL_TAB
-	extern PWM_RP_R
-	extern PWM_WP_R
-	extern PWM_RP_L
-	extern PWM_WP_L
-	extern PWM_Mode
+	%ifdef __OBJ_ELF
+	%define _PWM_FIFO_R PWM_FIFO_R
+	%define _PWM_FIFO_L PWM_FIFO_L
+	%define _PWM_FULL_TAB PWM_FULL_TAB
+	%define _PWM_RP_R PWM_RP_R
+	%define _PWM_WP_R PWM_WP_R
+	%define _PWM_RP_L PWM_RP_L
+	%define _PWM_WP_L PWM_WP_L
+	%define _PWM_Mode PWM_Mode
+	%endif
 
-	extern PWM_Cycle_Tmp
-	extern PWM_Int_Tmp
-	extern PWM_FIFO_L_Tmp
-	extern PWM_FIFO_R_Tmp
+	extern _PWM_FIFO_R
+	extern _PWM_FIFO_L
+	extern _PWM_FULL_TAB
+	extern _PWM_RP_R
+	extern _PWM_WP_R
+	extern _PWM_RP_L
+	extern _PWM_WP_L
+	extern _PWM_Mode
+
+	%ifdef __OBJ_ELF
+	%define _PWM_Cycle_Tmp PWM_Cycle_Tmp
+	%define _PWM_Int_Tmp PWM_Int_Tmp
+	%define _PWM_FIFO_L_Tmp PWM_FIFO_L_Tmp
+	%define _PWM_FIFO_R_Tmp PWM_FIFO_R_Tmp
+	%endif
+
+	extern _PWM_Cycle_Tmp
+	extern _PWM_Int_Tmp
+	extern _PWM_FIFO_L_Tmp
+	extern _PWM_FIFO_R_Tmp
 
 
 	struc vx
@@ -268,8 +286,8 @@ section .text align=64
 	extern _Write_To_68K_Space
 	extern __32X_Set_FB
 	extern SH2_DMA0_Request
-	extern PWM_Set_Cycle
-	extern PWM_Set_Int
+	extern _PWM_Set_Cycle
+	extern _PWM_Set_Int
 
 ;*********************
 ;
@@ -1169,49 +1187,49 @@ section .text align=64
 	ALIGN32
 	
 	SH2_RB_PWM_Cont_H
-		mov al, [PWM_Mode + 1]
+		mov al, [_PWM_Mode + 1]
 		ret 
 
 	ALIGN4
 	
 	SH2_RB_PWM_Cont_L
-		mov al, [PWM_Mode + 0]
+		mov al, [_PWM_Mode + 0]
 		ret 
 
 	ALIGN4
 	
 	SH2_RB_PWM_Cycle_H
-		mov al, [PWM_Cycle_Tmp + 1]
+		mov al, [_PWM_Cycle_Tmp + 1]
 		ret
 
 	ALIGN4
 	
 	SH2_RB_PWM_Cycle_L
-		mov al, [PWM_Cycle_Tmp + 0]
+		mov al, [_PWM_Cycle_Tmp + 0]
 		ret
 
 	ALIGN32
 
 	SH2_RB_PWM_Pulse_L
-		mov ecx, [PWM_RP_L]
-		mov edx, [PWM_WP_L]
-		mov al, [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
+		mov ecx, [_PWM_RP_L]
+		mov edx, [_PWM_WP_L]
+		mov al, [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
 		ret
 
 	ALIGN4
 
 	SH2_RB_PWM_Pulse_R
-		mov ecx, [PWM_RP_R]
-		mov edx, [PWM_WP_R]
-		mov al, [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
+		mov ecx, [_PWM_RP_R]
+		mov edx, [_PWM_WP_R]
+		mov al, [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
 		ret
 
 	ALIGN4
 
 	SH2_RB_PWM_Pulse_C
-		mov ecx, [PWM_RP_L]
-		mov edx, [PWM_WP_L]
-		mov al, [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
+		mov ecx, [_PWM_RP_L]
+		mov edx, [_PWM_WP_L]
+		mov al, [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
 		ret
 
 
@@ -1515,37 +1533,37 @@ section .text align=64
 	ALIGN32
 	
 	SH2_RW_PWM_Cont
-		mov ax, [PWM_Mode]
+		mov ax, [_PWM_Mode]
 		ret 
 		
 	ALIGN32
 	
 	SH2_RW_PWM_Cycle
-		mov ax, [PWM_Cycle_Tmp]
+		mov ax, [_PWM_Cycle_Tmp]
 		ret
 
 	ALIGN32
 
 	SH2_RW_PWM_Pulse_L
-		mov ecx, [PWM_RP_L]
-		mov edx, [PWM_WP_L]
-		mov ah, [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
+		mov ecx, [_PWM_RP_L]
+		mov edx, [_PWM_WP_L]
+		mov ah, [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
 		ret
 
 	ALIGN4
 
 	SH2_RW_PWM_Pulse_R
-		mov ecx, [PWM_RP_R]
-		mov edx, [PWM_WP_R]
-		mov ah, [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
+		mov ecx, [_PWM_RP_R]
+		mov edx, [_PWM_WP_R]
+		mov ah, [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
 		ret
 
 	ALIGN4
 
 	SH2_RW_PWM_Pulse_C
-		mov ecx, [PWM_RP_L]
-		mov edx, [PWM_WP_L]
-		mov ah, [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
+		mov ecx, [_PWM_RP_L]
+		mov edx, [_PWM_WP_L]
+		mov ah, [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + edx]
 		ret
 
 
@@ -1724,51 +1742,60 @@ section .text align=64
 	ALIGN32
 	
 	SH2_WB_PWM_Cont_H
-		mov [PWM_Mode + 1], dl
+		mov [_PWM_Mode + 1], dl
 		mov cl, dl
-		jmp PWM_Set_Int
+		push ecx
+		call _PWM_Set_Int
+		add esp, 4
+		ret
 	
 	ALIGN4
 	
 	SH2_WB_PWM_Cont_L
-		mov [PWM_Mode], dl
+		mov [_PWM_Mode], dl
 		ret
 
 	ALIGN4
 
 	SH2_WB_PWM_Cycle_H
-		mov cl, [PWM_Cycle_Tmp + 0]
-		mov [PWM_Cycle_Tmp + 1], dl
+		mov cl, [_PWM_Cycle_Tmp + 0]
+		mov [_PWM_Cycle_Tmp + 1], dl
 		mov ch, dl
-		jmp PWM_Set_Cycle
+		push ecx
+		call _PWM_Set_Cycle
+		add esp, 4
+		ret
 	
 	ALIGN4
 	
 	SH2_WB_PWM_Cycle_L
-		mov ch, [PWM_Cycle_Tmp + 1]
-		mov [PWM_Cycle_Tmp + 0], dl
+		mov ch, [_PWM_Cycle_Tmp + 1]
+		mov [_PWM_Cycle_Tmp + 0], dl
 		mov cl, dl
-		jmp PWM_Set_Cycle
+		push ecx
+		call _PWM_Set_Cycle
+		add esp, 4
+		ret
 
 	ALIGN32
 
 	SH2_WB_PWM_Pulse_L_H
-		mov [PWM_FIFO_L_Tmp + 1], dl
+		mov [_PWM_FIFO_L_Tmp + 1], dl
 		ret
 	
 	ALIGN32
 	
 	SH2_WB_PWM_Pulse_L_L
-		mov ecx, [PWM_RP_L]
-		mov eax, [PWM_WP_L]
-		mov dh, [PWM_FIFO_L_Tmp + 1]
-		test byte [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+		mov ecx, [_PWM_RP_L]
+		mov eax, [_PWM_WP_L]
+		mov dh, [_PWM_FIFO_L_Tmp + 1]
+		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
 		jnz short .full
 
-		mov [PWM_FIFO_L + eax * 2], dx
+		mov [_PWM_FIFO_L + eax * 2], dx
 		inc eax
 		and eax, byte (PWM_BUF_SIZE - 1)
-		mov [PWM_WP_L], eax
+		mov [_PWM_WP_L], eax
 		ret
 
 	ALIGN4
@@ -1779,22 +1806,22 @@ section .text align=64
 	ALIGN32
 
 	SH2_WB_PWM_Pulse_R_H
-		mov [PWM_FIFO_R_Tmp + 1], dl
+		mov [_PWM_FIFO_R_Tmp + 1], dl
 		ret
 	
 	ALIGN32
 	
 	SH2_WB_PWM_Pulse_R_L
-		mov ecx, [PWM_RP_R]
-		mov eax, [PWM_WP_R]
-		mov dh, [PWM_FIFO_R_Tmp + 1]
-		test byte [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+		mov ecx, [_PWM_RP_R]
+		mov eax, [_PWM_WP_R]
+		mov dh, [_PWM_FIFO_R_Tmp + 1]
+		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
 		jnz short .full
 
-		mov [PWM_FIFO_R + eax * 2], dx
+		mov [_PWM_FIFO_R + eax * 2], dx
 		inc eax
 		and eax, byte (PWM_BUF_SIZE - 1)
-		mov [PWM_WP_R], eax
+		mov [_PWM_WP_R], eax
 		ret
 
 	ALIGN4
@@ -1805,24 +1832,24 @@ section .text align=64
 	ALIGN32
 
 	SH2_WB_PWM_Pulse_C_H
-		mov [PWM_FIFO_L_Tmp + 1], dl
+		mov [_PWM_FIFO_L_Tmp + 1], dl
 		ret
 	
 	ALIGN32
 	
 	SH2_WB_PWM_Pulse_C_L
-		mov ecx, [PWM_RP_L]
-		mov eax, [PWM_WP_L]
-		mov dh, [PWM_FIFO_L_Tmp + 1]
-		test byte [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+		mov ecx, [_PWM_RP_L]
+		mov eax, [_PWM_WP_L]
+		mov dh, [_PWM_FIFO_L_Tmp + 1]
+		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
 		jnz short .full
 
-		mov [PWM_FIFO_L + eax * 2], dx
-		mov [PWM_FIFO_R + eax * 2], dx
+		mov [_PWM_FIFO_L + eax * 2], dx
+		mov [_PWM_FIFO_R + eax * 2], dx
 		inc eax
 		and eax, byte (PWM_BUF_SIZE - 1)
-		mov [PWM_WP_L], eax
-		mov [PWM_WP_R], eax
+		mov [_PWM_WP_L], eax
+		mov [_PWM_WP_R], eax
 		ret
 
 	ALIGN4
@@ -2014,29 +2041,34 @@ section .text align=64
 	ALIGN32
 	
 	SH2_WW_PWM_Cont
-		mov [PWM_Mode + 0], dl
+		mov [_PWM_Mode + 0], dl
 		mov cl, dh
-		mov [PWM_Mode + 1], dh
-		jmp PWM_Set_Int
+		mov [_PWM_Mode + 1], dh
+		push ecx
+		call _PWM_Set_Int
+		add esp, 4
+		ret
 		
 	ALIGN32
 	
 	SH2_WW_PWM_Cycle
-		mov ecx, edx
-		jmp PWM_Set_Cycle
+		push edx
+		call _PWM_Set_Cycle
+		add esp, 4
+		ret
 
 	ALIGN32
 
 	SH2_WW_PWM_Pulse_L
-		mov ecx, [PWM_RP_L]
-		mov eax, [PWM_WP_L]
-		test byte [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+		mov ecx, [_PWM_RP_L]
+		mov eax, [_PWM_WP_L]
+		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
 		jnz short .full
 
-		mov [PWM_FIFO_L + eax * 2], dx
+		mov [_PWM_FIFO_L + eax * 2], dx
 		inc eax
 		and eax, byte (PWM_BUF_SIZE - 1)
-		mov [PWM_WP_L], eax
+		mov [_PWM_WP_L], eax
 		ret
 
 	ALIGN4
@@ -2047,15 +2079,15 @@ section .text align=64
 	ALIGN32
 
 	SH2_WW_PWM_Pulse_R
-		mov ecx, [PWM_RP_R]
-		mov eax, [PWM_WP_R]
-		test byte [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+		mov ecx, [_PWM_RP_R]
+		mov eax, [_PWM_WP_R]
+		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
 		jnz short .full
 
-		mov [PWM_FIFO_R + eax * 2], dx
+		mov [_PWM_FIFO_R + eax * 2], dx
 		inc eax
 		and eax, byte (PWM_BUF_SIZE - 1)
-		mov [PWM_WP_R], eax
+		mov [_PWM_WP_R], eax
 		ret
 
 	ALIGN4
@@ -2066,17 +2098,17 @@ section .text align=64
 	ALIGN32
 
 	SH2_WW_PWM_Pulse_C
-		mov ecx, [PWM_RP_L]
-		mov eax, [PWM_WP_L]
-		test byte [PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+		mov ecx, [_PWM_RP_L]
+		mov eax, [_PWM_WP_L]
+		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
 		jnz short .full
 
-		mov [PWM_FIFO_L + eax * 2], dx
-		mov [PWM_FIFO_R + eax * 2], dx
+		mov [_PWM_FIFO_L + eax * 2], dx
+		mov [_PWM_FIFO_R + eax * 2], dx
 		inc eax
 		and eax, byte (PWM_BUF_SIZE - 1)
-		mov [PWM_WP_L], eax
-		mov [PWM_WP_R], eax
+		mov [_PWM_WP_L], eax
+		mov [_PWM_WP_R], eax
 		ret
 
 	ALIGN4
