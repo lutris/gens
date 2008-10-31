@@ -69,7 +69,7 @@ extern HACCEL hAccelTable_Menu;
 
 #ifdef __cplusplus
 
-// Unordered map containing all the menu items.
+// Unordered map containing menus. (Not menu items!)
 // Map key is the menu ID.
 // TODO: unordered_map is gcc-4.x and later.
 // For gcc-3.x, use __gnu_cxx::hash_map.

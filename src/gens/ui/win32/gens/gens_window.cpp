@@ -163,9 +163,13 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 	static vector<ACCEL> vAccel;
 	ACCEL curAccel;
 	
-	// If this is the first invokation of Win32_ParseMenu, clear the vector of accelerators.
+	// If this is the first invokation of Win32_ParseMenu,
+	// clear the vector of accelerators and the menu map.
 	if (container == MainMenu)
+	{
 		vAccel.clear();
+		gensMenuMap.clear();
+	}
 	
 	while (menu->id != 0)
 	{
@@ -193,6 +197,9 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 					Win32_ParseMenu(menu->submenu, mnuSubMenu);
 					uFlags = MF_BYPOSITION | MF_STRING | MF_POPUP;
 					uIDNewItem = (UINT_PTR)mnuSubMenu;
+					
+					// Add the submenu to the menu map.
+					gensMenuMap.insert(win32MenuMapItem(menu->id, mnuSubMenu));
 				}
 				break;
 			
@@ -278,14 +285,6 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 		
 		// Add the menu item to the container.
 		InsertMenu(container, -1, uFlags, uIDNewItem, sMenuText.c_str());
-		
-		// Add the menu to the menu map. (Exception is if id is 0 or IDM_SEPARATOR.)
-#if 0
-		if (menu->id != 0 && menu->id != IDM_SEPARATOR)
-		{
-			gensMenuMap.insert(gtkMenuMapItem(menu->id, mnuItem));
-		}
-#endif
 		
 		// Next menu item.
 		menu++;
