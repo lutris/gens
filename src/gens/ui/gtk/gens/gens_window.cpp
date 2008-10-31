@@ -348,7 +348,7 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 					break;
 			}
 			
-			// ADd the accelerator.
+			// Add the accelerator.
 			gtk_widget_add_accelerator(mnuItem, "activate", accel_group,
 						   accelKey, (GdkModifierType)accelModifier,
 						   GTK_ACCEL_VISIBLE);
