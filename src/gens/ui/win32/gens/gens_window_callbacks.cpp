@@ -145,6 +145,8 @@ static void dragDropFile(HDROP hDrop);
 LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT rectGensWindow;
+	HMENU mnuCallback;
+	bool state;
 	
 	switch(message)
 	{
@@ -249,8 +251,10 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					break;
 				
 				default:
-					// TODO: Get the menu item state.
-					GensWindow_MenuItemCallback(LOWORD(wParam), 0);
+					// Menu item selected.
+					mnuCallback = findMenuItem(LOWORD(wParam));
+					state = (GetMenuState(mnuCallback, LOWORD(wParam), MF_BYCOMMAND) & MF_CHECKED);
+					GensWindow_MenuItemCallback(LOWORD(wParam), state);
 					break;
 			}
 			break;
