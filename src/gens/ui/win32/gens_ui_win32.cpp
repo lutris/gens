@@ -87,8 +87,8 @@ static string UI_Win32_OpenFile_int(const string& title,
 
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 
-// Accelerator table for the main Gens window.
-HACCEL hAccelTable;
+// Accelerator tables for the main Gens window.
+HACCEL hAccelTable_NonMenu;
 
 
 /**
@@ -159,8 +159,8 @@ void GensUI::init(int argc, char *argv[])
 	lf.lfWeight = FW_BOLD;
 	fntTitle = CreateFontIndirect(&lf);
 	
-	// Load the accelerator table.
-	hAccelTable = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL));
+	// Load the accelerator table for non-menu commands.
+	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
 	create_gens_window();
@@ -206,7 +206,7 @@ void GensUI::update(void)
 			
 		// Check for an accelerator.
 		if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
-		    TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
+		    TranslateAccelerator(Gens_hWnd, hAccelTable_NonMenu, &msg))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;

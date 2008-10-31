@@ -11,7 +11,6 @@
 #include "macros/git.h"
 
 // Menu and Command ID definitions
-#include "gens/gens_window_menu.h"
 #include "gens/gens_window_cmds.h"
 
 // Icons
@@ -39,10 +38,9 @@ BEGIN
 	PUSHBUTTON	"&Cancel", IDCANCEL, ((224-(65*2+8))/2)+65+8, 24+104+2, 65, 13
 END
 
-// Accelerator Table
-IDR_GENS_WINDOW_ACCEL	ACCELERATORS	DISCARDABLE
+// Accelerator Table for non-menu commands
+IDR_GENS_WINDOW_ACCEL_NONMENU	ACCELERATORS	DISCARDABLE
 BEGIN
-	// Other accelerators not present in menus
 	VK_ESCAPE,	IDCMD_ESC,			VIRTKEY, NOINVERT
 	VK_PAUSE,	IDCMD_PAUSE,			VIRTKEY, NOINVERT
 	VK_F2,		IDCMD_FRAMESKIP_AUTO,		VIRTKEY, NOINVERT
