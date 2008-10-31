@@ -39,24 +39,6 @@ HWND create_gens_window(void);
 void create_gens_window_menubar(void);
 extern HWND Gens_hWnd;
 
-#if 0
-extern HMENU MainMenu;
-extern HMENU FileMenu;
-extern HMENU FileMenu_ROMHistory;
-extern HMENU FileMenu_ChangeState;
-extern HMENU GraphicsMenu;
-extern HMENU GraphicsMenu_Render;
-extern HMENU GraphicsMenu_FrameSkip;
-extern HMENU CPUMenu;
-extern HMENU CPUMenu_Debug;
-extern HMENU CPUMenu_Country;
-extern HMENU SoundMenu;
-extern HMENU SoundMenu_Rate;
-extern HMENU OptionsMenu;
-extern HMENU OptionsMenu_SegaCDSRAMSize;
-extern HMENU HelpMenu;
-#endif
-
 // New menu handler.
 HMENU findMenuItem(uint16_t id);
 
