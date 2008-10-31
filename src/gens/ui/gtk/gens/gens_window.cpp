@@ -70,34 +70,41 @@ gtkMenuMap gensMenuMap;
 
 // Menu icons.
 // See ui/common/gens/gens_menu.h:IDIM_* for the icon constants.
-static const char* GTK_MenuIcons[] =
+#include <utility>
+using std::pair;
+
+// GTK_MenuIcon_t:
+// - first: bool - true if stock icon; false if filename.
+// - second: stock icon name or filename, depending on first.
+typedef pair<bool, const char*> GTK_MenuIcon_t;
+static GTK_MenuIcon_t GTK_MenuIcons[] =
 {
-	NULL,	// IDIM_MENU_ICON == 0x0100 == not used
-	"gtk-open",
-	"gtk-save",
-	"gtk-save-as",
-	"gtk-refresh",
-	"gtk-revert-to-saved",
-	"gtk-close",
-	"gtk-quit",
-	"gtk-cdrom",
-	"gtk-cdrom",
-	"modem.png",
-	"history.png",
-	"password.png",
-	"gtk-fullscreen",
-	"gtk-select-color",
-	"viewmag.png",
-	"2rightarrow.png",
-	"gtk-copy",
-	"gtk-refresh",
-	"ksysguard.png",
-	"package_games.png",
-	"folder_slin_open.png",
-	"binary.png",
-	"memory.png",
-	"gtk-help",
-	NULL,
+	GTK_MenuIcon_t(false, NULL),	// IDIM_MENU_ICON == 0x0100 == not used
+	GTK_MenuIcon_t(true,  "gtk-open"),
+	GTK_MenuIcon_t(true,  "gtk-save"),
+	GTK_MenuIcon_t(true,  "gtk-save-as"),
+	GTK_MenuIcon_t(true,  "gtk-refresh"),
+	GTK_MenuIcon_t(true,  "gtk-revert-to-saved"),
+	GTK_MenuIcon_t(true,  "gtk-close"),
+	GTK_MenuIcon_t(true,  "gtk-quit"),
+	GTK_MenuIcon_t(true,  "gtk-cdrom"),
+	GTK_MenuIcon_t(true,  "gtk-cdrom"),
+	GTK_MenuIcon_t(false, "modem.png"),
+	GTK_MenuIcon_t(false, "history.png"),
+	GTK_MenuIcon_t(false, "password.png"),
+	GTK_MenuIcon_t(true,  "gtk-fullscreen"),
+	GTK_MenuIcon_t(true,  "gtk-select-color"),
+	GTK_MenuIcon_t(false, "viewmag.png"),
+	GTK_MenuIcon_t(false, "2rightarrow.png"),
+	GTK_MenuIcon_t(true,  "gtk-copy"),
+	GTK_MenuIcon_t(true,  "gtk-refresh"),
+	GTK_MenuIcon_t(false, "ksysguard.png"),
+	GTK_MenuIcon_t(false, "package_games.png"),
+	GTK_MenuIcon_t(false, "folder_slin_open.png"),
+	GTK_MenuIcon_t(false, "binary.png"),
+	GTK_MenuIcon_t(false, "memory.png"),
+	GTK_MenuIcon_t(true,  "gtk-help"),
+	GTK_MenuIcon_t(false, NULL),	// End of array.
 };
 
 
@@ -292,14 +299,18 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 		if (bMenuHasIcon)
 		{
 			// Icon specified.
-			if (menu->icon <= IDIM_MENU_ICON || menu->icon > IDIM_MENU_ICON_MAX)
-				break;
+			const char* iconName = NULL;
+			if (menu->icon > IDIM_MENU_ICON && menu->icon <= IDIM_MENU_ICON_MAX)
+			{
+				// Valid icon.
+				iconName = GTK_MenuIcons[menu->icon - IDIM_MENU_ICON].second;
+			}
 			
 			icon = NULL;
-			const char* iconName = GTK_MenuIcons[menu->icon - IDIM_MENU_ICON];
-			switch (menu->flags & GMF_ICON_MASK)
+			if (iconName)
 			{
-				case GMF_ICON_STOCK:
+				if (GTK_MenuIcons[menu->icon - IDIM_MENU_ICON].first)
+				{
 					// GTK+ stock icon.
 					icon = gtk_image_new_from_stock(iconName, GTK_ICON_SIZE_MENU);
 					if (!icon)
@@ -307,9 +318,9 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 						// Icon not found.
 						fprintf(stderr, "%s: GTK+ stock icon not found: %s\n", __func__, iconName);
 					}
-					break;
-				
-				case GMF_ICON_FILE:
+				}
+				else
+				{
 					// Load an icon from a file.
 					icon = create_pixmap(iconName);
 					if (!icon)
@@ -317,12 +328,7 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 						// Icon not found.
 						fprintf(stderr, "%s: Icon file not found: %s\n", __func__, iconName);
 					}
-					break;
-				
-				default:
-					// Unknown icon type.
-					fprintf(stderr, "%s: Unknown icon type: 0x%04X\n", __func__, (menu->flags & GMF_ICON_MASK));
-					break;
+				}
 			}
 			
 			if (icon)
