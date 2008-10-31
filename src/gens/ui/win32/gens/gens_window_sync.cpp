@@ -272,51 +272,54 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
-#if 0
-	unsigned int flags = MF_BYPOSITION | MF_STRING;
+	// TODO: Figure out how to hide menu items instead of deleting/recreating them.
+	
+	static const unsigned int flags = MF_BYCOMMAND | MF_STRING;
+	
+	HMENU mnuCPU = findMenuItem(IDM_CPU_MENU);
 	
 #ifdef GENS_DEBUGGER
 	// Synchronize the Debug submenu.
-	Sync_Gens_Window_CPUMenu_Debug(CPUMenu, 0);
+	Sync_Gens_Window_CPUMenu_Debug(mnuCPU, 0);
 #endif /* GENS_DEBUGGER */
 	
 	// Hide and show appropriate RESET items.
-	RemoveMenu(CPUMenu, IDM_CPU_RESET68K, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, IDM_CPU_RESETMAIN68K, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, IDM_CPU_RESETSUB68K, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, IDM_CPU_RESETMAINSH2, MF_BYCOMMAND);
-	RemoveMenu(CPUMenu, IDM_CPU_RESETSUBSH2, MF_BYCOMMAND);
+	RemoveMenu(mnuCPU, IDM_CPU_RESET68K, MF_BYCOMMAND);
+	RemoveMenu(mnuCPU, IDM_CPU_RESETMAIN68K, MF_BYCOMMAND);
+	RemoveMenu(mnuCPU, IDM_CPU_RESETSUB68K, MF_BYCOMMAND);
+	RemoveMenu(mnuCPU, IDM_CPU_RESETMAINSH2, MF_BYCOMMAND);
+	RemoveMenu(mnuCPU, IDM_CPU_RESETSUBSH2, MF_BYCOMMAND);
 	
 	if (SegaCD_Started)
 	{
 		// SegaCD: Show Main 68000 and Sub 68000.
-		InsertMenu(CPUMenu, 6, flags, IDM_CPU_RESETMAIN68K, "Reset Main 68000");
-		InsertMenu(CPUMenu, 7, flags, IDM_CPU_RESETSUB68K, "Reset Sub 68000");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETMAIN68K, "Reset Main 68000");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETSUB68K, "Reset Sub 68000");
 	}
 	else
 	{
 		// No SegaCD: Only show one 68000.
-		InsertMenu(CPUMenu, 5, flags, IDM_CPU_RESET68K, "Reset 68000");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESET68K, "Reset 68000");
 	}
 	
 	if (_32X_Started)
 	{
 		// 32X: Show Main SH2 and Sub SH2.
-		InsertMenu(CPUMenu, 8, flags, IDM_CPU_RESETMAINSH2, "Reset Main SH2");
-		InsertMenu(CPUMenu, 9, flags, IDM_CPU_RESETSUBSH2, "Reset Sub SH2");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETMAINSH2, "Reset Main SH2");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETSUBSH2, "Reset Sub SH2");
 	}
 	
 	// Country code
-	CheckMenuRadioItem(CPUMenu_Country,
+	HMENU mnuCountry = findMenuItem(IDM_CPU_COUNTRY);
+	CheckMenuRadioItem(mnuCountry,
 			   IDM_CPU_COUNTRY_AUTO,
 			   IDM_CPU_COUNTRY_JAPAN_PAL,
-			   IDM_CPU_COUNTRY + (Country + 1),
+			   IDM_CPU_COUNTRY_AUTO + (Country + 1),
 			   MF_BYCOMMAND);
 	
 	// SegaCD Perfect Sync
-	CheckMenuItem(CPUMenu, IDM_CPU_SEGACDPERFECTSYNC,
+	CheckMenuItem(mnuCPU, IDM_CPU_SEGACDPERFECTSYNC,
 		      MF_BYCOMMAND | (SegaCD_Accurate ? MF_CHECKED : MF_UNCHECKED));
-#endif
 }
 
 
