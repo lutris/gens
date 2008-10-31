@@ -33,18 +33,12 @@ extern "C" {
 
 #include <stdint.h>
 
-// Menu flags
-#define GMF_ICON_NONE		0x0000
-#define GMF_ICON_STOCK		0x0001
-#define GMF_ICON_FILE		0x0002
-#define GMF_ICON_MASK		0x000F
-
 #define GMF_ITEM_NORMAL		0x0000
-#define GMF_ITEM_SEPARATOR	0x0010
-#define GMF_ITEM_SUBMENU	0x0020
-#define GMF_ITEM_CHECK		0x0030
-#define GMF_ITEM_RADIO		0x0040
-#define GMF_ITEM_MASK		0x00F0
+#define GMF_ITEM_SEPARATOR	0x0001
+#define GMF_ITEM_SUBMENU	0x0002
+#define GMF_ITEM_CHECK		0x0003
+#define GMF_ITEM_RADIO		0x0004
+#define GMF_ITEM_MASK		0x000F
 
 // Accelerator modifiers
 #define GMAM_CTRL		0x0001

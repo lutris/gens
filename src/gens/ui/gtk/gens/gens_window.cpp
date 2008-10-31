@@ -270,7 +270,7 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 				bSetCallbackHandler = ((menu->flags & GMF_ITEM_MASK) != GMF_ITEM_SUBMENU);
 				
 				// Check if an icon was specified.
-				if (menu->flags & GMF_ICON_MASK)
+				if (menu->icon > 0)
 				{
 					bMenuHasIcon = true;
 					mnuItem = gtk_image_menu_item_new_with_mnemonic(sMenuText);
