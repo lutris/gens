@@ -206,7 +206,8 @@ void GensUI::update(void)
 			
 		// Check for an accelerator.
 		if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
-		    TranslateAccelerator(Gens_hWnd, hAccelTable_NonMenu, &msg))
+		    ((hAccelTable_NonMenu && TranslateAccelerator(Gens_hWnd, hAccelTable_NonMenu, &msg)) ||
+		     (hAccelTable_Menu    && TranslateAccelerator(Gens_hWnd, hAccelTable_Menu, &msg))))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;

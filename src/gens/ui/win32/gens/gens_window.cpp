@@ -62,6 +62,10 @@ HACCEL hAccelTable_Menu = NULL;
 using std::tr1::unordered_map;
 win32MenuMap gensMenuMap;
 
+// C++ includes
+#include <vector>
+using std::vector;
+
 // Menu objects
 HMENU MainMenu;
 #if 0
@@ -186,6 +190,14 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 	unsigned int uFlags;
 	UINT_PTR uIDNewItem;
 	
+	// Vector of accelerators.
+	static vector<ACCEL> vAccel;
+	ACCEL curAccel;
+	
+	// If this is the first invokation of Win32_ParseMenu, clear the vector of accelerators.
+	if (container == MainMenu)
+		vAccel.clear();
+	
 	while (menu->id != 0)
 	{
 		// Check what type of menu item this is.
@@ -235,25 +247,24 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 		{
 			// Accelerator specified.
 			// TODO: Add the accelerator to the accelerator table.
-			//int accelModifier = 0;
-			int accelKey;
+			curAccel.fVirt = FVIRTKEY | FNOINVERT;
 			
 			sMenuText += "\t";
 			
 			// Determine the modifier.
 			if (menu->accelModifier & GMAM_CTRL)
 			{
-				//accelModifier |= GDK_CONTROL_MASK;
+				curAccel.fVirt |= FCONTROL;
 				sMenuText += "Ctrl+";
 			}
 			if (menu->accelModifier & GMAM_ALT)
 			{
-				//accelModifier |= GDK_MOD1_MASK;
+				curAccel.fVirt |= FALT;
 				sMenuText += "Alt+";
 			}
 			if (menu->accelModifier & GMAM_SHIFT)
 			{
-				//accelModifier |= GDK_SHIFT_MASK;
+				curAccel.fVirt |= FSHIFT;
 				sMenuText += "Shift+";
 			}
 			
@@ -263,36 +274,37 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 			switch (menu->accelKey)
 			{
 				case GMAK_BACKSPACE:
-					accelKey = VK_BACK;
+					curAccel.key = VK_BACK;
 					sMenuText += "Backspace";
 					break;
 				
 				case GMAK_ENTER:
-					accelKey = VK_RETURN;
+					curAccel.key = VK_RETURN;
 					sMenuText += "Enter";
 					break;
 				
 				case GMAK_TAB:
-					accelKey = VK_TAB;
+					curAccel.key = VK_TAB;
 					sMenuText += "Tab";
 					break;
 				
 				case GMAK_F1: case GMAK_F2:  case GMAK_F3:  case GMAK_F4:
 				case GMAK_F5: case GMAK_F6:  case GMAK_F7:  case GMAK_F8:
 				case GMAK_F9: case GMAK_F10: case GMAK_F11: case GMAK_F12:
-					accelKey = (menu->accelKey - GMAK_F1) + VK_F1;
+					curAccel.key = (menu->accelKey - GMAK_F1) + VK_F1;
 					sprintf(tmpKey, "F%d", (menu->accelKey - GMAK_F1 + 1));
 					sMenuText += string(tmpKey);
 					break;
 					
 				default:
-					accelKey = menu->accelKey;
-					sMenuText += (char)(menu->accelKey);
+					curAccel.key = toupper(menu->accelKey);
+					sMenuText += (char)(curAccel.key);
 					break;
 			}
 			
 			// Add the accelerator.
-			// TODO
+			curAccel.cmd = menu->id;
+			vAccel.push_back(curAccel);
 		}
 		
 		// Add the menu item to the container.
@@ -308,6 +320,19 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 		
 		// Next menu item.
 		menu++;
+	}
+	
+	// If this is the first invokation of Win32_ParseMenu, create the accelerator table.
+	if (container == MainMenu)
+	{
+		if (hAccelTable_Menu)
+			DestroyAcceleratorTable(hAccelTable_Menu);
+		
+		// Create the accelerator table.
+		hAccelTable_Menu = CreateAcceleratorTable(&vAccel[0], vAccel.size());
+		
+		// Clear the vector of accelerators.
+		vAccel.clear();
 	}
 }
 
