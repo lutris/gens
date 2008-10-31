@@ -177,6 +177,11 @@ void create_gens_window_menubar(void)
 static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 {
 	HMENU mnuSubMenu;
+	string sMenuText;
+	
+	// Win32 InsertMenu() parameters.
+	unsigned int uFlags;
+	UINT_PTR uIDNewItem;
 	
 	while (menu->id != 0)
 	{
@@ -185,7 +190,8 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 		{
 			case GMF_ITEM_SEPARATOR:
 				// Separator.
-				InsertMenu(container, -1, MF_BYPOSITION | MF_SEPARATOR, (UINT_PTR)menu->id, NULL);
+				uFlags = MF_BYPOSITION | MF_SEPARATOR;
+				uIDNewItem = (UINT_PTR)menu->id;
 				break;
 			
 			case GMF_ITEM_SUBMENU:
@@ -193,75 +199,101 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 				if (!menu->submenu)
 				{
 					// No submenu specified. Create a normal menu item for now.
-					InsertMenu(container, -1, MF_BYPOSITION | MF_STRING, (UINT_PTR)menu->id, menu->text);
+					uFlags = MF_BYPOSITION | MF_STRING;
+					uIDNewItem = (UINT_PTR)menu->id;
 				}
 				else
 				{
 					// Submenu specified.
 					mnuSubMenu = CreatePopupMenu();
-					InsertMenu(container, -1, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuSubMenu, menu->text);
 					Win32_ParseMenu(menu->submenu, mnuSubMenu);
+					uFlags = MF_BYPOSITION | MF_STRING | MF_POPUP;
+					uIDNewItem = (UINT_PTR)mnuSubMenu;
 				}
 				break;
 			
 			case GMF_ITEM_CHECK:
 			case GMF_ITEM_RADIO:
 			default:
-				// Menu item.
-				// Win32 doesn't treat check or radio items as different types.
-				InsertMenu(container, -1, MF_BYPOSITION | MF_STRING, (UINT_PTR)menu->id, menu->text);
+				// Menu item. (Win32 doesn't treat check or radio items as different types.)
+				uFlags = MF_BYPOSITION | MF_STRING;
+				uIDNewItem = (UINT_PTR)menu->id;
 				break;
 		}
 		
+		// Set the menu text.
+		if (menu->text)
+			sMenuText = menu->text;
+		else
+			sMenuText.clear();
+		
 		// Check for an accelerator.
-#if 0
 		if (menu->accelKey != 0)
 		{
 			// Accelerator specified.
-			int accelModifier = 0;
-			guint accelKey;
+			// TODO: Add the accelerator to the accelerator table.
+			//int accelModifier = 0;
+			int accelKey;
+			
+			sMenuText += "\t";
 			
 			// Determine the modifier.
 			if (menu->accelModifier & GMAM_CTRL)
-				accelModifier |= GDK_CONTROL_MASK;
+			{
+				//accelModifier |= GDK_CONTROL_MASK;
+				sMenuText += "Ctrl+";
+			}
 			if (menu->accelModifier & GMAM_ALT)
-				accelModifier |= GDK_MOD1_MASK;
+			{
+				//accelModifier |= GDK_MOD1_MASK;
+				sMenuText += "Alt+";
+			}
 			if (menu->accelModifier & GMAM_SHIFT)
-				accelModifier |= GDK_SHIFT_MASK;
+			{
+				//accelModifier |= GDK_SHIFT_MASK;
+				sMenuText += "Shift+";
+			}
 			
 			// Determine the key.
 			// TODO: Add more special keys.
+			char tmpKey[8];
 			switch (menu->accelKey)
 			{
 				case GMAK_BACKSPACE:
-					accelKey = GDK_BackSpace;
+					accelKey = VK_BACK;
+					sMenuText += "Backspace";
 					break;
 				
 				case GMAK_ENTER:
-					accelKey = GDK_Return;
+					accelKey = VK_RETURN;
+					sMenuText += "Enter";
 					break;
 				
 				case GMAK_TAB:
-					accelKey = GDK_Tab;
+					accelKey = VK_TAB;
+					sMenuText += "Tab";
 					break;
 				
 				case GMAK_F1: case GMAK_F2:  case GMAK_F3:  case GMAK_F4:
 				case GMAK_F5: case GMAK_F6:  case GMAK_F7:  case GMAK_F8:
 				case GMAK_F9: case GMAK_F10: case GMAK_F11: case GMAK_F12:
-					accelKey = (menu->accelKey - GMAK_F1) + GDK_F1;
+					accelKey = (menu->accelKey - GMAK_F1) + VK_F1;
+					sprintf(tmpKey, "F%d", (menu->accelKey - GMAK_F1 + 1));
+					sMenuText += string(tmpKey);
 					break;
 					
 				default:
 					accelKey = menu->accelKey;
+					sMenuText += (char)(menu->accelKey);
 					break;
 			}
 			
-			// ADd the accelerator.
-			gtk_widget_add_accelerator(mnuItem, "activate", accel_group,
-					accelKey, (GdkModifierType)accelModifier,
-							GTK_ACCEL_VISIBLE);
+			// Add the accelerator.
+			// TODO
 		}
-#endif
+		
+		// Add the menu item to the container.
+		InsertMenu(container, -1, uFlags, uIDNewItem, sMenuText.c_str());
 		
 		// Add the menu to the menu map. (Exception is if id is 0 or IDM_SEPARATOR.)
 #if 0
