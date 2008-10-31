@@ -295,3 +295,22 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 		vAccel.clear();
 	}
 }
+
+
+/**
+ * findMenuItem(): Find a submenu in the menu map.
+ * @param id Submenu ID.
+ * @return Submenu.
+ */
+HMENU findMenuItem(uint16_t id)
+{
+	// TODO: Make this a common function.
+	
+	win32MenuMap::iterator mnuIter;
+	
+	mnuIter = gensMenuMap.find(id & 0xFF00);
+	if (mnuIter == gensMenuMap.end())
+		return NULL;
+	
+	return (*mnuIter).second;
+}
