@@ -32,6 +32,7 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
+#include <stdint.h>
 
 GtkWidget* create_gens_window(void); 
 extern GtkWidget *gens_window;
@@ -39,6 +40,7 @@ extern int do_callbacks;
 
 // New menu handler.
 void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
+GtkWidget* findMenuItem(uint16_t id);
 
 #ifdef __cplusplus
 }
@@ -53,12 +55,9 @@ void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
 
 #include <tr1/unordered_map>
 #include <utility>
-#include <stdint.h>
 typedef std::tr1::unordered_map<uint16_t, GtkWidget*> gtkMenuMap;
 extern gtkMenuMap gensMenuMap;
 typedef std::pair<uint16_t, GtkWidget*> gtkMenuMapItem;
-
-GtkWidget* findMenuItem(uint16_t id);
 
 #endif /* __cplusplus */
 
