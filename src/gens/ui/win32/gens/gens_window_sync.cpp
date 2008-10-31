@@ -94,7 +94,6 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	string sROMHistoryEntry;
 	char sTmpROMFilename[GENS_PATH_MAX];
-	char sMenuKey[24];
 	int romFormat;
 	int romsFound = 0;
 	for (unsigned short i = 0; i < 9; i++)
@@ -203,11 +202,18 @@ void Sync_Gens_Window_GraphicsMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
-#if 0
-	// Render submenu
+	HMENU mnuRender = findMenuItem(IDM_GRAPHICS_RENDER);
+	
+	// Delete and/or recreate the Render submenu.
 	DeleteMenu(parent, position, MF_BYPOSITION);
-	GraphicsMenu_Render = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)GraphicsMenu_Render, "&Render");
+	gensMenuMap.erase(IDM_GRAPHICS_RENDER);
+	if (mnuRender)
+		DestroyMenu(mnuRender);
+	
+	// Render submenu
+	mnuRender = CreatePopupMenu();
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuRender, "&Render");
+	gensMenuMap.insert(win32MenuMapItem(IDM_GRAPHICS_RENDER, mnuRender));
 	
 	// Create the render entries.
 	bool renderSelected = false;
@@ -242,15 +248,15 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 			else
 				renderSelected = (Video.Render_W == i);
 			
-			InsertMenu(GraphicsMenu_Render, i, MF_BYPOSITION | MF_STRING,
-				   IDM_GRAPHICS_RENDER + i, Renderers[i].name);
+			InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING,
+				   IDM_GRAPHICS_RENDER_NORMAL + i, Renderers[i].name);
 			
 			if (renderSelected)
 			{
-				CheckMenuRadioItem(GraphicsMenu_Render,
-						   IDM_GRAPHICS_RENDER,
-						   IDM_GRAPHICS_RENDER + (Renderers_Count - 1),
-						   IDM_GRAPHICS_RENDER + i,
+				CheckMenuRadioItem(mnuRender,
+						   IDM_GRAPHICS_RENDER_NORMAL,
+						   IDM_GRAPHICS_RENDER_NORMAL + (Renderers_Count - 1),
+						   IDM_GRAPHICS_RENDER_NORMAL + i,
 						   MF_BYCOMMAND);
 			}
 		}
@@ -258,7 +264,6 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		// Check the next renderer.
 		i++;
 	}
-#endif
 }
 
 
