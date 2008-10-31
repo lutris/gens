@@ -128,14 +128,6 @@ void create_gens_window_menubar(void)
 	
 	// Menus
 	Win32_ParseMenu(&gmiMain[0], MainMenu);
-#if 0
-	create_gens_window_FileMenu(MainMenu, 0);
-	create_gens_window_GraphicsMenu(MainMenu, 1);
-	create_gens_window_CPUMenu(MainMenu, 2);
-	create_gens_window_SoundMenu(MainMenu, 3);
-	create_gens_window_OptionsMenu(MainMenu, 4);
-	create_gens_window_HelpMenu(MainMenu, 5);
-#endif
 	
 	// Set the menu bar.
 	if (draw->fullScreen())
