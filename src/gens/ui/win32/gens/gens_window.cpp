@@ -43,20 +43,25 @@
 WNDCLASS WndClass;
 HWND Gens_hWnd = NULL;
 
-#ifdef GENS_DEBUGGER
-// Debug menu items
-//GtkWidget *debugMenuItems[9];
-//GtkWidget *debugSeparators[2];
-#endif /* GENS_DEBUGGER */
-
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
-// Menu identifier definitions
-#include "gens_window_menu.h"
+// New menu handler.
+#include "ui/common/gens/gens_menu.h"
+#include "ui/common/gens/gens_menu_callbacks.hpp"
+static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container);
+
+// Unordered map containing all the menu items.
+// Map key is the menu ID.
+// TODO: unordered_map is gcc-4.x and later.
+// For gcc-3.x, use __gnu_cxx::hash_map.
+#include <tr1/unordered_map>
+using std::tr1::unordered_map;
+win32MenuMap gensMenuMap;
 
 // Menu objects
 HMENU MainMenu;
+#if 0
 HMENU FileMenu;
 HMENU FileMenu_ROMHistory;
 HMENU FileMenu_ChangeState;
@@ -71,9 +76,11 @@ HMENU SoundMenu_Rate;
 HMENU OptionsMenu;
 HMENU OptionsMenu_SegaCDSRAMSize;
 HMENU HelpMenu;
+#endif
 
 void create_gens_window_menubar(void);
 
+#if 0
 static void create_gens_window_FileMenu(HMENU parent, int position);
 static void create_gens_window_FileMenu_ChangeState(HMENU parent, int position);
 static void create_gens_window_GraphicsMenu(HMENU parent, int position);
@@ -85,6 +92,7 @@ static void create_gens_window_SoundMenu_Rate(HMENU parent, int position);
 static void create_gens_window_OptionsMenu(HMENU parent, int position);
 static void create_gens_window_OptionsMenu_SegaCDSRAMSize(HMENU parent, int position);
 static void create_gens_window_HelpMenu(HMENU parent, int position);
+#endif
 
 
 /**
@@ -143,12 +151,15 @@ void create_gens_window_menubar(void)
 		MainMenu = CreateMenu();
 	
 	// Menus
+	Win32_ParseMenu(&gmiMain[0], MainMenu);
+#if 0
 	create_gens_window_FileMenu(MainMenu, 0);
 	create_gens_window_GraphicsMenu(MainMenu, 1);
 	create_gens_window_CPUMenu(MainMenu, 2);
 	create_gens_window_SoundMenu(MainMenu, 3);
 	create_gens_window_OptionsMenu(MainMenu, 4);
 	create_gens_window_HelpMenu(MainMenu, 5);
+#endif
 	
 	// Set the menu bar.
 	if (draw->fullScreen())
@@ -158,6 +169,115 @@ void create_gens_window_menubar(void)
 }
 
 
+/**
+ * Win32_ParseMenu(): Parse the menu structs.
+ * @param menu First item of the array of menu structs to parse.
+ * @param container Container to add the menu items to.
+ */
+static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
+{
+	HMENU mnuSubMenu;
+	
+	while (menu->id != 0)
+	{
+		// Check what type of menu item this is.
+		switch ((menu->flags & GMF_ITEM_MASK))
+		{
+			case GMF_ITEM_SEPARATOR:
+				// Separator.
+				InsertMenu(container, -1, MF_BYPOSITION | MF_SEPARATOR, (UINT_PTR)menu->id, NULL);
+				break;
+			
+			case GMF_ITEM_SUBMENU:
+				// Submenu.
+				if (!menu->submenu)
+				{
+					// No submenu specified. Create a normal menu item for now.
+					InsertMenu(container, -1, MF_BYPOSITION | MF_STRING, (UINT_PTR)menu->id, menu->text);
+				}
+				else
+				{
+					// Submenu specified.
+					mnuSubMenu = CreatePopupMenu();
+					InsertMenu(container, -1, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuSubMenu, menu->text);
+					Win32_ParseMenu(menu->submenu, mnuSubMenu);
+				}
+				break;
+			
+			case GMF_ITEM_CHECK:
+			case GMF_ITEM_RADIO:
+			default:
+				// Menu item.
+				// Win32 doesn't treat check or radio items as different types.
+				InsertMenu(container, -1, MF_BYPOSITION | MF_STRING, (UINT_PTR)menu->id, menu->text);
+				break;
+		}
+		
+		// Check for an accelerator.
+#if 0
+		if (menu->accelKey != 0)
+		{
+			// Accelerator specified.
+			int accelModifier = 0;
+			guint accelKey;
+			
+			// Determine the modifier.
+			if (menu->accelModifier & GMAM_CTRL)
+				accelModifier |= GDK_CONTROL_MASK;
+			if (menu->accelModifier & GMAM_ALT)
+				accelModifier |= GDK_MOD1_MASK;
+			if (menu->accelModifier & GMAM_SHIFT)
+				accelModifier |= GDK_SHIFT_MASK;
+			
+			// Determine the key.
+			// TODO: Add more special keys.
+			switch (menu->accelKey)
+			{
+				case GMAK_BACKSPACE:
+					accelKey = GDK_BackSpace;
+					break;
+				
+				case GMAK_ENTER:
+					accelKey = GDK_Return;
+					break;
+				
+				case GMAK_TAB:
+					accelKey = GDK_Tab;
+					break;
+				
+				case GMAK_F1: case GMAK_F2:  case GMAK_F3:  case GMAK_F4:
+				case GMAK_F5: case GMAK_F6:  case GMAK_F7:  case GMAK_F8:
+				case GMAK_F9: case GMAK_F10: case GMAK_F11: case GMAK_F12:
+					accelKey = (menu->accelKey - GMAK_F1) + GDK_F1;
+					break;
+					
+				default:
+					accelKey = menu->accelKey;
+					break;
+			}
+			
+			// ADd the accelerator.
+			gtk_widget_add_accelerator(mnuItem, "activate", accel_group,
+					accelKey, (GdkModifierType)accelModifier,
+							GTK_ACCEL_VISIBLE);
+		}
+#endif
+		
+		// Add the menu to the menu map. (Exception is if id is 0 or IDM_SEPARATOR.)
+#if 0
+		if (menu->id != 0 && menu->id != IDM_SEPARATOR)
+		{
+			gensMenuMap.insert(gtkMenuMapItem(menu->id, mnuItem));
+		}
+#endif
+		
+		// Next menu item.
+		menu++;
+	}
+}
+
+
+#if 0
 /**
  * create_gens_window_FileMenu(): Create the File menu.
  * @param parent Parent menu.
@@ -523,3 +643,4 @@ static void create_gens_window_HelpMenu(HMENU parent, int position)
 	
 	InsertMenu(HelpMenu, 0, flags, IDM_HELP_ABOUT, "&About");
 }
+#endif

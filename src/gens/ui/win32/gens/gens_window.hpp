@@ -32,12 +32,14 @@ extern "C" {
 #endif
 
 #include <windows.h>
+#include <stdint.h>
 
 HWND initGens_hWnd(void);
 HWND create_gens_window(void);
 void create_gens_window_menubar(void);
 extern HWND Gens_hWnd;
 
+#if 0
 extern HMENU MainMenu;
 extern HMENU FileMenu;
 extern HMENU FileMenu_ROMHistory;
@@ -53,15 +55,29 @@ extern HMENU SoundMenu_Rate;
 extern HMENU OptionsMenu;
 extern HMENU OptionsMenu_SegaCDSRAMSize;
 extern HMENU HelpMenu;
+#endif
 
-#ifdef GENS_DEBUGGER
-// Debug menu items
-//extern GtkWidget *debugMenuItems[9];
-//extern GtkWidget *debugSeparators[2];
-#endif /* GENS_DEBUGGER */
+// New menu handler.
+HMENU findMenuItem(uint16_t id);
 
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+// Unordered map containing all the menu items.
+// Map key is the menu ID.
+// TODO: unordered_map is gcc-4.x and later.
+// For gcc-3.x, use __gnu_cxx::hash_map.
+
+#include <tr1/unordered_map>
+#include <utility>
+#include <stdint.h>
+typedef std::tr1::unordered_map<uint16_t, HMENU> win32MenuMap;
+extern win32MenuMap gensMenuMap;
+typedef std::pair<uint16_t, HMENU> win32MenuMapItem;
+
+#endif /* __cplusplus */
 
 #endif /* GENS_WIN32_GENS_WINDOW_HPP */

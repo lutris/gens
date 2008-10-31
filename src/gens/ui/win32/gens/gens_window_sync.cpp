@@ -31,8 +31,8 @@
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
 
-// Menu identifier definitions
-#include "gens_window_menu.h"
+// New menu handler.
+#include "ui/common/gens/gens_menu.h"
 
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -74,6 +74,7 @@ void Sync_Gens_Window(void)
  */
 void Sync_Gens_Window_FileMenu(void)
 {
+#if 0
 	int i;
 	
 	// ROM Format prefixes
@@ -138,6 +139,7 @@ void Sync_Gens_Window_FileMenu(void)
 			   IDM_FILE_CHANGESTATE_9,
 			   IDM_FILE_CHANGESTATE + Current_State,
 			   MF_BYCOMMAND);
+#endif
 }
 
 
@@ -146,6 +148,7 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
+#if 0
 	// Full Screen
 	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_FULLSCREEN,
 		      MF_BYCOMMAND | (draw->fullScreen() ? MF_CHECKED : MF_UNCHECKED));
@@ -179,6 +182,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Screen Shot
 	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_SCREENSHOT,
 		      MF_BYCOMMAND | ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_CHECKED : MF_UNCHECKED));
+#endif
 }
 
 
@@ -189,6 +193,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
+#if 0
 	// Render submenu
 	DeleteMenu(parent, position, MF_BYPOSITION);
 	GraphicsMenu_Render = CreatePopupMenu();
@@ -243,6 +248,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		// Check the next renderer.
 		i++;
 	}
+#endif
 }
 
 
@@ -251,6 +257,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
  */
 void Sync_Gens_Window_CPUMenu(void)
 {
+#if 0
 	unsigned int flags = MF_BYPOSITION | MF_STRING;
 	
 #ifdef GENS_DEBUGGER
@@ -294,6 +301,7 @@ void Sync_Gens_Window_CPUMenu(void)
 	// SegaCD Perfect Sync
 	CheckMenuItem(CPUMenu, IDM_CPU_SEGACDPERFECTSYNC,
 		      MF_BYCOMMAND | (SegaCD_Accurate ? MF_CHECKED : MF_UNCHECKED));
+#endif
 }
 
 
@@ -305,6 +313,7 @@ void Sync_Gens_Window_CPUMenu(void)
  */
 void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 {
+#if 0
 	// Debug submenu
 	unsigned int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;
 	if (!(Genesis_Started || SegaCD_Started || _32X_Started))
@@ -349,6 +358,7 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 			InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, IDM_CPU_DEBUG + i, DebugStr[i]);
 		}
 	}
+#endif
 }
 #endif /* GENS_DEBUGGER */
 
@@ -358,6 +368,7 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
+#if 0
 	// Get the Enabled flag for the other menu items.
 	bool soundEnabled = audio->enabled();
 	
@@ -424,6 +435,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	ModifyMenu(SoundMenu, IDM_SOUND_GYMDUMP, MF_BYCOMMAND | MF_STRING, IDM_SOUND_GYMDUMP, dumpLabel);
 	EnableMenuItem(SoundMenu, IDM_SOUND_GYMDUMP,
 		       MF_BYCOMMAND | ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_ENABLED : MF_GRAYED));
+#endif
 }
 
 
@@ -432,6 +444,7 @@ void Sync_Gens_Window_SoundMenu(void)
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {
+#if 0
 	// SegaCD SRAM Size
 	int SRAM_ID = (BRAM_Ex_State & 0x100 ? BRAM_Ex_Size : -1);
 	CheckMenuRadioItem(OptionsMenu_SegaCDSRAMSize,
@@ -439,4 +452,5 @@ void Sync_Gens_Window_OptionsMenu(void)
 			   IDM_OPTIONS_SEGACDSRAMSIZE_64KB,
 			   IDM_OPTIONS_SEGACDSRAMSIZE + (SRAM_ID + 1),
 			   MF_BYCOMMAND);
+#endif
 }

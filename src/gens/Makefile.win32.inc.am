@@ -59,7 +59,6 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window.hpp \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
-		ui/win32/gens/gens_window_menu.h \
 		ui/win32/game_genie/game_genie_window.h \
 		ui/win32/game_genie/game_genie_window_callbacks.h \
 		ui/win32/game_genie/game_genie_window_misc.h \
