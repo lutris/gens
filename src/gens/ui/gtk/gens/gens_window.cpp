@@ -68,6 +68,38 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
 using std::tr1::unordered_map;
 gtkMenuMap gensMenuMap;
 
+// Menu icons.
+// See ui/common/gens/gens_menu.h:IDIM_* for the icon constants.
+static const char* GTK_MenuIcons[] =
+{
+	NULL,	// IDIM_MENU_ICON == 0x0100 == not used
+	"gtk-open",
+	"gtk-save",
+	"gtk-save-as",
+	"gtk-refresh",
+	"gtk-revert-to-saved",
+	"gtk-close",
+	"gtk-quit",
+	"gtk-cdrom",
+	"gtk-cdrom",
+	"modem.png",
+	"history.png",
+	"password.png",
+	"gtk-fullscreen",
+	"gtk-select-color",
+	"viewmag.png",
+	"2rightarrow.png",
+	"gtk-copy",
+	"gtk-refresh",
+	"ksysguard.png",
+	"package_games.png",
+	"folder_slin_open.png",
+	"binary.png",
+	"memory.png",
+	"gtk-help",
+	NULL,
+};
+
 
 // Set to 0 to temporarily disable callbacks.
 int do_callbacks = 1;
@@ -260,29 +292,30 @@ static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
 		if (bMenuHasIcon)
 		{
 			// Icon specified.
-			if (!menu->iconName)
+			if (menu->icon <= IDIM_MENU_ICON || menu->icon > IDIM_MENU_ICON_MAX)
 				break;
 			
 			icon = NULL;
+			const char* iconName = GTK_MenuIcons[menu->icon - IDIM_MENU_ICON];
 			switch (menu->flags & GMF_ICON_MASK)
 			{
 				case GMF_ICON_STOCK:
 					// GTK+ stock icon.
-					icon = gtk_image_new_from_stock(menu->iconName, GTK_ICON_SIZE_MENU);
+					icon = gtk_image_new_from_stock(iconName, GTK_ICON_SIZE_MENU);
 					if (!icon)
 					{
 						// Icon not found.
-						fprintf(stderr, "%s: GTK+ stock icon not found: %s\n", __func__, menu->iconName);
+						fprintf(stderr, "%s: GTK+ stock icon not found: %s\n", __func__, iconName);
 					}
 					break;
 				
 				case GMF_ICON_FILE:
 					// Load an icon from a file.
-					icon = create_pixmap(menu->iconName);
+					icon = create_pixmap(iconName);
 					if (!icon)
 					{
 						// Icon not found.
-						fprintf(stderr, "%s: Icon file not found: %s\n", __func__, menu->iconName);
+						fprintf(stderr, "%s: Icon file not found: %s\n", __func__, iconName);
 					}
 					break;
 				

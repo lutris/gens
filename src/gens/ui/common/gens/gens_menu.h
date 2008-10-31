@@ -69,6 +69,34 @@ extern "C" {
 #define GMAK_F11		0x020B
 #define GMAK_F12		0x020C
 
+// Menu icon IDs.
+#define IDIM_MENU_ICON		0x0100
+#define IDIM_OPEN		(IDIM_MENU_ICON + 1)
+#define IDIM_SAVE		(IDIM_MENU_ICON + 2)
+#define IDIM_SAVE_AS		(IDIM_MENU_ICON + 3)
+#define IDIM_REFRESH		(IDIM_MENU_ICON + 4)
+#define IDIM_REVERT		(IDIM_MENU_ICON + 5)
+#define IDIM_CLOSE		(IDIM_MENU_ICON + 6)
+#define IDIM_QUIT		(IDIM_MENU_ICON + 7)
+#define IDIM_CDROM		(IDIM_MENU_ICON + 8)
+#define IDIM_CDROM_DRIVE	(IDIM_MENU_ICON + 9)
+#define IDIM_NETPLAY		(IDIM_MENU_ICON + 10)
+#define IDIM_ROMHISTORY		(IDIM_MENU_ICON + 11)
+#define IDIM_GAME_GENIE		(IDIM_MENU_ICON + 12)
+#define IDIM_FULLSCREEN		(IDIM_MENU_ICON + 13)
+#define IDIM_COLOR_ADJUST	(IDIM_MENU_ICON + 14)
+#define IDIM_RENDER		(IDIM_MENU_ICON + 15)
+#define IDIM_FRAMESKIP		(IDIM_MENU_ICON + 16)
+#define IDIM_SCREENSHOT		(IDIM_MENU_ICON + 17)
+#define IDIM_RESET		(IDIM_MENU_ICON + 18)
+#define IDIM_GENERAL_OPTIONS	(IDIM_MENU_ICON + 19)
+#define IDIM_JOYPADS		(IDIM_MENU_ICON + 20)
+#define IDIM_DIRECTORIES	(IDIM_MENU_ICON + 21)
+#define IDIM_BIOSMISCFILES	(IDIM_MENU_ICON + 22)
+#define IDIM_MEMORY		(IDIM_MENU_ICON + 23)
+#define IDIM_HELP		(IDIM_MENU_ICON + 24)
+#define IDIM_MENU_ICON_MAX	IDIM_HELP
+
 struct GensMenuItem_t
 {
 	uint16_t id;				// Menu identifier. (0xFFFF == separator)
@@ -80,8 +108,7 @@ struct GensMenuItem_t
 	uint16_t accelModifier;
 	uint16_t accelKey;
 	
-	// GTK+ only. TODO: Add Win32 support.
-	char* iconName;				// Icon name
+	uint16_t icon;				// Icon ID.
 };
 
 extern struct GensMenuItem_t gmiMain[];
