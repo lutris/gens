@@ -331,15 +331,23 @@ void Sync_Gens_Window_CPUMenu(void)
  */
 void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 {
-#if 0
 	// Debug submenu
 	unsigned int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;
-	if (!(Genesis_Started || SegaCD_Started || _32X_Started))
+	if (Game == NULL)
 		flags |= MF_GRAYED;
 	
+	HMENU mnuDebug = findMenuItem(IDM_CPU_DEBUG);
+	
+	// Delete and/or recreate the Debug submenu.
 	DeleteMenu(parent, position, MF_BYPOSITION);
-	CPUMenu_Debug = CreatePopupMenu();
-	InsertMenu(parent, position, flags, (UINT_PTR)CPUMenu_Debug, "&Debug");
+	gensMenuMap.erase(IDM_CPU_DEBUG);
+	if (mnuDebug)
+		DestroyMenu(mnuDebug);
+	
+	// Debug submenu
+	mnuDebug = CreatePopupMenu();
+	InsertMenu(parent, position, flags, (UINT_PTR)mnuDebug, "&Debug");
+	gensMenuMap.insert(win32MenuMapItem(IDM_CPU_DEBUG, mnuDebug));
 	
 	if (flags & MF_GRAYED)
 		return;
@@ -370,13 +378,17 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 			if (i % 3 == 0 && (i >= 3 && i <= 6))
 			{
 				// Every three entires, add a separator.
-				InsertMenu(CPUMenu_Debug, i + 1, MF_SEPARATOR, NULL, NULL);
+				InsertMenu(mnuDebug, i + 1, MF_SEPARATOR,
+					   IDM_CPU_DEBUG_SEGACD_SEPARATOR + ((i / 3) - 1), NULL);
 			}
 			
-			InsertMenu(CPUMenu_Debug, i + (i / 3), MF_BYPOSITION | MF_STRING, IDM_CPU_DEBUG + i, DebugStr[i]);
+			InsertMenu(mnuDebug, i + (i / 3), MF_BYPOSITION | MF_STRING,
+				   IDM_CPU_DEBUG_MC68000 + i, DebugStr[i]);
+			
+			if (Debug == (i + 1))
+				CheckMenuItem(mnuDebug, IDM_CPU_DEBUG_MC68000 + i, MF_BYCOMMAND | MF_CHECKED);
 		}
 	}
-#endif
 }
 #endif /* GENS_DEBUGGER */
 
