@@ -474,13 +474,13 @@ void Sync_Gens_Window_SoundMenu(void)
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {
-#if 0
+	HMENU mnuOptions = findMenuItem(IDM_OPTIONS_MENU);
+	
 	// SegaCD SRAM Size
 	int SRAM_ID = (BRAM_Ex_State & 0x100 ? BRAM_Ex_Size : -1);
-	CheckMenuRadioItem(OptionsMenu_SegaCDSRAMSize,
+	CheckMenuRadioItem(mnuOptions,
 			   IDM_OPTIONS_SEGACDSRAMSIZE_NONE,
 			   IDM_OPTIONS_SEGACDSRAMSIZE_64KB,
-			   IDM_OPTIONS_SEGACDSRAMSIZE + (SRAM_ID + 1),
+			   IDM_OPTIONS_SEGACDSRAMSIZE_NONE + (SRAM_ID + 1),
 			   MF_BYCOMMAND);
-#endif
 }
