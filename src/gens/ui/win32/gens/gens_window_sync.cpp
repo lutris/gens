@@ -157,9 +157,10 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
-#if 0
+	HMENU mnuGraphics = findMenuItem(IDM_GRAPHICS_MENU);
+	
 	// Full Screen
-	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_FULLSCREEN,
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_FULLSCREEN,
 		      MF_BYCOMMAND | (draw->fullScreen() ? MF_CHECKED : MF_UNCHECKED));
 	
 	// VSync
@@ -168,30 +169,30 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		checkFlags = (Video.VSync_FS ? MF_CHECKED : MF_UNCHECKED);
 	else
 		checkFlags = (Video.VSync_W ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | checkFlags);
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | checkFlags);
 	
 	// Stretch
-	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_STRETCH,
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_STRETCH,
 		      MF_BYCOMMAND | (draw->stretch() ? MF_CHECKED : MF_UNCHECKED));
 	
 	// Render
-	Sync_Gens_Window_GraphicsMenu_Render(GraphicsMenu, 5);
+	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 5);
 	
 	// Sprite Limit
-	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_SPRITELIMIT,
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SPRITELIMIT,
 		      MF_BYCOMMAND | (Sprite_Over ? MF_CHECKED : MF_UNCHECKED));
 	
 	// Frame Skip
-	CheckMenuRadioItem(GraphicsMenu_FrameSkip,
+	HMENU mnuFrameSkip = findMenuItem(IDM_GRAPHICS_FRAMESKIP);
+	CheckMenuRadioItem(mnuFrameSkip,
 			   IDM_GRAPHICS_FRAMESKIP_AUTO,
 			   IDM_GRAPHICS_FRAMESKIP_8,
-			   IDM_GRAPHICS_FRAMESKIP + (Frame_Skip + 1),
+			   IDM_GRAPHICS_FRAMESKIP_AUTO + (Frame_Skip + 1),
 			   MF_BYCOMMAND);
 	
 	// Screen Shot
-	CheckMenuItem(GraphicsMenu, IDM_GRAPHICS_SCREENSHOT,
-		      MF_BYCOMMAND | ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_CHECKED : MF_UNCHECKED));
-#endif
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SCREENSHOT,
+		      MF_BYCOMMAND | ((Game != NULL) ? MF_CHECKED : MF_UNCHECKED));
 }
 
 
