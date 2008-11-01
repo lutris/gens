@@ -25,6 +25,7 @@
 #include "general_options_window_misc.hpp"
 
 #include "emulator/gens.hpp"
+#include "gens_ui.hpp"
 
 // Gens Win32 resources
 #include "ui/win32/resource.h"

@@ -25,6 +25,7 @@
 #include "select_cdrom_window_misc.hpp"
 
 #include "emulator/gens.hpp"
+#include "gens_ui.hpp"
 
 #include <windows.h>
 

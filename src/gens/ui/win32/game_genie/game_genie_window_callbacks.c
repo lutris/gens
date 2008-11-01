@@ -27,6 +27,7 @@
 #include "game_genie_window_misc.h"
 
 #include "emulator/gens.hpp"
+#include "gens_ui.hpp"
 
 #include <windows.h>
 
