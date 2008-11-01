@@ -398,12 +398,13 @@ void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
-#if 0
+	HMENU mnuSound = findMenuItem(IDM_SOUND_MENU);
+	
 	// Get the Enabled flag for the other menu items.
 	bool soundEnabled = audio->enabled();
 	
 	// Enabled
-	CheckMenuItem(SoundMenu, IDM_SOUND_ENABLE,
+	CheckMenuItem(mnuSound, IDM_SOUND_ENABLE,
 		      MF_BYCOMMAND | (soundEnabled ? MF_CHECKED : MF_UNCHECKED));
 	
 	const int soundMenuItems[11][2] =
@@ -423,10 +424,10 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	for (int i = 0; i < 11; i++)
 	{
-		EnableMenuItem(SoundMenu, soundMenuItems[i][1],
+		EnableMenuItem(mnuSound, soundMenuItems[i][1],
 			       MF_BYCOMMAND | (soundEnabled ? MF_ENABLED : MF_GRAYED));
 		
-		CheckMenuItem(SoundMenu, soundMenuItems[i][1],
+		CheckMenuItem(mnuSound, soundMenuItems[i][1],
 			      MF_BYCOMMAND | (soundMenuItems[i][0] ? MF_CHECKED : MF_UNCHECKED));
 	}
 	
@@ -439,14 +440,15 @@ void Sync_Gens_Window_SoundMenu(void)
 		{4, 32000}, {2, 44100}, {5, 48000},
 	};
 	
+	HMENU mnuRate = findMenuItem(IDM_SOUND_RATE);
 	for (int i = 0; i < 6; i++)
 	{
 		if (SndRates[i][1] == audio->soundRate())
 		{
-			CheckMenuRadioItem(SoundMenu,
+			CheckMenuRadioItem(mnuRate,
 					   IDM_SOUND_RATE_11025,
 					   IDM_SOUND_RATE_48000,
-					   IDM_SOUND_RATE + SndRates[i][0],
+					   IDM_SOUND_RATE_11025 + SndRates[i][0],
 					   MF_BYCOMMAND);
 			break;
 		}
@@ -457,15 +459,17 @@ void Sync_Gens_Window_SoundMenu(void)
 	// WAV dumping
 	// TODO: Always disabled for now, since WAV dumping isn't implemented yet.
 	strcpy(dumpLabel, (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump"));
-	ModifyMenu(SoundMenu, IDM_SOUND_WAVDUMP, MF_BYCOMMAND | MF_STRING, IDM_SOUND_WAVDUMP, dumpLabel);
-	EnableMenuItem(SoundMenu, IDM_SOUND_WAVDUMP, MF_BYCOMMAND | MF_GRAYED);
+	ModifyMenu(mnuSound, IDM_SOUND_WAVDUMP,
+		   MF_BYCOMMAND | MF_STRING, IDM_SOUND_WAVDUMP, dumpLabel);
+	EnableMenuItem(mnuSound, IDM_SOUND_WAVDUMP,
+		       MF_BYCOMMAND | MF_GRAYED);
 	
 	// GYM dumping
 	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
-	ModifyMenu(SoundMenu, IDM_SOUND_GYMDUMP, MF_BYCOMMAND | MF_STRING, IDM_SOUND_GYMDUMP, dumpLabel);
-	EnableMenuItem(SoundMenu, IDM_SOUND_GYMDUMP,
-		       MF_BYCOMMAND | ((Genesis_Started || SegaCD_Started || _32X_Started) ? MF_ENABLED : MF_GRAYED));
-#endif
+	ModifyMenu(mnuSound, IDM_SOUND_GYMDUMP, MF_BYCOMMAND | MF_STRING,
+		   IDM_SOUND_GYMDUMP, dumpLabel);
+	EnableMenuItem(mnuSound, IDM_SOUND_GYMDUMP,
+		       MF_BYCOMMAND | ((Game != NULL) ? MF_ENABLED : MF_GRAYED));
 }
 
 
