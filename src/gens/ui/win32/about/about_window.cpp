@@ -34,7 +34,7 @@
 
 #include "emulator/g_main.hpp"
 
-#include "ui/charset.hpp"
+#include "ui/win32/charset.hpp"
 #include "ui/win32/resource.h"
 
 #include <windowsx.h>

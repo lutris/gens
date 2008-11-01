@@ -30,8 +30,6 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
-#include "ui/charset.hpp"
-
 // Win32 instance
 HINSTANCE ghInstance = NULL;
 
