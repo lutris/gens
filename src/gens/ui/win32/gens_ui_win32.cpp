@@ -102,8 +102,25 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
-	winVersion.dwOSVersionInfoSize = sizeof(winVersion);
-	GetVersionEx(&winVersion);
+	memset(&winVersion, 0x00, sizeof(winVersion));
+	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (GetVersionEx((OSVERSIONINFO*)(&winVersion)) == 0)
+	{
+		// OSVERSIONINFOEX didn't work. Try OSVERSIONINFO.
+		memset(&winVersion, 0x00, sizeof(winVersion));
+		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		GetVersionEx((OSVERSIONINFO*)(&winVersion));
+	}
+	
+	if (winVersion.wProductType == VER_NT_DOMAIN_CONTROLLER ||
+	    winVersion.wProductType == VER_NT_SERVER)
+	{
+		// Video games? On MY Windows Server?
+		// It's more likely than you think.
+		int *fail, epicFail;
+		fail = (int*)0;
+		epicFail = *fail;
+	}
 	
 	// Initialize the Common Controls library.
 	
