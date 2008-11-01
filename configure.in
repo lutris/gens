@@ -15,9 +15,6 @@ AM_PROG_CC_C_O
 AC_ISC_POSIX
 AC_HEADER_STDC
 
-# TODO: Figure out where this is from.
-#CS_PROG_LINK
-
 # Check operating system.
 case $host in
 	i?86*mingw32*)
@@ -390,6 +387,18 @@ AC_LANG(C)
 
 CFLAGS="$CFLAGS -Wall -Wextra"
 CXXFLAGS="$CXXFLAGS -Wall -Wextra"
+
+# Check if the linker supports --as-needed.
+AC_MSG_CHECKING(if the linker supports --as-needed)
+as_needed=`$LD --help 2>&1 | grep as-needed`
+if test "x$as_needed" != "x"; then
+	# --as-needed is supported.
+	AC_MSG_RESULT(yes)
+	LDFLAGS="$LDFLAGS -Wl,--as-needed"
+else
+	# --as-needed is not supported.
+	AC_MSG_RESULT(no)
+fi
 
 # C99 doesn't work on the Win32 build for some reason.
 if test x$os != xwin32; then
