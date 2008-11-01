@@ -254,7 +254,7 @@ static struct GensMenuItem_t gmiSound[] =
 	{IDM_SOUND_DAC,			GMF_ITEM_CHECK,		"&DAC",			NULL, 0, 0, 0},
 	{IDM_SOUND_DAC_IMPROVED,	GMF_ITEM_CHECK,		"DAC Improved",		NULL, 0, 0, 0},
 	{IDM_SOUND_PSG,			GMF_ITEM_CHECK,		"&PSG",			NULL, 0, 0, 0},
-	{IDM_SOUND_PSG_IMPROVED,	GMF_ITEM_CHECK,		"PSG Improved",		NULL, 0, 0, 0},
+	{IDM_SOUND_PSG_SINE,		GMF_ITEM_CHECK,		"PSG (Sine Wave)",	NULL, 0, 0, 0},
 	{IDM_SOUND_PCM,			GMF_ITEM_CHECK,		"P&CM",			NULL, 0, 0, 0},
 	{IDM_SOUND_PWM,			GMF_ITEM_CHECK,		"P&WM",			NULL, 0, 0, 0},
 	{IDM_SOUND_CDDA,		GMF_ITEM_CHECK,		"CDDA (CD Audio)",	NULL, 0, 0, 0},

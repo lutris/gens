@@ -593,8 +593,8 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 			Change_PSG(!state);
 			break;
 		
-		case IDM_SOUND_PSG_IMPROVED:
-			Change_PSG_Improved(!state);
+		case IDM_SOUND_PSG_SINE:
+			Change_PSG_Sine(!state);
 			break;
 		
 		case IDM_SOUND_PCM:

@@ -471,7 +471,7 @@ void Sync_Gens_Window_SoundMenu(void)
 		{DAC_Enable, IDM_SOUND_DAC},
 		{DAC_Improv, IDM_SOUND_DAC_IMPROVED},
 		{PSG_Enable, IDM_SOUND_PSG},
-		{PSG_Improv, IDM_SOUND_PSG_IMPROVED},
+		{PSG_Improv, IDM_SOUND_PSG_SINE},
 		{PCM_Enable, IDM_SOUND_PCM},
 		{PWM_Enable, IDM_SOUND_PWM},
 		{CDDA_Enable, IDM_SOUND_CDDA},

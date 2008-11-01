@@ -25,7 +25,7 @@ int Change_YM2612_Improved(const int newYM2612Improved);
 int Change_DAC(const int newDAC);
 int Change_DAC_Improved(const int newDACImproved);
 int Change_PSG(const int newPSG);
-int Change_PSG_Improved(const int newPSGImproved);
+int Change_PSG_Sine(const int newPSGSine);
 int Change_PCM(const int newPCM);
 int Change_PWM(const int newPWM);
 int Change_CDDA(const int newCDDA);

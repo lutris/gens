@@ -236,7 +236,7 @@ extern struct GensMenuItem_t gmiMain[];
 #define IDM_SOUND_DAC			0x4006
 #define IDM_SOUND_DAC_IMPROVED		0x4007
 #define IDM_SOUND_PSG			0x4008
-#define IDM_SOUND_PSG_IMPROVED		0x4009
+#define IDM_SOUND_PSG_SINE		0x4009
 #define IDM_SOUND_PCM			0x400A
 #define IDM_SOUND_PWM			0x400B
 #define IDM_SOUND_CDDA			0x400C

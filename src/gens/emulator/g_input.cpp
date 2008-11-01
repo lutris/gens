@@ -251,7 +251,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F11:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_PSG_Improved(!PSG_Improv);
+				Change_PSG_Sine(!PSG_Improv);
 				Sync_Gens_Window_SoundMenu();
 			}
 			else //if (!mod)

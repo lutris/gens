@@ -942,7 +942,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case IDCMD_PSG_IMPROVED:
-			Change_PSG_Improved(!PSG_Improv);
+			Change_PSG_Sine(!PSG_Improv);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
