@@ -326,6 +326,65 @@ AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
 AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
 
 ###
+# C++ map type
+###
+
+AC_MSG_CHECKING(for hash table type)
+
+# These tests use C++.
+AC_LANG(C++)
+
+# Check if the TR1 unordered map works. (gcc-4.x and later)
+AC_COMPILE_IFELSE(
+	AC_LANG_PROGRAM(
+		[[#include <tr1/unordered_map>]],
+		[[std::tr1::unordered_map<int, int>::iterator testIterator;]]),
+	[hashtable=tr1_unordered_map],
+	[hashtable=no]
+	)
+
+if test x$hashtable = xno; then
+	# Check if the gcc hash map works. (gcc-3.x and earlier)
+	AC_COMPILE_IFELSE(
+		AC_LANG_PROGRAM(
+			[[#include <ext/hash_map>]],
+			[[__gnu_cxx::hash_map<int, int>::iterator testIterator;]]),
+		[hashtable=gnu_hash_map],
+		[hashtable=no]
+		)
+	
+	if test x$hashtable = xno; then
+		# Check if the standard C++ map works.
+		AC_COMPILE_IFELSE(
+			AC_LANG_PROGRAM(
+				[[#include <map>]],
+				[[std::map<int, int>::iterator testIterator;]]),
+			[hashtable=std_map],
+			[hashtable=no]
+			)
+		
+		if test x$hashtable = xno; then
+			AC_MSG_ERROR(Could not find a usable hash table implementation.)
+		fi
+	fi
+fi
+
+if test x$hashtable = xtr1_unordered_map; then
+	AC_MSG_RESULT(TR1 unordered_map)
+	AC_DEFINE(GENS_HASHTABLE_TR1_UNORDERED_MAP, 1, Use the TR1 unordered_map class.)
+elif test x$hashtable = xgnu_hash_map; then
+	AC_MSG_RESULT(GNU hash_map)
+	AC_DEFINE(GENS_HASHTABLE_GNU_HASH_MAP, 1, Use the GNU hash_map class.)
+elif test x$hashtable = xstd_map; then
+	AC_MSG_RESULT(Standard C++ map)
+	AC_MSG_WARN(SLOW std::map is being used; consider upgrading your compiler.)
+	AC_DEFINE(GENS_HASHTABLE_STD_MAP, 1, Use the standard C++ std::map class. (SLOW))
+fi
+
+# Reset test language to C.
+AC_LANG(C)
+
+###
 # Miscellaneous
 ###
 
