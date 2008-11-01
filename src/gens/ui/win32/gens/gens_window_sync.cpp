@@ -409,26 +409,26 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	const uint16_t soundMenuItems[11][2] =
 	{
-		{audio->stereo(), IDM_SOUND_STEREO},
-		{Z80_State & 1, IDM_SOUND_Z80},
-		{YM2612_Enable, IDM_SOUND_YM2612},
-		{YM2612_Improv, IDM_SOUND_YM2612_IMPROVED},
-		{DAC_Enable, IDM_SOUND_DAC},
-		{DAC_Improv, IDM_SOUND_DAC_IMPROVED},
-		{PSG_Enable, IDM_SOUND_PSG},
-		{PSG_Improv, IDM_SOUND_PSG_SINE},
-		{PCM_Enable, IDM_SOUND_PCM},
-		{PWM_Enable, IDM_SOUND_PWM},
-		{CDDA_Enable, IDM_SOUND_CDDA},
+		{IDM_SOUND_STEREO,		audio->stereo()},
+		{IDM_SOUND_Z80,			Z80_State & 1},
+		{IDM_SOUND_YM2612,		YM2612_Enable},
+		{IDM_SOUND_YM2612_IMPROVED,	YM2612_Improv},
+		{IDM_SOUND_DAC,			DAC_Enable},
+		{IDM_SOUND_DAC_IMPROVED,	DAC_Improv},
+		{IDM_SOUND_PSG,			PSG_Enable},
+		{IDM_SOUND_PSG_SINE,		PSG_Improv},
+		{IDM_SOUND_PCM,			PCM_Enable},
+		{IDM_SOUND_PWM,			PWM_Enable},
+		{IDM_SOUND_CDDA,		CDDA_Enable},
 	};
 	
 	for (int i = 0; i < 11; i++)
 	{
-		EnableMenuItem(mnuSound, soundMenuItems[i][1],
+		EnableMenuItem(mnuSound, soundMenuItems[i][0],
 			       MF_BYCOMMAND | (soundEnabled ? MF_ENABLED : MF_GRAYED));
 		
-		CheckMenuItem(mnuSound, soundMenuItems[i][1],
-			      MF_BYCOMMAND | (soundMenuItems[i][0] ? MF_CHECKED : MF_UNCHECKED));
+		CheckMenuItem(mnuSound, soundMenuItems[i][0],
+			      MF_BYCOMMAND | (soundMenuItems[i][1] ? MF_CHECKED : MF_UNCHECKED));
 	}
 	
 	// Rate
