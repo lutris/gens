@@ -134,6 +134,7 @@ AboutWindow::AboutWindow()
 	const string title = "<b><i>" + string(StrTitle) + "</i></b>\n<small>\n</small>" + string(StrDescription);
 	GtkWidget *lblVersion = gtk_label_new(title.c_str());
 	gtk_widget_set_name(lblVersion, "lblVersion");
+	gtk_misc_set_padding(GTK_MISC(lblVersion), 8, 8);
 	gtk_label_set_use_markup(GTK_LABEL(lblVersion), TRUE);
 	gtk_label_set_justify(GTK_LABEL(lblVersion), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(lblVersion);
