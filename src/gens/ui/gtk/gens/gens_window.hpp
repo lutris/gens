@@ -48,14 +48,11 @@ GtkWidget* findMenuItem(uint16_t id);
 
 #ifdef __cplusplus
 
-// Unordered map containing all the menu items.
-// Map key is the menu ID.
-// TODO: unordered_map is gcc-4.x and later.
-// For gcc-3.x, use __gnu_cxx::hash_map.
-
-#include <tr1/unordered_map>
+// Hash table containing all the menu items.
+// Key is the menu ID.
+#include "macros/hashtable.hpp"
 #include <utility>
-typedef std::tr1::unordered_map<uint16_t, GtkWidget*> gtkMenuMap;
+typedef GENS_HASHTABLE<uint16_t, GtkWidget*> gtkMenuMap;
 extern gtkMenuMap gensMenuMap;
 typedef std::pair<uint16_t, GtkWidget*> gtkMenuMapItem;
 

@@ -60,12 +60,8 @@ static void create_gens_window_menubar(GtkWidget *container);
 #include "ui/common/gens/gens_menu_callbacks.hpp"
 static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
 
-// Unordered map containing all the menu items.
-// Map key is the menu ID.
-// TODO: unordered_map is gcc-4.x and later.
-// For gcc-3.x, use __gnu_cxx::hash_map.
-#include <tr1/unordered_map>
-using std::tr1::unordered_map;
+// Hash table containing all the menu items.
+// Key is the menu ID.
 gtkMenuMap gensMenuMap;
 
 // Menu icons.
