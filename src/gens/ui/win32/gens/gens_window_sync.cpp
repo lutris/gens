@@ -407,7 +407,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	CheckMenuItem(mnuSound, IDM_SOUND_ENABLE,
 		      MF_BYCOMMAND | (soundEnabled ? MF_CHECKED : MF_UNCHECKED));
 	
-	const int soundMenuItems[11][2] =
+	const uint16_t soundMenuItems[11][2] =
 	{
 		{audio->stereo(), IDM_SOUND_STEREO},
 		{Z80_State & 1, IDM_SOUND_Z80},

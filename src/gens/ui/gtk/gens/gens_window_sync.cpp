@@ -462,7 +462,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Enabled
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_SOUND_ENABLE)), soundEnabled);
 	
-	const int soundMenuItems[11][2] =
+	const uint16_t soundMenuItems[11][2] =
 	{
 		{audio->stereo(), IDM_SOUND_STEREO},
 		{Z80_State & 1, IDM_SOUND_Z80},
