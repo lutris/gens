@@ -8,16 +8,13 @@ dist_pkgdata_DATA = \
 	2rightarrow.png \
 	modem.png \
 	binary.png \
-	folder_slin_open.png \
-	history.png \
-	kmix.png \
-	ksysguard.png \
 	memory.png \
-	package_games.png \
-	package_settings.png \
-	password.png \
-	resource.png \
 	viewmag.png \
-	xpaint.png
+	xpaint.png \
+	chronometer.png \
+	dialog-password.png \
+	preferences-system.png \
+	preferences-desktop-gaming.png \
+	document-open-folder.png
 	
 ##pkgdata_DATA = @GUIINST_HACK@
