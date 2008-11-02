@@ -104,11 +104,11 @@ HWND create_bios_misc_files_window(void)
 	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
 						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16, 408,
+						frameWidth + 16, 428,
 						Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(bios_misc_files_window, frameWidth + 16, 408);
+	Win32_setActualWindowSize(bios_misc_files_window, frameWidth + 16, 428);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(bios_misc_files_window);
