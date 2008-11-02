@@ -1,1 +1,9 @@
 *~
+/autom4te.cache/
+/config.h.in
+/configure
+/FOR FUTURE USE/
+Makefile.in
+
+/debug-*/
+/release-*/
