@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: File Compression Sub Class.                                       *
+ * Gens: RAR File Compression Class.                                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,50 +20,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_SUBCOMPRESSOR_HPP
-#define GENS_SUBCOMPRESSOR_HPP
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif /* HAVE_CONFIG_H */
+#ifndef GENS_RAR_HPP
+#define GENS_RAR_HPP
 
 #include <stdio.h>
 #include <string>
 #include <list>
 
-// Compressed file struct
-#include "compressedfile.hpp"
+// Subcompressor
+#include "subcompressor.hpp"
 
-using std::string;
-using std::list;
-
-class SubCompressor
+class RAR : public SubCompressor
 {
 	public:
-		SubCompressor(const bool showErrMsg = false);
-		virtual ~SubCompressor();
+		RAR(const bool showErrMsg = false);
+		~RAR();
 		
-		virtual bool detectFormat(FILE *f) = 0;
-		virtual int getNumFiles(const string& zFilename) = 0;
-		virtual list<CompressedFile>* getFileInfo(const string& zFilename) = 0;
-		virtual int getFile(const string& zFilename, const CompressedFile *fileInfo,
-				    unsigned char *buf, const int size) = 0;
+		bool detectFormat(FILE *f);
+		int getNumFiles(const std::string& zFilename);
+		std::list<CompressedFile>* getFileInfo(const std::string& zFilename);
+		int getFile(const std::string& zFilename,
+			    const CompressedFile *fileInfo,
+			    unsigned char *buf, const int size);
 		
-		virtual bool checkExternalExec(void) { return true; }
+		bool checkExternalExec(void);
 	
 	protected:
-		bool m_showErrMsg;
+		void errOpeningRAR(const int errorNumber);
 };
 
-// Various subcompressors.
-
-// Subcompressors that require zlib.
-#ifdef GENS_ZLIB
-#include "gzip.hpp"
-#include "Zip.hpp"
-#endif /* GENS_ZLIB */
-
-#include "7z.hpp"
-#include "rar.hpp"
-
-#endif /* GENS_SUBCOMPRESSOR_HPP */
+#endif /* GENS_RAR_HPP */

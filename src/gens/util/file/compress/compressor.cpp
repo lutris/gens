@@ -85,6 +85,7 @@ Compressor::Compressor(string zFilename, bool showErrMsg)
 		new Zip(showErrMsg),
 #endif /* GENS_ZLIB */
 		new _7z(showErrMsg),
+		new RAR(showErrMsg),
 		NULL,
 	};
 	

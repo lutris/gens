@@ -158,6 +158,7 @@ gens_SOURCES = \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/7z.cpp \
+		util/file/compress/rar.cpp \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
@@ -240,6 +241,7 @@ noinst_HEADERS = \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/7z.hpp \
+		util/file/compress/rar.hpp \
 		util/file/compress/popen_wrapper.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \

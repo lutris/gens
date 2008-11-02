@@ -57,9 +57,9 @@ static const char* UI_Win32_FileFilter_AllFiles =
 	"All Files\0*.*\0\0";
 
 static const char* UI_Win32_FileFilter_ROMFile =
-	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;*.zip;*.zsg;*.gz;*.7z\0"
-	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z\0"
-	"32X ROMs\0*.32x;*.zip;*.gz;*.7z\0"
+	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
+	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
+	"32X ROMs\0*.32x;*.zip;*.gz;*.7z;*.rar\0"
 	"SegaCD Disc Images\0*.cue;*.iso;*.bin;*.raw\0"
 	"All Files\0*.*\0\0";
 
