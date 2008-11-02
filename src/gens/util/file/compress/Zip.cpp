@@ -51,11 +51,13 @@ bool Zip::detectFormat(FILE *f)
 {
 	// Magic Number for Zip:
 	// First four bytes: "PK\x03\x04"
+	static const unsigned char magicZip[] = {'P', 'K', 0x03, 0x04};
+	
 	unsigned char buf[4];
 	fseek(f, 0, SEEK_SET);
 	fread(buf, 4, sizeof(unsigned char), f);
-	return (buf[0] == 'P' && buf[1] == 'K' &&
-		buf[2] == 0x03 && buf[3] == 0x04);
+	
+	return (memcmp(buf, magicZip, sizeof(magicZip)) == 0);
 }
 
 

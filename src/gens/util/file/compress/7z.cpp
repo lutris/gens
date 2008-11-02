@@ -84,12 +84,13 @@ bool _7z::detectFormat(FILE *f)
 {
 	// Magic Number for 7z:
 	// First six bytes: "7z\xBC\xAF\x27\x1C"
+	static const unsigned char magic7z[6] = {'7', 'z', 0xBC, 0xAF, 0x27, 0x1C};
+	
 	unsigned char buf[6];
 	fseek(f, 0, SEEK_SET);
 	fread(buf, 6, sizeof(unsigned char), f);
-	return (buf[0] == '7' && buf[1] == 'z' &&
-		buf[2] == 0xBC && buf[3] == 0xAF &&
-		buf[4] == 0x27 && buf[5] == 0x1C);
+	
+	return (memcmp(buf, magic7z, sizeof(magic7z)) == 0);
 }
 
 
