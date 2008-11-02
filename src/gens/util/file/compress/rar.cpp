@@ -342,7 +342,7 @@ list<CompressedFile>* RAR::getFileInfo(const string& zFilename)
 		if (curLine.at(52) == '-' || curLine.at(54) == '.')
 		{
 			// Normal file.
-			file.filesize = atoi(curLine.substr(11, 10).c_str());
+			file.filesize = atoi(curLine.substr(12, 10).c_str());
 			lst->push_back(file);
 			numFiles++;
 		}
