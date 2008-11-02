@@ -400,6 +400,5 @@ int RAR::getFile(const string& zFilename, const CompressedFile *fileInfo,
 	gens_pclose(pRAR);
 	
 	// Return the filesize.
-	printf("cmd: %s\n", ssCmd.str().c_str());
 	return totalSize;
 }
