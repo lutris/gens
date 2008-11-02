@@ -35,10 +35,10 @@
 // popen wrapper
 #include "popen_wrapper.h"
 
-#include <string>
 #include <sstream>
 using std::string;
 using std::stringstream;
+using std::list;
 
 // Newline constant: "\r\n" on Win32, "\n" on everything else.
 #ifdef GENS_OS_WIN32

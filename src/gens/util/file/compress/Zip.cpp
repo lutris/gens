@@ -28,8 +28,8 @@
 #include "minizip/unzip.h"
 #include "ui/gens_ui.hpp"
 
-#include <string>
 using std::string;
+using std::list;
 
 
 Zip::Zip(const bool showErrMsg)
