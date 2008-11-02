@@ -367,7 +367,6 @@ list<CompressedFile>* RAR::getFileInfo(const string& zFilename)
 int RAR::getFile(const string& zFilename, const CompressedFile *fileInfo,
 		 unsigned char *buf, const int size)
 {
-#if 0
 	FILE *pRAR;
 	char bufRAR[1024];
 	int rv;
@@ -377,8 +376,11 @@ int RAR::getFile(const string& zFilename, const CompressedFile *fileInfo,
 	
 	// Build the command line.
 	stringstream ssCmd;
-	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" e \"" << zFilename
-	      << "\" \"" << fileInfo->filename << "\" -so 2>/dev/null";
+	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" p -ierr \"" << zFilename
+	      << "\" \"" << fileInfo->filename << "\"";
+#ifndef GENS_OS_WIN32
+	ssCmd << " 2>/dev/null";
+#endif
 	
 	pRAR = gens_popen(ssCmd.str().c_str(), "r");
 	if (!pRAR)
@@ -398,8 +400,6 @@ int RAR::getFile(const string& zFilename, const CompressedFile *fileInfo,
 	gens_pclose(pRAR);
 	
 	// Return the filesize.
+	printf("cmd: %s\n", ssCmd.str().c_str());
 	return totalSize;
-#endif
-
-return 0;
 }
