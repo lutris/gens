@@ -47,7 +47,7 @@ HWND bios_misc_files_window = NULL;
 static const int frameWidth = 376;
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
-const unsigned short BIOSMiscFiles_Count = 14;
+const unsigned short BIOSMiscFiles_Count = 15;
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[BIOSMiscFiles_Count + 1] =
 {
 	{"Configure Genesis BIOS File", "md_bios", (FileFilterType)0, NULL},
