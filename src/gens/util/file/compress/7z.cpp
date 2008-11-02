@@ -76,9 +76,9 @@ void _7z::errOpening7z(int errorNumber)
 
 
 /**
- * detectFormat(): Detect if a file is in GZip format.
+ * detectFormat(): Detect if a file is in 7z format.
  * @param f File pointer of the file to check.
- * @return True if this file is in GZip format.
+ * @return True if this file is in 7z format.
  */
 bool _7z::detectFormat(FILE *f)
 {

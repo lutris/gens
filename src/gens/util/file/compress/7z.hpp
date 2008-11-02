@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_7z_HPP
-#define GENS_7z_HPP
+#ifndef GENS_7Z_HPP
+#define GENS_7Z_HPP
 
 #include <stdio.h>
 #include <string>
@@ -51,4 +51,4 @@ class _7z : public SubCompressor
 		void errOpening7z(const int errorNumber);
 };
 
-#endif
+#endif /* GENS_7Z_HPP */
