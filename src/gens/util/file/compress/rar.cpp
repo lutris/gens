@@ -144,8 +144,6 @@ bool RAR::checkExternalExec(void)
  */
 int RAR::getNumFiles(const string& zFilename)
 {
-	/* TODO */
-#if 0
 	FILE *pRAR;
 	char buf[1025];
 	int rv;
@@ -155,7 +153,7 @@ int RAR::getNumFiles(const string& zFilename)
 	
 	// Build the command line.
 	stringstream ssCmd;
-	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" l \"" << zFilename << "\"";
+	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" v \"" << zFilename << "\"";
 	
 	// Open the RAR file.
 	pRAR = gens_popen(ssCmd.str().c_str(), "r");
@@ -207,22 +205,25 @@ int RAR::getNumFiles(const string& zFilename)
 			break;
 		}
 		
+		// Get the second line, which contains the filesize and filetype.
+		curStartPos = curEndPos + RAR_NEWLINE_LENGTH;
+		curEndPos = data.find(RAR_NEWLINE, curStartPos);
+		if (curEndPos == string::npos)
+		{
+			// End of list.
+			break;
+		}
+		
 		// Get the current line.
 		curLine = data.substr(curStartPos, curEndPos - curStartPos);
 		
-		// Check the contents of the line.
-		if (curLine.substr(20, 1) == "D")
+		// Check if this is a normal file.
+		if (curLine.length() < 62)
+			break;
+		
+		if (curLine.at(52) == '-' || curLine.at(54) == '.')
 		{
-			// Directory. Don't add this entry.
-		}
-		else if (curLine.substr(0, 3) == "---")
-		{
-			// End of file listing.
-			endOfRAR = true;
-		}
-		else
-		{
-			// File. Add this entry.
+			// Normal file.
 			numFiles++;
 		}
 		
@@ -232,8 +233,6 @@ int RAR::getNumFiles(const string& zFilename)
 	
 	// Return the number of files found.
 	return numFiles;
-#endif
-	return 0;
 }
 
 
