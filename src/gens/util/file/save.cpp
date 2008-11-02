@@ -1792,12 +1792,6 @@ int Savestate::saveSRAM(void)
 	FILE* SRAM_File = 0;
 	int size_to_save, i;
 	
-	string filename = getSRAMFilename();
-	if (filename.empty())
-		return 0;
-	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
-		return 0;
-	
 	i = (64 * 1024) - 1;
 	while ((i >= 0) && (SRAM[i] == 0))
 		i--;
@@ -1810,6 +1804,12 @@ int Savestate::saveSRAM(void)
 	size_to_save = 1;
 	while (i > size_to_save)
 		size_to_save <<= 1;
+	
+	string filename = getSRAMFilename();
+	if (filename.empty())
+		return 0;
+	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
+		return 0;
 	
 	fwrite(SRAM, size_to_save, 1, SRAM_File);
 	fclose(SRAM_File);

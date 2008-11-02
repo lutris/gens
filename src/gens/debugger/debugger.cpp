@@ -284,10 +284,10 @@ void Debug_Event(int key, int mod)
 			    Debug == DEBUG_Z80 ||
 			    Debug == DEBUG_GENESIS_VDP)
 			{
-				if (pattern_adr < 0xD800)
+				if (pattern_adr < 0xDA00)
 					pattern_adr = (pattern_adr + 0x200) & 0xFFFF;
-				if (pattern_adr >= 0xD800) // Make sure it doesn't go out of bounds.
-					pattern_adr = 0xD800 - 0x200;
+				if (pattern_adr >= 0xDA00) // Make sure it doesn't go out of bounds.
+					pattern_adr = 0xDA00 - 0x200;
 			}
 			else if (Debug == DEBUG_WORD_RAM_PATTERN)
 			{

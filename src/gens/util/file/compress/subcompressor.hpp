@@ -64,5 +64,6 @@ class SubCompressor
 #endif /* GENS_ZLIB */
 
 #include "7z.hpp"
+#include "rar.hpp"
 
 #endif /* GENS_SUBCOMPRESSOR_HPP */

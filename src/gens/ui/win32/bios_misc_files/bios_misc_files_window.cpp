@@ -47,7 +47,7 @@ HWND bios_misc_files_window = NULL;
 static const int frameWidth = 376;
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
-const unsigned short BIOSMiscFiles_Count = 14;
+const unsigned short BIOSMiscFiles_Count = 15;
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[BIOSMiscFiles_Count + 1] =
 {
 	{"Configure Genesis BIOS File", "md_bios", (FileFilterType)0, NULL},
@@ -62,6 +62,7 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[BIOSMiscFiles_Count + 1] =
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
 	{"Configure Miscellaneous Files", "misc", (FileFilterType)0, NULL},
 	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
+	{"RAR Binary", "rar", AnyFile, Misc_Filenames.RAR_Binary},
 	{"GCOffline", "gcoffline", AnyFile, Misc_Filenames.GCOffline},
 	{"Manual", "manual", AnyFile, Misc_Filenames.Manual},
 	{NULL, NULL, (FileFilterType)0, NULL},
@@ -103,11 +104,11 @@ HWND create_bios_misc_files_window(void)
 	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
 						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16, 408,
+						frameWidth + 16, 428,
 						Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(bios_misc_files_window, frameWidth + 16, 408);
+	Win32_setActualWindowSize(bios_misc_files_window, frameWidth + 16, 428);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(bios_misc_files_window);

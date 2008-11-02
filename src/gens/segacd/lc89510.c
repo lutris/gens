@@ -776,17 +776,21 @@ debug_truc (unsigned int val)
 #endif
 }
 
-unsigned short _Read_CDC_Host_SUB (void)
-  __attribute__ ((alias ("Read_CDC_Host_SUB")));
-unsigned short _Read_CDC_Host_MAIN (void)
-  __attribute__ ((alias ("Read_CDC_Host_MAIN")));
-unsigned char _CDC_Read_Reg (void) __attribute__ ((alias ("CDC_Read_Reg")));
-void _CDC_Write_Reg (unsigned char Data)
-  __attribute__ ((alias ("CDC_Write_Reg")));
-void _CDD_Processing (void) __attribute__ ((alias ("CDD_Processing")));
-void _CDD_Import_Command (void)
-  __attribute__ ((alias ("CDD_Import_Command")));
-unsigned char _SCD_Read_Byte (unsigned int Adr)
-  __attribute__ ((alias ("SCD_Read_Byte")));
-unsigned char _SCD_Read_Word (unsigned int Adr)
-  __attribute__ ((alias ("SCD_Read_Word")));
+
+// Symbol aliases for cross-OS asm compatibility.
+unsigned short _Read_CDC_Host_SUB(void)
+	__attribute__ ((weak, alias ("Read_CDC_Host_SUB")));
+unsigned short _Read_CDC_Host_MAIN(void)
+	__attribute__ ((weak, alias ("Read_CDC_Host_MAIN")));
+unsigned char _CDC_Read_Reg(void)
+	__attribute__ ((weak, alias ("CDC_Read_Reg")));
+void _CDC_Write_Reg(unsigned char Data)
+	__attribute__ ((weak, alias ("CDC_Write_Reg")));
+void _CDD_Processing(void)
+	__attribute__ ((weak, alias ("CDD_Processing")));
+void _CDD_Import_Command(void)
+	__attribute__ ((weak, alias ("CDD_Import_Command")));
+unsigned char _SCD_Read_Byte(unsigned int Adr)
+	__attribute__ ((weak, alias ("SCD_Read_Byte")));
+unsigned char _SCD_Read_Word(unsigned int Adr)
+	__attribute__ ((weak, alias ("SCD_Read_Word")));

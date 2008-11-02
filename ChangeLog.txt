@@ -1,4 +1,4 @@
-Gens/GS v2.15.5/GS-m5 (Gens/GS)
+Gens/GS v2.15.5/GS-m5.1 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,10 +14,80 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens v2.15.5/GS-m5 is David Korth's fork of Gens, initially based
+Gens v2.15.5/GS-m5.1 is David Korth's fork of Gens, initially based
 on Gens for Linux v2.15.5. The number after the "m" indicates the
 milestone. Releases are usually made after a significant new
 feature has been added, with minor releases if a major bug is found.
+
+================================================================
+
+What's new in Gens/GS v2.15.5/GS-m5.1?
+
+Milestone 5.1 introduces the following new features:
+
+- RAR archives can now be used via an external RAR binary. You must have RAR
+  installed in order to use this feature. (Windows users can install WinRAR,
+  which includes the command-line rar.exe.)
+
+- You can now drag a ROM file onto the Gens window to open it.
+
+- [GTK+] Many of the bundled icons have been updated with KDE 4 Oxygen icons.
+  See http://www.oxygen-icons.org/ for more information.
+
+Milestone 5.1 has the following miscellaneous changes:
+
+- "PSG Improved" has been renamed to "PSG (Sine Wave)", which more accurately
+  describes its functionality.
+
+Milestone 5.1 fixes the following bugs:
+
+- [Win32] The lag issue seen on some computers should be fixed.
+
+- [Win32] Fixed joystick POV support.
+
+- [32X] PWM audio no longer "clicks" when it isn't in use.
+
+- [Debugger] The VDP debugger now scrolls all the way to the last VRAM line,
+  0xFE00-0xFFFF. Previously, it would only scroll to line 0xFC00-0xFDFF. This
+  bug was reported by djohe in #retro.
+
+- [Regression from m5] Gens no longer creates blank SRAM files for games that
+  don't use SRAM. This bug was reported by Delta on the Sonic Retro forums.
+
+- Fixed compilation with --disable-cdrom.
+
+Milestone 5.1 has the following low-level code changes:
+
+- The menu system has been rewritten such that both the Win32 and GTK+
+  versions now share the same menu data. Not only does this reduce the
+  amount of duplicated code, it makes it easier to add menu items and
+  it reduces the amount of code needed to build and synchronize the menus.
+
+- The PWM audio emulator has been rewritten in C. This rewrite was based on
+  pwm.c from Gens Rerecording.
+
+- The build system has been updated so that it automatically detects MacOS X
+  and Cygwin, and adjusts compilation settings for those two platforms as
+  necessary. Thanks to Sonicblur on the Sonic Retro forums for the MacOS X
+  compatibility fixes.
+
+- The About window has been converted to a C++ class.
+  Eventually, all of the windows will be converted to C++ classes.
+
+- The configure script will now check what hash table implementations are
+  available at compile time. Previously, Gens/GS only used the relatively
+  new TR1 unordered_map, which is only available in gcc-4.x and later. Not
+  only did this cause problems for gcc-3.x users, it caused problems for
+  gcc-4.0 users, since unordered_map was broken in gcc-4.0. The configure
+  script will now check to make sure unordered_map is working, and if it
+  isn't, it will fall back to either __gnu_cxx::hash_map or std::map. If
+  it falls back to std::map, it will print a warning, since std::map is
+  not a hash table and is thus considerably slower than both unordered_map
+  and hash_map.
+
+- The configure script will now check if the linker supports --as-needed.
+  Previously, the configure script always added --as-needed to LDFLAGS, which
+  caused a problem on systems that didn't support it.
 
 ================================================================
 

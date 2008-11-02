@@ -39,7 +39,7 @@
 // Old INI handling and timer functions are still needed for now.
 #include "port/ini_old.h"
 #include "port/timer.h"
-#endif /* GENS_OS_WIN32 */
+#endif /* !GENS_OS_WIN32 */
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
@@ -503,16 +503,12 @@ void GensMainLoop(void)
 				else
 					Update_Emulation();
 				
+				#ifdef GENS_OS_UNIX
 				// Prevent 100% CPU usage.
 				// The CPU scheduler will take away CPU time from Gens/GS if
 				// it notices that the process is eating up too much CPU time.
-#ifdef GENS_OS_WIN32
-				// On Windows, check for messages while sleeping here.
-				GensUI::sleep(1, false);
-#else
-				// Other systems: Don't update the UI while sleeping here.
 				GensUI::sleep(1, true);
-#endif
+				#endif
 			}
 			else
 			{

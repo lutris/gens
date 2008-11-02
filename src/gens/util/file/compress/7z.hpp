@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_7z_HPP
-#define GENS_7z_HPP
+#ifndef GENS_7Z_HPP
+#define GENS_7Z_HPP
 
 #include <stdio.h>
 #include <string>
@@ -30,9 +30,6 @@
 // Subcompressor
 #include "subcompressor.hpp"
 
-using std::string;
-using std::list;
-
 class _7z : public SubCompressor
 {
 	public:
@@ -40,9 +37,10 @@ class _7z : public SubCompressor
 		~_7z();
 		
 		bool detectFormat(FILE *f);
-		int getNumFiles(const string& zFilename);
-		list<CompressedFile>* getFileInfo(const string& zFilename);
-		int getFile(const string& zFilename, const CompressedFile *fileInfo,
+		int getNumFiles(const std::string& zFilename);
+		std::list<CompressedFile>* getFileInfo(const std::string& zFilename);
+		int getFile(const std::string& zFilename,
+			    const CompressedFile *fileInfo,
 			    unsigned char *buf, const int size);
 		
 		bool checkExternalExec(void);
@@ -51,4 +49,4 @@ class _7z : public SubCompressor
 		void errOpening7z(const int errorNumber);
 };
 
-#endif
+#endif /* GENS_7Z_HPP */

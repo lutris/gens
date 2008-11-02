@@ -12,8 +12,8 @@ extern "C" {
 #include "gens.hpp"
 
 // OS-specific includes.
-#if defined(GENS_OS_LINUX)
-#include "g_main_linux.hpp"
+#if defined(GENS_OS_UNIX)
+#include "g_main_unix.hpp"
 #elif defined(GENS_OS_WIN32)
 #include "g_main_win32.hpp"
 #else
@@ -59,6 +59,7 @@ struct Gens_BIOS_Filenames_t
 struct Gens_Misc_Filenames_t
 {
 	char _7z_Binary[GENS_PATH_MAX];
+	char RAR_Binary[GENS_PATH_MAX];
 	char GCOffline[GENS_PATH_MAX];
 	char Manual[GENS_PATH_MAX];
 };

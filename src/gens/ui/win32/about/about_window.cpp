@@ -34,13 +34,11 @@
 
 #include "emulator/g_main.hpp"
 
-#include "ui/charset.hpp"
+#include "ui/win32/charset.hpp"
 #include "ui/win32/resource.h"
 
 #include <windowsx.h>
 #include <commctrl.h>
-
-#include "ui/about_window_data.h"
 
 #define ID_TIMER_ICE 0x1234
 
@@ -55,6 +53,7 @@ static const unsigned short iceOffsetY = 8;
 
 
 static WNDCLASS m_WndClass;
+
 
 AboutWindow* AboutWindow::m_Instance = NULL;
 AboutWindow* AboutWindow::Instance(HWND parent)
@@ -84,6 +83,7 @@ AboutWindow::AboutWindow()
 {
 	tmrIce = NULL;
 	bmpGensLogo = NULL;
+	m_ChildWindowsCreated = false;
 	
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
@@ -101,6 +101,10 @@ AboutWindow::AboutWindow()
 		
 		RegisterClass(&m_WndClass);
 	}
+	
+	// Messages are processed before the object is finished being created,
+	// so this assignment is needed.
+	m_Instance = this;
 	
 	// Create the window.
 	// TODO: Don't hardcode the parent window.
@@ -130,18 +134,6 @@ AboutWindow::~AboutWindow()
 }
 
 
-void AboutWindow::setFocus(void)
-{
-	// TODO
-}
-
-
-void AboutWindow::setModal(HWND parent)
-{
-	// TODO
-}
-
-
 LRESULT CALLBACK AboutWindow::WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return m_Instance->WndProc(hWnd, message, wParam, lParam);
@@ -161,7 +153,8 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	switch(message)
 	{
 		case WM_CREATE:
-			CreateChildWindows(hWnd);
+			if (!m_ChildWindowsCreated)
+				CreateChildWindows(hWnd);
 			break;
 		
 		case WM_CLOSE:
@@ -224,6 +217,10 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void AboutWindow::CreateChildWindows(HWND hWnd)
 {
+	if (m_ChildWindowsCreated)
+		return;
+	
+	cx = 0; iceLastTicks = 0;
 	if (ice != 3)
 	{
 		// Gens logo
@@ -239,23 +236,18 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 		// "ice" timer
 		ax = 0; bx = 0; cx = 1;
 		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, (TIMERPROC)iceTime_STATIC);
+		
+		m_Window = hWnd;
 		updateIce();
 	}
 	
-	// Version information
-	char versionString[256];
-	strcpy(versionString, aboutTitle);
-#ifdef GENS_GIT_VERSION
-	strcat(versionString, "\n" GENS_GIT_VERSION);
-#endif /* GENS_GIT_VERSION */
-	
 	// Title and version information.
-	lblGensTitle = CreateWindow(WC_STATIC, versionString, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensTitle = CreateWindow(WC_STATIC, StrTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				    128, 8, 184, 32+lblTitle_HeightInc,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensTitle, fntTitle, TRUE);
 	
-	lblGensDesc = CreateWindow(WC_STATIC, aboutDesc, WS_CHILD | WS_VISIBLE | SS_CENTER,
+	lblGensDesc = CreateWindow(WC_STATIC, StrDescription, WS_CHILD | WS_VISIBLE | SS_CENTER,
 				   128, 42+lblTitle_HeightInc, 184, 100,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, TRUE);
@@ -268,21 +260,18 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 	
 	// Copyright message.
 	HWND lblGensCopyright;
-	string sCopyright = charset_utf8_to_cp1252(aboutCopyright);
+	string sCopyright = charset_utf8_to_cp1252(StrCopyright);
 	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 288, 168,
 					grpGensCopyright, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensCopyright, fntMain, TRUE);
 	
-	// OK button
-	HWND btnOK;
-	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     312 - 75, 288+lblTitle_HeightInc, 75, 23,
-			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
+	// Add the OK button.
+	addDialogButtons(hWnd, WndBase::BAlign_Right,
+			 WndBase::BUTTON_OK, WndBase::BUTTON_OK);
 	
-	// Set focus to the OK button.
-	SetFocus(btnOK);
+	// Child windows created.
+	m_ChildWindowsCreated = true;
 }
 
 
@@ -294,8 +283,8 @@ void AboutWindow::updateIce(void)
 	hDC = BeginPaint(m_Window, &ps);
 	
 	int x, y;
-	const unsigned char *src = &about_data[ax*01440];
-	const unsigned char *src2 = &about_dx[bx*040];
+	const unsigned char *src = &Data[ax*01440];
+	const unsigned char *src2 = &DX[bx*040];
 	unsigned char px1, px2;
 	
 	int bgc = GetSysColor(COLOR_3DFACE);

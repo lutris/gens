@@ -360,17 +360,17 @@ int Change_PSG(const int newPSG)
 
 
 /**
- * Change_PSG_Improved(): Enable or disable improved PSG sound emulation.
+ * Change_PSG_Sine(): Enable or disable sine wave PSG sound emulation.
  * @param newPSGImproved New improved PSG sound emulation setting.
  * @return 1 on success.
  */
-int Change_PSG_Improved(const int newPSGImproved)
+int Change_PSG_Sine(const int newPSGSine)
 {
-	PSG_Improv = newPSGImproved;
+	PSG_Improv = newPSGSine;
 	
 	if (PSG_Improv)
 	{
-		MESSAGE_L("Improved PSG sound", "Improved PSG sound", 1000);
+		MESSAGE_L("Sine wave PSG sound", "Sine wave PSG sound", 1000);
 	}
 	else
 	{

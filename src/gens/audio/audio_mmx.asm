@@ -4,7 +4,6 @@ section .text align=64
 
 	ALIGN32
 
-
 	; void writeSoundMono_MMX(int *left, int *right, short *dest, int length)
 	DECL writeSoundMono_MMX
 
@@ -21,7 +20,7 @@ section .text align=64
 		shr ecx, 1
 		jnc short .Double_Trans
 
-	.Simple_Trans
+	.Simple_Trans:
 		mov eax, [edi]
 		mov dword [edi], 0
 		add eax, [esi]
@@ -33,23 +32,23 @@ section .text align=64
 		mov word [ebx], 0x7FFF
 		jmp short .ok_s
 
-	.lower_s
+	.lower_s:
 		cmp eax, -0xFFFF
 		jge short .greater_s
 
 		mov word [ebx], -0x7FFF
 		jmp short .ok_s
 
-	.greater_s
+	.greater_s:
 		shr eax, 1
 		mov [ebx], ax
 
-	.ok_s
+	.ok_s:
 		add edi, 4
 		add esi, 4
 		add ebx, 2
 
-	.Double_Trans
+	.Double_Trans:
 		mov eax, 32
 		pxor mm4, mm4
 		movd mm5, eax
@@ -61,7 +60,7 @@ section .text align=64
 
 	ALIGN32
 
-	.Loop
+	.Loop:
 		movq mm0, [edi]			; L2 | L1
 		add ebx, 4
 		movq [edi], mm4
@@ -80,13 +79,12 @@ section .text align=64
 
 		emms
 
-	.End
+	.End:
 		pop esi
 		pop edi
 		pop ecx
 		pop ebx
 		ret
-
 
 	ALIGN32
 
@@ -107,7 +105,7 @@ section .text align=64
 		shr ecx, 1
 		jnc short .Double_Trans
 
-	.Simple_Trans
+	.Simple_Trans:
 		mov eax, [edi]
 		cmp eax, 0x7FFF
 		mov dword [edi], 0
@@ -116,17 +114,17 @@ section .text align=64
 		mov word [ebx + 0], 0x7FFF
 		jmp short .right_s1
 
-	.lower_s1
+	.lower_s1:
 		cmp eax, -0x7FFF
 		jge short .greater_s1
 
 		mov word [ebx + 0], -0x7FFF
 		jmp short .right_s1
 
-	.greater_s1
+	.greater_s1:
 		mov [ebx + 0], ax
 
-	.right_s1
+	.right_s1:
 		mov edx, [esi]
 		cmp edx, 0x7FFF
 		mov dword [esi], 0
@@ -135,22 +133,22 @@ section .text align=64
 		mov word [ebx + 2], 0x7FFF
 		jmp short .ok_s1
 
-	.lower_s2
+	.lower_s2:
 		cmp edx, -0x7FFF
 		jge short .greater_s2
 
 		mov word [ebx + 2], -0x7FFF
 		jmp short .ok_s1
 
-	.greater_s2
+	.greater_s2:
 		mov [ebx + 2], dx
 		
-	.ok_s1
+	.ok_s1:
 		add edi, 4
 		add esi, 4
 		add ebx, 4
 
-	.Double_Trans
+	.Double_Trans:
 		mov eax, 32
 		pxor mm4, mm4
 		test ecx, ecx
@@ -160,7 +158,7 @@ section .text align=64
 
 	ALIGN32
 
-	.Loop
+	.Loop:
 		movd mm0, [esi]			; 0  | R1
 		add edi, 8
 		movd mm1, [esi + 4]		; 0  | R2
@@ -182,7 +180,7 @@ section .text align=64
 
 		emms
 
-	.End
+	.End:
 		pop esi
 		pop edi
 		pop edx

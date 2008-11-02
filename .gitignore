@@ -1,0 +1,11 @@
+*~
+/autom4te.cache/
+/config.guess
+/config.sub
+/config.h.in
+/configure
+/FOR FUTURE USE/
+Makefile.in
+
+/debug-*/
+/release-*/

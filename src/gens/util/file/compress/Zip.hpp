@@ -30,9 +30,6 @@
 // Subcompressor
 #include "subcompressor.hpp"
 
-using std::string;
-using std::list;
-
 class Zip : public SubCompressor
 {
 	public:

@@ -1,6 +1,5 @@
 # Win32-specific Makefile.am
 
-NASM += -f win32
 INCLUDES += -I@srcdir@/ui/win32/
 
 gens_SOURCES += \
@@ -10,6 +9,7 @@ gens_SOURCES += \
 		input/input_dinput.cpp \
 		audio/audio_dsound.cpp \
 		util/file/compress/popen_wrapper.c \
+		ui/win32/charset.cpp \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.cpp \
 		ui/win32/gens/gens_window_callbacks.cpp \
@@ -36,6 +36,7 @@ gens_SOURCES += \
 		ui/win32/country_code/country_code_window_callbacks.c \
 		ui/win32/country_code/country_code_window_misc.c \
 		ui/win32/zip_select/zip_select_dialog_misc.cpp \
+		ui/win32/wndbase.cpp \
 		ui/win32/about/about_window.cpp \
 		ui/win32/resource.rc
 
@@ -54,10 +55,10 @@ noinst_HEADERS += \
 		input/input_dinput.hpp \
 		input/input_win32_keys.h \
 		audio/audio_dsound.hpp \
+		ui/win32/charset.hpp \
 		ui/win32/gens/gens_window.hpp \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
-		ui/win32/gens/gens_window_menu.h \
 		ui/win32/game_genie/game_genie_window.h \
 		ui/win32/game_genie/game_genie_window_callbacks.h \
 		ui/win32/game_genie/game_genie_window_misc.h \
@@ -80,6 +81,7 @@ noinst_HEADERS += \
 		ui/win32/country_code/country_code_window_callbacks.h \
 		ui/win32/country_code/country_code_window_misc.h \
 		ui/win32/zip_select/zip_select_dialog_misc.hpp \
+		ui/win32/wndbase.hpp \
 		ui/win32/about/about_window.hpp
 
 if GENS_CDROM

@@ -24,8 +24,8 @@
 
 #include <zlib.h>
 
-#include <string>
 using std::string;
+using std::list;
 
 
 GZip::GZip(const bool showErrMsg)

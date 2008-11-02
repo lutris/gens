@@ -32,36 +32,33 @@ extern "C" {
 #endif
 
 #include <windows.h>
+#include <stdint.h>
 
 HWND initGens_hWnd(void);
 HWND create_gens_window(void);
 void create_gens_window_menubar(void);
 extern HWND Gens_hWnd;
 
-extern HMENU MainMenu;
-extern HMENU FileMenu;
-extern HMENU FileMenu_ROMHistory;
-extern HMENU FileMenu_ChangeState;
-extern HMENU GraphicsMenu;
-extern HMENU GraphicsMenu_Render;
-extern HMENU GraphicsMenu_FrameSkip;
-extern HMENU CPUMenu;
-extern HMENU CPUMenu_Debug;
-extern HMENU CPUMenu_Country;
-extern HMENU SoundMenu;
-extern HMENU SoundMenu_Rate;
-extern HMENU OptionsMenu;
-extern HMENU OptionsMenu_SegaCDSRAMSize;
-extern HMENU HelpMenu;
+// New menu handler.
+HMENU findMenuItem(uint16_t id);
 
-#ifdef GENS_DEBUGGER
-// Debug menu items
-//extern GtkWidget *debugMenuItems[9];
-//extern GtkWidget *debugSeparators[2];
-#endif /* GENS_DEBUGGER */
+// Accelerator table for the main Gens window. [Menu commands.]
+extern HACCEL hAccelTable_Menu;
 
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+// Hash table containing all the menu items.
+// Key is the menu ID.
+#include "macros/hashtable.hpp"
+#include <utility>
+typedef GENS_HASHTABLE<uint16_t, HMENU> win32MenuMap;
+extern win32MenuMap gensMenuMap;
+typedef std::pair<uint16_t, HMENU> win32MenuMapItem;
+
+#endif /* __cplusplus */
 
 #endif /* GENS_WIN32_GENS_WINDOW_HPP */

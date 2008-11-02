@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "g_main.hpp"
-#include "g_main_linux.hpp"
+#include "g_main_unix.hpp"
 
 #include "g_palette.h"
 #include "gens_ui.hpp"

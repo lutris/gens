@@ -35,10 +35,10 @@
 // popen wrapper
 #include "popen_wrapper.h"
 
-#include <string>
 #include <sstream>
 using std::string;
 using std::stringstream;
+using std::list;
 
 // Newline constant: "\r\n" on Win32, "\n" on everything else.
 #ifdef GENS_OS_WIN32
@@ -76,20 +76,21 @@ void _7z::errOpening7z(int errorNumber)
 
 
 /**
- * detectFormat(): Detect if a file is in GZip format.
+ * detectFormat(): Detect if a file is in 7z format.
  * @param f File pointer of the file to check.
- * @return True if this file is in GZip format.
+ * @return True if this file is in 7z format.
  */
 bool _7z::detectFormat(FILE *f)
 {
 	// Magic Number for 7z:
 	// First six bytes: "7z\xBC\xAF\x27\x1C"
+	static const unsigned char magic7z[6] = {'7', 'z', 0xBC, 0xAF, 0x27, 0x1C};
+	
 	unsigned char buf[6];
 	fseek(f, 0, SEEK_SET);
 	fread(buf, 6, sizeof(unsigned char), f);
-	return (buf[0] == '7' && buf[1] == 'z' &&
-		buf[2] == 0xBC && buf[3] == 0xAF &&
-		buf[4] == 0x27 && buf[5] == 0x1C);
+	
+	return (memcmp(buf, magic7z, sizeof(magic7z)) == 0);
 }
 
 
@@ -356,7 +357,10 @@ int _7z::getFile(const string& zFilename, const CompressedFile *fileInfo,
 	// Build the command line.
 	stringstream ssCmd;
 	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" e \"" << zFilename
-	      << "\" \"" << fileInfo->filename << "\" -so 2>/dev/null";
+	      << "\" \"" << fileInfo->filename << "\" -so";
+#ifndef GENS_OS_WIN32
+	ssCmd << " 2>/dev/null";
+#endif
 	
 	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)

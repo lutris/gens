@@ -85,7 +85,6 @@ unsigned char RD_Controller_1(void)
 	return RD_Controller(Controller_1_State, Controller_1_Type,
 			     Controller_1_Counter, buttons);
 }
-unsigned char _RD_Controller_1(void) __attribute__ ((alias ("RD_Controller_1")));
 
 
 unsigned char RD_Controller_2(void)
@@ -120,7 +119,6 @@ unsigned char RD_Controller_2(void)
 	return RD_Controller(Controller_2_State, Controller_2_Type,
 			     Controller_2_Counter, buttons);
 }
-unsigned char _RD_Controller_2(void) __attribute__ ((alias ("RD_Controller_2")));
 
 
 static unsigned char RD_Controller(unsigned int state,
@@ -236,7 +234,6 @@ unsigned char WR_Controller_1(unsigned char data)
 	Controller_1_State = data;
 	return data;
 }
-unsigned char _WR_Controller_1(void) __attribute__ ((alias ("WR_Controller_1")));
 
 
 unsigned char WR_Controller_2(unsigned char data)
@@ -265,7 +262,6 @@ unsigned char WR_Controller_2(unsigned char data)
 	Controller_2_State = data;
 	return data;
 }
-unsigned char _WR_Controller_2(void) __attribute__ ((alias ("WR_Controller_2")));
 
 
 void Fix_Controllers(void)
@@ -286,3 +282,14 @@ void Fix_Controllers(void)
 		Controller_2_Counter = 0;
 	}
 }
+
+
+// Symbol aliases for cross-OS asm compatibility.
+unsigned char _RD_Controller_1(void)
+	__attribute__ ((weak, alias ("RD_Controller_1")));
+unsigned char _RD_Controller_2(void)
+	__attribute__ ((weak, alias ("RD_Controller_2")));
+unsigned char _WR_Controller_1(void)
+	__attribute__ ((weak, alias ("WR_Controller_1")));
+unsigned char _WR_Controller_2(void)
+	__attribute__ ((weak, alias ("WR_Controller_2")));

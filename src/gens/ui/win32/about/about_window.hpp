@@ -25,32 +25,30 @@
 
 #ifdef __cplusplus
 
+#include "wndbase.hpp"
 #include <windows.h>
 
- class AboutWindow
+class AboutWindow : WndBase
 {
 	public:
 		static AboutWindow* Instance(HWND parent = NULL);
 		static bool isOpen(void) { return (m_Instance != NULL); }
 		
-		bool isDialogMessage(MSG *msg) { return IsDialogMessage(m_Window, msg); }
-		
-		void setFocus(void);
-		void setModal(HWND parent);
+		bool isDialogMessage(MSG *msg) { return IsDialogMessage((HWND)m_Window, msg); }
 	
 	protected:
 		AboutWindow();
 		~AboutWindow();
 		
-		HWND m_Window;
-		HWND m_imgGensLogo;
+		static AboutWindow* m_Instance;
 		
 		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		
+		bool m_ChildWindowsCreated;
 		void CreateChildWindows(HWND hWnd);
 		
 		unsigned int iceLastTicks;
-		unsigned short ax, bx, cx;
 		UINT_PTR tmrIce;
 		
 		static void iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -63,10 +61,20 @@
 		HWND imgGensLogo;
 		
 		// Gens logo
+		HWND m_imgGensLogo;
 		HBITMAP bmpGensLogo;
-	
-	private:
-		static AboutWindow *m_Instance;
+		
+		unsigned short ax, bx, cx;
+		
+		// Strings
+		static const char* StrTitle;
+		static const char* StrDescription;
+		static const char* StrCopyright;
+		
+		// Data
+		static const unsigned char Data[];
+		static const unsigned char DX[];
+
 };
 
 #endif /* __cplusplus */

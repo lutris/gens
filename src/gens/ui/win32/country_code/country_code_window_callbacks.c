@@ -27,6 +27,7 @@
 #include "country_code_window_misc.h"
 
 #include "emulator/gens.hpp"
+#include "gens_ui.hpp"
 
 // Gens Win32 resources
 #include "ui/win32/resource.h"

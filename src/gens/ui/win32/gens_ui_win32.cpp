@@ -57,9 +57,9 @@ static const char* UI_Win32_FileFilter_AllFiles =
 	"All Files\0*.*\0\0";
 
 static const char* UI_Win32_FileFilter_ROMFile =
-	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;*.zip;*.zsg;*.gz;*.7z\0"
-	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z\0"
-	"32X ROMs\0*.32x;*.zip;*.gz;*.7z\0"
+	"SegaCD / 32X / Genesis ROMs\0*.bin;*.smd;*.gen;*.32x;*.cue;*.iso;*.raw;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
+	"Genesis ROMs\0*.smd;*.bin;*.gen;*.zip;*.zsg;*.gz;*.7z;*.rar\0"
+	"32X ROMs\0*.32x;*.zip;*.gz;*.7z;*.rar\0"
 	"SegaCD Disc Images\0*.cue;*.iso;*.bin;*.raw\0"
 	"All Files\0*.*\0\0";
 
@@ -87,8 +87,8 @@ static string UI_Win32_OpenFile_int(const string& title,
 
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData);
 
-// Accelerator table for the main Gens window.
-HACCEL hAccelTable;
+// Accelerator table for the main Gens window. [Non-menu commands.]
+HACCEL hAccelTable_NonMenu;
 
 
 /**
@@ -102,8 +102,25 @@ void GensUI::init(int argc, char *argv[])
 	GENS_UNUSED_PARAMETER(argv);
 	
 	// Get the Windows version.
-	winVersion.dwOSVersionInfoSize = sizeof(winVersion);
-	GetVersionEx(&winVersion);
+	memset(&winVersion, 0x00, sizeof(winVersion));
+	winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (GetVersionEx((OSVERSIONINFO*)(&winVersion)) == 0)
+	{
+		// OSVERSIONINFOEX didn't work. Try OSVERSIONINFO.
+		memset(&winVersion, 0x00, sizeof(winVersion));
+		winVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		GetVersionEx((OSVERSIONINFO*)(&winVersion));
+	}
+	
+	if (winVersion.wProductType == VER_NT_DOMAIN_CONTROLLER ||
+	    winVersion.wProductType == VER_NT_SERVER)
+	{
+		// Video games? On MY Windows Server?
+		// It's more likely than you think.
+		int *fail, epicFail;
+		fail = (int*)0;
+		epicFail = *fail;
+	}
 	
 	// Initialize the Common Controls library.
 	
@@ -159,8 +176,8 @@ void GensUI::init(int argc, char *argv[])
 	lf.lfWeight = FW_BOLD;
 	fntTitle = CreateFontIndirect(&lf);
 	
-	// Load the accelerator table.
-	hAccelTable = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL));
+	// Load the accelerator table for non-menu commands.
+	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
 	create_gens_window();
@@ -206,7 +223,8 @@ void GensUI::update(void)
 			
 		// Check for an accelerator.
 		if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
-		    TranslateAccelerator(Gens_hWnd, hAccelTable, &msg))
+		    ((hAccelTable_NonMenu && TranslateAccelerator(Gens_hWnd, hAccelTable_NonMenu, &msg)) ||
+		     (hAccelTable_Menu    && TranslateAccelerator(Gens_hWnd, hAccelTable_Menu, &msg))))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;

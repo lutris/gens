@@ -369,72 +369,71 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
  */
 static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 {
-	GtkFileFilter *filter;
-	const char* bin  = "*.[bB][iI][nN]";
-	const char* smd  = "*.[sS][mM][dD]";
-	const char* gen  = "*.[gG][eE][nN]";
-	const char* _32x = "*.32[xX]";
-	const char* iso  = "*.[iI][sS][oO]";
-	const char* chd  = "*.[cC][hH][dD]";
-	const char* raw  = "*.[rR][aA][wW]";
+	static const char* filter_bin  = "*.[bB][iI][nN]";
+	static const char* filter_smd  = "*.[sS][mM][dD]";
+	static const char* filter_gen  = "*.[gG][eE][nN]";
+	static const char* filter_32x = "*.32[xX]";
+	static const char* filter_iso  = "*.[iI][sS][oO]";
+	static const char* filter_raw  = "*.[rR][aA][wW]";
 #ifdef GENS_ZLIB
-	const char* zip  = "*.[zZ][iI][pP]";
-	const char* gz   = "*.[gG][zZ]";
-	const char* zsg  = "*.[zZ][sS][gG]";
+	static const char* filter_zip  = "*.[zZ][iI][pP]";
+	static const char* filter_gz   = "*.[gG][zZ]";
+	static const char* filter_zsg  = "*.[zZ][sS][gG]";
 #endif /* GENS_ZLIB */
-	const char* _7z  = "*.7[zZ]";
+	static const char* filter_7z  = "*.7[zZ]";
+	static const char* filter_rar  = "*.[rR][aA][rR]";
 	
-	filter = gtk_file_filter_new();
+	GtkFileFilter *filter = gtk_file_filter_new();
 	
 	// All ROM files
 	gtk_file_filter_set_name(filter, "Sega CD / 32X / Genesis ROMs");
-	gtk_file_filter_add_pattern(filter, bin);
-	gtk_file_filter_add_pattern(filter, smd);
-	gtk_file_filter_add_pattern(filter, gen);
-	gtk_file_filter_add_pattern(filter, _32x);
-	gtk_file_filter_add_pattern(filter, iso);
-	gtk_file_filter_add_pattern(filter, chd);
-	gtk_file_filter_add_pattern(filter, raw);
+	gtk_file_filter_add_pattern(filter, filter_bin);
+	gtk_file_filter_add_pattern(filter, filter_smd);
+	gtk_file_filter_add_pattern(filter, filter_gen);
+	gtk_file_filter_add_pattern(filter, filter_32x);
+	gtk_file_filter_add_pattern(filter, filter_iso);
+	gtk_file_filter_add_pattern(filter, filter_raw);
 #ifdef GENS_ZLIB
-	gtk_file_filter_add_pattern(filter, zip);
-	gtk_file_filter_add_pattern(filter, gz);
-	gtk_file_filter_add_pattern(filter, zsg);
+	gtk_file_filter_add_pattern(filter, filter_zip);
+	gtk_file_filter_add_pattern(filter, filter_gz);
+	gtk_file_filter_add_pattern(filter, filter_zsg);
 #endif /* GENS_ZLIB */
-	gtk_file_filter_add_pattern(filter, _7z);
+	gtk_file_filter_add_pattern(filter, filter_7z);
+	gtk_file_filter_add_pattern(filter, filter_rar);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	
 	// Genesis ROM files only
 	filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "Genesis ROMs");
-	gtk_file_filter_add_pattern(filter, bin);
-	gtk_file_filter_add_pattern(filter, smd);
-	gtk_file_filter_add_pattern(filter, gen);
+	gtk_file_filter_add_pattern(filter, filter_bin);
+	gtk_file_filter_add_pattern(filter, filter_smd);
+	gtk_file_filter_add_pattern(filter, filter_gen);
 #ifdef GENS_ZLIB
-	gtk_file_filter_add_pattern(filter, zip);
-	gtk_file_filter_add_pattern(filter, gz);
-	gtk_file_filter_add_pattern(filter, zsg);
+	gtk_file_filter_add_pattern(filter, filter_zip);
+	gtk_file_filter_add_pattern(filter, filter_gz);
+	gtk_file_filter_add_pattern(filter, filter_zsg);
 #endif /* GENS_ZLIB */
-	gtk_file_filter_add_pattern(filter, _7z);
+	gtk_file_filter_add_pattern(filter, filter_7z);
+	gtk_file_filter_add_pattern(filter, filter_rar);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);	
 	
 	// 32X ROM files only
 	filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "32X ROMs");
 #ifdef GENS_ZLIB
-	gtk_file_filter_add_pattern(filter, zip);
-	gtk_file_filter_add_pattern(filter, gz);
+	gtk_file_filter_add_pattern(filter, filter_zip);
+	gtk_file_filter_add_pattern(filter, filter_gz);
 #endif /* GENS_ZLIB */
-	gtk_file_filter_add_pattern(filter, _32x);
-	gtk_file_filter_add_pattern(filter, _7z);
+	gtk_file_filter_add_pattern(filter, filter_32x);
+	gtk_file_filter_add_pattern(filter, filter_7z);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	
 	// SegaCD disc image files only
 	filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "SegaCD Disc Image");
-	gtk_file_filter_add_pattern(filter, iso);
-	gtk_file_filter_add_pattern(filter, chd);
-	gtk_file_filter_add_pattern(filter, raw);
-	gtk_file_filter_add_pattern(filter, bin);
+	gtk_file_filter_add_pattern(filter, filter_iso);
+	gtk_file_filter_add_pattern(filter, filter_raw);
+	gtk_file_filter_add_pattern(filter, filter_bin);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }
 
@@ -445,13 +444,12 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
  */
 static void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
 {
-	GtkFileFilter *filter;
-	const char* gs = "*.[gG][sS]?";
+	static const char* filter_gs = "*.[gG][sS]?";
 	
 	// Savestate Files
-	filter = gtk_file_filter_new();
+	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "Savestate Files");
-	gtk_file_filter_add_pattern(filter, gs);
+	gtk_file_filter_add_pattern(filter, filter_gs);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }
 
@@ -462,19 +460,16 @@ static void UI_GTK_AddFilter_SavestateFile(GtkWidget* dialog)
  */
 static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
 {
-	GtkFileFilter *filter;
-	const char* bin = "*.[bb][iI][nN]";
-	const char* iso = "*.[iI][sS][oO]";
-	const char* chd = "*.[cC][hH][dD]";
-	const char* raw = "*.[rR][aA][wW]";
+	static const char* filter_bin = "*.[bb][iI][nN]";
+	static const char* filter_iso = "*.[iI][sS][oO]";
+	static const char* filter_raw = "*.[rR][aA][wW]";
 	
 	// SegaCD disc images
-	filter = gtk_file_filter_new();
+	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "SegaCD Disc Image");
-	gtk_file_filter_add_pattern(filter, bin);
-	gtk_file_filter_add_pattern(filter, iso);
-	gtk_file_filter_add_pattern(filter, chd);
-	gtk_file_filter_add_pattern(filter, raw);
+	gtk_file_filter_add_pattern(filter, filter_bin);
+	gtk_file_filter_add_pattern(filter, filter_iso);
+	gtk_file_filter_add_pattern(filter, filter_raw);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }
 
@@ -485,13 +480,12 @@ static void UI_GTK_AddFilter_CDImage(GtkWidget* dialog)
  */
 static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
 {
-	GtkFileFilter *filter;
-	const char* cfg = "*.[cC][fF][gG]";
+	static const char* filter_cfg = "*.[cC][fF][gG]";
 	
 	// Config files
-	filter = gtk_file_filter_new();
+	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "Gens Config File");
-	gtk_file_filter_add_pattern(filter, cfg);
+	gtk_file_filter_add_pattern(filter, filter_cfg);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }
 
@@ -502,12 +496,11 @@ static void UI_GTK_AddFilter_ConfigFile(GtkWidget* dialog)
  */
 static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
 {
-	GtkFileFilter *filter;
-	const char* cfg = "*.[gG][yY][mM]";
+	static const char* filter_gym = "*.[gG][yY][mM]";
 	
 	// Config files
-	filter = gtk_file_filter_new();
+	GtkFileFilter *filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "GYM File");
-	gtk_file_filter_add_pattern(filter, cfg);
+	gtk_file_filter_add_pattern(filter, filter_gym);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }

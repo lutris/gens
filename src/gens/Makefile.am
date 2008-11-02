@@ -27,7 +27,6 @@ ASMFILES = \
 		gens_core/mem/mem_sh2.o \
 		gens_core/mem/mem_z80.o \
 		gens_core/misc/misc.o \
-		gens_core/sound/pwm.o \
 		gens_core/cpu/sh2/sh2a.o \
 		gens_core/vdp/vdp_32x.o \
 		gens_core/vdp/vdp_io.o \
@@ -39,7 +38,19 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-NASM = nasm -O1 -w-orphan-labels $(NASM_INCLUDES)
+if GENS_OBJ_WIN32
+NASM_OBJ_FORMAT = -f win32 -D __OBJ_WIN32
+endif
+
+if GENS_OBJ_ELF32
+NASM_OBJ_FORMAT = -f elf -D __GCC2 -D __OBJ_ELF
+endif
+
+if GENS_OBJ_MACHO
+NASM_OBJ_FORMAT = -f macho -D __GCC2 -D __OBJ_MACHO
+endif
+
+NASM = nasm -O1 -w-orphan-labels $(NASM_OBJ_FORMAT) $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
 if GENS_ZLIB_INTERNAL
@@ -87,7 +98,7 @@ gens_SOURCES = \
 		gens_core/sound/pcm.c \
 		gens_core/sound/psg.c \
 		gens_core/sound/ym2612.c \
-		gens_core/sound/pwm.asm \
+		gens_core/sound/pwm.c \
 		gens_core/mem/mem_m68k.asm \
 		gens_core/mem/mem_s68k.asm \
 		gens_core/mem/mem_sh2.asm \
@@ -109,7 +120,9 @@ gens_SOURCES = \
 		segacd/cd_sys.cpp \
 		segacd/lc89510.c \
 		ui/gens_ui.cpp \
-		ui/charset.cpp \
+		ui/common/gens/gens_menu.c \
+		ui/common/gens/gens_menu_callbacks.cpp \
+		ui/common/about_window_data.cpp \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -117,6 +130,7 @@ gens_SOURCES = \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/7z.cpp \
+		util/file/compress/rar.cpp \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
@@ -184,13 +198,14 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
+		macros/hashtable.hpp \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
 		segacd/lc89510.h \
 		ui/gens_ui.hpp \
-		ui/charset.hpp \
-		ui/about_window_data.h \
+		ui/common/gens/gens_menu.h \
+		ui/common/gens/gens_menu_callbacks.cpp \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
@@ -198,6 +213,7 @@ noinst_HEADERS = \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/7z.hpp \
+		util/file/compress/rar.hpp \
 		util/file/compress/popen_wrapper.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
@@ -300,9 +316,9 @@ gens_CXXFLAGS =
 
 # OS-specific includes
 
-if GENS_OS_LINUX
-include $(srcdir)/Makefile.linux.inc.am
-endif # GENS_OS_LINUX
+if GENS_OS_UNIX
+include $(srcdir)/Makefile.unix.inc.am
+endif # GENS_OS_UNIX
 
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am

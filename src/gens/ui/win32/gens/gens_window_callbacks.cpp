@@ -85,12 +85,16 @@
 #include "gens_core/sound/pwm.h"
 #include "segacd/cd_sys.hpp"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+// C includes
 #include <cstring>
 
 // C++ includes
 #include <string>
 using std::string;
-
 
 // For some reason, these aren't extern'd anywhere...
 extern "C"
@@ -99,8 +103,9 @@ extern "C"
 	void sub68k_reset();
 }
 
-// Menu Command Definitions
-#include "gens_window_menu.h"
+// New menu handler.
+#include "ui/common/gens/gens_menu.h"
+#include "ui/common/gens/gens_menu_callbacks.hpp"
 
 // Non-Menu Command Definitions
 #include "gens_window_cmds.h"
@@ -110,15 +115,20 @@ extern "C"
 static bool paintsEnabled = true;
 
 static void on_gens_window_close(void);
+
+#if 0
 static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+#endif
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 static void fullScreenPopupMenu(HWND hWnd);
+
+static void dragDropFile(HDROP hDrop);
 
 
 // TODO: If a radio menu item is selected but is already enabled, don't do anything.
@@ -135,6 +145,8 @@ static void fullScreenPopupMenu(HWND hWnd);
 LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	RECT rectGensWindow;
+	HMENU mnuCallback;
+	bool state;
 	
 	switch(message)
 	{
@@ -144,6 +156,15 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 		
 		case WM_CREATE:
 			Active = 1;
+			break;
+		
+		case WM_DESTROY:
+			// Delete the menu command accelerator table.
+			if (hAccelTable_Menu)
+			{
+				DestroyAcceleratorTable(hAccelTable_Menu);
+				hAccelTable_Menu = NULL;
+			}
 			break;
 		
 		case WM_MENUSELECT:
@@ -205,6 +226,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			// Menu item.
 			switch (LOWORD(wParam) & 0xF000)
 			{
+#if 0
 				case IDM_FILE_MENU:
 					on_gens_window_FileMenu(hWnd, message, wParam, lParam);
 					break;
@@ -223,8 +245,16 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				case IDM_HELP_MENU:
 					on_gens_window_HelpMenu(hWnd, message, wParam, lParam);
 					break;
+#endif
 				case IDCMD_NONMENU_COMMANDS:
 					on_gens_window_NonMenuCmd(hWnd, message, wParam, lParam);
+					break;
+				
+				default:
+					// Menu item selected.
+					mnuCallback = findMenuItem(LOWORD(wParam));
+					state = (GetMenuState(mnuCallback, LOWORD(wParam), MF_BYCOMMAND) & MF_CHECKED);
+					GensWindow_MenuItemCallback(LOWORD(wParam), state);
 					break;
 			}
 			break;
@@ -245,6 +275,11 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			}
 			break;
 #endif /* GENS_DEBUGGER */
+		
+		case WM_DROPFILES:
+			// A file was dragged onto the Gens window.
+			dragDropFile((HDROP)wParam);
+			break;
 	}
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -264,6 +299,7 @@ static void on_gens_window_close(void)
 }
 
 
+#if 0
 /**
  * on_gens_window_FileMenu(): File Menu item has been selected.
  * @param hWnd hWnd of the object sending a message.
@@ -795,6 +831,7 @@ static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			break;
 	}
 }
+#endif
 
 
 /**
@@ -905,7 +942,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case IDCMD_PSG_IMPROVED:
-			Change_PSG_Improved(!PSG_Improv);
+			Change_PSG_Sine(!PSG_Improv);
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
@@ -974,6 +1011,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
  */
 static void fullScreenPopupMenu(HWND hWnd)
 {
+#if 0
 	// Full Screen, right mouse button click.
 	// Show the popup menu.
 	audio->clearSoundBuffer();
@@ -995,4 +1033,30 @@ static void fullScreenPopupMenu(HWND hWnd)
 	// Hide the mouse pointer.
 	while (ShowCursor(true) < 0) { }
 	while (ShowCursor(false) >= 0) { }
+#endif
+}
+
+
+/**
+ * dragDropFile(): Called when a file is dragged onto the Gens window.
+ */
+static void dragDropFile(HDROP hDrop)
+{
+	char filename[GENS_PATH_MAX];
+	unsigned int rval;
+	
+	rval = DragQueryFile(hDrop, 0, filename, sizeof(filename));
+	
+	if (rval > 0 && rval < GENS_PATH_MAX)
+	{
+		// Check that the file exists.
+		struct stat sbuf;
+		if (!stat(filename, &sbuf))
+		{
+			// File exists. Open it as a ROM image.
+			ROM::openROM(filename);
+		}
+	}
+	
+	DragFinish(hDrop);
 }

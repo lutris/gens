@@ -488,7 +488,6 @@ void PSG_Special_Update(void)
 	}
 }
 
-void _PSG_Write (int data) __attribute__ ((alias ("PSG_Write")));
 
 // Full PSG save/restore functions from Gens Rerecording.
 
@@ -505,3 +504,8 @@ void PSG_Restore_State_Full(void)
 } 
 
 /* end */
+
+
+// Symbol aliases for cross-OS asm compatibility.
+void _PSG_Write(int data)
+	__attribute__ ((weak, alias ("PSG_Write")));

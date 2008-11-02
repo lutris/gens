@@ -1,3 +1,9 @@
+gens (2.15.5-gs-m5.1-1) unstable; urgency=low
+
+  * Milestone 5.1 version bump.
+
+ -- David Korth <gerbilsoft@verizon.net>  Sat,  1 Nov 2008 19:12:45 -0400
+
 gens (2.15.5-gs-m5-1) unstable; urgency=low
 
   * Initial Debian package.

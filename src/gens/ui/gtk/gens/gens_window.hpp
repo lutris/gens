@@ -32,19 +32,30 @@ extern "C" {
 #endif
 
 #include <gtk/gtk.h>
+#include <stdint.h>
 
 GtkWidget* create_gens_window(void); 
 extern GtkWidget *gens_window;
 extern int do_callbacks;
 
-#ifdef GENS_DEBUGGER
-// Debug menu items
-extern GtkWidget *debugMenuItems[9];
-extern GtkWidget *debugSeparators[2];
-#endif /* GENS_DEBUGGER */
+// New menu handler.
+void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data);
+GtkWidget* findMenuItem(uint16_t id);
 
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+// Hash table containing all the menu items.
+// Key is the menu ID.
+#include "macros/hashtable.hpp"
+#include <utility>
+typedef GENS_HASHTABLE<uint16_t, GtkWidget*> gtkMenuMap;
+extern gtkMenuMap gensMenuMap;
+typedef std::pair<uint16_t, GtkWidget*> gtkMenuMapItem;
+
+#endif /* __cplusplus */
 
 #endif /* GENS_GTK_GENS_WINDOW_HPP */

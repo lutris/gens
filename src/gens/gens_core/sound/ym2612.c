@@ -2678,9 +2678,13 @@ void YM2612_Special_Update (void)
 	}
 }
 
-int _YM2612_Reset (void) __attribute__ ((alias ("YM2612_Reset")));
-int _YM2612_Read (void) __attribute__ ((alias ("YM2612_Read")));
-int _YM2612_Write (unsigned char adr, unsigned char data)
-  __attribute__ ((alias ("YM2612_Write")));
-
 /* end */
+
+
+// Symbol aliases for cross-OS asm compatibility.
+int _YM2612_Reset(void)
+	__attribute__ ((weak, alias ("YM2612_Reset")));
+int _YM2612_Read(void)
+	__attribute__ ((weak, alias ("YM2612_Read")));
+int _YM2612_Write(unsigned char adr, unsigned char data)
+	__attribute__ ((weak, alias ("YM2612_Write")));

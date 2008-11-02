@@ -25,39 +25,41 @@
 
 #ifdef __cplusplus
 
-#include <gtk/gtk.h>
+#include "wndbase.hpp"
 
-class AboutWindow
+class AboutWindow : public WndBase
 {
 	public:
-		static AboutWindow* Instance(GtkWidget *parent = NULL);
-		
-		void setFocus(void);
-		void setModal(GtkWidget *parent);
+		static AboutWindow* Instance(GtkWindow *parent = NULL);
 		
 		gboolean close(void);
-		
 		gboolean iceTime(void);
 	
 	protected:
 		AboutWindow();
 		~AboutWindow();
 		
-		GtkWidget *m_Window;
-		GtkAccelGroup *m_AccelTable;
+		static AboutWindow* m_Instance;
 		
-		GtkWidget *m_imgGensLogo;
+		void dlgButtonPress(uint32_t button);
 		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		static void GTK_OK(GtkButton *button, gpointer user_data);
-		
-		unsigned short ax, bx, cx;
 		static gboolean GTK_iceTime(gpointer user_data);
+		
+		GtkWidget *m_imgGensLogo;
+		unsigned short ax, bx, cx;
+		
 		void updateIce(void);
-	
-	private:
-		static AboutWindow *m_Instance;
+		
+		// Strings
+		static const char* StrTitle;
+		static const char* StrDescription;
+		static const char* StrCopyright;
+		
+		// Data
+		static const unsigned char Data[];
+		static const unsigned char DX[];
 };
 
 #endif
