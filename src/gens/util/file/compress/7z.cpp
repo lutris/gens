@@ -357,7 +357,10 @@ int _7z::getFile(const string& zFilename, const CompressedFile *fileInfo,
 	// Build the command line.
 	stringstream ssCmd;
 	ssCmd << "\"" << Misc_Filenames._7z_Binary << "\" e \"" << zFilename
-	      << "\" \"" << fileInfo->filename << "\" -so 2>/dev/null";
+	      << "\" \"" << fileInfo->filename << "\" -so";
+#ifndef GENS_OS_WIN32
+	ssCmd << " 2>/dev/null";
+#endif
 	
 	p_7z = gens_popen(ssCmd.str().c_str(), "r");
 	if (!p_7z)
