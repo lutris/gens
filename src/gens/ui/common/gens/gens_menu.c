@@ -62,7 +62,9 @@ static struct GensMenuItem_t gmiFile_ChgState[];
 static struct GensMenuItem_t gmiFile[] =
 {
 	{IDM_FILE_OPENROM,	GMF_ITEM_NORMAL,	"&Open ROM...",		NULL,	GMAM_CTRL, 'O', IDIM_OPEN},
+#ifdef GENS_CDROM
 	{IDM_FILE_BOOTCD,	GMF_ITEM_NORMAL,	"&Boot CD",		NULL,	GMAM_CTRL, 'B', IDIM_CDROM},
+#endif /* GENS_CDROM */
 	{IDM_FILE_NETPLAY,	GMF_ITEM_NORMAL,	"&Netplay",		NULL,	0, 0, IDIM_NETPLAY},
 	{IDM_FILE_ROMHISTORY,	GMF_ITEM_SUBMENU,	"ROM &History", 	NULL, 0, 0, IDIM_ROMHISTORY},
 	{IDM_FILE_CLOSEROM,	GMF_ITEM_NORMAL,	"&Close ROM",		NULL,	GMAM_CTRL, 'W', IDIM_CLOSE},

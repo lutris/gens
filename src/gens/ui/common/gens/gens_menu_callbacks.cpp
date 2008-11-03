@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include "gens_menu_callbacks.hpp"
 #include "gens_menu.h"
 
@@ -663,9 +667,11 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			Open_BIOS_Misc_Files();
 			break;
 		
+#ifdef GENS_CDROM
 		case IDM_OPTIONS_CURRENT_CD_DRIVE:
 			Open_Select_CDROM();
 			break;
+#endif /* GENS_CDROM */
 		
 		case IDM_OPTIONS_LOADCONFIG:
 			Config::loadAs(Game);

@@ -83,13 +83,19 @@ void Sync_Gens_Window_FileMenu(void)
 	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
 	
 	// Delete and/or recreate the ROM History submenu.
-	DeleteMenu(mnuFile, 3, MF_BYPOSITION);
+#ifdef GENS_CDROM
+	static const unsigned short posROMHistory = 3;
+#else /* !GENS_CDROM */
+	static const unsigned short posROMHistory = 2;
+#endif /* GENS_CDROM */
+	
+	DeleteMenu(mnuFile, posROMHistory, MF_BYPOSITION);
 	gensMenuMap.erase(IDM_FILE_ROMHISTORY);
 	if (mnuROMHistory)
 		DestroyMenu(mnuROMHistory);
 	
 	mnuROMHistory = CreatePopupMenu();
-	InsertMenu(mnuFile, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
+	InsertMenu(mnuFile, posROMHistory, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
 	gensMenuMap.insert(win32MenuMapItem(IDM_FILE_ROMHISTORY, mnuROMHistory));
 	
 	string sROMHistoryEntry;
@@ -127,7 +133,7 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	if (romsFound == 0)
-		EnableMenuItem(mnuFile, 3, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(mnuFile, posROMHistory, MF_BYPOSITION | MF_GRAYED);
 	
 	// Some menu items should be enabled or disabled, depending on if a game is loaded or not.
 	const unsigned int enableFlags = ((Game != NULL) ? MF_ENABLED : MF_GRAYED);
