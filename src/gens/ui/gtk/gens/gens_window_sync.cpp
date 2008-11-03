@@ -74,10 +74,14 @@ void Sync_Gens_Window_FileMenu(void)
 {
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
-	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
+	static const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
 	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
+	
+	// Netplay is currently not usable.
+	GtkWidget *mnuNetplay = findMenuItem(IDM_FILE_NETPLAY);
+	gtk_widget_set_sensitive(mnuNetplay, FALSE);
 	
 	// ROM History
 	GtkWidget *mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);

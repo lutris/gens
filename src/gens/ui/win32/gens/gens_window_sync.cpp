@@ -76,10 +76,15 @@ void Sync_Gens_Window_FileMenu(void)
 {
 	// ROM Format prefixes
 	// TODO: Move this somewhere else.
-	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
+	static const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
 	
-	// Find the file menu and ROM History submenu.
+	// Find the file menu.
 	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
+	
+        // Netplay is currently not usable.
+	EnableMenuItem(mnuFile, IDM_FILE_NETPLAY, MF_BYCOMMAND | MF_GRAYED);
+	
+	// Find the ROM History submenu.
 	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
 	
 	// Delete and/or recreate the ROM History submenu.
