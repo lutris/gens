@@ -43,11 +43,8 @@ class VDraw
 		virtual int Init_Video(void) = 0;
 		virtual void End_Video(void) = 0;
 		
-		// Initialize the graphics subsystem.
-		virtual int Init_Subsystem(void) = 0;
-		
 		// Shut down the graphics subsystem.
-		virtual int Shut_Down(void) = 0;
+		virtual void Shut_Down(void) = 0;
 		
 		// Clear the screen.
 		virtual void clearScreen(void) = 0;
@@ -55,7 +52,7 @@ class VDraw
 		//virtual void Clear_Back_Screen(void) = 0;
 		
 		// Flip the screen buffer.
-		int flip(void);
+		void flip(void);
 		
 		// Sets the bpp value.
 		void setBpp(const int newBpp, const bool resetVideo = true);
@@ -124,7 +121,7 @@ class VDraw
 		bool m_Stretch;
 		
 		// Flip the screen buffer. (Renderer-specific function)
-		virtual int flipInternal(void) = 0;
+		virtual void flipInternal(void) = 0;
 		
 		// Adjust stretch parameters.
 		virtual void stretchAdjustInternal(void);

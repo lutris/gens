@@ -9,6 +9,7 @@ gens_SOURCES += \
 		port/ini_old.c \
 		port/timer.c \
 		video/v_draw_sdl.cpp \
+		video/v_draw_sdl_sw.cpp \
 		input/input_sdl.cpp \
 		audio/audio_sdl.cpp
 
@@ -75,6 +76,7 @@ noinst_HEADERS += \
 		port/ini_old.h \
 		port/timer.h \
 		video/v_draw_sdl.hpp \
+		video/v_draw_sdl_sw.hpp \
 		input/input_sdl.hpp \
 		input/input_sdl_keys.h \
 		audio/audio_sdl.hpp

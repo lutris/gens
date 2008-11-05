@@ -20,9 +20,6 @@ class VDraw_DDraw : public VDraw
 		int Init_Video(void);
 		void End_Video(void);
 		
-		// Initialize the graphics subsystem.
-		int Init_Subsystem(void);
-		
 		// Shut down the graphics subsystem.
 		int Shut_Down(void);
 		

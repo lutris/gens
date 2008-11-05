@@ -1,5 +1,5 @@
 /**
- * Gens: Video Drawing class - SDL
+ * Gens: Video Drawing class - SDL (Base Class)
  */
 
 #ifndef GENS_V_DRAW_SDL_HPP
@@ -15,31 +15,27 @@ class VDraw_SDL : public VDraw
 		VDraw_SDL(VDraw *oldDraw);
 		~VDraw_SDL();
 		
-		int Init_Video(void);
-		void End_Video(void);
-		
-		// Initialize the graphics subsystem.
-		int Init_Subsystem(void);
+		virtual int Init_Video(void) = 0;
+		virtual void End_Video(void) { }
 		
 		// Shut down the graphics subsystem.
-		int Shut_Down(void);
-		
-		// Clear the screen.
-		void clearScreen(void);
-		//void Clear_Primary_Screen(void);
-		//void Clear_Back_Screen(void);
+		void Shut_Down(void);
 		
 		// Update VSync value.
-		void updateVSync(bool unused = false);
+		virtual void updateVSync(bool unused = false) { }
 		
 	protected:
-		int Init_SDL_Renderer(int w, int h);
+		static int SDL_RefCount;
+		
+		void setupSDLWindow(const int w, const int h);
+		
+		virtual int initRenderer(const int w, const int h, const bool reinitSDL = true) = 0;
 		
 		// Flip the screen buffer. (Called by v_draw.)
-		int flipInternal(void);
+		virtual void flipInternal(void) = 0;
 		
 		// Update the renderer.
-		void updateRenderer(void);
+		virtual void updateRenderer(void) = 0;
 		
 		// SDL flags
 		static const int SDL_Flags =
@@ -53,4 +49,4 @@ class VDraw_SDL : public VDraw
 		char SDL_WindowID[24];
 };
 
-#endif
+#endif /* GENS_V_DRAW_SDL_HPP */

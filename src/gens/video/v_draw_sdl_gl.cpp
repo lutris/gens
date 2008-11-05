@@ -15,6 +15,7 @@
 #include "ui/gtk/gtk-misc.h"
 #include "gens/gens_window.hpp"
 
+
 VDraw_SDL_GL::VDraw_SDL_GL()
 {
 	// Set the default GL values.
@@ -34,11 +35,10 @@ VDraw_SDL_GL::VDraw_SDL_GL()
 }
 
 VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
-	: VDraw(oldDraw)
+	: VDraw_SDL(oldDraw)
 {
 	// Set the default GL values.
 	textures[0] = 0;
-	textures[1] = 0;
 	textureSize = 256;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
@@ -57,56 +57,15 @@ VDraw_SDL_GL::~VDraw_SDL_GL()
 {
 }
 
+
 /**
  * Init_Video(): Initialize the video subsystem.
  * @return 1 on success.
  */
 int VDraw_SDL_GL::Init_Video(void)
 {
-	int x;
-	int w, h;
-	
-	// OpenGL width/height.
-	// TODO: Move these values here or something.
-	w = Video.Width_GL;
-	h = Video.Height_GL;
-	
-	if (m_FullScreen)
-	{
-		// Hide the embedded SDL window.
-		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
-		
-		unsetenv("SDL_WINDOWID");
-		strcpy(SDL_WindowID, "");
-	}
-	else
-	{
-		// Show the embedded SDL window.
-		GtkWidget *sdlsock = lookup_widget(gens_window, "sdlsock");
-		gtk_widget_set_size_request(sdlsock, w, h);
-		gtk_widget_realize(sdlsock);
-		gtk_widget_show(sdlsock);
-		
-		// Wait for GTK+ to catch up.
-		// TODO: If gtk_main_iteration_do() returns TRUE, exit the program.
-		while (gtk_events_pending())
-			gtk_main_iteration_do(FALSE);
-		
-		// Get the Window ID of the SDL socket.
-		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(sdlsock->window)));
-		setenv("SDL_WINDOWID", SDL_WindowID, 1);
-	}
-	
-	// Initialize SDL.
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
-	{
-		// Error initializing SDL.
-		Init_Fail("Couldn't initialize embedded SDL.");
-		return 0;
-	}
-	
-	// Initialize the renderer.
-	x = Init_SDL_GL_Renderer(w, h);
+	// Set up the SDL window.
+	setupSDLWindow(Video.Width_GL, Video.Height_GL);
 	
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
@@ -118,19 +77,19 @@ int VDraw_SDL_GL::Init_Video(void)
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
 	m_shift = (rendMode == 0) ? 0 : 1;
 	
-	// Return the status code from Init_SDL_GL_Renderer().
-	return x;
+	// Initialize the renderer.
+	return initRenderer(Video.Width_GL, Video.Height_GL);
 }
 
 
 /**
- * Init_SDL_GL_Renderer(): Initialize the SDL + OpenGL renderer.
+ * initRenderer(): Initialize the SDL + OpenGL renderer.
  * @param w Width of the screen.
  * @param h Height of the screen.
  * @param reinitSDL Reinitialize SDL.
  * @return 1 on success; 0 on error.
  */
-int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
+int VDraw_SDL_GL::initRenderer(int w, int h, bool reinitSDL)
 {
 	if (reinitSDL)
 	{
@@ -139,8 +98,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		if (!screen)
 		{
 			// Error initializing SDL.
-			fprintf(stderr, "Error creating SDL primary surface: %s\n", SDL_GetError());
-			exit(0);
+			fprintf(stderr, "VDraw_SDL_GL::initRenderer(): Error creating SDL primary surface: %s\n", SDL_GetError());
+			return 0;
 		}
 	}
 	
@@ -271,8 +230,6 @@ void VDraw_SDL_GL::End_Video(void)
 		free(filterBuffer);
 		filterBuffer = NULL;
 	}
-	
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 
@@ -315,7 +272,7 @@ void VDraw_SDL_GL::clearScreen(void)
  * Flip_internal(): Flip the screen buffer. (Called by v_draw.)
  * @return 1 on success; 0 on error.
  */
-int VDraw_SDL_GL::flipInternal(void)
+void VDraw_SDL_GL::flipInternal(void)
 {
 	// TODO: Add border drawing, like in v_draw_sdl.
 	
@@ -393,43 +350,6 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	// Swap the SDL GL buffers.
 	SDL_GL_SwapBuffers();
-	
-	// TODO: Return appropriate error code.
-	return 1;
-}
-
-
-/**
- * Init_Subsystem(): Initialize the OS-specific graphics library.
- * @return 0 on success; non-zero on error.
- */
-int VDraw_SDL_GL::Init_Subsystem(void)
-{
-	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
-	{
-		fprintf (stderr, SDL_GetError());
-		return -1;
-	}
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
-	{
-		fprintf(stderr, SDL_GetError());
-		return -1;
-	}
-	
-	/* Take it back down now that we know it works. */
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	
-	return 0;
-}
-
-
-/**
- * Shut_Down(): Shut down the graphics subsystem.
- */
-int VDraw_SDL_GL::Shut_Down(void)
-{
-	SDL_Quit();
-	return 1;
 }
 
 
@@ -479,7 +399,7 @@ void VDraw_SDL_GL::updateRenderer(void)
 	if (screen->w == Video.Width_GL && screen->h == Video.Height_GL)
 	{
 		// Output resolution is the same. Don't reinitialize SDL.
-		Init_SDL_GL_Renderer(Video.Width_GL, Video.Height_GL, false);
+		initRenderer(Video.Width_GL, Video.Height_GL, false);
 	}
 	else
 	{

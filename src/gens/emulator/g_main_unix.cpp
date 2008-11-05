@@ -24,7 +24,7 @@
 #include "util/file/ggenie.h"
 #include "util/sound/gym.hpp"
 
-#include "video/v_draw_sdl.hpp"
+#include "video/v_draw_sdl_sw.hpp"
 #include "input/input_sdl.hpp"
 #include "audio/audio_sdl.hpp"
 
@@ -65,8 +65,8 @@ void Create_Save_Directory(const char *dir)
 int main(int argc, char *argv[])
 {
 	// Initialize the drawing object.
-	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
-	draw = new VDraw_SDL();
+	// TODO: Select VDraw_SDL_SW(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
+	draw = new VDraw_SDL_SW();
 	
 	// Initialize the input object.
 	input = new Input_SDL();

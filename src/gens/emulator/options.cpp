@@ -984,7 +984,7 @@ void Options::setVSync(const bool newVSync)
 
 #ifdef GENS_OPENGL
 
-#include "video/v_draw_sdl.hpp"
+#include "video/v_draw_sdl_sw.hpp"
 #include "video/v_draw_sdl_gl.hpp"
 
 /**
@@ -1017,7 +1017,7 @@ void Options::setOpenGL(const bool newOpenGL)
 	}
 	else
 	{
-		newDraw = new VDraw_SDL(draw);
+		newDraw = new VDraw_SDL_SW(draw);
 		newDraw->Init_Video();
 		delete draw;
 		draw = newDraw;
