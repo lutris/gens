@@ -5,7 +5,8 @@
 #ifndef GENS_V_DRAW_SDL_GL_HPP
 #define GENS_V_DRAW_SDL_GL_HPP
 
-#include "v_draw_sdl.hpp"
+#include <SDL/SDL.h>
+#include "v_draw.hpp"
 
 // OpenGL includes
 #define GLX_GLXEXT_PROTOTYPES
@@ -32,7 +33,7 @@ typedef Bool (*PFNGLXGETMSCRATEOMLPROC)(Display *dpy, GLXDrawable drawable, int3
 typedef int (*PFNGLXGETFRAMEUSAGEMESAPROC)(Display *dpy, GLXDrawable drawable, float * usage);
 #endif
 
-class VDraw_SDL_GL : public VDraw_SDL
+class VDraw_SDL_GL : public VDraw
 {
 	public:
 		VDraw_SDL_GL();
@@ -41,6 +42,12 @@ class VDraw_SDL_GL : public VDraw_SDL
 		
 		int Init_Video(void);
 		void End_Video(void);
+		
+		// Initialize the graphics subsystem.
+		int Init_Subsystem(void);
+		
+		// Shut down the graphics subsystem.
+		int Shut_Down(void);
 		
 		// Clear the screen.
 		void clearScreen(void);
@@ -51,10 +58,10 @@ class VDraw_SDL_GL : public VDraw_SDL
 		void updateVSync(bool fromInitSDLGL = false);
 		
 	protected:
-		int initRenderer(const int w, const int h, const bool reinitSDL = true);
+		int Init_SDL_GL_Renderer(int w, int h, bool reinitSDL = true);
 		
 		// Flip the screen buffer. (Called by v_draw.)
-		void flipInternal(void);
+		int flipInternal(void);
 		
 		// Adjust stretch parameters.
 		void stretchAdjustInternal(void);
@@ -70,6 +77,9 @@ class VDraw_SDL_GL : public VDraw_SDL
 				SDL_ASYNCBLIT |
 				SDL_HWACCEL |
 				SDL_OPENGL;
+		
+		SDL_Surface *screen;
+		char SDL_WindowID[24];
 		
 		// GL variables.
 		GLuint textures[1];

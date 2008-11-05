@@ -973,6 +973,17 @@ cleanup_flip:
 
 
 /**
+ * Init_Subsystem(): Initialize the OS-specific graphics library.
+ * @return 0 on success; non-zero on error.
+ */
+int VDraw_DDraw::Init_Subsystem(void)
+{
+	// Does nothing...
+	return 0;
+}
+
+
+/**
  * Shut_Down(): Shut down the graphics subsystem.
  */
 int VDraw_DDraw::Shut_Down(void)

@@ -298,6 +298,9 @@ int is_gens_running()
  */
 int Init(void)
 {
+	if (draw->Init_Subsystem() != 0)
+		return 0;
+	
 #ifndef GENS_OS_WIN32
 	// TODO: Make this unnecessary.
 	init_timer();

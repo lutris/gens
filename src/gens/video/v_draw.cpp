@@ -140,8 +140,9 @@ int VDraw::Show_Genesis_Screen(void)
 
 /**
  * Flip(): Flip the screen buffer.
+ * @return 1 on success; 0 on error.
  */
-void VDraw::flip(void)
+int VDraw::flip(void)
 {
 	// TODO: Print the message and/or FPS counter on the screen buffer only.
 	// Don't print it on MD_Screen.
@@ -283,7 +284,7 @@ void VDraw::flip(void)
 	}
 	
 	// Flip the screen buffer.
-	flipInternal();
+	return flipInternal();
 }
 
 
