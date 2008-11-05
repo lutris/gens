@@ -48,7 +48,7 @@
 #include "select_cdrom/select_cdrom_window_misc.hpp"
 #endif /* GENS_CDROM */
 
-#include "emulator/ui_proxy.hpp"
+#include "emulator/options.hpp"
 #include "util/file/config_file.hpp"
 
 #include "ui/gens_ui.hpp"
@@ -851,13 +851,16 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			if (Quick_Exit)
 				close_gens();
 			
+#ifdef GENS_DEBUGGER
 			if (Debug)
 			{
-				Change_Debug(0);
+				Options::setDebugMode(DEBUG_NONE);
 				Paused = 0;
 				Sync_Gens_Window_CPUMenu();
 			}
-			else if (Paused)
+			else
+#endif /* GENS_DEBUGGER */
+			if (Paused)
 			{
 				Paused = 0;
 			}
@@ -883,66 +886,66 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case IDCMD_FRAMESKIP_AUTO:
-			Set_Frame_Skip(-1);
+			Options::setFrameSkip(-1);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDCMD_FRAMESKIP_DEC:
-			if (Frame_Skip == -1)
+			if (Options::frameSkip() == -1)
 			{
-				Set_Frame_Skip(0);
+				Options::setFrameSkip(0);
 				Sync_Gens_Window_GraphicsMenu();
 			}
-			else if (Frame_Skip > 0)
+			else if (Options::frameSkip() > 0)
 			{
-				Set_Frame_Skip(Frame_Skip - 1);
+				Options::setFrameSkip(Options::frameSkip() - 1);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		
 		case IDCMD_FRAMESKIP_INC:
-			if (Frame_Skip == -1)
+			if (Options::frameSkip() == -1)
 			{
-				Set_Frame_Skip(1);
+				Options::setFrameSkip(1);
 				Sync_Gens_Window_GraphicsMenu();
 			}
-			else if (Frame_Skip < 8)
+			else if (Options::frameSkip() < 8)
 			{
-				Set_Frame_Skip(Frame_Skip + 1);
+				Options::setFrameSkip(Options::frameSkip() + 1);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		
 		case IDCMD_SAVESLOT_DEC:
-			Set_Current_State((Current_State + 9) % 10);
+			Options::setSaveSlot((Options::saveSlot() + 9) % 10);
 			Sync_Gens_Window_FileMenu();
 			break;
 		
 		case IDCMD_SAVESLOT_INC:
-			Set_Current_State((Current_State + 1) % 10);
+			Options::setSaveSlot((Options::saveSlot() + 1) % 10);
 			Sync_Gens_Window_FileMenu();
 			break;
 		
 		case IDCMD_SWBLIT:
-			Change_Blit_Style();
+			Options::setSwRender(!Options::swRender());
 			break;
 		
 		case IDCMD_FASTBLUR:
-			Change_Fast_Blur();
+			Options::setFastBlur(!Options::fastBlur());
 			break;
 		
 		case IDCMD_YM2612_IMPROVED:
-			Change_YM2612_Improved(!YM2612_Improv);
+			Options::setSoundYM2612_Improved(!Options::soundYM2612_Improved());
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
 		case IDCMD_DAC_IMPROVED:
-			Change_DAC_Improved(!DAC_Improv);
+			Options::setSoundDAC_Improved(!Options::soundDAC_Improved());
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
 		case IDCMD_PSG_IMPROVED:
-			Change_PSG_Sine(!PSG_Improv);
+			Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
@@ -985,7 +988,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 					if (value > 9)
 						break;
 					
-					Set_Current_State(value);
+					Options::setSaveSlot(value);
 					Sync_Gens_Window_FileMenu();
 					break;
 				

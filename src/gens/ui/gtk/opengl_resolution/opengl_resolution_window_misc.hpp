@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_OPENGL_RESOLUTION_WINDOW_MISC_H
-#define GTK_OPENGL_RESOLUTION_WINDOW_MISC_H
+#ifndef GTK_OPENGL_RESOLUTION_WINDOW_MISC_HPP
+#define GTK_OPENGL_RESOLUTION_WINDOW_MISC_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,4 +36,4 @@ void GLRes_Save(void);
 }
 #endif
 
-#endif
+#endif /* GTK_OPENGL_RESOLUTION_WINDOW_MISC_HPP */

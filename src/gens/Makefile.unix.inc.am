@@ -58,7 +58,7 @@ gens_SOURCES += \
 		video/v_draw_sdl_gl.cpp \
 		ui/gtk/opengl_resolution/opengl_resolution_window.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.c
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.cpp
 endif # GENS_OPENGL
 
 if GENS_CDROM
@@ -123,7 +123,7 @@ noinst_HEADERS += \
 		video/v_draw_sdl_gl.hpp \
 		ui/gtk/opengl_resolution/opengl_resolution_window.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.h
+		ui/gtk/opengl_resolution/opengl_resolution_window_misc.hpp
 endif # GENS_OPENGL
 
 if GENS_CDROM

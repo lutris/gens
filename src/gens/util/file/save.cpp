@@ -45,7 +45,6 @@
 #include "segacd/cd_file.h"
 
 // UI
-#include "emulator/ui_proxy.hpp"
 #include "ui/gens_ui.hpp"
 
 // Byteswapping

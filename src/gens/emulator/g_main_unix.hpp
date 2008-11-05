@@ -21,11 +21,6 @@ void Create_Save_Directory(const char *dir);
 // Main loop.
 int main(int argc, char *argv[]);
 
-#ifdef GENS_OPENGL
-void Change_OpenGL(int newOpenGL);
-void Set_GL_Resolution(int w, int h);
-#endif /* GENS_OPENGL */
-
 #ifdef __cplusplus
 }
 #endif

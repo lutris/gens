@@ -73,7 +73,7 @@
 #endif /* GENS_CDROM */
 
 // UI
-#include "emulator/ui_proxy.hpp"
+#include "emulator/options.hpp"
 #include "ui/gens_ui.hpp"
 
 
@@ -385,7 +385,7 @@ int Config::load(const string& filename, void* gameActive)
 	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
 	// because the window hasn't been created yet.
 	if (is_gens_running())
-		Change_OpenGL(Video.OpenGL);
+		Options::setOpenGL(Video.OpenGL);
 #endif
 	
 	//Set_Render(Full_Screen, -1, 1);
@@ -414,7 +414,7 @@ int Config::load(const string& filename, void* gameActive)
 	// Only load the IC sound settings if sound can be initialized.
 	new_val = cfg.getInt("Sound", "State", 1);
 	if (new_val == audio->enabled() ||
-	    (new_val != audio->enabled() && Change_Sound(1)))
+	    (new_val != audio->enabled() && Options::setSoundEnable(true)))
 	{
 		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
 		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);

@@ -38,14 +38,13 @@
 #include "country_code/country_code_window_misc.h"
 
 #ifdef GENS_OPENGL
-#include "opengl_resolution/opengl_resolution_window_misc.h"
+#include "opengl_resolution/opengl_resolution_window_misc.hpp"
 #endif /* GENS_OPENGL */
 
 #ifdef GENS_CDROM
 #include "select_cdrom/select_cdrom_window_misc.hpp"
 #endif /* GENS_CDROM */
 
-#include "emulator/ui_proxy.hpp"
 #include "util/file/config_file.hpp"
 
 #include "ui/gens_ui.hpp"
@@ -70,9 +69,9 @@
 #endif /* GENS_CDROM */
 
 // Debugger
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
+//#ifdef GENS_DEBUGGER
+//#include "debugger/debugger.hpp"
+//#endif /* GENS_DEBUGGER */
 
 #include <sys/types.h>
 #include <sys/stat.h>

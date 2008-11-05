@@ -25,7 +25,6 @@
 #include "util/sound/gym.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
-#include "ui_proxy.hpp"
 #include "parse.hpp"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/68k/cpu_68k.h"

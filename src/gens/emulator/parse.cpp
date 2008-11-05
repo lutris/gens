@@ -57,7 +57,6 @@
 #include "gens_core/io/io.h"
 #include "gens_core/misc/misc.h"
 #include "segacd/cd_sys.hpp"
-#include "ui_proxy.hpp"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM

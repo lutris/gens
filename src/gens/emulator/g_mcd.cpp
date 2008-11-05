@@ -34,7 +34,6 @@
 #include "gens_core/misc/byteswap.h"
 
 #include "ui/gens_ui.hpp"
-#include "ui_proxy.hpp"
 
 
 unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name

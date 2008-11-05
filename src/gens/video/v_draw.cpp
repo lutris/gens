@@ -14,7 +14,6 @@
 #include "gens_core/misc/fastblur.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_palette.h"
-#include "emulator/ui_proxy.hpp"
 #include "gens_core/vdp/vdp_io.h"
 
 #ifndef GENS_OS_WIN32

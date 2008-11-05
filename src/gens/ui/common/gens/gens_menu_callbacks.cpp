@@ -40,14 +40,14 @@
 #include "country_code/country_code_window_misc.h"
 
 #ifdef GENS_OPENGL
-#include "opengl_resolution/opengl_resolution_window_misc.h"
+#include "opengl_resolution/opengl_resolution_window_misc.hpp"
 #endif /* GENS_OPENGL */
 
 #ifdef GENS_CDROM
 #include "select_cdrom/select_cdrom_window_misc.hpp"
 #endif /* GENS_CDROM */
 
-#include "emulator/ui_proxy.hpp"
+#include "emulator/options.hpp"
 #include "util/file/config_file.hpp"
 
 #include "util/sound/gym.hpp"
@@ -280,7 +280,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 		case IDM_FILE_CHANGESTATE_8:
 		case IDM_FILE_CHANGESTATE_9:
 			// Change state.
-			Set_Current_State(menuID - IDM_FILE_CHANGESTATE_0);
+			Options::setSaveSlot(menuID - IDM_FILE_CHANGESTATE_0);
 			Sync_Gens_Window_FileMenu();
 			break;
 		
@@ -317,18 +317,18 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			break;
 		
 		case IDM_GRAPHICS_VSYNC:
-			Change_VSync(!state);
+			Options::setVSync(!state);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDM_GRAPHICS_STRETCH:
-			Change_Stretch(!state);
+			Options::setStretch(!state);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 #ifdef GENS_OPENGL
 		case IDM_GRAPHICS_OPENGL:
-			Change_OpenGL(!state);
+			Options::setOpenGL(!state);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
@@ -343,22 +343,22 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_320:
-			Set_GL_Resolution(320, 240);
+			Options::setOpenGL_Resolution(320, 240);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_640:
-			Set_GL_Resolution(640, 480);
+			Options::setOpenGL_Resolution(640, 480);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_800:
-			Set_GL_Resolution(800, 600);
+			Options::setOpenGL_Resolution(800, 600);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_1024:
-			Set_GL_Resolution(1024, 768);
+			Options::setOpenGL_Resolution(1024, 768);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
@@ -394,7 +394,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 				
 		case IDM_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
-			Set_Sprite_Limit(!state);
+			Options::setSpriteLimit(!state);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 			
@@ -409,7 +409,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 		case IDM_GRAPHICS_FRAMESKIP_7:
 		case IDM_GRAPHICS_FRAMESKIP_8:
 			// Set the frame skip value.
-			Set_Frame_Skip(menuID - IDM_GRAPHICS_FRAMESKIP_AUTO - 1);
+			Options::setFrameSkip(menuID - IDM_GRAPHICS_FRAMESKIP_AUTO - 1);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
@@ -447,7 +447,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 		case IDM_CPU_COUNTRY_USA:
 		case IDM_CPU_COUNTRY_EUROPE:
 		case IDM_CPU_COUNTRY_JAPAN_PAL:
-			Change_Country(menuID - IDM_CPU_COUNTRY_AUTO - 1);
+			Options::setCountry(menuID - IDM_CPU_COUNTRY_AUTO - 1);
 			Sync_Gens_Window_CPUMenu();
 			break;
 		
@@ -456,7 +456,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_CPU_HARDRESET:
-			system_reset();
+			Options::systemReset();
 			break;
 		
 		case IDM_CPU_RESET68K:
@@ -537,18 +537,20 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_CPU_SEGACDPERFECTSYNC:
-			Change_SegaCD_PerfectSync(!state);
+			Options::setSegaCD_PerfectSync(!state);
 			Sync_Gens_Window_CPUMenu();
 			break;
 		
 		default:
+#ifdef GENS_DEBUGGER
 			if ((menuID & 0xFF00) == IDM_CPU_DEBUG)
 			{
 				// Debug mode change.
-				Change_Debug(menuID - IDM_CPU_DEBUG);
+				Options::setDebugMode((DEBUG_MODE)(menuID - IDM_CPU_DEBUG));
 				Sync_Gens_Window_CPUMenu();
 			}
 			else
+#endif /* GENS_DEBUGGER */
 			{
 				// Unknown menu item ID.
 				return 0;
@@ -566,51 +568,51 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 	switch (menuID)
 	{
 		case IDM_SOUND_ENABLE:
-			Change_Sound(!state);
+			Options::setSoundEnable(!state);
 			break;
 		
 		case IDM_SOUND_STEREO:
-			Change_Sound_Stereo(!state);
+			Options::setSoundStereo(!state);
 			break;
 		
 		case IDM_SOUND_Z80:
-			Change_Z80(!state);
+			Options::setSoundZ80(!state);
 			break;
 		
 		case IDM_SOUND_YM2612:
-			Change_YM2612(!state);
+			Options::setSoundYM2612(!state);
 			break;
 		
 		case IDM_SOUND_YM2612_IMPROVED:
-			Change_YM2612_Improved(!state);
+			Options::setSoundYM2612_Improved(!state);
 			break;
 		
 		case IDM_SOUND_DAC:
-			Change_DAC(!state);
+			Options::setSoundDAC(!state);
 			break;
 		
 		case IDM_SOUND_DAC_IMPROVED:
-			Change_DAC_Improved(!state);
+			Options::setSoundDAC_Improved(!state);
 			break;
 		
 		case IDM_SOUND_PSG:
-			Change_PSG(!state);
+			Options::setSoundPSG(!state);
 			break;
 		
 		case IDM_SOUND_PSG_SINE:
-			Change_PSG_Sine(!state);
+			Options::setSoundPSG_Sine(!state);
 			break;
 		
 		case IDM_SOUND_PCM:
-			Change_PCM(!state);
+			Options::setSoundPCM(!state);
 			break;
 		
 		case IDM_SOUND_PWM:
-			Change_PWM(!state);
+			Options::setSoundPWM(!state);
 			break;
 		
 		case IDM_SOUND_CDDA:
-			Change_CDDA(!state);
+			Options::setSoundCDDA(!state);
 			break;
 		
 		case IDM_SOUND_WAVDUMP:
@@ -633,7 +635,7 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 			if ((menuID & 0xFF00) == IDM_SOUND_RATE)
 			{
 				// Sample rate change.
-				Change_Sample_Rate(menuID - IDM_SOUND_RATE_11025);
+				Options::setSoundSampleRate(menuID - IDM_SOUND_RATE_11025);
 			}
 			else
 			{
@@ -690,7 +692,7 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			if ((menuID & 0xFF00) == IDM_OPTIONS_SEGACDSRAMSIZE)
 			{
 				// SegaCD SRAM Size change.
-				Change_SegaCD_SRAM_Size(menuID - IDM_OPTIONS_SEGACDSRAMSIZE_NONE - 1);
+				Options::setSegaCD_SRAMSize(menuID - IDM_OPTIONS_SEGACDSRAMSIZE_NONE - 1);
 				Sync_Gens_Window_OptionsMenu();
 			}
 			else

@@ -108,7 +108,7 @@ gens_SOURCES = \
 		emulator/g_palette.c \
 		emulator/g_update.cpp \
 		emulator/parse.cpp \
-		emulator/ui_proxy.cpp \
+		emulator/options.cpp \
 		gens_core/nasmhead.inc \
 		gens_core/cpu/68k/cpu_68k.c \
 		gens_core/cpu/sh2/cpu_sh2.c \
@@ -198,7 +198,7 @@ noinst_HEADERS = \
 		emulator/g_palette.h \
 		emulator/g_update.hpp \
 		emulator/parse.hpp \
-		emulator/ui_proxy.hpp \
+		emulator/options.hpp \
 		gens_core/cpu/68k/cpu_68k.h \
 		gens_core/cpu/68k/star_68k.h \
 		gens_core/cpu/sh2/sh2.h \
