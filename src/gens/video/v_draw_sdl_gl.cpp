@@ -390,6 +390,50 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glEnd();
 	
+	// Border color emulation.
+	
+	if ((!Genesis_Started && !SegaCD_Started && !_32X_Started) || (Debug > 0))
+	{
+		// Either no system is active or the debugger is enabled.
+		// Make sure the border color is black.
+		m_BorderColor_16B = 0;
+		m_BorderColor_32B = 0;
+	}
+	else
+	{
+		// Set the border color to the first palette entry.
+		m_BorderColor_16B = MD_Palette[0];
+		m_BorderColor_32B = MD_Palette32[0];
+	}
+	
+	if (!m_Stretch)
+	{
+		glDisable(GL_TEXTURE_2D);
+		
+		// TODO: This may not work properly on big-endian systems.
+		unsigned char* bcolor = (unsigned char*)(&m_BorderColor_32B);
+		glColor3ub(bcolor[2], bcolor[1], bcolor[0]);
+		
+		if (VDP_Num_Vis_Lines < 240)
+		{
+			// Top/Bottom borders.
+			float borderSize = ((float)((240 - VDP_Num_Vis_Lines) / 2)) / 240.0f;
+			glRectf(-1,  1, 1, ( 1.0f - (borderSize * 2.0)));
+			glRectf(-1, -1, 1, (-1.0f + (borderSize * 2.0)));
+		}
+		
+		if (m_HBorder > 0)
+		{
+			// Left/Right borders.
+			float borderSize = (float)(m_HBorder / 2) / 320.0f;
+			glRectf(-1, 1, (-1.0f + (borderSize * 2.0)), -1);
+			glRectf( 1, 1, ( 1.0f - (borderSize * 2.0)), -1);
+		}
+		
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glEnable(GL_TEXTURE_2D);
+	}
+	
 	// Swap the SDL GL buffers.
 	SDL_GL_SwapBuffers();
 	
