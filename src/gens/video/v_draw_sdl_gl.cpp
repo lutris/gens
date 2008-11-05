@@ -38,7 +38,6 @@ VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
 {
 	// Set the default GL values.
 	textures[0] = 0;
-	textures[1] = 0;
 	textureSize = 256;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
@@ -267,7 +266,7 @@ void VDraw_SDL_GL::End_Video(void)
 	if (filterBuffer)
 	{
 		// Delete the GL textures and filter buffer.
-		glDeleteTextures(2, textures);
+		glDeleteTextures(1, textures);
 		free(filterBuffer);
 		filterBuffer = NULL;
 	}
