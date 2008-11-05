@@ -218,7 +218,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
 	// Screen Shot
-	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH), (Game != NULL));
+	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
 	
 #ifdef GENS_OPENGL
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
