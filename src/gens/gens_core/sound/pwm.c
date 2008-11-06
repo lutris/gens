@@ -50,8 +50,8 @@ unsigned char PWM_FULL_TAB[PWM_BUF_SIZE * PWM_BUF_SIZE] =
 #error PWM_BUF_SIZE must equal 4 or 8.
 #endif /* PWM_BUF_SIZE */
 
-unsigned short PWM_FIFO_R[PWM_BUF_SIZE];
-unsigned short PWM_FIFO_L[PWM_BUF_SIZE];
+unsigned short PWM_FIFO_R[8];
+unsigned short PWM_FIFO_L[8];
 unsigned int PWM_RP_R;
 unsigned int PWM_WP_R;
 unsigned int PWM_RP_L;
