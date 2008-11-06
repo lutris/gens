@@ -31,6 +31,8 @@
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
 
+#include "emulator/options.hpp"
+
 // New menu handler.
 #include "ui/common/gens/gens_menu.h"
 
@@ -182,8 +184,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | checkFlags);
 	
 	// Stretch
-	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_STRETCH,
-		      MF_BYCOMMAND | (draw->stretch() ? MF_CHECKED : MF_UNCHECKED));
+	HMENU mnuStretch = findMenuItem(IDM_GRAPHICS_STRETCH);
+	CheckMenuRadioItem(mnuStretch,
+			   IDM_GRAPHICS_STRETCH_NONE,
+			   IDM_GRAPHICS_STRETCH_FULL,
+			   IDM_GRAPHICS_STRETCH_NONE + Options::stretch(),
+			   MF_BYCOMMAND);
 	
 	// Render
 	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 5);

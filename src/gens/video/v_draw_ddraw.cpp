@@ -414,21 +414,18 @@ HRESULT VDraw_DDraw::RestoreGraphics(void)
  */
 void VDraw_DDraw::stretchAdjustInternal(void)
 {
-	if (!stretch())
-	{
-		// Stretch is disabled.
-		m_VStretch = 0;
+	if (m_Stretch & STRETCH_H)
+		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	else
 		m_HStretch = 0;
-		
-		// Clear the screen.
-		clearScreen();
-		
-		return;
-	}
 	
-	// Stretch is enabled.
-	m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
-	m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	if (m_Stretch & STRETCH_V)
+		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
+	else
+		m_VStretch = 0;
+	
+	if (m_Stretch != STRETCH_FULL)
+		clearScreen();
 }
 
 
@@ -548,7 +545,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		RectSrc.top = 0;
 		RectSrc.bottom = VDP_Num_Vis_Lines;
 
-		if ((VDP_Num_Vis_Lines == 224) && !m_Stretch)
+		if ((VDP_Num_Vis_Lines == 224) && !(m_Stretch & STRETCH_V))
 		{
 			RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
 			RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis
@@ -561,7 +558,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 			RectSrc.top = 8 * 2;
 			RectSrc.bottom = (224 + 8) * 2;
 
-			if (!m_Stretch)
+			if (!(m_Stretch & STRETCH_V))
 			{
 				RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
 				RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis again
@@ -595,7 +592,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	{
 		Dep = 64;
 
-		if (!m_Stretch)
+		if (!(m_Stretch & STRETCH_H))
 		{
 			RectDest.left = (int) ((q.x - (ALT_X_RATIO_RES * Ratio_X))/2); //Upth-Modif - center the picture properly
 			RectDest.right = (int) (ALT_X_RATIO_RES * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
