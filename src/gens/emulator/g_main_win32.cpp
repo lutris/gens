@@ -123,10 +123,10 @@ void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
 
 /**
  * WinMain: Win32 main loop.
- * @param hinst ???
- * @param hPrevInst ???
- * @param lpCmdLine ???
- * @param nCmdShow ???
+ * @param hInst Instance ID of the Gens process.
+ * @param hPrevInst Instance ID of the previous Gens process. (Win16 only.)
+ * @param lpCmdLine Command line.
+ * @param nCmdShow How to show the Gens window.
  * @return Error code.
  */
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
