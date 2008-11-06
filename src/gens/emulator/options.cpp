@@ -924,28 +924,44 @@ void Options::setFastBlur(const bool newFastBlur)
 
 
 /**
- * stretch(): Get the Stretch setting.
- * @return True if Stretch is enabled; False if Stretch is disabled.
+ * stretch(): Get the current Stretch setting.
+ * @return Current Stretch setting.
  */
-bool Options::stretch(void)
+uint8_t Options::stretch(void)
 {
 	return draw->stretch();
 }
 
 /**
  * setStretch(): Set the Stretch setting.
- * @param newStretch True to enable Stretch; False to disable Stretch.
+ * @param newStretch New Stretch setting.
  */
-void Options::setStretch(const bool newStretch)
+void Options::setStretch(const uint8_t newStretch)
 {
-	Flag_Clr_Scr = 1;
+	if (newStretch > VDraw::STRETCH_FULL)
+	{
+		// TODO: Throw an exception.
+		return;
+	}
 	
+	Flag_Clr_Scr = 1;
 	draw->setStretch(newStretch);
 	
-	if (draw->stretch())
-		MESSAGE_L("Stretched mode", "Stretched mode", 1000);
-	else
-		MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
+	switch (draw->stretch())
+	{
+		case VDraw::STRETCH_NONE:
+			MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
+			break;
+		case VDraw::STRETCH_H:
+			MESSAGE_L("Horizontal stretched mode", "Horizontal stretched mode", 1000);
+			break;
+		case VDraw::STRETCH_V:
+			MESSAGE_L("Vertical stretched mode", "Vertical stretched mode", 1000);
+			break;
+		case VDraw::STRETCH_FULL:
+			MESSAGE_L("Full stretched mode", "Full stretched mode", 1000);
+			break;
+	}
 }
 
 

@@ -33,6 +33,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/mem/mem_m68k.h"
@@ -183,9 +184,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Simple checkbox items
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_VSYNC)), Video.VSync_W);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH)), draw->stretch());
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_SPRITELIMIT)), Sprite_Over);
 	
+	// Stretch mode
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
 	// Bits per pixel
 	switch (bpp)
 	{

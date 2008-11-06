@@ -104,6 +104,7 @@ static struct GensMenuItem_t gmiFile_ChgState[] =
 /** Graphics Menu **/
 
 
+static struct GensMenuItem_t gmiGraphics_Stretch[];
 #ifdef GENS_OPENGL
 static struct GensMenuItem_t gmiGraphics_GLRes[];
 #endif
@@ -116,7 +117,7 @@ static struct GensMenuItem_t gmiGraphics[] =
 {
 	{IDM_GRAPHICS_FULLSCREEN,	GMF_ITEM_NORMAL,	"&Full Screen",			NULL,	GMAM_ALT, GMAK_ENTER, IDIM_FULLSCREEN},
 	{IDM_GRAPHICS_VSYNC,		GMF_ITEM_CHECK,		"&VSync",			NULL,	GMAM_SHIFT, GMAK_F3, 0},
-	{IDM_GRAPHICS_STRETCH,		GMF_ITEM_CHECK,		"&Stretch",			NULL,	GMAM_SHIFT, GMAK_F2, 0},
+	{IDM_GRAPHICS_STRETCH,		GMF_ITEM_SUBMENU,	"&Stretch",			&gmiGraphics_Stretch[0], 0, 0, 0},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 #ifdef GENS_OPENGL
 	{IDM_GRAPHICS_OPENGL,		GMF_ITEM_CHECK,		"Open&GL",			NULL,	GMAM_SHIFT, 'R', 0},
@@ -137,6 +138,15 @@ static struct GensMenuItem_t gmiGraphics[] =
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_FRAMESKIP,	GMF_ITEM_SUBMENU,	"Frame Skip",			&gmiGraphics_FrameSkip[0], 0, 0, IDIM_FRAMESKIP},
 	{IDM_GRAPHICS_SCREENSHOT,	GMF_ITEM_NORMAL,	"Screen Shot",			NULL,	GMAM_SHIFT, GMAK_BACKSPACE, IDIM_SCREENSHOT},
+	{0, 0, NULL, NULL, 0, 0, 0}
+};
+
+static struct GensMenuItem_t gmiGraphics_Stretch[] =
+{
+	{IDM_GRAPHICS_STRETCH_NONE,	GMF_ITEM_RADIO,		"&None",		NULL, 0, 0, 0},
+	{IDM_GRAPHICS_STRETCH_H,	GMF_ITEM_RADIO,		"&Horizontal Only",	NULL, 0, 0, 0},
+	{IDM_GRAPHICS_STRETCH_V,	GMF_ITEM_RADIO,		"&Vertical Only",	NULL, 0, 0, 0},
+	{IDM_GRAPHICS_STRETCH_FULL,	GMF_ITEM_RADIO,		"&Full Stretch",	NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 

@@ -165,10 +165,12 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
-#endif
+#endif /* GENS_OPENGL */
 	
-	cfg.writeBool("Graphics", "Stretch", draw->stretch());
-	cfg.writeBool("Graphics", "Software Blit", draw->swRender());
+	cfg.writeInt("Graphics", "Stretch", Options::stretch());
+#ifdef GENS_OS_WIN32
+	cfg.writeBool("Graphics", "Software Blit", Options::swRender());
+#endif /* GENS_OS_WIN32 */
 	cfg.writeInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	cfg.writeInt("Graphics", "Frame Skip", Frame_Skip);
 	
@@ -397,8 +399,10 @@ int Config::load(const string& filename, void* gameActive)
 	if (is_gens_running())
 		Recalculate_Palettes();
 	
-	draw->setStretch(cfg.getBool("Graphics", "Stretch", false));
-	draw->setSwRender(cfg.getBool("Graphics", "Software Blit", false));
+	Options::setStretch(cfg.getInt("Graphics", "Stretch", 0));
+#ifdef GENS_OS_WIN32
+	Options::setSwRender(cfg.getBool("Graphics", "Software Blit", false));
+#endif /* GENS_OS_WIN32 */
 	Sprite_Over = cfg.getInt("Graphics", "Sprite Limit", 1);
 	Frame_Skip = cfg.getInt("Graphics", "Frame Skip", -1);
 	

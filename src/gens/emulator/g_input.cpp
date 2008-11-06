@@ -125,9 +125,9 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F2:
-			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
+			if (mod & GENS_KMOD_SHIFT)
 			{
-				Options::setStretch(!draw->stretch());
+				Options::setStretch((Options::stretch() + 1) % 4);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else if (!mod)

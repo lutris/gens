@@ -634,15 +634,6 @@ void VDraw::writeText(const string& msg, const unsigned short duration)
 
 
 /**
- * stretchAdjustInternal(): Adjust the stretch parameters.
- */
-void VDraw::stretchAdjustInternal(void)
-{
-	// VDraw doesn't do anything here by itself...
-}
-
-
-/**
  * Refresh_Video(): Refresh the video subsystem.
  */
 void VDraw::Refresh_Video(void)
@@ -758,14 +749,21 @@ int VDraw::reinitGensWindow(void)
 /** Properties **/
 
 
-bool VDraw::stretch(void)
+uint8_t VDraw::stretch(void)
 {
 	return m_Stretch;
 }
-void VDraw::setStretch(const bool newStretch)
+void VDraw::setStretch(const uint8_t newStretch)
 {
 	if (m_Stretch == newStretch)
 		return;
+	
+	if (newStretch > STRETCH_FULL)
+	{
+		// TODO: Throw an exception.
+		return;
+	}
+	
 	m_Stretch = newStretch;
 	stretchAdjustInternal();
 }

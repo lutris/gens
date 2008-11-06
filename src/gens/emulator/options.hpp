@@ -11,6 +11,8 @@
 
 #ifdef __cplusplus
 
+#include <stdint.h>
+
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
@@ -89,8 +91,8 @@ class Options
 		static bool fastBlur(void);
 		static void setFastBlur(const bool newFastBlur);
 		
-		static bool stretch(void);
-		static void setStretch(const bool newStretch);
+		static uint8_t stretch(void);
+		static void setStretch(const uint8_t newStretch);
 		
 		static bool vsync(void);
 		static void setVSync(const bool newVSync);

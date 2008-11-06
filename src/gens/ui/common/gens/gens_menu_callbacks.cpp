@@ -321,8 +321,11 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case IDM_GRAPHICS_STRETCH:
-			Options::setStretch(!state);
+		case IDM_GRAPHICS_STRETCH_NONE:
+		case IDM_GRAPHICS_STRETCH_H:
+		case IDM_GRAPHICS_STRETCH_V:
+		case IDM_GRAPHICS_STRETCH_FULL:
+			Options::setStretch(menuID - IDM_GRAPHICS_STRETCH_NONE);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		

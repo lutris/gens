@@ -281,17 +281,15 @@ void VDraw_SDL_GL::End_Video(void)
  */
 void VDraw_SDL_GL::stretchAdjustInternal(void)
 {
-	if (!stretch())
-	{
-		// Stretch is disabled.
-		m_VStretch = 0;
+	if (stretch() & STRETCH_H)
+		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	else
 		m_HStretch = 0;
-		return;
-	}
 	
-	// Stretch is enabled.
-	m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
-	m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	if (stretch() & STRETCH_V)
+		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
+	else
+		m_VStretch = 0;
 }
 
 
@@ -406,7 +404,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		m_BorderColor_32B = MD_Palette32[0];
 	}
 	
-	if (!m_Stretch)
+	if (m_Stretch > STRETCH_NONE)
 	{
 		glDisable(GL_TEXTURE_2D);
 		
@@ -414,7 +412,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		unsigned char* bcolor = (unsigned char*)(&m_BorderColor_32B);
 		glColor3ub(bcolor[2], bcolor[1], bcolor[0]);
 		
-		if (VDP_Num_Vis_Lines < 240)
+		if (!(m_Stretch & STRETCH_V) && (VDP_Num_Vis_Lines < 240))
 		{
 			// Top/Bottom borders.
 			float borderSize = ((float)((240 - VDP_Num_Vis_Lines) / 2)) / 240.0f;
@@ -422,7 +420,7 @@ int VDraw_SDL_GL::flipInternal(void)
 			glRectf(-1, -1, 1, (-1.0f + (borderSize * 2.0)));
 		}
 		
-		if (m_HBorder > 0)
+		if (!(m_Stretch & STRETCH_H) && (m_HBorder > 0))
 		{
 			// Left/Right borders.
 			float borderSize = (float)(m_HBorder / 2) / 320.0f;
