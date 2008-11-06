@@ -145,7 +145,7 @@ AboutWindow::AboutWindow()
 	// Copyright frame
 	GtkWidget *fraCopyright = gtk_frame_new(NULL);
 	gtk_widget_set_name(fraCopyright, "fraCopyright");
-	gtk_container_set_border_width(GTK_CONTAINER(fraCopyright), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(fraCopyright), 4);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraCopyright), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraCopyright);
 	gtk_box_pack_start(GTK_BOX(vboxMain), fraCopyright, FALSE, FALSE, 0);
@@ -156,6 +156,7 @@ AboutWindow::AboutWindow()
 	GtkWidget *lblCopyright = gtk_label_new(StrCopyright);
 	gtk_widget_set_name(lblCopyright, "lblCopyright");
 	gtk_misc_set_padding(GTK_MISC(lblCopyright), 8, 8);
+	gtk_misc_set_alignment(GTK_MISC(lblCopyright), 0.0f, 0.0f);
 	gtk_widget_show(lblCopyright);
 	gtk_container_add(GTK_CONTAINER(fraCopyright), lblCopyright);
 	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyright",
