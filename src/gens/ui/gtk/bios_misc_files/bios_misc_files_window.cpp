@@ -137,8 +137,8 @@ GtkWidget* create_bios_misc_files_window(void)
 			table_frame_file = gtk_table_new(1, 3, FALSE);
 			gtk_widget_set_name(table_frame_file, tmp);
 			gtk_container_set_border_width(GTK_CONTAINER(table_frame_file), 8);
-			gtk_table_set_row_spacings(GTK_TABLE(table_frame_file), 8);
-			gtk_table_set_col_spacings(GTK_TABLE(table_frame_file), 8);
+			gtk_table_set_row_spacings(GTK_TABLE(table_frame_file), 4);
+			gtk_table_set_col_spacings(GTK_TABLE(table_frame_file), 4);
 			gtk_widget_show(table_frame_file);
 			gtk_container_add(GTK_CONTAINER(frame_file), table_frame_file);
 			GLADE_HOOKUP_OBJECT(bios_misc_files_window, table_frame_file, tmp);
