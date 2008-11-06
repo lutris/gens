@@ -799,26 +799,26 @@ int VDraw_DDraw::flipInternal(void)
 				RectSrc.top = 0;
 				RectSrc.bottom = VDP_Num_Vis_Lines;
 
-				if ((VDP_Num_Vis_Lines == 224) && !m_Stretch)
+				if (!(m_Stretch & STRETCH_V))
 				{
-					RectDest.top = (int)((FS_Y - 224)/2); //Upth-Add - But we still
-					RectDest.bottom = RectDest.top + 224;  //Upth-Add - center the screen
+					RectDest.top = (int)((FS_Y - VDP_Num_Vis_Lines) / 2); //Upth-Add - But we still
+					RectDest.bottom = RectDest.top + VDP_Num_Vis_Lines;   //Upth-Add - center the screen
 				}
 				else
 				{
-					RectDest.top = (int)((FS_Y - 240)/2); //Upth-Add - for both of the
-					RectDest.bottom = RectDest.top + 240;  //Upth-Add - predefined conditions
+					RectDest.top = (int)((FS_Y - 240) / 2); //Upth-Add - for both of the
+					RectDest.bottom = RectDest.top + 240;   //Upth-Add - predefined conditions
 				}
 				
-				if (!isFullXRes() && !m_Stretch)
+				if (!(m_Stretch & STRETCH_H))
 				{
-					RectDest.left = (int)((FS_X - 256)/2); //Upth-Add - and along the
-					RectDest.right = 256 + RectDest.left;   //Upth-Add - x axis, also
+					RectDest.left = (int)((FS_X - (320 - Dep))/2); //Upth-Add - and along the
+					RectDest.right = (320 - Dep) + RectDest.left;  //Upth-Add - x axis, also
 				}
 				else
 				{
 					RectDest.left = (int)((FS_X - 320)/2); //Upth-Add - and along the
-					RectDest.right = 320 + RectDest.left;   //Upth-Add - x axis, also
+					RectDest.right = 320 + RectDest.left;  //Upth-Add - x axis, also
 				}
 				
 				DDraw_Draw_Text(&ddsd, lpDDS_Back, Video.Render_FS, true);
