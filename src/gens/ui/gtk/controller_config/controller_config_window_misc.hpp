@@ -33,6 +33,8 @@ void Open_Controller_Config(void);
 int Reconfigure_Input(int player, int padtype);
 void Controller_Config_Save(void);
 
+extern int CC_Configuring;
+
 #ifdef __cplusplus
 }
 #endif

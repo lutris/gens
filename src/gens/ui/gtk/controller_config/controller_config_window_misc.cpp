@@ -35,6 +35,11 @@
 #include "ui/gens_ui.hpp"
 
 
+// This is set to 1 when controllers are being configured.
+// This prevents GTK+ keypresses from triggering buttons.
+int CC_Configuring = 0;
+
+
 /**
  * Open_Controller_Config(): Opens the Controller Configuration window.
  */
@@ -113,54 +118,56 @@ int Reconfigure_Input(int player, int padtype)
 	
 	// TODO: Somehow condense this code.
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP");
+	CC_Configuring = 1;
+	
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP\n");
 	keyConfig[player].Up = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN\n");
 	keyConfig[player].Down = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT\n");
 	keyConfig[player].Left = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT\n");
 	keyConfig[player].Right = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START\n");
 	keyConfig[player].Start = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A\n");
 	keyConfig[player].A = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B\n");
 	keyConfig[player].B = input->getKey();
 	GensUI::sleep(250);
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C");
+	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C\n");
 	keyConfig[player].C = input->getKey();
 	GensUI::sleep(250);
 	
 	if (padtype & 0x01)
 	{
 		// 6-button control pad. Get additional keys.
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE");
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE\n");
 		keyConfig[player].Mode = input->getKey();
 		GensUI::sleep(250);
 		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X");
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X\n");
 		keyConfig[player].X = input->getKey();
 		GensUI::sleep(250);
 		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y");
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y\n");
 		keyConfig[player].Y = input->getKey();
 		GensUI::sleep(250);
 		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z");
+		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z\n");
 		keyConfig[player].Z = input->getKey();
 		GensUI::sleep(250);
 	}
@@ -171,7 +178,9 @@ int Reconfigure_Input(int player, int padtype)
 			"PRESS ANY KEY TO CONTINUE...");
 	input->getKey();
 	GensUI::sleep(500);
-	gtk_label_set_text(GTK_LABEL(label_echo), "");
+	gtk_label_set_text(GTK_LABEL(label_echo), "\n");
+	
+	CC_Configuring = 0;
 	
 	return 1;
 }

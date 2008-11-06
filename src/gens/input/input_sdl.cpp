@@ -12,6 +12,10 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
 
+// Needed to handle controller input configuration
+#include "controller_config/controller_config_window.hpp"
+#include "controller_config/controller_config_window_misc.hpp"
+
 const struct KeyMap keyDefault[8] =
 {
 	// Player 1
@@ -111,8 +115,8 @@ gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_
 {
 	SDL_Event sdlev;
 	
-	// Only grab keys from the Gens window.
-	if (grab != gens_window)
+	// Only grab keys from the Gens window. (or controller config window)
+	if (grab != gens_window && grab != controller_config_window)
 		return FALSE;
 	
 	switch(event->type)
@@ -135,6 +139,12 @@ gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_
 	sdlev.key.keysym.sym = (SDLKey)gdk_to_sdl_keyval(event->keyval);
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
+	
+	if (grab == controller_config_window && CC_Configuring)
+	{
+		// Configuring controllers. Don't allow GTK+ to handle this keypress.
+		return TRUE;
+	}
 	
 	return FALSE;
 }
