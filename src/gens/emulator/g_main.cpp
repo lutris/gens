@@ -256,10 +256,6 @@ void Init_Settings(void)
 	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);
 	strcat(Str_Tmp, "gens.cfg");
 	
-	// Default manual and CGOffline path is empty.
-	strcpy(Misc_Filenames.Manual, "");
-	strcpy(Misc_Filenames.GCOffline, "");
-	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
 	Config::load(Str_Tmp, NULL);

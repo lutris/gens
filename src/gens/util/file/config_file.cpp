@@ -224,8 +224,6 @@ int Config::save(const string& filename)
 	// Miscellaneous files
 	cfg.writeString("Options", "7z Binary", Misc_Filenames._7z_Binary);
 	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
-	cfg.writeString("Options", "GCOffline path", Misc_Filenames.GCOffline);
-	cfg.writeString("Options", "Gens manual path", Misc_Filenames.Manual);
 	
 	// Controller settings
 	cfg.writeInt("Input", "P1.Type", Controller_1_Type & 0x13);
@@ -486,10 +484,6 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
 #endif	
-	cfg.getString("Options", "GCOffline path", "GCOffline.chm",
-		      Misc_Filenames.GCOffline, sizeof(Misc_Filenames.GCOffline));
-	cfg.getString("Options", "Gens manual path", "manual.exe",
-		      Misc_Filenames.Manual, sizeof(Misc_Filenames.Manual));
 	
 	// Controller settings
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 1);

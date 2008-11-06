@@ -83,8 +83,6 @@ static const char* opt1arg_str[][3] =
 	{"screenshotpath",	sPathName,	"Path where to save your screenshot files"},
 	{"patchpath",		sPathName,	"Path where to save your patch files"},
 	{"ipspath",		sPathName,	"Path where to save your IPS files"},
-	{"gcofflinepath",	sPathName,	"unused"},
-	{"gensmanpath",		sPathName,	"unused"},
 	{"genesisbios",		sFileName,	"Genesis BIOS"},
 	{"usacdbios",		sFileName,	"USA SegaCD BIOS"},
 	{"europecdbios",	sFileName,	"European MegaCD BIOS"},
@@ -127,8 +125,6 @@ enum opt1arg_enum
 	OPT1_SCREENSHOTPATH,
 	OPT1_PATCHPATH,
 	OPT1_IPSPATH,
-	OPT1_GCOFFLINEPATH,
-	OPT1_GENSMANPATH,
 	OPT1_GENESISBIOS,
 	OPT1_USACDBIOS,
 	OPT1_EUROPECDBIOS,
@@ -253,8 +249,6 @@ static const struct option long_options[] =
 	LONGOPT_1ARG(OPT1_SCREENSHOTPATH),
 	LONGOPT_1ARG(OPT1_PATCHPATH),
 	LONGOPT_1ARG(OPT1_IPSPATH),
-	LONGOPT_1ARG(OPT1_GCOFFLINEPATH),
-	LONGOPT_1ARG(OPT1_GENSMANPATH),
 	LONGOPT_1ARG(OPT1_GENESISBIOS),
 	LONGOPT_1ARG(OPT1_USACDBIOS),
 	LONGOPT_1ARG(OPT1_EUROPECDBIOS),
@@ -428,8 +422,6 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH][0], PathNames.Screenshot_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_PATCHPATH][0], Patch_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_IPSPATH][0], IPS_Dir);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_GCOFFLINEPATH][0], Misc_Filenames.GCOffline);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_GENSMANPATH][0], Misc_Filenames.Manual);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_GENESISBIOS][0], BIOS_Filenames.MD_TMSS);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_USACDBIOS][0], BIOS_Filenames.SegaCD_US);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_EUROPECDBIOS][0], BIOS_Filenames.MegaCD_EU);

@@ -60,8 +60,6 @@ struct Gens_Misc_Filenames_t
 {
 	char _7z_Binary[GENS_PATH_MAX];
 	char RAR_Binary[GENS_PATH_MAX];
-	char GCOffline[GENS_PATH_MAX];
-	char Manual[GENS_PATH_MAX];
 };
 
 
