@@ -281,12 +281,12 @@ void VDraw_SDL_GL::End_Video(void)
  */
 void VDraw_SDL_GL::stretchAdjustInternal(void)
 {
-	if (stretch() & STRETCH_H)
+	if (m_Stretch & STRETCH_H)
 		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
 	else
 		m_HStretch = 0;
 	
-	if (stretch() & STRETCH_V)
+	if (m_Stretch & STRETCH_V)
 		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
 	else
 		m_VStretch = 0;
