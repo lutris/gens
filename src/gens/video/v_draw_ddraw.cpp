@@ -17,16 +17,6 @@
 // Inline video functions.
 #include "v_inline.h"
 
-// Modif N. -- added
-#undef CORRECT_256_ASPECT_RATIO
-#ifndef CORRECT_256_ASPECT_RATIO
-	// actually wrong, the genesis image is not supposed to get thinner in this mode
-	#define ALT_X_RATIO_RES 256
-#else
-	// keep same aspect ratio as 320x240
-	#define ALT_X_RATIO_RES 320
-#endif
-
 
 inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface,
 					 const int renderMode, const bool lock)
@@ -594,8 +584,8 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 
 		if (!(m_Stretch & STRETCH_H))
 		{
-			RectDest.left = (int) ((q.x - (ALT_X_RATIO_RES * Ratio_X))/2); //Upth-Modif - center the picture properly
-			RectDest.right = (int) (ALT_X_RATIO_RES * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
+			RectDest.left = (q.x - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - center the picture properly
+			RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
 		}
 
 		if (Render_Mode == 0)
@@ -704,8 +694,8 @@ int VDraw_DDraw::flipInternal(void)
 			}
 			else
 			{
-				RectDest.left = (int) ((FS_X - (ALT_X_RATIO_RES * Ratio_X))/2); //Upth-Modif - Centering the screen left-right
-				RectDest.right = (int) (ALT_X_RATIO_RES * Ratio_X + RectDest.left); //Upth-modif - again
+				RectDest.left = (FS_X - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - Centering the screen left-right
+				RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-modif - again
 			}
 			RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
 		}
