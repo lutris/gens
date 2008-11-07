@@ -343,7 +343,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		// Message is visible.
 		drawText(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(), m_MsgStyle);
 	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused && !Debug)
 	{
 		// FPS is enabled.
 		drawText(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(), m_FPSStyle);
