@@ -472,7 +472,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	}
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
-	// (Why do GetOpenFIleName() and GetSaveFileName change it?)
+	// (Why do GetOpenFileName() and GetSaveFileName change it?)
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 	
 	if (!ret)
