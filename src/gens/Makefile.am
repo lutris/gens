@@ -72,7 +72,7 @@ if GENS_OBJ_MACHO
 NASM_OBJ_FORMAT = -f macho -D __GCC2 -D __OBJ_MACHO
 endif
 
-NASM = nasm -O1 -w-orphan-labels $(NASM_OBJ_FORMAT) $(NASM_INCLUDES)
+NASM = nasm -O1 -g -w-orphan-labels $(NASM_OBJ_FORMAT) $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
 if GENS_ZLIB_INTERNAL

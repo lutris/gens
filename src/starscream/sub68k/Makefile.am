@@ -10,7 +10,7 @@ if GENS_OBJ_MACHO
 NASM_OBJ_FORMAT = -f macho -D __GCC2 -D __OBJ_MACHO
 endif
 
-NASM = nasm -O3 -w-orphan-labels $(NASM_OBJ_FORMAT)
+NASM = nasm -O3 -g -w-orphan-labels $(NASM_OBJ_FORMAT)
 
 BUILT_SOURCES = sub68k.asm
 CLEANFILES = star sub68k.asm
