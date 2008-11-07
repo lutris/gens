@@ -485,6 +485,7 @@ void GensMainLoop(void)
 			// DEBUG
 			Update_Debug_Screen();
 			draw->flip();
+			GensUI::sleep(100);
 		}
 		else
 #endif /* GENS_DEBUGGER */
