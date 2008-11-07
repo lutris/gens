@@ -267,8 +267,11 @@ static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
 			}
 			
 			// Add the accelerator.
-			curAccel.cmd = menu->id;
-			vAccel.push_back(curAccel);
+			if ((menu->flags & GMF_ITEM_MASK) != GMF_ITEM_SUBMENU)
+			{
+				curAccel.cmd = menu->id;
+				vAccel.push_back(curAccel);
+			}
 		}
 		
 		// Add the menu item to the container.
