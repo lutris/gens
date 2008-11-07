@@ -404,7 +404,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		m_BorderColor_32B = MD_Palette32[0];
 	}
 	
-	if (m_Stretch > STRETCH_NONE)
+	if (m_Stretch < STRETCH_FULL)
 	{
 		glDisable(GL_TEXTURE_2D);
 		
