@@ -466,7 +466,6 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
  */
 static void fullScreenPopupMenu(HWND hWnd)
 {
-#if 0
 	// Full Screen, right mouse button click.
 	// Show the popup menu.
 	audio->clearSoundBuffer();
@@ -488,7 +487,6 @@ static void fullScreenPopupMenu(HWND hWnd)
 	// Hide the mouse pointer.
 	while (ShowCursor(true) < 0) { }
 	while (ShowCursor(false) >= 0) { }
-#endif
 }
 
 
