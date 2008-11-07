@@ -934,6 +934,10 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			Options::setFastBlur(!Options::fastBlur());
 			break;
 		
+		case IDCMD_STRETCH_MODE:
+			Options::setStretch((Options::stretch() + 1) % 4);
+			break;
+		
 		case IDCMD_YM2612_IMPROVED:
 			Options::setSoundYM2612_Improved(!Options::soundYM2612_Improved());
 			Sync_Gens_Window_SoundMenu();
