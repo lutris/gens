@@ -38,31 +38,40 @@
  * @param offset ???
  */
 template<typename pixel>
-static inline void Blit2x(pixel *screen, pixel *mdScreen, int pitch, int x, int y, int offset)
+static inline void Blit2x(pixel *screen, pixel *mdScreen, int pitch, unsigned short x, unsigned short y, int offset)
 {
-	int i, j;
-	int dstOffs = 0;
-	
 	// Adjust for the 8px border on the MD Screen.
 	mdScreen += 8;
 	
-	for (i = 0; i < y; i++)
+	// Pitch difference.
+	pitch /= sizeof(pixel);
+	int nextLine = pitch + (pitch - (x * 2));
+	
+	offset >>= 1;
+	
+	pixel *line1 = screen;
+	for (unsigned short i = 0; i < y; i++)
 	{
-		dstOffs = i * (pitch / sizeof(pixel)) * 2;
-		for (j = 0; j < x; j++)
+		//dstOffs = i * (pitch / sizeof(pixel)) * 2;
+		for (unsigned short j = 0; j < x; j++)
 		{
-			screen[dstOffs + 0] = *mdScreen;
-			screen[dstOffs + 1] = *mdScreen;
-			
-			screen[dstOffs + (pitch / sizeof(pixel)) + 0] = *mdScreen;
-			screen[dstOffs + (pitch / sizeof(pixel)) + 1] = *mdScreen;
-			
-			mdScreen++;
-			dstOffs += 2;
+			*line1++ = *mdScreen;
+			*line1++ = *mdScreen++;
 		}
 		
 		// Next line.
-		mdScreen += (offset >> 1);
+		mdScreen += offset;
+		line1 += nextLine;
+	}
+	
+	// Copy lines
+	line1 = screen;
+	pixel *line2 = screen + pitch;
+	for (unsigned short i = 0; i < y; i++)
+	{
+		memcpy(line2, line1, pitch * sizeof(pixel));
+		line1 += (pitch * 2);
+		line2 += (pitch * 2);
 	}
 }
 
