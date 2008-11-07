@@ -166,7 +166,7 @@ static struct GensMenuItem_t gmiGraphics_GLRes[] =
 static struct GensMenuItem_t gmiGraphics_bpp[] =
 {
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	0, 0, 0},
-	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (555)",	NULL,	0, 0, 0},
+	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (565)",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32",		NULL,	0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
