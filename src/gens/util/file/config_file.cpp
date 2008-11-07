@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -76,6 +80,11 @@
 #include "emulator/options.hpp"
 #include "ui/gens_ui.hpp"
 
+// Needed for SetCurrentDirectory.
+#ifdef GENS_OS_WIN32
+#include <windows.h>
+#endif /* GENS_OS_WIN32 */
+
 
 // TODO: Make this a global array somewhere better.
 const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2D"};
@@ -89,6 +98,10 @@ int Config::save(const string& filename)
 {
 	int i;
 	char buf[256];
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	// Load the configuration file into the INI handler.
 	INI cfg(filename);
@@ -300,6 +313,10 @@ int Config::load(const string& filename, void* gameActive)
 {
 	int new_val, i;
 	char buf[256];
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	INI cfg(filename);
 	

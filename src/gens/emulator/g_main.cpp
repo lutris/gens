@@ -241,8 +241,10 @@ void Init_Settings(void)
 	Debug = 0;
 	
 #ifdef GENS_OS_WIN32
-	// Win32 needs the current directory.
-	GetCurrentDirectory(sizeof(PathNames.Gens_EXE_Path), PathNames.Gens_EXE_Path);
+	// Win32 needs the program's pathname.
+	char exeFilename[1024];
+	GetModuleFileName(NULL, exeFilename, sizeof(exeFilename));
+	ROM::getDirFromPath(exeFilename, PathNames.Gens_EXE_Path);
 #endif
 	
 	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);

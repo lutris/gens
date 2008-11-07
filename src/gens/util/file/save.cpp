@@ -50,6 +50,11 @@
 // Byteswapping
 #include "gens_core/misc/byteswap.h"
 
+// Needed for SetCurrentDirectory.
+#ifdef GENS_OS_WIN32
+#include <windows.h>
+#endif /* GENS_OS_WIN32 */
+
 #ifdef GENS_MP3
 // Gens Rerecording
 // fatal_mp3_error indicates an error occurred while reading an MP3 for a Sega CD game.
@@ -174,6 +179,10 @@ int Savestate::loadState(const string& filename)
 	
 	buf = State_Buffer;
 	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
 	if (!(f = fopen(filename.c_str(), "rb")))
 		return 0;
 	
@@ -229,6 +238,10 @@ int Savestate::saveState(const string& filename)
 	int len;
 	
 	ice = 0;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	buf = State_Buffer;
 	if ((f = fopen(filename.c_str(), "wb")) == NULL)
@@ -1767,6 +1780,10 @@ int Savestate::loadSRAM(void)
 	
 	memset(SRAM, 0, 64 * 1024);
 	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
 	string filename = getSRAMFilename();
 	if (filename.empty())
 		return 0;
@@ -1803,6 +1820,10 @@ int Savestate::saveSRAM(void)
 	size_to_save = 1;
 	while (i > size_to_save)
 		size_to_save <<= 1;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	string filename = getSRAMFilename();
 	if (filename.empty())
@@ -1877,6 +1898,10 @@ int Savestate::loadBRAM(void)
 	
 	Savestate::formatSegaCD_BackupRAM();
 	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
 	string filename = getBRAMFilename();
 	if (filename.empty())
 		return 0;
@@ -1898,6 +1923,10 @@ int Savestate::loadBRAM(void)
 int Savestate::saveBRAM(void)
 {
 	FILE* BRAM_File = 0;
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	string filename = getBRAMFilename();
 	if (filename.empty())
