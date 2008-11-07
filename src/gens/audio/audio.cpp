@@ -24,6 +24,8 @@ Audio::Audio()
 	m_soundRate = 44100;
 	Sound_Segs = 8;
 	Bytes_Per_Unit = 4;
+	
+	m_enabled = true;
 	m_stereo = true;
 	m_soundIsPlaying = false;
 	m_dumpingWAV = false;
