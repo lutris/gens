@@ -35,15 +35,9 @@
 #include "g_32x_32bit.h"
 
 
-#ifdef __RESULT__
-#define SH2_EXEC(cycM, cycS)						\
-	asm volatile ("call SH2_Exec"::"c" (&M_SH2), "d" (cycM));	\
-	asm volatile ("call SH2_Exec"::"c" (&S_SH2), "d" (cycS));
-#else
-#define SH2_EXEC(cycM, cycS)						\
-	SH2_Exec(&M_SH2, cycM);					\
+#define SH2_EXEC(cycM, cycS)		\
+	SH2_Exec(&M_SH2, cycM);		\
 	SH2_Exec(&S_SH2, cycS);
-#endif
 
 
 /**
@@ -336,18 +330,13 @@ int Do_32X_Frame_No_VDP(void)
 	PWM_Cycles = Cycles_SSH2 = Cycles_MSH2 = Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
 	
-	main68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
-#ifdef __RESULT__
-	asm volatile ("call SH2_Clear_Odo"::"c" (&M_SH2));
-	asm volatile ("call SH2_Clear_Odo"::"c" (&S_SH2));
-#else
-	SH2_Clear_Odo (&M_SH2);
-	SH2_Clear_Odo (&S_SH2);
-#endif
-	PWM_Clear_Timer ();
+	main68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
+	SH2_Clear_Odo(&M_SH2);
+	SH2_Clear_Odo(&S_SH2);
+	PWM_Clear_Timer();
 	
-	Patch_Codes ();
+	Patch_Codes();
 	
 	VRam_Flag = 1;
 	
@@ -409,17 +398,10 @@ int Do_32X_Frame_No_VDP(void)
 		if (--HInt_Counter_32X < 0)
 		{
 			HInt_Counter_32X = _32X_HIC;
-#ifdef __RESULT__
 			if (_32X_MINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (10));
+				SH2_Interrupt(&M_SH2, 10);
 			if (_32X_SINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (10));
-#else
-			if (_32X_MINT & 0x04)
-				SH2_Interrupt (&M_SH2, 10);
-			if (_32X_SINT & 0x04)
-				SH2_Interrupt (&S_SH2, 10);
-#endif
+				SH2_Interrupt(&S_SH2, 10);
 		}
 		
 		/* instruction by instruction execution */
@@ -472,17 +454,10 @@ int Do_32X_Frame_No_VDP(void)
 	if (--HInt_Counter_32X < 0)
 	{
 		HInt_Counter_32X = _32X_HIC;
-#ifdef __RESULT__
 		if (_32X_MINT & 0x04)
-			asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (10));
+			SH2_Interrupt(&M_SH2, 10);
 		if (_32X_SINT & 0x04)
-			asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (10));
-#else
-		if (_32X_MINT & 0x04)
-			SH2_Interrupt (&M_SH2, 10);
-		if (_32X_SINT & 0x04)
-			SH2_Interrupt (&S_SH2, 10);
-#endif
+			SH2_Interrupt(&S_SH2, 10);
 	}
 	
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
@@ -514,36 +489,29 @@ int Do_32X_Frame_No_VDP(void)
 	VDP_Status |= 0x0080;		// V Int happened
 	
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
+	Update_IRQ_Line();
 	
-#ifdef __RESULT__
 	if (_32X_MINT & 0x08)
-		asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (12));
+		SH2_Interrupt(&M_SH2, 12);
 	if (_32X_SINT & 0x08)
-		asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (12));
-#else
-	if (_32X_MINT & 0x08)
-		SH2_Interrupt (&M_SH2, 12);
-	if (_32X_SINT & 0x08)
-		SH2_Interrupt (&S_SH2, 12);
-#endif
+		SH2_Interrupt(&S_SH2, 12);
 	
-	z80_Interrupt (&M_Z80, 0xFF);
+	z80_Interrupt(&M_Z80, 0xFF);
 	
 	while (i < Cycles_M68K)
 	{
-		main68k_exec (i);
+		main68k_exec(i);
 		SH2_EXEC(j, k);
-		PWM_Update_Timer (l);
+		PWM_Update_Timer(l);
 		i += p_i;
 		j += p_j;
 		k += p_k;
 		l += p_l;
 	}
 	
-	main68k_exec (Cycles_M68K);
+	main68k_exec(Cycles_M68K);
 	SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
-	PWM_Update_Timer (PWM_Cycles);
+	PWM_Update_Timer(PWM_Cycles);
 	
 	Z80_EXEC(0);
 	
@@ -585,17 +553,10 @@ int Do_32X_Frame_No_VDP(void)
 		if (--HInt_Counter_32X < 0)
 		{
 			HInt_Counter_32X = _32X_HIC;
-#ifdef __RESULT__
-			if (_32X_MINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (10));
-			if (_32X_SINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (10));
-#else
 			if ((_32X_MINT & 0x04) && (_32X_MINT & 0x80))
-				SH2_Interrupt (&M_SH2, 10);
+				SH2_Interrupt(&M_SH2, 10);
 			if ((_32X_SINT & 0x04) && (_32X_SINT & 0x80))
-				SH2_Interrupt (&S_SH2, 10);
-#endif
+				SH2_Interrupt(&S_SH2, 10);
 		}
 		
 		/* instruction by instruction execution */
@@ -654,18 +615,13 @@ int Do_32X_Frame(void)
 	PWM_Cycles = Cycles_SSH2 = Cycles_MSH2 = Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
 	
-	main68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
-#ifdef __RESULT__
-	asm volatile ("call SH2_Clear_Odo"::"c" (&M_SH2));
-	asm volatile ("call SH2_Clear_Odo"::"c" (&S_SH2));
-#else
-	SH2_Clear_Odo (&M_SH2);
-	SH2_Clear_Odo (&S_SH2);
-#endif
-	PWM_Clear_Timer ();
+	main68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
+	SH2_Clear_Odo(&M_SH2);
+	SH2_Clear_Odo(&S_SH2);
+	PWM_Clear_Timer();
 	
-	Patch_Codes ();
+	Patch_Codes();
 	
 	VRam_Flag = 1;
 	
@@ -727,17 +683,10 @@ int Do_32X_Frame(void)
 		if (--HInt_Counter_32X < 0)
 		{
 			HInt_Counter_32X = _32X_HIC;
-#ifdef __RESULT__
 			if (_32X_MINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (10));
+				SH2_Interrupt(&M_SH2, 10);
 			if (_32X_SINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (10));
-#else
-			if (_32X_MINT & 0x04)
-				SH2_Interrupt (&M_SH2, 10);
-			if (_32X_SINT & 0x04)
-				SH2_Interrupt (&S_SH2, 10);
-#endif
+				SH2_Interrupt(&S_SH2, 10);
 		}
 		
 		Render_Line_32X();
@@ -793,17 +742,10 @@ int Do_32X_Frame(void)
 	if (--HInt_Counter_32X < 0)
 	{
 		HInt_Counter_32X = _32X_HIC;
-#ifdef __RESULT__
 		if (_32X_MINT & 0x04)
-			asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (10));
+			SH2_Interrupt(&M_SH2, 10);
 		if (_32X_SINT & 0x04)
-			asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (10));
-#else
-		if (_32X_MINT & 0x04)
-			SH2_Interrupt (&M_SH2, 10);
-		if (_32X_SINT & 0x04)
-			SH2_Interrupt (&S_SH2, 10);
-#endif
+			SH2_Interrupt(&S_SH2, 10);
 	}
 	
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
@@ -840,25 +782,18 @@ int Do_32X_Frame(void)
 	VDP_Int |= 0x8;
 	Update_IRQ_Line ();
 	
-#ifdef __RESULT__
 	if (_32X_MINT & 0x08)
-		asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (12));
+		SH2_Interrupt(&M_SH2, 12);
 	if (_32X_SINT & 0x08)
-		asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (12));
-#else
-	if (_32X_MINT & 0x08)
-		SH2_Interrupt (&M_SH2, 12);
-	if (_32X_SINT & 0x08)
-		SH2_Interrupt (&S_SH2, 12);
-#endif
+		SH2_Interrupt(&S_SH2, 12);
 	
-	z80_Interrupt (&M_Z80, 0xFF);
+	z80_Interrupt(&M_Z80, 0xFF);
 	
 	while (i < Cycles_M68K)
 	{
-		main68k_exec (i);
+		main68k_exec(i);
 		SH2_EXEC(j, k);
-		PWM_Update_Timer (l);
+		PWM_Update_Timer(l);
 		i += p_i;
 		j += p_j;
 		k += p_k;
@@ -911,17 +846,10 @@ int Do_32X_Frame(void)
 		if (--HInt_Counter_32X < 0)
 		{
 			HInt_Counter_32X = _32X_HIC;
-#ifdef __RESULT__
-			if (_32X_MINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&M_SH2), "d" (10));
-			if (_32X_SINT & 0x04)
-				asm volatile ("call SH2_Interrupt"::"c" (&S_SH2), "d" (10));
-#else
 			if ((_32X_MINT & 0x04) && (_32X_MINT & 0x80))
-				SH2_Interrupt (&M_SH2, 10);
+				SH2_Interrupt(&M_SH2, 10);
 			if ((_32X_SINT & 0x04) && (_32X_SINT & 0x80))
-				SH2_Interrupt (&S_SH2, 10);
-#endif
+				SH2_Interrupt(&S_SH2, 10);
 		}
 		
 		/* instruction by instruction execution */
