@@ -31,12 +31,10 @@ void Check_Country_Order(void);
 
 void Set_Clock_Freq(const int system);
 
-
 /**
  * STUB: Indicates that this function is a stub.
  */
 #define STUB fprintf(stderr, "TODO: STUB: %s()\n", __func__);
-
 
 /**
  * A macro to suppress some compilers' "Parameter is not used" warnings.
@@ -47,7 +45,6 @@ void Set_Clock_Freq(const int system);
  *
  * #define GENS_UNUSED_PARAMETER(x) ((x) = (x))
  */
-
 
 /**
  * SET_VISIBLE_LINES: Sets the number of visible lines, depending on CPU mode and VDP setting.
@@ -61,7 +58,6 @@ void Set_Clock_Freq(const int system);
 	else					\
 		VDP_Num_Vis_Lines = 224;	\
 }
-
 
 /**
  * Z80_EXEC(): Z80 execution macro.
