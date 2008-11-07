@@ -928,14 +928,17 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 		
 		case IDCMD_SWBLIT:
 			Options::setSwRender(!Options::swRender());
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDCMD_FASTBLUR:
 			Options::setFastBlur(!Options::fastBlur());
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDCMD_STRETCH_MODE:
 			Options::setStretch((Options::stretch() + 1) % 4);
+			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
 		case IDCMD_YM2612_IMPROVED:
