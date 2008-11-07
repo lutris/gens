@@ -279,11 +279,8 @@ static struct GensMenuItem_t gmiSound[] =
 static struct GensMenuItem_t gmiSound_Rate[] =
 {
 	{IDM_SOUND_RATE_11025,		GMF_ITEM_RADIO,		"11,025 Hz",		NULL, 0, 0, 0},
-	{IDM_SOUND_RATE_16000,		GMF_ITEM_RADIO,		"16,000 Hz",		NULL, 0, 0, 0},
 	{IDM_SOUND_RATE_22050,		GMF_ITEM_RADIO,		"22,050 Hz",		NULL, 0, 0, 0},
-	{IDM_SOUND_RATE_32000,		GMF_ITEM_RADIO,		"32,000 Hz",		NULL, 0, 0, 0},
 	{IDM_SOUND_RATE_44100,		GMF_ITEM_RADIO,		"44,100 Hz",		NULL, 0, 0, 0},
-	{IDM_SOUND_RATE_48000,		GMF_ITEM_RADIO,		"48,000 Hz",		NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 

@@ -451,20 +451,16 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Rate
 	// TODO: This const array is from gens_window.c.
 	// Move it somewhere else.
-	const int SndRates[6][2] =
-	{
-		{0, 11025}, {3, 16000}, {1, 22050},
-		{4, 32000}, {2, 44100}, {5, 48000},
-	};
+	const int SndRates[6][2] = {{0, 11025}, {1, 22050}, {2, 44100}};
 	
 	HMENU mnuRate = findMenuItem(IDM_SOUND_RATE);
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		if (SndRates[i][1] == audio->soundRate())
 		{
 			CheckMenuRadioItem(mnuRate,
 					   IDM_SOUND_RATE_11025,
-					   IDM_SOUND_RATE_48000,
+					   IDM_SOUND_RATE_44100,
 					   IDM_SOUND_RATE_11025 + SndRates[i][0],
 					   MF_BYCOMMAND);
 			break;

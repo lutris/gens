@@ -87,20 +87,11 @@ int Audio_SDL::initSound(void)
 		case 11025:
 			m_segLength = (CPU_Mode ? 220 : 184);
 			break;
-		case 16000:
-			m_segLength = (CPU_Mode ? 330 : 276);
-			break;
 		case 22050:
 			m_segLength = (CPU_Mode ? 441 : 368);
 			break;
-		case 32000:
-			m_segLength = (CPU_Mode ? 660 : 552);
-			break;
 		case 44100:
 			m_segLength = (CPU_Mode ? 882 : 735);
-			break;
-		case 48000:
-			m_segLength = (CPU_Mode ? 990 : 828);
 			break;
 	}
 	

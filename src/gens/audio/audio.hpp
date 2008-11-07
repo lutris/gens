@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 // TODO: Should these be kept out of the Audio class?
-extern int Seg_L[990], Seg_R[990];
+extern int Seg_L[882], Seg_R[882];
 extern unsigned int Sound_Extrapol[312][2];
 
 #ifdef __cplusplus

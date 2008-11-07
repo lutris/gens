@@ -506,15 +506,6 @@ void Sync_Gens_Window_SoundMenu(void)
 		case 44100:
 			id = IDM_SOUND_RATE_44100;
 			break;
-		case 16000:
-			id = IDM_SOUND_RATE_16000;
-			break;
-		case 32000:
-			id = IDM_SOUND_RATE_32000;
-			break;
-		case 48000:
-			id = IDM_SOUND_RATE_48000;
-			break;
 		default:
 			// Default to 22,050 Hz.
 			id = IDM_SOUND_RATE_22050;

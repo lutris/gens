@@ -12,7 +12,7 @@
 
 
 // TODO: Should these be kept out of the Audio class?
-int Seg_L[990], Seg_R[990];
+int Seg_L[882], Seg_R[882];
 unsigned int Sound_Extrapol[312][2];
 
 

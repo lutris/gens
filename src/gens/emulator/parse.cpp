@@ -106,7 +106,7 @@ static const char* opt1arg_str[][3] =
 						"\t11: AdvanceMAME Scale2x\n"
 						"\t12: HQ2x"},
 	{"frameskip",		"number",	"Frameskip (-1 [Auto] -> 9)"},
-	{"soundrate",		"rate",		"Sound Rate (11025, 16000, 22050, 32000, 44100, 48000 Hz)"},
+	{"soundrate",		"rate",		"Sound Rate (11025, 22050, 44100 Hz)"},
 	{"msh2-speed",		"percentage"	"Master SH2 Speed"},
 	{"ssh2-speed",		"percentage",	"Slave SH2 Speed"},
 	{"ramcart-size",	"number",	"SegaCD RAM cart size"},
@@ -561,21 +561,16 @@ void parseArgs(int argc, char **argv)
 		}
 		else if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_SOUNDRATE][0]))
 		{
-			int rate = strtol(optarg, (char**)NULL, 10);
-			switch(rate)
+			int rate = atoi(optarg);
+			
+			if (rate == 11025 || rate == 22050 || rate == 44100)
 			{
-				case 11025:
-				case 16000:
-				case 22050:
-				case 32000:
-				case 44100:
-				case 48000:
-					audio->setSoundRate(rate);
-					break;
-				
-				default:
-					fprintf(stderr, "Invalid rate");
-					break;
+				audio->setSoundRate(rate);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid sound rate: %d\n", rate);
+				exit(1);
 			}
 		}
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_QUICKEXIT][0]))

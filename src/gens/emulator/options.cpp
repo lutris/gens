@@ -718,12 +718,6 @@ int Options::soundSampleRate(void)
 			return 1;
 		case 44100:
 			return 2;
-		case 16000:
-			return 3;
-		case 32000:
-			return 4;
-		case 48000:
-			return 5;
 		default:
 			return -1;
 	}
@@ -738,7 +732,7 @@ int Options::soundSampleRate(void)
 void Options::setSoundSampleRate(const int newRate)
 {
 	// Make sure the rate ID is valid.
-	assert(newRate >= 0 && newRate <= 5);
+	assert(newRate >= 0 && newRate <= 2);
 	
 	switch (newRate)
 	{
@@ -750,15 +744,6 @@ void Options::setSoundSampleRate(const int newRate)
 			break;
 		case 2:
 			audio->setSoundRate(44100);
-			break;
-		case 3:
-			audio->setSoundRate(16000);
-			break;
-		case 4:
-			audio->setSoundRate(32000);
-			break;
-		case 5:
-			audio->setSoundRate(48000);
 			break;
 	}
 	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", audio->soundRate(), 2500);
