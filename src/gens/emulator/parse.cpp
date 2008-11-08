@@ -29,6 +29,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 // New video layer.
 #include "video/v_draw.hpp"
@@ -594,7 +595,12 @@ void parseArgs(int argc, char **argv)
 	}
 	else if (optind == argc - 1)
 	{
+#ifdef GENS_OS_WIN32
+		if ((!isalpha(argv[optind][0]) && argv[optind][1] != ':' && argv[optind][2] != '\\') &&
+		    (argv[optind][0] != '\\' && argv[optind][1] != '\\'))
+#else /* !GENS_OS_WIN32 */
 		if (argv[optind][0] != '/')
+#endif /* GENS_OS_WIN32 */
 		{
 			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));
 			strcat(PathNames.Start_Rom, GENS_DIR_SEPARATOR_STR);
