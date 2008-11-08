@@ -61,6 +61,7 @@ void Sync_Gens_Window(void)
 {
 	// Synchronize all menus.
 	Sync_Gens_Window_FileMenu();
+	Sync_Gens_Window_FileMenu_ROMHistory();
 	Sync_Gens_Window_GraphicsMenu();
 	Sync_Gens_Window_CPUMenu();
 	Sync_Gens_Window_SoundMenu();
@@ -70,19 +71,49 @@ void Sync_Gens_Window(void)
 
 /**
  * Sync_Gens_Window_FileMenu(): Synchronize the File Menu.
+ * This does NOT synchronize the ROM History submenu, since synchronizing the
+ * ROM History submenu can be slow if some ROMs are located on network shares.
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-	// ROM Format prefixes
-	// TODO: Move this somewhere else.
-	static const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
-	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
 	// Netplay is currently not usable.
 	GtkWidget *mnuNetplay = findMenuItem(IDM_FILE_NETPLAY);
 	gtk_widget_set_sensitive(mnuNetplay, FALSE);
+	
+	// Disable "Close ROM" if no ROM is loaded.
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_CLOSEROM), (Game != NULL));
+	
+	// Savestate menu items
+	gboolean saveStateEnable = (Game != NULL);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKSAVE), saveStateEnable);
+	
+	// Current savestate
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
+	
+	// Enable callbacks.
+	do_callbacks = 1;
+}
+
+
+/**
+ * Sync_Gens_Window_FileMenu_ROMHistory(): Synchronize the File, ROM History submenu.
+ * NOTE: If some ROMs are located on network shares, this function will be SLOW,
+ * since it has to check the contents of the ROM to determine its type.
+ */
+void Sync_Gens_Window_FileMenu_ROMHistory(void)
+{
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+	
+	// ROM Format prefixes
+	// TODO: Move this somewhere else.
+	static const char* ROM_Format_Prefix[6] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]", NULL};
 	
 	// ROM History
 	GtkWidget *mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
@@ -143,29 +174,16 @@ void Sync_Gens_Window_FileMenu(void)
 		sprintf(sMenuKey, "ROMHistory_Sub_%d", i);
 		g_object_set_data_full(G_OBJECT(mnuROMHistory_sub), sMenuKey,
 				       g_object_ref(mnuROMHistory_item),
-				       (GDestroyNotify)g_object_unref);
+						       (GDestroyNotify)g_object_unref);
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuROMHistory_item, "activate",
-				 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
-					    GINT_TO_POINTER(IDM_FILE_ROMHISTORY_0 + i));
+				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				  GINT_TO_POINTER(IDM_FILE_ROMHISTORY_0 + i));
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	gtk_widget_set_sensitive(mnuROMHistory, romsFound);
-	
-	// Disable "Close ROM" if no ROM is loaded.
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_CLOSEROM), (Game != NULL));
-	
-	// Savestate menu items
-	gboolean saveStateEnable = (Game != NULL);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKSAVE), saveStateEnable);
-	
-	// Current savestate
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
 	
 	// Enable callbacks.
 	do_callbacks = 1;

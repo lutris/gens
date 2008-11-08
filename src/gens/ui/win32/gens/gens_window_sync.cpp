@@ -64,6 +64,7 @@ void Sync_Gens_Window(void)
 {
 	// Synchronize all menus.
 	Sync_Gens_Window_FileMenu();
+	Sync_Gens_Window_FileMenu_ROMHistory();
 	Sync_Gens_Window_GraphicsMenu();
 	Sync_Gens_Window_CPUMenu();
 	Sync_Gens_Window_SoundMenu();
@@ -73,18 +74,52 @@ void Sync_Gens_Window(void)
 
 /**
  * Sync_Gens_Window_FileMenu(): Synchronize the File Menu.
+ * This does NOT synchronize the ROM History submenu, since synchronizing the
+ * ROM History submenu can be slow if some ROMs are located on network shares.
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-	// ROM Format prefixes
-	// TODO: Move this somewhere else.
-	static const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
-	
 	// Find the file menu.
 	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
 	
         // Netplay is currently not usable.
 	EnableMenuItem(mnuFile, IDM_FILE_NETPLAY, MF_BYCOMMAND | MF_GRAYED);
+	
+	// Some menu items should be enabled or disabled, depending on if a game is loaded or not.
+	const unsigned int enableFlags = ((Game != NULL) ? MF_ENABLED : MF_GRAYED);
+	
+	// Disable "Close ROM" if no ROM is loaded.
+	EnableMenuItem(mnuFile, IDM_FILE_CLOSEROM, MF_BYCOMMAND | enableFlags);
+	
+	// Savestate menu items
+	EnableMenuItem(mnuFile, IDM_FILE_LOADSTATE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_SAVESTATE, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_QUICKLOAD, MF_BYCOMMAND | enableFlags);
+	EnableMenuItem(mnuFile, IDM_FILE_QUICKSAVE, MF_BYCOMMAND | enableFlags);
+	
+	// Current savestate
+	HMENU mnuChangeState = findMenuItem(IDM_FILE_CHANGESTATE);
+	CheckMenuRadioItem(mnuChangeState,
+			   IDM_FILE_CHANGESTATE_0,
+			   IDM_FILE_CHANGESTATE_9,
+			   IDM_FILE_CHANGESTATE_0 + Current_State,
+			   MF_BYCOMMAND);
+}
+
+
+/**
+ * Sync_Gens_Window_FileMenu_ROMHistory(): Synchronize the File, ROM History submenu.
+ * NOTE: If some ROMs are located on network shares, this function will be SLOW,
+ * since it has to check the contents of the ROM to determine its type.
+ */
+void Sync_Gens_Window_FileMenu_ROMHistory(void)
+{
+	// ROM Format prefixes
+	// TODO: Move this somewhere else.
+	static const char* ROM_Format_Prefix[6] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]", NULL};
+	
+	// Find the file menu.
+	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
 	
 	// Find the ROM History submenu.
 	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
@@ -141,26 +176,6 @@ void Sync_Gens_Window_FileMenu(void)
 	// If no recent ROMs were found, disable the ROM History menu.
 	if (romsFound == 0)
 		EnableMenuItem(mnuFile, posROMHistory, MF_BYPOSITION | MF_GRAYED);
-	
-	// Some menu items should be enabled or disabled, depending on if a game is loaded or not.
-	const unsigned int enableFlags = ((Game != NULL) ? MF_ENABLED : MF_GRAYED);
-	
-	// Disable "Close ROM" if no ROM is loaded.
-	EnableMenuItem(mnuFile, IDM_FILE_CLOSEROM, MF_BYCOMMAND | enableFlags);
-	
-	// Savestate menu items
-	EnableMenuItem(mnuFile, IDM_FILE_LOADSTATE, MF_BYCOMMAND | enableFlags);
-	EnableMenuItem(mnuFile, IDM_FILE_SAVESTATE, MF_BYCOMMAND | enableFlags);
-	EnableMenuItem(mnuFile, IDM_FILE_QUICKLOAD, MF_BYCOMMAND | enableFlags);
-	EnableMenuItem(mnuFile, IDM_FILE_QUICKSAVE, MF_BYCOMMAND | enableFlags);
-	
-	// Current savestate
-	HMENU mnuChangeState = findMenuItem(IDM_FILE_CHANGESTATE);
-	CheckMenuRadioItem(mnuChangeState,
-			   IDM_FILE_CHANGESTATE_0,
-			   IDM_FILE_CHANGESTATE_9,
-			   IDM_FILE_CHANGESTATE_0 + Current_State,
-			   MF_BYCOMMAND);
 }
 
 
