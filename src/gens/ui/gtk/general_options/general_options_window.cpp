@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "general_options_window.h"
+#include "general_options_window.hpp"
 #include "general_options_window_callbacks.h"
 #include "gens/gens_window.hpp"
 
@@ -93,7 +93,7 @@
 
 GtkWidget *general_options_window = NULL;
 
-GtkAccelGroup *accel_group;
+static GtkAccelGroup *accel_group;
 
 // Message colors.
 // Index: 0 = name; 1 = normal; 2 = active; 3 = prelight; 4 = selected; 5 = insensitive
@@ -366,7 +366,7 @@ static void create_color_radio_buttons(const char* title,
 		for (j = GTK_STATE_NORMAL; j <= GTK_STATE_INSENSITIVE; j++)
 		{
 			gdk_color_parse(colors[i][j + 1], &tmpColor);
-			gtk_widget_modify_bg(radio_button_color, j, &tmpColor);
+			gtk_widget_modify_bg(radio_button_color, (GtkStateType)j, &tmpColor);
 		}
 		
 		gtk_widget_show(radio_button_color);

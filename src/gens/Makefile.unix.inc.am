@@ -39,7 +39,7 @@ gens_SOURCES += \
 		ui/gtk/directory_config/directory_config_window.c \
 		ui/gtk/directory_config/directory_config_window_callbacks.c \
 		ui/gtk/directory_config/directory_config_window_misc.cpp \
-		ui/gtk/general_options/general_options_window.c \
+		ui/gtk/general_options/general_options_window.cpp \
 		ui/gtk/general_options/general_options_window_callbacks.c \
 		ui/gtk/general_options/general_options_window_misc.cpp \
 		ui/gtk/color_adjust/color_adjust_window.c \
@@ -104,7 +104,7 @@ noinst_HEADERS += \
 		ui/gtk/directory_config/directory_config_window.h \
 		ui/gtk/directory_config/directory_config_window_callbacks.h \
 		ui/gtk/directory_config/directory_config_window_misc.hpp \
-		ui/gtk/general_options/general_options_window.h \
+		ui/gtk/general_options/general_options_window.hpp \
 		ui/gtk/general_options/general_options_window_callbacks.h \
 		ui/gtk/general_options/general_options_window_misc.hpp \
 		ui/gtk/color_adjust/color_adjust_window.h \

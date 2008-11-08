@@ -46,7 +46,7 @@
 #include "controller_config/controller_config_window.hpp"
 #include "bios_misc_files/bios_misc_files_window.hpp"
 #include "directory_config/directory_config_window.h"
-#include "general_options/general_options_window.h"
+#include "general_options/general_options_window.hpp"
 #include "color_adjust/color_adjust_window.h"
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/country_code_window.h"
