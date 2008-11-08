@@ -34,7 +34,7 @@
 #include "controller_config/controller_config_window_misc.hpp"
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
-#include "general_options/general_options_window_misc.hpp"
+#include "general_options/general_options_window.hpp"
 #include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
@@ -661,7 +661,7 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 	switch (menuID)
 	{
 		case IDM_OPTIONS_GENERAL:
-			Open_General_Options();
+			GeneralOptionsWindow::Instance();
 			break;
 		
 		case IDM_OPTIONS_JOYPADS:

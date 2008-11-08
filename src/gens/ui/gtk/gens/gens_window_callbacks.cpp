@@ -28,22 +28,6 @@
 #include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
-#include "game_genie/game_genie_window_misc.h"
-#include "controller_config/controller_config_window_misc.hpp"
-#include "bios_misc_files/bios_misc_files_window_misc.hpp"
-#include "directory_config/directory_config_window_misc.hpp"
-#include "general_options/general_options_window_misc.hpp"
-#include "about/about_window.hpp"
-#include "color_adjust/color_adjust_window_misc.h"
-#include "country_code/country_code_window_misc.h"
-
-#ifdef GENS_OPENGL
-#include "opengl_resolution/opengl_resolution_window_misc.hpp"
-#endif /* GENS_OPENGL */
-
-#ifdef GENS_CDROM
-#include "select_cdrom/select_cdrom_window_misc.hpp"
-#endif /* GENS_CDROM */
 
 #include "util/file/config_file.hpp"
 

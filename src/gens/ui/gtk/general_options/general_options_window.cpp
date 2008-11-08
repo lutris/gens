@@ -21,7 +21,6 @@
  ***************************************************************************/
 
 #include "general_options_window.hpp"
-#include "general_options_window_callbacks.h"
 #include "gens/gens_window.hpp"
 
 #include <sys/types.h>
@@ -34,7 +33,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
-// GENS GTK+ miscellaneous functions
+// TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
@@ -49,15 +48,17 @@
 	gtk_container_set_border_width(GTK_CONTAINER(FrameWidget), 5);		\
 	gtk_frame_set_shadow_type(GTK_FRAME(FrameWidget), GTK_SHADOW_NONE);	\
 	gtk_widget_show(FrameWidget);						\
-	gtk_box_pack_start(GTK_BOX(Box), FrameWidget, TRUE, TRUE, 0);	\
-	GLADE_HOOKUP_OBJECT(general_options_window, FrameWidget, FrameName);	\
+	gtk_box_pack_start(GTK_BOX(Box), FrameWidget, TRUE, TRUE, 0);		\
+	g_object_set_data_full(G_OBJECT(m_Window), FrameName,			\
+			       g_object_ref(FrameWidget), (GDestroyNotify)g_object_unref);	\
 										\
 	LabelWidget = gtk_label_new(Caption);					\
 	gtk_widget_set_name(LabelWidget, LabelName);				\
 	gtk_label_set_use_markup(GTK_LABEL(LabelWidget), TRUE);			\
 	gtk_widget_show(LabelWidget);						\
 	gtk_frame_set_label_widget(GTK_FRAME(FrameWidget), LabelWidget);	\
-	GLADE_HOOKUP_OBJECT(general_options_window, LabelWidget, LabelName);	\
+	g_object_set_data_full(G_OBJECT(m_Window), LabelName,			\
+			       g_object_ref(LabelWidget), (GDestroyNotify)g_object_unref);	\
 }
 
 
@@ -70,7 +71,8 @@
 	gtk_table_set_col_spacings(GTK_TABLE(TableWidget), ColSpacing);		\
 	gtk_widget_show(TableWidget);						\
 	gtk_container_add(GTK_CONTAINER(Container), TableWidget);		\
-	GLADE_HOOKUP_OBJECT(general_options_window, TableWidget, TableName);	\
+	g_object_set_data_full(G_OBJECT(m_Window), TableName,			\
+			       g_object_ref(TableWidget), (GDestroyNotify)g_object_unref);	\
 }
 
 
@@ -87,17 +89,14 @@
 			 TopAttach, BottomAttach,				\
 			 (GtkAttachOptions)(GTK_FILL),				\
 			 (GtkAttachOptions)(0), 0, 0);				\
-	GLADE_HOOKUP_OBJECT(general_options_window, CheckWidget, CheckName);	\
+	g_object_set_data_full(G_OBJECT(m_Window), CheckName,			\
+			       g_object_ref(CheckWidget), (GDestroyNotify)g_object_unref);	\
 }
 
 
-GtkWidget *general_options_window = NULL;
-
-static GtkAccelGroup *accel_group;
-
 // Message colors.
 // Index: 0 = name; 1 = normal; 2 = active; 3 = prelight; 4 = selected; 5 = insensitive
-const char* GO_MsgColors[5][6] =
+const char* GeneralOptionsWindow::Colors_Msg[5][6] =
 {
 	{"white", "#FFFFFF", "#E0E0E0", "#FFFFFF", "#FFFFFF", "#C0C0C0"},
 	{"blue",  "#0000FF", "#0000E0", "#8080FF", "#0000FF", "#1C1C1C"},
@@ -108,7 +107,7 @@ const char* GO_MsgColors[5][6] =
 
 // Intro effect colors.
 // Index: 0 = name; 1 = normal; 2 = active; 3 = prelight; 4 = selected; 5 = insensitive
-const char* GO_IntroEffectColors[9][6] =
+const char* GeneralOptionsWindow::Colors_IntroEffect[9][6] =
 {
 	{"black",  "#000000", "#000000", "#808080", "#000000", "#808080"},
 	{"blue",   "#0000FF", "#0000E0", "#8080FF", "#0000FF", "#202020"},
@@ -121,21 +120,111 @@ const char* GO_IntroEffectColors[9][6] =
 	{NULL, NULL, NULL, NULL, NULL, NULL}
 };
 
-static void create_color_radio_buttons(const char* title,
-				       const char* groupName, 
-				       const char* colors[][6],
-				       const int num,
-				       GtkWidget* container);
+
+GeneralOptionsWindow* GeneralOptionsWindow::m_Instance = NULL;
+GeneralOptionsWindow* GeneralOptionsWindow::Instance(GtkWindow *parent)
+{
+	if (m_Instance == NULL)
+	{
+		// Instance is deleted. Initialize the About window.
+		m_Instance = new GeneralOptionsWindow();
+	}
+	else
+	{
+		// Instance already exists. Set focus.
+		m_Instance->setFocus();
+	}
+	
+	// Set modality of the window.
+	m_Instance->setModal(parent);
+	
+	return m_Instance;
+}
+
+
+GeneralOptionsWindow::~GeneralOptionsWindow()
+{
+	if (m_Window)
+		gtk_widget_destroy(GTK_WIDGET(m_Window));
+	
+	m_Instance = NULL;
+}
+
+
+gboolean GeneralOptionsWindow::GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	return reinterpret_cast<GeneralOptionsWindow*>(user_data)->close();
+}
+
+
+void GeneralOptionsWindow::dlgButtonPress(uint32_t button)
+{
+	switch (button)
+	{
+		case WndBase::BUTTON_SAVE:
+			save();
+			close();
+			break;
+		
+		case WndBase::BUTTON_APPLY:
+			save();
+			break;
+		
+		case WndBase::BUTTON_CANCEL:
+			close();
+			break;
+	}
+}
 
 
 /**
- * create_general_options_window(): Create the General Options Window.
- * @return Directory Configuration Window.
+ * Window is closed.
  */
-GtkWidget* create_general_options_window(void)
+gboolean GeneralOptionsWindow::close(void)
 {
-	GdkPixbuf *general_options_window_icon_pixbuf;
-	GtkWidget *vbox_go;
+	delete this;
+	return FALSE;
+}
+
+
+/**
+ * GeneralOptionsWindow: Create the General Options Window.
+ */
+GeneralOptionsWindow::GeneralOptionsWindow()
+{
+	m_Window = gtk_dialog_new();
+	gtk_widget_set_name(GTK_WIDGET(m_Window), "GeneralOptionsWindow");
+	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 0);
+	gtk_window_set_title(GTK_WINDOW(m_Window), "General Options");
+	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
+	gtk_window_set_resizable(GTK_WINDOW(m_Window), FALSE);
+	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
+	
+	// Set the window data.
+	g_object_set_data(G_OBJECT(m_Window), "GeneralOptionsWindow", m_Window);
+	
+	// Load the Gens icon.
+	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
+	if (icon)
+	{
+		gtk_window_set_icon(GTK_WINDOW(m_Window), icon);
+		gdk_pixbuf_unref(icon);
+	}
+	
+	// Callbacks for if the window is closed.
+	g_signal_connect((gpointer)m_Window, "delete_event",
+			  G_CALLBACK(GeneralOptionsWindow::GTK_Close), (gpointer)this);
+	g_signal_connect((gpointer)m_Window, "destroy_event",
+			  G_CALLBACK(GeneralOptionsWindow::GTK_Close), (gpointer)this);
+	
+	// Get the dialog VBox.
+	GtkWidget *vboxDialog = GTK_DIALOG(m_Window)->vbox;
+	gtk_widget_set_name(vboxDialog, "vboxDialog");
+	gtk_widget_show(vboxDialog);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxDialog",
+			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
+	
 	GtkWidget *frame_system, *label_system, *table_system;
 	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
@@ -146,39 +235,9 @@ GtkWidget* create_general_options_window(void)
 	GtkWidget *check_message_enable, *check_message_doublesized;
 	GtkWidget *check_message_transparency, *hbox_message_colors;
 	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_effect_colors;
-	GtkWidget *hbutton_box_go_buttonRow;
-	GtkWidget *button_go_Cancel, *button_go_Apply, *button_go_Save;
-	
-	if (general_options_window)
-	{
-		// General Options window is already created. Set focus.
-		gtk_widget_grab_focus(general_options_window);
-		return NULL;
-	}
-	
-	accel_group = gtk_accel_group_new();
-	
-	// Create the General Options window.
-	CREATE_GTK_WINDOW(general_options_window,
-			  "general_options_window",
-			  "General Options",
-			  general_options_window_icon_pixbuf, "Gens2.ico");
-	
-	// Callbacks for if the window is closed.
-	g_signal_connect((gpointer)general_options_window, "delete_event",
-			 G_CALLBACK(on_general_options_window_close), NULL);
-	g_signal_connect((gpointer)general_options_window, "destroy_event",
-			 G_CALLBACK(on_general_options_window_close), NULL);
-	
-	// Create the main VBox.
-	vbox_go = gtk_vbox_new(FALSE, 5);
-	gtk_widget_set_name(vbox_go, "vbox_go");
-	gtk_widget_show(vbox_go);
-	gtk_container_add(GTK_CONTAINER(general_options_window), vbox_go);
-	GLADE_HOOKUP_OBJECT(general_options_window, vbox_go, "vbox_go");
 	
 	// System frame
-	CREATE_BOX_FRAME(frame_system, "frame_system", vbox_go,
+	CREATE_BOX_FRAME(frame_system, "frame_system", vboxDialog,
 			 label_system, "label_system", "<b><i>System</i></b>");
 	
 	// System table
@@ -201,7 +260,7 @@ GtkWidget* create_general_options_window(void)
 			      "Show SegaCD LEDs", table_system, 1, 2, 1, 2);
 	
 	// FPS frame
-	CREATE_BOX_FRAME(frame_fps, "frame_fps", vbox_go,
+	CREATE_BOX_FRAME(frame_fps, "frame_fps", vboxDialog,
 			 label_fps, "label_fps", "<b><i>FPS counter</i></b>");
 	
 	// FPS table
@@ -226,11 +285,11 @@ GtkWidget* create_general_options_window(void)
 	gtk_table_attach(GTK_TABLE(table_fps), hbox_fps_colors, 1, 3, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbox_fps_colors, "hbox_fps_color");
-	create_color_radio_buttons("Color:", "fps", GO_MsgColors, 4, hbox_fps_colors);
+	GLADE_HOOKUP_OBJECT(m_Window, hbox_fps_colors, "hbox_fps_color");
+	createColorRadioButtons("Color:", "fps", Colors_Msg, 4, hbox_fps_colors);
 	
 	// Message frame
-	CREATE_BOX_FRAME(frame_message, "frame_message", vbox_go,
+	CREATE_BOX_FRAME(frame_message, "frame_message", vboxDialog,
 			 label_message, "label_message", "<b><i>Message</i></b>");
 	
 	// Message table
@@ -255,11 +314,11 @@ GtkWidget* create_general_options_window(void)
 	gtk_table_attach(GTK_TABLE(table_message), hbox_message_colors, 1, 3, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbox_message_colors, "hbox_message_color");
-	create_color_radio_buttons("Color:", "message", GO_MsgColors, 4, hbox_message_colors);
+	GLADE_HOOKUP_OBJECT(m_Window, hbox_message_colors, "hbox_message_color");
+	createColorRadioButtons("Color:", "message", Colors_Msg, 4, hbox_message_colors);
 	
 	// Miscellaneous frame
-	CREATE_BOX_FRAME(frame_misc, "frame_misc", vbox_go,
+	CREATE_BOX_FRAME(frame_misc, "frame_misc", vboxDialog,
 			 label_misc, "label_misc", "<b><i>Miscellaneous</i></b>");
 	
 	// Intro effect colors
@@ -267,70 +326,44 @@ GtkWidget* create_general_options_window(void)
 	gtk_widget_set_name(hbox_misc_intro_effect_colors, "hbox_misc_intro_effect_colors");
 	gtk_widget_show(hbox_misc_intro_effect_colors);
 	gtk_container_add(GTK_CONTAINER(frame_misc), hbox_misc_intro_effect_colors);
-	GLADE_HOOKUP_OBJECT(general_options_window, 
+	GLADE_HOOKUP_OBJECT(m_Window, 
 			    hbox_misc_intro_effect_colors,
 			    "hbox_misc_intro_effect_colors");
-	create_color_radio_buttons("Intro Effect Color:", "misc_intro_effect",
-				   GO_IntroEffectColors, 8, hbox_misc_intro_effect_colors);
+	createColorRadioButtons("Intro Effect Color:", "misc_intro_effect",
+				Colors_IntroEffect, 8, hbox_misc_intro_effect_colors);
 	
-	// HButton Box for the row of buttons on the bottom of the window
-	hbutton_box_go_buttonRow = gtk_hbutton_box_new();
-	gtk_widget_set_name(hbutton_box_go_buttonRow, "hbutton_box_go_buttonRow");
-	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbutton_box_go_buttonRow), GTK_BUTTONBOX_END);
-	gtk_widget_show(hbutton_box_go_buttonRow);
-	gtk_box_pack_start(GTK_BOX(vbox_go), hbutton_box_go_buttonRow, FALSE, FALSE, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, hbutton_box_go_buttonRow, "hbutton_box_go_buttonRow");
+	// Create an accelerator group.
+	m_AccelTable = gtk_accel_group_new();
 	
-	// Cancel
-	button_go_Cancel = gtk_button_new_from_stock("gtk-cancel");
-	gtk_widget_set_name(button_go_Cancel, "button_go_Cancel");
-	gtk_widget_show(button_go_Cancel);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Cancel, FALSE, FALSE, 0);
-	gtk_widget_add_accelerator(button_go_Cancel, "activate", accel_group,
-				   GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	AddButtonCallback_Clicked(button_go_Cancel, on_button_go_Cancel_clicked);
-	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Cancel, "button_go_Cancel");
+	// Add the OK button.
+	addDialogButtons(m_Window, WndBase::BAlign_Default,
+			 WndBase::BUTTON_CANCEL | WndBase::BUTTON_APPLY | WndBase::BUTTON_SAVE, 0,
+			 WndBase::BUTTON_ALL);
 	
-	// Apply
-	button_go_Apply = gtk_button_new_from_stock("gtk-apply");
-	gtk_widget_set_name(button_go_Apply, "button_go_Apply");
-	gtk_widget_show(button_go_Apply);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Apply, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_go_Apply, on_button_go_Apply_clicked);
-	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Apply, "button_go_Apply");
+	// Add the accel group to the window.
+	gtk_window_add_accel_group(GTK_WINDOW(m_Window), GTK_ACCEL_GROUP(m_AccelTable));
 	
-	// Save
-	button_go_Save = gtk_button_new_from_stock("gtk-save");
-	gtk_widget_set_name(button_go_Save, "button_go_Save");
-	gtk_widget_show(button_go_Save);
-	gtk_box_pack_start(GTK_BOX(hbutton_box_go_buttonRow), button_go_Save, FALSE, FALSE, 0);
-	AddButtonCallback_Clicked(button_go_Save, on_button_go_Save_clicked);
-	gtk_widget_add_accelerator(button_go_Save, "activate", accel_group,
-				   GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	gtk_widget_add_accelerator(button_go_Save, "activate", accel_group,
-				   GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
-	GLADE_HOOKUP_OBJECT(general_options_window, button_go_Save, "button_go_Save");
+	// Load settings.
+	load();
 	
-	// Add the accel group.
-	gtk_window_add_accel_group(GTK_WINDOW(general_options_window), accel_group);
-	
-	return general_options_window;
+	// Show the window.
+	setVisible(true);
 }
 
 
 /**
- * create_color_radio_buttons(): Create color radio buttons.
+ * createColorRadioButtons(): Create color radio buttons.
  * @param title Title for this color button group.
  * @param groupName Prefix for each button's name.
  * @param colors Array of colors.
  * @param num Number of colors to use.
  * @param container Container for the radio buttons.
  */
-static void create_color_radio_buttons(const char* title,
-				       const char* groupName,
-				       const char* colors[][6],
-				       const int num,
-				       GtkWidget* container)
+void GeneralOptionsWindow::createColorRadioButtons(const char* title,
+						   const char* groupName,
+						   const char* colors[][6],
+						   const int num,
+						   GtkWidget* container)
 {
 	GtkWidget *label_color, *radio_button_color;
 	GSList *color_group = NULL;
@@ -344,7 +377,7 @@ static void create_color_radio_buttons(const char* title,
 	gtk_widget_set_name(label_color, tmp);
 	gtk_widget_show(label_color);
 	gtk_box_pack_start(GTK_BOX(container), label_color, TRUE, TRUE, 0);
-	GLADE_HOOKUP_OBJECT(general_options_window, label_color, tmp);
+	GLADE_HOOKUP_OBJECT(m_Window, label_color, tmp);
 	
 	// Color Buttons
 	for (i = 0; i < num; i++)
@@ -371,6 +404,170 @@ static void create_color_radio_buttons(const char* title,
 		
 		gtk_widget_show(radio_button_color);
 		gtk_box_pack_start(GTK_BOX(container), radio_button_color, TRUE, TRUE, 0);
-		GLADE_HOOKUP_OBJECT(general_options_window, radio_button_color, tmp);
-	}	
+		GLADE_HOOKUP_OBJECT(m_Window, radio_button_color, tmp);
+	}
+}
+
+
+/**
+ * load(): Load settings.
+ */
+void GeneralOptionsWindow::load(void)
+{
+	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
+	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
+	unsigned char curFPSStyle;
+	GtkWidget *check_fps_enable, *check_fps_doublesized;
+	GtkWidget *check_fps_transparency, *radio_button_fps_color;
+	unsigned char curMsgStyle;
+	GtkWidget *check_message_enable, *check_message_doublesized;
+	GtkWidget *check_message_transparency, *radio_button_message_color;
+	GtkWidget *radio_button_intro_effect_color;
+	char tmp[64];
+	
+	// Get the current options.
+	
+	// System
+	check_system_autofixchecksum = lookup_widget(m_Window, "check_system_autofixchecksum");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_autofixchecksum), Auto_Fix_CS);
+	check_system_autopause = lookup_widget(m_Window, "check_system_autopause");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_autopause), Auto_Pause);
+	check_system_fastblur = lookup_widget(m_Window, "check_system_fastblur");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_fastblur), draw->fastBlur());
+	check_system_segacd_leds = lookup_widget(m_Window, "check_system_segacd_leds");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds), Show_LED);
+	
+	// FPS counter
+	check_fps_enable = lookup_widget(m_Window, "check_fps_enable");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_enable), (draw->fpsEnabled() ? 1 : 0));
+	
+	curFPSStyle = draw->fpsStyle();
+	check_fps_doublesized = lookup_widget(m_Window, "check_fps_doublesized");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_doublesized), (curFPSStyle & 0x10));
+	check_fps_transparency = lookup_widget(m_Window, "check_fps_transparency");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_transparency), (curFPSStyle & 0x08));
+	
+	// FPS counter color
+	sprintf(tmp, "radio_button_fps_color_%s", Colors_Msg[(curFPSStyle & 0x06) >> 1][0]);
+	radio_button_fps_color = lookup_widget(m_Window, tmp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_fps_color), TRUE);
+	
+	// Message
+	check_message_enable = lookup_widget(m_Window, "check_message_enable");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_enable), (draw->msgEnabled() ? 1 : 0));
+	
+	curMsgStyle = draw->msgStyle();
+	check_message_doublesized = lookup_widget(m_Window, "check_message_doublesized");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_doublesized), (curMsgStyle & 0x10));
+	check_message_transparency = lookup_widget(m_Window, "check_message_transparency");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_transparency), (curMsgStyle & 0x08));
+	
+	// Message color
+	sprintf(tmp, "radio_button_message_color_%s", Colors_Msg[(curMsgStyle & 0x06) >> 1][0]);
+	radio_button_message_color = lookup_widget(m_Window, tmp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_message_color), TRUE);
+	
+	// Intro effect color
+	sprintf(tmp, "radio_button_misc_intro_effect_color_%s",
+		Colors_IntroEffect[draw->introEffectColor()][0]);
+	radio_button_intro_effect_color = lookup_widget(m_Window, tmp);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color), TRUE);
+}
+
+
+/**
+ * save(): Save settings.
+ */
+void GeneralOptionsWindow::save(void)
+{
+	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
+	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
+	unsigned char curFPSStyle;
+	GtkWidget *check_fps_enable, *check_fps_doublesized;
+	GtkWidget *check_fps_transparency, *radio_button_fps_color;
+	unsigned char curMsgStyle;
+	GtkWidget *check_message_enable, *check_message_doublesized;
+	GtkWidget *check_message_transparency, *radio_button_message_color;
+	GtkWidget *radio_button_intro_effect_color;
+	char tmp[64]; short i;
+	
+	// Save the current options.
+	
+	// System
+	check_system_autofixchecksum = lookup_widget(m_Window, "check_system_autofixchecksum");
+	Auto_Fix_CS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autofixchecksum));
+	check_system_autopause = lookup_widget(m_Window, "check_system_autopause");
+	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autopause));
+	check_system_fastblur = lookup_widget(m_Window, "check_system_fastblur");
+	draw->setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_fastblur)));
+	check_system_segacd_leds = lookup_widget(m_Window, "check_system_segacd_leds");
+	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
+	
+	// FPS counter
+	check_fps_enable = lookup_widget(m_Window, "check_fps_enable");
+	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable)));
+	
+	curFPSStyle = draw->fpsStyle() & ~0x18;
+	check_fps_doublesized = lookup_widget(m_Window, "check_fps_doublesized");
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
+	check_fps_transparency = lookup_widget(m_Window, "check_fps_transparency");
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_transparency)) ? 0x08 : 0x00);
+	
+	// FPS counter color
+	for (i = 0; i < 4; i++)
+	{
+		if (!Colors_Msg[i][0])
+			break;
+		sprintf(tmp, "radio_button_fps_color_%s", Colors_Msg[i][0]);
+		radio_button_fps_color = lookup_widget(m_Window, tmp);
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_fps_color)))
+		{
+			curFPSStyle &= ~0x06;
+			curFPSStyle |= (i << 1);
+			break;
+		}
+	}
+	
+	draw->setFPSStyle(curFPSStyle);
+	
+	// Message
+	check_message_enable = lookup_widget(m_Window, "check_message_enable");
+	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable)));
+	
+	curMsgStyle = draw->msgStyle() & ~0x18;
+	check_message_doublesized = lookup_widget(m_Window, "check_message_doublesized");
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
+	check_message_transparency = lookup_widget(m_Window, "check_message_transparency");
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_transparency)) ? 0x08 : 0x00);
+	
+	// Message color
+	for (i = 0; i < 4; i++)
+	{
+		if (!Colors_Msg[i][0])
+			break;
+		sprintf(tmp, "radio_button_message_color_%s", Colors_Msg[i][0]);
+		radio_button_message_color = lookup_widget(m_Window, tmp);
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_message_color)))
+		{
+			curMsgStyle &= ~0x06;
+			curMsgStyle |= (i << 1);
+			break;
+		}
+	}
+	
+	draw->setMsgStyle(curMsgStyle);
+	
+	// Intro effect color
+	for (i = 0; i < 8; i++)
+	{
+		if (!Colors_IntroEffect[i][0])
+			break;
+		sprintf(tmp, "radio_button_misc_intro_effect_color_%s", Colors_IntroEffect[i][0]);
+		radio_button_intro_effect_color = lookup_widget(m_Window, tmp);
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color)))
+		{
+			draw->setIntroEffectColor((unsigned char)i);
+			break;
+		}
+	}
 }

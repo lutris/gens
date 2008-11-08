@@ -20,22 +20,47 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_GENERAL_OPTIONS_WINDOW_H
-#define GTK_GENERAL_OPTIONS_WINDOW_H
+#ifndef GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP
+#define GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
-#include <gtk/gtk.h>
+#include "wndbase.hpp"
 
-GtkWidget* create_general_options_window(void); 
-extern GtkWidget *general_options_window;
-extern const char* GO_MsgColors[5][6];
-extern const char* GO_IntroEffectColors[9][6];
+class GeneralOptionsWindow : public WndBase
+{
+	public:
+		static GeneralOptionsWindow* Instance(GtkWindow *parent = NULL);
+		
+		gboolean close(void);
+	
+	protected:
+		GeneralOptionsWindow();
+		~GeneralOptionsWindow();
+		
+		static GeneralOptionsWindow* m_Instance;
+		
+		void dlgButtonPress(uint32_t button);
+		
+		void createColorRadioButtons(const char* title,
+					     const char* groupName, 
+					     const char* colors[][6],
+					     const int num,
+					     GtkWidget* container);
+		
+		// Settings functions.
+		void load(void);
+		void save(void);
+		
+		// Static functions required for GTK+ callbacks.
+		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+		static gboolean GTK_iceTime(gpointer user_data);
+		
+		// Color data
+		static const char* Colors_Msg[5][6];
+		static const char* Colors_IntroEffect[9][6];
+};
 
-#ifdef __cplusplus
-}
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP */
