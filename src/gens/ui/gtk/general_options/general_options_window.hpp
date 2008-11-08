@@ -45,19 +45,36 @@ class GeneralOptionsWindow : public WndBase
 		void createColorRadioButtons(const char* title,
 					     const char* groupName, 
 					     const char* colors[][6],
-					     const int num,
+					     const int buttonSet,
 					     GtkWidget* container);
 		
 		// Settings functions.
 		void load(void);
 		void save(void);
 		
+		// OSD items. [0 == FPS; 1 == MSG]
+		GtkWidget *chkOSD_Enable[2];
+		GtkWidget *chkOSD_DoubleSized[2];
+		GtkWidget *chkOSD_Transparency[2];
+		GtkWidget *optOSD_Color[2][4];
+		
+		void createOSDFrame(const char* title, const int index, GtkWidget *container);
+		
+		// Intro Effect color buttons.
+		GtkWidget *optIntroEffectColor[8];
+		
+		// Miscellaneous settings.
+		GtkWidget *chkMisc_AutoFixChecksum;
+		GtkWidget *chkMisc_AutoPause;
+		GtkWidget *chkMisc_FastBlur;
+		GtkWidget *chkMisc_SegaCDLEDs;
+		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 		static gboolean GTK_iceTime(gpointer user_data);
 		
 		// Color data
-		static const char* Colors_Msg[5][6];
+		static const char* Colors_OSD[5][6];
 		static const char* Colors_IntroEffect[9][6];
 };
 

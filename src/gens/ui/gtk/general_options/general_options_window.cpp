@@ -39,64 +39,9 @@
 #include "emulator/g_main.hpp"
 
 
-// Macro to create a frame (with label) and add it toa a box.
-#define CREATE_BOX_FRAME(FrameWidget, FrameName, Box,				\
-			 LabelWidget, LabelName, Caption)			\
-{										\
-	FrameWidget = gtk_frame_new(NULL);					\
-	gtk_widget_set_name(FrameWidget, FrameName);				\
-	gtk_container_set_border_width(GTK_CONTAINER(FrameWidget), 5);		\
-	gtk_frame_set_shadow_type(GTK_FRAME(FrameWidget), GTK_SHADOW_NONE);	\
-	gtk_widget_show(FrameWidget);						\
-	gtk_box_pack_start(GTK_BOX(Box), FrameWidget, TRUE, TRUE, 0);		\
-	g_object_set_data_full(G_OBJECT(m_Window), FrameName,			\
-			       g_object_ref(FrameWidget), (GDestroyNotify)g_object_unref);	\
-										\
-	LabelWidget = gtk_label_new(Caption);					\
-	gtk_widget_set_name(LabelWidget, LabelName);				\
-	gtk_label_set_use_markup(GTK_LABEL(LabelWidget), TRUE);			\
-	gtk_widget_show(LabelWidget);						\
-	gtk_frame_set_label_widget(GTK_FRAME(FrameWidget), LabelWidget);	\
-	g_object_set_data_full(G_OBJECT(m_Window), LabelName,			\
-			       g_object_ref(LabelWidget), (GDestroyNotify)g_object_unref);	\
-}
-
-
-// Macro to create a table and add it to a container.
-#define CREATE_CONTAINER_TABLE(TableWidget, TableName, Container,		\
-			       Rows, Columns, ColSpacing)			\
-{										\
-	TableWidget = gtk_table_new(Rows, Columns, FALSE);			\
-	gtk_widget_set_name(TableWidget, TableName);				\
-	gtk_table_set_col_spacings(GTK_TABLE(TableWidget), ColSpacing);		\
-	gtk_widget_show(TableWidget);						\
-	gtk_container_add(GTK_CONTAINER(Container), TableWidget);		\
-	g_object_set_data_full(G_OBJECT(m_Window), TableName,			\
-			       g_object_ref(TableWidget), (GDestroyNotify)g_object_unref);	\
-}
-
-
-// Macro to create a checkbox and add it to a table.
-#define CREATE_TABLE_CHECKBOX(CheckWidget, CheckName, Caption, Table,		\
-			      LeftAttach, RightAttach, TopAttach, BottomAttach)	\
-{										\
-	CheckWidget = gtk_check_button_new_with_label(Caption);			\
-	gtk_widget_set_name(CheckWidget, CheckName);				\
-	gtk_container_set_border_width(GTK_CONTAINER(CheckWidget), 5);		\
-	gtk_widget_show(CheckWidget);						\
-	gtk_table_attach(GTK_TABLE(Table), CheckWidget,				\
-			 LeftAttach, RightAttach,				\
-			 TopAttach, BottomAttach,				\
-			 (GtkAttachOptions)(GTK_FILL),				\
-			 (GtkAttachOptions)(0), 0, 0);				\
-	g_object_set_data_full(G_OBJECT(m_Window), CheckName,			\
-			       g_object_ref(CheckWidget), (GDestroyNotify)g_object_unref);	\
-}
-
-
-// Message colors.
+// On-Screen Display colors.
 // Index: 0 = name; 1 = normal; 2 = active; 3 = prelight; 4 = selected; 5 = insensitive
-const char* GeneralOptionsWindow::Colors_Msg[5][6] =
+const char* GeneralOptionsWindow::Colors_OSD[5][6] =
 {
 	{"white", "#FFFFFF", "#E0E0E0", "#FFFFFF", "#FFFFFF", "#C0C0C0"},
 	{"blue",  "#0000FF", "#0000E0", "#8080FF", "#0000FF", "#1C1C1C"},
@@ -228,109 +173,131 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	GtkWidget *frame_system, *label_system, *table_system;
 	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
 	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
-	GtkWidget *frame_fps, *label_fps, *table_fps;
-	GtkWidget *check_fps_enable, *check_fps_doublesized;
-	GtkWidget *check_fps_transparency, *hbox_fps_colors;
-	GtkWidget *frame_message, *label_message, *table_message;
-	GtkWidget *check_message_enable, *check_message_doublesized;
-	GtkWidget *check_message_transparency, *hbox_message_colors;
 	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_effect_colors;
 	
-	// System frame
-	CREATE_BOX_FRAME(frame_system, "frame_system", vboxDialog,
-			 label_system, "label_system", "<b><i>System</i></b>");
+	// Create the main HBox.
+	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 0);
+	gtk_widget_set_name(hboxMain, "hboxMain");
+	gtk_widget_show(hboxMain);
+	g_object_set_data_full(G_OBJECT(m_Window), "hboxMain",
+			       g_object_ref(hboxMain), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxMain, TRUE, TRUE, 0);
 	
-	// System table
-	CREATE_CONTAINER_TABLE(table_system, "table_system", frame_system, 2, 2, 47);
+	// On-screen display frame.
+	GtkWidget *fraOSDMain = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraOSDMain, "fraOSDMain");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraOSDMain), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraOSDMain), 4);
+	gtk_widget_show(fraOSDMain);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraOSDMain",
+			       g_object_ref(fraOSDMain), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxMain), fraOSDMain, TRUE, TRUE, 0);
+	
+	// Label for the on-screen display frame.
+	GtkWidget *lblOSDMain = gtk_label_new("<b><i>On-Screen Display</i></b>");
+	gtk_widget_set_name(lblOSDMain, "lblOSDMain");
+	gtk_label_set_use_markup(GTK_LABEL(lblOSDMain), TRUE);
+	gtk_widget_show(lblOSDMain);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblOSDMain",
+			       g_object_ref(lblOSDMain), (GDestroyNotify)g_object_unref);
+	gtk_frame_set_label_widget(GTK_FRAME(fraOSDMain), lblOSDMain);
+	
+	// VBox for the on-screen display frame.
+	GtkWidget *vboxOSDMain = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vboxOSDMain, "vboxOSDMain");
+	gtk_widget_show(vboxOSDMain);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxOSDMain",
+			       g_object_ref(vboxOSDMain), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(fraOSDMain), vboxOSDMain);
+	
+	// Add FPS and Message frames to the OSD frame.
+	createOSDFrame("FPS counter", 0, vboxOSDMain);
+	createOSDFrame("Message", 1, vboxOSDMain);
+	
+	// Miscellaneous settings frame.
+	GtkWidget *fraMisc = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraMisc, "fraMisc");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraMisc), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraMisc), 4);
+	gtk_widget_show(fraMisc);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraMisc",
+			       g_object_ref(fraMisc), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxMain), fraMisc, TRUE, TRUE, 0);
+	
+	// Label for the miscellaneous settings frame.
+	GtkWidget *lblMisc = gtk_label_new("<b><i>Miscellaneous</i></b>");
+	gtk_widget_set_name(lblMisc, "lblMisc");
+	gtk_label_set_use_markup(GTK_LABEL(lblMisc), TRUE);
+	gtk_widget_show(lblMisc);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblMisc",
+			       g_object_ref(lblMisc), (GDestroyNotify)g_object_unref);
+	gtk_frame_set_label_widget(GTK_FRAME(fraMisc), lblMisc);
+	
+	// VBox for the miscellaneous settings frame.
+	GtkWidget *vboxMisc = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vboxMisc, "vboxMisc");
+	gtk_widget_show(vboxMisc);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxMisc",
+			       g_object_ref(vboxMisc), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(fraMisc), vboxMisc);
+	
+	// Miscellaneous settings checkboxes.
 	
 	// Auto Fix Checksum
-	CREATE_TABLE_CHECKBOX(check_system_autofixchecksum, "check_system_autofixchecksum",
-			      "Auto Fix Checksum", table_system, 0, 1, 0, 1);
+	chkMisc_AutoFixChecksum = gtk_check_button_new_with_label("Auto Fix Checksum");
+	gtk_widget_set_name(chkMisc_AutoFixChecksum, "chkMisc_AutoFixChecksum");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_AutoFixChecksum), 2);
+	gtk_widget_show(chkMisc_AutoFixChecksum);
+	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_AutoFixChecksum",
+			       g_object_ref(chkMisc_AutoFixChecksum), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_AutoFixChecksum, FALSE, FALSE, 0);
 	
-	// Auto Pause
-	CREATE_TABLE_CHECKBOX(check_system_autopause, "check_system_autopause",
-			      "Auto Pause", table_system, 1, 2, 0, 1);
+	// Auto Fix Checksum
+	chkMisc_AutoPause = gtk_check_button_new_with_label("Auto Pause");
+	gtk_widget_set_name(chkMisc_AutoPause, "chkMisc_AutoPause");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_AutoPause), 2);
+	gtk_widget_show(chkMisc_AutoPause);
+	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_AutoPause",
+			       g_object_ref(chkMisc_AutoPause), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_AutoPause, FALSE, FALSE, 0);
 	
 	// Fast Blur
-	CREATE_TABLE_CHECKBOX(check_system_fastblur, "check_system_fastblur",
-			      "Fast Blur", table_system, 0, 1, 1, 2);
+	chkMisc_FastBlur = gtk_check_button_new_with_label("Fast Blur");
+	gtk_widget_set_name(chkMisc_FastBlur, "chkMisc_FastBlur");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_FastBlur), 2);
+	gtk_widget_show(chkMisc_FastBlur);
+	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_FastBlur",
+			       g_object_ref(chkMisc_FastBlur), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_FastBlur, FALSE, FALSE, 0);
 	
 	// Show SegaCD LEDs
-	CREATE_TABLE_CHECKBOX(check_system_segacd_leds, "check_system_segacd_leds",
-			      "Show SegaCD LEDs", table_system, 1, 2, 1, 2);
+	chkMisc_SegaCDLEDs = gtk_check_button_new_with_label("Show SegaCD LEDs");
+	gtk_widget_set_name(chkMisc_SegaCDLEDs, "chkMisc_SegaCDLEDs");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_SegaCDLEDs), 2);
+	gtk_widget_show(chkMisc_SegaCDLEDs);
+	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_SegaCDLEDs",
+			       g_object_ref(chkMisc_SegaCDLEDs), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_SegaCDLEDs, FALSE, FALSE, 0);
 	
-	// FPS frame
-	CREATE_BOX_FRAME(frame_fps, "frame_fps", vboxDialog,
-			 label_fps, "label_fps", "<b><i>FPS counter</i></b>");
+	// VBox for intro effect color
+	GtkWidget *vboxIntroEffectColor = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vboxIntroEffectColor, "vboxIntroEffectColor");
+	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffectColor), 8);
+	gtk_widget_show(vboxIntroEffectColor);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxIntroEffectColor",
+			       g_object_ref(vboxIntroEffectColor), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(vboxMisc), vboxIntroEffectColor);
 	
-	// FPS table
-	CREATE_CONTAINER_TABLE(table_fps, "table_fps", frame_fps, 2, 2, 91);
+	// Label for intro effect color
+	GtkWidget *lblIntroEffectColor = gtk_label_new("Intro Effect Color:");
+	gtk_widget_set_name(lblIntroEffectColor, "lblIntroEffectColor");
+	gtk_widget_show(lblIntroEffectColor);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblIntroEffectColor",
+			       g_object_ref(lblIntroEffectColor), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxIntroEffectColor), lblIntroEffectColor, FALSE, FALSE, 0);
 	
-	// FPS enable
-	CREATE_TABLE_CHECKBOX(check_fps_enable, "check_fps_enable",
-			      "Enable", table_fps, 0, 1, 0, 1);
-	
-	// FPS double sized
-	CREATE_TABLE_CHECKBOX(check_fps_doublesized, "check_fps_doublesized",
-			      "Double Sized", table_fps, 1, 2, 0, 1);
-	
-	// FPS transparency
-	CREATE_TABLE_CHECKBOX(check_fps_transparency, "check_fps_transparency",
-			      "Transparency", table_fps, 0, 1, 1, 2);
-	
-	// FPS colors
-	hbox_fps_colors = gtk_hbox_new(FALSE, 5);
-	gtk_widget_set_name(hbox_fps_colors, "hbox_fps_color");
-	gtk_widget_show(hbox_fps_colors);
-	gtk_table_attach(GTK_TABLE(table_fps), hbox_fps_colors, 1, 3, 1, 2,
-			 (GtkAttachOptions)(GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(m_Window, hbox_fps_colors, "hbox_fps_color");
-	createColorRadioButtons("Color:", "fps", Colors_Msg, 4, hbox_fps_colors);
-	
-	// Message frame
-	CREATE_BOX_FRAME(frame_message, "frame_message", vboxDialog,
-			 label_message, "label_message", "<b><i>Message</i></b>");
-	
-	// Message table
-	CREATE_CONTAINER_TABLE(table_message, "table_message", frame_message, 2, 2, 91);
-	
-	// Message enable
-	CREATE_TABLE_CHECKBOX(check_message_enable, "check_message_enable",
-			      "Enable", table_message, 0, 1, 0, 1);
-	
-	// Message double sized
-	CREATE_TABLE_CHECKBOX(check_message_doublesized, "check_message_doublesized",
-			      "Double Sized", table_message, 1, 2, 0, 1);
-	
-	// Message transparency
-	CREATE_TABLE_CHECKBOX(check_message_transparency, "check_message_transparency",
-			      "Transparency", table_message, 0, 1, 1, 2);
-	
-	// Message colors
-	hbox_message_colors = gtk_hbox_new(FALSE, 5);
-	gtk_widget_set_name(hbox_message_colors, "hbox_message_color");
-	gtk_widget_show(hbox_message_colors);
-	gtk_table_attach(GTK_TABLE(table_message), hbox_message_colors, 1, 3, 1, 2,
-			 (GtkAttachOptions)(GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	GLADE_HOOKUP_OBJECT(m_Window, hbox_message_colors, "hbox_message_color");
-	createColorRadioButtons("Color:", "message", Colors_Msg, 4, hbox_message_colors);
-	
-	// Miscellaneous frame
-	CREATE_BOX_FRAME(frame_misc, "frame_misc", vboxDialog,
-			 label_misc, "label_misc", "<b><i>Miscellaneous</i></b>");
-	
-	// Intro effect colors
-	hbox_misc_intro_effect_colors = gtk_hbox_new(FALSE, 5);
-	gtk_widget_set_name(hbox_misc_intro_effect_colors, "hbox_misc_intro_effect_colors");
-	gtk_widget_show(hbox_misc_intro_effect_colors);
-	gtk_container_add(GTK_CONTAINER(frame_misc), hbox_misc_intro_effect_colors);
-	GLADE_HOOKUP_OBJECT(m_Window, 
-			    hbox_misc_intro_effect_colors,
-			    "hbox_misc_intro_effect_colors");
-	createColorRadioButtons("Intro Effect Color:", "misc_intro_effect",
-				Colors_IntroEffect, 8, hbox_misc_intro_effect_colors);
+	createColorRadioButtons(NULL, "misc_intro_effect",
+				Colors_IntroEffect, 0, vboxIntroEffectColor);
 	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();
@@ -352,59 +319,208 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 
 
 /**
+ * createOSDFrame(): Creates an on-screen display frame.
+ * @param title Title for this frame.
+ * @param index Frame index.
+ * @param container Container for the frame.
+ */
+void GeneralOptionsWindow::createOSDFrame(const char* title, const int index, GtkWidget *container)
+{
+	char tmp[64];
+	
+	// Create the frame.
+	GtkWidget *fraOSD = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraOSD, "fraOSD");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraOSD), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraOSD), 4);
+	gtk_widget_show(fraOSD);
+	sprintf(tmp, "fraOSD_%d", index);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(fraOSD), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(container), fraOSD, TRUE, TRUE, 0);
+	
+	// Create the label for the frame.
+	snprintf(tmp, sizeof(tmp), "<b><i>%s</i></b>", title);
+	tmp[sizeof(tmp) - 1] = 0x00;
+	GtkWidget *lblOSD = gtk_label_new(tmp);
+	
+	sprintf(tmp, "lblOSD_%d", index);
+	gtk_widget_set_name(lblOSD, tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblOSD), TRUE);
+	gtk_widget_show(lblOSD);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(lblOSD), (GDestroyNotify)g_object_unref);
+	gtk_frame_set_label_widget(GTK_FRAME(fraOSD), lblOSD);
+	
+	// Create the vbox for the frame.
+	GtkWidget *vboxOSD = gtk_vbox_new(FALSE, 0);
+	sprintf(tmp, "vboxOSD_%d", index);
+	gtk_widget_set_name(vboxOSD, tmp);
+	gtk_widget_show(vboxOSD);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(vboxOSD), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(fraOSD), vboxOSD);
+	
+	// Create the checkboxes.
+	
+	// Enable
+	chkOSD_Enable[index] = gtk_check_button_new_with_label("Enable");
+	sprintf(tmp, "chkOSD_Enable_%d", index);
+	gtk_widget_set_name(chkOSD_Enable[index], tmp);
+	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_Enable[index]), 2);
+	gtk_widget_show(chkOSD_Enable[index]);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(chkOSD_Enable[index]), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_Enable[index], FALSE, FALSE, 0);
+	
+	// Double Sized
+	chkOSD_DoubleSized[index] = gtk_check_button_new_with_label("Double Sized");
+	sprintf(tmp, "chkOSD_DoubleSized_%d", index);
+	gtk_widget_set_name(chkOSD_DoubleSized[index], tmp);
+	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_DoubleSized[index]), 2);
+	gtk_widget_show(chkOSD_DoubleSized[index]);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(chkOSD_DoubleSized[index]), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_DoubleSized[index], FALSE, FALSE, 0);
+	
+	// Transparency
+	chkOSD_Transparency[index] = gtk_check_button_new_with_label("Transparency");
+	sprintf(tmp, "chkOSD_Transparency_%d", index);
+	gtk_widget_set_name(chkOSD_Transparency[index], tmp);
+	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_Transparency[index]), 2);
+	gtk_widget_show(chkOSD_Transparency[index]);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(chkOSD_Transparency[index]), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_Transparency[index], FALSE, FALSE, 0);
+	
+	// Color HBox
+	GtkWidget *hboxOSD_Color = gtk_hbox_new(FALSE, 0);
+	sprintf(tmp, "hboxOSD_Color_%d", index);
+	gtk_widget_set_name(hboxOSD_Color, tmp);
+	gtk_container_set_border_width(GTK_CONTAINER(hboxOSD_Color), 8);
+	gtk_widget_show(hboxOSD_Color);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(hboxOSD_Color), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(vboxOSD), hboxOSD_Color);
+	
+	// Color Radio Buttons
+	sprintf(tmp, "OSD_%d", index);
+	createColorRadioButtons("Color:", tmp, Colors_OSD, index, hboxOSD_Color);
+}
+
+
+/**
  * createColorRadioButtons(): Create color radio buttons.
  * @param title Title for this color button group.
  * @param groupName Prefix for each button's name.
  * @param colors Array of colors.
  * @param num Number of colors to use.
+ * @param buttonSet Button set ID.
  * @param container Container for the radio buttons.
  */
 void GeneralOptionsWindow::createColorRadioButtons(const char* title,
 						   const char* groupName,
 						   const char* colors[][6],
-						   const int num,
+						   const int buttonSet,
 						   GtkWidget* container)
 {
-	GtkWidget *label_color, *radio_button_color;
-	GSList *color_group = NULL;
-	GdkColor tmpColor;
-	int i, j;
+	int numColors = 0;
+	
+	// Make sure a valid button set is specified.
+	if (colors == Colors_OSD)
+	{
+		if (buttonSet < 0 || buttonSet > 1)
+			return;
+		numColors = 4;
+	}
+	else if (colors == Colors_IntroEffect)
+	{
+		if (buttonSet != 0)
+			return;
+		numColors = 8;
+	}
+	else
+	{
+		return;
+	}
+	
 	char tmp[64];
 	
 	// Color label
-	sprintf(tmp, "label_%s_color", groupName);
-	label_color = gtk_label_new(title);
-	gtk_widget_set_name(label_color, tmp);
-	gtk_widget_show(label_color);
-	gtk_box_pack_start(GTK_BOX(container), label_color, TRUE, TRUE, 0);
-	GLADE_HOOKUP_OBJECT(m_Window, label_color, tmp);
+	if (title)
+	{
+		// Alignment object.
+		GtkWidget *alignColor = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+		sprintf(tmp, "alignColor_%s", groupName);
+		gtk_alignment_set_padding(GTK_ALIGNMENT(alignColor), 0, 0, 0, 8);
+		gtk_widget_show(alignColor);
+		g_object_set_data_full(G_OBJECT(m_Window), tmp,
+				       g_object_ref(alignColor), (GDestroyNotify)g_object_unref);
+		gtk_box_pack_start(GTK_BOX(container), alignColor, FALSE, FALSE, 0);
+		
+		// Label object.
+		GtkWidget *lblColor = gtk_label_new(title);
+		sprintf(tmp, "lblColor_%s", groupName);
+		gtk_widget_set_name(lblColor, tmp);
+		gtk_widget_show(lblColor);
+		g_object_set_data_full(G_OBJECT(m_Window), tmp,
+				       g_object_ref(lblColor), (GDestroyNotify)g_object_unref);
+		gtk_container_add(GTK_CONTAINER(alignColor), lblColor);
+	}
+	
+	// HBox for the color buttons.
+	GtkWidget *hboxButtons = gtk_hbox_new(TRUE, 0);
+	sprintf(tmp, "hboxButtons_%s", groupName);
+	gtk_widget_set_name(hboxButtons, tmp);
+	gtk_widget_show(hboxButtons);
+	g_object_set_data_full(G_OBJECT(m_Window), tmp,
+			       g_object_ref(hboxButtons), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(container), hboxButtons, FALSE, FALSE, 0);
 	
 	// Color Buttons
-	for (i = 0; i < num; i++)
+	GtkWidget *optColorButton;
+	GSList *gslColorButton = NULL;
+	GdkColor tmpColor;
+	
+	for (int i = 0; i < numColors; i++)
 	{
 		if (!colors[i][0])
 			return;
 		
-		sprintf(tmp, "radio_button_%s_color_%s", groupName, colors[i][0]);
-		radio_button_color = gtk_radio_button_new(color_group);
-		color_group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_button_color));
-		gtk_widget_set_name(radio_button_color, tmp);
+		optColorButton = gtk_radio_button_new(gslColorButton);
+		gslColorButton = gtk_radio_button_get_group(GTK_RADIO_BUTTON(optColorButton));
+		sprintf(tmp, "optColorButton_%s_%d", groupName, i);
+		gtk_widget_set_name(optColorButton, tmp);
 		
 		// Display as a regular button, not as a radio button.
-		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(radio_button_color), FALSE);
+		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(optColorButton), FALSE);
 		
 		// Set colors.
 		// GTK_STATE_NORMAL == 0
 		// GTK_STATE_INSENSITIVE == 4
-		for (j = GTK_STATE_NORMAL; j <= GTK_STATE_INSENSITIVE; j++)
+		for (int j = GTK_STATE_NORMAL; j <= GTK_STATE_INSENSITIVE; j++)
 		{
 			gdk_color_parse(colors[i][j + 1], &tmpColor);
-			gtk_widget_modify_bg(radio_button_color, (GtkStateType)j, &tmpColor);
+			gtk_widget_modify_bg(optColorButton, (GtkStateType)j, &tmpColor);
 		}
 		
-		gtk_widget_show(radio_button_color);
-		gtk_box_pack_start(GTK_BOX(container), radio_button_color, TRUE, TRUE, 0);
-		GLADE_HOOKUP_OBJECT(m_Window, radio_button_color, tmp);
+		gtk_widget_set_size_request(optColorButton, 16, 16);
+		gtk_widget_show(optColorButton);
+		g_object_set_data_full(G_OBJECT(m_Window), tmp,
+				       g_object_ref(optColorButton), (GDestroyNotify)g_object_unref);
+		gtk_box_pack_start(GTK_BOX(hboxButtons), optColorButton, TRUE, TRUE, 0);
+		
+		// Save the color button.
+		if (colors == Colors_OSD)
+		{
+			// OSD color button.
+			optOSD_Color[buttonSet][i] = optColorButton;
+		}
+		else //if (colors == Colors_IntroEffect)
+		{
+			// Intro Effect color button.
+			optIntroEffectColor[i] = optColorButton;
+		}
 	}
 }
 
@@ -414,64 +530,32 @@ void GeneralOptionsWindow::createColorRadioButtons(const char* title,
  */
 void GeneralOptionsWindow::load(void)
 {
-	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
-	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
-	unsigned char curFPSStyle;
-	GtkWidget *check_fps_enable, *check_fps_doublesized;
-	GtkWidget *check_fps_transparency, *radio_button_fps_color;
-	unsigned char curMsgStyle;
-	GtkWidget *check_message_enable, *check_message_doublesized;
-	GtkWidget *check_message_transparency, *radio_button_message_color;
-	GtkWidget *radio_button_intro_effect_color;
-	char tmp[64];
-	
 	// Get the current options.
 	
-	// System
-	check_system_autofixchecksum = lookup_widget(m_Window, "check_system_autofixchecksum");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_autofixchecksum), Auto_Fix_CS);
-	check_system_autopause = lookup_widget(m_Window, "check_system_autopause");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_autopause), Auto_Pause);
-	check_system_fastblur = lookup_widget(m_Window, "check_system_fastblur");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_fastblur), draw->fastBlur());
-	check_system_segacd_leds = lookup_widget(m_Window, "check_system_segacd_leds");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds), Show_LED);
+	// Miscellaneous
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_AutoFixChecksum), Auto_Fix_CS);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_AutoPause), Auto_Pause);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur), draw->fastBlur());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs), Show_LED);
 	
 	// FPS counter
-	check_fps_enable = lookup_widget(m_Window, "check_fps_enable");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_enable), (draw->fpsEnabled() ? 1 : 0));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), (draw->fpsEnabled() ? 1 : 0));
 	
-	curFPSStyle = draw->fpsStyle();
-	check_fps_doublesized = lookup_widget(m_Window, "check_fps_doublesized");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_doublesized), (curFPSStyle & 0x10));
-	check_fps_transparency = lookup_widget(m_Window, "check_fps_transparency");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_fps_transparency), (curFPSStyle & 0x08));
-	
-	// FPS counter color
-	sprintf(tmp, "radio_button_fps_color_%s", Colors_Msg[(curFPSStyle & 0x06) >> 1][0]);
-	radio_button_fps_color = lookup_widget(m_Window, tmp);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_fps_color), TRUE);
+	unsigned char curFPSStyle = draw->fpsStyle();
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0]), (curFPSStyle & 0x10));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0]), (curFPSStyle & 0x08));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[0][(curFPSStyle & 0x06) >> 1]), TRUE);
 	
 	// Message
-	check_message_enable = lookup_widget(m_Window, "check_message_enable");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_enable), (draw->msgEnabled() ? 1 : 0));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1]), (draw->msgEnabled() ? 1 : 0));
 	
-	curMsgStyle = draw->msgStyle();
-	check_message_doublesized = lookup_widget(m_Window, "check_message_doublesized");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_doublesized), (curMsgStyle & 0x10));
-	check_message_transparency = lookup_widget(m_Window, "check_message_transparency");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_message_transparency), (curMsgStyle & 0x08));
-	
-	// Message color
-	sprintf(tmp, "radio_button_message_color_%s", Colors_Msg[(curMsgStyle & 0x06) >> 1][0]);
-	radio_button_message_color = lookup_widget(m_Window, tmp);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_message_color), TRUE);
+	unsigned char curMsgStyle = draw->msgStyle();
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1]), (curMsgStyle & 0x10));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1]), (curMsgStyle & 0x08));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][(curMsgStyle & 0x06) >> 1]), TRUE);
 	
 	// Intro effect color
-	sprintf(tmp, "radio_button_misc_intro_effect_color_%s",
-		Colors_IntroEffect[draw->introEffectColor()][0]);
-	radio_button_intro_effect_color = lookup_widget(m_Window, tmp);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color), TRUE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[draw->introEffectColor()]), TRUE);
 }
 
 
@@ -480,47 +564,25 @@ void GeneralOptionsWindow::load(void)
  */
 void GeneralOptionsWindow::save(void)
 {
-	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
-	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
-	unsigned char curFPSStyle;
-	GtkWidget *check_fps_enable, *check_fps_doublesized;
-	GtkWidget *check_fps_transparency, *radio_button_fps_color;
-	unsigned char curMsgStyle;
-	GtkWidget *check_message_enable, *check_message_doublesized;
-	GtkWidget *check_message_transparency, *radio_button_message_color;
-	GtkWidget *radio_button_intro_effect_color;
-	char tmp[64]; short i;
-	
 	// Save the current options.
 	
-	// System
-	check_system_autofixchecksum = lookup_widget(m_Window, "check_system_autofixchecksum");
-	Auto_Fix_CS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autofixchecksum));
-	check_system_autopause = lookup_widget(m_Window, "check_system_autopause");
-	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_autopause));
-	check_system_fastblur = lookup_widget(m_Window, "check_system_fastblur");
-	draw->setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_fastblur)));
-	check_system_segacd_leds = lookup_widget(m_Window, "check_system_segacd_leds");
-	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_system_segacd_leds));
+	// Miscellaneous
+	Auto_Fix_CS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_AutoFixChecksum));
+	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_AutoPause));
+	draw->setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur)));
+	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
 	
 	// FPS counter
-	check_fps_enable = lookup_widget(m_Window, "check_fps_enable");
-	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_enable)));
+	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0])));
 	
-	curFPSStyle = draw->fpsStyle() & ~0x18;
-	check_fps_doublesized = lookup_widget(m_Window, "check_fps_doublesized");
-	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_doublesized)) ? 0x10 : 0x00);
-	check_fps_transparency = lookup_widget(m_Window, "check_fps_transparency");
-	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_fps_transparency)) ? 0x08 : 0x00);
+	unsigned char curFPSStyle = draw->fpsStyle() & ~0x18;
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0])) ? 0x10 : 0x00);
+	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0])) ? 0x08 : 0x00);
 	
 	// FPS counter color
-	for (i = 0; i < 4; i++)
+	for (unsigned char i = 0; i < 4; i++)
 	{
-		if (!Colors_Msg[i][0])
-			break;
-		sprintf(tmp, "radio_button_fps_color_%s", Colors_Msg[i][0]);
-		radio_button_fps_color = lookup_widget(m_Window, tmp);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_fps_color)))
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optOSD_Color[0][i])))
 		{
 			curFPSStyle &= ~0x06;
 			curFPSStyle |= (i << 1);
@@ -531,23 +593,16 @@ void GeneralOptionsWindow::save(void)
 	draw->setFPSStyle(curFPSStyle);
 	
 	// Message
-	check_message_enable = lookup_widget(m_Window, "check_message_enable");
-	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_enable)));
+	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1])));
 	
-	curMsgStyle = draw->msgStyle() & ~0x18;
-	check_message_doublesized = lookup_widget(m_Window, "check_message_doublesized");
-	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_doublesized)) ? 0x10 : 0x00);
-	check_message_transparency = lookup_widget(m_Window, "check_message_transparency");
-	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_message_transparency)) ? 0x08 : 0x00);
+	unsigned char curMsgStyle = draw->msgStyle() & ~0x18;
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1])) ? 0x10 : 0x00);
+	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1])) ? 0x08 : 0x00);
 	
 	// Message color
-	for (i = 0; i < 4; i++)
+	for (unsigned char i = 0; i < 4; i++)
 	{
-		if (!Colors_Msg[i][0])
-			break;
-		sprintf(tmp, "radio_button_message_color_%s", Colors_Msg[i][0]);
-		radio_button_message_color = lookup_widget(m_Window, tmp);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_message_color)))
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][i])))
 		{
 			curMsgStyle &= ~0x06;
 			curMsgStyle |= (i << 1);
@@ -558,13 +613,9 @@ void GeneralOptionsWindow::save(void)
 	draw->setMsgStyle(curMsgStyle);
 	
 	// Intro effect color
-	for (i = 0; i < 8; i++)
+	for (unsigned char i = 0; i < 8; i++)
 	{
-		if (!Colors_IntroEffect[i][0])
-			break;
-		sprintf(tmp, "radio_button_misc_intro_effect_color_%s", Colors_IntroEffect[i][0]);
-		radio_button_intro_effect_color = lookup_widget(m_Window, tmp);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_button_intro_effect_color)))
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[i])))
 		{
 			draw->setIntroEffectColor((unsigned char)i);
 			break;
