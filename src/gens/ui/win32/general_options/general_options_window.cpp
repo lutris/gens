@@ -356,25 +356,9 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 				hWnd, (HMENU)(0xA010 + i), ghInstance, NULL);
 	}
 	
-	// Buttons
-	frameTop += frameHeight + 8;
-	const int btnLeft = ((frameWidth - (75+8+75+8+75)) / 2) + 8;
-	HWND btnOK, btnApply, btnCancel;
-	
-	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-			     btnLeft, frameTop, 75, 23,
-			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
-	SetWindowFont(btnOK, fntMain, TRUE);
-	
-	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				btnLeft+75+8, frameTop, 75, 23,
-				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, TRUE);
-	
-	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				 btnLeft+75+8+75+8, frameTop, 75, 23,
-				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
-	SetWindowFont(btnCancel, fntMain, TRUE);
+	// Add the buttons.
+	addDialogButtons(hWnd, WndBase::BAlign_Default,
+			 WndBase::BUTTON_OK | WndBase::BUTTON_APPLY | WndBase::BUTTON_CANCEL, 0);
 	
 	// Set focus to "Auto Fix Checksum".
 	SetFocus(chkMisc_AutoFixChecksum);
