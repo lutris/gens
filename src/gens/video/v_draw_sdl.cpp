@@ -152,8 +152,6 @@ int VDraw_SDL::flipInternal(void)
 	SDL_LockSurface(screen);
 	
 	// Draw the border.
-	// TODO: Make this more accurate and/or more efficient.
-	// In particular, it only works for 1x and 2x rendering.
 	drawBorder();
 	
 	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
@@ -204,6 +202,9 @@ int VDraw_SDL::flipInternal(void)
  */
 void VDraw_SDL::drawBorder(void)
 {
+	// TODO: Make this more accurate and/or more efficient.
+	// In particular, it only works for 1x and 2x rendering.
+	
 	SDL_Rect border;
 	
 	if (!Video.borderColorEmulation)
