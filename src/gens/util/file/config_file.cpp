@@ -388,7 +388,7 @@ int Config::load(const string& filename, void* gameActive)
 	draw->setFullScreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.Render_FS = cfg.getInt("Graphics", "Render Fullscreen", 2) - 1; // Default: Double
 	Video.Render_W = cfg.getInt("Graphics", "Render Windowed", 2) - 1;    // Default: Double
-	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
+	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
