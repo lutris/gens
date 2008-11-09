@@ -240,9 +240,9 @@ void PWM_Update(int **buf, int length)
 	while (length > 0)
 	{
 		if (PWM_Out_L)
-			buf[0][length-1] += (tmpOutL & 0xFFFF);
+			buf[0][length-1] += tmpOutL;
 		if (PWM_Out_R)
-			buf[1][length-1] += (tmpOutR & 0xFFFF);
+			buf[1][length-1] += tmpOutR;
 		
 		length--;
 	}
