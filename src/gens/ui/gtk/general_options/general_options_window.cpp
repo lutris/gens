@@ -583,6 +583,10 @@ void GeneralOptionsWindow::save(void)
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	
+	// If Auto Pause is enabled, deactivate emulation.
+	// If Auto Pause is disabled, activate emulation.
+	Active = !Auto_Pause;
+	
 	// FPS counter
 	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0])));
 	

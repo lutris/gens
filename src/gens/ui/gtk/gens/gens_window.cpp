@@ -156,6 +156,12 @@ GtkWidget* create_gens_window(void)
 	g_signal_connect((gpointer)gens_window, "destroy-event",
 			 G_CALLBACK(on_gens_window_close), NULL);
 	
+	// Callbacks for Auto Pause.
+	g_signal_connect((gpointer)gens_window, "focus-in-event",
+			 G_CALLBACK(gens_window_focus_in), NULL);
+	g_signal_connect((gpointer)gens_window, "focus-out-event",
+			 G_CALLBACK(gens_window_focus_out), NULL);
+	
 	// Enable drag & drop for ROM loading.
 	const GtkTargetEntry target_list[] =
 	{

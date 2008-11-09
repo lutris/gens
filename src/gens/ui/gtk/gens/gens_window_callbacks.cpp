@@ -156,3 +156,38 @@ gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
 	}
 	return FALSE;
 }
+
+
+/** Focus callbacks **/
+
+
+/**
+ * gens_window_focus_in(): Gens window has received focus.
+ * @param widget GTK+ widget.
+ * @param event GDK event.
+ * @param user_data User data.
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ */
+gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+{
+	Active = 1;
+	return FALSE;
+}
+
+
+/**
+ * gens_window_focus_in(): Gens window has lost focus.
+ * @param widget GTK+ widget.
+ * @param event GDK event.
+ * @param user_data User data.
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ */
+gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+{
+	if (Auto_Pause && Active)
+	{
+		Active = 0;
+		audio->clearSoundBuffer();
+	}
+	return FALSE;
+}
