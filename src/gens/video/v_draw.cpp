@@ -59,6 +59,12 @@ VDraw::VDraw()
 	m_MsgTime = 0;
 	m_MsgStyle.style = 0;
 	
+	// Initialize the border variables.
+	m_HBorder = 0;
+	m_HBorder_Old = ~0;
+	m_BorderColor_16B = ~0;
+	m_BorderColor_32B = ~0;
+	
 	// Others.
 	m_Stretch = false;
 	m_IntroEffectColor = 7;
@@ -99,6 +105,12 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_MsgVisible = false;
 	m_MsgTime = 0;
 	m_MsgStyle.style = oldDraw->msgStyle();
+	
+	// Initialize the border variables.
+	m_HBorder = 0;
+	m_HBorder_Old = ~0;
+	m_BorderColor_16B = ~0;
+	m_BorderColor_32B = ~0;
 	
 	// Others.
 	m_Stretch = oldDraw->stretch();
