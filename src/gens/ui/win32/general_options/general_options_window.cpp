@@ -343,8 +343,19 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 					  hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_SegaCDLEDs, fntMain, TRUE);
 	
+	// Border Color Emulation
+	frameTop += 20;
+	chkMisc_BorderColorEmulation = CreateWindow(WC_BUTTON, "Border Color Emulation",
+						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						    frameLeft+8, frameTop, 128, 20,
+						    hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkMisc_BorderColorEmulation, fntMain, TRUE);
+	
+	// Border Color Emulation isn't implemented on Win32 yet, so disable the checkbox.
+	Button_Enable(chkMisc_BorderColorEmulation, FALSE);
+	
 	// Intro effect color label
-	frameTop += 20+2;
+	frameTop += 20+16+2;
 	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
 					   WS_CHILD | WS_VISIBLE | SS_CENTER,
 					   frameLeft+8, frameTop, frameWidth-16, 20,
@@ -546,6 +557,9 @@ void GeneralOptionsWindow::load(void)
 	Button_SetCheck(chkMisc_FastBlur, (draw->fastBlur() ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
 	
+	// Border Color Emulation isn't implemented on Win32 yet, so don't load this yet.
+	//Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
+	
 	// FPS counter
 	Button_SetCheck(chkOSD_Enable[0], (draw->fpsEnabled() ? BST_CHECKED : BST_UNCHECKED));
 	
@@ -580,6 +594,9 @@ void GeneralOptionsWindow::save(void)
 	Auto_Pause = (Button_GetCheck(chkMisc_AutoPause) == BST_CHECKED);
 	draw->setFastBlur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
 	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
+	
+	// Border Color Emulation isn't implemented on Win32 yet, so don't save this yet.
+	//Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	
 	// FPS counter
 	draw->setFPSEnabled(Button_GetCheck(chkOSD_Enable[0]) == BST_CHECKED);
