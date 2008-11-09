@@ -70,6 +70,7 @@ struct Gens_VideoSettings_t
 	int Render_FS;	// TODO: Make this an enum.
 	int VSync_FS;
 	int VSync_W;
+	int borderColorEmulation;
 #ifdef GENS_OPENGL
 	int OpenGL;
 	int Width_GL;

@@ -211,8 +211,9 @@ static int Build_Language_String (void)
 void Init_Settings(void)
 {
 	// Initialize video settings.
-	Video.Render_W = 1;	// Double
-	Video.Render_FS = 1;	// Double
+	Video.Render_W = 1;  // Double
+	Video.Render_FS = 1; // Double
+	Video.borderColorEmulation = 1;
 #ifdef GENS_OPENGL
 	Video.OpenGL = 1;
 	Video.Width_GL = 640;
