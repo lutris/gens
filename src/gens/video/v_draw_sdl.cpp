@@ -181,7 +181,7 @@ int VDraw_SDL::flipInternal(void)
 		// Message is visible.
 		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_MsgStyle);
 	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused && !Debug)
+	else if (m_FPSEnabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
 		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_FPSStyle);

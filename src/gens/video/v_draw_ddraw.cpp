@@ -43,7 +43,7 @@ inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
 			 w, h, m_MsgText.c_str(), m_MsgStyle, false);
 	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused && !Debug)
+	else if (m_FPSEnabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
 		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
