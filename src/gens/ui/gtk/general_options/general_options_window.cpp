@@ -71,7 +71,7 @@ GeneralOptionsWindow* GeneralOptionsWindow::Instance(GtkWindow *parent)
 {
 	if (m_Instance == NULL)
 	{
-		// Instance is deleted. Initialize the About window.
+		// Instance is deleted. Initialize the General Options window.
 		m_Instance = new GeneralOptionsWindow();
 	}
 	else
