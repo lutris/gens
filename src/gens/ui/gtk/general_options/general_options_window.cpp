@@ -279,6 +279,15 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 			       g_object_ref(chkMisc_SegaCDLEDs), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_SegaCDLEDs, FALSE, FALSE, 0);
 	
+	// Border Color Emulation
+	chkMisc_BorderColorEmulation = gtk_check_button_new_with_label("Border Color Emulation");
+	gtk_widget_set_name(chkMisc_BorderColorEmulation, "chkMisc_BorderColorEmulation");
+	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_BorderColorEmulation), 2);
+	gtk_widget_show(chkMisc_BorderColorEmulation);
+	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_BorderColorEmulation",
+			       g_object_ref(chkMisc_BorderColorEmulation), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_BorderColorEmulation, FALSE, FALSE, 0);
+	
 	// VBox for intro effect color
 	GtkWidget *vboxIntroEffectColor = gtk_vbox_new(FALSE, 0);
 	gtk_widget_set_name(vboxIntroEffectColor, "vboxIntroEffectColor");
@@ -537,6 +546,7 @@ void GeneralOptionsWindow::load(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_AutoPause), Auto_Pause);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur), draw->fastBlur());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs), Show_LED);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation), Video.borderColorEmulation);
 	
 	// FPS counter
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), (draw->fpsEnabled() ? 1 : 0));
@@ -571,6 +581,7 @@ void GeneralOptionsWindow::save(void)
 	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_AutoPause));
 	draw->setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur)));
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
+	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	
 	// FPS counter
 	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0])));
