@@ -149,24 +149,82 @@ void VDraw_SDL::clearScreen(void)
  */
 int VDraw_SDL::flipInternal(void)
 {
+	SDL_LockSurface(screen);
+	
+	// Draw the border.
+	// TODO: Make this more accurate and/or more efficient.
+	// In particular, it only works for 1x and 2x rendering.
+	drawBorder();
+	
+	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	
+	// Start of the SDL framebuffer.
+	int pitch = screen->w * bytespp;
+	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
+	
+	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
+	
+	// Start of the SDL framebuffer.
+	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
+	
+	if (m_FullScreen)
+	{
+		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+	}
+	else
+	{
+		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+	}
+	
+	// Draw the message and/or FPS.
+	if (m_MsgVisible)
+	{
+		// Message is visible.
+		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_MsgStyle);
+	}
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused && !Debug)
+	{
+		// FPS is enabled.
+		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_FPSStyle);
+	}
+	
+	SDL_UnlockSurface(screen);
+	
+	SDL_Flip(screen);
+	
+	// TODO: Return appropriate error code.
+	return 1;
+}
+
+
+/**
+ * drawBorder(): Draw the border color.
+ * Called from flipInternal().
+ */
+void VDraw_SDL::drawBorder(void)
+{
 	SDL_Rect border;
 	
-	SDL_LockSurface(screen);
+	if (!Video.borderColorEmulation)
+	{
+		// Border color emulation is disabled.
+		// Don't do anything if the border color is currently black.
+		if (m_BorderColor_16B == 0 && m_BorderColor_32B == 0)
+			return;
+	}
 	
 	unsigned short newBorderColor_16B = MD_Palette[0];
 	unsigned int newBorderColor_32B = MD_Palette32[0];
 	
-	if ((!Genesis_Started && !SegaCD_Started && !_32X_Started) || (Debug > 0))
+	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
 	{
-		// Either no system is active or the debugger is enabled.
+		// Either no game is loaded or the debugger is enabled.
 		// Make sure the border color is black.
 		newBorderColor_16B = 0;
 		newBorderColor_32B = 0;
 	}
 	
-	// Draw the border.
-	// TODO: Make this more accurate and/or more efficient.
-	// In particular, it only works for 1x and 2x rendering.
 	if ((bpp == 15 || bpp == 16) && (m_BorderColor_16B != newBorderColor_16B))
 	{
 		m_BorderColor_16B = newBorderColor_16B;
@@ -235,46 +293,6 @@ int VDraw_SDL::flipInternal(void)
 			SDL_FillRect(screen, &border, m_BorderColor_32B);
 		}
 	}
-	
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
-	
-	// Start of the SDL framebuffer.
-	int pitch = screen->w * bytespp;
-	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
-	
-	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
-	
-	// Start of the SDL framebuffer.
-	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
-	
-	if (m_FullScreen)
-	{
-		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
-	}
-	else
-	{
-		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
-	}
-	
-	// Draw the message and/or FPS.
-	if (m_MsgVisible)
-	{
-		// Message is visible.
-		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_MsgStyle);
-	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused && !Debug)
-	{
-		// FPS is enabled.
-		drawText(screen->pixels, screen->w, screen->w, screen->h, m_MsgText.c_str(), m_FPSStyle);
-	}
-	
-	SDL_UnlockSurface(screen);
-	
-	SDL_Flip(screen);
-	
-	// TODO: Return appropriate error code.
-	return 1;
 }
 
 

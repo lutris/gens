@@ -37,6 +37,7 @@ class VDraw_SDL : public VDraw
 		
 		// Flip the screen buffer. (Called by v_draw.)
 		int flipInternal(void);
+		void drawBorder(void);
 		
 		// Update the renderer.
 		void updateRenderer(void);
