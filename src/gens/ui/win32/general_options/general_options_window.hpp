@@ -20,40 +20,83 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_GENERAL_OPTIONS_WINDOW_H
-#define GENS_WIN32_GENERAL_OPTIONS_WINDOW_H
+#ifndef GENS_WIN32_GENERAL_OPTIONS_WINDOW_HPP
+#define GENS_WIN32_GENERAL_OPTIONS_WINDOW_HPP
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
+#include "wndbase.hpp"
 #include <windows.h>
 
-HWND create_general_options_window(void); 
-extern HWND general_options_window;
-void General_Options_Window_CreateChildWindows(HWND hWnd);
+class GeneralOptionsWindow : public WndBase
+{
+	public:
+		static GeneralOptionsWindow* Instance(HWND parent = NULL);
+		static bool isOpen(void) { return (m_Instance != NULL); }
+		
+		bool isDialogMessage(MSG *msg) { return IsDialogMessage((HWND)m_Window, msg); }
+	
+	protected:
+		GeneralOptionsWindow();
+		~GeneralOptionsWindow();
+		
+		static GeneralOptionsWindow* m_Instance;
+		
+		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+		
+		bool m_ChildWindowsCreated;
+		void CreateChildWindows(HWND hWnd);
+		
+		// Custom radio button drawing functions.
+		void drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem);
+		void selectRadioButton(int identifier);
+		
+		/*
+		void createColorRadioButtons(const char* title,
+					     const char* groupName, 
+					     const char* colors[][6],
+					     const int buttonSet,
+					     GtkWidget* container);
+		*/
+		
+		// Settings functions.
+		void load(void);
+		void save(void);
+		
+		// OSD items. [0 == FPS; 1 == MSG]
+		HWND chkOSD_Enable[2];
+		HWND chkOSD_DoubleSized[2];
+		HWND chkOSD_Transparency[2];
+		HWND optOSD_Color[2][4];
+		
+		void createOSDFrame(HWND hWnd, const int index,
+				    const int frameLeft,
+				    const int frameTop,
+				    const char* title);
+		
+		// Intro Effect color buttons.
+		HWND optIntroEffectColor[8];
+		
+		// Color states.
+		unsigned short state_optColor[3];
+		
+		// Miscellaneous settings.
+		HWND chkMisc_AutoFixChecksum;
+		HWND chkMisc_AutoPause;
+		HWND chkMisc_FastBlur;
+		HWND chkMisc_SegaCDLEDs;
+		
+		// GDI objects
+		HBRUSH brushOSD[4][2];
+		HPEN penOSD[4][2];
+		HBRUSH brushIntroEffect[8][2];
+		HPEN penIntroEffect[8][2];
+		
+		// Color data
+		static const COLORREF Colors_OSD[4][2];
+		static const COLORREF Colors_IntroEffect[8][2];
+};
+#endif /* __cplusplus */
 
-extern HBRUSH go_MsgColors_brushes[4][2];
-extern HPEN go_MsgColors_pens[4][2];
-extern HBRUSH go_IntroEffectColors_brushes[8][2];
-extern HPEN go_IntroEffectColors_pens[8][2];
-
-// Controls
-extern HWND go_chkAutoFixChecksum;
-extern HWND go_chkAutoPause;
-extern HWND go_chkFastBlur;
-extern HWND go_chkSegaCDLEDs;
-
-// Index 0: FPS; Index 1: msg
-extern HWND go_chkMsgEnable[2];
-extern HWND go_chkMsgDoubleSized[2];
-extern HWND go_chkMsgTransparency[2];
-extern HWND go_stcMsgColor[2][4];
-extern HWND go_stcIntroEffectColor[8];
-extern unsigned short go_stcColor_State[3];
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif /* GENS_WIN32_GENERAL_OPTIONS_WINDOW_HPP */

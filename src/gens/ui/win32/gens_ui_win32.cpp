@@ -235,7 +235,7 @@ void GensUI::update(void)
 		    (controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 		    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
-		    (general_options_window && IsDialogMessage(general_options_window, &msg)) ||
+		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||
 		    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
