@@ -52,14 +52,6 @@ class GeneralOptionsWindow : public WndBase
 		void drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem);
 		void selectRadioButton(int identifier);
 		
-		/*
-		void createColorRadioButtons(const char* title,
-					     const char* groupName, 
-					     const char* colors[][6],
-					     const int buttonSet,
-					     GtkWidget* container);
-		*/
-		
 		// Settings functions.
 		void load(void);
 		void save(void);
@@ -71,8 +63,10 @@ class GeneralOptionsWindow : public WndBase
 		HWND optOSD_Color[2][4];
 		
 		void createOSDFrame(HWND hWnd, const int index,
-				    const int frameLeft,
-				    const int frameTop,
+				    const short frameLeft,
+				    const short frameTop,
+				    const short frameWidth,
+				    const short frameHeight,
 				    const char* title);
 		
 		// Intro Effect color buttons.

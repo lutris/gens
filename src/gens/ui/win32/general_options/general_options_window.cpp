@@ -66,8 +66,8 @@ const COLORREF GeneralOptionsWindow::Colors_IntroEffect[8][2] =
 	{RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00)},
 };
 
-static const int frameWidth = 304;
-static const int frameHeight = 64;
+static const int frameWidth = 160;
+static const int frameHeight = 256-16;
 
 
 GeneralOptionsWindow* GeneralOptionsWindow::m_Instance = NULL;
@@ -124,11 +124,11 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	m_Window = CreateWindowEx(NULL, "Gens_General_Options", "General Options",
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  frameWidth + 16, (frameHeight * 5) + 8,
+				  (frameWidth*2)+16+8, frameHeight+16+24+8,
 				  Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, frameWidth + 16, (frameHeight * 5) + 8);
+	Win32_setActualWindowSize(m_Window, (frameWidth*2)+16+8, frameHeight+16+24+8);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(m_Window);
@@ -260,8 +260,8 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 	
 	HWND grpBox, lblIntroEffectColor;
 	
-	const int frameLeft = 8;
-	int frameTop = 8;
+	unsigned short frameLeft = 8;
+	unsigned short frameTop = 8;
 	unsigned short i, j;
 	
 	// Create message color brushes and pens.
@@ -289,70 +289,76 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 	state_optColor[1] = 0;
 	state_optColor[2] = 0;
 	
-	// System frame
-	grpBox = CreateWindow(WC_BUTTON, "System",
-			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-			      frameLeft, frameTop, frameWidth, frameHeight,
-			      hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(grpBox, fntMain, TRUE);
-	
-	// Auto Fix Checksum
-	chkMisc_AutoFixChecksum = CreateWindow(WC_BUTTON, "Auto Fix Checksum",
-					       WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					       frameLeft+8, frameTop+16, 128, 20,
-					       hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_AutoFixChecksum, fntMain, TRUE);
-	
-	// Auto Pause
-	chkMisc_AutoPause = CreateWindow(WC_BUTTON, "Auto Pause",
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					 frameLeft+8+128+8+16, frameTop+16, 128, 20,
-					 hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_AutoPause, fntMain, TRUE);
-	
-	// Fast Blur
-	chkMisc_FastBlur = CreateWindow(WC_BUTTON, "Fast Blur",
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					frameLeft+8, frameTop+16+20, 128, 20,
-					hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_FastBlur, fntMain, TRUE);
-	
-	// Show SegaCD LEDs
-	chkMisc_SegaCDLEDs = CreateWindow(WC_BUTTON, "Show SegaCD LEDs",
-					  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					  frameLeft+8+128+8+16, frameTop+16+20, 128, 20,
-					  hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(chkMisc_SegaCDLEDs, fntMain, TRUE);
+	// On-Screen Display frame
+	HWND fraOSD = CreateWindow(WC_BUTTON, "On-Screen Display",
+				   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				   8, 8, frameWidth, frameHeight,
+				   hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(fraOSD, fntMain, TRUE);
 	
 	// FPS counter frame
-	frameTop += frameHeight + 8;
-	createOSDFrame(hWnd, 0, frameLeft, frameTop, "FPS counter");
+	createOSDFrame(hWnd, 0, 16, 24, frameWidth-16, (frameHeight/2)-16, "FPS counter");
 	
-	// Message frame
-	frameTop += frameHeight + 8;
-	createOSDFrame(hWnd, 1, frameLeft, frameTop, "Message");
+	// Message counter frame
+	createOSDFrame(hWnd, 1, 16, (frameHeight/2)+16, frameWidth-16, (frameHeight/2)-16, "Message");
 	
 	// Miscellaneous frame
-	frameTop += frameHeight + 8;
+	frameLeft += frameWidth + 8;
+	
 	grpBox = CreateWindow(WC_BUTTON, "Miscellaneous",
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      frameLeft, frameTop, frameWidth, frameHeight,
 			      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, TRUE);
 	
+	// Auto Fix Checksum
+	frameTop += 16;
+	chkMisc_AutoFixChecksum = CreateWindow(WC_BUTTON, "Auto Fix Checksum",
+					       WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+					       frameLeft+8, frameTop, 128, 20,
+					       hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkMisc_AutoFixChecksum, fntMain, TRUE);
+	
+	// Auto Pause
+	frameTop += 20;
+	chkMisc_AutoPause = CreateWindow(WC_BUTTON, "Auto Pause",
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+					 frameLeft+8, frameTop, 128, 20,
+					 hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkMisc_AutoPause, fntMain, TRUE);
+	
+	// Fast Blur
+	frameTop += 20;
+	chkMisc_FastBlur = CreateWindow(WC_BUTTON, "Fast Blur",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+					frameLeft+8, frameTop, 128, 20,
+					hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkMisc_FastBlur, fntMain, TRUE);
+	
+	// Show SegaCD LEDs
+	frameTop += 20;
+	chkMisc_SegaCDLEDs = CreateWindow(WC_BUTTON, "Show SegaCD LEDs",
+					  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+					  frameLeft+8, frameTop, 128, 20,
+					  hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkMisc_SegaCDLEDs, fntMain, TRUE);
+	
 	// Intro effect color label
+	frameTop += 20+2;
 	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
-					   WS_CHILD | WS_VISIBLE | SS_LEFT,
-					   frameLeft+8, frameTop+16+2, 64, 32,
+					   WS_CHILD | WS_VISIBLE | SS_CENTER,
+					   frameLeft+8, frameTop, frameWidth-16, 20,
 					   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblIntroEffectColor, fntMain, TRUE);
 	
 	// Intro effect color buttons
+	frameLeft += 8+4 + (((frameWidth-16) - (4*(16+8))) / 2);
+	frameTop += 20;
 	for (i = 0; i < 8; i++)
 	{
 		optIntroEffectColor[i] = CreateWindow(
 				WC_STATIC, "", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				frameLeft+8+92+8+(i*(16+8)), frameTop+16+2+8, 16, 16,
+				frameLeft + ((i%4)*(16+8)), frameTop + ((i / 4) * (16+4)), 16, 16,
 				hWnd, (HMENU)(0xA010 + i), ghInstance, NULL);
 	}
 	
@@ -360,8 +366,8 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 	addDialogButtons(hWnd, WndBase::BAlign_Default,
 			 WndBase::BUTTON_OK | WndBase::BUTTON_APPLY | WndBase::BUTTON_CANCEL, 0);
 	
-	// Set focus to "Auto Fix Checksum".
-	SetFocus(chkMisc_AutoFixChecksum);
+	// Set focus to "FPS counter" - "Enable".
+	SetFocus(chkOSD_Enable[0]);
 	
 	// Child windows created.
 	m_ChildWindowsCreated = true;
@@ -369,8 +375,10 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 
 
 void GeneralOptionsWindow::createOSDFrame(HWND hWnd, const int index,
-					  const int frameLeft,
-					  const int frameTop,
+					  const short frameLeft,
+					  const short frameTop,
+					  const short frameWidth,
+					  const short frameHeight,
 					  const char* title)
 {
 	// Message frame
@@ -393,21 +401,21 @@ void GeneralOptionsWindow::createOSDFrame(HWND hWnd, const int index,
 	// Double Sized
 	chkOSD_DoubleSized[index] = CreateWindow(WC_BUTTON, "Double Sized",
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						 frameLeft+8+128+8+16, frameTop+16, 128, 20,
+						 frameLeft+8, frameTop+16+20, 128, 20,
 						 hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_DoubleSized[index], fntMain, TRUE);
 	
 	// Transparency
 	chkOSD_Transparency[index] = CreateWindow(WC_BUTTON, "Transparency",
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						  frameLeft+8, frameTop+16+20, 128, 20,
+						  frameLeft+8, frameTop+16+20+20, 128, 20,
 						  hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Transparency[index], fntMain, TRUE);
 	
 	// Color label
 	lblColor = CreateWindow(WC_STATIC, "Color:",
 				WS_CHILD | WS_VISIBLE | SS_LEFT,
-				frameLeft+8+128+8+16, frameTop+16+20+2, 36, 16,
+				frameLeft+8, frameTop+16+20+20+20+2, 36, 20,
 				hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblColor, fntMain, TRUE);
 	
@@ -416,7 +424,7 @@ void GeneralOptionsWindow::createOSDFrame(HWND hWnd, const int index,
 	{
 		optOSD_Color[index][i] = CreateWindow(
 				WC_STATIC, "", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				frameLeft+8+128+8+32+4+16+4+(i*(16+8)), frameTop+16+20+2, 16, 16,
+				frameLeft+8+36+4+(i*(16+8)), frameTop+16+20+20+20+2, 16, 16,
 				hWnd, (HMENU)(0xA000 + ((index * 4) + i)), ghInstance, NULL);
 	}
 }
