@@ -62,6 +62,7 @@ class VDraw_SDL_GL : public VDraw
 		
 		// Flip the screen buffer. (Called by v_draw.)
 		int flipInternal(void);
+		void drawBorder(void);
 		
 		// Adjust stretch parameters.
 		void stretchAdjustInternal(void);

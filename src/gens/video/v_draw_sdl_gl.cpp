@@ -388,9 +388,24 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glEnd();
 	
-	// Border color emulation.
+	// Draw the border.
+	if (Video.borderColorEmulation)
+		drawBorder();
 	
-	if ((!Genesis_Started && !SegaCD_Started && !_32X_Started) || (Debug > 0))
+	// Swap the SDL GL buffers.
+	SDL_GL_SwapBuffers();
+	
+	// TODO: Return appropriate error code.
+	return 1;
+}
+
+
+void VDraw_SDL_GL::drawBorder(void)
+{
+	if (!Video.borderColorEmulation)
+		return;
+	
+	if ((Game == NULL) || (Debug > 0))
 	{
 		// Either no system is active or the debugger is enabled.
 		// Make sure the border color is black.
@@ -431,14 +446,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glEnable(GL_TEXTURE_2D);
 	}
-	
-	// Swap the SDL GL buffers.
-	SDL_GL_SwapBuffers();
-	
-	// TODO: Return appropriate error code.
-	return 1;
 }
-
 
 /**
  * Init_Subsystem(): Initialize the OS-specific graphics library.
