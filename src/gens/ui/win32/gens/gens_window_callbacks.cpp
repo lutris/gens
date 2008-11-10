@@ -173,14 +173,27 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			if (!input)
 				break;
 			
-			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
+			if (LOWORD(wParam) != WA_INACTIVE)
 			{
 				// Set the DirectInput cooperative level.
 				reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
 				
 				// Initialize joysticks.
 				reinterpret_cast<Input_DInput*>(input)->initJoysticks(hWnd);
+				
+				// Auto Pause - reactivate the game.
+				Active = 1;
 			}
+			else
+			{
+				// Auto Pause - deactivate the game.
+				if (Auto_Pause && Active)
+				{
+					Active = 0;
+					audio->clearSoundBuffer();
+				}
+			}
+			
 			break;
 		
 		case WM_PAINT:

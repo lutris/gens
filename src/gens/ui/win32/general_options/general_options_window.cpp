@@ -595,6 +595,10 @@ void GeneralOptionsWindow::save(void)
 	draw->setFastBlur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
 	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
 	
+	// If Auto Pause is enabled, deactivate emulation.
+	// If Auto Pause is disabled, activate emulation.
+	Active = !Auto_Pause;
+	
 	// Border Color Emulation isn't implemented on Win32 yet, so don't save this yet.
 	//Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	
