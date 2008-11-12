@@ -1,5 +1,5 @@
-#ifndef GENS_ROM_H
-#define GENS_ROM_H
+#ifndef GENS_ROM_HPP
+#define GENS_ROM_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,14 +55,16 @@ extern char ROM_Name[512];
 #endif
 
 #ifdef __cplusplus
+
+#include <string>
+
 // New C++ ROM class.
 class ROM
 {
 	public:
-		static void getNameFromPath(const char* fullPath, char* retFilename);
-		static void getDirFromPath(const char *fullPath, char *retDirName);
+		static std::string getNameFromPath(const std::string& fullPath);
+		static std::string getDirFromPath(const std::string& fullPath);
 		static void updateCDROMName(const char *cdromName);
-		
 		
 		static int getROM(void);
 		static int openROM(const char *Name);
@@ -75,7 +77,7 @@ class ROM
 		static void fixChecksum(void);
 		static int applyIPSPatch(void);
 		static void freeROM(ROM_t* ROM_MD);
-		
+	
 	protected:
 		static void updateRecentROMList(const char* filename);
 		static void updateROMDir(const char *filename);
@@ -98,4 +100,4 @@ ROMType detectFormat(const unsigned char buf[2048]);
 }
 #endif
 
-#endif /* GENS_ROM_H */
+#endif /* GENS_ROM_HPP */

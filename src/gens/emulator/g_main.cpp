@@ -244,8 +244,11 @@ void Init_Settings(void)
 #ifdef GENS_OS_WIN32
 	// Win32 needs the program's pathname.
 	char exeFilename[1024];
+	string tmpEXEPath;
 	GetModuleFileName(NULL, exeFilename, sizeof(exeFilename));
-	ROM::getDirFromPath(exeFilename, PathNames.Gens_EXE_Path);
+	tmpEXEPath = ROM::getDirFromPath(exeFilename);
+	strncpy(PathNames.Gens_EXE_Path, tmpEXEPath.c_str(), sizeof(PathNames.Gens_EXE_Path));
+	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path) - 1] = 0x00;
 #endif
 	
 	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);

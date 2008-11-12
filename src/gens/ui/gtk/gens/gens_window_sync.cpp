@@ -137,7 +137,6 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	
 	GtkWidget *mnuROMHistory_item;
 	string sROMHistoryEntry;
-	char sTmpROMFilename[GENS_PATH_MAX];
 	char sMenuKey[24];
 	int romFormat;
 	int romsFound = 0;
@@ -162,8 +161,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		ROM::getNameFromPath(Recent_Rom[i], sTmpROMFilename);
-		sROMHistoryEntry += sTmpROMFilename;
+		sROMHistoryEntry += ROM::getNameFromPath(Recent_Rom[i]);;
 		
 		// Add the ROM item to the ROM History submenu.
 		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());

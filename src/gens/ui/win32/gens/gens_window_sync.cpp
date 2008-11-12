@@ -141,7 +141,6 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	gensMenuMap.insert(win32MenuMapItem(IDM_FILE_ROMHISTORY, mnuROMHistory));
 	
 	string sROMHistoryEntry;
-	char sTmpROMFilename[GENS_PATH_MAX];
 	int romFormat;
 	int romsFound = 0;
 	for (unsigned short i = 0; i < 9; i++)
@@ -165,8 +164,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		ROM::getNameFromPath(Recent_Rom[i], sTmpROMFilename);
-		sROMHistoryEntry += sTmpROMFilename;
+		sROMHistoryEntry += ROM::getNameFromPath(Recent_Rom[i]);
 		
 		// Add the ROM item to the ROM History submenu.
 		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,
