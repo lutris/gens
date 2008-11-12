@@ -135,9 +135,9 @@ int VDraw_DDraw::Init_Video(void)
 			return Init_Fail(Gens_hWnd, "Error with lpDD->SetDisplayMode()!");
 	}
 	
-	lpDD->GetDisplayMode(&ddsd);
-	
+	// Check the current color depth.
 	unsigned char newBpp;
+	lpDD->GetDisplayMode(&ddsd);
 	switch (ddsd.ddpfPixelFormat.dwGBitMask)
 	{
 		case 0x03E0:
