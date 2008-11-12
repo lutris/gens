@@ -54,7 +54,9 @@ const struct Renderer_t Renderers[] =
 	{"Interpolated 25% Scanline", NULL, Blit2x_Scanline_25_Int_16_asm_MMX, NULL, NULL},
 	{"2xSAI (Kreed)", NULL, Blit_2xSAI_16_asm_MMX, NULL, NULL},
 	{"Scale2x", Blit_Scale2x_16, Blit_Scale2x_16, Blit_Scale2x_32, Blit_Scale2x_32},
+#ifndef GENS_OS_WIN32
 	{"HQ2x", NULL, Blit_HQ2x_16_asm, NULL, NULL},
+#endif /* GENS_OS_WIN32 */
 	{NULL, NULL, NULL, NULL, NULL},
 };
 
