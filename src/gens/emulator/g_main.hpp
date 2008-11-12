@@ -1,6 +1,8 @@
 #ifndef G_MAIN_HPP
 #define G_MAIN_HPP
 
+#include "gens.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -8,8 +10,6 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#include "gens.hpp"
 
 // OS-specific includes.
 #if defined(GENS_OS_UNIX)

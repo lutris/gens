@@ -23,11 +23,11 @@
 #ifndef GENS_UI_HPP
 #define GENS_UI_HPP
 
+#include "emulator/gens.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "emulator/gens.hpp"
 
 typedef enum
 {

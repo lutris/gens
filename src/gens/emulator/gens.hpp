@@ -4,10 +4,6 @@
 // GENS version information
 #define GENS_APPNAME "Gens"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Maximum path name length.
 // TODO: Use PATH_MAX instead?
 #define GENS_PATH_MAX 1024
@@ -19,17 +15,6 @@ extern "C" {
 
 #define CLOCK_NTSC 53693175
 #define CLOCK_PAL  53203424
-
-extern int Debug;
-extern int Frame_Skip;
-extern int Frame_Number;
-extern int DAC_Improv;
-
-int Round_Double(const double val);
-void Init_Tab(void);
-void Check_Country_Order(void);
-
-void Set_Clock_Freq(const int system);
 
 /**
  * STUB: Indicates that this function is a stub.
@@ -70,6 +55,21 @@ void Set_Clock_Freq(const int system);
 	else								\
 		z80_Set_Odo(&M_Z80, Cycles_Z80 - (cyclesSubtract));	\
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern int Debug;
+extern int Frame_Skip;
+extern int Frame_Number;
+extern int DAC_Improv;
+
+int Round_Double(const double val);
+void Init_Tab(void);
+void Check_Country_Order(void);
+
+void Set_Clock_Freq(const int system);
 
 #ifdef __cplusplus
 }
