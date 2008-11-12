@@ -743,6 +743,9 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		return reinitGensWindow();
 	}
 	
+	// Clear the screen.
+	clearScreen();
+	
 	return 1;
 }
 
