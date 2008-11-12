@@ -126,6 +126,15 @@ int VDraw_DDraw::Init_Video(void)
 	memset(&ddsd, 0, sizeof(ddsd));
 	ddsd.dwSize = sizeof(ddsd);
 	
+	// TODO: Figure out what FS_No_Res_Change is for.
+	// TODO: Figure out if this is correct.
+	if (m_FullScreen /* && !FS_No_Res_Change*/)
+	{
+		// Always use 16-bit color in fullscreen.
+		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, 16, 0, 0)))
+			return Init_Fail(Gens_hWnd, "Error with lpDD->SetDisplayMode()!");
+	}
+	
 	lpDD->GetDisplayMode(&ddsd);
 	
 	unsigned char newBpp;
@@ -150,14 +159,6 @@ int VDraw_DDraw::Init_Video(void)
 		setBpp(newBpp, false);
 	
 	setCooperativeLevel();
-	
-	// TODO: Figure out what FS_No_Res_Change is for.
-	// TODO: Figure out if this is correct.
-	if (m_FullScreen /* && !FS_No_Res_Change*/)
-	{
-		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, bpp, 0, 0)))
-			return Init_Fail(Gens_hWnd, "Error with lpDD->SetDisplayMode()!");
-	}
 	
 	// Clear ddsd.
 	memset(&ddsd, 0x00, sizeof(ddsd));
