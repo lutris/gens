@@ -4,8 +4,8 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 if GENS_X86_ASM
 gens_x86_asm_o = \
-		gens_core/gfx/blit1x.o \
-		gens_core/gfx/blit2x.o \
+		gens_core/gfx/blit1x_16.o \
+		gens_core/gfx/blit2x_16.o \
 		gens_core/gfx/blit2x_int.o \
 		gens_core/gfx/blit2x_scanline.o \
 		gens_core/gfx/blit2x_scanline_50.o \
@@ -18,8 +18,8 @@ gens_x86_asm_o = \
 		gens_core/misc/fastblur_16.o \
 		audio/audio_mmx.o
 gens_x86_asm_src = \
-		gens_core/gfx/blit1x.asm \
-		gens_core/gfx/blit2x.asm \
+		gens_core/gfx/blit1x_16.asm \
+		gens_core/gfx/blit2x_16.asm \
 		gens_core/gfx/blit2x_int.asm \
 		gens_core/gfx/blit2x_scanline.asm \
 		gens_core/gfx/blit2x_scanline_50.asm \
