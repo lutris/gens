@@ -104,8 +104,11 @@ static const char* opt1arg_str[][3] =
 						"\t 8: Interpolated Scanline 50%\n"
 						"\t 9: Interpolated Scanline 25%\n"
 						"\t10: 2xSAI Kreed\n"
-						"\t11: AdvanceMAME Scale2x\n"
-						"\t12: HQ2x"},
+						"\t11: AdvanceMAME Scale2x"
+#ifndef GENS_OS_WIN32
+						"\n\t12: HQ2x"
+#endif /* GENS_OS_WIN32 */
+						},
 	{"frameskip",		"number",	"Frameskip (-1 [Auto] -> 9)"},
 	{"soundrate",		"rate",		"Sound Rate (11025, 22050, 44100 Hz)"},
 	{"msh2-speed",		"percentage"	"Master SH2 Speed"},
