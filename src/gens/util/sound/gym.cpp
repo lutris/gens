@@ -13,7 +13,7 @@
 
 #include "ui/gens_ui.hpp"
 
-FILE *GYM_File;
+static FILE *GYM_File;
 int GYM_Dumping = 0;
 
 
