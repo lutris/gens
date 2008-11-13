@@ -19,8 +19,9 @@
 
 struct pcm_chip_ PCM_Chip;
 
+static int PCM_Volume_Tab[256 * 256];
+
 unsigned char Ram_PCM[64 * 1024];
-int PCM_Volume_Tab[256 * 256];
 int PCM_Enable;
 
 /**
@@ -28,7 +29,7 @@ int PCM_Enable;
  * @param Rate Sample rate.
  * @return 0 if successful.
  */
-int Init_PCM (int Rate)
+int Init_PCM(int Rate)
 {
 	int i, j, out;
 	
@@ -50,8 +51,8 @@ int Init_PCM (int Rate)
 		}
 	}
 	
-	Reset_PCM ();
-	Set_Rate_PCM (Rate);
+	Reset_PCM();
+	Set_Rate_PCM(Rate);
 	
 	return 0;
 }
@@ -59,12 +60,12 @@ int Init_PCM (int Rate)
 /**
  * Reset_PCM(): Reset the PCM chip.
  */
-void Reset_PCM (void)
+void Reset_PCM(void)
 {
 	int i;
 	
 	// Clear the PCM memory.
-	memset (Ram_PCM, 0, 64 * 1024);
+	memset(Ram_PCM, 0, 64 * 1024);
 	
 	PCM_Chip.Enable = 0;
 	
@@ -87,7 +88,7 @@ void Reset_PCM (void)
  * Set_Rate_PCM(): Change the PCM sample rate.
  * @param Rate New sample rate.
  */
-void Set_Rate_PCM (int Rate)
+void Set_Rate_PCM(int Rate)
 {
 	int i;
 	
@@ -110,7 +111,7 @@ void Set_Rate_PCM (int Rate)
  * @param Reg Register ID.
  * @param Data Data to write.
  */
-void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
+void Write_PCM_Reg(unsigned int Reg, unsigned int Data)
 {
 	int i;
 	
@@ -141,9 +142,9 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B &= 0xFF00;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B += Data;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step =
-			(int) ((float) PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B * PCM_Chip.Rate);
+				(int)((float)PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B * PCM_Chip.Rate);
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file,
+			fprintf(debug_SCD_file,
 				 "PCM : Step low = %.2X   Step calculated = %.8X\n", Data,
 				 PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step);
 #endif
@@ -154,9 +155,9 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B &= 0x00FF;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B += Data << 8;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step =
-				(int) ((float) PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B * PCM_Chip.Rate);
+				(int)((float)PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B * PCM_Chip.Rate);
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file,
+			fprintf(debug_SCD_file,
 				 "PCM : Step high = %.2X   Step calculated = %.8X\n", Data,
 				 PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step);
 #endif
@@ -166,7 +167,7 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr &= 0xFF00;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr += Data;			
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file, "PCM : Loop low = %.2X   Loop = %.8X\n", Data,
+			fprintf(debug_SCD_file, "PCM : Loop low = %.2X   Loop = %.8X\n", Data,
 				 PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr);
 #endif
 			break;
@@ -176,7 +177,7 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr &= 0x00FF;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr += Data << 8;
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file, "PCM : Loop high = %.2X   Loop = %.8X\n", Data,
+			fprintf(debug_SCD_file, "PCM : Loop high = %.2X   Loop = %.8X\n", Data,
 				PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr);
 #endif
 			break;
@@ -187,7 +188,7 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 				Data << (PCM_STEP_SHIFT + 8);
 			//PCM_Chip.Channel[PCM_Chip.Cur_Chan].Addr = PCM_Chip.Channel[PCM_Chip.Cur_Chan].St_Addr;
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file, "PCM : Start addr = %.2X   New Addr = %.8X\n",
+			fprintf(debug_SCD_file, "PCM : Start addr = %.2X   New Addr = %.8X\n",
 				 Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Addr);
 #endif
 			break;
@@ -214,7 +215,7 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 				PCM_Chip.Enable = 0;
 			
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file, "PCM : General Enable = %.2X\n", Data);
+			fprintf(debug_SCD_file, "PCM : General Enable = %.2X\n", Data);
 #endif
 			break;
 		
@@ -223,7 +224,7 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
 			Data ^= 0xFF;
 
 #ifdef DEBUG_CD
-			fprintf (debug_SCD_file, "PCM : Channel Enable = %.2X\n", Data);
+			fprintf(debug_SCD_file, "PCM : Channel Enable = %.2X\n", Data);
 #endif
 			
 			for (i = 0; i < 8; i++)
@@ -245,7 +246,7 @@ void Write_PCM_Reg (unsigned int Reg, unsigned int Data)
  * @param buf PCM buffer.
  * @param Length Buffer length.
  */
-int Update_PCM (int **buf, int Length)
+int Update_PCM(int **buf, int Length)
 {
 	int i, j;
 	int *bufL, *bufR;		//, *volL, *volR;
@@ -259,7 +260,7 @@ int Update_PCM (int **buf, int Length)
 	bufL = buf[0];
 	bufR = buf[1];
 	
-/*
+#if 0
 	// faster for short update
 	for (j = 0; j < Length; j++)
 	{
@@ -331,7 +332,7 @@ int Update_PCM (int **buf, int Length)
 			}
 		}
 	}
-*/
+#endif
 	
 	// for long update
 	for (i = 0; i < 8; i++)

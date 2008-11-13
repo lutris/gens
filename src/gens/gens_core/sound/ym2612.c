@@ -104,40 +104,75 @@
 
 struct ym2612__ YM2612;
 
-int *SIN_TAB[SIN_LENGTH];	// SINUS TABLE (pointer on TL TABLE)
-int TL_TAB[TL_LENGTH * 2];	// TOTAL LEVEL TABLE (positif and minus)
-unsigned int ENV_TAB[2 * ENV_LENGTH + 8];	// ENV CURVE TABLE (attack & decay)
+static int *SIN_TAB[SIN_LENGTH];			// SINUS TABLE (pointer on TL TABLE)
+static int TL_TAB[TL_LENGTH * 2];			// TOTAL LEVEL TABLE (positif and minus)
+static unsigned int ENV_TAB[2 * ENV_LENGTH + 8];	// ENV CURVE TABLE (attack & decay)
 
-//unsigned int ATTACK_TO_DECAY[ENV_LENGTH];     // Conversion from attack to decay phase
-unsigned int DECAY_TO_ATTACK[ENV_LENGTH];	// Conversion from decay to attack phase
+//static unsigned int ATTACK_TO_DECAY[ENV_LENGTH];	// Conversion from attack to decay phase
+static unsigned int DECAY_TO_ATTACK[ENV_LENGTH];	// Conversion from decay to attack phase
 
-unsigned int FINC_TAB[2048];	// Frequency step table
+static unsigned int FINC_TAB[2048];	// Frequency step table
 
-unsigned int AR_TAB[128];	// Attack rate table
-unsigned int DR_TAB[96];	// Decay rate table
-unsigned int DT_TAB[8][32];	// Detune table
-unsigned int SL_TAB[16];	// Substain level table
-unsigned int NULL_RATE[32];	// Table for NULL rate
+static unsigned int AR_TAB[128];	// Attack rate table
+static unsigned int DR_TAB[96];		// Decay rate table
+static unsigned int DT_TAB[8][32];	// Detune table
+static unsigned int SL_TAB[16];		// Substain level table
+static unsigned int NULL_RATE[32];	// Table for NULL rate
 
-int LFO_ENV_TAB[LFO_LENGTH];	// LFO AMS TABLE (adjusted for 11.8 dB)
-int LFO_FREQ_TAB[LFO_LENGTH];	// LFO FMS TABLE
-int LFO_ENV_UP[MAX_UPDATE_LENGTH];	// Temporary calculated LFO AMS (adjusted for 11.8 dB)
-int LFO_FREQ_UP[MAX_UPDATE_LENGTH];	// Temporary calculated LFO FMS
+static int LFO_ENV_TAB[LFO_LENGTH];		// LFO AMS TABLE (adjusted for 11.8 dB)
+static int LFO_FREQ_TAB[LFO_LENGTH];		// LFO FMS TABLE
+static int LFO_ENV_UP[MAX_UPDATE_LENGTH];	// Temporary calculated LFO AMS (adjusted for 11.8 dB)
+static int LFO_FREQ_UP[MAX_UPDATE_LENGTH];	// Temporary calculated LFO FMS
 
-int INTER_TAB[MAX_UPDATE_LENGTH];	// Interpolation table
+static int INTER_TAB[MAX_UPDATE_LENGTH];	// Interpolation table
 
-int LFO_INC_TAB[8];		// LFO step table
+static int LFO_INC_TAB[8];		// LFO step table
 
-int in0, in1, in2, in3;		// current phase calculation
-int en0, en1, en2, en3;		// current enveloppe calculation
+static int in0, in1, in2, in3;		// current phase calculation
+static int en0, en1, en2, en3;		// current enveloppe calculation
 
-unsigned short YM2612Vol = 256;
-unsigned short DACVol = 256;
 
+// Channel function declarations
+static void Update_Chan_Algo0(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7(channel_ *CH, int **buf, int length);
+
+static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length);
+
+static void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length);
+
+static void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length);
 
 typedef void (*Update_Chan_Fn)(channel_ *CH, int **buf, int length);
 
-const Update_Chan_Fn UPDATE_CHAN[8*8] =		// Update Channel functions pointer table
+// Update Channel functions pointer table
+static const Update_Chan_Fn UPDATE_CHAN[8*8] =
 {
 	Update_Chan_Algo0,
 	Update_Chan_Algo1,
@@ -176,8 +211,17 @@ const Update_Chan_Fn UPDATE_CHAN[8*8] =		// Update Channel functions pointer tab
 	Update_Chan_Algo7_LFO_Int
 };
 
+// Envelope function declarations
+static void Env_Attack_Next(slot_ *SL);
+static void Env_Decay_Next(slot_ *SL);
+static void Env_Substain_Next(slot_ *SL);
+static void Env_Release_Next(slot_ *SL);
+static void Env_NULL_Next(slot_ *SL);
+
 typedef void (*Env_Event)(slot_ * SL);
-const Env_Event ENV_NEXT_EVENT[8] =		// Next Enveloppe phase functions pointer table
+
+// Next Enveloppe phase functions pointer table
+static const Env_Event ENV_NEXT_EVENT[8] =
 {
 	Env_Attack_Next,
 	Env_Decay_Next,
@@ -189,7 +233,7 @@ const Env_Event ENV_NEXT_EVENT[8] =		// Next Enveloppe phase functions pointer t
 	Env_NULL_Next
 };
 
-const unsigned int DT_DEF_TAB[4 * 32] =
+static const unsigned int DT_DEF_TAB[4 * 32] =
 {
 	// FD = 0
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -208,7 +252,7 @@ const unsigned int DT_DEF_TAB[4 * 32] =
 	8, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 20, 22, 22, 22, 22
 };
 
-const unsigned int FKEY_TAB[16] =
+static const unsigned int FKEY_TAB[16] =
 {
 	0, 0, 0, 0,
 	0, 0, 0, 1,
@@ -216,12 +260,12 @@ const unsigned int FKEY_TAB[16] =
 	3, 3, 3, 3
 };
 
-const unsigned int LFO_AMS_TAB[4] =
+static const unsigned int LFO_AMS_TAB[4] =
 {
 	31, 4, 1, 0
 };
 
-const unsigned int LFO_FMS_TAB[8] =
+static const unsigned int LFO_FMS_TAB[8] =
 {
 	LFO_FMS_BASE * 0, LFO_FMS_BASE * 1,
 	LFO_FMS_BASE * 2, LFO_FMS_BASE * 3,
@@ -229,15 +273,16 @@ const unsigned int LFO_FMS_TAB[8] =
 	LFO_FMS_BASE * 12, LFO_FMS_BASE * 24
 };
 
-int int_cnt;			// Interpolation calculation
+static int int_cnt;	// Interpolation calculation
 
 
 #if YM_DEBUG_LEVEL > 0		// Debug
-FILE *debug_file = NULL;
+static FILE *debug_file = NULL;
 #endif
 
 
-/* Gens */
+/** Gens-specific **/
+
 #include "audio/audio.hpp"
 #include "util/sound/gym.hpp"
 extern int VDP_Current_Line;
@@ -250,7 +295,7 @@ int DAC_Enable;
 int *YM_Buf[2];
 int YM_Len = 0;
 
-/* end */
+/** end **/
 
 
 /***********************************************
@@ -370,7 +415,7 @@ static inline void CSM_Key_Control()
 }
 
 
-int SLOT_SET(int Adr, unsigned char data)
+static int SLOT_SET(int Adr, unsigned char data)
 {
 	channel_ *CH;
 	slot_ *SL;
@@ -537,8 +582,7 @@ int SLOT_SET(int Adr, unsigned char data)
 }
 
 
-int
-CHANNEL_SET (int Adr, unsigned char data)
+static int CHANNEL_SET(int Adr, unsigned char data)
 {
   channel_ *CH;
   int num;
@@ -714,8 +758,7 @@ CHANNEL_SET (int Adr, unsigned char data)
 }
 
 
-int
-YM_SET (int Adr, unsigned char data)
+static int YM_SET(int Adr, unsigned char data)
 {
   channel_ *CH;
   int nch;
@@ -874,12 +917,12 @@ YM_SET (int Adr, unsigned char data)
  ***********************************************/
 
 
-void Env_NULL_Next(slot_ * SL)
+static void Env_NULL_Next(slot_ * SL)
 {
 }
 
 
-void Env_Attack_Next(slot_ * SL)
+static void Env_Attack_Next(slot_ * SL)
 {
 	// Verified with Gynoug even in HQ (explode SFX)
 	SL->Ecnt = ENV_DECAY;
@@ -890,7 +933,7 @@ void Env_Attack_Next(slot_ * SL)
 }
 
 
-void Env_Decay_Next(slot_ * SL)
+static void Env_Decay_Next(slot_ * SL)
 {
 	// Verified with Gynoug even in HQ (explode SFX)
 	SL->Ecnt = SL->SLL;
@@ -901,7 +944,7 @@ void Env_Decay_Next(slot_ * SL)
 }
 
 
-void Env_Substain_Next (slot_ * SL)
+static void Env_Substain_Next (slot_ * SL)
 {
 	if (SL->SEG & 8)		// SSG envelope type
 	{
@@ -935,8 +978,7 @@ void Env_Substain_Next (slot_ * SL)
 }
 
 
-void
-Env_Release_Next (slot_ * SL)
+static void Env_Release_Next(slot_ * SL)
 {
 	SL->Ecnt = ENV_END;
 	SL->Einc = 0;
@@ -945,18 +987,22 @@ Env_Release_Next (slot_ * SL)
 
 
 
-#define GET_CURRENT_PHASE	\
-in0 = CH->SLOT[S0].Fcnt;	\
-in1 = CH->SLOT[S1].Fcnt;	\
-in2 = CH->SLOT[S2].Fcnt;	\
-in3 = CH->SLOT[S3].Fcnt;
+#define GET_CURRENT_PHASE		\
+{					\
+	in0 = CH->SLOT[S0].Fcnt;	\
+	in1 = CH->SLOT[S1].Fcnt;	\
+	in2 = CH->SLOT[S2].Fcnt;	\
+	in3 = CH->SLOT[S3].Fcnt;	\
+}
 
 
-#define UPDATE_PHASE					\
-CH->SLOT[S0].Fcnt += CH->SLOT[S0].Finc;	\
-CH->SLOT[S1].Fcnt += CH->SLOT[S1].Finc;	\
-CH->SLOT[S2].Fcnt += CH->SLOT[S2].Finc;	\
-CH->SLOT[S3].Fcnt += CH->SLOT[S3].Finc;
+#define UPDATE_PHASE				\
+{						\
+	CH->SLOT[S0].Fcnt += CH->SLOT[S0].Finc;	\
+	CH->SLOT[S1].Fcnt += CH->SLOT[S1].Finc;	\
+	CH->SLOT[S2].Fcnt += CH->SLOT[S2].Finc;	\
+	CH->SLOT[S3].Fcnt += CH->SLOT[S3].Finc;	\
+}
 
 
 #define UPDATE_PHASE_LFO										\
@@ -1052,150 +1098,192 @@ en2 = ENV_TAB[(CH->SLOT[S2].Ecnt >> ENV_LBITS)] + CH->SLOT[S2].TLL + (env_LFO >>
 en3 = ENV_TAB[(CH->SLOT[S3].Ecnt >> ENV_LBITS)] + CH->SLOT[S3].TLL + (env_LFO >> CH->SLOT[S3].AMS);
 
 
-#define UPDATE_ENV														\
-if ((CH->SLOT[S0].Ecnt += CH->SLOT[S0].Einc) >= CH->SLOT[S0].Ecmp)		\
-	ENV_NEXT_EVENT[CH->SLOT[S0].Ecurp](&(CH->SLOT[S0]));				\
-if ((CH->SLOT[S1].Ecnt += CH->SLOT[S1].Einc) >= CH->SLOT[S1].Ecmp)		\
-	ENV_NEXT_EVENT[CH->SLOT[S1].Ecurp](&(CH->SLOT[S1]));				\
-if ((CH->SLOT[S2].Ecnt += CH->SLOT[S2].Einc) >= CH->SLOT[S2].Ecmp)		\
-	ENV_NEXT_EVENT[CH->SLOT[S2].Ecurp](&(CH->SLOT[S2]));				\
-if ((CH->SLOT[S3].Ecnt += CH->SLOT[S3].Einc) >= CH->SLOT[S3].Ecmp)		\
-	ENV_NEXT_EVENT[CH->SLOT[S3].Ecurp](&(CH->SLOT[S3]));
+#define UPDATE_ENV								\
+{										\
+	if ((CH->SLOT[S0].Ecnt += CH->SLOT[S0].Einc) >= CH->SLOT[S0].Ecmp)	\
+		ENV_NEXT_EVENT[CH->SLOT[S0].Ecurp](&(CH->SLOT[S0]));		\
+	if ((CH->SLOT[S1].Ecnt += CH->SLOT[S1].Einc) >= CH->SLOT[S1].Ecmp)	\
+		ENV_NEXT_EVENT[CH->SLOT[S1].Ecurp](&(CH->SLOT[S1]));		\
+	if ((CH->SLOT[S2].Ecnt += CH->SLOT[S2].Einc) >= CH->SLOT[S2].Ecmp)	\
+		ENV_NEXT_EVENT[CH->SLOT[S2].Ecurp](&(CH->SLOT[S2]));		\
+	if ((CH->SLOT[S3].Ecnt += CH->SLOT[S3].Einc) >= CH->SLOT[S3].Ecmp)	\
+		ENV_NEXT_EVENT[CH->SLOT[S3].Ecurp](&(CH->SLOT[S3]));		\
+}
+
+#define DO_LIMIT				\
+{						\
+	if (CH->OUTd > LIMIT_CH_OUT)		\
+		CH->OUTd = LIMIT_CH_OUT;	\
+	else if (CH->OUTd < -LIMIT_CH_OUT)	\
+		CH->OUTd = -LIMIT_CH_OUT;	\
+}
 
 
-#define DO_LIMIT												\
-if (CH->OUTd > LIMIT_CH_OUT) CH->OUTd = LIMIT_CH_OUT;			\
-else if (CH->OUTd < -LIMIT_CH_OUT) CH->OUTd = -LIMIT_CH_OUT;
-
-
-#define DO_FEEDBACK0											\
-in0 += CH->S0_OUT[0] >> CH->FB;									\
-CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];
-
-
-#define DO_FEEDBACK												\
-in0 += (CH->S0_OUT[0] + CH->S0_OUT[1]) >> CH->FB;				\
-CH->S0_OUT[1] = CH->S0_OUT[0];									\
-CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];
-
-
-#define DO_FEEDBACK2														\
-in0 += (CH->S0_OUT[0] + (CH->S0_OUT[0] >> 2) + CH->S0_OUT[1]) >> CH->FB;	\
-CH->S0_OUT[1] = CH->S0_OUT[0] >> 2;											\
-CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];
-
-
-#define DO_FEEDBACK3																	\
-in0 += (CH->S0_OUT[0] + CH->S0_OUT[1] + CH->S0_OUT[2] + CH->S0_OUT[3]) >> CH->FB;		\
-CH->S0_OUT[3] = CH->S0_OUT[2] >> 1;														\
-CH->S0_OUT[2] = CH->S0_OUT[1] >> 1;														\
-CH->S0_OUT[1] = CH->S0_OUT[0] >> 1;														\
-CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];
-
-
-#define DO_ALGO_0															\
-DO_FEEDBACK																	\
-in1 += CH->S0_OUT[0];														\
-in2 += SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1];							\
-in3 += SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];							\
-CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;
-
-#define DO_ALGO_1															\
-DO_FEEDBACK																	\
-in2 += CH->S0_OUT[0] + SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1];			\
-in3 += SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];							\
-CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;
-
-#define DO_ALGO_2															\
-DO_FEEDBACK																	\
-in2 += SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1];							\
-in3 += CH->S0_OUT[0] + SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];			\
-CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;
-
-#define DO_ALGO_3															\
-DO_FEEDBACK																	\
-in1 += CH->S0_OUT[0];														\
-in3 += SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] + SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];	\
-CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;
-
-#define DO_ALGO_4															\
-DO_FEEDBACK																	\
-in1 += CH->S0_OUT[0];														\
-in3 += SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];							\
-CH->OUTd = ((int) SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] + (int) SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1]) >> OUT_SHIFT;	\
-DO_LIMIT
-
-#define DO_ALGO_5															\
-DO_FEEDBACK																	\
-in1 += CH->S0_OUT[0];														\
-in2 += CH->S0_OUT[0];														\
-in3 += CH->S0_OUT[0];														\
-CH->OUTd = ((int) SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] + (int) SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] + (int) SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2]) >> OUT_SHIFT;	\
-DO_LIMIT
-
-#define DO_ALGO_6															\
-DO_FEEDBACK																	\
-in1 += CH->S0_OUT[0];														\
-CH->OUTd = ((int) SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] + (int) SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] + (int) SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2]) >> OUT_SHIFT;	\
-DO_LIMIT
-
-#define DO_ALGO_7															\
-DO_FEEDBACK																	\
-CH->OUTd = ((int) SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] + (int) SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] + (int) SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2] + CH->S0_OUT[0]) >> OUT_SHIFT;	\
-DO_LIMIT
-
-
-#define DO_OUTPUT						\
-buf[0][i] += (int)(((CH->OUTd & CH->LEFT) * YM2612Vol) >> 8);	\
-buf[1][i] += (int)(((CH->OUTd & CH->RIGHT) * YM2612Vol) >> 8);
-
-
-#define DO_OUTPUT_INT0							\
-if ((int_cnt += YM2612.Inter_Step) & 0x04000)				\
+#define DO_FEEDBACK0							\
 {									\
-	int_cnt &= 0x3FFF;						\
-	buf[0][i] += (int)(((CH->OUTd & CH->LEFT) * YM2612Vol) >> 8);	\
-	buf[1][i] += (int)(((CH->OUTd & CH->RIGHT) * YM2612Vol) >> 8);	\
-}									\
-else i--;
+	in0 += CH->S0_OUT[0] >> CH->FB;					\
+	CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];	\
+}
+
+#define DO_FEEDBACK							\
+{									\
+	in0 += (CH->S0_OUT[0] + CH->S0_OUT[1]) >> CH->FB;		\
+	CH->S0_OUT[1] = CH->S0_OUT[0];					\
+	CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];	\
+}
+
+#define DO_FEEDBACK2									\
+{											\
+	in0 += (CH->S0_OUT[0] + (CH->S0_OUT[0] >> 2) + CH->S0_OUT[1]) >> CH->FB;	\
+	CH->S0_OUT[1] = CH->S0_OUT[0] >> 2;						\
+	CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];			\
+}
+
+#define DO_FEEDBACK3										\
+{												\
+	in0 += (CH->S0_OUT[0] + CH->S0_OUT[1] + CH->S0_OUT[2] + CH->S0_OUT[3]) >> CH->FB;	\
+	CH->S0_OUT[3] = CH->S0_OUT[2] >> 1;							\
+	CH->S0_OUT[2] = CH->S0_OUT[1] >> 1;							\
+	CH->S0_OUT[1] = CH->S0_OUT[0] >> 1;							\
+	CH->S0_OUT[0] = SIN_TAB[(in0 >> SIN_LBITS) & SIN_MASK][en0];				\
+}
 
 
-#define DO_OUTPUT_INT1								\
-CH->Old_OUTd = (CH->OUTd + CH->Old_OUTd) >> 1;					\
-if ((int_cnt += YM2612.Inter_Step) & 0x04000)					\
+#define DO_ALGO_0								\
 {										\
-	int_cnt &= 0x3FFF;							\
-	buf[0][i] += (int)(((CH->Old_OUTd & CH->LEFT) * YM2612Vol) >> 8);	\
-	buf[1][i] += (int)(((CH->Old_OUTd & CH->RIGHT) * YM2612Vol) >> 8);	\
-}										\
-else i--;
+	DO_FEEDBACK								\
+	in1 += CH->S0_OUT[0];							\
+	in2 += SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1];			\
+	in3 += SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];			\
+	CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;	\
+}
 
-
-#define DO_OUTPUT_INT2								\
-if ((int_cnt += YM2612.Inter_Step) & 0x04000)					\
+#define DO_ALGO_1								\
 {										\
-	int_cnt &= 0x3FFF;							\
-	CH->Old_OUTd = (CH->OUTd + CH->Old_OUTd) >> 1;				\
-	buf[0][i] += (int)(((CH->Old_OUTd & CH->LEFT) * YM2612Vol) >> 8);	\
-	buf[1][i] += (int)(((CH->Old_OUTd & CH->RIGHT) * YM2612Vol) >> 8);	\
-}										\
-else i--;									\
-CH->Old_OUTd = CH->OUTd;
+	DO_FEEDBACK								\
+	in2 += CH->S0_OUT[0] + SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1];	\
+	in3 += SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];			\
+	CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;	\
+}
 
-
-#define DO_OUTPUT_INT								\
-if ((int_cnt += YM2612.Inter_Step) & 0x04000)					\
+#define DO_ALGO_2								\
 {										\
-	int_cnt &= 0x3FFF;							\
-	CH->Old_OUTd = (((int_cnt ^ 0x3FFF) * CH->OUTd) + (int_cnt * CH->Old_OUTd)) >> 14;	\
-	buf[0][i] += (int)(((CH->Old_OUTd & CH->LEFT) * YM2612Vol) >> 8);	\
-	buf[1][i] += (int)(((CH->Old_OUTd & CH->RIGHT) * YM2612Vol) >> 8);	\
-}										\
-else i--;									\
-CH->Old_OUTd = CH->OUTd;
+	DO_FEEDBACK								\
+	in2 += SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1];			\
+	in3 += CH->S0_OUT[0] + SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];	\
+	CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;	\
+}
+
+#define DO_ALGO_3								\
+{										\
+	DO_FEEDBACK								\
+	in1 += CH->S0_OUT[0];							\
+	in3 += SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] +			\
+	       SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];			\
+	CH->OUTd = (SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3]) >> OUT_SHIFT;	\
+}
+
+#define DO_ALGO_4									\
+{											\
+	DO_FEEDBACK									\
+	in1 += CH->S0_OUT[0];								\
+	in3 += SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2];				\
+	CH->OUTd = ((int)SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] +			\
+		    (int)SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1]) >> OUT_SHIFT;	\
+	DO_LIMIT									\
+}
+
+#define DO_ALGO_5									\
+{											\
+	DO_FEEDBACK									\
+	in1 += CH->S0_OUT[0];								\
+	in2 += CH->S0_OUT[0];								\
+	in3 += CH->S0_OUT[0];								\
+	CH->OUTd = ((int)SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] +			\
+		    (int)SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] +			\
+		    (int)SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2]) >> OUT_SHIFT;	\
+	DO_LIMIT									\
+}
+
+#define DO_ALGO_6									\
+{											\
+	DO_FEEDBACK									\
+	in1 += CH->S0_OUT[0];								\
+	CH->OUTd = ((int)SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] +			\
+		    (int)SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] +			\
+		    (int)SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2]) >> OUT_SHIFT;	\
+	DO_LIMIT									\
+}
+
+#define DO_ALGO_7							\
+{									\
+	DO_FEEDBACK							\
+	CH->OUTd = ((int)SIN_TAB[(in3 >> SIN_LBITS) & SIN_MASK][en3] +	\
+		    (int)SIN_TAB[(in1 >> SIN_LBITS) & SIN_MASK][en1] +	\
+		    (int)SIN_TAB[(in2 >> SIN_LBITS) & SIN_MASK][en2] +	\
+		    CH->S0_OUT[0]) >> OUT_SHIFT;			\
+	DO_LIMIT							\
+}
 
 
-void Update_Chan_Algo0(channel_ *CH, int **buf, int length)
+#define DO_OUTPUT					\
+{							\
+	buf[0][i] += (int)(CH->OUTd & CH->LEFT);	\
+	buf[1][i] += (int)(CH->OUTd & CH->RIGHT);	\
+}
+
+#define DO_OUTPUT_INT0						\
+{								\
+	if ((int_cnt += YM2612.Inter_Step) & 0x04000)		\
+	{							\
+		int_cnt &= 0x3FFF;				\
+		buf[0][i] += (int)(CH->OUTd & CH->LEFT);	\
+		buf[1][i] += (int)(CH->OUTd & CH->RIGHT);	\
+	}							\
+	else i--;						\
+}
+
+#define DO_OUTPUT_INT1						\
+{								\
+	CH->Old_OUTd = (CH->OUTd + CH->Old_OUTd) >> 1;		\
+	if ((int_cnt += YM2612.Inter_Step) & 0x04000)		\
+	{							\
+		int_cnt &= 0x3FFF;				\
+		buf[0][i] += (int)(CH->Old_OUTd & CH->LEFT);	\
+		buf[1][i] += (int)(CH->Old_OUTd & CH->RIGHT);	\
+	}							\
+	else i--;						\
+}
+
+#define DO_OUTPUT_INT2						\
+{								\
+	if ((int_cnt += YM2612.Inter_Step) & 0x04000)		\
+	{							\
+		int_cnt &= 0x3FFF;				\
+		CH->Old_OUTd = (CH->OUTd + CH->Old_OUTd) >> 1;	\
+		buf[0][i] += (int)(CH->Old_OUTd & CH->LEFT);	\
+		buf[1][i] += (int)(CH->Old_OUTd & CH->RIGHT);	\
+	}							\
+	else i--;						\
+	CH->Old_OUTd = CH->OUTd;				\
+}
+
+#define DO_OUTPUT_INT							\
+{									\
+	if ((int_cnt += YM2612.Inter_Step) & 0x04000)			\
+	{								\
+		int_cnt &= 0x3FFF;					\
+		CH->Old_OUTd = (((int_cnt ^ 0x3FFF) * CH->OUTd) +	\
+				(int_cnt * CH->Old_OUTd)) >> 14;	\
+		buf[0][i] += (int)(CH->Old_OUTd & CH->LEFT);		\
+		buf[1][i] += (int)(CH->Old_OUTd & CH->RIGHT);		\
+	}								\
+	else i--;							\
+	CH->Old_OUTd = CH->OUTd;					\
+}
+
+
+static void Update_Chan_Algo0(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1218,7 +1306,7 @@ void Update_Chan_Algo0(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo1(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo1(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1241,7 +1329,7 @@ void Update_Chan_Algo1(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo2(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo2(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1264,7 +1352,7 @@ void Update_Chan_Algo2(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo3(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo3(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1287,7 +1375,7 @@ void Update_Chan_Algo3(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo4(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo4(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1310,7 +1398,7 @@ void Update_Chan_Algo4(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo5(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo5(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1335,7 +1423,7 @@ void Update_Chan_Algo5(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo6(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo6(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1360,7 +1448,7 @@ void Update_Chan_Algo6(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo7(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo7(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1386,7 +1474,7 @@ void Update_Chan_Algo7(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1409,7 +1497,7 @@ void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1432,7 +1520,7 @@ void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1455,7 +1543,7 @@ void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1478,7 +1566,7 @@ void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1502,7 +1590,7 @@ void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1527,7 +1615,7 @@ void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1552,7 +1640,7 @@ void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1583,8 +1671,7 @@ void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
  *****************************************************/
 
 
-void
-Update_Chan_Algo0_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo0_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1604,8 +1691,7 @@ Update_Chan_Algo0_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo1_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo1_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1625,8 +1711,7 @@ Update_Chan_Algo1_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo2_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo2_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1646,8 +1731,7 @@ Update_Chan_Algo2_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo3_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo3_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1667,8 +1751,7 @@ Update_Chan_Algo3_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo4_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo4_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1688,8 +1771,7 @@ Update_Chan_Algo4_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo5_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo5_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1710,8 +1792,7 @@ Update_Chan_Algo5_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo6_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo6_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1732,8 +1813,7 @@ Update_Chan_Algo6_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo7_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo7_Int(channel_ * CH, int **buf, int length)
 {
   int i;
 
@@ -1754,8 +1834,7 @@ Update_Chan_Algo7_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo0_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo0_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1776,8 +1855,7 @@ Update_Chan_Algo0_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo1_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo1_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1798,8 +1876,7 @@ Update_Chan_Algo1_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo2_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo2_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1820,8 +1897,7 @@ Update_Chan_Algo2_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo3_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo3_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1842,8 +1918,7 @@ Update_Chan_Algo3_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo4_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo4_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1864,8 +1939,7 @@ Update_Chan_Algo4_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo5_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo5_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1887,8 +1961,7 @@ Update_Chan_Algo5_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo6_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo6_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
@@ -1910,8 +1983,7 @@ Update_Chan_Algo6_LFO_Int (channel_ * CH, int **buf, int length)
 }
 
 
-void
-Update_Chan_Algo7_LFO_Int (channel_ * CH, int **buf, int length)
+static void Update_Chan_Algo7_LFO_Int(channel_ * CH, int **buf, int length)
 {
   int i, env_LFO, freq_LFO;
 
