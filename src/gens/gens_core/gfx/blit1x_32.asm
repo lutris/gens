@@ -19,9 +19,7 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-
 %include "nasmhead.inc"
-
 
 section .data align=64
 
