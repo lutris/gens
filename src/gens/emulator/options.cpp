@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "options.hpp"
-#include "macros/math.hpp"
+#include "macros/math_m.h"
 
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"

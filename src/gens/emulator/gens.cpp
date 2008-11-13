@@ -9,7 +9,7 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_32x.h"
 
-#include "macros/math.hpp"
+#include "macros/math_m.h"
 
 int Debug;
 int Frame_Skip;

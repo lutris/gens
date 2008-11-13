@@ -20,6 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_MATH_M_H
+#define GENS_MATH_M_H
 
 /**
  * roundDouble(): Round a double-precision floating point number.
@@ -33,3 +35,5 @@ static inline int roundDouble(const double val)
 	else
 		return (int)(val);
 }
+
+#endif /* GENS_MATH_M_H */
