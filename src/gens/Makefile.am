@@ -214,6 +214,7 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
+		macros/file_m.h \
 		macros/hashtable.hpp \
 		macros/math_m.h \
 		port/ini.hpp \
