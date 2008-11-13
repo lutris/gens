@@ -46,8 +46,8 @@ section .text align=64
 
 		mov ecx, [esp + 32]				; ecx = Number of pixels per line
 		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen32 + 8 * 4]			; esi = Source
 		shl ecx, 2					; ecx = Number of bytes per line
-		lea esi, [MD_Screen32 + 8 * 2]			; esi = Source
 		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
 		shr ecx, 3					; Transfer 8 bytes each cycle. (2 32-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
@@ -67,7 +67,7 @@ section .text align=64
 				dec ecx
 				jnz .Loop_X
 	
-			add esi, [esp + 40]			; Add 2x the line offset
+			add esi, [esp + 40]			; Add 2x the line offset. (1x offset is 16-bit only)
 			add esi, [esp + 40]
 			add edi, ebx				; Add the pitch difference to the destination pointer.
 			mov ecx, [esp + 32]			; Reset the X counter.
@@ -95,14 +95,14 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
-		add ecx, ecx					; ecx = Nb bytes par ligne
-		lea esi, [MD_Screen32 + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 6						; on transfert 64 bytes � chaque boucle
+		mov ecx, [esp + 32]				; ecx = Number of pixels per line
+		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen32 + 8 * 4]			; esi = Source
+		shl ecx, 2					; ecx = Number of bytes per line
+		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
+		shr ecx, 6					; Transfer 64 bytes each cycle. (16 32-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
+		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
@@ -130,10 +130,11 @@ section .text align=64
 				movq [edi + 56 - 64], mm7
 				jnz .Loop_X
 	
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
+			add esi, [esp + 40]			; Add 2x the line offset. (1x offset is 16-bit only)
+			add esi, [esp + 40]
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			mov ecx, [esp + 32]			; Reset the X counter.
+			dec dword [esp + 36]			; Decrement the Y counter.
 			jnz .Loop_Y
 
 		pop esi
