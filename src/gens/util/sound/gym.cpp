@@ -13,25 +13,11 @@
 
 #include "ui/gens_ui.hpp"
 
+#include "macros/file_m.h"
+
+
 static FILE *GYM_File;
 int GYM_Dumping = 0;
-
-
-/**
- * fileExists(): Check if the specified file exists.
- * @param filename Filename to check.
- * @return True if the file exists; false if it doesn't.
- */
-static bool fileExists(const char *filename)
-{
-	FILE *f = fopen(filename, "rb");
-	if (f)
-	{
-		fclose (f);
-		return true;
-	}
-	return false;
-}
 
 
 /**

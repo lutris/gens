@@ -42,6 +42,8 @@
 #include "gens_core/cpu/z80/z80.h"
 #include "util/gfx/imageutil.hpp"
 
+#include "macros/file_m.h"
+
 // Sega CD
 #include "emulator/g_mcd.hpp"
 
@@ -67,7 +69,6 @@
 #include "segacd/cd_sys.hpp"
 
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 // C includes
@@ -497,8 +498,7 @@ static void dragDropFile(HDROP hDrop)
 	if (rval > 0 && rval < GENS_PATH_MAX)
 	{
 		// Check that the file exists.
-		struct stat sbuf;
-		if (!stat(filename, &sbuf))
+		if (fileExists(filename))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);

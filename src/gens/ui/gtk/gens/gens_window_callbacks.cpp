@@ -41,6 +41,8 @@
 #include "gens_core/cpu/z80/z80.h"
 #include "util/gfx/imageutil.hpp"
 
+#include "macros/file_m.h"
+
 // Sega CD
 #include "emulator/g_mcd.hpp"
 
@@ -58,7 +60,6 @@
 //#endif /* GENS_DEBUGGER */
 
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 // C++ includes
@@ -128,8 +129,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 		g_free(unescaped);
 		
 		// Check that the file actually exists.
-		struct stat sbuf;
-		if (!stat(filename.c_str(), &sbuf))
+		if (fileExists(filename.c_str()))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename.c_str());
