@@ -44,12 +44,13 @@
  * Error_32X_BIOS(): Displays an error message if a BIOS file isn't found.
  * @param Str_BIOS Missing BIOS file.
  */
-void Error_32X_BIOS(const char *Str_BIOS)
+static void Error_32X_BIOS(const char *Str_BIOS)
 {
 	char Str_Err[256];
 	sprintf(Str_Err, "Your 32X BIOS files aren't correctly configured:\n%s\nGo to menu 'Options -> BIOS/Misc Files' to set them up.", Str_BIOS);
 	GensUI::msgBox(Str_Err, "BIOS Configuration Error");
 }
+
 
 /**
  * Init_32X(): Initialize the 32X with the specified ROM image.
@@ -291,7 +292,7 @@ void Reset_32X(void)
  * Do_32X_VDP_Only(): Updates the Genesis and 32X VDP.
  * @return 0 if successful. TODO: Remove unnecessary return values.
  */
-int Do_32X_VDP_Only (void)
+int Do_32X_VDP_Only(void)
 {
 	// Set the number of visible lines.
 	SET_VISIBLE_LINES;
@@ -867,19 +868,19 @@ int Do_32X_Frame(void)
 			l += p_l;
 		}
 		
-		main68k_exec (Cycles_M68K);
+		main68k_exec(Cycles_M68K);
 		SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
 		//SH2_Exec(&M_SH2, Cycles_MSH2);
 		//SH2_Exec(&S_SH2, Cycles_SSH2);
-		PWM_Update_Timer (PWM_Cycles);
+		PWM_Update_Timer(PWM_Cycles);
 		
 		Z80_EXEC(0);
 		//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80);
 		//else z80_Set_Odo(&M_Z80, Cycles_Z80);
 	}
 	
-	PSG_Special_Update ();
-	YM2612_Special_Update ();
+	PSG_Special_Update();
+	YM2612_Special_Update();
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping

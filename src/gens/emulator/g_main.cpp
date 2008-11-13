@@ -271,7 +271,7 @@ void Init_Settings(void)
 /**
  * close_gens(): Close GENS.
  */
-void close_gens ()
+void close_gens(void)
 {
 	Gens_Running = 0;
 }
@@ -279,7 +279,7 @@ void close_gens ()
 /**
  * run_gens(): Run GENS.
  */
-void run_gens ()
+static inline void run_gens(void)
 {
 	Gens_Running = 1;
 }
@@ -288,7 +288,7 @@ void run_gens ()
  * is_gens_running(): Is GENS running?!
  * @return 1 if it's running.
  */
-int is_gens_running()
+int is_gens_running(void)
 {
 	return Gens_Running;
 }

@@ -127,8 +127,8 @@ int Change_68K_Type(int hWnd, int Num, int Reset_SND);
 //extern void Read_To_68K_Space(int adr);
 
 void End_All(void);
-int is_gens_running();
-void close_gens();
+int is_gens_running(void);
+void close_gens(void);
 
 // Gens Rerecording
 int IsAsyncAllowed(void);
@@ -143,7 +143,9 @@ void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
 void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time);
 void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time);
 
-#if 0
+#if 0 
+
+// TODO: Fix this stuff.
 
 #define MINIMIZE \
 {\

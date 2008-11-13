@@ -1,5 +1,5 @@
 /**
- * GENS: Sega CD (Mega CD) initialization and main loop code.
+ * Gens: Sega CD (Mega CD) initialization and main loop code.
  */
 
 #include <cstring>
@@ -231,8 +231,7 @@ int Reload_SegaCD(const char* iso_name)
 /**
  * Reset_SegaCD(): Resets the Sega CD.
  */
-void
-Reset_SegaCD ()
+void Reset_SegaCD(void)
 {
 	char *BIOS_To_Use;
 	
@@ -469,8 +468,8 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 	
 	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer ();
-	sub68k_tripOdometer ();
+	main68k_tripOdometer();
+	sub68k_tripOdometer();
 	z80_Clear_Odo (&M_Z80);
 	
 	VRam_Flag = 1;
@@ -750,7 +749,7 @@ static inline void draw_SegaCD_LED(Pixel* screen, Pixel color, unsigned short st
 /**
  * SegaCD_Display_LED(): Display the LEDs on the Sega CD interface.
  */
-void SegaCD_Display_LED()
+static void SegaCD_Display_LED(void)
 {
 	// TODO: Optimize this function.
 	// TODO: Draw the LEDs on the screen buffer, not the MD screen.
