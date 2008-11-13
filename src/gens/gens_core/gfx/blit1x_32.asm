@@ -104,8 +104,8 @@ section .text align=64
 
 	.Loop_Y:
 	.Loop_X:
+				; Get source pixels.
 				movq mm0, [esi]
-				add edi, 64
 				movq mm1, [esi + 8]
 				movq mm2, [esi + 16]
 				movq mm3, [esi + 24]
@@ -113,18 +113,23 @@ section .text align=64
 				movq mm5, [esi + 40]
 				movq mm6, [esi + 48]
 				movq mm7, [esi + 56]
-				movq [edi + 0 - 64], mm0
+				
+				; Put destination pixels.
+				movq [edi], mm0
+				movq [edi + 8], mm1
+				movq [edi + 16], mm2
+				movq [edi + 24], mm3
+				movq [edi + 32], mm4
+				movq [edi + 40], mm5
+				movq [edi + 48], mm6
+				movq [edi + 56], mm7
+				
+				; Loop management.
 				add esi, 64
-				movq [edi + 8 - 64], mm1
-				movq [edi + 16 - 64], mm2
-				movq [edi + 24 - 64], mm3
-				movq [edi + 32 - 64], mm4
-				movq [edi + 40 - 64], mm5
-				movq [edi + 48 - 64], mm6
-				movq [edi + 56 - 64], mm7
+				add edi, 64
 				dec ecx
 				jnz .Loop_X
-	
+			
 			add esi, [esp + 40]			; Add 2x the line offset. (1x offset is 16-bit only)
 			add esi, [esp + 40]
 			add edi, ebx				; Add the pitch difference to the destination pointer.
