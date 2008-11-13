@@ -28,9 +28,7 @@ section .data align=64
 	extern MD_Screen32
 	extern Have_MMX
 
-
 section .text align=64
-
 
 	ALIGN64
 	
@@ -49,15 +47,15 @@ section .text align=64
 		lea esi, [MD_Screen32 + 8 * 4]			; esi = Source
 		shl ecx, 2					; ecx = Number of bytes per line
 		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
-		shr ecx, 3					; Transfer 8 bytes each cycle. (2 32-bit pixels)
+		shr ecx, 3					; Transfer 8 bytes per cycle. (2 32-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X
+	.Loop_Y:
+	.Loop_X:
 				mov eax, [esi]			; First pixel.
 				mov edx, [esi + 4]		; Second pixel.
 				add esi, 8
@@ -81,7 +79,6 @@ section .text align=64
 		pop ebx
 		ret
 
-
 	ALIGN64
 	
 	;************************************************************************
@@ -100,15 +97,15 @@ section .text align=64
 		lea esi, [MD_Screen32 + 8 * 4]			; esi = Source
 		shl ecx, 2					; ecx = Number of bytes per line
 		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
-		shr ecx, 6					; Transfer 64 bytes each cycle. (16 32-bit pixels)
+		shr ecx, 6					; Transfer 64 bytes per cycle. (16 32-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X
+	.Loop_Y:
+	.Loop_X:
 				movq mm0, [esi]
 				add edi, 64
 				movq mm1, [esi + 8]
@@ -126,8 +123,8 @@ section .text align=64
 				movq [edi + 32 - 64], mm4
 				movq [edi + 40 - 64], mm5
 				movq [edi + 48 - 64], mm6
-				dec ecx
 				movq [edi + 56 - 64], mm7
+				dec ecx
 				jnz .Loop_X
 	
 			add esi, [esp + 40]			; Add 2x the line offset. (1x offset is 16-bit only)
