@@ -31,7 +31,7 @@
  */
 static inline int fileExists(const char *filename)
 {
-	if (access(filename, F_OK))
+	if (!access(filename, F_OK))
 	{
 		// File exists.
 		return 1;
