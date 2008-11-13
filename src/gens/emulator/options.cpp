@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "options.hpp"
+#include "macros/math.hpp"
 
 #include "g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
@@ -213,12 +214,12 @@ void Options::setCountry(const int newCountry)
 	// TODO: Combine this with gens.cpp:Set_Clock_Freq().
 	if (CPU_Mode)
 	{
-		CPL_Z80 = Round_Double((((double)CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = Round_Double((((double)CLOCK_PAL / 7.0) / 50.0) / 312.0);
-		CPL_MSH2 = Round_Double(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-			   (double)MSH2_Speed) / 100.0);
-		CPL_SSH2 = Round_Double(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-			   (double)SSH2_Speed) / 100.0);
+		CPL_Z80 = roundDouble((((double)CLOCK_PAL / 15.0) / 50.0) / 312.0);
+		CPL_M68K = roundDouble((((double)CLOCK_PAL / 7.0) / 50.0) / 312.0);
+		CPL_MSH2 = roundDouble(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+					(double)MSH2_Speed) / 100.0);
+		CPL_SSH2 = roundDouble(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+					(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 312;
 		VDP_Status |= 0x0001;
@@ -229,12 +230,12 @@ void Options::setCountry(const int newCountry)
 	}
 	else
 	{
-		CPL_Z80 = Round_Double((((double)CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = Round_Double((((double)CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-		CPL_MSH2 = Round_Double(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-			   (double)MSH2_Speed) / 100.0);
-		CPL_SSH2 = Round_Double(((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-			   (double)SSH2_Speed) / 100.0);
+		CPL_Z80 = roundDouble((((double)CLOCK_NTSC / 15.0) / 60.0) / 262.0);
+		CPL_M68K = roundDouble((((double)CLOCK_NTSC / 7.0) / 60.0) / 262.0);
+		CPL_MSH2 = roundDouble(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+					(double)MSH2_Speed) / 100.0);
+		CPL_SSH2 = roundDouble(((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+					(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 262;
 		VDP_Status &= 0xFFFE;

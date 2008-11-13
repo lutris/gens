@@ -65,7 +65,6 @@ extern int Frame_Skip;
 extern int Frame_Number;
 extern int DAC_Improv;
 
-int Round_Double(const double val);
 void Init_Tab(void);
 void Check_Country_Order(void);
 
