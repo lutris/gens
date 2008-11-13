@@ -39,22 +39,21 @@
 #include "segacd/cd_sys.hpp"
 #include "gens_core/gfx/gfx_cd.h"
 
-int Current_32X_FB = 0;
-int adr_mem = 0, nb_inst = 1, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal;
-int Current_PC;
+static int Current_32X_FB = 0;
+static int adr_mem = 0, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal = 0;
+static int Current_PC;
 
-char _GString[GENS_PATH_MAX];		// GString is a GLib type (Unix version)
-char Dbg_Str[32];
-char Dbg_EA_Str[16];
-char Dbg_Size_Str[3];
-char Dbg_Cond_Str[3];
+static char Dbg_Out_Str[GENS_PATH_MAX];
 
 // Macro used to print a constant string.
 // Print_Text() doesn't directly support string constants, and since it's
 // written in assembly language, it's too cumbersome to fix.
-#define Print_Text_Constant(text, size, x, y, color)	\
-	strcpy(_GString, (text));			\
-	Print_Text(_GString, (size), (x), (y), (color));
+#define Print_Text_Constant(text, size, x, y, color)		\
+{								\
+	strcpy(Dbg_Out_Str, (text));				\
+	Print_Text(Dbg_Out_Str, (size), (x), (y), (color));	\
+}
+
 
 /**
  * Debug_Event(): Key pressed while debugging.
@@ -105,33 +104,35 @@ void Debug_Event(int key, int mod)
 					steps = 100000;
 					break;
 			}
+			
 			for (i = 0; i < steps; i++)
 			{
 				if ((Debug == DEBUG_MAIN_68000) || (Debug == DEBUG_GENESIS_VDP))
 				{
-					main68k_tripOdometer ();
-					main68k_exec (1);
+					main68k_tripOdometer();
+					main68k_exec(1);
 				}
 				else if (Debug == DEBUG_Z80)
 				{
-					z80_Clear_Odo (&M_Z80);
-					z80_Exec (&M_Z80, 1);
+					z80_Clear_Odo(&M_Z80);
+					z80_Exec(&M_Z80, 1);
 				}
 				else if (Debug == DEBUG_SUB_68000_REG ||
 					 Debug == DEBUG_SUB_68000_CDC ||
 					 Debug == DEBUG_WORD_RAM_PATTERN)
 				{
-					sub68k_tripOdometer ();
-					sub68k_exec (1);
+					sub68k_tripOdometer();
+					sub68k_exec(1);
 				}
 				else if (Debug == DEBUG_MAIN_SH2 ||
 					 Debug == DEBUG_SUB_SH2 ||
 					 Debug == DEBUG_32X_VDP)
 				{
-					SH2_Clear_Odo (sh);
-					SH2_Exec (sh, 1);
+					SH2_Clear_Odo(sh);
+					SH2_Exec(sh, 1);
 				}
 			}
+			
 			break;
 		
 		case GENS_KEY_z:
@@ -160,32 +161,50 @@ void Debug_Event(int key, int mod)
 		
 		case GENS_KEY_h:
 			if (Debug == DEBUG_MAIN_68000)
-				main68k_interrupt (4, -1);
+			{
+				main68k_interrupt(4, -1);
+			}
 			else if (Debug == DEBUG_Z80)
-				z80_Interrupt (&M_Z80, 0xFF);
+			{
+				z80_Interrupt(&M_Z80, 0xFF);
+			}
 			else if (Debug == DEBUG_SUB_68000_REG ||
 				 Debug == DEBUG_SUB_68000_CDC ||
 				 Debug == DEBUG_WORD_RAM_PATTERN)
-				sub68k_interrupt (5, -1);
+			{
+				sub68k_interrupt(5, -1);
+			}
 			else if (Debug == DEBUG_MAIN_SH2 ||
 				 Debug == DEBUG_SUB_SH2 ||
 				 Debug == DEBUG_32X_VDP)
-				SH2_Interrupt (sh, 8);
+			{
+				SH2_Interrupt(sh, 8);
+			}
+			
 			break;
 		
 		case GENS_KEY_j:
 			if (Debug == DEBUG_MAIN_68000)
-				main68k_interrupt (6, -1);
+			{
+				main68k_interrupt(6, -1);
+			}
 			else if (Debug == DEBUG_Z80)
-				z80_Interrupt (&M_Z80, 0xFF);
+			{
+				z80_Interrupt(&M_Z80, 0xFF);
+			}
 			else if (Debug == DEBUG_SUB_68000_REG ||
 				 Debug == DEBUG_SUB_68000_CDC ||
 				 Debug == DEBUG_WORD_RAM_PATTERN)
-				sub68k_interrupt (4, -1);
+			{
+				sub68k_interrupt(4, -1);
+			}
 			else if (Debug == DEBUG_MAIN_SH2 ||
 				 Debug == DEBUG_SUB_SH2 ||
 				 Debug == DEBUG_32X_VDP)
-				SH2_Interrupt (sh, 12);
+			{
+				SH2_Interrupt(sh, 12);
+			}
+			
 			break;
 		
 		case GENS_KEY_l:
@@ -222,16 +241,24 @@ void Debug_Event(int key, int mod)
 				sh->Status &= 0xFFFFFFF0;
 			}
 			else if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
+			{
 				sub68k_context.pc += 2;
+			}
 			else if (Debug == DEBUG_MAIN_68000)
+			{
 				main68k_context.pc += 2;
+			}
 			else if (Debug == DEBUG_Z80)
-				z80_Set_PC (&M_Z80, z80_Get_PC (&M_Z80) + 1);
+			{
+				z80_Set_PC(&M_Z80, z80_Get_PC(&M_Z80) + 1);
+			}
+			
 			break;
 		
 		case GENS_KEY_w:
 			if (Debug == DEBUG_SUB_68000_REG || Debug == DEBUG_SUB_68000_CDC)
-				Check_CD_Command ();
+				Check_CD_Command();
+			
 			break;
 		
 		case GENS_KEY_SPACE:
@@ -254,6 +281,7 @@ void Debug_Event(int key, int mod)
 				else if (Debug > 3)
 					Debug = 1;
 			}
+			
 			break;
 		
 		case GENS_KEY_NUM_DIVIDE:
@@ -268,6 +296,7 @@ void Debug_Event(int key, int mod)
 					MD_Palette[7 * 16 + i] =
 						((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
 			}
+			
 			break;
 		
 		case GENS_KEY_NUM_MULTIPLY:
@@ -275,6 +304,7 @@ void Debug_Event(int key, int mod)
 				pattern_pal--;
 			else
 				pattern_pal++;
+			
 			pattern_pal &= 0xF;
 			break;
 		
@@ -296,6 +326,7 @@ void Debug_Event(int key, int mod)
 				if (pattern_adr >= 0x3D000) // Make sure it doesn't go out of bounds.
 					pattern_adr = 0x3D000 - 0x800;
 			}
+			
 			break;
 		
 		case GENS_KEY_NUM_MINUS:
@@ -316,6 +347,7 @@ void Debug_Event(int key, int mod)
 				if (cd_pattern_adr < 0)	// Make sure it doesn't go out of bounds.
 					cd_pattern_adr = 0;
 			}
+			
 			break;
 	}
 }
@@ -370,7 +402,7 @@ unsigned int Next_Long(void)
 /**
  * Refresh_M68k_Inst(): Refresh the Main 68000 instance.
  */
-void Refresh_M68k_Inst(void)
+static void Refresh_M68k_Inst(void)
 {
 	unsigned int i, PC;
 	Current_PC = main68k_context.pc;
@@ -379,8 +411,8 @@ void Refresh_M68k_Inst(void)
 	for (i = 1; i < 14; i++)
 	{
 		PC = Current_PC;
-		sprintf(_GString, "%.4X   %-33s\n", PC, M68KDisasm (Next_Word, Next_Long));
-		Print_Text(_GString, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
+		sprintf(Dbg_Out_Str, "%.4X   %-33s\n", PC, M68KDisasm(Next_Word, Next_Long));
+		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }
 
@@ -388,7 +420,7 @@ void Refresh_M68k_Inst(void)
 /**
  * Refresh_M68k_Inst(): Refresh the Sub 68000 instance.
  */
-void Refresh_S68k_Inst(void)
+static void Refresh_S68k_Inst(void)
 {
 	unsigned int i, PC;
 	Current_PC = sub68k_context.pc;
@@ -397,8 +429,8 @@ void Refresh_S68k_Inst(void)
 	for (i = 1; i < 14; i++)
 	{
 		PC = Current_PC;
-		sprintf(_GString, "%.4X   %-33s\n", PC, M68KDisasm (Next_Word, Next_Long));
-		Print_Text(_GString, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
+		sprintf(Dbg_Out_Str, "%.4X   %-33s\n", PC, M68KDisasm (Next_Word, Next_Long));
+		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }
 
@@ -406,7 +438,7 @@ void Refresh_S68k_Inst(void)
 /**
  * Refresh_Z80_Inst(): Refresh the Z80 instance.
  */
-void Refresh_Z80_Inst(void)
+static void Refresh_Z80_Inst(void)
 {
 	unsigned int i, PC;
 	PC = z80_Get_PC (&M_Z80);
@@ -414,8 +446,8 @@ void Refresh_Z80_Inst(void)
 	
 	for (i = 1; i < 14; i++)
 	{
-		z80dis((unsigned char *) Ram_Z80, (int *) &PC, _GString);
-		Print_Text(_GString, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
+		z80dis((unsigned char *) Ram_Z80, (int *) &PC, Dbg_Out_Str);
+		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }
 
@@ -424,29 +456,29 @@ void Refresh_Z80_Inst(void)
  * Refresh_SH2_Inst(): Refresh an SH2 instance.
  * @param num ID of SH2 CPU (0 or 1).
  */
-void Refresh_SH2_Inst (int num)
+static void Refresh_SH2_Inst(int num)
 {
 	unsigned int i, PC;
 	SH2_CONTEXT *sh;
 	
 	if (num)
 	{
-		strcpy(_GString, "** SLAVE SH2 DEBUG **");
+		strcpy(Dbg_Out_Str, "** SLAVE SH2 DEBUG **");
 		sh = &S_SH2;
 	}
 	else
 	{
-		strcpy(_GString, "** MASTER SH2 DEBUG **");
+		strcpy(Dbg_Out_Str, "** MASTER SH2 DEBUG **");
 		sh = &M_SH2;
 	}
-	Print_Text(_GString, 22, 24, 1, VERT);
+	Print_Text(Dbg_Out_Str, 22, 24, 1, VERT);
 	
 	PC = (sh->PC - sh->Base_PC) - 4;
 	
 	for (i = 1; i < 14; i++, PC += 2)
 	{
-		SH2Disasm(_GString, PC, SH2_Read_Word (sh, PC), 0);
-		Print_Text(_GString, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
+		SH2Disasm(Dbg_Out_Str, PC, SH2_Read_Word (sh, PC), 0);
+		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }
 
@@ -454,7 +486,7 @@ void Refresh_SH2_Inst (int num)
 /**
  * Refresh_M68k_Mem(): Refresh the Main 68000 memory dump.
  */
-void Refresh_M68k_Mem (void)
+static void Refresh_M68k_Mem(void)
 {
 	unsigned int i, j, k, Adr;
 	Adr = adr_mem >> 1;
@@ -463,14 +495,14 @@ void Refresh_M68k_Mem (void)
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
 		i = (j & 0x7FFF) << 1;
-		sprintf(_GString, "%.4X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
+		sprintf(Dbg_Out_Str, "%.4X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
 				Ram_68k[i] + (Ram_68k[i + 1] << 8),
 				Ram_68k[i + 2] + (Ram_68k[i + 3] << 8),
 				Ram_68k[i + 4] + (Ram_68k[i + 5] << 8),
 				Ram_68k[i + 6] + (Ram_68k[i + 7] << 8),
 				Ram_68k[i + 8] + (Ram_68k[i + 9] << 8),
 				Ram_68k[i + 10] + (Ram_68k[i + 11] << 8));
-		Print_Text(_GString, 34, 1, 146 + (k << 3), BLANC);
+		Print_Text(Dbg_Out_Str, 34, 1, 146 + (k << 3), BLANC);
     }
 }
 
@@ -478,7 +510,7 @@ void Refresh_M68k_Mem (void)
 /**
  * Refresh_M68k_Mem(): Refresh the Sub 68000 memory dump.
  */
-void Refresh_S68k_Mem (void)
+static void Refresh_S68k_Mem(void)
 {
 	unsigned int i, j, k, Adr;
 	Adr = adr_mem >> 1;
@@ -487,14 +519,14 @@ void Refresh_S68k_Mem (void)
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
 		i = (j & 0x1FFFF) << 1;
-		sprintf(_GString, "%.5X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
+		sprintf(Dbg_Out_Str, "%.5X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
 				Ram_Word_1M[i] + (Ram_Word_1M[i + 1] << 8),
 				Ram_Word_1M[i + 2] + (Ram_Word_1M[i + 3] << 8),
 				Ram_Word_1M[i + 4] + (Ram_Word_1M[i + 5] << 8),
 				Ram_Word_1M[i + 6] + (Ram_Word_1M[i + 7] << 8),
 				Ram_Word_1M[i + 8] + (Ram_Word_1M[i + 9] << 8),
 				Ram_Word_1M[i + 10] + (Ram_Word_1M[i + 11] << 8));
-		Print_Text(_GString, 35, 1, 146 + (k << 3), BLANC);
+		Print_Text(Dbg_Out_Str, 35, 1, 146 + (k << 3), BLANC);
 	}
 }
 
@@ -502,19 +534,19 @@ void Refresh_S68k_Mem (void)
 /**
  * Refresh_Z80_Mem(): Refresh the Z80 memory dump.
   */
-void Refresh_Z80_Mem(void)
+static void Refresh_Z80_Mem(void)
 {
 	unsigned int j, k;
 	Print_Text_Constant("***** Z80 MEM *****", 19, 24, 130, VERT);
 	
 	for (k = 0, j = adr_mem & 0xFFFF; k < 7; k++, j = (j + 12) & 0xFFFF)
 	{
-		sprintf(_GString, "%.4X:%.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n", j,
+		sprintf(Dbg_Out_Str, "%.4X:%.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n", j,
 				Z80_ReadB(j + 0), Z80_ReadB(j + 1), Z80_ReadB(j + 2),
 				Z80_ReadB(j + 3), Z80_ReadB(j + 4), Z80_ReadB(j + 5),
 				Z80_ReadB(j + 6), Z80_ReadB(j + 7), Z80_ReadB(j + 8),
 				Z80_ReadB(j + 9), Z80_ReadB(j + 10), Z80_ReadB(j + 11));
-		Print_Text(_GString, 35, 1, 146 + (k << 3), BLANC);
+		Print_Text(Dbg_Out_Str, 35, 1, 146 + (k << 3), BLANC);
 	}
 }
 
@@ -522,7 +554,7 @@ void Refresh_Z80_Mem(void)
 /**
  * Refresh_SH2_Mem(): Refresh the SH2 memory dump.
  */
-void Refresh_SH2_Mem(void)
+static void Refresh_SH2_Mem(void)
 {
 	unsigned int i, j, k, Adr;
 	Adr = adr_mem >> 1;
@@ -531,14 +563,14 @@ void Refresh_SH2_Mem(void)
 	for (k = 0, j = Adr; k < 7; k++, j += 6)
 	{
 		i = (j & 0x1FFFF) << 1;
-		sprintf(_GString, "%.5X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
+		sprintf(Dbg_Out_Str, "%.5X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
 				_32X_Ram[i] + (_32X_Ram[i + 1] << 8),
 				_32X_Ram[i + 2] + (_32X_Ram[i + 3] << 8),
 				_32X_Ram[i + 4] + (_32X_Ram[i + 5] << 8),
 				_32X_Ram[i + 6] + (_32X_Ram[i + 7] << 8),
 				_32X_Ram[i + 8] + (_32X_Ram[i + 9] << 8),
 				_32X_Ram[i + 10] + (_32X_Ram[i + 11] << 8));
-		Print_Text(_GString, 35, 1, 146 + (k << 3), BLANC);
+		Print_Text(Dbg_Out_Str, 35, 1, 146 + (k << 3), BLANC);
 	}
 }
 
@@ -546,42 +578,42 @@ void Refresh_SH2_Mem(void)
 /**
  * Refresh_M68k_State(): Refresh the Main 68000 status display.
  */
-void Refresh_M68k_State(void)
+static void Refresh_M68k_State(void)
 {
 	Print_Text_Constant("** MAIN 68000 STATUS **", 23, 196, 130, VERT);
 	
-	sprintf(_GString, "A0=%.8X A1=%.8X A2=%.8X X=%d\n",
+	sprintf(Dbg_Out_Str, "A0=%.8X A1=%.8X A2=%.8X X=%d\n",
 			main68k_context.areg[0], main68k_context.areg[1],
 			main68k_context.areg[2], (main68k_context.sr & 0x10) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 146, BLANC);
-	sprintf(_GString, "A3=%.8X A4=%.8X A5=%.8X N=%d\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 146, BLANC);
+	sprintf(Dbg_Out_Str, "A3=%.8X A4=%.8X A5=%.8X N=%d\n",
 			main68k_context.areg[3], main68k_context.areg[4],
 			main68k_context.areg[5], (main68k_context.sr & 0x8) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 154, BLANC);
-	sprintf(_GString, "A6=%.8X A7=%.8X D0=%.8X Z=%d\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 154, BLANC);
+	sprintf(Dbg_Out_Str, "A6=%.8X A7=%.8X D0=%.8X Z=%d\n",
 			main68k_context.areg[6], main68k_context.areg[7],
 			main68k_context.dreg[0], (main68k_context.sr & 0x4) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 162, BLANC);
-	sprintf(_GString, "D1=%.8X D2=%.8X D3=%.8X V=%d\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 162, BLANC);
+	sprintf(Dbg_Out_Str, "D1=%.8X D2=%.8X D3=%.8X V=%d\n",
 			main68k_context.dreg[1], main68k_context.dreg[2],
 			main68k_context.dreg[3], (main68k_context.sr & 0x2) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 170, BLANC);
-	sprintf(_GString, "D4=%.8X D5=%.8X D6=%.8X C=%d\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 170, BLANC);
+	sprintf(Dbg_Out_Str, "D4=%.8X D5=%.8X D6=%.8X C=%d\n",
 			main68k_context.dreg[4], main68k_context.dreg[5],
 			main68k_context.dreg[6], (main68k_context.sr & 0x1) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 178, BLANC);
-	sprintf(_GString, "D7=%.8X PC=%.8X SR=%.4X\n", main68k_context.dreg[7],
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 178, BLANC);
+	sprintf(Dbg_Out_Str, "D7=%.8X PC=%.8X SR=%.4X\n", main68k_context.dreg[7],
 			main68k_context.pc, main68k_context.sr);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 186, BLANC);
-	sprintf(_GString, "Cycles=%.10d \n", main68k_context.odometer);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 194, BLANC);
-	sprintf(_GString, "Bank for Z80 = %.8X\n", Bank_Z80);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 202, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 186, BLANC);
+	sprintf(Dbg_Out_Str, "Cycles=%.10d \n", main68k_context.odometer);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 194, BLANC);
+	sprintf(Dbg_Out_Str, "Bank for Z80 = %.8X\n", Bank_Z80);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 202, BLANC);
 	/*
-	sprintf(_GString, "Bank = %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n",
+	sprintf(Dbg_Out_Str, "Bank = %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n",
 			Rom_Bank[0], Rom_Bank[1], Rom_Bank[2], Rom_Bank[3],
 			Rom_Bank[4], Rom_Bank[5], Rom_Bank[6], Rom_Bank[7]);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 210, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 210, BLANC);
 	*/
 }
 
@@ -589,64 +621,64 @@ void Refresh_M68k_State(void)
 /**
  * Refresh_S68k_State(): Refresh the Sub 68000 status display.
  */
-void Refresh_S68k_State(void)
+static void Refresh_S68k_State(void)
 {
 	Print_Text_Constant("** SUB 68000 STATUS **", 22, 196, 130, VERT);
 	
-	sprintf(_GString, "A0=%.8X A1=%.8X A2=%.8X X=%d\n", sub68k_context.areg[0],
+	sprintf(Dbg_Out_Str, "A0=%.8X A1=%.8X A2=%.8X X=%d\n", sub68k_context.areg[0],
 			sub68k_context.areg[1], sub68k_context.areg[2],
 			(sub68k_context.sr & 0x10) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 146, BLANC);
-	sprintf(_GString, "A3=%.8X A4=%.8X A5=%.8X N=%d\n", sub68k_context.areg[3],
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 146, BLANC);
+	sprintf(Dbg_Out_Str, "A3=%.8X A4=%.8X A5=%.8X N=%d\n", sub68k_context.areg[3],
 			sub68k_context.areg[4], sub68k_context.areg[5],
 			(sub68k_context.sr & 0x8) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 154, BLANC);
-	sprintf(_GString, "A6=%.8X A7=%.8X D0=%.8X Z=%d\n", sub68k_context.areg[6],
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 154, BLANC);
+	sprintf(Dbg_Out_Str, "A6=%.8X A7=%.8X D0=%.8X Z=%d\n", sub68k_context.areg[6],
 			sub68k_context.areg[7], sub68k_context.dreg[0],
 			(sub68k_context.sr & 0x4) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 162, BLANC);
-	sprintf(_GString, "D1=%.8X D2=%.8X D3=%.8X V=%d\n", sub68k_context.dreg[1],
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 162, BLANC);
+	sprintf(Dbg_Out_Str, "D1=%.8X D2=%.8X D3=%.8X V=%d\n", sub68k_context.dreg[1],
 			sub68k_context.dreg[2], sub68k_context.dreg[3],
 			(sub68k_context.sr & 0x2) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 170, BLANC);
-	sprintf(_GString, "D4=%.8X D5=%.8X D6=%.8X C=%d\n", sub68k_context.dreg[4],
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 170, BLANC);
+	sprintf(Dbg_Out_Str, "D4=%.8X D5=%.8X D6=%.8X C=%d\n", sub68k_context.dreg[4],
 			sub68k_context.dreg[5], sub68k_context.dreg[6],
 			(sub68k_context.sr & 0x1) ? 1 : 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 178, BLANC);
-	sprintf(_GString, "D7=%.8X PC=%.8X SR=%.4X\n", sub68k_context.dreg[7],
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 178, BLANC);
+	sprintf(Dbg_Out_Str, "D7=%.8X PC=%.8X SR=%.4X\n", sub68k_context.dreg[7],
 			sub68k_context.pc, sub68k_context.sr);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 186, BLANC);
-	sprintf(_GString, "Cycles=%.10d \n", sub68k_context.odometer);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 194, BLANC);
-	sprintf(_GString, "Bank for main 68K = %.8X\n", Bank_M68K);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 202, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 186, BLANC);
+	sprintf(Dbg_Out_Str, "Cycles=%.10d \n", sub68k_context.odometer);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 194, BLANC);
+	sprintf(Dbg_Out_Str, "Bank for main 68K = %.8X\n", Bank_M68K);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 202, BLANC);
 }
 
 
 /**
  * Refresh_Z80_State(): Refresh the Z80 status display.
  */
-void Refresh_Z80_State(void)
+static void Refresh_Z80_State(void)
 {
 	Print_Text_Constant("***** Z80 STATUS *****", 22, 196, 130, VERT);
 	
-	sprintf(_GString, "AF =%.4X BC =%.4X DE =%.4X HL =%.4X\n",
+	sprintf(Dbg_Out_Str, "AF =%.4X BC =%.4X DE =%.4X HL =%.4X\n",
 			z80_Get_AF (&M_Z80), M_Z80.BC.w.BC,
 			M_Z80.DE.w.DE, M_Z80.HL.w.HL);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 146, BLANC);
-	sprintf(_GString, "AF2=%.4X BC2=%.4X DE2=%.4X HL2=%.4X\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 146, BLANC);
+	sprintf(Dbg_Out_Str, "AF2=%.4X BC2=%.4X DE2=%.4X HL2=%.4X\n",
 			z80_Get_AF2 (&M_Z80), M_Z80.BC2.w.BC2,
 			M_Z80.DE2.w.DE2, M_Z80.HL2.w.HL2);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 154, BLANC);
-	sprintf(_GString, "IX =%.4X IY =%.4X SP =%.4X PC =%.4X\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 154, BLANC);
+	sprintf(Dbg_Out_Str, "IX =%.4X IY =%.4X SP =%.4X PC =%.4X\n",
 			M_Z80.IX.w.IX, M_Z80.IY.w.IY,
 			M_Z80.SP.w.SP, z80_Get_PC (&M_Z80));
-	Print_Text(_GString, strlen(_GString) - 1, 162, 162, BLANC);
-	sprintf(_GString, "IFF1=%d IFF2=%d I=%.2X R=%.2X IM=%.2X\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 162, BLANC);
+	sprintf(Dbg_Out_Str, "IFF1=%d IFF2=%d I=%.2X R=%.2X IM=%.2X\n",
 			M_Z80.IFF.b.IFF1, M_Z80.IFF.b.IFF2, M_Z80.I,
 			M_Z80.R.b.R1, M_Z80.IM);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 170, BLANC);
-	sprintf(_GString, "S=%d Z=%d Y=%d H=%d X=%d P=%d N=%d C=%d\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 170, BLANC);
+	sprintf(Dbg_Out_Str, "S=%d Z=%d Y=%d H=%d X=%d P=%d N=%d C=%d\n",
 			(z80_Get_AF (&M_Z80) & 0x80) >> 7,
 			(z80_Get_AF (&M_Z80) & 0x40) >> 6,
 			(z80_Get_AF (&M_Z80) & 0x20) >> 5,
@@ -655,126 +687,126 @@ void Refresh_Z80_State(void)
 			(z80_Get_AF (&M_Z80) & 0x04) >> 2,
 			(z80_Get_AF (&M_Z80) & 0x02) >> 1,
 			(z80_Get_AF (&M_Z80) & 0x01) >> 0);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 178, BLANC);
-	sprintf(_GString, "Status=%.2X ILine=%.2X IVect=%.2X\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 178, BLANC);
+	sprintf(Dbg_Out_Str, "Status=%.2X ILine=%.2X IVect=%.2X\n",
 			M_Z80.Status & 0xFF, M_Z80.IntLine, M_Z80.IntVect);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 186, BLANC);
-	sprintf(_GString, "Bank68K=%.8X State=%.2X\n", Bank_M68K, Z80_State);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 194, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 186, BLANC);
+	sprintf(Dbg_Out_Str, "Bank68K=%.8X State=%.2X\n", Bank_M68K, Z80_State);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 194, BLANC);
 }
 
 
 /**
  * Refresh_Z80_State(): Refresh the Z80 status display.
  */
-void Refresh_SH2_State(int num)
+static void Refresh_SH2_State(int num)
 {
 	SH2_CONTEXT *sh;
 	
 	if (num)
 	{
-		strcpy(_GString, "** SLAVE SH2 STATUS **");
+		strcpy(Dbg_Out_Str, "** SLAVE SH2 STATUS **");
 		sh = &S_SH2;
 	}
 	else
 	{
-		strcpy(_GString, "** MASTER SH2 STATUS **");
+		strcpy(Dbg_Out_Str, "** MASTER SH2 STATUS **");
 		sh = &M_SH2;
 	}
-	Print_Text(_GString, 22, 196, 130, VERT);
+	Print_Text(Dbg_Out_Str, 22, 196, 130, VERT);
 	
-	sprintf(_GString, "R0=%.8X R1=%.8X R2=%.8X T=%d\n", SH2_Get_R(sh, 0),
+	sprintf(Dbg_Out_Str, "R0=%.8X R1=%.8X R2=%.8X T=%d\n", SH2_Get_R(sh, 0),
 			SH2_Get_R(sh, 1), SH2_Get_R(sh, 2), SH2_Get_SR(sh) & 1);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 146, BLANC);
-	sprintf(_GString, "R3=%.8X R4=%.8X R5=%.8X S=%d\n", SH2_Get_R(sh, 3),
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 146, BLANC);
+	sprintf(Dbg_Out_Str, "R3=%.8X R4=%.8X R5=%.8X S=%d\n", SH2_Get_R(sh, 3),
 			SH2_Get_R(sh, 4), SH2_Get_R(sh, 5), (SH2_Get_SR(sh) >> 1) & 1);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 154, BLANC);
-	sprintf(_GString, "R6=%.8X R7=%.8X R8=%.8X Q=%d\n", SH2_Get_R(sh, 6),
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 154, BLANC);
+	sprintf(Dbg_Out_Str, "R6=%.8X R7=%.8X R8=%.8X Q=%d\n", SH2_Get_R(sh, 6),
 			SH2_Get_R(sh, 7), SH2_Get_R(sh, 8), (SH2_Get_SR(sh) >> 8) & 1);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 162, BLANC);
-	sprintf(_GString, "R9=%.8X RA=%.8X RB=%.8X M=%d\n", SH2_Get_R(sh, 9),
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 162, BLANC);
+	sprintf(Dbg_Out_Str, "R9=%.8X RA=%.8X RB=%.8X M=%d\n", SH2_Get_R(sh, 9),
 			SH2_Get_R(sh, 0xA), SH2_Get_R(sh, 0xB),
 			(SH2_Get_SR(sh) >> 9) & 1);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 170, BLANC);
-	sprintf(_GString, "RC=%.8X RD=%.8X RE=%.8X I=%.1X\n", SH2_Get_R(sh, 0xC),
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 170, BLANC);
+	sprintf(Dbg_Out_Str, "RC=%.8X RD=%.8X RE=%.8X I=%.1X\n", SH2_Get_R(sh, 0xC),
 			SH2_Get_R(sh, 0xD), SH2_Get_R(sh, 0xE),
 			(SH2_Get_SR(sh) >> 4) & 0xF);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 178, BLANC);
-	sprintf(_GString, "RF=%.8X PC=%.8X SR=%.4X St=%.4X\n", SH2_Get_R(sh, 0xF),
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 178, BLANC);
+	sprintf(Dbg_Out_Str, "RF=%.8X PC=%.8X SR=%.4X St=%.4X\n", SH2_Get_R(sh, 0xF),
 			SH2_Get_PC(sh), SH2_Get_SR(sh), sh->Status & 0xFFFF);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 186, BLANC);
-	sprintf(_GString, "GBR=%.8X VBR=%.8X PR=%.8X\n", SH2_Get_GBR(sh),
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 186, BLANC);
+	sprintf(Dbg_Out_Str, "GBR=%.8X VBR=%.8X PR=%.8X\n", SH2_Get_GBR(sh),
 			SH2_Get_VBR(sh), SH2_Get_PR(sh));
-	Print_Text(_GString, strlen(_GString) - 1, 162, 194, BLANC);
-	sprintf(_GString, "MACH=%.8X MACL=%.8X IL=%.2X IV=%.2X\n",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 194, BLANC);
+	sprintf(Dbg_Out_Str, "MACH=%.8X MACL=%.8X IL=%.2X IV=%.2X\n",
 			SH2_Get_MACH(sh), SH2_Get_MACL(sh), sh->INT.Prio, sh->INT.Vect);
-	Print_Text(_GString, strlen(_GString) - 1, 162, 202, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 202, BLANC);
 }
 
 
 /**
  * Refresh_VDP_State(): Refresh the VDP status display.
  */
-void Refresh_VDP_State(void)
+static void Refresh_VDP_State(void)
 {
 	int tmp;
 	Print_Text_Constant("**** VDP STATUS ****", 20, 200, 1, VERT);
 	
-	sprintf(_GString, "Setting register: 1=%.2X 2=%.2X 3=%.2X 4=%.2X",
+	sprintf(Dbg_Out_Str, "Setting register: 1=%.2X 2=%.2X 3=%.2X 4=%.2X",
 			VDP_Reg.Set1, VDP_Reg.Set2, VDP_Reg.Set3, VDP_Reg.Set4);
-	Print_Text(_GString, strlen(_GString), 162, 14, BLANC);
-	sprintf(_GString, "Pattern Adr: ScrA=%.2X ScrB=%.2X Win=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 14, BLANC);
+	sprintf(Dbg_Out_Str, "Pattern Adr: ScrA=%.2X ScrB=%.2X Win=%.2X",
 			VDP_Reg.Pat_ScrA_Adr, VDP_Reg.Pat_ScrB_Adr, VDP_Reg.Pat_Win_Adr);
-	Print_Text(_GString, strlen(_GString), 162, 22, BLANC);
-	sprintf(_GString, "Sprite Attribut Adr: Low=%.2X High=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 22, BLANC);
+	sprintf(Dbg_Out_Str, "Sprite Attribut Adr: Low=%.2X High=%.2X",
 			VDP_Reg.Spr_Att_Adr, VDP_Reg.Reg6);
-	Print_Text(_GString, strlen(_GString), 162, 30, BLANC);
-	sprintf(_GString, "H Scroll Adr: Low=%.2X High=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 30, BLANC);
+	sprintf(Dbg_Out_Str, "H Scroll Adr: Low=%.2X High=%.2X",
 			VDP_Reg.H_Scr_Adr, VDP_Reg.Reg14);
-	Print_Text(_GString, strlen(_GString), 162, 38, BLANC);
-	sprintf(_GString, "H Interrupt=%.2X    Auto Inc=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 38, BLANC);
+	sprintf(Dbg_Out_Str, "H Interrupt=%.2X    Auto Inc=%.2X",
 			VDP_Reg.H_Int, VDP_Reg.Auto_Inc);
-	Print_Text(_GString, strlen(_GString), 162, 46, BLANC);
-	sprintf(_GString, "BG Color: Low=%.2X Med=%.2X High=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 46, BLANC);
+	sprintf(Dbg_Out_Str, "BG Color: Low=%.2X Med=%.2X High=%.2X",
 			VDP_Reg.BG_Color, VDP_Reg.Reg8, VDP_Reg.Reg9);
-	Print_Text(_GString, strlen(_GString), 162, 54, BLANC);
-	sprintf(_GString, "Scroll Size=%.2X    Window Pos: H=%.2X V=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 54, BLANC);
+	sprintf(Dbg_Out_Str, "Scroll Size=%.2X    Window Pos: H=%.2X V=%.2X",
 			VDP_Reg.Scr_Size, VDP_Reg.Win_H_Pos, VDP_Reg.Win_V_Pos);
-	Print_Text(_GString, strlen(_GString), 162, 62, BLANC);
-	sprintf(_GString, "DMA Length: Low=%.2X High=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 62, BLANC);
+	sprintf(Dbg_Out_Str, "DMA Length: Low=%.2X High=%.2X",
 		VDP_Reg.DMA_Length_L, VDP_Reg.DMA_Length_H);
-	Print_Text(_GString, strlen(_GString), 162, 70, BLANC);
-	sprintf(_GString, "DMA Source Adr: Low=%.2X Med=%.2X High=%.2X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 70, BLANC);
+	sprintf(Dbg_Out_Str, "DMA Source Adr: Low=%.2X Med=%.2X High=%.2X",
 			VDP_Reg.DMA_Src_Adr_L, VDP_Reg.DMA_Src_Adr_M,
 			VDP_Reg.DMA_Src_Adr_H);
-	Print_Text(_GString, strlen(_GString), 162, 78, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 78, BLANC);
 	
 	tmp = Read_VDP_Status ();
-	sprintf(_GString, "V Int Happened %d  Sprite overflow %d", (tmp >> 7) & 1, (tmp >> 6) & 1);
-	Print_Text(_GString, strlen(_GString), 162, 86, BLANC);
-	sprintf(_GString, "Collision Spr  %d  Odd Frame in IM %d", (tmp >> 5) & 1, (tmp >> 4) & 1);
-	Print_Text(_GString, strlen(_GString), 162, 94, BLANC);
-	sprintf(_GString, "During V Blank %d  During H Blank  %d", (tmp >> 3) & 1, (tmp >> 2) & 1);
-	Print_Text(_GString, strlen(_GString), 162, 102, BLANC);
-	sprintf(_GString, "DMA Busy %d  PAL Mode %d Line Num %d", (tmp >> 1) & 1, tmp & 1, VDP_Current_Line);
-	Print_Text(_GString, strlen(_GString), 162, 110, BLANC);
-	sprintf(_GString, "VDP Int =%.2X DMA_Length=%.4X", VDP_Int, DMAT_Length);
-	Print_Text(_GString, strlen(_GString), 162, 118, BLANC);
+	sprintf(Dbg_Out_Str, "V Int Happened %d  Sprite overflow %d", (tmp >> 7) & 1, (tmp >> 6) & 1);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 86, BLANC);
+	sprintf(Dbg_Out_Str, "Collision Spr  %d  Odd Frame in IM %d", (tmp >> 5) & 1, (tmp >> 4) & 1);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 94, BLANC);
+	sprintf(Dbg_Out_Str, "During V Blank %d  During H Blank  %d", (tmp >> 3) & 1, (tmp >> 2) & 1);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 102, BLANC);
+	sprintf(Dbg_Out_Str, "DMA Busy %d  PAL Mode %d Line Num %d", (tmp >> 1) & 1, tmp & 1, VDP_Current_Line);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 110, BLANC);
+	sprintf(Dbg_Out_Str, "VDP Int =%.2X DMA_Length=%.4X", VDP_Int, DMAT_Length);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 118, BLANC);
 }
 
 
 /**
  * Refresh_VDP_Pattern(): Refresh the VDP pattern display.
  */
-void Refresh_VDP_Pattern(void)
+static void Refresh_VDP_Pattern(void)
 {
 	unsigned int i;
 	Print_Text_Constant("******** VDP PATTERN ********", 29, 28, 0, VERT);
 	
 	for (i = 0; i < 20; i++)
 	{
-		sprintf(_GString, "%.4X", (pattern_adr & 0xFFFF) + 0x200 * i);
-		Print_Text(_GString, strlen(_GString), 2, (i << 3) + 11, BLANC);
+		sprintf(Dbg_Out_Str, "%.4X", (pattern_adr & 0xFFFF) + 0x200 * i);
+		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, BLANC);
 	}
 	
 	Cell_8x8_Dump(&VRam[pattern_adr & 0xFFFF], pattern_pal);
@@ -818,7 +850,7 @@ static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned short pal
 /**
  * Refresh_VDP_Palette(): Refresh the VDP palette display.
  */
-void Refresh_VDP_Palette(void)
+static void Refresh_VDP_Palette(void)
 {
 	unsigned short i;
 	
@@ -839,27 +871,27 @@ void Refresh_VDP_Palette(void)
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
 	
-	sprintf(_GString, "Status : %.4X", Read_VDP_Status ());
-	Print_Text(_GString, strlen(_GString), 176, 70, BLANC);
-	sprintf(_GString, "Flag : %.2X       Data : %.8X", Ctrl.Flag, Ctrl.Data);
-	Print_Text(_GString, strlen(_GString), 176, 78, BLANC);
-	sprintf(_GString, "Write : %.2X      Access : %.2X", Ctrl.Write, Ctrl.Access);
-	Print_Text(_GString, strlen(_GString), 176, 86, BLANC);
-	sprintf(_GString, "Address : %.4X  DMA_Mode : %.2X", Ctrl.Address, Ctrl.DMA_Mode);
-	Print_Text(_GString, strlen(_GString), 176, 94, BLANC);
-	sprintf(_GString, "DMA adr: %.8X  DMA len: %.4X", VDP_Reg.DMA_Address, VDP_Reg.DMA_Length);
-	Print_Text(_GString, strlen(_GString), 176, 102, BLANC);
-	sprintf(_GString, "DMA : %.2X", Ctrl.DMA);
-	Print_Text(_GString, strlen(_GString), 176, 110, BLANC);
+	sprintf(Dbg_Out_Str, "Status : %.4X", Read_VDP_Status ());
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 70, BLANC);
+	sprintf(Dbg_Out_Str, "Flag : %.2X       Data : %.8X", Ctrl.Flag, Ctrl.Data);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 78, BLANC);
+	sprintf(Dbg_Out_Str, "Write : %.2X      Access : %.2X", Ctrl.Write, Ctrl.Access);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 86, BLANC);
+	sprintf(Dbg_Out_Str, "Address : %.4X  DMA_Mode : %.2X", Ctrl.Address, Ctrl.DMA_Mode);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 94, BLANC);
+	sprintf(Dbg_Out_Str, "DMA adr: %.8X  DMA len: %.4X", VDP_Reg.DMA_Address, VDP_Reg.DMA_Length);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 102, BLANC);
+	sprintf(Dbg_Out_Str, "DMA : %.2X", Ctrl.DMA);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 110, BLANC);
 	
-	Print_Text_Constant("Sprite List:", strlen(_GString), 176, 126, BLANC);
+	Print_Text_Constant("Sprite List:", strlen(Dbg_Out_Str), 176, 126, BLANC);
 	for (i = 0; i < 10; i++)
 	{
-		sprintf(_GString, "%d %d %d %d %d",
+		sprintf(Dbg_Out_Str, "%d %d %d %d %d",
 			Sprite_Struct[i].Pos_X, Sprite_Struct[i].Pos_Y,
 			Sprite_Struct[i].Size_X, Sprite_Struct[i].Size_Y,
 			Sprite_Struct[i].Num_Tile);
-		Print_Text(_GString, strlen(_GString), 176, 134 + (i * 8), BLANC);
+		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 134 + (i * 8), BLANC);
 	}
 }
 
@@ -867,118 +899,118 @@ void Refresh_VDP_Palette(void)
 /**
  * Refresh_SegaCD_State(): Refresh the Sega CD status display.
  */
-void Refresh_SegaCD_State(void)
+static void Refresh_SegaCD_State(void)
 {
 	Print_Text_Constant("** SEGACD STATUS **", 20, 200, 1, VERT);
 	
-	sprintf(_GString, "GE00=%.4X GE02=%.4X CD00=%.4X CD02=%.4X",
+	sprintf(Dbg_Out_Str, "GE00=%.4X GE02=%.4X CD00=%.4X CD02=%.4X",
 			M68K_RW (0xA12000), M68K_RW (0xA12002), S68K_RW (0xFF8000), S68K_RW (0xFF8002));
-	Print_Text(_GString, strlen(_GString), 162, 14, BLANC);
-	sprintf(_GString, "GE04=%.4X GE06=%.4X CD04=%.4X CD06=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 14, BLANC);
+	sprintf(Dbg_Out_Str, "GE04=%.4X GE06=%.4X CD04=%.4X CD06=%.4X",
 			M68K_RW (0xA12004), M68K_RW (0xA12006), S68K_RW (0xFF8004), 0x0000);
-	Print_Text(_GString, strlen(_GString), 162, 22, BLANC);
-	sprintf(_GString, "GE0A=%.4X GE0C=%.4X CD0A=%.4X CD0C=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 22, BLANC);
+	sprintf(Dbg_Out_Str, "GE0A=%.4X GE0C=%.4X CD0A=%.4X CD0C=%.4X",
 			M68K_RW (0xA1200A), M68K_RW (0xA1200C), S68K_RW (0xFF800A), S68K_RW (0xFF800C));
-	Print_Text(_GString, strlen(_GString), 162, 30, BLANC);
-	sprintf(_GString, "GD0E=%.4X", S68K_RW (0xFF800E));
-	Print_Text(_GString, strlen(_GString), 162, 38, BLANC);
-	sprintf(_GString, "GD10=%.4X GD12=%.4X GD14=%.4X GD16=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 30, BLANC);
+	sprintf(Dbg_Out_Str, "GD0E=%.4X", S68K_RW (0xFF800E));
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 38, BLANC);
+	sprintf(Dbg_Out_Str, "GD10=%.4X GD12=%.4X GD14=%.4X GD16=%.4X",
 			S68K_RW (0xFF8010), S68K_RW (0xFF8012), S68K_RW (0xFF8014), S68K_RW (0xFF8016));
-	Print_Text(_GString, strlen(_GString), 162, 46, BLANC);
-	sprintf(_GString, "GD18=%.4X GD1A=%.4X GD1C=%.4X GD1E=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 46, BLANC);
+	sprintf(Dbg_Out_Str, "GD18=%.4X GD1A=%.4X GD1C=%.4X GD1E=%.4X",
 			S68K_RW (0xFF8018), S68K_RW (0xFF801A), S68K_RW (0xFF801C), S68K_RW (0xFF801E));
-	Print_Text(_GString, strlen(_GString), 162, 54, BLANC);
-	sprintf(_GString, "GD20=%.4X GD22=%.4X GD24=%.4X GD26=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 54, BLANC);
+	sprintf(Dbg_Out_Str, "GD20=%.4X GD22=%.4X GD24=%.4X GD26=%.4X",
 			S68K_RW (0xFF8020), S68K_RW (0xFF8022), S68K_RW (0xFF8024), S68K_RW (0xFF8026));
-	Print_Text(_GString, strlen(_GString), 162, 62, BLANC);
-	sprintf(_GString, "GD28=%.4X GD2A=%.4X GD2C=%.4X GD2E=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 62, BLANC);
+	sprintf(Dbg_Out_Str, "GD28=%.4X GD2A=%.4X GD2C=%.4X GD2E=%.4X",
 			S68K_RW (0xFF8028), S68K_RW (0xFF802A), S68K_RW (0xFF802C), S68K_RW (0xFF802E));
-	Print_Text(_GString, strlen(_GString), 162, 70, BLANC);
-	sprintf(_GString, "CD30=%.4X CD32=%.4X CD34=%.4X CD36=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 70, BLANC);
+	sprintf(Dbg_Out_Str, "CD30=%.4X CD32=%.4X CD34=%.4X CD36=%.4X",
 			S68K_RW (0xFF8030), S68K_RW (0xFF8032), S68K_RW (0xFF8034), S68K_RW (0xFF8036));
-	Print_Text(_GString, strlen(_GString), 162, 78, BLANC);
-	sprintf(_GString, "CD38=%.4X CD3A=%.4X CD3E=%.4X CD40=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 78, BLANC);
+	sprintf(Dbg_Out_Str, "CD38=%.4X CD3A=%.4X CD3E=%.4X CD40=%.4X",
 			S68K_RW (0xFF8038), S68K_RW (0xFF803A), S68K_RW (0xFF803E), S68K_RW (0xFF8040));
-	Print_Text(_GString, strlen(_GString), 162, 86, BLANC);
-	sprintf(_GString, "CD42=%.4X CD44=%.4X CD48=%.4X CD4A=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 86, BLANC);
+	sprintf(Dbg_Out_Str, "CD42=%.4X CD44=%.4X CD48=%.4X CD4A=%.4X",
 			S68K_RW (0xFF8042), S68K_RW (0xFF8044), S68K_RW (0xFF8048), S68K_RW (0xFF804A));
-	Print_Text(_GString, strlen(_GString), 162, 94, BLANC);
-	sprintf(_GString, "CD4C=%.4X CD4E=%.4X CD50=%.4X CD52=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 94, BLANC);
+	sprintf(Dbg_Out_Str, "CD4C=%.4X CD4E=%.4X CD50=%.4X CD52=%.4X",
 			S68K_RW (0xFF804C), S68K_RW (0xFF804E), S68K_RW (0xFF8050), S68K_RW (0xFF8052));
-	Print_Text(_GString, strlen(_GString), 162, 102, BLANC);
-	sprintf(_GString, "CD58=%.4X CD5A=%.4X CD5C=%.4X CD5E=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 102, BLANC);
+	sprintf(Dbg_Out_Str, "CD58=%.4X CD5A=%.4X CD5C=%.4X CD5E=%.4X",
 			S68K_RW (0xFF8058), S68K_RW (0xFF805A), S68K_RW (0xFF805C), S68K_RW (0xFF805E));
-	Print_Text(_GString, strlen(_GString), 162, 110, BLANC);
-	sprintf(_GString, "CD60=%.4X CD62=%.4X CD64=%.4X CD66=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 110, BLANC);
+	sprintf(Dbg_Out_Str, "CD60=%.4X CD62=%.4X CD64=%.4X CD66=%.4X",
 			S68K_RW (0xFF8060), S68K_RW (0xFF8062), S68K_RW (0xFF8064), S68K_RW (0xFF8066));
-	Print_Text(_GString, strlen(_GString), 162, 118, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 118, BLANC);
 }
 
 
 /**
  * Refresh_32X_State(): Refresh the 32X status display.
  */
-void Refresh_32X_State(void)
+static void Refresh_32X_State(void)
 {
 	Print_Text_Constant("** 32X STATUS **", 20, 200, 1, VERT);
 	
-	sprintf(_GString, "M000=%.4X S000=%.4X M004=%.4X M006=%.4X",
+	sprintf(Dbg_Out_Str, "M000=%.4X S000=%.4X M004=%.4X M006=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4000), SH2_Read_Word (&S_SH2, 0x4000),
 			SH2_Read_Word (&M_SH2, 0x4004), SH2_Read_Word (&M_SH2, 0x4006));
-	Print_Text(_GString, strlen(_GString), 162, 14, BLANC);
-	sprintf(_GString, "M008=%.4X M00A=%.4X M00C=%.4X M00E=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 14, BLANC);
+	sprintf(Dbg_Out_Str, "M008=%.4X M00A=%.4X M00C=%.4X M00E=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4008), SH2_Read_Word (&M_SH2, 0x400A),
 			SH2_Read_Word (&M_SH2, 0x400C), SH2_Read_Word (&M_SH2, 0x400E));
-	Print_Text(_GString, strlen(_GString), 162, 22, BLANC);
-	sprintf(_GString, "M010=%.4X M012=%.4X M014=%.4X M016=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 22, BLANC);
+	sprintf(Dbg_Out_Str, "M010=%.4X M012=%.4X M014=%.4X M016=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4010), SH2_Read_Word (&M_SH2, 0x4012),
 			SH2_Read_Word (&M_SH2, 0x4014), SH2_Read_Word (&M_SH2, 0x4016));
-	Print_Text(_GString, strlen(_GString), 162, 30, BLANC);
-	sprintf(_GString, "M020=%.4X M022=%.4X M024=%.4X M026=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 30, BLANC);
+	sprintf(Dbg_Out_Str, "M020=%.4X M022=%.4X M024=%.4X M026=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4020), SH2_Read_Word (&M_SH2, 0x4022),
 			SH2_Read_Word (&M_SH2, 0x4024), SH2_Read_Word (&M_SH2, 0x4026));
-	Print_Text(_GString, strlen(_GString), 162, 38, BLANC);
-	sprintf(_GString, "M028=%.4X M02A=%.4X M02C=%.4X M02E=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 38, BLANC);
+	sprintf(Dbg_Out_Str, "M028=%.4X M02A=%.4X M02C=%.4X M02E=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4028), SH2_Read_Word (&M_SH2, 0x402A),
 			SH2_Read_Word (&M_SH2, 0x402C), SH2_Read_Word (&M_SH2, 0x402E));
-	Print_Text(_GString, strlen(_GString), 162, 46, BLANC);
-	sprintf(_GString, "M030=%.4X M032=%.4X M034=%.4X M036=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 46, BLANC);
+	sprintf(Dbg_Out_Str, "M030=%.4X M032=%.4X M034=%.4X M036=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4030), SH2_Read_Word (&M_SH2, 0x4032),
 			SH2_Read_Word (&M_SH2, 0x4034), SH2_Read_Word (&M_SH2, 0x4036));
-	Print_Text(_GString, strlen(_GString), 162, 54, BLANC);
-	sprintf(_GString, "M100=%.4X M102=%.4X M104=%.4X M106=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 54, BLANC);
+	sprintf(Dbg_Out_Str, "M100=%.4X M102=%.4X M104=%.4X M106=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4100), SH2_Read_Word (&M_SH2, 0x4102),
 			SH2_Read_Word (&M_SH2, 0x4104), SH2_Read_Word (&M_SH2, 0x4106));
-	Print_Text(_GString, strlen(_GString), 162, 62, BLANC);
-	sprintf(_GString, "M108=%.4X M10A=%.4X M10C=%.4X M10E=%.4X",
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 62, BLANC);
+	sprintf(Dbg_Out_Str, "M108=%.4X M10A=%.4X M10C=%.4X M10E=%.4X",
 			SH2_Read_Word (&M_SH2, 0x4108), SH2_Read_Word (&M_SH2, 0x410A),
 			SH2_Read_Word (&M_SH2, 0x410C), SH2_Read_Word (&M_SH2, 0x410E));
-	Print_Text(_GString, strlen(_GString), 162, 70, BLANC);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 70, BLANC);
 }
 
 
 /**
  * Refresh_CDC_State(): Refresh the CDC status display.
  */
-void Refresh_CDC_State(void)
+static void Refresh_CDC_State(void)
 {
 	Print_Text_Constant("** CDC STATUS **", 16, 200, 1, VERT);
 	
-	sprintf(_GString, "COMIN=%.2X IFSTAT=%.2X DBC=%.4X", CDC.COMIN, CDC.IFSTAT, CDC.DBC.N);
-	Print_Text(_GString, strlen(_GString), 162, 14, BLANC);
-	sprintf(_GString, "HEAD=%.8X PT=%.4X WA=%.4X", CDC.HEAD.N, CDC.PT.N, CDC.WA.N);
-	Print_Text(_GString, strlen(_GString), 162, 22, BLANC);
-	sprintf(_GString, "STAT=%.8X CTRL=%.8X", CDC.STAT.N, CDC.CTRL.N);
-	Print_Text(_GString, strlen(_GString), 162, 30, BLANC);
-	sprintf(_GString, "DAC=%.4X IFCTRL=%.2X", CDC.DAC.N, CDC.IFCTRL);
-	Print_Text(_GString, strlen(_GString), 162, 38, BLANC);
+	sprintf(Dbg_Out_Str, "COMIN=%.2X IFSTAT=%.2X DBC=%.4X", CDC.COMIN, CDC.IFSTAT, CDC.DBC.N);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 14, BLANC);
+	sprintf(Dbg_Out_Str, "HEAD=%.8X PT=%.4X WA=%.4X", CDC.HEAD.N, CDC.PT.N, CDC.WA.N);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 22, BLANC);
+	sprintf(Dbg_Out_Str, "STAT=%.8X CTRL=%.8X", CDC.STAT.N, CDC.CTRL.N);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 30, BLANC);
+	sprintf(Dbg_Out_Str, "DAC=%.4X IFCTRL=%.2X", CDC.DAC.N, CDC.IFCTRL);
+	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 38, BLANC);
 }
 
 
 /**
  * Refresh_Word_RAM_Pattern(): Refresh the Word RAM pattern status display.
  */
-void Refresh_Word_RAM_Pattern(void)
+static void Refresh_Word_RAM_Pattern(void)
 {
 	// Improved Word RAM pattern display function ported from Gens Rerecording.
 	unsigned int i;
@@ -987,8 +1019,8 @@ void Refresh_Word_RAM_Pattern(void)
 	
 	for (i = 0; i < 24; i++)
 	{
-		sprintf(_GString, "%.4X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
-		Print_Text(_GString, strlen(_GString), 2, (i << 3) + 11, BLANC);
+		sprintf(Dbg_Out_Str, "%.4X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
+		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, BLANC);
 	}
 	
 	// Word RAM patterns can be either 16x16 or 32x32.
