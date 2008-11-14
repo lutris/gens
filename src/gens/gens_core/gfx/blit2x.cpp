@@ -75,12 +75,10 @@ static inline void Blit2x(pixel *screen, pixel *mdScreen, int pitch, unsigned sh
 	}
 }
 
-#ifndef GENS_X86_ASM
 void Blit2x_16(unsigned char *screen, int pitch, int x, int y, int offset)
 {
 	Blit2x((unsigned short*)screen, MD_Screen, pitch, x, y, offset);
 }
-#endif
 
 void Blit2x_32(unsigned char *screen, int pitch, int x, int y, int offset)
 {

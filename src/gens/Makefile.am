@@ -7,6 +7,7 @@ gens_x86_asm_o = \
 		gens_core/gfx/blit1x_16.o \
 		gens_core/gfx/blit1x_32.o \
 		gens_core/gfx/blit2x_16.o \
+		gens_core/gfx/blit2x_32.o \
 		gens_core/gfx/blit2x_int.o \
 		gens_core/gfx/blit2x_scanline.o \
 		gens_core/gfx/blit2x_scanline_50.o \
@@ -39,7 +40,8 @@ gens_x86_asm_h = \
 else
 gens_x86_asm_o =
 gens_x86_asm_src = \
-		gens_core/gfx/blit1x.cpp
+		gens_core/gfx/blit1x.cpp \
+		gens_core/gfx/blit2x.cpp
 gens_x86_asm_h =
 endif
 
@@ -122,7 +124,6 @@ gens_SOURCES = \
 		gens_core/misc/misc.asm \
 		gens_core/misc/fastblur.c \
 		$(gens_x86_asm_src) \
-		gens_core/gfx/blit2x.cpp \
 		gens_core/gfx/blit2x_scanline.cpp \
 		gens_core/gfx/scale2x.cpp \
 		gens_core/gfx/hq2x_funcs.c \
