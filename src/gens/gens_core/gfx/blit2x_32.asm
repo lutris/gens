@@ -130,8 +130,8 @@ section .text align=64
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X1
+	.Loop_Y:
+	.Loop_X1:
 				movq mm0, [esi]
 				movq mm1, mm0
 				movq mm2, [esi + 8]
@@ -173,7 +173,7 @@ section .text align=64
 
 	ALIGN64
 	
-	.Loop_X2
+	.Loop_X2:
 				movq mm0, [esi]
 				movq mm1, mm0
 				movq mm2, [esi + 8]
