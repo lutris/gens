@@ -19,20 +19,14 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-
 %include "nasmhead.inc"
-
 
 section .data align=64
 
 	extern MD_Screen
-	extern TAB336
 	extern Have_MMX
-	extern Mode_555
-
 
 section .text align=64
-
 
 	ALIGN64
 
@@ -46,21 +40,21 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes Dest � chaque boucle
+		mov ecx, [esp + 32]				; ecx = Number of pixels per line
+		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen + 8 * 2]			; esi = Source
+		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
+		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
+		shr ecx, 4					; Transfer 16 bytes per cycle. (8 16-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
+		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X1
-				mov eax, [esi]					; on transferts 2 pixels d'un coup	
+	.Loop_Y:
+	.Loop_X1:
+				mov eax, [esi]			; First two pixels.
 				add esi, 8
 				mov edx, eax
 				rol eax, 16
@@ -68,7 +62,7 @@ section .text align=64
 				mov [edi], eax
 				mov [edi + 4], edx
 				add edi, 16
-				mov eax, [esi - 4]				; on transferts 2 pixels d'un coup	
+				mov eax, [esi - 4]		; Second two pixels.
 				mov edx, eax
 				rol eax, 16
 				xchg ax, dx
@@ -77,8 +71,8 @@ section .text align=64
 				mov [edi - 4], edx
 				jnz short .Loop_X1
 	
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
+			mov ecx, [esp + 32]			; ecx = Number of pixels per line
+			add edi, ebx				; Add the pitch difference to the destination pointer.
 			shl ecx, 3
 			sub esi, ecx
 			shr ecx, 3
@@ -86,8 +80,8 @@ section .text align=64
 
 	ALIGN64
 	
-	.Loop_X2
-				mov eax, [esi]					; on transferts 2 pixels d'un coup	
+	.Loop_X2:
+				mov eax, [esi]			; First two pixels.
 				add esi, 8
 				mov edx, eax
 				rol eax, 16
@@ -95,7 +89,7 @@ section .text align=64
 				mov [edi], eax
 				mov [edi + 4], edx
 				add edi, 16
-				mov eax, [esi - 4]				; on transferts 2 pixels d'un coup	
+				mov eax, [esi - 4]		; Second two pixels.
 				mov edx, eax
 				rol eax, 16
 				xchg ax, dx
@@ -104,10 +98,10 @@ section .text align=64
 				mov [edi - 4], edx
 				jnz short .Loop_X2
 
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
+			add esi, [esp + 40]			; Add the line offset.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			dec dword [esp + 36]			; Reset the X conuter.
+			mov ecx, [esp + 32]			; Decrement the Y counter.
 			jnz near .Loop_Y
 
 		pop esi
@@ -116,7 +110,6 @@ section .text align=64
 		pop ecx
 		pop ebx
 		ret
-
 
 	ALIGN64
 
@@ -130,51 +123,54 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 6						; on transfert 64 bytes Dest � chaque boucle
+		mov ecx, [esp + 32]				; ecx = Number of pixels per line
+		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen + 8 * 2]			; esi = Source
+		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
+		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
+		shr ecx, 6					; Transfer 64 bytes per cycle. (16 32-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
+		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X1
+	.Loop_Y:
+	.Loop_X1:
 				movq mm0, [esi]
-				add edi, byte 64
-				movq mm2, [esi + 8]
 				movq mm1, mm0
-				movq mm4, [esi + 16]
+				movq mm2, [esi + 8]
 				movq mm3, mm2
-				movq mm6, [esi + 24]
+				movq mm4, [esi + 16]
 				movq mm5, mm4
+				movq mm6, [esi + 24]
 				movq mm7, mm6
+				
 				punpcklwd mm1, mm1
 				punpckhwd mm0, mm0
-				movq [edi + 0 - 64], mm1
 				punpcklwd mm3, mm3
-				movq [edi + 8 - 64], mm0
 				punpckhwd mm2, mm2
-				movq [edi + 16 - 64], mm3
 				punpcklwd mm5, mm5
-				movq [edi + 24 - 64], mm2
 				punpckhwd mm4, mm4
-				movq [edi + 32 - 64], mm5
 				punpcklwd mm7, mm7
-				movq [edi + 40 - 64], mm4
 				punpckhwd mm6, mm6
-				movq [edi + 48 - 64], mm7
+				
+				movq [edi + 0], mm1
+				movq [edi + 8], mm0
+				movq [edi + 16], mm3
+				movq [edi + 24], mm2
+				movq [edi + 32], mm5
+				movq [edi + 40], mm4
+				movq [edi + 48], mm7
+				movq [edi + 56], mm6
+				
+				add edi, byte 64
 				add esi, byte 32
 				dec ecx
-				movq [edi + 56 - 64], mm6
 				jnz short .Loop_X1
 	
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
+			mov ecx, [esp + 32]			; Reset the X counter.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
 			shl ecx, 5
 			sub esi, ecx
 			shr ecx, 5
@@ -182,40 +178,43 @@ section .text align=64
 
 	ALIGN64
 	
-	.Loop_X2
+	.Loop_X2:
 				movq mm0, [esi]
-				add edi, byte 64
-				movq mm2, [esi + 8]
 				movq mm1, mm0
-				movq mm4, [esi + 16]
+				movq mm2, [esi + 8]
 				movq mm3, mm2
-				movq mm6, [esi + 24]
+				movq mm4, [esi + 16]
 				movq mm5, mm4
+				movq mm6, [esi + 24]
 				movq mm7, mm6
+				
 				punpcklwd mm1, mm1
 				punpckhwd mm0, mm0
-				movq [edi + 0 - 64], mm1
 				punpcklwd mm3, mm3
-				movq [edi + 8 - 64], mm0
 				punpckhwd mm2, mm2
-				movq [edi + 16 - 64], mm3
 				punpcklwd mm5, mm5
-				movq [edi + 24 - 64], mm2
 				punpckhwd mm4, mm4
-				movq [edi + 32 - 64], mm5
 				punpcklwd mm7, mm7
-				movq [edi + 40 - 64], mm4
 				punpckhwd mm6, mm6
-				movq [edi + 48 - 64], mm7
+				
+				movq [edi + 0], mm1
+				movq [edi + 8], mm0
+				movq [edi + 16], mm3
+				movq [edi + 24], mm2
+				movq [edi + 32], mm5
+				movq [edi + 40], mm4
+				movq [edi + 48], mm7
+				movq [edi + 56], mm6
+				
+				add edi, byte 64
 				add esi, byte 32
 				dec ecx
-				movq [edi + 56 - 64], mm6
 				jnz short .Loop_X2
 
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
+			add esi, [esp + 40]			; Add the line offset.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			mov ecx, [esp + 32]			; Reset the X counter.
+			dec dword [esp + 36]			; Decrement the Y counter.
 			jnz near .Loop_Y
 
 		pop esi
