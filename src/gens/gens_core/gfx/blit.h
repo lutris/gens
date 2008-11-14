@@ -22,6 +22,7 @@ void Blit2x_32(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit2x_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit2x_16_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
 void Blit2x_32_asm(unsigned char *screen, int pitch, int x, int y, int offset);
+void Blit2x_32_asm_MMX(unsigned char *screen, int pitch, int x, int y, int offset);
 #endif /* GENS_X86_ASM */
 
 void Blit2x_Int_16_asm(unsigned char *screen, int pitch, int x, int y, int offset);

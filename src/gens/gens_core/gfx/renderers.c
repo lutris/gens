@@ -44,7 +44,7 @@ const int Renderers_Count = 12;
 const struct Renderer_t Renderers[] =
 {
 	{"Normal", Blit1x_16_asm, Blit1x_16_asm_MMX, Blit1x_32_asm, Blit1x_32_asm_MMX},
-	{"Double", Blit2x_16_asm, Blit2x_16_asm_MMX, Blit2x_32_asm, Blit2x_32_asm},
+	{"Double", Blit2x_16_asm, Blit2x_16_asm_MMX, Blit2x_32_asm, Blit2x_32_asm_MMX},
 	{"Interpolated", Blit2x_Int_16_asm, Blit2x_Int_16_asm_MMX, NULL, NULL},
 	{"Scanline", Blit2x_Scanline_16_asm, Blit2x_Scanline_16_asm_MMX, Blit2x_Scanline_32, Blit2x_Scanline_32},
 	{"50% Scanline", NULL, Blit2x_Scanline_50_16_asm_MMX, NULL, NULL},
