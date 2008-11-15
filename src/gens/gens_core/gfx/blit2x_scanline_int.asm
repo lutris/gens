@@ -92,7 +92,7 @@ section .text align=64
 				jnz short .Loop_X1
 
 			mov ecx, [esp + 32]			; ecx = Number of pixels per line
-			shr ecx, 2				; Black out 16 pixels per cycle.
+			shr ecx, 2				; Black out 16 bytes (32 pixels) per cycle.
 			add edi, ebx				; Add the pitch difference to the destination pointer.
 			xor edx, edx				; Scanlines are all black.
 			jmp short .Loop_X2
@@ -135,15 +135,14 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface screen
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne screen
-		add ebx, ebx					; ebx = pitch * 2
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 4						; on transfert 16 bytes screen � chaque boucle
-		mov edi, [esp + 24]				; edi = destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
+		mov ecx, [esp + 32]				; ecx = Number of pixels per line
+		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen + 8 * 2]			; esi = Source
+		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
+		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
+		shr ecx, 4					; Transfer 16 bytes per cycle. (32 16-bit pixels)
+		mov edi, [esp + 24]				; edi = Destination
+		mov [esp + 32], ecx				; Initialize the X counter.
 
 		movq mm7, [MASK_DIV2_15]
 		; Check if this is 15-bit color mode.
@@ -156,8 +155,8 @@ section .text align=64
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X
+	.Loop_Y:
+	.Loop_X1:
 				movq mm0, [esi]
 				add edi, byte 16
 				movq mm2, mm0
@@ -174,13 +173,35 @@ section .text align=64
 				movq [edi + 0 - 16], mm2
 				dec ecx
 				movq [edi + 8 - 16], mm3
-				jnz short .Loop_X
+				jnz short .Loop_X1
 
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
-			jnz short .Loop_Y
+			mov ecx, [esp + 32]			; Reset the X counter.
+			shr ecx, 2				; Black out 64 bytes (128 pixels) per cycle.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			pxor mm0, mm0				; Scanlines are all black.
+			jmp short .Loop_X2
+
+	ALIGN64
+
+	.Loop_X2:
+				movq [edi + 0], mm0
+				movq [edi + 8], mm0
+				movq [edi + 16], mm0
+				movq [edi + 24], mm0
+				movq [edi + 32], mm0
+				movq [edi + 40], mm0
+				movq [edi + 48], mm0
+				movq [edi + 56], mm0
+				
+				add edi, byte 64
+				dec ecx
+				jnz short .Loop_X2
+
+			add esi, [esp + 40]			; Add the line offset.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			mov ecx, [esp + 32]			; Reset the X counter.
+			dec dword [esp + 36]			; Decrement the Y counter.
+			jnz near .Loop_Y
 
 		emms
 		pop esi
