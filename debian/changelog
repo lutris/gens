@@ -1,3 +1,9 @@
+gens (2.15.5-gs-m5.2-1) unstable; urgency=low
+
+  * Milestone 5.2 version bump.
+
+ -- David Korth <gerbilsoft@verizon.net>  Sat, 15 Nov 2008 18:09:40 -0500
+
 gens (2.15.5-gs-m5.1-1) unstable; urgency=low
 
   * Milestone 5.1 version bump.
