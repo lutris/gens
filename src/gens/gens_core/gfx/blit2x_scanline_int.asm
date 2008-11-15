@@ -19,24 +19,18 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-
 %include "nasmhead.inc"
-
 
 section .data align=64
 
-
 	extern MD_Screen
-	extern TAB336
 	extern Have_MMX
 	extern bpp
 
 	MASK_DIV2_15:	dd 0x3DEF3DEF, 0x3DEF3DEF
 	MASK_DIV2_16:	dd 0x7BEF7BEF, 0x7BEF7BEF
 
-
 section .text align=64
-
 
 	ALIGN64
 	
@@ -50,21 +44,20 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface screen
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne screen
-		add ebx, ebx					; ebx = pitch * 2
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 2						; on transfert 4 bytes screen � chaque boucle
-		mov edi, [esp + 24]				; edi = destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
+		mov ecx, [esp + 32]				; ecx = Number of pixels per line
+		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen + 8 * 2]			; esi = Source
+		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
+		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
+		shr ecx, 2					; Transfer 4 bytes per cycle. (8 16-bit pixels)
+		mov edi, [esp + 24]				; edi = Destination
+		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X
+	.Loop_Y:
+	.Loop_X1:
 ;				mov eax, [esi]
 ;				add esi, byte 2
 ;				shr eax, 1
@@ -96,13 +89,31 @@ section .text align=64
 				mov dx, [esi]
 				mov [edi + 0 - 4], ax
 				mov [edi + 2 - 4], dx
-				jnz short .Loop_X
+				jnz short .Loop_X1
 
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]			; ecx = Nombre de pixels / 4 dans une ligne
-			jnz short .Loop_Y
+			mov ecx, [esp + 32]			; ecx = Number of pixels per line
+			shr ecx, 2				; Black out 16 pixels per cycle.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			xor edx, edx				; Scanlines are all black.
+			jmp short .Loop_X2
+			
+	ALIGN64
+	
+	.Loop_X2:
+				mov [edi], edx
+				mov [edi + 4], edx
+				mov [edi + 8], edx
+				mov [edi + 12], edx
+				add edi, 16
+				
+				dec ecx
+				jnz short .Loop_X2
+
+			add esi, [esp + 40]			; Add the line offset.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			dec dword [esp + 36]			; Reset the X conuter.
+			mov ecx, [esp + 32]			; Decrement the Y counter.
+			jnz near .Loop_Y
 
 		pop esi
 		pop edi
