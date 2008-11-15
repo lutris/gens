@@ -354,6 +354,14 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 	// Border Color Emulation isn't implemented on Win32 yet, so disable the checkbox.
 	Button_Enable(chkMisc_BorderColorEmulation, FALSE);
 	
+	// Pause Tint
+	frameTop += 20;
+	chkMisc_PauseTint = CreateWindow(WC_BUTTON, "Pause Tint",
+						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+						frameLeft+8, frameTop, 128, 20,
+						hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(chkMisc_PauseTint, fntMain, TRUE);
+	
 	// Intro effect color label
 	frameTop += 20+16+2;
 	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
@@ -556,6 +564,7 @@ void GeneralOptionsWindow::load(void)
 	Button_SetCheck(chkMisc_AutoPause, (Auto_Pause ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_FastBlur, (draw->fastBlur() ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Border Color Emulation isn't implemented on Win32 yet, so don't load this yet.
 	//Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
@@ -594,6 +603,7 @@ void GeneralOptionsWindow::save(void)
 	Auto_Pause = (Button_GetCheck(chkMisc_AutoPause) == BST_CHECKED);
 	draw->setFastBlur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
 	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
+	Video.pauseTint = (Button_GetCheck(chkMisc_PauseTint) == BST_CHECKED);
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.

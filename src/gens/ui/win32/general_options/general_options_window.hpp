@@ -81,6 +81,7 @@ class GeneralOptionsWindow : public WndBase
 		HWND chkMisc_FastBlur;
 		HWND chkMisc_SegaCDLEDs;
 		HWND chkMisc_BorderColorEmulation;
+		HWND chkMisc_PauseTint;
 		
 		// GDI objects
 		HBRUSH brushOSD[4][2];
