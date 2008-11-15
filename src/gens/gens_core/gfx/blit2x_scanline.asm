@@ -19,21 +19,14 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-
 %include "nasmhead.inc"
-
 
 section .data align=64
 
-
 	extern MD_Screen
-	extern TAB336
 	extern Have_MMX
-	extern Mode_555
-
 
 section .text align=64
-
 
 	ALIGN64
 	
@@ -120,43 +113,78 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Nombre de pix par ligne
-		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
-		lea ecx, [ecx * 4]				; ecx = Nb bytes par ligne Dest
-		add ebx, ebx					; ebx = pitch * 2
-		lea esi, [MD_Screen + 8 * 2]	; esi = Source
-		sub ebx, ecx					; ebx = Compl�ment offset pour ligne suivante
-		shr ecx, 5						; on transfert 32 bytes Dest � chaque boucle
+		mov ecx, [esp + 32]				; ecx = Number of pixels per line
+		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
+		lea esi, [MD_Screen + 8 * 2]			; esi = Source
+		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
+		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
+		shr ecx, 6					; Transfer 64 bytes per cycle. (16 32-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; on stocke cette nouvelle valeur pour X
-		jnp short .Loop_Y
+		mov [esp + 32], ecx				; Initialize the X counter.
+		jmp short .Loop_Y
 
 	ALIGN64
 
-	.Loop_Y
-	.Loop_X
+	.Loop_Y:
+	.Loop_X1:
 				movq mm0, [esi]
-				add edi, byte 32
-				movq mm2, [esi + 8]
 				movq mm1, mm0
+				movq mm2, [esi + 8]
 				movq mm3, mm2
-				punpcklwd mm1, mm0
-				add esi, byte 16
+				movq mm4, [esi + 16]
+				movq mm5, mm4
+				movq mm6, [esi + 24]
+				movq mm7, mm6
+				
+				punpcklwd mm1, mm1
 				punpckhwd mm0, mm0
-				movq [edi + 0 - 32], mm1
-				punpcklwd mm3, mm2
-				movq [edi + 8 - 32], mm0
+				punpcklwd mm3, mm3
 				punpckhwd mm2, mm2
-				movq [edi + 16 - 32], mm3
+				punpcklwd mm5, mm5
+				punpckhwd mm4, mm4
+				punpcklwd mm7, mm7
+				punpckhwd mm6, mm6
+				
+				movq [edi + 0], mm1
+				movq [edi + 8], mm0
+				movq [edi + 16], mm3
+				movq [edi + 24], mm2
+				movq [edi + 32], mm5
+				movq [edi + 40], mm4
+				movq [edi + 48], mm7
+				movq [edi + 56], mm6
+				
+				add edi, byte 64
+				add esi, byte 32
 				dec ecx
-				movq [edi + 24 - 32], mm2
-				jnz short .Loop_X
+				jnz short .Loop_X1
 	
-			add esi, [esp + 40]			; on augmente la source pour pointer sur la prochaine ligne
-			add edi, ebx				; on augmente la destination avec le debordement du pitch
-			dec dword [esp + 36]		; on continue tant qu'il reste des lignes
-			mov ecx, [esp + 32]
-			jnz short .Loop_Y
+			mov ecx, [esp + 32]			; Reset the X counter.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			pxor mm0, mm0				; Scanlines are all black.
+			jmp short .Loop_X2
+
+	ALIGN64
+	
+	.Loop_X2:
+				movq [edi + 0], mm0
+				movq [edi + 8], mm0
+				movq [edi + 16], mm0
+				movq [edi + 24], mm0
+				movq [edi + 32], mm0
+				movq [edi + 40], mm0
+				movq [edi + 48], mm0
+				movq [edi + 56], mm0
+				
+				add edi, byte 64
+				dec ecx
+				jnz short .Loop_X2
+
+			add esi, [esp + 40]			; Add the line offset.
+			add edi, ebx				; Add the pitch difference to the destination pointer.
+			mov ecx, [esp + 32]			; Reset the X counter.
+			dec dword [esp + 36]			; Decrement the Y counter.
+			jnz near .Loop_Y
 
 		pop esi
 		pop edi
