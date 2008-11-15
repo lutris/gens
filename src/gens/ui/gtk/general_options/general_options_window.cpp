@@ -170,11 +170,6 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	g_object_set_data_full(G_OBJECT(m_Window), "vboxDialog",
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
-	GtkWidget *frame_system, *label_system, *table_system;
-	GtkWidget *check_system_autofixchecksum, *check_system_autopause;
-	GtkWidget *check_system_fastblur, *check_system_segacd_leds;
-	GtkWidget *frame_misc, *label_misc, *hbox_misc_intro_effect_colors;
-	
 	// Create the main HBox.
 	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 0);
 	gtk_widget_set_name(hboxMain, "hboxMain");
