@@ -32,6 +32,7 @@ gens_x86_asm_src = \
 		gens_core/gfx/blit2x_scanline_25_int.asm \
 		gens_core/gfx/blit_2xSAI.asm \
 		gens_core/gfx/blit_hq2x_16.asm \
+		gens_core/gfx/hq2x_funcs.c \
 		gens_core/misc/fastblur_16.asm \
 		audio/audio_mmx.asm
 gens_x86_asm_h = \
@@ -126,7 +127,6 @@ gens_SOURCES = \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/blit2x_scanline.cpp \
 		gens_core/gfx/scale2x.cpp \
-		gens_core/gfx/hq2x_funcs.c \
 		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
