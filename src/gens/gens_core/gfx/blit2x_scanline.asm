@@ -165,7 +165,7 @@ section .text align=64
 			jmp short .Loop_X2
 
 	ALIGN64
-	
+
 	.Loop_X2:
 				movq [edi + 0], mm0
 				movq [edi + 8], mm0
