@@ -69,6 +69,7 @@ class GeneralOptionsWindow : public WndBase
 		GtkWidget *chkMisc_FastBlur;
 		GtkWidget *chkMisc_SegaCDLEDs;
 		GtkWidget *chkMisc_BorderColorEmulation;
+		GtkWidget *chkMisc_PauseTint;
 		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
