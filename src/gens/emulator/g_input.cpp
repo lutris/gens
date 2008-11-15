@@ -36,7 +36,7 @@
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
 // TODO: This isn't actually a bug with SDL/GTK - it's an issue with keysnooping...
-int mod = 0;
+static int mod = 0;
 
 
 /**
@@ -117,6 +117,9 @@ void Input_KeyDown(int key)
 			{
 				draw->setFullScreen(!draw->fullScreen());
 				Sync_Gens_Window_GraphicsMenu();
+				
+				// Reset the modifier key value to prevent Alt from getting "stuck".
+				mod = 0;
 			}
 			break;
 		
