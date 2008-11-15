@@ -61,7 +61,13 @@ unsigned int CPU_Flags = 0;
  */
 unsigned int getCPUFlags(void)
 {
-#if defined(__i386__) || defined(__amd64__)
+#if !defined(GENS_X86_ASM)
+	
+	// x86 asm code has been turned off.
+	// Don't check for any CPU flags.
+	return 0;
+	
+#elif defined(__i386__) || defined(__amd64__)
 	// IA32/x86_64.
 	
 	// Check if cpuid is supported.
@@ -159,8 +165,10 @@ unsigned int getCPUFlags(void)
 	
 	// Return the CPU flags.
 	return CPU_Flags;
+	
 #else
 	// No flags for this CPU.
 	return 0;
+	
 #endif
 }
