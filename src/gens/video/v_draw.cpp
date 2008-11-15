@@ -167,7 +167,7 @@ int VDraw::flip(void)
 	// TODO: Make constnats for Intro_Style.
 	if (Genesis_Started || _32X_Started || SegaCD_Started)
 	{
-		if (!Active || Paused)
+		if (Video.pauseTint && (!Active || Paused))
 		{
 			// Emulation is paused.
 			Pause_Screen();
