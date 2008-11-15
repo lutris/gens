@@ -45,7 +45,7 @@ section .text align=64
 		lea esi, [MD_Screen + 8 * 2]			; esi = Source
 		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
 		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
-		shr ecx, 4					; Transfer 16 bytes per cycle. (8 16-bit pixels)
+		shr ecx, 4					; Transfer 16 bytes per cycle. (32 16-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
@@ -128,7 +128,7 @@ section .text align=64
 		lea esi, [MD_Screen + 8 * 2]			; esi = Source
 		lea ecx, [ecx * 4]				; ecx = Number of bytes per line
 		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
-		shr ecx, 6					; Transfer 64 bytes per cycle. (16 32-bit pixels)
+		shr ecx, 6					; Transfer 64 bytes per cycle. (128 16-bit pixels)
 		mov edi, [esp + 24]				; edi = Destination
 		mov [esp + 32], ecx				; Initialize the X counter.
 		jmp short .Loop_Y
