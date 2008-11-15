@@ -124,6 +124,7 @@ gens_SOURCES = \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
 		gens_core/misc/fastblur.c \
+		gens_core/misc/cpuflags.c \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/blit2x_scanline.cpp \
 		gens_core/gfx/scale2x.cpp \
@@ -207,6 +208,7 @@ noinst_HEADERS = \
 		gens_core/misc/byteswap.h \
 		gens_core/misc/misc.h \
 		gens_core/misc/fastblur.h \
+		gens_core/misc/cpuflags.h \
 		$(gens_x86_asm_h) \
 		gens_core/gfx/blit.h \
 		gens_core/gfx/gfx_cd.h \
