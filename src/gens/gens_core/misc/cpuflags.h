@@ -47,6 +47,7 @@
 extern "C" {
 #endif
 
+extern unsigned int CPU_Flags;
 unsigned int getCPUFlags(void);
 
 #ifdef __cplusplus

@@ -51,6 +51,10 @@
 #define CPUFLAG_IA32_EXT_ECX_SSE5	(1 << 11)
 
 
+// CPU Flags
+unsigned int CPU_Flags = 0;
+
+
 /**
  * getCPUFlags(): Get the CPU flags.
  * @return CPU flags.
@@ -58,7 +62,7 @@
 unsigned int getCPUFlags(void)
 {
 #if defined(__i386__) || defined(__amd64__)
-	// IA32.
+	// IA32/x86_64.
 	
 	// Check if cpuid is supported.
 	unsigned int _eax;
@@ -112,22 +116,22 @@ unsigned int getCPUFlags(void)
 		);
 	
 	// Check the feature flags.
-	unsigned int flags = 0;
+	CPU_Flags = 0;
 	
 	if (_edx & CPUFLAG_IA32_EDX_MMX)
-		flags |= CPUFLAG_MMX;
+		CPU_Flags |= CPUFLAG_MMX;
 	if (_edx & CPUFLAG_IA32_EDX_SSE)
-		flags |= CPUFLAG_SSE;
+		CPU_Flags |= CPUFLAG_SSE;
 	if (_edx & CPUFLAG_IA32_EDX_SSE2)
-		flags |= CPUFLAG_SSE2;
+		CPU_Flags |= CPUFLAG_SSE2;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE3)
-		flags |= CPUFLAG_SSE3;
+		CPU_Flags |= CPUFLAG_SSE3;
 	if (_ecx & CPUFLAG_IA32_ECX_SSSE3)
-		flags |= CPUFLAG_SSSE3;
+		CPU_Flags |= CPUFLAG_SSSE3;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE41)
-		flags |= CPUFLAG_SSE41;
+		CPU_Flags |= CPUFLAG_SSE41;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE42)
-		flags |= CPUFLAG_SSE42;
+		CPU_Flags |= CPUFLAG_SSE42;
 	
 	// Get the extended CPU feature flags.
 	if (maxFunc >= 0x80000001)
@@ -142,19 +146,19 @@ unsigned int getCPUFlags(void)
 		
 		// Check the extended feature flags.
 		if (_edx & CPUFLAG_IA32_EXT_EDX_MMXEXT)
-			flags |= CPUFLAG_MMXEXT;
+			CPU_Flags |= CPUFLAG_MMXEXT;
 		if (_edx & CPUFLAG_IA32_EXT_EDX_3DNOW)
-			flags |= CPUFLAG_3DNOW;
+			CPU_Flags |= CPUFLAG_3DNOW;
 		if (_edx & CPUFLAG_IA32_EXT_EDX_3DNOWEXT)
-			flags |= CPUFLAG_3DNOWEXT;
+			CPU_Flags |= CPUFLAG_3DNOWEXT;
 		if (_ecx & CPUFLAG_IA32_EXT_ECX_SSE4A)
-			flags |= CPUFLAG_SSE4A;
+			CPU_Flags |= CPUFLAG_SSE4A;
 		if (_ecx & CPUFLAG_IA32_EXT_ECX_SSE5)
-			flags |= CPUFLAG_SSE5;
+			CPU_Flags |= CPUFLAG_SSE5;
 	}
 	
 	// Return the CPU flags.
-	return flags;
+	return CPU_Flags;
 #else
 	// No flags for this CPU.
 	return 0;
