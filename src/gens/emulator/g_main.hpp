@@ -71,6 +71,7 @@ struct Gens_VideoSettings_t
 	int VSync_FS;
 	int VSync_W;
 	int borderColorEmulation;
+	int pauseTint;
 #ifdef GENS_OPENGL
 	int OpenGL;
 	int Width_GL;

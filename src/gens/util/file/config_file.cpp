@@ -170,6 +170,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeInt("Graphics", "Render Windowed", Video.Render_W + 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
+	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
 	
 #ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bpp);
@@ -389,6 +390,7 @@ int Config::load(const string& filename, void* gameActive)
 	Video.Render_FS = cfg.getInt("Graphics", "Render Fullscreen", 2) - 1; // Default: Double
 	Video.Render_W = cfg.getInt("Graphics", "Render Windowed", 2) - 1;    // Default: Double
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
+	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
