@@ -13,7 +13,7 @@ extern unsigned int RGBtoYUV[65536];
 
 //extern unsigned char MD_Screen;
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 
 #ifdef __cplusplus
 }
@@ -58,7 +58,7 @@ int Blit_HQ2x_InitLUTs(void)
 
   return nMMXsupport;
   */
-	return Have_MMX;
+	return (CPU_Flags & CPUFLAG_MMX);
 }
 
 

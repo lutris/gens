@@ -13,10 +13,6 @@ extern "C" {
 #define TRANS    0x08
 #define SIZE_X2  0x10
 
-extern int Have_MMX;
-extern int MMX_Enable;
-
-void Identify_CPU(void);
 void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
 
 void Cell_8x8_Dump(unsigned char *Adr, int Palette);

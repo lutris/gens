@@ -50,7 +50,7 @@
 // Renderer / Blitter selection stuff.
 #include "gens_core/gfx/renderers.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 
 // C++ includes
 #include <string>
@@ -257,7 +257,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		if (bpp == 32)
 		{
 			// 32-bit
-			if (Have_MMX && Renderers[i].blit_32_mmx)
+			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_32_mmx)
 				showRenderer = true;
 			else if (Renderers[i].blit_32)
 				showRenderer = true;
@@ -265,7 +265,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		else // if (bpp == 15 || bpp == 16)
 		{
 			// 15/16-bit
-			if (Have_MMX && Renderers[i].blit_16_mmx)
+			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_16_mmx)
 				showRenderer = true;
 			else if (Renderers[i].blit_16)
 				showRenderer = true;

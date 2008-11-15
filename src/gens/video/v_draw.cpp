@@ -10,7 +10,7 @@
 
 #include "emulator/g_md.hpp"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 #include "gens_core/misc/fastblur.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_palette.h"
@@ -695,9 +695,9 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	
 	// Check if a blit function exists for this renderer.
 	if (bpp == 32)
-		testBlit = (Have_MMX ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
+		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
 	else if (bpp == 15 || bpp == 16)
-		testBlit = (Have_MMX ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
+		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
 	else
 	{
 		// Invalid bpp.

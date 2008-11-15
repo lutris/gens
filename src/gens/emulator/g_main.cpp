@@ -18,6 +18,7 @@
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
 #include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"
 #include "util/file/config_file.hpp"
@@ -309,7 +310,7 @@ int Init(void)
 	init_timer();
 #endif
 	
-	Identify_CPU();
+	getCPUFlags();
 	
 	MSH2_Init();
 	SSH2_Init();

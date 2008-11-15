@@ -55,9 +55,8 @@ section .data align=64
 
 
 	extern MD_Screen
-	extern TAB336
-	extern Have_MMX
 	extern bpp
+	%include "../misc/cpuflags.inc"
 
 	; 2xSAI
 
@@ -138,7 +137,7 @@ section .text align=64
 		mov ebx, [esp + 28]				; ebx = pitch de la surface Dest
 		lea esi, [MD_Screen + 8 * 2]	; esi = Source
 		mov edi, [esp + 24]				; edi = Destination
-		test byte [Have_MMX], 0xFF		; on teste la pr�sence du MMX
+		test dword [_CPU_Flags], CPUFLAG_MMX		; Check for MMX.
 		jz near .End
 
 		sub esp, byte 4 * 5				; 5 params for _2xSaILine

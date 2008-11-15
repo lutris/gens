@@ -18,7 +18,7 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/sound/pcm.h"
-#include "gens_core/misc/misc.h" // for Have_MMX flag
+#include "gens_core/misc/cpuflags.h"
 
 #ifdef GENS_X86_ASM
 #include "audio_mmx.h" // MMX audio functions
@@ -257,7 +257,7 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	if (m_stereo)
 	{
 #ifdef GENS_X86_ASM
-		if (Have_MMX)
+		if (CPU_Flags & CPUFLAG_MMX)
 			writeSoundStereo_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), m_segLength);
 		else
 #endif
@@ -266,7 +266,7 @@ int Audio_DSound::writeSoundBuffer(void *dumpBuf)
 	else
 	{
 #ifdef GENS_X86_ASM
-		if (Have_MMX)
+		if (CPU_Flags & CPUFLAG_MMX)
 			writeSoundMono_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), m_segLength);
 		else
 #endif
