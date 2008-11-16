@@ -43,12 +43,10 @@ static inline void Blit1x_int(pixel *screen, pixel *mdScreen,
 			      unsigned short width, unsigned short height,
 			      int pitch, int offset)
 {
-	int i;
-	
 	// Adjust for the 8px border on the MD Screen.
 	mdScreen += 8;
 	
-	for (i = 0; i < height; i++)
+	for (int i = 0; i < height; i++)
 	{
 		memcpy(screen, mdScreen, width * sizeof(pixel));
 		
