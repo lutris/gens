@@ -1,4 +1,4 @@
-Gens/GS v2.15.5/GS-m5.1 (Gens/GS)
+Gens/GS v2.15.5/GS-m5.2 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
@@ -14,10 +14,83 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens v2.15.5/GS-m5.1 is David Korth's fork of Gens, initially based
+Gens v2.15.5/GS-m5.2 is David Korth's fork of Gens, initially based
 on Gens for Linux v2.15.5. The number after the "m" indicates the
 milestone. Releases are usually made after a significant new
 feature has been added, with minor releases if a major bug is found.
+
+================================================================
+
+What's new in Gens/GS v2.15.5/GS-m5.2?
+
+Milestone 5.2 introduces the following new features:
+
+- Updates to the most-used renderers:
+
+  - The C++ 1x, 2x, and 2x scanline renderers are now much faster.
+
+  - The asm and mmx 1x and 2x renderers have been updated to support
+    32-bit color.
+
+  - The scanline and interpolated scanline asm renderers now correctly
+    black out empty lines, which fixes a "leftover garbage" problem
+    caused by the new text drawing function.
+
+- [Linux] The OpenGL renderer now supports border color emulation.
+
+- The "Stretch" option now allows you to set Horizontal Stretch and
+  Vertical Stretch independently.
+
+- New "General Options" window layout. The new layout takes up a lot less
+  space than the old layout, and allows for more options.
+
+- The "General Options" window now allows you to enable or disable
+  border color emulation and the pause tint.
+
+- [GTK+] The design of the "Controller Configuration" window has been
+  improved.
+
+Milestone 5.2 has the following miscellaneous changes:
+
+- The "BIOS/Misc Files" entries for "GCOffline" and "Gens Manual" have been
+  removed. There are no functions in Gens/GS that make use of these, and both
+  documents haven't been updated in several years.
+
+- The 16 kHz, 32 kHz, and 48 kHz sound rates have been removed. They never
+  worked properly and ended up causing lag.
+
+- The built-in debugger now sleeps for 100 ms between frames. Previously, it
+  would attempt to redraw frames as fast as possible, which led to high CPU
+  usage if VSync wasn't turned on.
+
+- [Win32] hq2x is broken, so it has been disabled for now.	
+
+Milestone 5.2 fixes the following bugs:
+
+- Fixed compilation with --disable-cdrom.
+
+- Fixed some PWM regressions introduced in m5.1.
+
+- [Win32] Savestates were sometimes not saved to the correct directory.
+
+Milestone 5.2 has the following low-level code changes:
+
+- VDraw_DDraw: CORRECT_256_ASPECT_RATIO and ALT_X_RATIO_RES have been removed.
+  These were originally used in Gens Rerecording to specify if the horizontal
+  resolution should always be stretched, but is no longer necessary due to the
+  improved "Stretch" mode options.
+
+- nasm now generates debugging symbols for all asm code.
+
+- Many functions and variables that don't need global visibility have been
+  marked as static.
+
+- New CPU flag system to determine all available instruction sets instead of
+  just MMX. This will allow for more optimizations later on.
+
+- Fixed an issue where a segment override prefix was specified in Starscream,
+  which broke Valgrind. (Valgrind is still broken for SegaCD and 32X emulation,
+  unfortunately.)
 
 ================================================================
 
