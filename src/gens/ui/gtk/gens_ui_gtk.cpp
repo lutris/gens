@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include "gens/gens_window.hpp"
 
 #include "ui/gens_ui.hpp"
