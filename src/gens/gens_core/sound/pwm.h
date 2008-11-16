@@ -8,8 +8,8 @@ extern "C" {
 #define PWM_BUF_SIZE 4
 extern unsigned char PWM_FULL_TAB[PWM_BUF_SIZE * PWM_BUF_SIZE];
 
-extern unsigned short PWM_FIFO_R[PWM_BUF_SIZE];
-extern unsigned short PWM_FIFO_L[PWM_BUF_SIZE];
+extern unsigned short PWM_FIFO_R[8];
+extern unsigned short PWM_FIFO_L[8];
 extern unsigned int PWM_RP_R;
 extern unsigned int PWM_WP_R;
 extern unsigned int PWM_RP_L;

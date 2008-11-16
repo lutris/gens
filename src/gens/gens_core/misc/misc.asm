@@ -225,13 +225,6 @@ section .bss align=64
 	extern VDP_Reg
 	extern MD_Screen
 
-	DECL CPU_Model
-	resd 1
-	DECL Have_MMX
-	resd 1
-	DECL MMX_Enable
-	resd 1
-
 section .text align=64
 
 %macro AFF_PIXEL 2
@@ -791,46 +784,6 @@ section .text align=64
 	%%End
 
 %endmacro
-
-
-	ALIGN4
-	
-	; void Identify_CPU(void)
-	DECL Identify_CPU
-
-		pushad
-
-		mov dword [Have_MMX], 0
-		mov dword [CPU_Model], 0
-		pushfd
-		pop eax
-		mov ebx, eax
-		xor eax, 0x200000
-		push eax
-		popfd
-		pushfd
-		pop eax
-		xor eax, ebx
-		and eax, 0x200000
-		jz .not_supported		; CPUID instruction not supported
-
-		xor eax, eax
-		cpuid					; get number of CPUID functions
-		test eax, eax
-		jz .not_supported		; CPUID function 1 not supported
-
-		mov eax, 1
-		cpuid					; get family and features
-		and eax, 0x000000F00	; family
-		and edx, 0x0FFFFF0FF	; features flags
-		or eax, edx				; combine bits
-		mov [CPU_Model], eax	; Store CPU Model
-		test eax, 0x00800000	; Having MMX ?
-		setnz [Have_MMX]		; Store it
-
-	.not_supported
-		popad
-		ret
 
 
 	ALIGN4

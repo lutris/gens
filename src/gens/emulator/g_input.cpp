@@ -11,7 +11,7 @@
 #include "g_input.hpp"
 #include "g_main.hpp"
 #include "g_mcd.hpp"
-#include "ui_proxy.hpp"
+#include "options.hpp"
 #include "util/file/save.hpp"
 #include "util/sound/gym.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -36,7 +36,7 @@
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
 // TODO: This isn't actually a bug with SDL/GTK - it's an issue with keysnooping...
-int mod = 0;
+static int mod = 0;
 
 
 /**
@@ -73,7 +73,7 @@ void Input_KeyDown(int key)
 				close_gens();
 			if (Debug)
 			{
-				Change_Debug(0);
+				Options::setDebugMode(DEBUG_NONE);
 				Paused = 0;
 				Sync_Gens_Window_CPUMenu();
 			}
@@ -109,7 +109,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_TAB:
-			system_reset();
+			Options::systemReset();
 			break;
 		
 		case GENS_KEY_RETURN:
@@ -117,6 +117,9 @@ void Input_KeyDown(int key)
 			{
 				draw->setFullScreen(!draw->fullScreen());
 				Sync_Gens_Window_GraphicsMenu();
+				
+				// Reset the modifier key value to prevent Alt from getting "stuck".
+				mod = 0;
 			}
 			break;
 		
@@ -125,14 +128,14 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F2:
-			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
+			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_Stretch(!draw->stretch());
+				Options::setStretch((Options::stretch() + 1) % 4);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else if (!mod)
 			{
-				Set_Frame_Skip(-1);
+				Options::setFrameSkip(-1);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
@@ -141,19 +144,19 @@ void Input_KeyDown(int key)
 			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
 				int newVSync = !(draw->fullScreen() ? Video.VSync_FS : Video.VSync_W);
-				Change_VSync(newVSync);
+				Options::setVSync(newVSync);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else if (!mod)
 			{
-				if (Frame_Skip == -1)
+				if (Options::frameSkip() == -1)
 				{
-					Set_Frame_Skip(0);
+					Options::setFrameSkip(0);
 					Sync_Gens_Window_GraphicsMenu();
 				}
-				else if (Frame_Skip > 0)
+				else if (Options::frameSkip() > 0)
 				{
-					Set_Frame_Skip(Frame_Skip - 1);
+					Options::setFrameSkip(Options::frameSkip() - 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -162,14 +165,14 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F4:
 			if (!mod)
 			{
-				if (Frame_Skip == -1)
+				if (Options::frameSkip() == -1)
 				{
-					Set_Frame_Skip(1);
+					Options::setFrameSkip(1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
-				else if (Frame_Skip < 8)
+				else if (Options::frameSkip() < 8)
 				{
-					Set_Frame_Skip(Frame_Skip + 1);
+					Options::setFrameSkip(Options::frameSkip() + 1);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -197,7 +200,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F6:
 			if (!mod)
 			{
-				Set_Current_State((Current_State + 9) % 10);
+				Options::setSaveSlot((Options::saveSlot() + 9) % 10);
 				Sync_Gens_Window_FileMenu();
 			}
 			break;
@@ -205,7 +208,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F7:
 			if (!mod)
 			{
-				Set_Current_State((Current_State + 1) % 10);
+				Options::setSaveSlot((Options::saveSlot() + 1) % 10);
 				Sync_Gens_Window_FileMenu();
 			}
 			break;
@@ -230,16 +233,18 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F9:
+			#ifdef GENS_OS_WIN32 // TODO: Implement SW Render options on SDL?
 			if (mod & GENS_KMOD_SHIFT)
-				Change_Blit_Style();
+				Options::setSwRender(!Options::swRender());
 			else // if (!mod)
-				Change_Fast_Blur();
+			#endif /* GENS_OS_WIN32 */
+				Options::setFastBlur(!Options::fastBlur());
 			break;
 		
 		case GENS_KEY_F10:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_DAC_Improved(!DAC_Improv);
+				Options::setSoundDAC_Improved(!Options::soundDAC_Improved());
 				Sync_Gens_Window_SoundMenu();
 			}
 			else if (draw->fullScreen() && !mod)
@@ -251,7 +256,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F11:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_PSG_Sine(!PSG_Improv);
+				Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
 				Sync_Gens_Window_SoundMenu();
 			}
 			else //if (!mod)
@@ -268,7 +273,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_F12:
 			if (mod & GENS_KMOD_SHIFT)
 			{
-				Change_YM2612_Improved(!YM2612_Improv);
+				Options::setSoundYM2612_Improved(!Options::soundYM2612_Improved());
 				Sync_Gens_Window_SoundMenu();
 			}
 			else //if (!mod)
@@ -296,7 +301,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_9:
 			if (!mod)
 			{
-				Set_Current_State(key - GENS_KEY_0);
+				Options::setSaveSlot(key - GENS_KEY_0);
 				Sync_Gens_Window_FileMenu();
 			}
 			else if (key != GENS_KEY_0 && (mod & GENS_KMOD_CTRL))
@@ -399,7 +404,7 @@ void Input_KeyDown(int key)
 		case GENS_KEY_r:
 			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
 			{
-				Change_OpenGL(!Video.OpenGL);
+				Options::setOpenGL(!Options::openGL());
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;

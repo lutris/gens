@@ -1,5 +1,5 @@
 /**
- * GENS: Palette handler.
+ * Gens: Palette handler.
  */
 
 
@@ -20,7 +20,7 @@ int Invert_Color;
  * @param c Color component.
  * @return Constrained color component.
  */
-static inline short Constrain_Color_Component(short c)
+static inline short constrainColorComponent(short c)
 {
 	if (c < 0)
 		return 0;
@@ -47,6 +47,36 @@ static inline int CalculateGrayScale(int r, int g, int b)
 }
 
 
+#define PALETTE_ADJUST_BRIGHTNESS(r, g, b, brightness)	\
+{							\
+	if (brightness != 0)				\
+	{						\
+		r += brightness;			\
+		g += brightness;			\
+		b += brightness;			\
+							\
+		r = constrainColorComponent(r);		\
+		g = constrainColorComponent(g);		\
+		b = constrainColorComponent(b);		\
+	}						\
+}
+
+
+#define PALETTE_ADJUST_CONTRAST(r, g, b, contrast)	\
+{							\
+	if (contrast != 100)				\
+	{						\
+		r = (r * contrast) / 100;		\
+		g = (g * contrast) / 100;		\
+		b = (b * contrast) / 100;		\
+							\
+		r = constrainColorComponent(r);		\
+		g = constrainColorComponent(g);		\
+		b = constrainColorComponent(b);		\
+	}						\
+}
+
+
 /**
  * Recalculate_Palettes(): Recalculates the MD and 32X palettes for brightness, contrast, and various effects.
  */
@@ -61,7 +91,7 @@ void Recalculate_Palettes(void)
 	// These values are scaled to positive numbers.
 	// Normal brightness: (Brightness_Level == 100)
 	// Normal contrast:   (  Contrast_Level == 100)
-	const short bright = ((Brightness_Level - 100) * 32) / 100;
+	const short brightness = ((Brightness_Level - 100) * 32) / 100;
 	const short contrast = Contrast_Level;
 	
 	// Calculate the MD palette.
@@ -78,29 +108,8 @@ void Recalculate_Palettes(void)
 				bf = (b & 0xE) << 2;
 				
 				// Compute colors here (64 levels)
-				if (bright != 0)
-				{
-					// Brightness setting.
-					rf += bright;
-					gf += bright;
-					bf += bright;
-					
-					rf = Constrain_Color_Component(rf);
-					gf = Constrain_Color_Component(gf);
-					bf = Constrain_Color_Component(bf);
-				}
-				
-				if (contrast != 100)
-				{
-					// Contrast setting.
-					rf = (rf * contrast) / 100;
-					gf = (gf * contrast) / 100;
-					bf = (bf * contrast) / 100;
-					
-					rf = Constrain_Color_Component(rf);
-					gf = Constrain_Color_Component(gf);
-					bf = Constrain_Color_Component(bf);
-				}
+				PALETTE_ADJUST_BRIGHTNESS(rf, gf, bf, brightness);
+				PALETTE_ADJUST_CONTRAST(rf, gf, bf, contrast);
 				
 				// 32-bit palette
 				Palette32[color] = (rf << 18) | (gf << 10) | (bf << 2);
@@ -131,29 +140,8 @@ void Recalculate_Palettes(void)
 		rf = ((i >> 0) & 0x1F) << 1;
 		
 		// Compute colors here (64 levels)
-		if (bright != 0)
-		{
-			// Brightness setting.
-			rf += bright;
-			gf += bright;
-			bf += bright;
-			
-			rf = Constrain_Color_Component(rf);
-			gf = Constrain_Color_Component(gf);
-			bf = Constrain_Color_Component(bf);
-		}
-		
-		if (contrast != 100)
-		{
-			// Contrast setting.
-			rf = (rf * contrast) / 100;
-			gf = (gf * contrast) / 100;
-			bf = (bf * contrast) / 100;
-			
-			rf = Constrain_Color_Component(rf);
-			gf = Constrain_Color_Component(gf);
-			bf = Constrain_Color_Component(bf);
-		}
+		PALETTE_ADJUST_BRIGHTNESS(rf, gf, bf, brightness);
+		PALETTE_ADJUST_CONTRAST(rf, gf, bf, contrast);
 		
 		// 32-bit palette
 		_32X_Palette_32B[i] = (rf << 18) | (gf << 10) | (bf << 2);

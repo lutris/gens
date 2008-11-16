@@ -24,13 +24,14 @@
 
 #include "opengl_resolution_window.h"
 #include "opengl_resolution_window_callbacks.h"
-#include "opengl_resolution_window_misc.h"
+#include "opengl_resolution_window_misc.hpp"
 #include "gens/gens_window.hpp"
 
 #include <gtk/gtk.h>
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
 
 
 /**
@@ -74,6 +75,9 @@ void GLRes_Save(void)
 	spinbutton_width = lookup_widget(opengl_resolution_window, "spinbutton_width");
 	spinbutton_height = lookup_widget(opengl_resolution_window, "spinbutton_height");
 	
-	Set_GL_Resolution(gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbutton_width)),
-			  gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbutton_height)));
+	Options::setOpenGL_Resolution
+	(
+		gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbutton_width)),
+		gtk_spin_button_get_value(GTK_SPIN_BUTTON(spinbutton_height))
+	);
 }

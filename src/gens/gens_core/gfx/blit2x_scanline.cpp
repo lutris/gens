@@ -38,31 +38,37 @@
  * @param offset ???
  */
 template<typename pixel>
-static inline void Blit2x_Scanline(pixel *screen, pixel *mdScreen, int pitch, int x, int y, int offset)
+static inline void Blit2x_Scanline(pixel *screen, pixel *mdScreen, int pitch, unsigned short x, unsigned short y, int offset)
 {
-	int i, j;
-	int dstOffs = 0;
-	
 	// Adjust for the 8px border on the MD Screen.
 	mdScreen += 8;
 	
-	for (i = 0; i < y; i++)
+	// Pitch difference.
+	pitch /= sizeof(pixel);
+	int nextLine = pitch + (pitch - (x * 2));
+	
+	offset >>= 1;
+	
+	pixel *line = screen;
+	for (unsigned short i = 0; i < y; i++)
 	{
-		dstOffs = i * (pitch / sizeof(pixel)) * 2;
-		for (j = 0; j < x; j++)
+		for (unsigned short j = 0; j < x; j++)
 		{
-			screen[dstOffs + 0] = *mdScreen;
-			screen[dstOffs + 1] = *mdScreen;
-			
-			screen[dstOffs + (pitch / sizeof(pixel)) + 0] = 0;
-			screen[dstOffs + (pitch / sizeof(pixel)) + 1] = 0;
-			
-			mdScreen++;
-			dstOffs += 2;
+			*line++ = *mdScreen;
+			*line++ = *mdScreen++;
 		}
 		
 		// Next line.
-		mdScreen += (offset >> 1);
+		mdScreen += offset;
+		line += nextLine;
+	}
+	
+	// Zero the extra lines.
+	line = screen + pitch;
+	for (unsigned short i = 0; i < y; i++)
+	{
+		memset(line, 0x00, pitch * sizeof(pixel));
+		line += (pitch * 2);
 	}
 }
 

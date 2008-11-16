@@ -1,5 +1,5 @@
 /**
- * GENS: Palette handler.
+ * Gens: Palette handler.
  */
 
 #ifndef G_PALETTE_H

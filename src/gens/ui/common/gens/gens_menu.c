@@ -62,7 +62,9 @@ static struct GensMenuItem_t gmiFile_ChgState[];
 static struct GensMenuItem_t gmiFile[] =
 {
 	{IDM_FILE_OPENROM,	GMF_ITEM_NORMAL,	"&Open ROM...",		NULL,	GMAM_CTRL, 'O', IDIM_OPEN},
+#ifdef GENS_CDROM
 	{IDM_FILE_BOOTCD,	GMF_ITEM_NORMAL,	"&Boot CD",		NULL,	GMAM_CTRL, 'B', IDIM_CDROM},
+#endif /* GENS_CDROM */
 	{IDM_FILE_NETPLAY,	GMF_ITEM_NORMAL,	"&Netplay",		NULL,	0, 0, IDIM_NETPLAY},
 	{IDM_FILE_ROMHISTORY,	GMF_ITEM_SUBMENU,	"ROM &History", 	NULL, 0, 0, IDIM_ROMHISTORY},
 	{IDM_FILE_CLOSEROM,	GMF_ITEM_NORMAL,	"&Close ROM",		NULL,	GMAM_CTRL, 'W', IDIM_CLOSE},
@@ -102,6 +104,7 @@ static struct GensMenuItem_t gmiFile_ChgState[] =
 /** Graphics Menu **/
 
 
+static struct GensMenuItem_t gmiGraphics_Stretch[];
 #ifdef GENS_OPENGL
 static struct GensMenuItem_t gmiGraphics_GLRes[];
 #endif
@@ -114,7 +117,7 @@ static struct GensMenuItem_t gmiGraphics[] =
 {
 	{IDM_GRAPHICS_FULLSCREEN,	GMF_ITEM_NORMAL,	"&Full Screen",			NULL,	GMAM_ALT, GMAK_ENTER, IDIM_FULLSCREEN},
 	{IDM_GRAPHICS_VSYNC,		GMF_ITEM_CHECK,		"&VSync",			NULL,	GMAM_SHIFT, GMAK_F3, 0},
-	{IDM_GRAPHICS_STRETCH,		GMF_ITEM_CHECK,		"&Stretch",			NULL,	GMAM_SHIFT, GMAK_F2, 0},
+	{IDM_GRAPHICS_STRETCH,		GMF_ITEM_SUBMENU,	"&Stretch",			&gmiGraphics_Stretch[0], GMAM_SHIFT, GMAK_F2, 0},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 #ifdef GENS_OPENGL
 	{IDM_GRAPHICS_OPENGL,		GMF_ITEM_CHECK,		"Open&GL",			NULL,	GMAM_SHIFT, 'R', 0},
@@ -138,6 +141,15 @@ static struct GensMenuItem_t gmiGraphics[] =
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
+static struct GensMenuItem_t gmiGraphics_Stretch[] =
+{
+	{IDM_GRAPHICS_STRETCH_NONE,	GMF_ITEM_RADIO,		"&None",		NULL, 0, 0, 0},
+	{IDM_GRAPHICS_STRETCH_H,	GMF_ITEM_RADIO,		"&Horizontal Only",	NULL, 0, 0, 0},
+	{IDM_GRAPHICS_STRETCH_V,	GMF_ITEM_RADIO,		"&Vertical Only",	NULL, 0, 0, 0},
+	{IDM_GRAPHICS_STRETCH_FULL,	GMF_ITEM_RADIO,		"&Full Stretch",	NULL, 0, 0, 0},
+	{0, 0, NULL, NULL, 0, 0, 0}
+};
+
 #ifdef GENS_OPENGL
 static struct GensMenuItem_t gmiGraphics_GLRes[] =
 {
@@ -154,7 +166,7 @@ static struct GensMenuItem_t gmiGraphics_GLRes[] =
 static struct GensMenuItem_t gmiGraphics_bpp[] =
 {
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	0, 0, 0},
-	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (555)",	NULL,	0, 0, 0},
+	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (565)",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_BPP_32,	GMF_ITEM_RADIO,		"32",		NULL,	0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
@@ -267,11 +279,8 @@ static struct GensMenuItem_t gmiSound[] =
 static struct GensMenuItem_t gmiSound_Rate[] =
 {
 	{IDM_SOUND_RATE_11025,		GMF_ITEM_RADIO,		"11,025 Hz",		NULL, 0, 0, 0},
-	{IDM_SOUND_RATE_16000,		GMF_ITEM_RADIO,		"16,000 Hz",		NULL, 0, 0, 0},
 	{IDM_SOUND_RATE_22050,		GMF_ITEM_RADIO,		"22,050 Hz",		NULL, 0, 0, 0},
-	{IDM_SOUND_RATE_32000,		GMF_ITEM_RADIO,		"32,000 Hz",		NULL, 0, 0, 0},
 	{IDM_SOUND_RATE_44100,		GMF_ITEM_RADIO,		"44,100 Hz",		NULL, 0, 0, 0},
-	{IDM_SOUND_RATE_48000,		GMF_ITEM_RADIO,		"48,000 Hz",		NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 

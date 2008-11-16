@@ -14,7 +14,9 @@ gens_x86_asm_h = \
 		audio/audio_mmx.h
 else
 gens_x86_asm_o =
-gens_x86_asm_src =
+gens_x86_asm_src = \
+		gens_core/gfx/blit1x.cpp \
+		gens_core/gfx/blit2x.cpp
 gens_x86_asm_h =
 endif
 
@@ -38,19 +40,7 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/vdp/ -I@srcdir@/gens_core/sound/ -I@srcdir@/gens_core/gfx/ \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
-if GENS_OBJ_WIN32
-NASM_OBJ_FORMAT = -f win32 -D __OBJ_WIN32
-endif
-
-if GENS_OBJ_ELF32
-NASM_OBJ_FORMAT = -f elf -D __GCC2 -D __OBJ_ELF
-endif
-
-if GENS_OBJ_MACHO
-NASM_OBJ_FORMAT = -f macho -D __GCC2 -D __OBJ_MACHO
-endif
-
-NASM = nasm -O1 -w-orphan-labels $(NASM_OBJ_FORMAT) $(NASM_INCLUDES)
+NASM += $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
 
 if GENS_ZLIB_INTERNAL
@@ -86,7 +76,7 @@ gens_SOURCES = \
 		emulator/g_palette.c \
 		emulator/g_update.cpp \
 		emulator/parse.cpp \
-		emulator/ui_proxy.cpp \
+		emulator/options.cpp \
 		gens_core/nasmhead.inc \
 		gens_core/cpu/68k/cpu_68k.c \
 		gens_core/cpu/sh2/cpu_sh2.c \
@@ -108,6 +98,7 @@ gens_SOURCES = \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
 		gens_core/misc/fastblur.c \
+		gens_core/misc/cpuflags.c \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
@@ -172,7 +163,7 @@ noinst_HEADERS = \
 		emulator/g_palette.h \
 		emulator/g_update.hpp \
 		emulator/parse.hpp \
-		emulator/ui_proxy.hpp \
+		emulator/options.hpp \
 		gens_core/cpu/68k/cpu_68k.h \
 		gens_core/cpu/68k/star_68k.h \
 		gens_core/cpu/sh2/sh2.h \
@@ -190,6 +181,7 @@ noinst_HEADERS = \
 		gens_core/misc/byteswap.h \
 		gens_core/misc/misc.h \
 		gens_core/misc/fastblur.h \
+		gens_core/misc/cpuflags.h \
 		$(gens_x86_asm_h) \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
@@ -198,7 +190,9 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
+		macros/file_m.h \
 		macros/hashtable.hpp \
+		macros/math_m.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \

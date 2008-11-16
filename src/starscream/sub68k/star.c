@@ -1448,14 +1448,14 @@ static void gen_basefunction(void) {
 	}
 	emit("mov ebp,[__fetch]\n");
 	emit(".check:\n");
-	emit("db 3Eh\n");
+	//emit("db 3Eh\n");
 	emit("cmp esi,[ebp]\n");           /* Are we smaller? */
 	emit("jb short .next\n");          /* Yes, go to next address */
-	emit("db 3Eh\n");
+	//emit("db 3Eh\n");
 	emit("cmp esi,[ebp+4]\n");         /* Are we bigger? */
 	emit("jbe short .base\n");
 	emit(".next:\n");
-	emit("db 3Eh\n");
+	//emit("db 3Eh\n");
 	emit("cmp dword [ebp],byte -1\n"); /* End of list? */
 	emit("je short .outofrange\n");
 	emit("add ebp,byte 12\n");         /* To the next structure */

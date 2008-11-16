@@ -31,6 +31,8 @@
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
 
+#include "emulator/options.hpp"
+
 // New menu handler.
 #include "ui/common/gens/gens_menu.h"
 
@@ -48,7 +50,7 @@
 // Renderer / Blitter selection stuff.
 #include "gens_core/gfx/renderers.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 
 // C++ includes
 #include <string>
@@ -62,6 +64,7 @@ void Sync_Gens_Window(void)
 {
 	// Synchronize all menus.
 	Sync_Gens_Window_FileMenu();
+	Sync_Gens_Window_FileMenu_ROMHistory();
 	Sync_Gens_Window_GraphicsMenu();
 	Sync_Gens_Window_CPUMenu();
 	Sync_Gens_Window_SoundMenu();
@@ -71,63 +74,16 @@ void Sync_Gens_Window(void)
 
 /**
  * Sync_Gens_Window_FileMenu(): Synchronize the File Menu.
+ * This does NOT synchronize the ROM History submenu, since synchronizing the
+ * ROM History submenu can be slow if some ROMs are located on network shares.
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-	// ROM Format prefixes
-	// TODO: Move this somewhere else.
-	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
-	
-	// Find the file menu and ROM History submenu.
+	// Find the file menu.
 	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
-	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
 	
-	// Delete and/or recreate the ROM History submenu.
-	DeleteMenu(mnuFile, 3, MF_BYPOSITION);
-	gensMenuMap.erase(IDM_FILE_ROMHISTORY);
-	if (mnuROMHistory)
-		DestroyMenu(mnuROMHistory);
-	
-	mnuROMHistory = CreatePopupMenu();
-	InsertMenu(mnuFile, 3, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
-	gensMenuMap.insert(win32MenuMapItem(IDM_FILE_ROMHISTORY, mnuROMHistory));
-	
-	string sROMHistoryEntry;
-	char sTmpROMFilename[GENS_PATH_MAX];
-	int romFormat;
-	int romsFound = 0;
-	for (unsigned short i = 0; i < 9; i++)
-	{
-		// Make sure this Recent ROM entry actually has an entry.
-		if (strlen(Recent_Rom[i]) == 0)
-			continue;
-		
-		// Increment the ROMs Found counter.
-		romsFound++;
-		
-		// Determine the ROM format.
-		// TODO: Improve the return variable from Detect_Format()
-		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
-		if (romFormat >= 1 && romFormat <= 4)
-			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
-		else
-			sROMHistoryEntry = ROM_Format_Prefix[0];
-		
-		// Add a tab, a dash, and a space.
-		sROMHistoryEntry += "\t- ";
-		
-		// Get the ROM filename.
-		ROM::getNameFromPath(Recent_Rom[i], sTmpROMFilename);
-		sROMHistoryEntry += sTmpROMFilename;
-		
-		// Add the ROM item to the ROM History submenu.
-		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,
-			   IDM_FILE_ROMHISTORY_0 + i, sROMHistoryEntry.c_str());
-	}
-	
-	// If no recent ROMs were found, disable the ROM History menu.
-	if (romsFound == 0)
-		EnableMenuItem(mnuFile, 3, MF_BYPOSITION | MF_GRAYED);
+        // Netplay is currently not usable.
+	EnableMenuItem(mnuFile, IDM_FILE_NETPLAY, MF_BYCOMMAND | MF_GRAYED);
 	
 	// Some menu items should be enabled or disabled, depending on if a game is loaded or not.
 	const unsigned int enableFlags = ((Game != NULL) ? MF_ENABLED : MF_GRAYED);
@@ -152,6 +108,76 @@ void Sync_Gens_Window_FileMenu(void)
 
 
 /**
+ * Sync_Gens_Window_FileMenu_ROMHistory(): Synchronize the File, ROM History submenu.
+ * NOTE: If some ROMs are located on network shares, this function will be SLOW,
+ * since it has to check the contents of the ROM to determine its type.
+ */
+void Sync_Gens_Window_FileMenu_ROMHistory(void)
+{
+	// ROM Format prefixes
+	// TODO: Move this somewhere else.
+	static const char* ROM_Format_Prefix[6] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]", NULL};
+	
+	// Find the file menu.
+	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
+	
+	// Find the ROM History submenu.
+	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
+	
+	// Delete and/or recreate the ROM History submenu.
+#ifdef GENS_CDROM
+	static const unsigned short posROMHistory = 3;
+#else /* !GENS_CDROM */
+	static const unsigned short posROMHistory = 2;
+#endif /* GENS_CDROM */
+	
+	DeleteMenu(mnuFile, posROMHistory, MF_BYPOSITION);
+	gensMenuMap.erase(IDM_FILE_ROMHISTORY);
+	if (mnuROMHistory)
+		DestroyMenu(mnuROMHistory);
+	
+	mnuROMHistory = CreatePopupMenu();
+	InsertMenu(mnuFile, posROMHistory, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
+	gensMenuMap.insert(win32MenuMapItem(IDM_FILE_ROMHISTORY, mnuROMHistory));
+	
+	string sROMHistoryEntry;
+	int romFormat;
+	int romsFound = 0;
+	for (unsigned short i = 0; i < 9; i++)
+	{
+		// Make sure this Recent ROM entry actually has an entry.
+		if (strlen(Recent_Rom[i]) == 0)
+			continue;
+		
+		// Increment the ROMs Found counter.
+		romsFound++;
+		
+		// Determine the ROM format.
+		// TODO: Improve the return variable from Detect_Format()
+		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
+		if (romFormat >= 1 && romFormat <= 4)
+			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
+		else
+			sROMHistoryEntry = ROM_Format_Prefix[0];
+		
+		// Add a tab, a dash, and a space.
+		sROMHistoryEntry += "\t- ";
+		
+		// Get the ROM filename.
+		sROMHistoryEntry += ROM::getNameFromPath(Recent_Rom[i]);
+		
+		// Add the ROM item to the ROM History submenu.
+		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,
+			   IDM_FILE_ROMHISTORY_0 + i, sROMHistoryEntry.c_str());
+	}
+	
+	// If no recent ROMs were found, disable the ROM History menu.
+	if (romsFound == 0)
+		EnableMenuItem(mnuFile, posROMHistory, MF_BYPOSITION | MF_GRAYED);
+}
+
+
+/**
  * Sync_Gens_Window_GraphicsMenu(): Synchronize the Graphics menu.
  */
 void Sync_Gens_Window_GraphicsMenu(void)
@@ -171,8 +197,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | checkFlags);
 	
 	// Stretch
-	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_STRETCH,
-		      MF_BYCOMMAND | (draw->stretch() ? MF_CHECKED : MF_UNCHECKED));
+	HMENU mnuStretch = findMenuItem(IDM_GRAPHICS_STRETCH);
+	CheckMenuRadioItem(mnuStretch,
+			   IDM_GRAPHICS_STRETCH_NONE,
+			   IDM_GRAPHICS_STRETCH_FULL,
+			   IDM_GRAPHICS_STRETCH_NONE + Options::stretch(),
+			   MF_BYCOMMAND);
 	
 	// Render
 	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 5);
@@ -227,7 +257,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		if (bpp == 32)
 		{
 			// 32-bit
-			if (Have_MMX && Renderers[i].blit_32_mmx)
+			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_32_mmx)
 				showRenderer = true;
 			else if (Renderers[i].blit_32)
 				showRenderer = true;
@@ -235,7 +265,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		else // if (bpp == 15 || bpp == 16)
 		{
 			// 15/16-bit
-			if (Have_MMX && Renderers[i].blit_16_mmx)
+			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_16_mmx)
 				showRenderer = true;
 			else if (Renderers[i].blit_16)
 				showRenderer = true;
@@ -434,20 +464,16 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Rate
 	// TODO: This const array is from gens_window.c.
 	// Move it somewhere else.
-	const int SndRates[6][2] =
-	{
-		{0, 11025}, {3, 16000}, {1, 22050},
-		{4, 32000}, {2, 44100}, {5, 48000},
-	};
+	const int SndRates[6][2] = {{0, 11025}, {1, 22050}, {2, 44100}};
 	
 	HMENU mnuRate = findMenuItem(IDM_SOUND_RATE);
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		if (SndRates[i][1] == audio->soundRate())
 		{
 			CheckMenuRadioItem(mnuRate,
 					   IDM_SOUND_RATE_11025,
-					   IDM_SOUND_RATE_48000,
+					   IDM_SOUND_RATE_44100,
 					   IDM_SOUND_RATE_11025 + SndRates[i][0],
 					   MF_BYCOMMAND);
 			break;

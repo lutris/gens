@@ -22,7 +22,7 @@
 
 #include "opengl_resolution_window.h"
 #include "opengl_resolution_window_callbacks.h"
-#include "opengl_resolution_window_misc.h"
+#include "opengl_resolution_window_misc.hpp"
 
 #include "emulator/gens.hpp"
 

@@ -47,21 +47,19 @@ static GtkAccelGroup *accel_group;
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {
-	{"<b><i>Configure Genesis BIOS File</i></b>", "md_bios", (FileFilterType)0, NULL},
+	{"<b><i>Genesis BIOS File</i></b>", "md_bios", (FileFilterType)0, NULL},
 	{"Genesis", "md_bios", ROMFile, BIOS_Filenames.MD_TMSS},
-	{"<b><i>Configure 32X BIOS Files</i></b>", "32x_bios", (FileFilterType)0, NULL},
+	{"<b><i>32X BIOS Files</i></b>", "32x_bios", (FileFilterType)0, NULL},
 	{"MC68000", "mc68000", ROMFile, BIOS_Filenames._32X_MC68000},
 	{"Master SH2", "msh2", ROMFile, BIOS_Filenames._32X_MSH2},
 	{"Slave SH2", "ssh2", ROMFile, BIOS_Filenames._32X_SSH2},
-	{"<b><i>Configure SegaCD BIOS Files</i></b>", "mcd_bios", (FileFilterType)0, NULL},
+	{"<b><i>SegaCD BIOS Files</i></b>", "mcd_bios", (FileFilterType)0, NULL},
 	{"USA", "mcd_bios_usa", ROMFile, BIOS_Filenames.SegaCD_US},
 	{"Europe", "mcd_bios_eur", ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
-	{"<b><i>Configure Miscellaneous Files</i></b>", "misc", (FileFilterType)0, NULL},
+	{"<b><i>Miscellaneous Files</i></b>", "misc", (FileFilterType)0, NULL},
 	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
 	{"RAR Binary", "rar", AnyFile, Misc_Filenames.RAR_Binary},
-	{"GCOffline", "gcoffline", AnyFile, Misc_Filenames.GCOffline},
-	{"Manual", "manual", AnyFile, Misc_Filenames.Manual},
 	{NULL, NULL, (FileFilterType)0, NULL},
 };
 
@@ -119,8 +117,8 @@ GtkWidget* create_bios_misc_files_window(void)
 			sprintf(tmp, "frame_%s", BIOSMiscFiles[file].tag);
 			frame_file = gtk_frame_new(NULL);
 			gtk_widget_set_name(frame_file, tmp);
-			gtk_container_set_border_width(GTK_CONTAINER(frame_file), 5);
-			gtk_frame_set_shadow_type(GTK_FRAME(frame_file), GTK_SHADOW_NONE);
+			gtk_container_set_border_width(GTK_CONTAINER(frame_file), 4);
+			gtk_frame_set_shadow_type(GTK_FRAME(frame_file), GTK_SHADOW_ETCHED_IN);
 			gtk_widget_show(frame_file);
 			gtk_box_pack_start(GTK_BOX(vbox_bmf), frame_file, TRUE, TRUE, 0);
 			GLADE_HOOKUP_OBJECT(bios_misc_files_window, frame_file, tmp);
@@ -138,8 +136,9 @@ GtkWidget* create_bios_misc_files_window(void)
 			sprintf(tmp, "table_frame_%s", BIOSMiscFiles[file].tag);
 			table_frame_file = gtk_table_new(1, 3, FALSE);
 			gtk_widget_set_name(table_frame_file, tmp);
-			gtk_table_set_row_spacings(GTK_TABLE(table_frame_file), 5);
-			gtk_table_set_col_spacings(GTK_TABLE(table_frame_file), 5);
+			gtk_container_set_border_width(GTK_CONTAINER(table_frame_file), 8);
+			gtk_table_set_row_spacings(GTK_TABLE(table_frame_file), 4);
+			gtk_table_set_col_spacings(GTK_TABLE(table_frame_file), 4);
 			gtk_widget_show(table_frame_file);
 			gtk_container_add(GTK_CONTAINER(frame_file), table_frame_file);
 			GLADE_HOOKUP_OBJECT(bios_misc_files_window, table_frame_file, tmp);

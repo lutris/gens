@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) General Options Window - Callback Functions.               *
+ * Gens: CPU Flags.                                                        *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,62 +20,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "general_options_window.h"
-#include "general_options_window_callbacks.h"
-#include "general_options_window_misc.hpp"
+#ifndef GENS_CPU_FLAGS_H
+#define GENS_CPU_FLAGS_H
 
-#include "emulator/gens.hpp"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
 
+// CPU flags (IA32/x86_64)
+#define CPUFLAG_MMX		(1 << 0)
+#define CPUFLAG_SSE		(1 << 1)
+#define CPUFLAG_SSE2		(1 << 2)
+#define CPUFLAG_SSE3		(1 << 3)
+#define CPUFLAG_SSSE3		(1 << 4)
+#define CPUFLAG_SSE41		(1 << 5)
+#define CPUFLAG_SSE42		(1 << 6)
+#define CPUFLAG_SSE4A		(1 << 7)
+#define CPUFLAG_SSE5		(1 << 8)
 
-/**
- * Window is closed.
- */
-gboolean on_general_options_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(general_options_window);
-	general_options_window = NULL;
-	return FALSE;
+// CPU flags (IA32/x86_64; AMD only)
+#define CPUFLAG_MMXEXT		(1 << 9)
+#define CPUFLAG_3DNOW		(1 << 10)
+#define CPUFLAG_3DNOWEXT	(1 << 11)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern unsigned int CPU_Flags;
+unsigned int getCPUFlags(void);
+
+#ifdef __cplusplus
 }
+#endif
 
-
-/**
- * Cancel
- */
-void on_button_go_Cancel_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	gtk_widget_destroy(general_options_window);
-	general_options_window = NULL;
-}
-
-
-/**
- * Apply
- */
-void on_button_go_Apply_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	General_Options_Save();
-}
-
-
-/**
- * Save
- */
-void on_button_go_Save_clicked(GtkButton *button, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(button);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	General_Options_Save();
-	gtk_widget_destroy(general_options_window);
-	general_options_window = NULL;
-}
+#endif /* GENS_CPU_FLAGS_H */

@@ -114,8 +114,8 @@ GtkWidget* create_directory_config_window(void)
 	// Create the directory entry frame.
 	frame_direntry = gtk_frame_new(NULL);
 	gtk_widget_set_name(frame_direntry, "frame_direntry");
-	gtk_container_set_border_width(GTK_CONTAINER(frame_direntry), 5);
-	gtk_frame_set_shadow_type(GTK_FRAME(frame_direntry), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(frame_direntry), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame_direntry), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(frame_direntry);
 	gtk_box_pack_start(GTK_BOX(vbox_dc), frame_direntry, TRUE, TRUE, 0);
 	GLADE_HOOKUP_OBJECT(directory_config_window, frame_direntry, "frame_direntry");
@@ -131,8 +131,9 @@ GtkWidget* create_directory_config_window(void)
 	// Add the frame table.
 	table_frame_direntry = gtk_table_new(1, 3, FALSE);
 	gtk_widget_set_name(table_frame_direntry, "table_frame_direntry");
-	gtk_table_set_row_spacings(GTK_TABLE(table_frame_direntry), 5);
-	gtk_table_set_col_spacings(GTK_TABLE(table_frame_direntry), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(table_frame_direntry), 8);
+	gtk_table_set_row_spacings(GTK_TABLE(table_frame_direntry), 4);
+	gtk_table_set_col_spacings(GTK_TABLE(table_frame_direntry), 4);
 	gtk_widget_show(table_frame_direntry);
 	gtk_container_add(GTK_CONTAINER(frame_direntry), table_frame_direntry);
 	GLADE_HOOKUP_OBJECT(directory_config_window, table_frame_direntry, "table_frame_direntry");

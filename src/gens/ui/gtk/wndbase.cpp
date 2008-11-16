@@ -39,6 +39,15 @@ void WndBase::setModal(GtkWindow *parent)
 }
 
 
+void WndBase::setVisible(bool newVisible)
+{
+	if (newVisible)
+		gtk_widget_show_all(m_Window);
+	else
+		gtk_widget_hide_all(m_Window);
+}
+
+
 static inline void WndBase_GTK_AddBtnToContainer(void *container, GtkWidget *button,
 						 GtkResponseType responseID)
 {

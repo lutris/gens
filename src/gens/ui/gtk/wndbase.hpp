@@ -35,6 +35,7 @@ class WndBase
 	public:
 		void setFocus(void);
 		void setModal(GtkWindow *parent);
+		void setVisible(bool newVisible);
 		
 		// Button constants
 		static const uint32_t BUTTON_OK		= (1 << 0);

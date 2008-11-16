@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) General Options Window.                                    *
+ * Gens: Math macros and inline functions.                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,22 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_GENERAL_OPTIONS_WINDOW_H
-#define GTK_GENERAL_OPTIONS_WINDOW_H
+#ifndef GENS_MATH_M_H
+#define GENS_MATH_M_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <gtk/gtk.h>
-
-GtkWidget* create_general_options_window(void); 
-extern GtkWidget *general_options_window;
-extern const char* GO_MsgColors[5][6];
-extern const char* GO_IntroEffectColors[9][6];
-
-#ifdef __cplusplus
+/**
+ * roundDouble(): Round a double-precision floating point number.
+ * @param val Double-precision floating point number.
+ * @return Rounded number.
+ */
+static inline int roundDouble(const double val)
+{
+	if ((val - (double)((int)val)) > 0.5)
+		return (int)(val) + 1;
+	else
+		return (int)(val);
 }
-#endif
 
-#endif
+#endif /* GENS_MATH_M_H */

@@ -9,19 +9,12 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_32x.h"
 
+#include "macros/math_m.h"
+
 int Debug;
 int Frame_Skip;
 int Frame_Number;
 int DAC_Improv;
-
-
-int Round_Double(const double val)
-{
-	if ((val - (double) (int) val) > 0.5)
-		return (int) (val + 1);
-	else
-		return (int) val;
-}
 
 
 void Init_Tab(void)
@@ -108,14 +101,12 @@ void Set_Clock_Freq(const int system)
 	if (CPU_Mode)
 	{
 		// PAL
-		CPL_Z80 = Round_Double ((((double) CLOCK_PAL / 15.0) / 50.0) / 312.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_PAL / 7.0) / 50.0) / 312.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
-				(double) SSH2_Speed) / 100.0);
+		CPL_Z80 = roundDouble((((double)CLOCK_PAL / 15.0) / 50.0) / 312.0);
+		CPL_M68K = roundDouble((((double)CLOCK_PAL / 7.0) / 50.0) / 312.0);
+		CPL_MSH2 = roundDouble(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+					(double)MSH2_Speed) / 100.0);
+		CPL_SSH2 = roundDouble(((((((double)CLOCK_PAL / 7.0) * 3.0) / 50.0) / 312.0) *
+					(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 312;
 		VDP_Status |= 0x0001;
@@ -135,14 +126,12 @@ void Set_Clock_Freq(const int system)
 	else
 	{
 		// NTSC
-		CPL_Z80 = Round_Double ((((double) CLOCK_NTSC / 15.0) / 60.0) / 262.0);
-		CPL_M68K = Round_Double ((((double) CLOCK_NTSC / 7.0) / 60.0) / 262.0);
-		CPL_MSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) MSH2_Speed) / 100.0);
-		CPL_SSH2 =
-			Round_Double (((((((double) CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
-				(double) SSH2_Speed) / 100.0);
+		CPL_Z80 = roundDouble((((double)CLOCK_NTSC / 15.0) / 60.0) / 262.0);
+		CPL_M68K = roundDouble((((double)CLOCK_NTSC / 7.0) / 60.0) / 262.0);
+		CPL_MSH2 = roundDouble(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+					(double)MSH2_Speed) / 100.0);
+		CPL_SSH2 = roundDouble(((((((double)CLOCK_NTSC / 7.0) * 3.0) / 60.0) / 262.0) *
+					(double)SSH2_Speed) / 100.0);
 		
 		VDP_Num_Lines = 262;
 		VDP_Status &= 0xFFFE;

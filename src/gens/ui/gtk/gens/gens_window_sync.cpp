@@ -33,6 +33,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/mem/mem_m68k.h"
@@ -46,7 +47,7 @@
 // Renderer / Blitter selection stuff.
 #include "gens_core/gfx/renderers.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 
 // C++ includes
 #include <string>
@@ -60,6 +61,7 @@ void Sync_Gens_Window(void)
 {
 	// Synchronize all menus.
 	Sync_Gens_Window_FileMenu();
+	Sync_Gens_Window_FileMenu_ROMHistory();
 	Sync_Gens_Window_GraphicsMenu();
 	Sync_Gens_Window_CPUMenu();
 	Sync_Gens_Window_SoundMenu();
@@ -69,15 +71,49 @@ void Sync_Gens_Window(void)
 
 /**
  * Sync_Gens_Window_FileMenu(): Synchronize the File Menu.
+ * This does NOT synchronize the ROM History submenu, since synchronizing the
+ * ROM History submenu can be slow if some ROMs are located on network shares.
  */
 void Sync_Gens_Window_FileMenu(void)
 {
-	// ROM Format prefixes
-	// TODO: Move this somewhere else.
-	const char* ROM_Format_Prefix[5] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]"};
-	
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
+	
+	// Netplay is currently not usable.
+	GtkWidget *mnuNetplay = findMenuItem(IDM_FILE_NETPLAY);
+	gtk_widget_set_sensitive(mnuNetplay, FALSE);
+	
+	// Disable "Close ROM" if no ROM is loaded.
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_CLOSEROM), (Game != NULL));
+	
+	// Savestate menu items
+	gboolean saveStateEnable = (Game != NULL);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
+	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKSAVE), saveStateEnable);
+	
+	// Current savestate
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
+	
+	// Enable callbacks.
+	do_callbacks = 1;
+}
+
+
+/**
+ * Sync_Gens_Window_FileMenu_ROMHistory(): Synchronize the File, ROM History submenu.
+ * NOTE: If some ROMs are located on network shares, this function will be SLOW,
+ * since it has to check the contents of the ROM to determine its type.
+ */
+void Sync_Gens_Window_FileMenu_ROMHistory(void)
+{
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+	
+	// ROM Format prefixes
+	// TODO: Move this somewhere else.
+	static const char* ROM_Format_Prefix[6] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]", NULL};
 	
 	// ROM History
 	GtkWidget *mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
@@ -101,7 +137,6 @@ void Sync_Gens_Window_FileMenu(void)
 	
 	GtkWidget *mnuROMHistory_item;
 	string sROMHistoryEntry;
-	char sTmpROMFilename[GENS_PATH_MAX];
 	char sMenuKey[24];
 	int romFormat;
 	int romsFound = 0;
@@ -126,8 +161,7 @@ void Sync_Gens_Window_FileMenu(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		ROM::getNameFromPath(Recent_Rom[i], sTmpROMFilename);
-		sROMHistoryEntry += sTmpROMFilename;
+		sROMHistoryEntry += ROM::getNameFromPath(Recent_Rom[i]);;
 		
 		// Add the ROM item to the ROM History submenu.
 		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());
@@ -138,29 +172,16 @@ void Sync_Gens_Window_FileMenu(void)
 		sprintf(sMenuKey, "ROMHistory_Sub_%d", i);
 		g_object_set_data_full(G_OBJECT(mnuROMHistory_sub), sMenuKey,
 				       g_object_ref(mnuROMHistory_item),
-				       (GDestroyNotify)g_object_unref);
+						       (GDestroyNotify)g_object_unref);
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuROMHistory_item, "activate",
-				 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
-					    GINT_TO_POINTER(IDM_FILE_ROMHISTORY_0 + i));
+				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				  GINT_TO_POINTER(IDM_FILE_ROMHISTORY_0 + i));
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	gtk_widget_set_sensitive(mnuROMHistory, romsFound);
-	
-	// Disable "Close ROM" if no ROM is loaded.
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_CLOSEROM), (Game != NULL));
-	
-	// Savestate menu items
-	gboolean saveStateEnable = (Game != NULL);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKSAVE), saveStateEnable);
-	
-	// Current savestate
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
 	
 	// Enable callbacks.
 	do_callbacks = 1;
@@ -179,9 +200,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Simple checkbox items
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_VSYNC)), Video.VSync_W);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH)), draw->stretch());
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_SPRITELIMIT)), Sprite_Over);
 	
+	// Stretch mode
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
 	// Bits per pixel
 	switch (bpp)
 	{
@@ -214,7 +236,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
 	// Screen Shot
-	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH), (Game != NULL));
+	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
 	
 #ifdef GENS_OPENGL
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
@@ -301,7 +323,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		if (bpp == 32)
 		{
 			// 32-bit
-			if (Have_MMX && Renderers[i].blit_32_mmx)
+			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_32_mmx)
 				showRenderer = TRUE;
 			else if (Renderers[i].blit_32)
 				showRenderer = TRUE;
@@ -309,7 +331,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		else // if (bpp == 15 || bpp == 16)
 		{
 			// 15/16-bit
-			if (Have_MMX && Renderers[i].blit_16_mmx)
+			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_16_mmx)
 				showRenderer = TRUE;
 			else if (Renderers[i].blit_16)
 				showRenderer = TRUE;
@@ -499,15 +521,6 @@ void Sync_Gens_Window_SoundMenu(void)
 			break;
 		case 44100:
 			id = IDM_SOUND_RATE_44100;
-			break;
-		case 16000:
-			id = IDM_SOUND_RATE_16000;
-			break;
-		case 32000:
-			id = IDM_SOUND_RATE_32000;
-			break;
-		case 48000:
-			id = IDM_SOUND_RATE_48000;
 			break;
 		default:
 			// Default to 22,050 Hz.

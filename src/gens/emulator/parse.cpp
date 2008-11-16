@@ -29,6 +29,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 // New video layer.
 #include "video/v_draw.hpp"
@@ -57,7 +58,6 @@
 #include "gens_core/io/io.h"
 #include "gens_core/misc/misc.h"
 #include "segacd/cd_sys.hpp"
-#include "ui_proxy.hpp"
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
@@ -84,8 +84,6 @@ static const char* opt1arg_str[][3] =
 	{"screenshotpath",	sPathName,	"Path where to save your screenshot files"},
 	{"patchpath",		sPathName,	"Path where to save your patch files"},
 	{"ipspath",		sPathName,	"Path where to save your IPS files"},
-	{"gcofflinepath",	sPathName,	"unused"},
-	{"gensmanpath",		sPathName,	"unused"},
 	{"genesisbios",		sFileName,	"Genesis BIOS"},
 	{"usacdbios",		sFileName,	"USA SegaCD BIOS"},
 	{"europecdbios",	sFileName,	"European MegaCD BIOS"},
@@ -106,10 +104,13 @@ static const char* opt1arg_str[][3] =
 						"\t 8: Interpolated Scanline 50%\n"
 						"\t 9: Interpolated Scanline 25%\n"
 						"\t10: 2xSAI Kreed\n"
-						"\t11: AdvanceMAME Scale2x\n"
-						"\t12: HQ2x"},
+						"\t11: AdvanceMAME Scale2x"
+#ifndef GENS_OS_WIN32
+						"\n\t12: HQ2x"
+#endif /* GENS_OS_WIN32 */
+						},
 	{"frameskip",		"number",	"Frameskip (-1 [Auto] -> 9)"},
-	{"soundrate",		"rate",		"Sound Rate (11025, 16000, 22050, 32000, 44100, 48000 Hz)"},
+	{"soundrate",		"rate",		"Sound Rate (11025, 22050, 44100 Hz)"},
 	{"msh2-speed",		"percentage"	"Master SH2 Speed"},
 	{"ssh2-speed",		"percentage",	"Slave SH2 Speed"},
 	{"ramcart-size",	"number",	"SegaCD RAM cart size"},
@@ -128,8 +129,6 @@ enum opt1arg_enum
 	OPT1_SCREENSHOTPATH,
 	OPT1_PATCHPATH,
 	OPT1_IPSPATH,
-	OPT1_GCOFFLINEPATH,
-	OPT1_GENSMANPATH,
 	OPT1_GENESISBIOS,
 	OPT1_USACDBIOS,
 	OPT1_EUROPECDBIOS,
@@ -254,8 +253,6 @@ static const struct option long_options[] =
 	LONGOPT_1ARG(OPT1_SCREENSHOTPATH),
 	LONGOPT_1ARG(OPT1_PATCHPATH),
 	LONGOPT_1ARG(OPT1_IPSPATH),
-	LONGOPT_1ARG(OPT1_GCOFFLINEPATH),
-	LONGOPT_1ARG(OPT1_GENSMANPATH),
 	LONGOPT_1ARG(OPT1_GENESISBIOS),
 	LONGOPT_1ARG(OPT1_USACDBIOS),
 	LONGOPT_1ARG(OPT1_EUROPECDBIOS),
@@ -429,8 +426,6 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH][0], PathNames.Screenshot_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_PATCHPATH][0], Patch_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_IPSPATH][0], IPS_Dir);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_GCOFFLINEPATH][0], Misc_Filenames.GCOffline);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_GENSMANPATH][0], Misc_Filenames.Manual);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_GENESISBIOS][0], BIOS_Filenames.MD_TMSS);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_USACDBIOS][0], BIOS_Filenames.SegaCD_US);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_EUROPECDBIOS][0], BIOS_Filenames.MegaCD_EU);
@@ -570,21 +565,16 @@ void parseArgs(int argc, char **argv)
 		}
 		else if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_SOUNDRATE][0]))
 		{
-			int rate = strtol(optarg, (char**)NULL, 10);
-			switch(rate)
+			int rate = atoi(optarg);
+			
+			if (rate == 11025 || rate == 22050 || rate == 44100)
 			{
-				case 11025:
-				case 16000:
-				case 22050:
-				case 32000:
-				case 44100:
-				case 48000:
-					audio->setSoundRate(rate);
-					break;
-				
-				default:
-					fprintf(stderr, "Invalid rate");
-					break;
+				audio->setSoundRate(rate);
+			}
+			else
+			{
+				fprintf(stderr, "Invalid sound rate: %d\n", rate);
+				exit(1);
 			}
 		}
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_QUICKEXIT][0]))
@@ -608,7 +598,12 @@ void parseArgs(int argc, char **argv)
 	}
 	else if (optind == argc - 1)
 	{
+#ifdef GENS_OS_WIN32
+		if ((!isalpha(argv[optind][0]) && argv[optind][1] != ':' && argv[optind][2] != '\\') &&
+		    (argv[optind][0] != '\\' && argv[optind][1] != '\\'))
+#else /* !GENS_OS_WIN32 */
 		if (argv[optind][0] != '/')
+#endif /* GENS_OS_WIN32 */
 		{
 			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));
 			strcat(PathNames.Start_Rom, GENS_DIR_SEPARATOR_STR);

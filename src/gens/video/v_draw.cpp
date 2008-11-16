@@ -10,11 +10,10 @@
 
 #include "emulator/g_md.hpp"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 #include "gens_core/misc/fastblur.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_palette.h"
-#include "emulator/ui_proxy.hpp"
 #include "gens_core/vdp/vdp_io.h"
 
 #ifndef GENS_OS_WIN32
@@ -60,6 +59,12 @@ VDraw::VDraw()
 	m_MsgTime = 0;
 	m_MsgStyle.style = 0;
 	
+	// Initialize the border variables.
+	m_HBorder = 0;
+	m_HBorder_Old = ~0;
+	m_BorderColor_16B = ~0;
+	m_BorderColor_32B = ~0;
+	
 	// Others.
 	m_Stretch = false;
 	m_IntroEffectColor = 7;
@@ -100,6 +105,12 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_MsgVisible = false;
 	m_MsgTime = 0;
 	m_MsgStyle.style = oldDraw->msgStyle();
+	
+	// Initialize the border variables.
+	m_HBorder = 0;
+	m_HBorder_Old = ~0;
+	m_BorderColor_16B = ~0;
+	m_BorderColor_32B = ~0;
 	
 	// Others.
 	m_Stretch = oldDraw->stretch();
@@ -156,7 +167,7 @@ int VDraw::flip(void)
 	// TODO: Make constnats for Intro_Style.
 	if (Genesis_Started || _32X_Started || SegaCD_Started)
 	{
-		if (!Active || Paused)
+		if (Video.pauseTint && (!Active || Paused))
 		{
 			// Emulation is paused.
 			Pause_Screen();
@@ -635,15 +646,6 @@ void VDraw::writeText(const string& msg, const unsigned short duration)
 
 
 /**
- * stretchAdjustInternal(): Adjust the stretch parameters.
- */
-void VDraw::stretchAdjustInternal(void)
-{
-	// VDraw doesn't do anything here by itself...
-}
-
-
-/**
  * Refresh_Video(): Refresh the video subsystem.
  */
 void VDraw::Refresh_Video(void)
@@ -693,9 +695,9 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	
 	// Check if a blit function exists for this renderer.
 	if (bpp == 32)
-		testBlit = (Have_MMX ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
+		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
 	else if (bpp == 15 || bpp == 16)
-		testBlit = (Have_MMX ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
+		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
 	else
 	{
 		// Invalid bpp.
@@ -759,14 +761,21 @@ int VDraw::reinitGensWindow(void)
 /** Properties **/
 
 
-bool VDraw::stretch(void)
+uint8_t VDraw::stretch(void)
 {
 	return m_Stretch;
 }
-void VDraw::setStretch(const bool newStretch)
+void VDraw::setStretch(const uint8_t newStretch)
 {
 	if (m_Stretch == newStretch)
 		return;
+	
+	if (newStretch > STRETCH_FULL)
+	{
+		// TODO: Throw an exception.
+		return;
+	}
+	
 	m_Stretch = newStretch;
 	stretchAdjustInternal();
 }

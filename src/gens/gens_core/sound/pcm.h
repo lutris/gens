@@ -35,6 +35,7 @@ extern int PCM_Enable;
 int Init_PCM(int Rate);
 void Set_Rate_PCM(int Rate);
 void Reset_PCM(void);
+void Write_PCM_Reg(unsigned int Reg, unsigned int Data);
 int Update_PCM(int **buf, int Length);
 
 #ifdef __cplusplus

@@ -1,6 +1,8 @@
 #ifndef G_MAIN_HPP
 #define G_MAIN_HPP
 
+#include "gens.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -8,8 +10,6 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#include "gens.hpp"
 
 // OS-specific includes.
 #if defined(GENS_OS_UNIX)
@@ -60,8 +60,6 @@ struct Gens_Misc_Filenames_t
 {
 	char _7z_Binary[GENS_PATH_MAX];
 	char RAR_Binary[GENS_PATH_MAX];
-	char GCOffline[GENS_PATH_MAX];
-	char Manual[GENS_PATH_MAX];
 };
 
 
@@ -72,6 +70,8 @@ struct Gens_VideoSettings_t
 	int Render_FS;	// TODO: Make this an enum.
 	int VSync_FS;
 	int VSync_W;
+	int borderColorEmulation;
+	int pauseTint;
 #ifdef GENS_OPENGL
 	int OpenGL;
 	int Width_GL;
@@ -128,8 +128,8 @@ int Change_68K_Type(int hWnd, int Num, int Reset_SND);
 //extern void Read_To_68K_Space(int adr);
 
 void End_All(void);
-int is_gens_running();
-void close_gens();
+int is_gens_running(void);
+void close_gens(void);
 
 // Gens Rerecording
 int IsAsyncAllowed(void);
@@ -144,7 +144,9 @@ void MESSAGE_NUM_L(const char* str, const char* def, int num, int time);
 void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time);
 void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time);
 
-#if 0
+#if 0 
+
+// TODO: Fix this stuff.
 
 #define MINIMIZE \
 {\

@@ -132,50 +132,6 @@ void YM2612_Special_Update(void);
 
 /* end */
 
-// used for foward...
-void Update_Chan_Algo0(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo1(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo2(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo3(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo4(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo5(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo6(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo7(channel_ *CH, int **buf, int length);
-
-void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length);
-
-void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length);
-
-void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length);
-void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length);
-
-// used for foward...
-void Env_Attack_Next(slot_ *SL);
-void Env_Decay_Next(slot_ *SL);
-void Env_Substain_Next(slot_ *SL);
-void Env_Release_Next(slot_ *SL);
-void Env_NULL_Next(slot_ *SL);
-
 #ifdef __cplusplus
 }
 #endif

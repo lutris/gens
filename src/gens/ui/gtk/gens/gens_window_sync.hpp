@@ -31,6 +31,7 @@ extern "C" {
 
 void Sync_Gens_Window(void);
 void Sync_Gens_Window_FileMenu(void);
+void Sync_Gens_Window_FileMenu_ROMHistory(void);
 void Sync_Gens_Window_GraphicsMenu(void);
 void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container);
 void Sync_Gens_Window_CPUMenu(void);

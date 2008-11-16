@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -73,8 +77,13 @@
 #endif /* GENS_CDROM */
 
 // UI
-#include "emulator/ui_proxy.hpp"
+#include "emulator/options.hpp"
 #include "ui/gens_ui.hpp"
+
+// Needed for SetCurrentDirectory.
+#ifdef GENS_OS_WIN32
+#include <windows.h>
+#endif /* GENS_OS_WIN32 */
 
 
 // TODO: Make this a global array somewhere better.
@@ -89,6 +98,10 @@ int Config::save(const string& filename)
 {
 	int i;
 	char buf[256];
+	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
 	
 	// Load the configuration file into the INI handler.
 	INI cfg(filename);
@@ -151,24 +164,29 @@ int Config::save(const string& filename)
 	
 	// Video settings
 	// Render_Mode is incremented by 1 for compatibility with old Gens.
-	// TODO: BUG: If "Full Screen VSync" is saved before "Full Screen",
-	// the Linux reimplementation of WritePrivateProfileString gets confused.
 	cfg.writeBool("Graphics", "Full Screen", draw->fullScreen());
 	cfg.writeInt("Graphics", "Render Fullscreen", Video.Render_FS + 1);
 	cfg.writeInt("Graphics", "Full Screen VSync", Video.VSync_FS & 1);
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeInt("Graphics", "Render Windowed", Video.Render_W + 1);
+	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
+	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
 	
+#ifndef GENS_OS_WIN32
 	cfg.writeInt("Graphics", "Bits Per Pixel", bpp);
+#endif /* GENS_OS_WIN32 */
+	
 #ifdef GENS_OPENGL
 	cfg.writeInt("Graphics", "Render OpenGL", (Video.OpenGL ? 1 : 0));
 	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
-#endif
+#endif /* GENS_OPENGL */
 	
-	cfg.writeBool("Graphics", "Stretch", draw->stretch());
-	cfg.writeBool("Graphics", "Software Blit", draw->swRender());
+	cfg.writeInt("Graphics", "Stretch", Options::stretch());
+#ifdef GENS_OS_WIN32
+	cfg.writeBool("Graphics", "Software Blit", Options::swRender());
+#endif /* GENS_OS_WIN32 */
 	cfg.writeInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	cfg.writeInt("Graphics", "Frame Skip", Frame_Skip);
 	
@@ -222,8 +240,6 @@ int Config::save(const string& filename)
 	// Miscellaneous files
 	cfg.writeString("Options", "7z Binary", Misc_Filenames._7z_Binary);
 	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
-	cfg.writeString("Options", "GCOffline path", Misc_Filenames.GCOffline);
-	cfg.writeString("Options", "Gens manual path", Misc_Filenames.Manual);
 	
 	// Controller settings
 	cfg.writeInt("Input", "P1.Type", Controller_1_Type & 0x13);
@@ -301,6 +317,10 @@ int Config::load(const string& filename, void* gameActive)
 	int new_val, i;
 	char buf[256];
 	
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif /* GENS_OS_WIN32 */
+	
 	INI cfg(filename);
 	
 	CRam_Flag = 1;
@@ -369,12 +389,19 @@ int Config::load(const string& filename, void* gameActive)
 	draw->setFullScreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.Render_FS = cfg.getInt("Graphics", "Render Fullscreen", 2) - 1; // Default: Double
 	Video.Render_W = cfg.getInt("Graphics", "Render Windowed", 2) - 1;    // Default: Double
+	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
+	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
+	
+#ifndef GENS_OS_WIN32
+	// TODO: Add a 555/565 override for Win32.
 	bpp = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 32));
 	if (bpp != 15 && bpp != 16 && bpp != 32)
 	{
 		// Invalid bpp. Set it to 32 by default.
 		bpp = 32;
 	}
+#endif /* GENS_OS_WIN32 */
+	
 #ifdef GENS_OPENGL
 	Video.OpenGL = cfg.getInt("Graphics", "Render OpenGL", 0);
 	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
@@ -385,7 +412,7 @@ int Config::load(const string& filename, void* gameActive)
 	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
 	// because the window hasn't been created yet.
 	if (is_gens_running())
-		Change_OpenGL(Video.OpenGL);
+		Options::setOpenGL(Video.OpenGL);
 #endif
 	
 	//Set_Render(Full_Screen, -1, 1);
@@ -397,8 +424,10 @@ int Config::load(const string& filename, void* gameActive)
 	if (is_gens_running())
 		Recalculate_Palettes();
 	
-	draw->setStretch(cfg.getBool("Graphics", "Stretch", false));
-	draw->setSwRender(cfg.getBool("Graphics", "Software Blit", false));
+	Options::setStretch(cfg.getInt("Graphics", "Stretch", 0));
+#ifdef GENS_OS_WIN32
+	Options::setSwRender(cfg.getBool("Graphics", "Software Blit", false));
+#endif /* GENS_OS_WIN32 */
 	Sprite_Over = cfg.getInt("Graphics", "Sprite Limit", 1);
 	Frame_Skip = cfg.getInt("Graphics", "Frame Skip", -1);
 	
@@ -414,7 +443,7 @@ int Config::load(const string& filename, void* gameActive)
 	// Only load the IC sound settings if sound can be initialized.
 	new_val = cfg.getInt("Sound", "State", 1);
 	if (new_val == audio->enabled() ||
-	    (new_val != audio->enabled() && Change_Sound(1)))
+	    (new_val != audio->enabled() && Options::setSoundEnable(true)))
 	{
 		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
 		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);
@@ -482,10 +511,6 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
 #endif	
-	cfg.getString("Options", "GCOffline path", "GCOffline.chm",
-		      Misc_Filenames.GCOffline, sizeof(Misc_Filenames.GCOffline));
-	cfg.getString("Options", "Gens manual path", "manual.exe",
-		      Misc_Filenames.Manual, sizeof(Misc_Filenames.Manual));
 	
 	// Controller settings
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 1);

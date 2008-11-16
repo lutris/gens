@@ -18,6 +18,7 @@
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
 #include "gens_core/misc/misc.h"
+#include "gens_core/misc/cpuflags.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"
 #include "util/file/config_file.hpp"
@@ -25,7 +26,6 @@
 #include "util/sound/gym.hpp"
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
-#include "ui_proxy.hpp"
 #include "parse.hpp"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
@@ -212,8 +212,10 @@ static int Build_Language_String (void)
 void Init_Settings(void)
 {
 	// Initialize video settings.
-	Video.Render_W = 1;	// Double
-	Video.Render_FS = 1;	// Double
+	Video.Render_W = 1;  // Double
+	Video.Render_FS = 1; // Double
+	Video.borderColorEmulation = 1;
+	Video.pauseTint = 1;
 #ifdef GENS_OPENGL
 	Video.OpenGL = 1;
 	Video.Width_GL = 640;
@@ -242,8 +244,13 @@ void Init_Settings(void)
 	Debug = 0;
 	
 #ifdef GENS_OS_WIN32
-	// Win32 needs the current directory.
-	GetCurrentDirectory(sizeof(PathNames.Gens_EXE_Path), PathNames.Gens_EXE_Path);
+	// Win32 needs the program's pathname.
+	char exeFilename[1024];
+	string tmpEXEPath;
+	GetModuleFileName(NULL, exeFilename, sizeof(exeFilename));
+	tmpEXEPath = ROM::getDirFromPath(exeFilename);
+	strncpy(PathNames.Gens_EXE_Path, tmpEXEPath.c_str(), sizeof(PathNames.Gens_EXE_Path));
+	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path) - 1] = 0x00;
 #endif
 	
 	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);
@@ -257,10 +264,6 @@ void Init_Settings(void)
 	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);
 	strcat(Str_Tmp, "gens.cfg");
 	
-	// Default manual and CGOffline path is empty.
-	strcpy(Misc_Filenames.Manual, "");
-	strcpy(Misc_Filenames.GCOffline, "");
-	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
 	Config::load(Str_Tmp, NULL);
@@ -270,7 +273,7 @@ void Init_Settings(void)
 /**
  * close_gens(): Close GENS.
  */
-void close_gens ()
+void close_gens(void)
 {
 	Gens_Running = 0;
 }
@@ -278,7 +281,7 @@ void close_gens ()
 /**
  * run_gens(): Run GENS.
  */
-void run_gens ()
+static inline void run_gens(void)
 {
 	Gens_Running = 1;
 }
@@ -287,7 +290,7 @@ void run_gens ()
  * is_gens_running(): Is GENS running?!
  * @return 1 if it's running.
  */
-int is_gens_running()
+int is_gens_running(void)
 {
 	return Gens_Running;
 }
@@ -307,7 +310,7 @@ int Init(void)
 	init_timer();
 #endif
 	
-	Identify_CPU();
+	getCPUFlags();
 	
 	MSH2_Init();
 	SSH2_Init();
@@ -490,6 +493,7 @@ void GensMainLoop(void)
 			// DEBUG
 			Update_Debug_Screen();
 			draw->flip();
+			GensUI::sleep(100);
 		}
 		else
 #endif /* GENS_DEBUGGER */

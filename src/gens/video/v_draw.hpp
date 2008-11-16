@@ -10,13 +10,9 @@
 // Font for onscreen messages
 #include "C64_charset.h"
 
-#ifndef __WIN32__
-#ifndef HWND
-#define HWND int
-#endif /* HWND */
-#endif /* __WIN32__ */
-
 #ifdef __cplusplus
+
+#include <stdint.h>
 
 // C++ includes
 #include <string>
@@ -73,8 +69,8 @@ class VDraw
 		void writeText(const string& msg, const unsigned short duration);
 		
 		// Properties
-		bool stretch(void);
-		void setStretch(const bool newStretch);
+		uint8_t stretch(void);
+		void setStretch(const uint8_t newStretch);
 		bool swRender(void);
 		void setSwRender(const bool newSwRender);
 		int shift(void);
@@ -112,6 +108,12 @@ class VDraw
 			bool doubleSize;
 			bool transparent;
 		};
+		
+		// Stretch constants.
+		static const uint8_t STRETCH_NONE = 0x00;
+		static const uint8_t STRETCH_H    = 0x01;
+		static const uint8_t STRETCH_V    = 0x02;
+		static const uint8_t STRETCH_FULL = 0x03;
 	
 	protected:
 		// Called if initialization fails.
@@ -121,13 +123,13 @@ class VDraw
 		int m_shift;
 		
 		// Stretch option.
-		bool m_Stretch;
+		uint8_t m_Stretch;
 		
 		// Flip the screen buffer. (Renderer-specific function)
 		virtual int flipInternal(void) = 0;
 		
 		// Adjust stretch parameters.
-		virtual void stretchAdjustInternal(void);
+		virtual void stretchAdjustInternal(void) { };
 		
 		// Update the renderer.
 		virtual void updateRenderer(void) = 0;

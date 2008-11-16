@@ -3,7 +3,6 @@
 #endif
 
 #include <stdio.h>
-#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,6 +12,8 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
+
+#include "macros/file_m.h"
 
 #ifdef GENS_PNG
 #include <png.h>
@@ -349,7 +350,6 @@ int ImageUtil::screenShot(void)
 	// Build the filename.
 	int num = -1;
 	char filename[GENS_PATH_MAX];
-	struct stat sbuf;
 #ifdef GENS_PNG
 	const char* ext = "png";
 #else /* !GENS_PNG */
@@ -360,7 +360,7 @@ int ImageUtil::screenShot(void)
 	{
 		num++;
 		sprintf(filename, "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Name, num, ext);
-	} while (!stat(filename, &sbuf));
+	} while (fileExists(filename));
 	
 	// Attempt to open the file.
 	FILE *img = fopen(filename, "wb");

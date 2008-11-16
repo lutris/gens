@@ -46,7 +46,7 @@
 #include "controller_config/controller_config_window.hpp"
 #include "bios_misc_files/bios_misc_files_window.hpp"
 #include "directory_config/directory_config_window.h"
-#include "general_options/general_options_window.h"
+#include "general_options/general_options_window.hpp"
 #include "color_adjust/color_adjust_window.h"
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/country_code_window.h"
@@ -235,7 +235,7 @@ void GensUI::update(void)
 		    (controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 		    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
-		    (general_options_window && IsDialogMessage(general_options_window, &msg)) ||
+		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||
 		    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
@@ -472,7 +472,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	}
 	
 	// Reset the current directory to PathNames.Gens_EXE_Path.
-	// (Why do GetOpenFIleName() and GetSaveFileName change it?)
+	// (Why do GetOpenFileName() and GetSaveFileName change it?)
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 	
 	if (!ret)

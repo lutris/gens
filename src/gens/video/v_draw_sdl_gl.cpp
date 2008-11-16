@@ -38,7 +38,6 @@ VDraw_SDL_GL::VDraw_SDL_GL(VDraw *oldDraw)
 {
 	// Set the default GL values.
 	textures[0] = 0;
-	textures[1] = 0;
 	textureSize = 256;
 	filterBuffer = NULL;
 	filterBufferSize = 0;
@@ -267,7 +266,7 @@ void VDraw_SDL_GL::End_Video(void)
 	if (filterBuffer)
 	{
 		// Delete the GL textures and filter buffer.
-		glDeleteTextures(2, textures);
+		glDeleteTextures(1, textures);
 		free(filterBuffer);
 		filterBuffer = NULL;
 	}
@@ -282,17 +281,15 @@ void VDraw_SDL_GL::End_Video(void)
  */
 void VDraw_SDL_GL::stretchAdjustInternal(void)
 {
-	if (!stretch())
-	{
-		// Stretch is disabled.
-		m_VStretch = 0;
+	if (m_Stretch & STRETCH_H)
+		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	else
 		m_HStretch = 0;
-		return;
-	}
 	
-	// Stretch is enabled.
-	m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
-	m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	if (m_Stretch & STRETCH_V)
+		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
+	else
+		m_VStretch = 0;
 }
 
 
@@ -346,7 +343,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		// Message is visible.
 		drawText(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(), m_MsgStyle);
 	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	else if (m_FPSEnabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
 		drawText(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3, m_MsgText.c_str(), m_FPSStyle);
@@ -391,6 +388,10 @@ int VDraw_SDL_GL::flipInternal(void)
 	
 	glEnd();
 	
+	// Draw the border.
+	if (Video.borderColorEmulation)
+		drawBorder();
+	
 	// Swap the SDL GL buffers.
 	SDL_GL_SwapBuffers();
 	
@@ -398,6 +399,54 @@ int VDraw_SDL_GL::flipInternal(void)
 	return 1;
 }
 
+
+void VDraw_SDL_GL::drawBorder(void)
+{
+	if (!Video.borderColorEmulation)
+		return;
+	
+	if ((Game == NULL) || (Debug > 0))
+	{
+		// Either no system is active or the debugger is enabled.
+		// Make sure the border color is black.
+		m_BorderColor_16B = 0;
+		m_BorderColor_32B = 0;
+	}
+	else
+	{
+		// Set the border color to the first palette entry.
+		m_BorderColor_16B = MD_Palette[0];
+		m_BorderColor_32B = MD_Palette32[0];
+	}
+	
+	if (m_Stretch < STRETCH_FULL)
+	{
+		glDisable(GL_TEXTURE_2D);
+		
+		// TODO: This may not work properly on big-endian systems.
+		unsigned char* bcolor = (unsigned char*)(&m_BorderColor_32B);
+		glColor3ub(bcolor[2], bcolor[1], bcolor[0]);
+		
+		if (!(m_Stretch & STRETCH_V) && (VDP_Num_Vis_Lines < 240))
+		{
+			// Top/Bottom borders.
+			float borderSize = ((float)((240 - VDP_Num_Vis_Lines) / 2)) / 240.0f;
+			glRectf(-1,  1, 1, ( 1.0f - (borderSize * 2.0)));
+			glRectf(-1, -1, 1, (-1.0f + (borderSize * 2.0)));
+		}
+		
+		if (!(m_Stretch & STRETCH_H) && (m_HBorder > 0))
+		{
+			// Left/Right borders.
+			float borderSize = (float)(m_HBorder / 2) / 320.0f;
+			glRectf(-1, 1, (-1.0f + (borderSize * 2.0)), -1);
+			glRectf( 1, 1, ( 1.0f - (borderSize * 2.0)), -1);
+		}
+		
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glEnable(GL_TEXTURE_2D);
+	}
+}
 
 /**
  * Init_Subsystem(): Initialize the OS-specific graphics library.

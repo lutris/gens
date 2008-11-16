@@ -122,8 +122,10 @@ void Detect_Country_Genesis(void)
 	}
 }
 
+
 /**
  * Init_Genesis_Bios(): Initialize the Genesis BIOS.
+ * TODO: Fix this. It doesn't seem to work properly.
  */
 void Init_Genesis_Bios(void)
 {
@@ -333,7 +335,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 /**
  * Reset_Genesis(): Resets the Genesis.
  */
-void Reset_Genesis (void)
+void Reset_Genesis(void)
 {
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();
@@ -375,7 +377,7 @@ void Reset_Genesis (void)
  * Do_VDP_Only(): Updates the Genesis VDP.
  * @return 0 if successful. TODO: Remove unnecessary return values.
  */
-int Do_VDP_Only (void)
+int Do_VDP_Only(void)
 {
 	// Set the number of visible lines.
 	SET_VISIBLE_LINES;

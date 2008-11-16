@@ -49,53 +49,35 @@ ROM_t* myROM = NULL;
 
 /**
  * getNameFromPath(): Get the filename part of a pathname.
- * @param Full_Path Full pathname.
- * @param retFilename Buffer to store the filename part.
+ * @param fullPath Full pathname.
+ * @return Filename part of the pathname.
  */
-// FIXME: This function is poorly written.
-void ROM::getNameFromPath(const char* fullPath, char* retFilename)
+string ROM::getNameFromPath(const string& fullPath)
 {
-	int i = strlen(fullPath) - 1;
+	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
 	
-	while ((i >= 0) && (fullPath[i] != GENS_DIR_SEPARATOR_CHR))
-		i--;
+	if (pos == string::npos)
+		return fullPath;
+	else if (pos + 1 == fullPath.length())
+		return "";
 	
-	if (i <= 0)
-	{
-		// No filename found.
-		retFilename[0] = 0;
-	}
-	else
-	{
-		// Filename found. Copy it to the output buffer.
-		strcpy(retFilename, &fullPath[++i]);
-	}
+	return fullPath.substr(pos + 1);
 }
 
 
 /**
  * getDirFromPath(): Get the directory part of a pathname.
- * @param Full_Path Full pathname.
- * @param Dir Buffer to store the directory part.
+ * @param fullPath Full pathname.
+ * @return Directory part of the pathname.
  */
-// FIXME: This function is poorly written.
-void ROM::getDirFromPath(const char *fullPath, char *retDirName)
+string ROM::getDirFromPath(const string& fullPath)
 {
-	int i = strlen(fullPath) - 1;
+	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
 	
-	while ((i >= 0) && (fullPath[i] != GENS_DIR_SEPARATOR_CHR))
-		i--;
+	if (pos == string::npos)
+		return "";
 	
-	if (i <= 0)
-	{
-		// No directory found.
-		retDirName[0] = 0;
-	}
-	else
-	{
-		// Directory found. Copy it to the output buffer.
-		strncpy(retDirName, fullPath, ++i);
-	}
+	return fullPath.substr(0, pos + 1);
 }
 
 
@@ -131,7 +113,9 @@ void ROM::updateRecentROMList(const char* filename)
  */
 void ROM::updateROMDir(const char *filename)
 {
-	getDirFromPath(filename, Rom_Dir);
+	string tmpROMDir = getDirFromPath(filename);
+	strncpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
+	Rom_Dir[sizeof(Rom_Dir) - 1] = 0x00;
 }
 
 

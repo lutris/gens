@@ -1,5 +1,5 @@
 /**
- * GENS: Sega 32X initialization and main loop code.
+ * Gens: Sega 32X initialization and main loop code.
  */
 
 #ifndef GENS_32X_HPP

@@ -50,8 +50,8 @@ unsigned char PWM_FULL_TAB[PWM_BUF_SIZE * PWM_BUF_SIZE] =
 #error PWM_BUF_SIZE must equal 4 or 8.
 #endif /* PWM_BUF_SIZE */
 
-unsigned short PWM_FIFO_R[PWM_BUF_SIZE];
-unsigned short PWM_FIFO_L[PWM_BUF_SIZE];
+unsigned short PWM_FIFO_R[8];
+unsigned short PWM_FIFO_L[8];
 unsigned int PWM_RP_R;
 unsigned int PWM_WP_R;
 unsigned int PWM_RP_L;
@@ -126,16 +126,15 @@ void PWM_Clear_Timer(void)
 /**
  * PWM_SHIFT(): Shift PWM data.
  * @param src: Channel (L or R) with the source data.
- * @param srcPointer Channel (L or R) to use for the source pointer. (TODO: Why is this different from src?)
  * @param dest Channel (L or R) for the destination.
  */
-#define PWM_SHIFT(src, srcPointer, dest)								\
+#define PWM_SHIFT(src, dest)										\
 {													\
 	/* Make sure the source FIFO isn't empty. */							\
 	if (PWM_RP_##src != PWM_WP_##src)								\
 	{												\
 		/* Get destination channel output from the source channel FIFO. */			\
-		PWM_Out_##dest = PWM_FIFO_##src[PWM_RP_##srcPointer];					\
+		PWM_Out_##dest = PWM_FIFO_##src[PWM_RP_##src];						\
 													\
 		/* Increment the source channel read pointer, resetting to 0 if it overflows. */	\
 		PWM_RP_##src = (PWM_RP_##src + 1) & (PWM_BUF_SIZE - 1);					\
@@ -150,39 +149,39 @@ static void PWM_Shift_Data(void)
 		case 0x01:
 		case 0x0D:
 			// Rx_LL: Right -> Ignore, Left -> Left
-			PWM_SHIFT(L, L, L);
+			PWM_SHIFT(L, L);
 			break;
 		
 		case 0x02:
 		case 0x0E:
 			// Rx_LR: Right -> Ignore, Left -> Right
-			PWM_SHIFT(L, L, R);
+			PWM_SHIFT(L, R);
 			break;
 		
 		case 0x04:
 		case 0x07:
 			// RL_Lx: Right -> Left, Left -> Ignore
-			PWM_SHIFT(R, L, L);
+			PWM_SHIFT(R, L);
 			break;
 		
 		case 0x05:
 		case 0x09:
 			// RR_LL: Right -> Right, Left -> Left
-			PWM_SHIFT(L, L, L);
-			PWM_SHIFT(R, R, R);
+			PWM_SHIFT(L, L);
+			PWM_SHIFT(R, R);
 			break;
 		
 		case 0x06:
 		case 0x0A:
 			// RL_LR: Right -> Left, Left -> Right
-			PWM_SHIFT(L, L, R);
-			PWM_SHIFT(R, R, L);
+			PWM_SHIFT(L, R);
+			PWM_SHIFT(R, L);
 			break;
 		
 		case 0x08:
 		case 0x0B:
 			// RR_Lx: Right -> Right, Left -> Ignore
-			PWM_SHIFT(R, L, R);
+			PWM_SHIFT(R, R);
 			break;
 		
 		case 0x00:
@@ -238,12 +237,14 @@ void PWM_Update(int **buf, int length)
 	tmpOutL <<= 2;
 	tmpOutR <<= 2;
 	
-	for (; length > 0; length--)
+	while (length > 0)
 	{
 		if (PWM_Out_L)
-			buf[0][length] += tmpOutL;
+			buf[0][length-1] += tmpOutL;
 		if (PWM_Out_R)
-			buf[1][length] += tmpOutR;
+			buf[1][length-1] += tmpOutR;
+		
+		length--;
 	}
 }
 

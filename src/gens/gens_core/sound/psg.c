@@ -15,9 +15,7 @@
 #include <string.h>
 #include "psg.h"
 
-
-/* Defines */
-
+/** Defines **/
 
 #ifndef PI
 #define PI 3.14159265358979323846
@@ -35,8 +33,7 @@
 #define NOISE_DEF 0x4000
 
 
-/* PSG debug macros */
-
+/** PSG debug macros **/
 
 #define PSG_DEBUG_LEVEL 0
 
@@ -63,14 +60,14 @@
 
 #endif /* PSG_DEBUG_LEVEL > 0 */
 
+/** Variables **/
 
-/* Variables */
+static unsigned int PSG_SIN_Table[16][512];
+static unsigned int PSG_Step_Table[1024];
+static unsigned int PSG_Volume_Table[16];
+static unsigned int PSG_Noise_Step_Table[4];
 
-
-unsigned int PSG_SIN_Table[16][512];
-unsigned int PSG_Step_Table[1024];
-unsigned int PSG_Volume_Table[16];
-unsigned int PSG_Noise_Step_Table[4];
+// PSG save buffer
 unsigned int PSG_Save[8];
 
 struct _psg PSG;
@@ -80,13 +77,15 @@ FILE *psg_debug_file = NULL;
 #endif
 
 
-/* Gens specific extern and variables */
+/** Gens-specific extern and variables **/
 #include "audio/audio.hpp"
 extern int VDP_Current_Line;
 extern int GYM_Dumping;
 
+
 // TODO: Include gym.h instead of declaring this here.
 int Update_GYM_Dump(char v0, char v1, char v2);
+
 
 int PSG_Enable;
 int PSG_Improv;
@@ -98,7 +97,7 @@ int PSG_Len = 0;
 int *PSG_Buf[2];
 
 
-/* Functions */
+/** Functions **/
 
 
 void PSG_Write(int data)
@@ -465,7 +464,7 @@ void PSG_Restore_State(void)
 }
 
 
-/* Gens */
+/** Gens-specific code **/
 
 
 /**
@@ -501,9 +500,10 @@ void PSG_Save_State_Full(void)
 void PSG_Restore_State_Full(void)
 {
 	memcpy(&PSG, PSG_Save_Full, sizeof(PSG));
-} 
+}
 
-/* end */
+
+/** end **/
 
 
 // Symbol aliases for cross-OS asm compatibility.

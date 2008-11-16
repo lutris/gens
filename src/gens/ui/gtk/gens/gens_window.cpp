@@ -112,7 +112,6 @@ GtkWidget* create_gens_window(void)
 {
 	GdkPixbuf *gens_window_icon_pixbuf;
 	GtkWidget *vbox1;
-	GtkWidget *handlebox1;
 	GtkWidget *sdlsock;
 	
 	accel_group = gtk_accel_group_new();
@@ -130,16 +129,8 @@ GtkWidget* create_gens_window(void)
 	gtk_container_add(GTK_CONTAINER(gens_window), vbox1);
 	GLADE_HOOKUP_OBJECT(gens_window, vbox1, "vbox1");
 	
-	handlebox1 = gtk_handle_box_new();
-	gtk_widget_set_name(handlebox1, "handlebox1");
-	gtk_widget_show(handlebox1);
-	gtk_box_pack_start(GTK_BOX(vbox1), handlebox1, FALSE, FALSE, 0);
-	gtk_handle_box_set_shadow_type(GTK_HANDLE_BOX(handlebox1), GTK_SHADOW_NONE);
-	gtk_handle_box_set_snap_edge(GTK_HANDLE_BOX(handlebox1), GTK_POS_LEFT);
-	GLADE_HOOKUP_OBJECT(gens_window, vbox1, "handlebox1");
-	
 	// Create the menu bar.
-	create_gens_window_menubar(handlebox1);
+	create_gens_window_menubar(vbox1);
 	
 	// Create the SDL socket.
 	sdlsock = gtk_event_box_new();
@@ -155,6 +146,12 @@ GtkWidget* create_gens_window(void)
 			 G_CALLBACK(on_gens_window_close), NULL);
 	g_signal_connect((gpointer)gens_window, "destroy-event",
 			 G_CALLBACK(on_gens_window_close), NULL);
+	
+	// Callbacks for Auto Pause.
+	g_signal_connect((gpointer)gens_window, "focus-in-event",
+			 G_CALLBACK(gens_window_focus_in), NULL);
+	g_signal_connect((gpointer)gens_window, "focus-out-event",
+			 G_CALLBACK(gens_window_focus_out), NULL);
 	
 	// Enable drag & drop for ROM loading.
 	const GtkTargetEntry target_list[] =

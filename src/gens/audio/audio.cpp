@@ -12,7 +12,7 @@
 
 
 // TODO: Should these be kept out of the Audio class?
-int Seg_L[990], Seg_R[990];
+int Seg_L[882], Seg_R[882];
 unsigned int Sound_Extrapol[312][2];
 
 
@@ -24,6 +24,8 @@ Audio::Audio()
 	m_soundRate = 44100;
 	Sound_Segs = 8;
 	Bytes_Per_Unit = 4;
+	
+	m_enabled = true;
 	m_stereo = true;
 	m_soundIsPlaying = false;
 	m_dumpingWAV = false;

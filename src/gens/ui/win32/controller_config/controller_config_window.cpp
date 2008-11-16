@@ -200,7 +200,7 @@ void Controller_Config_Window_CreateChildWindows(HWND hWnd)
 			"Only a few games support teamplayer (games which\n"
 			"have 4 player support), so don't forget to use the\n"
 			"\"load config\" and \"save config\" options. :)\n\n"
-			"Controller configuration is applied when Save is clicked.";
+			"Controller configuration is applied when OK is clicked.";
 	
 	// Create the Note group box.
 	grpBox = CreateWindow(WC_BUTTON, "Note",

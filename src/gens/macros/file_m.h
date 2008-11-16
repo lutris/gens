@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) General Options Window - Callback Functions.              *
+ * Gens: File macros and inline functions.                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,20 +20,25 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_GENERAL_OPTIONS_WINDOW_CALLBACKS_H
-#define GENS_WIN32_GENERAL_OPTIONS_WINDOW_CALLBACKS_H
+#ifndef GENS_FILE_M_H
+#define GENS_FILE_M_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <unistd.h>
 
-#include <windows.h>
-
-LRESULT CALLBACK General_Options_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK General_Options_MsgColor_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-#ifdef __cplusplus
+/**
+ * fileExists(): Check if a file exists.
+ * @return 1 if the file exists; 0 if the file does not exist.
+ */
+static inline int fileExists(const char *filename)
+{
+	if (!access(filename, F_OK))
+	{
+		// File exists.
+		return 1;
+	}
+	
+	// File does not exist.
+	return 0;
 }
-#endif
 
-#endif
+#endif /* GENS_FILE_M_H */

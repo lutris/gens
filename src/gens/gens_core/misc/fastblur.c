@@ -26,6 +26,7 @@
 #include "misc.h"
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/misc/cpuflags.h"
 
 
 #ifndef GENS_X86_ASM
@@ -43,7 +44,7 @@ void Fast_Blur(void)
 	if (bpp == 15 || bpp == 16)
 	{
 #ifdef GENS_X86_ASM
-		if (Have_MMX)
+		if (CPU_Flags & CPUFLAG_MMX)
 			Fast_Blur_16_asm_MMX();
 		else
 			Fast_Blur_16_asm();

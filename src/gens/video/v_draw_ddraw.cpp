@@ -17,16 +17,6 @@
 // Inline video functions.
 #include "v_inline.h"
 
-// Modif N. -- added
-#undef CORRECT_256_ASPECT_RATIO
-#ifndef CORRECT_256_ASPECT_RATIO
-	// actually wrong, the genesis image is not supposed to get thinner in this mode
-	#define ALT_X_RATIO_RES 256
-#else
-	// keep same aspect ratio as 320x240
-	#define ALT_X_RATIO_RES 320
-#endif
-
 
 inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface,
 					 const int renderMode, const bool lock)
@@ -53,7 +43,7 @@ inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
 			 w, h, m_MsgText.c_str(), m_MsgStyle, false);
 	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	else if (m_FPSEnabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
 		drawText((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
@@ -136,9 +126,18 @@ int VDraw_DDraw::Init_Video(void)
 	memset(&ddsd, 0, sizeof(ddsd));
 	ddsd.dwSize = sizeof(ddsd);
 	
-	lpDD->GetDisplayMode(&ddsd);
+	// TODO: Figure out what FS_No_Res_Change is for.
+	// TODO: Figure out if this is correct.
+	if (m_FullScreen /* && !FS_No_Res_Change*/)
+	{
+		// Always use 16-bit color in fullscreen.
+		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, 16, 0, 0)))
+			return Init_Fail(Gens_hWnd, "Error with lpDD->SetDisplayMode()!");
+	}
 	
+	// Check the current color depth.
 	unsigned char newBpp;
+	lpDD->GetDisplayMode(&ddsd);
 	switch (ddsd.ddpfPixelFormat.dwGBitMask)
 	{
 		case 0x03E0:
@@ -160,14 +159,6 @@ int VDraw_DDraw::Init_Video(void)
 		setBpp(newBpp, false);
 	
 	setCooperativeLevel();
-	
-	// TODO: Figure out what FS_No_Res_Change is for.
-	// TODO: Figure out if this is correct.
-	if (m_FullScreen /* && !FS_No_Res_Change*/)
-	{
-		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, bpp, 0, 0)))
-			return Init_Fail(Gens_hWnd, "Error with lpDD->SetDisplayMode()!");
-	}
 	
 	// Clear ddsd.
 	memset(&ddsd, 0x00, sizeof(ddsd));
@@ -414,21 +405,18 @@ HRESULT VDraw_DDraw::RestoreGraphics(void)
  */
 void VDraw_DDraw::stretchAdjustInternal(void)
 {
-	if (!stretch())
-	{
-		// Stretch is disabled.
-		m_VStretch = 0;
+	if (m_Stretch & STRETCH_H)
+		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	else
 		m_HStretch = 0;
-		
-		// Clear the screen.
-		clearScreen();
-		
-		return;
-	}
 	
-	// Stretch is enabled.
-	m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
-	m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+	if (m_Stretch & STRETCH_V)
+		m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
+	else
+		m_VStretch = 0;
+	
+	if (m_Stretch != STRETCH_FULL)
+		clearScreen();
 }
 
 
@@ -548,7 +536,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		RectSrc.top = 0;
 		RectSrc.bottom = VDP_Num_Vis_Lines;
 
-		if ((VDP_Num_Vis_Lines == 224) && !m_Stretch)
+		if ((VDP_Num_Vis_Lines == 224) && !(m_Stretch & STRETCH_V))
 		{
 			RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
 			RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis
@@ -561,7 +549,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 			RectSrc.top = 8 * 2;
 			RectSrc.bottom = (224 + 8) * 2;
 
-			if (!m_Stretch)
+			if (!(m_Stretch & STRETCH_V))
 			{
 				RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
 				RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis again
@@ -595,10 +583,10 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	{
 		Dep = 64;
 
-		if (!m_Stretch)
+		if (!(m_Stretch & STRETCH_H))
 		{
-			RectDest.left = (int) ((q.x - (ALT_X_RATIO_RES * Ratio_X))/2); //Upth-Modif - center the picture properly
-			RectDest.right = (int) (ALT_X_RATIO_RES * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
+			RectDest.left = (q.x - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - center the picture properly
+			RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
 		}
 
 		if (Render_Mode == 0)
@@ -707,8 +695,8 @@ int VDraw_DDraw::flipInternal(void)
 			}
 			else
 			{
-				RectDest.left = (int) ((FS_X - (ALT_X_RATIO_RES * Ratio_X))/2); //Upth-Modif - Centering the screen left-right
-				RectDest.right = (int) (ALT_X_RATIO_RES * Ratio_X + RectDest.left); //Upth-modif - again
+				RectDest.left = (FS_X - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - Centering the screen left-right
+				RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-modif - again
 			}
 			RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
 		}
@@ -774,7 +762,7 @@ int VDraw_DDraw::flipInternal(void)
 		}
 		else
 #endif
-		if (!m_swRender && Video.Render_FS == 0)
+		if (Video.Render_FS == 0)
 		{
 			// 1x rendering.
 			if (m_swRender)
@@ -812,26 +800,26 @@ int VDraw_DDraw::flipInternal(void)
 				RectSrc.top = 0;
 				RectSrc.bottom = VDP_Num_Vis_Lines;
 
-				if ((VDP_Num_Vis_Lines == 224) && !m_Stretch)
+				if (!(m_Stretch & STRETCH_V))
 				{
-					RectDest.top = (int)((FS_Y - 224)/2); //Upth-Add - But we still
-					RectDest.bottom = RectDest.top + 224;  //Upth-Add - center the screen
+					RectDest.top = (int)((FS_Y - VDP_Num_Vis_Lines) / 2); //Upth-Add - But we still
+					RectDest.bottom = RectDest.top + VDP_Num_Vis_Lines;   //Upth-Add - center the screen
 				}
 				else
 				{
-					RectDest.top = (int)((FS_Y - 240)/2); //Upth-Add - for both of the
-					RectDest.bottom = RectDest.top + 240;  //Upth-Add - predefined conditions
+					RectDest.top = (int)((FS_Y - 240) / 2); //Upth-Add - for both of the
+					RectDest.bottom = RectDest.top + 240;   //Upth-Add - predefined conditions
 				}
 				
-				if (!isFullXRes() && !m_Stretch)
+				if (!(m_Stretch & STRETCH_H))
 				{
-					RectDest.left = (int)((FS_X - 256)/2); //Upth-Add - and along the
-					RectDest.right = 256 + RectDest.left;   //Upth-Add - x axis, also
+					RectDest.left = (int)((FS_X - (320 - Dep))/2); //Upth-Add - and along the
+					RectDest.right = (320 - Dep) + RectDest.left;  //Upth-Add - x axis, also
 				}
 				else
 				{
 					RectDest.left = (int)((FS_X - 320)/2); //Upth-Add - and along the
-					RectDest.right = 320 + RectDest.left;   //Upth-Add - x axis, also
+					RectDest.right = 320 + RectDest.left;  //Upth-Add - x axis, also
 				}
 				
 				DDraw_Draw_Text(&ddsd, lpDDS_Back, Video.Render_FS, true);

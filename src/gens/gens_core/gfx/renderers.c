@@ -43,8 +43,8 @@ const int Renderers_Count = 12;
 // Includes x86 ASM versions, where available.
 const struct Renderer_t Renderers[] =
 {
-	{"Normal", Blit1x_16_asm, Blit1x_16_asm_MMX, Blit1x_32, Blit1x_32},
-	{"Double", Blit2x_16_asm, Blit2x_16_asm_MMX, Blit2x_32, Blit2x_32},
+	{"Normal", Blit1x_16_asm, Blit1x_16_asm_MMX, Blit1x_32_asm, Blit1x_32_asm_MMX},
+	{"Double", Blit2x_16_asm, Blit2x_16_asm_MMX, Blit2x_32_asm, Blit2x_32_asm_MMX},
 	{"Interpolated", Blit2x_Int_16_asm, Blit2x_Int_16_asm_MMX, NULL, NULL},
 	{"Scanline", Blit2x_Scanline_16_asm, Blit2x_Scanline_16_asm_MMX, Blit2x_Scanline_32, Blit2x_Scanline_32},
 	{"50% Scanline", NULL, Blit2x_Scanline_50_16_asm_MMX, NULL, NULL},
@@ -54,7 +54,9 @@ const struct Renderer_t Renderers[] =
 	{"Interpolated 25% Scanline", NULL, Blit2x_Scanline_25_Int_16_asm_MMX, NULL, NULL},
 	{"2xSAI (Kreed)", NULL, Blit_2xSAI_16_asm_MMX, NULL, NULL},
 	{"Scale2x", Blit_Scale2x_16, Blit_Scale2x_16, Blit_Scale2x_32, Blit_Scale2x_32},
-	{"HQ2x", Blit_HQ2x_16_asm, Blit_HQ2x_16_asm, NULL, NULL},
+#ifndef GENS_OS_WIN32
+	{"HQ2x", NULL, Blit_HQ2x_16_asm, NULL, NULL},
+#endif /* GENS_OS_WIN32 */
 	{NULL, NULL, NULL, NULL, NULL},
 };
 

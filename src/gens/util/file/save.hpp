@@ -1,12 +1,8 @@
 #ifndef GENS_SAVE_HPP
 #define GENS_SAVE_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <stdio.h>
 #include "emulator/gens.hpp"
+#include <stdio.h>
 
 #define GENESIS_LENGTH_EX1		0x2247C
 #define GENESIS_LENGTH_EX2		0x11ED2
@@ -28,6 +24,10 @@ extern "C" {
 #define SCD32X_STATE_FILE_LENGTH     (0x22500 + 0xE0000 + 0x82A00)
 #define MAX_STATE_FILE_LENGTH        SCD32X_STATE_FILE_LENGTH
 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern char State_Dir[GENS_PATH_MAX];
 extern char SRAM_Dir[GENS_PATH_MAX];

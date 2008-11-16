@@ -28,24 +28,7 @@
 #include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
-#include "game_genie/game_genie_window_misc.h"
-#include "controller_config/controller_config_window_misc.hpp"
-#include "bios_misc_files/bios_misc_files_window_misc.hpp"
-#include "directory_config/directory_config_window_misc.hpp"
-#include "general_options/general_options_window_misc.hpp"
-#include "about/about_window.hpp"
-#include "color_adjust/color_adjust_window_misc.h"
-#include "country_code/country_code_window_misc.h"
 
-#ifdef GENS_OPENGL
-#include "opengl_resolution/opengl_resolution_window_misc.h"
-#endif /* GENS_OPENGL */
-
-#ifdef GENS_CDROM
-#include "select_cdrom/select_cdrom_window_misc.hpp"
-#endif /* GENS_CDROM */
-
-#include "emulator/ui_proxy.hpp"
 #include "util/file/config_file.hpp"
 
 #include "ui/gens_ui.hpp"
@@ -57,6 +40,8 @@
 #include "util/file/save.hpp"
 #include "gens_core/cpu/z80/z80.h"
 #include "util/gfx/imageutil.hpp"
+
+#include "macros/file_m.h"
 
 // Sega CD
 #include "emulator/g_mcd.hpp"
@@ -70,12 +55,11 @@
 #endif /* GENS_CDROM */
 
 // Debugger
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
+//#ifdef GENS_DEBUGGER
+//#include "debugger/debugger.hpp"
+//#endif /* GENS_DEBUGGER */
 
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 // C++ includes
@@ -145,8 +129,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 		g_free(unescaped);
 		
 		// Check that the file actually exists.
-		struct stat sbuf;
-		if (!stat(filename.c_str(), &sbuf))
+		if (fileExists(filename.c_str()))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename.c_str());
@@ -170,6 +153,41 @@ gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
 		GdkAtom target_type = GDK_POINTER_TO_ATOM(g_list_nth_data(context->targets, 0));
 		gtk_drag_get_data(widget, context, target_type, time);
 		return TRUE;
+	}
+	return FALSE;
+}
+
+
+/** Focus callbacks **/
+
+
+/**
+ * gens_window_focus_in(): Gens window has received focus.
+ * @param widget GTK+ widget.
+ * @param event GDK event.
+ * @param user_data User data.
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ */
+gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+{
+	Active = 1;
+	return FALSE;
+}
+
+
+/**
+ * gens_window_focus_in(): Gens window has lost focus.
+ * @param widget GTK+ widget.
+ * @param event GDK event.
+ * @param user_data User data.
+ * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ */
+gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
+{
+	if (Auto_Pause && Active)
+	{
+		Active = 0;
+		audio->clearSoundBuffer();
 	}
 	return FALSE;
 }

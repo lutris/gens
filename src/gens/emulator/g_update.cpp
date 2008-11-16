@@ -27,6 +27,7 @@ clock_t New_Time = 0;
 clock_t Used_Time = 0;
 int Sleep_Time;
 
+
 /**
  * Reset_Update_Timers(): Reset the update timers.
  */
@@ -183,50 +184,50 @@ int Update_Emulation_Netplay(int player, int num_player)
 {
 	static int Over_Time = 0;
 	int current_div;
-
+	
 	if (CPU_Mode) current_div = 20;
 	else current_div = 16 + (Over_Time ^= 1);
-
+	
 	New_Time = GetTickCount();
 	Used_Time += (New_Time - Last_Time);
 	Frame_Number = Used_Time / current_div;
 	Used_Time %= current_div;
 	Last_Time = New_Time;
-
+	
 	if (Frame_Number > 6) Frame_Number = 6;
-
+	
 	for (; Frame_Number > 1; Frame_Number--)
-{
+	{
 		if (Sound_Enable)
-{
+		{
 			if (WP == Get_Current_Seg()) WP = (WP - 1) & (Sound_Segs - 1);
 			Write_Sound_Buffer(NULL);
 			WP = (WP + 1) & (Sound_Segs - 1);
-}
-
+		}
+		
 		Scan_Player_Net(player);
 		if (Kaillera_Error != -1) Kaillera_Error = Kaillera_Modify_Play_Values((void *) (Kaillera_Keys), 2);
 		//Kaillera_Error = Kaillera_Modify_Play_Values((void *) (Kaillera_Keys), 2);
 		Update_Controllers_Net(num_player);
 		Update_Frame_Fast();
-}
+	}
 
 	if (Frame_Number)
-{
+	{
 		if (Sound_Enable)
-{
+		{
 			if (WP == Get_Current_Seg()) WP = (WP - 1) & (Sound_Segs - 1);
 			Write_Sound_Buffer(NULL);
 			WP = (WP + 1) & (Sound_Segs - 1);
-}
-
+		}
+		
 		Scan_Player_Net(player);
 		if (Kaillera_Error != -1) Kaillera_Error = Kaillera_Modify_Play_Values((void *) (Kaillera_Keys), 2);
 		//Kaillera_Error = Kaillera_Modify_Play_Values((void *) (Kaillera_Keys), 2);
 		Update_Controllers_Net(num_player);
 		Update_Frame();
 		draw->flip();
-}
+	}
 	return 1;
 }
 #endif

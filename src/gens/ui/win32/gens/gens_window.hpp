@@ -39,6 +39,8 @@ HWND create_gens_window(void);
 void create_gens_window_menubar(void);
 extern HWND Gens_hWnd;
 
+extern HMENU MainMenu;
+
 // New menu handler.
 HMENU findMenuItem(uint16_t id);
 

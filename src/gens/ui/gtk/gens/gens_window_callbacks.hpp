@@ -40,6 +40,10 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
 			       gint x, gint y, guint time, gpointer user_data);
 
+// Focus callbacks
+gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
+gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data);
+
 #ifdef __cplusplus
 }
 #endif

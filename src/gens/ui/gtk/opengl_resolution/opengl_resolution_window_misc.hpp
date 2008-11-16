@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) General Options Window - Miscellaneous Functions.         *
+ * Gens: (GTK+) OpenGL Resolution Window - Miscellaneous Functions.        *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,18 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_GENERAL_OPTIONS_WINDOW_MISC_H
-#define GENS_WIN32_GENERAL_OPTIONS_WINDOW_MISC_H
+#ifndef GTK_OPENGL_RESOLUTION_WINDOW_MISC_HPP
+#define GTK_OPENGL_RESOLUTION_WINDOW_MISC_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void Open_General_Options(void);
-void General_Options_Save(void);
+#include <gtk/gtk.h>
+
+void Open_OpenGL_Resolution(void);
+void GLRes_Save(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* GTK_OPENGL_RESOLUTION_WINDOW_MISC_HPP */
