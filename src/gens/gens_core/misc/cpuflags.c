@@ -50,6 +50,25 @@
 #define CPUFLAG_IA32_EXT_ECX_SSE4A	(1 << 6)
 #define CPUFLAG_IA32_EXT_ECX_SSE5	(1 << 11)
 
+// CPUID macro with PIC support.
+// See http://gcc.gnu.org/ml/gcc-patches/2007-09/msg00324.html
+#if defined(__i386__) && defined(__PIC__)
+#define __cpuid(level, a, b, c, d)				\
+	__asm__ (						\
+		"xchgl	%%ebx, %1\n"				\
+		"cpuid\n"					\
+		"xchgl	%%ebx, %1\n"				\
+		: "=a" (a), "=r" (b), "=c" (c), "=d" (d)	\
+		: "0" (level)					\
+		)
+#else
+#define __cpuid(level, a, b, c, d)				\
+	__asm__ (						\
+		"cpuid\n"					\
+		: "=a" (a), "=b" (b), "=c" (c), "=d" (d)	\
+		: "0" (level)					\
+		)
+#endif
 
 // CPU Flags
 unsigned int CPU_Flags = 0;
@@ -71,22 +90,20 @@ unsigned int getCPUFlags(void)
 	// IA32/x86_64.
 	
 	// Check if cpuid is supported.
-	unsigned int _eax;
+	unsigned int _eax, _ebx, _ecx, _edx;
 	
 	__asm__ (
 		"pushfl\n"
 		"popl %%eax\n"
-		"movl %%eax, %%ebx\n"
+		"movl %%eax, %%edx\n"
 		"xorl $0x200000, %%eax\n"
 		"pushl %%eax\n"
 		"popfl\n"
 		"pushfl\n"
 		"popl %%eax\n"
-		"xorl %%ebx, %%eax\n"
+		"xorl %%edx, %%eax\n"
 		"andl $0x200000, %%eax"
 		:	"=a" (_eax)	// Output
-		:			// Input
-		:	"ebx"		// Clobber
 		);
 	
 	if (!_eax)
@@ -99,11 +116,7 @@ unsigned int getCPUFlags(void)
 	// CPUID is supported.
 	// Check if the CPUID Feature function (Function 1) is supported.
 	unsigned int maxFunc;
-	__asm__ (
-		"xorl %%eax, %%eax\n"
-		"cpuid\n"		// Get number of CPUID functions.
-		:	"=a" (maxFunc)	// Output
-		);
+	__cpuid(0x00000000, maxFunc, _ebx, _ecx, _edx);
 	
 	if (!maxFunc)
 	{
@@ -112,14 +125,7 @@ unsigned int getCPUFlags(void)
 	}
 	
 	// Get the CPU feature flags.
-	unsigned int _edx, _ecx;
-	__asm__ (
-		"movl $1, %%eax\n"	// CPUID function 1: family and features
-		"cpuid\n"
-		:	"=d" (_edx), "=c" (_ecx)	// Output
-		:					// Input
-		:	"eax", "ebx"			// Clobber
-		);
+	__cpuid(0x00000001, _eax, _ebx, _ecx, _edx);
 	
 	// Check the feature flags.
 	CPU_Flags = 0;
@@ -142,13 +148,7 @@ unsigned int getCPUFlags(void)
 	// Get the extended CPU feature flags.
 	if (maxFunc >= 0x80000001)
 	{
-		__asm__ (
-			"movl $0x80000001, %%eax\n"	// CPUID function 0x80000001: extended family and features
-			"cpuid\n"
-			:	"=d" (_edx), "=c" (_ecx)	// Output
-			:					// Input
-			:	"eax", "ebx"			// Clobber
-			);
+		__cpuid(0x80000001, _eax, _ebx, _ecx, _edx);
 		
 		// Check the extended feature flags.
 		if (_edx & CPUFLAG_IA32_EXT_EDX_MMXEXT)
