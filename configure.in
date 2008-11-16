@@ -168,7 +168,7 @@ elif test x$obj_format = xelf64; then
 	AC_MSG_ERROR([*** TODO: ELF64 object format.])
 fi
 
-NASM="${NASM} -O3 -g -w-orphan-labels ${nasm_obj_format}"
+NASM="${NASM} -O1 -g -w-orphan-labels ${nasm_obj_format}"
 
 
 AC_ARG_ENABLE(x86_asm, AC_HELP_STRING([--enable-x86-asm], [Enable x86 assembly optimizations [[default=yes]]]), enable_x86_asm=$enableval, enable_x86_asm=yes)
