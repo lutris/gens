@@ -76,15 +76,18 @@ typedef struct
 	uint16_t *screen16;
 	uint32_t *screen32;
 	
-	// Current bpp.
-	uint8_t bpp;
-	
 	// Output screen buffer parameters.
 	void *screen;
-	int x;
-	int y;
+	unsigned short width;
+	unsigned short height;
 	int pitch;
 	int offset;
+	
+	// CPU flags.
+	uint32_t cpuFlags;
+	
+	// Current bpp.
+	uint8_t bpp;
 } MDP_Render_Info_t;
 
 
