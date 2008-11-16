@@ -87,7 +87,7 @@ if test x$ui = xgtk; then
 GTK_VERSION=2.4.0
 AM_PATH_GTK_2_0($GTK_VERSION,
 		:,
-		AC_MSG_ERROR([*** GTK+ version $GTK_VERSION not found!])
+		AC_MSG_ERROR([*** GTK+ version $GTK_VERSION or later not found!])
 )
 
 AC_DEFINE(GENS_UI_GTK, 1, Enable the GTK+ UI)
