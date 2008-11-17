@@ -5,6 +5,7 @@
 #include "v_draw_sdl.hpp"
 
 #include <string.h>
+
 #include <gdk/gdkx.h>
 
 #include "gens_core/vdp/vdp_rend.h"

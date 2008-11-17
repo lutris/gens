@@ -29,9 +29,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"

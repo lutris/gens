@@ -29,9 +29,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 
 // GENS GTK+ miscellaneous functions
 #include "gtk-misc.h"
