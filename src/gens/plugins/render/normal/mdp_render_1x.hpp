@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: 1x renderer. (Plugin Data File)                                   *
+ * Gens: [MDP] 1x renderer.                                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,17 +20,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_BLIT1X_PLUGIN_H
-#define GENS_BLIT1X_PLUGIN_H
+#ifndef GENS_MDP_RENDERER_1X_HPP
+#define GENS_MDP_RENDERER_1X_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern GensPlugin_t GP_Render_1x;
+#include "plugins/plugin.h"
+
+void mdp_renderer_1x_cpp(MDP_Render_Info_t *renderInfo);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_BLIT1X_PLUGIN_H */
+#endif /* GENS_MDP_RENDERER_1X_HPP */

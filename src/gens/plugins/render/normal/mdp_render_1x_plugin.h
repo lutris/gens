@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: 1x renderer. (Plugin Data File)                                   *
+ * Gens: [MDP] 1x renderer. (Plugin Data File)                             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,31 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "plugins/plugin.h"
-#include <string.h>
-#include <stdint.h>
+#ifndef GENS_BLIT1X_PLUGIN_H
+#define GENS_BLIT1X_PLUGIN_H
 
-#include "blit1x.hpp"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static MDP_Desc_t MDP_Desc =
-{
-	.name = "Normal Renderer",
-	.author = "David Korth",
-	.description = "Normal 1x renderer."
-};
+extern GensPlugin_t mdp_render_1x;
 
-static MDP_Render_t MDP_Render =
-{
-	.blit = Blit1x,
-	.scale = 1,
-	.tag = "Normal"
-};
+#ifdef __cplusplus
+}
+#endif
 
-MDP_t MDP_Render_1x =
-{
-	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 0, 1),
-	.type = GENSPLUGIN_RENDER,
-	.desc = &MDP_Desc,
-	.plugin_t = (void*)&MDP_Render
-};
+#endif /* GENS_BLIT1X_PLUGIN_H */
