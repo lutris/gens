@@ -29,7 +29,8 @@
 static MDP_Desc_t MDP_Desc =
 {
 	.name = "Normal Renderer",
-	.author = "David Korth",
+	.author_mdp = "David Korth",
+	.author_orig = "Stéphane Dallongeville",
 	.description = "Normal 1x renderer."
 };
 
