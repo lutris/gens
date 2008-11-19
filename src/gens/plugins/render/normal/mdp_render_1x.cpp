@@ -39,7 +39,7 @@
 
 #ifndef GENS_X86_ASM
 /**
- * mdp_renderer_1x_cpp_int: Blits the image to the screen, 1x size, no filtering.
+ * mdp_render_1x_cpp_int: Blits the image to the screen, 1x size, no filtering.
  * @param destScreen Pointer to the destination screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
  * @param width Width of the image.
