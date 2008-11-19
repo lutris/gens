@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-extern GensPlugin_t mdp_render_1x;
+extern MDP_t mdp_render_1x;
 
 #ifdef __cplusplus
 }
