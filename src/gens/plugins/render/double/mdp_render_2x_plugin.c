@@ -32,7 +32,7 @@ static MDP_Desc_t MDP_Desc =
 	.author_mdp = "David Korth",
 	.author_orig = "Stéphane Dallongeville",
 	.description = "Double-scan 2x renderer.",
-	.license = MDP_LICENSE_GPL_2,
+	.license = MDP_LICENSE_GPL_2
 };
 
 static MDP_Render_t MDP_Render =
