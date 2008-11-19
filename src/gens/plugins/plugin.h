@@ -93,11 +93,11 @@ typedef struct
 
 
 // Render plugin definition.
-typedef void (GENS_FNCALL *BlitFn)(MDP_Render_Info_t *renderInfo);
+typedef void (GENS_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
 typedef struct
 {
 	// Blit function.
-	BlitFn blit;
+	MDP_Render_Fn blit;
 	
 	// Scaling ratio. (1 == 320x240; 2 = 640x480; etc)
 	const unsigned int scale;
