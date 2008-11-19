@@ -79,8 +79,8 @@ typedef struct
 	
 	// Output screen buffer parameters.
 	void *screen;
-	unsigned short width;
-	unsigned short height;
+	unsigned int width;
+	unsigned int height;
 	int pitch;
 	int offset;
 	
