@@ -163,21 +163,17 @@ int VDraw_SDL::flipInternal(void)
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
-	MDP_Render_Info_t rInfo;
-	rInfo.screen16 = MD_Screen;
-	rInfo.screen32 = MD_Screen32;
-	rInfo.screen = (void*)start;
-	rInfo.width = 320 - m_HBorder;
-	rInfo.height = VDP_Num_Vis_Lines;
-	rInfo.pitch = pitch;
-	rInfo.offset = 32 + (m_HBorder * 2);
-	rInfo.cpuFlags = CPU_Flags;
-	rInfo.bpp = bpp;
+	// Set up the render information.
+	m_rInfo.screen = (void*)start;
+	m_rInfo.width = 320 - m_HBorder;
+	m_rInfo.height = VDP_Num_Vis_Lines;
+	m_rInfo.pitch = pitch;
+	m_rInfo.offset = 32 + (m_HBorder * 2);
 	
 	if (m_FullScreen)
-		m_BlitFS(&rInfo);
+		m_BlitFS(&m_rInfo);
 	else
-		m_BlitW(&rInfo);
+		m_BlitW(&m_rInfo);
 	
 	// Draw the message and/or FPS.
 	if (m_MsgVisible)

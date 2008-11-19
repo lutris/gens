@@ -29,6 +29,15 @@
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
+// CPU flags
+#include "gens_core/misc/cpuflags.h"
+
+
+/**
+ * m_rInfo: Render Plugin information.
+ */
+MDP_Render_Info_t VDraw::m_rInfo;
+
 
 VDraw::VDraw()
 {
@@ -70,6 +79,12 @@ VDraw::VDraw()
 	m_IntroEffectColor = 7;
 	m_FullScreen = false;
 	m_fastBlur = false;
+	
+	// Initialize the Render Plugin information.
+	m_rInfo.screen16 = MD_Screen;
+	m_rInfo.screen32 = MD_Screen32;
+	m_rInfo.cpuFlags = getCPUFlags(); // TODO: Run getCPUFlags() at the beginning of the program.
+	m_rInfo.bpp = bpp;
 	
 	// Calculate the text style.
 	calcTextStyle();
@@ -592,6 +607,8 @@ void VDraw::setBpp(const int newBpp, const bool resetVideo)
 		return;
 	
 	bpp = newBpp;
+	m_rInfo.bpp = bpp;
+	
 	if (resetVideo)
 	{
 		End_Video();

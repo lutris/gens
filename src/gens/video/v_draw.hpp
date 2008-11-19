@@ -188,6 +188,9 @@ class VDraw
 		bool m_swRender;
 		bool m_fastBlur;
 		
+		// Render Plugin information.
+		static MDP_Render_Info_t m_rInfo;
+		
 		// Win32 stuff
 		virtual int reinitGensWindow(void);
 };
