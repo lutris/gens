@@ -49,8 +49,8 @@
  */
 template<typename pixel>
 static inline void mdp_render_1x_cpp_int(pixel *destScreen, pixel *mdScreen,
-					   int width, int height,
-					   int pitch, int offset)
+					 int width, int height,
+					 int pitch, int offset)
 {
 	for (int i = 0; i < height; i++)
 	{
