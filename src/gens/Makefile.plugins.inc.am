@@ -2,11 +2,15 @@
 
 gens_SOURCES += \
 		plugins/render/normal/mdp_render_1x_plugin.c \
-		plugins/render/normal/mdp_render_1x.cpp
+		plugins/render/normal/mdp_render_1x.cpp \
+		plugins/render/double/mdp_render_2x_plugin.c \
+		plugins/render/double/mdp_render_2x.cpp
 
 noinst_HEADERS += \
 		plugins/render/normal/mdp_render_1x_plugin.h \
-		plugins/render/normal/mdp_render_1x.hpp
+		plugins/render/normal/mdp_render_1x.hpp \
+		plugins/render/double/mdp_render_2x_plugin.h \
+		plugins/render/double/mdp_render_2x.hpp
 
 if GENS_X86_ASM
 gens_x86_asm_o += \
