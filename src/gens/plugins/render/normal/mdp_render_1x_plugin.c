@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "blit1x.hpp"
+#include "mdp_render_1x.hpp"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -35,7 +35,7 @@ static MDP_Desc_t MDP_Desc =
 
 static MDP_Render_t MDP_Render =
 {
-	.blit = Blit1x,
+	.blit = mdp_render_1x_cpp,
 	.scale = 1,
 	.tag = "Normal"
 };

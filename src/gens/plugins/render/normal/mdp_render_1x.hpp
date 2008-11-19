@@ -29,7 +29,7 @@ extern "C" {
 
 #include "plugins/plugin.h"
 
-void mdp_renderer_1x_cpp(MDP_Render_Info_t *renderInfo);
+void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo);
 
 #ifdef __cplusplus
 }

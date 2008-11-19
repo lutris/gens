@@ -39,7 +39,7 @@
  * @param offset ???
  */
 template<typename pixel>
-static inline void mdp_renderer_1x_cpp_int(pixel *screen, pixel *mdScreen,
+static inline void mdp_render_1x_cpp_int(pixel *screen, pixel *mdScreen,
 					   unsigned short width, unsigned short height,
 					   int pitch, int offset)
 {
@@ -58,21 +58,21 @@ static inline void mdp_renderer_1x_cpp_int(pixel *screen, pixel *mdScreen,
 }
 
 
-void mdp_renderer_1x_cpp(MDP_Render_Info_t *renderInfo)
+void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;
 	
 	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
 	{
-		mdp_renderer_1x_cpp_int(
+		mdp_render_1x_cpp_int(
 			    (uint16_t*)renderInfo->screen, renderInfo->screen16,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
 	}
 	else
 	{
-		mdp_renderer_1x_cpp_int(
+		mdp_render_1x_cpp_int(
 			    (uint32_t*)renderInfo->screen, renderInfo->screen32,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
