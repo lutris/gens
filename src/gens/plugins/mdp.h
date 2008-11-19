@@ -53,6 +53,11 @@ extern "C" {
 #endif
 
 
+// Licenses
+#define MDP_LICENSE_GPL_2	"GPL-2"
+#define MDP_LICENSE_GPL_3	"GPL-3"
+#define MDP_LICENSE_BSD		"BSD"
+
 // Plugin description struct.
 typedef struct
 {
@@ -60,6 +65,7 @@ typedef struct
 	const char* author_mdp;
 	const char* author_orig;
 	const char* description;
+	const char* license;
 } MDP_Desc_t;
 
 
