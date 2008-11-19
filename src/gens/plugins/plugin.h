@@ -57,7 +57,8 @@ extern "C" {
 typedef struct
 {
 	const char* name;
-	const char* author;
+	const char* author_mdp;
+	const char* author_orig;
 	const char* description;
 } MDP_Desc_t;
 
