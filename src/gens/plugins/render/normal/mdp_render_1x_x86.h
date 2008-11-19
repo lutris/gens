@@ -27,11 +27,13 @@
 extern "C" {
 #endif
 
-void mdp_render_1x_x86_16(unsigned char *screen, int pitch, int x, int y, int offset);
-void mdp_render_1x_x86_16_mmx(unsigned char *screen, int pitch, int x, int y, int offset);
+#include <stdint.h>
 
-void mdp_render_1x_x86_32(unsigned char *screen, int pitch, int x, int y, int offset);
-void mdp_render_1x_x86_32_mmx(unsigned char *screen, int pitch, int x, int y, int offset);
+void mdp_render_1x_16_x86(uint16_t *screen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+void mdp_render_1x_16_x86_mmx(uint16_t *screen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+
+void mdp_render_1x_32_x86(uint32_t *screen, uint32_t *mdScreen, int width, int height, int pitch, int offset);
+void mdp_render_1x_32_x86_mmx(uint32_t *screen, uint32_t *mdScreen, int width, int height, int pitch, int offset);
 
 #ifdef __cplusplus
 }

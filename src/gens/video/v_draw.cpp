@@ -84,7 +84,6 @@ VDraw::VDraw()
 	m_rInfo.screen16 = MD_Screen;
 	m_rInfo.screen32 = MD_Screen32;
 	m_rInfo.cpuFlags = getCPUFlags(); // TODO: Run getCPUFlags() at the beginning of the program.
-	m_rInfo.bpp = bpp;
 	
 	// Calculate the text style.
 	calcTextStyle();
@@ -603,11 +602,11 @@ void VDraw::calcTextStyle(void)
  */
 void VDraw::setBpp(const int newBpp, const bool resetVideo)
 {
+	// If the new bpp is the same as the current bpp, don't do anything else.
 	if (bpp == newBpp)
 		return;
 	
 	bpp = newBpp;
-	m_rInfo.bpp = bpp;
 	
 	if (resetVideo)
 	{

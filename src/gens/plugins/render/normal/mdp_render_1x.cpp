@@ -28,7 +28,16 @@
 #include <string.h>
 #include <stdint.h>
 
+// TODO: Add a plugin-specific version of the CPU Flags file.
+#include "gens_core/misc/cpuflags.h"
 
+// x86 asm versions
+#ifdef GENS_X86_ASM
+#include "mdp_render_1x_x86.h"
+#endif /* GENS_X86_ASM */
+
+
+#ifndef GENS_X86_ASM
 /**
  * mdp_renderer_1x_cpp_int: Blits the image to the screen, 1x size, no filtering.
  * @param screen Pointer to the screen buffer.
@@ -40,7 +49,7 @@
  */
 template<typename pixel>
 static inline void mdp_render_1x_cpp_int(pixel *screen, pixel *mdScreen,
-					   unsigned short width, unsigned short height,
+					   int width, int height,
 					   int pitch, int offset)
 {
 	// Adjust for the 8px border on the MD Screen.
@@ -56,8 +65,9 @@ static inline void mdp_render_1x_cpp_int(pixel *screen, pixel *mdScreen,
 		screen += (pitch / sizeof(pixel));
 	}
 }
+#endif /* GENS_X86_ASM */
 
-
+#include <stdio.h>
 void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
@@ -65,16 +75,50 @@ void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo)
 	
 	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
 	{
+#ifdef GENS_X86_ASM
+		if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		{
+			mdp_render_1x_16_x86_mmx(
+				    (uint16_t*)renderInfo->screen, renderInfo->screen16,
+				    renderInfo->width, renderInfo->height,
+				    renderInfo->pitch, renderInfo->offset);
+		}
+		else
+		{
+			mdp_render_1x_16_x86(
+				    (uint16_t*)renderInfo->screen, renderInfo->screen16,
+				    renderInfo->width, renderInfo->height,
+				    renderInfo->pitch, renderInfo->offset);
+		}
+#else /* !GENS_X86_ASM */
 		mdp_render_1x_cpp_int(
 			    (uint16_t*)renderInfo->screen, renderInfo->screen16,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
+#endif /* GENS_X86_ASM */
 	}
 	else
 	{
+#ifdef GENS_X86_ASM
+		if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		{
+			mdp_render_1x_32_x86_mmx(
+				    (uint32_t*)renderInfo->screen, renderInfo->screen32,
+				    renderInfo->width, renderInfo->height,
+				    renderInfo->pitch, renderInfo->offset);
+		}
+		else
+		{
+			mdp_render_1x_32_x86(
+				    (uint32_t*)renderInfo->screen, renderInfo->screen32,
+				    renderInfo->width, renderInfo->height,
+				    renderInfo->pitch, renderInfo->offset);
+		}
+#else /* !GENS_X86_ASM */
 		mdp_render_1x_cpp_int(
 			    (uint32_t*)renderInfo->screen, renderInfo->screen32,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
+#endif /* GENS_X86_ASM */
 	}
 }

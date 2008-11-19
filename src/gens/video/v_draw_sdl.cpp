@@ -169,6 +169,7 @@ int VDraw_SDL::flipInternal(void)
 	m_rInfo.height = VDP_Num_Vis_Lines;
 	m_rInfo.pitch = pitch;
 	m_rInfo.offset = 32 + (m_HBorder * 2);
+	m_rInfo.bpp = bpp;
 	
 	if (m_FullScreen)
 		m_BlitFS(&m_rInfo);

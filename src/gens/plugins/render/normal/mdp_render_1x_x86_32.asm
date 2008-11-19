@@ -21,17 +21,20 @@
 
 %include "nasmhead.inc"
 
-section .data align=64
-
-	extern MD_Screen32
+arg_screen	equ 24
+arg_mdScreen	equ 28
+arg_width	equ 32
+arg_height	equ 36
+arg_pitch	equ 40
+arg_offset	equ 44
 
 section .text align=64
 
 	ALIGN64
 	
 	;************************************************************************
-	; void mdp_render_1x_x86_32(unsigned char *screen, int pitch, int x, int y, int offset)
-	DECL mdp_render_1x_x86_32
+	; void mdp_render_1x_32_x86(uint16_t *screen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+	DECL mdp_render_1x_32_x86
 
 		push ebx
 		push ecx
@@ -39,22 +42,23 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Number of pixels per line
-		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
-		lea esi, [MD_Screen32 + 8 * 4]			; esi = Source
-		shl ecx, 2					; ecx = Number of bytes per line
-		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
-		shr ecx, 3					; Transfer 8 bytes per cycle. (2 32-bit pixels)
-		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; Initialize the X counter.
+		mov ecx, [esp + arg_width]		; ecx = Number of pixels per line
+		mov ebx, [esp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
+		mov esi, [esp + arg_mdScreen]
+		lea esi, [esi + 8 * 4]			; esi = Source
+		shl ecx, 2				; ecx = Number of bytes per line
+		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
+		shr ecx, 3				; Transfer 8 bytes per cycle. (2 32-bit pixels)
+		mov edi, [esp + arg_screen]		; edi = Destination
+		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
 
 	.Loop_Y:
 	.Loop_X:
-				mov eax, [esi]			; First pixel.
-				mov edx, [esi + 4]		; Second pixel.
+				mov eax, [esi]		; First pixel.
+				mov edx, [esi + 4]	; Second pixel.
 				add esi, 8
 				mov [edi], eax
 				mov [edi + 4], edx
@@ -62,11 +66,11 @@ section .text align=64
 				dec ecx
 				jnz .Loop_X
 	
-			add esi, [esp + 40]			; Add 2x the line offset. (1x offset is 16-bit only)
-			add esi, [esp + 40]
-			add edi, ebx				; Add the pitch difference to the destination pointer.
-			mov ecx, [esp + 32]			; Reset the X counter.
-			dec dword [esp + 36]			; Decrement the Y counter.
+			add esi, [esp + arg_offset]	; Add 2x the line offset. (1x offset is 16-bit only)
+			add esi, [esp + arg_offset]
+			add edi, ebx			; Add the pitch difference to the destination pointer.
+			mov ecx, [esp + arg_width]	; Reset the X counter.
+			dec dword [esp + arg_height]	; Decrement the Y counter.
 			jnz .Loop_Y
 
 		pop esi
@@ -79,8 +83,8 @@ section .text align=64
 	ALIGN64
 	
 	;************************************************************************
-	; void mdp_render_1x_x86_32_mmx(unsigned char *screen, int pitch, int x, int y, int offset)
-	DECL mdp_render_1x_x86_32_mmx
+	; void mdp_render_1x_32_x86_mmx(uint16_t *screen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+	DECL mdp_render_1x_32_x86_mmx
 
 		push ebx
 		push ecx
@@ -88,14 +92,15 @@ section .text align=64
 		push edi
 		push esi
 
-		mov ecx, [esp + 32]				; ecx = Number of pixels per line
-		mov ebx, [esp + 28]				; ebx = Pitch of destination surface (bytes per line)
-		lea esi, [MD_Screen32 + 8 * 4]			; esi = Source
-		shl ecx, 2					; ecx = Number of bytes per line
-		sub ebx, ecx					; ebx = Difference between dest pitch and src pitch
-		shr ecx, 6					; Transfer 64 bytes per cycle. (16 32-bit pixels)
-		mov edi, [esp + 24]				; edi = Destination
-		mov [esp + 32], ecx				; Initialize the X counter.
+		mov ecx, [esp + arg_width]		; ecx = Number of pixels per line
+		mov ebx, [esp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
+		mov esi, [esp + arg_mdScreen]
+		lea esi, [esi + 8 * 4]			; esi = Source
+		shl ecx, 2				; ecx = Number of bytes per line
+		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
+		shr ecx, 6				; Transfer 64 bytes per cycle. (16 32-bit pixels)
+		mov edi, [esp + arg_screen]		; edi = Destination
+		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
 	ALIGN64
@@ -128,11 +133,11 @@ section .text align=64
 				dec ecx
 				jnz .Loop_X
 			
-			add esi, [esp + 40]			; Add 2x the line offset. (1x offset is 16-bit only)
-			add esi, [esp + 40]
-			add edi, ebx				; Add the pitch difference to the destination pointer.
-			mov ecx, [esp + 32]			; Reset the X counter.
-			dec dword [esp + 36]			; Decrement the Y counter.
+			add esi, [esp + arg_offset]	; Add 2x the line offset. (1x offset is 16-bit only)
+			add esi, [esp + arg_offset]
+			add edi, ebx			; Add the pitch difference to the destination pointer.
+			mov ecx, [esp + arg_width]	; Reset the X counter.
+			dec dword [esp + arg_height]	; Decrement the Y counter.
 			jnz .Loop_Y
 
 		pop esi
