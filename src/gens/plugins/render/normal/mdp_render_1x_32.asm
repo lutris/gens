@@ -24,7 +24,6 @@
 section .data align=64
 
 	extern MD_Screen32
-	extern Have_MMX
 
 section .text align=64
 
