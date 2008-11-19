@@ -79,8 +79,8 @@ typedef struct
 	void *mdScreen;
 	
 	// Output screen buffer parameters.
-	unsigned int width;
-	unsigned int height;
+	int width;
+	int height;
 	int pitch;
 	int offset;
 	
