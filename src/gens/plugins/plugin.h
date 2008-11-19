@@ -66,7 +66,7 @@ typedef struct
 // Plugin types.
 enum MDP_Type
 {
-	MDPT_NULL,
+	MDPT_NULL = 0,
 	MDPT_RENDER,
 };
 
