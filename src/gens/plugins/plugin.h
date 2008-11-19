@@ -65,7 +65,8 @@ typedef struct
 // Plugin types.
 enum MDP_Type
 {
-	GENSPLUGIN_RENDER,
+	MDP_NULL,
+	MDP_RENDER,
 };
 
 
