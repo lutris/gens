@@ -34,6 +34,8 @@ VDraw::VDraw()
 {
 	// Initialize variables.
 	m_shift = 0;
+	m_BlitFS = NULL;
+	m_BlitW = NULL;
 	
 	// Initialize the FPS counter.
 	m_FPS = 0.0f;
@@ -77,6 +79,8 @@ VDraw::VDraw(VDraw *oldDraw)
 {
 	// Initialize this VDraw based on an existing VDraw object.
 	m_shift = oldDraw->shift();
+	m_BlitFS = oldDraw->m_BlitFS;
+	m_BlitW = oldDraw->m_BlitW;
 	
 	// Initialize the FPS counter.
 	// TODO: Copy FPS variables from the other VDraw?
@@ -664,17 +668,20 @@ void VDraw::Refresh_Video(void)
 int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
 	int oldRend, *Rend;
+	MDP_Render_Fn *rendFn;
 	bool reinit = false;
 	
 	if (m_FullScreen)
 	{
 		Rend = &Video.Render_FS;
 		oldRend = Video.Render_FS;
+		rendFn = &m_BlitFS;
 	}
 	else
 	{
 		Rend = &Video.Render_W;
 		oldRend = Video.Render_W;
+		rendFn = &m_BlitW;
 	}
 	
 	// Checks if an invalid mode number was passed.
@@ -687,11 +694,19 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	}
 	
 	// Renderer function found.
+	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(newMode)->plugin_t);
+	*rendFn = rendPlugin->blit;
+	
 	if (*Rend != newMode)
-		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s",
-			      ((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(newMode)->plugin_t))->tag, 1500);
+	{
+		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", rendPlugin->tag, 1500);
+	}
 	else
+	{
 		reinit = true;
+	}
+	
+	// Set the new render mode number.
 	*Rend = newMode;
 	
 	setShift(newMode == 0 ? 0 : 1);

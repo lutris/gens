@@ -179,13 +179,9 @@ int VDraw_SDL::flipInternal(void)
 	rInfo.bpp = bpp;
 	
 	if (m_FullScreen)
-	{
-		((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(Video.Render_FS)->plugin_t))->blit(&rInfo);
-	}
+		m_BlitFS(&rInfo);
 	else
-	{
-		((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(Video.Render_W)->plugin_t))->blit(&rInfo);
-	}
+		m_BlitW(&rInfo);
 	
 	// Draw the message and/or FPS.
 	if (m_MsgVisible)

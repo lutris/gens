@@ -113,7 +113,12 @@ class VDraw
 		static const uint8_t STRETCH_H    = 0x01;
 		static const uint8_t STRETCH_V    = 0x02;
 		static const uint8_t STRETCH_FULL = 0x03;
-	
+		
+		// Render functions
+		// TODO: Make these properties.
+		MDP_Render_Fn m_BlitFS;
+		MDP_Render_Fn m_BlitW;
+		
 	protected:
 		// Called if initialization fails.
 		void Init_Fail(const char *err);
