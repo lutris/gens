@@ -52,9 +52,6 @@ static inline void mdp_render_1x_cpp_int(pixel *screen, pixel *mdScreen,
 					   int width, int height,
 					   int pitch, int offset)
 {
-	// Adjust for the 8px border on the MD Screen.
-	mdScreen += 8;
-	
 	for (int i = 0; i < height; i++)
 	{
 		memcpy(screen, mdScreen, width * sizeof(pixel));

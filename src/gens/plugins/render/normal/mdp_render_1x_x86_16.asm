@@ -44,8 +44,7 @@ section .text align=64
 
 		mov ecx, [esp + arg_width]		; ecx = Number of pixels per line
 		mov ebx, [esp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
-		mov esi, [esp + arg_mdScreen]
-		lea esi, [esi + 8 * 2]			; esi = Source
+		mov esi, [esp + arg_mdScreen]		; esi = Source
 		add ecx, ecx				; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 3				; Transfer 8 bytes per cycle. (4 16-bit pixels)
@@ -93,8 +92,7 @@ section .text align=64
 
 		mov ecx, [esp + arg_width]		; ecx = Number of pixels per line
 		mov ebx, [esp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
-		mov esi, [esp + arg_mdScreen]
-		lea esi, [esi + 8 * 2]			; esi = Source
+		mov esi, [esp + arg_mdScreen]		; esi = Source
 		add ecx, ecx				; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 6				; Transfer 64 bytes per cycle. (32 16-bit pixels)
