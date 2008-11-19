@@ -107,19 +107,19 @@ typedef struct
 
 
 // Basic plugin definition struct.
+typedef void (GENS_FNCALL *mdp_init)(void);
+typedef void (GENS_FNCALL *mdp_end)(void);
+
 typedef struct
 {
-	// Plugin interface version.
 	const uint32_t interfaceVersion;
-	
-	// Version of this plugin.
 	const uint32_t pluginVersion;
-	
-	// Type of plugin.
 	const uint32_t type;
-	
-	// Description struct.
 	const MDP_Desc_t *desc;
+	
+	// Init/Shutdown functions
+	mdp_init init;
+	mdp_end end;
 	
 	// Struct definition for the specified plugin type.
 	const void *plugin_t;
