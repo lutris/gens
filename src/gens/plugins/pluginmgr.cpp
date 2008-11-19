@@ -75,8 +75,8 @@ void PluginMgr::end(void)
 	// Shut down all render plugins.
 	for (unsigned int i = 0; i < vRenderPlugins.size(); i++)
 	{
-		if (vRenderPlugins.at(i).end != NULL)
-			vRenderPlugins.at(i).end();
+		if (vRenderPlugins.at(i)->end != NULL)
+			vRenderPlugins.at(i)->end();
 	}
 	
 	// Clear the vector of render plugins.
