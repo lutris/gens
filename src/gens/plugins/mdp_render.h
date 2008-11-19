@@ -30,6 +30,10 @@ extern "C" {
 #include "mdp.h"
 
 
+// MDP Render Plugin interface version.
+#define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 0, 1)
+
+
 // Gens rendering info
 typedef struct
 {
@@ -55,6 +59,9 @@ typedef struct
 typedef void (GENS_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
 typedef struct
 {
+	// Render interface version.
+	const uint32_t interfaceVersion;
+	
 	// Blit function.
 	MDP_Render_Fn blit;
 	
