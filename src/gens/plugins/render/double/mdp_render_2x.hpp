@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-#include "plugins/mdp.h"
+#include "plugins/mdp_render.h"
 
 void mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo);
 

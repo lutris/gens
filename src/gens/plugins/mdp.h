@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Interface Definitions.                   *
+ * Gens: MDP: Mega Drive Plugin - Base Interface Definitions.              *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -69,42 +69,6 @@ enum MDP_Type
 	MDPT_NULL = 0,
 	MDPT_RENDER,
 };
-
-
-// Gens rendering info
-typedef struct
-{
-	// Screen buffers.
-	void *destScreen;
-	void *mdScreen;
-	
-	// Output screen buffer parameters.
-	int width;
-	int height;
-	int pitch;
-	int offset;
-	
-	// CPU flags.
-	uint32_t cpuFlags;
-	
-	// Current bpp.
-	uint8_t bpp;
-} MDP_Render_Info_t;
-
-
-// Render plugin definition.
-typedef void (GENS_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
-typedef struct
-{
-	// Blit function.
-	MDP_Render_Fn blit;
-	
-	// Scaling ratio. (1 == 320x240; 2 = 640x480; etc)
-	const int scale;
-	
-	// Render tag.
-	const char* tag;
-} MDP_Render_t;
 
 
 // Basic plugin definition struct.

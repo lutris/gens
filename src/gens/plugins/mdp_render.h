@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Plugin Manager.                                                   *
+ * Gens: MDP: Mega Drive Plugin - Render Plugin Interface Definitions.     *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,21 +20,54 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGINMGR_HPP
-#define GENS_PLUGINMGR_HPP
+#ifndef GENS_MDP_PLUGIN_H
+#define GENS_MDP_PLUGIN_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "mdp.h"
-#include "mdp_render.h"
 
-#include <vector>
 
-class PluginMgr
+// Gens rendering info
+typedef struct
 {
-	public:
-		static void init(void);
-		static void end(void);
-		
-		static std::vector<MDP_t*> vRenderPlugins;
-};
+	// Screen buffers.
+	void *destScreen;
+	void *mdScreen;
+	
+	// Output screen buffer parameters.
+	int width;
+	int height;
+	int pitch;
+	int offset;
+	
+	// CPU flags.
+	uint32_t cpuFlags;
+	
+	// Current bpp.
+	uint8_t bpp;
+} MDP_Render_Info_t;
 
-#endif /* GENS_PLUGINMGR_HPP */
+
+// Render plugin definition.
+typedef void (GENS_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
+typedef struct
+{
+	// Blit function.
+	MDP_Render_Fn blit;
+	
+	// Scaling ratio. (1 == 320x240; 2 = 640x480; etc)
+	const int scale;
+	
+	// Render tag.
+	const char* tag;
+} MDP_Render_t;
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_MDP_H */
