@@ -100,7 +100,7 @@ typedef struct
 	MDP_Render_Fn blit;
 	
 	// Scaling ratio. (1 == 320x240; 2 = 640x480; etc)
-	const unsigned int scale;
+	const int scale;
 	
 	// Render tag.
 	const char tag[64];
