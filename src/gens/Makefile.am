@@ -130,8 +130,9 @@ gens_SOURCES = \
 		video/v_effects.cpp \
 		input/input.cpp \
 		audio/audio.cpp \
-		plugins/render/normal/blit1x.cpp \
-		plugins/render/normal/blit1x_plugin.c
+		plugins/pluginmgr.cpp \
+		plugins/render/normal/mdp_render_1x_plugin.c \
+		plugins/render/normal/mdp_render_1x.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -217,7 +218,10 @@ noinst_HEADERS = \
 		video/v_effects.hpp \
 		input/input.hpp \
 		audio/audio.hpp \
-		audio/audio_mmx.h
+		audio/audio_mmx.h \
+		plugins/pluginmgr.hpp \
+		plugins/render/normal/mdp_render_1x_plugin.h \
+		plugins/render/normal/mdp_render_1x.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \

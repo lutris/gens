@@ -167,13 +167,24 @@ int VDraw_SDL::flipInternal(void)
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
+	MDP_Render_Info_t rInfo;
+	rInfo.screen16 = MD_Screen;
+	rInfo.screen32 = MD_Screen32;
+	rInfo.screen = (void*)start;
+	rInfo.width = 320 - m_HBorder;
+	rInfo.height = VDP_Num_Vis_Lines;
+	rInfo.pitch = pitch;
+	rInfo.offset = 32 + (m_HBorder * 2);
+	rInfo.cpuFlags = CPU_Flags;
+	rInfo.bpp = bpp;
+	
 	if (m_FullScreen)
 	{
-		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+		((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(Video.Render_FS)->plugin_t))->blit(&rInfo);
 	}
 	else
 	{
-		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+		((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(Video.Render_W)->plugin_t))->blit(&rInfo);
 	}
 	
 	// Draw the message and/or FPS.

@@ -23,6 +23,8 @@
 #ifndef GENS_RENDERERS_H
 #define GENS_RENDERERS_H
 
+#if 0
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -69,6 +71,8 @@ extern const int Renderers_Count;
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

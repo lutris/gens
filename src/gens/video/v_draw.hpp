@@ -5,14 +5,18 @@
 #ifndef GENS_V_DRAW_HPP
 #define GENS_V_DRAW_HPP
 
-#include "gens_core/gfx/renderers.h"
-
 // Font for onscreen messages
 #include "C64_charset.h"
 
 #ifdef __cplusplus
 
 #include <stdint.h>
+
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
+
+// CPU flags
+#include "gens_core/misc/cpuflags.h"
 
 // C++ includes
 #include <string>
@@ -91,11 +95,6 @@ class VDraw
 		void setFPSStyle(const unsigned char newFPSStyle);
 		unsigned char introEffectColor(void);
 		void setIntroEffectColor(const unsigned char newIntroEffectColor);
-		
-		// Renderers
-		// TODO: Make these properties.
-		BlitFn Blit_FS;
-		BlitFn Blit_W;
 		
 		// TODO: Move these functions out of v_draw.cpp.
 		static int Show_Genesis_Screen(void);

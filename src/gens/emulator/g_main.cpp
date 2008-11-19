@@ -56,6 +56,9 @@
 // Update Emulation functions
 #include "g_update.hpp"
 
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
+
 // Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
@@ -328,8 +331,11 @@ int Init(void)
 #endif
 	
 	Init_Tab();
-	run_gens();
 	
+	// Initialize the Plugin Manager.
+	PluginMgr::init();
+	
+	run_gens();
 	return 1;
 }
 
@@ -344,6 +350,9 @@ void End_All(void)
 #ifdef GENS_CDROM
 	End_CD_Driver();
 #endif
+	
+	// Shut down the Plugin Manager.
+	PluginMgr::init();
 	
 	// Shut down the input subsystem.
 	delete input;

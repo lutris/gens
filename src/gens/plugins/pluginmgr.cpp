@@ -36,6 +36,12 @@ static MDP_t* mdp_internal[] =
 
 
 /**
+ * vRenderPlugins: Vector containing render plugins.
+ */
+vector<MDP_t*> PluginMgr::vRenderPlugins;
+
+
+/**
  * init(): Initialize the plugin system.
  */
 void PluginMgr::init(void)

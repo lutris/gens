@@ -34,8 +34,6 @@ VDraw::VDraw()
 {
 	// Initialize variables.
 	m_shift = 0;
-	Blit_FS = NULL;
-	Blit_W = NULL;
 	
 	// Initialize the FPS counter.
 	m_FPS = 0.0f;
@@ -79,8 +77,6 @@ VDraw::VDraw(VDraw *oldDraw)
 {
 	// Initialize this VDraw based on an existing VDraw object.
 	m_shift = oldDraw->shift();
-	Blit_FS = oldDraw->Blit_FS;
-	Blit_W = oldDraw->Blit_W;
 	
 	// Initialize the FPS counter.
 	// TODO: Copy FPS variables from the other VDraw?
@@ -668,24 +664,21 @@ void VDraw::Refresh_Video(void)
 int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
 	int oldRend, *Rend;
-	BlitFn *Blit, testBlit;
 	bool reinit = false;
 	
 	if (m_FullScreen)
 	{
-		Blit = &Blit_FS;
 		Rend = &Video.Render_FS;
 		oldRend = Video.Render_FS;
 	}
 	else
 	{
-		Blit = &Blit_W;
 		Rend = &Video.Render_W;
 		oldRend = Video.Render_W;
 	}
 	
 	// Checks if an invalid mode number was passed.
-	if (newMode < 0 || newMode >= Renderers_Count)
+	if (newMode < 0 || newMode >= PluginMgr::vRenderPlugins.size())
 	{
 		// Invalid mode number.
 		MESSAGE_NUM_L("Error: Render mode %d is not available.",
@@ -693,36 +686,13 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		return 0;
 	}
 	
-	// Check if a blit function exists for this renderer.
-	if (bpp == 32)
-		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
-	else if (bpp == 15 || bpp == 16)
-		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
-	else
-	{
-		// Invalid bpp.
-		fprintf(stderr, "Invalid bpp: %d\n", bpp);
-		return 0;
-	}
-	
-	if (!testBlit)
-	{
-		// Renderer function not found.
-		if (Renderers[newMode].name)
-		{
-			MESSAGE_STR_L("Error: Render mode %s is not available.",
-				      "Error: Render mode %s is not available.", Renderers[newMode].name, 1500);
-		}
-		return 0;
-	}
-	
 	// Renderer function found.
 	if (*Rend != newMode)
-		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
+		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s",
+			      ((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(newMode)->plugin_t))->tag, 1500);
 	else
 		reinit = true;
 	*Rend = newMode;
-	*Blit = testBlit;
 	
 	setShift(newMode == 0 ? 0 : 1);
 	
