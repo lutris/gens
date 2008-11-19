@@ -23,7 +23,7 @@
 #ifndef GENS_PLUGINMGR_HPP
 #define GENS_PLUGINMGR_HPP
 
-#include "plugin.h"
+#include "mdp.h"
 
 #include <vector>
 

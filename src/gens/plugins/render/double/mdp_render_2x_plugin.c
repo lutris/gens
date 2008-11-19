@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "plugins/plugin.h"
+#include "plugins/mdp.h"
 #include <string.h>
 #include <stdint.h>
 
