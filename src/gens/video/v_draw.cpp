@@ -81,8 +81,8 @@ VDraw::VDraw()
 	m_fastBlur = false;
 	
 	// Initialize the Render Plugin information.
-	m_rInfo.screen16 = MD_Screen;
-	m_rInfo.screen32 = MD_Screen32;
+	m_rInfo.screen16 = &MD_Screen[8];
+	m_rInfo.screen32 = &MD_Screen32[8];
 	m_rInfo.cpuFlags = getCPUFlags(); // TODO: Run getCPUFlags() at the beginning of the program.
 	
 	// Calculate the text style.
