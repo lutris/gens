@@ -50,7 +50,7 @@ void PluginMgr::init(void)
 		// TODO: Check plugin version information.
 		switch (mdp_internal[i]->type)
 		{
-			case GENSPLUGIN_RENDER:
+			case MDPT_RENDER:
 				// Rendering plugin.
 				vRenderPlugins.push_back(mdp_internal[i]);
 				if (mdp_internal[i]->init)
