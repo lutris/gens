@@ -1,0 +1,9 @@
+# Plugins
+
+gens_SOURCES += \
+		plugins/render/normal/mdp_render_1x_plugin.c \
+		plugins/render/normal/mdp_render_1x.cpp
+
+noinst_HEADERS += \
+		plugins/render/normal/mdp_render_1x_plugin.h \
+		plugins/render/normal/mdp_render_1x.hpp

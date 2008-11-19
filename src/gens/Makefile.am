@@ -130,9 +130,7 @@ gens_SOURCES = \
 		video/v_effects.cpp \
 		input/input.cpp \
 		audio/audio.cpp \
-		plugins/pluginmgr.cpp \
-		plugins/render/normal/mdp_render_1x_plugin.c \
-		plugins/render/normal/mdp_render_1x.cpp
+		plugins/pluginmgr.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -219,9 +217,7 @@ noinst_HEADERS = \
 		input/input.hpp \
 		audio/audio.hpp \
 		audio/audio_mmx.h \
-		plugins/pluginmgr.hpp \
-		plugins/render/normal/mdp_render_1x_plugin.h \
-		plugins/render/normal/mdp_render_1x.hpp
+		plugins/pluginmgr.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
@@ -321,6 +317,9 @@ endif # GENS_OS_UNIX
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am
 endif # GENS_OS_WIN32
+
+# Plugins
+include $(srcdir)/Makefile.plugins.inc.am
 
 # Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
 gens_CFLAGS += @CFLAGS@
