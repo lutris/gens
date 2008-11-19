@@ -80,7 +80,6 @@ section .text align=64
 	
 	;************************************************************************
 	; void mdp_render_1x_32_x86_mmx(unsigned char *screen, int pitch, int x, int y, int offset)
-	; TODO
 	DECL mdp_render_1x_32_x86_mmx
 
 		push ebx
