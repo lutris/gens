@@ -30,6 +30,8 @@
 
 #include "gens/gens_window_sync.hpp"
 
+#include "port/timer.h"
+
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
@@ -64,6 +66,10 @@ void Create_Save_Directory(const char *dir)
  */
 int main(int argc, char *argv[])
 {
+	// Initialize the timer.
+	// TODO: Make this unnecessary.
+	init_timer();
+	
 	// Initialize the drawing object.
 	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
 	draw = new VDraw_SDL();
