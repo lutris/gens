@@ -31,7 +31,8 @@ static MDP_Desc_t MDP_Desc =
 	.name = "Normal Renderer",
 	.author_mdp = "David Korth",
 	.author_orig = "Stéphane Dallongeville",
-	.description = "Normal 1x renderer."
+	.description = "Normal 1x renderer.",
+	.license = MDP_LICENSE_GPL_2,
 };
 
 static MDP_Render_t MDP_Render =
