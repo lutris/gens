@@ -30,10 +30,10 @@
 
 // TODO: Add a plugin-specific version of the CPU Flags file.
 #include "gens_core/misc/cpuflags.h"
-#undef GENS_X86_ASM
+
 // x86 asm versions
 #ifdef GENS_X86_ASM
-#include "mdp_render_1x_x86.h"
+#include "mdp_render_2x_x86.h"
 #endif /* GENS_X86_ASM */
 
 
