@@ -7,3 +7,14 @@ gens_SOURCES += \
 noinst_HEADERS += \
 		plugins/render/normal/mdp_render_1x_plugin.h \
 		plugins/render/normal/mdp_render_1x.hpp
+
+if GENS_X86_ASM
+gens_x86_asm_o += \
+		plugins/render/normal/mdp_render_1x_x86_16.o \
+		plugins/render/normal/mdp_render_1x_x86_32.o
+gens_x86_asm_src += \
+		plugins/render/normal/mdp_render_1x_x86_16.asm \
+		plugins/render/normal/mdp_render_1x_x86_32.asm
+gens_x86_asm_h += \
+		plugins/render/normal/mdp_render_1x_x86.h
+endif
