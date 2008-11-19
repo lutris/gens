@@ -723,7 +723,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	// Set the new render mode number.
 	*Rend = newMode;
 	
-	setShift(newMode == 0 ? 0 : 1);
+	setShift(rendPlugin->scale - 1);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
@@ -734,6 +734,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (forceUpdate && is_gens_running())
 		updateRenderer();
 	
+	// TODO: Update this to use MDP's scale value.
 	if ((reinit && forceUpdate) ||
 	    (oldRend == 0 && newMode != 0) ||
 	    (oldRend != 0 && newMode == 0))
