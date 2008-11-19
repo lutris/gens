@@ -64,7 +64,7 @@ static inline void mdp_render_1x_cpp_int(pixel *destScreen, pixel *mdScreen,
 }
 #endif /* GENS_X86_ASM */
 
-#include <stdio.h>
+
 void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
