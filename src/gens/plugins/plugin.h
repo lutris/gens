@@ -56,9 +56,9 @@ extern "C" {
 // Plugin description struct.
 typedef struct
 {
-	const char name[256];
-	const char author[256];
-	const char description[1024];
+	const char* name;
+	const char* author;
+	const char* description;
 } MDP_Desc_t;
 
 
@@ -102,7 +102,7 @@ typedef struct
 	const int scale;
 	
 	// Render tag.
-	const char tag[64];
+	const char* tag;
 } MDP_Render_t;
 
 
