@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Plugin interface definition.                                      *
+ * Gens: MDP: Mega Drive Plugin - Interface Definitions.                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGIN_H
-#define GENS_PLUGIN_H
+#ifndef GENS_MDP_H
+#define GENS_MDP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -131,4 +131,4 @@ typedef struct
 }
 #endif
 
-#endif /* GENS_PLUGIN_H */
+#endif /* GENS_MDP_H */
