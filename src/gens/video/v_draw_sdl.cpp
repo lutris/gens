@@ -36,19 +36,15 @@ VDraw_SDL::~VDraw_SDL()
 int VDraw_SDL::Init_Video(void)
 {
 	int x;
-	int w, h;
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
-	{
-		// Normal render mode. 320x240
-		w = 320; h = 240;
-	}
-	else
-	{
-		// 2x render mode. 640x480
-		w = 640; h = 480;
-	}
+	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	
+	// Determine the window size using the scaling factor.
+	if (rendPlugin->scale <= 0)
+		return 0;
+	int w = 320 * rendPlugin->scale;
+	int h = 240 * rendPlugin->scale;
 	
 	if (m_FullScreen)
 	{
@@ -346,25 +342,19 @@ void VDraw_SDL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
+	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	
+	// Determine the window size using the scaling factor.
+	if (rendPlugin->scale <= 0)
+		return;
+	int w = 320 * rendPlugin->scale;
+	int h = 240 * rendPlugin->scale;
+	
+	if (screen->w == w && screen->h == h)
 	{
-		// 1x rendering.
-		if (screen->w == 320 && screen->h == 240)
-		{
-			// Already 1x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
-	}
-	else
-	{
-		// 2x rendering.
-		if (screen->w == 640 && screen->h == 480)
-		{
-			// Already 2x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
+		// No resolution switch is necessary. Simply clear the screen.
+		clearScreen();
+		return;
 	}
 	
 	// Resolution switch is needed.
