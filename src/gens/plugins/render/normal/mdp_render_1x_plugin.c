@@ -44,7 +44,7 @@ MDP_t mdp_render_1x =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 0, 1),
-	.type = GENSPLUGIN_RENDER,
+	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
 	
 	// Init/Shutdown functions
