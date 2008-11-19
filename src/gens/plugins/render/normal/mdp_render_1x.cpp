@@ -40,7 +40,7 @@
 #ifndef GENS_X86_ASM
 /**
  * mdp_renderer_1x_cpp_int: Blits the image to the screen, 1x size, no filtering.
- * @param screen Pointer to the screen buffer.
+ * @param destScreen Pointer to the destination screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
  * @param width Width of the image.
  * @param height Height of the image.
@@ -48,18 +48,18 @@
  * @param offset ???
  */
 template<typename pixel>
-static inline void mdp_render_1x_cpp_int(pixel *screen, pixel *mdScreen,
+static inline void mdp_render_1x_cpp_int(pixel *destScreen, pixel *mdScreen,
 					   int width, int height,
 					   int pitch, int offset)
 {
 	for (int i = 0; i < height; i++)
 	{
-		memcpy(screen, mdScreen, width * sizeof(pixel));
+		memcpy(destScreen, mdScreen, width * sizeof(pixel));
 		
 		// Next line.
 		// TODO: Make this a constant somewhere.
 		mdScreen += 336;
-		screen += (pitch / sizeof(pixel));
+		destScreen += (pitch / sizeof(pixel));
 	}
 }
 #endif /* GENS_X86_ASM */
@@ -76,20 +76,23 @@ void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo)
 		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
 			mdp_render_1x_16_x86_mmx(
-				    (uint16_t*)renderInfo->screen, renderInfo->screen16,
+				    (uint16_t*)renderInfo->destScreen,
+				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
 		}
 		else
 		{
 			mdp_render_1x_16_x86(
-				    (uint16_t*)renderInfo->screen, renderInfo->screen16,
+				    (uint16_t*)renderInfo->destScreen,
+				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
 		mdp_render_1x_cpp_int(
-			    (uint16_t*)renderInfo->screen, renderInfo->screen16,
+			    (uint16_t*)renderInfo->destScreen,
+			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
 #endif /* GENS_X86_ASM */
@@ -100,20 +103,23 @@ void mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo)
 		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
 			mdp_render_1x_32_x86_mmx(
-				    (uint32_t*)renderInfo->screen, renderInfo->screen32,
+				    (uint32_t*)renderInfo->destScreen,
+				    (uint32_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
 		}
 		else
 		{
 			mdp_render_1x_32_x86(
-				    (uint32_t*)renderInfo->screen, renderInfo->screen32,
+				    (uint32_t*)renderInfo->destScreen,
+				    (uint32_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
 		mdp_render_1x_cpp_int(
-			    (uint32_t*)renderInfo->screen, renderInfo->screen32,
+			    (uint32_t*)renderInfo->destScreen,
+			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
 #endif /* GENS_X86_ASM */

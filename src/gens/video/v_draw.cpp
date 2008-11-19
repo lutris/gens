@@ -29,9 +29,6 @@
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
-// CPU flags
-#include "gens_core/misc/cpuflags.h"
-
 
 /**
  * m_rInfo: Render Plugin information.
@@ -80,10 +77,8 @@ VDraw::VDraw()
 	m_FullScreen = false;
 	m_fastBlur = false;
 	
-	// Initialize the Render Plugin information.
-	m_rInfo.screen16 = &MD_Screen[8];
-	m_rInfo.screen32 = &MD_Screen32[8];
-	m_rInfo.cpuFlags = getCPUFlags(); // TODO: Run getCPUFlags() at the beginning of the program.
+	// Initialize m_rInfo.
+	m_rInfo.bpp = 0;
 	
 	// Calculate the text style.
 	calcTextStyle();
@@ -131,6 +126,9 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_IntroEffectColor = oldDraw->introEffectColor();
 	m_FullScreen = oldDraw->fullScreen();
 	m_fastBlur = oldDraw->fastBlur();
+	
+	// Initialize m_rInfo.
+	m_rInfo.bpp = 0;
 	
 	// Calculate the text style.
 	calcTextStyle();

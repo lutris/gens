@@ -73,12 +73,11 @@ enum MDP_Type
 // Gens rendering info
 typedef struct
 {
-	// MD screen buffers.
-	uint16_t *screen16;
-	uint32_t *screen32;
+	// Screen buffers.
+	void *destScreen;
+	void *mdScreen;
 	
 	// Output screen buffer parameters.
-	void *screen;
 	unsigned int width;
 	unsigned int height;
 	int pitch;

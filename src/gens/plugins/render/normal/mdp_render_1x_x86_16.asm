@@ -21,7 +21,7 @@
 
 %include "nasmhead.inc"
 
-arg_screen	equ 24
+arg_destScreen	equ 24
 arg_mdScreen	equ 28
 arg_width	equ 32
 arg_height	equ 36
@@ -33,7 +33,7 @@ section .text align=64
 	ALIGN64
 	
 	;************************************************************************
-	; void mdp_render_1x_16_x86(uint16_t *screen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+	; void mdp_render_1x_16_x86(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 	DECL mdp_render_1x_16_x86
 
 		push ebx
@@ -48,7 +48,7 @@ section .text align=64
 		add ecx, ecx				; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 3				; Transfer 8 bytes per cycle. (4 16-bit pixels)
-		mov edi, [esp + arg_screen]		; edi = Destination
+		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
@@ -81,7 +81,7 @@ section .text align=64
 	ALIGN64
 	
 	;************************************************************************
-	; void mdp_render_1x_16_x86_mmx(uint16_t *screen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+	; void mdp_render_1x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 	DECL mdp_render_1x_16_x86_mmx
 
 		push ebx
@@ -96,7 +96,7 @@ section .text align=64
 		add ecx, ecx				; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 6				; Transfer 64 bytes per cycle. (32 16-bit pixels)
-		mov edi, [esp + arg_screen]		; edi = Destination
+		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
