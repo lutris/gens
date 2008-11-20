@@ -19,8 +19,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
-
 arg_destScreen	equ 24
 arg_mdScreen	equ 28
 arg_width	equ 32
@@ -30,6 +28,11 @@ arg_offset	equ 44
 
 MASK_DIV2_32	equ 0x007F7F7F
 
+%ifdef __OBJ_ELF
+%define _mdp_render_scanline_50_32_x86 mdp_render_scanline_50_32_x86
+%define _mdp_render_scanline_50_32_x86_mmx mdp_render_scanline_50_32_x86_mmx
+%endif
+
 section .data align=64
 
 	; 64-bit mask used for the MMX version.
@@ -37,12 +40,13 @@ section .data align=64
 
 section .text align=64
 
-	ALIGN64
+	align 64
 
 	;************************************************************************
 	; void mdp_render_scanline_50_32_x86(uint16_t *destScreen, uint16_t *mdScreen,
 	;				     int width, int height, int pitch, int offset);
-	DECL mdp_render_scanline_50_32_x86
+	global _mdp_render_scanline_50_32_x86
+	_mdp_render_scanline_50_32_x86:
 
 		push ebx
 		push ecx
@@ -61,7 +65,7 @@ section .text align=64
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
-	ALIGN64
+	align 64
 
 	.Loop_Y:
 	.Loop_X1:
@@ -86,7 +90,7 @@ section .text align=64
 			shr ecx, 3
 			jmp short .Loop_X2
 
-	ALIGN64
+	align 64
 	
 	.Loop_X2:
 				mov eax, [esi]			; First pixel.
@@ -120,12 +124,13 @@ section .text align=64
 		pop ebx
 		ret
 
-	ALIGN64
+	align 64
 
 	;************************************************************************
 	; void mdp_render_scanline_50_32_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;					 int width, int height, int pitch, int offset);
-	DECL mdp_render_scanline_50_32_x86_mmx
+	global _mdp_render_scanline_50_32_x86_mmx
+	_mdp_render_scanline_50_32_x86_mmx:
 
 		push ebx
 		push ecx
@@ -145,7 +150,7 @@ section .text align=64
 		movq mm7, [MASK_DIV2_32_MMX]		; Load the mask.
 		jmp short .Loop_Y
 
-	ALIGN64
+	align 64
 
 	.Loop_Y:
 	.Loop_X1:
@@ -176,7 +181,7 @@ section .text align=64
 			shr ecx, 4
 			jmp short .Loop_X2
 
-	ALIGN64
+	align 64
 	
 	.Loop_X2:
 				; 50% filter.

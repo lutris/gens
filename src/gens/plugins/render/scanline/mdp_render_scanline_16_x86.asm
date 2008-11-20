@@ -19,8 +19,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
-
 arg_destScreen	equ 24
 arg_mdScreen	equ 28
 arg_width	equ 32
@@ -28,13 +26,19 @@ arg_height	equ 36
 arg_pitch	equ 40
 arg_offset	equ 44
 
+%ifdef __OBJ_ELF
+%define _mdp_render_scanline_16_x86 mdp_render_scanline_16_x86
+%define _mdp_render_scanline_16_x86_mmx mdp_render_scanline_16_x86_mmx
+%endif
+
 section .text align=64
 
-	ALIGN64
+	align 64
 
 	;************************************************************************
 	; void mdp_render_scanline_16_x86(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
-	DECL mdp_render_scanline_16_x86
+	global _mdp_render_scanline_16_x86
+	_mdp_render_scanline_16_x86:
 
 		push ebx
 		push ecx
@@ -53,7 +57,7 @@ section .text align=64
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
-	ALIGN64
+	align 64
 
 	.Loop_Y:
 	.Loop_X1:
@@ -79,7 +83,7 @@ section .text align=64
 			xor edx, edx			; Scanlines are all black.
 			jmp short .Loop_X2
 
-	ALIGN64
+	align 64
 	
 	.Loop_X2:
 				mov [edi], edx
@@ -104,11 +108,12 @@ section .text align=64
 		pop ebx
 		ret
 
-	ALIGN64
+	align 64
 
 	;************************************************************************
 	; void mdp_render_scanline_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
-	DECL mdp_render_scanline_16_x86_mmx
+	global _mdp_render_scanline_16_x86_mmx
+	_mdp_render_scanline_16_x86_mmx:
 
 		push ebx
 		push ecx
@@ -127,7 +132,7 @@ section .text align=64
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
 
-	ALIGN64
+	align 64
 
 	.Loop_Y:
 	.Loop_X1:
@@ -168,7 +173,7 @@ section .text align=64
 			pxor mm0, mm0			; Scanlines are all black.
 			jmp short .Loop_X2
 
-	ALIGN64
+	align 64
 	
 	.Loop_X2:
 				movq [edi + 0], mm0
