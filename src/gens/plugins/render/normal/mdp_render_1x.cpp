@@ -57,8 +57,7 @@ static inline void mdp_render_1x_cpp_int(pixel *destScreen, pixel *mdScreen,
 		memcpy(destScreen, mdScreen, width * sizeof(pixel));
 		
 		// Next line.
-		// TODO: Make this a constant somewhere.
-		mdScreen += 336;
+		mdScreen += width + offset;
 		destScreen += (pitch / sizeof(pixel));
 	}
 }

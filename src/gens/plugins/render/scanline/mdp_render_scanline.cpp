@@ -57,8 +57,6 @@ static inline void mdp_render_scanline_cpp_int(pixel *destScreen, pixel *mdScree
 	pitch /= sizeof(pixel);
 	int nextLine = pitch + (pitch - (width * 2));
 	
-	offset >>= 1;
-	
 	pixel *line = destScreen;
 	for (unsigned short i = 0; i < height; i++)
 	{
@@ -77,7 +75,7 @@ static inline void mdp_render_scanline_cpp_int(pixel *destScreen, pixel *mdScree
 	line = destScreen + pitch;
 	for (unsigned short i = 0; i < height; i++)
 	{
-		memset(line, 0x00, width * sizeof(pixel));
+		memset(line, 0x00, width * 2 * sizeof(pixel));
 		line += (pitch * 2);
 	}
 }

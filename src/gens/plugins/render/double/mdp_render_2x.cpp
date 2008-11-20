@@ -56,8 +56,6 @@ static inline void mdp_render_2x_cpp_int(pixel *destScreen, pixel *mdScreen,
 	pitch /= sizeof(pixel);
 	int nextLine = pitch + (pitch - (width * 2));
 	
-	offset >>= 1;
-	
 	pixel *line1 = destScreen;
 	for (unsigned short i = 0; i < height; i++)
 	{

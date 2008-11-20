@@ -48,6 +48,7 @@ section .text align=64
 		lea ecx, [ecx * 8]			; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 4				; Transfer 16 bytes per cycle. (4 32-bit pixels)
+		shl [esp + arg_offset], 2		; Adjust offset for 32-bit color.
 		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
@@ -94,8 +95,7 @@ section .text align=64
 				dec ecx
 				jnz short .Loop_X2
 
-			add esi, [esp + arg_offset]		; Add 2x the line offset. (1x offset is 16-bit only)
-			add esi, [esp + arg_offset]
+			add esi, [esp + arg_offset]		; Add the line offset.
 			add edi, ebx				; Add the pitch difference to the destination pointer.
 			mov ecx, [esp + arg_width]		; Reset the X counter.
 			dec dword [esp + arg_height]		; Decrement the Y counter.
@@ -126,6 +126,7 @@ section .text align=64
 		lea ecx, [ecx * 8]			; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 6				; Transfer 64 bytes per cycle. (16 32-bit pixels)
+		shl [esp + arg_offset], 2		; Adjust offset for 32-bit color.
 		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
@@ -208,8 +209,7 @@ section .text align=64
 				dec ecx
 				jnz short .Loop_X2
 
-			add esi, [esp + arg_offset]	; Add 2x the line offset. (1x offset is 16-bit only)
-			add esi, [esp + arg_offset]
+			add esi, [esp + arg_offset]	; Add the line offset.
 			add edi, ebx			; Add the pitch difference to the destination pointer.
 			mov ecx, [esp + arg_width]	; Reset the X counter.
 			dec dword [esp + arg_height]	; Decrement the Y counter.
