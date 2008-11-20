@@ -39,4 +39,4 @@ void mdp_render_2x_32_x86_mmx(uint32_t *destScreen, uint32_t *mdScreen, int widt
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_1X_X86_H */
+#endif /* GENS_MDP_RENDER_2X_X86_H */

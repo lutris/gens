@@ -39,4 +39,4 @@ void mdp_render_scanline_32_x86_mmx(uint32_t *destScreen, uint32_t *mdScreen, in
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_1X_X86_H */
+#endif /* GENS_MDP_RENDER_SCANLINE_X86_H */
