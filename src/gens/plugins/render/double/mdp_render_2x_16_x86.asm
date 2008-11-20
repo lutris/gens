@@ -48,7 +48,7 @@ section .text align=64
 		lea ecx, [ecx * 4]			; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 4				; Transfer 16 bytes per cycle. (32 16-bit pixels)
-		shl [esp + arg_offset], 1		; Adjust offset for 16-bit color.
+		shl dword [esp + arg_offset], 1		; Adjust offset for 16-bit color.
 		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
@@ -132,7 +132,7 @@ section .text align=64
 		lea ecx, [ecx * 4]			; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
 		shr ecx, 6				; Transfer 64 bytes per cycle. (128 16-bit pixels)
-		shl [esp + arg_offset], 1		; Adjust offset for 16-bit color.
+		shl dword [esp + arg_offset], 1		; Adjust offset for 16-bit color.
 		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
 		jmp short .Loop_Y
