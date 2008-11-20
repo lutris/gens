@@ -38,6 +38,10 @@
 #endif /* GENS_X86_ASM */
 
 
+static const unsigned short MASK_DIV2_15 = 0x3DEF;
+static const unsigned short MASK_DIV2_16 = 0x7BEF;
+static const unsigned int MASK_DIV2_32 = 0x7F7F7F;
+
 #ifndef GENS_X86_ASM
 /**
  * mdp_render_scanline_50_cpp_int: Blits the image to the screen, 2x size, 50% scanlines.
@@ -47,11 +51,13 @@
  * @param x X coordinate for the image.
  * @param y Y coordinate for the image.
  * @param offset ???
+ * @param mask Mask for the scanline data.
  */
 template<typename pixel>
 static inline void mdp_render_scanline_50_cpp_int(pixel *destScreen, pixel *mdScreen,
 						  int width, int height,
-						  int pitch, int offset)
+						  int pitch, int offset,
+						  pixel mask)
 {
 	// Pitch difference.
 	pitch /= sizeof(pixel);
@@ -66,8 +72,8 @@ static inline void mdp_render_scanline_50_cpp_int(pixel *destScreen, pixel *mdSc
 			*line1++ = *mdScreen;
 			*line1++ = *mdScreen;
 			
-			*line2++ = (*mdScreen) >> 1;
-			*line2++ = (*mdScreen++) >> 1;
+			*line2++ = ((*mdScreen) >> 1) & mask;
+			*line2++ = ((*mdScreen++) >> 1) & mask;
 		}
 		
 		// Next line.
@@ -84,8 +90,10 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 	if (!renderInfo)
 		return;
 	
-	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
+	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
+		unsigned short mask = (renderInfo->bpp == 16 ? MASK_DIV2_16 : MASK_DIV2_15);
+		
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
@@ -108,7 +116,8 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset);
+			    renderInfo->pitch, renderInfo->offset,
+			    mask);
 #endif /* GENS_X86_ASM */
 	}
 	else
@@ -135,7 +144,8 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset);
+			    renderInfo->pitch, renderInfo->offset,
+			    MASK_DIV2_32);
 #endif /* GENS_X86_ASM */
 	}
 }
