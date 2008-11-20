@@ -31,7 +31,6 @@
 // TODO: Add a plugin-specific version of the CPU Flags file.
 #include "gens_core/misc/cpuflags.h"
 
-#undef GENS_X86_ASM
 // x86 asm versions
 #ifdef GENS_X86_ASM
 #include "mdp_render_scanline_50_x86.h"
@@ -40,9 +39,11 @@
 
 static const unsigned short MASK_DIV2_15 = 0x3DEF;
 static const unsigned short MASK_DIV2_16 = 0x7BEF;
+static const unsigned int MASK_DIV2_15_ASM = 0x3DEF3DEF;
+static const unsigned int MASK_DIV2_16_ASM = 0x7BEF7BEF;
 static const unsigned int MASK_DIV2_32 = 0x7F7F7F;
 
-#ifndef GENS_X86_ASM
+//#ifndef GENS_X86_ASM
 /**
  * mdp_render_scanline_50_cpp_int: Blits the image to the screen, 2x size, 50% scanlines.
  * @param screen Pointer to the screen buffer.
@@ -82,9 +83,13 @@ static inline void mdp_render_scanline_50_cpp_int(pixel *destScreen, pixel *mdSc
 		line2 += nextLine;
 	}
 }
-#endif /* GENS_X86_ASM */
+//#endif /* GENS_X86_ASM */
 
 
+/**
+ * 
+ * @param renderInfo 
+ */
 void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
@@ -92,8 +97,6 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 	
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
-		unsigned short mask = (renderInfo->bpp == 16 ? MASK_DIV2_16 : MASK_DIV2_15);
-		
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
@@ -101,7 +104,8 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->pitch, renderInfo->offset,
+				    (renderInfo->bpp == 15));
 		}
 		else
 		{
@@ -109,7 +113,8 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->pitch, renderInfo->offset,
+				    (renderInfo->bpp == 16 ? MASK_DIV2_16_ASM : MASK_DIV2_15_ASM));
 		}
 #else /* !GENS_X86_ASM */
 		mdp_render_scanline_50_cpp_int(
@@ -117,7 +122,7 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset,
-			    mask);
+			    (renderInfo->bpp == 16 ? MASK_DIV2_16 : MASK_DIV2_15));
 #endif /* GENS_X86_ASM */
 	}
 	else
