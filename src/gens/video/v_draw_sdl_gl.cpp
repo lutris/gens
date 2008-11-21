@@ -499,27 +499,20 @@ void VDraw_SDL_GL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
+	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	
+	// Determine the window size using the scaling factor.
+	if (rendPlugin->scale <= 0)
+		return;
+	int w = 320 * rendPlugin->scale;
+	int h = 256 * rendPlugin->scale;
+	
+	if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
+	    rowLength == w && textureSize == h)
 	{
-		// 1x rendering.
-		if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
-		    rowLength == 320 && textureSize == 256)
-		{
-			// Already 1x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
-	}
-	else
-	{
-		// 2x rendering.
-		if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
-		    rowLength == 640 && textureSize == 512)
-		{
-			// Already 2x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
+		// No resolution switch is necessary. Simply clear the screen.
+		clearScreen();
+		return;
 	}
 	
 	// Resolution switch is needed.
