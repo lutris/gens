@@ -92,15 +92,7 @@ void mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo)
 	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_SSE2)
-		{
-			mdp_render_2x_16_x86_sse2(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
-		}
-		else if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
 			mdp_render_2x_16_x86_mmx(
 				    (uint16_t*)renderInfo->destScreen,
@@ -127,15 +119,7 @@ void mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo)
 	else
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_SSE2)
-		{
-			mdp_render_2x_32_x86_sse2(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
-		}
-		else if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
 			mdp_render_2x_32_x86_mmx(
 				    (uint32_t*)renderInfo->destScreen,

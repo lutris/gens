@@ -29,7 +29,6 @@ arg_offset	equ 44
 %ifdef __OBJ_ELF
 %define _mdp_render_2x_16_x86 mdp_render_2x_16_x86
 %define _mdp_render_2x_16_x86_mmx mdp_render_2x_16_x86_mmx
-%define _mdp_render_2x_16_x86_sse2 mdp_render_2x_16_x86_sse2
 %endif
 
 section .text align=64
@@ -37,8 +36,7 @@ section .text align=64
 	align 64
 
 	;************************************************************************
-	; void mdp_render_2x_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
-	;			    int width, int height, int pitch, int offset);
+	; void mdp_render_2x_16_x86(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 	global _mdp_render_2x_16_x86
 	_mdp_render_2x_16_x86:
 
@@ -123,8 +121,7 @@ section .text align=64
 	align 64
 
 	;************************************************************************
-	; void mdp_render_2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-	;				int width, int height, int pitch, int offset);
+	; void mdp_render_2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 	global _mdp_render_2x_16_x86_mmx
 	_mdp_render_2x_16_x86_mmx:
 
@@ -139,7 +136,7 @@ section .text align=64
 		mov esi, [esp + arg_mdScreen]		; esi = Source
 		lea ecx, [ecx * 4]			; ecx = Number of bytes per line
 		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
-		shr ecx, 6				; Transfer 64 bytes per cycle. (32 16-bit pixels)
+		shr ecx, 6				; Transfer 64 bytes per cycle. (128 16-bit pixels)
 		shl dword [esp + arg_offset], 1		; Adjust offset for 16-bit color.
 		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
@@ -235,120 +232,4 @@ section .text align=64
 		pop ecx
 		pop ebx
 		emms
-		ret
-
-	align 64
-
-	;************************************************************************
-	; void mdp_render_2x_16_x86_sse2(uint16_t *destScreen, uint16_t *mdScreen,
-	;				 int width, int height, int pitch, int offset);
-	global _mdp_render_2x_16_x86_sse2
-	_mdp_render_2x_16_x86_sse2:
-
-		push ebx
-		push ecx
-		push edx
-		push edi
-		push esi
-
-		mov ecx, [esp + arg_width]		; ecx = Number of pixels per line
-		mov ebx, [esp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
-		mov esi, [esp + arg_mdScreen]		; esi = Source
-		lea ecx, [ecx * 4]			; ecx = Number of bytes per line
-		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
-		shr ecx, 7				; Transfer 128 bytes per cycle. (64 16-bit pixels)
-		shl dword [esp + arg_offset], 1		; Adjust offset for 16-bit color.
-		mov edi, [esp + arg_destScreen]		; edi = Destination
-		mov [esp + arg_width], ecx		; Initialize the X counter.
-		jmp short .Loop_Y
-
-	align 64
-
-	.Loop_Y:
-	.Loop_X1:
-				movdqu xmm0, [esi]
-				movdqa xmm1, xmm0
-				movdqu xmm2, [esi + 16]
-				movdqa xmm3, xmm2
-				movdqu xmm4, [esi + 32]
-				movdqa xmm5, xmm4
-				movdqu xmm6, [esi + 48]
-				movdqa xmm7, xmm6
-				
-				punpcklwd xmm1, xmm1
-				punpckhwd xmm0, xmm0
-				punpcklwd xmm3, xmm3
-				punpckhwd xmm2, xmm2
-				punpcklwd xmm5, xmm5
-				punpckhwd xmm4, xmm4
-				punpcklwd xmm7, xmm7
-				punpckhwd xmm6, xmm6
-				
-				movdqu [edi + 0], xmm1
-				movdqu [edi + 16], xmm0
-				movdqu [edi + 32], xmm3
-				movdqu [edi + 48], xmm2
-				movdqu [edi + 64], xmm5
-				movdqu [edi + 80], xmm4
-				movdqu [edi + 96], xmm7
-				movdqu [edi + 112], xmm6
-				
-				add edi, dword 128
-				add esi, byte 64
-				dec ecx
-				jnz short .Loop_X1
-	
-			mov ecx, [esp + arg_width]	; Reset the X counter.
-			add edi, ebx			; Add the pitch difference to the destination pointer.
-			shl ecx, 6
-			sub esi, ecx
-			shr ecx, 6
-			jmp short .Loop_X2
-
-	align 64
-	
-	.Loop_X2:
-				movdqu xmm0, [esi]
-				movdqa xmm1, xmm0
-				movdqu xmm2, [esi + 16]
-				movdqa xmm3, xmm2
-				movdqu xmm4, [esi + 32]
-				movdqa xmm5, xmm4
-				movdqu xmm6, [esi + 48]
-				movdqa xmm7, xmm6
-				
-				punpcklwd xmm1, xmm1
-				punpckhwd xmm0, xmm0
-				punpcklwd xmm3, xmm3
-				punpckhwd xmm2, xmm2
-				punpcklwd xmm5, xmm5
-				punpckhwd xmm4, xmm4
-				punpcklwd xmm7, xmm7
-				punpckhwd xmm6, xmm6
-				
-				movdqu [edi + 0], xmm1
-				movdqu [edi + 16], xmm0
-				movdqu [edi + 32], xmm3
-				movdqu [edi + 48], xmm2
-				movdqu [edi + 64], xmm5
-				movdqu [edi + 80], xmm4
-				movdqu [edi + 96], xmm7
-				movdqu [edi + 112], xmm6
-				
-				add edi, dword 128
-				add esi, byte 64
-				dec ecx
-				jnz short .Loop_X2
-
-			add esi, [esp + arg_offset]	; Add the line offset.
-			add edi, ebx			; Add the pitch difference to the destination pointer.
-			mov ecx, [esp + arg_width]	; Reset the X counter.
-			dec dword [esp + arg_height]	; Decrement the Y counter.
-			jnz near .Loop_Y
-
-		pop esi
-		pop edi
-		pop edx
-		pop ecx
-		pop ebx
 		ret
