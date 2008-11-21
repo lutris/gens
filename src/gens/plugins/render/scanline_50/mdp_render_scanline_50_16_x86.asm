@@ -46,7 +46,7 @@ section .text align=64
 	;************************************************************************
 	; void mdp_render_scanline_50_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
 	;				     int width, int height, int pitch, int offset,
-	;				     unsigned int mask);
+	;				     uint32_t mask);
 	global _mdp_render_scanline_50_16_x86
 	_mdp_render_scanline_50_16_x86:
 
@@ -141,7 +141,7 @@ section .text align=64
 	;************************************************************************
 	; void mdp_render_scanline_50_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;					 int width, int height, int pitch, int offset,
-	;					 unsigned int mode555);
+	;					 int mode555);
 	global _mdp_render_scanline_50_16_x86_mmx
 	_mdp_render_scanline_50_16_x86_mmx:
 
