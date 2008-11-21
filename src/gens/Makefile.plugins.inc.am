@@ -15,6 +15,8 @@ gens_SOURCES += \
 		plugins/render/scale2x/mdp_render_scale2x.c \
 		plugins/render/scale2x/mdp_render_scale3x_plugin.c \
 		plugins/render/scale2x/mdp_render_scale3x.c \
+		plugins/render/scale2x/mdp_render_scale4x_plugin.c \
+		plugins/render/scale2x/mdp_render_scale4x.c \
 		plugins/render/scale2x/scale2x.c \
 		plugins/render/scale2x/scale3x.c \
 		plugins/render/scale2x/scalebit.c
@@ -34,6 +36,8 @@ noinst_HEADERS += \
 		plugins/render/scale2x/mdp_render_scale2x.h \
 		plugins/render/scale2x/mdp_render_scale3x_plugin.h \
 		plugins/render/scale2x/mdp_render_scale3x.h \
+		plugins/render/scale2x/mdp_render_scale4x_plugin.h \
+		plugins/render/scale2x/mdp_render_scale4x.h \
 		plugins/render/scale2x/scale2x.h \
 		plugins/render/scale2x/scale3x.h \
 		plugins/render/scale2x/scalebit.h
