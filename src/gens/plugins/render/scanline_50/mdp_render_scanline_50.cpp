@@ -44,7 +44,7 @@
 #define MASK_DIV2_32 ((uint32_t)(0x007F7F7F))
 
 
-//#ifndef GENS_X86_ASM
+#ifndef GENS_X86_ASM
 /**
  * mdp_render_scanline_50_cpp_int: Blits the image to the screen, 2x size, 50% scanlines.
  * @param screen Pointer to the screen buffer.
@@ -84,7 +84,7 @@ static inline void mdp_render_scanline_50_cpp_int(pixel *destScreen, pixel *mdSc
 		line2 += nextLine;
 	}
 }
-//#endif /* GENS_X86_ASM */
+#endif /* GENS_X86_ASM */
 
 
 /**
