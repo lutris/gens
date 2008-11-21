@@ -33,6 +33,7 @@ static MDP_Desc_t MDP_Desc =
 	.author_mdp = "David Korth",
 	.author_orig = "Andrea Mazzoleni",
 	.description = "Scale2x v2.2.",
+	.website = "http://scale2x.sourceforge.net/",
 	.license = MDP_LICENSE_GPL_2
 };
 
