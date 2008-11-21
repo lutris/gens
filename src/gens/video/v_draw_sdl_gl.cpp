@@ -148,18 +148,13 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	updateVSync(true);
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
-	{
-		// 1x rendering.
-		rowLength = 320;
-		textureSize = 256;
-	}
-	else
-	{
-		// 2x rendering.
-		rowLength = 640;
-		textureSize = 512;
-	}
+	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	
+	// Determine the texture size using the scaling factor.
+	if (rendPlugin->scale <= 0)
+		return 0;
+	rowLength = 320 * rendPlugin->scale;
+	textureSize = 256 * rendPlugin->scale;
 	
 	int bytespp = (bpp == 15 ? 2 : bpp / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
@@ -329,14 +324,28 @@ int VDraw_SDL_GL::flipInternal(void)
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
 	
+	// Set up the render information.
+	if (m_rInfo.bpp != bpp)
+	{
+		// bpp has changed. Reinitialize the screen pointers.
+		m_rInfo.bpp = bpp;
+		m_rInfo.cpuFlags = CPU_Flags;
+		if (bpp == 15 || bpp == 16)
+			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+		else
+			m_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+	}
+	
+	m_rInfo.destScreen = (void*)start;
+	m_rInfo.width = 320 - m_HBorder;
+	m_rInfo.height = VDP_Num_Vis_Lines;
+	m_rInfo.pitch = pitch;
+	m_rInfo.offset = 16 + m_HBorder;
+	
 	if (m_FullScreen)
-	{
-		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
-	}
+		m_BlitFS(&m_rInfo);
 	else
-	{
-		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
-	}
+		m_BlitW(&m_rInfo);
 	
 	// Draw the message and/or FPS.
 	if (m_MsgVisible)
