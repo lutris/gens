@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include "plugins/mdp_render.h"
+
 extern MDP_t mdp_render_scanline_25;
 
 #ifdef __cplusplus
