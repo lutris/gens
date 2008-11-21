@@ -31,9 +31,11 @@ extern "C" {
 
 void mdp_render_1x_16_x86(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 void mdp_render_1x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+void mdp_render_1x_16_x86_sse2(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 
 void mdp_render_1x_32_x86(uint32_t *destScreen, uint32_t *mdScreen, int width, int height, int pitch, int offset);
 void mdp_render_1x_32_x86_mmx(uint32_t *destScreen, uint32_t *mdScreen, int width, int height, int pitch, int offset);
+void mdp_render_1x_32_x86_sse2(uint32_t *destScreen, uint32_t *mdScreen, int width, int height, int pitch, int offset);
 
 #ifdef __cplusplus
 }
