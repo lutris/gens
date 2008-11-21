@@ -39,8 +39,8 @@ section .data align=64
 	; 64-bit masks used for the mmx version.
 	MASK_DIV2_15_MMX:	dd 0x3DEF3DEF, 0x3DEF3DEF
 	MASK_DIV2_16_MMX:	dd 0x7BEF7BEF, 0x7BEF7BEF
-	MASK_DIV4_15_ASM:	dd 0x1CE71CE7, 0x1CE71CE7
-	MASK_DIV4_16_ASM:	dd 0x39E739E7, 0x39E739E7
+	MASK_DIV4_15_MMX:	dd 0x1CE71CE7, 0x1CE71CE7
+	MASK_DIV4_16_MMX:	dd 0x39E739E7, 0x39E739E7
 
 section .text align=64
 
@@ -155,7 +155,7 @@ section .text align=64
 	;					 int mode555);
 	global _mdp_render_scanline_25_16_x86_mmx
 	_mdp_render_scanline_25_16_x86_mmx:
-ret ;TODO
+
 		push ebx
 		push ecx
 		push edx
@@ -174,9 +174,11 @@ ret ;TODO
 		
 		; Check which mask to use.
 		movq mm7, [MASK_DIV2_16_MMX]
+		movq mm6, [MASK_DIV4_16_MMX]
 		test byte [esp + arg_mode555], 1
 		jz .Loop_Y
 		movq mm7, [MASK_DIV2_15_MMX]		; 15-bit color. (Mode 555)
+		movq mm6, [MASK_DIV4_15_MMX]
 		jmp short .Loop_Y
 
 	align 64
@@ -213,13 +215,26 @@ ret ;TODO
 	align 64
 	
 	.Loop_X2:
-				; 50% filter.
 				movq mm0, [esi]
 				movq mm2, [esi + 8]
+				movq mm4, mm0
+				movq mm5, mm2
+				
+				; 50% Scanline
 				psrlq mm0, 1
 				psrlq mm2, 1
 				pand mm0, mm7
 				pand mm2, mm7
+				
+				; 25% Scanline
+				psrlq mm4, 2
+				psrlq mm5, 2
+				pand mm4, mm6
+				pand mm5, mm6
+				
+				; Combine the two values.
+				paddw mm0, mm4
+				paddw mm2, mm5
 				
 				; Expand to 2x size.
 				movq mm1, mm0

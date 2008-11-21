@@ -141,7 +141,7 @@ section .text align=64
 	;					 int width, int height, int pitch, int offset);
 	global _mdp_render_scanline_25_32_x86_mmx
 	_mdp_render_scanline_25_32_x86_mmx:
-ret ;TODO
+
 		push ebx
 		push ecx
 		push edx
@@ -157,7 +157,8 @@ ret ;TODO
 		shl dword [esp + arg_offset], 2		; Adjust offset for 32-bit color.
 		mov edi, [esp + arg_destScreen]		; edi = Destination
 		mov [esp + arg_width], ecx		; Initialize the X counter.
-		movq mm7, [MASK_DIV2_32_MMX]		; Load the mask.
+		movq mm7, [MASK_DIV2_32_MMX]		; Load the masks.
+		movq mm6, [MASK_DIV4_32_MMX]		; Load the masks.
 		jmp short .Loop_Y
 
 	align 64
@@ -194,13 +195,26 @@ ret ;TODO
 	align 64
 	
 	.Loop_X2:
-				; 50% filter.
 				movq mm0, [esi]
 				movq mm2, [esi + 8]
+				movq mm4, mm0
+				movq mm5, mm2
+				
+				; 50% Scanline
 				psrlq mm0, 1
 				psrlq mm2, 1
 				pand mm0, mm7
 				pand mm2, mm7
+				
+				; 25% Scanline
+				psrlq mm4, 2
+				psrlq mm5, 2
+				pand mm4, mm6
+				pand mm5, mm6
+				
+				; Combine the two values.
+				paddd mm0, mm5
+				paddd mm2, mm5
 				
 				; Expand to 2x size.
 				movq mm1, mm0
