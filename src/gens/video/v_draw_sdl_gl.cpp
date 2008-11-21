@@ -152,6 +152,20 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	rowLength = 320 * rendPlugin->scale;
 	textureSize = 256 * rendPlugin->scale;
 	
+	// Check that the texture size is a power of two.
+	// TODO: Optimize this code.
+	
+	if (textureSize <= 256)
+		textureSize = 256;
+	else if (textureSize <= 512)
+		textureSize = 512;
+	else if (textureSize <= 1024)
+		textureSize = 1024;
+	else if (textureSize <= 2048)
+		textureSize = 2048;
+	else if (textureSize <= 4096)
+		textureSize = 4096;
+	
 	int bytespp = (bpp == 15 ? 2 : bpp / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
 	filterBuffer = (unsigned char*)malloc(filterBufferSize);
