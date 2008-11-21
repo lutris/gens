@@ -214,6 +214,8 @@ int VDraw_SDL::flipInternal(void)
  */
 void VDraw_SDL::drawBorder(void)
 {
+	// TODO: Consolidate this function by using a macro.
+	
 	SDL_Rect border;
 	
 	if (!Video.borderColorEmulation)
