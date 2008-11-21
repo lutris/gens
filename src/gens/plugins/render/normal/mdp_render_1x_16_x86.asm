@@ -29,7 +29,6 @@ arg_offset	equ 44
 %ifdef __OBJ_ELF
 %define _mdp_render_1x_16_x86 mdp_render_1x_16_x86
 %define _mdp_render_1x_16_x86_mmx mdp_render_1x_16_x86_mmx
-%define _mdp_render_1x_16_x86_sse2 mdp_render_1x_16_x86_sse2
 %endif
 
 section .text align=64
@@ -37,8 +36,7 @@ section .text align=64
 	align 64
 	
 	;************************************************************************
-	; void mdp_render_1x_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
-	;			    int width, int height, int pitch, int offset);
+	; void mdp_render_1x_16_x86(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 	global _mdp_render_1x_16_x86
 	_mdp_render_1x_16_x86:
 
@@ -88,8 +86,7 @@ section .text align=64
 	align 64
 	
 	;************************************************************************
-	; void mdp_render_1x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-	;				int width, int height, int pitch, int offset);
+	; void mdp_render_1x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 	global _mdp_render_1x_16_x86_mmx
 	_mdp_render_1x_16_x86_mmx:
 
@@ -152,72 +149,4 @@ section .text align=64
 		pop ecx
 		pop ebx
 		emms
-		ret
-
-	align 64
-
-	;************************************************************************
-	; void mdp_render_1x_16_x86_sse2(uint16_t *destScreen, uint16_t *mdScreen,
-	;				 int width, int height, int pitch, int offset);
-	global _mdp_render_1x_16_x86_sse2
-	_mdp_render_1x_16_x86_sse2:
-
-		push ebx
-		push ecx
-		push edx
-		push edi
-		push esi
-
-		mov ecx, [esp + arg_width]		; ecx = Number of pixels per line
-		mov ebx, [esp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
-		mov esi, [esp + arg_mdScreen]		; esi = Source
-		add ecx, ecx				; ecx = Number of bytes per line
-		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
-		shr ecx, 7				; Transfer 128 bytes per cycle. (64 16-bit pixels)
-		shl dword [esp + arg_offset], 1		; Adjust offset for 16-bit color.
-		mov edi, [esp + arg_destScreen]		; edi = Destination
-		mov [esp + arg_width], ecx		; Initialize the X counter.
-		jmp short .Loop_Y
-
-	align 64
-
-	.Loop_Y:
-	.Loop_X:
-				; Get source pixels.
-				movdqu xmm0, [esi]
-				movdqu xmm1, [esi + 16]
-				movdqu xmm2, [esi + 32]
-				movdqu xmm3, [esi + 48]
-				movdqu xmm4, [esi + 64]
-				movdqu xmm5, [esi + 80]
-				movdqu xmm6, [esi + 96]
-				movdqu xmm7, [esi + 112]
-				
-				; Put destination pixels.
-				movdqu [edi], xmm0
-				movdqu [edi + 16], xmm1
-				movdqu [edi + 32], xmm2
-				movdqu [edi + 48], xmm3
-				movdqu [edi + 64], xmm4
-				movdqu [edi + 80], xmm5
-				movdqu [edi + 96], xmm6
-				movdqu [edi + 112], xmm7
-				
-				; Loop management.
-				add esi, 128
-				add edi, 128
-				dec ecx
-				jnz .Loop_X
-			
-			add esi, [esp + arg_offset]	; Add the line offset.
-			add edi, ebx			; Add the pitch difference to the destination pointer.
-			mov ecx, [esp + arg_width]	; Reset the X counter.
-			dec dword [esp + arg_height]	; Decrement the Y counter.
-			jnz .Loop_Y
-
-		pop esi
-		pop edi
-		pop edx
-		pop ecx
-		pop ebx
 		ret
