@@ -51,9 +51,9 @@
 #define CPUFLAG_IA32_EXT_ECX_SSE5	(1 << 11)
 
 // CPUID functions.
-#define CPUID_MAX_FUNCTIONS		(0x00000000)
-#define CPUID_FAMILY_FEATURES		(0x00000001)
-#define CPUID_EXT_FAMILY_FEATURES	(0x80000001)
+#define CPUID_MAX_FUNCTIONS		((unsigned int)(0x00000000))
+#define CPUID_FAMILY_FEATURES		((unsigned int)(0x00000001))
+#define CPUID_EXT_FAMILY_FEATURES	((unsigned int)(0x80000001))
 
 // CPUID macro with PIC support.
 // See http://gcc.gnu.org/ml/gcc-patches/2007-09/msg00324.html
