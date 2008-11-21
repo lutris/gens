@@ -8,7 +8,9 @@ gens_SOURCES += \
 		plugins/render/scanline/mdp_render_scanline_plugin.c \
 		plugins/render/scanline/mdp_render_scanline.cpp \
 		plugins/render/scanline_50/mdp_render_scanline_50_plugin.c \
-		plugins/render/scanline_50/mdp_render_scanline_50.cpp
+		plugins/render/scanline_50/mdp_render_scanline_50.cpp \
+		plugins/render/scanline_25/mdp_render_scanline_25_plugin.c \
+		plugins/render/scanline_25/mdp_render_scanline_25.cpp
 
 noinst_HEADERS += \
 		plugins/render/normal/mdp_render_1x_plugin.h \
@@ -18,7 +20,9 @@ noinst_HEADERS += \
 		plugins/render/scanline/mdp_render_scanline_plugin.h \
 		plugins/render/scanline/mdp_render_scanline.hpp \
 		plugins/render/scanline_50/mdp_render_scanline_50_plugin.h \
-		plugins/render/scanline_50/mdp_render_scanline_50.hpp
+		plugins/render/scanline_50/mdp_render_scanline_50.hpp \
+		plugins/render/scanline_25/mdp_render_scanline_25_plugin.h \
+		plugins/render/scanline_25/mdp_render_scanline_25.hpp
 
 if GENS_X86_ASM
 gens_x86_asm_o += \
