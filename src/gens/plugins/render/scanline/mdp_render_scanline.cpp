@@ -39,7 +39,7 @@
 
 #ifndef GENS_X86_ASM
 /**
- * mdp_render_scanline_cpp_int: Blits the image to the screen, 2x size, scanlines.
+ * T_mdp_render_scanline_cpp: Blits the image to the screen, 2x size, scanlines.
  * @param screen Pointer to the screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
  * @param pitch Number of bytes per line.
@@ -48,9 +48,9 @@
  * @param offset ???
  */
 template<typename pixel>
-static inline void mdp_render_scanline_cpp_int(pixel *destScreen, pixel *mdScreen,
-					       int width, int height,
-					       int pitch, int offset)
+static inline void T_mdp_render_scanline_cpp(pixel *destScreen, pixel *mdScreen,
+					     int width, int height,
+					     int pitch, int offset)
 {
 	// Pitch difference.
 	pitch /= sizeof(pixel);
@@ -106,7 +106,7 @@ void mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
-		mdp_render_scanline_cpp_int(
+		T_mdp_render_scanline_cpp(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
@@ -133,7 +133,7 @@ void mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
-		mdp_render_scanline_cpp_int(
+		T_mdp_render_scanline_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,

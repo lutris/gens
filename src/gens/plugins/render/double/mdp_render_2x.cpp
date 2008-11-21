@@ -39,7 +39,7 @@
 
 #ifndef GENS_X86_ASM
 /**
- * mdp_render_2x_cpp_int: Blits the image to the screen, 1x size, no filtering.
+ * T_mdp_render_2x_cpp: Blits the image to the screen, 1x size, no filtering.
  * @param destScreen Pointer to the destination screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
  * @param width Width of the image.
@@ -48,9 +48,9 @@
  * @param offset ???
  */
 template<typename pixel>
-static inline void mdp_render_2x_cpp_int(pixel *destScreen, pixel *mdScreen,
-					 int width, int height,
-					 int pitch, int offset)
+static inline void T_mdp_render_2x_cpp(pixel *destScreen, pixel *mdScreen,
+				       int width, int height,
+				       int pitch, int offset)
 {
 	// Pitch difference.
 	pitch /= sizeof(pixel);
@@ -109,7 +109,7 @@ void mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
-		mdp_render_2x_cpp_int(
+		T_mdp_render_2x_cpp(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
@@ -136,7 +136,7 @@ void mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
-		mdp_render_2x_cpp_int(
+		T_mdp_render_2x_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
