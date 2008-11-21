@@ -32,7 +32,6 @@
 #include "gens_core/misc/cpuflags.h"
 
 // x86 asm versions
-#undef GENS_X86_ASM
 #ifdef GENS_X86_ASM
 #include "mdp_render_scanline_25_x86.h"
 #endif /* GENS_X86_ASM */
