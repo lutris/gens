@@ -116,10 +116,13 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_RETURN:
-			if (draw->fullScreen() && (mod & GENS_KMOD_ALT))
+			if (mod & GENS_KMOD_ALT)
 			{
-				draw->setFullScreen(!draw->fullScreen());
-				Sync_Gens_Window_GraphicsMenu();
+				if (draw->fullScreen())
+				{
+					draw->setFullScreen(!draw->fullScreen());
+					Sync_Gens_Window_GraphicsMenu();
+				}
 				
 				// Reset the modifier key value to prevent Alt from getting "stuck".
 				mod = 0;
