@@ -77,8 +77,8 @@ class VDraw
 		void setStretch(const uint8_t newStretch);
 		bool swRender(void);
 		void setSwRender(const bool newSwRender);
-		int shift(void);
-		void setShift(const int newShift);
+		int scale(void);
+		void setScale(const int newScale);
 		bool msgEnabled(void);
 		void setMsgEnabled(const bool newMsgEnable);
 		bool fpsEnabled(void);
@@ -123,8 +123,8 @@ class VDraw
 		// Called if initialization fails.
 		void Init_Fail(const char *err);
 		
-		// Screen shift in 1x rendering mode.
-		int m_shift;
+		// Screen scaling.
+		int m_scale;
 		
 		// Stretch option.
 		uint8_t m_Stretch;

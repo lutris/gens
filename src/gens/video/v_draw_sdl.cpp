@@ -90,9 +90,6 @@ int VDraw_SDL::Init_Video(void)
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
 	
-	// If normal rendering mode is set, disable the video shift.
-	m_shift = (rendMode == 0) ? 0 : 1;
-	
 	// Return the status code from Init_SDL_Renderer().
 	return x;
 }
@@ -162,7 +159,7 @@ int VDraw_SDL::flipInternal(void)
 	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
 	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
 	
-	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
+	int startPos = ((pitch * VBorder) + HBorder) * m_scale;  // Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);

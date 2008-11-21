@@ -114,10 +114,6 @@ int VDraw_SDL_GL::Init_Video(void)
 	// Adjust stretch parameters.
 	stretchAdjustInternal();
 	
-	// If normal rendering mode is set, disable the video shift.
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	m_shift = (rendMode == 0) ? 0 : 1;
-	
 	// Return the status code from Init_SDL_GL_Renderer().
 	return x;
 }
@@ -319,7 +315,7 @@ int VDraw_SDL_GL::flipInternal(void)
 	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
 	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
 	
-	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
+	int startPos = ((pitch * VBorder) + HBorder) * m_scale;  // Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
@@ -374,11 +370,11 @@ int VDraw_SDL_GL::flipInternal(void)
 	// Set the texture data.
 	glTexSubImage2D(GL_TEXTURE_2D, 0,
 			0,						// x offset
-			((240 - VDP_Num_Vis_Lines) >> 1) << m_shift,	// y offsets
+			((240 - VDP_Num_Vis_Lines) >> 1) * m_scale,	// y offsets
 			rowLength,					// width
-			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) << m_shift),	// height
+			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) * m_scale),	// height
 			m_pixelFormat, m_pixelType,
-			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) << m_shift));
+			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) * m_scale));
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);

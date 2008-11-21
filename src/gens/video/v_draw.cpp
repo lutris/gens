@@ -39,7 +39,7 @@ MDP_Render_Info_t VDraw::m_rInfo;
 VDraw::VDraw()
 {
 	// Initialize variables.
-	m_shift = 0;
+	m_scale = 1;
 	m_BlitFS = NULL;
 	m_BlitW = NULL;
 	
@@ -87,7 +87,7 @@ VDraw::VDraw()
 VDraw::VDraw(VDraw *oldDraw)
 {
 	// Initialize this VDraw based on an existing VDraw object.
-	m_shift = oldDraw->shift();
+	m_scale = oldDraw->scale();
 	m_BlitFS = oldDraw->m_BlitFS;
 	m_BlitW = oldDraw->m_BlitW;
 	
@@ -418,8 +418,8 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	if (adjustForScreenSize)
 	{
 		// Adjust for screen size. (SDL/GL)
-		x = ((m_HBorder / 2) << m_shift) + 8;
-		y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+		x = ((m_HBorder / 2) * m_scale) + 8;
+		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * m_scale);
 	}
 	else
 	{
@@ -428,14 +428,14 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		{
 			// Hack for windowed 1x rendering.
 			x = 8;
-			y = VDP_Num_Vis_Lines << m_shift;
+			y = VDP_Num_Vis_Lines * m_scale;
 		}
 		else if (m_FullScreen && Video.Render_FS == 0)
 		{
 			// Hacks for fullscreen 1x rendering.
 			if (m_swRender)
 			{
-				x = ((m_HBorder / 2) << m_shift);
+				x = ((m_HBorder / 2) * m_scale);
 				y = VDP_Num_Vis_Lines + 8;
 			}
 			else
@@ -446,12 +446,11 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		}
 		else
 		{
-			x = ((m_HBorder / 2) << m_shift);
-			y = VDP_Num_Vis_Lines << m_shift;
+			x = ((m_HBorder / 2) * m_scale);
+			y = VDP_Num_Vis_Lines * m_scale;
 		}
 		
-		if (m_shift)
-			y += 16;
+		y += (16 * (m_scale - 1));
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
@@ -468,7 +467,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	msgLength = strlen(msg);
 	
 	// Determine how many linebreaks are needed.
-	msgWidth = w - 16 - (m_HBorder << m_shift);
+	msgWidth = w - 16 - (m_HBorder * m_scale);
 	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
 	y -= (linebreaks * charSize);
 	
@@ -723,7 +722,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	// Set the new render mode number.
 	*Rend = newMode;
 	
-	setShift(rendPlugin->scale - 1);
+	setScale(rendPlugin->scale);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
@@ -795,15 +794,15 @@ void VDraw::setSwRender(const bool newSwRender)
 }
 
 
-int VDraw::shift(void)
+int VDraw::scale(void)
 {
-	return m_shift;
+	return m_scale;
 }
-void VDraw::setShift(const int newShift)
+void VDraw::setScale(const int newScale)
 {
-	if (m_shift == newShift)
+	if (m_scale == newScale)
 		return;
-	m_shift = newShift;
+	m_scale = newScale;
 	
 	// TODO: Figure out what to do here...
 }
