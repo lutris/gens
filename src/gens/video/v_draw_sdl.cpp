@@ -214,9 +214,6 @@ int VDraw_SDL::flipInternal(void)
  */
 void VDraw_SDL::drawBorder(void)
 {
-	// TODO: Make this more accurate and/or more efficient.
-	// In particular, it only works for 1x and 2x rendering.
-	
 	SDL_Rect border;
 	
 	if (!Video.borderColorEmulation)
@@ -245,9 +242,7 @@ void VDraw_SDL::drawBorder(void)
 		{
 			// Top/Bottom borders.
 			border.x = 0; border.w = screen->w;
-			border.h = 240 - VDP_Num_Vis_Lines;
-			if (screen->h == 240)
-				border.h >>= 1;
+			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 			border.y = screen->h - border.h;
@@ -263,9 +258,7 @@ void VDraw_SDL::drawBorder(void)
 			}
 			
 			border.x = 0; border.h = screen->h;
-			border.w = m_HBorder;
-			if (screen->w == 320)
-				border.w >>= 1;
+			border.w = (m_HBorder >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 			border.x = screen->w - border.w;
@@ -279,9 +272,7 @@ void VDraw_SDL::drawBorder(void)
 		{
 			// Top/Bottom borders.
 			border.x = 0; border.w = screen->w;
-			border.h = 240 - VDP_Num_Vis_Lines;
-			if (screen->h == 240)
-				border.h >>= 1;
+			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_32B);
 			border.y = screen->h - border.h;
@@ -297,9 +288,7 @@ void VDraw_SDL::drawBorder(void)
 			}
 			
 			border.x = 0; border.h = screen->h;
-			border.w = m_HBorder;
-			if (screen->w == 320)
-				border.w >>= 1;
+			border.w = (m_HBorder >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_32B);
 			border.x = screen->w - border.w;
