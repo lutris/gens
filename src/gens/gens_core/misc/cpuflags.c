@@ -97,6 +97,7 @@ unsigned int getCPUFlags(void)
 	// Check if cpuid is supported.
 	unsigned int _eax, _ebx, _ecx, _edx;
 	
+#if defined(__i386__)
 	__asm__ (
 		"pushfl\n"
 		"popl %%eax\n"
@@ -110,6 +111,21 @@ unsigned int getCPUFlags(void)
 		"andl $0x200000, %%eax"
 		:	"=a" (_eax)	// Output
 		);
+#else /* defined(__amd64__) */
+	__asm__ (
+		"pushfq\n"
+		"popq %%rax\n"
+		"movl %%eax, %%edx\n"
+		"xorl $0x200000, %%eax\n"
+		"pushq %%rax\n"
+		"popfq\n"
+		"pushfq\n"
+		"popq %%rax\n"
+		"xorl %%edx, %%eax\n"
+		"andl $0x200000, %%eax"
+		:	"=a" (_eax)	// Output
+		);
+#endif
 	
 	if (!_eax)
 	{
