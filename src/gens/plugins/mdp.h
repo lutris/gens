@@ -65,6 +65,7 @@ typedef struct
 	const char* author_mdp;
 	const char* author_orig;
 	const char* description;
+	const char* website;
 	const char* license;
 } MDP_Desc_t;
 
