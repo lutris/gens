@@ -31,11 +31,11 @@ extern "C" {
 
 void mdp_render_scanline_50_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
 				   int width, int height, int pitch, int offset,
-				   unsigned int mask);
+				   uint32_t mask);
 
 void mdp_render_scanline_50_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 				       int width, int height, int pitch, int offset,
-				       unsigned int mode555);
+				       int mode555);
 
 void mdp_render_scanline_50_32_x86(uint32_t *destScreen, uint32_t *mdScreen,
 				   int width, int height, int pitch, int offset);
