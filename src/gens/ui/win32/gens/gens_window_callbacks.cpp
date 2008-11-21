@@ -60,6 +60,9 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
+
 // Needed on Win32
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
@@ -413,7 +416,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			// TODO: Make filters constants.
 			// There's already NB_FILTER, but it has the wrong numbers...
 			rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-			if (rendMode < 11)
+			if (rendMode < (PluginMgr::vRenderPlugins.size() - 1))
 			{
 				draw->setRender(rendMode + 1);
 				Sync_Gens_Window_GraphicsMenu();
