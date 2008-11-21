@@ -71,11 +71,16 @@ static inline void mdp_render_scanline_50_cpp_int(pixel *destScreen, pixel *mdSc
 	{
 		for (unsigned short j = 0; j < width; j++)
 		{
-			*line1++ = *mdScreen;
-			*line1++ = *mdScreen;
+			pixel tmp = *mdScreen++;
 			
-			*line2++ = ((*mdScreen) >> 1) & mask;
-			*line2++ = ((*mdScreen++) >> 1) & mask;
+			// First line.
+			*line1++ = tmp;
+			*line1++ = tmp;
+			
+			// Second line. (50% Scanline effect)
+			tmp = (tmp >> 1) & mask;
+			*line2++ = tmp;
+			*line2++ = tmp;
 		}
 		
 		// Next line.
