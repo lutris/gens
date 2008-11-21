@@ -91,8 +91,11 @@ class VDraw_SDL_GL : public VDraw
 		unsigned int m_pixelFormat;
 		unsigned int m_pixelType;
 		
+		// Render parameters
+		double m_HRender, m_VRender;
+		
 		// Stretch parameters
-		float m_HStretch, m_VStretch;
+		double m_HStretch, m_VStretch;
 		
 		// OpenGL VSync stuff
 		// Copied from Mesa's glxswapcontrol.c

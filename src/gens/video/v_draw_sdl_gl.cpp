@@ -166,6 +166,10 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	else if (textureSize <= 4096)
 		textureSize = 4096;
 	
+	// Calculate the rendering parameters.
+	m_HRender = (double)(rowLength) / (double)(textureSize*2);
+	m_VRender = (double)(240.0 * rendPlugin->scale) / (double)(textureSize);
+	
 	int bytespp = (bpp == 15 ? 2 : bpp / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
 	filterBuffer = (unsigned char*)malloc(filterBufferSize);
@@ -393,17 +397,17 @@ int VDraw_SDL_GL::flipInternal(void)
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
 	
-	glTexCoord2f(0.0f + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
+	glTexCoord2d(0.0 + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
 	glVertex2i(-1,  1);				// Upper-left vertex of the quad.
 	
-	glTexCoord2f(0.625f - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
+	glTexCoord2d(m_HRender - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
 	glVertex2i( 1,  1);				// Upper-right vertex of the quad.
 	
-	// 0.9375 = 256/240; 0.9375 = 512/480
-	glTexCoord2f(0.625f - m_HStretch, 0.9375f - m_VStretch);	// Lower-right corner of the texture.
+	// 0.9375 = 240/256; 0.9375 = 480/512
+	glTexCoord2d(m_HRender - m_HStretch, m_VRender - m_VStretch);	// Lower-right corner of the texture.
 	glVertex2i( 1, -1);						// Lower-right vertex of the quad.
 	
-	glTexCoord2f(0.0f + m_HStretch, 0.9375f - m_VStretch);	// Lower-left corner of the texture.
+	glTexCoord2d(0.0 + m_HStretch, m_VRender - m_VStretch);	// Lower-left corner of the texture.
 	glVertex2i(-1, -1);					// Lower-left corner of the quad.
 	
 	glEnd();
