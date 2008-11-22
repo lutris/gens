@@ -44,6 +44,7 @@ static MDP_Render_t MDP_Render =
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_hq2x_cpp,
 	.scale = 2,
+	.flags = MDP_RENDER_FLAG_SRC16DST32,
 	.tag = "hq2x"
 };
 

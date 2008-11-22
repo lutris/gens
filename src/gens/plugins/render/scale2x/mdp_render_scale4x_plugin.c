@@ -44,6 +44,7 @@ static MDP_Render_t MDP_Render =
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_scale4x_cpp,
 	.scale = 4,
+	.flags = 0,
 	.tag = "Scale4x"
 };
 
