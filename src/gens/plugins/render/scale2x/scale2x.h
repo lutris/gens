@@ -25,26 +25,25 @@
 extern "C" {
 #endif
 
-typedef unsigned short scale2x_uint16;
-typedef unsigned scale2x_uint32;
+#include <stdint.h>
 
-void scale2x_16_def(scale2x_uint16* dst0, scale2x_uint16* dst1,
-		    const scale2x_uint16* src0, const scale2x_uint16* src1,
-		    const scale2x_uint16* src2, unsigned count);
+void scale2x_16_def(uint16_t* dst0, uint16_t* dst1,
+		    const uint16_t* src0, const uint16_t* src1,
+		    const uint16_t* src2, unsigned int count);
 
-void scale2x_32_def(scale2x_uint32* dst0, scale2x_uint32* dst1,
-		    const scale2x_uint32* src0, const scale2x_uint32* src1,
-		    const scale2x_uint32* src2, unsigned count);
+void scale2x_32_def(uint32_t* dst0, uint32_t* dst1,
+		    const uint32_t* src0, const uint32_t* src1,
+		    const uint32_t* src2, unsigned count);
 
 #if defined(__GNUC__) && defined(__i386__)
 
-void scale2x_16_mmx(scale2x_uint16* dst0, scale2x_uint16* dst1,
-		    const scale2x_uint16* src0, const scale2x_uint16* src1,
-		    const scale2x_uint16* src2, unsigned count);
+void scale2x_16_mmx(uint16_t* dst0, uint16_t* dst1,
+		    const uint16_t* src0, const uint16_t* src1,
+		    const uint16_t* src2, unsigned count);
 
-void scale2x_32_mmx(scale2x_uint32* dst0, scale2x_uint32* dst1,
-		    const scale2x_uint32* src0, const scale2x_uint32* src1,
-		    const scale2x_uint32* src2, unsigned count);
+void scale2x_32_mmx(uint32_t* dst0, uint32_t* dst1,
+		    const uint32_t* src0, const uint32_t* src1,
+		    const uint32_t* src2, unsigned count);
 
 /**
  * End the use of the MMX instructions.

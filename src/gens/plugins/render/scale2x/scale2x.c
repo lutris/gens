@@ -52,7 +52,7 @@
  */
 /* #define USE_SCALE_RANDOMWRITE */
 
-static inline void scale2x_16_def_whole(scale2x_uint16* restrict dst0, scale2x_uint16* restrict dst1, const scale2x_uint16* restrict src0, const scale2x_uint16* restrict src1, const scale2x_uint16* restrict src2, unsigned count)
+static inline void scale2x_16_def_whole(uint16_t* restrict dst0, uint16_t* restrict dst1, const uint16_t* restrict src0, const uint16_t* restrict src1, const uint16_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -111,7 +111,7 @@ static inline void scale2x_16_def_whole(scale2x_uint16* restrict dst0, scale2x_u
 	}
 }
 
-static inline void scale2x_16_def_border(scale2x_uint16* restrict dst, const scale2x_uint16* restrict src0, const scale2x_uint16* restrict src1, const scale2x_uint16* restrict src2, unsigned count)
+static inline void scale2x_16_def_border(uint16_t* restrict dst, const uint16_t* restrict src0, const uint16_t* restrict src1, const uint16_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -156,7 +156,7 @@ static inline void scale2x_16_def_border(scale2x_uint16* restrict dst, const sca
 	}
 }
 
-static inline void scale2x_16_def_center(scale2x_uint16* restrict dst, const scale2x_uint16* restrict src0, const scale2x_uint16* restrict src1, const scale2x_uint16* restrict src2, unsigned count)
+static inline void scale2x_16_def_center(uint16_t* restrict dst, const uint16_t* restrict src0, const uint16_t* restrict src1, const uint16_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -201,7 +201,7 @@ static inline void scale2x_16_def_center(scale2x_uint16* restrict dst, const sca
 	}
 }
 
-static inline void scale2x_32_def_whole(scale2x_uint32* restrict dst0, scale2x_uint32* restrict dst1, const scale2x_uint32* restrict src0, const scale2x_uint32* restrict src1, const scale2x_uint32* restrict src2, unsigned count)
+static inline void scale2x_32_def_whole(uint32_t* restrict dst0, uint32_t* restrict dst1, const uint32_t* restrict src0, const uint32_t* restrict src1, const uint32_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -260,7 +260,7 @@ static inline void scale2x_32_def_whole(scale2x_uint32* restrict dst0, scale2x_u
 	}
 }
 
-static inline void scale2x_32_def_border(scale2x_uint32* restrict dst, const scale2x_uint32* restrict src0, const scale2x_uint32* restrict src1, const scale2x_uint32* restrict src2, unsigned count)
+static inline void scale2x_32_def_border(uint32_t* restrict dst, const uint32_t* restrict src0, const uint32_t* restrict src1, const uint32_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -305,7 +305,7 @@ static inline void scale2x_32_def_border(scale2x_uint32* restrict dst, const sca
 	}
 }
 
-static inline void scale2x_32_def_center(scale2x_uint32* restrict dst, const scale2x_uint32* restrict src0, const scale2x_uint32* restrict src1, const scale2x_uint32* restrict src2, unsigned count)
+static inline void scale2x_32_def_center(uint32_t* restrict dst, const uint32_t* restrict src0, const uint32_t* restrict src1, const uint32_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -361,7 +361,7 @@ static inline void scale2x_32_def_center(scale2x_uint32* restrict dst, const sca
  * \param dst0 First destination row, double length in pixels.
  * \param dst1 Second destination row, double length in pixels.
  */
-void scale2x_16_def(scale2x_uint16* dst0, scale2x_uint16* dst1, const scale2x_uint16* src0, const scale2x_uint16* src1, const scale2x_uint16* src2, unsigned count)
+void scale2x_16_def(uint16_t* dst0, uint16_t* dst1, const uint16_t* src0, const uint16_t* src1, const uint16_t* src2, unsigned count)
 {
 #ifdef USE_SCALE_RANDOMWRITE
 	scale2x_16_def_whole(dst0, dst1, src0, src1, src2, count);
@@ -382,7 +382,7 @@ void scale2x_16_def(scale2x_uint16* dst0, scale2x_uint16* dst1, const scale2x_ui
  * \param dst0 First destination row, double length in pixels.
  * \param dst1 Second destination row, double length in pixels.
  */
-void scale2x_32_def(scale2x_uint32* dst0, scale2x_uint32* dst1, const scale2x_uint32* src0, const scale2x_uint32* src1, const scale2x_uint32* src2, unsigned count)
+void scale2x_32_def(uint32_t* dst0, uint32_t* dst1, const uint32_t* src0, const uint32_t* src1, const uint32_t* src2, unsigned count)
 {
 #ifdef USE_SCALE_RANDOMWRITE
 	scale2x_32_def_whole(dst0, dst1, src0, src1, src2, count);
@@ -436,7 +436,7 @@ void scale2x_32_def(scale2x_uint32* dst0, scale2x_uint32* dst1, const scale2x_ui
  *      %mm7 -> *current
  */
 
-static inline void scale2x_16_mmx_border(scale2x_uint16* dst, const scale2x_uint16* src0, const scale2x_uint16* src1, const scale2x_uint16* src2, unsigned count)
+static inline void scale2x_16_mmx_border(uint16_t* dst, const uint16_t* src0, const uint16_t* src1, const uint16_t* src2, unsigned count)
 {
 	assert(count >= 8);
 	assert(count % 4 == 0);
@@ -627,7 +627,7 @@ static inline void scale2x_16_mmx_border(scale2x_uint16* dst, const scale2x_uint
 	);
 }
 
-static inline void scale2x_32_mmx_border(scale2x_uint32* dst, const scale2x_uint32* src0, const scale2x_uint32* src1, const scale2x_uint32* src2, unsigned count)
+static inline void scale2x_32_mmx_border(uint32_t* dst, const uint32_t* src0, const uint32_t* src1, const uint32_t* src2, unsigned count)
 {
 	assert(count >= 4);
 	assert(count % 2 == 0);
@@ -829,7 +829,7 @@ static inline void scale2x_32_mmx_border(scale2x_uint32* dst, const scale2x_uint
  * \param dst0 First destination row, double length in pixels.
  * \param dst1 Second destination row, double length in pixels.
  */
-void scale2x_16_mmx(scale2x_uint16* dst0, scale2x_uint16* dst1, const scale2x_uint16* src0, const scale2x_uint16* src1, const scale2x_uint16* src2, unsigned count)
+void scale2x_16_mmx(uint16_t* dst0, uint16_t* dst1, const uint16_t* src0, const uint16_t* src1, const uint16_t* src2, unsigned count)
 {
 	if (count % 4 != 0 || count < 8) {
 		scale2x_16_def(dst0, dst1, src0, src1, src2, count);
@@ -850,7 +850,7 @@ void scale2x_16_mmx(scale2x_uint16* dst0, scale2x_uint16* dst1, const scale2x_ui
  * \param dst0 First destination row, double length in pixels.
  * \param dst1 Second destination row, double length in pixels.
  */
-void scale2x_32_mmx(scale2x_uint32* dst0, scale2x_uint32* dst1, const scale2x_uint32* src0, const scale2x_uint32* src1, const scale2x_uint32* src2, unsigned count)
+void scale2x_32_mmx(uint32_t* dst0, uint32_t* dst1, const uint32_t* src0, const uint32_t* src1, const uint32_t* src2, unsigned count)
 {
 	if (count % 2 != 0 || count < 4) {
 		scale2x_32_def(dst0, dst1, src0, src1, src2, count);

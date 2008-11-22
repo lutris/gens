@@ -52,7 +52,7 @@
  */
 /* #define USE_SCALE_RANDOMWRITE */
 
-static inline void scale3x_16_def_whole(scale3x_uint16* restrict dst0, scale3x_uint16* restrict dst1, scale3x_uint16* restrict dst2, const scale3x_uint16* restrict src0, const scale3x_uint16* restrict src1, const scale3x_uint16* restrict src2, unsigned count)
+static inline void scale3x_16_def_whole(uint16_t* restrict dst0, uint16_t* restrict dst1, uint16_t* restrict dst2, const uint16_t* restrict src0, const uint16_t* restrict src1, const uint16_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -143,7 +143,7 @@ static inline void scale3x_16_def_whole(scale3x_uint16* restrict dst0, scale3x_u
 	}
 }
 
-static inline void scale3x_16_def_border(scale3x_uint16* restrict dst, const scale3x_uint16* restrict src0, const scale3x_uint16* restrict src1, const scale3x_uint16* restrict src2, unsigned count)
+static inline void scale3x_16_def_border(uint16_t* restrict dst, const uint16_t* restrict src0, const uint16_t* restrict src1, const uint16_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -194,7 +194,7 @@ static inline void scale3x_16_def_border(scale3x_uint16* restrict dst, const sca
 	}
 }
 
-static inline void scale3x_16_def_center(scale3x_uint16* restrict dst, const scale3x_uint16* restrict src0, const scale3x_uint16* restrict src1, const scale3x_uint16* restrict src2, unsigned count)
+static inline void scale3x_16_def_center(uint16_t* restrict dst, const uint16_t* restrict src0, const uint16_t* restrict src1, const uint16_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -245,7 +245,7 @@ static inline void scale3x_16_def_center(scale3x_uint16* restrict dst, const sca
 	}
 }
 
-static inline void scale3x_32_def_whole(scale3x_uint32* restrict dst0, scale3x_uint32* restrict dst1, scale3x_uint32* restrict dst2, const scale3x_uint32* restrict src0, const scale3x_uint32* restrict src1, const scale3x_uint32* restrict src2, unsigned count)
+static inline void scale3x_32_def_whole(uint32_t* restrict dst0, uint32_t* restrict dst1, uint32_t* restrict dst2, const uint32_t* restrict src0, const uint32_t* restrict src1, const uint32_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -336,7 +336,7 @@ static inline void scale3x_32_def_whole(scale3x_uint32* restrict dst0, scale3x_u
 	}
 }
 
-static inline void scale3x_32_def_border(scale3x_uint32* restrict dst, const scale3x_uint32* restrict src0, const scale3x_uint32* restrict src1, const scale3x_uint32* restrict src2, unsigned count)
+static inline void scale3x_32_def_border(uint32_t* restrict dst, const uint32_t* restrict src0, const uint32_t* restrict src1, const uint32_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -387,7 +387,7 @@ static inline void scale3x_32_def_border(scale3x_uint32* restrict dst, const sca
 	}
 }
 
-static inline void scale3x_32_def_center(scale3x_uint32* restrict dst, const scale3x_uint32* restrict src0, const scale3x_uint32* restrict src1, const scale3x_uint32* restrict src2, unsigned count)
+static inline void scale3x_32_def_center(uint32_t* restrict dst, const uint32_t* restrict src0, const uint32_t* restrict src1, const uint32_t* restrict src2, unsigned count)
 {
 	assert(count >= 2);
 
@@ -450,7 +450,7 @@ static inline void scale3x_32_def_center(scale3x_uint32* restrict dst, const sca
  * \param dst1 Second destination row, triple length in pixels.
  * \param dst2 Third destination row, triple length in pixels.
  */
-void scale3x_16_def(scale3x_uint16* dst0, scale3x_uint16* dst1, scale3x_uint16* dst2, const scale3x_uint16* src0, const scale3x_uint16* src1, const scale3x_uint16* src2, unsigned count)
+void scale3x_16_def(uint16_t* dst0, uint16_t* dst1, uint16_t* dst2, const uint16_t* src0, const uint16_t* src1, const uint16_t* src2, unsigned count)
 {
 #ifdef USE_SCALE_RANDOMWRITE
 	scale3x_16_def_whole(dst0, dst1, dst2, src0, src1, src2, count);
@@ -473,7 +473,7 @@ void scale3x_16_def(scale3x_uint16* dst0, scale3x_uint16* dst1, scale3x_uint16* 
  * \param dst1 Second destination row, triple length in pixels.
  * \param dst2 Third destination row, triple length in pixels.
  */
-void scale3x_32_def(scale3x_uint32* dst0, scale3x_uint32* dst1, scale3x_uint32* dst2, const scale3x_uint32* src0, const scale3x_uint32* src1, const scale3x_uint32* src2, unsigned count)
+void scale3x_32_def(uint32_t* dst0, uint32_t* dst1, uint32_t* dst2, const uint32_t* src0, const uint32_t* src1, const uint32_t* src2, unsigned count)
 {
 #ifdef USE_SCALE_RANDOMWRITE
 	scale3x_32_def_whole(dst0, dst1, dst2, src0, src1, src2, count);

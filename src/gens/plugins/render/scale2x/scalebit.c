@@ -47,8 +47,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define SSDST(bits, num) (scale2x_uint##bits *)dst##num
-#define SSSRC(bits, num) (const scale2x_uint##bits *)src##num
+#define SSDST(bits, num) (uint##bits##_t *)dst##num
+#define SSSRC(bits, num) (const uint##bits##_t *)src##num
 
 /**
  * Apply the Scale2x effect on a group of rows. Used internally.
@@ -57,13 +57,32 @@ static inline void stage_scale2x(void* dst0, void* dst1,
 				 const void* src0, const void* src1, const void* src2,
 				 unsigned int pixel, unsigned int pixel_per_row)
 {
-	switch (pixel) {
+	switch (pixel)
+	{
 #if defined(__GNUC__) && defined(__i386__)
-		case 2 : scale2x_16_mmx(SSDST(16,0), SSDST(16,1), SSSRC(16,0), SSSRC(16,1), SSSRC(16,2), pixel_per_row); break;
-		case 4 : scale2x_32_mmx(SSDST(32,0), SSDST(32,1), SSSRC(32,0), SSSRC(32,1), SSSRC(32,2), pixel_per_row); break;
+		case 2:
+			scale2x_16_mmx(SSDST(16,0), SSDST(16,1),
+				       SSSRC(16,0), SSSRC(16,1), SSSRC(16,2),
+				       pixel_per_row);
+			break;
+		
+		case 4:
+			scale2x_32_mmx(SSDST(32,0), SSDST(32,1),
+				       SSSRC(32,0), SSSRC(32,1), SSSRC(32,2),
+				       pixel_per_row);
+			break;
 #else
-		case 2 : scale2x_16_def(SSDST(16,0), SSDST(16,1), SSSRC(16,0), SSSRC(16,1), SSSRC(16,2), pixel_per_row); break;
-		case 4 : scale2x_32_def(SSDST(32,0), SSDST(32,1), SSSRC(32,0), SSSRC(32,1), SSSRC(32,2), pixel_per_row); break;
+		case 2:
+			scale2x_16_def(SSDST(16,0), SSDST(16,1),
+				       SSSRC(16,0), SSSRC(16,1), SSSRC(16,2),
+				       pixel_per_row);
+			break;
+		
+		case 4:
+			scale2x_32_def(SSDST(32,0), SSDST(32,1),
+				       SSSRC(32,0), SSSRC(32,1), SSSRC(32,2),
+				       pixel_per_row);
+			break;
 #endif
 	}
 }
@@ -75,9 +94,19 @@ static inline void stage_scale3x(void* dst0, void* dst1, void* dst2,
 				 const void* src0, const void* src1, const void* src2,
 				 unsigned int pixel, unsigned int pixel_per_row)
 {
-	switch (pixel) {
-		case 2 : scale3x_16_def(SSDST(16,0), SSDST(16,1), SSDST(16,2), SSSRC(16,0), SSSRC(16,1), SSSRC(16,2), pixel_per_row); break;
-		case 4 : scale3x_32_def(SSDST(32,0), SSDST(32,1), SSDST(32,2), SSSRC(32,0), SSSRC(32,1), SSSRC(32,2), pixel_per_row); break;
+	switch (pixel)
+	{
+		case 2:
+			scale3x_16_def(SSDST(16,0), SSDST(16,1), SSDST(16,2),
+				       SSSRC(16,0), SSSRC(16,1), SSSRC(16,2),
+				       pixel_per_row);
+			break;
+		
+		case 4:
+			scale3x_32_def(SSDST(32,0), SSDST(32,1), SSDST(32,2),
+				       SSSRC(32,0), SSSRC(32,1), SSSRC(32,2),
+				       pixel_per_row);
+			break;
 	}
 }
 
