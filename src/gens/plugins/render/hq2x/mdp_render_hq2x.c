@@ -42,6 +42,10 @@
 int *mdp_render_hq2x_LUT16to32 = NULL;
 int *mdp_render_hq2x_RGBtoYUV = NULL;
 
+// TODO: Proper 15-bit color support.
+// It "works' right now in 15-bit, but the output is different than with 16-bit.
+// My first attempt at 15-bit support resulted in massive failure. :(
+
 
 /**
  * mdp_render_hq2x_end(): Shut down the hq2x plugin.
@@ -72,7 +76,6 @@ static void mdp_render_hq2x_InitLUT16to32(void)
 	mdp_render_hq2x_LUT16to32 = malloc(65536 * sizeof(int));
 	
 	// Initialize the 16-bit to 32-bit conversion table.
-	// TODO: 15-bit color support.
 	for (int i = 0; i < 65536; i++)
 		mdp_render_hq2x_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
 }
@@ -87,7 +90,6 @@ static void mdp_render_hq2x_InitRGBtoYUV(void)
 	mdp_render_hq2x_RGBtoYUV = malloc(65536 * sizeof(int));
 	
 	// Initialize the RGB to YUV conversion table.
-	// TODO: 15-bit color support.
 	int r, g, b, Y, u, v;
 	
 	for (int i = 0; i < 32; i++)
@@ -117,17 +119,10 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
 	{
 		// Make sure the lookup tables are initialized.
-		if (renderInfo->bpp == 16)
-		{
-			if (!mdp_render_hq2x_LUT16to32)
-				mdp_render_hq2x_InitLUT16to32();
-			if (!mdp_render_hq2x_RGBtoYUV)
-				mdp_render_hq2x_InitRGBtoYUV();
-		}
-		else
-		{
-			// TODO: 15-bit version.
-		}
+		if (!mdp_render_hq2x_LUT16to32)
+			mdp_render_hq2x_InitLUT16to32();
+		if (!mdp_render_hq2x_RGBtoYUV)
+			mdp_render_hq2x_InitRGBtoYUV();
 		
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
