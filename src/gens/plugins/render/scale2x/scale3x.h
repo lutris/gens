@@ -21,6 +21,10 @@
 #ifndef __SCALE3X_H
 #define __SCALE3X_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef unsigned short scale3x_uint16;
 typedef unsigned scale3x_uint32;
 
@@ -32,5 +36,8 @@ void scale3x_32_def(scale3x_uint32* dst0, scale3x_uint32* dst1, scale3x_uint32* 
 		    const scale3x_uint32* src0, const scale3x_uint32* src1,
 		    const scale3x_uint32* src2, unsigned count);
 
+#ifdef __cplusplus
+}
 #endif
 
+#endif /* __SCALE3X_H */

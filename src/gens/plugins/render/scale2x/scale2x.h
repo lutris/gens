@@ -21,6 +21,10 @@
 #ifndef __SCALE2X_H
 #define __SCALE2X_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef unsigned short scale2x_uint16;
 typedef unsigned scale2x_uint32;
 
@@ -55,5 +59,8 @@ static inline void scale2x_mmx_emms(void)
 
 #endif
 
+#ifdef __cplusplus
+}
 #endif
 
+#endif /* __SCALE2X_H */
