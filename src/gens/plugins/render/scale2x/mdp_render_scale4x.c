@@ -32,8 +32,8 @@
 // Scale2x frontend.
 #include "scalebit.h"
 
-// TODO: Add a plugin-specific version of the CPU Flags file.
-#include "gens_core/misc/cpuflags.h"
+// CPU flags
+#include "plugins/mdp_cpuflags.h"
 
 // TODO: Conditionalize MMX.
 // Scale2x always defaults to using MMX right now.

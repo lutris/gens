@@ -28,8 +28,8 @@
 #include <string.h>
 #include <stdint.h>
 
-// TODO: Add a plugin-specific version of the CPU Flags file.
-#include "gens_core/misc/cpuflags.h"
+// CPU flags
+#include "plugins/mdp_cpuflags.h"
 
 // x86 asm versions
 #ifdef GENS_X86_ASM
@@ -104,7 +104,7 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
 		{
 			mdp_render_scanline_50_16_x86_mmx(
 				    (uint16_t*)renderInfo->destScreen,
@@ -134,7 +134,7 @@ void mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 	else
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
 		{
 			mdp_render_scanline_50_32_x86_mmx(
 				    (uint32_t*)renderInfo->destScreen,

@@ -28,8 +28,8 @@
 #include <string.h>
 #include <stdint.h>
 
-// TODO: Add a plugin-specific version of the CPU Flags file.
-#include "gens_core/misc/cpuflags.h"
+// CPU flags
+#include "plugins/mdp_cpuflags.h"
 
 // TODO: Remove this when x86 asm versions are added.
 #undef GENS_X86_ASM

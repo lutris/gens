@@ -1,10 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] Scale3x renderer.                                           *
+ * Gens: MDP: Mega Drive Plugin - CPU Flag Definitions.                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
- * Scale3x Copyright (c) 2001 by Andrea Mazzoleni                          *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,31 +20,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+// The definitions in this file match gens_core/misc/cpuflags.h.
+
+#ifndef GENS_MDP_CPUFLAGS_H
+#define GENS_MDP_CPUFLAGS_H
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
+#endif /* HAVE_CONFIG_H */
 
-#include "mdp_render_scale3x.h"
-#include <string.h>
-#include <stdint.h>
+// CPU flags (IA32/x86_64)
+#define MDP_CPUFLAG_MMX		(1 << 0)
+#define MDP_CPUFLAG_SSE		(1 << 1)
+#define MDP_CPUFLAG_SSE2	(1 << 2)
+#define MDP_CPUFLAG_SSE3	(1 << 3)
+#define MDP_CPUFLAG_SSSE3	(1 << 4)
+#define MDP_CPUFLAG_SSE41	(1 << 5)
+#define MDP_CPUFLAG_SSE42	(1 << 6)
+#define MDP_CPUFLAG_SSE4A	(1 << 7)
+#define MDP_CPUFLAG_SSE5	(1 << 8)
 
-// Scale2x frontend.
-#include "scalebit.h"
+// CPU flags (IA32/x86_64; AMD only)
+#define MDP_CPUFLAG_MMXEXT	(1 << 9)
+#define MDP_CPUFLAG_3DNOW	(1 << 10)
+#define MDP_CPUFLAG_3DNOWEXT	(1 << 11)
 
-// CPU flags
-#include "plugins/mdp_cpuflags.h"
-
-// TODO: Conditionalize MMX.
-// Scale2x always defaults to using MMX right now.
-
-void mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo)
-{
-	if (!renderInfo)
-		return;
-
-	unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
-	
-	scale(3, renderInfo->destScreen, renderInfo->pitch,
-	      renderInfo->mdScreen, (renderInfo->width + renderInfo->offset) * bytespp,
-	      bytespp, renderInfo->width, renderInfo->height);
-}
+#endif /* GENS_MDP_CPUFLAGS_H */
