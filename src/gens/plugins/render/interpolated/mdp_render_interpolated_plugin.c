@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] 2x renderer. (Plugin Data File)                             *
+ * Gens: [MDP] Interpolated renderer. (Plugin Data File)                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "plugins/mdp.h"
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
+
+#include "plugins/mdp.h"
+#include "plugins/mdp_cpuflags.h"
 
 #include "mdp_render_interpolated.hpp"
 
@@ -50,6 +52,10 @@ MDP_t mdp_render_interpolated =
 	.pluginVersion = MDP_VERSION(0, 0, 1),
 	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
+	
+	// CPU flags
+	.cpuFlagsSupported = 0,
+	.cpuFlagsRequired = 0,
 	
 	// Init/Shutdown functions
 	.init = NULL,

@@ -218,7 +218,9 @@ noinst_HEADERS = \
 		audio/audio.hpp \
 		audio/audio_mmx.h \
 		plugins/pluginmgr.hpp \
-		plugins/mdp.h
+		plugins/mdp.h \
+		plugins/mdp_cpuflags.h \
+		plugins/mdp_render.h
 
 if GENS_DEBUGGER
 noinst_HEADERS += \

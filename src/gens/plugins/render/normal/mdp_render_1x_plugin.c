@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "plugins/mdp.h"
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
+
+#include "plugins/mdp.h"
+#include "plugins/mdp_cpuflags.h"
 
 #include "mdp_render_1x.hpp"
 
@@ -50,6 +52,10 @@ MDP_t mdp_render_1x =
 	.pluginVersion = MDP_VERSION(0, 0, 1),
 	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
+	
+	// CPU flags
+	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
+	.cpuFlagsRequired = 0,
 	
 	// Init/Shutdown functions
 	.init = NULL,

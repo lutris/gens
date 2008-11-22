@@ -89,6 +89,10 @@ typedef struct
 	const uint32_t type;
 	const MDP_Desc_t *desc;
 	
+	// CPU flag information.
+	const uint32_t cpuFlagsSupported;
+	const uint32_t cpuFlagsRequired;
+	
 	// Init/Shutdown functions
 	mdp_init init;
 	mdp_end end;
