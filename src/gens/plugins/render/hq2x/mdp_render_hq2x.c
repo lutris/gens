@@ -26,8 +26,9 @@
 #endif
 
 #include "mdp_render_hq2x.h"
-#include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
@@ -38,28 +39,59 @@
 #endif /* GENS_X86_ASM */
 
 // hq2x lookup tables
-int LUT16to32[65536];
-int RGBtoYUV[65536];
+int *mdp_render_hq2x_LUT16to32 = NULL;
+int *mdp_render_hq2x_RGBtoYUV = NULL;
 
 
-// TODO: Only initialize the LUTs when necessary.
-// Right now, this function is the MDP_t init() function.
-void mdp_render_hq2x_InitLUTs(void)
+void mdp_render_hq2x_end(void)
 {
-	int i, j, k, r, g, b, Y, u, v;
+	// Free all lookup tables.
+	if (mdp_render_hq2x_LUT16to32)
+	{
+		free(mdp_render_hq2x_LUT16to32);
+		mdp_render_hq2x_LUT16to32 = NULL;
+	}
+	
+	if (mdp_render_hq2x_RGBtoYUV)
+	{
+		free(mdp_render_hq2x_RGBtoYUV);
+		mdp_render_hq2x_RGBtoYUV = NULL;
+	}
+}
+
+
+/**
+ * mdp_render_hq2x_InitLUT16to32(): Initialize LUT16to32.
+ */
+static void mdp_render_hq2x_InitLUT16to32(void)
+{
+	// Allocate the memory for the lookup table.
+	mdp_render_hq2x_LUT16to32 = malloc(65536 * sizeof(int));
 	
 	// Initialize the 16-bit to 32-bit conversion table.
 	// TODO: 15-bit color support.
-	for (i = 0; i < 65536; i++)
-		LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
+	for (int i = 0; i < 65536; i++)
+		mdp_render_hq2x_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
+}
+
+
+/**
+ * mdp_render_hq2x_InitRGBtoYUV(): Initialize RGBtoYUV.
+ */
+static void mdp_render_hq2x_InitRGBtoYUV(void)
+{
+	// Allocate the memory for the lookup table.
+	mdp_render_hq2x_RGBtoYUV = malloc(65536 * sizeof(int));
 	
 	// Initialize the RGB to YUV conversion table.
 	// TODO: 15-bit color support.
-	for (i = 0; i < 32; i++)
+	int r, g, b, Y, u, v;
+	
+	for (int i = 0; i < 32; i++)
 	{
-		for (j = 0; j < 64; j++)
+		for (int j = 0; j < 64; j++)
 		{
-			for (k = 0; k < 32; k++)
+			for (int k = 0; k < 32; k++)
 			{
 				r = i << 3;
 				g = j << 2;
@@ -67,7 +99,7 @@ void mdp_render_hq2x_InitLUTs(void)
 				Y = (r + g + b) >> 2;
 				u = 128 + ((r - b) >> 2);
 				v = 128 + ((-r + 2*g -b) >> 3);
-				RGBtoYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
+				mdp_render_hq2x_RGBtoYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
 			}
 		}
 	}
@@ -78,9 +110,22 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;
-
+	
 	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
 	{
+		// Make sure the lookup tables are initialized.
+		if (renderInfo->bpp == 16)
+		{
+			if (!mdp_render_hq2x_LUT16to32)
+				mdp_render_hq2x_InitLUT16to32();
+			if (!mdp_render_hq2x_RGBtoYUV)
+				mdp_render_hq2x_InitRGBtoYUV();
+		}
+		else
+		{
+			// TODO: 15-bit version.
+		}
+		
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
 		{

@@ -19,13 +19,13 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 %ifdef __OBJ_ELF
-%define _LUT16to32 LUT16to32
-%define _RGBtoYUV RGBtoYUV
+%define _mdp_render_hq2x_LUT16to32 mdp_render_hq2x_LUT16to32
+%define _mdp_render_hq2x_RGBtoYUV mdp_render_hq2x_RGBtoYUV
 %define _mdp_render_hq2x_16_x86_mmx mdp_render_hq2x_16_x86_mmx
 %endif
 
-extern _LUT16to32
-extern _RGBtoYUV
+extern _mdp_render_hq2x_LUT16to32
+extern _mdp_render_hq2x_RGBtoYUV
 
 section .bss align=64
 	linesleft:	resd 1
@@ -100,7 +100,7 @@ section .text
 	mov	edx, [%1]
 	cmp	edx, [%2]
 	je	%%fin
-	mov	ecx, _RGBtoYUV
+	mov	ecx, [_mdp_render_hq2x_RGBtoYUV]
 	movd	mm1, [ecx+edx*4]
 	movq	mm5, mm1
 	mov	edx, [%2]
@@ -222,7 +222,7 @@ section .text
 %endmacro
 
 %macro Interp6 3
-	mov		ecx, _LUT16to32
+	mov		ecx, [_mdp_render_hq2x_LUT16to32]
 	movd		mm1, [ecx+eax*4]
 	mov		edx, %2
 	movd		mm2, [ecx+edx*4]
@@ -246,7 +246,7 @@ section .text
 %endmacro
 
 %macro Interp7 3
-	mov		ecx, _LUT16to32
+	mov		ecx, [_mdp_render_hq2x_LUT16to32]
 	movd		mm1, [ecx+eax*4]
 	mov		edx, %2
 	movd		mm2, [ecx+edx*4]
@@ -269,7 +269,7 @@ section .text
 %endmacro
 
 %macro Interp9 3
-	mov		ecx, _LUT16to32
+	mov		ecx, [_mdp_render_hq2x_LUT16to32]
 	movd		mm1, [ecx+eax*4]
 	mov		edx, %2
 	movd		mm2, [ecx+edx*4]
@@ -293,7 +293,7 @@ section .text
 %endmacro
 
 %macro Interp10 3
-	mov		ecx, _LUT16to32
+	mov		ecx, [_mdp_render_hq2x_LUT16to32]
 	movd		mm1, [ecx+eax*4]
 	mov		edx, %2
 	movd		mm2, [ecx+edx*4]
@@ -599,7 +599,7 @@ arg_offset	equ 28
 	mov	[w9], edx
 	
 .flags:
-	mov	ebx, _RGBtoYUV
+	mov	ebx, [_mdp_render_hq2x_RGBtoYUV]
 	mov	eax, [w5]
 	xor	ecx, ecx
 	movd	mm5, [ebx + eax * 4]

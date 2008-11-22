@@ -30,7 +30,7 @@ extern "C" {
 
 #include "plugins/mdp_render.h"
 
-void mdp_render_hq2x_InitLUTs(void);
+void mdp_render_hq2x_end(void);
 void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo);
 
 #ifdef __cplusplus

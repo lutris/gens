@@ -59,8 +59,8 @@ MDP_t mdp_render_hq2x =
 	.cpuFlagsRequired = MDP_CPUFLAG_MMX,
 	
 	// Init/Shutdown functions
-	.init = mdp_render_hq2x_InitLUTs,	// TODO: Only initialize the LUTs when necessary.
-	.end = NULL,
+	.init = NULL,
+	.end = mdp_render_hq2x_end,
 	
 	.plugin_t = (void*)&MDP_Render
 };
