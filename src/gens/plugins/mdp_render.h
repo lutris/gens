@@ -55,6 +55,12 @@ typedef struct
 } MDP_Render_Info_t;
 
 
+// Render plugin flags.
+
+// SRC16DST32: Source must be 16-bit color when using 32-bit output.
+#define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
+
+
 // Render plugin definition.
 typedef void (GENS_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
 typedef struct
@@ -67,6 +73,9 @@ typedef struct
 	
 	// Scaling ratio. (1 == 320x240; 2 = 640x480; etc)
 	const int scale;
+	
+	// Render flags.
+	const uint32_t flags;
 	
 	// Render tag.
 	const char* tag;
