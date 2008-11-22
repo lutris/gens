@@ -46,42 +46,47 @@ section .text align=64
 		mov	ebp, esp
 		pushad
 		
-		mov ecx, [ebp + arg_width]		; ecx = Number of pixels per line
-		mov ebx, [ebp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
-		mov esi, [ebp + arg_mdScreen]		; esi = Source
-		shl ecx, 2				; ecx = Number of bytes per line
-		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
-		shr ecx, 3				; Transfer 8 bytes per cycle. (2 32-bit pixels)
-		shl dword [ebp + arg_offset], 2		; Adjust offset for 32-bit color.
-		mov edi, [ebp + arg_destScreen]		; edi = Destination
-		mov [ebp + arg_width], ecx		; Initialize the X counter.
-		jmp short .Loop_Y
-
+		mov	ecx, [ebp + arg_width]		; ecx = Number of pixels per line
+		mov	ebx, [ebp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
+		mov	esi, [ebp + arg_mdScreen]	; esi = Source
+		shl	ecx, 2				; ecx = Number of bytes per line
+		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
+		shr	ecx, 3				; Transfer 8 bytes per cycle. (2 32-bit pixels)
+		shl	dword [ebp + arg_offset], 2	; Adjust offset for 32-bit color.
+		mov	edi, [ebp + arg_destScreen]	; edi = Destination
+		mov	[ebp + arg_width], ecx		; Initialize the X counter.
+		jmp	short .Loop_Y
+	
 	align 64
-
+	
 	.Loop_Y:
 	.Loop_X:
-				mov eax, [esi]		; First pixel.
-				mov edx, [esi + 4]	; Second pixel.
-				add esi, 8
-				mov [edi], eax
-				mov [edi + 4], edx
-				add edi, 8
-				dec ecx
-				jnz .Loop_X
-	
-			add esi, [ebp + arg_offset]	; Add the line offset.
-			add edi, ebx			; Add the pitch difference to the destination pointer.
-			mov ecx, [ebp + arg_width]	; Reset the X counter.
-			dec dword [ebp + arg_height]	; Decrement the Y counter.
-			jnz .Loop_Y
+				; Get source pixels.
+				mov	eax, [esi]	; First pixel.
+				mov	edx, [esi + 4]	; Second pixel.
+				add	esi, 8
+				
+				; Put destination pixels.
+				mov	[edi], eax
+				mov	[edi + 4], edx
+				add	edi, 8
+				
+				; Next group of pixels.
+				dec	ecx
+				jnz	.Loop_X
+			
+			add	esi, [ebp + arg_offset]		; Add the line offset.
+			add	edi, ebx			; Add the pitch difference to the destination pointer.
+			mov	ecx, [ebp + arg_width]		; Reset the X counter.
+			dec	dword [ebp + arg_height]	; Decrement the Y counter.
+			jnz	.Loop_Y
 		
 		; Reset the frame pointer.
 		popad
 		mov	esp, ebp
 		pop	ebp
 		ret
-
+	
 	align 64
 	
 	;************************************************************************
@@ -94,52 +99,52 @@ section .text align=64
 		mov	ebp, esp
 		pushad
 		
-		mov ecx, [ebp + arg_width]		; ecx = Number of pixels per line
-		mov ebx, [ebp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
-		mov esi, [ebp + arg_mdScreen]		; esi = Source
-		shl ecx, 2				; ecx = Number of bytes per line
-		sub ebx, ecx				; ebx = Difference between dest pitch and src pitch
-		shr ecx, 6				; Transfer 64 bytes per cycle. (16 32-bit pixels)
-		shl dword [ebp + arg_offset], 2		; Adjust offset for 32-bit color.
-		mov edi, [ebp + arg_destScreen]		; edi = Destination
-		mov [ebp + arg_width], ecx		; Initialize the X counter.
-		jmp short .Loop_Y
-
+		mov	ecx, [ebp + arg_width]		; ecx = Number of pixels per line
+		mov	ebx, [ebp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
+		mov	esi, [ebp + arg_mdScreen]	; esi = Source
+		shl	ecx, 2				; ecx = Number of bytes per line
+		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
+		shr	ecx, 6				; Transfer 64 bytes per cycle. (16 32-bit pixels)
+		shl	dword [ebp + arg_offset], 2	; Adjust offset for 32-bit color.
+		mov	edi, [ebp + arg_destScreen]	; edi = Destination
+		mov	[ebp + arg_width], ecx		; Initialize the X counter.
+		jmp	short .Loop_Y
+	
 	align 64
-
+	
 	.Loop_Y:
 	.Loop_X:
 				; Get source pixels.
-				movq mm0, [esi]
-				movq mm1, [esi + 8]
-				movq mm2, [esi + 16]
-				movq mm3, [esi + 24]
-				movq mm4, [esi + 32]
-				movq mm5, [esi + 40]
-				movq mm6, [esi + 48]
-				movq mm7, [esi + 56]
+				movq	mm0, [esi]
+				movq	mm1, [esi + 8]
+				movq	mm2, [esi + 16]
+				movq	mm3, [esi + 24]
+				movq	mm4, [esi + 32]
+				movq	mm5, [esi + 40]
+				movq	mm6, [esi + 48]
+				movq	mm7, [esi + 56]
+				add	esi, 64
 				
 				; Put destination pixels.
-				movq [edi], mm0
-				movq [edi + 8], mm1
-				movq [edi + 16], mm2
-				movq [edi + 24], mm3
-				movq [edi + 32], mm4
-				movq [edi + 40], mm5
-				movq [edi + 48], mm6
-				movq [edi + 56], mm7
+				movq	[edi], mm0
+				movq	[edi + 8], mm1
+				movq	[edi + 16], mm2
+				movq	[edi + 24], mm3
+				movq	[edi + 32], mm4
+				movq	[edi + 40], mm5
+				movq	[edi + 48], mm6
+				movq	[edi + 56], mm7
+				add	edi, 64
 				
-				; Loop management.
-				add esi, 64
-				add edi, 64
-				dec ecx
-				jnz .Loop_X
+				; Next group of pixels.
+				dec	ecx
+				jnz	.Loop_X
 			
-			add esi, [ebp + arg_offset]	; Add the line offset.
-			add edi, ebx			; Add the pitch difference to the destination pointer.
-			mov ecx, [ebp + arg_width]	; Reset the X counter.
-			dec dword [ebp + arg_height]	; Decrement the Y counter.
-			jnz .Loop_Y
+			add	esi, [ebp + arg_offset]		; Add the line offset.
+			add	edi, ebx			; Add the pitch difference to the destination pointer.
+			mov	ecx, [ebp + arg_width]		; Reset the X counter.
+			dec	dword [ebp + arg_height]	; Decrement the Y counter.
+			jnz	.Loop_Y
 		
 		; Reset the frame pointer.
 		popad
