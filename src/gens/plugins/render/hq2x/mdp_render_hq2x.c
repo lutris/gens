@@ -43,6 +43,9 @@ int *mdp_render_hq2x_LUT16to32 = NULL;
 int *mdp_render_hq2x_RGBtoYUV = NULL;
 
 
+/**
+ * mdp_render_hq2x_end(): Shut down the hq2x plugin.
+ */
 void mdp_render_hq2x_end(void)
 {
 	// Free all lookup tables.
