@@ -133,16 +133,6 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
 		}
-		/*
-		else
-		{
-			mdp_render_hq2x_16_x86(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
-		}
-		*/
 #else /* !GENS_X86_ASM */
 		T_mdp_render_hq2x_cpp(
 			    (uint16_t*)renderInfo->destScreen,
@@ -162,16 +152,6 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
 		}
-		/*
-		else
-		{
-			mdp_render_hq2x_32_x86(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
-		}
-		*/
 #else /* !GENS_X86_ASM */
 		T_mdp_render_hq2x_cpp(
 			    (uint32_t*)renderInfo->destScreen,
