@@ -61,6 +61,7 @@ extern "C" {
 #define MDP_LICENSE_LGPL_3	"LGPL-3"
 #define MDP_LICENSE_BSD		"BSD"
 
+
 // Plugin description struct.
 typedef struct
 {
