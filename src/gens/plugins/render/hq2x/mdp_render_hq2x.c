@@ -44,11 +44,6 @@
 // It "works' right now in 15-bit, but the output is different than with 16-bit.
 // My first attempt at 15-bit support resulted in massive failure. :(
 
-// Temporary buffer for 32-bit color.
-static uint16_t *tmpOutBuf = NULL;
-static const int tmpOutBuf_pitch = 640 * 2;
-static const int tmpOutBuf_height = 480;
-
 
 /**
  * mdp_render_hq2x_end(): Initialize the hq2x plugin.
@@ -65,13 +60,6 @@ void mdp_render_hq2x_init(void)
  */
 void mdp_render_hq2x_end(void)
 {
-	// Free the temporary buffer for 32-bit color.
-	if (tmpOutBuf)
-	{
-		free(tmpOutBuf);
-		tmpOutBuf = NULL;
-	}
-	
 	// Decrement the lookup table reference counter.
 	mdp_render_hq2x_refcount--;
 	

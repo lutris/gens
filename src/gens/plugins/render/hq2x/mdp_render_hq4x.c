@@ -44,11 +44,6 @@
 // It "works' right now in 15-bit, but the output is different than with 16-bit.
 // My first attempt at 15-bit support resulted in massive failure. :(
 
-// Temporary buffer for 32-bit color.
-static uint16_t *tmpOutBuf = NULL;
-static const int tmpOutBuf_pitch = 1280 * 2;
-static const int tmpOutBuf_height = 960;
-
 
 /**
  * mdp_render_hq4x_end(): Initialize the hq4x plugin.
