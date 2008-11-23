@@ -57,7 +57,7 @@ typedef struct
 
 // Render plugin flags.
 
-// SRC16DST32: Source must be 16-bit color when using 32-bit output.
+// SRC16DST32: Plugin only supports 16-bit color; Gens/GS has to convert it to 32-bit.
 #define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
 
 

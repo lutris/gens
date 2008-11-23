@@ -191,6 +191,19 @@ class VDraw
 		// Render Plugin information.
 		static MDP_Render_Info_t m_rInfo;
 		
+		// 16-bit to 32-bit conversion tables.
+		static int *LUT16to32;
+		static int LUT16to32_refcount;
+		static void Init_LUT16to32(void);
+		
+		// Internal surface for rendering the 16-bit temporary image.
+		uint16_t *m_tmp16img;
+		int m_tmp16img_scale;
+		int m_tmp16img_pitch;
+		static void Render_16to32(uint32_t *dest, uint16_t *src,
+					  int width, int height,
+					  int pitchDest, int pitchSrc);
+		
 		// Win32 stuff
 		virtual int reinitGensWindow(void);
 };

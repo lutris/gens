@@ -103,49 +103,20 @@ void mdp_render_hq3x_cpp(MDP_Render_Info_t *renderInfo)
 	if (!mdp_render_hq2x_RGBtoYUV)
 		mdp_render_hq2x_InitRGBtoYUV();
 	
-	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
-	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
-		{
-			mdp_render_hq3x_16_x86_mmx(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
-		}
-#else /* !GENS_X86_ASM */
-		T_mdp_render_hq3x_cpp(
+	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+	{
+		mdp_render_hq3x_16_x86_mmx(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
-#endif /* GENS_X86_ASM */
 	}
-	else //if (renderInfo->bpp == 32)
-	{
-		if (!tmpOutBuf)
-			tmpOutBuf = malloc(tmpOutBuf_pitch * tmpOutBuf_height);
-		
-#ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
-		{
-			mdp_render_hq3x_16_x86_mmx(
-				    (uint16_t*)tmpOutBuf,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    tmpOutBuf_pitch, renderInfo->offset);
-			
-			mdp_render_hq2x_16to32((uint32_t*)renderInfo->destScreen, tmpOutBuf,
-					       renderInfo->width * 3, renderInfo->height * 3,
-					       renderInfo->pitch, tmpOutBuf_pitch);
-		}
 #else /* !GENS_X86_ASM */
-		T_mdp_render_hq3x_cpp(
-			    (uint16_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset);
+	T_mdp_render_hq3x_cpp(
+		    (uint16_t*)renderInfo->destScreen,
+		    (uint16_t*)renderInfo->mdScreen,
+		    renderInfo->width, renderInfo->height,
+		    renderInfo->pitch, renderInfo->offset);
 #endif /* GENS_X86_ASM */
-	}
 }

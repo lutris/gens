@@ -29,6 +29,10 @@
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
+// 16-bit to 32-bit conversion tables.
+int *VDraw::LUT16to32 = NULL;
+int VDraw::LUT16to32_refcount = 0;
+
 
 /**
  * m_rInfo: Render Plugin information.
@@ -80,6 +84,14 @@ VDraw::VDraw()
 	// Initialize m_rInfo.
 	m_rInfo.bpp = 0;
 	
+	// LUT16to32 reference counter.
+	LUT16to32_refcount++;
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	m_tmp16img = NULL;
+	m_tmp16img_scale = 0;
+	m_tmp16img_pitch = 0;
+	
 	// Calculate the text style.
 	calcTextStyle();
 }
@@ -130,12 +142,38 @@ VDraw::VDraw(VDraw *oldDraw)
 	// Initialize m_rInfo.
 	m_rInfo.bpp = 0;
 	
+	// LUT16to32 reference counter.
+	LUT16to32_refcount++;
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	m_tmp16img = NULL;
+	m_tmp16img_scale = 0;
+	m_tmp16img_pitch = 0;
+	
 	// Calculate the text style.
 	calcTextStyle();
 }
 
 VDraw::~VDraw()
 {
+	// LUT16to32 reference counter.
+	LUT16to32_refcount--;
+	
+	if (LUT16to32_refcount == 0 && LUT16to32)
+	{
+		// Free the lookup table.
+		free(LUT16to32);
+		LUT16to32 = NULL;
+	}
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	if (m_tmp16img)
+	{
+		free(m_tmp16img);
+		m_tmp16img = NULL;
+		m_tmp16img_scale = 0;
+		m_tmp16img_pitch = 0;
+	}
 }
 
 
@@ -737,7 +775,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	{
 		if (rendPlugin->flags & MDP_RENDER_FLAG_SRC16DST32)
 		{
-			// Render plugin requires that the MD surface is 16-bit color.
+			// Render plugin only supports 16-bit color.
 			bppMD = 16;
 			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 		}
@@ -776,6 +814,60 @@ int VDraw::reinitGensWindow(void)
 {
 	// Does nothing by default...
 	return 1;
+}
+
+
+/**
+ * Init_LUT16to32(): Initialize the 16-bit to 32-bit lookup table.
+ */
+void VDraw::Init_LUT16to32(void)
+{
+	// Allocate the memory for the lookup table.
+	LUT16to32 = static_cast<int*>(malloc(65536 * sizeof(int)));
+	
+	// Initialize the 16-bit to 32-bit conversion table.
+	for (int i = 0; i < 65536; i++)
+		LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
+}
+
+
+/**
+ * Render_16to32(): Convert 16-bit to 32-bit using the lookup table.
+ * @param dest Destination surface.
+ * @param src Source surface.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitchDest Pitch of the destination surface.
+ * @param pitchSrc Pitch of the source surface.
+ */
+void VDraw::Render_16to32(uint32_t *dest, uint16_t *src,
+			  int width, int height,
+			  int pitchDest, int pitchSrc)
+{
+	int x, y;
+	
+	const int pitchDestDiff = ((pitchDest / 4) - width);
+	const int pitchSrcDiff = ((pitchSrc / 2) - width);
+	
+	// Process four pixels at a time.
+	width >>= 2;
+	
+	for (y = 0; y < height; y++)
+	{
+		for (x = 0; x < width; x++)
+		{
+			*(dest + 0) = LUT16to32[*(src + 0)];
+			*(dest + 1) = LUT16to32[*(src + 1)];
+			*(dest + 2) = LUT16to32[*(src + 2)];
+			*(dest + 3) = LUT16to32[*(src + 3)];
+			
+			dest += 4;
+			src += 4;
+		}
+		
+		dest += pitchDestDiff;
+		src += pitchSrcDiff;
+	}
 }
 
 
