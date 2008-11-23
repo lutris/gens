@@ -36,7 +36,7 @@ static MDP_Desc_t MDP_Desc =
 	.author_orig = "Maxim Stepin",
 	.description = "hq2x renderer.",
 	.website = "http://www.hiend3d.com/",
-	.license = MDP_LICENSE_GPL_2
+	.license = MDP_LICENSE_LGPL_21
 };
 
 static MDP_Render_t MDP_Render =
