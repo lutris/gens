@@ -899,7 +899,7 @@ int VDraw_DDraw::flipInternal(void)
 				
 				Render_16to32((uint32_t*)start, m_tmp16img,
 					      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
-					      pitch, m_tmp16img_pitch);
+					      ddsd.lPitch, m_tmp16img_pitch);
 			}
 			else
 			{
@@ -1000,7 +1000,7 @@ int VDraw_DDraw::flipInternal(void)
 				
 				Render_16to32((uint32_t*)start, m_tmp16img,
 					      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
-					      pitch, m_tmp16img_pitch);
+					      ddsd.lPitch, m_tmp16img_pitch);
 			}
 			else
 			{
