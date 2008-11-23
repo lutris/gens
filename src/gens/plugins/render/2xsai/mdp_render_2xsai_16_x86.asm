@@ -744,5 +744,4 @@ arg_mode555	equ 32
 		popad
 		mov	esp, ebp
 		pop	ebp
-		emms
 		ret
