@@ -189,7 +189,7 @@ arg_mode555	equ 32
 	align 64
 	
 	.Loop:
-			mov word [esi + 320 * 2], 0	; clear clipping
+			mov word [esi + edx * 2], 0	; clear clipping
 			
 			call _2xSaILine			; Do one line
 			
