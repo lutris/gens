@@ -28,6 +28,7 @@ extern _mdp_render_hq2x_LUT16to32
 extern _mdp_render_hq2x_RGBtoYUV
 
 section .bss align=64
+	
 	linesleft:	resd 1
 	xcounter:	resd 1
 	cross:		resd 1
@@ -53,7 +54,7 @@ section .bss align=64
 	c9:		resd 1
 
 section .data align=64
-
+	
 	reg_blank:	dd  0,0
 	const3:		dd  0x00030003,0x00000003
 	const5:		dd  0x00050005,0x00000005
@@ -2096,15 +2097,14 @@ arg_offset	equ 28
 	jmp	.flags
 	
 .NextY:
-	add	esi, [ebp + arg_offset] ; MDP addition
+	add	esi, [ebp + arg_offset] ; MDP: Add the line offset to the source buffer.
 	add	edi, ebx
 	
-	; Stuff added from the original Gens/Linux hq2x renderer.
-	; It doesn't make sense, but it fixes some hq2x issues.
-	; NOTE: This is probably what causes breakage on Windows!
-	mov	ebx, 320
+	; MDP: Add the difference between the pitch and the source width.
+	mov	ebx, [ebp + arg_pitch]
+	shr	ebx, 3
 	sub	ebx, [ebp + arg_width]
-	shl	ebx, 2
+	shl	ebx, 3
 	add	edi, ebx
 	
 	dec	dword [linesleft]
@@ -2112,7 +2112,10 @@ arg_offset	equ 28
 	mov	ebx, [ebp + arg_width]
 	shl	ebx, 2
 	
-	; More stuff added from the original Gens/Linux hq2x renderer.
+	; MDP: Add the line offset to the destination buffer.
+	; Two adds are necessary because the offset is for 16-bit color.
+	; hq2x requires a 16-bit source even though it outputs a 32-bit image.
+	; The plugin definition file sets the MDP_RENDER_FLAG_SRC16DST32 flag.
 	add	ebx, [ebp + arg_offset]
 	add	ebx, [ebp + arg_offset]
 	
