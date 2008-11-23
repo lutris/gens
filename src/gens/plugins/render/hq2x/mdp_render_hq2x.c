@@ -131,7 +131,7 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 #else /* !GENS_X86_ASM */
 		T_mdp_render_hq2x_cpp(
 			    (uint32_t*)renderInfo->destScreen,
-			    (uint32_t*)renderInfo->mdScreen,
+			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
 #endif /* GENS_X86_ASM */
