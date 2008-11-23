@@ -906,7 +906,7 @@ arg_pitch	equ 24
 arg_offset	equ 28
 
 	;************************************************************************
-	; void mdp_render_hq2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
+	; void mdp_render_hq4x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				  int width, int height, int pitch, int offset);
 	global _mdp_render_hq4x_16_x86_mmx
 	_mdp_render_hq4x_16_x86_mmx:
