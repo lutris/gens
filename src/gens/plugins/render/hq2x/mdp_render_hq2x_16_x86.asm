@@ -28,6 +28,7 @@ extern _mdp_render_hq2x_LUT16to32
 extern _mdp_render_hq2x_RGBtoYUV
 
 section .bss align=64
+	
 	linesleft:	resd 1
 	xcounter:	resd 1
 	cross:		resd 1
@@ -44,7 +45,7 @@ section .bss align=64
 	w9:		resd 1
 
 section .data align=64
-
+	
 	reg_blank:	dd  0,0
 	const3:		dd  0x00030003, 0x00000003
 	const5:		dd  0x00050005, 0x00000005
@@ -52,48 +53,48 @@ section .data align=64
 	const14:	dd  0x000E000E, 0x0000000E
 	threshold:	dd  0x00300706, 0x00000000
 	zerolowbits:	dd  0xF7DEF7DE
+	
+	FuncTable:
+		dd ..@flag0, ..@flag1, ..@flag2, ..@flag3, ..@flag4, ..@flag5, ..@flag6, ..@flag7
+		dd ..@flag8, ..@flag9, ..@flag10, ..@flag11, ..@flag12, ..@flag13, ..@flag14, ..@flag15
+		dd ..@flag16, ..@flag17, ..@flag18, ..@flag19, ..@flag20, ..@flag21, ..@flag22, ..@flag23
+		dd ..@flag24, ..@flag25, ..@flag26, ..@flag27, ..@flag28, ..@flag29, ..@flag30, ..@flag31
+		dd ..@flag32, ..@flag33, ..@flag34, ..@flag35, ..@flag36, ..@flag37, ..@flag38, ..@flag39
+		dd ..@flag40, ..@flag41, ..@flag42, ..@flag43, ..@flag44, ..@flag45, ..@flag46, ..@flag47
+		dd ..@flag48, ..@flag49, ..@flag50, ..@flag51, ..@flag52, ..@flag53, ..@flag54, ..@flag55
+		dd ..@flag56, ..@flag57, ..@flag58, ..@flag59, ..@flag60, ..@flag61, ..@flag62, ..@flag63
+		dd ..@flag64, ..@flag65, ..@flag66, ..@flag67, ..@flag68, ..@flag69, ..@flag70, ..@flag71
+		dd ..@flag72, ..@flag73, ..@flag74, ..@flag75, ..@flag76, ..@flag77, ..@flag78, ..@flag79
+		dd ..@flag80, ..@flag81, ..@flag82, ..@flag83, ..@flag84, ..@flag85, ..@flag86, ..@flag87
+		dd ..@flag88, ..@flag89, ..@flag90, ..@flag91, ..@flag92, ..@flag93, ..@flag94, ..@flag95
+		dd ..@flag96, ..@flag97, ..@flag98, ..@flag99, ..@flag100, ..@flag101, ..@flag102, ..@flag103
+		dd ..@flag104, ..@flag105, ..@flag106, ..@flag107, ..@flag108, ..@flag109, ..@flag110, ..@flag111
+		dd ..@flag112, ..@flag113, ..@flag114, ..@flag115, ..@flag116, ..@flag117, ..@flag118, ..@flag119
+		dd ..@flag120, ..@flag121, ..@flag122, ..@flag123, ..@flag124, ..@flag125, ..@flag126, ..@flag127
+		dd ..@flag128, ..@flag129, ..@flag130, ..@flag131, ..@flag132, ..@flag133, ..@flag134, ..@flag135
+		dd ..@flag136, ..@flag137, ..@flag138, ..@flag139, ..@flag140, ..@flag141, ..@flag142, ..@flag143
+		dd ..@flag144, ..@flag145, ..@flag146, ..@flag147, ..@flag148, ..@flag149, ..@flag150, ..@flag151
+		dd ..@flag152, ..@flag153, ..@flag154, ..@flag155, ..@flag156, ..@flag157, ..@flag158, ..@flag159
+		dd ..@flag160, ..@flag161, ..@flag162, ..@flag163, ..@flag164, ..@flag165, ..@flag166, ..@flag167
+		dd ..@flag168, ..@flag169, ..@flag170, ..@flag171, ..@flag172, ..@flag173, ..@flag174, ..@flag175
+		dd ..@flag176, ..@flag177, ..@flag178, ..@flag179, ..@flag180, ..@flag181, ..@flag182, ..@flag183
+		dd ..@flag184, ..@flag185, ..@flag186, ..@flag187, ..@flag188, ..@flag189, ..@flag190, ..@flag191
+		dd ..@flag192, ..@flag193, ..@flag194, ..@flag195, ..@flag196, ..@flag197, ..@flag198, ..@flag199
+		dd ..@flag200, ..@flag201, ..@flag202, ..@flag203, ..@flag204, ..@flag205, ..@flag206, ..@flag207
+		dd ..@flag208, ..@flag209, ..@flag210, ..@flag211, ..@flag212, ..@flag213, ..@flag214, ..@flag215
+		dd ..@flag216, ..@flag217, ..@flag218, ..@flag219, ..@flag220, ..@flag221, ..@flag222, ..@flag223
+		dd ..@flag224, ..@flag225, ..@flag226, ..@flag227, ..@flag228, ..@flag229, ..@flag230, ..@flag231
+		dd ..@flag232, ..@flag233, ..@flag234, ..@flag235, ..@flag236, ..@flag237, ..@flag238, ..@flag239
+		dd ..@flag240, ..@flag241, ..@flag242, ..@flag243, ..@flag244, ..@flag245, ..@flag246, ..@flag247
+		dd ..@flag248, ..@flag249, ..@flag250, ..@flag251, ..@flag252, ..@flag253, ..@flag254, ..@flag255
 
-FuncTable:
-	dd ..@flag0, ..@flag1, ..@flag2, ..@flag3, ..@flag4, ..@flag5, ..@flag6, ..@flag7
-	dd ..@flag8, ..@flag9, ..@flag10, ..@flag11, ..@flag12, ..@flag13, ..@flag14, ..@flag15
-	dd ..@flag16, ..@flag17, ..@flag18, ..@flag19, ..@flag20, ..@flag21, ..@flag22, ..@flag23
-	dd ..@flag24, ..@flag25, ..@flag26, ..@flag27, ..@flag28, ..@flag29, ..@flag30, ..@flag31
-	dd ..@flag32, ..@flag33, ..@flag34, ..@flag35, ..@flag36, ..@flag37, ..@flag38, ..@flag39
-	dd ..@flag40, ..@flag41, ..@flag42, ..@flag43, ..@flag44, ..@flag45, ..@flag46, ..@flag47
-	dd ..@flag48, ..@flag49, ..@flag50, ..@flag51, ..@flag52, ..@flag53, ..@flag54, ..@flag55
-	dd ..@flag56, ..@flag57, ..@flag58, ..@flag59, ..@flag60, ..@flag61, ..@flag62, ..@flag63
-	dd ..@flag64, ..@flag65, ..@flag66, ..@flag67, ..@flag68, ..@flag69, ..@flag70, ..@flag71
-	dd ..@flag72, ..@flag73, ..@flag74, ..@flag75, ..@flag76, ..@flag77, ..@flag78, ..@flag79
-	dd ..@flag80, ..@flag81, ..@flag82, ..@flag83, ..@flag84, ..@flag85, ..@flag86, ..@flag87
-	dd ..@flag88, ..@flag89, ..@flag90, ..@flag91, ..@flag92, ..@flag93, ..@flag94, ..@flag95
-	dd ..@flag96, ..@flag97, ..@flag98, ..@flag99, ..@flag100, ..@flag101, ..@flag102, ..@flag103
-	dd ..@flag104, ..@flag105, ..@flag106, ..@flag107, ..@flag108, ..@flag109, ..@flag110, ..@flag111
-	dd ..@flag112, ..@flag113, ..@flag114, ..@flag115, ..@flag116, ..@flag117, ..@flag118, ..@flag119
-	dd ..@flag120, ..@flag121, ..@flag122, ..@flag123, ..@flag124, ..@flag125, ..@flag126, ..@flag127
-	dd ..@flag128, ..@flag129, ..@flag130, ..@flag131, ..@flag132, ..@flag133, ..@flag134, ..@flag135
-	dd ..@flag136, ..@flag137, ..@flag138, ..@flag139, ..@flag140, ..@flag141, ..@flag142, ..@flag143
-	dd ..@flag144, ..@flag145, ..@flag146, ..@flag147, ..@flag148, ..@flag149, ..@flag150, ..@flag151
-	dd ..@flag152, ..@flag153, ..@flag154, ..@flag155, ..@flag156, ..@flag157, ..@flag158, ..@flag159
-	dd ..@flag160, ..@flag161, ..@flag162, ..@flag163, ..@flag164, ..@flag165, ..@flag166, ..@flag167
-	dd ..@flag168, ..@flag169, ..@flag170, ..@flag171, ..@flag172, ..@flag173, ..@flag174, ..@flag175
-	dd ..@flag176, ..@flag177, ..@flag178, ..@flag179, ..@flag180, ..@flag181, ..@flag182, ..@flag183
-	dd ..@flag184, ..@flag185, ..@flag186, ..@flag187, ..@flag188, ..@flag189, ..@flag190, ..@flag191
-	dd ..@flag192, ..@flag193, ..@flag194, ..@flag195, ..@flag196, ..@flag197, ..@flag198, ..@flag199
-	dd ..@flag200, ..@flag201, ..@flag202, ..@flag203, ..@flag204, ..@flag205, ..@flag206, ..@flag207
-	dd ..@flag208, ..@flag209, ..@flag210, ..@flag211, ..@flag212, ..@flag213, ..@flag214, ..@flag215
-	dd ..@flag216, ..@flag217, ..@flag218, ..@flag219, ..@flag220, ..@flag221, ..@flag222, ..@flag223
-	dd ..@flag224, ..@flag225, ..@flag226, ..@flag227, ..@flag228, ..@flag229, ..@flag230, ..@flag231
-	dd ..@flag232, ..@flag233, ..@flag234, ..@flag235, ..@flag236, ..@flag237, ..@flag238, ..@flag239
-	dd ..@flag240, ..@flag241, ..@flag242, ..@flag243, ..@flag244, ..@flag245, ..@flag246, ..@flag247
-	dd ..@flag248, ..@flag249, ..@flag250, ..@flag251, ..@flag252, ..@flag253, ..@flag254, ..@flag255
+	FuncTable2:
+		dd ..@cross0, ..@cross1, ..@cross2, ..@flag0,
+		dd ..@cross4, ..@flag0,  ..@flag0,  ..@flag0,
+		dd ..@cross8, ..@flag0,  ..@flag0,  ..@flag0,
+		dd ..@flag0,  ..@flag0,  ..@flag0,  ..@flag0
 
-FuncTable2:
-	dd ..@cross0, ..@cross1, ..@cross2, ..@flag0,
-	dd ..@cross4, ..@flag0,  ..@flag0,  ..@flag0,
-	dd ..@cross8, ..@flag0,  ..@flag0,  ..@flag0,
-	dd ..@flag0,  ..@flag0,  ..@flag0,  ..@flag0
-
-section .text
+section .text align=64
 
 %macro TestDiff 2
 	xor	ecx, ecx
@@ -101,10 +102,10 @@ section .text
 	cmp	edx, [%2]
 	je	%%fin
 	mov	ecx, [_mdp_render_hq2x_RGBtoYUV]
-	movd	mm1, [ecx+edx*4]
+	movd	mm1, [ecx + edx * 4]
 	movq	mm5, mm1
 	mov	edx, [%2]
-	movd	mm2, [ecx+edx*4]
+	movd	mm2, [ecx + edx * 4]
 	psubusb	mm1, mm2
 	psubusb	mm2, mm5
 	por	mm1, mm2
@@ -223,11 +224,11 @@ section .text
 
 %macro Interp6 3
 	mov		ecx, [_mdp_render_hq2x_LUT16to32]
-	movd		mm1, [ecx+eax*4]
+	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
-	movd		mm2, [ecx+edx*4]
+	movd		mm2, [ecx + edx * 4]
 	mov		edx, %3
-	movd		mm3, [ecx+edx*4]
+	movd		mm3, [ecx + edx * 4]
 	punpcklbw	mm1, [reg_blank]
 	punpcklbw	mm2, [reg_blank]
 	punpcklbw	mm3, [reg_blank]
@@ -247,11 +248,11 @@ section .text
 
 %macro Interp7 3
 	mov		ecx, [_mdp_render_hq2x_LUT16to32]
-	movd		mm1, [ecx+eax*4]
+	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
-	movd		mm2, [ecx+edx*4]
+	movd		mm2, [ecx + edx * 4]
 	mov		edx, %3
-	movd		mm3, [ecx+edx*4]
+	movd		mm3, [ecx + edx * 4]
 	punpcklbw	mm1, [reg_blank]
 	punpcklbw	mm2, [reg_blank]
 	punpcklbw	mm3, [reg_blank]
@@ -270,11 +271,11 @@ section .text
 
 %macro Interp9 3
 	mov		ecx, [_mdp_render_hq2x_LUT16to32]
-	movd		mm1, [ecx+eax*4]
+	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
-	movd		mm2, [ecx+edx*4]
+	movd		mm2, [ecx + edx * 4]
 	mov		edx, %3
-	movd		mm3, [ecx+edx*4]
+	movd		mm3, [ecx + edx * 4]
 	punpcklbw	mm1, [reg_blank]
 	punpcklbw	mm2, [reg_blank]
 	punpcklbw	mm3, [reg_blank]
@@ -294,11 +295,11 @@ section .text
 
 %macro Interp10 3
 	mov		ecx, [_mdp_render_hq2x_LUT16to32]
-	movd		mm1, [ecx+eax*4]
+	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
-	movd		mm2, [ecx+edx*4]
+	movd		mm2, [ecx + edx * 4]
 	mov		edx, %3
-	movd		mm3, [ecx+edx*4]
+	movd		mm3, [ecx + edx * 4]
 	punpcklbw	mm1, [reg_blank]
 	punpcklbw	mm2, [reg_blank]
 	punpcklbw	mm3, [reg_blank]
