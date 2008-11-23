@@ -60,7 +60,7 @@ MDP_t mdp_render_hq2x =
 	.cpuFlagsRequired = MDP_CPUFLAG_MMX,
 	
 	// Init/Shutdown functions
-	.init = NULL,
+	.init = mdp_render_hq2x_init,
 	.end = mdp_render_hq2x_end,
 	
 	.plugin_t = (void*)&MDP_Render

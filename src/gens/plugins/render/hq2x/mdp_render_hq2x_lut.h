@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] hq2x renderer.                                              *
+ * Gens: [MDP] hq2x renderer. (Lookup Tables)                              *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,18 +21,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_HQ2X_H
-#define GENS_MDP_RENDER_HQ2X_H
+#ifndef GENS_MDP_RENDER_HQ2X_LUT_H
+#define GENS_MDP_RENDER_HQ2X_LUT_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "plugins/mdp_render.h"
+extern int *mdp_render_hq2x_LUT16to32;
+extern int *mdp_render_hq2x_RGBtoYUV;
+extern int mdp_render_hq2x_refcount;
 
-void mdp_render_hq2x_init(void);
-void mdp_render_hq2x_end(void);
-void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo);
+void mdp_render_hq2x_InitLUT16to32(void);
+void mdp_render_hq2x_InitRGBtoYUV(void);
 
 #ifdef __cplusplus
 }
