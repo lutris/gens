@@ -65,7 +65,7 @@ void mdp_render_hq2x_end(void)
 	
 	if (mdp_render_hq2x_refcount == 0)
 	{
-		// Last plugin to use the lookup tables.
+		// This is the last plugin to use the hq2x lookup tables.
 		// Deallocate them.
 		
 		if (mdp_render_hq2x_LUT16to32)
