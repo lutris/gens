@@ -480,7 +480,7 @@ arg_offset	equ 28
 	mov	[linesleft], edx
 	mov	ebx, [ebp + arg_width]
 	shl	ebx, 1
-	shl	dword [ebp + arg_offset], 1	; Adjust offset for 16-bit color. [MD Screen]
+	shl	dword [ebp + arg_offset], 1	; Adjust offset for 16-bit color. [MD_Screen]
 	mov	dword [prevline], 0
 	mov	dword [nextline], ebx
 	
