@@ -51,7 +51,7 @@ static const int tmpOutBuf_height = 960;
 
 
 /**
- * mdp_render_hq4x_end(): Initialize the hq2x plugin.
+ * mdp_render_hq4x_end(): Initialize the hq4x plugin.
  */
 void mdp_render_hq4x_init(void)
 {
