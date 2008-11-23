@@ -871,8 +871,40 @@ int VDraw_DDraw::flipInternal(void)
 			m_rInfo.height = VDP_Num_Vis_Lines;
 			m_rInfo.pitch = ddsd.lPitch;
 			m_rInfo.offset = 16 + m_HBorder;
+			
+			if (bppMD == 16 && bppOut != 16)
+			{
+				// MDP_RENDER_FLAG_SRC16DST32.
+				// Render as 16-bit to an internal surface.
+				if (!LUT16to32)
+					Init_LUT16to32();
 				
-			m_BlitFS(&m_rInfo);
+				// Make sure the internal surface is initialized.
+				if (m_tmp16img_scale != m_scale)
+				{
+					if (m_tmp16img)
+						free(m_tmp16img);
+					
+					m_tmp16img_scale = m_scale;
+					m_tmp16img_pitch = 320 * m_scale * 2;
+					m_tmp16img = static_cast<uint16_t*>(malloc(m_tmp16img_pitch * 240 * m_scale));
+				}
+				
+				m_rInfo.destScreen = (void*)m_tmp16img;
+				m_rInfo.pitch = m_tmp16img_pitch;
+				if (m_FullScreen)
+					m_BlitFS(&m_rInfo);
+				else
+					m_BlitW(&m_rInfo);
+				
+				Render_16to32((uint32_t*)start, m_tmp16img,
+					      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
+					      pitch, m_tmp16img_pitch);
+			}
+			else
+			{
+				m_BlitFS(&m_rInfo);
+			}
 			
 			// Draw the text.
 			DDraw_Draw_Text(&ddsd, curBlit, false);
@@ -940,8 +972,40 @@ int VDraw_DDraw::flipInternal(void)
 			m_rInfo.height = VDP_Num_Vis_Lines;
 			m_rInfo.pitch = ddsd.lPitch;
 			m_rInfo.offset = 16 + m_HBorder;
+			
+			if (bppMD == 16 && bppOut != 16)
+			{
+				// MDP_RENDER_FLAG_SRC16DST32.
+				// Render as 16-bit to an internal surface.
+				if (!LUT16to32)
+					Init_LUT16to32();
 				
-			m_BlitW(&m_rInfo);
+				// Make sure the internal surface is initialized.
+				if (m_tmp16img_scale != m_scale)
+				{
+					if (m_tmp16img)
+						free(m_tmp16img);
+					
+					m_tmp16img_scale = m_scale;
+					m_tmp16img_pitch = 320 * m_scale * 2;
+					m_tmp16img = static_cast<uint16_t*>(malloc(m_tmp16img_pitch * 240 * m_scale));
+				}
+				
+				m_rInfo.destScreen = (void*)m_tmp16img;
+				m_rInfo.pitch = m_tmp16img_pitch;
+				if (m_FullScreen)
+					m_BlitFS(&m_rInfo);
+				else
+					m_BlitW(&m_rInfo);
+				
+				Render_16to32((uint32_t*)start, m_tmp16img,
+					      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
+					      pitch, m_tmp16img_pitch);
+			}
+			else
+			{
+				m_BlitW(&m_rInfo);
+			}
 			
 			// Draw the text.
 			DDraw_Draw_Text(&ddsd, lpDDS_Blit, false);
