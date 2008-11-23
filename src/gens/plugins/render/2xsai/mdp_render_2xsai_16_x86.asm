@@ -189,9 +189,9 @@ arg_mode555	equ 32
 	align 64
 	
 	.Loop:
-			mov word [esi + edx * 2], 0	; clear clipping
+			mov	word [esi + edx * 2], 0	; clear clipping
 			
-			call _2xSaILine			; Do one line
+			call	_2xSaILine		; Do one line
 			
 			add	esi, eax		; esi = *Src + 1 line
 			lea	edi, [edi + ebx * 2]	; edi = *Dest + 2 lines
