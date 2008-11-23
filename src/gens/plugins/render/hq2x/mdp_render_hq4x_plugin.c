@@ -55,6 +55,13 @@ MDP_t mdp_render_hq4x =
 	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
 	
+	// UUID: 5708aebf-d8ab-4e34-80cd-c66fd2b7f2c5
+	.uuid = {0x57, 0x08, 0xAE, 0xBF,
+		 0xD8, 0xAB,
+		 0x4E, 0x34,
+		 0x80, 0xCD,
+		 0xC6, 0x6F, 0xD2, 0xB7, 0xF2, 0xC5},
+	
 	// CPU flags
 	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
 	.cpuFlagsRequired = MDP_CPUFLAG_MMX,

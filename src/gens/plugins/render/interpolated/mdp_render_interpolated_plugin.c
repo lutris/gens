@@ -54,6 +54,13 @@ MDP_t mdp_render_interpolated =
 	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
 	
+	// UUID: fd39b461-9488-4eff-b401-a9e764fdc0b7
+	.uuid = {0xFD, 0x39, 0xB4, 0x61,
+		 0x94, 0x88,
+		 0x4E, 0xFF,
+		 0xB4, 0x01,
+		 0xA9, 0xE7, 0x64, 0xFD, 0xC0, 0xB7},
+	
 	// CPU flags
 	.cpuFlagsSupported = 0,
 	.cpuFlagsRequired = 0,

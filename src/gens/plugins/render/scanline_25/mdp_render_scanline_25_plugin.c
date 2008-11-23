@@ -54,6 +54,13 @@ MDP_t mdp_render_scanline_25 =
 	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
 	
+	// UUID: dacc2ec9-c442-4071-a4bd-dd6298875e42
+	.uuid = {0xDA, 0xCC, 0x2E, 0xC9,
+		 0xC4, 0x42,
+		 0x40, 0x71,
+		 0xA4, 0xBD,
+		 0xDD, 0x62, 0x98, 0x87, 0x5E, 0x42},
+	
 	// CPU flags
 	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
 	.cpuFlagsRequired = 0,

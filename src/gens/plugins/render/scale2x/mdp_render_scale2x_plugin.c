@@ -55,6 +55,13 @@ MDP_t mdp_render_scale2x =
 	.type = MDPT_RENDER,
 	.desc = &MDP_Desc,
 	
+	// UUID: 9f61e947-8a92-46c0-ad4c-f42e642d2257
+	.uuid = {0x9F, 0x61, 0xE9, 0x47,
+		 0x8A, 0x92,
+		 0x46, 0xC0,
+		 0xAD, 0x4C,
+		 0xF4, 0x2E, 0x64, 0x2D, 0x22, 0x57},
+	
 	// CPU flags
 	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
 	.cpuFlagsRequired = MDP_CPUFLAG_MMX,
