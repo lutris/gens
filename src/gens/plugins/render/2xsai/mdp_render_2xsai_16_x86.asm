@@ -202,8 +202,7 @@ arg_mode555	equ 32
 		
 		; Free the 5 parameters used for _2xSaILine.
 		add	esp, byte 4 * 5
-
-	.End:
+		
 		; Reset the frame pointer.
 		popad
 		mov	esp, ebp
