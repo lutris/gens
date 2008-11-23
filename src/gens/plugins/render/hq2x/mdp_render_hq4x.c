@@ -44,6 +44,11 @@
 // It "works' right now in 15-bit, but the output is different than with 16-bit.
 // My first attempt at 15-bit support resulted in massive failure. :(
 
+// Temporary buffer for 32-bit color.
+static uint16_t *tmpOutBuf = NULL;
+static const int tmpOutBuf_pitch = 1280 * 2;
+static const int tmpOutBuf_height = 960;
+
 
 /**
  * mdp_render_hq4x_end(): Initialize the hq2x plugin.
@@ -108,6 +113,32 @@ void mdp_render_hq4x_cpp(MDP_Render_Info_t *renderInfo)
 				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset);
+		}
+#else /* !GENS_X86_ASM */
+		T_mdp_render_hq4x_cpp(
+			    (uint16_t*)renderInfo->destScreen,
+			    (uint16_t*)renderInfo->mdScreen,
+			    renderInfo->width, renderInfo->height,
+			    renderInfo->pitch, renderInfo->offset);
+#endif /* GENS_X86_ASM */
+	}
+	else //if (renderInfo->bpp == 32)
+	{
+		if (!tmpOutBuf)
+			tmpOutBuf = malloc(tmpOutBuf_pitch * tmpOutBuf_height);
+		
+#ifdef GENS_X86_ASM
+		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+		{
+			mdp_render_hq4x_16_x86_mmx(
+				    (uint16_t*)tmpOutBuf,
+				    (uint16_t*)renderInfo->mdScreen,
+				    renderInfo->width, renderInfo->height,
+				    tmpOutBuf_pitch, renderInfo->offset);
+			
+			mdp_render_hq2x_16to32((uint32_t*)renderInfo->destScreen, tmpOutBuf,
+					       renderInfo->width * 4, renderInfo->height * 4,
+					       renderInfo->pitch, tmpOutBuf_pitch);
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_hq4x_cpp(
