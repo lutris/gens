@@ -69,7 +69,6 @@ gens_x86_asm_o += \
 		plugins/render/scanline_25/mdp_render_scanline_25_16_x86.o \
 		plugins/render/scanline_25/mdp_render_scanline_25_32_x86.o \
 		plugins/render/hq2x/mdp_render_hq2x_16_x86.o \
-		plugins/render/hq2x/mdp_render_hq2x_32_x86.o \
 		plugins/render/hq2x/mdp_render_hq4x_16_x86.o
 gens_x86_asm_src += \
 		plugins/render/normal/mdp_render_1x_16_x86.asm \
@@ -83,7 +82,6 @@ gens_x86_asm_src += \
 		plugins/render/scanline_25/mdp_render_scanline_25_16_x86.asm \
 		plugins/render/scanline_25/mdp_render_scanline_25_32_x86.asm \
 		plugins/render/hq2x/mdp_render_hq2x_16_x86.asm \
-		plugins/render/hq2x/mdp_render_hq2x_32_x86.asm \
 		plugins/render/hq2x/mdp_render_hq4x_16_x86.asm
 gens_x86_asm_h += \
 		plugins/render/normal/mdp_render_1x_x86.h \

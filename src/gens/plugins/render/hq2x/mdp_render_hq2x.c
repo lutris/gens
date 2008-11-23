@@ -117,23 +117,4 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 			    renderInfo->pitch, renderInfo->offset);
 #endif /* GENS_X86_ASM */
 	}
-	else
-	{
-#ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
-		{
-			mdp_render_hq2x_32_x86_mmx(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
-		}
-#else /* !GENS_X86_ASM */
-		T_mdp_render_hq2x_cpp(
-			    (uint32_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset);
-#endif /* GENS_X86_ASM */
-	}
 }

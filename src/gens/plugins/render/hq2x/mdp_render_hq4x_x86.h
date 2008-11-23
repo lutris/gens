@@ -32,8 +32,6 @@ extern "C" {
 
 void mdp_render_hq4x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
 
-void mdp_render_hq4x_32_x86_mmx(uint32_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
-
 #ifdef __cplusplus
 }
 #endif
