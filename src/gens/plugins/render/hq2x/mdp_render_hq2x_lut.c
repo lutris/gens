@@ -23,6 +23,7 @@
 
 
 #include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 
@@ -73,5 +74,45 @@ void mdp_render_hq2x_InitRGBtoYUV(void)
 				mdp_render_hq2x_RGBtoYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
 			}
 		}
+	}
+}
+
+
+/**
+ * mdp_render_hq2x_16to32(): Convert 16-bit to 32-bit using the lookup table.
+ * @param dest Destination surface.
+ * @param src Source surface.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitchDest Pitch of the destination surface.
+ * @param pitchSrc Pitch of the source surface.
+ */
+void mdp_render_hq2x_16to32(uint32_t *dest, uint16_t *src,
+			    int width, int height,
+			    int pitchDest, int pitchSrc)
+{
+	int x, y;
+	
+	const int pitchDestDiff = (width - (pitchDest / 4)) * 4;
+	const int pitchSrcDiff = (width - (pitchSrc / 2)) * 2;
+	
+	// Process four pixels at a time.
+	width >>= 2;
+	
+	for (y = 0; y < height; y++)
+	{
+		for (x = 0; x < width; x++)
+		{
+			*(dest + 0) = mdp_render_hq2x_LUT16to32[*(src + 0)];
+			*(dest + 1) = mdp_render_hq2x_LUT16to32[*(src + 1)];
+			*(dest + 2) = mdp_render_hq2x_LUT16to32[*(src + 2)];
+			*(dest + 3) = mdp_render_hq2x_LUT16to32[*(src + 3)];
+			
+			dest += 4;
+			src += 4;
+		}
+		
+		dest += pitchDestDiff;
+		src += pitchSrcDiff;
 	}
 }

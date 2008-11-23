@@ -35,6 +35,10 @@ extern int mdp_render_hq2x_refcount;
 void mdp_render_hq2x_InitLUT16to32(void);
 void mdp_render_hq2x_InitRGBtoYUV(void);
 
+void mdp_render_hq2x_16to32(uint32_t *dest, uint16_t *src,
+			    int width, int height,
+			    int pitchDest, int pitchSrc);
+
 #ifdef __cplusplus
 }
 #endif
