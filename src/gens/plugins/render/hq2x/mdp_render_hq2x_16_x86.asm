@@ -1946,7 +1946,7 @@ arg_offset	equ 28
 	jle	.xres_2
 	jmp	.LoopX
 	
-.xres_2
+.xres_2:
 	; x=Xres-2 - special case
 	jl	.xres_1
 	mov	ebx, [prevline]
@@ -1983,7 +1983,7 @@ arg_offset	equ 28
 	mov	[w9], eax
 	jmp	.flags
 	
-.xres_1
+.xres_1:
 	cmp	dword [xcounter], -1
 	jl	.NextY
 	; x=Xres-1 - special case
@@ -2042,13 +2042,13 @@ arg_offset	equ 28
 	mov	dword [prevline], ebx
 	jmp	.LoopY
 	
-.lastline
+.lastline:
 	mov	dword [nextline], 0
 	neg	ebx
 	mov	dword [prevline], ebx
 	jmp	.LoopY
 	
-.fin
+.fin:
 	emms
 	popad
 	mov	esp, ebp
