@@ -35,6 +35,7 @@ using std::vector;
 #include "render/scale2x/mdp_render_scale3x_plugin.h"
 #include "render/scale2x/mdp_render_scale4x_plugin.h"
 #include "render/hq2x/mdp_render_hq2x_plugin.h"
+#include "render/hq2x/mdp_render_hq3x_plugin.h"
 #include "render/hq2x/mdp_render_hq4x_plugin.h"
 
 // Internal plugins
@@ -50,6 +51,7 @@ static MDP_t* mdp_internal[] =
 	&mdp_render_scale3x,
 	&mdp_render_scale4x,
 	&mdp_render_hq2x,
+	&mdp_render_hq3x,
 	&mdp_render_hq4x,
 	NULL
 };
