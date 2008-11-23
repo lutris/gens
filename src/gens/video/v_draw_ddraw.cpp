@@ -617,11 +617,6 @@ int VDraw_DDraw::flipInternal(void)
 		// bpp has changed. Reinitialize the screen pointers.
 		m_rInfo.bpp = bppOut;
 		m_rInfo.cpuFlags = CPU_Flags;
-		
-		if (bppMD == 32)
-			m_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
-		else
-			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 	}
 	
 	if (m_FullScreen)

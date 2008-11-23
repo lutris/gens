@@ -731,6 +731,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	{
 		// Not 32-bit color. Always use the destination surface color depth.
 		bppMD = bppOut;
+		m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 	}
 	else
 	{
@@ -738,11 +739,13 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		{
 			// Render plugin requires that the MD surface is 16-bit color.
 			bppMD = 16;
+			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 		}
 		else
 		{
 			// MD surface should be the same color depth as the destination surface.
 			bppMD = bppOut;
+			m_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
 		}
 	}
 	
