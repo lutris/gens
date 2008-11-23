@@ -116,14 +116,14 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 	if (!renderInfo)
 		return;
 	
+	// Make sure the lookup tables are initialized.
+	if (!mdp_render_hq2x_LUT16to32)
+		mdp_render_hq2x_InitLUT16to32();
+	if (!mdp_render_hq2x_RGBtoYUV)
+		mdp_render_hq2x_InitRGBtoYUV();
+	
 	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
 	{
-		// Make sure the lookup tables are initialized.
-		if (!mdp_render_hq2x_LUT16to32)
-			mdp_render_hq2x_InitLUT16to32();
-		if (!mdp_render_hq2x_RGBtoYUV)
-			mdp_render_hq2x_InitRGBtoYUV();
-		
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
 		{
@@ -147,6 +147,35 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 		T_mdp_render_hq2x_cpp(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
+			    renderInfo->width, renderInfo->height,
+			    renderInfo->pitch, renderInfo->offset);
+#endif /* GENS_X86_ASM */
+	}
+	else
+	{
+#ifdef GENS_X86_ASM
+		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+		{
+			mdp_render_hq2x_32_x86_mmx(
+				    (uint32_t*)renderInfo->destScreen,
+				    (uint16_t*)renderInfo->mdScreen,
+				    renderInfo->width, renderInfo->height,
+				    renderInfo->pitch, renderInfo->offset);
+		}
+		/*
+		else
+		{
+			mdp_render_hq2x_32_x86(
+				    (uint32_t*)renderInfo->destScreen,
+				    (uint32_t*)renderInfo->mdScreen,
+				    renderInfo->width, renderInfo->height,
+				    renderInfo->pitch, renderInfo->offset);
+		}
+		*/
+#else /* !GENS_X86_ASM */
+		T_mdp_render_hq2x_cpp(
+			    (uint32_t*)renderInfo->destScreen,
+			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset);
 #endif /* GENS_X86_ASM */
