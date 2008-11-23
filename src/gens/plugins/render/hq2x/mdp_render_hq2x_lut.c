@@ -93,8 +93,8 @@ void mdp_render_hq2x_16to32(uint32_t *dest, uint16_t *src,
 {
 	int x, y;
 	
-	const int pitchDestDiff = (width - (pitchDest / 4)) * 4;
-	const int pitchSrcDiff = (width - (pitchSrc / 2)) * 2;
+	const int pitchDestDiff = ((pitchDest / 4) - width);
+	const int pitchSrcDiff = ((pitchSrc / 2) - width);
 	
 	// Process four pixels at a time.
 	width >>= 2;
