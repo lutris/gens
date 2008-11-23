@@ -193,8 +193,7 @@ arg_mode555	equ 32
 			
 			call _2xSaILine			; Do one line
 			
-			add esi, 336 * 2		; esi = *Src + 1 line
-			;add	esi, ebx		; esi = *Src + 1 line
+			add	esi, eax		; esi = *Src + 1 line
 			lea	edi, [edi + ebx * 2]	; edi = *Dest + 2 lines
 			mov	[esp], esi		; 1st Param = *Src
 			dec	ecx
