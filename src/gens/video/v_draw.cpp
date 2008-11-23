@@ -694,6 +694,10 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		rendFn = &m_BlitW;
 	}
 	
+	// Get the old scaling factor.
+	MDP_Render_t *oldRendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(oldRend)->plugin_t);
+	const int oldScale = oldRendPlugin->scale;
+	
 	// Checks if an invalid mode number was passed.
 	if (newMode < 0 || newMode >= PluginMgr::vRenderPlugins.size())
 	{
@@ -751,10 +755,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (forceUpdate && is_gens_running())
 		updateRenderer();
 	
-	// TODO: Update this to use MDP's scale value.
-	if ((reinit && forceUpdate) ||
-	    (oldRend == 0 && newMode != 0) ||
-	    (oldRend != 0 && newMode == 0))
+	if ((reinit && forceUpdate) || (oldScale != m_scale))
 	{
 		// The Gens window must be reinitialized.
 		return reinitGensWindow();

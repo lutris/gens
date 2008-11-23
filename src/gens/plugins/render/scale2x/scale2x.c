@@ -40,6 +40,13 @@
 
 #include <assert.h>
 
+// "restrict" is only available in C99 and later.
+#if __STDC_VERSION__ >= 199901L
+#define RESTRICT restrict
+#else
+#define RESTRICT
+#endif
+
 /***************************************************************************/
 /* Scale2x C implementation */
 
@@ -52,9 +59,9 @@
  */
 /* #define USE_SCALE_RANDOMWRITE */
 
-static inline void scale2x_16_def_whole(uint16_t* restrict dst0, uint16_t* restrict dst1,
-					const uint16_t* restrict src0, const uint16_t* restrict src1,
-					const uint16_t* restrict src2, unsigned int count)
+static inline void scale2x_16_def_whole(uint16_t* RESTRICT dst0, uint16_t* RESTRICT dst1,
+					const uint16_t* RESTRICT src0, const uint16_t* RESTRICT src1,
+					const uint16_t* RESTRICT src2, unsigned int count)
 {
 	assert(count >= 2);
 	
@@ -124,8 +131,8 @@ static inline void scale2x_16_def_whole(uint16_t* restrict dst0, uint16_t* restr
 	}
 }
 
-static inline void scale2x_16_def_border(uint16_t* restrict dst, const uint16_t* restrict src0,
-					 const uint16_t* restrict src1, const uint16_t* restrict src2,
+static inline void scale2x_16_def_border(uint16_t* RESTRICT dst, const uint16_t* RESTRICT src0,
+					 const uint16_t* RESTRICT src1, const uint16_t* RESTRICT src2,
 					 unsigned int count)
 {
 	assert(count >= 2);
@@ -182,8 +189,8 @@ static inline void scale2x_16_def_border(uint16_t* restrict dst, const uint16_t*
 	}
 }
 
-static inline void scale2x_16_def_center(uint16_t* restrict dst, const uint16_t* restrict src0,
-					 const uint16_t* restrict src1, const uint16_t* restrict src2,
+static inline void scale2x_16_def_center(uint16_t* RESTRICT dst, const uint16_t* RESTRICT src0,
+					 const uint16_t* RESTRICT src1, const uint16_t* RESTRICT src2,
 					 unsigned int count)
 {
 	assert(count >= 2);
@@ -239,9 +246,9 @@ static inline void scale2x_16_def_center(uint16_t* restrict dst, const uint16_t*
 	}
 }
 
-static inline void scale2x_32_def_whole(uint32_t* restrict dst0, uint32_t* restrict dst1,
-					const uint32_t* restrict src0, const uint32_t* restrict src1,
-					const uint32_t* restrict src2, unsigned int count)
+static inline void scale2x_32_def_whole(uint32_t* RESTRICT dst0, uint32_t* RESTRICT dst1,
+					const uint32_t* RESTRICT src0, const uint32_t* RESTRICT src1,
+					const uint32_t* RESTRICT src2, unsigned int count)
 {
 	assert(count >= 2);
 	
@@ -311,8 +318,8 @@ static inline void scale2x_32_def_whole(uint32_t* restrict dst0, uint32_t* restr
 	}
 }
 
-static inline void scale2x_32_def_border(uint32_t* restrict dst, const uint32_t* restrict src0,
-					 const uint32_t* restrict src1, const uint32_t* restrict src2,
+static inline void scale2x_32_def_border(uint32_t* RESTRICT dst, const uint32_t* RESTRICT src0,
+					 const uint32_t* RESTRICT src1, const uint32_t* RESTRICT src2,
 					 unsigned int count)
 {
 	assert(count >= 2);
@@ -369,8 +376,8 @@ static inline void scale2x_32_def_border(uint32_t* restrict dst, const uint32_t*
 	}
 }
 
-static inline void scale2x_32_def_center(uint32_t* restrict dst, const uint32_t* restrict src0,
-					 const uint32_t* restrict src1, const uint32_t* restrict src2,
+static inline void scale2x_32_def_center(uint32_t* RESTRICT dst, const uint32_t* RESTRICT src0,
+					 const uint32_t* RESTRICT src1, const uint32_t* RESTRICT src2,
 					 unsigned int count)
 {
 	assert(count >= 2);

@@ -76,7 +76,8 @@ static void mdp_render_hq2x_InitLUT16to32(void)
 	mdp_render_hq2x_LUT16to32 = malloc(65536 * sizeof(int));
 	
 	// Initialize the 16-bit to 32-bit conversion table.
-	for (int i = 0; i < 65536; i++)
+	int i;
+	for (i = 0; i < 65536; i++)
 		mdp_render_hq2x_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
 }
 
@@ -90,13 +91,13 @@ static void mdp_render_hq2x_InitRGBtoYUV(void)
 	mdp_render_hq2x_RGBtoYUV = malloc(65536 * sizeof(int));
 	
 	// Initialize the RGB to YUV conversion table.
-	int r, g, b, Y, u, v;
+	int i, j, k, r, g, b, Y, u, v;
 	
-	for (int i = 0; i < 32; i++)
+	for (i = 0; i < 32; i++)
 	{
-		for (int j = 0; j < 64; j++)
+		for (j = 0; j < 64; j++)
 		{
-			for (int k = 0; k < 32; k++)
+			for (k = 0; k < 32; k++)
 			{
 				r = i << 3;
 				g = j << 2;
