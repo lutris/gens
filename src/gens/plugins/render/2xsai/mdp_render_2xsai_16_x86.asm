@@ -196,8 +196,9 @@ arg_mode555	equ 32
 			add	esi, eax		; esi = *Src + 1 line
 			lea	edi, [edi + ebx * 2]	; edi = *Dest + 2 lines
 			mov	[esp], esi		; 1st Param = *Src
-			dec	ecx
 			mov	[esp + 12], edi		; 4th Param = *Dest
+			
+			dec	ecx
 			jnz	short .Loop
 		
 		; Free the 5 parameters used for _2xSaILine.
