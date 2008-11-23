@@ -242,7 +242,7 @@ void Input_KeyDown(int key)
 			#ifdef GENS_OS_WIN32 // TODO: Implement SW Render options on SDL?
 			if (mod & GENS_KMOD_SHIFT)
 				Options::setSwRender(!Options::swRender());
-			else // if (!mod)
+			else //if (!mod)
 			#endif /* GENS_OS_WIN32 */
 				Options::setFastBlur(!Options::fastBlur());
 			break;

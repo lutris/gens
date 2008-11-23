@@ -76,7 +76,13 @@ section .bss align=64
 	extern _32X_VDP_CRam
 	extern _32X_VDP_CRam_Ajusted
 	extern _32X_VDP
-
+	
+	; MD bpp
+	%ifdef __OBJ_ELF
+	%define _bppMD bppMD
+	%endif
+	extern _bppMD
+	
 	struc vx
 		.Mode		resd 1
 		.State		resd 1
@@ -141,10 +147,6 @@ section .bss align=64
 	.Borne			resd 1
 
 	ALIGN_4
-
-	; Color depth
-	DECL bpp
-	resb 32
 
 	; _32X_Rend_Mode is used for the 32X 32-bit color C macros.
 	; See g_32x_32bit.h
@@ -969,7 +971,7 @@ ALIGN4
 	mov ebx, (64 / 2) - 1			; ebx = Nombre de couleurs
 	
 	; Check for 15-bit color (555)
-	cmp byte [bpp], 15
+	cmp byte [_bppMD], 15
 	jne short %%Loop
 
 	; 15-bit color requires an extra step.
@@ -1857,7 +1859,7 @@ ALIGN4
 	ALIGN4
 	
 	.Palette_OK
-		cmp byte [bpp], 32	; check if this is 32-bit color
+		cmp byte [_bppMD], 32	; check if this is 32-bit color
 		jne short .Render16
 		
 	.Render32 ; 32-bit

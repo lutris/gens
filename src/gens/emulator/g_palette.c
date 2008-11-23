@@ -115,12 +115,12 @@ void Recalculate_Palettes(void)
 				Palette32[color] = (rf << 18) | (gf << 10) | (bf << 2);
 				
 				// 16-bit palette
-				if (bpp == 15)
+				if (bppMD == 15)
 				{
 					rf = ((rf >> 1) & 0x1F) << 10;
 					gf = ((gf >> 1) & 0x1F) << 5;
 				}
-				else //if (bpp == 16)
+				else //if (bppMD == 16)
 				{
 					rf = ((rf >> 1) & 0x1F) << 11;
 					gf = ((gf >> 0) & 0x3F) << 5;
@@ -147,12 +147,12 @@ void Recalculate_Palettes(void)
 		_32X_Palette_32B[i] = (rf << 18) | (gf << 10) | (bf << 2);
 		
 		// 16-bit palette
-		if (bpp == 15)
+		if (bppMD == 15)
 		{
 			rf = ((rf >> 1) & 0x1F) << 10;
 			gf = ((gf >> 1) & 0x1F) << 5;
 		}
-		else //if (bpp == 16)
+		else //if (bppMD == 16)
 		{
 			rf = ((rf >> 1) & 0x1F) << 11;
 			gf = ((gf >> 0) & 0x3F) << 5;
@@ -178,12 +178,12 @@ void Recalculate_Palettes(void)
 			Palette32[i] = (r << 16) | (g << 8) | b;
 			
 			// 15/16-bit color
-			if (bpp == 15)
+			if (bppMD == 15)
 			{
 				r = ((r >> 3) & 0x1F) << 10;
 				g = ((g >> 3) & 0x1F) << 5;
 			}
-			else //if (bpp == 16)
+			else //if (bppMD == 16)
 			{
 				r = ((r >> 3) & 0x1F) << 11;
 				g = ((g >> 2) & 0x3F) << 5;
@@ -206,12 +206,12 @@ void Recalculate_Palettes(void)
 			_32X_Palette_32B[i] = (r << 16) | (g << 8) | b;
 			
 			// 15/16-bit color
-			if (bpp == 15)
+			if (bppMD == 15)
 			{
 				r = ((r >> 3) & 0x1F) << 10;
 				g = ((g >> 3) & 0x1F) << 5;
 			}
-			else //if (bpp == 16)
+			else //if (bppMD == 16)
 			{
 				r = ((r >> 3) & 0x1F) << 11;
 				g = ((g >> 2) & 0x3F) << 5;

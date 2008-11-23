@@ -510,14 +510,14 @@ void VDraw::drawText(void *screen, const int fullW, const int w, const int h,
 		     const char *msg, const VDraw_Style& style,
 		     const bool adjustForScreenSize)
 {
-	if (bpp == 15 || bpp == 16)
+	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
 		drawText_int((unsigned short*)screen, fullW, w, h, msg,
 			     (unsigned short)m_Transparency_Mask, style,
 			     adjustForScreenSize);
 	}
-	else // if (bpp == 32)
+	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		drawText_int((unsigned int*)screen, fullW, w, h, msg,
@@ -531,32 +531,29 @@ static inline void calcTextStyle_int(VDraw::VDraw_Style& style)
 {
 	// Calculate the dot color.
 	
-	if (bpp == 15 || bpp == 16)
+	if (bppOut == 15)
 	{
-		if (bpp == 15)
-		{
-			if ((style.style & 0x07) == STYLE_COLOR_RED)
-				style.dotColor = 0x7C00;
-			else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
-				style.dotColor = 0x03E0;
-			else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
-				style.dotColor = 0x001F;
-			else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
-				style.dotColor = 0x7FFF;
-		}
-		else // if (bpp == 16)
-		{
-			if ((style.style & 0x07) == STYLE_COLOR_RED)
-				style.dotColor = 0xF800;
-			else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
-				style.dotColor = 0x07E0;
-			else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
-				style.dotColor = 0x001F;
-			else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
-				style.dotColor = 0xFFFF;
-		}
+		if ((style.style & 0x07) == STYLE_COLOR_RED)
+			style.dotColor = 0x7C00;
+		else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+			style.dotColor = 0x03E0;
+		else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+			style.dotColor = 0x001F;
+		else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+			style.dotColor = 0x7FFF;
 	}
-	else //if (bpp == 32)
+	else if (bppOut == 16)
+	{
+		if ((style.style & 0x07) == STYLE_COLOR_RED)
+			style.dotColor = 0xF800;
+		else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+			style.dotColor = 0x07E0;
+		else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+			style.dotColor = 0x001F;
+		else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+			style.dotColor = 0xFFFF;
+	}
+	else //if (bppOut == 32)
 	{
 		if ((style.style & 0x07) == STYLE_COLOR_RED)
 			style.dotColor = 0xFF0000;
@@ -579,11 +576,11 @@ static inline void calcTextStyle_int(VDraw::VDraw_Style& style)
 void VDraw::calcTextStyle(void)
 {
 	// Calculate the transparency mask.
-	if (bpp == 15)
+	if (bppOut == 15)
 		m_Transparency_Mask = 0x7BDE;
-	else if (bpp == 16)
+	else if (bppOut == 16)
 		m_Transparency_Mask = 0xF7DE;
-	else //if (bpp == 32)
+	else //if (bppOut == 32)
 		m_Transparency_Mask = 0xFEFEFE;
 	
 	// Calculate the style values for FPS and Msg.
@@ -600,10 +597,10 @@ void VDraw::calcTextStyle(void)
 void VDraw::setBpp(const int newBpp, const bool resetVideo)
 {
 	// If the new bpp is the same as the current bpp, don't do anything else.
-	if (bpp == newBpp)
+	if (bppOut == newBpp)
 		return;
 	
-	bpp = newBpp;
+	bppOut = newBpp;
 	
 	if (resetVideo)
 	{
@@ -722,7 +719,28 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	// Set the new render mode number.
 	*Rend = newMode;
 	
+	// Set the scaling value.
 	setScale(rendPlugin->scale);
+	
+	// Set the MD bpp output value.
+	if (bppOut != 32)
+	{
+		// Not 32-bit color. Always use the destination surface color depth.
+		bppMD = bppOut;
+	}
+	else
+	{
+		if (rendPlugin->flags & MDP_RENDER_FLAG_SRC16DST32)
+		{
+			// Render plugin requires that the MD surface is 16-bit color.
+			bppMD = 16;
+		}
+		else
+		{
+			// MD surface should be the same color depth as the destination surface.
+			bppMD = bppOut;
+		}
+	}
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();

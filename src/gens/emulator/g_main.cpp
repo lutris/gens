@@ -65,6 +65,10 @@ struct Gens_BIOS_Filenames_t BIOS_Filenames;
 struct Gens_Misc_Filenames_t Misc_Filenames;
 struct Gens_VideoSettings_t Video;
 
+// bpp settings.
+uint8_t bppMD;	// MD bpp
+uint8_t bppOut;	// Output bpp.
+
 int fast_forward = 0;
 
 POINT Window_Pos;
@@ -226,7 +230,8 @@ void Init_Settings(void)
 #endif
 	
 	// Default bpp.
-	bpp = 32;
+	bppMD = 32;
+	bppOut = 32;
 	
 	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;

@@ -114,7 +114,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 			}
 		}
 	}
-	else // if (bpp == 32)
+	else //if (bpp == 32)
 	{
 		// 32-bit color.
 		// BMP uses 24-bit color, so a conversion is still necessary.
@@ -373,16 +373,16 @@ int ImageUtil::screenShot(void)
 	
 	// Save the image.
 	void *screen;
-	if (bpp == 15 || bpp == 16)
+	if (bppMD == 15 || bppMD == 16)
 		screen = (void*)(&MD_Screen[8]);
-	else //if (bpp == 32)
+	else //if (bppMD == 32)
 		screen = (void*)(&MD_Screen32[8]);
 	
 	int rval;
 #ifdef GENS_PNG
-	rval = writePNG(img, w, h, 336, screen, bpp);
+	rval = writePNG(img, w, h, 336, screen, bppMD);
 #else /* !GENS_PNG */
-	rval = writeBMP(img, w, h, 336, screen, bpp);
+	rval = writeBMP(img, w, h, 336, screen, bppMD);
 #endif /* GENS_PNG */
 	
 	// Close the file.

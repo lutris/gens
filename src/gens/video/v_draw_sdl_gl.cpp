@@ -130,7 +130,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 {
 	if (reinitSDL)
 	{
-		screen = SDL_SetVideoMode(w, h, bpp, SDL_GL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
+		screen = SDL_SetVideoMode(w, h, bppOut, SDL_GL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
 		
 		if (!screen)
 		{
@@ -170,7 +170,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	m_HRender = (double)(rowLength) / (double)(textureSize*2);
 	m_VRender = (double)(240.0 * rendPlugin->scale) / (double)(textureSize);
 	
-	int bytespp = (bpp == 15 ? 2 : bpp / 8);
+	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
 	filterBuffer = (unsigned char*)malloc(filterBufferSize);
 	
@@ -213,7 +213,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	
 	// Color depth values.
-	if (bpp == 15)
+	if (bppOut == 15)
 	{
 		// 15-bit color. (Mode 555)
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 15);
@@ -224,7 +224,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		m_pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 		m_pixelFormat = GL_BGRA;
 	}
-	else if (bpp == 16)
+	else if (bppOut == 16)
 	{
 		// 16-bit color. (Mode 565)
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
@@ -235,7 +235,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		m_pixelType = GL_UNSIGNED_SHORT_5_6_5;
 		m_pixelFormat = GL_RGB;
 	}
-	else //if (bpp == 32)
+	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
@@ -326,7 +326,7 @@ int VDraw_SDL_GL::flipInternal(void)
 {
 	// TODO: Add border drawing, like in v_draw_sdl.
 	
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
 	int pitch = rowLength * bytespp;
@@ -339,15 +339,16 @@ int VDraw_SDL_GL::flipInternal(void)
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
 	
 	// Set up the render information.
-	if (m_rInfo.bpp != bpp)
+	if (m_rInfo.bpp != bppOut)
 	{
 		// bpp has changed. Reinitialize the screen pointers.
-		m_rInfo.bpp = bpp;
+		m_rInfo.bpp = bppOut;
 		m_rInfo.cpuFlags = CPU_Flags;
-		if (bpp == 15 || bpp == 16)
-			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
-		else
+		
+		if (bppMD == 32)
 			m_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+		else
+			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 	}
 	
 	m_rInfo.destScreen = (void*)start;

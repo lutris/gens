@@ -30,35 +30,7 @@
 
 
 #ifndef GENS_X86_ASM
-static void Fast_Blur_16(void);
-#endif
-static void Fast_Blur_32(void);
-
-
-/**
- * Fast_Blur: Apply a fast blurring algorithm to the onscreen image.
- */
-void Fast_Blur(void)
-{
-	// TODO: Make it so fast blur doesn't apply to screenshots.
-	if (bpp == 15 || bpp == 16)
-	{
-#ifdef GENS_X86_ASM
-		if (CPU_Flags & CPUFLAG_MMX)
-			Fast_Blur_16_asm_MMX();
-		else
-			Fast_Blur_16_asm();
-#else
-		Fast_Blur_16();
-#endif
-	}
-	else // if (bpp == 32)
-		Fast_Blur_32();
-}
-
-
-#ifndef GENS_X86_ASM
-static void Fast_Blur_16(void)
+static inline void Fast_Blur_16(void)
 {
 	int pixel;
 	unsigned short color = 0;
@@ -66,9 +38,9 @@ static void Fast_Blur_16(void)
 	unsigned short mask;
 	
 	// Check bpp.
-	if (bpp == 15)
+	if (bppMD == 15)
 		mask = 0x3DEF;
-	else //if (bpp == 16)
+	else //if (bppMD == 16)
 		mask = 0x7BEF;
 	
 	for (pixel = 1; pixel < (336 * 240); pixel++)
@@ -91,7 +63,7 @@ static void Fast_Blur_16(void)
 #endif
 
 
-static void Fast_Blur_32(void)
+static inline void Fast_Blur_32(void)
 {
 	int pixel;
 	unsigned int color = 0;
@@ -113,4 +85,26 @@ static void Fast_Blur_32(void)
 		// Save the color for the next pixel.
 		blurColor = color;
 	}
+}
+
+
+/**
+ * Fast_Blur: Apply a fast blurring algorithm to the onscreen image.
+ */
+void Fast_Blur(void)
+{
+	// TODO: Make it so fast blur doesn't apply to screenshots.
+	if (bppMD == 15 || bppMD == 16)
+	{
+#ifdef GENS_X86_ASM
+		if (CPU_Flags & CPUFLAG_MMX)
+			Fast_Blur_16_asm_MMX();
+		else
+			Fast_Blur_16_asm();
+#else
+		Fast_Blur_16();
+#endif
+	}
+	else //if (bppMD == 32)
+		Fast_Blur_32();
 }

@@ -21,6 +21,10 @@ extern "C" {
 #endif
 
 
+// Provides uint8_t, uint16_t, uint32_t, etc.
+#include <stdint.h>
+
+
 // Gens settings
 struct Gens_Settings_t
 {
@@ -79,6 +83,10 @@ struct Gens_VideoSettings_t
 	int glLinearFilter;
 #endif
 };
+
+// bpp settings.
+extern uint8_t bppMD;	// MD bpp
+extern uint8_t bppOut;	// Output bpp.
 
 extern struct Gens_Settings_t Settings;
 extern struct Gens_PathNames_t PathNames;

@@ -25,7 +25,12 @@
 section .data align=64
 
 	extern MD_Screen
-	extern bpp
+	
+	; MD bpp
+	%ifdef __OBJ_ELF
+	%define _bppMD bppMD
+	%endif
+	extern _bppMD
 	
 	Mask:		dd 0x00000000, 0x00000000
 	Mask_GG_15:	dd 0x03E003E0, 0x03E003E0
@@ -51,7 +56,7 @@ section .text align=64
 		xor edx, edx
 		
 		; Check which color depth is in use.
-		cmp byte [bpp], 16
+		cmp byte [_bppMD], 16
 		je short .Loop_565
 		
 	ALIGN32
@@ -123,7 +128,7 @@ section .text align=64
 		xor edx, edx
 		
 		;If 15-bit, apply the 15-bit color masks.
-		cmp byte [bpp], 15
+		cmp byte [_bppMD], 15
 		je short .Mask_555
 		
 		; 16-bit masks

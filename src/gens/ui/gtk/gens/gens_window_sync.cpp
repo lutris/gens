@@ -206,8 +206,9 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Stretch mode
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
+	
 	// Bits per pixel
-	switch (bpp)
+	switch (bppOut)
 	{
 		case 15:
 			id = IDM_GRAPHICS_BPP_15;

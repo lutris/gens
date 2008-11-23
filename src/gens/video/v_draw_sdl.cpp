@@ -103,7 +103,7 @@ int VDraw_SDL::Init_Video(void)
  */
 int VDraw_SDL::Init_SDL_Renderer(int w, int h)
 {
-	screen = SDL_SetVideoMode(w, h, bpp, SDL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
+	screen = SDL_SetVideoMode(w, h, bppOut, SDL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
 	
 	if (!screen)
 	{
@@ -152,7 +152,7 @@ int VDraw_SDL::flipInternal(void)
 	// Draw the border.
 	drawBorder();
 	
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
 	int pitch = screen->w * bytespp;
@@ -165,15 +165,16 @@ int VDraw_SDL::flipInternal(void)
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
 	// Set up the render information.
-	if (m_rInfo.bpp != bpp)
+	if (m_rInfo.bpp != bppOut)
 	{
 		// bpp has changed. Reinitialize the screen pointers.
-		m_rInfo.bpp = bpp;
+		m_rInfo.bpp = bppOut;
 		m_rInfo.cpuFlags = CPU_Flags;
-		if (bpp == 15 || bpp == 16)
-			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
-		else
+		
+		if (bppMD == 32)
 			m_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+		else
+			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 	}
 	
 	m_rInfo.destScreen = (void*)start;
@@ -237,7 +238,7 @@ void VDraw_SDL::drawBorder(void)
 		newBorderColor_32B = 0;
 	}
 	
-	if ((bpp == 15 || bpp == 16) && (m_BorderColor_16B != newBorderColor_16B))
+	if ((bppOut == 15 || bppOut == 16) && (m_BorderColor_16B != newBorderColor_16B))
 	{
 		m_BorderColor_16B = newBorderColor_16B;
 		if (VDP_Num_Vis_Lines < 240)
@@ -267,7 +268,7 @@ void VDraw_SDL::drawBorder(void)
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 		}
 	}
-	else if ((bpp == 32) && (m_BorderColor_32B != newBorderColor_32B))
+	else if ((bppOut == 32) && (m_BorderColor_32B != newBorderColor_32B))
 	{
 		m_BorderColor_32B = newBorderColor_32B;
 		if (VDP_Num_Vis_Lines < 240)

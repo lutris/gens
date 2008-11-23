@@ -133,7 +133,7 @@ int Update_Crazy_Effect(unsigned char introEffectColor)
 			prev_l = MD_Screen[offset - 336];
 			prev_p = MD_Screen[offset - 1];
 			
-			if (bpp == 15)
+			if (bppMD == 15)
 			{
 				RB = ((prev_l & 0x7C1F) + (prev_p & 0x7C1F)) >> 1;
 				G = ((prev_l & 0x03E0) + (prev_p & 0x03E0)) >> 1;
@@ -260,11 +260,11 @@ static void Pause_Screen_int(pixel *mdScreen, pixel RMask, pixel GMask, pixel BM
  */
 void Pause_Screen(void)
 {
-	if (bpp == 15)
+	if (bppMD == 15)
 		Pause_Screen_int(MD_Screen, (unsigned short)0x7C00, (unsigned short)0x03E0, (unsigned short)0x001F, 10, 5, 0);
-	else if (bpp == 16)
+	else if (bppMD == 16)
 		Pause_Screen_int(MD_Screen, (unsigned short)0xF800, (unsigned short)0x07C0, (unsigned short)0x001F, 11, 6, 0);
-	else //if (bpp == 32)
+	else //if (bppMD == 32)
 		Pause_Screen_int(MD_Screen32, (unsigned int)0xFF0000, (unsigned int)0x00FF00, (unsigned int)0x0000FF, 16+3, 8+3, 0+3);
 	
 	if (ice == 2)
