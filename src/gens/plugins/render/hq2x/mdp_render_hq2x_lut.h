@@ -39,4 +39,4 @@ void mdp_render_hq2x_InitRGBtoYUV(void);
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_HQ2X_HPP */
+#endif /* GENS_MDP_RENDER_HQ2X_LUT_H */

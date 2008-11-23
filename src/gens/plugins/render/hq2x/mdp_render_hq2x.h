@@ -38,4 +38,4 @@ void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo);
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_HQ2X_HPP */
+#endif /* GENS_MDP_RENDER_HQ2X_H */
