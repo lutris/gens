@@ -82,6 +82,11 @@ void mdp_render_hq2x_end(void)
 	}
 }
 
+
+/**
+ * mdp_render_hq2x_cpp(): hq2x rendering function.
+ * @param renderInfo Render information.
+ */
 void mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
