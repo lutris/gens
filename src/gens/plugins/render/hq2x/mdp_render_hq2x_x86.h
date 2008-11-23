@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_1X_X86_H
-#define GENS_MDP_RENDER_1X_X86_H
+#ifndef GENS_MDP_RENDER_HQ2X_X86_H
+#define GENS_MDP_RENDER_HQ2X_X86_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,4 +38,4 @@ void mdp_render_hq2x_32_x86_mmx(uint32_t *destScreen, uint16_t *mdScreen, int wi
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_1X_X86_H */
+#endif /* GENS_MDP_RENDER_HQ2X_X86_H */
