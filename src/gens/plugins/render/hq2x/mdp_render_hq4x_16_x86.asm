@@ -2,6 +2,7 @@
 ;16bpp output
 ;----------------------------------------------------------
 ;Copyright (C) 2003 MaxSt ( maxst@hiend3d.com )
+;MDP port Copyright (c) 2008 by David Korth
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -28,6 +29,7 @@ extern _mdp_render_hq2x_LUT16to32
 extern _mdp_render_hq2x_RGBtoYUV
 
 section .bss align=64
+	
 	linesleft:	resd 1
 	xcounter:	resd 1
 	cross:		resd 1
@@ -42,7 +44,7 @@ section .bss align=64
 	w7:		resd 1
 	w8:		resd 1
 	w9:		resd 1
-
+	
 section .data align=64
 	
 	reg_blank:	dd  0,0
