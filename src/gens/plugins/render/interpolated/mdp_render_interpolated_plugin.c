@@ -50,7 +50,7 @@ static MDP_Render_t MDP_Render =
 MDP_t mdp_render_interpolated =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 0, 1),
+	.pluginVersion = MDP_VERSION(0, 1, 0),
 	.type = MDPT_RENDER,
 	
 	// UUID: fd39b461-9488-4eff-b401-a9e764fdc0b7

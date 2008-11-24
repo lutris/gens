@@ -51,7 +51,7 @@ static MDP_Render_t MDP_Render =
 MDP_t mdp_render_scale4x =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 0, 1),
+	.pluginVersion = MDP_VERSION(0, 1, 0),
 	.type = MDPT_RENDER,
 	
 	// UUID: 46e175f5-0949-40c2-b414-6635e0e550ee

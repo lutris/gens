@@ -31,7 +31,7 @@ extern "C" {
 
 
 // MDP Render Plugin interface version.
-#define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 0, 1)
+#define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
 
 
 // Gens rendering info

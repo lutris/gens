@@ -50,7 +50,7 @@ static MDP_Render_t MDP_Render =
 MDP_t mdp_render_scanline_50 =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 0, 1),
+	.pluginVersion = MDP_VERSION(0, 1, 0),
 	.type = MDPT_RENDER,
 	
 	// UUID: 2a9b9e28-1d29-4c84-ade7-d576d5566839

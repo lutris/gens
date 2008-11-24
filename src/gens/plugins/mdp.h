@@ -49,7 +49,7 @@ extern "C" {
 #include "mdp_version.h"
 
 // MDP interface version.
-#define MDP_INTERFACE_VERSION MDP_VERSION(0, 0, 1)
+#define MDP_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
 
 
 // Licenses

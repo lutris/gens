@@ -51,7 +51,7 @@ static MDP_Render_t MDP_Render =
 MDP_t mdp_render_2xsai =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 0, 1),
+	.pluginVersion = MDP_VERSION(0, 1, 0),
 	.type = MDPT_RENDER,
 	
 	// UUID: 5c03f2ff-1c20-4f9b-b81c-458de6c7880d
