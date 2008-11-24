@@ -66,7 +66,7 @@ static inline void T_mdp_render_interpolated_cpp(pixel *destScreen, pixel *mdScr
 {
 	pitch /= sizeof(pixel);
 	
-	for(int y = 0; y < height; y++)
+	for (int y = 0; y < height; y++)
 	{
 		pixel *SrcLine = &mdScreen[y * (width + offset)];
 		pixel *DstLine1 = &destScreen[(y * 2) * pitch];
