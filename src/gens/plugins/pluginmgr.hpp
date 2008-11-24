@@ -35,6 +35,9 @@ class PluginMgr
 		static void end(void);
 		
 		static std::vector<MDP_t*> vRenderPlugins;
+	
+	protected:
+		static inline void initPlugin_Render(MDP_t *plugin);
 };
 
 #endif /* GENS_PLUGINMGR_HPP */

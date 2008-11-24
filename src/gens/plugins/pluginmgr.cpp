@@ -66,6 +66,31 @@ vector<MDP_t*> PluginMgr::vRenderPlugins;
 
 
 /**
+ * initPlugin_Render(): Initialize a rendering plugin.
+ */
+inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
+{
+	MDP_Render_t *rendPlugin = static_cast<MDP_Render_t*>(plugin->plugin_t);
+	
+	// Check the render interface version.
+	if (MDP_VERSION_MAJOR(rendPlugin->interfaceVersion) !=
+	    MDP_VERSION_MAJOR(MDP_RENDER_INTERFACE_VERSION))
+	{
+		// Incorrect major interface version.
+		// TODO: Add to a list of "incompatible" plugins.
+		return;
+	}
+	
+	// TODO: Check the minor version.
+	// Probably not needed right now, but may be needed later.
+	
+	vRenderPlugins.push_back(plugin);
+	if (plugin->init)
+		plugin->init();
+}
+
+
+/**
  * init(): Initialize the plugin system.
  */
 void PluginMgr::init(void)
@@ -77,14 +102,23 @@ void PluginMgr::init(void)
 	unsigned int i = 0;
 	while (mdp_internal[i])
 	{
-		// TODO: Check plugin version information.
+		// Check the MDP_t version.
+		if (MDP_VERSION_MAJOR(mdp_internal[i]->interfaceVersion) !=
+		    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
+		{
+			// Incorrect major interface version.
+			// TODO: Add to a list of "incompatible" plugins.
+			i++;
+			continue;
+		}
+		
+		// TODO: Check the minor version.
+		// Probably not needed right now, but may be needed later.
+		
 		switch (mdp_internal[i]->type)
 		{
 			case MDPT_RENDER:
-				// Rendering plugin.
-				vRenderPlugins.push_back(mdp_internal[i]);
-				if (mdp_internal[i]->init)
-					mdp_internal[i]->init();
+				initPlugin_Render(mdp_internal[i]);
 				break;
 			
 			default:
