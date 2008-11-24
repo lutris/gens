@@ -44,7 +44,7 @@ noinst_HEADERS += \
 		plugins/render/scanline_50/mdp_render_scanline_50_plugin.h \
 		plugins/render/scanline_50/mdp_render_scanline_50.hpp \
 		plugins/render/scanline_25/mdp_render_scanline_25_plugin.h \
-		plugins/render/scanline_25/mdp_render_scanline_25.hpp
+		plugins/render/scanline_25/mdp_render_scanline_25.hpp \
 		plugins/render/interpolated/mdp_render_interpolated_plugin.h \
 		plugins/render/interpolated/mdp_render_interpolated.hpp \
 		plugins/render/interpolated_scanline/mdp_render_interpolated_scanline_plugin.h \
