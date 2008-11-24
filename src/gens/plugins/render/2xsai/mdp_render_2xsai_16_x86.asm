@@ -166,7 +166,7 @@ arg_mode555	equ 32
 		movq	[darkenMask], mm0
 		movq	[GreenMask], mm1
 		movq	[RedBlueMask], mm2
-		jmp	near .Loop
+		jmp	short .Loop
 	
 	.Mode_565:
 		; 16-bit: Apply 16-bit color masks.
@@ -184,7 +184,7 @@ arg_mode555	equ 32
 		movq	[darkenMask], mm0
 		movq	[GreenMask], mm1
 		movq	[RedBlueMask], mm2
-		jmp	near .Loop
+		jmp	short .Loop
 	
 	align 64
 	
