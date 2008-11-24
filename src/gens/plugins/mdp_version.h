@@ -38,20 +38,20 @@
  * @param mdp_version MDP version number.
  * @return Major version number. (uint8_t)
  */
-#define MDP_VERSION_MAJOR(mdp_version)		((mdp_version >> 24) & 0xFF)
+#define MDP_VERSION_MAJOR(mdp_version)		(((mdp_version) >> 24) & 0xFF)
 
 /**
  * MDP_VERSION_MINOR(): Extract the minor version number from an MDP version number.
  * @param mdp_version MDP version number.
  * @return Minor version number. (uint8_t)
  */
-#define MDP_VERSION_MINOR(mdp_version)		((mdp_version >> 16) & 0xFF)
+#define MDP_VERSION_MINOR(mdp_version)		(((mdp_version) >> 16) & 0xFF)
 
 /**
  * MDP_VERSION_REVISION(): Extract the revision number from an MDP version number.
  * @param mdp_version MDP version number.
  * @return Revision number. (uint16_t)
  */
-#define MDP_VERSION_REVISION(mdp_version)	(mdp_version & 0xFFFF)
+#define MDP_VERSION_REVISION(mdp_version)	((mdp_version) & 0xFFFF)
 
 #endif /* __MDP_VERSION_H */
