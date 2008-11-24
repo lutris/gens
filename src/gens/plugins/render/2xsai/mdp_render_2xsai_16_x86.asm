@@ -94,7 +94,7 @@ section .data align=64
 	darkenMask16:		dd 0xC718C718, 0xC718C718
 	GreenMask16:		dd 0x07E007E0, 0x07E007E0
 	RedBlueMask16:		dd 0xF81FF81F, 0xF81FF81F
-
+	
 section .bss align=64
 	
 	LineBuffer:	resb 32
@@ -102,13 +102,8 @@ section .bss align=64
 	Mask2:		resb 8
 	ACPixel:	resb 8
 	
-	Line1Int:	resb 640 * 2
-	Line2Int:	resb 640 * 2
-	Line1IntP:	resd 1
-	Line2IntP:	resb 1
-
 section .text align=64
-
+	
 arg_destScreen	equ 8
 arg_mdScreen	equ 12
 arg_width	equ 16
@@ -116,7 +111,7 @@ arg_height	equ 20
 arg_pitch	equ 24
 arg_offset	equ 28
 arg_mode555	equ 32
-
+	
 	;************************************************************************
 	; void mdp_render_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				   int width, int height, int pitch, int offset.
