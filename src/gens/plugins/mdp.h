@@ -30,14 +30,6 @@ extern "C" {
 #include <stdint.h>
 
 
-// Version number macro.
-#define MDP_VERSION(major, minor, revision) \
-	((((major) & 0xFF) << 24) | (((minor) & 0xFF) << 16) | ((revision) & 0xFFFF))
-
-// Gens Plugin interface version.
-#define MDP_INTERFACE_VERSION MDP_VERSION(0, 0, 1)
-
-
 // Function pointer calling conventions from SDL's begin_code.h
 // TODO: Combine this with the #defines from compress.h
 #ifndef GENS_FNCALL
@@ -51,6 +43,13 @@ extern "C" {
 #endif
 #endif
 #endif
+
+
+// Version number macros.
+#include "mdp_version.h"
+
+// MDP interface version.
+#define MDP_INTERFACE_VERSION MDP_VERSION(0, 0, 1)
 
 
 // Licenses
