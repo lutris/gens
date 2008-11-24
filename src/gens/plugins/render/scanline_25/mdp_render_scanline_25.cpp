@@ -126,8 +126,8 @@ void mdp_render_scanline_25_cpp(MDP_Render_Info_t *renderInfo)
 				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
 				    renderInfo->pitch, renderInfo->offset,
-				    (renderInfo->bpp == 16 ? MASK_DIV2_16_ASM : MASK_DIV2_15_ASM),
-				    (renderInfo->bpp == 16 ? MASK_DIV4_16_ASM : MASK_DIV4_15_ASM));
+				    (renderInfo->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM),
+				    (renderInfo->bpp == 15 ? MASK_DIV4_15_ASM : MASK_DIV4_16_ASM));
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_scanline_25_cpp(
@@ -135,8 +135,8 @@ void mdp_render_scanline_25_cpp(MDP_Render_Info_t *renderInfo)
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset,
-			    (renderInfo->bpp == 16 ? MASK_DIV2_16 : MASK_DIV2_15),
-			    (renderInfo->bpp == 16 ? MASK_DIV4_16 : MASK_DIV4_15));
+			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16),
+			    (renderInfo->bpp == 15 ? MASK_DIV4_15 : MASK_DIV4_16));
 #endif /* GENS_X86_ASM */
 	}
 	else
