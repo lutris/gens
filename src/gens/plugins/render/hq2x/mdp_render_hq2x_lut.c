@@ -28,6 +28,9 @@
 
 
 // hq2x lookup tables.
+// TODO: Request a pointer to VDraw::LUT16to32.
+// Using VDraw::LUT16to32 instead of building a new LUT16to32 will save memory.
+// Note that this requires a pointer request interface to be added to MDP.
 int *mdp_render_hq2x_LUT16to32 = NULL;
 int *mdp_render_hq2x_RGBtoYUV = NULL;
 int mdp_render_hq2x_refcount = 0;
