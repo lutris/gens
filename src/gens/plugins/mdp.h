@@ -100,14 +100,14 @@ typedef struct
 	const uint32_t cpuFlagsRequired;
 	
 	// Plugin description.
-	const MDP_Desc_t *desc;
+	MDP_Desc_t *desc;
 	
 	// Init/Shutdown functions
 	mdp_init init;
 	mdp_end end;
 	
 	// Struct definition for the specified plugin type.
-	const void *plugin_t;
+	void *plugin_t;
 } MDP_t;
 
 
