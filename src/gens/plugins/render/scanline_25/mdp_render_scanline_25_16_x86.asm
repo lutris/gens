@@ -260,7 +260,7 @@ section .text align=64
 				movq	[edi + 24], mm2
 				add	edi, byte 32
 				
-				; Next set of pixels.
+				; Next group of pixels.
 				dec	ecx
 				jnz	short .Loop_X2
 			
