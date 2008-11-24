@@ -488,7 +488,8 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 			y = VDP_Num_Vis_Lines * m_scale;
 		}
 		
-		y += (16 * (m_scale - 1));
+		if (m_scale > 1)
+			y += (8 * m_scale);
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
