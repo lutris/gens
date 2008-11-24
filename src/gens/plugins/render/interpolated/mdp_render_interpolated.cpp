@@ -96,7 +96,7 @@ void mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
 	if (!renderInfo)
 		return;
 	
-	if (renderInfo->bpp == 15 || renderInfo->bpp == 16)
+	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & CPUFLAG_MMX)
