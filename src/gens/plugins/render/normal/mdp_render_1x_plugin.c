@@ -52,7 +52,6 @@ MDP_t mdp_render_1x =
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 0, 1),
 	.type = MDPT_RENDER,
-	.desc = &MDP_Desc,
 	
 	// UUID: b3366576-f17a-4f5a-a923-a654c513b185
 	.uuid = {0xB3, 0x36, 0x65, 0x76,
@@ -64,6 +63,9 @@ MDP_t mdp_render_1x =
 	// CPU flags
 	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
 	.cpuFlagsRequired = 0,
+	
+	// Description
+	.desc = &MDP_Desc,
 	
 	// Init/Shutdown functions
 	.init = NULL,

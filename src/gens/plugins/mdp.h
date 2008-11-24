@@ -91,7 +91,7 @@ typedef struct
 	const uint32_t interfaceVersion;
 	const uint32_t pluginVersion;
 	const uint32_t type;
-	const MDP_Desc_t *desc;
+	const uint32_t reserved1;
 	
 	// UUID - each plugin must have a unique ID.
 	const unsigned char uuid[16];
@@ -99,6 +99,9 @@ typedef struct
 	// CPU flag information.
 	const uint32_t cpuFlagsSupported;
 	const uint32_t cpuFlagsRequired;
+	
+	// Plugin description.
+	const MDP_Desc_t *desc;
 	
 	// Init/Shutdown functions
 	mdp_init init;

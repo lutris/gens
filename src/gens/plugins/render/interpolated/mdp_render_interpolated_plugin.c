@@ -52,7 +52,6 @@ MDP_t mdp_render_interpolated =
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 0, 1),
 	.type = MDPT_RENDER,
-	.desc = &MDP_Desc,
 	
 	// UUID: fd39b461-9488-4eff-b401-a9e764fdc0b7
 	.uuid = {0xFD, 0x39, 0xB4, 0x61,
@@ -64,6 +63,9 @@ MDP_t mdp_render_interpolated =
 	// CPU flags
 	.cpuFlagsSupported = 0,
 	.cpuFlagsRequired = 0,
+	
+	// Description
+	.desc = &MDP_Desc,
 	
 	// Init/Shutdown functions
 	.init = NULL,
