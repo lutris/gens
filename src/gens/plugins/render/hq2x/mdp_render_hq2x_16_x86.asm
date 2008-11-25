@@ -366,7 +366,7 @@ section .text align=64
 %endmacro
 
 %macro PIXEL01_0 0
-	mov [edi + 2], ax
+	mov	[edi + 2], ax
 %endmacro
 
 %macro PIXEL01_10 0
@@ -414,7 +414,7 @@ section .text align=64
 %endmacro
 
 %macro PIXEL10_0 0
-	mov [edi + ebx], ax
+	mov	[edi + ebx], ax
 %endmacro
 
 %macro PIXEL10_10 0
@@ -462,7 +462,7 @@ section .text align=64
 %endmacro
 
 %macro PIXEL11_0 0
-	mov [edi + ebx + 2], ax
+	mov	[edi + ebx + 2], ax
 %endmacro
 
 %macro PIXEL11_10 0
