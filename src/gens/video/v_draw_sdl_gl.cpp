@@ -4,7 +4,8 @@
 
 #include "v_draw_sdl_gl.hpp"
 
-#include <string.h>
+#include <cstring>
+#include <stdlib.h>
 
 #include <gdk/gdkx.h>
 
@@ -172,7 +173,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	
 	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
-	filterBuffer = (unsigned char*)malloc(filterBufferSize);
+	posix_memalign((void**)(&filterBuffer), 16, filterBufferSize);
 	
 	glViewport(0, 0, screen->w, screen->h);
 	
