@@ -1,7 +1,6 @@
 TODO for Gens/GS m6:
 - Finish initial plugin implementation. (Internal plugins only.)
 - [MDP] Port the rest of the Interpolated renderers. (Add 32-bit color asm versions, too.)
-- [MDP] Change "pitch" and "offset" to "destPitch" and "srcPitch".
 - [SDL] Fix Ctrl-Q in fullscreen.
 - [MDP] Use the render tag instead of ID number in the configuration file.
 - [MDP] Add plugin configuration save/load based on MDP UUID.
