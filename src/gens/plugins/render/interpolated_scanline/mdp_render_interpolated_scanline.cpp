@@ -31,9 +31,6 @@
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
 
-// TODO: Remove this when x86 asm versions are added.
-#undef GENS_X86_ASM
-
 // x86 asm versions
 #ifdef GENS_X86_ASM
 #include "mdp_render_interpolated_scanline_x86.h"
@@ -47,7 +44,7 @@
 #define MASK_DIV2_32 ((uint32_t)(0x007F7F7F))
 
 
-#ifndef GENS_X86_ASM
+//#ifndef GENS_X86_ASM
 /**
  * T_mdp_render_interpolated_scanline_cpp: Blits the image to the screen, interpolated size, interpolation.
  * @param destScreen Pointer to the destination screen buffer.
@@ -85,7 +82,7 @@ static inline void T_mdp_render_interpolated_scanline_cpp(pixel *destScreen, pix
 		}
 	}
 }
-#endif /* GENS_X86_ASM */
+//#endif /* GENS_X86_ASM */
 
 
 void mdp_render_interpolated_scanline_cpp(MDP_Render_Info_t *renderInfo)
@@ -96,13 +93,14 @@ void mdp_render_interpolated_scanline_cpp(MDP_Render_Info_t *renderInfo)
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_MMX)
+		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
 		{
 			mdp_render_interpolated_scanline_16_x86_mmx(
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->pitch, renderInfo->offset,
+				    (renderInfo->bpp == 15));
 		}
 		else
 		{
@@ -110,7 +108,8 @@ void mdp_render_interpolated_scanline_cpp(MDP_Render_Info_t *renderInfo)
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
 				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->pitch, renderInfo->offset,
+				    (renderInfo->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM));
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_interpolated_scanline_cpp(
@@ -123,6 +122,7 @@ void mdp_render_interpolated_scanline_cpp(MDP_Render_Info_t *renderInfo)
 	}
 	else
 	{
+#if 0
 #ifdef GENS_X86_ASM
 		if (renderInfo->cpuFlags & CPUFLAG_MMX)
 		{
@@ -141,12 +141,14 @@ void mdp_render_interpolated_scanline_cpp(MDP_Render_Info_t *renderInfo)
 				    renderInfo->pitch, renderInfo->offset);
 		}
 #else /* !GENS_X86_ASM */
+#endif
+#endif
 		T_mdp_render_interpolated_scanline_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->width, renderInfo->height,
 			    renderInfo->pitch, renderInfo->offset,
 			    MASK_DIV2_32);
-#endif /* GENS_X86_ASM */
+//#endif /* GENS_X86_ASM */
 	}
 }
