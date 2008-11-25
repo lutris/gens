@@ -31,8 +31,8 @@ extern "C" {
 #include <stdint.h>
 
 void mdp_render_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-				 int width, int height, int pitch, int offset,
-				 int mode555);
+				 int destPitch, int srcPitch,
+				 int width, int height, int mode555);
 
 #ifdef __cplusplus
 }

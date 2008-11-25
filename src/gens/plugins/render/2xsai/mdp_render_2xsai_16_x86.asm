@@ -106,16 +106,16 @@ section .text align=64
 	
 arg_destScreen	equ 8
 arg_mdScreen	equ 12
-arg_width	equ 16
-arg_height	equ 20
-arg_pitch	equ 24
-arg_offset	equ 28
+arg_destPitch	equ 16
+arg_srcPitch	equ 20
+arg_width	equ 24
+arg_height	equ 28
 arg_mode555	equ 32
 	
 	;************************************************************************
 	; void mdp_render_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-	;				   int width, int height, int pitch, int offset.
-	;				   int mode555);
+	;				   int destPitch, int srcPitch,
+	;				   int width, int height, mode555);
 	global _mdp_render_2xsai_16_x86_mmx
 	_mdp_render_2xsai_16_x86_mmx:
 		
@@ -126,15 +126,12 @@ arg_mode555	equ 32
 		
 		mov	ecx, [ebp + arg_height]		; ecx = Number of lines
 		mov	edx, [ebp + arg_width]		; edx = Width
-		mov	ebx, [ebp + arg_pitch]		; ebx = Pitch of destination surface (bytes per line)
+		mov	ebx, [ebp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
 		mov	esi, [ebp + arg_mdScreen]	; esi = Source
 		mov	edi, [ebp + arg_destScreen]	; edi = Destination
+		mov	eax, [ebp + arg_srcPitch]	; eax = Pitch of source surface (bytes per line)
 		
 		; Parameters for _2xSaILine
-		mov	eax, [ebp + arg_width]
-		add	eax, [ebp + arg_offset]
-		add	eax, eax
-		
 		push	ebx	; 5th parameter == destination pitch
 		push	edi	; 4th parameter == destination
 		push	edx	; 3rd parameter == width
@@ -209,7 +206,7 @@ arg_mode555	equ 32
 	align 64
 	
 	;***********************************************************************************************
-	;void _2xSaILine(uint8 *srcPtr, uint32 srcPitch, uint32 width, uint8 *dstPtr, uint32 dstPitch);
+	;v oid _2xSaILine(uint8 *srcPtr, uint32 srcPitch, uint32 width, uint8 *dstPtr, uint32 dstPitch);
 	_2xSaILine:
 		
 		push	ebp

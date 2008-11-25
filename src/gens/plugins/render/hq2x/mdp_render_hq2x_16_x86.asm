@@ -511,14 +511,15 @@ section .text align=64
 
 arg_destScreen	equ 8
 arg_mdScreen	equ 12
-arg_width	equ 16
-arg_height	equ 20
-arg_pitch	equ 24
-arg_offset	equ 28
+arg_destPitch	equ 16
+arg_srcPitch	equ 20
+arg_width	equ 24
+arg_height	equ 28
 
 	;************************************************************************
 	; void mdp_render_hq2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-	;				  int width, int height, int pitch, int offset);
+	;				  int destPitch, int srcPitch,
+	;				  int width, int height);
 	global _mdp_render_hq2x_16_x86_mmx
 	_mdp_render_hq2x_16_x86_mmx:
 	
@@ -531,8 +532,8 @@ arg_offset	equ 28
 	mov	edx, [ebp + arg_height]
 	mov	[linesleft], edx
 	mov	ebx, [ebp + arg_width]
-	shl	ebx, 1
-	shl	dword [ebp + arg_offset], 1	; Adjust offset for 16-bit color.
+	add	ebx, ebx
+	sub	[ebp + arg_srcPitch], ebx	; arg_srcPitch = offset
 	mov	dword [prevline], 0
 	mov	dword [nextline], ebx
 	
@@ -674,7 +675,7 @@ arg_offset	equ 28
 	test	ecx, ecx
 	jnz	.testflag1
 	mov	ecx, [cross]
-	mov	ebx, [ebp + arg_pitch]
+	mov	ebx, [ebp + arg_destPitch]
 	jmp	[FuncTable2 + ecx * 4]
 	
 .testflag1:
@@ -738,7 +739,7 @@ arg_offset	equ 28
 	or	ecx, 128
 	
 .noflag9:
-	mov	ebx, [ebp + arg_pitch]
+	mov	ebx, [ebp + arg_destPitch]
 	jmp	[FuncTable + ecx * 4]
 	
 ..@flag0:
@@ -2017,11 +2018,11 @@ arg_offset	equ 28
 	jmp	.flags
 	
 .NextY:
-	add	esi, [ebp + arg_offset] ; MDP: Add the line offset to the source buffer.
+	add	esi, [ebp + arg_srcPitch] ; MDP: Add the source pitch difference.
 	add	edi, ebx
 	
 	; MDP: Add the difference between the pitch and the source width.
-	mov	ebx, [ebp + arg_pitch]
+	mov	ebx, [ebp + arg_destPitch]
 	shr	ebx, 2
 	sub	ebx, [ebp + arg_width]
 	shl	ebx, 2
@@ -2032,8 +2033,8 @@ arg_offset	equ 28
 	mov	ebx, [ebp + arg_width]
 	shl	ebx, 1
 	
-	; MDP: Add the line offset to the destination buffer.
-	add	ebx, [ebp + arg_offset]
+	; MDP: Add the source pitch difference to the destination buffer.
+	add	ebx, [ebp + arg_srcPitch]
 	
 	cmp	dword [linesleft], 1
 	je	.lastline
