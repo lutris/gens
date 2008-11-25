@@ -191,6 +191,7 @@ noinst_HEADERS = \
 		macros/git.h \
 		macros/file_m.h \
 		macros/hashtable.hpp \
+		macros/malloc_align.h \
 		macros/math_m.h \
 		port/ini.hpp \
 		segacd/cd_file.h \

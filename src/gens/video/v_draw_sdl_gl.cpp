@@ -5,7 +5,7 @@
 #include "v_draw_sdl_gl.hpp"
 
 #include <cstring>
-#include <stdlib.h>
+#include "macros/malloc_align.h"
 
 #include <gdk/gdkx.h>
 
@@ -174,7 +174,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	// Allocate the filter buffer.
 	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
-	posix_memalign((void**)(&filterBuffer), 16, filterBufferSize);
+	filterBuffer = static_cast<unsigned char*>(gens_malloc_align(filterBufferSize, 16));
 	
 	glViewport(0, 0, screen->w, screen->h);
 	
