@@ -23,16 +23,7 @@ gens_SOURCES += \
 		plugins/render/scale2x/mdp_render_scale4x.c \
 		plugins/render/scale2x/scale2x.c \
 		plugins/render/scale2x/scale3x.c \
-		plugins/render/scale2x/scalebit.c \
-		plugins/render/hq2x/mdp_render_hq2x_lut.c \
-		plugins/render/hq2x/mdp_render_hq2x_plugin.c \
-		plugins/render/hq2x/mdp_render_hq2x.c \
-		plugins/render/hq2x/mdp_render_hq3x_plugin.c \
-		plugins/render/hq2x/mdp_render_hq3x.c \
-		plugins/render/hq2x/mdp_render_hq4x_plugin.c \
-		plugins/render/hq2x/mdp_render_hq4x.c \
-		plugins/render/2xsai/mdp_render_2xsai_plugin.c \
-		plugins/render/2xsai/mdp_render_2xsai.c
+		plugins/render/scale2x/scalebit.c
 
 noinst_HEADERS += \
 		plugins/render/normal/mdp_render_1x_plugin.h \
@@ -57,7 +48,20 @@ noinst_HEADERS += \
 		plugins/render/scale2x/mdp_render_scale4x.h \
 		plugins/render/scale2x/scale2x.h \
 		plugins/render/scale2x/scale3x.h \
-		plugins/render/scale2x/scalebit.h \
+		plugins/render/scale2x/scalebit.h
+
+if GENS_X86_ASM
+gens_SOURCES += \
+		plugins/render/hq2x/mdp_render_hq2x_lut.c \
+		plugins/render/hq2x/mdp_render_hq2x_plugin.c \
+		plugins/render/hq2x/mdp_render_hq2x.c \
+		plugins/render/hq2x/mdp_render_hq3x_plugin.c \
+		plugins/render/hq2x/mdp_render_hq3x.c \
+		plugins/render/hq2x/mdp_render_hq4x_plugin.c \
+		plugins/render/hq2x/mdp_render_hq4x.c \
+		plugins/render/2xsai/mdp_render_2xsai_plugin.c \
+		plugins/render/2xsai/mdp_render_2xsai.c
+noinst_HEADERS += \
 		plugins/render/hq2x/mdp_render_hq2x_lut.h \
 		plugins/render/hq2x/mdp_render_hq2x_plugin.h \
 		plugins/render/hq2x/mdp_render_hq2x.h \
@@ -67,8 +71,6 @@ noinst_HEADERS += \
 		plugins/render/hq2x/mdp_render_hq4x.h \
 		plugins/render/2xsai/mdp_render_2xsai_plugin.h \
 		plugins/render/2xsai/mdp_render_2xsai.h
-
-if GENS_X86_ASM
 gens_x86_asm_o += \
 		plugins/render/normal/mdp_render_1x_16_x86.o \
 		plugins/render/normal/mdp_render_1x_32_x86.o \

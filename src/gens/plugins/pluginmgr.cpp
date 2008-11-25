@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include "pluginmgr.hpp"
 
 using std::vector;
@@ -35,10 +39,13 @@ using std::vector;
 #include "render/scale2x/mdp_render_scale2x_plugin.h"
 #include "render/scale2x/mdp_render_scale3x_plugin.h"
 #include "render/scale2x/mdp_render_scale4x_plugin.h"
+
+#ifdef GENS_X86_ASM
 #include "render/hq2x/mdp_render_hq2x_plugin.h"
 #include "render/hq2x/mdp_render_hq3x_plugin.h"
 #include "render/hq2x/mdp_render_hq4x_plugin.h"
 #include "render/2xsai/mdp_render_2xsai_plugin.h"
+#endif /* GENS_X86_ASM */
 
 // Internal plugins
 static MDP_t* mdp_internal[] =
@@ -53,10 +60,12 @@ static MDP_t* mdp_internal[] =
 	&mdp_render_scale2x,
 	&mdp_render_scale3x,
 	&mdp_render_scale4x,
+#ifdef GENS_X86_ASM
 	&mdp_render_hq2x,
 	&mdp_render_hq3x,
 	&mdp_render_hq4x,
 	&mdp_render_2xsai,
+#endif /* GENS_X86_ASM */
 	NULL
 };
 
