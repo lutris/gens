@@ -171,6 +171,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	m_HRender = (double)(rowLength) / (double)(textureSize*2);
 	m_VRender = (double)(240.0 * rendPlugin->scale) / (double)(textureSize);
 	
+	// Allocate the filter buffer.
 	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
 	posix_memalign((void**)(&filterBuffer), 16, filterBufferSize);
