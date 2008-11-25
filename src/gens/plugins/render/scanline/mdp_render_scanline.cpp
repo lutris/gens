@@ -40,42 +40,44 @@
 #ifndef GENS_X86_ASM
 /**
  * T_mdp_render_scanline_cpp: Blits the image to the screen, 2x size, scanlines.
- * @param screen Pointer to the screen buffer.
+ * @param destScreen Pointer to the screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
- * @param pitch Number of bytes per line.
- * @param x X coordinate for the image.
- * @param y Y coordinate for the image.
- * @param offset ???
+ * @param destPitch Pitch of destScreen.
+ * @param srcPitch Pitch of mdScreen.
+ * @param width Width of the image.
+ * @param height Height of the image.
  */
 template<typename pixel>
 static inline void T_mdp_render_scanline_cpp(pixel *destScreen, pixel *mdScreen,
-					     int width, int height,
-					     int pitch, int offset)
+					     int destPitch, int srcPitch,
+					     int width, int height)
 {
 	// Pitch difference.
-	pitch /= sizeof(pixel);
-	int nextLine = pitch + (pitch - (width * 2));
+	destPitch /= sizeof(pixel);
+	int nextLine = destPitch + (destPitch - (width * 2));
+	
+	srcPitch /= sizeof(pixel);
 	
 	pixel *line = destScreen;
-	for (unsigned short i = 0; i < height; i++)
+	for (int i = 0; i < height; i++)
 	{
-		for (unsigned short j = 0; j < width; j++)
+		for (int j = 0; j < width; j++)
 		{
 			*line++ = *mdScreen;
 			*line++ = *mdScreen++;
 		}
 		
 		// Next line.
-		mdScreen += offset;
+		mdScreen += (srcPitch - width);
 		line += nextLine;
 	}
 	
 	// Zero the extra lines.
-	line = destScreen + pitch;
+	line = destScreen + destPitch;
 	for (unsigned short i = 0; i < height; i++)
 	{
 		memset(line, 0x00, width * 2 * sizeof(pixel));
-		line += (pitch * 2);
+		line += (destPitch * 2);
 	}
 }
 #endif /* GENS_X86_ASM */
@@ -94,23 +96,23 @@ void mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo)
 			mdp_render_scanline_16_x86_mmx(
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->destPitch, renderInfo->srcPitch,
+				    renderInfo->width, renderInfo->height);
 		}
 		else
 		{
 			mdp_render_scanline_16_x86(
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->destPitch, renderInfo->srcPitch,
+				    renderInfo->width, renderInfo->height);
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_scanline_cpp(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset);
+			    renderInfo->destPitch, renderInfo->srcPitch,
+			    renderInfo->width, renderInfo->height);
 #endif /* GENS_X86_ASM */
 	}
 	else
@@ -121,23 +123,23 @@ void mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo)
 			mdp_render_scanline_32_x86_mmx(
 				    (uint32_t*)renderInfo->destScreen,
 				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->destPitch, renderInfo->srcPitch,
+				    renderInfo->width, renderInfo->height);
 		}
 		else
 		{
 			mdp_render_scanline_32_x86(
 				    (uint32_t*)renderInfo->destScreen,
 				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->destPitch, renderInfo->srcPitch,
+				    renderInfo->width, renderInfo->height);
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_scanline_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
-			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset);
+			    renderInfo->destPitch, renderInfo->srcPitch,
+			    renderInfo->width, renderInfo->height);
 #endif /* GENS_X86_ASM */
 	}
 }

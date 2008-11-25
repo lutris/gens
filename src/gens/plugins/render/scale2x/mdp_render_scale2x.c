@@ -45,7 +45,7 @@ void mdp_render_scale2x_cpp(MDP_Render_Info_t *renderInfo)
 
 	unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
 	
-	scale(2, renderInfo->destScreen, renderInfo->pitch,
-	      renderInfo->mdScreen, (renderInfo->width + renderInfo->offset) * bytespp,
-	      bytespp, renderInfo->width, renderInfo->height);
+	scale(2, renderInfo->destScreen, renderInfo->destPitch,
+		 renderInfo->mdScreen, renderInfo->srcPitch,
+		 bytespp, renderInfo->width, renderInfo->height);
 }

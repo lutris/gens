@@ -52,32 +52,33 @@
  * T_mdp_render_interpolated_cpp: Blits the image to the screen, interpolated size, interpolation.
  * @param destScreen Pointer to the destination screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
+ * @param destPitch Pitch of destScreen.
+ * @param srcPitch Pitch of mdScreen.
  * @param width Width of the image.
  * @param height Height of the image.
- * @param pitch Number of bytes per line.
- * @param offset ???
  * @param mask Mask for the interpolation data.
  */
 template<typename pixel>
 static inline void T_mdp_render_interpolated_cpp(pixel *destScreen, pixel *mdScreen,
+						 int destPitch, int srcPitch,
 						 int width, int height,
-						 int pitch, int offset,
 						 pixel mask)
 {
-	pitch /= sizeof(pixel);
+	destPitch /= sizeof(pixel);
+	srcPitch /= sizeof(pixel);
 	
 	for (int y = 0; y < height; y++)
 	{
-		pixel *SrcLine = &mdScreen[y * (width + offset)];
-		pixel *DstLine1 = &destScreen[(y * 2) * pitch];
-		pixel *DstLine2 = &destScreen[((y * 2) + 1) * pitch];
+		pixel *SrcLine = &mdScreen[y * srcPitch];
+		pixel *DstLine1 = &destScreen[(y * 2) * destPitch];
+		pixel *DstLine2 = &destScreen[((y * 2) + 1) * destPitch];
 		
 		for (int i = 0; i < width; i++)
 		{
 			pixel C = *(SrcLine);
-			pixel R = *(SrcLine+1);
-			pixel D = *(SrcLine + width + offset);
-			pixel DR = *(SrcLine + width + offset + 1);
+			pixel R = *(SrcLine + 1);
+			pixel D = *(SrcLine + srcPitch);
+			pixel DR = *(SrcLine + srcPitch + 1);
 			
 			*DstLine1++ = C;
 			*DstLine1++ = ((C >> 1) & mask) + ((R >> 1) & mask);
@@ -104,8 +105,8 @@ void mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
 			mdp_render_interpolated_16_x86_mmx(
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
+				    renderInfo->destPitch, renderInfo->srcPitch,
 				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset,
 				    (renderInfo->bpp == 15));
 		}
 		else
@@ -113,16 +114,16 @@ void mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
 			mdp_render_interpolated_16_x86(
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
+				    renderInfo->destPitch, renderInfo->srcPitch,
 				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset,
 				    (renderInfo->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM));
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_interpolated_cpp(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
+			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset,
 			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 #endif /* GENS_X86_ASM */
 	}
@@ -134,23 +135,23 @@ void mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
 			mdp_render_interpolated_32_x86_mmx(
 				    (uint32_t*)renderInfo->destScreen,
 				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->destPitch, renderInfo->srcPitch,
+				    renderInfo->width, renderInfo->height);
 		}
 		else
 		{
 			mdp_render_interpolated_32_x86(
 				    (uint32_t*)renderInfo->destScreen,
 				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->width, renderInfo->height,
-				    renderInfo->pitch, renderInfo->offset);
+				    renderInfo->destPitch, renderInfo->srcPitch,
+				    renderInfo->width, renderInfo->height);
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_interpolated_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
+			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height,
-			    renderInfo->pitch, renderInfo->offset,
 			    MASK_DIV2_32);
 #endif /* GENS_X86_ASM */
 	}

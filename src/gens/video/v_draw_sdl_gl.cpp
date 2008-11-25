@@ -344,13 +344,13 @@ int VDraw_SDL_GL::flipInternal(void)
 		// bpp has changed. Reinitialize the screen pointers.
 		m_rInfo.bpp = bppOut;
 		m_rInfo.cpuFlags = CPU_Flags;
+		m_rInfo.srcPitch = 336 * bytespp;
 	}
 	
 	m_rInfo.destScreen = (void*)start;
 	m_rInfo.width = 320 - m_HBorder;
 	m_rInfo.height = VDP_Num_Vis_Lines;
-	m_rInfo.pitch = pitch;
-	m_rInfo.offset = 16 + m_HBorder;
+	m_rInfo.destPitch = pitch;
 	
 	if (bppMD == 16 && bppOut != 16)
 	{
@@ -371,7 +371,7 @@ int VDraw_SDL_GL::flipInternal(void)
 		}
 		
 		m_rInfo.destScreen = (void*)m_tmp16img;
-		m_rInfo.pitch = m_tmp16img_pitch;
+		m_rInfo.destPitch = m_tmp16img_pitch;
 		if (m_FullScreen)
 			m_BlitFS(&m_rInfo);
 		else

@@ -617,6 +617,7 @@ int VDraw_DDraw::flipInternal(void)
 		// bpp has changed. Reinitialize the screen pointers.
 		m_rInfo.bpp = bppOut;
 		m_rInfo.cpuFlags = CPU_Flags;
+		m_rInfo.srcPitch = 336 * bytespp;
 	}
 	
 	if (m_FullScreen)
@@ -784,8 +785,7 @@ int VDraw_DDraw::flipInternal(void)
 				m_rInfo.destScreen = (void*)start;
 				m_rInfo.width = 320 - m_HBorder;
 				m_rInfo.height = VDP_Num_Vis_Lines;
-				m_rInfo.pitch = ddsd.lPitch;
-				m_rInfo.offset = 16 + m_HBorder;
+				m_rInfo.destPitch = ddsd.lPitch;
 				
 				m_BlitFS(&m_rInfo);
 				
@@ -869,8 +869,7 @@ int VDraw_DDraw::flipInternal(void)
 			m_rInfo.destScreen = (void*)start;
 			m_rInfo.width = 320 - m_HBorder;
 			m_rInfo.height = VDP_Num_Vis_Lines;
-			m_rInfo.pitch = ddsd.lPitch;
-			m_rInfo.offset = 16 + m_HBorder;
+			m_rInfo.destPitch = ddsd.lPitch;
 			
 			if (bppMD == 16 && bppOut != 16)
 			{
@@ -891,7 +890,7 @@ int VDraw_DDraw::flipInternal(void)
 				}
 				
 				m_rInfo.destScreen = (void*)m_tmp16img;
-				m_rInfo.pitch = m_tmp16img_pitch;
+				m_rInfo.destPitch = m_tmp16img_pitch;
 				if (m_FullScreen)
 					m_BlitFS(&m_rInfo);
 				else
@@ -970,8 +969,7 @@ int VDraw_DDraw::flipInternal(void)
 			m_rInfo.destScreen = (void*)start;
 			m_rInfo.width = 320 - m_HBorder;
 			m_rInfo.height = VDP_Num_Vis_Lines;
-			m_rInfo.pitch = ddsd.lPitch;
-			m_rInfo.offset = 16 + m_HBorder;
+			m_rInfo.destPitch = ddsd.lPitch;
 			
 			if (bppMD == 16 && bppOut != 16)
 			{
@@ -992,7 +990,7 @@ int VDraw_DDraw::flipInternal(void)
 				}
 				
 				m_rInfo.destScreen = (void*)m_tmp16img;
-				m_rInfo.pitch = m_tmp16img_pitch;
+				m_rInfo.destPitch = m_tmp16img_pitch;
 				if (m_FullScreen)
 					m_BlitFS(&m_rInfo);
 				else
