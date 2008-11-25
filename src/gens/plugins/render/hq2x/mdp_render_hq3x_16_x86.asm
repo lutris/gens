@@ -2706,7 +2706,7 @@ arg_height	equ 28
 %endmacro
 	
 %macro MULT_BY_6 2
-	; Optimized Multiplication by 6 [by David Korth]
+	; Optimized Multiplication by 6 [written by David Korth]
 	; %1 == register with value to multiply by 6
 	; %2 == temporary register
 	add	%1, %1
