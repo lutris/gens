@@ -324,9 +324,7 @@ void VDraw_SDL_GL::clearScreen(void)
  */
 int VDraw_SDL_GL::flipInternal(void)
 {
-	// TODO: Add border drawing, like in v_draw_sdl.
-	
-	unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
 	int pitch = rowLength * bytespp;
