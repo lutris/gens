@@ -152,10 +152,10 @@ int VDraw_SDL::flipInternal(void)
 	// Draw the border.
 	drawBorder();
 	
-	unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
-	int pitch = screen->w * bytespp;
+	int pitch = screen->pitch;
 	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
 	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
 	
