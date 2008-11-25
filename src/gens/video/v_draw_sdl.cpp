@@ -170,7 +170,6 @@ int VDraw_SDL::flipInternal(void)
 		// bpp has changed. Reinitialize the screen pointers.
 		m_rInfo.bpp = bppOut;
 		m_rInfo.cpuFlags = CPU_Flags;
-		m_rInfo.srcPitch = 336 * (bppMD == 15 ? 2 : bppMD / 8);
 	}
 	
 	m_rInfo.destScreen = (void*)start;

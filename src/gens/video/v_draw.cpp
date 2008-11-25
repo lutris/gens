@@ -788,6 +788,9 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		}
 	}
 	
+	// Set the source pitch.
+	m_rInfo.srcPitch = 336 * (bppMD == 15 ? 2 : bppMD / 8);
+	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
 	// if( (Old_Rend==NORMAL && Num==DOUBLE)||(Old_Rend==DOUBLE && Num==NORMAL) ||Opengl)
