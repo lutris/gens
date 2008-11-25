@@ -56,7 +56,7 @@ static inline void T_mdp_render_1x_cpp(pixel *destScreen, pixel *mdScreen,
 	destPitch /= sizeof(pixel);
 	srcPitch /= sizeof(pixel);
 	
-	for (int i = 0; i < height; i++)
+	for (int y = 0; y < height; y++)
 	{
 		memcpy(destScreen, mdScreen, width * sizeof(pixel));
 		

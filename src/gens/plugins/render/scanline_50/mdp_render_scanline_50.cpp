@@ -68,9 +68,9 @@ static inline void T_mdp_render_scanline_50_cpp(pixel *destScreen, pixel *mdScre
 	
 	pixel *line1 = destScreen;
 	pixel *line2 = destScreen + destPitch;
-	for (int i = 0; i < height; i++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int j = 0; j < width; j++)
+		for (int x = 0; x < width; x++)
 		{
 			pixel tmp = *mdScreen++;
 			

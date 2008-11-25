@@ -59,10 +59,9 @@ static inline void T_mdp_render_2x_cpp(pixel *destScreen, pixel *mdScreen,
 	srcPitch /= sizeof(pixel);
 	
 	pixel *line1 = destScreen;
-	for (int i = 0; i < height; i++)
+	for (int y = 0; y < height; y++)
 	{
-		//dstOffs = i * (pitch / sizeof(pixel)) * 2;
-		for (int j = 0; j < width; j++)
+		for (int x = 0; x < width; x++)
 		{
 			*line1++ = *mdScreen;
 			*line1++ = *mdScreen++;
@@ -76,7 +75,7 @@ static inline void T_mdp_render_2x_cpp(pixel *destScreen, pixel *mdScreen,
 	// Copy lines.
 	line1 = destScreen;
 	pixel *line2 = destScreen + destPitch;
-	for (unsigned short i = 0; i < height; i++)
+	for (int y = 0; y < height; y++)
 	{
 		memcpy(line2, line1, width * 2 * sizeof(pixel));
 		line1 += (destPitch * 2);

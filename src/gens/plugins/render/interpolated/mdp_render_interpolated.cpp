@@ -73,7 +73,7 @@ static inline void T_mdp_render_interpolated_cpp(pixel *destScreen, pixel *mdScr
 		pixel *DstLine1 = &destScreen[(y * 2) * destPitch];
 		pixel *DstLine2 = &destScreen[((y * 2) + 1) * destPitch];
 		
-		for (int i = 0; i < width; i++)
+		for (int x = 0; x < width; x++)
 		{
 			pixel C = *(SrcLine);
 			pixel R = *(SrcLine + 1);
