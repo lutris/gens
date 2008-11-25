@@ -329,11 +329,11 @@ int VDraw_SDL_GL::flipInternal(void)
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
-	int pitch = rowLength * bytespp;
-	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
+	const int pitch = rowLength * bytespp;
+	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	const int HBorder = m_HBorder * (bytespp / 2);		// Left border width, in pixels.
 	
-	int startPos = ((pitch * VBorder) + HBorder) * m_scale;  // Starting position from within the screen.
+	const int startPos = ((pitch * VBorder) + HBorder) * m_scale;	// Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
