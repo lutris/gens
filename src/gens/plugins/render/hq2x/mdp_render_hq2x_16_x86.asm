@@ -1942,6 +1942,7 @@ arg_height	equ 28
 	mov	[edi + ebx], edx
 	jmp	.LoopX_end
 
+
 .LoopX_end:
 	add	esi, 2
 	add	edi, 4
