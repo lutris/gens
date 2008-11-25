@@ -20,6 +20,7 @@ TODO for Gens/GS m6.1:
 - [MDP] New plugin types:
   - Audio Processing (volume control)
   - Generic (Game Genie, SGens)
+- [MDP] External plugins.
 
 High-Level TODO:
 - Move most global variables to global Settings struct
