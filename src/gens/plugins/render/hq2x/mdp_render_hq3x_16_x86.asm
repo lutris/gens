@@ -2693,17 +2693,34 @@ arg_height	equ 28
 	add	edi, ebx
 	add	edi, ebx
 	
+%macro DIV_BY_6 1
+	; Optimized Division by Constant from http://www.agner.org/optimize/optimizing_assembly.pdf
+	; Dividend: %1 -> eax
+	; Divisor:  edx
+	; Quotient: edx
+	
+	mov	eax, %1
+	mov	edx, 0xAAAAAAAB
+	mul	edx
+	shr	edx, 2
+%endmacro
+	
+%macro MULT_BY_6 2
+	; Optimized Multiplication by 6 [by David Korth]
+	; %1 == register with value to multiply by 6
+	; %2 == temporary register
+	add	%1, %1
+	mov	%2, %1
+	add	%1, %1
+	add	%1, %2
+%endmacro
+	
 	; MDP: Add the difference between the pitch and the source width.
-	mov	eax, [ebp + arg_destPitch]
-	xor	edx, edx
-	mov	ebx, 6
-	div	ebx
-	sub	eax, [ebp + arg_width]
-	add	eax, eax
-	mov	edx, eax
-	add	eax, eax
-	add	eax, edx
-	add	edi, eax
+	mov		eax, [ebp + arg_destPitch]
+	DIV_BY_6	[ebp + arg_destPitch]
+	sub		edx, [ebp + arg_width]
+	MULT_BY_6	edx, eax
+	add		edi, edx
 	
 	dec	dword [linesleft]
 	jz	.fin
