@@ -5,6 +5,7 @@ TODO for Gens/GS m6:
 - [MDP] Use the render tag instead of ID number in the configuration file.
 - [MDP] Add plugin configuration save/load based on MDP UUID.
 - [MDP] Add an optional plugin icon variable. (32x32 PNG)
+- [MDP] Add a function to look up a pointer from Gens (e.g. for LUT16to32).
 - [MDPT_RENDER] Scale2x: Use non-MMX functions if MMX isn't supported on
   the current CPU.
 - [MDPT_RENDER] hq?x: Pre-calculate the destination pitch adjustment instead
