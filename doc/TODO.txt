@@ -1,27 +1,86 @@
+TODO for Gens/GS m6:
+- Finish initial plugin implementation. (Internal plugins only.)
+- [MDP] Port the rest of the Interpolated renderers. (Add 32-bit color asm versions, too.)
+- [SDL] Fix Ctrl-Q in fullscreen.
+- [MDP] Use the render tag instead of ID number in the configuration file.
+- [MDP] Add plugin configuration save/load based on MDP UUID.
+- [MDP] Add an optional plugin icon variable. (32x32 PNG)
+- [MDPT_RENDER] Scale2x: Use non-MMX functions if MMX isn't supported on
+  the current CPU.
+- [MDPT_RENDER] hq?x: Pre-calculate the destination pitch adjustment instead
+  of re-calculating it on each line.
+- [MDPT_RENDER] asm: Apply optimization tips from http://www.mark.masmcode.com/.
+  In particular, reduce dependencies.
+- [MDP] Add a flags field to MDP_RenderInfo_t, which will allow for something
+  like MDP_RENDERINFO_INTERLACED_EVEN and MDP_RENDERINFO_INTERLACED_ODD,
+  indicating interlaced frames. This will require MDP_RENDER_INTERLACED in
+  MDP_Render_t.
+
+TODO for Gens/GS m6.1:
+- [MDP] New plugin types:
+  - Audio Processing (volume control)
+  - Generic (Game Genie, SGens)
+
 High-Level TODO:
 - Move most global variables to global Settings struct
 - Port all Gens Rerecording changes
 - Add Qt4 UI
 - Convert all code to C++ with classes, etc
-- Convert from automake to CMake
-- Add VGM dumping support
+- [MDP] Add VGM dumping support
 - Add more compression format support
 - Improve the Zip File Selection Dialog
 
 Low Priority:
 - Add MacOS X Aqua UI
 
-Emulator TODO:
-- Fix VRAM overwrite bug, as seen in Sonic 2 Delta. Gens doesn't overwrite the VRAM, but Kega and the actual MD do.
-- Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual MD do. (Possible: Make an option to crash on illegal address.)
+High-Level TODO:
+- [DDraw] Border color emulation.
+- Rework border color emulation to be in the MD renderer, not the blitter.
+- Reimplement OpenGL projection so it doesn't stretch on widescreen monitors.
+  (Make it an option?)
+- [Win32] Add OpenGL renderer.
+- Combine common portions of the GTK+ and Win32 UIs.
+- Rework the language system.
+- Combine the two versions of Starscream. (It'll still output two asms, though.)
+- [Linux] Add a No GUI mode that runs in a plain SDL window.
+- [Linux] Add a configure option to disable the GTK+ interface.
+- Store ROM filetypes in the configuration file so they don't need to
+  be checked in Sync_Gens_Window_FileMenu_ROMHistory().
+- Port Linux physical CD-ROM support to libcdio. libcdio also works on
+  MacOS X and BSD.
+- Port MP3 support to LAME or some other MP3 library.
+- Re-add v5 32X savestate load support.
+- Automatically format SegaCD RAM cartridges.
+- Include the reverse-engineered 32X firmware.
+- [SDL] Figure out the minimum SDL version.
+- [GTK+] game_genie: If Enter is pressed in a textbox, select "Add Code", not "OK".
+- Pausing using Esc while in interlaced mode (Sonic 2 2P) causes the bottom
+  half of the screen to screw up.
+- [Win32] Windowed VSync might be broken.
+- [Win32] Full Screen: Frame counter flickers.
+- [Win32] Show a warning if DDraw fails due to lack of video memory.
+- [Win32] Frameskip doesn't work correctly. (It completely disregards timing.)
+- [ASPI] Only initialize when "Boot CD" is selected. (Also, close when SegaCD is closed.)
+- Check if mingw32 forces 8-byte alignment for doubles. (ym2612 struct)
+- J-Cart: http://spritesmind.net/_GenDev/forum/viewtopic.php?start=15&t=177
+- [Linux] Mono sound is broken.
+- [Win32] Mono sound works on Windows, but not in Wine.
+
+Low-Level TODO:
+- Fix VRAM overwrite bug, as seen in Sonic 2 Delta. Gens doesn't
+  overwrite the VRAM, but Kega and the actual MD do.
+- Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual
+  MD do. (Possible: Make an option to crash on illegal address.)
 - CD audio fixes in Gens Re-Recording r65, r66, etc.
   - http://code.google.com/p/gens-rerecording/source/detail?r=65
-- Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
+- [MDP] Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
 - Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
-- Set the border color to color 0 of palette 0. (See Sonic 1 GHZ for an example.)
-  - Works in SDL mode, but not in GL mode.
 - Z80 initialization bug: http://forums.sonicretro.org/index.php?showtopic=11192
 - Erase the entire MD palette when a new ROM is loaded.
+- [32X] PWM regressions from the C port, started in m5.1. PWM is broken in
+  BC Racer, but BC Racer doesn't work anyway.
 
-Miscellaneous Bugs:
-- Auto Pause doesn't work.
+Miscellaneous:
+- Commit fe2426a72420177fd3e7e4c086a673ec7273a97c fixed performance problems in VMware.
+  This commit allows processing messages in GensUI::sleep(), which technically *shouldn't*
+  fix the problem in VMware since GensUI::sleep() isn't called when a game is running.
