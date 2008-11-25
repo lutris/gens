@@ -41,11 +41,13 @@ typedef struct
 	void *destScreen;
 	void *mdScreen;
 	
-	// Output screen buffer parameters.
+	// Screen buffer pitch.
+	int destPitch;
+	int srcPitch;
+	
+	// Image parameters.
 	int width;
 	int height;
-	int pitch;
-	int offset;
 	
 	// CPU flags.
 	uint32_t cpuFlags;
