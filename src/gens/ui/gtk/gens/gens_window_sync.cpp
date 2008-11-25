@@ -247,14 +247,25 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// OpenGL Resolution
 	
+	// TODO: Optimize this.
 	if (Video.Width_GL == 320 && Video.Height_GL == 240)
-		id = IDM_GRAPHICS_OPENGL_RES_320;
+		id = IDM_GRAPHICS_OPENGL_RES_320x240;
 	else if (Video.Width_GL == 640 && Video.Height_GL == 480)
-		id = IDM_GRAPHICS_OPENGL_RES_640;
+		id = IDM_GRAPHICS_OPENGL_RES_640x480;
 	else if (Video.Width_GL == 800 && Video.Height_GL == 600)
-		id = IDM_GRAPHICS_OPENGL_RES_800;
+		id = IDM_GRAPHICS_OPENGL_RES_800x600;
+	else if (Video.Width_GL == 960 && Video.Height_GL == 720)
+		id = IDM_GRAPHICS_OPENGL_RES_960x720;
 	else if (Video.Width_GL == 1024 && Video.Height_GL == 768)
-		id = IDM_GRAPHICS_OPENGL_RES_1024;
+		id = IDM_GRAPHICS_OPENGL_RES_1024x768;
+	else if (Video.Width_GL == 1280 && Video.Height_GL == 960)
+		id = IDM_GRAPHICS_OPENGL_RES_1280x960;
+	else if (Video.Width_GL == 1280 && Video.Height_GL == 1024)
+		id = IDM_GRAPHICS_OPENGL_RES_1280x1024;
+	else if (Video.Width_GL == 1400 && Video.Height_GL == 1050)
+		id = IDM_GRAPHICS_OPENGL_RES_1400x1050;
+	else if (Video.Width_GL == 1600 && Video.Height_GL == 1200)
+		id = IDM_GRAPHICS_OPENGL_RES_1600x1200;
 	else
 		id = IDM_GRAPHICS_OPENGL_RES_CUSTOM;
 	

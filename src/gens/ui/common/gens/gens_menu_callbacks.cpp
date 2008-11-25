@@ -345,23 +345,48 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			
 			break;
 		
-		case IDM_GRAPHICS_OPENGL_RES_320:
+		case IDM_GRAPHICS_OPENGL_RES_320x240:
 			Options::setOpenGL_Resolution(320, 240);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case IDM_GRAPHICS_OPENGL_RES_640:
+		case IDM_GRAPHICS_OPENGL_RES_640x480:
 			Options::setOpenGL_Resolution(640, 480);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case IDM_GRAPHICS_OPENGL_RES_800:
+		case IDM_GRAPHICS_OPENGL_RES_800x600:
 			Options::setOpenGL_Resolution(800, 600);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
-		case IDM_GRAPHICS_OPENGL_RES_1024:
+		case IDM_GRAPHICS_OPENGL_RES_960x720:
+			Options::setOpenGL_Resolution(960, 720);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_1024x768:
 			Options::setOpenGL_Resolution(1024, 768);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_1280x960:
+			Options::setOpenGL_Resolution(1280, 960);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_1280x1024:
+			Options::setOpenGL_Resolution(1280, 1024);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_1400x1050:
+			Options::setOpenGL_Resolution(1400, 1050);
+			Sync_Gens_Window_GraphicsMenu();
+			break;
+		
+		case IDM_GRAPHICS_OPENGL_RES_1600x1200:
+			Options::setOpenGL_Resolution(1600, 1200);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
