@@ -957,7 +957,8 @@ arg_height	equ 28
 	shr	eax, 16
 	mov	[w9], eax
 	jmp	.flags
-.LoopX
+	
+.LoopX:
 	mov	ebx, [prevline]
 	movq	mm5, [esi + ebx - 2]
 	movq	mm6, [esi - 2]
@@ -1142,6 +1143,7 @@ arg_height	equ 28
 .noflag9:
 	mov	ebx, [ebp + arg_destPitch]
 	jmp	[FuncTable + ecx * 4]
+
 
 ..@flag0;
 ..@flag1:
@@ -4033,6 +4035,7 @@ arg_height	equ 28
 	PIXEL32_0
 	DiffOrNot w6, w8, PIXEL33_0, PIXEL33_20
 	jmp .LoopX_end
+
 
 .LoopX_end:
 	add	esi, 2

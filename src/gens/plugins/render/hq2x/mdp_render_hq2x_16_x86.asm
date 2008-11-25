@@ -741,7 +741,8 @@ arg_height	equ 28
 .noflag9:
 	mov	ebx, [ebp + arg_destPitch]
 	jmp	[FuncTable + ecx * 4]
-	
+
+
 ..@flag0:
 ..@flag1:
 ..@flag4:
