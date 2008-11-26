@@ -37,11 +37,11 @@
 #endif /* GENS_X86_ASM */
 
 // Mask constants
-#define MASK_DIV2_15 ((uint16_t)(0x3DEF))
-#define MASK_DIV2_16 ((uint16_t)(0x7BEF))
-#define MASK_DIV2_15_ASM ((uint32_t)(0x3DEF3DEF))
-#define MASK_DIV2_16_ASM ((uint32_t)(0x7BEF7BEF))
-#define MASK_DIV2_32 ((uint32_t)(0x007F7F7F))
+#define MASK_DIV2_15		((uint16_t)(0x3DEF))
+#define MASK_DIV2_16		((uint16_t)(0x7BEF))
+#define MASK_DIV2_15_ASM	((uint32_t)(0x3DEF3DEF))
+#define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
+#define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
 
 #ifndef GENS_X86_ASM
