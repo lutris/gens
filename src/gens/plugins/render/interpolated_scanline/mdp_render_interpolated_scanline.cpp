@@ -46,7 +46,7 @@
 
 //#ifndef GENS_X86_ASM
 /**
- * T_mdp_render_interpolated_scanline_cpp: Blits the image to the screen, interpolated size, interpolation.
+ * T_mdp_render_interpolated_scanline_cpp: Blits the image to the screen, 2x size, interpolation with scanlines.
  * @param destScreen Pointer to the destination screen buffer.
  * @param mdScreen Pointer to the MD screen buffer.
  * @param destPitch Pitch of destScreen.
