@@ -67,10 +67,6 @@ section .data align=64
 	GreenMask:		dd 0x07E007E0, 0x07E007E0
 	RedBlueMask:		dd 0xF81FF81F, 0xF81FF81F
 	
-	FALSE:			dd 0x00000000, 0x00000000
-	TRUE:			dd 0xFFFFFFFF, 0xFFFFFFFF
-	ONE:			dd 0x00010001, 0x00010001
-	
 	; 15-bit color masks
 	
 	colorMask15:		dd 0x7BDE7BDE, 0x7BDE7BDE
@@ -95,6 +91,14 @@ section .data align=64
 	GreenMask16:		dd 0x07E007E0, 0x07E007E0
 	RedBlueMask16:		dd 0xF81FF81F, 0xF81FF81F
 	
+	; Constants
+	FALSE:			dd 0x00000000, 0x00000000
+	TRUE:			dd 0xFFFFFFFF, 0xFFFFFFFF
+	ONE:			dd 0x00010001, 0x00010001
+	
+	; Previous Mode 555 setting
+	PrevMode555:		dd 0x00000000
+	
 section .bss align=64
 	
 	LineBuffer:	resb 32
@@ -115,7 +119,7 @@ arg_mode555	equ 32
 	;************************************************************************
 	; void mdp_render_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				   int destPitch, int srcPitch,
-	;				   int width, int height, mode555);
+	;				   int width, int height, int mode555);
 	global _mdp_render_2xsai_16_x86_mmx
 	_mdp_render_2xsai_16_x86_mmx:
 		
@@ -124,41 +128,34 @@ arg_mode555	equ 32
 		mov	ebp, esp
 		pushad
 		
+		; Miscellaneous parameters.
+		mov	al, byte [ebp + arg_mode555]	; Mode 555 setting
 		mov	ecx, [ebp + arg_height]		; ecx = Number of lines
+		
+		; Move parameters for _2xSaILine into registers.
 		mov	edx, [ebp + arg_width]		; edx = Width
 		mov	ebx, [ebp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
 		mov	esi, [ebp + arg_mdScreen]	; esi = Source
 		mov	edi, [ebp + arg_destScreen]	; edi = Destination
 		mov	eax, [ebp + arg_srcPitch]	; eax = Pitch of source surface (bytes per line)
 		
-		; Parameters for _2xSaILine
+		; Push parameters for _2xSaILine onto the stack.
 		push	ebx	; 5th parameter == destination pitch
 		push	edi	; 4th parameter == destination
 		push	edx	; 3rd parameter == width
 		push	eax	; 2nd parameter == source pitch
 		push	esi	; 1st parameter == source
 		
+		; Check if the Mode 555 setting has changed.
+		cmp	al, [PrevMode555]
+		je	.Loop
+		
+		; Mode 555 setting has changed.
+		mov	byte [PrevMode555], al
+		
 		; Check if this is 15-bit color mode.
-		test	byte [ebp + arg_mode555], 1
-		jz	short .Mode_565
-	
-	.Mode_555:
-		; 15-bit: Apply 15-bit color masks.
-		movq	mm0, [colorMask15]
-		movq	mm1, [lowPixelMask15]
-		movq	[colorMask], mm0
-		movq	[lowPixelMask], mm1
-		movq	mm0, [qcolorMask15]
-		movq	mm1, [qlowpixelMask15]
-		movq	[qcolorMask], mm0
-		movq	[qlowpixelMask], mm1
-		movq	mm0, [darkenMask15]
-		movq	mm1, [GreenMask15]
-		movq	mm2, [RedBlueMask15]
-		movq	[darkenMask], mm0
-		movq	[GreenMask], mm1
-		movq	[RedBlueMask], mm2
-		jmp	short .Loop
+		test	al, 1
+		jnz	short .Mode_555
 	
 	.Mode_565:
 		; 16-bit: Apply 16-bit color masks.
@@ -173,6 +170,24 @@ arg_mode555	equ 32
 		movq	mm0, [darkenMask16]
 		movq	mm1, [GreenMask16]
 		movq	mm2, [RedBlueMask16]
+		movq	[darkenMask], mm0
+		movq	[GreenMask], mm1
+		movq	[RedBlueMask], mm2
+		jmp	short .Loop
+	
+	.Mode_555:
+		; 15-bit: Apply 15-bit color masks.
+		movq	mm0, [colorMask15]
+		movq	mm1, [lowPixelMask15]
+		movq	[colorMask], mm0
+		movq	[lowPixelMask], mm1
+		movq	mm0, [qcolorMask15]
+		movq	mm1, [qlowpixelMask15]
+		movq	[qcolorMask], mm0
+		movq	[qlowpixelMask], mm1
+		movq	mm0, [darkenMask15]
+		movq	mm1, [GreenMask15]
+		movq	mm2, [RedBlueMask15]
 		movq	[darkenMask], mm0
 		movq	[GreenMask], mm1
 		movq	[RedBlueMask], mm2
