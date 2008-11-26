@@ -36,8 +36,6 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
 
-#include "gens_core/gfx/renderers.h"
-
 
 /**
  * spriteLimit(): Get the current sprite limit setting.
