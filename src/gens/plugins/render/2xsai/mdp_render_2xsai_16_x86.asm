@@ -92,8 +92,6 @@ section .data align=64
 	RedBlueMask16:		dd 0xF81FF81F, 0xF81FF81F
 	
 	; Constants
-	FALSE:			dd 0x00000000, 0x00000000
-	TRUE:			dd 0xFFFFFFFF, 0xFFFFFFFF
 	ONE:			dd 0x00010001, 0x00010001
 	
 	; Previous Mode 555 setting
