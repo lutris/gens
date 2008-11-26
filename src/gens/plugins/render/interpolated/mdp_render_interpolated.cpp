@@ -31,23 +31,12 @@
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
 
-// TODO: Remove this when x86 asm versions are added.
-#undef GENS_X86_ASM
-
-// x86 asm versions
-#ifdef GENS_X86_ASM
-#include "mdp_render_interpolated_x86.h"
-#endif /* GENS_X86_ASM */
-
 // Mask constants
 #define MASK_DIV2_15		((uint16_t)(0x3DEF))
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
-#define MASK_DIV2_15_ASM	((uint32_t)(0x3DEF3DEF))
-#define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
 #define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
 
-#ifndef GENS_X86_ASM
 /**
  * T_mdp_render_interpolated_cpp: Blits the image to the screen, 2x size, interpolation.
  * @param destScreen Pointer to the destination screen buffer.
@@ -89,7 +78,6 @@ static inline void T_mdp_render_interpolated_cpp(pixel *destScreen, pixel *mdScr
 		}
 	}
 }
-#endif /* GENS_X86_ASM */
 
 
 void mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
@@ -99,60 +87,20 @@ void mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
 	
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
-#ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_MMX)
-		{
-			mdp_render_interpolated_16_x86_mmx(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15));
-		}
-		else
-		{
-			mdp_render_interpolated_16_x86(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM));
-		}
-#else /* !GENS_X86_ASM */
 		T_mdp_render_interpolated_cpp(
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height,
 			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
-#endif /* GENS_X86_ASM */
 	}
 	else
 	{
-#ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_MMX)
-		{
-			mdp_render_interpolated_32_x86_mmx(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height);
-		}
-		else
-		{
-			mdp_render_interpolated_32_x86(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height);
-		}
-#else /* !GENS_X86_ASM */
 		T_mdp_render_interpolated_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height,
 			    MASK_DIV2_32);
-#endif /* GENS_X86_ASM */
 	}
 }
