@@ -67,7 +67,7 @@ section .data align=64
 	GreenMask:		dd 0x07E007E0, 0x07E007E0
 	RedBlueMask:		dd 0xF81FF81F, 0xF81FF81F
 	
-	; 15-bit color masks
+	; 15-bit color masks.
 	
 	colorMask15:		dd 0x7BDE7BDE, 0x7BDE7BDE
 	lowPixelMask15:		dd 0x04210421, 0x04210421
@@ -79,7 +79,7 @@ section .data align=64
 	GreenMask15:		dd 0x03E003E0, 0x03E003E0
 	RedBlueMask15:		dd 0x7C1F7C1F, 0x7C1F7C1F
 	
-	; 16-bit color masks
+	; 16-bit color masks.
 	
 	colorMask16:		dd 0xF7DEF7DE, 0xF7DEF7DE
 	lowPixelMask16:		dd 0x08210821, 0x08210821
@@ -91,10 +91,10 @@ section .data align=64
 	GreenMask16:		dd 0x07E007E0, 0x07E007E0
 	RedBlueMask16:		dd 0xF81FF81F, 0xF81FF81F
 	
-	; Constants
+	; Constants.
 	ONE:			dd 0x00010001, 0x00010001
 	
-	; Previous Mode 555 setting
+	; Previous Mode 555 setting.
 	PrevMode555:		dd 0x00000000
 	
 section .bss align=64
