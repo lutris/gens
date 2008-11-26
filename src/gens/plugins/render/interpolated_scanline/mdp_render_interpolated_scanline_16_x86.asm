@@ -147,12 +147,12 @@ section .text align=64
 		
 		; Initialize the mask.
 		
-		; Default to 16-bit color.
+		; Default to 16-bit color. (Mode 565)
 		movq	mm7, [MASK_DIV2_16_MMX]
 		test	byte [ebp + arg_mode555], 1
 		jz	short .Loop_Y
 		
-		; 15-bit color is specified.
+		; 15-bit color is specified. (Mode 555)
 		movq	mm7, [MASK_DIV2_15_MMX]
 		jmp	short .Loop_Y
 	

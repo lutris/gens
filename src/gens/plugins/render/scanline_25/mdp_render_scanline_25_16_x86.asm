@@ -179,12 +179,16 @@ section .text align=64
 		shr	ecx, 5				; Transfer 32 bytes per cycle. (64 16-bit pixels)
 		mov	[ebp + arg_width], ecx		; Initialize the X counter.
 		
-		; Check which mask to use.
-		movq	mm7, [MASK_DIV2_16_MMX]		; Default to 16-bit color. (Mode 565)
+		; Initialize the mask.
+		
+		; Default to 16-bit color. (Mode 565)
+		movq	mm7, [MASK_DIV2_16_MMX]
 		movq	mm6, [MASK_DIV4_16_MMX]
 		test	byte [ebp + arg_mode555], 1
 		jz	.Loop_Y
-		movq	mm7, [MASK_DIV2_15_MMX]		; 15-bit color. (Mode 555)
+		
+		; 15-bit color is specified.. (Mode 555)
+		movq	mm7, [MASK_DIV2_15_MMX]
 		movq	mm6, [MASK_DIV4_15_MMX]
 		jmp	short .Loop_Y
 
