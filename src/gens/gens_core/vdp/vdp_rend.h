@@ -39,9 +39,6 @@ extern struct
 
 extern int Sprite_Over;
 
-// Color depth
-extern unsigned char bpp;
-
 void Render_Line();
 void Render_Line_32X();
 

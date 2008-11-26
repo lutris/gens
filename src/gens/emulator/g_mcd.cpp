@@ -767,22 +767,22 @@ static void SegaCD_Display_LED(void)
 	// Ready LED
 	if (LED_Status & 2)
 	{
-		if (bpp == 15)
+		if (bppMD == 15)
 			draw_SegaCD_LED(MD_Screen, ledReady_15, 0);
-		else if (bpp == 16)
+		else if (bppMD == 16)
 			draw_SegaCD_LED(MD_Screen, ledReady_16, 0);
-		else //if (bpp == 32)
+		else //if (bppMD == 32)
 			draw_SegaCD_LED(MD_Screen32, ledReady_32, 0);
 	}
 	
 	// Access LED
 	if (LED_Status & 1)
 	{
-		if (bpp == 15)
+		if (bppMD == 15)
 			draw_SegaCD_LED(MD_Screen, ledAccess_15, 8);
-		else if (bpp == 16)
+		else if (bppMD == 16)
 			draw_SegaCD_LED(MD_Screen, ledAccess_16, 8);
-		else //if (bpp == 32)
+		else //if (bppMD == 32)
 			draw_SegaCD_LED(MD_Screen32, ledAccess_32, 8);
 	}
 }

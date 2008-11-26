@@ -29,13 +29,23 @@
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
+// 16-bit to 32-bit conversion tables.
+int *VDraw::LUT16to32 = NULL;
+int VDraw::LUT16to32_refcount = 0;
+
+
+/**
+ * m_rInfo: Render Plugin information.
+ */
+MDP_Render_Info_t VDraw::m_rInfo;
+
 
 VDraw::VDraw()
 {
 	// Initialize variables.
-	m_shift = 0;
-	Blit_FS = NULL;
-	Blit_W = NULL;
+	m_scale = 1;
+	m_BlitFS = NULL;
+	m_BlitW = NULL;
 	
 	// Initialize the FPS counter.
 	m_FPS = 0.0f;
@@ -71,6 +81,17 @@ VDraw::VDraw()
 	m_FullScreen = false;
 	m_fastBlur = false;
 	
+	// Initialize m_rInfo.
+	m_rInfo.bpp = 0;
+	
+	// LUT16to32 reference counter.
+	LUT16to32_refcount++;
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	m_tmp16img = NULL;
+	m_tmp16img_scale = 0;
+	m_tmp16img_pitch = 0;
+	
 	// Calculate the text style.
 	calcTextStyle();
 }
@@ -78,9 +99,9 @@ VDraw::VDraw()
 VDraw::VDraw(VDraw *oldDraw)
 {
 	// Initialize this VDraw based on an existing VDraw object.
-	m_shift = oldDraw->shift();
-	Blit_FS = oldDraw->Blit_FS;
-	Blit_W = oldDraw->Blit_W;
+	m_scale = oldDraw->scale();
+	m_BlitFS = oldDraw->m_BlitFS;
+	m_BlitW = oldDraw->m_BlitW;
 	
 	// Initialize the FPS counter.
 	// TODO: Copy FPS variables from the other VDraw?
@@ -118,12 +139,41 @@ VDraw::VDraw(VDraw *oldDraw)
 	m_FullScreen = oldDraw->fullScreen();
 	m_fastBlur = oldDraw->fastBlur();
 	
+	// Initialize m_rInfo.
+	m_rInfo.bpp = 0;
+	
+	// LUT16to32 reference counter.
+	LUT16to32_refcount++;
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	m_tmp16img = NULL;
+	m_tmp16img_scale = 0;
+	m_tmp16img_pitch = 0;
+	
 	// Calculate the text style.
 	calcTextStyle();
 }
 
 VDraw::~VDraw()
 {
+	// LUT16to32 reference counter.
+	LUT16to32_refcount--;
+	
+	if (LUT16to32_refcount == 0 && LUT16to32)
+	{
+		// Free the lookup table.
+		free(LUT16to32);
+		LUT16to32 = NULL;
+	}
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	if (m_tmp16img)
+	{
+		free(m_tmp16img);
+		m_tmp16img = NULL;
+		m_tmp16img_scale = 0;
+		m_tmp16img_pitch = 0;
+	}
 }
 
 
@@ -406,8 +456,8 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	if (adjustForScreenSize)
 	{
 		// Adjust for screen size. (SDL/GL)
-		x = ((m_HBorder / 2) << m_shift) + 8;
-		y = h - (((240 - VDP_Num_Vis_Lines) / 2) << m_shift);
+		x = ((m_HBorder / 2) * m_scale) + 8;
+		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * m_scale);
 	}
 	else
 	{
@@ -416,14 +466,14 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		{
 			// Hack for windowed 1x rendering.
 			x = 8;
-			y = VDP_Num_Vis_Lines << m_shift;
+			y = VDP_Num_Vis_Lines * m_scale;
 		}
 		else if (m_FullScreen && Video.Render_FS == 0)
 		{
 			// Hacks for fullscreen 1x rendering.
 			if (m_swRender)
 			{
-				x = ((m_HBorder / 2) << m_shift);
+				x = ((m_HBorder / 2) * m_scale);
 				y = VDP_Num_Vis_Lines + 8;
 			}
 			else
@@ -434,12 +484,12 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 		}
 		else
 		{
-			x = ((m_HBorder / 2) << m_shift);
-			y = VDP_Num_Vis_Lines << m_shift;
+			x = ((m_HBorder / 2) * m_scale);
+			y = VDP_Num_Vis_Lines * m_scale;
 		}
 		
-		if (m_shift)
-			y += 16;
+		if (m_scale > 1)
+			y += (8 * m_scale);
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
@@ -456,7 +506,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	msgLength = strlen(msg);
 	
 	// Determine how many linebreaks are needed.
-	msgWidth = w - 16 - (m_HBorder << m_shift);
+	msgWidth = w - 16 - (m_HBorder * m_scale);
 	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
 	y -= (linebreaks * charSize);
 	
@@ -499,14 +549,14 @@ void VDraw::drawText(void *screen, const int fullW, const int w, const int h,
 		     const char *msg, const VDraw_Style& style,
 		     const bool adjustForScreenSize)
 {
-	if (bpp == 15 || bpp == 16)
+	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
 		drawText_int((unsigned short*)screen, fullW, w, h, msg,
 			     (unsigned short)m_Transparency_Mask, style,
 			     adjustForScreenSize);
 	}
-	else // if (bpp == 32)
+	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		drawText_int((unsigned int*)screen, fullW, w, h, msg,
@@ -520,32 +570,29 @@ static inline void calcTextStyle_int(VDraw::VDraw_Style& style)
 {
 	// Calculate the dot color.
 	
-	if (bpp == 15 || bpp == 16)
+	if (bppOut == 15)
 	{
-		if (bpp == 15)
-		{
-			if ((style.style & 0x07) == STYLE_COLOR_RED)
-				style.dotColor = 0x7C00;
-			else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
-				style.dotColor = 0x03E0;
-			else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
-				style.dotColor = 0x001F;
-			else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
-				style.dotColor = 0x7FFF;
-		}
-		else // if (bpp == 16)
-		{
-			if ((style.style & 0x07) == STYLE_COLOR_RED)
-				style.dotColor = 0xF800;
-			else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
-				style.dotColor = 0x07E0;
-			else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
-				style.dotColor = 0x001F;
-			else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
-				style.dotColor = 0xFFFF;
-		}
+		if ((style.style & 0x07) == STYLE_COLOR_RED)
+			style.dotColor = 0x7C00;
+		else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+			style.dotColor = 0x03E0;
+		else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+			style.dotColor = 0x001F;
+		else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+			style.dotColor = 0x7FFF;
 	}
-	else //if (bpp == 32)
+	else if (bppOut == 16)
+	{
+		if ((style.style & 0x07) == STYLE_COLOR_RED)
+			style.dotColor = 0xF800;
+		else if ((style.style & 0x07) == STYLE_COLOR_GREEN)
+			style.dotColor = 0x07E0;
+		else if ((style.style & 0x07) == STYLE_COLOR_BLUE)
+			style.dotColor = 0x001F;
+		else //if ((style.style & 0x07) == STYLE_COLOR_WHITE)
+			style.dotColor = 0xFFFF;
+	}
+	else //if (bppOut == 32)
 	{
 		if ((style.style & 0x07) == STYLE_COLOR_RED)
 			style.dotColor = 0xFF0000;
@@ -568,11 +615,11 @@ static inline void calcTextStyle_int(VDraw::VDraw_Style& style)
 void VDraw::calcTextStyle(void)
 {
 	// Calculate the transparency mask.
-	if (bpp == 15)
+	if (bppOut == 15)
 		m_Transparency_Mask = 0x7BDE;
-	else if (bpp == 16)
+	else if (bppOut == 16)
 		m_Transparency_Mask = 0xF7DE;
-	else //if (bpp == 32)
+	else //if (bppOut == 32)
 		m_Transparency_Mask = 0xFEFEFE;
 	
 	// Calculate the style values for FPS and Msg.
@@ -588,10 +635,12 @@ void VDraw::calcTextStyle(void)
  */
 void VDraw::setBpp(const int newBpp, const bool resetVideo)
 {
-	if (bpp == newBpp)
+	// If the new bpp is the same as the current bpp, don't do anything else.
+	if (bppOut == newBpp)
 		return;
 	
-	bpp = newBpp;
+	bppOut = newBpp;
+	
 	if (resetVideo)
 	{
 		End_Video();
@@ -668,24 +717,27 @@ void VDraw::Refresh_Video(void)
 int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
 	int oldRend, *Rend;
-	BlitFn *Blit, testBlit;
+	MDP_Render_Fn *rendFn;
 	bool reinit = false;
 	
 	if (m_FullScreen)
 	{
-		Blit = &Blit_FS;
 		Rend = &Video.Render_FS;
 		oldRend = Video.Render_FS;
+		rendFn = &m_BlitFS;
 	}
 	else
 	{
-		Blit = &Blit_W;
 		Rend = &Video.Render_W;
 		oldRend = Video.Render_W;
+		rendFn = &m_BlitW;
 	}
 	
+	// Get the old scaling factor.
+	const int oldScale = PluginMgr::getPluginFromID_Render(oldRend)->scale;
+	
 	// Checks if an invalid mode number was passed.
-	if (newMode < 0 || newMode >= Renderers_Count)
+	if (newMode < 0 || newMode >= PluginMgr::vRenderPlugins.size())
 	{
 		// Invalid mode number.
 		MESSAGE_NUM_L("Error: Render mode %d is not available.",
@@ -693,38 +745,50 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		return 0;
 	}
 	
-	// Check if a blit function exists for this renderer.
-	if (bpp == 32)
-		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_32_mmx : Renderers[newMode].blit_32);
-	else if (bpp == 15 || bpp == 16)
-		testBlit = ((CPU_Flags & CPUFLAG_MMX) ? Renderers[newMode].blit_16_mmx : Renderers[newMode].blit_16);
-	else
-	{
-		// Invalid bpp.
-		fprintf(stderr, "Invalid bpp: %d\n", bpp);
-		return 0;
-	}
-	
-	if (!testBlit)
-	{
-		// Renderer function not found.
-		if (Renderers[newMode].name)
-		{
-			MESSAGE_STR_L("Error: Render mode %s is not available.",
-				      "Error: Render mode %s is not available.", Renderers[newMode].name, 1500);
-		}
-		return 0;
-	}
-	
 	// Renderer function found.
-	if (*Rend != newMode)
-		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", Renderers[newMode].name, 1500);
-	else
-		reinit = true;
-	*Rend = newMode;
-	*Blit = testBlit;
+	MDP_Render_t *rendPlugin = PluginMgr::getPluginFromID_Render(newMode);
+	*rendFn = rendPlugin->blit;
 	
-	setShift(newMode == 0 ? 0 : 1);
+	if (*Rend != newMode)
+	{
+		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", rendPlugin->tag, 1500);
+	}
+	else
+	{
+		reinit = true;
+	}
+	
+	// Set the new render mode number.
+	*Rend = newMode;
+	
+	// Set the scaling value.
+	setScale(rendPlugin->scale);
+	
+	// Set the MD bpp output value.
+	if (bppOut != 32)
+	{
+		// Not 32-bit color. Always use the destination surface color depth.
+		bppMD = bppOut;
+		m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+	}
+	else
+	{
+		if (rendPlugin->flags & MDP_RENDER_FLAG_SRC16DST32)
+		{
+			// Render plugin only supports 16-bit color.
+			bppMD = 16;
+			m_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+		}
+		else
+		{
+			// MD surface should be the same color depth as the destination surface.
+			bppMD = bppOut;
+			m_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+		}
+	}
+	
+	// Set the source pitch.
+	m_rInfo.srcPitch = 336 * (bppMD == 15 ? 2 : bppMD / 8);
 	
 	//if (Num>3 || Num<10)
 	//Clear_Screen();
@@ -735,9 +799,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	if (forceUpdate && is_gens_running())
 		updateRenderer();
 	
-	if ((reinit && forceUpdate) ||
-	    (oldRend == 0 && newMode != 0) ||
-	    (oldRend != 0 && newMode == 0))
+	if ((reinit && forceUpdate) || (oldScale != m_scale))
 	{
 		// The Gens window must be reinitialized.
 		return reinitGensWindow();
@@ -755,6 +817,60 @@ int VDraw::reinitGensWindow(void)
 {
 	// Does nothing by default...
 	return 1;
+}
+
+
+/**
+ * Init_LUT16to32(): Initialize the 16-bit to 32-bit lookup table.
+ */
+void VDraw::Init_LUT16to32(void)
+{
+	// Allocate the memory for the lookup table.
+	LUT16to32 = static_cast<int*>(malloc(65536 * sizeof(int)));
+	
+	// Initialize the 16-bit to 32-bit conversion table.
+	for (int i = 0; i < 65536; i++)
+		LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
+}
+
+
+/**
+ * Render_16to32(): Convert 16-bit to 32-bit using the lookup table.
+ * @param dest Destination surface.
+ * @param src Source surface.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitchDest Pitch of the destination surface.
+ * @param pitchSrc Pitch of the source surface.
+ */
+void VDraw::Render_16to32(uint32_t *dest, uint16_t *src,
+			  int width, int height,
+			  int pitchDest, int pitchSrc)
+{
+	int x, y;
+	
+	const int pitchDestDiff = ((pitchDest / 4) - width);
+	const int pitchSrcDiff = ((pitchSrc / 2) - width);
+	
+	// Process four pixels at a time.
+	width >>= 2;
+	
+	for (y = 0; y < height; y++)
+	{
+		for (x = 0; x < width; x++)
+		{
+			*(dest + 0) = LUT16to32[*(src + 0)];
+			*(dest + 1) = LUT16to32[*(src + 1)];
+			*(dest + 2) = LUT16to32[*(src + 2)];
+			*(dest + 3) = LUT16to32[*(src + 3)];
+			
+			dest += 4;
+			src += 4;
+		}
+		
+		dest += pitchDestDiff;
+		src += pitchSrcDiff;
+	}
 }
 
 
@@ -795,15 +911,15 @@ void VDraw::setSwRender(const bool newSwRender)
 }
 
 
-int VDraw::shift(void)
+int VDraw::scale(void)
 {
-	return m_shift;
+	return m_scale;
 }
-void VDraw::setShift(const int newShift)
+void VDraw::setScale(const int newScale)
 {
-	if (m_shift == newShift)
+	if (m_scale == newScale)
 		return;
-	m_shift = newShift;
+	m_scale = newScale;
 	
 	// TODO: Figure out what to do here...
 }

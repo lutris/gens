@@ -5,14 +5,18 @@
 #ifndef GENS_V_DRAW_HPP
 #define GENS_V_DRAW_HPP
 
-#include "gens_core/gfx/renderers.h"
-
 // Font for onscreen messages
 #include "C64_charset.h"
 
 #ifdef __cplusplus
 
 #include <stdint.h>
+
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
+
+// CPU flags
+#include "gens_core/misc/cpuflags.h"
 
 // C++ includes
 #include <string>
@@ -73,8 +77,8 @@ class VDraw
 		void setStretch(const uint8_t newStretch);
 		bool swRender(void);
 		void setSwRender(const bool newSwRender);
-		int shift(void);
-		void setShift(const int newShift);
+		int scale(void);
+		void setScale(const int newScale);
 		bool msgEnabled(void);
 		void setMsgEnabled(const bool newMsgEnable);
 		bool fpsEnabled(void);
@@ -91,11 +95,6 @@ class VDraw
 		void setFPSStyle(const unsigned char newFPSStyle);
 		unsigned char introEffectColor(void);
 		void setIntroEffectColor(const unsigned char newIntroEffectColor);
-		
-		// Renderers
-		// TODO: Make these properties.
-		BlitFn Blit_FS;
-		BlitFn Blit_W;
 		
 		// TODO: Move these functions out of v_draw.cpp.
 		static int Show_Genesis_Screen(void);
@@ -114,13 +113,18 @@ class VDraw
 		static const uint8_t STRETCH_H    = 0x01;
 		static const uint8_t STRETCH_V    = 0x02;
 		static const uint8_t STRETCH_FULL = 0x03;
-	
+		
+		// Render functions
+		// TODO: Make these properties.
+		MDP_Render_Fn m_BlitFS;
+		MDP_Render_Fn m_BlitW;
+		
 	protected:
 		// Called if initialization fails.
 		void Init_Fail(const char *err);
 		
-		// Screen shift in 1x rendering mode.
-		int m_shift;
+		// Screen scaling.
+		int m_scale;
 		
 		// Stretch option.
 		uint8_t m_Stretch;
@@ -183,6 +187,22 @@ class VDraw
 		// Miscellaneous settings.
 		bool m_swRender;
 		bool m_fastBlur;
+		
+		// Render Plugin information.
+		static MDP_Render_Info_t m_rInfo;
+		
+		// 16-bit to 32-bit conversion tables.
+		static int *LUT16to32;
+		static int LUT16to32_refcount;
+		static void Init_LUT16to32(void);
+		
+		// Internal surface for rendering the 16-bit temporary image.
+		uint16_t *m_tmp16img;
+		int m_tmp16img_scale;
+		int m_tmp16img_pitch;
+		static void Render_16to32(uint32_t *dest, uint16_t *src,
+					  int width, int height,
+					  int pitchDest, int pitchSrc);
 		
 		// Win32 stuff
 		virtual int reinitGensWindow(void);

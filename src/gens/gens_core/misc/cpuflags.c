@@ -51,9 +51,10 @@
 #define CPUFLAG_IA32_EXT_ECX_SSE5	(1 << 11)
 
 // CPUID functions.
-#define CPUID_MAX_FUNCTIONS		(0x00000000)
-#define CPUID_FAMILY_FEATURES		(0x00000001)
-#define CPUID_EXT_FAMILY_FEATURES	(0x80000001)
+#define CPUID_MAX_FUNCTIONS		((unsigned int)(0x00000000))
+#define CPUID_FAMILY_FEATURES		((unsigned int)(0x00000001))
+#define CPUID_MAX_EXT_FUNCTIONS		((unsigned int)(0x80000000))
+#define CPUID_EXT_FAMILY_FEATURES	((unsigned int)(0x80000001))
 
 // CPUID macro with PIC support.
 // See http://gcc.gnu.org/ml/gcc-patches/2007-09/msg00324.html
@@ -97,6 +98,7 @@ unsigned int getCPUFlags(void)
 	// Check if cpuid is supported.
 	unsigned int _eax, _ebx, _ecx, _edx;
 	
+#if defined(__i386__)
 	__asm__ (
 		"pushfl\n"
 		"popl %%eax\n"
@@ -110,6 +112,21 @@ unsigned int getCPUFlags(void)
 		"andl $0x200000, %%eax"
 		:	"=a" (_eax)	// Output
 		);
+#else /* defined(__amd64__) */
+	__asm__ (
+		"pushfq\n"
+		"popq %%rax\n"
+		"movl %%eax, %%edx\n"
+		"xorl $0x200000, %%eax\n"
+		"pushq %%rax\n"
+		"popfq\n"
+		"pushfq\n"
+		"popq %%rax\n"
+		"xorl %%edx, %%eax\n"
+		"andl $0x200000, %%eax"
+		:	"=a" (_eax)	// Output
+		);
+#endif
 	
 	if (!_eax)
 	{
@@ -119,7 +136,7 @@ unsigned int getCPUFlags(void)
 	}
 	
 	// CPUID is supported.
-	// Check if the CPUID Feature function (Function 1) is supported.
+	// Check if the CPUID Features function (Function 1) is supported.
 	unsigned int maxFunc;
 	__cpuid(CPUID_MAX_FUNCTIONS, maxFunc, _ebx, _ecx, _edx);
 	
@@ -150,9 +167,11 @@ unsigned int getCPUFlags(void)
 	if (_ecx & CPUFLAG_IA32_ECX_SSE42)
 		CPU_Flags |= CPUFLAG_SSE42;
 	
-	// Get the extended CPU feature flags.
+	// Check if the CPUID Extended Features function (Function 0x80000001) is supported.
+	__cpuid(CPUID_MAX_EXT_FUNCTIONS, maxFunc, _ebx, _ecx, _edx);
 	if (maxFunc >= CPUID_EXT_FAMILY_FEATURES)
 	{
+		// CPUID Extended Features are supported.
 		__cpuid(CPUID_EXT_FAMILY_FEATURES, _eax, _ebx, _ecx, _edx);
 		
 		// Check the extended feature flags.

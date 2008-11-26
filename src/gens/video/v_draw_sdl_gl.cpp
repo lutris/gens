@@ -4,7 +4,8 @@
 
 #include "v_draw_sdl_gl.hpp"
 
-#include <string.h>
+#include <cstring>
+#include "macros/malloc_align.h"
 
 #include <gdk/gdkx.h>
 
@@ -63,13 +64,10 @@ VDraw_SDL_GL::~VDraw_SDL_GL()
  */
 int VDraw_SDL_GL::Init_Video(void)
 {
-	int x;
-	int w, h;
-	
 	// OpenGL width/height.
 	// TODO: Move these values here or something.
-	w = Video.Width_GL;
-	h = Video.Height_GL;
+	const int w = Video.Width_GL;
+	const int h = Video.Height_GL;
 	
 	if (m_FullScreen)
 	{
@@ -106,17 +104,13 @@ int VDraw_SDL_GL::Init_Video(void)
 	}
 	
 	// Initialize the renderer.
-	x = Init_SDL_GL_Renderer(w, h);
+	int x = Init_SDL_GL_Renderer(w, h);
 	
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
 	
 	// Adjust stretch parameters.
 	stretchAdjustInternal();
-	
-	// If normal rendering mode is set, disable the video shift.
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	m_shift = (rendMode == 0) ? 0 : 1;
 	
 	// Return the status code from Init_SDL_GL_Renderer().
 	return x;
@@ -134,7 +128,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 {
 	if (reinitSDL)
 	{
-		screen = SDL_SetVideoMode(w, h, bpp, SDL_GL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
+		screen = SDL_SetVideoMode(w, h, bppOut, SDL_GL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
 		
 		if (!screen)
 		{
@@ -148,22 +142,36 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	updateVSync(true);
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
-	{
-		// 1x rendering.
-		rowLength = 320;
-		textureSize = 256;
-	}
-	else
-	{
-		// 2x rendering.
-		rowLength = 640;
-		textureSize = 512;
-	}
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
-	int bytespp = (bpp == 15 ? 2 : bpp / 8);
+        // Determine the texture size using the scaling factor.
+	if (scale <= 0)
+		return 0;
+	rowLength = 320 * scale;
+	textureSize = 256 * scale;
+	
+	// Check that the texture size is a power of two.
+	// TODO: Optimize this code.
+	
+	if (textureSize <= 256)
+		textureSize = 256;
+	else if (textureSize <= 512)
+		textureSize = 512;
+	else if (textureSize <= 1024)
+		textureSize = 1024;
+	else if (textureSize <= 2048)
+		textureSize = 2048;
+	else if (textureSize <= 4096)
+		textureSize = 4096;
+	
+	// Calculate the rendering parameters.
+	m_HRender = (double)(rowLength) / (double)(textureSize*2);
+	m_VRender = (double)(240 * scale) / (double)(textureSize);
+	
+	// Allocate the filter buffer.
+	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	filterBufferSize = rowLength * textureSize * bytespp;
-	filterBuffer = (unsigned char*)malloc(filterBufferSize);
+	filterBuffer = static_cast<unsigned char*>(gens_malloc_align(filterBufferSize, 16));
 	
 	glViewport(0, 0, screen->w, screen->h);
 	
@@ -204,7 +212,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	
 	// Color depth values.
-	if (bpp == 15)
+	if (bppOut == 15)
 	{
 		// 15-bit color. (Mode 555)
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 15);
@@ -215,7 +223,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		m_pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 		m_pixelFormat = GL_BGRA;
 	}
-	else if (bpp == 16)
+	else if (bppOut == 16)
 	{
 		// 16-bit color. (Mode 565)
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
@@ -226,7 +234,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 		m_pixelType = GL_UNSIGNED_SHORT_5_6_5;
 		m_pixelFormat = GL_RGB;
 	}
-	else //if (bpp == 32)
+	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
@@ -315,27 +323,66 @@ void VDraw_SDL_GL::clearScreen(void)
  */
 int VDraw_SDL_GL::flipInternal(void)
 {
-	// TODO: Add border drawing, like in v_draw_sdl.
-	
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
-	int pitch = rowLength * bytespp;
-	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
+	const int pitch = rowLength * bytespp;
+	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	const int HBorder = m_HBorder * (bytespp / 2);		// Left border width, in pixels.
 	
-	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
+	const int startPos = ((pitch * VBorder) + HBorder) * m_scale;	// Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
 	
-	if (m_FullScreen)
+	// Set up the render information.
+	if (m_rInfo.bpp != bppOut)
 	{
-		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+		// bpp has changed. Reinitialize the screen pointers.
+		m_rInfo.bpp = bppOut;
+		m_rInfo.cpuFlags = CPU_Flags;
+	}
+	
+	m_rInfo.destScreen = (void*)start;
+	m_rInfo.width = 320 - m_HBorder;
+	m_rInfo.height = VDP_Num_Vis_Lines;
+	m_rInfo.destPitch = pitch;
+	
+	if (bppMD == 16 && bppOut != 16)
+	{
+		// MDP_RENDER_FLAG_SRC16DST32.
+		// Render as 16-bit to an internal surface.
+		if (!LUT16to32)
+			Init_LUT16to32();
+		
+		// Make sure the internal surface is initialized.
+		if (m_tmp16img_scale != m_scale)
+		{
+			if (m_tmp16img)
+				free(m_tmp16img);
+			
+			m_tmp16img_scale = m_scale;
+			m_tmp16img_pitch = 320 * m_scale * 2;
+			m_tmp16img = static_cast<uint16_t*>(malloc(m_tmp16img_pitch * 240 * m_scale));
+		}
+		
+		m_rInfo.destScreen = (void*)m_tmp16img;
+		m_rInfo.destPitch = m_tmp16img_pitch;
+		if (m_FullScreen)
+			m_BlitFS(&m_rInfo);
+		else
+			m_BlitW(&m_rInfo);
+		
+		Render_16to32((uint32_t*)start, m_tmp16img,
+			      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
+			      pitch, m_tmp16img_pitch);
 	}
 	else
 	{
-		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+		if (m_FullScreen)
+			m_BlitFS(&m_rInfo);
+		else
+			m_BlitW(&m_rInfo);
 	}
 	
 	// Draw the message and/or FPS.
@@ -365,26 +412,26 @@ int VDraw_SDL_GL::flipInternal(void)
 	// Set the texture data.
 	glTexSubImage2D(GL_TEXTURE_2D, 0,
 			0,						// x offset
-			((240 - VDP_Num_Vis_Lines) >> 1) << m_shift,	// y offsets
+			((240 - VDP_Num_Vis_Lines) >> 1) * m_scale,	// y offsets
 			rowLength,					// width
-			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) << m_shift),	// height
+			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) * m_scale),	// height
 			m_pixelFormat, m_pixelType,
-			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) << m_shift));
+			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) * m_scale));
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
 	
-	glTexCoord2f(0.0f + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
+	glTexCoord2d(0.0 + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
 	glVertex2i(-1,  1);				// Upper-left vertex of the quad.
 	
-	glTexCoord2f(0.625f - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
+	glTexCoord2d(m_HRender - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
 	glVertex2i( 1,  1);				// Upper-right vertex of the quad.
 	
-	// 0.9375 = 256/240; 0.9375 = 512/480
-	glTexCoord2f(0.625f - m_HStretch, 0.9375f - m_VStretch);	// Lower-right corner of the texture.
+	// 0.9375 = 240/256; 0.9375 = 480/512
+	glTexCoord2d(m_HRender - m_HStretch, m_VRender - m_VStretch);	// Lower-right corner of the texture.
 	glVertex2i( 1, -1);						// Lower-right vertex of the quad.
 	
-	glTexCoord2f(0.0f + m_HStretch, 0.9375f - m_VStretch);	// Lower-left corner of the texture.
+	glTexCoord2d(0.0 + m_HStretch, m_VRender - m_VStretch);	// Lower-left corner of the texture.
 	glVertex2i(-1, -1);					// Lower-left corner of the quad.
 	
 	glEnd();
@@ -490,27 +537,21 @@ void VDraw_SDL_GL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return;
+	// Determine the window size using the scaling factor.
+	const int w = 320 * scale;
+	const int h = 256 * scale;
+	
+	if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
+	    rowLength == w && textureSize == h)
 	{
-		// 1x rendering.
-		if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
-		    rowLength == 320 && textureSize == 256)
-		{
-			// Already 1x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
-	}
-	else
-	{
-		// 2x rendering.
-		if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
-		    rowLength == 640 && textureSize == 512)
-		{
-			// Already 2x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
+		// No resolution switch is necessary. Simply clear the screen.
+		clearScreen();
+		return;
 	}
 	
 	// Resolution switch is needed.

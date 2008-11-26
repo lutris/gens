@@ -5,18 +5,18 @@
 ; macro MAKE_IMAGE_PIXEL
 ; construit un pixel de l'image destination (rotation/compression)
 ;
-; Paramètres :
+; ParamÃ¨tres :
 ; %1 = 0 pour normal et 1 pour titled
 ; %2 = 0 pour 16x16 dot et 1 pour 32x32 dot
 ; %3 = 0 pour 1x1 screen et 1 pour 16x16 screen
 ; %4 = Priority mode : 0 = OFF, 1 = Underwrite, 2 = Overwrite
 ;
-; Entrée :
-; di = donnée du stamp
+; EntrÃ©e :
+; di = donnÃ©e du stamp
 ; ecx = XS, edx = YS
 ;
-; Résultat :
-; un pixel du buffer image a été caculé
+; RÃ©sultat :
+; un pixel du buffer image a Ã©tÃ© caculÃ©
 
 %macro MAKE_IMAGE_PIXEL 4
 
@@ -399,18 +399,18 @@
 ; macro MAKE_IMAGE_LINE
 ; construit une ligne de l'image destination (rotation/compression)
 ;
-; Paramètres :
+; ParamÃ¨tres :
 ; %1 = 0 pour normal et 1 pour titled
 ; %2 = 0 pour 16x16 dot et 1 pour 32x32 dot
 ; %3 = 0 pour 1x1 screen et 1 pour 16x16 screen
 ; %4 = Prioritie mode : 0 = OFF, 1 = Underwrite, 2 = Overwrite
 ;
-; Entrée :
+; EntrÃ©e :
 ; ecx = X Start (11 bits floating part)
 ; edx = Y Start (11 bits floating part)
 ;
-; Résultat :
-; une ligne du buffer image a été caculée
+; RÃ©sultat :
+; une ligne du buffer image a Ã©tÃ© caculÃ©e
 
 %macro MAKE_IMAGE_LINE 4
 
@@ -449,8 +449,8 @@
 %endif
 
 		mov esi, [Stamp_Map_Adr]
-		add ebx, eax					; numéro de stamp
-		mov edi, [esi + ebx * 2]		; di = donnée stamp concerné
+		add ebx, eax					; numÃ©ro de stamp
+		mov edi, [esi + ebx * 2]		; di = donnÃ©e stamp concernÃ©
 
 		MAKE_IMAGE_PIXEL %1, %2, %3, %4
 
@@ -482,14 +482,14 @@
 ; macro MAKE_IMAGE
 ; construit l'image destination (rotation/compression)
 ;
-; Paramètres :
+; ParamÃ¨tres :
 ; %1 = 0 pour normal et 1 pour titled
 ; %2 = 0 pour 16x16 dot et 1 pour 32x32 dot
 ; %3 = 0 pour 1x1 screen et 1 pour 16x16 screen
 ; %4 = Prioritie mode : 0 = OFF, 1 = Underwrite, 2 = Overwrite
 ;
-; Résultat :
-; tout le buffer image a été caculée
+; RÃ©sultat :
+; tout le buffer image a Ã©tÃ© caculÃ©e
 
 %macro MAKE_IMAGE 4
 
@@ -603,7 +603,7 @@ section .data align=64
 	dd	0x00054000, 0x00048000, 0x00040000, 0x00036000		; 008-032		; briefing - sprite
 	dd	0x0002E000, 0x00028000, 0x00024000, 0x00022000		; 036-064		; arbre souvent
 	dd	0x00021000, 0x00020000, 0x0001E000, 0x0001B800		; 068-096		; map thunderstrike
-	dd	0x00019800, 0x00017A00, 0x00015C00, 0x00013E00		; 100-128		; logo défoncé
+	dd	0x00019800, 0x00017A00, 0x00015C00, 0x00013E00		; 100-128		; logo dÃ©foncÃ©
 
 	dd	0x00012000, 0x00011800, 0x00011000, 0x00010800		; 132-160		; briefing - map
 	dd	0x00010000, 0x0000F800, 0x0000F000, 0x0000E800		; 164-192

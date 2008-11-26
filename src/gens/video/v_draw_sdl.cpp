@@ -16,6 +16,10 @@
 #include "ui/gtk/gtk-misc.h"
 #include "gens/gens_window.hpp"
 
+// CPU flags
+#include "gens_core/misc/cpuflags.h"
+
+
 VDraw_SDL::VDraw_SDL()
 {
 }
@@ -35,20 +39,14 @@ VDraw_SDL::~VDraw_SDL()
  */
 int VDraw_SDL::Init_Video(void)
 {
-	int x;
-	int w, h;
-	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
-	{
-		// Normal render mode. 320x240
-		w = 320; h = 240;
-	}
-	else
-	{
-		// 2x render mode. 640x480
-		w = 640; h = 480;
-	}
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return 0;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
 	
 	if (m_FullScreen)
 	{
@@ -85,13 +83,10 @@ int VDraw_SDL::Init_Video(void)
 	}
 	
 	// Initialize the renderer.
-	x = Init_SDL_Renderer(w, h);
+	int x = Init_SDL_Renderer(w, h);
 	
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
-	
-	// If normal rendering mode is set, disable the video shift.
-	m_shift = (rendMode == 0) ? 0 : 1;
 	
 	// Return the status code from Init_SDL_Renderer().
 	return x;
@@ -106,7 +101,7 @@ int VDraw_SDL::Init_Video(void)
  */
 int VDraw_SDL::Init_SDL_Renderer(int w, int h)
 {
-	screen = SDL_SetVideoMode(w, h, bpp, SDL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
+	screen = SDL_SetVideoMode(w, h, bppOut, SDL_Flags | (m_FullScreen ? SDL_FULLSCREEN : 0));
 	
 	if (!screen)
 	{
@@ -155,25 +150,66 @@ int VDraw_SDL::flipInternal(void)
 	// Draw the border.
 	drawBorder();
 	
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Start of the SDL framebuffer.
-	int pitch = screen->w * bytespp;
-	int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	int HBorder = m_HBorder * (bytespp / 2);	// Left border width, in pixels.
+	const int pitch = screen->pitch;
+	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	const int HBorder = m_HBorder * (bytespp / 2);		// Left border width, in pixels.
 	
-	int startPos = ((pitch * VBorder) + HBorder) << m_shift;  // Starting position from within the screen.
+	const int startPos = ((pitch * VBorder) + HBorder) * m_scale;	// Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
-	if (m_FullScreen)
+	// Set up the render information.
+	if (m_rInfo.bpp != bppOut)
 	{
-		Blit_FS(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+		// bpp has changed. Reinitialize the screen pointers.
+		m_rInfo.bpp = bppOut;
+		m_rInfo.cpuFlags = CPU_Flags;
+	}
+	
+	m_rInfo.destScreen = (void*)start;
+	m_rInfo.width = 320 - m_HBorder;
+	m_rInfo.height = VDP_Num_Vis_Lines;
+	m_rInfo.destPitch = pitch;
+	
+	if (bppMD == 16 && bppOut != 16)
+	{
+		// MDP_RENDER_FLAG_SRC16DST32.
+		// Render as 16-bit to an internal surface.
+		if (!LUT16to32)
+			Init_LUT16to32();
+		
+		// Make sure the internal surface is initialized.
+		if (m_tmp16img_scale != m_scale)
+		{
+			if (m_tmp16img)
+				free(m_tmp16img);
+			
+			m_tmp16img_scale = m_scale;
+			m_tmp16img_pitch = 320 * m_scale * 2;
+			m_tmp16img = static_cast<uint16_t*>(malloc(m_tmp16img_pitch * 240 * m_scale));
+		}
+		
+		m_rInfo.destScreen = (void*)m_tmp16img;
+		m_rInfo.destPitch = m_tmp16img_pitch;
+		if (m_FullScreen)
+			m_BlitFS(&m_rInfo);
+		else
+			m_BlitW(&m_rInfo);
+		
+		Render_16to32((uint32_t*)start, m_tmp16img,
+			      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
+			      pitch, m_tmp16img_pitch);
 	}
 	else
 	{
-		Blit_W(start, pitch, 320 - m_HBorder, VDP_Num_Vis_Lines, 32 + (m_HBorder * 2));
+		if (m_FullScreen)
+			m_BlitFS(&m_rInfo);
+		else
+			m_BlitW(&m_rInfo);
 	}
 	
 	// Draw the message and/or FPS.
@@ -203,8 +239,7 @@ int VDraw_SDL::flipInternal(void)
  */
 void VDraw_SDL::drawBorder(void)
 {
-	// TODO: Make this more accurate and/or more efficient.
-	// In particular, it only works for 1x and 2x rendering.
+	// TODO: Consolidate this function by using a macro.
 	
 	SDL_Rect border;
 	
@@ -227,16 +262,14 @@ void VDraw_SDL::drawBorder(void)
 		newBorderColor_32B = 0;
 	}
 	
-	if ((bpp == 15 || bpp == 16) && (m_BorderColor_16B != newBorderColor_16B))
+	if ((bppOut == 15 || bppOut == 16) && (m_BorderColor_16B != newBorderColor_16B))
 	{
 		m_BorderColor_16B = newBorderColor_16B;
 		if (VDP_Num_Vis_Lines < 240)
 		{
 			// Top/Bottom borders.
 			border.x = 0; border.w = screen->w;
-			border.h = 240 - VDP_Num_Vis_Lines;
-			if (screen->h == 240)
-				border.h >>= 1;
+			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 			border.y = screen->h - border.h;
@@ -252,25 +285,21 @@ void VDraw_SDL::drawBorder(void)
 			}
 			
 			border.x = 0; border.h = screen->h;
-			border.w = m_HBorder;
-			if (screen->w == 320)
-				border.w >>= 1;
+			border.w = (m_HBorder >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 			border.x = screen->w - border.w;
 			SDL_FillRect(screen, &border, m_BorderColor_16B);
 		}
 	}
-	else if ((bpp == 32) && (m_BorderColor_32B != newBorderColor_32B))
+	else if ((bppOut == 32) && (m_BorderColor_32B != newBorderColor_32B))
 	{
 		m_BorderColor_32B = newBorderColor_32B;
 		if (VDP_Num_Vis_Lines < 240)
 		{
 			// Top/Bottom borders.
 			border.x = 0; border.w = screen->w;
-			border.h = 240 - VDP_Num_Vis_Lines;
-			if (screen->h == 240)
-				border.h >>= 1;
+			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_32B);
 			border.y = screen->h - border.h;
@@ -286,9 +315,7 @@ void VDraw_SDL::drawBorder(void)
 			}
 			
 			border.x = 0; border.h = screen->h;
-			border.w = m_HBorder;
-			if (screen->w == 320)
-				border.w >>= 1;
+			border.w = (m_HBorder >> 1) * m_scale;
 			border.y = 0;
 			SDL_FillRect(screen, &border, m_BorderColor_32B);
 			border.x = screen->w - border.w;
@@ -339,25 +366,19 @@ void VDraw_SDL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	if (rendMode == 0)
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	
+	if (screen->w == w && screen->h == h)
 	{
-		// 1x rendering.
-		if (screen->w == 320 && screen->h == 240)
-		{
-			// Already 1x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
-	}
-	else
-	{
-		// 2x rendering.
-		if (screen->w == 640 && screen->h == 480)
-		{
-			// Already 2x rendering. Simply clear the screen.
-			clearScreen();
-			return;
-		}
+		// No resolution switch is necessary. Simply clear the screen.
+		clearScreen();
+		return;
 	}
 	
 	// Resolution switch is needed.

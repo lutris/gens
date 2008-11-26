@@ -285,16 +285,28 @@ void Debug_Event(int key, int mod)
 			break;
 		
 		case GENS_KEY_NUM_DIVIDE:
+			// What does this do?
 			VDP_Status &= ~2;
 			for (i = 0; i < 16; i++)
 			{
-				// TODO: 32-bit palette support.
-				if (bpp == 15)
+				// NOTE: Gens Rerecording uses [12 * 16 * i].
+				// Original Gens uses [7 * 16 * i].
+				// Which is it?!
+				if (bppMD == 15)
+				{
 					MD_Palette[7 * 16 + i] =
 						((2 * i) << 10) + ((2 * i) << 5) + (2 * i);
-				else
+				}
+				else if (bppMD == 16)
+				{
 					MD_Palette[7 * 16 + i] =
 						((2 * i) << 11) + ((4 * i) << 5) + (2 * i);
+				}
+				else //if (bppMD == 32)
+				{
+					MD_Palette32[7 * 16 * i] =
+						((16 * i) << 16) + ((16 * i) << 8) + (16 * i);
+				}
 			}
 			
 			break;
@@ -856,7 +868,7 @@ static void Refresh_VDP_Palette(void)
 	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
-	if (bpp == 32)
+	if (bppMD == 32)
 	{
 		// 32-bit color palette update
 		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 4);
@@ -1031,7 +1043,7 @@ static void Refresh_Word_RAM_Pattern(void)
 	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
-	if (bpp == 32)
+	if (bppMD == 32)
 	{
 		// 32-bit color palette update
 		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 16);
@@ -1052,10 +1064,10 @@ static void Refresh_Word_RAM_Pattern(void)
 void Update_Debug_Screen(void)
 {
 	// Clear the MD screen.
-	if (bpp == 15 || bpp == 16)
-		memset(MD_Screen, 0x00, sizeof(MD_Screen));
-	else // if (bpp == 32)
+	if (bppMD == 32)
 		memset(MD_Screen32, 0x00, sizeof(MD_Screen32));
+	else
+		memset(MD_Screen, 0x00, sizeof(MD_Screen));
 	
 	if (Debug & 0x100)
 	{

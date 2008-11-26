@@ -48,9 +48,11 @@
 #include "util/sound/gym.hpp"
 
 // Renderer / Blitter selection stuff.
-#include "gens_core/gfx/renderers.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
+
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
 
 // C++ includes
 #include <string>
@@ -247,52 +249,26 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	
 	// Create the render entries.
 	bool renderSelected = false;
-	int i = 0;
-	bool showRenderer;
 	
-	while (Renderers[i].name)
+	// Create the render entries.
+	for (unsigned int i = 0; i < PluginMgr::vRenderPlugins.size(); i++)
 	{
-		// Check if the current blitter exists for this video mode.
-		showRenderer = false;
-		if (bpp == 32)
-		{
-			// 32-bit
-			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_32_mmx)
-				showRenderer = true;
-			else if (Renderers[i].blit_32)
-				showRenderer = true;
-		}
-		else // if (bpp == 15 || bpp == 16)
-		{
-			// 15/16-bit
-			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_16_mmx)
-				showRenderer = true;
-			else if (Renderers[i].blit_16)
-				showRenderer = true;
-		}
+		if (draw->fullScreen())
+			renderSelected = (Video.Render_FS == (int)i);
+		else
+			renderSelected = (Video.Render_W == (int)i);
 		
-		if (showRenderer)
-		{
-			if (draw->fullScreen())
-				renderSelected = (Video.Render_FS == i);
-			else
-				renderSelected = (Video.Render_W == i);
-			
-			InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING,
-				   IDM_GRAPHICS_RENDER_NORMAL + i, Renderers[i].name);
-			
-			if (renderSelected)
-			{
-				CheckMenuRadioItem(mnuRender,
-						   IDM_GRAPHICS_RENDER_NORMAL,
-						   IDM_GRAPHICS_RENDER_NORMAL + (Renderers_Count - 1),
-						   IDM_GRAPHICS_RENDER_NORMAL + i,
-						   MF_BYCOMMAND);
-			}
-		}
+		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING,
+			   IDM_GRAPHICS_RENDER_NORMAL + i, PluginMgr::getPluginFromID_Render(i)->tag);
 		
-		// Check the next renderer.
-		i++;
+		if (renderSelected)
+		{
+			CheckMenuRadioItem(mnuRender,
+					   IDM_GRAPHICS_RENDER_NORMAL,
+					   IDM_GRAPHICS_RENDER_NORMAL + (PluginMgr::vRenderPlugins.size() - 1),
+					   IDM_GRAPHICS_RENDER_NORMAL + i,
+					   MF_BYCOMMAND);
+		}
 	}
 }
 

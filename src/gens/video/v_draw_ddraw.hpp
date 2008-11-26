@@ -69,8 +69,7 @@ class VDraw_DDraw : public VDraw
 		
 		HRESULT RestoreGraphics(void);
 		void CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
-		inline void DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface,
-					    const int renderMode, const bool lock);
+		inline void DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const bool lock);
 		
 		// Win32 stuff
 		virtual int reinitGensWindow(void);

@@ -45,9 +45,11 @@
 #include "util/sound/gym.hpp"
 
 // Renderer / Blitter selection stuff.
-#include "gens_core/gfx/renderers.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
+
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
 
 // C++ includes
 #include <string>
@@ -204,8 +206,9 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Stretch mode
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
+	
 	// Bits per pixel
-	switch (bpp)
+	switch (bppOut)
 	{
 		case 15:
 			id = IDM_GRAPHICS_BPP_15;
@@ -244,14 +247,25 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// OpenGL Resolution
 	
+	// TODO: Optimize this.
 	if (Video.Width_GL == 320 && Video.Height_GL == 240)
-		id = IDM_GRAPHICS_OPENGL_RES_320;
+		id = IDM_GRAPHICS_OPENGL_RES_320x240;
 	else if (Video.Width_GL == 640 && Video.Height_GL == 480)
-		id = IDM_GRAPHICS_OPENGL_RES_640;
+		id = IDM_GRAPHICS_OPENGL_RES_640x480;
 	else if (Video.Width_GL == 800 && Video.Height_GL == 600)
-		id = IDM_GRAPHICS_OPENGL_RES_800;
+		id = IDM_GRAPHICS_OPENGL_RES_800x600;
+	else if (Video.Width_GL == 960 && Video.Height_GL == 720)
+		id = IDM_GRAPHICS_OPENGL_RES_960x720;
 	else if (Video.Width_GL == 1024 && Video.Height_GL == 768)
-		id = IDM_GRAPHICS_OPENGL_RES_1024;
+		id = IDM_GRAPHICS_OPENGL_RES_1024x768;
+	else if (Video.Width_GL == 1280 && Video.Height_GL == 960)
+		id = IDM_GRAPHICS_OPENGL_RES_1280x960;
+	else if (Video.Width_GL == 1280 && Video.Height_GL == 1024)
+		id = IDM_GRAPHICS_OPENGL_RES_1280x1024;
+	else if (Video.Width_GL == 1400 && Video.Height_GL == 1050)
+		id = IDM_GRAPHICS_OPENGL_RES_1400x1050;
+	else if (Video.Width_GL == 1600 && Video.Height_GL == 1200)
+		id = IDM_GRAPHICS_OPENGL_RES_1600x1200;
 	else
 		id = IDM_GRAPHICS_OPENGL_RES_CUSTOM;
 	
@@ -289,9 +303,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	
 	GtkWidget *mnuItem;
 	GSList *radioGroup = NULL;
-	gboolean showRenderer;
 	
-	int i;
 	char sObjName[64];
 	
 	// Check if the Render submenu already exists.
@@ -312,57 +324,31 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 			       (GDestroyNotify)g_object_unref);
 	
 	// Create the render entries.
-	i = 0;
-	while (Renderers[i].name)
+	for (unsigned int i = 0; i < PluginMgr::vRenderPlugins.size(); i++)
 	{
 		// Delete the menu item from the map, if it exists.
 		gensMenuMap.erase(IDM_GRAPHICS_RENDER_NORMAL + i);
 		
-		// Check if the current blitter exists for this video mode.
-		showRenderer = FALSE;
-		if (bpp == 32)
-		{
-			// 32-bit
-			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_32_mmx)
-				showRenderer = TRUE;
-			else if (Renderers[i].blit_32)
-				showRenderer = TRUE;
-		}
-		else // if (bpp == 15 || bpp == 16)
-		{
-			// 15/16-bit
-			if ((CPU_Flags & CPUFLAG_MMX) && Renderers[i].blit_16_mmx)
-				showRenderer = TRUE;
-			else if (Renderers[i].blit_16)
-				showRenderer = TRUE;
-		}
+		sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
 		
-		if (showRenderer)
-		{
-			sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
-			
-			mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, Renderers[i].name);
-			radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
-			gtk_widget_set_name(mnuItem, sObjName);
-			gtk_widget_show(mnuItem);
-			gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
-			
-			// Make sure the menu item is deleted when the submenu is deleted.
-			g_object_set_data_full(G_OBJECT(mnuSubMenu), sObjName,
-					       g_object_ref(mnuItem),
-					       (GDestroyNotify)g_object_unref);
-			
-			// Connect the signal.
-			g_signal_connect((gpointer)mnuItem, "activate",
-					  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
-					  GINT_TO_POINTER(IDM_GRAPHICS_RENDER_NORMAL + i));
-			
-			// Add the menu item to the map.
-			gensMenuMap.insert(gtkMenuMapItem(IDM_GRAPHICS_RENDER_NORMAL + i, mnuItem));
-		}
+		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, PluginMgr::getPluginFromID_Render(i)->tag);
+		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
+		gtk_widget_set_name(mnuItem, sObjName);
+		gtk_widget_show(mnuItem);
+		gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
 		
-		// Check the next renderer.
-		i++;
+		// Make sure the menu item is deleted when the submenu is deleted.
+		g_object_set_data_full(G_OBJECT(mnuSubMenu), sObjName,
+				       g_object_ref(mnuItem),
+				       (GDestroyNotify)g_object_unref);
+		
+		// Connect the signal.
+		g_signal_connect((gpointer)mnuItem, "activate",
+				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				  GINT_TO_POINTER(IDM_GRAPHICS_RENDER_NORMAL + i));
+		
+		// Add the menu item to the map.
+		gensMenuMap.insert(gtkMenuMapItem(IDM_GRAPHICS_RENDER_NORMAL + i, mnuItem));
 	}
 }
 

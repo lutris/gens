@@ -33,6 +33,9 @@
 #include "gens/gens_window_sync.hpp"
 #include "gens_ui.hpp"
 
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
+
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
 // TODO: This isn't actually a bug with SDL/GTK - it's an issue with keysnooping...
@@ -113,10 +116,13 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_RETURN:
-			if (draw->fullScreen() && (mod & GENS_KMOD_ALT))
+			if (mod & GENS_KMOD_ALT)
 			{
-				draw->setFullScreen(!draw->fullScreen());
-				Sync_Gens_Window_GraphicsMenu();
+				if (draw->fullScreen())
+				{
+					draw->setFullScreen(!draw->fullScreen());
+					Sync_Gens_Window_GraphicsMenu();
+				}
 				
 				// Reset the modifier key value to prevent Alt from getting "stuck".
 				mod = 0;
@@ -236,7 +242,7 @@ void Input_KeyDown(int key)
 			#ifdef GENS_OS_WIN32 // TODO: Implement SW Render options on SDL?
 			if (mod & GENS_KMOD_SHIFT)
 				Options::setSwRender(!Options::swRender());
-			else // if (!mod)
+			else //if (!mod)
 			#endif /* GENS_OS_WIN32 */
 				Options::setFastBlur(!Options::fastBlur());
 			break;
@@ -278,10 +284,8 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				// TODO: Make filters constants.
-				// There's already NB_FILTER, but it has the wrong numbers...
 				int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-				if (rendMode < 11)
+				if (rendMode < (PluginMgr::vRenderPlugins.size() - 1))
 				{
 					draw->setRender(rendMode + 1);
 					Sync_Gens_Window_GraphicsMenu();

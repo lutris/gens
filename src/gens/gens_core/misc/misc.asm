@@ -13,8 +13,13 @@ section .data align=64
 	extern CDD.Seconde
 	extern CDD.Frame
 	extern CDD.Ext
-	extern bpp
-
+	
+	; MD bpp
+	%ifdef __OBJ_ELF
+	%define _bppMD bppMD
+	%endif
+	extern _bppMD
+	
 	Small_Police:
 		dd 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000			; 32   
 		dd 0x00000000, 0x00000300, 0x00000400, 0x00000500, 0x00000000, 0x00000700, 0x00000000			; 33	!
@@ -800,7 +805,7 @@ section .text align=64
 		mov esi, [esp + 24]				; esi = *string
 		
 		; Check if 32-bit color is in use.
-		cmp byte [bpp], 32
+		cmp byte [_bppMD], 32
 		je Print_Text32
 		
 		; 15/16-bit color functions.
@@ -856,7 +861,7 @@ section .text align=64
 		sub esp, 4
 		and ebx, 0x3					; on garde uniquement le type palette
 		mov dword [Mask], 0xF7DE
-		cmp byte [bpp], 15  ; 15 == mode 555; 16 == mode 565
+		cmp byte [_bppMD], 15  ; 15 == mode 555; 16 == mode 565
 		jne short .Mode_565
 		or ebx, 0x4
 		mov dword [Mask], 0x7BDE
@@ -1230,7 +1235,7 @@ section .text align=64
 		mov esi, [esp + 28]				; esi = Address
 		
 		; Check if 32-bit color is in use.
-		cmp byte [bpp], 32
+		cmp byte [_bppMD], 32
 		je .32BIT
 		
 		shl ebp, 5					; ebp = palette number * 32
@@ -1331,7 +1336,7 @@ section .text align=64
 		shl ebp, 5					; ebp = palette_number * 32
 		
 		; Check if 32-bit color is in use.
-		cmp byte [bpp], 32
+		cmp byte [_bppMD], 32
 		je .32BIT
 		
 		lea edi, [MD_Screen	+ 6780]			; edi = MD_Screen + copy offset
@@ -1496,7 +1501,7 @@ section .text align=64
 		mov esi, [esp + 28]				; esi = Address
 		
 		; Check if 32-bit color is in use.
-		cmp byte [bpp], 32
+		cmp byte [_bppMD], 32
 		je .32BIT
 		
 		lea edi, [MD_Screen	+ 6780]		; edi = MD_Screen + copy offset

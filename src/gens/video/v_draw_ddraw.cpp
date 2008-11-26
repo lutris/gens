@@ -18,20 +18,20 @@
 #include "v_inline.h"
 
 
-inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface,
-					 const int renderMode, const bool lock)
+inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const bool lock)
 {
 	if (lock)
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
-	const int w = (renderMode == 0 ? 320 : 640);
-	const int h = (renderMode == 0 ? 240 : 480);
+	// Determine the window size using the scaling factor.
+	const int w = 320 * m_scale;
+	const int h = 240 * m_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
 	// so they won't show up at all.
 	
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// NOTE: fullW must be (pddsd->lPitch / bytespp).
 	// DirectDraw likes to use absurdly large line lengths in full screen mode.
@@ -92,25 +92,24 @@ int VDraw_DDraw::Init_Fail(HWND hWnd, const char *err)
  */
 int VDraw_DDraw::Init_Video(void)
 {
-	int rendMode;
 	DDSURFACEDESC2 ddsd;
 	
 	End_Video();
 	
-	rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return 0;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	const int mdW = 336 * scale;
 	
 	if (m_FullScreen)
 	{
-		if (rendMode == 0)
-		{
-			Res_X = 320;
-			Res_Y = 240;
-		}
-		else
-		{
-			Res_X = 640;
-			Res_Y = 480;
-		}
+		Res_X = w;
+		Res_Y = h;
 	}
 	
 	if (FAILED(DirectDrawCreate(NULL, &lpDD_Init, NULL)))
@@ -155,7 +154,7 @@ int VDraw_DDraw::Init_Video(void)
 			break;
 	}
 	
-	if (newBpp != bpp)
+	if (newBpp != bppOut)
 		setBpp(newBpp, false);
 	
 	setCooperativeLevel();
@@ -225,10 +224,10 @@ int VDraw_DDraw::Init_Video(void)
 	}
 	else
 	{
-		// 2x render mode. 640x480 [672x480]
+		// Larger than 1x.
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
-		ddsd.dwWidth = 672;
-		ddsd.dwHeight = 480;
+		ddsd.dwWidth = mdW;
+		ddsd.dwHeight = h;
 	}
 	
 	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL)))
@@ -276,6 +275,7 @@ int VDraw_DDraw::Init_Video(void)
 	// Synchronize menus.
 	Sync_Gens_Window();
 	
+	// VDraw_DDraw initialized.
 	return 1;
 }
 
@@ -294,27 +294,23 @@ int VDraw_DDraw::reinitGensWindow(void)
 	
 	End_Video();
 	
-	int w, h;
-	
 	// Rebuild the menu bar.
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
 	create_gens_window_menubar();
+	
+	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return 0;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
 	
 	if (m_FullScreen)
 	{
 		while (ShowCursor(true) < 1) { }
 		while (ShowCursor(false) >= 0) { }
-		
-		if (Video.Render_FS == 0)
-		{
-			w = 320;
-			h = 240;
-		}
-		else
-		{
-			w = 640;
-			h = 480;
-		}
 		
 		SetWindowLong(Gens_hWnd, GWL_STYLE, NULL);
 		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
@@ -323,17 +319,6 @@ int VDraw_DDraw::reinitGensWindow(void)
 	{
 		while (ShowCursor(false) >= 0) { }
 		while (ShowCursor(true) < 1) { }
-		
-		if (Video.Render_W == 0)
-		{
-			w = 320;
-			h = 240;
-		}
-		else
-		{
-			w = 640;
-			h = 480;
-		}
 		
 		// MoveWindow / ResizeWindow code
 		SetWindowLong(Gens_hWnd, GWL_STYLE, GetWindowLong(Gens_hWnd, GWL_STYLE) | WS_OVERLAPPEDWINDOW);
@@ -530,8 +515,8 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	POINT q; //Upth-Add - For determining the correct ratio
 	q.x = RectDest.right; //Upth-Add - we need to get
 	q.y = RectDest.bottom; //Upth-Add - the bottom-right corner
-
-	if (Render_Mode == 0)
+	
+	if (m_scale == 1)
 	{
 		RectSrc.top = 0;
 		RectSrc.bottom = VDP_Num_Vis_Lines;
@@ -546,19 +531,19 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	{
 		if (VDP_Num_Vis_Lines == 224)
 		{
-			RectSrc.top = 8 * 2;
-			RectSrc.bottom = (224 + 8) * 2;
+			RectSrc.top = 8 * m_scale;
+			RectSrc.bottom = (224 + 8) * m_scale;
 
 			if (!(m_Stretch & STRETCH_V))
 			{
-				RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
+				RectDest.top = (int) ((q.y - (224 * Ratio_Y)) / 2); //Upth-Modif - Centering the screen properly
 				RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis again
 			}
 		}
 		else
 		{
 			RectSrc.top = 0; //Upth-Modif - Was "0 * 2"
-			RectSrc.bottom = (240 * 2);
+			RectSrc.bottom = (240 * m_scale);
 		}
 	}
 
@@ -574,9 +559,9 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		else
 		{
 			RectSrc.left = 0; //Upth-Modif - Was "0 * 2"
-			RectSrc.right = 320 * 2;
+			RectSrc.right = 320 * m_scale;
 		}
-		RectDest.left = (int) ((q.x - (320 * Ratio_X))/2); //Upth-Add - center the picture
+		RectDest.left = (int) ((q.x - (320 * Ratio_X)) / 2); //Upth-Add - center the picture
 		RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - along the x axis
 	}
 	else // less-wide X resolution:
@@ -597,7 +582,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		else
 		{
 			RectSrc.left = 32 * 2;
-			RectSrc.right = (256 * 2) + (32 * 2);
+			RectSrc.right = (256 * m_scale) + (32 * m_scale);
 		}
 	}
 }
@@ -621,18 +606,28 @@ int VDraw_DDraw::flipInternal(void)
 	POINT p;
 	float Ratio_X, Ratio_Y;
 	int Dep = 0;
-	unsigned char bytespp = (bpp == 15 ? 2 : bpp / 8);
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	
+	// Set up the render information.
+	if (m_rInfo.bpp != bppOut)
+	{
+		// bpp has changed. Reinitialize the screen pointers.
+		m_rInfo.bpp = bppOut;
+		m_rInfo.cpuFlags = CPU_Flags;
+	}
 	
 	if (m_FullScreen)
 	{
 		//Upth-Add - So we can set the fullscreen resolution to the current res without changing the value that gets saved to the config
 		int FS_X, FS_Y;
 		
+#if 0
 		if (Res_X < (320 << (int)(Video.Render_FS > 0)))
 			Res_X = 320 << (int)(Video.Render_FS > 0); //Upth-Add - Flooring the resolution to 320x240
 		if (Res_Y < (240 << (int)(Video.Render_FS > 0)))
 			Res_Y = 240 << (int)(Video.Render_FS > 0); //Upth-Add - or 640x480, as appropriate
-		
+#endif
+			
 		// TODO: FS_No_Res_Change
 #if 0
 		if (FS_No_Res_Change)
@@ -775,15 +770,23 @@ int VDraw_DDraw::flipInternal(void)
 				if (FAILED(rval))
 					goto cleanup_flip;
 				
-				int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
-				int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
-				int startPos = (ddsd.lPitch * VBorder) + HBorder;
+				const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+				const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+				
+				const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * m_scale;	// Starting position from within the screen.
+				
+				// Start of the DDraw framebuffer.
 				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 				
-				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+				m_rInfo.destScreen = (void*)start;
+				m_rInfo.width = 320 - m_HBorder;
+				m_rInfo.height = VDP_Num_Vis_Lines;
+				m_rInfo.destPitch = ddsd.lPitch;
+				
+				m_BlitFS(&m_rInfo);
 				
 				// Draw the text.
-				DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_FS, false);
+				DDraw_Draw_Text(&ddsd, lpDDS_Blit, false);
 				
 				lpDDS_Blit->Unlock(NULL);
 				
@@ -822,7 +825,7 @@ int VDraw_DDraw::flipInternal(void)
 					RectDest.right = 320 + RectDest.left;  //Upth-Add - x axis, also
 				}
 				
-				DDraw_Draw_Text(&ddsd, lpDDS_Back, Video.Render_FS, true);
+				DDraw_Draw_Text(&ddsd, lpDDS_Back, true);
 				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
@@ -851,15 +854,55 @@ int VDraw_DDraw::flipInternal(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
-			int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
-			int startPos = (ddsd.lPitch * VBorder) + HBorder;
+			const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+			const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+				
+			const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * m_scale;	// Starting position from within the screen.
+				
+			// Start of the DDraw framebuffer.
 			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 			
-			Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+			m_rInfo.destScreen = (void*)start;
+			m_rInfo.width = 320 - m_HBorder;
+			m_rInfo.height = VDP_Num_Vis_Lines;
+			m_rInfo.destPitch = ddsd.lPitch;
+			
+			if (bppMD == 16 && bppOut != 16)
+			{
+				// MDP_RENDER_FLAG_SRC16DST32.
+				// Render as 16-bit to an internal surface.
+				if (!LUT16to32)
+					Init_LUT16to32();
+				
+				// Make sure the internal surface is initialized.
+				if (m_tmp16img_scale != m_scale)
+				{
+					if (m_tmp16img)
+						free(m_tmp16img);
+					
+					m_tmp16img_scale = m_scale;
+					m_tmp16img_pitch = 320 * m_scale * 2;
+					m_tmp16img = static_cast<uint16_t*>(malloc(m_tmp16img_pitch * 240 * m_scale));
+				}
+				
+				m_rInfo.destScreen = (void*)m_tmp16img;
+				m_rInfo.destPitch = m_tmp16img_pitch;
+				if (m_FullScreen)
+					m_BlitFS(&m_rInfo);
+				else
+					m_BlitW(&m_rInfo);
+				
+				Render_16to32((uint32_t*)start, m_tmp16img,
+					      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
+					      ddsd.lPitch, m_tmp16img_pitch);
+			}
+			else
+			{
+				m_BlitFS(&m_rInfo);
+			}
 			
 			// Draw the text.
-			DDraw_Draw_Text(&ddsd, curBlit, Video.Render_FS, false);
+			DDraw_Draw_Text(&ddsd, curBlit, false);
 			
 			curBlit->Unlock(NULL);
 			
@@ -911,22 +954,62 @@ int VDraw_DDraw::flipInternal(void)
 			if (FAILED(rval))
 				goto cleanup_flip;
 			
-			int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
-			int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
-			int startPos = (ddsd.lPitch * VBorder) + HBorder;
+			const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+			const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+				
+			const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * m_scale;	// Starting position from within the screen.
+				
+			// Start of the DDraw framebuffer.
 			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
 			
-			Blit_W(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+			m_rInfo.destScreen = (void*)start;
+			m_rInfo.width = 320 - m_HBorder;
+			m_rInfo.height = VDP_Num_Vis_Lines;
+			m_rInfo.destPitch = ddsd.lPitch;
+			
+			if (bppMD == 16 && bppOut != 16)
+			{
+				// MDP_RENDER_FLAG_SRC16DST32.
+				// Render as 16-bit to an internal surface.
+				if (!LUT16to32)
+					Init_LUT16to32();
+				
+				// Make sure the internal surface is initialized.
+				if (m_tmp16img_scale != m_scale)
+				{
+					if (m_tmp16img)
+						free(m_tmp16img);
+					
+					m_tmp16img_scale = m_scale;
+					m_tmp16img_pitch = 320 * m_scale * 2;
+					m_tmp16img = static_cast<uint16_t*>(malloc(m_tmp16img_pitch * 240 * m_scale));
+				}
+				
+				m_rInfo.destScreen = (void*)m_tmp16img;
+				m_rInfo.destPitch = m_tmp16img_pitch;
+				if (m_FullScreen)
+					m_BlitFS(&m_rInfo);
+				else
+					m_BlitW(&m_rInfo);
+				
+				Render_16to32((uint32_t*)start, m_tmp16img,
+					      m_rInfo.width * m_scale, m_rInfo.height * m_scale,
+					      ddsd.lPitch, m_tmp16img_pitch);
+			}
+			else
+			{
+				m_BlitW(&m_rInfo);
+			}
 			
 			// Draw the text.
-			DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_W, false);
+			DDraw_Draw_Text(&ddsd, lpDDS_Blit, false);
 			
 			lpDDS_Blit->Unlock(NULL);
 		}
 		else
 		{
 			// Draw the text.
-			DDraw_Draw_Text(&ddsd, lpDDS_Blit, Video.Render_W, true);
+			DDraw_Draw_Text(&ddsd, lpDDS_Blit, true);
 		}
 		
 		p.x = p.y = 0;

@@ -36,9 +36,8 @@
 // INI handling
 #include "port/ini.hpp"
 #ifndef GENS_OS_WIN32
-// Old INI handling and timer functions are still needed for now.
+// Old INI handling functions are still needed for now.
 #include "port/ini_old.h"
-#include "port/timer.h"
 #endif /* !GENS_OS_WIN32 */
 
 #ifdef GENS_DEBUGGER
@@ -56,12 +55,19 @@
 // Update Emulation functions
 #include "g_update.hpp"
 
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
+
 // Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
 struct Gens_BIOS_Filenames_t BIOS_Filenames;
 struct Gens_Misc_Filenames_t Misc_Filenames;
 struct Gens_VideoSettings_t Video;
+
+// bpp settings.
+uint8_t bppMD;	// MD bpp
+uint8_t bppOut;	// Output bpp.
 
 int fast_forward = 0;
 
@@ -224,7 +230,8 @@ void Init_Settings(void)
 #endif
 	
 	// Default bpp.
-	bpp = 32;
+	bppMD = 32;
+	bppOut = 32;
 	
 	// Old code from InitParameters().
 	VDP_Num_Vis_Lines = 224;
@@ -305,11 +312,6 @@ int Init(void)
 	if (draw->Init_Subsystem() != 0)
 		return 0;
 	
-#ifndef GENS_OS_WIN32
-	// TODO: Make this unnecessary.
-	init_timer();
-#endif
-	
 	getCPUFlags();
 	
 	MSH2_Init();
@@ -328,8 +330,11 @@ int Init(void)
 #endif
 	
 	Init_Tab();
-	run_gens();
 	
+	// Initialize the Plugin Manager.
+	PluginMgr::init();
+	
+	run_gens();
 	return 1;
 }
 
@@ -344,6 +349,9 @@ void End_All(void)
 #ifdef GENS_CDROM
 	End_CD_Driver();
 #endif
+	
+	// Shut down the Plugin Manager.
+	PluginMgr::init();
 	
 	// Shut down the input subsystem.
 	delete input;

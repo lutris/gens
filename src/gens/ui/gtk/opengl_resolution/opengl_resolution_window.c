@@ -49,7 +49,7 @@
 			    "label_" GroupName);					\
 											\
 	SpinbuttonWidget = gtk_spin_button_new(GTK_ADJUSTMENT(				\
-				gtk_adjustment_new(1, 0, 9999, 1, 10, 10)), 1, 0);	\
+				gtk_adjustment_new(1, 0, 9999, 1, 10, 0)), 1, 0);	\
 	gtk_widget_set_name(SpinbuttonWidget, "spinbutton_" GroupName);			\
 	gtk_widget_show(SpinbuttonWidget);						\
 	gtk_box_pack_start(GTK_BOX(Container), SpinbuttonWidget, FALSE, FALSE, 0);	\

@@ -173,7 +173,7 @@ int Config::save(const string& filename)
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
 	
 #ifndef GENS_OS_WIN32
-	cfg.writeInt("Graphics", "Bits Per Pixel", bpp);
+	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_OPENGL
@@ -394,11 +394,11 @@ int Config::load(const string& filename, void* gameActive)
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
-	bpp = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 32));
-	if (bpp != 15 && bpp != 16 && bpp != 32)
+	bppOut = (unsigned char)(cfg.getInt("Graphics", "Bits Per Pixel", 32));
+	if (bppOut != 15 && bppOut != 16 && bppOut != 32)
 	{
 		// Invalid bpp. Set it to 32 by default.
-		bpp = 32;
+		bppOut = 32;
 	}
 #endif /* GENS_OS_WIN32 */
 	

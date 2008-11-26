@@ -54,6 +54,14 @@
 
 #endif
 
+// Useful predefined hashtables and pairs.
+#include <string>
+#include <utility>
+
+// StrToInt: Used to map strings to ints.
+typedef GENS_HASHTABLE<std::string, int> mapStrToInt;
+typedef std::pair<std::string, int> pairStrToInt;
+
 #endif /* __cplusplus */
 
 #endif /* GENS_HASHTABLE_HPP */

@@ -4,35 +4,9 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 if GENS_X86_ASM
 gens_x86_asm_o = \
-		gens_core/gfx/blit1x_16.o \
-		gens_core/gfx/blit1x_32.o \
-		gens_core/gfx/blit2x_16.o \
-		gens_core/gfx/blit2x_32.o \
-		gens_core/gfx/blit2x_int.o \
-		gens_core/gfx/blit2x_scanline.o \
-		gens_core/gfx/blit2x_scanline_50.o \
-		gens_core/gfx/blit2x_scanline_25.o \
-		gens_core/gfx/blit2x_scanline_int.o \
-		gens_core/gfx/blit2x_scanline_50_int.o \
-		gens_core/gfx/blit2x_scanline_25_int.o \
-		gens_core/gfx/blit_2xSAI.o \
-		gens_core/gfx/blit_hq2x_16.o \
 		gens_core/misc/fastblur_16.o \
 		audio/audio_mmx.o
 gens_x86_asm_src = \
-		gens_core/gfx/blit1x_16.asm \
-		gens_core/gfx/blit1x_32.asm \
-		gens_core/gfx/blit2x_16.asm \
-		gens_core/gfx/blit2x_int.asm \
-		gens_core/gfx/blit2x_scanline.asm \
-		gens_core/gfx/blit2x_scanline_50.asm \
-		gens_core/gfx/blit2x_scanline_25.asm \
-		gens_core/gfx/blit2x_scanline_int.asm \
-		gens_core/gfx/blit2x_scanline_50_int.asm \
-		gens_core/gfx/blit2x_scanline_25_int.asm \
-		gens_core/gfx/blit_2xSAI.asm \
-		gens_core/gfx/blit_hq2x_16.asm \
-		gens_core/gfx/hq2x_funcs.c \
 		gens_core/misc/fastblur_16.asm \
 		audio/audio_mmx.asm
 gens_x86_asm_h = \
@@ -126,9 +100,6 @@ gens_SOURCES = \
 		gens_core/misc/fastblur.c \
 		gens_core/misc/cpuflags.c \
 		$(gens_x86_asm_src) \
-		gens_core/gfx/blit2x_scanline.cpp \
-		gens_core/gfx/scale2x.cpp \
-		gens_core/gfx/renderers.c \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
 		gens_core/io/io_old.asm \
@@ -158,7 +129,8 @@ gens_SOURCES = \
 		video/v_draw.cpp \
 		video/v_effects.cpp \
 		input/input.cpp \
-		audio/audio.cpp
+		audio/audio.cpp \
+		plugins/pluginmgr.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -210,9 +182,7 @@ noinst_HEADERS = \
 		gens_core/misc/fastblur.h \
 		gens_core/misc/cpuflags.h \
 		$(gens_x86_asm_h) \
-		gens_core/gfx/blit.h \
 		gens_core/gfx/gfx_cd.h \
-		gens_core/gfx/renderers.h \
 		gens_core/io/io.h \
 		gens_core/io/io_old.h \
 		gens_core/vdp/vdp_32x.h \
@@ -221,6 +191,7 @@ noinst_HEADERS = \
 		macros/git.h \
 		macros/file_m.h \
 		macros/hashtable.hpp \
+		macros/malloc_align.h \
 		macros/math_m.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
@@ -246,7 +217,12 @@ noinst_HEADERS = \
 		video/v_effects.hpp \
 		input/input.hpp \
 		audio/audio.hpp \
-		audio/audio_mmx.h
+		audio/audio_mmx.h \
+		plugins/pluginmgr.hpp \
+		plugins/mdp.h \
+		plugins/mdp_cpuflags.h \
+		plugins/mdp_version.h \
+		plugins/mdp_render.h
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
@@ -346,6 +322,9 @@ endif # GENS_OS_UNIX
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am
 endif # GENS_OS_WIN32
+
+# Plugins
+include $(srcdir)/Makefile.plugins.inc.am
 
 # Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
 gens_CFLAGS += @CFLAGS@
