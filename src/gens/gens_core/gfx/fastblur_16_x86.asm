@@ -20,29 +20,32 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%include "nasmhead.inc"
+%ifdef __OBJ_ELF
+%define _Fast_Blur_16_x86 Fast_Blur_16_x86
+%define _Fast_Blur_16_x86_mmx Fast_Blur_16_x86_mmx
+%define _bppMD bppMD
+%endif
 
 section .data align=64
-
+	
 	extern MD_Screen
 	
 	; MD bpp
-	%ifdef __OBJ_ELF
-	%define _bppMD bppMD
-	%endif
 	extern _bppMD
 	
+	; 64-bit masks used for the MMX version.
 	Mask:		dd 0x00000000, 0x00000000
 	Mask_GG_15:	dd 0x03E003E0, 0x03E003E0
 	Mask_RBRB_15:	dd 0x7C1F7C1F, 0x7C1F7C1F
 	Mask_GG_16:	dd 0x07C007C0, 0x07C007C0
-	Mask_RBRB_16	dd 0xF81FF81F, 0xF81FF81F
-
+	Mask_RBRB_16:	dd 0xF81FF81F, 0xF81FF81F
+	
 section .text align=64
-
+	
 	; void Fast_Blur_16_asm()
 	; 15/16-bit color Fast Blur function, non-MMX.
-	DECL Fast_Blur_16_x86
+	global _Fast_Blur_16_x86
+	_Fast_Blur_16_x86:
 		
 		push ebx
 		push ecx
@@ -58,10 +61,10 @@ section .text align=64
 		; Check which color depth is in use.
 		cmp byte [_bppMD], 16
 		je short .Loop_565
-		
-	ALIGN32
 	
-	.Loop_555
+	align 32
+	
+	.Loop_555:
 			; 15-bit color
 			mov ax, [esi]
 			add esi, 2
@@ -84,8 +87,8 @@ section .text align=64
 		pop ecx
 		pop ebx
 		ret
-	
-	.Loop_565
+		
+	.Loop_565:
 			; 16-bit color
 			mov ax, [esi]
 			add esi, 2
@@ -109,12 +112,12 @@ section .text align=64
 		pop ebx
 		ret
 	
-	
-	ALIGN32
+	align 32
 	
 	; void Fast_Blur_16_asm_MMX()
 	; 15/16-bit color Fast Blur function, using MMX instructions.
-	DECL Fast_Blur_16_x86_mmx
+	global _Fast_Blur_16_x86_mmx
+	_Fast_Blur_16_x86_mmx:
 		
 		push ebx
 		push ecx
@@ -136,14 +139,14 @@ section .text align=64
 		movq mm7, [Mask_GG_16]
 		jmp short .MMX_Loop
 		
-	.Mask_555
+	.Mask_555:
 		; 15-bit masks
 		movq mm6, [Mask_RBRB_15]
 		movq mm7, [Mask_GG_15]
 	
-	ALIGN32
+	align 32
 	
-	.MMX_Loop
+	.MMX_Loop:
 			movq mm0, [esi]
 			movq mm1, mm0
 			movq mm2, [esi + 2]
