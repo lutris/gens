@@ -90,7 +90,7 @@ section .text align=64
 	
 	align 32
 	
-	; void Fast_Blur_16_asm_MMX()
+	; void Fast_Blur_16_x86_mmx()
 	; 15/16-bit color Fast Blur function, using MMX instructions.
 	global _Fast_Blur_16_x86_mmx
 	_Fast_Blur_16_x86_mmx:
