@@ -14,9 +14,7 @@ gens_x86_asm_h = \
 		audio/audio_mmx.h
 else
 gens_x86_asm_o =
-gens_x86_asm_src = \
-		gens_core/gfx/blit1x.cpp \
-		gens_core/gfx/blit2x.cpp
+gens_x86_asm_src =
 gens_x86_asm_h =
 endif
 
