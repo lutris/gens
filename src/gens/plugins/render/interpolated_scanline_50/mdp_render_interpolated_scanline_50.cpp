@@ -44,8 +44,8 @@
 #define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
 #define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
-
 #define BLEND(a, b, mask) ((((a) >> 1) & mask) + (((b) >> 1) & mask))
+
 
 //#ifndef GENS_X86_ASM
 /**
