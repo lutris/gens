@@ -186,3 +186,17 @@ void PluginMgr::end(void)
 	vRenderPlugins.clear();
 	tblRenderPlugins.clear();
 }
+
+
+/**
+ * getPluginFromID_Render(): Get a render plugin from its ID number.
+ * @param id ID number.
+ * @return Render plugin, or NULL if it wasn't found.
+ */
+MDP_Render_t* PluginMgr::getPluginFromID_Render(int id)
+{
+	if (id < 0 || id >= vRenderPlugins.size())
+		return NULL;
+	
+	return static_cast<MDP_Render_t*>(vRenderPlugins.at(id)->plugin_t);
+}
