@@ -31,17 +31,9 @@
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
 
-//#undef GENS_X86_ASM
-// x86 asm versions
-#ifdef GENS_X86_ASM
-#include "mdp_render_interpolated_scanline_50_x86.h"
-#endif /* GENS_X86_ASM */
-
 // Mask constants
 #define MASK_DIV2_15		((uint16_t)(0x3DEF))
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
-#define MASK_DIV2_15_ASM	((uint32_t)(0x3DEF3DEF))
-#define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
 #define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
 #define BLEND(a, b, mask) ((((a) >> 1) & mask) + (((b) >> 1) & mask))
@@ -100,26 +92,12 @@ void mdp_render_interpolated_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 	
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
-#ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
-		{
-			mdp_render_interpolated_scanline_50_16_x86_mmx(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15));
-		}
-		else
-#endif /* GENS_X86_ASM */
-		{
-			T_mdp_render_interpolated_scanline_50_cpp(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-					    renderInfo->destPitch, renderInfo->srcPitch,
-					    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
-		}
+		T_mdp_render_interpolated_scanline_50_cpp(
+			    (uint16_t*)renderInfo->destScreen,
+			    (uint16_t*)renderInfo->mdScreen,
+			    renderInfo->destPitch, renderInfo->srcPitch,
+			    renderInfo->width, renderInfo->height,
+			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 	}
 	else
 	{
