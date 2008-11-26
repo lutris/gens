@@ -78,6 +78,7 @@ static inline void T_mdp_render_interpolated_scanline_cpp(pixel *destScreen, pix
 			*DstLine1++ = ((C >> 1) & mask) + ((R >> 1) & mask);
 			*DstLine2++ = 0;
 			*DstLine2++ = 0;
+			
 			SrcLine++;
 		}
 	}

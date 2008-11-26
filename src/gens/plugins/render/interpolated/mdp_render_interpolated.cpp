@@ -84,6 +84,7 @@ static inline void T_mdp_render_interpolated_cpp(pixel *destScreen, pixel *mdScr
 			*DstLine2++ = ((C >> 1) & mask) + ((D >> 1) & mask);
 			*DstLine2++ = (((((C >> 1) & mask) + ((R >> 1) & mask)) >> 1) & mask) +
 				      (((((D >> 1) & mask) + ((DR >> 1) & mask)) >> 1) & mask);
+			
 			SrcLine++;
 		}
 	}
