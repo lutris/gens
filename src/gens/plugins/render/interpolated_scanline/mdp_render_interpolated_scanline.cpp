@@ -58,8 +58,7 @@
 template<typename pixel>
 static inline void T_mdp_render_interpolated_scanline_cpp(pixel *destScreen, pixel *mdScreen,
 						 int destPitch, int srcPitch,
-						 int width, int height,
-						 pixel mask)
+						 int width, int height, pixel mask)
 {
 	destPitch /= sizeof(pixel);
 	srcPitch /= sizeof(pixel);
