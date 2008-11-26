@@ -50,7 +50,14 @@ static inline void T_Fast_Blur(pixel *mdScreen, pixel mask)
 	pixel color = 0;
 	pixel blurColor = 0;
 	
-	for (int i = 1; i < (336 * 240); i++)
+	// Start at the 8th pixel.
+	// MD screen has an 8-pixel-wide buffer at the left-most side.
+	mdScreen += 8;
+	
+	// Number of pixels to process.
+	const int numPixels = (336 * 240) - 8;
+	
+	for (int i = 0; i < numPixels; i++)
 	{
 		// Get the current pixel.
 		color = (*mdScreen >> 1) & mask;
