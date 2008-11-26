@@ -23,14 +23,18 @@
 %ifdef __OBJ_ELF
 %define _Fast_Blur_16_x86 Fast_Blur_16_x86
 %define _Fast_Blur_16_x86_mmx Fast_Blur_16_x86_mmx
+%define _MD_Screen MD_Screen
 %define _bppMD bppMD
 %endif
 
+MD_SCREEN_SIZE	equ 336 * 240
+MASK_DIV2_15	equ 0x3DEF
+MASK_DIV2_16	equ 0x7BEF
+
 section .data align=64
 	
-	extern MD_Screen
-	
-	; MD bpp
+	; MD screen buffer and bpp.
+	extern _MD_Screen
 	extern _bppMD
 	
 	; 64-bit masks used for the MMX version.
@@ -42,68 +46,45 @@ section .data align=64
 	
 section .text align=64
 	
-	; void Fast_Blur_16_asm()
+	; void Fast_Blur_16_x86()
 	; 15/16-bit color Fast Blur function, non-MMX.
 	global _Fast_Blur_16_x86
 	_Fast_Blur_16_x86:
 		
-		push ebx
-		push ecx
-		push edx
-		push edi
-		push esi
+		push	ebx
+		push	ecx
+		push	edx
+		push	edi
+		push	esi
 		
-		mov esi, MD_Screen
-		mov ecx, 336 * 240
-		xor edi, edi
-		xor edx, edx
+		; Start at the beginning of the actual display data.
+		mov	esi, _MD_Screen + (8*2)
+		mov	ecx, MD_SCREEN_SIZE - 8
+		xor	ebx, ebx
 		
-		; Check which color depth is in use.
-		cmp byte [_bppMD], 16
-		je short .Loop_565
+		; Default to 16-bit color.
+		mov	dx, MASK_DIV2_16
+		cmp	byte [_bppMD], 15
+		jne	short .Loop
+		
+		; 15-bit color is in use.
+		mov	dx, MASK_DIV2_15
+		jmp	short .Loop
 	
 	align 32
 	
-	.Loop_555:
-			; 15-bit color
-			mov ax, [esi]
-			add esi, 2
-			shr ax, 1
-			mov bx, ax
-			and ax, 0x3C0F
-			and bx, 0x01E0
-			add di, ax
-			add dx, bx
-			add dx, di
-			dec ecx
-			mov [esi - 2], dx
-			mov di, ax
-			mov dx, bx
-			jnz short .Loop_555
-		
-		pop esi
-		pop edi
-		pop edx
-		pop ecx
-		pop ebx
-		ret
-		
-	.Loop_565:
-			; 16-bit color
-			mov ax, [esi]
-			add esi, 2
-			shr ax, 1
-			mov bx, ax
-			and ax, 0x780F
-			and bx, 0x03E0
-			add di, ax
-			add dx, bx
-			add dx, di
-			dec ecx
-			mov [esi - 2], dx
-			mov di, ax
-			mov dx, bx
-			jnz .Loop_565
+	.Loop:
+			mov	ax, [esi]	; Get the current pixel.
+			shr	ax, 1		; Reduce pixel brightness by 50%.
+			and	ax, dx		; Apply color mask.
+			add	bx, ax		; Blur the pixel with the previous pixel.
+			mov	[esi - 2], bx	; Write the new pixel.
+			mov	bx, ax		; Store the current pixel.
+			
+			; Next pixel.
+			add	esi, 2
+			dec	ecx
+			jnz	short .Loop
 		
 		pop esi
 		pop edi
@@ -125,12 +106,12 @@ section .text align=64
 		push edi
 		push esi
 		
-		mov esi, MD_Screen
-		mov ecx, (336 * 240 * 2) / 8
+		mov esi, _MD_Screen
+		mov ecx, MD_SCREEN_SIZE / 4
 		xor edi, edi
 		xor edx, edx
 		
-		;If 15-bit, apply the 15-bit color masks.
+		; If 15-bit, apply the 15-bit color masks.
 		cmp byte [_bppMD], 15
 		je short .Mask_555
 		
