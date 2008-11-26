@@ -25,7 +25,15 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "pluginmgr.hpp"
+#include "macros/hashtable.hpp"
 
+// C++ includes
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
+using std::pair;
+using std::string;
 using std::vector;
 
 // Render plugins
@@ -75,9 +83,10 @@ static MDP_t* mdp_internal[] =
 
 
 /**
- * vRenderPlugins: Vector containing render plugins.
+ * vRenderPlugins, tblRenderPlugins: Vector and map containing render plugins.
  */
 vector<MDP_t*> PluginMgr::vRenderPlugins;
+mapStrToInt PluginMgr::tblRenderPlugins;
 
 
 /**
@@ -96,12 +105,27 @@ inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
 		return;
 	}
 	
+	// Check if a plugin with this tag already exists.
+	string tag = rendPlugin->tag;
+	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
+	mapStrToInt::iterator existingMDP = tblRenderPlugins.find(tag);
+	if (existingMDP != tblRenderPlugins.end())
+	{
+		// Plugin with this tag already exists.
+		// TODO: Show an error.
+		return;
+	}
+	
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
 	
+	// Add the plugin to the vector.
 	vRenderPlugins.push_back(plugin);
 	if (plugin->init)
 		plugin->init();
+	
+	// Add the plugin tag to the map.
+	tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
 }
 
 
@@ -158,6 +182,7 @@ void PluginMgr::end(void)
 			vRenderPlugins.at(i)->end();
 	}
 	
-	// Clear the vector of render plugins.
+	// Clear the vector and map of render plugins.
 	vRenderPlugins.clear();
+	tblRenderPlugins.clear();
 }
