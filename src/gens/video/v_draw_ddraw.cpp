@@ -23,14 +23,9 @@ inline void VDraw_DDraw::DDraw_Draw_Text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	if (lock)
 		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
-	
 	// Determine the window size using the scaling factor.
-	if (rendPlugin->scale <= 0)
-		return;
-	const int w = 320 * rendPlugin->scale;
-	const int h = 240 * rendPlugin->scale;
+	const int w = 320 * m_scale;
+	const int h = 240 * m_scale;
 	
 	// +(8*bytespp) is needed for the lpSurface pointer because the DDraw module
 	// includes the entire 336x240 MD_Screen. The first 8 pixels are offscreen,
@@ -102,14 +97,14 @@ int VDraw_DDraw::Init_Video(void)
 	End_Video();
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
 	// Determine the window size using the scaling factor.
-	if (rendPlugin->scale <= 0)
+	if (scale <= 0)
 		return 0;
-	const int w = 320 * rendPlugin->scale;
-	const int h = 240 * rendPlugin->scale;
-	const int mdW = 336 * rendPlugin->scale;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	const int mdW = 336 * scale;
 	
 	if (m_FullScreen)
 	{
@@ -280,6 +275,7 @@ int VDraw_DDraw::Init_Video(void)
 	// Synchronize menus.
 	Sync_Gens_Window();
 	
+	// VDraw_DDraw initialized.
 	return 1;
 }
 
@@ -303,10 +299,13 @@ int VDraw_DDraw::reinitGensWindow(void)
 	create_gens_window_menubar();
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
-	const int w = 320 * rendPlugin->scale;
-	const int h = 240 * rendPlugin->scale;
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return 0;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
 	
 	if (m_FullScreen)
 	{
@@ -517,9 +516,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	q.x = RectDest.right; //Upth-Add - we need to get
 	q.y = RectDest.bottom; //Upth-Add - the bottom-right corner
 	
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(Render_Mode)->plugin_t);
-	
-	if (rendPlugin->scale == 1)
+	if (m_scale == 1)
 	{
 		RectSrc.top = 0;
 		RectSrc.bottom = VDP_Num_Vis_Lines;
@@ -534,8 +531,8 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	{
 		if (VDP_Num_Vis_Lines == 224)
 		{
-			RectSrc.top = 8 * rendPlugin->scale;
-			RectSrc.bottom = (224 + 8) * rendPlugin->scale;
+			RectSrc.top = 8 * m_scale;
+			RectSrc.bottom = (224 + 8) * m_scale;
 
 			if (!(m_Stretch & STRETCH_V))
 			{
@@ -546,7 +543,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		else
 		{
 			RectSrc.top = 0; //Upth-Modif - Was "0 * 2"
-			RectSrc.bottom = (240 * rendPlugin->scale);
+			RectSrc.bottom = (240 * m_scale);
 		}
 	}
 
@@ -562,7 +559,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		else
 		{
 			RectSrc.left = 0; //Upth-Modif - Was "0 * 2"
-			RectSrc.right = 320 * rendPlugin->scale;
+			RectSrc.right = 320 * m_scale;
 		}
 		RectDest.left = (int) ((q.x - (320 * Ratio_X)) / 2); //Upth-Add - center the picture
 		RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - along the x axis
@@ -585,7 +582,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		else
 		{
 			RectSrc.left = 32 * 2;
-			RectSrc.right = (256 * rendPlugin->scale) + (32 * rendPlugin->scale);
+			RectSrc.right = (256 * m_scale) + (32 * m_scale);
 		}
 	}
 }

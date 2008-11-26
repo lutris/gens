@@ -254,12 +254,12 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	for (unsigned int i = 0; i < PluginMgr::vRenderPlugins.size(); i++)
 	{
 		if (draw->fullScreen())
-			renderSelected = (Video.Render_FS == i);
+			renderSelected = (Video.Render_FS == (int)i);
 		else
-			renderSelected = (Video.Render_W == i);
+			renderSelected = (Video.Render_W == (int)i);
 		
 		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING,
-			   IDM_GRAPHICS_RENDER_NORMAL + i, ((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(i)->plugin_t))->tag);
+			   IDM_GRAPHICS_RENDER_NORMAL + i, PluginMgr::getPluginFromID_Render(i)->tag);
 		
 		if (renderSelected)
 		{

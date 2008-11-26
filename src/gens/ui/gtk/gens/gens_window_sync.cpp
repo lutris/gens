@@ -303,7 +303,6 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	
 	GtkWidget *mnuItem;
 	GSList *radioGroup = NULL;
-	gboolean showRenderer;
 	
 	char sObjName[64];
 	
@@ -332,7 +331,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		
 		sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
 		
-		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, ((MDP_Render_t*)(PluginMgr::vRenderPlugins.at(i)->plugin_t))->tag);
+		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, PluginMgr::getPluginFromID_Render(i)->tag);
 		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
 		gtk_widget_set_name(mnuItem, sObjName);
 		gtk_widget_show(mnuItem);

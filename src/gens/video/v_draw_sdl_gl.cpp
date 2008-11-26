@@ -64,13 +64,10 @@ VDraw_SDL_GL::~VDraw_SDL_GL()
  */
 int VDraw_SDL_GL::Init_Video(void)
 {
-	int x;
-	int w, h;
-	
 	// OpenGL width/height.
 	// TODO: Move these values here or something.
-	w = Video.Width_GL;
-	h = Video.Height_GL;
+	const int w = Video.Width_GL;
+	const int h = Video.Height_GL;
 	
 	if (m_FullScreen)
 	{
@@ -107,7 +104,7 @@ int VDraw_SDL_GL::Init_Video(void)
 	}
 	
 	// Initialize the renderer.
-	x = Init_SDL_GL_Renderer(w, h);
+	int x = Init_SDL_GL_Renderer(w, h);
 	
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
@@ -145,13 +142,13 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	updateVSync(true);
 	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
-	// Determine the texture size using the scaling factor.
-	if (rendPlugin->scale <= 0)
+        // Determine the texture size using the scaling factor.
+	if (scale <= 0)
 		return 0;
-	rowLength = 320 * rendPlugin->scale;
-	textureSize = 256 * rendPlugin->scale;
+	rowLength = 320 * scale;
+	textureSize = 256 * scale;
 	
 	// Check that the texture size is a power of two.
 	// TODO: Optimize this code.
@@ -169,7 +166,7 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	
 	// Calculate the rendering parameters.
 	m_HRender = (double)(rowLength) / (double)(textureSize*2);
-	m_VRender = (double)(240.0 * rendPlugin->scale) / (double)(textureSize);
+	m_VRender = (double)(240 * scale) / (double)(textureSize);
 	
 	// Allocate the filter buffer.
 	int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
@@ -540,13 +537,14 @@ void VDraw_SDL_GL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
 	// Determine the window size using the scaling factor.
-	if (rendPlugin->scale <= 0)
+	if (scale <= 0)
 		return;
-	int w = 320 * rendPlugin->scale;
-	int h = 256 * rendPlugin->scale;
+	// Determine the window size using the scaling factor.
+	const int w = 320 * scale;
+	const int h = 256 * scale;
 	
 	if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
 	    rowLength == w && textureSize == h)

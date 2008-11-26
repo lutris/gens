@@ -734,8 +734,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	}
 	
 	// Get the old scaling factor.
-	MDP_Render_t *oldRendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(oldRend)->plugin_t);
-	const int oldScale = oldRendPlugin->scale;
+	const int oldScale = PluginMgr::getPluginFromID_Render(oldRend)->scale;
 	
 	// Checks if an invalid mode number was passed.
 	if (newMode < 0 || newMode >= PluginMgr::vRenderPlugins.size())
@@ -747,7 +746,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	}
 	
 	// Renderer function found.
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(newMode)->plugin_t);
+	MDP_Render_t *rendPlugin = PluginMgr::getPluginFromID_Render(newMode);
 	*rendFn = rendPlugin->blit;
 	
 	if (*Rend != newMode)

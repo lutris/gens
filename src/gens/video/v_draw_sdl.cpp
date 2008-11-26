@@ -39,16 +39,14 @@ VDraw_SDL::~VDraw_SDL()
  */
 int VDraw_SDL::Init_Video(void)
 {
-	int x;
-	
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
 	// Determine the window size using the scaling factor.
-	if (rendPlugin->scale <= 0)
+	if (scale <= 0)
 		return 0;
-	int w = 320 * rendPlugin->scale;
-	int h = 240 * rendPlugin->scale;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
 	
 	if (m_FullScreen)
 	{
@@ -85,7 +83,7 @@ int VDraw_SDL::Init_Video(void)
 	}
 	
 	// Initialize the renderer.
-	x = Init_SDL_Renderer(w, h);
+	int x = Init_SDL_Renderer(w, h);
 	
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
@@ -368,13 +366,13 @@ void VDraw_SDL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
 	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	MDP_Render_t *rendPlugin = (MDP_Render_t*)(PluginMgr::vRenderPlugins.at(rendMode)->plugin_t);
+	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
 	
 	// Determine the window size using the scaling factor.
-	if (rendPlugin->scale <= 0)
+	if (scale <= 0)
 		return;
-	int w = 320 * rendPlugin->scale;
-	int h = 240 * rendPlugin->scale;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
 	
 	if (screen->w == w && screen->h == h)
 	{
