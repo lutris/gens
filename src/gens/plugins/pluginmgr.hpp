@@ -35,7 +35,7 @@ class PluginMgr
 		static void init(void);
 		static void end(void);
 		
-		MDP_Render_t* getPluginFromID_Render(int id);
+		static MDP_Render_t* getPluginFromID_Render(int id);
 		
 		static std::vector<MDP_t*> vRenderPlugins;
 		static mapStrToInt tblRenderPlugins;
