@@ -4,13 +4,13 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 if GENS_X86_ASM
 gens_x86_asm_o = \
-		gens_core/gfx/fastblur_16.o \
+		gens_core/gfx/fastblur_16_x86.o \
 		audio/audio_mmx.o
 gens_x86_asm_src = \
-		gens_core/gfx/fastblur_16.asm \
+		gens_core/gfx/fastblur_16_x86.asm \
 		audio/audio_mmx.asm
 gens_x86_asm_h = \
-		gens_core/gfx/fastblur_16.h \
+		gens_core/gfx/fastblur_x86.h \
 		audio/audio_mmx.h
 else
 gens_x86_asm_o =
@@ -95,7 +95,7 @@ gens_SOURCES = \
 		gens_core/mem/mem_m68k_cd.inc \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
-		gens_core/gfx/fastblur.c \
+		gens_core/gfx/fastblur.cpp \
 		gens_core/misc/cpuflags.c \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/gfx_cd.asm \
@@ -177,7 +177,7 @@ noinst_HEADERS = \
 		gens_core/mem/mem_z80.h \
 		gens_core/misc/byteswap.h \
 		gens_core/misc/misc.h \
-		gens_core/gfx/fastblur.h \
+		gens_core/gfx/fastblur.hpp \
 		gens_core/misc/cpuflags.h \
 		$(gens_x86_asm_h) \
 		gens_core/gfx/gfx_cd.h \
