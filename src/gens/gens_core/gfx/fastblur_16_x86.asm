@@ -82,10 +82,10 @@ section .text align=64
 			dec	ecx
 			jnz	short .Loop
 		
-		pop esi
-		pop edx
-		pop ecx
-		pop ebx
+		pop	esi
+		pop	edx
+		pop	ecx
+		pop	ebx
 		ret
 	
 	align 32
@@ -132,7 +132,7 @@ section .text align=64
 			; Next group of pixels.
 			add	esi, 8
 			dec	ecx
-			jnz short .Loop
+			jnz	short .Loop
 		
 		pop	esi
 		pop	ecx
