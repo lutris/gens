@@ -5,7 +5,7 @@
   
 - Accentuated accents look like strange in the SDL window.
   This is an Assembly issue, so don't ask me about it.
-  Characters are printed without their accent (french example: Activé -> Active)
+  Characters are printed without their accent (french example: ActivÃ© -> Active)
 
 - WAV Dumping is not (yet) implemented. GYM play back has not been completely tested.
 
