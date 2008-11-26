@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include "fastblur.hpp"
 #include "fastblur_x86.h"
 #include "emulator/g_main.hpp"
@@ -34,6 +38,7 @@
 #define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
 
+#ifndef GENS_X86_ASM
 /**
  * T_Fast_Blur: Apply a fast blur effect to the MD screen buffer.
  * @param mdScreen MD screen buffer.
@@ -63,6 +68,7 @@ static inline void T_Fast_Blur(pixel *mdScreen, pixel mask)
 		mdScreen++;
 	}
 }
+#endif /* GENS_X86_ASM */
 
 
 /**
@@ -83,5 +89,14 @@ void Fast_Blur(void)
 #endif
 	}
 	else //if (bppMD == 32)
+	{
+#ifdef GENS_X86_ASM
+		if (CPU_Flags & CPUFLAG_MMX)
+			Fast_Blur_32_x86_mmx();
+		else
+			Fast_Blur_32_x86();
+#else
 		T_Fast_Blur(MD_Screen32, MASK_DIV2_32);
+#endif
+	}
 }

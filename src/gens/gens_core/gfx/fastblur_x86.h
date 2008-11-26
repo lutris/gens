@@ -30,6 +30,9 @@ extern "C" {
 void Fast_Blur_16_x86(void);
 void Fast_Blur_16_x86_mmx(void);
 
+void Fast_Blur_32_x86(void);
+void Fast_Blur_32_x86_mmx(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -5,9 +5,11 @@ AUTOMAKE_OPTIONS = subdir-objects
 if GENS_X86_ASM
 gens_x86_asm_o = \
 		gens_core/gfx/fastblur_16_x86.o \
+		gens_core/gfx/fastblur_32_x86.o \
 		audio/audio_mmx.o
 gens_x86_asm_src = \
 		gens_core/gfx/fastblur_16_x86.asm \
+		gens_core/gfx/fastblur_32_x86.asm \
 		audio/audio_mmx.asm
 gens_x86_asm_h = \
 		gens_core/gfx/fastblur_x86.h \
