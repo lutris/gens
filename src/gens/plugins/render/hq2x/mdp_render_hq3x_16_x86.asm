@@ -2705,7 +2705,7 @@ arg_height	equ 28
 	shr	edx, 2
 %endmacro
 	
-%macro MULT_BY_6 2
+%macro MUL_BY_6 2
 	; Optimized Multiplication by 6 [written by David Korth]
 	; %1 == register with value to multiply by 6
 	; %2 == temporary register
@@ -2719,7 +2719,7 @@ arg_height	equ 28
 	mov		eax, [ebp + arg_destPitch]
 	DIV_BY_6	[ebp + arg_destPitch]
 	sub		edx, [ebp + arg_width]
-	MULT_BY_6	edx, eax
+	MUL_BY_6	edx, eax
 	add		edi, edx
 	
 	dec	dword [linesleft]
