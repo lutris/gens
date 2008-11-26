@@ -31,6 +31,7 @@
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
 
+//#undef GENS_X86_ASM
 // x86 asm versions
 #ifdef GENS_X86_ASM
 #include "mdp_render_interpolated_scanline_50_x86.h"
@@ -43,12 +44,8 @@
 #define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
 #define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
-#define MASK_DIV4_15		((uint16_t)(0x1CE7))
-#define MASK_DIV4_16		((uint16_t)(0x39E7))
-#define MASK_DIV4_15_ASM	((uint32_t)(0x1CE71CE7))
-#define MASK_DIV4_16_ASM	((uint32_t)(0x39E739E7))
-#define MASK_DIV4_32		((uint32_t)(0x003F3F3F))
 
+#define BLEND(a, b, mask) ((((a) >> 1) & mask) + (((b) >> 1) & mask))
 
 //#ifndef GENS_X86_ASM
 /**
@@ -59,17 +56,18 @@
  * @param srcPitch Pitch of mdScreen.
  * @param width Width of the image.
  * @param height Height of the image.
- * @param mask2 50% mask for the scanline data.
- * @param mask4 25% mask for the scanline data.
+ * @param mask Mask for the interpolation data.
  */
 template<typename pixel>
 static inline void T_mdp_render_interpolated_scanline_50_cpp(pixel *destScreen, pixel *mdScreen,
-						 int destPitch, int srcPitch,
-						 int width, int height, pixel mask2, pixel mask4)
+							     int destPitch, int srcPitch,
+							     int width, int height, pixel mask)
 {
 	destPitch /= sizeof(pixel);
 	srcPitch /= sizeof(pixel);
 	
+	// TODO: Figure out why the interpolation function is using the line
+	// below the source line instead of using the current source line.
 	for (int y = 0; y < height; y++)
 	{
 		pixel *SrcLine = &mdScreen[y * srcPitch];
@@ -84,10 +82,9 @@ static inline void T_mdp_render_interpolated_scanline_50_cpp(pixel *destScreen, 
 			pixel DR = *(SrcLine + srcPitch + 1);
 			
 			*DstLine1++ = C;
-			*DstLine1++ = ((C >> 1) & mask2) + ((R >> 1) & mask2);
-			*DstLine2++ = ((((C >> 1) & mask2) + ((D >> 1) & mask2)) >> 1) & mask2;
-			*DstLine2++ = (((((((C >> 1) & mask2) + ((R >> 1) & mask2)) >> 1) & mask2) +
-					 (((((D >> 1) & mask2) + ((DR >> 1) & mask2)) >> 1) & mask2)) >> 1) & mask4;
+			*DstLine1++ = BLEND(C, R, mask);
+			*DstLine2++ = (BLEND(C, D, mask) >> 1) & mask;
+			*DstLine2++ = ((BLEND(BLEND(C, R, mask), BLEND(D, DR, mask), mask)) >> 1) & mask;
 			
 			SrcLine++;
 		}
@@ -121,8 +118,7 @@ void mdp_render_interpolated_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 				    (uint16_t*)renderInfo->mdScreen,
 					    renderInfo->destPitch, renderInfo->srcPitch,
 					    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16),
-				    (renderInfo->bpp == 15 ? MASK_DIV4_15 : MASK_DIV4_16));
+				    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 		}
 	}
 	else
@@ -132,6 +128,6 @@ void mdp_render_interpolated_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height,
-			    MASK_DIV2_32, MASK_DIV4_32);
+			    MASK_DIV2_32);
 	}
 }
