@@ -9,3 +9,5 @@ Makefile.in
 
 /debug-*/
 /release-*/
+
+.directory
