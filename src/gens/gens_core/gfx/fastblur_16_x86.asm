@@ -42,7 +42,7 @@ section .text align=64
 
 	; void Fast_Blur_16_asm()
 	; 15/16-bit color Fast Blur function, non-MMX.
-	DECL Fast_Blur_16_asm
+	DECL Fast_Blur_16_x86
 		
 		push ebx
 		push ecx
@@ -114,7 +114,7 @@ section .text align=64
 	
 	; void Fast_Blur_16_asm_MMX()
 	; 15/16-bit color Fast Blur function, using MMX instructions.
-	DECL Fast_Blur_16_asm_MMX
+	DECL Fast_Blur_16_x86_mmx
 		
 		push ebx
 		push ecx
