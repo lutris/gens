@@ -68,7 +68,7 @@ section .text align=64
 		add	ecx, ecx			; ecx = Number of bytes per line
 		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
 		mov	edi, [ebp + arg_destScreen]	; edi = Destination
-		shr	ecx, 4				; Transfer 16 bytes per cycle. (32 16-bit pixels)
+		shr	ecx, 4				; Transfer 16 bytes per cycle. (8 16-bit pixels)
 		mov	[ebp + arg_width], ecx		; Initialize the X counter.
 		jmp	short .Loop_Y
 	
@@ -176,7 +176,7 @@ section .text align=64
 		add	ecx, ecx			; ecx = Number of bytes per line
 		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
 		mov	edi, [ebp + arg_destScreen]	; edi = Destination
-		shr	ecx, 5				; Transfer 32 bytes per cycle. (64 16-bit pixels)
+		shr	ecx, 5				; Transfer 32 bytes per cycle. (16 16-bit pixels)
 		mov	[ebp + arg_width], ecx		; Initialize the X counter.
 		
 		; Initialize the mask.
