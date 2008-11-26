@@ -2698,7 +2698,6 @@ arg_height	equ 28
 	; Dividend: %1 -> eax
 	; Divisor:  edx
 	; Quotient: edx
-	
 	mov	eax, %1
 	mov	edx, 0xAAAAAAAB
 	mul	edx
