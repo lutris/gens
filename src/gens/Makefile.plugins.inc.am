@@ -17,6 +17,8 @@ gens_SOURCES += \
 		plugins/render/interpolated_scanline/mdp_render_interpolated_scanline.cpp \
 		plugins/render/interpolated_scanline_50/mdp_render_interpolated_scanline_50_plugin.c \
 		plugins/render/interpolated_scanline_50/mdp_render_interpolated_scanline_50.cpp \
+		plugins/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25_plugin.c \
+		plugins/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25.cpp \
 		plugins/render/scale2x/mdp_render_scale2x_plugin.c \
 		plugins/render/scale2x/mdp_render_scale2x.c \
 		plugins/render/scale2x/mdp_render_scale3x_plugin.c \
@@ -44,6 +46,8 @@ noinst_HEADERS += \
 		plugins/render/interpolated_scanline/mdp_render_interpolated_scanline.hpp \
 		plugins/render/interpolated_scanline_50/mdp_render_interpolated_scanline_50_plugin.h \
 		plugins/render/interpolated_scanline_50/mdp_render_interpolated_scanline_50.hpp \
+		plugins/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25_plugin.h \
+		plugins/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25.hpp \
 		plugins/render/scale2x/mdp_render_scale2x_plugin.h \
 		plugins/render/scale2x/mdp_render_scale2x.h \
 		plugins/render/scale2x/mdp_render_scale3x_plugin.h \
