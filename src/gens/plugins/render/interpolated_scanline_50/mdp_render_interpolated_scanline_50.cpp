@@ -31,8 +31,6 @@
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
 
-#undef GENS_X86_ASM
-
 // x86 asm versions
 #ifdef GENS_X86_ASM
 #include "mdp_render_interpolated_scanline_50_x86.h"
@@ -116,54 +114,24 @@ void mdp_render_interpolated_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 				    (renderInfo->bpp == 15));
 		}
 		else
+#endif /* GENS_X86_ASM */
 		{
-			mdp_render_interpolated_scanline_50_16_x86(
+			T_mdp_render_interpolated_scanline_50_cpp(
 				    (uint16_t*)renderInfo->destScreen,
 				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM,
-				    (renderInfo->bpp == 15 ? MASK_DIV4_15_ASM : MASK_DIV4_16_ASM));
+					    renderInfo->destPitch, renderInfo->srcPitch,
+					    renderInfo->width, renderInfo->height,
+				    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16),
+				    (renderInfo->bpp == 15 ? MASK_DIV4_15 : MASK_DIV4_16));
 		}
-#else /* !GENS_X86_ASM */
-		T_mdp_render_interpolated_scanline_50_cpp(
-			    (uint16_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16),
-			    (renderInfo->bpp == 15 ? MASK_DIV4_15 : MASK_DIV4_16));
-#endif /* GENS_X86_ASM */
 	}
 	else
 	{
-#if 0
-#ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & CPUFLAG_MMX)
-		{
-			mdp_render_interpolated_scanline_50_32_x86_mmx(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height);
-		}
-		else
-		{
-			mdp_render_interpolated_scanline_50_32_x86(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height);
-		}
-#else /* !GENS_X86_ASM */
-#endif
-#endif
 		T_mdp_render_interpolated_scanline_50_cpp(
 			    (uint32_t*)renderInfo->destScreen,
 			    (uint32_t*)renderInfo->mdScreen,
 			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height,
 			    MASK_DIV2_32, MASK_DIV4_32);
-//#endif /* GENS_X86_ASM */
 	}
 }
