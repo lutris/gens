@@ -11,7 +11,7 @@
 #include "emulator/g_md.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
-#include "gens_core/misc/fastblur.h"
+#include "gens_core/gfx/fastblur.h"
 #include "emulator/g_main.hpp"
 #include "emulator/g_palette.h"
 #include "gens_core/vdp/vdp_io.h"

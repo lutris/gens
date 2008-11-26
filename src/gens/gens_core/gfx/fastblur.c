@@ -23,7 +23,6 @@
 
 #include "fastblur.h"
 #include "fastblur_16.h"
-#include "misc.h"
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
