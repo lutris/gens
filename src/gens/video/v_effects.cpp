@@ -28,7 +28,7 @@
 
 #include "v_effects.hpp"
 #include "gens_core/misc/misc.h"
-#include "gens_core/gfx/fastblur.h"
+#include "gens_core/gfx/fastblur.hpp"
 
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_io.h"
