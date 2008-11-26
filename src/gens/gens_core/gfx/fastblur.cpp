@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Fast Blur function. (15/16/32-bit color, C version.)              *
+ * Gens: Fast Blur function.                                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,8 +21,8 @@
  ***************************************************************************/
 
 
-#include "fastblur.h"
-#include "fastblur_16.h"
+#include "fastblur.hpp"
+#include "fastblur_x86.h"
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
@@ -97,9 +97,9 @@ void Fast_Blur(void)
 	{
 #ifdef GENS_X86_ASM
 		if (CPU_Flags & CPUFLAG_MMX)
-			Fast_Blur_16_asm_MMX();
+			Fast_Blur_16_x86_mmx();
 		else
-			Fast_Blur_16_asm();
+			Fast_Blur_16_x86();
 #else
 		Fast_Blur_16();
 #endif

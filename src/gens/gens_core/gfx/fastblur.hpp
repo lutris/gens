@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Fast Blur function. (15/16/32-bit color, C version.)              *
+ * Gens: Fast Blur function.                                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_FASTBLUR_H
-#define GENS_FASTBLUR_H
+#ifndef GENS_FASTBLUR_HPP
+#define GENS_FASTBLUR_HPP
 
 #ifdef __cplusplus
 extern "C" {
