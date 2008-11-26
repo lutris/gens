@@ -54,7 +54,6 @@ section .text align=64
 		push	ebx
 		push	ecx
 		push	edx
-		push	edi
 		push	esi
 		
 		; Start at the beginning of the actual display data.
@@ -87,7 +86,6 @@ section .text align=64
 			jnz	short .Loop
 		
 		pop esi
-		pop edi
 		pop edx
 		pop ecx
 		pop ebx
