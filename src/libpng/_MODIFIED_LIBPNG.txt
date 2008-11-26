@@ -1,5 +1,5 @@
-This copy of libpng-1.2.32 is a modified version of the original.
+This copy of libpng-1.2.33 is a modified version of the original.
 In particular, the shared library functionality has been removed.
 Also, several patches from the Gentoo source tree have been included.
 
-To obtain the original libpng-1.2.32, visit http://www.libpng.org
+To obtain the original libpng-1.2.33, visit http://www.libpng.org
