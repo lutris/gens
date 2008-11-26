@@ -20,69 +20,47 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include "fastblur.hpp"
 #include "fastblur_x86.h"
 #include "emulator/g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
 
+// Mask constants
+#define MASK_DIV2_15		((uint16_t)(0x3DEF))
+#define MASK_DIV2_16		((uint16_t)(0x7BEF))
+#define MASK_DIV2_15_ASM	((uint32_t)(0x3DEF3DEF))
+#define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
+#define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
 
-#ifndef GENS_X86_ASM
-static inline void Fast_Blur_16(void)
+
+/**
+ * T_Fast_Blur: Apply a fast blur effect to the MD screen buffer.
+ * @param mdScreen MD screen buffer.
+ * @param mask MSB mask for pixel data.
+ */
+template<typename pixel>
+static inline void T_Fast_Blur(pixel *mdScreen, pixel mask)
 {
-	int pixel;
-	unsigned short color = 0;
-	unsigned short blurColor = 0;
-	unsigned short mask;
+	pixel color = 0;
+	pixel blurColor = 0;
 	
-	// Check bpp.
-	if (bppMD == 15)
-		mask = 0x3DEF;
-	else //if (bppMD == 16)
-		mask = 0x7BEF;
-	
-	for (pixel = 1; pixel < (336 * 240); pixel++)
+	for (int i = 1; i < (336 * 240); i++)
 	{
-		color = MD_Screen[pixel] >> 1;
-		
-		// Mask off the MSB of each color component.
-		color &= mask;
+		// Get the current pixel.
+		color = (*mdScreen >> 1) & mask;
 		
 		// Blur the color with the previous pixel.
 		blurColor += color;
 		
 		// Draw the new pixel.
-		MD_Screen[pixel - 1] = blurColor;
+		*(mdScreen - 1) = blurColor;
 		
 		// Save the color for the next pixel.
 		blurColor = color;
-	}
-}
-#endif
-
-
-static inline void Fast_Blur_32(void)
-{
-	int pixel;
-	unsigned int color = 0;
-	unsigned int blurColor = 0;
-	
-	for (pixel = 1; pixel < (336 * 240); pixel++)
-	{
-		color = MD_Screen32[pixel] >> 1;
 		
-		// Mask off the MSB of each color component.
-		color &= 0x7F7F7F;
-		
-		// Blur the color with the previous pixel.
-		blurColor += color;
-		
-		// Draw the new pixel.
-		MD_Screen32[pixel - 1] = blurColor;//blurColorRB + blurColorG;
-		
-		// Save the color for the next pixel.
-		blurColor = color;
+		// Increment the MD screen pointer.
+		mdScreen++;
 	}
 }
 
@@ -93,7 +71,7 @@ static inline void Fast_Blur_32(void)
 void Fast_Blur(void)
 {
 	// TODO: Make it so fast blur doesn't apply to screenshots.
-	if (bppMD == 15 || bppMD == 16)
+	if (bppMD == 16 || bppMD == 15)
 	{
 #ifdef GENS_X86_ASM
 		if (CPU_Flags & CPUFLAG_MMX)
@@ -101,9 +79,9 @@ void Fast_Blur(void)
 		else
 			Fast_Blur_16_x86();
 #else
-		Fast_Blur_16();
+		T_Fast_Blur(MD_Screen, (bppMD == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 #endif
 	}
 	else //if (bppMD == 32)
-		Fast_Blur_32();
+		T_Fast_Blur(MD_Screen32, MASK_DIV2_32);
 }
