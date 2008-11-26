@@ -47,7 +47,6 @@
  * @param width Width of the image.
  * @param height Height of the image.
  */
-#include <stdio.h>
 template<typename pixel>
 static inline void T_mdp_render_1x_cpp(pixel *destScreen, pixel *mdScreen,
 				       int destPitch, int srcPitch,
