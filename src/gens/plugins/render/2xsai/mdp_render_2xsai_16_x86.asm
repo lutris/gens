@@ -63,10 +63,6 @@ section .data align=64
 	qcolorMask:		dd 0xE79CE79C, 0xE79CE79C
 	qlowpixelMask:		dd 0x18631863, 0x18631863
 	
-	darkenMask:		dd 0xC718C718, 0xC718C718
-	GreenMask:		dd 0x07E007E0, 0x07E007E0
-	RedBlueMask:		dd 0xF81FF81F, 0xF81FF81F
-	
 	; 15-bit color masks.
 	
 	colorMask15:		dd 0x7BDE7BDE, 0x7BDE7BDE
@@ -75,10 +71,6 @@ section .data align=64
 	qcolorMask15:		dd 0x739C739C, 0x739C739C
 	qlowpixelMask15:	dd 0x0C630C63, 0x0C630C63
 	
-	darkenMask15:		dd 0x63186318, 0x63186318
-	GreenMask15:		dd 0x03E003E0, 0x03E003E0
-	RedBlueMask15:		dd 0x7C1F7C1F, 0x7C1F7C1F
-	
 	; 16-bit color masks.
 	
 	colorMask16:		dd 0xF7DEF7DE, 0xF7DEF7DE
@@ -86,10 +78,6 @@ section .data align=64
 	
 	qcolorMask16:		dd 0xE79CE79C, 0xE79CE79C
 	qlowpixelMask16:	dd 0x18631863, 0x18631863
-	
-	darkenMask16:		dd 0xC718C718, 0xC718C718
-	GreenMask16:		dd 0x07E007E0, 0x07E007E0
-	RedBlueMask16:		dd 0xF81FF81F, 0xF81FF81F
 	
 	; Constants.
 	ONE:			dd 0x00010001, 0x00010001
@@ -165,12 +153,6 @@ arg_mode555	equ 32
 		movq	mm1, [qlowpixelMask16]
 		movq	[qcolorMask], mm0
 		movq	[qlowpixelMask], mm1
-		movq	mm0, [darkenMask16]
-		movq	mm1, [GreenMask16]
-		movq	mm2, [RedBlueMask16]
-		movq	[darkenMask], mm0
-		movq	[GreenMask], mm1
-		movq	[RedBlueMask], mm2
 		jmp	short .Loop
 	
 	.Mode_555:
@@ -183,12 +165,6 @@ arg_mode555	equ 32
 		movq	mm1, [qlowpixelMask15]
 		movq	[qcolorMask], mm0
 		movq	[qlowpixelMask], mm1
-		movq	mm0, [darkenMask15]
-		movq	mm1, [GreenMask15]
-		movq	mm2, [RedBlueMask15]
-		movq	[darkenMask], mm0
-		movq	[GreenMask], mm1
-		movq	[RedBlueMask], mm2
 		jmp	short .Loop
 	
 	align 64
