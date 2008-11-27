@@ -609,10 +609,10 @@ int VDraw_DDraw::flipInternal(void)
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
 	// Set up the render information.
-	if (m_rInfo.bpp != bppOut)
+	if (m_rInfo.bpp != bppMD)
 	{
 		// bpp has changed. Reinitialize the screen pointers.
-		m_rInfo.bpp = bppOut;
+		m_rInfo.bpp = bppMD;
 		m_rInfo.cpuFlags = CPU_Flags;
 	}
 	

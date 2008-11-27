@@ -163,10 +163,10 @@ int VDraw_SDL::flipInternal(void)
 	unsigned char *start = &(((unsigned char*)(screen->pixels))[startPos]);
 	
 	// Set up the render information.
-	if (m_rInfo.bpp != bppOut)
+	if (m_rInfo.bpp != bppMD)
 	{
 		// bpp has changed. Reinitialize the screen pointers.
-		m_rInfo.bpp = bppOut;
+		m_rInfo.bpp = bppMD;
 		m_rInfo.cpuFlags = CPU_Flags;
 	}
 	
