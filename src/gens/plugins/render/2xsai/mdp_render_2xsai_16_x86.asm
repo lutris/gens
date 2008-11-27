@@ -87,7 +87,6 @@ section .data align=64
 	
 section .bss align=64
 	
-	LineBuffer:	resb 32
 	Mask1:		resb 8
 	Mask2:		resb 8
 	ACPixel:	resb 8
@@ -213,7 +212,6 @@ arg_mode555	equ 32
 		sub	eax, ebx		; eax now points to colorE
 		
 		pxor	mm0, mm0
-		movq	[LineBuffer], mm0
 		jmp	short .Loop
 	
 	align 64
