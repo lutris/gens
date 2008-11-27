@@ -155,6 +155,8 @@ arg_mode555	equ 32
 		movq	[qlowpixelMask], mm1
 		jmp	short .Loop
 	
+	align 64
+	
 	.Mode_555:
 		; 15-bit: Apply 15-bit color masks.
 		movq	mm0, [colorMask15]
