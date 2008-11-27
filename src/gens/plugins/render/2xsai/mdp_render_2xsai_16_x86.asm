@@ -196,7 +196,7 @@ arg_mode555	equ 32
 	align 64
 	
 	;***********************************************************************************************
-	;v oid _2xSaILine(uint8 *srcPtr, uint32 srcPitch, uint32 width, uint8 *dstPtr, uint32 dstPitch);
+	; void _2xSaILine(uint8 *srcPtr, uint32 srcPitch, uint32 width, uint8 *dstPtr, uint32 dstPitch);
 	_2xSaILine:
 		
 		push	ebp
