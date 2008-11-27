@@ -404,6 +404,11 @@ void Input_KeyDown(int key)
 			break;
 		*/
 		
+		case GENS_KEY_q:
+			if (draw->fullScreen())
+				close_gens();
+			break;
+		
 #ifdef GENS_OPENGL
 		case GENS_KEY_r:
 			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
