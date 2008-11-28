@@ -74,9 +74,11 @@ void mdp_host_unref_ptr(MDP_PTR ptrID)
 	{
 		case MDP_PTR_LUT16to32:
 			mdp_host_unref_ptr_LUT16to32();
+			break;
 		
 		default:
 			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
+			break;
 	}
 }
 
