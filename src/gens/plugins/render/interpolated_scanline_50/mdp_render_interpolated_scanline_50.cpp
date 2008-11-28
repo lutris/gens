@@ -85,7 +85,7 @@ static inline void T_mdp_render_interpolated_scanline_50_cpp(pixel *destScreen, 
 //#endif /* GENS_X86_ASM */
 
 
-void mdp_render_interpolated_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
+void MDP_FNCALL mdp_render_interpolated_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;

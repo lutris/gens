@@ -48,7 +48,7 @@
 /**
  * mdp_render_hq3x_end(): Initialize the hq3x plugin.
  */
-void mdp_render_hq3x_init(void)
+void MDP_FNCALL mdp_render_hq3x_init(void)
 {
 	// Increment the lookup table reference counter.
 	mdp_render_hq2x_refcount++;
@@ -58,7 +58,7 @@ void mdp_render_hq3x_init(void)
 /**
  * mdp_render_hq3x_end(): Shut down the hq3x plugin.
  */
-void mdp_render_hq3x_end(void)
+void MDP_FNCALL mdp_render_hq3x_end(void)
 {
 	// Decrement the lookup table reference counter.
 	mdp_render_hq2x_refcount--;
@@ -87,7 +87,7 @@ void mdp_render_hq3x_end(void)
  * mdp_render_hq3x_cpp(): hq3x rendering function.
  * @param renderInfo Render information.
  */
-void mdp_render_hq3x_cpp(MDP_Render_Info_t *renderInfo)
+void MDP_FNCALL mdp_render_hq3x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;

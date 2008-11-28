@@ -83,7 +83,7 @@ static inline void T_mdp_render_scanline_cpp(pixel *destScreen, pixel *mdScreen,
 #endif /* GENS_X86_ASM */
 
 
-void mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo)
+void MDP_FNCALL mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;

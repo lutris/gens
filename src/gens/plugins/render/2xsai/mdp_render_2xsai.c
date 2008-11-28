@@ -44,7 +44,7 @@
  * mdp_render_2xsai_cpp(): 2xSaI rendering function.
  * @param renderInfo Render information.
  */
-void mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo)
+void MDP_FNCALL mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;

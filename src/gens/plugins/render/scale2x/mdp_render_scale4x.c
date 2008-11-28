@@ -38,7 +38,7 @@
 // TODO: Conditionalize MMX.
 // Scale2x always defaults to using MMX right now.
 
-void mdp_render_scale4x_cpp(MDP_Render_Info_t *renderInfo)
+void MDP_FNCALL mdp_render_scale4x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
 		return;
