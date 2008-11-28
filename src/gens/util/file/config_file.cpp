@@ -25,8 +25,10 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
-#include <string.h>
 #include <unistd.h>
+#include <algorithm>
+#include <cstring>
+
 #include "save.hpp"
 #include "config_file.hpp"
 #include "port/ini.hpp"
@@ -79,6 +81,9 @@
 // UI
 #include "emulator/options.hpp"
 #include "ui/gens_ui.hpp"
+
+// Plugin Manager
+#include "plugins/pluginmgr.hpp"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
@@ -165,10 +170,10 @@ int Config::save(const string& filename)
 	// Video settings
 	// Render_Mode is incremented by 1 for compatibility with old Gens.
 	cfg.writeBool("Graphics", "Full Screen", draw->fullScreen());
-	cfg.writeInt("Graphics", "Render Fullscreen", Video.Render_FS + 1);
+	cfg.writeString("Graphics", "Render Fullscreen", PluginMgr::getPluginFromID_Render(Video.Render_FS)->tag);
+	cfg.writeString("Graphics", "Render Windowed", PluginMgr::getPluginFromID_Render(Video.Render_W)->tag);
 	cfg.writeInt("Graphics", "Full Screen VSync", Video.VSync_FS & 1);
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
-	cfg.writeInt("Graphics", "Render Windowed", Video.Render_W + 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
 	cfg.writeBool("Graphics", "Pause Tint", Video.pauseTint);
 	
@@ -383,14 +388,40 @@ int Config::load(const string& filename, void* gameActive)
 	Invert_Color = cfg.getInt("Graphics", "Invert", 0);
 	
 	// Video settings
-	// Render_Mode is decremented by 1 for compatibility with old Gens.
 	Video.VSync_FS = cfg.getInt("Graphics", "Full Screen VSync", 0) & 1;
 	Video.VSync_W = cfg.getInt("Graphics", "Windows VSync", 0) & 1;
 	draw->setFullScreen(cfg.getBool("Graphics", "Full Screen", false));
-	Video.Render_FS = cfg.getInt("Graphics", "Render Fullscreen", 2) - 1; // Default: Double
-	Video.Render_W = cfg.getInt("Graphics", "Render Windowed", 2) - 1;    // Default: Double
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
+	
+	// Renderer: Full Screen
+	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "");
+	mapStrToInt::iterator renderMDP;
+	if (renderTag.empty())
+		Video.Render_FS = 1;
+	else
+	{
+		std::transform(renderTag.begin(), renderTag.end(), renderTag.begin(), ::tolower);
+		renderMDP = PluginMgr::tblRenderPlugins.find(renderTag);
+		if (renderMDP == PluginMgr::tblRenderPlugins.end())
+			Video.Render_FS = 1;
+		else
+			Video.Render_FS = (*renderMDP).second;
+	}
+	
+	// Renderer: Windowed
+	renderTag = cfg.getString("Graphics", "Render Windowed", "");
+	if (renderTag.empty())
+		Video.Render_W = 1;
+	else
+	{
+		std::transform(renderTag.begin(), renderTag.end(), renderTag.begin(), ::tolower);
+		renderMDP = PluginMgr::tblRenderPlugins.find(renderTag);
+		if (renderMDP == PluginMgr::tblRenderPlugins.end())
+			Video.Render_W = 1;
+		else
+			Video.Render_W = (*renderMDP).second;
+	}
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.
