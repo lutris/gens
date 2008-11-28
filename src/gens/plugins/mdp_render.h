@@ -27,12 +27,12 @@
 extern "C" {
 #endif
 
-#include "mdp.h"
-
+#include <stdint.h>
+#include "mdp_fncall.h"
+#include "mdp_version.h"
 
 // MDP Render Plugin interface version.
 #define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
-
 
 // Gens rendering info
 typedef struct
@@ -56,12 +56,10 @@ typedef struct
 	uint8_t bpp;
 } MDP_Render_Info_t;
 
-
 // Render plugin flags.
 
 // SRC16DST32: Plugin only supports 16-bit color; Gens/GS has to convert it to 32-bit.
 #define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
-
 
 // Render plugin definition.
 typedef void (MDP_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
