@@ -29,8 +29,9 @@ extern "C" {
 #endif
 
 #include "plugins/mdp_render.h"
+#include "plugins/mdp_host.h"
 
-void mdp_render_hq3x_init(void);
+void mdp_render_hq3x_init(MDP_Host_t *hostSrv);
 void mdp_render_hq3x_end(void);
 void mdp_render_hq3x_cpp(MDP_Render_Info_t *renderInfo);
 

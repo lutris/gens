@@ -21,34 +21,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-
 // hq2x lookup tables.
-// TODO: Request a pointer to VDraw::LUT16to32.
-// Using VDraw::LUT16to32 instead of building a new LUT16to32 will save memory.
-// Note that this requires a pointer request interface to be added to MDP.
-int *mdp_render_hq2x_LUT16to32 = NULL;
 int *mdp_render_hq2x_RGBtoYUV = NULL;
 int mdp_render_hq2x_refcount = 0;
-
-
-/**
- * mdp_render_hq2x_InitLUT16to32(): Initialize LUT16to32.
- */
-void mdp_render_hq2x_InitLUT16to32(void)
-{
-	// Allocate the memory for the lookup table.
-	mdp_render_hq2x_LUT16to32 = malloc(65536 * sizeof(int));
-	
-	// Initialize the 16-bit to 32-bit conversion table.
-	int i;
-	for (i = 0; i < 65536; i++)
-		mdp_render_hq2x_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
-}
 
 
 /**
@@ -56,7 +35,7 @@ void mdp_render_hq2x_InitLUT16to32(void)
  */
 void mdp_render_hq2x_InitRGBtoYUV(void)
 {
-	// Allocate the memory for the lookup table.
+	// Allocate memory for the lookup table.
 	mdp_render_hq2x_RGBtoYUV = malloc(65536 * sizeof(int));
 	
 	// Initialize the RGB to YUV conversion table.
@@ -77,45 +56,5 @@ void mdp_render_hq2x_InitRGBtoYUV(void)
 				mdp_render_hq2x_RGBtoYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
 			}
 		}
-	}
-}
-
-
-/**
- * mdp_render_hq2x_16to32(): Convert 16-bit to 32-bit using the lookup table.
- * @param dest Destination surface.
- * @param src Source surface.
- * @param width Width of the image.
- * @param height Height of the image.
- * @param pitchDest Pitch of the destination surface.
- * @param pitchSrc Pitch of the source surface.
- */
-void mdp_render_hq2x_16to32(uint32_t *dest, uint16_t *src,
-			    int width, int height,
-			    int pitchDest, int pitchSrc)
-{
-	int x, y;
-	
-	const int pitchDestDiff = ((pitchDest / 4) - width);
-	const int pitchSrcDiff = ((pitchSrc / 2) - width);
-	
-	// Process four pixels at a time.
-	width >>= 2;
-	
-	for (y = 0; y < height; y++)
-	{
-		for (x = 0; x < width; x++)
-		{
-			*(dest + 0) = mdp_render_hq2x_LUT16to32[*(src + 0)];
-			*(dest + 1) = mdp_render_hq2x_LUT16to32[*(src + 1)];
-			*(dest + 2) = mdp_render_hq2x_LUT16to32[*(src + 2)];
-			*(dest + 3) = mdp_render_hq2x_LUT16to32[*(src + 3)];
-			
-			dest += 4;
-			src += 4;
-		}
-		
-		dest += pitchDestDiff;
-		src += pitchSrcDiff;
 	}
 }

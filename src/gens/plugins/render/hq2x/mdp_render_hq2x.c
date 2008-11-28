@@ -40,6 +40,11 @@
 #include "mdp_render_hq2x_x86.h"
 #endif /* GENS_X86_ASM */
 
+// MDP Host Services
+static MDP_Host_t *mdp_render_hq2x_hostSrv;
+int *mdp_render_hq2x_LUT16to32 = NULL;
+
+
 // TODO: Proper 15-bit color support.
 // It "works' right now in 15-bit, but the output is different than with 16-bit.
 // My first attempt at 15-bit support resulted in massive failure. :(
@@ -48,10 +53,12 @@
 /**
  * mdp_render_hq2x_end(): Initialize the hq2x plugin.
  */
-void MDP_FNCALL mdp_render_hq2x_init(void)
+void MDP_FNCALL mdp_render_hq2x_init(MDP_Host_t *hostSrv)
 {
-	// Increment the lookup table reference counter.
 	mdp_render_hq2x_refcount++;
+	
+	// Save the MDP Host Services pointer.
+	mdp_render_hq2x_hostSrv = hostSrv;
 }
 
 
@@ -60,6 +67,13 @@ void MDP_FNCALL mdp_render_hq2x_init(void)
  */
 void MDP_FNCALL mdp_render_hq2x_end(void)
 {
+	// If the LUT16to32 pointer was referenced, unreference it.
+	if (mdp_render_hq2x_LUT16to32)
+	{
+		mdp_render_hq2x_hostSrv->unrefPtr(MDP_PTR_LUT16to32);
+		mdp_render_hq2x_LUT16to32 = NULL;
+	}
+	
 	// Decrement the lookup table reference counter.
 	mdp_render_hq2x_refcount--;
 	
@@ -67,12 +81,6 @@ void MDP_FNCALL mdp_render_hq2x_end(void)
 	{
 		// This is the last plugin to use the hq2x lookup tables.
 		// Deallocate them.
-		
-		if (mdp_render_hq2x_LUT16to32)
-		{
-			free(mdp_render_hq2x_LUT16to32);
-			mdp_render_hq2x_LUT16to32 = NULL;
-		}
 		
 		if (mdp_render_hq2x_RGBtoYUV)
 		{
@@ -94,7 +102,7 @@ void MDP_FNCALL mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 	
 	// Make sure the lookup tables are initialized.
 	if (!mdp_render_hq2x_LUT16to32)
-		mdp_render_hq2x_InitLUT16to32();
+		mdp_render_hq2x_LUT16to32 = (int*)(mdp_render_hq2x_hostSrv->refPtr(MDP_PTR_LUT16to32));
 	if (!mdp_render_hq2x_RGBtoYUV)
 		mdp_render_hq2x_InitRGBtoYUV();
 	
