@@ -405,7 +405,7 @@ void Input_KeyDown(int key)
 		*/
 		
 		case GENS_KEY_q:
-			if (draw->fullScreen())
+			if (draw->fullScreen() && (mod & KMOD_CTRL))
 				close_gens();
 			break;
 		
