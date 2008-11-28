@@ -38,7 +38,6 @@ extern "C" {
 // MDP interface version.
 #define MDP_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
 
-
 // Licenses
 #define MDP_LICENSE_GPL_2	"GPL-2"
 #define MDP_LICENSE_GPL_3	"GPL-3"
@@ -46,7 +45,6 @@ extern "C" {
 #define MDP_LICENSE_LGPL_21	"LGPL-2.1"
 #define MDP_LICENSE_LGPL_3	"LGPL-3"
 #define MDP_LICENSE_BSD		"BSD"
-
 
 // Plugin description struct.
 typedef struct
@@ -59,7 +57,6 @@ typedef struct
 	const char* license;
 } MDP_Desc_t;
 
-
 // Plugin types.
 enum MDP_Type
 {
@@ -67,9 +64,11 @@ enum MDP_Type
 	MDPT_RENDER,
 };
 
+// MDP Host Services.
+#include "mdp_host.h"
 
 // Basic plugin definition struct.
-typedef void (GENS_FNCALL *mdp_init)(void);
+typedef void (GENS_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
 typedef void (GENS_FNCALL *mdp_end)(void);
 
 typedef struct

@@ -122,7 +122,7 @@ inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
 	// Add the plugin to the vector.
 	vRenderPlugins.push_back(plugin);
 	if (plugin->init)
-		plugin->init();
+		plugin->init(&MDP_Host);
 	
 	// Add the plugin tag to the map.
 	tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
