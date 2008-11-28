@@ -20,7 +20,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 %ifdef __OBJ_ELF
-%define _mdp_render_hq4x_LUT16to32 mdp_render_hq2x_LUT16to32
+%define _mdp_render_hq4x_LUT16to32 mdp_render_hq4x_LUT16to32
 %define _mdp_render_hq2x_RGBtoYUV mdp_render_hq2x_RGBtoYUV
 %define _mdp_render_hq4x_16_x86_mmx mdp_render_hq4x_16_x86_mmx
 %endif
