@@ -3,7 +3,6 @@ TODO for Gens/GS m6:
 - Add 32-bit color x86 asm/mmx Fast Blur function.
 - Bug: If the config file specifies 15-bit color (RGB 555), the initial
   palette will be 16-bit color (RGB 565), resulting in incorrect colors.
-- [MDP] Use the render tag instead of ID number in the configuration file.
 - [MDP] Add plugin configuration save/load based on MDP UUID.
 - [MDP] Add an optional plugin icon variable. (32x32 PNG)
 - [MDP] Add a function to look up a pointer from Gens (e.g. for LUT16to32).
