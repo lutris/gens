@@ -1,5 +1,4 @@
 TODO for Gens/GS m6:
-- Segmentation fault on startup when "Full Screen=1".
 - Finish initial plugin implementation. (Internal plugins only.)
 - Add 32-bit color x86 asm/mmx Fast Blur function.
 - Bug: If the config file specifies 15-bit color (RGB 555), the initial
