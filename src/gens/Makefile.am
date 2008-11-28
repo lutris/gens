@@ -130,7 +130,8 @@ gens_SOURCES = \
 		video/v_effects.cpp \
 		input/input.cpp \
 		audio/audio.cpp \
-		plugins/pluginmgr.cpp
+		plugins/pluginmgr.cpp \
+		plugins/mdp_host.c
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -222,6 +223,7 @@ noinst_HEADERS = \
 		plugins/mdp.h \
 		plugins/mdp_cpuflags.h \
 		plugins/mdp_version.h \
+		plugins/mdp_host.h \
 		plugins/mdp_render.h
 
 if GENS_DEBUGGER
