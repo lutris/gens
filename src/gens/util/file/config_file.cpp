@@ -431,6 +431,7 @@ int Config::load(const string& filename, void* gameActive)
 		// Invalid bpp. Set it to 32 by default.
 		bppOut = 32;
 	}
+	bppMD = bppOut;
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_OPENGL
