@@ -352,8 +352,6 @@ int VDraw_SDL_GL::flipInternal(void)
 	{
 		// MDP_RENDER_FLAG_SRC16DST32.
 		// Render as 16-bit to an internal surface.
-		if (!LUT16to32)
-			Init_LUT16to32();
 		
 		// Make sure the internal surface is initialized.
 		if (m_tmp16img_scale != m_scale)

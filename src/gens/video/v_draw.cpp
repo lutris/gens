@@ -29,10 +29,6 @@
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
-// 16-bit to 32-bit conversion tables.
-int *VDraw::LUT16to32 = NULL;
-int VDraw::LUT16to32_refcount = 0;
-
 
 /**
  * m_rInfo: Render Plugin information.
@@ -81,11 +77,8 @@ VDraw::VDraw()
 	m_FullScreen = false;
 	m_fastBlur = false;
 	
-	// Initialize m_rInfo.
-	m_rInfo.bpp = 0;
-	
-	// LUT16to32 reference counter.
-	LUT16to32_refcount++;
+	// Set LUT16to32 to NULL initially.
+	m_LUT16to32 = NULL;
 	
 	// Internal surface for rendering the 16-bit temporary image.
 	m_tmp16img = NULL;
@@ -142,8 +135,8 @@ VDraw::VDraw(VDraw *oldDraw)
 	// Initialize m_rInfo.
 	m_rInfo.bpp = 0;
 	
-	// LUT16to32 reference counter.
-	LUT16to32_refcount++;
+	// Set LUT16to32 to NULL initially.
+	m_LUT16to32 = NULL;
 	
 	// Internal surface for rendering the 16-bit temporary image.
 	m_tmp16img = NULL;
@@ -156,14 +149,11 @@ VDraw::VDraw(VDraw *oldDraw)
 
 VDraw::~VDraw()
 {
-	// LUT16to32 reference counter.
-	LUT16to32_refcount--;
-	
-	if (LUT16to32_refcount == 0 && LUT16to32)
+	if (m_LUT16to32)
 	{
-		// Free the lookup table.
-		free(LUT16to32);
-		LUT16to32 = NULL;
+		// Unreference LUT16to32.
+		MDP_Host.unrefPtr(MDP_PTR_LUT16to32);
+		m_LUT16to32 = NULL;
 	}
 	
 	// Internal surface for rendering the 16-bit temporary image.
@@ -824,21 +814,7 @@ int VDraw::reinitGensWindow(void)
 
 
 /**
- * Init_LUT16to32(): Initialize the 16-bit to 32-bit lookup table.
- */
-void VDraw::Init_LUT16to32(void)
-{
-	// Allocate the memory for the lookup table.
-	LUT16to32 = static_cast<int*>(malloc(65536 * sizeof(int)));
-	
-	// Initialize the 16-bit to 32-bit conversion table.
-	for (int i = 0; i < 65536; i++)
-		LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
-}
-
-
-/**
- * Render_16to32(): Convert 16-bit to 32-bit using the lookup table.
+ * Render_16to32(): Convert a 16-bit color image to 32-bit color using the lookup table.
  * @param dest Destination surface.
  * @param src Source surface.
  * @param width Width of the image.
@@ -850,7 +826,9 @@ void VDraw::Render_16to32(uint32_t *dest, uint16_t *src,
 			  int width, int height,
 			  int pitchDest, int pitchSrc)
 {
-	int x, y;
+	// Make sure the lookup table is referenced.
+	if (!m_LUT16to32)
+		m_LUT16to32 = static_cast<int*>(MDP_Host.refPtr(MDP_PTR_LUT16to32));
 	
 	const int pitchDestDiff = ((pitchDest / 4) - width);
 	const int pitchSrcDiff = ((pitchSrc / 2) - width);
@@ -858,14 +836,14 @@ void VDraw::Render_16to32(uint32_t *dest, uint16_t *src,
 	// Process four pixels at a time.
 	width >>= 2;
 	
-	for (y = 0; y < height; y++)
+	for (unsigned int y = 0; y < height; y++)
 	{
-		for (x = 0; x < width; x++)
+		for (unsigned int x = 0; x < width; x++)
 		{
-			*(dest + 0) = LUT16to32[*(src + 0)];
-			*(dest + 1) = LUT16to32[*(src + 1)];
-			*(dest + 2) = LUT16to32[*(src + 2)];
-			*(dest + 3) = LUT16to32[*(src + 3)];
+			*(dest + 0) = m_LUT16to32[*(src + 0)];
+			*(dest + 1) = m_LUT16to32[*(src + 1)];
+			*(dest + 2) = m_LUT16to32[*(src + 2)];
+			*(dest + 3) = m_LUT16to32[*(src + 3)];
 			
 			dest += 4;
 			src += 4;
