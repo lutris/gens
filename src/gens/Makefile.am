@@ -221,6 +221,7 @@ noinst_HEADERS = \
 		audio/audio_mmx.h \
 		plugins/pluginmgr.hpp \
 		plugins/mdp.h \
+		plugins/mdp_fncall.h \
 		plugins/mdp_cpuflags.h \
 		plugins/mdp_version.h \
 		plugins/mdp_host.h \
