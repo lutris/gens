@@ -716,6 +716,9 @@ void VDraw::Refresh_Video(void)
  */
 int VDraw::setRender(const int newMode, const bool forceUpdate)
 {
+	if (PluginMgr::vRenderPlugins.size() == 0)
+		return 0;
+	
 	int oldRend, *Rend;
 	MDP_Render_Fn *rendFn;
 	bool reinit = false;
