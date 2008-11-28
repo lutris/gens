@@ -27,7 +27,10 @@
 extern "C" {
 #endif
 
-#include "mdp.h"
+#include <stdint.h>
+
+#include "mdp_fncall.h"
+#include "mdp_version.h"
 
 // MDP Host Services interface version.
 #define MDP_HOST_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
