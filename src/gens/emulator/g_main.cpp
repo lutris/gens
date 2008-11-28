@@ -271,6 +271,9 @@ void Init_Settings(void)
 	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);
 	strcat(Str_Tmp, "gens.cfg");
 	
+	// Initialize the Plugin Manager.
+	PluginMgr::init();
+	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
 	Config::load(Str_Tmp, NULL);
@@ -330,9 +333,6 @@ int Init(void)
 #endif
 	
 	Init_Tab();
-	
-	// Initialize the Plugin Manager.
-	PluginMgr::init();
 	
 	run_gens();
 	return 1;
