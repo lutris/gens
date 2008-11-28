@@ -68,8 +68,8 @@ enum MDP_Type
 #include "mdp_host.h"
 
 // Basic plugin definition struct.
-typedef void (GENS_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
-typedef void (GENS_FNCALL *mdp_end)(void);
+typedef void (MDP_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
+typedef void (MDP_FNCALL *mdp_end)(void);
 
 typedef struct
 {

@@ -64,7 +64,7 @@ typedef struct
 
 
 // Render plugin definition.
-typedef void (GENS_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
+typedef void (MDP_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
 typedef struct
 {
 	// Render interface version.

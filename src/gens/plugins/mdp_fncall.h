@@ -29,14 +29,14 @@ extern "C" {
 
 // Function pointer calling conventions from SDL's begin_code.h
 // TODO: Combine this with the #defines from compress.h
-#ifndef GENS_FNCALL
+#ifndef MDP_FNCALL
 #if defined(__WIN32__) && !defined(__GNUC__)
-#define GENS_FNCALL __cdecl
+#define MDP_FNCALL __cdecl
 #else
 #ifdef __OS2__
-#define GENS_FNCALL _System
+#define MDP_FNCALL _System
 #else
-#define GENS_FNCALL
+#define MDP_FNCALL
 #endif
 #endif
 #endif
