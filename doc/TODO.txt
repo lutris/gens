@@ -2,8 +2,6 @@ TODO for Gens/GS m6:
 - Finish initial plugin implementation. (Internal plugins only.)
 - [MDP] Add plugin configuration save/load based on MDP UUID.
 - [MDP] Add an optional plugin icon variable. (32x32 PNG)
-- [MDPT_RENDER] Scale2x: Use non-MMX functions if MMX isn't supported on
-  the current CPU.
 - [MDPT_RENDER] hq?x: Pre-calculate the destination pitch adjustment instead
   of re-calculating it on each line.
 - [MDPT_RENDER] asm: Apply optimization tips from http://www.mark.masmcode.com/.
