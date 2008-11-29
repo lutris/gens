@@ -24,7 +24,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "zip_select_dialog.h"
+#include "zip_select_dialog.hpp"
 #include "zip_select_dialog_misc.hpp"
 
 #include <gtk/gtk.h>

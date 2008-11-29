@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "zip_select_dialog.h"
+#include "zip_select_dialog.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
