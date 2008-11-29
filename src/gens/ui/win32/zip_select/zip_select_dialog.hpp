@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Zip File Selection Dialog - Miscellaneous Functions.       *
+ * Gens: (Win32) Zip File Selection Dialog.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_ZIP_SELECT_DIALOG_MISC_HPP
-#define GTK_ZIP_SELECT_DIALOG_MISC_HPP
+#ifndef GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP
+#define GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP
 
 #include "util/file/compress/compressedfile.hpp"
 
@@ -30,4 +30,4 @@ using std::list;
 
 CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst);
 
-#endif
+#endif /* GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP */

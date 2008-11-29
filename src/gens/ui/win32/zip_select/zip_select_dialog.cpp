@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Zip File Selection Dialog - Miscellaneous Functions.       *
+ * Gens: (Win32) Zip File Selection Dialog.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -24,7 +24,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "zip_select_dialog_misc.hpp"
+#include "zip_select_dialog.hpp"
 #include "gens/gens_window.hpp"
 
 #include "emulator/g_main.hpp"
