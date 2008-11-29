@@ -40,7 +40,7 @@ using std::list;
 static GtkWidget *zip_select_dialog;
 #endif
 
-static gboolean on_m_treeFileList_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
 // TODO: Improve this dialog.
 
@@ -110,16 +110,16 @@ ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
 			       g_object_ref(scrlFileList), (GDestroyNotify)g_object_unref);
 	
 	// Tree view containing the files in the archive.
-	m_treeFileList = gtk_tree_view_new();
-	gtk_widget_set_name(m_treeFileList, "m_treeFileList");
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(m_treeFileList), TRUE);
-	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(m_treeFileList), FALSE);
-	gtk_widget_show(m_treeFileList);
-	gtk_container_add(GTK_CONTAINER(scrlFileList), m_treeFileList);
-	g_signal_connect((gpointer)m_treeFileList, "button_press_event",
-			  G_CALLBACK(on_m_treeFileList_button_press), m_Window);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_treeFileList",
-			       g_object_ref(m_treeFileList), (GDestroyNotify)g_object_unref);
+	m_lstFiles = gtk_tree_view_new();
+	gtk_widget_set_name(m_lstFiles, "m_lstFiles");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(m_lstFiles), TRUE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(m_lstFiles), FALSE);
+	gtk_widget_show(m_lstFiles);
+	gtk_container_add(GTK_CONTAINER(scrlFileList), m_lstFiles);
+	g_signal_connect((gpointer)m_lstFiles, "button_press_event",
+			  G_CALLBACK(on_m_lstFiles_button_press), m_Window);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_lstFiles",
+			       g_object_ref(m_lstFiles), (GDestroyNotify)g_object_unref);
 	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();
@@ -141,7 +141,7 @@ ZipSelectDialog::~ZipSelectDialog()
 }
 
 
-static gboolean on_m_treeFileList_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
+static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(widget);
 	
@@ -175,30 +175,30 @@ CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 	CompressedFile *selFile;
 	
 	// Stores the entries in the TreeView.
-	GtkListStore *lstFiles = NULL;
+	GtkListStore *lstdataFiles = NULL;
 	
 	// Create a list model.
-	lstFiles = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	lstdataFiles = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 	
 	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(m_treeFileList), GTK_TREE_MODEL(lstFiles));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_lstFiles), GTK_TREE_MODEL(lstdataFiles));
 	
 	// Create the renderer and the columns.
 	GtkCellRenderer *rendText = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colText = gtk_tree_view_column_new_with_attributes("Zip", rendText, "text", 0, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(m_treeFileList), colText);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(m_lstFiles), colText);
 	
 	// Add all files from the CompressedFile list.
 	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
 	{
-		gtk_list_store_append(lstFiles, &iter);
-		gtk_list_store_set(GTK_LIST_STORE(lstFiles), &iter,
+		gtk_list_store_append(lstdataFiles, &iter);
+		gtk_list_store_set(GTK_LIST_STORE(lstdataFiles), &iter,
 				   0, (*lstIter).filename.c_str(), 1, &(*lstIter), -1);
 	}
 	
 	// Select the first item by default.
 	GtkTreePath *path;
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_treeFileList));
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_lstFiles));
 	path = gtk_tree_path_new_from_string("0");
 	gtk_tree_selection_select_path(selection, path);
 	gtk_tree_path_free(path);
@@ -212,20 +212,20 @@ CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 	}
 	
 	// Get the selected file.
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_treeFileList));
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lstFiles), &iter);
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_lstFiles));
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lstdataFiles), &iter);
 	while (valid)
 	{
 		if (gtk_tree_selection_iter_is_selected(selection, &iter))
 		{
 			// Found the selected file.
-			gtk_tree_model_get(GTK_TREE_MODEL(lstFiles), &iter, 1, &selFile, -1);
+			gtk_tree_model_get(GTK_TREE_MODEL(lstdataFiles), &iter, 1, &selFile, -1);
 			break;
 		}
 		else
 		{
 			// Didn't find the selected file yet.
-			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lstFiles), &iter);
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lstdataFiles), &iter);
 		}
 	}
 	

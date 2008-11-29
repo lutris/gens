@@ -40,7 +40,7 @@ class ZipSelectDialog : public WndBase
 		CompressedFile* getFile(std::list<CompressedFile>* lst);
 	
 	protected:
-		GtkWidget *m_treeFileList;
+		GtkWidget *m_lstFiles;
 };
 
 #endif /* __cplusplus */
