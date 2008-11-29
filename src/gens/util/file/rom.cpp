@@ -32,7 +32,8 @@ using std::list;
 #include "gens_core/misc/byteswap.h"
 
 #include "ui/gens_ui.hpp"
-#include "zip_select/zip_select_dialog_misc.hpp"
+#include "zip_select/zip_select_dialog.hpp"
+#include "gens/gens_window.hpp"
 
 // New file compression handler.
 #include "util/file/compress/compressor.hpp"
@@ -560,7 +561,9 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 	else
 	{
 		// More than one file is in the archive. Load it.
-		selFile = Open_Zip_Select_Dialog(files);
+		ZipSelectDialog *zip = new ZipSelectDialog(GTK_WINDOW(gens_window));
+		selFile = zip->getFile(files);
+		delete zip;
 	}
 	
 	if (!selFile)

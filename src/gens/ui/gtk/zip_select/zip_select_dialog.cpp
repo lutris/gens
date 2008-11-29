@@ -28,147 +28,207 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
+#include <list>
+using std::list;
 
 #include "emulator/gens.hpp"
 
-// GENS GTK+ miscellaneous functions
+// Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
+#if 0
 static GtkWidget *zip_select_dialog;
+#endif
 
-static gboolean on_treeview_zip_list_button_press(GtkWidget *widget, GdkEventButton *event);
-static gboolean on_treeview_zip_list_key_press(GtkWidget *widget, GdkEventKey *event);
+static gboolean on_m_treeFileList_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
 // TODO: Improve this dialog.
 
 
 /**
- * create_zip_select_dialog(): Create the Zip File Selection Dialog.
+ * ZipSelectDialog(): Create the Zip File Selection Dialog.
  * @return Zip File Selection Dialog.
  */
-GtkWidget* create_zip_select_dialog(void)
+ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
 {
-	GdkPixbuf *zip_select_dialog_icon_pixbuf;
-	GtkWidget *frame_zip, *label_frame_zip;
-	GtkWidget *scroll_zip_list;
-	GtkWidget *treeview_zip_list;
-	GtkWidget *button_Zip_Cancel, *button_Zip_OK;
-	
-//	accel_group = gtk_accel_group_new();
-	
 	// Create the Zip File Selection window.
-	zip_select_dialog = gtk_dialog_new();
-	gtk_widget_set_name(zip_select_dialog, "zip_select_dialog");
-	gtk_container_set_border_width(GTK_CONTAINER(zip_select_dialog), 5);
-	gtk_window_set_title(GTK_WINDOW(zip_select_dialog), "Archive File Selection");
-	gtk_window_set_position(GTK_WINDOW(zip_select_dialog), GTK_WIN_POS_CENTER);
-	gtk_window_set_modal(GTK_WINDOW(zip_select_dialog), TRUE);
-	gtk_window_set_resizable(GTK_WINDOW(zip_select_dialog), FALSE);
-	gtk_window_set_type_hint(GTK_WINDOW(zip_select_dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_dialog_set_has_separator(GTK_DIALOG(zip_select_dialog), FALSE);
-	GLADE_HOOKUP_OBJECT_NO_REF(zip_select_dialog, zip_select_dialog, "zip_select_dialog");
+	m_Window = gtk_dialog_new();
+	gtk_widget_set_name(m_Window, "zip_select_dialog");
+	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 5);
+	gtk_window_set_title(GTK_WINDOW(m_Window), "Archive File Selection");
+	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
+	gtk_window_set_modal(GTK_WINDOW(m_Window), TRUE);
+	gtk_window_set_resizable(GTK_WINDOW(m_Window), FALSE);
+	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
+	gtk_window_set_transient_for(GTK_WINDOW(m_Window), parent);
+	
+	// Set the window data.
+	g_object_set_data(G_OBJECT(m_Window), "ZipSelectDialog", m_Window);
 	
 	// Make the window a decent size.
-	gtk_widget_set_size_request(zip_select_dialog, 480, 280);
+	gtk_widget_set_size_request(m_Window, 480, 280);
 	
 	// Load the Gens icon.
-	zip_select_dialog_icon_pixbuf = create_pixbuf("Gens2.ico");
-	if (zip_select_dialog_icon_pixbuf)
+	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
+	if (icon)
 	{
-		gtk_window_set_icon(GTK_WINDOW(zip_select_dialog), zip_select_dialog_icon_pixbuf);
-		gdk_pixbuf_unref(zip_select_dialog_icon_pixbuf);
+		gtk_window_set_icon(GTK_WINDOW(m_Window), icon);
+		gdk_pixbuf_unref(icon);
 	}
 	
 	// Add a frame for zip file selection.
-	frame_zip = gtk_frame_new(NULL);
-	gtk_widget_set_name(frame_zip, "frame_zip");
-	gtk_container_set_border_width(GTK_CONTAINER(frame_zip), 5);
-	gtk_frame_set_shadow_type(GTK_FRAME(frame_zip), GTK_SHADOW_NONE);
-	gtk_widget_show(frame_zip);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(zip_select_dialog)->vbox), frame_zip);
-	GLADE_HOOKUP_OBJECT(zip_select_dialog, frame_zip, "frame_zip");
+	GtkWidget *fraZip = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraZip, "fraZip");
+	gtk_container_set_border_width(GTK_CONTAINER(fraZip), 5);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraZip), GTK_SHADOW_NONE);
+	gtk_widget_show(fraZip);
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(m_Window)->vbox), fraZip);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraZip",
+			       g_object_ref(fraZip), (GDestroyNotify)g_object_unref);
 	
 	// Add a label to the zip file selection frame.
-	label_frame_zip = gtk_label_new("This archive contains multiple files.\nSelect which file you want to load.");
-	gtk_widget_set_name(label_frame_zip, "label_frame_zip");
-	gtk_label_set_justify(GTK_LABEL(label_frame_zip), GTK_JUSTIFY_CENTER);
-	gtk_widget_show(label_frame_zip);
-	gtk_frame_set_label_widget(GTK_FRAME(frame_zip), label_frame_zip);
-	gtk_frame_set_label_align(GTK_FRAME(frame_zip), 0.5, 0);
-	gtk_frame_set_shadow_type(GTK_FRAME(frame_zip), GTK_SHADOW_NONE);
-	GLADE_HOOKUP_OBJECT(zip_select_dialog, label_frame_zip, "label_frame_zip");
+	GtkWidget *lblZip = gtk_label_new("This archive contains multiple files.\nSelect which file you want to load.");
+	gtk_widget_set_name(lblZip, "lblZip");
+	gtk_label_set_justify(GTK_LABEL(lblZip), GTK_JUSTIFY_CENTER);
+	gtk_widget_show(lblZip);
+	gtk_frame_set_label_widget(GTK_FRAME(fraZip), lblZip);
+	gtk_frame_set_label_align(GTK_FRAME(fraZip), 0.5, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraZip), GTK_SHADOW_NONE);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblZip",
+			       g_object_ref(lblZip), (GDestroyNotify)g_object_unref);
 	
 	// Scrolled Window for the file list
-	scroll_zip_list = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_name(scroll_zip_list, "scroll_zip_list");
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_zip_list),
+	GtkWidget *scrlFileList = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_name(scrlFileList, "scrlFileList");
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlFileList),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
-	gtk_widget_show(scroll_zip_list);
-	gtk_container_add(GTK_CONTAINER(frame_zip), scroll_zip_list);
-	GLADE_HOOKUP_OBJECT(zip_select_dialog, scroll_zip_list, "scroll_zip_list");
+	gtk_widget_show(scrlFileList);
+	gtk_container_add(GTK_CONTAINER(fraZip), scrlFileList);
+	g_object_set_data_full(G_OBJECT(m_Window), "scrlFileList",
+			       g_object_ref(scrlFileList), (GDestroyNotify)g_object_unref);
 	
 	// Tree view containing the files in the archive.
-	treeview_zip_list = gtk_tree_view_new();
-	gtk_widget_set_name(treeview_zip_list, "treeview_zip_list");
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(treeview_zip_list), TRUE);
-	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview_zip_list), FALSE);
-	gtk_widget_show(treeview_zip_list);
-	gtk_container_add(GTK_CONTAINER(scroll_zip_list), treeview_zip_list);
-	g_signal_connect((gpointer)treeview_zip_list, "button_press_event",
-			  G_CALLBACK(on_treeview_zip_list_button_press), NULL);
-	g_signal_connect((gpointer)treeview_zip_list, "key_press_event",
-			  G_CALLBACK(on_treeview_zip_list_key_press), NULL);
-	GLADE_HOOKUP_OBJECT(zip_select_dialog, treeview_zip_list, "treeview_zip_list");
+	m_treeFileList = gtk_tree_view_new();
+	gtk_widget_set_name(m_treeFileList, "m_treeFileList");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(m_treeFileList), TRUE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(m_treeFileList), FALSE);
+	gtk_widget_show(m_treeFileList);
+	gtk_container_add(GTK_CONTAINER(scrlFileList), m_treeFileList);
+	g_signal_connect((gpointer)m_treeFileList, "button_press_event",
+			  G_CALLBACK(on_m_treeFileList_button_press), m_Window);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_treeFileList",
+			       g_object_ref(m_treeFileList), (GDestroyNotify)g_object_unref);
 	
-	// Dialog buttons
+	// Create an accelerator group.
+	m_AccelTable = gtk_accel_group_new();
 	
-	// Cancel
-	button_Zip_Cancel = gtk_dialog_add_button(GTK_DIALOG(zip_select_dialog),
-						  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-	GLADE_HOOKUP_OBJECT(zip_select_dialog, button_Zip_Cancel, "button_Zip_Cancel");
-	
-	// OK
-	button_Zip_OK = gtk_dialog_add_button(GTK_DIALOG(zip_select_dialog),
-						  GTK_STOCK_OK, GTK_RESPONSE_OK);
-	GLADE_HOOKUP_OBJECT(zip_select_dialog, button_Zip_Cancel, "button_Zip_Cancel");
+	// Add the dialog buttons.
+	addDialogButtons(m_Window, WndBase::BAlign_Default,
+			 WndBase::BUTTON_CANCEL | WndBase::BUTTON_OK, 0,
+			 WndBase::BUTTON_ALL);
 	
 	// Add the accel group.
-//	gtk_window_add_accel_group(GTK_WINDOW(zip_select_dialog), accel_group);
-	
-	return zip_select_dialog;
+	gtk_window_add_accel_group(GTK_WINDOW(m_Window), m_AccelTable);
 }
 
 
-static gboolean on_treeview_zip_list_button_press(GtkWidget *widget, GdkEventButton *event)
+ZipSelectDialog::~ZipSelectDialog()
+{
+	if (m_Window)
+		gtk_widget_destroy(GTK_WIDGET(m_Window));
+}
+
+
+static gboolean on_m_treeFileList_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(widget);
 	
-	if (zip_select_dialog && event->type == GDK_2BUTTON_PRESS)
+	if (GTK_IS_DIALOG(user_data) && event->type == GDK_2BUTTON_PRESS)
 	{
 		// Item was double-clicked in the treeview.
 		// Select the current item.
-		gtk_dialog_response(GTK_DIALOG(zip_select_dialog), GTK_RESPONSE_OK);
+		gtk_dialog_response(GTK_DIALOG(user_data), GTK_RESPONSE_OK);
 		return TRUE;
 	}
 	return FALSE;
 }
 
 
-static gboolean on_treeview_zip_list_key_press(GtkWidget *widget, GdkEventKey *event)
+/**
+ * getFile(): Get a file using the Zip Select dialog.
+ */
+CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 {
-	GENS_UNUSED_PARAMETER(widget);
-	
-	if (zip_select_dialog &&
-	    (event->keyval == GDK_Return ||
-	     event->keyval == GDK_KP_Enter))
+	if (!lst)
 	{
-		// Enter was pressed in the treeview.
-		// Select the current item.
-		gtk_dialog_response(GTK_DIALOG(zip_select_dialog), GTK_RESPONSE_OK);
-		return TRUE;
+		// NULL list pointer passed. Don't do anything.
+		return NULL;
 	}
-	return FALSE;
+	
+	gint dialogResponse;
+	GtkTreeSelection *selection;
+	gboolean valid;
+	list<CompressedFile>::iterator lstIter;
+	GtkTreeIter iter;
+	CompressedFile *selFile;
+	
+	// Stores the entries in the TreeView.
+	GtkListStore *lstFiles = NULL;
+	
+	// Create a list model.
+	lstFiles = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	
+	// Set the view model of the treeview.
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_treeFileList), GTK_TREE_MODEL(lstFiles));
+	
+	// Create the renderer and the columns.
+	GtkCellRenderer *rendText = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colText = gtk_tree_view_column_new_with_attributes("Zip", rendText, "text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(m_treeFileList), colText);
+	
+	// Add all files from the CompressedFile list.
+	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
+	{
+		gtk_list_store_append(lstFiles, &iter);
+		gtk_list_store_set(GTK_LIST_STORE(lstFiles), &iter,
+				   0, (*lstIter).filename.c_str(), 1, &(*lstIter), -1);
+	}
+	
+	// Select the first item by default.
+	GtkTreePath *path;
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_treeFileList));
+	path = gtk_tree_path_new_from_string("0");
+	gtk_tree_selection_select_path(selection, path);
+	gtk_tree_path_free(path);
+	
+	// Run the dialog.
+	dialogResponse = gtk_dialog_run(GTK_DIALOG(m_Window));
+	if (dialogResponse != GTK_RESPONSE_OK)
+	{
+		// No file was selected.
+		return NULL;
+	}
+	
+	// Get the selected file.
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_treeFileList));
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lstFiles), &iter);
+	while (valid)
+	{
+		if (gtk_tree_selection_iter_is_selected(selection, &iter))
+		{
+			// Found the selected file.
+			gtk_tree_model_get(GTK_TREE_MODEL(lstFiles), &iter, 1, &selFile, -1);
+			break;
+		}
+		else
+		{
+			// Didn't find the selected file yet.
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lstFiles), &iter);
+		}
+	}
+	
+	// Return the selected CompressedFile*.
+	return selFile;
 }

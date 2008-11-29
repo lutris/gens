@@ -47,7 +47,6 @@ gens_SOURCES += \
 		ui/gtk/country_code/country_code_window_callbacks.c \
 		ui/gtk/country_code/country_code_window_misc.c \
 		ui/gtk/zip_select/zip_select_dialog.cpp \
-		ui/gtk/zip_select/zip_select_dialog_misc.cpp \
 		ui/gtk/wndbase.cpp \
 		ui/gtk/about/about_window.cpp
 
@@ -110,7 +109,6 @@ noinst_HEADERS += \
 		ui/gtk/country_code/country_code_window_callbacks.h \
 		ui/gtk/country_code/country_code_window_misc.h \
 		ui/gtk/zip_select/zip_select_dialog.hpp \
-		ui/gtk/zip_select/zip_select_dialog_misc.hpp \
 		ui/gtk/wndbase.hpp \
 		ui/gtk/about/about_window.hpp
 

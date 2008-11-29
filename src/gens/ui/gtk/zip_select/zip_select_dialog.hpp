@@ -20,19 +20,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_ZIP_SELECT_DIALOG_H
-#define GTK_ZIP_SELECT_DIALOG_H
+#ifndef GENS_GTK_ZIP_SELECT_DIALOG_HPP
+#define GENS_GTK_ZIP_SELECT_DIALOG_HPP
 
 #ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <gtk/gtk.h>
+#include <list>
 
-GtkWidget* create_zip_select_dialog(void); 
+#include "wndbase.hpp"
+#include "util/file/compress/compressedfile.hpp"
 
-#ifdef __cplusplus
-}
-#endif
+class ZipSelectDialog : public WndBase
+{
+	public:
+		ZipSelectDialog(GtkWindow *parent = NULL);
+		~ZipSelectDialog();
+		
+		CompressedFile* getFile(std::list<CompressedFile>* lst);
+	
+	protected:
+		GtkWidget *m_treeFileList;
+};
 
-#endif
+#endif /* __cplusplus */
+
+#endif /* GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP */
