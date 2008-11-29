@@ -73,7 +73,6 @@ class GeneralOptionsWindow : public WndBase
 		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		static gboolean GTK_iceTime(gpointer user_data);
 		
 		// Color data
 		static const char* Colors_OSD[5][6];
