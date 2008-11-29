@@ -63,7 +63,7 @@ MDP_t mdp_render_scale4x =
 	
 	// CPU flags
 	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
-	.cpuFlagsRequired = MDP_CPUFLAG_MMX,
+	.cpuFlagsRequired = 0,
 	
 	// Description
 	.desc = &MDP_Desc,

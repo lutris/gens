@@ -27,7 +27,8 @@ gens_SOURCES += \
 		plugins/render/scale2x/mdp_render_scale4x.c \
 		plugins/render/scale2x/scale2x.c \
 		plugins/render/scale2x/scale3x.c \
-		plugins/render/scale2x/scalebit.c
+		plugins/render/scale2x/scalebit.c \
+		plugins/render/scale2x/scalebit_mmx.c
 
 noinst_HEADERS += \
 		plugins/render/normal/mdp_render_1x_plugin.h \
@@ -56,7 +57,8 @@ noinst_HEADERS += \
 		plugins/render/scale2x/mdp_render_scale4x.h \
 		plugins/render/scale2x/scale2x.h \
 		plugins/render/scale2x/scale3x.h \
-		plugins/render/scale2x/scalebit.h
+		plugins/render/scale2x/scalebit.h \
+		plugins/render/scale2x/scalebit_mmx.h
 
 if GENS_X86_ASM
 gens_SOURCES += \

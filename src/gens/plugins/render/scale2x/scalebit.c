@@ -59,19 +59,6 @@ static inline void stage_scale2x(void* dst0, void* dst1,
 {
 	switch (pixel)
 	{
-#if defined(__GNUC__) && defined(__i386__)
-		case 2:
-			scale2x_16_mmx(SSDST(16,0), SSDST(16,1),
-				       SSSRC(16,0), SSSRC(16,1), SSSRC(16,2),
-				       pixel_per_row);
-			break;
-		
-		case 4:
-			scale2x_32_mmx(SSDST(32,0), SSDST(32,1),
-				       SSSRC(32,0), SSSRC(32,1), SSSRC(32,2),
-				       pixel_per_row);
-			break;
-#else
 		case 2:
 			scale2x_16_def(SSDST(16,0), SSDST(16,1),
 				       SSSRC(16,0), SSSRC(16,1), SSSRC(16,2),
@@ -83,7 +70,6 @@ static inline void stage_scale2x(void* dst0, void* dst1,
 				       SSSRC(32,0), SSSRC(32,1), SSSRC(32,2),
 				       pixel_per_row);
 			break;
-#endif
 	}
 }
 
@@ -139,9 +125,9 @@ static inline void stage_scale4x(void* dst0, void* dst1, void* dst2, void* dst3,
  * \param width Horizontal size in pixels of the source bitmap.
  * \param height Vertical size in pixels of the source bitmap.
  */
-static void scale2x(void* void_dst, unsigned int dst_slice,
-		    const void* void_src, unsigned int src_slice,
-		    unsigned int pixel, unsigned int width, unsigned int height)
+void scale2x(void* void_dst, unsigned int dst_slice,
+	     const void* void_src, unsigned int src_slice,
+	     unsigned int pixel, unsigned int width, unsigned int height)
 {
 	unsigned char* dst = (unsigned char*)void_dst;
 	const unsigned char* src = (const unsigned char*)void_src;
@@ -167,10 +153,6 @@ static void scale2x(void* void_dst, unsigned int dst_slice,
 	}
 	
 	stage_scale2x(SCDST(0), SCDST(1), SCSRC(0), SCSRC(1), SCSRC(1), pixel, width);
-	
-#if defined(__GNUC__) && defined(__i386__)
-	scale2x_mmx_emms();
-#endif
 }
 
 /**
@@ -187,9 +169,9 @@ static void scale2x(void* void_dst, unsigned int dst_slice,
  * \param width Horizontal size in pixels of the source bitmap.
  * \param height Vertical size in pixels of the source bitmap.
  */
-static void scale3x(void* void_dst, unsigned int dst_slice,
-		    const void* void_src, unsigned int src_slice,
-		    unsigned int pixel, unsigned int width, unsigned int height)
+void scale3x(void* void_dst, unsigned int dst_slice,
+	     const void* void_src, unsigned int src_slice,
+	     unsigned int pixel, unsigned int width, unsigned int height)
 {
 	unsigned char* dst = (unsigned char*)void_dst;
 	const unsigned char* src = (const unsigned char*)void_src;
@@ -238,10 +220,10 @@ static void scale3x(void* void_dst, unsigned int dst_slice,
  * \param width Horizontal size in pixels of the source bitmap.
  * \param height Vertical size in pixels of the source bitmap.
  */
-static void scale4x_buf(void* void_dst, unsigned int dst_slice,
-			void* void_mid, unsigned int mid_slice,
-			const void* void_src, unsigned int src_slice,
-			unsigned int pixel, unsigned int width, unsigned int height)
+static inline void scale4x_buf(void* void_dst, unsigned int dst_slice,
+			       void* void_mid, unsigned int mid_slice,
+			       const void* void_src, unsigned int src_slice,
+			       unsigned int pixel, unsigned int width, unsigned int height)
 {
 	unsigned char* dst = (unsigned char*)void_dst;
 	const unsigned char* src = (const unsigned char*)void_src;
@@ -300,10 +282,6 @@ static void scale4x_buf(void* void_dst, unsigned int dst_slice,
 	dst = SCDST(4);
 	
 	stage_scale4x(SCDST(0), SCDST(1), SCDST(2), SCDST(3), SCMID(3), SCMID(4), SCMID(5), SCMID(5), pixel, width);
-	
-#if defined(__GNUC__) && defined(__i386__)
-	scale2x_mmx_emms();
-#endif
 }
 
 /**
@@ -322,9 +300,9 @@ static void scale4x_buf(void* void_dst, unsigned int dst_slice,
  * \param width Horizontal size in pixels of the source bitmap.
  * \param height Vertical size in pixels of the source bitmap.
  */
-static void scale4x(void* void_dst, unsigned int dst_slice,
-		    const void* void_src, unsigned int src_slice,
-		    unsigned int pixel, unsigned int width, unsigned int height)
+void scale4x(void* void_dst, unsigned int dst_slice,
+	     const void* void_src, unsigned int src_slice,
+	     unsigned int pixel, unsigned int width, unsigned int height)
 {
 	unsigned int mid_slice;
 	void* mid;
@@ -389,37 +367,3 @@ int scale_precondition(unsigned int scale, unsigned int pixel, unsigned int widt
 	
 	return 0;
 }
-
-/**
- * Apply the Scale effect on a bitmap.
- * This function is simply a common interface for ::scale2x(), ::scale3x() and ::scale4x().
- * \param scale Scale factor. 2, 203 (fox 2x3), 204 (for 2x4), 3 or 4.
- * \param void_dst Pointer at the first pixel of the destination bitmap.
- * \param dst_slice Size in bytes of a destination bitmap row.
- * \param void_src Pointer at the first pixel of the source bitmap.
- * \param src_slice Size in bytes of a source bitmap row.
- * \param pixel Bytes per pixel of the source and destination bitmap.
- * \param width Horizontal size in pixels of the source bitmap.
- * \param height Vertical size in pixels of the source bitmap.
- */
-void scale(unsigned int scale, void* void_dst, unsigned int dst_slice,
-	   const void* void_src, unsigned int src_slice,
-	   unsigned int pixel, unsigned int width, unsigned int height)
-{
-	switch (scale)
-	{
-		case 202:
-		case 2:
-			scale2x(void_dst, dst_slice, void_src, src_slice, pixel, width, height);
-			break;
-		case 303:
-		case 3:
-			scale3x(void_dst, dst_slice, void_src, src_slice, pixel, width, height);
-			break;
-		case 404:
-		case 4:
-			scale4x(void_dst, dst_slice, void_src, src_slice, pixel, width, height);
-			break;
-	}
-}
-

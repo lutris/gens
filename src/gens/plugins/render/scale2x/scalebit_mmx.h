@@ -33,29 +33,28 @@
  * - derivative works of the program are allowed.
  */
 
-#ifndef __SCALEBIT_H
-#define __SCALEBIT_H
+#ifndef __SCALEBIT_MMX_H
+#define __SCALEBIT_MMX_H
+
+// Scale2x uses GNU inline assembler.
+#if defined(__GNUC__) && defined(__i386__)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int scale_precondition(unsigned int scale, unsigned int pixel, unsigned int width, unsigned int height);
+void scale2x_mmx(void* void_dst, unsigned int dst_slice,
+		 const void* void_src, unsigned int src_slice,
+		 unsigned int pixel, unsigned int width, unsigned int height);
 
-void scale2x(void* void_dst, unsigned int dst_slice,
-	     const void* void_src, unsigned int src_slice,
-	     unsigned int pixel, unsigned int width, unsigned int height);
-
-void scale3x(void* void_dst, unsigned int dst_slice,
-	     const void* void_src, unsigned int src_slice,
-	     unsigned int pixel, unsigned int width, unsigned int height);
-
-void scale4x(void* void_dst, unsigned int dst_slice,
-	     const void* void_src, unsigned int src_slice,
-	     unsigned int pixel, unsigned int width, unsigned int height);
+void scale4x_mmx(void* void_dst, unsigned int dst_slice,
+		 const void* void_src, unsigned int src_slice,
+		 unsigned int pixel, unsigned int width, unsigned int height);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* defined(__GNUC__) && defined(__i386__) */
 
 #endif /* __SCALEBIT_H */

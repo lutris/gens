@@ -31,6 +31,7 @@
 
 // Scale2x frontend.
 #include "scalebit.h"
+#include "scalebit_mmx.h"
 
 // CPU flags
 #include "plugins/mdp_cpuflags.h"
@@ -43,9 +44,20 @@ void MDP_FNCALL mdp_render_scale2x_cpp(MDP_Render_Info_t *renderInfo)
 	if (!renderInfo)
 		return;
 
-	unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
+	const unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
 	
-	scale(2, renderInfo->destScreen, renderInfo->destPitch,
-		 renderInfo->mdScreen, renderInfo->srcPitch,
-		 bytespp, renderInfo->width, renderInfo->height);
+#if defined(__GNUC__) && defined(__i386__)
+	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+	{
+		scale2x_mmx(renderInfo->destScreen, renderInfo->destPitch,
+			    renderInfo->mdScreen, renderInfo->srcPitch,
+			    bytespp, renderInfo->width, renderInfo->height);
+	}
+	else
+#endif /* defined(__GNUC__) && defined(__i386__) */
+	{
+		scale2x(renderInfo->destScreen, renderInfo->destPitch,
+			renderInfo->mdScreen, renderInfo->srcPitch,
+			bytespp, renderInfo->width, renderInfo->height);
+	}
 }
