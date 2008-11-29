@@ -95,7 +95,8 @@ static inline void* mdp_host_ref_ptr_LUT16to32(void)
 		mdp_ptr_LUT16to32 = (int*)(malloc(65536 * sizeof(int)));
 		
 		// Initialize the 16-bit to 32-bit conversion table.
-		for (int i = 0; i < 65536; i++)
+		int i;
+		for (i = 0; i < 65536; i++)
 			mdp_ptr_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
 	}
 	
