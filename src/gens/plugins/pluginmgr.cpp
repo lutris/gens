@@ -121,8 +121,8 @@ inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
 	
 	// Add the plugin to the vector.
 	vRenderPlugins.push_back(plugin);
-	if (plugin->init)
-		plugin->init(&MDP_Host);
+	if (plugin->func && plugin->func->init)
+		plugin->func->init(&MDP_Host);
 	
 	// Add the plugin tag to the map.
 	tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
@@ -178,8 +178,9 @@ void PluginMgr::end(void)
 	// Shut down all render plugins.
 	for (unsigned int i = 0; i < vRenderPlugins.size(); i++)
 	{
-		if (vRenderPlugins.at(i)->end != NULL)
-			vRenderPlugins.at(i)->end();
+		MDP_Func_t *func = vRenderPlugins.at(i)->func;
+		if (func && func->end)
+			func->end();
 	}
 	
 	// Clear the vector and map of render plugins.
