@@ -8,8 +8,8 @@ static char Dbg_EA_Str[16];
 static char Dbg_Size_Str[3];
 static char Dbg_Cond_Str[3];
 
-static unsigned short (*Next_Word) ();
-static unsigned int (*Next_Long) ();
+static unsigned short (*Next_Word)(void);
+static unsigned int (*Next_Long)(void);
 
 
 static char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
@@ -36,7 +36,7 @@ static char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 	else if (EA_Num == 6)
 	{
 		// 110 rrr  d8(Ar,ix)   aiiizcc0 dddddddd
-		i = Next_Word () & 0xFFFF;
+		i = Next_Word() & 0xFFFF;
 		// i & 0x8000: if true, dest is  an address register; otherwise, dest is a data register
 		sprintf(Dbg_EA_Str, "$%.2X(A%.1d,%c%.1d)", i & 0xFF, Reg_Num,
 			((i & 0x8000) ? 'A' : 'D'), (i >> 12) & 0x07);
@@ -69,13 +69,13 @@ static char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 				switch (Size)
 				{
 					case 0:
-						sprintf(Dbg_EA_Str, "#$%.2X", Next_Word () & 0xFF);
+						sprintf(Dbg_EA_Str, "#$%.2X", Next_Word() & 0xFF);
 						break;
 					case 1:
-						sprintf(Dbg_EA_Str, "#$%.4X", Next_Word ());
+						sprintf(Dbg_EA_Str, "#$%.4X", Next_Word());
 						break;
 					case 2:
-						sprintf(Dbg_EA_Str, "#$%.8X", Next_Long ());
+						sprintf(Dbg_EA_Str, "#$%.8X", Next_Long());
 						break;
 				}
 				break;
@@ -186,7 +186,7 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 						//MOVEP.z Ds,d16(Ad)
 						sprintf(Dbg_Str, "MOVEP%-3sD%.1d,#$%.4X(A%.1d)",
 							Make_Dbg_Size_Str_2((OPC & 0x40) >> 6),
-							(OPC & 0xE00) >> 9, Next_Word (), OPC & 0x7);
+							(OPC & 0xE00) >> 9, Next_Word(), OPC & 0x7);
 					}
 					else
 					{
@@ -351,7 +351,7 @@ char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
 					
 					case 41:
 						//EORI.W  #k,a
-						i = Next_Word () & 0xFFFF;
+						i = Next_Word() & 0xFFFF;
 						sprintf(Dbg_Str, "EORI.W  #$%.4X,%s", i,
 							Make_Dbg_EA_Str (1, (OPC & 0x38) >> 3, OPC & 0x7));
 						break;
