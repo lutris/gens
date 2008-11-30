@@ -371,7 +371,7 @@ void Debug_Event(int key, int mod)
  */
 unsigned short Next_Word(void)
 {
-	unsigned short val;
+	unsigned short val = 0;
 	
 	if (Debug == DEBUG_MAIN_68000)
 		val = M68K_RW (Current_PC);
@@ -390,7 +390,7 @@ unsigned short Next_Word(void)
  */
 unsigned int Next_Long(void)
 {
-	unsigned int val;
+	unsigned int val = 0;
 	
 	if (Debug == DEBUG_MAIN_68000)
 	{
