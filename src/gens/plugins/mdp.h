@@ -55,6 +55,14 @@ typedef struct
 	const char* description;
 	const char* website;
 	const char* license;
+	
+	// Filler for alignment purposes.
+	const void* reserved1;
+	const void* reserved2;
+	
+	// Icon data.
+	const unsigned char* icon;
+	const int iconLength;
 } MDP_Desc_t;
 
 // Plugin types.
