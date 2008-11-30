@@ -321,7 +321,7 @@ int ImageUtil::write(const string& filename, const ImageFormat format,
 	else
 #endif /* GENS_PNG */
 	{
-//		rval = writeBMP(fImg, w, h, pitch, screen, bpp);
+		rval = writeBMP(fImg, w, h, pitch, screen, bpp);
 	}
 	
 	fclose(fImg);
