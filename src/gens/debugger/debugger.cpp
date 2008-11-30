@@ -374,13 +374,12 @@ unsigned short Next_Word(void)
 	unsigned short val = 0;
 	
 	if (Debug == DEBUG_MAIN_68000)
-		val = M68K_RW (Current_PC);
+		val = M68K_RW(Current_PC);
 	else if (Debug >= DEBUG_Z80)
-		val = S68K_RW (Current_PC);
+		val = S68K_RW(Current_PC);
 	
 	Current_PC += 2;
-	
-	return (val);
+	return val;
 }
 
 
@@ -394,20 +393,19 @@ unsigned int Next_Long(void)
 	
 	if (Debug == DEBUG_MAIN_68000)
 	{
-		val = M68K_RW (Current_PC);
+		val = M68K_RW(Current_PC);
 		val <<= 16;
-		val |= M68K_RW (Current_PC + 2);
+		val |= M68K_RW(Current_PC + 2);
 	}
 	else if (Debug >= DEBUG_Z80)
 	{
-		val = S68K_RW (Current_PC);
+		val = S68K_RW(Current_PC);
 		val <<= 16;
-		val |= S68K_RW (Current_PC + 2);
+		val |= S68K_RW(Current_PC + 2);
 	}
 	
 	Current_PC += 4;
-	
-	return (val);
+	return val;
 }
 
 
