@@ -60,9 +60,8 @@ typedef struct
 	const void* reserved1;
 	const void* reserved2;
 	
-	// Icon data.
-	const unsigned char* icon;
-	const int iconLength;
+	// Icon data. (XPM3 format)
+	const char** icon;
 } MDP_Desc_t;
 
 // Plugin types.
