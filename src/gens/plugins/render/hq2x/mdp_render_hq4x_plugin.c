@@ -48,6 +48,12 @@ static MDP_Render_t MDP_Render =
 	.tag = "hq4x"
 };
 
+static MDP_Func_t MDP_Func =
+{
+	.init = mdp_render_hq4x_init,
+	.end = mdp_render_hq4x_end,
+};
+
 MDP_t mdp_render_hq4x =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -68,9 +74,8 @@ MDP_t mdp_render_hq4x =
 	// Description
 	.desc = &MDP_Desc,
 	
-	// Init/Shutdown functions
-	.init = mdp_render_hq4x_init,
-	.end = mdp_render_hq4x_end,
+	// Functions
+	.func = &MDP_Func,
 	
 	.plugin_t = (void*)&MDP_Render
 };

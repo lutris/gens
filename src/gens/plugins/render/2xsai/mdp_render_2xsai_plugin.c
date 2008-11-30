@@ -68,9 +68,8 @@ MDP_t mdp_render_2xsai =
 	// Description
 	.desc = &MDP_Desc,
 	
-	// Init/Shutdown functions
-	.init = NULL,
-	.end = NULL,
+	// Functions
+	.func = NULL,
 	
 	.plugin_t = (void*)&MDP_Render
 };
