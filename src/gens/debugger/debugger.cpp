@@ -414,13 +414,12 @@ unsigned int Next_Long(void)
  */
 static void Refresh_M68k_Inst(void)
 {
-	unsigned int i, PC;
 	Current_PC = main68k_context.pc;
 	Print_Text_Constant("** MAIN 68000 DEBUG **", 22, 24, 1, VERT);
 	
-	for (i = 1; i < 14; i++)
+	for (unsigned int i = 1; i < 14; i++)
 	{
-		PC = Current_PC;
+		unsigned int PC = Current_PC;
 		sprintf(Dbg_Out_Str, "%.4X   %-33s\n", PC, M68KDisasm(Next_Word, Next_Long));
 		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
@@ -432,14 +431,13 @@ static void Refresh_M68k_Inst(void)
  */
 static void Refresh_S68k_Inst(void)
 {
-	unsigned int i, PC;
 	Current_PC = sub68k_context.pc;
 	Print_Text_Constant("** SUB 68000 DEBUG **", 22, 24, 1, VERT);
 	
-	for (i = 1; i < 14; i++)
+	for (unsigned int i = 1; i < 14; i++)
 	{
-		PC = Current_PC;
-		sprintf(Dbg_Out_Str, "%.4X   %-33s\n", PC, M68KDisasm (Next_Word, Next_Long));
+		unsigned int PC = Current_PC;
+		sprintf(Dbg_Out_Str, "%.4X   %-33s\n", PC, M68KDisasm(Next_Word, Next_Long));
 		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }
@@ -450,11 +448,10 @@ static void Refresh_S68k_Inst(void)
  */
 static void Refresh_Z80_Inst(void)
 {
-	unsigned int i, PC;
-	PC = z80_Get_PC (&M_Z80);
+	unsigned int PC = z80_Get_PC(&M_Z80);
 	Print_Text_Constant("***** Z80 DEBUG *****", 22, 24, 1, VERT);
 	
-	for (i = 1; i < 14; i++)
+	for (unsigned int i = 1; i < 14; i++)
 	{
 		z80dis((unsigned char *) Ram_Z80, (int *) &PC, Dbg_Out_Str);
 		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
@@ -468,7 +465,6 @@ static void Refresh_Z80_Inst(void)
  */
 static void Refresh_SH2_Inst(int num)
 {
-	unsigned int i, PC;
 	SH2_CONTEXT *sh;
 	
 	if (num)
@@ -483,9 +479,9 @@ static void Refresh_SH2_Inst(int num)
 	}
 	Print_Text(Dbg_Out_Str, 22, 24, 1, VERT);
 	
-	PC = (sh->PC - sh->Base_PC) - 4;
+	unsigned int PC = (sh->PC - sh->Base_PC) - 4;
 	
-	for (i = 1; i < 14; i++, PC += 2)
+	for (unsigned int i = 1; i < 14; i++, PC += 2)
 	{
 		SH2Disasm(Dbg_Out_Str, PC, SH2_Read_Word (sh, PC), 0);
 		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
@@ -498,13 +494,12 @@ static void Refresh_SH2_Inst(int num)
  */
 static void Refresh_M68k_Mem(void)
 {
-	unsigned int i, j, k, Adr;
-	Adr = adr_mem >> 1;
+	unsigned int Adr = adr_mem >> 1;
 	Print_Text_Constant("** MAIN 68000 MEM **", 20, 24, 130, VERT);
 	
-	for (k = 0, j = Adr; k < 7; k++, j += 6)
+	for (unsigned int k = 0, j = Adr; k < 7; k++, j += 6)
 	{
-		i = (j & 0x7FFF) << 1;
+		unsigned int i = (j & 0x7FFF) << 1;
 		sprintf(Dbg_Out_Str, "%.4X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
 				Ram_68k[i] + (Ram_68k[i + 1] << 8),
 				Ram_68k[i + 2] + (Ram_68k[i + 3] << 8),
@@ -522,13 +517,12 @@ static void Refresh_M68k_Mem(void)
  */
 static void Refresh_S68k_Mem(void)
 {
-	unsigned int i, j, k, Adr;
-	Adr = adr_mem >> 1;
+	unsigned int Adr = adr_mem >> 1;
 	Print_Text_Constant("** SUB 68000 MEM **", 19, 24, 130, VERT);
 	
-	for (k = 0, j = Adr; k < 7; k++, j += 6)
+	for (unsigned int k = 0, j = Adr; k < 7; k++, j += 6)
 	{
-		i = (j & 0x1FFFF) << 1;
+		unsigned int i = (j & 0x1FFFF) << 1;
 		sprintf(Dbg_Out_Str, "%.5X:%.4X %.4X %.4X %.4X %.4X %.4X\n", i,
 				Ram_Word_1M[i] + (Ram_Word_1M[i + 1] << 8),
 				Ram_Word_1M[i + 2] + (Ram_Word_1M[i + 3] << 8),
@@ -546,10 +540,9 @@ static void Refresh_S68k_Mem(void)
   */
 static void Refresh_Z80_Mem(void)
 {
-	unsigned int j, k;
 	Print_Text_Constant("***** Z80 MEM *****", 19, 24, 130, VERT);
 	
-	for (k = 0, j = adr_mem & 0xFFFF; k < 7; k++, j = (j + 12) & 0xFFFF)
+	for (unsigned int k = 0, j = adr_mem & 0xFFFF; k < 7; k++, j = (j + 12) & 0xFFFF)
 	{
 		sprintf(Dbg_Out_Str, "%.4X:%.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X %.2X\n", j,
 				Z80_ReadB(j + 0), Z80_ReadB(j + 1), Z80_ReadB(j + 2),
@@ -759,7 +752,6 @@ static void Refresh_SH2_State(int num)
  */
 static void Refresh_VDP_State(void)
 {
-	int tmp;
 	Print_Text_Constant("**** VDP STATUS ****", 20, 200, 1, VERT);
 	
 	sprintf(Dbg_Out_Str, "Setting register: 1=%.2X 2=%.2X 3=%.2X 4=%.2X",
@@ -791,7 +783,7 @@ static void Refresh_VDP_State(void)
 			VDP_Reg.DMA_Src_Adr_H);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 78, BLANC);
 	
-	tmp = Read_VDP_Status ();
+	int tmp = Read_VDP_Status ();
 	sprintf(Dbg_Out_Str, "V Int Happened %d  Sprite overflow %d", (tmp >> 7) & 1, (tmp >> 6) & 1);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 162, 86, BLANC);
 	sprintf(Dbg_Out_Str, "Collision Spr  %d  Odd Frame in IM %d", (tmp >> 5) & 1, (tmp >> 4) & 1);
@@ -810,10 +802,9 @@ static void Refresh_VDP_State(void)
  */
 static void Refresh_VDP_Pattern(void)
 {
-	unsigned int i;
 	Print_Text_Constant("******** VDP PATTERN ********", 29, 28, 0, VERT);
 	
-	for (i = 0; i < 20; i++)
+	for (unsigned int i = 0; i < 20; i++)
 	{
 		sprintf(Dbg_Out_Str, "%.4X", (pattern_adr & 0xFFFF) + 0x200 * i);
 		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, BLANC);
@@ -826,16 +817,14 @@ static void Refresh_VDP_Pattern(void)
 template<typename pixel>
 static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, unsigned short numPalettes)
 {
-	unsigned short i, j, k, l;
-	unsigned short col;
-	for (i = 0; i < 8; i++)
+	for (unsigned int i = 0; i < 8; i++)
 	{
-		for (j = 0; j < 16; j++)
+		for (unsigned int j = 0; j < 16; j++)
 		{
-			for (k = 0; k < 8; k++)
+			for (unsigned int k = 0; k < 8; k++)
 			{
-				col = (i * 336) + 180 + (j * 8) + k;
-				for (l = 0; l < numPalettes; l++)
+				unsigned int col = (i * 336) + 180 + (j * 8) + k;
+				for (unsigned int l = 0; l < numPalettes; l++)
 				{
 					screen[(336 * (10 + (l * 8))) + col] = palette[j + (16 * l)];
 				}
@@ -848,9 +837,7 @@ template<typename pixel>
 static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned short paletteMask, pixel outlineColor)
 {
 	// Outline the selected palette. Ported from Gens Rerecording.
-	unsigned short i;
-	
-	for (i = 0; i < 16 * 8; i++)
+	for (unsigned int i = 0; i < 16 * 8; i++)
 	{
 		screen[(336 * (9 + ((pattern_pal & paletteMask) * 8))) + 180 + i] = outlineColor;
 		screen[(336 * (18 + ((pattern_pal & paletteMask) * 8))) + 180 + i] = outlineColor;
@@ -862,8 +849,6 @@ static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned short pal
  */
 static void Refresh_VDP_Palette(void)
 {
-	unsigned short i;
-	
 	Print_Text_Constant("******** VDP PALETTE ********", 29, 180, 0, ROUGE);
 	
 	if (bppMD == 32)
@@ -895,7 +880,7 @@ static void Refresh_VDP_Palette(void)
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 176, 110, BLANC);
 	
 	Print_Text_Constant("Sprite List:", strlen(Dbg_Out_Str), 176, 126, BLANC);
-	for (i = 0; i < 10; i++)
+	for (unsigned int i = 0; i < 10; i++)
 	{
 		sprintf(Dbg_Out_Str, "%d %d %d %d %d",
 			Sprite_Struct[i].Pos_X, Sprite_Struct[i].Pos_Y,
@@ -1023,11 +1008,10 @@ static void Refresh_CDC_State(void)
 static void Refresh_Word_RAM_Pattern(void)
 {
 	// Improved Word RAM pattern display function ported from Gens Rerecording.
-	unsigned int i;
 	
 	Print_Text_Constant("****** WORD RAM PATTERN ******", 29, 28, 0, VERT);
 	
-	for (i = 0; i < 24; i++)
+	for (unsigned int i = 0; i < 24; i++)
 	{
 		sprintf(Dbg_Out_Str, "%.4X", (cd_pattern_adr & 0x3FFFF) + 0x200 * i);
 		Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str), 2, (i << 3) + 11, BLANC);
