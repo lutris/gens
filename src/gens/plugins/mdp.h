@@ -75,9 +75,17 @@ enum MDP_Type
 // MDP Host Services.
 #include "mdp_host.h"
 
-// Basic plugin definition struct.
+// Plugin functions.
 typedef void (MDP_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
 typedef void (MDP_FNCALL *mdp_end)(void);
+
+// Plugin function struct.
+typedef struct
+{
+	// Init/Shutdown functions
+	mdp_init	init;
+	mdp_end		end;
+} MDP_Func_t;
 
 typedef struct
 {
@@ -96,9 +104,8 @@ typedef struct
 	// Plugin description.
 	MDP_Desc_t *desc;
 	
-	// Init/Shutdown functions
-	mdp_init init;
-	mdp_end end;
+	// Plugin functions.
+	MDP_Func_t *func;
 	
 	// Struct definition for the specified plugin type.
 	void *plugin_t;
