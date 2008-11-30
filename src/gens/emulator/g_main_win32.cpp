@@ -34,7 +34,7 @@
 HINSTANCE ghInstance = NULL;
 
 // Windows version
-OSVERSIONINFOEX winVersion;
+OSVERSIONINFO winVersion;
 
 // If extended Common Controls are enabled, this is set to a non-zero value.
 int win32_CommCtrlEx = 0;
