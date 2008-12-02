@@ -11,16 +11,26 @@ section .bss align=64
  
 section .text align=64
 
+	; External symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Read_VDP_Status	Read_VDP_Status
+		%define	_Read_VDP_H_Counter	Read_VDP_H_Counter
+		%define	_Read_VDP_V_Counter	Read_VDP_V_Counter
+		%define	_Write_Byte_VDP_Data	Write_Byte_VDP_Data
+		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
+	%endif
+	
+	extern _Read_VDP_Status
+	extern _Read_VDP_V_Counter
+	extern _Read_VDP_H_Counter
+	extern _Write_Byte_VDP_Data
+	extern _Write_Word_VDP_Data
+	
 	extern M68K_RB
 	extern M68K_WB
 	extern _YM2612_Write
 	extern _YM2612_Read
 	extern _PSG_Write
-	extern Write_Byte_VDP_Data
-	extern Write_Word_VDP_Data
-	extern Read_VDP_Status
-	extern Read_VDP_V_Counter
-	extern Read_VDP_H_Counter
 
 	extern _Write_To_Bank
 	extern _Read_To_68K_Space
@@ -228,14 +238,14 @@ section .text align=64
 		test ecx, 1
 		jnz short .vdp_h_counter
 
-	.vdp_v_counter
-		call Read_VDP_V_Counter
+	.vdp_v_counter:
+		call	_Read_VDP_V_Counter
 		ret
 
 	ALIGN4
 	
-	.vdp_h_counter
-		call Read_VDP_H_Counter
+	.vdp_h_counter:
+		call	_Read_VDP_H_Counter
 		ret
 
 	ALIGN4
@@ -246,11 +256,11 @@ section .text align=64
 
 	ALIGN4
 	
-	.vdp_status
-		call Read_VDP_Status
-		test ecx, 1
-		jnz short .no_swap_status
-		mov al, ah
+	.vdp_status:
+		call	_Read_VDP_Status
+		test	ecx, 1
+		jnz	short .no_swap_status
+		mov	al, ah
 
 	.no_swap_status
 		ret
@@ -299,37 +309,37 @@ section .text align=64
 		xor ah, ah
 		pop ecx
 		ret
-		
-	ALIGN4
-
-	DECLF Z80_ReadW_PSG, 4
-		cmp ecx, 0x7F04
-		jb short .bad
-		cmp ecx, 0x7F08
-		jb short .vdp_status
-		cmp ecx, 0x7F09
-		ja short .bad
-
-		call Read_VDP_V_Counter
-		mov cl, al
-		call Read_VDP_H_Counter
-		mov ah, cl
-		ret
-
-	ALIGN4
-
-	.bad
-		mov al, 0
-		ret
-
-	ALIGN4
 	
-	.vdp_status
-		call Read_VDP_Status
+	align 16
+	
+	DECLF Z80_ReadW_PSG, 4
+		cmp	ecx, 0x7F04
+		jb	short .bad
+		cmp	ecx, 0x7F08
+		jb	short .vdp_status
+		cmp	ecx, 0x7F09
+		ja	short .bad
+		
+		call	_Read_VDP_V_Counter
+		mov	cl, al
+		call	_Read_VDP_H_Counter
+		mov	ah, cl
 		ret
-
-	ALIGN4
-
+	
+	align 4
+	
+	.bad:
+		mov	al, 0
+		ret
+	
+	align 4
+	
+	.vdp_status:
+		call	_Read_VDP_Status
+		ret
+	
+	align 16
+	
 	DECLF Z80_ReadW_68K_Ram, 4
 		mov eax, [Bank_Z80]
 		and ecx, 0x7FFF
@@ -394,32 +404,32 @@ section .text align=64
 		call _YM2612_Write
 		add esp, 8
 		ret
-		
-	ALIGN4
-
+	
+	align 16
+	
 	DECLF Z80_WriteB_PSG, 8
-		cmp ecx, 0x7F11
-		jne short .other
-
-		push edx
-		call _PSG_Write
-		pop edx
+		cmp	ecx, 0x7F11
+		jne	short .other
+		
+		push	edx
+		call	_PSG_Write
+		pop	edx
 		ret
-
-	ALIGN4
+	
+	align 16
 	
 	.other
-		cmp ecx, 0x7F03
-		ja short .bad
-
-		push edx
-		call Write_Byte_VDP_Data
-		pop edx
-
-	.bad
+		cmp	ecx, 0x7F03
+		ja	short .bad
+		
+		push	edx
+		call	_Write_Byte_VDP_Data
+		pop	edx
+		
+	.bad:
 		ret
 
-	ALIGN4
+	align 16
 
 	DECLF Z80_WriteB_68K_Ram, 8
 		mov eax, [Bank_Z80]
@@ -458,33 +468,33 @@ section .text align=64
 		call _YM2612_Write
 		add esp, 16
 		ret
-		
-	ALIGN4
+	
+	align 16
 	
 	DECLF Z80_WriteW_PSG, 8
-		cmp ecx, 0x7F11
-		jne short .other
-
-		push edx
-		call _PSG_Write
-		pop edx
-		ret
-
-	ALIGN4
-	
-	.other
-		cmp ecx, 0x7F03
-		ja short .bad
-
-		push edx
-		call Write_Word_VDP_Data
-		pop edx
-
-	.bad
+		cmp	ecx, 0x7F11
+		jne	short .other
+		
+		push	edx
+		call	_PSG_Write
+		pop	edx
 		ret
 	
-	ALIGN4
-
+	align 16
+	
+	.other:
+		cmp	ecx, 0x7F03
+		ja	short .bad
+		
+		push	edx
+		call	_Write_Word_VDP_Data
+		pop	edx
+	
+	.bad:
+		ret
+	
+	align 16
+	
 	DECLF Z80_WriteW_68K_Ram, 8
 		mov eax, [Bank_Z80]
 		and ecx, 0x7FFF

@@ -82,30 +82,69 @@ section .data align=64
 	
 section .bss align=64
 	
-	extern VRam
-	extern VRam_Flag
-	extern CRam
-	extern CRam_Flag
-	extern VSRam
-	extern VDP_Reg
-	extern VDP_Current_Line
-	extern VDP_Status
-	extern H_Cell
-	extern H_Win_Mul
-	extern H_Pix
-	extern H_Pix_Begin
-	extern H_Scroll_Mask
-	extern H_Scroll_CMul
-	extern H_Scroll_CMask
-	extern V_Scroll_CMask
-	extern V_Scroll_MMask
-	extern Win_X_Pos
-	extern Win_Y_Pos
-	extern ScrA_Addr
-	extern ScrB_Addr
-	extern Win_Addr
-	extern Spr_Addr
-	extern H_Scroll_Addr
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_VRam			VRam
+		%define	_CRam			CRam
+		%define	_VSRam			VSRam
+		%define	_VDP_Reg		VDP_Reg
+		
+		%define	_ScrA_Addr		ScrA_Addr
+		%define	_ScrB_Addr		ScrB_Addr
+		%define	_Win_Addr		Win_Addr
+		%define	_Spr_Addr		Spr_Addr
+		%define	_H_Scroll_Addr		H_Scroll_Addr
+		%define	_H_Cell			H_Cell
+		%define	_H_Win_Mul		H_Win_Mul
+		%define	_H_Pix			H_Pix
+		%define	_H_Pix_Begin		H_Pix_Begin
+		
+		%define _H_Scroll_Mask		H_Scroll_Mask
+		%define	_H_Scroll_CMul		H_Scroll_CMul
+		%define	_H_Scroll_CMask		H_Scroll_CMask
+		%define	_V_Scroll_CMask		V_Scroll_CMask
+		%define	_V_Scroll_MMask		V_Scroll_MMask
+		
+		%define	_Win_X_Pos		Win_X_Pos
+		%define	_Win_Y_Pos		Win_Y_Pos
+		
+		%define	_VDP_Status		VDP_Status
+		%define	_VDP_Current_Line	VDP_Current_Line
+		%define	_CRam_Flag		CRam_Flag
+		%define	_VRam_Flag		VRam_Flag
+		
+		%define	_bppMD			bppMD
+	%endif
+	
+	extern _VRam
+	extern _CRam
+	extern _VSRam
+	extern _VDP_Reg
+	
+	extern _ScrA_Addr
+	extern _ScrB_Addr
+	extern _Win_Addr
+	extern _Spr_Addr
+	extern _H_Scroll_Addr
+	extern _H_Cell
+	extern _H_Win_Mul
+	extern _H_Pix
+	extern _H_Pix_Begin
+	
+	extern _H_Scroll_Mask
+	extern _H_Scroll_CMul
+	extern _H_Scroll_CMask
+	extern _V_Scroll_CMask
+	extern _V_Scroll_MMask
+	
+	extern _Win_X_Pos
+	extern _Win_Y_Pos
+	
+	extern _VDP_Status
+	extern _VDP_Current_Line
+	extern _CRam_Flag
+	extern _VRam_Flag
+	
 	extern _32X_Started
 	extern _32X_Palette_16B
 	extern _32X_VDP_Ram
@@ -114,9 +153,6 @@ section .bss align=64
 	extern _32X_VDP
 	
 	; MD bpp
-	%ifdef __OBJ_ELF
-	%define _bppMD bppMD
-	%endif
 	extern _bppMD
 	
 	struc vx
@@ -239,10 +275,10 @@ section .text align=64
 
 %macro GET_X_OFFSET 1
 	
-	mov	eax, [VDP_Current_Line]
-	mov	ebx, [H_Scroll_Addr]		; ebx points to the H-Scroll data
+	mov	eax, [_VDP_Current_Line]
+	mov	ebx, [_H_Scroll_Addr]		; ebx points to the H-Scroll data
 	mov	edi, eax
-	and	eax, [H_Scroll_Mask]
+	and	eax, [_H_Scroll_Mask]
 	
 %if %1 > 0
 	mov	esi, [ebx + eax * 4]		; X Cell offset
@@ -269,12 +305,12 @@ section .text align=64
 	mov	eax, [Data_Misc.Cell]		; Current cell for the V Scroll
 	test	eax, 0xFF81			; outside the limits of the VRAM? Then don't change...
 	jnz	short %%End
-	mov	edi, [VDP_Current_Line]		; edi = line number
+	mov	edi, [_VDP_Current_Line]	; edi = line number
 	
 %if %1 > 0
-	mov	eax, [VSRam + eax * 2 + 0]
+	mov	eax, [_VSRam + eax * 2 + 0]
 %else
-	mov	ax, [VSRam + eax * 2 + 2]
+	mov	ax, [_VSRam + eax * 2 + 2]
 %endif
 	
 %if %2 > 0
@@ -285,7 +321,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [V_Scroll_CMask]		; prevent V Cell Offset from overflowing
+	and	edi, [_V_Scroll_CMask]		; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 %%End
@@ -306,16 +342,16 @@ section .text align=64
 
 %macro GET_PATTERN_INFO 1
 	
-	mov	cl, [H_Scroll_CMul]
+	mov	cl, [_H_Scroll_CMul]
 	mov	eax, edi			; eax = V Cell Offset
 	mov	edx, esi			; edx = H Cell Offset
 	
 	shl	eax, cl				; eax = V Cell Offset * H Width
 	
 %if %1 > 0
-	mov	ebx, [ScrA_Addr]
+	mov	ebx, [_ScrA_Addr]
 %else
-	mov	ebx, [ScrB_Addr]
+	mov	ebx, [_ScrB_Addr]
 %endif
 	
 	add	edx, eax			; edx = (V Offset / 8) * H Width + (H Offset / 8)
@@ -361,9 +397,9 @@ section .text align=64
 %%No_V_Flip
 	
 %if %1 > 0
-	mov	ebx, [VRam + ecx + ebx * 8]		; ebx = Line of the pattern = Pattern Data (interlaced)
+	mov	ebx, [_VRam + ecx + ebx * 8]		; ebx = Line of the pattern = Pattern Data (interlaced)
 %else
-	mov	ebx, [VRam + ecx + ebx * 4]		; ebx = Line of the pattern = Pattern Data (normal)
+	mov	ebx, [_VRam + ecx + ebx * 4]		; ebx = Line of the pattern = Pattern Data (normal)
 %endif
 	
 %endmacro
@@ -377,7 +413,7 @@ section .text align=64
 
 %macro MAKE_SPRITE_STRUCT 1
 	
-	mov	ebp, [Spr_Addr]
+	mov	ebp, [_Spr_Addr]
 	xor	edi, edi				; edi = 0
 	mov	esi, ebp				; esi point on the table of sprite data
 	jmp	short %%Loop
@@ -434,7 +470,7 @@ section .text align=64
 
 %macro MAKE_SPRITE_STRUCT_PARTIAL 0
 	
-	mov	ebp, [Spr_Addr]
+	mov	ebp, [_Spr_Addr]
 ;	xor	eax, eax
 	xor	ebx, ebx
 	xor	edi, edi				; edi = 0
@@ -483,12 +519,12 @@ section .text align=64
 	
 	xor	edi, edi
 %if %1 > 0
-	mov	ecx, [H_Cell]
+	mov	ecx, [_H_Cell]
 %endif
 	xor	ax, ax				; used for masking
-	mov	ebx, [H_Pix]
+	mov	ebx, [_H_Pix]
 	xor	esi, esi
-	mov	edx, [VDP_Current_Line]
+	mov	edx, [_VDP_Current_Line]
 	jmp	short %%Loop_1
 	
 	align 16
@@ -574,7 +610,7 @@ section .text align=64
 		cmp	[_Sprite_Struct + edi + 20], edx	; one tests if the sprite is on the current line
 		jl	short %%Out_Line_3
 
-		or 	byte [VDP_Status], 0x40
+		or 	byte [_VDP_Status], 0x40
 		jmp	short %%End
 		
 %%Out_Line_3
@@ -1017,7 +1053,7 @@ section .text align=64
 	
 	and	ch, 0x20
 	sub	ebp, [esp]
-	or	byte [VDP_Status], ch
+	or	byte [_VDP_Status], ch
 	
 %%Full_Trans
 
@@ -1060,7 +1096,7 @@ section .text align=64
 	
 	and	ch, 0x20
 	sub	ebp, [esp]
-	or	byte [VDP_Status], ch
+	or	byte [_VDP_Status], ch
 	
 %%Full_Trans
 
@@ -1076,7 +1112,7 @@ section .text align=64
 %macro UPDATE_PALETTE 1
 	
 	xor	eax, eax
-	mov	byte [CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
+	mov	byte [_CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
 	mov	cx, 0x7BEF
 	xor	edx, edx
 	mov	ebx, (64 / 2) - 1		; ebx = Number of Colours
@@ -1092,8 +1128,8 @@ section .text align=64
 	align 16
 	
 %%Loop
-		mov	ax, [CRam + ebx * 4 + 0]		; ax = data color
-		mov	dx, [CRam + ebx * 4 + 2]		; dx = data color
+		mov	ax, [_CRam + ebx * 4 + 0]		; ax = data color
+		mov	dx, [_CRam + ebx * 4 + 2]		; dx = data color
 		and	ax, 0x0FFF
 		and	dx, 0x0FFF
 		mov	ax, [_Palette + eax * 2]
@@ -1119,7 +1155,7 @@ section .text align=64
 		dec	ebx			; if the 64 colors were not yet made
 		jns	short %%Loop		; then one continues
 		
-		mov	ebx, [VDP_Reg + 7 * 4]
+		mov	ebx, [_VDP_Reg + 7 * 4]
 		and	ebx, byte 0x3F
 		mov	ax, [_MD_Palette + ebx * 2]
 		mov	[_MD_Palette + 0 * 2], ax
@@ -1140,7 +1176,7 @@ section .text align=64
 %macro UPDATE_PALETTE32 1
 	
 	xor	eax, eax
-	mov	byte [CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
+	mov	byte [_CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
 	mov	ecx, 0x007F7F7F
 	xor	edx, edx
 	mov	ebx, (64 / 2) - 1		; ebx = Number of Colours
@@ -1149,8 +1185,8 @@ section .text align=64
 	align 16
 	
 %%Loop32
-		mov	ax, [CRam + ebx * 4 + 0]			; ax = data color
-		mov	dx, [CRam + ebx * 4 + 2]			; dx = data color
+		mov	ax, [_CRam + ebx * 4 + 0]			; ax = data color
+		mov	dx, [_CRam + ebx * 4 + 2]			; dx = data color
 		and	eax, 0x0FFF
 		and	edx, 0x0FFF
 		mov	eax, [_Palette32 + eax * 4]
@@ -1176,7 +1212,7 @@ section .text align=64
 		dec	ebx			; if the 64 colors were not yet made
 		jns	short %%Loop32		; then one continues
 		
-		mov	ebx, [VDP_Reg + 7 * 4]
+		mov	ebx, [_VDP_Reg + 7 * 4]
 		and	ebx, byte 0x3F
 		mov	eax, [_MD_Palette32 + ebx * 4]
 		mov	[_MD_Palette32 + 0 * 4], eax
@@ -1216,15 +1252,15 @@ section .text align=64
 	shr	esi, 3				; esi = current cell
 	add	ebp, eax			; ebp updated for clipping
 	mov	ebx, esi
-	and	esi, [H_Scroll_CMask]		; prevent H Cell Offset from overflowing
+	and	esi, [_H_Scroll_CMask]		; prevent H Cell Offset from overflowing
 	and	ebx, byte 1
-	mov	eax, [H_Cell]
+	mov	eax, [_H_Cell]
 	sub	ebx, byte 2			; start with cell -2 or -1 (for V Scroll)
 	mov	[Data_Misc.X], eax		; number of cells to post
 	mov	[Data_Misc.Cell], ebx		; Current cell for the V Scroll
 	
-	mov	edi, [VDP_Current_Line]		; edi = line number
-	mov	eax, [VSRam + 2]
+	mov	edi, [_VDP_Current_Line]	; edi = line number
+	mov	eax, [_VSRam + 2]
 	
 %if %1 > 0
 	shr	eax, 1				; divide Y scroll in 2 if interlaced
@@ -1234,7 +1270,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [V_Scroll_CMask]		; prevent V Cell Offset from overflowing
+	and	edi, [_V_Scroll_CMask]		; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 	jmp	short %%First_Loop
@@ -1299,7 +1335,7 @@ section .text align=64
 		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
 		inc	esi				; Next H cell
 		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [H_Scroll_CMask]		; prevent H Offset from overflowing
+		and	esi, [_H_Scroll_CMask]		; prevent H Offset from overflowing
 		dec	byte [Data_Misc.X]		; decrement number of cells to treat
 		jns	near %%Loop
 		
@@ -1319,18 +1355,18 @@ section .text align=64
 
 %macro RENDER_LINE_SCROLL_A_WIN 3
 	
-	mov	eax, [VDP_Current_Line]
-	mov	cl, [VDP_Reg + 18 * 4]
+	mov	eax, [_VDP_Current_Line]
+	mov	cl, [_VDP_Reg + 18 * 4]
 	shr	eax, 3
-	mov	ebx, [H_Cell]
+	mov	ebx, [_H_Cell]
 	shr	cl, 7				; cl = 1 si window at bottom
-	cmp	eax, [Win_Y_Pos]
+	cmp	eax, [_Win_Y_Pos]
 	setae	ch				; ch = 1 si current line >= pos Y window
 	xor	cl, ch				; cl = 0 si line window sinon line Scroll A
 	jz	near %%Full_Win
 	
-	test	byte [VDP_Reg + 17 * 4], 0x80
-	mov	edx, [Win_X_Pos]
+	test	byte [_VDP_Reg + 17 * 4], 0x80
+	mov	edx, [_Win_X_Pos]
 	jz	short %%Win_Left
 	
 %%Win_Right
@@ -1373,20 +1409,20 @@ section .text align=64
 	and	ecx, byte 1
 	lea	eax, [eax + ebx * 8]		; clipping + window clip
 	sub	ecx, byte 2			; on démarre au cell -2 ou -1 (pour le V Scroll)
-	and	esi, [H_Scroll_CMask]		; on empeche H Cell Offset de deborder
+	and	esi, [_H_Scroll_CMask]		; on empeche H Cell Offset de deborder
 	add	ebp, eax			; ebp mis à jour pour clipping + window clip
 	add	ebx, ecx			; ebx = Cell courant pour le V Scroll
 	
-	mov	edi, [VDP_Current_Line]		; edi = line number
+	mov	edi, [_VDP_Current_Line]	; edi = line number
 	mov	[Data_Misc.Cell], ebx		; Cell courant pour le V Scroll
 	jns	short %%Not_First_Cell
 	
-	mov	eax, [VSRam + 0]
+	mov	eax, [_VSRam + 0]
 	jmp	short %%First_VScroll_OK
 	
 %%Not_First_Cell
-	and	ebx, [V_Scroll_MMask]
-	mov	eax, [VSRam + ebx * 2]
+	and	ebx, [_V_Scroll_MMask]
+	mov	eax, [_VSRam + ebx * 2]
 	
 %%First_VScroll_OK
 	
@@ -1398,7 +1434,7 @@ section .text align=64
 	mov	eax, edi
 	shr	edi, 3				; V Cell Offset
 	and	eax, byte 7			; adjust for pattern
-	and	edi, [V_Scroll_CMask]		; prevent V Cell Offset from overflowing
+	and	edi, [_V_Scroll_CMask]		; prevent V Cell Offset from overflowing
 	mov	[Data_Misc.Line_7], eax
 	
 	jmp	short %%First_Loop_SCA
@@ -1461,7 +1497,7 @@ section .text align=64
 		inc	dword [Data_Misc.Cell]		; Next H cell for the V Scroll
 		inc	esi				; Next H cell
 		add	ebp, byte 8			; advance to the next pattern
-		and	esi, [H_Scroll_CMask]		; prevent H Offset from overflowing
+		and	esi, [_H_Scroll_CMask]		; prevent H Offset from overflowing
 		dec	byte [Data_Misc.Length_A]	; decrement number of cells to treat for Scroll A
 		jns	near %%Loop_SCA
 
@@ -1537,12 +1573,12 @@ section .text align=64
 	mov	edi, [Data_Misc.Length_W]		; edi = # of cells to render
 	
 %%Window_Initialised
-	mov	edx, [VDP_Current_Line]
-	mov	cl, [H_Win_Mul]
+	mov	edx, [_VDP_Current_Line]
+	mov	cl, [_H_Win_Mul]
 	mov	ebx, edx				; ebx = Line
 	mov	ebp, [esp]				; ebp point on surface where one renders
 	shr	edx, 3					; edx = Line / 8
-	mov	eax, [Win_Addr]
+	mov	eax, [_Win_Addr]
 	shl	edx, cl
 	lea	ebp, [ebp + esi * 8 + 8]		; no clipping for the window, return directly to the first pixel
 	lea	eax, [eax + edx * 2]			; eax point on the pattern data for the window
@@ -1638,7 +1674,7 @@ section .text align=64
 	align 16
 	
 %%Sprite_Loop
-		mov	edx, [VDP_Current_Line]
+		mov	edx, [_VDP_Current_Line]
 %%First_Loop
 		mov	edi, [_Sprite_Visible + edi]
 		mov	eax, [_Sprite_Struct + edi + 24]		; eax = CellInfo of the sprite
@@ -1729,7 +1765,7 @@ section .text align=64
 			add	esi, edi			; one goes on next the pattern (mem)
 			
 	%%Spr_Test_X_Max
-			cmp	ebp, [H_Pix]
+			cmp	ebp, [_H_Pix]
 			jge	%%Spr_Test_X_Max_Loop
 		
 		; Check if sprites should always be on top.
@@ -1744,7 +1780,7 @@ section .text align=64
 		
 	%%H_Flip_P0
 	%%H_Flip_P0_Loop
-			mov	ebx, [VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE_FLIP 0, %2		; one posts the line of the sprite pattern
 			
 			sub	ebp, byte 8			; one posts the previous pattern
@@ -1757,7 +1793,7 @@ section .text align=64
 		
 	%%H_Flip_P1
 	%%H_Flip_P1_Loop
-			mov	ebx, [VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE_FLIP 1, %2		; one posts the line of the sprite pattern
 			
 			sub	ebp, byte 8			; one posts the previous pattern
@@ -1770,7 +1806,7 @@ section .text align=64
 		
 	%%No_H_Flip
 		mov	ebx, [_Sprite_Struct + edi + 16]
-		mov	ecx, [H_Pix]
+		mov	ecx, [_H_Pix]
 		mov	ebp, [_Sprite_Struct + edi + 0]		; position the pointer ebp
 		cmp	ebx, ecx				; test for the maximum edge of the sprite
 		mov	edi, [Data_Misc.Next_Cell]
@@ -1806,7 +1842,7 @@ section .text align=64
 		
 	%%No_H_Flip_P0
 	%%No_H_Flip_P0_Loop
-			mov	ebx, [VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE 0, %2			; one posts the line of the sprite pattern 
 			
 			add	ebp, byte 8			; one posts the previous pattern
@@ -1819,7 +1855,7 @@ section .text align=64
 		
 	%%No_H_Flip_P1
 	%%No_H_Flip_P1_Loop
-			mov	ebx, [VRam + esi]		; ebx = Pattern Data
+			mov	ebx, [_VRam + esi]		; ebx = Pattern Data
 			PUTLINE_SPRITE 1, %2			; on affiche la ligne du pattern sprite
 			
 			add	ebp, byte 8			; one posts the previous pattern
@@ -1851,7 +1887,7 @@ section .text align=64
 
 %macro RENDER_LINE 2
 	
-	test	dword [VDP_Reg + 11 * 4], 4
+	test	dword [_VDP_Reg + 11 * 4], 4
 	jz	near %%Full_VScroll
 	
 %%Cell_VScroll
@@ -1876,14 +1912,14 @@ section .text align=64
 		
 		pushad
 		
-		mov	ebx, [VDP_Current_Line]
+		mov	ebx, [_VDP_Current_Line]
 		xor	eax, eax
 		mov	edi, [_TAB336 + ebx * 4]
-		test	dword [VDP_Reg + 1 * 4], 0x40		; test if the VDP is active
+		test	dword [_VDP_Reg + 1 * 4], 0x40		; test if the VDP is active
 		push	edi					; we need this value later
 		jnz	short .VDP_Enable			; if not, nothing is posted
 		
-		test	byte [VDP_Reg + 12 * 4], 0x08
+		test	byte [_VDP_Reg + 12 * 4], 0x08
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
@@ -1899,11 +1935,11 @@ section .text align=64
 	align 16
 	
 	.VDP_Enable:
-		mov	ebx, [VRam_Flag]
-		mov	eax, [VDP_Reg + 12 * 4]
+		mov	ebx, [_VRam_Flag]
+		mov	eax, [_VDP_Reg + 12 * 4]
 		and	ebx, byte 3
 		and	eax, byte 4
-		mov	byte [VRam_Flag], 0
+		mov	byte [_VRam_Flag], 0
 		jmp	[.Table_Sprite_Struct + ebx * 8 + eax]
 	
 	align 16
@@ -1937,7 +1973,7 @@ section .text align=64
 	align 16
 	
 	.Sprite_Struc_OK:
-		mov	eax, [VDP_Reg + 12 * 4]
+		mov	eax, [_VDP_Reg + 12 * 4]
 		and	eax, byte 0xC
 		jmp	[.Table_Render_Line + eax]
 	
@@ -1976,10 +2012,10 @@ section .text align=64
 	align 16
 	
 	.VDP_OK:
-		test	byte [CRam_Flag], 1		; teste si la palette a etait modifiee
+		test	byte [_CRam_Flag], 1		; teste si la palette a etait modifiee
 		jz	near .Palette_OK		; si oui
 		
-		test	byte [VDP_Reg + 12 * 4], 8
+		test	byte [_VDP_Reg + 12 * 4], 8
 		jnz	near .Palette_HS
 		
 		UPDATE_PALETTE32 0
@@ -1998,7 +2034,7 @@ section .text align=64
 		
 	.Render32: ; 32-bit color
 		mov	ecx, 160
-		mov	eax, [H_Pix_Begin]
+		mov	eax, [_H_Pix_Begin]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
@@ -2032,7 +2068,7 @@ section .text align=64
 	
 	.Render16: ; 15-bit/16-bit color
 		mov	ecx, 160
-		mov	eax, [H_Pix_Begin]
+		mov	eax, [_H_Pix_Begin]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
@@ -2088,14 +2124,14 @@ section .text align=64
 		
 		pushad
 		
-		mov	ebx, [VDP_Current_Line]
+		mov	ebx, [_VDP_Current_Line]
 		xor	eax, eax
 		mov	edi, [_TAB336 + ebx * 4]
-		test	dword [VDP_Reg + 1 * 4], 0x40		; test if the VDP is active
+		test	dword [_VDP_Reg + 1 * 4], 0x40		; test if the VDP is active
 		push	edi					; we need this value later
 		jnz	short .VDP_Enable			; if not, nothing is posted
 			
-		test	byte [VDP_Reg + 12 * 4], 0x08
+		test	byte [_VDP_Reg + 12 * 4], 0x08
 		cld
 		mov	ecx, 160
 		jz	short .No_Shadow
@@ -2111,10 +2147,10 @@ section .text align=64
 	align 16
 	
 	.VDP_Enable:
-		mov	ebx, [VRam_Flag]
+		mov	ebx, [_VRam_Flag]
 		xor	eax, eax
 		and	ebx, byte 3
-		mov	[VRam_Flag], eax
+		mov	[_VRam_Flag], eax
 		jmp	[.Table_Sprite_Struct + ebx * 4]
 	
 	align 16
@@ -2139,12 +2175,12 @@ section .text align=64
 	align 16
 	
 	.Sprite_Struc_OK:
-		test	byte [VDP_Reg + 12 * 4], 0x8	; no interlace in 32X mode
+		test	byte [_VDP_Reg + 12 * 4], 0x8	; no interlace in 32X mode
 		jnz	near .HS
 	
 	.NHS:
 			RENDER_LINE 0, 0
-			test	byte [CRam_Flag], 1		; test if palette was modified
+			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	near .VDP_OK
 			UPDATE_PALETTE32 0
 			jmp	.VDP_OK
@@ -2153,7 +2189,7 @@ section .text align=64
 
 	.HS:
 			RENDER_LINE 0, 1
-			test	byte [CRam_Flag], 1		; test if palette was modified
+			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	near .VDP_OK
 			UPDATE_PALETTE32 1
 	
@@ -2161,7 +2197,7 @@ section .text align=64
 	
 	.VDP_OK:
 		mov	ecx, 160
-		mov	eax, [H_Pix_Begin]
+		mov	eax, [_H_Pix_Begin]
 		mov	edi, [esp]
 		sub	ecx, eax
 		add	esp, byte 4
@@ -2173,7 +2209,7 @@ section .text align=64
 		shl	esi, 17
 		mov	ebp, eax
 		shr	edx, 3
-		mov	ebx, [VDP_Current_Line]
+		mov	ebx, [_VDP_Current_Line]
 		shr	ebp, 11
 		and	eax, byte 3
 		and	edx, byte 0x10

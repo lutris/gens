@@ -196,15 +196,15 @@ section .data align=64
 	%assign i i+8
 	%endrep
 
-	Mask:			dd 0x00000000, 0x00000000
-	Mask_GG_15:		dd 0x03E003E0, 0x03E003E0
+	Mask:		dd 0x00000000, 0x00000000
+	Mask_GG_15:	dd 0x03E003E0, 0x03E003E0
 	Mask_RBRB_15:	dd 0x7C1F7C1F, 0x7C1F7C1F
-	Mask_GG_16:		dd 0x07C007C0, 0x07C007C0
-	Mask_RBRB_16	dd 0xF81FF81F, 0xF81FF81F
+	Mask_GG_16:	dd 0x07C007C0, 0x07C007C0
+	Mask_RBRB_16:	dd 0xF81FF81F, 0xF81FF81F
 
-	Mask_1001_64	dd 0xFFFF0000, 0x0000FFFF
-	Mask_0011_64	dd 0xFFFFFFFF, 0x00000000
-	Mask_1100_64	dd 0x00000000, 0xFFFFFFFF
+	Mask_1001_64:	dd 0xFFFF0000, 0x0000FFFF
+	Mask_0011_64:	dd 0xFFFFFFFF, 0x00000000
+	Mask_1100_64:	dd 0x00000000, 0xFFFFFFFF
 
 
 section .bss align=64
@@ -217,6 +217,8 @@ section .bss align=64
 	%define	_MD_Palette32		MD_Palette32
 	
 	%define _bppMD			bppMD
+	
+	%define	_VDP_Reg		VDP_Reg
 %endif
 	
 	extern _MD_Screen
@@ -232,7 +234,7 @@ section .bss align=64
 	extern CDD.Frame
 	extern CDD.Ext
 	
-	extern VDP_Reg
+	extern _VDP_Reg
 	
 	; MD bpp
 	extern _bppMD
@@ -832,7 +834,7 @@ section .text align=64
 		test eax, 0x1					; on teste si on est en mode emulation
 		jz short .No_Emulation
 
-		test byte [VDP_Reg + 12 * 4], 1	; on teste si on est en mode 32 ou 40 cells
+		test byte [_VDP_Reg + 12 * 4], 1	; on teste si on est en mode 32 ou 40 cells
 		jnz short .No_Emulation
 
 		mov ebx, 256					; Taille = 256
@@ -1042,7 +1044,7 @@ section .text align=64
 		test eax, 0x1					; test the emulation mode
 		jz short .No_Emulation
 
-		test byte [VDP_Reg + 12 * 4], 1	; on teste si on est en mode 32 ou 40 cells
+		test byte [_VDP_Reg + 12 * 4], 1	; on teste si on est en mode 32 ou 40 cells
 		jnz short .No_Emulation
 
 		mov ebx, 256					; Taille = 256

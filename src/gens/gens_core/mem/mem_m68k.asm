@@ -534,13 +534,25 @@ section .text align=64
 	extern Z80_WriteB_Table
 	extern Z80_WriteW_Table
 
-	extern Read_VDP_Data
-	extern Read_VDP_Status
-	extern Read_VDP_V_Counter 
-	extern Read_VDP_H_Counter
-	extern Write_Byte_VDP_Data
-	extern Write_Word_VDP_Data
-	extern Write_VDP_Ctrl
+	; External symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Read_VDP_Data		Read_VDP_Data
+		%define	_Read_VDP_Status	Read_VDP_Status
+		%define	_Read_VDP_H_Counter	Read_VDP_H_Counter
+		%define	_Read_VDP_V_Counter	Read_VDP_V_Counter
+		%define	_Write_Byte_VDP_Data	Write_Byte_VDP_Data
+		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
+		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
+	%endif
+	
+	extern _Read_VDP_Data
+	extern _Read_VDP_Status
+	extern _Read_VDP_V_Counter 
+	extern _Read_VDP_H_Counter
+	extern _Write_Byte_VDP_Data
+	extern _Write_Word_VDP_Data
+	extern _Write_VDP_Ctrl
+	
 	extern _RD_Controller_1
 	extern _RD_Controller_2 
 	extern _WR_Controller_1
@@ -1032,16 +1044,16 @@ section .text align=64
 		test ebx, 1
 		jnz short .vdp_h_counter
 
-	.vdp_v_counter
-		call Read_VDP_V_Counter
-		pop ebx
+	.vdp_v_counter:
+		call	_Read_VDP_V_Counter
+		pop	ebx
 		ret
 
 	ALIGN4
 	
-	.vdp_h_counter
-		call Read_VDP_H_Counter
-		pop ebx
+	.vdp_h_counter:
+		call	_Read_VDP_H_Counter
+		pop	ebx
 		ret
 
 	ALIGN4
@@ -1053,11 +1065,11 @@ section .text align=64
 
 	ALIGN4
 	
-	.vdp_status
-		call Read_VDP_Status
-		test ebx, 1
-		jnz .no_swap_status
-		mov al, ah					; on lit que le poids fort
+	.vdp_status:
+		call	_Read_VDP_Status
+		test	ebx, 1
+		jnz	.no_swap_status
+		mov	al, ah					; on lit que le poids fort
 
 	.no_swap_status
 		pop ebx
@@ -1357,35 +1369,35 @@ section .text align=64
 	ALIGN32
 
 	M68K_Read_Word_VDP:
-		cmp ebx, 0xC00003
-		ja short .no_vdp_data
-
-		call Read_VDP_Data
-		pop ebx
+		cmp	ebx, 0xC00003
+		ja	short .no_vdp_data
+		
+		call	_Read_VDP_Data
+		pop	ebx
 		ret
 
 	ALIGN4
 	
-	.no_vdp_data
-		cmp ebx, 0xC00007
-		ja .no_vdp_status
-
-		call Read_VDP_Status
-		pop ebx
+	.no_vdp_data:
+		cmp	ebx, 0xC00007
+		ja	.no_vdp_status
+		
+		call	_Read_VDP_Status
+		pop	ebx
 		ret
 
 	ALIGN4
 	
-	.no_vdp_status
-		cmp ebx, 0xC00009
-		ja short .bad
-		call Read_VDP_V_Counter
-		mov bl, al
-		call Read_VDP_H_Counter
-		mov ah, bl
-		pop ebx
+	.no_vdp_status:
+		cmp	ebx, 0xC00009
+		ja	short .bad
+		call	_Read_VDP_V_Counter
+		mov	bl, al
+		call	_Read_VDP_H_Counter
+		mov	ah, bl
+		pop	ebx
 		ret
-
+	
 	ALIGN4
 	
 	.bad
@@ -1645,16 +1657,16 @@ section .text align=64
 	ALIGN32
 
 	M68K_Write_Byte_VDP:
-		cmp ebx, 0xC00003
-		ja short .no_data_port
-
-		push eax
-		call Write_Byte_VDP_Data
-		pop eax
-		pop ecx
-		pop ebx
+		cmp	ebx, 0xC00003
+		ja	short .no_data_port
+		
+		push	eax
+		call	_Write_Byte_VDP_Data
+		pop	eax
+		pop	ecx
+		pop	ebx
 		ret
-
+	
 	ALIGN4
 	
 	.no_data_port
@@ -1923,35 +1935,35 @@ section .text align=64
 		pop ecx
 		pop ebx
 		ret
-
+	
 	ALIGN32
-
+	
 	M68K_Write_Word_VDP:
-		cmp ebx, 0xC00003
-		ja short .no_data_port
-
-		push eax
-		call Write_Word_VDP_Data
-		pop eax
-		pop ecx
-		pop ebx
+		cmp	ebx, 0xC00003
+		ja	short .no_data_port
+		
+		push	eax
+		call	_Write_Word_VDP_Data
+		pop	eax
+		pop	ecx
+		pop	ebx
 		ret
-
+	
 	ALIGN4
-
-	.no_data_port
-		cmp ebx, 0xC00007
-		ja short .bad
-
-		push eax
-		call Write_VDP_Ctrl
-		pop eax
-		pop ecx
-		pop ebx
+	
+	.no_data_port:
+		cmp	ebx, 0xC00007
+		ja	short .bad
+		
+		push	eax
+		call	_Write_VDP_Ctrl
+		pop	eax
+		pop	ecx
+		pop	ebx
 		ret
-
+	
 	ALIGN4
-
+	
 	.bad
 		pop ecx
 		pop ebx

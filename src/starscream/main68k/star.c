@@ -548,12 +548,19 @@ static void gen_interface(void) {
 	emit("section .text\n");
 	emit("bits 32\n");
 
+	// Symbol redefines for ELF
+	emit("\n");
+	emit("\t%%ifdef __OBJ_ELF\n");
+	emit("\t%%define _Int_Ack Int_Ack\n");
+	emit("\t%%endif\n");
+	emit("\n");
+	
 	emit("\n");
 	emit("\textern M68K_RB\n");
 	emit("\textern M68K_RW\n");
 	emit("\textern M68K_WB\n");
 	emit("\textern M68K_WW\n");
-	emit("\textern Int_Ack\n");
+	emit("\textern _Int_Ack\n");
 	emit("\n");
 
 	emit("top:\n");
@@ -1232,7 +1239,7 @@ static void gen_flush_interrupts(void) {
 	emit("mov [__sr+1], dh\n");
 
 	emit("push eax\n");
-	emit("call Int_Ack\n");					// in: dl = old IPL line, out: al = new IPL line
+	emit("call _Int_Ack\n");					// in: dl = old IPL line, out: al = new IPL line
 	emit("mov byte [__interrupts],al\n");	// set it
 	emit("pop eax\n");
 
