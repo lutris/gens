@@ -18,6 +18,7 @@
 	%define	_Sprite_Over		Sprite_Over
 	%define	_Render_Line		Render_Line
 	%define	_Render_Line_32X	Render_Line_32X
+	%define	_VDP_Layers		VDP_Layers
 %endif
 
 HIGH_B		equ 0x80
@@ -63,6 +64,33 @@ section .data align=64
 	Mask_F:
 		dd 0xFFFFFFFF, 0xFFFF0FFF, 0xFFFF00FF, 0xFFFF000F
 		dd 0xFFFF0000, 0x0FFF0000, 0x00FF0000, 0x000F0000
+	
+	align 32
+	
+	; VDP layer flags
+	VDP_LAYER_SCROLLA_LOW		equ	(1 << 0)
+	VDP_LAYER_SCROLLA_HIGH		equ	(1 << 1)
+	VDP_LAYER_SCROLLA_SWAP		equ	(1 << 2)
+	VDP_LAYER_SCROLLB_LOW		equ	(1 << 3)
+	VDP_LAYER_SCROLLB_HIGH		equ	(1 << 4)
+	VDP_LAYER_SCROLLB_SWAP		equ	(1 << 5)
+	VDP_LAYER_SPRITE_LOW		equ	(1 << 6)
+	VDP_LAYER_SPRITE_HIGH		equ	(1 << 7)
+	VDP_LAYER_SPRITE_SWAP		equ	(1 << 8)
+	VDP_LAYER_SPRITE_ALWAYSONTOP	equ	(1 << 9)
+	
+	; Default layer flags
+	VDP_LAYER_DEFAULT		equ	VDP_LAYER_SCROLLA_LOW	| \
+						VDP_LAYER_SCROLLA_HIGH	| \
+						VDP_LAYER_SCROLLB_LOW	| \
+						VDP_LAYER_SCROLLB_HIGH	| \
+						VDP_LAYER_SPRITE_LOW	| \
+						VDP_LAYER_SPRITE_HIGH
+	
+	; VDP_Layers: Active layers and layer settings.
+	global _VDP_Layers
+	_VDP_Layers:
+		dd VDP_LAYER_DEFAULT
 	
 section .bss align=64
 	
@@ -742,6 +770,14 @@ section .text align=64
 		mov dword [_MD_Screen + ebp * 2 +  8], 0x00000000
 		mov dword [_MD_Screen + ebp * 2 + 12], 0x00000000
 	%endif
+	
+	; If ScrollA Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
+	jz	near %%Full_Trans
+%else
+	; If ScrollB Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_LOW
+	jz	near %%Full_Trans
 %endif
 
 	test ebx, ebx
@@ -785,6 +821,14 @@ section .text align=64
 		mov dword [_MD_Screen + ebp * 2 +  8], 0x00000000
 		mov dword [_MD_Screen + ebp * 2 + 12], 0x00000000
 	%endif
+	
+	; If ScrollA Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
+	jz	near %%Full_Trans
+%else
+	; If ScrollB Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_LOW
+	jz	near %%Full_Trans
 %endif
 
 	test ebx, ebx
@@ -820,7 +864,15 @@ section .text align=64
 	mov dword [_MD_Screen + ebp * 2 +  4], 0x00000000
 	mov dword [_MD_Screen + ebp * 2 +  8], 0x00000000
 	mov dword [_MD_Screen + ebp * 2 + 12], 0x00000000
+	
+	; If ScrollA High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
+	jz	near %%Full_Trans
 %else
+	; If ScrollB High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_HIGH
+	jz	near %%Full_Trans
+	
 	%if %2 > 0
 
 		; Faster on almost CPU (because of pairable instructions)
@@ -880,7 +932,15 @@ section .text align=64
 	mov dword [_MD_Screen + ebp * 2 +  4], 0x00000000
 	mov dword [_MD_Screen + ebp * 2 +  8], 0x00000000
 	mov dword [_MD_Screen + ebp * 2 + 12], 0x00000000
+	
+	; If ScrollA High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
+	jz	near %%Full_Trans
 %else
+	; If ScrollB High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_HIGH
+	jz	near %%Full_Trans
+	
 	%if %2 > 0
 
 		; Faster on almost CPU (because of pairable instructions)
@@ -935,10 +995,20 @@ section .text align=64
 ; - ebp pointe sur dest mais sans le screen
 
 %macro PUTLINE_SPRITE 2
-
+	
+%if %1 > 0
+	; If Sprite High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_HIGH
+	jz	near %%Full_Trans
+%else
+	; If Sprite Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_LOW
+	jz	near %%Full_Trans
+%endif
+	
 	xor ecx, ecx
 	add ebp, [esp]
-
+	
 	PUTPIXEL_SPRITE 0, 0x0000f000, 12, %1, %2
 	PUTPIXEL_SPRITE 1, 0x00000f00,  8, %1, %2
 	PUTPIXEL_SPRITE 2, 0x000000f0,  4, %1, %2
@@ -951,6 +1021,8 @@ section .text align=64
 	and ch, 0x20
 	sub ebp, [esp]
 	or byte [VDP_Status], ch
+
+%%Full_Trans
 
 %endmacro
 
@@ -966,10 +1038,20 @@ section .text align=64
 ; - ebp pointe sur dest
 
 %macro PUTLINE_SPRITE_FLIP 2
-
+	
+%if %1 > 0
+	; If Sprite High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_HIGH
+	jz	near %%Full_Trans
+%else
+	; If Sprite Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SPRITE_LOW
+	jz	near %%Full_Trans
+%endif
+	
 	xor ecx, ecx
 	add ebp, [esp]
-
+	
 	PUTPIXEL_SPRITE 0, 0x000f0000, 16, %1, %2
 	PUTPIXEL_SPRITE 1, 0x00f00000, 20, %1, %2
 	PUTPIXEL_SPRITE 2, 0x0f000000, 24, %1, %2
@@ -982,6 +1064,8 @@ section .text align=64
 	and ch, 0x20
 	sub ebp, [esp]
 	or byte [VDP_Status], ch
+
+%%Full_Trans
 
 %endmacro
 

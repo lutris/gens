@@ -19,10 +19,6 @@ extern unsigned int MD_Palette32[256];
 // See g_32x_32bit.h
 extern unsigned char _32X_Rend_Mode;
 
-// Debugging stuff
-// TODO: Port all debugging stuff from Gens Rerecording
-extern char PalLock;
-
 extern unsigned long TAB336[336];
 
 extern struct
@@ -41,6 +37,29 @@ extern int Sprite_Over;
 
 void Render_Line();
 void Render_Line_32X();
+
+// VDP layer control
+extern unsigned int VDP_Layers;
+
+// VDP layer flags
+#define VDP_LAYER_SCROLLA_LOW		(1 << 0)
+#define VDP_LAYER_SCROLLA_HIGH		(1 << 1)
+#define VDP_LAYER_SCROLLA_SWAP		(1 << 2)
+#define VDP_LAYER_SCROLLB_LOW		(1 << 3)
+#define VDP_LAYER_SCROLLB_HIGH		(1 << 4)
+#define VDP_LAYER_SCROLLB_SWAP		(1 << 5)
+#define VDP_LAYER_SPRITE_LOW		(1 << 6)
+#define VDP_LAYER_SPRITE_HIGH		(1 << 7)
+#define VDP_LAYER_SPRITE_SWAP		(1 << 8)
+#define VDP_LAYER_SPRITE_ALWAYSONTOP	(1 << 9)
+
+#define VDP_LAYER_DEFAULT	  \
+	VDP_LAYER_SCROLLA_LOW	| \
+	VDP_LAYER_SCROLLA_HIGH	| \
+	VDP_LAYER_SCROLLB_LOW	| \
+	VDP_LAYER_SCROLLB_HIGH	| \
+	VDP_LAYER_SPRITE_LOW	| \
+	VDP_LAYER_SPRITE_HIGH
 
 #ifdef __cplusplus
 }
