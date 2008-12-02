@@ -101,6 +101,7 @@ section .bss align=64
 		%define	_MD_Palette32		MD_Palette32
 		%define	_Sprite_Struct		Sprite_Struct
 		%define	_Sprite_Visible		Sprite_Visible
+		%define	_VDP_Layers		VDP_Layers
 	%endif
 	
 	extern Rom_Data
@@ -117,6 +118,10 @@ section .bss align=64
 	extern _MD_Palette
 	extern _MD_Screen32
 	extern _MD_Palette32
+	
+	; See vdp_rend.asm.
+	VDP_LAYER_PALETTE_LOCK		equ	(1 << 10)
+	extern _VDP_Layers
 	
 	extern Ram_68k
 	extern Ram_Prg
@@ -512,6 +517,10 @@ section .text align=64
 		dec	ecx
 		jnz	.loop_VSRam
 		
+		; Check if the palette is locked.
+		test	dword [_VDP_Layers], VDP_LAYER_PALETTE_LOCK
+		jnz	.palette_Locked
+		
 		mov	ebx, _MD_Palette
 		mov	ecx, (100 / 2)
 	.loop_Palette:
@@ -528,6 +537,7 @@ section .text align=64
 		dec	ecx
 		jnz	.loop_Palette32
 		
+	.palette_Locked:
 		mov	ebx, _Sprite_Struct
 		mov	ecx, (100 * 8)
 	.loop_Sprite_Struct:

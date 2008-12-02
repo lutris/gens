@@ -66,6 +66,7 @@ section .data align=64
 	VDP_LAYER_SPRITE_HIGH		equ	(1 << 7)
 	VDP_LAYER_SPRITE_SWAP		equ	(1 << 8)
 	VDP_LAYER_SPRITE_ALWAYSONTOP	equ	(1 << 9)
+	VDP_LAYER_PALETTE_LOCK		equ	(1 << 10)
 	
 	; Default layer flags
 	VDP_LAYER_DEFAULT		equ	VDP_LAYER_SCROLLA_LOW	| \
@@ -1111,6 +1112,10 @@ section .text align=64
 
 %macro UPDATE_PALETTE 1
 	
+	; Check if the palette is locked.
+	test	dword [_VDP_Layers], VDP_LAYER_PALETTE_LOCK
+	jnz	near %%End
+	
 	xor	eax, eax
 	mov	byte [_CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
 	mov	cx, 0x7BEF
@@ -1174,6 +1179,10 @@ section .text align=64
 ; %1 = Highlight/Shadow Enable
 
 %macro UPDATE_PALETTE32 1
+	
+	; Check if the palette is locked.
+	test	dword [_VDP_Layers], VDP_LAYER_PALETTE_LOCK
+	jnz	near %%End
 	
 	xor	eax, eax
 	mov	byte [_CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified

@@ -52,6 +52,7 @@ extern unsigned int VDP_Layers;
 #define VDP_LAYER_SPRITE_HIGH		(1 << 7)
 #define VDP_LAYER_SPRITE_SWAP		(1 << 8)
 #define VDP_LAYER_SPRITE_ALWAYSONTOP	(1 << 9)
+#define	VDP_LAYER_PALETTE_LOCK		(1 << 10)
 
 #define VDP_LAYER_DEFAULT	  \
 	(VDP_LAYER_SCROLLA_LOW	| \
