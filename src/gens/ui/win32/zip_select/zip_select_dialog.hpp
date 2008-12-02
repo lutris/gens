@@ -25,9 +25,28 @@
 
 #include "util/file/compress/compressedfile.hpp"
 
-#include <list>
-using std::list;
+#ifdef __cplusplus
 
-CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst);
+#include <list>
+
+#include "wndbase.hpp"
+#include <windows.h>
+
+class ZipSelectDialog : public WndBase
+{
+	public:
+		ZipSelectDialog(HWND parent = NULL);
+		~ZipSelectDialog();
+		
+		CompressedFile* getFile(std::list<CompressedFile>* lst);
+		
+		void init(HWND hWndDlg);
+	
+	protected:
+		HWND m_Parent;
+		std::list<CompressedFile> *m_fileList;
+};
+
+#endif /* __cplusplus */
 
 #endif /* GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP */

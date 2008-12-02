@@ -43,17 +43,24 @@ using std::string;
 using std::list;
 
 
-static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst);
 static inline int getCurListItemData(HWND hWndDlg, int nIDDlgItem);
+static LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 
-LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+ZipSelectDialog::ZipSelectDialog(HWND parent)
+{
+	m_Parent = parent;
+}
+
+ZipSelectDialog::~ZipSelectDialog()
+{
+}
 
 
 /**
- * Get_Zip_Select(): Opens the Zip File Selection Dialog.
+ * getFile(): Opens the Zip File Selection Dialog.
  */
-CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
+CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 {
 	if (!lst)
 	{
@@ -61,24 +68,26 @@ CompressedFile* Open_Zip_Select_Dialog(list<CompressedFile>* lst)
 		return NULL;
 	}
 	
+	m_fileList = lst;
+	
 	CompressedFile* file;
 	file = reinterpret_cast<CompressedFile*>(DialogBoxParam(
 				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
-				  Gens_hWnd,
+				  m_Parent,
 				  reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
-				  reinterpret_cast<LPARAM>(lst)));
+				  reinterpret_cast<LPARAM>(this)));
 	
 	// File was selected.
 	return file;
 }
 
 
-LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
 		case WM_INITDIALOG:
-			Init_Zip_Select_Dialog(hWndDlg, reinterpret_cast<list<CompressedFile>*>(lParam));
+			reinterpret_cast<ZipSelectDialog*>(lParam)->init(hWndDlg);
 			return TRUE;
 		
 		case WM_COMMAND:
@@ -106,11 +115,10 @@ LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wP
 
 
 /**
- * Init_Zip_Select_Dialog(): Initialize the Zip Select dialog.
+ * init(): Initialize the Zip Select dialog.
  * @param hWndDlg hWnd of the Zip Select dialog.
- * @param lst List of files in the archive.
  */
-static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
+void ZipSelectDialog::init(HWND hWndDlg)
 {
 	Win32_centerOnGensWindow(hWndDlg);
 	
@@ -119,12 +127,12 @@ static void Init_Zip_Select_Dialog(HWND hWndDlg, list<CompressedFile>* lst)
 	
 	// Reserve space in the listbox for the file listing.
 	// Assuming maximum of 128 bytes per filename.
-	SendMessage(lstFiles, LB_INITSTORAGE, static_cast<WPARAM>(lst->size()), 128);
+	SendMessage(lstFiles, LB_INITSTORAGE, static_cast<WPARAM>(m_fileList->size()), 128);
 	
 	// Add all strings.
 	list<CompressedFile>::iterator lstIter;
 	int index;
-	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
+	for (lstIter = m_fileList->begin(); lstIter != m_fileList->end(); lstIter++)
 	{
 		index = ListBox_AddString(lstFiles, (*lstIter).filename.c_str());
 		ListBox_SetItemData(lstFiles, index, &(*lstIter));
