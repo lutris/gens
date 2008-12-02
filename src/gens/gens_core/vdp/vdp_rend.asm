@@ -2,25 +2,6 @@
 ; Gens: VDP Rendering functions.
 ;
 
-; Symbol redefines for ELF
-%ifdef __OBJ_ELF
-	%define	_TAB336			TAB336
-	%define	_TAB320			TAB320
-	%define	_MD_Screen		MD_Screen
-	%define	_MD_Palette		MD_Palette
-	%define	_Palette		Palette
-	%define	_MD_Screen32		MD_Screen32
-	%define	_MD_Palette32		MD_Palette32
-	%define	_Palette32		Palette32
-	%define	_Sprite_Struct		Sprite_Struct
-	%define	_Sprite_Visible		Sprite_Visible
-	%define	__32X_Rend_Mode		_32X_Rend_Mode
-	%define	_Sprite_Over		Sprite_Over
-	%define	_Render_Line		Render_Line
-	%define	_Render_Line_32X	Render_Line_32X
-	%define	_VDP_Layers		VDP_Layers
-%endif
-
 HIGH_B		equ 0x80
 SHAD_B		equ 0x40
 PRIO_B		equ 0x01
@@ -36,6 +17,13 @@ SHAD_D		equ 0x40404040
 NOSHAD_D	equ 0xBFBFBFBF
 
 section .data align=64
+	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_TAB336		TAB336
+		%define	_TAB320		TAB320
+		%define	_VDP_Layers	VDP_Layers
+	%endif
 	
 	global _TAB336
 	_TAB336:
@@ -138,6 +126,22 @@ section .bss align=64
 		.AF_St:		resd 1
 		.AF_Len:	resd 1
 	endstruc
+	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_MD_Screen		MD_Screen
+		%define	_MD_Palette		MD_Palette
+		%define	_Palette		Palette
+		%define	_MD_Screen32		MD_Screen32
+		%define	_MD_Palette32		MD_Palette32
+		%define	_Palette32		Palette32
+		%define	_Sprite_Struct		Sprite_Struct
+		%define	_Sprite_Visible		Sprite_Visible
+		%define	__32X_Rend_Mode		_32X_Rend_Mode
+		%define	_Sprite_Over		Sprite_Over
+		%define	_Render_Line		Render_Line
+		%define	_Render_Line_32X	Render_Line_32X
+	%endif
 	
 	; MD screen buffer (16-bit)
 	alignb 16
