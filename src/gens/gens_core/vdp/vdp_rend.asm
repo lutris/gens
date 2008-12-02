@@ -1601,8 +1601,8 @@ section .text align=64
 
 ; macro RENDER_LINE_SPR
 ; param :
-; %1 = 1 pour mode entrelacé et 0 pour mode normal
-; %2 = Shadow / Highlight (0 = Disable et 1 = Enable)
+; %1 = 1 for interlace mode and 0 for normal mode
+; %2 = Shadow / Highlight (0 = Disable and 1 = Enable)
 
 %macro RENDER_LINE_SPR 2
 	
@@ -1611,20 +1611,21 @@ section .text align=64
 	
 %%Sprite_Over
 	
-	UPDATE_MASK_SPRITE 1		; edi pointe sur le sprite à afficher
+	UPDATE_MASK_SPRITE 1		; edi == point on the sprite to post
 	xor edi, edi
 	test esi, esi
 	mov dword [Data_Misc.X], edi
 	jnz near %%First_Loop
-	jmp %%End					; on quitte
+	jmp %%End			; quit
 	
 %%No_Sprite_Over
-	UPDATE_MASK_SPRITE 0		; edi pointe sur le sprite à afficher
+	
+	UPDATE_MASK_SPRITE 0		; edi = point on the sprite to post
 	xor edi, edi
 	test esi, esi
 	mov dword [Data_Misc.X], edi
 	jnz short %%First_Loop
-	jmp %%End					; on quitte
+	jmp %%End			; quit
 	
 	align 16
 	
@@ -1632,92 +1633,92 @@ section .text align=64
 		mov edx, [VDP_Current_Line]
 %%First_Loop
 		mov edi, [_Sprite_Visible + edi]
-		mov eax, [_Sprite_Struct + edi + 24]		; eax = CellInfo du sprite
+		mov eax, [_Sprite_Struct + edi + 24]		; eax = CellInfo of the sprite
 		sub edx, [_Sprite_Struct + edi + 4]		; edx = Line - Y Pos (Y Offset)
-		mov ebx, eax							; ebx = CellInfo
-		mov esi, eax							; esi = CellInfo
+		mov ebx, eax					; ebx = CellInfo
+		mov esi, eax					; esi = CellInfo
 		
-		shr bx, 9								; on va isoler la palette dans ebx
-		mov ecx, edx							; ecx = Y Offset
-		and ebx, 0x30							; on garde que le numero de palette * 16
+		shr bx, 9					; isolate the palette in ebx
+		mov ecx, edx					; ecx = Y Offset
+		and ebx, 0x30					; keep the palette numberan even multiple of 16
 		
-		and esi, 0x7FF							; esi = numero du premier pattern du sprite
-		mov [Data_Misc.Palette], ebx			; on stocke le numero de palette * 64 dans Palette
-		and edx, 0xF8							; on efface les 3 bits de poids faibles = Num Pattern * 8
+		and esi, 0x7FF					; esi = number of the first pattern of the sprite
+		mov [Data_Misc.Palette], ebx			; store the palette number * 64 in Palette
+		and edx, 0xF8					; one erases the 3 least significant bits = Num Pattern * 8
 		mov ebx, [_Sprite_Struct + edi + 12]		; ebx = Size Y
-		and ecx, byte 7							; ecx = (Y Offset & 7) = Line du pattern courant
+		and ecx, byte 7					; ecx = (Y Offset & 7) = Line of the current pattern
 %if %1 > 0
-		shl ebx, 6								; ebx = Size Y * 64
-		lea edx, [edx * 8]						; edx = Num Pattern * 64
-		shl esi, 6								; esi = pointe sur sur le contenu du pattern
+		shl ebx, 6					; ebx = Size Y * 64
+		lea edx, [edx * 8]				; edx = Num Pattern * 64
+		shl esi, 6					; esi = point on the contents of the pattern
 %else
-		shl ebx, 5								; ebx = Size Y * 32
-		lea edx, [edx * 4]						; edx = Num Pattern * 32
-		shl esi, 5								; esi = pointe sur sur le contenu du pattern
+		shl ebx, 5					; ebx = Size Y * 32
+		lea edx, [edx * 4]				; edx = Num Pattern * 32
+		shl esi, 5					; esi = point on the contents of the pattern
 %endif
 		
-		test eax, 0x1000						; on teste pour V Flip
+		test eax, 0x1000				; test for V Flip
 		jz %%No_V_Flip
 		
 	%%V_Flip
 		sub ebx, edx
-		xor ecx, 7								; ecx = 7 - (Y Offset & 7)
-		add esi, ebx							; esi pointe sur le pattern à afficher
+		xor ecx, 7					; ecx = 7 - (Y Offset & 7)
+		add esi, ebx					; esi = point on the pattern to post
 %if %1 > 0
-		lea ebx, [ebx + edx + 64]				; on restore la valeur de ebx + 64
-		lea esi, [esi + ecx * 8]				; et ainsi que sur la bonne ligne du pattern
+		lea ebx, [ebx + edx + 64]			; restore the value of ebx + 64
+		lea esi, [esi + ecx * 8]			; and load the good line of the pattern
 		jmp short %%Suite
 %else
-		lea ebx, [ebx + edx + 32]				; on restore la valeur de ebx + 32
-		lea esi, [esi + ecx * 4]				; et ainsi que sur la bonne ligne du pattern
+		lea ebx, [ebx + edx + 32]			; restore the value of ebx + 64
+		lea esi, [esi + ecx * 4]			; and load the good line of the pattern
 		jmp short %%Suite
 %endif
 		
 		align 16
 		
 	%%No_V_Flip
-		add esi, edx							; esi pointe sur le pattern à afficher
+		add esi, edx					; esi = point on the pattern to post
 %if %1 > 0
-		add ebx, byte 64						; on additionne 64 à ebx
-		lea esi, [esi + ecx * 8]				; et ainsi que sur la bonne ligne du pattern
+		add ebx, byte 64				; add 64 to ebx
+		lea esi, [esi + ecx * 8]			; and load the good line of the pattern
 %else			
-		add ebx, byte 32						; on additionne 32 à ebx
-		lea esi, [esi + ecx * 4]				; et ainsi que sur la bonne ligne du pattern
+		add ebx, byte 32				; add 32 to ebx
+		lea esi, [esi + ecx * 4]			; and load the good line of the pattern
 %endif
 		
 	%%Suite
-		mov [Data_Misc.Next_Cell], ebx			; la prochain Cell X de ce sprite se trouve à ebx octets
-		mov edx, [Data_Misc.Palette]			; edx = Numero de palette * 64
+		mov [Data_Misc.Next_Cell], ebx			; next Cell X of this sprite is with ebx bytes
+		mov edx, [Data_Misc.Palette]			; edx = Palette number * 64
 		
-		test eax, 0x800							; on teste H Flip
+		test eax, 0x800					; test H Flip
 		jz near %%No_H_Flip
 			
 	%%H_Flip
 		mov ebx, [_Sprite_Struct + edi + 0]
-		mov ebp, [_Sprite_Struct + edi + 16]		; on positionne pour X
-		cmp ebx, -7								; on teste pour la borne min du spr
+		mov ebp, [_Sprite_Struct + edi + 16]		; position for X
+		cmp ebx, -7					; test for the minimum edge of the sprite
 		mov edi, [Data_Misc.Next_Cell]
 		jg short %%Spr_X_Min_Norm
-		mov ebx, -7								; borne min = clip ecran
+		mov ebx, -7					; minimum edge = clip screen
 		
 	%%Spr_X_Min_Norm
-		mov [Data_Spr.H_Min], ebx				; borne min = spr min
+		mov [Data_Spr.H_Min], ebx			; spr min = minimum edge
 		
 	%%Spr_X_Min_OK
-		sub ebp, byte 7							; pour afficher le dernier pattern en premier
+		sub ebp, byte 7					; to post the last pattern in first
 		jmp short %%Spr_Test_X_Max
 		
 		align 16
 		
 	%%Spr_Test_X_Max_Loop
-			sub ebp, byte 8							; on recule sur le pattern precedent (ecran)
-			add esi, edi							; on va sur le prochain pattern (mem)
+			sub ebp, byte 8				; one moves back on the preceding pattern (screen)
+			add esi, edi				; one goes on next the pattern (mem)
 			
 	%%Spr_Test_X_Max
 			cmp ebp, [H_Pix]
 			jge %%Spr_Test_X_Max_Loop
 		
-		test eax, 0x8000						; on teste la priorité
+		test eax, 0x8000				; test the priority
 		jnz near %%H_Flip_P1
 		jmp short %%H_Flip_P0
 		
@@ -1725,13 +1726,13 @@ section .text align=64
 		
 	%%H_Flip_P0
 	%%H_Flip_P0_Loop
-			mov ebx, [VRam + esi]					; ebx = Pattern Data
-			PUTLINE_SPRITE_FLIP 0, %2				; on affiche la ligne du pattern sprite
+			mov ebx, [VRam + esi]			; ebx = Pattern Data
+			PUTLINE_SPRITE_FLIP 0, %2		; one posts the line of the sprite pattern
 			
-			sub ebp, byte 8							; on affiche le pattern precedent
-			add esi, edi							; on va sur le prochain pattern
-			cmp ebp, [Data_Spr.H_Min]				; on teste si on a fait tout les patterns du sprite
-			jge near %%H_Flip_P0_Loop				; sinon on continue
+			sub ebp, byte 8				; one posts the previous pattern
+			add esi, edi				; one goes on next the pattern
+			cmp ebp, [Data_Spr.H_Min]		; test if one did all the sprite patterns
+			jge near %%H_Flip_P0_Loop		; if not, continue
 		jmp %%End_Sprite_Loop
 		
 		align 16
@@ -1739,12 +1740,12 @@ section .text align=64
 	%%H_Flip_P1
 	%%H_Flip_P1_Loop
 			mov ebx, [VRam + esi]					; ebx = Pattern Data
-			PUTLINE_SPRITE_FLIP 1, %2				; on affiche la ligne du pattern sprite
+			PUTLINE_SPRITE_FLIP 1, %2				; one posts the line of the sprite pattern
 			
-			sub ebp, byte 8							; on affiche le pattern precedent
-			add esi, edi							; on va sur le prochain pattern
-			cmp ebp, [Data_Spr.H_Min]				; on teste si on a fait tout les patterns du sprite
-			jge near %%H_Flip_P1_Loop				; sinon on continue
+			sub ebp, byte 8						; one posts the previous pattern
+			add esi, edi						; one goes on next the pattern
+			cmp ebp, [Data_Spr.H_Min]				; test if one did all the sprite patterns
+			jge near %%H_Flip_P1_Loop				; if not, continue
 		jmp %%End_Sprite_Loop
 		
 		align 16
@@ -1752,30 +1753,30 @@ section .text align=64
 	%%No_H_Flip
 		mov ebx, [_Sprite_Struct + edi + 16]
 		mov ecx, [H_Pix]
-		mov ebp, [_Sprite_Struct + edi + 0]		; on position le pointeur ebp
-		cmp ebx, ecx							; on teste pour la borne max du spr
+		mov ebp, [_Sprite_Struct + edi + 0]		; position the pointer ebp
+		cmp ebx, ecx					; test for the maximum edge of the sprite
 		mov edi, [Data_Misc.Next_Cell]
 		jl %%Spr_X_Max_Norm
-		mov [Data_Spr.H_Max], ecx				; borne max = clip ecran
+		mov [Data_Spr.H_Max], ecx			; max edge = clip screan
 		jmp short %%Spr_Test_X_Min
 		
 		align 16
 		
 	%%Spr_X_Max_Norm
-		mov [Data_Spr.H_Max], ebx				; borne max = spr max
+		mov [Data_Spr.H_Max], ebx			; spr max = max edge
 		jmp short %%Spr_Test_X_Min
 		
 		align 16
 		
 	%%Spr_Test_X_Min_Loop
-			add ebp, byte 8						; on avance sur le prochain pattern (ecran)
-			add esi, edi						; on va sur le prochain pattern (mem)
+			add ebp, byte 8				; advance to the next pattern (screen)
+			add esi, edi				; one goes on next the pattern (mem)
 			
 	%%Spr_Test_X_Min
 			cmp ebp, -7
 			jl %%Spr_Test_X_Min_Loop
 		
-		test ax, 0x8000							; on teste la priorité
+		test ax, 0x8000					; test the priority
 		jnz near %%No_H_Flip_P1
 		jmp short %%No_H_Flip_P0
 		
@@ -1783,26 +1784,26 @@ section .text align=64
 		
 	%%No_H_Flip_P0
 	%%No_H_Flip_P0_Loop
-			mov ebx, [VRam + esi]					; ebx = Pattern Data
-			PUTLINE_SPRITE 0, %2					; on affiche la ligne du pattern sprite
+			mov ebx, [VRam + esi]			; ebx = Pattern Data
+			PUTLINE_SPRITE 0, %2			; one posts the line of the sprite pattern 
 			
-			add ebp, byte 8							; on affiche le pattern precedent
-			add esi, edi							; on va sur le prochain pattern
-			cmp ebp, [Data_Spr.H_Max]				; on teste si on a fait tout les patterns du sprite
-			jl near %%No_H_Flip_P0_Loop				; sinon on continue
+			add ebp, byte 8				; one posts the previous pattern
+			add esi, edi				; one goes on next the pattern
+			cmp ebp, [Data_Spr.H_Max]		; test if one did all the sprite patterns
+			jl near %%No_H_Flip_P0_Loop		; if not, continue
 		jmp %%End_Sprite_Loop
 		
 		align 16
 		
 	%%No_H_Flip_P1
 	%%No_H_Flip_P1_Loop
-			mov ebx, [VRam + esi]					; ebx = Pattern Data
-			PUTLINE_SPRITE 1, %2					; on affiche la ligne du pattern sprite
+			mov ebx, [VRam + esi]			; ebx = Pattern Data
+			PUTLINE_SPRITE 1, %2			; on affiche la ligne du pattern sprite
 			
-			add ebp, byte 8							; on affiche le pattern precedent
-			add esi, edi							; on va sur le prochain pattern
-			cmp ebp, [Data_Spr.H_Max]				; on teste si on a fait tout les patterns du sprite
-			jl near %%No_H_Flip_P1_Loop				; sinon on continue
+			add ebp, byte 8				; one posts the previous pattern
+			add esi, edi				; one goes on next the pattern
+			cmp ebp, [Data_Spr.H_Max]		; test if one did all the sprite patterns
+			jl near %%No_H_Flip_P1_Loop		; if not, continue
 		jmp short %%End_Sprite_Loop
 		
 		align 16
