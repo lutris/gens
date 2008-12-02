@@ -1,24 +1,6 @@
 %include "nasmhead.inc"
 
 section .data align=64
-
-	extern MD_Screen
-	extern MD_Screen32
-	extern MD_Palette
-	extern MD_Palette32
-	extern CDD.Control
-	extern CDD.Rcv_Status
-	extern CDD.Status
-	extern CDD.Minute
-	extern CDD.Seconde
-	extern CDD.Frame
-	extern CDD.Ext
-	
-	; MD bpp
-	%ifdef __OBJ_ELF
-	%define _bppMD bppMD
-	%endif
-	extern _bppMD
 	
 	Small_Police:
 		dd 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000			; 32   
@@ -226,10 +208,35 @@ section .data align=64
 
 
 section .bss align=64
-
+	
+; Symbol redefines for ELF
+%ifdef __OBJ_ELF
+	%define	_MD_Screen		MD_Screen
+	%define	_MD_Palette		MD_Palette
+	%define	_MD_Screen32		MD_Screen32
+	%define	_MD_Palette32		MD_Palette32
+	
+	%define _bppMD			bppMD
+%endif
+	
+	extern _MD_Screen
+	extern _MD_Palette
+	extern _MD_Screen32
+	extern _MD_Palette32
+	
+	extern CDD.Control
+	extern CDD.Rcv_Status
+	extern CDD.Status
+	extern CDD.Minute
+	extern CDD.Seconde
+	extern CDD.Frame
+	extern CDD.Ext
+	
 	extern VDP_Reg
-	extern MD_Screen
-
+	
+	; MD bpp
+	extern _bppMD
+	
 section .text align=64
 
 %macro AFF_PIXEL 2
@@ -237,7 +244,7 @@ section .text align=64
 		mov eax, ebx					; eax = data pixels
 		shr eax, %2					; keep the first
 		and eax, 0xF
-		mov ax, [MD_Palette + eax * 2 + ebp]		; conversion 8->16 bits palette
+		mov ax, [_MD_Palette + eax * 2 + ebp]		; conversion 8->16 bits palette
 		mov [edi + (%1 * 2)], ax			; write the pixel to Dest
 
 %endmacro
@@ -249,7 +256,7 @@ section .text align=64
 		mov eax, ebx					; eax = data pixels
 		shr eax, %2					; keep the first
 		and eax, 0xF
-		mov eax, [MD_Palette32 + eax * 4 + ebp]		; conversion 8->16 bits palette
+		mov eax, [_MD_Palette32 + eax * 4 + ebp]		; conversion 8->16 bits palette
 		mov [edi + (%1 * 4)], eax			; write the pixel to Dest
 
 %endmacro
@@ -809,7 +816,7 @@ section .text align=64
 		je Print_Text32
 		
 		; 15/16-bit color functions.
-		lea edi, [MD_Screen + 8 * 2]	; edi = Dest
+		lea edi, [_MD_Screen + 8 * 2]	; edi = Dest
 		
 		; Print on the bottom of the screen.
 		mov ebx, 336 * 2				; Pitch Dest
@@ -1019,7 +1026,7 @@ section .text align=64
 	Print_Text32 ; 32-bit color text printing functions.
 
 		shl ebx, 1						; Pitch Dest
-		lea edi, [MD_Screen32 + 8 * 4]	; edi = Dest
+		lea edi, [_MD_Screen32 + 8 * 4]	; edi = Dest
 		
 		; print on the bottom of the screen
 		mov ebx, 336 * 4				; Pitch Dest
@@ -1239,7 +1246,7 @@ section .text align=64
 		je .32BIT
 		
 		shl ebp, 5					; ebp = palette number * 32
-		lea edi, [MD_Screen	+ 6780]			; edi = MD_Screen + copy offset
+		lea edi, [_MD_Screen	+ 6780]			; edi = MD_Screen + copy offset
 
 	.Loop_EDX
 		mov ecx, 16						; ecx = Number of patterns per row
@@ -1275,7 +1282,7 @@ section .text align=64
 	
 	.32BIT
 		shl ebp, 6
-		lea edi, [MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
+		lea edi, [_MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
 
 	.Loop_EDX32
 		mov ecx, 16						; ecx = Number of patterns per row
@@ -1339,7 +1346,7 @@ section .text align=64
 		cmp byte [_bppMD], 32
 		je .32BIT
 		
-		lea edi, [MD_Screen	+ 6780]			; edi = MD_Screen + copy offset
+		lea edi, [_MD_Screen	+ 6780]			; edi = MD_Screen + copy offset
 
 	.Loop_EDX
 		mov ecx, 16					; ecx = Number of patterns per row
@@ -1407,7 +1414,7 @@ section .text align=64
 	
 	.32BIT
 		shl ebp, 1
-		lea edi, [MD_Screen32 + 13560]	; edi = MD_Screen + copy offset
+		lea edi, [_MD_Screen32 + 13560]	; edi = MD_Screen + copy offset
 
 	.Loop_EDX32
 		mov ecx, 16						; ecx = Number of patterns per row
@@ -1504,7 +1511,7 @@ section .text align=64
 		cmp byte [_bppMD], 32
 		je .32BIT
 		
-		lea edi, [MD_Screen	+ 6780]		; edi = MD_Screen + copy offset
+		lea edi, [_MD_Screen	+ 6780]		; edi = MD_Screen + copy offset
 
 	.Loop_EDX
 		mov ecx, 16				; ecx = Number of patterns per row
@@ -1540,7 +1547,7 @@ section .text align=64
 		
 	.32BIT
 		shl ebp, 1
-		lea edi, [MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
+		lea edi, [_MD_Screen32 + 13560 ]	; edi = MD_Screen + copy offset
 
 	.Loop_EDX32
 		mov ecx, 16						; ecx = Number of patterns per row

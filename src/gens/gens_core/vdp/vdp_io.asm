@@ -7,26 +7,6 @@ RD_Mode		equ 0
 WR_Mode		equ 1
 
 section .data align=64
-
-	extern Rom_Data
-	extern Rom_Size
-	extern Cell_Conv_Tab
-	extern Sprite_Struct
-	extern Sprite_Visible
-	extern CPL_M68K
-	extern Cycles_M68K
-	extern _main68k_context		; Starscream context (for interrupts)
-	extern Ram_Word_State
-
-	extern MD_Palette
-	extern MD_Palette32
-	extern MD_Screen
-	extern MD_Screen32
-
-	; If set, palette is locked.
-	extern PalLock
-
-	ALIGN64
 	
 	CD_Table:
 		dd 0x0005, 0x0009, 0x0000, 0x000A	; bits 0-2	= Location (0x00:WRONG, 0x01:VRAM, 0x02:CRAM, 0x03:VSRAM)
@@ -88,7 +68,32 @@ section .data align=64
 		dd 0x0000, 0x0007, 0x01F8, 0x01FF
 
 section .bss align=64
-
+	
+; Symbol redefines for ELF
+%ifdef __OBJ_ELF
+	%define	_MD_Screen		MD_Screen
+	%define	_MD_Palette		MD_Palette
+	%define	_MD_Screen32		MD_Screen32
+	%define	_MD_Palette32		MD_Palette32
+	%define	_Sprite_Struct		Sprite_Struct
+	%define	_Sprite_Visible		Sprite_Visible
+%endif
+	
+	extern Rom_Data
+	extern Rom_Size
+	extern Cell_Conv_Tab
+	extern _Sprite_Struct
+	extern _Sprite_Visible
+	extern CPL_M68K
+	extern Cycles_M68K
+	extern _main68k_context		; Starscream context (for interrupts)
+	extern Ram_Word_State
+	
+	extern _MD_Screen
+	extern _MD_Palette
+	extern _MD_Screen32
+	extern _MD_Palette32
+	
 	extern Ram_68k
 	extern Ram_Prg
 	extern Ram_Word_2M
@@ -333,21 +338,21 @@ section .text align=64
 
 		xor eax, eax
 
-		mov ebx, MD_Screen
+		mov ebx, _MD_Screen
 		mov ecx, (336 * 240 / 2)
-	.loop_MD_Screen
+	.loop__MD_Screen
 		mov [ebx], eax
 		add ebx, 4
 		dec ecx
-		jnz .loop_MD_Screen
+		jnz .loop__MD_Screen
 
-		mov ebx, MD_Screen32
+		mov ebx, _MD_Screen32
 		mov ecx, (336 * 240 / 1)
-	.loop_MD_Screen32
+	.loop__MD_Screen32
 		mov [ebx], eax
 		add ebx, 4
 		dec ecx
-		jnz .loop_MD_Screen32
+		jnz .loop__MD_Screen32
 		
 		mov ebx, VRam
 		mov ecx, (1024 * 16)
@@ -373,9 +378,7 @@ section .text align=64
 		dec ecx
 		jnz .loop_VSRam
 
-		test [PalLock], byte 1
-		jnz .palette_Locked
-		mov ebx, MD_Palette
+		mov ebx, _MD_Palette
 		mov ecx, (100 / 2)
 	.loop_Palette
 		mov [ebx], eax
@@ -383,7 +386,7 @@ section .text align=64
 		dec ecx
 		jnz .loop_Palette
 
-		mov ebx, MD_Palette32
+		mov ebx, _MD_Palette32
 		mov ecx, 0x100
 	.loop_Palette32
 		mov [ebx], eax
@@ -391,8 +394,7 @@ section .text align=64
 		dec ecx
 		jnz .loop_Palette32
 
-	.palette_Locked
-		mov ebx, Sprite_Struct
+		mov ebx, _Sprite_Struct
 		mov ecx, (100 * 8)
 	.loop_Sprite_Struct
 		mov [ebx], eax
@@ -400,7 +402,7 @@ section .text align=64
 		dec ecx
 		jnz .loop_Sprite_Struct
 
-		mov ebx, Sprite_Visible
+		mov ebx, _Sprite_Visible
 		mov ecx, 100
 	.loop_Sprite_Visible
 		mov [ebx], eax

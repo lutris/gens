@@ -1,35 +1,39 @@
 %include "nasmhead.inc"
 
 section .bss align=64
-
-	extern MD_Screen
-	extern MD_Screen32
+	
+; Symbol redefines for ELF
+%ifdef __OBJ_ELF
+	%define	_MD_Screen		MD_Screen
+	%define	_MD_Screen32		MD_Screen32
+	%define	_bppMD			bppMD
+%endif
+	
+	extern _MD_Screen
+	extern _MD_Screen32
 	
 	; MD bpp
-	%ifdef __OBJ_ELF
-	%define _bppMD bppMD
-	%endif
 	extern _bppMD
-
+	
 	DECL _32X_Palette_16B
 	resw 0x10000
-
+	
 	DECL _32X_Palette_32B
 	resd 0x10000
-
+	
 	DECL _32X_VDP_Ram
 	resb 0x100 * 1024
-
+	
 	DECL _32X_VDP_CRam
 	resw 0x100
-
+	
 	DECL _32X_VDP_CRam_Ajusted
 	resw 0x100
-
+	
 	DECL _32X_VDP_CRam_Ajusted32
 	resd 0x100
 	
-	ALIGNB 32
+	alignb 32
 	
 	DECL _32X_VDP
 	.Mode		resd 1
@@ -38,7 +42,7 @@ section .bss align=64
 	.AF_St		resd 1
 	.AF_Len		resd 1
 	.AF_Line	resd 1
-
+	
 section .text align=64
 
 	; void _32X_VDP_Reset()
@@ -82,7 +86,7 @@ section .text align=64
 		cmp byte [_bppMD], 32
 		je	near .32BIT
 
-		lea edi, [MD_Screen + 8 * 2]
+		lea edi, [_MD_Screen + 8 * 2]
 
 	.Loop_Y
 		mov eax, [_32X_VDP.Mode]
@@ -166,7 +170,7 @@ section .text align=64
 		cmp ebp, 220
 		jb near .Loop_Y
 
-		lea edi, [MD_Screen + 8 * 2 + 336 * 2 * 220]
+		lea edi, [_MD_Screen + 8 * 2 + 336 * 2 * 220]
 		xor eax, eax
 		mov ecx, 128
 
@@ -190,7 +194,7 @@ section .text align=64
 		ret
 
 	.32BIT
-		lea edi, [MD_Screen32 + 8 * 4]
+		lea edi, [_MD_Screen32 + 8 * 4]
 
 	.Loop_Y32
 		mov eax, [_32X_VDP.Mode]
@@ -274,7 +278,7 @@ section .text align=64
 		cmp ebp, 220
 		jb near .Loop_Y32
 
-		lea edi, [MD_Screen32 + 8 * 4 + 336 * 4 * 220]
+		lea edi, [_MD_Screen32 + 8 * 4 + 336 * 4 * 220]
 		xor eax, eax
 		mov ecx, 128
 
