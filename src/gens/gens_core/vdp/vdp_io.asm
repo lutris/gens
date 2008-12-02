@@ -1,3 +1,7 @@
+;
+; Gens: VDP I/O functions.
+;
+
 IN_VRAM		equ 0
 IN_CRAM		equ 1
 IN_VSRAM	equ 2
