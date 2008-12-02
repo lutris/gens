@@ -67,7 +67,7 @@ section .data align=64
 	
 	align 32
 	
-	; VDP layer flags
+	; VDP layer flags (ported from Gens Rerecording; original by Nitsuja)
 	VDP_LAYER_SCROLLA_LOW		equ	(1 << 0)
 	VDP_LAYER_SCROLLA_HIGH		equ	(1 << 1)
 	VDP_LAYER_SCROLLA_SWAP		equ	(1 << 2)
