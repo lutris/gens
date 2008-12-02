@@ -176,8 +176,6 @@ section .bss align=64
 		%define	_Sprite_Visible		Sprite_Visible
 		%define	__32X_Rend_Mode		_32X_Rend_Mode
 		%define	_Sprite_Over		Sprite_Over
-		%define	_Render_Line		Render_Line
-		%define	_Render_Line_32X	Render_Line_32X
 	%endif
 	
 	; MD screen buffer (16-bit)
@@ -264,6 +262,11 @@ section .bss align=64
 	
 section .text align=64
 
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Render_Line		Render_Line
+		%define	_Render_Line_32X	Render_Line_32X
+	%endif
 
 ;****************************************
 

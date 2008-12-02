@@ -8,22 +8,6 @@ IN_VSRAM	equ 2
 RD_Mode		equ 0
 WR_Mode		equ 1
 
-; Symbol redefines for ELF
-%ifdef __OBJ_ELF
-	%define	_Reset_VDP		Reset_VDP
-	%define	_Update_DMA		Update_DMA
-	%define	_Read_VDP_Data		Read_VDP_Data
-	%define	_Read_VDP_Status	Read_VDP_Status
-	%define	_Read_VDP_H_Counter	Read_VDP_H_Counter
-	%define	_Read_VDP_V_Counter	Read_VDP_V_Counter
-	%define	_Write_Byte_VDP_Data	Write_Byte_VDP_Data
-	%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
-	%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
-	%define	_Set_VDP_Reg		Set_VDP_Reg
-	%define	_Int_Ack		Int_Ack
-	%define	_Update_IRQ_Line	Update_IRQ_Line
-%endif
-
 section .data align=64
 	
 	CD_Table:
@@ -355,6 +339,22 @@ section .bss align=64
 	
 section .text align=64
 	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Reset_VDP		Reset_VDP
+		%define	_Update_DMA		Update_DMA
+		%define	_Read_VDP_Data		Read_VDP_Data
+		%define	_Read_VDP_Status	Read_VDP_Status
+		%define	_Read_VDP_H_Counter	Read_VDP_H_Counter
+		%define	_Read_VDP_V_Counter	Read_VDP_V_Counter
+		%define	_Write_Byte_VDP_Data	Write_Byte_VDP_Data
+		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
+		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
+		%define	_Set_VDP_Reg		Set_VDP_Reg
+		%define	_Int_Ack		Int_Ack
+		%define	_Update_IRQ_Line	Update_IRQ_Line
+	%endif
+
 	extern _main68k_readOdometer
 	extern _main68k_releaseCycles
 	extern _main68k_interrupt
