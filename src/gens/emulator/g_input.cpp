@@ -21,6 +21,9 @@
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 
+// VDP
+#include "gens_core/vdp/vdp_rend.h"
+
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
@@ -428,6 +431,10 @@ void Input_KeyDown(int key)
 			}
 			break;
 #endif /* GENS_CDROM */
+		
+		case GENS_KEY_i:
+			VDP_Layers ^= VDP_LAYER_PALETTE_LOCK;
+			break;
 		
 		default:
 			break;

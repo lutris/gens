@@ -36,9 +36,15 @@ static inline void* gens_malloc_align(size_t size, size_t alignment)
 #include <stdlib.h>
 static inline void* gens_malloc_align(size_t size, size_t alignment)
 {
+#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
 	void *mem;
 	posix_memalign(&mem, alignment, size);
 	return mem;
+#else
+	// TODO: Write a wrapper class for aligned malloc.
+	((void)alignment);
+	return malloc(size);
+#endif
 }
 
 #endif /* GENS_OS_WIN32 */
