@@ -1255,9 +1255,14 @@ section .text align=64
 	%%First_Loop
 		
 		GET_PATTERN_INFO 0
-		
 		GET_PATTERN_DATA %1, 0
 		
+		; Check for swapped Scroll B priority.
+		test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_SWAP
+		jz	short %%No_Swap_ScrollB_Priority
+		xor	ax, 0x8000
+		
+	%%No_Swap_ScrollB_Priority
 		test eax, 0x0800							; on teste si H-Flip ?
 		jz near %%No_H_Flip							; si oui alors
 		
@@ -1416,6 +1421,12 @@ section .text align=64
 		GET_PATTERN_INFO 1
 		GET_PATTERN_DATA %1, 0
 		
+		; Check for swapped Scroll A priority.
+		test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_SWAP
+		jz	short %%No_Swap_ScrollA_Priority_1
+		xor	ax, 0x8000
+		
+	%%No_Swap_ScrollA_Priority_1
 		test eax, 0x0800							; on teste si H-Flip ?
 		jz near %%No_H_Flip							; si oui alors
 
@@ -1459,9 +1470,6 @@ section .text align=64
 		dec byte [Data_Misc.Length_A]	; un cell de moins à traiter pour Scroll A
 		jns near %%Loop_SCA
 
-
-
-
 %%LC_SCA
 
 %if %2 > 0
@@ -1470,7 +1478,13 @@ section .text align=64
 
 	GET_PATTERN_INFO 1
 	GET_PATTERN_DATA %1, 0
-
+	
+	; Check for swapped Scroll A priority.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_SWAP
+	jz	short %%No_Swap_ScrollA_Priority_2
+	xor	ax, 0x8000
+	
+%%No_Swap_ScrollA_Priority_2
 	test eax, 0x0800							; on teste si H-Flip ?
 	mov ecx, [Data_Misc.Mask]
 	jz near %%LC_SCA_No_H_Flip					; si oui alors
@@ -1638,6 +1652,12 @@ section .text align=64
 		mov ebx, eax					; ebx = CellInfo
 		mov esi, eax					; esi = CellInfo
 		
+		; Check for swapped sprite priority.
+		test	dword [_VDP_Layers], VDP_LAYER_SPRITE_SWAP
+		jz	short %%No_Swap_Sprite_Priority
+		xor	ax, 0x8000
+		
+	%%No_Swap_Sprite_Priority
 		shr bx, 9					; isolate the palette in ebx
 		mov ecx, edx					; ecx = Y Offset
 		and ebx, 0x30					; keep the palette numberan even multiple of 16
@@ -1718,6 +1738,10 @@ section .text align=64
 			cmp ebp, [H_Pix]
 			jge %%Spr_Test_X_Max_Loop
 		
+		; Check if sprites should always be on top.
+		test	dword [_VDP_Layers], VDP_LAYER_SPRITE_ALWAYSONTOP
+		jnz	near %%H_Flip_P1
+		
 		test eax, 0x8000				; test the priority
 		jnz near %%H_Flip_P1
 		jmp short %%H_Flip_P0
@@ -1775,6 +1799,10 @@ section .text align=64
 	%%Spr_Test_X_Min
 			cmp ebp, -7
 			jl %%Spr_Test_X_Min_Loop
+		
+		; Check if sprites should always be on top.
+		test	dword [_VDP_Layers], VDP_LAYER_SPRITE_ALWAYSONTOP
+		jnz	near %%No_H_Flip_P1
 		
 		test ax, 0x8000					; test the priority
 		jnz near %%No_H_Flip_P1
