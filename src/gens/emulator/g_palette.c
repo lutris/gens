@@ -7,6 +7,7 @@
 #include "g_main.hpp"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
+#include "gens_core/vdp/vdp_io.h"
 
 
 int Contrast_Level;
@@ -246,4 +247,7 @@ void Recalculate_Palettes(void)
 		_32X_VDP_CRam_Ajusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
 		_32X_VDP_CRam_Ajusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
 	}
+	
+	// Set CRam_Flag.
+	CRam_Flag = 1;
 }
