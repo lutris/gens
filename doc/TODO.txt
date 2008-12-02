@@ -10,6 +10,7 @@ TODO for Gens/GS m6:
   indicating interlaced frames. This will require MDP_RENDER_INTERLACED in
   MDP_Render_t.
 - [MDP] Initial plugin manager UI.
+- vdp_rend.h, vdp_io.h: Move externs to the correct files.
 
 TODO for Gens/GS m6.1:
 - [MDP] New plugin types:
