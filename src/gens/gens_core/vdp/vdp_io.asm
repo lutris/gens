@@ -376,91 +376,90 @@ section .text align=64
 %macro DMA_LOOP 2
 
 %if %1 < 1
-	and esi, 0x003FFFFE
+	and	esi, 0x003FFFFE
 %elif %1 < 2
-	and esi, 0xFFFE
+	and	esi, 0xFFFE
 %elif %1 < 3
-	and esi, 0x0001FFFE
-	add esi, [Bank_M68K]
+	and	esi, 0x0001FFFE
+	add	esi, [Bank_M68K]
 %elif %1 < 4
-	sub esi, 2
-	and esi, 0x0003FFFE
+	sub	esi, 2
+	and	esi, 0x0003FFFE
 %elif %1 < 7
-	sub esi, 2
-	and esi, 0x0001FFFE
+	sub	esi, 2
+	and	esi, 0x0001FFFE
 %else
-	sub esi, 2				; cell rearranged
-	xor eax, eax				; for offset
-	and esi, 0x0001FFFE
+	sub	esi, 2		; cell rearranged
+	xor	eax, eax	; for offset
+	and	esi, 0x0001FFFE
 %endif
-	mov ebx, edi
+	mov	ebx, edi
 %if %2 < 1
-	mov dword [_VRam_Flag], 1
-	mov byte [_DMAT_Type], 0
+	mov	dword [_VRam_Flag], 1
+	mov	byte [_DMAT_Type], 0
 %else
 	%if %2 < 2
-		mov dword [_CRam_Flag], 1
+		mov	dword [_CRam_Flag], 1
 	%endif
-	mov byte [_DMAT_Type], 1
+	mov	byte [_DMAT_Type], 1
 %endif
-	xor edi, edi
-	mov dword [_Ctrl.DMA], 0
-	jmp short %%Loop
+	xor	edi, edi
+	mov	dword [_Ctrl.DMA], 0
+	jmp	short %%Loop
 	
 	align 16
 	
 %%Loop
-	mov di, bx
+	mov	di, bx
 %if %1 < 1
-	mov ax, [Rom_Data + esi]
-	add esi, 2
+	mov	ax, [Rom_Data + esi]
+	add	esi, 2
 %elif %1 < 2
-	mov ax, [Ram_68k + esi]
-	add si, 2
+	mov	ax, [Ram_68k + esi]
+	add	si, 2
 %elif %1 < 3
-	mov ax, [Ram_Prg + esi]
-	add esi, 2
+	mov	ax, [Ram_Prg + esi]
+	add	esi, 2
 %elif %1 < 4
-	mov ax, [Ram_Word_2M + esi]
-	add esi, 2
+	mov	ax, [Ram_Word_2M + esi]
+	add	esi, 2
 %elif %1 < 6
-	mov ax, [Ram_Word_1M + esi + 0x00000]
-	add esi, 2
+	mov	ax, [Ram_Word_1M + esi + 0x00000]
+	add	esi, 2
 %elif %1 < 7
-	mov ax, [Ram_Word_1M + esi + 0x20000]
-	add esi, 2
+	mov	ax, [Ram_Word_1M + esi + 0x20000]
+	add	esi, 2
 %elif %1 < 8
-	mov ax, [Cell_Conv_Tab + esi]
-	add esi, 2
-	mov ax, [Ram_Word_1M + eax * 2 + 0x00000]
+	mov	ax, [Cell_Conv_Tab + esi]
+	add	esi, 2
+	mov	ax, [Ram_Word_1M + eax * 2 + 0x00000]
 %elif %1 < 9
-	mov ax, [Cell_Conv_Tab + esi]
-	add esi, 2
-	mov ax, [Ram_Word_1M + eax * 2 + 0x20000]
+	mov	ax, [Cell_Conv_Tab + esi]
+	add	esi, 2
+	mov	ax, [Ram_Word_1M + eax * 2 + 0x20000]
 %endif
 %if %2 < 1
-	shr di, 1
-	jnc short %%No_Swap
-		rol ax, 8
+	shr	di, 1
+	jnc	short %%No_Swap
+	rol	ax, 8
 %%No_Swap
 %else
-	and di, byte 0x7E
+	and	di, byte 0x7E
 %endif
-	add bx, dx
-	dec ecx
+	add	bx, dx
+	dec	ecx
 %if %2 < 1
-	mov [_VRam + edi * 2], ax
+	mov	[_VRam + edi * 2], ax
 %elif %2 < 2
-	mov [_CRam + edi], ax
+	mov	[_CRam + edi], ax
 %else
-	mov [_VSRam + edi], ax
+	mov	[_VSRam + edi], ax
 %endif
-	jnz short %%Loop
-
+	jnz	short %%Loop
+	
 %%End_Loop
 	jmp .End_DMA
-
-
+	
 %endmacro
 
 ;***********************************************
