@@ -389,23 +389,45 @@ section .bss align=64
 	extern _32X_FIFO_Read
 	extern _32X_MINT
 	extern _32X_SINT
-	extern _32X_Palette_16B
-	extern _32X_Palette_32B
-	extern _32X_VDP_Ram
-	extern _32X_VDP_CRam
-	extern _32X_VDP_CRam_Ajusted
-	extern _32X_VDP_CRam_Ajusted32
-	extern _32X_VDP
-
+	
+	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
-	%define _PWM_FIFO_R PWM_FIFO_R
-	%define _PWM_FIFO_L PWM_FIFO_L
-	%define _PWM_FULL_TAB PWM_FULL_TAB
-	%define _PWM_RP_R PWM_RP_R
-	%define _PWM_WP_R PWM_WP_R
-	%define _PWM_RP_L PWM_RP_L
-	%define _PWM_WP_L PWM_WP_L
-	%define _PWM_Mode PWM_Mode
+		%define	__32X_Palette_16B		_32X_Palette_16B
+		%define	__32X_Palette_32B		_32X_Palette_32B
+		
+		%define	__32X_VDP_Ram			_32X_VDP_Ram
+		%define __32X_VDP_CRam			_32X_VDP_CRam
+		
+		%define __32X_VDP_CRam_Ajusted		_32X_VDP_CRam_Ajusted
+		%define	__32X_VDP_CRam_Ajusted32	_32X_VDP_CRam_Ajusted32
+		
+		%define	__32X_VDP			_32X_VDP
+		%define __32X_VDP.Mode			_32X_VDP.Mode
+		%define __32X_VDP.State			_32X_VDP.State
+		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
+		%define __32X_VDP.AF_St			_32X_VDP.AF_St
+		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
+		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
+	%endif
+	
+	extern __32X_Palette_16B
+	extern __32X_Palette_32B
+	extern __32X_VDP_CRam_Ajusted
+	extern __32X_VDP_CRam_Ajusted32
+	extern __32X_VDP_Ram
+	extern __32X_VDP_CRam
+	extern __32X_VDP
+	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define _PWM_FIFO_R PWM_FIFO_R
+		%define _PWM_FIFO_L PWM_FIFO_L
+		%define _PWM_FULL_TAB PWM_FULL_TAB
+		%define _PWM_RP_R PWM_RP_R
+		%define _PWM_WP_R PWM_WP_R
+		%define _PWM_RP_L PWM_RP_L
+		%define _PWM_WP_L PWM_WP_L
+		%define _PWM_Mode PWM_Mode
 	%endif
 
 	extern _PWM_FIFO_R

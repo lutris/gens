@@ -139,24 +139,46 @@ section .bss align=64
 	extern M_SH2
 	extern S_SH2
 	
-	; 32B and Ajusted32 ported from Gens Re-Recording.
-	extern _32X_Palette_16B
-	extern _32X_Palette_32B
-	extern _32X_VDP_Ram
-	extern _32X_VDP_CRam
-	extern _32X_VDP_CRam_Ajusted
-	extern _32X_VDP_CRam_Ajusted32
-	extern _32X_VDP
-
+	; 32B and Ajusted32 ported from Gens Rerecording.
+	
+	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
-	%define _PWM_FIFO_R PWM_FIFO_R
-	%define _PWM_FIFO_L PWM_FIFO_L
-	%define _PWM_FULL_TAB PWM_FULL_TAB
-	%define _PWM_RP_R PWM_RP_R
-	%define _PWM_WP_R PWM_WP_R
-	%define _PWM_RP_L PWM_RP_L
-	%define _PWM_WP_L PWM_WP_L
-	%define _PWM_Mode PWM_Mode
+		%define	__32X_Palette_16B		_32X_Palette_16B
+		%define	__32X_Palette_32B		_32X_Palette_32B
+		
+		%define	__32X_VDP_Ram			_32X_VDP_Ram
+		%define __32X_VDP_CRam			_32X_VDP_CRam
+		
+		%define __32X_VDP_CRam_Ajusted		_32X_VDP_CRam_Ajusted
+		%define	__32X_VDP_CRam_Ajusted32	_32X_VDP_CRam_Ajusted32
+		
+		%define	__32X_VDP			_32X_VDP
+		%define __32X_VDP.Mode			_32X_VDP.Mode
+		%define __32X_VDP.State			_32X_VDP.State
+		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
+		%define __32X_VDP.AF_St			_32X_VDP.AF_St
+		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
+		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
+	%endif
+	
+	extern __32X_Palette_16B
+	extern __32X_Palette_32B
+	extern __32X_VDP_Ram
+	extern __32X_VDP_CRam
+	extern __32X_VDP_CRam_Ajusted
+	extern __32X_VDP_CRam_Ajusted32
+	extern __32X_VDP
+	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define _PWM_FIFO_R PWM_FIFO_R
+		%define _PWM_FIFO_L PWM_FIFO_L
+		%define _PWM_FULL_TAB PWM_FULL_TAB
+		%define _PWM_RP_R PWM_RP_R
+		%define _PWM_WP_R PWM_WP_R
+		%define _PWM_RP_L PWM_RP_L
+		%define _PWM_WP_L PWM_WP_L
+		%define _PWM_Mode PWM_Mode
 	%endif
 
 	extern _PWM_FIFO_R
@@ -167,20 +189,21 @@ section .bss align=64
 	extern _PWM_RP_L
 	extern _PWM_WP_L
 	extern _PWM_Mode
-
+	
+	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
-	%define _PWM_Cycle_Tmp PWM_Cycle_Tmp
-	%define _PWM_Int_Tmp PWM_Int_Tmp
-	%define _PWM_FIFO_L_Tmp PWM_FIFO_L_Tmp
-	%define _PWM_FIFO_R_Tmp PWM_FIFO_R_Tmp
+		%define _PWM_Cycle_Tmp PWM_Cycle_Tmp
+		%define _PWM_Int_Tmp PWM_Int_Tmp
+		%define _PWM_FIFO_L_Tmp PWM_FIFO_L_Tmp
+		%define _PWM_FIFO_R_Tmp PWM_FIFO_R_Tmp
 	%endif
-
+	
 	extern _PWM_Cycle_Tmp
 	extern _PWM_Int_Tmp
 	extern _PWM_FIFO_L_Tmp
 	extern _PWM_FIFO_R_Tmp
-
-
+	
+	
 	struc vx
 		.Mode		resd 1
 		.State		resd 1
@@ -321,14 +344,14 @@ section .text align=64
 
 	MSH2_Read_Byte_00_Rom		
 		and ecx, 0x07FF
-		mov al, [_32X_MSH2_Rom + ecx]
+		mov al, [__32X_MSH2_Rom + ecx]
 		ret
 
 
 	ALIGN4
 
 	SH2_Read_Byte_VDP
-		test byte [_32X_FM], 0xFF
+		test byte [__32X_FM], 0xFF
 		jz short SH2_RB_Bad
 		test ecx, 0xFFBE00
 		jnz short SH2_RB_Bad
@@ -351,7 +374,7 @@ section .text align=64
 
 	SSH2_Read_Byte_00_Rom		
 		and ecx, 0x03FF
-		mov al, [_32X_SSH2_Rom + ecx]
+		mov al, [__32X_SSH2_Rom + ecx]
 		ret
 
 
@@ -368,7 +391,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x3FFFFF
 		sub edx, byte 6
-		mov al, [_32X_Rom + ecx]
+		mov al, [__32X_Rom + ecx]
 		mov [ebp + SH2.Cycle_IO], edx
 		ret
 
@@ -380,7 +403,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		xor ecx, byte 1
 		sub edx, byte 4
-		mov al, [_32X_VDP_Ram + ecx]
+		mov al, [__32X_VDP_Ram + ecx]
 		mov [ebp + SH2.Cycle_IO], edx
 		ret
 
@@ -392,7 +415,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		xor ecx, byte 1
 		sub edx, byte 4
-		mov al, [_32X_VDP_Ram + ecx + 0x20000]
+		mov al, [__32X_VDP_Ram + ecx + 0x20000]
 		mov [ebp + SH2.Cycle_IO], edx
 		ret
 
@@ -401,7 +424,7 @@ section .text align=64
 	
 	DECLF SH2_Read_Byte_Ram, 4
 		and ecx, 0x3FFFF
-		mov al, [_32X_Ram + ecx]
+		mov al, [__32X_Ram + ecx]
 		ret
 
 
@@ -426,15 +449,15 @@ section .text align=64
 
 	MSH2_Read_Word_00_Rom		
 		and ecx, 0x07FE
-		mov ah, [_32X_MSH2_Rom + ecx]
-		mov al, [_32X_MSH2_Rom + ecx + 1]
+		mov ah, [__32X_MSH2_Rom + ecx]
+		mov al, [__32X_MSH2_Rom + ecx + 1]
 		ret
 
 
 	ALIGN4
 
 	SH2_Read_Word_VDP
-		test byte [_32X_FM], 0xFF
+		test byte [__32X_FM], 0xFF
 		jz short SH2_RW_Bad
 		test ecx, 0xFFBE00
 		jnz short SH2_Read_Word_VDP_Palette
@@ -457,8 +480,8 @@ section .text align=64
 
 	SSH2_Read_Word_00_Rom		
 		and ecx, 0x03FE
-		mov ah, [_32X_SSH2_Rom + ecx]
-		mov al, [_32X_SSH2_Rom + ecx + 1]
+		mov ah, [__32X_SSH2_Rom + ecx]
+		mov al, [__32X_SSH2_Rom + ecx + 1]
 		ret
 
 
@@ -476,7 +499,7 @@ section .text align=64
 		jnz short SH2_RW_Bad
 
 		and ecx, 0x1FE
-		mov ax, [_32X_VDP_CRam + ecx]
+		mov ax, [__32X_VDP_CRam + ecx]
 		ret
 
 
@@ -486,8 +509,8 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x3FFFFE
 		sub edx, byte 8
-		mov ah, [_32X_Rom + ecx + 0]
-		mov al, [_32X_Rom + ecx + 1]
+		mov ah, [__32X_Rom + ecx + 0]
+		mov al, [__32X_Rom + ecx + 1]
 		mov [ebp + SH2.Cycle_IO], edx
 		ret
 
@@ -498,7 +521,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x1FFFE
 		sub edx, byte 5
-		mov ax, [_32X_VDP_Ram + ecx]
+		mov ax, [__32X_VDP_Ram + ecx]
 		mov [ebp + SH2.Cycle_IO], edx
 		ret
 
@@ -509,7 +532,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x1FFFE
 		sub edx, byte 5
-		mov ax, [_32X_VDP_Ram + ecx + 0x20000]
+		mov ax, [__32X_VDP_Ram + ecx + 0x20000]
 		mov [ebp + SH2.Cycle_IO], edx
 		ret
 
@@ -518,8 +541,8 @@ section .text align=64
 	
 	DECLF SH2_Read_Word_Ram, 4
 		and ecx, 0x3FFFE
-		mov ah, [_32X_Ram + ecx + 0]
-		mov al, [_32X_Ram + ecx + 1]
+		mov ah, [__32X_Ram + ecx + 0]
+		mov al, [__32X_Ram + ecx + 1]
 		ret
 
 
@@ -554,7 +577,7 @@ section .text align=64
 
 	MSH2_Read_Long_00_Rom
 		and ecx, 0x07FC
-		mov eax, [_32X_MSH2_Rom + ecx]
+		mov eax, [__32X_MSH2_Rom + ecx]
 		bswap eax
 		ret
 
@@ -562,7 +585,7 @@ section .text align=64
 	ALIGN32
 
 	SH2_Read_Long_VDP_Reg
-		test byte [_32X_FM], 0xFF
+		test byte [__32X_FM], 0xFF
 		jz short SH2_RL_Bad
 		test ecx, 0xFFBE00
 		jnz short SH2_Read_Long_VDP_Palette
@@ -584,7 +607,7 @@ section .text align=64
 		jnz short SH2_RL_Bad
 
 		and ecx, 0x1FC
-		mov eax, [_32X_VDP_CRam + ecx]
+		mov eax, [__32X_VDP_CRam + ecx]
 		rol eax, 16
 		ret
 
@@ -612,7 +635,7 @@ section .text align=64
 
 	SSH2_Read_Long_00_Rom		
 		and ecx, 0x03FC
-		mov eax, [_32X_SSH2_Rom + ecx]
+		mov eax, [__32X_SSH2_Rom + ecx]
 		bswap eax
 		ret
 
@@ -630,7 +653,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x3FFFFC
 		sub edx, byte 8
-		mov eax, [_32X_Rom + ecx]
+		mov eax, [__32X_Rom + ecx]
 		mov [ebp + SH2.Cycle_IO], edx
 		bswap eax
 		ret
@@ -642,7 +665,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x1FFFC
 		sub edx, byte 5
-		mov eax, [_32X_VDP_Ram + ecx]
+		mov eax, [__32X_VDP_Ram + ecx]
 		mov [ebp + SH2.Cycle_IO], edx
 		rol eax, 16
 		ret
@@ -654,7 +677,7 @@ section .text align=64
 		mov edx, [ebp + SH2.Cycle_IO]
 		and ecx, 0x1FFFC
 		sub edx, byte 5
-		mov eax, [_32X_VDP_Ram + ecx + 0x20000]
+		mov eax, [__32X_VDP_Ram + ecx + 0x20000]
 		mov [ebp + SH2.Cycle_IO], edx
 		rol eax, 16
 		ret
@@ -664,7 +687,7 @@ section .text align=64
 	
 	DECLF SH2_Read_Long_Ram, 4
 		and ecx, 0x3FFFC
-		mov eax, [_32X_Ram + ecx]
+		mov eax, [__32X_Ram + ecx]
 		bswap eax
 		ret
 
@@ -704,7 +727,7 @@ section .text align=64
 	ALIGN4
 	
 	SH2_Write_Byte_VDP
-		test byte [_32X_FM], 0xFF
+		test byte [__32X_FM], 0xFF
 		jz short SH2_WB_Bad
 		test ecx, 0xFFBE00
 		jnz short SH2_WB_Bad
@@ -737,7 +760,7 @@ section .text align=64
 		jz short .blank
 
 		xor ecx, byte 1
-		mov [_32X_VDP_Ram + ecx], dl
+		mov [__32X_VDP_Ram + ecx], dl
 
 	.blank
 		ret
@@ -751,7 +774,7 @@ section .text align=64
 		jz short .blank
 
 		xor ecx, byte 1
-		mov [_32X_VDP_Ram + ecx + 0x20000], dl
+		mov [__32X_VDP_Ram + ecx + 0x20000], dl
 
 	.blank
 		ret
@@ -761,7 +784,7 @@ section .text align=64
 	
 	DECLF SH2_Write_Byte_Ram, 8
 		and ecx, 0x3FFFF
-		mov [_32X_Ram + ecx], dl
+		mov [__32X_Ram + ecx], dl
 		ret
 
 
@@ -785,7 +808,7 @@ section .text align=64
 	ALIGN4
 	
 	SH2_Write_Word_VDP
-		test byte [_32X_FM], 0xFF
+		test byte [__32X_FM], 0xFF
 		jz short SH2_WW_Bad
 		test ecx, 0xFFBE00
 		jnz short SH2_Write_Word_VDP_Palette
@@ -801,11 +824,11 @@ section .text align=64
 
 		and edx, 0xFFFF
 		and ecx, 0x1FE
-		mov ax, [_32X_Palette_16B + edx * 2]
-		mov ebx, [_32X_Palette_32B + edx * 4]
-		mov [_32X_VDP_CRam + ecx], dx
-		mov [_32X_VDP_CRam_Ajusted + ecx], ax
-		mov [_32X_VDP_CRam_Ajusted32 + ecx * 2], ebx
+		mov ax, [__32X_Palette_16B + edx * 2]
+		mov ebx, [__32X_Palette_32B + edx * 4]
+		mov [__32X_VDP_CRam + ecx], dx
+		mov [__32X_VDP_CRam_Ajusted + ecx], ax
+		mov [__32X_VDP_CRam_Ajusted32 + ecx * 2], ebx
 		ret
 
 
@@ -833,7 +856,7 @@ section .text align=64
 		test ecx, 0x20000
 		jnz short .overwrite
 
-		mov [_32X_VDP_Ram + ecx], dx
+		mov [__32X_VDP_Ram + ecx], dx
 		ret
 
 	ALIGN4
@@ -842,13 +865,13 @@ section .text align=64
 		test dl, dl
 		jz short .blank1
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0], dl
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0], dl
 
 	.blank1
 		test dh, dh
 		jz short .blank2
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 1], dh
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 1], dh
 
 	.blank2
 		ret
@@ -860,7 +883,7 @@ section .text align=64
 		test ecx, 0x20000
 		jnz short .overwrite
 
-		mov [_32X_VDP_Ram + ecx + 0x20000], dx
+		mov [__32X_VDP_Ram + ecx + 0x20000], dx
 		ret
 
 	ALIGN4
@@ -869,13 +892,13 @@ section .text align=64
 		test dl, dl
 		jz short .blank1
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 0], dl
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 0], dl
 
 	.blank1
 		test dh, dh
 		jz short .blank2
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 1], dh
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 1], dh
 
 	.blank2
 		ret
@@ -885,8 +908,8 @@ section .text align=64
 	
 	DECLF SH2_Write_Word_Ram, 8
 		and ecx, 0x3FFFE
-		mov [_32X_Ram + ecx + 0], dh
-		mov [_32X_Ram + ecx + 1], dl
+		mov [__32X_Ram + ecx + 0], dh
+		mov [__32X_Ram + ecx + 1], dl
 		ret
 
 
@@ -941,7 +964,7 @@ section .text align=64
 	ALIGN32
 
 	SH2_Write_Long_VDP_Reg
-		test byte [_32X_FM], 0xFF
+		test byte [__32X_FM], 0xFF
 		jz short SH2_WL_Bad
 		test ecx, 0xFFBE00
 		jnz short SH2_Write_Long_VDP_Palette
@@ -966,24 +989,24 @@ section .text align=64
 		and ecx, 0x1FC
 		rol eax, 16
 		and edx, 0xFFFF
-		mov [_32X_VDP_CRam + ecx], eax
-		mov dx, [_32X_Palette_16B + edx * 2]
+		mov [__32X_VDP_CRam + ecx], eax
+		mov dx, [__32X_Palette_16B + edx * 2]
 		and eax, 0xFFFF
-		mov [_32X_VDP_CRam_Ajusted + ecx + 2], dx
-		mov ax, [_32X_Palette_16B + eax * 2]
-		mov [_32X_VDP_CRam_Ajusted + ecx + 0], ax
+		mov [__32X_VDP_CRam_Ajusted + ecx + 2], dx
+		mov ax, [__32X_Palette_16B + eax * 2]
+		mov [__32X_VDP_CRam_Ajusted + ecx + 0], ax
 
 		; Ported from Gens Re-Recording.
-		mov eax, [_32X_VDP_CRam + ecx]
+		mov eax, [__32X_VDP_CRam + ecx]
 		mov edx, eax
 		shl ecx, 1
 		rol edx, 16
 		and eax, 0xFFFF
 		and edx, 0xFFFF
-		mov eax, [_32X_Palette_32B + eax * 4]
-		mov edx, [_32X_Palette_32B + edx * 4]
-		mov [_32X_VDP_CRam_Ajusted32 + ecx + 0], eax
-		mov [_32X_VDP_CRam_Ajusted32 + ecx + 4], edx
+		mov eax, [__32X_Palette_32B + eax * 4]
+		mov edx, [__32X_Palette_32B + edx * 4]
+		mov [__32X_VDP_CRam_Ajusted32 + ecx + 0], eax
+		mov [__32X_VDP_CRam_Ajusted32 + ecx + 4], edx
 		
 		ret
 
@@ -997,7 +1020,7 @@ section .text align=64
 		test ecx, 0x20000
 		jnz short .overwrite
 
-		mov [_32X_VDP_Ram + ecx], edx
+		mov [__32X_VDP_Ram + ecx], edx
 		ret
 
 	ALIGN4
@@ -1006,25 +1029,25 @@ section .text align=64
 		test dl, dl
 		jz short .blank1
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0], dl
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0], dl
 
 	.blank1
 		test dh, dh
 		jz short .blank2
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 1], dh
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 1], dh
 
 	.blank2
 		test al, al
 		jz short .blank3
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 2], al
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 2], al
 
 	.blank3
 		test ah, ah
 		jz short .blank4
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 3], ah
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 3], ah
 
 	.blank4
 		ret
@@ -1039,7 +1062,7 @@ section .text align=64
 		test ecx, 0x20000
 		jnz short .overwrite
 
-		mov [_32X_VDP_Ram + ecx + 0x20000], edx
+		mov [__32X_VDP_Ram + ecx + 0x20000], edx
 		ret
 
 	ALIGN4
@@ -1048,25 +1071,25 @@ section .text align=64
 		test dl, dl
 		jz short .blank1
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 0], dl
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 0], dl
 
 	.blank1
 		test dh, dh
 		jz short .blank2
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 1], dh
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 1], dh
 
 	.blank2
 		test al, al
 		jz short .blank3
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 2], al
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 2], al
 
 	.blank3
 		test ah, ah
 		jz short .blank4
 
-		mov [_32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 3], ah
+		mov [__32X_VDP_Ram + ecx - 0x20000 + 0x20000 + 3], ah
 
 	.blank4
 		ret
@@ -1077,7 +1100,7 @@ section .text align=64
 	DECLF SH2_Write_Long_Ram, 8
 		and ecx, 0x3FFFC
 		bswap edx
-		mov [_32X_Ram + ecx], edx
+		mov [__32X_Ram + ecx], edx
 		ret
 
 
@@ -1146,8 +1169,8 @@ section .text align=64
 
 	MSH2_RB_IntC_H
 	SSH2_RB_IntC_H
-		mov al, [_32X_ADEN]
-		mov ah, [_32X_FM]
+		mov al, [__32X_ADEN]
+		mov ah, [__32X_FM]
 		add al, al
 		or al, ah
 		ret
@@ -1155,33 +1178,33 @@ section .text align=64
 	ALIGN32
 
 	MSH2_RB_IntC_L
-		mov al, [_32X_MINT]
+		mov al, [__32X_MINT]
 		ret
 
 	ALIGN32
 
 	SH2_RB_HCnt
-		mov al, [_32X_HIC]
+		mov al, [__32X_HIC]
 		ret
 
 	ALIGN32
 
 	SH2_RB_DREQ_H
-		mov al, [_32X_DREQ_ST + 1]
+		mov al, [__32X_DREQ_ST + 1]
 		ret
 
 	ALIGN32
 
 	SH2_RB_DREQ_L
-		mov al, [_32X_RV]
-		mov ah, [_32X_DREQ_ST]
+		mov al, [__32X_RV]
+		mov ah, [__32X_DREQ_ST]
 		or al, ah
 		ret
 
 	ALIGN32
 
 	SH2_RB_Com
-		mov al, [_32X_Comm + ecx - 0x20]
+		mov al, [__32X_Comm + ecx - 0x20]
 		ret
 
 	ALIGN32
@@ -1272,7 +1295,7 @@ section .text align=64
 	ALIGN32
 
 	SSH2_RB_IntC_L
-		mov al, [_32X_SINT]
+		mov al, [__32X_SINT]
 		ret
 
 
@@ -1298,63 +1321,63 @@ section .text align=64
 	ALIGN32
 
 	SH2_RB_VDP_Mode_H
-		mov al, [_32X_VDP + vx.Mode + 1]
+		mov al, [__32X_VDP + vx.Mode + 1]
 		ret
 
 	ALIGN4
 
 	SH2_RB_VDP_Mode_L
-		mov al, [_32X_VDP + vx.Mode + 0]
+		mov al, [__32X_VDP + vx.Mode + 0]
 		ret
 
 	ALIGN4
 
 	SH2_RB_VDP_Shift
-		mov al, [_32X_VDP + vx.Mode + 2]
+		mov al, [__32X_VDP + vx.Mode + 2]
 		ret
 
 	ALIGN4
 
 	SH2_RB_VDP_AF_Len
-		mov al, [_32X_VDP + vx.AF_Len + 0]
+		mov al, [__32X_VDP + vx.AF_Len + 0]
 		ret
 
 	ALIGN4
 
 	SH2_RB_VDP_AF_St_H
-		mov al, [_32X_VDP + vx.AF_St + 1]
+		mov al, [__32X_VDP + vx.AF_St + 1]
 		ret
 
 	ALIGN4
 
 	SH2_RB_VDP_AF_St_L
-		mov al, [_32X_VDP + vx.AF_St + 0]
+		mov al, [__32X_VDP + vx.AF_St + 0]
 		ret
 
 	ALIGN4
 
 	SH2_RB_VDP_AF_Data_H
-		mov al, [_32X_VDP + vx.AF_Data + 1]
+		mov al, [__32X_VDP + vx.AF_Data + 1]
 		ret
 
 	ALIGN4
 	
 	SH2_RB_VDP_AF_Data_L
-		mov al, [_32X_VDP + vx.AF_Data + 0]
+		mov al, [__32X_VDP + vx.AF_Data + 0]
 		ret
 
 	ALIGN32
 	
 	SH2_RB_VDP_State_H
-		mov al, [_32X_VDP + vx.State + 1]
+		mov al, [__32X_VDP + vx.State + 1]
 		ret
 
 	ALIGN4
 	
 	SH2_RB_VDP_State_L
-		mov al, [_32X_VDP + vx.State]
+		mov al, [__32X_VDP + vx.State]
 		xor al, 2
-		mov [_32X_VDP + vx.State], al
+		mov [__32X_VDP + vx.State], al
 		ret
 
 
@@ -1393,79 +1416,79 @@ section .text align=64
 	ALIGN32
 
 	MSH2_RW_IntC
-		mov al, [_32X_ADEN]
-		mov ah, [_32X_FM]
+		mov al, [__32X_ADEN]
+		mov ah, [__32X_FM]
 		add al, al
 		or ah, al
-		mov al, [_32X_MINT]
+		mov al, [__32X_MINT]
 		ret
 
 	ALIGN32
 
 	SH2_RW_HCnt
-		mov al, [_32X_HIC]
+		mov al, [__32X_HIC]
 		xor ah, ah
 		ret
 
 	ALIGN32
 
 	SH2_RW_Com
-		mov ah, [_32X_Comm + ecx - 0x20 + 0]
-		mov al, [_32X_Comm + ecx - 0x20 + 1]
+		mov ah, [__32X_Comm + ecx - 0x20 + 0]
+		mov al, [__32X_Comm + ecx - 0x20 + 1]
 		ret
 
 	ALIGN32
 
 	SH2_RW_DREQ
-		mov al, [_32X_RV]
-		mov ah, [_32X_DREQ_ST]
+		mov al, [__32X_RV]
+		mov ah, [__32X_DREQ_ST]
 		or al, ah
-		mov ah, [_32X_DREQ_ST + 1]
+		mov ah, [__32X_DREQ_ST + 1]
 		ret
 
 	ALIGN32
 
 	SH2_RW_DREQ_Src_H
-		mov ax, [_32X_DREQ_SRC + 2]
+		mov ax, [__32X_DREQ_SRC + 2]
 		ret
 
 	ALIGN4
 	
 	SH2_RW_DREQ_Src_L
-		mov ax, [_32X_DREQ_SRC]
+		mov ax, [__32X_DREQ_SRC]
 		ret
 
 	ALIGN4
 	
 	SH2_RW_DREQ_Dst_H
-		mov ax, [_32X_DREQ_DST + 2]
+		mov ax, [__32X_DREQ_DST + 2]
 		ret
 
 	ALIGN4
 	
 	SH2_RW_DREQ_Dst_L
-		mov ax, [_32X_DREQ_DST]
+		mov ax, [__32X_DREQ_DST]
 		ret
 
 	ALIGN4
 
 	SH2_RW_DREQ_Len
-		mov ax, [_32X_DREQ_LEN]
+		mov ax, [__32X_DREQ_LEN]
 		ret
 
 
 	ALIGN32
 	
 	SH2_RW_FIFO
-		mov ax, [_32X_DREQ_ST]
-		mov edx, [_32X_FIFO_Read]
-		mov ecx, [_32X_FIFO_Block]
+		mov ax, [__32X_DREQ_ST]
+		mov edx, [__32X_FIFO_Read]
+		mov ecx, [__32X_FIFO_Block]
 		and ax, 0x4004
 		xor ecx, byte (4 * 2)
 		cmp ax, 0x0004
 		jne short .FIFO_End
 
-		mov ax, [_32X_FIFO_A + ecx + edx * 2]
+		mov ax, [__32X_FIFO_A + ecx + edx * 2]
 
 ;pushad
 ;push eax
@@ -1480,7 +1503,7 @@ section .text align=64
 		cmp edx, 4
 		jae short .32X_FIFO_Empty_A
 
-		mov [_32X_FIFO_Read], edx
+		mov [__32X_FIFO_Read], edx
 		ret
 
 	ALIGN4
@@ -1492,28 +1515,28 @@ section .text align=64
 	ALIGN4
 	
 	.32X_FIFO_Empty_A
-		mov dx, [_32X_DREQ_LEN]
+		mov dx, [__32X_DREQ_LEN]
 		push eax
 		sub dx, byte 4
-		mov al, [_32X_DREQ_ST + 1]
-		mov [_32X_DREQ_LEN], dx
+		mov al, [__32X_DREQ_ST + 1]
+		mov [__32X_DREQ_LEN], dx
 		jz short .32X_FIFO_Read_End
 
 		test al, 0x80
 		jz short .32X_FIFO_Empty_B
 
 		xor dl, dl
-		mov [_32X_FIFO_Block], ecx
-		mov [_32X_DREQ_ST + 1], dl
-		mov [_32X_FIFO_Write], dl
-		mov [_32X_FIFO_Read], dl
+		mov [__32X_FIFO_Block], ecx
+		mov [__32X_DREQ_ST + 1], dl
+		mov [__32X_FIFO_Write], dl
+		mov [__32X_FIFO_Read], dl
 		pop eax
 		ret
 
 	ALIGN4
 
 	.32X_FIFO_Empty_B
-		mov byte [_32X_DREQ_ST + 1], 0x40
+		mov byte [__32X_DREQ_ST + 1], 0x40
 		xor edx, edx
 		mov ecx, M_SH2						; we use M_SH2 instead of EBP (like real 32X).
 		call SH2_DMA0_Request
@@ -1525,7 +1548,7 @@ section .text align=64
 	.32X_FIFO_Read_End
 		xor edx, edx
 		mov ecx, M_SH2						; we use M_SH2 instead of EBP (like real 32X).
-		mov [_32X_DREQ_ST], dx
+		mov [__32X_DREQ_ST], dx
 		call SH2_DMA0_Request
 		pop eax
 		ret
@@ -1597,11 +1620,11 @@ section .text align=64
 	ALIGN32
 
 	SSH2_RW_IntC
-		mov al, [_32X_ADEN]
-		mov ah, [_32X_FM]
+		mov al, [__32X_ADEN]
+		mov ah, [__32X_FM]
 		add al, al
 		or ah, al
-		mov al, [_32X_SINT]
+		mov al, [__32X_SINT]
 		ret
 
 	ALIGN32
@@ -1622,41 +1645,41 @@ section .text align=64
 	ALIGN32
 
 	SH2_RW_VDP_Mode
-		mov ax, [_32X_VDP + vx.Mode]
+		mov ax, [__32X_VDP + vx.Mode]
 		ret
 
 	ALIGN4
 	
 	SH2_RW_VDP_Shift
-		mov al, [_32X_VDP + vx.Mode + 2]
+		mov al, [__32X_VDP + vx.Mode + 2]
 		xor ah, ah
 		ret
 
 	ALIGN4
 
 	SH2_RW_VDP_AF_Len
-		mov al, [_32X_VDP + vx.AF_Len]
+		mov al, [__32X_VDP + vx.AF_Len]
 		xor ah, ah
 		ret
 
 	ALIGN4
 
 	SH2_RW_VDP_AF_St
-		mov ax, [_32X_VDP + vx.AF_St]
+		mov ax, [__32X_VDP + vx.AF_St]
 		ret
 
 	ALIGN4
 
 	SH2_RW_VDP_AF_Data
-		mov ax, [_32X_VDP + vx.AF_Data]
+		mov ax, [__32X_VDP + vx.AF_Data]
 		ret
 
 	ALIGN32
 
 	SH2_RW_VDP_State
-		mov ax, [_32X_VDP + vx.State]
+		mov ax, [__32X_VDP + vx.State]
 		xor ax, byte 2
-		mov [_32X_VDP + vx.State], ax
+		mov [__32X_VDP + vx.State], ax
 		ret
 
 
@@ -1715,28 +1738,28 @@ section .text align=64
 	MSH2_WB_IntC_H
 	SSH2_WB_IntC_H
 		and dl, 0x80
-		mov al, [_32X_FM]
+		mov al, [__32X_FM]
 		xor al, dl
-		mov [_32X_FM], dl
+		mov [__32X_FM], dl
 		jnz near __32X_Set_FB
 		ret
 
 	ALIGN32
 
 	MSH2_WB_IntC_L
-		mov [_32X_MINT], dl
+		mov [__32X_MINT], dl
 		ret
 
 	ALIGN32
 
 	SH2_WB_HCnt
-		mov [_32X_HIC], dl
+		mov [__32X_HIC], dl
 		ret
 
 	ALIGN32
 
 	SH2_WB_Com
-		mov [_32X_Comm + ecx - 0x20], dl
+		mov [__32X_Comm + ecx - 0x20], dl
 		ret
 
 	ALIGN32
@@ -1907,7 +1930,7 @@ section .text align=64
 	ALIGN32
 
 	SSH2_WB_IntC_L
-		mov [_32X_SINT], dl
+		mov [__32X_SINT], dl
 		ret
 
 
@@ -1941,35 +1964,35 @@ section .text align=64
 	ALIGN32
 
 	SH2_WB_VDP_Mode
-		mov [_32X_VDP + vx.Mode], dl
+		mov [__32X_VDP + vx.Mode], dl
 		ret
 
 	ALIGN4
 	
 	SH2_WB_VDP_Shift
-		mov [_32X_VDP + vx.Mode + 2], dl
+		mov [__32X_VDP + vx.Mode + 2], dl
 		ret
 
 	ALIGN4
 	
 	SH2_WB_VDP_AF_Len
-		mov [_32X_VDP + vx.AF_Len], dl
+		mov [__32X_VDP + vx.AF_Len], dl
 		ret
 
 	ALIGN32
 	
 	SH2_WB_VDP_State
-		mov ah, [_32X_VDP + vx.Mode + 0]
-		mov al, [_32X_VDP + vx.State + 1]
+		mov ah, [__32X_VDP + vx.Mode + 0]
+		mov al, [__32X_VDP + vx.State + 1]
 		test ah, 3
-		mov [_32X_VDP + vx.State + 2], dl
+		mov [__32X_VDP + vx.State + 2], dl
 		jz short .blank
 
 		test al, al
 		jns short .not_in_vblank
 		
 	.blank
-		mov [_32X_VDP + vx.State + 0], dl
+		mov [__32X_VDP + vx.State + 0], dl
 		jmp __32X_Set_FB
 
 	ALIGN4
@@ -2024,18 +2047,18 @@ section .text align=64
 
 	MSH2_WW_IntC
 		and dh, 0x80
-		mov al, [_32X_FM]
-		mov [_32X_MINT], dl
+		mov al, [__32X_FM]
+		mov [__32X_MINT], dl
 		xor al, dh
-		mov [_32X_FM], dh
+		mov [__32X_FM], dh
 		jnz near __32X_Set_FB
 		ret
 
 	ALIGN32
 
 	SH2_WW_Com
-		mov [_32X_Comm + ecx - 0x20 + 0], dh
-		mov [_32X_Comm + ecx - 0x20 + 1], dl
+		mov [__32X_Comm + ecx - 0x20 + 0], dh
+		mov [__32X_Comm + ecx - 0x20 + 1], dl
 		ret
 
 	ALIGN32
@@ -2158,10 +2181,10 @@ section .text align=64
 
 	SSH2_WW_IntC
 		and dh, 0x80
-		mov al, [_32X_FM]
-		mov [_32X_SINT], dl
+		mov al, [__32X_FM]
+		mov [__32X_SINT], dl
 		xor al, dh
-		mov [_32X_FM], dh
+		mov [__32X_FM], dh
 		jnz near __32X_Set_FB
 		ret
 
@@ -2197,26 +2220,26 @@ section .text align=64
 	ALIGN32
 
 	SH2_WW_VDP_AF_St
-		mov [_32X_VDP + vx.AF_St], dx
+		mov [__32X_VDP + vx.AF_St], dx
 		ret
 
 	ALIGN4
 
 	SH2_WW_VDP_AF_Data
-		mov [_32X_VDP + vx.AF_Data], dx
+		mov [__32X_VDP + vx.AF_Data], dx
 		push edi
 		mov ax, dx
-		mov edi, [_32X_VDP + vx.State]
+		mov edi, [__32X_VDP + vx.State]
 		shl eax, 16
 		and edi, byte 1
 		mov ax, dx
 		xor edi, byte 1
-		mov edx, [_32X_VDP + vx.AF_St]
-		movzx ecx, byte [_32X_VDP + vx.AF_Len]
+		mov edx, [__32X_VDP + vx.AF_St]
+		movzx ecx, byte [__32X_VDP + vx.AF_Len]
 		shl edi, 17
 		inc ecx
 		shr ecx, 1
-		lea edi, [edi + _32X_VDP_Ram]
+		lea edi, [edi + __32X_VDP_Ram]
 		jz short .Spec
 		jnc short .Loop
 
@@ -2233,7 +2256,7 @@ section .text align=64
 		jnz short .Loop
 
 		pop edi
-		mov [_32X_VDP + vx.AF_St], edx
+		mov [__32X_VDP + vx.AF_St], edx
 		ret
 
 	ALIGN32
@@ -2242,5 +2265,5 @@ section .text align=64
 		mov [edi + edx * 2], ax
 		inc dl
 		pop edi
-		mov [_32X_VDP + vx.AF_St], edx
+		mov [__32X_VDP + vx.AF_St], edx
 		ret

@@ -146,12 +146,21 @@ section .bss align=64
 	extern _CRam_Flag
 	extern _VRam_Flag
 	
-	extern _32X_Started
-	extern _32X_Palette_16B
-	extern _32X_VDP_Ram
-	extern _32X_VDP_CRam
-	extern _32X_VDP_CRam_Ajusted
-	extern _32X_VDP
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	__32X_VDP_Ram			_32X_VDP_Ram
+		
+		%define	__32X_VDP			_32X_VDP
+		%define __32X_VDP.Mode			_32X_VDP.Mode
+		%define __32X_VDP.State			_32X_VDP.State
+		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
+		%define __32X_VDP.AF_St			_32X_VDP.AF_St
+		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
+		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
+	%endif
+	
+	extern __32X_VDP_Ram
+	extern __32X_VDP
 	
 	; MD bpp
 	extern _bppMD
@@ -2214,8 +2223,8 @@ section .text align=64
 		sub	ecx, eax
 		add	esp, byte 4
 		lea	edi, [_MD_Screen + edi * 2 + 8 * 2]
-		mov	esi, [_32X_VDP + vx.State]
-		mov	eax, [_32X_VDP + vx.Mode]
+		mov	esi, [__32X_VDP + vx.State]
+		mov	eax, [__32X_VDP + vx.Mode]
 		and	esi, byte 1
 		mov	edx, eax
 		shl	esi, 17
@@ -2226,10 +2235,10 @@ section .text align=64
 		and	eax, byte 3
 		and	edx, byte 0x10
 		and	ebp, byte 0x20
-		mov	bx, [_32X_VDP_Ram + esi + ebx * 2]
+		mov	bx, [__32X_VDP_Ram + esi + ebx * 2]
 		or	edx, ebp
-		lea	esi, [_32X_VDP_Ram + esi + ebx * 2]
-
+		lea	esi, [__32X_VDP_Ram + esi + ebx * 2]
+		
 		; Set the 32X render mode for the 32-bit color C macros.
 		shr	edx, 2
 		mov	[__32X_Rend_Mode], al

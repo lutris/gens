@@ -99,10 +99,10 @@
 
 	.no_busreq
 		cmp ebx, 0xA15100
-		jae near .32X_Reg
+		jae near ._32X_Reg
 
 		cmp ebx, 0xA130EC
-		jae short .32X_ID
+		jae short ._32X_ID
 
 		cmp ebx, 0xA1000F
 		ja short .bad
@@ -171,22 +171,22 @@
 
 	ALIGN4
 
-	.32X_ID
+	._32X_ID
 		and ebx, 3
-		mov al, [.32X_ID_Tab + ebx]
+		mov al, [._32X_ID_Tab + ebx]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_ID_Tab
+	._32X_ID_Tab
 		db 'A', 'M', 'S', 'R'
 
 	ALIGN32
 
-	.32X_Reg
+	._32X_Reg
 		cmp ebx, 0xA15180
-		jae near .32X_VDP_Reg
+		jae near ._32X_VDP_Reg
 
 		and ebx, 0x3F
 		jmp [.Table_32X_Reg + ebx * 4]
@@ -194,39 +194,39 @@
 	ALIGN4
 
 	.Table_32X_Reg
-		dd .32X_ACR_H, .32X_ACR_L, .32X_bad, .32X_Int		; 00-03
-		dd .32X_bad, .32X_Bank, .32X_bad, .32X_DREQ_C		; 04-07
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 08-0B
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 0C-0F
+		dd ._32X_ACR_H, ._32X_ACR_L, ._32X_bad, ._32X_Int		; 00-03
+		dd ._32X_bad, ._32X_Bank, ._32X_bad, ._32X_DREQ_C		; 04-07
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 08-0B
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 0C-0F
 
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 10-13
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 14-17
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 18-1B
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 1C-1F
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 10-13
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 14-17
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 18-1B
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 1C-1F
 
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm		; 20
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm		; 20
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
 
-		dd .32X_PWM_Cont_H, .32X_PWM_Cont_L
-		dd .32X_PWM_Cycle_H, .32X_PWM_Cycle_L
-		dd .32X_PWM_Pulse_L, .32X_bad
-		dd .32X_PWM_Pulse_R, .32X_bad
-		dd .32X_PWM_Pulse_L, .32X_bad
-		dd .32X_bad, .32X_bad
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad
+		dd ._32X_PWM_Cont_H, ._32X_PWM_Cont_L
+		dd ._32X_PWM_Cycle_H, ._32X_PWM_Cycle_L
+		dd ._32X_PWM_Pulse_L, ._32X_bad
+		dd ._32X_PWM_Pulse_R, ._32X_bad
+		dd ._32X_PWM_Pulse_L, ._32X_bad
+		dd ._32X_bad, ._32X_bad
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad
 
 	ALIGN32
 
-	.32X_ACR_H
+	._32X_ACR_H
 		mov al, [_32X_FM]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_ACR_L
+	._32X_ACR_L
 		mov al, [_32X_ADEN]
 		mov ah, [_32X_RES]
 		or al, ah
@@ -236,21 +236,21 @@
 
 	ALIGN4
 
-	.32X_Int
+	._32X_Int
 		xor al, al
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_Bank
+	._32X_Bank
 		mov al, [Bank_SH2]
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_DREQ_C
+	._32X_DREQ_C
 		mov al, [_32X_RV]
 		mov bl, [_32X_DREQ_ST + 0]
 		mov ah, [_32X_DREQ_ST + 1]
@@ -263,7 +263,7 @@
 
 	ALIGN32
 
-	.32X_Comm
+	._32X_Comm
 		mov al, [_32X_Comm + ebx - 0x20]
 		pop ebx
 		ret
@@ -271,35 +271,35 @@
 
 	ALIGN32
 	
-	.32X_PWM_Cont_H
+	._32X_PWM_Cont_H
 		mov al, [_PWM_Mode + 1]
 		pop ebx
 		ret 
 
 	ALIGN4
 	
-	.32X_PWM_Cont_L
+	._32X_PWM_Cont_L
 		mov al, [_PWM_Mode + 0]
 		pop ebx
 		ret 
 
 	ALIGN4
 	
-	.32X_PWM_Cycle_H
+	._32X_PWM_Cycle_H
 		mov al, [_PWM_Cycle_Tmp + 1]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_PWM_Cycle_L
+	._32X_PWM_Cycle_L
 		mov al, [_PWM_Cycle_Tmp + 0]
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_PWM_Pulse_L
+	._32X_PWM_Pulse_L
 		mov ebx, [_PWM_RP_L]
 		mov eax, [_PWM_WP_L]
 		mov al, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
@@ -308,7 +308,7 @@
 
 	ALIGN4
 
-	.32X_PWM_Pulse_R
+	._32X_PWM_Pulse_R
 		mov ebx, [_PWM_RP_R]
 		mov eax, [_PWM_WP_R]
 		mov al, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
@@ -317,7 +317,7 @@
 
 	ALIGN4
 
-	.32X_PWM_Pulse_C
+	._32X_PWM_Pulse_C
 		mov ebx, [_PWM_RP_L]
 		mov eax, [_PWM_WP_L]
 		mov al, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
@@ -327,11 +327,11 @@
 
 	ALIGN32
 	
-	.32X_VDP_Reg
+	._32X_VDP_Reg
 		test byte [_32X_FM], 0xFF
-		jnz near .32X_bad
+		jnz near ._32X_bad
 		cmp ebx, 0xA15200
-		jae near .32X_bad
+		jae near ._32X_bad
 
 		and ebx, 0xF
 		jmp [.Table_32X_VDP_Reg + ebx * 4]
@@ -339,86 +339,86 @@
 	ALIGN4
 
 	.Table_32X_VDP_Reg
-		dd .32X_VDP_Mode_H, .32X_VDP_Mode_L, .32X_bad, .32X_VDP_Shift
-		dd .32X_bad, .32X_VDP_AF_Len_L, .32X_VDP_AF_St_H, .32X_VDP_AF_St_L
-		dd .32X_VDP_AF_Data_H, .32X_VDP_AF_Data_L, .32X_VDP_State_H, .32X_VDP_State_L
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad
+		dd ._32X_VDP_Mode_H, ._32X_VDP_Mode_L, ._32X_bad, ._32X_VDP_Shift
+		dd ._32X_bad, ._32X_VDP_AF_Len_L, ._32X_VDP_AF_St_H, ._32X_VDP_AF_St_L
+		dd ._32X_VDP_AF_Data_H, ._32X_VDP_AF_Data_L, ._32X_VDP_State_H, ._32X_VDP_State_L
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad
 
 	ALIGN32
 
-	.32X_VDP_Mode_H
-		mov al, [_32X_VDP + vx.Mode + 1]
+	._32X_VDP_Mode_H
+		mov al, [__32X_VDP + vx.Mode + 1]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_Mode_L
-		mov al, [_32X_VDP + vx.Mode + 0]
+	._32X_VDP_Mode_L
+		mov al, [__32X_VDP + vx.Mode + 0]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_Shift
-		mov al, [_32X_VDP + vx.Mode + 2]
+	._32X_VDP_Shift
+		mov al, [__32X_VDP + vx.Mode + 2]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_AF_Len_L
-		mov al, [_32X_VDP + vx.AF_Len + 0]
-		pop ebx
-		ret
-
-	ALIGN32
-	
-	.32X_VDP_AF_St_H
-		mov al, [_32X_VDP + vx.AF_St + 1]
-		pop ebx
-		ret
-
-	ALIGN4
-	
-	.32X_VDP_AF_St_L
-		mov al, [_32X_VDP + vx.AF_St + 0]
-		pop ebx
-		ret
-
-	ALIGN4
-
-	.32X_VDP_AF_Data_H
-		mov al, [_32X_VDP + vx.AF_Data + 1]
-		pop ebx
-		ret
-
-	ALIGN4
-	
-	.32X_VDP_AF_Data_L
-		mov al, [_32X_VDP + vx.AF_Data + 0]
+	._32X_VDP_AF_Len_L
+		mov al, [__32X_VDP + vx.AF_Len + 0]
 		pop ebx
 		ret
 
 	ALIGN32
 	
-	.32X_VDP_State_H
-		mov al, [_32X_VDP + vx.State + 1]
+	._32X_VDP_AF_St_H
+		mov al, [__32X_VDP + vx.AF_St + 1]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_State_L
-		mov al, [_32X_VDP + vx.State]
+	._32X_VDP_AF_St_L
+		mov al, [__32X_VDP + vx.AF_St + 0]
+		pop ebx
+		ret
+
+	ALIGN4
+
+	._32X_VDP_AF_Data_H
+		mov al, [__32X_VDP + vx.AF_Data + 1]
+		pop ebx
+		ret
+
+	ALIGN4
+	
+	._32X_VDP_AF_Data_L
+		mov al, [__32X_VDP + vx.AF_Data + 0]
+		pop ebx
+		ret
+
+	ALIGN32
+	
+	._32X_VDP_State_H
+		mov al, [__32X_VDP + vx.State + 1]
+		pop ebx
+		ret
+
+	ALIGN4
+	
+	._32X_VDP_State_L
+		mov al, [__32X_VDP + vx.State]
 		xor al, 2
-		mov [_32X_VDP + vx.State], al
+		mov [__32X_VDP + vx.State], al
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_bad
+	._32X_bad
 		xor al, al
 		pop ebx
 		ret
@@ -429,7 +429,7 @@
 	DECL M68K_Read_Byte_32X_FB0
 		and ebx, 0x1FFFF
 		xor ebx, byte 1
-		mov al, [_32X_VDP_Ram + ebx]
+		mov al, [__32X_VDP_Ram + ebx]
 		pop ebx
 		ret
 
@@ -439,7 +439,7 @@
 	DECL M68K_Read_Byte_32X_FB1
 		and ebx, 0x1FFFF
 		xor ebx, byte 1
-		mov al, [_32X_VDP_Ram + ebx + 0x20000]
+		mov al, [__32X_VDP_Ram + ebx + 0x20000]
 		pop ebx
 		ret
 
@@ -544,13 +544,13 @@
 
 	.no_busreq
 		cmp ebx, 0xA15100
-		jae near .32X_Reg
+		jae near ._32X_Reg
 
 		cmp ebx, 0xA130EC
 %ifdef __GCC2
-		jae near .32X_ID
+		jae near ._32X_ID
 %else
-		jae short .32X_ID
+		jae short ._32X_ID
 %endif
 		cmp ebx, 0xA1000F
 		ja short .bad
@@ -626,22 +626,22 @@
 
 	ALIGN4
 
-	.32X_ID
+	._32X_ID
 		and ebx, 3
-		mov ax, [.32X_ID_Tab + ebx]
+		mov ax, [._32X_ID_Tab + ebx]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_ID_Tab
+	._32X_ID_Tab
 		db 'A', 'M', 'S', 'R'
 
 	ALIGN4
 
-	.32X_Reg
+	._32X_Reg
 		cmp ebx, 0xA15180
-		jae near .32X_VDP_Reg
+		jae near ._32X_VDP_Reg
 
 		and ebx, 0x3E
 		jmp [.Table_32X_Reg + ebx * 2]
@@ -649,24 +649,24 @@
 	ALIGN4
 
 	.Table_32X_Reg
-		dd .32X_ACR, .32X_INT, .32X_Bank, .32X_DREQ_C		; 00-07
-		dd .32X_DREQ_Src_H, .32X_DREQ_Src_L,				; 08-0B
-		dd .32X_DREQ_Dest_H, .32X_DREQ_Dest_L,				; 0C-0F
+		dd ._32X_ACR, ._32X_INT, ._32X_Bank, ._32X_DREQ_C		; 00-07
+		dd ._32X_DREQ_Src_H, ._32X_DREQ_Src_L,				; 08-0B
+		dd ._32X_DREQ_Dest_H, ._32X_DREQ_Dest_L,				; 0C-0F
 
-		dd .32X_DREQ_Len, .32X_FIFO, .32X_bad, .32X_bad		; 10-17
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 18-1F
+		dd ._32X_DREQ_Len, ._32X_FIFO, ._32X_bad, ._32X_bad		; 10-17
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 18-1F
 
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm		; 20
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm		; 20
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
 
-		dd .32X_PWM_Cont, .32X_PWM_Cycle
-		dd .32X_PWM_Pulse_L, .32X_PWM_Pulse_R
-		dd .32X_PWM_Pulse_C, .32X_bad
-		dd .32X_bad, .32X_bad
+		dd ._32X_PWM_Cont, ._32X_PWM_Cycle
+		dd ._32X_PWM_Pulse_L, ._32X_PWM_Pulse_R
+		dd ._32X_PWM_Pulse_C, ._32X_bad
+		dd ._32X_bad, ._32X_bad
 
 	ALIGN32
 
-	.32X_ACR
+	._32X_ACR
 		mov al, [_32X_ADEN]
 		mov ah, [_32X_RES]
 		or al, ah
@@ -677,14 +677,14 @@
 
 	ALIGN4
 
-	.32X_INT
+	._32X_INT
 		xor ax, ax
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_Bank
+	._32X_Bank
 		mov al, [Bank_SH2]
 		xor ah, ah
 		pop ebx
@@ -692,7 +692,7 @@
 
 	ALIGN4
 
-	.32X_DREQ_C
+	._32X_DREQ_C
 		mov bl, [_32X_DREQ_ST + 0]
 		mov ah, [_32X_DREQ_ST + 1]
 		mov al, [_32X_RV]
@@ -705,49 +705,49 @@
 
 	ALIGN4
 
-	.32X_DREQ_Src_H
+	._32X_DREQ_Src_H
 		mov ax, [_32X_DREQ_SRC + 2]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_DREQ_Src_L
+	._32X_DREQ_Src_L
 		mov ax, [_32X_DREQ_SRC]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_DREQ_Dest_H
+	._32X_DREQ_Dest_H
 		mov ax, [_32X_DREQ_DST + 2]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_DREQ_Dest_L
+	._32X_DREQ_Dest_L
 		mov ax, [_32X_DREQ_DST]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_DREQ_Len
+	._32X_DREQ_Len
 		mov ax, [_32X_DREQ_LEN]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_FIFO
+	._32X_FIFO
 		pop ebx
 		ret
 
 
 	ALIGN32
 
-	.32X_Comm
+	._32X_Comm
 		mov ah, [_32X_Comm + ebx - 0x20 + 0]
 		mov al, [_32X_Comm + ebx - 0x20 + 1]
 		pop ebx
@@ -756,21 +756,21 @@
 
 	ALIGN32
 	
-	.32X_PWM_Cont
+	._32X_PWM_Cont
 		mov ax, [_PWM_Mode]
 		pop ebx
 		ret 
 		
 	ALIGN4
 	
-	.32X_PWM_Cycle
+	._32X_PWM_Cycle
 		mov ax, [_PWM_Cycle_Tmp]
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_PWM_Pulse_L
+	._32X_PWM_Pulse_L
 		mov ebx, [_PWM_RP_L]
 		mov eax, [_PWM_WP_L]
 		mov ah, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
@@ -779,7 +779,7 @@
 
 	ALIGN4
 
-	.32X_PWM_Pulse_R
+	._32X_PWM_Pulse_R
 		mov ebx, [_PWM_RP_R]
 		mov eax, [_PWM_WP_R]
 		mov ah, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
@@ -788,7 +788,7 @@
 
 	ALIGN4
 
-	.32X_PWM_Pulse_C
+	._32X_PWM_Pulse_C
 		mov ebx, [_PWM_RP_L]
 		mov eax, [_PWM_WP_L]
 		mov ah, [_PWM_FULL_TAB + ebx * PWM_BUF_SIZE + eax]
@@ -798,11 +798,11 @@
 
 	ALIGN32
 
-	.32X_VDP_Reg
+	._32X_VDP_Reg
 		test byte [_32X_FM], 0xFF
-		jnz near .32X_bad
+		jnz near ._32X_bad
 		cmp ebx, 0xA15200
-		jae near .32X_CRAM
+		jae near ._32X_CRAM
 
 		and ebx, 0xE
 		jmp [.Table_32X_VDP_Reg + ebx * 2]
@@ -812,69 +812,69 @@
 	.Table_32X_VDP_Reg
 		; VDP REG
 
-		dd .32X_VDP_Mode, .32X_VDP_Shift, .32X_VDP_AF_Len, .32X_VDP_AF_St
-		dd .32X_VDP_AF_Data, .32X_VDP_State, .32X_bad, .32X_bad
+		dd ._32X_VDP_Mode, ._32X_VDP_Shift, ._32X_VDP_AF_Len, ._32X_VDP_AF_St
+		dd ._32X_VDP_AF_Data, ._32X_VDP_State, ._32X_bad, ._32X_bad
 
 	ALIGN32
 	
-	.32X_VDP_Mode
-		mov ax, [_32X_VDP + vx.Mode]
+	._32X_VDP_Mode
+		mov ax, [__32X_VDP + vx.Mode]
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_Shift
-		mov al, [_32X_VDP + vx.Mode + 2]
+	._32X_VDP_Shift
+		mov al, [__32X_VDP + vx.Mode + 2]
 		xor ah, ah
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_VDP_AF_Len
-		mov al, [_32X_VDP + vx.AF_Len]
+	._32X_VDP_AF_Len
+		mov al, [__32X_VDP + vx.AF_Len]
 		xor ah, ah
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_VDP_AF_St
-		mov ax, [_32X_VDP + vx.AF_St]
+	._32X_VDP_AF_St
+		mov ax, [__32X_VDP + vx.AF_St]
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_VDP_AF_Data
-		mov ax, [_32X_VDP + vx.AF_Data]
+	._32X_VDP_AF_Data
+		mov ax, [__32X_VDP + vx.AF_Data]
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_VDP_State
-		mov ax, [_32X_VDP + vx.State]
+	._32X_VDP_State
+		mov ax, [__32X_VDP + vx.State]
 		xor ax, byte 2
-		mov [_32X_VDP + vx.State], ax
+		mov [__32X_VDP + vx.State], ax
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_bad
+	._32X_bad
 		xor ax, ax
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_CRAM
+	._32X_CRAM
 		cmp ebx, 0xA15400
-		jae short .32X_bad
+		jae short ._32X_bad
 
-		mov ax, [_32X_VDP_CRam + ebx - 0xA15200]
+		mov ax, [__32X_VDP_CRam + ebx - 0xA15200]
 		pop ebx
 		ret
 
@@ -883,7 +883,7 @@
 	
 	DECL M68K_Read_Word_32X_FB0
 		and ebx, 0x1FFFE
-		mov ax, [_32X_VDP_Ram + ebx]
+		mov ax, [__32X_VDP_Ram + ebx]
 		pop ebx
 		ret
 
@@ -892,7 +892,7 @@
 	
 	DECL M68K_Read_Word_32X_FB1
 		and ebx, 0x1FFFE
-		mov ax, [_32X_VDP_Ram + ebx + 0x20000]
+		mov ax, [__32X_VDP_Ram + ebx + 0x20000]
 		pop ebx
 		ret
 
@@ -1030,7 +1030,7 @@
 	
 	.no_reset_z80
 		cmp ebx, 0xA15100
-		jae near .32X_Reg
+		jae near ._32X_Reg
 
 		cmp ebx, 0xA130F0
 		jae short .Genesis_Bank
@@ -1116,9 +1116,9 @@
 
 	ALIGN32
 
-	.32X_Reg
+	._32X_Reg
 		cmp ebx, 0xA15180
-		jae near .32X_VDP_Reg
+		jae near ._32X_VDP_Reg
 
 ;pushad
 ;push eax
@@ -1134,32 +1134,32 @@
 	ALIGN4
 
 	.Table_32X_Reg
-		dd .32X_ACR_H, .32X_ACR_L, .32X_bad, .32X_Int		; 00-03
-		dd .32X_bad, .32X_Bank, .32X_bad, .32X_DREQ_C		; 04-07
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 08-0B
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 0C-0F
+		dd ._32X_ACR_H, ._32X_ACR_L, ._32X_bad, ._32X_Int		; 00-03
+		dd ._32X_bad, ._32X_Bank, ._32X_bad, ._32X_DREQ_C		; 04-07
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 08-0B
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 0C-0F
 
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 10-13
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 14-17
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 18-1B
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 1C-1F
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 10-13
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 14-17
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 18-1B
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 1C-1F
 
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm		; 20
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm		; 20
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
 
-		dd .32X_bad, .32X_PWM_Cont_L
-		dd .32X_PWM_Cycle_H, .32X_PWM_Cycle_L
-		dd .32X_PWM_Pulse_L_H, .32X_PWM_Pulse_L_L
-		dd .32X_PWM_Pulse_R_H, .32X_PWM_Pulse_R_L
-		dd .32X_PWM_Pulse_C_H, .32X_PWM_Pulse_C_L
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad
-		dd .32X_bad, .32X_bad
+		dd ._32X_bad, ._32X_PWM_Cont_L
+		dd ._32X_PWM_Cycle_H, ._32X_PWM_Cycle_L
+		dd ._32X_PWM_Pulse_L_H, ._32X_PWM_Pulse_L_L
+		dd ._32X_PWM_Pulse_R_H, ._32X_PWM_Pulse_R_L
+		dd ._32X_PWM_Pulse_C_H, ._32X_PWM_Pulse_C_L
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad
+		dd ._32X_bad, ._32X_bad
 
 	ALIGN32
 
-	.32X_ACR_H
+	._32X_ACR_H
 		and al, 0x80
 		mov ah, [_32X_FM]
 		pop ecx
@@ -1171,7 +1171,7 @@
 
 	ALIGN32
 
-	.32X_ACR_L
+	._32X_ACR_L
 		mov ah, [_32X_RES]
 		mov bl, al
 		and al, 2
@@ -1210,7 +1210,7 @@
 
 	ALIGN32
 
-	.32X_Int
+	._32X_Int
 		mov bl, al
 		mov ah, [_32X_MINT]
 		add al, al
@@ -1247,7 +1247,7 @@
 
 	ALIGN32
 
-	.32X_Bank
+	._32X_Bank
 		and al, 3
 		mov [Bank_SH2], al
 		call _M68K_Set_32X_Rom_Bank
@@ -1257,7 +1257,7 @@
 
 	ALIGN32
 
-	.32X_DREQ_C
+	._32X_DREQ_C
 		mov bl, al
 		mov ah, [_32X_RV]
 		and al, 1
@@ -1288,7 +1288,7 @@
 
 	ALIGN32
 
-	.32X_Comm
+	._32X_Comm
 		mov [_32X_Comm + ebx - 0x20], al
 		pop ecx
 		pop ebx
@@ -1297,7 +1297,7 @@
 	
 	ALIGN4
 	
-	.32X_PWM_Cont_L
+	._32X_PWM_Cont_L
 		mov [_PWM_Mode + 0], al
 		pop ecx
 		pop ebx
@@ -1305,7 +1305,7 @@
 
 	ALIGN4
 
-	.32X_PWM_Cycle_H
+	._32X_PWM_Cycle_H
 		mov cl, [_PWM_Cycle_Tmp + 0]
 		mov [_PWM_Cycle_Tmp + 1], al
 		mov ch, al
@@ -1318,7 +1318,7 @@
 	
 	ALIGN4
 	
-	.32X_PWM_Cycle_L
+	._32X_PWM_Cycle_L
 		mov ch, [_PWM_Cycle_Tmp + 1]
 		mov [_PWM_Cycle_Tmp + 0], al
 		mov cl, al
@@ -1331,7 +1331,7 @@
 
 	ALIGN32
 
-	.32X_PWM_Pulse_L_H
+	._32X_PWM_Pulse_L_H
 		mov [_PWM_FIFO_L_Tmp + 1], al
 		pop ecx
 		pop ebx
@@ -1339,12 +1339,12 @@
 	
 	ALIGN32
 	
-	.32X_PWM_Pulse_L_L
+	._32X_PWM_Pulse_L_L
 		mov ecx, [_PWM_RP_L]
 		mov ebx, [_PWM_WP_L]
 		mov ah, [_PWM_FIFO_L_Tmp + 1]
 		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
-		jnz short .32X_PWM_Pulse_L_full
+		jnz short ._32X_PWM_Pulse_L_full
 
 		mov [_PWM_FIFO_L + ebx * 2], ax
 		inc ebx
@@ -1356,14 +1356,14 @@
 
 	ALIGN4
 	
-	.32X_PWM_Pulse_L_full
+	._32X_PWM_Pulse_L_full
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_PWM_Pulse_R_H
+	._32X_PWM_Pulse_R_H
 		mov [_PWM_FIFO_R_Tmp + 1], al
 		pop ecx
 		pop ebx
@@ -1371,12 +1371,12 @@
 	
 	ALIGN32
 	
-	.32X_PWM_Pulse_R_L
+	._32X_PWM_Pulse_R_L
 		mov ecx, [_PWM_RP_R]
 		mov ebx, [_PWM_WP_R]
 		mov ah, [_PWM_FIFO_R_Tmp + 1]
 		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
-		jnz short .32X_PWM_Pulse_R_full
+		jnz short ._32X_PWM_Pulse_R_full
 
 		mov [_PWM_FIFO_R + ebx * 2], ax
 		inc ebx
@@ -1388,14 +1388,14 @@
 
 	ALIGN4
 	
-	.32X_PWM_Pulse_R_full
+	._32X_PWM_Pulse_R_full
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_PWM_Pulse_C_H
+	._32X_PWM_Pulse_C_H
 		mov [_PWM_FIFO_L_Tmp + 1], al
 		pop ecx
 		pop ebx
@@ -1403,12 +1403,12 @@
 	
 	ALIGN32
 	
-	.32X_PWM_Pulse_C_L
+	._32X_PWM_Pulse_C_L
 		mov ecx, [_PWM_RP_L]
 		mov ebx, [_PWM_WP_L]
 		mov ah, [_PWM_FIFO_L_Tmp + 1]
 		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
-		jnz short .32X_PWM_Pulse_C_full
+		jnz short ._32X_PWM_Pulse_C_full
 
 		mov [_PWM_FIFO_L + ebx * 2], ax
 		mov [_PWM_FIFO_R + ebx * 2], ax
@@ -1422,7 +1422,7 @@
 
 	ALIGN4
 	
-	.32X_PWM_Pulse_C_full
+	._32X_PWM_Pulse_C_full
 		pop ecx
 		pop ebx
 		ret
@@ -1430,11 +1430,11 @@
 
 	ALIGN32
 
-	.32X_VDP_Reg
+	._32X_VDP_Reg
 		test byte [_32X_FM], 0xFF
-		jnz near .32X_bad
+		jnz near ._32X_bad
 		cmp ebx, 0xA15200
-		jae near .32X_bad
+		jae near ._32X_bad
 
 ;pushad
 ;push eax
@@ -1450,59 +1450,59 @@
 	ALIGN4
 
 	.Table_32X_VDP_Reg
-		dd .32X_bad, .32X_VDP_Mode, .32X_bad, .32X_VDP_Shift
-		dd .32X_bad, .32X_VDP_AF_Len, .32X_bad, .32X_bad
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_VDP_State
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad
+		dd ._32X_bad, ._32X_VDP_Mode, ._32X_bad, ._32X_VDP_Shift
+		dd ._32X_bad, ._32X_VDP_AF_Len, ._32X_bad, ._32X_bad
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_VDP_State
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad
 
 	ALIGN32
 	
-	.32X_VDP_Mode
-		mov [_32X_VDP + vx.Mode], al
+	._32X_VDP_Mode
+		mov [__32X_VDP + vx.Mode], al
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_Shift
-		mov [_32X_VDP + vx.Mode + 2], al
+	._32X_VDP_Shift
+		mov [__32X_VDP + vx.Mode + 2], al
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_AF_Len
-		mov [_32X_VDP + vx.AF_Len], al
+	._32X_VDP_AF_Len
+		mov [__32X_VDP + vx.AF_Len], al
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 	
-	.32X_VDP_State
-		mov bh, [_32X_VDP + vx.Mode + 0]
-		mov bl, [_32X_VDP + vx.State + 1]
+	._32X_VDP_State
+		mov bh, [__32X_VDP + vx.Mode + 0]
+		mov bl, [__32X_VDP + vx.State + 1]
 		test bh, 3
-		mov [_32X_VDP + vx.State + 2], al
-		jz short .32X_VDP_blank
+		mov [__32X_VDP + vx.State + 2], al
+		jz short ._32X_VDP_blank
 
 		test bl, bl
-		jns short .32X_VDP_State_nvb
+		jns short ._32X_VDP_State_nvb
 
-	.32X_VDP_blank
-		mov [_32X_VDP + vx.State + 0], al
+	._32X_VDP_blank
+		mov [__32X_VDP + vx.State + 0], al
 		call __32X_Set_FB
 
-	.32X_VDP_State_nvb
+	._32X_VDP_State_nvb
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_bad
+	._32X_bad
 		pop ecx
 		pop ebx
 		ret
@@ -1516,7 +1516,7 @@
 		jz short .blank
 
 		xor ebx, byte 1
-		mov [_32X_VDP_Ram + ebx], al
+		mov [__32X_VDP_Ram + ebx], al
 
 	.blank
 		pop ecx
@@ -1531,7 +1531,7 @@
 		jz short .blank
 
 		xor ebx, byte 1
-		mov [_32X_VDP_Ram + ebx + 0x20000], al
+		mov [__32X_VDP_Ram + ebx + 0x20000], al
 
 	.blank
 		pop ecx
@@ -1667,7 +1667,7 @@
 	
 	.no_reset_z80
 		cmp ebx, 0xA15100
-		jae near .32X_Reg
+		jae near ._32X_Reg
 
 		cmp ebx, 0xA130F0
 		jae short .Genesis_Bank
@@ -1760,9 +1760,9 @@
 
 	ALIGN32
 
-	.32X_Reg
+	._32X_Reg
 		cmp ebx, 0xA15180
-		jae near .32X_VDP_Reg
+		jae near ._32X_VDP_Reg
 
 ;pushad
 ;push eax
@@ -1778,24 +1778,24 @@
 	ALIGN4
 
 	.Table_32X_Reg
-		dd .32X_ACR, .32X_INT, .32X_Bank, .32X_DREQ_C		; 00-07
-		dd .32X_DREQ_Src_H, .32X_DREQ_Src_L,				; 08-0B
-		dd .32X_DREQ_Dest_H, .32X_DREQ_Dest_L,				; 0C-0F
+		dd ._32X_ACR, ._32X_INT, ._32X_Bank, ._32X_DREQ_C		; 00-07
+		dd ._32X_DREQ_Src_H, ._32X_DREQ_Src_L,				; 08-0B
+		dd ._32X_DREQ_Dest_H, ._32X_DREQ_Dest_L,				; 0C-0F
 
-		dd .32X_DREQ_Len, .32X_FIFO, .32X_bad, .32X_bad		; 10-17
-		dd .32X_bad, .32X_bad, .32X_bad, .32X_bad			; 18-1F
+		dd ._32X_DREQ_Len, ._32X_FIFO, ._32X_bad, ._32X_bad		; 10-17
+		dd ._32X_bad, ._32X_bad, ._32X_bad, ._32X_bad			; 18-1F
 
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm		; 20
-		dd .32X_Comm, .32X_Comm, .32X_Comm, .32X_Comm
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm		; 20
+		dd ._32X_Comm, ._32X_Comm, ._32X_Comm, ._32X_Comm
 
-		dd .32X_PWM_Cont, .32X_PWM_Cycle
-		dd .32X_PWM_Pulse_L, .32X_PWM_Pulse_R
-		dd .32X_PWM_Pulse_C, .32X_bad
-		dd .32X_bad, .32X_bad
+		dd ._32X_PWM_Cont, ._32X_PWM_Cycle
+		dd ._32X_PWM_Pulse_L, ._32X_PWM_Pulse_R
+		dd ._32X_PWM_Pulse_C, ._32X_bad
+		dd ._32X_bad, ._32X_bad
 
 	ALIGN32
 
-	.32X_ACR
+	._32X_ACR
 		mov bh, [_32X_FM]
 		and ah, 0x80
 		mov bl, al
@@ -1844,7 +1844,7 @@
 
 	ALIGN32
 
-	.32X_INT
+	._32X_INT
 		mov bl, al
 		mov ah, [_32X_MINT]
 		add al, al
@@ -1881,7 +1881,7 @@
 
 	ALIGN32
 
-	.32X_Bank
+	._32X_Bank
 		and al, 3
 		mov [Bank_SH2], al
 		call _M68K_Set_32X_Rom_Bank
@@ -1891,7 +1891,7 @@
 
 	ALIGN32
 
-	.32X_DREQ_C
+	._32X_DREQ_C
 		mov bl, al
 		mov ah, [_32X_RV]
 		and al, 1
@@ -1921,7 +1921,7 @@
 
 	ALIGN4
 
-	.32X_DREQ_Src_H
+	._32X_DREQ_Src_H
 		mov [_32X_DREQ_SRC + 2], al
 		pop ecx
 		pop ebx
@@ -1929,7 +1929,7 @@
 
 	ALIGN4
 
-	.32X_DREQ_Src_L
+	._32X_DREQ_Src_L
 		and ax, byte ~1
 		pop ecx
 		mov [_32X_DREQ_SRC], ax
@@ -1938,7 +1938,7 @@
 
 	ALIGN4
 
-	.32X_DREQ_Dest_H
+	._32X_DREQ_Dest_H
 		mov [_32X_DREQ_DST + 2], al
 		pop ecx
 		pop ebx
@@ -1946,7 +1946,7 @@
 
 	ALIGN4
 
-	.32X_DREQ_Dest_L
+	._32X_DREQ_Dest_L
 		mov [_32X_DREQ_DST], ax
 		pop ecx
 		pop ebx
@@ -1954,7 +1954,7 @@
 
 	ALIGN4
 
-	.32X_DREQ_Len
+	._32X_DREQ_Len
 		and ax, byte ~3
 		pop ecx
 		mov [_32X_DREQ_LEN], ax
@@ -1963,13 +1963,13 @@
 
 	ALIGN4
 
-	.32X_FIFO
+	._32X_FIFO
 		mov cx, [_32X_DREQ_ST]
 		mov ebx, [_32X_FIFO_Write]
 		and cx, 0x8004
 		cmp cx, 0x0004
 		mov ecx, [_32X_FIFO_Block]
-		jne short .32X_FIFO_End
+		jne short ._32X_FIFO_End
 
 ;pushad
 ;push eax
@@ -1983,22 +1983,22 @@
 		mov [_32X_FIFO_A + ecx + ebx * 2], ax
 		inc ebx
 		cmp ebx, 4
-		jae short .32X_FIFO_Full_A
+		jae short ._32X_FIFO_Full_A
 
 		mov [_32X_FIFO_Write], ebx
 
-	.32X_FIFO_End
+	._32X_FIFO_End
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_FIFO_Full_A
+	._32X_FIFO_Full_A
 		mov bl, [_32X_DREQ_ST + 1]
 		push edx
 		test bl, 0x40
-		jz short .32X_FIFO_Full_B
+		jz short ._32X_FIFO_Full_B
 
 		xor al, al
 		xor ecx, byte (4 * 2)
@@ -2018,7 +2018,7 @@
 
 	ALIGN4
 
-	.32X_FIFO_Full_B
+	._32X_FIFO_Full_B
 		mov byte [_32X_DREQ_ST + 1], 0x80
 
 		mov dl, 1
@@ -2033,7 +2033,7 @@
 
 	ALIGN32
 
-	.32X_Comm
+	._32X_Comm
 		mov [_32X_Comm + ebx - 0x20 + 0], ah
 		mov [_32X_Comm + ebx - 0x20 + 1], al
 		pop ecx
@@ -2043,7 +2043,7 @@
 
 	ALIGN32
 	
-	.32X_PWM_Cont
+	._32X_PWM_Cont
 		and al, 0x0F
 		pop ecx
 		mov [_PWM_Mode], al
@@ -2052,7 +2052,7 @@
 		
 	ALIGN32
 	
-	.32X_PWM_Cycle
+	._32X_PWM_Cycle
 		push eax
 		call _PWM_Set_Cycle
 		add esp, 4
@@ -2062,11 +2062,11 @@
 
 	ALIGN32
 
-	.32X_PWM_Pulse_L
+	._32X_PWM_Pulse_L
 		mov ecx, [_PWM_RP_L]
 		mov ebx, [_PWM_WP_L]
 		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
-		jnz short .32X_PWM_Pulse_L_full
+		jnz short ._32X_PWM_Pulse_L_full
 
 		mov [_PWM_FIFO_L + ebx * 2], ax
 		inc ebx
@@ -2078,18 +2078,18 @@
 
 	ALIGN4
 	
-	.32X_PWM_Pulse_L_full
+	._32X_PWM_Pulse_L_full
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_PWM_Pulse_R
+	._32X_PWM_Pulse_R
 		mov ecx, [_PWM_RP_R]
 		mov ebx, [_PWM_WP_R]
 		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
-		jnz short .32X_PWM_Pulse_R_full
+		jnz short ._32X_PWM_Pulse_R_full
 
 		mov [_PWM_FIFO_R + ebx * 2], ax
 		inc ebx
@@ -2101,18 +2101,18 @@
 
 	ALIGN4
 	
-	.32X_PWM_Pulse_R_full
+	._32X_PWM_Pulse_R_full
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_PWM_Pulse_C
+	._32X_PWM_Pulse_C
 		mov ecx, [_PWM_RP_L]
 		mov ebx, [_PWM_WP_L]
 		test byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + ebx], 0x80
-		jnz short .32X_PWM_Pulse_C_full
+		jnz short ._32X_PWM_Pulse_C_full
 
 		mov [_PWM_FIFO_L + ebx * 2], ax
 		mov [_PWM_FIFO_R + ebx * 2], ax
@@ -2126,7 +2126,7 @@
 
 	ALIGN4
 	
-	.32X_PWM_Pulse_C_full
+	._32X_PWM_Pulse_C_full
 		pop ecx
 		pop ebx
 		ret
@@ -2134,11 +2134,11 @@
 
 	ALIGN32
 
-	.32X_VDP_Reg
+	._32X_VDP_Reg
 		test byte [_32X_FM], 0xFF
-		jnz near .32X_bad
+		jnz near ._32X_bad
 		cmp ebx, 0xA15200
-		jae near .32X_CRAM
+		jae near ._32X_CRAM
 
 ;pushad
 ;push eax
@@ -2154,58 +2154,58 @@
 	ALIGN4
 
 	.Table_32X_VDP_Reg
-		dd .32X_VDP_Mode, .32X_VDP_Shift, .32X_VDP_AF_Len, .32X_VDP_AF_St
-		dd .32X_VDP_AF_Data, .32X_VDP_State, .32X_bad, .32X_bad
+		dd ._32X_VDP_Mode, ._32X_VDP_Shift, ._32X_VDP_AF_Len, ._32X_VDP_AF_St
+		dd ._32X_VDP_AF_Data, ._32X_VDP_State, ._32X_bad, ._32X_bad
 
 	ALIGN32
 
-	.32X_VDP_Mode
-		mov [_32X_VDP + vx.Mode], al
+	._32X_VDP_Mode
+		mov [__32X_VDP + vx.Mode], al
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 	
-	.32X_VDP_Shift
-		mov [_32X_VDP + vx.Mode + 2], al
+	._32X_VDP_Shift
+		mov [__32X_VDP + vx.Mode + 2], al
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_VDP_AF_Len
-		mov [_32X_VDP + vx.AF_Len], al
+	._32X_VDP_AF_Len
+		mov [__32X_VDP + vx.AF_Len], al
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_VDP_AF_St
-		mov [_32X_VDP + vx.AF_St], ax
+	._32X_VDP_AF_St
+		mov [__32X_VDP + vx.AF_St], ax
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_VDP_AF_Data
+	._32X_VDP_AF_Data
 		push edi
-		mov [_32X_VDP + vx.AF_Data], ax
+		mov [__32X_VDP + vx.AF_Data], ax
 		mov bx, ax
-		mov edi, [_32X_VDP + vx.State]
+		mov edi, [__32X_VDP + vx.State]
 		shl eax, 16
 		and edi, byte 1
 		mov ax, bx
 		xor edi, byte 1
-		mov ebx, [_32X_VDP + vx.AF_St]
-		mov ecx, [_32X_VDP + vx.AF_Len]
+		mov ebx, [__32X_VDP + vx.AF_St]
+		mov ecx, [__32X_VDP + vx.AF_Len]
 		shl edi, 17
 		inc ecx
 		shr ecx, 1
-		lea edi, [edi + _32X_VDP_Ram]
+		lea edi, [edi + __32X_VDP_Ram]
 		jz short .Spec_Fill
 		jnc short .Loop
 
@@ -2221,7 +2221,7 @@
 		dec ecx
 		jns short .Loop
 
-		mov [_32X_VDP + vx.AF_St], ebx
+		mov [__32X_VDP + vx.AF_St], ebx
 		pop edi
 		pop ecx
 		pop ebx
@@ -2233,7 +2233,7 @@
 		mov [edi + ebx * 2], ax
 		inc bl
 		pop edi
-		mov [_32X_VDP + vx.AF_St], ebx
+		mov [__32X_VDP + vx.AF_St], ebx
 		pop ecx
 		pop ebx
 		ret
@@ -2241,46 +2241,46 @@
 
 	ALIGN4
 
-	.32X_VDP_State
-		mov bh, [_32X_VDP + vx.Mode + 0]
-		mov bl, [_32X_VDP + vx.State + 1]
+	._32X_VDP_State
+		mov bh, [__32X_VDP + vx.Mode + 0]
+		mov bl, [__32X_VDP + vx.State + 1]
 		test bh, 3
-		mov [_32X_VDP + vx.State + 2], al
-		jz short .32X_VDP_blank
+		mov [__32X_VDP + vx.State + 2], al
+		jz short ._32X_VDP_blank
 
 		test bl, bl
-		jns short .32X_VDP_State_nvb
+		jns short ._32X_VDP_State_nvb
 		
-	.32X_VDP_blank
-		mov [_32X_VDP + vx.State + 0], al
+	._32X_VDP_blank
+		mov [__32X_VDP + vx.State + 0], al
 		call __32X_Set_FB
 
-	.32X_VDP_State_nvb
+	._32X_VDP_State_nvb
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN4
 
-	.32X_bad
+	._32X_bad
 		pop ecx
 		pop ebx
 		ret
 
 	ALIGN32
 
-	.32X_CRAM
+	._32X_CRAM
 		cmp ebx, 0xA15400
-		jae short .32X_bad
+		jae short ._32X_bad
 
 		push edx
 
 		and eax, 0xFFFF
-		mov cx, [_32X_Palette_16B + eax * 2]
-		mov edx, [_32X_Palette_32B + eax * 4]
-		mov [_32X_VDP_CRam + ebx - 0xA15200], ax
-		mov [_32X_VDP_CRam_Ajusted + ebx - 0xA15200], cx
-		mov [_32X_VDP_CRam_Ajusted32 + (ebx - 0xA15200) * 2], edx
+		mov cx, [__32X_Palette_16B + eax * 2]
+		mov edx, [__32X_Palette_32B + eax * 4]
+		mov [__32X_VDP_CRam + ebx - 0xA15200], ax
+		mov [__32X_VDP_CRam_Ajusted + ebx - 0xA15200], cx
+		mov [__32X_VDP_CRam_Ajusted32 + (ebx - 0xA15200) * 2], edx
 
 		pop edx
 		pop ecx
@@ -2295,7 +2295,7 @@
 		test ebx, 0x20000
 		jnz short .overwrite
 
-		mov [_32X_VDP_Ram + ebx], ax
+		mov [__32X_VDP_Ram + ebx], ax
 		pop ecx
 		pop ebx
 		ret
@@ -2306,13 +2306,13 @@
 		test al, al
 		jz short .blank1
 
-		mov [_32X_VDP_Ram + ebx - 0x20000 + 0], al
+		mov [__32X_VDP_Ram + ebx - 0x20000 + 0], al
 
 	.blank1
 		test ah, ah
 		jz short .blank2
 
-		mov [_32X_VDP_Ram + ebx - 0x20000 + 1], ah
+		mov [__32X_VDP_Ram + ebx - 0x20000 + 1], ah
 
 	.blank2
 		pop ecx
@@ -2327,7 +2327,7 @@
 		test ebx, 0x20000
 		jnz short .overwrite
 
-		mov [_32X_VDP_Ram + ebx + 0x20000], ax
+		mov [__32X_VDP_Ram + ebx + 0x20000], ax
 		pop ecx
 		pop ebx
 		ret
@@ -2338,13 +2338,13 @@
 		test al, al
 		jz short .blank1
 
-		mov [_32X_VDP_Ram + ebx - 0x20000 + 0x20000 + 0], al
+		mov [__32X_VDP_Ram + ebx - 0x20000 + 0x20000 + 0], al
 
 	.blank1
 		test ah, ah
 		jz short .blank2
 
-		mov [_32X_VDP_Ram + ebx - 0x20000 + 0x20000 + 1], ah
+		mov [__32X_VDP_Ram + ebx - 0x20000 + 0x20000 + 1], ah
 
 	.blank2
 		pop ecx

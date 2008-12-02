@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-struct VDP_32X_Type
+struct VDP_32X_t
 {
 	unsigned int Mode;
 	unsigned int State;
@@ -22,9 +22,9 @@ extern unsigned short _32X_VDP_CRam[0x100];
 extern unsigned short _32X_VDP_CRam_Ajusted[0x100];
 extern unsigned int _32X_VDP_CRam_Ajusted32[0x100];
 
-extern struct VDP_32X_Type _32X_VDP;
+extern struct VDP_32X_t _32X_VDP;
 
-void _32X_VDP_Reset();
+void _32X_VDP_Reset(void);
 void _32X_VDP_Draw(int FB_Num);
 
 #ifdef __cplusplus
