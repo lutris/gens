@@ -31,7 +31,7 @@
  * @return 1 on success; 0 on error.
  */
 int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
-			const void *screen, const uint8_t bpp)
+			const void *screen, const int bpp)
 {
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
 		return 0;
@@ -149,10 +149,11 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
  * @param pitch Pitch of the image. (measured in pixels)
  * @param screen Pointer to screen buffer.
  * @param bpp Bits per pixel.
+ * @param alpha Alpha channel specification. (32-bit color only.)
  * @return 1 on success; 0 on error.
  */
 int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
-			const void *screen, const uint8_t bpp)
+			const void *screen, const int bpp, const AlphaChannel alpha)
 {
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
 		return 0;
@@ -193,9 +194,19 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	png_set_compression_level(png_ptr, 5);
 	
 	// Set up the PNG header.
-	png_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB,
-		     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-		     PNG_FILTER_TYPE_DEFAULT);
+	if (!(bpp == 32 && alpha != ALPHACHANNEL_NONE))
+	{
+		png_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB,
+			     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+			     PNG_FILTER_TYPE_DEFAULT);
+	}
+	else
+	{
+		// 32-bit color, with alpha channel.
+		png_set_IHDR(png_ptr, info_ptr, w, h, 8, PNG_COLOR_TYPE_RGB_ALPHA,
+			     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+			     PNG_FILTER_TYPE_DEFAULT);
+	}
 	
 	// Write the PNG information to the file.
 	png_write_info(png_ptr, info_ptr);
@@ -282,11 +293,21 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		uint32_t *screen32 = (uint32_t*)screen;
 		
 		for (y = 0; y < h; y++)
-		{			
+		{
 			row_pointers[y] = (uint8_t*)&screen32[(y * pitch)];//&MD_Screen32[(y * 336) + 8];
 		}
 		
-		png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
+		if (!alpha)
+		{
+			// No alpha channel. Set filler byte.
+			png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
+		}
+		else if (alpha == ALPHACHANNEL_TRANSPARENCY)
+		{
+			// 0x00 == opaque; 0xFF == transparent.
+			png_set_invert_alpha(png_ptr);
+		}
+		
 		png_set_bgr(png_ptr);
 		png_write_rows(png_ptr, row_pointers, h);
 	}
@@ -302,7 +323,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 
 int ImageUtil::write(const string& filename, const ImageFormat format,
 		     const int w, const int h, const int pitch,
-		     const void *screen, const uint8_t bpp)
+		     const void *screen, const int bpp, const AlphaChannel alpha)
 {
 	// Write an image file.
 	FILE *fImg = fopen(filename.c_str(), "wb");
@@ -316,7 +337,7 @@ int ImageUtil::write(const string& filename, const ImageFormat format,
 #ifdef GENS_PNG
 	if (format == IMAGEFORMAT_PNG)
 	{
-		rval = writePNG(fImg, w, h, pitch, screen, bpp);
+		rval = writePNG(fImg, w, h, pitch, screen, bpp, alpha);
 	}
 	else
 #endif /* GENS_PNG */

@@ -28,6 +28,13 @@ class ImageUtil
 			#endif /* GENS_PNG */
 		};
 		
+		enum AlphaChannel
+		{
+			ALPHACHANNEL_NONE,
+			ALPHACHANNEL_OPACITY,
+			ALPHACHANNEL_TRANSPARENCY,
+		};
+		
 		#ifdef GENS_PNG
 			static const ImageFormat DefaultImageFormat = IMAGEFORMAT_PNG;
 		#else /* !GENS_PNG */
@@ -36,16 +43,18 @@ class ImageUtil
 		
 		static int write(const string& filename, const ImageFormat format,
 				 const int w, const int h, const int pitch,
-				 const void *screen, const uint8_t bpp);
+				 const void *screen, const int bpp,
+				 const AlphaChannel alpha = ALPHACHANNEL_NONE);
 		
 		static int screenShot(void);
 	
 	protected:
 		static int writeBMP(FILE *fImg, const int w, const int h, const int pitch,
-				    const void *screen, const uint8_t bpp);
+				    const void *screen, const int bpp);
 		
 		static int writePNG(FILE *fImg, const int w, const int h, const int pitch,
-				    const void *screen, const uint8_t bpp);
+				    const void *screen, const int bpp,
+				    const AlphaChannel alpha = ALPHACHANNEL_NONE);
 };
 
 #endif /* __cplusplus */
