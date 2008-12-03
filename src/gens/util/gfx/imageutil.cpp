@@ -289,7 +289,8 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		// to automatically convert 32-bit to 24-bit.
 		// TODO: PNG_FILLER_AFTER, BGR mode - needed for little-endian.
 		 // Figure out what's needed on big-endian.
-		png_byte *row_pointers[240];
+		
+		png_byte **row_pointers = static_cast<png_byte**>(malloc(sizeof(png_byte*) * h));
 		uint32_t *screen32 = (uint32_t*)screen;
 		
 		for (y = 0; y < h; y++)
@@ -310,6 +311,8 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		
 		png_set_bgr(png_ptr);
 		png_write_rows(png_ptr, row_pointers, h);
+		
+		free(row_pointers);
 	}
 	
 	// Finished writing.
