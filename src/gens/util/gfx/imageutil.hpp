@@ -49,6 +49,9 @@ class ImageUtil
 		static int screenShot(void);
 	
 	protected:
+		ImageUtil() { }
+		~ImageUtil() { }
+		
 		static int writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 				    const void *screen, const int bpp);
 		
