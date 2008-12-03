@@ -19,6 +19,71 @@
 #include <png.h>
 #endif /* GENS_PNG */
 
+// Pixel masks
+static const uint16_t MASK_RED_15	= 0x7C00;
+static const uint16_t MASK_GREEN_15	= 0x03E0;
+static const uint16_t MASK_BLUE_15	= 0x001F;
+
+static const uint16_t MASK_RED_16	= 0xF800;
+static const uint16_t MASK_GREEN_16	= 0x07E0;
+static const uint16_t MASK_BLUE_16	= 0x001F;
+
+static const uint32_t MASK_RED_32	= 0xFF0000;
+static const uint32_t MASK_GREEN_32	= 0x00FF00;
+static const uint32_t MASK_BLUE_32	= 0x0000FF;
+
+// Pixel shifts
+static const uint8_t SHIFT_RED_15	= 7;
+static const uint8_t SHIFT_GREEN_15	= 2;
+static const uint8_t SHIFT_BLUE_15	= 3;
+
+static const uint8_t SHIFT_RED_16	= 8;
+static const uint8_t SHIFT_GREEN_16	= 3;
+static const uint8_t SHIFT_BLUE_16	= 3;
+
+static const uint8_t SHIFT_RED_32	= 16;
+static const uint8_t SHIFT_GREEN_32	= 8;
+static const uint8_t SHIFT_BLUE_32	= 0;
+
+
+/**
+ * T_writeBMP_rows(): Write BMP rows.
+ * @param screen Pointer to the screen buffer.
+ * @param bmpOut Buffer to write BMP data to.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
+ * @param maskR Red mask.
+ * @param maskG Green mask.
+ * @param maskB Blue mask.
+ * @param shiftR Red shift. (Right)
+ * @param shiftG Green shift. (Right)
+ * @param shiftB Blue shift. (Left)
+ */
+template<typename pixel>
+static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
+				   const int width, const int height, const int pitch,
+				   const pixel maskR, const pixel maskG, const pixel maskB,
+				   const uint8_t shiftR, const uint8_t shiftG, const uint8_t shiftB)
+{
+	// 15-bit or 16-bit color.
+	pixel MD_Color;
+	const pixel *curScreen;
+	uint8_t *bmp = bmpOut;
+	
+	// Bitmaps are stored upside-down.
+	for (int y = height - 1; y >= 0; y--)
+	{
+		curScreen = &screen[y * pitch];
+		for (int x = 0; x < width; x++)
+		{
+			MD_Color = *curScreen++;
+			*bmp++ = (uint8_t)((MD_Color & maskB) << shiftB);
+			*bmp++ = (uint8_t)((MD_Color & maskG) >> shiftG);
+			*bmp++ = (uint8_t)((MD_Color & maskR) >> shiftR);
+		}
+	}
+}
 
 /**
  * writeBMP(): Write a BMP image.
@@ -39,8 +104,8 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	unsigned char *bmpData = NULL;
 	
 	// Calculate the size of the bitmap image.
-	int bmpSize = (w * h * 3) + 54;
-	bmpData = static_cast<unsigned char*>(malloc(bmpSize));
+	int bmpSize = (w * h * 3);
+	bmpData = static_cast<unsigned char*>(malloc(bmpSize + 54));
 	if (!bmpData)
 	{
 		// Could not allocate enough memory.
@@ -72,65 +137,27 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	
 	// TODO: Verify endianness requirements.
 	
-	//Src += Pitch * (Y - 1);
-	int pos = 0;
-	int x, y;
-	
-	// Bitmaps are stored upside-down.
-	if (bpp == 15 || bpp == 16)
+	if (bpp == 15)
 	{
-		// 15-bit or 16-bit color.
-		uint16_t MD_Color;
-		const uint16_t *screen16 = static_cast<const uint16_t*>(screen);
-		
-		if (bpp == 15)
-		{
-			// 15-bit color, 555 pixel format.
-			for (y = h - 1; y >= 0; y--)
-			{
-				for (x = 0; x < w; x++)
-				{
-					MD_Color = screen16[(y * pitch) + x];
-					bmpData[54 + (pos * 3) + 2] = (uint8_t)((MD_Color & 0x7C00) >> 7);
-					bmpData[54 + (pos * 3) + 1] = (uint8_t)((MD_Color & 0x03E0) >> 2);
-					bmpData[54 + (pos * 3) + 0] = (uint8_t)((MD_Color & 0x001F) << 3);
-					pos++;
-				}
-			}
-		}
-		else if (bpp == 16)
-		{
-			// 16-bit color, 565 pixel format.
-			for (y = h - 1; y >= 0; y--)
-			{
-				for (x = 0; x < w; x++)
-				{
-					MD_Color = screen16[(y * pitch) + x];
-					bmpData[54 + (pos * 3) + 2] = (uint8_t)((MD_Color & 0xF800) >> 8);
-					bmpData[54 + (pos * 3) + 1] = (uint8_t)((MD_Color & 0x07E0) >> 3);
-					bmpData[54 + (pos * 3) + 0] = (uint8_t)((MD_Color & 0x001F) << 3);
-					pos++;
-				}
-			}
-		}
+		// 15-bit color. (Mode 555)
+		T_writeBMP_rows(static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch,
+				MASK_RED_15, MASK_GREEN_15, MASK_BLUE_15,
+				SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15);
+	}
+	else if (bpp == 16)
+	{
+		// 16-bit color. (Mode 565)
+		T_writeBMP_rows(static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch,
+				MASK_RED_16, MASK_GREEN_16, MASK_BLUE_16,
+				SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16);
 	}
 	else //if (bpp == 32)
 	{
 		// 32-bit color.
 		// BMP uses 24-bit color, so a conversion is still necessary.
-		uint32_t MD_Color32;
-		const uint32_t *screen32 = static_cast<const uint32_t*>(screen);
-		for (y = h - 1; y >= 0; y--)
-		{
-			for (x = 0; x < w; x++)
-			{
-				MD_Color32 = screen32[(y * pitch) + x];
-				bmpData[54 + (pos * 3) + 2] = (uint8_t)((MD_Color32 >> 16) & 0xFF);
-				bmpData[54 + (pos * 3) + 1] = (uint8_t)((MD_Color32 >> 8) & 0xFF);
-				bmpData[54 + (pos * 3) + 0] = (uint8_t)(MD_Color32 & 0xFF);
-				pos++;
-			}
-		}
+		T_writeBMP_rows(static_cast<const uint32_t*>(screen), &bmpData[54], w, h, pitch,
+				MASK_RED_32, MASK_GREEN_32, MASK_BLUE_32,
+				SHIFT_RED_32, SHIFT_GREEN_32, SHIFT_BLUE_32);
 	}
 	
 	fwrite(bmpData, 1, bmpSize + 54, fImg);
@@ -402,11 +429,10 @@ int ImageUtil::screenShot(void)
 	else //if (bppMD == 32)
 		screen = (void*)(&MD_Screen32[8]);
 	
-	int rval;
 #ifdef GENS_PNG
-	rval = writePNG(img, w, h, 336, screen, bppMD);
+	int rval = writePNG(img, w, h, 336, screen, bppMD);
 #else /* !GENS_PNG */
-	rval = writeBMP(img, w, h, 336, screen, bppMD);
+	int rval = writeBMP(img, w, h, 336, screen, bppMD);
 #endif /* GENS_PNG */
 	
 	// Close the file.
