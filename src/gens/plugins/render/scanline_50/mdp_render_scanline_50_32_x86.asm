@@ -27,7 +27,7 @@ arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
 
-MASK_DIV2_32	equ 0x007F7F7F
+MASK_DIV2_32	equ 0x7F7F7F7F
 
 %ifdef __OBJ_ELF
 %define _mdp_render_scanline_50_32_x86 mdp_render_scanline_50_32_x86
@@ -37,7 +37,7 @@ MASK_DIV2_32	equ 0x007F7F7F
 section .data align=64
 	
 	; 64-bit mask used for the MMX version.
-	MASK_DIV2_32_MMX:	dd 0x007F7F7F, 0x007F7F7F
+	MASK_DIV2_32_MMX:	dd 0x7F7F7F7F, 0x7F7F7F7F
 	
 section .text align=64
 	

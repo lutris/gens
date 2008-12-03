@@ -34,7 +34,7 @@
 // Mask constants
 #define MASK_DIV2_15		((uint16_t)(0x3DEF))
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
-#define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
+#define MASK_DIV2_32		((uint32_t)(0x7F7F7F7F))
 
 #define BLEND(a, b, mask) ((((a) >> 1) & mask) + (((b) >> 1) & mask))
 

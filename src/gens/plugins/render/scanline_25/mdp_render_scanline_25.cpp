@@ -41,13 +41,13 @@
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
 #define MASK_DIV2_15_ASM	((uint32_t)(0x3DEF3DEF))
 #define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
-#define MASK_DIV2_32		((uint32_t)(0x007F7F7F))
+#define MASK_DIV2_32		((uint32_t)(0x7F7F7F7F))
 
 #define MASK_DIV4_15		((uint16_t)(0x1CE7))
 #define MASK_DIV4_16		((uint16_t)(0x39E7))
 #define MASK_DIV4_15_ASM	((uint32_t)(0x1CE71CE7))
 #define MASK_DIV4_16_ASM	((uint32_t)(0x39E739E7))
-#define MASK_DIV4_32		((uint32_t)(0x003F3F3F))
+#define MASK_DIV4_32		((uint32_t)(0x3F3F3F3F))
 
 
 #ifndef GENS_X86_ASM
