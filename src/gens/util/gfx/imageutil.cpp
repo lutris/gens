@@ -66,21 +66,16 @@ static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
 				   const pixel maskR, const pixel maskG, const pixel maskB,
 				   const uint8_t shiftR, const uint8_t shiftG, const uint8_t shiftB)
 {
-	// 15-bit or 16-bit color.
-	pixel MD_Color;
-	const pixel *curScreen;
-	uint8_t *bmp = bmpOut;
-	
 	// Bitmaps are stored upside-down.
 	for (int y = height - 1; y >= 0; y--)
 	{
-		curScreen = &screen[y * pitch];
+		const pixel *curScreen = &screen[y * pitch];
 		for (int x = 0; x < width; x++)
 		{
-			MD_Color = *curScreen++;
-			*bmp++ = (uint8_t)((MD_Color & maskB) << shiftB);
-			*bmp++ = (uint8_t)((MD_Color & maskG) >> shiftG);
-			*bmp++ = (uint8_t)((MD_Color & maskR) >> shiftR);
+			pixel MD_Color = *curScreen++;
+			*bmpOut++ = (uint8_t)((MD_Color & maskB) << shiftB);
+			*bmpOut++ = (uint8_t)((MD_Color & maskG) >> shiftG);
+			*bmpOut++ = (uint8_t)((MD_Color & maskR) >> shiftR);
 		}
 	}
 }
@@ -169,6 +164,63 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 
 #ifdef GENS_PNG
 /**
+ * T_writePNG_rows_16(): Write 16-bit PNG rows.
+ * @param screen Pointer to the screen buffer.
+ * @param png_ptr PNG pointer.
+ * @param info_ptr PNG info pointer.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
+ * @param maskR Red mask.
+ * @param maskG Green mask.
+ * @param maskB Blue mask.
+ * @param shiftR Red shift. (Right)
+ * @param shiftG Green shift. (Right)
+ * @param shiftB Blue shift. (Left)
+ * @return 1 on success; 0 on error.
+ */
+template<typename pixel>
+static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, png_infop info_ptr,
+				     const int width, const int height, const int pitch,
+				     const pixel maskR, const pixel maskG, const pixel maskB,
+				     const uint8_t shiftR, const uint8_t shiftG, const uint8_t shiftB)
+{
+	// Allocate the row buffer.
+	uint8_t *rowBuffer;
+	if ((rowBuffer = static_cast<uint8_t*>(malloc(width * 3))) == NULL)
+	{
+		// Could not allocate enough memory.
+		fprintf(stderr, "%s: Could not allocate enough memory for the row buffer.\n", __func__);
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+		return 0;
+	}
+	
+	// Write the rows.
+	for (int y = 0; y < height; y++)
+	{
+		uint8_t *rowBufPtr = rowBuffer;
+		for (int x = 0; x < width; x++)
+		{
+			pixel MD_Color = *screen++;
+			*rowBufPtr++ = (uint8_t)((MD_Color & maskR) >> shiftR);
+			*rowBufPtr++ = (uint8_t)((MD_Color & maskG) >> shiftG);
+			*rowBufPtr++ = (uint8_t)((MD_Color & maskB) << shiftB);
+		}
+		
+		// Write the row.
+		png_write_row(png_ptr, rowBuffer);
+		
+		// Next row.
+		screen += (pitch - width);
+	}
+	
+	// Free the row buffer.
+	free(rowBuffer);
+	
+	return 1;
+}
+
+/**
  * writePNG(): Write a PNG image.
  * @param fImg File handle to save the image to.
  * @param w Width of the image.
@@ -246,83 +298,43 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 #endif
 	
 	// Write the image.
-	int x, y;
-	if (bpp == 15 || bpp == 16)
+	if (bpp == 15)
 	{
-		// 15-bit or 16-bit color.
-		uint16_t MD_Color;
-		uint16_t *screen16 = (uint16_t*)screen;
-		
-		// Allocate the row buffer.
-		uint8_t *rowBuffer;
-		if ((rowBuffer = (uint8_t*)malloc(w * 3)) == NULL)
+		// 15-bit color. (Mode 555)
+		if (!T_writePNG_rows_16(static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch,
+					MASK_RED_15, MASK_GREEN_15, MASK_BLUE_15,
+					SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15))
 		{
-			// Could not allocate enough memory.
-			fprintf(stderr, "writePNG(): Could not allocate enough memory for the row buffer.\n");
-			png_destroy_write_struct(&png_ptr, &info_ptr);
 			return 0;
 		}
-		
-		if (bpp == 15)
+	}
+	else if (bpp == 16)
+	{
+		// 16-bit color. (Mode 565)
+		if (!T_writePNG_rows_16(static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch,
+					MASK_RED_16, MASK_GREEN_16, MASK_BLUE_16,
+					SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16))
 		{
-			// 15-bit color, 555 pixel format.
-			for (y = 0; y < h; y++)
-			{
-				for (x = 0; x < w; x++)
-				{
-					MD_Color = *screen16;
-					rowBuffer[(x * 3) + 0] = (uint8_t)((MD_Color & 0x7C00) >> 7);
-					rowBuffer[(x * 3) + 1] = (uint8_t)((MD_Color & 0x03E0) >> 2);
-					rowBuffer[(x * 3) + 2] = (uint8_t)((MD_Color & 0x001F) << 3);
-					screen16++;
-				}
-				
-				// Write the row.
-				png_write_row(png_ptr, rowBuffer);
-				
-				// Next row.
-				screen16 += (pitch - w);
-			}
+			return 0;
 		}
-		else if (bpp == 16)
-		{
-			// 16-bit color, 565 pixel format.
-			for (y = 0; y < h; y++)
-			{
-				for (x = 0; x < w; x++)
-				{
-					MD_Color = *screen16;
-					rowBuffer[(x * 3) + 0] = (uint8_t)((MD_Color & 0xF800) >> 8);
-					rowBuffer[(x * 3) + 1] = (uint8_t)((MD_Color & 0x07E0) >> 3);
-					rowBuffer[(x * 3) + 2] = (uint8_t)((MD_Color & 0x001F) << 3);
-					screen16++;
-				}
-				
-				// Write the row.
-				png_write_row(png_ptr, rowBuffer);
-				
-				// Next row.
-				screen16 += (pitch - w);
-			}
-		}
-		
-		// Free the row buffer.
-		free(rowBuffer);
 	}
 	else // if (bpp == 32)
 	{
 		// 32-bit color.
-		// libpng expects 24-bit data, but has a convenience function
-		// to automatically convert 32-bit to 24-bit.
+		// Depending on the alpha channel settings, libpng expects either
+		// 24-bit data (no alpha) or 32-bit data (with alpha); however,
+		// libpng offers an option to automatically convert 32-bit data
+		// without alpha channel to 24-bit. (png_set_filler())
+		
 		// TODO: PNG_FILLER_AFTER, BGR mode - needed for little-endian.
 		 // Figure out what's needed on big-endian.
 		
 		png_byte **row_pointers = static_cast<png_byte**>(malloc(sizeof(png_byte*) * h));
 		uint32_t *screen32 = (uint32_t*)screen;
 		
-		for (y = 0; y < h; y++)
+		for (int y = 0; y < h; y++)
 		{
-			row_pointers[y] = (uint8_t*)&screen32[(y * pitch)];//&MD_Screen32[(y * 336) + 8];
+			row_pointers[y] = (uint8_t*)&screen32[y * pitch];
 		}
 		
 		if (!alpha)
@@ -332,6 +344,7 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 		}
 		else if (alpha == ALPHACHANNEL_TRANSPARENCY)
 		{
+			// Alpha channel indicates transparency.
 			// 0x00 == opaque; 0xFF == transparent.
 			png_set_invert_alpha(png_ptr);
 		}
