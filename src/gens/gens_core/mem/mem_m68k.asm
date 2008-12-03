@@ -7,20 +7,35 @@
 	extern _Read_To_68K_Space
 
 section .data align=64
-
-	extern Controller_1_Counter
-	extern Controller_1_Delay
-	extern Controller_1_State
-	extern Controller_1_COM
-	extern Controller_2_Counter
-	extern Controller_2_Delay
-	extern Controller_2_State
-	extern Controller_2_COM
+	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Controller_1_Counter	Controller_1_Counter
+		%define	_Controller_1_Delay	Controller_1_Delay
+		%define	_Controller_1_State	Controller_1_State
+		%define	_Controller_1_COM	Controller_1_COM
+		
+		%define	_Controller_2_Counter	Controller_2_Counter
+		%define	_Controller_2_Delay	Controller_2_Delay
+		%define	_Controller_2_State	Controller_2_State
+		%define	_Controller_2_COM	Controller_2_COM
+	%endif
+	
+	extern _Controller_1_Counter
+	extern _Controller_1_Delay
+	extern _Controller_1_State
+	extern _Controller_1_COM
+	
+	extern _Controller_2_Counter
+	extern _Controller_2_Delay
+	extern _Controller_2_State
+	extern _Controller_2_COM
+	
 	extern Memory_Control_Status
 	extern Cell_Conv_Tab
 	extern VDP_Current_Line
-
-
+	
+	
 	DECL Genesis_M68K_Read_Byte_Table
 		dd M68K_Read_Byte_Rom0,		; 0x000000 - 0x07FFFF
 		dd M68K_Read_Byte_Rom1,		; 0x080000 - 0x0FFFFF
@@ -1034,14 +1049,14 @@ section .text align=64
 	ALIGN4
 
 	.CT_Pad_1
-		mov al, [Controller_1_COM]
+		mov al, [_Controller_1_COM]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.CT_Pad_2
-		mov al, [Controller_2_COM]
+		mov al, [_Controller_2_COM]
 		pop ebx
 		ret
 
@@ -1370,14 +1385,14 @@ section .text align=64
 	ALIGN4
 
 	.CT_Pad_1
-		mov eax, [Controller_1_COM]
+		mov eax, [_Controller_1_COM]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.CT_Pad_2
-		mov eax, [Controller_2_COM]
+		mov eax, [_Controller_2_COM]
 		pop ebx
 		ret
 
@@ -1503,11 +1518,11 @@ section .text align=64
 
 		xor ecx, ecx
 		mov ah, [Z80_State]
-		mov dword [Controller_1_Counter], ecx
+		mov dword [_Controller_1_Counter], ecx
 		test al, 1
-		mov dword [Controller_1_Delay], ecx
-		mov dword [Controller_2_Counter], ecx
-		mov dword [Controller_2_Delay], ecx
+		mov dword [_Controller_1_Delay], ecx
+		mov dword [_Controller_2_Counter], ecx
+		mov dword [_Controller_2_Delay], ecx
 		jnz short .desactived
 
 		test ah, 2
@@ -1630,7 +1645,7 @@ section .text align=64
 	ALIGN4
 
 	.CT_Pad_1
-		mov [Controller_1_COM], al
+		mov [_Controller_1_COM], al
 		pop ecx
 		pop ebx
 		ret
@@ -1638,7 +1653,7 @@ section .text align=64
 	ALIGN4
 
 	.CT_Pad_2
-		mov [Controller_2_COM], al
+		mov [_Controller_2_COM], al
 		pop ecx
 		pop ebx
 		ret
@@ -1777,11 +1792,11 @@ section .text align=64
 		
 		xor ecx, ecx
 		mov al, [Z80_State]
-		mov dword [Controller_1_Counter], ecx
+		mov dword [_Controller_1_Counter], ecx
 		test ah, 1
-		mov dword [Controller_1_Delay], ecx
-		mov dword [Controller_2_Counter], ecx
-		mov dword [Controller_2_Delay], ecx
+		mov dword [_Controller_1_Delay], ecx
+		mov dword [_Controller_2_Counter], ecx
+		mov dword [_Controller_2_Delay], ecx
 		jnz short .desactived
 
 		test al, 2
@@ -1904,7 +1919,7 @@ section .text align=64
 	ALIGN4
 
 	.CT_Pad_1
-		mov [Controller_1_COM], ax
+		mov [_Controller_1_COM], ax
 		pop ecx
 		pop ebx
 		ret
@@ -1912,7 +1927,7 @@ section .text align=64
 	ALIGN4
 
 	.CT_Pad_2
-		mov [Controller_2_COM], ax
+		mov [_Controller_2_COM], ax
 		pop ecx
 		pop ebx
 		ret

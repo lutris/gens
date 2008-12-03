@@ -13,241 +13,283 @@
 
 
 section .data align=64
-
-	DECL Controller_1_State
-	dd 0x40
-	DECL Controller_1_COM
-	dd 0
-	DECL Controller_1_Counter
-	dd 0
-	DECL Controller_1_Delay
-	dd 0
 	
-	DECL Controller_1_Type
-	dd 0
-	DECL Controller_1_Up
-	dd 1
-	DECL Controller_1_Down
-	dd 1
-	DECL Controller_1_Left
-	dd 1
-	DECL Controller_1_Right
-	dd 1
-	DECL Controller_1_Start
-	dd 1
-	DECL Controller_1_A
-	dd 1
-	DECL Controller_1_B
-	dd 1
-	DECL Controller_1_C
-	dd 1
-	DECL Controller_1_Mode
-	dd 1
-	DECL Controller_1_X
-	dd 1
-	DECL Controller_1_Y
-	dd 1
-	DECL Controller_1_Z
-	dd 1
-
-	DECL Controller_2_State
-	dd 0x40
-	DECL Controller_2_COM
-	dd 0
-	DECL Controller_2_Counter
-	dd 0
-	DECL Controller_2_Delay
-	dd 0
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Controller_1_Counter	Controller_1_Counter
+		%define	_Controller_1_Delay	Controller_1_Delay
+		%define	_Controller_1_State	Controller_1_State
+		%define	_Controller_1_COM	Controller_1_COM
+		
+		%define	_Controller_1_Type	Controller_1_Type
+		%define	_Controller_1B_Type	Controller_1B_Type
+		%define	_Controller_1C_Type	Controller_1C_Type
+		%define	_Controller_1D_Type	Controller_1D_Type
+		
+		%define	_Controller_1_Buttons	Controller_1_Buttons
+		%define	_Controller_1B_Buttons	Controller_1B_Buttons
+		%define	_Controller_1C_Buttons	Controller_1C_Buttons
+		%define	_Controller_1D_Buttons	Controller_1D_Buttons
+		
+		%define	_Controller_2_Counter	Controller_2_Counter
+		%define	_Controller_2_Delay	Controller_2_Delay
+		%define	_Controller_2_State	Controller_2_State
+		%define	_Controller_2_COM	Controller_2_COM
+		
+		%define	_Controller_2_Type	Controller_2_Type
+		%define	_Controller_2B_Type	Controller_2B_Type
+		%define	_Controller_2C_Type	Controller_2C_Type
+		%define	_Controller_2D_Type	Controller_2D_Type
+		
+		%define	_Controller_2_Buttons	Controller_2_Buttons
+		%define	_Controller_2B_Buttons	Controller_2B_Buttons
+		%define	_Controller_2C_Buttons	Controller_2C_Buttons
+		%define	_Controller_2D_Buttons	Controller_2D_Buttons
+	%endif
 	
-	DECL Controller_2_Type
-	dd 0
-	DECL Controller_2_Up
-	dd 1
-	DECL Controller_2_Down
-	dd 1
-	DECL Controller_2_Left
-	dd 1
-	DECL Controller_2_Right
-	dd 1
-	DECL Controller_2_Start
-	dd 1
-	DECL Controller_2_A
-	dd 1
-	DECL Controller_2_B
-	dd 1
-	DECL Controller_2_C
-	dd 1
-	DECL Controller_2_Mode
-	dd 1
-	DECL Controller_2_X
-	dd 1
-	DECL Controller_2_Y
-	dd 1
-	DECL Controller_2_Z
-	dd 1
-
-	DECL Controller_1B_Type
-	dd 0
-	DECL Controller_1B_Up
-	dd 1
-	DECL Controller_1B_Down
-	dd 1
-	DECL Controller_1B_Left
-	dd 1
-	DECL Controller_1B_Right
-	dd 1
-	DECL Controller_1B_Start
-	dd 1
-	DECL Controller_1B_A
-	dd 1
-	DECL Controller_1B_B
-	dd 1
-	DECL Controller_1B_C
-	dd 1
-	DECL Controller_1B_Mode
-	dd 1
-	DECL Controller_1B_X
-	dd 1
-	DECL Controller_1B_Y
-	dd 1
-	DECL Controller_1B_Z
-	dd 1
-
-	DECL Controller_1C_Type
-	dd 0
-	DECL Controller_1C_Up
-	dd 1
-	DECL Controller_1C_Down
-	dd 1
-	DECL Controller_1C_Left
-	dd 1
-	DECL Controller_1C_Right
-	dd 1
-	DECL Controller_1C_Start
-	dd 1
-	DECL Controller_1C_A
-	dd 1
-	DECL Controller_1C_B
-	dd 1
-	DECL Controller_1C_C
-	dd 1
-	DECL Controller_1C_Mode
-	dd 1
-	DECL Controller_1C_X
-	dd 1
-	DECL Controller_1C_Y
-	dd 1
-	DECL Controller_1C_Z
-	dd 1
-
-	DECL Controller_1D_Type
-	dd 0
-	DECL Controller_1D_Up
-	dd 1
-	DECL Controller_1D_Down
-	dd 1
-	DECL Controller_1D_Left
-	dd 1
-	DECL Controller_1D_Right
-	dd 1
-	DECL Controller_1D_Start
-	dd 1
-	DECL Controller_1D_A
-	dd 1
-	DECL Controller_1D_B
-	dd 1
-	DECL Controller_1D_C
-	dd 1
-	DECL Controller_1D_Mode
-	dd 1
-	DECL Controller_1D_X
-	dd 1
-	DECL Controller_1D_Y
-	dd 1
-	DECL Controller_1D_Z
-	dd 1
-
-	DECL Controller_2B_Type
-	dd 0
-	DECL Controller_2B_Up
-	dd 1
-	DECL Controller_2B_Down
-	dd 1
-	DECL Controller_2B_Left
-	dd 1
-	DECL Controller_2B_Right
-	dd 1
-	DECL Controller_2B_Start
-	dd 1
-	DECL Controller_2B_A
-	dd 1
-	DECL Controller_2B_B
-	dd 1
-	DECL Controller_2B_C
-	dd 1
-	DECL Controller_2B_Mode
-	dd 1
-	DECL Controller_2B_X
-	dd 1
-	DECL Controller_2B_Y
-	dd 1
-	DECL Controller_2B_Z
-	dd 1
-
-	DECL Controller_2C_Type
-	dd 0
-	DECL Controller_2C_Up
-	dd 1
-	DECL Controller_2C_Down
-	dd 1
-	DECL Controller_2C_Left
-	dd 1
-	DECL Controller_2C_Right
-	dd 1
-	DECL Controller_2C_Start
-	dd 1
-	DECL Controller_2C_A
-	dd 1
-	DECL Controller_2C_B
-	dd 1
-	DECL Controller_2C_C
-	dd 1
-	DECL Controller_2C_Mode
-	dd 1
-	DECL Controller_2C_X
-	dd 1
-	DECL Controller_2C_Y
-	dd 1
-	DECL Controller_2C_Z
-	dd 1
-
-	DECL Controller_2D_Type
-	dd 0
-	DECL Controller_2D_Up
-	dd 1
-	DECL Controller_2D_Down
-	dd 1
-	DECL Controller_2D_Left
-	dd 1
-	DECL Controller_2D_Right
-	dd 1
-	DECL Controller_2D_Start
-	dd 1
-	DECL Controller_2D_A
-	dd 1
-	DECL Controller_2D_B
-	dd 1
-	DECL Controller_2D_C
-	dd 1
-	DECL Controller_2D_Mode
-	dd 1
-	DECL Controller_2D_X
-	dd 1
-	DECL Controller_2D_Y
-	dd 1
-	DECL Controller_2D_Z
-	dd 1
-
+	extern _Controller_1_State
+	extern _Controller_1_COM
+	extern _Controller_1_Counter
+	extern _Controller_1_Delay
+	
+	extern _Controller_1_Type
+	extern _Controller_1B_Type
+	extern _Controller_1C_Type
+	extern _Controller_1D_Type
+	
+	extern _Controller_1_Buttons
+	extern _Controller_1B_Buttons
+	extern _Controller_1C_Buttons
+	extern _Controller_1D_Buttons
+	
+	extern _Controller_2_State
+	extern _Controller_2_COM
+	extern _Controller_2_Counter
+	extern _Controller_2_Delay
+	
+	extern _Controller_2_Buttons
+	extern _Controller_2B_Buttons
+	extern _Controller_2C_Buttons
+	extern _Controller_2D_Buttons
+	
+	extern _Controller_2_Type
+	extern _Controller_2B_Type
+	extern _Controller_2C_Type
+	extern _Controller_2D_Type
+	
+	; Old button variables for io_old.asm compatibility.
+	
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Controller_1_Up	Controller_1_Up
+		%define	_Controller_1_Down	Controller_1_Down
+		%define	_Controller_1_Left	Controller_1_Left
+		%define	_Controller_1_Right	Controller_1_Right
+		%define	_Controller_1_Start	Controller_1_Start
+		%define	_Controller_1_A		Controller_1_A
+		%define	_Controller_1_B		Controller_1_B
+		%define	_Controller_1_C		Controller_1_C
+		%define	_Controller_1_Mode	Controller_1_Mode
+		%define	_Controller_1_X		Controller_1_X
+		%define	_Controller_1_Y		Controller_1_Y
+		%define	_Controller_1_Z		Controller_1_Z
+		
+		%define	_Controller_1B_Up	Controller_1B_Up
+		%define	_Controller_1B_Down	Controller_1B_Down
+		%define	_Controller_1B_Left	Controller_1B_Left
+		%define	_Controller_1B_Right	Controller_1B_Right
+		%define	_Controller_1B_Start	Controller_1B_Start
+		%define	_Controller_1B_A	Controller_1B_A
+		%define	_Controller_1B_B	Controller_1B_B
+		%define	_Controller_1B_C	Controller_1B_C
+		%define	_Controller_1B_Mode	Controller_1B_Mode
+		%define	_Controller_1B_X	Controller_1B_X
+		%define	_Controller_1B_Y	Controller_1B_Y
+		%define	_Controller_1B_Z	Controller_1B_Z
+		
+		%define	_Controller_1C_Up	Controller_1C_Up
+		%define	_Controller_1C_Down	Controller_1C_Down
+		%define	_Controller_1C_Left	Controller_1C_Left
+		%define	_Controller_1C_Right	Controller_1C_Right
+		%define	_Controller_1C_Start	Controller_1C_Start
+		%define	_Controller_1C_A	Controller_1C_A
+		%define	_Controller_1C_B	Controller_1C_B
+		%define	_Controller_1C_C	Controller_1C_C
+		%define	_Controller_1C_Mode	Controller_1C_Mode
+		%define	_Controller_1C_X	Controller_1C_X
+		%define	_Controller_1C_Y	Controller_1C_Y
+		%define	_Controller_1C_Z	Controller_1C_Z
+		
+		%define	_Controller_1D_Up	Controller_1D_Up
+		%define	_Controller_1D_Down	Controller_1D_Down
+		%define	_Controller_1D_Left	Controller_1D_Left
+		%define	_Controller_1D_Right	Controller_1D_Right
+		%define	_Controller_1D_Start	Controller_1D_Start
+		%define	_Controller_1D_A	Controller_1D_A
+		%define	_Controller_1D_B	Controller_1D_B
+		%define	_Controller_1D_C	Controller_1D_C
+		%define	_Controller_1D_Mode	Controller_1D_Mode
+		%define	_Controller_1D_X	Controller_1D_X
+		%define	_Controller_1D_Y	Controller_1D_Y
+		%define	_Controller_1D_Z	Controller_1D_Z
+		
+		%define	_Controller_2_Up	Controller_2_Up
+		%define	_Controller_2_Down	Controller_2_Down
+		%define	_Controller_2_Left	Controller_2_Left
+		%define	_Controller_2_Right	Controller_2_Right
+		%define	_Controller_2_Start	Controller_2_Start
+		%define	_Controller_2_A		Controller_2_A
+		%define	_Controller_2_B		Controller_2_B
+		%define	_Controller_2_C		Controller_2_C
+		%define	_Controller_2_Mode	Controller_2_Mode
+		%define	_Controller_2_X		Controller_2_X
+		%define	_Controller_2_Y		Controller_2_Y
+		%define	_Controller_2_Z		Controller_2_Z
+		
+		%define	_Controller_2B_Up	Controller_2B_Up
+		%define	_Controller_2B_Down	Controller_2B_Down
+		%define	_Controller_2B_Left	Controller_2B_Left
+		%define	_Controller_2B_Right	Controller_2B_Right
+		%define	_Controller_2B_Start	Controller_2B_Start
+		%define	_Controller_2B_A	Controller_2B_A
+		%define	_Controller_2B_B	Controller_2B_B
+		%define	_Controller_2B_C	Controller_2B_C
+		%define	_Controller_2B_Mode	Controller_2B_Mode
+		%define	_Controller_2B_X	Controller_2B_X
+		%define	_Controller_2B_Y	Controller_2B_Y
+		%define	_Controller_2B_Z	Controller_2B_Z
+		
+		%define	_Controller_2C_Up	Controller_2C_Up
+		%define	_Controller_2C_Down	Controller_2C_Down
+		%define	_Controller_2C_Left	Controller_2C_Left
+		%define	_Controller_2C_Right	Controller_2C_Right
+		%define	_Controller_2C_Start	Controller_2C_Start
+		%define	_Controller_2C_A	Controller_2C_A
+		%define	_Controller_2C_B	Controller_2C_B
+		%define	_Controller_2C_C	Controller_2C_C
+		%define	_Controller_2C_Mode	Controller_2C_Mode
+		%define	_Controller_2C_X	Controller_2C_X
+		%define	_Controller_2C_Y	Controller_2C_Y
+		%define	_Controller_2C_Z	Controller_2C_Z
+		
+		%define	_Controller_2D_Up	Controller_2D_Up
+		%define	_Controller_2D_Down	Controller_2D_Down
+		%define	_Controller_2D_Left	Controller_2D_Left
+		%define	_Controller_2D_Right	Controller_2D_Right
+		%define	_Controller_2D_Start	Controller_2D_Start
+		%define	_Controller_2D_A	Controller_2D_A
+		%define	_Controller_2D_B	Controller_2D_B
+		%define	_Controller_2D_C	Controller_2D_C
+		%define	_Controller_2D_Mode	Controller_2D_Mode
+		%define	_Controller_2D_X	Controller_2D_X
+		%define	_Controller_2D_Y	Controller_2D_Y
+		%define	_Controller_2D_Z	Controller_2D_Z
+	%endif
+	
+	extern _Controller_1_Up
+	extern _Controller_1_Down
+	extern _Controller_1_Left
+	extern _Controller_1_Right
+	extern _Controller_1_Start
+	extern _Controller_1_A
+	extern _Controller_1_B
+	extern _Controller_1_C
+	extern _Controller_1_Mode
+	extern _Controller_1_X
+	extern _Controller_1_Y
+	extern _Controller_1_Z
+	
+	extern _Controller_1B_Up
+	extern _Controller_1B_Down
+	extern _Controller_1B_Left
+	extern _Controller_1B_Right
+	extern _Controller_1B_Start
+	extern _Controller_1B_A
+	extern _Controller_1B_B
+	extern _Controller_1B_C
+	extern _Controller_1B_Mode
+	extern _Controller_1B_X
+	extern _Controller_1B_Y
+	extern _Controller_1B_Z
+	
+	extern _Controller_1C_Up
+	extern _Controller_1C_Down
+	extern _Controller_1C_Left
+	extern _Controller_1C_Right
+	extern _Controller_1C_Start
+	extern _Controller_1C_A
+	extern _Controller_1C_B
+	extern _Controller_1C_C
+	extern _Controller_1C_Mode
+	extern _Controller_1C_X
+	extern _Controller_1C_Y
+	extern _Controller_1C_Z
+	
+	extern _Controller_1D_Up
+	extern _Controller_1D_Down
+	extern _Controller_1D_Left
+	extern _Controller_1D_Right
+	extern _Controller_1D_Start
+	extern _Controller_1D_A
+	extern _Controller_1D_B
+	extern _Controller_1D_C
+	extern _Controller_1D_Mode
+	extern _Controller_1D_X
+	extern _Controller_1D_Y
+	extern _Controller_1D_Z
+	
+	extern _Controller_2_Up
+	extern _Controller_2_Down
+	extern _Controller_2_Left
+	extern _Controller_2_Right
+	extern _Controller_2_Start
+	extern _Controller_2_A
+	extern _Controller_2_B
+	extern _Controller_2_C
+	extern _Controller_2_Mode
+	extern _Controller_2_X
+	extern _Controller_2_Y
+	extern _Controller_2_Z
+	
+	extern _Controller_2B_Up
+	extern _Controller_2B_Down
+	extern _Controller_2B_Left
+	extern _Controller_2B_Right
+	extern _Controller_2B_Start
+	extern _Controller_2B_A
+	extern _Controller_2B_B
+	extern _Controller_2B_C
+	extern _Controller_2B_Mode
+	extern _Controller_2B_X
+	extern _Controller_2B_Y
+	extern _Controller_2B_Z
+	
+	extern _Controller_2C_Up
+	extern _Controller_2C_Down
+	extern _Controller_2C_Left
+	extern _Controller_2C_Right
+	extern _Controller_2C_Start
+	extern _Controller_2C_A
+	extern _Controller_2C_B
+	extern _Controller_2C_C
+	extern _Controller_2C_Mode
+	extern _Controller_2C_X
+	extern _Controller_2C_Y
+	extern _Controller_2C_Z
+	
+	extern _Controller_2D_Up
+	extern _Controller_2D_Down
+	extern _Controller_2D_Left
+	extern _Controller_2D_Right
+	extern _Controller_2D_Start
+	extern _Controller_2D_A
+	extern _Controller_2D_B
+	extern _Controller_2D_C
+	extern _Controller_2D_Mode
+	extern _Controller_2D_X
+	extern _Controller_2D_Y
+	extern _Controller_2D_Z
+	
 	Table_TP1:
 		dd RD_Controller_1_TP.TP_L0L, RD_Controller_1_TP.TP_L0H	; 00-01
 		dd RD_Controller_1_TP.TP_H0L, RD_Controller_1_TP.TP_H0H	; 02-03
@@ -329,9 +371,9 @@ section .text align=64
 
 	;unsigned char RD_Controller_1_TP(void)		ATTENTION, ebx est modifié et non sauvegardé ici !!!
 	DECL RD_Controller_1_TP
-		mov eax, [Controller_1_State]
-		mov ebx, [Controller_1_Counter]
-		test byte [Controller_2_State], 0xC
+		mov eax, [_Controller_1_State]
+		mov ebx, [_Controller_1_Counter]
+		test byte [_Controller_2_State], 0xC
 		jnz near .Team_Player_2
 		shr eax, 3
 		and ebx, 0x0F0000
@@ -372,7 +414,7 @@ section .text align=64
 
 	.TP_H1L
 	.TP_L1L
-		mov ax, [Controller_1_Type]
+		mov ax, [_Controller_1_Type]
 		and ax, 1
 		or ax, bx
 		ret
@@ -381,7 +423,7 @@ section .text align=64
 
 	.TP_H2H
 	.TP_L2H
-		mov ax, [Controller_1B_Type]
+		mov ax, [_Controller_1B_Type]
 		or ax, bx
 		ret
 
@@ -389,7 +431,7 @@ section .text align=64
 
 	.TP_H2L
 	.TP_L2L
-		mov ax, [Controller_1C_Type]
+		mov ax, [_Controller_1C_Type]
 		or ax, bx
 		ret
 
@@ -397,163 +439,163 @@ section .text align=64
 
 	.TP_H3H
 	.TP_L3H
-		mov ax, [Controller_1D_Type]
+		mov ax, [_Controller_1D_Type]
 		or ax, bx
 		ret
 
 	ALIGN4
 
 	.TP_PA_DIR
-		mov eax, [Controller_1_Right]
+		mov eax, [_Controller_1_Right]
 		add eax, eax
-		add eax, [Controller_1_Left]
+		add eax, [_Controller_1_Left]
 		add eax, eax
-		add eax, [Controller_1_Down]
+		add eax, [_Controller_1_Down]
 		add eax, eax
-		add eax, [Controller_1_Up]
+		add eax, [_Controller_1_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PA_ABC
-		mov eax, [Controller_1_Start]
+		mov eax, [_Controller_1_Start]
 		add eax, eax
-		add eax, [Controller_1_A]
+		add eax, [_Controller_1_A]
 		add eax, eax
-		add eax, [Controller_1_C]
+		add eax, [_Controller_1_C]
 		add eax, eax
-		add eax, [Controller_1_B]
+		add eax, [_Controller_1_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PA_XYZ
-		mov eax, [Controller_1_Mode]
+		mov eax, [_Controller_1_Mode]
 		add eax, eax
-		add eax, [Controller_1_X]
+		add eax, [_Controller_1_X]
 		add eax, eax
-		add eax, [Controller_1_Y]
+		add eax, [_Controller_1_Y]
 		add eax, eax
-		add eax, [Controller_1_Z]
+		add eax, [_Controller_1_Z]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PB_DIR
-		mov eax, [Controller_1B_Right]
+		mov eax, [_Controller_1B_Right]
 		add eax, eax
-		add eax, [Controller_1B_Left]
+		add eax, [_Controller_1B_Left]
 		add eax, eax
-		add eax, [Controller_1B_Down]
+		add eax, [_Controller_1B_Down]
 		add eax, eax
-		add eax, [Controller_1B_Up]
+		add eax, [_Controller_1B_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PB_ABC
-		mov eax, [Controller_1B_Start]
+		mov eax, [_Controller_1B_Start]
 		add eax, eax
-		add eax, [Controller_1B_A]
+		add eax, [_Controller_1B_A]
 		add eax, eax
-		add eax, [Controller_1B_C]
+		add eax, [_Controller_1B_C]
 		add eax, eax
-		add eax, [Controller_1B_B]
+		add eax, [_Controller_1B_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PB_XYZ
-		mov eax, [Controller_1B_Mode]
+		mov eax, [_Controller_1B_Mode]
 		add eax, eax
-		add eax, [Controller_1B_X]
+		add eax, [_Controller_1B_X]
 		add eax, eax
-		add eax, [Controller_1B_Y]
+		add eax, [_Controller_1B_Y]
 		add eax, eax
-		add eax, [Controller_1B_Z]
+		add eax, [_Controller_1B_Z]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PC_DIR
-		mov eax, [Controller_1C_Right]
+		mov eax, [_Controller_1C_Right]
 		add eax, eax
-		add eax, [Controller_1C_Left]
+		add eax, [_Controller_1C_Left]
 		add eax, eax
-		add eax, [Controller_1C_Down]
+		add eax, [_Controller_1C_Down]
 		add eax, eax
-		add eax, [Controller_1C_Up]
+		add eax, [_Controller_1C_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PC_ABC
-		mov eax, [Controller_1C_Start]
+		mov eax, [_Controller_1C_Start]
 		add eax, eax
-		add eax, [Controller_1C_A]
+		add eax, [_Controller_1C_A]
 		add eax, eax
-		add eax, [Controller_1C_C]
+		add eax, [_Controller_1C_C]
 		add eax, eax
-		add eax, [Controller_1C_B]
+		add eax, [_Controller_1C_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PC_XYZ
-		mov eax, [Controller_1C_Mode]
+		mov eax, [_Controller_1C_Mode]
 		add eax, eax
-		add eax, [Controller_1C_X]
+		add eax, [_Controller_1C_X]
 		add eax, eax
-		add eax, [Controller_1C_Y]
+		add eax, [_Controller_1C_Y]
 		add eax, eax
-		add eax, [Controller_1C_Z]
+		add eax, [_Controller_1C_Z]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PD_DIR
-		mov eax, [Controller_1D_Right]
+		mov eax, [_Controller_1D_Right]
 		add eax, eax
-		add eax, [Controller_1D_Left]
+		add eax, [_Controller_1D_Left]
 		add eax, eax
-		add eax, [Controller_1D_Down]
+		add eax, [_Controller_1D_Down]
 		add eax, eax
-		add eax, [Controller_1D_Up]
+		add eax, [_Controller_1D_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PD_ABC
-		mov eax, [Controller_1D_Start]
+		mov eax, [_Controller_1D_Start]
 		add eax, eax
-		add eax, [Controller_1D_A]
+		add eax, [_Controller_1D_A]
 		add eax, eax
-		add eax, [Controller_1D_C]
+		add eax, [_Controller_1D_C]
 		add eax, eax
-		add eax, [Controller_1D_B]
+		add eax, [_Controller_1D_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PD_XYZ
-		mov eax, [Controller_1D_Mode]
+		mov eax, [_Controller_1D_Mode]
 		add eax, eax
-		add eax, [Controller_1D_X]
+		add eax, [_Controller_1D_X]
 		add eax, eax
-		add eax, [Controller_1D_Y]
+		add eax, [_Controller_1D_Y]
 		add eax, eax
-		add eax, [Controller_1D_Z]
+		add eax, [_Controller_1D_Z]
 		add eax, ebx
 		ret
 
@@ -566,17 +608,17 @@ section .text align=64
 
 	ALIGN4
 	
-	.Table_Get_Cont
-		dd Controller_1_Type
-		dd Controller_1B_Type
-		dd Controller_1C_Type
-		dd Controller_1D_Type
+	.Table_Get_Cont:
+		dd _Controller_1_Type
+		dd _Controller_1B_Type
+		dd _Controller_1C_Type
+		dd _Controller_1D_Type
 	
 	ALIGN32
 
 	.Team_Player_2
 		push edx
-		mov edx, [Controller_2_State]
+		mov edx, [_Controller_2_State]
 		test edx, 0x40
 		jnz short .TP2_Spec
 
@@ -648,8 +690,8 @@ section .text align=64
 	ALIGN32
 
 	.TP2_Third_Low
-  		mov eax, [Controller_1_Start]
-		mov ebx, [Controller_1_A]
+  		mov eax, [_Controller_1_Start]
+		mov ebx, [_Controller_1_A]
 		lea eax, [eax * 2 + ebx]
 		shl eax, 4
 		pop edx
@@ -689,8 +731,8 @@ section .text align=64
 	;unsigned char RD_Controller_2_TP(void) 	ATTENTION, ebx est modifié et non sauvegardé ici !!!
 	DECL RD_Controller_2_TP
 
-		mov eax, [Controller_2_State]
-		mov ebx, [Controller_2_Counter]
+		mov eax, [_Controller_2_State]
+		mov ebx, [_Controller_2_Counter]
 		shr eax, 3
 		and ebx, 0x0F0000
 		and eax, 0x0C
@@ -730,7 +772,7 @@ section .text align=64
 
 	.TP_H1L
 	.TP_L1L
-		mov ax, [Controller_2_Type]
+		mov ax, [_Controller_2_Type]
 		and ax, 1
 		or ax, bx
 		ret
@@ -739,7 +781,7 @@ section .text align=64
 
 	.TP_H2H
 	.TP_L2H
-		mov ax, [Controller_2B_Type]
+		mov ax, [_Controller_2B_Type]
 		or ax, bx
 		ret
 
@@ -747,7 +789,7 @@ section .text align=64
 
 	.TP_H2L
 	.TP_L2L
-		mov ax, [Controller_2C_Type]
+		mov ax, [_Controller_2C_Type]
 		or ax, bx
 		ret
 
@@ -755,163 +797,163 @@ section .text align=64
 
 	.TP_H3H
 	.TP_L3H
-		mov ax, [Controller_2D_Type]
+		mov ax, [_Controller_2D_Type]
 		or ax, bx
 		ret
 
 	ALIGN4
 
 	.TP_PA_DIR
-		mov eax, [Controller_2_Right]
+		mov eax, [_Controller_2_Right]
 		add eax, eax
-		add eax, [Controller_2_Left]
+		add eax, [_Controller_2_Left]
 		add eax, eax
-		add eax, [Controller_2_Down]
+		add eax, [_Controller_2_Down]
 		add eax, eax
-		add eax, [Controller_2_Up]
+		add eax, [_Controller_2_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PA_ABC
-		mov eax, [Controller_2_Start]
+		mov eax, [_Controller_2_Start]
 		add eax, eax
-		add eax, [Controller_2_A]
+		add eax, [_Controller_2_A]
 		add eax, eax
-		add eax, [Controller_2_C]
+		add eax, [_Controller_2_C]
 		add eax, eax
-		add eax, [Controller_2_B]
+		add eax, [_Controller_2_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PA_XYZ
-		mov eax, [Controller_2_Mode]
+		mov eax, [_Controller_2_Mode]
 		add eax, eax
-		add eax, [Controller_2_X]
+		add eax, [_Controller_2_X]
 		add eax, eax
-		add eax, [Controller_2_Y]
+		add eax, [_Controller_2_Y]
 		add eax, eax
-		add eax, [Controller_2_Z]
+		add eax, [_Controller_2_Z]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PB_DIR
-		mov eax, [Controller_2B_Right]
+		mov eax, [_Controller_2B_Right]
 		add eax, eax
-		add eax, [Controller_2B_Left]
+		add eax, [_Controller_2B_Left]
 		add eax, eax
-		add eax, [Controller_2B_Down]
+		add eax, [_Controller_2B_Down]
 		add eax, eax
-		add eax, [Controller_2B_Up]
+		add eax, [_Controller_2B_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PB_ABC
-		mov eax, [Controller_2B_Start]
+		mov eax, [_Controller_2B_Start]
 		add eax, eax
-		add eax, [Controller_2B_A]
+		add eax, [_Controller_2B_A]
 		add eax, eax
-		add eax, [Controller_2B_C]
+		add eax, [_Controller_2B_C]
 		add eax, eax
-		add eax, [Controller_2B_B]
+		add eax, [_Controller_2B_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PB_XYZ
-		mov eax, [Controller_2B_Mode]
+		mov eax, [_Controller_2B_Mode]
 		add eax, eax
-		add eax, [Controller_2B_X]
+		add eax, [_Controller_2B_X]
 		add eax, eax
-		add eax, [Controller_2B_Y]
+		add eax, [_Controller_2B_Y]
 		add eax, eax
-		add eax, [Controller_2B_Z]
+		add eax, [_Controller_2B_Z]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PC_DIR
-		mov eax, [Controller_2C_Right]
+		mov eax, [_Controller_2C_Right]
 		add eax, eax
-		add eax, [Controller_2C_Left]
+		add eax, [_Controller_2C_Left]
 		add eax, eax
-		add eax, [Controller_2C_Down]
+		add eax, [_Controller_2C_Down]
 		add eax, eax
-		add eax, [Controller_2C_Up]
+		add eax, [_Controller_2C_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PC_ABC
-		mov eax, [Controller_2C_Start]
+		mov eax, [_Controller_2C_Start]
 		add eax, eax
-		add eax, [Controller_2C_A]
+		add eax, [_Controller_2C_A]
 		add eax, eax
-		add eax, [Controller_2C_C]
+		add eax, [_Controller_2C_C]
 		add eax, eax
-		add eax, [Controller_2C_B]
+		add eax, [_Controller_2C_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PC_XYZ
-		mov eax, [Controller_2C_Mode]
+		mov eax, [_Controller_2C_Mode]
 		add eax, eax
-		add eax, [Controller_2C_X]
+		add eax, [_Controller_2C_X]
 		add eax, eax
-		add eax, [Controller_2C_Y]
+		add eax, [_Controller_2C_Y]
 		add eax, eax
-		add eax, [Controller_2C_Z]
+		add eax, [_Controller_2C_Z]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PD_DIR
-		mov eax, [Controller_2D_Right]
+		mov eax, [_Controller_2D_Right]
 		add eax, eax
-		add eax, [Controller_2D_Left]
+		add eax, [_Controller_2D_Left]
 		add eax, eax
-		add eax, [Controller_2D_Down]
+		add eax, [_Controller_2D_Down]
 		add eax, eax
-		add eax, [Controller_2D_Up]
+		add eax, [_Controller_2D_Up]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PD_ABC
-		mov eax, [Controller_2D_Start]
+		mov eax, [_Controller_2D_Start]
 		add eax, eax
-		add eax, [Controller_2D_A]
+		add eax, [_Controller_2D_A]
 		add eax, eax
-		add eax, [Controller_2D_C]
+		add eax, [_Controller_2D_C]
 		add eax, eax
-		add eax, [Controller_2D_B]
+		add eax, [_Controller_2D_B]
 		add eax, ebx
 		ret
 
 	ALIGN4
 
 	.TP_PD_XYZ
-		mov eax, [Controller_2D_Mode]
+		mov eax, [_Controller_2D_Mode]
 		add eax, eax
-		add eax, [Controller_2D_X]
+		add eax, [_Controller_2D_X]
 		add eax, eax
-		add eax, [Controller_2D_Y]
+		add eax, [_Controller_2D_Y]
 		add eax, eax
-		add eax, [Controller_2D_Z]
+		add eax, [_Controller_2D_Z]
 		add eax, ebx
 		ret
 
@@ -935,7 +977,7 @@ section .text align=64
 
 	.P1A
 		mov ebx, 1
-		test byte [Controller_1_Type], 1
+		test byte [_Controller_1_Type], 1
 		jnz short .P1A_6
 
 	.P1A_3
@@ -959,7 +1001,7 @@ section .text align=64
 	ALIGN4
 
 	.P1B
-		test byte [Controller_1B_Type], 1
+		test byte [_Controller_1B_Type], 1
 		jnz short .P1B_6
 
 	.P1B_3
@@ -983,7 +1025,7 @@ section .text align=64
 	ALIGN4
 
 	.P1C
-		test byte [Controller_1C_Type], 1
+		test byte [_Controller_1C_Type], 1
 		jnz short .P1C_6
 
 	.P1C_3
@@ -1007,7 +1049,7 @@ section .text align=64
 	ALIGN4
 
 	.P1D
-		test byte [Controller_1D_Type], 1
+		test byte [_Controller_1D_Type], 1
 		jnz short .P1D_6
 
 	.P1D_3
@@ -1032,7 +1074,7 @@ section .text align=64
 
 	.P2A
 		mov ebx, 1
-		test byte [Controller_2_Type], 1
+		test byte [_Controller_2_Type], 1
 		jnz short .P2A_6
 
 	.P2A_3
@@ -1056,7 +1098,7 @@ section .text align=64
 	ALIGN4
 
 	.P2B
-		test byte [Controller_2B_Type], 1
+		test byte [_Controller_2B_Type], 1
 		jnz short .P2B_6
 
 	.P2B_3
@@ -1080,7 +1122,7 @@ section .text align=64
 	ALIGN4
 
 	.P2C
-		test byte [Controller_2C_Type], 1
+		test byte [_Controller_2C_Type], 1
 		jnz short .P2C_6
 
 	.P2C_3
@@ -1104,7 +1146,7 @@ section .text align=64
 	ALIGN4
 
 	.P2D
-		test byte [Controller_2D_Type], 1
+		test byte [_Controller_2D_Type], 1
 		jnz short .P2D_6
 
 	.P2D_3

@@ -20,6 +20,11 @@ extern "C" {
 #define CONTROLLER_Y		0x00000400
 #define CONTROLLER_Z		0x00000800
 
+extern unsigned int Controller_1_State;
+extern unsigned int Controller_1_COM;
+extern unsigned int Controller_1_Counter;
+extern unsigned int Controller_1_Delay;
+
 extern unsigned int Controller_1_Buttons;
 extern unsigned int Controller_1B_Buttons;
 extern unsigned int Controller_1C_Buttons;
@@ -29,6 +34,11 @@ extern unsigned int Controller_2_Buttons;
 extern unsigned int Controller_2B_Buttons;
 extern unsigned int Controller_2C_Buttons;
 extern unsigned int Controller_2D_Buttons;
+
+extern unsigned int Controller_2_State;
+extern unsigned int Controller_2_COM;
+extern unsigned int Controller_2_Counter;
+extern unsigned int Controller_2_Delay;
 
 extern unsigned int Controller_1_Type;
 extern unsigned int Controller_1B_Type;

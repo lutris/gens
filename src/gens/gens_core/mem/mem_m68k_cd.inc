@@ -258,14 +258,14 @@
 	ALIGN4
 
 	.CT_Pad_1
-		mov al, [Controller_1_COM]
+		mov al, [_Controller_1_COM]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.CT_Pad_2
-		mov al, [Controller_2_COM]
+		mov al, [_Controller_2_COM]
 		pop ebx
 		ret
 
@@ -705,14 +705,14 @@
 	ALIGN4
 
 	.CT_Pad_1
-		mov ax, [Controller_1_COM]
+		mov ax, [_Controller_1_COM]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.CT_Pad_2
-		mov ax, [Controller_2_COM]
+		mov ax, [_Controller_2_COM]
 		pop ebx
 		ret
 
@@ -1012,11 +1012,11 @@
 
 		xor ecx, ecx
 		mov ah, [Z80_State]
-		mov dword [Controller_1_Counter], ecx
+		mov dword [_Controller_1_Counter], ecx
 		test al, 1
-		mov dword [Controller_1_Delay], ecx
-		mov dword [Controller_2_Counter], ecx
-		mov dword [Controller_2_Delay], ecx
+		mov dword [_Controller_1_Delay], ecx
+		mov dword [_Controller_2_Counter], ecx
+		mov dword [_Controller_2_Delay], ecx
 		jnz short .desactived
 
 		test ah, 2
@@ -1139,7 +1139,7 @@
 	ALIGN4
 
 	.CT_Pad_1
-		mov [Controller_1_COM], al
+		mov [_Controller_1_COM], al
 		pop ecx
 		pop ebx
 		ret
@@ -1147,7 +1147,7 @@
 	ALIGN4
 
 	.CT_Pad_2
-		mov [Controller_2_COM], al
+		mov [_Controller_2_COM], al
 		pop ecx
 		pop ebx
 		ret
@@ -1560,11 +1560,11 @@
 		
 		xor ecx, ecx
 		mov al, [Z80_State]
-		mov dword [Controller_1_Counter], ecx
+		mov dword [_Controller_1_Counter], ecx
 		test ah, 1
-		mov dword [Controller_1_Delay], ecx
-		mov dword [Controller_2_Counter], ecx
-		mov dword [Controller_2_Delay], ecx
+		mov dword [_Controller_1_Delay], ecx
+		mov dword [_Controller_2_Counter], ecx
+		mov dword [_Controller_2_Delay], ecx
 		jnz short .desactived
 
 		test al, 2
@@ -1687,7 +1687,7 @@
 	ALIGN4
 
 	.CT_Pad_1
-		mov [Controller_1_COM], ax
+		mov [_Controller_1_COM], ax
 		pop ecx
 		pop ebx
 		ret
@@ -1695,7 +1695,7 @@
 	ALIGN4
 
 	.CT_Pad_2
-		mov [Controller_2_COM], ax
+		mov [_Controller_2_COM], ax
 		pop ecx
 		pop ebx
 		ret

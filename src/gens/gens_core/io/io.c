@@ -6,15 +6,60 @@
 
 #include "io.h"
 
+unsigned int Controller_1_State		= 0x40;
+unsigned int Controller_1_COM		= 0;
+unsigned int Controller_1_Counter	= 0;
+unsigned int Controller_1_Delay		= 0;
+
+unsigned int Controller_1_Type		= 0;
+unsigned int Controller_1B_Type		= 0;
+unsigned int Controller_1C_Type		= 0;
+unsigned int Controller_1D_Type		= 0;
+
 unsigned int Controller_1_Buttons	= 0xFFFFFFFF;
 unsigned int Controller_1B_Buttons	= 0xFFFFFFFF;
 unsigned int Controller_1C_Buttons	= 0xFFFFFFFF;
 unsigned int Controller_1D_Buttons	= 0xFFFFFFFF;
 
+unsigned int Controller_2_State		= 0x40;
+unsigned int Controller_2_COM		= 0;
+unsigned int Controller_2_Counter	= 0;
+unsigned int Controller_2_Delay		= 0;
+
+unsigned int Controller_2_Type		= 0;
+unsigned int Controller_2B_Type		= 0;
+unsigned int Controller_2C_Type		= 0;
+unsigned int Controller_2D_Type		= 0;
+
 unsigned int Controller_2_Buttons	= 0xFFFFFFFF;
 unsigned int Controller_2B_Buttons	= 0xFFFFFFFF;
 unsigned int Controller_2C_Buttons	= 0xFFFFFFFF;
 unsigned int Controller_2D_Buttons	= 0xFFFFFFFF;
+
+// These are only for io_old.asm compatibility.
+#define CREATE_CONTROLLER_OLD_VARIABLES(player)			\
+	unsigned int Controller_ ## player ## _Up	= 1;	\
+	unsigned int Controller_ ## player ## _Down	= 1;	\
+	unsigned int Controller_ ## player ## _Left	= 1;	\
+	unsigned int Controller_ ## player ## _Right	= 1;	\
+	unsigned int Controller_ ## player ## _Start	= 1;	\
+	unsigned int Controller_ ## player ## _A	= 1;	\
+	unsigned int Controller_ ## player ## _B	= 1;	\
+	unsigned int Controller_ ## player ## _C	= 1;	\
+	unsigned int Controller_ ## player ## _Mode	= 1;	\
+	unsigned int Controller_ ## player ## _X	= 1;	\
+	unsigned int Controller_ ## player ## _Y	= 1;	\
+	unsigned int Controller_ ## player ## _Z	= 1;
+
+CREATE_CONTROLLER_OLD_VARIABLES(1);
+CREATE_CONTROLLER_OLD_VARIABLES(1B);
+CREATE_CONTROLLER_OLD_VARIABLES(1C);
+CREATE_CONTROLLER_OLD_VARIABLES(1D);
+
+CREATE_CONTROLLER_OLD_VARIABLES(2);
+CREATE_CONTROLLER_OLD_VARIABLES(2B);
+CREATE_CONTROLLER_OLD_VARIABLES(2C);
+CREATE_CONTROLLER_OLD_VARIABLES(2D);
 
 // Select Line status
 enum SelectLine
