@@ -23,7 +23,7 @@ endif
 ASMFILES = \
 		$(gens_x86_asm_o) \
 		gens_core/gfx/gfx_cd.o \
-		gens_core/io/io_old.o \
+		gens_core/io/io_teamplayer.o \
 		gens_core/mem/mem_m68k.o \
 		gens_core/mem/mem_s68k.o \
 		gens_core/mem/mem_sh2.o \
@@ -102,7 +102,7 @@ gens_SOURCES = \
 		$(gens_x86_asm_src) \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
-		gens_core/io/io_old.asm \
+		gens_core/io/io_teamplayer.asm \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x.asm \
@@ -185,7 +185,7 @@ noinst_HEADERS = \
 		$(gens_x86_asm_h) \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
-		gens_core/io/io_old.h \
+		gens_core/io/io_teamplayer.h \
 		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \

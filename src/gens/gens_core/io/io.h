@@ -5,8 +5,6 @@
 extern "C" {
 #endif
 
-#include "io_old.h"
-
 #define CONTROLLER_UP		0x00000001
 #define CONTROLLER_DOWN		0x00000002
 #define CONTROLLER_LEFT		0x00000004

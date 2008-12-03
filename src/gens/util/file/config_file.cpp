@@ -54,6 +54,7 @@
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/mem/mem_z80.h"
 #include "gens_core/io/io.h"
+#include "gens_core/io/io_teamplayer.h"
 #include "util/file/rom.hpp"
 
 // VDP

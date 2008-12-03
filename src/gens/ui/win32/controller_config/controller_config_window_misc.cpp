@@ -29,6 +29,7 @@
 
 #include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
+#include "gens_core/io/io_teamplayer.h"
 #include "ui/gens_ui.hpp"
 
 #include <windows.h>

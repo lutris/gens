@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "io.h"
+#include "io_teamplayer.h"
 
 unsigned int Controller_1_State		= 0x40;
 unsigned int Controller_1_COM		= 0;
