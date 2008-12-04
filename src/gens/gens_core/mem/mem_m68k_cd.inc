@@ -25,7 +25,7 @@
 		je near M68K_Read_Byte_Bad
 
 		xor ebx, 1
-		mov al, [Ram_Prg + ebx - 0x20000]		
+		mov al, [_Ram_Prg + ebx - 0x20000]		
 		pop ebx
 		ret
 
@@ -33,7 +33,7 @@
 	
 	M68K_Read_Byte_WRam:
 		cmp ebx, 0x23FFFF
-		mov eax, [Ram_Word_State]
+		mov eax, [_Ram_Word_State]
 		ja short .bad
 		and eax, 0x3
 		jmp [.Table_Word_Ram + eax * 4]
@@ -49,7 +49,7 @@
 
 	.Word_Ram_2M
 		xor ebx, 1
-		mov al, [Ram_Word_2M + ebx - 0x200000]
+		mov al, [_Ram_Word_2M + ebx - 0x200000]
 		pop ebx
 		ret
 
@@ -60,7 +60,7 @@
 		ja short .Cell_Arranged_0
 
 		xor ebx, 1
-		mov al, [Ram_Word_1M + ebx - 0x200000]
+		mov al, [_Ram_Word_1M + ebx - 0x200000]
 		pop ebx
 		ret
 
@@ -71,7 +71,7 @@
 		ja short .Cell_Arranged_1
 
 		xor ebx, 1
-		mov al, [Ram_Word_1M + ebx - 0x200000 + 0x20000]
+		mov al, [_Ram_Word_1M + ebx - 0x200000 + 0x20000]
 		pop ebx
 		ret
 
@@ -87,10 +87,10 @@
 	.Cell_Arranged_0
 		shr ebx, 1
 		mov eax, 0
-		mov bx, [Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
 		adc eax, 0
 		and ebx, 0xFFFF
-		mov al, [Ram_Word_1M + ebx * 2 + eax]
+		mov al, [_Ram_Word_1M + ebx * 2 + eax]
 		pop ebx
 		ret
 
@@ -99,10 +99,10 @@
 	.Cell_Arranged_1
 		shr ebx, 1
 		mov eax, 0
-		mov bx, [Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
 		adc eax, 0
 		and ebx, 0xFFFF
-		mov al, [Ram_Word_1M + ebx * 2 + eax + 0x20000]
+		mov al, [_Ram_Word_1M + ebx * 2 + eax + 0x20000]
 		pop ebx
 		ret
 
@@ -306,7 +306,7 @@
 	ALIGN4
 	
 	.S68K_Ctrl_H
-		mov al, [Int_Mask_S68K]
+		mov al, [_Int_Mask_S68K]
 		and al, 4
 		shl al, 5
 		pop ebx
@@ -316,24 +316,24 @@
 	
 	.Memory_Ctrl_L
 		mov eax, [Bank_M68K]
-		mov ebx, [Ram_Word_State]
+		mov ebx, [_Ram_Word_State]
 		shr eax, 11
 		and ebx, 3
-		or al, [Memory_Control_Status + ebx]
+		or al, [_Memory_Control_Status + ebx]
 		pop ebx
 		ret
 
 	ALIGN4
 	
 	.Memory_Ctrl_H
-		mov al, [S68K_Mem_WP]
+		mov al, [_S68K_Mem_WP]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.CDC_Mode_H
-		mov al, [CDC.RS0 + 1]
+		mov al, [_CDC.RS0 + 1]
 		pop ebx
 		ret
 
@@ -382,28 +382,28 @@
 	ALIGN4
 
 	.Stop_Watch_H
-		mov al, [CDC.Stop_Watch + 3]
+		mov al, [_CDC.Stop_Watch + 3]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Stop_Watch_L
-		mov al, [CDC.Stop_Watch + 2]
+		mov al, [_CDC.Stop_Watch + 2]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Com_Flag_H
-		mov al, [COMM.Flag + 1]
+		mov al, [_COMM.Flag + 1]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Com_Flag_L
-		mov al, [COMM.Flag]
+		mov al, [_COMM.Flag]
 		pop ebx
 		ret
 
@@ -426,7 +426,7 @@
 	.Com_D7_H
 	.Com_D7_L
 		xor ebx, 1
-		mov al, [COMM.Command + ebx - 0x10]
+		mov al, [_COMM.Command + ebx - 0x10]
 		pop ebx
 		ret
 
@@ -449,7 +449,7 @@
 	.Com_S7_H
 	.Com_S7_L
 		xor ebx, 1
-		mov al, [COMM.Status + ebx - 0x20]
+		mov al, [_COMM.Status + ebx - 0x20]
 		pop ebx
 		ret
 
@@ -477,7 +477,7 @@
 		cmp byte [S68K_State], 1			; BUS available ?
 		je near M68K_Read_Byte_Bad
 
-		mov ax, [Ram_Prg + ebx - 0x20000]
+		mov ax, [_Ram_Prg + ebx - 0x20000]
 		pop ebx
 		ret
 
@@ -485,7 +485,7 @@
 	
 	M68K_Read_Word_WRam:
 		cmp ebx, 0x23FFFF
-		mov eax, [Ram_Word_State]
+		mov eax, [_Ram_Word_State]
 		ja short .bad
 		and eax, 0x3
 		jmp [.Table_Word_Ram + eax * 4]
@@ -500,7 +500,7 @@
 	ALIGN4
 
 	.Word_Ram_2M
-		mov ax, [Ram_Word_2M + ebx - 0x200000]
+		mov ax, [_Ram_Word_2M + ebx - 0x200000]
 		pop ebx
 		ret
 
@@ -510,7 +510,7 @@
 		cmp ebx, 0x21FFFF
 		ja short .Cell_Arranged_0
 
-		mov ax, [Ram_Word_1M + ebx - 0x200000]
+		mov ax, [_Ram_Word_1M + ebx - 0x200000]
 		pop ebx
 		ret
 
@@ -520,7 +520,7 @@
 		cmp ebx, 0x21FFFF
 		ja short .Cell_Arranged_1
 
-		mov ax, [Ram_Word_1M + ebx - 0x200000 + 0x20000]
+		mov ax, [_Ram_Word_1M + ebx - 0x200000 + 0x20000]
 		pop ebx
 		ret
 
@@ -535,8 +535,8 @@
 
 	.Cell_Arranged_0
 		xor eax, eax
-		mov ax, [Cell_Conv_Tab + ebx - 0x220000]
-		mov ax, [Ram_Word_1M + eax * 2]
+		mov ax, [_Cell_Conv_Tab + ebx - 0x220000]
+		mov ax, [_Ram_Word_1M + eax * 2]
 		pop ebx
 		ret
 
@@ -544,8 +544,8 @@
 
 	.Cell_Arranged_1
 		xor eax, eax
-		mov ax, [Cell_Conv_Tab + ebx - 0x220000]
-		mov ax, [Ram_Word_1M + eax * 2 + 0x20000]
+		mov ax, [_Cell_Conv_Tab + ebx - 0x220000]
+		mov ax, [_Ram_Word_1M + eax * 2 + 0x20000]
 		pop ebx
 		ret
 
@@ -747,7 +747,7 @@
 	ALIGN4
 
 	.S68K_Ctrl
-		mov ah, [Int_Mask_S68K]
+		mov ah, [_Int_Mask_S68K]
 		mov al, [S68K_State]
 		and ah, 4
 		shl ah, 5
@@ -758,18 +758,18 @@
 	
 	.Memory_Ctrl
 		mov eax, [Bank_M68K]
-		mov ebx, [Ram_Word_State]
+		mov ebx, [_Ram_Word_State]
 		shr eax, 11
 		and ebx, 3
-		mov ah, [S68K_Mem_WP]
-		or al, [Memory_Control_Status + ebx]
+		mov ah, [_S68K_Mem_WP]
+		or al, [_Memory_Control_Status + ebx]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.CDC_Mode
-		mov ah, [CDC.RS0 + 1]
+		mov ah, [_CDC.RS0 + 1]
 		mov al, 0
 		pop ebx
 		ret
@@ -798,14 +798,14 @@
 	ALIGN4
 
 	.Stop_Watch
-		mov ax, [CDC.Stop_Watch + 2]
+		mov ax, [_CDC.Stop_Watch + 2]
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Com_Flag
-		mov ax, [COMM.Flag]
+		mov ax, [_COMM.Flag]
 		pop ebx
 		ret
 
@@ -819,7 +819,7 @@
 	.Com_D5
 	.Com_D6
 	.Com_D7
-		mov ax, [COMM.Command + ebx - 0x10]
+		mov ax, [_COMM.Command + ebx - 0x10]
 		pop ebx
 		ret
 
@@ -833,7 +833,7 @@
 	.Com_S5
 	.Com_S6
 	.Com_S7
-		mov ax, [COMM.Status + ebx - 0x20]
+		mov ax, [_COMM.Status + ebx - 0x20]
 		pop ebx
 		ret
 
@@ -854,7 +854,7 @@
 		je short .bad
 
 		xor ebx, 1
-		mov [Ram_Prg + ebx - 0x20000], al
+		mov [_Ram_Prg + ebx - 0x20000], al
 
 	.bad
 		pop ecx
@@ -865,7 +865,7 @@
 
 	M68K_Write_Byte_WRam:
 		cmp ebx, 0x23FFFF
-		mov ecx, [Ram_Word_State]
+		mov ecx, [_Ram_Word_State]
 		ja short .bad
 		and ecx, 0x3
 		jmp [.Table_Word_Ram + ecx * 4]
@@ -881,7 +881,7 @@
 
 	.Word_Ram_2M
 		xor ebx, 1
-		mov [Ram_Word_2M + ebx - 0x200000], al
+		mov [_Ram_Word_2M + ebx - 0x200000], al
 		pop ecx
 		pop ebx
 		ret
@@ -892,7 +892,7 @@
 		cmp ebx, 0x21FFFF
 		ja short .Cell_Arranged_0
 		xor ebx, 1
-		mov [Ram_Word_1M + ebx - 0x200000], al
+		mov [_Ram_Word_1M + ebx - 0x200000], al
 		pop ecx
 		pop ebx
 		ret
@@ -904,7 +904,7 @@
 		ja short .Cell_Arranged_1
 
 		xor ebx, 1
-		mov [Ram_Word_1M + ebx - 0x200000 + 0x20000], al
+		mov [_Ram_Word_1M + ebx - 0x200000 + 0x20000], al
 		pop ecx
 		pop ebx
 		ret
@@ -921,10 +921,10 @@
 	.Cell_Arranged_0
 		shr ebx, 1
 		mov ecx, 0
-		mov bx, [Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
 		adc ecx, 0
 		and ebx, 0xFFFF
-		mov [Ram_Word_1M + ebx * 2 + ecx], al
+		mov [_Ram_Word_1M + ebx * 2 + ecx], al
 		pop ecx
 		pop ebx
 		ret
@@ -934,10 +934,10 @@
 	.Cell_Arranged_1
 		shr ebx, 1
 		mov ecx, 0
-		mov bx, [Cell_Conv_Tab + ebx * 2 - 0x220000]
+		mov bx, [_Cell_Conv_Tab + ebx * 2 - 0x220000]
 		adc ecx, 0
 		and ebx, 0xFFFF
-		mov [Ram_Word_1M + ebx * 2 + ecx + 0x20000], al
+		mov [_Ram_Word_1M + ebx * 2 + ecx + 0x20000], al
 		pop ecx
 		pop ebx
 		ret
@@ -1206,7 +1206,7 @@
 	.S68K_Ctrl_H
 		test al, 0x1
 		jz .No_Process_INT2
-		test byte [Int_Mask_S68K], 0x4
+		test byte [_Int_Mask_S68K], 0x4
 		jz .No_Process_INT2
 
 		push dword -1
@@ -1234,7 +1234,7 @@
 		mov ebx, eax
 		shr eax, 1
 		and ebx, 0xC0
-		test byte [Ram_Word_State], 0x2
+		test byte [_Ram_Word_State], 0x2
 		jnz short .Mode_1M
 
 	.Mode_2M
@@ -1243,7 +1243,7 @@
 		mov [Bank_M68K], ebx
 		jz short .No_DMNA
 
-		mov byte [Ram_Word_State], 1
+		mov byte [_Ram_Word_State], 1
 		call _MS68K_Set_Word_Ram
 
 	.No_DMNA
@@ -1259,7 +1259,7 @@
 		test al, 1
 		jnz short .no_swap
 
-		or word [Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
+		or word [_Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
 
 	.no_swap
 		mov [Bank_M68K], ebx
@@ -1271,7 +1271,7 @@
 	ALIGN4
 	
 	.Memory_Ctrl_H
-		mov [S68K_Mem_WP], al
+		mov [_S68K_Mem_WP], al
 		pop ecx
 		pop ebx
 		ret
@@ -1323,7 +1323,7 @@
 ;pop eax
 ;popad
 
-		mov [COMM.Flag + 1], al
+		mov [_COMM.Flag + 1], al
 		pop ecx
 		pop ebx
 		ret
@@ -1341,7 +1341,7 @@
 ;popad
 
 		rol al, 1
-		mov byte [COMM.Flag + 1], al
+		mov byte [_COMM.Flag + 1], al
 		pop ecx
 		pop ebx
 		ret
@@ -1374,7 +1374,7 @@
 ;popad
 
 		xor ebx, 1
-		mov [COMM.Command + ebx - 0x10], al
+		mov [_COMM.Command + ebx - 0x10], al
 		pop ecx
 		pop ebx
 		ret
@@ -1417,7 +1417,7 @@
 		cmp byte [S68K_State], 1			; BUS available ?
 		je short .bad
 
-		mov [Ram_Prg + ebx - 0x20000], ax
+		mov [_Ram_Prg + ebx - 0x20000], ax
 
 	.bad
 		pop ecx
@@ -1428,7 +1428,7 @@
 	
 	M68K_Write_Word_WRam:
 		cmp ebx, 0x23FFFF
-		mov ecx, [Ram_Word_State]
+		mov ecx, [_Ram_Word_State]
 		ja short .bad
 		and ecx, 0x3
 		jmp [.Table_Word_Ram + ecx * 4]
@@ -1442,7 +1442,7 @@
 	ALIGN4
 
 	.Word_Ram_2M
-		mov [Ram_Word_2M + ebx - 0x200000], ax
+		mov [_Ram_Word_2M + ebx - 0x200000], ax
 		pop ecx
 		pop ebx
 		ret
@@ -1453,7 +1453,7 @@
 		cmp ebx, 0x21FFFF
 		ja short .Cell_Arranged_0
 
-		mov [Ram_Word_1M + ebx - 0x200000], ax
+		mov [_Ram_Word_1M + ebx - 0x200000], ax
 		pop ecx
 		pop ebx
 		ret
@@ -1464,7 +1464,7 @@
 		cmp ebx, 0x21FFFF
 		ja short .Cell_Arranged_1
 
-		mov [Ram_Word_1M + ebx  - 0x200000 + 0x20000], ax
+		mov [_Ram_Word_1M + ebx  - 0x200000 + 0x20000], ax
 		pop ecx
 		pop ebx
 		ret
@@ -1479,20 +1479,20 @@
 	ALIGN4
 
 	.Cell_Arranged_0
-		mov bx, [Cell_Conv_Tab + ebx - 0x220000]
+		mov bx, [_Cell_Conv_Tab + ebx - 0x220000]
 		and ebx, 0xFFFF
 		pop ecx
-		mov [Ram_Word_1M + ebx * 2], ax
+		mov [_Ram_Word_1M + ebx * 2], ax
 		pop ebx
 		ret
 
 	ALIGN4
 
 	.Cell_Arranged_1
-		mov bx, [Cell_Conv_Tab + ebx - 0x220000]
+		mov bx, [_Cell_Conv_Tab + ebx - 0x220000]
 		and ebx, 0xFFFF
 		pop ecx
-		mov [Ram_Word_1M + ebx * 2 + 0x20000], ax
+		mov [_Ram_Word_1M + ebx * 2 + 0x20000], ax
 		pop ebx
 		ret
 
@@ -1748,7 +1748,7 @@
 		test ah, 1
 		mov [S68K_State], al
 		jz short .No_Process_INT2
-		test byte [Int_Mask_S68K], 0x4
+		test byte [_Int_Mask_S68K], 0x4
 		jz short .No_Process_INT2
 
 		push dword -1
@@ -1773,11 +1773,11 @@
 ;pop eax
 ;popad
 
-		mov [S68K_Mem_WP], ah
+		mov [_S68K_Mem_WP], ah
 		mov ebx, eax
 		shr eax, 1
 		and ebx, 0xC0
-		test byte [Ram_Word_State], 0x2
+		test byte [_Ram_Word_State], 0x2
 		jnz short .Mode_1M
 
 	.Mode_2M
@@ -1786,7 +1786,7 @@
 		mov [Bank_M68K], ebx
 		jz short .No_DMNA
 
-		mov byte [Ram_Word_State], 1
+		mov byte [_Ram_Word_State], 1
 		call _MS68K_Set_Word_Ram
 
 	.No_DMNA
@@ -1802,7 +1802,7 @@
 		test al, 1
 		jnz short .no_swap
 
-		or word [Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
+		or word [_Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
 
 	.no_swap
 		mov [Bank_M68K], ebx
@@ -1847,7 +1847,7 @@
 ;pop eax
 ;popad
 
-		mov [COMM.Flag + 1], ah
+		mov [_COMM.Flag + 1], ah
 		pop ecx
 		pop ebx
 		ret
@@ -1871,7 +1871,7 @@
 ;pop eax
 ;popad
 
-		mov [COMM.Command + ebx - 0x10], ax
+		mov [_COMM.Command + ebx - 0x10], ax
 		pop ecx
 		pop ebx
 		ret

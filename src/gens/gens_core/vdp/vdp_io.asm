@@ -89,18 +89,28 @@ section .bss align=64
 		%define	_MD_Palette32		MD_Palette32
 		%define	_Sprite_Struct		Sprite_Struct
 		%define	_Sprite_Visible		Sprite_Visible
+		
+		%define	_Cell_Conv_Tab		Cell_Conv_Tab
+		%define	_Ram_Word_State		Ram_Word_State
+		
+		%define	_Ram_Prg		Ram_Prg
+		%define	_Ram_Word_2M		Ram_Word_2M
+		%define	_Ram_Word_1M		Ram_Word_1M
+		
 		%define	_VDP_Layers		VDP_Layers
 	%endif
 	
 	extern Rom_Data
 	extern Rom_Size
-	extern Cell_Conv_Tab
 	extern _Sprite_Struct
 	extern _Sprite_Visible
 	extern CPL_M68K
 	extern Cycles_M68K
 	extern _main68k_context		; Starscream context (for interrupts)
-	extern Ram_Word_State
+	
+	; SegaCD
+	extern _Cell_Conv_Tab
+	extern _Ram_Word_State
 	
 	extern _MD_Screen
 	extern _MD_Palette
@@ -112,9 +122,9 @@ section .bss align=64
 	extern _VDP_Layers
 	
 	extern Ram_68k
-	extern Ram_Prg
-	extern Ram_Word_2M
-	extern Ram_Word_1M
+	extern _Ram_Prg
+	extern _Ram_Word_2M
+	extern _Ram_Word_1M
 	extern Bank_M68K
 	
 	; Symbol redefines for ELF
@@ -422,25 +432,25 @@ section .text align=64
 	mov	ax, [Ram_68k + esi]
 	add	si, 2
 %elif %1 < 3
-	mov	ax, [Ram_Prg + esi]
+	mov	ax, [_Ram_Prg + esi]
 	add	esi, 2
 %elif %1 < 4
-	mov	ax, [Ram_Word_2M + esi]
+	mov	ax, [_Ram_Word_2M + esi]
 	add	esi, 2
 %elif %1 < 6
-	mov	ax, [Ram_Word_1M + esi + 0x00000]
+	mov	ax, [_Ram_Word_1M + esi + 0x00000]
 	add	esi, 2
 %elif %1 < 7
-	mov	ax, [Ram_Word_1M + esi + 0x20000]
+	mov	ax, [_Ram_Word_1M + esi + 0x20000]
 	add	esi, 2
 %elif %1 < 8
-	mov	ax, [Cell_Conv_Tab + esi]
+	mov	ax, [_Cell_Conv_Tab + esi]
 	add	esi, 2
-	mov	ax, [Ram_Word_1M + eax * 2 + 0x00000]
+	mov	ax, [_Ram_Word_1M + eax * 2 + 0x00000]
 %elif %1 < 9
-	mov	ax, [Cell_Conv_Tab + esi]
+	mov	ax, [_Cell_Conv_Tab + esi]
 	add	esi, 2
-	mov	ax, [Ram_Word_1M + eax * 2 + 0x20000]
+	mov	ax, [_Ram_Word_1M + eax * 2 + 0x20000]
 %endif
 %if %2 < 1
 	shr	di, 1
@@ -1162,7 +1172,7 @@ section .text align=64
 		mov	ebx, 2
 		jb	short .DMA_Src_OK			; Src = PRG RAM (ebx = 2)
 		
-		mov	bh, [Ram_Word_State]
+		mov	bh, [_Ram_Word_State]
 		mov	bl, 3					; Src = WORD RAM ; 3 = WORD RAM 2M
 		and	bh, 3					; 4 = BAD
 		add	bl, bh					; 5 = WORD RAM 1M Bank 0

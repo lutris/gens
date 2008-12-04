@@ -551,7 +551,7 @@ static void gen_interface(void) {
 	// Symbol redefines for ELF
 	emit("\n");
 	emit("\t%%ifdef __OBJ_ELF\n");
-	emit("\t%%define _Int_Ack Int_Ack\n");
+	emit("\t\t%%define _Int_Ack Int_Ack\n");
 	emit("\t%%endif\n");
 	emit("\n");
 	

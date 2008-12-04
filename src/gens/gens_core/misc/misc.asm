@@ -209,30 +209,39 @@ section .data align=64
 
 section .bss align=64
 	
-; Symbol redefines for ELF
-%ifdef __OBJ_ELF
-	%define	_MD_Screen		MD_Screen
-	%define	_MD_Palette		MD_Palette
-	%define	_MD_Screen32		MD_Screen32
-	%define	_MD_Palette32		MD_Palette32
-	
-	%define _bppMD			bppMD
-	
-	%define	_VDP_Reg		VDP_Reg
-%endif
+	; Symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_MD_Screen		MD_Screen
+		%define	_MD_Palette		MD_Palette
+		%define	_MD_Screen32		MD_Screen32
+		%define	_MD_Palette32		MD_Palette32
+		
+		%define	_CDD			CDD
+		%define	_CDD.Control		CDD.Control
+		%define	_CDD.Rcv_Status		CDD.Rcv_Status
+		%define	_CDD.Status		CDD.Status
+		%define _CDD.Minute		CDD.Minute
+		%define	_CDD.Seconde		CDD.Seconde
+		%define	_CDD.Frame		CDD.Frame
+		%define _CDD.Ext		CDD.Ext
+		
+		%define	_VDP_Reg		VDP_Reg
+		
+		%define _bppMD			bppMD
+	%endif
 	
 	extern _MD_Screen
 	extern _MD_Palette
 	extern _MD_Screen32
 	extern _MD_Palette32
 	
-	extern CDD.Control
-	extern CDD.Rcv_Status
-	extern CDD.Status
-	extern CDD.Minute
-	extern CDD.Seconde
-	extern CDD.Frame
-	extern CDD.Ext
+	extern _CDD.Control
+	extern _CDD.Rcv_Status
+	extern _CDD.Status
+	extern _CDD.Minute
+	extern _CDD.Seconde
+	extern _CDD.Frame
+	extern _CDD.Ext
 	
 	extern _VDP_Reg
 	
@@ -1599,27 +1608,27 @@ section .text align=64
 		push ebx
 		push ecx
 
-		mov ax, [CDD.Status]
-		mov bx, [CDD.Minute]
-		mov cx, [CDD.Seconde]
-		mov [CDD.Rcv_Status + 0], ax
-		mov [CDD.Rcv_Status + 2], bx
-		mov [CDD.Rcv_Status + 4], cx
+		mov ax, [_CDD.Status]
+		mov bx, [_CDD.Minute]
+		mov cx, [_CDD.Seconde]
+		mov [_CDD.Rcv_Status + 0], ax
+		mov [_CDD.Rcv_Status + 2], bx
+		mov [_CDD.Rcv_Status + 4], cx
 		add al, bl
 		add al, bh
-		mov bx, [CDD.Frame]
+		mov bx, [_CDD.Frame]
 		add al, ch
 		add al, cl
-		and byte [CDD.Control], 0x3
+		and byte [_CDD.Control], 0x3
 		add al, ah
 		add al, bl
-		mov ah, [CDD.Ext]
+		mov ah, [_CDD.Ext]
 		add al, bh
 		add al, ah
-		mov [CDD.Rcv_Status + 6], bx
+		mov [_CDD.Rcv_Status + 6], bx
 		not al
 		and al, 0x0F
-		mov [CDD.Rcv_Status + 8], ax
+		mov [_CDD.Rcv_Status + 8], ax
 
 		pop ecx
 		pop ebx

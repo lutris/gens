@@ -8,7 +8,7 @@
 
 section .data align=64
 	
-	; Symbol redefines for ELF
+	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_Controller_1_Counter	Controller_1_Counter
 		%define	_Controller_1_Delay	Controller_1_Delay
@@ -19,6 +19,9 @@ section .data align=64
 		%define	_Controller_2_Delay	Controller_2_Delay
 		%define	_Controller_2_State	Controller_2_State
 		%define	_Controller_2_COM	Controller_2_COM
+		
+		%define	_Memory_Control_Status	Memory_Control_Status
+		%define	_Cell_Conv_Tab		Cell_Conv_Tab
 	%endif
 	
 	extern _Controller_1_Counter
@@ -31,8 +34,8 @@ section .data align=64
 	extern _Controller_2_State
 	extern _Controller_2_COM
 	
-	extern Memory_Control_Status
-	extern Cell_Conv_Tab
+	extern _Memory_Control_Status
+	extern _Cell_Conv_Tab
 	extern VDP_Current_Line
 	
 	
@@ -366,22 +369,27 @@ section .data align=64
 
 	DECL M68K_Write_Word_Table
 		times 16	dd M68K_Write_Bad
-
-%ifdef __GCC2
-section .bss
-bits 32
-%else
+	
 section .bss align=64
-%endif
+	
+	; External symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Ram_Prg		Ram_Prg
+		%define	_Ram_Word_2M		Ram_Word_2M
+		%define	_Ram_Word_1M		Ram_Word_1M
+		%define	_Ram_Word_State		Ram_Word_State
+		%define	_S68K_Mem_WP		S68K_Mem_WP
+		%define	_Int_Mask_S68K		Int_Mask_S68K
+	%endif
 
 	extern Ram_Z80
-	extern Ram_Prg
-	extern Ram_Word_2M
-	extern Ram_Word_1M
-	extern Ram_Word_State
+	extern _Ram_Prg
+	extern _Ram_Word_2M
+	extern _Ram_Word_1M
+	extern _Ram_Word_State
 
-	extern S68K_Mem_WP
-	extern Int_Mask_S68K
+	extern _S68K_Mem_WP
+	extern _Int_Mask_S68K
 	extern Bank_Z80
 
 	extern M_SH2
@@ -405,7 +413,7 @@ section .bss align=64
 	extern _32X_MINT
 	extern _32X_SINT
 	
-	; Symbol redefines for ELF
+	; External Symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	__32X_Palette_16B		_32X_Palette_16B
 		%define	__32X_Palette_32B		_32X_Palette_32B
@@ -433,7 +441,7 @@ section .bss align=64
 	extern __32X_VDP_CRam
 	extern __32X_VDP
 	
-	; Symbol redefines for ELF
+	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define _PWM_FIFO_R PWM_FIFO_R
 		%define _PWM_FIFO_L PWM_FIFO_L
@@ -453,28 +461,44 @@ section .bss align=64
 	extern _PWM_RP_L
 	extern _PWM_WP_L
 	extern _PWM_Mode
-
+	
+	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
-	%define _PWM_Cycle_Tmp PWM_Cycle_Tmp
-	%define _PWM_Int_Tmp PWM_Int_Tmp
-	%define _PWM_FIFO_L_Tmp PWM_FIFO_L_Tmp
-	%define _PWM_FIFO_R_Tmp PWM_FIFO_R_Tmp
+		%define _PWM_Cycle_Tmp		PWM_Cycle_Tmp
+		%define _PWM_Int_Tmp		PWM_Int_Tmp
+		%define _PWM_FIFO_L_Tmp		PWM_FIFO_L_Tmp
+		%define _PWM_FIFO_R_Tmp		PWM_FIFO_R_Tmp
 	%endif
 
 	extern _PWM_Cycle_Tmp
 	extern _PWM_Int_Tmp
 	extern _PWM_FIFO_L_Tmp
 	extern _PWM_FIFO_R_Tmp
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_COMM			COMM
+		%define	_COMM.Flag		COMM.Flag
+		%define	_COMM.Command		COMM.Command
+		%define	_COMM.Status		COMM.Status
+		
+		%define	_CDC			CDC
+		%define	_CDC.RS0		CDC.RS0
+		%define	_CDC.RS1		CDC.RS1
+		%define	_CDC.Host_Data		CDC.Host_Data
+		%define	_CDC.DMA_Adr		CDC.DMA_Adr
+		%define	_CDC.Stop_Watch		CDC.Stop_Watch
+	%endif
+	
+	extern _COMM.Flag
+	extern _COMM.Command
+	extern _COMM.Status
 
-	extern COMM.Flag
-	extern COMM.Command
-	extern COMM.Status
-
-	extern CDC.RS0
-	extern CDC.RS1
-	extern CDC.Host_Data
-	extern CDC.DMA_Adr
-	extern CDC.Stop_Watch
+	extern _CDC.RS0
+	extern _CDC.RS1
+	extern _CDC.Host_Data
+	extern _CDC.DMA_Adr
+	extern _CDC.Stop_Watch
 
 	struc vx
 		.Mode		resd 1
@@ -562,10 +586,9 @@ section .bss align=64
 	resd 1
 	DECL Cycles_Z80
 	resd 1
-
-
+	
 section .text align=64
-
+	
 	extern Z80_ReadB_Table
 	extern Z80_ReadW_Table
 	extern Z80_WriteB_Table

@@ -60,7 +60,6 @@ unsigned char M68K_RB(unsigned int Adr);
 unsigned short M68K_RW(unsigned int Adr);
 void M68K_WB(unsigned int Adr, unsigned char Data);
 void M68K_WW(unsigned int Adr, unsigned short Data);
-void Update_SegaCD_Timer(void);
 
 #ifdef __cplusplus
 }
