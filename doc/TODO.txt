@@ -8,6 +8,7 @@ TODO for Gens/GS m6:
   indicating interlaced frames. This will require MDP_RENDER_INTERLACED in
   MDP_Render_t.
 - [MDP] Initial plugin manager UI.
+- VDraw: Stretch is broken for 3x scaling.
 
 TODO for Gens/GS m6.1:
 - [MDP] New plugin types:
