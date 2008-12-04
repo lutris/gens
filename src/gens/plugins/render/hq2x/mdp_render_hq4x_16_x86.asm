@@ -907,6 +907,8 @@ arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
 
+loc_calcPitchDiff	equ 32
+
 	;************************************************************************
 	; void mdp_render_hq4x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				  int destPitch, int srcPitch,
@@ -927,6 +929,13 @@ arg_height	equ 28
 	sub	[ebp + arg_srcPitch], ebx	; arg_srcPitch = offset
 	mov	dword [prevline], 0
 	mov	dword [nextline], ebx
+	
+	; MDP: Calculate the difference between the pitch and the source width.
+	mov	eax, [ebp + arg_destPitch]
+	shr	eax, 3
+	sub	eax, [ebp + arg_width]
+	shl	eax, 3
+	mov	[ebp + loc_calcPitchDiff], eax
 	
 .LoopY:
 	mov	ecx, [ebp + arg_width]
@@ -4120,11 +4129,7 @@ arg_height	equ 28
 	add	edi, ebx
 	
 	; MDP: Add the difference between the pitch and the source width.
-	mov	ebx, [ebp + arg_destPitch]
-	shr	ebx, 3
-	sub	ebx, [ebp + arg_width]
-	shl	ebx, 3
-	add	edi, ebx
+	add	edi, [ebp + loc_calcPitchDiff]
 	
 	dec	dword [linesleft]
 	jz	.fin

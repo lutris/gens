@@ -450,6 +450,8 @@ arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
 
+loc_calcPitchDiff	equ 32
+
 	;************************************************************************
 	; void mdp_render_hq3x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				  int destPitch, int srcPitch,
@@ -463,13 +465,42 @@ arg_height	equ 28
 	
 	mov	esi, [ebp + arg_mdScreen]
 	mov	edi, [ebp + arg_destScreen]
-	mov	edx, [ebp + arg_height]
-	mov	[linesleft], edx
 	mov	ebx, [ebp + arg_width]
 	add	ebx, ebx
 	sub	[ebp + arg_srcPitch], ebx	; arg_srcPitch = offset
 	mov	dword [prevline], 0
 	mov	dword [nextline], ebx
+	
+%macro DIV_BY_6 1
+	; Optimized Division by Constant from http://www.agner.org/optimize/optimizing_assembly.pdf
+	; Dividend: %1 -> eax
+	; Divisor:  edx
+	; Quotient: edx
+	mov	eax, %1
+	mov	edx, 0xAAAAAAAB
+	mul	edx
+	shr	edx, 2
+%endmacro
+	
+%macro MUL_BY_6 2
+	; Optimized Multiplication by 6 [written by David Korth]
+	; %1 == register with value to multiply by 6
+	; %2 == temporary register
+	add	%1, %1
+	mov	%2, %1
+	add	%1, %1
+	add	%1, %2
+%endmacro
+	
+	; MDP: Calculate the difference between the pitch and the source width.
+	DIV_BY_6	[ebp + arg_destPitch]
+	sub		edx, [ebp + arg_width]
+	MUL_BY_6	edx, eax
+	mov		[ebp + loc_calcPitchDiff], edx
+	
+	; Get the height.
+	mov	edx, [ebp + arg_height]
+	mov	[linesleft], edx
 	
 .LoopY:
 	mov	ecx, [ebp + arg_width]
@@ -2693,33 +2724,8 @@ arg_height	equ 28
 	add	edi, ebx
 	add	edi, ebx
 	
-%macro DIV_BY_6 1
-	; Optimized Division by Constant from http://www.agner.org/optimize/optimizing_assembly.pdf
-	; Dividend: %1 -> eax
-	; Divisor:  edx
-	; Quotient: edx
-	mov	eax, %1
-	mov	edx, 0xAAAAAAAB
-	mul	edx
-	shr	edx, 2
-%endmacro
-	
-%macro MUL_BY_6 2
-	; Optimized Multiplication by 6 [written by David Korth]
-	; %1 == register with value to multiply by 6
-	; %2 == temporary register
-	add	%1, %1
-	mov	%2, %1
-	add	%1, %1
-	add	%1, %2
-%endmacro
-	
 	; MDP: Add the difference between the pitch and the source width.
-	mov		eax, [ebp + arg_destPitch]
-	DIV_BY_6	[ebp + arg_destPitch]
-	sub		edx, [ebp + arg_width]
-	MUL_BY_6	edx, eax
-	add		edi, edx
+	add	edi, [ebp + loc_calcPitchDiff]
 	
 	dec	dword [linesleft]
 	jz	.fin
