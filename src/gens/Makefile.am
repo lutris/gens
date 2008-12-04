@@ -25,6 +25,8 @@ ASMFILES = \
 		gens_core/gfx/gfx_cd.o \
 		gens_core/io/io_teamplayer.o \
 		gens_core/mem/mem_m68k.o \
+		gens_core/mem/mem_m68k_cd.o \
+		gens_core/mem/mem_m68k_32x.o \
 		gens_core/mem/mem_s68k.o \
 		gens_core/mem/mem_sh2.o \
 		gens_core/mem/mem_z80.o \

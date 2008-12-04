@@ -1,5 +1,330 @@
+%include "nasmhead.inc"
+
+%define CYCLE_FOR_TAKE_Z80_BUS_GENESIS 16
 %define PWM_BUF_SIZE 4
 
+section .bss align=64
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_Controller_1_Counter	Controller_1_Counter
+		%define	_Controller_1_Delay	Controller_1_Delay
+		%define	_Controller_1_State	Controller_1_State
+		%define	_Controller_1_COM	Controller_1_COM
+		
+		%define	_Controller_2_Counter	Controller_2_Counter
+		%define	_Controller_2_Delay	Controller_2_Delay
+		%define	_Controller_2_State	Controller_2_State
+		%define	_Controller_2_COM	Controller_2_COM
+	%endif
+	
+	extern _Controller_1_Counter
+	extern _Controller_1_Delay
+	extern _Controller_1_State
+	extern _Controller_1_COM
+	
+	extern _Controller_2_Counter
+	extern _Controller_2_Delay
+	extern _Controller_2_State
+	extern _Controller_2_COM
+	
+	extern Rom_Data
+	
+	extern M_Z80
+	extern Z80_State
+	extern Last_BUS_REQ_Cnt
+	extern Last_BUS_REQ_St
+	
+	extern M_SH2
+	extern S_SH2
+	
+	extern Game_Mode
+	extern CPU_Mode
+	extern Gen_Version
+	
+	extern _32X_Comm
+	extern _32X_ADEN
+	extern _32X_RES
+	extern _32X_FM
+	extern _32X_RV
+	extern _32X_DREQ_ST
+	extern _32X_DREQ_SRC
+	extern _32X_DREQ_DST
+	extern _32X_DREQ_LEN
+	extern _32X_FIFO_A
+	extern _32X_FIFO_B
+	extern _32X_FIFO_Block
+	extern _32X_FIFO_Write
+	extern _32X_FIFO_Read
+	extern _32X_MINT
+	extern _32X_SINT
+	
+	; External Symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	__32X_Palette_16B		_32X_Palette_16B
+		%define	__32X_Palette_32B		_32X_Palette_32B
+		
+		%define	__32X_VDP_Ram			_32X_VDP_Ram
+		%define __32X_VDP_CRam			_32X_VDP_CRam
+		
+		%define __32X_VDP_CRam_Ajusted		_32X_VDP_CRam_Ajusted
+		%define	__32X_VDP_CRam_Ajusted32	_32X_VDP_CRam_Ajusted32
+		
+		%define	__32X_VDP			_32X_VDP
+		%define __32X_VDP.Mode			_32X_VDP.Mode
+		%define __32X_VDP.State			_32X_VDP.State
+		%define __32X_VDP.AF_Data		_32X_VDP.AF_Data
+		%define __32X_VDP.AF_St			_32X_VDP.AF_St
+		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
+		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
+	%endif
+	
+	extern __32X_Palette_16B
+	extern __32X_Palette_32B
+	extern __32X_VDP_CRam_Ajusted
+	extern __32X_VDP_CRam_Ajusted32
+	extern __32X_VDP_Ram
+	extern __32X_VDP_CRam
+	extern __32X_VDP
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define _PWM_FIFO_R PWM_FIFO_R
+		%define _PWM_FIFO_L PWM_FIFO_L
+		%define _PWM_FULL_TAB PWM_FULL_TAB
+		%define _PWM_RP_R PWM_RP_R
+		%define _PWM_WP_R PWM_WP_R
+		%define _PWM_RP_L PWM_RP_L
+		%define _PWM_WP_L PWM_WP_L
+		%define _PWM_Mode PWM_Mode
+	%endif
+
+	extern _PWM_FIFO_R
+	extern _PWM_FIFO_L
+	extern _PWM_FULL_TAB
+	extern _PWM_RP_R
+	extern _PWM_WP_R
+	extern _PWM_RP_L
+	extern _PWM_WP_L
+	extern _PWM_Mode
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define _PWM_Cycle_Tmp		PWM_Cycle_Tmp
+		%define _PWM_Int_Tmp		PWM_Int_Tmp
+		%define _PWM_FIFO_L_Tmp		PWM_FIFO_L_Tmp
+		%define _PWM_FIFO_R_Tmp		PWM_FIFO_R_Tmp
+	%endif
+
+	extern _PWM_Cycle_Tmp
+	extern _PWM_Int_Tmp
+	extern _PWM_FIFO_L_Tmp
+	extern _PWM_FIFO_R_Tmp
+	
+	extern Z80_M68K_Cycle_Tab
+	extern Rom_Data
+	extern Bank_M68K
+	extern Fake_Fetch
+	
+	extern Cycles_M68K
+	extern Cycles_Z80
+	
+	extern SRAM_ON
+	extern SRAM_Write
+	
+	; 32X MC68000 firmware
+	DECL _32X_Genesis_Rom
+		resb 256
+	
+	DECL Bank_SH2
+		resd 1
+	
+	struc vx
+		.Mode:		resd 1
+		.State:		resd 1
+		.AF_Data:	resd 1
+		.AF_St:		resd 1
+		.AF_Len:	resd 1
+		.AF_Line:	resd 1
+	endstruc
+	
+section .data align=64
+	
+	; 32X Default Jump Table
+	
+	extern M68K_Read_Byte_Bad
+	
+	extern Genesis_M68K_Read_Byte_Table
+	extern Genesis_M68K_Read_Word_Table
+	
+	extern M68K_Read_Byte_Table
+	extern M68K_Read_Word_Table
+	
+	DECL _32X_M68K_Read_Byte_Table
+		dd	M68K_Read_Byte_Rom0,		; 0x000000 - 0x07FFFF
+		dd	M68K_Read_Byte_Rom1,		; 0x080000 - 0x0FFFFF
+		dd	M68K_Read_Byte_Rom2,		; 0x100000 - 0x17FFFF
+		dd	M68K_Read_Byte_Rom3,		; 0x180000 - 0x1FFFFF
+		dd	M68K_Read_Byte_Rom4,		; 0x200000 - 0x27FFFF
+		dd	M68K_Read_Byte_Rom5,		; 0x280000 - 0x2FFFFF
+		dd	M68K_Read_Byte_Rom6,		; 0x300000 - 0x37FFFF
+		dd	M68K_Read_Byte_Rom7,		; 0x380000 - 0x3FFFFF
+		dd	M68K_Read_Byte_Bios_32X,	; 0x400000 - 0x47FFFF
+		dd	M68K_Read_Byte_BiosR_32X,; 0x480000 - 0x4FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x500000 - 0x57FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x580000 - 0x5FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x600000 - 0x67FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x700000 - 0x77FFFF
+		dd	M68K_Read_Byte_32X_FB0,	; 0x780000 - 0x7FFFFF
+		dd	M68K_Read_Byte_32X_FB1,	; 0x800000 - 0x87FFFF
+		dd	M68K_Read_Byte_Rom0,		; 0x880000 - 0x8FFFFF
+		dd	M68K_Read_Byte_Rom1,		; 0x900000 - 0x97FFFF
+		dd	M68K_Read_Byte_Rom2,		; 0x980000 - 0x9FFFFF
+		dd	M68K_Read_Byte_Misc_32X,	; 0xA00000 - 0xA7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xA80000 - 0xAFFFFF
+		dd	M68K_Read_Byte_Bad,		; 0xB00000 - 0xB7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xB80000 - 0xBFFFFF
+		dd	M68K_Read_Byte_VDP,		; 0xC00000 - 0xC7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Byte_Bad,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Byte_Ram,		; 0xE00000 - 0xE7FFFF
+		dd	M68K_Read_Byte_Ram,		; 0xE80000 - 0xEFFFFF
+		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
+		dd	M68K_Read_Byte_Ram,		; 0xF80000 - 0xFFFFFF
+
+	DECL _32X_M68K_Read_Word_Table
+		dd	M68K_Read_Word_Rom0,		; 0x000000 - 0x07FFFF
+		dd	M68K_Read_Word_Rom1,		; 0x080000 - 0x0FFFFF
+		dd	M68K_Read_Word_Rom2,		; 0x100000 - 0x17FFFF
+		dd	M68K_Read_Word_Rom3,		; 0x180000 - 0x1FFFFF
+		dd	M68K_Read_Word_Rom4,		; 0x200000 - 0x27FFFF
+		dd	M68K_Read_Word_Rom5,		; 0x280000 - 0x2FFFFF
+		dd	M68K_Read_Word_Rom6,		; 0x300000 - 0x37FFFF
+		dd	M68K_Read_Word_Rom7,		; 0x380000 - 0x3FFFFF
+		dd	M68K_Read_Word_Bios_32X,	; 0x480000 - 0x4FFFFF
+		dd	M68K_Read_Word_BiosR_32X,	; 0x480000 - 0x4FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x500000 - 0x57FFFF
+		dd	M68K_Read_Word_Bad,		; 0x580000 - 0x5FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x600000 - 0x67FFFF
+		dd	M68K_Read_Word_Bad,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x700000 - 0x77FFFF
+		dd	M68K_Read_Word_32X_FB0,		; 0x780000 - 0x7FFFFF
+		dd	M68K_Read_Word_32X_FB1,		; 0x800000 - 0x87FFFF
+		dd	M68K_Read_Word_Rom0,		; 0x880000 - 0x8FFFFF
+		dd	M68K_Read_Word_Rom1,		; 0x900000 - 0x97FFFF
+		dd	M68K_Read_Word_Rom2,		; 0x980000 - 0x9FFFFF
+		dd	M68K_Read_Word_Misc_32X,	; 0xA00000 - 0xA7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xA80000 - 0xAFFFFF
+		dd	M68K_Read_Word_Bad,		; 0xB00000 - 0xB7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xB80000 - 0xBFFFFF
+		dd	M68K_Read_Word_VDP,		; 0xC00000 - 0xC7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Word_Bad,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Word_Ram,		; 0xE00000 - 0xE7FFFF
+		dd	M68K_Read_Word_Ram,		; 0xE80000 - 0xEFFFFF
+		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
+		dd	M68K_Read_Word_Ram,		; 0xF80000 - 0xFFFFFF
+	
+	DECL _32X_M68K_Write_Byte_Table
+		dd	M68K_Write_Bad,			; 0x000000 - 0x0FFFFF
+		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
+		dd	M68K_Write_Byte_SRAM,		; 0x200000 - 0x2FFFFF
+		dd	M68K_Write_Bad,			; 0x300000 - 0x3FFFFF
+		dd	M68K_Write_Bad,			; 0x400000 - 0x4FFFFF
+		dd	M68K_Write_Bad,			; 0x500000 - 0x5FFFFF
+		dd	M68K_Write_Bad,			; 0x600000 - 0x6FFFFF
+		dd	M68K_Write_Byte_32X_FB0,	; 0x700000 - 0x7FFFFF
+		dd	M68K_Write_Byte_32X_FB1,	; 0x800000 - 0x8FFFFF
+		dd	M68K_Write_Bad,			; 0x900000 - 0x9FFFFF
+		dd	M68K_Write_Byte_Misc_32X,	; 0xA00000 - 0xAFFFFF
+		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
+		dd	M68K_Write_Byte_VDP,		; 0xC00000 - 0xCFFFFF
+		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
+		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
+	
+	DECL _32X_M68K_Write_Word_Table
+		dd	M68K_Write_Bad,			; 0x000000 - 0x0FFFFF
+		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
+		dd	M68K_Write_Word_SRAM,		; 0x200000 - 0x2FFFFF
+		dd	M68K_Write_Bad,			; 0x300000 - 0x3FFFFF
+		dd	M68K_Write_Bad,			; 0x400000 - 0x4FFFFF
+		dd	M68K_Write_Bad,			; 0x500000 - 0x5FFFFF
+		dd	M68K_Write_Bad,			; 0x600000 - 0x6FFFFF
+		dd	M68K_Write_Word_32X_FB0,	; 0x700000 - 0x7FFFFF
+		dd	M68K_Write_Word_32X_FB1,	; 0x800000 - 0x8FFFFF
+		dd	M68K_Write_Bad,			; 0x900000 - 0x9FFFFF
+		dd	M68K_Write_Word_Misc_32X,	; 0xA00000 - 0xAFFFFF
+		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
+		dd	M68K_Write_Word_VDP,		; 0xC00000 - 0xCFFFFF
+		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Word_Ram,		; 0xE00000 - 0xEFFFFF
+		dd	M68K_Write_Word_Ram,		; 0xF00000 - 0xFFFFFF
+	
+section .text align=64
+	
+	extern Z80_ReadB_Table
+	extern Z80_WriteB_Table
+	
+	extern M68K_Read_Byte_Rom0
+	extern M68K_Read_Byte_Rom1
+	extern M68K_Read_Byte_Rom2
+	extern M68K_Read_Byte_Rom3
+	extern M68K_Read_Byte_Rom4
+	extern M68K_Read_Byte_Rom5
+	extern M68K_Read_Byte_Rom6
+	extern M68K_Read_Byte_Rom7
+	
+	extern M68K_Read_Byte_VDP
+	extern M68K_Read_Byte_Ram
+	
+	extern M68K_Read_Word_Rom0
+	extern M68K_Read_Word_Rom1
+	extern M68K_Read_Word_Rom2
+	extern M68K_Read_Word_Rom3
+	extern M68K_Read_Word_Rom4
+	extern M68K_Read_Word_Rom5
+	extern M68K_Read_Word_Rom6
+	extern M68K_Read_Word_Rom7
+	
+	extern M68K_Read_Word_Bad
+	extern M68K_Read_Word_VDP
+	extern M68K_Read_Word_Ram
+	
+	extern M68K_Write_Bad
+	extern M68K_Write_Byte_SRAM
+	extern M68K_Write_Byte_VDP
+	extern M68K_Write_Byte_Ram
+	
+	extern M68K_Write_Word_SRAM
+	extern M68K_Write_Word_VDP
+	extern M68K_Write_Word_Ram
+	
+	extern _main68k_readOdometer
+	extern z80_Reset
+	extern z80_Exec
+	extern z80_Set_Odo
+	
+	extern SH2_Reset
+	extern SH2_Interrupt
+	extern SH2_DMA0_Request
+	
+	extern _YM2612_Reset
+	
+	extern _RD_Controller_1
+	extern _RD_Controller_2 
+	extern _WR_Controller_1
+	extern _WR_Controller_2
+	
+	extern _M68K_32X_Mode
+	extern _M68K_Set_32X_Rom_Bank
+	extern __32X_Set_FB
+	extern _PWM_Set_Cycle
+	extern _PWM_Set_Int
+	
 	; 32X extended Read Byte
 	; *******************************************
 

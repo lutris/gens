@@ -1,5 +1,260 @@
+%include "nasmhead.inc"
 
+%define CYCLE_FOR_TAKE_Z80_BUS_SEGACD 32
 
+section .bss align=64
+	
+	; External symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Ram_Prg		Ram_Prg
+		%define	_Ram_Word_2M		Ram_Word_2M
+		%define	_Ram_Word_1M		Ram_Word_1M
+		%define	_Ram_Word_State		Ram_Word_State
+		%define	_S68K_Mem_WP		S68K_Mem_WP
+		%define	_Int_Mask_S68K		Int_Mask_S68K
+	%endif
+	
+	extern _Ram_Prg
+	extern _Ram_Word_2M
+	extern _Ram_Word_1M
+	extern _Ram_Word_State
+	
+	extern _S68K_Mem_WP
+	extern _Int_Mask_S68K
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_COMM			COMM
+		%define	_COMM.Flag		COMM.Flag
+		%define	_COMM.Command		COMM.Command
+		%define	_COMM.Status		COMM.Status
+		
+		%define	_CDC			CDC
+		%define	_CDC.RS0		CDC.RS0
+		%define	_CDC.RS1		CDC.RS1
+		%define	_CDC.Host_Data		CDC.Host_Data
+		%define	_CDC.DMA_Adr		CDC.DMA_Adr
+		%define	_CDC.Stop_Watch		CDC.Stop_Watch
+	%endif
+	
+	extern _COMM.Flag
+	extern _COMM.Command
+	extern _COMM.Status
+	
+	extern _CDC.RS0
+	extern _CDC.RS1
+	extern _CDC.Host_Data
+	extern _CDC.DMA_Adr
+	extern _CDC.Stop_Watch
+	
+	extern M_Z80
+	extern Z80_State
+	extern Last_BUS_REQ_Cnt
+	extern Last_BUS_REQ_St
+	
+	extern Game_Mode
+	extern CPU_Mode
+	extern Gen_Version
+	
+	extern Z80_M68K_Cycle_Tab
+	extern Rom_Data
+	extern Bank_M68K
+	extern Fake_Fetch
+	
+	extern Cycles_M68K
+	extern Cycles_Z80
+	
+	DECL BRAM_Ex_State
+		resd 1
+	DECL BRAM_Ex_Size
+		resd 1
+	
+	DECL S68K_State
+		resd 1
+	DECL CPL_S68K
+		resd 1
+	DECL Cycles_S68K
+		resd 1
+	
+	DECL Ram_Backup_Ex
+		resb 64 * 1024
+	
+section .data align=64
+	
+	; External symbol redefines for ELF
+	%ifdef __OBJ_ELF
+		%define	_Memory_Control_Status	Memory_Control_Status
+		%define	_Cell_Conv_Tab		Cell_Conv_Tab
+	%endif
+	
+	extern _Memory_Control_Status
+	extern _Cell_Conv_Tab
+	
+	extern _MS68K_Set_Word_Ram
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_Controller_1_Counter	Controller_1_Counter
+		%define	_Controller_1_Delay	Controller_1_Delay
+		%define	_Controller_1_State	Controller_1_State
+		%define	_Controller_1_COM	Controller_1_COM
+		
+		%define	_Controller_2_Counter	Controller_2_Counter
+		%define	_Controller_2_Delay	Controller_2_Delay
+		%define	_Controller_2_State	Controller_2_State
+		%define	_Controller_2_COM	Controller_2_COM
+	%endif
+	
+	extern _Controller_1_Counter
+	extern _Controller_1_Delay
+	extern _Controller_1_State
+	extern _Controller_1_COM
+	
+	extern _Controller_2_Counter
+	extern _Controller_2_Delay
+	extern _Controller_2_State
+	extern _Controller_2_COM
+	
+	; Sega CD Default Jump Table
+	
+	DECL SegaCD_M68K_Read_Byte_Table
+		dd	M68K_Read_Byte_Bios_CD,		; 0x000000 - 0x07FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x080000 - 0x0FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x100000 - 0x17FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x180000 - 0x1FFFFF
+		dd	M68K_Read_Byte_WRam,		; 0x200000 - 0x27FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x280000 - 0x2FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x300000 - 0x37FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x380000 - 0x3FFFFF
+		dd	M68K_Read_Byte_BRAM_L,		; 0x400000 - 0x47FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x480000 - 0x4FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x500000 - 0x57FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x580000 - 0x5FFFFF
+		dd	M68K_Read_Byte_BRAM,		; 0x600000 - 0x67FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x700000 - 0x77FFFF
+		dd	M68K_Read_Byte_BRAM_W,		; 0x780000 - 0x7FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x800000 - 0x87FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x880000 - 0x8FFFFF
+		dd	M68K_Read_Byte_Bad,		; 0x900000 - 0x97FFFF
+		dd	M68K_Read_Byte_Bad,		; 0x980000 - 0x9FFFFF
+		dd	M68K_Read_Byte_Misc_CD,		; 0xA00000 - 0xA7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xA80000 - 0xAFFFFF
+		dd	M68K_Read_Byte_Bad,		; 0xB00000 - 0xB7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xB80000 - 0xBFFFFF
+		dd	M68K_Read_Byte_VDP,		; 0xC00000 - 0xC7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Byte_Bad,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Byte_Bad,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Byte_Ram,		; 0xE00000 - 0xE7FFFF
+		dd	M68K_Read_Byte_Ram,		; 0xE80000 - 0xEFFFFF
+		dd	M68K_Read_Byte_Ram,		; 0xF00000 - 0xF7FFFF
+		dd	M68K_Read_Byte_Ram,		; 0xF80000 - 0xFFFFFF
+	
+	DECL SegaCD_M68K_Read_Word_Table
+		dd	M68K_Read_Word_Bios_CD,		; 0x000000 - 0x07FFFF
+		dd	M68K_Read_Word_Bad,		; 0x080000 - 0x0FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x100000 - 0x17FFFF
+		dd	M68K_Read_Word_Bad,		; 0x180000 - 0x1FFFFF
+		dd	M68K_Read_Word_WRam,		; 0x200000 - 0x27FFFF
+		dd	M68K_Read_Word_Bad,		; 0x280000 - 0x2FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x300000 - 0x37FFFF
+		dd	M68K_Read_Word_Bad,		; 0x380000 - 0x3FFFFF
+		dd	M68K_Read_Word_BRAM_L,		; 0x400000 - 0x47FFFF
+		dd	M68K_Read_Word_Bad,		; 0x480000 - 0x4FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x500000 - 0x57FFFF
+		dd	M68K_Read_Word_Bad,		; 0x580000 - 0x5FFFFF
+		dd	M68K_Read_Word_BRAM,		; 0x600000 - 0x67FFFF
+		dd	M68K_Read_Word_Bad,		; 0x680000 - 0x6FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x700000 - 0x77FFFF
+		dd	M68K_Read_Word_BRAM_W,		; 0x780000 - 0x7FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x800000 - 0x87FFFF
+		dd	M68K_Read_Word_Bad,		; 0x880000 - 0x8FFFFF
+		dd	M68K_Read_Word_Bad,		; 0x900000 - 0x97FFFF
+		dd	M68K_Read_Word_Bad,		; 0x980000 - 0x9FFFFF
+		dd	M68K_Read_Word_Misc_CD,		; 0xA00000 - 0xA7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xA80000 - 0xAFFFFF
+		dd	M68K_Read_Word_Bad,		; 0xB00000 - 0xB7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xB80000 - 0xBFFFFF
+		dd	M68K_Read_Word_VDP,		; 0xC00000 - 0xC7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xC80000 - 0xCFFFFF
+		dd	M68K_Read_Word_Bad,		; 0xD00000 - 0xD7FFFF
+		dd	M68K_Read_Word_Bad,		; 0xD80000 - 0xDFFFFF
+		dd	M68K_Read_Word_Ram,		; 0xE00000 - 0xE7FFFF
+		dd	M68K_Read_Word_Ram,		; 0xE80000 - 0xEFFFFF
+		dd	M68K_Read_Word_Ram,		; 0xF00000 - 0xF7FFFF
+		dd	M68K_Read_Word_Ram,		; 0xF80000 - 0xFFFFFF
+	
+	DECL SegaCD_M68K_Write_Byte_Table
+		dd	M68K_Write_Byte_Bios_CD,	; 0x000000 - 0x0FFFFF
+		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
+		dd	M68K_Write_Byte_WRam,		; 0x200000 - 0x2FFFFF
+		dd	M68K_Write_Bad,			; 0x300000 - 0x3FFFFF
+		dd	M68K_Write_Bad,			; 0x400000 - 0x4FFFFF
+		dd	M68K_Write_Bad,			; 0x500000 - 0x5FFFFF
+		dd	M68K_Write_Byte_BRAM,		; 0x600000 - 0x6FFFFF
+		dd	M68K_Write_Byte_BRAM_W,		; 0x700000 - 0x7FFFFF
+		dd	M68K_Write_Bad,			; 0x800000 - 0x8FFFFF
+		dd	M68K_Write_Bad,			; 0x900000 - 0x9FFFFF
+		dd	M68K_Write_Byte_Misc_CD,	; 0xA00000 - 0xAFFFFF
+		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
+		dd	M68K_Write_Byte_VDP,		; 0xC00000 - 0xCFFFFF
+		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Byte_Ram,		; 0xE00000 - 0xEFFFFF
+		dd	M68K_Write_Byte_Ram,		; 0xF00000 - 0xFFFFFF
+	
+	DECL SegaCD_M68K_Write_Word_Table
+		dd	M68K_Write_Word_Bios_CD,	; 0x000000 - 0x0FFFFF
+		dd	M68K_Write_Bad,			; 0x100000 - 0x1FFFFF
+		dd	M68K_Write_Word_WRam,		; 0x200000 - 0x2FFFFF
+		dd	M68K_Write_Bad,			; 0x300000 - 0x3FFFFF
+		dd	M68K_Write_Bad,			; 0x400000 - 0x4FFFFF
+		dd	M68K_Write_Bad,			; 0x500000 - 0x5FFFFF
+		dd	M68K_Write_Word_BRAM,		; 0x600000 - 0x6FFFFF
+		dd	M68K_Write_Word_BRAM_W,		; 0x700000 - 0x7FFFFF
+		dd	M68K_Write_Bad,			; 0x800000 - 0x8FFFFF
+		dd	M68K_Write_Bad,			; 0x900000 - 0x9FFFFF
+		dd	M68K_Write_Word_Misc_CD,	; 0xA00000 - 0xAFFFFF
+		dd	M68K_Write_Bad,			; 0xB00000 - 0xBFFFFF
+		dd	M68K_Write_Word_VDP,		; 0xC00000 - 0xCFFFFF
+		dd	M68K_Write_Bad,			; 0xD00000 - 0xDFFFFF
+		dd	M68K_Write_Word_Ram,		; 0xE00000 - 0xEFFFFF
+		dd	M68K_Write_Word_Ram,		; 0xF00000 - 0xFFFFFF
+	
+section .text align=64
+	
+	extern Z80_ReadB_Table
+	extern Z80_WriteB_Table
+	
+	extern M68K_Read_Byte_Bad
+	extern M68K_Read_Byte_VDP
+	extern M68K_Read_Byte_Ram
+	extern M68K_Read_Word_Bad
+	extern M68K_Read_Word_VDP
+	extern M68K_Read_Word_Ram
+	extern M68K_Write_Bad
+	extern M68K_Write_Byte_VDP
+	extern M68K_Write_Byte_Ram
+	extern M68K_Write_Word_VDP
+	extern M68K_Write_Word_Ram
+	
+	extern _main68k_readOdometer
+	extern _sub68k_reset
+	extern _sub68k_interrupt
+	extern z80_Reset
+	extern z80_Exec
+	extern z80_Set_Odo
+	
+	extern _M68K_Set_Prg_Ram
+	extern _YM2612_Reset
+	
+	extern _Read_CDC_Host_MAIN
+	
+	extern _RD_Controller_1
+	extern _RD_Controller_2 
+	extern _WR_Controller_1
+	extern _WR_Controller_2
+	
 	; SegaCD extended Read Byte
 	; *******************************************
 
