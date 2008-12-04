@@ -1,8 +1,6 @@
 TODO for Gens/GS m6:
 - Finish initial plugin implementation. (Internal plugins only.)
 - [MDP] Add plugin configuration save/load based on MDP UUID.
-- [MDPT_RENDER] hq?x: Pre-calculate the destination pitch adjustment instead
-  of re-calculating it on each line.
 - [MDPT_RENDER] asm: Apply optimization tips from http://www.mark.masmcode.com/.
   In particular, reduce dependencies.
 - [MDP] Add a flags field to MDP_RenderInfo_t, which will allow for something
