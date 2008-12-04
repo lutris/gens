@@ -684,42 +684,42 @@ section .text align=64
 		or	al, [Gen_Version]
 		ret
 	
-	align 16
+	align 8
 	
 	.Pad_1:
 		call	_RD_Controller_1
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.Pad_2:
 		call	_RD_Controller_2
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.Ser:
 		mov	al, 0xFF
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_1:
 		mov	al, [_Controller_1_COM]
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_2:
 		mov	al, [_Controller_2_COM]
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Ser:
 		xor	al, al
@@ -1028,42 +1028,42 @@ section .text align=64
 		or	eax, [Gen_Version]		; on recupere les infos hardware de la machine
 		ret
 	
-	align 16
+	align 8
 	
 	.Pad_1:
 		call	_RD_Controller_1
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.Pad_2:
 		call	_RD_Controller_2
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.Ser:
 		mov	ax, 0xFF00
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_1:
 		mov	eax, [_Controller_1_COM]
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_2:
 		mov	eax, [_Controller_2_COM]
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Ser:
 		xor	eax, eax
@@ -1306,7 +1306,7 @@ section .text align=64
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.Pad_2:
 		push	eax
@@ -1316,7 +1316,7 @@ section .text align=64
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_1:
 		mov	[_Controller_1_COM], al
@@ -1324,7 +1324,7 @@ section .text align=64
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_2:
 		mov	[_Controller_2_COM], al
@@ -1588,7 +1588,7 @@ section .text align=64
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.Pad_2:
 		push	eax
@@ -1598,7 +1598,7 @@ section .text align=64
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_1:
 		mov	[_Controller_1_COM], ax
@@ -1606,7 +1606,7 @@ section .text align=64
 		pop	ebx
 		ret
 	
-	align 16
+	align 8
 	
 	.CT_Pad_2:
 		mov	[_Controller_2_COM], ax
