@@ -15,6 +15,8 @@ TODO for Gens/GS m6.1:
   - Audio Processing (volume control)
   - Generic (Game Genie, SGens)
 - [MDP] External plugins.
+- Write a utility to convert PNG to a static const unsigned char[].
+  - Tentative name: "C Binary Object Builder" (CBOB)
 
 High-Level TODO:
 - Move most global variables to global Settings struct
