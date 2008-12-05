@@ -291,7 +291,7 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	gtk_box_pack_start(GTK_BOX(hboxPluginIconNameAuthor), vboxPluginNameAuthor, TRUE, TRUE, 0);
 	
 	// Label for the main plugin info.
-	lblPluginMainInfo = gtk_label_new("\n\n\n\n");
+	lblPluginMainInfo = gtk_label_new("\n\n\n");
 	gtk_widget_set_name(lblPluginMainInfo, "lblPluginMainInfo");
 	gtk_misc_set_alignment(GTK_MISC(lblPluginMainInfo), 0.0f, 0.0f);
 	gtk_widget_show(lblPluginMainInfo);
