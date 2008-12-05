@@ -38,6 +38,7 @@
 #include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
+#include "plugin_manager/plugin_manager_window.hpp"
 
 #ifdef GENS_OPENGL
 #include "opengl_resolution/opengl_resolution_window_misc.hpp"
@@ -714,6 +715,10 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 		
 		case IDM_OPTIONS_SAVECONFIGAS:
 			Config::saveAs();
+			break;
+		
+		case IDM_OPTIONS_PLUGINMANAGER:
+			PluginManagerWindow::Instance();
 			break;
 		
 		default:
