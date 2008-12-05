@@ -235,6 +235,7 @@ GtkWidget* create_game_genie_window(void)
 	// Scrolled Window for the code list
 	scroll_gg_list = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_set_name(scroll_gg_list, "scroll_gg_list");
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll_gg_list), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_gg_list),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
