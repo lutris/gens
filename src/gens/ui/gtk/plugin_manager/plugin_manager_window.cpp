@@ -398,15 +398,21 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	// Fill in the descriptions.
 	MDP_Desc_t *desc = plugin->desc;
 	stringstream ssMainDesc;
+	int lines = 3;			// Name, MDP Author, and License are always printed.
+	const int linesReserved = 4;	// Number of lines reserved.
 	
 	ssMainDesc << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl
 		   << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
 	if (desc->author_orig)
 	{
 		ssMainDesc << "Original Author: " << string(desc->author_orig) << endl;
+		lines++;
 	}
 	ssMainDesc << "License: " + (desc->license ? string(desc->license) : "(none)");
-	if (!desc->author_orig)
+	
+	// Linebreaks needed.
+	const int linesNeeded = linesReserved - lines;
+	for (int i = 0; i < linesNeeded; i++)
 	{
 		ssMainDesc << endl;
 	}
