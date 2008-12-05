@@ -140,6 +140,35 @@ PluginManagerWindow::PluginManagerWindow()
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the plugin list frame.
+	createPluginListFrame(GTK_BOX(vboxDialog));
+	
+	// Create an accelerator group.
+	m_AccelTable = gtk_accel_group_new();
+	
+	// Add the OK button.
+	addDialogButtons(m_Window, WndBase::BAlign_Default,
+			 WndBase::BUTTON_OK, 0,
+			 WndBase::BUTTON_ALL);
+	
+	// Add the accel group to the window.
+	gtk_window_add_accel_group(GTK_WINDOW(m_Window), GTK_ACCEL_GROUP(m_AccelTable));
+	
+	// Populate the plugin list.
+	lmPluginList = NULL;
+	populatePluginList();
+	
+	// Show the window.
+	setVisible(true);
+	
+	// Make sure nothing is selected initially.
+	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
+	gtk_tree_selection_unselect_all(sel);
+}
+
+
+void PluginManagerWindow::createPluginListFrame(GtkBox *container)
+{
+	// Create the plugin list frame.
 	GtkWidget *fraPluginList = gtk_frame_new(NULL);
 	gtk_widget_set_name(fraPluginList, "fraPluginList");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginList), GTK_SHADOW_ETCHED_IN);
@@ -147,7 +176,7 @@ PluginManagerWindow::PluginManagerWindow()
 	gtk_widget_show(fraPluginList);
 	g_object_set_data_full(G_OBJECT(m_Window), "fraPluginList",
 			       g_object_ref(fraPluginList), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(vboxDialog), fraPluginList, TRUE, TRUE, 0);
+	gtk_box_pack_start(container, fraPluginList, TRUE, TRUE, 0);
 	
 	// Label for the plugin list frame.
 	GtkWidget *lblPluginList = gtk_label_new("<b><i>Internal Plugins</i></b>");
@@ -179,28 +208,6 @@ PluginManagerWindow::PluginManagerWindow()
 	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList);
 	g_object_set_data_full(G_OBJECT(m_Window), "lstPluginList",
 			       g_object_ref(lstPluginList), (GDestroyNotify)g_object_unref);
-	
-	// Create an accelerator group.
-	m_AccelTable = gtk_accel_group_new();
-	
-	// Add the OK button.
-	addDialogButtons(m_Window, WndBase::BAlign_Default,
-			 WndBase::BUTTON_OK, 0,
-			 WndBase::BUTTON_ALL);
-	
-	// Add the accel group to the window.
-	gtk_window_add_accel_group(GTK_WINDOW(m_Window), GTK_ACCEL_GROUP(m_AccelTable));
-	
-	// Populate the plugin list.
-	lmPluginList = NULL;
-	populatePluginList();
-	
-	// Show the window.
-	setVisible(true);
-	
-	// Make sure nothing is selected initially.
-	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
-	gtk_tree_selection_unselect_all(sel);
 }
 
 

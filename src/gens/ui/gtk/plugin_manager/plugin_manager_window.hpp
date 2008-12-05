@@ -49,6 +49,7 @@ class PluginManagerWindow : public WndBase
 		GtkWidget *lstPluginList;
 		GtkListStore *lmPluginList;
 		
+		void createPluginListFrame(GtkBox *container);
 		void populatePluginList(void);
 };
 
