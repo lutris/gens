@@ -125,6 +125,7 @@ AboutWindow::AboutWindow()
 			       g_object_ref(m_imgGensLogo), (GDestroyNotify)g_object_unref);
 	
 	cx = 0;
+	ice = 3;
 	if (ice == 3)
 	{
 		ax = 0; bx = 0; cx = 1;
@@ -183,9 +184,10 @@ AboutWindow::~AboutWindow()
 {
 	cx = 0;
 	
-	if (m_Window)
+	if (GTK_IS_WINDOW(m_Window))
 		gtk_widget_destroy(GTK_WIDGET(m_Window));
 	
+	m_Window = NULL;
 	m_Instance = NULL;
 }
 
