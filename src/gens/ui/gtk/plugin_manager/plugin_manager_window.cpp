@@ -38,7 +38,9 @@
 #include "plugins/pluginmgr.hpp"
 
 // C++ includes
+#include <string>
 #include <vector>
+using std::string;
 using std::vector;
 
 
@@ -164,8 +166,9 @@ PluginManagerWindow::PluginManagerWindow()
 	setVisible(true);
 	
 	// Make sure nothing is selected initially.
-	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
-	gtk_tree_selection_unselect_all(sel);
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
+	gtk_tree_selection_unselect_all(selection);
+	lstPluginList_cursor_changed(NULL);
 }
 
 
@@ -211,6 +214,10 @@ void PluginManagerWindow::createPluginListFrame(GtkBox *container)
 	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList);
 	g_object_set_data_full(G_OBJECT(m_Window), "lstPluginList",
 			       g_object_ref(lstPluginList), (GDestroyNotify)g_object_unref);
+	
+	// Connect the treeview's "cursor-changed" signal.
+	g_signal_connect((gpointer)lstPluginList, "cursor-changed",
+			 G_CALLBACK(lstPluginList_cursor_changed_STATIC), this);
 }
 
 
@@ -319,7 +326,7 @@ void PluginManagerWindow::populatePluginList(void)
 	if (lmPluginList)
 		gtk_list_store_clear(lmPluginList);
 	else
-		lmPluginList = gtk_list_store_new(1, G_TYPE_STRING);
+		lmPluginList = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 	
 	// Set the view model of the treeview.
 	gtk_tree_view_set_model(GTK_TREE_VIEW(lstPluginList), GTK_TREE_MODEL(lmPluginList));
@@ -351,7 +358,7 @@ void PluginManagerWindow::populatePluginList(void)
 		MDP_t *plugin = (*curPlugin);
 		if (plugin->desc && plugin->desc->name)
 		{
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, plugin->desc->name, -1);
+			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, plugin->desc->name, 1, plugin, -1);
 		}
 		else
 		{
@@ -359,7 +366,68 @@ void PluginManagerWindow::populatePluginList(void)
 			// TODO: For external plugins, indicate the external file.
 			char tmp[64];
 			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, tmp, -1);
+			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, tmp, 1, NULL, -1);
 		}
 	}
+}
+
+
+void PluginManagerWindow::lstPluginList_cursor_changed_STATIC(GtkTreeView *tree_view, gpointer user_data)
+{
+	reinterpret_cast<PluginManagerWindow*>(user_data)->lstPluginList_cursor_changed(tree_view);
+}
+
+
+void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
+{
+	// Check which plugin is clicked.
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
+	
+	GtkTreeIter iter;
+	if (!gtk_tree_selection_get_selected(selection, (GtkTreeModel**)(&lmPluginList), &iter))
+	{
+		// No plugin selected.
+		gtk_label_set_text(GTK_LABEL(lblPluginName), "No plugin selected.");
+		gtk_label_set_text(GTK_LABEL(lblAuthorMDP), NULL);
+		gtk_label_set_text(GTK_LABEL(lblAuthorOrig), NULL);
+		return;
+	}
+	
+	// Found a selected plugin.
+	GValue gVal = { 0 };
+	MDP_t *plugin;
+	
+	gtk_tree_model_get_value(GTK_TREE_MODEL(lmPluginList), &iter, 1, &gVal);
+	plugin = (MDP_t*)g_value_peek_pointer(&gVal);
+	g_value_unset(&gVal);
+	
+	// Get the plugin information.
+	if (!plugin)
+	{
+		// Invalid plugin.
+		gtk_label_set_text(GTK_LABEL(lblPluginName), "Invalid plugin selected.");
+		gtk_label_set_text(GTK_LABEL(lblAuthorMDP), NULL);
+		gtk_label_set_text(GTK_LABEL(lblAuthorOrig), NULL);
+		return;
+	}
+	
+	if (!plugin->desc)
+	{
+		gtk_label_set_text(GTK_LABEL(lblPluginName), "This plugin does not have a valid description field.");
+		gtk_label_set_text(GTK_LABEL(lblAuthorMDP), NULL);
+		gtk_label_set_text(GTK_LABEL(lblAuthorOrig), NULL);
+		return;
+	}
+	
+	// Fill in the descriptions.
+	MDP_Desc_t *desc = plugin->desc;
+	string sName = "Name: " + (desc->name ? string(desc->name) : "(none)");
+	string sAuthorMDP = "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)");
+	string sAuthorOrig;
+	if (desc->author_orig)
+		sAuthorOrig = "Original Author: " + string(desc->author_orig);
+	
+	gtk_label_set_text(GTK_LABEL(lblPluginName), sName.c_str());
+	gtk_label_set_text(GTK_LABEL(lblAuthorMDP), sAuthorMDP.c_str());
+	gtk_label_set_text(GTK_LABEL(lblAuthorOrig), sAuthorOrig.c_str());
 }

@@ -33,7 +33,9 @@ class PluginManagerWindow : public WndBase
 		static PluginManagerWindow* Instance(GtkWindow *parent = NULL);
 		
 		gboolean close(void);
-	
+		
+		void lstPluginList_cursor_changed(GtkTreeView *tree_view);
+		
 	protected:
 		PluginManagerWindow();
 		~PluginManagerWindow();
@@ -44,6 +46,7 @@ class PluginManagerWindow : public WndBase
 		
 		// Static functions required for GTK+ callbacks.
 		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+		static void lstPluginList_cursor_changed_STATIC(GtkTreeView *tree_view, gpointer user_data);
 		
 		// GTK+ objects
 		GtkWidget *lstPluginList;
