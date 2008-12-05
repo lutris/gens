@@ -196,6 +196,15 @@ void PluginManagerWindow::createPluginListFrame(GtkBox *container)
 			       g_object_ref(lblPluginList), (GDestroyNotify)g_object_unref);
 	gtk_frame_set_label_widget(GTK_FRAME(fraPluginList), lblPluginList);
 	
+	// VBox for the plugin list.
+	GtkWidget *vboxPluginList = gtk_vbox_new(FALSE, 0);
+	gtk_widget_set_name(vboxPluginList, "vboxPluginList");
+	gtk_container_set_border_width(GTK_CONTAINER(vboxPluginList), 8);
+	gtk_widget_show(vboxPluginList);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginList",
+			       g_object_ref(vboxPluginList), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(fraPluginList), vboxPluginList);
+	
 	// Scrolled Window for the plugin list.
 	GtkWidget *scrlPluginList = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_set_name(scrlPluginList, "scrlPluginList");
@@ -203,7 +212,7 @@ void PluginManagerWindow::createPluginListFrame(GtkBox *container)
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrlPluginList);
-	gtk_container_add(GTK_CONTAINER(fraPluginList), scrlPluginList);
+	gtk_box_pack_start(GTK_BOX(vboxPluginList), scrlPluginList, TRUE, TRUE, 0);
 	g_object_set_data_full(G_OBJECT(m_Window), "scrlPluginList",
 			       g_object_ref(scrlPluginList), (GDestroyNotify)g_object_unref);
 	
