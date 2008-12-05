@@ -237,45 +237,46 @@ void AboutWindow::updateIce(void)
 	if (!m_imgGensLogo)
 		return;
 	
-	int x, y, r;
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
 	unsigned char px1, px2;
 	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufIce);
-	r = gdk_pixbuf_get_rowstride(m_pbufIce);
+	int r = gdk_pixbuf_get_rowstride(m_pbufIce);
+	int rd = r - (0120 << 2);
 	
 	memset(pixels, 0, 062000);
-	for (y = 0; y < 0120; y += 2)
+	for (int y = 0120; y != 0; y -= 2)
 	{
-		for (x = 0; x < 0120; x += 4)
+		for (int x = 0120; x != 0; x -= 4)
 		{
 			px1 = (*src & 0360) >> 3;
 			px2 = (*src & 0017) << 1;
 			
-			pixels[y*r + x*4 + 0] = (src2[px1 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 1] = (src2[px1 + 1] & 0360);
-			pixels[y*r + x*4 + 2] = (src2[px1 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 3] = (px1 ? '\377' : '\000');
+			*pixels++ = (src2[px1 + 1] & 0017) << 4;
+			*pixels++ = (src2[px1 + 1] & 0360);
+			*pixels++ = (src2[px1 + 0] & 0017) << 4;
+			*pixels++ = (px1 ? '\377' : '\000');
 			
-			pixels[y*r + x*4 + 4] = (src2[px1 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 5] = (src2[px1 + 1] & 0360);
-			pixels[y*r + x*4 + 6] = (src2[px1 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 7] = (px1 ? '\377' : '\000');
+			*pixels++ = (src2[px1 + 1] & 0017) << 4;
+			*pixels++ = (src2[px1 + 1] & 0360);
+			*pixels++ = (src2[px1 + 0] & 0017) << 4;
+			*pixels++ = (px1 ? '\377' : '\000');
 			
-			pixels[y*r + x*4 + 8] = (src2[px2 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 9] = (src2[px2 + 1] & 0360);
-			pixels[y*r + x*4 + 10] = (src2[px2 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 11] = (px2 ? '\377' : '\000');
+			*pixels++ = (src2[px2 + 1] & 0017) << 4;
+			*pixels++ = (src2[px2 + 1] & 0360);
+			*pixels++ = (src2[px2 + 0] & 0017) << 4;
+			*pixels++ = (px2 ? '\377' : '\000');
 			
-			pixels[y*r + x*4 + 12] = (src2[px2 + 1] & 0017) << 4;
-			pixels[y*r + x*4 + 13] = (src2[px2 + 1] & 0360);
-			pixels[y*r + x*4 + 14] = (src2[px2 + 0] & 0017) << 4;
-			pixels[y*r + x*4 + 15] = (px2 ? '\377' : '\000');
+			*pixels++ = (src2[px2 + 1] & 0017) << 4;
+			*pixels++ = (src2[px2 + 1] & 0360);
+			*pixels++ = (src2[px2 + 0] & 0017) << 4;
+			*pixels++ = (px2 ? '\377' : '\000');
 			
-			memcpy(&pixels[(y+1)*r + x*4], &pixels[y*r + x*4], 16);
+			memcpy(pixels + r - 16, pixels - 16, 16);
 			
 			src++;
 		}
+		pixels += (rd + r);
 	}
 	
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgGensLogo), m_pbufIce);
