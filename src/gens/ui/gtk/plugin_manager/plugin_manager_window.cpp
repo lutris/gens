@@ -197,6 +197,10 @@ PluginManagerWindow::PluginManagerWindow()
 	
 	// Show the window.
 	setVisible(true);
+	
+	// Make sure nothing is selected initially.
+	GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
+	gtk_tree_selection_unselect_all(sel);
 }
 
 
