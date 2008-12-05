@@ -239,18 +239,17 @@ void AboutWindow::updateIce(void)
 	
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
-	unsigned char px1, px2;
 	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufIce);
-	int r = gdk_pixbuf_get_rowstride(m_pbufIce);
-	int rd = r - (0120 << 2);
+	const int r = gdk_pixbuf_get_rowstride(m_pbufIce);
+	const int rd = r - (0120 << 2);
 	
 	memset(pixels, 0, 062000);
 	for (int y = 0120; y != 0; y -= 2)
 	{
 		for (int x = 0120; x != 0; x -= 4)
 		{
-			px1 = (*src & 0360) >> 3;
-			px2 = (*src & 0017) << 1;
+			unsigned char px1 = (*src & 0360) >> 3;
+			unsigned char px2 = (*src & 0017) << 1;
 			
 			*pixels++ = (src2[px1 + 1] & 0017) << 4;
 			*pixels++ = (src2[px1 + 1] & 0360);
