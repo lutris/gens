@@ -142,6 +142,9 @@ PluginManagerWindow::PluginManagerWindow()
 	// Create the plugin list frame.
 	createPluginListFrame(GTK_BOX(vboxDialog));
 	
+	// Create the plugin information frame.
+	createPluginInfoFrame(GTK_BOX(vboxDialog));
+	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();
 	
@@ -208,6 +211,104 @@ void PluginManagerWindow::createPluginListFrame(GtkBox *container)
 	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList);
 	g_object_set_data_full(G_OBJECT(m_Window), "lstPluginList",
 			       g_object_ref(lstPluginList), (GDestroyNotify)g_object_unref);
+}
+
+
+void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
+{
+	// Create the plugin information frame.
+	GtkWidget *fraPluginInfo = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraPluginInfo, "fraPluginInfo");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginInfo), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraPluginInfo), 4);
+	gtk_widget_show(fraPluginInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraPluginInfo",
+			       g_object_ref(fraPluginInfo), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(container, fraPluginInfo, TRUE, TRUE, 0);
+	
+	// Label for the plugin information frame.
+	GtkWidget *lblPluginInfo = gtk_label_new("<b><i>Plugin Information</i></b>");
+	gtk_widget_set_name(lblPluginInfo, "lblPluginInfo");
+	gtk_label_set_use_markup(GTK_LABEL(lblPluginInfo), TRUE);
+	gtk_widget_show(lblPluginInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginInfo",
+			       g_object_ref(lblPluginInfo), (GDestroyNotify)g_object_unref);
+	gtk_frame_set_label_widget(GTK_FRAME(fraPluginInfo), lblPluginInfo);
+	
+	// VBox for the plugin information frame.
+	GtkWidget *vboxPluginInfo = gtk_vbox_new(FALSE, 8);
+	gtk_container_set_border_width(GTK_CONTAINER(vboxPluginInfo), 8);
+	gtk_widget_set_name(vboxPluginInfo, "vboxPluginInfo");
+	gtk_widget_show(vboxPluginInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginInfo",
+			       g_object_ref(vboxPluginInfo), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(fraPluginInfo), vboxPluginInfo);
+	
+	// HBox for the plugin icon, name, and description.
+	GtkWidget *hboxPluginIconNameAuthor = gtk_hbox_new(FALSE, 8);
+	gtk_widget_set_name(hboxPluginIconNameAuthor, "hboxPluginIconNameAuthor");
+	gtk_widget_show(hboxPluginIconNameAuthor);
+	g_object_set_data_full(G_OBJECT(m_Window), "hboxPluginIconNameAuthor",
+			       g_object_ref(hboxPluginIconNameAuthor), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), hboxPluginIconNameAuthor, TRUE, FALSE, 0);
+	
+	// Plugin icon pixbuf.
+	pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
+	g_object_set_data_full(G_OBJECT(m_Window), "pbufPluginIcon",
+			       g_object_ref(pbufPluginIcon), (GDestroyNotify)g_object_unref);
+	
+	// Clear the pixbuf.
+	guchar *pixels = gdk_pixbuf_get_pixels(pbufPluginIcon);
+	int rowstride = gdk_pixbuf_get_rowstride(pbufPluginIcon);
+	int height = gdk_pixbuf_get_height(pbufPluginIcon);
+	memset(pixels, 0x80, rowstride * height);
+	
+	// Plugin icon widget.
+	GtkWidget *imgPluginIcon = gtk_image_new_from_pixbuf(pbufPluginIcon);
+	gtk_widget_set_name(imgPluginIcon, "imgPluginIcon");
+	gtk_misc_set_alignment(GTK_MISC(imgPluginIcon), 0.0f, 0.0f);
+	gtk_widget_show(imgPluginIcon);
+	g_object_set_data_full(G_OBJECT(m_Window), "imgPluginIcon",
+			       g_object_ref(imgPluginIcon), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxPluginIconNameAuthor), imgPluginIcon, FALSE, FALSE, 0);
+	
+	// VBox for the plugin name and author.
+	GtkWidget *vboxPluginNameAuthor = gtk_vbox_new(FALSE, 4);
+	gtk_widget_set_name(vboxPluginNameAuthor, "vboxPluginNameAuthor");
+	gtk_widget_show(vboxPluginNameAuthor);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginNameAuthor",
+			       g_object_ref(vboxPluginNameAuthor), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxPluginIconNameAuthor), vboxPluginNameAuthor, TRUE, TRUE, 0);
+	
+	// Label for the plugin name.
+	lblPluginName = gtk_label_new("Name: Lorem Ipsum");
+	gtk_widget_set_name(lblPluginName, "lblPluginName");
+	gtk_label_set_use_markup(GTK_LABEL(lblPluginName), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(lblPluginName), 0.0f, 0.0f);
+	gtk_widget_show(lblPluginName);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginName",
+			       g_object_ref(lblPluginName), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblPluginName, TRUE, FALSE, 0);
+	
+	// Label for the MDP author.
+	lblAuthorMDP = gtk_label_new("MDP Author: John Doe");
+	gtk_widget_set_name(lblAuthorMDP, "lblAuthorMDP");
+	gtk_label_set_use_markup(GTK_LABEL(lblAuthorMDP), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(lblAuthorMDP), 0.0f, 0.0f);
+	gtk_widget_show(lblAuthorMDP);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblAuthorMDP",
+			       g_object_ref(lblAuthorMDP), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblAuthorMDP, TRUE, FALSE, 0);
+	
+	// Label for the original author.
+	lblAuthorOrig = gtk_label_new("Original Author: John Doe");
+	gtk_widget_set_name(lblAuthorOrig, "lblAuthorOrig");
+	gtk_label_set_use_markup(GTK_LABEL(lblAuthorMDP), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(lblAuthorOrig), 0.0f, 0.0f);
+	gtk_widget_show(lblAuthorOrig);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblAuthorOrig",
+			       g_object_ref(lblAuthorOrig), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblAuthorOrig, TRUE, FALSE, 0);
 }
 
 
