@@ -208,6 +208,7 @@ void PluginManagerWindow::createPluginListFrame(GtkBox *container)
 	// Scrolled Window for the plugin list.
 	GtkWidget *scrlPluginList = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_set_name(scrlPluginList, "scrlPluginList");
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlPluginList), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlPluginList),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
