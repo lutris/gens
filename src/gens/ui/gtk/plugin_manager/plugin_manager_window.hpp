@@ -52,9 +52,7 @@ class PluginManagerWindow : public WndBase
 		GtkWidget *lstPluginList;
 		GtkListStore *lmPluginList;
 		GdkPixbuf *pbufPluginIcon;
-		GtkWidget *lblPluginName;
-		GtkWidget *lblAuthorMDP;
-		GtkWidget *lblAuthorOrig;
+		GtkWidget *lblPluginMainInfo;
 		
 		// Initialization functions.
 		void createPluginListFrame(GtkBox *container);

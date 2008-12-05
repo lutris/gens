@@ -39,8 +39,11 @@
 
 // C++ includes
 #include <string>
+#include <sstream>
 #include <vector>
+using std::endl;
 using std::string;
+using std::stringstream;
 using std::vector;
 
 
@@ -287,35 +290,14 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 			       g_object_ref(vboxPluginNameAuthor), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(hboxPluginIconNameAuthor), vboxPluginNameAuthor, TRUE, TRUE, 0);
 	
-	// Label for the plugin name.
-	lblPluginName = gtk_label_new("Name: Lorem Ipsum");
-	gtk_widget_set_name(lblPluginName, "lblPluginName");
-	gtk_label_set_use_markup(GTK_LABEL(lblPluginName), TRUE);
-	gtk_misc_set_alignment(GTK_MISC(lblPluginName), 0.0f, 0.0f);
-	gtk_widget_show(lblPluginName);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginName",
-			       g_object_ref(lblPluginName), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblPluginName, TRUE, FALSE, 0);
-	
-	// Label for the MDP author.
-	lblAuthorMDP = gtk_label_new("MDP Author: John Doe");
-	gtk_widget_set_name(lblAuthorMDP, "lblAuthorMDP");
-	gtk_label_set_use_markup(GTK_LABEL(lblAuthorMDP), TRUE);
-	gtk_misc_set_alignment(GTK_MISC(lblAuthorMDP), 0.0f, 0.0f);
-	gtk_widget_show(lblAuthorMDP);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblAuthorMDP",
-			       g_object_ref(lblAuthorMDP), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblAuthorMDP, TRUE, FALSE, 0);
-	
-	// Label for the original author.
-	lblAuthorOrig = gtk_label_new("Original Author: John Doe");
-	gtk_widget_set_name(lblAuthorOrig, "lblAuthorOrig");
-	gtk_label_set_use_markup(GTK_LABEL(lblAuthorMDP), TRUE);
-	gtk_misc_set_alignment(GTK_MISC(lblAuthorOrig), 0.0f, 0.0f);
-	gtk_widget_show(lblAuthorOrig);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblAuthorOrig",
-			       g_object_ref(lblAuthorOrig), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblAuthorOrig, TRUE, FALSE, 0);
+	// Label for the main plugin info.
+	lblPluginMainInfo = gtk_label_new("\n\n\n\n");
+	gtk_widget_set_name(lblPluginMainInfo, "lblPluginMainInfo");
+	gtk_misc_set_alignment(GTK_MISC(lblPluginMainInfo), 0.0f, 0.0f);
+	gtk_widget_show(lblPluginMainInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginMainInfo",
+			       g_object_ref(lblPluginMainInfo), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblPluginMainInfo, TRUE, FALSE, 0);
 }
 
 
@@ -366,7 +348,7 @@ void PluginManagerWindow::populatePluginList(void)
 			// TODO: For external plugins, indicate the external file.
 			char tmp[64];
 			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, tmp, 1, NULL, -1);
+			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, tmp, 1, plugin, -1);
 		}
 	}
 }
@@ -387,9 +369,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!gtk_tree_selection_get_selected(selection, (GtkTreeModel**)(&lmPluginList), &iter))
 	{
 		// No plugin selected.
-		gtk_label_set_text(GTK_LABEL(lblPluginName), "No plugin selected.");
-		gtk_label_set_text(GTK_LABEL(lblAuthorMDP), NULL);
-		gtk_label_set_text(GTK_LABEL(lblAuthorOrig), NULL);
+		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n");
 		return;
 	}
 	
@@ -405,29 +385,31 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!plugin)
 	{
 		// Invalid plugin.
-		gtk_label_set_text(GTK_LABEL(lblPluginName), "Invalid plugin selected.");
-		gtk_label_set_text(GTK_LABEL(lblAuthorMDP), NULL);
-		gtk_label_set_text(GTK_LABEL(lblAuthorOrig), NULL);
+		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n");
 		return;
 	}
 	
 	if (!plugin->desc)
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginName), "This plugin does not have a valid description field.");
-		gtk_label_set_text(GTK_LABEL(lblAuthorMDP), NULL);
-		gtk_label_set_text(GTK_LABEL(lblAuthorOrig), NULL);
+		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n");
 		return;
 	}
 	
 	// Fill in the descriptions.
 	MDP_Desc_t *desc = plugin->desc;
-	string sName = "Name: " + (desc->name ? string(desc->name) : "(none)");
-	string sAuthorMDP = "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)");
-	string sAuthorOrig;
-	if (desc->author_orig)
-		sAuthorOrig = "Original Author: " + string(desc->author_orig);
+	stringstream ssMainDesc;
 	
-	gtk_label_set_text(GTK_LABEL(lblPluginName), sName.c_str());
-	gtk_label_set_text(GTK_LABEL(lblAuthorMDP), sAuthorMDP.c_str());
-	gtk_label_set_text(GTK_LABEL(lblAuthorOrig), sAuthorOrig.c_str());
+	ssMainDesc << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl
+		   << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
+	if (desc->author_orig)
+	{
+		ssMainDesc << "Original Author: " << string(desc->author_orig) << endl;
+	}
+	ssMainDesc << "License: " + (desc->license ? string(desc->license) : "(none)");
+	if (!desc->author_orig)
+	{
+		ssMainDesc << endl;
+	}
+	
+	gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), ssMainDesc.str().c_str());
 }
