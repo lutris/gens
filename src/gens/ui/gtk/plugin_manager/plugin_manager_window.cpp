@@ -254,13 +254,13 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 			       g_object_ref(vboxPluginInfo), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraPluginInfo), vboxPluginInfo);
 	
-	// HBox for the plugin icon, name, and description.
-	GtkWidget *hboxPluginIconNameAuthor = gtk_hbox_new(FALSE, 8);
-	gtk_widget_set_name(hboxPluginIconNameAuthor, "hboxPluginIconNameAuthor");
-	gtk_widget_show(hboxPluginIconNameAuthor);
-	g_object_set_data_full(G_OBJECT(m_Window), "hboxPluginIconNameAuthor",
-			       g_object_ref(hboxPluginIconNameAuthor), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), hboxPluginIconNameAuthor, TRUE, FALSE, 0);
+	// HBox for the main plugin info.
+	GtkWidget *hboxPluginMainInfo = gtk_hbox_new(FALSE, 8);
+	gtk_widget_set_name(hboxPluginMainInfo, "hboxPluginMainInfo");
+	gtk_widget_show(hboxPluginMainInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "hboxPluginMainInfo",
+			       g_object_ref(hboxPluginMainInfo), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), hboxPluginMainInfo, TRUE, FALSE, 0);
 	
 	// Plugin icon pixbuf.
 	pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
@@ -280,15 +280,15 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	gtk_widget_show(imgPluginIcon);
 	g_object_set_data_full(G_OBJECT(m_Window), "imgPluginIcon",
 			       g_object_ref(imgPluginIcon), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(hboxPluginIconNameAuthor), imgPluginIcon, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), imgPluginIcon, FALSE, FALSE, 0);
 	
-	// VBox for the plugin name and author.
-	GtkWidget *vboxPluginNameAuthor = gtk_vbox_new(FALSE, 4);
-	gtk_widget_set_name(vboxPluginNameAuthor, "vboxPluginNameAuthor");
-	gtk_widget_show(vboxPluginNameAuthor);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginNameAuthor",
-			       g_object_ref(vboxPluginNameAuthor), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(hboxPluginIconNameAuthor), vboxPluginNameAuthor, TRUE, TRUE, 0);
+	// VBox for the main plugin info.
+	GtkWidget *vboxPluginMainInfo = gtk_vbox_new(FALSE, 4);
+	gtk_widget_set_name(vboxPluginMainInfo, "vboxPluginMainInfo");
+	gtk_widget_show(vboxPluginMainInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginMainInfo",
+			       g_object_ref(vboxPluginMainInfo), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), vboxPluginMainInfo, TRUE, TRUE, 0);
 	
 	// Label for the main plugin info.
 	lblPluginMainInfo = gtk_label_new("\n\n\n\n");
@@ -297,7 +297,7 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	gtk_widget_show(lblPluginMainInfo);
 	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginMainInfo",
 			       g_object_ref(lblPluginMainInfo), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(vboxPluginNameAuthor), lblPluginMainInfo, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vboxPluginMainInfo), lblPluginMainInfo, TRUE, FALSE, 0);
 }
 
 
