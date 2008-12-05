@@ -53,6 +53,8 @@ AboutWindow* AboutWindow::Instance(GtkWindow *parent)
 	}
 	
 	// Set modality of the window.
+	if (!parent)
+		parent = GTK_WINDOW(gens_window);
 	m_Instance->setModal(parent);
 	
 	return m_Instance;
