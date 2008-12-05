@@ -116,22 +116,27 @@ AboutWindow::AboutWindow()
 	g_object_set_data_full(G_OBJECT(m_Window), "hboxLogo",
 			       g_object_ref(hboxLogo), (GDestroyNotify)g_object_unref);
 	
-	// Gens logo
-	m_imgGensLogo = create_pixmap("gens_small.png");
+	cx = 0;
+	m_pbufIce = NULL;
+	if (ice != 3)
+	{
+		// Gens logo
+		m_imgGensLogo = create_pixmap("gens_small.png");
+	}
+	else
+	{
+		ax = 0; bx = 0; cx = 1;
+		m_pbufIce = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 0120, 0120);
+		m_imgGensLogo = gtk_image_new_from_pixbuf(m_pbufIce);
+		g_timeout_add(100, GTK_iceTime, (gpointer)this);
+		updateIce();
+	}
+	
 	gtk_widget_set_name(GTK_WIDGET(m_imgGensLogo), "m_imgGensLogo");
 	gtk_widget_show(GTK_WIDGET(m_imgGensLogo));
 	gtk_box_pack_start(GTK_BOX(hboxLogo), GTK_WIDGET(m_imgGensLogo), TRUE, TRUE, 0);
 	g_object_set_data_full(G_OBJECT(m_Window), "imgGensLogo",
 			       g_object_ref(m_imgGensLogo), (GDestroyNotify)g_object_unref);
-	
-	cx = 0;
-	ice = 3;
-	if (ice == 3)
-	{
-		ax = 0; bx = 0; cx = 1;
-		g_timeout_add(100, GTK_iceTime, (gpointer)this);
-		updateIce();
-	}
 	
 	// Version information
 	const string title = "<b><i>" + string(StrTitle) + "</i></b>\n<small>\n</small>" + string(StrDescription);
@@ -187,6 +192,12 @@ AboutWindow::~AboutWindow()
 	if (GTK_IS_WINDOW(m_Window))
 		gtk_widget_destroy(GTK_WIDGET(m_Window));
 	
+	if (m_pbufIce)
+	{
+		g_object_unref(G_OBJECT(m_pbufIce));
+		m_pbufIce = NULL;
+	}
+	
 	m_Window = NULL;
 	m_Instance = NULL;
 }
@@ -226,13 +237,12 @@ void AboutWindow::updateIce(void)
 	if (!m_imgGensLogo)
 		return;
 	
-	GdkPixbuf *icebuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 0120, 0120);
 	int x, y, r;
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
 	unsigned char px1, px2;
-	guchar *pixels = gdk_pixbuf_get_pixels(icebuf);
-	r = gdk_pixbuf_get_rowstride(icebuf);
+	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufIce);
+	r = gdk_pixbuf_get_rowstride(m_pbufIce);
 	
 	memset(pixels, 0, 062000);
 	for (y = 0; y < 0120; y += 2)
@@ -268,10 +278,7 @@ void AboutWindow::updateIce(void)
 		}
 	}
 	
-	if (m_imgGensLogo)
-		gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgGensLogo), icebuf);
-	
-	g_object_unref(G_OBJECT(icebuf));
+	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgGensLogo), m_pbufIce);
 }
 
 

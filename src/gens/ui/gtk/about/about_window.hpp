@@ -48,6 +48,7 @@ class AboutWindow : public WndBase
 		static gboolean GTK_iceTime(gpointer user_data);
 		
 		GtkWidget *m_imgGensLogo;
+		GdkPixbuf *m_pbufIce;
 		unsigned short ax, bx, cx;
 		
 		void updateIce(void);
