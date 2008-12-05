@@ -765,6 +765,7 @@ section .text align=64
 		test	ecx, 0xFFBC01
 		jnz	short SH2_WW_Bad
 		
+		push	ebx
 		and	edx, 0xFFFF
 		and	ecx, 0x1FE
 		mov	ax, [__32X_Palette_16B + edx * 2]
@@ -772,6 +773,7 @@ section .text align=64
 		mov	[__32X_VDP_CRam + ecx], dx
 		mov	[__32X_VDP_CRam_Ajusted + ecx], ax
 		mov	[__32X_VDP_CRam_Ajusted32 + ecx * 2], ebx
+		pop	ebx
 		ret
 	
 	align 4
