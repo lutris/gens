@@ -1,8 +1,5 @@
 TODO for Gens/GS m6:
 - Finish initial plugin implementation. (Internal plugins only.)
-- [MDP] Add plugin configuration save/load based on MDP UUID.
-- [MDPT_RENDER] asm: Apply optimization tips from http://www.mark.masmcode.com/.
-  In particular, reduce dependencies.
 - [MDP] Initial plugin manager UI.
 - VDraw: Stretch is broken for 3x scaling.
 
@@ -13,6 +10,9 @@ TODO for Gens/GS m6.1:
 - [MDP] External plugins.
 - Write a utility to convert PNG to a static const unsigned char[].
   - Tentative name: "C Binary Object Builder" (CBOB)
+- [MDP] Add plugin configuration save/load based on MDP UUID.
+- [MDPT_RENDER] asm: Apply optimization tips from http://www.mark.masmcode.com/.
+  In particular, reduce dependencies.
 
 High-Level TODO:
 - Move most global variables to global Settings struct
