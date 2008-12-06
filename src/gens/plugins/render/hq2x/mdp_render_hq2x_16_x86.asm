@@ -516,7 +516,7 @@ arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
 
-loc_calcPitchDiff	equ 32
+loc_calcPitchDiff	equ -4
 
 	;************************************************************************
 	; void mdp_render_hq2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
@@ -525,8 +525,10 @@ loc_calcPitchDiff	equ 32
 	global _mdp_render_hq2x_16_x86_mmx
 	_mdp_render_hq2x_16_x86_mmx:
 	
+	; Set up the frame pointer.
 	push	ebp
 	mov	ebp, esp
+	sub	esp, 4
 	pushad
 	
 	mov	esi, [ebp + arg_mdScreen]
@@ -2056,8 +2058,9 @@ loc_calcPitchDiff	equ 32
 	jmp	.LoopY
 	
 .fin:
-	emms
+	; Reset the frame pointer.
 	popad
 	mov	esp, ebp
 	pop	ebp
+	emms
 	ret
