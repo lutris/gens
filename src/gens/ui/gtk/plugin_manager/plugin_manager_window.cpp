@@ -485,7 +485,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	
 	// CPU flags.
 	gtk_label_set_text(GTK_LABEL(lblCpuFlags),
-			   getCpuFlags(plugin->cpuFlagsRequired,
+			   GetCPUFlags(plugin->cpuFlagsRequired,
 				       plugin->cpuFlagsSupported).c_str());
 	gtk_label_set_use_markup(GTK_LABEL(lblCpuFlags), TRUE);
 	
@@ -503,7 +503,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 }
 
 
-string PluginManagerWindow::getCpuFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported)
+string PluginManagerWindow::GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported)
 {
 	stringstream ssFlags;
 	ssFlags << "CPU Flags: ";

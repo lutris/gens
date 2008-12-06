@@ -66,7 +66,7 @@ class PluginManagerWindow : public WndBase
 		void populatePluginList(void);
 		
 		// CPU flags.
-		static std::string getCpuFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported);
+		static std::string GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported);
 };
 
 #endif /* __cplusplus */
