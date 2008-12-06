@@ -309,6 +309,34 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginMainInfo",
 			       g_object_ref(lblPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginMainInfo), lblPluginMainInfo, TRUE, FALSE, 0);
+	
+	// Frame for the plugin description.
+	GtkWidget *fraPluginDesc = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraPluginDesc, "fraPluginDesc");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginDesc), GTK_SHADOW_NONE);
+	gtk_container_set_border_width(GTK_CONTAINER(fraPluginDesc), 4);
+	gtk_widget_show(fraPluginDesc);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraPluginDesc",
+			       g_object_ref(fraPluginDesc), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), fraPluginDesc, TRUE, TRUE, 0);
+	
+	// Label for the plugin description frame.
+	lblPluginDescTitle = gtk_label_new(" ");
+	gtk_widget_set_name(lblPluginDescTitle, "lblPluginDescTitle");
+	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginDescTitle",
+			       g_object_ref(lblPluginDescTitle), (GDestroyNotify)g_object_unref);
+	gtk_frame_set_label_widget(GTK_FRAME(fraPluginDesc), lblPluginDescTitle);
+	
+	// Label for the plugin description.
+	lblPluginDesc = gtk_label_new(NULL);
+	gtk_widget_set_name(lblPluginDesc, "lblPluginDesc");
+	gtk_label_set_selectable(GTK_LABEL(lblPluginDesc), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(lblPluginDesc), 0.0f, 0.0f);
+	gtk_widget_set_size_request(lblPluginDesc, -1, 64);
+	gtk_widget_show(lblPluginDesc);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginDesc",
+			       g_object_ref(lblPluginDesc), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(fraPluginDesc), lblPluginDesc);
 }
 
 
@@ -381,6 +409,8 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// No plugin selected.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		return;
 	}
 	
@@ -397,12 +427,16 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// Invalid plugin.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		return;
 	}
 	
 	if (!plugin->desc)
 	{
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		return;
 	}
 	
@@ -434,4 +468,16 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	}
 	
 	gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), ssMainDesc.str().c_str());
+	
+	// Plugin description.
+	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
+	if (desc->description)
+	{
+		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), "<b><i>Plugin Description</i></b>");
+		gtk_label_set_use_markup(GTK_LABEL(lblPluginDescTitle), TRUE);
+	}
+	else
+	{
+		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+	}
 }

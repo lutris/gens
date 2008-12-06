@@ -735,7 +735,7 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			}
 			break;
 	}
-
+	
 	// Menu item handled.
 	return 1;
 }
