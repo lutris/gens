@@ -26,7 +26,7 @@ section .text align=64
 		
 		; Copy the function parameters to registers.
 		mov	edi, [ebp + arg_left]		; Left
-		mov	esi, [esp + arg_right]		; Right
+		mov	esi, [ebp + arg_right]		; Right
 		mov	ecx, [ebp + arg_length]		; Length
 		mov	ebx, [ebp + arg_dest]		; Dest
 		
@@ -112,7 +112,7 @@ section .text align=64
 		
 		; Copy the function parameters to registers.
 		mov	edi, [ebp + arg_left]		; Left
-		mov	esi, [esp + arg_right]		; Right
+		mov	esi, [ebp + arg_right]		; Right
 		mov	ecx, [ebp + arg_length]		; Length
 		mov	ebx, [ebp + arg_dest]		; Dest
 		
