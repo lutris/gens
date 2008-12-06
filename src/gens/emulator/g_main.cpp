@@ -271,6 +271,9 @@ void Init_Settings(void)
 	strncpy(Str_Tmp, PathNames.Gens_Path, 1000);
 	strcat(Str_Tmp, "gens.cfg");
 	
+	// Get the CPU flags.
+	getCPUFlags();
+	
 	// Initialize the Plugin Manager.
 	PluginMgr::init();
 	
@@ -314,8 +317,6 @@ int Init(void)
 {
 	if (draw->Init_Subsystem() != 0)
 		return 0;
-	
-	getCPUFlags();
 	
 	MSH2_Init();
 	SSH2_Init();
