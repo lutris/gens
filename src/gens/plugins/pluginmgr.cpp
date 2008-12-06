@@ -36,6 +36,9 @@ using std::pair;
 using std::string;
 using std::vector;
 
+// CPU flags
+#include "gens_core/misc/cpuflags.h"
+
 // Render plugins
 #include "render/normal/mdp_render_1x_plugin.h"
 #include "render/double/mdp_render_2x_plugin.h"
@@ -146,6 +149,16 @@ void PluginMgr::init(void)
 		    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
 		{
 			// Incorrect major interface version.
+			// TODO: Add to a list of "incompatible" plugins.
+			i++;
+			continue;
+		}
+		
+		// Check required CPU flags.
+		uint32_t cpuFlagsRequired = mdp_internal[i]->cpuFlagsRequired;
+		if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
+		{
+			// CPU does not support some required CPU flags.
 			// TODO: Add to a list of "incompatible" plugins.
 			i++;
 			continue;
