@@ -77,6 +77,10 @@ VDraw::VDraw()
 	m_FullScreen = false;
 	m_fastBlur = false;
 	
+	// Initialize m_rInfo.
+	m_rInfo.bpp = 0;
+	m_rInfo.renderFlags = 0;
+	
 	// Set LUT16to32 to NULL initially.
 	m_LUT16to32 = NULL;
 	
@@ -134,6 +138,7 @@ VDraw::VDraw(VDraw *oldDraw)
 	
 	// Initialize m_rInfo.
 	m_rInfo.bpp = 0;
+	m_rInfo.renderFlags = 0;
 	
 	// Set LUT16to32 to NULL initially.
 	m_LUT16to32 = NULL;

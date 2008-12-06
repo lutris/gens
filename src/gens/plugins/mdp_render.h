@@ -49,11 +49,14 @@ typedef struct
 	int width;
 	int height;
 	
+	// Current bpp.
+	uint32_t bpp;
+	
 	// CPU flags.
 	uint32_t cpuFlags;
 	
-	// Current bpp.
-	uint8_t bpp;
+	// Rendering flags. Currently unused.
+	uint32_t renderFlags;
 } MDP_Render_Info_t;
 
 // Render plugin flags.
