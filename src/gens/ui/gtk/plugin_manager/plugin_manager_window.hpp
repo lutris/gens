@@ -27,6 +27,9 @@
 
 #include "wndbase.hpp"
 
+// C++ includes
+#include <string>
+
 class PluginManagerWindow : public WndBase
 {
 	public:
@@ -53,6 +56,7 @@ class PluginManagerWindow : public WndBase
 		GtkListStore *lmPluginList;
 		GdkPixbuf *pbufPluginIcon;
 		GtkWidget *lblPluginMainInfo;
+		GtkWidget *lblCpuFlags;
 		GtkWidget *lblPluginDesc;
 		GtkWidget *lblPluginDescTitle;
 		
@@ -60,6 +64,9 @@ class PluginManagerWindow : public WndBase
 		void createPluginListFrame(GtkBox *container);
 		void createPluginInfoFrame(GtkBox *container);
 		void populatePluginList(void);
+		
+		// CPU flags.
+		static std::string getCpuFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported);
 };
 
 #endif /* __cplusplus */

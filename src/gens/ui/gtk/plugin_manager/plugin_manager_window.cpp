@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include <gtk/gtk.h>
 
@@ -310,6 +311,16 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 			       g_object_ref(lblPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginMainInfo), lblPluginMainInfo, TRUE, FALSE, 0);
 	
+	// Label for CPU flags.
+	lblCpuFlags = gtk_label_new(" ");
+	gtk_widget_set_name(lblCpuFlags, "lblCpuFlags");
+	gtk_label_set_selectable(GTK_LABEL(lblCpuFlags), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(lblCpuFlags), 0.0f, 0.0f);
+	gtk_widget_show(lblCpuFlags);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblCpuFlags",
+			       g_object_ref(lblCpuFlags), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(vboxPluginInfo), lblCpuFlags);
+	
 	// Frame for the plugin description.
 	GtkWidget *fraPluginDesc = gtk_frame_new(NULL);
 	gtk_widget_set_name(fraPluginDesc, "fraPluginDesc");
@@ -409,6 +420,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// No plugin selected.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		return;
@@ -427,6 +439,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// Invalid plugin.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		return;
@@ -435,6 +448,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!plugin->desc)
 	{
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		return;
@@ -469,6 +483,12 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	
 	gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), ssMainDesc.str().c_str());
 	
+	// CPU flags.
+	gtk_label_set_text(GTK_LABEL(lblCpuFlags),
+			   getCpuFlags(plugin->cpuFlagsRequired,
+				       plugin->cpuFlagsSupported).c_str());
+	gtk_label_set_use_markup(GTK_LABEL(lblCpuFlags), TRUE);
+	
 	// Plugin description.
 	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
 	if (desc->description)
@@ -480,4 +500,59 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 	}
+}
+
+
+string PluginManagerWindow::getCpuFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported)
+{
+	stringstream ssFlags;
+	ssFlags << "CPU Flags: ";
+	
+	if (!cpuFlagsRequired && !cpuFlagsSupported)
+	{
+		// No CPU flags required or supported.
+		ssFlags << "(none)";
+		return ssFlags.str();
+	}
+	
+	// Check all CPU flags.
+	// TODO: Move this array of CPU flag names somewhere else.
+	static const char* cpuFlagNames[] =
+	{
+		"MMX", "SSE", "SSE2", "SSE3", "SSSE3",
+		"SSE4.1", "SSE4.2", "SSE4A", "SSE5",
+		"MMXEXT", "3DNOW", "3DNOWEXT",
+		
+		NULL
+	};
+	
+	int curFlag = 0;
+	bool firstFlag = true;
+	while (cpuFlagNames[curFlag])
+	{
+		uint32_t flagBit = (1 << curFlag);
+		
+		if (cpuFlagsRequired & flagBit)
+		{
+			// This CPU flag is required.
+			if (!firstFlag)
+				ssFlags << " ";
+			ssFlags << "<b>" << cpuFlagNames[curFlag] << "</b>";
+			firstFlag = false;
+		}
+		else if (cpuFlagsSupported & flagBit)
+		{
+			// This CPU flag is supported, but not required.
+			if (!firstFlag)
+				ssFlags << " ";
+			ssFlags << cpuFlagNames[curFlag];
+			firstFlag = false;
+		}
+		
+		// Next CPU flag.
+		curFlag++;
+	}
+	
+	// Return the CPU flag string.
+	return ssFlags.str();
 }
