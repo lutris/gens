@@ -24,6 +24,7 @@ using std::list;
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
+#include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
@@ -806,6 +807,10 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	Genesis_Started = 0;
 	_32X_Started = 0;
 	SegaCD_Started = 0;
+	
+	// Clear the border color palette entries.
+	MD_Palette[0] = 0;
+	MD_Palette32[0] = 0;
 	
 	Game = NULL;
 	ice = 0;
