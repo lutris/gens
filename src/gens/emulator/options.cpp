@@ -10,27 +10,31 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "options.hpp"
-#include "macros/math_m.h"
-
 #include "g_main.hpp"
-#include "gens_core/mem/mem_m68k.h"
-#include "gens_core/sound/ym2612.h"
-#include "gens_core/sound/psg.h"
-#include "gens_core/sound/pcm.h"
-#include "gens_core/sound/pwm.h"
+#include "options.hpp"
 #include "gens.hpp"
 #include "g_md.hpp"
 #include "g_mcd.hpp"
 #include "g_32x.hpp"
 #include "segacd/cd_sys.hpp"
+#include "macros/math_m.h"
+
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_m68k_cd.h"
+#include "gens_core/mem/mem_s68k.h"
+#include "gens_core/mem/mem_sh2.h"
+
+#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/psg.h"
+#include "gens_core/sound/pcm.h"
+#include "gens_core/sound/pwm.h"
+
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
+
 #include "gens_core/misc/misc.h"
-#include "gens_core/mem/mem_sh2.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
-#include "gens_core/mem/mem_s68k.h"
 #include "util/file/save.hpp"
 
 #include "ui/gens_ui.hpp"

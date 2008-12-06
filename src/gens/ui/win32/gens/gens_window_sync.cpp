@@ -29,23 +29,24 @@
 
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
+#include "ui/common/gens/gens_menu.h"
 #include "gens_window_callbacks.hpp"
 
-#include "emulator/options.hpp"
-
-// New menu handler.
-#include "ui/common/gens/gens_menu.h"
-
 #include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
+#include "segacd/cd_sys.hpp"
+#include "util/sound/gym.hpp"
+
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+
 #include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_m68k_cd.h"
+
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"
-#include "segacd/cd_sys.hpp"
-#include "util/sound/gym.hpp"
 
 // Renderer / Blitter selection stuff.
 #include "gens_core/vdp/vdp_rend.h"

@@ -1,8 +1,10 @@
 #include <string.h>
 #include "sh2.h"
 #include "cpu_sh2.h"
-#include "gens_core/mem/mem_sh2.h"
+
 #include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_m68k_32x.h"
+#include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_32x.h"
 
 int MSH2_Speed;

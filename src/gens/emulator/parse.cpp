@@ -36,19 +36,24 @@
 
 #include "g_main.hpp"
 #include "util/file/save.hpp"
+#include "g_palette.h"
+#include "util/file/rom.hpp"
+
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/sh2/sh2.h"
 #include "gens_core/cpu/z80/z80.h"
+
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
-#include "g_palette.h"
-#include "util/file/rom.hpp"
+
 #include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_m68k_cd.h"
 #include "gens_core/mem/mem_s68k.h"
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/mem/mem_z80.h"
+
 #include "gens_core/sound/ym2612.h"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"

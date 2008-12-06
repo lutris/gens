@@ -50,6 +50,7 @@
 
 // Memory
 #include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_m68k_cd.h"
 #include "gens_core/mem/mem_s68k.h"
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/mem/mem_z80.h"
