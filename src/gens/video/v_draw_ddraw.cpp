@@ -508,10 +508,10 @@ void VDraw_DDraw::restorePrimary(void)
 // Render_Mode is input, RectDest is input and output, everything else is output only
 void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
 {
-	Ratio_X = (float) RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
-	Ratio_Y = (float) RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
+	Ratio_X = (float)RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
+	Ratio_Y = (float)RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
 	Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - and here we floor the value
-
+	
 	POINT q; //Upth-Add - For determining the correct ratio
 	q.x = RectDest.right; //Upth-Add - we need to get
 	q.y = RectDest.bottom; //Upth-Add - the bottom-right corner
@@ -567,13 +567,13 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	else // less-wide X resolution:
 	{
 		Dep = 64;
-
+		
 		if (!(m_Stretch & STRETCH_H))
 		{
 			RectDest.left = (q.x - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - center the picture properly
 			RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
 		}
-
+		
 		if (Render_Mode == 0)
 		{
 			RectSrc.left = 8 + 0;
@@ -581,8 +581,8 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 		}
 		else
 		{
-			RectSrc.left = 32 * 2;
-			RectSrc.right = (256 * m_scale) + (32 * m_scale);
+			RectSrc.left = 32 * m_scale;
+			RectSrc.right = (32 + 256) * m_scale;
 		}
 	}
 }
