@@ -2,8 +2,7 @@
 ;
 ; SH2 emulator 1.60 (ASM source part)
 ; Copyright 2002 Stéphane Dallongeville
-; This file is included in the main ASM
-; source file sh2a.asm
+; I/O handling functions.
 ;
 ;******************************************
 
@@ -22,7 +21,124 @@
 ;***********************************************************************************
 
 
-ALIGN32
+;**************************
+;
+; Some usefull ASM macros
+;
+;**************************
+
+
+%define ALIGN4		align 4
+%define ALIGN32		align 32
+%define ALIGN64		align 64
+%define ALIGNB4		alignb 4
+%define ALIGNB32	alignb 32
+%define ALIGNB64	alignb 64
+
+
+; By default, regcall functions use the MSVC __fastcall convention.
+; In case you're using GCC, uncomment the __GCC definition.
+
+;%define __GCC
+;%define __GCC2
+
+%macro DECLV 1
+
+	global _%1
+	global %1
+
+	_%1:
+	%1:
+
+%endmacro
+
+%ifdef __GCC2
+%macro DECLF 1-2
+
+%if %0 > 1
+	global %1%2
+%endif
+	global _%1
+	global %1
+
+%if %0 > 1
+	%1%2:
+%endif
+	_%1:
+	%1:
+
+%endmacro
+%else
+%macro DECLF 1-2
+
+%if %0 > 1
+	global @%1@%2
+%endif
+	global _%1
+	global %1
+
+%if %0 > 1
+	@%1@%2:
+%endif
+	_%1:
+	%1:
+
+%endmacro
+%endif
+
+%macro FUNC_IN 0
+
+%ifdef __GCC
+;	push ecx
+;	push edx
+	mov ecx, eax
+%endif
+
+%endmacro
+
+
+%macro FUNC_OUT 0
+
+%ifdef __GCC
+;	pop edx
+;	pop ecx
+%endif
+	ret
+
+%endmacro
+
+
+%macro FUNC_CALL_IN 0
+
+%ifdef __GCC
+	push ebp
+	mov eax, ecx
+%endif
+
+%endmacro
+
+
+%macro FUNC_CALL_OUT 0
+
+%ifdef __GCC
+	pop ebp
+%endif
+
+%endmacro
+
+
+section .bss align=64
+	
+	%include "sh2_context.inc"
+	
+section .text align=64
+
+; External symbol redefines for ELF.
+%ifdef __OBJ_ELF
+	%define	_SH2_Interrupt_Internal		SH2_Interrupt_Internal
+%endif
+
+extern _SH2_Interrupt_Internal
 
 ; UINT8 SH2_Read_Byte(SH2_CONTEXT *SH2, UINT32 adr)
 
@@ -2550,7 +2666,7 @@ ALIGN32
 	mov dl, [ebp + SH2.IPDMA]
 	mov ecx, ebp
 	FUNC_CALL_IN
-	call SH2_Interrupt_Internal
+	call _SH2_Interrupt_Internal
 	FUNC_CALL_OUT
 	mov al, bl
 
@@ -3327,7 +3443,7 @@ ALIGN32
 	mov dl, [ebp + SH2.IPDMA]
 	mov ecx, ebp
 	FUNC_CALL_IN
-	call SH2_Interrupt_Internal
+	call _SH2_Interrupt_Internal
 	FUNC_CALL_OUT
 	mov al, bl
 

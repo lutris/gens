@@ -32,6 +32,7 @@ ASMFILES = \
 		gens_core/mem/mem_z80.o \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
+		gens_core/cpu/sh2/sh2_io.o \
 		gens_core/vdp/vdp_32x.o \
 		gens_core/vdp/vdp_io.o \
 		gens_core/vdp/vdp_rend.o \
@@ -83,8 +84,8 @@ gens_SOURCES = \
 		gens_core/cpu/68k/cpu_68k.c \
 		gens_core/cpu/sh2/cpu_sh2.c \
 		gens_core/cpu/sh2/sh2a.asm \
+		gens_core/cpu/sh2/sh2_io.asm \
 		gens_core/cpu/sh2/sh2.c \
-		gens_core/cpu/sh2/sh2_io.inc \
 		gens_core/cpu/z80/z80.asm \
 		gens_core/cpu/z80/cpu_z80.c \
 		gens_core/sound/pcm.c \
