@@ -30,7 +30,11 @@ section .bss align=64
 	
 	extern Rom_Data
 	
-	extern M_Z80
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_M_Z80	M_Z80
+	%endif
+	extern _M_Z80
 	extern Z80_State
 	extern Last_BUS_REQ_Cnt
 	extern Last_BUS_REQ_St
@@ -1250,7 +1254,7 @@ section .text align=64
 		sub	ebx, eax
 		mov	edx, [Cycles_Z80]
 		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, M_Z80
+		mov	ecx, _M_Z80
 		sub	edx, ebx
 %ifdef __GCC2
 		; TODO: This is a fastcall function.
@@ -1282,7 +1286,7 @@ section .text align=64
 		mov	[Z80_State], cl
 		mov	edx, [Cycles_Z80]
 		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, M_Z80
+		mov	ecx, _M_Z80
 		sub	edx, ebx
 %ifdef __GCC2
 		; TODO: This is a fastcall function.
@@ -1307,7 +1311,7 @@ section .text align=64
 		jnz	short .no_reset
 		
 		push	edx
-		mov	ecx, M_Z80
+		mov	ecx, _M_Z80
 %ifdef __GCC2
 		; TODO: This is a fastcall function.
 		; Convert to standard cdecl.
@@ -1894,7 +1898,7 @@ section .text align=64
 		sub	ebx, eax
 		mov	edx, [Cycles_Z80]
 		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, M_Z80
+		mov	ecx, _M_Z80
 		sub	edx, ebx
 %ifdef __GCC2
 		; TODO: This is a fastcall function.
@@ -1926,7 +1930,7 @@ section .text align=64
 		mov	[Z80_State], cl
 		mov	edx, [Cycles_Z80]
 		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, M_Z80
+		mov	ecx, _M_Z80
 		sub	edx, ebx
 %ifdef __GCC2
 		; TODO: This is a fastcall function.
@@ -1951,7 +1955,7 @@ section .text align=64
 		jnz	short .no_reset
 		
 		push	edx
-		mov	ecx, M_Z80
+		mov	ecx, _M_Z80
 %ifdef __GCC2
 		; TODO: This is a fastcall function.
 		; Convert to standard cdecl.
