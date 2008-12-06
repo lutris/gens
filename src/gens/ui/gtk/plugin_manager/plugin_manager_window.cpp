@@ -493,7 +493,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
 	if (desc->description)
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), "<b><i>Plugin Description</i></b>");
+		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), "<b><i>Description</i></b>");
 		gtk_label_set_use_markup(GTK_LABEL(lblPluginDescTitle), TRUE);
 	}
 	else
