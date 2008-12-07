@@ -27,6 +27,7 @@
 #include "plugins/mdp_cpuflags.h"
 
 #include "mdp_render_scanline.hpp"
+#include "mdp_render_scanline_icon.h"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -36,6 +37,9 @@ static MDP_Desc_t MDP_Desc =
 	.description = "Scanline renderer.",
 	.website = NULL,
 	.license = MDP_LICENSE_GPL_2,
+	
+	.icon = mdp_render_scanline_icon,
+	.iconLength = sizeof(mdp_render_scanline_icon)
 };
 
 static MDP_Render_t MDP_Render =
