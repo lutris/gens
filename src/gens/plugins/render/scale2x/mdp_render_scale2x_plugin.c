@@ -28,6 +28,7 @@
 #include "plugins/mdp_cpuflags.h"
 
 #include "mdp_render_scale2x.h"
+#include "mdp_render_scale2x_icon.h"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -36,7 +37,10 @@ static MDP_Desc_t MDP_Desc =
 	.author_orig = "Andrea Mazzoleni",
 	.description = "Scale2x v2.2.",
 	.website = "http://scale2x.sourceforge.net/",
-	.license = MDP_LICENSE_GPL_2
+	.license = MDP_LICENSE_GPL_2,
+	
+	.icon = mdp_render_scale2x_icon,
+	.iconLength = sizeof(mdp_render_scale2x_icon)
 };
 
 static MDP_Render_t MDP_Render =

@@ -59,6 +59,7 @@ noinst_HEADERS += \
 		plugins/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25_icon.h \
 		plugins/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25.hpp \
 		plugins/render/scale2x/mdp_render_scale2x_plugin.h \
+		plugins/render/scale2x/mdp_render_scale2x_icon.h \
 		plugins/render/scale2x/mdp_render_scale2x.h \
 		plugins/render/scale2x/mdp_render_scale3x_plugin.h \
 		plugins/render/scale2x/mdp_render_scale3x.h \
