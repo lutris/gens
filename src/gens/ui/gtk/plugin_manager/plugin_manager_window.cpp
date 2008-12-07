@@ -364,18 +364,19 @@ void PluginManagerWindow::populatePluginList(void)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
 	
 	// Add all plugins to the treeview.
+	char tmp[64];
 	vector<MDP_t*>::iterator curPlugin;
 	for (curPlugin = PluginMgr::vRenderPlugins.begin();
 	     curPlugin != PluginMgr::vRenderPlugins.end(); curPlugin++)
 	{
 		GtkTreeIter iter;
-		
 		gtk_list_store_append(lmPluginList, &iter);
 		
 		MDP_t *plugin = (*curPlugin);
+		const char *pluginName;
 		if (plugin->desc && plugin->desc->name)
 		{
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, plugin->desc->name, 1, plugin, -1);
+			pluginName = plugin->desc->name;
 		}
 		else
 		{
@@ -383,8 +384,10 @@ void PluginManagerWindow::populatePluginList(void)
 			// TODO: For external plugins, indicate the external file.
 			char tmp[64];
 			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, tmp, 1, plugin, -1);
+			pluginName = tmp;
 		}
+		
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, -1);
 	}
 }
 
