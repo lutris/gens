@@ -1,5 +1,5 @@
 MDP: Mega Drive Plugins
-Interface Specification Version 0.1.0 [DRAFT]
+Interface Specification Version 0.1.0
 (c) Copyright 2008 by David Korth.
 
 Permission is granted to copy, distribute and/or modify this
@@ -17,15 +17,6 @@ or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts.  A copy of the license is included in the section entitled "GNU
 Free Documentation License".
-
-================================================================
-
-0. Draft Document Notice
-
-WARNING: This document is a draft version of an upcoming plugin format.
-Please do not write an implementation of the plugin format using this
-document, as the plugin format may change during the draft process, which
-may break compatibility with the version described in this document.
 
 ================================================================
 
