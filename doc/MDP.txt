@@ -27,7 +27,17 @@ to extend the abilities of Sega Genesis emulators.
 
 ================================================================
 
-2. Version Numbering
+2. External Plugins
+
+MDP Version 0.1.0 does not currently define an external plugin interface.
+This means that all plugins have to be statically linked to the main binary.
+Support for external plugins will be added in MDP Version 1.0.0, using the
+dynamic-link library (.dll) interface on Windows and the shared object (.so)
+interface on Linux.
+
+================================================================
+
+3. Version Numbering
 
 All MDP interfaces use a hard version numbering system. That is, the version
 number is used to determine compatibility.
@@ -68,11 +78,11 @@ that section.
 
 ================================================================
 
-3. Basic Plugin Interface [MDP_VERSION(0, 1, 0)]
+4. Basic Plugin Interface [MDP_VERSION(0, 1, 0)]
 
 Every plugin must export a struct of type MDP_t. This struct contains the
-basic information about the plugin. MDP v0.1 does not have support for
-external plugins, so the name of the MDP_t struct is not required to be
+basic information about the plugin. MDP Version 0.1.0 does not have support
+for external plugins, so the name of the MDP_t struct is not required to be
 anything specific. Later versions of MDP will support external plugins,
 in which case the MDP_t struct will require a specific symbol name.
 
@@ -109,7 +119,7 @@ Fields:
 
 - type: Plugin type. Can be one of the following:
   - MDPT_NULL: NULL plugin. Does nothing.
-  - MDPT_RENDER: Render plugin. (See Section 4 for more information)
+  - MDPT_RENDER: Render plugin. (See Section 5 for more information)
 
 - reserved1: Reserved.
 
@@ -129,11 +139,11 @@ Fields:
 
 - plugin_t: Pointer to a type-specific struct. For a plugin of type
             MDPT_RENDER, this points to a struct of type MDP_Render_t.
-            (See Section 4 for more information.)
+            (See Section 5 for more information.)
 
 ----------------------------------------------------------------
 
-3.1. MDP Description Field
+4.1. MDP Description Field
 
 The MDP_t.desc field points to a struct of type MDP_Desc_t, which contains
 a description of the plugin.
@@ -184,7 +194,7 @@ Fields:
 
 ----------------------------------------------------------------
 
-3.2. MDP Function Field
+4.2. MDP Function Field
 
 The MDP_t.func field points to a struct of type MDP_Func_t, which contains
 several pointers to functions within the plugin.
@@ -211,7 +221,7 @@ Fields:
 
 ----------------------------------------------------------------
 
-3.3. MDP Host Services [MDP_VERSION(0, 1, 0)]
+4.3. MDP Host Services [MDP_VERSION(0, 1, 0)]
 
 The MDP_Func_t.init() function has one parameter, hostSrv, which is a pointer
 to a struct containing various services offered by the MDP host.
@@ -258,7 +268,7 @@ Items:
 
 ================================================================
 
-4. MDP Render Plugins [MDP_VERSION(0, 1, 0)]
+5. MDP Render Plugins [MDP_VERSION(0, 1, 0)]
 
 Render plugins are used to render the original Genesis display to the main
 video display. The basic renderers, Normal and Double, merely do a blit or
