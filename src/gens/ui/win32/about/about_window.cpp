@@ -193,8 +193,12 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case WM_COMMAND:
-			if (LOWORD(wParam) == IDC_BTN_OK || LOWORD(wParam) == IDOK)
+			if (LOWORD(wParam) == IDC_BTN_OK || LOWORD(wParam) == IDOK ||
+			    LOWORD(wParam) == IDC_BTN_CANCEL || LOWORD(wParam) == IDCANCEL)
+			{
 				DestroyWindow(m_Window);
+			}
+			
 			break;
 		
 		case WM_DESTROY:
