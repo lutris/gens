@@ -223,6 +223,9 @@ void PluginManagerWindow::createChildWindows(HWND hWnd)
 	// Populate the plugin list.
 	populatePluginList();
 	
+	// Initialize the plugin description frame.
+	lstPluginList_cursor_changed();
+	
 	// Child windows created.
 	m_childWindowsCreated = true;
 }
