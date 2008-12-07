@@ -509,7 +509,6 @@ inline void PluginManagerWindow::createPluginIconWidget(HWND hWnd)
  */
 bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned int iconLength)
 {
-#if 0
 	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
 	
 	if (!icon || iconLength < sizeof(pngMagicNumber))
@@ -584,8 +583,8 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA)
 		has_alpha = true;
 	
-	// GTK+ expects RGBA format.
-	// TODO: Check if this is the same on big-endian machines.
+	// Win32 expects BGRA format.
+	png_set_bgr(png_ptr);
 	
 	// Convert tRNS to alpha channel.
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
@@ -614,13 +613,12 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	png_read_update_info(png_ptr, info_ptr);
 	
 	// Create the row pointers.
-	int rowstride = gdk_pixbuf_get_rowstride(m_pbufPluginIcon);
-	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufPluginIcon);
 	png_bytep row_pointers[32];
+	unsigned char *pixels = static_cast<unsigned char*>(m_bmpPluginIconData);
 	for (unsigned int i = 0; i < 32; i++)
 	{
 		row_pointers[i] = pixels;
-		pixels += rowstride;
+		pixels += 32*4;
 	}
 	
 	// Read the image data.
@@ -629,11 +627,10 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	// Close the PNG image.
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	
-	// Set the GTK+ image to the new icon.
-	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
+	// Set the plugin icon widget's bitmap to m_hbmpPluginIcon.
+	SendMessage(m_imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbmpPluginIcon);
 	
 	return true;
-#endif
 }
 
 
@@ -644,7 +641,6 @@ void PluginManagerWindow::clearIcon(void)
 {
 	// Clear the icon.
 	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
-	printf("0x%08X\n", bgColor);
 	
 	// Byteswap the lower 24 bits.
 	bgColor = ((bgColor & 0xFF000000)) |
