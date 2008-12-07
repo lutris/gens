@@ -319,15 +319,15 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 			       g_object_ref(lblPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginMainInfo), lblPluginMainInfo, TRUE, FALSE, 0);
 	
-	// Label for CPU flags.
-	lblCpuFlags = gtk_label_new(" ");
-	gtk_widget_set_name(lblCpuFlags, "lblCpuFlags");
-	gtk_label_set_selectable(GTK_LABEL(lblCpuFlags), TRUE);
-	gtk_misc_set_alignment(GTK_MISC(lblCpuFlags), 0.0f, 0.0f);
-	gtk_widget_show(lblCpuFlags);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblCpuFlags",
-			       g_object_ref(lblCpuFlags), (GDestroyNotify)g_object_unref);
-	gtk_container_add(GTK_CONTAINER(vboxPluginInfo), lblCpuFlags);
+	// Label for secondary plugin info.
+	m_lblPluginSecInfo = gtk_label_new("\n");
+	gtk_widget_set_name(m_lblPluginSecInfo, "m_lblPluginSecInfo");
+	gtk_label_set_selectable(GTK_LABEL(m_lblPluginSecInfo), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(m_lblPluginSecInfo), 0.0f, 0.0f);
+	gtk_widget_show(m_lblPluginSecInfo);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_lblPluginSecInfo",
+			       g_object_ref(m_lblPluginSecInfo), (GDestroyNotify)g_object_unref);
+	gtk_container_add(GTK_CONTAINER(vboxPluginInfo), m_lblPluginSecInfo);
 	
 	// Frame for the plugin description.
 	GtkWidget *fraPluginDesc = gtk_frame_new(NULL);
@@ -428,7 +428,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// No plugin selected.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
+		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		clearIcon();
@@ -448,7 +448,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// Invalid plugin.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
+		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		clearIcon();
@@ -458,7 +458,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!plugin->desc)
 	{
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
+		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 		clearIcon();
@@ -508,11 +508,25 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	
 	gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), ssMainDesc.str().c_str());
 	
-	// CPU flags.
-	gtk_label_set_text(GTK_LABEL(lblCpuFlags),
-			   GetCPUFlags(plugin->cpuFlagsRequired,
-				       plugin->cpuFlagsSupported).c_str());
-	gtk_label_set_use_markup(GTK_LABEL(lblCpuFlags), TRUE);
+	// UUID.
+	char sUUID[48];
+	const unsigned char *pluginUUID = plugin->uuid;
+	sprintf(sUUID, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+		pluginUUID[0], pluginUUID[1], pluginUUID[2], pluginUUID[3],
+		pluginUUID[4], pluginUUID[5],
+		pluginUUID[6], pluginUUID[7],
+		pluginUUID[8], pluginUUID[9],
+		pluginUUID[10], pluginUUID[11], pluginUUID[12], pluginUUID[13], pluginUUID[14], pluginUUID[15]);
+	
+	// Secondary plugin information.
+	// Includes UUID and CPU flags.
+	stringstream ssSecInfo;
+	ssSecInfo << "UUID: " << sUUID << endl
+		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported);
+	
+	// Set the secondary information label.
+	gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), ssSecInfo.str().c_str());
+	gtk_label_set_use_markup(GTK_LABEL(m_lblPluginSecInfo), TRUE);
 	
 	// Plugin description.
 	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);

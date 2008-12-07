@@ -60,7 +60,7 @@ class PluginManagerWindow : public WndBase
 		GdkPixbuf *m_pbufPluginIcon;
 		GtkWidget *m_imgPluginIcon;
 		GtkWidget *lblPluginMainInfo;
-		GtkWidget *lblCpuFlags;
+		GtkWidget *m_lblPluginSecInfo;
 		GtkWidget *lblPluginDesc;
 		GtkWidget *lblPluginDescTitle;
 		
