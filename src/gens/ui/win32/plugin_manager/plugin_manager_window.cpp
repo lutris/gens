@@ -602,11 +602,16 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 		     &interlace_type, &compression_type, &filter_method);
 	
 	// Check if the PNG image has an alpha channel.
-	if (!has_alpha)
+	if (has_alpha)
+	{
+		// Invert the alpha channel so that 0xFF is transparent and 0x00 is opaque.
+		png_set_invert_alpha(png_ptr);
+	}
+	else //if (!has_alpha)
 	{
 		// No alpha channel specified.
 		// Use filler instead.
-		png_set_filler(png_ptr, 0xFF, PNG_FILLER_AFTER);
+		png_set_filler(png_ptr, 0x00, PNG_FILLER_AFTER);
 	}
 	
 	// Update the PNG info.
@@ -627,10 +632,53 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	// Close the PNG image.
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	
+	// Apply transparency.
+	applyTransparency();
+	
 	// Set the plugin icon widget's bitmap to m_hbmpPluginIcon.
 	SendMessage(m_imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbmpPluginIcon);
 	
 	return true;
+}
+
+
+/**
+ * applyTransparency(): Apply transparency values to the plugin icon.
+ */
+inline void PluginManagerWindow::applyTransparency(void)
+{
+	// Get the background color.
+	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
+	
+	// Byteswap the lower 24 bits.
+	bgColor = ((bgColor & 0xFF000000)) |
+		  ((bgColor & 0x00FF0000) >> 16) |
+		  ((bgColor & 0x0000FF00)) |
+		  ((bgColor & 0x000000FF) << 16);
+	
+	// Check for any pixels with transparency.
+	// TODO: Optimize this function.
+	unsigned int *pixels = static_cast<unsigned int*>(m_bmpPluginIconData);
+	for (unsigned int i = 32*32; i != 0; i--)
+	{
+		if (!(*pixels & 0xFF000000))
+		{
+			pixels++;
+			continue;
+		}
+		
+		// Pixel has transparency.
+		unsigned char trans = (*pixels & 0xFF000000) >> 24;
+		if (trans == 0xFF)
+		{
+			// Completely transparent.
+			*pixels++ = bgColor;
+			continue;
+		}
+		
+		// TODO: Translucency.
+		unsigned int orig = (*pixels & 0x00FFFFFF);
+	}
 }
 
 
