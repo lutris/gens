@@ -73,14 +73,16 @@ class PluginManagerWindow : public WndBase
 		void populatePluginList(void);
 		
 		// CPU flags.
-		static std::string GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported);
+		static std::string GetCPUFlags(uint32_t cpuFlagsRequired,
+					       uint32_t cpuFlagsSupported,
+					       bool formatting);
 		
 #ifdef GENS_PNG
 		// Plugin icon.
 		GdkPixbuf *m_pbufPluginIcon;
 		GtkWidget *m_imgPluginIcon;
 		
-		inline void createPluginIconWidget(void);
+		inline void createPluginIconWidget(GtkBox *container);
 		bool displayIcon(const unsigned char* icon, const unsigned int iconLength);
 		void clearIcon(void);
 		
@@ -89,7 +91,7 @@ class PluginManagerWindow : public WndBase
 		static const unsigned char *png_dataptr;
 		static unsigned int png_datalen;
 		static unsigned int png_datapos;
-		static void user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
+		static void png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 #endif /* GENS_PNG */
 };
 

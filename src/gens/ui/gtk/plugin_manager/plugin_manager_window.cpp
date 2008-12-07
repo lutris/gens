@@ -30,8 +30,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <assert.h>
-
 #include <gtk/gtk.h>
 
 // TODO: Get rid of gtk-misc.h
@@ -48,14 +46,6 @@ using std::endl;
 using std::string;
 using std::stringstream;
 using std::vector;
-
-
-#ifdef GENS_PNG
-// PNG read variables.
-const unsigned char *PluginManagerWindow::png_dataptr;
-unsigned int PluginManagerWindow::png_datalen;
-unsigned int PluginManagerWindow::png_datapos;
-#endif /* GENS_PNG */
 
 
 PluginManagerWindow* PluginManagerWindow::m_Instance = NULL;
@@ -285,7 +275,7 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	
 #ifdef GENS_PNG
 	// Create the plugin icon widget.
-	createPluginIconWidget();
+	createPluginIconWidget(GTK_BOX(hboxPluginMainInfo));
 #endif /* GENS_PNG */
 	
 	// VBox for the main plugin info.
@@ -515,7 +505,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	// Includes UUID and CPU flags.
 	stringstream ssSecInfo;
 	ssSecInfo << "UUID: " << sUUID << endl
-		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported);
+		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, true);
 	
 	// Set the secondary information label.
 	gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), ssSecInfo.str().c_str());
@@ -544,66 +534,12 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 }
 
 
-string PluginManagerWindow::GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported)
-{
-	stringstream ssFlags;
-	ssFlags << "CPU Flags: ";
-	
-	if (!cpuFlagsRequired && !cpuFlagsSupported)
-	{
-		// No CPU flags required or supported.
-		ssFlags << "(none)";
-		return ssFlags.str();
-	}
-	
-	// Check all CPU flags.
-	// TODO: Move this array of CPU flag names somewhere else.
-	static const char* cpuFlagNames[] =
-	{
-		"MMX", "SSE", "SSE2", "SSE3", "SSSE3",
-		"SSE4.1", "SSE4.2", "SSE4A", "SSE5",
-		"MMXEXT", "3DNOW", "3DNOWEXT",
-		
-		NULL
-	};
-	
-	int curFlag = 0;
-	bool firstFlag = true;
-	while (cpuFlagNames[curFlag])
-	{
-		uint32_t flagBit = (1 << curFlag);
-		
-		if (cpuFlagsRequired & flagBit)
-		{
-			// This CPU flag is required.
-			if (!firstFlag)
-				ssFlags << " ";
-			ssFlags << "<b>" << cpuFlagNames[curFlag] << "</b>";
-			firstFlag = false;
-		}
-		else if (cpuFlagsSupported & flagBit)
-		{
-			// This CPU flag is supported, but not required.
-			if (!firstFlag)
-				ssFlags << " ";
-			ssFlags << cpuFlagNames[curFlag];
-			firstFlag = false;
-		}
-		
-		// Next CPU flag.
-		curFlag++;
-	}
-	
-	// Return the CPU flag string.
-	return ssFlags.str();
-}
-
-
 #ifdef GENS_PNG
 /**
  * createPluginIconWidget(): Create the GTK+ plugin icon widget and pixbuf.
+ * @param container Container for the plugin icon widget.
  */
-inline void PluginManagerWindow::createPluginIconWidget(void)
+inline void PluginManagerWindow::createPluginIconWidget(GtkBox *container)
 {
 	// Plugin icon pixbuf.
 	m_pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
@@ -617,7 +553,7 @@ inline void PluginManagerWindow::createPluginIconWidget(void)
 	gtk_widget_show(m_imgPluginIcon);
 	g_object_set_data_full(G_OBJECT(m_Window), "m_imgPluginIcon",
 			       g_object_ref(m_imgPluginIcon), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), m_imgPluginIcon, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(container), m_imgPluginIcon, FALSE, FALSE, 0);
 	
 	// Clear the icon.
 	clearIcon();
@@ -677,7 +613,7 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	png_datapos = 0;
 	
 	void *read_io_ptr = png_get_io_ptr(png_ptr);
-	png_set_read_fn(png_ptr, read_io_ptr, &user_read_data);
+	png_set_read_fn(png_ptr, read_io_ptr, &png_user_read_data);
 	
 	// Get the PNG information.
 	png_read_info(png_ptr, info_ptr);
@@ -755,19 +691,6 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
 	
 	return true;
-}
-
-
-void PluginManagerWindow::user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
-{
-	// Make sure there's enough data available.
-	assert(png_datapos + length <= png_datalen);
-	
-	// Copy the data.
-	memcpy(data, &png_dataptr[png_datapos], length);
-	
-	// Increment the data position.
-	png_datapos += length;
 }
 
 

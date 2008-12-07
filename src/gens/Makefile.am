@@ -117,6 +117,7 @@ gens_SOURCES = \
 		ui/common/gens/gens_menu.c \
 		ui/common/gens/gens_menu_callbacks.cpp \
 		ui/common/about_window_data.cpp \
+		ui/common/plugin_manager_window_common.cpp \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
