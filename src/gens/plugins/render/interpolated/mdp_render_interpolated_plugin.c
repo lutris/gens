@@ -27,6 +27,7 @@
 #include "plugins/mdp_cpuflags.h"
 
 #include "mdp_render_interpolated.hpp"
+#include "mdp_render_interpolated_icon.h"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -35,7 +36,10 @@ static MDP_Desc_t MDP_Desc =
 	.author_orig = "Stéphane Dallongeville",
 	.description = "Interpolated renderer.",
 	.website = NULL,
-	.license = MDP_LICENSE_GPL_2
+	.license = MDP_LICENSE_GPL_2,
+	
+	.icon = mdp_render_interpolated_icon,
+	.iconLength = sizeof(mdp_render_interpolated_icon)
 };
 
 static MDP_Render_t MDP_Render =
