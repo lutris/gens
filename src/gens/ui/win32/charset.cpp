@@ -77,10 +77,10 @@ static const unsigned short charset_map_utf8_to_cp1252_array[][2] =
 /**
  * charset_utf8_to_cp1252(): Convert a UTF-8 string to cp1252.
  * @param s_utf8 UTF-8 string.
- * repChar Replacement character for symbols not available in cp1252.
+ * @param replacementChar Replacement character for symbols not available in cp1252.
  * @return cp1252 string.
  */
-string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
+string charset_utf8_to_cp1252(const char* s_utf8, const char replacementChar)
 {
 	int sLen = strlen(s_utf8);
 	unsigned int utf8char;
@@ -139,7 +139,7 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 			else
 			{
 				// Unknown character.
-				utf8char = repChar;
+				utf8char = replacementChar;
 			}
 		}
 		
@@ -179,7 +179,7 @@ string charset_utf8_to_cp1252(const char* s_utf8, const char repChar)
 			if (charIter == charset_map_utf8_to_cp1252.end())
 			{
 				// Character not found.
-				cp1252char = repChar;
+				cp1252char = replacementChar;
 			}
 			else
 			{
