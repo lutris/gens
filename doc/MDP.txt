@@ -313,6 +313,10 @@ The MDP_Render_t.flags field can be a combination of the following flags:
                               color. Gens will convert the output to 32-bit
                               color, if necessary.
 
+----------------------------------------------------------------
+
+5.1. MDP_Render_t.blit()
+
 The MDP_Render_t.blit function must point to a function of type MDP_Render_fn.
 For example, the Normal renderer has this function:
 
