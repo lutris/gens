@@ -103,4 +103,4 @@ static const unsigned char mdp_render_interpolated_icon[1084] =
 }
 #endif
 
-#endif /* MDP_RENDER_SCANLINE_25_ICON_H */
+#endif /* MDP_RENDER_INTERPOLATED_ICON_H */
