@@ -45,8 +45,8 @@ class GeneralOptionsWindow : public WndBase
 		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		
-		bool m_ChildWindowsCreated;
-		void CreateChildWindows(HWND hWnd);
+		bool m_childWindowsCreated;
+		void createChildWindows(HWND hWnd);
 		
 		// Custom radio button drawing functions.
 		void drawMsgRadioButton(int identifier, LPDRAWITEMSTRUCT lpDrawItem);

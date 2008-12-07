@@ -83,7 +83,7 @@ AboutWindow::AboutWindow()
 {
 	tmrIce = NULL;
 	bmpGensLogo = NULL;
-	m_ChildWindowsCreated = false;
+	m_childWindowsCreated = false;
 	
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
@@ -153,8 +153,8 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	switch(message)
 	{
 		case WM_CREATE:
-			if (!m_ChildWindowsCreated)
-				CreateChildWindows(hWnd);
+			if (!m_childWindowsCreated)
+				createChildWindows(hWnd);
 			break;
 		
 		case WM_CLOSE:
@@ -215,9 +215,9 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 }
 
 
-void AboutWindow::CreateChildWindows(HWND hWnd)
+void AboutWindow::createChildWindows(HWND hWnd)
 {
-	if (m_ChildWindowsCreated)
+	if (m_childWindowsCreated)
 		return;
 	
 	cx = 0; iceLastTicks = 0;
@@ -271,7 +271,7 @@ void AboutWindow::CreateChildWindows(HWND hWnd)
 			 WndBase::BUTTON_OK, WndBase::BUTTON_OK);
 	
 	// Child windows created.
-	m_ChildWindowsCreated = true;
+	m_childWindowsCreated = true;
 }
 
 

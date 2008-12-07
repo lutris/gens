@@ -96,7 +96,7 @@ GeneralOptionsWindow* GeneralOptionsWindow::Instance(HWND parent)
  */
 GeneralOptionsWindow::GeneralOptionsWindow()
 {
-	m_ChildWindowsCreated = false;
+	m_childWindowsCreated = false;
 	
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
@@ -169,8 +169,8 @@ LRESULT CALLBACK GeneralOptionsWindow::WndProc(HWND hWnd, UINT message, WPARAM w
 	switch (message)
 	{
 		case WM_CREATE:
-			if (!m_ChildWindowsCreated)
-				CreateChildWindows(hWnd);
+			if (!m_childWindowsCreated)
+				createChildWindows(hWnd);
 			break;
 		
 		case WM_CLOSE:
@@ -253,9 +253,9 @@ LRESULT CALLBACK GeneralOptionsWindow::WndProc(HWND hWnd, UINT message, WPARAM w
 }
 
 
-void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
+void GeneralOptionsWindow::createChildWindows(HWND hWnd)
 {
-	if (m_ChildWindowsCreated)
+	if (m_childWindowsCreated)
 		return;
 	
 	HWND grpBox, lblIntroEffectColor;
@@ -389,7 +389,7 @@ void GeneralOptionsWindow::CreateChildWindows(HWND hWnd)
 	SetFocus(chkOSD_Enable[0]);
 	
 	// Child windows created.
-	m_ChildWindowsCreated = true;
+	m_childWindowsCreated = true;
 }
 
 

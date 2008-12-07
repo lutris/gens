@@ -45,8 +45,8 @@ class AboutWindow : WndBase
 		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		
-		bool m_ChildWindowsCreated;
-		void CreateChildWindows(HWND hWnd);
+		bool m_childWindowsCreated;
+		void createChildWindows(HWND hWnd);
 		
 		unsigned int iceLastTicks;
 		UINT_PTR tmrIce;
