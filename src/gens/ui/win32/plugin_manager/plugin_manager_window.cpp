@@ -599,6 +599,8 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 		     &interlace_type, &compression_type, &filter_method);
 	
 	// Check if the PNG image has an alpha channel.
+	// TODO: Windows XP (and probably 2000 and Vista) support alpha transparency directly.
+	// Older versions don't.
 	if (!has_alpha)
 	{
 		// No alpha channel specified.
