@@ -435,7 +435,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	// Includes UUID and CPU flags.
 	stringstream ssSecInfo;
 	ssSecInfo << "UUID: " << sUUID << WIN32_ENDL
-		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, true);
+		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, false);
 	
 	// Set the secondary information label.
 	Edit_SetText(m_lblPluginSecInfo, ssSecInfo.str().c_str());
