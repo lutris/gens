@@ -210,11 +210,11 @@ void PluginManagerWindow::createChildWindows(HWND hWnd)
 	// Add the OK button.
 	addDialogButtons(hWnd, WndBase::BAlign_Right,
 			 WndBase::BUTTON_OK, WndBase::BUTTON_OK);
-#if 0
+	
 	// Populate the plugin list.
-	lmPluginList = NULL;
 	populatePluginList();
 	
+#if 0
 	// Show the window.
 	setVisible(true);
 	
@@ -241,7 +241,7 @@ void PluginManagerWindow::createPluginListFrame(HWND hWnd)
 	
 	// Create the plugin listbox.
 	m_lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, "",
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT,
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL | LBS_NOTIFY,
 					 8+8, 8+16, m_fraPluginList_Width-16, m_fraPluginList_Height-24,
 					 hWnd, (HMENU)IDC_PLUGIN_MANAGER_LSTPLUGINS, ghInstance, NULL);
 	SetWindowFont(m_lstPluginList, fntMain, true);
@@ -303,60 +303,42 @@ void PluginManagerWindow::createPluginInfoFrame(HWND hWnd)
 }
 
 
-#if 0
 void PluginManagerWindow::populatePluginList(void)
 {
-	// Check if the list model is already created.
-	// If it is, clear it; if not, create a new one.
-	if (lmPluginList)
-		gtk_list_store_clear(lmPluginList);
-	else
-		lmPluginList = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	if (!m_lstPluginList)
+		return;
 	
-	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(lstPluginList), GTK_TREE_MODEL(lmPluginList));
+	// Clear the plugin list.
+	ListBox_ResetContent(m_lstPluginList);
 	
-	GtkTreeViewColumn *colPlugin;
-	
-	// Delete any existing columns.
-	do
-	{
-		colPlugin = gtk_tree_view_get_column(GTK_TREE_VIEW(lstPluginList), 0);
-		if (colPlugin)
-			gtk_tree_view_remove_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
-	} while (colPlugin != NULL);
-	
-	// Create the renderer and columns.
-	GtkCellRenderer *textRenderer = gtk_cell_renderer_text_new();
-	colPlugin = gtk_tree_view_column_new_with_attributes("Plugin", textRenderer, "text", 0, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
-	
-	// Add all plugins to the treeview.
+	// Add all plugins to the listbox.
+	char tmp[64];
 	vector<MDP_t*>::iterator curPlugin;
 	for (curPlugin = PluginMgr::vRenderPlugins.begin();
 	     curPlugin != PluginMgr::vRenderPlugins.end(); curPlugin++)
 	{
-		GtkTreeIter iter;
-		
-		gtk_list_store_append(lmPluginList, &iter);
-		
 		MDP_t *plugin = (*curPlugin);
+		const char *pluginName;
 		if (plugin->desc && plugin->desc->name)
 		{
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, plugin->desc->name, 1, plugin, -1);
+			pluginName = plugin->desc->name;
 		}
 		else
 		{
 			// No description or name.
 			// TODO: For external plugins, indicate the external file.
-			char tmp[64];
 			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
-			gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, tmp, 1, plugin, -1);
+			pluginName = tmp;
 		}
+		
+		int index = ListBox_AddString(m_lstPluginList, pluginName);
+		if (index != LB_ERR)
+			ListBox_SetItemData(m_lstPluginList, index, plugin);
 	}
 }
 
 
+#if 0
 void PluginManagerWindow::lstPluginList_cursor_changed_STATIC(GtkTreeView *tree_view, gpointer user_data)
 {
 	reinterpret_cast<PluginManagerWindow*>(user_data)->lstPluginList_cursor_changed(tree_view);

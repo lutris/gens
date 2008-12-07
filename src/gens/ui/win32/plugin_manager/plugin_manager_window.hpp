@@ -72,11 +72,6 @@ class PluginManagerWindow : public WndBase
 		HWND m_lblPluginMainInfo;
 		HWND m_lblPluginSecInfo;
 		HWND m_lblPluginDesc;
-		#if 0
-		// GTK+ objects
-		GtkWidget *lblPluginDesc;
-		GtkWidget *lblPluginDescTitle;
-		#endif
 		
 		// Initialization functions.
 		void createPluginListFrame(HWND hWnd);
