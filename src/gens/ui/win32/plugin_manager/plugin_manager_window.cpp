@@ -59,7 +59,7 @@ WNDCLASS PluginManagerWindow::m_WndClass;
 const int PluginManagerWindow::m_fraPluginList_Width = 320;
 const int PluginManagerWindow::m_fraPluginList_Height = 144;
 const int PluginManagerWindow::m_fraPluginInfo_Width = 320;
-const int PluginManagerWindow::m_fraPluginInfo_Height = 272;
+const int PluginManagerWindow::m_fraPluginInfo_Height = 248;
 const int PluginManagerWindow::m_WndWidth = 320+8+8;
 const int PluginManagerWindow::m_WndHeight = 8+m_fraPluginList_Height+8+m_fraPluginInfo_Height+8+24+8;
 
@@ -270,7 +270,7 @@ void PluginManagerWindow::createPluginInfoFrame(HWND hWnd)
 #else /* !GENS_PNG */
 	const int lblPluginMainInfo_Left = 8+8;
 #endif /* GENS_PNG */
-	const int lblPluginMainInfo_Height = 104;
+	const int lblPluginMainInfo_Height = 96;
 	
 	m_lblPluginMainInfo = CreateWindow(WC_EDIT, NULL,
 					   WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
@@ -281,7 +281,7 @@ void PluginManagerWindow::createPluginInfoFrame(HWND hWnd)
 	Edit_SetReadOnly(m_lblPluginMainInfo, true);
 	
 	// Label for secondary plugin info.
-	const int lblPluginSecInfo_Height = 48;
+	const int lblPluginSecInfo_Height = 40;
 	m_lblPluginSecInfo = CreateWindow(WC_EDIT, NULL,
 					   WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
 					   8+8, top+16+lblPluginMainInfo_Height+8,
@@ -291,7 +291,7 @@ void PluginManagerWindow::createPluginInfoFrame(HWND hWnd)
 	Edit_SetReadOnly(m_lblPluginSecInfo, true);
 	
 	// Label for the plugin description.
-	const int lblPluginDesc_Height = 80;
+	const int lblPluginDesc_Height = 72;
 	m_lblPluginDesc = CreateWindow(WC_EDIT, NULL,
 				       WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
 				       8+8, top+16+lblPluginMainInfo_Height+8+lblPluginSecInfo_Height+8,
