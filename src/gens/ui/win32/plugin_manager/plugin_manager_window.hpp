@@ -97,7 +97,6 @@ class PluginManagerWindow : public WndBase
 		
 		inline void createPluginIconWidget(HWND hWnd);
 		inline unsigned int getBGColor(void);
-		inline void applyTransparency(void);
 		bool displayIcon(const unsigned char* icon, const unsigned int iconLength);
 		void clearIcon(void);
 		
