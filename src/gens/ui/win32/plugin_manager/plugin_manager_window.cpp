@@ -493,9 +493,6 @@ inline void PluginManagerWindow::createPluginIconWidget(HWND hWnd)
 				       8+8, top+16, 32, 32,
 				       hWnd, NULL, ghInstance, NULL);
 	
-	// Set the plugin icon widget's bitmap to m_hbmpPluginIcon.
-	SendMessage(m_imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbmpPluginIcon);
-	
 	// Clear the icon.
 	clearIcon();
 }
@@ -707,5 +704,8 @@ void PluginManagerWindow::clearIcon(void)
 		
 		bmpData += 4;
 	}
+	
+	// Set the plugin icon widget's bitmap to m_hbmpPluginIcon.
+	SendMessage(m_imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbmpPluginIcon);
 }
 #endif /* GENS_PNG */
