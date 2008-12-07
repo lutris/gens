@@ -51,6 +51,7 @@
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/country_code_window.h"
 #include "about/about_window.hpp"
+#include "plugin_manager/plugin_manager_window.hpp"
 
 // Filename filters.
 static const char* UI_Win32_FileFilter_AllFiles =
@@ -222,7 +223,8 @@ void GensUI::update(void)
 		    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
-		    (AboutWindow::isOpen() && AboutWindow::Instance()->isDialogMessage(&msg)))
+		    (AboutWindow::isOpen() && AboutWindow::Instance()->isDialogMessage(&msg)) ||
+		    (PluginManagerWindow::isOpen() && PluginManagerWindow::Instance()->isDialogMessage(&msg)))
 		{
 			// Dialog message. Don't process it as a regular message.
 			continue;
