@@ -65,7 +65,7 @@ MDP_t mdp_render_interpolated_scanline =
 		 0x00, 0xEC, 0xC3, 0xED, 0x0E, 0x95},
 	
 	// CPU flags
-	.cpuFlagsSupported = 0,
+	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
 	.cpuFlagsRequired = 0,
 	
 	// Description
