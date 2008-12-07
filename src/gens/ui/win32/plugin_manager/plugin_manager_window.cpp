@@ -431,7 +431,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	// Plugin description.
 	if (desc->description)
 	{
-		string pluginDesc = string("Description\n") + string(desc->description);
+		string pluginDesc = string("Description:\n") + string(desc->description);
 		Edit_SetText(m_lblPluginDesc, pluginDesc.c_str());
 	}
 	else
