@@ -1,0 +1,384 @@
+MDP: Mega Drive Plugins
+Interface Specification Version 0.1.0 [DRAFT]
+(c) Copyright 2008 by David Korth.
+
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.3 or any later version published by the Free Software
+Foundation; with no Invariant Sections, no Front-Cover Texts and
+no Back-Cover Texts.  You may obtain a copy of this license at
+http://www.gnu.org/copyleft/fdl.html
+
+================================================================
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.  A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
+================================================================
+
+0. Draft Document Notice
+
+WARNING: This document is a draft version of an upcoming plugin format.
+Please do not write an implementation of the plugin format using this
+document, as the plugin format may change during the draft process, which
+may break compatibility with the version described in this document.
+
+================================================================
+
+1. What is a Mega Drive Plugin?
+
+The Mega Drive Plugin specification, or MDP, defines an interface used
+to extend the abilities of Sega Genesis emulators.
+
+================================================================
+
+2. Version Numbering
+
+All MDP interfaces use a hard version numbering system. That is, the version
+number is used to determine compatibility.
+
+mdp.h provides an MDP_VERSION() macro, which creates a version number in
+this format: 0xMMNNRRRR
+
+- MM == major version.
+- NN == minor version.
+- RR == revision number.
+
+So for MDP interface version 0.1.0, you would use MDP_VERSION(0, 1, 0).
+As a convenience, the MDP_INTERFACE_VERSION macro provides the version
+number of the MDP interface definition as specified in that particular
+mdp.h header file.
+
+To determine compatibility, Gens looks at the version number and compares
+it to its own MDP version number.
+
+The major version number is the main indicator of compatibility; the major
+version number of Gens' MDP interface *must* be equal to the major version
+number of the plugin's MDP interface; otherwise, it is assumed that the
+plugin is incompatible and it is not loaded.
+
+The minor version number indicates if any new backwards-compatible features
+have been added. That is, if a feature has been added that doesn't break
+the interface and doesn't require that plugins make use of it, the minor
+version number is incremented. Gens will check the minor version number to
+see if these specific features should be enabled or not on a plugin-by-plugin
+basis.
+
+The revision number is not used at all in checking version compatibility.
+
+Note that some sections have an MDP_VERSION() macro in brackets next to
+the section name. This indicates the interfaceVersion of the struct being
+described. Differences between versions, if any, will be noted later in
+that section.
+
+================================================================
+
+3. Basic Plugin Interface [MDP_VERSION(0, 1, 0)]
+
+Every plugin must export a struct of type MDP_t. This struct contains the
+basic information about the plugin. MDP v0.1 does not have support for
+external plugins, so the name of the MDP_t struct is not required to be
+anything specific. Later versions of MDP will support external plugins,
+in which case the MDP_t struct will require a specific symbol name.
+
+Format of the MDP_t struct:
+
+#include "mdp/mdp.h"
+#include "mdp/mdp_cpuflags.h"
+
+typedef struct
+{
+	const uint32_t interfaceVersion;
+	const uint32_t pluginVersion;
+	const uint32_t type;
+	const uint32_t reserved1;
+	
+	const unsigned char uuid[16];
+	
+	const uint32_t cpuFlagsSupported;
+	const uint32_t cpuFlagsRequired;
+	
+	MDP_Desc_t *desc;
+	
+	MDP_Func_t *func;
+	
+	void *plugin_t;
+} MDP_t;
+
+Fields:
+
+- interfaceVersion: The MDP interface version.
+
+- pluginVersion: Version number of the specific plugin. This is user-defined
+                 and can be anything.
+
+- type: Plugin type. Can be one of the following:
+  - MDPT_NULL: NULL plugin. Does nothing.
+  - MDPT_RENDER: Render plugin. (See Section 4 for more information)
+
+- reserved1: Reserved.
+
+- uuid: 16-byte UUID used to uniquely identify the plugin. Use a tool such as
+        uuidgen to generate the UUID.
+
+- cpuFlagsSupported: [bitfield] CPU flags that are supported by the plugin.
+                     The CPU flag values are defined in mdp_cpuflags.h.
+
+- cpuFlagsRequired: [bitfield] CPU flags that are required by the plugin. If
+                    the current CPU does not support any flags specified in
+                    this field, the plugin will not be loaded.
+
+- desc: Pointer to MDP_Desc_t with description information about the plugin.
+
+- MDP_Func_t: Pointer to a struct containing various plugin functions.
+
+- plugin_t: Pointer to a type-specific struct. For a plugin of type
+            MDPT_RENDER, this points to a struct of type MDP_Render_t.
+            (See Section 4 for more information.)
+
+----------------------------------------------------------------
+
+3.1. MDP Description Field
+
+The MDP_t.desc field points to a struct of type MDP_Desc_t, which contains
+a description of the plugin.
+
+#include "mdp/mdp.h"
+
+typedef struct
+{
+	const char* name;
+	const char* author_mdp;
+	const char* author_orig;
+	const char* description;
+	const char* website;
+	const char* license;
+	
+	const void* reserved1;
+	const void* reserved2;
+	
+	const unsigned char* icon;
+	const unsigned int iconLength;
+} MDP_Desc_t;
+
+Fields:
+
+- name: Name of the plugin.
+
+- author_mdp: Author of the plugin.
+
+- author_orig: Author of the original code. This is mainly used when porting
+               a third-party renderer in an MDP plugin. If the plugin author
+               is the same as the code author, this field may be set to NULL.
+
+- description: A short description of the plugin.
+
+- website: The plugin author's website. May be NULL if no website is available.
+
+- license: Plugin license. Example licenses are "GPL-2", "GPL-3", "BSD".
+           See mdp.h's MDP_LICENSE_* #defines for more.
+
+- reserved1: Reserved.
+
+- reserved2: Reserved.
+
+- icon: Icon for the plugin. This must be a 32x32 PNG-format icon.
+        Alternatively, this field may be set to NULL to indicate no icon.
+
+- iconLength: Length of the data pointed to by the icon field.
+
+----------------------------------------------------------------
+
+3.2. MDP Function Field
+
+The MDP_t.func field points to a struct of type MDP_Func_t, which contains
+several pointers to functions within the plugin.
+
+#include "mdp/mdp.h"
+
+typedef void (MDP_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
+typedef void (MDP_FNCALL *mdp_end)(void);
+
+typedef struct
+{
+	// Init/Shutdown functions
+	mdp_init	init;
+	mdp_end		end;
+} MDP_Func_t;
+
+Fields:
+
+- init: Pointer to a function used to initialize the plugin.
+        This function is called at Gens startup.
+
+- end: Pointer to a function used to shut down the plugin.
+       This function is called at Gens shutdown.
+
+----------------------------------------------------------------
+
+3.3. MDP Host Services [MDP_VERSION(0, 1, 0)]
+
+The MDP_Func_t.init() function has one parameter, hostSrv, which is a pointer
+to a struct containing various services offered by the MDP host.
+
+#include "mdp/mdp_host.h"
+
+typedef struct
+{
+	const uint32_t interfaceVersion;
+	
+	void* (MDP_FNCALL *refPtr)(MDP_PTR ptrID);
+	void  (MDP_FNCALL *unrefPtr)(MDP_PTR ptrID);
+} MDP_Host_t;
+
+Fields:
+
+- interfaceVersion: MDP Host Services interface version. Usually the same
+                    as the MDP interface version.
+
+- refPtr: Function to reference a Gens pointer.
+
+- unrefPtr: Function to unreference a Gens pointer. This function must be
+            called for any pointers referenced with refPtr() by the plugin
+            when the plugin is shut down.
+
+MDP_PTR is an enum containing various pointers that can be referenced by
+plugins.
+
+typedef enum
+{
+	MDP_PTR_NULL		= 0,
+	MDP_PTR_LUT16to32,
+} MDP_PTR;
+
+Items:
+
+- MDP_PTR_NULL: NULL.
+
+- MDP_PTR_LUT16to32: A lookup table for converting 16-bit color to 32-bit color.
+  Original Definition: unsigned int LUT16to32[65536];
+
+  To convert a 16-bit color to a 32-bit color, use the 16-bit color value as
+  the table offset. The value stored at that offset is the 32-bit color value.
+
+================================================================
+
+4. MDP Render Plugins [MDP_VERSION(0, 1, 0)]
+
+Render plugins are used to render the original Genesis display to the main
+video display. The basic renderers, Normal and Double, merely do a blit or
+a 2x scaled blit, respectively. More advanced renderers can apply
+interpolation and scanline effects in order to improve the output of the
+image on high-resolution monitors.
+
+All render plugins have their MDP_t.type field set to MDPT_RENDER, and
+their MDP_t.plugin field pointing to a struct of type MDP_Render_t.
+
+#include "mdp/mdp_render.h"
+
+typedef void (MDP_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
+typedef struct
+{
+	const uint32_t interfaceVersion;
+	MDP_Render_Fn blit;
+	const int scale;
+	const uint32_t flags;
+	const char* tag;
+} MDP_Render_t;
+
+Fields:
+
+- interfaceVersion: Interface version of the MDPT_RENDER plugin.
+                    The MDP_RENDER_INTERFACE_VERSION macro in mdp_render.h
+                    defines the current render interface version.
+
+- blit: Pointer to a function of type MDP_Render_Fn. This function is called
+        after every frame to blit the MD image to the output display.
+
+- scale: Scaling factor of the renderer. For the "Normal" renderer, this would
+         be set to 1, while for the "Double" renderer, this would be set to 2.
+
+- flags: Renderer flags. [bitfield]
+
+- tag: Renderer tag. This string is what shows up in the "Render" menu.
+
+The MDP_Render_t.flags field can be a combination of the following flags:
+
+- MDP_RENDER_FLAG_SRC16DST32: Indicates that the renderer only supports 16-bit
+                              color. Gens will convert the output to 32-bit
+                              color, if necessary.
+
+The MDP_Render_t.blit function must point to a function of type MDP_Render_fn.
+For example, the Normal renderer has this function:
+
+void MDP_FNCALL mdp_render_1x_cpp(MDP_Render_Info_t *renderInfo);
+
+The MDP_Render_Info_t struct contains the current rendering information, as
+provided by the emulator.
+
+#include "mdp/mdp_render.h"
+
+typedef struct
+{
+	void *destScreen;
+	void *mdScreen;
+	
+	int destPitch;
+	int srcPitch;
+	
+	int width;
+	int height;
+	
+	uint32_t bpp;
+	uint32_t cpuFlags;
+	uint32_t renderFlags;
+} MDP_Render_Info_t;
+
+Fields:
+
+- destScreen: Pointer to the destination screen buffer.
+
+- mdScreen: Pointer to the source screen buffer.
+
+- destPitch: Pitch of the destination screen buffer.
+             (Number of bytes per row.)
+
+- srcPitch: Pitch of the source screen buffer.
+            (Number of bytes per row.)
+
+- width: Width of the image to blit.
+
+- height: Height of the image to blit.
+
+- bpp: Color depth of both destScreen and mdScreen.
+
+- cpuFlags: CPU flags supported by the current CPU.
+
+- renderFlags: Currently unused.
+
+Note that the width of the image might not be the same as the pitch of
+the image. This is especially true with regards to the mdScreen buffer
+(Gens uses a pitch of 336 pixels) and destScreen on some platforms.
+
+All renderers *must* support 15-bit (RGB555) and 16-bit (RGB565). 15-bit
+color is required because some older video cards don't actually support
+16-bit color, and use RGB555 mode instead, even if it reports that it's
+running in 16-bit color. Regardless of the actual RGB5?5 mode, both of
+these color depths use 2 bytes per pixel.
+
+The plugin should also support 32-bit color, but in cases where this is
+not possible. the MDP_Render_t.flags field can have the
+MDP_RENDER_FLAG_SRC16DST32 flag set.
+
+32-bit color format: 0x00BBGGRR (big-endian notation)
+
+The MDP_Render_Info_t.renderFlags field is currently unused in this version
+of the MDP Render interface.
+
+================================================================
+
+End of MDP Interface Specification Version 0.1.0.
