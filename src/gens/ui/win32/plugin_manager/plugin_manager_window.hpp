@@ -91,10 +91,11 @@ class PluginManagerWindow : public WndBase
 		
 #ifdef GENS_PNG
 		// Plugin icon.
-		GdkPixbuf *m_pbufPluginIcon;
-		GtkWidget *m_imgPluginIcon;
+		HBITMAP m_hbmpPluginIcon;
+		void *m_bmpPluginIconData;
+		HWND m_imgPluginIcon;
 		
-		inline void createPluginIconWidget(GtkBox *container);
+		inline void createPluginIconWidget(HWND hWnd);
 		bool displayIcon(const unsigned char* icon, const unsigned int iconLength);
 		void clearIcon(void);
 		

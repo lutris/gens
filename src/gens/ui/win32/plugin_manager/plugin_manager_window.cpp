@@ -93,6 +93,7 @@ PluginManagerWindow* PluginManagerWindow::Instance(HWND parent)
 PluginManagerWindow::PluginManagerWindow()
 {
 	m_childWindowsCreated = false;
+	m_hbmpPluginIcon = NULL;
 	
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
@@ -136,6 +137,12 @@ PluginManagerWindow::PluginManagerWindow()
 
 PluginManagerWindow::~PluginManagerWindow()
 {
+	if (m_hbmpPluginIcon)
+	{
+		DeleteBitmap(m_hbmpPluginIcon);
+		m_hbmpPluginIcon = NULL;
+	}
+	
 	m_Instance = NULL;
 }
 
@@ -453,24 +460,37 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 
 #ifdef GENS_PNG
 /**
- * createPluginIconWidget(): Create the GTK+ plugin icon widget and pixbuf.
- * @param container Container for the plugin icon widget.
+ * createPluginIconWidget(): Create the plugin icon widget and bitmap.
+ * @param hWnd hWnd of the window.
  */
-inline void PluginManagerWindow::createPluginIconWidget(GtkBox *container)
+inline void PluginManagerWindow::createPluginIconWidget(HWND hWnd)
 {
-	// Plugin icon pixbuf.
-	m_pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_pbufPluginIcon",
-			       g_object_ref(m_pbufPluginIcon), (GDestroyNotify)g_object_unref);
+	// Plugin icon bitmap.
+	HDC dc = CreateCompatibleDC(NULL);
+	BITMAPINFO bmInfo;
+	
+	bmInfo.bmiHeader.biSize = sizeof(bmInfo.bmiHeader);
+	bmInfo.bmiHeader.biWidth = 32;
+	bmInfo.bmiHeader.biHeight = -32;
+	bmInfo.bmiHeader.biPlanes = 1;
+	bmInfo.bmiHeader.biBitCount = 32;
+	bmInfo.bmiHeader.biCompression = 0;
+	bmInfo.bmiHeader.biSizeImage = 0;
+	bmInfo.bmiHeader.biClrUsed = 0;
+	bmInfo.bmiHeader.biClrImportant = 0;
+	
+	m_hbmpPluginIcon = CreateDIBSection(dc, &bmInfo, DIB_RGB_COLORS,
+					    &m_bmpPluginIconData, NULL, 0);
 	
 	// Plugin icon widget.
-	m_imgPluginIcon = gtk_image_new();
-	gtk_widget_set_name(m_imgPluginIcon, "m_imgPluginIcon");
-	gtk_misc_set_alignment(GTK_MISC(m_imgPluginIcon), 0.0f, 0.0f);
-	gtk_widget_show(m_imgPluginIcon);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_imgPluginIcon",
-			       g_object_ref(m_imgPluginIcon), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(container), m_imgPluginIcon, FALSE, FALSE, 0);
+	const int top = 8+m_fraPluginList_Height+8;
+	m_imgPluginIcon = CreateWindow(WC_STATIC, NULL,
+				       WS_CHILD | WS_VISIBLE | SS_BITMAP,
+				       8+8, top+16, 32, 32,
+				       hWnd, NULL, ghInstance, NULL);
+	
+	// Set the plugin icon widget's bitmap to m_hbmpPluginIcon.
+	SendMessage(m_imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)m_hbmpPluginIcon);
 	
 	// Clear the icon.
 	clearIcon();
@@ -485,6 +505,7 @@ inline void PluginManagerWindow::createPluginIconWidget(GtkBox *container)
  */
 bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned int iconLength)
 {
+#if 0
 	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
 	
 	if (!icon || iconLength < sizeof(pngMagicNumber))
@@ -608,6 +629,7 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
 	
 	return true;
+#endif
 }
 
 
@@ -616,21 +638,26 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
  */
 void PluginManagerWindow::clearIcon(void)
 {
-	if (!m_pbufPluginIcon)
-		return;
+	// Clear the icon.
+	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
+	printf("0x%08X\n", bgColor);
 	
-	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufPluginIcon);
-	int rowstride = gdk_pixbuf_get_rowstride(m_pbufPluginIcon);
-	int height = gdk_pixbuf_get_height(m_pbufPluginIcon);
-	int width = gdk_pixbuf_get_width(m_pbufPluginIcon);
-	int bits_per_sample = gdk_pixbuf_get_bits_per_sample(m_pbufPluginIcon);
-	int n_channels = gdk_pixbuf_get_n_channels(m_pbufPluginIcon);
+	// Byteswap the lower 24 bits.
+	bgColor = ((bgColor & 0xFF000000)) |
+		  ((bgColor & 0x00FF0000) >> 16) |
+		  ((bgColor & 0x0000FF00)) |
+		  ((bgColor & 0x000000FF) << 16);
 	
-	// The last row of the pixbuf data may not be fully allocated.
-	// See http://library.gnome.org/devel/gdk-pixbuf/stable/gdk-pixbuf-gdk-pixbuf.html
-	int size = (rowstride * (height - 1)) + (width * ((n_channels * bits_per_sample + 7) / 8));
-	memset(pixels, 0x00, size);
+	unsigned int *bmpData = static_cast<unsigned int*>(m_bmpPluginIconData);
 	
-	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
+	for (unsigned int pixel = 32*32/4; pixel != 0; pixel--)
+	{
+		bmpData[0] = bgColor;
+		bmpData[1] = bgColor;
+		bmpData[2] = bgColor;
+		bmpData[3] = bgColor;
+		
+		bmpData += 4;
+	}
 }
 #endif /* GENS_PNG */
