@@ -78,6 +78,9 @@ class PluginManagerWindow : public WndBase
 		void createPluginInfoFrame(HWND hWnd);
 		void populatePluginList(void);
 		
+		// lstPluginList cursor changed.
+		void lstPluginList_cursor_changed(void);
+		
 		// CPU flags.
 		static std::string GetCPUFlags(uint32_t cpuFlagsRequired,
 					       uint32_t cpuFlagsSupported,

@@ -179,10 +179,19 @@ LRESULT CALLBACK PluginManagerWindow::WndProc(HWND hWnd, UINT message, WPARAM wP
 			break;
 		
 		case WM_COMMAND:
-			if (LOWORD(wParam) == IDC_BTN_OK || LOWORD(wParam) == IDOK ||
-			    LOWORD(wParam) == IDC_BTN_CANCEL || LOWORD(wParam) == IDCANCEL)
+			switch (LOWORD(wParam))
 			{
-				DestroyWindow(m_Window);
+				case IDC_BTN_OK:
+				case IDOK:
+				case IDC_BTN_CANCEL:
+				case IDCANCEL:
+					DestroyWindow(m_Window);
+					break;
+				
+				case IDC_PLUGIN_MANAGER_LSTPLUGINLIST:
+					if (HIWORD(wParam) == LBN_SELCHANGE)
+						lstPluginList_cursor_changed();
+					break;
 			}
 			
 			break;
@@ -214,16 +223,6 @@ void PluginManagerWindow::createChildWindows(HWND hWnd)
 	// Populate the plugin list.
 	populatePluginList();
 	
-#if 0
-	// Show the window.
-	setVisible(true);
-	
-	// Make sure nothing is selected initially.
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
-	gtk_tree_selection_unselect_all(selection);
-	lstPluginList_cursor_changed(NULL);
-#endif
-	
 	// Child windows created.
 	m_childWindowsCreated = true;
 }
@@ -243,7 +242,7 @@ void PluginManagerWindow::createPluginListFrame(HWND hWnd)
 	m_lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, "",
 					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL | LBS_NOTIFY,
 					 8+8, 8+16, m_fraPluginList_Width-16, m_fraPluginList_Height-24,
-					 hWnd, (HMENU)IDC_PLUGIN_MANAGER_LSTPLUGINS, ghInstance, NULL);
+					 hWnd, (HMENU)IDC_PLUGIN_MANAGER_LSTPLUGINLIST, ghInstance, NULL);
 	SetWindowFont(m_lstPluginList, fntMain, true);
 }
 
@@ -272,7 +271,7 @@ void PluginManagerWindow::createPluginInfoFrame(HWND hWnd)
 	const int lblPluginMainInfo_Left = 8+8;
 #endif /* GENS_PNG */
 	const int lblPluginMainInfo_Height = 104;
-
+	
 	m_lblPluginMainInfo = CreateWindow(WC_EDIT, NULL,
 					   WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
 					   lblPluginMainInfo_Left, top+16,
@@ -283,13 +282,13 @@ void PluginManagerWindow::createPluginInfoFrame(HWND hWnd)
 	
 	// Label for secondary plugin info.
 	const int lblPluginSecInfo_Height = 48;
-	m_lblPluginMainInfo = CreateWindow(WC_EDIT, NULL,
+	m_lblPluginSecInfo = CreateWindow(WC_EDIT, NULL,
 					   WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
 					   8+8, top+16+lblPluginMainInfo_Height+8,
 					   m_fraPluginInfo_Width-8-8, lblPluginSecInfo_Height,
 					   hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(m_lblPluginMainInfo, fntMain, true);
-	Edit_SetReadOnly(m_lblPluginMainInfo, true);
+	SetWindowFont(m_lblPluginSecInfo, fntMain, true);
+	Edit_SetReadOnly(m_lblPluginSecInfo, true);
 	
 	// Label for the plugin description.
 	const int lblPluginDesc_Height = 80;
@@ -338,26 +337,19 @@ void PluginManagerWindow::populatePluginList(void)
 }
 
 
-#if 0
-void PluginManagerWindow::lstPluginList_cursor_changed_STATIC(GtkTreeView *tree_view, gpointer user_data)
+void PluginManagerWindow::lstPluginList_cursor_changed(void)
 {
-	reinterpret_cast<PluginManagerWindow*>(user_data)->lstPluginList_cursor_changed(tree_view);
-}
-
-
-void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
-{
-	// Check which plugin is clicked.
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
+	printf("CHANGED\n");
 	
-	GtkTreeIter iter;
-	if (!gtk_tree_selection_get_selected(selection, (GtkTreeModel**)(&lmPluginList), &iter))
+	// Check which plugin is clicked.
+	int index = ListBox_GetCurSel(m_lstPluginList);
+	
+	if (index == LB_ERR)
 	{
 		// No plugin selected.
-		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
-		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+		Edit_SetText(m_lblPluginMainInfo, "No plugin selected.");
+		Edit_SetText(m_lblPluginSecInfo, NULL);
+		Edit_SetText(m_lblPluginDesc, NULL);
 #ifdef GENS_PNG
 		clearIcon();
 #endif /* GENS_PNG */
@@ -365,21 +357,15 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	}
 	
 	// Found a selected plugin.
-	GValue gVal = { 0 };
-	MDP_t *plugin;
-	
-	gtk_tree_model_get_value(GTK_TREE_MODEL(lmPluginList), &iter, 1, &gVal);
-	plugin = (MDP_t*)g_value_peek_pointer(&gVal);
-	g_value_unset(&gVal);
+	MDP_t *plugin = reinterpret_cast<MDP_t*>(ListBox_GetItemData(m_lstPluginList, index));
 	
 	// Get the plugin information.
 	if (!plugin)
 	{
 		// Invalid plugin.
-		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
-		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+		Edit_SetText(m_lblPluginMainInfo, "Invalid plugin selected.");
+		Edit_SetText(m_lblPluginSecInfo, NULL);
+		Edit_SetText(m_lblPluginDesc, NULL);
 #ifdef GENS_PNG
 		clearIcon();
 #endif /* GENS_PNG */
@@ -388,10 +374,9 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	
 	if (!plugin->desc)
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
-		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+		Edit_SetText(m_lblPluginMainInfo, "This plugin does not have a valid description field.");
+		Edit_SetText(m_lblPluginSecInfo, NULL);
+		Edit_SetText(m_lblPluginDesc, NULL);
 #ifdef GENS_PNG
 		clearIcon();
 #endif /* GENS_PNG */
@@ -400,46 +385,36 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	
 	// Fill in the descriptions.
 	MDP_Desc_t *desc = plugin->desc;
-	stringstream ssMainDesc;
-	int lines = 4;			// Name, MDP Author, Version, and License are always printed.
-	const int linesReserved = 6;	// Number of lines reserved.
+	stringstream ssMainInfo;
 	
 	// Plugin name.
-	ssMainDesc << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl;
+	ssMainInfo << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl;
 	
 	// Plugin version.
-	ssMainDesc << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
+	ssMainInfo << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
 				  << "." << MDP_VERSION_MINOR(plugin->pluginVersion)
 				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << endl;
 	
 	// Plugin author.
-	ssMainDesc << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
+	ssMainInfo << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
 	
 	// Original code author.
 	if (desc->author_orig)
 	{
-		ssMainDesc << "Original Author: " << string(desc->author_orig) << endl;
-		lines++;
+		ssMainInfo << "Original Author: " << string(desc->author_orig) << endl;
 	}
 	
 	// Website.
 	if (desc->website)
 	{
-		ssMainDesc << "Website: " << string(desc->website) << endl;
-		lines++;
+		ssMainInfo << "Website: " << string(desc->website) << endl;
 	}
 	
 	// License.
-	ssMainDesc << "License: " + (desc->license ? string(desc->license) : "(none)");
+	ssMainInfo << "License: " + (desc->license ? string(desc->license) : "(none)");
 	
-	// Linebreaks needed.
-	const int linesNeeded = linesReserved - lines;
-	for (int i = 0; i < linesNeeded; i++)
-	{
-		ssMainDesc << endl;
-	}
-	
-	gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), ssMainDesc.str().c_str());
+	// Set the main plugin information.
+	Edit_SetText(m_lblPluginMainInfo, ssMainInfo.str().c_str());
 	
 	// UUID.
 	string sUUID = UUIDtoString(plugin->uuid);
@@ -451,19 +426,17 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, true);
 	
 	// Set the secondary information label.
-	gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), ssSecInfo.str().c_str());
-	gtk_label_set_use_markup(GTK_LABEL(m_lblPluginSecInfo), TRUE);
+	Edit_SetText(m_lblPluginSecInfo, ssSecInfo.str().c_str());
 	
 	// Plugin description.
-	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
 	if (desc->description)
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), "<b><i>Description</i></b>");
-		gtk_label_set_use_markup(GTK_LABEL(lblPluginDescTitle), TRUE);
+		string pluginDesc = string("Description\n") + string(desc->description);
+		Edit_SetText(m_lblPluginDesc, pluginDesc.c_str());
 	}
 	else
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		Edit_SetText(m_lblPluginDesc, NULL);
 	}
 	
 #ifdef GENS_PNG
@@ -660,4 +633,3 @@ void PluginManagerWindow::clearIcon(void)
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
 }
 #endif /* GENS_PNG */
-#endif
