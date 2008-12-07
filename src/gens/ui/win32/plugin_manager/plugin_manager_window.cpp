@@ -339,8 +339,6 @@ void PluginManagerWindow::populatePluginList(void)
 
 void PluginManagerWindow::lstPluginList_cursor_changed(void)
 {
-	printf("CHANGED\n");
-	
 	// Check which plugin is clicked.
 	int index = ListBox_GetCurSel(m_lstPluginList);
 	
