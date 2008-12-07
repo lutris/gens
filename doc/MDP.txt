@@ -148,6 +148,8 @@ Fields:
 The MDP_t.desc field points to a struct of type MDP_Desc_t, which contains
 a description of the plugin.
 
+Note: All strings are encoded using UTF-8.
+
 #include "mdp/mdp.h"
 
 typedef struct
@@ -306,6 +308,7 @@ Fields:
 - flags: Renderer flags. [bitfield]
 
 - tag: Renderer tag. This string is what shows up in the "Render" menu.
+       (Note: This string is encoded using UTF-8.)
 
 The MDP_Render_t.flags field can be a combination of the following flags:
 
