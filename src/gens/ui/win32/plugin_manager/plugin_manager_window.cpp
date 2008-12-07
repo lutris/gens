@@ -640,9 +640,10 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 
 
 /**
- * applyTransparency(): Apply transparency values to the plugin icon.
+ * getBGColor() Get the background color.
+ * @return Background color.
  */
-inline void PluginManagerWindow::applyTransparency(void)
+inline unsigned int PluginManagerWindow::getBGColor(void)
 {
 	// Get the background color.
 	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
@@ -652,6 +653,17 @@ inline void PluginManagerWindow::applyTransparency(void)
 		  ((bgColor & 0x00FF0000) >> 16) |
 		  ((bgColor & 0x0000FF00)) |
 		  ((bgColor & 0x000000FF) << 16);
+	
+	return bgColor;
+}
+
+/**
+ * applyTransparency(): Apply transparency values to the plugin icon.
+ */
+inline void PluginManagerWindow::applyTransparency(void)
+{
+	// Get the background color.
+	unsigned int bgColor = getBGColor();
 	
 	// Check for any pixels with transparency.
 	// TODO: Optimize this function.
@@ -684,17 +696,11 @@ inline void PluginManagerWindow::applyTransparency(void)
  */
 void PluginManagerWindow::clearIcon(void)
 {
+	// Get the background color.
+	unsigned int bgColor = getBGColor();
+	
 	// Clear the icon.
-	unsigned int bgColor = GetSysColor(COLOR_3DFACE);
-	
-	// Byteswap the lower 24 bits.
-	bgColor = ((bgColor & 0xFF000000)) |
-		  ((bgColor & 0x00FF0000) >> 16) |
-		  ((bgColor & 0x0000FF00)) |
-		  ((bgColor & 0x000000FF) << 16);
-	
 	unsigned int *bmpData = static_cast<unsigned int*>(m_bmpPluginIconData);
-	
 	for (unsigned int pixel = 32*32/4; pixel != 0; pixel--)
 	{
 		bmpData[0] = bgColor;
