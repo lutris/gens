@@ -1,5 +1,4 @@
 TODO for Gens/GS m6:
-- Finish initial plugin implementation. (Internal plugins only.)
 - [MDP] Initial plugin manager UI.
 - VDraw_SDL_GL: Stretch is broken for 3x scaling.
 
