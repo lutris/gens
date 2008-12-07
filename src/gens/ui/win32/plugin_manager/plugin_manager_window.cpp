@@ -46,10 +46,14 @@
 #include <string>
 #include <sstream>
 #include <vector>
-using std::endl;
 using std::string;
 using std::stringstream;
 using std::vector;
+
+// Win32 line ending.
+// For some reason, MinGW's std::endl always outputs "\n", even on Windows.
+// This works on Wine, but not on Windows.
+#define WIN32_ENDL "\r\n"
 
 
 // Window class.
@@ -396,26 +400,26 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	stringstream ssMainInfo;
 	
 	// Plugin name.
-	ssMainInfo << "Name: " << (desc->name ? charset_utf8_to_cp1252(desc->name) : "(none)") << endl;
+	ssMainInfo << "Name: " << (desc->name ? charset_utf8_to_cp1252(desc->name) : "(none)") << WIN32_ENDL;
 	
 	// Plugin version.
 	ssMainInfo << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
 				  << "." << MDP_VERSION_MINOR(plugin->pluginVersion)
-				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << endl;
+				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << WIN32_ENDL;
 	
 	// Plugin author.
-	ssMainInfo << "MDP Author: " + (desc->author_mdp ? charset_utf8_to_cp1252(desc->author_mdp) : "(none)") << endl;
+	ssMainInfo << "MDP Author: " + (desc->author_mdp ? charset_utf8_to_cp1252(desc->author_mdp) : "(none)") << WIN32_ENDL;
 	
 	// Original code author.
 	if (desc->author_orig)
 	{
-		ssMainInfo << "Original Author: " << charset_utf8_to_cp1252(desc->author_orig) << endl;
+		ssMainInfo << "Original Author: " << charset_utf8_to_cp1252(desc->author_orig) << WIN32_ENDL;
 	}
 	
 	// Website.
 	if (desc->website)
 	{
-		ssMainInfo << "Website: " << charset_utf8_to_cp1252(desc->website) << endl;
+		ssMainInfo << "Website: " << charset_utf8_to_cp1252(desc->website) << WIN32_ENDL;
 	}
 	
 	// License.
@@ -430,7 +434,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	// Secondary plugin information.
 	// Includes UUID and CPU flags.
 	stringstream ssSecInfo;
-	ssSecInfo << "UUID: " << sUUID << endl
+	ssSecInfo << "UUID: " << sUUID << WIN32_ENDL
 		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, true);
 	
 	// Set the secondary information label.
@@ -439,7 +443,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	// Plugin description.
 	if (desc->description)
 	{
-		string pluginDesc = string("Description:\n") + charset_utf8_to_cp1252(desc->description);
+		string pluginDesc = string("Description:") + WIN32_ENDL + charset_utf8_to_cp1252(desc->description);
 		Edit_SetText(m_lblPluginDesc, pluginDesc.c_str());
 	}
 	else
