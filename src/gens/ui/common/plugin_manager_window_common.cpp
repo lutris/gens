@@ -129,3 +129,37 @@ string PluginManagerWindow::GetCPUFlags(uint32_t cpuFlagsRequired,
 	// Return the CPU flag string.
 	return ssFlags.str();
 }
+
+
+/**
+ * numToHex(): Convert a numbr to a hexadecimal character.
+ * @param num Number.
+ * @return Hexadecimal character.
+ */
+static inline char numToHex(unsigned char num)
+{
+	return ((num <= 9) ? (num + '0') : ((num >= 10 && num <= 15) ? (num - 10 + 'a') : 0x00));
+}
+
+
+/**
+ * UUIDtoString(): Convert a 16-byte UUID to a string.
+ * @param uuid Pointer to UUID.
+ * @return UUID as a string.
+ */
+string PluginManagerWindow::UUIDtoString(const unsigned char *uuid)
+{
+	char sUUID[48];
+	char *pUUIDChar = sUUID;
+	for (unsigned int i = 0; i < 16; i++)
+	{
+		*pUUIDChar++ = numToHex(uuid[i] >> 4);
+		*pUUIDChar++ = numToHex(uuid[i] & 0x0F);
+		
+		if (i == 3 || i == 5 || i == 7 || i == 9)
+			*pUUIDChar++ = '-';
+	}
+	*pUUIDChar = 0x00;
+	
+	return string(sUUID);
+}

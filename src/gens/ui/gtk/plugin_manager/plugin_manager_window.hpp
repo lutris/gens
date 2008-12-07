@@ -77,6 +77,9 @@ class PluginManagerWindow : public WndBase
 					       uint32_t cpuFlagsSupported,
 					       bool formatting);
 		
+		// Convert UUID to string.
+		static std::string UUIDtoString(const unsigned char *uuid);
+		
 #ifdef GENS_PNG
 		// Plugin icon.
 		GdkPixbuf *m_pbufPluginIcon;

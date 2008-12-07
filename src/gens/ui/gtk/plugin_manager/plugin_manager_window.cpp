@@ -492,14 +492,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), ssMainDesc.str().c_str());
 	
 	// UUID.
-	char sUUID[48];
-	const unsigned char *pluginUUID = plugin->uuid;
-	sprintf(sUUID, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-		pluginUUID[0], pluginUUID[1], pluginUUID[2], pluginUUID[3],
-		pluginUUID[4], pluginUUID[5],
-		pluginUUID[6], pluginUUID[7],
-		pluginUUID[8], pluginUUID[9],
-		pluginUUID[10], pluginUUID[11], pluginUUID[12], pluginUUID[13], pluginUUID[14], pluginUUID[15]);
+	string sUUID = UUIDtoString(plugin->uuid);
 	
 	// Secondary plugin information.
 	// Includes UUID and CPU flags.
