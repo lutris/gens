@@ -62,7 +62,7 @@ typedef struct
 	
 	// Icon data. (PNG format)
 	const unsigned char* icon;
-	const int iconLength;
+	const unsigned int iconLength;
 } MDP_Desc_t;
 
 // Plugin types.
