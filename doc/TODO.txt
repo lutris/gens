@@ -1,5 +1,4 @@
 TODO for Gens/GS m6:
-- [MDP] Initial plugin manager UI.
 - VDraw_SDL_GL: Stretch is broken for 3x scaling.
 
 TODO for Gens/GS m6.1:
