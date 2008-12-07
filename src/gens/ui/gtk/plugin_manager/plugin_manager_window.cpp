@@ -34,9 +34,6 @@
 
 #include <gtk/gtk.h>
 
-// PNG
-#include <png.h>
-
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
 
@@ -53,10 +50,12 @@ using std::stringstream;
 using std::vector;
 
 
+#ifdef GENS_PNG
 // PNG read variables.
 const unsigned char *PluginManagerWindow::png_dataptr;
 unsigned int PluginManagerWindow::png_datalen;
 unsigned int PluginManagerWindow::png_datapos;
+#endif /* GENS_PNG */
 
 
 PluginManagerWindow* PluginManagerWindow::m_Instance = NULL;
@@ -284,22 +283,10 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 			       g_object_ref(hboxPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), hboxPluginMainInfo, TRUE, FALSE, 0);
 	
-	// Plugin icon pixbuf.
-	m_pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_pbufPluginIcon",
-			       g_object_ref(m_pbufPluginIcon), (GDestroyNotify)g_object_unref);
-	
-	// Plugin icon widget.
-	m_imgPluginIcon = gtk_image_new();
-	gtk_widget_set_name(m_imgPluginIcon, "m_imgPluginIcon");
-	gtk_misc_set_alignment(GTK_MISC(m_imgPluginIcon), 0.0f, 0.0f);
-	gtk_widget_show(m_imgPluginIcon);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_imgPluginIcon",
-			       g_object_ref(m_imgPluginIcon), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), m_imgPluginIcon, FALSE, FALSE, 0);
-	
-	// Clear the icon.
-	clearIcon();
+#ifdef GENS_PNG
+	// Create the plugin icon widget.
+	createPluginIconWidget();
+#endif /* GENS_PNG */
 	
 	// VBox for the main plugin info.
 	GtkWidget *vboxPluginMainInfo = gtk_vbox_new(FALSE, 4);
@@ -431,7 +418,9 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+#ifdef GENS_PNG
 		clearIcon();
+#endif /* GENS_PNG */
 		return;
 	}
 	
@@ -451,7 +440,9 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+#ifdef GENS_PNG
 		clearIcon();
+#endif /* GENS_PNG */
 		return;
 	}
 	
@@ -461,7 +452,9 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+#ifdef GENS_PNG
 		clearIcon();
+#endif /* GENS_PNG */
 		return;
 	}
 	
@@ -540,12 +533,14 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 	}
 	
+#ifdef GENS_PNG
 	// Plugin icon.
 	if (!displayIcon(desc->icon, desc->iconLength))
 	{
 		// No plugin icon found. Clear the pixbuf.
 		clearIcon();
 	}
+#endif /* GENS_PNG */
 }
 
 
@@ -601,6 +596,31 @@ string PluginManagerWindow::GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuF
 	
 	// Return the CPU flag string.
 	return ssFlags.str();
+}
+
+
+#ifdef GENS_PNG
+/**
+ * createPluginIconWidget(): Create the GTK+ plugin icon widget and pixbuf.
+ */
+inline void PluginManagerWindow::createPluginIconWidget(void)
+{
+	// Plugin icon pixbuf.
+	m_pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_pbufPluginIcon",
+			       g_object_ref(m_pbufPluginIcon), (GDestroyNotify)g_object_unref);
+	
+	// Plugin icon widget.
+	m_imgPluginIcon = gtk_image_new();
+	gtk_widget_set_name(m_imgPluginIcon, "m_imgPluginIcon");
+	gtk_misc_set_alignment(GTK_MISC(m_imgPluginIcon), 0.0f, 0.0f);
+	gtk_widget_show(m_imgPluginIcon);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_imgPluginIcon",
+			       g_object_ref(m_imgPluginIcon), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), m_imgPluginIcon, FALSE, FALSE, 0);
+	
+	// Clear the icon.
+	clearIcon();
 }
 
 
@@ -773,3 +793,4 @@ void PluginManagerWindow::clearIcon(void)
 	
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
 }
+#endif /* GENS_PNG */

@@ -23,6 +23,10 @@
 #ifndef GENS_GTK_PLUGIN_MANAGER_WINDOW_HPP
 #define GENS_GTK_PLUGIN_MANAGER_WINDOW_HPP
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #ifdef __cplusplus
 
 #include "wndbase.hpp"
@@ -30,8 +34,9 @@
 // C++ includes
 #include <string>
 
-// PNG
+#ifdef GENS_PNG
 #include <png.h>
+#endif /* GENS_PNG */
 
 class PluginManagerWindow : public WndBase
 {
@@ -57,8 +62,6 @@ class PluginManagerWindow : public WndBase
 		// GTK+ objects
 		GtkWidget *lstPluginList;
 		GtkListStore *lmPluginList;
-		GdkPixbuf *m_pbufPluginIcon;
-		GtkWidget *m_imgPluginIcon;
 		GtkWidget *lblPluginMainInfo;
 		GtkWidget *m_lblPluginSecInfo;
 		GtkWidget *lblPluginDesc;
@@ -72,7 +75,12 @@ class PluginManagerWindow : public WndBase
 		// CPU flags.
 		static std::string GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported);
 		
+#ifdef GENS_PNG
 		// Plugin icon.
+		GdkPixbuf *m_pbufPluginIcon;
+		GtkWidget *m_imgPluginIcon;
+		
+		inline void createPluginIconWidget(void);
 		bool displayIcon(const unsigned char* icon, const unsigned int iconLength);
 		void clearIcon(void);
 		
@@ -82,6 +90,7 @@ class PluginManagerWindow : public WndBase
 		static unsigned int png_datalen;
 		static unsigned int png_datapos;
 		static void user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
+#endif /* GENS_PNG */
 };
 
 #endif /* __cplusplus */
