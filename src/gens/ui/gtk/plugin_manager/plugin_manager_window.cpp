@@ -310,7 +310,7 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), vboxPluginMainInfo, TRUE, TRUE, 0);
 	
 	// Label for the main plugin info.
-	lblPluginMainInfo = gtk_label_new("\n\n\n\n");
+	lblPluginMainInfo = gtk_label_new("\n\n\n\n\n");
 	gtk_widget_set_name(lblPluginMainInfo, "lblPluginMainInfo");
 	gtk_label_set_selectable(GTK_LABEL(lblPluginMainInfo), TRUE);
 	gtk_misc_set_alignment(GTK_MISC(lblPluginMainInfo), 0.0f, 0.0f);
@@ -427,7 +427,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!gtk_tree_selection_get_selected(selection, (GtkTreeModel**)(&lmPluginList), &iter))
 	{
 		// No plugin selected.
-		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n\n");
 		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
@@ -447,7 +447,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!plugin)
 	{
 		// Invalid plugin.
-		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n\n");
 		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
@@ -457,7 +457,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	
 	if (!plugin->desc)
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n");
+		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n\n");
 		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
@@ -468,21 +468,35 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	// Fill in the descriptions.
 	MDP_Desc_t *desc = plugin->desc;
 	stringstream ssMainDesc;
-	int lines = 3;			// Name, MDP Author, and License are always printed.
-	const int linesReserved = 5;	// Number of lines reserved.
+	int lines = 4;			// Name, MDP Author, Version, and License are always printed.
+	const int linesReserved = 6;	// Number of lines reserved.
 	
-	ssMainDesc << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl
-		   << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
+	// Plugin name.
+	ssMainDesc << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl;
+	
+	// Plugin version.
+	ssMainDesc << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
+				  << "." << MDP_VERSION_MINOR(plugin->pluginVersion)
+				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << endl;
+	
+	// Plugin author.
+	ssMainDesc << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
+	
+	// Original code author.
 	if (desc->author_orig)
 	{
 		ssMainDesc << "Original Author: " << string(desc->author_orig) << endl;
 		lines++;
 	}
+	
+	// Website.
 	if (desc->website)
 	{
 		ssMainDesc << "Website: " << string(desc->website) << endl;
 		lines++;
 	}
+	
+	// License.
 	ssMainDesc << "License: " + (desc->license ? string(desc->license) : "(none)");
 	
 	// Linebreaks needed.
