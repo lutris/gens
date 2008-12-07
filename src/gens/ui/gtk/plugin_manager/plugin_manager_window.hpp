@@ -30,6 +30,9 @@
 // C++ includes
 #include <string>
 
+// PNG
+#include <png.h>
+
 class PluginManagerWindow : public WndBase
 {
 	public:
@@ -54,7 +57,8 @@ class PluginManagerWindow : public WndBase
 		// GTK+ objects
 		GtkWidget *lstPluginList;
 		GtkListStore *lmPluginList;
-		GdkPixbuf *pbufPluginIcon;
+		GdkPixbuf *m_pbufPluginIcon;
+		GtkWidget *m_imgPluginIcon;
 		GtkWidget *lblPluginMainInfo;
 		GtkWidget *lblCpuFlags;
 		GtkWidget *lblPluginDesc;
@@ -67,6 +71,17 @@ class PluginManagerWindow : public WndBase
 		
 		// CPU flags.
 		static std::string GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuFlagsSupported);
+		
+		// Plugin icon.
+		bool displayIcon(const unsigned char* icon, const unsigned int iconLength);
+		void clearIcon(void);
+		
+		// PNG read variables.
+		// WARNING: Not multi-object/multi-thread safe!
+		static const unsigned char *png_dataptr;
+		static unsigned int png_datalen;
+		static unsigned int png_datapos;
+		static void user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 };
 
 #endif /* __cplusplus */

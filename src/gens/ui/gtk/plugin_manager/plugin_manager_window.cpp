@@ -30,7 +30,12 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include <assert.h>
+
 #include <gtk/gtk.h>
+
+// PNG
+#include <png.h>
 
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
@@ -46,6 +51,12 @@ using std::endl;
 using std::string;
 using std::stringstream;
 using std::vector;
+
+
+// PNG read variables.
+const unsigned char *PluginManagerWindow::png_dataptr;
+unsigned int PluginManagerWindow::png_datalen;
+unsigned int PluginManagerWindow::png_datapos;
 
 
 PluginManagerWindow* PluginManagerWindow::m_Instance = NULL;
@@ -274,24 +285,21 @@ void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
 	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), hboxPluginMainInfo, TRUE, FALSE, 0);
 	
 	// Plugin icon pixbuf.
-	pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
-	g_object_set_data_full(G_OBJECT(m_Window), "pbufPluginIcon",
-			       g_object_ref(pbufPluginIcon), (GDestroyNotify)g_object_unref);
-	
-	// Clear the pixbuf.
-	guchar *pixels = gdk_pixbuf_get_pixels(pbufPluginIcon);
-	int rowstride = gdk_pixbuf_get_rowstride(pbufPluginIcon);
-	int height = gdk_pixbuf_get_height(pbufPluginIcon);
-	memset(pixels, 0x80, rowstride * height);
+	m_pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_pbufPluginIcon",
+			       g_object_ref(m_pbufPluginIcon), (GDestroyNotify)g_object_unref);
 	
 	// Plugin icon widget.
-	GtkWidget *imgPluginIcon = gtk_image_new_from_pixbuf(pbufPluginIcon);
-	gtk_widget_set_name(imgPluginIcon, "imgPluginIcon");
-	gtk_misc_set_alignment(GTK_MISC(imgPluginIcon), 0.0f, 0.0f);
-	gtk_widget_show(imgPluginIcon);
-	g_object_set_data_full(G_OBJECT(m_Window), "imgPluginIcon",
-			       g_object_ref(imgPluginIcon), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), imgPluginIcon, FALSE, FALSE, 0);
+	m_imgPluginIcon = gtk_image_new();
+	gtk_widget_set_name(m_imgPluginIcon, "m_imgPluginIcon");
+	gtk_misc_set_alignment(GTK_MISC(m_imgPluginIcon), 0.0f, 0.0f);
+	gtk_widget_show(m_imgPluginIcon);
+	g_object_set_data_full(G_OBJECT(m_Window), "m_imgPluginIcon",
+			       g_object_ref(m_imgPluginIcon), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), m_imgPluginIcon, FALSE, FALSE, 0);
+	
+	// Clear the icon.
+	clearIcon();
 	
 	// VBox for the main plugin info.
 	GtkWidget *vboxPluginMainInfo = gtk_vbox_new(FALSE, 4);
@@ -423,6 +431,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+		clearIcon();
 		return;
 	}
 	
@@ -442,6 +451,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+		clearIcon();
 		return;
 	}
 	
@@ -451,6 +461,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 		gtk_label_set_text(GTK_LABEL(lblCpuFlags), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
+		clearIcon();
 		return;
 	}
 	
@@ -499,6 +510,13 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	else
 	{
 		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+	}
+	
+	// Plugin icon.
+	if (!displayIcon(desc->icon, desc->iconLength))
+	{
+		// No plugin icon found. Clear the pixbuf.
+		clearIcon();
 	}
 }
 
@@ -555,4 +573,175 @@ string PluginManagerWindow::GetCPUFlags(uint32_t cpuFlagsRequired, uint32_t cpuF
 	
 	// Return the CPU flag string.
 	return ssFlags.str();
+}
+
+
+/**
+ * displayIcon(): Displays the plugin icon.
+ * @param icon Icon data. (PNG format)
+ * @param iconLength Length of the icon data.
+ * @return True if the icon was displayed; false otherwise.
+ */
+bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned int iconLength)
+{
+	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
+	
+	if (!icon || iconLength < sizeof(pngMagicNumber))
+		return false;
+	
+	// Check that the icon is in PNG format.
+	if (memcmp(icon, pngMagicNumber, sizeof(pngMagicNumber)))
+	{
+		// Not in PNG format.
+		return false;
+	}
+
+	// Initialize libpng.
+	
+	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr)
+		return false;
+	
+	png_infop info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_read_struct(&png_ptr, NULL, NULL);
+		return false;
+	}
+	
+	png_infop end_info = png_create_info_struct(png_ptr);
+	if (!end_info)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		return false;
+	}
+	
+	if (setjmp(png_jmpbuf(png_ptr)))
+	{
+		// TODO: Is setjmp() really necessary?
+		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		return false;
+	}
+	
+	// Set the custom read function.
+	png_dataptr = icon;
+	png_datalen = iconLength;
+	png_datapos = 0;
+	
+	void *read_io_ptr = png_get_io_ptr(png_ptr);
+	png_set_read_fn(png_ptr, read_io_ptr, &user_read_data);
+	
+	// Get the PNG information.
+	png_read_info(png_ptr, info_ptr);
+	
+	// Get the PNG information.
+	png_uint_32 width, height;
+	int bit_depth, color_type, interlace_type, compression_type, filter_method;
+	bool has_alpha = false;
+	
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+		     &interlace_type, &compression_type, &filter_method);
+	
+	
+	if (width != 32 || height != 32)
+	{
+		// Not 32x32.
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		return false;
+	}
+	
+	// Make sure RGB color is used.
+	if (color_type == PNG_COLOR_TYPE_PALETTE)
+		png_set_palette_to_rgb(png_ptr);
+	else if (color_type == PNG_COLOR_TYPE_GRAY)
+		png_set_gray_to_rgb(png_ptr);
+	else if (color_type == PNG_COLOR_TYPE_RGB_ALPHA)
+		has_alpha = true;
+	
+	// GTK+ expects RGBA format.
+	// TODO: Check if this is the same on big-endian machines.
+	
+	// Convert tRNS to alpha channel.
+	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+	{
+		png_set_tRNS_to_alpha(png_ptr);
+		has_alpha = true;
+	}
+	
+	// Convert 16-bit per channel PNG to 8-bit.
+	if (bit_depth == 16)
+		png_set_strip_16(png_ptr);
+	
+	// Get the new PNG information.
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+		     &interlace_type, &compression_type, &filter_method);
+	
+	// Check if the PNG image has an alpha channel.
+	if (!has_alpha)
+	{
+		// No alpha channel specified.
+		// Use filler instead.
+		png_set_filler(png_ptr, 0xFF, PNG_FILLER_AFTER);
+	}
+	
+	// Update the PNG info.
+	png_read_update_info(png_ptr, info_ptr);
+	
+	// Create the row pointers.
+	int rowstride = gdk_pixbuf_get_rowstride(m_pbufPluginIcon);
+	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufPluginIcon);
+	png_bytep row_pointers[32];
+	for (unsigned int i = 0; i < 32; i++)
+	{
+		row_pointers[i] = pixels;
+		pixels += rowstride;
+	}
+	
+	// Read the image data.
+	png_read_image(png_ptr, row_pointers);
+	
+	// Close the PNG image.
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	
+	// Set the GTK+ image to the new icon.
+	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
+	
+	return true;
+}
+
+
+void PluginManagerWindow::user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+	// Make sure there's enough data available.
+	assert(png_datapos + length <= png_datalen);
+	
+	// Copy the data.
+	memcpy(data, &png_dataptr[png_datapos], length);
+	
+	// Increment the data position.
+	png_datapos += length;
+}
+
+
+/**
+ * clearIcon(): Clear the plugin icon.
+ */
+void PluginManagerWindow::clearIcon(void)
+{
+	if (!m_pbufPluginIcon)
+		return;
+	
+	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufPluginIcon);
+	int rowstride = gdk_pixbuf_get_rowstride(m_pbufPluginIcon);
+	int height = gdk_pixbuf_get_height(m_pbufPluginIcon);
+	int width = gdk_pixbuf_get_width(m_pbufPluginIcon);
+	int bits_per_sample = gdk_pixbuf_get_bits_per_sample(m_pbufPluginIcon);
+	int n_channels = gdk_pixbuf_get_n_channels(m_pbufPluginIcon);
+	
+	// The last row of the pixbuf data may not be fully allocated.
+	// See http://library.gnome.org/devel/gdk-pixbuf/stable/gdk-pixbuf-gdk-pixbuf.html
+	int size = (rowstride * (height - 1)) + (width * ((n_channels * bits_per_sample + 7) / 8));
+	memset(pixels, 0x00, size);
+	
+	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
 }
