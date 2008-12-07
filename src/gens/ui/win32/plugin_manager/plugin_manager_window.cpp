@@ -389,7 +389,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	stringstream ssMainInfo;
 	
 	// Plugin name.
-	ssMainInfo << "Name: " << (desc->name ? string(desc->name) : "(none)") << endl;
+	ssMainInfo << "Name: " << (desc->name ? charset_utf8_to_cp1252(desc->name) : "(none)") << endl;
 	
 	// Plugin version.
 	ssMainInfo << "Version: " << MDP_VERSION_MAJOR(plugin->pluginVersion)
@@ -397,22 +397,22 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 				  << "." << MDP_VERSION_REVISION(plugin->pluginVersion) << endl;
 	
 	// Plugin author.
-	ssMainInfo << "MDP Author: " + (desc->author_mdp ? string(desc->author_mdp) : "(none)") << endl;
+	ssMainInfo << "MDP Author: " + (desc->author_mdp ? charset_utf8_to_cp1252(desc->author_mdp) : "(none)") << endl;
 	
 	// Original code author.
 	if (desc->author_orig)
 	{
-		ssMainInfo << "Original Author: " << string(desc->author_orig) << endl;
+		ssMainInfo << "Original Author: " << charset_utf8_to_cp1252(desc->author_orig) << endl;
 	}
 	
 	// Website.
 	if (desc->website)
 	{
-		ssMainInfo << "Website: " << string(desc->website) << endl;
+		ssMainInfo << "Website: " << charset_utf8_to_cp1252(desc->website) << endl;
 	}
 	
 	// License.
-	ssMainInfo << "License: " + (desc->license ? string(desc->license) : "(none)");
+	ssMainInfo << "License: " + (desc->license ? charset_utf8_to_cp1252(desc->license) : "(none)");
 	
 	// Set the main plugin information.
 	Edit_SetText(m_lblPluginMainInfo, ssMainInfo.str().c_str());
@@ -432,7 +432,7 @@ void PluginManagerWindow::lstPluginList_cursor_changed(void)
 	// Plugin description.
 	if (desc->description)
 	{
-		string pluginDesc = string("Description:\n") + string(desc->description);
+		string pluginDesc = string("Description:\n") + charset_utf8_to_cp1252(desc->description);
 		Edit_SetText(m_lblPluginDesc, pluginDesc.c_str());
 	}
 	else
