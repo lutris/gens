@@ -109,9 +109,6 @@ int VDraw_SDL_GL::Init_Video(void)
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(m_FullScreen ? SDL_DISABLE : SDL_ENABLE);
 	
-	// Adjust stretch parameters.
-	stretchAdjustInternal();
-	
 	// Return the status code from Init_SDL_GL_Renderer().
 	return x;
 }
@@ -147,22 +144,9 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
         // Determine the texture size using the scaling factor.
 	if (scale <= 0)
 		return 0;
+	
 	rowLength = 320 * scale;
-	textureSize = 256 * scale;
-	
-	// Check that the texture size is a power of two.
-	// TODO: Optimize this code.
-	
-	if (textureSize <= 256)
-		textureSize = 256;
-	else if (textureSize <= 512)
-		textureSize = 512;
-	else if (textureSize <= 1024)
-		textureSize = 1024;
-	else if (textureSize <= 2048)
-		textureSize = 2048;
-	else if (textureSize <= 4096)
-		textureSize = 4096;
+	textureSize = calcTextureSize(scale);
 	
 	// Calculate the rendering parameters.
 	m_HRender = (double)(rowLength) / (double)(textureSize*2);
@@ -262,6 +246,9 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	// Set the texture format.
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureSize * 2, textureSize, 0,
 		     m_pixelFormat, m_pixelType, NULL);
+	
+	// Adjust stretch parameters.
+	stretchAdjustInternal();
 	
 	return 1;
 }
@@ -545,7 +532,7 @@ void VDraw_SDL_GL::updateRenderer(void)
 	const int h = 256 * scale;
 	
 	if (screen->w == Video.Width_GL && screen->h == Video.Height_GL &&
-	    rowLength == w && textureSize == h)
+	    rowLength == w && textureSize == calcTextureSize(scale))
 	{
 		// No resolution switch is necessary. Simply clear the screen.
 		clearScreen();
@@ -598,4 +585,27 @@ void VDraw_SDL_GL::updateVSync(bool fromInitSDLGL)
 		else if (!fromInitSDLGL)
 			Refresh_Video();
 	}
+}
+
+
+inline int VDraw_SDL_GL::calcTextureSize(int scale)
+{
+	int txSize = 256 * scale;
+	
+	// Check that the texture size is a power of two.
+	// TODO: Optimize this code.
+	
+	if (txSize <= 256)
+		return 256;
+	else if (txSize <= 512)
+		return 512;
+	else if (txSize <= 1024)
+		return 1024;
+	else if (txSize <= 2048)
+		return 2048;
+	else if (txSize <= 4096)
+		return 4096;
+	
+	// Texture size is larger than 4096.
+	return txSize;
 }

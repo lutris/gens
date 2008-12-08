@@ -760,7 +760,7 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 	*Rend = newMode;
 	
 	// Set the scaling value.
-	setScale(rendPlugin->scale);
+	m_scale = rendPlugin->scale;
 	
 	// Set the MD bpp output value.
 	if (bppOut != 32)

@@ -101,6 +101,8 @@ class VDraw_SDL_GL : public VDraw
 		// Copied from Mesa's glxswapcontrol.c
 		PFNGLXSWAPINTERVALMESAPROC set_swap_interval;
 		PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval;
+		
+		inline int calcTextureSize(int scale);
 };
 
 #endif
