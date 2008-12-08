@@ -38,7 +38,12 @@ Milestone 6 introduces the following new features:
 
 - [Win32] hq2x has been fixed.
 
-- New renderers: scale3x, scale4x, hq3x, hq4x.
+- Scale2x now has optimized C and x86 mmx implementations.
+
+- New renderers: Scale3x, Scale4x, hq3x, hq4x.
+
+- Added a 32-bit color asm version of the Fast Blur effect, with mmx
+  optimizations if available.
 
 Milestone 6 fixes the following bugs:
 
@@ -61,6 +66,10 @@ Milestone 6 has the following low-level code changes:
   a templated function for different color depths, using pointer arithmetic
   instead of recalculating array indexes for every iteration, and fixing a
   bug that caused bitmaps to be 54 bytes larger than they should have been.
+
+- The "Render Fullscreen" and "Render Windowed" values in the gens.cfg file
+  now contain the renderer tag instead of an ID number. For example, instead
+  of saying "1" for the Normal renderer, the value would be "Normal".
 
 ================================================================
 
