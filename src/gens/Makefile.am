@@ -267,8 +267,8 @@ gens_LDADD = \
 		${gens_mdp_static} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
-		../mdZ80/libmdZ80.a
-		-lm
+		../mdZ80/libmdZ80.a \
+		-lm -lltdl
 
 if GENS_MP3
 gens_LDADD += \

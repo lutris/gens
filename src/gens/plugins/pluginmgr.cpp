@@ -60,6 +60,9 @@ using std::vector;
 #include "mdp/render/2xsai/mdp_render_2xsai_plugin.h"
 #endif /* GENS_X86_ASM */
 
+// Libtool Dynamic Loader
+#include <ltdl.h>
+
 // Internal plugins
 static MDP_t* mdp_internal[] =
 {
@@ -152,6 +155,27 @@ void PluginMgr::init(void)
 		// Next plugin.
 		i++;
 	}
+	
+	// Attempt to load an external plugin.
+	lt_dlinit();
+	lt_dlhandle handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline/.libs/libmdp_render_scanline.so");
+	if (!handle)
+	{
+		fprintf(stderr, "Could not open external plugin.\n");
+		return;
+	}
+	
+	// Attempt to load the mdp symbol.
+	MDP_t *plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
+	if (!plugin)
+	{
+		fprintf(stderr, "mdp symbol not found.\n");
+		lt_dlclose(handle);
+		lt_dlexit();
+	}
+	
+	// Symbol loaded. Load the plugin.
+	loadPlugin(plugin);
 }
 
 
