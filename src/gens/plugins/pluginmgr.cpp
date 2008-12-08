@@ -144,44 +144,53 @@ void PluginMgr::init(void)
 	unsigned int i = 0;
 	while (mdp_internal[i])
 	{
-		// Check the MDP_t version.
-		if (MDP_VERSION_MAJOR(mdp_internal[i]->interfaceVersion) !=
-		    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
-		{
-			// Incorrect major interface version.
-			// TODO: Add to a list of "incompatible" plugins.
-			i++;
-			continue;
-		}
-		
-		// Check required CPU flags.
-		uint32_t cpuFlagsRequired = mdp_internal[i]->cpuFlagsRequired;
-		if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
-		{
-			// CPU does not support some required CPU flags.
-			// TODO: Add to a list of "incompatible" plugins.
-			i++;
-			continue;
-		}
-		
-		// TODO: Check the minor version.
-		// Probably not needed right now, but may be needed later.
-		
-		switch (mdp_internal[i]->type)
-		{
-			case MDPT_RENDER:
-				initPlugin_Render(mdp_internal[i]);
-				break;
-			
-			default:
-				// Unknown plugin type.
-				break;
-		}
+		loadPlugin(mdp_internal[i]);
 		
 		// Next plugin.
 		i++;
 	}
 }
+
+
+/**
+ * loadPlugin(): Attempt to load a plugin.
+ * @param plugin Plugin struct.
+ */
+void PluginMgr::loadPlugin(MDP_t *plugin)
+{
+	// Check the MDP_t version.
+	if (MDP_VERSION_MAJOR(plugin->interfaceVersion) !=
+	    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
+	{
+		// Incorrect major interface version.
+		// TODO: Add to a list of "incompatible" plugins.
+		return;
+	}
+	
+	// Check required CPU flags.
+	uint32_t cpuFlagsRequired = mdp_internal[i]->cpuFlagsRequired;
+	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
+	{
+		// CPU does not support some required CPU flags.
+		// TODO: Add to a list of "incompatible" plugins.
+		return;
+	}
+	
+	// TODO: Check the minor version.
+	// Probably not needed right now, but may be needed later.
+	
+	switch (mdp_internal[i]->type)
+	{
+		case MDPT_RENDER:
+			initPlugin_Render(plugin);
+			break;
+		
+		default:
+			// Unknown plugin type.
+			break;
+	}
+}
+
 
 /**
  * end(): Shut down the plugin system.
