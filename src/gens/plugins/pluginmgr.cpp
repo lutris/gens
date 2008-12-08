@@ -94,8 +94,9 @@ mapStrToInt PluginMgr::tblRenderPlugins;
 
 /**
  * initPlugin_Render(): Initialize a rendering plugin.
+ * @return True if loaded; false if not.
  */
-inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
+bool PluginMgr::initPlugin_Render(MDP_t* plugin)
 {
 	MDP_Render_t *rendPlugin = static_cast<MDP_Render_t*>(plugin->plugin_t);
 	
@@ -105,7 +106,7 @@ inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
 	{
 		// Incorrect major interface version.
 		// TODO: Add to a list of "incompatible" plugins.
-		return;
+		return false;
 	}
 	
 	// Check if a plugin with this tag already exists.
@@ -116,7 +117,7 @@ inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
 	{
 		// Plugin with this tag already exists.
 		// TODO: Show an error.
-		return;
+		return false;
 	}
 	
 	// TODO: Check the minor version.
@@ -129,6 +130,8 @@ inline void PluginMgr::initPlugin_Render(MDP_t* plugin)
 	
 	// Add the plugin tag to the map.
 	tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
+	
+	return true;
 }
 
 
@@ -155,8 +158,9 @@ void PluginMgr::init(void)
 /**
  * loadPlugin(): Attempt to load a plugin.
  * @param plugin Plugin struct.
+ * @return True if loaded; false if not.
  */
-void PluginMgr::loadPlugin(MDP_t *plugin)
+bool PluginMgr::loadPlugin(MDP_t *plugin)
 {
 	// Check the MDP_t version.
 	if (MDP_VERSION_MAJOR(plugin->interfaceVersion) !=
@@ -164,31 +168,33 @@ void PluginMgr::loadPlugin(MDP_t *plugin)
 	{
 		// Incorrect major interface version.
 		// TODO: Add to a list of "incompatible" plugins.
-		return;
+		return false;
 	}
 	
 	// Check required CPU flags.
-	uint32_t cpuFlagsRequired = mdp_internal[i]->cpuFlagsRequired;
+	uint32_t cpuFlagsRequired = plugin->cpuFlagsRequired;
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
 	{
 		// CPU does not support some required CPU flags.
 		// TODO: Add to a list of "incompatible" plugins.
-		return;
+		return false;
 	}
 	
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
 	
-	switch (mdp_internal[i]->type)
+	switch (plugin->type)
 	{
 		case MDPT_RENDER:
-			initPlugin_Render(plugin);
+			return initPlugin_Render(plugin);
 			break;
 		
 		default:
 			// Unknown plugin type.
 			break;
 	}
+	
+	return true;
 }
 
 

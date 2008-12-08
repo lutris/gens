@@ -41,9 +41,8 @@ class PluginMgr
 		static mapStrToInt tblRenderPlugins;
 		
 	protected:
-		static void loadPlugin(MDP_t *plugin);
-		
-		static inline void initPlugin_Render(MDP_t *plugin);
+		static bool loadPlugin(MDP_t *plugin);
+		static bool initPlugin_Render(MDP_t *plugin);
 };
 
 #endif /* GENS_PLUGINMGR_HPP */
