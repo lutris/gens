@@ -291,7 +291,7 @@ void VDraw_SDL_GL::End_Video(void)
 void VDraw_SDL_GL::stretchAdjustInternal(void)
 {
 	if (m_Stretch & STRETCH_H)
-		m_HStretch = ((m_HBorder * 0.0625f) / 64.0f);
+		m_HStretch = (((double)m_HBorder * (((double)rowLength / (double)textureSize)) / 20.0) / 64.0);
 	else
 		m_HStretch = 0;
 	
