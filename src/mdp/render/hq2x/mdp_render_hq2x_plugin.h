@@ -1,14 +1,15 @@
 /***************************************************************************
- * Gens: Plugin Manager.                                                   *
+ * Gens: [MDP] hq2x renderer. (Plugin Data File)                           *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
+ * hq2x Copyright (c) 2003 by Maxim Stepin                                 *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
- * under the terms of the GNU General Public License as published by the   *
- * Free Software Foundation; either version 2 of the License, or (at your  *
- * option) any later version.                                              *
+ * under the terms of the GNU Lesser General Public License as published   *
+ * by the Free Software Foundation; either version 2.1 of the License, or  *
+ * (at your option) any later version.                                     *
  *                                                                         *
  * This program is distributed in the hope that it will be useful, but     *
  * WITHOUT ANY WARRANTY; without even the implied warranty of              *
@@ -20,28 +21,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGINMGR_HPP
-#define GENS_PLUGINMGR_HPP
+#ifndef MDP_RENDER_HQ2X_PLUGIN_H
+#define MDP_RENDER_HQ2X_PLUGIN_H
 
-#include "mdp/mdp.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mdp/mdp_render.h"
 
-#include <vector>
-#include "macros/hashtable.hpp"
+extern MDP_t mdp_render_hq2x;
 
-class PluginMgr
-{
-	public:
-		static void init(void);
-		static void end(void);
-		
-		static MDP_Render_t* getPluginFromID_Render(int id);
-		
-		static std::vector<MDP_t*> vRenderPlugins;
-		static mapStrToInt tblRenderPlugins;
-		
-	protected:
-		static inline void initPlugin_Render(MDP_t *plugin);
-};
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* GENS_PLUGINMGR_HPP */
+#endif /* MDP_RENDER_HQ2X_PLUGIN_H */

@@ -19,7 +19,7 @@
 #include "gens_core/misc/cpuflags.h"
 
 // MDP Host Services
-#include "plugins/mdp_host.h"
+#include "mdp/mdp_host.h"
 
 // C++ includes
 #include <string>

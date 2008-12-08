@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp_host.h"
+#include "mdp/mdp_host.h"
 #include <stdio.h>
 #include <stdlib.h>
 

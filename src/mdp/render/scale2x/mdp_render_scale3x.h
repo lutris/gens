@@ -1,9 +1,10 @@
 /***************************************************************************
- * Gens: Plugin Manager.                                                   *
+ * Gens: [MDP] Scale3x renderer.                                           *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
+ * Scale3x Copyright (c) 2001 by Andrea Mazzoleni                          *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,28 +21,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGINMGR_HPP
-#define GENS_PLUGINMGR_HPP
+#ifndef MDP_RENDER_SCALE3X_H
+#define MDP_RENDER_SCALE3X_H
 
-#include "mdp/mdp.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mdp/mdp_render.h"
 
-#include <vector>
-#include "macros/hashtable.hpp"
+void mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo);
 
-class PluginMgr
-{
-	public:
-		static void init(void);
-		static void end(void);
-		
-		static MDP_Render_t* getPluginFromID_Render(int id);
-		
-		static std::vector<MDP_t*> vRenderPlugins;
-		static mapStrToInt tblRenderPlugins;
-		
-	protected:
-		static inline void initPlugin_Render(MDP_t *plugin);
-};
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* GENS_PLUGINMGR_HPP */
+#endif /* MDP_RENDER_SCALE3X_H */

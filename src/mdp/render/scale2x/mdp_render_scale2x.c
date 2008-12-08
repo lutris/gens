@@ -1,9 +1,10 @@
 /***************************************************************************
- * Gens: Plugin Manager.                                                   *
+ * Gens: [MDP] Scale2x renderer.                                           *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
+ * Scale2x Copyright (c) 2001 by Andrea Mazzoleni                          *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,28 +21,43 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGINMGR_HPP
-#define GENS_PLUGINMGR_HPP
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_render.h"
+#include "mdp_render_scale2x.h"
+#include <string.h>
+#include <stdint.h>
 
-#include <vector>
-#include "macros/hashtable.hpp"
+// Scale2x frontend.
+#include "scalebit.h"
+#include "scalebit_mmx.h"
 
-class PluginMgr
+// CPU flags
+#include "mdp/mdp_cpuflags.h"
+
+// TODO: Conditionalize MMX.
+// Scale2x always defaults to using MMX right now.
+
+void MDP_FNCALL mdp_render_scale2x_cpp(MDP_Render_Info_t *renderInfo)
 {
-	public:
-		static void init(void);
-		static void end(void);
-		
-		static MDP_Render_t* getPluginFromID_Render(int id);
-		
-		static std::vector<MDP_t*> vRenderPlugins;
-		static mapStrToInt tblRenderPlugins;
-		
-	protected:
-		static inline void initPlugin_Render(MDP_t *plugin);
-};
+	if (!renderInfo)
+		return;
 
-#endif /* GENS_PLUGINMGR_HPP */
+	const unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
+	
+#if defined(__GNUC__) && defined(__i386__)
+	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+	{
+		scale2x_mmx(renderInfo->destScreen, renderInfo->destPitch,
+			    renderInfo->mdScreen, renderInfo->srcPitch,
+			    bytespp, renderInfo->width, renderInfo->height);
+	}
+	else
+#endif /* defined(__GNUC__) && defined(__i386__) */
+	{
+		scale2x(renderInfo->destScreen, renderInfo->destPitch,
+			renderInfo->mdScreen, renderInfo->srcPitch,
+			bytespp, renderInfo->width, renderInfo->height);
+	}
+}

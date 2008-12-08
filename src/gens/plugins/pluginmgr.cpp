@@ -40,24 +40,24 @@ using std::vector;
 #include "gens_core/misc/cpuflags.h"
 
 // Render plugins
-#include "render/normal/mdp_render_1x_plugin.h"
-#include "render/double/mdp_render_2x_plugin.h"
-#include "render/scanline/mdp_render_scanline_plugin.h"
-#include "render/scanline_50/mdp_render_scanline_50_plugin.h"
-#include "render/scanline_25/mdp_render_scanline_25_plugin.h"
-#include "render/interpolated/mdp_render_interpolated_plugin.h"
-#include "render/interpolated_scanline/mdp_render_interpolated_scanline_plugin.h"
-#include "render/interpolated_scanline_50/mdp_render_interpolated_scanline_50_plugin.h"
-#include "render/interpolated_scanline_25/mdp_render_interpolated_scanline_25_plugin.h"
-#include "render/scale2x/mdp_render_scale2x_plugin.h"
-#include "render/scale2x/mdp_render_scale3x_plugin.h"
-#include "render/scale2x/mdp_render_scale4x_plugin.h"
+#include "mdp/render/normal/mdp_render_1x_plugin.h"
+#include "mdp/render/double/mdp_render_2x_plugin.h"
+#include "mdp/render/scanline/mdp_render_scanline_plugin.h"
+#include "mdp/render/scanline_50/mdp_render_scanline_50_plugin.h"
+#include "mdp/render/scanline_25/mdp_render_scanline_25_plugin.h"
+#include "mdp/render/interpolated/mdp_render_interpolated_plugin.h"
+#include "mdp/render/interpolated_scanline/mdp_render_interpolated_scanline_plugin.h"
+#include "mdp/render/interpolated_scanline_50/mdp_render_interpolated_scanline_50_plugin.h"
+#include "mdp/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25_plugin.h"
+#include "mdp/render/scale2x/mdp_render_scale2x_plugin.h"
+#include "mdp/render/scale2x/mdp_render_scale3x_plugin.h"
+#include "mdp/render/scale2x/mdp_render_scale4x_plugin.h"
 
 #ifdef GENS_X86_ASM
-#include "render/hq2x/mdp_render_hq2x_plugin.h"
-#include "render/hq2x/mdp_render_hq3x_plugin.h"
-#include "render/hq2x/mdp_render_hq4x_plugin.h"
-#include "render/2xsai/mdp_render_2xsai_plugin.h"
+#include "mdp/render/hq2x/mdp_render_hq2x_plugin.h"
+#include "mdp/render/hq2x/mdp_render_hq3x_plugin.h"
+#include "mdp/render/hq2x/mdp_render_hq4x_plugin.h"
+#include "mdp/render/2xsai/mdp_render_2xsai_plugin.h"
 #endif /* GENS_X86_ASM */
 
 // Internal plugins

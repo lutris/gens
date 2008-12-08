@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Plugin Manager.                                                   *
+ * Gens: [MDP] 2x renderer.                                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,28 +20,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_PLUGINMGR_HPP
-#define GENS_PLUGINMGR_HPP
+#ifndef GENS_MDP_RENDER_2X_HPP
+#define GENS_MDP_RENDER_2X_HPP
 
-#include "mdp/mdp.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mdp/mdp_render.h"
 
-#include <vector>
-#include "macros/hashtable.hpp"
+void mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo);
 
-class PluginMgr
-{
-	public:
-		static void init(void);
-		static void end(void);
-		
-		static MDP_Render_t* getPluginFromID_Render(int id);
-		
-		static std::vector<MDP_t*> vRenderPlugins;
-		static mapStrToInt tblRenderPlugins;
-		
-	protected:
-		static inline void initPlugin_Render(MDP_t *plugin);
-};
+#ifdef __cplusplus
+}
+#endif
 
-#endif /* GENS_PLUGINMGR_HPP */
+#endif /* GENS_MDP_RENDER_2X_HPP */

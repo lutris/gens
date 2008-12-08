@@ -220,13 +220,7 @@ noinst_HEADERS = \
 		input/input.hpp \
 		audio/audio.hpp \
 		audio/audio_mmx.h \
-		plugins/pluginmgr.hpp \
-		plugins/mdp.h \
-		plugins/mdp_fncall.h \
-		plugins/mdp_cpuflags.h \
-		plugins/mdp_version.h \
-		plugins/mdp_host.h \
-		plugins/mdp_render.h
+		plugins/pluginmgr.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
@@ -253,9 +247,25 @@ noinst_HEADERS += \
 endif
 
 
+# Statically-linked MDP plugins..
+# TODO: Add built-in renderers automatically.
+gens_mdp_static = \
+		../mdp/render/normal/libmdp_render_1x.a \
+		../mdp/render/double/libmdp_render_2x.a \
+		../mdp/render/scanline/libmdp_render_scanline.a \
+		../mdp/render/scanline_50/libmdp_render_scanline_50.a \
+		../mdp/render/scanline_25/libmdp_render_scanline_25.a \
+		../mdp/render/interpolated/libmdp_render_interpolated.a \
+		../mdp/render/interpolated_scanline/libmdp_render_interpolated_scanline.a \
+		../mdp/render/interpolated_scanline_50/libmdp_render_interpolated_scanline_50.a \
+		../mdp/render/interpolated_scanline_25/libmdp_render_interpolated_scanline_25.a \
+		../mdp/render/scale2x/libmdp_render_scale2x.a \
+		../mdp/render/hq2x/libmdp_render_hq2x.a \
+		../mdp/render/2xsai/libmdp_render_2xsai.a
 
 gens_LDADD = \
 		${ASMFILES} \
+		${gens_mdp_static} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		../mdZ80/libmdZ80.a
@@ -288,6 +298,7 @@ endif # GENS_PNG
 
 gens_DEPENDENCIES = \
 		${ASMFILES} \
+		${gens_mdp_static} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		../mdZ80/libmdZ80.a
@@ -328,9 +339,6 @@ endif # GENS_OS_UNIX
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am
 endif # GENS_OS_WIN32
-
-# Plugins
-include $(srcdir)/Makefile.plugins.inc.am
 
 # Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
 gens_CFLAGS += @CFLAGS@
