@@ -55,7 +55,7 @@
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.hpp"
-#include "gens_core/cpu/z80/z80.h"
+#include "mdZ80/mdZ80.h"
 #include "util/gfx/imageutil.hpp"
 
 // Sega CD

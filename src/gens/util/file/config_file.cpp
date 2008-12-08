@@ -46,7 +46,7 @@
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
 #include "gens_core/cpu/sh2/sh2.h"
-#include "gens_core/cpu/z80/z80.h"
+#include "mdZ80/mdZ80.h"
 
 // Memory
 #include "gens_core/mem/mem_m68k.h"

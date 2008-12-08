@@ -39,7 +39,7 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"
-#include "gens_core/cpu/z80/z80.h"
+#include "mdZ80/mdZ80.h"
 #include "util/gfx/imageutil.hpp"
 
 #include "macros/file_m.h"

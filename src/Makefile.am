@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = starscream
+SUBDIRS = starscream mdZ80
 
 if GENS_MP3
 SUBDIRS += mp3_dec

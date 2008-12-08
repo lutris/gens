@@ -1,13 +1,13 @@
 /**********************************************************/
 /*                                                        */
 /* Z80 emulator 0.99                                      */
-/* Copyright 2002 St�phane Dallongeville                  */
+/* Copyright 2002 Stéphane Dallongeville                  */
 /* Used for the genesis emulation in Gens                 */
 /*                                                        */
 /**********************************************************/
 
-#ifndef GENS_Z80_H
-#define GENS_Z80_H
+#ifndef __MDZ80_H
+#define __MDZ80_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -367,4 +367,4 @@ UINT32 FASTCALL z80_Set_AF2(Z80_CONTEXT *z80, UINT32 AF2);
 }
 #endif
 
-#endif /* GENS_Z80_H */
+#endif /* __MDZ80_H */

@@ -35,8 +35,7 @@ ASMFILES = \
 		gens_core/cpu/sh2/sh2_io.o \
 		gens_core/vdp/vdp_32x.o \
 		gens_core/vdp/vdp_io.o \
-		gens_core/vdp/vdp_rend.o \
-		gens_core/cpu/z80/z80.o
+		gens_core/vdp/vdp_rend.o
 
 NASM_INCLUDES = \
 -I@srcdir@/gens_core/ -I@srcdir@/gens_core/io/ -I@srcdir@/gens_core/misc/ \
@@ -86,7 +85,6 @@ gens_SOURCES = \
 		gens_core/cpu/sh2/sh2a.asm \
 		gens_core/cpu/sh2/sh2_io.asm \
 		gens_core/cpu/sh2/sh2.c \
-		gens_core/cpu/z80/z80.asm \
 		gens_core/cpu/z80/cpu_z80.c \
 		gens_core/sound/pcm.c \
 		gens_core/sound/psg.c \
@@ -173,7 +171,6 @@ noinst_HEADERS = \
 		gens_core/cpu/sh2/sh2.h \
 		gens_core/cpu/sh2/cpu_sh2.h \
 		gens_core/cpu/z80/cpu_z80.h \
-		gens_core/cpu/z80/z80.h \
 		gens_core/sound/pcm.h \
 		gens_core/sound/psg.h \
 		gens_core/sound/ym2612.h \
@@ -261,6 +258,7 @@ gens_LDADD = \
 		${ASMFILES} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
+		../mdZ80/libmdZ80.a
 		-lm
 
 if GENS_MP3
@@ -291,7 +289,8 @@ endif # GENS_PNG
 gens_DEPENDENCIES = \
 		${ASMFILES} \
 		../starscream/main68k/main68k.o \
-		../starscream/sub68k/sub68k.o
+		../starscream/sub68k/sub68k.o \
+		../mdZ80/libmdZ80.a
 
 if GENS_MP3
 gens_DEPENDENCIES += \

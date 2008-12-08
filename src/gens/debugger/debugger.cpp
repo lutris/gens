@@ -19,7 +19,7 @@
 
 // Z80
 #include "gens_core/cpu/z80/cpu_z80.h"
-#include "gens_core/cpu/z80/z80.h"
+#include "mdZ80/mdZ80.h"
 #include "gens_core/mem/mem_z80.h"
 #include "z80dis.h"
 

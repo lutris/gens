@@ -487,7 +487,6 @@ Makefile
 pixmaps/Makefile
 xdg/Makefile
 src/Makefile
-src/gens/Makefile
 src/zlib/Makefile
 src/minizip/Makefile
 src/libpng/Makefile
@@ -495,6 +494,8 @@ src/mp3_dec/Makefile
 src/starscream/Makefile
 src/starscream/main68k/Makefile
 src/starscream/sub68k/Makefile
+src/mdZ80/Makefile
+src/gens/Makefile
 ])
 
 AC_OUTPUT
