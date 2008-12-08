@@ -1,6 +1,6 @@
 /***************************************************************************
  * mdZ80: Gens Z80 Emulator                                                *
- * mdZ80_DAA.c: DAA tables.                                                *
+ * mdZ80_DAA.c: Decimal Adjust Accumulator.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
