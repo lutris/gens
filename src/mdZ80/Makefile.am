@@ -10,10 +10,12 @@ ASMFILES = mdZ80.o
 noinst_LIBRARIES = libmdZ80.a
 
 libmdZ80_a_SOURCES = \
-		mdZ80.asm
+		mdZ80.asm \
+		mdZ80_DAA.c
 
 noinst_HEADERS = \
-		mdZ80.h
+		mdZ80.h \
+		mdZ80_DAA.h
 
 libmdZ80_a_LIBADD = \
 		$(ASMFILES)
