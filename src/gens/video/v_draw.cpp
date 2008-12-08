@@ -907,7 +907,8 @@ void VDraw::setScale(const int newScale)
 		return;
 	m_scale = newScale;
 	
-	// TODO: Figure out what to do here...
+	// Adjust internal stretch.
+	stretchAdjustInternal();
 }
 
 

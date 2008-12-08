@@ -579,9 +579,6 @@ void VDraw_SDL_GL::updateRenderer(void)
 	
 	// Clear the screen.
 	clearScreen();
-	
-	// Adjust stretch parameters.
-	stretchAdjustInternal();
 }
 
 
