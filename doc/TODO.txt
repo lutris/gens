@@ -1,6 +1,3 @@
-TODO for Gens/GS m6:
-- VDraw_SDL_GL: Stretch is broken for 3x scaling.
-
 TODO for Gens/GS m6.1:
 - [MDP] New plugin types:
   - Audio Processing (volume control)
