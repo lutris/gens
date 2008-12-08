@@ -55,8 +55,8 @@ Milestone 6 has the following low-level code changes:
   no longer depend on the "nasmhead.inc" macro file. This macro file provided
   alignment macros (which nasm has built-in) and "DECL" macros, which provide
   both underscored and non-underscored symbol declarations. Only one of these
-  is needed per symbol, and it depends on architecture. Removing "DECL" and
-  manually redefining symbols reduced the total symbol count.
+  is needed per symbol, and it depends on the executable format. Removing
+  "DECL" and manually redefining symbols reduced the total symbol count.
 
 - Adjusted alignment values for many x86 asm functions.
 
