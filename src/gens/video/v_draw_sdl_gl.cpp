@@ -286,7 +286,7 @@ void VDraw_SDL_GL::stretchAdjustInternal(void)
 	{
 		// TODO: Fix this ugly hack.
 		if (m_scale == 3)
-			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / (2.0 + 2.0/3.0));
+			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / (2.0 + (2.0/3.0)));
 		else
 			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
 	}
