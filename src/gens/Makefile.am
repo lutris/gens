@@ -252,7 +252,6 @@ endif
 gens_mdp_static = \
 		../mdp/render/normal/libmdp_render_1x.a \
 		../mdp/render/double/libmdp_render_2x.a \
-		../mdp/render/scanline/libmdp_render_scanline.a \
 		../mdp/render/scanline_50/libmdp_render_scanline_50.a \
 		../mdp/render/scanline_25/libmdp_render_scanline_25.a \
 		../mdp/render/interpolated/libmdp_render_interpolated.a \

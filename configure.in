@@ -8,6 +8,11 @@ AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([configure.in])
 AM_INIT_AUTOMAKE(gens, 2.15.5/GS-m6)
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
+
+# Libtool
+AC_LIBTOOL_DLOPEN
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 AC_PROG_CC
@@ -473,6 +478,9 @@ LDFLAGS="${ldflags_as_needed} ${ldflags_win32} $LDFLAGS"
 # Make sure all packages have the base source directory in their #include search path.
 CPPFLAGS="-I$srcdir/src $CPPFLAGS"
 
+# Use package-specific libdir.
+libdir="$libdir/gens"
+
 AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
 AC_SUBST(SDL_CFLAGS)
@@ -485,6 +493,7 @@ AC_SUBST(GETTIMEFLAG)
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
+AC_SUBST(libdir)
 
 AC_CONFIG_FILES([
 Makefile

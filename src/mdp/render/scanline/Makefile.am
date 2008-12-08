@@ -9,9 +9,11 @@ ASMFILES = \
 %.o: %.asm
 	$(NASM) $< -o $@
 
-noinst_LIBRARIES = libmdp_render_scanline.a
+lib_LTLIBRARIES = libmdp_render_scanline.la
 
-libmdp_render_scanline_a_SOURCES = \
+libmdp_render_scanline_la_LDFLAGS = -module
+
+libmdp_render_scanline_la_SOURCES = \
 		mdp_render_scanline_plugin.c \
 		mdp_render_scanline.cpp \
 		mdp_render_scanline_16_x86.asm \
@@ -23,10 +25,10 @@ noinst_HEADERS = \
 		mdp_render_scanline.hpp \
 		mdp_render_scanline_x86.h
 
-libmdp_render_scanline_a_LIBADD = \
+libmdp_render_scanline_la_LIBADD = \
 		$(ASMFILES)
 
-libmdp_render_scanline_a_DEPENDENCIES = \
+libmdp_render_scanline_la_DEPENDENCIES = \
 		$(ASMFILES)
 
 CLEANFILES = \

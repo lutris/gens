@@ -42,7 +42,7 @@ using std::vector;
 // Render plugins
 #include "mdp/render/normal/mdp_render_1x_plugin.h"
 #include "mdp/render/double/mdp_render_2x_plugin.h"
-#include "mdp/render/scanline/mdp_render_scanline_plugin.h"
+//#include "mdp/render/scanline/mdp_render_scanline_plugin.h"
 #include "mdp/render/scanline_50/mdp_render_scanline_50_plugin.h"
 #include "mdp/render/scanline_25/mdp_render_scanline_25_plugin.h"
 #include "mdp/render/interpolated/mdp_render_interpolated_plugin.h"
@@ -65,7 +65,7 @@ static MDP_t* mdp_internal[] =
 {
 	&mdp_render_1x,
 	&mdp_render_2x,
-	&mdp_render_scanline,
+//	&mdp_render_scanline,
 	&mdp_render_scanline_50,
 	&mdp_render_scanline_25,
 	&mdp_render_interpolated,
