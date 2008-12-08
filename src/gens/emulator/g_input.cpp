@@ -432,10 +432,6 @@ void Input_KeyDown(int key)
 			break;
 #endif /* GENS_CDROM */
 		
-		case GENS_KEY_i:
-			VDP_Layers ^= VDP_LAYER_PALETTE_LOCK;
-			break;
-		
 		default:
 			break;
 	}
