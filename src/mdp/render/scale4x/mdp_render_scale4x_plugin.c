@@ -28,7 +28,7 @@
 #include "mdp/mdp_cpuflags.h"
 
 #include "mdp_render_scale4x.h"
-#include "mdp_render_scale2x_icon.h"
+#include "mdp_render_scale4x_icon.h"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -39,8 +39,8 @@ static MDP_Desc_t MDP_Desc =
 	.website = "http://scale2x.sourceforge.net/",
 	.license = MDP_LICENSE_GPL_2,
 	
-	.icon = mdp_render_scale2x_icon,
-	.iconLength = sizeof(mdp_render_scale2x_icon)
+	.icon = mdp_render_scale4x_icon,
+	.iconLength = sizeof(mdp_render_scale4x_icon)
 };
 
 static MDP_Render_t MDP_Render =
@@ -52,7 +52,7 @@ static MDP_Render_t MDP_Render =
 	.tag = "Scale4x"
 };
 
-MDP_t mdp_render_scale4x =
+MDP_t mdp =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 1, 0),

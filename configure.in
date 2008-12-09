@@ -524,6 +524,7 @@ src/mdp/render/interpolated_scanline_25/Makefile
 src/mdp/render/interpolated_scanline_50/Makefile
 src/mdp/render/scale2x/Makefile
 src/mdp/render/scale3x/Makefile
+src/mdp/render/scale4x/Makefile
 src/mdp/render/hq2x/Makefile
 src/mdp/render/2xsai/Makefile
 src/gens/Makefile

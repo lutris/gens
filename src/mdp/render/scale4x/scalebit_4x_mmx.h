@@ -33,8 +33,8 @@
  * - derivative works of the program are allowed.
  */
 
-#ifndef __SCALEBIT_MMX_H
-#define __SCALEBIT_MMX_H
+#ifndef MDP_RENDER_SCALE4X_SCALEBIT_4X_MMX_H
+#define MDP_RENDER_SCALE4X_SCALEBIT_4X_MMX_H
 
 // Scale2x uses GNU inline assembler.
 #if defined(__GNUC__) && defined(__i386__)
@@ -43,13 +43,12 @@
 extern "C" {
 #endif
 
-void scale2x_mmx(void* void_dst, unsigned int dst_slice,
-		 const void* void_src, unsigned int src_slice,
-		 unsigned int pixel, unsigned int width, unsigned int height);
+#include "mdp/mdp_fncall.h"
 
-void scale4x_mmx(void* void_dst, unsigned int dst_slice,
-		 const void* void_src, unsigned int src_slice,
-		 unsigned int pixel, unsigned int width, unsigned int height);
+void MDP_FNCALL DLL_LOCAL scale4x_mmx(
+				void* void_dst, unsigned int dst_slice,
+				const void* void_src, unsigned int src_slice,
+				unsigned int pixel, unsigned int width, unsigned int height);
 
 #ifdef __cplusplus
 }

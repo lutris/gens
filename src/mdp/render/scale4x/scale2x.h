@@ -18,8 +18,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef MDP_RENDER_SCALE2X_SCALE2X_H
-#define MDP_RENDER_SCALE2X_SCALE2X_H
+#ifndef MDP_RENDER_SCALE4X_SCALE2X_H
+#define MDP_RENDER_SCALE4X_SCALE2X_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,4 +68,4 @@ static inline void scale2x_mmx_emms(void)
 }
 #endif
 
-#endif /* MDP_RENDER_SCALE2X_SCALE2X_H */
+#endif /* MDP_RENDER_SCALE4X_SCALE2X_H */

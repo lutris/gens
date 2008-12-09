@@ -15,7 +15,8 @@ SUBDIRS = \
 		interpolated_scanline_25 \
 		interpolated_scanline_50 \
 		scale2x \
-		scale3x
+		scale3x \
+		scale4x
 
 if GENS_X86_ASM
 SUBDIRS += \

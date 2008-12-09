@@ -29,8 +29,8 @@
 #include <config.h>
 #endif
 
+#include "scalebit_4x_mmx.h"
 #include "scale2x.h"
-#include "scale3x.h"
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>
@@ -82,52 +82,6 @@ static inline void stage_scale4x_mmx(void* dst0, void* dst1, void* dst2, void* d
 #define SCDST(i) (dst+(i)*dst_slice)
 #define SCSRC(i) (src+(i)*src_slice)
 #define SCMID(i) (mid[(i)])
-
-/**
- * Apply the Scale2x effect on a bitmap.
- * The destination bitmap is filled with the scaled version of the source bitmap.
- * The source bitmap isn't modified.
- * The destination bitmap must be manually allocated before calling the function,
- * note that the resulting size is exactly 2x2 times the size of the source bitmap.
- * \param void_dst Pointer at the first pixel of the destination bitmap.
- * \param dst_slice Size in bytes of a destination bitmap row.
- * \param void_src Pointer at the first pixel of the source bitmap.
- * \param src_slice Size in bytes of a source bitmap row.
- * \param pixel Bytes per pixel of the source and destination bitmap.
- * \param width Horizontal size in pixels of the source bitmap.
- * \param height Vertical size in pixels of the source bitmap.
- */
-void scale2x_mmx(void* void_dst, unsigned int dst_slice,
-		 const void* void_src, unsigned int src_slice,
-		 unsigned int pixel, unsigned int width, unsigned int height)
-{
-	unsigned char* dst = (unsigned char*)void_dst;
-	const unsigned char* src = (const unsigned char*)void_src;
-	unsigned int count;
-	
-	assert(height >= 2);
-	
-	count = height;
-	
-	stage_scale2x_mmx(SCDST(0), SCDST(1), SCSRC(0), SCSRC(0), SCSRC(1), pixel, width);
-	
-	dst = SCDST(2);
-	
-	count -= 2;
-	while (count)
-	{
-		stage_scale2x_mmx(SCDST(0), SCDST(1), SCSRC(0), SCSRC(1), SCSRC(2), pixel, width);
-		
-		dst = SCDST(2);
-		src = SCSRC(1);
-		
-		--count;
-	}
-	
-	stage_scale2x_mmx(SCDST(0), SCDST(1), SCSRC(0), SCSRC(1), SCSRC(1), pixel, width);
-	
-	scale2x_mmx_emms();
-}
 
 /**
  * Apply the Scale4x effect on a bitmap.
@@ -232,9 +186,9 @@ static inline void scale4x_buf_mmx(void* void_dst, unsigned int dst_slice,
  * \param width Horizontal size in pixels of the source bitmap.
  * \param height Vertical size in pixels of the source bitmap.
  */
-void scale4x_mmx(void* void_dst, unsigned int dst_slice,
-		 const void* void_src, unsigned int src_slice,
-		 unsigned int pixel, unsigned int width, unsigned int height)
+void MDP_FNCALL scale4x_mmx(void* void_dst, unsigned int dst_slice,
+			    const void* void_src, unsigned int src_slice,
+			    unsigned int pixel, unsigned int width, unsigned int height)
 {
 	unsigned int mid_slice;
 	void* mid;

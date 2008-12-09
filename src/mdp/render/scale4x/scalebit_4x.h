@@ -33,29 +33,26 @@
  * - derivative works of the program are allowed.
  */
 
-#ifndef __SCALEBIT_H
-#define __SCALEBIT_H
+#ifndef MDP_RENDER_SCALE4X_SCALEBIT_4X_H
+#define MDP_RENDER_SCALE4X_SCALEBIT_4X_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int scale_precondition(unsigned int scale, unsigned int pixel, unsigned int width, unsigned int height);
+#include "mdp/mdp_fncall.h"
 
-void scale2x(void* void_dst, unsigned int dst_slice,
-	     const void* void_src, unsigned int src_slice,
-	     unsigned int pixel, unsigned int width, unsigned int height);
+int MDP_FNCALL DLL_LOCAL scale_precondition(
+				unsigned int scale, unsigned int pixel,
+				unsigned int width, unsigned int height);
 
-void scale3x(void* void_dst, unsigned int dst_slice,
-	     const void* void_src, unsigned int src_slice,
-	     unsigned int pixel, unsigned int width, unsigned int height);
-
-void scale4x(void* void_dst, unsigned int dst_slice,
-	     const void* void_src, unsigned int src_slice,
-	     unsigned int pixel, unsigned int width, unsigned int height);
+void MDP_FNCALL DLL_LOCAL scale4x(
+				void* void_dst, unsigned int dst_slice,
+				const void* void_src, unsigned int src_slice,
+				unsigned int pixel, unsigned int width, unsigned int height);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SCALEBIT_H */
+#endif /* MDP_RENDER_SCALE4X_SCALEBIT_4X_H */
