@@ -36,9 +36,6 @@
 // CPU flags
 #include "mdp/mdp_cpuflags.h"
 
-// TODO: Conditionalize MMX.
-// Scale2x always defaults to using MMX right now.
-
 void MDP_FNCALL mdp_render_scale2x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
