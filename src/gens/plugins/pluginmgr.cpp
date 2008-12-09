@@ -158,7 +158,7 @@ void PluginMgr::init(void)
 	
 	// Attempt to load an external plugin.
 	lt_dlinit();
-	lt_dlhandle handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline/.libs/libmdp_render_scanline.so");
+	lt_dlhandle handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline/.libs/mdp_render_scanline.so");
 	if (!handle)
 	{
 		fprintf(stderr, "Could not open external plugin.\n");

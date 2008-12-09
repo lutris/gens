@@ -9,10 +9,15 @@ AC_CONFIG_SRCDIR([configure.in])
 AM_INIT_AUTOMAKE(gens, 2.15.5/GS-m6)
 m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
 
-# Libtool
+# libtool
 AC_LIBTOOL_DLOPEN
 AC_ENABLE_SHARED
 AC_DISABLE_STATIC
+
+# libltdl
+AC_WITH_LTDL
+
+# Set up libtool.
 AC_PROG_LIBTOOL
 
 AC_PROG_CC
@@ -476,7 +481,7 @@ CXXFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_win32} $CXXFLAGS"
 LDFLAGS="${ldflags_as_needed} ${ldflags_win32} $LDFLAGS"
 
 # Make sure all packages have the base source directory in their #include search path.
-CPPFLAGS="-I$srcdir/src $CPPFLAGS"
+CPPFLAGS="-I${srcdir}/src $CPPFLAGS"
 
 # Use package-specific libdir.
 libdir="$libdir/gens"

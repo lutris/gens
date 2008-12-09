@@ -268,7 +268,7 @@ gens_LDADD = \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
 		../mdZ80/libmdZ80.a \
-		-lm -lltdl
+		-lm $(LIBLTDL)
 
 if GENS_MP3
 gens_LDADD += \
@@ -300,7 +300,8 @@ gens_DEPENDENCIES = \
 		${gens_mdp_static} \
 		../starscream/main68k/main68k.o \
 		../starscream/sub68k/sub68k.o \
-		../mdZ80/libmdZ80.a
+		../mdZ80/libmdZ80.a \
+		$(LDTLDEPS)
 
 if GENS_MP3
 gens_DEPENDENCIES += \
