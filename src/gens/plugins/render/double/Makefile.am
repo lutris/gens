@@ -27,8 +27,8 @@ if GENS_X86_ASM
 libmdp_render_2x_a_LIBADD = $(ASMFILES)
 libmdp_render_2x_a_DEPENDENCIES = $(ASMFILES)
 CLEANFILES = $(ASMFILES)
-else
+else # !GENS_X86_ASM
 libmdp_render_2x_a_LIBADD =
 libmdp_render_2x_a_DEPENDENCIES =
 CLEANFILES =
-endif
+endif # GENS_X86_ASM
