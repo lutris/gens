@@ -51,7 +51,7 @@ static MDP_Render_t MDP_Render =
 	.tag = "25% Scanline"
 };
 
-MDP_t mdp_render_scanline_25 =
+MDP_t mdp =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 1, 0),

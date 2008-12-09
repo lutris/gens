@@ -29,22 +29,26 @@ extern "C" {
 
 #include <stdint.h>
 
-void mdp_render_scanline_25_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
-				   int destPitch, int srcPitch,
-				   int width, int height,
-				   uint32_t mask2, uint32_t mask4);
+void MDP_FNCALL DLL_LOCAL mdp_render_scanline_25_16_x86(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height,
+				uint32_t mask2, uint32_t mask4);
 
-void mdp_render_scanline_25_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-				       int destPitch, int srcPitch,
-				       int width, int height, int mode555);
+void MDP_FNCALL DLL_LOCAL mdp_render_scanline_25_16_x86_mmx(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height, int mode555);
 
-void mdp_render_scanline_25_32_x86(uint32_t *destScreen, uint32_t *mdScreen,
-				   int destPitch, int srcPitch,
-				   int width, int height);
+void MDP_FNCALL DLL_LOCAL mdp_render_scanline_25_32_x86(
+				uint32_t *destScreen, uint32_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height);
 
-void mdp_render_scanline_25_32_x86_mmx(uint32_t *destScreen, uint32_t *mdScreen,
-				       int destPitch, int srcPitch,
-				       int width, int height);
+void MDP_FNCALL DLL_LOCAL mdp_render_scanline_25_32_x86_mmx(
+				uint32_t *destScreen, uint32_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height);
 
 #ifdef __cplusplus
 }
