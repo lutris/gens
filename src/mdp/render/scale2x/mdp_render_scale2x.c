@@ -30,8 +30,8 @@
 #include <stdint.h>
 
 // Scale2x frontend.
-#include "scalebit.h"
-#include "scalebit_mmx.h"
+#include "scalebit_2x.h"
+#include "scalebit_2x_mmx.h"
 
 // CPU flags
 #include "mdp/mdp_cpuflags.h"
