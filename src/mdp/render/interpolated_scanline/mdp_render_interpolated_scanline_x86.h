@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.             *
  *****************************************************************************/
 
-#ifndef GENS_MDP_RENDER_INTERPOLATED_SCANLINE_X86_H
-#define GENS_MDP_RENDER_INTERPOLATED_SCANLINE_X86_H
+#ifndef MDP_RENDER_INTERPOLATED_SCANLINE_X86_H
+#define MDP_RENDER_INTERPOLATED_SCANLINE_X86_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,26 +29,30 @@ extern "C" {
 
 #include <stdint.h>
 
-void mdp_render_interpolated_scanline_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
-					     int destPitch, int srcPitch,
-					     int width, int height, uint32_t mask);
+void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_16_x86(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height, uint32_t mask);
 
-void mdp_render_interpolated_scanline_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-						 int destPitch, int srcPitch,
-						 int width, int height, int mode555);
+void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_16_x86_mmx(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height, int mode555);
 
 #if 0
-void mdp_render_interpolated_scanline_32_x86(uint16_t *destScreen, uint16_t *mdScreen,
-					     int destPitch, int srcPitch,
-					     int width, int height);
+void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_32_x86(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height);
 
-void mdp_render_interpolated_scanline_32_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-						 int destPitch, int srcPitch,
-						 int width, int height);
+void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_32_x86_mmx(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height);
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_INTERPOLATED_SCANLINE_X86_H */
+#endif /* MDP_RENDER_INTERPOLATED_SCANLINE_X86_H */

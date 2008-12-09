@@ -1,16 +1,20 @@
 # MDP Render Plugin: Interpolated Scanline renderer
 
+# libtool/nasm stuff from http://osdir.com/ml/sysutils.automake.general/2002-08/msg00134.html
+# strip_fPIC.sh from http://networkmultimedia.org/
+
 AUTOMAKE_OPTIONS = subdir-objects
 
-ASMFILES = \
-		mdp_render_interpolated_scanline_16_x86.o
+STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
-%.o: %.asm
-	$(NASM) $< -o $@
+.asm.lo:
+	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
-noinst_LIBRARIES = libmdp_render_interpolated_scanline.a
+lib_LTLIBRARIES = mdp_render_interpolated_scanline.la
 
-libmdp_render_interpolated_scanline_a_SOURCES = \
+mdp_render_interpolated_scanline_la_LDFLAGS = -module -no-undefined -avoid-version
+
+mdp_render_interpolated_scanline_la_SOURCES = \
 		mdp_render_interpolated_scanline_plugin.c \
 		mdp_render_interpolated_scanline.cpp \
 		mdp_render_interpolated_scanline_16_x86.asm
@@ -20,12 +24,3 @@ noinst_HEADERS = \
 		mdp_render_interpolated_scanline_icon.h \
 		mdp_render_interpolated_scanline.hpp \
 		mdp_render_interpolated_scanline_x86.h
-
-libmdp_render_interpolated_scanline_a_LIBADD = \
-		$(ASMFILES)
-
-libmdp_render_interpolated_scanline_a_DEPENDENCIES = \
-		$(ASMFILES)
-
-CLEANFILES = \
-		$(ASMFILES)
