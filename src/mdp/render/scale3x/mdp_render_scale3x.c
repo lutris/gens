@@ -29,14 +29,11 @@
 #include <string.h>
 #include <stdint.h>
 
-// Scale2x frontend.
-#include "scalebit.h"
+// Scale3x frontend.
+#include "scalebit_3x.h"
 
 // CPU flags
 #include "mdp/mdp_cpuflags.h"
-
-// TODO: Conditionalize MMX.
-// Scale2x always defaults to using MMX right now.
 
 void MDP_FNCALL mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo)
 {

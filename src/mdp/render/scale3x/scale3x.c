@@ -535,9 +535,9 @@ static inline void scale3x_32_def_center(uint32_t* RESTRICT dst, const uint32_t*
  * \param dst1 Second destination row, triple length in pixels.
  * \param dst2 Third destination row, triple length in pixels.
  */
-void scale3x_16_def(uint16_t* dst0, uint16_t* dst1, uint16_t* dst2,
-		    const uint16_t* src0, const uint16_t* src1, const uint16_t* src2,
-		    unsigned int count)
+void MDP_FNCALL scale3x_16_def(uint16_t* dst0, uint16_t* dst1, uint16_t* dst2,
+			       const uint16_t* src0, const uint16_t* src1, const uint16_t* src2,
+			       unsigned int count)
 {
 #ifdef USE_SCALE_RANDOMWRITE
 	scale3x_16_def_whole(dst0, dst1, dst2, src0, src1, src2, count);
@@ -560,9 +560,9 @@ void scale3x_16_def(uint16_t* dst0, uint16_t* dst1, uint16_t* dst2,
  * \param dst1 Second destination row, triple length in pixels.
  * \param dst2 Third destination row, triple length in pixels.
  */
-void scale3x_32_def(uint32_t* dst0, uint32_t* dst1, uint32_t* dst2,
-		    const uint32_t* src0, const uint32_t* src1, const uint32_t* src2,
-		    unsigned int count)
+void MDP_FNCALL scale3x_32_def(uint32_t* dst0, uint32_t* dst1, uint32_t* dst2,
+			       const uint32_t* src0, const uint32_t* src1, const uint32_t* src2,
+			       unsigned int count)
 {
 #ifdef USE_SCALE_RANDOMWRITE
 	scale3x_32_def_whole(dst0, dst1, dst2, src0, src1, src2, count);
