@@ -7,8 +7,6 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 # Render plugins
 SUBDIRS = \
-		normal \
-		double \
 		scanline \
 		scanline_25 \
 		scanline_50 \

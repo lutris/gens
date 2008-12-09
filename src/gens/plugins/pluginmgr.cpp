@@ -40,25 +40,8 @@ using std::vector;
 #include "gens_core/misc/cpuflags.h"
 
 // Render plugins
-#include "mdp/render/normal/mdp_render_1x_plugin.h"
-#include "mdp/render/double/mdp_render_2x_plugin.h"
-//#include "mdp/render/scanline/mdp_render_scanline_plugin.h"
-#include "mdp/render/scanline_50/mdp_render_scanline_50_plugin.h"
-#include "mdp/render/scanline_25/mdp_render_scanline_25_plugin.h"
-#include "mdp/render/interpolated/mdp_render_interpolated_plugin.h"
-#include "mdp/render/interpolated_scanline/mdp_render_interpolated_scanline_plugin.h"
-#include "mdp/render/interpolated_scanline_50/mdp_render_interpolated_scanline_50_plugin.h"
-#include "mdp/render/interpolated_scanline_25/mdp_render_interpolated_scanline_25_plugin.h"
-#include "mdp/render/scale2x/mdp_render_scale2x_plugin.h"
-#include "mdp/render/scale2x/mdp_render_scale3x_plugin.h"
-#include "mdp/render/scale2x/mdp_render_scale4x_plugin.h"
-
-#ifdef GENS_X86_ASM
-#include "mdp/render/hq2x/mdp_render_hq2x_plugin.h"
-#include "mdp/render/hq2x/mdp_render_hq3x_plugin.h"
-#include "mdp/render/hq2x/mdp_render_hq4x_plugin.h"
-#include "mdp/render/2xsai/mdp_render_2xsai_plugin.h"
-#endif /* GENS_X86_ASM */
+#include "render/normal/mdp_render_1x_plugin.h"
+#include "render/double/mdp_render_2x_plugin.h"
 
 // Libtool Dynamic Loader
 #include <ltdl.h>
@@ -68,22 +51,6 @@ static MDP_t* mdp_internal[] =
 {
 	&mdp_render_1x,
 	&mdp_render_2x,
-//	&mdp_render_scanline,
-	&mdp_render_scanline_50,
-	&mdp_render_scanline_25,
-	&mdp_render_interpolated,
-	&mdp_render_interpolated_scanline,
-	&mdp_render_interpolated_scanline_50,
-	&mdp_render_interpolated_scanline_25,
-	&mdp_render_scale2x,
-	&mdp_render_scale3x,
-	&mdp_render_scale4x,
-#ifdef GENS_X86_ASM
-	&mdp_render_hq2x,
-	&mdp_render_hq3x,
-	&mdp_render_hq4x,
-	&mdp_render_2xsai,
-#endif /* GENS_X86_ASM */
 	NULL
 };
 
@@ -158,8 +125,8 @@ void PluginMgr::init(void)
 	
 	// Attempt to load an external plugin.
 	lt_dlinit();
-	//lt_dlhandle handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline/.libs/mdp_render_scanline.so");
-	lt_dlhandle handle = lt_dlopen("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp\\render\\scanline\\.libs\\mdp_render_scanline.dll");
+	lt_dlhandle handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline/.libs/mdp_render_scanline.so");
+	//lt_dlhandle handle = lt_dlopen("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp\\render\\scanline\\.libs\\mdp_render_scanline.dll");
 	if (!handle)
 	{
 		fprintf(stderr, "Could not open external plugin.\n");

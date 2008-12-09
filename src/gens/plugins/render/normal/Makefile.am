@@ -23,11 +23,12 @@ noinst_HEADERS = \
 		mdp_render_1x.hpp \
 		mdp_render_1x_x86.h
 
-libmdp_render_1x_a_LIBADD = \
-		$(ASMFILES)
-
-libmdp_render_1x_a_DEPENDENCIES = \
-		$(ASMFILES)
-
-CLEANFILES = \
-		$(ASMFILES)
+if GENS_X86_ASM
+libmdp_render_1x_a_LIBADD = $(ASMFILES)
+libmdp_render_1x_a_DEPENDENCIES = $(ASMFILES)
+CLEANFILES = $(ASMFILES)
+else
+libmdp_render_1x_a_LIBADD =
+libmdp_render_1x_a_DEPENDENCIES =
+CLEANFILES =
+endif

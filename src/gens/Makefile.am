@@ -247,20 +247,11 @@ noinst_HEADERS += \
 endif
 
 
-# Statically-linked MDP plugins..
+# Statically-linked MDP plugins.
 # TODO: Add built-in renderers automatically.
 gens_mdp_static = \
-		../mdp/render/normal/libmdp_render_1x.a \
-		../mdp/render/double/libmdp_render_2x.a \
-		../mdp/render/scanline_50/libmdp_render_scanline_50.a \
-		../mdp/render/scanline_25/libmdp_render_scanline_25.a \
-		../mdp/render/interpolated/libmdp_render_interpolated.a \
-		../mdp/render/interpolated_scanline/libmdp_render_interpolated_scanline.a \
-		../mdp/render/interpolated_scanline_50/libmdp_render_interpolated_scanline_50.a \
-		../mdp/render/interpolated_scanline_25/libmdp_render_interpolated_scanline_25.a \
-		../mdp/render/scale2x/libmdp_render_scale2x.a \
-		../mdp/render/hq2x/libmdp_render_hq2x.a \
-		../mdp/render/2xsai/libmdp_render_2xsai.a
+		plugins/render/normal/libmdp_render_1x.a \
+		plugins/render/double/libmdp_render_2x.a
 
 gens_LDADD = \
 		${ASMFILES} \

@@ -515,8 +515,6 @@ src/starscream/sub68k/Makefile
 src/mdZ80/Makefile
 src/mdp/Makefile
 src/mdp/render/Makefile
-src/mdp/render/normal/Makefile
-src/mdp/render/double/Makefile
 src/mdp/render/scanline/Makefile
 src/mdp/render/scanline_25/Makefile
 src/mdp/render/scanline_50/Makefile
@@ -528,6 +526,8 @@ src/mdp/render/scale2x/Makefile
 src/mdp/render/hq2x/Makefile
 src/mdp/render/2xsai/Makefile
 src/gens/Makefile
+src/gens/plugins/render/normal/Makefile
+src/gens/plugins/render/double/Makefile
 ])
 
 AC_OUTPUT
