@@ -139,11 +139,34 @@ void PluginMgr::init(void)
 	{
 		fprintf(stderr, "mdp symbol not found.\n");
 		lt_dlclose(handle);
-		lt_dlexit();
+	}
+	else
+	{
+		// Symbol loaded. Load the plugin.
+		loadPlugin(plugin);
 	}
 	
-	// Symbol loaded. Load the plugin.
-	loadPlugin(plugin);
+	// Attempt to load another external plugin.
+	handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline_50/.libs/mdp_render_scanline_50.so");
+	//handle = lt_dlopen("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp\\render\\scanline_50\\.libs\\mdp_render_scanline_50.dll");
+	if (!handle)
+	{
+		fprintf(stderr, "Could not open external plugin.\n");
+		return;
+	}
+	
+	// Attempt to load the mdp symbol.
+	plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
+	if (!plugin)
+	{
+		fprintf(stderr, "mdp symbol not found.\n");
+		lt_dlclose(handle);
+	}
+	else
+	{
+		// Symbol loaded. Load the plugin.
+		loadPlugin(plugin);
+	}
 }
 
 
