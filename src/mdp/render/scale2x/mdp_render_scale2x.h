@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_SCALE2X_H
-#define GENS_MDP_RENDER_SCALE2X_H
+#ifndef MDP_RENDER_SCALE2X_H
+#define MDP_RENDER_SCALE2X_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,4 +36,4 @@ void MDP_FNCALL DLL_LOCAL mdp_render_scale2x_cpp(MDP_Render_Info_t *renderInfo);
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_SCALE2X_H */
+#endif /* MDP_RENDER_SCALE2X_H */
