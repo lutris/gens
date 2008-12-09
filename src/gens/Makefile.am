@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+SUBDIRS = plugins/render/normal plugins/render/double
+
 if GENS_X86_ASM
 gens_x86_asm_o = \
 		gens_core/gfx/fastblur_16_x86.o \
