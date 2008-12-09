@@ -16,12 +16,16 @@ mdp_render_scanline_la_LDFLAGS = -module -no-undefined -avoid-version
 
 mdp_render_scanline_la_SOURCES = \
 		mdp_render_scanline_plugin.c \
-		mdp_render_scanline.cpp \
-		mdp_render_scanline_16_x86.asm \
-		mdp_render_scanline_32_x86.asm
+		mdp_render_scanline.cpp
 
 noinst_HEADERS = \
 		mdp_render_scanline_plugin.h \
 		mdp_render_scanline_icon.h \
 		mdp_render_scanline.hpp \
 		mdp_render_scanline_x86.h
+
+if GENS_X86_ASM
+mdp_render_scanline_la_SOURCES += \
+		mdp_render_scanline_16_x86.asm \
+		mdp_render_scanline_32_x86.asm
+endif # GENS_X86_ASM

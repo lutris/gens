@@ -16,11 +16,15 @@ mdp_render_interpolated_scanline_la_LDFLAGS = -module -no-undefined -avoid-versi
 
 mdp_render_interpolated_scanline_la_SOURCES = \
 		mdp_render_interpolated_scanline_plugin.c \
-		mdp_render_interpolated_scanline.cpp \
-		mdp_render_interpolated_scanline_16_x86.asm
+		mdp_render_interpolated_scanline.cpp
 
 noinst_HEADERS = \
 		mdp_render_interpolated_scanline_plugin.h \
 		mdp_render_interpolated_scanline_icon.h \
 		mdp_render_interpolated_scanline.hpp \
 		mdp_render_interpolated_scanline_x86.h
+
+if GENS_X86_ASM
+mdp_render_interpolated_scanline_la_SOURCES += \
+		mdp_render_interpolated_scanline_16_x86.asm
+endif # GENS_X86_ASM
