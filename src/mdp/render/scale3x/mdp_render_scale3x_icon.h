@@ -4,6 +4,7 @@
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008 by David Korth                                       *
+ * Scale3x Copyright (c) 2001 by Andrea Mazzoleni                          *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
