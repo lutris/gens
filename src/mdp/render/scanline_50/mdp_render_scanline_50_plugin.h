@@ -29,7 +29,7 @@ extern "C" {
 
 #include "mdp/mdp_render.h"
 
-extern DLL_PUBLIC MDP_t mdp_render_scanline_50;
+extern DLL_PUBLIC MDP_t mdp;
 
 #ifdef __cplusplus
 }
