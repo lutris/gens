@@ -10,11 +10,11 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 .asm.lo:
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
-lib_LTLIBRARIES = libmdp_render_scanline.la
+lib_LTLIBRARIES = mdp_render_scanline.la
 
-libmdp_render_scanline_la_LDFLAGS = -module -no-undefined -avoid-version
+mdp_render_scanline_la_LDFLAGS = -module -no-undefined -avoid-version
 
-libmdp_render_scanline_la_SOURCES = \
+mdp_render_scanline_la_SOURCES = \
 		mdp_render_scanline_plugin.c \
 		mdp_render_scanline.cpp \
 		mdp_render_scanline_16_x86.asm \
