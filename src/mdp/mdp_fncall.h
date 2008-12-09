@@ -44,7 +44,7 @@ extern "C" {
 // DLL import/export.
 // See http://gcc.gnu.org/wiki/Visibility
 #if defined(_WIN32) || defined(__CYGWIN__)
-	#ifdef BUILDING_DLL
+	#if defined(BUILDING_DLL) || defined(DLL_EXPORT)
 		#ifdef __GNUC__
 			#define DLL_PUBLIC __attribute__ ((dllexport))
 		#else
