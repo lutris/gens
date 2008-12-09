@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_2XSAI_X86_H
-#define GENS_MDP_RENDER_2XSAI_X86_H
+#ifndef MDP_RENDER_2XSAI_X86_H
+#define MDP_RENDER_2XSAI_X86_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,12 +30,13 @@ extern "C" {
 
 #include <stdint.h>
 
-void mdp_render_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
-				 int destPitch, int srcPitch,
-				 int width, int height, int mode555);
+void MDP_FNCALL DLL_LOCAL mdp_render_2xsai_16_x86_mmx(
+			uint16_t *destScreen, uint16_t *mdScreen,
+			int destPitch, int srcPitch,
+			int width, int height, int mode555);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_2XSAI_X86_H */
+#endif /* MDP_RENDER_2XSAI_X86_H */
