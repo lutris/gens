@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_SCANLINE_X86_H
-#define GENS_MDP_RENDER_SCANLINE_X86_H
+#ifndef MDP_RENDER_SCANLINE_X86_H
+#define MDP_RENDER_SCANLINE_X86_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,4 +53,4 @@ void MDP_FNCALL DLL_LOCAL mdp_render_scanline_32_x86_mmx(
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_SCANLINE_X86_H */
+#endif /* MDP_RENDER_SCANLINE_X86_H */
