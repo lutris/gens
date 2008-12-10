@@ -2,11 +2,16 @@
 #include <config.h>
 #endif
 
+#include "imageutil.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <cstring>
 
-#include "imageutil.hpp"
+// C++ includes
+#include <string>
+using std::string;
+
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"

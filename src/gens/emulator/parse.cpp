@@ -561,10 +561,12 @@ void parseArgs(int argc, char **argv)
 			else
 			{
 				fprintf(stderr, "Render mode : %d\n", mode);
+				/* TODO
 				if (draw->fullScreen())
 					Video.Render_FS = mode;
 				else
 					Video.Render_W = mode;
+				*/
 			}
 		}
 		else if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_SOUNDRATE][0]))

@@ -23,7 +23,8 @@
 
 // C++ includes
 #include <string>
-using std::string;
+#include <list>
+
 
 // Constants for m_MsgStyle and m_FPSStyle.
 // These match the #define's in gens_core/misc/misc.h.
@@ -67,13 +68,13 @@ class VDraw
 		void Refresh_Video(void);
 		
 		// Set the rendering mode.
-		int setRender(const int newMode, const bool forceUpdate = true);
+		int setRender(const std::list<MDP_t*>::iterator& newMode, const bool forceUpdate = true);
 		
 		// Update VSync value.
 		virtual void updateVSync(const bool data = false) = 0;
 		
 		// Write text to the screen.
-		void writeText(const string& msg, const unsigned short duration);
+		void writeText(const std::string& msg, const unsigned short duration);
 		
 		// Properties
 		uint8_t stretch(void);
@@ -165,7 +166,7 @@ class VDraw
 		
 		// On-screen message
 		bool m_MsgEnabled; // Is the message function enabled by the user?
-		string m_MsgText;
+		std::string m_MsgText;
 		bool m_MsgVisible; // Is the message currently visible onscreen?
 		unsigned int m_MsgTime;
 		

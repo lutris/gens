@@ -39,6 +39,11 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// C++ includes
+#include <list>
+using std::list;
+
+
 // Due to bugs with SDL and GTK, modifier state has to be tracked manually.
 // TODO: Shift-A works, but if shift is still held down and B is pressed, nothing shows up on SDL.
 // TODO: This isn't actually a bug with SDL/GTK - it's an issue with keysnooping...
@@ -274,10 +279,11 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-				if (rendMode > 0)
+				list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+				if (rendMode != PluginMgr::lstRenderPlugins.begin())
 				{
-					draw->setRender(rendMode - 1);
+					rendMode--;
+					draw->setRender(rendMode);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -291,10 +297,11 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-				if (rendMode < (PluginMgr::vRenderPlugins.size() - 1))
+				list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+				rendMode++;
+				if (rendMode != PluginMgr::lstRenderPlugins.end())
 				{
-					draw->setRender(rendMode + 1);
+					draw->setRender(rendMode);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}

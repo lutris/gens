@@ -235,8 +235,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	Sync_Gens_Window_GraphicsMenu_Render(findMenuItem(IDM_GRAPHICS_RENDER));
 	
 	// Selected Render Mode
+	// FIXME: lstRenderPlugins
+#if 0
 	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_RENDER_NORMAL + rendMode)), TRUE);
+#endif
 	
 	// Frame Skip
 	id = (IDM_GRAPHICS_FRAMESKIP_AUTO + 1) + Frame_Skip;
@@ -328,6 +331,8 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 			       (GDestroyNotify)g_object_unref);
 	
 	// Create the render entries.
+	// FIXME
+#if 0
 	for (unsigned int i = 0; i < PluginMgr::vRenderPlugins.size(); i++)
 	{
 		// Delete the menu item from the map, if it exists.
@@ -354,6 +359,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		// Add the menu item to the map.
 		gensMenuMap.insert(gtkMenuMapItem(IDM_GRAPHICS_RENDER_NORMAL + i, mnuItem));
 	}
+#endif
 }
 
 

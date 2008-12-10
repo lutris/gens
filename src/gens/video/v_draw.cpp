@@ -3,10 +3,17 @@
  */
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "v_draw.hpp"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstring>
+
+// C++ includes
+#include <list>
+#include <string>
+using std::list;
+using std::string;
 
 #include "emulator/g_md.hpp"
 #include "gens_core/vdp/vdp_rend.h"
@@ -437,6 +444,8 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	unsigned short x, y, cx, cy;
 	unsigned char charSize;
 	
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	
 	// The message must be specified.
 	if (!msg)
 		return;
@@ -457,13 +466,13 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	else
 	{
 		// Don't adjust for screen size. (DDraw)
-		if (!m_FullScreen && Video.Render_W == 0)
+		if (!m_FullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hack for windowed 1x rendering.
 			x = 8;
 			y = VDP_Num_Vis_Lines * m_scale;
 		}
-		else if (m_FullScreen && Video.Render_FS == 0)
+		else if (m_FullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hacks for fullscreen 1x rendering.
 			if (m_swRender)
@@ -488,8 +497,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
-	if ((!m_FullScreen && Video.Render_W == 0) ||
-	    (m_FullScreen && Video.Render_FS == 0))
+	if (rendMode == PluginMgr::lstRenderPlugins.begin())
 	{
 		y += 2;
 	}
@@ -643,11 +651,11 @@ void VDraw::setBpp(const int newBpp, const bool resetVideo)
 	}
 	
 	// Reset the renderer.
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
 	if (!setRender(rendMode, resetVideo))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!setRender(0, resetVideo))
+		if (!setRender(PluginMgr::lstRenderPlugins.begin(), resetVideo))
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);
@@ -709,45 +717,28 @@ void VDraw::Refresh_Video(void)
  * @param newMode Rendering mode / filter.
  * @param forceUpdate If true, forces a renderer update.
  */
-int VDraw::setRender(const int newMode, const bool forceUpdate)
+int VDraw::setRender(const list<MDP_t*>::iterator& newMode, const bool forceUpdate)
 {
-	if (PluginMgr::vRenderPlugins.size() == 0)
+	if (PluginMgr::lstRenderPlugins.size() == 0 ||
+	    newMode == PluginMgr::lstRenderPlugins.end())
+	{
 		return 0;
+	}
 	
-	int oldRend, *Rend;
-	MDP_Render_Fn *rendFn;
+	list<MDP_t*>::iterator& Rend = (m_FullScreen ? rendMode_FS : rendMode_W);
+	list<MDP_t*>::iterator oldRend = Rend;
+	MDP_Render_Fn *rendFn = (m_FullScreen ? &m_BlitFS : &m_BlitW);
+	
 	bool reinit = false;
 	
-	if (m_FullScreen)
-	{
-		Rend = &Video.Render_FS;
-		oldRend = Video.Render_FS;
-		rendFn = &m_BlitFS;
-	}
-	else
-	{
-		Rend = &Video.Render_W;
-		oldRend = Video.Render_W;
-		rendFn = &m_BlitW;
-	}
-	
 	// Get the old scaling factor.
-	const int oldScale = PluginMgr::getPluginFromID_Render(oldRend)->scale;
-	
-	// Checks if an invalid mode number was passed.
-	if (newMode < 0 || newMode >= PluginMgr::vRenderPlugins.size())
-	{
-		// Invalid mode number.
-		MESSAGE_NUM_L("Error: Render mode %d is not available.",
-			      "Error: Render mode %d is not available.", newMode, 1500);
-		return 0;
-	}
+	const int oldScale = (static_cast<MDP_Render_t*>((*oldRend)->plugin_t))->scale;
 	
 	// Renderer function found.
-	MDP_Render_t *rendPlugin = PluginMgr::getPluginFromID_Render(newMode);
+	MDP_Render_t *rendPlugin = static_cast<MDP_Render_t*>((*newMode)->plugin_t);
 	*rendFn = rendPlugin->blit;
 	
-	if (*Rend != newMode)
+	if (Rend != newMode)
 	{
 		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", rendPlugin->tag, 1500);
 	}
@@ -756,8 +747,8 @@ int VDraw::setRender(const int newMode, const bool forceUpdate)
 		reinit = true;
 	}
 	
-	// Set the new render mode number.
-	*Rend = newMode;
+	// Set the new render mode.
+	Rend = newMode;
 	
 	// Set the scaling value.
 	m_scale = rendPlugin->scale;
@@ -1000,8 +991,8 @@ void VDraw::setFullScreen(const bool newFullScreen)
 	m_FullScreen = newFullScreen;
 	
 	// Set the renderer.
-	int newRend = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	setRender(newRend, false);
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	setRender(rendMode, false);
 	
 #ifdef GENS_OS_WIN32
 	// Reinitialize the Gens window, if necessary.

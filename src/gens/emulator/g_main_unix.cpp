@@ -3,13 +3,17 @@
  */
 
 
-#include <sys/stat.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "g_main.hpp"
 #include "g_main_unix.hpp"
+
+#include <sys/stat.h>
+#include <cstdio>
+#include <stdlib.h>
+#include <cstring>
+
+// C++ includes
+#include <list>
+using std::list;
 
 #include "g_palette.h"
 #include "gens_ui.hpp"
@@ -110,6 +114,12 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
+	// TEMPORARY: Set initial renderers to Normal.
+	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
+	rendMode_W = PluginMgr::lstRenderPlugins.begin();
+	printf("A\n");
+	printf("tag: %s\n", ((MDP_Render_t*)((*rendMode_W)->plugin_t))->tag);
+	printf("B\n");
 #ifdef GENS_OPENGL
 	// Check if OpenGL needs to be enabled.
 	// This also initializes SDL or SDL+GL.
@@ -130,11 +140,11 @@ int main(int argc, char *argv[])
 	// Update the UI.
 	GensUI::update();
 	
-	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	const list<MDP_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	if (!draw->setRender(rendMode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!draw->setRender(0))
+		if (!draw->setRender(PluginMgr::lstRenderPlugins.begin()))
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");

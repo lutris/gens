@@ -3,6 +3,12 @@
 #endif
 
 #include <stdio.h>
+#include <cstring>
+
+// C++ includes
+#include <string>
+using std::string;
+
 #include "cd_sys.hpp"
 #include "cd_file.h"
 #include "emulator/gens.hpp"
@@ -14,7 +20,6 @@
 #include "gens_core/mem/mem_s68k.h"
 #include "util/file/save.hpp"
 #include "gens_core/misc/misc.h"
-#include <string.h>
 
 // CD-ROM drive access
 #ifdef GENS_CDROM

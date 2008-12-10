@@ -7,6 +7,10 @@
 #include <cstring>
 #include "macros/malloc_align.h"
 
+// C++ includes
+#include <list>
+using std::list;
+
 #include <gdk/gdkx.h>
 
 #include "gens_core/vdp/vdp_rend.h"
@@ -138,8 +142,8 @@ int VDraw_SDL_GL::Init_SDL_GL_Renderer(int w, int h, bool reinitSDL)
 	// Update VSync.
 	updateVSync(true);
 	
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const int scale = (static_cast<MDP_Render_t*>((*rendMode)->plugin_t))->scale;
 	
         // Determine the texture size using the scaling factor.
 	if (scale <= 0)
@@ -527,8 +531,8 @@ int VDraw_SDL_GL::Shut_Down(void)
 void VDraw_SDL_GL::updateRenderer(void)
 {
 	// Check if a resolution switch is needed.
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const int scale = (static_cast<MDP_Render_t*>((*rendMode)->plugin_t))->scale;
 	
 	// Determine the window size using the scaling factor.
 	if (scale <= 0)

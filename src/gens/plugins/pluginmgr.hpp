@@ -27,7 +27,7 @@
 #include "mdp/mdp_render.h"
 
 #include <string>
-#include <vector>
+#include <list>
 #include "macros/hashtable.hpp"
 
 class PluginMgr
@@ -36,11 +36,10 @@ class PluginMgr
 		static void init(void);
 		static void end(void);
 		
-		static MDP_Render_t* getPluginFromID_Render(int id);
-		static unsigned int getPluginIDFromTag_Render(std::string tag, const unsigned int defID);
+		//static unsigned int getPluginIDFromTag_Render(std::string tag, const unsigned int defID);
 		
-		static std::vector<MDP_t*> vRenderPlugins;
-		static mapStrToInt tblRenderPlugins;
+		static std::list<MDP_t*> lstRenderPlugins;
+		//static mapStrToInt tblRenderPlugins;
 		
 	protected:
 		static bool loadPlugin(MDP_t *plugin);

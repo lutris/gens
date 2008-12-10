@@ -45,10 +45,10 @@
 #include <algorithm>
 #include <string>
 #include <utility>
-#include <vector>
+#include <list>
 using std::pair;
 using std::string;
-using std::vector;
+using std::list;
 
 // CPU flags
 #include "gens_core/misc/cpuflags.h"
@@ -70,10 +70,10 @@ static MDP_t* mdp_internal[] =
 
 
 /**
- * vRenderPlugins, tblRenderPlugins: Vector and map containing render plugins.
+ * lstRenderPlugins, tblRenderPlugins: List and map containing render plugins.
  */
-vector<MDP_t*> PluginMgr::vRenderPlugins;
-mapStrToInt PluginMgr::tblRenderPlugins;
+list<MDP_t*> PluginMgr::lstRenderPlugins;
+//mapStrToInt PluginMgr::tblRenderPlugins;
 
 
 /**
@@ -95,6 +95,7 @@ bool PluginMgr::initPlugin_Render(MDP_t* plugin)
 	
 	// Check if a plugin with this tag already exists.
 	string tag = rendPlugin->tag;
+	/* TODO
 	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
 	mapStrToInt::iterator existingMDP = tblRenderPlugins.find(tag);
 	if (existingMDP != tblRenderPlugins.end())
@@ -103,17 +104,18 @@ bool PluginMgr::initPlugin_Render(MDP_t* plugin)
 		// TODO: Show an error.
 		return false;
 	}
+	*/
 	
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
 	
-	// Add the plugin to the vector.
-	vRenderPlugins.push_back(plugin);
+	// Add the plugin to the list.
+	lstRenderPlugins.push_back(plugin);
 	if (plugin->func && plugin->func->init)
 		plugin->func->init(&MDP_Host);
 	
 	// Add the plugin tag to the map.
-	tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
+	//tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
 	
 	return true;
 }
@@ -334,33 +336,21 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 void PluginMgr::end(void)
 {
 	// Shut down all render plugins.
-	for (unsigned int i = 0; i < vRenderPlugins.size(); i++)
+	for (list<MDP_t*>::iterator curMDP = lstRenderPlugins.begin();
+	     curMDP != lstRenderPlugins.end(); curMDP++)
 	{
-		MDP_Func_t *func = vRenderPlugins.at(i)->func;
+		MDP_Func_t *func = (*curMDP)->func;
 		if (func && func->end)
 			func->end();
 	}
 	
 	// Clear the vector and map of render plugins.
-	vRenderPlugins.clear();
-	tblRenderPlugins.clear();
+	lstRenderPlugins.clear();
+	//tblRenderPlugins.clear();
 }
 
 
-/**
- * getPluginFromID_Render(): Get a render plugin from its ID number.
- * @param id ID number.
- * @return Render plugin, or NULL if it wasn't found.
- */
-MDP_Render_t* PluginMgr::getPluginFromID_Render(int id)
-{
-	if (id < 0 || id >= vRenderPlugins.size())
-		return NULL;
-	
-	return static_cast<MDP_Render_t*>(vRenderPlugins.at(id)->plugin_t);
-}
-
-
+#if 0
 /**
  * getPluginIDFromTag_Render(): Get a render plugin ID from its tag.
  * @param tag Plugin tag.
@@ -380,3 +370,4 @@ unsigned int PluginMgr::getPluginIDFromTag_Render(string tag, const unsigned int
 	else
 		return (*renderMDP).second;
 }
+#endif

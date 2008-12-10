@@ -364,6 +364,8 @@ void PluginManagerWindow::populatePluginList(void)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
 	
 	// Add all plugins to the treeview.
+	// TODO: lstRenderPlugins
+#if 0
 	char tmp[64];
 	vector<MDP_t*>::iterator curPlugin;
 	for (curPlugin = PluginMgr::vRenderPlugins.begin();
@@ -389,6 +391,7 @@ void PluginManagerWindow::populatePluginList(void)
 		
 		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, -1);
 	}
+#endif
 }
 
 

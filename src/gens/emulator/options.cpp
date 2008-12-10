@@ -8,7 +8,11 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <string.h>
+#include <cstring>
+
+// C++ includes
+#include <list>
+using std::list;
 
 #include "g_main.hpp"
 #include "options.hpp"
@@ -1057,7 +1061,7 @@ void Options::setOpenGL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	list<MDP_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	draw->setRender(rendMode, true);
 	
 	// Synchronize the Graphics Menu.

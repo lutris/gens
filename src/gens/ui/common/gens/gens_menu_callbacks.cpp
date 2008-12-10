@@ -451,7 +451,8 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			if ((menuID & 0xFF00) == IDM_GRAPHICS_RENDER)
 			{
 				// Render mode change.
-				draw->setRender(menuID - IDM_GRAPHICS_RENDER_NORMAL);
+				// FIXME: Update to use lstRenderPlugins.
+				//draw->setRender(menuID - IDM_GRAPHICS_RENDER_NORMAL);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else

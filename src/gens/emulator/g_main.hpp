@@ -70,8 +70,6 @@ struct Gens_Misc_Filenames_t
 // Video settings
 struct Gens_VideoSettings_t
 {
-	int Render_W;	// TODO: Make this an enum.
-	int Render_FS;	// TODO: Make this an enum.
 	int VSync_FS;
 	int VSync_W;
 	int borderColorEmulation;
@@ -209,6 +207,11 @@ extern Input *input;
 // New Audio object
 #include "audio/audio.hpp"
 extern Audio *audio;
+
+// Renderers
+#include "plugins/pluginmgr.hpp"
+extern std::list<MDP_t*>::iterator rendMode_FS;
+extern std::list<MDP_t*>::iterator rendMode_W;
 
 #endif
 

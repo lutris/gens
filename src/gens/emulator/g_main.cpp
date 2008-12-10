@@ -69,6 +69,12 @@ struct Gens_VideoSettings_t Video;
 uint8_t bppMD;	// MD bpp
 uint8_t bppOut;	// Output bpp.
 
+// Renderers
+#include <list>
+using std::list;
+list<MDP_t*>::iterator rendMode_FS;
+list<MDP_t*>::iterator rendMode_W;
+
 int fast_forward = 0;
 
 POINT Window_Pos;
@@ -218,8 +224,6 @@ static int Build_Language_String (void)
 void Init_Settings(void)
 {
 	// Initialize video settings.
-	Video.Render_W = 1;  // Double
-	Video.Render_FS = 1; // Double
 	Video.borderColorEmulation = 1;
 	Video.pauseTint = 1;
 #ifdef GENS_OPENGL
