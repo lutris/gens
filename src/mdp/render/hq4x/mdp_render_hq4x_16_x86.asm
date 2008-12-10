@@ -43,11 +43,18 @@ section .bss align=64
 	w8:		resd 1
 	w9:		resd 1
 	
+	; Color depth variables.
+	zerolowbits:	resd 1
+	
 section .data align=64
 	
 	extern _mdp_render_hq4x_LUT16to32
 	extern _mdp_render_hq4x_RGB16toYUV
 	
+; Constants
+zerolowbits_15	equ	0x7BDE7BDE
+zerolowbits_16	equ	0xF7DEF7DE
+
 ; Read-only data on Win32 uses the section name ".rdata".
 %ifdef __OBJ_WIN32
 	%define .rodata .rdata
@@ -61,7 +68,6 @@ section .rodata align=64
 	const6:		dd  0x00060006, 0x00000006
 	const7:		dd  0x00070007, 0x00000007
 	threshold:	dd  0x00300706, 0x00000000
-	zerolowbits:	dd  0xF7DEF7DE
 	
 	FuncTable:
 		dd ..@flag0, ..@flag1, ..@flag2, ..@flag3, ..@flag4, ..@flag5, ..@flag6, ..@flag7
@@ -914,6 +920,7 @@ arg_destPitch	equ 16
 arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
+arg_mode555	equ 32
 
 loc_calcPitchDiff	equ -4
 
@@ -946,6 +953,14 @@ loc_calcPitchDiff	equ -4
 	sub	eax, [ebp + arg_width]
 	shl	eax, 3
 	mov	[ebp + loc_calcPitchDiff], eax
+	
+	; Check for 15-bit color.
+	test	byte [ebp + arg_mode555], 1
+	mov	dword [zerolowbits], zerolowbits_16
+	jz	.LoopY
+	
+	; 15-bit color.
+	mov	dword [zerolowbits], zerolowbits_15
 	
 .LoopY:
 	mov	ecx, [ebp + arg_width]

@@ -34,7 +34,8 @@ extern "C" {
 
 DLL_LOCAL void MDP_FNCALL mdp_render_hq3x_16_x86_mmx(
 				uint16_t *destScreen, uint16_t *mdScreen,
-				int width, int height, int pitch, int offset);
+				int destPitch, int srcPitch,
+				int width, int height, int mode555);
 
 #ifdef __cplusplus
 }
