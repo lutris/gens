@@ -21,12 +21,12 @@
 
 %ifdef __OBJ_ELF
 %define _mdp_render_hq3x_LUT16to32 mdp_render_hq3x_LUT16to32
-%define _mdp_render_hq2x_RGBtoYUV mdp_render_hq2x_RGBtoYUV
+%define _mdp_render_hq3x_RGB16toYUV mdp_render_hq3x_RGB16toYUV
 %define _mdp_render_hq3x_16_x86_mmx mdp_render_hq3x_16_x86_mmx
 %endif
 
 extern _mdp_render_hq3x_LUT16to32
-extern _mdp_render_hq2x_RGBtoYUV
+extern _mdp_render_hq3x_RGB16toYUV
 
 section .bss align=64
 	
@@ -99,7 +99,7 @@ section .text align=64
 	mov	edx, [%1]
 	cmp	edx, [%2]
 	je	%%fin
-	mov	ecx, [_mdp_render_hq2x_RGBtoYUV]
+	mov	ecx, [_mdp_render_hq3x_RGB16toYUV]
 	movd	mm1, [ecx + edx * 4]
 	movq	mm5, mm1
 	mov	edx, [%2]
@@ -569,7 +569,7 @@ loc_calcPitchDiff	equ -4
 	mov	[w9], edx
 	
 .flags:
-	mov	ebx, [_mdp_render_hq2x_RGBtoYUV]
+	mov	ebx, [_mdp_render_hq3x_RGB16toYUV]
 	mov	eax, [w5]
 	xor	ecx, ecx
 	movd	mm5, [ebx + eax * 4]

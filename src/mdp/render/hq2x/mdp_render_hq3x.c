@@ -26,7 +26,6 @@
 #endif
 
 #include "mdp_render_hq3x.h"
-#include "mdp_render_hq2x_lut.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -43,6 +42,7 @@
 // MDP Host Services
 static MDP_Host_t *mdp_render_hq3x_hostSrv;
 int *mdp_render_hq3x_LUT16to32 = NULL;
+int *mdp_render_hq3x_RGB16toYUV = NULL;
 
 
 // TODO: Proper 15-bit color support.
@@ -55,9 +55,6 @@ int *mdp_render_hq3x_LUT16to32 = NULL;
  */
 void MDP_FNCALL mdp_render_hq3x_init(MDP_Host_t *hostSrv)
 {
-	// Increment the lookup table reference counter.
-	mdp_render_hq2x_refcount++;
-	
 	// Save the MDP Host Services pointer.
 	mdp_render_hq3x_hostSrv = hostSrv;
 }
@@ -75,19 +72,11 @@ void MDP_FNCALL mdp_render_hq3x_end(void)
 		mdp_render_hq3x_LUT16to32 = NULL;
 	}
 	
-	// Decrement the lookup table reference counter.
-	mdp_render_hq2x_refcount--;
-	
-	if (mdp_render_hq2x_refcount == 0)
+	// If the RGB16toYUV pointer was referenced, unreference it.
+	if (mdp_render_hq3x_RGB16toYUV)
 	{
-		// This is the last plugin to use the hq2x lookup tables.
-		// Deallocate them.
-		
-		if (mdp_render_hq2x_RGBtoYUV)
-		{
-			free(mdp_render_hq2x_RGBtoYUV);
-			mdp_render_hq2x_RGBtoYUV = NULL;
-		}
+		mdp_render_hq3x_hostSrv->unrefPtr(MDP_PTR_RGB16toYUV);
+		mdp_render_hq3x_RGB16toYUV = NULL;
 	}
 }
 
@@ -104,8 +93,8 @@ void MDP_FNCALL mdp_render_hq3x_cpp(MDP_Render_Info_t *renderInfo)
 	// Make sure the lookup tables are initialized.
 	if (!mdp_render_hq3x_LUT16to32)
 		mdp_render_hq3x_LUT16to32 = (int*)(mdp_render_hq3x_hostSrv->refPtr(MDP_PTR_LUT16to32));
-	if (!mdp_render_hq2x_RGBtoYUV)
-		mdp_render_hq2x_InitRGBtoYUV();
+	if (!mdp_render_hq3x_RGB16toYUV)
+		mdp_render_hq3x_RGB16toYUV = (int*)(mdp_render_hq3x_hostSrv->refPtr(MDP_PTR_RGB16toYUV));
 	
 #ifdef GENS_X86_ASM
 	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
