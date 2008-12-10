@@ -350,24 +350,21 @@ void PluginMgr::end(void)
 }
 
 
-#if 0
 /**
- * getPluginIDFromTag_Render(): Get a render plugin ID from its tag.
+ * getMDPIterFromTag_Render(): Get a render plugin iterator from its tag.
  * @param tag Plugin tag.
- * @param defID Default plugin ID.
- * @return Plugin ID, or default ID if it wasn't found.
+ * @return Plugin iterator from lstRenderPlugins.
  */
-unsigned int PluginMgr::getPluginIDFromTag_Render(string tag, const unsigned int defID)
+std::list<MDP_t*>::iterator PluginMgr::getMDPIterFromTag_Render(string tag)
 {
 	if (tag.empty())
-		return defID;
+		return lstRenderPlugins.end();
 	
 	// Search for the plugin tag.
 	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
-	mapStrToInt::iterator renderMDP = tblRenderPlugins.find(tag);
+	mapRenderPlugin::iterator renderMDP = tblRenderPlugins.find(tag);
 	if (renderMDP == tblRenderPlugins.end())
-		return defID;
+		return lstRenderPlugins.end();
 	else
 		return (*renderMDP).second;
 }
-#endif

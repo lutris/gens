@@ -39,7 +39,7 @@ class PluginMgr
 		static void init(void);
 		static void end(void);
 		
-		//static unsigned int getPluginIDFromTag_Render(std::string tag, const unsigned int defID);
+		static std::list<MDP_t*>::iterator getMDPIterFromTag_Render(std::string tag);
 		
 		static std::list<MDP_t*> lstRenderPlugins;
 		static mapRenderPlugin tblRenderPlugins;

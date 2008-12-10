@@ -114,10 +114,6 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
-	// FIXME: TEMPORARY: Set initial renderers to Normal.
-	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
-	rendMode_W = PluginMgr::lstRenderPlugins.begin();
-	
 #ifdef GENS_OPENGL
 	// Check if OpenGL needs to be enabled.
 	// This also initializes SDL or SDL+GL.

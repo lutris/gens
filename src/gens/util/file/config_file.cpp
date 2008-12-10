@@ -170,9 +170,8 @@ int Config::save(const string& filename)
 	// Video settings
 	// Render_Mode is incremented by 1 for compatibility with old Gens.
 	cfg.writeBool("Graphics", "Full Screen", draw->fullScreen());
-	// FIXME: Use lstRenderPlugins.
-	//cfg.writeString("Graphics", "Render Fullscreen", PluginMgr::getPluginFromID_Render(Video.Render_FS)->tag);
-	//cfg.writeString("Graphics", "Render Windowed", PluginMgr::getPluginFromID_Render(Video.Render_W)->tag);
+	cfg.writeString("Graphics", "Render Fullscreen", (static_cast<MDP_Render_t*>((*rendMode_FS)->plugin_t))->tag);
+	cfg.writeString("Graphics", "Render Windowed", (static_cast<MDP_Render_t*>((*rendMode_W)->plugin_t))->tag);
 	cfg.writeInt("Graphics", "Full Screen VSync", Video.VSync_FS & 1);
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);
@@ -395,16 +394,23 @@ int Config::load(const string& filename, void* gameActive)
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
 	
-	// FIXME: Use lstRenderPlugins.
-	/*
 	// Renderer: Full Screen
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "");
-	Video.Render_FS = PluginMgr::getPluginIDFromTag_Render(renderTag, 1);
+	rendMode_FS = PluginMgr::getMDPIterFromTag_Render(renderTag);
+	if (rendMode_FS == PluginMgr::lstRenderPlugins.end())
+	{
+		// Invalid mode. Set to Normal mode.
+		rendMode_FS == PluginMgr::lstRenderPlugins.begin();
+	}
 	
 	// Renderer: Windowed
 	renderTag = cfg.getString("Graphics", "Render Windowed", "");
-	Video.Render_W = PluginMgr::getPluginIDFromTag_Render(renderTag, 1);
-	*/
+	rendMode_W = PluginMgr::getMDPIterFromTag_Render(renderTag);
+	if (rendMode_W == PluginMgr::lstRenderPlugins.end())
+	{
+		// Invalid mode. Set to Normal mode.
+		rendMode_W == PluginMgr::lstRenderPlugins.begin();
+	}
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.

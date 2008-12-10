@@ -281,6 +281,10 @@ void Init_Settings(void)
 	// Initialize the Plugin Manager.
 	PluginMgr::init();
 	
+	// Set the default renderers.
+	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
+	rendMode_W = PluginMgr::lstRenderPlugins.begin();
+	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
 	Config::load(Str_Tmp, NULL);
