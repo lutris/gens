@@ -60,7 +60,7 @@ void Get_Save_Path(char *buf, size_t n)
  */
 void Create_Save_Directory(const char *dir)
 {
-	mkdir(dir, 0700);
+	mkdir(dir, 0755);
 }
 
 
