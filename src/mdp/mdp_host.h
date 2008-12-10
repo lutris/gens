@@ -39,7 +39,8 @@ extern "C" {
 typedef enum
 {
 	MDP_PTR_NULL		= 0,
-	MDP_PTR_LUT16to32,
+	MDP_PTR_LUT16to32	= 1,
+	MDP_PTR_RGB16toYUV	= 2,
 } MDP_PTR;
 
 // MDP Host Services struct.
