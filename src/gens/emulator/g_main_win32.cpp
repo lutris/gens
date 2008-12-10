@@ -48,11 +48,15 @@ HFONT fntTitle = NULL;
 #define max(a,b)   (((a) > (b)) ? (a) : (b))
 #endif /* max */
 
-// Needed for some macros
+// Windows macros.
 #include <windowsx.h>
 
 // argc/argv conversion.
 #include "port/argc_argv.h"
+
+// C++ includes
+#include <list>
+using std::list;
 
 
 /**
@@ -207,14 +211,14 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Update the UI.
 	GensUI::update();
 	
-	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
+	const list<MDP_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	if (!draw->setRender(rendMode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!draw->setRender(0))
+		if (!draw->setRender(PluginMgr::lstRenderPlugins.begin()))
 		{
 			// Cannot initialize normal mode.
-			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
+			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);
 			return 1;
 		}
 	}

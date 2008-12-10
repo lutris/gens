@@ -40,6 +40,10 @@
 #include <windowsx.h>
 #include <commctrl.h>
 
+// C++ includes
+#include <string>
+using std::string;
+
 #define ID_TIMER_ICE 0x1234
 
 #ifdef GENS_GIT_VERSION

@@ -59,7 +59,9 @@ HACCEL hAccelTable_Menu = NULL;
 win32MenuMap gensMenuMap;
 
 // C++ includes
+#include <string>
 #include <vector>
+using std::string;
 using std::vector;
 
 // Main menu.

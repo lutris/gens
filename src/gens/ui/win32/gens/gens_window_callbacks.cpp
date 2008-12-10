@@ -79,7 +79,9 @@
 
 // C++ includes
 #include <string>
+#include <list>
 using std::string;
+using std::list;
 
 // For some reason, these aren't extern'd anywhere...
 extern "C"
@@ -286,8 +288,6 @@ static void on_gens_window_close(void)
  */
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int rendMode;
-	
 	switch (LOWORD(wParam))
 	{
 		case IDCMD_ESC:
@@ -404,25 +404,27 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case IDCMD_RENDERMODE_DEC:
-			rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-			if (rendMode > 0)
+		{
+			list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+			if (rendMode != PluginMgr::lstRenderPlugins.begin())
 			{
-				draw->setRender(rendMode - 1);
+				rendMode--;
+				draw->setRender(rendMode);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
-		
+		}
 		case IDCMD_RENDERMODE_INC:
-			// TODO: Make filters constants.
-			// There's already NB_FILTER, but it has the wrong numbers...
-			rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-			if (rendMode < (PluginMgr::vRenderPlugins.size() - 1))
+		{
+			list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+			rendMode++;
+			if (rendMode != PluginMgr::lstRenderPlugins.end())
 			{
-				draw->setRender(rendMode + 1);
+				draw->setRender(rendMode);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
-		
+		}
 		case IDCMD_CHANGE_CD:
 			if (SegaCD_Started)
 				Change_CD();

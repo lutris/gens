@@ -325,6 +325,8 @@ void PluginManagerWindow::populatePluginList(void)
 	ListBox_ResetContent(m_lstPluginList);
 	
 	// Add all plugins to the listbox.
+	// FIXME: lstRenderPlugins
+#if 0
 	char tmp[64];
 	vector<MDP_t*>::iterator curPlugin;
 	for (curPlugin = PluginMgr::vRenderPlugins.begin();
@@ -348,6 +350,7 @@ void PluginManagerWindow::populatePluginList(void)
 		if (index != LB_ERR)
 			ListBox_SetItemData(m_lstPluginList, index, plugin);
 	}
+#endif
 }
 
 

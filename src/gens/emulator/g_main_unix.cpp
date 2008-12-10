@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 		if (!draw->setRender(PluginMgr::lstRenderPlugins.begin()))
 		{
 			// Cannot initialize normal mode.
-			fprintf(stderr, "FATAL ERROR: Cannot initialize any renderers.\n");
+			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);
 			return 1;
 		}
 	}

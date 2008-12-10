@@ -4,7 +4,11 @@
 
 #include "v_draw_ddraw.hpp"
 
-#include <string.h>
+#include <cstring>
+
+// C++ includes
+#include <list>
+using std::list;
 
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -96,8 +100,8 @@ int VDraw_DDraw::Init_Video(void)
 	
 	End_Video();
 	
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const int scale = (static_cast<MDP_Render_t*>((*rendMode)->plugin_t))->scale;
 	
 	// Determine the window size using the scaling factor.
 	if (scale <= 0)
@@ -215,7 +219,7 @@ int VDraw_DDraw::Init_Video(void)
 	
 	// Determine the width and height.
 	// NOTE: For DirectDraw, the actual 336 width is used.
-	if (rendMode == 0)
+	if (scale == 1)
 	{
 		// Normal render mode. 320x240 [336x240]
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
@@ -236,10 +240,10 @@ int VDraw_DDraw::Init_Video(void)
 	// TODO: Check if this is right.
 	// I think this might be causing the frame counter flicker in full screen mode.
 	//if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
-	if (!(m_FullScreen && rendMode == 0))
+	if (!(m_FullScreen && scale == 1))
 		lpDDS_Blit = lpDDS_Back;
 	
-	if (rendMode == 0)
+	if (scale == 1)
 	{
 		// Normal rendering mode uses MD_Screen directly.
 		memset(&ddsd, 0, sizeof(ddsd));
@@ -298,8 +302,8 @@ int VDraw_DDraw::reinitGensWindow(void)
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
 	create_gens_window_menubar();
 	
-	int rendMode = (m_FullScreen ? Video.Render_FS : Video.Render_W);
-	const int scale = PluginMgr::getPluginFromID_Render(rendMode)->scale;
+	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const int scale = (static_cast<MDP_Render_t*>((*rendMode)->plugin_t))->scale;
 	
 	// Determine the window size using the scaling factor.
 	if (scale <= 0)
@@ -505,8 +509,15 @@ void VDraw_DDraw::restorePrimary(void)
 }
 
 
-// Render_Mode is input, RectDest is input and output, everything else is output only
-void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
+/**
+ * CalculateDrawArea(): Calculate the drawing area.
+ * @param RectDest [in, out] Destination rectangle.
+ * @param RectSrc [out] Source rectangle.
+ * @param Ratio_X [out] X ratio.
+ * @param Ratio_Y [out] Y ratio.
+ * @param Dep [out] Horizontal border.
+ */
+void VDraw_DDraw::CalculateDrawArea(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
 {
 	Ratio_X = (float)RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
 	Ratio_Y = (float)RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
@@ -551,7 +562,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 	{
 		Dep = 0;
 
-		if (Render_Mode == 0)
+		if (m_scale == 1)
 		{
 			RectSrc.left = 8 + 0 ;
 			RectSrc.right = 8 + 320;
@@ -574,7 +585,7 @@ void VDraw_DDraw::CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectS
 			RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
 		}
 		
-		if (Render_Mode == 0)
+		if (m_scale == 1)
 		{
 			RectSrc.left = 8 + 0;
 			RectSrc.right = 8 + 256;
@@ -757,7 +768,7 @@ int VDraw_DDraw::flipInternal(void)
 		}
 		else
 #endif
-		if (Video.Render_FS == 0)
+		if (m_scale == 1)
 		{
 			// 1x rendering.
 			if (m_swRender)
@@ -910,16 +921,16 @@ int VDraw_DDraw::flipInternal(void)
 				RectDest.top = 0;
 				RectDest.right = GetSystemMetrics(SM_CXSCREEN); // not SM_XVIRTUALSCREEN since we only want the primary monitor if there's more than one
 				RectDest.bottom = GetSystemMetrics(SM_CYSCREEN);
-
-				CalculateDrawArea(Video.Render_FS, RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
-
+				
+				CalculateDrawArea(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
+				
 				if (Video.VSync_FS)
 				{
 					int vb;
 					lpDD->GetVerticalBlankStatus(&vb);
 					if (!vb) lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, 0);
 				}
-
+				
 				lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 			}
 			else
@@ -935,7 +946,7 @@ int VDraw_DDraw::flipInternal(void)
 	{
 		// Windowed mode
 		GetClientRect(Gens_hWnd, &RectDest);
-		CalculateDrawArea(Video.Render_W, RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
+		CalculateDrawArea(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 
 		int Clr_Cmp_Val = isFullXRes() ? 40 : 32;
 		if (Flag_Clr_Scr != Clr_Cmp_Val)
@@ -945,7 +956,7 @@ int VDraw_DDraw::flipInternal(void)
 			Flag_Clr_Scr = Clr_Cmp_Val;
 		}
 
-		if (Video.Render_W >= 1)
+		if (m_scale > 1)
 		{
 			rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			

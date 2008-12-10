@@ -35,9 +35,7 @@
 
 // C++ includes
 #include <string>
-#include <sstream>
 using std::string;
-using std::stringstream;
 
 
 AboutWindow* AboutWindow::m_Instance = NULL;

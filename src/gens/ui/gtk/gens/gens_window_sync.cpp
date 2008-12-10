@@ -331,8 +331,10 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
+	list<MDP_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	
 	for (list<MDP_t*>::iterator curMDP = PluginMgr::lstRenderPlugins.begin();
-	     curMDP != PluginMgr::lstRenderPlugins.end(); curMDP++)
+	     curMDP != PluginMgr::lstRenderPlugins.end(); curMDP++, i++)
 	{
 		// Delete the menu item from the map, if it exists.
 		gensMenuMap.erase(i);
@@ -348,7 +350,6 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
 		
 		// Check if this render mode is selected.
-		list<MDP_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 		if (selMDP == curMDP)
 		{
 			// Render mode is selected.
@@ -367,9 +368,6 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		
 		// Add the menu item to the map.
 		gensMenuMap.insert(gtkMenuMapItem(i, mnuItem));
-		
-		// Next menu item.
-		i++;
 	}
 }
 

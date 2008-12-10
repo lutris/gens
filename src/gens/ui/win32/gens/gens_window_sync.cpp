@@ -57,8 +57,16 @@
 
 // C++ includes
 #include <string>
+#include <list>
 using std::string;
+using std::list;
 
+
+// Internal functions.
+static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position);
+#ifdef GENS_DEBUGGER
+static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position);
+#endif /* GENS_DEBUGGER */
 
 /**
  * Sync_Gens_Window(): Synchronize the Gens Main Window.
@@ -233,7 +241,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
  * @param parent Parent menu.
  * @param position Position in the parent menu.
  */
-void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
+static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
 	HMENU mnuRender = findMenuItem(IDM_GRAPHICS_RENDER);
 	
@@ -252,24 +260,28 @@ void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	bool renderSelected = false;
 	
 	// Create the render entries.
-	for (unsigned int i = 0; i < PluginMgr::vRenderPlugins.size(); i++)
+	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
+	unsigned int selMenuItem = 0;
+	list<MDP_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	
+	for (list<MDP_t*>::iterator curMDP = PluginMgr::lstRenderPlugins.begin();
+	     curMDP != PluginMgr::lstRenderPlugins.end(); curMDP++, i++)
 	{
-		if (draw->fullScreen())
-			renderSelected = (Video.Render_FS == (int)i);
-		else
-			renderSelected = (Video.Render_W == (int)i);
+		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING, i,
+			   (static_cast<MDP_Render_t*>((*curMDP)->plugin_t))->tag);
 		
-		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING,
-			   IDM_GRAPHICS_RENDER_NORMAL + i, PluginMgr::getPluginFromID_Render(i)->tag);
-		
-		if (renderSelected)
-		{
-			CheckMenuRadioItem(mnuRender,
-					   IDM_GRAPHICS_RENDER_NORMAL,
-					   IDM_GRAPHICS_RENDER_NORMAL + (PluginMgr::vRenderPlugins.size() - 1),
-					   IDM_GRAPHICS_RENDER_NORMAL + i,
-					   MF_BYCOMMAND);
-		}
+		// Check if this render mode is selected.
+		if (selMDP == curMDP)
+			selMenuItem = i;
+	}
+	
+	if (selMenuItem != 0)
+	{
+		// Found a selected render mode.
+		CheckMenuRadioItem(mnuRender,
+				   IDM_GRAPHICS_RENDER_NORMAL,
+				   IDM_GRAPHICS_RENDER_NORMAL + PluginMgr::lstRenderPlugins.size() - 1,
+				   selMenuItem, MF_BYCOMMAND);
 	}
 }
 
@@ -336,7 +348,7 @@ void Sync_Gens_Window_CPUMenu(void)
  * @param parent Parent menu.
  * @param position Position in the parent menu.
  */
-void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
+static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 {
 	// Debug submenu
 	unsigned int flags = MF_BYPOSITION | MF_POPUP | MF_STRING;
