@@ -41,6 +41,21 @@
 #include <ext/hash_map>
 #define GENS_HASHTABLE __gnu_cxx::hash_map
 
+// Fix a bug with hash_map<string, int>
+// See http://gcc.gnu.org/ml/libstdc++/2002-04/msg00107.html
+
+#include <string>
+namespace __gnu_cxx
+{
+	template<> struct hash<std::string>
+	{
+		size_t operator() (const std::string& x) const
+		{
+			return hash<const char*>()(x.c_str());
+		}
+	};
+}
+
 #elif defined(GENS_HASHTABLE_STD_MAP)
 
 // Standard std::map
