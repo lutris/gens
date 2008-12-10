@@ -15,7 +15,6 @@ noinst_LIBRARIES = libmdp_render_hq2x.a
 libmdp_render_hq2x_a_SOURCES = \
 		mdp_render_hq2x_plugin.c \
 		mdp_render_hq2x.c \
-		mdp_render_hq2x_lut.c \
 		mdp_render_hq2x_16_x86.asm \
 		mdp_render_hq3x_plugin.c \
 		mdp_render_hq3x.c \
@@ -27,7 +26,6 @@ libmdp_render_hq2x_a_SOURCES = \
 noinst_HEADERS = \
 		mdp_render_hq2x_plugin.h \
 		mdp_render_hq2x.h \
-		mdp_render_hq2x_lut.h \
 		mdp_render_hq2x_x86.h \
 		mdp_render_hq3x_plugin.h \
 		mdp_render_hq3x.h \
