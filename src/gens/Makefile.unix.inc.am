@@ -133,6 +133,7 @@ endif # GENS_UI_GTK
 
 gens_CFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
+		-DGENS_MDP_DIR=\"@libdir@\" \
 		@SDL_CFLAGS@
 
 if GENS_UI_GTK
@@ -141,6 +142,7 @@ endif
 
 gens_CXXFLAGS += \
 		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
+		-DGENS_MDP_DIR=\"@libdir@\" \
 		@SDL_CFLAGS@
 
 if GENS_UI_GTK
