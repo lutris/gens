@@ -50,7 +50,7 @@ MDP_Host_t MDP_Host =
  * @param ptrID Pointer ID.
  * @return Pointer.
  */
-void* mdp_host_ref_ptr(MDP_PTR ptrID)
+void* mdp_host_ref_ptr(uint32_t ptrID)
 {
 	switch (ptrID)
 	{

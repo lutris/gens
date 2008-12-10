@@ -49,8 +49,8 @@ typedef struct
 	
 	// refPtr(): Get a reference for a pointer.
 	// unrefPtr(): Unreference a pointer.
-	void* (MDP_FNCALL *refPtr)(MDP_PTR ptrID);
-	void  (MDP_FNCALL *unrefPtr)(MDP_PTR ptrID);
+	void* (MDP_FNCALL *refPtr)(uint32_t ptrID);
+	void  (MDP_FNCALL *unrefPtr)(uint32_t ptrID);
 } MDP_Host_t;
 
 // Gens/GS host services
