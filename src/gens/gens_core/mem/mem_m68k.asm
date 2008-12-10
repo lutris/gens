@@ -32,6 +32,27 @@ section .data align=64
 	
 	extern VDP_Current_Line
 	
+	; Current Main 68000 Jump Table
+	
+	DECL M68K_Read_Byte_Table
+		times 32	dd M68K_Read_Byte_Bad
+	
+	DECL M68K_Read_Word_Table
+		times 32	dd M68K_Read_Byte_Bad
+	
+	DECL M68K_Write_Byte_Table
+		times 16	dd M68K_Write_Bad
+	
+	DECL M68K_Write_Word_Table
+		times 16	dd M68K_Write_Bad
+	
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+        %define .rodata .rdata
+%endif
+
+section .rodata align=64
+	
 	DECL Genesis_M68K_Read_Byte_Table
 		dd	M68K_Read_Byte_Rom0,		; 0x000000 - 0x07FFFF
 		dd	M68K_Read_Byte_Rom1,		; 0x080000 - 0x0FFFFF
@@ -147,20 +168,6 @@ section .data align=64
 	extern _32X_M68K_Read_Word_Table
 	extern _32X_M68K_Write_Byte_Table
 	extern _32X_M68K_Write_Word_Table
-	
-	; Current Main 68000 Jump Table
-	
-	DECL M68K_Read_Byte_Table
-		times 32	dd M68K_Read_Byte_Bad
-	
-	DECL M68K_Read_Word_Table
-		times 32	dd M68K_Read_Byte_Bad
-	
-	DECL M68K_Write_Byte_Table
-		times 16	dd M68K_Write_Bad
-	
-	DECL M68K_Write_Word_Table
-		times 16	dd M68K_Write_Bad
 	
 section .bss align=64
 	

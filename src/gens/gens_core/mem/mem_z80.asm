@@ -9,6 +9,81 @@ section .bss align=64
 	DECL Bank_Z80
 	resd 1
  
+section .rodata align=64
+	; Z80 Jump Tables
+	
+	DECL Z80_ReadB_Table
+		dd Z80_ReadB_Ram,	; 0x0000 - 0x0FFF
+		dd Z80_ReadB_Ram,	; 0x1000 - 0x1FFF
+		dd Z80_ReadB_Ram,	; 0x2000 - 0x2FFF
+		dd Z80_ReadB_Ram,	; 0x3000 - 0x3FFF
+		dd Z80_ReadB_YM2612,	; 0x4000 - 0x4FFF
+		dd Z80_ReadB_YM2612,	; 0x5000 - 0x5FFF
+		dd Z80_ReadB_Bank,	; 0x6000 - 0x6FFF
+		dd Z80_ReadB_PSG,	; 0x7000 - 0x7FFF
+		dd Z80_ReadB_68K_Ram,	; 0x8000 - 0x8FFF
+		dd Z80_ReadB_68K_Ram,	; 0x9000 - 0x9FFF
+		dd Z80_ReadB_68K_Ram,	; 0xA000 - 0xAFFF
+		dd Z80_ReadB_68K_Ram,	; 0xB000 - 0xBFFF
+		dd Z80_ReadB_68K_Ram,	; 0xC000 - 0xCFFF
+		dd Z80_ReadB_68K_Ram,	; 0xD000 - 0xDFFF
+		dd Z80_ReadB_68K_Ram,	; 0xE000 - 0xEFFF
+		dd Z80_ReadB_68K_Ram	; 0xF000 - 0xFFFF
+	
+	DECL Z80_ReadW_Table
+		dd Z80_ReadW_Ram,	; 0x0000 - 0x0FFF
+		dd Z80_ReadW_Ram,	; 0x1000 - 0x1FFF
+		dd Z80_ReadW_Ram,	; 0x2000 - 0x2FFF
+		dd Z80_ReadW_Ram,	; 0x3000 - 0x3FFF
+		dd Z80_ReadW_YM2612,	; 0x4000 - 0x4FFF
+		dd Z80_ReadW_YM2612,	; 0x5000 - 0x5FFF
+		dd Z80_ReadW_Bank,	; 0x6000 - 0x6FFF
+		dd Z80_ReadW_PSG,	; 0x7000 - 0x7FFF
+		dd Z80_ReadW_68K_Ram,	; 0x8000 - 0x8FFF
+		dd Z80_ReadW_68K_Ram,	; 0x9000 - 0x9FFF
+		dd Z80_ReadW_68K_Ram,	; 0xA000 - 0xAFFF
+		dd Z80_ReadW_68K_Ram,	; 0xB000 - 0xBFFF
+		dd Z80_ReadW_68K_Ram,	; 0xC000 - 0xCFFF
+		dd Z80_ReadW_68K_Ram,	; 0xD000 - 0xDFFF
+		dd Z80_ReadW_68K_Ram,	; 0xE000 - 0xEFFF
+		dd Z80_ReadW_68K_Ram	; 0xF000 - 0xFFFF
+	
+	DECL Z80_WriteB_Table
+		dd Z80_WriteB_Ram,	; 0x0000 - 0x0FFF
+		dd Z80_WriteB_Ram,	; 0x1000 - 0x1FFF
+		dd Z80_WriteB_Ram,	; 0x2000 - 0x2FFF
+		dd Z80_WriteB_Ram,	; 0x3000 - 0x3FFF
+		dd Z80_WriteB_YM2612,	; 0x4000 - 0x4FFF
+		dd Z80_WriteB_YM2612,	; 0x5000 - 0x5FFF
+		dd Z80_WriteB_Bank,	; 0x6000 - 0x6FFF
+		dd Z80_WriteB_PSG,	; 0x7000 - 0x7FFF
+		dd Z80_WriteB_68K_Ram,	; 0x8000 - 0x8FFF
+		dd Z80_WriteB_68K_Ram,	; 0x9000 - 0x9FFF
+		dd Z80_WriteB_68K_Ram,	; 0xA000 - 0xAFFF
+		dd Z80_WriteB_68K_Ram,	; 0xB000 - 0xBFFF
+		dd Z80_WriteB_68K_Ram,	; 0xC000 - 0xCFFF
+		dd Z80_WriteB_68K_Ram,	; 0xD000 - 0xDFFF
+		dd Z80_WriteB_68K_Ram,	; 0xE000 - 0xEFFF
+		dd Z80_WriteB_68K_Ram	; 0xF000 - 0xFFFF
+	
+	DECL Z80_WriteW_Table
+		dd Z80_WriteW_Ram,	; 0x0000 - 0x0FFF
+		dd Z80_WriteW_Ram,	; 0x1000 - 0x1FFF
+		dd Z80_WriteW_Ram,	; 0x2000 - 0x2FFF
+		dd Z80_WriteW_Ram,	; 0x3000 - 0x3FFF
+		dd Z80_WriteW_YM2612,	; 0x4000 - 0x4FFF
+		dd Z80_WriteW_YM2612,	; 0x5000 - 0x5FFF
+		dd Z80_WriteW_Bank,	; 0x6000 - 0x6FFF
+		dd Z80_WriteW_PSG,	; 0x7000 - 0x7FFF
+		dd Z80_WriteW_68K_Ram,	; 0x8000 - 0x8FFF
+		dd Z80_WriteW_68K_Ram,	; 0x9000 - 0x9FFF
+		dd Z80_WriteW_68K_Ram,	; 0xA000 - 0xAFFF
+		dd Z80_WriteW_68K_Ram,	; 0xB000 - 0xBFFF
+		dd Z80_WriteW_68K_Ram,	; 0xC000 - 0xCFFF
+		dd Z80_WriteW_68K_Ram,	; 0xD000 - 0xDFFF
+		dd Z80_WriteW_68K_Ram,	; 0xE000 - 0xEFFF
+		dd Z80_WriteW_68K_Ram	; 0xF000 - 0xFFFF
+	
 section .text align=64
 
 	; External symbol redefines for ELF
@@ -39,11 +114,11 @@ section .text align=64
 
 	;unsigned char Z80_ReadB(unsigned int Adr);
 	DECL Z80_ReadB
-
+	
 		mov eax, [esp + 4]
 		push ecx
 		push edx
-
+		
 		mov ecx, eax
 		and eax, 0xF000
 		and ecx, 0x7FFF
@@ -52,37 +127,17 @@ section .text align=64
 		pop edx
 		pop ecx
 		ret
-
-	ALIGN4
-
-	DECL Z80_ReadB_Table
-			dd Z80_ReadB_Ram,		; 0x0000 - 0x0FFF
-			dd Z80_ReadB_Ram,		; 0x1000 - 0x1FFF
-			dd Z80_ReadB_Ram,		; 0x2000 - 0x2FFF
-			dd Z80_ReadB_Ram,		; 0x3000 - 0x3FFF
-			dd Z80_ReadB_YM2612,	; 0x4000 - 0x4FFF
-			dd Z80_ReadB_YM2612,	; 0x5000 - 0x5FFF
-			dd Z80_ReadB_Bank,		; 0x6000 - 0x6FFF
-			dd Z80_ReadB_PSG,		; 0x7000 - 0x7FFF
-			dd Z80_ReadB_68K_Ram,	; 0x8000 - 0x8FFF
-			dd Z80_ReadB_68K_Ram,	; 0x9000 - 0x9FFF
-			dd Z80_ReadB_68K_Ram,	; 0xA000 - 0xAFFF
-			dd Z80_ReadB_68K_Ram,	; 0xB000 - 0xBFFF
-			dd Z80_ReadB_68K_Ram,	; 0xC000 - 0xCFFF
-			dd Z80_ReadB_68K_Ram,	; 0xD000 - 0xDFFF
-			dd Z80_ReadB_68K_Ram,	; 0xE000 - 0xEFFF
-			dd Z80_ReadB_68K_Ram	; 0xF000 - 0xFFFF
-
-
+	
+	
 	ALIGN32
 	
 	;unsigned short Z80_ReadW(unsigned int Adr);
 	DECL Z80_ReadW
-
+		
 		mov eax, [esp + 4]
 		push ecx
 		push edx
-
+		
 		mov ecx, eax
 		and eax, 0xF000
 		and ecx, 0x7FFF
@@ -91,36 +146,16 @@ section .text align=64
 		pop edx
 		pop ecx
 		ret
-
-	ALIGN4
-
-	DECL Z80_ReadW_Table
-			dd Z80_ReadW_Ram,		; 0x0000 - 0x0FFF
-			dd Z80_ReadW_Ram,		; 0x1000 - 0x1FFF
-			dd Z80_ReadW_Ram,		; 0x2000 - 0x2FFF
-			dd Z80_ReadW_Ram,		; 0x3000 - 0x3FFF
-			dd Z80_ReadW_YM2612,	; 0x4000 - 0x4FFF
-			dd Z80_ReadW_YM2612,	; 0x5000 - 0x5FFF
-			dd Z80_ReadW_Bank,		; 0x6000 - 0x6FFF
-			dd Z80_ReadW_PSG,		; 0x7000 - 0x7FFF
-			dd Z80_ReadW_68K_Ram,	; 0x8000 - 0x8FFF
-			dd Z80_ReadW_68K_Ram,	; 0x9000 - 0x9FFF
-			dd Z80_ReadW_68K_Ram,	; 0xA000 - 0xAFFF
-			dd Z80_ReadW_68K_Ram,	; 0xB000 - 0xBFFF
-			dd Z80_ReadW_68K_Ram,	; 0xC000 - 0xCFFF
-			dd Z80_ReadW_68K_Ram,	; 0xD000 - 0xDFFF
-			dd Z80_ReadW_68K_Ram,	; 0xE000 - 0xEFFF
-			dd Z80_ReadW_68K_Ram	; 0xF000 - 0xFFFF
-
-
+	
+	
 	ALIGN32
-
+	
 	;void Z80_WriteB(unsigned int Adr, unsigned char Data);
 	DECL Z80_WriteB
-
+		
 		push ecx
 		push edx
-
+		
 		mov eax, [esp + 12]
 		mov edx, [esp + 16]
 		mov ecx, eax
@@ -132,35 +167,16 @@ section .text align=64
 		pop edx
 		pop ecx
 		ret
-
-	ALIGN4
-
-	DECL Z80_WriteB_Table
-			dd Z80_WriteB_Ram,		; 0x0000 - 0x0FFF
-			dd Z80_WriteB_Ram,		; 0x1000 - 0x1FFF
-			dd Z80_WriteB_Ram,		; 0x2000 - 0x2FFF
-			dd Z80_WriteB_Ram,		; 0x3000 - 0x3FFF
-			dd Z80_WriteB_YM2612,	; 0x4000 - 0x4FFF
-			dd Z80_WriteB_YM2612,	; 0x5000 - 0x5FFF
-			dd Z80_WriteB_Bank,		; 0x6000 - 0x6FFF
-			dd Z80_WriteB_PSG,		; 0x7000 - 0x7FFF
-			dd Z80_WriteB_68K_Ram,	; 0x8000 - 0x8FFF
-			dd Z80_WriteB_68K_Ram,	; 0x9000 - 0x9FFF
-			dd Z80_WriteB_68K_Ram,	; 0xA000 - 0xAFFF
-			dd Z80_WriteB_68K_Ram,	; 0xB000 - 0xBFFF
-			dd Z80_WriteB_68K_Ram,	; 0xC000 - 0xCFFF
-			dd Z80_WriteB_68K_Ram,	; 0xD000 - 0xDFFF
-			dd Z80_WriteB_68K_Ram,	; 0xE000 - 0xEFFF
-			dd Z80_WriteB_68K_Ram	; 0xF000 - 0xFFFF
-
+	
+	
 	ALIGN32
-
+	
 	;void Z80_WriteW(unsigned int Adr, unsigned short Data);
 	DECL Z80_WriteW
 
 		push ecx
 		push edx
-
+		
 		mov eax, [esp + 12]
 		mov edx, [esp + 16]
 		mov ecx, eax
@@ -172,27 +188,7 @@ section .text align=64
 		pop edx
 		pop ecx
 		ret
-
-	ALIGN4
-
-	DECL Z80_WriteW_Table
-			dd Z80_WriteW_Ram,		; 0x0000 - 0x0FFF
-			dd Z80_WriteW_Ram,		; 0x1000 - 0x1FFF
-			dd Z80_WriteW_Ram,		; 0x2000 - 0x2FFF
-			dd Z80_WriteW_Ram,		; 0x3000 - 0x3FFF
-			dd Z80_WriteW_YM2612,	; 0x4000 - 0x4FFF
-			dd Z80_WriteW_YM2612,	; 0x5000 - 0x5FFF
-			dd Z80_WriteW_Bank,		; 0x6000 - 0x6FFF
-			dd Z80_WriteW_PSG,		; 0x7000 - 0x7FFF
-			dd Z80_WriteW_68K_Ram,	; 0x8000 - 0x8FFF
-			dd Z80_WriteW_68K_Ram,	; 0x9000 - 0x9FFF
-			dd Z80_WriteW_68K_Ram,	; 0xA000 - 0xAFFF
-			dd Z80_WriteW_68K_Ram,	; 0xB000 - 0xBFFF
-			dd Z80_WriteW_68K_Ram,	; 0xC000 - 0xCFFF
-			dd Z80_WriteW_68K_Ram,	; 0xD000 - 0xDFFF
-			dd Z80_WriteW_68K_Ram,	; 0xE000 - 0xEFFF
-			dd Z80_WriteW_68K_Ram	; 0xF000 - 0xFFFF
-
+	
 	; Read Byte
 	; ---------
 

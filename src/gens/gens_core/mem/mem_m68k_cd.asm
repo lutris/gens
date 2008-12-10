@@ -119,6 +119,12 @@ section .data align=64
 	extern _Controller_2_State
 	extern _Controller_2_COM
 	
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+        %define .rodata .rdata
+%endif
+
+section .rodata align=64
 	; Sega CD Default Jump Table
 	
 	DECL SegaCD_M68K_Read_Byte_Table

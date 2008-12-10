@@ -154,8 +154,6 @@ section .bss align=64
 	
 section .data align=64
 	
-	; 32X Default Jump Table
-	
 	extern M68K_Read_Byte_Bad
 	
 	extern Genesis_M68K_Read_Byte_Table
@@ -163,6 +161,14 @@ section .data align=64
 	
 	extern M68K_Read_Byte_Table
 	extern M68K_Read_Word_Table
+	
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+        %define .rodata .rdata
+%endif
+
+section .rodata align=64
+	; 32X Default Jump Table
 	
 	DECL _32X_M68K_Read_Byte_Table
 		dd	M68K_Read_Byte_Rom0,		; 0x000000 - 0x07FFFF
@@ -174,14 +180,14 @@ section .data align=64
 		dd	M68K_Read_Byte_Rom6,		; 0x300000 - 0x37FFFF
 		dd	M68K_Read_Byte_Rom7,		; 0x380000 - 0x3FFFFF
 		dd	M68K_Read_Byte_Bios_32X,	; 0x400000 - 0x47FFFF
-		dd	M68K_Read_Byte_BiosR_32X,; 0x480000 - 0x4FFFFF
+		dd	M68K_Read_Byte_BiosR_32X,	; 0x480000 - 0x4FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x500000 - 0x57FFFF
 		dd	M68K_Read_Byte_Bad,		; 0x580000 - 0x5FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x600000 - 0x67FFFF
 		dd	M68K_Read_Byte_Bad,		; 0x680000 - 0x6FFFFF
 		dd	M68K_Read_Byte_Bad,		; 0x700000 - 0x77FFFF
-		dd	M68K_Read_Byte_32X_FB0,	; 0x780000 - 0x7FFFFF
-		dd	M68K_Read_Byte_32X_FB1,	; 0x800000 - 0x87FFFF
+		dd	M68K_Read_Byte_32X_FB0,		; 0x780000 - 0x7FFFFF
+		dd	M68K_Read_Byte_32X_FB1,		; 0x800000 - 0x87FFFF
 		dd	M68K_Read_Byte_Rom0,		; 0x880000 - 0x8FFFFF
 		dd	M68K_Read_Byte_Rom1,		; 0x900000 - 0x97FFFF
 		dd	M68K_Read_Byte_Rom2,		; 0x980000 - 0x9FFFFF
