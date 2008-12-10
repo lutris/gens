@@ -73,7 +73,7 @@ static MDP_t* mdp_internal[] =
  * lstRenderPlugins, tblRenderPlugins: List and map containing render plugins.
  */
 list<MDP_t*> PluginMgr::lstRenderPlugins;
-//mapStrToInt PluginMgr::tblRenderPlugins;
+mapRenderPlugin PluginMgr::tblRenderPlugins;
 
 
 /**
@@ -95,16 +95,14 @@ bool PluginMgr::initPlugin_Render(MDP_t* plugin)
 	
 	// Check if a plugin with this tag already exists.
 	string tag = rendPlugin->tag;
-	/* TODO
 	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
-	mapStrToInt::iterator existingMDP = tblRenderPlugins.find(tag);
+	mapRenderPlugin::iterator existingMDP = tblRenderPlugins.find(tag);
 	if (existingMDP != tblRenderPlugins.end())
 	{
 		// Plugin with this tag already exists.
 		// TODO: Show an error.
 		return false;
 	}
-	*/
 	
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
@@ -115,7 +113,9 @@ bool PluginMgr::initPlugin_Render(MDP_t* plugin)
 		plugin->func->init(&MDP_Host);
 	
 	// Add the plugin tag to the map.
-	//tblRenderPlugins.insert(pairStrToInt(tag, vRenderPlugins.size() - 1));
+	list<MDP_t*>::iterator lstIter = lstRenderPlugins.end();
+	lstIter--;
+	tblRenderPlugins.insert(pairRenderPlugin(tag, lstIter));
 	
 	return true;
 }

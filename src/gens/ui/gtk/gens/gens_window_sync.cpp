@@ -24,7 +24,13 @@
 #include <config.h>
 #endif
 
-#include <string.h>
+#include <cstring>
+
+// C++ includes
+#include <string>
+#include <list>
+using std::string;
+using std::list;
 
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
@@ -55,13 +61,13 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
-// C++ includes
-#include <string>
-using std::string;
+
+// Internal functions.
+static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container);
 
 
 /**
- * Sync_Gens_Window(): Synchronize the GENS Main Window.
+ * Sync_Gens_Window(): Synchronize the Gens Main Window.
  */
 void Sync_Gens_Window(void)
 {
@@ -231,15 +237,8 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	if (id != 0)
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
 	
-	// Rebuild the Render submenu
+	// Rebuild the Render submenu.
 	Sync_Gens_Window_GraphicsMenu_Render(findMenuItem(IDM_GRAPHICS_RENDER));
-	
-	// Selected Render Mode
-	// FIXME: lstRenderPlugins
-#if 0
-	int rendMode = (draw->fullScreen() ? Video.Render_FS : Video.Render_W);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_RENDER_NORMAL + rendMode)), TRUE);
-#endif
 	
 	// Frame Skip
 	id = (IDM_GRAPHICS_FRAMESKIP_AUTO + 1) + Frame_Skip;
@@ -331,20 +330,30 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 			       (GDestroyNotify)g_object_unref);
 	
 	// Create the render entries.
-	// FIXME
-#if 0
-	for (unsigned int i = 0; i < PluginMgr::vRenderPlugins.size(); i++)
+	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
+	for (list<MDP_t*>::iterator curMDP = PluginMgr::lstRenderPlugins.begin();
+	     curMDP != PluginMgr::lstRenderPlugins.end(); curMDP++)
 	{
 		// Delete the menu item from the map, if it exists.
-		gensMenuMap.erase(IDM_GRAPHICS_RENDER_NORMAL + i);
+		gensMenuMap.erase(i);
 		
 		sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
 		
-		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, PluginMgr::getPluginFromID_Render(i)->tag);
+		MDP_Render_t *plugin = static_cast<MDP_Render_t*>((*curMDP)->plugin_t);
+		
+		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, plugin->tag);
 		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
 		gtk_widget_set_name(mnuItem, sObjName);
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
+		
+		// Check if this render mode is selected.
+		list<MDP_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+		if (selMDP == curMDP)
+		{
+			// Render mode is selected.
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), true);
+		}
 		
 		// Make sure the menu item is deleted when the submenu is deleted.
 		g_object_set_data_full(G_OBJECT(mnuSubMenu), sObjName,
@@ -354,12 +363,14 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuItem, "activate",
 				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
-				  GINT_TO_POINTER(IDM_GRAPHICS_RENDER_NORMAL + i));
+				  GINT_TO_POINTER(i));
 		
 		// Add the menu item to the map.
-		gensMenuMap.insert(gtkMenuMapItem(IDM_GRAPHICS_RENDER_NORMAL + i, mnuItem));
+		gensMenuMap.insert(gtkMenuMapItem(i, mnuItem));
+		
+		// Next menu item.
+		i++;
 	}
-#endif
 }
 
 

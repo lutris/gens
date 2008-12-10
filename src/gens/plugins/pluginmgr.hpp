@@ -30,6 +30,9 @@
 #include <list>
 #include "macros/hashtable.hpp"
 
+typedef GENS_HASHTABLE<std::string, std::list<MDP_t*>::iterator> mapRenderPlugin;
+typedef std::pair<std::string, std::list<MDP_t*>::iterator> pairRenderPlugin;
+
 class PluginMgr
 {
 	public:
@@ -39,7 +42,7 @@ class PluginMgr
 		//static unsigned int getPluginIDFromTag_Render(std::string tag, const unsigned int defID);
 		
 		static std::list<MDP_t*> lstRenderPlugins;
-		//static mapStrToInt tblRenderPlugins;
+		static mapRenderPlugin tblRenderPlugins;
 		
 	protected:
 		static bool loadPlugin(MDP_t *plugin);

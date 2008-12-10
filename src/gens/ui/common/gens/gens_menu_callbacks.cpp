@@ -86,7 +86,10 @@ extern "C"
 
 // C++ includes
 #include <string>
+#include <list>
 using std::string;
+using std::list;
+
 
 static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state);
@@ -451,8 +454,19 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			if ((menuID & 0xFF00) == IDM_GRAPHICS_RENDER)
 			{
 				// Render mode change.
-				// FIXME: Update to use lstRenderPlugins.
-				//draw->setRender(menuID - IDM_GRAPHICS_RENDER_NORMAL);
+				// TODO: Improve performance here.
+				list<MDP_t*>::iterator mdpIter = PluginMgr::lstRenderPlugins.begin();
+				for (unsigned int i = 1; i < (menuID & 0x00FF); i++)
+				{
+					mdpIter++;
+					if (mdpIter == PluginMgr::lstRenderPlugins.end())
+						break;
+				}
+				
+				// Found the renderer.
+				draw->setRender(mdpIter);
+				
+				// Synchronize the Graphics Menu.
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			else
