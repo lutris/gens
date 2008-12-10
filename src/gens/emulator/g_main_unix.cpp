@@ -43,8 +43,14 @@
  */
 void Get_Save_Path(char *buf, size_t n)
 {
-	strncpy(buf, getenv ("HOME"), n);
-	strcat(buf, "/.gens/");
+	strncpy(buf, getenv("HOME"), n);
+	
+	// OS-specific save path.
+	#ifdef GENS_OS_MACOSX
+		strcat(buf, "/Library/Application Support/Gens/");
+	#else // Other Unix or Linux system.
+		strcat(buf, "/.gens/");
+	#endif
 }
 
 
