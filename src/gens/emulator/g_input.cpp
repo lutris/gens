@@ -77,13 +77,17 @@ void Input_KeyDown(int key)
 		case GENS_KEY_ESCAPE:
 			if (Quick_Exit)
 				close_gens();
-			if (Debug)
+			
+#ifdef GENS_DEBUGGER
+			if (Options::debugMode())
 			{
 				Options::setDebugMode(DEBUG_NONE);
 				Paused = 0;
 				Sync_Gens_Window_CPUMenu();
 			}
-			else if (Paused)
+			else
+#endif /* GENS_DEBUGGER */
+			if (Paused)
 			{
 				Paused = 0;
 			}

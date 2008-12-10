@@ -129,6 +129,7 @@ void Options::setFrameSkip(const int newFrameSkip)
 }
 
 
+#ifdef GENS_DEBUGGER
 /**
  * debugMode(): Get the current debugging mode.
  * @return Current debugging mode.
@@ -155,6 +156,7 @@ void Options::setDebugMode(const DEBUG_MODE newDebugMode)
 	else
 		Debug = (int)newDebugMode;
 }
+#endif /* GENS_DEBUGGER */
 
 
 /**
