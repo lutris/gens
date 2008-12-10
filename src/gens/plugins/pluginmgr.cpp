@@ -32,8 +32,14 @@
 
 // opendir/closedir/readdir/etc
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <cstring>
+
+// mingw doesn't provide S_ISLNK.
+#ifndef S_ISLNK
+#define S_ISLNK(x) (0)
+#endif
 
 // C++ includes
 #include <algorithm>
@@ -133,7 +139,13 @@ void PluginMgr::init(void)
 	
 	// Load all external plugins.
 	#ifdef GENS_OS_WIN32
-		loadExternalPlugins(PathNames.Gens_EXE_Path);
+		scanExternalPlugins(PathNames.Gens_EXE_Path);
+		
+		// Wine path
+		scanExternalPlugins("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp");
+		
+		// VMware path
+		scanExternalPlugins("Z:\\david\\programming\\gens\\debug-win32\\src\\mdp");
 	#endif /* GENS_OS_WIN32 */
 	
 	#ifdef GENS_MDP_DIR
@@ -211,67 +223,71 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	struct dirent *d_entry;
 	size_t d_name_len;
 	string tmpFilename;
+	mode_t filetype;
+	
+	// Required if libc doesn't provide the dirent->d_type field.
+	#ifndef _DIRENT_HAVE_D_TYPE
+		struct stat dirstat;
+	#endif /* !_DIRENT_HAVE_D_TYPE */
 	
 	d_entry = readdir(mdpDir);
 	while (d_entry)
 	{
-		// Check the type of file.
+		// Check the file type.
 		#ifdef _DIRENT_HAVE_D_TYPE
-			switch (d_entry->d_type)
+			// libc provides the dirent->d_type field.
+			filetype = DTTOIF(d_entry->d_type);
+		#else
+			// libc does not provide the dirent->d_type field.
+			// mingw unfortunately doesn't. :(
+			tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+			stat(tmpFilename.c_str(), &dirstat);
+			filetype = dirstat.st_mode;
+		#endif
+		
+		if (S_ISDIR(filetype))
+		{
+			// Directory.
+			if (recursive)
 			{
-				case DT_FIFO:
-				case DT_SOCK:
-				case DT_CHR:
-				case DT_BLK:
-					// Special file. Ignore this.
-					break;
-				
-				case DT_DIR:
-					// Directory.
-					if (recursive)
-					{
-						// Recursive scan is enabled.
-						// Make sure the directory isn't "." or "..".
-						if (!memcmp(d_entry->d_name, ".", 2) ||
-					    	    !memcmp(d_entry->d_name, "..", 3))
-						{
-							// Directory is "." or "..".
-							break;
-						}
-						
-						// Scan the directory.
-						tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
-						scanExternalPlugins(tmpFilename.c_str());
-					}
-					break;
-				
-				default:
-					// Regular file or symlink.
+				// Recursive scan is enabled.
+				// Make sure the directory isn't "." or "..".
+				if (memcmp(d_entry->d_name, ".", 2) &&
+				    memcmp(d_entry->d_name, "..", 3))
+				{
+					// Directory is not "." or "..".
 					
-					// Check if the file extension matches libltdl's shared library extension.
-					d_name_len = strlen(d_entry->d_name);
-					if (d_name_len < (sizeof(LTDL_SHLIB_EXT) - 1))
-					{
-						// Filename is too short.
-						break;
-					}
-					
-					// Compare the file extension.
-					if (strncasecmp(&d_entry->d_name[d_name_len - sizeof(LTDL_SHLIB_EXT) + 1],
-					    		LTDL_SHLIB_EXT, sizeof(LTDL_SHLIB_EXT) - 1))
-					{
-						// File extension doesn't match.
-						break;
-					}
-					
-					// Found a plugin.
+					// Scan the directory.
+					#ifdef _DIRENT_HAVE_D_TYPE
 					tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
-					loadExternalPlugin(tmpFilename);
-					break;
+					#endif /* _DIRENT_HAVE_D_TYPE */
+					scanExternalPlugins(tmpFilename.c_str());
+				}
 			}
-		#else /* !_DIRENT_HAVE_D_TYPE */
-			#error TODO: Add support for dirent without dirent->d_type.
-		#endif /* _DIRENT_HAVE_D_TYPE */
+		}
+		else if (S_ISREG(filetype) || S_ISLNK(filetype))
+		{
+			// Regular file or symlink.
+			
+			// Check if the file extension matches libltdl's shared library extension.
+			d_name_len = strlen(d_entry->d_name);
+			if (d_name_len >= (sizeof(LTDL_SHLIB_EXT) - 1))
+			{
+				// Filename is long enough.
+				
+				// Compare the file extension.
+				if (!strncasecmp(&d_entry->d_name[d_name_len - sizeof(LTDL_SHLIB_EXT) + 1],
+						 LTDL_SHLIB_EXT, sizeof(LTDL_SHLIB_EXT) - 1))
+				{	
+					// File extension matches.
+					// Found a plugin.
+					#ifdef _DIRENT_HAVE_D_TYPE
+					tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+					#endif
+					loadExternalPlugin(tmpFilename);
+				}
+			}
+		}
 		
 		// Get the next directory entry.
 		d_entry = readdir(mdpDir);
