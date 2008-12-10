@@ -44,6 +44,9 @@ class PluginMgr
 		
 	protected:
 		static bool loadPlugin(MDP_t *plugin);
+		static void scanExternalPlugins(const std::string& directory, bool recursive = true);
+		static void loadExternalPlugin(const std::string& filename);
+		
 		static bool initPlugin_Render(MDP_t *plugin);
 };
 

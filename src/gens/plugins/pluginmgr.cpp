@@ -27,6 +27,14 @@
 #include "pluginmgr.hpp"
 #include "macros/hashtable.hpp"
 
+#include "emulator/g_main.hpp"
+#include "util/file/rom.hpp"
+
+// opendir/closedir/readdir/etc
+#include <sys/types.h>
+#include <dirent.h>
+#include <cstring>
+
 // C++ includes
 #include <algorithm>
 #include <string>
@@ -123,50 +131,15 @@ void PluginMgr::init(void)
 		i++;
 	}
 	
-	// Attempt to load an external plugin.
-	lt_dlinit();
-	lt_dlhandle handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline/.libs/mdp_render_scanline.so");
-	//lt_dlhandle handle = lt_dlopen("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp\\render\\scanline\\.libs\\mdp_render_scanline.dll");
-	if (!handle)
-	{
-		fprintf(stderr, "Could not open external plugin.\n");
-		return;
-	}
+	// Load all external plugins.
+	#ifdef GENS_OS_WIN32
+		loadExternalPlugins(PathNames.Gens_EXE_Path);
+	#endif /* GENS_OS_WIN32 */
 	
-	// Attempt to load the mdp symbol.
-	MDP_t *plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
-	if (!plugin)
-	{
-		fprintf(stderr, "mdp symbol not found.\n");
-		lt_dlclose(handle);
-	}
-	else
-	{
-		// Symbol loaded. Load the plugin.
-		loadPlugin(plugin);
-	}
-	
-	// Attempt to load another external plugin.
-	handle = lt_dlopen("/home/david/programming/gens/debug-linux/src/mdp/render/scanline_50/.libs/mdp_render_scanline_50.so");
-	//handle = lt_dlopen("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp\\render\\scanline_50\\.libs\\mdp_render_scanline_50.dll");
-	if (!handle)
-	{
-		fprintf(stderr, "Could not open external plugin.\n");
-		return;
-	}
-	
-	// Attempt to load the mdp symbol.
-	plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
-	if (!plugin)
-	{
-		fprintf(stderr, "mdp symbol not found.\n");
-		lt_dlclose(handle);
-	}
-	else
-	{
-		// Symbol loaded. Load the plugin.
-		loadPlugin(plugin);
-	}
+	#ifdef GENS_MDP_DIR
+		scanExternalPlugins(GENS_MDP_DIR);
+		scanExternalPlugins("/home/david/programming/gens/debug-linux/src/mdp");
+	#endif /* GENS_MDP_DIR */
 }
 
 
@@ -210,6 +183,132 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 	}
 	
 	return true;
+}
+
+
+/**
+ * scanExternalPlugins(): Scan for external plugins.
+ * @param directory Directory to scan for plugins.
+ * @param recursive If true, scans directories recursively.
+ */
+void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
+{
+	// Scan the plugin directory for external plugins.
+	DIR *mdpDir;
+	
+	// Scan the plugin directory for external plugins.
+	mdpDir = opendir(directory.c_str());
+	
+	if (!mdpDir)
+	{
+		// Could not open the MDP plugin directory.
+		fprintf(stderr, "PluginMgr::%s: Could not open MDP plugin directory: %s\n",
+			__func__, directory.c_str());
+		return;
+	}
+	
+	// Read all files in the directory.
+	struct dirent *d_entry;
+	size_t d_name_len;
+	string tmpFilename;
+	
+	d_entry = readdir(mdpDir);
+	while (d_entry)
+	{
+		// Check the type of file.
+		#ifdef _DIRENT_HAVE_D_TYPE
+			switch (d_entry->d_type)
+			{
+				case DT_FIFO:
+				case DT_SOCK:
+				case DT_CHR:
+				case DT_BLK:
+					// Special file. Ignore this.
+					break;
+				
+				case DT_DIR:
+					// Directory.
+					if (recursive)
+					{
+						// Recursive scan is enabled.
+						// Make sure the directory isn't "." or "..".
+						if (!memcmp(d_entry->d_name, ".", 2) ||
+					    	    !memcmp(d_entry->d_name, "..", 3))
+						{
+							// Directory is "." or "..".
+							break;
+						}
+						
+						// Scan the directory.
+						tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+						scanExternalPlugins(tmpFilename.c_str());
+					}
+					break;
+				
+				default:
+					// Regular file or symlink.
+					
+					// Check if the file extension matches libltdl's shared library extension.
+					d_name_len = strlen(d_entry->d_name);
+					if (d_name_len < (sizeof(LTDL_SHLIB_EXT) - 1))
+					{
+						// Filename is too short.
+						break;
+					}
+					
+					// Compare the file extension.
+					if (strncasecmp(&d_entry->d_name[d_name_len - sizeof(LTDL_SHLIB_EXT) + 1],
+					    		LTDL_SHLIB_EXT, sizeof(LTDL_SHLIB_EXT) - 1))
+					{
+						// File extension doesn't match.
+						break;
+					}
+					
+					// Found a plugin.
+					tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+					loadExternalPlugin(tmpFilename);
+					break;
+			}
+		#else /* !_DIRENT_HAVE_D_TYPE */
+			#error TODO: Add support for dirent without dirent->d_type.
+		#endif /* _DIRENT_HAVE_D_TYPE */
+		
+		// Get the next directory entry.
+		d_entry = readdir(mdpDir);
+	}
+}
+
+
+/**
+ * loadExternalPlugin(): Load an external plugin.
+ * @param filename Filename of the external plugin.
+ */
+void PluginMgr::loadExternalPlugin(const string& filename)
+{
+	lt_dlinit();
+	lt_dlhandle handle = lt_dlopen(filename.c_str());
+	
+	if (!handle)
+	{
+		fprintf(stderr, "PluginMgr::%s: Could not open external plugin: %s\n",
+			__func__, ROM::getNameFromPath(filename).c_str());
+		return;
+	}
+	
+	// Attempt to load the mdp symbol.
+	MDP_t *plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
+	if (!plugin)
+	{
+		fprintf(stderr, "PluginMgr::%s: \"mdp\" symbol not found in plugin: %s\n",
+			__func__, ROM::getNameFromPath(filename).c_str());
+		lt_dlclose(handle);
+		return;
+	}
+	
+	// Symbol loaded. Load the plugin.
+	fprintf(stderr, "PluginMgr::%s: \"mdp\" symbol loaded from plugin: %s\n",
+		__func__, ROM::getNameFromPath(filename).c_str());
+	loadPlugin(plugin);
 }
 
 
