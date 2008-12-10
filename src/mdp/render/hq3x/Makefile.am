@@ -1,4 +1,4 @@
-# MDP Render Plugin: hq2x renderer
+# MDP Render Plugin: hq3x renderer
 
 # libtool/nasm stuff from http://osdir.com/ml/sysutils.automake.general/2002-08/msg00134.html
 # strip_fPIC.sh from http://networkmultimedia.org/
@@ -10,16 +10,16 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 .asm.lo:
 	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
-lib_LTLIBRARIES = mdp_render_hq2x.la
+lib_LTLIBRARIES = mdp_render_hq3x.la
 
-mdp_render_hq2x_la_LDFLAGS = -module -no-undefined -avoid-version
+mdp_render_hq3x_la_LDFLAGS = -module -no-undefined -avoid-version
 
-mdp_render_hq2x_la_SOURCES = \
-		mdp_render_hq2x_plugin.c \
-		mdp_render_hq2x.c \
-		mdp_render_hq2x_16_x86.asm
+mdp_render_hq3x_la_SOURCES = \
+		mdp_render_hq3x_plugin.c \
+		mdp_render_hq3x.c \
+		mdp_render_hq3x_16_x86.asm
 
 noinst_HEADERS = \
-		mdp_render_hq2x_plugin.h \
-		mdp_render_hq2x.h \
-		mdp_render_hq2x_x86.h
+		mdp_render_hq3x_plugin.h \
+		mdp_render_hq3x.h \
+		mdp_render_hq3x_x86.h

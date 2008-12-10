@@ -21,5 +21,7 @@ SUBDIRS = \
 if GENS_X86_ASM
 SUBDIRS += \
 		hq2x \
+		hq3x \
+		hq4x \
 		2xsai
 endif # GENS_X86_ASM

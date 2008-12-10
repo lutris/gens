@@ -526,6 +526,8 @@ src/mdp/render/scale2x/Makefile
 src/mdp/render/scale3x/Makefile
 src/mdp/render/scale4x/Makefile
 src/mdp/render/hq2x/Makefile
+src/mdp/render/hq3x/Makefile
+src/mdp/render/hq4x/Makefile
 src/mdp/render/2xsai/Makefile
 src/gens/Makefile
 src/gens/plugins/render/normal/Makefile

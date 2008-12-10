@@ -54,7 +54,7 @@ static MDP_Func_t MDP_Func =
 	.end = mdp_render_hq2x_end,
 };
 
-MDP_t mdp_render_hq2x =
+MDP_t mdp =
 {
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 1, 0),

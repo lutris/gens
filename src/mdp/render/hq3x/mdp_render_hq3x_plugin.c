@@ -21,19 +21,61 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_RENDER_HQ3X_PLUGIN_H
-#define MDP_RENDER_HQ3X_PLUGIN_H
+#include <stdint.h>
+#include <string.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "mdp/mdp.h"
+#include "mdp/mdp_cpuflags.h"
 
-#include "mdp/mdp_render.h"
+#include "mdp_render_hq3x.h"
 
-extern DLL_PUBLIC MDP_t mdp_render_hq3x;
+static MDP_Desc_t MDP_Desc =
+{
+	.name = "hq3x Renderer",
+	.author_mdp = "David Korth",
+	.author_orig = "Maxim Stepin",
+	.description = "hq3x renderer.",
+	.website = "http://www.hiend3d.com/",
+	.license = MDP_LICENSE_LGPL_21
+};
 
-#ifdef __cplusplus
-}
-#endif
+static MDP_Render_t MDP_Render =
+{
+	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
+	.blit = mdp_render_hq3x_cpp,
+	.scale = 3,
+	.flags = MDP_RENDER_FLAG_SRC16DST32,
+	.tag = "hq3x"
+};
 
-#endif /* MDP_RENDER_HQ3X_PLUGIN_H */
+static MDP_Func_t MDP_Func =
+{
+	.init = mdp_render_hq3x_init,
+	.end = mdp_render_hq3x_end,
+};
+
+MDP_t mdp =
+{
+	.interfaceVersion = MDP_INTERFACE_VERSION,
+	.pluginVersion = MDP_VERSION(0, 1, 0),
+	.type = MDPT_RENDER,
+	
+	// UUID: 34e9dfe0-4ca1-474b-9f32-6e7f0f489ae1
+	.uuid = {0x34, 0xE9, 0xDF, 0xE0,
+		 0x4C, 0xA1,
+		 0x47, 0x4B,
+		 0x9F, 0x32,
+		 0x6E, 0x7F, 0x0F, 0x48, 0x9A, 0xE1},
+	
+	// CPU flags
+	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
+	.cpuFlagsRequired = MDP_CPUFLAG_MMX,
+	
+	// Description
+	.desc = &MDP_Desc,
+	
+	// Functions
+	.func = &MDP_Func,
+	
+	.plugin_t = (void*)&MDP_Render
+};
