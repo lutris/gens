@@ -42,11 +42,11 @@ extern "C" {
 
 #include "mdp/mdp_fncall.h"
 
-int MDP_FNCALL DLL_LOCAL scale_precondition(
+DLL_LOCAL int MDP_FNCALL scale_precondition(
 				unsigned int scale, unsigned int pixel,
 				unsigned int width, unsigned int height);
 
-void MDP_FNCALL DLL_LOCAL scale3x(
+DLL_LOCAL void MDP_FNCALL scale3x(
 				void* void_dst, unsigned int dst_slice,
 				const void* void_src, unsigned int src_slice,
 				unsigned int pixel, unsigned int width, unsigned int height);

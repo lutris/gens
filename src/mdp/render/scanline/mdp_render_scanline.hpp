@@ -29,7 +29,7 @@ extern "C" {
 
 #include "mdp/mdp_render.h"
 
-void MDP_FNCALL DLL_LOCAL mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo);
+DLL_LOCAL void MDP_FNCALL mdp_render_scanline_cpp(MDP_Render_Info_t *renderInfo);
 
 #ifdef __cplusplus
 }

@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_HQ3X_X86_H
-#define GENS_MDP_RENDER_HQ3X_X86_H
+#ifndef MDP_RENDER_HQ3X_X86_H
+#define MDP_RENDER_HQ3X_X86_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,10 +30,14 @@ extern "C" {
 
 #include <stdint.h>
 
-void mdp_render_hq3x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, int width, int height, int pitch, int offset);
+#include "mdp/mdp_fncall.h"
+
+DLL_LOCAL void MDP_FNCALL mdp_render_hq3x_16_x86_mmx(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int width, int height, int pitch, int offset);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_HQ3X_X86_H */
+#endif /* MDP_RENDER_HQ3X_X86_H */

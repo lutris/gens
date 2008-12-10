@@ -29,23 +29,25 @@ extern "C" {
 
 #include <stdint.h>
 
-void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_16_x86(
+#include "mdp/mdp_fncall.h"
+
+DLL_LOCAL void MDP_FNCALL mdp_render_interpolated_scanline_16_x86(
 				uint16_t *destScreen, uint16_t *mdScreen,
 				int destPitch, int srcPitch,
 				int width, int height, uint32_t mask);
 
-void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_16_x86_mmx(
+DLL_LOCAL void MDP_FNCALL mdp_render_interpolated_scanline_16_x86_mmx(
 				uint16_t *destScreen, uint16_t *mdScreen,
 				int destPitch, int srcPitch,
 				int width, int height, int mode555);
 
 #if 0
-void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_32_x86(
+DLL_LOCAL void MDP_FNCALL mdp_render_interpolated_scanline_32_x86(
 				uint16_t *destScreen, uint16_t *mdScreen,
 				int destPitch, int srcPitch,
 				int width, int height);
 
-void MDP_FNCALL DLL_LOCAL mdp_render_interpolated_scanline_32_x86_mmx(
+DLL_LOCAL void MDP_FNCALL mdp_render_interpolated_scanline_32_x86_mmx(
 				uint16_t *destScreen, uint16_t *mdScreen,
 				int destPitch, int srcPitch,
 				int width, int height);

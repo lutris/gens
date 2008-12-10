@@ -30,7 +30,7 @@ extern "C" {
 
 #include "mdp/mdp_render.h"
 
-extern MDP_t mdp_render_hq4x;
+extern DLL_PUBLIC MDP_t mdp_render_hq4x;
 
 #ifdef __cplusplus
 }

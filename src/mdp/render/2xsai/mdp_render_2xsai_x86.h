@@ -30,10 +30,12 @@ extern "C" {
 
 #include <stdint.h>
 
-void MDP_FNCALL DLL_LOCAL mdp_render_2xsai_16_x86_mmx(
-			uint16_t *destScreen, uint16_t *mdScreen,
-			int destPitch, int srcPitch,
-			int width, int height, int mode555);
+#include "mdp/mdp_fncall.h"
+
+DLL_LOCAL void MDP_FNCALL mdp_render_2xsai_16_x86_mmx(
+				uint16_t *destScreen, uint16_t *mdScreen,
+				int destPitch, int srcPitch,
+				int width, int height, int mode555);
 
 #ifdef __cplusplus
 }

@@ -45,7 +45,7 @@ extern "C" {
 
 #include "mdp/mdp_fncall.h"
 
-void MDP_FNCALL DLL_LOCAL scale4x_mmx(
+DLL_LOCAL void MDP_FNCALL scale4x_mmx(
 				void* void_dst, unsigned int dst_slice,
 				const void* void_src, unsigned int src_slice,
 				unsigned int pixel, unsigned int width, unsigned int height);

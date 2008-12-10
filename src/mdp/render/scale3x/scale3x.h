@@ -29,12 +29,12 @@ extern "C" {
 
 #include "mdp/mdp_fncall.h"
 
-void MDP_FNCALL DLL_LOCAL scale3x_16_def(
+DLL_LOCAL void MDP_FNCALL scale3x_16_def(
 				uint16_t* dst0, uint16_t* dst1, uint16_t* dst2,
 				const uint16_t* src0, const uint16_t* src1,
 				const uint16_t* src2, unsigned int count);
 
-void MDP_FNCALL DLL_LOCAL scale3x_32_def(
+DLL_LOCAL void MDP_FNCALL scale3x_32_def(
 				uint32_t* dst0, uint32_t* dst1, uint32_t* dst2,
 				const uint32_t* src0, const uint32_t* src1,
 				const uint32_t* src2, unsigned int count);
