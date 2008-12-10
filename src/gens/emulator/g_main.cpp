@@ -352,7 +352,7 @@ void End_All(void)
 #endif
 	
 	// Shut down the Plugin Manager.
-	PluginMgr::init();
+	PluginMgr::end();
 	
 	// Shut down the input subsystem.
 	delete input;
