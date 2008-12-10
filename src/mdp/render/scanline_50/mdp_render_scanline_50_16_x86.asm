@@ -61,6 +61,7 @@ section .text align=64
 		push	ebp
 		mov	ebp, esp
 		pushad
+		
 		mov	ecx, [ebp + arg_width]		; ecx = Number of pixels per line
 		mov	ebx, [ebp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
 		mov	esi, [ebp + arg_mdScreen]	; esi = Source
