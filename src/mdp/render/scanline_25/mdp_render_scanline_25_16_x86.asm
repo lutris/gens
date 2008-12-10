@@ -30,12 +30,18 @@ arg_mask2	equ 32
 arg_mask4	equ 36
 arg_mode555	equ 32
 
+; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
-%define _mdp_render_scanline_25_16_x86 mdp_render_scanline_25_16_x86
-%define _mdp_render_scanline_25_16_x86_mmx mdp_render_scanline_25_16_x86_mmx
+	%define	_mdp_render_scanline_25_16_x86		mdp_render_scanline_25_16_x86
+	%define	_mdp_render_scanline_25_16_x86_mmx	mdp_render_scanline_25_16_x86_mmx
 %endif
 
-section .data align=64
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+	%define .rodata .rdata
+%endif
+
+section .rodata align=64
 	
 	; 64-bit masks used for the mmx version.
 	MASK_DIV2_15_MMX:	dd 0x3DEF3DEF, 0x3DEF3DEF

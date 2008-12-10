@@ -19,14 +19,12 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
-%define _mdp_render_hq2x_LUT16to32 mdp_render_hq2x_LUT16to32
-%define _mdp_render_hq2x_RGB16toYUV mdp_render_hq2x_RGB16toYUV
-%define _mdp_render_hq2x_16_x86_mmx mdp_render_hq2x_16_x86_mmx
+	%define _mdp_render_hq2x_LUT16to32	mdp_render_hq2x_LUT16to32
+	%define _mdp_render_hq2x_RGB16toYUV	mdp_render_hq2x_RGB16toYUV
+	%define _mdp_render_hq2x_16_x86_mmx	mdp_render_hq2x_16_x86_mmx
 %endif
-
-extern _mdp_render_hq2x_LUT16to32
-extern _mdp_render_hq2x_RGB16toYUV
 
 section .bss align=64
 	
@@ -47,7 +45,17 @@ section .bss align=64
 	
 section .data align=64
 	
-	reg_blank:	dd  0,0
+	extern _mdp_render_hq2x_LUT16to32
+	extern _mdp_render_hq2x_RGB16toYUV
+	
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+	%define .rodata .rdata
+%endif
+
+section .rodata align=64
+	
+	reg_blank:	dd  0, 0
 	const3:		dd  0x00030003, 0x00000003
 	const5:		dd  0x00050005, 0x00000005
 	const6:		dd  0x00060006, 0x00000006

@@ -27,9 +27,10 @@ arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
 
+; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
-%define _mdp_render_scanline_32_x86 mdp_render_scanline_32_x86
-%define _mdp_render_scanline_32_x86_mmx mdp_render_scanline_32_x86_mmx
+	%define _mdp_render_scanline_32_x86 mdp_render_scanline_32_x86
+	%define _mdp_render_scanline_32_x86_mmx mdp_render_scanline_32_x86_mmx
 %endif
 
 section .text align=64

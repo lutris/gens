@@ -21,8 +21,9 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
+; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
-%define _mdp_render_2xsai_16_x86_mmx mdp_render_2xsai_16_x86_mmx
+	%define	_mdp_render_2xsai_16_x86_mmx	mdp_render_2xsai_16_x86_mmx
 %endif
 
 srcPtr		equ 8
@@ -63,6 +64,16 @@ section .data align=64
 	qcolorMask:		dd 0xE79CE79C, 0xE79CE79C
 	qlowpixelMask:		dd 0x18631863, 0x18631863
 	
+	; Previous Mode 555 setting.
+	PrevMode555:		dd 0x00000000
+	
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+	%define .rodata .rdata
+%endif
+
+section .rodata align=64
+
 	; 15-bit color masks.
 	
 	colorMask15:		dd 0x7BDE7BDE, 0x7BDE7BDE
@@ -82,9 +93,6 @@ section .data align=64
 	; Constants.
 	ONE:			dd 0x00010001, 0x00010001
 	
-	; Previous Mode 555 setting.
-	PrevMode555:		dd 0x00000000
-	
 section .bss align=64
 	
 	Mask1:		resb 8
@@ -92,7 +100,7 @@ section .bss align=64
 	ACPixel:	resb 8
 	
 section .text align=64
-	
+
 arg_destScreen	equ 8
 arg_mdScreen	equ 12
 arg_destPitch	equ 16
@@ -100,7 +108,7 @@ arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
 arg_mode555	equ 32
-	
+
 	;************************************************************************
 	; void mdp_render_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				   int destPitch, int srcPitch,
