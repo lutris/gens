@@ -26,8 +26,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <algorithm>
-#include <cstring>
 
 #include "save.hpp"
 #include "config_file.hpp"
@@ -398,32 +396,11 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Renderer: Full Screen
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "");
-	mapStrToInt::iterator renderMDP;
-	if (renderTag.empty())
-		Video.Render_FS = 1;
-	else
-	{
-		std::transform(renderTag.begin(), renderTag.end(), renderTag.begin(), ::tolower);
-		renderMDP = PluginMgr::tblRenderPlugins.find(renderTag);
-		if (renderMDP == PluginMgr::tblRenderPlugins.end())
-			Video.Render_FS = 1;
-		else
-			Video.Render_FS = (*renderMDP).second;
-	}
+	Video.Render_FS = PluginMgr::getPluginIDFromTag_Render(renderTag, 1);
 	
 	// Renderer: Windowed
 	renderTag = cfg.getString("Graphics", "Render Windowed", "");
-	if (renderTag.empty())
-		Video.Render_W = 1;
-	else
-	{
-		std::transform(renderTag.begin(), renderTag.end(), renderTag.begin(), ::tolower);
-		renderMDP = PluginMgr::tblRenderPlugins.find(renderTag);
-		if (renderMDP == PluginMgr::tblRenderPlugins.end())
-			Video.Render_W = 1;
-		else
-			Video.Render_W = (*renderMDP).second;
-	}
+	Video.Render_W = PluginMgr::getPluginIDFromTag_Render(renderTag, 1);
 	
 #ifndef GENS_OS_WIN32
 	// TODO: Add a 555/565 override for Win32.

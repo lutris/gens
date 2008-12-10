@@ -244,3 +244,24 @@ MDP_Render_t* PluginMgr::getPluginFromID_Render(int id)
 	
 	return static_cast<MDP_Render_t*>(vRenderPlugins.at(id)->plugin_t);
 }
+
+
+/**
+ * getPluginIDFromTag_Render(): Get a render plugin ID from its tag.
+ * @param tag Plugin tag.
+ * @param defID Default plugin ID.
+ * @return Plugin ID, or default ID if it wasn't found.
+ */
+unsigned int PluginMgr::getPluginIDFromTag_Render(string tag, const unsigned int defID)
+{
+	if (tag.empty())
+		return defID;
+	
+	// Search for the plugin tag.
+	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
+	mapStrToInt::iterator renderMDP = tblRenderPlugins.find(tag);
+	if (renderMDP == tblRenderPlugins.end())
+		return defID;
+	else
+		return (*renderMDP).second;
+}
