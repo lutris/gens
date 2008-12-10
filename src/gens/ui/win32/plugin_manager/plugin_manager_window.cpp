@@ -45,10 +45,10 @@
 // C++ includes
 #include <string>
 #include <sstream>
-#include <vector>
+#include <list>
 using std::string;
 using std::stringstream;
-using std::vector;
+using std::list;
 
 // Win32 line ending.
 // For some reason, MinGW's std::endl always outputs "\n", even on Windows.
@@ -325,12 +325,10 @@ void PluginManagerWindow::populatePluginList(void)
 	ListBox_ResetContent(m_lstPluginList);
 	
 	// Add all plugins to the listbox.
-	// FIXME: lstRenderPlugins
-#if 0
 	char tmp[64];
-	vector<MDP_t*>::iterator curPlugin;
-	for (curPlugin = PluginMgr::vRenderPlugins.begin();
-	     curPlugin != PluginMgr::vRenderPlugins.end(); curPlugin++)
+	list<MDP_t*>::iterator curPlugin;
+	for (curPlugin = PluginMgr::lstRenderPlugins.begin();
+	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++)
 	{
 		MDP_t *plugin = (*curPlugin);
 		const char *pluginName;
@@ -350,7 +348,6 @@ void PluginManagerWindow::populatePluginList(void)
 		if (index != LB_ERR)
 			ListBox_SetItemData(m_lstPluginList, index, plugin);
 	}
-#endif
 }
 
 

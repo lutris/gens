@@ -41,11 +41,11 @@
 // C++ includes
 #include <string>
 #include <sstream>
-#include <vector>
+#include <list>
 using std::endl;
 using std::string;
 using std::stringstream;
-using std::vector;
+using std::list;
 
 
 PluginManagerWindow* PluginManagerWindow::m_Instance = NULL;
@@ -364,12 +364,10 @@ void PluginManagerWindow::populatePluginList(void)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
 	
 	// Add all plugins to the treeview.
-	// FIXME: lstRenderPlugins
-#if 0
 	char tmp[64];
-	vector<MDP_t*>::iterator curPlugin;
-	for (curPlugin = PluginMgr::vRenderPlugins.begin();
-	     curPlugin != PluginMgr::vRenderPlugins.end(); curPlugin++)
+	list<MDP_t*>::iterator curPlugin;
+	for (curPlugin = PluginMgr::lstRenderPlugins.begin();
+	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++)
 	{
 		GtkTreeIter iter;
 		gtk_list_store_append(lmPluginList, &iter);
@@ -391,7 +389,6 @@ void PluginManagerWindow::populatePluginList(void)
 		
 		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, -1);
 	}
-#endif
 }
 
 
