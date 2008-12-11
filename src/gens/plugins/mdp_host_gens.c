@@ -20,14 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp/mdp_host.h"
+#include "mdp_host_gens.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-// Host service functions.
-void* mdp_host_ref_ptr(MDP_PTR ptrID);
-void  mdp_host_unref_ptr(MDP_PTR ptrID);
-
 
 // MDP_PTR functions.
 static inline int* mdp_host_ref_ptr_LUT16to32(void);
@@ -42,12 +37,15 @@ static int* mdp_ptr_RGB16toYUV = NULL;
 static int  mdp_ptr_RGB16toYUV_count = 0;
 
 
-MDP_Host_t MDP_Host =
+MDP_Host_t Gens_MDP_Host =
 {
 	.interfaceVersion = MDP_HOST_INTERFACE_VERSION,
 	
 	.refPtr = mdp_host_ref_ptr,
 	.unrefPtr = mdp_host_unref_ptr,
+	
+	.registerRenderer = NULL,
+	.unregisterRenderer = NULL
 };
 
 
@@ -77,7 +75,7 @@ void* mdp_host_ref_ptr(uint32_t ptrID)
  * @param ptrID Pointer ID.
  * @return Pointer.
  */
-void mdp_host_unref_ptr(MDP_PTR ptrID)
+void mdp_host_unref_ptr(uint32_t ptrID)
 {
 	switch (ptrID)
 	{
@@ -147,7 +145,7 @@ static inline int* mdp_host_ref_ptr_RGB16toYUV(void)
 	if (!mdp_ptr_RGB16toYUV)
 	{
 		// Allocate memory for the lookup table.
-		mdp_ptr_RGB16toYUV = malloc(65536 * sizeof(int));
+		mdp_ptr_RGB16toYUV = (int*)(malloc(65536 * sizeof(int)));
 		
 		// Initialize the RGB to YUV conversion table.
 		int i, j, k, r, g, b, Y, u, v;

@@ -36,6 +36,9 @@ using std::string;
 // TODO: Add a wrapper call to sync the GraphicsMenu.
 #include "gens/gens_window_sync.hpp"
 
+// MDP Host Services
+#include "plugins/mdp_host_gens.h"
+
 
 /**
  * m_rInfo: Render Plugin information.
@@ -164,7 +167,7 @@ VDraw::~VDraw()
 	if (m_LUT16to32)
 	{
 		// Unreference LUT16to32.
-		MDP_Host.unrefPtr(MDP_PTR_LUT16to32);
+		mdp_host_unref_ptr(MDP_PTR_LUT16to32);
 		m_LUT16to32 = NULL;
 	}
 	
@@ -824,7 +827,7 @@ void VDraw::Render_16to32(uint32_t *dest, uint16_t *src,
 {
 	// Make sure the lookup table is referenced.
 	if (!m_LUT16to32)
-		m_LUT16to32 = static_cast<int*>(MDP_Host.refPtr(MDP_PTR_LUT16to32));
+		m_LUT16to32 = static_cast<int*>(mdp_host_ref_ptr(MDP_PTR_LUT16to32));
 	
 	const int pitchDestDiff = ((pitchDest / 4) - width);
 	const int pitchSrcDiff = ((pitchSrc / 2) - width);
