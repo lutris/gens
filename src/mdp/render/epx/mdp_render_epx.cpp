@@ -33,7 +33,7 @@ static MDP_Host_t *mdp_render_epx_hostSrv = NULL;
 
 
 /**
- * mdp_render_epx_init(): Initialize the Interpolated rendering plugin.
+ * mdp_render_epx_init(): Initialize the EPX rendering plugin.
  */
 void MDP_FNCALL mdp_render_epx_init(MDP_Host_t *hostSrv)
 {
@@ -46,7 +46,7 @@ void MDP_FNCALL mdp_render_epx_init(MDP_Host_t *hostSrv)
 
 
 /**
- * mdp_render_epx_end(): Shut down the Interpolated rendering plugin.
+ * mdp_render_epx_end(): Shut down the EPX rendering plugin.
  */
 void MDP_FNCALL mdp_render_epx_end(void)
 {
