@@ -44,7 +44,6 @@ static MDP_Host_t *mdp_render_1x_hostSrv = NULL;
 /**
  * mdp_render_1x_init(): Initialize the Normal rendering plugin.
  */
-#include <stdio.h>
 void MDP_FNCALL mdp_render_1x_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
