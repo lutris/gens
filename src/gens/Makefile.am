@@ -135,7 +135,8 @@ gens_SOURCES = \
 		input/input.cpp \
 		audio/audio.cpp \
 		plugins/pluginmgr.cpp \
-		plugins/mdp_host_gens.c
+		plugins/mdp_host_gens.c \
+		plugins/mdp_host_gens_cpp.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \

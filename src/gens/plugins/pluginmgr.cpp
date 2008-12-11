@@ -53,7 +53,7 @@ using std::list;
 // CPU flags
 #include "gens_core/misc/cpuflags.h"
 
-// Render plugins
+// Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
 #include "render/double/mdp_render_2x_plugin.h"
 
@@ -81,54 +81,6 @@ mapMDP PluginMgr::tblMDP;
  */
 list<MDP_Render_t*> PluginMgr::lstRenderPlugins;
 mapRenderPlugin PluginMgr::tblRenderPlugins;
-
-
-// TODO: Replace with MDP_Host_t->registerRenderer().
-#if 0
-/**
- * initPlugin_Render(): Initialize a rendering plugin.
- * @return True if loaded; false if not.
- */
-bool PluginMgr::initPlugin_Render(MDP_t* plugin)
-{
-	MDP_Render_t *rendPlugin = static_cast<MDP_Render_t*>(plugin->plugin_t);
-	
-	// Check the render interface version.
-	if (MDP_VERSION_MAJOR(rendPlugin->interfaceVersion) !=
-	    MDP_VERSION_MAJOR(MDP_RENDER_INTERFACE_VERSION))
-	{
-		// Incorrect major interface version.
-		// TODO: Add to a list of "incompatible" plugins.
-		return false;
-	}
-	
-	// Check if a plugin with this tag already exists.
-	string tag = rendPlugin->tag;
-	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
-	mapRenderPlugin::iterator existingMDP = tblRenderPlugins.find(tag);
-	if (existingMDP != tblRenderPlugins.end())
-	{
-		// Plugin with this tag already exists.
-		// TODO: Show an error.
-		return false;
-	}
-	
-	// TODO: Check the minor version.
-	// Probably not needed right now, but may be needed later.
-	
-	// Add the plugin to the list.
-	lstRenderPlugins.push_back(plugin);
-	if (plugin->func && plugin->func->init)
-		plugin->func->init(&MDP_Host);
-	
-	// Add the plugin tag to the map.
-	list<MDP_t*>::iterator lstIter = lstRenderPlugins.end();
-	lstIter--;
-	tblRenderPlugins.insert(pairRenderPlugin(tag, lstIter));
-	
-	return true;
-}
-#endif
 
 
 /**

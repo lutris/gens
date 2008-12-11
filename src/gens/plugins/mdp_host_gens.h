@@ -39,6 +39,9 @@ extern MDP_Host_t Gens_MDP_Host;
 void* MDP_FNCALL mdp_host_ref_ptr(uint32_t ptrID);
 void  MDP_FNCALL mdp_host_unref_ptr(uint32_t ptrID);
 
+int MDP_FNCALL registerRenderer(struct MDP_t *plugin, MDP_Render_t *renderer);
+int MDP_FNCALL unregisterRenderer(struct MDP_t *plugin, MDP_Render_t *renderer);
+
 #ifdef __cplusplus
 }
 #endif
