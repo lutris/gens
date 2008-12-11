@@ -151,8 +151,12 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 	// Probably not needed right now, but may be needed later.
 	
 	// Run the plugin initialization function.
+	// TODO: Add return value to init(), and check it for errors.
 	if (plugin->func && plugin->func->init)
 		plugin->func->init(&Gens_MDP_Host);
+	
+	// Add the plugin to the list of plugins.
+	lstMDP.push_back(plugin);
 	
 	// Plugin loaded.
 	return true;
