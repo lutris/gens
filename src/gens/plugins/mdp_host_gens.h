@@ -29,14 +29,15 @@ extern "C" {
 
 // MDP Host Services.
 #include "mdp/mdp.h"	// TODO: Fix the typedef struct MDP_t hack for mdp_host.h
+#include "mdp/mdp_fncall.h"
 #include "mdp/mdp_host.h"
 
 // MDP Host Services struct.
 extern MDP_Host_t Gens_MDP_Host;
 
 // Host service functions.
-void* mdp_host_ref_ptr(uint32_t ptrID);
-void  mdp_host_unref_ptr(uint32_t ptrID);
+void* MDP_FNCALL mdp_host_ref_ptr(uint32_t ptrID);
+void  MDP_FNCALL mdp_host_unref_ptr(uint32_t ptrID);
 
 #ifdef __cplusplus
 }

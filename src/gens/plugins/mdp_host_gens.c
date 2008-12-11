@@ -54,7 +54,7 @@ MDP_Host_t Gens_MDP_Host =
  * @param ptrID Pointer ID.
  * @return Pointer.
  */
-void* mdp_host_ref_ptr(uint32_t ptrID)
+void* MDP_FNCALL mdp_host_ref_ptr(uint32_t ptrID)
 {
 	switch (ptrID)
 	{
@@ -75,7 +75,7 @@ void* mdp_host_ref_ptr(uint32_t ptrID)
  * @param ptrID Pointer ID.
  * @return Pointer.
  */
-void mdp_host_unref_ptr(uint32_t ptrID)
+void MDP_FNCALL mdp_host_unref_ptr(uint32_t ptrID)
 {
 	switch (ptrID)
 	{
