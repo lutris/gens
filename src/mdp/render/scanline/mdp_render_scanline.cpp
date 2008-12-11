@@ -25,6 +25,7 @@
 #endif
 
 #include "mdp_render_scanline.hpp"
+#include "mdp_render_scanline_plugin.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -35,6 +36,35 @@
 #ifdef GENS_X86_ASM
 #include "mdp_render_scanline_x86.h"
 #endif /* GENS_X86_ASM */
+
+// MDP Host Services
+static MDP_Host_t *mdp_render_scanline_hostSrv = NULL;
+
+
+/**
+ * mdp_render_scanline_init(): Initialize the Scanline rendering plugin.
+ */
+void MDP_FNCALL mdp_render_scanline_init(MDP_Host_t *hostSrv)
+{
+	// Save the MDP Host Services pointer.
+	mdp_render_scanline_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_scanline_hostSrv->register_renderer(&mdp, &mdp_render_t);
+}
+
+
+/**
+ * mdp_render_scanline_end(): Shut down the Scanline rendering plugin.
+ */
+void MDP_FNCALL mdp_render_scanline_end(void)
+{
+	if (mdp_render_scanline_hostSrv)
+	{
+		// Unregister the renderer.
+		mdp_render_scanline_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	}
+}
 
 
 #ifndef GENS_X86_ASM
