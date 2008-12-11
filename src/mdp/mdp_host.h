@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Host Services.                           *
+ * MDP: Mega Drive Plugin - Host Services.                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_HOST_H
-#define GENS_MDP_HOST_H
+#ifndef MDP_HOST_H
+#define MDP_HOST_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,4 +64,4 @@ typedef struct
 }
 #endif
 
-#endif /* GENS_MDP_HOST_H */
+#endif /* MDP_HOST_H */
