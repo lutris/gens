@@ -26,6 +26,7 @@
 #endif
 
 #include "mdp_render_2xsai.h"
+#include "mdp_render_2xsai_plugin.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -38,6 +39,35 @@
 #ifdef GENS_X86_ASM
 #include "mdp_render_2xsai_x86.h"
 #endif /* GENS_X86_ASM */
+
+// MDP Host Services
+static MDP_Host_t *mdp_render_2xsai_hostSrv = NULL;
+
+
+/**
+ * mdp_render_2xsai_init(): Initialize the 2xSaI rendering plugin.
+ */
+void MDP_FNCALL mdp_render_2xsai_init(MDP_Host_t *hostSrv)
+{
+	// Save the MDP Host Services pointer.
+	mdp_render_2xsai_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_2xsai_hostSrv->register_renderer(&mdp, &mdp_render_t);
+}
+
+
+/**
+ * mdp_render_2xsai_end(): Shut down the 2xSaI rendering plugin.
+ */
+void MDP_FNCALL mdp_render_2xsai_end(void)
+{
+	if (mdp_render_2xsai_hostSrv)
+	{
+		// Unregister the renderer.
+		mdp_render_2xsai_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	}
+}
 
 
 /**

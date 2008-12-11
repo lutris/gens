@@ -39,13 +39,19 @@ static MDP_Desc_t MDP_Desc =
 	.license = MDP_LICENSE_LGPL_21
 };
 
-static MDP_Render_t MDP_Render =
+MDP_Render_t mdp_render_t =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_2xsai_cpp,
 	.scale = 2,
 	.flags = MDP_RENDER_FLAG_SRC16DST32,
 	.tag = "2xSaI"
+};
+
+static MDP_Func_t MDP_Func =
+{
+	.init = mdp_render_2xsai_init,
+	.end = mdp_render_2xsai_end
 };
 
 MDP_t mdp =
@@ -69,5 +75,5 @@ MDP_t mdp =
 	.desc = &MDP_Desc,
 	
 	// Functions.
-	.func = NULL
+	.func = &MDP_Func
 };

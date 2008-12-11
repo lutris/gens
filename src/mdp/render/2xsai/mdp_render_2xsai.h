@@ -29,7 +29,10 @@ extern "C" {
 #endif
 
 #include "mdp/mdp_render.h"
+#include "mdp/mdp_host.h"
 
+DLL_LOCAL void MDP_FNCALL mdp_render_2xsai_init(MDP_Host_t *hostSrv);
+DLL_LOCAL void MDP_FNCALL mdp_render_2xsai_end(void);
 DLL_LOCAL void MDP_FNCALL mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo);
 
 #ifdef __cplusplus
