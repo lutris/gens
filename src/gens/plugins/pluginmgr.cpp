@@ -53,6 +53,9 @@ using std::list;
 // CPU flags
 #include "gens_core/misc/cpuflags.h"
 
+// MDP Host Services
+#include "mdp_host_gens.h"
+
 // Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
 #include "render/double/mdp_render_2x_plugin.h"
@@ -146,6 +149,10 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 	
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
+	
+	// Run the plugin initialization function.
+	if (plugin->func && plugin->func->init)
+		plugin->func->init(&Gens_MDP_Host);
 	
 	// Plugin loaded.
 	return true;

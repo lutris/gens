@@ -69,8 +69,6 @@ int MDP_FNCALL mdp_host_register_renderer(struct MDP_t *plugin, MDP_Render_t *re
 	
 	// Add the plugin to the list.
 	PluginMgr::lstRenderPlugins.push_back(renderer);
-	if (plugin->func && plugin->func->init)
-		plugin->func->init(&Gens_MDP_Host);
 	
 	// Add the plugin tag to the map.
 	list<MDP_Render_t*>::iterator lstIter = PluginMgr::lstRenderPlugins.end();
