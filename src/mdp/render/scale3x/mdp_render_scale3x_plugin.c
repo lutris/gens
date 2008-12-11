@@ -43,13 +43,19 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = sizeof(mdp_render_scale3x_icon)
 };
 
-static MDP_Render_t MDP_Render =
+MDP_Render_t mdp_render_t =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_scale3x_cpp,
 	.scale = 3,
 	.flags = 0,
 	.tag = "Scale3x"
+};
+
+static MDP_Func_t MDP_Func =
+{
+	.init = mdp_render_scale3x_init,
+	.end = mdp_render_scale3x_end
 };
 
 MDP_t mdp =
@@ -73,5 +79,5 @@ MDP_t mdp =
 	.desc = &MDP_Desc,
 	
 	// Functions.
-	.func = NULL
+	.func = &MDP_Func
 };

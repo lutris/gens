@@ -26,6 +26,7 @@
 #endif
 
 #include "mdp_render_scale3x.h"
+#include "mdp_render_scale3x_plugin.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -34,6 +35,36 @@
 
 // CPU flags
 #include "mdp/mdp_cpuflags.h"
+
+// MDP Host Services
+static MDP_Host_t *mdp_render_scale3x_hostSrv = NULL;
+
+
+/**
+ * mdp_render_scale3x_init(): Initialize the Scale3x rendering plugin.
+ */
+void MDP_FNCALL mdp_render_scale3x_init(MDP_Host_t *hostSrv)
+{
+	// Save the MDP Host Services pointer.
+	mdp_render_scale3x_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_scale3x_hostSrv->register_renderer(&mdp, &mdp_render_t);
+}
+
+
+/**
+ * mdp_render_scale3x_end(): Shut down the Scale3x rendering plugin.
+ */
+void MDP_FNCALL mdp_render_scale3x_end(void)
+{
+	if (mdp_render_scale3x_hostSrv)
+	{
+		// Unregister the renderer.
+		mdp_render_scale3x_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	}
+}
+
 
 void MDP_FNCALL mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo)
 {
