@@ -123,7 +123,7 @@ void MDP_FNCALL mdp_render_epx_cpp(MDP_Render_Info_t *renderInfo)
 			    renderInfo->destPitch, renderInfo->srcPitch,
 			    renderInfo->width, renderInfo->height);
 	}
-	else
+	else //if (renderInfo->bpp == 32)
 	{
 		T_mdp_render_epx_cpp(
 			    (uint32_t*)renderInfo->destScreen,

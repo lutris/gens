@@ -124,7 +124,7 @@ void MDP_FNCALL mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
 			    renderInfo->width, renderInfo->height,
 			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 	}
-	else
+	else //if (renderInfo->bpp == 32)
 	{
 		T_mdp_render_interpolated_cpp(
 			    (uint32_t*)renderInfo->destScreen,
