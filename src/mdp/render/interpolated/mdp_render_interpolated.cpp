@@ -25,6 +25,7 @@
 #endif
 
 #include "mdp_render_interpolated.hpp"
+#include "mdp_render_interpolated_plugin.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -35,6 +36,35 @@
 #define MASK_DIV2_15		((uint16_t)(0x3DEF))
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
 #define MASK_DIV2_32		((uint32_t)(0x7F7F7F7F))
+
+// MDP Host Services
+static MDP_Host_t *mdp_render_interpolated_hostSrv = NULL;
+
+
+/**
+ * mdp_render_interpolated_init(): Initialize the Interpolated rendering plugin.
+ */
+void MDP_FNCALL mdp_render_interpolated_init(MDP_Host_t *hostSrv)
+{
+	// Save the MDP Host Services pointer.
+	mdp_render_interpolated_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_interpolated_hostSrv->register_renderer(&mdp, &mdp_render_t);
+}
+
+
+/**
+ * mdp_render_interpolated_end(): Shut down the Interpolated rendering plugin.
+ */
+void MDP_FNCALL mdp_render_interpolated_end(void)
+{
+	if (mdp_render_interpolated_hostSrv)
+	{
+		// Unregister the renderer.
+		mdp_render_interpolated_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	}
+}
 
 
 /**
