@@ -70,12 +70,21 @@ static MDP_t* mdp_internal[] =
 
 
 /**
+ * lstRenderPlugins, tblRenderPlugins: List and map containing all plugins.
+ */
+list<MDP_t*> PluginMgr::lstMDP;
+mapMDP PluginMgr::tblMDP;
+
+
+/**
  * lstRenderPlugins, tblRenderPlugins: List and map containing render plugins.
  */
-list<MDP_t*> PluginMgr::lstRenderPlugins;
+list<MDP_Render_t*> PluginMgr::lstRenderPlugins;
 mapRenderPlugin PluginMgr::tblRenderPlugins;
 
 
+// TODO: Replace with MDP_Host_t->registerRenderer().
+#if 0
 /**
  * initPlugin_Render(): Initialize a rendering plugin.
  * @return True if loaded; false if not.
@@ -119,6 +128,7 @@ bool PluginMgr::initPlugin_Render(MDP_t* plugin)
 	
 	return true;
 }
+#endif
 
 
 /**
@@ -185,17 +195,7 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
 	
-	switch (plugin->type)
-	{
-		case MDPT_RENDER:
-			return initPlugin_Render(plugin);
-			break;
-		
-		default:
-			// Unknown plugin type.
-			break;
-	}
-	
+	// Plugin loaded.
 	return true;
 }
 
@@ -336,26 +336,29 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 void PluginMgr::end(void)
 {
 	// Shut down all render plugins.
-	for (list<MDP_t*>::iterator curMDP = lstRenderPlugins.begin();
-	     curMDP != lstRenderPlugins.end(); curMDP++)
+	for (list<MDP_t*>::iterator curMDP = lstMDP.begin();
+	     curMDP != lstMDP.end(); curMDP++)
 	{
 		MDP_Func_t *func = (*curMDP)->func;
 		if (func && func->end)
 			func->end();
 	}
 	
-	// Clear the vector and map of render plugins.
+	// Clear all plugin lists and maps.
+	lstMDP.clear();
+	tblMDP.clear();
+	
 	lstRenderPlugins.clear();
-	//tblRenderPlugins.clear();
+	tblRenderPlugins.clear();
 }
 
 
 /**
  * getMDPIterFromTag_Render(): Get a render plugin iterator from its tag.
  * @param tag Plugin tag.
- * @return Plugin iterator from lstRenderPlugins.
+ * @return Render plugin iterator from lstRenderPlugins.
  */
-std::list<MDP_t*>::iterator PluginMgr::getMDPIterFromTag_Render(string tag)
+std::list<MDP_Render_t*>::iterator PluginMgr::getMDPIterFromTag_Render(string tag)
 {
 	if (tag.empty())
 		return lstRenderPlugins.end();

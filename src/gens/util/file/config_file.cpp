@@ -170,8 +170,8 @@ int Config::save(const string& filename)
 	// Video settings
 	// Render_Mode is incremented by 1 for compatibility with old Gens.
 	cfg.writeBool("Graphics", "Full Screen", draw->fullScreen());
-	cfg.writeString("Graphics", "Render Fullscreen", (static_cast<MDP_Render_t*>((*rendMode_FS)->plugin_t))->tag);
-	cfg.writeString("Graphics", "Render Windowed", (static_cast<MDP_Render_t*>((*rendMode_W)->plugin_t))->tag);
+	cfg.writeString("Graphics", "Render Fullscreen", (*rendMode_FS)->tag);
+	cfg.writeString("Graphics", "Render Windowed", (*rendMode_W)->tag);
 	cfg.writeInt("Graphics", "Full Screen VSync", Video.VSync_FS & 1);
 	cfg.writeInt("Graphics", "Windows VSync", Video.VSync_W & 1);
 	cfg.writeBool("Graphics", "Border Color Emulation", Video.borderColorEmulation);

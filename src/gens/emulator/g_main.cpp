@@ -72,8 +72,8 @@ uint8_t bppOut;	// Output bpp.
 // Renderers
 #include <list>
 using std::list;
-list<MDP_t*>::iterator rendMode_FS;
-list<MDP_t*>::iterator rendMode_W;
+list<MDP_Render_t*>::iterator rendMode_FS;
+list<MDP_Render_t*>::iterator rendMode_W;
 
 int fast_forward = 0;
 
@@ -220,8 +220,9 @@ static int Build_Language_String (void)
 
 /**
  * Init_Settings(): Initialize the Settings struct.
+ * @return 1 on success; 0 on error.
  */
-void Init_Settings(void)
+int Init_Settings(void)
 {
 	// Initialize video settings.
 	Video.borderColorEmulation = 1;
@@ -282,12 +283,21 @@ void Init_Settings(void)
 	PluginMgr::init();
 	
 	// Set the default renderers.
+	if (PluginMgr::lstRenderPlugins.empty())
+	{
+		// No render plugins found.
+		fprintf(stderr, "%s(): FATAL ERROR: No render plugins found.\n", __func__);
+		return 1;	// TODO: Replace with a better error code.
+	}
 	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
 	rendMode_W = PluginMgr::lstRenderPlugins.begin();
 	
 	// Build language strings and load the default configuration.
 	Build_Language_String();
 	Config::load(Str_Tmp, NULL);
+	
+	// Success.
+	return 1;
 }
 
 

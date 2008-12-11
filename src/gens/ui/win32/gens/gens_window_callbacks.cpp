@@ -405,7 +405,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 		
 		case IDCMD_RENDERMODE_DEC:
 		{
-			list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+			list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 			if (rendMode != PluginMgr::lstRenderPlugins.begin())
 			{
 				rendMode--;
@@ -416,7 +416,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 		}
 		case IDCMD_RENDERMODE_INC:
 		{
-			list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+			list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 			rendMode++;
 			if (rendMode != PluginMgr::lstRenderPlugins.end())
 			{

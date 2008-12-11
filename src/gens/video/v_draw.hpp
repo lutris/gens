@@ -68,7 +68,7 @@ class VDraw
 		void Refresh_Video(void);
 		
 		// Set the rendering mode.
-		int setRender(const std::list<MDP_t*>::iterator& newMode, const bool forceUpdate = true);
+		int setRender(const std::list<MDP_Render_t*>::iterator& newMode, const bool forceUpdate = true);
 		
 		// Update VSync value.
 		virtual void updateVSync(const bool data = false) = 0;

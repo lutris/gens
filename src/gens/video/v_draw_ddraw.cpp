@@ -100,8 +100,8 @@ int VDraw_DDraw::Init_Video(void)
 	
 	End_Video();
 	
-	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
-	const int scale = (static_cast<MDP_Render_t*>((*rendMode)->plugin_t))->scale;
+	const list<MDP_Render_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const int scale = (*rendMode)->scale;
 	
 	// Determine the window size using the scaling factor.
 	if (scale <= 0)
@@ -302,8 +302,8 @@ int VDraw_DDraw::reinitGensWindow(void)
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
 	create_gens_window_menubar();
 	
-	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
-	const int scale = (static_cast<MDP_Render_t*>((*rendMode)->plugin_t))->scale;
+	const list<MDP_Render_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const int scale = (*rendMode)->scale;
 	
 	// Determine the window size using the scaling factor.
 	if (scale <= 0)

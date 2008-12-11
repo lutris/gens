@@ -331,26 +331,24 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
-	list<MDP_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	list<MDP_Render_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	
-	for (list<MDP_t*>::iterator curMDP = PluginMgr::lstRenderPlugins.begin();
-	     curMDP != PluginMgr::lstRenderPlugins.end(); curMDP++, i++)
+	for (list<MDP_Render_t*>::iterator curPlugin = PluginMgr::lstRenderPlugins.begin();
+	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)
 	{
 		// Delete the menu item from the map, if it exists.
 		gensMenuMap.erase(i);
 		
 		sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
 		
-		MDP_Render_t *plugin = static_cast<MDP_Render_t*>((*curMDP)->plugin_t);
-		
-		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, plugin->tag);
+		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, (*curPlugin)->tag);
 		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
 		gtk_widget_set_name(mnuItem, sObjName);
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
 		
 		// Check if this render mode is selected.
-		if (selMDP == curMDP)
+		if (selMDP == curPlugin)
 		{
 			// Render mode is selected.
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), true);

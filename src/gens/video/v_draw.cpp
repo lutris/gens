@@ -444,7 +444,7 @@ void VDraw::drawText_int(pixel *screen, const int fullW, const int w, const int 
 	unsigned short x, y, cx, cy;
 	unsigned char charSize;
 	
-	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const list<MDP_Render_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
 	
 	// The message must be specified.
 	if (!msg)
@@ -651,7 +651,7 @@ void VDraw::setBpp(const int newBpp, const bool resetVideo)
 	}
 	
 	// Reset the renderer.
-	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const list<MDP_Render_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
 	if (!setRender(rendMode, resetVideo))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
@@ -717,7 +717,7 @@ void VDraw::Refresh_Video(void)
  * @param newMode Rendering mode / filter.
  * @param forceUpdate If true, forces a renderer update.
  */
-int VDraw::setRender(const list<MDP_t*>::iterator& newMode, const bool forceUpdate)
+int VDraw::setRender(const list<MDP_Render_t*>::iterator& newMode, const bool forceUpdate)
 {
 	if (PluginMgr::lstRenderPlugins.size() == 0 ||
 	    newMode == PluginMgr::lstRenderPlugins.end())
@@ -725,17 +725,17 @@ int VDraw::setRender(const list<MDP_t*>::iterator& newMode, const bool forceUpda
 		return 0;
 	}
 	
-	list<MDP_t*>::iterator& Rend = (m_FullScreen ? rendMode_FS : rendMode_W);
-	list<MDP_t*>::iterator oldRend = Rend;
+	list<MDP_Render_t*>::iterator& Rend = (m_FullScreen ? rendMode_FS : rendMode_W);
+	list<MDP_Render_t*>::iterator oldRend = Rend;
 	MDP_Render_Fn *rendFn = (m_FullScreen ? &m_BlitFS : &m_BlitW);
 	
 	bool reinit = false;
 	
 	// Get the old scaling factor.
-	const int oldScale = (static_cast<MDP_Render_t*>((*oldRend)->plugin_t))->scale;
+	const int oldScale = (*oldRend)->scale;
 	
 	// Renderer function found.
-	MDP_Render_t *rendPlugin = static_cast<MDP_Render_t*>((*newMode)->plugin_t);
+	MDP_Render_t *rendPlugin = (*newMode);
 	*rendFn = rendPlugin->blit;
 	
 	if (Rend != newMode)
@@ -991,7 +991,7 @@ void VDraw::setFullScreen(const bool newFullScreen)
 	m_FullScreen = newFullScreen;
 	
 	// Set the renderer.
-	const list<MDP_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
+	const list<MDP_Render_t*>::iterator& rendMode = (m_FullScreen ? rendMode_FS : rendMode_W);
 	setRender(rendMode, false);
 	
 #ifdef GENS_OS_WIN32

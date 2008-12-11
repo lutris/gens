@@ -279,7 +279,7 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+				list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 				if (rendMode != PluginMgr::lstRenderPlugins.begin())
 				{
 					rendMode--;
@@ -297,7 +297,7 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				list<MDP_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+				list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 				rendMode++;
 				if (rendMode != PluginMgr::lstRenderPlugins.end())
 				{

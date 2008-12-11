@@ -142,7 +142,7 @@ int IsAsyncAllowed(void);
 
 // Initialization functions.
 int Init(void);
-void Init_Settings(void);
+int Init_Settings(void);
 
 // MESSAGE_L functions.
 void MESSAGE_L(const char* str, const char* def, int time);
@@ -210,8 +210,8 @@ extern Audio *audio;
 
 // Renderers
 #include "plugins/pluginmgr.hpp"
-extern std::list<MDP_t*>::iterator rendMode_FS;
-extern std::list<MDP_t*>::iterator rendMode_W;
+extern std::list<MDP_Render_t*>::iterator rendMode_FS;
+extern std::list<MDP_Render_t*>::iterator rendMode_W;
 
 #endif
 

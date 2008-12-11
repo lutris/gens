@@ -262,16 +262,15 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
 	unsigned int selMenuItem = 0;
-	list<MDP_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	list<MDP_Render_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	
-	for (list<MDP_t*>::iterator curMDP = PluginMgr::lstRenderPlugins.begin();
-	     curMDP != PluginMgr::lstRenderPlugins.end(); curMDP++, i++)
+	for (list<MDP_Render_t*>::iterator curPlugin = PluginMgr::lstRenderPlugins.begin();
+	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)
 	{
-		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING, i,
-			   (static_cast<MDP_Render_t*>((*curMDP)->plugin_t))->tag);
+		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING, i, (*curPlugin)->tag);
 		
 		// Check if this render mode is selected.
-		if (selMDP == curMDP)
+		if (selMDP == curPlugin)
 			selMenuItem = i;
 	}
 	

@@ -1061,7 +1061,7 @@ void Options::setOpenGL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	list<MDP_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	list<MDP_Render_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	draw->setRender(rendMode, true);
 	
 	// Synchronize the Graphics Menu.

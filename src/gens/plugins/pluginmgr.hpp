@@ -30,8 +30,11 @@
 #include <list>
 #include "macros/hashtable.hpp"
 
-typedef GENS_HASHTABLE<std::string, std::list<MDP_t*>::iterator> mapRenderPlugin;
-typedef std::pair<std::string, std::list<MDP_t*>::iterator> pairRenderPlugin;
+typedef GENS_HASHTABLE<std::string, std::list<MDP_t*>::iterator> mapMDP;
+typedef std::pair<std::string, std::list<MDP_t*>::iterator> pairMDP;
+
+typedef GENS_HASHTABLE<std::string, std::list<MDP_Render_t*>::iterator> mapRenderPlugin;
+typedef std::pair<std::string, std::list<MDP_Render_t*>::iterator> pairRenderPlugin;
 
 class PluginMgr
 {
@@ -39,9 +42,12 @@ class PluginMgr
 		static void init(void);
 		static void end(void);
 		
-		static std::list<MDP_t*>::iterator getMDPIterFromTag_Render(std::string tag);
+		static std::list<MDP_Render_t*>::iterator getMDPIterFromTag_Render(std::string tag);
 		
-		static std::list<MDP_t*> lstRenderPlugins;
+		static std::list<MDP_t*> lstMDP;
+		static mapMDP tblMDP;
+		
+		static std::list<MDP_Render_t*> lstRenderPlugins;
 		static mapRenderPlugin tblRenderPlugins;
 		
 	protected:
@@ -49,7 +55,8 @@ class PluginMgr
 		static void scanExternalPlugins(const std::string& directory, bool recursive = true);
 		static void loadExternalPlugin(const std::string& filename);
 		
-		static bool initPlugin_Render(MDP_t *plugin);
+		// TODO: Replace with MDP_Host_t->registerRenderer().
+		//static bool initPlugin_Render(MDP_t *plugin);
 };
 
 #endif /* GENS_PLUGINMGR_HPP */

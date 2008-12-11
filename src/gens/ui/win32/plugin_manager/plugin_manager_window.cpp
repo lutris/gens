@@ -327,8 +327,8 @@ void PluginManagerWindow::populatePluginList(void)
 	// Add all plugins to the listbox.
 	char tmp[64];
 	list<MDP_t*>::iterator curPlugin;
-	for (curPlugin = PluginMgr::lstRenderPlugins.begin();
-	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++)
+	for (curPlugin = PluginMgr::lstMDP.begin();
+	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
 		MDP_t *plugin = (*curPlugin);
 		const char *pluginName;

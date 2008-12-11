@@ -91,7 +91,14 @@ int main(int argc, char *argv[])
 	audio = new Audio_SDL();
 	
 	// Initialize the Settings struct.
-	Init_Settings();
+	if (Init_Settings())
+	{
+		// Error initializing settings.
+		delete audio;
+		delete input;
+		delete draw;
+		return 1;	// TODO: Replace with a better error code.
+	}
 	
 	// Initialize the Game Genie array.
 	Init_GameGenie();
@@ -127,21 +134,21 @@ int main(int argc, char *argv[])
 	{
 		if (ROM::openROM(PathNames.Start_Rom) == -1)
 		{
-			fprintf(stderr, "Failed to load %s\n", PathNames.Start_Rom);
+			fprintf(stderr, "%s(): Failed to load %s\n", __func__, PathNames.Start_Rom);
 		}
 	}
 	
 	// Update the UI.
 	GensUI::update();
 	
-	const list<MDP_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	const list<MDP_Render_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
 	if (!draw->setRender(rendMode))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
 		if (!draw->setRender(PluginMgr::lstRenderPlugins.begin()))
 		{
 			// Cannot initialize normal mode.
-			fprintf(stderr, "%s: FATAL ERROR: Cannot initialize any renderers.\n", __func__);
+			fprintf(stderr, "%s(): FATAL ERROR: Cannot initialize any renderers.\n", __func__);
 			return 1;
 		}
 	}
