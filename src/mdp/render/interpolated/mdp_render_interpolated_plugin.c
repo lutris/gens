@@ -53,9 +53,13 @@ static MDP_Render_t MDP_Render =
 
 MDP_t mdp =
 {
+	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
 	.pluginVersion = MDP_VERSION(0, 1, 0),
-	.type = MDPT_RENDER,
+	
+	// CPU flags.
+	.cpuFlagsSupported = 0,
+	.cpuFlagsRequired = 0,
 	
 	// UUID: fd39b461-9488-4eff-b401-a9e764fdc0b7
 	.uuid = {0xFD, 0x39, 0xB4, 0x61,
@@ -64,15 +68,9 @@ MDP_t mdp =
 		 0xB4, 0x01,
 		 0xA9, 0xE7, 0x64, 0xFD, 0xC0, 0xB7},
 	
-	// CPU flags
-	.cpuFlagsSupported = 0,
-	.cpuFlagsRequired = 0,
-	
-	// Description
+	// Description.
 	.desc = &MDP_Desc,
 	
-	// Functions
-	.func = NULL,
-	
-	.plugin_t = (void*)&MDP_Render
+	// Functions.
+	.func = NULL
 };

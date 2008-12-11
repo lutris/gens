@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_H
-#define GENS_MDP_H
+#ifndef MDP_H
+#define MDP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,7 @@ extern "C" {
 #include "mdp_version.h"
 
 // MDP interface version.
-#define MDP_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
+#define MDP_INTERFACE_VERSION MDP_VERSION(1, 0, 0)
 
 // Licenses
 #define MDP_LICENSE_GPL_2	"GPL-2"
@@ -65,12 +65,7 @@ typedef struct
 	const unsigned int iconLength;
 } MDP_Desc_t;
 
-// Plugin types.
-enum MDP_Type
-{
-	MDPT_NULL = 0,
-	MDPT_RENDER,
-};
+typedef struct MDP_t MDP_t;
 
 // MDP Host Services.
 #include "mdp_host.h"
@@ -87,33 +82,28 @@ typedef struct
 	mdp_end		end;
 } MDP_Func_t;
 
-typedef struct
+struct MDP_t
 {
+	// Plugin version information.
 	const uint32_t interfaceVersion;
 	const uint32_t pluginVersion;
-	const uint32_t type;
-	const uint32_t reserved1;
+	
+	// CPU flags.
+	const uint32_t cpuFlagsSupported;
+	const uint32_t cpuFlagsRequired;
 	
 	// UUID - each plugin must have a unique ID.
 	const unsigned char uuid[16];
 	
-	// CPU flag information.
-	const uint32_t cpuFlagsSupported;
-	const uint32_t cpuFlagsRequired;
-	
-	// Plugin description.
+	// Description.
 	MDP_Desc_t *desc;
 	
-	// Plugin functions.
+	// Functions.
 	MDP_Func_t *func;
-	
-	// Struct definition for the specified plugin type.
-	void *plugin_t;
-} MDP_t;
-
+};
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_H */
+#endif /* MDP_H */

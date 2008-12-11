@@ -31,6 +31,7 @@ extern "C" {
 
 #include "mdp_fncall.h"
 #include "mdp_version.h"
+#include "mdp_render.h"
 
 // MDP Host Services interface version.
 #define MDP_HOST_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
@@ -52,6 +53,11 @@ typedef struct
 	// unrefPtr(): Unreference a pointer.
 	void* (MDP_FNCALL *refPtr)(uint32_t ptrID);
 	void  (MDP_FNCALL *unrefPtr)(uint32_t ptrID);
+	
+	// registerRenderer(): Register a renderer.
+	// unregisterRenderer(): Unregister a renderer.
+	int (MDP_FNCALL *registerRenderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *unregisterRenderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
 } MDP_Host_t;
 
 // Gens/GS host services
