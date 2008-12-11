@@ -73,14 +73,13 @@ static MDP_t* mdp_internal[] =
 
 
 /**
- * lstRenderPlugins, tblRenderPlugins: List and map containing all plugins.
+ * lstMDP: List containing all loaded plugins.
  */
 list<MDP_t*> PluginMgr::lstMDP;
-mapMDP PluginMgr::tblMDP;
 
 
 /**
- * lstRenderPlugins, tblRenderPlugins: List and map containing render plugins.
+ * lstRenderPlugins, tblRenderPlugins: List and map containing all loaded render plugins.
  */
 list<MDP_Render_t*> PluginMgr::lstRenderPlugins;
 mapRenderPlugin PluginMgr::tblRenderPlugins;
@@ -309,7 +308,6 @@ void PluginMgr::end(void)
 	
 	// Clear all plugin lists and maps.
 	lstMDP.clear();
-	tblMDP.clear();
 	
 	lstRenderPlugins.clear();
 	tblRenderPlugins.clear();
