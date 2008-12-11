@@ -62,7 +62,7 @@ void MDP_FNCALL mdp_render_scanline_50_init(MDP_Host_t *hostSrv)
 
 
 /**
- * mdp_render_scanline_end(): Shut down the Scanline rendering plugin.
+ * mdp_render_scanline_50_end(): Shut down the Scanline rendering plugin.
  */
 void MDP_FNCALL mdp_render_scanline_50_end(void)
 {
