@@ -39,7 +39,7 @@ static MDP_Desc_t MDP_Desc =
 	.license = MDP_LICENSE_LGPL_21
 };
 
-static MDP_Render_t MDP_Render =
+MDP_Render_t mdp_render_t =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_hq4x_cpp,

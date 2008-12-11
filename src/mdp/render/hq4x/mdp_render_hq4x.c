@@ -26,6 +26,7 @@
 #endif
 
 #include "mdp_render_hq4x.h"
+#include "mdp_render_hq4x_plugin.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -57,6 +58,9 @@ void MDP_FNCALL mdp_render_hq4x_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_hq4x_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_hq4x_hostSrv->register_renderer(&mdp, &mdp_render_t);
 }
 
 
@@ -65,6 +69,9 @@ void MDP_FNCALL mdp_render_hq4x_init(MDP_Host_t *hostSrv)
  */
 void MDP_FNCALL mdp_render_hq4x_end(void)
 {
+	if (!mdp_render_hq4x_hostSrv)
+		return;
+	
 	// If the LUT16to32 pointer was referenced, unreference it.
 	if (mdp_render_hq4x_LUT16to32)
 	{
@@ -78,6 +85,9 @@ void MDP_FNCALL mdp_render_hq4x_end(void)
 		mdp_render_hq4x_hostSrv->unrefPtr(MDP_PTR_RGB16toYUV);
 		mdp_render_hq4x_RGB16toYUV = NULL;
 	}
+	
+	// Unregister the renderer.
+	mdp_render_hq4x_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
 }
 
 

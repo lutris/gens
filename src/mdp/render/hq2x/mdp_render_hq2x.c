@@ -26,6 +26,7 @@
 #endif
 
 #include "mdp_render_hq2x.h"
+#include "mdp_render_hq2x_plugin.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -57,6 +58,9 @@ void MDP_FNCALL mdp_render_hq2x_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_hq2x_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_hq2x_hostSrv->register_renderer(&mdp, &mdp_render_t);
 }
 
 
@@ -65,6 +69,12 @@ void MDP_FNCALL mdp_render_hq2x_init(MDP_Host_t *hostSrv)
  */
 void MDP_FNCALL mdp_render_hq2x_end(void)
 {
+	if (!mdp_render_hq2x_hostSrv)
+		return;
+	
+	// Unregister the renderer.
+	mdp_render_hq2x_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	
 	// If the LUT16to32 pointer was referenced, unreference it.
 	if (mdp_render_hq2x_LUT16to32)
 	{
