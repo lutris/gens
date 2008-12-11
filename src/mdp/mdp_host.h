@@ -54,10 +54,10 @@ typedef struct
 	void* (MDP_FNCALL *refPtr)(uint32_t ptrID);
 	void  (MDP_FNCALL *unrefPtr)(uint32_t ptrID);
 	
-	// registerRenderer(): Register a renderer.
-	// unregisterRenderer(): Unregister a renderer.
-	int (MDP_FNCALL *registerRenderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
-	int (MDP_FNCALL *unregisterRenderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	// register_renderer(): Register a renderer.
+	// unregister_renderer(): Unregister a renderer.
+	int (MDP_FNCALL *register_renderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *unregister_renderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
 } MDP_Host_t;
 
 #ifdef __cplusplus
