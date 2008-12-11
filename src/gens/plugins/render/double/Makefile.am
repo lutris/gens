@@ -1,4 +1,4 @@
-# MDP Render Plugin: Double renderer
+# MDP Render Plugin: Double renderer.
 
 AUTOMAKE_OPTIONS = subdir-objects
 

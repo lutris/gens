@@ -1,4 +1,4 @@
-# MDP Render Plugin: hq4x renderer
+# MDP Render Plugin: hq4x renderer.
 
 # libtool/nasm stuff from http://osdir.com/ml/sysutils.automake.general/2002-08/msg00134.html
 # strip_fPIC.sh from http://networkmultimedia.org/
