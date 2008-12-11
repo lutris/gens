@@ -400,7 +400,7 @@ int Config::load(const string& filename, void* gameActive)
 	if (rendMode_FS == PluginMgr::lstRenderPlugins.end())
 	{
 		// Invalid mode. Set to Normal mode.
-		rendMode_FS == PluginMgr::lstRenderPlugins.begin();
+		rendMode_FS = PluginMgr::lstRenderPlugins.begin();
 	}
 	
 	// Renderer: Windowed
@@ -409,7 +409,7 @@ int Config::load(const string& filename, void* gameActive)
 	if (rendMode_W == PluginMgr::lstRenderPlugins.end())
 	{
 		// Invalid mode. Set to Normal mode.
-		rendMode_W == PluginMgr::lstRenderPlugins.begin();
+		rendMode_W = PluginMgr::lstRenderPlugins.begin();
 	}
 	
 #ifndef GENS_OS_WIN32
