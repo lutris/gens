@@ -220,7 +220,7 @@ static int Build_Language_String (void)
 
 /**
  * Init_Settings(): Initialize the Settings struct.
- * @return 1 on success; 0 on error.
+ * @return 0 on success; non-zero on error.
  */
 int Init_Settings(void)
 {
@@ -297,7 +297,7 @@ int Init_Settings(void)
 	Config::load(Str_Tmp, NULL);
 	
 	// Success.
-	return 1;
+	return 0;
 }
 
 
