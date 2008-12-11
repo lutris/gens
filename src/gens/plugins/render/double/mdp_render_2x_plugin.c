@@ -42,13 +42,19 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = sizeof(mdp_render_2x_icon)
 };
 
-static MDP_Render_t MDP_Render =
+MDP_Render_t mdp_render_2x_render_t =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_2x_cpp,
 	.scale = 2,
 	.flags = 0,
 	.tag = "Double"
+};
+
+static MDP_Func_t MDP_Func =
+{
+	.init = mdp_render_2x_init,
+	.end = mdp_render_2x_end
 };
 
 MDP_t mdp_render_2x =
@@ -72,5 +78,5 @@ MDP_t mdp_render_2x =
 	.desc = &MDP_Desc,
 	
 	// Functions
-	.func = NULL
+	.func = &MDP_Func
 };
