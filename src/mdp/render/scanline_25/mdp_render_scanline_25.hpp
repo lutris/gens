@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+#include "mdp/mdp.h"
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
