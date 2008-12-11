@@ -60,9 +60,6 @@ typedef struct
 	int (MDP_FNCALL *unregisterRenderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
 } MDP_Host_t;
 
-// Gens/GS host services
-extern MDP_Host_t MDP_Host;
-
 #ifdef __cplusplus
 }
 #endif
