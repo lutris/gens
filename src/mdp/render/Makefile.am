@@ -17,7 +17,8 @@ SUBDIRS = \
 		scale2x \
 		scale3x \
 		scale4x \
-		epx
+		epx \
+		epx_plus
 
 if GENS_X86_ASM
 SUBDIRS += \

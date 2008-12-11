@@ -530,6 +530,7 @@ src/mdp/render/hq3x/Makefile
 src/mdp/render/hq4x/Makefile
 src/mdp/render/2xsai/Makefile
 src/mdp/render/epx/Makefile
+src/mdp/render/epx_plus/Makefile
 src/gens/Makefile
 src/gens/plugins/render/normal/Makefile
 src/gens/plugins/render/double/Makefile
