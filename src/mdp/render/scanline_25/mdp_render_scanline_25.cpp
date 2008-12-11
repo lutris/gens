@@ -25,6 +25,7 @@
 #endif
 
 #include "mdp_render_scanline_25.hpp"
+#include "mdp_render_scanline_25_plugin.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -48,6 +49,35 @@
 #define MASK_DIV4_15_ASM	((uint32_t)(0x1CE71CE7))
 #define MASK_DIV4_16_ASM	((uint32_t)(0x39E739E7))
 #define MASK_DIV4_32		((uint32_t)(0x3F3F3F3F))
+
+// MDP Host Services
+static MDP_Host_t *mdp_render_scanline_25_hostSrv = NULL;
+
+
+/**
+ * mdp_render_scanline_25_init(): Initialize the 25% Scanline rendering plugin.
+ */
+void MDP_FNCALL mdp_render_scanline_25_init(MDP_Host_t *hostSrv)
+{
+	// Save the MDP Host Services pointer.
+	mdp_render_scanline_25_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_scanline_25_hostSrv->register_renderer(&mdp, &mdp_render_t);
+}
+
+
+/**
+ * mdp_render_scanline_25_end(): Shut down the 25% Scanline rendering plugin.
+ */
+void MDP_FNCALL mdp_render_scanline_25_end(void)
+{
+	if (mdp_render_scanline_25_hostSrv)
+	{
+		// Unregister the renderer.
+		mdp_render_scanline_25_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	}
+}
 
 
 #ifndef GENS_X86_ASM
