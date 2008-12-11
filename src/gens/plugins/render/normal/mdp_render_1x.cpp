@@ -55,7 +55,7 @@ void MDP_FNCALL mdp_render_1x_init(MDP_Host_t *hostSrv)
 
 
 /**
- * mdp_render_hq2x_end(): Shut down the Normal rendering plugin.
+ * mdp_render_1x_end(): Shut down the Normal rendering plugin.
  */
 void MDP_FNCALL mdp_render_1x_end(void)
 {
