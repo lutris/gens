@@ -103,7 +103,8 @@ void MDP_FNCALL mdp_render_hq4x_cpp(MDP_Render_Info_t *renderInfo)
 			    (uint16_t*)renderInfo->destScreen,
 			    (uint16_t*)renderInfo->mdScreen,
 			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height);
+			    renderInfo->width, renderInfo->height,
+			    (renderInfo->bpp == 15));
 	}
 #else /* !GENS_X86_ASM */
 	T_mdp_render_hq4x_cpp(
