@@ -25,6 +25,7 @@
 #endif
 
 #include "mdp_render_1x.hpp"
+#include "mdp_render_1x_plugin.h"
 #include <string.h>
 #include <stdint.h>
 
@@ -35,6 +36,36 @@
 #ifdef GENS_X86_ASM
 #include "mdp_render_1x_x86.h"
 #endif /* GENS_X86_ASM */
+
+// MDP Host Services
+static MDP_Host_t *mdp_render_1x_hostSrv = NULL;
+
+
+/**
+ * mdp_render_1x_init(): Initialize the Normal rendering plugin.
+ */
+#include <stdio.h>
+void MDP_FNCALL mdp_render_1x_init(MDP_Host_t *hostSrv)
+{
+	// Save the MDP Host Services pointer.
+	mdp_render_1x_hostSrv = hostSrv;
+	
+	// Register the renderer.
+	mdp_render_1x_hostSrv->register_renderer(&mdp_render_1x, &mdp_render_1x_render_t);
+}
+
+
+/**
+ * mdp_render_hq2x_end(): Shut down the Normal rendering plugin.
+ */
+void MDP_FNCALL mdp_render_1x_end(void)
+{
+	if (mdp_render_1x_hostSrv)
+	{
+		// Unregister the renderer.
+		mdp_render_1x_hostSrv->unregister_renderer(&mdp_render_1x, &mdp_render_1x_render_t);
+	}
+}
 
 
 #ifndef GENS_X86_ASM
