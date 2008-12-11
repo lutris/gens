@@ -44,8 +44,8 @@ MDP_Host_t Gens_MDP_Host =
 	.refPtr = mdp_host_ref_ptr,
 	.unrefPtr = mdp_host_unref_ptr,
 	
-	.registerRenderer = NULL,
-	.unregisterRenderer = NULL
+	.register_renderer = mdp_host_register_renderer,
+	.unregister_renderer = mdp_host_unregister_renderer
 };
 
 
