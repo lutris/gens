@@ -11,7 +11,7 @@
 	extern __GLOBAL_OFFSET_TABLE
 	
 	; Get the Global Offset Table.
-	%macro get_GOT
+	%macro get_GOT 0
 		call	%%getgot
 		%%getgot:
 		pop	ebx
@@ -25,7 +25,7 @@
 	%endmacro
 %else
 	; Not PIC. Define dummy macros.
-	%macro get_GOT
+	%macro get_GOT 0
 	%endmacro
 	
 	%macro get_localvar 2
