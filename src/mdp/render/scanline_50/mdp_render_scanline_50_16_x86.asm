@@ -20,14 +20,14 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-arg_destScreen	equ 8
-arg_mdScreen	equ 12
-arg_destPitch	equ 16
-arg_srcPitch	equ 20
-arg_width	equ 24
-arg_height	equ 28
-arg_mask	equ 32
-arg_mode555	equ 32
+arg_destScreen	equ 16+8
+arg_mdScreen	equ 16+12
+arg_destPitch	equ 16+16
+arg_srcPitch	equ 16+20
+arg_width	equ 16+24
+arg_height	equ 16+28
+arg_mask	equ 16+32
+arg_mode555	equ 16+32
 
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
@@ -57,21 +57,23 @@ section .text align=64
 	global _mdp_render_scanline_50_16_x86
 	_mdp_render_scanline_50_16_x86:
 		
-		; Set up the frame pointer.
-		push	ebp
-		mov	ebp, esp
-		pushad
+		; Save registers.
+		push	ebx
+		push	ecx
+		push	edx
+		push 	edi
+		push	esi
 		
-		mov	ecx, [ebp + arg_width]		; ecx = Number of pixels per line
-		mov	ebx, [ebp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
-		mov	esi, [ebp + arg_mdScreen]	; esi = Source
+		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
+		mov	ebx, [esp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
+		mov	esi, [esp + arg_mdScreen]	; esi = Source
 		add	ecx, ecx
-		sub	[ebp + arg_srcPitch], ecx	; arg_srcPitch = offset
+		sub	[esp + arg_srcPitch], ecx	; arg_srcPitch = offset
 		add	ecx, ecx			; ecx = Number of bytes per line
 		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
-		mov	edi, [ebp + arg_destScreen]	; edi = Destination
+		mov	edi, [esp + arg_destScreen]	; edi = Destination
 		shr	ecx, 4				; Transfer 16 bytes per cycle. (32 16-bit pixels)
-		mov	[ebp + arg_width], ecx		; Initialize the X counter.
+		mov	[esp + arg_width], ecx		; Initialize the X counter.
 		jmp	short .Loop_Y
 	
 	align 64
@@ -100,7 +102,7 @@ section .text align=64
 				dec	ecx
 				jnz	short .Loop_X1
 			
-			mov	ecx, [ebp + arg_width]	; ecx = Number of pixels per line
+			mov	ecx, [esp + arg_width]	; ecx = Number of pixels per line
 			add	edi, ebx		; Add the destination pitch difference.
 			shl	ecx, 3
 			sub	esi, ecx		; Go back to the beginning of the source line.
@@ -113,7 +115,7 @@ section .text align=64
 				; First two pixels.
 				mov	eax, [esi]
 				shr	eax, 1			; 50% scanline
-				and	eax, [ebp + arg_mask]	; Mask off the MSB of each color component.
+				and	eax, [esp + arg_mask]	; Mask off the MSB of each color component.
 				mov	edx, eax
 				rol	eax, 16
 				xchg	ax, dx
@@ -123,7 +125,7 @@ section .text align=64
 				; Second two pixels.
 				mov	eax, [esi + 4]
 				shr	eax, 1			; 50% scanline
-				and	eax, [ebp + arg_mask]	; Mask off the MSB of each color component.
+				and	eax, [esp + arg_mask]	; Mask off the MSB of each color component.
 				mov	edx, eax
 				rol	eax, 16
 				xchg	ax, dx
@@ -136,16 +138,18 @@ section .text align=64
 				dec ecx
 				jnz short .Loop_X2
 			
-			add	esi, [ebp + arg_srcPitch]	; Add the source pitch difference.
+			add	esi, [esp + arg_srcPitch]	; Add the source pitch difference.
 			add	edi, ebx			; Add the destination pitch difference.
-			mov	ecx, [ebp + arg_width]		; Reset the X conuter.
-			dec	dword [ebp + arg_height]	; Decrement the Y counter.
+			mov	ecx, [esp + arg_width]		; Reset the X conuter.
+			dec	dword [esp + arg_height]	; Decrement the Y counter.
 			jnz	near .Loop_Y
 		
-		; Reset the frame pointer.
-		popad
-		mov	esp, ebp
-		pop	ebp
+		; Restore registers.
+		pop	esi
+		pop	edi
+		pop	edx
+		pop	ecx
+		pop	ebx
 		ret
 	
 	align 64
@@ -157,25 +161,27 @@ section .text align=64
 	global _mdp_render_scanline_50_16_x86_mmx
 	_mdp_render_scanline_50_16_x86_mmx:
 		
-		; Set up the frame pointer.
-		push	ebp
-		mov	ebp, esp
-		pushad
+		; Save registers.
+		push	ebx
+		push	ecx
+		push	edx
+		push 	edi
+		push	esi
 		
-		mov	ecx, [ebp + arg_width]		; ecx = Number of pixels per line
-		mov	ebx, [ebp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
-		mov	esi, [ebp + arg_mdScreen]	; esi = Source
+		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
+		mov	ebx, [esp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
+		mov	esi, [esp + arg_mdScreen]	; esi = Source
 		add	ecx, ecx
-		sub	[ebp + arg_srcPitch], ecx	; arg_srcPitch = offset
+		sub	[esp + arg_srcPitch], ecx	; arg_srcPitch = offset
 		add	ecx, ecx			; ecx = Number of bytes per line
 		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
-		mov	edi, [ebp + arg_destScreen]	; edi = Destination
+		mov	edi, [esp + arg_destScreen]	; edi = Destination
 		shr	ecx, 5				; Transfer 32 bytes per cycle. (64 16-bit pixels)
-		mov	[ebp + arg_width], ecx		; Initialize the X counter.
+		mov	[esp + arg_width], ecx		; Initialize the X counter.
 		
 		; Check which mask to use.
 		movq	mm7, [MASK_DIV2_16_MMX]		; Default to 16-bit color. (Mode 565)
-		test	byte [ebp + arg_mode555], 1
+		test	byte [esp + arg_mode555], 1
 		jz	.Loop_Y
 		movq	mm7, [MASK_DIV2_15_MMX]		; 15-bit color. (Mode 555)
 		jmp	short .Loop_Y
@@ -208,7 +214,7 @@ section .text align=64
 				dec	ecx
 				jnz	short .Loop_X1
 			
-			mov	ecx, [ebp + arg_width]	; Reset the X counter.
+			mov	ecx, [esp + arg_width]	; Reset the X counter.
 			add	edi, ebx		; Add the destination pitch difference.
 			shl	ecx, 4
 			sub	esi, ecx		; Go back to the beginning of the source line.
@@ -248,15 +254,17 @@ section .text align=64
 				dec	ecx
 				jnz	short .Loop_X2
 			
-			add	esi, [ebp + arg_srcPitch]	; Add the source pitch difference.
+			add	esi, [esp + arg_srcPitch]	; Add the source pitch difference.
 			add	edi, ebx			; Add the destination pitch difference.
-			mov	ecx, [ebp + arg_width]		; Reset the X counter.
-			dec	dword [ebp + arg_height]	; Decrement the Y counter.
+			mov	ecx, [esp + arg_width]		; Reset the X counter.
+			dec	dword [esp + arg_height]	; Decrement the Y counter.
 			jnz	near .Loop_Y
 		
-		; Reset the frame pointer.
-		popad
-		mov	esp, ebp
-		pop	ebp
+		; Restore registers.
 		emms
+		pop	esi
+		pop	edi
+		pop	edx
+		pop	ecx
+		pop	ebx
 		ret
