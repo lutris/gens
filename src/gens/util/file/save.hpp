@@ -74,11 +74,11 @@ class Savestate
 				       unsigned int numBytes);
 		
 		static void importDataAuto(void* into, const void* data,
-					   unsigned int* pOffset,
+					   unsigned int& offset,
 					   const unsigned int numBytes);
 		
 		static void exportDataAuto(const void* from, void* data,
-					   unsigned int *pOffset,
+					   unsigned int& offset,
 					   const unsigned int numBytes);
 		
 		static int gsxImportGenesis(const unsigned char* data);
