@@ -40,6 +40,7 @@ static struct GensMenuItem_t gmiGraphics[];
 static struct GensMenuItem_t gmiCPU[];
 static struct GensMenuItem_t gmiSound[];
 static struct GensMenuItem_t gmiOptions[];
+static struct GensMenuItem_t gmiPlugins[];
 static struct GensMenuItem_t gmiHelp[];
 
 struct GensMenuItem_t gmiMain[] =
@@ -49,6 +50,7 @@ struct GensMenuItem_t gmiMain[] =
 	{IDM_CPU_MENU,		GMF_ITEM_SUBMENU,	"&CPU",			&gmiCPU[0],		0, 0, 0},
 	{IDM_SOUND_MENU,	GMF_ITEM_SUBMENU,	"&Sound",		&gmiSound[0],		0, 0, 0},
 	{IDM_OPTIONS_MENU,	GMF_ITEM_SUBMENU,	"&Options",		&gmiOptions[0],		0, 0, 0},
+	{IDM_PLUGINS_MENU,	GMF_ITEM_SUBMENU,	"&Plugins",		&gmiPlugins[0],		0, 0, 0},
 	{IDM_HELP_MENU,		GMF_ITEM_SUBMENU,	"&Help",		&gmiHelp[0],		0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
@@ -309,8 +311,6 @@ static struct GensMenuItem_t gmiOptions[] =
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, 0},
 	{IDM_OPTIONS_LOADCONFIG,	GMF_ITEM_NORMAL,	"&Load Config...",	NULL, 0, 0, IDIM_OPEN},
 	{IDM_OPTIONS_SAVECONFIGAS,	GMF_ITEM_NORMAL,	"&Save Config As...",	NULL, 0, 0, IDIM_SAVE_AS},
-	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, 0},
-	{IDM_OPTIONS_PLUGINMANAGER,	GMF_ITEM_NORMAL,	"&Plugin Manager",	NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
@@ -321,6 +321,17 @@ static struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 	{IDM_OPTIONS_SEGACDSRAMSIZE_16KB,	GMF_ITEM_RADIO, "16 KB", NULL, 0, 0, 0},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_32KB,	GMF_ITEM_RADIO, "32 KB", NULL, 0, 0, 0},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_64KB,	GMF_ITEM_RADIO, "64 KB", NULL, 0, 0, 0},
+	{0, 0, NULL, NULL, 0, 0, 0}
+};
+
+
+/** Plugins Menu **/
+
+
+static struct GensMenuItem_t gmiPlugins[] =
+{
+	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, 0},
+	{IDM_PLUGINS_MANAGER,		GMF_ITEM_NORMAL,	"Plugin Manager",	NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 

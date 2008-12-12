@@ -96,6 +96,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
+static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t state);
 static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state);
 
 
@@ -124,6 +125,9 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 			break;
 		case IDM_OPTIONS_MENU:
 			return GensWindow_MenuItemCallback_OptionsMenu(menuID, state);
+			break;
+		case IDM_PLUGINS_MENU:
+			return GensWindow_MenuItemCallback_PluginsMenu(menuID, state);
 			break;
 		case IDM_HELP_MENU:
 			return GensWindow_MenuItemCallback_HelpMenu(menuID, state);
@@ -732,10 +736,6 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			Config::saveAs();
 			break;
 		
-		case IDM_OPTIONS_PLUGINMANAGER:
-			PluginManagerWindow::Instance();
-			break;
-		
 		default:
 			if ((menuID & 0xFF00) == IDM_OPTIONS_SEGACDSRAMSIZE)
 			{
@@ -749,6 +749,24 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 				return 0;
 			}
 			break;
+	}
+	
+	// Menu item handled.
+	return 1;
+}
+
+
+static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t state)
+{
+	switch (menuID)
+	{
+		case IDM_PLUGINS_MANAGER:
+			PluginManagerWindow::Instance();
+			break;
+		
+		default:
+			// Unknown menu item ID.
+			return 0;
 	}
 	
 	// Menu item handled.
