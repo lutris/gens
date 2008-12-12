@@ -374,6 +374,44 @@ fi # GENS_PNG
 AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
 AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
 
+
+###
+# gcc -fvisibility-inlines-hidden and -fvisibility=hidden optoins
+###
+
+AC_MSG_CHECKING(for gcc visibility support)
+
+if test x$obj_format = xwin32; then
+	# Symbol visibility isn't applicable on Win32.
+	AC_MSG_RESULT(not applicable on Win32)
+else
+	AC_COMPILE_IFELSE(
+		AC_LANG_PROGRAM(
+			[[
+				#include <stdio.h>
+				#if defined(__GNUC__) && (__GNUC__ >= 4)
+					// gcc-4.x supports visibility settings.
+				#else
+					// Not gcc-4.x or higher.
+					#error Not gcc-4.x or higher.
+				#endif
+			]],
+			[[printf("Test for gcc visibility support.\n");]]),
+		[fvisibility=yes],
+		[fvisibility=no]
+		)
+	
+	AC_MSG_RESULT($fvisibility)
+	
+	if test x$fvisibility = xyes; then
+		cflags_visibility="-fvisibility=hidden"
+		cxxflags_visibility="-fvisibility-inlines-hidden -fvisibility=hidden"
+	else
+		cflags_visibility=""
+		cxxflags_visibility=""
+	fi
+fi
+
 ###
 # C++ map type
 ###
@@ -476,8 +514,8 @@ else
 	cflags_win32=""
 fi
 
-CFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_99} ${cflags_win32} $CFLAGS"
-CXXFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_win32} $CXXFLAGS"
+CFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_99} ${cflags_win32} ${cflags_visibility} $CFLAGS"
+CXXFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_win32} ${cxxflags_visibility} $CXXFLAGS"
 LDFLAGS="${ldflags_as_needed} ${ldflags_win32} $LDFLAGS"
 
 # Make sure all packages have the base source directory in their #include search path.
