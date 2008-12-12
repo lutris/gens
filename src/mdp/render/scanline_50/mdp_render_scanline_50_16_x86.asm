@@ -58,19 +58,19 @@ section .text align=64
 	_mdp_render_scanline_50_16_x86:
 		
 		; Save registers.
-		push	ebx
+		push	ebp
 		push	ecx
 		push	edx
 		push 	edi
 		push	esi
 		
 		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
-		mov	ebx, [esp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
+		mov	ebp, [esp + arg_destPitch]	; ebp = Pitch of destination surface (bytes per line)
 		mov	esi, [esp + arg_mdScreen]	; esi = Source
 		add	ecx, ecx
 		sub	[esp + arg_srcPitch], ecx	; arg_srcPitch = offset
 		add	ecx, ecx			; ecx = Number of bytes per line
-		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
+		sub	ebp, ecx			; ebp = Difference between dest pitch and src pitch
 		mov	edi, [esp + arg_destScreen]	; edi = Destination
 		shr	ecx, 4				; Transfer 16 bytes per cycle. (32 16-bit pixels)
 		mov	[esp + arg_width], ecx		; Initialize the X counter.
@@ -103,7 +103,7 @@ section .text align=64
 				jnz	short .Loop_X1
 			
 			mov	ecx, [esp + arg_width]	; ecx = Number of pixels per line
-			add	edi, ebx		; Add the destination pitch difference.
+			add	edi, ebp		; Add the destination pitch difference.
 			shl	ecx, 3
 			sub	esi, ecx		; Go back to the beginning of the source line.
 			shr	ecx, 3
@@ -139,7 +139,7 @@ section .text align=64
 				jnz short .Loop_X2
 			
 			add	esi, [esp + arg_srcPitch]	; Add the source pitch difference.
-			add	edi, ebx			; Add the destination pitch difference.
+			add	edi, ebp			; Add the destination pitch difference.
 			mov	ecx, [esp + arg_width]		; Reset the X conuter.
 			dec	dword [esp + arg_height]	; Decrement the Y counter.
 			jnz	near .Loop_Y
@@ -149,7 +149,7 @@ section .text align=64
 		pop	edi
 		pop	edx
 		pop	ecx
-		pop	ebx
+		pop	ebp
 		ret
 	
 	align 64
@@ -162,19 +162,19 @@ section .text align=64
 	_mdp_render_scanline_50_16_x86_mmx:
 		
 		; Save registers.
-		push	ebx
+		push	ebp
 		push	ecx
 		push	edx
 		push 	edi
 		push	esi
 		
 		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
-		mov	ebx, [esp + arg_destPitch]	; ebx = Pitch of destination surface (bytes per line)
+		mov	ebp, [esp + arg_destPitch]	; ebp = Pitch of destination surface (bytes per line)
 		mov	esi, [esp + arg_mdScreen]	; esi = Source
 		add	ecx, ecx
 		sub	[esp + arg_srcPitch], ecx	; arg_srcPitch = offset
 		add	ecx, ecx			; ecx = Number of bytes per line
-		sub	ebx, ecx			; ebx = Difference between dest pitch and src pitch
+		sub	ebp, ecx			; ebp = Difference between dest pitch and src pitch
 		mov	edi, [esp + arg_destScreen]	; edi = Destination
 		shr	ecx, 5				; Transfer 32 bytes per cycle. (64 16-bit pixels)
 		mov	[esp + arg_width], ecx		; Initialize the X counter.
@@ -215,7 +215,7 @@ section .text align=64
 				jnz	short .Loop_X1
 			
 			mov	ecx, [esp + arg_width]	; Reset the X counter.
-			add	edi, ebx		; Add the destination pitch difference.
+			add	edi, ebp		; Add the destination pitch difference.
 			shl	ecx, 4
 			sub	esi, ecx		; Go back to the beginning of the source line.
 			shr	ecx, 4
@@ -255,7 +255,7 @@ section .text align=64
 				jnz	short .Loop_X2
 			
 			add	esi, [esp + arg_srcPitch]	; Add the source pitch difference.
-			add	edi, ebx			; Add the destination pitch difference.
+			add	edi, ebp			; Add the destination pitch difference.
 			mov	ecx, [esp + arg_width]		; Reset the X counter.
 			dec	dword [esp + arg_height]	; Decrement the Y counter.
 			jnz	near .Loop_Y
@@ -266,5 +266,5 @@ section .text align=64
 		pop	edi
 		pop	edx
 		pop	ecx
-		pop	ebx
+		pop	ebp
 		ret
