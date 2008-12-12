@@ -25,6 +25,7 @@ noinst_HEADERS = \
 		mdp_render_scanline_50_x86.h
 
 if GENS_X86_ASM
+NASM += -I@srcdir@/../
 mdp_render_scanline_50_la_SOURCES += \
 		mdp_render_scanline_50_16_x86.asm \
 		mdp_render_scanline_50_32_x86.asm
