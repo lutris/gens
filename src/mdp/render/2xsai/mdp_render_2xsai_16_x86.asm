@@ -127,12 +127,12 @@ arg_mode555	equ 28+32
 		
 		; Check if the Mode 555 setting has changed.
 		mov	al, byte [esp + arg_mode555]	; Mode 555 setting
-		get_localvar	ah, PrevMode555
+		get_mov_localvar	ah, PrevMode555
 		cmp	al, ah
 		je	near .Parameters
 		
 		; Mode 555 setting has changed.
-		put_localvar	PrevMode555, al
+		put_mov_localvar	PrevMode555, al
 		
 		; Check if this is 15-bit color mode.
 		test	al, 1
@@ -140,28 +140,28 @@ arg_mode555	equ 28+32
 	
 	.Mode_565:
 		; 16-bit: Apply 16-bit color masks.
-		get_localvar_mmx	mm0, colorMask16
-		get_localvar_mmx	mm1, lowPixelMask16
-		put_localvar_mmx	colorMask, mm0
-		put_localvar_mmx	lowPixelMask, mm1
-		get_localvar_mmx	mm0, qcolorMask16
-		get_localvar_mmx	mm1, qlowpixelMask16
-		put_localvar_mmx	qcolorMask, mm0
-		put_localvar_mmx	qlowpixelMask, mm1
+		get_movq_localvar	mm0, colorMask16
+		get_movq_localvar	mm1, lowPixelMask16
+		put_movq_localvar	colorMask, mm0
+		put_movq_localvar	lowPixelMask, mm1
+		get_movq_localvar	mm0, qcolorMask16
+		get_movq_localvar	mm1, qlowpixelMask16
+		put_movq_localvar	qcolorMask, mm0
+		put_movq_localvar	qlowpixelMask, mm1
 		jmp	short .Parameters
 	
 	align 64
 	
 	.Mode_555:
 		; 15-bit: Apply 15-bit color masks.
-		get_localvar_mmx	mm0, colorMask15
-		get_localvar_mmx	mm1, lowPixelMask15
-		put_localvar_mmx	colorMask, mm0
-		put_localvar_mmx	lowPixelMask, mm1
-		get_localvar_mmx	mm0, qcolorMask15
-		get_localvar_mmx	mm1, qlowpixelMask15
-		put_localvar_mmx	qcolorMask, mm0
-		put_localvar_mmx	qlowpixelMask, mm1
+		get_movq_localvar	mm0, colorMask15
+		get_movq_localvar	mm1, lowPixelMask15
+		put_movq_localvar	colorMask, mm0
+		put_movq_localvar	lowPixelMask, mm1
+		get_movq_localvar	mm0, qcolorMask15
+		get_movq_localvar	mm1, qlowpixelMask15
+		put_movq_localvar	qcolorMask, mm0
+		put_movq_localvar	qlowpixelMask, mm1
 		jmp	short .Parameters
 	
 	align 64
@@ -272,7 +272,7 @@ arg_mode555	equ 28+32
 			pand	mm4, mm7	;result in mm4
 			
 			por	mm0, mm4	;combine the masks
-			put_localvar_mmx	Mask1, mm0
+			put_movq_localvar	Mask1, mm0
 			
 			;2	-------------------------------------------
 			
@@ -313,7 +313,7 @@ arg_mode555	equ 28+32
 			pand	mm4, mm7	;result in mm4
 			
 			por	mm0, mm4	;combine the masks
-			put_localvar_mmx	Mask2, mm0
+			put_movq_localvar	Mask2, mm0
 			
 			;interpolate colorA and colorB
 			
@@ -323,13 +323,13 @@ arg_mode555	equ 28+32
 			movq	mm2, mm0
 			movq	mm3, mm1
 			
-			pand_localvar_mmx	mm0, colorMask
-			pand_localvar_mmx	mm1, colorMask
+			pand_localvar	mm0, colorMask
+			pand_localvar	mm1, colorMask
 			
 			psrlw	mm0, 1
 			psrlw	mm1, 1
 			
-			pand_localvar_mmx	mm3, lowPixelMask
+			pand_localvar	mm3, lowPixelMask
 			paddw	mm0, mm1
 			
 			pand	mm3, mm2
@@ -340,9 +340,9 @@ arg_mode555	equ 28+32
 			movq	mm1, [eax + ebp + colorA]
 			movq	mm2, [eax + ebp + colorB]
 			
-			get_localvar_mmx	mm3, Mask1
+			get_movq_localvar	mm3, Mask1
 			movq	mm5, mm1
-			get_localvar_mmx	mm4, Mask2
+			get_movq_localvar	mm4, Mask2
 			movq	mm6, mm1
 			
 			pand	mm1, mm3
@@ -408,7 +408,7 @@ arg_mode555	equ 28+32
 			pand	mm4, mm7	;result in mm4
 			
 			por	mm0, mm4	;combine the masks
-			put_localvar_mmx	Mask1, mm0
+			put_movq_localvar	Mask1, mm0
 			
 			;4  ----------------------------------------
 			
@@ -449,7 +449,7 @@ arg_mode555	equ 28+32
 			pand	mm4, mm7	;result in mm4
 			
 			por	mm0, mm4	;combine the masks
-			put_localvar_mmx	Mask2, mm0
+			put_movq_localvar	Mask2, mm0
 			
 			;----------------------------------------------
 			
@@ -461,13 +461,13 @@ arg_mode555	equ 28+32
 			movq	mm2, mm0
 			movq	mm3, mm1
 			
-			pand_localvar_mmx	mm0, colorMask
-			pand_localvar_mmx	mm1, colorMask
+			pand_localvar	mm0, colorMask
+			pand_localvar	mm1, colorMask
 			
 			psrlw	mm0, 1
 			psrlw	mm1, 1
 			
-			pand_localvar_mmx	mm3, lowPixelMask
+			pand_localvar	mm3, lowPixelMask
 			paddw	mm0, mm1
 			
 			pand	mm3, mm2
@@ -480,8 +480,8 @@ arg_mode555	equ 28+32
 			movq	mm1, [eax + ebp + colorA]
 			movq	mm2, [eax + ebp + ebp + colorC]
 			
-			get_localvar_mmx	mm3, Mask1
-			get_localvar_mmx	mm4, Mask2
+			get_movq_localvar	mm3, Mask1
+			get_movq_localvar	mm4, Mask2
 			
 			pand	mm1, mm3
 			pand	mm2, mm4
@@ -493,7 +493,7 @@ arg_mode555	equ 28+32
 			pcmpeqw	mm3, mm7
 			pand	mm0, mm3
 			por	mm0, mm1
-			put_localvar_mmx	ACPixel, mm0
+			put_movq_localvar	ACPixel, mm0
 			
 			;////////////////////////////////
 			; Decide which "branch" to take
@@ -523,9 +523,9 @@ arg_mode555	equ 28+32
 			pxor		mm0, mm6
 			por		mm1, mm6
 			movq		mm7, mm0
-			put_localvar_mmx	Mask2, mm2
+			put_movq_localvar	Mask2, mm2
 			packsswb	mm7, mm7
-			put_localvar_mmx	Mask1, mm1
+			put_movq_localvar	Mask1, mm1
 			
 			movd	ecx, mm7
 			test	ecx, ecx
@@ -541,7 +541,7 @@ arg_mode555	equ 28+32
 			movq	mm4, [eax + ebp + colorA]
 			movq	mm5, [eax + ebp + colorB]
 			pxor	mm7, mm7
-			pand_localvar_mmx	mm6, ONE
+			pand_localvar	mm6, ONE
 			
 			movq	mm0, [eax + colorE]
 			movq	mm1, [eax + ebp + colorG]
@@ -651,10 +651,10 @@ arg_mode555	equ 28+32
 			pcmpgtw	mm7, mm0
 			pcmpgtw	mm0, mm1
 			
-			por_localvar_mmx	mm7, Mask1
-			por_localvar_mmx	mm1, Mask2
-			put_localvar_mmx	Mask1, mm7
-			put_localvar_mmx	Mask2, mm1
+			por_localvar	mm7, Mask1
+			por_localvar	mm1, Mask2
+			put_movq_localvar	Mask1, mm7
+			put_movq_localvar	Mask2, mm1
 			
 		.SKIP_GUESS:
 			
@@ -666,9 +666,9 @@ arg_mode555	equ 28+32
 			movq	mm4, mm0
 			movq	mm2, [eax + ebp + ebp + colorC]
 			movq	mm5, mm1
-			get_localvar_mmx	mm3, qcolorMask
+			get_movq_localvar	mm3, qcolorMask
 			movq	mm6, mm2
-			get_localvar_mmx	mm7, qlowpixelMask
+			get_movq_localvar	mm7, qlowpixelMask
 			
 			pand	mm0, mm3
 			pand	mm1, mm3
@@ -693,13 +693,13 @@ arg_mode555	equ 28+32
 			paddw	mm4, mm6
 			paddw	mm0, mm2
 			psrlw	mm4, 2
-			pand_localvar_mmx	mm4, qlowpixelMask
+			pand_localvar	mm4, qlowpixelMask
 			paddw	mm0, mm4	;mm0 contains the interpolated value of A, B, C and D
 			
 			;assemble the pixels
 			
-			get_localvar_mmx	mm1, Mask1
-			get_localvar_mmx	mm2, Mask2
+			get_movq_localvar	mm1, Mask1
+			get_movq_localvar	mm2, Mask2
 			movq	mm4, [eax + ebp + colorA]
 			movq	mm5, [eax + ebp + colorB]
 			pand	mm4, mm1
@@ -712,7 +712,7 @@ arg_mode555	equ 28+32
 			pand	mm0, mm1
 			por	mm4, mm0	;mm4 contains the diagonal pixels
 			
-			get_localvar_mmx	mm0, ACPixel
+			get_movq_localvar	mm0, ACPixel
 			movq		mm1, mm0
 			punpcklwd	mm0, mm4
 			punpckhwd	mm1, mm4

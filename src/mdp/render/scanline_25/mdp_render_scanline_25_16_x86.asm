@@ -188,14 +188,14 @@ section .text align=64
 		; Initialize the mask.
 		
 		; Default to 16-bit color. (Mode 565)
-		get_localvar_mmx mm7, MASK_DIV2_16_MMX
-		get_localvar_mmx mm6, MASK_DIV4_16_MMX
+		get_movq_localvar mm7, MASK_DIV2_16_MMX
+		get_movq_localvar mm6, MASK_DIV4_16_MMX
 		test	byte [esp + arg_mode555], 1
 		jz	.Loop_Y
 		
 		; 15-bit color is specified. (Mode 555)
-		get_localvar_mmx mm7, MASK_DIV2_15_MMX
-		get_localvar_mmx mm6, MASK_DIV4_15_MMX
+		get_movq_localvar mm7, MASK_DIV2_15_MMX
+		get_movq_localvar mm6, MASK_DIV4_15_MMX
 		jmp	short .Loop_Y
 
 	align 64

@@ -159,7 +159,7 @@ section .text align=64
 		mov	edi, [esp + arg_destScreen]	; edi = Destination
 		shr	ecx, 5				; Transfer 32 bytes per cycle. (8 32-bit pixels)
 		mov	[esp + arg_width], ecx		; Initialize the X counter.
-		get_localvar_mmx mm7, MASK_DIV2_32_MMX	; Load the mask.
+		get_movq_localvar mm7, MASK_DIV2_32_MMX	; Load the mask.
 		jmp	short .Loop_Y
 	
 	align 64

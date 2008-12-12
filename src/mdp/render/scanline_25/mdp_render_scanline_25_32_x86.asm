@@ -171,8 +171,8 @@ section .text align=64
 		mov	[esp + arg_width], ecx		; Initialize the X counter.
 		
 		; Initialize the masks.
-		get_localvar_mmx mm7, MASK_DIV2_32_MMX	; Load the 50% mask.
-		get_localvar_mmx mm6, MASK_DIV4_32_MMX	; Load the 25% mask.
+		get_movq_localvar mm7, MASK_DIV2_32_MMX	; Load the 50% mask.
+		get_movq_localvar mm6, MASK_DIV4_32_MMX	; Load the 25% mask.
 		jmp	short .Loop_Y
 	
 	align 64

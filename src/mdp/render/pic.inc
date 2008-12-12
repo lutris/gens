@@ -18,39 +18,39 @@
 		add	ebx, __GLOBAL_OFFSET_TABLE + $$ - %%getgot wrt ..gotpc
 	%endmacro
 	
-	; Get a local data variable.
-	; Syntax: get_localvar destRegister, varName
-	%macro get_localvar 2
+	; Get a local data variable. (mov)
+	; Syntax: get_mov_localvar destRegister, varName
+	%macro get_mov_localvar 2
 		mov	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
 	
-	; Get a local data variable. (mmx destination register)
-	; Syntax: get_localvar_mmx destRegister, varName
-	%macro get_localvar_mmx 2
+	; Get a local data variable. (movq)
+	; Syntax: get_movq_localvar destRegister, varName
+	%macro get_movq_localvar 2
 		movq	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
 	
-	; Write a local data variable.
-	; Syntax: put_localvar varName, srcRegister
-	%macro put_localvar 2
+	; Write a local data variable. (mov)
+	; Syntax: put_mov_localvar varName, srcRegister
+	%macro put_mov_localvar 2
 		mov	[ebx + %1 wrt ..gotoff], %2
 	%endmacro
 	
-	; Write a local data variable. (mmx source register)
-	; Syntax: put_localvar_mmx varName, srcRegister
-	%macro put_localvar_mmx 2
+	; Write a local data variable. (movq)
+	; Syntax: put_movq_localvar varName, srcRegister
+	%macro put_movq_localvar 2
 		movq	[ebx + %1 wrt ..gotoff], %2
 	%endmacro
 	
 	; Logical "or" an mmx register with a data variable.
-	; Syntax: por_localvar_mmx destRegister, varName
-	%macro por_localvar_mmx 2
+	; Syntax: por_localvar destRegister, varName
+	%macro por_localvar 2
 		por	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
 	
 	; Logical "and" an mmx register with a data variable.
-	; Syntax: pand_localvar_mmx destRegister, varName
-	%macro pand_localvar_mmx 2
+	; Syntax: pand_localvar destRegister, varName
+	%macro pand_localvar 2
 		pand	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
 %else
@@ -58,27 +58,27 @@
 	%macro get_GOT 0
 	%endmacro
 	
-	%macro get_localvar 2
+	%macro get_mov_localvar 2
 		mov	%1, [%2]
 	%endmacro
 	
-	%macro get_localvar_mmx 2
+	%macro get_movq_localvar 2
 		movq	%1, [%2]
 	%endmacro
 	
-	%macro put_localvar 2
+	%macro put_mov_localvar 2
 		mov	[%1], %2
 	%endmacro
 	
-	%macro put_localvar_mmx 2
+	%macro put_movq_localvar 2
 		movq	[%1], %2
 	%endmacro
 	
-	%macro por_localvar_mmx 2
+	%macro por_localvar 2
 		por	%1, [%2]
 	%endmacro
 	
-	%macro pand_localvar_mmx 2
+	%macro pand_localvar 2
 		pand	%1, [%2]
 	%endmacro
 %endif
