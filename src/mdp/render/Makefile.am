@@ -26,4 +26,7 @@ SUBDIRS += \
 		hq3x \
 		hq4x \
 		2xsai
+
+noinst_HEADERS = pic.inc
+
 endif # GENS_X86_ASM
