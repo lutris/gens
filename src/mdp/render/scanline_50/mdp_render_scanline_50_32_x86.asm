@@ -20,12 +20,12 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-arg_destScreen	equ 16+8
-arg_mdScreen	equ 16+12
-arg_destPitch	equ 16+16
-arg_srcPitch	equ 16+20
-arg_width	equ 16+24
-arg_height	equ 16+28
+arg_destScreen	equ 28+8
+arg_mdScreen	equ 28+12
+arg_destPitch	equ 28+16
+arg_srcPitch	equ 28+20
+arg_width	equ 28+24
+arg_height	equ 28+28
 
 MASK_DIV2_32	equ 0x7F7F7F7F
 
@@ -34,6 +34,9 @@ MASK_DIV2_32	equ 0x7F7F7F7F
 	%define	_mdp_render_scanline_50_32_x86		mdp_render_scanline_50_32_x86
 	%define	_mdp_render_scanline_50_32_x86_mmx	mdp_render_scanline_50_32_x86_mmx
 %endif
+
+; Position-independent code macros.
+%include "pic.inc"
 
 ; Read-only data on Win32 uses the section name ".rdata".
 %ifdef __OBJ_WIN32
@@ -57,11 +60,7 @@ section .text align=64
 	_mdp_render_scanline_50_32_x86:
 		
 		; Save registers.
-		push	ebp
-		push	ecx
-		push	edx
-		push 	edi
-		push	esi
+		pushad
 		
 		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
 		mov	ebp, [esp + arg_destPitch]	; ebp = Pitch of destination surface (bytes per line)
@@ -87,7 +86,7 @@ section .text align=64
 				; Put destination pixels.
 				mov	[edi], eax
 				mov	[edi + 4], eax
-				mov	[edi + 8], edx
+				mov	[edi + 8] , edx
 				mov	[edi + 12], edx
 				add	edi, 16
 				
@@ -132,11 +131,7 @@ section .text align=64
 			jnz	near .Loop_Y
 		
 		; Restore registers.
-		pop	esi
-		pop	edi
-		pop	edx
-		pop	ecx
-		pop	ebp
+		popad
 		ret
 	
 	align 64
@@ -149,11 +144,10 @@ section .text align=64
 	_mdp_render_scanline_50_32_x86_mmx:
 		
 		; Save registers.
-		push	ebp
-		push	ecx
-		push	edx
-		push 	edi
-		push	esi
+		pushad
+		
+		; (PIC) Get the Global Offset Table.
+		get_GOT
 		
 		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
 		mov	ebp, [esp + arg_destPitch]	; ebp = Pitch of destination surface (bytes per line)
@@ -165,7 +159,7 @@ section .text align=64
 		mov	edi, [esp + arg_destScreen]	; edi = Destination
 		shr	ecx, 5				; Transfer 32 bytes per cycle. (8 32-bit pixels)
 		mov	[esp + arg_width], ecx		; Initialize the X counter.
-		movq	mm7, [MASK_DIV2_32_MMX]		; Load the mask.
+		get_localvar_mmx mm7, MASK_DIV2_32_MMX	; Load the mask.
 		jmp	short .Loop_Y
 	
 	align 64
@@ -244,9 +238,5 @@ section .text align=64
 		
 		; Restore registers.
 		emms
-		pop	esi
-		pop	edi
-		pop	edx
-		pop	ecx
-		pop	ebp
+		popad
 		ret

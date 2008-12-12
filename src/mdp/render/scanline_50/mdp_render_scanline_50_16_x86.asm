@@ -20,20 +20,23 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-arg_destScreen	equ 16+8
-arg_mdScreen	equ 16+12
-arg_destPitch	equ 16+16
-arg_srcPitch	equ 16+20
-arg_width	equ 16+24
-arg_height	equ 16+28
-arg_mask	equ 16+32
-arg_mode555	equ 16+32
+arg_destScreen	equ 28+8
+arg_mdScreen	equ 28+12
+arg_destPitch	equ 28+16
+arg_srcPitch	equ 28+20
+arg_width	equ 28+24
+arg_height	equ 28+28
+arg_mask	equ 28+32
+arg_mode555	equ 28+32
 
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
 	%define	_mdp_render_scanline_50_16_x86		mdp_render_scanline_50_16_x86
 	%define	_mdp_render_scanline_50_16_x86_mmx	mdp_render_scanline_50_16_x86_mmx
 %endif
+
+; Position-independent code macros.
+%include "pic.inc"
 
 ; Read-only data on Win32 uses the section name ".rdata".
 %ifdef __OBJ_WIN32
@@ -58,11 +61,7 @@ section .text align=64
 	_mdp_render_scanline_50_16_x86:
 		
 		; Save registers.
-		push	ebp
-		push	ecx
-		push	edx
-		push 	edi
-		push	esi
+		pushad
 		
 		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
 		mov	ebp, [esp + arg_destPitch]	; ebp = Pitch of destination surface (bytes per line)
@@ -145,11 +144,7 @@ section .text align=64
 			jnz	near .Loop_Y
 		
 		; Restore registers.
-		pop	esi
-		pop	edi
-		pop	edx
-		pop	ecx
-		pop	ebp
+		popad
 		ret
 	
 	align 64
@@ -162,11 +157,10 @@ section .text align=64
 	_mdp_render_scanline_50_16_x86_mmx:
 		
 		; Save registers.
-		push	ebp
-		push	ecx
-		push	edx
-		push 	edi
-		push	esi
+		pushad
+		
+		; (PIC) Get the Global Offset Table.
+		get_GOT
 		
 		mov	ecx, [esp + arg_width]		; ecx = Number of pixels per line
 		mov	ebp, [esp + arg_destPitch]	; ebp = Pitch of destination surface (bytes per line)
@@ -180,10 +174,10 @@ section .text align=64
 		mov	[esp + arg_width], ecx		; Initialize the X counter.
 		
 		; Check which mask to use.
-		movq	mm7, [MASK_DIV2_16_MMX]		; Default to 16-bit color. (Mode 565)
+		get_localvar_mmx mm7, MASK_DIV2_16_MMX	; Default to 16-bit color. (Mode 565)
 		test	byte [esp + arg_mode555], 1
 		jz	.Loop_Y
-		movq	mm7, [MASK_DIV2_15_MMX]		; 15-bit color. (Mode 555)
+		get_localvar_mmx mm7, MASK_DIV2_15_MMX	; 15-bit color. (Mode 555)
 		jmp	short .Loop_Y
 	
 	align 64
@@ -262,9 +256,5 @@ section .text align=64
 		
 		; Restore registers.
 		emms
-		pop	esi
-		pop	edi
-		pop	edx
-		pop	ecx
-		pop	ebp
+		popad
 		ret
