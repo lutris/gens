@@ -1,6 +1,11 @@
 %include "nasmhead.inc"
 
-section .data align=64
+; Read-only data on Win32 uses the section name ".rdata".
+%ifdef __OBJ_WIN32
+	%define	.rodata	.rdata
+%endif
+
+section .rodata align=64
 	
 	Small_Police:
 		dd 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000			; 32   
@@ -195,18 +200,7 @@ section .data align=64
 		dd (i * 65536)
 	%assign i i+8
 	%endrep
-
-	Mask:		dd 0x00000000, 0x00000000
-	Mask_GG_15:	dd 0x03E003E0, 0x03E003E0
-	Mask_RBRB_15:	dd 0x7C1F7C1F, 0x7C1F7C1F
-	Mask_GG_16:	dd 0x07C007C0, 0x07C007C0
-	Mask_RBRB_16:	dd 0xF81FF81F, 0xF81FF81F
-
-	Mask_1001_64:	dd 0xFFFF0000, 0x0000FFFF
-	Mask_0011_64:	dd 0xFFFFFFFF, 0x00000000
-	Mask_1100_64:	dd 0x00000000, 0xFFFFFFFF
-
-
+	
 section .bss align=64
 	
 	; Symbol redefines for ELF
@@ -247,6 +241,9 @@ section .bss align=64
 	
 	; MD bpp
 	extern _bppMD
+	
+	; Mask
+	Mask:	resd 2
 	
 section .text align=64
 
