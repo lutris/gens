@@ -19,9 +19,15 @@
 	%endmacro
 	
 	; Get a local data variable.
-	; Syntax: get_var destRegister, varName
+	; Syntax: get_localvar destRegister, varName
 	%macro get_localvar 2
 		mov	%1, [ebx + %2 wrt ..gotoff]
+	%endmacro
+	
+	; Get a local data variable. (mmx destination register)
+	; Syntax: get_localvar_mmx destRegister, varName
+	%macro get_localvar_mmx 2
+		movq	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
 %else
 	; Not PIC. Define dummy macros.
@@ -30,5 +36,9 @@
 	
 	%macro get_localvar 2
 		mov	%1, [%2]
+	%endmacro
+	
+	%macro get_localvar_mmx 2
+		movq	%1, [%2]
 	%endmacro
 %endif
