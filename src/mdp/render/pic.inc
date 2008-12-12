@@ -48,6 +48,12 @@
 		movq	[ebx + %1 wrt ..gotoff], %2
 	%endmacro
 	
+	; Logical "or" a memory address. (explicit dword operand size)
+	; Syntax: or_dword_localvar destRegister, srcRegister/immed
+	%macro or_dword_localvar 2
+		or	dword [ebx + %1 wrt ..gotoff], %2
+	%endmacro
+	
 	; Logical "or" an mmx register with a data variable.
 	; Syntax: por_localvar destRegister, varName
 	%macro por_localvar 2
@@ -58,6 +64,12 @@
 	; Syntax: pand_localvar destRegister, varName
 	%macro pand_localvar 2
 		pand	%1, [ebx + %2 wrt ..gotoff]
+	%endmacro
+	
+	; Packed Subtract Unsigned with Saturation.
+	; Syntax: psubusb destRegister, varName
+	%macro psubusb_localvar 2
+		psubusb	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
 %else
 	; Not PIC. Define dummy macros.
@@ -84,11 +96,19 @@
 		movq	[%1], %2
 	%endmacro
 	
+	%macro or_dword_localvar 2
+		or	dword [%1], %2
+	%endmacro
+	
 	%macro por_localvar 2
 		por	%1, [%2]
 	%endmacro
 	
 	%macro pand_localvar 2
 		pand	%1, [%2]
+	%endmacro
+	
+	%macro psubusb_localvar 2
+		psubusb	%1, [%2]
 	%endmacro
 %endif
