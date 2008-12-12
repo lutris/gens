@@ -14,6 +14,8 @@ lib_LTLIBRARIES = mdp_render_2xsai.la
 
 mdp_render_2xsai_la_LDFLAGS = -module -no-undefined -avoid-version
 
+NASM += -I@srcdir@/../
+
 mdp_render_2xsai_la_SOURCES = \
 		mdp_render_2xsai_plugin.c \
 		mdp_render_2xsai.c \
