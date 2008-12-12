@@ -29,6 +29,30 @@
 	%macro get_localvar_mmx 2
 		movq	%1, [ebx + %2 wrt ..gotoff]
 	%endmacro
+	
+	; Write a local data variable.
+	; Syntax: put_localvar varName, srcRegister
+	%macro put_localvar 2
+		mov	[ebx + %1 wrt ..gotoff], %2
+	%endmacro
+	
+	; Write a local data variable. (mmx source register)
+	; Syntax: put_localvar_mmx varName, srcRegister
+	%macro put_localvar_mmx 2
+		movq	[ebx + %1 wrt ..gotoff], %2
+	%endmacro
+	
+	; Logical "or" an mmx register with a data variable.
+	; Syntax: por_localvar_mmx destRegister, varName
+	%macro por_localvar_mmx 2
+		por	%1, [ebx + %2 wrt ..gotoff]
+	%endmacro
+	
+	; Logical "and" an mmx register with a data variable.
+	; Syntax: pand_localvar_mmx destRegister, varName
+	%macro pand_localvar_mmx 2
+		pand	%1, [ebx + %2 wrt ..gotoff]
+	%endmacro
 %else
 	; Not PIC. Define dummy macros.
 	%macro get_GOT 0
@@ -40,5 +64,21 @@
 	
 	%macro get_localvar_mmx 2
 		movq	%1, [%2]
+	%endmacro
+	
+	%macro put_localvar 2
+		mov	[%1], %2
+	%endmacro
+	
+	%macro put_localvar_mmx 2
+		movq	[%1], %2
+	%endmacro
+	
+	%macro por_localvar_mmx 2
+		por	%1, [%2]
+	%endmacro
+	
+	%macro pand_localvar_mmx 2
+		pand	%1, [%2]
 	%endmacro
 %endif
