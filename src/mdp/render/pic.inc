@@ -36,6 +36,12 @@
 		mov	[ebx + %1 wrt ..gotoff], %2
 	%endmacro
 	
+	; Write a local data variable. (mov, explicit dword operand size)
+	; Syntax: put_mov_dword_localvar varName, srcRegister/immed
+	%macro put_mov_dword_localvar 2
+		mov	dword [ebx + %1 wrt ..gotoff], %2
+	%endmacro
+	
 	; Write a local data variable. (movq)
 	; Syntax: put_movq_localvar varName, srcRegister
 	%macro put_movq_localvar 2
@@ -68,6 +74,10 @@
 	
 	%macro put_mov_localvar 2
 		mov	[%1], %2
+	%endmacro
+	
+	%macro put_mov_dword_localvar 2
+		mov	dword [%1], %2
 	%endmacro
 	
 	%macro put_movq_localvar 2
