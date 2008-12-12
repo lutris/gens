@@ -25,6 +25,7 @@ noinst_HEADERS = \
 		mdp_render_interpolated_scanline_x86.h
 
 if GENS_X86_ASM
+NASM += -I@srcdir@/../
 mdp_render_interpolated_scanline_la_SOURCES += \
 		mdp_render_interpolated_scanline_16_x86.asm
 endif # GENS_X86_ASM
