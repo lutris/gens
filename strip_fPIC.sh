@@ -6,12 +6,16 @@ pic="no"
 command=""
 while [ $# -gt 0 ]; do
     case "$1" in
-        -?[pP][iI][cC])
+        -f[pP][iI][cC])
             # PIC - define __PIC in nasm.
             if test "x$pic" = "xno"; then
                 command="$command -D __PIC"
                 pic="yes"
             fi
+            ;;
+	-d[pP][iI][cC])
+            # DPIC - ignore.
+            # This variant is used by libtool on mingw.
             ;;
         -I)
             command="$command $1 $2/"
