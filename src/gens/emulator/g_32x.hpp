@@ -5,11 +5,11 @@
 #ifndef GENS_32X_HPP
 #define GENS_32X_HPP
 
+#include "util/file/rom.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "util/file/rom.hpp"
 
 int Init_32X(ROM_t* MD_ROM);
 void Reset_32X();

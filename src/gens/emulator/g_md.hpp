@@ -5,11 +5,11 @@
 #ifndef GENS_MD_HPP
 #define GENS_MD_HPP
 
+#include "util/file/rom.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "util/file/rom.hpp"
 
 void Detect_Country_Genesis(void);
 

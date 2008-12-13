@@ -70,10 +70,10 @@ int Load_ISO(char* buf, const char* iso_name)
 	fread(detectBuf, 1, sizeof(detectBuf), isoFile);
 	switch (detectFormat(detectBuf))
 	{
-		case SegaCD_Image:
+		case ROMTYPE_SYS_MCD:
 			Tracks[0].Type = TYPE_ISO;
 			break;
-		case SegaCD_Image_BIN:
+		case ROMTYPE_SYS_MCD | ROMTYPE_FLAG_CD_BIN_CUE:
 			Tracks[0].Type = TYPE_BIN;
 			break;
 		default:

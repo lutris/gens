@@ -219,7 +219,6 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			Open_Game_Genie();
 			break;
 		
-		case IDM_FILE_ROMHISTORY_0:
 		case IDM_FILE_ROMHISTORY_1:
 		case IDM_FILE_ROMHISTORY_2:
 		case IDM_FILE_ROMHISTORY_3:
@@ -233,8 +232,8 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (audio->playingGYM())
 				Stop_Play_GYM();
 			
-			if (strlen(Recent_Rom[menuID - IDM_FILE_ROMHISTORY_0]) > 0)
-				ROM::openROM(Recent_Rom[menuID - IDM_FILE_ROMHISTORY_0]);
+			if (ROM::Recent_ROMs.size() > (menuID - IDM_FILE_ROMHISTORY_1))
+				ROM::openROM(ROM::Recent_ROMs.at(menuID - IDM_FILE_ROMHISTORY_1).filename.c_str());
 			
 			Sync_Gens_Window();
 			break;

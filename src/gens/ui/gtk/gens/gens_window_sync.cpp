@@ -29,8 +29,10 @@
 // C++ includes
 #include <string>
 #include <list>
+#include <deque>
 using std::string;
 using std::list;
+using std::deque;
 
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
@@ -150,21 +152,15 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	GtkWidget *mnuROMHistory_item;
 	string sROMHistoryEntry;
 	char sMenuKey[24];
-	int romFormat;
-	int romsFound = 0;
-	for (unsigned short i = 0; i < 9; i++)
+	unsigned int romFormat;
+	int romNum = 0;
+	
+	for (deque<ROM::Recent_ROM_t>::iterator rom = ROM::Recent_ROMs.begin();
+	     rom != ROM::Recent_ROMs.end(); rom++)
 	{
-		// Make sure this Recent ROM entry actually has an entry.
-		if (strlen(Recent_Rom[i]) == 0)
-			continue;
-		
-		// Increment the ROMs Found counter.
-		romsFound++;
-		
 		// Determine the ROM format.
-		// TODO: Improve the return variable from Detect_Format()
-		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
-		if (romFormat >= 1 && romFormat <= 4)
+		romFormat = ((*rom).type & ROMTYPE_SYS_MASK);
+		if (romFormat >= ROMTYPE_SYS_MD && romFormat <= ROMTYPE_SYS_MCD32X)
 			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
 		else
 			sROMHistoryEntry = ROM_Format_Prefix[0];
@@ -173,7 +169,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		sROMHistoryEntry += ROM::getNameFromPath(Recent_Rom[i]);;
+		sROMHistoryEntry += ROM::getNameFromPath((*rom).filename);
 		
 		// Add the ROM item to the ROM History submenu.
 		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());
@@ -181,7 +177,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		gtk_container_add(GTK_CONTAINER(mnuROMHistory_sub), mnuROMHistory_item);
 		
 		// Make sure the menu item is deleted when the submenu is deleted.
-		sprintf(sMenuKey, "ROMHistory_Sub_%d", i);
+		sprintf(sMenuKey, "ROMHistory_Sub_%d", romNum);
 		g_object_set_data_full(G_OBJECT(mnuROMHistory_sub), sMenuKey,
 				       g_object_ref(mnuROMHistory_item),
 						       (GDestroyNotify)g_object_unref);
@@ -189,11 +185,14 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuROMHistory_item, "activate",
 				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
-				  GINT_TO_POINTER(IDM_FILE_ROMHISTORY_0 + i));
+				  GINT_TO_POINTER(IDM_FILE_ROMHISTORY_1 + romNum));
+		
+		// Increment the ROM number.
+		romNum++;
 	}
 	
-	// If no recent ROMs were found, disable the ROM History menu.
-	gtk_widget_set_sensitive(mnuROMHistory, romsFound);
+	// If no recent ROMs were found, disable the ROM History submenu.
+	gtk_widget_set_sensitive(mnuROMHistory, romNum);
 	
 	// Enable callbacks.
 	do_callbacks = 1;

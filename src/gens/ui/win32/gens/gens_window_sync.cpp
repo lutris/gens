@@ -58,8 +58,10 @@
 // C++ includes
 #include <string>
 #include <list>
+#include <deque>
 using std::string;
 using std::list;
+using std::deque;
 
 
 // Internal functions.
@@ -67,6 +69,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position);
 #ifdef GENS_DEBUGGER
 static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position);
 #endif /* GENS_DEBUGGER */
+
 
 /**
  * Sync_Gens_Window(): Synchronize the Gens Main Window.
@@ -153,20 +156,15 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	
 	string sROMHistoryEntry;
 	int romFormat;
-	int romsFound = 0;
-	for (unsigned short i = 0; i < 9; i++)
+	int romNum = 0;
+	
+	for (deque<ROM::Recent_ROM_t>::iterator rom = ROM::Recent_ROMs.begin();
+	     rom != ROM::Recent_ROMs.end(); rom++)
 	{
-		// Make sure this Recent ROM entry actually has an entry.
-		if (strlen(Recent_Rom[i]) == 0)
-			continue;
-		
-		// Increment the ROMs Found counter.
-		romsFound++;
-		
 		// Determine the ROM format.
 		// TODO: Improve the return variable from Detect_Format()
-		romFormat = ROM::detectFormat_fopen(Recent_Rom[i]) >> 1;
-		if (romFormat >= 1 && romFormat <= 4)
+		romFormat = ((*rom).type & ROMTYPE_SYS_MASK);
+		if (romFormat >= ROMTYPE_SYS_MD && romFormat <= ROMTYPE_SYS_MCD32X)
 			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
 		else
 			sROMHistoryEntry = ROM_Format_Prefix[0];
@@ -175,15 +173,18 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		sROMHistoryEntry += ROM::getNameFromPath(Recent_Rom[i]);
+		sROMHistoryEntry += ROM::getNameFromPath((*rom).filename);
 		
 		// Add the ROM item to the ROM History submenu.
 		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,
-			   IDM_FILE_ROMHISTORY_0 + i, sROMHistoryEntry.c_str());
+			   IDM_FILE_ROMHISTORY_1 + romNum, sROMHistoryEntry.c_str());
+		
+		// Increment the ROM number.
+		romNum++;
 	}
 	
 	// If no recent ROMs were found, disable the ROM History menu.
-	if (romsFound == 0)
+	if (romNum == 0)
 		EnableMenuItem(mnuFile, posROMHistory, MF_BYPOSITION | MF_GRAYED);
 }
 

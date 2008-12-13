@@ -328,8 +328,8 @@ void Input_KeyDown(int key)
 				if (audio->playingGYM())
 					Stop_Play_GYM();
 				
-				if (strlen(Recent_Rom[key - GENS_KEY_1]) > 0)
-					ROM::openROM(Recent_Rom[key - GENS_KEY_1]);
+				if (ROM::Recent_ROMs.size() > (key - GENS_KEY_1))
+					ROM::openROM(ROM::Recent_ROMs.at(key - GENS_KEY_1).filename.c_str());
 				
 				Sync_Gens_Window();
 			}

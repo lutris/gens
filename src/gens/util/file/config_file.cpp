@@ -85,6 +85,10 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// C++ includes
+#include <deque>
+using std::deque;
+
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
 #include <windows.h>
@@ -135,11 +139,18 @@ int Config::save(const string& filename)
 	cfg.writeString("General", "32X Master SH2 BIOS", BIOS_Filenames._32X_MSH2);
 	cfg.writeString("General", "32X Slave SH2 BIOS", BIOS_Filenames._32X_SSH2);
 	
-	// Last 9 ROMs
-	for (i = 0; i < 9; i++)
+	// ROM History. (Last 9 ROMs.)
+	int romNum = 1;
+	for (deque<ROM::Recent_ROM_t>::iterator rom = ROM::Recent_ROMs.begin();
+	     rom != ROM::Recent_ROMs.end(); rom++)
 	{
-		sprintf(buf, "ROM %d", i + 1);
-		cfg.writeString("General", buf, Recent_Rom[i]);
+		sprintf(buf, "ROM %d", romNum);
+		cfg.writeString("General", buf, (*rom).filename);
+		
+		sprintf(buf, "ROM %d Type", romNum);
+		cfg.writeInt("General", buf, (*rom).type, true, 4);
+		
+		romNum++;
 	}
 	
 #ifdef GENS_CDROM
@@ -354,11 +365,24 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("General", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MSH2, sizeof(BIOS_Filenames._32X_MSH2));
 	cfg.getString("General", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_SSH2, sizeof(BIOS_Filenames._32X_SSH2));
 	
-	// Last 9 ROMs
-	for (i = 0; i < 9; i++)
+	// ROM History. (Last 9 ROMs.)
+	ROM::Recent_ROMs.clear();
+	ROM::Recent_ROM_t recentROM;
+	char tmpFilename[GENS_PATH_MAX];
+	
+	for (int romNum = 1; romNum <= 9; romNum++)
 	{
-		sprintf(buf, "ROM %d", i + 1);
-		cfg.getString("General", buf, "", Recent_Rom[i], sizeof(Recent_Rom[i]));
+		sprintf(buf, "ROM %d", romNum);
+		cfg.getString("General", buf, "", tmpFilename, sizeof(tmpFilename));
+		if (!tmpFilename[0])
+			continue;
+		
+		recentROM.filename = string(tmpFilename);
+		
+		sprintf(buf, "ROM %d Type", romNum);
+		recentROM.type = cfg.getInt("General", buf, 0);
+		
+		ROM::Recent_ROMs.push_back(recentROM);
 	}
 	
 #ifdef GENS_CDROM

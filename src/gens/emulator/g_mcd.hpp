@@ -5,11 +5,11 @@
 #ifndef GENS_MCD_HPP
 #define GENS_MCD_HPP
 
+#include "util/file/rom.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "util/file/rom.hpp"
 
 const char* Detect_Country_SegaCD(void);
 

@@ -8,19 +8,6 @@ extern "C" {
 #include "emulator/gens.hpp"
 #include <stdlib.h>
 
-typedef enum
-{
-	MD_ROM			= 2,
-	MD_ROM_Interleaved	= 3,
-	_32X_ROM		= 4,
-	_32X_ROM_Interleaved	= 5,
-	SegaCD_Image		= 6,
-	SegaCD_Image_BIN	= 7,
-	SegaCD_32X_Image	= 8,
-	SegaCD_32X_Image_BIN	= 9,
-} ROMType;
-
-
 typedef struct _ROM_t
 {
 	char Console_Name[17];
@@ -42,8 +29,6 @@ typedef struct _ROM_t
 	char Countries[4];
 } ROM_t;
 
-
-extern char Recent_Rom[9][GENS_PATH_MAX];
 extern char IPS_Dir[GENS_PATH_MAX];
 extern char Rom_Dir[GENS_PATH_MAX];
 
@@ -54,9 +39,23 @@ extern char ROM_Name[512];
 }
 #endif
 
+// ROM type values.
+#define ROMTYPE_SYS_NONE	0x00000000
+#define ROMTYPE_SYS_MD		0x00000001
+#define ROMTYPE_SYS_32X		0x00000002
+#define ROMTYPE_SYS_MCD		0x00000003
+#define ROMTYPE_SYS_MCD32X	0x00000004
+#define ROMTYPE_SYS_MASK	0x000000FF
+
+// ROM type flags.
+#define ROMTYPE_FLAG_INTERLEAVED	0x00000100
+#define ROMTYPE_FLAG_CD_BIN_CUE		0x00000200
+#define ROMTYPE_FLAG_MASK		0x0000FF00
+
 #ifdef __cplusplus
 
 #include <string>
+#include <deque>
 
 // New C++ ROM class.
 class ROM
@@ -70,16 +69,26 @@ class ROM
 		static int openROM(const char *Name);
 		static ROM_t* loadSegaCD_BIOS(const char *filename);
 		
-		static ROMType detectFormat(const unsigned char buf[2048]);
-		static ROMType detectFormat_fopen(const char* filename);
+		static unsigned int detectFormat(const unsigned char buf[2048]);
+		static unsigned int detectFormat_fopen(const char* filename);
 		
-		static ROMType loadROM(const char* filename, ROM_t** retROM);
+		static unsigned int loadROM(const char* filename, ROM_t** retROM);
 		static void fixChecksum(void);
 		static int applyIPSPatch(void);
 		static void freeROM(ROM_t* ROM_MD);
+		
+		// Recent ROM struct.
+		struct Recent_ROM_t
+		{
+			unsigned int type;
+			std::string filename;
+		};
+		
+		// Double-ended queue containing all Recent ROMs.
+		static std::deque<Recent_ROM_t> Recent_ROMs;
 	
 	protected:
-		static void updateRecentROMList(const char* filename);
+		static void updateRecentROMList(const std::string& filename, const unsigned int type);
 		static void updateROMDir(const char *filename);
 		static void updateROMName(const char *filename);
 		static void deinterleaveSMD(void);
@@ -94,7 +103,7 @@ extern "C" {
 
 // Temporary C wrapper functions.
 // TODO: Eliminate these.
-ROMType detectFormat(const unsigned char buf[2048]);
+unsigned int detectFormat(const unsigned char buf[2048]);
 
 #ifdef __cplusplus
 }

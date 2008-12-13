@@ -6,10 +6,13 @@
 
 #include <fcntl.h>
 
+// C++ includes
 #include <string>
 #include <list>
+#include <deque>
 using std::string;
 using std::list;
+using std::deque;
 
 #include "rom.hpp"
 
@@ -39,7 +42,6 @@ using std::list;
 // New file compression handler.
 #include "util/file/compress/compressor.hpp"
 
-char Recent_Rom[9][GENS_PATH_MAX];
 char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
 
@@ -47,6 +49,9 @@ ROM_t* Game = NULL;
 char ROM_Name[512];
 
 ROM_t* myROM = NULL;
+
+// Double-ended queue containing all Recent ROMs.
+deque<ROM::Recent_ROM_t> ROM::Recent_ROMs;
 
 
 /**
@@ -86,26 +91,33 @@ string ROM::getDirFromPath(const string& fullPath)
 /**
  * updateRecentROMList(): Update the Recent ROM list with the given ROM filename.
  * @param filename Full pathname to a ROM file.
+ * @param type ROM type.
  */
-void ROM::updateRecentROMList(const char* filename)
+void ROM::updateRecentROMList(const std::string& filename, const unsigned int type)
 {
-	int i;
-	
-	for (i = 0; i < 9; i++)
+	for (deque<Recent_ROM_t>::iterator rom = Recent_ROMs.begin();
+	     rom != Recent_ROMs.end(); rom++)
 	{
 		// Check if the ROM exists in the Recent ROM list.
-		// If it does, don't do anything.
+		// If it does, update its ROM type and return.
 		// TODO: If it does, move it up to position 1.
-		if (!(strcmp(Recent_Rom[i], filename)))
+		if ((*rom).filename == filename)
+		{
+			// ROM exists.
+			(*rom).type = type;
 			return;
+		}
 	}
 	
-	// Move all recent ROMs down by one index.
-	for (i = 8; i > 0; i--)
-		strcpy(Recent_Rom[i], Recent_Rom[i - 1]);
+	// ROM doesn't exist.
+	Recent_ROM_t newROM;
+	newROM.type = type;
+	newROM.filename = filename;
+	Recent_ROMs.push_front(newROM);
 	
-	// Add this ROM to the recent ROM list.
-	strcpy(Recent_Rom[0], filename);
+	// Make sure there's no more than 9 elements in the deque.
+	if (Recent_ROMs.size() > 9)
+		Recent_ROMs.resize(9);
 }
 
 
@@ -187,7 +199,7 @@ void ROM::updateCDROMName(const char *cdromName)
 
 // Temporary C wrapper functions.
 // TODO: Eliminate this.
-ROMType detectFormat(const unsigned char buf[2048])
+unsigned int detectFormat(const unsigned char buf[2048])
 {
 	return ROM::detectFormat(buf);
 }
@@ -196,9 +208,9 @@ ROMType detectFormat(const unsigned char buf[2048])
 /**
  * Detect_Format(): Detect the format of a given ROM header.
  * @param buf Buffer containing the first 2048 bytes of the ROM file.
- * @return ROMType.
+ * @return ROM type.
  */
-ROMType ROM::detectFormat(const unsigned char buf[2048])
+unsigned int ROM::detectFormat(const unsigned char buf[2048])
 {
 	bool interleaved = false;
 	
@@ -206,13 +218,13 @@ ROMType ROM::detectFormat(const unsigned char buf[2048])
 	if (!strncasecmp("SEGADISCSYSTEM", (char*)(&buf[0x00]), 14))
 	{
 		// SegaCD image, ISO9660 format.
-		return SegaCD_Image;
+		return ROMTYPE_SYS_MCD;
 	}
 	else if (!strncasecmp("SEGADISCSYSTEM", (char*)(&buf[0x10]), 14))
 	{
 		// SegaCD image, BIN/CUE format.
 		// TODO: Proper BIN/CUE audio support, if it's not done already.
-		return SegaCD_Image_BIN;
+		return ROMTYPE_SYS_MCD | ROMTYPE_FLAG_CD_BIN_CUE;
 	}
 	
 	// Check if this is an interleaved ROM.
@@ -237,7 +249,7 @@ ROMType ROM::detectFormat(const unsigned char buf[2048])
 			    (!strncasecmp((char*)&buf[0x0407], "AS", 2)))
 			{
 				// Interleaved 32X ROM.
-				return _32X_ROM_Interleaved;
+				return ROMTYPE_SYS_32X | ROMTYPE_FLAG_INTERLEAVED;
 			}
 		}
 	}
@@ -250,30 +262,26 @@ ROMType ROM::detectFormat(const unsigned char buf[2048])
 			    (!strncasecmp((char*)(&buf[0x040E]), "MARS", 4)))
 			{
 				// Non-interleaved 32X ROM.
-				return _32X_ROM;
+				return ROMTYPE_SYS_32X;
 			}
 		}
 	}
 	
 	// Assuming this is a Genesis ROM.
-	
-	if (interleaved)
-		return MD_ROM_Interleaved;
-	
-	return MD_ROM;
+	return (ROMTYPE_SYS_MD | (interleaved ? ROMTYPE_FLAG_INTERLEAVED : 0));
 }
 
 
 /**
  * detectFormat_fopen(): Detect the format of a given ROM file.
  * @param filename Filename of the ROM file.
- * @return ROMType.
+ * @return ROM Type.
  */
-ROMType ROM::detectFormat_fopen(const char* filename)
+unsigned int ROM::detectFormat_fopen(const char* filename)
 {
 	Compressor *cmp;
 	list<CompressedFile> *files;
-	ROMType rtype;
+	unsigned int romType;
 	
 	// Open the ROM file using the compressor functions.
 	cmp = new Compressor(filename);
@@ -281,7 +289,7 @@ ROMType ROM::detectFormat_fopen(const char* filename)
 	{
 		// Cannot load the file.
 		delete cmp;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	
 	// Get the file information.
@@ -293,19 +301,19 @@ ROMType ROM::detectFormat_fopen(const char* filename)
 		// No files.
 		delete files;
 		delete cmp;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	
 	// Get the first file in the archive.
 	// TODO: Store the compressed filename in ROM history.
 	unsigned char detectBuf[2048];
 	cmp->getFile(&(*files->begin()), detectBuf, sizeof(detectBuf));
-	rtype = detectFormat(detectBuf);
+	romType = detectFormat(detectBuf);
 	
 	// Return the ROM type.
 	delete files;
 	delete cmp;
-	return rtype;
+	return romType;
 }
 
 
@@ -430,7 +438,7 @@ int ROM::getROM(void)
  */
 int ROM::openROM(const char *Name)
 {
-	int sys;
+	int romType;
 	
 	/*
 	Free_Rom(Game);
@@ -443,41 +451,37 @@ int ROM::openROM(const char *Name)
 	// Close any loaded ROM first.
 	freeROM(Game);
 	
-	sys = loadROM(Name, &Game);
-	if (sys <= 0)
+	romType = loadROM(Name, &Game);
+	if (romType <= 0)
 		return -1;
 	
-	updateRecentROMList(Name);
+	updateRecentROMList(Name, romType);
 	updateROMDir(Name);
 	
-	switch (sys)
+	switch (romType & ROMTYPE_SYS_MASK)
 	{
 		default:
-		case MD_ROM:
-		case MD_ROM_Interleaved:
+		case ROMTYPE_SYS_MD:
 			if (Game)
 				Genesis_Started = Init_Genesis(Game);
 			
 			return Genesis_Started;
 			break;
 	
-		case _32X_ROM:
-		case _32X_ROM_Interleaved:
+		case ROMTYPE_SYS_32X:
 			if (Game)
 				_32X_Started = Init_32X(Game);
 			
 			return _32X_Started;
 			break;
 		
-		case SegaCD_Image:
-		case SegaCD_Image_BIN:
+		case ROMTYPE_SYS_MCD:
 			SegaCD_Started = Init_SegaCD(Name);
 			
 			return SegaCD_Started;
 			break;
 		
-		case SegaCD_32X_Image:
-		case SegaCD_32X_Image_BIN:
+		case ROMTYPE_SYS_MCD32X:
 			break;
 	}
 	
@@ -513,14 +517,14 @@ ROM_t* ROM::loadSegaCD_BIOS(const char *filename)
  * loadROM(): Load a ROM file.
  * @param filename Filename of the ROM file.
  * @param interleaved If non-zero, the ROM is interleaved.
- * @return Pointer to Rom struct with the ROM information.
+ * @return ROM type.
  */
-ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
+unsigned int ROM::loadROM(const char* filename, ROM_t** retROM)
 {
 	Compressor *cmp;
 	list<CompressedFile> *files;
 	CompressedFile* selFile;
-	ROMType rtype;
+	unsigned int romType;
 	
 	// Set up the compressor.
 	cmp = new Compressor(filename, true);
@@ -530,7 +534,7 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 		delete cmp;
 		Game = NULL;
 		*retROM = NULL;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	
 	// Get the file information.
@@ -552,7 +556,7 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 		cmp = NULL;
 		Game = NULL;
 		*retROM = NULL;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	else if (files->size() == 1)
 	{
@@ -581,22 +585,22 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 		delete cmp;
 		Game = NULL;
 		*retROM = NULL;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	
 	// Determine the ROM type.
 	unsigned char detectBuf[2048];
 	cmp->getFile(&(*selFile), detectBuf, sizeof(detectBuf));
-	rtype = detectFormat(detectBuf);
-	if (rtype < MD_ROM ||
-	    rtype >= SegaCD_Image)
+	romType = detectFormat(detectBuf);
+	unsigned int romSys = romType & ROMTYPE_SYS_MASK;
+	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
 	{
 		// Unknown ROM type, or this is a SegaCD image.
 		delete files;
 		delete cmp;
 		Game = NULL;
 		*retROM = NULL;
-		return rtype;
+		return ROMTYPE_SYS_NONE;
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
@@ -607,7 +611,7 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 		delete cmp;
 		Game = NULL;
 		*retROM = NULL;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	
 	myROM = (ROM_t*)malloc(sizeof(ROM_t));
@@ -618,7 +622,7 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 		delete cmp;
 		Game = NULL;
 		*retROM = NULL;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	//fseek(ROM_File, 0, SEEK_SET);
 	
@@ -635,7 +639,7 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 		myROM = NULL;
 		Game = NULL;
 		*retROM = NULL;
-		return (ROMType)0;
+		return ROMTYPE_SYS_NONE;
 	}
 	//fclose(ROM_File);
 	
@@ -647,14 +651,13 @@ ROMType ROM::loadROM(const char* filename, ROM_t** retROM)
 	delete cmp;
 	
 	// Deinterleave the ROM, if necessary.
-	if (rtype == MD_ROM_Interleaved ||
-	    rtype == _32X_ROM_Interleaved)
+	if (romType & ROMTYPE_FLAG_INTERLEAVED)
 		deinterleaveSMD();
 	
 	fillROMInfo();
 	
 	*retROM = myROM;
-	return rtype;
+	return romType;
 }
 
 
