@@ -50,7 +50,7 @@ void MDP_FNCALL mdp_render_1x_init(MDP_Host_t *hostSrv)
 	mdp_render_1x_hostSrv = hostSrv;
 	
 	// Register the renderer.
-	mdp_render_1x_hostSrv->register_renderer(&mdp_render_1x, &mdp_render_1x_render_t);
+	mdp_render_1x_hostSrv->renderer_register(&mdp_render_1x, &mdp_render_1x_render_t);
 }
 
 
@@ -62,7 +62,7 @@ void MDP_FNCALL mdp_render_1x_end(void)
 	if (mdp_render_1x_hostSrv)
 	{
 		// Unregister the renderer.
-		mdp_render_1x_hostSrv->unregister_renderer(&mdp_render_1x, &mdp_render_1x_render_t);
+		mdp_render_1x_hostSrv->renderer_unregister(&mdp_render_1x, &mdp_render_1x_render_t);
 	}
 }
 

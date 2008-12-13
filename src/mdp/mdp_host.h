@@ -58,15 +58,15 @@ typedef struct
 {
 	const uint32_t interfaceVersion;
 	
-	// refPtr(): Get a reference for a pointer.
-	// unrefPtr(): Unreference a pointer.
-	void* (MDP_FNCALL *refPtr)(uint32_t ptrID);
-	void  (MDP_FNCALL *unrefPtr)(uint32_t ptrID);
+	// ptr_ref(): Get a reference for a pointer.
+	// ptr_unref(): Unreference a pointer.
+	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
+	void  (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
 	
-	// register_renderer(): Register a renderer.
-	// unregister_renderer(): Unregister a renderer.
-	int (MDP_FNCALL *register_renderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
-	int (MDP_FNCALL *unregister_renderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	// renderer_register(): Register a renderer.
+	// renderer_unregister(): Unregister a renderer.
+	int (MDP_FNCALL *renderer_register)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *renderer_unregister)(struct MDP_t *plugin, MDP_Render_t *renderer);
 	
 	// menu_item_add(): Add a menu item.
 	// menu_item_remove(): Remove a menu item.

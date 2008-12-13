@@ -25,10 +25,10 @@
 #include <stdlib.h>
 
 // MDP_PTR functions.
-static inline int* mdp_host_ref_ptr_LUT16to32(void);
-static inline void mdp_host_unref_ptr_LUT16to32(void);
-static inline int* mdp_host_ref_ptr_RGB16toYUV(void);
-static inline void mdp_host_unref_ptr_RGB16toYUV(void);
+static inline int* mdp_host_ptr_ref_LUT16to32(void);
+static inline void mdp_host_ptr_unref_LUT16to32(void);
+static inline int* mdp_host_ptr_ref_RGB16toYUV(void);
+static inline void mdp_host_ptr_unref_RGB16toYUV(void);
 
 // MDP_PTR variables.
 static int* mdp_ptr_LUT16to32 = NULL;
@@ -41,11 +41,11 @@ MDP_Host_t Gens_MDP_Host =
 {
 	.interfaceVersion = MDP_HOST_INTERFACE_VERSION,
 	
-	.refPtr = mdp_host_ref_ptr,
-	.unrefPtr = mdp_host_unref_ptr,
+	.ptr_ref = mdp_host_ptr_ref,
+	.ptr_unref = mdp_host_ptr_unref,
 	
-	.register_renderer = mdp_host_register_renderer,
-	.unregister_renderer = mdp_host_unregister_renderer,
+	.renderer_register = mdp_host_renderer_register,
+	.renderer_unregister = mdp_host_renderer_unregister,
 	
 	.menu_item_add = mdp_host_menu_item_add,
 	.menu_item_remove = mdp_host_menu_item_remove
@@ -53,19 +53,19 @@ MDP_Host_t Gens_MDP_Host =
 
 
 /**
- * mdp_host_ref_ptr(): Reference a pointer.
+ * mdp_host_ptr_ref(): Reference a pointer.
  * @param ptrID Pointer ID.
  * @return Pointer.
  */
-void* MDP_FNCALL mdp_host_ref_ptr(uint32_t ptrID)
+void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 {
 	switch (ptrID)
 	{
 		case MDP_PTR_LUT16to32:
-			return (void*)mdp_host_ref_ptr_LUT16to32();
+			return (void*)mdp_host_ptr_ref_LUT16to32();
 		
 		case MDP_PTR_RGB16toYUV:
-			return (void*)mdp_host_ref_ptr_RGB16toYUV();
+			return (void*)mdp_host_ptr_ref_RGB16toYUV();
 		
 		default:
 			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
@@ -74,20 +74,20 @@ void* MDP_FNCALL mdp_host_ref_ptr(uint32_t ptrID)
 }
 
 /**
- * mdp_host_unref_ptr(): Unreference a pointer.
+ * mdp_host_ptr_unref(): Unreference a pointer.
  * @param ptrID Pointer ID.
  * @return Pointer.
  */
-void MDP_FNCALL mdp_host_unref_ptr(uint32_t ptrID)
+void MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 {
 	switch (ptrID)
 	{
 		case MDP_PTR_LUT16to32:
-			mdp_host_unref_ptr_LUT16to32();
+			mdp_host_ptr_unref_LUT16to32();
 			break;
 		
 		case MDP_PTR_RGB16toYUV:
-			mdp_host_unref_ptr_RGB16toYUV();
+			mdp_host_ptr_unref_RGB16toYUV();
 			break;
 		
 		default:
@@ -98,10 +98,10 @@ void MDP_FNCALL mdp_host_unref_ptr(uint32_t ptrID)
 
 
 /**
- * mdp_host_ref_ptr_LUT16to32(): Get a reference for LUT16to32.
+ * mdp_host_ptr_ref_LUT16to32(): Get a reference for LUT16to32.
  * @return LUT16to32.
  */
-static inline int* mdp_host_ref_ptr_LUT16to32(void)
+static inline int* mdp_host_ptr_ref_LUT16to32(void)
 {
 	if (!mdp_ptr_LUT16to32)
 	{
@@ -122,10 +122,10 @@ static inline int* mdp_host_ref_ptr_LUT16to32(void)
 }
 
 /**
- * mdp_host_unref_ptr_LUT16to32(): Unreference LUT16to32.
+ * mdp_host_ptr_unref_LUT16to32(): Unreference LUT16to32.
  * @return LUT16to32.
  */
-static inline void mdp_host_unref_ptr_LUT16to32(void)
+static inline void mdp_host_ptr_unref_LUT16to32(void)
 {
 	// Decrement the reference counter.
 	mdp_ptr_LUT16to32_count--;
@@ -140,10 +140,10 @@ static inline void mdp_host_unref_ptr_LUT16to32(void)
 
 
 /**
- * mdp_host_ref_ptr_LUT16to32(): Get a reference for RGB16toYUV.
+ * mdp_host_ptr_ref_LUT16to32(): Get a reference for RGB16toYUV.
  * @return RGB16toYUV.
  */
-static inline int* mdp_host_ref_ptr_RGB16toYUV(void)
+static inline int* mdp_host_ptr_ref_RGB16toYUV(void)
 {
 	if (!mdp_ptr_RGB16toYUV)
 	{
@@ -179,10 +179,10 @@ static inline int* mdp_host_ref_ptr_RGB16toYUV(void)
 }
 
 /**
- * mdp_host_unref_ptr_RGB16toYUV(): Unreference LUT16to32.
+ * mdp_host_ptr_unref_RGB16toYUV(): Unreference LUT16to32.
  * @return RGB16toYUV.
  */
-static inline void mdp_host_unref_ptr_RGB16toYUV(void)
+static inline void mdp_host_ptr_unref_RGB16toYUV(void)
 {
 	// Decrement the reference counter.
 	mdp_ptr_RGB16toYUV_count--;

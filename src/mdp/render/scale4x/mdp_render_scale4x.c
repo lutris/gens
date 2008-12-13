@@ -50,7 +50,7 @@ void MDP_FNCALL mdp_render_scale4x_init(MDP_Host_t *hostSrv)
 	mdp_render_scale4x_hostSrv = hostSrv;
 	
 	// Register the renderer.
-	mdp_render_scale4x_hostSrv->register_renderer(&mdp, &mdp_render_t);
+	mdp_render_scale4x_hostSrv->renderer_register(&mdp, &mdp_render_t);
 }
 
 
@@ -59,11 +59,11 @@ void MDP_FNCALL mdp_render_scale4x_init(MDP_Host_t *hostSrv)
  */
 void MDP_FNCALL mdp_render_scale4x_end(void)
 {
-	if (mdp_render_scale4x_hostSrv)
-	{
-		// Unregister the renderer.
-		mdp_render_scale4x_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
-	}
+	if (!mdp_render_scale4x_hostSrv)
+		return;
+	
+	// Unregister the renderer.
+	mdp_render_scale4x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
 }
 
 

@@ -34,12 +34,12 @@ using std::list;
 
 
 /**
- * mdp_host_register_renderer(): Register a render plugin.
+ * mdp_host_renderer_register(): Register a render plugin.
  * @param plugin MDP_t requesting plugin registration.
  * @param renderer MDP_Render_t struct containing renderer information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_register_renderer(struct MDP_t *plugin, MDP_Render_t *renderer)
+int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *renderer)
 {
 	if (!plugin || !renderer)
 		return 1;	// TODO: Return an MDP error code.
@@ -81,12 +81,12 @@ int MDP_FNCALL mdp_host_register_renderer(struct MDP_t *plugin, MDP_Render_t *re
 
 
 /**
- * mdp_host_unregister_renderer(): Unregister a render plugin.
+ * mdp_host_renderer_unregister(): Unregister a render plugin.
  * @param plugin MDP_t requesting plugin unregistration.
  * @param renderer MDP_Render_t struct containing renderer information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_unregister_renderer(struct MDP_t *plugin, MDP_Render_t *renderer)
+int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *renderer)
 {
 	// TODO: Implement this function.
 	return 0;

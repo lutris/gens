@@ -60,7 +60,7 @@ void MDP_FNCALL mdp_render_hq4x_init(MDP_Host_t *hostSrv)
 	mdp_render_hq4x_hostSrv = hostSrv;
 	
 	// Register the renderer.
-	mdp_render_hq4x_hostSrv->register_renderer(&mdp, &mdp_render_t);
+	mdp_render_hq4x_hostSrv->renderer_register(&mdp, &mdp_render_t);
 }
 
 
@@ -72,22 +72,22 @@ void MDP_FNCALL mdp_render_hq4x_end(void)
 	if (!mdp_render_hq4x_hostSrv)
 		return;
 	
+	// Unregister the renderer.
+	mdp_render_hq4x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	
 	// If the LUT16to32 pointer was referenced, unreference it.
 	if (mdp_render_hq4x_LUT16to32)
 	{
-		mdp_render_hq4x_hostSrv->unrefPtr(MDP_PTR_LUT16to32);
+		mdp_render_hq4x_hostSrv->ptr_unref(MDP_PTR_LUT16to32);
 		mdp_render_hq4x_LUT16to32 = NULL;
 	}
 	
 	// If the RGB16toYUV pointer was referenced, unreference it.
 	if (mdp_render_hq4x_RGB16toYUV)
 	{
-		mdp_render_hq4x_hostSrv->unrefPtr(MDP_PTR_RGB16toYUV);
+		mdp_render_hq4x_hostSrv->ptr_unref(MDP_PTR_RGB16toYUV);
 		mdp_render_hq4x_RGB16toYUV = NULL;
 	}
-	
-	// Unregister the renderer.
-	mdp_render_hq4x_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
 }
 
 
@@ -102,9 +102,9 @@ void MDP_FNCALL mdp_render_hq4x_cpp(MDP_Render_Info_t *renderInfo)
 	
 	// Make sure the lookup tables are initialized.
 	if (!mdp_render_hq4x_LUT16to32)
-		mdp_render_hq4x_LUT16to32 = (int*)(mdp_render_hq4x_hostSrv->refPtr(MDP_PTR_LUT16to32));
+		mdp_render_hq4x_LUT16to32 = (int*)(mdp_render_hq4x_hostSrv->ptr_ref(MDP_PTR_LUT16to32));
 	if (!mdp_render_hq4x_RGB16toYUV)
-		mdp_render_hq4x_RGB16toYUV = (int*)(mdp_render_hq4x_hostSrv->refPtr(MDP_PTR_RGB16toYUV));
+		mdp_render_hq4x_RGB16toYUV = (int*)(mdp_render_hq4x_hostSrv->ptr_ref(MDP_PTR_RGB16toYUV));
 	
 #ifdef GENS_X86_ASM
 	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)

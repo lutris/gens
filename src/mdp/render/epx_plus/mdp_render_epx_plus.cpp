@@ -50,7 +50,7 @@ void MDP_FNCALL mdp_render_epx_plus_init(MDP_Host_t *hostSrv)
 	mdp_render_epx_plus_hostSrv = hostSrv;
 	
 	// Register the renderer.
-	mdp_render_epx_plus_hostSrv->register_renderer(&mdp, &mdp_render_t);
+	mdp_render_epx_plus_hostSrv->renderer_register(&mdp, &mdp_render_t);
 }
 
 
@@ -63,7 +63,7 @@ void MDP_FNCALL mdp_render_epx_plus_end(void)
 		return;
 	
 	// Unregister the renderer.
-	mdp_render_epx_plus_hostSrv->unregister_renderer(&mdp, &mdp_render_t);
+	mdp_render_epx_plus_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
 }
 
 
