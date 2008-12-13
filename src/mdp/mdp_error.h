@@ -26,13 +26,18 @@
 // These error codes are typically returned as negative numbers.
 // Example: return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED.
 
-// No error.
-#define	MDP_ERR_OK				0
+// Low word: Error code.
+// High word: Error category.
 
-// Function not implemented.
-#define	MDP_ERR_FUNCTION_NOT_IMPLEMENTED	1
+// General error codes.
+#define MDP_ERRCAT_GENERAL			(0x0000 << 4)
+#define	MDP_ERR_OK				(0x0000 | MDP_ERRCAT_GENERAL)
+#define	MDP_ERR_FUNCTION_NOT_IMPLEMENTED	(0x0001 | MDP_ERRCAT_GENERAL)
+#define MDP_ERR_UNKNOWN_PTRID			(0x0002 | MDP_ERRCAT_GENERAL)
 
-// Unknown pointer ID.
-#define MDP_ERR_UNKNOWN_PTRID			2
+// Renderer errors.
+#define MDP_ERRCAT_RENDER			(0x0001 << 4)
+#define MDP_ERR_RENDER_UNKNOWN			(0x0000 | MDP_ERRCAT_RENDER)
+#define MDP_ERR_RENDER_INVALID_RENDERINFO	(0x0002 | MDP_ERRCAT_RENDER)
 
 #endif /* __MDP_ERROR_H */
