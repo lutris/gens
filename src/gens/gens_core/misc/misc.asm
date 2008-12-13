@@ -2,8 +2,6 @@
 ; Gens: Miscellaneous assembly language functions.
 ;
 
-%include "nasmhead.inc"
-
 ; Read-only data on Win32 uses the section name ".rdata".
 %ifdef __OBJ_WIN32
 	%define	.rodata	.rdata
@@ -207,7 +205,7 @@ section .rodata align=64
 	
 section .bss align=64
 	
-	; Symbol redefines for ELF
+	; External symbol redefines for ELF
 	%ifdef __OBJ_ELF
 		%define	_MD_Screen		MD_Screen
 		%define	_MD_Palette		MD_Palette
@@ -804,9 +802,21 @@ section .text align=64
 	%%End
 
 %endmacro
-
+	
+	; Symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_Print_Text		Print_Text
+		
+		%define _Cell_8x8_Dump		Cell_8x8_Dump
+		%define _Cell_16x16_Dump	Cell_16x16_Dump
+		%define _Cell_32x32_Dump	Cell_32x32_Dump
+		
+		%define	_CDD_Export_Status	CDD_Export_Status
+	%endif
+	
 	; void Print_Text(char *str, int Size, int Pos_X, int Pos_Y, int Style)
-	DECL Print_Text
+	global _Print_Text
+	_Print_Text:
 		
 		push	ebx
 		push	ecx
@@ -1234,7 +1244,8 @@ section .text align=64
 	align 64
 	
 	;void Cell_8x8_Dump(unsigned char *Adr, int Palette)
-	DECL Cell_8x8_Dump
+	global _Cell_8x8_Dump
+	_Cell_8x8_Dump:
 		
 		push ebx
 		push ecx
@@ -1337,7 +1348,8 @@ section .text align=64
 	align 64
 	
 	;void Cell_16x16_Dump(unsigned char *Adr, int Palette)
-	DECL Cell_16x16_Dump
+	global _Cell_16x16_Dump
+	_Cell_16x16_Dump:
 		
 		push	ebx
 		push	ecx
@@ -1502,7 +1514,8 @@ section .text align=64
 	align 64
 	
 	;void Cell_32x32_Dump(unsigned char *Adr, int Palette)
-	DECL Cell_32x32_Dump
+	global _Cell_32x32_Dump
+	_Cell_32x32_Dump:
 		
 		push	ebx
 		push	ecx
@@ -1605,7 +1618,8 @@ section .text align=64
 	align 64
 	
 	; void CDD_Export_Status(void)
-	DECL CDD_Export_Status
+	global _CDD_Export_Status
+	_CDD_Export_Status:
 		push	ebx
 		push	ecx
 		
