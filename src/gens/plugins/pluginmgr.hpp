@@ -45,8 +45,8 @@ struct mdpMenuItem_t
 	bool			checked;
 };
 
-typedef GENS_HASHTABLE<std::string, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
-typedef std::pair<std::string, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
+typedef GENS_HASHTABLE<uint16_t, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
+typedef std::pair<uint16_t, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 
 class PluginMgr
 {
