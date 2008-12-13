@@ -120,8 +120,8 @@ class VDraw
 		
 		// Render functions
 		// TODO: Make these properties.
-		MDP_Render_Fn m_BlitFS;
-		MDP_Render_Fn m_BlitW;
+		mdp_render_fn m_BlitFS;
+		mdp_render_fn m_BlitW;
 		
 	protected:
 		// Called if initialization fails.

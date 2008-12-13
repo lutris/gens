@@ -730,7 +730,7 @@ int VDraw::setRender(const list<MDP_Render_t*>::iterator& newMode, const bool fo
 	
 	list<MDP_Render_t*>::iterator& Rend = (m_FullScreen ? rendMode_FS : rendMode_W);
 	list<MDP_Render_t*>::iterator oldRend = Rend;
-	MDP_Render_Fn *rendFn = (m_FullScreen ? &m_BlitFS : &m_BlitW);
+	mdp_render_fn *rendFn = (m_FullScreen ? &m_BlitFS : &m_BlitW);
 	
 	bool reinit = false;
 	
