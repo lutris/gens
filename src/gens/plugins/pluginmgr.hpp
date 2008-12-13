@@ -39,6 +39,7 @@ struct mdpMenuItem_t
 {
 	uint16_t 		id;
 	mdp_menu_handler_fn	handler;
+	MDP_t			*owner;
 	
 	// Attributes
 	std::string		text;
