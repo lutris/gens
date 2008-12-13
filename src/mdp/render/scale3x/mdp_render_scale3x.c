@@ -25,44 +25,54 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
+#include <string.h>
+
 #include "mdp_render_scale3x.h"
 #include "mdp_render_scale3x_plugin.h"
-#include <string.h>
-#include <stdint.h>
 
 // Scale3x frontend.
 #include "scalebit_3x.h"
 
-// CPU flags
+// MDP includes.
 #include "mdp/mdp_cpuflags.h"
+#include "mdp/mdp_error.h"
 
-// MDP Host Services
+// MDP Host Services.
 static MDP_Host_t *mdp_render_scale3x_hostSrv = NULL;
 
 
 /**
  * mdp_render_scale3x_init(): Initialize the Scale3x rendering plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_scale3x_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_scale3x_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_scale3x_hostSrv = hostSrv;
 	
 	// Register the renderer.
 	mdp_render_scale3x_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	
+	// Initialized.
+	return MDP_ERR_OK;
 }
 
 
 /**
  * mdp_render_scale3x_end(): Shut down the Scale3x rendering plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_scale3x_end(void)
+int MDP_FNCALL mdp_render_scale3x_end(void)
 {
 	if (!mdp_render_scale3x_hostSrv)
 		return;
 	
 	// Unregister the renderer.
 	mdp_render_scale3x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	
+	// Plugin is shut down.
+	return MDP_ERR_OK;
 }
 
 

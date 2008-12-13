@@ -29,18 +29,18 @@
 #include "mdp_render_hq3x_plugin.h"
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 
-// CPU flags
+// MDP includes.
 #include "mdp/mdp_cpuflags.h"
+#include "mdp/mdp_error.h"
 
-// x86 asm versions
+// x86 asm versions.
 #ifdef GENS_X86_ASM
 #include "mdp_render_hq3x_x86.h"
 #endif /* GENS_X86_ASM */
 
-// MDP Host Services
+// MDP Host Services.
 static MDP_Host_t *mdp_render_hq3x_hostSrv;
 int *mdp_render_hq3x_LUT16to32 = NULL;
 int *mdp_render_hq3x_RGB16toYUV = NULL;
@@ -53,24 +53,29 @@ int *mdp_render_hq3x_RGB16toYUV = NULL;
 
 /**
  * mdp_render_hq3x_end(): Initialize the hq3x plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_hq3x_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_hq3x_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_hq3x_hostSrv = hostSrv;
 	
 	// Register the renderer.
 	mdp_render_hq3x_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	
+	// Initialized.
+	return MDP_ERR_OK;
 }
 
 
 /**
  * mdp_render_hq3x_end(): Shut down the hq3x plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_hq3x_end(void)
+int MDP_FNCALL mdp_render_hq3x_end(void)
 {
 	if (!mdp_render_hq3x_hostSrv)
-		return;
+		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
 	mdp_render_hq3x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
@@ -88,6 +93,9 @@ void MDP_FNCALL mdp_render_hq3x_end(void)
 		mdp_render_hq3x_hostSrv->ptr_unref(MDP_PTR_RGB16toYUV);
 		mdp_render_hq3x_RGB16toYUV = NULL;
 	}
+	
+	// Plugin is shut down.
+	return MDP_ERR_OK;
 }
 
 

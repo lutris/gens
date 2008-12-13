@@ -23,38 +23,50 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
+#include <string.h>
+
 #include "mdp_render_epx.hpp"
 #include "mdp_render_epx_plugin.h"
-#include <string.h>
-#include <stdint.h>
 
-// MDP Host Services
+// MDP includes.
+#include "mdp/mdp_error.h"
+
+// MDP Host Services.
 static MDP_Host_t *mdp_render_epx_hostSrv = NULL;
 
 
 /**
  * mdp_render_epx_init(): Initialize the EPX rendering plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_epx_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_epx_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_epx_hostSrv = hostSrv;
 	
 	// Register the renderer.
 	mdp_render_epx_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	
+	// Initialized.
+	return MDP_ERR_OK;
 }
 
 
 /**
  * mdp_render_epx_end(): Shut down the EPX rendering plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_epx_end(void)
+int MDP_FNCALL mdp_render_epx_end(void)
 {
 	if (!mdp_render_epx_hostSrv)
-		return;
+		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
 	mdp_render_epx_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	
+	// Plugin is shut down.
+	return MDP_ERR_OK;
 }
 
 
