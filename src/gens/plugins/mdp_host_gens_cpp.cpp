@@ -20,8 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp_host_gens.h"
-
 // C++ includes
 #include <algorithm>
 #include <string>
@@ -29,7 +27,11 @@
 using std::string;
 using std::list;
 
-// Plugin Manager
+// MDP includes.
+#include "mdp_host_gens.h"
+#include "mdp/mdp_error.h"
+
+// Plugin Manager.
 #include "pluginmgr.hpp"
 
 
@@ -90,4 +92,82 @@ int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *
 {
 	// TODO: Implement this function.
 	return 0;
+}
+
+
+/**
+ * mdp_host_menu_item_add(): Add a menu item.
+ * @param plugin MDP_t requesting the menu item.
+ * @param handler Function to handle menu item callbacks.
+ * @param menu_id Menu to add the menu item to. (Currently ignored.)
+ * @return Menu item ID, or MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id)
+{
+	// TODO
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+}
+
+
+/**
+ * mdp_host_menu_item_remove(): Remove a menu item.
+ * @param plugin MDP_t requesting the menu item.
+ * @param menu_item_id Menu item ID.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
+{
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+}
+
+
+/**
+ * mdp_host_menu_item_set_text(): Set menu item text.
+ * @param plugin MDP_t requesting the menu item.
+ * @param menu_item_id Menu item ID.
+ * @param text Text to set.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_id, const char *text)
+{
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+}
+
+
+/**
+ * mdp_host_menu_item_get_text(): get menu item text.
+ * @param plugin MDP_t requesting the menu item.
+ * @param menu_item_id Menu item ID.
+ * @param text_buf Buffer to copy the text to.
+ * @param size Size of text_buf.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size)
+{
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+}
+
+
+/**
+ * mdp_host_menu_item_set_checked(): Set menu item "checked" state.
+ * @param plugin MDP_t requesting the menu item.
+ * @param menu_item_id Menu item ID.
+ * @param checked "Checked" state.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_set_checked(struct MDP_t *plugin, int menu_item_id, int checked)
+{
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+}
+
+
+/**
+ * mdp_host_menu_item_get_checked(): Get menu item "checked" state.
+ * @param plugin MDP_t requesting the menu item.
+ * @param menu_item_id Menu item ID.
+ * @return 0 if not checked; 1 if checked; negative number for MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_get_checked(struct MDP_t *plugin, int menu_item_id)
+{
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }

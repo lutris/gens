@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+// C includes.
 #include <stdio.h>
 #include <stdlib.h>
 
+// MDP includes.
 #include "mdp_host_gens.h"
 #include "mdp/mdp_error.h"
 
@@ -198,31 +200,4 @@ static inline void mdp_host_ptr_unref_RGB16toYUV(void)
 		free(mdp_ptr_RGB16toYUV);
 		mdp_ptr_RGB16toYUV = NULL;
 	}
-}
-
-
-/**
- * mdp_host_menu_item_add(): Add a menu item.
- * @param plugin MDP_t requesting the menu item.
- * @param handler Function to handle menu item callbacks.
- * @param menu_id Menu to add the menu item to. (Currently ignored.)
- * @return Menu item ID, or MDP error code.
- */
-int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id)
-{
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
-}
-
-
-/**
- * mdp_host_menu_item_remove(): Remove a menu item.
- * @param plugin MDP_t requesting the menu item.
- * @param handler Function to handle menu item callbacks.
- * @param menu_id Menu to add the menu item to. (Currently ignored.)
- * @return MDP error code.
- */
-int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
-{
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
