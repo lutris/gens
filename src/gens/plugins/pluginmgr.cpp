@@ -201,13 +201,13 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 		#ifdef _DIRENT_HAVE_D_TYPE
 			// libc provides the dirent->d_type field.
 			filetype = DTTOIF(d_entry->d_type);
-		#else
+		#else /* !_DIRENT_HAVE_D_TYPE */
 			// libc does not provide the dirent->d_type field.
 			// mingw unfortunately doesn't. :(
 			tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
 			stat(tmpFilename.c_str(), &dirstat);
 			filetype = dirstat.st_mode;
-		#endif
+		#endif /* _DIRENT_HAVE_D_TYPE */
 		
 		if (S_ISDIR(filetype))
 		{
