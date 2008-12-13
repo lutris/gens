@@ -153,6 +153,16 @@ int Config::save(const string& filename)
 		romNum++;
 	}
 	
+	// Make sure unused ROM entries are deleted.
+	for (int i = romNum; i < 9; i++)
+	{
+		sprintf(buf, "ROM %d", i);
+		cfg.deleteEntry("General", buf);
+		
+		sprintf(buf, "ROM %d Type", i);
+		cfg.deleteEntry("General", buf);
+	}
+	
 #ifdef GENS_CDROM
 	// Physical CD-ROM support for SegaCD
 #if defined(GENS_OS_WIN32)
