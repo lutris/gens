@@ -66,7 +66,7 @@ int MDP_FNCALL mdp_render_scale3x_init(MDP_Host_t *hostSrv)
 int MDP_FNCALL mdp_render_scale3x_end(void)
 {
 	if (!mdp_render_scale3x_hostSrv)
-		return;
+		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
 	mdp_render_scale3x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
@@ -76,14 +76,16 @@ int MDP_FNCALL mdp_render_scale3x_end(void)
 }
 
 
-void MDP_FNCALL mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
-		return;
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 
 	const unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
 	
 	scale3x(renderInfo->destScreen, renderInfo->destPitch,
 		renderInfo->mdScreen, renderInfo->srcPitch,
 		bytespp, renderInfo->width, renderInfo->height);
+	
+	return MDP_ERR_OK;
 }

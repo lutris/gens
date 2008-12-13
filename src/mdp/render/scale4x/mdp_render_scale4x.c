@@ -76,10 +76,10 @@ int MDP_FNCALL mdp_render_scale4x_end(void)
 }
 
 
-void MDP_FNCALL mdp_render_scale4x_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_scale4x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
-		return;
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 
 	const unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
 	
@@ -97,4 +97,6 @@ void MDP_FNCALL mdp_render_scale4x_cpp(MDP_Render_Info_t *renderInfo)
 			renderInfo->mdScreen, renderInfo->srcPitch,
 			bytespp, renderInfo->width, renderInfo->height);
 	}
+	
+	return MDP_ERR_OK;
 }

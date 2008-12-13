@@ -152,10 +152,10 @@ static inline void T_mdp_render_epx_plus_cpp(pixel *destScreen, pixel *mdScreen,
 }
 
 
-void MDP_FNCALL mdp_render_epx_plus_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_epx_plus_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
-		return;
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
@@ -175,4 +175,6 @@ void MDP_FNCALL mdp_render_epx_plus_cpp(MDP_Render_Info_t *renderInfo)
 			    renderInfo->width, renderInfo->height,
 			    MASK_DIV2_32);
 	}
+	
+	return MDP_ERR_OK;
 }

@@ -133,10 +133,10 @@ static inline void T_mdp_render_scanline_50_cpp(pixel *destScreen, pixel *mdScre
 #endif /* GENS_X86_ASM */
 
 
-void MDP_FNCALL mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
-		return;
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
 	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
 	{
@@ -196,4 +196,6 @@ void MDP_FNCALL mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
 			    MASK_DIV2_32);
 #endif /* GENS_X86_ASM */
 	}
+	
+	return MDP_ERR_OK;
 }

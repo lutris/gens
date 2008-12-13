@@ -102,11 +102,12 @@ int MDP_FNCALL mdp_render_hq2x_end(void)
 /**
  * mdp_render_hq2x_cpp(): hq2x rendering function.
  * @param renderInfo Render information.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
-		return;
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
 	// Make sure the lookup tables are initialized.
 	if (!mdp_render_hq2x_LUT16to32)
@@ -131,4 +132,6 @@ void MDP_FNCALL mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 		    renderInfo->destPitch, renderInfo->srcPitch,
 		    renderInfo->width, renderInfo->height);
 #endif /* GENS_X86_ASM */
+	
+	return MDP_ERR_OK;
 }

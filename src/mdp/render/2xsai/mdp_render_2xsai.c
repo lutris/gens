@@ -81,11 +81,12 @@ int MDP_FNCALL mdp_render_2xsai_end(void)
 /**
  * mdp_render_2xsai_cpp(): 2xSaI rendering function.
  * @param renderInfo Render information.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo)
 {
 	if (!renderInfo)
-		return;
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
 #ifdef GENS_X86_ASM
 	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
@@ -104,4 +105,6 @@ void MDP_FNCALL mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo)
 		    renderInfo->destPitch, renderInfo->srcPitch,
 		    renderInfo->width, renderInfo->height);
 #endif /* GENS_X86_ASM */
+	
+	return MDP_ERR_OK;
 }
