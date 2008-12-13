@@ -39,7 +39,7 @@
 #include "mdp_render_1x_x86.h"
 #endif /* GENS_X86_ASM */
 
-// MDP Host Services
+// MDP Host Services.
 static MDP_Host_t *mdp_render_1x_hostSrv = NULL;
 
 
