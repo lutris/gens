@@ -24,10 +24,11 @@
 #include <config.h>
 #endif
 
-#include "mdp_render_2x.hpp"
-#include "mdp_render_2x_plugin.h"
 #include <string.h>
 #include <stdint.h>
+
+#include "mdp_render_2x.hpp"
+#include "mdp_render_2x_plugin.h"
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
