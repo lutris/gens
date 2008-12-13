@@ -65,7 +65,7 @@ typedef struct
 #define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
 
 // Render plugin definition.
-typedef void (MDP_FNCALL *mdp_render_fn)(MDP_Render_Info_t *renderInfo);
+typedef int (MDP_FNCALL *mdp_render_fn)(MDP_Render_Info_t *renderInfo);
 typedef struct
 {
 	// Render interface version.

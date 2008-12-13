@@ -118,7 +118,7 @@ class VDraw
 		static const uint8_t STRETCH_V    = 0x02;
 		static const uint8_t STRETCH_FULL = 0x03;
 		
-		// Render functions
+		// Render functions.
 		// TODO: Make these properties.
 		mdp_render_fn m_BlitFS;
 		mdp_render_fn m_BlitW;
