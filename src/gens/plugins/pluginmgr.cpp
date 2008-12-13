@@ -86,6 +86,12 @@ mapRenderPlugin PluginMgr::tblRenderPlugins;
 
 
 /**
+ * List and map containing plugin menu items.
+ */
+list<mdpMenuItem_t> PluginMgr::lstMenuItems;
+mapMenuItems PluginMgr::tblMenuItems;
+
+/**
  * init(): Initialize the plugin system.
  */
 void PluginMgr::init(void)

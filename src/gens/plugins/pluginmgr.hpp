@@ -25,6 +25,7 @@
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_render.h"
+#include "mdp/mdp_host.h"
 
 #include <string>
 #include <list>
@@ -32,6 +33,20 @@
 
 typedef GENS_HASHTABLE<std::string, std::list<MDP_Render_t*>::iterator> mapRenderPlugin;
 typedef std::pair<std::string, std::list<MDP_Render_t*>::iterator> pairRenderPlugin;
+
+// Menu items
+struct mdpMenuItem_t
+{
+	uint16_t 		id;
+	mdp_menu_handler_fn	handler;
+	
+	// Attributes
+	std::string		text;
+	bool			checked;
+};
+
+typedef GENS_HASHTABLE<std::string, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
+typedef std::pair<std::string, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 
 class PluginMgr
 {
@@ -47,6 +62,10 @@ class PluginMgr
 		// List and map containing all loaded render plugins.
 		static std::list<MDP_Render_t*> lstRenderPlugins;
 		static mapRenderPlugin tblRenderPlugins;
+		
+		// List and map containing plugin menu items.
+		static std::list<mdpMenuItem_t> lstMenuItems;
+		static mapMenuItems tblMenuItems;
 		
 	protected:
 		static bool loadPlugin(MDP_t *plugin);
