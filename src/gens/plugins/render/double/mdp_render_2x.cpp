@@ -29,8 +29,9 @@
 #include <string.h>
 #include <stdint.h>
 
-// CPU flags
+// MDP includes.
 #include "mdp/mdp_cpuflags.h"
+#include "mdp/mdp_error.h"
 
 // x86 asm versions
 #ifdef GENS_X86_ASM
@@ -43,27 +44,34 @@ static MDP_Host_t *mdp_render_2x_hostSrv = NULL;
 
 /**
  * mdp_render_2x_init(): Initialize the Double rendering plugin.
+ * @return MDP error code.
  */
-void MDP_FNCALL mdp_render_2x_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_2x_init(MDP_Host_t *hostSrv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_2x_hostSrv = hostSrv;
 	
 	// Register the renderer.
 	mdp_render_2x_hostSrv->renderer_register(&mdp_render_2x, &mdp_render_2x_render_t);
+	
+	// Initialized.
+	return MDP_ERR_OK;
 }
 
 
 /**
  * mdp_render_2x_end(): Shut down the Double rendering plugin.
  */
-void MDP_FNCALL mdp_render_2x_end(void)
+int MDP_FNCALL mdp_render_2x_end(void)
 {
-	if (mdp_render_2x_hostSrv)
-	{
-		// Unregister the renderer.
-		mdp_render_2x_hostSrv->renderer_unregister(&mdp_render_2x, &mdp_render_2x_render_t);
-	}
+	if (!mdp_render_2x_hostSrv)
+		return MDP_ERR_OK;
+	
+	// Unregister the renderer.
+	mdp_render_2x_hostSrv->renderer_unregister(&mdp_render_2x, &mdp_render_2x_render_t);
+	
+	// Plugin is shut down.
+	return MDP_ERR_OK;
 }
 
 

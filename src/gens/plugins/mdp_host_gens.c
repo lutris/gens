@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp_host_gens.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "mdp_host_gens.h"
+#include "mdp/mdp_error.h"
 
 // MDP_PTR functions.
 static inline int* mdp_host_ptr_ref_LUT16to32(void);
@@ -76,9 +78,9 @@ void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 /**
  * mdp_host_ptr_unref(): Unreference a pointer.
  * @param ptrID Pointer ID.
- * @return Pointer.
+ * @return Error code.
  */
-void MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
+int MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 {
 	switch (ptrID)
 	{
@@ -91,9 +93,12 @@ void MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 			break;
 		
 		default:
-			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
+			fprintf(stderr, "%s: Unknown ptrID: 0x%08X\n", __func__, ptrID);
+			return -MDP_ERR_UNKNOWN_PTRID;
 			break;
 	}
+	
+	return MDP_ERR_OK;
 }
 
 

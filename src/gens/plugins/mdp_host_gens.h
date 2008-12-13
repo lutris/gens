@@ -37,7 +37,7 @@ extern MDP_Host_t Gens_MDP_Host;
 
 // Host service functions.
 void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID);
-void  MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID);
+int   MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID);
 
 int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *renderer);
 int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *renderer);
