@@ -79,7 +79,7 @@ void INI::load(const string& filename)
 	if (!cfgFile.is_open())
 	{
 		// Error opening the INI file.
-		fprintf(stderr, "%s(): Error opening INI file %s\n", __func__, filename.c_str());
+		fprintf(stderr, "INI::%s(): Error opening INI file %s\n", __func__, filename.c_str());
 		return;
 	}
 	
@@ -344,7 +344,7 @@ void INI::writeString(const string& section, const string& key, const string& va
 		if (iniSectIter == m_INI.end())
 		{
 			// Error creating the new section.
-			fprintf(stderr, "%s(): Error creating new INI section: %s\n", __func__, section.c_str());
+			fprintf(stderr, "INI::%s(): Error creating new INI section: %s\n", __func__, section.c_str());
 			return;
 		}
 	}
@@ -415,7 +415,7 @@ void INI::save(const string& filename)
 	if (!cfgFile.is_open())
 	{
 		// Error opening the INI file.
-		fprintf(stderr, "%s(): Error opening INI file %s", __func__, filename.c_str());
+		fprintf(stderr, "INI::%s(): Error opening INI file %s", __func__, filename.c_str());
 		return;
 	}
 	
