@@ -71,15 +71,15 @@ typedef struct MDP_t MDP_t;
 #include "mdp_host.h"
 
 // Plugin functions.
-typedef void (MDP_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
-typedef void (MDP_FNCALL *mdp_end)(void);
+typedef int (MDP_FNCALL *mdp_init_fn)(MDP_Host_t *hostSrv);
+typedef int (MDP_FNCALL *mdp_end_fn)(void);
 
 // Plugin function struct.
 typedef struct
 {
 	// Init/Shutdown functions
-	mdp_init	init;
-	mdp_end		end;
+	mdp_init_fn	init;
+	mdp_end_fn	end;
 } MDP_Func_t;
 
 struct MDP_t

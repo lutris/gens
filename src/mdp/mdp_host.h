@@ -61,7 +61,7 @@ typedef struct
 	// ptr_ref(): Get a reference for a pointer.
 	// ptr_unref(): Unreference a pointer.
 	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
-	void  (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
+	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
 	
 	// renderer_register(): Register a renderer.
 	// renderer_unregister(): Unregister a renderer.
