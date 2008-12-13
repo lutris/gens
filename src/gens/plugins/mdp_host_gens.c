@@ -206,12 +206,12 @@ static inline void mdp_host_ptr_unref_RGB16toYUV(void)
  * @param plugin MDP_t requesting the menu item.
  * @param handler Function to handle menu item callbacks.
  * @param menu_id Menu to add the menu item to. (Currently ignored.)
- * @return Menu item ID, or negative number (error code) on error.
+ * @return Menu item ID, or MDP error code.
  */
 int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id)
 {
 	// TODO
-	return -1;
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
 
 
@@ -224,5 +224,5 @@ int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn 
  */
 int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
 {
-	return -1;
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
