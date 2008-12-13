@@ -33,7 +33,7 @@ static MDP_Desc_t MDP_Desc =
 	.author_mdp = "David Korth",
 	.author_orig = "Gens Rerecording developers",
 	.description = "EPX renderer.",
-	.website = NULL,
+	.website = "http://code.google.com/p/gens-rerecording/",
 	.license = MDP_LICENSE_GPL_2,
 	
 	.icon = NULL,
