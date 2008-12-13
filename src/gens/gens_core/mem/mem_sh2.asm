@@ -552,7 +552,7 @@ section .text align=64
 	
 	SH2_Read_Long_VDP_Reg:
 		test	byte [__32X_FM], 0xFF
-		jz	short SH2_RL_Bad
+		jz	SH2_RL_Bad
 		test	ecx, 0xFFBE00
 		jnz	short SH2_Read_Long_VDP_Palette
 		
@@ -861,7 +861,7 @@ section .text align=64
 	
 	DECLF MSH2_Write_Long_00, 8
 		test	ecx, 0xFFC000
-		jz	short SH2_WL_Bad
+		jz	SH2_WL_Bad
 		test	ecx, 0xFFBF00
 		jnz	short SH2_Write_Long_VDP_Reg
 		
@@ -878,7 +878,7 @@ section .text align=64
 	
 	DECLF SSH2_Write_Long_00, 8
 		test	ecx, 0xFFC000
-		jz	near SH2_WL_Bad
+		jz	SH2_WL_Bad
 		test	ecx, 0xFFBF00
 		jnz	short SH2_Write_Long_VDP_Reg
 		

@@ -868,10 +868,10 @@ section .text align=64
 		jae	near ._32X_Reg
 		
 		cmp	ebx, 0xA130EC
-		jae	short ._32X_ID
+		jae	._32X_ID
 		
 		cmp	ebx, 0xA1000F
-		ja	short .bad
+		ja	.bad
 		
 		and	ebx, 0x00000E
 		jmp	[.Table_IO_RW + ebx * 2]
@@ -1341,13 +1341,13 @@ section .text align=64
 	
 	.no_reset_z80:
 		cmp	ebx, 0xA15100
-		jae	near ._32X_Reg
+		jae	._32X_Reg
 		
 		cmp	ebx, 0xA130F0
-		jae	short .Genesis_Bank
+		jae	.Genesis_Bank
 		
 		cmp	ebx, 0xA1000F
-		ja	near .bad
+		ja	.bad
 		
 		and	ebx, 0x00000E
 		jmp	[.Table_IO_WB + ebx * 2]
@@ -1985,13 +1985,13 @@ section .text align=64
 	
 	.no_reset_z80:
 		cmp	ebx, 0xA15100
-		jae	near ._32X_Reg
+		jae	._32X_Reg
 		
 		cmp	ebx, 0xA130F0
-		jae	short .Genesis_Bank
+		jae	.Genesis_Bank
 		
 		cmp	ebx, 0xA1000F
-		ja	short .bad
+		ja	.bad
 		
 		and	ebx, 0x00000E
 		jmp	[.Table_IO_WW + ebx * 2]
@@ -2049,9 +2049,9 @@ section .text align=64
 	
 	.Genesis_Bank:
 		cmp	ebx, 0xA130F2
-		jb	short .bank_0
+		jb	.bank_0
 		cmp	ebx, 0xA130FF
-		ja	near .bad
+		ja	.bad
 		
 		;and	ebx, 0xF
 		;and	eax, 0x1F
@@ -2095,7 +2095,7 @@ section .text align=64
 	
 	align 16
 	
-	.Table_32X_Reg
+	.Table_32X_Reg:
 		dd	._32X_ACR,	._32X_INT,	._32X_Bank,	._32X_DREQ_C	; 00-07
 		dd	._32X_DREQ_Src_H,	._32X_DREQ_Src_L,			; 08-0B
 		dd	._32X_DREQ_Dest_H,	._32X_DREQ_Dest_L,			; 0C-0F

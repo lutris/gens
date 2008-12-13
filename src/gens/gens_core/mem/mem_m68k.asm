@@ -1296,7 +1296,7 @@ section .text align=64
 	
 	.no_reset_z80:
 		cmp	ebx, 0xA1000D
-		ja	near .no_ctrl_io
+		ja	.no_ctrl_io
 
 		and	ebx, 0x00000E
 		jmp	[.Table_IO_WB + ebx * 2]
@@ -1578,7 +1578,7 @@ section .text align=64
 	
 	.no_reset_z80:
 		cmp	ebx, 0xA1000D
-		ja	near .no_ctrl_io
+		ja	.no_ctrl_io
 		
 		and	ebx, 0x00000E
 		jmp	[.Table_IO_WW + ebx * 2]
