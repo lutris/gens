@@ -366,6 +366,38 @@ void INI::writeString(const string& section, const string& key, const string& va
 
 
 /**
+ * INI::deleteEntry(): Delete an INI entry.
+ * @param section Section to delete from.
+ * @param key Key to delete.
+ */
+void INI::deleteEntry(const string& section, const string& key)
+{
+	iniFile::iterator iniSectIter;
+	iniSection::iterator sectKeyIter;
+	
+	// Search for the section.
+	iniSectIter = m_INI.find(section);
+	if (iniSectIter == m_INI.end())
+	{
+		// Section not found.
+		return;
+	}
+	
+	// // Search for the key.
+	sectKeyIter = (*iniSectIter).second.find(key);
+	if (sectKeyIter == (*iniSectIter).second.end())
+	{
+		// Key not found.
+		return;
+	}
+	
+	// Key found. Delete it.
+	(*iniSectIter).second.erase(sectKeyIter);
+	return;
+}
+
+
+/**
  * save(): Save m_INI to the specified INI file.
  * @param filename Filename of the INI file to save to.
  */

@@ -75,6 +75,9 @@ class INI
 			      const bool hex = false, const uint8_t hexFieldWidth = 0);
 		void writeBool(const string& section, const string& key, const bool value);
 		void writeString(const string& section, const string& key, const string& value);
+		
+		// Delete entry.
+		void deleteEntry(const string& section, const string& key);
 	
 	protected:
 		iniFile m_INI;
