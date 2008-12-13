@@ -24,8 +24,8 @@
 #include <config.h>
 #endif
 
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "mdp_render_1x.hpp"
 #include "mdp_render_1x_plugin.h"
