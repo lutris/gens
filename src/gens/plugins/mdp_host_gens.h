@@ -42,6 +42,9 @@ void  MDP_FNCALL mdp_host_unref_ptr(uint32_t ptrID);
 int MDP_FNCALL mdp_host_register_renderer(struct MDP_t *plugin, MDP_Render_t *renderer);
 int MDP_FNCALL mdp_host_unregister_renderer(struct MDP_t *plugin, MDP_Render_t *renderer);
 
+int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id);
+int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id);
+
 #ifdef __cplusplus
 }
 #endif

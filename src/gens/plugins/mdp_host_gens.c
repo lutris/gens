@@ -45,7 +45,10 @@ MDP_Host_t Gens_MDP_Host =
 	.unrefPtr = mdp_host_unref_ptr,
 	
 	.register_renderer = mdp_host_register_renderer,
-	.unregister_renderer = mdp_host_unregister_renderer
+	.unregister_renderer = mdp_host_unregister_renderer,
+	
+	.menu_item_add = mdp_host_menu_item_add,
+	.menu_item_remove = mdp_host_menu_item_remove
 };
 
 
@@ -190,4 +193,31 @@ static inline void mdp_host_unref_ptr_RGB16toYUV(void)
 		free(mdp_ptr_RGB16toYUV);
 		mdp_ptr_RGB16toYUV = NULL;
 	}
+}
+
+
+/**
+ * mdp_host_menu_item_add(): Add a menu item.
+ * @param plugin MDP_t requesting the menu item.
+ * @param handler Function to handle menu item callbacks.
+ * @param menu_id Menu to add the menu item to. (Currently ignored.)
+ * @return Menu item ID, or negative number (error code) on error.
+ */
+int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id)
+{
+	// TODO
+	return -1;
+}
+
+
+/**
+ * mdp_host_menu_item_remove(): Remove a menu item.
+ * @param plugin MDP_t requesting the menu item.
+ * @param handler Function to handle menu item callbacks.
+ * @param menu_id Menu to add the menu item to. (Currently ignored.)
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
+{
+	return -1;
 }

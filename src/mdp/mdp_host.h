@@ -44,6 +44,15 @@ typedef enum
 	MDP_PTR_RGB16toYUV	= 2,
 } MDP_PTR;
 
+// MDP_MENU: Menu IDs.
+typedef enum
+{
+	MDP_MENU_DEFAULT	= 0,
+} MDP_MENU;
+
+// Menu Handler function.
+typedef void (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
+
 // MDP Host Services struct.
 typedef struct
 {
@@ -58,6 +67,11 @@ typedef struct
 	// unregister_renderer(): Unregister a renderer.
 	int (MDP_FNCALL *register_renderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
 	int (MDP_FNCALL *unregister_renderer)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	
+	// menu_item_add(): Add a menu item.
+	// menu_item_remove(): Remove a menu item.
+	int (MDP_FNCALL *menu_item_add)(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id);
+	int (MDP_FNCALL *menu_item_remove)(struct MDP_t *plugin, int menu_item_id);
 } MDP_Host_t;
 
 #ifdef __cplusplus
