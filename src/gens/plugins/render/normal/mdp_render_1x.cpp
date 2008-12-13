@@ -34,7 +34,7 @@
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
 
-// x86 asm versions
+// x86 asm versions.
 #ifdef GENS_X86_ASM
 #include "mdp_render_1x_x86.h"
 #endif /* GENS_X86_ASM */
