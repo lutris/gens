@@ -80,6 +80,7 @@ void Sync_Gens_Window(void)
 	Sync_Gens_Window_CPUMenu();
 	Sync_Gens_Window_SoundMenu();
 	Sync_Gens_Window_OptionsMenu();
+	Sync_Gens_Window_PluginsMenu();
 }
 
 
@@ -561,7 +562,71 @@ void Sync_Gens_Window_SoundMenu(void)
 
 
 /**
- * Sync_Gens_Window_SoundMenu(): Synchronize the Options menu.
+ * Sync_Gens_Window_PluginsMenu(): Synchronize the Plugins menu.
+ */
+void Sync_Gens_Window_PluginsMenu(void)
+{
+	// Disable callbacks so nothing gets screwed up.
+	do_callbacks = 0;
+	
+	// Get the Plugins menu.
+	GtkWidget *mnuPlugins = findMenuItem(IDM_PLUGINS_MENU);
+	
+	// Delete the Plugins submenu.
+	GtkWidget *mnuPlugins_sub = gtk_menu_item_get_submenu(GTK_MENU_ITEM(mnuPlugins));
+	if (mnuPlugins_sub)
+	{
+		// Submenu currently exists. Delete it.
+		gtk_widget_destroy(mnuPlugins_sub);
+	}
+	
+	// Create a new submenu.
+	mnuPlugins_sub = gtk_menu_new();
+	gtk_widget_set_name(mnuPlugins_sub, "FileMenu_Plugins_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuPlugins), mnuPlugins_sub);
+	
+	g_object_set_data_full(G_OBJECT(mnuPlugins), "FileMenu_Plugins_SubMenu",
+			       g_object_ref(mnuPlugins_sub),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Create the plugin menu items.
+	GtkWidget *mnuItem;
+	// TODO
+	
+	// Add the Plugin Manager separator.
+	// TODO: Only if plugin menu items were added.
+	/*
+	mnuItem = gtk_separator_menu_item_new();
+	gtk_widget_set_name(mnuItem, "mnuPlugins_sep_PluginManager");
+	gtk_widget_show(mnuItem);
+	gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
+	
+	g_object_set_data_full(G_OBJECT(mnuPlugins_sub), "mnuPlugins_sep_PluginManager",
+			       g_object_ref(mnuItem),
+			       (GDestroyNotify)g_object_unref);
+	*/
+	
+	// Add the Plugin Manager menu item.
+	mnuItem = gtk_menu_item_new_with_mnemonic("Plugin Manager");
+	gtk_widget_set_name(mnuItem, "mnuPlugins_item_PluginManager");
+	gtk_widget_show(mnuItem);
+	gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
+	
+	g_object_set_data_full(G_OBJECT(mnuPlugins_sub), "mnuPlugins_item_PluginManager",
+			       g_object_ref(mnuItem),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Set the callback handler.
+	g_signal_connect((gpointer)mnuItem, "activate",
+			 G_CALLBACK(GensWindow_GTK_MenuItemCallback), GINT_TO_POINTER(IDM_PLUGINS_MANAGER));
+	
+	// Enable callbacks.
+	do_callbacks = 1;
+}
+
+
+/**
+ * Sync_Gens_Window_OptionsMenu(): Synchronize the Options menu.
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {

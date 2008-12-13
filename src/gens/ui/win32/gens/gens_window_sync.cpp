@@ -83,6 +83,7 @@ void Sync_Gens_Window(void)
 	Sync_Gens_Window_CPUMenu();
 	Sync_Gens_Window_SoundMenu();
 	Sync_Gens_Window_OptionsMenu();
+	Sync_Gens_Window_PluginsMenu();
 }
 
 
@@ -489,7 +490,40 @@ void Sync_Gens_Window_SoundMenu(void)
 
 
 /**
- * Sync_Gens_Window_SoundMenu(): Synchronize the Options menu.
+ * Sync_Gens_Window_PluginsMenu(): Synchronize the Plugins menu.
+ */
+void Sync_Gens_Window_PluginsMenu(void)
+{
+	// Find the Plugins menu.
+	HMENU mnuPlugins = findMenuItem(IDM_PLUGINS_MENU);
+	
+	// Delete and/or recreate the Plugins menu.
+	static const unsigned short posPlugins = 5;
+	
+	DeleteMenu(MainMenu, (UINT)mnuPlugins, MF_BYCOMMAND);
+	gensMenuMap.erase(IDM_PLUGINS_MENU);
+	if (mnuPlugins)
+		DestroyMenu(mnuPlugins);
+	
+	mnuPlugins = CreatePopupMenu();
+	InsertMenu(MainMenu, posPlugins, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)mnuPlugins, "&Plugins");
+	gensMenuMap.insert(win32MenuMapItem(IDM_PLUGINS_MENU, mnuPlugins));
+	
+	// Create the plugin menu items.
+	// TODO
+	
+	// Add the Plugin Manager separator.
+	// TODO: Only if plugin menu items were added.
+	//InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_SEPARATOR, IDM_SEPARATOR, NULL);
+	
+	// Add the Plugin Manager menu item.
+	InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING, IDM_PLUGINS_MANAGER, "Plugin Manager");
+}
+
+
+/**
+ * Sync_Gens_Window_OptionsMenu(): Synchronize the Options menu.
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {

@@ -330,8 +330,6 @@ static struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 
 static struct GensMenuItem_t gmiPlugins[] =
 {
-	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, 0},
-	{IDM_PLUGINS_MANAGER,		GMF_ITEM_NORMAL,	"Plugin Manager",	NULL, 0, 0, 0},
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 

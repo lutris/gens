@@ -36,6 +36,7 @@ void Sync_Gens_Window_GraphicsMenu(void);
 void Sync_Gens_Window_CPUMenu(void);
 void Sync_Gens_Window_SoundMenu(void);
 void Sync_Gens_Window_OptionsMenu(void);
+void Sync_Gens_Window_PluginsMenu(void);
 
 #ifdef __cplusplus
 }
