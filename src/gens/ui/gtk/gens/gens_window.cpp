@@ -433,6 +433,7 @@ void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
 		return;
 	
 	bool state = false;
+	uint16_t menuItemID = (uint16_t)(GPOINTER_TO_INT(user_data));
 	
 	if (GTK_IS_RADIO_MENU_ITEM(menuitem))
 	{
@@ -446,10 +447,19 @@ void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
 		// Check menu items automatically toggle, so the state value should be
 		// the opposite value of its current state.
 		state = !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
+		
+		// Revert the automatic toggle if this is in the Plugins Menu.
+		if ((menuItemID & 0xF000) == IDM_PLUGINS_MENU)
+		{
+			// Plugins menu. Revert the automatic toggle.
+			do_callbacks = 0;
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem), state);
+			do_callbacks = 1;
+		}
 	}
 	
 	// Run the callback function.
-	GensWindow_MenuItemCallback((uint16_t)(GPOINTER_TO_INT(user_data)), state);
+	GensWindow_MenuItemCallback(menuItemID, state);
 };
 
 
