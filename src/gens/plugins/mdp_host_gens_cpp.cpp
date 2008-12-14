@@ -31,6 +31,9 @@ using std::list;
 #include "mdp_host_gens.h"
 #include "mdp/mdp_error.h"
 
+// Menus.
+#include "ui/common/gens/gens_menu.h"
+
 // Plugin Manager.
 #include "pluginmgr.hpp"
 
@@ -104,8 +107,54 @@ int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *
  */
 int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id)
 {
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	// Check to see what the largest menu ID is.
+	uint16_t menuItemID;
+	
+	// TODO: Allow adding to menus other than the Plugins menu.
+	
+	if (PluginMgr::lstMenuItems.size() == 0)
+	{
+		// No menu items.
+		menuItemID = IDM_PLUGINS_MENU + 1;
+	}
+	else
+	{
+		// Get the menu ID of the last menu item, and add one.
+		menuItemID = PluginMgr::lstMenuItems.back().id + 1;
+		do
+		{
+			mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menuItemID);
+			if (curMenuItem == PluginMgr::tblMenuItems.end())
+				 break;
+			menuItemID++;
+		} while (menuItemID < IDM_PLUGINS_MANAGER);
+		
+		if (menuItemID >= IDM_PLUGINS_MANAGER)
+		{
+			// Out of menu item IDs.
+			return -MDP_ERR_MENU_TOO_MANY_ITEMS;
+		}
+	}
+	
+	// Add the menu item.
+	mdpMenuItem_t menuItem;
+	menuItem.id = menuItemID;
+	menuItem.handler = handler;
+	menuItem.owner = plugin;
+	
+	// Default attributes.
+	menuItem.checked = false;
+	
+	// Add the menu item to the list.
+	PluginMgr::lstMenuItems.push_back(menuItem);
+	
+	// Add the menu item ID to the map.
+	list<mdpMenuItem_t>::iterator lstIter = PluginMgr::lstMenuItems.end();
+	lstIter--;
+	PluginMgr::tblMenuItems.insert(pairMenuItems(menuItemID, lstIter));
+	
+	// Return the menu item ID.
+	return menuItemID;
 }
 
 
