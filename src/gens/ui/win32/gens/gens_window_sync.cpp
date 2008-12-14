@@ -511,14 +511,32 @@ void Sync_Gens_Window_PluginsMenu(void)
 	gensMenuMap.insert(win32MenuMapItem(IDM_PLUGINS_MENU, mnuPlugins));
 	
 	// Create the plugin menu items.
-	// TODO
+	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
+	     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
+	{
+		char *sMenuText = strdup((*curMenuItem).text.c_str());
+		char *mnemonicPos = strchr(sMenuText, '&');
+		if (mnemonicPos)
+			*mnemonicPos = '_';
+		
+		InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
+			   (*curMenuItem).id, (*curMenuItem).text.c_str());
+		
+		// Set the menu item check state.
+		CheckMenuItem(mnuPlugins, (*curMenuItem).id,
+			      MF_BYCOMMAND | ((*curMenuItem).checked ? MF_CHECKED : MF_UNCHECKED));
+	}
 	
-	// Add the Plugin Manager separator.
-	// TODO: Only if plugin menu items were added.
-	//InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_SEPARATOR, IDM_SEPARATOR, NULL);
+	// If plugin menu items were added, add the Plugin Manager separator.
+	if (PluginMgr::lstMenuItems.size() != 0)
+	{
+		InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_SEPARATOR,
+			   IDM_SEPARATOR, NULL);
+	}
 	
 	// Add the Plugin Manager menu item.
-	InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING, IDM_PLUGINS_MANAGER, "Plugin Manager");
+	InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
+		   IDM_PLUGINS_MANAGER, "Plugin Manager");
 }
 
 
