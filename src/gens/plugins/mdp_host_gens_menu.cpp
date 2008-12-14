@@ -114,6 +114,42 @@ int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn 
 }
 
 
+// Typedef for the menu item list iterator.
+typedef list<mdpMenuItem_t>::iterator menuIter;
+
+
+/**
+ * getMenuItemIter(): Get a menu item iterator.
+ * @param plugin Plugin that requested access to the menu item.
+ * @param menu_item_id Menu item ID.
+ * @param lstIter_ret List iterator. (Output)
+ * @return True if found; false if not found or not owned by the plugin.
+ */
+static inline bool getMenuItemIter(struct MDP_t *plugin, int menu_item_id, menuIter& lstIter_ret)
+{
+	// Search for the menu item.
+	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
+	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	{
+		// Menu item not found.
+		return false;
+	}
+	
+	// Get the list iterator.
+	lstIter_ret = (*curMenuItem).second;
+	
+	// Check if the menu item is owned by this plugin.
+	if ((*lstIter_ret).owner != plugin)
+	{
+		// Not owned by the plugin.
+		return false;
+	}
+	
+	// Menu item is owned by the plugin.
+	return true;
+}
+
+
 /**
  * mdp_host_menu_item_remove(): Remove a menu item.
  * @param plugin MDP_t requesting the menu item.
@@ -122,26 +158,15 @@ int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn 
  */
 int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
 {
-	// Search for the menu item.
-	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
-	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	menuIter lstIter;
+	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
 	{
-		// Menu item not found.
+		// Menu item not found or not owned by this plugin.
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	}
 	
-	// Get the list iterator.
-	list<mdpMenuItem_t>::iterator lstIter = (*curMenuItem).second;
-	
-	// Check if the menu item is owned by this plugin.
-	if ((*lstIter).owner != plugin)
-	{
-		// Not owned by the plugin.
-		return -MDP_ERR_MENU_INVALID_MENUID;
-	}
-	
-	// Menu item is owned by the plugin. Remove it.
-	PluginMgr::tblMenuItems.erase(curMenuItem);
+	// Remove the menu item.
+	PluginMgr::tblMenuItems.erase(menu_item_id);
 	PluginMgr::lstMenuItems.erase(lstIter);
 	
 	// If Gens is running, synchronize the Plugins Menu.
@@ -162,25 +187,14 @@ int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
  */
 int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_id, const char *text)
 {
-	// Search for the menu item.
-	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
-	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	menuIter lstIter;
+	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
 	{
-		// Menu item not found.
+		// Menu item not found or not owned by this plugin.
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	}
 	
-	// Get the list iterator.
-	list<mdpMenuItem_t>::iterator lstIter = (*curMenuItem).second;
-	
-	// Check if the menu item is owned by this plugin.
-	if ((*lstIter).owner != plugin)
-	{
-		// Not owned by the plugin.
-		return -MDP_ERR_MENU_INVALID_MENUID;
-	}
-	
-	// Menu item is owned by the plugin. Set the text.
+	// Set the menu item text.
 	if (text)
 		(*lstIter).text = string(text);
 	else
@@ -206,25 +220,14 @@ int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_i
  */
 int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size)
 {
-	// Search for the menu item.
-	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
-	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	menuIter lstIter;
+	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
 	{
-		// Menu item not found.
+		// Menu item not found or not owned by this plugin.
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	}
 	
-	// Get the list iterator.
-	list<mdpMenuItem_t>::iterator lstIter = (*curMenuItem).second;
-	
-	// Check if the menu item is owned by this plugin.
-	if ((*lstIter).owner != plugin)
-	{
-		// Not owned by the plugin.
-		return -MDP_ERR_MENU_INVALID_MENUID;
-	}
-	
-	// Menu item is owned by the plugin. Get the text.
+	// Get the menu item text.
 	// TODO: Return an error code if the buffer size isn't large enough.
 	strncpy(text_buf, (*lstIter).text.c_str(), size);
 	
