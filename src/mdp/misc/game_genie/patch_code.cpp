@@ -149,9 +149,9 @@ string PatchCode::getGG(void)
 		return "";
 	
 	// Temporary storage for the Game Genie code.
-	char code[10];
+	char code[9];
 	code[4] = '-';
-	code[10] = 0x00;
+	code[9] = 0x00;
 	
 	// Current character.
 	int ch;
