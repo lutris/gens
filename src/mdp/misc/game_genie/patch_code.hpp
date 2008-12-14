@@ -71,7 +71,7 @@ class DLL_LOCAL PatchCode
 		bool decodeGG(const std::string& code);
 		
 		// Game Genie characters.
-		static const char* gg_chars;
+		static const char gg_chars[];
 		
 		uint32_t m_address;
 		uint32_t m_data;

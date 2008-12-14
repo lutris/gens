@@ -28,7 +28,7 @@ using std::string;
 
 
 // Game Genie characters.
-const char* PatchCode::gg_chars =
+const char PatchCode::gg_chars[] =
 	"AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 
 PatchCode::PatchCode()
