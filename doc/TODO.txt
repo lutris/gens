@@ -1,8 +1,5 @@
 TODO for Gens/GS m6.1:
 - hq3x: Broken on Win32 in some cases. (Check width division!)
-- [MDP] New plugin types:
-  - Audio Processing (volume control)
-  - Generic (Game Genie, SGens)
 - [MDP] External plugins.
 - Write a utility to convert PNG to a static const unsigned char[].
   - Tentative name: "C Binary Object Builder" (CBOB)
