@@ -49,13 +49,13 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	// Save the MDP Host Services pointer.
 	gg_host_srv = host_srv;
 	
-	// Check the UI type.
 #if defined(GENS_UI_GTK)
 	static const int uiType = MDP_UI_GTK2;
 #elif defined(GENS_UI_WIN32)
 	static const int uiType = MDP_UI_WIN32;
 #endif
 	
+	// Check the UI type.
 	if (gg_host_srv->val_get(MDP_VAL_UI) != uiType)
 	{
 		// Unsupported UI type.
