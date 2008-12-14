@@ -52,6 +52,9 @@ MDP_Host_t Gens_MDP_Host =
 	.ptr_ref = mdp_host_ptr_ref,
 	.ptr_unref = mdp_host_ptr_unref,
 	
+	.val_set = mdp_host_val_set,
+	.val_get = mdp_host_val_get,
+	
 	.renderer_register = mdp_host_renderer_register,
 	.renderer_unregister = mdp_host_renderer_unregister,
 	
@@ -211,3 +214,64 @@ static inline void mdp_host_ptr_unref_RGB16toYUV(void)
 		mdp_ptr_RGB16toYUV = NULL;
 	}
 }
+
+
+/**
+ * mdp_host_set_val(): Set an MDP value.
+ * @param valID Value ID.
+ * @param val Value.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
+{
+	switch (valID)
+	{
+		case MDP_VAL_UI:
+			// Read-only values.
+			return -MDP_ERR_VAL_READ_ONLY;
+			break;
+		
+		default:
+			// Unknown value ID.
+			return -MDP_ERR_UNKNOWN_VALID;
+			break;
+	}
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * mdp_host_set_val(): Get an MDP value.
+ * @param valID Value ID.
+ * @return Value, or MDP error code. (Values must be positive.)
+ */
+int MDP_FNCALL mdp_host_val_get(uint32_t valID)
+{
+	switch (valID)
+	{
+		case MDP_VAL_UI:
+			// UI type.
+			#if defined(GENS_UI_GTK)
+				return MDP_UI_GTK2;
+			#elif defined(GENS_UI_QT4)
+				return MDP_UI_QT4;
+			#elif defined(GENS_UI_WIN32)
+				return MDP_UI_WIN32;
+			#elif defined(GENS_UI_MACOSX_COCOA)
+				return MDP_UI_MACOSX_COCOA;
+			#else
+				return MDP_UI_NONE;
+			#endif
+			
+			break;
+		
+		default:
+			// Unknown value ID.
+			return -MDP_ERR_UNKNOWN_VALID;
+			break;
+	}
+	
+	return MDP_ERR_OK;
+}
+

@@ -40,6 +40,9 @@ extern MDP_Host_t Gens_MDP_Host;
 void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID);
 int   MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID);
 
+int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val);
+int MDP_FNCALL mdp_host_val_get(uint32_t valID);
+
 #ifdef __cplusplus
 }
 #endif
