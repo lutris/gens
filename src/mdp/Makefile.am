@@ -4,7 +4,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 # Render plugins
-SUBDIRS = render
+SUBDIRS = render misc
 
 noinst_HEADERS = \
 		mdp.h \

@@ -574,6 +574,8 @@ src/mdp/render/hq4x/Makefile
 src/mdp/render/2xsai/Makefile
 src/mdp/render/epx/Makefile
 src/mdp/render/epx_plus/Makefile
+src/mdp/misc/Makefile
+src/mdp/misc/game_genie/Makefile
 ])
 
 AC_OUTPUT
