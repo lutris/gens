@@ -611,6 +611,11 @@ void Sync_Gens_Window_PluginsMenu(void)
 		g_object_set_data_full(G_OBJECT(mnuPlugins_sub), widgetName,
 				       g_object_ref(mnuItem),
 				       (GDestroyNotify)g_object_unref);
+		
+		// Set the callback handler.
+		g_signal_connect((gpointer)mnuItem, "activate",
+			 	G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				GINT_TO_POINTER((*curMenuItem).id));
 	}
 	
 	// TODO
@@ -642,7 +647,8 @@ void Sync_Gens_Window_PluginsMenu(void)
 	
 	// Set the callback handler.
 	g_signal_connect((gpointer)mnuItem, "activate",
-			 G_CALLBACK(GensWindow_GTK_MenuItemCallback), GINT_TO_POINTER(IDM_PLUGINS_MANAGER));
+			 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+			 GINT_TO_POINTER(IDM_PLUGINS_MANAGER));
 	
 	// Enable callbacks.
 	do_callbacks = 1;
