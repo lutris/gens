@@ -136,7 +136,8 @@ gens_SOURCES = \
 		audio/audio.cpp \
 		plugins/pluginmgr.cpp \
 		plugins/mdp_host_gens.c \
-		plugins/mdp_host_gens_cpp.cpp
+		plugins/mdp_host_gens_cpp.cpp \
+		plugins/mdp_host_gens_menu.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -224,7 +225,9 @@ noinst_HEADERS = \
 		audio/audio.hpp \
 		audio/audio_mmx.h \
 		plugins/pluginmgr.hpp \
-		plugins/mdp_host_gens.h
+		plugins/mdp_host_gens.h \
+		plugins/mdp_host_gens_cpp.hpp \
+		plugins/mdp_host_gens_menu.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \

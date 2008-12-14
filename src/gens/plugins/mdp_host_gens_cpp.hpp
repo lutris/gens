@@ -20,28 +20,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_HOST_GENS_H
-#define GENS_MDP_HOST_GENS_H
+#ifndef GENS_MDP_HOST_GENS_CPP_HPP
+#define GENS_MDP_HOST_GENS_CPP_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// MDP Host Services.
-#include "mdp/mdp.h"	// TODO: Fix the typedef struct MDP_t hack for mdp_host.h
-#include "mdp/mdp_fncall.h"
-#include "mdp/mdp_host.h"
+#include "mdp_host_gens.h"
 
-// MDP Host Services struct.
-extern MDP_Host_t Gens_MDP_Host;
+// Host Services functions. (C++)
 
-// Host Services functions.
-
-void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID);
-int   MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID);
+int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *renderer);
+int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *renderer);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_HOST_GENS_H */
+#endif /* GENS_MDP_HOST_GENS_CPP_HPP */

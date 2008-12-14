@@ -24,8 +24,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// MDP includes.
+// MDP Host Services includes.
 #include "mdp_host_gens.h"
+#include "mdp_host_gens_cpp.hpp"
+#include "mdp_host_gens_menu.hpp"
+
+// MDP includes.
 #include "mdp/mdp_error.h"
 
 // MDP_PTR functions.

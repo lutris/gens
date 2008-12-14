@@ -20,28 +20,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_HOST_GENS_H
-#define GENS_MDP_HOST_GENS_H
+#ifndef GENS_MDP_HOST_GENS_MENU_HPP
+#define GENS_MDP_HOST_GENS_MENU_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// MDP Host Services.
-#include "mdp/mdp.h"	// TODO: Fix the typedef struct MDP_t hack for mdp_host.h
-#include "mdp/mdp_fncall.h"
-#include "mdp/mdp_host.h"
+#include "mdp_host_gens.h"
 
-// MDP Host Services struct.
-extern MDP_Host_t Gens_MDP_Host;
+// Host Services functions. (Menus)
 
-// Host Services functions.
+int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler,
+				      int menu_id, const char *text);
+int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id);
 
-void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID);
-int   MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID);
+int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_id, const char *text);
+int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size);
+
+int MDP_FNCALL mdp_host_menu_item_set_checked(struct MDP_t *plugin, int menu_item_id, int checked);
+int MDP_FNCALL mdp_host_menu_item_get_checked(struct MDP_t *plugin, int menu_item_id);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_HOST_GENS_H */
+#endif /* GENS_MDP_HOST_GENS_MENU_HPP */
