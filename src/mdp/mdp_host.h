@@ -44,6 +44,22 @@ typedef enum
 	MDP_PTR_RGB16toYUV	= 2,
 } MDP_PTR;
 
+// MDP_VAL: Value IDs.
+typedef enum
+{
+	MDP_VAL_UI		= 0,
+} MDP_VAL;
+
+// MDP_UI: UI identifiers.
+typedef enum
+{
+	MDP_UI_NONE		= 0,
+	MDP_UI_GTK2		= 1,
+	MDP_UI_QT4		= 2,
+	MDP_UI_WIN32		= 3,
+	MDP_UI_MACOSX_COCOA	= 4,
+} MDP_UI;
+
 // MDP_MENU: Menu IDs.
 typedef enum
 {
@@ -62,6 +78,10 @@ typedef struct
 	// ptr_unref(): Unreference a pointer.
 	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
 	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
+	
+	// get_val(), set_val(): Set or get int values.
+	int (MDP_FNCALL *set_val)(uint32_t valID, int val);
+	int (MDP_FNCALL *get_val)(uint32_t valID);
 	
 	// renderer_register(): Register a renderer.
 	// renderer_unregister(): Unregister a renderer.
