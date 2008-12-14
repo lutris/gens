@@ -22,6 +22,9 @@
 
 #include "patch_codes.hpp"
 
+// C includes
+#include <string.h>
+
 
 PatchCodes::PatchCodes()
 {
@@ -29,7 +32,7 @@ PatchCodes::PatchCodes()
 	m_dataSize = DS_INVALID;
 }
 
-PatchCodes::PatchCodes(const std::string& code)
+PatchCodes::PatchCodes(const std::string& code, CPU cpu)
 {
 	m_cpu = CPU_INVALID;
 	m_dataSize = DS_INVALID;
@@ -64,8 +67,8 @@ void PatchCodes::setCode(const std::string& code, CPU cpu)
 
 
 // Macro to get a Game Genie character.
-#define GET_GENIE_CHAR(n)				\
-	if (!(x = strchr(genie_chars, code.at(n))))	\
+#define GET_GENIE_CHAR(ch)				\
+	if (!(x = strchr(genie_chars, code.at(ch))))	\
 		return false;				\
 	n = ((int)(x - genie_chars)) >> 1;
 

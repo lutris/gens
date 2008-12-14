@@ -30,10 +30,6 @@
 class PatchCodes
 {
 	public:
-		PatchCodes();
-		PatchCodes(const std::string& code, CPU cpu = CPU_M68K);
-		~PatchCodes();
-			
 		enum CPU
 		{
 			CPU_INVALID = 0,
@@ -51,6 +47,10 @@ class PatchCodes
 			DS_WORD    = 2, // 16-bit
 			DS_DWORD   = 3, // 32-bit
 		};
+		
+		PatchCodes();
+		PatchCodes(const std::string& code, CPU cpu = CPU_M68K);
+		~PatchCodes();
 		
 		void setCode(const std::string& code, CPU cpu = CPU_M68K);
 		
