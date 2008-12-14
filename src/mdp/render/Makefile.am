@@ -1,5 +1,5 @@
 # MDP: Mega Drive Plugins
-# Interface Specification Version 0.1.0
+# Interface Specification Version 1.0.0
 
 # Render plugins
 
