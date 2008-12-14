@@ -23,11 +23,16 @@
 #ifndef __MDP_GAME_GENIE_PATCH_CODE_HPP
 #define __MDP_GAME_GENIE_PATCH_CODE_HPP
 
+// C includes.
 #include <stdint.h>
 
+// C++ includes.
 #include <string>
 
-class PatchCode
+// MDP includes.
+#include "mdp/mdp_fncall.h"
+
+class DLL_LOCAL PatchCode
 {
 	public:
 		enum CPU
