@@ -80,8 +80,8 @@ typedef struct
 	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
 	
 	// val_set(), val_get(): Set or get int values.
-	int (MDP_FNCALL *val_get)(uint32_t valID, int val);
-	int (MDP_FNCALL *val_set)(uint32_t valID);
+	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
+	int (MDP_FNCALL *val_get)(uint32_t valID);
 	
 	// renderer_register(): Register a renderer.
 	// renderer_unregister(): Unregister a renderer.
