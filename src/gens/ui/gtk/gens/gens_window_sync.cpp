@@ -621,8 +621,6 @@ void Sync_Gens_Window_PluginsMenu(void)
 				GINT_TO_POINTER((*curMenuItem).id));
 	}
 	
-	// TODO
-	
 	// If plugin menu items were added, add the Plugin Manager separator.
 	if (PluginMgr::lstMenuItems.size() != 0)
 	{
