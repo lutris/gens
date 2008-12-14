@@ -178,7 +178,34 @@ int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn 
  */
 int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
 {
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	// Search for the menu item.
+	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
+	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	{
+		// Menu item not found.
+		return -MDP_ERR_MENU_INVALID_MENUID;
+	}
+	
+	// Get the list iterator.
+	list<mdpMenuItem_t>::iterator lstIter = (*curMenuItem).second;
+	
+	// Check if the menu item is owned by this plugin.
+	if ((*lstIter).owner != plugin)
+	{
+		// Not owned by the plugin.
+		return -MDP_ERR_MENU_INVALID_MENUID;
+	}
+	
+	// Menu item is owned by the plugin. Remove it.
+	PluginMgr::tblMenuItems.erase(curMenuItem);
+	PluginMgr::lstMenuItems.erase(lstIter);
+	
+	// If Gens is running, synchronize the Plugins Menu.
+	if (is_gens_running())
+		Sync_Gens_Window_PluginsMenu();
+	
+	// Menu item removed.
+	return MDP_ERR_OK;
 }
 
 
