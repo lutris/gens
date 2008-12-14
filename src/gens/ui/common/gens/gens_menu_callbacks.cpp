@@ -764,8 +764,18 @@ static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t sta
 			break;
 		
 		default:
-			// Unknown menu item ID.
-			return 0;
+			// Check if this menu item ID exists.
+			mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menuID);
+			if (curMenuItem == PluginMgr::tblMenuItems.end())
+			{
+				// Unknown menu item ID.
+				return 0;
+			}
+			
+			// Found the menu item ID.
+			// TODO: Handle the MDP error code, if any.
+			(*((*curMenuItem).second)).handler(menuID);
+			break;
 	}
 	
 	// Menu item handled.
