@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Game Genie - Patch Codes Handler.                           *
+ * Gens: [MDP] Game Genie - Patch Code Handler.                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "patch_codes.hpp"
+#include "patch_code.hpp"
 
 #include <cstring>
 #include <string>
@@ -28,23 +28,23 @@ using std::string;
 
 
 // Game Genie characters.
-const char* PatchCodes::gg_chars =
+const char* PatchCode::gg_chars =
 	"AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 
-PatchCodes::PatchCodes()
+PatchCode::PatchCode()
 {
 	m_cpu = CPU_INVALID;
 	m_dataSize = DS_INVALID;
 }
 
-PatchCodes::PatchCodes(const std::string& code, CPU cpu)
+PatchCode::PatchCode(const std::string& code, CPU cpu)
 {
 	m_cpu = CPU_INVALID;
 	m_dataSize = DS_INVALID;
 	setCode(code, cpu);
 }
 
-PatchCodes::~PatchCodes()
+PatchCode::~PatchCode()
 {
 }
 
@@ -54,7 +54,7 @@ PatchCodes::~PatchCodes()
  * @param code Code string.
  * @param cpu CPU for the code.
  */
-void PatchCodes::setCode(const std::string& code, CPU cpu)
+void PatchCode::setCode(const std::string& code, CPU cpu)
 {
 	// Decode the code.
 	
@@ -82,7 +82,7 @@ void PatchCodes::setCode(const std::string& code, CPU cpu)
  * @param code Game Genie code.
  * @return True if decoded successfully; false if not.
  */
-bool PatchCodes::decodeGG(const std::string& code)
+bool PatchCode::decodeGG(const std::string& code)
 {
 	if (code.length() != 9 || code.at(4) != '-')
 		return false;
@@ -142,7 +142,7 @@ bool PatchCodes::decodeGG(const std::string& code)
  * getGG(): Get the current code in Game Genie format.
  * @return Game Genie code if valid; otherwise, empty string.
  */
-string PatchCodes::getGG(void)
+string PatchCode::getGG(void)
 {
 	// Code must be for M68K and have a 16-bit data size.
 	if (m_cpu != CPU_M68K || m_dataSize != DS_WORD)

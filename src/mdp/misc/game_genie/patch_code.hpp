@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Game Genie - Patch Codes Handler.                           *
+ * Gens: [MDP] Game Genie - Patch Code Handler.                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,14 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef __MDP_GAME_GENIE_PATCH_CODES_HPP
-#define __MDP_GAME_GENIE_PATCH_CODES_HPP
+#ifndef __MDP_GAME_GENIE_PATCH_CODE_HPP
+#define __MDP_GAME_GENIE_PATCH_CODE_HPP
 
 #include <stdint.h>
 
 #include <string>
 
-class PatchCodes
+class PatchCode
 {
 	public:
 		enum CPU
@@ -48,17 +48,18 @@ class PatchCodes
 			DS_DWORD   = 3, // 32-bit
 		};
 		
-		PatchCodes();
-		PatchCodes(const std::string& code, CPU cpu = CPU_M68K);
-		~PatchCodes();
+		PatchCode();
+		PatchCode(const std::string& code, CPU cpu = CPU_M68K);
+		~PatchCode();
 		
 		void setCode(const std::string& code, CPU cpu = CPU_M68K);
 		
+		std::string getGG(void);
+		
+		// Properties
 		uint32_t address(void);
 		uint32_t data(void);
 		DataSize dataSize(void);
-		
-		std::string getGG(void);
 		
 	protected:
 		bool decodeGG(const std::string& code);
@@ -72,4 +73,4 @@ class PatchCodes
 		CPU m_cpu;
 };
 
-#endif /* __MDP_GAME_GENIE_PATCH_CODES_HPP */
+#endif /* __MDP_GAME_GENIE_PATCH_CODE_HPP */
