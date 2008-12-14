@@ -58,8 +58,13 @@ class PatchCodes
 		uint32_t data(void);
 		DataSize dataSize(void);
 		
+		std::string getGG(void);
+		
 	protected:
 		bool decodeGG(const std::string& code);
+		
+		// Game Genie characters.
+		static const char* gg_chars;
 		
 		uint32_t m_address;
 		uint32_t m_data;
