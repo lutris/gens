@@ -49,6 +49,20 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	// Save the MDP Host Services pointer.
 	gg_host_srv = host_srv;
 	
+	// Check the UI type.
+#if defined(GENS_UI_GTK)
+	static const int uiType = MDP_UI_GTK2;
+#elif defined(GENS_UI_WIN32)
+	static const int uiType = MDP_UI_WIN32;
+#endif
+	
+	if (gg_host_srv->val_get(MDP_VAL_UI) != uiType)
+	{
+		// Unsupported UI type.
+		gg_host_srv = NULL;
+		return -MDP_ERR_UNSUPPORTED_UI;
+	}
+	
 	// Create a menu item.
 	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &mdp_misc_game_genie_menu_handler, 0, "&Game Genie");
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
