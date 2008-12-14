@@ -23,7 +23,6 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
-#include "util/file/ggenie.h"
 #include "segacd/cd_sys.hpp"
 #include "segacd/lc89510.h"
 #include "gens_core/gfx/gfx_cd.h"
@@ -185,7 +184,10 @@ int Init_SegaCD(const char* iso_name)
 	}
 	
 	Savestate::loadBRAM();		// Initialise BRAM
-	Load_Patch_File();		// Only used to reset Patch structure
+	
+	// TODO: Send "Load ROM" event to registered MDP event handlers.
+	// Note: This is only used to reset patch information right now.
+	//Load_Patch_File();
 	
 	Reset_Update_Timers();
 	

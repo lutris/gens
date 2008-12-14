@@ -21,7 +21,6 @@ using std::deque;
 #include "emulator/g_md.hpp"
 #include "emulator/g_mcd.hpp"
 #include "emulator/g_32x.hpp"
-#include "util/file/ggenie.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "segacd/cd_sys.hpp"
 #include "gens_core/mem/mem_m68k.h"
@@ -572,7 +571,7 @@ unsigned int ROM::loadROM(const char* filename, ROM_t** retROM)
 		#elif defined(GENS_UI_WIN32)
 			ZipSelectDialog *zip = new ZipSelectDialog(Gens_hWnd);
 		#else
-			#error Can't determine UI.
+			#error Cannot determine UI.
 		#endif
 		selFile = zip->getFile(files);
 		delete zip;
@@ -795,7 +794,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 		Savestate::saveBRAM();
 	
 	Savestate::saveSRAM();
-	Save_Patch_File();
+	
+	// TODO: Send "Close ROM" event to registered MDP event handlers.
+	//Save_Patch_File();
 	
 	// Audio dumping.
 	if (audio->dumpingWAV())

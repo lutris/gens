@@ -121,7 +121,6 @@ gens_SOURCES = \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
-		util/file/ggenie.c \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/7z.cpp \
@@ -209,7 +208,6 @@ noinst_HEADERS = \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
-		util/file/ggenie.h \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/7z.hpp \

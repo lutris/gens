@@ -25,7 +25,6 @@
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
-#include "util/file/ggenie.h"
 #include "gens_core/sound/pwm.h"
 #include "util/sound/gym.hpp"
 
@@ -209,7 +208,8 @@ int Init_32X(ROM_t* MD_ROM)
 			audio->playSound();
 	}
 	
-	Load_Patch_File();
+	// TODO: Send "Load ROM" event to registered MDP event handlers.
+	//Load_Patch_File();
 	
 	Reset_Update_Timers();
 	
@@ -340,7 +340,8 @@ int Do_32X_Frame_No_VDP(void)
 	SH2_Clear_Odo(&S_SH2);
 	PWM_Clear_Timer();
 	
-	Patch_Codes();
+	// TODO: Send "Before Frame" event to registered MDP event handlers.
+	//Patch_Codes();
 	
 	VRam_Flag = 1;
 	
@@ -625,7 +626,8 @@ int Do_32X_Frame(void)
 	SH2_Clear_Odo(&S_SH2);
 	PWM_Clear_Timer();
 	
-	Patch_Codes();
+	// TODO: Send "Before Frame" event to registered MDP event handlers.
+	//Patch_Codes();
 	
 	VRam_Flag = 1;
 	

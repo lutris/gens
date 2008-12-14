@@ -27,9 +27,6 @@ gens_SOURCES += \
 		ui/gtk/gens/gens_window.cpp \
 		ui/gtk/gens/gens_window_callbacks.cpp \
 		ui/gtk/gens/gens_window_sync.cpp \
-		ui/gtk/game_genie/game_genie_window.c \
-		ui/gtk/game_genie/game_genie_window_callbacks.c \
-		ui/gtk/game_genie/game_genie_window_misc.c \
 		ui/gtk/controller_config/controller_config_window.cpp \
 		ui/gtk/controller_config/controller_config_window_callbacks.cpp \
 		ui/gtk/controller_config/controller_config_window_misc.cpp \
@@ -90,9 +87,6 @@ noinst_HEADERS += \
 		ui/gtk/gens/gens_window.hpp \
 		ui/gtk/gens/gens_window_callbacks.hpp \
 		ui/gtk/gens/gens_window_sync.hpp \
-		ui/gtk/game_genie/game_genie_window.h \
-		ui/gtk/game_genie/game_genie_window_callbacks.h \
-		ui/gtk/game_genie/game_genie_window_misc.h \
 		ui/gtk/controller_config/controller_config_window.hpp \
 		ui/gtk/controller_config/controller_config_window_callbacks.hpp \
 		ui/gtk/controller_config/controller_config_window_misc.hpp \

@@ -42,7 +42,6 @@
 #include "ui/win32/resource.h"
 
 // Windows
-#include "game_genie/game_genie_window.h"
 #include "controller_config/controller_config_window.hpp"
 #include "bios_misc_files/bios_misc_files_window.hpp"
 #include "directory_config/directory_config_window.h"
@@ -215,8 +214,8 @@ void GensUI::update(void)
 		}
 			
 		// Check for dialog messages.
-		if ((game_genie_window && IsDialogMessage(game_genie_window, &msg)) ||
-		    (controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
+		// TODO: Check for dialog messages for registered MDP windows.
+		if ((controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 		    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
 		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||

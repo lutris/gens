@@ -33,7 +33,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
-// GENS GTK+ miscellaneous functions
+// Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
@@ -42,7 +42,6 @@
 // TODO: Consolidate these into Settings.PathNames
 #include "util/file/save.hpp"
 #include "util/gfx/imageutil.hpp"
-#include "util/file/ggenie.h"
 #include "util/file/rom.hpp"
 
 
@@ -60,7 +59,7 @@ const struct DirEntry_t DirEntries[] =
 	{"WAV Dump", "wavdump", PathNames.Dump_WAV_Dir},
 	{"GYM Dump", "gymdump", PathNames.Dump_GYM_Dir},
 	{"Screenshots", "screenshots", PathNames.Screenshot_Dir},
-	{"PAT patches", "pat_patches", Patch_Dir},
+	{"PAT patches", "pat_patches", PathNames.Patch_Dir},
 	{"IPS patches", "ips_patches", IPS_Dir},
 	{NULL, NULL, NULL},
 };

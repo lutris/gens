@@ -25,7 +25,6 @@ using std::list;
 
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/config_file.hpp"
-#include "util/file/ggenie.h"
 #include "util/sound/gym.hpp"
 
 #include "video/v_draw_sdl.hpp"
@@ -99,9 +98,6 @@ int main(int argc, char *argv[])
 		delete draw;
 		return 1;	// TODO: Replace with a better error code.
 	}
-	
-	// Initialize the Game Genie array.
-	Init_GameGenie();
 	
 	// Parse command line arguments.
 	parseArgs(argc, argv);

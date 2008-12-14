@@ -43,6 +43,9 @@ struct Gens_PathNames_t
 	char Dump_WAV_Dir[GENS_PATH_MAX];
 	char Dump_GYM_Dir[GENS_PATH_MAX];
 	char Screenshot_Dir[GENS_PATH_MAX];
+	
+	// TODO: Implement a way to allow plugins to add directories.
+	char Patch_Dir[GENS_PATH_MAX];
 };
 
 

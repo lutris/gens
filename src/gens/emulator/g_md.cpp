@@ -19,7 +19,6 @@
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
-#include "util/file/ggenie.h"
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
@@ -320,7 +319,8 @@ int Init_Genesis(ROM_t* MD_ROM)
 			audio->playSound();
 	}
 	
-	Load_Patch_File();
+	// TODO: Send "Load ROM" event to registered MDP event handlers.
+	//Load_Patch_File();
 	
 	Reset_Update_Timers();
 	
@@ -414,7 +414,8 @@ int Do_Genesis_Frame_No_VDP(void)
 	main68k_tripOdometer ();
 	z80_Clear_Odo (&M_Z80);
 	
-	Patch_Codes();
+	// TODO: Send "Before Frame" event to registered MDP event handlers.
+	//Patch_Codes();
 	
 	VRam_Flag = 1;
 	
@@ -547,7 +548,8 @@ int Do_Genesis_Frame(void)
 	main68k_tripOdometer();
 	z80_Clear_Odo(&M_Z80);
 	
-	Patch_Codes();
+	// TODO: Send "Before Frame" event to registered MDP event handlers.
+	//Patch_Codes();
 	
 	VRam_Flag = 1;
 	

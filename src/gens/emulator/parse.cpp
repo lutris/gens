@@ -58,7 +58,6 @@
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"
 #include "util/gfx/imageutil.hpp"
-#include "util/file/ggenie.h"
 #include "gens_core/io/io.h"
 #include "gens_core/misc/misc.h"
 #include "segacd/cd_sys.hpp"
@@ -428,7 +427,7 @@ void parseArgs(int argc, char **argv)
 		TEST_OPTION_STRING(opt1arg_str[OPT1_BRAMPATH][0], BRAM_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_DUMPPATH][0], PathNames.Dump_WAV_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_SCREENSHOTPATH][0], PathNames.Screenshot_Dir);
-		TEST_OPTION_STRING(opt1arg_str[OPT1_PATCHPATH][0], Patch_Dir);
+		TEST_OPTION_STRING(opt1arg_str[OPT1_PATCHPATH][0], PathNames.Patch_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_IPSPATH][0], IPS_Dir);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_GENESISBIOS][0], BIOS_Filenames.MD_TMSS);
 		TEST_OPTION_STRING(opt1arg_str[OPT1_USACDBIOS][0], BIOS_Filenames.SegaCD_US);

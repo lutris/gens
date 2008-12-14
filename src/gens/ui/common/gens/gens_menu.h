@@ -120,7 +120,7 @@ extern struct GensMenuItem_t gmiMain[];
 #endif /* GENS_CDROM */
 #define IDM_FILE_NETPLAY		0x1003
 #define IDM_FILE_CLOSEROM		0x1004
-#define IDM_FILE_GAMEGENIE		0x1005
+//#define IDM_FILE_GAMEGENIE		0x1005
 #define IDM_FILE_LOADSTATE		0x1006
 #define IDM_FILE_SAVESTATE		0x1007
 #define IDM_FILE_QUICKLOAD		0x1008

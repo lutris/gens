@@ -30,7 +30,6 @@
 #include "emulator/g_main.hpp"
 #include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
-#include "game_genie/game_genie_window_misc.h"
 #include "controller_config/controller_config_window_misc.hpp"
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
@@ -213,10 +212,6 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			
 			ROM::freeROM(Game);
 			Sync_Gens_Window();
-			break;
-		
-		case IDM_FILE_GAMEGENIE:
-			Open_Game_Genie();
 			break;
 		
 		case IDM_FILE_ROMHISTORY_1:
