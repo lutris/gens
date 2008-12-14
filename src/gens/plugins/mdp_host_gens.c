@@ -52,7 +52,10 @@ MDP_Host_t Gens_MDP_Host =
 	.renderer_unregister = mdp_host_renderer_unregister,
 	
 	.menu_item_add = mdp_host_menu_item_add,
-	.menu_item_remove = mdp_host_menu_item_remove
+	.menu_item_remove = mdp_host_menu_item_remove,
+	
+	.menu_item_set_text = mdp_host_menu_item_set_text,
+	.menu_item_get_text = mdp_host_menu_item_get_text
 };
 
 

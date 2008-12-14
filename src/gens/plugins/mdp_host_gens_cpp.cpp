@@ -20,7 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-// C++ includes
+// C includes.
+#include <string.h>
+
+// C++ includes.
 #include <algorithm>
 #include <string>
 #include <list>
@@ -218,7 +221,37 @@ int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
  */
 int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_id, const char *text)
 {
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	// Search for the menu item.
+	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
+	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	{
+		// Menu item not found.
+		return -MDP_ERR_MENU_INVALID_MENUID;
+	}
+	
+	// Get the list iterator.
+	list<mdpMenuItem_t>::iterator lstIter = (*curMenuItem).second;
+	
+	// Check if the menu item is owned by this plugin.
+	if ((*lstIter).owner != plugin)
+	{
+		// Not owned by the plugin.
+		return -MDP_ERR_MENU_INVALID_MENUID;
+	}
+	
+	// Menu item is owned by the plugin. Set the text.
+	if (text)
+		(*lstIter).text = string(text);
+	else
+		(*lstIter).text.clear();
+	
+	// If Gens is running, synchronize the Plugins Menu.
+	// TODO: Optimize this so that only the specific menu item is updated.
+	if (is_gens_running())
+		Sync_Gens_Window_PluginsMenu();
+	
+	// Menu item removed.
+	return MDP_ERR_OK;
 }
 
 
@@ -232,7 +265,30 @@ int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_i
  */
 int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size)
 {
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	// Search for the menu item.
+	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
+	if (curMenuItem == PluginMgr::tblMenuItems.end())
+	{
+		// Menu item not found.
+		return -MDP_ERR_MENU_INVALID_MENUID;
+	}
+	
+	// Get the list iterator.
+	list<mdpMenuItem_t>::iterator lstIter = (*curMenuItem).second;
+	
+	// Check if the menu item is owned by this plugin.
+	if ((*lstIter).owner != plugin)
+	{
+		// Not owned by the plugin.
+		return -MDP_ERR_MENU_INVALID_MENUID;
+	}
+	
+	// Menu item is owned by the plugin. Get the text.
+	// TODO: Return an error code if the buffer size isn't large enough.
+	strncpy(text_buf, (*lstIter).text.c_str(), size);
+	
+	// Menu item text copied.
+	return MDP_ERR_OK;
 }
 
 
