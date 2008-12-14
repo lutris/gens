@@ -103,9 +103,11 @@ int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *
  * @param plugin MDP_t requesting the menu item.
  * @param handler Function to handle menu item callbacks.
  * @param menu_id Menu to add the menu item to. (Currently ignored.)
+ * @param text Initial menu item text.
  * @return Menu item ID, or MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id)
+int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler,
+				      int menu_id, const char *text)
 {
 	// Check to see what the largest menu ID is.
 	uint16_t menuItemID;
@@ -141,6 +143,10 @@ int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn 
 	menuItem.id = menuItemID;
 	menuItem.handler = handler;
 	menuItem.owner = plugin;
+	
+	// Set the menu item text.
+	if (text)
+		menuItem.text = string(text);
 	
 	// Default attributes.
 	menuItem.checked = false;
