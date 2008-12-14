@@ -608,6 +608,9 @@ void Sync_Gens_Window_PluginsMenu(void)
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
 		
+		// Set the menu item check state.
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), (*curMenuItem).checked);
+		
 		g_object_set_data_full(G_OBJECT(mnuPlugins_sub), widgetName,
 				       g_object_ref(mnuItem),
 				       (GDestroyNotify)g_object_unref);
