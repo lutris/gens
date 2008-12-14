@@ -263,19 +263,23 @@ AM_CONDITIONAL([GENS_WIN32_CONSOLE], [test x$enable_win32_console = xyes])
 
 AC_ARG_WITH(opengl, AC_HELP_STRING([--without-opengl], [Build without OpenGL support [[default=no]]]), with_opengl=$withval, with_opengl=yes)
 if test x$with_opengl = xyes; then
-AC_MSG_CHECKING(for OpenGL support)
+	AC_MSG_CHECKING(for OpenGL support)
 	with_opengl=no
-	AC_TRY_COMPILE([
-		#include <GL/gl.h>
-	],[
-		GLint g;
-	],[
-		with_opengl=yes
-	])      
-	AC_MSG_RESULT($with_opengl)
-	if test x$with_opengl = xyes; then
-		LDFLAGS="$LDFLAGS -lGL"
-		AC_DEFINE(GENS_OPENGL, 1, OpenGL support)
+	if test x$os = xwin32; then
+		AC_MSG_WARN([OpenGL support is not currently available on Win32. Disabling.])
+	else
+		AC_TRY_COMPILE([
+			#include <GL/gl.h>
+		],[
+			GLint g;
+		],[
+			with_opengl=yes
+		])      
+		AC_MSG_RESULT($with_opengl)
+		if test x$with_opengl = xyes; then
+			LDFLAGS="$LDFLAGS -lGL"
+			AC_DEFINE(GENS_OPENGL, 1, OpenGL support)
+		fi
 	fi
 fi
 AM_CONDITIONAL([GENS_OPENGL], [test x$with_opengl = xyes])
