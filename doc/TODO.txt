@@ -1,6 +1,10 @@
 TODO for Gens/GS m6.1:
 - hq3x: Broken on Win32 in some cases. (Check width division!)
 - [MDP] External plugins.
+- [MDP] Port Game Genie to MDP, and add the following:
+  - 8-bit writes: 000000:00
+  - Support for S68K, Z80, MSH2, and SSH2 address spaces
+  - Improved file format (but maintain read-only compatibility with the old version).
 - Write a utility to convert PNG to a static const unsigned char[].
   - Tentative name: "C Binary Object Builder" (CBOB)
 - [MDP] Add plugin configuration save/load based on MDP UUID.
