@@ -57,9 +57,10 @@ class PatchCode
 		std::string getGG(void);
 		
 		// Properties
-		uint32_t address(void);
-		uint32_t data(void);
-		DataSize dataSize(void);
+		uint32_t address(void)		{ return m_address; }
+		uint32_t data(void)		{ return m_data; }
+		DataSize dataSize(void)		{ return m_dataSize; }
+		CPU cpu(void)			{ return m_cpu; }
 		
 	protected:
 		bool decodeGG(const std::string& code);
