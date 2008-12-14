@@ -33,6 +33,8 @@ using std::list;
 
 // Menus.
 #include "ui/common/gens/gens_menu.h"
+#include "emulator/g_main.hpp"
+#include "gens/gens_window_sync.hpp"
 
 // Plugin Manager.
 #include "pluginmgr.hpp"
@@ -158,6 +160,10 @@ int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn 
 	list<mdpMenuItem_t>::iterator lstIter = PluginMgr::lstMenuItems.end();
 	lstIter--;
 	PluginMgr::tblMenuItems.insert(pairMenuItems(menuItemID, lstIter));
+	
+	// If Gens is running, synchronize the Plugins Menu.
+	if (is_gens_running())
+		Sync_Gens_Window_PluginsMenu();
 	
 	// Return the menu item ID.
 	return menuItemID;

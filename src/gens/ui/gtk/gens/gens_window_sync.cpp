@@ -591,28 +591,52 @@ void Sync_Gens_Window_PluginsMenu(void)
 	
 	// Create the plugin menu items.
 	GtkWidget *mnuItem;
+	char widgetName[64];
+	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
+	     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
+	{
+		char *sMenuText = strdup((*curMenuItem).text.c_str());
+		char *mnemonicPos = strchr(sMenuText, '&');
+		if (mnemonicPos)
+			*mnemonicPos = '_';
+		
+		mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText);
+		free(sMenuText);
+		
+		sprintf(widgetName, "mnuPlugins_0x%04X", (*curMenuItem).id);
+		gtk_widget_set_name(mnuItem, widgetName);
+		gtk_widget_show(mnuItem);
+		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
+		
+		g_object_set_data_full(G_OBJECT(mnuPlugins_sub), widgetName,
+				       g_object_ref(mnuItem),
+				       (GDestroyNotify)g_object_unref);
+	}
+	
 	// TODO
 	
-	// Add the Plugin Manager separator.
-	// TODO: Only if plugin menu items were added.
-	/*
-	mnuItem = gtk_separator_menu_item_new();
-	gtk_widget_set_name(mnuItem, "mnuPlugins_sep_PluginManager");
-	gtk_widget_show(mnuItem);
-	gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
-	
-	g_object_set_data_full(G_OBJECT(mnuPlugins_sub), "mnuPlugins_sep_PluginManager",
-			       g_object_ref(mnuItem),
-			       (GDestroyNotify)g_object_unref);
-	*/
+	// If plugin menu items were added, add the Plugin Manager separator.
+	if (PluginMgr::lstMenuItems.size() != 0)
+	{
+		const char* sSepName = "mnuPlugins_sep_PluginManager";
+		mnuItem = gtk_separator_menu_item_new();
+		gtk_widget_set_name(mnuItem, sSepName);
+		gtk_widget_show(mnuItem);
+		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
+		
+		g_object_set_data_full(G_OBJECT(mnuPlugins_sub), sSepName,
+				       g_object_ref(mnuItem),
+				       (GDestroyNotify)g_object_unref);
+	}
 	
 	// Add the Plugin Manager menu item.
+	const char* sMgrName = "mnuPlugins_sep_PluginManager";
 	mnuItem = gtk_menu_item_new_with_mnemonic("Plugin Manager");
-	gtk_widget_set_name(mnuItem, "mnuPlugins_item_PluginManager");
+	gtk_widget_set_name(mnuItem, sMgrName);
 	gtk_widget_show(mnuItem);
 	gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
 	
-	g_object_set_data_full(G_OBJECT(mnuPlugins_sub), "mnuPlugins_item_PluginManager",
+	g_object_set_data_full(G_OBJECT(mnuPlugins_sub), sMgrName,
 			       g_object_ref(mnuItem),
 			       (GDestroyNotify)g_object_unref);
 	
