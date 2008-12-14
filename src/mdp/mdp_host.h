@@ -51,7 +51,7 @@ typedef enum
 } MDP_MENU;
 
 // Menu Handler function.
-typedef void (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
+typedef int (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
 
 // MDP Host Services struct.
 typedef struct
