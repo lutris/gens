@@ -79,9 +79,9 @@ typedef struct
 	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
 	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
 	
-	// get_val(), set_val(): Set or get int values.
-	int (MDP_FNCALL *set_val)(uint32_t valID, int val);
-	int (MDP_FNCALL *get_val)(uint32_t valID);
+	// val_set(), val_get(): Set or get int values.
+	int (MDP_FNCALL *val_get)(uint32_t valID, int val);
+	int (MDP_FNCALL *val_set)(uint32_t valID);
 	
 	// renderer_register(): Register a renderer.
 	// renderer_unregister(): Unregister a renderer.
