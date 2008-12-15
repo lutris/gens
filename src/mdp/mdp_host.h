@@ -32,6 +32,7 @@ extern "C" {
 #include "mdp_fncall.h"
 #include "mdp_version.h"
 #include "mdp_render.h"
+#include "mdp_event.h"
 
 // MDP Host Services interface version.
 #define MDP_HOST_INTERFACE_VERSION MDP_VERSION(0, 2, 0)
@@ -102,8 +103,8 @@ typedef struct
 	int (MDP_FNCALL *menu_item_get_checked)(struct MDP_t *plugin, int menu_item_id);
 	
 	// Event handler functions.
-	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, void fn());
-	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
+	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
 } MDP_Host_t;
 
 #ifdef __cplusplus
