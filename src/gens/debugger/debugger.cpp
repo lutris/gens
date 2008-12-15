@@ -38,6 +38,7 @@
 #include "segacd/lc89510.h"
 #include "segacd/cd_sys.hpp"
 #include "gens_core/gfx/gfx_cd.h"
+#include "mcd_cell_dump.h"
 
 static int Current_32X_FB = 0;
 static int adr_mem = 0, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal = 0;

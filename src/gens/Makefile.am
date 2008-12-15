@@ -143,7 +143,10 @@ gens_SOURCES += \
 		debugger/debugger.cpp \
 		debugger/m68kd.c \
 		debugger/sh2d.c \
-		debugger/z80dis.c
+		debugger/z80dis.c \
+		debugger/mcd_cell_dump.asm
+ASMFILES += \
+		debugger/mcd_cell_dump.o
 endif
 
 if GENS_MP3
@@ -232,7 +235,8 @@ noinst_HEADERS += \
 		debugger/debugger.hpp \
 		debugger/m68kd.h \
 		debugger/sh2d.h \
-		debugger/z80dis.h
+		debugger/z80dis.h \
+		debugger/mcd_cell_dump.h
 endif
 
 if GENS_CDROM

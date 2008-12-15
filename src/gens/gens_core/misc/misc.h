@@ -15,10 +15,6 @@ extern "C" {
 
 void Print_Text(const char *str, int Size, int Pos_X, int Pos_Y, int Style);
 
-void Cell_8x8_Dump(unsigned char *Adr, int Palette);
-void Cell_16x16_Dump(unsigned char *Adr, int Palette);
-void Cell_32x32_Dump(unsigned char *Adr, int Palette);
-
 void CDD_Export_Status(void);
 
 #ifdef __cplusplus
