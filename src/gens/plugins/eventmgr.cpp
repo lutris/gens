@@ -41,12 +41,12 @@ using std::list;
 list<mdpEventItem_t> EventMgr::lstEvents[MaxEventID];
 
 
-void EventMgr::RaiseEvent_load_rom(const char* rom_name, int system_id)
+void EventMgr::RaiseEvent_open_rom(const char* rom_name, int system_id)
 {
-	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[MDP_EVENT_LOAD_ROM - 1].begin();
-	     lstIter != lstEvents[MDP_EVENT_LOAD_ROM - 1].end(); lstIter++)
+	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[MDP_EVENT_OPEN_ROM - 1].begin();
+	     lstIter != lstEvents[MDP_EVENT_OPEN_ROM - 1].end(); lstIter++)
 	{
-		mdp_event_load_rom_fn handler = (mdp_event_load_rom_fn)((*lstIter).handler);
+		mdp_event_open_rom_fn handler = (mdp_event_open_rom_fn)((*lstIter).handler);
 		
 		// TODO: Check return value.
 		handler(rom_name, system_id);
@@ -56,8 +56,8 @@ void EventMgr::RaiseEvent_load_rom(const char* rom_name, int system_id)
 
 void EventMgr::RaiseEvent_close_rom(void)
 {
-	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[MDP_EVENT_LOAD_ROM - 1].begin();
-	     lstIter != lstEvents[MDP_EVENT_LOAD_ROM - 1].end(); lstIter++)
+	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[MDP_EVENT_CLOSE_ROM - 1].begin();
+	     lstIter != lstEvents[MDP_EVENT_CLOSE_ROM - 1].end(); lstIter++)
 	{
 		mdp_event_close_rom_fn handler = (mdp_event_close_rom_fn)((*lstIter).handler);
 		

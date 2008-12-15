@@ -48,7 +48,7 @@ class EventMgr
 		static std::list<mdpEventItem_t> lstEvents[MaxEventID];
 		
 		// Events.
-		static void RaiseEvent_load_rom(const char* rom_name, int system_id);
+		static void RaiseEvent_open_rom(const char* rom_name, int system_id);
 		static void RaiseEvent_close_rom(void);
 };
 
