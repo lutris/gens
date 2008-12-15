@@ -205,7 +205,8 @@ align 64
 	
 	; Free the 5 parameters used for _2xSaILine.
 	add	esp, byte 4 * 5
-	
+
+.End:
 	; Restore registers.
 	emms
 	popad
