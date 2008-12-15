@@ -237,6 +237,7 @@ _2xSaILine:
 
 align 64
 
+; Main Loop
 .Loop:
 		push ecx
 		
