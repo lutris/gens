@@ -222,8 +222,10 @@ _2xSaILine:
 	; Save registers.
 	pushad
 	
+	; Prepare the destination.
 	mov	edx, [esp + dstOffset]	; edx points to the screen
 	
+	; Prepare the source
 	mov	eax, [esp + srcPtr]	; eax points to colorA
 	mov	ebp, [esp + srcPitch]
 	mov	ecx, [esp + width]
