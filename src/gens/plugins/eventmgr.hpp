@@ -34,8 +34,8 @@
 // Event item.
 struct mdpEventItem_t
 {
-	MDP_t	*owner;
-	void	(*handler)();
+	MDP_t			*owner;
+	mdp_event_handler_fn	handler;
 };
 
 class EventMgr
@@ -48,8 +48,7 @@ class EventMgr
 		static std::list<mdpEventItem_t> lstEvents[MaxEventID];
 		
 		// Events.
-		static void RaiseEvent_open_rom(const char* rom_name, int system_id);
-		static void RaiseEvent_close_rom(void);
+		static void RaiseEvent(int event_id, void *event_info);
 };
 
 #endif /* GENS_EVENTMGR_HPP */

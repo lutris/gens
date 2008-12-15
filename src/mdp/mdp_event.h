@@ -31,6 +31,7 @@
 extern "C" {
 #endif
 
+
 // MDP Event IDs
 enum MDP_EVENT_ID
 {
@@ -39,19 +40,27 @@ enum MDP_EVENT_ID
 	MDP_EVENT_CLOSE_ROM	= 2
 };
 
-/**
- * MDP_EVENT_OPEN_ROM: Occurs when a ROM is opened.
- * @param rom_name ROM name. (C string, read-only)
- * @param system_id System ID. See mdp_constants.h::MDP_SYSTEM_ID
- * @return MDP error code.
- */
-typedef int (MDP_FNCALL *mdp_event_open_rom_fn)(const char *rom_name, int system_id);
 
 /**
- * MDP_EVENT_CLOSE_ROM: Occurs when a ROM is closed.
+ * mdp_event_callback_fn(): Event callback function.
+ * @param event_id Event ID.
+ * @param event_info Pointer to struct containing event information.
+ * This should be casted to an appropriate struct, based on event_id.
+ * This may be NULL, depending on if the event uses a struct or not.
  * @return MDP error code.
  */
-typedef int (MDP_FNCALL *mdp_event_close_rom_fn)(void);
+typedef int (MDP_FNCALL *mdp_event_handler_fn)(int event_id, void *event_info);
+
+
+/**
+ * mdp_event_open_rom_t: Event information for when a ROM is opened.
+ */
+typedef struct
+{
+	const char *rom_name;	// ROM name.
+	int system_id;		// System ID.
+} mdp_event_open_rom_t;
+
 
 #ifdef __cplusplus
 }
