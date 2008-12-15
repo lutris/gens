@@ -100,6 +100,10 @@ typedef struct
 	int (MDP_FNCALL *menu_item_get_text)(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size);
 	int (MDP_FNCALL *menu_item_set_checked)(struct MDP_t *plugin, int menu_item_id, int checked);
 	int (MDP_FNCALL *menu_item_get_checked)(struct MDP_t *plugin, int menu_item_id);
+	
+	// Event handler functions.
+	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, void *fn());
+	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, MDP_Render_t *renderer);
 } MDP_Host_t;
 
 #ifdef __cplusplus
