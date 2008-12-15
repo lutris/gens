@@ -12,4 +12,6 @@ noinst_HEADERS = \
 		mdp_fncall.h \
 		mdp_version.h \
 		mdp_host.h \
-		mdp_render.h
+		mdp_render.h \
+		mdp_event.h \
+		mdp_constants.h
