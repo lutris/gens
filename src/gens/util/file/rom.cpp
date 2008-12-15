@@ -494,7 +494,7 @@ int ROM::openROM(const char *Name)
 	}
 	
 	// Raise the MDP_EVENT_OPEN_ROM event.
-	EventMgr::RaiseEvent_open_rom(Rom_Name, sysID);
+	EventMgr::RaiseEvent_open_rom(ROM_Name, sysID);
 	return started;
 }
 
