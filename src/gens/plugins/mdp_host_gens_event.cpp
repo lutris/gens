@@ -36,6 +36,9 @@ using std::list;
 // Plugin Manager.
 #include "pluginmgr.hpp"
 
+// Event Manager.
+#include "eventmgr.hpp"
+
 
 /**
  * mdp_host_event_register(): Register an event handler.
@@ -44,10 +47,28 @@ using std::list;
  * @param handler Event handler function.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id, void *handler())
+int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id, void (*handler)())
 {
-	// TODO: Implement this function.
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	// Check that tne event ID is valid.
+	if (event_id <= MDP_EVENT_UNKNOWN || event_id > EventMgr::MaxEventID)
+		return -MDP_ERR_EVENT_INVALID_EVENTID;
+	
+	// Check if this plugin and handler are already registered for this event.
+	for (list<mdpEventItem_t>::iterator lstIter = EventMgr::lstEvents[event_id - 1].begin();
+	     lstIter != EventMgr::lstEvents[event_id - 1].end(); lstIter++)
+	{
+		if ((*lstIter).handler == handler && (*lstIter).owner == plugin)
+			return -MDP_ERR_EVENT_ALREADY_REGISTERED;
+	}
+	
+	// Not registered. Register this event handler.
+	mdpEventItem_t event;
+	event.owner = plugin;
+	event.handler = handler;
+	EventMgr::lstEvents[event_id - 1].push_back(event);
+	
+	// Event handler registered.
+	return MDP_ERR_OK;
 }
 
 
@@ -58,7 +79,7 @@ int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id, void 
  * @param handler Event handler function.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_event_unregister(struct MDP_t *plugin, int event_id, void *handler())
+int MDP_FNCALL mdp_host_event_unregister(struct MDP_t *plugin, int event_id, void (*handler)())
 {
 	// TODO: Implement this function.
 	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
