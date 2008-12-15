@@ -34,11 +34,16 @@
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
+#include "mdp/mdp_event.h"
 
 // MDP Host Services.
 static MDP_Host_t *gg_host_srv = NULL;
 static int gg_menuItemID = 0;
 
+
+static int MDP_FNCALL event_open_rom(const char *rom_name, int system_id);
+
+typedef void (*voidfn)(void);
 
 /**
  * mdp_misc_game_genie_init(): Initialize the Game Genie plugin.
@@ -66,6 +71,10 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	// Create a menu item.
 	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &mdp_misc_game_genie_menu_handler, 0, "&Game Genie");
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
+	
+	// Register the MDP_EVENT_OPEN_ROM event.
+	
+	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, (voidfn)(event_open_rom));
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -97,5 +106,12 @@ int MDP_FNCALL mdp_misc_game_genie_end(void)
 int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 {
 	printf("Game Genie Menu Handler: Menu item 0x%04X\n", menu_item_id);
+	return MDP_ERR_OK;
+}
+
+
+static int MDP_FNCALL event_open_rom(const char *rom_name, int system_id)
+{
+	printf("GG: ROM opened: %s, system_id %d\n", rom_name, system_id);
 	return MDP_ERR_OK;
 }
