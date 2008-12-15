@@ -28,17 +28,17 @@ extern "C" {
 #endif
 
 // System ID constants.
-enum MDP_SYSID
+enum MDP_SYSTEM_ID
 {
-	MDP_SYSID_UNKNOWN = 0,
-	MDP_SYSID_MD      = 1,
-	MDP_SYSID_MCD     = 2,
-	MDP_SYSID_32X     = 3,
-	MDP_SYSID_MCD32X  = 4,
-	MDP_SYSID_SMS     = 5,
-	MDP_SYSID_GG      = 6,
-	MDP_SYSID_SG1000  = 7,
-	MDP_SYSID_PICO    = 8,
+	MDP_SYSTEM_UNKNOWN = 0,
+	MDP_SYSTEM_MD      = 1,
+	MDP_SYSTEM_MCD     = 2,
+	MDP_SYSTEM_32X     = 3,
+	MDP_SYSTEM_MCD32X  = 4,
+	MDP_SYSTEM_SMS     = 5,
+	MDP_SYSTEM_GG      = 6,
+	MDP_SYSTEM_SG1000  = 7,
+	MDP_SYSTEM_PICO    = 8,
 };
 
 #ifdef __cplusplus
