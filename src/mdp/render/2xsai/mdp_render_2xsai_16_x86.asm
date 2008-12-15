@@ -185,6 +185,9 @@ align 64
 	push	eax	; 2nd parameter == source pitch
 	push	esi	; 1st parameter == source
 	
+	; Go to the main loop.
+	jmp	short .Loop
+
 align 64
 
 .Loop:
