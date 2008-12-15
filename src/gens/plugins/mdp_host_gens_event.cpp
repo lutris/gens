@@ -47,7 +47,7 @@ using std::list;
  * @param handler Event handler function.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id, void (*handler)())
+int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id, void handler())
 {
 	// Check that tne event ID is valid.
 	if (event_id <= MDP_EVENT_UNKNOWN || event_id > EventMgr::MaxEventID)
@@ -79,7 +79,7 @@ int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id, void 
  * @param handler Event handler function.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_event_unregister(struct MDP_t *plugin, int event_id, void (*handler)())
+int MDP_FNCALL mdp_host_event_unregister(struct MDP_t *plugin, int event_id, void handler())
 {
 	// TODO: Implement this function.
 	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
