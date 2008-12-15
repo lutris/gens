@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Event Handler Declarations.              *
+ * Gens: MDP: Mega Drive Plugin - Constants.                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,23 +20,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef __MDP_EVENT_H
-#define __MDP_EVENT_H
-
-#include <stdint.h>
-#include "mdp_fncall.h"
-#include "mdp_constants.h"
+#ifndef __MDP_CONSTANTS_H
+#define __MDP_CONSTANTS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// system_id == MDP_SYSID
-typedef int (MDP_FNCALL *mdp_event_load_rom_fn)(const char *rom_name, int system_id);
-typedef int (MDP_FNCALL *mdp_event_close_rom_fn)(void);
+// System ID constants.
+enum MDP_SYSID
+{
+	MDP_SYSID_UNKNOWN = 0,
+	MDP_SYSID_MD      = 1,
+	MDP_SYSID_MCD     = 2,
+	MDP_SYSID_32X     = 3,
+	MDP_SYSID_MCD32X  = 4,
+	MDP_SYSID_SMS     = 5,
+	MDP_SYSID_GG      = 6,
+	MDP_SYSID_SG1000  = 7,
+	MDP_SYSID_PICO    = 8,
+};
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MDP_EVENT_H */
+#endif /* __MDP_CONSTANTS_H */
