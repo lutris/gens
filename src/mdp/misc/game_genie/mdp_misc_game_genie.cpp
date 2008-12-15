@@ -41,9 +41,8 @@ static MDP_Host_t *gg_host_srv = NULL;
 static int gg_menuItemID = 0;
 
 
-static int MDP_FNCALL event_open_rom(const char *rom_name, int system_id);
+static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
 
-typedef void (*voidfn)(void);
 
 /**
  * mdp_misc_game_genie_init(): Initialize the Game Genie plugin.
@@ -74,7 +73,7 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	
 	// Register the MDP_EVENT_OPEN_ROM event.
 	
-	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, (voidfn)(event_open_rom));
+	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -110,8 +109,13 @@ int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 }
 
 
-static int MDP_FNCALL event_open_rom(const char *rom_name, int system_id)
+static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 {
-	printf("GG: ROM opened: %s, system_id %d\n", rom_name, system_id);
+	printf("Event: %d\n", event_id);
+	if (event_id == MDP_EVENT_OPEN_ROM)
+	{
+		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)(event_info);
+		printf("GG: ROM opened: %s, system_id %d\n", openROM->rom_name, openROM->system_id);
+	}
 	return MDP_ERR_OK;
 }
