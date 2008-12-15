@@ -32,6 +32,7 @@
 #include "mdp_host_gens.h"
 #include "mdp_host_gens_cpp.hpp"
 #include "mdp_host_gens_menu.hpp"
+#include "mdp_host_gens_event.hpp"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -69,7 +70,10 @@ MDP_Host_t Gens_MDP_Host =
 	.menu_item_get_text = mdp_host_menu_item_get_text,
 	
 	.menu_item_set_checked = mdp_host_menu_item_set_checked,
-	.menu_item_get_checked = mdp_host_menu_item_get_checked
+	.menu_item_get_checked = mdp_host_menu_item_get_checked,
+	
+	.event_register = mdp_host_event_register,
+	.event_unregister = mdp_host_event_unregister
 };
 
 
