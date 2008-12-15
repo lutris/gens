@@ -376,8 +376,8 @@ align 64
 		
 		;if ((colorA == colorD) && (colorB != colorC) && (colorA == colorG) && (colorC == colorO)
 		
-		movq	mm0, [eax+ebp+colorA]			;mm0 and mm1 contain colorA
-		movq	mm2, [eax+ebp+ebp+colorC]		;mm2 and mm3 contain colorC
+		movq	mm0, [eax + ebp + colorA]		;mm0 and mm1 contain colorA
+		movq	mm2, [eax + ebp + ebp + colorC]		;mm2 and mm3 contain colorC
 		movq	mm1, mm0
 		movq	mm3, mm2
 		
