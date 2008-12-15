@@ -494,8 +494,7 @@ int ROM::openROM(const char *Name)
 	}
 	
 	// Raise the MDP_EVENT_OPEN_ROM event.
-	// TODO: Use the game's name, not Name.
-	EventMgr::RaiseEvent_open_rom(Name, sysID);
+	EventMgr::RaiseEvent_open_rom(Rom_Name, sysID);
 	return started;
 }
 
