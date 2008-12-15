@@ -46,11 +46,8 @@ void EventMgr::RaiseEvent(int event_id, void *event_info)
 	if (event_id <= 0 || event_id > MaxEventID)
 		return;
 	
-	// Subtract one from the Event ID to get the array index.
-	const int event_id_array = event_id - 1;
-	
-	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[event_id_array].begin();
-	     lstIter != lstEvents[event_id_array].end(); lstIter++)
+	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[event_id - 1].begin();
+	     lstIter != lstEvents[event_id - 1].end(); lstIter++)
 	{
 		// TODO: Check the return value.
 		(*lstIter).handler(event_id, event_info);
