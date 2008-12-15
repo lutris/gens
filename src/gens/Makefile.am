@@ -137,7 +137,8 @@ gens_SOURCES = \
 		plugins/mdp_host_gens.c \
 		plugins/mdp_host_gens_cpp.cpp \
 		plugins/mdp_host_gens_menu.cpp \
-		plugins/mdp_host_gens_event.cpp
+		plugins/mdp_host_gens_event.cpp \
+		plugins/eventmgr.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -230,7 +231,8 @@ noinst_HEADERS = \
 		plugins/mdp_host_gens.h \
 		plugins/mdp_host_gens_cpp.hpp \
 		plugins/mdp_host_gens_menu.hpp \
-		plugins/mdp_host_gens_event.hpp
+		plugins/mdp_host_gens_event.hpp \
+		plugins/eventmgr.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
