@@ -41,20 +41,20 @@
 #endif /* GENS_X86_ASM */
 
 // MDP Host Services.
-static MDP_Host_t *mdp_render_2xsai_hostSrv = NULL;
+static MDP_Host_t *mdp_render_2xsai_host_srv = NULL;
 
 
 /**
  * mdp_render_2xsai_init(): Initialize the 2xSaI rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_2xsai_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_2xsai_init(MDP_Host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
-	mdp_render_2xsai_hostSrv = hostSrv;
+	mdp_render_2xsai_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_2xsai_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	mdp_render_2xsai_host_srv->renderer_register(&mdp, &mdp_render_t);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -67,11 +67,11 @@ int MDP_FNCALL mdp_render_2xsai_init(MDP_Host_t *hostSrv)
  */
 int MDP_FNCALL mdp_render_2xsai_end(void)
 {
-	if (!mdp_render_2xsai_hostSrv)
+	if (!mdp_render_2xsai_host_srv)
 		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
-	mdp_render_2xsai_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	mdp_render_2xsai_host_srv->renderer_unregister(&mdp, &mdp_render_t);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
