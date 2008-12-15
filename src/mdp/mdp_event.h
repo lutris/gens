@@ -31,8 +31,26 @@
 extern "C" {
 #endif
 
-// system_id == MDP_SYSID
+// MDP Event IDs
+enum MDP_EVENT_ID
+{
+	MDP_EVENT_UNKNOWN	= 0,
+	MDP_EVENT_LOAD_ROM	= 1,
+	MDP_EVENT_CLOSE_ROM	= 2
+};
+
+/**
+ * MDP_EVENT_LOAD_ROM: Occurs when a ROM is loaded.
+ * @param rom_name ROM name. (C string, read-only)
+ * @param system_id System ID. See mdp_constants.h::MDP_SYSTEM_ID
+ * @return MDP error code.
+ */
 typedef int (MDP_FNCALL *mdp_event_load_rom_fn)(const char *rom_name, int system_id);
+
+/**
+ * MDP_EVENT_CLOSE_ROM: Occurs when a ROM is closed.
+ * @return MDP error code.
+ */
 typedef int (MDP_FNCALL *mdp_event_close_rom_fn)(void);
 
 #ifdef __cplusplus
