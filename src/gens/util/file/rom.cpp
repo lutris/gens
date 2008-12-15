@@ -41,6 +41,9 @@ using std::deque;
 // New file compression handler.
 #include "util/file/compress/compressor.hpp"
 
+#include "mdp/mdp_constants.h"
+#include "plugins/eventmgr.hpp"
+
 char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
 
@@ -457,6 +460,7 @@ int ROM::openROM(const char *Name)
 	updateRecentROMList(Name, romType);
 	updateROMDir(Name);
 	
+	int started, sysID;
 	switch (romType & ROMTYPE_SYS_MASK)
 	{
 		default:
@@ -464,27 +468,35 @@ int ROM::openROM(const char *Name)
 			if (Game)
 				Genesis_Started = Init_Genesis(Game);
 			
-			return Genesis_Started;
+			started = Genesis_Started;
+			sysID = MDP_SYSTEM_MD;
 			break;
 	
 		case ROMTYPE_SYS_32X:
 			if (Game)
 				_32X_Started = Init_32X(Game);
 			
-			return _32X_Started;
+			started = _32X_Started;
+			sysID = MDP_SYSTEM_32X;
 			break;
 		
 		case ROMTYPE_SYS_MCD:
 			SegaCD_Started = Init_SegaCD(Name);
 			
-			return SegaCD_Started;
+			started = SegaCD_Started;
+			sysID = MDP_SYSTEM_MCD;
 			break;
 		
 		case ROMTYPE_SYS_MCD32X:
+			// Not supported right now.
+			return -1;
 			break;
 	}
 	
-	return -1;
+	// Raise the MDP_EVENT_OPEN_ROM event.
+	// TODO: Use the game's name, not Name.
+	EventMgr::RaiseEvent_open_rom(Name, sysID);
+	return started;
 }
 
 
