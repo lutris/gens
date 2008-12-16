@@ -32,7 +32,7 @@ extern "C" {
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_init(MDP_Host_t *hostSrv);
+DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_init(MDP_Host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_render_super_eagle_cpp(MDP_Render_Info_t *renderInfo);
 
