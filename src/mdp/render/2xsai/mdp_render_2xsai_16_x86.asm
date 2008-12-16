@@ -660,8 +660,8 @@ align 64
 		pcmpgtw	mm7, mm0
 		pcmpgtw	mm0, mm1
 		
-		por_localvar	mm7, Mask1
-		por_localvar	mm1, Mask2
+		por_localvar		mm7, Mask1
+		por_localvar		mm1, Mask2
 		put_movq_localvar	Mask1, mm7
 		put_movq_localvar	Mask2, mm1
 		
