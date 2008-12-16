@@ -324,12 +324,14 @@ void Input_KeyDown(int key)
 			}
 			else if (key != GENS_KEY_0 && (mod & GENS_KMOD_CTRL))
 			{
+				if (ROM::Recent_ROMs.size() <= (key - GENS_KEY_1))
+					break;
+				
 				//if ((Check_If_Kaillera_Running())) return 0;
 				if (audio->playingGYM())
 					Stop_Play_GYM();
 				
-				if (ROM::Recent_ROMs.size() > (key - GENS_KEY_1))
-					ROM::openROM(ROM::Recent_ROMs.at(key - GENS_KEY_1).filename.c_str());
+				ROM::openROM(ROM::Recent_ROMs.at(key - GENS_KEY_1).filename.c_str());
 				
 				Sync_Gens_Window();
 			}
