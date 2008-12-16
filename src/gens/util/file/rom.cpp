@@ -306,9 +306,9 @@ void ROM::deinterleaveSMD(void)
 		// Go through both 8 KB sub-blocks at the same time.
 		for (j = 0; j < 0x2000; j++)
 		{
-			// Odd byte, first 8 KB
+			// Odd byte; first 8 KB.
 			Rom_Data[ptr + (j << 1) + 1] = buf[j];
-			// Even byte, second 8 KB
+			// Even byte; second 8 KB.
 			Rom_Data[ptr + (j << 1)] = buf[j + 0x2000];
 		}
 	}
