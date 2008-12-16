@@ -336,7 +336,7 @@ void Input_KeyDown(int key)
 				if (audio->playingGYM())
 					Stop_Play_GYM();
 				
-				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename.c_str());
+				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename);
 				
 				Sync_Gens_Window();
 			}

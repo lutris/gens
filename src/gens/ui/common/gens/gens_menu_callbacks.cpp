@@ -228,7 +228,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 				Stop_Play_GYM();
 			
 			if (ROM::Recent_ROMs.size() > (menuID - IDM_FILE_ROMHISTORY_1))
-				ROM::openROM(ROM::Recent_ROMs.at(menuID - IDM_FILE_ROMHISTORY_1).filename.c_str());
+				ROM::openROM(ROM::Recent_ROMs.at(menuID - IDM_FILE_ROMHISTORY_1).filename);
 			
 			Sync_Gens_Window();
 			break;

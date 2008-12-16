@@ -66,13 +66,13 @@ class ROM
 		static void updateCDROMName(const char *cdromName);
 		
 		static int getROM(void);
-		static int openROM(const char *Name);
-		static ROM_t* loadSegaCD_BIOS(const char *filename);
+		static int openROM(const std::string& filename);
+		static ROM_t* loadSegaCD_BIOS(const std::string& filename);
 		
 		static unsigned int detectFormat(const unsigned char buf[2048]);
 		static unsigned int detectFormat_fopen(const char* filename);
 		
-		static unsigned int loadROM(const char* filename, ROM_t** retROM);
+		static unsigned int loadROM(const std::string& filename, ROM_t** retROM);
 		static void fixChecksum(void);
 		static int applyIPSPatch(void);
 		static void freeROM(ROM_t* ROM_MD);
@@ -89,8 +89,8 @@ class ROM
 	
 	protected:
 		static void updateRecentROMList(const std::string& filename, const unsigned int type);
-		static void updateROMDir(const char *filename);
-		static void updateROMName(const char *filename);
+		static void updateROMDir(const std::string& filename);
+		static void updateROMName(const char* filename);
 		static void deinterleaveSMD(void);
 		static void fillROMInfo(void);
 		static unsigned short calcChecksum(void);

@@ -95,7 +95,7 @@ string ROM::getDirFromPath(const string& fullPath)
  * @param filename Full pathname to a ROM file.
  * @param type ROM type.
  */
-void ROM::updateRecentROMList(const std::string& filename, const unsigned int type)
+void ROM::updateRecentROMList(const string& filename, const unsigned int type)
 {
 	for (deque<Recent_ROM_t>::iterator rom = Recent_ROMs.begin();
 	     rom != Recent_ROMs.end(); rom++)
@@ -127,7 +127,7 @@ void ROM::updateRecentROMList(const std::string& filename, const unsigned int ty
  * Update_Rom_Dir(): Update the Rom_Dir using the path of the specified ROM file.
  * @param filename Full pathname to a ROM file.
  */
-void ROM::updateROMDir(const char *filename)
+void ROM::updateROMDir(const string& filename)
 {
 	string tmpROMDir = getDirFromPath(filename);
 	strncpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
@@ -136,7 +136,7 @@ void ROM::updateROMDir(const char *filename)
 
 
 // FIXME: This function is poorly written.
-void ROM::updateROMName(const char *filename)
+void ROM::updateROMName(const char* filename)
 {
 	int length = strlen(filename) - 1;
 	
@@ -429,16 +429,16 @@ int ROM::getROM(void)
 	}
 	
 	// Open the ROM.
-	return openROM(filename.c_str());
+	return openROM(filename);
 }
 
 
 /**
  * Open_Rom(): Open the specified ROM file.
- * @param Name Filename of the ROM file.
+ * @param filename Filename of the ROM file.
  * @return Unknown.
  */
-int ROM::openROM(const char *Name)
+int ROM::openROM(const string& filename)
 {
 	int romType;
 	
@@ -453,12 +453,12 @@ int ROM::openROM(const char *Name)
 	// Close any loaded ROM first.
 	freeROM(Game);
 	
-	romType = loadROM(Name, &Game);
+	romType = loadROM(filename, &Game);
 	if (romType <= 0)
 		return -1;
 	
-	updateRecentROMList(Name, romType);
-	updateROMDir(Name);
+	updateRecentROMList(filename, romType);
+	updateROMDir(filename);
 	
 	int started, sysID;
 	switch (romType & ROMTYPE_SYS_MASK)
@@ -481,7 +481,7 @@ int ROM::openROM(const char *Name)
 			break;
 		
 		case ROMTYPE_SYS_MCD:
-			SegaCD_Started = Init_SegaCD(Name);
+			SegaCD_Started = Init_SegaCD(filename.c_str());
 			
 			started = SegaCD_Started;
 			sysID = MDP_SYSTEM_MCD;
@@ -507,13 +507,13 @@ int ROM::openROM(const char *Name)
  * @param filename Filename of the SegaCD BIOS ROM image.
  * @return Pointer to Rom struct with the ROM information.
  */
-ROM_t* ROM::loadSegaCD_BIOS(const char *filename)
+ROM_t* ROM::loadSegaCD_BIOS(const string& filename)
 {
 	FILE *f;
 	
 	// This basically just checks if the BIOS ROM image can be opened.
 	// TODO: Show an error message if it can't be opened.
-	if ((f = fopen(filename, "rb")) == 0)
+	if ((f = fopen(filename.c_str(), "rb")) == 0)
 		return 0;
 	fclose(f);
 	
@@ -532,7 +532,7 @@ ROM_t* ROM::loadSegaCD_BIOS(const char *filename)
  * @param interleaved If non-zero, the ROM is interleaved.
  * @return ROM type.
  */
-unsigned int ROM::loadROM(const char* filename, ROM_t** retROM)
+unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 {
 	Compressor *cmp;
 	list<CompressedFile> *files;
@@ -656,7 +656,7 @@ unsigned int ROM::loadROM(const char* filename, ROM_t** retROM)
 	}
 	//fclose(ROM_File);
 	
-	updateROMName(filename);
+	updateROMName(filename.c_str());
 	Rom_Size = selFile->filesize;
 	
 	// Delete the compression objects.

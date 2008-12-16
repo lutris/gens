@@ -453,7 +453,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 					//if ((Check_If_Kaillera_Running())) return 0;
 					if (audio->playingGYM())
 						Stop_Play_GYM();
-					ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename.c_str());
+					ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename);
 					Sync_Gens_Window();
 					break;
 			}
