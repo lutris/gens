@@ -30,6 +30,15 @@
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 
+// File management functions.
+#include "util/file/file.hpp"
+
+// CPU flags
+#include "gens_core/misc/cpuflags.h"
+
+// MDP Host Services
+#include "mdp_host_gens.h"
+
 // opendir/closedir/readdir/etc
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -50,20 +59,12 @@ using std::pair;
 using std::string;
 using std::list;
 
-// CPU flags
-#include "gens_core/misc/cpuflags.h"
-
-// MDP Host Services
-#include "mdp_host_gens.h"
+// Libtool Dynamic Loader
+#include <ltdl.h>
 
 // Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
 #include "render/double/mdp_render_2x_plugin.h"
-
-// Libtool Dynamic Loader
-#include <ltdl.h>
-
-// Internal plugins
 static MDP_t* mdp_internal[] =
 {
 	&mdp_render_1x,
@@ -277,7 +278,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	if (!handle)
 	{
 		fprintf(stderr, "PluginMgr::%s: Could not open external plugin: %s\n",
-			__func__, ROM::getNameFromPath(filename).c_str());
+			__func__, File::GetNameFromPath(filename).c_str());
 		return;
 	}
 	
@@ -286,14 +287,14 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	if (!plugin)
 	{
 		fprintf(stderr, "PluginMgr::%s: \"mdp\" symbol not found in plugin: %s\n",
-			__func__, ROM::getNameFromPath(filename).c_str());
+			__func__, File::GetNameFromPath(filename).c_str());
 		lt_dlclose(handle);
 		return;
 	}
 	
 	// Symbol loaded. Load the plugin.
 	fprintf(stderr, "PluginMgr::%s: \"mdp\" symbol loaded from plugin: %s\n",
-		__func__, ROM::getNameFromPath(filename).c_str());
+		__func__, File::GetNameFromPath(filename).c_str());
 	loadPlugin(plugin);
 }
 

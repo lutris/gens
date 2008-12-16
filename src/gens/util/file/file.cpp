@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: File macros and inline functions.                                 *
+ * Gens: File management functions.                                        *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,25 +20,45 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_FILE_M_H
-#define GENS_FILE_M_H
+#include "file.hpp"
 
+// C includes
 #include <unistd.h>
 
+// C++ includes
+#include <string>
+using std::string;
+
+
 /**
- * fileExists(): Check if a file exists.
- * @return 1 if the file exists; 0 if the file does not exist.
+ * GetNameFromPath(): Get the filename part of a pathname.
+ * @param fullPath Full pathname.
+ * @return Filename part of the pathname.
  */
-static inline int fileExists(const char *filename)
+string File::GetNameFromPath(const string& fullPath)
 {
-	if (!access(filename, F_OK))
-	{
-		// File exists.
-		return 1;
-	}
+	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
 	
-	// File does not exist.
-	return 0;
+	if (pos == string::npos)
+		return fullPath;
+	else if (pos + 1 == fullPath.length())
+		return "";
+	
+	return fullPath.substr(pos + 1);
 }
 
-#endif /* GENS_FILE_M_H */
+
+/**
+ * GetDirFromPath(): Get the directory part of a pathname.
+ * @param fullPath Full pathname.
+ * @return Directory part of the pathname.
+ */
+string File::GetDirFromPath(const string& fullPath)
+{
+	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
+	
+	if (pos == string::npos)
+		return "";
+	
+	return fullPath.substr(0, pos + 1);
+}

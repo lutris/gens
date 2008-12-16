@@ -29,6 +29,9 @@
 #include "emulator/g_main.hpp"
 #include "gens_ui.hpp"
 
+// File management functions.
+#include "util/file/file.hpp"
+
 #include <cstring>
 #include <cerrno>
 

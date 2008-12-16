@@ -63,6 +63,9 @@ using std::deque;
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// File management functions.
+#include "util/file/file.hpp"
+
 
 // Internal functions.
 static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container);
@@ -170,7 +173,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		sROMHistoryEntry += ROM::getNameFromPath((*rom).filename);
+		sROMHistoryEntry += File::GetNameFromPath((*rom).filename);
 		
 		// Add the ROM item to the ROM History submenu.
 		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());

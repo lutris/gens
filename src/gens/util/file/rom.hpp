@@ -61,8 +61,6 @@ extern char ROM_Name[512];
 class ROM
 {
 	public:
-		static std::string getNameFromPath(const std::string& fullPath);
-		static std::string getDirFromPath(const std::string& fullPath);
 		static void updateCDROMName(const char *cdromName);
 		
 		static int getROM(void);

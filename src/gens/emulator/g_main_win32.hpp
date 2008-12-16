@@ -9,9 +9,6 @@
 extern "C" {
 #endif
 
-#define GENS_DIR_SEPARATOR_STR "\\"
-#define GENS_DIR_SEPARATOR_CHR '\\'
-
 #include <windows.h>
 
 // Win32 instance

@@ -42,8 +42,6 @@
 #include "mdZ80/mdZ80.h"
 #include "util/gfx/imageutil.hpp"
 
-#include "macros/file_m.h"
-
 // Sega CD
 #include "emulator/g_mcd.hpp"
 
@@ -62,6 +60,9 @@
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
+
+// File management functions.
+#include "util/file/file.hpp"
 
 // Needed on Win32
 #include "gens_core/mem/mem_m68k.h"
@@ -505,7 +506,7 @@ static void dragDropFile(HDROP hDrop)
 	if (rval > 0 && rval < GENS_PATH_MAX)
 	{
 		// Check that the file exists.
-		if (fileExists(filename))
+		if (File::Exists(filename))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);

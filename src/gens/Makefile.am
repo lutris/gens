@@ -121,6 +121,7 @@ gens_SOURCES = \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
+		util/file/file.cpp \
 		util/file/compress/compressor.cpp \
 		util/file/compress/subcompressor.cpp \
 		util/file/compress/7z.cpp \
@@ -199,7 +200,6 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
-		macros/file_m.h \
 		macros/hashtable.hpp \
 		macros/malloc_align.h \
 		macros/math_m.h \
@@ -213,6 +213,7 @@ noinst_HEADERS = \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \
+		util/file/file.hpp \
 		util/file/compress/compressor.hpp \
 		util/file/compress/subcompressor.hpp \
 		util/file/compress/7z.hpp \

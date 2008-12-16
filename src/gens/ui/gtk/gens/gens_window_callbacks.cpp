@@ -41,7 +41,8 @@
 #include "mdZ80/mdZ80.h"
 #include "util/gfx/imageutil.hpp"
 
-#include "macros/file_m.h"
+// File management functions.
+#include "util/file/file.hpp"
 
 // Sega CD
 #include "emulator/g_mcd.hpp"
@@ -129,7 +130,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 		g_free(unescaped);
 		
 		// Check that the file actually exists.
-		if (fileExists(filename.c_str()))
+		if (File::Exists(filename))
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);

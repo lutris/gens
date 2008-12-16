@@ -55,6 +55,9 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// File management functions.
+#include "util/file/file.hpp"
+
 // C++ includes
 #include <string>
 #include <list>
@@ -174,7 +177,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		sROMHistoryEntry += "\t- ";
 		
 		// Get the ROM filename.
-		sROMHistoryEntry += ROM::getNameFromPath((*rom).filename);
+		sROMHistoryEntry += File::GetNameFromPath((*rom).filename);
 		
 		// Add the ROM item to the ROM History submenu.
 		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,

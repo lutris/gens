@@ -44,6 +44,9 @@ using std::deque;
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"
 
+// File management functions.
+#include "file.hpp"
+
 char Rom_Dir[GENS_PATH_MAX];
 char IPS_Dir[GENS_PATH_MAX];
 
@@ -54,40 +57,6 @@ ROM_t* myROM = NULL;
 
 // Double-ended queue containing all Recent ROMs.
 deque<ROM::Recent_ROM_t> ROM::Recent_ROMs;
-
-
-/**
- * getNameFromPath(): Get the filename part of a pathname.
- * @param fullPath Full pathname.
- * @return Filename part of the pathname.
- */
-string ROM::getNameFromPath(const string& fullPath)
-{
-	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
-	
-	if (pos == string::npos)
-		return fullPath;
-	else if (pos + 1 == fullPath.length())
-		return "";
-	
-	return fullPath.substr(pos + 1);
-}
-
-
-/**
- * getDirFromPath(): Get the directory part of a pathname.
- * @param fullPath Full pathname.
- * @return Directory part of the pathname.
- */
-string ROM::getDirFromPath(const string& fullPath)
-{
-	size_t pos = fullPath.rfind(GENS_DIR_SEPARATOR_CHR);
-	
-	if (pos == string::npos)
-		return "";
-	
-	return fullPath.substr(0, pos + 1);
-}
 
 
 /**
@@ -129,7 +98,7 @@ void ROM::updateRecentROMList(const string& filename, const unsigned int type)
  */
 void ROM::updateROMDir(const string& filename)
 {
-	string tmpROMDir = getDirFromPath(filename);
+	string tmpROMDir = File::GetDirFromPath(filename);
 	strncpy(Rom_Dir, tmpROMDir.c_str(), sizeof(Rom_Dir));
 	Rom_Dir[sizeof(Rom_Dir) - 1] = 0x00;
 }

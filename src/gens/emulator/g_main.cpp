@@ -58,6 +58,9 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// File management functions.
+#include "util/file/file.hpp"
+
 // Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
@@ -260,7 +263,7 @@ int Init_Settings(void)
 	char exeFilename[1024];
 	string tmpEXEPath;
 	GetModuleFileName(NULL, exeFilename, sizeof(exeFilename));
-	tmpEXEPath = ROM::getDirFromPath(exeFilename);
+	tmpEXEPath = File::GetDirFromPath(exeFilename);
 	strncpy(PathNames.Gens_EXE_Path, tmpEXEPath.c_str(), sizeof(PathNames.Gens_EXE_Path));
 	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path) - 1] = 0x00;
 #endif

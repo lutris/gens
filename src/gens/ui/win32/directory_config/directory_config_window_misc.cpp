@@ -30,6 +30,9 @@
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
+// File management functions.
+#include "util/file/file.hpp"
+
 #include <windows.h>
 
 

@@ -67,7 +67,10 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
-// Include this *last* to avoid naming confflicts.
+// File management functions.
+#include "util/file/file.hpp"
+
+// Include this *last* to avoid naming conflicts.
 #include "parse.hpp"
 
 static const char* sFileName = "filename";
@@ -604,10 +607,11 @@ void parseArgs(int argc, char **argv)
 	else if (optind == argc - 1)
 	{
 #ifdef GENS_OS_WIN32
+		/* Win32: Check for "C:\" and "\\" prefixes. */
 		if ((!isalpha(argv[optind][0]) && argv[optind][1] != ':' && argv[optind][2] != '\\') &&
 		    (argv[optind][0] != '\\' && argv[optind][1] != '\\'))
 #else /* !GENS_OS_WIN32 */
-		if (argv[optind][0] != '/')
+		if (argv[optind][0] != GENS_DIR_SEPARATOR_CHR)
 #endif /* GENS_OS_WIN32 */
 		{
 			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));

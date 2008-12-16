@@ -18,7 +18,8 @@ using std::string;
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
 
-#include "macros/file_m.h"
+// File management functions.
+#include "util/file/file.hpp"
 
 #ifdef GENS_PNG
 #include <png.h>
@@ -429,7 +430,7 @@ int ImageUtil::screenShot(void)
 	{
 		num++;
 		sprintf(filename, "%s%s_%03d.%s", PathNames.Screenshot_Dir, ROM_Name, num, ext);
-	} while (fileExists(filename));
+	} while (File::Exists(filename));
 	
 	// Attempt to open the file.
 	FILE *img = fopen(filename, "wb");

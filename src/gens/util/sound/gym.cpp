@@ -13,7 +13,8 @@
 
 #include "ui/gens_ui.hpp"
 
-#include "macros/file_m.h"
+// File management functions.
+#include "util/file/file.hpp"
 
 
 static FILE *GYM_File;
@@ -46,7 +47,7 @@ int Start_GYM_Dump(void)
 	{
 		num++;
 		sprintf(filename, "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, ROM_Name, num);
-	} while (fileExists(filename));
+	} while (File::Exists(filename));
 	
 	GYM_File = fopen(filename, "w");
 	if (!GYM_File)
