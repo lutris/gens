@@ -399,10 +399,10 @@ align 64
 		paddw	mm0, mm3
 		put_movq_localvar	product2b, mm0
 		
-		
 		;////////////////////////////////
 		; Decide which "branch" to take
 		;--------------------------------
+		
 		movq	mm4, [eax + ebp + color5]
 		movq	mm5, [eax + ebp + color6]
 		movq	mm6, [eax + ebp + ebp + color3]
@@ -701,7 +701,6 @@ align 64
 		por	mm0, mm1
 		put_movq_localvar	final2b, mm0
 		
-		
 		get_movq_localvar	mm0, final1a
 		get_movq_localvar	mm2, final1b
 		movq		mm1, mm0
@@ -712,9 +711,6 @@ align 64
 		punpckhwd	mm1, mm2
 		punpcklwd	mm4, mm6
 		punpckhwd	mm5, mm6
-		
-		
-		
 		
 		; Extra 8 bytes is caused by pushing 2 DWORDs onto the stack.
 		; (%ebp can't be used due to PIC.)
