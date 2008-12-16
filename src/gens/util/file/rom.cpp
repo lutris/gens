@@ -511,7 +511,6 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	if (!files || files->empty())
 	{
 		// No files in the archive.
-		// TODO: For 7z, suggest setting the 7z binary filename.
 		GensUI::msgBox("No files were detected in this archive.", "No Files Detected");
 		
 		if (files)
