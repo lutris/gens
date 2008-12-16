@@ -17,6 +17,7 @@ TODO for Gens/GS m6.1:
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
   - Disables reset, close ROM, etc.
 - "Directory" registration for "Configure Directories".
+- [MDP] Add a variable to indicate if the loaded ROM has been byteswapped.
 
 High-Level TODO:
 - Move most global variables to global Settings struct
