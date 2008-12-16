@@ -24,12 +24,13 @@ static int PCM_Volume_Tab[256 * 256];
 unsigned char Ram_PCM[64 * 1024];
 int PCM_Enable;
 
+
 /**
- * Init_PCM(): Initialize the PCM chip.
+ * PCM_Init(): Initialize the PCM chip.
  * @param Rate Sample rate.
  * @return 0 if successful.
  */
-int Init_PCM(int Rate)
+int PCM_Init(int Rate)
 {
 	int i, j, out;
 	
@@ -51,16 +52,17 @@ int Init_PCM(int Rate)
 		}
 	}
 	
-	Reset_PCM();
-	Set_Rate_PCM(Rate);
+	PCM_Reset();
+	PCM_Set_Rate(Rate);
 	
 	return 0;
 }
 
+
 /**
- * Reset_PCM(): Reset the PCM chip.
+ * PCM_Reset(): Reset the PCM chip.
  */
-void Reset_PCM(void)
+void PCM_Reset(void)
 {
 	int i;
 	
@@ -84,11 +86,12 @@ void Reset_PCM(void)
 	}
 }
 
+
 /**
- * Set_Rate_PCM(): Change the PCM sample rate.
+ * PCM_Set_Rate(): Change the PCM sample rate.
  * @param Rate New sample rate.
  */
-void Set_Rate_PCM(int Rate)
+void PCM_Set_Rate(int Rate)
 {
 	int i;
 	
@@ -105,13 +108,13 @@ void Set_Rate_PCM(int Rate)
 	}
 }
 
-/* write pcm register */
+
 /**
- * Write_PCM_Reg(): Write to a PCM register.
+ * PCM_Write_Reg(): Write to a PCM register.
  * @param Reg Register ID.
  * @param Data Data to write.
  */
-void Write_PCM_Reg(unsigned int Reg, unsigned int Data)
+void PCM_Write_Reg(unsigned int Reg, unsigned int Data)
 {
 	int i;
 	
@@ -242,11 +245,11 @@ void Write_PCM_Reg(unsigned int Reg, unsigned int Data)
 
 
 /**
- * Update_PCM(): Update the PCM buffer.
+ * PCM_Update(): Update the PCM buffer.
  * @param buf PCM buffer.
  * @param Length Buffer length.
  */
-int Update_PCM(int **buf, int Length)
+int PCM_Update(int **buf, int Length)
 {
 	int i, j;
 	int *bufL, *bufR;		//, *volL, *volR;
@@ -304,14 +307,14 @@ int Update_PCM(int **buf, int Length)
 						}
 					}
 				}
-
+				
 				// test for loop signal
 				if (Ram_PCM[Addr] == 0xFF)
 				{
 					Addr = CH->Loop_Addr;
 					CH->Addr = Addr << PCM_STEP_SHIFT;
 				}
-
+				
 				if (Ram_PCM[Addr] & 0x80)
 				{
 					CH->Data = Ram_PCM[Addr] & 0x7F;
@@ -324,9 +327,9 @@ int Update_PCM(int **buf, int Length)
 					bufL[j] += CH->Data * CH->MUL_L;
 					bufR[j] += CH->Data * CH->MUL_R;
 				}
-
+				
 				// update address register
-//				CH->Addr = (CH->Addr + CH->Step) & 0x7FFFFFF;
+				//CH->Addr = (CH->Addr + CH->Step) & 0x7FFFFFF;
 				CH->Addr += CH->Step;
 				CH->Old_Addr = Addr + 1;
 			}
@@ -403,8 +406,3 @@ int Update_PCM(int **buf, int Length)
 	
 	return 0;
 }
-
-
-// Symbol aliases for cross-OS asm compatibility.
-void _Write_PCM_Reg(unsigned int Reg, unsigned int Data)
-	__attribute__ ((weak, alias ("Write_PCM_Reg")));

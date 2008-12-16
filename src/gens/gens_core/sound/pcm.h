@@ -32,11 +32,11 @@ extern struct pcm_chip_ PCM_Chip;
 extern unsigned char Ram_PCM[64 * 1024];
 extern int PCM_Enable;
 
-int Init_PCM(int Rate);
-void Set_Rate_PCM(int Rate);
-void Reset_PCM(void);
-void Write_PCM_Reg(unsigned int Reg, unsigned int Data);
-int Update_PCM(int **buf, int Length);
+int  PCM_Init(int Rate);
+void PCM_Set_Rate(int Rate);
+void PCM_Reset(void);
+void PCM_Write_Reg(unsigned int Reg, unsigned int Data);
+int  PCM_Update(int **buf, int Length);
 
 #ifdef __cplusplus
 }

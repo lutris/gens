@@ -170,7 +170,7 @@ int Init_SegaCD(const char* iso_name)
 	LC89510_Reset();
 	Init_RS_GFX();
 	
-	Init_PCM(audio->soundRate());
+	PCM_Init(audio->soundRate());
 	
 	// Initialize sound.
 	if (audio->enabled())
@@ -279,14 +279,14 @@ void Reset_SegaCD(void)
 	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
-	M68K_Reset (2);
-	S68K_Reset ();
-	Z80_Reset ();
-	LC89510_Reset ();
-	Reset_VDP ();
-	Init_RS_GFX ();
-	Reset_PCM ();
-	YM2612_Reset ();
+	M68K_Reset(2);
+	S68K_Reset();
+	Z80_Reset();
+	LC89510_Reset();
+	Reset_VDP();
+	Init_RS_GFX();
+	PCM_Reset();
+	YM2612_Reset();
 	
 	if (CPU_Mode)
 		VDP_Status |= 1;
@@ -334,8 +334,8 @@ int Do_SegaCD_Frame_No_VDP(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
+		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		Update_CDC_TRansfert();
@@ -369,7 +369,7 @@ int Do_SegaCD_Frame_No_VDP(void)
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 	if (PCM_Enable)
-		Update_PCM(buf, Sound_Extrapol[VDP_Current_Line][1]);
+		PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -413,7 +413,7 @@ int Do_SegaCD_Frame_No_VDP(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM(buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -495,7 +495,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -569,7 +569,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 	if (PCM_Enable)
-		Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+		PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -651,7 +651,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -835,7 +835,7 @@ int Do_SegaCD_Frame(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -872,7 +872,7 @@ int Do_SegaCD_Frame(void)
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 	if (PCM_Enable)
-		Update_PCM(buf, Sound_Extrapol[VDP_Current_Line][1]);
+		PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -916,7 +916,7 @@ int Do_SegaCD_Frame(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM(buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -1001,7 +1001,7 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -1077,7 +1077,7 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 	if (PCM_Enable)
-		Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+		PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
@@ -1159,7 +1159,7 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			Update_PCM (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];

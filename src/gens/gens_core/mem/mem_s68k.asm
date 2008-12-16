@@ -308,8 +308,13 @@ section .data align=64
 	
 section .text align=64
 	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_PCM_Write_Reg		PCM_Write_Reg
+	%endif
+	
 	extern _sub68k_interrupt
-	extern _Write_PCM_Reg
+	extern _PCM_Write_Reg
 	extern Calcul_Rot_Comp
 	extern Update_Rot
 	extern _CDC_Read_Reg
@@ -2237,7 +2242,7 @@ section .text align=64
 		and	ebx, 0x1F
 		push	ebx
 		
-		call	_Write_PCM_Reg
+		call	_PCM_Write_Reg
 		add	esp, 8
 	
 	.bad2:
@@ -3116,7 +3121,7 @@ section .text align=64
 		and	ebx, 0x1F
 		push	ebx
 		
-		call	_Write_PCM_Reg
+		call	_PCM_Write_Reg
 		add	esp, 8
 		
 		pop	ecx

@@ -273,7 +273,7 @@ void Options::setCountry(const int newCountry)
 		}
 		
 		if (SegaCD_Started)
-			Set_Rate_PCM(audio->soundRate());
+			PCM_Set_Rate(audio->soundRate());
 		
 		YM2612_Restore (Reg_1);
 		PSG_Restore_State();
@@ -425,7 +425,7 @@ void Options::setSoundStereo(const bool newSoundStereo)
 	}
 	
 	if (SegaCD_Started)
-		Set_Rate_PCM(audio->soundRate());
+		PCM_Set_Rate(audio->soundRate());
 	
 	// Restore the sound state.
 	YM2612_Restore(Reg_1);
@@ -786,7 +786,7 @@ void Options::setSoundSampleRate(const int newRate)
 	}
 
 	if (SegaCD_Started)
-		Set_Rate_PCM(audio->soundRate());
+		PCM_Set_Rate(audio->soundRate());
 	
 	// Restore the sound registers
 	YM2612_Restore(Reg_1);
