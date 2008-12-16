@@ -79,12 +79,12 @@ using std::string;
 
 
 /**
- * selectFile(): Select a savestate to load or save.
+ * SelectFile(): Select a savestate to load or save.
  * @param save If false, load; if true, save.
  * @param dir ???
  * @return Filename if a savestate was selected, or "" if no file was selected.
  */
-string Savestate::selectFile(const bool save, const string& dir)
+string Savestate::SelectFile(const bool save, const string& dir)
 {
 	string filename;
 	
@@ -98,11 +98,11 @@ string Savestate::selectFile(const bool save, const string& dir)
 
 
 /**
- * selectCDImage(): Select a CD image to load. (Used for multi-disc SegaCD games.)
+ * SelectCDImage(): Select a CD image to load. (Used for multi-disc SegaCD games.)
  * @param dir ???
  * @return Filename if a CD image was selected, or "" if no file was selected.
  */
-string Savestate::selectCDImage(const string& dir)
+string Savestate::SelectCDImage(const string& dir)
 {
 	return GensUI::openFile("Load SegaCD Disc Image", "" /*Rom_Dir*/, CDImage);
 }
@@ -138,31 +138,31 @@ int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext)
 
 
 /**
- * getStateFile(): Open the current savestate file.
+ * GetStateFile(): Open the current savestate file.
  * @return File handle for the current savestate file.
  */
-FILE* Savestate::getStateFile(void)
+FILE* Savestate::GetStateFile(void)
 {
-	return fopen(getStateFilename().c_str(), "rb");
+	return fopen(GetStateFilename().c_str(), "rb");
 }
 
 
 /**
- * getStateFilename(): Get the filename of the current savestate.
+ * GetStateFilename(): Get the filename of the current savestate.
  * @return Filename of the current savestate.
  */
-string Savestate::getStateFilename(void)
+string Savestate::GetStateFilename(void)
 {
 	return string(State_Dir) + string(ROM_Name) + ".gs" + (char)('0' + Current_State);
 }
 
 
 /**
- * loadState(): Load a savestate.
+ * LoadState(): Load a savestate.
  * @param filename Filename of the savestate.
  * @return 1 if successful; 0 on error.
  */
-int Savestate::loadState(const string& filename)
+int Savestate::LoadState(const string& filename)
 {
 	FILE *f;
 	unsigned char *buf;
@@ -199,15 +199,15 @@ int Savestate::loadState(const string& filename)
 		*/
 		
 		// Save functions updated from Gens Rerecording
-		buf += gsxImportGenesis(buf);
+		buf += GsxImportGenesis(buf);
 		if (SegaCD_Started)
 		{
-			gsxImportSegaCD(buf);
+			GsxImportSegaCD(buf);
 			buf += SEGACD_LENGTH_EX;
 		}
 		if (_32X_Started)
 		{
-			gsxImport32X(buf);
+			GsxImport32X(buf);
 			buf += G32X_LENGTH_EX;
 		}
 		
@@ -229,11 +229,11 @@ int Savestate::loadState(const string& filename)
 
 
 /**
- * saveState(): Save a savestate.
+ * SaveState(): Save a savestate.
  * @param filename Filename of the savestate.
  * @return 1 if successful; 0 on error.
  */
-int Savestate::saveState(const string& filename)
+int Savestate::SaveState(const string& filename)
 {
 	FILE *f;
 	unsigned char *buf;
@@ -262,16 +262,16 @@ int Savestate::saveState(const string& filename)
 		return 0;
 	memset(buf, 0, len);
 	
-	gsxExportGenesis(buf);
+	GsxExportGenesis(buf);
 	buf += GENESIS_STATE_LENGTH;
 	if (SegaCD_Started)
 	{
-		gsxExportSegaCD(buf);
+		GsxExportSegaCD(buf);
 		buf += SEGACD_LENGTH_EX;
 	}
 	if (_32X_Started)
 	{
-		gsxExport32X(buf);
+		GsxExport32X(buf);
 		buf += G32X_LENGTH_EX;
 	}
 	
@@ -289,22 +289,20 @@ int Savestate::saveState(const string& filename)
 // on the Genecyst save file format.
 
 
-// Version field is initialized in gsxImportGenesis(),
-// but is also used in gsxImportSegaCD() and gsxImport32X().
+// Version field is initialized in GsxImportGenesis(),
+// but is also used in GsxImportSegaCD() and GsxImport32X().
 // TODO: Move this to the Savestate class.
 static unsigned char m_Version;
 
 
-// importData and ExportData functions from Gens Rerecording
+// ImportData and ExportData functions from Gens Rerecording
 
 //Modif N. - added ImportData and ExportData because the import/export code was getting a little hairy without these
 // The main advantage to using these, besides less lines of code, is that
 // you can replace ImportData with ExportData, without changing anything else in the arguments,
 // to go from import code to export code.
 
-// Changed to importData and exportData to follow C++ naming conventions.
-
-inline void Savestate::importData(void* into, const void* data,
+inline void Savestate::ImportData(void* into, const void* data,
 				  const unsigned int offset,
 				  unsigned int numBytes)
 {
@@ -316,7 +314,7 @@ inline void Savestate::importData(void* into, const void* data,
 }
 
 
-inline void Savestate::exportData(const void* from, void* data,
+inline void Savestate::ExportData(const void* from, void* data,
 				  const unsigned int offset,
 				  unsigned int numBytes)
 {
@@ -334,31 +332,31 @@ inline void Savestate::exportData(const void* from, void* data,
 
 
 // versions that auto-increment the offset
-inline void Savestate::importDataAuto(void* into, const void* data,
+inline void Savestate::ImportDataAuto(void* into, const void* data,
 				      unsigned int& offset,
 				      const unsigned int numBytes)
 {
-	importData(into, data, offset, numBytes);
+	ImportData(into, data, offset, numBytes);
 	offset += numBytes;
 }
 
 
-inline void Savestate::exportDataAuto(const void* from, void* data,
+inline void Savestate::ExportDataAuto(const void* from, void* data,
 				      unsigned int& offset,
 				      const unsigned int numBytes)
 {
-	exportData(from, data, offset, numBytes);
+	ExportData(from, data, offset, numBytes);
 	offset += numBytes;
 }
 
 
 /**
- * gsxImportGenesis(): Load Genesis data from a GSX savestate.
+ * GsxImportGenesis(): Load Genesis data from a GSX savestate.
  * (Portions ported from Gens Rerecording.)
  * @param Data Savestate data.
  * @return Number of bytes read.
  */
-int Savestate::gsxImportGenesis(const unsigned char* data)
+int Savestate::GsxImportGenesis(const unsigned char* data)
 {
 	unsigned char Reg_1[0x200], *src;
 	int i;
@@ -381,9 +379,9 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 	if (m_Version < 6)
 		len -= 0x10000;
 	
-	importData(CRam, data, 0x112, 0x80);
-	importData(VSRam, data, 0x192, 0x50);
-	importData(Ram_Z80, data, 0x474, 0x2000);
+	ImportData(CRam, data, 0x112, 0x80);
+	ImportData(VSRam, data, 0x192, 0x50);
+	ImportData(Ram_Z80, data, 0x474, 0x2000);
 	
 	// 68000 RAM
 	for (i = 0; i < 0x10000; i += 2)
@@ -399,13 +397,13 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		VRam[i + 1] = data[i + 0x12478 + 0];
 	}
 	
-	importData(Reg_1, data, 0x1E4, 0x200);
+	ImportData(Reg_1, data, 0x1E4, 0x200);
 	YM2612_Restore(Reg_1);
 	
 	// Version 2, 3, and 4 save files
 	if ((m_Version >= 2) && (m_Version < 4))
 	{
-		importData(&Ctrl, data, 0x30, 7 * 4);
+		ImportData(&Ctrl, data, 0x30, 7 * 4);
 		
 		Z80_State &= ~6;
 		if (data[0x440] & 1)
@@ -413,9 +411,9 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		if (data[0x444] & 1)
 			Z80_State |= 4;
 		
-		importData(&Bank_Z80, data, 0x448, 4);
+		ImportData(&Bank_Z80, data, 0x448, 4);
 		
-		importData(&PSG_Save, data, 0x224B8, 8 * 4);
+		ImportData(&PSG_Save, data, 0x224B8, 8 * 4);
 		PSG_Restore_State();
 	}
 	else if ((m_Version >= 4) || (m_Version == 0))
@@ -453,7 +451,7 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		Ctrl.Access = data[0x46] + (data[0x47] << 8); //Nitsuja added this
 		Ctrl.Address = data[0x48] + (data[0x49] << 8);
 		
-		importData(&Bank_Z80, data, 0x43C, 4);
+		ImportData(&Bank_Z80, data, 0x43C, 4);
 		
 		if (m_Version >= 4)
 		{
@@ -488,21 +486,21 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		Set_VDP_Reg(i, data[0xFA + i]);
 	
 	// 68000 registers
-	importData(&Context_68K.dreg[0], data, 0x80, 8 * 2 * 4);
-	importData(&Context_68K.pc, data, 0xC8, 4);
-	importData(&Context_68K.sr, data, 0xD0, 2);
+	ImportData(&Context_68K.dreg[0], data, 0x80, 8 * 2 * 4);
+	ImportData(&Context_68K.pc, data, 0xC8, 4);
+	ImportData(&Context_68K.sr, data, 0xD0, 2);
 	
 	if ((m_Version >= 3) || (m_Version == 0))
 	{
 		if (data[0xD1] & 0x20)
 		{
 			// Supervisor
-			importData(&Context_68K.asp, data, 0xD2, 2);
+			ImportData(&Context_68K.asp, data, 0xD2, 2);
 		}
 		else
 		{
 			// User
-			importData(&Context_68K.asp, data, 0xD6, 2);
+			ImportData(&Context_68K.asp, data, 0xD6, 2);
 		}
 	}
 	
@@ -513,142 +511,142 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 	{
 		// Gens v6 savestate
 		//Modif N. - saving more stuff (although a couple of these are saved above in a weird way that I don't trust)
-		importDataAuto(&Context_68K.dreg, data, offset, 4*8);
-		importDataAuto(&Context_68K.areg, data, offset, 4*8);
-		importDataAuto(&Context_68K.asp, data, offset, 4);
-		importDataAuto(&Context_68K.pc, data, offset, 4);
-		importDataAuto(&Context_68K.odometer, data, offset, 4);
-		importDataAuto(&Context_68K.interrupts, data, offset, 8);
-		importDataAuto(&Context_68K.sr, data, offset, 2);
-		importDataAuto(&Context_68K.contextfiller00, data, offset, 2);
+		ImportDataAuto(&Context_68K.dreg, data, offset, 4*8);
+		ImportDataAuto(&Context_68K.areg, data, offset, 4*8);
+		ImportDataAuto(&Context_68K.asp, data, offset, 4);
+		ImportDataAuto(&Context_68K.pc, data, offset, 4);
+		ImportDataAuto(&Context_68K.odometer, data, offset, 4);
+		ImportDataAuto(&Context_68K.interrupts, data, offset, 8);
+		ImportDataAuto(&Context_68K.sr, data, offset, 2);
+		ImportDataAuto(&Context_68K.contextfiller00, data, offset, 2);
 		
-		importDataAuto(&VDP_Reg.H_Int, data, offset, 4);
-		importDataAuto(&VDP_Reg.Set1, data, offset, 4);
-		importDataAuto(&VDP_Reg.Set2, data, offset, 4);
-		importDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, offset, 4);
-		importDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, offset, 4);
-		importDataAuto(&VDP_Reg.Pat_Win_Adr, data, offset, 4);
-		importDataAuto(&VDP_Reg.Pat_ScrB_Adr, data, offset, 4);
-		importDataAuto(&VDP_Reg.Spr_Att_Adr, data, offset, 4);
-		importDataAuto(&VDP_Reg.Reg6, data, offset, 4);
-		importDataAuto(&VDP_Reg.BG_Color, data, offset, 4);
-		importDataAuto(&VDP_Reg.Reg8, data, offset, 4);
-		importDataAuto(&VDP_Reg.Reg9, data, offset, 4);
-		importDataAuto(&VDP_Reg.H_Int, data, offset, 4);
-		importDataAuto(&VDP_Reg.Set3, data, offset, 4);
-		importDataAuto(&VDP_Reg.Set4, data, offset, 4);
-		importDataAuto(&VDP_Reg.H_Scr_Adr, data, offset, 4);
-		importDataAuto(&VDP_Reg.Reg14, data, offset, 4);
-		importDataAuto(&VDP_Reg.Auto_Inc, data, offset, 4);
-		importDataAuto(&VDP_Reg.Scr_Size, data, offset, 4);
-		importDataAuto(&VDP_Reg.Win_H_Pos, data, offset, 4);
-		importDataAuto(&VDP_Reg.Win_V_Pos, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length_L, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length_H, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Address, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.H_Int, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Set1, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Set2, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Pat_Win_Adr, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Pat_ScrB_Adr, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Spr_Att_Adr, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Reg6, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.BG_Color, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Reg8, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Reg9, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.H_Int, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Set3, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Set4, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.H_Scr_Adr, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Reg14, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Auto_Inc, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Scr_Size, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Win_H_Pos, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Win_V_Pos, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_L, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_H, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Address, data, offset, 4);
 		
-		importDataAuto(&Controller_1_Counter, data, offset, 4);
-		importDataAuto(&Controller_1_Delay, data, offset, 4);
-		importDataAuto(&Controller_1_State, data, offset, 4);
-		importDataAuto(&Controller_1_COM, data, offset, 4);
-		importDataAuto(&Controller_2_Counter, data, offset, 4);
-		importDataAuto(&Controller_2_Delay, data, offset, 4);
-		importDataAuto(&Controller_2_State, data, offset, 4);
-		importDataAuto(&Controller_2_COM, data, offset, 4);
-		importDataAuto(&Memory_Control_Status, data, offset, 4);
-		importDataAuto(&Cell_Conv_Tab, data, offset, 4);
+		ImportDataAuto(&Controller_1_Counter, data, offset, 4);
+		ImportDataAuto(&Controller_1_Delay, data, offset, 4);
+		ImportDataAuto(&Controller_1_State, data, offset, 4);
+		ImportDataAuto(&Controller_1_COM, data, offset, 4);
+		ImportDataAuto(&Controller_2_Counter, data, offset, 4);
+		ImportDataAuto(&Controller_2_Delay, data, offset, 4);
+		ImportDataAuto(&Controller_2_State, data, offset, 4);
+		ImportDataAuto(&Controller_2_COM, data, offset, 4);
+		ImportDataAuto(&Memory_Control_Status, data, offset, 4);
+		ImportDataAuto(&Cell_Conv_Tab, data, offset, 4);
 		
-		importDataAuto(&Controller_1_Type, data, offset, 4);
+		ImportDataAuto(&Controller_1_Type, data, offset, 4);
 		/* TODO: Make this stuff use bitfields.
 		         For now, it's disabled, especially since v6 is rare.
-		importDataAuto(&Controller_1_Up, data, offset, 4);
-		importDataAuto(&Controller_1_Down, data, offset, 4);
-		importDataAuto(&Controller_1_Left, data, offset, 4);
-		importDataAuto(&Controller_1_Right, data, offset, 4);
-		importDataAuto(&Controller_1_Start, data, offset, 4);
-		importDataAuto(&Controller_1_Mode, data, offset, 4);
-		importDataAuto(&Controller_1_A, data, offset, 4);
-		importDataAuto(&Controller_1_B, data, offset, 4);
-		importDataAuto(&Controller_1_C, data, offset, 4);
-		importDataAuto(&Controller_1_X, data, offset, 4);
-		importDataAuto(&Controller_1_Y, data, offset, 4);
-		importDataAuto(&Controller_1_Z, data, offset, 4);
+		ImportDataAuto(&Controller_1_Up, data, offset, 4);
+		ImportDataAuto(&Controller_1_Down, data, offset, 4);
+		ImportDataAuto(&Controller_1_Left, data, offset, 4);
+		ImportDataAuto(&Controller_1_Right, data, offset, 4);
+		ImportDataAuto(&Controller_1_Start, data, offset, 4);
+		ImportDataAuto(&Controller_1_Mode, data, offset, 4);
+		ImportDataAuto(&Controller_1_A, data, offset, 4);
+		ImportDataAuto(&Controller_1_B, data, offset, 4);
+		ImportDataAuto(&Controller_1_C, data, offset, 4);
+		ImportDataAuto(&Controller_1_X, data, offset, 4);
+		ImportDataAuto(&Controller_1_Y, data, offset, 4);
+		ImportDataAuto(&Controller_1_Z, data, offset, 4);
 		*/
 		offset += 12*4;
 		
-		importDataAuto(&Controller_2_Type, data, offset, 4);
+		ImportDataAuto(&Controller_2_Type, data, offset, 4);
 		/* TODO: Make this stuff use bitfields.
 		         For now, it's disabled, especially since v6 is rare.
-		importDataAuto(&Controller_2_Up, data, offset, 4);
-		importDataAuto(&Controller_2_Down, data, offset, 4);
-		importDataAuto(&Controller_2_Left, data, offset, 4);
-		importDataAuto(&Controller_2_Right, data, offset, 4);
-		importDataAuto(&Controller_2_Start, data, offset, 4);
-		importDataAuto(&Controller_2_Mode, data, offset, 4);
-		importDataAuto(&Controller_2_A, data, offset, 4);
-		importDataAuto(&Controller_2_B, data, offset, 4);
-		importDataAuto(&Controller_2_C, data, offset, 4);
-		importDataAuto(&Controller_2_X, data, offset, 4);
-		importDataAuto(&Controller_2_Y, data, offset, 4);
-		importDataAuto(&Controller_2_Z, data, offset, 4);
+		ImportDataAuto(&Controller_2_Up, data, offset, 4);
+		ImportDataAuto(&Controller_2_Down, data, offset, 4);
+		ImportDataAuto(&Controller_2_Left, data, offset, 4);
+		ImportDataAuto(&Controller_2_Right, data, offset, 4);
+		ImportDataAuto(&Controller_2_Start, data, offset, 4);
+		ImportDataAuto(&Controller_2_Mode, data, offset, 4);
+		ImportDataAuto(&Controller_2_A, data, offset, 4);
+		ImportDataAuto(&Controller_2_B, data, offset, 4);
+		ImportDataAuto(&Controller_2_C, data, offset, 4);
+		ImportDataAuto(&Controller_2_X, data, offset, 4);
+		ImportDataAuto(&Controller_2_Y, data, offset, 4);
+		ImportDataAuto(&Controller_2_Z, data, offset, 4);
 		*/
 		offset += 12*4;
 		
-		importDataAuto(&DMAT_Length, data, offset, 4);
-		importDataAuto(&DMAT_Type, data, offset, 4);
-		importDataAuto(&DMAT_Tmp, data, offset, 4);
-		importDataAuto(&VDP_Current_Line, data, offset, 4);
-		importDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-		importDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-		importDataAuto(&Bank_M68K, data, offset, 4);
-		importDataAuto(&S68K_State, data, offset, 4);
-		importDataAuto(&Z80_State, data, offset, 4);
-		importDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
-		importDataAuto(&Last_BUS_REQ_St, data, offset, 4);
-		importDataAuto(&Fake_Fetch, data, offset, 4);
-		importDataAuto(&Game_Mode, data, offset, 4);
-		importDataAuto(&CPU_Mode, data, offset, 4);
-		importDataAuto(&CPL_M68K, data, offset, 4);
-		importDataAuto(&CPL_S68K, data, offset, 4);
-		importDataAuto(&CPL_Z80, data, offset, 4);
-		importDataAuto(&Cycles_S68K, data, offset, 4);
-		importDataAuto(&Cycles_M68K, data, offset, 4);
-		importDataAuto(&Cycles_Z80, data, offset, 4);
-		importDataAuto(&VDP_Status, data, offset, 4);
-		importDataAuto(&VDP_Int, data, offset, 4);
-		importDataAuto(&Ctrl.Write, data, offset, 4);
-		importDataAuto(&Ctrl.DMA_Mode, data, offset, 4);
-		importDataAuto(&Ctrl.DMA, data, offset, 4);
-		//importDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
+		ImportDataAuto(&DMAT_Length, data, offset, 4);
+		ImportDataAuto(&DMAT_Type, data, offset, 4);
+		ImportDataAuto(&DMAT_Tmp, data, offset, 4);
+		ImportDataAuto(&VDP_Current_Line, data, offset, 4);
+		ImportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
+		ImportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
+		ImportDataAuto(&Bank_M68K, data, offset, 4);
+		ImportDataAuto(&S68K_State, data, offset, 4);
+		ImportDataAuto(&Z80_State, data, offset, 4);
+		ImportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
+		ImportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
+		ImportDataAuto(&Fake_Fetch, data, offset, 4);
+		ImportDataAuto(&Game_Mode, data, offset, 4);
+		ImportDataAuto(&CPU_Mode, data, offset, 4);
+		ImportDataAuto(&CPL_M68K, data, offset, 4);
+		ImportDataAuto(&CPL_S68K, data, offset, 4);
+		ImportDataAuto(&CPL_Z80, data, offset, 4);
+		ImportDataAuto(&Cycles_S68K, data, offset, 4);
+		ImportDataAuto(&Cycles_M68K, data, offset, 4);
+		ImportDataAuto(&Cycles_Z80, data, offset, 4);
+		ImportDataAuto(&VDP_Status, data, offset, 4);
+		ImportDataAuto(&VDP_Int, data, offset, 4);
+		ImportDataAuto(&Ctrl.Write, data, offset, 4);
+		ImportDataAuto(&Ctrl.DMA_Mode, data, offset, 4);
+		ImportDataAuto(&Ctrl.DMA, data, offset, 4);
+		//ImportDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
 		//offset+=4;
 		
 		// TODO: LagCount from Gens Rerecording.
-		//LagCount = importNumber_le32(data, &offset);
+		//LagCount = ImportNumber_le32(data, &offset);
 		offset += 4;
 		
-		importDataAuto(&VRam_Flag, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		importDataAuto(&VDP_Reg.Auto_Inc, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		//importDataAuto(VRam, data, offset, 65536);
-		importDataAuto(CRam, data, offset, 512);
-		//importDataAuto(VSRam, data, offset, 64);
-		importDataAuto(H_Counter_Table, data, offset, 512 * 2);
-		//importDataAuto(Spr_Link, data, offset, 4*256);
+		ImportDataAuto(&VRam_Flag, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.Auto_Inc, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
+		//ImportDataAuto(VRam, data, offset, 65536);
+		ImportDataAuto(CRam, data, offset, 512);
+		//ImportDataAuto(VSRam, data, offset, 64);
+		ImportDataAuto(H_Counter_Table, data, offset, 512 * 2);
+		//ImportDataAuto(Spr_Link, data, offset, 4*256);
 		//extern int DMAT_Tmp, VSRam_Over;
-		//importDataAuto(&DMAT_Tmp, data, offset, 4);
-		//importDataAuto(&VSRam_Over, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length_L, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length_H, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		importDataAuto(&VDP_Reg.DMA_Address, data, offset, 4);
+		//ImportDataAuto(&DMAT_Tmp, data, offset, 4);
+		//ImportDataAuto(&VSRam_Over, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_L, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length_H, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
+		ImportDataAuto(&VDP_Reg.DMA_Address, data, offset, 4);
 		
 #ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == GENESIS_V6_STATE_LENGTH);
@@ -658,10 +656,10 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 	{
 		// Gens v7 savestate
 		unsigned char Reg_2[sizeof(ym2612_)];
-		importDataAuto(Reg_2, data, offset, sizeof(ym2612_)); // some important parts of this weren't saved above
+		ImportDataAuto(Reg_2, data, offset, sizeof(ym2612_)); // some Important parts of this weren't saved above
 		YM2612_Restore_Full(Reg_2);
 		
-		importDataAuto(PSG_Save_Full, data, offset, sizeof(struct _psg)); // some important parts of this weren't saved above
+		ImportDataAuto(PSG_Save_Full, data, offset, sizeof(struct _psg)); // some Important parts of this weren't saved above
 		PSG_Restore_State_Full();
 		
 		// BUG: The Gens v7 savestate stores M_Z80.BasePC, which is a *real* pointer.
@@ -670,64 +668,64 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 		// The PC is set correctly by the older savestate code above via z80_Set_PC().
 		unsigned int oldBasePC = M_Z80.BasePC;
 		unsigned int oldPC = M_Z80.PC.d;
-		importDataAuto(&M_Z80, data, offset, 0x5C); // some important parts of this weren't saved above
+		ImportDataAuto(&M_Z80, data, offset, 0x5C); // some Important parts of this weren't saved above
 		M_Z80.PC.d = oldPC;
 		M_Z80.BasePC = oldBasePC;
 		
-		importDataAuto(&M_Z80.RetIC, data, offset, 4); // not sure about the last two variables, might as well save them too
-		importDataAuto(&M_Z80.IntAckC, data, offset, 4);
+		ImportDataAuto(&M_Z80.RetIC, data, offset, 4); // not sure about the last two variables, might as well save them too
+		ImportDataAuto(&M_Z80.IntAckC, data, offset, 4);
 		
-		importDataAuto(&Context_68K.dreg[0], data, offset, 86); // some important parts of this weren't saved above
+		ImportDataAuto(&Context_68K.dreg[0], data, offset, 86); // some Important parts of this weren't saved above
 		
-		importDataAuto(&Controller_1_State, data, offset, 448); // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
+		ImportDataAuto(&Controller_1_State, data, offset, 448); // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
 		
 		// apparently necessary
-		importDataAuto(&VDP_Status, data, offset, 4);
-		importDataAuto(&VDP_Int, data, offset, 4);
-		importDataAuto(&VDP_Current_Line, data, offset, 4);
-		importDataAuto(&VDP_Num_Lines, data, offset, 4);
-		importDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-		importDataAuto(&DMAT_Length, data, offset, 4);
-		importDataAuto(&DMAT_Type, data, offset, 4);
-		//importDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
+		ImportDataAuto(&VDP_Status, data, offset, 4);
+		ImportDataAuto(&VDP_Int, data, offset, 4);
+		ImportDataAuto(&VDP_Current_Line, data, offset, 4);
+		ImportDataAuto(&VDP_Num_Lines, data, offset, 4);
+		ImportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
+		ImportDataAuto(&DMAT_Length, data, offset, 4);
+		ImportDataAuto(&DMAT_Type, data, offset, 4);
+		//ImportDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
-		//importDataAuto(&LagCount, data, offset, 4);
+		//ImportDataAuto(&LagCount, data, offset, 4);
 		offset += 4;
 		
-		importDataAuto(&VRam_Flag, data, offset, 4);
-		importDataAuto(&CRam, data, offset, 256 * 2);
+		ImportDataAuto(&VRam_Flag, data, offset, 4);
+		ImportDataAuto(&CRam, data, offset, 256 * 2);
 		
 		// it's probably safer sync-wise to keep SRAM stuff in the savestate
-		importDataAuto(&SRAM, data, offset, sizeof(SRAM));
-		importDataAuto(&SRAM_Start, data, offset, 4);
-		importDataAuto(&SRAM_End, data, offset, 4);
-		importDataAuto(&SRAM_ON, data, offset, 4);
-		importDataAuto(&SRAM_Write, data, offset, 4);
-		importDataAuto(&SRAM_Custom, data, offset, 4);
+		ImportDataAuto(&SRAM, data, offset, sizeof(SRAM));
+		ImportDataAuto(&SRAM_Start, data, offset, 4);
+		ImportDataAuto(&SRAM_End, data, offset, 4);
+		ImportDataAuto(&SRAM_ON, data, offset, 4);
+		ImportDataAuto(&SRAM_Write, data, offset, 4);
+		ImportDataAuto(&SRAM_Custom, data, offset, 4);
 		
 		// this group I'm not sure about, they don't seem to be necessary but I'm keeping them around just in case
-		importDataAuto(&Bank_M68K, data, offset, 4);
-		importDataAuto(&S68K_State, data, offset, 4);
-		importDataAuto(&Z80_State, data, offset, 4);
-		importDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
-		importDataAuto(&Last_BUS_REQ_St, data, offset, 4);
-		importDataAuto(&Fake_Fetch, data, offset, 4);
-		importDataAuto(&Game_Mode, data, offset, 4);
-		importDataAuto(&CPU_Mode, data, offset, 4);
-		importDataAuto(&CPL_M68K, data, offset, 4);
-		importDataAuto(&CPL_S68K, data, offset, 4);
-		importDataAuto(&CPL_Z80, data, offset, 4);
-		importDataAuto(&Cycles_S68K, data, offset, 4);
-		importDataAuto(&Cycles_M68K, data, offset, 4);
-		importDataAuto(&Cycles_Z80, data, offset, 4);
-		importDataAuto(&Gen_Mode, data, offset, 4);
-		importDataAuto(&Gen_Version, data, offset, 4);
-		importDataAuto(H_Counter_Table, data, offset, 512 * 2);
-		importDataAuto(&VDP_Reg, data, offset, sizeof(VDP_Reg));
-		importDataAuto(&Ctrl, data, offset, sizeof(Ctrl));
+		ImportDataAuto(&Bank_M68K, data, offset, 4);
+		ImportDataAuto(&S68K_State, data, offset, 4);
+		ImportDataAuto(&Z80_State, data, offset, 4);
+		ImportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
+		ImportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
+		ImportDataAuto(&Fake_Fetch, data, offset, 4);
+		ImportDataAuto(&Game_Mode, data, offset, 4);
+		ImportDataAuto(&CPU_Mode, data, offset, 4);
+		ImportDataAuto(&CPL_M68K, data, offset, 4);
+		ImportDataAuto(&CPL_S68K, data, offset, 4);
+		ImportDataAuto(&CPL_Z80, data, offset, 4);
+		ImportDataAuto(&Cycles_S68K, data, offset, 4);
+		ImportDataAuto(&Cycles_M68K, data, offset, 4);
+		ImportDataAuto(&Cycles_Z80, data, offset, 4);
+		ImportDataAuto(&Gen_Mode, data, offset, 4);
+		ImportDataAuto(&Gen_Version, data, offset, 4);
+		ImportDataAuto(H_Counter_Table, data, offset, 512 * 2);
+		ImportDataAuto(&VDP_Reg, data, offset, sizeof(VDP_Reg));
+		ImportDataAuto(&Ctrl, data, offset, sizeof(Ctrl));
 		
-		importDataAuto(&Context_68K.cycles_needed, data, offset, 44);
+		ImportDataAuto(&Context_68K.cycles_needed, data, offset, 44);
 		
 #ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == GENESIS_STATE_LENGTH);
@@ -740,11 +738,11 @@ int Savestate::gsxImportGenesis(const unsigned char* data)
 
 
 /**
- * gsxExportGenesis(): Save Genesis data to a savestate.
+ * GsxExportGenesis(): Save Genesis data to a savestate.
  * (Portions ported from Gens Rerecording.)
  * @param data Savestate data buffer.
  */
-void Savestate::gsxExportGenesis(unsigned char* data)
+void Savestate::GsxExportGenesis(unsigned char* data)
 {
 	// This savestate function uses the GENS v7 savestate format.
 	// Note about GENS v7 savestate format:
@@ -794,24 +792,24 @@ void Savestate::gsxExportGenesis(unsigned char* data)
 	main68k_GetContext(&Context_68K);
 	
 	// 68000 registers
-	exportData(&Context_68K.dreg[0], data, 0x80, 8 * 2 * 4);
-	exportData(&Context_68K.pc, data, 0xC8, 4);
-	exportData(&Context_68K.sr, data, 0xD0, 2);
+	ExportData(&Context_68K.dreg[0], data, 0x80, 8 * 2 * 4);
+	ExportData(&Context_68K.pc, data, 0xC8, 4);
+	ExportData(&Context_68K.sr, data, 0xD0, 2);
 	
 	if (Context_68K.sr & 0x2000)
 	{
 		// Supervisor
-		exportData(&Context_68K.asp, data, 0xD2, 4);
-		exportData(&Context_68K.areg[7], data, 0xD6, 4);
+		ExportData(&Context_68K.asp, data, 0xD2, 4);
+		ExportData(&Context_68K.areg[7], data, 0xD6, 4);
 	}
 	else
 	{
 		// User
-		exportData(&Context_68K.asp, data, 0xD6, 4);
-		exportData(&Context_68K.areg[7], data, 0xD2, 4);
+		ExportData(&Context_68K.asp, data, 0xD6, 4);
+		ExportData(&Context_68K.areg[7], data, 0xD2, 4);
 	}
 	
-	exportData(&Ctrl.Data, data, 0x40, 4);
+	ExportData(&Ctrl.Data, data, 0x40, 4);
 	
 	data[0x44] = Ctrl.Flag;
 	data[0x45] = (Ctrl.DMA >> 2) & 1;
@@ -880,7 +878,7 @@ void Savestate::gsxExportGenesis(unsigned char* data)
 	data[0x438] = (unsigned char) (((Z80_State & 4) >> 2) ^ 1);
 	data[0x439] = (unsigned char) (((Z80_State & 2) >> 1) ^ 1);
 	
-	exportData(&Bank_Z80, data, 0x43C, 4);
+	ExportData(&Bank_Z80, data, 0x43C, 4);
 	
 	for (i = 0; i < 0x2000; i++)
 		data[i + 0x474] = Ram_Z80[i];
@@ -916,14 +914,14 @@ void Savestate::gsxExportGenesis(unsigned char* data)
 	
 	unsigned char Reg_2[sizeof(ym2612_)];
 	YM2612_Save_Full(Reg_2);
-	exportDataAuto(Reg_2, data, offset, sizeof(ym2612_)); // some important parts of this weren't saved above
+	ExportDataAuto(Reg_2, data, offset, sizeof(ym2612_)); // some Important parts of this weren't saved above
 	
 	PSG_Save_State_Full();
-	exportDataAuto(PSG_Save_Full, data, offset, sizeof(struct _psg));  // some important parts of this weren't saved above
+	ExportDataAuto(PSG_Save_Full, data, offset, sizeof(struct _psg));  // some Important parts of this weren't saved above
 	
-	exportDataAuto(&M_Z80, data, offset, 0x5C); // some important parts of this weren't saved above
+	ExportDataAuto(&M_Z80, data, offset, 0x5C); // some Important parts of this weren't saved above
 	
-	// BUG: The above exportDataAuto call saves the PC and BasePC registers,
+	// BUG: The above ExportDataAuto call saves the PC and BasePC registers,
 	// which are based on x86 memory locations and not emulated memory.
 	// Set them to 0xDEADBEEF in the savestate, in big-endian format
 	// so it's readable by a hex editor.
@@ -940,58 +938,58 @@ void Savestate::gsxExportGenesis(unsigned char* data)
 	data[offset - 0x5C + 0x42] = 0xBE;
 	data[offset - 0x5C + 0x43] = 0xEF;
 	
-	exportDataAuto(&M_Z80.RetIC, data, offset, 4); // not sure about the last two variables, might as well save them too
-	exportDataAuto(&M_Z80.IntAckC, data, offset, 4);
+	ExportDataAuto(&M_Z80.RetIC, data, offset, 4); // not sure about the last two variables, might as well save them too
+	ExportDataAuto(&M_Z80.IntAckC, data, offset, 4);
 	
-	exportDataAuto(&Context_68K.dreg[0], data, offset, 86); // some important parts of this weren't saved above
+	ExportDataAuto(&Context_68K.dreg[0], data, offset, 86); // some Important parts of this weren't saved above
 	
-	exportDataAuto(&Controller_1_State, data, offset, 448);   // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
+	ExportDataAuto(&Controller_1_State, data, offset, 448);   // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
 	
 	// apparently necessary
-	exportDataAuto(&VDP_Status, data, offset, 4);
-	exportDataAuto(&VDP_Int, data, offset, 4);
-	exportDataAuto(&VDP_Current_Line, data, offset, 4);
-	exportDataAuto(&VDP_Num_Lines, data, offset, 4);
-	exportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-	exportDataAuto(&DMAT_Length, data, offset, 4);
-	exportDataAuto(&DMAT_Type, data, offset, 4);
-	//exportDataAuto(&CRam_Flag, data, offset, 4);
+	ExportDataAuto(&VDP_Status, data, offset, 4);
+	ExportDataAuto(&VDP_Int, data, offset, 4);
+	ExportDataAuto(&VDP_Current_Line, data, offset, 4);
+	ExportDataAuto(&VDP_Num_Lines, data, offset, 4);
+	ExportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
+	ExportDataAuto(&DMAT_Length, data, offset, 4);
+	ExportDataAuto(&DMAT_Type, data, offset, 4);
+	//ExportDataAuto(&CRam_Flag, data, offset, 4);
 	// TODO: LagCount for GENS ReRecording.
-	//exportDataAuto(&LagCount, data, offset, 4);
+	//ExportDataAuto(&LagCount, data, offset, 4);
 	offset += 4;
-	exportDataAuto(&VRam_Flag, data, offset, 4);
-	exportDataAuto(&CRam, data, offset, 256 * 2);
+	ExportDataAuto(&VRam_Flag, data, offset, 4);
+	ExportDataAuto(&CRam, data, offset, 256 * 2);
 	
 	// it's probably safer sync-wise to keep SRAM stuff in the savestate
-	exportDataAuto(&SRAM, data, offset, sizeof(SRAM));
-	exportDataAuto(&SRAM_Start, data, offset, 4);
-	exportDataAuto(&SRAM_End, data, offset, 4);
-	exportDataAuto(&SRAM_ON, data, offset, 4);
-	exportDataAuto(&SRAM_Write, data, offset, 4);
-	exportDataAuto(&SRAM_Custom, data, offset, 4);
+	ExportDataAuto(&SRAM, data, offset, sizeof(SRAM));
+	ExportDataAuto(&SRAM_Start, data, offset, 4);
+	ExportDataAuto(&SRAM_End, data, offset, 4);
+	ExportDataAuto(&SRAM_ON, data, offset, 4);
+	ExportDataAuto(&SRAM_Write, data, offset, 4);
+	ExportDataAuto(&SRAM_Custom, data, offset, 4);
 	
 	// this group I'm not sure about, they don't seem to be necessary but I'm keeping them around just in case
-	exportDataAuto(&Bank_M68K, data, offset, 4);
-	exportDataAuto(&S68K_State, data, offset, 4);
-	exportDataAuto(&Z80_State, data, offset, 4);
-	exportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
-	exportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
-	exportDataAuto(&Fake_Fetch, data, offset, 4);
-	exportDataAuto(&Game_Mode, data, offset, 4);
-	exportDataAuto(&CPU_Mode, data, offset, 4);
-	exportDataAuto(&CPL_M68K, data, offset, 4);
-	exportDataAuto(&CPL_S68K, data, offset, 4);
-	exportDataAuto(&CPL_Z80, data, offset, 4);
-	exportDataAuto(&Cycles_S68K, data, offset, 4);
-	exportDataAuto(&Cycles_M68K, data, offset, 4);
-	exportDataAuto(&Cycles_Z80, data, offset, 4);
-	exportDataAuto(&Gen_Mode, data, offset, 4);
-	exportDataAuto(&Gen_Version, data, offset, 4);
-	exportDataAuto(H_Counter_Table, data, offset, 512 * 2);
-	exportDataAuto(&VDP_Reg, data, offset, sizeof(VDP_Reg));
-	exportDataAuto(&Ctrl, data, offset, sizeof(Ctrl));
+	ExportDataAuto(&Bank_M68K, data, offset, 4);
+	ExportDataAuto(&S68K_State, data, offset, 4);
+	ExportDataAuto(&Z80_State, data, offset, 4);
+	ExportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
+	ExportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
+	ExportDataAuto(&Fake_Fetch, data, offset, 4);
+	ExportDataAuto(&Game_Mode, data, offset, 4);
+	ExportDataAuto(&CPU_Mode, data, offset, 4);
+	ExportDataAuto(&CPL_M68K, data, offset, 4);
+	ExportDataAuto(&CPL_S68K, data, offset, 4);
+	ExportDataAuto(&CPL_Z80, data, offset, 4);
+	ExportDataAuto(&Cycles_S68K, data, offset, 4);
+	ExportDataAuto(&Cycles_M68K, data, offset, 4);
+	ExportDataAuto(&Cycles_Z80, data, offset, 4);
+	ExportDataAuto(&Gen_Mode, data, offset, 4);
+	ExportDataAuto(&Gen_Version, data, offset, 4);
+	ExportDataAuto(H_Counter_Table, data, offset, 512 * 2);
+	ExportDataAuto(&VDP_Reg, data, offset, sizeof(VDP_Reg));
+	ExportDataAuto(&Ctrl, data, offset, sizeof(Ctrl));
 	
-	exportDataAuto(&Context_68K.cycles_needed, data, offset, 44);
+	ExportDataAuto(&Context_68K.cycles_needed, data, offset, 44);
 	
 	#ifdef GENS_DEBUG_SAVESTATE
 		// assert that the final offset value equals our savestate size, otherwise we screwed up
@@ -1002,11 +1000,11 @@ void Savestate::gsxExportGenesis(unsigned char* data)
 
 
 /**
- * gsxImportSegaCD(): Load Sega CD data from a savestate.
+ * GsxImportSegaCD(): Load Sega CD data from a savestate.
  * (Ported from Gens Rerecording.)
  * @param data Savestate data.
  */
-void Savestate::gsxImportSegaCD(const unsigned char* data)
+void Savestate::GsxImportSegaCD(const unsigned char* data)
 {
 	struct S68000CONTEXT Context_sub68K;
 	unsigned char *src;
@@ -1015,69 +1013,69 @@ void Savestate::gsxImportSegaCD(const unsigned char* data)
 	sub68k_GetContext(&Context_sub68K);
 	
 	//sub68K bit goes here
-	importData(&(Context_sub68K.dreg[0]), data, 0x0, 8 * 4);
-	importData(&(Context_sub68K.areg[0]), data, 0x20, 8 * 4);
-	importData(&(Context_sub68K.pc), data, 0x48, 4);
-	importData(&(Context_sub68K.sr), data, 0x50, 2);
+	ImportData(&(Context_sub68K.dreg[0]), data, 0x0, 8 * 4);
+	ImportData(&(Context_sub68K.areg[0]), data, 0x20, 8 * 4);
+	ImportData(&(Context_sub68K.pc), data, 0x48, 4);
+	ImportData(&(Context_sub68K.sr), data, 0x50, 2);
 	
 	if(data[0x51] & 0x20)
 	{
 		// Supervisor
-		importData(&Context_68K.asp, data, 0x52, 4);
+		ImportData(&Context_68K.asp, data, 0x52, 4);
 	}
 	else
 	{
 		// User
-		importData(&Context_68K.asp, data, 0x56, 4);
+		ImportData(&Context_68K.asp, data, 0x56, 4);
 	}
 	
 	
-	importData(&Context_sub68K.odometer, data, 0x5A, 4);
-	importData(Context_sub68K.interrupts, data, 0x60, 8);
-	importData(&Ram_Word_State, data, 0x6C, 4);
+	ImportData(&Context_sub68K.odometer, data, 0x5A, 4);
+	ImportData(Context_sub68K.interrupts, data, 0x60, 8);
+	ImportData(&Ram_Word_State, data, 0x6C, 4);
 	
 	//here ends sub68k bit
 	
 	//sub68k_SetContext(&Context_sub68K); // Modif N. -- moved to later
 	
 	//PCM Chip Load
-	importData(&PCM_Chip.Rate, data, 0x100, 4);
-	importData(&PCM_Chip.Enable, data, 0x104, 4);
-	importData(&PCM_Chip.Cur_Chan, data, 0x108, 4);
-	importData(&PCM_Chip.Bank, data, 0x10C, 4);
+	ImportData(&PCM_Chip.Rate, data, 0x100, 4);
+	ImportData(&PCM_Chip.Enable, data, 0x104, 4);
+	ImportData(&PCM_Chip.Cur_Chan, data, 0x108, 4);
+	ImportData(&PCM_Chip.Bank, data, 0x10C, 4);
 	
 	for (j = 0; j < 8; j++)
 	{
-		importData(&PCM_Chip.Channel[j].ENV, data, 0x120 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].PAN, data, 0x124 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].MUL_L, data, 0x128 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].MUL_R, data, 0x12C + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].St_Addr, data, 0x130 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].Loop_Addr, data, 0x134 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].Addr, data, 0x138 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].Step, data, 0x13C + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].Step_B, data, 0x140 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].Enable, data, 0x144 + (j * 4 * 11), 4);
-		importData(&PCM_Chip.Channel[j].Data, data, 0x148 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].ENV, data, 0x120 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].PAN, data, 0x124 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].MUL_L, data, 0x128 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].MUL_R, data, 0x12C + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].St_Addr, data, 0x130 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].Loop_Addr, data, 0x134 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].Addr, data, 0x138 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].Step, data, 0x13C + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].Step_B, data, 0x140 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].Enable, data, 0x144 + (j * 4 * 11), 4);
+		ImportData(&PCM_Chip.Channel[j].Data, data, 0x148 + (j * 4 * 11), 4);
 	}
 	
 	//End PCM Chip Load
 	
 	//Init_RS_GFX(); //purge old GFX data
 	//GFX State Load
-	importData(&(Rot_Comp.Stamp_Size), data, 0x300, 4);
-	importData(&(Rot_Comp.Stamp_Map_Adr), data, 0x304, 4);
-	importData(&(Rot_Comp.IB_V_Cell_Size), data, 0x308, 4);
-	importData(&(Rot_Comp.IB_Adr), data, 0x30C, 4);
-	importData(&(Rot_Comp.IB_Offset), data, 0x310, 4);
-	importData(&(Rot_Comp.IB_H_Dot_Size), data, 0x314, 4);
-	importData(&(Rot_Comp.IB_V_Dot_Size), data, 0x318, 4);
-	importData(&(Rot_Comp.Vector_Adr), data, 0x31C, 4);
-	importData(&(Rot_Comp.Rotation_Running), data, 0x320, 4);
+	ImportData(&(Rot_Comp.Stamp_Size), data, 0x300, 4);
+	ImportData(&(Rot_Comp.Stamp_Map_Adr), data, 0x304, 4);
+	ImportData(&(Rot_Comp.IB_V_Cell_Size), data, 0x308, 4);
+	ImportData(&(Rot_Comp.IB_Adr), data, 0x30C, 4);
+	ImportData(&(Rot_Comp.IB_Offset), data, 0x310, 4);
+	ImportData(&(Rot_Comp.IB_H_Dot_Size), data, 0x314, 4);
+	ImportData(&(Rot_Comp.IB_V_Dot_Size), data, 0x318, 4);
+	ImportData(&(Rot_Comp.Vector_Adr), data, 0x31C, 4);
+	ImportData(&(Rot_Comp.Rotation_Running), data, 0x320, 4);
 	//End GFX State Load
 	
 	//gate array bit
-	importData(&COMM.Flag, data, 0x0500, 4);
+	ImportData(&COMM.Flag, data, 0x0500, 4);
 	src = (unsigned char *) &COMM.Command;
 	for (j = 0; j < 8 * 2; j += 2)
 	{
@@ -1094,47 +1092,47 @@ void Savestate::gsxImportSegaCD(const unsigned char* data)
 			*src++ = data[i + 0x0514 + j];
 		}
 	}
-	importData(&Memory_Control_Status, data, 0x0524, 4);
-	importData(&Init_Timer_INT3, data, 0x0528, 4);
-	importData(&Timer_INT3, data, 0x052C, 4);
-	importData(&Timer_Step, data, 0x0530, 4);
-	importData(&Int_Mask_S68K, data, 0x0534, 4);
-	importData(&Font_COLOR, data, 0x0538, 4);
-	importData(&Font_BITS, data, 0x053C, 4);
-	importData(&CD_Access_Timer, data, 0x0540, 4);
-	importData(&SCD.Status_CDC, data, 0x0544, 4);
-	importData(&SCD.Status_CDD, data, 0x0548, 4);
-	importData(&SCD.Cur_LBA, data, 0x054C, 4);
-	importData(&SCD.Cur_Track, data, 0x0550, 4);
-	importData(&S68K_Mem_WP, data, 0x0554, 4);
-	importData(&S68K_Mem_PM, data, 0x0558, 4);
+	ImportData(&Memory_Control_Status, data, 0x0524, 4);
+	ImportData(&Init_Timer_INT3, data, 0x0528, 4);
+	ImportData(&Timer_INT3, data, 0x052C, 4);
+	ImportData(&Timer_Step, data, 0x0530, 4);
+	ImportData(&Int_Mask_S68K, data, 0x0534, 4);
+	ImportData(&Font_COLOR, data, 0x0538, 4);
+	ImportData(&Font_BITS, data, 0x053C, 4);
+	ImportData(&CD_Access_Timer, data, 0x0540, 4);
+	ImportData(&SCD.Status_CDC, data, 0x0544, 4);
+	ImportData(&SCD.Status_CDD, data, 0x0548, 4);
+	ImportData(&SCD.Cur_LBA, data, 0x054C, 4);
+	ImportData(&SCD.Cur_Track, data, 0x0550, 4);
+	ImportData(&S68K_Mem_WP, data, 0x0554, 4);
+	ImportData(&S68K_Mem_PM, data, 0x0558, 4);
 	// More goes here when found
 	//here ends gate array bit
 	
 	//Misc Status Flags
-	importData(&Ram_Word_State, data, 0xF00, 4); //For determining 1M or 2M
-	importData(&LED_Status, data, 0xF08, 4); //So the LED shows up properly
+	ImportData(&Ram_Word_State, data, 0xF00, 4); //For determining 1M or 2M
+	ImportData(&LED_Status, data, 0xF08, 4); //So the LED shows up properly
 	//Word RAM state
 	
 	//Prg RAM
-	importData(Ram_Prg, data, 0x1000, 0x80000);
+	ImportData(Ram_Prg, data, 0x1000, 0x80000);
 	
 	//Word RAM
 	if (Ram_Word_State >= 2)
-		importData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
+		ImportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
 	else
-		importData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
-		//importData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
+		ImportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
+		//ImportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
 	//Word RAM end
 	
-	importData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
+	ImportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
 	
 	//CDD & CDC Data
 	//CDD
 	unsigned int CDD_data[8]; //makes an array for reading CDD unsigned int Data into
 	for (j = 0; j < 8; j++)
 	{
-		importData(&CDD_data[j], data, 0xD1000  + (4 * j), 4);
+		ImportData(&CDD_data[j], data, 0xD1000  + (4 * j), 4);
 	}
 	for(i = 0; i < 10; i++)
 		CDD.Rcv_Status[i] = data[0xD1020 + i];
@@ -1154,23 +1152,23 @@ void Savestate::gsxImportSegaCD(const unsigned char* data)
 	//CDD end
 	
 	//CDC
-	importData(&CDC.RS0, data, 0xD1034, 4);
-	importData(&CDC.RS1, data, 0xD1038, 4);
-	importData(&CDC.Host_Data, data, 0xD103C, 4);
-	importData(&CDC.DMA_Adr, data, 0xD1040, 4);
-	importData(&CDC.Stop_Watch, data, 0xD1044, 4);
-	importData(&CDC.COMIN, data, 0xD1048, 4);
-	importData(&CDC.IFSTAT, data, 0xD104C, 4);
-	importData(&CDC.DBC.N, data, 0xD1050, 4);
-	importData(&CDC.DAC.N, data, 0xD1054, 4);
-	importData(&CDC.HEAD.N, data, 0xD1058, 4);
-	importData(&CDC.PT.N, data, 0xD105C, 4);
-	importData(&CDC.WA.N, data, 0xD1060, 4);
-	importData(&CDC.STAT.N, data, 0xD1064, 4);
-	importData(&CDC.SBOUT, data, 0xD1068, 4);
-	importData(&CDC.IFCTRL, data, 0xD106C, 4);
-	importData(&CDC.CTRL.N, data, 0xD1070, 4);
-	importData(CDC.Buffer, data, 0xD1074, ((32 * 1024 * 2) + 2352)); //Modif N. - added the *2 because the buffer appears to be that large
+	ImportData(&CDC.RS0, data, 0xD1034, 4);
+	ImportData(&CDC.RS1, data, 0xD1038, 4);
+	ImportData(&CDC.Host_Data, data, 0xD103C, 4);
+	ImportData(&CDC.DMA_Adr, data, 0xD1040, 4);
+	ImportData(&CDC.Stop_Watch, data, 0xD1044, 4);
+	ImportData(&CDC.COMIN, data, 0xD1048, 4);
+	ImportData(&CDC.IFSTAT, data, 0xD104C, 4);
+	ImportData(&CDC.DBC.N, data, 0xD1050, 4);
+	ImportData(&CDC.DAC.N, data, 0xD1054, 4);
+	ImportData(&CDC.HEAD.N, data, 0xD1058, 4);
+	ImportData(&CDC.PT.N, data, 0xD105C, 4);
+	ImportData(&CDC.WA.N, data, 0xD1060, 4);
+	ImportData(&CDC.STAT.N, data, 0xD1064, 4);
+	ImportData(&CDC.SBOUT, data, 0xD1068, 4);
+	ImportData(&CDC.IFCTRL, data, 0xD106C, 4);
+	ImportData(&CDC.CTRL.N, data, 0xD1070, 4);
+	ImportData(CDC.Buffer, data, 0xD1074, ((32 * 1024 * 2) + 2352)); //Modif N. - added the *2 because the buffer appears to be that large
 	//CDC end
 	//CDD & CDC Data end
 	
@@ -1180,56 +1178,56 @@ void Savestate::gsxImportSegaCD(const unsigned char* data)
 		// I'm not sure how much of this really needs to be saved, should check it sometime
 		unsigned int offset = SEGACD_LENGTH_EX1;
 		
-		importDataAuto(&File_Add_Delay, data, offset, 4);
-//		importDataAuto(CD_Audio_Buffer_L, data, offset, 4*8192); // removed, seems to be unnecessary
-//		importDataAuto(CD_Audio_Buffer_R, data, offset, 4*8192); // removed, seems to be unnecessary
-		importDataAuto(&CD_Audio_Buffer_Read_Pos, data, offset, 4);
-		importDataAuto(&CD_Audio_Buffer_Write_Pos, data, offset, 4);
-		importDataAuto(&CD_Audio_Starting, data, offset, 4);
-		importDataAuto(&CD_Present, data, offset, 4);
-		importDataAuto(&CD_Load_System, data, offset, 4);
-		importDataAuto(&CD_Timer_Counter, data, offset, 4);
-		importDataAuto(&CDD_Complete, data, offset, 4);
-		importDataAuto(&track_number, data, offset, 4);
-		importDataAuto(&CD_timer_st, data, offset, 4);
-		importDataAuto(&CD_LBA_st, data, offset, 4);
-		importDataAuto(&CDC_Decode_Reg_Read, data, offset, 4);
+		ImportDataAuto(&File_Add_Delay, data, offset, 4);
+//		ImportDataAuto(CD_Audio_Buffer_L, data, offset, 4*8192); // removed, seems to be unnecessary
+//		ImportDataAuto(CD_Audio_Buffer_R, data, offset, 4*8192); // removed, seems to be unnecessary
+		ImportDataAuto(&CD_Audio_Buffer_Read_Pos, data, offset, 4);
+		ImportDataAuto(&CD_Audio_Buffer_Write_Pos, data, offset, 4);
+		ImportDataAuto(&CD_Audio_Starting, data, offset, 4);
+		ImportDataAuto(&CD_Present, data, offset, 4);
+		ImportDataAuto(&CD_Load_System, data, offset, 4);
+		ImportDataAuto(&CD_Timer_Counter, data, offset, 4);
+		ImportDataAuto(&CDD_Complete, data, offset, 4);
+		ImportDataAuto(&track_number, data, offset, 4);
+		ImportDataAuto(&CD_timer_st, data, offset, 4);
+		ImportDataAuto(&CD_LBA_st, data, offset, 4);
+		ImportDataAuto(&CDC_Decode_Reg_Read, data, offset, 4);
 		
-		importDataAuto(&SCD, data, offset, sizeof(SCD));
-		//importDataAuto(&CDC, data, offset, sizeof(CDC)); // removed, seems unnecessary/redundant
-		importDataAuto(&CDD, data, offset, sizeof(CDD));
-		importDataAuto(&COMM, data, offset, sizeof(COMM));
+		ImportDataAuto(&SCD, data, offset, sizeof(SCD));
+		//ImportDataAuto(&CDC, data, offset, sizeof(CDC)); // removed, seems unnecessary/redundant
+		ImportDataAuto(&CDD, data, offset, sizeof(CDD));
+		ImportDataAuto(&COMM, data, offset, sizeof(COMM));
 		
-		importDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
-		importDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
+		ImportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
+		ImportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
 		
-		importDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
-		importDataAuto(&Stamp_Map_Adr, data, offset, 4);
-		importDataAuto(&Buffer_Adr, data, offset, 4);
-		importDataAuto(&Vector_Adr, data, offset, 4);
-		importDataAuto(&Jmp_Adr, data, offset, 4);
-		importDataAuto(&Float_Part, data, offset, 4);
-		importDataAuto(&Draw_Speed, data, offset, 4);
-		importDataAuto(&XS, data, offset, 4);
-		importDataAuto(&YS, data, offset, 4);
-		importDataAuto(&DXS, data, offset, 4);
-		importDataAuto(&DYS, data, offset, 4);
-		importDataAuto(&XD, data, offset, 4);
-		importDataAuto(&YD, data, offset, 4);
-		importDataAuto(&XD_Mul, data, offset, 4);
-		importDataAuto(&H_Dot, data, offset, 4);
+		ImportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
+		ImportDataAuto(&Stamp_Map_Adr, data, offset, 4);
+		ImportDataAuto(&Buffer_Adr, data, offset, 4);
+		ImportDataAuto(&Vector_Adr, data, offset, 4);
+		ImportDataAuto(&Jmp_Adr, data, offset, 4);
+		ImportDataAuto(&Float_Part, data, offset, 4);
+		ImportDataAuto(&Draw_Speed, data, offset, 4);
+		ImportDataAuto(&XS, data, offset, 4);
+		ImportDataAuto(&YS, data, offset, 4);
+		ImportDataAuto(&DXS, data, offset, 4);
+		ImportDataAuto(&DYS, data, offset, 4);
+		ImportDataAuto(&XD, data, offset, 4);
+		ImportDataAuto(&YD, data, offset, 4);
+		ImportDataAuto(&XD_Mul, data, offset, 4);
+		ImportDataAuto(&H_Dot, data, offset, 4);
 		
-		importDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
-		importDataAuto(&Rom_Data[0x72], data, offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
+		ImportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
+		ImportDataAuto(&Rom_Data[0x72], data, offset, 2); 	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 		
 #ifdef GENS_MP3
-		importDataAuto(&fatal_mp3_error, data, offset, 4);
-		importDataAuto(&Current_OUT_Pos, data, offset, 4);
-		importDataAuto(&Current_OUT_Size, data, offset, 4);
+		ImportDataAuto(&fatal_mp3_error, data, offset, 4);
+		ImportDataAuto(&Current_OUT_Pos, data, offset, 4);
+		ImportDataAuto(&Current_OUT_Size, data, offset, 4);
 #endif /* GENS_MP3 */
-		importDataAuto(&Track_Played, data, offset, 1);
-		importDataAuto(played_tracks_linear, data, offset, 100);
-		//importDataAuto(&Current_IN_Pos, data, offset, 4)? // don't save this; bad things happen
+		ImportDataAuto(&Track_Played, data, offset, 1);
+		ImportDataAuto(played_tracks_linear, data, offset, 100);
+		//ImportDataAuto(&Current_IN_Pos, data, offset, 4)? // don't save this; bad things happen
 		
 #ifdef GENS_DEBUG_SAVESTATE
 		assert(offset == SEGACD_LENGTH_EX);
@@ -1244,11 +1242,11 @@ void Savestate::gsxImportSegaCD(const unsigned char* data)
 
 
 /**
- * gsxExportSegaCD(): Save Sega CD data to a savestate.
+ * GsxExportSegaCD(): Save Sega CD data to a savestate.
  * (Uses Gens v7 format from Gens Rerecording.)
  * @param data Savestate data buffer.
  */
-void Savestate::gsxExportSegaCD(unsigned char* data)
+void Savestate::GsxExportSegaCD(unsigned char* data)
 {
 	struct S68000CONTEXT Context_sub68K;
 	unsigned char *src;
@@ -1257,63 +1255,63 @@ void Savestate::gsxExportSegaCD(unsigned char* data)
 	sub68k_GetContext(&Context_sub68K);
 	
 	//sub68K bit goes here
-	exportData(&Context_sub68K.dreg[0], data, 0x0, 8 * 4);
-	exportData(&Context_sub68K.areg[0], data, 0x20, 8 * 4);
-	exportData(&Context_sub68K.pc, data, 0x48, 4);
-	exportData(&Context_sub68K.sr, data, 0x50, 2);
+	ExportData(&Context_sub68K.dreg[0], data, 0x0, 8 * 4);
+	ExportData(&Context_sub68K.areg[0], data, 0x20, 8 * 4);
+	ExportData(&Context_sub68K.pc, data, 0x48, 4);
+	ExportData(&Context_sub68K.sr, data, 0x50, 2);
 	
 	if (Context_sub68K.sr & 0x2000)
 	{
-		exportData(&Context_sub68K.asp, data, 0x52, 4);
-		exportData(&Context_sub68K.areg[7], data, 0x56, 4);
+		ExportData(&Context_sub68K.asp, data, 0x52, 4);
+		ExportData(&Context_sub68K.areg[7], data, 0x56, 4);
 	}
 	else
 	{
-		exportData(&Context_sub68K.asp, data, 0x56, 4);
-		exportData(&Context_sub68K.areg[7], data, 0x52, 4);
+		ExportData(&Context_sub68K.asp, data, 0x56, 4);
+		ExportData(&Context_sub68K.areg[7], data, 0x52, 4);
 	}
 	
-	exportData(&Context_sub68K.odometer, data, 0x5A, 4);
-	exportData(Context_sub68K.interrupts, data, 0x60, 8);
-	exportData(&Ram_Word_State, data, 0x6C, 4);
+	ExportData(&Context_sub68K.odometer, data, 0x5A, 4);
+	ExportData(Context_sub68K.interrupts, data, 0x60, 8);
+	ExportData(&Ram_Word_State, data, 0x6C, 4);
 	//here ends sub68k bit
 	
 	//PCM Chip dump
-	exportData(&PCM_Chip.Rate, data, 0x100, 4);
-	exportData(&PCM_Chip.Enable, data, 0x104, 4);
-	exportData(&PCM_Chip.Cur_Chan, data, 0x108, 4);
-	exportData(&PCM_Chip.Bank, data, 0x10C, 4);
+	ExportData(&PCM_Chip.Rate, data, 0x100, 4);
+	ExportData(&PCM_Chip.Enable, data, 0x104, 4);
+	ExportData(&PCM_Chip.Cur_Chan, data, 0x108, 4);
+	ExportData(&PCM_Chip.Bank, data, 0x10C, 4);
 	
 	for (j = 0; j < 8; j++)
 	{
-		exportData(&PCM_Chip.Channel[j].ENV, data, 0x120 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].PAN, data, 0x124 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].MUL_L, data, 0x128 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].MUL_R, data, 0x12C + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].St_Addr, data, 0x130 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].Loop_Addr, data, 0x134 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].Addr, data, 0x138 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].Step, data, 0x13C + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].Step_B, data, 0x140 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].Enable, data, 0x144 + (j * 4 * 11), 4);
-		exportData(&PCM_Chip.Channel[j].Data, data, 0x148 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].ENV, data, 0x120 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].PAN, data, 0x124 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].MUL_L, data, 0x128 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].MUL_R, data, 0x12C + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].St_Addr, data, 0x130 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].Loop_Addr, data, 0x134 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].Addr, data, 0x138 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].Step, data, 0x13C + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].Step_B, data, 0x140 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].Enable, data, 0x144 + (j * 4 * 11), 4);
+		ExportData(&PCM_Chip.Channel[j].Data, data, 0x148 + (j * 4 * 11), 4);
 	}
 	//End PCM Chip Dump
 
 	//GFX State Dump
-	exportData(&Rot_Comp.Stamp_Size, data, 0x300, 4);
-	exportData(&Rot_Comp.Stamp_Map_Adr, data, 0x304, 4);
-	exportData(&Rot_Comp.IB_V_Cell_Size, data, 0x308, 4);
-	exportData(&Rot_Comp.IB_Adr, data, 0x30C, 4);
-	exportData(&Rot_Comp.IB_Offset, data, 0x310, 4);
-	exportData(&Rot_Comp.IB_H_Dot_Size, data, 0x314, 4);
-	exportData(&Rot_Comp.IB_V_Dot_Size, data, 0x318, 4);
-	exportData(&Rot_Comp.Vector_Adr, data, 0x31C, 4);
-	exportData(&Rot_Comp.Rotation_Running, data, 0x320, 4);
+	ExportData(&Rot_Comp.Stamp_Size, data, 0x300, 4);
+	ExportData(&Rot_Comp.Stamp_Map_Adr, data, 0x304, 4);
+	ExportData(&Rot_Comp.IB_V_Cell_Size, data, 0x308, 4);
+	ExportData(&Rot_Comp.IB_Adr, data, 0x30C, 4);
+	ExportData(&Rot_Comp.IB_Offset, data, 0x310, 4);
+	ExportData(&Rot_Comp.IB_H_Dot_Size, data, 0x314, 4);
+	ExportData(&Rot_Comp.IB_V_Dot_Size, data, 0x318, 4);
+	ExportData(&Rot_Comp.Vector_Adr, data, 0x31C, 4);
+	ExportData(&Rot_Comp.Rotation_Running, data, 0x320, 4);
 	//End GFX State Dump
 
 	//gate array bit
-	exportData(&COMM.Flag, data, 0x0500, 4);
+	ExportData(&COMM.Flag, data, 0x0500, 4);
 	src = (unsigned char *) &COMM.Command;
 	for (j = 0; j < 8 * 2; j += 2)
 	{
@@ -1330,39 +1328,39 @@ void Savestate::gsxExportSegaCD(unsigned char* data)
 			data[i + 0x0514 + j] = *src++;
 		}
 	}
-	exportData(&Memory_Control_Status, data, 0x0524, 4);
-	exportData(&Init_Timer_INT3, data, 0x0528, 4);
-	exportData(&Timer_INT3, data, 0x052C, 4);
-	exportData(&Timer_Step, data, 0x0530, 4);
-	exportData(&Int_Mask_S68K, data, 0x0534, 4);
-	exportData(&Font_COLOR, data, 0x0538, 4);
-	exportData(&Font_BITS, data, 0x053C, 4);
-	exportData(&CD_Access_Timer, data, 0x0540, 4);
-	exportData(&SCD.Status_CDC, data, 0x0544, 4);
-	exportData(&SCD.Status_CDD, data, 0x0548, 4);
-	exportData(&SCD.Cur_LBA, data, 0x054C, 4);
-	exportData(&SCD.Cur_Track, data, 0x0550, 4);
-	exportData(&S68K_Mem_WP, data, 0x0554, 4);
-	exportData(&S68K_Mem_PM, data, 0x0558, 4);
+	ExportData(&Memory_Control_Status, data, 0x0524, 4);
+	ExportData(&Init_Timer_INT3, data, 0x0528, 4);
+	ExportData(&Timer_INT3, data, 0x052C, 4);
+	ExportData(&Timer_Step, data, 0x0530, 4);
+	ExportData(&Int_Mask_S68K, data, 0x0534, 4);
+	ExportData(&Font_COLOR, data, 0x0538, 4);
+	ExportData(&Font_BITS, data, 0x053C, 4);
+	ExportData(&CD_Access_Timer, data, 0x0540, 4);
+	ExportData(&SCD.Status_CDC, data, 0x0544, 4);
+	ExportData(&SCD.Status_CDD, data, 0x0548, 4);
+	ExportData(&SCD.Cur_LBA, data, 0x054C, 4);
+	ExportData(&SCD.Cur_Track, data, 0x0550, 4);
+	ExportData(&S68K_Mem_WP, data, 0x0554, 4);
+	ExportData(&S68K_Mem_PM, data, 0x0558, 4);
 	// More goes here When found
 	//here ends gate array bit
 	
 	//Misc Status Flags
-	exportData(&Ram_Word_State, data, 0xF00, 4); //For determining 1M or 2M
-	exportData(&LED_Status, data, 0xF08, 4); //So the LED shows up properly
+	ExportData(&Ram_Word_State, data, 0xF00, 4); //For determining 1M or 2M
+	ExportData(&LED_Status, data, 0xF08, 4); //So the LED shows up properly
 	//Word RAM state
 	
 	//Prg RAM
-	exportData(Ram_Prg, data, 0x1000, 0x80000);
+	ExportData(Ram_Prg, data, 0x1000, 0x80000);
 	
 	//Word RAM
 	if (Ram_Word_State >= 2)
-		exportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
+		ExportData(Ram_Word_1M, data, 0x81000, 0x40000); //1M mode
 	else
-		exportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
+		ExportData(Ram_Word_2M, data, 0x81000, 0x40000); //2M mode
 	//Word RAM end
 	
-	exportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
+	ExportData(Ram_PCM, data, 0xC1000, 0x10000); //PCM RAM
 	
 	//CDD & CDC Data
 	//CDD
@@ -1370,7 +1368,7 @@ void Savestate::gsxExportSegaCD(unsigned char* data)
 				   CDD.Minute, CDD.Seconde, CDD.Frame, CDD.Ext}; // Makes an array for easier loop construction
 	for (j = 0; j < 8; j++)
 	{
-		exportData(&CDD_src[j], data, 0xD1000  + (4 * j), 4);
+		ExportData(&CDD_src[j], data, 0xD1000  + (4 * j), 4);
 	}
 	for(i = 0; i < 10; i++)
 		data[0xD1020 + i] = CDD.Rcv_Status[i];
@@ -1379,23 +1377,23 @@ void Savestate::gsxExportSegaCD(unsigned char* data)
 	//CDD end
 	
 	//CDC
-	exportData(&CDC.RS0, data, 0xD1034, 4);
-	exportData(&CDC.RS1, data, 0xD1038, 4);
-	exportData(&CDC.Host_Data, data, 0xD103C, 4);
-	exportData(&CDC.DMA_Adr, data, 0xD1040, 4);
-	exportData(&CDC.Stop_Watch, data, 0xD1044, 4);
-	exportData(&CDC.COMIN, data, 0xD1048, 4);
-	exportData(&CDC.IFSTAT, data, 0xD104C, 4);
-	exportData(&CDC.DBC.N, data, 0xD1050, 4);
-	exportData(&CDC.DAC.N, data, 0xD1054, 4);
-	exportData(&CDC.HEAD.N, data, 0xD1058, 4);
-	exportData(&CDC.PT.N, data, 0xD105C, 4);
-	exportData(&CDC.WA.N, data, 0xD1060, 4);
-	exportData(&CDC.STAT.N, data, 0xD1064, 4);
-	exportData(&CDC.SBOUT, data, 0xD1068, 4);
-	exportData(&CDC.IFCTRL, data, 0xD106C, 4);
-	exportData(&CDC.CTRL.N, data, 0xD1070, 4);
-	exportData(CDC.Buffer, data, 0xD1074, ((32 * 1024 * 2) + 2352)); //Modif N. - added the *2 because the buffer appears to be that large
+	ExportData(&CDC.RS0, data, 0xD1034, 4);
+	ExportData(&CDC.RS1, data, 0xD1038, 4);
+	ExportData(&CDC.Host_Data, data, 0xD103C, 4);
+	ExportData(&CDC.DMA_Adr, data, 0xD1040, 4);
+	ExportData(&CDC.Stop_Watch, data, 0xD1044, 4);
+	ExportData(&CDC.COMIN, data, 0xD1048, 4);
+	ExportData(&CDC.IFSTAT, data, 0xD104C, 4);
+	ExportData(&CDC.DBC.N, data, 0xD1050, 4);
+	ExportData(&CDC.DAC.N, data, 0xD1054, 4);
+	ExportData(&CDC.HEAD.N, data, 0xD1058, 4);
+	ExportData(&CDC.PT.N, data, 0xD105C, 4);
+	ExportData(&CDC.WA.N, data, 0xD1060, 4);
+	ExportData(&CDC.STAT.N, data, 0xD1064, 4);
+	ExportData(&CDC.SBOUT, data, 0xD1068, 4);
+	ExportData(&CDC.IFCTRL, data, 0xD106C, 4);
+	ExportData(&CDC.CTRL.N, data, 0xD1070, 4);
+	ExportData(CDC.Buffer, data, 0xD1074, ((32 * 1024 * 2) + 2352)); //Modif N. - added the *2 because the buffer appears to be that large
 	//CDC end
 	//CDD & CDC Data end
 	
@@ -1404,61 +1402,61 @@ void Savestate::gsxExportSegaCD(unsigned char* data)
 	
 	unsigned int offset = SEGACD_LENGTH_EX1;
 	
-	exportDataAuto(&File_Add_Delay, data, offset, 4);
-//	exportDataAuto(CD_Audio_Buffer_L, data, offset, 4*8192); // removed, seems to be unnecessary
-//	exportDataAuto(CD_Audio_Buffer_R, data, offset, 4*8192); // removed, seems to be unnecessary
-	exportDataAuto(&CD_Audio_Buffer_Read_Pos, data, offset, 4);
-	exportDataAuto(&CD_Audio_Buffer_Write_Pos, data, offset, 4);
-	exportDataAuto(&CD_Audio_Starting, data, offset, 4);
-	exportDataAuto(&CD_Present, data, offset, 4);
-	exportDataAuto(&CD_Load_System, data, offset, 4);
-	exportDataAuto(&CD_Timer_Counter, data, offset, 4);
-	exportDataAuto(&CDD_Complete, data, offset, 4);
-	exportDataAuto(&track_number, data, offset, 4);
-	exportDataAuto(&CD_timer_st, data, offset, 4);
-	exportDataAuto(&CD_LBA_st, data, offset, 4);
-	exportDataAuto(&CDC_Decode_Reg_Read, data, offset, 4);
+	ExportDataAuto(&File_Add_Delay, data, offset, 4);
+//	ExportDataAuto(CD_Audio_Buffer_L, data, offset, 4*8192); // removed, seems to be unnecessary
+//	ExportDataAuto(CD_Audio_Buffer_R, data, offset, 4*8192); // removed, seems to be unnecessary
+	ExportDataAuto(&CD_Audio_Buffer_Read_Pos, data, offset, 4);
+	ExportDataAuto(&CD_Audio_Buffer_Write_Pos, data, offset, 4);
+	ExportDataAuto(&CD_Audio_Starting, data, offset, 4);
+	ExportDataAuto(&CD_Present, data, offset, 4);
+	ExportDataAuto(&CD_Load_System, data, offset, 4);
+	ExportDataAuto(&CD_Timer_Counter, data, offset, 4);
+	ExportDataAuto(&CDD_Complete, data, offset, 4);
+	ExportDataAuto(&track_number, data, offset, 4);
+	ExportDataAuto(&CD_timer_st, data, offset, 4);
+	ExportDataAuto(&CD_LBA_st, data, offset, 4);
+	ExportDataAuto(&CDC_Decode_Reg_Read, data, offset, 4);
 	
-	exportDataAuto(&SCD, data, offset, sizeof(SCD));
-//	exportDataAuto(&CDC, data, offset, sizeof(CDC)); // removed, seems unnecessary/redundant
-	exportDataAuto(&CDD, data, offset, sizeof(CDD));
-	exportDataAuto(&COMM, data, offset, sizeof(COMM));
+	ExportDataAuto(&SCD, data, offset, sizeof(SCD));
+//	ExportDataAuto(&CDC, data, offset, sizeof(CDC)); // removed, seems unnecessary/redundant
+	ExportDataAuto(&CDD, data, offset, sizeof(CDD));
+	ExportDataAuto(&COMM, data, offset, sizeof(COMM));
 	
-	exportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
-	exportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
+	ExportDataAuto(Ram_Backup, data, offset, sizeof(Ram_Backup));
+	ExportDataAuto(Ram_Backup_Ex, data, offset, sizeof(Ram_Backup_Ex));
 	
-	exportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
-	exportDataAuto(&Stamp_Map_Adr, data, offset, 4);
-	exportDataAuto(&Buffer_Adr, data, offset, 4);
-	exportDataAuto(&Vector_Adr, data, offset, 4);
-	exportDataAuto(&Jmp_Adr, data, offset, 4);
-	exportDataAuto(&Float_Part, data, offset, 4);
-	exportDataAuto(&Draw_Speed, data, offset, 4);
-	exportDataAuto(&XS, data, offset, 4);
-	exportDataAuto(&YS, data, offset, 4);
-	exportDataAuto(&DXS, data, offset, 4);
-	exportDataAuto(&DYS, data, offset, 4);
-	exportDataAuto(&XD, data, offset, 4);
-	exportDataAuto(&YD, data, offset, 4);
-	exportDataAuto(&XD_Mul, data, offset, 4);
-	exportDataAuto(&H_Dot, data, offset, 4);
+	ExportDataAuto(&Rot_Comp, data, offset, sizeof(Rot_Comp));
+	ExportDataAuto(&Stamp_Map_Adr, data, offset, 4);
+	ExportDataAuto(&Buffer_Adr, data, offset, 4);
+	ExportDataAuto(&Vector_Adr, data, offset, 4);
+	ExportDataAuto(&Jmp_Adr, data, offset, 4);
+	ExportDataAuto(&Float_Part, data, offset, 4);
+	ExportDataAuto(&Draw_Speed, data, offset, 4);
+	ExportDataAuto(&XS, data, offset, 4);
+	ExportDataAuto(&YS, data, offset, 4);
+	ExportDataAuto(&DXS, data, offset, 4);
+	ExportDataAuto(&DYS, data, offset, 4);
+	ExportDataAuto(&XD, data, offset, 4);
+	ExportDataAuto(&YD, data, offset, 4);
+	ExportDataAuto(&XD_Mul, data, offset, 4);
+	ExportDataAuto(&H_Dot, data, offset, 4);
 	
-	exportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
-	exportDataAuto(&Rom_Data[0x72], data, offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
+	ExportDataAuto(&Context_sub68K.cycles_needed, data, offset, 44);
+	ExportDataAuto(&Rom_Data[0x72], data, offset, 2);	//Sega CD games can overwrite the low two bytes of the Horizontal Interrupt vector
 	
 #ifdef GENS_MP3
-	exportDataAuto(&fatal_mp3_error, data, offset, 4);
-	exportDataAuto(&Current_OUT_Pos, data, offset, 4);
-	exportDataAuto(&Current_OUT_Size, data, offset, 4);
+	ExportDataAuto(&fatal_mp3_error, data, offset, 4);
+	ExportDataAuto(&Current_OUT_Pos, data, offset, 4);
+	ExportDataAuto(&Current_OUT_Size, data, offset, 4);
 #else
 	int dummy = 0;
-	exportDataAuto(&dummy, data, offset, 4);
-	exportDataAuto(&dummy, data, offset, 4);
-	exportDataAuto(&dummy, data, offset, 4);
+	ExportDataAuto(&dummy, data, offset, 4);
+	ExportDataAuto(&dummy, data, offset, 4);
+	ExportDataAuto(&dummy, data, offset, 4);
 #endif /* GENS_MP3 */
-	exportDataAuto(&Track_Played, data, offset, 1);
-	exportDataAuto(played_tracks_linear, data, offset, 100);
-	//exportDataAuto(&Current_IN_Pos, data, offset, 4)? // don't save this; bad things happen
+	ExportDataAuto(&Track_Played, data, offset, 1);
+	ExportDataAuto(played_tracks_linear, data, offset, 100);
+	//ExportDataAuto(&Current_IN_Pos, data, offset, 4)? // don't save this; bad things happen
 	
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == SEGACD_LENGTH_EX);
@@ -1467,11 +1465,11 @@ void Savestate::gsxExportSegaCD(unsigned char* data)
 
 
 /**
- * gsxImport32X(): Load 32X data from a GSX savestate.
+ * GsxImport32X(): Load 32X data from a GSX savestate.
  * (Ported from Gens Rerecording.)
  * @param data Savestate data.
  */
-void Savestate::gsxImport32X(const unsigned char* data)
+void Savestate::GsxImport32X(const unsigned char* data)
 {
 	// TODO: Reimplement v5 support.
 	
@@ -1482,125 +1480,125 @@ void Savestate::gsxImport32X(const unsigned char* data)
 	{
 		SH2_CONTEXT* context = (contextNum == 0) ? &M_SH2 : &S_SH2;
 
-		importDataAuto(context->Cache, data, offset, sizeof(context->Cache));
-		importDataAuto(context->R, data, offset, sizeof(context->R));
-		importDataAuto(&context->SR, data, offset, sizeof(context->SR));
-		importDataAuto(&context->INT, data, offset, sizeof(context->INT));
-		importDataAuto(&context->GBR, data, offset, sizeof(context->GBR));
-		importDataAuto(&context->VBR, data, offset, sizeof(context->VBR));
-		importDataAuto(context->INT_QUEUE, data, offset, sizeof(context->INT_QUEUE));
-		importDataAuto(&context->MACH, data, offset, sizeof(context->MACH));
-		importDataAuto(&context->MACL, data, offset, sizeof(context->MACL));
-		importDataAuto(&context->PR, data, offset, sizeof(context->PR));
-		importDataAuto(&context->PC, data, offset, sizeof(context->PC));
-		importDataAuto(&context->Status, data, offset, sizeof(context->Status));
-		importDataAuto(&context->Base_PC, data, offset, sizeof(context->Base_PC));
-		importDataAuto(&context->Fetch_Start, data, offset, sizeof(context->Fetch_Start));
-		importDataAuto(&context->Fetch_End, data, offset, sizeof(context->Fetch_End));
-		importDataAuto(&context->DS_Inst, data, offset, sizeof(context->DS_Inst));
-		importDataAuto(&context->DS_PC, data, offset, sizeof(context->DS_PC));
-		importDataAuto(&context->Odometer, data, offset, sizeof(context->Odometer));
-		importDataAuto(&context->Cycle_TD, data, offset, sizeof(context->Cycle_TD));
-		importDataAuto(&context->Cycle_IO, data, offset, sizeof(context->Cycle_IO));
-		importDataAuto(&context->Cycle_Sup, data, offset, sizeof(context->Cycle_Sup));
-		importDataAuto(context->IO_Reg, data, offset, sizeof(context->IO_Reg));
-		importDataAuto(&context->DVCR, data, offset, sizeof(context->DVCR));
-		importDataAuto(&context->DVSR, data, offset, sizeof(context->DVSR));
-		importDataAuto(&context->DVDNTH, data, offset, sizeof(context->DVDNTH));
-		importDataAuto(&context->DVDNTL, data, offset, sizeof(context->DVDNTL));
-		importDataAuto(&context->DRCR0, data, offset, sizeof(context->DRCR0));
-		importDataAuto(&context->DRCR1, data, offset, sizeof(context->DRCR1));
-		importDataAuto(&context->DREQ0, data, offset, sizeof(context->DREQ0));
-		importDataAuto(&context->DREQ1, data, offset, sizeof(context->DREQ1));
-		importDataAuto(&context->DMAOR, data, offset, sizeof(context->DMAOR));
-		importDataAuto(&context->SAR0, data, offset, sizeof(context->SAR0));
-		importDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
-		importDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
-		importDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
-		importDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
-		importDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
-		importDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
-		importDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
-		importDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
-		importDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
-		importDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
-		importDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
-		importDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
-		importDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
-		importDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
-		importDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
-		importDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
-		importDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
-		importDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
-		importDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
-		importDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
-		importDataAuto(&context->WDTSR, data, offset, sizeof(context->WDTSR));
-		importDataAuto(&context->WDTRST, data, offset, sizeof(context->WDTRST));
-		importDataAuto(context->FRT_Tab, data, offset, sizeof(context->FRT_Tab));
-		importDataAuto(&context->FRTCNT, data, offset, sizeof(context->FRTCNT));
-		importDataAuto(&context->FRTOCRA, data, offset, sizeof(context->FRTOCRA));
-		importDataAuto(&context->FRTOCRB, data, offset, sizeof(context->FRTOCRB));
-		importDataAuto(&context->FRTTIER, data, offset, sizeof(context->FRTTIER));
-		importDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
-		importDataAuto(&context->FRTTCR, data, offset, sizeof(context->FRTTCR));
-		importDataAuto(&context->FRTTOCR, data, offset, sizeof(context->FRTTOCR));
-		importDataAuto(&context->FRTICR, data, offset, sizeof(context->FRTICR));
-		importDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
-		importDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
-		importDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		ImportDataAuto(context->Cache, data, offset, sizeof(context->Cache));
+		ImportDataAuto(context->R, data, offset, sizeof(context->R));
+		ImportDataAuto(&context->SR, data, offset, sizeof(context->SR));
+		ImportDataAuto(&context->INT, data, offset, sizeof(context->INT));
+		ImportDataAuto(&context->GBR, data, offset, sizeof(context->GBR));
+		ImportDataAuto(&context->VBR, data, offset, sizeof(context->VBR));
+		ImportDataAuto(context->INT_QUEUE, data, offset, sizeof(context->INT_QUEUE));
+		ImportDataAuto(&context->MACH, data, offset, sizeof(context->MACH));
+		ImportDataAuto(&context->MACL, data, offset, sizeof(context->MACL));
+		ImportDataAuto(&context->PR, data, offset, sizeof(context->PR));
+		ImportDataAuto(&context->PC, data, offset, sizeof(context->PC));
+		ImportDataAuto(&context->Status, data, offset, sizeof(context->Status));
+		ImportDataAuto(&context->Base_PC, data, offset, sizeof(context->Base_PC));
+		ImportDataAuto(&context->Fetch_Start, data, offset, sizeof(context->Fetch_Start));
+		ImportDataAuto(&context->Fetch_End, data, offset, sizeof(context->Fetch_End));
+		ImportDataAuto(&context->DS_Inst, data, offset, sizeof(context->DS_Inst));
+		ImportDataAuto(&context->DS_PC, data, offset, sizeof(context->DS_PC));
+		ImportDataAuto(&context->Odometer, data, offset, sizeof(context->Odometer));
+		ImportDataAuto(&context->Cycle_TD, data, offset, sizeof(context->Cycle_TD));
+		ImportDataAuto(&context->Cycle_IO, data, offset, sizeof(context->Cycle_IO));
+		ImportDataAuto(&context->Cycle_Sup, data, offset, sizeof(context->Cycle_Sup));
+		ImportDataAuto(context->IO_Reg, data, offset, sizeof(context->IO_Reg));
+		ImportDataAuto(&context->DVCR, data, offset, sizeof(context->DVCR));
+		ImportDataAuto(&context->DVSR, data, offset, sizeof(context->DVSR));
+		ImportDataAuto(&context->DVDNTH, data, offset, sizeof(context->DVDNTH));
+		ImportDataAuto(&context->DVDNTL, data, offset, sizeof(context->DVDNTL));
+		ImportDataAuto(&context->DRCR0, data, offset, sizeof(context->DRCR0));
+		ImportDataAuto(&context->DRCR1, data, offset, sizeof(context->DRCR1));
+		ImportDataAuto(&context->DREQ0, data, offset, sizeof(context->DREQ0));
+		ImportDataAuto(&context->DREQ1, data, offset, sizeof(context->DREQ1));
+		ImportDataAuto(&context->DMAOR, data, offset, sizeof(context->DMAOR));
+		ImportDataAuto(&context->SAR0, data, offset, sizeof(context->SAR0));
+		ImportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
+		ImportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
+		ImportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
+		ImportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
+		ImportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
+		ImportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
+		ImportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
+		ImportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
+		ImportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
+		ImportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
+		ImportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
+		ImportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
+		ImportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
+		ImportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
+		ImportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
+		ImportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
+		ImportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
+		ImportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
+		ImportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
+		ImportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
+		ImportDataAuto(&context->WDTSR, data, offset, sizeof(context->WDTSR));
+		ImportDataAuto(&context->WDTRST, data, offset, sizeof(context->WDTRST));
+		ImportDataAuto(context->FRT_Tab, data, offset, sizeof(context->FRT_Tab));
+		ImportDataAuto(&context->FRTCNT, data, offset, sizeof(context->FRTCNT));
+		ImportDataAuto(&context->FRTOCRA, data, offset, sizeof(context->FRTOCRA));
+		ImportDataAuto(&context->FRTOCRB, data, offset, sizeof(context->FRTOCRB));
+		ImportDataAuto(&context->FRTTIER, data, offset, sizeof(context->FRTTIER));
+		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		ImportDataAuto(&context->FRTTCR, data, offset, sizeof(context->FRTTCR));
+		ImportDataAuto(&context->FRTTOCR, data, offset, sizeof(context->FRTTOCR));
+		ImportDataAuto(&context->FRTICR, data, offset, sizeof(context->FRTICR));
+		ImportDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
+		ImportDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
+		ImportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
 	}
 
-	importDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
-	importDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
-	importDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
-	importDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
-	importDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
-	importDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
-	importDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
-	importDataAuto(&_32X_FM, data, offset, sizeof(_32X_FM));
-	importDataAuto(&_32X_RV, data, offset, sizeof(_32X_RV));
-	importDataAuto(&_32X_DREQ_ST, data, offset, sizeof(_32X_DREQ_ST));
-	importDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
-	importDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
-	importDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
-	importDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
-	importDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
-	importDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
-	importDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
-	importDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
-	importDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
-	importDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
-	importDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
-	importDataAuto(&CPL_SSH2, data, offset, sizeof(CPL_SSH2));
-	importDataAuto(&CPL_MSH2, data, offset, sizeof(CPL_MSH2));
-	importDataAuto(&Cycles_MSH2, data, offset, sizeof(Cycles_MSH2));
-	importDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
+	ImportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
+	ImportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
+	ImportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
+	ImportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
+	ImportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
+	ImportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
+	ImportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
+	ImportDataAuto(&_32X_FM, data, offset, sizeof(_32X_FM));
+	ImportDataAuto(&_32X_RV, data, offset, sizeof(_32X_RV));
+	ImportDataAuto(&_32X_DREQ_ST, data, offset, sizeof(_32X_DREQ_ST));
+	ImportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
+	ImportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
+	ImportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
+	ImportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
+	ImportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
+	ImportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
+	ImportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
+	ImportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
+	ImportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
+	ImportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
+	ImportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
+	ImportDataAuto(&CPL_SSH2, data, offset, sizeof(CPL_SSH2));
+	ImportDataAuto(&CPL_MSH2, data, offset, sizeof(CPL_MSH2));
+	ImportDataAuto(&Cycles_MSH2, data, offset, sizeof(Cycles_MSH2));
+	ImportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
 
-	importDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
-	importDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
-	importDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
+	ImportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
+	ImportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
+	ImportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
 
-	importDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
-	importDataAuto(&Bank_SH2, data, offset, sizeof(Bank_SH2));
+	ImportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
+	ImportDataAuto(&Bank_SH2, data, offset, sizeof(Bank_SH2));
 
-	importDataAuto(PWM_FIFO_R, data, offset, sizeof(PWM_FIFO_R));
-	importDataAuto(PWM_FIFO_L, data, offset, sizeof(PWM_FIFO_L));
-	importDataAuto(&PWM_RP_R, data, offset, sizeof(PWM_RP_R));
-	importDataAuto(&PWM_WP_R, data, offset, sizeof(PWM_WP_R));
-	importDataAuto(&PWM_RP_L, data, offset, sizeof(PWM_RP_L));
-	importDataAuto(&PWM_WP_L, data, offset, sizeof(PWM_WP_L));
-	importDataAuto(&PWM_Cycles, data, offset, sizeof(PWM_Cycles));
-	importDataAuto(&PWM_Cycle, data, offset, sizeof(PWM_Cycle));
-	importDataAuto(&PWM_Cycle_Cnt, data, offset, sizeof(PWM_Cycle_Cnt));
-	importDataAuto(&PWM_Int, data, offset, sizeof(PWM_Int));
-	importDataAuto(&PWM_Int_Cnt, data, offset, sizeof(PWM_Int_Cnt));
-	importDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
-	importDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
-	importDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
+	ImportDataAuto(PWM_FIFO_R, data, offset, sizeof(PWM_FIFO_R));
+	ImportDataAuto(PWM_FIFO_L, data, offset, sizeof(PWM_FIFO_L));
+	ImportDataAuto(&PWM_RP_R, data, offset, sizeof(PWM_RP_R));
+	ImportDataAuto(&PWM_WP_R, data, offset, sizeof(PWM_WP_R));
+	ImportDataAuto(&PWM_RP_L, data, offset, sizeof(PWM_RP_L));
+	ImportDataAuto(&PWM_WP_L, data, offset, sizeof(PWM_WP_L));
+	ImportDataAuto(&PWM_Cycles, data, offset, sizeof(PWM_Cycles));
+	ImportDataAuto(&PWM_Cycle, data, offset, sizeof(PWM_Cycle));
+	ImportDataAuto(&PWM_Cycle_Cnt, data, offset, sizeof(PWM_Cycle_Cnt));
+	ImportDataAuto(&PWM_Int, data, offset, sizeof(PWM_Int));
+	ImportDataAuto(&PWM_Int_Cnt, data, offset, sizeof(PWM_Int_Cnt));
+	ImportDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
+	ImportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
+	ImportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
 
-	importDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
-	importDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
-	importDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
+	ImportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
+	ImportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
+	ImportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
 
 	M68K_32X_Mode();
 	_32X_Set_FB();
@@ -1620,11 +1618,11 @@ void Savestate::gsxImport32X(const unsigned char* data)
 
 
 /**
- * gsxExport32X(): Save 32X data to a GSX savestate.
+ * GsxExport32X(): Save 32X data to a GSX savestate.
  * (Ported from Gens Rerecording.)
  * @param data Savestate data buffer.
  */
-void Savestate::gsxExport32X(unsigned char* data)
+void Savestate::GsxExport32X(unsigned char* data)
 {
 	// NOTE: Gens v7 Savestates with 32X data will *not* work on older versions of Gens!
 	unsigned int offset = 0;
@@ -1634,125 +1632,125 @@ void Savestate::gsxExport32X(unsigned char* data)
 	{
 		SH2_CONTEXT* context = (contextNum == 0) ? &M_SH2 : &S_SH2;
 	
-		exportDataAuto(context->Cache, data, offset, sizeof(context->Cache));
-		exportDataAuto(context->R, data, offset, sizeof(context->R));
-		exportDataAuto(&context->SR, data, offset, sizeof(context->SR));
-		exportDataAuto(&context->INT, data, offset, sizeof(context->INT));
-		exportDataAuto(&context->GBR, data, offset, sizeof(context->GBR));
-		exportDataAuto(&context->VBR, data, offset, sizeof(context->VBR));
-		exportDataAuto(context->INT_QUEUE, data, offset, sizeof(context->INT_QUEUE));
-		exportDataAuto(&context->MACH, data, offset, sizeof(context->MACH));
-		exportDataAuto(&context->MACL, data, offset, sizeof(context->MACL));
-		exportDataAuto(&context->PR, data, offset, sizeof(context->PR));
-		exportDataAuto(&context->PC, data, offset, sizeof(context->PC));
-		exportDataAuto(&context->Status, data, offset, sizeof(context->Status));
-		exportDataAuto(&context->Base_PC, data, offset, sizeof(context->Base_PC));
-		exportDataAuto(&context->Fetch_Start, data, offset, sizeof(context->Fetch_Start));
-		exportDataAuto(&context->Fetch_End, data, offset, sizeof(context->Fetch_End));
-		exportDataAuto(&context->DS_Inst, data, offset, sizeof(context->DS_Inst));
-		exportDataAuto(&context->DS_PC, data, offset, sizeof(context->DS_PC));
-		exportDataAuto(&context->Odometer, data, offset, sizeof(context->Odometer));
-		exportDataAuto(&context->Cycle_TD, data, offset, sizeof(context->Cycle_TD));
-		exportDataAuto(&context->Cycle_IO, data, offset, sizeof(context->Cycle_IO));
-		exportDataAuto(&context->Cycle_Sup, data, offset, sizeof(context->Cycle_Sup));
-		exportDataAuto(context->IO_Reg, data, offset, sizeof(context->IO_Reg));
-		exportDataAuto(&context->DVCR, data, offset, sizeof(context->DVCR));
-		exportDataAuto(&context->DVSR, data, offset, sizeof(context->DVSR));
-		exportDataAuto(&context->DVDNTH, data, offset, sizeof(context->DVDNTH));
-		exportDataAuto(&context->DVDNTL, data, offset, sizeof(context->DVDNTL));
-		exportDataAuto(&context->DRCR0, data, offset, sizeof(context->DRCR0));
-		exportDataAuto(&context->DRCR1, data, offset, sizeof(context->DRCR1));
-		exportDataAuto(&context->DREQ0, data, offset, sizeof(context->DREQ0));
-		exportDataAuto(&context->DREQ1, data, offset, sizeof(context->DREQ1));
-		exportDataAuto(&context->DMAOR, data, offset, sizeof(context->DMAOR));
-		exportDataAuto(&context->SAR0, data, offset, sizeof(context->SAR0));
-		exportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
-		exportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
-		exportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
-		exportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
-		exportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
-		exportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
-		exportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
-		exportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
-		exportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
-		exportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
-		exportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
-		exportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
-		exportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
-		exportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
-		exportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
-		exportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
-		exportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
-		exportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
-		exportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
-		exportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
-		exportDataAuto(&context->WDTSR, data, offset, sizeof(context->WDTSR));
-		exportDataAuto(&context->WDTRST, data, offset, sizeof(context->WDTRST));
-		exportDataAuto(context->FRT_Tab, data, offset, sizeof(context->FRT_Tab));
-		exportDataAuto(&context->FRTCNT, data, offset, sizeof(context->FRTCNT));
-		exportDataAuto(&context->FRTOCRA, data, offset, sizeof(context->FRTOCRA));
-		exportDataAuto(&context->FRTOCRB, data, offset, sizeof(context->FRTOCRB));
-		exportDataAuto(&context->FRTTIER, data, offset, sizeof(context->FRTTIER));
-		exportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
-		exportDataAuto(&context->FRTTCR, data, offset, sizeof(context->FRTTCR));
-		exportDataAuto(&context->FRTTOCR, data, offset, sizeof(context->FRTTOCR));
-		exportDataAuto(&context->FRTICR, data, offset, sizeof(context->FRTICR));
-		exportDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
-		exportDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
-		exportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		ExportDataAuto(context->Cache, data, offset, sizeof(context->Cache));
+		ExportDataAuto(context->R, data, offset, sizeof(context->R));
+		ExportDataAuto(&context->SR, data, offset, sizeof(context->SR));
+		ExportDataAuto(&context->INT, data, offset, sizeof(context->INT));
+		ExportDataAuto(&context->GBR, data, offset, sizeof(context->GBR));
+		ExportDataAuto(&context->VBR, data, offset, sizeof(context->VBR));
+		ExportDataAuto(context->INT_QUEUE, data, offset, sizeof(context->INT_QUEUE));
+		ExportDataAuto(&context->MACH, data, offset, sizeof(context->MACH));
+		ExportDataAuto(&context->MACL, data, offset, sizeof(context->MACL));
+		ExportDataAuto(&context->PR, data, offset, sizeof(context->PR));
+		ExportDataAuto(&context->PC, data, offset, sizeof(context->PC));
+		ExportDataAuto(&context->Status, data, offset, sizeof(context->Status));
+		ExportDataAuto(&context->Base_PC, data, offset, sizeof(context->Base_PC));
+		ExportDataAuto(&context->Fetch_Start, data, offset, sizeof(context->Fetch_Start));
+		ExportDataAuto(&context->Fetch_End, data, offset, sizeof(context->Fetch_End));
+		ExportDataAuto(&context->DS_Inst, data, offset, sizeof(context->DS_Inst));
+		ExportDataAuto(&context->DS_PC, data, offset, sizeof(context->DS_PC));
+		ExportDataAuto(&context->Odometer, data, offset, sizeof(context->Odometer));
+		ExportDataAuto(&context->Cycle_TD, data, offset, sizeof(context->Cycle_TD));
+		ExportDataAuto(&context->Cycle_IO, data, offset, sizeof(context->Cycle_IO));
+		ExportDataAuto(&context->Cycle_Sup, data, offset, sizeof(context->Cycle_Sup));
+		ExportDataAuto(context->IO_Reg, data, offset, sizeof(context->IO_Reg));
+		ExportDataAuto(&context->DVCR, data, offset, sizeof(context->DVCR));
+		ExportDataAuto(&context->DVSR, data, offset, sizeof(context->DVSR));
+		ExportDataAuto(&context->DVDNTH, data, offset, sizeof(context->DVDNTH));
+		ExportDataAuto(&context->DVDNTL, data, offset, sizeof(context->DVDNTL));
+		ExportDataAuto(&context->DRCR0, data, offset, sizeof(context->DRCR0));
+		ExportDataAuto(&context->DRCR1, data, offset, sizeof(context->DRCR1));
+		ExportDataAuto(&context->DREQ0, data, offset, sizeof(context->DREQ0));
+		ExportDataAuto(&context->DREQ1, data, offset, sizeof(context->DREQ1));
+		ExportDataAuto(&context->DMAOR, data, offset, sizeof(context->DMAOR));
+		ExportDataAuto(&context->SAR0, data, offset, sizeof(context->SAR0));
+		ExportDataAuto(&context->DAR0, data, offset, sizeof(context->DAR0));
+		ExportDataAuto(&context->TCR0, data, offset, sizeof(context->TCR0));
+		ExportDataAuto(&context->CHCR0, data, offset, sizeof(context->CHCR0));
+		ExportDataAuto(&context->SAR1, data, offset, sizeof(context->SAR1));
+		ExportDataAuto(&context->DAR1, data, offset, sizeof(context->DAR1));
+		ExportDataAuto(&context->TCR1, data, offset, sizeof(context->TCR1));
+		ExportDataAuto(&context->CHCR1, data, offset, sizeof(context->CHCR1));
+		ExportDataAuto(&context->VCRDIV, data, offset, sizeof(context->VCRDIV));
+		ExportDataAuto(&context->VCRDMA0, data, offset, sizeof(context->VCRDMA0));
+		ExportDataAuto(&context->VCRDMA1, data, offset, sizeof(context->VCRDMA1));
+		ExportDataAuto(&context->VCRWDT, data, offset, sizeof(context->VCRWDT));
+		ExportDataAuto(&context->IPDIV, data, offset, sizeof(context->IPDIV));
+		ExportDataAuto(&context->IPDMA, data, offset, sizeof(context->IPDMA));
+		ExportDataAuto(&context->IPWDT, data, offset, sizeof(context->IPWDT));
+		ExportDataAuto(&context->IPBSC, data, offset, sizeof(context->IPBSC));
+		ExportDataAuto(&context->BARA, data, offset, sizeof(context->BARA));
+		ExportDataAuto(&context->BAMRA, data, offset, sizeof(context->BAMRA));
+		ExportDataAuto(context->WDT_Tab, data, offset, sizeof(context->WDT_Tab));
+		ExportDataAuto(&context->WDTCNT, data, offset, sizeof(context->WDTCNT));
+		ExportDataAuto(&context->WDT_Sft, data, offset, sizeof(context->WDT_Sft));
+		ExportDataAuto(&context->WDTSR, data, offset, sizeof(context->WDTSR));
+		ExportDataAuto(&context->WDTRST, data, offset, sizeof(context->WDTRST));
+		ExportDataAuto(context->FRT_Tab, data, offset, sizeof(context->FRT_Tab));
+		ExportDataAuto(&context->FRTCNT, data, offset, sizeof(context->FRTCNT));
+		ExportDataAuto(&context->FRTOCRA, data, offset, sizeof(context->FRTOCRA));
+		ExportDataAuto(&context->FRTOCRB, data, offset, sizeof(context->FRTOCRB));
+		ExportDataAuto(&context->FRTTIER, data, offset, sizeof(context->FRTTIER));
+		ExportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
+		ExportDataAuto(&context->FRTTCR, data, offset, sizeof(context->FRTTCR));
+		ExportDataAuto(&context->FRTTOCR, data, offset, sizeof(context->FRTTOCR));
+		ExportDataAuto(&context->FRTICR, data, offset, sizeof(context->FRTICR));
+		ExportDataAuto(&context->FRT_Sft, data, offset, sizeof(context->FRT_Sft));
+		ExportDataAuto(&context->BCR1, data, offset, sizeof(context->BCR1));
+		ExportDataAuto(&context->FRTCSR, data, offset, sizeof(context->FRTCSR));
 	}
 	
-	exportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
-	exportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
-	exportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
-	exportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
-	exportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
-	exportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
-	exportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
-	exportDataAuto(&_32X_FM, data, offset, sizeof(_32X_FM));
-	exportDataAuto(&_32X_RV, data, offset, sizeof(_32X_RV));
-	exportDataAuto(&_32X_DREQ_ST, data, offset, sizeof(_32X_DREQ_ST));
-	exportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
-	exportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
-	exportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
-	exportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
-	exportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
-	exportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
-	exportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
-	exportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
-	exportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
-	exportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
-	exportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
-	exportDataAuto(&CPL_SSH2, data, offset, sizeof(CPL_SSH2));
-	exportDataAuto(&CPL_MSH2, data, offset, sizeof(CPL_MSH2));
-	exportDataAuto(&Cycles_MSH2, data, offset, sizeof(Cycles_MSH2));
-	exportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
+	ExportDataAuto(_32X_Ram, data, offset, sizeof(_32X_Ram));
+	ExportDataAuto(_MSH2_Reg, data, offset, sizeof(_MSH2_Reg));
+	ExportDataAuto(_SSH2_Reg, data, offset, sizeof(_SSH2_Reg));
+	ExportDataAuto(_SH2_VDP_Reg, data, offset, sizeof(_SH2_VDP_Reg));
+	ExportDataAuto(_32X_Comm, data, offset, sizeof(_32X_Comm));
+	ExportDataAuto(&_32X_ADEN, data, offset, sizeof(_32X_ADEN));
+	ExportDataAuto(&_32X_RES, data, offset, sizeof(_32X_RES));
+	ExportDataAuto(&_32X_FM, data, offset, sizeof(_32X_FM));
+	ExportDataAuto(&_32X_RV, data, offset, sizeof(_32X_RV));
+	ExportDataAuto(&_32X_DREQ_ST, data, offset, sizeof(_32X_DREQ_ST));
+	ExportDataAuto(&_32X_DREQ_SRC, data, offset, sizeof(_32X_DREQ_SRC));
+	ExportDataAuto(&_32X_DREQ_DST, data, offset, sizeof(_32X_DREQ_DST));
+	ExportDataAuto(&_32X_DREQ_LEN, data, offset, sizeof(_32X_DREQ_LEN));
+	ExportDataAuto(_32X_FIFO_A, data, offset, sizeof(_32X_FIFO_A));
+	ExportDataAuto(_32X_FIFO_B, data, offset, sizeof(_32X_FIFO_B));
+	ExportDataAuto(&_32X_FIFO_Block, data, offset, sizeof(_32X_FIFO_Block));
+	ExportDataAuto(&_32X_FIFO_Read, data, offset, sizeof(_32X_FIFO_Read));
+	ExportDataAuto(&_32X_FIFO_Write, data, offset, sizeof(_32X_FIFO_Write));
+	ExportDataAuto(&_32X_MINT, data, offset, sizeof(_32X_MINT));
+	ExportDataAuto(&_32X_SINT, data, offset, sizeof(_32X_SINT));
+	ExportDataAuto(&_32X_HIC, data, offset, sizeof(_32X_HIC));
+	ExportDataAuto(&CPL_SSH2, data, offset, sizeof(CPL_SSH2));
+	ExportDataAuto(&CPL_MSH2, data, offset, sizeof(CPL_MSH2));
+	ExportDataAuto(&Cycles_MSH2, data, offset, sizeof(Cycles_MSH2));
+	ExportDataAuto(&Cycles_SSH2, data, offset, sizeof(Cycles_SSH2));
 	
-	exportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
-	exportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
-	exportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
+	ExportDataAuto(&_32X_VDP, data, offset, sizeof(_32X_VDP));
+	ExportDataAuto(_32X_VDP_Ram, data, offset, sizeof(_32X_VDP_Ram));
+	ExportDataAuto(_32X_VDP_CRam, data, offset, sizeof(_32X_VDP_CRam));
 	
-	exportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
-	exportDataAuto(&Bank_SH2, data, offset, sizeof(Bank_SH2));
+	ExportDataAuto(Set_SR_Table, data, offset, sizeof(Set_SR_Table));
+	ExportDataAuto(&Bank_SH2, data, offset, sizeof(Bank_SH2));
 	
-	exportDataAuto(PWM_FIFO_R, data, offset, sizeof(PWM_FIFO_R));
-	exportDataAuto(PWM_FIFO_L, data, offset, sizeof(PWM_FIFO_L));
-	exportDataAuto(&PWM_RP_R, data, offset, sizeof(PWM_RP_R));
-	exportDataAuto(&PWM_WP_R, data, offset, sizeof(PWM_WP_R));
-	exportDataAuto(&PWM_RP_L, data, offset, sizeof(PWM_RP_L));
-	exportDataAuto(&PWM_WP_L, data, offset, sizeof(PWM_WP_L));
-	exportDataAuto(&PWM_Cycles, data, offset, sizeof(PWM_Cycles));
-	exportDataAuto(&PWM_Cycle, data, offset, sizeof(PWM_Cycle));
-	exportDataAuto(&PWM_Cycle_Cnt, data, offset, sizeof(PWM_Cycle_Cnt));
-	exportDataAuto(&PWM_Int, data, offset, sizeof(PWM_Int));
-	exportDataAuto(&PWM_Int_Cnt, data, offset, sizeof(PWM_Int_Cnt));
-	exportDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
-	exportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
-	exportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
+	ExportDataAuto(PWM_FIFO_R, data, offset, sizeof(PWM_FIFO_R));
+	ExportDataAuto(PWM_FIFO_L, data, offset, sizeof(PWM_FIFO_L));
+	ExportDataAuto(&PWM_RP_R, data, offset, sizeof(PWM_RP_R));
+	ExportDataAuto(&PWM_WP_R, data, offset, sizeof(PWM_WP_R));
+	ExportDataAuto(&PWM_RP_L, data, offset, sizeof(PWM_RP_L));
+	ExportDataAuto(&PWM_WP_L, data, offset, sizeof(PWM_WP_L));
+	ExportDataAuto(&PWM_Cycles, data, offset, sizeof(PWM_Cycles));
+	ExportDataAuto(&PWM_Cycle, data, offset, sizeof(PWM_Cycle));
+	ExportDataAuto(&PWM_Cycle_Cnt, data, offset, sizeof(PWM_Cycle_Cnt));
+	ExportDataAuto(&PWM_Int, data, offset, sizeof(PWM_Int));
+	ExportDataAuto(&PWM_Int_Cnt, data, offset, sizeof(PWM_Int_Cnt));
+	ExportDataAuto(&PWM_Mode, data, offset, sizeof(PWM_Mode));
+	ExportDataAuto(&PWM_Out_R, data, offset, sizeof(PWM_Out_R));
+	ExportDataAuto(&PWM_Out_L, data, offset, sizeof(PWM_Out_L));
 	
-	exportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
-	exportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
-	exportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
+	ExportDataAuto(_32X_Rom, data, offset, 1024); // just in case some of these bytes are not in fact read-only as was apparently the case with Sega CD games (1024 seems acceptably small)
+	ExportDataAuto(_32X_MSH2_Rom, data, offset, sizeof(_32X_MSH2_Rom));
+	ExportDataAuto(_32X_SSH2_Rom, data, offset, sizeof(_32X_SSH2_Rom));
 	
 #ifdef GENS_DEBUG_SAVESTATE
 	assert(offset == G32X_LENGTH_EX);
@@ -1761,10 +1759,10 @@ void Savestate::gsxExport32X(unsigned char* data)
 
 
 /**
- * getSRAMFilename(): Get the filename of the SRAM file.
+ * GetSRAMFilename(): Get the filename of the SRAM file.
  * @return Filename of the SRAM file.
  */
-inline string Savestate::getSRAMFilename(void)
+inline string Savestate::GetSRAMFilename(void)
 {
 	if (strlen(ROM_Name) == 0)
 		return "";
@@ -1773,10 +1771,10 @@ inline string Savestate::getSRAMFilename(void)
 
 
 /**
- * loadSRAM(): Load the SRAM file.
+ * LoadSRAM(): Load the SRAM file.
  * @return 1 on success; 0 on error.
  */
-int Savestate::loadSRAM(void)
+int Savestate::LoadSRAM(void)
 {
 	FILE* SRAM_File = 0;
 	
@@ -1786,7 +1784,7 @@ int Savestate::loadSRAM(void)
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
-	string filename = getSRAMFilename();
+	string filename = GetSRAMFilename();
 	if (filename.empty())
 		return 0;
 	if ((SRAM_File = fopen(filename.c_str(), "rb")) == 0)
@@ -1802,10 +1800,10 @@ int Savestate::loadSRAM(void)
 
 
 /**
- * saveSRAM(): Save the SRAM file.
+ * SaveSRAM(): Save the SRAM file.
  * @return 1 on success; 0 on error.
  */
-int Savestate::saveSRAM(void)
+int Savestate::SaveSRAM(void)
 {
 	FILE* SRAM_File = 0;
 	int size_to_save, i;
@@ -1827,7 +1825,7 @@ int Savestate::saveSRAM(void)
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
-	string filename = getSRAMFilename();
+	string filename = GetSRAMFilename();
 	if (filename.empty())
 		return 0;
 	if ((SRAM_File = fopen(filename.c_str(), "wb")) == 0)
@@ -1842,10 +1840,10 @@ int Savestate::saveSRAM(void)
 
 
 /**
- * formatSegaCD_BRAM(): Format the internal SegaCD BRAM.
+ * FormatSegaCD_BRAM(): Format the internal SegaCD BRAM.
  * @param buf Pointer to location 0x1FC0 in the internal SegaCD BRAM.
  */
-void Savestate::formatSegaCD_BRAM(unsigned char *buf)
+void Savestate::FormatSegaCD_BRAM(unsigned char *buf)
 {
 	// TODO: Format cartridge BRAM.
 	static const char brmHeader[0x40] =
@@ -1864,13 +1862,13 @@ void Savestate::formatSegaCD_BRAM(unsigned char *buf)
 
 
 /**
- * formatSegaCD_BackupRAM(): Format the SegaCD backup RAM.
+ * FormatSegaCD_BackupRAM(): Format the SegaCD backup RAM.
  */
-void Savestate::formatSegaCD_BackupRAM(void)
+void Savestate::FormatSegaCD_BackupRAM(void)
 {
 	// SegaCD internal BRAM.
 	memset(Ram_Backup, 0, 8 * 1024);
-	formatSegaCD_BRAM(&Ram_Backup[0x1FC0]);
+	FormatSegaCD_BRAM(&Ram_Backup[0x1FC0]);
 	
 	// SegaCD cartridge memory.
 	// TODO: Format the cartridge memory.
@@ -1879,10 +1877,10 @@ void Savestate::formatSegaCD_BackupRAM(void)
 
 
 /**
- * getSRAMFilename(): Get the filename of the BRAM file.
+ * GetSRAMFilename(): Get the filename of the BRAM file.
  * @return Filename of the BRAM file.
  */
-inline string Savestate::getBRAMFilename(void)
+inline string Savestate::GetBRAMFilename(void)
 {
 	if (strlen(ROM_Name) == 0)
 		return "";
@@ -1891,20 +1889,20 @@ inline string Savestate::getBRAMFilename(void)
 
 
 /**
- * loadBRAM(): Load the BRAM file.
+ * LoadBRAM(): Load the BRAM file.
  * @return 1 on success; 0 on error.
  */
-int Savestate::loadBRAM(void)
+int Savestate::LoadBRAM(void)
 {
 	FILE* BRAM_File = 0;
 	
-	Savestate::formatSegaCD_BackupRAM();
+	Savestate::FormatSegaCD_BackupRAM();
 	
 #ifdef GENS_OS_WIN32
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
-	string filename = getBRAMFilename();
+	string filename = GetBRAMFilename();
 	if (filename.empty())
 		return 0;
 	if ((BRAM_File = fopen(filename.c_str(), "rb")) == 0)
@@ -1919,10 +1917,10 @@ int Savestate::loadBRAM(void)
 }
 
 /**
- * saveBRAM(): Save the BRAM file.
+ * SaveBRAM(): Save the BRAM file.
  * @return 1 on success; 0 on error.
  */
-int Savestate::saveBRAM(void)
+int Savestate::SaveBRAM(void)
 {
 	FILE* BRAM_File = 0;
 	
@@ -1930,7 +1928,7 @@ int Savestate::saveBRAM(void)
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
 	
-	string filename = getBRAMFilename();
+	string filename = GetBRAMFilename();
 	if (filename.empty())
 		return 0;
 	if ((BRAM_File = fopen(filename.c_str(), "wb")) == 0)

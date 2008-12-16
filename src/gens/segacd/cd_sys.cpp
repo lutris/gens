@@ -1017,7 +1017,7 @@ int Close_Tray_CDD_cC(void)
 	else
 #endif /* GENS_CDROM */
 	{
-		string new_iso = Savestate::selectCDImage(Rom_Dir);
+		string new_iso = Savestate::SelectCDImage(Rom_Dir);
 		if (!new_iso.empty())
 		{
 			Reload_SegaCD(new_iso.c_str());

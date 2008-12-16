@@ -215,7 +215,7 @@ void Init_Genesis_SRAM(ROM_t* MD_ROM)
 		SRAM_Custom = 0;
 	
 	// Load the SRAM file.
-	Savestate::loadSRAM();
+	Savestate::LoadSRAM();
 }
 
 

@@ -727,9 +727,9 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	audio->clearSoundBuffer();
 	
 	if (SegaCD_Started)
-		Savestate::saveBRAM();
+		Savestate::SaveBRAM();
 	
-	Savestate::saveSRAM();
+	Savestate::SaveSRAM();
 	
 	// TODO: Send "Close ROM" event to registered MDP event handlers.
 	//Save_Patch_File();

@@ -204,14 +204,14 @@ void Input_KeyDown(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				filename = Savestate::selectFile(true, State_Dir);
+				filename = Savestate::SelectFile(true, State_Dir);
 				if (!filename.empty())
-					Savestate::saveState(filename);
+					Savestate::SaveState(filename);
 			}
 			else if (!mod)
 			{
-				filename = Savestate::getStateFilename();
-				Savestate::saveState(filename);
+				filename = Savestate::GetStateFilename();
+				Savestate::SaveState(filename);
 			}
 			break;
 		
@@ -239,14 +239,14 @@ void Input_KeyDown(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				filename = Savestate::selectFile(false, State_Dir);
+				filename = Savestate::SelectFile(false, State_Dir);
 				if (!filename.empty())
-					Savestate::loadState(filename);
+					Savestate::LoadState(filename);
 			}
 			else if (!mod)
 			{
-				filename = Savestate::getStateFilename();
-				Savestate::loadState(filename);
+				filename = Savestate::GetStateFilename();
+				Savestate::LoadState(filename);
 			}
 			break;
 		

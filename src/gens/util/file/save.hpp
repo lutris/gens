@@ -45,54 +45,54 @@ extern char BRAM_Dir[GENS_PATH_MAX];
 class Savestate
 {
 	public:
-		static std::string selectFile(const bool save = false, const std::string& dir = "");
-		static std::string selectCDImage(const std::string& dir);
+		static std::string SelectFile(const bool save = false, const std::string& dir = "");
+		static std::string SelectCDImage(const std::string& dir);
 		
-		static FILE* getStateFile(void);
-		static std::string getStateFilename(void);
+		static FILE* GetStateFile(void);
+		static std::string GetStateFilename(void);
 		
-		static int loadState(const std::string& filename);
-		static int saveState(const std::string& filename);
+		static int LoadState(const std::string& filename);
+		static int SaveState(const std::string& filename);
 		
-		static int loadSRAM(void);
-		static int saveSRAM(void);
+		static int LoadSRAM(void);
+		static int SaveSRAM(void);
 		
-		static void formatSegaCD_BackupRAM(void);
+		static void FormatSegaCD_BackupRAM(void);
 		
-		static int loadBRAM(void);
-		static int saveBRAM(void);
+		static int LoadBRAM(void);
+		static int SaveBRAM(void);
 		
 	protected:
 		// ImportData / ExportData functions from Gens Rerecording
 		
-		static void importData(void* into, const void* data, 
+		static void ImportData(void* into, const void* data, 
 				       const unsigned int offset,
 				       unsigned int numBytes);
 		
-		static void exportData(const void* from, void* data,
+		static void ExportData(const void* from, void* data,
 				       const unsigned int offset,
 				       unsigned int numBytes);
 		
-		static void importDataAuto(void* into, const void* data,
+		static void ImportDataAuto(void* into, const void* data,
 					   unsigned int& offset,
 					   const unsigned int numBytes);
 		
-		static void exportDataAuto(const void* from, void* data,
+		static void ExportDataAuto(const void* from, void* data,
 					   unsigned int& offset,
 					   const unsigned int numBytes);
 		
-		static int gsxImportGenesis(const unsigned char* data);
-		static void gsxExportGenesis(unsigned char* data);
-		static void gsxImportSegaCD(const unsigned char* data);
-		static void gsxExportSegaCD(unsigned char* data);
-		static void gsxImport32X(const unsigned char* data);
-		static void gsxExport32X(unsigned char* data);
+		static int GsxImportGenesis(const unsigned char* data);
+		static void GsxExportGenesis(unsigned char* data);
+		static void GsxImportSegaCD(const unsigned char* data);
+		static void GsxExportSegaCD(unsigned char* data);
+		static void GsxImport32X(const unsigned char* data);
+		static void GsxExport32X(unsigned char* data);
 		
-		static std::string getSRAMFilename(void);
+		static std::string GetSRAMFilename(void);
 		
-		static void formatSegaCD_BRAM(unsigned char *buf);
+		static void FormatSegaCD_BRAM(unsigned char *buf);
 		
-		static std::string getBRAMFilename(void);
+		static std::string GetBRAMFilename(void);
 };
 
 //int Change_Dir(char *Dest, char *Dir, char *Titre, char *Filter, char *Ext);

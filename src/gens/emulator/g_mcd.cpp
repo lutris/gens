@@ -183,7 +183,8 @@ int Init_SegaCD(const char* iso_name)
 			audio->playSound();
 	}
 	
-	Savestate::loadBRAM();		// Initialise BRAM
+	// Initialize BRAM.
+	Savestate::LoadBRAM();
 	
 	// TODO: Send "Load ROM" event to registered MDP event handlers.
 	// Note: This is only used to reset patch information right now.
@@ -216,7 +217,8 @@ int Reload_SegaCD(const char* iso_name)
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();
 	
-	Savestate::saveBRAM();
+	// Save the current BRAM.
+	Savestate::SaveBRAM();
 	
 	GensUI::setWindowTitle_Init(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), true);
 	
@@ -227,7 +229,8 @@ int Reload_SegaCD(const char* iso_name)
 	// Set the window title to the localized console name and the game name.
 	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "SegaCD" : "MegaCD"), ROM_Name, "No Disc");
 	
-	Savestate::loadBRAM();
+	// Load the new BRAM.
+	Savestate::LoadBRAM();
 	
 	return 1;
 }

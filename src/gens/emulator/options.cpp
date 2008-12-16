@@ -93,7 +93,7 @@ void Options::setSaveSlot(const int newSaveSlot)
 	
 	// TODO: Change this to just check if the file exists.
 	FILE *f;
-	if ((f = Savestate::getStateFile()))
+	if ((f = Savestate::GetStateFile()))
 	{
 		fclose(f);
 		MESSAGE_NUM_L("SLOT %d [OCCUPIED]", "SLOT %d [OCCUPIED]", Current_State, 1500);

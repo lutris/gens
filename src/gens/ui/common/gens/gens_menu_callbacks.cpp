@@ -238,9 +238,9 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (Check_If_Kaillera_Running())
 				return 0;
 			*/
-			filename = Savestate::selectFile(false, State_Dir);
+			filename = Savestate::SelectFile(false, State_Dir);
 			if (!filename.empty())
-				Savestate::loadState(filename.c_str());
+				Savestate::LoadState(filename.c_str());
 			break;
 		
 		case IDM_FILE_SAVESTATE:
@@ -248,9 +248,9 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (Check_If_Kaillera_Running())
 				return 0;
 			*/
-			filename = Savestate::selectFile(true, State_Dir);
+			filename = Savestate::SelectFile(true, State_Dir);
 			if (!filename.empty())
-				Savestate::saveState(filename.c_str());
+				Savestate::SaveState(filename.c_str());
 			break;
 		
 		case IDM_FILE_QUICKLOAD:
@@ -258,8 +258,8 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (Check_If_Kaillera_Running())
 			return 0;
 			*/
-			filename = Savestate::getStateFilename();
-			Savestate::loadState(filename);
+			filename = Savestate::GetStateFilename();
+			Savestate::LoadState(filename);
 			break;
 		
 		case IDM_FILE_QUICKSAVE:
@@ -267,8 +267,8 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (Check_If_Kaillera_Running())
 			return 0;
 			*/
-			filename = Savestate::getStateFilename();
-			Savestate::saveState(filename.c_str());
+			filename = Savestate::GetStateFilename();
+			Savestate::SaveState(filename.c_str());
 			break;
 		
 		case IDM_FILE_CHANGESTATE_0:
