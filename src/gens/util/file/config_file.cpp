@@ -377,16 +377,16 @@ int Config::load(const string& filename, void* gameActive)
 	// ROM History. (Last 9 ROMs.)
 	ROM::Recent_ROMs.clear();
 	ROM::Recent_ROM_t recentROM;
-	char tmpFilename[GENS_PATH_MAX];
+	string tmpFilename;
 	
 	for (int romNum = 1; romNum <= 9; romNum++)
 	{
 		sprintf(buf, "ROM %d", romNum);
-		cfg.getString("General", buf, "", tmpFilename, sizeof(tmpFilename));
-		if (!tmpFilename[0])
+		tmpFilename = cfg.getString("General", buf, "");
+		if (tmpFilename.empty())
 			continue;
 		
-		recentROM.filename = string(tmpFilename);
+		recentROM.filename = tmpFilename;
 		
 		sprintf(buf, "ROM %d Type", romNum);
 		recentROM.type = cfg.getInt("General", buf, 0);
