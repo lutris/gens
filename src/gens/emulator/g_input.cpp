@@ -317,25 +317,31 @@ void Input_KeyDown(int key)
 		case GENS_KEY_7:
 		case GENS_KEY_8:
 		case GENS_KEY_9:
-			if (!mod)
+		{
+			int value = (key - GENS_KEY_0);
+			
+			if (!mod && (value >= 0 && value <= 9))
 			{
-				Options::setSaveSlot(key - GENS_KEY_0);
+				// No modifier key. Select save slot.
+				Options::setSaveSlot(value);
 				Sync_Gens_Window_FileMenu();
 			}
-			else if (key != GENS_KEY_0 && (mod & GENS_KMOD_CTRL))
+			else if ((mod & GENS_KMOD_CTRL) && (value >= 1 && value <= 9))
 			{
-				if (ROM::Recent_ROMs.size() <= (key - GENS_KEY_1))
+				// Ctrl. Select ROM from ROM History.
+				if (ROM::Recent_ROMs.size() < value)
 					break;
 				
 				//if ((Check_If_Kaillera_Running())) return 0;
 				if (audio->playingGYM())
 					Stop_Play_GYM();
 				
-				ROM::openROM(ROM::Recent_ROMs.at(key - GENS_KEY_1).filename.c_str());
+				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename.c_str());
 				
 				Sync_Gens_Window();
 			}
 			break;
+		}
 		
 #ifdef GENS_CDROM
 		case GENS_KEY_b:
