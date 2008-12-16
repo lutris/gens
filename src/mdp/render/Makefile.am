@@ -26,7 +26,8 @@ SUBDIRS += \
 		hq3x \
 		hq4x \
 		2xsai \
-		super_eagle
+		super_eagle \
+		super_2xsai
 
 noinst_HEADERS = pic.inc
 

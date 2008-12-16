@@ -579,6 +579,7 @@ src/mdp/render/2xsai/Makefile
 src/mdp/render/epx/Makefile
 src/mdp/render/epx_plus/Makefile
 src/mdp/render/super_eagle/Makefile
+src/mdp/render/super_2xsai/Makefile
 src/mdp/misc/Makefile
 src/mdp/misc/game_genie/Makefile
 ])
