@@ -279,25 +279,25 @@ align 64
 .Loop:
 		push	ecx
 		
-		movq	mm0, [eax+ebp+color5]
-		movq	mm1, [eax+ebp+color6]
+		movq	mm0, [eax + ebp + color5]
+		movq	mm1, [eax + ebp + color6]
 		movq	mm2, mm0
 		movq	mm3, mm1
 		movq	mm4, mm0
 		movq	mm5, mm1
 		
-		pand	mm0, [colorMask]
-		pand	mm1, [colorMask]
+		pand_localvar	mm0, colorMask
+		pand_localvar	mm1, colorMask
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand	mm3, [lowPixelMask]
+		pand_localvar	mm3, lowPixelMask
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
 		paddw	mm0, mm3		;mm0 contains the interpolated values
-		movq	[I56Pixel], mm0
+		put_movq_localvar	I56Pixel, mm0
 		movq	mm7, mm0
 		
 		;-------------------
@@ -306,18 +306,18 @@ align 64
 		movq	mm2, mm0
 		movq	mm3, mm1
 		
-		pand	mm0, [colorMask]
-		pand	mm1, [colorMask]
+		pand_localvar	mm0, colorMask
+		pand_localvar	mm1, colorMask
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand	mm3, [lowPixelMask]
+		pand_localvar	mm3, lowPixelMask
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
 		paddw	mm0, mm3		;mm0 contains the interpolated values
-		movq	[product1a], mm0
+		put_movq_localvar	product1a, mm0
 		;--------------------
 		
 		movq	mm0, mm7
@@ -325,18 +325,18 @@ align 64
 		movq	mm2, mm0
 		movq	mm3, mm1
 		
-		pand	mm0, [colorMask]
-		pand	mm1, [colorMask]
+		pand_localvar	mm0, colorMask
+		pand_localvar	mm1, colorMask
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand	mm3, [lowPixelMask]
+		pand_localvar	mm3, lowPixelMask
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
 		paddw	mm0, mm3
-		movq	[product1b], mm0
+		put_movq_localvar	product1b, mm0
 		
 		;-------------------------
 		;-------------------------
@@ -347,18 +347,18 @@ align 64
 		movq	mm4, mm0
 		movq	mm5, mm1
 		
-		pand	mm0, [colorMask]
-		pand	mm1, [colorMask]
+		pand_localvar	mm0, colorMask
+		pand_localvar	mm1, colorMask
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand	mm3, [lowPixelMask]
+		pand_localvar	mm3, lowPixelMask
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
 		paddw	mm0, mm3
-		movq	[I23Pixel], mm0
+		put_movq_localvar	I23Pixel, mm0
 		movq	mm7, mm0
 		
 		;---------------------
@@ -367,18 +367,18 @@ align 64
 		movq	mm2, mm0
 		movq	mm3, mm1
 		
-		pand	mm0, [colorMask]
-		pand	mm1, [colorMask]
+		pand_localvar	mm0, colorMask
+		pand_localvar	mm1, colorMask
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand	mm3, [lowPixelMask]
+		pand_localvar	mm3, lowPixelMask
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
 		paddw	mm0, mm3
-		movq	[product2a], mm0
+		put_movq_localvar	product2a, mm0
 		
 		;----------------------
 		movq	mm0, mm7
@@ -386,18 +386,18 @@ align 64
 		movq	mm2, mm0
 		movq	mm3, mm1
 		
-		pand	mm0, [colorMask]
-		pand	mm1, [colorMask]
+		pand_localvar	mm0, colorMask
+		pand_localvar	mm1, colorMask
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand	mm3, [lowPixelMask]
+		pand_localvar	mm3, lowPixelMask
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
 		paddw	mm0, mm3
-		movq	[product2b], mm0
+		put_movq_localvar	product2b, mm0
 		
 		
 		;////////////////////////////////
@@ -416,7 +416,7 @@ align 64
 		pcmpeqw	mm1, mm7
 		pcmpeqw	mm1, mm3
 		pand	mm0, mm1
-		movq	[Mask35], mm0
+		put_movq_localvar	Mask35, mm0
 		
 		movq	mm0, [eax + ebp + ebp + colorS1]
 		movq	mm1, [eax + ebp + color4]
@@ -432,8 +432,8 @@ align 64
 		pand	mm0, mm1
 		pand	mm2, mm3
 		por	mm0, mm2
-		pand	mm0, [Mask35]
-		movq	[Mask35b], mm0
+		pand_localvar		mm0, Mask35
+		put_movq_localvar	Mask35b, mm0
 		
 		;-----------
 		pxor	mm3, mm3
@@ -444,7 +444,7 @@ align 64
 		pcmpeqw	mm1, mm7
 		pcmpeqw	mm0, mm3
 		pand	mm0, mm1
-		movq	[Mask26], mm0
+		put_movq_localvar	Mask26, mm0
 		
 		movq	mm0, [eax + ebp + ebp + color1]
 		movq	mm1, [eax + ebp + colorS2]
@@ -460,8 +460,8 @@ align 64
 		pand	mm0, mm1
 		pand	mm2, mm3
 		por	mm0, mm2
-		pand	mm0, [Mask26]
-		movq	[Mask26b], mm0
+		pand_localvar		mm0, Mask26
+		put_movq_localvar	Mask26b, mm0
 		
 		;--------------------
 		movq	mm0, mm4
@@ -491,7 +491,7 @@ align 64
 		movq	mm4, [eax + ebp + color5]
 		movq	mm5, [eax + ebp + color6]
 		pxor	mm7, mm7
-		pand	mm6, [ONE]
+		pand_localvar	mm6, ONE
 		
 		movq	mm0, [eax + colorB1]
 		movq	mm1, [eax + ebp + color4]
@@ -601,18 +601,18 @@ align 64
 		pcmpgtw	mm7, mm0
 		pcmpgtw	mm0, mm1
 		
-		por	mm7, [Mask35]
-		por	mm1, [Mask26]
-		movq	[Mask35], mm7
-		movq	[Mask26], mm1
+		por_localvar		mm7, Mask35
+		por_localvar		mm1, Mask26
+		put_movq_localvar	Mask35, mm7
+		put_movq_localvar	Mask26, mm1
 	
 	.SKIP_GUESS:
 		;Start the ASSEMBLY !!!
 		
-		movq	mm4, [Mask35]
-		movq	mm5, [Mask26]
-		movq	mm6, [Mask35b]
-		movq	mm7, [Mask26b]
+		get_movq_localvar	mm4, Mask35
+		get_movq_localvar	mm5, Mask26
+		get_movq_localvar	mm6, Mask35b
+		get_movq_localvar	mm7, Mask26b
 		
 		movq	mm0, [eax + ebp + color5]
 		movq	mm1, [eax + ebp + color6]
@@ -643,15 +643,15 @@ align 64
 		por	mm1, mm6
 		pand	mm0, mm1
 		movq	mm1, mm5
-		pand	mm1, [I56Pixel]
+		pand_localvar		mm1, I56Pixel
 		por	mm0, mm1
 		movq	mm1, mm7
-		pand	mm1, [product1b]
+		pand_localvar		mm1, product1b
 		por	mm0, mm1
 		movq	mm1, mm2
-		pand	mm1, [product1a]
+		pand_localvar		mm1, product1a
 		por	mm0, mm1
-		movq	[final1a], mm0
+		put_movq_localvar	final1a, mm0
 		
 		movq	mm0, [eax + ebp + color6]
 		movq	mm1, mm3
@@ -659,15 +659,15 @@ align 64
 		por	mm1, mm7
 		pand	mm0, mm1
 		movq	mm1, mm4
-		pand	mm1, [I56Pixel]
+		pand_localvar		mm1, I56Pixel
 		por	mm0, mm1
 		movq	mm1, mm6
-		pand	mm1, [product1a]
+		pand_localvar		mm1, product1a
 		por	mm0, mm1
 		movq	mm1, mm2
-		pand	mm1, [product1b]
+		pand_localvar		mm1, product1b
 		por	mm0, mm1
-		movq	[final1b], mm0
+		put_movq_localvar	final1b, mm0
 		
 		movq	mm0, [eax + ebp + ebp + color2]
 		movq	mm1, mm3
@@ -675,15 +675,15 @@ align 64
 		por	mm1, mm7
 		pand	mm0, mm1
 		movq	mm1, mm4
-		pand	mm1, [I23Pixel]
+		pand_localvar		mm1, I23Pixel
 		por	mm0, mm1
 		movq	mm1, mm6
-		pand	mm1, [product2b]
+		pand_localvar		mm1, product2b
 		por	mm0, mm1
 		movq	mm1, mm2
-		pand	mm1, [product2a]
+		pand_localvar		mm1, product2a
 		por	mm0, mm1
-		movq	[final2a], mm0
+		put_movq_localvar	final2a, mm0
 		
 		movq	mm0, [eax + ebp + ebp + color3]
 		movq	mm1, mm3
@@ -691,22 +691,22 @@ align 64
 		por	mm1, mm6
 		pand	mm0, mm1
 		movq	mm1, mm5
-		pand	mm1, [I23Pixel]
+		pand_localvar		mm1, I23Pixel
 		por	mm0, mm1
 		movq	mm1, mm7
-		pand	mm1, [product2a]
+		pand_localvar		mm1, product2a
 		por	mm0, mm1
 		movq	mm1, mm2
-		pand	mm1, [product2b]
+		pand_localvar		mm1, product2b
 		por	mm0, mm1
-		movq	[final2b], mm0
+		put_movq_localvar	final2b, mm0
 		
 		
-		movq		mm0, [final1a]
-		movq		mm2, [final1b]
+		get_movq_localvar	mm0, final1a
+		get_movq_localvar	mm2, final1b
 		movq		mm1, mm0
-		movq		mm4, [final2a]
-		movq		mm6, [final2b]
+		get_movq_localvar	mm4, final2a
+		get_movq_localvar	mm6, final2b
 		movq		mm5, mm4
 		punpcklwd	mm0, mm2
 		punpckhwd	mm1, mm2
