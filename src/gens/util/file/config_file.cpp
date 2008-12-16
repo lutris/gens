@@ -153,7 +153,7 @@ int Config::save(const string& filename)
 	}
 	
 	// Make sure unused ROM entries are deleted.
-	for (int i = romNum; i < 9; i++)
+	for (int i = romNum; i <= 9; i++)
 	{
 		sprintf(buf, "ROM %d", i);
 		cfg.deleteEntry("General", buf);
