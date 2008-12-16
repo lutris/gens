@@ -70,7 +70,6 @@ class ROM
 		static ROM_t* loadSegaCD_BIOS(const std::string& filename);
 		
 		static unsigned int detectFormat(const unsigned char buf[2048]);
-		static unsigned int detectFormat_fopen(const char* filename);
 		
 		static unsigned int loadROM(const std::string& filename, ROM_t** retROM);
 		static void fixChecksum(void);

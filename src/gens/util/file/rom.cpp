@@ -275,51 +275,6 @@ unsigned int ROM::detectFormat(const unsigned char buf[2048])
 
 
 /**
- * detectFormat_fopen(): Detect the format of a given ROM file.
- * @param filename Filename of the ROM file.
- * @return ROM Type.
- */
-unsigned int ROM::detectFormat_fopen(const char* filename)
-{
-	Compressor *cmp;
-	list<CompressedFile> *files;
-	unsigned int romType;
-	
-	// Open the ROM file using the compressor functions.
-	cmp = new Compressor(filename);
-	if (!cmp->isFileLoaded())
-	{
-		// Cannot load the file.
-		delete cmp;
-		return ROMTYPE_SYS_NONE;
-	}
-	
-	// Get the file information.
-	files = cmp->getFileInfo();
-	
-	// Check how many files are available.
-	if (!files || files->empty())
-	{
-		// No files.
-		delete files;
-		delete cmp;
-		return ROMTYPE_SYS_NONE;
-	}
-	
-	// Get the first file in the archive.
-	// TODO: Store the compressed filename in ROM history.
-	unsigned char detectBuf[2048];
-	cmp->getFile(&(*files->begin()), detectBuf, sizeof(detectBuf));
-	romType = detectFormat(detectBuf);
-	
-	// Return the ROM type.
-	delete files;
-	delete cmp;
-	return romType;
-}
-
-
-/**
  * deinterleaveSMD(): Deinterleaves an SMD-format ROM.
  */
 void ROM::deinterleaveSMD(void)
