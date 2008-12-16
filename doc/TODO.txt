@@ -10,6 +10,13 @@ TODO for Gens/GS m6.1:
 - [MDP] Add plugin configuration save/load based on MDP UUID.
 - [MDPT_RENDER] asm: Apply optimization tips from http://www.mark.masmcode.com/.
   In particular, reduce dependencies.
+- Add --boot-cd command line option.
+- Don't show "Zip File Selection Dialog" if a ROM is opened in Full Screen.
+- Don't show "Zip File Selection Dialog" if an archive has multiple files
+  but only one has a ROM file extension.
+- Add "Exclusive Mode" so a plugin can gain exclusive control.
+  - Disables reset, close ROM, etc.
+- "Directory" registration for "Configure Directories".
 
 High-Level TODO:
 - Move most global variables to global Settings struct
