@@ -129,10 +129,6 @@ section .bss align=64
 	; for super2xSAI and supereagle
 	I56Pixel:	resb 8
 	I23Pixel:	resb 8
-	I5556Pixel:	resb 8
-	I2223Pixel:	resb 8
-	I5666Pixel:	resb 8
-	I2333Pixel:	resb 8
 	Mask26:		resb 8
 	Mask35:		resb 8
 	Mask26b:	resb 8
