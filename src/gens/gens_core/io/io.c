@@ -269,10 +269,13 @@ static unsigned char RD_Controller(unsigned int state,
 				out |= 0x20;
 			
 			return (out | 0x0F);
+		
+		default:
+			break;
 	}
 	
 	// Shouldn't happen...
-	printf("%s: Invalid Select Line State: %d\n", __func__, SelectLine_State);
+	fprintf(stderr, "io.c::%s(): Invalid Select Line State: %d\n", __func__, SelectLine_State);
 	return 0x00;
 }
 
