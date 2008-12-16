@@ -342,11 +342,10 @@ void ROM::fillROMInfo(void)
 	memcpy(myROM->Description,	&Rom_Data[0x1C8], 40);
 	memcpy(myROM->Countries,	&Rom_Data[0x1F0], 4);
 	
-	char tmp[15];
+	char tmp[14];
 	memcpy(&tmp[0], myROM->Type, 2);
 	memcpy(&tmp[2], myROM->Version, 12);
-	tmp[14] = 0;
-	if (strcmp(tmp, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060") == 0)
+	if (memcmp(tmp, "\107\115\040\060\060\060\060\061\060\065\061\055\060\060", 14) == 0)
 		ice = 1;
 	
 	// Calculate internal ROM size using the ROM header's
