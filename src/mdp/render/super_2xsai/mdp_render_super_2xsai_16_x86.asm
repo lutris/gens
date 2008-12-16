@@ -33,6 +33,30 @@ dstOffset	equ 28+20
 dstPitch	equ 28+24
 dstSegment	equ 28+28
 
+colorB0		equ -2
+colorB1		equ 0
+colorB2		equ 2
+colorB3		equ 4
+
+color7		equ -2
+color8		equ 0
+color9		equ 2
+
+color4		equ -2
+color5		equ 0
+color6		equ 2
+colorS2		equ 4
+
+color1		equ -2
+color2		equ 0
+color3		equ 2
+colorS1		equ 4
+
+colorA0		equ -2
+colorA1		equ 0
+colorA2		equ 2
+colorA3		equ 4
+
 colorI		equ -2
 colorE		equ 0
 colorF		equ 2
@@ -102,6 +126,26 @@ section .bss align=64
 	Mask2:		resb 8
 	ACPixel:	resb 8
 	
+	; for super2xSAI and supereagle
+	I56Pixel:	resb 8
+	I23Pixel:	resb 8
+	I5556Pixel:	resb 8
+	I2223Pixel:	resb 8
+	I5666Pixel:	resb 8
+	I2333Pixel:	resb 8
+	Mask26:		resb 8
+	Mask35:		resb 8
+	Mask26b:	resb 8
+	Mask35b:	resb 8
+	product1a:	resb 8
+	product1b:	resb 8
+	product2a:	resb 8
+	product2b:	resb 8
+	final1a:	resb 8
+	final1b:	resb 8
+	final2a:	resb 8
+	final2b:	resb 8
+	
 section .text align=64
 
 arg_destScreen	equ 28+8
@@ -119,8 +163,6 @@ arg_mode555	equ 28+32
 ;					 int width, int height, int mode555);
 global _mdp_render_super_2xsai_16_x86_mmx
 _mdp_render_super_2xsai_16_x86_mmx:
-	
-	ret
 	
 	; Save registers.
 	pushad
@@ -241,281 +283,138 @@ align 64
 
 ; Main Loop
 .Loop:
-		push ecx
+		push	ecx
 		
-		;1	------------------------------------------
-		
-		;if ((colorA == colorD) && (colorB != colorC) && (colorA == colorE) && (colorB == colorL)
-		
-		movq	mm0, [eax + ebp + colorA]	;mm0 and mm1 contain colorA
-		movq	mm2, [eax + ebp + colorB]	;mm2 and mm3 contain colorB
-		
-		movq	mm1, mm0
-		movq	mm3, mm2
-		
-		pcmpeqw	mm0, [eax + ebp + ebp + colorD]
-		pcmpeqw	mm1, [eax + colorE]
-		pcmpeqw	mm2, [eax + ebp + ebp + colorL]
-		pcmpeqw	mm3, [eax + ebp + ebp + colorC]
-		
-		pand	mm0, mm1
-		pxor	mm1, mm1
-		pand	mm0, mm2
-		pcmpeqw	mm3, mm1
-		pand	mm0, mm3	;result in mm0
-		
-		;if ((colorA == colorC) && (colorB != colorE) && (colorA == colorF) && (colorB == colorJ)
-		
-		movq	mm4, [eax + ebp + colorA]	;mm4 and mm5 contain colorA
-		movq	mm6, [eax + ebp + colorB]	;mm6 and mm7 contain colorB
-		movq	mm5, mm4
-		movq	mm7, mm6
-		
-		pcmpeqw	mm4, [eax + ebp + ebp + colorC]
-		pcmpeqw	mm5, [eax + colorF]
-		pcmpeqw	mm6, [eax + colorJ]
-		pcmpeqw	mm7, [eax + colorE]
-		
-		pand	mm4, mm5
-		pxor	mm5, mm5
-		pand	mm4, mm6
-		pcmpeqw	mm7, mm5
-		pand	mm4, mm7	;result in mm4
-		
-		por	mm0, mm4	;combine the masks
-		put_movq_localvar	Mask1, mm0
-		
-		;2	-------------------------------------------
-		
-		;if ((colorB == colorC) && (colorA != colorD) && (colorB == colorF) && (colorA == colorH)
-		
-		movq	mm0, [eax + ebp + colorB]	;mm0 and mm1 contain colorB
-		movq	mm2, [eax + ebp + colorA]	;mm2 and mm3 contain colorA
-		movq	mm1, mm0
-		movq	mm3, mm2
-		
-		pcmpeqw	mm0, [eax + ebp + ebp + colorC]
-		pcmpeqw	mm1, [eax + colorF]
-		pcmpeqw	mm2, [eax + ebp + ebp + colorH]
-		pcmpeqw	mm3, [eax + ebp + ebp + colorD]
-		
-		pand	mm0, mm1
-		pxor	mm1, mm1
-		pand	mm0, mm2
-		pcmpeqw	mm3, mm1
-		pand	mm0, mm3	;result in mm0
-		
-		;if ((colorB == colorE) && (colorB == colorD) && (colorA != colorF) && (colorA == colorI)
-		
-		movq	mm4, [eax + ebp + colorB]	;mm4 and mm5 contain colorB
-		movq	mm6, [eax + ebp + colorA]	;mm6 and mm7 contain colorA
-		movq	mm5, mm4
-		movq	mm7, mm6
-		
-		pcmpeqw	mm4, [eax + ebp + ebp + colorD]
-		pcmpeqw	mm5, [eax + colorE]
-		pcmpeqw	mm6, [eax + colorI]
-		pcmpeqw	mm7, [eax + colorF]
-		
-		pand	mm4, mm5
-		pxor	mm5, mm5
-		pand	mm4, mm6
-		pcmpeqw	mm7, mm5
-		pand	mm4, mm7	;result in mm4
-		
-		por	mm0, mm4	;combine the masks
-		put_movq_localvar	Mask2, mm0
-		
-		;interpolate colorA and colorB
-		
-		movq	mm0, [eax + ebp + colorA]
-		movq	mm1, [eax + ebp + colorB]
-		
+		movq	mm0, [eax + ebp + color5]
+		movq	mm1, [eax + ebp + color6]
 		movq	mm2, mm0
 		movq	mm3, mm1
-		
-		pand_localvar	mm0, colorMask
-		pand_localvar	mm1, colorMask
-		
-		psrlw	mm0, 1
-		psrlw	mm1, 1
-		
-		pand_localvar	mm3, lowPixelMask
-		paddw	mm0, mm1
-		
-		pand	mm3, mm2
-		paddw	mm0, mm3	;mm0 contains the interpolated values
-		
-		;assemble the pixels
-		
-		movq	mm1, [eax + ebp + colorA]
-		movq	mm2, [eax + ebp + colorB]
-		
-		get_movq_localvar	mm3, Mask1
+		movq	mm4, mm0
 		movq	mm5, mm1
-		get_movq_localvar	mm4, Mask2
-		movq	mm6, mm1
 		
-		pand	mm1, mm3
-		por	mm3, mm4
-		pxor	mm7, mm7
-		pand	mm2, mm4
-		
-		pcmpeqw	mm3, mm7
-		por	mm1, mm2
-		pand	mm0, mm3
-		
-		por	mm0, mm1
-		
-		punpcklwd	mm5, mm0
-		punpckhwd	mm6, mm0
-		;movq	mm0, [eax + ebp + colorA + 8]	;Only the first pixel is needed
-		
-		movq	[edx], mm5
-		movq	[edx + 8], mm6
-		
-		;3 Create the Nextline  -------------------
-		
-		;if ((colorA == colorD) && (colorB != colorC) && (colorA == colorG) && (colorC == colorO)
-		
-		movq	mm0, [eax + ebp + colorA]		;mm0 and mm1 contain colorA
-		movq	mm2, [eax + ebp + ebp + colorC]		;mm2 and mm3 contain colorC
-		movq	mm1, mm0
-		movq	mm3, mm2
-		
-		push	eax
-		add	eax, ebp
-		pcmpeqw	mm0, [eax + ebp + colorD]
-		pcmpeqw	mm1, [eax + colorG]
-		pcmpeqw	mm2, [eax + ebp + ebp + colorO]
-		pcmpeqw	mm3, [eax + colorB]
-		pop	eax
-		
-		pand	mm0, mm1
-		pxor	mm1, mm1
-		pand	mm0, mm2
-		pcmpeqw	mm3, mm1
-		pand	mm0, mm3	;result in mm0
-		
-		;if ((colorA == colorB) && (colorG != colorC) && (colorA == colorH) && (colorC == colorM)
-		
-		movq	mm4, [eax + ebp + colorA]		;mm4 and mm5 contain colorA
-		movq	mm6, [eax + ebp + ebp + colorC]		;mm6 and mm7 contain colorC
-		movq	mm5, mm4
-		movq	mm7, mm6
-		
-		push	eax
-		add	eax, ebp
-		pcmpeqw	mm4, [eax + ebp + colorH]
-		pcmpeqw	mm5, [eax + colorB]
-		pcmpeqw	mm6, [eax + ebp + ebp + colorM]
-		pcmpeqw	mm7, [eax + colorG]
-		pop	eax
-		
-		pand	mm4, mm5
-		pxor	mm5, mm5
-		pand	mm4, mm6
-		pcmpeqw	mm7, mm5
-		pand	mm4, mm7	;result in mm4
-		
-		por	mm0, mm4	;combine the masks
-		put_movq_localvar	Mask1, mm0
-		
-		;4  ----------------------------------------
-		
-		;if ((colorB == colorC) && (colorA != colorD) && (colorC == colorH) && (colorA == colorF)
-		
-		movq	mm0, [eax + ebp + ebp + colorC]		;mm0 and mm1 contain colorC
-		movq	mm2, [eax + ebp + colorA]		;mm2 and mm3 contain colorA
-		movq	mm1, mm0
-		movq	mm3, mm2
-		
-		pcmpeqw	mm0, [eax + ebp + colorB]
-		pcmpeqw	mm1, [eax + ebp + ebp + colorH]
-		pcmpeqw	mm2, [eax + colorF]
-		pcmpeqw	mm3, [eax + ebp + ebp + colorD]
-		
-		pand	mm0, mm1
-		pxor	mm1, mm1
-		pand	mm0, mm2
-		pcmpeqw	mm3, mm1
-		pand	mm0, mm3	;result in mm0
-		
-		;if ((colorC == colorG) && (colorC == colorD) && (colorA != colorH) && (colorA == colorI)
-		
-		movq	mm4, [eax + ebp + ebp + colorC]		;mm4 and mm5 contain colorC
-		movq	mm6, [eax + ebp + colorA]		;mm6 and mm7 contain colorA
-		movq	mm5, mm4
-		movq	mm7, mm6
-		
-		pcmpeqw	mm4, [eax + ebp + ebp + colorD]
-		pcmpeqw	mm5, [eax + ebp + colorG]
-		pcmpeqw	mm6, [eax + colorI]
-		pcmpeqw	mm7, [eax + ebp + ebp + colorH]
-		
-		pand	mm4, mm5
-		pxor	mm5, mm5
-		pand	mm4, mm6
-		pcmpeqw	mm7, mm5
-		pand	mm4, mm7	;result in mm4
-		
-		por	mm0, mm4	;combine the masks
-		put_movq_localvar	Mask2, mm0
-		
-		;----------------------------------------------
-		
-		;interpolate colorA and colorC
-		
-		movq	mm0, [eax + ebp + colorA]
-		movq	mm1, [eax + ebp + ebp + colorC]
-		
-		movq	mm2, mm0
-		movq	mm3, mm1
-		
-		pand_localvar	mm0, colorMask
-		pand_localvar	mm1, colorMask
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
 		
 		psrlw	mm0, 1
 		psrlw	mm1, 1
 		
-		pand_localvar	mm3, lowPixelMask
+		pand	mm3, [lowPixelMask]
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
-		paddw	mm0, mm3	;mm0 contains the interpolated values
+		paddw	mm0, mm3		;mm0 contains the interpolated values
+		movq	[I56Pixel], mm0
+		movq	mm7, mm0
 		
-		;-------------
+		;-------------------
+		movq	mm0, mm7
+		movq	mm1, mm4	;5, 5, 5, 6
+		movq	mm2, mm0
+		movq	mm3, mm1
 		
-		;assemble the pixels
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
 		
-		movq	mm1, [eax + ebp + colorA]
-		movq	mm2, [eax + ebp + ebp + colorC]
+		psrlw	mm0, 1
+		psrlw	mm1, 1
 		
-		get_movq_localvar	mm3, Mask1
-		get_movq_localvar	mm4, Mask2
+		pand	mm3, [lowPixelMask]
+		paddw	mm0, mm1
 		
-		pand	mm1, mm3
-		pand	mm2, mm4
+		pand	mm3, mm2
+		paddw	mm0, mm3		;mm0 contains the interpolated values
+		movq	[I5556Pixel], mm0
+		;--------------------
 		
-		por	mm3, mm4
-		pxor	mm7, mm7
-		por	mm1, mm2
+		movq	mm0, mm7
+		movq	mm1, mm5		;6,6,6,5
+		movq	mm2, mm0
+		movq	mm3, mm1
 		
-		pcmpeqw	mm3, mm7
-		pand	mm0, mm3
-		por	mm0, mm1
-		put_movq_localvar	ACPixel, mm0
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
+		
+		psrlw	mm0, 1
+		psrlw	mm1, 1
+		
+		pand	mm3, [lowPixelMask]
+		paddw	mm0, mm1
+		
+		pand	mm3, mm2
+		paddw	mm0, mm3
+		movq	[I5666Pixel], mm0
+		
+		;-------------------------
+		;-------------------------
+		movq	mm0, [eax + ebp + ebp + color2]
+		movq	mm1, [eax + ebp + ebp + color3]
+		movq	mm2, mm0
+		movq	mm3, mm1
+		movq	mm4, mm0
+		movq	mm5, mm1
+		
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
+		
+		psrlw	mm0, 1
+		psrlw	mm1, 1
+		
+		pand	mm3, [lowPixelMask]
+		paddw	mm0, mm1
+		
+		pand	mm3, mm2
+		paddw	mm0, mm3
+		movq	[I23Pixel], mm0
+		movq	mm7, mm0
+		
+		;---------------------
+		movq	mm0, mm7
+		movq	mm1, mm4  ;2,2,2,3
+		movq	mm2, mm0
+		movq	mm3, mm1
+		
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
+		
+		psrlw	mm0, 1
+		psrlw	mm1, 1
+		
+		pand	mm3, [lowPixelMask]
+		paddw	mm0, mm1
+		
+		pand	mm3, mm2
+		paddw	mm0, mm3
+		movq	[I2223Pixel], mm0
+		
+		;----------------------
+		movq	mm0, mm7
+		movq	mm1, mm5  ;3,3,3,2
+		movq	mm2, mm0
+		movq	mm3, mm1
+		
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
+		
+		psrlw	mm0, 1
+		psrlw	mm1, 1
+		
+		pand	mm3, [lowPixelMask]
+		paddw	mm0, mm1
+		
+		pand	mm3, mm2
+		paddw	mm0, mm3
+		movq	[I2333Pixel], mm0
 		
 		;////////////////////////////////
 		; Decide which "branch" to take
 		;--------------------------------
 		
-		movq	mm0, [eax + ebp + colorA]
-		movq	mm1, [eax + ebp + colorB]
+		movq	mm0, [eax + ebp + color5]
+		movq	mm1, [eax + ebp + color6]
 		movq	mm6, mm0
 		movq	mm7, mm1
-		pcmpeqw	mm0, [eax + ebp + ebp + colorD]
-		pcmpeqw	mm1, [eax + ebp + ebp + colorC]
+		pcmpeqw	mm0, [eax + ebp + ebp + color3]
+		pcmpeqw	mm1, [eax + ebp + ebp + color2]
 		pcmpeqw	mm6, mm7
 		
 		movq	mm2, mm0
@@ -534,25 +433,21 @@ align 64
 		pxor		mm0, mm6
 		por		mm1, mm6
 		movq		mm7, mm0
-		put_movq_localvar	Mask2, mm2
+		movq		[Mask26], mm2
 		packsswb	mm7, mm7
-		put_movq_localvar	Mask1, mm1
+		movq		[Mask35], mm1
 		
 		movd	ecx, mm7
 		test	ecx, ecx
 		jz	near .SKIP_GUESS
 		
-		;-------------------------------------
-		; Map of the pixels:           I|E F|J
-		;                              G|A B|K
-		;                              H|C D|L
-		;                              M|N O|P
+		;---------------------------------------------
 		
 		movq	mm6, mm0
 		movq	mm4, [eax + ebp + colorA]
 		movq	mm5, [eax + ebp + colorB]
 		pxor	mm7, mm7
-		pand_localvar	mm6, ONE
+		pand	mm6, [ONE]
 		
 		movq	mm0, [eax + colorE]
 		movq	mm1, [eax + ebp + colorG]
@@ -662,80 +557,264 @@ align 64
 		pcmpgtw	mm7, mm0
 		pcmpgtw	mm0, mm1
 		
-		por_localvar	mm7, Mask1
-		por_localvar	mm1, Mask2
-		put_movq_localvar	Mask1, mm7
-		put_movq_localvar	Mask2, mm1
-		
+		por	mm7, [Mask35]
+		por	mm0, [Mask26]
+		movq	[Mask35], mm7
+		movq	[Mask26], mm0
+	
 	.SKIP_GUESS:
+		;Start the ASSEMBLY !!!  eh... compose all the results together to form the final image...
 		
-		;----------------------------
-		;interpolate A, B, C and D
-		
-		movq	mm0, [eax + ebp + colorA]
-		movq	mm1, [eax + ebp + colorB]
+		movq	mm0, [eax + ebp + color5]
+		movq	mm1, [eax + ebp + ebp + color2]
+		movq	mm2, mm0
+		movq	mm3, mm1
 		movq	mm4, mm0
-		movq	mm2, [eax + ebp + ebp + colorC]
 		movq	mm5, mm1
-		get_movq_localvar	mm3, qcolorMask
-		movq	mm6, mm2
-		get_movq_localvar	mm7, qlowpixelMask
 		
-		pand	mm0, mm3
-		pand	mm1, mm3
-		pand	mm2, mm3
-		pand	mm3, [eax + ebp + ebp + colorD]
+		pand	mm0, [colorMask]
+		pand	mm1, [colorMask]
 		
-		psrlw	mm0, 2
-		pand	mm4, mm7
-		psrlw	mm1, 2
-		pand	mm5, mm7
-		psrlw	mm2, 2
-		pand	mm6, mm7
-		psrlw	mm3, 2
-		pand	mm7, [eax + ebp + ebp + colorD]
+		psrlw	mm0, 1
+		psrlw	mm1, 1
 		
+		pand	mm3, [lowPixelMask]
 		paddw	mm0, mm1
-		paddw	mm2, mm3
 		
-		paddw	mm4, mm5
-		paddw	mm6, mm7
+		pand	mm3, mm2
+		paddw	mm0, mm3		;mm0 contains the interpolated values
 		
-		paddw	mm4, mm6
-		paddw	mm0, mm2
-		psrlw	mm4, 2
-		pand_localvar	mm4, qlowpixelMask
-		paddw	mm0, mm4	;mm0 contains the interpolated value of A, B, C and D
+		;---------------------------
 		
-		;assemble the pixels
+		movq	mm7, [Mask26]
+		movq	mm6, [eax + colorB2]
+		movq	mm5, [eax + ebp + ebp + color2]
+		movq	mm4, [eax + ebp + ebp + color1]
+		pcmpeqw	mm4, mm5
+		pcmpeqw	mm6, mm5
+		pxor	mm5, mm5
+		pand	mm7, mm4
+		pcmpeqw	mm6, mm5
+		pand	mm7, mm6
 		
-		get_movq_localvar	mm1, Mask1
-		get_movq_localvar	mm2, Mask2
-		movq	mm4, [eax + ebp + colorA]
-		movq	mm5, [eax + ebp + colorB]
-		pand	mm4, mm1
-		pand	mm5, mm2
+		movq	mm6, [eax + ebp + ebp + color3]
+		movq	mm5, [eax + ebp + ebp + color2]
+		movq	mm4, [eax + ebp + ebp + color1]
+		movq	mm2, [eax + ebp + color5]
+		movq	mm1, [eax + ebp + color4]
+		movq	mm3, [eax + colorB0]
+		
+		pcmpeqw	mm2, mm4
+		pcmpeqw	mm6, mm5
+		pcmpeqw	mm1, mm5
+		pcmpeqw	mm3, mm5
+		pxor	mm5, mm5
+		pcmpeqw	mm2, mm5
+		pcmpeqw	mm3, mm5
+		pand	mm6, mm1
+		pand	mm2, mm3
+		pand	mm6, mm2
+		por	mm7, mm6
+		
+		movq	mm6, mm7
+		pcmpeqw	mm6, mm5
+		pand	mm7, mm0
+		
+		movq	mm1, [eax + ebp + color5]
+		pand	mm6, mm1
+		por	mm7, mm6
+		movq	[final1a], mm7		;finished  1a
+		
+		;--------------------------------
+		
+		movq	mm7, [Mask35]
+		push	eax
+		add	eax, ebp
+		movq	mm6, [eax + ebp + ebp + colorA2]
+		pop	eax
+		movq	mm5, [eax + ebp + color5]
+		movq	mm4, [eax + ebp + color4]
+		pcmpeqw	mm4, mm5
+		pcmpeqw	mm6, mm5
+		pxor	mm5, mm5
+		pand	mm7, mm4
+		pcmpeqw	mm6, mm5
+		pand	mm7, mm6
+		
+		movq	mm6, [eax + ebp + color6]
+		movq	mm5, [eax + ebp + color5]
+		movq	mm4, [eax + ebp + color4]
+		movq	mm2, [eax + ebp + ebp + color2]
+		movq	mm1, [eax + ebp + ebp + color1]
+		push	eax
+		add	eax, ebp
+		movq	mm3, [eax + ebp + ebp + colorA0]
+		pop	eax
+		
+		pcmpeqw	mm2, mm4
+		pcmpeqw	mm6, mm5
+		pcmpeqw	mm1, mm5
+		pcmpeqw	mm3, mm5
+		pxor	mm5, mm5
+		pcmpeqw	mm2, mm5
+		pcmpeqw	mm3, mm5
+		pand	mm6, mm1
+		pand	mm2, mm3
+		pand	mm6, mm2
+		por	mm7, mm6
+		
+		movq	mm6, mm7
+		pcmpeqw	mm6, mm5
+		pand	mm7, mm0
+		
+		movq	mm1, [eax + ebp + ebp + color2]
+		pand	mm6, mm1
+		por	mm7, mm6
+		movq	[final2a], mm7		;finished  2a
+		
+		;--------------------------------------------
+		
+		push	eax
+		add	eax, ebp
+		pxor	mm7, mm7
+		movq	mm0, [eax + ebp + ebp + colorA0]
+		movq	mm1, [eax + ebp + ebp + colorA1]
+		movq	mm2, [eax + ebp + ebp + colorA2]
+		movq	mm3, [eax + ebp + ebp + colorA3]
+		pop	eax
+		movq	mm4, [eax + ebp + ebp + color2]
+		movq	mm5, [eax + ebp + ebp + color3]
+		movq	mm6, [eax + ebp + color6]
+		
+		pcmpeqw	mm6, mm5
+		pcmpeqw	mm1, mm5
+		pcmpeqw	mm4, mm2
+		pcmpeqw	mm0, mm5
+		pcmpeqw	mm4, mm7
+		pcmpeqw	mm0, mm7
+		pand	mm0, mm4
+		pand	mm6, mm1
+		pand	mm0, mm6
+		
+		movq	mm4, [eax + ebp + color2]
+		movq	mm5, [eax + ebp + ebp + color5]
+		movq	mm6, [eax + ebp + ebp + color3]
+		
+		pcmpeqw	mm5, mm4
+		pcmpeqw	mm2, mm4
+		pcmpeqw	mm1, mm6
+		pcmpeqw	mm3, mm4
+		pcmpeqw	mm1, mm7
+		pcmpeqw	mm3, mm7
+		pand	mm2, mm5
+		pand	mm1, mm3
+		pand	mm1, mm2
+		
+		movq	mm2, mm0
+		movq	mm7, [I2333Pixel]
+		movq	mm6, [I2223Pixel]
+		movq	mm5, [I23Pixel]
+		movq	mm4, [Mask35]
+		movq	mm3, [Mask26]
+		
+		por	mm2, mm4
+		pand	mm4, [eax + ebp + ebp + color3]
+		por	mm2, mm3
+		pand	mm3, [eax + ebp + ebp + color2]
+		por	mm2, mm1
+		pand	mm0, mm7
+		pand	mm1, mm6
+		pxor	mm7, mm7
+		pcmpeqw	mm2, mm7
+		por	mm0, mm1
+		por	mm3, mm4
+		pand	mm2, mm5
+		por	mm0, mm3
+		por	mm0, mm2
+		movq	[final2b], mm0
+		
+		;-----------------------------------
 		
 		pxor	mm7, mm7
-		por	mm1, mm2
-		por	mm4, mm5
-		pcmpeqw	mm1, mm7
-		pand	mm0, mm1
-		por	mm4, mm0	;mm4 contains the diagonal pixels
+		movq	mm0, [eax + colorB0]
+		movq	mm1, [eax + colorB1]
+		movq	mm2, [eax + colorB2]
+		movq	mm3, [eax + colorB3]
+		movq	mm4, [eax + ebp + color5]
+		movq	mm5, [eax + ebp + color6]
+		movq	mm6, [eax + ebp + ebp + color3]
 		
-		get_movq_localvar	mm0, ACPixel
-		movq		mm1, mm0
-		punpcklwd	mm0, mm4
-		punpckhwd	mm1, mm4
+		pcmpeqw	mm6, mm5
+		pcmpeqw	mm1, mm5
+		pcmpeqw	mm4, mm2
+		pcmpeqw	mm0, mm5
+		pcmpeqw	mm4, mm7
+		pcmpeqw	mm0, mm7
+		pand	mm0, mm4
+		pand	mm6, mm1
+		pand	mm0, mm6
+		
+		movq	mm4, [eax + ebp + color5]
+		movq	mm5, [eax + ebp + ebp + color2]
+		movq	mm6, [eax + ebp + color6]
+		
+		pcmpeqw	mm5, mm4
+		pcmpeqw	mm2, mm4
+		pcmpeqw	mm1, mm6
+		pcmpeqw	mm3, mm4
+		pcmpeqw	mm1, mm7
+		pcmpeqw	mm3, mm7
+		pand	mm2, mm5
+		pand	mm1, mm3
+		pand	mm1, mm2
+		
+		movq	mm2, mm0
+		movq	mm7, [I5666Pixel]
+		movq	mm6, [I5556Pixel]
+		movq	mm5, [I56Pixel]
+		movq	mm4, [Mask35]
+		movq	mm3, [Mask26]
+		
+		por	mm2, mm4
+		pand	mm4, [eax + ebp + color5]
+		por	mm2, mm3
+		pand	mm3, [eax + ebp + color6]
+		por	mm2, mm1
+		pand	mm0, mm7
+		pand	mm1, mm6
+		pxor	mm7, mm7
+		pcmpeqw	mm2, mm7
+		por	mm0, mm1
+		por	mm3, mm4
+		pand	mm2, mm5
+		por	mm0, mm3
+		por	mm0, mm2
+		movq	[final1b], mm0
+		
+		;---------
+		
+		movq	mm0, [final1a]
+		movq	mm4, [final2a]
+		movq	mm2, [final1b]
+		movq	mm6, [final2b]
+		
+		movq	mm1, mm0
+		movq	mm5, mm4
+		
+		punpcklwd	mm0, mm2
+		punpckhwd	mm1, mm2
+		
+		punpcklwd	mm4, mm6
+		punpckhwd	mm5, mm6
 		
 		; Extra 8 bytes is caused by pushing 2 DWORDs onto the stack.
 		; (%ebp can't be used due to PIC.)
-		push	edx
-		add	edx, [esp + 8 + dstPitch]
-		
 		movq	[edx], mm0
 		movq	[edx + 8], mm1
-		
+		push	edx
+		add	edx, [esp + 8 + dstPitch]
+		movq	[edx], mm4
+		movq	[edx + 8], mm5
 		pop	edx
 		
 		add	edx, 16
