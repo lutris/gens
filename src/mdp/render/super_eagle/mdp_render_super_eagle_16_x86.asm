@@ -296,7 +296,7 @@ align 64
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
-		paddw	mm0, mm3		;mm0 contains the interpolated values
+		paddw	mm0, mm3	;mm0 contains the interpolated values
 		put_movq_localvar	I56Pixel, mm0
 		movq	mm7, mm0
 		
@@ -316,7 +316,7 @@ align 64
 		paddw	mm0, mm1
 		
 		pand	mm3, mm2
-		paddw	mm0, mm3		;mm0 contains the interpolated values
+		paddw	mm0, mm3	;mm0 contains the interpolated values
 		put_movq_localvar	product1a, mm0
 		;--------------------
 		
