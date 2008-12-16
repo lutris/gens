@@ -431,6 +431,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		default:
+		{
 			int value = LOWORD(wParam) & 0x0F;
 			
 			switch (LOWORD(wParam) & 0xFF00)
@@ -446,7 +447,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 				
 				case IDCMD_ROMHISTORY_NUMERIC:
 					// Load a ROM from the ROM History submenu.
-					if (value == 0 || value > 9)
+					if (value == 0 || value > 9 || ROM::Recent_ROMs.size() < value)
 						break;
 					
 					//if ((Check_If_Kaillera_Running())) return 0;
@@ -456,6 +457,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 					Sync_Gens_Window();
 					break;
 			}
+		}
 	}
 }
 
