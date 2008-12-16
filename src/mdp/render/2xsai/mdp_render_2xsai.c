@@ -88,23 +88,12 @@ int MDP_FNCALL mdp_render_2xsai_cpp(MDP_Render_Info_t *renderInfo)
 	if (!renderInfo)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
-#ifdef GENS_X86_ASM
-	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
-	{
-		mdp_render_2xsai_16_x86_mmx(
-			    (uint16_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height,
-			    (renderInfo->bpp == 15));
-	}
-#else /* !GENS_X86_ASM */
-	T_mdp_render_2xsai_cpp(
+	mdp_render_2xsai_16_x86_mmx(
 		    (uint16_t*)renderInfo->destScreen,
 		    (uint16_t*)renderInfo->mdScreen,
 		    renderInfo->destPitch, renderInfo->srcPitch,
-		    renderInfo->width, renderInfo->height);
-#endif /* GENS_X86_ASM */
+		    renderInfo->width, renderInfo->height,
+		    (renderInfo->bpp == 15));
 	
 	return MDP_ERR_OK;
 }
