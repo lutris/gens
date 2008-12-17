@@ -30,6 +30,8 @@ High-Level TODO:
 
 Low Priority:
 - Add MacOS X Aqua UI
+- Automatic 32X mode switching when a 32X register is written to.
+  This is how Kega enables 32X mode.
 
 High-Level TODO:
 - [DDraw] Border color emulation.
