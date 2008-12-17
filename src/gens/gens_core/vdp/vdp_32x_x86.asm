@@ -71,33 +71,8 @@ section .text align=64
 	
 	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
-		%define	__32X_VDP_Reset		_32X_VDP_Reset
 		%define	__32X_VDP_Draw		_32X_VDP_Draw
 	%endif
-	
-	; void _32X_VDP_Reset()
-	global __32X_VDP_Reset
-	__32X_VDP_Reset:
-		
-		push	ecx
-		push	edi
-		
-		xor	eax, eax
-		mov	ecx, (256 * 1024 / 4)
-		mov	[__32X_VDP.Mode], eax
-		mov	edi, __32X_VDP_Ram
-		mov	[__32X_VDP.State], eax
-		mov	[__32X_VDP.AF_Data], eax
-		rep	stosd
-		mov	[__32X_VDP.AF_St], eax
-		mov	[__32X_VDP.AF_Len], eax
-		mov	[__32X_VDP.AF_Line], eax
-		
-		pop	edi
-		pop	ecx
-		ret
-	
-	align 16
 	
 	; void _32X_VDP_Draw(int FB_Num)
 	global __32X_VDP_Draw

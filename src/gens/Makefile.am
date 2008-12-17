@@ -109,6 +109,7 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x_x86.asm \
+		gens_core/vdp/vdp_32x.c \
 		port/ini.cpp \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
