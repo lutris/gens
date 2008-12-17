@@ -276,7 +276,7 @@ static unsigned char RD_Controller(unsigned int state,
 	
 	// Shouldn't happen...
 	fprintf(stderr, "io.c::%s(): Invalid Select Line State: %d\n", __func__, SelectLine_State);
-	return 0x00;
+	return 0;
 }
 
 

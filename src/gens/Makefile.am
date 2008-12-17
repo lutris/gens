@@ -35,7 +35,7 @@ ASMFILES = \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
 		gens_core/cpu/sh2/sh2_io.o \
-		gens_core/vdp/vdp_32x.o \
+		gens_core/vdp/vdp_32x_x86.o \
 		gens_core/vdp/vdp_io.o \
 		gens_core/vdp/vdp_rend.o
 
@@ -108,7 +108,7 @@ gens_SOURCES = \
 		gens_core/io/io_teamplayer.asm \
 		gens_core/vdp/vdp_io.asm \
 		gens_core/vdp/vdp_rend.asm \
-		gens_core/vdp/vdp_32x.asm \
+		gens_core/vdp/vdp_32x_x86.asm \
 		port/ini.cpp \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
