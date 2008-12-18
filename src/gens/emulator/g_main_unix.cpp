@@ -75,6 +75,26 @@ void Create_Save_Directory(const char *dir)
  */
 int main(int argc, char *argv[])
 {
+	if (geteuid() == 0)
+	{
+		// Don't run Gens/GS as root!
+		const char gensRootErr[] = "Error: Gens/GS should not be run as root.\nPlease log in as a regular user.\n";
+		
+		fprintf(stderr, gensRootErr);
+		
+		#ifdef GENS_UI_GTK
+			// Check if X is running.
+			char *display = getenv("DISPLAY");
+			if (display)
+			{
+				gtk_init(0, NULL);
+				GensUI::msgBox(gensRootErr, GENS_APPNAME " - Permissions Error", GensUI::MSGBOX_ICON_ERROR);
+			}
+		#endif /* GENS_UI_GTK */
+		
+		return 1;
+	}
+	
 	// Initialize the timer.
 	// TODO: Make this unnecessary.
 	init_timer();
