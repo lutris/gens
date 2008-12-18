@@ -191,6 +191,17 @@ int Savestate::LoadState(const string& filename)
 	memset(buf, 0, len);
 	if (fread(buf, 1, len, f))
 	{
+		// Verify that the savestate is in GSX format.
+		static const unsigned char gsxHeader[5] = {'G', 'S', 'T', 0x40, 0xE0};
+		if (memcmp(&buf[0], &gsxHeader[0], sizeof(gsxHeader)))
+		{
+			// Header does not match GSX.
+			sprintf(Str_Tmp, "Error: State %d is not in GSX format.", Current_State);
+			draw->writeText(Str_Tmp, 2000);
+			fclose(f);
+			return 0;
+		}
+		
 		//z80_Reset (&M_Z80); // Commented out in Gens Rerecording...
 		/*
 		main68k_reset();
