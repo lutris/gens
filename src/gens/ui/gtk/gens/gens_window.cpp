@@ -46,7 +46,7 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
-GtkWidget *gens_window;
+GtkWidget *gens_window = NULL;
 GtkWidget *MenuBar;
 
 
