@@ -97,12 +97,12 @@ key=value
 
 If you must edit gens.cfg by hand to configure your joystick:
 
-Down  : 4096 + 256*which + 1
-Up    : 4096 + 256*which + 2
-Left  : 4096 + 256*which + 3
-Right : 4096 + 256*which + 4
+Down  : 0x1000 + 0x100*which + 1
+Up    : 0x1000 + 0x100*which + 2
+Left  : 0x1000 + 0x100*which + 3
+Right : 0x1000 + 0x100*which + 4
 
-Buttons : 4112 + 256*which + x 
+Buttons : 0x1010 + 0x100*which + x 
 
 where which = 0 for first joystick,
             = 1 for second joystick,
@@ -110,10 +110,10 @@ where which = 0 for first joystick,
 		  
 Here how a typical gens.cfg with joystick would look like (modify for your own needs)
 
-P1.Up=4098
-P1.Down=4097
-P1.Left=4099
-P1.Right=4100
-P1.Start=4112
-P1.A=4113
+P1.Up=0x1002
+P1.Down=0x1001
+P1.Left=0x1003
+P1.Right=0x1004
+P1.Start=0x1010
+P1.A=0x1011
 ...
