@@ -46,6 +46,9 @@
 // Inline video functions.
 #include "v_inline.h"
 
+// Text drawing.
+#include "vdraw_text.hpp"
+
 
 // VDraw backends.
 #ifdef GENS_OS_WIN32
@@ -73,16 +76,6 @@ static vdraw_backend_t * const vdraw_backends[] =
 static vdraw_backend_t	*vdraw_cur_backend = NULL;
 static VDRAW_BACKEND	vdraw_cur_backend_id;
 
-// VDraw styles.
-typedef struct
-{
-	uint8_t		style;
-	uint8_t		color;		// STYLE_COLOR_* values
-	uint32_t	dot_color;	// Actual RGB color value.
-	BOOL		double_size;
-	BOOL		transparent;
-} vdraw_style_t;
-
 // Function pointers.
 int		(*vdraw_init_subsystem)(void);
 int		(*vdraw_shutdown)(void);
@@ -103,9 +96,6 @@ static BOOL	vdraw_prop_fullscreen = FALSE;
 static BOOL	vdraw_prop_sw_render = FALSE;
 static BOOL	vdraw_prop_fast_blur = FALSE;
 static int	vdraw_prop_scale = 1;
-
-// Text drawing values.
-static uint32_t	vdraw_prop_mask_transparency;
 
 // FPS counter.
 static BOOL	vdraw_fps_enabled = FALSE;

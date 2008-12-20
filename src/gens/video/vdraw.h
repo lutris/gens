@@ -48,16 +48,6 @@ extern "C" {
 // MDP Render Functions.
 #include "mdp/mdp_render.h"
 
-// Constants for MsgStyle and FpsStyle.
-// These match the #define's in gens_core/misc/misc.h.
-#define STYLE_EMU_MODE		0x01
-#define STYLE_COLOR_WHITE	0x00
-#define STYLE_COLOR_BLUE	0x02
-#define STYLE_COLOR_GREEN	0x04
-#define STYLE_COLOR_RED		0x06
-#define STYLE_TRANSPARENT	0x08
-#define STYLE_DOUBLESIZE	0x10
-
 // Stretch mode constants.
 #define STRETCH_NONE		0x00
 #define STRETCH_H		0x01
