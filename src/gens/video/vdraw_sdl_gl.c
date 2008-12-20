@@ -446,3 +446,18 @@ static void vdraw_sdl_gl_stretch_adjust(void)
 	else
 		m_VStretch = 0;
 }
+
+
+/**
+ * vdraw_sdl_gl_clear_screen(): Clears the screen.
+ */
+static void vdraw_sdl_gl_clear_screen(void)
+{
+	// Clear the screen.
+	glClear(GL_COLOR_BUFFER_BIT);
+	memset(filterBuffer, 0x00, filterBufferSize);
+	
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
+}
