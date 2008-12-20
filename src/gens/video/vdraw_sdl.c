@@ -59,7 +59,7 @@ static int	vdraw_sdl_shutdown(void);
 static void	vdraw_sdl_clear_screen(void);
 
 static int	vdraw_sdl_flip(void);
-static void	vdraw_sdl_draw_border(void); // Not used in vdraw_backend_sdl.
+static void	vdraw_sdl_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_sdl_update_renderer(void);
 
 
