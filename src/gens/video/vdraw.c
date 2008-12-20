@@ -114,7 +114,7 @@ static BOOL	vdraw_fps_enabled = FALSE;
 static float	vdraw_fps_value = 0;
 static float	vdraw_fps_frames[8] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 static uint32_t	vdraw_fps_old_time = 0, vdraw_fps_view = 0, vdraw_fps_index = 0;
-static uint32_t	vdraw_fps_freq[2] = {0, 0}, vdraw_fps_new_time[2] = {0, 0};
+static uint32_t	vdraw_fps_freq_cpu[2] = {0, 0}, vdraw_fps_new_time[2] = {0, 0};
 static vdraw_style_t	vdraw_fps_style = {0, 0, 0, FALSE, FALSE};
 
 // On-screen message.
@@ -311,12 +311,9 @@ void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
  */
 int vdraw_flip(void)
 {
-	// Temporary buffer for sprintf().
-	char tmp[64];
-	
 	// Check if any effects need to be applied.
 	// TODO: Make constnats for Intro_Style.
-	if (Genesis_Started || _32X_Started || SegaCD_Started)
+	if (Game != NULL)
 	{
 		if (Video.pauseTint && (!Active || Paused))
 		{
@@ -345,82 +342,76 @@ int vdraw_flip(void)
 		Clear_Screen_MD();
 	}
 	
-	// TODO
-#if 0
-	if (vdraw_msg_visible && GetTickCount > vdraw_msg_time)
+	if (vdraw_msg_visible && GetTickCount() > vdraw_msg_time)
 	{
 		vdraw_msg_visible = FALSE;
 		vdraw_msg_text[0] = 0x00;
 	}
-	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	else if (vdraw_fps_enabled && (Game != NULL) && !Paused)
 	{
-		if (m_FPS_FreqCPU[0] > 1)	// accurate timer ok
+		if (vdraw_fps_freq_cpu[0] > 1)	// accurate timer ok
 		{
-			if (++m_FPS_ViewFPS >= 16)
+			if (++vdraw_fps_view >= 16)
 			{
-#ifdef GENS_OS_WIN32
-				QueryPerformanceCounter((LARGE_INTEGER*)m_FPS_NewTime);
-#else
-				QueryPerformanceCounter((long long*)m_FPS_NewTime);
-#endif
-				if (m_FPS_NewTime[0] != m_FPS_OldTime)
+				#ifdef GENS_OS_WIN32
+					QueryPerformanceCounter((LARGE_INTEGER*)vdraw_fps_new_time);
+				#else
+					QueryPerformanceCounter((long long*)vdraw_fps_new_time);
+				#endif
+				if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
 				{
-					m_FPS = (float)(m_FPS_FreqCPU[0]) * 16.0f / (float)(m_FPS_NewTime[0] - m_FPS_OldTime);
-					sprintf(tmp, "%.1f", m_FPS);
-					m_MsgText = tmp;
+					vdraw_fps_value = (float)(vdraw_fps_freq_cpu[0]) * 16.0f /
+							  (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
+					sprintf(vdraw_msg_text, "%.1f", vdraw_fps_value);
 				}
 				else
 				{
 					// IT'S OVER 9000 FPS!!!111!11!1
-					m_MsgText = ">9000";
+					strcpy(vdraw_msg_text, ">9000");
 				}
 				
-				m_FPS_OldTime = m_FPS_NewTime[0];
-				m_FPS_ViewFPS = 0;
+				vdraw_fps_old_time = vdraw_fps_new_time[0];
+				vdraw_fps_view = 0;
 			}
 		}
-		else if (m_FPS_FreqCPU[0] == 1)	// accurate timer not supported
+		else if (vdraw_fps_freq_cpu[0] == 1)	// accurate timer not supported
 		{
-			if (++m_FPS_ViewFPS >= 10)
+			if (++vdraw_fps_view >= 10)
 			{
-				m_FPS_NewTime[0] = GetTickCount();
+				vdraw_fps_new_time[0] = GetTickCount();
 				
-				if (m_FPS_NewTime[0] != m_FPS_OldTime)
-					m_FPS_Frames[m_FPS_IndexFPS] = 10000.0f / (float)(m_FPS_NewTime[0] - m_FPS_OldTime);
+				if (vdraw_fps_new_time[0] != vdraw_fps_old_time)
+					vdraw_fps_frames[vdraw_fps_index] = 10000.0f / (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
 				else
-					m_FPS_Frames[m_FPS_IndexFPS] = 2000;
+					vdraw_fps_frames[vdraw_fps_index] = 2000;
 				
-				m_FPS_IndexFPS++;
-				m_FPS_IndexFPS &= 7;
-				m_FPS = 0.0f;
+				vdraw_fps_index++;
+				vdraw_fps_index &= 7;
+				vdraw_fps_value = 0.0f;
 				
 				for (unsigned char i = 0; i < 8; i++)
-					m_FPS += m_FPS_Frames[i];
+					vdraw_fps_value += vdraw_fps_frames[i];
 				
-				m_FPS /= 8.0f;
-				m_FPS_OldTime = m_FPS_NewTime[0];
-				m_FPS_ViewFPS = 0;
+				vdraw_fps_value /= 8.0f;
+				vdraw_fps_old_time = vdraw_fps_new_time[0];
+				vdraw_fps_view = 0;
 			}
-			sprintf(tmp, "%.1f", m_FPS);
-			m_MsgText = tmp;
+			sprintf(vdraw_msg_text, "%.1f", vdraw_fps_value);
 		}
 		else
 		{
-#ifdef GENS_OS_WIN32
-			QueryPerformanceFrequency((LARGE_INTEGER*)m_FPS_FreqCPU);
-#else
-			QueryPerformanceFrequency((long long*)m_FPS_FreqCPU);
-#endif
-			if (m_FPS_FreqCPU[0] == 0)
-				m_FPS_FreqCPU[0] = 1;
+			#ifdef GENS_OS_WIN32
+				QueryPerformanceFrequency((LARGE_INTEGER*)vdraw_fps_freq_cpu);
+			#else
+				QueryPerformanceFrequency((long long*)vdraw_fps_freq_cpu);
+			#endif
+			if (vdraw_fps_freq_cpu[0] == 0)
+				vdraw_fps_freq_cpu[0] = 1;
 			
-			// TODO: WTF is this for?
-			// Assuming it just clears the string...
-			//sprintf(Info_String, "", FPS);
-			m_MsgText = "";
+			// Clear the message text.
+			vdraw_msg_text[0] = 0x00;
 		}
 	}
-#endif
 	
 	// Blur the screen if requested.
 	if (vdraw_prop_fast_blur)
