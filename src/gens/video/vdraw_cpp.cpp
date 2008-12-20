@@ -99,6 +99,8 @@ int vdraw_set_renderer(const list<MDP_Render_t*>::iterator& newMode, const bool 
 	
 	// Set the scaling value.
 	vdraw_scale = rendPlugin->scale;
+	if (vdraw_cur_backend && vdraw_cur_backend->stretch_adjust)
+		vdraw_cur_backend->stretch_adjust();
 	
 	// Set the MD bpp output value.
 	if (bppOut != 32)
