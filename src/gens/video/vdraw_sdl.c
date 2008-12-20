@@ -291,7 +291,7 @@ static int vdraw_sdl_flip(void)
 			vdraw_blitW(&vdraw_rInfo);
 	}
 	
-	// Draw the message and/or FPS.
+	// Draw the message and/or FPS counter.
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
