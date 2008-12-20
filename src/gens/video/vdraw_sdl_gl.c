@@ -175,6 +175,16 @@ vdraw_backend_t vdraw_backend_sdl_gl =
  */
 int vdraw_sdl_gl_init(void)
 {
+	// Get the VSync functions.
+	// TODO: Copy functions to test for VSync from Mesa's glxswapcontrol.c
+	/*
+	has_OML_sync_control = is_extension_supported("GLX_OML_sync_control");
+	has_SGI_swap_control = is_extension_supported("GLX_SGI_swap_control");
+	has_MESA_swap_control = is_extension_supported("GLX_MESA_swap_control");
+	*/
+	set_swap_interval = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalSGI");
+	get_swap_interval = (PFNGLXGETSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXGetSwapIntervalSGI");
+	
 	// OpenGL width/height.
 	// TODO: Move these values here or something.
 	const int w = Video.Width_GL;
