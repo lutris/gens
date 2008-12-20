@@ -45,6 +45,9 @@
 // CPU flags.
 #include "gens_core/misc/cpuflags.h"
 
+// Text drawing functions.
+#include "vdraw_text.hpp"
+
 
 // Function prototypes.
 static int	vdraw_sdl_init(void);
@@ -276,8 +279,8 @@ static int vdraw_sdl_flip(void)
 			vdraw_blitW(&vdraw_rInfo);
 		
 		vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
-				     vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
-	pitch, vdraw_16to32_pitch);
+				    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+				    pitch, vdraw_16to32_pitch);
 	}
 	else
 	{
@@ -288,18 +291,20 @@ static int vdraw_sdl_flip(void)
 	}
 	
 	// Draw the message and/or FPS.
-#if 0
-	if (m_MsgVisible)
+	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		drawText(vdraw_sdl_screen->pixels, vdraw_sdl_screen->w, vdraw_sdl_screen->w, vdraw_sdl_screen->h, m_MsgText.c_str(), m_MsgStyle);
+		draw_text(vdraw_sdl_screen->pixels, vdraw_sdl_screen->w,
+			  vdraw_sdl_screen->w, vdraw_sdl_screen->h,
+			  vdraw_msg_text, &vdraw_msg_style, TRUE);
 	}
-	else if (m_FPSEnabled && (Game != NULL) && Active && !Paused && !Debug)
+	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
-		drawText(vdraw_sdl_screen->pixels, vdraw_sdl_screen->w, vdraw_sdl_screen->w, vdraw_sdl_screen->h, m_MsgText.c_str(), m_FPSStyle);
+		draw_text(vdraw_sdl_screen->pixels, vdraw_sdl_screen->w,
+			  vdraw_sdl_screen->w, vdraw_sdl_screen->h,
+			  vdraw_msg_text, &vdraw_fps_style, TRUE);
 	}
-#endif
 	
 	SDL_UnlockSurface(vdraw_sdl_screen);
 	

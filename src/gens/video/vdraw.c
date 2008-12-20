@@ -50,9 +50,6 @@
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"
 
-// Text drawing.
-#include "vdraw_text.hpp"
-
 // Gens window.
 #include "gens/gens_window_sync.hpp"
 
@@ -110,19 +107,19 @@ static BOOL	vdraw_prop_fast_blur = FALSE;
 int		vdraw_scale = 1;
 
 // FPS counter.
-static BOOL	vdraw_fps_enabled = FALSE;
+BOOL		vdraw_fps_enabled = FALSE;
 static float	vdraw_fps_value = 0;
 static float	vdraw_fps_frames[8] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 static uint32_t	vdraw_fps_old_time = 0, vdraw_fps_view = 0, vdraw_fps_index = 0;
 static uint32_t	vdraw_fps_freq_cpu[2] = {0, 0}, vdraw_fps_new_time[2] = {0, 0};
-static vdraw_style_t	vdraw_fps_style = {0, 0, 0, FALSE, FALSE};
+vdraw_style_t	vdraw_fps_style = {0, 0, 0, FALSE, FALSE};
 
 // On-screen message.
 static BOOL	vdraw_msg_enabled = TRUE;
-static char	vdraw_msg_text[1024];
-static BOOL	vdraw_msg_visible = FALSE;
+char		vdraw_msg_text[1024];
+BOOL		vdraw_msg_visible = FALSE;
 static uint32_t	vdraw_msg_time = 0;
-static vdraw_style_t	vdraw_msg_style = {0, 0, 0, FALSE, FALSE};
+vdraw_style_t	vdraw_msg_style = {0, 0, 0, FALSE, FALSE};
 
 // Screen border.
 int		vdraw_border_h = 0, vdraw_border_h_old = ~0;
@@ -342,10 +339,13 @@ int vdraw_flip(void)
 		Clear_Screen_MD();
 	}
 	
-	if (vdraw_msg_visible && GetTickCount() > vdraw_msg_time)
+	if (vdraw_msg_visible)
 	{
-		vdraw_msg_visible = FALSE;
-		vdraw_msg_text[0] = 0x00;
+		if (GetTickCount() > vdraw_msg_time)
+		{
+			vdraw_msg_visible = FALSE;
+			vdraw_msg_text[0] = 0x00;
+		}
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && !Paused)
 	{

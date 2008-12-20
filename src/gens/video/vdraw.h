@@ -54,6 +54,10 @@ extern "C" {
 #define STRETCH_V		0x02
 #define STRETCH_FULL		0x03
 
+// Text drawing functions.
+#include "vdraw_text.hpp"
+
+
 // VDraw backends.
 typedef enum
 {
@@ -111,6 +115,13 @@ extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
 
 void	vdraw_write_text(const char* msg, const int duration);
+
+// Message variables used externally.
+extern BOOL vdraw_fps_enabled;
+extern vdraw_style_t vdraw_fps_style;
+extern char vdraw_msg_text[1024];
+extern BOOL vdraw_msg_visible;
+extern vdraw_style_t vdraw_msg_style;
 
 // Properties.
 uint8_t	vdraw_get_stretch(void);
