@@ -480,15 +480,68 @@ void vdraw_set_stretch(const uint8_t new_stretch)
 		vdraw_cur_backend->stretch_adjust();
 }
 
-/*
-BOOL	vdraw_get_sw_render(void);
-void	vdraw_set_sw_render(const BOOL new_sw_render);
-BOOL	vdraw_get_msg_enabled(void);
-void	vdraw_set_msg_enabled(const BOOL new_msg_enable);
-BOOL	vdraw_get_fps_enabled(void);
-void	vdraw_set_fps_enabled(const BOOL new_fps_enable);
-BOOL	vdraw_get_fullscreen(void);
-void	vdraw_set_fullscreen(const BOOL new_fullscreen);
-BOOL	vdraw_get_fast_blur(void);
-void	vdraw_set_fast_blur(const BOOL new_fast_blur);
-*/
+
+BOOL vdraw_get_sw_render(void)
+{
+	return (vdraw_prop_sw_render ? TRUE : FALSE);
+}
+void vdraw_set_sw_render(const BOOL new_sw_render)
+{
+	vdraw_prop_sw_render = (new_sw_render ? TRUE : FALSE);
+}
+
+
+BOOL vdraw_get_msg_enabled(void)
+{
+	return (vdraw_msg_enabled ? TRUE : FALSE);
+}
+void vdraw_set_msg_enabled(const BOOL new_msg_enable)
+{
+	vdraw_msg_enabled = (new_msg_enable ? TRUE : FALSE);
+}
+
+
+BOOL vdraw_get_fps_enabled(void)
+{
+	return (vdraw_fps_enabled ? TRUE : FALSE);
+}
+void vdraw_set_fps_enabled(const BOOL new_fps_enable)
+{
+	vdraw_fps_enabled = (new_fps_enable ? TRUE : FALSE);
+}
+
+
+BOOL vdraw_get_fullscreen(void)
+{
+	return vdraw_prop_fullscreen;
+}
+void vdraw_set_fullscreen(const BOOL new_fullscreen)
+{
+	if (vdraw_prop_fullscreen == new_fullscreen)
+		return;
+	
+	vdraw_prop_fullscreen = new_fullscreen;
+	
+	// Reset the renderer.
+	vdraw_reset_renderer(FALSE);
+	
+	#ifdef GENS_OS_WIN32
+		// Reinitialize the Gens window, if necessary.
+		if (vdraw_cur_backend && vdraw_cur_backend->reinit_gens_window)
+			vdraw_cur_backend->reinit_gens_window();
+	#else /* !GENS_OS_WIN32 */
+		// Refresh the video subsystem, if Gens is running.
+		if (is_gens_running())
+			vdraw_refresh_video();
+	#endif /* GENS_OS_WIN32 */
+}
+
+
+BOOL vdraw_get_fast_blur(void)
+{
+	return (vdraw_prop_fast_blur ? TRUE : FALSE);
+}
+void vdraw_set_fast_blur(const BOOL new_fast_blur)
+{
+	vdraw_prop_fast_blur = (new_fast_blur ? TRUE : FALSE);
+}
