@@ -221,7 +221,7 @@ static void vdraw_sdl_clear_screen(void)
 
 
 /**
- * vdraw_sdl_flip(): Flip the screen buffer. (Called by vdraw_flip().)
+ * vdraw_sdl_flip(): Flip the screen buffer. [Called by vdraw_flip().]
  * @return 0 on success; non-zero on error.
  */
 static int vdraw_sdl_flip(void)
