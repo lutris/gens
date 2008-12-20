@@ -385,6 +385,44 @@ static int vdraw_sdl_gl_end(void)
 
 
 /**
+ * vdraw_sdl_gl_init_subsystem(): Initialize the OS-specific graphics library.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_sdl_gl_init_subsystem(void)
+{
+	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
+	{
+		fprintf(stderr, "%s(): Error initializing SDL timers: %s\n",
+			__func__, SDL_GetError());
+		return -1;
+	}
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+	{
+		fprintf(stderr, "%s(): Error initializing SDL video: %s\n",
+			__func__, SDL_GetError());
+		return -1;
+	}
+	
+	// Take it back down now that we know it works.
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	
+	// Initialized successfully.
+	return 0;
+}
+
+
+/**
+ * vdraw_sdl_gl_shutdown(): Shut down the OS-specific graphics library.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_sdl_gl_shutdown(void)
+{
+	SDL_Quit();
+	return 0;
+}
+
+
+/**
  * vdraw_sdl_gl_stretch_adjust(): Adjust stretch parameters.
  * Called by either vdraw or another function in vdraw_sdl_gl.
  */
