@@ -701,3 +701,22 @@ static void vdraw_sdl_gl_update_renderer(void)
 	// Clear the screen.
 	vdraw_sdl_gl_clear_screen();
 }
+
+
+/**
+ * vdraw_sdl_gl_update_vsync(): Update the VSync value.
+ * @param fromInitSDLGL If TRUE, this function is being called from vdraw_sdl_gl_init_opengl().
+ */
+static void vdraw_sdl_gl_update_vsync(const BOOL fromInitSDLGL)
+{
+	// Set the VSync value.
+	// TODO: Turning VSync off seems to require a refresh...
+	int vsync = (vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
+	if (set_swap_interval != NULL)
+	{
+		if (vsync)
+			set_swap_interval(1);
+		else if (!fromInitSDLGL)
+			vdraw_refresh_video();
+	}
+}
