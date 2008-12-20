@@ -457,6 +457,25 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 }
 
 
+/**
+ * vdraw_refresh_video(): Refresh the video subsystem.
+ */
+void vdraw_refresh_video(void)
+{
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
+	
+	if (vdraw_cur_backend)
+	{
+		vdraw_cur_backend->end();
+		vdraw_cur_backend->init();
+		if (vdraw_cur_backend->stretch_adjust)
+			vdraw_cur_backend->stretch_adjust();
+	}
+}
+
+
 /** Properties **/
 
 
