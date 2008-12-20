@@ -45,10 +45,10 @@ void vdraw_reset_renderer(const BOOL reset_video)
 {
 	// Reset the renderer.
 	const list<MDP_Render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
-	if (!vdraw_set_renderer(rendMode, reset_video))
+	if (vdraw_set_renderer(rendMode, reset_video))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!vdraw_set_renderer(PluginMgr::lstRenderPlugins.begin(), reset_video))
+		if (vdraw_set_renderer(PluginMgr::lstRenderPlugins.begin(), reset_video))
 		{
 			// Cannot initialize normal mode.
 			fprintf(stderr, "%s(): FATAL ERROR: Cannot initialize any renderers.\n", __func__);
