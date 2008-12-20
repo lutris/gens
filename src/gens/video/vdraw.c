@@ -42,12 +42,19 @@
 #include "v_effects.hpp"
 #include "gens_core/gfx/fastblur.hpp"
 #include "emulator/g_md.hpp"
+#include "emulator/g_palette.h"
 
 // Inline video functions.
 #include "v_inline.h"
 
+// VDraw C++ functions.
+#include "vdraw_cpp.hpp"
+
 // Text drawing.
 #include "vdraw_text.hpp"
+
+// Gens window.
+#include "gens/gens_window_sync.hpp"
 
 
 // VDraw backends.
@@ -73,8 +80,8 @@ static vdraw_backend_t * const vdraw_backends[] =
 };
 
 // Current backend.
-static vdraw_backend_t	*vdraw_cur_backend = NULL;
-static VDRAW_BACKEND	vdraw_cur_backend_id;
+vdraw_backend_t	*vdraw_cur_backend = NULL;
+VDRAW_BACKEND	vdraw_cur_backend_id;
 
 // Function pointers.
 int		(*vdraw_init_subsystem)(void);
@@ -95,7 +102,7 @@ static uint8_t	vdraw_prop_intro_effect_color = 0;
 static BOOL	vdraw_prop_fullscreen = FALSE;
 static BOOL	vdraw_prop_sw_render = FALSE;
 static BOOL	vdraw_prop_fast_blur = FALSE;
-static int	vdraw_prop_scale = 1;
+int		vdraw_scale = 1;
 
 // FPS counter.
 static BOOL	vdraw_fps_enabled = FALSE;
@@ -411,4 +418,40 @@ int vdraw_flip(void)
 	// Flip the screen buffer.
 	return vdraw_cur_backend->vdraw_backend_flip();
 
+}
+
+
+/**
+ * vdraw_set_bpp(): Sets the bpp value.
+ * @param new_bpp New bpp value.
+ * @param reset_video If true, resets the video subsystem if the bpp needs to be changed.
+ */
+void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
+{
+	if (bppOut == new_bpp)
+		return;
+	
+	bppOut = new_bpp;
+	
+	if (reset_video && vdraw_cur_backend)
+	{
+		vdraw_cur_backend->vdraw_backend_end();
+		vdraw_cur_backend->vdraw_backend_init();
+	}
+	
+	// Reset the renderer.
+	vdraw_reset_renderer(reset_video);
+	
+	// Recalculate palettes.
+	Recalculate_Palettes();
+	
+	// Recalculate the text styles.
+	calc_transparency_mask();
+	calc_text_style(&vdraw_fps_style);
+	calc_text_style(&vdraw_msg_style);
+	
+	// Synchronize the Graphics menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
 }

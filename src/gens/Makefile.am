@@ -132,6 +132,7 @@ gens_SOURCES = \
 		util/sound/wave.c \
 		video/C64_charset.c \
 		video/vdraw.c \
+		video/vdraw_cpp.cpp \
 		video/vdraw_text.cpp \
 		video/v_draw.cpp \
 		video/v_effects.cpp \
@@ -227,6 +228,7 @@ noinst_HEADERS = \
 		util/sound/wave.h \
 		video/C64_charset.h \
 		video/vdraw.h \
+		video/vdraw_cpp.hpp \
 		video/vdraw_text.hpp \
 		video/v_draw.hpp \
 		video/v_effects.hpp \

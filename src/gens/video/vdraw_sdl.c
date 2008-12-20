@@ -222,8 +222,6 @@ static void vdraw_sdl_clear_screen(void)
  */
 static int vdraw_sdl_flip(void)
 {
-	const int scale = vdraw_get_scale();
-	
 	SDL_LockSurface(vdraw_sdl_screen);
 	
 	// Draw the border.
@@ -236,7 +234,7 @@ static int vdraw_sdl_flip(void)
 	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
 	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
 	
-	const int startPos = ((pitch * VBorder) + HBorder) * scale;	// Starting position from within the screen.
+	const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
 	unsigned char *start = &(((unsigned char*)(vdraw_sdl_screen->pixels))[startPos]);
@@ -260,14 +258,14 @@ static int vdraw_sdl_flip(void)
 		// Render as 16-bit to an internal surface.
 		
 		// Make sure the internal surface is initialized.
-		if (vdraw_16to32_scale != scale)
+		if (vdraw_16to32_scale != vdraw_scale)
 		{
 			if (vdraw_16to32_surface)
 				free(vdraw_16to32_surface);
 			
-			vdraw_16to32_scale = scale;
-			vdraw_16to32_pitch = 320 * scale * 2;
-			vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * scale));
+			vdraw_16to32_scale = vdraw_scale;
+			vdraw_16to32_pitch = 320 * vdraw_scale * 2;
+			vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
 		}
 		
 		vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
@@ -278,7 +276,7 @@ static int vdraw_sdl_flip(void)
 			vdraw_blitW(&vdraw_rInfo);
 		
 		vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
-				    vdraw_rInfo.width * scale, vdraw_rInfo.height * scale,
+				     vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
 	pitch, vdraw_16to32_pitch);
 	}
 	else
@@ -321,7 +319,6 @@ static void vdraw_sdl_draw_border(void)
 	// TODO: Consolidate this function by using a macro.
 	
 	SDL_Rect border;
-	const int scale = vdraw_get_scale();
 	
 	if (!Video.borderColorEmulation)
 	{
@@ -349,7 +346,7 @@ static void vdraw_sdl_draw_border(void)
 		{
 			// Top/Bottom borders.
 			border.x = 0; border.w = vdraw_sdl_screen->w;
-			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * scale;
+			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale;
 			border.y = 0;
 			SDL_FillRect(vdraw_sdl_screen, &border, vdraw_border_color_16);
 			border.y = vdraw_sdl_screen->h - border.h;
@@ -365,7 +362,7 @@ static void vdraw_sdl_draw_border(void)
 			}
 			
 			border.x = 0; border.h = vdraw_sdl_screen->h;
-			border.w = (vdraw_border_h >> 1) * scale;
+			border.w = (vdraw_border_h >> 1) * vdraw_scale;
 			border.y = 0;
 			SDL_FillRect(vdraw_sdl_screen, &border, vdraw_border_color_16);
 			border.x = vdraw_sdl_screen->w - border.w;
@@ -379,7 +376,7 @@ static void vdraw_sdl_draw_border(void)
 		{
 			// Top/Bottom borders.
 			border.x = 0; border.w = vdraw_sdl_screen->w;
-			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * scale;
+			border.h = ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale;
 			border.y = 0;
 			SDL_FillRect(vdraw_sdl_screen, &border, vdraw_border_color_32);
 			border.y = vdraw_sdl_screen->h - border.h;
@@ -395,7 +392,7 @@ static void vdraw_sdl_draw_border(void)
 			}
 			
 			border.x = 0; border.h = vdraw_sdl_screen->h;
-			border.w = (vdraw_border_h >> 1) * scale;
+			border.w = (vdraw_border_h >> 1) * vdraw_scale;
 			border.y = 0;
 			SDL_FillRect(vdraw_sdl_screen, &border, vdraw_border_color_32);
 			border.x = vdraw_sdl_screen->w - border.w;

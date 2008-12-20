@@ -92,6 +92,10 @@ int	vdraw_end(void);
 int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
 
+// Current backend.
+extern vdraw_backend_t	*vdraw_cur_backend;
+extern VDRAW_BACKEND	vdraw_cur_backend_id;
+
 // Called if initialization fails.
 void	vdraw_init_fail(const char* err);
 
@@ -105,8 +109,6 @@ extern int	(*vdraw_shutdown)(void);
 extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
 
-// TODO: set_render
-//int	vdraw_set_render(const std::list<MDP_Render_t*>::iterator& newMode, const bool forceUpdate = true);
 void	vdraw_write_text(const char* msg, const int duration);
 
 // Properties
@@ -114,8 +116,6 @@ uint8_t	vdraw_get_stretch(void);
 void	vdraw_set_stretch(const uint8_t new_stretch);
 BOOL	vdraw_get_sw_render(void);
 void	vdraw_set_sw_render(const BOOL new_sw_render);
-int	vdraw_get_scale(void);
-void	vdraw_set_scale(const int new_scale);
 BOOL	vdraw_get_msg_enabled(void);
 void	vdraw_set_msg_enabled(const BOOL new_msg_enable);
 BOOL	vdraw_get_fps_enabled(void);
@@ -139,6 +139,9 @@ extern mdp_render_fn vdraw_blitW;
 
 // Render plugin information.
 extern MDP_Render_Info_t vdraw_rInfo;
+
+// Scale factor.
+extern int vdraw_scale;
 
 // Screen border.
 extern int vdraw_border_h, vdraw_border_h_old;

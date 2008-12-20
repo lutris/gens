@@ -145,7 +145,6 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 	const bool fullScreen = vdraw_get_fullscreen();
 	
 	const list<MDP_Render_t*>::iterator& rendMode = (fullScreen ? rendMode_FS : rendMode_W);
-	const int scale = vdraw_get_scale();
 	
 	// The message must be specified.
 	if (!msg)
@@ -161,8 +160,8 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 	if (adjustForScreenSize)
 	{
 		// Adjust for screen size. (SDL/GL)
-		x = ((vdraw_border_h / 2) * scale) + 8;
-		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * scale);
+		x = ((vdraw_border_h / 2) * vdraw_scale) + 8;
+		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
 	}
 	else
 	{
@@ -171,14 +170,14 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 		{
 			// Hack for windowed 1x rendering.
 			x = 8;
-			y = VDP_Num_Vis_Lines * scale;
+			y = VDP_Num_Vis_Lines * vdraw_scale;
 		}
 		else if (fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hacks for fullscreen 1x rendering.
 			if (vdraw_get_sw_render())
 			{
-				x = ((vdraw_border_h / 2) * scale);
+				x = ((vdraw_border_h / 2) * vdraw_scale);
 				y = VDP_Num_Vis_Lines + 8;
 			}
 			else
@@ -189,12 +188,12 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 		}
 		else
 		{
-			x = ((vdraw_border_h / 2) * scale);
-			y = VDP_Num_Vis_Lines * scale;
+			x = ((vdraw_border_h / 2) * vdraw_scale);
+			y = VDP_Num_Vis_Lines * vdraw_scale;
 		}
 		
-		if (scale > 1)
-			y += (8 * scale);
+		if (vdraw_scale > 1)
+			y += (8 * vdraw_scale);
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
@@ -210,7 +209,7 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 	msgLength = strlen(msg);
 	
 	// Determine how many linebreaks are needed.
-	msgWidth = w - 16 - (vdraw_border_h * scale);
+	msgWidth = w - 16 - (vdraw_border_h * vdraw_scale);
 	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
 	y -= (linebreaks * charSize);
 	
