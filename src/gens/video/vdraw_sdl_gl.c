@@ -647,3 +647,57 @@ static void vdraw_sdl_gl_draw_border(void)
 		glEnable(GL_TEXTURE_2D);
 	}
 }
+
+
+/**
+ * vdraw_sdl_gl_update_renderer(): Update the renderer.
+ */
+static void vdraw_sdl_gl_update_renderer(void)
+{
+	// Check if a resolution switch is needed.
+	MDP_Render_t *rendMode = get_mdp_render_t();
+	const int scale = rendMode->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return;
+	const int w = 320 * scale;
+	
+	if (vdraw_sdl_gl_screen->w == Video.Width_GL &&
+	    vdraw_sdl_gl_screen->h == Video.Height_GL &&
+	    rowLength == w && textureSize == vdraw_sdl_gl_calc_texture_size(scale))
+	{
+		// No resolution switch is necessary. Simply clear the screen.
+		vdraw_sdl_gl_clear_screen();
+		return;
+	}
+	
+	// Resolution switch is needed.
+	
+	// Clear the GL buffers.
+	// TODO: Make this a separate function that is also called by End_Video().
+	if (filterBuffer)
+	{
+		// Delete the GL textures and filter buffer.
+		glDeleteTextures(1, textures);
+		free(filterBuffer);
+		filterBuffer = NULL;
+	}
+	
+	// Reinitialize the GL buffers.
+	if (vdraw_sdl_gl_screen->w == Video.Width_GL &&
+	    vdraw_sdl_gl_screen->h == Video.Height_GL)
+	{
+		// Output resolution is the same. Don't reinitialize SDL.
+		vdraw_sdl_gl_init_opengl(Video.Width_GL, Video.Height_GL, FALSE);
+	}
+	else
+	{
+		// Output resolution has changed. Reinitialize SDL.
+		vdraw_sdl_gl_end();
+		vdraw_sdl_gl_init();
+	}
+	
+	// Clear the screen.
+	vdraw_sdl_gl_clear_screen();
+}
