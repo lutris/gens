@@ -155,7 +155,7 @@ static int vdraw_sdl_init(void)
 
 
 /**
- * vdraw_sdl_end(): Closes the SDL renderer.
+ * vdraw_sdl_end(): Close the SDL renderer.
  * @return 0 on success; non-zero on error.
  */
 static int vdraw_sdl_end(void)
@@ -166,7 +166,7 @@ static int vdraw_sdl_end(void)
 
 
 /**
- * vdraw_sdl_init_subsystem(): Initializes the OS-specific graphics library.
+ * vdraw_sdl_init_subsystem(): Initialize the OS-specific graphics library.
  * @return 0 on success; non-zero on error.
  */
 static int vdraw_sdl_init_subsystem(void)
@@ -193,7 +193,7 @@ static int vdraw_sdl_init_subsystem(void)
 
 
 /**
- * vdraw_sdl_shutdown(): Shuts down the OS-specific graphics library.
+ * vdraw_sdl_shutdown(): Shut down the OS-specific graphics library.
  * @return 0 on success; non-zero on error.
  */
 static int vdraw_sdl_shutdown(void)
