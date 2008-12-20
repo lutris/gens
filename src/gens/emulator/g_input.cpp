@@ -39,7 +39,10 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
-// C++ includes
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
+
+// C++ includes.
 #include <list>
 using std::list;
 
@@ -116,7 +119,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_BACKSPACE:
-			if (draw->fullScreen() && (mod & KMOD_SHIFT))
+			if (vdraw_get_fullscreen() && (mod & KMOD_SHIFT))
 			{
 				audio->clearSoundBuffer();
 				ImageUtil::screenShot();
@@ -130,9 +133,9 @@ void Input_KeyDown(int key)
 		case GENS_KEY_RETURN:
 			if (mod & GENS_KMOD_ALT)
 			{
-				if (draw->fullScreen())
+				if (vdraw_get_fullscreen())
 				{
-					draw->setFullScreen(!draw->fullScreen());
+					vdraw_set_fullscreen(!vdraw_get_fullscreen());
 					Sync_Gens_Window_GraphicsMenu();
 				}
 				
@@ -159,9 +162,9 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F3:
-			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
+			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_SHIFT))
 			{
-				int newVSync = !(draw->fullScreen() ? Video.VSync_FS : Video.VSync_W);
+				int newVSync = !(vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
 				Options::setVSync(newVSync);
 				Sync_Gens_Window_GraphicsMenu();
 			}
@@ -197,7 +200,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F5:
-			if (!draw->fullScreen())
+			if (!vdraw_get_fullscreen())
 				break;
 			
 			//if (Check_If_Kaillera_Running()) return 0;
@@ -232,7 +235,7 @@ void Input_KeyDown(int key)
 			break;
 		
 		case GENS_KEY_F8:
-			if (!draw->fullScreen())
+			if (!vdraw_get_fullscreen())
 				break;
 			
 			//if (Check_If_Kaillera_Running()) return 0;
@@ -265,9 +268,9 @@ void Input_KeyDown(int key)
 				Options::setSoundDAC_Improved(!Options::soundDAC_Improved());
 				Sync_Gens_Window_SoundMenu();
 			}
-			else if (draw->fullScreen() && !mod)
+			else if (vdraw_get_fullscreen() && !mod)
 			{
-				draw->setFPSEnabled(!draw->fpsEnabled());
+				vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			}
 			break;
 		
@@ -279,11 +282,11 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+				list<MDP_Render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				if (rendMode != PluginMgr::lstRenderPlugins.begin())
 				{
 					rendMode--;
-					draw->setRender(rendMode);
+					vdraw_set_renderer(rendMode);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -297,11 +300,11 @@ void Input_KeyDown(int key)
 			}
 			else //if (!mod)
 			{
-				list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+				list<MDP_Render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				rendMode++;
 				if (rendMode != PluginMgr::lstRenderPlugins.end())
 				{
-					draw->setRender(rendMode);
+					vdraw_set_renderer(rendMode);
 					Sync_Gens_Window_GraphicsMenu();
 				}
 			}
@@ -345,7 +348,7 @@ void Input_KeyDown(int key)
 		
 #ifdef GENS_CDROM
 		case GENS_KEY_b:
-			if (draw->fullScreen() && (mod & GENS_KMOD_CTRL))
+			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_CTRL))
 			{
 				// Ctrl-B: Boot CD
 				if (Num_CD_Drive == 0)
@@ -427,13 +430,13 @@ void Input_KeyDown(int key)
 		*/
 		
 		case GENS_KEY_q:
-			if (draw->fullScreen() && (mod & KMOD_CTRL))
+			if (vdraw_get_fullscreen() && (mod & KMOD_CTRL))
 				close_gens();
 			break;
 		
 #ifdef GENS_OPENGL
 		case GENS_KEY_r:
-			if (draw->fullScreen() && (mod & GENS_KMOD_SHIFT))
+			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_SHIFT))
 			{
 				Options::setOpenGL(!Options::openGL());
 				Sync_Gens_Window_GraphicsMenu();

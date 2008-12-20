@@ -31,9 +31,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-// New video layer.
-#include "video/v_draw.hpp"
-
 #include "g_main.hpp"
 #include "util/file/save.hpp"
 #include "g_palette.h"
@@ -487,11 +484,11 @@ void parseArgs(int argc, char **argv)
 		// Other options that can't be handled by macros.
 		if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][0]))
 		{
-			draw->setStretch(true);
+			vdraw_set_stretch(TRUE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][1]))
 		{
-			draw->setStretch(false);
+			vdraw_set_stretch(FALSE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SOUND][0]))
 		{
@@ -511,43 +508,43 @@ void parseArgs(int argc, char **argv)
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT][0]))
 		{
-			draw->setSwRender(true);
+			vdraw_set_sw_render(TRUE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT][1]))
 		{
-			draw->setSwRender(false);
+			vdraw_set_sw_render(FALSE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FASTBLUR][0]))
 		{
-			draw->setFastBlur(true);
+			vdraw_set_fast_blur(TRUE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FASTBLUR][1]))
 		{
-			draw->setFastBlur(false);
+			vdraw_set_fast_blur(FALSE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FPS][0]))
 		{
-			draw->setFPSEnabled(true);
+			vdraw_set_fps_enabled(TRUE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_FPS][1]))
 		{
-			draw->setFPSEnabled(false);
+			vdraw_set_fps_enabled(FALSE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_MSG][0]))
 		{
-			draw->setMsgEnabled(true);
+			vdraw_set_msg_enabled(TRUE);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_MSG][1]))
 		{
-			draw->setMsgEnabled(false);
+			vdraw_set_fps_enabled(FALSE);
 		}
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_FS][0]))
 		{
-			draw->setFullScreen(true);
+			vdraw_set_fullscreen(TRUE);
 		}
 		else if (!strcmp(long_options[option_index].name, opt0arg_str[OPT0_WINDOW][0]))
 		{
-			draw->setFullScreen(false);
+			vdraw_set_fullscreen(FALSE);
 		}
 		else if (!strcmp(long_options[option_index].name, opt1arg_str[OPT1_RENDERMODE][0]))
 		{

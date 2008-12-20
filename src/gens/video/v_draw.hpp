@@ -1,7 +1,7 @@
 /**
  * Gens: Video Drawing base class.
  */
-
+#error DO NOT USE v_draw.hpp
 #ifndef GENS_V_DRAW_HPP
 #define GENS_V_DRAW_HPP
 

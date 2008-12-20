@@ -1,7 +1,7 @@
 /**
  * Gens: Video Drawing class - SDL
  */
-
+#error DO NOT USE v_draw_sdl.hpp
 #ifndef GENS_V_DRAW_SDL_HPP
 #define GENS_V_DRAW_SDL_HPP
 

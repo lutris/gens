@@ -35,6 +35,7 @@
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
+#include "emulator/options.hpp"
 
 
 // On-Screen Display colors.
@@ -548,29 +549,29 @@ void GeneralOptionsWindow::load(void)
 	// Miscellaneous
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_AutoFixChecksum), Auto_Fix_CS);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_AutoPause), Auto_Pause);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur), draw->fastBlur());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur), Options::fastBlur());
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs), Show_LED);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation), Video.borderColorEmulation);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint), Video.pauseTint);
 	
 	// FPS counter
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), (draw->fpsEnabled() ? 1 : 0));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0]), vdraw_get_fps_enabled());
 	
-	unsigned char curFPSStyle = draw->fpsStyle();
+	unsigned char curFPSStyle = vdraw_get_fps_style();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0]), (curFPSStyle & 0x10));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0]), (curFPSStyle & 0x08));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[0][(curFPSStyle & 0x06) >> 1]), TRUE);
 	
 	// Message
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1]), (draw->msgEnabled() ? 1 : 0));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1]), vdraw_get_msg_enabled());
 	
-	unsigned char curMsgStyle = draw->msgStyle();
+	unsigned char curMsgStyle = vdraw_get_msg_style();
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1]), (curMsgStyle & 0x10));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1]), (curMsgStyle & 0x08));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optOSD_Color[1][(curMsgStyle & 0x06) >> 1]), TRUE);
 	
 	// Intro effect color
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[draw->introEffectColor()]), TRUE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[vdraw_get_intro_effect_color()]), TRUE);
 }
 
 
@@ -584,7 +585,7 @@ void GeneralOptionsWindow::save(void)
 	// Miscellaneous
 	Auto_Fix_CS = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_AutoFixChecksum));
 	Auto_Pause = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_AutoPause));
-	draw->setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur)));
+	Options::setFastBlur(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_FastBlur)));
 	Show_LED = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_SegaCDLEDs));
 	Video.borderColorEmulation = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_BorderColorEmulation));
 	Video.pauseTint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkMisc_PauseTint));
@@ -594,9 +595,9 @@ void GeneralOptionsWindow::save(void)
 	Active = !Auto_Pause;
 	
 	// FPS counter
-	draw->setFPSEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0])));
+	vdraw_set_fps_enabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[0])));
 	
-	unsigned char curFPSStyle = draw->fpsStyle() & ~0x18;
+	unsigned char curFPSStyle = vdraw_get_fps_style() & ~0x18;
 	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[0])) ? 0x10 : 0x00);
 	curFPSStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[0])) ? 0x08 : 0x00);
 	
@@ -611,12 +612,12 @@ void GeneralOptionsWindow::save(void)
 		}
 	}
 	
-	draw->setFPSStyle(curFPSStyle);
+	vdraw_set_fps_style(curFPSStyle);
 	
 	// Message
-	draw->setMsgEnabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1])));
+	vdraw_set_msg_enabled(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Enable[1])));
 	
-	unsigned char curMsgStyle = draw->msgStyle() & ~0x18;
+	unsigned char curMsgStyle = vdraw_get_msg_style() & ~0x18;
 	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_DoubleSized[1])) ? 0x10 : 0x00);
 	curMsgStyle |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkOSD_Transparency[1])) ? 0x08 : 0x00);
 	
@@ -631,14 +632,14 @@ void GeneralOptionsWindow::save(void)
 		}
 	}
 	
-	draw->setMsgStyle(curMsgStyle);
+	vdraw_set_msg_style(curMsgStyle);
 	
 	// Intro effect color
 	for (unsigned char i = 0; i < 8; i++)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optIntroEffectColor[i])))
 		{
-			draw->setIntroEffectColor((unsigned char)i);
+			vdraw_set_intro_effect_color((unsigned char)i);
 			break;
 		}
 	}

@@ -134,7 +134,6 @@ gens_SOURCES = \
 		video/vdraw.c \
 		video/vdraw_cpp.cpp \
 		video/vdraw_text.cpp \
-		video/v_draw.cpp \
 		video/v_effects.cpp \
 		input/input.cpp \
 		audio/audio.cpp \
@@ -230,7 +229,6 @@ noinst_HEADERS = \
 		video/vdraw.h \
 		video/vdraw_cpp.hpp \
 		video/vdraw_text.hpp \
-		video/v_draw.hpp \
 		video/v_effects.hpp \
 		input/input.hpp \
 		audio/audio.hpp \

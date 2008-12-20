@@ -898,7 +898,7 @@ void Options::setSegaCD_PerfectSync(const bool newSegaCD_PerfectSync)
  */
 bool Options::fastBlur(void)
 {
-	return draw->fastBlur();
+	return vdraw_get_fast_blur();
 }
 
 /**
@@ -908,9 +908,9 @@ bool Options::fastBlur(void)
 void Options::setFastBlur(const bool newFastBlur)
 {
 	Flag_Clr_Scr = 1;
-	draw->setFastBlur(newFastBlur);
+	vdraw_set_fast_blur(newFastBlur);
 	
-	if (draw->fastBlur())
+	if (vdraw_get_fast_blur())
 		MESSAGE_L("Fast Blur Enabled", "Fast Blur Enabled", 1000);
 	else
 		MESSAGE_L("Fast Blur Disabled", "Fast Blur Disabled", 1000);
@@ -923,7 +923,7 @@ void Options::setFastBlur(const bool newFastBlur)
  */
 uint8_t Options::stretch(void)
 {
-	return draw->stretch();
+	return vdraw_get_stretch();
 }
 
 /**
@@ -939,9 +939,9 @@ void Options::setStretch(const uint8_t newStretch)
 	}
 	
 	Flag_Clr_Scr = 1;
-	draw->setStretch(newStretch);
+	vdraw_set_stretch(newStretch);
 	
-	switch (draw->stretch())
+	switch (vdraw_get_stretch())
 	{
 		case STRETCH_NONE:
 			MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
@@ -967,7 +967,7 @@ bool Options::vsync(void)
 {
 	int *p_vsync;
 	
-	p_vsync = (draw->fullScreen() ? &Video.VSync_FS : &Video.VSync_W);
+	p_vsync = (vdraw_get_fullscreen() ? &Video.VSync_FS : &Video.VSync_W);
 	return *p_vsync;
 }
 
@@ -979,7 +979,7 @@ void Options::setVSync(const bool newVSync)
 {
 	int *p_vsync;
 	
-	p_vsync = (draw->fullScreen() ? &Video.VSync_FS : &Video.VSync_W);
+	p_vsync = (vdraw_get_fullscreen() ? &Video.VSync_FS : &Video.VSync_W);
 	*p_vsync = (newVSync == 1 ? 1 : 0);
 	
 	if (*p_vsync)
@@ -988,7 +988,8 @@ void Options::setVSync(const bool newVSync)
 		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
 	
 	// Update VSync.
-	draw->updateVSync();
+	if (vdraw_update_vsync)
+		vdraw_update_vsync(0);
 }
 
 

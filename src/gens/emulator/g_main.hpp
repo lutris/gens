@@ -206,10 +206,6 @@ MDP_Render_t* get_mdp_render_t(void);
 
 // C++ classes
 
-// New VDraw object
-#include "video/v_draw.hpp"
-extern VDraw *draw;
-
 // New Input object
 #include "input/input.hpp"
 extern Input *input;
