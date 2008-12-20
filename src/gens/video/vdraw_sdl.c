@@ -64,7 +64,7 @@ static void	vdraw_sdl_update_renderer(void);
 
 
 // Miscellaneous.
-#define VDRAW_SDL_FLAGS SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL
+#define VDRAW_SDL_FLAGS (SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ASYNCBLIT | SDL_HWACCEL)
 static SDL_Surface *vdraw_sdl_screen;
 
 
