@@ -995,9 +995,6 @@ void Options::setVSync(const bool newVSync)
 
 #ifdef GENS_OPENGL
 
-#include "video/v_draw_sdl.hpp"
-#include "video/v_draw_sdl_gl.hpp"
-
 /**
  * openGL(): Get the OpenGL setting.
  * @return OpenGL setting.
