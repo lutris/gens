@@ -455,3 +455,40 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	
 	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
 }
+
+
+/** Properties **/
+
+
+uint8_t vdraw_get_stretch(void)
+{
+	return vdraw_prop_stretch;
+}
+void vdraw_set_stretch(const uint8_t new_stretch)
+{
+	if (vdraw_prop_stretch == new_stretch)
+		return;
+	
+	if (new_stretch > STRETCH_FULL)
+	{
+		// Invalid stretch value.
+		return;
+	}
+	
+	vdraw_prop_stretch = new_stretch;
+	if (vdraw_cur_backend && vdraw_cur_backend->vdraw_backend_stretch_adjust)
+		vdraw_cur_backend->vdraw_backend_stretch_adjust();
+}
+
+/*
+BOOL	vdraw_get_sw_render(void);
+void	vdraw_set_sw_render(const BOOL new_sw_render);
+BOOL	vdraw_get_msg_enabled(void);
+void	vdraw_set_msg_enabled(const BOOL new_msg_enable);
+BOOL	vdraw_get_fps_enabled(void);
+void	vdraw_set_fps_enabled(const BOOL new_fps_enable);
+BOOL	vdraw_get_fullscreen(void);
+void	vdraw_set_fullscreen(const BOOL new_fullscreen);
+BOOL	vdraw_get_fast_blur(void);
+void	vdraw_set_fast_blur(const BOOL new_fast_blur);
+*/
