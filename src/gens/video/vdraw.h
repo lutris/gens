@@ -89,6 +89,7 @@ typedef struct
 
 int	vdraw_init(void);
 int	vdraw_end(void);
+int	vdraw_backend_init_subsystem(VDRAW_BACKEND backend);
 int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
 
@@ -111,7 +112,7 @@ extern void	(*vdraw_update_vsync)(const int data);
 
 void	vdraw_write_text(const char* msg, const int duration);
 
-// Properties
+// Properties.
 uint8_t	vdraw_get_stretch(void);
 void	vdraw_set_stretch(const uint8_t new_stretch);
 BOOL	vdraw_get_sw_render(void);
@@ -125,13 +126,13 @@ void	vdraw_set_fullscreen(const BOOL new_fullscreen);
 BOOL	vdraw_get_fast_blur(void);
 void	vdraw_set_fast_blur(const BOOL new_fast_blur);
 
-// Style properties
+// Style properties.
 uint8_t	vdraw_get_msg_style(void);
 void	vdraw_set_msg_style(const uint8_t new_msg_style);
 uint8_t	vdraw_get_fps_style(void);
 void	vdraw_set_fps_style(const uint8_t new_fps_style);
 uint8_t	vdraw_get_intro_effect_color(void);
-void	vdraw_set_intro_effect_color(void);
+void	vdraw_set_intro_effect_color(const uint8_t new_intro_effect_color);
 
 // Render functions.
 extern mdp_render_fn vdraw_blitFS;

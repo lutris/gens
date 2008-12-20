@@ -56,6 +56,11 @@
 // Gens window.
 #include "gens/gens_window_sync.hpp"
 
+// Timer functionality.
+#ifndef GENS_OS_WIN32
+#include "port/timer.h"
+#endif /* GENS_OS_WIN32 */
+
 
 // VDraw backends.
 #ifdef GENS_OS_WIN32
@@ -148,6 +153,12 @@ int vdraw_init(void)
  */
 int vdraw_end(void)
 {
+	if (vdraw_cur_backend)
+	{
+		vdraw_cur_backend->end();
+		vdraw_cur_backend = NULL;
+	}
+	
 	if (vdraw_LUT16to32)
 	{
 		// Unreference LUT16to32.
@@ -165,6 +176,27 @@ int vdraw_end(void)
 	}
 	
 	// TODO: Do something here.
+	return 0;
+}
+
+
+/**
+ * vdraw_backend_init_subsystem(): Initialize a backend's subsystem.
+ * @param backend Backend to use.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_backend_init_subsystem(VDRAW_BACKEND backend)
+{
+	if (backend < 0 || backend >= VDRAW_BACKEND_MAX)
+	{
+		// Invalid backend.
+		return -1;
+	}
+	
+	if (vdraw_backends[backend]->init_subsystem)
+		vdraw_backends[backend]->init_subsystem();
+	
+	// Initialized successfully.
 	return 0;
 }
 
@@ -458,6 +490,23 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 
 
 /**
+ * vdraw_write_text(): Write text to the screen.
+ * @param msg Message to write.
+ * @param duration Duration for the message to appear, in milliseconds.
+ */
+void vdraw_write_text(const char* msg, const int duration)
+{
+	if (!vdraw_msg_enabled)
+		return;
+	
+	strncpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
+	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
+	vdraw_msg_time = GetTickCount() + duration;
+	vdraw_msg_visible = TRUE;
+}
+
+
+/**
  * vdraw_refresh_video(): Refresh the video subsystem.
  */
 void vdraw_refresh_video(void)
@@ -563,4 +612,51 @@ BOOL vdraw_get_fast_blur(void)
 void vdraw_set_fast_blur(const BOOL new_fast_blur)
 {
 	vdraw_prop_fast_blur = (new_fast_blur ? TRUE : FALSE);
+}
+
+
+/** Style properties **/
+
+
+uint8_t	vdraw_get_msg_style(void)
+{
+	return vdraw_msg_style.style;
+}
+void vdraw_set_msg_style(const uint8_t new_msg_style)
+{
+	if (vdraw_msg_style.style == new_msg_style)
+		return;
+	
+	vdraw_msg_style.style = new_msg_style;
+	calc_text_style(&vdraw_msg_style);
+}
+
+
+uint8_t	vdraw_get_fps_style(void)
+{
+	return vdraw_fps_style.style;
+}
+void vdraw_set_fps_style(const uint8_t new_fps_style)
+{
+	if (vdraw_fps_style.style == new_fps_style)
+		return;
+	
+	vdraw_fps_style.style = new_fps_style;
+	calc_text_style(&vdraw_fps_style);
+}
+
+
+uint8_t	vdraw_get_intro_effect_color(void)
+{
+	return vdraw_prop_intro_effect_color;
+}
+void vdraw_set_intro_effect_color(const uint8_t new_intro_effect_color)
+{
+	if (vdraw_prop_intro_effect_color == new_intro_effect_color ||
+	    /* new_intro_effect_color < 0 ||*/ new_intro_effect_color > 7)
+		return;
+	
+	vdraw_prop_intro_effect_color = new_intro_effect_color;
+	
+	// TODO: Figure out what to do here...
 }
