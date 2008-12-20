@@ -461,3 +461,134 @@ static void vdraw_sdl_gl_clear_screen(void)
 	vdraw_border_color_16 = ~MD_Palette[0];
 	vdraw_border_color_32 = ~MD_Palette32[0];
 }
+
+
+/**
+ * vdraw_sdl_gl_flip(): Flip the screen buffer. [Called by vdraw_flip().]
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_sdl_gl_flip(void)
+{
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	
+	// Start of the SDL framebuffer.
+	const int pitch = rowLength * bytespp;
+	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
+	
+	const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+	
+	// Start of the SDL framebuffer.
+	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
+	
+	// Set up the render information.
+	if (vdraw_rInfo.bpp != bppMD)
+	{
+		// bpp has changed. Reinitialize the screen pointers.
+		vdraw_rInfo.bpp = bppMD;
+		vdraw_rInfo.cpuFlags = CPU_Flags;
+	}
+	
+	vdraw_rInfo.destScreen = (void*)start;
+	vdraw_rInfo.width = 320 - vdraw_border_h;
+	vdraw_rInfo.height = VDP_Num_Vis_Lines;
+	vdraw_rInfo.destPitch = pitch;
+	
+	if (bppMD == 16 && bppOut != 16)
+	{
+		// MDP_RENDER_FLAG_SRC16DST32.
+		// Render as 16-bit to an internal surface.
+		
+		// Make sure the internal surface is initialized.
+		if (vdraw_16to32_scale != vdraw_scale)
+		{
+			if (vdraw_16to32_surface)
+				free(vdraw_16to32_surface);
+			
+			vdraw_16to32_scale = vdraw_scale;
+			vdraw_16to32_pitch = 320 * vdraw_scale * 2;
+			vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
+		}
+		
+		vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
+		vdraw_rInfo.destPitch = vdraw_16to32_pitch;
+		if (vdraw_get_fullscreen())
+			m_BlitFS(&vdraw_rInfo);
+		else
+			m_BlitW(&vdraw_rInfo);
+		
+		Render_16to32((uint32_t*)start, vdraw_16to32_surface,
+			      vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+			      pitch, vdraw_16to32_pitch);
+	}
+	else
+	{
+		if (vdraw_get_fullscreen())
+			m_BlitFS(&vdraw_rInfo);
+		else
+			m_BlitW(&vdraw_rInfo);
+	}
+	
+	// Draw the message and/or FPS counter.
+	if (vdraw_msg_visible)
+	{
+		// Message is visible.
+		draw_text(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3,
+			  vdraw_msg_text, &vdraw_msg_style, TRUE);
+	}
+	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
+	{
+		// FPS is enabled.
+		draw_text(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3,
+			  vdraw_msg_text, &vdraw_fps_style, TRUE);
+	}
+	
+	// Set the GL MAG filter.
+	// TODO: Only do this when the linear filter setting is changed.
+	if (Video.glLinearFilter)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	else
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	
+	// OpenGL needs to know the width of the texture data.
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, rowLength);
+	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
+	
+	// Set the texture data.
+	glTexSubImage2D(GL_TEXTURE_2D, 0,
+			0,						// x offset
+			((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale,	// y offsets
+			rowLength,					// width
+			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) * vdraw_scale),	// height
+			m_pixelFormat, m_pixelType,
+			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale));
+	
+	// Corners of the rectangle.
+	glBegin(GL_QUADS);
+	
+	glTexCoord2d(0.0 + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
+	glVertex2i(-1,  1);				// Upper-left vertex of the quad.
+	
+	glTexCoord2d(m_HRender - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
+	glVertex2i( 1,  1);				// Upper-right vertex of the quad.
+	
+	// 0.9375 = 240/256; 0.9375 = 480/512
+	glTexCoord2d(m_HRender - m_HStretch, m_VRender - m_VStretch);	// Lower-right corner of the texture.
+	glVertex2i( 1, -1);						// Lower-right vertex of the quad.
+	
+	glTexCoord2d(0.0 + m_HStretch, m_VRender - m_VStretch);	// Lower-left corner of the texture.
+	glVertex2i(-1, -1);					// Lower-left corner of the quad.
+	
+	glEnd();
+	
+	// Draw the border.
+	if (Video.borderColorEmulation)
+		drawBorder();
+	
+	// Swap the SDL GL buffers.
+	SDL_GL_SwapBuffers();
+	
+	// TODO: Return appropriate error code.
+	return 0;
+}
