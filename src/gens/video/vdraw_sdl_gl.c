@@ -363,3 +363,48 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	
 	return 0;
 }
+
+
+/**
+ * vdraw_sdl_gl_end(): Close the SDL+OpenGL renderer.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_sdl_gl_end(void)
+{
+	if (filterBuffer)
+	{
+		// Delete the GL textures and filter buffer.
+		glDeleteTextures(1, textures);
+		free(filterBuffer);
+		filterBuffer = NULL;
+	}
+	
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	return 0;
+}
+
+
+/**
+ * vdraw_sdl_gl_stretch_adjust(): Adjust stretch parameters.
+ * Called by either vdraw or another function in vdraw_sdl_gl.
+ */
+static void vdraw_sdl_gl_stretch_adjust(void)
+{
+	uint8_t stretch = vdraw_get_stretch();
+	
+	if (stretch & STRETCH_H)
+		m_HStretch = (((double)vdraw_border_h * (((double)rowLength / (double)textureSize)) / 20.0) / 64.0);
+	else
+		m_HStretch = 0;
+	
+	if (stretch & STRETCH_V)
+	{
+		// TODO: Fix this ugly hack.
+		if (vdraw_scale == 3)
+			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / (2.0 + (2.0/3.0)));
+		else
+			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
+	}
+	else
+		m_VStretch = 0;
+}
