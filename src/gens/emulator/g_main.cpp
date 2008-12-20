@@ -505,6 +505,17 @@ void Clear_Screen_MD(void)
 
 
 /**
+ * get_mdp_render_t(): Get the current MDP_Render_t*. (C wrapper)
+ * @return Current MDP_Render_t*.
+ */
+MDP_Render_t* get_mdp_render_t(void)
+{
+	const list<MDP_Render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	return (*rendMode);
+}
+
+
+/**
  * GensMainLoop(): The main program loop.
  */
 void GensMainLoop(void)

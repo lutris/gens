@@ -28,13 +28,13 @@
 
 // Constants for m_MsgStyle and m_FPSStyle.
 // These match the #define's in gens_core/misc/misc.h.
-const unsigned char STYLE_EMU_MODE	= 0x01;
-const unsigned char STYLE_COLOR_WHITE	= 0x00;
-const unsigned char STYLE_COLOR_BLUE	= 0x02;
-const unsigned char STYLE_COLOR_GREEN	= 0x04;
-const unsigned char STYLE_COLOR_RED	= 0x06;
-const unsigned char STYLE_TRANSPARENT	= 0x08;
-const unsigned char STYLE_DOUBLESIZE	= 0x10;
+#define STYLE_EMU_MODE		0x01
+#define STYLE_COLOR_WHITE	0x00
+#define STYLE_COLOR_BLUE	0x02
+#define STYLE_COLOR_GREEN	0x04
+#define STYLE_COLOR_RED		0x06
+#define STYLE_TRANSPARENT	0x08
+#define STYLE_DOUBLESIZE	0x10
 
 
 class VDraw
@@ -113,10 +113,10 @@ class VDraw
 		};
 		
 		// Stretch constants.
-		static const uint8_t STRETCH_NONE = 0x00;
-		static const uint8_t STRETCH_H    = 0x01;
-		static const uint8_t STRETCH_V    = 0x02;
-		static const uint8_t STRETCH_FULL = 0x03;
+		#define STRETCH_NONE		0x00
+		#define STRETCH_H		0x01
+		#define STRETCH_V		0x02
+		#define STRETCH_FULL		0x03
 		
 		// Render functions.
 		// TODO: Make these properties.

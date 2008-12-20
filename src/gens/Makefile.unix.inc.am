@@ -8,6 +8,7 @@ gens_SOURCES += \
 		emulator/g_main_unix.cpp \
 		port/ini_old.c \
 		port/timer.c \
+		video/vdraw_sdl.c \
 		video/v_draw_sdl.cpp \
 		input/input_sdl.cpp \
 		audio/audio_sdl.cpp
@@ -69,6 +70,7 @@ noinst_HEADERS += \
 		emulator/g_main_unix.hpp \
 		port/ini_old.h \
 		port/timer.h \
+		video/vdraw_sdl.h \
 		video/v_draw_sdl.hpp \
 		input/input_sdl.hpp \
 		input/input_sdl_keys.h \

@@ -131,6 +131,7 @@ gens_SOURCES = \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
 		video/C64_charset.c \
+		video/vdraw.c \
 		video/v_draw.cpp \
 		video/v_effects.cpp \
 		input/input.cpp \
@@ -224,6 +225,7 @@ noinst_HEADERS = \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
 		video/C64_charset.h \
+		video/vdraw.h \
 		video/v_draw.hpp \
 		video/v_effects.hpp \
 		input/input.hpp \

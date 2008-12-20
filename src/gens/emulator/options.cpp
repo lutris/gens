@@ -932,7 +932,7 @@ uint8_t Options::stretch(void)
  */
 void Options::setStretch(const uint8_t newStretch)
 {
-	if (newStretch > VDraw::STRETCH_FULL)
+	if (newStretch > STRETCH_FULL)
 	{
 		// TODO: Throw an exception.
 		return;
@@ -943,16 +943,16 @@ void Options::setStretch(const uint8_t newStretch)
 	
 	switch (draw->stretch())
 	{
-		case VDraw::STRETCH_NONE:
+		case STRETCH_NONE:
 			MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
 			break;
-		case VDraw::STRETCH_H:
+		case STRETCH_H:
 			MESSAGE_L("Horizontal stretched mode", "Horizontal stretched mode", 1000);
 			break;
-		case VDraw::STRETCH_V:
+		case STRETCH_V:
 			MESSAGE_L("Vertical stretched mode", "Vertical stretched mode", 1000);
 			break;
-		case VDraw::STRETCH_FULL:
+		case STRETCH_FULL:
 			MESSAGE_L("Full stretched mode", "Full stretched mode", 1000);
 			break;
 	}
