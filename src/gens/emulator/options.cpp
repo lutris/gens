@@ -44,6 +44,9 @@ using std::list;
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
 
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
+
 
 /**
  * spriteLimit(): Get the current sprite limit setting.
@@ -1011,24 +1014,17 @@ bool Options::openGL(void)
 void Options::setOpenGL(const bool newOpenGL)
 {
 	// End the current drawing function.
-	draw->End_Video();
+	vdraw_backend_end();
 	
 	Video.OpenGL = newOpenGL;
-	VDraw *newDraw;
 	if (Video.OpenGL)
 	{
-		newDraw = new VDraw_SDL_GL(draw);
-		newDraw->Init_Video();
-		delete draw;
-		draw = newDraw;
+		vdraw_backend_init(VDRAW_BACKEND_SDL_GL);
 		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500);
 	}
 	else
 	{
-		newDraw = new VDraw_SDL(draw);
-		newDraw->Init_Video();
-		delete draw;
-		draw = newDraw;
+		vdraw_backend_init(VDRAW_BACKEND_SDL);
 		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500);
 	}
 }
@@ -1059,8 +1055,7 @@ void Options::setOpenGL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	list<MDP_Render_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
-	draw->setRender(rendMode, true);
+	vdraw_reset_renderer(TRUE);
 	
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
