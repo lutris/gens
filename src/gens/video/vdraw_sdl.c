@@ -137,7 +137,7 @@ static int vdraw_sdl_init(void)
 		return 0;
 	}
 	
-	// Initialize the SDL renderer.
+	// Initialize the SDL backend.
 	vdraw_sdl_screen = SDL_SetVideoMode(w, h, bppOut, VDRAW_SDL_FLAGS | (vdraw_get_fullscreen() ? SDL_FULLSCREEN : 0));
 	if (!vdraw_sdl_screen)
 	{
