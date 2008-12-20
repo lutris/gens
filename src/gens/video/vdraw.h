@@ -71,20 +71,20 @@ typedef enum
 // VDraw backend function pointers.
 typedef struct
 {
-	int	(*vdraw_backend_init)(void);
-	int	(*vdraw_backend_end)(void);
+	int	(*init)(void);
+	int	(*end)(void);
 	
-	int	(*vdraw_backend_init_subsystem)(void);
-	int	(*vdraw_backend_shutdown)(void);
+	int	(*init_subsystem)(void);
+	int	(*shutdown)(void);
 	
-	void	(*vdraw_backend_clear_screen)(void);
-	void	(*vdraw_backend_update_vsync)(const int data);
+	void	(*clear_screen)(void);
+	void	(*update_vsync)(const int data);
 	
-	int	(*vdraw_backend_flip)(void);
-	void	(*vdraw_backend_stretch_adjust)(void);
-	void	(*vdraw_backend_update_renderer)(void);
+	int	(*flip)(void);
+	void	(*stretch_adjust)(void);
+	void	(*update_renderer)(void);
 	
-	int	(*vdraw_backend_reinit_gens_window)(void);
+	int	(*reinit_gens_window)(void);
 } vdraw_backend_t;
 
 int	vdraw_init(void);

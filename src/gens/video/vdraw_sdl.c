@@ -67,20 +67,20 @@ static SDL_Surface *vdraw_sdl_screen;
 
 vdraw_backend_t vdraw_backend_sdl =
 {
-	.vdraw_backend_init = vdraw_sdl_init,
-	.vdraw_backend_end = vdraw_sdl_end,
+	.init = vdraw_sdl_init,
+	.end = vdraw_sdl_end,
 	
-	.vdraw_backend_init_subsystem = vdraw_sdl_init_subsystem,
-	.vdraw_backend_shutdown = vdraw_sdl_shutdown,
+	.init_subsystem = vdraw_sdl_init_subsystem,
+	.shutdown = vdraw_sdl_shutdown,
 	
-	.vdraw_backend_clear_screen = vdraw_sdl_clear_screen,
-	.vdraw_backend_update_vsync = NULL,
+	.clear_screen = vdraw_sdl_clear_screen,
+	.update_vsync = NULL,
 	
-	.vdraw_backend_flip = vdraw_sdl_flip,
-	.vdraw_backend_stretch_adjust = NULL,
-	.vdraw_backend_update_renderer = vdraw_sdl_update_renderer,
+	.flip = vdraw_sdl_flip,
+	.stretch_adjust = NULL,
+	.update_renderer = vdraw_sdl_update_renderer,
 	
-	.vdraw_backend_reinit_gens_window = NULL
+	.reinit_gens_window = NULL
 };
 
 

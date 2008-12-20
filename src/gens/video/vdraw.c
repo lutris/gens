@@ -187,14 +187,14 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_cur_backend_id = backend;
 	
 	// Copy the function pointers.
-	vdraw_init_subsystem = vdraw_cur_backend->vdraw_backend_init_subsystem;
-	vdraw_shutdown = vdraw_cur_backend->vdraw_backend_shutdown;
-	vdraw_clear_screen = vdraw_cur_backend->vdraw_backend_clear_screen;
-	vdraw_update_vsync = vdraw_cur_backend->vdraw_backend_update_vsync;
+	vdraw_init_subsystem = vdraw_cur_backend->init_subsystem;
+	vdraw_shutdown = vdraw_cur_backend->shutdown;
+	vdraw_clear_screen = vdraw_cur_backend->clear_screen;
+	vdraw_update_vsync = vdraw_cur_backend->update_vsync;
 	
 	// Initialize the backend.
-	if (vdraw_cur_backend->vdraw_backend_init)
-		return vdraw_cur_backend->vdraw_backend_init();
+	if (vdraw_cur_backend->init)
+		return vdraw_cur_backend->init();
 	
 	// Initialized successfully.
 	return 0;
@@ -225,7 +225,7 @@ int vdraw_backend_end(void)
 	if (!vdraw_cur_backend)
 		return 1;
 	
-	vdraw_cur_backend->vdraw_backend_end();
+	vdraw_cur_backend->end();
 	vdraw_cur_backend = NULL;
 	return 0;
 }
@@ -404,19 +404,19 @@ int vdraw_flip(void)
 	if (vdraw_border_h != vdraw_border_h_old)
 	{
 		// Display width change. Adjust the stretch parameters.
-		if (vdraw_cur_backend->vdraw_backend_stretch_adjust)
-			vdraw_cur_backend->vdraw_backend_stretch_adjust();
+		if (vdraw_cur_backend->stretch_adjust)
+			vdraw_cur_backend->stretch_adjust();
 	}
 	
 	if (vdraw_border_h > vdraw_border_h_old)
 	{
 		// New screen width is smaller than old screen width.
 		// Clear the screen.
-		vdraw_cur_backend->vdraw_backend_clear_screen();
+		vdraw_cur_backend->clear_screen();
 	}
 	
 	// Flip the screen buffer.
-	return vdraw_cur_backend->vdraw_backend_flip();
+	return vdraw_cur_backend->flip();
 
 }
 
@@ -435,8 +435,8 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	
 	if (reset_video && vdraw_cur_backend)
 	{
-		vdraw_cur_backend->vdraw_backend_end();
-		vdraw_cur_backend->vdraw_backend_init();
+		vdraw_cur_backend->end();
+		vdraw_cur_backend->init();
 	}
 	
 	// Reset the renderer.
@@ -476,8 +476,8 @@ void vdraw_set_stretch(const uint8_t new_stretch)
 	}
 	
 	vdraw_prop_stretch = new_stretch;
-	if (vdraw_cur_backend && vdraw_cur_backend->vdraw_backend_stretch_adjust)
-		vdraw_cur_backend->vdraw_backend_stretch_adjust();
+	if (vdraw_cur_backend && vdraw_cur_backend->stretch_adjust)
+		vdraw_cur_backend->stretch_adjust();
 }
 
 /*
