@@ -97,8 +97,10 @@ typedef struct
 	int	(*vdraw_backend_reinit_gens_window)(void);
 } vdraw_backend_t;
 
-int	vdraw_init(VDRAW_BACKEND backend);
+int	vdraw_init(void);
 int	vdraw_end(void);
+int	vdraw_backend_init(VDRAW_BACKEND backend);
+int	vdraw_backend_end(void);
 
 // Called if initialization fails.
 void	vdraw_init_fail(const char* err);
@@ -140,9 +142,6 @@ uint8_t	vdraw_get_fps_style(void);
 void	vdraw_set_fps_style(const uint8_t new_fps_style);
 uint8_t	vdraw_get_intro_effect_color(void);
 void	vdraw_set_intro_effect_color(void);
-
-// TODO: Move this function out of vdraw.c
-int	Show_Genesis_Screen(void);
 
 // Render functions.
 extern mdp_render_fn vdraw_blitFS;

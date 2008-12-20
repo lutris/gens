@@ -22,15 +22,29 @@
 
 #include "vdraw.h"
 
-// MDP Host Services.
-#include "mdp/mdp.h"
-#include "mdp/mdp_host.h"
-#include "plugins/mdp_host_gens.h"
+#include "emulator/g_main.hpp"
 
 // C includes.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+// MDP Host Services.
+#include "mdp/mdp.h"
+#include "mdp/mdp_host.h"
+#include "plugins/mdp_host_gens.h"
+
+// VDP includes.
+#include "gens_core/vdp/vdp_rend.h"
+#include "gens_core/vdp/vdp_io.h"
+
+// Video Effects.
+#include "v_effects.hpp"
+#include "gens_core/gfx/fastblur.hpp"
+#include "emulator/g_md.hpp"
+
+// Inline video functions.
+#include "v_inline.h"
 
 
 // VDraw backends.
@@ -121,11 +135,49 @@ int		vdraw_16to32_pitch;
 
 
 /**
- * vdraw_init(): Initialize video drawing.
+ * vdraw_init(): Initialize the Video Drawing subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_init(void)
+{
+	// TODO: Do something here.
+	return 0;
+}
+
+
+/**
+ * vdraw_init(): Shut down the Video Drawing subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_end(void)
+{
+	if (vdraw_LUT16to32)
+	{
+		// Unreference LUT16to32.
+		mdp_host_ptr_unref(MDP_PTR_LUT16to32);
+		vdraw_LUT16to32 = NULL;
+	}
+	
+	// Internal surface for rendering the 16-bit temporary image.
+	if (vdraw_16to32_surface)
+	{
+		free(vdraw_16to32_surface);
+		vdraw_16to32_surface = NULL;
+		vdraw_16to32_scale = 0;
+		vdraw_16to32_pitch = 0;
+	}
+	
+	// TODO: Do something here.
+	return 0;
+}
+
+
+/**
+ * vdraw_backend_init(): Initialize a backend.
  * @param backend Backend to use.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_init(VDRAW_BACKEND backend)
+int vdraw_backend_init(VDRAW_BACKEND backend)
 {
 	if (backend < 0 || backend >= VDRAW_BACKEND_MAX)
 	{
@@ -168,6 +220,21 @@ void vdraw_init_fail(const char* err)
 
 
 /**
+ * vdraw_backend_end(): Shut down the current backend.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_backend_end(void)
+{
+	if (!vdraw_cur_backend)
+		return 1;
+	
+	vdraw_cur_backend->vdraw_backend_end();
+	vdraw_cur_backend = NULL;
+	return 0;
+}
+
+
+/**
  * vdraw_render_16to32(): Convert a 16-bit color image to 32-bit color using a lookup table.
  * @param dest Destination surface.
  * @param src Source surface.
@@ -206,4 +273,152 @@ void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
 		dest += pitchDestDiff;
 		src += pitchSrcDiff;
 	}
+}
+
+
+/**
+ * vdraw_flip(): Flip the screen buffer.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_flip(void)
+{
+	// Temporary buffer for sprintf().
+	char tmp[64];
+	
+	// Check if any effects need to be applied.
+	// TODO: Make constnats for Intro_Style.
+	if (Genesis_Started || _32X_Started || SegaCD_Started)
+	{
+		if (Video.pauseTint && (!Active || Paused))
+		{
+			// Emulation is paused.
+			Pause_Screen();
+		}
+	}
+	else if (Intro_Style == 1)
+	{
+		// Gens logo effect. (TODO: This is broken!)
+		Update_Gens_Logo();
+	}
+	else if (Intro_Style == 2)
+	{
+		// "Strange" effect. (TODO: This is broken!)
+		Update_Crazy_Effect(vdraw_prop_intro_effect_color);
+	}
+	else if (Intro_Style == 3)
+	{
+		// Genesis BIOS. (TODO: This is broken!)
+		Do_Genesis_Frame();
+	}
+	else
+	{
+		// Blank screen.
+		Clear_Screen_MD();
+	}
+	
+	// TODO
+#if 0
+	if (vdraw_msg_visible && GetTickCount > vdraw_msg_time)
+	{
+		vdraw_msg_visible = FALSE;
+		vdraw_msg_text[0] = 0x00;
+	}
+	else if (m_FPSEnabled && (Genesis_Started || _32X_Started || SegaCD_Started) && !Paused)
+	{
+		if (m_FPS_FreqCPU[0] > 1)	// accurate timer ok
+		{
+			if (++m_FPS_ViewFPS >= 16)
+			{
+#ifdef GENS_OS_WIN32
+				QueryPerformanceCounter((LARGE_INTEGER*)m_FPS_NewTime);
+#else
+				QueryPerformanceCounter((long long*)m_FPS_NewTime);
+#endif
+				if (m_FPS_NewTime[0] != m_FPS_OldTime)
+				{
+					m_FPS = (float)(m_FPS_FreqCPU[0]) * 16.0f / (float)(m_FPS_NewTime[0] - m_FPS_OldTime);
+					sprintf(tmp, "%.1f", m_FPS);
+					m_MsgText = tmp;
+				}
+				else
+				{
+					// IT'S OVER 9000 FPS!!!111!11!1
+					m_MsgText = ">9000";
+				}
+				
+				m_FPS_OldTime = m_FPS_NewTime[0];
+				m_FPS_ViewFPS = 0;
+			}
+		}
+		else if (m_FPS_FreqCPU[0] == 1)	// accurate timer not supported
+		{
+			if (++m_FPS_ViewFPS >= 10)
+			{
+				m_FPS_NewTime[0] = GetTickCount();
+				
+				if (m_FPS_NewTime[0] != m_FPS_OldTime)
+					m_FPS_Frames[m_FPS_IndexFPS] = 10000.0f / (float)(m_FPS_NewTime[0] - m_FPS_OldTime);
+				else
+					m_FPS_Frames[m_FPS_IndexFPS] = 2000;
+				
+				m_FPS_IndexFPS++;
+				m_FPS_IndexFPS &= 7;
+				m_FPS = 0.0f;
+				
+				for (unsigned char i = 0; i < 8; i++)
+					m_FPS += m_FPS_Frames[i];
+				
+				m_FPS /= 8.0f;
+				m_FPS_OldTime = m_FPS_NewTime[0];
+				m_FPS_ViewFPS = 0;
+			}
+			sprintf(tmp, "%.1f", m_FPS);
+			m_MsgText = tmp;
+		}
+		else
+		{
+#ifdef GENS_OS_WIN32
+			QueryPerformanceFrequency((LARGE_INTEGER*)m_FPS_FreqCPU);
+#else
+			QueryPerformanceFrequency((long long*)m_FPS_FreqCPU);
+#endif
+			if (m_FPS_FreqCPU[0] == 0)
+				m_FPS_FreqCPU[0] = 1;
+			
+			// TODO: WTF is this for?
+			// Assuming it just clears the string...
+			//sprintf(Info_String, "", FPS);
+			m_MsgText = "";
+		}
+	}
+#endif
+	
+	// Blur the screen if requested.
+	if (vdraw_prop_fast_blur)
+		Fast_Blur();
+	
+	// Check if the display width changed.
+	vdraw_border_h_old = vdraw_border_h;
+	if (isFullXRes())
+		vdraw_border_h = 0;	// 320x224
+	else
+		vdraw_border_h = 64;	// 256x224
+	
+	if (vdraw_border_h != vdraw_border_h_old)
+	{
+		// Display width change. Adjust the stretch parameters.
+		if (vdraw_cur_backend->vdraw_backend_stretch_adjust)
+			vdraw_cur_backend->vdraw_backend_stretch_adjust();
+	}
+	
+	if (vdraw_border_h > vdraw_border_h_old)
+	{
+		// New screen width is smaller than old screen width.
+		// Clear the screen.
+		vdraw_cur_backend->vdraw_backend_clear_screen();
+	}
+	
+	// Flip the screen buffer.
+	return vdraw_cur_backend->vdraw_backend_flip();
+
 }
