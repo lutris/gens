@@ -513,20 +513,20 @@ static int vdraw_sdl_gl_flip(void)
 		vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
 		vdraw_rInfo.destPitch = vdraw_16to32_pitch;
 		if (vdraw_get_fullscreen())
-			m_BlitFS(&vdraw_rInfo);
+			vdraw_blitFS(&vdraw_rInfo);
 		else
-			m_BlitW(&vdraw_rInfo);
+			vdraw_blitW(&vdraw_rInfo);
 		
-		Render_16to32((uint32_t*)start, vdraw_16to32_surface,
-			      vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
-			      pitch, vdraw_16to32_pitch);
+		vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
+				    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+				    pitch, vdraw_16to32_pitch);
 	}
 	else
 	{
 		if (vdraw_get_fullscreen())
-			m_BlitFS(&vdraw_rInfo);
+			vdraw_blitFS(&vdraw_rInfo);
 		else
-			m_BlitW(&vdraw_rInfo);
+			vdraw_blitW(&vdraw_rInfo);
 	}
 	
 	// Draw the message and/or FPS counter.
@@ -584,11 +584,66 @@ static int vdraw_sdl_gl_flip(void)
 	
 	// Draw the border.
 	if (Video.borderColorEmulation)
-		drawBorder();
+		vdraw_sdl_gl_draw_border();
 	
 	// Swap the SDL GL buffers.
 	SDL_GL_SwapBuffers();
 	
 	// TODO: Return appropriate error code.
 	return 0;
+}
+
+
+/**
+ * vdraw_sdl_gl_draw_border(): Draw the border color.
+ * Called from vdraw_sdl_gl_flip().
+ */
+static void vdraw_sdl_gl_draw_border(void)
+{
+	if (!Video.borderColorEmulation)
+		return;
+	
+	if ((Game == NULL) || (Debug > 0))
+	{
+		// Either no system is active or the debugger is enabled.
+		// Make sure the border color is black.
+		vdraw_border_color_16 = 0;
+		vdraw_border_color_32 = 0;
+	}
+	else
+	{
+		// Set the border color to the first palette entry.
+		vdraw_border_color_16 = MD_Palette[0];
+		vdraw_border_color_32 = MD_Palette32[0];
+	}
+	
+	uint8_t stretch = vdraw_get_stretch();
+	
+	if (stretch < STRETCH_FULL)
+	{
+		glDisable(GL_TEXTURE_2D);
+		
+		// TODO: This may not work properly on big-endian systems.
+		unsigned char* bcolor = (unsigned char*)(&vdraw_border_color_32);
+		glColor3ub(bcolor[2], bcolor[1], bcolor[0]);
+		
+		if (!(stretch & STRETCH_V) && (VDP_Num_Vis_Lines < 240))
+		{
+			// Top/Bottom borders.
+			float borderSize = ((float)((240 - VDP_Num_Vis_Lines) / 2)) / 240.0f;
+			glRectf(-1,  1, 1, ( 1.0f - (borderSize * 2.0)));
+			glRectf(-1, -1, 1, (-1.0f + (borderSize * 2.0)));
+		}
+		
+		if (!(stretch & STRETCH_H) && (vdraw_border_h > 0))
+		{
+			// Left/Right borders.
+			float borderSize = (float)(vdraw_border_h / 2) / 320.0f;
+			glRectf(-1, 1, (-1.0f + (borderSize * 2.0)), -1);
+			glRectf( 1, 1, ( 1.0f - (borderSize * 2.0)), -1);
+		}
+		
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glEnable(GL_TEXTURE_2D);
+	}
 }
