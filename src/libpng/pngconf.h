@@ -323,8 +323,8 @@
      /* If you encounter a compiler error here, see the explanation
       * near the end of INSTALL.
       */
-         __pngconf.h__ already includes setjmp.h;
-         __dont__ include it again.;
+#warning  __pngconf.h__ already includes setjmp.h;
+#warning  __dont__ include it again.;
 #    endif
 #  endif /* __linux__ */
 
