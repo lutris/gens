@@ -1070,7 +1070,7 @@ void Options::setOpenGL_Resolution(int w, int h)
  */
 bool Options::swRender(void)
 {
-	return draw->swRender();
+	return vdraw_get_sw_render();
 }
 
 /**
@@ -1083,9 +1083,9 @@ void Options::setSwRender(const bool newSwRender)
 	
 	Flag_Clr_Scr = 1;
 	
-	draw->setSwRender(newSwRender);
+	vdraw_set_sw_render(newSwRender);
 	
-	if (draw->swRender())
+	if (vdraw_get_sw_render())
 		MESSAGE_L("Force software blit for Full-Screen",
 			  "Force software blit for Full-Screen", 1000);
 	else
