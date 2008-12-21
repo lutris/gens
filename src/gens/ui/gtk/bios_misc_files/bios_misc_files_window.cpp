@@ -48,7 +48,7 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {
 	{"Genesis BIOS File", "md_bios", (FileFilterType)0, NULL},
 	{"Genesis", "md_bios", ROMFile, BIOS_Filenames.MD_TMSS},
-	{"32X BIOS Files", "32x_bios", (FileFilterType)0, NULL},
+	{"External 32X Firmware", "32x_bios", (FileFilterType)0, NULL},
 	{"MC68000", "mc68000", ROMFile, BIOS_Filenames._32X_MC68000},
 	{"Master SH2", "msh2", ROMFile, BIOS_Filenames._32X_MSH2},
 	{"Slave SH2", "ssh2", ROMFile, BIOS_Filenames._32X_SSH2},
