@@ -46,17 +46,17 @@ static GtkAccelGroup *accel_group;
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 {
-	{"<b><i>Genesis BIOS File</i></b>", "md_bios", (FileFilterType)0, NULL},
+	{"Genesis BIOS File", "md_bios", (FileFilterType)0, NULL},
 	{"Genesis", "md_bios", ROMFile, BIOS_Filenames.MD_TMSS},
-	{"<b><i>32X BIOS Files</i></b>", "32x_bios", (FileFilterType)0, NULL},
+	{"32X BIOS Files", "32x_bios", (FileFilterType)0, NULL},
 	{"MC68000", "mc68000", ROMFile, BIOS_Filenames._32X_MC68000},
 	{"Master SH2", "msh2", ROMFile, BIOS_Filenames._32X_MSH2},
 	{"Slave SH2", "ssh2", ROMFile, BIOS_Filenames._32X_SSH2},
-	{"<b><i>SegaCD BIOS Files</i></b>", "mcd_bios", (FileFilterType)0, NULL},
+	{"SegaCD BIOS Files", "mcd_bios", (FileFilterType)0, NULL},
 	{"USA", "mcd_bios_usa", ROMFile, BIOS_Filenames.SegaCD_US},
 	{"Europe", "mcd_bios_eur", ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
-	{"<b><i>Miscellaneous Files</i></b>", "misc", (FileFilterType)0, NULL},
+	{"Miscellaneous Files", "misc", (FileFilterType)0, NULL},
 	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
 	{"RAR Binary", "rar", AnyFile, Misc_Filenames.RAR_Binary},
 	{NULL, NULL, (FileFilterType)0, NULL},
