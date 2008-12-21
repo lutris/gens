@@ -48,6 +48,8 @@ const char* AboutWindow::StrCopyright =
 		"(c) 1999-2002 by Stéphane Dallongeville\n"
 		"(c) 2003-2004 by Stéphane Akhoun\n\n"
 		"Gens/GS (c) 2008 by David Korth\n\n"
+		"Reverse-engineered 32X firmware by DevSter\n"
+		"http://devster.monkeeh.com/segapage.html\n\n"
 		"Visit the Gens homepage:\n"
 		"http://gens.consolemul.com\n\n"
 		"For news on Gens/GS, visit Sonic Retro:\n"

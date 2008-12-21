@@ -115,11 +115,11 @@ AboutWindow::AboutWindow()
 	m_Window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  320, 320+lblTitle_HeightInc,
+				  320, 344+lblTitle_HeightInc,
 				  Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, 320, 320+lblTitle_HeightInc);
+	Win32_setActualWindowSize(m_Window, 320, 344+lblTitle_HeightInc);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(m_Window);
@@ -263,14 +263,14 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	// Box for the copyright message.
 	HWND grpGensCopyright;
 	grpGensCopyright = CreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 88+lblTitle_HeightInc, 304, 192,
+					8, 88+lblTitle_HeightInc, 304, 216,
 					hWnd, NULL, ghInstance, NULL);
 	
 	// Copyright message.
 	HWND lblGensCopyright;
 	string sCopyright = charset_utf8_to_cp1252(StrCopyright);
 	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 16, 288, 168,
+					8, 16, 288, 192,
 					grpGensCopyright, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensCopyright, fntMain, TRUE);
 	
