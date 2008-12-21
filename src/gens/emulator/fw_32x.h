@@ -24,8 +24,8 @@
 #ifndef GENS_FW_32X_H
 #define GENS_FW_32X_H
 
-const unsigned char fw_re_32X_mc68000[272];
-const unsigned char fw_re_32X_msh2[712];
-const unsigned char fw_re_32X_ssh2[532];
+extern const unsigned char fw_re_32X_mc68000[272];
+extern const unsigned char fw_re_32X_msh2[712];
+extern const unsigned char fw_re_32X_ssh2[532];
 
 #endif /* GENS_FW_32X_H */
