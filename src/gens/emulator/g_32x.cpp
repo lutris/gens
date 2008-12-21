@@ -36,6 +36,9 @@
 // 32X 32-bit color functions
 #include "g_32x_32bit.h"
 
+// Reverse-engineered 32X firmware.
+#include "fw_32x.h"
+
 
 #define SH2_EXEC(cycM, cycS)		\
 	SH2_Exec(&M_SH2, cycM);		\
@@ -68,41 +71,54 @@ int Init_32X(ROM_t* MD_ROM)
 	// Clear the sound buffer.
 	audio->clearSoundBuffer();
 	
-	// Read the Genesis 32X BIOS (usually "32X_G_BIOS.BIN")
+	// Read the 32X MC68000 firmware. (usually "32X_G_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
 	{
+		// External firmware file opened.
 		fread(&_32X_Genesis_Rom[0], 1, 256, f);
+		memset(&_32X_Genesis_Rom[256], 0x00, 256);
 		be16_to_cpu_array(&_32X_Genesis_Rom[0], 256);
 		fclose(f);
 	}
 	else
 	{
-		Error_32X_BIOS("Genesis 32X");
-		return 0;
+		// Use the reverse-engineered firmware.
+		memcpy(&_32X_Genesis_Rom[0], &fw_re_32X_mc68000[0], sizeof(fw_re_32X_mc68000));
+		memset(&_32X_Genesis_Rom[sizeof(fw_re_32X_mc68000)], 0x00,
+			sizeof(_32X_Genesis_Rom) - sizeof(fw_re_32X_mc68000));
+		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(fw_re_32X_mc68000));
 	}
 	
-	// Read the Master SH2 BIOS (usually "32X_M_BIOS.BIN")	
+	// Read the Master SH2 firmware. (usually "32X_M_BIOS.BIN")	
 	if ((f = fopen(BIOS_Filenames._32X_MSH2, "rb")))
 	{
-		fread(&_32X_MSH2_Rom[0], 1, 2 * 1024, f);
+		fread(&_32X_MSH2_Rom[0], 1, 2048, f);
+		le16_to_cpu_array(&_32X_MSH2_Rom[0], 2048);
 		fclose(f);
 	}
 	else
 	{
-		Error_32X_BIOS("Master SH2");
-		return 0;
+		// Use the reverse-engineered firmware.
+		memcpy(&_32X_MSH2_Rom[0], &fw_re_32X_msh2[0], sizeof(fw_re_32X_msh2));
+		memset(&_32X_MSH2_Rom[sizeof(fw_re_32X_msh2)], 0x00,
+			sizeof(_32X_MSH2_Rom) - sizeof(fw_re_32X_msh2));
+		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(fw_re_32X_msh2));
 	}
 	
-	// Read the Slave SH2 BIOS (usually "32X_S_BIOS.BIN")
+	// Read the Slave SH2 firmware. (usually "32X_S_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_SSH2, "rb")))
 	{
-		fread(&_32X_SSH2_Rom[0], 1, 1 * 1024, f);
+		fread(&_32X_SSH2_Rom[0], 1, 1024, f);
+		le16_to_cpu_array(&_32X_SSH2_Rom[0], 1024);
 		fclose(f);
 	}
 	else
 	{
-		Error_32X_BIOS("Slave SH2");
-		return 0;
+		// Use the reverse-engineered firmware.
+		memcpy(&_32X_SSH2_Rom[0], &fw_re_32X_ssh2[0], sizeof(fw_re_32X_ssh2));
+		memset(&_32X_SSH2_Rom[sizeof(fw_re_32X_ssh2)], 0x00,
+			sizeof(_32X_SSH2_Rom) - sizeof(fw_re_32X_ssh2));
+		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(fw_re_32X_ssh2));
 	}
 	
 	Flag_Clr_Scr = 1;
