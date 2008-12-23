@@ -70,7 +70,14 @@ static int	vdraw_ddraw_restore_primary(void);
 static int	vdraw_ddraw_set_cooperative_level(void);
 
 
-// DirectDraw variables
+// Stretch parameters.
+static float m_HStretch, m_VStretch;
+
+// X and Y resolutions.
+static int Res_X;
+static int Res_Y;
+
+// DirectDraw variables.
 static LPDIRECTDRAW lpDD_Init = NULL;
 static LPDIRECTDRAW4 lpDD = NULL;
 static LPDIRECTDRAWSURFACE4 lpDDS_Primary = NULL;
@@ -143,4 +150,229 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	
 	if (lock)
 		IDirectDrawSurface4_Unlock(lpDDS_Surface, NULL);
+}
+
+
+/**
+ * vdraw_ddraw_init(): Initialize the DirectDraw video subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_init(void)
+{
+	DDSURFACEDESC2 ddsd;
+	
+	vdraw_ddraw_end();
+	
+	MDP_Render_t *rendMode = get_mdp_render_t();
+	const int scale = rendMode->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return -1;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	const int mdW = 336 * scale;
+	
+	if (vdraw_get_fullscreen())
+	{
+		Res_X = w;
+		Res_Y = h;
+	}
+	
+	if (FAILED(DirectDrawCreate(NULL, &lpDD_Init, NULL)))
+	{
+		vdraw_init_fail("Error with DirectDrawCreate!");
+		return -2;
+	}
+	
+	if (FAILED(IDirectDraw4_QueryInterface(lpDD_Init, &IID_IDirectDraw4, (LPVOID*)&lpDD)))
+	{
+		vdraw_init_fail("Error with QueryInterface!\nUpgrade your DirectX version.");
+		return -3;
+	}
+	
+	IDirectDraw4_Release(lpDD_Init);
+	lpDD_Init = NULL;
+	
+	// TODO: 15-bit color override ("Force 555" or "Force 565" in the config file).
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	
+	// TODO: Figure out what FS_No_Res_Change is for.
+	// TODO: Figure out if this is correct.
+	if (vdraw_get_fullscreen() /* && !FS_No_Res_Change*/)
+	{
+		// Always use 16-bit color in fullscreen.
+		if (FAILED(IDirectDraw4_SetDisplayMode(lpDD, Res_X, Res_Y, 16, 0, 0)))
+		{
+			vdraw_init_fail("Error with lpDD->SetDisplayMode()!");
+			return -4;
+		}
+	}
+	
+	// Check the current color depth.
+	unsigned char newBpp;
+	IDirectDraw4_GetDisplayMode(lpDD, &ddsd);
+	switch (ddsd.ddpfPixelFormat.dwGBitMask)
+	{
+		case 0x03E0:
+			// 15-bit color.
+			newBpp = 15;
+			break;
+		case 0x07E0:
+			// 16-bit color.
+			newBpp = 16;
+			break;
+		case 0x00FF00:
+		default:
+			// 32-bit color.
+			newBpp = 32;
+			break;
+	}
+	
+	if (newBpp != bppOut)
+		vdraw_set_bpp(newBpp, FALSE);
+	
+	vdraw_ddraw_set_cooperative_level();
+	
+	// Clear ddsd.
+	memset(&ddsd, 0x00, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	
+	if (vdraw_get_fullscreen() && Video.VSync_FS)
+	{
+		ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX;
+		ddsd.dwBackBufferCount = 2;
+	}
+	else
+	{
+		ddsd.dwFlags = DDSD_CAPS;
+		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
+	}
+	
+	if (FAILED(IDirectDraw4_CreateSurface(lpDD, &ddsd, &lpDDS_Primary, NULL)))
+	{
+		vdraw_init_fail("Error with lpDD->CreateSurface()! [lpDDS_Primary]");
+		return -5;
+	}
+	
+	if (vdraw_get_fullscreen())
+	{
+		if (Video.VSync_FS)
+		{
+			ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
+			
+			if (FAILED(IDirectDrawSurface4_GetAttachedSurface(lpDDS_Primary, &ddsd.ddsCaps, &lpDDS_Flip)))
+			{
+				vdraw_init_fail("Error with lpDDPrimary->GetAttachedSurface()!");
+				return -6;
+			}
+			
+			lpDDS_Blit = lpDDS_Flip;
+		}
+		else
+		{
+			lpDDS_Blit = lpDDS_Primary;
+		}
+	}
+	else
+	{
+		if (FAILED(IDirectDraw4_CreateClipper(lpDD, 0, &lpDDC_Clipper, NULL )))
+		{
+			vdraw_init_fail("Error with lpDD->CreateClipper()!");
+			return -7;
+		}
+		
+		if (FAILED(IDirectDrawClipper_SetHWnd(lpDDC_Clipper, 0, Gens_hWnd)))
+		{
+			vdraw_init_fail("Error with lpDDC_Clipper->SetHWnd()!");
+			return -8;
+		}
+		
+		if (FAILED(IDirectDrawSurface4_SetClipper(lpDDS_Primary, lpDDC_Clipper)))
+		{
+			vdraw_init_fail("Error with lpDDS_Primary->SetClipper()!");
+			return -9;
+		}
+	}
+	
+	// Clear ddsd again.
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
+	
+	// Determine the width and height.
+	// NOTE: For DirectDraw, the actual 336 width is used.
+	if (scale == 1)
+	{
+		// Normal render mode. 320x240 [336x240]
+		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
+		ddsd.dwWidth = 336;
+		ddsd.dwHeight = 240;
+	}
+	else
+	{
+		// Larger than 1x.
+		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
+		ddsd.dwWidth = mdW;
+		ddsd.dwHeight = h;
+	}
+	
+	if (FAILED(IDirectDraw4_CreateSurface(lpDD, &ddsd, &lpDDS_Back, NULL)))
+	{
+		vdraw_init_fail("Error with lpDD->CreateSurface()! [lpDDS_Back]");
+		return -10;
+	}
+	
+	// TODO: Check if this is right.
+	// I think this might be causing the frame counter flicker in full screen mode.
+	//if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
+	if (!(vdraw_get_fullscreen() && scale == 1))
+		lpDDS_Blit = lpDDS_Back;
+	
+	if (scale == 1)
+	{
+		// Normal rendering mode uses MD_Screen directly.
+		memset(&ddsd, 0, sizeof(ddsd));
+		ddsd.dwSize = sizeof(ddsd);
+		
+		if (FAILED(IDirectDrawSurface4_GetSurfaceDesc(lpDDS_Back, &ddsd)))
+		{
+			vdraw_init_fail("Error with lpDD_Back->GetSurfaceDesc()!");
+			return 11;
+		}
+		
+		ddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_PITCH | DDSD_LPSURFACE | DDSD_PIXELFORMAT;
+		ddsd.dwWidth = 336;
+		ddsd.dwHeight = 240;
+		
+		if (ddsd.ddpfPixelFormat.dwRGBBitCount > 16)
+		{
+			// 32-bit color.
+			ddsd.lpSurface = MD_Screen32;
+			ddsd.lPitch = 336 * 4;
+		}
+		else
+		{
+			// 15-bit or 16-bit color.
+			ddsd.lpSurface = MD_Screen;
+			ddsd.lPitch = 336 * 2;
+		}
+		
+		if (FAILED(IDirectDrawSurface4_SetSurfaceDesc(lpDDS_Back, &ddsd, 0)))
+		{
+			vdraw_init_fail("Error with lpDD_Back->SetSurfaceDesc()!");
+			return 12;
+		}
+	}
+	
+	// Reset the render mode.
+	vdraw_reset_renderer(FALSE);
+	
+	// Synchronize menus.
+	Sync_Gens_Window();
+	
+	// vdraw_ddraw initialized.
+	return 0;
 }
