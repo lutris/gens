@@ -44,6 +44,9 @@ using std::list;
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
 
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
+
 
 /**
  * spriteLimit(): Get the current sprite limit setting.
@@ -898,7 +901,7 @@ void Options::setSegaCD_PerfectSync(const bool newSegaCD_PerfectSync)
  */
 bool Options::fastBlur(void)
 {
-	return draw->fastBlur();
+	return vdraw_get_fast_blur();
 }
 
 /**
@@ -908,9 +911,9 @@ bool Options::fastBlur(void)
 void Options::setFastBlur(const bool newFastBlur)
 {
 	Flag_Clr_Scr = 1;
-	draw->setFastBlur(newFastBlur);
+	vdraw_set_fast_blur(newFastBlur);
 	
-	if (draw->fastBlur())
+	if (vdraw_get_fast_blur())
 		MESSAGE_L("Fast Blur Enabled", "Fast Blur Enabled", 1000);
 	else
 		MESSAGE_L("Fast Blur Disabled", "Fast Blur Disabled", 1000);
@@ -923,7 +926,7 @@ void Options::setFastBlur(const bool newFastBlur)
  */
 uint8_t Options::stretch(void)
 {
-	return draw->stretch();
+	return vdraw_get_stretch();
 }
 
 /**
@@ -932,27 +935,27 @@ uint8_t Options::stretch(void)
  */
 void Options::setStretch(const uint8_t newStretch)
 {
-	if (newStretch > VDraw::STRETCH_FULL)
+	if (newStretch > STRETCH_FULL)
 	{
 		// TODO: Throw an exception.
 		return;
 	}
 	
 	Flag_Clr_Scr = 1;
-	draw->setStretch(newStretch);
+	vdraw_set_stretch(newStretch);
 	
-	switch (draw->stretch())
+	switch (vdraw_get_stretch())
 	{
-		case VDraw::STRETCH_NONE:
+		case STRETCH_NONE:
 			MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
 			break;
-		case VDraw::STRETCH_H:
+		case STRETCH_H:
 			MESSAGE_L("Horizontal stretched mode", "Horizontal stretched mode", 1000);
 			break;
-		case VDraw::STRETCH_V:
+		case STRETCH_V:
 			MESSAGE_L("Vertical stretched mode", "Vertical stretched mode", 1000);
 			break;
-		case VDraw::STRETCH_FULL:
+		case STRETCH_FULL:
 			MESSAGE_L("Full stretched mode", "Full stretched mode", 1000);
 			break;
 	}
@@ -967,7 +970,7 @@ bool Options::vsync(void)
 {
 	int *p_vsync;
 	
-	p_vsync = (draw->fullScreen() ? &Video.VSync_FS : &Video.VSync_W);
+	p_vsync = (vdraw_get_fullscreen() ? &Video.VSync_FS : &Video.VSync_W);
 	return *p_vsync;
 }
 
@@ -979,7 +982,7 @@ void Options::setVSync(const bool newVSync)
 {
 	int *p_vsync;
 	
-	p_vsync = (draw->fullScreen() ? &Video.VSync_FS : &Video.VSync_W);
+	p_vsync = (vdraw_get_fullscreen() ? &Video.VSync_FS : &Video.VSync_W);
 	*p_vsync = (newVSync == 1 ? 1 : 0);
 	
 	if (*p_vsync)
@@ -988,14 +991,12 @@ void Options::setVSync(const bool newVSync)
 		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
 	
 	// Update VSync.
-	draw->updateVSync();
+	if (vdraw_update_vsync)
+		vdraw_update_vsync(0);
 }
 
 
 #ifdef GENS_OPENGL
-
-#include "video/v_draw_sdl.hpp"
-#include "video/v_draw_sdl_gl.hpp"
 
 /**
  * openGL(): Get the OpenGL setting.
@@ -1013,24 +1014,17 @@ bool Options::openGL(void)
 void Options::setOpenGL(const bool newOpenGL)
 {
 	// End the current drawing function.
-	draw->End_Video();
+	vdraw_backend_end();
 	
 	Video.OpenGL = newOpenGL;
-	VDraw *newDraw;
 	if (Video.OpenGL)
 	{
-		newDraw = new VDraw_SDL_GL(draw);
-		newDraw->Init_Video();
-		delete draw;
-		draw = newDraw;
+		vdraw_backend_init(VDRAW_BACKEND_SDL_GL);
 		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500);
 	}
 	else
 	{
-		newDraw = new VDraw_SDL(draw);
-		newDraw->Init_Video();
-		delete draw;
-		draw = newDraw;
+		vdraw_backend_init(VDRAW_BACKEND_SDL);
 		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500);
 	}
 }
@@ -1061,8 +1055,7 @@ void Options::setOpenGL_Resolution(int w, int h)
 		return;
 	
 	// OpenGL mode is currently enabled. Change the resolution.
-	list<MDP_Render_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
-	draw->setRender(rendMode, true);
+	vdraw_reset_renderer(TRUE);
 	
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
@@ -1077,7 +1070,7 @@ void Options::setOpenGL_Resolution(int w, int h)
  */
 bool Options::swRender(void)
 {
-	return draw->swRender();
+	return vdraw_get_sw_render();
 }
 
 /**
@@ -1090,9 +1083,9 @@ void Options::setSwRender(const bool newSwRender)
 	
 	Flag_Clr_Scr = 1;
 	
-	draw->setSwRender(newSwRender);
+	vdraw_set_sw_render(newSwRender);
 	
-	if (draw->swRender())
+	if (vdraw_get_sw_render())
 		MESSAGE_L("Force software blit for Full-Screen",
 			  "Force software blit for Full-Screen", 1000);
 	else

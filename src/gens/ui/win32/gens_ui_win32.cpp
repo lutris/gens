@@ -542,5 +542,6 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
  */
 void Win32_ClearSoundBuffer(void)
 {
-	audio->clearSoundBuffer();
+	if (audio->soundInitialized())
+		audio->clearSoundBuffer();
 }

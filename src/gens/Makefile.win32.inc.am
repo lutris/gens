@@ -5,7 +5,7 @@ INCLUDES += -I@srcdir@/ui/win32/
 gens_SOURCES += \
 		emulator/g_main_win32.cpp \
 		port/argc_argv.c \
-		video/v_draw_ddraw.cpp \
+		video/vdraw_ddraw.c \
 		input/input_dinput.cpp \
 		audio/audio_dsound.cpp \
 		util/file/compress/popen_wrapper.c \
@@ -47,7 +47,7 @@ endif
 noinst_HEADERS += \
 		emulator/g_main_win32.hpp \
 		port/argc_argv.h \
-		video/v_draw_ddraw.hpp \
+		video/vdraw_ddraw.h \
 		input/input_dinput.hpp \
 		input/input_win32_keys.h \
 		audio/audio_dsound.hpp \

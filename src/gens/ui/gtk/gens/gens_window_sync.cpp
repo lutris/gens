@@ -334,7 +334,7 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
-	list<MDP_Render_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	list<MDP_Render_t*>::iterator& selMDP = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	
 	for (list<MDP_Render_t*>::iterator curPlugin = PluginMgr::lstRenderPlugins.begin();
 	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)

@@ -132,7 +132,9 @@ gens_SOURCES = \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
 		video/C64_charset.c \
-		video/v_draw.cpp \
+		video/vdraw.c \
+		video/vdraw_cpp.cpp \
+		video/vdraw_text.cpp \
 		video/v_effects.cpp \
 		input/input.cpp \
 		audio/audio.cpp \
@@ -203,6 +205,7 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
+		macros/bool_m.h \
 		macros/hashtable.hpp \
 		macros/malloc_align.h \
 		macros/math_m.h \
@@ -226,7 +229,9 @@ noinst_HEADERS = \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
 		video/C64_charset.h \
-		video/v_draw.hpp \
+		video/vdraw.h \
+		video/vdraw_cpp.hpp \
+		video/vdraw_text.hpp \
 		video/v_effects.hpp \
 		input/input.hpp \
 		audio/audio.hpp \

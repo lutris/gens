@@ -37,7 +37,7 @@ int Start_GYM_Dump(void)
 	
 	if (GYM_Dumping)
 	{
-		draw->writeText("GYM sound is already dumping", 1000);
+		vdraw_write_text("GYM sound is already dumping", 1000);
 		return 0;
 	}
 	
@@ -97,7 +97,7 @@ int Start_GYM_Dump(void)
 	t_buf[2] = YM_Save[0x28];
 	fwrite(t_buf, 3, 1, GYM_File);
 	
-	draw->writeText("Starting to dump GYM sound", 1000);
+	vdraw_write_text("Starting to dump GYM sound", 1000);
 	GYM_Dumping = 1;
 	
 	return 1;
@@ -112,7 +112,7 @@ int Stop_GYM_Dump(void)
 {
 	if (!GYM_Dumping)
 	{
-		draw->writeText("Already stopped", 1000);
+		vdraw_write_text("Already stopped", 1000);
 		return 0;
 	}
 	
@@ -121,7 +121,7 @@ int Stop_GYM_Dump(void)
 	audio->clearSoundBuffer();
 	GYM_Dumping = 0;
 	
-	draw->writeText("GYM dump stopped", 1000);
+	vdraw_write_text("GYM dump stopped", 1000);
 	return 1;
 }
 
@@ -139,7 +139,7 @@ int Start_Play_GYM(void)
 	
 	if (audio->playingGYM())
 	{
-		draw->writeText("Already playing GYM", 1000);
+		vdraw_write_text("Already playing GYM", 1000);
 		return 0;
 	}
 	
@@ -149,7 +149,7 @@ int Start_Play_GYM(void)
 	if (!audio->initSound())
 	{
 		audio->setEnabled(false);
-		draw->writeText("Can't initialize SDL Sound", 1000);
+		vdraw_write_text("Can't initialize SDL Sound", 1000);
 		return 0;
 	}
 	
@@ -168,7 +168,7 @@ int Start_Play_GYM(void)
 	PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
 	audio->setPlayingGYM(true);
 	
-	draw->writeText("Starting to play GYM", 1000);
+	vdraw_write_text("Starting to play GYM", 1000);
 	return 1;
 }
 
@@ -181,7 +181,7 @@ int Stop_Play_GYM(void)
 {
 	if (!audio->playingGYM())
 	{
-		draw->writeText("Already stopped", 1000);
+		vdraw_write_text("Already stopped", 1000);
 		return 0;
 	}
 	
@@ -190,7 +190,7 @@ int Stop_Play_GYM(void)
 	audio->clearSoundBuffer();
 	audio->setPlayingGYM(false);
 	
-	draw->writeText("Stopped playing GYM", 1000);
+	vdraw_write_text("Stopped playing GYM", 1000);
 	return 1;
 }
 

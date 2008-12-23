@@ -8,7 +8,7 @@ gens_SOURCES += \
 		emulator/g_main_unix.cpp \
 		port/ini_old.c \
 		port/timer.c \
-		video/v_draw_sdl.cpp \
+		video/vdraw_sdl.c \
 		input/input_sdl.cpp \
 		audio/audio_sdl.cpp
 
@@ -50,7 +50,7 @@ gens_SOURCES += \
 
 if GENS_OPENGL
 gens_SOURCES += \
-		video/v_draw_sdl_gl.cpp \
+		video/vdraw_sdl_gl.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
 		ui/gtk/opengl_resolution/opengl_resolution_window_misc.cpp
@@ -69,7 +69,7 @@ noinst_HEADERS += \
 		emulator/g_main_unix.hpp \
 		port/ini_old.h \
 		port/timer.h \
-		video/v_draw_sdl.hpp \
+		video/vdraw_sdl.h \
 		input/input_sdl.hpp \
 		input/input_sdl_keys.h \
 		audio/audio_sdl.hpp
@@ -110,7 +110,7 @@ noinst_HEADERS += \
 
 if GENS_OPENGL
 noinst_HEADERS += \
-		video/v_draw_sdl_gl.hpp \
+		video/vdraw_sdl_gl.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
 		ui/gtk/opengl_resolution/opengl_resolution_window_misc.hpp

@@ -197,7 +197,7 @@ int Savestate::LoadState(const string& filename)
 		{
 			// Header does not match GSX.
 			sprintf(Str_Tmp, "Error: State %d is not in GSX format.", Current_State);
-			draw->writeText(Str_Tmp, 2000);
+			vdraw_write_text(Str_Tmp, 2000);
 			fclose(f);
 			return 0;
 		}
@@ -230,7 +230,7 @@ int Savestate::LoadState(const string& filename)
 		*/
 		
 		sprintf(Str_Tmp, "STATE %d LOADED", Current_State);
-		draw->writeText(Str_Tmp, 2000);
+		vdraw_write_text(Str_Tmp, 2000);
 	}
 	
 	fclose(f);
@@ -290,7 +290,7 @@ int Savestate::SaveState(const string& filename)
 	fclose(f);
 	
 	sprintf(Str_Tmp, "STATE %d SAVED", Current_State);
-	draw->writeText(Str_Tmp, 2000);
+	vdraw_write_text(Str_Tmp, 2000);
 	
 	return 1;
 }
@@ -1805,7 +1805,7 @@ int Savestate::LoadSRAM(void)
 	fclose(SRAM_File);
 	
 	string msg = "SRAM loaded from " + filename;
-	draw->writeText(msg, 2000);
+	vdraw_write_text(msg.c_str(), 2000);
 	return 1;
 }
 
@@ -1845,7 +1845,8 @@ int Savestate::SaveSRAM(void)
 	fwrite(SRAM, size_to_save, 1, SRAM_File);
 	fclose(SRAM_File);
 	
-	draw->writeText("SRAM saved in " + filename, 2000);
+	string dispText = "SRAM saved in " + filename;
+	vdraw_write_text(dispText.c_str(), 2000);
 	return 1;
 }
 
@@ -1923,7 +1924,8 @@ int Savestate::LoadBRAM(void)
 	fread(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
 	fclose(BRAM_File);
 	
-	draw->writeText("BRAM loaded in " + filename, 2000);
+	string dispText = "BRAM loaded from " + filename;
+	vdraw_write_text(dispText.c_str(), 2000);
 	return 1;
 }
 
@@ -1949,6 +1951,7 @@ int Savestate::SaveBRAM(void)
 	fwrite(Ram_Backup_Ex, (8 << BRAM_Ex_Size) * 1024, 1, BRAM_File);
 	fclose(BRAM_File);
 	
-	draw->writeText("BRAM saved in " + filename, 2000);
+	string dispText = "BRAM saved in " + filename;
+	vdraw_write_text(dispText.c_str(), 2000);
 	return 1;
 }

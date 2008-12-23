@@ -73,6 +73,9 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
+
 // For some reason, these aren't extern'd anywhere...
 extern "C"
 {
@@ -312,7 +315,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 				Set_Render(1, Render_FS, 1);
 			*/
 			
-			draw->setFullScreen(!draw->fullScreen());
+			vdraw_set_fullscreen(!vdraw_get_fullscreen());
 			// TODO: See if draw->setRender() is still needed.
 			//draw->setRender(Video.Render_Mode);
 			Sync_Gens_Window_GraphicsMenu();
@@ -400,19 +403,19 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 		
 #ifdef GENS_OS_UNIX
 		case IDM_GRAPHICS_BPP_15:
-			draw->setBpp(15);
+			vdraw_set_bpp(15, TRUE);
 			Sync_Gens_Window_GraphicsMenu();
 			MESSAGE_L("Selected 15-bit color depth", "Selected 15-bit color depth", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_16:
-			draw->setBpp(16);
+			vdraw_set_bpp(16, TRUE);
 			Sync_Gens_Window_GraphicsMenu();
 			MESSAGE_L("Selected 16-bit color depth", "Selected 16-bit color depth", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_32:
-			draw->setBpp(32);
+			vdraw_set_bpp(32, TRUE);
 			Sync_Gens_Window_GraphicsMenu();
 			MESSAGE_L("Selected 32-bit color depth", "Selected 32-bit color depth", 1500);
 			break;
@@ -462,7 +465,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 				}
 				
 				// Found the renderer.
-				draw->setRender(mdpIter);
+				vdraw_set_renderer(mdpIter);
 				
 				// Synchronize the Graphics Menu.
 				Sync_Gens_Window_GraphicsMenu();

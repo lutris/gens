@@ -97,16 +97,16 @@ void Detect_Country_Genesis(void)
 	if (Game_Mode)
 	{
 		if (CPU_Mode)
-			draw->writeText("Europe system (50 FPS)", 1500);
+			vdraw_write_text("Europe system (50 FPS)", 1500);
 		else
-			draw->writeText("USA system (60 FPS)", 1500);
+			vdraw_write_text("USA system (60 FPS)", 1500);
 	}
 	else
 	{
 		if (CPU_Mode)
-			draw->writeText("Japan system (50 FPS)", 1500);
+			vdraw_write_text("Japan system (50 FPS)", 1500);
 		else
-			draw->writeText("Japan system (60 FPS)", 1500);
+			vdraw_write_text("Japan system (60 FPS)", 1500);
 	}
 	
 	if (CPU_Mode)

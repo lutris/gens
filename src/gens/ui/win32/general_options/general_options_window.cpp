@@ -562,7 +562,7 @@ void GeneralOptionsWindow::load(void)
 	// Miscellaneous
 	Button_SetCheck(chkMisc_AutoFixChecksum, (Auto_Fix_CS ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_AutoPause, (Auto_Pause ? BST_CHECKED : BST_UNCHECKED));
-	Button_SetCheck(chkMisc_FastBlur, (draw->fastBlur() ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkMisc_FastBlur, (vdraw_get_fast_blur() ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
 	
@@ -570,23 +570,23 @@ void GeneralOptionsWindow::load(void)
 	//Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
 	
 	// FPS counter
-	Button_SetCheck(chkOSD_Enable[0], (draw->fpsEnabled() ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkOSD_Enable[0], (vdraw_get_fps_enabled() ? BST_CHECKED : BST_UNCHECKED));
 	
-	curFPSStyle = draw->fpsStyle();
+	curFPSStyle = vdraw_get_fps_style();
 	Button_SetCheck(chkOSD_DoubleSized[0], ((curFPSStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkOSD_Transparency[0], ((curFPSStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
 	state_optColor[0] = (curFPSStyle & 0x06) >> 1;
 	
 	// Message
-	Button_SetCheck(chkOSD_Enable[1], (draw->msgEnabled() ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkOSD_Enable[1], (vdraw_get_msg_enabled() ? BST_CHECKED : BST_UNCHECKED));
 	
-	curMsgStyle = draw->msgStyle();
+	curMsgStyle = vdraw_get_msg_style();
 	Button_SetCheck(chkOSD_DoubleSized[1], ((curMsgStyle & 0x10) ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkOSD_Transparency[1], ((curMsgStyle & 0x08) ? BST_CHECKED : BST_UNCHECKED));
 	state_optColor[1] = (curMsgStyle & 0x06) >> 1;
 	
 	// Intro effect color
-	state_optColor[2] = draw->introEffectColor();
+	state_optColor[2] = vdraw_get_intro_effect_color();
 }
 
 
@@ -601,7 +601,7 @@ void GeneralOptionsWindow::save(void)
 	// System
 	Auto_Fix_CS = (Button_GetCheck(chkMisc_AutoFixChecksum) == BST_CHECKED);
 	Auto_Pause = (Button_GetCheck(chkMisc_AutoPause) == BST_CHECKED);
-	draw->setFastBlur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
+	vdraw_set_fast_blur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
 	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
 	Video.pauseTint = (Button_GetCheck(chkMisc_PauseTint) == BST_CHECKED);
 	
@@ -613,24 +613,24 @@ void GeneralOptionsWindow::save(void)
 	//Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	
 	// FPS counter
-	draw->setFPSEnabled(Button_GetCheck(chkOSD_Enable[0]) == BST_CHECKED);
+	vdraw_set_fps_enabled(Button_GetCheck(chkOSD_Enable[0]) == BST_CHECKED);
 	
-	curFPSStyle = draw->fpsStyle() & ~0x18;
+	curFPSStyle = vdraw_get_fps_style() & ~0x18;
 	curFPSStyle |= ((Button_GetCheck(chkOSD_DoubleSized[0]) == BST_CHECKED) ? 0x10 : 0x00);
 	curFPSStyle |= ((Button_GetCheck(chkOSD_Transparency[0]) == BST_CHECKED) ? 0x08 : 0x00);
 	curFPSStyle &= ~0x06;
 	curFPSStyle |= state_optColor[0] << 1;
-	draw->setFPSStyle(curFPSStyle);
+	vdraw_set_fps_style(curFPSStyle);
 	
 	// Message
-	draw->setMsgEnabled(Button_GetCheck(chkOSD_Enable[1]) == BST_CHECKED);
-	curMsgStyle = draw->msgStyle() & ~0x18;
+	vdraw_set_msg_enabled(Button_GetCheck(chkOSD_Enable[1]) == BST_CHECKED);
+	curMsgStyle = vdraw_get_msg_style() & ~0x18;
 	curMsgStyle |= ((Button_GetCheck(chkOSD_DoubleSized[1]) == BST_CHECKED) ? 0x10 : 0x00);
 	curMsgStyle |= ((Button_GetCheck(chkOSD_Transparency[1]) == BST_CHECKED) ? 0x08 : 0x00);
 	curMsgStyle &= ~0x06;
 	curMsgStyle |= state_optColor[1] << 1;
-	draw->setMsgStyle(curMsgStyle);
+	vdraw_set_msg_style(curMsgStyle);
 	
 	// Intro effect color
-	draw->setIntroEffectColor(static_cast<unsigned char>(state_optColor[2]));
+	vdraw_set_intro_effect_color(static_cast<unsigned char>(state_optColor[2]));
 }

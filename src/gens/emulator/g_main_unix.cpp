@@ -27,9 +27,12 @@ using std::list;
 #include "util/file/config_file.hpp"
 #include "util/sound/gym.hpp"
 
-#include "video/v_draw_sdl.hpp"
+#include "video/vdraw_sdl.h"
 #include "input/input_sdl.hpp"
 #include "audio/audio_sdl.hpp"
+
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
 
 #include "gens/gens_window_sync.hpp"
 
@@ -99,9 +102,9 @@ int main(int argc, char *argv[])
 	// TODO: Make this unnecessary.
 	init_timer();
 	
-	// Initialize the drawing object.
-	// TODO: Select VDraw_SDL(), VDraw_SDL_GL(), or VDraw_DDraw() depending on other factors.
-	draw = new VDraw_SDL();
+	// Initialize vdraw_sdl.
+	vdraw_init();
+	vdraw_backend_init_subsystem(VDRAW_BACKEND_SDL);
 	
 	// Initialize the input object.
 	input = new Input_SDL();
@@ -115,7 +118,7 @@ int main(int argc, char *argv[])
 		// Error initializing settings.
 		delete audio;
 		delete input;
-		delete draw;
+		vdraw_end();
 		return 1;	// TODO: Replace with a better error code.
 	}
 	
@@ -143,7 +146,7 @@ int main(int argc, char *argv[])
 	Options::setOpenGL(Video.OpenGL);
 #else
 	// Initialize SDL.
-	draw->Init_Video();
+	vdraw_backend_init(VDRAW_BACKEND_SDL);
 #endif
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
@@ -157,17 +160,8 @@ int main(int argc, char *argv[])
 	// Update the UI.
 	GensUI::update();
 	
-	const list<MDP_Render_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
-	if (!draw->setRender(rendMode))
-	{
-		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!draw->setRender(PluginMgr::lstRenderPlugins.begin()))
-		{
-			// Cannot initialize normal mode.
-			fprintf(stderr, "%s(): FATAL ERROR: Cannot initialize any renderers.\n", __func__);
-			return 1;
-		}
-	}
+	// Reset the renderer.
+	vdraw_reset_renderer(TRUE);
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();

@@ -18,9 +18,12 @@
 #include "util/file/config_file.hpp"
 #include "util/sound/gym.hpp"
 
-#include "video/v_draw_ddraw.hpp"
+#include "video/vdraw_ddraw.h"
 #include "input/input_dinput.hpp"
 #include "audio/audio_dsound.hpp"
+
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
 
 #include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
@@ -141,8 +144,9 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Initialize the Gens hWnd.
 	initGens_hWnd();
 	
-	// Initialize the drawing object.
-	draw = new VDraw_DDraw();
+	// Initialize vdraw_ddraw.
+	vdraw_init();
+	vdraw_backend_init_subsystem(VDRAW_BACKEND_DDRAW);
 	
 	// Initialize the input object.
 	try
@@ -164,7 +168,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		// Error initializing settings.
 		delete audio;
 		delete input;
-		delete draw;
+		vdraw_end();
 		return 1;	// TODO: Replace with a better error code.
 	}
 	
@@ -200,7 +204,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Change_OpenGL(Video.OpenGL);
 #else
 	// Initialize DirectDraw.
-	draw->Init_Video();
+	vdraw_backend_init(VDRAW_BACKEND_DDRAW);
 #endif
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
@@ -214,17 +218,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Update the UI.
 	GensUI::update();
 	
-	const list<MDP_Render_t*>::iterator& rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
-	if (!draw->setRender(rendMode))
-	{
-		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (!draw->setRender(PluginMgr::lstRenderPlugins.begin()))
-		{
-			// Cannot initialize normal mode.
-			fprintf(stderr, "%s(): FATAL ERROR: Cannot initialize any renderers.\n", __func__);
-			return 1;
-		}
-	}
+	// Reset the renderer.
+	vdraw_reset_renderer(TRUE);
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();

@@ -73,7 +73,7 @@ int Update_Emulation(void)
 #ifdef GENS_DEBUGGER
 			if (!Debug)
 #endif /* GENS_DEBUGGER */
-				draw->flip();
+				vdraw_flip();
 		}
 	}
 	else
@@ -99,7 +99,7 @@ int Update_Emulation(void)
 #ifdef GENS_DEBUGGER
 			if (!Debug)
 #endif /* GENS_DEBUGGER */
-				draw->flip();
+				vdraw_flip();
 		}
 		else
 		{
@@ -129,7 +129,7 @@ int Update_Emulation(void)
 #ifdef GENS_DEBUGGER
 				if (!Debug)
 #endif /* GENS_DEBUGGER */
-					draw->flip();
+					vdraw_flip();
 			}
 			else
 			{
@@ -173,7 +173,7 @@ int Update_Emulation_One(void)
 #ifdef GENS_DEBUGGER
 	if (!Debug)
 #endif /* GENS_DEBUGGER */
-		draw->flip();
+		vdraw_flip();
 	
 	return 1;
 }
@@ -226,7 +226,7 @@ int Update_Emulation_Netplay(int player, int num_player)
 		//Kaillera_Error = Kaillera_Modify_Play_Values((void *) (Kaillera_Keys), 2);
 		Update_Controllers_Net(num_player);
 		Update_Frame();
-		draw->flip();
+		vdraw_flip();
 	}
 	return 1;
 }

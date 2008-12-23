@@ -105,16 +105,10 @@ int Quick_Exit = 0;
 
 static int Gens_Running = 0;
 
-// New video layer.
-#include "video/v_draw.hpp"
-VDraw *draw = NULL;
-
 // New input layer.
-#include "input/input.hpp"
 Input *input = NULL;
 
 // New audio layer.
-#include "audio/audio.hpp"
 Audio *audio = NULL;
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
@@ -331,14 +325,11 @@ int is_gens_running(void)
 
 
 /**
- * Init(): Initialize GENS.
+ * Init(): Initialize Gens.
  * @return 1 if successful; 0 on errors.
  */
 int Init(void)
 {
-	if (draw->Init_Subsystem() != 0)
-		return 0;
-	
 	MSH2_Init();
 	SSH2_Init();
 	M68K_Init();
@@ -385,10 +376,9 @@ void End_All(void)
 	audio = NULL;
 	
 	// Shut down the video subsystem.
-	draw->End_Video();
-	draw->Shut_Down();
-	delete draw;
-	draw = NULL;
+	vdraw_backend_end();
+	if (vdraw_shutdown)
+		vdraw_shutdown();
 }
 
 
@@ -424,7 +414,7 @@ void MESSAGE_L(const char* str, const char* def, int time)
 {
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	draw->writeText(buf, time);
+	vdraw_write_text(buf, time);
 }
 
 
@@ -441,7 +431,7 @@ void MESSAGE_NUM_L(const char* str, const char* def, int num, int time)
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, num);
-	draw->writeText(msg_tmp, time);
+	vdraw_write_text(msg_tmp, time);
 }
 
 
@@ -458,7 +448,7 @@ void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time)
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, str2);
-	draw->writeText(msg_tmp, time);
+	vdraw_write_text(msg_tmp, time);
 }
 
 
@@ -476,7 +466,7 @@ void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int ti
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, num1, num2);
-	draw->writeText(msg_tmp, time);
+	vdraw_write_text(msg_tmp, time);
 }
 
 
@@ -505,6 +495,17 @@ void Clear_Screen_MD(void)
 
 
 /**
+ * get_mdp_render_t(): Get the current MDP_Render_t*. (C wrapper)
+ * @return Current MDP_Render_t*.
+ */
+MDP_Render_t* get_mdp_render_t(void)
+{
+	const list<MDP_Render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	return (*rendMode);
+}
+
+
+/**
  * GensMainLoop(): The main program loop.
  */
 void GensMainLoop(void)
@@ -522,7 +523,7 @@ void GensMainLoop(void)
 		{
 			// DEBUG
 			Update_Debug_Screen();
-			draw->flip();
+			vdraw_flip();
 			GensUI::sleep(100);
 		}
 		else
@@ -552,7 +553,7 @@ void GensMainLoop(void)
 				else
 					Do_VDP_Only();
 				//Pause_Screen();
-				draw->flip();
+				vdraw_flip();
 				GensUI::sleep(100);
 			}
 		}
@@ -561,7 +562,7 @@ void GensMainLoop(void)
 			// No game is currently running.
 			
 			// Update the screen.
-			draw->flip();
+			vdraw_flip();
 			
 			// Determine how much sleep time to add, based on intro style.
 			// TODO: Move this to v_draw.cpp?

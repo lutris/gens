@@ -191,6 +191,13 @@ void Clear_Screen_MD(void);
 // The main program loop.
 void GensMainLoop(void);
 
+// Get the current MDP_Render_t*.
+#include "mdp/mdp_render.h"
+MDP_Render_t* get_mdp_render_t(void);
+
+// Back to C!
+#include "video/vdraw.h"
+
 #ifdef __cplusplus
 }
 #endif
@@ -198,10 +205,6 @@ void GensMainLoop(void);
 #ifdef __cplusplus
 
 // C++ classes
-
-// New VDraw object
-#include "video/v_draw.hpp"
-extern VDraw *draw;
 
 // New Input object
 #include "input/input.hpp"

@@ -179,7 +179,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("General", "Window X", Window_Pos.x);
 	cfg.writeInt("General", "Window Y", Window_Pos.y);
 	cfg.writeInt("General", "Intro Style", Intro_Style);
-	cfg.writeInt("General", "Free Mode Color", draw->introEffectColor());
+	cfg.writeInt("General", "Free Mode Color", vdraw_get_intro_effect_color());
 	
 	// Video adjustments
 	cfg.writeInt("Graphics", "Contrast", Contrast_Level);
@@ -188,8 +188,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Invert", Invert_Color & 1);
 	
 	// Video settings
-	// Render_Mode is incremented by 1 for compatibility with old Gens.
-	cfg.writeBool("Graphics", "Full Screen", draw->fullScreen());
+	cfg.writeBool("Graphics", "Full Screen", vdraw_get_fullscreen());
 	cfg.writeString("Graphics", "Render Fullscreen", (*rendMode_FS)->tag);
 	cfg.writeString("Graphics", "Render Windowed", (*rendMode_W)->tag);
 	cfg.writeInt("Graphics", "Full Screen VSync", Video.VSync_FS & 1);
@@ -247,11 +246,11 @@ int Config::save(const string& filename)
 	cfg.writeInt("CPU", "Slave SH2 Speed", SSH2_Speed);
 	
 	// Various settings
-	cfg.writeBool("Options", "Fast Blur", draw->fastBlur());
-	cfg.writeBool("Options", "FPS", draw->fpsEnabled());
-	cfg.writeInt("Options", "FPS Style", draw->fpsStyle());
-	cfg.writeBool("Options", "Message", draw->msgEnabled());
-	cfg.writeInt("Options", "Message Style", draw->msgStyle());
+	cfg.writeBool("Options", "Fast Blur", Options::fastBlur());
+	cfg.writeBool("Options", "FPS", vdraw_get_fps_enabled());
+	cfg.writeInt("Options", "FPS Style", vdraw_get_fps_style());
+	cfg.writeBool("Options", "Message", vdraw_get_msg_enabled());
+	cfg.writeInt("Options", "Message Style", vdraw_get_msg_style());
 	cfg.writeInt("Options", "LED", Show_LED & 1);
 	cfg.writeInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	cfg.writeInt("Options", "Auto Pause", Auto_Pause & 1);
@@ -327,7 +326,8 @@ int Config::saveAs(void)
 	
 	// Filename selected for the config file.
 	save(filename);
-	draw->writeText("Config saved in " + filename, 2000);
+	string dispText = "Config saved in " + filename;
+	vdraw_write_text(dispText.c_str(), 2000);
 	return 1;
 }
 
@@ -411,7 +411,7 @@ int Config::load(const string& filename, void* gameActive)
 	Window_Pos.x = cfg.getInt("General", "Window X", 0);
 	Window_Pos.y = cfg.getInt("General", "Window Y", 0);
 	Intro_Style = cfg.getInt("General", "Intro Style", 0);
-	draw->setIntroEffectColor(cfg.getInt("General", "Free Mode Color", 7));
+	vdraw_set_intro_effect_color(cfg.getInt("General", "Free Mode Color", 7));
 	Sleep_Time = cfg.getInt("General", "Allow Idle", 0) & 1;
 	
 	// Video adjustments
@@ -423,7 +423,7 @@ int Config::load(const string& filename, void* gameActive)
 	// Video settings
 	Video.VSync_FS = cfg.getInt("Graphics", "Full Screen VSync", 0) & 1;
 	Video.VSync_W = cfg.getInt("Graphics", "Windows VSync", 0) & 1;
-	draw->setFullScreen(cfg.getBool("Graphics", "Full Screen", false));
+	vdraw_set_fullscreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
 	
@@ -532,11 +532,11 @@ int Config::load(const string& filename, void* gameActive)
 		SSH2_Speed = 0;
 	
 	// Various settings
-	draw->setFastBlur(cfg.getBool("Options", "Fast Blur", false));
-	draw->setFPSEnabled(cfg.getBool("Options", "FPS", false));
-	draw->setFPSStyle(cfg.getInt("Options", "FPS Style", 0));
-	draw->setMsgEnabled(cfg.getBool("Options", "Message", true));
-	draw->setMsgStyle(cfg.getInt("Options", "Message Style", 0));
+	Options::setFastBlur(cfg.getBool("Options", "Fast Blur", false));
+	vdraw_set_fps_enabled(cfg.getBool("Options", "FPS", false));
+	vdraw_set_fps_style(cfg.getInt("Options", "FPS Style", 0));
+	vdraw_set_msg_enabled(cfg.getBool("Options", "Message", true));
+	vdraw_set_msg_style(cfg.getInt("Options", "Message Style", 0));
 	Show_LED = cfg.getInt("Options", "LED", 1);
 	Auto_Fix_CS = cfg.getInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = cfg.getInt("Options", "Auto Pause", 0);
@@ -627,6 +627,7 @@ int Config::loadAs(void* gameActive)
 	
 	// Filename selected for the config file.
 	load(filename, gameActive);
-	draw->writeText("Config loaded from " + filename, 2000);
+	string dispText = "Config loaded from " + filename;
+	vdraw_write_text(dispText.c_str(), 2000);
 	return 1;
 }

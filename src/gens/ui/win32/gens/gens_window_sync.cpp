@@ -202,11 +202,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 	// Full Screen
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_FULLSCREEN,
-		      MF_BYCOMMAND | (draw->fullScreen() ? MF_CHECKED : MF_UNCHECKED));
+		      MF_BYCOMMAND | (vdraw_get_fullscreen() ? MF_CHECKED : MF_UNCHECKED));
 	
 	// VSync
 	unsigned int checkFlags;
-	if (draw->fullScreen())
+	if (vdraw_get_fullscreen())
 		checkFlags = (Video.VSync_FS ? MF_CHECKED : MF_UNCHECKED);
 	else
 		checkFlags = (Video.VSync_W ? MF_CHECKED : MF_UNCHECKED);
@@ -267,7 +267,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
 	unsigned int selMenuItem = 0;
-	list<MDP_Render_t*>::iterator& selMDP = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+	list<MDP_Render_t*>::iterator& selMDP = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	
 	for (list<MDP_Render_t*>::iterator curPlugin = PluginMgr::lstRenderPlugins.begin();
 	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)
