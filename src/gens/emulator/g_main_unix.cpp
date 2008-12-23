@@ -31,12 +31,12 @@ using std::list;
 #include "input/input_sdl.hpp"
 #include "audio/audio_sdl.hpp"
 
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
+
 #include "gens/gens_window_sync.hpp"
 
 #include "port/timer.h"
-
-// VDraw C++ functions.
-#include "video/vdraw_cpp.hpp"
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"

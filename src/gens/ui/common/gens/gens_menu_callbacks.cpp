@@ -315,7 +315,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 				Set_Render(1, Render_FS, 1);
 			*/
 			
-			vdraw_set_fullscreen(!vdraw_get_fullscreen);
+			vdraw_set_fullscreen(!vdraw_get_fullscreen());
 			// TODO: See if draw->setRender() is still needed.
 			//draw->setRender(Video.Render_Mode);
 			Sync_Gens_Window_GraphicsMenu();

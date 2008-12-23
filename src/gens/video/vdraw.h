@@ -20,12 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_VDRAW_H
-#define GENS_VDRAW_H
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#ifndef GENS_VDRAW_H
+#define GENS_VDRAW_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,9 +33,13 @@ extern "C" {
 
 #include <stdint.h>
 
-#ifndef BOOL
-#define BOOL int
-#endif
+// Win32 has definitions for BOOL.
+#ifdef GENS_OS_WIN32
+#include <windows.h>
+#else /* !GENS_OS_WIN32 */
+// Other systems might not have definitions for BOOL.
+typedef int BOOL;
+#endif /* GENS_OS_WIN32 */
 
 #ifndef TRUE
 #define TRUE 1

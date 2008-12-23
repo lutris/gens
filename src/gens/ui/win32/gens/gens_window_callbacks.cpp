@@ -98,24 +98,17 @@ extern "C"
 // Non-Menu Command Definitions
 #include "gens_window_cmds.h"
 
-#include "video/v_draw_ddraw.hpp"
+#include "video/vdraw_ddraw.h"
 #include "input/input_dinput.hpp"
+
+// VDraw C++ functions.
+#include "video/vdraw_cpp.hpp"
+
 static bool paintsEnabled = true;
 
 static void on_gens_window_close(void);
-
-#if 0
-static void on_gens_window_FileMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void on_gens_window_GraphicsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void on_gens_window_CPUMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void on_gens_window_SoundMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void on_gens_window_OptionsMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-static void on_gens_window_HelpMenu(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-#endif
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
 static void fullScreenPopupMenu(HWND hWnd);
-
 static void dragDropFile(HDROP hDrop);
 
 
@@ -167,7 +160,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 		
 		case WM_EXITSIZEMOVE:
-			if (draw->fullScreen())
+			if (vdraw_get_fullscreen())
 				break;
 			
 			// Save the window coordinates.
@@ -211,15 +204,15 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			
 			if (paintsEnabled)
 			{
-				((VDraw_DDraw*)draw)->clearPrimaryScreen();
-				draw->flip();
+				vdraw_ddraw_clear_primary_screen();
+				vdraw_flip();
 			}
 			
 			EndPaint(hWnd, &ps);
 			break;
 		
 		case WM_RBUTTONDOWN:
-			if (draw->fullScreen())
+			if (vdraw_get_fullscreen())
 				fullScreenPopupMenu(hWnd);
 			break;
 		
@@ -401,27 +394,27 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			break;
 		
 		case IDCMD_FPS:
-			draw->setFPSEnabled(!draw->fpsEnabled());
+			vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			break;
 		
 		case IDCMD_RENDERMODE_DEC:
 		{
-			list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+			list<MDP_Render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 			if (rendMode != PluginMgr::lstRenderPlugins.begin())
 			{
 				rendMode--;
-				draw->setRender(rendMode);
+				vdraw_set_renderer(rendMode);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		}
 		case IDCMD_RENDERMODE_INC:
 		{
-			list<MDP_Render_t*>::iterator rendMode = (draw->fullScreen() ? rendMode_FS : rendMode_W);
+			list<MDP_Render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 			rendMode++;
 			if (rendMode != PluginMgr::lstRenderPlugins.end())
 			{
-				draw->setRender(rendMode);
+				vdraw_set_renderer(rendMode);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
@@ -480,7 +473,7 @@ static void fullScreenPopupMenu(HWND hWnd)
 	POINT pt;
 	GetCursorPos(&pt);
 	SendMessage(hWnd, WM_PAINT, 0, 0);
-	reinterpret_cast<VDraw_DDraw*>(draw)->restorePrimary();
+	vdraw_ddraw_restore_primary();
 	
 	// Disable painting while the popup menu is open.
 	paintsEnabled = false;

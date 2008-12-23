@@ -283,9 +283,10 @@ void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
 	// Process four pixels at a time.
 	width >>= 2;
 	
-	for (unsigned int y = 0; y < height; y++)
+	unsigned int x, y;
+	for (y = 0; y < height; y++)
 	{
-		for (unsigned int x = 0; x < width; x++)
+		for (x = 0; x < width; x++)
 		{
 			*(dest + 0) = vdraw_LUT16to32[*(src + 0)];
 			*(dest + 1) = vdraw_LUT16to32[*(src + 1)];
@@ -389,7 +390,8 @@ int vdraw_flip(void)
 				vdraw_fps_index &= 7;
 				vdraw_fps_value = 0.0f;
 				
-				for (unsigned char i = 0; i < 8; i++)
+				unsigned char i;
+				for (i = 0; i < 8; i++)
 					vdraw_fps_value += vdraw_fps_frames[i];
 				
 				vdraw_fps_value /= 8.0f;

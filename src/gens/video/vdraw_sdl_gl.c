@@ -121,6 +121,26 @@ PFNGLXSWAPINTERVALMESAPROC set_swap_interval = NULL;
 PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval = NULL;
 
 
+// VDraw Backend struct.
+vdraw_backend_t vdraw_backend_sdl_gl =
+{
+	.init = vdraw_sdl_gl_init,
+	.end = vdraw_sdl_gl_end,
+	
+	.init_subsystem = vdraw_sdl_gl_init_subsystem,
+	.shutdown = vdraw_sdl_gl_shutdown,
+	
+	.clear_screen = vdraw_sdl_gl_clear_screen,
+	.update_vsync = vdraw_sdl_gl_update_vsync,
+	
+	.flip = vdraw_sdl_gl_flip,
+	.stretch_adjust = vdraw_sdl_gl_stretch_adjust,
+	.update_renderer = vdraw_sdl_gl_update_renderer,
+	
+	.reinit_gens_window = NULL
+};
+
+
 /**
  * vdraw_sdl_gl_calc_texture_size(): Calculate the texture size for the given scale value.
  * @param scale Scale value.
@@ -147,26 +167,6 @@ static inline int vdraw_sdl_gl_calc_texture_size(int scale)
 	// Texture size is larger than 4096.
 	return tex_size;
 }
-
-
-// VDraw Backend struct.
-vdraw_backend_t vdraw_backend_sdl_gl =
-{
-	.init = vdraw_sdl_gl_init,
-	.end = vdraw_sdl_gl_end,
-	
-	.init_subsystem = vdraw_sdl_gl_init_subsystem,
-	.shutdown = vdraw_sdl_gl_shutdown,
-	
-	.clear_screen = vdraw_sdl_gl_clear_screen,
-	.update_vsync = vdraw_sdl_gl_update_vsync,
-	
-	.flip = vdraw_sdl_gl_flip,
-	.stretch_adjust = vdraw_sdl_gl_stretch_adjust,
-	.update_renderer = vdraw_sdl_gl_update_renderer,
-	
-	.reinit_gens_window = NULL
-};
 
 
 /**

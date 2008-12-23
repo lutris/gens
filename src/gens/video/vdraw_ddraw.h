@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Video Drawing - C++ functions.                                    *
+ * Gens: Video Drawing - DirectDraw Backend.                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,49 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#ifndef GENS_VDRAW_CPP_HPP
-#define GENS_VDRAW_CPP_HPP
-
-// Win32 has definitions for BOOL.
-#ifdef GENS_OS_WIN32
-#include <windows.h>
-#else /* !GENS_OS_WIN32 */
-// Other systems might not have definitions for BOOL.
-typedef int BOOL;
-#endif /* GENS_OS_WIN32 */
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
+#ifndef GENS_VDRAW_DDRAW_H
+#define GENS_VDRAW_DDRAW_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void vdraw_reset_renderer(const BOOL reset_video);
+#include "vdraw.h"
+
+extern vdraw_backend_t vdraw_backend_ddraw;
+
+int vdraw_ddraw_clear_primary_screen(void);
+int vdraw_ddraw_clear_back_screen(void);
+int vdraw_ddraw_restore_primary(void);
+int vdraw_ddraw_set_cooperative_level(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#ifdef __cplusplus
-
-// MDP Render functions.
-#include "mdp/mdp_render.h"
-
-// C++ includes
-#include <list>
-
-int vdraw_set_renderer(const std::list<MDP_Render_t*>::iterator& newMode, const bool forceUpdate = true);
-
-#endif /* __cplusplus */
-
-#endif /* GENS_VDRAW_CPP_HPP */
+#endif /* GENS_VDRAW_DDRAW_H */

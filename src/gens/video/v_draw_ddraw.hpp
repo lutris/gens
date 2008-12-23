@@ -2,6 +2,8 @@
  * Gens: Video Drawing class - DirectDraw
  */
 
+#error DO NOT INCLUDE v_draw_ddraw.hpp
+
 #ifndef GENS_V_DRAW_DDRAW_HPP
 #define GENS_V_DRAW_DDRAW_HPP
 

@@ -119,7 +119,7 @@ void create_gens_window_menubar(void)
 	DestroyMenu(MainMenu);
 	
 	// Create the main menu.
-	if (draw->fullScreen())
+	if (vdraw_get_fullscreen())
 		MainMenu = CreatePopupMenu();
 	else
 		MainMenu = CreateMenu();
@@ -128,7 +128,7 @@ void create_gens_window_menubar(void)
 	Win32_ParseMenu(&gmiMain[0], MainMenu);
 	
 	// Set the menu bar.
-	if (draw->fullScreen())
+	if (vdraw_get_fullscreen())
 		SetMenu(Gens_hWnd, NULL);
 	else
 		SetMenu(Gens_hWnd, MainMenu);
