@@ -72,13 +72,13 @@ int		vdraw_ddraw_set_cooperative_level(void);
 
 
 // DirectDraw variables
-static LPDIRECTDRAW lpDD_Init;
-static LPDIRECTDRAW4 lpDD;
-static LPDIRECTDRAWSURFACE4 lpDDS_Primary;
-static LPDIRECTDRAWSURFACE4 lpDDS_Flip;
-static LPDIRECTDRAWSURFACE4 lpDDS_Back;
-static LPDIRECTDRAWSURFACE4 lpDDS_Blit;
-static LPDIRECTDRAWCLIPPER lpDDC_Clipper;
+static LPDIRECTDRAW lpDD_Init = NULL;
+static LPDIRECTDRAW4 lpDD = NULL;
+static LPDIRECTDRAWSURFACE4 lpDDS_Primary = NULL;
+static LPDIRECTDRAWSURFACE4 lpDDS_Flip = NULL;
+static LPDIRECTDRAWSURFACE4 lpDDS_Back = NULL;
+static LPDIRECTDRAWSURFACE4 lpDDS_Blit = NULL;
+static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 static HRESULT RestoreGraphics(void);
 static void CalculateDrawArea(RECT *RectDest, RECT *RectSrc, float *Ratio_X, float *Ratio_Y, int *Dep);
