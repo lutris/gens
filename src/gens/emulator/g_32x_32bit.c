@@ -5,7 +5,7 @@
 
 
 // Post_Line_32X() was originally a series of macros.
-// I converted it to a function so it can be debugged easier.
+// I converted it to a function so it can be debugged more easily.
 
 
 // TODO: Clean up these functions.
