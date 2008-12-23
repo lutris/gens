@@ -527,10 +527,10 @@ static int vdraw_ddraw_clear_back_screen(void)
  * @param Ratio_Y [out] Y ratio.
  * @param Dep [out] Horizontal border.
  */
-static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *pRatio_X, float* pRatio_Y, int *Dep)
+static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *pRatio_X, float* pRatio_Y, int *pDep)
 {
 	// TODO: Is this check really necessary?
-	if (!pRectDest || !pRectSrc || !pRatio_X || !pRatio_Y || !Dep)
+	if (!pRectDest || !pRectSrc || !pRatio_X || !pRatio_Y || !pDep)
 		return;
 	
 	*pRatio_X = (float)pRectDest->right / 320.0f;  //Upth-Modif - why use two lines of code
@@ -576,8 +576,8 @@ static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *p
 
 	if (isFullXRes())
 	{
-		Dep = 0;
-
+		*pDep = 0;
+		
 		if (vdraw_scale == 1)
 		{
 			pRectSrc->left = 8 + 0 ;
@@ -593,7 +593,7 @@ static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *p
 	}
 	else // less-wide X resolution:
 	{
-		Dep = 64;
+		*pDep = 64;
 		
 		if (!(stretch & STRETCH_H))
 		{
