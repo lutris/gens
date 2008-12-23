@@ -457,7 +457,7 @@ static void vdraw_sdl_gl_stretch_adjust(void)
 
 
 /**
- * vdraw_sdl_gl_clear_screen(): Clears the screen.
+ * vdraw_sdl_gl_clear_screen(): Clear the screen.
  */
 static void vdraw_sdl_gl_clear_screen(void)
 {

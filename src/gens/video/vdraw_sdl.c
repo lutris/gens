@@ -203,7 +203,7 @@ static int vdraw_sdl_shutdown(void)
 
 
 /** 
- * vdraw_sdl_clear_screen(): Clears the screen.
+ * vdraw_sdl_clear_screen(): Clear the screen.
  */
 static void vdraw_sdl_clear_screen(void)
 {
