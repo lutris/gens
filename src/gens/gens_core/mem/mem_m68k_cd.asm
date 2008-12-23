@@ -1,5 +1,26 @@
 %include "nasmhead.inc"
 
+%ifidn	__OUTPUT_FORMAT__, elf
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf32
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf64
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, win32
+	%define	__OBJ_WIN32
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, win64
+	%define	__OBJ_WIN64
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, macho
+	%define	__OBJ_MACHO
+%endif
+
+%ifdef __OBJ_ELF
+	; Mark the stack as non-executable on ELF.
+	section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
 %define CYCLE_FOR_TAKE_Z80_BUS_SEGACD 32
 
 section .bss align=64
@@ -119,11 +140,6 @@ section .data align=64
 	extern _Controller_2_State
 	extern _Controller_2_COM
 	
-; Read-only data on Win32 uses the section name ".rdata".
-%ifdef __OBJ_WIN32
-        %define .rodata .rdata
-%endif
-
 section .rodata align=64
 	; Sega CD Default Jump Table
 	

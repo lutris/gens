@@ -21,6 +21,27 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
+%ifidn	__OUTPUT_FORMAT__, elf
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf32
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf64
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, win32
+	%define	__OBJ_WIN32
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, win64
+	%define	__OBJ_WIN64
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, macho
+	%define	__OBJ_MACHO
+%endif
+
+%ifdef __OBJ_ELF
+	; Mark the stack as non-executable on ELF.
+	section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
 	%define	_mdp_render_2xsai_16_x86_mmx	mdp_render_2xsai_16_x86_mmx
@@ -70,13 +91,8 @@ section .data align=64
 	; Previous Mode 555 setting.
 	PrevMode555:		dd 0x00000000
 	
-; Read-only data on Win32 uses the section name ".rdata".
-%ifdef __OBJ_WIN32
-	%define .rodata .rdata
-%endif
-
 section .rodata align=64
-
+	
 	; 15-bit color masks.
 	
 	colorMask15:		dd 0x7BDE7BDE, 0x7BDE7BDE

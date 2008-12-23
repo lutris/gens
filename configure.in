@@ -183,13 +183,13 @@ fi
 
 # Set nasm flags.
 if test x$obj_format = xwin32; then
-	nasm_obj_format="-f win32 -D __OBJ_WIN32"
+	nasm_obj_format="-f win32"
 elif test x$obj_format = xwin64; then
 	AC_MSG_ERROR([*** TODO: Win64 object format.])
 elif test x$obj_format = xmacho; then
-	nasm_obj_format="-f macho -D __GCC2 -D __OBJ_MACHO"
+	nasm_obj_format="-f macho -D __GCC2"
 elif test x$obj_format = xelf32; then
-	nasm_obj_format="-f elf -D __GCC2 -D __OBJ_ELF"
+	nasm_obj_format="-f elf -D __GCC2"
 elif test x$obj_format = xelf64; then
 	AC_MSG_ERROR([*** TODO: ELF64 object format.])
 fi

@@ -20,6 +20,27 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
+%ifidn	__OUTPUT_FORMAT__, elf
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf32
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf64
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, win32
+	%define	__OBJ_WIN32
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, win64
+	%define	__OBJ_WIN64
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, macho
+	%define	__OBJ_MACHO
+%endif
+
+%ifdef __OBJ_ELF
+	; Mark the stack as non-executable on ELF.
+	section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
 arg_destScreen	equ 28+8
 arg_mdScreen	equ 28+12
 arg_destPitch	equ 28+16
@@ -38,11 +59,6 @@ arg_mode555	equ 28+32
 
 ; Position-independent code macros.
 %include "pic.inc"
-
-; Read-only data on Win32 uses the section name ".rdata".
-%ifdef __OBJ_WIN32
-	%define .rodata .rdata
-%endif
 
 section .rodata align=64
 	

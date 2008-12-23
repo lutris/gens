@@ -1,5 +1,26 @@
 %include "nasmhead.inc"
 
+%ifidn	__OUTPUT_FORMAT__, elf
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf32
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf64
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, win32
+	%define	__OBJ_WIN32
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, win64
+	%define	__OBJ_WIN64
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, macho
+	%define	__OBJ_MACHO
+%endif
+
+%ifdef __OBJ_ELF
+	; Mark the stack as non-executable on ELF.
+	section .note.GNU-stack noalloc noexec nowrite progbits
+%endif
+
 %define PWM_BUF_SIZE 4
 ; For some convenience, EBP register is never modified because assumed "alive"
 ; so we can access the current SH2 context by using EBP. 

@@ -20,10 +20,25 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
+%ifidn	__OUTPUT_FORMAT__, elf
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf32
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, elf64
+	%define	__OBJ_ELF
+%elifidn __OUTPUT_FORMAT__, win32
+	%define	__OBJ_WIN32
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, win64
+	%define	__OBJ_WIN64
+	%define	.rodata	.rdata
+%elifidn __OUTPUT_FORMAT__, macho
+	%define	__OBJ_MACHO
+%endif
+
 %ifdef __OBJ_ELF
-%define _Fast_Blur_32_x86 Fast_Blur_32_x86
-%define _Fast_Blur_32_x86_mmx Fast_Blur_32_x86_mmx
-%define _MD_Screen32 MD_Screen32
+	; Mark the stack as non-executable on ELF.
+	section .note.GNU-stack noalloc noexec nowrite progbits
 %endif
 
 MD_SCREEN_SIZE	equ 336 * 240
@@ -31,14 +46,27 @@ MASK_DIV2_32	equ 0x007F7F7F
 
 section .data align=64
 	
-	; MD screen buffer and bpp.
+	; Symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_MD_Screen32		MD_Screen32
+	%endif
+	
+	; MD screen buffer.
 	extern _MD_Screen32
+	
+section .rodata align=64
 	
 	; 64-bit mask used for the mmx version.
 	MASK_DIV2_32_MMX:	dd 0x007F7F7F, 0x007F7F7F
 	
 section .text align=64
 	
+	; Symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_Fast_Blur_32_x86	Fast_Blur_32_x86
+		%define	_Fast_Blur_32_x86_mmx	Fast_Blur_32_x86_mmx
+	%endif
+
 	; void Fast_Blur_32_x86_mmx()
 	; 32-bit color Fast Blur function, non-MMX.
 	global _Fast_Blur_32_x86

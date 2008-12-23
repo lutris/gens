@@ -545,16 +545,30 @@ static void copy_memory_map(char *map, char *reg) {
 /***************************************************************************/
 
 static void gen_interface(void) {
+	emit("\n");
+	emit("%%ifidn __OUTPUT_FORMAT__, elf\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%elifidn __OUTPUT_FORMAT__, elf32\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%elifidn __OUTPUT_FORMAT__, elf64\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%endif\n");
+	emit("\n");
+	
+	// Mark the stack as non-executable on ELF.
+	emit("%%ifdef __OBJ_ELF\n");
+	emit("\tsection .note.GNU-stack noalloc noexec nowrite progbits\n");
+	emit("%%endif\n");
+	emit("\n");
+	
 	emit("section .text\n");
 	emit("bits 32\n");
-
-	// Symbol redefines for ELF
+	
+	// Symbol redefines for ELF.
 	emit("\n");
 	emit("\t%%ifdef __OBJ_ELF\n");
 	emit("\t\t%%define _Int_Ack Int_Ack\n");
 	emit("\t%%endif\n");
-	emit("\n");
-	
 	emit("\n");
 	emit("\textern M68K_RB\n");
 	emit("\textern M68K_RW\n");
