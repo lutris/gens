@@ -328,7 +328,7 @@ static int vdraw_ddraw_init(void)
 	
 	// TODO: Check if this is right.
 	// I think this might be causing the frame counter flicker in full screen mode.
-	//if (!m_FullScreen || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
+	//if (!vdraw_get_fullscreen() || (rendMode >= 1 && (/*FS_No_Res_Change ||*/ Res_X != 640 || Res_Y != 480)))
 	if (!(vdraw_get_fullscreen() && scale == 1))
 		lpDDS_Blit = lpDDS_Back;
 	
@@ -541,7 +541,7 @@ static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *p
 	q.x = pRectDest->right; //Upth-Add - we need to get
 	q.y = pRectDest->bottom; //Upth-Add - the bottom-right corner
 	
-	uint8_t stretch = vdraw_get_stretch();
+	const uint8_t stretch = vdraw_get_stretch();
 	
 	if (vdraw_scale == 1)
 	{
@@ -612,4 +612,450 @@ static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *p
 			pRectSrc->right = (32 + 256) * vdraw_scale;
 		}
 	}
+}
+
+
+/**
+ * vdraw_ddraw_flip(): Flip the screen buffer. [Called by vdraw_flip().]
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_flip(void)
+{
+	// TODO: Add border drawing, like in vdraw_sdl.
+	
+	if (!lpDD)
+		return -1;
+	
+	HRESULT rval = DD_OK;
+	DDSURFACEDESC2 ddsd;
+	ddsd.dwSize = sizeof(ddsd);
+	RECT RectDest, RectSrc;
+	POINT p;
+	float Ratio_X, Ratio_Y;
+	int Dep = 0;
+	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	
+	// Set up the render information.
+	if (vdraw_rInfo.bpp != bppMD)
+	{
+		// bpp has changed. Reinitialize the screen pointers.
+		vdraw_rInfo.bpp = bppMD;
+		vdraw_rInfo.cpuFlags = CPU_Flags;
+	}
+	
+	const uint8_t stretch = vdraw_get_stretch();
+	
+	if (vdraw_get_fullscreen())
+	{
+		//Upth-Add - So we can set the fullscreen resolution to the current res without changing the value that gets saved to the config
+		int FS_X, FS_Y;
+		
+#if 0
+		if (Res_X < (320 << (int)(Video.Render_FS > 0)))
+			Res_X = 320 << (int)(Video.Render_FS > 0); //Upth-Add - Flooring the resolution to 320x240
+		if (Res_Y < (240 << (int)(Video.Render_FS > 0)))
+			Res_Y = 240 << (int)(Video.Render_FS > 0); //Upth-Add - or 640x480, as appropriate
+#endif
+			
+		// TODO: FS_No_Res_Change
+#if 0
+		if (FS_No_Res_Change)
+		{
+			//Upth-Add - If we didn't change resolution when we went Full Screen
+			DEVMODE temp;
+			EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&temp); //Upth-Add - Gets the current screen resolution
+			FS_X = temp.dmPelsWidth;
+			FS_Y = temp.dmPelsHeight;
+		}
+		else
+		{
+#endif
+			//Upth-Add - Otherwise use the configured resolution values
+			FS_X = Res_X; 
+			FS_Y = Res_Y;
+#if 0
+		}
+#endif
+		
+		Ratio_X = (float)FS_X / 320.0f; //Upth-Add - Find the current size-ratio on the x-axis
+		Ratio_Y = (float)FS_Y / 240.0f; //Upth-Add - Find the current size-ratio on the y-axis
+		
+		Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - Floor them to the smaller value for correct ratio display
+		
+		if (isFullXRes())
+		{
+			if (Flag_Clr_Scr != 40)
+			{
+				// MD resolution change. Clear the screen.
+				vdraw_ddraw_clear_screen();
+				Flag_Clr_Scr = 40;
+			}
+			
+			Dep = 0;
+			RectSrc.left = 0 + 8;
+			RectSrc.right = 320 + 8;
+			RectDest.left = (int) ((FS_X - (320 * Ratio_X))/2); //Upth-Modif - Offset the left edge of the picture to the center of the screen
+			RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Modif - Stretch the picture and move the right edge the same amount
+		}
+		else
+		{
+			if (Flag_Clr_Scr != 32)
+			{
+				// MD resolution change. Clear the screen.
+				vdraw_ddraw_clear_screen();
+				Flag_Clr_Scr = 32;
+			}
+			
+			Dep = 64;
+			RectSrc.left = 0 + 8;
+			RectSrc.right = 256 + 8;
+			
+			if (stretch)
+			{
+				RectDest.left = 0;
+				RectDest.right = FS_X; //Upth-Modif - use the user configured value
+				RectDest.top = 0;      //Upth-Add - also, if we have stretch enabled
+				RectDest.bottom = FS_Y;//Upth-Add - we don't correct the screen ratio
+			}
+			else
+			{
+				RectDest.left = (FS_X - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - Centering the screen left-right
+				RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-modif - again
+			}
+			RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Add - Centers the screen top-bottom, in case Ratio_X was the floor.
+		}
+		
+		// TODO: Figure out how to get this working.
+		// Until I can get it working, fall back to the standard 2x renderer.
+#if 0
+		if (Video.Render_FS == 1)
+		{
+			// 2x rendering.
+			if (m_swRender)
+			{
+				// Software rendering is enabled.
+				// Ignore the Stretch setting.
+				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
+				
+				if (FAILED(rval))
+					goto cleanup_flip;
+				
+				int VBorder = ((240 - VDP_Num_Vis_Lines) / 2) << m_shift;	// Top border height, in pixels.
+				int HBorder = (Dep * (bytespp / 2)) << m_shift;			// Left border width, in pixels.
+				int startPos = (ddsd.lPitch * VBorder) + HBorder;
+				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			
+				Blit_FS(start, ddsd.lPitch, 320 - Dep, VDP_Num_Vis_Lines, 32 + (Dep * 2));
+				
+				lpDDS_Blit->Unlock(NULL);
+				
+				if (Video.VSync_FS)
+				{
+					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
+				}
+			}
+			else
+			{
+				RectSrc.top = 0;
+				RectSrc.bottom = VDP_Num_Vis_Lines;
+				
+				if ((VDP_Num_Vis_Lines == 224) && !stretch)
+				{
+					RectDest.top = (int) ((FS_Y - (224 * Ratio_Y))/2); //Upth-Modif - centering top-bottom
+					RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - with the method I already described for left-right
+				}
+				else
+				{
+					RectDest.top = (int) ((FS_Y - (240 * Ratio_Y))/2); //Upth-Modif - centering top-bottom under other circumstances
+					RectDest.bottom = (int) (240 * Ratio_Y) + RectDest.top; //Upth-Modif - using the same method
+				}
+				RectDest.left = (int) ((FS_X - (320 * Ratio_X))/2); //Upth-Add - Centering left-right
+				RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - I wonder why I had to change the center-stuff three times...
+
+				if (Video.VSync_FS)
+				{
+					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
+				}
+				else
+				{
+					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+//					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
+				}
+			}
+		}
+		else
+#endif
+		if (vdraw_scale == 1)
+		{
+			// 1x rendering.
+			if (vdraw_get_sw_render())
+			{
+				// Software rendering is enabled.
+				// Ignore the Stretch setting.
+				
+				rval = IDirectDrawSurface4_Lock(lpDDS_Blit, NULL, &ddsd, DDLOCK_WAIT, NULL);
+				
+				if (FAILED(rval))
+					goto cleanup_flip;
+				
+				const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+				const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+				
+				const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+				
+				// Start of the DDraw framebuffer.
+				unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+				
+				vdraw_rInfo.destScreen = (void*)start;
+				vdraw_rInfo.width = 320 - vdraw_border_h;
+				vdraw_rInfo.height = VDP_Num_Vis_Lines;
+				vdraw_rInfo.destPitch = ddsd.lPitch;
+				
+				vdraw_blitFS(&vdraw_rInfo);
+				
+				// Draw the text.
+				vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);
+				
+				IDirectDrawSurface4_Unlock(lpDDS_Blit, NULL);
+				
+				if (Video.VSync_FS)
+				{
+					IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+				}
+			}
+			else
+			{
+				// Software rendering is disabled.
+				// If Stretch is enabled, stretch the image.
+				
+				RectSrc.top = 0;
+				RectSrc.bottom = VDP_Num_Vis_Lines;
+				
+				if (!(stretch & STRETCH_V))
+				{
+					RectDest.top = (int)((FS_Y - VDP_Num_Vis_Lines) / 2); //Upth-Add - But we still
+					RectDest.bottom = RectDest.top + VDP_Num_Vis_Lines;   //Upth-Add - center the screen
+				}
+				else
+				{
+					RectDest.top = (int)((FS_Y - 240) / 2); //Upth-Add - for both of the
+					RectDest.bottom = RectDest.top + 240;   //Upth-Add - predefined conditions
+				}
+				
+				if (!(stretch & STRETCH_H))
+				{
+					RectDest.left = (int)((FS_X - (320 - Dep))/2); //Upth-Add - and along the
+					RectDest.right = (320 - Dep) + RectDest.left;  //Upth-Add - x axis, also
+				}
+				else
+				{
+					RectDest.left = (int)((FS_X - 320)/2); //Upth-Add - and along the
+					RectDest.right = 320 + RectDest.left;  //Upth-Add - x axis, also
+				}
+				
+				vdraw_ddraw_draw_text(&ddsd, lpDDS_Back, TRUE);
+				if (Video.VSync_FS)
+				{
+					IDirectDrawSurface4_Blt(lpDDS_Flip, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+				}
+				else
+				{
+					IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					//IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
+				}
+			}
+		}
+		else
+		{
+			// Other renderer.
+			
+			LPDIRECTDRAWSURFACE4 curBlit = lpDDS_Blit;
+#ifdef CORRECT_256_ASPECT_RATIO
+			if(!IS_FULL_X_RESOLUTION)
+				curBlit = lpDDS_Back; // have to use it or the aspect ratio will be way off
+#endif
+			rval = IDirectDrawSurface4_Lock(curBlit, NULL, &ddsd, DDLOCK_WAIT, NULL);
+			
+			if (FAILED(rval))
+				goto cleanup_flip;
+			
+			const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+			const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+				
+			const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+				
+			// Start of the DDraw framebuffer.
+			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			
+			vdraw_rInfo.destScreen = (void*)start;
+			vdraw_rInfo.width = 320 - vdraw_border_h;
+			vdraw_rInfo.height = VDP_Num_Vis_Lines;
+			vdraw_rInfo.destPitch = ddsd.lPitch;
+			
+			if (bppMD == 16 && bppOut != 16)
+			{
+				// MDP_RENDER_FLAG_SRC16DST32.
+				// Render as 16-bit to an internal surface.
+				
+				// Make sure the internal surface is initialized.
+				if (vdraw_16to32_scale != vdraw_scale)
+				{
+					if (vdraw_16to32_surface)
+						free(vdraw_16to32_surface);
+					
+					vdraw_16to32_scale = vdraw_scale;
+					vdraw_16to32_pitch = 320 * vdraw_scale * 2;
+					vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
+				}
+				
+				vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
+				vdraw_rInfo.destPitch = vdraw_16to32_pitch;
+				vdraw_blitFS(&vdraw_rInfo);
+				
+				vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
+						    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+						    ddsd.lPitch, vdraw_16to32_pitch);
+			}
+			else
+			{
+				vdraw_blitFS(&vdraw_rInfo);
+			}
+			
+			// Draw the text.
+			vdraw_ddraw_draw_text(&ddsd, curBlit, FALSE);
+			
+			IDirectDrawSurface4_Unlock(curBlit, NULL);
+			
+			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
+			{
+				RectDest.left = 0;
+				RectDest.top = 0;
+				RectDest.right = GetSystemMetrics(SM_CXSCREEN); // not SM_XVIRTUALSCREEN since we only want the primary monitor if there's more than one
+				RectDest.bottom = GetSystemMetrics(SM_CYSCREEN);
+				
+				vdraw_ddraw_calc_draw_area(&RectDest, &RectSrc, &Ratio_X, &Ratio_Y, &Dep);
+				
+				if (Video.VSync_FS)
+				{
+					int vb;
+					IDirectDraw4_GetVerticalBlankStatus(lpDD, &vb);
+					if (!vb)
+						IDirectDraw4_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+				}
+				
+				IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+			}
+			else
+			{
+				if (Video.VSync_FS)
+				{
+					IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+				}
+			}
+		}
+	}
+	else
+	{
+		// Windowed mode
+		GetClientRect(Gens_hWnd, &RectDest);
+		vdraw_ddraw_calc_draw_area(&RectDest, &RectSrc, &Ratio_X, &Ratio_Y, &Dep);
+		
+		int Clr_Cmp_Val = isFullXRes() ? 40 : 32;
+		if (Flag_Clr_Scr != Clr_Cmp_Val)
+		{
+			// MD resolution change. Clear the screen.
+			vdraw_ddraw_clear_screen();
+			Flag_Clr_Scr = Clr_Cmp_Val;
+		}
+		
+		if (vdraw_scale > 1)
+		{
+			rval = IDirectDrawSurface4_Lock(lpDDS_Blit, NULL, &ddsd, DDLOCK_WAIT, NULL);
+			
+			if (FAILED(rval))
+				goto cleanup_flip;
+			
+			const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+			const int HBorder = Dep * (bytespp / 2);		// Left border width, in pixels.
+				
+			const int startPos = ((ddsd.lPitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+				
+			// Start of the DDraw framebuffer.
+			unsigned char* start = (unsigned char*)ddsd.lpSurface + startPos;
+			
+			vdraw_rInfo.destScreen = (void*)start;
+			vdraw_rInfo.width = 320 - vdraw_border_h;
+			vdraw_rInfo.height = VDP_Num_Vis_Lines;
+			vdraw_rInfo.destPitch = ddsd.lPitch;
+			
+			if (bppMD == 16 && bppOut != 16)
+			{
+				// MDP_RENDER_FLAG_SRC16DST32.
+				// Render as 16-bit to an internal surface.
+				
+				// Make sure the internal surface is initialized.
+				if (vdraw_16to32_scale != vdraw_scale)
+				{
+					if (vdraw_16to32_surface)
+						free(vdraw_16to32_surface);
+					
+					vdraw_16to32_scale = vdraw_scale;
+					vdraw_16to32_pitch = 320 * vdraw_scale * 2;
+					vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
+				}
+				
+				vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
+				vdraw_rInfo.destPitch = vdraw_16to32_pitch;
+				vdraw_blitFS(&vdraw_rInfo);
+				
+				vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
+						    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+						    ddsd.lPitch, vdraw_16to32_pitch);
+			}
+			else
+			{
+				vdraw_blitW(&vdraw_rInfo);
+			}
+			
+			// Draw the text.
+			vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);
+			
+			IDirectDrawSurface4_Unlock(lpDDS_Blit, NULL);
+		}
+		else
+		{
+			// Draw the text.
+			vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, TRUE);
+		}
+		
+		p.x = p.y = 0;
+		ClientToScreen(Gens_hWnd, &p);
+		
+		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
+		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
+		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
+		RectDest.right += p.x;  //Upth-Modif - that I use to find the center
+		
+		if (RectDest.top < RectDest.bottom)
+		{
+			if (Video.VSync_W)
+			{
+				int vb;
+				IDirectDraw4_GetVerticalBlankStatus(lpDD, &vb);
+				if (!vb)
+					IDirectDraw4_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+			}
+			
+			rval = IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+			//rval = IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
+		}
+	}
+
+cleanup_flip:
+	if (rval == DDERR_SURFACELOST)
+		rval = RestoreGraphics();
+	
+	return 1;
 }
