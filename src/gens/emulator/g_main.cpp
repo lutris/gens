@@ -377,7 +377,8 @@ void End_All(void)
 	
 	// Shut down the video subsystem.
 	vdraw_backend_end();
-	vdraw_shutdown();
+	if (vdraw_shutdown)
+		vdraw_shutdown();
 }
 
 
