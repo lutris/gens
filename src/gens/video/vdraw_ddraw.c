@@ -50,6 +50,9 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
+// Inline video functions.
+#include "v_inline.h"
+
 
 // Function prototypes.
 static int	vdraw_ddraw_init(void);
@@ -59,7 +62,6 @@ static void	vdraw_ddraw_clear_screen(void);
 static void	vdraw_ddraw_update_vsync(const BOOL fromInitSDLGL);
 
 static int	vdraw_ddraw_flip(void);
-static void	vdraw_ddraw_stretch_adjust(void);
 static void	vdraw_ddraw_update_renderer(void);
 
 
@@ -70,9 +72,6 @@ static int	vdraw_ddraw_clear_back_screen(void);
 static int	vdraw_ddraw_restore_primary(void);
 static int	vdraw_ddraw_set_cooperative_level(void);
 
-
-// Stretch parameters.
-static float m_HStretch, m_VStretch;
 
 // X and Y resolutions.
 static int Res_X;
@@ -87,8 +86,9 @@ static LPDIRECTDRAWSURFACE4 lpDDS_Back = NULL;
 static LPDIRECTDRAWSURFACE4 lpDDS_Blit = NULL;
 static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
+// Miscellaneous DirectDraw-specific functions.
 static HRESULT RestoreGraphics(void);
-static void CalculateDrawArea(RECT *RectDest, RECT *RectSrc, float *Ratio_X, float *Ratio_Y, int *Dep);
+static void vdraw_ddraw_calc_draw_area(RECT *RectDest, RECT *RectSrc, float *pRatio_X, float *pRatio_Y, int *Dep);
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock);
 
 
@@ -105,7 +105,7 @@ vdraw_backend_t vdraw_backend_ddraw =
 	.update_vsync = vdraw_ddraw_update_vsync,
 	
 	.flip = vdraw_ddraw_flip,
-	.stretch_adjust = vdraw_ddraw_stretch_adjust,
+	.stretch_adjust = NULL,
 	.update_renderer = vdraw_ddraw_update_renderer,
 	
 	// Win32-specific functions.
@@ -516,4 +516,100 @@ static int vdraw_ddraw_clear_back_screen(void)
 	IDirectDrawSurface4_Blt(lpDDS_Back, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 	
 	return 1;
+}
+
+
+/**
+ * vdraw_ddraw_calc_draw_area(): Calculate the drawing area.
+ * @param RectDest [in, out] Destination rectangle.
+ * @param RectSrc [out] Source rectangle.
+ * @param Ratio_X [out] X ratio.
+ * @param Ratio_Y [out] Y ratio.
+ * @param Dep [out] Horizontal border.
+ */
+static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *pRatio_X, float* pRatio_Y, int *Dep)
+{
+	// TODO: Is this check really necessary?
+	if (!pRectDest || !pRectSrc || !pRatio_X || !pRatio_Y || !Dep)
+		return;
+	
+	*pRatio_X = (float)pRectDest->right / 320.0f;  //Upth-Modif - why use two lines of code
+	*pRatio_Y = (float)pRectDest->bottom / 240.0f; //Upth-Modif - when you can do this?
+	*pRatio_X = *pRatio_Y = (*pRatio_X < *pRatio_Y) ? *pRatio_X : *pRatio_Y; //Upth-Add - and here we floor the value
+	
+	POINT q; //Upth-Add - For determining the correct ratio
+	q.x = pRectDest->right; //Upth-Add - we need to get
+	q.y = pRectDest->bottom; //Upth-Add - the bottom-right corner
+	
+	uint8_t stretch = vdraw_get_stretch();
+	
+	if (vdraw_scale == 1)
+	{
+		pRectSrc->top = 0;
+		pRectSrc->bottom = VDP_Num_Vis_Lines;
+
+		if ((VDP_Num_Vis_Lines == 224) && !(stretch & STRETCH_V))
+		{
+			pRectDest->top = (int) ((q.y - (224 * *pRatio_Y))/2); //Upth-Modif - Centering the screen properly
+			pRectDest->bottom = (int) (224 * *pRatio_Y) + pRectDest->top; //Upth-Modif - along the y axis
+		}
+	}
+	else
+	{
+		if (VDP_Num_Vis_Lines == 224)
+		{
+			pRectSrc->top = 8 * vdraw_scale;
+			pRectSrc->bottom = (224 + 8) * vdraw_scale;
+
+			if (!(stretch & STRETCH_V))
+			{
+				pRectDest->top = (int) ((q.y - (224 * *pRatio_Y)) / 2); //Upth-Modif - Centering the screen properly
+				pRectDest->bottom = (int) (224 * *pRatio_Y) + pRectDest->top; //Upth-Modif - along the y axis again
+			}
+		}
+		else
+		{
+			pRectSrc->top = 0; //Upth-Modif - Was "0 * 2"
+			pRectSrc->bottom = (240 * vdraw_scale);
+		}
+	}
+
+	if (isFullXRes())
+	{
+		Dep = 0;
+
+		if (vdraw_scale == 1)
+		{
+			pRectSrc->left = 8 + 0 ;
+			pRectSrc->right = 8 + 320;
+		}
+		else
+		{
+			pRectSrc->left = 0; //Upth-Modif - Was "0 * 2"
+			pRectSrc->right = 320 * vdraw_scale;
+		}
+		pRectDest->left = (int) ((q.x - (320 * *pRatio_X)) / 2); //Upth-Add - center the picture
+		pRectDest->right = (int) (320 * *pRatio_X) + pRectDest->left; //Upth-Add - along the x axis
+	}
+	else // less-wide X resolution:
+	{
+		Dep = 64;
+		
+		if (!(stretch & STRETCH_H))
+		{
+			pRectDest->left = (q.x - (int)(256.0f * *pRatio_X)) / 2; //Upth-Modif - center the picture properly
+			pRectDest->right = (int)(256.0f * *pRatio_X) + pRectDest->left; //Upth-Modif - along the x axis
+		}
+		
+		if (vdraw_scale == 1)
+		{
+			pRectSrc->left = 8 + 0;
+			pRectSrc->right = 8 + 256;
+		}
+		else
+		{
+			pRectSrc->left = 32 * vdraw_scale;
+			pRectSrc->right = (32 + 256) * vdraw_scale;
+		}
+	}
 }
