@@ -136,7 +136,7 @@ int vdraw_set_renderer(const list<MDP_Render_t*>::iterator& newMode, const bool 
 	// Update the renderer.
 	if (vdraw_cur_backend)
 	{
-		if (forceUpdate && is_gens_running())
+		if (forceUpdate && is_gens_running() && vdraw_cur_backend->update_renderer)
 			vdraw_cur_backend->update_renderer();
 		
 #ifdef GENS_OS_WIN32

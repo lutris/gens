@@ -39,6 +39,7 @@
 // Gens window.
 #include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
+#include "ui/gens_ui.hpp"
 
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
@@ -59,10 +60,9 @@ static int	vdraw_ddraw_init(void);
 static int	vdraw_ddraw_end(void);
 
 static void	vdraw_ddraw_clear_screen(void);
-static void	vdraw_ddraw_update_vsync(const BOOL fromInitSDLGL);
+static void	vdraw_ddraw_update_vsync(const BOOL fromInitDDraw);
 
 static int	vdraw_ddraw_flip(void);
-static void	vdraw_ddraw_update_renderer(void);
 
 
 // Win32-specific functions.
@@ -87,7 +87,7 @@ static LPDIRECTDRAWSURFACE4 lpDDS_Blit = NULL;
 static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
-static HRESULT RestoreGraphics(void);
+static HRESULT vdraw_ddraw_restore_graphics(void);
 static void vdraw_ddraw_calc_draw_area(RECT *RectDest, RECT *RectSrc, float *pRatio_X, float *pRatio_Y, int *Dep);
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock);
 
@@ -106,7 +106,7 @@ vdraw_backend_t vdraw_backend_ddraw =
 	
 	.flip = vdraw_ddraw_flip,
 	.stretch_adjust = NULL,
-	.update_renderer = vdraw_ddraw_update_renderer,
+	.update_renderer = NULL,
 	
 	// Win32-specific functions.
 	.reinit_gens_window	= vdraw_ddraw_reinit_gens_window,
@@ -1055,7 +1055,140 @@ static int vdraw_ddraw_flip(void)
 
 cleanup_flip:
 	if (rval == DDERR_SURFACELOST)
-		rval = RestoreGraphics();
+		rval = vdraw_ddraw_restore_graphics();
 	
 	return 1;
+}
+
+
+/**
+ * vdraw_ddraw_update_vsync(): Update the VSync value.
+ * @param fromInitDDraw If TRUE, this function is being called from vdraw_ddraw_init().
+ */
+static void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
+{
+	// If Full Screen, reinitialize the video subsystem.
+	if (vdraw_get_fullscreen())
+		vdraw_refresh_video();
+}
+
+
+/**
+ * vdraw_ddraw_reinit_gens_window(): Reinitialize the Gens window.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_reinit_gens_window(void)
+{
+	// Clear the sound buffer.
+	Win32_ClearSoundBuffer();
+	
+	// Stop DirectDraw.
+	vdraw_ddraw_end();
+	
+	// Rebuild the menu bar.
+	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
+	create_gens_window_menubar();
+	
+	MDP_Render_t *rendMode = get_mdp_render_t();
+	const int scale = rendMode->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return -1;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	
+	if (vdraw_get_fullscreen())
+	{
+		while (ShowCursor(TRUE) < 1) { }
+		while (ShowCursor(FALSE) >= 0) { }
+		
+		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(NULL));
+		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+	}
+	else
+	{
+		while (ShowCursor(FALSE) >= 0) { }
+		while (ShowCursor(TRUE) < 1) { }
+		
+		// MoveWindow / ResizeWindow code
+		LONG_PTR curStyle = GetWindowLongPtr(Gens_hWnd, GWL_STYLE);
+		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(curStyle  | WS_OVERLAPPEDWINDOW));
+		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+		Win32_setActualWindowSize(Gens_hWnd, w, h);
+	}
+	
+	// Reinitialize DirectDraw.
+	return vdraw_ddraw_init();
+}
+
+
+/**
+ * vdraw_ddraw_restore_graphics(): Restore the DirectDraw surface if it is lost.
+ * @return HRESULT.
+ */
+HRESULT vdraw_ddraw_restore_graphics(void)
+{
+	HRESULT rval1 = IDirectDrawSurface4_Restore(lpDDS_Primary);
+	HRESULT rval2 = IDirectDrawSurface4_Restore(lpDDS_Back);
+	
+	// Modif N. -- fixes lost surface handling when the color depth has changed
+	if (rval1 == DDERR_WRONGMODE || rval2 == DDERR_WRONGMODE)
+		return vdraw_ddraw_init() ? DD_OK : DDERR_GENERIC;
+	
+	return SUCCEEDED(rval2) ? rval1 : rval2;
+}
+
+
+/**
+ * vdraw_ddraw_restore_primary(): Restore the primary DirectDraw surface.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_restore_primary(void)
+{
+	if (!lpDD)
+		return -1;
+	
+	if (vdraw_get_fullscreen() && Video.VSync_FS)
+	{
+		while (IDirectDrawSurface4_GetFlipStatus(lpDDS_Primary, DDGFS_ISFLIPDONE) == DDERR_SURFACEBUSY) { }
+		IDirectDraw_FlipToGDISurface(lpDD);
+	}
+	
+	return 0;
+}
+
+
+/**
+ * vdraw_ddraw_set_cooperative_level(): Sets the DirectDraw cooperative level.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_ddraw_set_cooperative_level(void)
+{
+	if (!Gens_hWnd || !lpDD)
+		return -1;
+	
+	HRESULT rval;
+#ifdef DISABLE_EXCLUSIVE_FULLSCREEN_LOCK
+	Video.VSync_FS = 0;
+	rval = IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_NORMAL);
+#else
+	if (vdraw_get_fullscreen())
+		rval = IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
+	else
+		rval = IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_NORMAL);
+#endif
+	
+	if (FAILED(rval))
+	{
+		fprintf(stderr, "%s(): lpDD->SetCooperativeLevel() failed.\n", __func__);
+		// TODO: Error handling code.
+	}
+	else
+	{
+		fprintf(stderr, "%s(): lpDD->SetCooperativeLevel() succeeded.\n", __func__);
+	}
+	
+	return 0;
 }
