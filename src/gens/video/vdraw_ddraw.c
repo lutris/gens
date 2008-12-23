@@ -55,9 +55,6 @@
 static int	vdraw_ddraw_init(void);
 static int	vdraw_ddraw_end(void);
 
-static int	vdraw_ddraw_init_subsystem(void);
-static int	vdraw_ddraw_shutdown(void);
-
 static void	vdraw_ddraw_clear_screen(void);
 static void	vdraw_ddraw_update_vsync(const BOOL fromInitSDLGL);
 
@@ -421,4 +418,102 @@ static int vdraw_ddraw_end(void)
 	
 	lpDDS_Blit = NULL;
 	return 0;
+}
+
+
+/** 
+ * vdraw_ddraw_clear_screen(): Clear the screen.
+ */
+static void vdraw_ddraw_clear_screen(void)
+{
+	// Clear both screen buffers.
+	vdraw_ddraw_clear_primary_screen();
+	vdraw_ddraw_clear_back_screen();
+	
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
+}
+
+
+/**
+ * vdraw_ddraw_clear_primary_screen(): Clear the primary screen.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_clear_primary_screen(void)
+{
+	if (!lpDD || !lpDDS_Primary)
+		return -1;
+	
+	DDSURFACEDESC2 ddsd;
+	DDBLTFX ddbltfx;
+	RECT rd;
+	POINT p;
+	
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	
+	memset(&ddbltfx, 0, sizeof(ddbltfx));
+	ddbltfx.dwSize = sizeof(ddbltfx);
+	ddbltfx.dwFillColor = 0; // Black
+	
+	if (vdraw_get_fullscreen())
+	{
+		if (Video.VSync_FS)
+		{
+			IDirectDrawSurface4_Blt(lpDDS_Flip, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+			
+			IDirectDrawSurface4_Blt(lpDDS_Flip, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+			
+			IDirectDrawSurface4_Blt(lpDDS_Flip, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+		}
+		else
+		{
+			IDirectDrawSurface4_Blt(lpDDS_Primary, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+		}
+	}
+	else
+	{
+		p.x = p.y = 0;
+		GetClientRect(Gens_hWnd, &rd);
+		ClientToScreen(Gens_hWnd, &p);
+		
+		rd.left = p.x;
+		rd.top = p.y;
+		rd.right += p.x;
+		rd.bottom += p.y;
+		
+		if (rd.top < rd.bottom)
+			IDirectDrawSurface4_Blt(lpDDS_Primary, &rd, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+	}
+	
+	return 0;
+}
+
+
+/**
+ * vdraw_ddraw_clear_back_screen(): Clear the back buffer.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_clear_back_screen(void)
+{
+	if (!lpDD || !lpDDS_Back)
+		return -1;
+	
+	DDSURFACEDESC2 ddsd;
+	DDBLTFX ddbltfx;
+	
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize = sizeof(ddsd);
+	
+	memset(&ddbltfx, 0, sizeof(ddbltfx));
+	ddbltfx.dwSize = sizeof(ddbltfx);
+	ddbltfx.dwFillColor = 0;
+	
+	IDirectDrawSurface4_Blt(lpDDS_Back, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+	
+	return 1;
 }
