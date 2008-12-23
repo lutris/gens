@@ -32,22 +32,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-
-// Win32 has definitions for BOOL.
-#ifdef GENS_OS_WIN32
-#include <windows.h>
-#else /* !GENS_OS_WIN32 */
-// Other systems might not have definitions for BOOL.
-#define BOOL int
-#endif /* GENS_OS_WIN32 */
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-
-#ifndef FALSE
-#define FALSE 0
-#endif
+#include "macros/bool_m.h"
 
 // MDP Render Functions.
 #include "mdp/mdp_render.h"

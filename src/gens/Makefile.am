@@ -203,6 +203,7 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
+		macros/bool_m.h \
 		macros/hashtable.hpp \
 		macros/malloc_align.h \
 		macros/math_m.h \
