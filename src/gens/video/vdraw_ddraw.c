@@ -24,6 +24,9 @@
 
 #include "emulator/g_main.hpp"
 
+// VDraw C++ functions.
+#include "vdraw_cpp.hpp"
+
 // C includes.
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +38,7 @@
 
 // Gens window.
 #include "gens/gens_window.hpp"
+#include "gens/gens_window_sync.hpp"
 
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
@@ -374,5 +378,47 @@ static int vdraw_ddraw_init(void)
 	Sync_Gens_Window();
 	
 	// vdraw_ddraw initialized.
+	return 0;
+}
+
+
+/**
+ * vdraw_ddraw_end(): Close the DirectDraw renderer.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_ddraw_end(void)
+{
+	if (lpDDC_Clipper)
+	{
+		IDirectDrawClipper_Release(lpDDC_Clipper);
+		lpDDC_Clipper = NULL;
+	}
+	
+	if (lpDDS_Back)
+	{
+		IDirectDrawSurface4_Release(lpDDS_Back);
+		lpDDS_Back = NULL;
+	}
+	
+	if (lpDDS_Flip)
+	{
+		IDirectDrawSurface4_Release(lpDDS_Flip);
+		lpDDS_Flip = NULL;
+	}
+	
+	if (lpDDS_Primary)
+	{
+		IDirectDrawSurface4_Release(lpDDS_Primary);
+		lpDDS_Primary = NULL;
+	}
+	
+	if (lpDD)
+	{
+		IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_NORMAL);
+		IDirectDraw4_Release(lpDD);
+		lpDD = NULL;
+	}
+	
+	lpDDS_Blit = NULL;
 	return 0;
 }
