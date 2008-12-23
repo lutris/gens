@@ -56,6 +56,12 @@
 // Timer functionality.
 #ifndef GENS_OS_WIN32
 #include "port/timer.h"
+#endif /* !GENS_OS_WIN32 */
+
+// windows.h is needed on Win32 for MessageBox().
+#ifdef GENS_OS_WIN32
+#include <windows.h>
+#include "gens/gens_window.hpp"
 #endif /* GENS_OS_WIN32 */
 
 
@@ -240,6 +246,11 @@ void vdraw_init_fail(const char* err)
 		fprintf(stderr, "vdraw initialization failed: %s\n", err);
 	else
 		fprintf(stderr, "vdraw initialization failed.\n");
+	
+#ifdef GENS_OS_WIN32
+	MessageBox(Gens_hWnd, err, "DirectDraw Error", MB_ICONERROR);
+	TerminateProcess(GetCurrentProcess(), 1); //Modif N
+#endif /* GENS_OS_WIN32 */
 	
 	exit(0);
 }
