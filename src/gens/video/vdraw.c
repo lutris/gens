@@ -86,10 +86,10 @@ vdraw_backend_t	*vdraw_cur_backend = NULL;
 VDRAW_BACKEND	vdraw_cur_backend_id;
 
 // Function pointers.
-int		(*vdraw_init_subsystem)(void);
-int		(*vdraw_shutdown)(void);
-void		(*vdraw_clear_screen)(void);
-void		(*vdraw_update_vsync)(const int data);
+int		(*vdraw_init_subsystem)(void) = NULL;
+int		(*vdraw_shutdown)(void) = NULL;
+void		(*vdraw_clear_screen)(void) = NULL;
+void		(*vdraw_update_vsync)(const int data) = NULL;
 
 // Render functions.
 mdp_render_fn vdraw_blitFS;
