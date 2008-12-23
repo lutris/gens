@@ -32,7 +32,7 @@
 #include <windows.h>
 #else /* !GENS_OS_WIN32 */
 // Other systems might not have definitions for BOOL.
-typedef int BOOL;
+#define BOOL int
 #endif /* GENS_OS_WIN32 */
 
 #ifndef TRUE

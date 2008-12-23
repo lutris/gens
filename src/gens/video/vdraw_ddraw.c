@@ -61,14 +61,13 @@ static int	vdraw_ddraw_flip(void);
 static void	vdraw_ddraw_stretch_adjust(void);
 static void	vdraw_ddraw_update_renderer(void);
 
-static int	vdraw_ddraw_reinit_gens_window(void);
 
-// Used internally and/or externally, but not as part of vdraw_backend_t.
-// TODO: Maybe add Win32-specific stuff to vdraw_backend_t?
-int		vdraw_ddraw_clear_primary_screen(void);
-int		vdraw_ddraw_clear_back_screen(void);
-int		vdraw_ddraw_restore_primary(void);
-int		vdraw_ddraw_set_cooperative_level(void);
+// Win32-specific functions.
+static int	vdraw_ddraw_reinit_gens_window(void);
+static int	vdraw_ddraw_clear_primary_screen(void);
+static int	vdraw_ddraw_clear_back_screen(void);
+static int	vdraw_ddraw_restore_primary(void);
+static int	vdraw_ddraw_set_cooperative_level(void);
 
 
 // DirectDraw variables
@@ -101,7 +100,12 @@ vdraw_backend_t vdraw_backend_ddraw =
 	.stretch_adjust = vdraw_ddraw_stretch_adjust,
 	.update_renderer = vdraw_ddraw_update_renderer,
 	
-	.reinit_gens_window = vdraw_ddraw_reinit_gens_window
+	// Win32-specific functions.
+	.reinit_gens_window	= vdraw_ddraw_reinit_gens_window,
+	.clear_primary_screen	= vdraw_ddraw_clear_primary_screen,
+	.clear_back_screen	= vdraw_ddraw_clear_back_screen,
+	.restore_primary	= vdraw_ddraw_restore_primary,
+	.set_cooperative_level	= vdraw_ddraw_set_cooperative_level
 };
 
 

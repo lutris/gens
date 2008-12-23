@@ -136,8 +136,6 @@ vdraw_backend_t vdraw_backend_sdl_gl =
 	.flip = vdraw_sdl_gl_flip,
 	.stretch_adjust = vdraw_sdl_gl_stretch_adjust,
 	.update_renderer = vdraw_sdl_gl_update_renderer,
-	
-	.reinit_gens_window = NULL
 };
 
 

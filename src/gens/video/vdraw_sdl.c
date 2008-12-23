@@ -82,9 +82,7 @@ vdraw_backend_t vdraw_backend_sdl =
 	
 	.flip = vdraw_sdl_flip,
 	.stretch_adjust = NULL,
-	.update_renderer = vdraw_sdl_update_renderer,
-	
-	.reinit_gens_window = NULL
+	.update_renderer = vdraw_sdl_update_renderer
 };
 
 

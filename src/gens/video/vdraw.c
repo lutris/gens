@@ -96,6 +96,13 @@ int		(*vdraw_init_subsystem)(void) = NULL;
 int		(*vdraw_shutdown)(void) = NULL;
 void		(*vdraw_clear_screen)(void) = NULL;
 void		(*vdraw_update_vsync)(const int data) = NULL;
+#ifdef GENS_OS_WIN32
+int		(*vdraw_reinit_gens_window)(void) = NULL;
+int		(*vdraw_clear_primary_screen)(void) = NULL;
+int		(*vdraw_clear_back_screen)(void) = NULL;
+int		(*vdraw_restore_primary)(void) = NULL;
+int		(*vdraw_set_cooperative_level)(void) = NULL;
+#endif /* GENS_OS_WIN32 */
 
 // Render functions.
 mdp_render_fn vdraw_blitFS;
@@ -222,10 +229,17 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	vdraw_cur_backend_id = backend;
 	
 	// Copy the function pointers.
-	vdraw_init_subsystem = vdraw_cur_backend->init_subsystem;
-	vdraw_shutdown = vdraw_cur_backend->shutdown;
-	vdraw_clear_screen = vdraw_cur_backend->clear_screen;
-	vdraw_update_vsync = vdraw_cur_backend->update_vsync;
+	vdraw_init_subsystem		= vdraw_cur_backend->init_subsystem;
+	vdraw_shutdown			= vdraw_cur_backend->shutdown;
+	vdraw_clear_screen		= vdraw_cur_backend->clear_screen;
+	vdraw_update_vsync		= vdraw_cur_backend->update_vsync;
+#ifdef GENS_OS_WIN32
+	vdraw_reinit_gens_window	= vdraw_cur_backend->reinit_gens_window;
+	vdraw_clear_primary_screen	= vdraw_cur_backend->clear_primary_screen;
+	vdraw_clear_back_screen		= vdraw_cur_backend->clear_back_screen;
+	vdraw_restore_primary		= vdraw_cur_backend->restore_primary;
+	vdraw_set_cooperative_level	= vdraw_cur_backend->set_cooperative_level;
+#endif /* GENS_OS_WIN32 */
 	
 	// Initialize the backend.
 	if (vdraw_cur_backend->init)

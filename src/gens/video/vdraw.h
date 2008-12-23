@@ -38,7 +38,7 @@ extern "C" {
 #include <windows.h>
 #else /* !GENS_OS_WIN32 */
 // Other systems might not have definitions for BOOL.
-typedef int BOOL;
+#define BOOL int
 #endif /* GENS_OS_WIN32 */
 
 #ifndef TRUE
@@ -92,7 +92,15 @@ typedef struct
 	void	(*stretch_adjust)(void);
 	void	(*update_renderer)(void);
 	
+#ifdef GENS_OS_WIN32
+	// Win32-specific functions.
 	int	(*reinit_gens_window)(void);
+	int	(*clear_primary_screen)(void);
+	int	(*clear_back_screen)(void);
+	int	(*restore_primary)(void);
+	int	(*set_cooperative_level)(void);
+#endif /* GENS_OS_WIN32 */
+	
 } vdraw_backend_t;
 
 int	vdraw_init(void);
@@ -117,6 +125,13 @@ extern int	(*vdraw_init_subsystem)(void);
 extern int	(*vdraw_shutdown)(void);
 extern void	(*vdraw_clear_screen)(void);
 extern void	(*vdraw_update_vsync)(const int data);
+#ifdef GENS_OS_WIN32
+extern int	(*vdraw_reinit_gens_window)(void);
+extern int	(*vdraw_clear_primary_screen)(void);
+extern int	(*vdraw_clear_back_screen)(void);
+extern int	(*vdraw_restore_primary)(void);
+extern int	(*vdraw_set_cooperative_level)(void);
+#endif /* GENS_OS_WIN32 */
 
 void	vdraw_write_text(const char* msg, const int duration);
 

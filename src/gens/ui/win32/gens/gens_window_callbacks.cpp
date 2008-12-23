@@ -204,7 +204,8 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			
 			if (paintsEnabled)
 			{
-				vdraw_ddraw_clear_primary_screen();
+				if (vdraw_restore_primary)
+					vdraw_restore_primary();
 				vdraw_flip();
 			}
 			
@@ -473,7 +474,6 @@ static void fullScreenPopupMenu(HWND hWnd)
 	POINT pt;
 	GetCursorPos(&pt);
 	SendMessage(hWnd, WM_PAINT, 0, 0);
-	vdraw_ddraw_restore_primary();
 	
 	// Disable painting while the popup menu is open.
 	paintsEnabled = false;

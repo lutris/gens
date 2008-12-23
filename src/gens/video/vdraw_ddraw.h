@@ -31,11 +31,6 @@ extern "C" {
 
 extern vdraw_backend_t vdraw_backend_ddraw;
 
-int vdraw_ddraw_clear_primary_screen(void);
-int vdraw_ddraw_clear_back_screen(void);
-int vdraw_ddraw_restore_primary(void);
-int vdraw_ddraw_set_cooperative_level(void);
-
 #ifdef __cplusplus
 }
 #endif

@@ -139,12 +139,14 @@ int vdraw_set_renderer(const list<MDP_Render_t*>::iterator& newMode, const bool 
 		if (forceUpdate && is_gens_running())
 			vdraw_cur_backend->update_renderer();
 		
+#ifdef GENS_OS_WIN32
 		if ((reinit && forceUpdate) || (oldScale != vdraw_scale))
 		{
 			// The Gens window must be reinitialized.
 			if (vdraw_cur_backend->reinit_gens_window)
 				return vdraw_cur_backend->reinit_gens_window();
 		}
+#endif /* GENS_OS_WIN32 */
 	}
 	
 	return 0;
