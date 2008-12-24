@@ -279,7 +279,9 @@ int vdraw_backend_end(void)
 	if (!vdraw_cur_backend)
 		return 1;
 	
-	vdraw_cur_backend->end();
+	if (vdraw_cur_backend->end)
+		vdraw_cur_backend->end();
+	
 	vdraw_cur_backend = NULL;
 	return 0;
 }
