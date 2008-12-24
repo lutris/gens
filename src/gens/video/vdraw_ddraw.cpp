@@ -75,6 +75,7 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 
 // Border drawing.
 static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, RECT *pRectDest);
+static DDBLTFX ddbltfx_Border_Color;
 
 
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
@@ -328,6 +329,10 @@ int vdraw_ddraw_init(void)
 		}
 	}
 	
+	// Clear ddbltfx for the border color.
+	memset(&ddbltfx_Border_Color, 0, sizeof(ddbltfx_Border_Color));
+	ddbltfx_Border_Color.dwSize = sizeof(ddbltfx_Border_Color);
+	
 	// Reset the render mode.
 	vdraw_reset_renderer(FALSE);
 	
@@ -389,10 +394,6 @@ void vdraw_ddraw_clear_screen(void)
 	// Clear both screen buffers.
 	vdraw_ddraw_clear_primary_screen();
 	vdraw_ddraw_clear_back_screen();
-	
-	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
-	vdraw_border_color_32 = ~MD_Palette32[0];
 }
 
 
@@ -1027,25 +1028,21 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 	if (stretch == STRETCH_FULL || !pRectDest)
 		return;
 	
-	DDBLTFX ddbltfx;
-	memset(&ddbltfx, 0, sizeof(ddbltfx));
-	ddbltfx.dwSize = sizeof(ddbltfx);
-	
 	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
 	{
 		// Border color emulation is disabled.
 		// Use a black border.
-		ddbltfx.dwFillColor = 0;
+		ddbltfx_Border_Color.dwFillColor = 0;
 	}
 	else if (bppOut == 15 || bppOut == 16)
 	{
 		// 15-bit/16-bit color.
-		ddbltfx.dwFillColor = MD_Palette[0];
+		ddbltfx_Border_Color.dwFillColor = MD_Palette[0];
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
-		ddbltfx.dwFillColor = MD_Palette32[0];
+		ddbltfx_Border_Color.dwFillColor = MD_Palette32[0];
 	}
 	
 	if (vdraw_get_fullscreen())
@@ -1079,13 +1076,13 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 			rectBorder = rectWin;
 			rectBorder.bottom -= height;
 			rectBorder.bottom = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
-			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 			
 			// Draw bottom border.
 			rectBorder = rectWin;
 			rectBorder.top += height;
 			rectBorder.top = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
-			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 		}
 		
 		if (!isFullXRes() && !(stretch & STRETCH_H))
@@ -1097,13 +1094,13 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 			rectBorder = rectWin;
 			rectBorder.right -= width;
 			rectBorder.right = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
-			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 			
 			// Draw bottom border.
 			rectBorder = rectWin;
 			rectBorder.left += width;
 			rectBorder.left = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
-			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 		}
 	}
 }
