@@ -9,9 +9,6 @@
 extern "C" {
 #endif
 
-extern int RMax_Level;
-extern int GMax_Level;
-extern int BMax_Level;
 extern int Contrast_Level;
 extern int Brightness_Level;
 extern int Greyscale;

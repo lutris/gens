@@ -98,7 +98,7 @@ extern "C"
 // Non-Menu Command Definitions
 #include "gens_window_cmds.h"
 
-#include "video/vdraw_ddraw.h"
+#include "video/vdraw_ddraw_t.h"
 #include "input/input_dinput.hpp"
 
 // VDraw C++ functions.

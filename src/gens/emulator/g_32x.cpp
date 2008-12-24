@@ -794,9 +794,6 @@ int Do_32X_Frame(void)
 	main68k_exec (Cycles_M68K - 360);
 	Z80_EXEC(168);
 	
-	//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80 - 168);
-	//else z80_Set_Odo(&M_Z80, Cycles_Z80 - 168);
-	
 	VDP_Status &= ~0x0004;		// HBlank = 0
 	_32X_VDP.State &= ~0x4000;
 	VDP_Status |= 0x0080;		// V Int happened
@@ -827,8 +824,6 @@ int Do_32X_Frame(void)
 	PWM_Update_Timer(PWM_Cycles);
 	
 	Z80_EXEC(0);
-	//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80);
-	//else z80_Set_Odo(&M_Z80, Cycles_Z80);
 	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
@@ -880,8 +875,6 @@ int Do_32X_Frame(void)
 		{
 			main68k_exec (i);
 			SH2_EXEC(j, k);
-			//SH2_Exec(&M_SH2, j);
-			//SH2_Exec(&S_SH2, k);
 			PWM_Update_Timer (l);
 			i += p_i;
 			j += p_j;
@@ -891,13 +884,9 @@ int Do_32X_Frame(void)
 		
 		main68k_exec(Cycles_M68K);
 		SH2_EXEC(Cycles_MSH2, Cycles_SSH2);
-		//SH2_Exec(&M_SH2, Cycles_MSH2);
-		//SH2_Exec(&S_SH2, Cycles_SSH2);
 		PWM_Update_Timer(PWM_Cycles);
 		
 		Z80_EXEC(0);
-		//if (Z80_State == 3) z80_Exec(&M_Z80, Cycles_Z80);
-		//else z80_Set_Odo(&M_Z80, Cycles_Z80);
 	}
 	
 	PSG_Special_Update();

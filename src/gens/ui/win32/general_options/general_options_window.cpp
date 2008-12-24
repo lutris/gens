@@ -351,9 +351,6 @@ void GeneralOptionsWindow::createChildWindows(HWND hWnd)
 						    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkMisc_BorderColorEmulation, fntMain, TRUE);
 	
-	// Border Color Emulation isn't implemented on Win32 yet, so disable the checkbox.
-	Button_Enable(chkMisc_BorderColorEmulation, FALSE);
-	
 	// Pause Tint
 	frameTop += 20;
 	chkMisc_PauseTint = CreateWindow(WC_BUTTON, "Pause Tint",
@@ -564,10 +561,8 @@ void GeneralOptionsWindow::load(void)
 	Button_SetCheck(chkMisc_AutoPause, (Auto_Pause ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_FastBlur, (vdraw_get_fast_blur() ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_SegaCDLEDs, (Show_LED ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
 	Button_SetCheck(chkMisc_PauseTint, (Video.pauseTint ? BST_CHECKED : BST_UNCHECKED));
-	
-	// Border Color Emulation isn't implemented on Win32 yet, so don't load this yet.
-	//Button_SetCheck(chkMisc_BorderColorEmulation, (Video.borderColorEmulation ? BST_CHECKED : BST_UNCHECKED));
 	
 	// FPS counter
 	Button_SetCheck(chkOSD_Enable[0], (vdraw_get_fps_enabled() ? BST_CHECKED : BST_UNCHECKED));
@@ -603,14 +598,12 @@ void GeneralOptionsWindow::save(void)
 	Auto_Pause = (Button_GetCheck(chkMisc_AutoPause) == BST_CHECKED);
 	vdraw_set_fast_blur(Button_GetCheck(chkMisc_FastBlur) == BST_CHECKED);
 	Show_LED = (Button_GetCheck(chkMisc_SegaCDLEDs) == BST_CHECKED);
+	Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	Video.pauseTint = (Button_GetCheck(chkMisc_PauseTint) == BST_CHECKED);
 	
 	// If Auto Pause is enabled, deactivate emulation.
 	// If Auto Pause is disabled, activate emulation.
 	Active = !Auto_Pause;
-	
-	// Border Color Emulation isn't implemented on Win32 yet, so don't save this yet.
-	//Video.borderColorEmulation = (Button_GetCheck(chkMisc_BorderColorEmulation) == BST_CHECKED);
 	
 	// FPS counter
 	vdraw_set_fps_enabled(Button_GetCheck(chkOSD_Enable[0]) == BST_CHECKED);
