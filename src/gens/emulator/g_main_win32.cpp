@@ -18,7 +18,7 @@
 #include "util/file/config_file.hpp"
 #include "util/sound/gym.hpp"
 
-#include "video/vdraw_ddraw.h"
+#include "video/vdraw_ddraw_t.h"
 #include "input/input_dinput.hpp"
 #include "audio/audio_dsound.hpp"
 

@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "vdraw_ddraw.h"
+#include "vdraw_ddraw.hpp"
 
 #include "emulator/g_main.hpp"
 
@@ -55,24 +55,6 @@
 #include "v_inline.h"
 
 
-// Function prototypes.
-static int	vdraw_ddraw_init(void);
-static int	vdraw_ddraw_end(void);
-
-static void	vdraw_ddraw_clear_screen(void);
-static void	vdraw_ddraw_update_vsync(const BOOL fromInitDDraw);
-
-static int	vdraw_ddraw_flip(void);
-
-
-// Win32-specific functions.
-static int	vdraw_ddraw_reinit_gens_window(void);
-static int	vdraw_ddraw_clear_primary_screen(void);
-static int	vdraw_ddraw_clear_back_screen(void);
-static int	vdraw_ddraw_restore_primary(void);
-static int	vdraw_ddraw_set_cooperative_level(void);
-
-
 // X and Y resolutions.
 static int Res_X;
 static int Res_Y;
@@ -88,39 +70,14 @@ static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
 static HRESULT vdraw_ddraw_restore_graphics(void);
-static void vdraw_ddraw_calc_draw_area(RECT *RectDest, RECT *RectSrc, float *pRatio_X, float *pRatio_Y, int *Dep);
+static void vdraw_ddraw_calc_draw_area(RECT &RectDest, RECT &RectSrc, float &Ratio_X, float &Ratio_Y, int &Dep);
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock);
-
-
-// VDraw Backend struct.
-vdraw_backend_t vdraw_backend_ddraw =
-{
-	.init = vdraw_ddraw_init,
-	.end = vdraw_ddraw_end,
-	
-	.init_subsystem = NULL,
-	.shutdown = NULL,
-	
-	.clear_screen = vdraw_ddraw_clear_screen,
-	.update_vsync = vdraw_ddraw_update_vsync,
-	
-	.flip = vdraw_ddraw_flip,
-	.stretch_adjust = NULL,
-	.update_renderer = NULL,
-	
-	// Win32-specific functions.
-	.reinit_gens_window	= vdraw_ddraw_reinit_gens_window,
-	.clear_primary_screen	= vdraw_ddraw_clear_primary_screen,
-	.clear_back_screen	= vdraw_ddraw_clear_back_screen,
-	.restore_primary	= vdraw_ddraw_restore_primary,
-	.set_cooperative_level	= vdraw_ddraw_set_cooperative_level
-};
 
 
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
 {
 	if (lock)
-		IDirectDrawSurface4_Lock(lpDDS_Surface, NULL, pddsd, DDLOCK_WAIT, NULL);
+		lpDDS_Surface->Lock(NULL, pddsd, DDLOCK_WAIT, NULL);
 	
 	// Determine the window size using the scaling factor.
 	const int w = 320 * vdraw_scale;
@@ -150,7 +107,7 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	}
 	
 	if (lock)
-		IDirectDrawSurface4_Unlock(lpDDS_Surface, NULL);
+		lpDDS_Surface->Unlock(NULL);
 }
 
 
@@ -158,7 +115,7 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
  * vdraw_ddraw_init(): Initialize the DirectDraw video subsystem.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_init(void)
+int vdraw_ddraw_init(void)
 {
 	DDSURFACEDESC2 ddsd;
 	
@@ -186,13 +143,13 @@ static int vdraw_ddraw_init(void)
 		return -2;
 	}
 	
-	if (FAILED(IDirectDraw4_QueryInterface(lpDD_Init, &IID_IDirectDraw4, (LPVOID*)&lpDD)))
+	if (FAILED(lpDD_Init->QueryInterface(IID_IDirectDraw4, (LPVOID*)&lpDD)))
 	{
 		vdraw_init_fail("Error with QueryInterface!\nUpgrade your DirectX version.");
 		return -3;
 	}
 	
-	IDirectDraw4_Release(lpDD_Init);
+	lpDD_Init->Release();
 	lpDD_Init = NULL;
 	
 	// TODO: 15-bit color override ("Force 555" or "Force 565" in the config file).
@@ -204,7 +161,7 @@ static int vdraw_ddraw_init(void)
 	if (vdraw_get_fullscreen() /* && !FS_No_Res_Change*/)
 	{
 		// Always use 16-bit color in fullscreen.
-		if (FAILED(IDirectDraw4_SetDisplayMode(lpDD, Res_X, Res_Y, 16, 0, 0)))
+		if (FAILED(lpDD->SetDisplayMode(Res_X, Res_Y, 16, 0, 0)))
 		{
 			vdraw_init_fail("Error with lpDD->SetDisplayMode()!");
 			return -4;
@@ -213,7 +170,7 @@ static int vdraw_ddraw_init(void)
 	
 	// Check the current color depth.
 	unsigned char newBpp;
-	IDirectDraw4_GetDisplayMode(lpDD, &ddsd);
+	lpDD->GetDisplayMode(&ddsd);
 	switch (ddsd.ddpfPixelFormat.dwGBitMask)
 	{
 		case 0x03E0:
@@ -252,7 +209,7 @@ static int vdraw_ddraw_init(void)
 		ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 	}
 	
-	if (FAILED(IDirectDraw4_CreateSurface(lpDD, &ddsd, &lpDDS_Primary, NULL)))
+	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Primary, NULL)))
 	{
 		vdraw_init_fail("Error with lpDD->CreateSurface()! [lpDDS_Primary]");
 		return -5;
@@ -264,7 +221,7 @@ static int vdraw_ddraw_init(void)
 		{
 			ddsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
 			
-			if (FAILED(IDirectDrawSurface4_GetAttachedSurface(lpDDS_Primary, &ddsd.ddsCaps, &lpDDS_Flip)))
+			if (FAILED(lpDDS_Primary->GetAttachedSurface(&ddsd.ddsCaps, &lpDDS_Flip)))
 			{
 				vdraw_init_fail("Error with lpDDPrimary->GetAttachedSurface()!");
 				return -6;
@@ -279,19 +236,19 @@ static int vdraw_ddraw_init(void)
 	}
 	else
 	{
-		if (FAILED(IDirectDraw4_CreateClipper(lpDD, 0, &lpDDC_Clipper, NULL )))
+		if (FAILED(lpDD->CreateClipper(0, &lpDDC_Clipper, NULL )))
 		{
 			vdraw_init_fail("Error with lpDD->CreateClipper()!");
 			return -7;
 		}
 		
-		if (FAILED(IDirectDrawClipper_SetHWnd(lpDDC_Clipper, 0, Gens_hWnd)))
+		if (FAILED(lpDDC_Clipper->SetHWnd(0, Gens_hWnd)))
 		{
 			vdraw_init_fail("Error with lpDDC_Clipper->SetHWnd()!");
 			return -8;
 		}
 		
-		if (FAILED(IDirectDrawSurface4_SetClipper(lpDDS_Primary, lpDDC_Clipper)))
+		if (FAILED(lpDDS_Primary->SetClipper(lpDDC_Clipper)))
 		{
 			vdraw_init_fail("Error with lpDDS_Primary->SetClipper()!");
 			return -9;
@@ -320,7 +277,7 @@ static int vdraw_ddraw_init(void)
 		ddsd.dwHeight = h;
 	}
 	
-	if (FAILED(IDirectDraw4_CreateSurface(lpDD, &ddsd, &lpDDS_Back, NULL)))
+	if (FAILED(lpDD->CreateSurface(&ddsd, &lpDDS_Back, NULL)))
 	{
 		vdraw_init_fail("Error with lpDD->CreateSurface()! [lpDDS_Back]");
 		return -10;
@@ -338,7 +295,7 @@ static int vdraw_ddraw_init(void)
 		memset(&ddsd, 0, sizeof(ddsd));
 		ddsd.dwSize = sizeof(ddsd);
 		
-		if (FAILED(IDirectDrawSurface4_GetSurfaceDesc(lpDDS_Back, &ddsd)))
+		if (FAILED(lpDDS_Back->GetSurfaceDesc(&ddsd)))
 		{
 			vdraw_init_fail("Error with lpDD_Back->GetSurfaceDesc()!");
 			return 11;
@@ -361,7 +318,7 @@ static int vdraw_ddraw_init(void)
 			ddsd.lPitch = 336 * 2;
 		}
 		
-		if (FAILED(IDirectDrawSurface4_SetSurfaceDesc(lpDDS_Back, &ddsd, 0)))
+		if (FAILED(lpDDS_Back->SetSurfaceDesc(&ddsd, 0)))
 		{
 			vdraw_init_fail("Error with lpDD_Back->SetSurfaceDesc()!");
 			return 12;
@@ -383,36 +340,36 @@ static int vdraw_ddraw_init(void)
  * vdraw_ddraw_end(): Close the DirectDraw renderer.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_end(void)
+int vdraw_ddraw_end(void)
 {
 	if (lpDDC_Clipper)
 	{
-		IDirectDrawClipper_Release(lpDDC_Clipper);
+		lpDDC_Clipper->Release();
 		lpDDC_Clipper = NULL;
 	}
 	
 	if (lpDDS_Back)
 	{
-		IDirectDrawSurface4_Release(lpDDS_Back);
+		lpDDS_Back->Release();
 		lpDDS_Back = NULL;
 	}
 	
 	if (lpDDS_Flip)
 	{
-		IDirectDrawSurface4_Release(lpDDS_Flip);
+		lpDDS_Flip->Release();
 		lpDDS_Flip = NULL;
 	}
 	
 	if (lpDDS_Primary)
 	{
-		IDirectDrawSurface4_Release(lpDDS_Primary);
+		lpDDS_Primary->Release();
 		lpDDS_Primary = NULL;
 	}
 	
 	if (lpDD)
 	{
-		IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_NORMAL);
-		IDirectDraw4_Release(lpDD);
+		lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
+		lpDD->Release();
 		lpDD = NULL;
 	}
 	
@@ -424,7 +381,7 @@ static int vdraw_ddraw_end(void)
 /** 
  * vdraw_ddraw_clear_screen(): Clear the screen.
  */
-static void vdraw_ddraw_clear_screen(void)
+void vdraw_ddraw_clear_screen(void)
 {
 	// Clear both screen buffers.
 	vdraw_ddraw_clear_primary_screen();
@@ -440,7 +397,7 @@ static void vdraw_ddraw_clear_screen(void)
  * vdraw_ddraw_clear_primary_screen(): Clear the primary screen.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_clear_primary_screen(void)
+int vdraw_ddraw_clear_primary_screen(void)
 {
 	if (!lpDD || !lpDDS_Primary)
 		return -1;
@@ -461,18 +418,18 @@ static int vdraw_ddraw_clear_primary_screen(void)
 	{
 		if (Video.VSync_FS)
 		{
-			IDirectDrawSurface4_Blt(lpDDS_Flip, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
-			IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+			lpDDS_Flip->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 			
-			IDirectDrawSurface4_Blt(lpDDS_Flip, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
-			IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+			lpDDS_Flip->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 			
-			IDirectDrawSurface4_Blt(lpDDS_Flip, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
-			IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+			lpDDS_Flip->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 		}
 		else
 		{
-			IDirectDrawSurface4_Blt(lpDDS_Primary, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 		}
 	}
 	else
@@ -487,7 +444,7 @@ static int vdraw_ddraw_clear_primary_screen(void)
 		rd.bottom += p.y;
 		
 		if (rd.top < rd.bottom)
-			IDirectDrawSurface4_Blt(lpDDS_Primary, &rd, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			lpDDS_Primary->Blt(&rd, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 	}
 	
 	return 0;
@@ -498,7 +455,7 @@ static int vdraw_ddraw_clear_primary_screen(void)
  * vdraw_ddraw_clear_back_screen(): Clear the back buffer.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_clear_back_screen(void)
+int vdraw_ddraw_clear_back_screen(void)
 {
 	if (!lpDD || !lpDDS_Back)
 		return -1;
@@ -513,7 +470,7 @@ static int vdraw_ddraw_clear_back_screen(void)
 	ddbltfx.dwSize = sizeof(ddbltfx);
 	ddbltfx.dwFillColor = 0;
 	
-	IDirectDrawSurface4_Blt(lpDDS_Back, NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+	lpDDS_Back->Blt(NULL, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 	
 	return 1;
 }
@@ -527,89 +484,85 @@ static int vdraw_ddraw_clear_back_screen(void)
  * @param Ratio_Y [out] Y ratio.
  * @param Dep [out] Horizontal border.
  */
-static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *pRatio_X, float* pRatio_Y, int *pDep)
+static void vdraw_ddraw_calc_draw_area(RECT &RectDest, RECT &RectSrc, float &Ratio_X, float &Ratio_Y, int &Dep)
 {
-	// TODO: Is this check really necessary?
-	if (!pRectDest || !pRectSrc || !pRatio_X || !pRatio_Y || !pDep)
-		return;
-	
-	*pRatio_X = (float)pRectDest->right / 320.0f;  //Upth-Modif - why use two lines of code
-	*pRatio_Y = (float)pRectDest->bottom / 240.0f; //Upth-Modif - when you can do this?
-	*pRatio_X = *pRatio_Y = (*pRatio_X < *pRatio_Y) ? *pRatio_X : *pRatio_Y; //Upth-Add - and here we floor the value
+	Ratio_X = (float)RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
+	Ratio_Y = (float)RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
+	Ratio_X = Ratio_Y = (Ratio_X < Ratio_Y) ? Ratio_X : Ratio_Y; //Upth-Add - and here we floor the value
 	
 	POINT q; //Upth-Add - For determining the correct ratio
-	q.x = pRectDest->right; //Upth-Add - we need to get
-	q.y = pRectDest->bottom; //Upth-Add - the bottom-right corner
+	q.x = RectDest.right; //Upth-Add - we need to get
+	q.y = RectDest.bottom; //Upth-Add - the bottom-right corner
 	
 	const uint8_t stretch = vdraw_get_stretch();
 	
 	if (vdraw_scale == 1)
 	{
-		pRectSrc->top = 0;
-		pRectSrc->bottom = VDP_Num_Vis_Lines;
+		RectSrc.top = 0;
+		RectSrc.bottom = VDP_Num_Vis_Lines;
 
 		if ((VDP_Num_Vis_Lines == 224) && !(stretch & STRETCH_V))
 		{
-			pRectDest->top = (int) ((q.y - (224 * *pRatio_Y))/2); //Upth-Modif - Centering the screen properly
-			pRectDest->bottom = (int) (224 * *pRatio_Y) + pRectDest->top; //Upth-Modif - along the y axis
+			RectDest.top = (int) ((q.y - (224 * Ratio_Y))/2); //Upth-Modif - Centering the screen properly
+			RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis
 		}
 	}
 	else
 	{
 		if (VDP_Num_Vis_Lines == 224)
 		{
-			pRectSrc->top = 8 * vdraw_scale;
-			pRectSrc->bottom = (224 + 8) * vdraw_scale;
+			RectSrc.top = 8 * vdraw_scale;
+			RectSrc.bottom = (224 + 8) * vdraw_scale;
 
 			if (!(stretch & STRETCH_V))
 			{
-				pRectDest->top = (int) ((q.y - (224 * *pRatio_Y)) / 2); //Upth-Modif - Centering the screen properly
-				pRectDest->bottom = (int) (224 * *pRatio_Y) + pRectDest->top; //Upth-Modif - along the y axis again
+				RectDest.top = (int) ((q.y - (224 * Ratio_Y)) / 2); //Upth-Modif - Centering the screen properly
+				RectDest.bottom = (int) (224 * Ratio_Y) + RectDest.top; //Upth-Modif - along the y axis again
 			}
 		}
 		else
 		{
-			pRectSrc->top = 0; //Upth-Modif - Was "0 * 2"
-			pRectSrc->bottom = (240 * vdraw_scale);
+			RectSrc.top = 0; //Upth-Modif - Was "0 * 2"
+			RectSrc.bottom = (240 * vdraw_scale);
 		}
 	}
 
 	if (isFullXRes())
 	{
-		*pDep = 0;
+		Dep = 0;
 		
 		if (vdraw_scale == 1)
 		{
-			pRectSrc->left = 8 + 0 ;
-			pRectSrc->right = 8 + 320;
+			RectSrc.left = 8 + 0 ;
+			RectSrc.right = 8 + 320;
 		}
 		else
 		{
-			pRectSrc->left = 0; //Upth-Modif - Was "0 * 2"
-			pRectSrc->right = 320 * vdraw_scale;
+			RectSrc.left = 0; //Upth-Modif - Was "0 * 2"
+			RectSrc.right = 320 * vdraw_scale;
 		}
-		pRectDest->left = (int) ((q.x - (320 * *pRatio_X)) / 2); //Upth-Add - center the picture
-		pRectDest->right = (int) (320 * *pRatio_X) + pRectDest->left; //Upth-Add - along the x axis
+		RectDest.left = (int) ((q.x - (320 * Ratio_X)) / 2); //Upth-Add - center the picture
+		RectDest.right = (int) (320 * Ratio_X) + RectDest.left; //Upth-Add - along the x axis
 	}
 	else // less-wide X resolution:
 	{
-		*pDep = 64;
+		Dep = 64;
 		
 		if (!(stretch & STRETCH_H))
 		{
-			pRectDest->left = (q.x - (int)(256.0f * *pRatio_X)) / 2; //Upth-Modif - center the picture properly
-			pRectDest->right = (int)(256.0f * *pRatio_X) + pRectDest->left; //Upth-Modif - along the x axis
+			RectDest.left = (q.x - (int)(256.0f * Ratio_X)) / 2; //Upth-Modif - center the picture properly
+			RectDest.right = (int)(256.0f * Ratio_X) + RectDest.left; //Upth-Modif - along the x axis
 		}
 		
 		if (vdraw_scale == 1)
 		{
-			pRectSrc->left = 8 + 0;
-			pRectSrc->right = 8 + 256;
+			RectSrc.left = 8 + 0;
+			RectSrc.right = 8 + 256;
 		}
 		else
 		{
-			pRectSrc->left = 32 * vdraw_scale;
-			pRectSrc->right = (32 + 256) * vdraw_scale;
+			RectSrc.left = 32 * vdraw_scale;
+			RectSrc.right = (32 + 256) * vdraw_scale;
 		}
 	}
 }
@@ -619,7 +572,7 @@ static void vdraw_ddraw_calc_draw_area(RECT *pRectDest, RECT *pRectSrc, float *p
  * vdraw_ddraw_flip(): Flip the screen buffer. [Called by vdraw_flip().]
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_flip(void)
+int vdraw_ddraw_flip(void)
 {
 	// TODO: Add border drawing, like in vdraw_sdl.
 	
@@ -794,7 +747,7 @@ static int vdraw_ddraw_flip(void)
 				// Software rendering is enabled.
 				// Ignore the Stretch setting.
 				
-				rval = IDirectDrawSurface4_Lock(lpDDS_Blit, NULL, &ddsd, DDLOCK_WAIT, NULL);
+				rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 				
 				if (FAILED(rval))
 					goto cleanup_flip;
@@ -817,11 +770,11 @@ static int vdraw_ddraw_flip(void)
 				// Draw the text.
 				vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);
 				
-				IDirectDrawSurface4_Unlock(lpDDS_Blit, NULL);
+				lpDDS_Blit->Unlock(NULL);
 				
 				if (Video.VSync_FS)
 				{
-					IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 			}
 			else
@@ -857,13 +810,13 @@ static int vdraw_ddraw_flip(void)
 				vdraw_ddraw_draw_text(&ddsd, lpDDS_Back, TRUE);
 				if (Video.VSync_FS)
 				{
-					IDirectDrawSurface4_Blt(lpDDS_Flip, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 				else
 				{
-					IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					//IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
+					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+					//lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 				}
 			}
 		}
@@ -876,7 +829,7 @@ static int vdraw_ddraw_flip(void)
 			if(!IS_FULL_X_RESOLUTION)
 				curBlit = lpDDS_Back; // have to use it or the aspect ratio will be way off
 #endif
-			rval = IDirectDrawSurface4_Lock(curBlit, NULL, &ddsd, DDLOCK_WAIT, NULL);
+			rval = curBlit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			
 			if (FAILED(rval))
 				goto cleanup_flip;
@@ -926,7 +879,7 @@ static int vdraw_ddraw_flip(void)
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, curBlit, FALSE);
 			
-			IDirectDrawSurface4_Unlock(curBlit, NULL);
+			curBlit->Unlock(NULL);
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
@@ -935,23 +888,23 @@ static int vdraw_ddraw_flip(void)
 				RectDest.right = GetSystemMetrics(SM_CXSCREEN); // not SM_XVIRTUALSCREEN since we only want the primary monitor if there's more than one
 				RectDest.bottom = GetSystemMetrics(SM_CYSCREEN);
 				
-				vdraw_ddraw_calc_draw_area(&RectDest, &RectSrc, &Ratio_X, &Ratio_Y, &Dep);
+				vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 				
 				if (Video.VSync_FS)
 				{
 					int vb;
-					IDirectDraw4_GetVerticalBlankStatus(lpDD, &vb);
+					lpDD->GetVerticalBlankStatus(&vb);
 					if (!vb)
-						IDirectDraw4_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+						lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, 0);
 				}
 				
-				IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+				lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 			}
 			else
 			{
 				if (Video.VSync_FS)
 				{
-					IDirectDrawSurface4_Flip(lpDDS_Primary, NULL, DDFLIP_WAIT);
+					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 			}
 		}
@@ -960,7 +913,7 @@ static int vdraw_ddraw_flip(void)
 	{
 		// Windowed mode
 		GetClientRect(Gens_hWnd, &RectDest);
-		vdraw_ddraw_calc_draw_area(&RectDest, &RectSrc, &Ratio_X, &Ratio_Y, &Dep);
+		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 		
 		int Clr_Cmp_Val = isFullXRes() ? 40 : 32;
 		if (Flag_Clr_Scr != Clr_Cmp_Val)
@@ -972,7 +925,7 @@ static int vdraw_ddraw_flip(void)
 		
 		if (vdraw_scale > 1)
 		{
-			rval = IDirectDrawSurface4_Lock(lpDDS_Blit, NULL, &ddsd, DDLOCK_WAIT, NULL);
+			rval = lpDDS_Blit->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL);
 			
 			if (FAILED(rval))
 				goto cleanup_flip;
@@ -1022,7 +975,7 @@ static int vdraw_ddraw_flip(void)
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);
 			
-			IDirectDrawSurface4_Unlock(lpDDS_Blit, NULL);
+			lpDDS_Blit->Unlock(NULL);
 		}
 		else
 		{
@@ -1043,13 +996,13 @@ static int vdraw_ddraw_flip(void)
 			if (Video.VSync_W)
 			{
 				int vb;
-				IDirectDraw4_GetVerticalBlankStatus(lpDD, &vb);
+				lpDD->GetVerticalBlankStatus(&vb);
 				if (!vb)
-					IDirectDraw4_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+					lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, 0);
 			}
 			
-			rval = IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-			//rval = IDirectDrawSurface4_Blt(lpDDS_Primary, &RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
+			rval = lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
+			//rval = lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 		}
 	}
 
@@ -1065,7 +1018,7 @@ cleanup_flip:
  * vdraw_ddraw_update_vsync(): Update the VSync value.
  * @param fromInitDDraw If TRUE, this function is being called from vdraw_ddraw_init().
  */
-static void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
+void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
 {
 	// If Full Screen, reinitialize the video subsystem.
 	if (vdraw_get_fullscreen())
@@ -1077,7 +1030,7 @@ static void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
  * vdraw_ddraw_reinit_gens_window(): Reinitialize the Gens window.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_reinit_gens_window(void)
+int vdraw_ddraw_reinit_gens_window(void)
 {
 	// Clear the sound buffer.
 	Win32_ClearSoundBuffer();
@@ -1130,8 +1083,8 @@ static int vdraw_ddraw_reinit_gens_window(void)
  */
 HRESULT vdraw_ddraw_restore_graphics(void)
 {
-	HRESULT rval1 = IDirectDrawSurface4_Restore(lpDDS_Primary);
-	HRESULT rval2 = IDirectDrawSurface4_Restore(lpDDS_Back);
+	HRESULT rval1 = lpDDS_Primary->Restore();
+	HRESULT rval2 = lpDDS_Back->Restore();
 	
 	// Modif N. -- fixes lost surface handling when the color depth has changed
 	if (rval1 == DDERR_WRONGMODE || rval2 == DDERR_WRONGMODE)
@@ -1145,15 +1098,15 @@ HRESULT vdraw_ddraw_restore_graphics(void)
  * vdraw_ddraw_restore_primary(): Restore the primary DirectDraw surface.
  * @return 0 on success; non-zero on error.
  */
-static int vdraw_ddraw_restore_primary(void)
+int vdraw_ddraw_restore_primary(void)
 {
 	if (!lpDD)
 		return -1;
 	
 	if (vdraw_get_fullscreen() && Video.VSync_FS)
 	{
-		while (IDirectDrawSurface4_GetFlipStatus(lpDDS_Primary, DDGFS_ISFLIPDONE) == DDERR_SURFACEBUSY) { }
-		IDirectDraw_FlipToGDISurface(lpDD);
+		while (lpDDS_Primary->GetFlipStatus(DDGFS_ISFLIPDONE) == DDERR_SURFACEBUSY) { }
+		lpDD->FlipToGDISurface();
 	}
 	
 	return 0;
@@ -1172,12 +1125,12 @@ int vdraw_ddraw_set_cooperative_level(void)
 	HRESULT rval;
 #ifdef DISABLE_EXCLUSIVE_FULLSCREEN_LOCK
 	Video.VSync_FS = 0;
-	rval = IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_NORMAL);
+	rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
 #else
 	if (vdraw_get_fullscreen())
-		rval = IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
+		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
 	else
-		rval = IDirectDraw4_SetCooperativeLevel(lpDD, Gens_hWnd, DDSCL_NORMAL);
+		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
 #endif
 	
 	if (FAILED(rval))

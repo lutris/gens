@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Video Drawing - DirectDraw Backend.                               *
+ * Gens: Video Drawing - DirectDraw Backend. (vdraw_backend_t struct)      *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,19 +20,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_VDRAW_DDRAW_H
-#define GENS_VDRAW_DDRAW_H
+#include "vdraw_ddraw_t.h"
+#include "vdraw_ddraw.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "vdraw.h"
-
-extern vdraw_backend_t vdraw_backend_ddraw;
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* GENS_VDRAW_DDRAW_H */
+// VDraw Backend struct.
+vdraw_backend_t vdraw_backend_ddraw =
+{
+	.init = vdraw_ddraw_init,
+	.end = vdraw_ddraw_end,
+	
+	.init_subsystem = NULL,
+	.shutdown = NULL,
+	
+	.clear_screen = vdraw_ddraw_clear_screen,
+	.update_vsync = vdraw_ddraw_update_vsync,
+	
+	.flip = vdraw_ddraw_flip,
+	.stretch_adjust = NULL,
+	.update_renderer = NULL,
+	
+	// Win32-specific functions.
+	.reinit_gens_window	= vdraw_ddraw_reinit_gens_window,
+	.clear_primary_screen	= vdraw_ddraw_clear_primary_screen,
+	.clear_back_screen	= vdraw_ddraw_clear_back_screen,
+	.restore_primary	= vdraw_ddraw_restore_primary,
+	.set_cooperative_level	= vdraw_ddraw_set_cooperative_level
+};
