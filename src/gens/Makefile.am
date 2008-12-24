@@ -72,7 +72,6 @@ bin_PROGRAMS = gens
 gens_SOURCES = \
 		emulator/gens.cpp \
 		emulator/g_main.cpp \
-		emulator/g_input.cpp \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
 		emulator/g_32x.cpp \
@@ -169,7 +168,6 @@ endif
 noinst_HEADERS = \
 		emulator/gens.hpp \
 		emulator/g_main.hpp \
-		emulator/g_input.hpp \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
 		emulator/g_32x.hpp \

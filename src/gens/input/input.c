@@ -25,7 +25,6 @@
 // C includes.
 #include <string.h>
 
-#include "emulator/g_input.hpp"
 #include "gens_core/io/io.h"
 
 

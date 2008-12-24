@@ -22,10 +22,10 @@
 
 #include "input_sdl.h"
 #include "input_sdl_keys.h"
+#include "input_sdl_events.hpp"
 #include "gdk/gdkkeysyms.h"
 
 #include "emulator/g_main.hpp"
-#include "emulator/g_input.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
 
@@ -330,12 +330,12 @@ int input_sdl_update(void)
 			
 			case SDL_KEYDOWN:
 				input_sdl_keys[event.key.keysym.sym] = TRUE;
-				Input_KeyDown(event.key.keysym.sym);
+				input_sdl_event_key_down(event.key.keysym.sym);
 				break;
 				
 			case SDL_KEYUP:
 				input_sdl_keys[event.key.keysym.sym] = FALSE;
-				Input_KeyUp(event.key.keysym.sym);
+				input_sdl_event_key_up(event.key.keysym.sym);
 				break;
 			
 			case SDL_JOYAXISMOTION:

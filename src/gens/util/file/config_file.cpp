@@ -33,7 +33,6 @@
 
 #include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
-#include "emulator/g_input.hpp"
 #include "util/gfx/imageutil.hpp"
 #include "gens_core/misc/misc.h"
 #include "emulator/g_palette.h"

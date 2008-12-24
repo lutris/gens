@@ -4,7 +4,6 @@
 #include "emulator/g_main.hpp"
 #include "emulator/g_md.hpp"
 #include "emulator/g_32x.hpp"
-#include "emulator/g_input.hpp"
 #include "gens_core/misc/misc.h"
 #include "ui/gens_ui.hpp"
 
