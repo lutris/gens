@@ -52,6 +52,9 @@
 // Byteswapping
 #include "gens_core/misc/byteswap.h"
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
 #include <windows.h>

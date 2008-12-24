@@ -37,6 +37,9 @@
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 
 // On-Screen Display colors.
 // Index: 0 = name; 1 = normal; 2 = active; 3 = prelight; 4 = selected; 5 = insensitive

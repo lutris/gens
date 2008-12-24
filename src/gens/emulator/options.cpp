@@ -44,7 +44,8 @@ using std::list;
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window_sync.hpp"
 
-// VDraw C++ functions.
+// Video Drawing.
+#include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
 
 

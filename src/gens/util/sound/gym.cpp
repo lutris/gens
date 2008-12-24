@@ -13,6 +13,9 @@
 
 #include "ui/gens_ui.hpp"
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 // File management functions.
 #include "util/file/file.hpp"
 

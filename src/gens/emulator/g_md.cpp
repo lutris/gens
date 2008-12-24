@@ -27,6 +27,9 @@
 
 #include "gens_ui.hpp"
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.

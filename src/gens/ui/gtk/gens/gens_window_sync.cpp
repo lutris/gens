@@ -66,6 +66,9 @@ using std::deque;
 // File management functions.
 #include "util/file/file.hpp"
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 
 // Internal functions.
 static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container);

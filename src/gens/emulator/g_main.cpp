@@ -61,6 +61,10 @@
 // File management functions.
 #include "util/file/file.hpp"
 
+// Video, Audio, and Input backends.
+#include "video/vdraw.h"
+#include "input/input.h"
+
 // Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
@@ -104,9 +108,6 @@ int Kaillera_Client_Running = 0;
 int Quick_Exit = 0;
 
 static int Gens_Running = 0;
-
-// New input layer.
-Input *input = NULL;
 
 // New audio layer.
 Audio *audio = NULL;
@@ -367,8 +368,7 @@ void End_All(void)
 	PluginMgr::end();
 	
 	// Shut down the input subsystem.
-	delete input;
-	input = NULL;
+	input_end();
 	
 	// Shut down the audio subsystem.
 	audio->endSound();
@@ -516,7 +516,7 @@ void GensMainLoop(void)
 		GensUI::update();
 		
 		// Update physical controller inputs.
-		input->update();
+		input_update();
 		
 #ifdef GENS_DEBUGGER
 		if (Debug)

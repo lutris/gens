@@ -195,9 +195,6 @@ void GensMainLoop(void);
 #include "mdp/mdp_render.h"
 MDP_Render_t* get_mdp_render_t(void);
 
-// Back to C!
-#include "video/vdraw.h"
-
 #ifdef __cplusplus
 }
 #endif
@@ -205,10 +202,6 @@ MDP_Render_t* get_mdp_render_t(void);
 #ifdef __cplusplus
 
 // C++ classes
-
-// New Input object
-#include "input/input.hpp"
-extern Input *input;
 
 // New Audio object
 #include "audio/audio.hpp"

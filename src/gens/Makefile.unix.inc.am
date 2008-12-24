@@ -9,7 +9,7 @@ gens_SOURCES += \
 		port/ini_old.c \
 		port/timer.c \
 		video/vdraw_sdl.c \
-		input/input_sdl.cpp \
+		input/input_sdl.c \
 		audio/audio_sdl.cpp
 
 if GENS_CDROM
@@ -70,7 +70,7 @@ noinst_HEADERS += \
 		port/ini_old.h \
 		port/timer.h \
 		video/vdraw_sdl.h \
-		input/input_sdl.hpp \
+		input/input_sdl.h \
 		input/input_sdl_keys.h \
 		audio/audio_sdl.hpp
 

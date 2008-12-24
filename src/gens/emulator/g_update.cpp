@@ -22,6 +22,10 @@
 #define NULL 0
 #endif
 
+// Video, Audio, Input.
+#include "video/vdraw.h"
+#include "input/input.h"
+
 clock_t Last_Time = 0;
 clock_t New_Time = 0;
 clock_t Used_Time = 0;
@@ -53,8 +57,8 @@ int Update_Emulation(void)
 		}
 #endif /* GENS_OS_UNIX */
 		
-		input->updateControllers();
-
+		input_update_controllers();
+		
 		if (Frame_Number++ < Frame_Skip)
 		{
 			Update_Frame_Fast();
@@ -94,7 +98,7 @@ int Update_Emulation(void)
 			audio->waitForAudioBuffer();
 			
 			// Audio buffer is empty.
-			input->updateControllers();
+			input_update_controllers();
 			Update_Frame();
 #ifdef GENS_DEBUGGER
 			if (!Debug)
@@ -107,24 +111,24 @@ int Update_Emulation(void)
 				current_div = 20;
 			else
 				current_div = 16 + (Over_Time ^= 1);
-
+			
 			New_Time = GetTickCount();
 			Used_Time += (New_Time - Last_Time);
 			Frame_Number = Used_Time / current_div;
 			Used_Time %= current_div;
 			Last_Time = New_Time;
-
+			
 			if (Frame_Number > 8) Frame_Number = 8;
-
+			
 			for (; Frame_Number > 1; Frame_Number--)
 			{
-				input->updateControllers();
+				input_update_controllers();
 				Update_Frame_Fast();
 			}
-
+			
 			if (Frame_Number)
 			{
-				input->updateControllers();
+				input_update_controllers();
 				Update_Frame();
 #ifdef GENS_DEBUGGER
 				if (!Debug)
@@ -167,7 +171,7 @@ int Update_Emulation(void)
 
 int Update_Emulation_One(void)
 {
-	input->updateControllers();
+	input_update_controllers();
 	Update_Frame();
 	
 #ifdef GENS_DEBUGGER

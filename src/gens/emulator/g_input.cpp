@@ -39,8 +39,10 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
-// VDraw C++ functions.
+// Video, Audio, Input.
+#include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
+#include "input/input.h"
 
 // C++ includes.
 #include <list>
