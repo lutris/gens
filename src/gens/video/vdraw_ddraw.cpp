@@ -977,7 +977,7 @@ int vdraw_ddraw_flip(void)
 				
 				vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
 				vdraw_rInfo.destPitch = vdraw_16to32_pitch;
-				vdraw_blitFS(&vdraw_rInfo);
+				vdraw_blitW(&vdraw_rInfo);
 				
 				vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
 						    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
