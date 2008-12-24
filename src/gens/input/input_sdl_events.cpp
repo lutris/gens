@@ -81,8 +81,6 @@ static int mod = 0;
  */
 void input_sdl_event_key_down(int key)
 {
-	string filename;
-	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -228,13 +226,13 @@ void input_sdl_event_key_down(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				filename = Savestate::SelectFile(true, State_Dir);
+				string filename = Savestate::SelectFile(true, State_Dir);
 				if (!filename.empty())
 					Savestate::SaveState(filename);
 			}
 			else if (!mod)
 			{
-				filename = Savestate::GetStateFilename();
+				string filename = Savestate::GetStateFilename();
 				Savestate::SaveState(filename);
 			}
 			break;
@@ -263,13 +261,13 @@ void input_sdl_event_key_down(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				filename = Savestate::SelectFile(false, State_Dir);
+				string filename = Savestate::SelectFile(false, State_Dir);
 				if (!filename.empty())
 					Savestate::LoadState(filename);
 			}
 			else if (!mod)
 			{
-				filename = Savestate::GetStateFilename();
+				string filename = Savestate::GetStateFilename();
 				Savestate::LoadState(filename);
 			}
 			break;
@@ -493,7 +491,7 @@ void input_sdl_event_key_down(int key)
  */
 void input_sdl_event_key_up(int key)
 {
-	switch(key)
+	switch (key)
 	{
 		case GENS_KEY_LCTRL:
 			mod &= ~GENS_KMOD_LCTRL;
