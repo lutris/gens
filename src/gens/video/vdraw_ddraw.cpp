@@ -73,6 +73,9 @@ static HRESULT vdraw_ddraw_restore_graphics(void);
 static void vdraw_ddraw_calc_draw_area(RECT &RectDest, RECT &RectSrc, float &Ratio_X, float &Ratio_Y, int &Dep);
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock);
 
+// Border drawing.
+static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, RECT *pRectDest);
+
 
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock)
 {
@@ -986,6 +989,9 @@ int vdraw_ddraw_flip(void)
 		p.x = p.y = 0;
 		ClientToScreen(Gens_hWnd, &p);
 		
+		// Draw the border.
+		vdraw_ddraw_draw_border(&ddsd, lpDDS_Primary, &RectDest);
+		
 		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
 		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
 		RectDest.left += p.x;   //Upth-Modif - because it modifies the values
@@ -1001,6 +1007,7 @@ int vdraw_ddraw_flip(void)
 					lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, 0);
 			}
 			
+			// Blit the image.
 			rval = lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 			//rval = lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 		}
@@ -1011,6 +1018,64 @@ cleanup_flip:
 		rval = vdraw_ddraw_restore_graphics();
 	
 	return 1;
+}
+
+
+static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, RECT *pRectDest)
+{
+	uint8_t stretch = vdraw_get_stretch();
+	if (stretch == STRETCH_FULL || !pRectDest)
+		return;
+	
+	DDBLTFX ddbltfx;
+	memset(&ddbltfx, 0, sizeof(ddbltfx));
+	ddbltfx.dwSize = sizeof(ddbltfx);
+	ddbltfx.dwFillColor = 0x00FF00; // Black
+	
+	if (vdraw_get_fullscreen())
+	{
+		// Fullscreen.
+		// TODO
+	}
+	else
+	{
+		// Windowed.
+		RECT rectWin;
+		POINT ptWin;
+		ptWin.x = 0;
+		ptWin.y = 0;
+		GetClientRect(Gens_hWnd, &rectWin);
+		ClientToScreen(Gens_hWnd, &ptWin);
+		
+		rectWin.left += ptWin.x;
+		rectWin.top += ptWin.y;
+		rectWin.right += ptWin.x;
+		rectWin.bottom += ptWin.y;
+		
+		if ((VDP_Num_Vis_Lines < 240) && !(stretch & STRETCH_V))
+		{
+			// Vertical stretch is disabled.
+			
+			int height = pRectDest->bottom - pRectDest->top;
+			
+			// Draw top border.
+			RECT rectTB = rectWin;
+			rectTB.bottom -= height;
+			rectTB.bottom = ((rectTB.bottom - rectTB.top) / 2) + rectTB.top;
+			lpDDS_Surface->Blt(&rectTB, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			
+			// Draw bottom border.
+			rectTB = rectWin;
+			rectTB.top += height;
+			rectTB.top = ((rectTB.bottom - rectTB.top) / 2) + rectTB.top;
+			lpDDS_Surface->Blt(&rectTB, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+		}
+		
+		if (!isFullXRes() && !(stretch & STRETCH_H))
+		{
+			// Horizontal stretch is disabled.
+		}
+	}
 }
 
 
