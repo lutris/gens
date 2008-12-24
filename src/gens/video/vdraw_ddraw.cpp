@@ -1084,39 +1084,37 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 	
 	RECT rectBorder;
 	
-	if ((VDP_Num_Vis_Lines < 240) && !(stretch & STRETCH_V))
+	int drawHeight = pRectDest->bottom - pRectDest->top;
+	int viewHeight = rectDD.bottom - rectDD.top;
+	if ((viewHeight > drawHeight) && !(stretch & STRETCH_V))
 	{
 		// Vertical stretch is disabled.
-		int height = pRectDest->bottom - pRectDest->top;
 		
 		// Draw top border.
 		rectBorder = rectDD;
-		rectBorder.bottom -= height;
-		rectBorder.bottom = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
+		rectBorder.bottom = ((viewHeight - drawHeight) / 2) + rectBorder.top;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 		
 		// Draw bottom border.
 		rectBorder = rectDD;
-		rectBorder.top += height;
-		rectBorder.top = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
+		rectBorder.top = ((viewHeight - drawHeight) / 2) + rectBorder.top + drawHeight;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 	}
 	
-	if (!isFullXRes() && !(stretch & STRETCH_H))
+	int drawWidth = pRectDest->right - pRectDest->left;
+	int viewWidth = rectDD.right - rectDD.left;
+	if ((viewWidth > drawWidth) && !(stretch & STRETCH_H))
 	{
 		// Horizontal stretch is disabled.
-		int width = pRectDest->right - pRectDest->left;
 		
 		// Draw left border.
 		rectBorder = rectDD;
-		rectBorder.right -= width;
-		rectBorder.right = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
+		rectBorder.right = ((viewWidth - drawWidth) / 2) + rectBorder.left;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 		
 		// Draw bottom border.
 		rectBorder = rectDD;
-		rectBorder.left += width;
-		rectBorder.left = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
+		rectBorder.left = ((viewWidth - drawWidth) / 2) + rectBorder.left + drawWidth;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 	}
 }
