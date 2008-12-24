@@ -1030,7 +1030,23 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 	DDBLTFX ddbltfx;
 	memset(&ddbltfx, 0, sizeof(ddbltfx));
 	ddbltfx.dwSize = sizeof(ddbltfx);
-	ddbltfx.dwFillColor = 0x00FF00; // Black
+	
+	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
+	{
+		// Border color emulation is disabled.
+		// Use a black border.
+		ddbltfx.dwFillColor = 0;
+	}
+	else if (bppOut == 15 || bppOut == 16)
+	{
+		// 15-bit/16-bit color.
+		ddbltfx.dwFillColor = MD_Palette[0];
+	}
+	else //if (bppOut == 32)
+	{
+		// 32-bit color.
+		ddbltfx.dwFillColor = MD_Palette32[0];
+	}
 	
 	if (vdraw_get_fullscreen())
 	{
