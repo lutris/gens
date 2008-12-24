@@ -1052,28 +1052,42 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 		rectWin.right += ptWin.x;
 		rectWin.bottom += ptWin.y;
 		
+		RECT rectBorder;
+		
 		if ((VDP_Num_Vis_Lines < 240) && !(stretch & STRETCH_V))
 		{
 			// Vertical stretch is disabled.
-			
 			int height = pRectDest->bottom - pRectDest->top;
 			
 			// Draw top border.
-			RECT rectTB = rectWin;
-			rectTB.bottom -= height;
-			rectTB.bottom = ((rectTB.bottom - rectTB.top) / 2) + rectTB.top;
-			lpDDS_Surface->Blt(&rectTB, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			rectBorder = rectWin;
+			rectBorder.bottom -= height;
+			rectBorder.bottom = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 			
 			// Draw bottom border.
-			rectTB = rectWin;
-			rectTB.top += height;
-			rectTB.top = ((rectTB.bottom - rectTB.top) / 2) + rectTB.top;
-			lpDDS_Surface->Blt(&rectTB, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			rectBorder = rectWin;
+			rectBorder.top += height;
+			rectBorder.top = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 		}
 		
 		if (!isFullXRes() && !(stretch & STRETCH_H))
 		{
 			// Horizontal stretch is disabled.
+			int width = pRectDest->right - pRectDest->left;
+			
+			// Draw left border.
+			rectBorder = rectWin;
+			rectBorder.right -= width;
+			rectBorder.right = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
+			
+			// Draw bottom border.
+			rectBorder = rectWin;
+			rectBorder.left += width;
+			rectBorder.left = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
+			lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx);
 		}
 	}
 }
