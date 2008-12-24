@@ -55,6 +55,9 @@ static BOOL		(*input_check_key_pressed)(unsigned int key) = NULL;
 unsigned int		(*input_get_key)(void) = NULL;
 const input_keymap_t	*input_keymap_default = NULL;
 
+// Current keymap.
+input_keymap_t	input_keymap[8];
+
 
 /**
  * input_init(): Initialize an Input backend.

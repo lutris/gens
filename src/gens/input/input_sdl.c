@@ -50,7 +50,7 @@ static BOOL		input_sdl_joy_exists(int joy_num);
 
 // Miscellaneous.
 static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
-static int gdk_to_sdl_keyval(int gdk_key);
+static int input_sdl_gdk_to_sdl_keyval(int gdk_key);
 
 // Check an SDL joystick axis.
 static void input_sdl_check_joystick_axis(SDL_Event *event);
@@ -208,7 +208,7 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	
 	// Convert this keypress from GDK to SDL.
 	// TODO: Use GENS key defines instead.
-	sdlev.key.keysym.sym = (SDLKey)gdk_to_sdl_keyval(event->keyval);
+	sdlev.key.keysym.sym = (SDLKey)input_sdl_gdk_to_sdl_keyval(event->keyval);
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
 	
@@ -222,30 +222,29 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 }
 
 
-#if 0
 /**
- * joyExists(): Check if the specified joystick exists.
+ * input_sdl_joy_exists(): Check if the specified joystick exists.
  * @param joyNum Joystick number.
- * @return true if the joystick exists; false if it does not exist.
+ * @return TRUE if the joystick exists; FALSE if it does not exist.
  */
-bool Input_SDL::joyExists(int joyNum)
+BOOL input_sdl_joy_exists(int joyNum)
 {
 	if (joyNum < 0 || joyNum >= 6)
-		return false;
+		return FALSE;
 	
-	if (m_joy[joyNum])
-		return true;
+	if (input_sdl_joys[joyNum])
+		return TRUE;
 	
 	// Joystick does not exist.
-	return false;
+	return FALSE;
 }
 
 
 /**
- * getKey(): Get a key. (Used for controller configuration.)
+ * input_sdl_get_key(): Get a key. (Used for controller configuration.)
  * @return Key value.
  */
-unsigned int Input_SDL::getKey(void)
+unsigned int input_sdl_get_key(void)
 {
 	// TODO: Optimize this function.
 	GdkEvent *event;
@@ -260,11 +259,11 @@ unsigned int Input_SDL::getKey(void)
 	}
 	
 	// Update the UI.
-	GensUI::update();
+	GensUI_update();
 	
-	while (true)
+	while (TRUE)
 	{
-		while (SDL_PollEvent (&sdl_event))
+		while (SDL_PollEvent(&sdl_event))
 		{
 			switch (sdl_event.type)
 			{
@@ -275,17 +274,17 @@ unsigned int Input_SDL::getKey(void)
 					if (sdl_event.jaxis.value < -10000)
 					{
 						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							JoyAxisValues[0][sdl_event.jaxis.axis]);
+							input_sdl_joy_axis_values[0][sdl_event.jaxis.axis]);
 					}
 					else if (sdl_event.jaxis.value > 10000)
 					{
 						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							JoyAxisValues[1][sdl_event.jaxis.axis]);
+							input_sdl_joy_axis_values[1][sdl_event.jaxis.axis]);
 					}
 					else
 					{
 						// FIXME: WTF is this for?!
-						return getKey();
+						return input_sdl_get_key();
 					}
 					break;
 				
@@ -301,15 +300,16 @@ unsigned int Input_SDL::getKey(void)
 		// Check if a GDK key press occurred.
 		event = gdk_event_get();
 		if (event && event->type == GDK_KEY_PRESS)
-			return gdk_to_sdl_keyval(event->key.keyval);
+			return input_sdl_gdk_to_sdl_keyval(event->key.keyval);
 	}
 }
 
 
 /**
- * update(): Update the input subsystem.
+ * input_sdl_update(): Update the input subsystem.
+ * @return 0 on success; non-zero on error.
  */
-void Input_SDL::update(void)
+int input_sdl_update(void)
 {
 	// Check for SDL events
 	SDL_Event event;
@@ -320,7 +320,7 @@ void Input_SDL::update(void)
 		{
 			case SDL_QUIT:
 				close_gens();
-				return;
+				return 0;
 			
 			/* TODO: SDL_VIDEORESIZE should work in GL mode.
 			case SDL_VIDEORESIZE:
@@ -329,25 +329,25 @@ void Input_SDL::update(void)
 			*/
 			
 			case SDL_KEYDOWN:
-				m_keys[event.key.keysym.sym] = true;
+				input_sdl_keys[event.key.keysym.sym] = TRUE;
 				Input_KeyDown(event.key.keysym.sym);
 				break;
 				
 			case SDL_KEYUP:
-				m_keys[event.key.keysym.sym] = false;
+				input_sdl_keys[event.key.keysym.sym] = FALSE;
 				Input_KeyUp(event.key.keysym.sym);
 				break;
 			
 			case SDL_JOYAXISMOTION:
-				checkJoystickAxis(&event);
+				input_sdl_check_joystick_axis(&event);
 				break;
 			
 			case SDL_JOYBUTTONDOWN:
-				m_joyState[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = true;
+				input_sdl_joy_state[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = TRUE;
 				break;
 			
 			case SDL_JOYBUTTONUP:
-				m_joyState[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = false;
+				input_sdl_joy_state[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = FALSE;
 				break;
 			
 			case SDL_JOYHATMOTION:
@@ -357,14 +357,16 @@ void Input_SDL::update(void)
 				break;
 		}
 	}
+	
+	return 0;
 }
 
 
 /**
- * checkJoystickAxis: Check the SDL_Event for a joystick axis event.
+ * input_sdl_check_joystick_axis: Check the SDL_Event for a joystick axis event.
  * @param event Pointer to SDL_Event.
  */
-void Input_SDL::checkJoystickAxis(SDL_Event *event)
+static void input_sdl_check_joystick_axis(SDL_Event *event)
 {
 	if (event->jaxis.axis >= 6)
 	{
@@ -375,38 +377,38 @@ void Input_SDL::checkJoystickAxis(SDL_Event *event)
 	
 	if (event->jaxis.value < -10000)
 	{
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.axis]] = true;
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.axis]] = false;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[0][event->jaxis.axis]] = TRUE;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[1][event->jaxis.axis]] = FALSE;
 	}
 	else if (event->jaxis.value > 10000)
 	{
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.axis]] = false;
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.axis]] = true;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[0][event->jaxis.axis]] = FALSE;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[1][event->jaxis.axis]] = TRUE;
 	}
 	else
 	{
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.axis]] = false;
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.axis]] = false;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[0][event->jaxis.axis]] = FALSE;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[1][event->jaxis.axis]] = FALSE;
 	}
 }
 
 
 /**
- * checkKeyPressed(): Checks if the specified key is pressed.
+ * input_sdl_check_key_pressed(): Checks if the specified key is pressed.
  * @param key Key to check.
- * @return True if the key is pressed.
+ * @return TRUE if the key is pressed; FALSE if the key is not pressed.
  */
-bool Input_SDL::checkKeyPressed(unsigned int key)
+BOOL input_sdl_check_key_pressed(unsigned int key)
 {
 	// If the key value is <1024, it's a keyboard key.
 	if (key < 1024)
-		return m_keys[key];
+		return input_sdl_keys[key];
 	
 	// Joystick "key" check.
 	
@@ -414,10 +416,11 @@ bool Input_SDL::checkKeyPressed(unsigned int key)
 	int joyNum = ((key >> 8) & 0xF);
 	
 	// Check that this joystick exists.
-	if (!joyExists(joyNum))
-		return false;
+	if (!input_sdl_joy_exists(joyNum))
+		return FALSE;
 	
 	// Joystick exists. Check the state.
+#if 0
 	if (key & 0x80)
 	{
 		// Joystick POV
@@ -442,33 +445,35 @@ bool Input_SDL::checkKeyPressed(unsigned int key)
 		}
 #endif
 	}
-	else if (key & 0x70)
+	else
+#endif
+	if (key & 0x70)
 	{
 		// Joystick buttons
-		if (m_joyState[0x10 + (0x100 * joyNum) + ((key & 0xFF) - 0x10)])
-			return true;
+		if (input_sdl_joy_state[0x10 + (0x100 * joyNum) + ((key & 0xFF) - 0x10)])
+			return TRUE;
 	}
 	else
 	{
 		// Joystick axes
 		if (((key & 0xF) >= 1) && ((key & 0xF) <= 12))
 		{
-			if (m_joyState[(0x100 * joyNum) + (key & 0xF)])
-				return true;
+			if (input_sdl_joy_state[(0x100 * joyNum) + (key & 0xF)])
+				return TRUE;
 		}
 	}
 	
 	// Key is not pressed.
-	return false;
+	return FALSE;
 }
 
 
 /**
- * gdk_to_sdl_keyval(): Converts a GDK key value to a Gens key value.
+ * input_sdl_gdk_to_sdl_keyval(): Converts a GDK key value to a Gens key value.
  * @param gdk_key GDK key value.
  * @return Gens key value.
  */
-static int gdk_to_sdl_keyval(int gdk_key)
+static int input_sdl_gdk_to_sdl_keyval(int gdk_key)
 {
 	switch (gdk_key)
 	{
@@ -725,7 +730,7 @@ static int gdk_to_sdl_keyval(int gdk_key)
 		case GDK_Mode_switch:
 			return GENS_KEY_MODE;
 		//case GDK_:
-		//	return    GENS_KEY_COMPOSE;
+		//	return GENS_KEY_COMPOSE;
 		case GDK_Help:
 			return GENS_KEY_HELP;
 		case GDK_Print:
@@ -737,14 +742,13 @@ static int gdk_to_sdl_keyval(int gdk_key)
 		case GDK_Menu:
 			return GENS_KEY_MENU;
 		//case GDK_:
-		//	return    GENS_KEY_POWER;
+		//	return GENS_KEY_POWER;
 		case GDK_EuroSign:
 			return GENS_KEY_EURO;
 		//case GDK_Undo:
-		//	return        GENS_KEY_UNDO;
+		//	return GENS_KEY_UNDO;
 		default:
 			//fprintf(stderr, "unknown gdk key\n");
 			return -1;
 	}
 }
-#endif

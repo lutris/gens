@@ -113,3 +113,13 @@ void GensUI::setWindowTitle_Init(const string& system, const bool reinit)
 {
 	setWindowTitle_withAppVersion(system + ": " + (reinit ? "Rei" : "I") + "nitializing, please wait...");
 }
+
+
+/**
+ * GensUI_update(): Update the Gens UI.
+ * Wrapper function for C code.
+ */
+void GensUI_update(void)
+{
+	GensUI::update();
+}
