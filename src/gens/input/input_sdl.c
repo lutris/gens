@@ -49,19 +49,19 @@ static unsigned int	input_sdl_get_key(void);
 static BOOL		input_sdl_joy_exists(int joy_num);
 
 // Miscellaneous.
-static gint GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
+static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
 static int gdk_to_sdl_keyval(int gdk_key);
 
 // Check an SDL joystick axis.
 static void input_sdl_check_joystick_axis(SDL_Event *event);
 
 // Internal variables.
-static int m_numJoysticks;	// Number of joysticks connected
-static SDL_Joystick *m_joy[6];	// SDL joystick structs
+static int input_sdl_num_joysticks;	// Number of joysticks connected
+static SDL_Joystick *input_sdl_joys[6];	// SDL joystick structs
 
 // Key and joystick state.
-static BOOL m_keys[1024];
-static BOOL m_joyState[0x530];
+static BOOL input_sdl_keys[1024];
+static BOOL input_sdl_joy_state[0x530];
 
 // Default keymap.
 static const input_keymap_t input_sdl_keymap_default[8] =
@@ -115,23 +115,26 @@ input_backend_t input_backend_sdl =
 };
 
 
-#if 0
-Input_SDL::Input_SDL()
+/**
+ * input_sdl_init(): Initialize the SDL input subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int input_sdl_init(void)
 {
-	// Initialize m_keys and m_joyState.
-	memset(m_keys, 0x00, sizeof(m_keys));
-	memset(m_joyState, 0x00, sizeof(m_joyState));
+	// Initialize the keys and joystick state arrays.
+	memset(input_sdl_keys, 0x00, sizeof(input_sdl_keys));
+	memset(input_sdl_joy_state, 0x00, sizeof(input_sdl_joy_state));
 	
 	// Install the GTK+ key snooper.
-	gtk_key_snooper_install(GDK_KeySnoop, this);
+	gtk_key_snooper_install(input_sdl_gdk_keysnoop, NULL);
 	
 	// Initialize joysticks.
-	m_numJoysticks = 0;
+	input_sdl_num_joysticks = 0;
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
 	{
 		// Error initializing SDL.
-		fprintf(stderr, "%s: Error initializing SDL's joystick handler: %s\n", __func__, SDL_GetError());
-		return;
+		fprintf(stderr, "%s(): Error initializing SDL's joystick handler: %s\n", __func__, SDL_GetError());
+		return -1;
 	}
 	
 	// If any joysticks are connected, set them up.
@@ -142,36 +145,45 @@ Input_SDL::Input_SDL()
 		
 		for (int i = 0; i < 6; i++)
 		{
-			m_joy[i] = SDL_JoystickOpen(i);
-			if (m_joy[i])
-				m_numJoysticks++;
+			input_sdl_joys[i] = SDL_JoystickOpen(i);
+			if (input_sdl_joys[i])
+				input_sdl_num_joysticks++;
 		}
 	}
-}
-
-
-Input_SDL::~Input_SDL()
-{
-	// If any joysticks were opened, close them.
-	for (int i = 0; i < 6; i++)
-	{
-		if (SDL_JoystickOpened(i))
-		{
-			SDL_JoystickClose(m_joy[i]);
-			m_joy[i] = NULL;
-		}
-	}
+	
+	// Joysticks initialized.
+	return 0;
 }
 
 
 /**
- * GDK_KeySnoop(): Keysnooping callback event for GTK+/GDK.
+ * input_sdl_end(): Shut down the SDL input subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int input_sdl_end(void)
+{
+	// If any joysticks were opened, close them.
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		if (SDL_JoystickOpened(i))
+		{
+			SDL_JoystickClose(input_sdl_joys[i]);
+			input_sdl_joys[i] = NULL;
+		}
+	}
+	
+	return 0;
+}
+
+
+/**
+ * input_sdl_gdk_keysnoop(): Keysnooping callback event for GTK+/GDK.
  * @param grab_widget Widget this key was snooped from.
  * @param event Event information.
  * @param func_data User data.
  * @return TRUE to stop processing this event; FALSE to allow GTK+ to process this event.
  */
-gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
+static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
 {
 	SDL_Event sdlev;
 	
@@ -210,6 +222,7 @@ gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_
 }
 
 
+#if 0
 /**
  * joyExists(): Check if the specified joystick exists.
  * @param joyNum Joystick number.
