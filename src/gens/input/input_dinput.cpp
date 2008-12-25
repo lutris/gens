@@ -83,7 +83,10 @@ static BOOL input_dinput_joystick_initialized;
 static BOOL input_dinput_joystick_error;
 static int input_dinput_num_joysticks;	// Number of joysticks connected
 static BOOL input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
+int input_dinput_set_cooperative_level_joysticks(HWND hWnd);
 
+// Miscellaneous DirectInput functions.
+static inline void input_dinput_restore_input(void);
 
 // Default keymap.
 const input_keymap_t input_dinput_keymap_default[8] =
@@ -213,12 +216,15 @@ int input_dinput_init(void)
 }
 
 
-Input_DInput::~Input_DInput()
+/**
+ * input_dinput_end(): Shut down the DirectInput subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int input_dinput_end(void)
 {
 	// If any joysticks were opened, close them.
-	int i;
 	if (!lpDI)
-		return;
+		return 0;
 	
 	if (lpDIDMouse)
 	{
@@ -232,7 +238,7 @@ Input_DInput::~Input_DInput()
 		lpDIDKeyboard = NULL;
 	}
 	
-	for (i = 0; i < MAX_JOYS; i++)
+	for (int i = 0; i < MAX_JOYS; i++)
 	{
 		if (input_dinput_joy_id[i])
 		{
@@ -245,6 +251,9 @@ Input_DInput::~Input_DInput()
 	input_dinput_num_joysticks = 0;
 	lpDI->Release();
 	lpDI = NULL;
+	
+	// DirectInput shut down.
+	return 0;
 }
 
 
@@ -274,11 +283,13 @@ int input_dinput_init_joysticks(HWND hWnd)
 	input_dinput_joystick_initialized = true;
 	
 	HRESULT rval;
-	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &input_dinput_init_joysticks_enum, hWnd, DIEDFL_ATTACHEDONLY);
+	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK,
+				 (LPDIENUMDEVICESCALLBACK)(&input_dinput_init_joysticks_enum),
+				 hWnd, DIEDFL_ATTACHEDONLY);
 	if (rval != DI_OK)
 	{
 		input_dinput_joystick_error = true;
-		GensUI::msgBox("Input_DInput::initJoysticks(): EnumDevices() failed.",
+		GensUI::msgBox("input_dinput_init_joysticks(): EnumDevices() failed.",
 			       "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
 		// TODO: Error handling.
 		return -2;
@@ -374,7 +385,10 @@ static BOOL input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOI
 }
 
 
-void Input_DInput::restoreInput(void)
+/**
+ * input_dinput_restore_input(): Restore DirectInput.
+ */
+static inline void input_dinput_restore_input(void)
 {
 	//lpDIDMouse->Acquire();
 	lpDIDKeyboard->Acquire();
@@ -382,28 +396,28 @@ void Input_DInput::restoreInput(void)
 
 
 /**
- * joyExists(): Check if the specified joystick exists.
+ * input_dinput_joy_exists(): Check if the specified joystick exists.
  * @param joyNum Joystick number.
  * @return true if the joystick exists; false if it does not exist.
  */
-bool Input_DInput::joyExists(int joyNum)
+BOOL input_dinput_joy_exists(int joyNum)
 {
 	if (joyNum < 0 || joyNum >= MAX_JOYS)
-		return false;
+		return FALSE;
 	
 	if (input_dinput_joy_id[joyNum])
-		return true;
+		return TRUE;
 	
 	// Joystick does not exist.
-	return false;
+	return FALSE;
 }
 
 
 /**
- * getKey(): Get a key. (Used for controller configuration.)
+ * input_dinput_get_key(): Get a key. (Used for controller configuration.)
  * @return Key value.
  */
-unsigned int Input_DInput::getKey(void)
+unsigned int input_dinput_get_key(void)
 {
 	int i, j, joyIndex;
 	
@@ -418,43 +432,43 @@ unsigned int Input_DInput::getKey(void)
 	while (true)
 	{
 		// Compute the current state of all buttons.
-		update();
+		input_dinput_update();
 		
 		// Current state of DirectInput keys
 		for (i = 0; i < 256; i++)
-			curDiKeys[i] = (m_DIKeys[i] & 0x80);
+			curDiKeys[i] = (input_dinput_keys[i] & 0x80);
 		
 		// Current state of recognized buttons on joypad
 		joyIndex = 0;
 		for (i = 0; i < input_dinput_num_joysticks; i++)
 		{
-			if (!joyExists(i))
+			if (!input_dinput_joy_exists(i))
 				continue;
 			
-			curJoyKeys[joyIndex++] = (m_joyState[i].lY < -500);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lY > +500);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lX < -500);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lX > +500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lY < -500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lY > +500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lX < -500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lX > +500);
 			
 			for (j = 0; j < 4; j++)
 			{
-				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 0);
-				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 9000);
-				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 18000);
-				curJoyKeys[joyIndex++] = (m_joyState[i].rgdwPOV[j] == 27000);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 0);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 9000);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 18000);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 27000);
 			}
 			
 			for (j = 0; j < 32; j++)
 			{
-				curJoyKeys[joyIndex++] = (m_joyState[i].rgbButtons[j]);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgbButtons[j]);
 			}
 			
-			curJoyKeys[joyIndex++] = (m_joyState[i].lRx < 0x3FFF);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lRx > 0xBFFF);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lRy < 0x3FFF);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lRy > 0xBFFF);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lZ < 0x3FFF);
-			curJoyKeys[joyIndex++] = (m_joyState[i].lZ > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRx < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRx > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRy < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRy > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lZ < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lZ > 0xBFFF);
 		}
 		
 		// Compare buttons against the previous state to determine
@@ -477,7 +491,7 @@ unsigned int Input_DInput::getKey(void)
 					int joyIndex2 = 0;
 					for (i = 0; i < input_dinput_num_joysticks; i++)
 					{
-						if (!joyExists(i))
+						if (!input_dinput_joy_exists(i))
 							continue;
 						
 						if (index == joyIndex2++)
@@ -555,33 +569,37 @@ unsigned int Input_DInput::getKey(void)
 
 
 /**
- * update(): Update the input subsystem.
+ * input_dinput_update(): Update the input subsystem.
+ * @return 0 on success; non-zero on error.
  */
-void Input_DInput::update(void)
+int input_dinput_update(void)
 {
 	//DIMOUSESTATE MouseState;
 	HRESULT rval;
-	int i;
 	
-	rval = lpDIDKeyboard->GetDeviceState(256, &m_DIKeys);
+	rval = lpDIDKeyboard->GetDeviceState(256, &input_dinput_keys);
 	
 	// HACK because DirectInput is totally wacky about recognizing the PAUSE/BREAK key
 	// still not perfect with this, but at least it goes above a 25% success rate
 	if(GetAsyncKeyState(VK_PAUSE)) // normally this should have & 0x8000, but apparently this key is too special for that to work
-		m_DIKeys[0xC5] |= 0x80;
+		input_dinput_keys[0xC5] |= 0x80;
 	
 	if ((rval == DIERR_INPUTLOST) | (rval == DIERR_NOTACQUIRED))
-		restoreInput();
+		input_dinput_restore_input();
 	
-	for (i = 0; i < input_dinput_num_joysticks; i++)
+	for (int i = 0; i < input_dinput_num_joysticks; i++)
 	{
 		if (input_dinput_joy_id[i])
 		{
 			input_dinput_joy_id[i]->Poll();
-			rval = input_dinput_joy_id[i]->GetDeviceState(sizeof(m_joyState[i]), &m_joyState[i]);
+			rval = input_dinput_joy_id[i]->GetDeviceState(sizeof(input_dinput_joy_state[i]), &input_dinput_joy_state[i]);
 			if (rval != DI_OK) input_dinput_joy_id[i]->Acquire();
 		}
 	}
+	
+	return 0;
+	
+	// TODO: Figure out what to do with the rest of this function.
 	
 	//rval = lpDIDMouse->GetDeviceState(sizeof(MouseState), &MouseState);
 	
@@ -630,15 +648,15 @@ void Input_DInput::update(void)
 
 
 /**
- * checkKeyPressed(): Checks if the specified key is pressed.
+ * input_dinput_check_key_pressed(): Checks if the specified key is pressed.
  * @param key Key to check.
- * @return True if the key is pressed.
+ * @return TRUE if the key is pressed; FALSE if the key is not pressed.
  */
-bool Input_DInput::checkKeyPressed(unsigned int key)
+BOOL input_dinput_check_key_pressed(unsigned int key)
 {
 	// If the key value is <256, it's a keyboard key.
 	if (key < 0x100)
-		return (m_DIKeys[key] & 0x80);
+		return ((input_dinput_keys[key] & 0x80) ? TRUE : FALSE);
 	
 	// Joystick "key" check.
 	
@@ -646,42 +664,42 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 	int joyNum = ((key >> 8) & 0xF);
 	
 	// Check that this joystick exists.
-	if (!joyExists(joyNum))
-		return false;
+	if (!input_dinput_joy_exists(joyNum))
+		return FALSE;
 	
 	// Joystick exists. Check the state.
 	if (key & 0x80)
 	{
 		// Joystick POV
-		int value = m_joyState[joyNum].rgdwPOV[(key >> 4) & 3];
+		int value = input_dinput_joy_state[joyNum].rgdwPOV[(key >> 4) & 3];
 		if (value == -1)
-			return false;
+			return FALSE;
 		
 		switch (key & 0xF)
 		{
 			case 1:
 				if (value >= 29250 || value <= 6750)
-					return true;
+					return TRUE;
 				break;
 			case 2:
 				if (value >= 2250 && value <= 15750)
-					return true;
+					return TRUE;
 				break;
 			case 3:
 				if (value >= 11250 && value <= 24750)
-					return true;
+					return TRUE;
 				break;
 			case 4:
 				if (value >= 20250 && value <= 33750)
-					return true;
+					return TRUE;
 				break;
 		}
 	}
 	else if (key & 0x70)
 	{
 		// Joystick buttons
-		if (m_joyState[joyNum].rgbButtons[(key & 0xFF) - 0x10])
-			return true;
+		if (input_dinput_joy_state[joyNum].rgbButtons[(key & 0xFF) - 0x10])
+			return TRUE;
 	}
 	else
 	{
@@ -689,65 +707,66 @@ bool Input_DInput::checkKeyPressed(unsigned int key)
 		switch (key & 0xF)
 		{
 			case 1:
-				if (m_joyState[joyNum].lY < -500)
-					return true;
+				if (input_dinput_joy_state[joyNum].lY < -500)
+					return TRUE;
 				break;
 			case 2:
-				if (m_joyState[joyNum].lY > +500)
-					return true;
+				if (input_dinput_joy_state[joyNum].lY > +500)
+					return TRUE;
 				break;
 			case 3:
-				if (m_joyState[joyNum].lX < -500)
-					return true;
+				if (input_dinput_joy_state[joyNum].lX < -500)
+					return TRUE;
 				break;
 			case 4:
-				if (m_joyState[joyNum].lX > +500)
-					return true;
+				if (input_dinput_joy_state[joyNum].lX > +500)
+					return TRUE;
 				break;
 			case 5:
-				if (m_joyState[joyNum].lRx < 0x3FFF)
-					return true;
+				if (input_dinput_joy_state[joyNum].lRx < 0x3FFF)
+					return TRUE;
 				break;
 			case 6:
-				if (m_joyState[joyNum].lRx > 0xBFFF)
-					return true;
+				if (input_dinput_joy_state[joyNum].lRx > 0xBFFF)
+					return TRUE;
 				break;
 			case 7:
-				if (m_joyState[joyNum].lRy < 0x3FFF)
-					return true;
+				if (input_dinput_joy_state[joyNum].lRy < 0x3FFF)
+					return TRUE;
 				break;
 			case 8:
-				if (m_joyState[joyNum].lRy > 0xBFFF)
-					return true;
+				if (input_dinput_joy_state[joyNum].lRy > 0xBFFF)
+					return TRUE;
 				break;
 			case 9:
-				if (m_joyState[joyNum].lZ < 0x3FFF)
-					return true;
+				if (input_dinput_joy_state[joyNum].lZ < 0x3FFF)
+					return TRUE;
 				break;
 			case 10:
-				if (m_joyState[joyNum].lZ > 0xBFFF)
-					return true;
+				if (input_dinput_joy_state[joyNum].lZ > 0xBFFF)
+					return TRUE;
 				break;
 		}
 	}
 	
 	// Key is not pressed.
-	return false;
+	return FALSE;
 }
 
 
 /**
- * setCooperativeLevel(): Sets the cooperative level.
+ * input_dinput_set_cooperative_level(): Sets the cooperative level.
  * @param hWnd Window to set the cooperative level on.
+ * @return 0 on success; non-zero on error.
  */
-void Input_DInput::setCooperativeLevel(HWND hWnd)
+int input_dinput_set_cooperative_level(HWND hWnd)
 {
 	// If no hWnd was specified, use the Gens window.
 	if (!hWnd)
 		hWnd = Gens_hWnd;
 	
 	if (!hWnd || !lpDIDKeyboard /*|| lpDIDMouse*/)
-		return;
+		return -1;
 	
 	HRESULT rval;
 	//rval = lpDIDMouse->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
@@ -761,14 +780,17 @@ void Input_DInput::setCooperativeLevel(HWND hWnd)
 	{
 		fprintf(stderr, "%s(): lpDIDKeyboard->SetCooperativeLevel() succeeded.\n", __func__);
 	}
+	
+	return 0;
 }
 
 
 /**
- * setCooperativeLevel_Joysticks(): Sets the cooperative level on joysticks.
+ * input_dinput_set_cooperative_level_joysticks(): Sets the cooperative level on joysticks.
  * @param hWnd Window to set the cooperative level on.
+ * @return 0 on success; non-zero on error.
  */
-void Input_DInput::setCooperativeLevel_Joysticks(HWND hWnd)
+int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 {
 	// If no hWnd was specified, use the Gens window.
 	if (!hWnd)
@@ -793,4 +815,6 @@ void Input_DInput::setCooperativeLevel_Joysticks(HWND hWnd)
 			fprintf(stderr, "%s(): SetCooperativeLevel() succeeded on joystick %d.\n", __func__, i);
 		}
 	}
+	
+	return 0;
 }
