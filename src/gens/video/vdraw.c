@@ -125,14 +125,14 @@ static float	vdraw_fps_value = 0;
 static float	vdraw_fps_frames[8] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 static uint32_t	vdraw_fps_old_time = 0, vdraw_fps_view = 0, vdraw_fps_index = 0;
 static uint32_t	vdraw_fps_freq_cpu[2] = {0, 0}, vdraw_fps_new_time[2] = {0, 0};
-vdraw_style_t	vdraw_fps_style = {0, 0, 0, FALSE, FALSE};
+vdraw_style_t	vdraw_fps_style;
 
 // On-screen message.
 static BOOL	vdraw_msg_enabled = TRUE;
 char		vdraw_msg_text[1024];
 BOOL		vdraw_msg_visible = FALSE;
 static uint32_t	vdraw_msg_time = 0;
-vdraw_style_t	vdraw_msg_style = {0, 0, 0, FALSE, FALSE};
+vdraw_style_t	vdraw_msg_style;
 
 // Screen border.
 int		vdraw_border_h = 0, vdraw_border_h_old = ~0;
@@ -152,7 +152,13 @@ int		vdraw_16to32_pitch;
  */
 int vdraw_init(void)
 {
-	// TODO: Do something here.
+	// Calculate the initial text styles.
+	memset(&vdraw_fps_style, 0x00, sizeof(vdraw_fps_style));
+	memset(&vdraw_msg_style, 0x00, sizeof(vdraw_msg_style));
+	calc_text_style(&vdraw_fps_style);
+	calc_text_style(&vdraw_msg_style);
+	
+	// Initialized.
 	return 0;
 }
 
@@ -279,7 +285,9 @@ int vdraw_backend_end(void)
 	if (!vdraw_cur_backend)
 		return 1;
 	
-	vdraw_cur_backend->end();
+	if (vdraw_cur_backend->end)
+		vdraw_cur_backend->end();
+	
 	vdraw_cur_backend = NULL;
 	return 0;
 }

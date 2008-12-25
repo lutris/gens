@@ -98,11 +98,11 @@ extern "C"
 // Non-Menu Command Definitions
 #include "gens_window_cmds.h"
 
-#include "video/vdraw_ddraw_t.h"
-#include "input/input_dinput.hpp"
-
-// VDraw C++ functions.
+// Video, Audio, Input.
+#include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
+#include "input/input.h"
+#include "input/input_dinput.hpp"
 
 static bool paintsEnabled = true;
 
@@ -170,16 +170,13 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			break;
 		
 		case WM_ACTIVATE:
-			if (!input)
-				break;
-			
 			if (LOWORD(wParam) != WA_INACTIVE)
 			{
 				// Set the DirectInput cooperative level.
-				reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
+				input_set_cooperative_level(hWnd);
 				
 				// Initialize joysticks.
-				reinterpret_cast<Input_DInput*>(input)->initJoysticks(hWnd);
+				input_dinput_init_joysticks(hWnd);
 				
 				// Auto Pause - reactivate the game.
 				Active = 1;

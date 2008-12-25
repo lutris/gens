@@ -73,7 +73,8 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
-// VDraw C++ functions.
+// Video Drawing.
+#include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
 
 // For some reason, these aren't extern'd anywhere...

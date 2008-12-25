@@ -7,6 +7,8 @@
 
 #include "audio.hpp"
 
+#include <stdint.h>
+
 class Audio_SDL : public Audio
 {
 	public:
@@ -18,8 +20,8 @@ class Audio_SDL : public Audio
 		void endSound(void);
 		
 		// Audio callback functions.
-		static void AudioCallback(void *user, Uint8 *buffer, int len);
-		void audioCallback_int(Uint8 *buffer, int len);
+		static void AudioCallback(void *user, uint8_t *buffer, int len);
+		void audioCallback_int(uint8_t *buffer, int len);
 		
 		// Miscellaneous functions that need to be sorted through.
 		int getCurrentSeg(void);

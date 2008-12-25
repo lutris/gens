@@ -38,7 +38,7 @@ GtkWidget *controller_config_window = NULL;
 
 
 // Internal copy of Keys_Def[], which is copied when OK is clicked.
-struct KeyMap keyConfig[8];
+input_keymap_t keyConfig[8];
 
 
 static void AddControllerVBox(GtkWidget *vbox, int port);

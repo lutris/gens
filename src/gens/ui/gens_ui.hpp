@@ -52,6 +52,12 @@ typedef enum
 void Win32_ClearSoundBuffer(void);
 #endif /* GENS_OS_WIN32 */
 
+/**
+ * GensUI_update(): Update the Gens UI.
+ * Wrapper function for C code.
+ */
+void GensUI_update(void);
+
 #ifdef __cplusplus
 }
 #endif

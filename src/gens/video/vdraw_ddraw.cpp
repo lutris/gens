@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include "vdraw.h"
 #include "vdraw_ddraw.hpp"
 
 #include "emulator/g_main.hpp"
+#include "util/file/rom.hpp"
 
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"
@@ -70,11 +72,11 @@ static LPDIRECTDRAWCLIPPER lpDDC_Clipper = NULL;
 
 // Miscellaneous DirectDraw-specific functions.
 static HRESULT vdraw_ddraw_restore_graphics(void);
-static void vdraw_ddraw_calc_draw_area(RECT &RectDest, RECT &RectSrc, float &Ratio_X, float &Ratio_Y, int &Dep);
+static void vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
 static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const BOOL lock);
 
 // Border drawing.
-static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, RECT *pRectDest);
+static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest);
 static DDBLTFX ddbltfx_Border_Color;
 
 
@@ -488,7 +490,7 @@ int vdraw_ddraw_clear_back_screen(void)
  * @param Ratio_Y [out] Y ratio.
  * @param Dep [out] Horizontal border.
  */
-static void vdraw_ddraw_calc_draw_area(RECT &RectDest, RECT &RectSrc, float &Ratio_X, float &Ratio_Y, int &Dep)
+static void vdraw_ddraw_calc_draw_area(RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep)
 {
 	Ratio_X = (float)RectDest.right / 320.0f;  //Upth-Modif - why use two lines of code
 	Ratio_Y = (float)RectDest.bottom / 240.0f; //Upth-Modif - when you can do this?
@@ -781,7 +783,7 @@ int vdraw_ddraw_flip(void)
 				lpDDS_Blit->Unlock(NULL);
 				
 				// Draw the border.
-				vdraw_ddraw_draw_border(&ddsd, lpDDS_Blit, &RectDest);
+				vdraw_ddraw_draw_border(&ddsd, lpDDS_Blit, RectDest);
 				
 				if (Video.VSync_FS)
 				{
@@ -822,12 +824,12 @@ int vdraw_ddraw_flip(void)
 				if (Video.VSync_FS)
 				{
 					lpDDS_Flip->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
-					vdraw_ddraw_draw_border(&ddsd, lpDDS_Flip, &RectDest);
+					vdraw_ddraw_draw_border(&ddsd, lpDDS_Flip, RectDest);
 					lpDDS_Primary->Flip(NULL, DDFLIP_WAIT);
 				}
 				else
 				{
-					vdraw_ddraw_draw_border(&ddsd, lpDDS_Primary, &RectDest);
+					vdraw_ddraw_draw_border(&ddsd, lpDDS_Primary, RectDest);
 					lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, DDBLT_WAIT | DDBLT_ASYNC, NULL);
 					//lpDDS_Primary->Blt(&RectDest, lpDDS_Back, &RectSrc, NULL, NULL);
 				}
@@ -895,7 +897,7 @@ int vdraw_ddraw_flip(void)
 			curBlit->Unlock(NULL);
 			
 			// Draw the border.
-			vdraw_ddraw_draw_border(&ddsd, curBlit, &RectDest);
+			vdraw_ddraw_draw_border(&ddsd, curBlit, RectDest);
 			
 			if (curBlit == lpDDS_Back) // note: this can happen in windowed fullscreen, or if CORRECT_256_ASPECT_RATIO is defined and the current display mode is 256 pixels across
 			{
@@ -977,7 +979,7 @@ int vdraw_ddraw_flip(void)
 				
 				vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
 				vdraw_rInfo.destPitch = vdraw_16to32_pitch;
-				vdraw_blitFS(&vdraw_rInfo);
+				vdraw_blitW(&vdraw_rInfo);
 				
 				vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
 						    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
@@ -1003,7 +1005,7 @@ int vdraw_ddraw_flip(void)
 		ClientToScreen(Gens_hWnd, &p);
 		
 		// Draw the border.
-		vdraw_ddraw_draw_border(&ddsd, lpDDS_Primary, &RectDest);
+		vdraw_ddraw_draw_border(&ddsd, lpDDS_Primary, RectDest);
 		
 		RectDest.top += p.y; //Upth-Modif - this part moves the picture into the window
 		RectDest.bottom += p.y; //Upth-Modif - I had to move it after all of the centering
@@ -1034,10 +1036,17 @@ cleanup_flip:
 }
 
 
-static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, RECT *pRectDest)
+/**
+ * vdraw_ddraw_draw_border(): Draw the border color.
+ * Called from vdraw_ddraw_flip().
+ * @param pddsd
+ * @param lpDDS_Surface
+ * @param RectDest Destination rectangle.
+ */
+static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 lpDDS_Surface, const RECT& RectDest)
 {
 	uint8_t stretch = vdraw_get_stretch();
-	if (stretch == STRETCH_FULL || !pRectDest)
+	if (stretch == STRETCH_FULL)
 		return;
 	
 	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
@@ -1084,39 +1093,37 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 	
 	RECT rectBorder;
 	
-	if ((VDP_Num_Vis_Lines < 240) && !(stretch & STRETCH_V))
+	int drawHeight = RectDest.bottom - RectDest.top;
+	int viewHeight = rectDD.bottom - rectDD.top;
+	if ((viewHeight > drawHeight) && !(stretch & STRETCH_V))
 	{
 		// Vertical stretch is disabled.
-		int height = pRectDest->bottom - pRectDest->top;
 		
 		// Draw top border.
 		rectBorder = rectDD;
-		rectBorder.bottom -= height;
-		rectBorder.bottom = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
+		rectBorder.bottom = ((viewHeight - drawHeight) / 2) + rectBorder.top;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 		
 		// Draw bottom border.
 		rectBorder = rectDD;
-		rectBorder.top += height;
-		rectBorder.top = ((rectBorder.bottom - rectBorder.top) / 2) + rectBorder.top;
+		rectBorder.top = ((viewHeight - drawHeight) / 2) + rectBorder.top + drawHeight;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 	}
 	
-	if (!isFullXRes() && !(stretch & STRETCH_H))
+	int drawWidth = RectDest.right - RectDest.left;
+	int viewWidth = rectDD.right - rectDD.left;
+	if ((viewWidth > drawWidth) && !(stretch & STRETCH_H))
 	{
 		// Horizontal stretch is disabled.
-		int width = pRectDest->right - pRectDest->left;
 		
 		// Draw left border.
 		rectBorder = rectDD;
-		rectBorder.right -= width;
-		rectBorder.right = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
+		rectBorder.right = ((viewWidth - drawWidth) / 2) + rectBorder.left;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 		
 		// Draw bottom border.
 		rectBorder = rectDD;
-		rectBorder.left += width;
-		rectBorder.left = ((rectBorder.right - rectBorder.left) / 2) + rectBorder.left;
+		rectBorder.left = ((viewWidth - drawWidth) / 2) + rectBorder.left + drawWidth;
 		lpDDS_Surface->Blt(&rectBorder, NULL, NULL, DDBLT_WAIT | DDBLT_COLORFILL, &ddbltfx_Border_Color);
 	}
 }

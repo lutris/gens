@@ -27,12 +27,11 @@ using std::list;
 #include "util/file/config_file.hpp"
 #include "util/sound/gym.hpp"
 
+// Video, Audio, Input.
 #include "video/vdraw_sdl.h"
-#include "input/input_sdl.hpp"
-#include "audio/audio_sdl.hpp"
-
-// VDraw C++ functions.
 #include "video/vdraw_cpp.hpp"
+#include "audio/audio_sdl.hpp"
+#include "input/input_sdl.h"
 
 #include "gens/gens_window_sync.hpp"
 
@@ -106,8 +105,8 @@ int main(int argc, char *argv[])
 	vdraw_init();
 	vdraw_backend_init_subsystem(VDRAW_BACKEND_SDL);
 	
-	// Initialize the input object.
-	input = new Input_SDL();
+	// Initialize input_sdl.
+	input_init(INPUT_BACKEND_SDL);
 	
 	// Initialize the audio object.
 	audio = new Audio_SDL();
@@ -117,7 +116,7 @@ int main(int argc, char *argv[])
 	{
 		// Error initializing settings.
 		delete audio;
-		delete input;
+		input_end();
 		vdraw_end();
 		return 1;	// TODO: Replace with a better error code.
 	}

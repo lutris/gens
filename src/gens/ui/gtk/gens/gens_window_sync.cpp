@@ -43,6 +43,7 @@ using std::deque;
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
 #include "segacd/cd_sys.hpp"
+#include "util/file/rom.hpp"
 #include "util/sound/gym.hpp"
 
 #include "gens_core/vdp/vdp_io.h"
@@ -65,6 +66,9 @@ using std::deque;
 
 // File management functions.
 #include "util/file/file.hpp"
+
+// Video Drawing.
+#include "video/vdraw.h"
 
 
 // Internal functions.

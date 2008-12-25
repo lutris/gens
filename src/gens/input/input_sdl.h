@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Controller Configuration Window.                           *
+ * Gens: Input Handler - SDL Backend.                                      *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,22 +20,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_CONTROLLER_CONFIG_WINDOW_H
-#define GTK_CONTROLLER_CONFIG_WINDOW_H
+#ifndef GENS_INPUT_SDL_H
+#define GENS_INPUT_SDL_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "input/input.h"
-#include <gtk/gtk.h>
+#include "input.h"
 
-GtkWidget* create_controller_config_window(void); 
-extern GtkWidget *controller_config_window;
-extern input_keymap_t keyConfig[8];
+extern input_backend_t input_backend_sdl;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* GENS_INPUT_SDL_H */

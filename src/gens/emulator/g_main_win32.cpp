@@ -18,8 +18,8 @@
 #include "util/file/config_file.hpp"
 #include "util/sound/gym.hpp"
 
-#include "video/vdraw_ddraw_t.h"
-#include "input/input_dinput.hpp"
+#include "video/vdraw.h"
+#include "input/input.h"
 #include "audio/audio_dsound.hpp"
 
 // VDraw C++ functions.
@@ -149,11 +149,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	vdraw_backend_init_subsystem(VDRAW_BACKEND_DDRAW);
 	
 	// Initialize the input object.
-	try
-	{
-		input = new Input_DInput();
-	}
-	catch (LRESULT rval)
+	int rval = input_init(INPUT_BACKEND_DINPUT);
+	if (rval != 0)
 	{
 		// DirectInput could not be initialized for some reason.
 		exit(rval);
@@ -167,7 +164,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	{
 		// Error initializing settings.
 		delete audio;
-		delete input;
+		input_end();
 		vdraw_end();
 		return 1;	// TODO: Replace with a better error code.
 	}

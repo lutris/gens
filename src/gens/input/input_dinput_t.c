@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Controller Configuration Window.                           *
+ * Gens: Input Handler - DirectInput 5 Backend. (input_backend_t struct)   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,22 +20,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_CONTROLLER_CONFIG_WINDOW_H
-#define GTK_CONTROLLER_CONFIG_WINDOW_H
+#include "input_dinput_t.h"
+#include "input_dinput.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "input/input.h"
-#include <gtk/gtk.h>
-
-GtkWidget* create_controller_config_window(void); 
-extern GtkWidget *controller_config_window;
-extern input_keymap_t keyConfig[8];
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+// Input Backend struct.
+input_backend_t input_backend_dinput =
+{
+	.init = input_dinput_init,
+	.end = input_dinput_end,
+	
+	.keymap_default = &input_dinput_keymap_default[0],
+	
+	.update = input_dinput_update,
+	.check_key_pressed = input_dinput_check_key_pressed,
+	.get_key = input_dinput_get_key,
+	.joy_exists = input_dinput_joy_exists,
+	
+	// Win32-specific functions.
+	.set_cooperative_level = input_dinput_set_cooperative_level
+};

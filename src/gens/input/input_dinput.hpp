@@ -23,39 +23,32 @@
 #ifndef GENS_INPUT_DINPUT_HPP
 #define GENS_INPUT_DINPUT_HPP
 
-#include "input.hpp"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <windows.h>
-#include <dinput.h>
-//#include <mmsystem.h>
+#include "macros/bool_m.h"
+#include "input.h"
 
-// Wine's headers are missing these definitions...
-#ifndef IID_IDirectInputDevice2
-#ifdef UNICODE
-#define IID_IDirectInputDevice2 IID_IDirectInputDevice2W
-#else
-#define IID_IDirectInputDevice2 IID_IDirectInputDevice2A
-#endif /* UNICODE */
-#endif /* IID_IDirectInputDevice2 */
+// Function prototypes.
+int		input_dinput_init(void);
+int		input_dinput_end(void);
 
-#ifndef IDirectInputDevice2
-#ifdef UNICODE
-#define IDirectInputDevice2 IDirectInputDevice2W
-#else
-#define IDirectInputDevice2 IDirectInputDevice2A
-#endif /* UNICODE */
-#endif /* IDirectInputDevice2 */
+int		input_dinput_update(void);
+BOOL		input_dinput_check_key_pressed(unsigned int key);
+unsigned int	input_dinput_get_key(void);
+BOOL		input_dinput_joy_exists(int joy_num);
 
-#ifndef IDirectInputDevice2Vtbl
-#ifdef UNICODE
-#define IDirectInputDevice2Vtbl IDirectInputDevice2WVtbl
-#else
-#define IDirectInputDevice2Vtbl IDirectInputDevice2AVtbl
-#endif /* UNICODE */
-#endif /* IDirectInputDevice2Vtbl */
+// Win32-specific functions.
+int		input_dinput_set_cooperative_level(HWND hWnd);
 
-#define MAX_JOYS 8
+// Win32-specific functions not used in input_backend_t.
+int		input_dinput_init_joysticks(HWND hWnd);
 
+// Default keymap.
+extern const input_keymap_t input_dinput_keymap_default[8];
+
+#if 0
 class Input_DInput : public Input
 {
 	public:
@@ -113,5 +106,10 @@ class Input_DInput : public Input
 		bool joysticksInitialized;
 		bool joystickError;
 };
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

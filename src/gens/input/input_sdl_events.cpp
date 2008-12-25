@@ -1,17 +1,37 @@
-/**
- * Gens: Input handler.
- */
+/***************************************************************************
+ * Gens: Input Handler - SDL Backend. (Events)                             *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
+#include "input_sdl_events.hpp"
+
+// C includes.
 #include <cstring>
 
-#include "g_input.hpp"
-#include "g_main.hpp"
-#include "g_mcd.hpp"
-#include "options.hpp"
+#include "emulator/g_main.hpp"
+#include "emulator/g_mcd.hpp"
+#include "emulator/options.hpp"
 #include "util/file/save.hpp"
 #include "util/sound/gym.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -39,8 +59,10 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
-// VDraw C++ functions.
+// Video, Audio, Input.
+#include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
+#include "input/input.h"
 
 // C++ includes.
 #include <list>
@@ -54,14 +76,11 @@ static int mod = 0;
 
 
 /**
- * Input_KeyDown(): Check if a key is pressed.
+ * input_sdl_event_key_down(): Check if a key is pressed.
  * @param key Keycode.
  */
-void Input_KeyDown(int key)
+void input_sdl_event_key_down(int key)
 {
-#ifdef GENS_OS_UNIX
-	string filename;
-	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -207,13 +226,13 @@ void Input_KeyDown(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				filename = Savestate::SelectFile(true, State_Dir);
+				string filename = Savestate::SelectFile(true, State_Dir);
 				if (!filename.empty())
 					Savestate::SaveState(filename);
 			}
 			else if (!mod)
 			{
-				filename = Savestate::GetStateFilename();
+				string filename = Savestate::GetStateFilename();
 				Savestate::SaveState(filename);
 			}
 			break;
@@ -242,13 +261,13 @@ void Input_KeyDown(int key)
 			
 			if (mod == KMOD_SHIFT)
 			{
-				filename = Savestate::SelectFile(false, State_Dir);
+				string filename = Savestate::SelectFile(false, State_Dir);
 				if (!filename.empty())
 					Savestate::LoadState(filename);
 			}
 			else if (!mod)
 			{
-				filename = Savestate::GetStateFilename();
+				string filename = Savestate::GetStateFilename();
 				Savestate::LoadState(filename);
 			}
 			break;
@@ -463,19 +482,16 @@ void Input_KeyDown(int key)
 	if (Debug != DEBUG_NONE)
 		Debug_Event(key, mod);
 #endif /* GENS_DEBUGGER */
-
-#endif /* GENS_OS_UNIX */
 }
 
 
 /**
- * Input_KeyUp(): Check if a key is released.
+ * input_sdl_event_key_up(): Check if a key is released.
  * @param key Keycode.
  */
-void Input_KeyUp(int key)
+void input_sdl_event_key_up(int key)
 {
-#ifdef GENS_OS_UNIX
-	switch(key)
+	switch (key)
 	{
 		case GENS_KEY_LCTRL:
 			mod &= ~GENS_KMOD_LCTRL;
@@ -501,5 +517,4 @@ void Input_KeyUp(int key)
 		default:
 			break;
 	}
-#endif /* GENS_OS_UNIX */
 }

@@ -3,10 +3,6 @@
 
 #include "gens.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -18,6 +14,11 @@ extern "C" {
 #include "g_main_win32.hpp"
 #else
 #error Unsupported operating system.
+#endif
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 
@@ -195,9 +196,6 @@ void GensMainLoop(void);
 #include "mdp/mdp_render.h"
 MDP_Render_t* get_mdp_render_t(void);
 
-// Back to C!
-#include "video/vdraw.h"
-
 #ifdef __cplusplus
 }
 #endif
@@ -205,10 +203,6 @@ MDP_Render_t* get_mdp_render_t(void);
 #ifdef __cplusplus
 
 // C++ classes
-
-// New Input object
-#include "input/input.hpp"
-extern Input *input;
 
 // New Audio object
 #include "audio/audio.hpp"
@@ -221,4 +215,4 @@ extern std::list<MDP_Render_t*>::iterator rendMode_W;
 
 #endif
 
-#endif
+#endif /* G_MAIN_HPP */

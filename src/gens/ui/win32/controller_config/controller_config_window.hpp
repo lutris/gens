@@ -27,14 +27,14 @@
 extern "C" {
 #endif
 
-#include "input/input.hpp"
+#include "input/input.h"
 #include <windows.h>
 
 HWND create_controller_config_window(void); 
 extern HWND controller_config_window;
 void Controller_Config_Window_CreateChildWindows(HWND hWnd);
 
-extern struct KeyMap keyConfig[8];
+extern input_keymap_t keyConfig[8];
 
 // Controls
 extern HWND cc_chkTeamPlayer[2];

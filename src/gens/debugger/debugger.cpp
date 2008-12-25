@@ -4,7 +4,6 @@
 #include "emulator/g_main.hpp"
 #include "emulator/g_md.hpp"
 #include "emulator/g_32x.hpp"
-#include "emulator/g_input.hpp"
 #include "gens_core/misc/misc.h"
 #include "ui/gens_ui.hpp"
 
@@ -39,6 +38,10 @@
 #include "segacd/cd_sys.hpp"
 #include "gens_core/gfx/gfx_cd.h"
 #include "mcd_cell_dump.h"
+
+// Input functions.
+#include "input/input.h"
+
 
 static int Current_32X_FB = 0;
 static int adr_mem = 0, pattern_adr = 0, cd_pattern_adr = 0, pattern_pal = 0;

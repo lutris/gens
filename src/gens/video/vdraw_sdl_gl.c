@@ -34,6 +34,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include "ui/gtk/gtk-misc.h"
+#include "util/file/rom.hpp"
 
 // Gens window.
 #include "gens/gens_window.hpp"

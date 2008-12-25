@@ -1,12 +1,13 @@
 #ifndef GENS_ROM_HPP
 #define GENS_ROM_HPP
 
+#include "emulator/gens.hpp"
+
+#include <stdlib.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "emulator/gens.hpp"
-#include <stdlib.h>
 
 typedef struct _ROM_t
 {
@@ -92,6 +93,7 @@ class ROM
 		static void fillROMInfo(void);
 		static unsigned short calcChecksum(void);
 };
+
 #endif /* __cplusplus */
 
 #ifdef __cplusplus

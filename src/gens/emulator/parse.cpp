@@ -67,6 +67,10 @@
 // File management functions.
 #include "util/file/file.hpp"
 
+// Video, Audio, Input.
+#include "video/vdraw.h"
+#include "input/input.h"
+
 // Include this *last* to avoid naming conflicts.
 #include "parse.hpp"
 
@@ -484,11 +488,11 @@ void parseArgs(int argc, char **argv)
 		// Other options that can't be handled by macros.
 		if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][0]))
 		{
-			vdraw_set_stretch(TRUE);
+			vdraw_set_stretch(true);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STRETCH][1]))
 		{
-			vdraw_set_stretch(FALSE);
+			vdraw_set_stretch(false);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SOUND][0]))
 		{

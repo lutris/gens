@@ -1,14 +1,31 @@
-/**
- * Gens: Input class - SDL
- */
+/***************************************************************************
+ * Gens: Input Handler - SDL Backend.                                      *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
-
-#include "input_sdl.hpp"
+#include "input_sdl.h"
 #include "input_sdl_keys.h"
+#include "input_sdl_events.hpp"
 #include "gdk/gdkkeysyms.h"
 
 #include "emulator/g_main.hpp"
-#include "emulator/g_input.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
 
@@ -16,7 +33,38 @@
 #include "controller_config/controller_config_window.hpp"
 #include "controller_config/controller_config_window_misc.hpp"
 
-const struct KeyMap keyDefault[8] =
+
+#include <SDL/SDL.h>
+
+// GTK stuff
+#include <gtk/gtk.h>
+
+// Function prototypes.
+static int		input_sdl_init(void);
+static int		input_sdl_end(void);
+
+static int		input_sdl_update(void);
+static BOOL		input_sdl_check_key_pressed(unsigned int key);
+static unsigned int	input_sdl_get_key(void);
+static BOOL		input_sdl_joy_exists(int joy_num);
+
+// Miscellaneous.
+static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
+static int input_sdl_gdk_to_sdl_keyval(int gdk_key);
+
+// Check an SDL joystick axis.
+static void input_sdl_check_joystick_axis(SDL_Event *event);
+
+// Internal variables.
+static int input_sdl_num_joysticks;	// Number of joysticks connected
+static SDL_Joystick *input_sdl_joys[6];	// SDL joystick structs
+
+// Key and joystick state.
+static BOOL input_sdl_keys[1024];
+static BOOL input_sdl_joy_state[0x530];
+
+// Default keymap.
+static const input_keymap_t input_sdl_keymap_default[8] =
 {
 	// Player 1
 	{GENS_KEY_RETURN, GENS_KEY_RSHIFT,
@@ -41,12 +89,8 @@ const struct KeyMap keyDefault[8] =
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-
-static int gdk_to_sdl_keyval(int gdk_key);
-
-
 // Axis values.
-static const unsigned char JoyAxisValues[2][6] =
+static const unsigned char input_sdl_joy_axis_values[2][6] =
 {
 	// axis value < -10,000
 	{0x03, 0x01, 0x07, 0x05, 0x0B, 0x09},
@@ -56,22 +100,41 @@ static const unsigned char JoyAxisValues[2][6] =
 };
 
 
-Input_SDL::Input_SDL()
+// Input Backend struct.
+input_backend_t input_backend_sdl =
 {
-	// Initialize m_keys and m_joyState.
-	memset(m_keys, 0x00, sizeof(m_keys));
-	memset(m_joyState, 0x00, sizeof(m_joyState));
+	.init = input_sdl_init,
+	.end = input_sdl_end,
+	
+	.keymap_default = &input_sdl_keymap_default[0],
+	
+	.update = input_sdl_update,
+	.check_key_pressed = input_sdl_check_key_pressed,
+	.get_key = input_sdl_get_key,
+	.joy_exists = input_sdl_joy_exists
+};
+
+
+/**
+ * input_sdl_init(): Initialize the SDL input subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int input_sdl_init(void)
+{
+	// Initialize the keys and joystick state arrays.
+	memset(input_sdl_keys, 0x00, sizeof(input_sdl_keys));
+	memset(input_sdl_joy_state, 0x00, sizeof(input_sdl_joy_state));
 	
 	// Install the GTK+ key snooper.
-	gtk_key_snooper_install(GDK_KeySnoop, this);
+	gtk_key_snooper_install(input_sdl_gdk_keysnoop, NULL);
 	
 	// Initialize joysticks.
-	m_numJoysticks = 0;
+	input_sdl_num_joysticks = 0;
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
 	{
 		// Error initializing SDL.
-		fprintf(stderr, "%s: Error initializing SDL's joystick handler: %s\n", __func__, SDL_GetError());
-		return;
+		fprintf(stderr, "%s(): Error initializing SDL's joystick handler: %s\n", __func__, SDL_GetError());
+		return -1;
 	}
 	
 	// If any joysticks are connected, set them up.
@@ -82,36 +145,45 @@ Input_SDL::Input_SDL()
 		
 		for (int i = 0; i < 6; i++)
 		{
-			m_joy[i] = SDL_JoystickOpen(i);
-			if (m_joy[i])
-				m_numJoysticks++;
+			input_sdl_joys[i] = SDL_JoystickOpen(i);
+			if (input_sdl_joys[i])
+				input_sdl_num_joysticks++;
 		}
 	}
-}
-
-
-Input_SDL::~Input_SDL()
-{
-	// If any joysticks were opened, close them.
-	for (int i = 0; i < 6; i++)
-	{
-		if (SDL_JoystickOpened(i))
-		{
-			SDL_JoystickClose(m_joy[i]);
-			m_joy[i] = NULL;
-		}
-	}
+	
+	// Joysticks initialized.
+	return 0;
 }
 
 
 /**
- * GDK_KeySnoop(): Keysnooping callback event for GTK+/GDK.
+ * input_sdl_end(): Shut down the SDL input subsystem.
+ * @return 0 on success; non-zero on error.
+ */
+int input_sdl_end(void)
+{
+	// If any joysticks were opened, close them.
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		if (SDL_JoystickOpened(i))
+		{
+			SDL_JoystickClose(input_sdl_joys[i]);
+			input_sdl_joys[i] = NULL;
+		}
+	}
+	
+	return 0;
+}
+
+
+/**
+ * input_sdl_gdk_keysnoop(): Keysnooping callback event for GTK+/GDK.
  * @param grab_widget Widget this key was snooped from.
  * @param event Event information.
  * @param func_data User data.
  * @return TRUE to stop processing this event; FALSE to allow GTK+ to process this event.
  */
-gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
+static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data)
 {
 	SDL_Event sdlev;
 	
@@ -136,7 +208,7 @@ gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_
 	
 	// Convert this keypress from GDK to SDL.
 	// TODO: Use GENS key defines instead.
-	sdlev.key.keysym.sym = (SDLKey)gdk_to_sdl_keyval(event->keyval);
+	sdlev.key.keysym.sym = (SDLKey)input_sdl_gdk_to_sdl_keyval(event->keyval);
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
 	
@@ -151,28 +223,28 @@ gint Input_SDL::GDK_KeySnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_
 
 
 /**
- * joyExists(): Check if the specified joystick exists.
+ * input_sdl_joy_exists(): Check if the specified joystick exists.
  * @param joyNum Joystick number.
- * @return true if the joystick exists; false if it does not exist.
+ * @return TRUE if the joystick exists; FALSE if it does not exist.
  */
-bool Input_SDL::joyExists(int joyNum)
+BOOL input_sdl_joy_exists(int joyNum)
 {
 	if (joyNum < 0 || joyNum >= 6)
-		return false;
+		return FALSE;
 	
-	if (m_joy[joyNum])
-		return true;
+	if (input_sdl_joys[joyNum])
+		return TRUE;
 	
 	// Joystick does not exist.
-	return false;
+	return FALSE;
 }
 
 
 /**
- * getKey(): Get a key. (Used for controller configuration.)
+ * input_sdl_get_key(): Get a key. (Used for controller configuration.)
  * @return Key value.
  */
-unsigned int Input_SDL::getKey(void)
+unsigned int input_sdl_get_key(void)
 {
 	// TODO: Optimize this function.
 	GdkEvent *event;
@@ -187,11 +259,11 @@ unsigned int Input_SDL::getKey(void)
 	}
 	
 	// Update the UI.
-	GensUI::update();
+	GensUI_update();
 	
-	while (true)
+	while (TRUE)
 	{
-		while (SDL_PollEvent (&sdl_event))
+		while (SDL_PollEvent(&sdl_event))
 		{
 			switch (sdl_event.type)
 			{
@@ -202,17 +274,17 @@ unsigned int Input_SDL::getKey(void)
 					if (sdl_event.jaxis.value < -10000)
 					{
 						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							JoyAxisValues[0][sdl_event.jaxis.axis]);
+							input_sdl_joy_axis_values[0][sdl_event.jaxis.axis]);
 					}
 					else if (sdl_event.jaxis.value > 10000)
 					{
 						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							JoyAxisValues[1][sdl_event.jaxis.axis]);
+							input_sdl_joy_axis_values[1][sdl_event.jaxis.axis]);
 					}
 					else
 					{
 						// FIXME: WTF is this for?!
-						return getKey();
+						return input_sdl_get_key();
 					}
 					break;
 				
@@ -228,15 +300,16 @@ unsigned int Input_SDL::getKey(void)
 		// Check if a GDK key press occurred.
 		event = gdk_event_get();
 		if (event && event->type == GDK_KEY_PRESS)
-			return gdk_to_sdl_keyval(event->key.keyval);
+			return input_sdl_gdk_to_sdl_keyval(event->key.keyval);
 	}
 }
 
 
 /**
- * update(): Update the input subsystem.
+ * input_sdl_update(): Update the input subsystem.
+ * @return 0 on success; non-zero on error.
  */
-void Input_SDL::update(void)
+int input_sdl_update(void)
 {
 	// Check for SDL events
 	SDL_Event event;
@@ -247,7 +320,7 @@ void Input_SDL::update(void)
 		{
 			case SDL_QUIT:
 				close_gens();
-				return;
+				return 0;
 			
 			/* TODO: SDL_VIDEORESIZE should work in GL mode.
 			case SDL_VIDEORESIZE:
@@ -256,25 +329,25 @@ void Input_SDL::update(void)
 			*/
 			
 			case SDL_KEYDOWN:
-				m_keys[event.key.keysym.sym] = true;
-				Input_KeyDown(event.key.keysym.sym);
+				input_sdl_keys[event.key.keysym.sym] = TRUE;
+				input_sdl_event_key_down(event.key.keysym.sym);
 				break;
 				
 			case SDL_KEYUP:
-				m_keys[event.key.keysym.sym] = false;
-				Input_KeyUp(event.key.keysym.sym);
+				input_sdl_keys[event.key.keysym.sym] = FALSE;
+				input_sdl_event_key_up(event.key.keysym.sym);
 				break;
 			
 			case SDL_JOYAXISMOTION:
-				checkJoystickAxis(&event);
+				input_sdl_check_joystick_axis(&event);
 				break;
 			
 			case SDL_JOYBUTTONDOWN:
-				m_joyState[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = true;
+				input_sdl_joy_state[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = TRUE;
 				break;
 			
 			case SDL_JOYBUTTONUP:
-				m_joyState[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = false;
+				input_sdl_joy_state[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = FALSE;
 				break;
 			
 			case SDL_JOYHATMOTION:
@@ -284,14 +357,16 @@ void Input_SDL::update(void)
 				break;
 		}
 	}
+	
+	return 0;
 }
 
 
 /**
- * checkJoystickAxis: Check the SDL_Event for a joystick axis event.
+ * input_sdl_check_joystick_axis: Check the SDL_Event for a joystick axis event.
  * @param event Pointer to SDL_Event.
  */
-void Input_SDL::checkJoystickAxis(SDL_Event *event)
+static void input_sdl_check_joystick_axis(SDL_Event *event)
 {
 	if (event->jaxis.axis >= 6)
 	{
@@ -302,38 +377,38 @@ void Input_SDL::checkJoystickAxis(SDL_Event *event)
 	
 	if (event->jaxis.value < -10000)
 	{
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.axis]] = true;
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.axis]] = false;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[0][event->jaxis.axis]] = TRUE;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[1][event->jaxis.axis]] = FALSE;
 	}
 	else if (event->jaxis.value > 10000)
 	{
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.axis]] = false;
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.axis]] = true;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[0][event->jaxis.axis]] = FALSE;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[1][event->jaxis.axis]] = TRUE;
 	}
 	else
 	{
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[0][event->jaxis.axis]] = false;
-		m_joyState[(0x100 * event->jaxis.which) +
-			   JoyAxisValues[1][event->jaxis.axis]] = false;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[0][event->jaxis.axis]] = FALSE;
+		input_sdl_joy_state[(0x100 * event->jaxis.which) +
+			input_sdl_joy_axis_values[1][event->jaxis.axis]] = FALSE;
 	}
 }
 
 
 /**
- * checkKeyPressed(): Checks if the specified key is pressed.
+ * input_sdl_check_key_pressed(): Checks if the specified key is pressed.
  * @param key Key to check.
- * @return True if the key is pressed.
+ * @return TRUE if the key is pressed; FALSE if the key is not pressed.
  */
-bool Input_SDL::checkKeyPressed(unsigned int key)
+BOOL input_sdl_check_key_pressed(unsigned int key)
 {
 	// If the key value is <1024, it's a keyboard key.
 	if (key < 1024)
-		return m_keys[key];
+		return input_sdl_keys[key];
 	
 	// Joystick "key" check.
 	
@@ -341,10 +416,11 @@ bool Input_SDL::checkKeyPressed(unsigned int key)
 	int joyNum = ((key >> 8) & 0xF);
 	
 	// Check that this joystick exists.
-	if (!joyExists(joyNum))
-		return false;
+	if (!input_sdl_joy_exists(joyNum))
+		return FALSE;
 	
 	// Joystick exists. Check the state.
+#if 0
 	if (key & 0x80)
 	{
 		// Joystick POV
@@ -369,34 +445,49 @@ bool Input_SDL::checkKeyPressed(unsigned int key)
 		}
 #endif
 	}
-	else if (key & 0x70)
+	else
+#endif
+	if (key & 0x70)
 	{
 		// Joystick buttons
-		if (m_joyState[0x10 + (0x100 * joyNum) + ((key & 0xFF) - 0x10)])
-			return true;
+		if (input_sdl_joy_state[0x10 + (0x100 * joyNum) + ((key & 0xFF) - 0x10)])
+			return TRUE;
 	}
 	else
 	{
 		// Joystick axes
 		if (((key & 0xF) >= 1) && ((key & 0xF) <= 12))
 		{
-			if (m_joyState[(0x100 * joyNum) + (key & 0xF)])
-				return true;
+			if (input_sdl_joy_state[(0x100 * joyNum) + (key & 0xF)])
+				return TRUE;
 		}
 	}
 	
 	// Key is not pressed.
-	return false;
+	return FALSE;
 }
 
 
 /**
- * gdk_to_sdl_keyval(): Converts a GDK key value to a Gens key value.
+ * input_sdl_gdk_to_sdl_keyval(): Converts a GDK key value to a Gens key value.
  * @param gdk_key GDK key value.
  * @return Gens key value.
  */
-static int gdk_to_sdl_keyval(int gdk_key)
+static int input_sdl_gdk_to_sdl_keyval(int gdk_key)
 {
+	if (!(gdk_key & 0xFF00))
+	{
+		// ASCII symbol.
+		// SDL and GDK use the same values for these keys.
+		
+		// Make sure the key value is lowercase.
+		gdk_key = tolower(gdk_key);
+		
+		// Return the key value.
+		return gdk_key;
+	}
+	
+	// Non-ASCII symbol.
 	switch (gdk_key)
 	{
 		case GDK_BackSpace:
@@ -413,132 +504,6 @@ static int gdk_to_sdl_keyval(int gdk_key)
 			return GENS_KEY_ESCAPE;
 		case GDK_KP_Space:
 			return GENS_KEY_SPACE;
-		case GDK_exclamdown:
-			return GENS_KEY_EXCLAIM;
-		case GDK_quotedbl:
-			return GENS_KEY_QUOTEDBL;
-		case GDK_numbersign:
-			return GENS_KEY_HASH;
-		case GDK_dollar:
-			return GENS_KEY_DOLLAR;
-		case GDK_ampersand:
-			return GENS_KEY_AMPERSAND;
-		case GDK_quoteright:
-			return GENS_KEY_QUOTE;
-		case GDK_parenleft:
-			return GENS_KEY_LEFTPAREN;
-		case GDK_parenright:
-			return GENS_KEY_RIGHTPAREN;
-		case GDK_asterisk:
-			return GENS_KEY_ASTERISK;
-		case GDK_plus:
-			return GENS_KEY_PLUS;
-		case GDK_comma:
-			return GENS_KEY_COMMA;
-		case GDK_minus:
-			return GENS_KEY_MINUS;
-		case GDK_period:
-			return GENS_KEY_PERIOD;
-		case GDK_slash:
-			return GENS_KEY_SLASH;
-		case GDK_0:
-			return GENS_KEY_0;
-		case GDK_1:
-			return GENS_KEY_1;
-		case GDK_2:
-			return GENS_KEY_2;
-		case GDK_3:
-			return GENS_KEY_3;
-		case GDK_4:
-			return GENS_KEY_4;
-		case GDK_5:
-			return GENS_KEY_5;
-		case GDK_6:
-			return GENS_KEY_6;
-		case GDK_7:
-			return GENS_KEY_7;
-		case GDK_8:
-			return GENS_KEY_8;
-		case GDK_9:
-			return GENS_KEY_9;
-		case GDK_colon:
-			return GENS_KEY_COLON;
-		case GDK_semicolon:
-			return GENS_KEY_SEMICOLON;
-		case GDK_less:
-			return GENS_KEY_LESS;
-		case GDK_equal:
-			return GENS_KEY_EQUALS;
-		case GDK_greater:
-			return GENS_KEY_GREATER;
-		case GDK_question:
-			return GENS_KEY_QUESTION;
-		case GDK_at:
-			return GENS_KEY_AT;
-		case GDK_bracketleft:
-			return GENS_KEY_LEFTBRACKET;
-		case GDK_backslash:
-			return GENS_KEY_BACKSLASH;
-		case GDK_bracketright:
-			return GENS_KEY_RIGHTBRACKET;
-		case GDK_asciicircum:
-			return GENS_KEY_CARET;
-		case GDK_underscore:
-			return GENS_KEY_UNDERSCORE;
-		case GDK_quoteleft:
-			return GENS_KEY_BACKQUOTE;
-		case GDK_a:
-			return GENS_KEY_a;
-		case GDK_b:
-			return GENS_KEY_b;
-		case GDK_c:
-			return GENS_KEY_c;
-		case GDK_d:
-			return GENS_KEY_d;
-		case GDK_e:
-			return GENS_KEY_e;
-		case GDK_f:
-			return GENS_KEY_f;
-		case GDK_g:
-			return GENS_KEY_g;
-		case GDK_h:
-			return GENS_KEY_h;
-		case GDK_i:
-			return GENS_KEY_i;
-		case GDK_j:
-			return GENS_KEY_j;
-		case GDK_k:
-			return GENS_KEY_k;
-		case GDK_l:
-			return GENS_KEY_l;
-		case GDK_m:
-			return GENS_KEY_m;
-		case GDK_n:
-			return GENS_KEY_n;
-		case GDK_o:
-			return GENS_KEY_o;
-		case GDK_p:
-			return GENS_KEY_p;
-		case GDK_q:
-			return GENS_KEY_q;
-		case GDK_r:
-			return GENS_KEY_r;
-		case GDK_s:
-			return GENS_KEY_s;
-		case GDK_t:
-			return GENS_KEY_t;
-		case GDK_u:
-			return GENS_KEY_u;
-		case GDK_v:
-			return GENS_KEY_v;
-		case GDK_w:
-			return GENS_KEY_w;
-		case GDK_x:
-			return GENS_KEY_x;
-		case GDK_y:
-			return GENS_KEY_y;
-		case GDK_z:
-			return GENS_KEY_z;
 		case GDK_Delete:
 			return GENS_KEY_DELETE;
 		case GDK_KP_0:
@@ -652,7 +617,7 @@ static int gdk_to_sdl_keyval(int gdk_key)
 		case GDK_Mode_switch:
 			return GENS_KEY_MODE;
 		//case GDK_:
-		//	return    GENS_KEY_COMPOSE;
+		//	return GENS_KEY_COMPOSE;
 		case GDK_Help:
 			return GENS_KEY_HELP;
 		case GDK_Print:
@@ -664,13 +629,13 @@ static int gdk_to_sdl_keyval(int gdk_key)
 		case GDK_Menu:
 			return GENS_KEY_MENU;
 		//case GDK_:
-		//	return    GENS_KEY_POWER;
+		//	return GENS_KEY_POWER;
 		case GDK_EuroSign:
 			return GENS_KEY_EURO;
-		//case GDK_Undo:
-		//	return        GENS_KEY_UNDO;
+		case GDK_Undo:
+			return GENS_KEY_UNDO;
 		default:
-			//fprintf(stderr, "unknown gdk key\n");
+			fprintf(stderr, "%s(): Unknown GDK key: 0x%04X\n", __func__, gdk_key);
 			return -1;
 	}
 }

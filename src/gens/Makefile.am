@@ -72,7 +72,6 @@ bin_PROGRAMS = gens
 gens_SOURCES = \
 		emulator/gens.cpp \
 		emulator/g_main.cpp \
-		emulator/g_input.cpp \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
 		emulator/g_32x.cpp \
@@ -136,7 +135,7 @@ gens_SOURCES = \
 		video/vdraw_cpp.cpp \
 		video/vdraw_text.cpp \
 		video/v_effects.cpp \
-		input/input.cpp \
+		input/input.c \
 		audio/audio.cpp \
 		plugins/pluginmgr.cpp \
 		plugins/mdp_host_gens.c \
@@ -170,7 +169,6 @@ endif
 noinst_HEADERS = \
 		emulator/gens.hpp \
 		emulator/g_main.hpp \
-		emulator/g_input.hpp \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
 		emulator/g_32x.hpp \
@@ -233,7 +231,7 @@ noinst_HEADERS = \
 		video/vdraw_cpp.hpp \
 		video/vdraw_text.hpp \
 		video/v_effects.hpp \
-		input/input.hpp \
+		input/input.h \
 		audio/audio.hpp \
 		audio/audio_mmx.h \
 		plugins/pluginmgr.hpp \

@@ -54,7 +54,7 @@ static WNDCLASS WndClass;
 HWND controller_config_window = NULL;
 
 // Internal copy of Keys_Def[], which is copied when OK is clicked.
-struct KeyMap keyConfig[8];
+input_keymap_t keyConfig[8];
 
 // Controller Group Box size.
 static const unsigned short grpBox_Height = 140;
