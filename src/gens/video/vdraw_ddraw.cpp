@@ -20,9 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include "vdraw.h"
 #include "vdraw_ddraw.hpp"
 
 #include "emulator/g_main.hpp"
+#include "util/file/rom.hpp"
 
 // VDraw C++ functions.
 #include "vdraw_cpp.hpp"

@@ -3,10 +3,6 @@
 
 #include "gens.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -18,6 +14,11 @@ extern "C" {
 #include "g_main_win32.hpp"
 #else
 #error Unsupported operating system.
+#endif
+
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 
@@ -214,4 +215,4 @@ extern std::list<MDP_Render_t*>::iterator rendMode_W;
 
 #endif
 
-#endif
+#endif /* G_MAIN_HPP */

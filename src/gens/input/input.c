@@ -53,6 +53,9 @@ int			(*input_update)(void) = NULL;
 static BOOL		(*input_check_key_pressed)(unsigned int key) = NULL;
 unsigned int		(*input_get_key)(void) = NULL;
 const input_keymap_t	*input_keymap_default = NULL;
+#ifdef GENS_OS_WIN32
+int			(*input_set_cooperative_level)(HWND hWnd);
+#endif /* GENS_OS_WIN32 */
 
 // Current keymap.
 input_keymap_t	input_keymap[8];
@@ -86,6 +89,9 @@ int input_init(INPUT_BACKEND backend)
 	input_check_key_pressed	= input_cur_backend->check_key_pressed;
 	input_get_key		= input_cur_backend->get_key;
 	input_keymap_default	= input_cur_backend->keymap_default;
+#ifdef GENS_OS_WIN32
+	input_set_cooperative_level = input_cur_backend->set_cooperative_level;
+#endif /* GENS_OS_WIN32 */
 	
 	// Initialize the backend.
 	if (input_cur_backend->init)

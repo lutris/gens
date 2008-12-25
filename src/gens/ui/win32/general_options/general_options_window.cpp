@@ -40,6 +40,9 @@
 // Win32 common controls
 #include <commctrl.h>
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 
 static WNDCLASS m_WndClass;
 

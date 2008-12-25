@@ -36,6 +36,11 @@
 #error Unsupported operating system.
 #endif
 
+// Needed for HWND in input_set_cooperative_level.
+#ifdef GENS_OS_WIN32
+#include <windows.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -83,6 +88,11 @@ typedef struct
 	
 	// Check if a joystick exists.
 	BOOL	(*joy_exists)(int joy_num);
+	
+#ifdef GENS_OS_WIN32
+	// Win32-specific functions.
+	int	(*set_cooperative_level)(HWND hWnd);
+#endif /* GENS_OS_WIN32 */
 } input_backend_t;
 
 int	input_init(INPUT_BACKEND backend);
@@ -99,6 +109,9 @@ void	input_update_controllers(void);
 extern int			(*input_update)(void);
 extern unsigned int		(*input_get_key)(void);
 extern const input_keymap_t	*input_keymap_default;
+#ifdef GENS_OS_WIN32
+extern int			(*input_set_cooperative_level)(HWND hWnd);
+#endif /* GENS_OS_WIN32 */
 
 // Current keymap.
 extern input_keymap_t	input_keymap[8];

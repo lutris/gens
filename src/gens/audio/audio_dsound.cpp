@@ -20,6 +20,9 @@
 #include "gens_core/sound/pcm.h"
 #include "gens_core/misc/cpuflags.h"
 
+// Needed in order to update controllers.
+#include "input/input.h"
+
 #ifdef GENS_X86_ASM
 #include "audio_mmx.h" // MMX audio functions
 #endif
@@ -383,7 +386,7 @@ void Audio_DSound::waitForAudioBuffer(void)
 	{
 		writeSoundBuffer(NULL);
 		WP = (WP + 1) & (Sound_Segs - 1);
-		input->updateControllers();
+		input_update_controllers();
 	}
 }
 

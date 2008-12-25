@@ -8,6 +8,7 @@ gens_SOURCES += \
 		video/vdraw_ddraw_t.c \
 		video/vdraw_ddraw.cpp \
 		input/input_dinput.cpp \
+		input/input_dinput_t.c \
 		audio/audio_dsound.cpp \
 		util/file/compress/popen_wrapper.c \
 		ui/win32/charset.cpp \
@@ -51,6 +52,7 @@ noinst_HEADERS += \
 		video/vdraw_ddraw_t.h \
 		video/vdraw_ddraw.hpp \
 		input/input_dinput.hpp \
+		input/input_dinput_t.h \
 		input/input_win32_keys.h \
 		audio/audio_dsound.hpp \
 		ui/win32/charset.hpp \

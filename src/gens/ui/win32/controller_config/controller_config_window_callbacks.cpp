@@ -67,10 +67,10 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
 			{
 				// Set the DirectInput cooperative level.
-				reinterpret_cast<Input_DInput*>(input)->setCooperativeLevel(hWnd);
+				input_set_cooperative_level(hWnd);
 				
 				// Initialize joysticks.
-				reinterpret_cast<Input_DInput*>(input)->initJoysticks(hWnd);
+				input_dinput_init_joysticks(hWnd);
 			}
 			break;
 		

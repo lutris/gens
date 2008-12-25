@@ -36,6 +36,9 @@
 
 #include "emulator/g_main.hpp"
 
+// Video Drawing.
+#include "video/vdraw.h"
+
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */

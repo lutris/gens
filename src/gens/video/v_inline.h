@@ -23,12 +23,13 @@
 #ifndef GENS_V_INLINE_H
 #define GENS_V_INLINE_H
 
+#include "emulator/g_main.hpp"
+#include "gens_core/vdp/vdp_io.h"
+#include "util/file/rom.hpp"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "emulator/g_main.hpp"
-#include "gens_core/vdp/vdp_io.h"
 
 // Inline functions for determining MD resolution settings.
 static inline int isFullXRes(void)
