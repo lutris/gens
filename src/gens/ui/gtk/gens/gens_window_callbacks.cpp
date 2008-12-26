@@ -55,10 +55,8 @@
 #include "segacd/cd_aspi.hpp"
 #endif /* GENS_CDROM */
 
-// Debugger
-//#ifdef GENS_DEBUGGER
-//#include "debugger/debugger.hpp"
-//#endif /* GENS_DEBUGGER */
+// Audio Handler.
+#include "audio/audio.h"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -188,7 +186,7 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 	if (Auto_Pause && Active)
 	{
 		Active = 0;
-		audio->clearSoundBuffer();
+		audio_clear_sound_buffer();
 	}
 	return FALSE;
 }

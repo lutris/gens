@@ -283,7 +283,7 @@ static FILE *debug_file = NULL;
 
 /** Gens-specific **/
 
-#include "audio/audio.hpp"
+#include "audio/audio.h"
 #include "util/sound/gym.hpp"
 extern int VDP_Current_Line;
 extern int YM2612_Enable;

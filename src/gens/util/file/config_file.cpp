@@ -85,6 +85,7 @@
 
 // Video, Audio, Input.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 #include "input/input.h"
 
 // C++ includes
@@ -218,9 +219,9 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Frame Skip", Frame_Skip);
 	
 	// Sound settings
-	cfg.writeBool("Sound", "State", audio->enabled());
-	cfg.writeInt("Sound", "Rate", audio->soundRate());
-	cfg.writeBool("Sound", "Stereo", audio->stereo());
+	cfg.writeBool("Sound", "State", audio_get_enabled());
+	cfg.writeInt("Sound", "Rate", audio_get_sound_rate());
+	cfg.writeBool("Sound", "Stereo", audio_get_stereo());
 	
 	cfg.writeInt("Sound", "Z80 State", Z80_State & 1);
 	cfg.writeInt("Sound", "YM2612 State", YM2612_Enable & 1);
@@ -489,8 +490,8 @@ int Config::load(const string& filename, void* gameActive)
 	Frame_Skip = cfg.getInt("Graphics", "Frame Skip", -1);
 	
 	// Sound settings
-	audio->setSoundRate(cfg.getInt("Sound", "Rate", 22050));
-	audio->setStereo(cfg.getBool("Sound", "Stereo", true));
+	audio_set_sound_rate(cfg.getInt("Sound", "Rate", 22050));
+	audio_set_stereo(cfg.getBool("Sound", "Stereo", true));
 	
 	if (cfg.getInt("Sound", "Z80 State", 1))
 		Z80_State |= 1;
@@ -498,9 +499,10 @@ int Config::load(const string& filename, void* gameActive)
 		Z80_State &= ~1;
 	
 	// Only load the IC sound settings if sound can be initialized.
+	// TODO: Change it to load the settings unconditionally?
 	new_val = cfg.getInt("Sound", "State", 1);
-	if (new_val == audio->enabled() ||
-	    (new_val != audio->enabled() && Options::setSoundEnable(true)))
+	if (new_val == audio_get_enabled() ||
+	    (new_val != audio_get_enabled() && Options::setSoundEnable(true)))
 	{
 		YM2612_Enable = cfg.getInt("Sound", "YM2612 State", 1);
 		PSG_Enable = cfg.getInt("Sound", "PSG State", 1);

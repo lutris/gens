@@ -77,8 +77,8 @@ FILE *psg_debug_file = NULL;
 #endif
 
 
-/** Gens-specific extern and variables **/
-#include "audio/audio.hpp"
+/** Gens-specific externs and variables **/
+#include "audio/audio.h"
 extern int VDP_Current_Line;
 extern int GYM_Dumping;
 

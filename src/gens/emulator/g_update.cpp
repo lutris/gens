@@ -24,6 +24,7 @@
 
 // Video, Audio, Input.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 #include "input/input.h"
 
 clock_t Last_Time = 0;
@@ -51,9 +52,9 @@ int Update_Emulation(void)
 	if (Frame_Skip != -1)
 	{
 #ifdef GENS_OS_UNIX
-		if (audio->enabled())
+		if (audio_get_enabled())
 		{
-			audio->writeSoundBuffer(NULL);
+			audio_write_sound_buffer(NULL);
 		}
 #endif /* GENS_OS_UNIX */
 		
@@ -66,10 +67,10 @@ int Update_Emulation(void)
 		else
 		{
 #ifdef GENS_OS_WIN32
-			if (audio->enabled())
+			if (audio_get_enabled())
 			{
-				audio->wpInc();
-				audio->writeSoundBuffer(NULL);
+				audio_wp_inc();
+				audio_write_sound_buffer(NULL);
 			}
 #endif /* GENS_OS_WIN32 */
 			Frame_Number = 0;
@@ -82,7 +83,7 @@ int Update_Emulation(void)
 	}
 	else
 	{
-		if (audio->enabled())
+		if (audio_get_enabled())
 		{
 			// This does auto-frame skip in a fairly dodgy way -
 			// only updating the frame when we have 'lots' in
@@ -91,11 +92,11 @@ int Update_Emulation(void)
 			
 #ifdef GENS_OS_WIN32
 			// Win32 specific.
-			audio->wpSegWait();
+			audio_wp_seg_wait();
 #endif /* GENS_OS_WIN32 */
 			
 			// Wait for the audio buffer to empty out.
-			audio->waitForAudioBuffer();
+			audio_wait_for_audio_buffer();
 			
 			// Audio buffer is empty.
 			input_update_controllers();

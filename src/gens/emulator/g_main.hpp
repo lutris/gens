@@ -204,10 +204,6 @@ MDP_Render_t* get_mdp_render_t(void);
 
 // C++ classes
 
-// New Audio object
-#include "audio/audio.hpp"
-extern Audio *audio;
-
 // Renderers
 #include "plugins/pluginmgr.hpp"
 extern std::list<MDP_Render_t*>::iterator rendMode_FS;

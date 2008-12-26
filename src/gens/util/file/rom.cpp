@@ -44,6 +44,9 @@ using std::deque;
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // File management functions.
 #include "file.hpp"
 
@@ -724,7 +727,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 		return;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	if (SegaCD_Started)
 		Savestate::SaveBRAM();
@@ -735,8 +738,8 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	//Save_Patch_File();
 	
 	// Audio dumping.
-	if (audio->dumpingWAV())
-		audio->stopWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_stop();
 	if (GYM_Dumping)
 		Stop_GYM_Dump();
 

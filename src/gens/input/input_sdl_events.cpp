@@ -62,6 +62,7 @@
 // Video, Audio, Input.
 #include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
+#include "audio/audio.h"
 #include "input/input.h"
 
 // C++ includes.
@@ -122,7 +123,7 @@ void input_sdl_event_key_down(int key)
 			{
 				Paused = 1;
 				//Pause_Screen();
-				audio->clearSoundBuffer();
+				audio_clear_sound_buffer();
 			}
 			break;
 		
@@ -133,14 +134,14 @@ void input_sdl_event_key_down(int key)
 			{
 				Paused = 1;
 				//Pause_Screen();
-				audio->clearSoundBuffer();
+				audio_clear_sound_buffer();
 			}
 			break;
 		
 		case GENS_KEY_BACKSPACE:
 			if (vdraw_get_fullscreen() && (mod & KMOD_SHIFT))
 			{
-				audio->clearSoundBuffer();
+				audio_clear_sound_buffer();
 				ImageUtil::screenShot();
 			}
 			break;
@@ -355,7 +356,7 @@ void input_sdl_event_key_down(int key)
 					break;
 				
 				//if ((Check_If_Kaillera_Running())) return 0;
-				if (audio->playingGYM())
+				if (audio_get_gym_playing())
 					Stop_Play_GYM();
 				
 				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename);
@@ -373,7 +374,7 @@ void input_sdl_event_key_down(int key)
 				if (Num_CD_Drive == 0)
 					return;	// return 1;
 				//if (Check_If_Kaillera_Running()) return 0;
-				if (audio->playingGYM())
+				if (audio_get_gym_playing())
 					Stop_Play_GYM();
 				ROM::freeROM(Game);	// Don't forget it !
 				SegaCD_Started = Init_SegaCD(NULL);
