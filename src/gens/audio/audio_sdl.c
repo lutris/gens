@@ -26,8 +26,12 @@
 
 #include "audio.h"
 #include "audio_sdl.h"
-#include "audio_mmx.h"
 #include <SDL/SDL.h>
+
+// MMX audio functions.
+#ifdef GENS_X86_ASM
+#include "audio_mmx.h"
+#endif /* GENS_X86_ASM */
 
 // Gens includes.
 #include "emulator/g_main.hpp"
