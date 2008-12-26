@@ -282,6 +282,14 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		// Check if this render mode is selected.
 		if (selMDP == curPlugin)
 			selMenuItem = i;
+		
+		// Insert a separator between the built-in renderers
+		// and the external renderers if external renderers exist.
+		if (i == IDM_GRAPHICS_RENDER_NORMAL + 1)
+		{
+			if (PluginMgr::lstRenderPlugins.size() > 2)
+				InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_SEPARATOR, IDM_SEPARATOR, NULL);
+		}
 	}
 	
 	if (selMenuItem != 0)

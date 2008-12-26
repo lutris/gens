@@ -374,6 +374,24 @@ void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		
 		// Add the menu item to the map.
 		gensMenuMap.insert(gtkMenuMapItem(i, mnuItem));
+		
+		// Insert a separator between the built-in renderers
+		// and the external renderers if external renderers exist.
+		if (i == IDM_GRAPHICS_RENDER_NORMAL + 1)
+		{
+			if (PluginMgr::lstRenderPlugins.size() > 2)
+			{
+				mnuItem = gtk_separator_menu_item_new();
+				gtk_widget_set_name(mnuItem, "GraphicsMenu_Render_SubMenu_sep");
+				gtk_widget_show(mnuItem);
+				gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
+				
+				// Make sure the menu item is deleted when the submenu is deleted.
+				g_object_set_data_full(G_OBJECT(mnuSubMenu), "GraphicsMenu_Render_SubMenu_sep",
+						       g_object_ref(mnuItem),
+						       (GDestroyNotify)g_object_unref);
+			}
+		}
 	}
 }
 
