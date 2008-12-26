@@ -5,6 +5,7 @@ TODO for Gens/GS m6.1:
   - 8-bit writes: 000000:00
   - Support for S68K, Z80, MSH2, and SSH2 address spaces
   - Improved file format (but maintain read-only compatibility with the old version).
+- [MDP] SRC16DST32 renderers cause DEP violations on Windows.
 - Write a utility to convert PNG to a static const unsigned char[].
   - Tentative name: "C Binary Object Builder" (CBOB)
 - [MDP] Add plugin configuration save/load based on MDP UUID.
@@ -18,12 +19,18 @@ TODO for Gens/GS m6.1:
   - Disables reset, close ROM, etc.
 - "Directory" registration for "Configure Directories".
 - [MDP] Add a variable to indicate if the loaded ROM has been byteswapped.
+- Add --boot-cd command line option.
+- Don't show "Zip File Selection Dialog" if a ROM is opened in Full Screen.
+- Don't show "ZIp File Selection Dialog" if an archive has multiple files but only one has a ROM file extension.
+- Add "Exclusive Mode" so a plugin can gain exclusive control.
+  - Disables reset, close ROM, etc.
+- "Directory" registration for "Configure Directories".
+- SSG-EG: http://www.spritesmind.net/_GenDev/forum/viewtopic.php?p=5716#5716
 
 High-Level TODO:
 - Move most global variables to global Settings struct
 - Port all Gens Rerecording changes
 - Add Qt4 UI
-- Convert all code to C++ with classes, etc
 - [MDP] Add VGM dumping support
 - Add more compression format support
 - Improve the Zip File Selection Dialog
