@@ -27,6 +27,9 @@
 #include "emulator/gens.hpp"
 #include "gens_ui.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 #include <windows.h>
 
 // Gens Win32 resources
@@ -52,7 +55,7 @@ LRESULT CALLBACK Select_CDROM_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			// - Menu is opened.
 			// - Window is resized.
 			// - Left/Right mouse button down on title bar.
-			Win32_ClearSoundBuffer();
+			audio_clear_sound_buffer();
 			break;
 		
 		case WM_COMMAND:

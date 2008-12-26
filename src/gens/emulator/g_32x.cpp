@@ -33,6 +33,9 @@
 
 #include "ui/gens_ui.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // 32X 32-bit color functions
 #include "g_32x_32bit.h"
 
@@ -69,7 +72,7 @@ int Init_32X(ROM_t* MD_ROM)
 	int i;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	// Read the 32X MC68000 firmware. (usually "32X_G_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
@@ -214,14 +217,17 @@ int Init_32X(ROM_t* MD_ROM)
 		ROM::fixChecksum();
 	
 	// Initialize sound.
-	if (audio->enabled())
+	if (audio_get_enabled())
 	{
-		audio->endSound();
+		audio_end();
 		
-		if (!audio->initSound())
-			audio->setEnabled(false);
+		if (audio_init(AUDIO_BACKEND_DEFAULT))
+			audio_set_enabled(false);
 		else
-			audio->playSound();
+		{
+			if (audio_play_sound)
+				audio_play_sound();
+		}
 	}
 	
 	// TODO: Send "Load ROM" event to registered MDP event handlers.
@@ -251,7 +257,7 @@ void Reset_32X(void)
 	int i;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	Paused = 0;
 	Controller_1_COM = Controller_2_COM = 0;
@@ -605,8 +611,8 @@ int Do_32X_Frame_No_VDP(void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
@@ -894,8 +900,8 @@ int Do_32X_Frame(void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	

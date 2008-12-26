@@ -69,6 +69,7 @@
 
 // Video, Audio, Input.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 #include "input/input.h"
 
 // Include this *last* to avoid naming conflicts.
@@ -496,19 +497,19 @@ void parseArgs(int argc, char **argv)
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SOUND][0]))
 		{
-			audio->setEnabled(true);
+			audio_set_enabled(true);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SOUND][1]))
 		{
-			audio->setEnabled(false);
+			audio_set_enabled(false);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STEREO][0]))
 		{
-			audio->setStereo(true);
+			audio_set_stereo(true);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_STEREO][1]))
 		{
-			audio->setStereo(false);
+			audio_set_stereo(false);
 		}
 		else if (!strcmp(long_options[option_index].name, optBarg_str[OPTB_SWBLIT][0]))
 		{
@@ -578,7 +579,7 @@ void parseArgs(int argc, char **argv)
 			
 			if (rate == 11025 || rate == 22050 || rate == 44100)
 			{
-				audio->setSoundRate(rate);
+				audio_set_sound_rate(rate);
 			}
 			else
 			{

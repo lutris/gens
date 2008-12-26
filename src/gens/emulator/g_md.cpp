@@ -27,8 +27,9 @@
 
 #include "gens_ui.hpp"
 
-// Video Drawing.
+// Video, Audio.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 
 
 /**
@@ -135,7 +136,7 @@ void Init_Genesis_Bios(void)
 	FILE *f;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	if ((f = fopen(BIOS_Filenames.MD_TMSS, "rb")))
 	{
@@ -232,7 +233,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 	char Str_Err[256];
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	Flag_Clr_Scr = 1;
 	Debug = Paused = Frame_Number = 0;
@@ -312,14 +313,17 @@ int Init_Genesis(ROM_t* MD_ROM)
 		ROM::fixChecksum();
 	
 	// Initialize sound.
-	if (audio->enabled())
+	if (audio_get_enabled())
 	{
-		audio->endSound();
+		audio_end();
 		
-		if (!audio->initSound())
-			audio->setEnabled(false);
+		if (audio_init(AUDIO_BACKEND_DEFAULT))
+			audio_set_enabled(false);
 		else
-			audio->playSound();
+		{
+			if (audio_play_sound)
+				audio_play_sound();
+		}
 	}
 	
 	// TODO: Send "Load ROM" event to registered MDP event handlers.
@@ -341,7 +345,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 void Reset_Genesis(void)
 {
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	Controller_1_COM = Controller_2_COM = 0;
 	Paused = 0;
@@ -508,7 +512,7 @@ int Do_Genesis_Frame_No_VDP(void)
 			main68k_addCycles(Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
-//		main68k_exec(Cycles_M68K - 436);
+		//main68k_exec(Cycles_M68K - 436);
 		main68k_exec(Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
@@ -521,8 +525,8 @@ int Do_Genesis_Frame_No_VDP(void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
@@ -644,7 +648,7 @@ int Do_Genesis_Frame(void)
 			main68k_addCycles(Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
-//		main68k_exec(Cycles_M68K - 436);
+		//main68k_exec(Cycles_M68K - 436);
 		main68k_exec (Cycles_M68K - 404);
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
@@ -656,8 +660,8 @@ int Do_Genesis_Frame(void)
 	PSG_Special_Update();
 	YM2612_Special_Update();
 	
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Audio Handler - DirectSound 3 Backend.                            *
+ * Gens: Audio Handler - DirectSound 3 Backend. (audio_backend_t struct)   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,34 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_AUDIO_DSOUND_HPP
-#define GENS_AUDIO_DSOUND_HPP
+#include "audio_dsound_t.h"
+#include "audio_dsound.hpp"
 
-#include "macros/bool_m.h"
-#include "audio.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// Function prototypes.
-int	audio_dsound_init(void);
-int	audio_dsound_end(void);
-
-int	audio_dsound_write_sound_buffer(void *dump_buf);
-void	audio_dsound_clear_sound_buffer(void);
-
-int	audio_dsound_play_sound(void);
-int	audio_dsound_stop_sound(void);
-
-void	audio_dsound_wait_for_audio_buffer(void);
-
-// Win32-specific functions.
-void	audio_dsound_wp_seg_wait(void);
-void	audio_dsound_wp_inc(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* GENS_AUDIO_DSOUND_HPP */
+// Audio Backend struct.
+audio_backend_t audio_backend_dsound =
+{
+	.init = audio_dsound_init,
+	.end = audio_dsound_end,
+	
+	.write_sound_buffer = audio_dsound_write_sound_buffer,
+	.clear_sound_buffer = audio_dsound_clear_sound_buffer,
+	
+	.play_sound = audio_dsound_play_sound,
+	.stop_sound = audio_dsound_stop_sound,
+	
+	.wait_for_audio_buffer = audio_dsound_wait_for_audio_buffer,
+ 
+	// Win32-specific functions.
+	.wp_seg_wait = audio_dsound_wp_seg_wait,
+	.wp_inc = audio_dsound_wp_inc
+};

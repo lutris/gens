@@ -11,6 +11,8 @@
 
 #include "macros/math_m.h"
 
+#include "audio/audio.h"
+
 int Debug;
 int Frame_Skip;
 int Frame_Number;
@@ -120,8 +122,8 @@ void Set_Clock_Freq(const int system)
 		if (system == 2) // 32X
 			_32X_VDP.Mode &= ~0x8000;
 		
-		YM2612_Init(CLOCK_PAL / 7, audio->soundRate(), YM2612_Improv);
-		PSG_Init(CLOCK_PAL / 15, audio->soundRate());
+		YM2612_Init(CLOCK_PAL / 7, audio_get_sound_rate(), YM2612_Improv);
+		PSG_Init(CLOCK_PAL / 15, audio_get_sound_rate());
 	}
 	else
 	{
@@ -145,8 +147,8 @@ void Set_Clock_Freq(const int system)
 		if (system == 2) // 32X
 			_32X_VDP.Mode |= 0x8000;
 		
-		YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
-		PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
+		YM2612_Init(CLOCK_NTSC / 7, audio_get_sound_rate(), YM2612_Improv);
+		PSG_Init(CLOCK_NTSC / 15, audio_get_sound_rate());
 	}
 	
 	if (system == 2) // 32X

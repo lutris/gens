@@ -73,9 +73,10 @@
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */
 
-// Video Drawing.
+// Video, Audio.
 #include "video/vdraw.h"
 #include "video/vdraw_cpp.hpp"
+#include "audio/audio.h"
 
 // For some reason, these aren't extern'd anywhere...
 extern "C"
@@ -156,7 +157,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if ((Check_If_Kaillera_Running()))
 				return 0;
 			*/
-			if (audio->playingGYM())
+			if (audio_get_gym_playing())
 				Stop_Play_GYM();
 			if (ROM::getROM() != -1)
 				Sync_Gens_Window();
@@ -174,7 +175,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			if (Check_If_Kaillera_Running())
 				return 0;
 			*/
-			if (audio->playingGYM())
+			if (audio_get_gym_playing())
 				Stop_Play_GYM();
 			
 			ROM::freeROM(Game); // Don't forget it !
@@ -193,14 +194,14 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 			// So, let's give them what they really want: A Rick Roll! :)
 			Paused = 1;
 			//Pause_Screen();
-			audio->clearSoundBuffer();
+			audio_clear_sound_buffer();
 			ShellExecute(NULL, NULL, "http://www.youtube.com/watch?v=oHg5SJYRHA0", NULL, NULL, SW_MAXIMIZE);
 			break;
 #endif /* GENS_OS_WIN32 */
 		
 		case IDM_FILE_CLOSEROM:
-			if (audio->soundInitialized())
-				audio->clearSoundBuffer();
+			if (audio_initialized)
+				audio_clear_sound_buffer();
 	
 #ifdef GENS_DEBUGGER
 			Debug = 0;
@@ -228,7 +229,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 		case IDM_FILE_ROMHISTORY_8:
 		case IDM_FILE_ROMHISTORY_9:
 			// ROM History.
-			if (audio->playingGYM())
+			if (audio_get_gym_playing())
 				Stop_Play_GYM();
 			
 			if (ROM::Recent_ROMs.size() > (menuID - IDM_FILE_ROMHISTORY_1))
@@ -448,7 +449,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			break;
 		
 		case IDM_GRAPHICS_SCREENSHOT:
-			audio->clearSoundBuffer();
+			audio_clear_sound_buffer();
 			ImageUtil::screenShot();
 			break;
 		
@@ -663,10 +664,10 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 		
 		case IDM_SOUND_WAVDUMP:
 			// Change WAV dump status.
-			if (!audio->dumpingWAV())
-				audio->startWAVDump();
+			if (!audio_get_wav_dumping())
+				audio_wav_dump_start();
 			else
-				audio->stopWAVDump();
+				audio_wav_dump_stop();
 			break;
 		
 		case IDM_SOUND_GYMDUMP:

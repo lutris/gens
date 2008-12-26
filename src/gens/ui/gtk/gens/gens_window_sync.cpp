@@ -67,8 +67,9 @@ using std::deque;
 // File management functions.
 #include "util/file/file.hpp"
 
-// Video Drawing.
+// Video, Audio.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 
 
 // Internal functions.
@@ -489,14 +490,14 @@ void Sync_Gens_Window_SoundMenu(void)
 	do_callbacks = 0;
 	
 	// Get the Enabled flag for the other menu items.
-	bool soundEnabled = audio->enabled();
+	bool soundEnabled = audio_get_enabled();
 	
 	// Enabled
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_SOUND_ENABLE)), soundEnabled);
 	
 	const uint16_t soundMenuItems[11][2] =
 	{
-		{IDM_SOUND_STEREO,		audio->stereo()},
+		{IDM_SOUND_STEREO,		audio_get_stereo()},
 		{IDM_SOUND_Z80,			Z80_State & 1},
 		{IDM_SOUND_YM2612,		YM2612_Enable},
 		{IDM_SOUND_YM2612_IMPROVED,	YM2612_Improv},
@@ -521,7 +522,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Rate
 	// TODO: Improve this by using a hash or something.
 	uint16_t id;
-	switch (audio->soundRate())
+	switch (audio_get_sound_rate())
 	{
 		case 11025:
 			id = IDM_SOUND_RATE_11025;
@@ -542,7 +543,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	const char* sLabel;
 	
 	// WAV dumping
-	sLabel = (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump");
+	sLabel = (audio_get_wav_dumping() ? "Stop WAV Dump" : "Start WAV Dump");
 	GtkWidget *mnuWAVDump = findMenuItem(IDM_SOUND_WAVDUMP);
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuWAVDump)->child), sLabel);
 	
@@ -554,7 +555,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.
 	
-	bool allowAudioDump = (Game != NULL) && audio->enabled();
+	bool allowAudioDump = (Game != NULL) && audio_get_enabled();
 	
 	// WAV dump
 	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.

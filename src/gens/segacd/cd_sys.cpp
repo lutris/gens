@@ -21,6 +21,9 @@ using std::string;
 #include "util/file/save.hpp"
 #include "gens_core/misc/misc.h"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // CD-ROM drive access
 #ifdef GENS_CDROM
 #include "cd_aspi.hpp"
@@ -990,7 +993,7 @@ int Fast_Rewind_CDD_c9(void)
 
 int Close_Tray_CDD_cC(void)
 {
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	// Stop CDC read
 	SCD.Status_CDC &= ~1;
@@ -1049,7 +1052,7 @@ int Open_Tray_CDD_cD(void)
 #ifdef GENS_CDROM
 	if (CD_Load_System == CDROM_)
 	{
-		audio->clearSoundBuffer();
+		audio_clear_sound_buffer();
 		
 		ASPI_Lock(0);
 		ASPI_Star_Stop_Unit(OPEN_TRAY, 0, 0, ASPI_Open_Tray_CDD_cD_COMP);
@@ -1132,7 +1135,7 @@ void Write_CD_Audio(short *Buf, int rate, int channel, int length)
 	
 	if (rate == 0)
 		return;
-	if (audio->soundRate() == 0)
+	if (audio_get_sound_rate() == 0)
 		return;
 	
 	if (CD_Audio_Starting)
@@ -1144,7 +1147,7 @@ void Write_CD_Audio(short *Buf, int rate, int channel, int length)
 	}
 	
 	length_src = rate / 75;			// 75th of a second
-	length_dst = audio->soundRate() / 75;	// 75th of a second
+	length_dst = audio_get_sound_rate() / 75;	// 75th of a second
 	
 	pas_src = (length_src << 16) / length_dst;
 	pos_src = 0;

@@ -34,6 +34,9 @@
 
 #include "emulator/g_main.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 #include "ui/win32/charset.hpp"
 #include "ui/win32/resource.h"
 
@@ -173,7 +176,7 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			// - Menu is opened.
 			// - Window is resized.
 			// - Left/Right mouse button down on title bar.
-			audio->clearSoundBuffer();
+			audio_clear_sound_buffer();
 			break;
 		
 		case WM_PAINT:

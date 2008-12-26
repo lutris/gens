@@ -35,6 +35,9 @@
 #include <windows.h>
 #include <windowsx.h>
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // Win32 common controls
 #include <commctrl.h>
 
@@ -96,7 +99,7 @@ int Reconfigure_Input(int player, int padtype)
 		return 0;
 	
 	// Prevent audio stuttering.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
 	keyConfig[player].Up = input_get_key();

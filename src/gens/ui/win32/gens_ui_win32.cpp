@@ -41,6 +41,9 @@
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // Windows
 #include "controller_config/controller_config_window.hpp"
 #include "bios_misc_files/bios_misc_files_window.hpp"
@@ -328,8 +331,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 		owner = static_cast<void*>(Gens_hWnd);
 	
 	// Clear the sound buffer.
-	if (audio)
-		audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	// Show the message box.
 	int response = MessageBox(static_cast<HWND>(owner), msg.c_str(), title.c_str(), msgStyle);
@@ -440,7 +442,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	BOOL ret;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	if (!openOrSave)
 	{
@@ -496,7 +498,7 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	bi.lParam = (LPARAM)(initDir.c_str());
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if (!pidl)
@@ -532,16 +534,4 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);
 	
 	return 0;
-}
-
-
-/**
- * Win32_ClearSoundBuffer(): Clear the sound buffer.
- * NOTE: TEMPORARY wrapper function for C files.
- * Remove this when all the windows are converted to C++.
- */
-void Win32_ClearSoundBuffer(void)
-{
-	if (audio->soundInitialized())
-		audio->clearSoundBuffer();
 }

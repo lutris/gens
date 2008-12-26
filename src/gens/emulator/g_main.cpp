@@ -63,6 +63,7 @@
 
 // Video, Audio, and Input backends.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 #include "input/input.h"
 
 // Gens Settings struct
@@ -108,9 +109,6 @@ int Kaillera_Client_Running = 0;
 int Quick_Exit = 0;
 
 static int Gens_Running = 0;
-
-// New audio layer.
-Audio *audio = NULL;
 
 // TODO: Rewrite the language system so it doesn't depend on the old INI functions.
 static int Build_Language_String (void)
@@ -337,8 +335,8 @@ int Init(void)
 	S68K_Init();
 	Z80_Init();
 	
-	YM2612_Init(CLOCK_NTSC / 7, audio->soundRate(), YM2612_Improv);
-	PSG_Init(CLOCK_NTSC / 15, audio->soundRate());
+	YM2612_Init(CLOCK_NTSC / 7, audio_get_sound_rate(), YM2612_Improv);
+	PSG_Init(CLOCK_NTSC / 15, audio_get_sound_rate());
 	PWM_Init();
 	
 	// Initialize the CD-ROM drive, if available.
@@ -371,9 +369,7 @@ void End_All(void)
 	input_end();
 	
 	// Shut down the audio subsystem.
-	audio->endSound();
-	delete audio;
-	audio = NULL;
+	audio_end();
 	
 	// Shut down the video subsystem.
 	vdraw_backend_end();
@@ -566,7 +562,7 @@ void GensMainLoop(void)
 			
 			// Determine how much sleep time to add, based on intro style.
 			// TODO: Move this to v_draw.cpp?
-			if (audio->playingGYM())
+			if (audio_get_gym_playing())
 			{
 				// PLAY GYM
 				Play_GYM();

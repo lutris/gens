@@ -43,15 +43,6 @@ typedef enum
 	GYMFile		= 5,
 } FileFilterType;
 
-#ifdef GENS_OS_WIN32
-/**
- * Win32_ClearSoundBuffer(): Clear the sound buffer.
- * NOTE: TEMPORARY wrapper function for C files.
- * Remove this when all the windows are converted to C++.
- */
-void Win32_ClearSoundBuffer(void);
-#endif /* GENS_OS_WIN32 */
-
 /**
  * GensUI_update(): Update the Gens UI.
  * Wrapper function for C code.

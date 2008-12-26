@@ -30,7 +30,7 @@ using std::list;
 // Video, Audio, Input.
 #include "video/vdraw_sdl.h"
 #include "video/vdraw_cpp.hpp"
-#include "audio/audio_sdl.hpp"
+#include "audio/audio_sdl.h"
 #include "input/input_sdl.h"
 
 #include "gens/gens_window_sync.hpp"
@@ -108,14 +108,10 @@ int main(int argc, char *argv[])
 	// Initialize input_sdl.
 	input_init(INPUT_BACKEND_SDL);
 	
-	// Initialize the audio object.
-	audio = new Audio_SDL();
-	
 	// Initialize the Settings struct.
 	if (Init_Settings())
 	{
 		// Error initializing settings.
-		delete audio;
 		input_end();
 		vdraw_end();
 		return 1;	// TODO: Replace with a better error code.

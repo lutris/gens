@@ -59,8 +59,9 @@
 // File management functions.
 #include "util/file/file.hpp"
 
-// Video Drawing.
+// Video, Audio.
 #include "video/vdraw.h"
+#include "audio/audio.h"
 
 // C++ includes
 #include <string>
@@ -428,7 +429,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	HMENU mnuSound = findMenuItem(IDM_SOUND_MENU);
 	
 	// Get the Enabled flag for the other menu items.
-	bool soundEnabled = audio->enabled();
+	bool soundEnabled = audio_get_enabled();
 	
 	// Enabled
 	CheckMenuItem(mnuSound, IDM_SOUND_ENABLE,
@@ -436,7 +437,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	const uint16_t soundMenuItems[11][2] =
 	{
-		{IDM_SOUND_STEREO,		audio->stereo()},
+		{IDM_SOUND_STEREO,		audio_get_stereo()},
 		{IDM_SOUND_Z80,			Z80_State & 1},
 		{IDM_SOUND_YM2612,		YM2612_Enable},
 		{IDM_SOUND_YM2612_IMPROVED,	YM2612_Improv},
@@ -466,7 +467,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	HMENU mnuRate = findMenuItem(IDM_SOUND_RATE);
 	for (int i = 0; i < 3; i++)
 	{
-		if (SndRates[i][1] == audio->soundRate())
+		if (SndRates[i][1] == audio_get_sound_rate())
 		{
 			CheckMenuRadioItem(mnuRate,
 					   IDM_SOUND_RATE_11025,
@@ -481,7 +482,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	// WAV dumping
 	// TODO: Always disabled for now, since WAV dumping isn't implemented yet.
-	strcpy(dumpLabel, (audio->dumpingWAV() ? "Stop WAV Dump" : "Start WAV Dump"));
+	strcpy(dumpLabel, (audio_get_wav_dumping() ? "Stop WAV Dump" : "Start WAV Dump"));
 	ModifyMenu(mnuSound, IDM_SOUND_WAVDUMP,
 		   MF_BYCOMMAND | MF_STRING, IDM_SOUND_WAVDUMP, dumpLabel);
 	EnableMenuItem(mnuSound, IDM_SOUND_WAVDUMP,

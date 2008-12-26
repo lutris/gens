@@ -37,6 +37,9 @@
 
 #include "ui/gens_ui.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 
 unsigned char CD_Data[GENS_PATH_MAX];	// Used for hard reset to know the game name
 
@@ -78,7 +81,7 @@ int Init_SegaCD(const char* iso_name)
 	const char* BIOS_To_Use;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	GensUI::setWindowTitle_Init("SegaCD", false);
 	
@@ -170,17 +173,20 @@ int Init_SegaCD(const char* iso_name)
 	LC89510_Reset();
 	Init_RS_GFX();
 	
-	PCM_Init(audio->soundRate());
+	PCM_Init(audio_get_sound_rate());
 	
 	// Initialize sound.
-	if (audio->enabled())
+	if (audio_get_enabled())
 	{
-		audio->endSound();
+		audio_end();
 		
-		if (!audio->initSound())
-			audio->setEnabled(false);
+		if (audio_init(AUDIO_BACKEND_DEFAULT))
+			audio_set_enabled(false);
 		else
-			audio->playSound();
+		{
+			if (audio_play_sound)
+				audio_play_sound();
+		}
 	}
 	
 	// Initialize BRAM.
@@ -215,7 +221,7 @@ int Init_SegaCD(const char* iso_name)
 int Reload_SegaCD(const char* iso_name)
 {
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	// Save the current BRAM.
 	Savestate::SaveBRAM();
@@ -244,7 +250,7 @@ void Reset_SegaCD(void)
 	char *BIOS_To_Use;
 	
 	// Clear the sound buffer.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	if (Game_Mode == 0)
 		BIOS_To_Use = BIOS_Filenames.MegaCD_JP;
@@ -443,12 +449,12 @@ int Do_SegaCD_Frame_No_VDP(void)
 	
 	PSG_Special_Update();
 	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio->segLength());
+	Update_CD_Audio(buf, audio_seg_length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
@@ -720,12 +726,12 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 	
 	PSG_Special_Update();
 	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio->segLength());
+	Update_CD_Audio(buf, audio_seg_length);
 	
   	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
@@ -946,12 +952,12 @@ int Do_SegaCD_Frame(void)
 	
 	PSG_Special_Update();
 	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio->segLength());
+	Update_CD_Audio(buf, audio_seg_length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
@@ -1228,12 +1234,12 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 	
 	PSG_Special_Update();
 	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio->segLength());
+	Update_CD_Audio(buf, audio_seg_length);
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio->dumpingWAV())
-		audio->updateWAVDump();
+	if (audio_get_wav_dumping())
+		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
