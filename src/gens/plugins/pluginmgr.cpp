@@ -169,6 +169,22 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 }
 
 
+struct pluginDirEntry
+{
+	string filename;
+	bool isDirectory;
+	
+	bool operator< (const pluginDirEntry& compare) const
+	{
+		#ifdef GENS_OS_WIN32
+			return (strcasecmp(filename.c_str(), compare.filename.c_str()) < 0);
+		#else
+			return (strcmp(filename.c_str(), compare.filename.c_str()) < 0);
+		#endif
+	}
+};
+
+
 /**
  * scanExternalPlugins(): Scan for external plugins.
  * @param directory Directory to scan for plugins.
@@ -193,8 +209,11 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	// Read all files in the directory.
 	struct dirent *d_entry;
 	size_t d_name_len;
-	string tmpFilename;
 	mode_t filetype;
+	
+	// Create a list of all directory entries first.
+	list<pluginDirEntry> pluginEntries;
+	pluginDirEntry curEntry;
 	
 	// Required if libc doesn't provide the dirent->d_type field.
 	#ifndef _DIRENT_HAVE_D_TYPE
@@ -211,8 +230,8 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 		#else /* !_DIRENT_HAVE_D_TYPE */
 			// libc does not provide the dirent->d_type field.
 			// mingw unfortunately doesn't. :(
-			tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
-			stat(tmpFilename.c_str(), &dirstat);
+			curEntry.filename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+			stat(curEntry.filename.c_str(), &dirstat);
 			filetype = dirstat.st_mode;
 		#endif /* _DIRENT_HAVE_D_TYPE */
 		
@@ -230,9 +249,10 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 					
 					// Scan the directory.
 					#ifdef _DIRENT_HAVE_D_TYPE
-					tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+						curEntry.filename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
 					#endif /* _DIRENT_HAVE_D_TYPE */
-					scanExternalPlugins(tmpFilename.c_str());
+					curEntry.isDirectory = true;
+					pluginEntries.push_back(curEntry);
 				}
 			}
 		}
@@ -253,15 +273,35 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 					// File extension matches.
 					// Found a plugin.
 					#ifdef _DIRENT_HAVE_D_TYPE
-					tmpFilename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+						curEntry.filename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
 					#endif
-					loadExternalPlugin(tmpFilename);
+					curEntry.isDirectory = false;
+					pluginEntries.push_back(curEntry);
 				}
 			}
 		}
 		
 		// Get the next directory entry.
 		d_entry = readdir(mdpDir);
+	}
+	
+	// Sort the list of plugins.
+	pluginEntries.sort();
+	
+	// Load the plugins.
+	for (list<pluginDirEntry>::iterator curPlugin = pluginEntries.begin();
+	     curPlugin != pluginEntries.end(); curPlugin++)
+	{
+		if (((*curPlugin).isDirectory) && recursive)
+		{
+			// Scan the directory.
+			scanExternalPlugins((*curPlugin).filename, recursive);
+		}
+		else
+		{
+			// Load the plugin.
+			loadExternalPlugin((*curPlugin).filename);
+		}
 	}
 }
 
