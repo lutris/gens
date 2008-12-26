@@ -240,6 +240,9 @@ static int audio_sdl_write_sound_buffer(void *dump_buf)
 }
 
 
+/**
+ * audio_sdl_clear_sound_buffer(): Clear the sound buffer.
+ */
 static void audio_sdl_clear_sound_buffer(void)
 {
 	// NOTE: This isn't used with SDL.
