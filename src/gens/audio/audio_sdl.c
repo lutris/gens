@@ -87,7 +87,7 @@ static int audio_sdl_init(void)
 	// Make sure sound is shut down first.
 	audio_sdl_end();
 	
-	// Determine the segment length.
+	// Calculate the segment length.
 	audio_calc_segment_length();
 	
 	int i;
