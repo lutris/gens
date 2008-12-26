@@ -79,7 +79,7 @@ audio_backend_t audio_backend_sdl =
  * audio_sdl_init(): Initialize the SDL audio subsystem.
  * @return 0 on success; non-zero on error.
  */
-int audio_sdl_init(void)
+static int audio_sdl_init(void)
 {
 	if (audio_initialized)
 		return -1;
@@ -142,7 +142,7 @@ int audio_sdl_init(void)
  * audio_sdl_end(): Shut down the SDL audio subsystem.
  * @return 0 on success; non-zero on error.
  */
-int audio_sdl_end(void)
+static int audio_sdl_end(void)
 {
 	SDL_PauseAudio(1);
 	
@@ -250,7 +250,7 @@ static void audio_sdl_clear_sound_buffer(void)
  * audio_sdl_wait_for_audio_buffer(): Wait for the audio buffer to empty out.
  * This function is used for Auto Frame Skip.
  */
-void audio_sdl_wait_for_audio_buffer(void)
+static void audio_sdl_wait_for_audio_buffer(void)
 {
 	audio_sdl_write_sound_buffer(NULL);
 	while (audio_sdl_len <= (audio_seg_length * audio_seg_to_buffer))
