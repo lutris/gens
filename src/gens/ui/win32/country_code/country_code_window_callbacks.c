@@ -29,6 +29,9 @@
 #include "emulator/gens.hpp"
 #include "gens_ui.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // Gens Win32 resources
 #include "ui/win32/resource.h"
 
@@ -53,7 +56,7 @@ LRESULT CALLBACK Country_Code_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			// - Menu is opened.
 			// - Window is resized.
 			// - Left/Right mouse button down on title bar.
-			Win32_ClearSoundBuffer();
+			audio_clear_sound_buffer();
 			break;
 		
 		case WM_COMMAND:

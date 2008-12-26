@@ -38,6 +38,9 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // Windows includes
 #include <windowsx.h>
 #include <commctrl.h>
@@ -186,7 +189,7 @@ LRESULT CALLBACK PluginManagerWindow::WndProc(HWND hWnd, UINT message, WPARAM wP
 			// - Menu is opened.
 			// - Window is resized.
 			// - Left/Right mouse button down on title bar.
-			audio->clearSoundBuffer();
+			audio_clear_sound_buffer();
 			break;
 		
 		case WM_COMMAND:

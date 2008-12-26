@@ -56,6 +56,9 @@
 // Inline video functions.
 #include "v_inline.h"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 
 // X and Y resolutions.
 static int Res_X;
@@ -1148,7 +1151,7 @@ void vdraw_ddraw_update_vsync(const BOOL fromInitDDraw)
 int vdraw_ddraw_reinit_gens_window(void)
 {
 	// Clear the sound buffer.
-	Win32_ClearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	// Stop DirectDraw.
 	vdraw_ddraw_end();

@@ -20,7 +20,7 @@
 
 #include "video/vdraw.h"
 #include "input/input.h"
-#include "audio/audio_dsound.hpp"
+#include "audio/audio.h"
 
 // VDraw C++ functions.
 #include "video/vdraw_cpp.hpp"
@@ -156,14 +156,10 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		exit(rval);
 	}
 	
-	// Initialize the audio object.
-	audio = new Audio_DSound();
-	
 	// Initialize the Settings struct.
 	if (Init_Settings())
 	{
 		// Error initializing settings.
-		delete audio;
 		input_end();
 		vdraw_end();
 		return 1;	// TODO: Replace with a better error code.
@@ -227,7 +223,7 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Run the Gens Main Loop.
 	GensMainLoop();
 	
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
 	strcat(Str_Tmp, "gens.cfg");
 	Config::save(Str_Tmp);

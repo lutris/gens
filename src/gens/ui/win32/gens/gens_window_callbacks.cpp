@@ -64,6 +64,9 @@
 // File management functions.
 #include "util/file/file.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // Needed on Win32
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/sound/ym2612.h"
@@ -156,7 +159,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 			// - Menu is opened.
 			// - Window is resized.
 			// - Left/Right mouse button down on title bar.
-			audio->clearSoundBuffer();
+			audio_clear_sound_buffer();
 			break;
 		
 		case WM_EXITSIZEMOVE:
@@ -187,7 +190,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				if (Auto_Pause && Active)
 				{
 					Active = 0;
-					audio->clearSoundBuffer();
+					audio_clear_sound_buffer();
 				}
 			}
 			
@@ -264,8 +267,8 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 static void on_gens_window_close(void)
 {
 	//Modif N - making sure sound doesn't stutter on exit
-	if (audio->soundInitialized())
-		audio->clearSoundBuffer();
+	if (audio_initialized)
+		audio_clear_sound_buffer();
 	
 	close_gens();
 }
@@ -303,7 +306,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			{
 				Paused = 1;
 				//Pause_Screen();
-				audio->clearSoundBuffer();
+				audio_clear_sound_buffer();
 			}
 			break;
 		
@@ -316,7 +319,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			{
 				Paused = 1;
 				//Pause_Screen();
-				audio->clearSoundBuffer();
+				audio_clear_sound_buffer();
 			}
 			break;
 		
@@ -443,7 +446,7 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 						break;
 					
 					//if ((Check_If_Kaillera_Running())) return 0;
-					if (audio->playingGYM())
+					if (audio_get_gym_playing())
 						Stop_Play_GYM();
 					ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename);
 					Sync_Gens_Window();
@@ -462,7 +465,7 @@ static void fullScreenPopupMenu(HWND hWnd)
 {
 	// Full Screen, right mouse button click.
 	// Show the popup menu.
-	audio->clearSoundBuffer();
+	audio_clear_sound_buffer();
 	
 	// Show the mouse pointer.
 	while (ShowCursor(false) >= 0) { }
