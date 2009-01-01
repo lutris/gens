@@ -276,8 +276,7 @@ gens_mdp_static = \
 gens_LDADD = \
 		${ASMFILES} \
 		${gens_mdp_static} \
-		../starscream/main68k.o \
-		../starscream/sub68k.o \
+		../starscream/libstarscream.a \
 		../mdZ80/libmdZ80.a \
 		-lm $(LIBLTDL)
 
@@ -309,8 +308,7 @@ endif # GENS_PNG
 gens_DEPENDENCIES = \
 		${ASMFILES} \
 		${gens_mdp_static} \
-		../starscream/main68k.o \
-		../starscream/sub68k.o \
+		../starscream/libstarscream.a \
 		../mdZ80/libmdZ80.a \
 		$(LDTLDEPS)
 
@@ -332,10 +330,7 @@ gens_DEPENDENCIES += ../libpng/libpng.a
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
-CLEANFILES = \
-		${ASMFILES} \
-		../starscream/main68k.o \
-		../starscream/sub68k.o
+CLEANFILES = ${ASMFILES}
 
 # Initialize CFLAGS and CXXFLAGS.
 gens_CFLAGS =
