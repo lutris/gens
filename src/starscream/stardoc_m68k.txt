@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 Starscream 680x0 emulation library                      Custom version M0.26d
 Copyright 1997, 1998, 1999 Neill Corlett
-Modified by Stéphane Dallongeville
+Modified by StÃ©phane Dallongeville
 Used for the main 68000 CPU emulation in Gens.
 -----------------------------------------------------------------------------
 
