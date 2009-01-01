@@ -643,7 +643,7 @@ align 64
 		
 		;--------------------------------
 		
-		movq	mm7, [Mask35]
+		get_movq_localvar	mm7, Mask35
 		push	eax
 		add	eax, ebp
 		movq	mm6, [eax + ebp + ebp + colorA2]
@@ -785,11 +785,11 @@ align 64
 		pand	mm1, mm2
 		
 		movq	mm2, mm0
-		movq	mm7, [I5666Pixel]
-		movq	mm6, [I5556Pixel]
-		movq	mm5, [I56Pixel]
-		movq	mm4, [Mask35]
-		movq	mm3, [Mask26]
+		get_movq_localvar	mm7, I5666Pixel
+		get_movq_localvar	mm6, I5556Pixel
+		get_movq_localvar	mm5, I56Pixel
+		get_movq_localvar	mm4, Mask35
+		get_movq_localvar	mm3, Mask26
 		
 		por	mm2, mm4
 		pand	mm4, [eax + ebp + color5]
