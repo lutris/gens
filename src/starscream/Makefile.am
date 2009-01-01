@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 BUILT_SOURCES = main68k.asm sub68k.asm
 CLEANFILES = star_m68k star_s68k main68k.asm sub68k.asm
 
@@ -19,3 +21,8 @@ main68k.asm: star_m68k
 	./star_m68k main68k.asm -hog -name main68k_
 sub68k.asm: star_s68k
 	./star_s68k sub68k.asm -hog -name sub68k_
+
+# Build libstarscream.a
+noinst_LIBRARIES = libstarscream.a
+libstarscream_a_SOURCES = main68k.asm sub68k.asm
+libstarscream_a_LIBADD = main68k.o sub68k.o
