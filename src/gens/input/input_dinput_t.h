@@ -29,7 +29,7 @@ extern "C" {
 
 #include "input.h"
 
-extern input_backend_t input_backend_dinput;
+extern const input_backend_t input_backend_dinput;
 
 #ifdef __cplusplus
 }

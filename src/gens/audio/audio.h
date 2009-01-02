@@ -78,8 +78,8 @@ int	audio_init(AUDIO_BACKEND backend);
 int	audio_end(void);
 
 // Current backend.
-extern audio_backend_t	*audio_cur_backend;
-extern AUDIO_BACKEND	audio_cur_backend_id;
+extern const audio_backend_t *audio_cur_backend;
+extern AUDIO_BACKEND audio_cur_backend_id;
 
 // Clear the sound buffer.
 void	audio_clear_sound_buffer(void);

@@ -99,8 +99,8 @@ int	input_init(INPUT_BACKEND backend);
 int	input_end(void);
 
 // Current backend.
-extern input_backend_t	*input_cur_backend;
-extern INPUT_BACKEND	input_cur_backend_id;
+extern const input_backend_t *input_cur_backend;
+extern INPUT_BACKEND input_cur_backend_id;
 
 // Update the controller bitfields.
 void	input_update_controllers(void);

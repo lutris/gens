@@ -24,7 +24,7 @@
 #include "audio_dsound.hpp"
 
 // Audio Backend struct.
-audio_backend_t audio_backend_dsound =
+const audio_backend_t audio_backend_dsound =
 {
 	.init = audio_dsound_init,
 	.end = audio_dsound_end,

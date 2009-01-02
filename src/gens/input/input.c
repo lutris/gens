@@ -35,7 +35,7 @@
 	#include "input_sdl.h"
 #endif /* GENS_OS_WIN32 */
 
-static input_backend_t * const input_backends[] =
+static const input_backend_t * const input_backends[] =
 {
 	#ifdef GENS_OS_WIN32
 		&input_backend_dinput,
@@ -45,8 +45,8 @@ static input_backend_t * const input_backends[] =
 };
 
 // Current backend.
-input_backend_t	*input_cur_backend = NULL;
-INPUT_BACKEND	input_cur_backend_id;
+const input_backend_t *input_cur_backend = NULL;
+INPUT_BACKEND input_cur_backend_id;
 
 // Function and array pointers.
 int			(*input_update)(void) = NULL;

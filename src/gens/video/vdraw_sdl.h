@@ -29,7 +29,7 @@ extern "C" {
 
 #include "vdraw.h"
 
-extern vdraw_backend_t vdraw_backend_sdl;
+extern const vdraw_backend_t vdraw_backend_sdl;
 
 #ifdef __cplusplus
 }

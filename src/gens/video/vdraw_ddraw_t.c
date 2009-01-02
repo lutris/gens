@@ -24,7 +24,7 @@
 #include "vdraw_ddraw.hpp"
 
 // VDraw Backend struct.
-vdraw_backend_t vdraw_backend_ddraw =
+const vdraw_backend_t vdraw_backend_ddraw =
 {
 	.init = vdraw_ddraw_init,
 	.end = vdraw_ddraw_end,

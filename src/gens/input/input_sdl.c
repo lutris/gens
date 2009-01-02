@@ -101,7 +101,7 @@ static const unsigned char input_sdl_joy_axis_values[2][6] =
 
 
 // Input Backend struct.
-input_backend_t input_backend_sdl =
+const input_backend_t input_backend_sdl =
 {
 	.init = input_sdl_init,
 	.end = input_sdl_end,

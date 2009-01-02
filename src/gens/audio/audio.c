@@ -35,7 +35,7 @@
 	#include "audio_sdl.h"
 #endif /* GENS_OS_WIN32 */
 
-static audio_backend_t * const audio_backends[] =
+static const audio_backend_t * const audio_backends[] =
 {
 	#ifdef GENS_OS_WIN32
 		&audio_backend_dsound,
@@ -45,8 +45,8 @@ static audio_backend_t * const audio_backends[] =
 };
 
 // Current backend.
-audio_backend_t	*audio_cur_backend = NULL;
-AUDIO_BACKEND	audio_cur_backend_id;
+const audio_backend_t *audio_cur_backend = NULL;
+AUDIO_BACKEND audio_cur_backend_id;
 
 // Function pointers.
 int	(*audio_write_sound_buffer)(void *dump_buf) = NULL;

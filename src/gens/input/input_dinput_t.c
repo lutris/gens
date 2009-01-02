@@ -24,7 +24,7 @@
 #include "input_dinput.hpp"
 
 // Input Backend struct.
-input_backend_t input_backend_dinput =
+const input_backend_t input_backend_dinput =
 {
 	.init = input_dinput_init,
 	.end = input_dinput_end,

@@ -75,7 +75,7 @@
 	#endif /* GENS_OPENGL */
 #endif /* GENS_OS_WIN32 */
 
-static vdraw_backend_t * const vdraw_backends[] =
+static const vdraw_backend_t * const vdraw_backends[] =
 {
 	#ifdef GENS_OS_WIN32
 		&vdraw_backend_ddraw,
@@ -88,8 +88,8 @@ static vdraw_backend_t * const vdraw_backends[] =
 };
 
 // Current backend.
-vdraw_backend_t	*vdraw_cur_backend = NULL;
-VDRAW_BACKEND	vdraw_cur_backend_id;
+const vdraw_backend_t *vdraw_cur_backend = NULL;
+VDRAW_BACKEND vdraw_cur_backend_id;
 
 // Function pointers.
 int		(*vdraw_init_subsystem)(void) = NULL;

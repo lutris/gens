@@ -95,8 +95,8 @@ int	vdraw_backend_init(VDRAW_BACKEND backend);
 int	vdraw_backend_end(void);
 
 // Current backend.
-extern vdraw_backend_t	*vdraw_cur_backend;
-extern VDRAW_BACKEND	vdraw_cur_backend_id;
+extern const vdraw_backend_t *vdraw_cur_backend;
+extern VDRAW_BACKEND vdraw_cur_backend_id;
 
 // Called if initialization fails.
 void	vdraw_init_fail(const char* err);

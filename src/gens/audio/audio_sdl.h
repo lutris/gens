@@ -29,7 +29,7 @@ extern "C" {
 
 #include "audio.h"
 
-extern audio_backend_t audio_backend_sdl;
+extern const audio_backend_t audio_backend_sdl;
 
 #ifdef __cplusplus
 }

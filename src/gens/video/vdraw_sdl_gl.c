@@ -123,7 +123,7 @@ PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval = NULL;
 
 
 // VDraw Backend struct.
-vdraw_backend_t vdraw_backend_sdl_gl =
+const vdraw_backend_t vdraw_backend_sdl_gl =
 {
 	.init = vdraw_sdl_gl_init,
 	.end = vdraw_sdl_gl_end,

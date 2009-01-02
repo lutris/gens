@@ -60,7 +60,7 @@ static unsigned char *audio_sdl_audiobuf = NULL;
 static void audio_sdl_callback(void *user, uint8_t *buffer, int len);
 
 // Audio Backend struct.
-audio_backend_t audio_backend_sdl =
+const audio_backend_t audio_backend_sdl =
 {
 	.init = audio_sdl_init,
 	.end = audio_sdl_end,

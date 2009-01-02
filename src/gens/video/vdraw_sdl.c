@@ -70,7 +70,7 @@ static SDL_Surface *vdraw_sdl_screen;
 
 
 // VDraw Backend struct.
-vdraw_backend_t vdraw_backend_sdl =
+const vdraw_backend_t vdraw_backend_sdl =
 {
 	.init = vdraw_sdl_init,
 	.end = vdraw_sdl_end,
