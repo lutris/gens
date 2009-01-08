@@ -503,6 +503,7 @@ static void dragDropFile(HDROP hDrop)
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);
+			Sync_Gens_Window();
 		}
 	}
 	

@@ -132,6 +132,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 		{
 			// File exists. Open it as a ROM image.
 			ROM::openROM(filename);
+			Sync_Gens_Window();
 		}
 		else
 		{
