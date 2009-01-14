@@ -4975,28 +4975,6 @@ DECLF z80_Add_%1
 
 align 16
 
-; UINT32 FASTCALL z80_Set_IN(Z80_CONTEXT *z80, Z80_RB *Func)
-;
-; RETURN: 0
-
-DECLF z80_Set_IN, 8
-	mov [ecx + Z80.IN], edx
-	ret
-
-
-align 16
-
-; UINT32 FASTCALL z80_Set_OUT(Z80_CONTEXT *z80, Z80_WB *Func)
-;
-; RETURN: 0
-
-DECLF z80_Set_OUT, 8
-	mov [ecx + Z80.OUT], edx
-	ret
-
-
-align 16
-
 ; int FASTCALL z80_Read_Odo(Z80_CONTEXT *z80)
 ; ecx = context pointer
 ;
