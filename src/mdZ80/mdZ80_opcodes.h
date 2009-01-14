@@ -21,9 +21,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+/**
+ * Z80 opcodes: 1-byte opcodes.
+ */
 enum mdZ80_opcode
 {
-	// 0x00 - 0x0F
+	/* 0x00 - 0x0F */
 	Z80_OP_NOP		= 0x00,	Z80_OP_LD_BC_NN		= 0x01,
 	Z80_OP_LD_mBC_A		= 0x02,	Z80_OP_INC_BC		= 0x03,
 	Z80_OP_INC_B		= 0x04,	Z80_OP_DEC_B		= 0x05,
@@ -33,7 +36,7 @@ enum mdZ80_opcode
 	Z80_OP_INC_C		= 0x0C,	Z80_OP_DEC_C		= 0x0D,
 	Z80_OP_LD_C_N		= 0x0E,	Z80_OP_RRCA		= 0x0F,
 	
-	// 0x10 - 0x1F
+	/* 0x10 - 0x1F */
 	Z80_OP_DJNZ		= 0x10,	Z80_OP_LD_DE_NN		= 0x11,
 	Z80_OP_LD_mDE_A		= 0x12,	Z80_OP_INC_DE		= 0x13,
 	Z80_OP_INC_D		= 0x14,	Z80_OP_DEC_D		= 0x15,
@@ -43,7 +46,7 @@ enum mdZ80_opcode
 	Z80_OP_INC_E		= 0x1C,	Z80_OP_DEC_E		= 0x1D,
 	Z80_OP_LD_E_N		= 0x1E,	Z80_OP_RRA		= 0x1F,
 	
-	// 0x20 - 0x2F
+	/* 0x20 - 0x2F */
 	Z80_OP_JRNZ_N		= 0x20,	Z80_OP_LD_HL_NN		= 0x21,
 	Z80_OP_LD_mNN_HL	= 0x22,	Z80_OP_INC_HL		= 0x23,
 	Z80_OP_INC_H		= 0x24,	Z80_OP_DEC_H		= 0x25,
@@ -53,7 +56,7 @@ enum mdZ80_opcode
 	Z80_OP_INC_L		= 0x2C,	Z80_OP_DEC_L		= 0x2D,
 	Z80_OP_LD_L_N		= 0x2E,	Z80_OP_CPL		= 0x2F,
 	
-	// 0x30 - 0x3F
+	/* 0x30 - 0x3F */
 	Z80_OP_JRNC_N		= 0x30,	Z80_OP_LD_SP_NN		= 0x31,
 	Z80_OP_LD_mNN_A		= 0x32,	Z80_OP_INC_SP		= 0x33,
 	Z80_OP_INC_mHL		= 0x34,	Z80_OP_DEC_mHL		= 0x35,
@@ -63,7 +66,7 @@ enum mdZ80_opcode
 	Z80_OP_INC_A		= 0x3C,	Z80_OP_DEC_A		= 0x3D,
 	Z80_OP_LD_A_N		= 0x3E,	Z80_OP_CCF		= 0x3F,
 	
-	// 0x40 - 0x4F
+	/* 0x40 - 0x4F */
 	Z80_OP_LD_B_B		= 0x40,	Z80_OP_LD_B_C		= 0x41,
 	Z80_OP_LD_B_D		= 0x42,	Z80_OP_LD_B_E		= 0x43,
 	Z80_OP_LD_B_H		= 0x44,	Z80_OP_LD_B_L		= 0x45,
@@ -73,7 +76,7 @@ enum mdZ80_opcode
 	Z80_OP_LD_C_H		= 0x4C,	Z80_OP_LD_C_L		= 0x4D,
 	Z80_OP_LD_C_mHL		= 0x4E,	Z80_OP_LD_C_A		= 0x4F,
 	
-	// 0x50 - 0x5F
+	/* 0x50 - 0x5F */
 	Z80_OP_LD_D_B		= 0x50,	Z80_OP_LD_D_C		= 0x51,
 	Z80_OP_LD_D_D		= 0x52,	Z80_OP_LD_D_E		= 0x53,
 	Z80_OP_LD_D_H		= 0x54,	Z80_OP_LD_D_L		= 0x55,
@@ -83,7 +86,7 @@ enum mdZ80_opcode
 	Z80_OP_LD_E_H		= 0x5C,	Z80_OP_LD_E_L		= 0x5D,
 	Z80_OP_LD_E_mHL		= 0x5E,	Z80_OP_LD_E_A		= 0x5F,
 	
-	// 0x60 - 0x6F
+	/* 0x60 - 0x6F */
 	Z80_OP_LD_H_B		= 0x60,	Z80_OP_LD_H_C		= 0x61,
 	Z80_OP_LD_H_D		= 0x62,	Z80_OP_LD_H_E		= 0x63,
 	Z80_OP_LD_H_H		= 0x64,	Z80_OP_LD_H_L		= 0x65,
@@ -93,7 +96,7 @@ enum mdZ80_opcode
 	Z80_OP_LD_L_H		= 0x6C,	Z80_OP_LD_L_L		= 0x6D,
 	Z80_OP_LD_L_mHL		= 0x6E,	Z80_OP_LD_L_A		= 0x6F,
 	
-	// 0x70 - 0x7F
+	/* 0x70 - 0x7F */
 	Z80_OP_LD_mHL_B		= 0x70,	Z80_OP_LD_mHL_C		= 0x71,
 	Z80_OP_LD_mHL_D		= 0x72,	Z80_OP_LD_mHL_E		= 0x73,
 	Z80_OP_LD_mHL_H		= 0x74,	Z80_OP_LD_mHL_L		= 0x75,
@@ -103,7 +106,7 @@ enum mdZ80_opcode
 	Z80_OP_LD_A_H		= 0x7C,	Z80_OP_LD_A_L		= 0x7D,
 	Z80_OP_LD_A_mHL		= 0x7E,	Z80_OP_LD_A_A		= 0x7F,
 	
-	// 0x80 - 0x8F
+	/* 0x80 - 0x8F */
 	Z80_OP_ADD_A_B		= 0x80,	Z80_OP_ADD_A_C		= 0x81,
 	Z80_OP_ADD_A_D		= 0x82,	Z80_OP_ADD_A_E		= 0x83,
 	Z80_OP_ADD_A_H		= 0x84,	Z80_OP_ADD_A_L		= 0x85,
@@ -113,7 +116,7 @@ enum mdZ80_opcode
 	Z80_OP_ADC_A_H		= 0x8C,	Z80_OP_ADC_A_L		= 0x8D,
 	Z80_OP_ADC_A_mHL	= 0x8E,	Z80_OP_ADC_A_A		= 0x8F,
 	
-	// 0x90 - 0x9F
+	/* 0x90 - 0x9F */
 	Z80_OP_SUB_B		= 0x90,	Z80_OP_SUB_C		= 0x91,
 	Z80_OP_SUB_D		= 0x92,	Z80_OP_SUB_E		= 0x93,
 	Z80_OP_SUB_H		= 0x94,	Z80_OP_SUB_L		= 0x95,
@@ -123,7 +126,7 @@ enum mdZ80_opcode
 	Z80_OP_SBC_H		= 0x9C,	Z80_OP_SBC_L		= 0x9D,
 	Z80_OP_SBC_mHL		= 0x9E,	Z80_OP_SBC_A		= 0x9F,
 	
-	// 0xA0 - 0xAF
+	/* 0xA0 - 0xAF */
 	Z80_OP_AND_B		= 0xA0,	Z80_OP_AND_C		= 0xA1,
 	Z80_OP_AND_D		= 0xA2,	Z80_OP_AND_E		= 0xA3,
 	Z80_OP_AND_H		= 0xA4,	Z80_OP_AND_L		= 0xA5,
@@ -133,7 +136,7 @@ enum mdZ80_opcode
 	Z80_OP_XOR_H		= 0xAC,	Z80_OP_XOR_L		= 0xAD,
 	Z80_OP_XOR_mHL		= 0xAE,	Z80_OP_XOR_A		= 0xAF,
 	
-	// 0xB0 - 0xBF
+	/* 0xB0 - 0xBF */
 	Z80_OP_OR_B		= 0xB0,	Z80_OP_OR_C		= 0xB1,
 	Z80_OP_OR_D		= 0xB2,	Z80_OP_OR_E		= 0xB3,
 	Z80_OP_OR_H		= 0xB4,	Z80_OP_OR_L		= 0xB5,
@@ -143,7 +146,7 @@ enum mdZ80_opcode
 	Z80_OP_CP_H		= 0xBC,	Z80_OP_CP_L		= 0xBD,
 	Z80_OP_CP_mHL		= 0xBE,	Z80_OP_CP_A		= 0xBF,
 	
-	// 0xC0 - 0xCF
+	/* 0xC0 - 0xCF */
 	Z80_OP_RET_NZ		= 0xC0,	Z80_OP_POP_BC		= 0xC1,
 	Z80_OP_JP_NZ_NN		= 0xC2,	Z80_OP_JP_NN		= 0xC3,
 	Z80_OP_CALL_NZ_NN	= 0xC4,	Z80_OP_PUSH_BC		= 0xC5,
@@ -153,7 +156,7 @@ enum mdZ80_opcode
 	Z80_OP_CALL_Z_NN	= 0xCC,	Z80_OP_CALL_NN		= 0xCD,
 	Z80_OP_ADC_A_N		= 0xCE,	Z80_OP_RST_08H		= 0xCF,
 	
-	// 0xD0 - 0xDF
+	/* 0xD0 - 0xDF */
 	Z80_OP_RET_NC		= 0xD0,	Z80_OP_POP_DE		= 0xD1,
 	Z80_OP_JP_NC_NN		= 0xD2,	Z80_OP_OUT_mN		= 0xD3,
 	Z80_OP_CALL_NC_NN	= 0xD4,	Z80_OP_PUSH_DE		= 0xD5,
@@ -163,7 +166,7 @@ enum mdZ80_opcode
 	Z80_OP_CALL_C_NN	= 0xDC,	Z80_PREFIX_DD		= 0xDD,
 	Z80_OP_SBC_N		= 0xDE,	Z80_OP_RST_18H		= 0xDF,
 	
-	// 0xE0 - 0xEF
+	/* 0xE0 - 0xEF */
 	Z80_OP_RET_NP		= 0xE0,	Z80_OP_POP_HL		= 0xE1,
 	Z80_OP_JP_NP_NN		= 0xE2,	Z80_OP_EX_mSP_HL	= 0xE3,
 	Z80_OP_CALL_NP_NN	= 0xE4,	Z80_OP_PUSH_HL		= 0xE5,
@@ -173,7 +176,7 @@ enum mdZ80_opcode
 	Z80_OP_CALL_P_NN	= 0xEC,	Z80_PREFIX_ED		= 0xED,
 	Z80_OP_XOR_N		= 0xEE,	Z80_OP_RST_28H		= 0xEF,
 	
-	// 0xF0 - 0xFF
+	/* 0xF0 - 0xFF */
 	Z80_OP_RET_NS		= 0xF0,	Z80_OP_POP_AF		= 0xF1,
 	Z80_OP_JP_NS_NN		= 0xF2,	Z80_OP_DI		= 0xF3,
 	Z80_OP_CALL_NS_NN	= 0xF4,	Z80_OP_PUSH_AF		= 0xF5,
