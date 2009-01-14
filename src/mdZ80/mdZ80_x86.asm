@@ -4998,21 +4998,6 @@ DECLF z80_Read_Odo, 4
 
 align 16
 
-; void FASTCALL z80_Clear_Odo(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: none
-
-DECLF z80_Clear_Odo, 4
-%ifdef __GCC2
-	mov ecx, eax
-%endif
-	mov dword [ecx + Z80.CycleCnt], 0
-	ret
-
-
-align 16
-
 ; void FASTCALL z80_Set_Odo(Z80_CONTEXT *z80, UINT32 Odo)
 ; ecx = context pointer
 ;

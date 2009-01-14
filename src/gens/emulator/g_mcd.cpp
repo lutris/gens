@@ -321,9 +321,9 @@ int Do_SegaCD_Frame_No_VDP(void)
 	
 	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer ();
-	sub68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
+	main68k_tripOdometer();
+	sub68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -484,7 +484,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
 	sub68k_tripOdometer();
-	z80_Clear_Odo (&M_Z80);
+	z80_Clear_Odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -822,9 +822,9 @@ int Do_SegaCD_Frame(void)
 	
 	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer ();
-	sub68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
+	main68k_tripOdometer();
+	sub68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -988,9 +988,9 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 	
 	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer ();
-	sub68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
+	main68k_tripOdometer();
+	sub68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	

@@ -418,8 +418,8 @@ int Do_Genesis_Frame_No_VDP(void)
 	
 	Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer ();
-	z80_Clear_Odo (&M_Z80);
+	main68k_tripOdometer();
+	z80_Clear_Odo(&M_Z80);
 	
 	// TODO: Send "Before Frame" event to registered MDP event handlers.
 	//Patch_Codes();
