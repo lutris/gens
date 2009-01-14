@@ -295,6 +295,11 @@ section .rodata align=64
 	
 section .text align=64
 	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	_z80_Reset	z80_Reset
+	%endif
+	
 	extern Z80_ReadB_Table
 	extern Z80_WriteB_Table
 	
@@ -333,7 +338,7 @@ section .text align=64
 	extern M68K_Write_Word_Ram
 	
 	extern _main68k_readOdometer
-	extern z80_Reset
+	extern _z80_Reset
 	extern z80_Exec
 	extern z80_Set_Odo
 	
@@ -1333,13 +1338,11 @@ section .text align=64
 		jnz	short .no_reset
 		
 		push	edx
-		mov	ecx, _M_Z80
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
-		call	z80_Reset
+		
+		push	_M_Z80
+		call	_z80_Reset
+		add	esp, 4
+		
 		or	byte [Z80_State], 4
 		call	_YM2612_Reset
 		pop	edx
@@ -1977,13 +1980,11 @@ section .text align=64
 		jnz	short .no_reset
 		
 		push	edx
-		mov	ecx, _M_Z80
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
-		call	z80_Reset
+		
+		push	_M_Z80
+		call	_z80_Reset
+		add	esp, 4
+		
 		or	byte [Z80_State], 4
 		call	_YM2612_Reset
 		pop	edx

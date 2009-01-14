@@ -4896,43 +4896,6 @@ DECLF z80_Init, 4
 	ret
 
 
-align 16
-
-; int FASTCALL z80_Reset(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: 0
-
-DECLF z80_Reset, 4
-	
-	push	edi
-	push	esi
-	push	ebp
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	xor	eax, eax
-	mov	ebp, ecx
-	mov	edi, ecx
-	mov	ecx, (Z80.Reset_Size / 4)
-	push	dword [ebp + Z80.CycleCnt]
-	rep	stosd
-	pop	dword [ebp + Z80.CycleCnt]
-	
-	xor	zxPC, zxPC
-	REBASE_PC
-	mov	edx, 0xFFFF
-	mov	[ebp + Z80.PC], zxPC
-	mov	[ebp + Z80.IX], edx
-	mov	[ebp + Z80.IY], edx
-	mov	dword [ebp + Z80.AF], 0x4000
-	
-	pop	ebp
-	pop	esi
-	pop	edi
-	ret
-
-
 %macro ADD_HANDLER 1
 
 align 16
@@ -5297,59 +5260,6 @@ DECLF z80_Interrupt, 8
 	mov	[ecx + Z80.CycleIO], edx
 
 .done:
-	ret
-
-
-align 16
-
-; UINT32 FASTCALL z80_Get_PC(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: Current PC (-1 during Z80_Exec)
-
-DECLF z80_Get_PC, 4
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	mov	eax, [ecx + Z80.PC]
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	mov	edx, [ecx + Z80.BasePC]
-	jnz	short .running
-	
-	sub	eax, edx
-	ret
-
-align 4
-
-.running:
-	or eax, byte -1
-	ret
-
-
-align 16
-
-; UINT32 FASTCALL z80_Set_PC(Z80_CONTEXT *z80, UINT32 PC)
-; ecx = context pointer
-; edx = new PC
-;
-; RETURN: NONE
-
-DECLF z80_Set_PC, 8
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	jnz	short .running
-
-	and	edx, 0xFFFF
-	mov	eax, edx
-	shr	edx, 8
-	mov	edx, [ecx + Z80.Fetch + edx * 4]
-	add	eax, edx
-	mov	[ecx + Z80.BasePC], edx
-	mov	[ecx + Z80.PC], eax
-
-.running:
 	ret
 
 

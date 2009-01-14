@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-ASMFILES = mdZ80.o
+ASMFILES = mdZ80_x86.o
 
 %.o: %.asm
 	$(NASM) $< -o $@
@@ -10,7 +10,8 @@ ASMFILES = mdZ80.o
 noinst_LIBRARIES = libmdZ80.a
 
 libmdZ80_a_SOURCES = \
-		mdZ80.asm \
+		mdZ80_x86.asm \
+		mdZ80.c \
 		mdZ80_DAA.c \
 		mdZ80_INC_DEC.c
 

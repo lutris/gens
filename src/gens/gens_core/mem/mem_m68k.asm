@@ -271,6 +271,8 @@ section .text align=64
 		%define	_Write_Byte_VDP_Data	Write_Byte_VDP_Data
 		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
 		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
+		
+		%define	_z80_Reset	z80_Reset
 	%endif
 	
 	extern _Read_VDP_Data
@@ -282,7 +284,7 @@ section .text align=64
 	extern _Write_VDP_Ctrl
 	
 	extern _main68k_readOdometer
-	extern z80_Reset
+	extern _z80_Reset
 	extern z80_Exec
 	extern z80_Set_Odo
 	extern _M68K_Set_Prg_Ram
@@ -1288,13 +1290,11 @@ section .text align=64
 		jnz	short .no_reset
 		
 		push	edx
-		mov	ecx, _M_Z80
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
-		call	z80_Reset
+		
+		push	_M_Z80
+		call	_z80_Reset
+		add	esp, 4
+		
 		or	byte [Z80_State], 4
 		call	_YM2612_Reset
 		pop	edx
@@ -1570,13 +1570,11 @@ section .text align=64
 		jnz	short .no_reset
 		
 		push	edx
-		mov	ecx, _M_Z80
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
-		call	z80_Reset
+		
+		push	_M_Z80
+		call	_z80_Reset
+		add	esp, 4
+		
 		or	byte [Z80_State], 4
 		call	_YM2612_Reset
 		pop	edx
