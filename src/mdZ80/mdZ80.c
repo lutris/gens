@@ -172,3 +172,25 @@ void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
 	// Set the FXY2 register.
 	z80->AF2.b.FXY2 = newAF2 & (Z80_FLAG_X | Z80_FLAG_Y);
 }
+
+
+/**
+ * z80_Interrupt(): Raise a Z80 interrupt.
+ * TODO: Figure out the exact purpose of this function.
+ * @param z80 Pointer to Z80 context.
+ * @param vector Interrupt vector.
+ */
+void z80_Interrupt(Z80_CONTEXT *z80, unsigned char vector)
+{
+	// Set the interrupt data.
+	z80->IntVect = vector;
+	z80->IntLine = Z80_FLAG_P;	// because of IFF mask
+	
+	// If the Z80 is currently running, don't do anything else.
+	if (z80->Status & Z80_STATE_RUNNING)
+		return;
+	
+	// Shift the cycle variables.
+	z80->CycleSup = z80->CycleIO;
+	z80->CycleIO = 0;
+}

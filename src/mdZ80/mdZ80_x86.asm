@@ -5200,32 +5200,6 @@ DECLF z80_NMI, 4
 	ret
 
 
-align 16
-
-; UINT32 FASTCALL z80_Interrupt(Z80_CONTEXT *z80, UINT32 vector)
-; ecx = context pointer
-; edx = bus data
-;
-; RETURN: NONE
-
-DECLF z80_Interrupt, 8
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	mov	[ecx + Z80.IntVect], dl
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	mov	byte [ecx + Z80.IntLine], FLAG_P	; because of IFF mask
-	jz	short .done
-	
-	mov	eax, [ecx + Z80.CycleIO]
-	xor	edx, edx
-	mov	[ecx + Z80.CycleSup], eax
-	mov	[ecx + Z80.CycleIO], edx
-
-.done:
-	ret
-
-
 ;*********************
 ;
 ; Tables declaration 
