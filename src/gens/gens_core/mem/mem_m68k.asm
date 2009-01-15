@@ -273,6 +273,7 @@ section .text align=64
 		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
 		
 		%define	_z80_Reset	z80_Reset
+		%define	_z80_Set_Odo	z80_Set_Odo
 	%endif
 	
 	extern _Read_VDP_Data
@@ -286,7 +287,7 @@ section .text align=64
 	extern _main68k_readOdometer
 	extern _z80_Reset
 	extern z80_Exec
-	extern z80_Set_Odo
+	extern _z80_Set_Odo
 	extern _M68K_Set_Prg_Ram
 	extern _YM2612_Write
 	extern _YM2612_Read
@@ -1233,14 +1234,12 @@ section .text align=64
 		sub	ebx, eax
 		mov	edx, [Cycles_Z80]
 		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, _M_Z80
 		sub	edx, ebx
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
-		call	z80_Set_Odo
+		
+		push	edx
+		push	_M_Z80
+		call	_z80_Set_Odo
+		add	esp, 8
 		pop	edx
 	
 	.already_activated:
@@ -1513,14 +1512,12 @@ section .text align=64
 		sub	ebx, eax
 		mov	edx, [Cycles_Z80]
 		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
-		mov	ecx, _M_Z80
 		sub	edx, ebx
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
-		call	z80_Set_Odo
+		
+		push	edx
+		push	_M_Z80
+		call	_z80_Set_Odo
+		add	esp, 8
 		pop	edx
 	
 	.already_activated:

@@ -4998,21 +4998,6 @@ DECLF z80_Read_Odo, 4
 
 align 16
 
-; void FASTCALL z80_Set_Odo(Z80_CONTEXT *z80, UINT32 Odo)
-; ecx = context pointer
-;
-; RETURN: none
-
-DECLF z80_Set_Odo, 8
-%ifdef __GCC2
-	mov ecx, eax
-%endif
-	mov [ecx + Z80.CycleCnt], edx
-	ret
-
-
-align 16
-
 ; void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles)
 ; ecx = context pointer
 ; edx = number of cycles to add

@@ -175,6 +175,17 @@ void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
 
 
 /**
+ * z80_Set_Odo(): Set the Z80 odometer.
+ * @param z80 Pointer to Z80 context.
+ * @param odo New value for the Z80 odometer.
+ */
+void z80_Set_Odo(Z80_CONTEXT *z80, unsigned int odo)
+{
+	z80->CycleCnt = odo;
+}
+
+
+/**
  * z80_NMI(): Raise a non-maskable interrupt.
  * @param z80 Pointer to Z80 context.
  */
