@@ -186,6 +186,26 @@ void z80_Set_Odo(Z80_CONTEXT *z80, unsigned int odo)
 
 
 /**
+ * z80_Add_Cycles(): Add cycles to the Z80 odometer.
+ * @param z80 Pointer to Z80 context.
+ * @param cycles Number of cycles to add.
+ */
+void z80_Add_Cycles(Z80_CONTEXT *z80, unsigned int cycles)
+{
+	if (z80->Status & Z80_STATE_RUNNING)
+	{
+		// z80_Exec() is running.
+		z80->CycleIO -= cycles;
+	}
+	else
+	{
+		// z80_Exec() is not running.
+		z80->CycleCnt += cycles;
+	}
+}
+
+
+/**
  * z80_NMI(): Raise a non-maskable interrupt.
  * @param z80 Pointer to Z80 context.
  */

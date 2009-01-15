@@ -349,7 +349,7 @@ UINT32 z80_Add_Fetch(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, UINT8 *R
 UINT32 FASTCALL z80_Read_Odo(Z80_CONTEXT *z80);
 //void FASTCALL z80_Clear_Odo(Z80_CONTEXT *z80);
 //void FASTCALL z80_Set_Odo(Z80_CONTEXT *z80, UINT32 Odo);
-void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
+//void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
 
 UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
 
@@ -375,7 +375,7 @@ static inline void z80_Clear_Odo(Z80_CONTEXT *z80)
 	z80->CycleCnt = 0;
 }
 void z80_Set_Odo(Z80_CONTEXT *z80, unsigned int odo);
-//void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
+void z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
 
 //UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
 
