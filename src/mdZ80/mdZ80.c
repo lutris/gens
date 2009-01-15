@@ -26,10 +26,8 @@
 // C includes.
 #include <string.h>
 
-
-#define Z80_RUNNING	0x01
-#define Z80_HALTED	0x02
-#define Z80_FAULTED	0x10
+// Z80 flag and state definitions.
+#include "mdZ80_flags.h"
 
 
 /**
@@ -39,7 +37,7 @@
  */
 unsigned int z80_Get_PC(Z80_CONTEXT *z80)
 {
-	if (z80->Status & Z80_RUNNING)
+	if (z80->Status & Z80_STATE_RUNNING)
 		return -1;
 	
 	// Subtract the BasePC from PC to get the actual Z80 program counter.
@@ -54,7 +52,7 @@ unsigned int z80_Get_PC(Z80_CONTEXT *z80)
  */
 void z80_Set_PC(Z80_CONTEXT *z80, unsigned int PC)
 {
-	if (z80->Status & Z80_RUNNING)
+	if (z80->Status & Z80_STATE_RUNNING)
 		return;
 	
 	// TODO: 32-bit specific code will break on 64-bit!
