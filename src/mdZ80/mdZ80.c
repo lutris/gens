@@ -175,6 +175,25 @@ void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
 
 
 /**
+ * z80_NMI(): Raise a non-maskable interrupt.
+ * @param z80 Pointer to Z80 context.
+ */
+void z80_NMI(Z80_CONTEXT *z80)
+{
+	z80->IntVect = 0x66;
+	z80->IntLine = 0x80;
+	
+	// If the Z80 is currently running, don't do anything else.
+	if (z80->Status & Z80_STATE_RUNNING)
+		return;
+	
+	// Shift the cycle variables.
+	z80->CycleSup = z80->CycleIO;
+	z80->CycleIO = 0;
+}
+
+
+/**
  * z80_Interrupt(): Raise a Z80 interrupt.
  * TODO: Figure out the exact purpose of this function.
  * @param z80 Pointer to Z80 context.

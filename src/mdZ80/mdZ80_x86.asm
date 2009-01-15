@@ -5177,29 +5177,6 @@ z80_Exec_Interrupt_Happened:
 	jmp	dword [OP_Table + edx * 4]
 
 
-align 16
-
-; UINT32 FASTCALL z80_NMI(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: NONE
-
-DECLF z80_NMI, 4
-	
-	mov	byte [ecx + Z80.IntVect], 0x66
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	mov	byte [ecx + Z80.IntLine], 0x80
-	jz	short .done
-	
-	mov	eax, [ecx + Z80.CycleIO]
-	xor	edx, edx
-	mov	[ecx + Z80.CycleSup], eax
-	mov	[ecx + Z80.CycleIO], edx
-
-.done:
-	ret
-
-
 ;*********************
 ;
 ; Tables declaration 

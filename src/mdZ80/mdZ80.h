@@ -353,9 +353,6 @@ void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
 
 UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
 
-UINT32 FASTCALL z80_NMI(Z80_CONTEXT *z80);
-//UINT32 FASTCALL z80_Interrupt(Z80_CONTEXT *z80, UINT32 vector);
-
 
 /**
  * Z80 functions (ported to C)
@@ -382,7 +379,7 @@ static inline void z80_Clear_Odo(Z80_CONTEXT *z80)
 
 //UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
 
-//UINT32 FASTCALL z80_NMI(Z80_CONTEXT *z80);
+void z80_NMI(Z80_CONTEXT *z80);
 void z80_Interrupt(Z80_CONTEXT *z80, unsigned char vector);
 
 
