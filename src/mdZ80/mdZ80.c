@@ -86,3 +86,45 @@ void z80_Reset(Z80_CONTEXT *z80)
 	z80->IY.d = 0xFFFF;
 	z80->AF.d = 0x4000;
 }
+
+
+/**
+ * z80_Get_AF(): Get the AF register.
+ * @param z80 Pointer to Z80 context.
+ * @return AF register, or -1 during z80_Exec().
+ */
+unsigned int z80_Get_AF(Z80_CONTEXT *z80)
+{
+	if (z80->Status & Z80_STATE_RUNNING)
+		return;
+	
+	// F register.
+	// The X and Y flags are stored separately from the
+	// rest of the flags for some reason.
+	unsigned char F = (z80->AF.b.F & ~(Z80_FLAG_X | Z80_FLAG_Y)) |
+			  (z80->AF.b.FXY & (Z80_FLAG_X | Z80_FLAG_Y));
+	
+	// Return AF.
+	return ((z80->AF.b.A << 8) | F);
+}
+
+
+/**
+ * z80_Get_AF2(): Get the AF' register.
+ * @param z80 Pointer to Z80 context.
+ * @return AF' register, or -1 during z80_Exec().
+ */
+unsigned int z80_Get_AF2(Z80_CONTEXT *z80)
+{
+	if (z80->Status & Z80_STATE_RUNNING)
+		return;
+	
+	// F' register.
+	// The X and Y flags are stored separately from the
+	// rest of the flags for some reason.
+	unsigned char F2 = (z80->AF2.b.F2 & ~(Z80_FLAG_X | Z80_FLAG_Y)) |
+			  (z80->AF2.b.FXY2 & (Z80_FLAG_X | Z80_FLAG_Y));
+	
+	// Return AF'.
+	return ((z80->AF2.b.A2 << 8) | F2);
+}

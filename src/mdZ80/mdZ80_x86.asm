@@ -5228,36 +5228,6 @@ DECLF z80_Interrupt, 8
 
 align 16
 
-; UINT32 FASTCALL z80_Get_AF(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: AF register (-1 during Z80_Exec)
-
-DECLF z80_Get_AF, 4
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	xor	eax, eax
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	jnz	short .running
-	
-	mov	al, [ecx + Z80.F]
-	mov	dl, [ecx + Z80.FXYB]
-	and	al, ~(FLAG_X | FLAG_Y)
-	and	dl, FLAG_X | FLAG_Y
-	mov	ah, [ecx + Z80.A]
-	or	al, dl
-	ret
-
-align 4
-
-.running
-	or eax, byte -1
-	ret
-
-
-align 16
-
 ; UINT32 FASTCALL z80_Set_AF(Z80_CONTEXT *z80, UINT32 AF)
 ; ecx = context pointer
 ; edx = new AF
@@ -5280,36 +5250,6 @@ DECLF z80_Set_AF, 8
 	mov	[ecx + Z80.A], al
 
 .running:
-	ret
-
-
-align 16
-
-; UINT32 FASTCALL z80_Get_AF2(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: AF2 register (-1 during Z80_Exec)
-
-DECLF z80_Get_AF2, 4
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	xor	eax, eax
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	jnz	short .running
-	
-	mov	al, [ecx + Z80.F2]
-	mov	dl, [ecx + Z80.FXYB2]
-	and	al, ~(FLAG_X | FLAG_Y)
-	and	dl, FLAG_X | FLAG_Y
-	mov	ah, [ecx + Z80.A2]
-	or	al, dl
-	ret
-
-align 4
-
-.running:
-	or eax, byte -1
 	ret
 
 
