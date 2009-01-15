@@ -49,18 +49,6 @@
 
 
 /**
- * Error_32X_BIOS(): Displays an error message if a BIOS file isn't found.
- * @param Str_BIOS Missing BIOS file.
- */
-static void Error_32X_BIOS(const char *Str_BIOS)
-{
-	char Str_Err[256];
-	sprintf(Str_Err, "Your 32X BIOS files aren't correctly configured:\n%s\nGo to menu 'Options -> BIOS/Misc Files' to set them up.", Str_BIOS);
-	GensUI::msgBox(Str_Err, "BIOS Configuration Error");
-}
-
-
-/**
  * Init_32X(): Initialize the 32X with the specified ROM image.
  * @param MD_ROM ROM image struct.
  * @return 1 if successful; 0 if an error occurred.
