@@ -5226,64 +5226,6 @@ DECLF z80_Interrupt, 8
 	ret
 
 
-align 16
-
-; UINT32 FASTCALL z80_Set_AF(Z80_CONTEXT *z80, UINT32 AF)
-; ecx = context pointer
-; edx = new AF
-;
-; RETURN: NONE
-
-DECLF z80_Set_AF, 8
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	mov	eax, edx
-	jnz	short .running
-	
-	rol	ax, 8
-	and	dl, FLAG_X | FLAG_Y
-	and	ah, ~(FLAG_X | FLAG_Y)
-	mov	[ecx + Z80.FXYB], dl
-	mov	[ecx + Z80.F], ah
-	mov	[ecx + Z80.A], al
-
-.running:
-	ret
-
-
-align 16
-
-; UINT32 FASTCALL z80_Set_AF2(Z80_CONTEXT *z80, UINT32 AF2)
-; ecx = context pointer
-; edx = new AF2
-;
-; RETURN: NONE
-
-DECLF z80_Set_AF2, 8
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	mov	eax, edx
-	jnz	short .running
-	
-	rol	ax, 8
-	and	dl, FLAG_X | FLAG_Y
-	and	ah, ~(FLAG_X | FLAG_Y)
-	mov	[ecx + Z80.FXYB2], dl
-	mov	[ecx + Z80.F2], ah
-	mov	[ecx + Z80.A2], al
-
-.running:
-	ret
-
-
-
-
-
-
 ;*********************
 ;
 ; Tables declaration 

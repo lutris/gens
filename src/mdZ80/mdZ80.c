@@ -110,6 +110,28 @@ unsigned int z80_Get_AF(Z80_CONTEXT *z80)
 
 
 /**
+ * z80_Set_AF(): Set the AF register.
+ * @param z80 Pointer to Z80 context.
+ * @param newAF New AF register value.
+ */
+void z80_Set_AF(Z80_CONTEXT *z80, unsigned int newAF)
+{
+	if (z80->Status & Z80_STATE_RUNNING)
+		return;
+	
+	// Set the A register.
+	z80->AF.b.A = (newAF >> 8) & 0xFF;
+	
+	// Set the F register.
+	newAF &= 0xFF;
+	z80->AF.b.F = newAF & ~(Z80_FLAG_X | Z80_FLAG_Y);
+	
+	// Set the FXY register.
+	z80->AF.b.FXY = newAF & (Z80_FLAG_X | Z80_FLAG_Y);
+}
+
+
+/**
  * z80_Get_AF2(): Get the AF' register.
  * @param z80 Pointer to Z80 context.
  * @return AF' register, or -1 during z80_Exec().
@@ -127,4 +149,26 @@ unsigned int z80_Get_AF2(Z80_CONTEXT *z80)
 	
 	// Return AF'.
 	return ((z80->AF2.b.A2 << 8) | F2);
+}
+
+
+/**
+ * z80_Set_AF2(): Set the AF' register.
+ * @param z80 Pointer to Z80 context.
+ * @param newAF New AF' register value.
+ */
+void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
+{
+	if (z80->Status & Z80_STATE_RUNNING)
+		return;
+	
+	// Set the A' register.
+	z80->AF2.b.A2 = (newAF2 >> 8) & 0xFF;
+	
+	// Set the F' register.
+	newAF2 &= 0xFF;
+	z80->AF2.b.F2 = newAF2 & ~(Z80_FLAG_X | Z80_FLAG_Y);
+	
+	// Set the FXY2 register.
+	z80->AF2.b.FXY2 = newAF2 & (Z80_FLAG_X | Z80_FLAG_Y);
 }
