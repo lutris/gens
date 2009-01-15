@@ -96,7 +96,7 @@ void z80_Reset(Z80_CONTEXT *z80)
 unsigned int z80_Get_AF(Z80_CONTEXT *z80)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
-		return;
+		return -1;
 	
 	// F register.
 	// The X and Y flags are stored separately from the
@@ -117,7 +117,7 @@ unsigned int z80_Get_AF(Z80_CONTEXT *z80)
 unsigned int z80_Get_AF2(Z80_CONTEXT *z80)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
-		return;
+		return -1;
 	
 	// F' register.
 	// The X and Y flags are stored separately from the
