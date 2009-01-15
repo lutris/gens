@@ -22,6 +22,10 @@
  ***************************************************************************/
 
 
+#ifndef _MDZ80_OPCODES_H
+#define _MDZ80_OPCODES_H
+
+
 /**
  * Z80 opcodes: 1-byte opcodes.
  */
@@ -1097,3 +1101,6 @@ enum mdZ80_opcode_FDCB
 	Z80_OP_FDCB_SET_7_mIYd_H	= 0xFC,	Z80_OP_FDCB_SET_7_mIYd_L	= 0xFD,
 	Z80_OP_FDCB_SET_7_mIYd		= 0xFE,	Z80_OP_FDCB_SET_7_mIYd_A	= 0xFF,
 };
+
+
+#endif /* _MDZ80_OPCODES_H */
