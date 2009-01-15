@@ -17,6 +17,7 @@ libmdZ80_a_SOURCES = \
 
 noinst_HEADERS = \
 		mdZ80.h \
+		mdZ80_flags.h \
 		mdZ80_opcodes.h \
 		mdZ80_DAA.h \
 		mdZ80_INC_DEC.h
