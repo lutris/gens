@@ -419,7 +419,7 @@ int Do_Genesis_Frame_No_VDP(void)
 	Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	
 	// TODO: Send "Before Frame" event to registered MDP event handlers.
 	//Patch_Codes();
@@ -460,7 +460,7 @@ int Do_Genesis_Frame_No_VDP(void)
 			Update_IRQ_Line ();
 		}
 		
-		main68k_exec (Cycles_M68K);
+		main68k_exec(Cycles_M68K);
 		Z80_EXEC(0);
 	}
 	
@@ -489,10 +489,10 @@ int Do_Genesis_Frame_No_VDP(void)
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
-	z80_Interrupt (&M_Z80, 0xFF);
+	Update_IRQ_Line();
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
-	main68k_exec (Cycles_M68K);
+	main68k_exec(Cycles_M68K);
 	Z80_EXEC(0);
 	
 	for (VDP_Current_Line++;
@@ -553,7 +553,7 @@ int Do_Genesis_Frame(void)
 	Cycles_M68K = Cycles_Z80 = 0;
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	
 	// TODO: Send "Before Frame" event to registered MDP event handlers.
 	//Patch_Codes();
@@ -626,7 +626,7 @@ int Do_Genesis_Frame(void)
 	
 	VDP_Int |= 0x8;
 	Update_IRQ_Line();
-	z80_Interrupt (&M_Z80, 0xFF);
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	main68k_exec(Cycles_M68K);
 	Z80_EXEC(0);

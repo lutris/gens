@@ -51,7 +51,7 @@
 	if (Z80_State == 3)						\
 		z80_Exec(&M_Z80, Cycles_Z80 - (cyclesSubtract));	\
 	else								\
-		z80_Set_Odo(&M_Z80, Cycles_Z80 - (cyclesSubtract));	\
+		mdZ80_set_odo(&M_Z80, Cycles_Z80 - (cyclesSubtract));	\
 }
 
 #ifdef __cplusplus

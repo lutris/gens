@@ -22,7 +22,7 @@ void Z80_Reset(void)
 	Last_BUS_REQ_Cnt = 0;
 	Last_BUS_REQ_St = 0;
 	
-	z80_Reset(&M_Z80);
+	mdZ80_reset(&M_Z80);
 }
 
 

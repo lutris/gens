@@ -345,7 +345,7 @@ int Do_32X_Frame_No_VDP(void)
 	Last_BUS_REQ_Cnt = -1000;
 	
 	main68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	SH2_Clear_Odo(&M_SH2);
 	SH2_Clear_Odo(&S_SH2);
 	PWM_Clear_Timer();
@@ -511,7 +511,7 @@ int Do_32X_Frame_No_VDP(void)
 	if (_32X_SINT & 0x08)
 		SH2_Interrupt(&S_SH2, 12);
 	
-	z80_Interrupt(&M_Z80, 0xFF);
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	while (i < Cycles_M68K)
 	{
@@ -631,7 +631,7 @@ int Do_32X_Frame(void)
 	Last_BUS_REQ_Cnt = -1000;
 	
 	main68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	SH2_Clear_Odo(&M_SH2);
 	SH2_Clear_Odo(&S_SH2);
 	PWM_Clear_Timer();
@@ -800,7 +800,7 @@ int Do_32X_Frame(void)
 	if (_32X_SINT & 0x08)
 		SH2_Interrupt(&S_SH2, 12);
 	
-	z80_Interrupt(&M_Z80, 0xFF);
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	while (i < Cycles_M68K)
 	{

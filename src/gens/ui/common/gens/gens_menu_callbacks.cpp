@@ -579,7 +579,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 			if (!Game)
 				break;
 			
-			z80_Reset(&M_Z80);
+			mdZ80_reset(&M_Z80);
 			MESSAGE_L("Z80 reset", "Z80 reset", 1000);
 			break;
 		

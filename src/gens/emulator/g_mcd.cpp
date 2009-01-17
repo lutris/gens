@@ -323,7 +323,7 @@ int Do_SegaCD_Frame_No_VDP(void)
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
 	sub68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -403,8 +403,8 @@ int Do_SegaCD_Frame_No_VDP(void)
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
-	z80_Interrupt (&M_Z80, 0xFF);
+	Update_IRQ_Line();
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	main68k_exec (Cycles_M68K);
 	sub68k_exec (Cycles_S68K);
@@ -484,7 +484,7 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
 	sub68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -624,31 +624,31 @@ int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
-	z80_Interrupt (&M_Z80, 0xFF);
+	Update_IRQ_Line();
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	/* instruction by instruction execution */
 	
 	while (i < Cycles_M68K)
 	{
-		main68k_exec (i);
+		main68k_exec(i);
 		i += 24;
 		
 		if (j < Cycles_S68K)
 		{
-			sub68k_exec (j);
+			sub68k_exec(j);
 			j += 39;
 		}
 	}
 	
-	main68k_exec (Cycles_M68K);
-	sub68k_exec (Cycles_S68K);
+	main68k_exec(Cycles_M68K);
+	sub68k_exec(Cycles_S68K);
 	
 	/* end instruction by instruction execution */
 	
 	Z80_EXEC(0);
 	
-	Update_SegaCD_Timer ();
+	Update_SegaCD_Timer();
 	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
@@ -824,7 +824,7 @@ int Do_SegaCD_Frame(void)
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
 	sub68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -906,11 +906,11 @@ int Do_SegaCD_Frame(void)
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
-	z80_Interrupt (&M_Z80, 0xFF);
+	Update_IRQ_Line();
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
-	main68k_exec (Cycles_M68K);
-	sub68k_exec (Cycles_S68K);
+	main68k_exec(Cycles_M68K);
+	sub68k_exec(Cycles_S68K);
 	Z80_EXEC(0);
 	
 	Update_SegaCD_Timer();
@@ -990,7 +990,7 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 	Last_BUS_REQ_Cnt = -1000;
 	main68k_tripOdometer();
 	sub68k_tripOdometer();
-	z80_Clear_Odo(&M_Z80);
+	mdZ80_clear_odo(&M_Z80);
 	
 	VRam_Flag = 1;
 	
@@ -1132,31 +1132,31 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
-	Update_IRQ_Line ();
-	z80_Interrupt (&M_Z80, 0xFF);
+	Update_IRQ_Line();
+	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	/* instruction by instruction execution */
 	
 	while (i < Cycles_M68K)
 	{
-		main68k_exec (i);
+		main68k_exec(i);
 		i += 24;
 		
 		if (j < Cycles_S68K)
 		{
-			sub68k_exec (j);
+			sub68k_exec(j);
 			j += 39;
 		}
 	}
 	
-	main68k_exec (Cycles_M68K);
-	sub68k_exec (Cycles_S68K);
+	main68k_exec(Cycles_M68K);
+	sub68k_exec(Cycles_S68K);
 	
 	/* end instruction by instruction execution */
 	
 	Z80_EXEC(0);
 	
-	Update_SegaCD_Timer ();
+	Update_SegaCD_Timer();
 	
 	for (VDP_Current_Line++;
 	     VDP_Current_Line < VDP_Num_Lines;
@@ -1169,7 +1169,7 @@ int Do_SegaCD_Frame_Cycle_Accurate(void)
 		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert ();
+		Update_CDC_TRansfert();
 		
 		i = Cycles_M68K + 24;
 		j = Cycles_S68K + 39;

@@ -60,10 +60,10 @@ void mdZ80_init(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Reset(): Reset the Z80 CPU.
+ * mdZ80_reset(): Reset the Z80 CPU.
  * @param z80 Pointer to Z80 context.
  */
-void z80_Reset(Z80_CONTEXT *z80)
+void mdZ80_reset(Z80_CONTEXT *z80)
 {
 	// Save the Z80 Cycle Count.
 	unsigned int cycleCnt = z80->CycleCnt;
@@ -75,7 +75,7 @@ void z80_Reset(Z80_CONTEXT *z80)
 	z80->CycleCnt = cycleCnt;
 	
 	// Initialize the program counter.
-	z80_Set_PC(z80, 0);
+	mdZ80_set_PC(z80, 0);
 	
 	// Initialize the index and flag registers.
 	z80->IX.d = 0xFFFF;
@@ -85,11 +85,11 @@ void z80_Reset(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Get_PC(): Get the Z80 program counter.
+ * mdZ80_get_PC(): Get the Z80 program counter.
  * @param z80 Pointer to Z80 context.
  * @return Z80 program counter, or -1 (0xFFFFFFFF) if the Z80 is running.
  */
-unsigned int z80_Get_PC(Z80_CONTEXT *z80)
+unsigned int mdZ80_get_PC(Z80_CONTEXT *z80)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return -1;
@@ -100,11 +100,11 @@ unsigned int z80_Get_PC(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Set_PC(): Set the Z80 program counter.
+ * mdZ80_set_PC(): Set the Z80 program counter.
  * @param z80 Pointer to Z80 context.
  * @param PC New program counter.
  */
-void z80_Set_PC(Z80_CONTEXT *z80, unsigned int PC)
+void mdZ80_set_PC(Z80_CONTEXT *z80, unsigned int PC)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return;
@@ -118,11 +118,11 @@ void z80_Set_PC(Z80_CONTEXT *z80, unsigned int PC)
 
 
 /**
- * z80_Get_AF(): Get the AF register.
+ * mdZ0_get_AF(): Get the AF register.
  * @param z80 Pointer to Z80 context.
  * @return AF register, or -1 during z80_Exec().
  */
-unsigned int z80_Get_AF(Z80_CONTEXT *z80)
+unsigned int mdZ80_get_AF(Z80_CONTEXT *z80)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return -1;
@@ -139,11 +139,11 @@ unsigned int z80_Get_AF(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Set_AF(): Set the AF register.
+ * mdZ80_set_AF(): Set the AF register.
  * @param z80 Pointer to Z80 context.
  * @param newAF New AF register value.
  */
-void z80_Set_AF(Z80_CONTEXT *z80, unsigned int newAF)
+void mdZ80_set_AF(Z80_CONTEXT *z80, unsigned int newAF)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return;
@@ -161,11 +161,11 @@ void z80_Set_AF(Z80_CONTEXT *z80, unsigned int newAF)
 
 
 /**
- * z80_Get_AF2(): Get the AF' register.
+ * mdZ80_get_AF2(): Get the AF' register.
  * @param z80 Pointer to Z80 context.
  * @return AF' register, or -1 during z80_Exec().
  */
-unsigned int z80_Get_AF2(Z80_CONTEXT *z80)
+unsigned int mdZ80_get_AF2(Z80_CONTEXT *z80)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return -1;
@@ -182,11 +182,11 @@ unsigned int z80_Get_AF2(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Set_AF2(): Set the AF' register.
+ * mdZ0_set_AF2(): Set the AF' register.
  * @param z80 Pointer to Z80 context.
  * @param newAF New AF' register value.
  */
-void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
+void mdZ80_set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return;
@@ -204,11 +204,11 @@ void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
 
 
 /**
- * z80_Read_Odo(): Read the Z80 odometer.
+ * mdZ80_read_odo(): Read the Z80 odometer.
  * @param z80 Pointer to Z80 context.
  * @return Z80 odometer, or -1 during z80_Exec().
  */
-unsigned int z80_Read_Odo(Z80_CONTEXT *z80)
+unsigned int mdZ80_read_odo(Z80_CONTEXT *z80)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 		return -1;
@@ -218,22 +218,22 @@ unsigned int z80_Read_Odo(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Set_Odo(): Set the Z80 odometer.
+ * mdZ80_set_odo(): Set the Z80 odometer.
  * @param z80 Pointer to Z80 context.
  * @param odo New value for the Z80 odometer.
  */
-void z80_Set_Odo(Z80_CONTEXT *z80, unsigned int odo)
+void mdZ80_set_odo(Z80_CONTEXT *z80, unsigned int odo)
 {
 	z80->CycleCnt = odo;
 }
 
 
 /**
- * z80_Add_Cycles(): Add cycles to the Z80 odometer.
+ * mdZ80_add_cycles(): Add cycles to the Z80 odometer.
  * @param z80 Pointer to Z80 context.
  * @param cycles Number of cycles to add.
  */
-void z80_Add_Cycles(Z80_CONTEXT *z80, unsigned int cycles)
+void mdZ80_add_cycles(Z80_CONTEXT *z80, unsigned int cycles)
 {
 	if (z80->Status & Z80_STATE_RUNNING)
 	{
@@ -249,10 +249,10 @@ void z80_Add_Cycles(Z80_CONTEXT *z80, unsigned int cycles)
 
 
 /**
- * z80_NMI(): Raise a non-maskable interrupt.
+ * mdZ80_nmi(): Raise a non-maskable interrupt.
  * @param z80 Pointer to Z80 context.
  */
-void z80_NMI(Z80_CONTEXT *z80)
+void mdZ80_nmi(Z80_CONTEXT *z80)
 {
 	z80->IntVect = 0x66;
 	z80->IntLine = 0x80;
@@ -268,12 +268,12 @@ void z80_NMI(Z80_CONTEXT *z80)
 
 
 /**
- * z80_Interrupt(): Raise a Z80 interrupt.
+ * mdZ80_interrupt(): Raise a Z80 interrupt.
  * TODO: Figure out the exact purpose of this function.
  * @param z80 Pointer to Z80 context.
  * @param vector Interrupt vector.
  */
-void z80_Interrupt(Z80_CONTEXT *z80, unsigned char vector)
+void mdZ80_interrupt(Z80_CONTEXT *z80, unsigned char vector)
 {
 	// Set the interrupt data.
 	z80->IntVect = vector;

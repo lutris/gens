@@ -475,16 +475,16 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		}
 	}
 
-	z80_Set_AF (&M_Z80, data[0x404] + (data[0x405] << 8));
+	mdZ80_set_AF (&M_Z80, data[0x404] + (data[0x405] << 8));
 	M_Z80.AF.b.FXY = data[0x406]; //Modif N [Gens Rerecording]
 	M_Z80.BC.w.BC = data[0x408] + (data[0x409] << 8);
 	M_Z80.DE.w.DE = data[0x40C] + (data[0x40D] << 8);
 	M_Z80.HL.w.HL = data[0x410] + (data[0x411] << 8);
 	M_Z80.IX.w.IX = data[0x414] + (data[0x415] << 8);
 	M_Z80.IY.w.IY = data[0x418] + (data[0x419] << 8);
-	z80_Set_PC(&M_Z80, data[0x41C] + (data[0x41D] << 8));
+	mdZ80_set_PC(&M_Z80, data[0x41C] + (data[0x41D] << 8));
 	M_Z80.SP.w.SP = data[0x420] + (data[0x421] << 8);
-	z80_Set_AF2(&M_Z80, data[0x424] + (data[0x425] << 8));
+	mdZ80_set_AF2(&M_Z80, data[0x424] + (data[0x425] << 8));
 	M_Z80.BC2.w.BC2 = data[0x428] + (data[0x429] << 8);
 	M_Z80.DE2.w.DE2 = data[0x42C] + (data[0x42D] << 8);
 	M_Z80.HL2.w.HL2 = data[0x430] + (data[0x431] << 8);
@@ -860,8 +860,8 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	for (i = 0; i < 0x200; i++)
 		data[i + 0x1E4] = Reg_1[i];
 	
-	data[0x404] = (unsigned char) (z80_Get_AF (&M_Z80) & 0xFF);
-	data[0x405] = (unsigned char) (z80_Get_AF (&M_Z80) >> 8);
+	data[0x404] = (unsigned char) (mdZ80_get_AF(&M_Z80) & 0xFF);
+	data[0x405] = (unsigned char) (mdZ80_get_AF(&M_Z80) >> 8);
 	data[0x406] = (unsigned char) (M_Z80.AF.b.FXY & 0xFF); //Modif N
 	data[0x407] = (unsigned char) 0; //Modif N
 	data[0x408] = (unsigned char) (M_Z80.BC.w.BC & 0xFF);
@@ -874,12 +874,12 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	data[0x415] = (unsigned char) (M_Z80.IX.w.IX >> 8);
 	data[0x418] = (unsigned char) (M_Z80.IY.w.IY & 0xFF);
 	data[0x419] = (unsigned char) (M_Z80.IY.w.IY >> 8);
-	data[0x41C] = (unsigned char) (z80_Get_PC (&M_Z80) & 0xFF);
-	data[0x41D] = (unsigned char) ((z80_Get_PC (&M_Z80) >> 8) & 0xFF);
+	data[0x41C] = (unsigned char) (mdZ80_get_PC(&M_Z80) & 0xFF);
+	data[0x41D] = (unsigned char) ((mdZ80_get_PC(&M_Z80) >> 8) & 0xFF);
 	data[0x420] = (unsigned char) (M_Z80.SP.w.SP & 0xFF);
 	data[0x421] = (unsigned char) (M_Z80.SP.w.SP >> 8);
-	data[0x424] = (unsigned char) (z80_Get_AF2 (&M_Z80) & 0xFF);
-	data[0x425] = (unsigned char) (z80_Get_AF2 (&M_Z80) >> 8);
+	data[0x424] = (unsigned char) (mdZ80_get_AF2(&M_Z80) & 0xFF);
+	data[0x425] = (unsigned char) (mdZ80_get_AF2(&M_Z80) >> 8);
 	data[0x428] = (unsigned char) (M_Z80.BC2.w.BC2 & 0xFF);
 	data[0x429] = (unsigned char) (M_Z80.BC2.w.BC2 >> 8);
 	data[0x42C] = (unsigned char) (M_Z80.DE2.w.DE2 & 0xFF);

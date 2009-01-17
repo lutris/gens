@@ -360,28 +360,28 @@ UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
 
 
 void mdZ80_init(Z80_CONTEXT *z80);
-void z80_Reset(Z80_CONTEXT *z80);
+void mdZ80_reset(Z80_CONTEXT *z80);
 
 
-unsigned int z80_Get_PC(Z80_CONTEXT *z80);
-unsigned int z80_Get_AF(Z80_CONTEXT *z80);
-unsigned int z80_Get_AF2(Z80_CONTEXT *z80);
-void z80_Set_PC(Z80_CONTEXT *z80, unsigned int PC);
-void z80_Set_AF(Z80_CONTEXT *z80, UINT32 AF);
-void z80_Set_AF2(Z80_CONTEXT *z80, UINT32 AF2);
+unsigned int mdZ80_get_PC(Z80_CONTEXT *z80);
+unsigned int mdZ80_get_AF(Z80_CONTEXT *z80);
+unsigned int mdZ80_get_AF2(Z80_CONTEXT *z80);
+void mdZ80_set_PC(Z80_CONTEXT *z80, unsigned int PC);
+void mdZ80_set_AF(Z80_CONTEXT *z80, UINT32 AF);
+void mdZ80_set_AF2(Z80_CONTEXT *z80, UINT32 AF2);
 
-unsigned int z80_Read_Odo(Z80_CONTEXT *z80);
-static inline void z80_Clear_Odo(Z80_CONTEXT *z80)
+unsigned int mdZ80_read_odo(Z80_CONTEXT *z80);
+static inline void mdZ80_clear_odo(Z80_CONTEXT *z80)
 {
 	z80->CycleCnt = 0;
 }
-void z80_Set_Odo(Z80_CONTEXT *z80, unsigned int odo);
-void z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
+void mdZ80_set_odo(Z80_CONTEXT *z80, unsigned int odo);
+void mdZ80_add_cycles(Z80_CONTEXT *z80, UINT32 cycles);
 
-//UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
+//UINT32 FASTCALL mdZ80_Exec(Z80_CONTEXT *z80, int odo);
 
-void z80_NMI(Z80_CONTEXT *z80);
-void z80_Interrupt(Z80_CONTEXT *z80, unsigned char vector);
+void mdZ80_nmi(Z80_CONTEXT *z80);
+void mdZ80_interrupt(Z80_CONTEXT *z80, unsigned char vector);
 
 
 /**

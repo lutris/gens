@@ -251,8 +251,8 @@ section .text align=64
 	
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
-		%define	_z80_Reset	z80_Reset
-		%define	_z80_Set_Odo	z80_Set_Odo
+		%define	_mdZ80_reset	mdZ80_reset
+		%define	_mdZ80_set_odo	mdZ80_set_odo
 	%endif
 	
 	extern Z80_ReadB_Table
@@ -273,9 +273,9 @@ section .text align=64
 	extern _main68k_readOdometer
 	extern _sub68k_reset
 	extern _sub68k_interrupt
-	extern _z80_Reset
+	extern _mdZ80_reset
 	extern z80_Exec
-	extern _z80_Set_Odo
+	extern _mdZ80_set_odo
 	
 	extern _M68K_Set_Prg_Ram
 	extern _YM2612_Reset
@@ -1309,7 +1309,7 @@ section .text align=64
 		
 		push	edx
 		push	_M_Z80
-		call	_z80_Set_Odo
+		call	_mdZ80_set_odo
 		add	esp, 8
 		pop	edx
 	
@@ -1362,7 +1362,7 @@ section .text align=64
 		push	edx
 		
 		push	_M_Z80
-		call	_z80_Reset
+		call	_mdZ80_reset
 		add	esp, 4
 		
 		or	byte [Z80_State], 4
@@ -1854,7 +1854,7 @@ section .text align=64
 		
 		push	edx
 		push	_M_Z80
-		call	_z80_Set_Odo
+		call	_mdZ80_set_odo
 		add	esp, 8
 		pop	edx
 	
@@ -1907,7 +1907,7 @@ section .text align=64
 		push	edx
 		
 		push	_M_Z80
-		call	_z80_Reset
+		call	_mdZ80_reset
 		add	esp, 4
 		
 		or	byte [Z80_State], 4

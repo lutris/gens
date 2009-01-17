@@ -118,7 +118,7 @@ void Debug_Event(int key, int mod)
 				}
 				else if (Debug == DEBUG_Z80)
 				{
-					z80_Clear_Odo(&M_Z80);
+					mdZ80_clear_odo(&M_Z80);
 					z80_Exec(&M_Z80, 1);
 				}
 				else if (Debug == DEBUG_SUB_68000_REG ||
@@ -170,7 +170,7 @@ void Debug_Event(int key, int mod)
 			}
 			else if (Debug == DEBUG_Z80)
 			{
-				z80_Interrupt(&M_Z80, 0xFF);
+				mdZ80_interrupt(&M_Z80, 0xFF);
 			}
 			else if (Debug == DEBUG_SUB_68000_REG ||
 				 Debug == DEBUG_SUB_68000_CDC ||
@@ -194,7 +194,7 @@ void Debug_Event(int key, int mod)
 			}
 			else if (Debug == DEBUG_Z80)
 			{
-				z80_Interrupt(&M_Z80, 0xFF);
+				mdZ80_interrupt(&M_Z80, 0xFF);
 			}
 			else if (Debug == DEBUG_SUB_68000_REG ||
 				 Debug == DEBUG_SUB_68000_CDC ||
@@ -254,7 +254,7 @@ void Debug_Event(int key, int mod)
 			}
 			else if (Debug == DEBUG_Z80)
 			{
-				z80_Set_PC(&M_Z80, z80_Get_PC(&M_Z80) + 1);
+				mdZ80_set_PC(&M_Z80, mdZ80_get_PC(&M_Z80) + 1);
 			}
 			
 			break;
@@ -452,12 +452,12 @@ static void Refresh_S68k_Inst(void)
  */
 static void Refresh_Z80_Inst(void)
 {
-	unsigned int PC = z80_Get_PC(&M_Z80);
+	unsigned int PC = mdZ80_get_PC(&M_Z80);
 	Print_Text_Constant("***** Z80 DEBUG *****", 22, 24, 1, VERT);
 	
 	for (unsigned int i = 1; i < 14; i++)
 	{
-		z80dis((unsigned char *) Ram_Z80, (int *) &PC, Dbg_Out_Str);
+		z80dis((unsigned char*)Ram_Z80, (int*)&PC, Dbg_Out_Str);
 		Print_Text(Dbg_Out_Str, 39, 1, (i << 3) + 5, (i == 1 ? ROUGE : BLANC));
 	}
 }
@@ -669,31 +669,28 @@ static void Refresh_Z80_State(void)
 {
 	Print_Text_Constant("***** Z80 STATUS *****", 22, 196, 130, VERT);
 	
+	unsigned int AF = mdZ80_get_AF(&M_Z80);
+	
 	sprintf(Dbg_Out_Str, "AF =%.4X BC =%.4X DE =%.4X HL =%.4X\n",
-			z80_Get_AF (&M_Z80), M_Z80.BC.w.BC,
-			M_Z80.DE.w.DE, M_Z80.HL.w.HL);
+			AF, M_Z80.BC.w.BC, M_Z80.DE.w.DE, M_Z80.HL.w.HL);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 146, BLANC);
 	sprintf(Dbg_Out_Str, "AF2=%.4X BC2=%.4X DE2=%.4X HL2=%.4X\n",
-			z80_Get_AF2 (&M_Z80), M_Z80.BC2.w.BC2,
+			mdZ80_get_AF2(&M_Z80), M_Z80.BC2.w.BC2,
 			M_Z80.DE2.w.DE2, M_Z80.HL2.w.HL2);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 154, BLANC);
 	sprintf(Dbg_Out_Str, "IX =%.4X IY =%.4X SP =%.4X PC =%.4X\n",
 			M_Z80.IX.w.IX, M_Z80.IY.w.IY,
-			M_Z80.SP.w.SP, z80_Get_PC (&M_Z80));
+			M_Z80.SP.w.SP, mdZ80_get_PC(&M_Z80));
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 162, BLANC);
 	sprintf(Dbg_Out_Str, "IFF1=%d IFF2=%d I=%.2X R=%.2X IM=%.2X\n",
 			M_Z80.IFF.b.IFF1, M_Z80.IFF.b.IFF2, M_Z80.I,
 			M_Z80.R.b.R1, M_Z80.IM);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 170, BLANC);
 	sprintf(Dbg_Out_Str, "S=%d Z=%d Y=%d H=%d X=%d P=%d N=%d C=%d\n",
-			(z80_Get_AF (&M_Z80) & 0x80) >> 7,
-			(z80_Get_AF (&M_Z80) & 0x40) >> 6,
-			(z80_Get_AF (&M_Z80) & 0x20) >> 5,
-			(z80_Get_AF (&M_Z80) & 0x10) >> 4,
-			(z80_Get_AF (&M_Z80) & 0x08) >> 3,
-			(z80_Get_AF (&M_Z80) & 0x04) >> 2,
-			(z80_Get_AF (&M_Z80) & 0x02) >> 1,
-			(z80_Get_AF (&M_Z80) & 0x01) >> 0);
+			(AF & 0x80) >> 7, (AF & 0x40) >> 6,
+			(AF & 0x20) >> 5, (AF & 0x10) >> 4,
+			(AF & 0x08) >> 3, (AF & 0x04) >> 2,
+			(AF & 0x02) >> 1, (AF & 0x01) >> 0);
 	Print_Text(Dbg_Out_Str, strlen(Dbg_Out_Str) - 1, 162, 178, BLANC);
 	sprintf(Dbg_Out_Str, "Status=%.2X ILine=%.2X IVect=%.2X\n",
 			M_Z80.Status & 0xFF, M_Z80.IntLine, M_Z80.IntVect);

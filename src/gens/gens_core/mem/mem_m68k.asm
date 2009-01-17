@@ -272,8 +272,8 @@ section .text align=64
 		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
 		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
 		
-		%define	_z80_Reset	z80_Reset
-		%define	_z80_Set_Odo	z80_Set_Odo
+		%define	_mdZ80_reset	mdZ80_reset
+		%define	_mdZ80_set_odo	mdZ80_set_odo
 	%endif
 	
 	extern _Read_VDP_Data
@@ -285,9 +285,9 @@ section .text align=64
 	extern _Write_VDP_Ctrl
 	
 	extern _main68k_readOdometer
-	extern _z80_Reset
+	extern _mdZ80_reset
 	extern z80_Exec
-	extern _z80_Set_Odo
+	extern _mdZ80_set_odo
 	extern _M68K_Set_Prg_Ram
 	extern _YM2612_Write
 	extern _YM2612_Read
@@ -1238,7 +1238,7 @@ section .text align=64
 		
 		push	edx
 		push	_M_Z80
-		call	_z80_Set_Odo
+		call	_mdZ80_set_odo
 		add	esp, 8
 		pop	edx
 	
@@ -1291,7 +1291,7 @@ section .text align=64
 		push	edx
 		
 		push	_M_Z80
-		call	_z80_Reset
+		call	_mdZ80_reset
 		add	esp, 4
 		
 		or	byte [Z80_State], 4
@@ -1516,7 +1516,7 @@ section .text align=64
 		
 		push	edx
 		push	_M_Z80
-		call	_z80_Set_Odo
+		call	_mdZ80_set_odo
 		add	esp, 8
 		pop	edx
 	
@@ -1569,7 +1569,7 @@ section .text align=64
 		push	edx
 		
 		push	_M_Z80
-		call	_z80_Reset
+		call	_mdZ80_reset
 		add	esp, 4
 		
 		or	byte [Z80_State], 4
