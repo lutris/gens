@@ -31,6 +31,60 @@
 
 
 /**
+ * mdZ80_init(): Initialize a Z80 context.
+ * @param z80 Pointer to Z80 context.
+ */
+void mdZ80_init(Z80_CONTEXT *z80)
+{
+	// Clear the entire Z80 struct.
+	memset(z80, 0x00, sizeof(Z80_CONTEXT));
+	
+	// Clear the default Z80 memory buffer.
+	memset(mdZ80_def_mem, 0x00, sizeof(mdZ80_def_mem));
+	
+	// Set up the Z80 function pointer variables.
+	unsigned int i;
+	for (i = 0; i < 0x100; i++)
+	{
+		z80->ReadB[i] = mdZ80_def_ReadB;
+		z80->ReadW[i] = mdZ80_def_ReadW;
+		z80->WriteB[i] = mdZ80_def_WriteB;
+		z80->WriteW[i] = mdZ80_def_WriteW;
+		z80->Fetch[i] = mdZ80_def_mem;
+	}
+	
+	// Set up the I/O handlers.
+	z80->IN_C = mdZ80_def_In;
+	z80->OUT_C = mdZ80_def_Out;
+}
+
+
+/**
+ * z80_Reset(): Reset the Z80 CPU.
+ * @param z80 Pointer to Z80 context.
+ */
+void z80_Reset(Z80_CONTEXT *z80)
+{
+	// Save the Z80 Cycle Count.
+	unsigned int cycleCnt = z80->CycleCnt;
+	
+	// Clear the Z80 struct up to CycleSup.
+	memset(z80, 0x00, 23*4);
+	
+	// Restore the Z80 Cycle Count.
+	z80->CycleCnt = cycleCnt;
+	
+	// Initialize the program counter.
+	z80_Set_PC(z80, 0);
+	
+	// Initialize the index and flag registers.
+	z80->IX.d = 0xFFFF;
+	z80->IY.d = 0xFFFF;
+	z80->AF.d = 0x4000;
+}
+
+
+/**
  * z80_Get_PC(): Get the Z80 program counter.
  * @param z80 Pointer to Z80 context.
  * @return Z80 program counter, or -1 (0xFFFFFFFF) if the Z80 is running.
@@ -60,31 +114,6 @@ void z80_Set_PC(Z80_CONTEXT *z80, unsigned int PC)
 	unsigned int newPC = (unsigned int)(z80->Fetch[PC >> 8]);
 	z80->BasePC = newPC;
 	z80->PC.d = newPC + PC;
-}
-
-
-/**
- * z80_Reset(): Reset the Z80 CPU.
- * @param z80 Pointer to Z80 context.
- */
-void z80_Reset(Z80_CONTEXT *z80)
-{
-	// Save the Z80 Cycle Count.
-	unsigned int cycleCnt = z80->CycleCnt;
-	
-	// Clear the Z80 struct up to CycleSup.
-	memset(z80, 0x00, 23*4);
-	
-	// Restore the Z80 Cycle Count.
-	z80->CycleCnt = cycleCnt;
-	
-	// Initialize the program counter.
-	z80_Set_PC(z80, 0);
-	
-	// Initialize the index and flag registers.
-	z80->IX.d = 0xFFFF;
-	z80->IY.d = 0xFFFF;
-	z80->AF.d = 0x4000;
 }
 
 

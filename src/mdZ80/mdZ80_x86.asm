@@ -229,7 +229,8 @@ section .bss align=64
 	
 	; Symbol redefines for ELF.
 	%ifdef __OBJ_ELF
-		%define	_M_Z80	M_Z80
+		%define	_M_Z80		M_Z80
+		%define	_mdZ80_def_mem	mdZ80_def_mem
 	%endif
 	global _M_Z80
 	_M_Z80:
@@ -237,7 +238,8 @@ section .bss align=64
 
 	alignb 32
 	
-	Def_z80_Mem:
+	global _mdZ80_def_mem
+	_mdZ80_def_mem:
 		resb 0x10000
 	
 
@@ -4792,107 +4794,48 @@ PREFIXE_FDCB:
 ;*******************
 
 
-align 16
-
-Def_z80_ReadB:
-Def_z80_In:
-	mov al, [Def_z80_Mem + ecx]
-	ret
-
-
-align 16
-
-Def_z80_ReadW:
-	mov ax, [Def_z80_Mem + ecx]
-	ret
-
-
-align 16
-
-Def_z80_WriteB:
-Def_z80_Out:
-	mov [Def_z80_Mem + ecx], dl
-	ret
-
-align 16
-
-Def_z80_WriteW:
-	mov [Def_z80_Mem + ecx], dx
-	ret
-
-
-
-align 16
-
-; int FASTCALL z80_Init(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN: 0
-
-DECLF z80_Init, 4
-	
-	push	edi
-	push	ebp
-%ifdef __GCC2
-	mov	ecx, eax
+; External symbol redefines for ELF.
+%ifdef __OBJ_ELF
+	%define	_mdZ80_def_ReadB	mdZ80_def_ReadB
+	%define	_mdZ80_def_In		mdZ80_def_In
+	%define	_mdZ80_def_ReadW	mdZ80_def_ReadW
+	%define	_mdZ80_def_WriteB	mdZ80_def_WriteB
+	%define	_mdZ80_def_Out		mdZ80_def_Out
+	%define	_mdZ80_def_WriteW	mdZ80_def_WriteW
 %endif
-	xor	eax, eax
-	mov	ebp, ecx
-	mov	edi, ecx
-	mov	ecx, (Z80.Init_Size / 4)
-	rep	stosd
-	
-	mov	edi, Def_z80_Mem
-	mov	ecx, 0x10000 / 4
-	rep	stosd
-	
-	mov	eax, Def_z80_ReadB
-	mov	edi, 0xFF
-	
-.LoopRB:
-		mov	[ebp + Z80.ReadB + edi * 4], eax
-		dec	edi
-		jns	short .LoopRB
-	
-	mov	eax, Def_z80_ReadW
-	mov	edi, 0xFF
-	
-.LoopRW:
-		mov	[ebp + Z80.ReadW + edi * 4], eax
-		dec	edi
-		jns	short .LoopRW
-	
-	mov	eax, Def_z80_WriteB
-	mov	edi, 0xFF
-	
-.LoopWB:
-		mov	[ebp + Z80.WriteB + edi * 4], eax
-		dec	edi
-		jns	short .LoopWB
-	
-	mov	eax, Def_z80_WriteW
-	mov	edi, 0xFF
-	
-.LoopWW:
-		mov	[ebp + Z80.WriteW + edi * 4], eax
-		dec	edi
-		jns	short .LoopWW
-	
-	mov	eax, Def_z80_Mem
-	mov	edi, 0xFF
-	
-.LoopF:
-		mov	[ebp + Z80.Fetch + edi * 4], eax
-		dec	edi
-		jns	short .LoopF
-	
-	mov	eax, Def_z80_In
-	mov	[ebp + Z80.IN], eax
-	mov	eax, Def_z80_Out
-	mov	[ebp + Z80.OUT], eax
-	
-	pop	ebp
-	pop	edi
+
+align 16
+
+global _mdZ80_def_ReadB
+global _mdZ80_def_In
+_mdZ80_def_ReadB:
+_mdZ80_def_In:
+	mov al, [_mdZ80_def_mem + ecx]
+	ret
+
+
+align 16
+
+global _mdZ80_def_ReadW
+_mdZ80_def_ReadW:
+	mov ax, [_mdZ80_def_mem + ecx]
+	ret
+
+
+align 16
+
+global _mdZ80_def_WriteB
+global _mdZ80_def_Out
+_mdZ80_def_WriteB:
+_mdZ80_def_Out:
+	mov [_mdZ80_def_mem + ecx], dl
+	ret
+
+align 16
+
+global _mdZ80_def_WriteW
+_mdZ80_def_WriteW:
+	mov [_mdZ80_def_mem + ecx], dx
 	ret
 
 

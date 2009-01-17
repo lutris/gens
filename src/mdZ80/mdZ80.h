@@ -315,8 +315,8 @@ struct _Z80_context
 	Z80_RW *ReadW[0x100];
 	Z80_WW *WriteW[0x100];
 
-	Z80_WB *IN_C;
-	Z80_RB *OUT_C;
+	Z80_RB *IN_C;
+	Z80_WB *OUT_C;
 	UINT32 RetIC;
 	UINT32 IntAckC;
 };
@@ -337,7 +337,7 @@ extern Z80_CONTEXT M_Z80;
  */
 
 
-UINT32 FASTCALL z80_Init(Z80_CONTEXT *z80);
+//UINT32 FASTCALL z80_Init(Z80_CONTEXT *z80);
 //UINT32 FASTCALL z80_Reset(Z80_CONTEXT *z80);
 
 UINT32 z80_Add_ReadB(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, Z80_RB *Func);
@@ -359,6 +359,7 @@ UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
  */
 
 
+void mdZ80_init(Z80_CONTEXT *z80);
 void z80_Reset(Z80_CONTEXT *z80);
 
 
@@ -381,6 +382,20 @@ void z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
 
 void z80_NMI(Z80_CONTEXT *z80);
 void z80_Interrupt(Z80_CONTEXT *z80, unsigned char vector);
+
+
+/**
+ * Default Read/Write functions.
+ * TODO: Port these to C.
+ * This requires the Read/Write function prototype to be changed to non-fastcall.
+ */
+extern unsigned char mdZ80_def_mem[0x10000];
+unsigned char FASTCALL mdZ80_def_ReadB(UINT32 address);
+unsigned char FASTCALL mdZ80_def_In(UINT32 address);
+unsigned short FASTCALL mdZ80_def_ReadW(UINT32 address);
+void FASTCALL mdZ80_def_WriteB(UINT32 address, unsigned char data);
+void FASTCALL mdZ80_def_Out(UINT32 address, unsigned char data);
+void FASTCALL mdZ80_def_WriteW(UINT32 address, unsigned short data);
 
 
 #ifdef __cplusplus

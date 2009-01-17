@@ -32,7 +32,7 @@ void Z80_Reset(void)
  */
 int Z80_Init(void)
 {
-	z80_Init (&M_Z80);
+	mdZ80_init(&M_Z80);
 	
 	z80_Add_Fetch(&M_Z80, 0x00, 0x1F, &Ram_Z80[0]);
 	z80_Add_Fetch(&M_Z80, 0x20, 0x3F, &Ram_Z80[0]);
