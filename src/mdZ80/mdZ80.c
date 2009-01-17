@@ -175,6 +175,20 @@ void z80_Set_AF2(Z80_CONTEXT *z80, unsigned int newAF2)
 
 
 /**
+ * z80_Read_Odo(): Read the Z80 odometer.
+ * @param z80 Pointer to Z80 context.
+ * @return Z80 odometer, or -1 during z80_Exec().
+ */
+unsigned int z80_Read_Odo(Z80_CONTEXT *z80)
+{
+	if (z80->Status & Z80_STATE_RUNNING)
+		return -1;
+	
+	return (z80->CycleCnt + z80->CycleTD - z80->CycleIO);
+}
+
+
+/**
  * z80_Set_Odo(): Set the Z80 odometer.
  * @param z80 Pointer to Z80 context.
  * @param odo New value for the Z80 odometer.

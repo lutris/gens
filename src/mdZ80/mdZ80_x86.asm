@@ -4975,29 +4975,6 @@ DECLF z80_Add_%1
 
 align 16
 
-; int FASTCALL z80_Read_Odo(Z80_CONTEXT *z80)
-; ecx = context pointer
-;
-; RETURN:
-; Number of cycles executed since the last
-; clear odometer call
-
-DECLF z80_Read_Odo, 4
-	
-	test	byte [ecx + Z80.Status], Z80_RUNNING
-	mov	eax, [ecx + Z80.CycleCnt]
-	jz	short .not_running
-	
-	add	eax, [ecx + Z80.CycleTD]
-	mov	edx, [ecx + Z80.CycleIO]
-	sub	eax, edx
-	
-.not_running:
-	ret
-
-
-align 16
-
 ; UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, UINT32 odo)
 ; ecx = context pointer
 ; edx = odometer to raise
