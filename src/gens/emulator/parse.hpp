@@ -33,4 +33,4 @@ void parseArgs(int argc, char **argv);
 }
 #endif
 
-#endif /* GENS_PARSE_H */
+#endif /* GENS_PARSE_HPP */
