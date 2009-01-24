@@ -69,6 +69,7 @@ typedef enum
 typedef struct
 {
 	const char* const name;
+	const uint32_t flags;
 	
 	int	(*init)(void);
 	int	(*end)(void);
@@ -103,7 +104,7 @@ int	vdraw_backend_end(void);
 // Current backend.
 extern const vdraw_backend_t *vdraw_cur_backend;
 extern VDRAW_BACKEND vdraw_cur_backend_id;
-extern unsigned int vdraw_cur_backend_flags;
+extern uint32_t vdraw_cur_backend_flags;
 
 // Called if initialization fails.
 void	vdraw_init_fail(const char* err);

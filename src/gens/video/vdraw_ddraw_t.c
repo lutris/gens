@@ -27,6 +27,7 @@
 const vdraw_backend_t vdraw_backend_ddraw =
 {
 	.name = "DirectDraw 4",
+	.flags = VDRAW_BACKEND_FLAG_VSYNC | VDRAW_BACKEND_FLAG_STRETCH,
 	
 	.init = vdraw_ddraw_init,
 	.end = vdraw_ddraw_end,

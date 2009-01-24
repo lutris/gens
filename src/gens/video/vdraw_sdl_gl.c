@@ -126,6 +126,7 @@ PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval = NULL;
 const vdraw_backend_t vdraw_backend_sdl_gl =
 {
 	.name = "SDL+OpenGL",
+	.flags = VDRAW_BACKEND_FLAG_VSYNC | VDRAW_BACKEND_FLAG_STRETCH,
 	
 	.init = vdraw_sdl_gl_init,
 	.end = vdraw_sdl_gl_end,

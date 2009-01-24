@@ -90,7 +90,7 @@ static const vdraw_backend_t * const vdraw_backends[] =
 // Current backend.
 const vdraw_backend_t *vdraw_cur_backend = NULL;
 VDRAW_BACKEND vdraw_cur_backend_id = -1;
-unsigned int vdraw_cur_backend_flags = 0;
+uint32_t vdraw_cur_backend_flags = 0;
 
 // Function pointers.
 int		(*vdraw_init_subsystem)(void) = NULL;
@@ -249,11 +249,7 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 #endif /* GENS_OS_WIN32 */
 	
 	// Set the backend flags.
-	vdraw_cur_backend_flags = 0;
-	if (vdraw_cur_backend->stretch_adjust)
-		vdraw_cur_backend_flags |= VDRAW_BACKEND_FLAG_STRETCH;
-	if (vdraw_cur_backend->update_vsync)
-		vdraw_cur_backend_flags |= VDRAW_BACKEND_FLAG_VSYNC;
+	vdraw_cur_backend_flags		= vdraw_cur_backend->flags;
 	
 	// Initialize the backend.
 	if (vdraw_cur_backend->init)
