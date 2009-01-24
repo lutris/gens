@@ -74,7 +74,7 @@ Windows: [build requirements]
 3.1. Easy Windows Build Instructions
 
 Since not everyone is a computer wiz, I created an easier build system for
-Win32. It consists of five easy steps.
+Win32. It consists of four easy steps.
 
 1. Copy all files from C:\WINDOWS into the Gens/GS source code directory.
 
