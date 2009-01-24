@@ -71,6 +71,28 @@ Windows: [build requirements]
 
 ================================================================
 
+3.1. Easy Windows Build Instructions
+
+Since not everyone is a computer wiz, I created an easier build system for
+Win32. It consists of five easy steps.
+
+1. Copy all files from C:\WINDOWS into the Gens/GS source code directory.
+
+2. Run "compile.hta". Internet Explorer will ask you to download and install
+an unsigned ActiveX control. Click Yes. If your antivirus program warns you,
+click "Ignore". "compile.hta" will generate a Visual Studio 2008 project,
+"gensgs.sln".
+
+3. Open "gensgs.sln" in Visual Studio 2008, Professional Edition or higher.
+You must use a legally licensed copy of Visual Studio 2008; if your copy is
+pirated, you will be redirected to newegg.com, where you may purchase a copy
+of Visual Studio 2008, Professional Edition, for the low price of $649.99.
+
+4. Compile the project using Visual Studio 2008. The final binary will be
+called "gens.exe".
+
+================================================================
+
 4. Where are gens.cfg and language.dat stored?
 
 On Linux: ~/.gens/
