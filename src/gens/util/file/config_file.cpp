@@ -204,8 +204,8 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Bits Per Pixel", bppOut);
 #endif /* GENS_OS_WIN32 */
 	
-#ifdef GENS_OPENGL
 	cfg.writeString("Graphics", "Backend", vdraw_backends[vdraw_cur_backend_id]->name);
+#ifdef GENS_OPENGL
 	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
@@ -460,7 +460,6 @@ int Config::load(const string& filename, void* gameActive)
 	bppMD = bppOut;
 #endif /* GENS_OS_WIN32 */
 	
-#ifdef GENS_OPENGL
 	string backend = cfg.getString("Graphics", "Backend", "");
 	// Determine the initial backend ID.
 	if (!backend.empty())
@@ -493,6 +492,7 @@ int Config::load(const string& filename, void* gameActive)
 		vdraw_cur_backend_id = (VDRAW_BACKEND)0;
 	}
 	
+#ifdef GENS_OPENGL
 	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.Height_GL = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
