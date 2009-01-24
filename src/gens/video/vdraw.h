@@ -95,6 +95,8 @@ typedef struct
 	
 } vdraw_backend_t;
 
+extern const vdraw_backend_t* const vdraw_backends[];
+
 int	vdraw_init(void);
 int	vdraw_end(void);
 int	vdraw_backend_init_subsystem(VDRAW_BACKEND backend);

@@ -135,14 +135,9 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
-#ifdef GENS_OPENGL
-	// Check if OpenGL needs to be enabled.
-	// This also initializes SDL or SDL+GL.
-	Options::setOpenGL(Video.OpenGL);
-#else
+	// TODO: Initialize the correct backend.
 	// Initialize SDL.
 	vdraw_backend_init(VDRAW_BACKEND_SDL);
-#endif
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{

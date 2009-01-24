@@ -75,7 +75,7 @@
 	#endif /* GENS_OPENGL */
 #endif /* GENS_OS_WIN32 */
 
-static const vdraw_backend_t * const vdraw_backends[] =
+const vdraw_backend_t* const vdraw_backends[] =
 {
 	#ifdef GENS_OS_WIN32
 		&vdraw_backend_ddraw,
@@ -85,6 +85,7 @@ static const vdraw_backend_t * const vdraw_backends[] =
 			&vdraw_backend_sdl_gl,
 		#endif /* GENS_OPENGL */
 	#endif /* GENS_OS_WIN32 */
+	NULL
 };
 
 // Current backend.

@@ -983,7 +983,7 @@ bool Options::vsync(void)
 
 /**
  * setVSync(): Set the VSync setting.
- * @param vsync True to enable VSync; False to disable VSync.
+ * @param newVSync True to enable VSync; False to disable VSync.
  */
 void Options::setVSync(const bool newVSync)
 {
@@ -1003,40 +1003,48 @@ void Options::setVSync(const bool newVSync)
 }
 
 
-#ifdef GENS_OPENGL
-
 /**
- * openGL(): Get the OpenGL setting.
- * @return OpenGL setting.
+ * backend(): Get the current backend.
+ * @return Current backend ID.
  */
-bool Options::openGL(void)
+VDRAW_BACKEND Options::backend(void)
 {
-	return Video.OpenGL;
+	return vdraw_cur_backend_id;
 }
 
 /**
- * setOpenGL(): Change the OpenGL setting.
- * @param newOpenGL True to enable OpenGL; False to disable OpenGL.
+ * setBackend(): Set the current backend.
+ * @param newBackend Backend ID.
  */
-void Options::setOpenGL(const bool newOpenGL)
+void Options::setBackend(VDRAW_BACKEND newBackend)
 {
-	// End the current drawing function.
+	if (newBackend >= VDRAW_BACKEND_MAX)
+	{
+		// Invalid backend.
+		return;
+	}
+	
+	// End the current backend.
 	vdraw_backend_end();
 	
-	Video.OpenGL = newOpenGL;
-	if (Video.OpenGL)
+	// Initialize the new backend.
+	vdraw_backend_init(newBackend);
+	
+	// Synchronize the Graphics Menu.
+	Sync_Gens_Window_GraphicsMenu();
+	
+	// Print a notice about the selected backend.
+	if (is_gens_running())
 	{
-		vdraw_backend_init(VDRAW_BACKEND_SDL_GL);
-		MESSAGE_L("Selected OpenGL Renderer", "Selected OpenGL Renderer", 1500);
-	}
-	else
-	{
-		vdraw_backend_init(VDRAW_BACKEND_SDL);
-		MESSAGE_L("Selected SDL Renderer", "Selected SDL Renderer", 1500);
+		char buf[64];
+		snprintf(buf, sizeof(buf), "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
+		buf[sizeof(buf) - 1] = 0x00;
+		MESSAGE_L(buf, buf, 1500);
 	}
 }
 
 
+#ifdef GENS_OPENGL
 /**
  * setOpenGL_Resolution(): Set the OpenGL resolution.
  * @param w Width.
@@ -1057,9 +1065,15 @@ void Options::setOpenGL_Resolution(int w, int h)
 	MESSAGE_NUM_2L("Selected %dx%d resolution",
 		       "Selected %dx%d resolution", w, h, 1500);
 	
-	// If OpenGL mode isn't enabled, don't do anything.
-	if (!Video.OpenGL)
+	// If the current backend isn't OpenGL, don't do anything.
+	// TODO: Make this not platform-dependent.
+#ifdef GENS_OS_UNIX
+	if (vdraw_cur_backend_id != VDRAW_BACKEND_SDL_GL)
 		return;
+#else
+	// OpenGL isn't implemented on any other platforms yet.
+	return;
+#endif
 	
 	// OpenGL mode is currently enabled. Change the resolution.
 	vdraw_reset_renderer(TRUE);

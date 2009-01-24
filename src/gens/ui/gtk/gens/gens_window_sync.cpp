@@ -260,8 +260,62 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Screen Shot
 	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
 	
+	// Backends
+	GtkWidget *mnuBackend = findMenuItem(IDM_GRAPHICS_BACKEND);
+	
+	// Check if the ROM History submenu already exists.
+	GtkWidget *mnuBackend_sub = gtk_menu_item_get_submenu(GTK_MENU_ITEM(mnuBackend));
+	if (mnuBackend_sub)
+	{
+		// Submenu currently exists. Delete it.
+		gtk_widget_destroy(mnuBackend_sub);
+	}
+	
+	// Create a new submenu.
+	mnuBackend_sub = gtk_menu_new();
+	gtk_widget_set_name(mnuBackend_sub, "GraphicsMenu_Backend_SubMenu");
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuBackend), mnuBackend_sub);
+	
+	g_object_set_data_full(G_OBJECT(mnuBackend), "GraphicsMenu_Backend_SubMenu",
+			       g_object_ref(mnuBackend_sub),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Add the backends.
+	int curBackend = 0;
+	GSList *radioGroup = NULL;
+	char sObjName[64];
+	GtkWidget *mnuItem;
+	
+	while (vdraw_backends[curBackend])
+	{
+		mnuItem = gtk_radio_menu_item_new_with_label(radioGroup, vdraw_backends[curBackend]->name);
+		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
+		
+		sprintf(sObjName, "GraphicsMenu_Backends_SubMenu_%d", curBackend);
+		gtk_widget_set_name(mnuItem, sObjName);
+		gtk_widget_show(mnuItem);
+		gtk_container_add(GTK_CONTAINER(mnuBackend_sub), mnuItem);
+		
+		// Check if this backend is currently active.
+		if (vdraw_cur_backend_id == curBackend)
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), true);
+		
+		// Make sure the menu item is deleted when the submenu is deleted.
+		g_object_set_data_full(G_OBJECT(mnuBackend_sub), sObjName,
+				       g_object_ref(mnuItem),
+				       (GDestroyNotify)g_object_unref);
+		
+		// Connect the signal.
+		g_signal_connect((gpointer)mnuItem, "activate",
+				 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				 GINT_TO_POINTER(IDM_GRAPHICS_BACKEND + 1 + curBackend));
+		
+		// Next backend.
+		curBackend++;
+	}
+	
 #ifdef GENS_OPENGL
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
+	//gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL_FILTER)), Video.glLinearFilter);
 	
 	// OpenGL Resolution

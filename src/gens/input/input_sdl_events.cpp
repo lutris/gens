@@ -458,7 +458,8 @@ void input_sdl_event_key_down(int key)
 		case GENS_KEY_r:
 			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_SHIFT))
 			{
-				Options::setOpenGL(!Options::openGL());
+				// TODO: Iterate through current backends.
+				Options::setBackend(VDRAW_BACKEND_SDL_GL);
 				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;

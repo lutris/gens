@@ -337,11 +337,6 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			break;
 		
 #ifdef GENS_OPENGL
-		case IDM_GRAPHICS_OPENGL:
-			Options::setOpenGL(!state);
-			Sync_Gens_Window_GraphicsMenu();
-			break;
-		
 		case IDM_GRAPHICS_OPENGL_FILTER:
 			Video.glLinearFilter = !state;
 			
@@ -454,30 +449,39 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			break;
 		
 		default:
-			if ((menuID & 0xFF00) == IDM_GRAPHICS_RENDER)
+			switch (menuID & 0xFF00)
 			{
-				// Render mode change.
-				// TODO: Improve performance here.
-				list<MDP_Render_t*>::iterator mdpIter = PluginMgr::lstRenderPlugins.begin();
-				for (unsigned int i = 1; i < (menuID & 0x00FF); i++)
+				case IDM_GRAPHICS_BACKEND:
 				{
-					mdpIter++;
-					if (mdpIter == PluginMgr::lstRenderPlugins.end())
-						break;
+					// Backend change.
+					Options::setBackend((VDRAW_BACKEND)((menuID & 0xFF) - 1));
+					break;
 				}
-				
-				// Found the renderer.
-				vdraw_set_renderer(mdpIter);
-				
-				// Synchronize the Graphics Menu.
-				Sync_Gens_Window_GraphicsMenu();
+				case IDM_GRAPHICS_RENDER:
+				{
+					// Render mode change.
+					// TODO: Improve performance here.
+					list<MDP_Render_t*>::iterator mdpIter = PluginMgr::lstRenderPlugins.begin();
+					for (unsigned int i = 1; i < (menuID & 0x00FF); i++)
+					{
+						mdpIter++;
+						if (mdpIter == PluginMgr::lstRenderPlugins.end())
+							break;
+					}
+					
+					// Found the renderer.
+					vdraw_set_renderer(mdpIter);
+					
+					// Synchronize the Graphics Menu.
+					Sync_Gens_Window_GraphicsMenu();
+					
+					break;
+				}
+				default:
+					// Unknown menu item ID.
+					return 0;
+					break;
 			}
-			else
-			{
-				// Unknown menu item ID.
-				return 0;
-			}
-			break;
 	}
 	
 	// Menu item handled.

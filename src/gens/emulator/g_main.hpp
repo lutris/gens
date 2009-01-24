@@ -79,7 +79,6 @@ struct Gens_VideoSettings_t
 	int borderColorEmulation;
 	int pauseTint;
 #ifdef GENS_OPENGL
-	int OpenGL;
 	int Width_GL;
 	int Height_GL;
 	int glLinearFilter;

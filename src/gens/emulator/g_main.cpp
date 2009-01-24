@@ -224,7 +224,6 @@ int Init_Settings(void)
 	Video.borderColorEmulation = 1;
 	Video.pauseTint = 1;
 #ifdef GENS_OPENGL
-	Video.OpenGL = 1;
 	Video.Width_GL = 640;
 	Video.Height_GL = 480;
 	Video.glLinearFilter = 0;

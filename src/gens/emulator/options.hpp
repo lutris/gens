@@ -9,6 +9,8 @@
 #ifndef GENS_OPTIONS_HPP
 #define GENS_OPTIONS_HPP
 
+#include "video/vdraw.h"
+
 #ifdef __cplusplus
 
 #include <stdint.h>
@@ -102,10 +104,10 @@ class Options
 		static void setSwRender(const bool newSwRender);
 #endif /* GENS_OS_WIN32 */
 		
-#ifdef GENS_OPENGL
-		static bool openGL(void);
-		static void setOpenGL(const bool newOpenGL);
+		static VDRAW_BACKEND backend(void);
+		static void setBackend(VDRAW_BACKEND newBackend);
 		
+#ifdef GENS_OPENGL
 		static void setOpenGL_Resolution(int w, int h);
 #endif /* GENS_OPENGL */
 		

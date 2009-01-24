@@ -205,7 +205,7 @@ int Config::save(const string& filename)
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_OPENGL
-	cfg.writeInt("Graphics", "Render OpenGL", (Video.OpenGL ? 1 : 0));
+// TODO	cfg.writeInt("Graphics", "Render OpenGL", (Video.OpenGL ? 1 : 0));
 	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
@@ -461,7 +461,7 @@ int Config::load(const string& filename, void* gameActive)
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_OPENGL
-	Video.OpenGL = cfg.getInt("Graphics", "Render OpenGL", 0);
+// TODO	Video.OpenGL = cfg.getInt("Graphics", "Render OpenGL", 0);
 	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.Height_GL = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
@@ -469,8 +469,8 @@ int Config::load(const string& filename, void* gameActive)
 	// Set the OpenGL renderer.
 	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert
 	// because the window hasn't been created yet.
-	if (is_gens_running())
-		Options::setOpenGL(Video.OpenGL);
+//	if (is_gens_running())
+// TODO		Options::setOpenGL(Video.OpenGL);
 #endif
 	
 	//Set_Render(Full_Screen, -1, 1);
