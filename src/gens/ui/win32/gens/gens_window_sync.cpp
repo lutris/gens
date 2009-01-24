@@ -154,7 +154,8 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	static const unsigned short posROMHistory = 2;
 #endif /* GENS_CDROM */
 	
-	DeleteMenu(mnuFile, posROMHistory, MF_BYPOSITION);
+	DeleteMenu(mnuFile, (UINT)mnuROMHistory, MF_BYCOMMAND);
+	DeleteMenu(mnuFile, IDM_FILE_ROMHISTORY, MF_BYCOMMAND);
 	gensMenuMap.erase(IDM_FILE_ROMHISTORY);
 	if (mnuROMHistory)
 		DestroyMenu(mnuROMHistory);
@@ -194,7 +195,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	
 	// If no recent ROMs were found, disable the ROM History menu.
 	if (romNum == 0)
-		EnableMenuItem(mnuFile, posROMHistory, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(mnuFile, (UINT)mnuROMHistory, MF_BYCOMMAND | MF_GRAYED);
 }
 
 
@@ -263,7 +264,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	HMENU mnuRender = findMenuItem(IDM_GRAPHICS_RENDER);
 	
 	// Delete and/or recreate the Render submenu.
-	DeleteMenu(parent, position, MF_BYPOSITION);
+	DeleteMenu(parent, (UINT)mnuRender, MF_BYCOMMAND);
 	gensMenuMap.erase(IDM_GRAPHICS_RENDER);
 	if (mnuRender)
 		DestroyMenu(mnuRender);
@@ -382,7 +383,7 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 	HMENU mnuDebug = findMenuItem(IDM_CPU_DEBUG);
 	
 	// Delete and/or recreate the Debug submenu.
-	DeleteMenu(parent, position, MF_BYPOSITION);
+	DeleteMenu(parent, (UINT)mnuDebug, MF_BYCOMMAND);
 	gensMenuMap.erase(IDM_CPU_DEBUG);
 	if (mnuDebug)
 		DestroyMenu(mnuDebug);
