@@ -26,6 +26,8 @@
 // VDraw Backend struct.
 const vdraw_backend_t vdraw_backend_ddraw =
 {
+	.name = "DirectDraw 4",
+	
 	.init = vdraw_ddraw_init,
 	.end = vdraw_ddraw_end,
 	
