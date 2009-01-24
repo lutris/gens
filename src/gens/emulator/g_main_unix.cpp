@@ -135,9 +135,17 @@ int main(int argc, char *argv[])
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
-	// TODO: Initialize the correct backend.
-	// Initialize SDL.
-	vdraw_backend_init(VDRAW_BACKEND_SDL);
+	// Initialize the backend.
+	if ((int)vdraw_cur_backend_id < 0)
+	{
+		// No backend saved in the configuration file. Use the default.
+		vdraw_backend_init((VDRAW_BACKEND)0);
+	}
+	else
+	{
+		// Backend saved in the configuration file. Use that backend.
+		vdraw_backend_init(vdraw_cur_backend_id);
+	}
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{

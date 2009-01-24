@@ -205,7 +205,7 @@ int Config::save(const string& filename)
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_OPENGL
-// TODO	cfg.writeInt("Graphics", "Render OpenGL", (Video.OpenGL ? 1 : 0));
+	cfg.writeString("Graphics", "Backend", vdraw_backends[vdraw_cur_backend_id]->name);
 	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
 	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
 	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
@@ -461,7 +461,38 @@ int Config::load(const string& filename, void* gameActive)
 #endif /* GENS_OS_WIN32 */
 	
 #ifdef GENS_OPENGL
-// TODO	Video.OpenGL = cfg.getInt("Graphics", "Render OpenGL", 0);
+	string backend = cfg.getString("Graphics", "Backend", "");
+	// Determine the initial backend ID.
+	if (!backend.empty())
+	{
+		int backendID = 0;
+		while (vdraw_backends[backendID])
+		{
+			if (strncasecmp(backend.c_str(),
+					vdraw_backends[backendID]->name,
+					backend.length()) == 0)
+			{
+				// Found the correct backend.
+				vdraw_cur_backend_id = (VDRAW_BACKEND)backendID;
+				break;
+			}
+			
+			// Check the next backend.
+			backendID++;
+		}
+		
+		if (!vdraw_backends[backendID])
+		{
+			// Backend not found. Use the first backend.
+			vdraw_cur_backend_id = (VDRAW_BACKEND)0;
+		}
+	}
+	else
+	{
+		// No backend saved in the config file. Use the first backend.
+		vdraw_cur_backend_id = (VDRAW_BACKEND)0;
+	}
+	
 	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
 	Video.Height_GL = cfg.getInt("Graphics", "OpenGL Height", 480);
 	Video.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
