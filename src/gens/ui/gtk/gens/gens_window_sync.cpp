@@ -34,11 +34,14 @@ using std::string;
 using std::list;
 using std::deque;
 
+#include "gtk-misc.h"
+
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
-#include "ui/common/gens/gens_menu.h"
 
-#include "gtk-misc.h"
+// Common UI functions.
+#include "ui/common/gens/gens_menu.h"
+#include "ui/common/gens/gens_window_sync.h"
 
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
@@ -134,10 +137,6 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	// Disable callbacks so nothing gets screwed up.
 	do_callbacks = 0;
 	
-	// ROM Format prefixes
-	// TODO: Move this somewhere else.
-	static const char* ROM_Format_Prefix[6] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]", NULL};
-	
 	// ROM History
 	GtkWidget *mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
 	
@@ -170,9 +169,9 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		// Determine the ROM format.
 		romFormat = ((*rom).type & ROMTYPE_SYS_MASK);
 		if (romFormat >= ROMTYPE_SYS_MD && romFormat <= ROMTYPE_SYS_MCD32X)
-			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
+			sROMHistoryEntry = gws_rom_format_prefix[romFormat];
 		else
-			sROMHistoryEntry = ROM_Format_Prefix[0];
+			sROMHistoryEntry = gws_rom_format_prefix[0];
 		
 		// Add a tab, a dash, and a space.
 		sROMHistoryEntry += "\t- ";
@@ -266,27 +265,21 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL_FILTER)), Video.glLinearFilter);
 	
 	// OpenGL Resolution
+	int resID = 0;
+	uint32_t curRes = GENS_GWS_RES(Video.Width_GL, Video.Height_GL);
+	while (gws_opengl_resolutions[resID][0] != 0)
+	{
+		if (gws_opengl_resolutions[resID][0] == curRes)
+		{
+			id = gws_opengl_resolutions[resID][1];
+			break;
+		}
+		
+		// Next resolution.
+		resID++;
+	}
 	
-	// TODO: Optimize this.
-	if (Video.Width_GL == 320 && Video.Height_GL == 240)
-		id = IDM_GRAPHICS_OPENGL_RES_320x240;
-	else if (Video.Width_GL == 640 && Video.Height_GL == 480)
-		id = IDM_GRAPHICS_OPENGL_RES_640x480;
-	else if (Video.Width_GL == 800 && Video.Height_GL == 600)
-		id = IDM_GRAPHICS_OPENGL_RES_800x600;
-	else if (Video.Width_GL == 960 && Video.Height_GL == 720)
-		id = IDM_GRAPHICS_OPENGL_RES_960x720;
-	else if (Video.Width_GL == 1024 && Video.Height_GL == 768)
-		id = IDM_GRAPHICS_OPENGL_RES_1024x768;
-	else if (Video.Width_GL == 1280 && Video.Height_GL == 960)
-		id = IDM_GRAPHICS_OPENGL_RES_1280x960;
-	else if (Video.Width_GL == 1280 && Video.Height_GL == 1024)
-		id = IDM_GRAPHICS_OPENGL_RES_1280x1024;
-	else if (Video.Width_GL == 1400 && Video.Height_GL == 1050)
-		id = IDM_GRAPHICS_OPENGL_RES_1400x1050;
-	else if (Video.Width_GL == 1600 && Video.Height_GL == 1200)
-		id = IDM_GRAPHICS_OPENGL_RES_1600x1200;
-	else
+	if (gws_opengl_resolutions[resID][0] == 0)
 		id = IDM_GRAPHICS_OPENGL_RES_CUSTOM;
 	
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);

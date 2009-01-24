@@ -29,8 +29,11 @@
 
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
-#include "ui/common/gens/gens_menu.h"
 #include "gens_window_callbacks.hpp"
+
+// Common UI functions.
+#include "ui/common/gens/gens_menu.h"
+#include "ui/common/gens/gens_window_sync.h"
 
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
@@ -137,10 +140,6 @@ void Sync_Gens_Window_FileMenu(void)
  */
 void Sync_Gens_Window_FileMenu_ROMHistory(void)
 {
-	// ROM Format prefixes
-	// TODO: Move this somewhere else.
-	static const char* ROM_Format_Prefix[6] = {"[----]", "[MD]", "[32X]", "[SCD]", "[SCDX]", NULL};
-	
 	// Find the file menu.
 	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
 	
@@ -175,9 +174,9 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		// TODO: Improve the return variable from Detect_Format()
 		romFormat = ((*rom).type & ROMTYPE_SYS_MASK);
 		if (romFormat >= ROMTYPE_SYS_MD && romFormat <= ROMTYPE_SYS_MCD32X)
-			sROMHistoryEntry = ROM_Format_Prefix[romFormat];
+			sROMHistoryEntry = gws_rom_format_prefix[romFormat];
 		else
-			sROMHistoryEntry = ROM_Format_Prefix[0];
+			sROMHistoryEntry = gws_rom_format_prefix[0];
 		
 		// Add a tab, a dash, and a space.
 		sROMHistoryEntry += "\t- ";
@@ -396,24 +395,8 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 	if (flags & MF_GRAYED)
 		return;
 	
-	// TODO: Move this array somewhere else.
-	const char* DebugStr[9] =
-	{
-		"&Genesis - 68000",
-		"Genesis - &Z80",
-		"Genesis - &VDP",
-		"&SegaCD - 68000",
-		"SegaCD - &CDC",
-		"SegaCD - GF&X",
-		"32X - Main SH2",
-		"32X - Sub SH2",
-		"32X - VDP",
-	};
-	
-	int i;
-	
 	// Create the debug entries.
-	for (i = 0; i < 9; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		if ((i >= 0 && i <= 2) ||
 		    (i >= 3 && i <= 5 && SegaCD_Started) ||
@@ -427,7 +410,7 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 			}
 			
 			InsertMenu(mnuDebug, i + (i / 3), MF_BYPOSITION | MF_STRING,
-				   IDM_CPU_DEBUG_MC68000 + i, DebugStr[i]);
+				   IDM_CPU_DEBUG_MC68000 + i, gws_debug_items[i]);
 			
 			if (Debug == (i + 1))
 				CheckMenuItem(mnuDebug, IDM_CPU_DEBUG_MC68000 + i, MF_BYCOMMAND | MF_CHECKED);
