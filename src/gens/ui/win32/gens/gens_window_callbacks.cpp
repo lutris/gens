@@ -425,6 +425,16 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 				Change_CD();
 			break;
 		
+		case IDCMD_VDRAW_BACKEND:
+		{
+			int curBackend = vdraw_cur_backend_id;
+			curBackend++;
+			if (curBackend >= VDRAW_BACKEND_MAX)
+				curBackend = 0;
+			Options::setBackend((VDRAW_BACKEND)curBackend);
+			break;
+		}
+		
 		default:
 		{
 			int value = LOWORD(wParam) & 0x0F;

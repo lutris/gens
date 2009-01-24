@@ -50,6 +50,7 @@ extern "C" {
 #define IDCMD_RENDERMODE_INC		0x700F
 #define IDCMD_CHANGE_CD			0x7010
 #define IDCMD_STRETCH_MODE		0x7011
+#define IDCMD_VDRAW_BACKEND		0x7012
 
 // Non-Menu Commands - Save Slot Numbers
 #define IDCMD_SAVESLOT_NUMERIC		0x7100 // Same as IDCMD_SAVESLOT_NUMERIC_0
