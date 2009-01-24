@@ -146,7 +146,8 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// Initialize vdraw_ddraw.
 	vdraw_init();
-	vdraw_backend_init_subsystem(VDRAW_BACKEND_DDRAW);
+	// TODO: This doesn't seem to be needed on Win32...
+	//vdraw_backend_init_subsystem(VDRAW_BACKEND_DDRAW);
 	
 	// Initialize the input object.
 	int rval = input_init(INPUT_BACKEND_DINPUT);
@@ -191,14 +192,17 @@ int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
 	
-#ifdef GENS_OPENGL
-	// Check if OpenGL needs to be enabled.
-	// This also initializes SDL or SDL+GL.
-	Change_OpenGL(Video.OpenGL);
-#else
-	// Initialize DirectDraw.
-	vdraw_backend_init(VDRAW_BACKEND_DDRAW);
-#endif
+	// Initialize the backend.
+	if ((int)vdraw_cur_backend_id < 0)
+	{
+		// No backend saved in the configuration file. Use the default.
+		vdraw_backend_init((VDRAW_BACKEND)0);
+	}
+	else
+	{
+		// Backend saved in the configuration file. Use that backend.
+		vdraw_backend_init(vdraw_cur_backend_id);
+	}
 	
 	if (strcmp(PathNames.Start_Rom, "") != 0)
 	{
