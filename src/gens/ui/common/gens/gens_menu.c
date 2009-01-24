@@ -123,14 +123,11 @@ static struct GensMenuItem_t gmiGraphics[] =
 #ifdef GENS_OPENGL
 	{IDM_GRAPHICS_OPENGL_FILTER,	GMF_ITEM_CHECK,		"OpenGL &Linear Filter",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_OPENGL_RES,	GMF_ITEM_SUBMENU,	"OpenGL Resolution",		&gmiGraphics_GLRes[0],	0, 0, 0},
-#ifndef GENS_OS_UNIX
-	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
-#endif /* !GENS_OS_UNIX */
 #endif /* GENS_OPENGL */
 #ifdef GENS_OS_UNIX
 	{IDM_GRAPHICS_BPP,		GMF_ITEM_SUBMENU,	"Bits per pixel",		&gmiGraphics_bpp[0],	0, 0, 0},
-	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 #endif /* GENS_OS_UNIX */
+	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},
 	{IDM_GRAPHICS_COLORADJUST,	GMF_ITEM_NORMAL,	"Color Adjust...",		NULL,	0, 0, IDIM_COLOR_ADJUST},
 	{IDM_GRAPHICS_RENDER,		GMF_ITEM_SUBMENU,	"&Render",			NULL,	0, 0, IDIM_RENDER},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,				NULL,	0, 0, 0},

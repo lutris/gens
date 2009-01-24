@@ -233,7 +233,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 			   MF_BYCOMMAND);
 	
 	// Render
-	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 5);
+	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 7);
 	
 	// Sprite Limit
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SPRITELIMIT,
@@ -250,6 +250,37 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Screen Shot
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SCREENSHOT,
 		      MF_BYCOMMAND | ((Game != NULL) ? MF_CHECKED : MF_UNCHECKED));
+	
+	// Find the Backend submenu.
+	HMENU mnuBackend = findMenuItem(IDM_GRAPHICS_BACKEND);
+	
+	// Delete and/or recreate the Backend submenu.
+	DeleteMenu(mnuGraphics, (UINT)mnuBackend, MF_BYCOMMAND);
+	DeleteMenu(mnuGraphics, IDM_GRAPHICS_BACKEND, MF_BYCOMMAND);
+	gensMenuMap.erase(IDM_GRAPHICS_BACKEND);
+	if (mnuBackend)
+		DestroyMenu(mnuBackend);
+	
+	// Create a new submenu.
+	mnuBackend = CreatePopupMenu();
+	InsertMenu(mnuGraphics, 4, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuBackend, "&Backend\tShift+R");
+	gensMenuMap.insert(win32MenuMapItem(IDM_GRAPHICS_BACKEND, mnuBackend));
+	
+	// Add the backends.
+	int curBackend = 0;
+	while (vdraw_backends[curBackend])
+	{
+		InsertMenu(mnuBackend, -1, MF_BYPOSITION | MF_STRING,
+			   IDM_GRAPHICS_BACKEND + 1 + curBackend, vdraw_backends[curBackend]->name);
+		
+		// Check if this backend is currently active.
+		if (vdraw_cur_backend_id == curBackend)
+			CheckMenuItem(mnuBackend, IDM_GRAPHICS_BACKEND + 1 + curBackend,
+				      MF_BYCOMMAND | MF_CHECKED);
+		
+		// Next backend.
+		curBackend++;
+	}
 }
 
 
@@ -264,6 +295,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	
 	// Delete and/or recreate the Render submenu.
 	DeleteMenu(parent, (UINT)mnuRender, MF_BYCOMMAND);
+	DeleteMenu(parent, IDM_GRAPHICS_RENDER, MF_BYCOMMAND);
 	gensMenuMap.erase(IDM_GRAPHICS_RENDER);
 	if (mnuRender)
 		DestroyMenu(mnuRender);

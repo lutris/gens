@@ -263,7 +263,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Backends
 	GtkWidget *mnuBackend = findMenuItem(IDM_GRAPHICS_BACKEND);
 	
-	// Check if the ROM History submenu already exists.
+	// Check if the Graphics submenu already exists.
 	GtkWidget *mnuBackend_sub = gtk_menu_item_get_submenu(GTK_MENU_ITEM(mnuBackend));
 	if (mnuBackend_sub)
 	{
