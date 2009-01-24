@@ -454,16 +454,18 @@ void input_sdl_event_key_down(int key)
 				close_gens();
 			break;
 		
-#ifdef GENS_OPENGL
 		case GENS_KEY_r:
-			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_SHIFT))
-			{
-				// TODO: Iterate through current backends.
-				Options::setBackend(VDRAW_BACKEND_SDL_GL);
-				Sync_Gens_Window_GraphicsMenu();
-			}
+		{
+			if ((mod & ~KMOD_SHIFT) || !(mod & KMOD_SHIFT))
+				break;
+			
+			int curBackend = vdraw_cur_backend_id;
+			curBackend++;
+			if (curBackend >= VDRAW_BACKEND_MAX)
+				curBackend = 0;
+			Options::setBackend((VDRAW_BACKEND)curBackend);
 			break;
-#endif
+		}
 		
 #ifdef GENS_CDROM
 		case GENS_KEY_v:
