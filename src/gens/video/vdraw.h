@@ -61,9 +61,15 @@ typedef enum
 	VDRAW_BACKEND_MAX
 } VDRAW_BACKEND;
 
+// VDraw backend flags.
+#define VDRAW_BACKEND_FLAG_STRETCH	(1 << 0)
+#define VDRAW_BACKEND_FLAG_VSYNC	(1 << 1)
+
 // VDraw backend function pointers.
 typedef struct
 {
+	const char* const name;
+	
 	int	(*init)(void);
 	int	(*end)(void);
 	
@@ -97,6 +103,7 @@ int	vdraw_backend_end(void);
 // Current backend.
 extern const vdraw_backend_t *vdraw_cur_backend;
 extern VDRAW_BACKEND vdraw_cur_backend_id;
+extern unsigned int vdraw_cur_backend_flags;
 
 // Called if initialization fails.
 void	vdraw_init_fail(const char* err);

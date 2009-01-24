@@ -90,6 +90,7 @@ static const vdraw_backend_t * const vdraw_backends[] =
 // Current backend.
 const vdraw_backend_t *vdraw_cur_backend = NULL;
 VDRAW_BACKEND vdraw_cur_backend_id;
+unsigned int vdraw_cur_backend_flags;
 
 // Function pointers.
 int		(*vdraw_init_subsystem)(void) = NULL;
