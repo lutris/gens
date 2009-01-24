@@ -4804,6 +4804,16 @@ PREFIXE_FDCB:
 	%define	_mdZ80_def_WriteW	mdZ80_def_WriteW
 %endif
 
+; Fastcall symbol redefines for Win32.
+%ifdef __OBJ_WIN32
+	%define	_mdZ80_def_ReadB	@mdZ80_def_ReadB@4
+	%define	_mdZ80_def_In		@mdZ80_def_In@4
+	%define	_mdZ80_def_ReadW	@mdZ80_def_ReadW@4
+	%define	_mdZ80_def_WriteB	@mdZ80_def_WriteB@8
+	%define	_mdZ80_def_Out		@mdZ80_def_Out@8
+	%define	_mdZ80_def_WriteW	@mdZ80_def_WriteW@8
+%endif
+
 align 16
 
 global _mdZ80_def_ReadB
