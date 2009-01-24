@@ -76,6 +76,7 @@ using std::deque;
 
 
 // Internal functions.
+static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position);
 static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position);
 #ifdef GENS_DEBUGGER
 static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position);
@@ -232,6 +233,9 @@ void Sync_Gens_Window_GraphicsMenu(void)
 			   IDM_GRAPHICS_STRETCH_NONE + Options::stretch(),
 			   MF_BYCOMMAND);
 	
+	// Backend
+	Sync_Gens_Window_GraphicsMenu_Backend(mnuGraphics, 4);
+	
 	// Render
 	Sync_Gens_Window_GraphicsMenu_Render(mnuGraphics, 7);
 	
@@ -250,20 +254,29 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Screen Shot
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_SCREENSHOT,
 		      MF_BYCOMMAND | ((Game != NULL) ? MF_CHECKED : MF_UNCHECKED));
-	
+}
+
+
+/**
+ * Sync_Gens_Window_GraphicsMenu_Backend(): Synchronize the Graphics, Backend submenu.
+ * @param parent Parent menu.
+ * @param position Position in the parent menu.
+ */
+static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
+{
 	// Find the Backend submenu.
 	HMENU mnuBackend = findMenuItem(IDM_GRAPHICS_BACKEND);
 	
 	// Delete and/or recreate the Backend submenu.
-	DeleteMenu(mnuGraphics, (UINT)mnuBackend, MF_BYCOMMAND);
-	DeleteMenu(mnuGraphics, IDM_GRAPHICS_BACKEND, MF_BYCOMMAND);
+	DeleteMenu(parent, (UINT)mnuBackend, MF_BYCOMMAND);
+	DeleteMenu(parent, IDM_GRAPHICS_BACKEND, MF_BYCOMMAND);
 	gensMenuMap.erase(IDM_GRAPHICS_BACKEND);
 	if (mnuBackend)
 		DestroyMenu(mnuBackend);
 	
 	// Create a new submenu.
 	mnuBackend = CreatePopupMenu();
-	InsertMenu(mnuGraphics, 4, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuBackend, "&Backend\tShift+R");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuBackend, "&Backend\tShift+R");
 	gensMenuMap.insert(win32MenuMapItem(IDM_GRAPHICS_BACKEND, mnuBackend));
 	
 	// Add the backends.
@@ -291,6 +304,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
  */
 static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
+	// Find the Render submenu.
 	HMENU mnuRender = findMenuItem(IDM_GRAPHICS_RENDER);
 	
 	// Delete and/or recreate the Render submenu.
@@ -304,9 +318,6 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	mnuRender = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuRender, "&Render");
 	gensMenuMap.insert(win32MenuMapItem(IDM_GRAPHICS_RENDER, mnuRender));
-	
-	// Create the render entries.
-	bool renderSelected = false;
 	
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
