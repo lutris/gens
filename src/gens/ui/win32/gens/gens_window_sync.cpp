@@ -286,14 +286,16 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 		InsertMenu(mnuBackend, -1, MF_BYPOSITION | MF_STRING,
 			   IDM_GRAPHICS_BACKEND + 1 + curBackend, vdraw_backends[curBackend]->name);
 		
-		// Check if this backend is currently active.
-		if (vdraw_cur_backend_id == curBackend)
-			CheckMenuItem(mnuBackend, IDM_GRAPHICS_BACKEND + 1 + curBackend,
-				      MF_BYCOMMAND | MF_CHECKED);
-		
 		// Next backend.
 		curBackend++;
 	}
+	
+	// Set the radio button indicator on the current backend.
+	CheckMenuRadioItem(mnuBackend,
+			   IDM_GRAPHICS_BACKEND + 1,
+			   IDM_GRAPHICS_BACKEND + curBackend,
+			   IDM_GRAPHICS_BACKEND + 1 + vdraw_cur_backend_id,
+			   MF_BYCOMMAND);
 }
 
 
