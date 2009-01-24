@@ -225,6 +225,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	// Stretch mode
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
 	
+	// Enable VSync/Stretch only if the current backend supports it.
+	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_VSYNC),
+				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_VSYNC));
+	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH),
+				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH));
+	
 	// Bits per pixel
 	switch (bppOut)
 	{

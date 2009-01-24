@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Main Window - Synchronization Functions.                   *
+ * Gens: (Win32) Main Window - Synchronization Functions.                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -209,13 +209,20 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_FULLSCREEN,
 		      MF_BYCOMMAND | (vdraw_get_fullscreen() ? MF_CHECKED : MF_UNCHECKED));
 	
+	unsigned int flags;
+	
+	// Enable VSync/Stretch only if the current backend supports it.
+	flags = (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_VSYNC ? MF_ENABLED : MF_GRAYED);
+	EnableMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | flags);
+	flags = (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH ? MF_ENABLED : MF_GRAYED);
+	EnableMenuItem(mnuGraphics, (UINT)(findMenuItem(IDM_GRAPHICS_STRETCH)), MF_BYCOMMAND | flags);
+	
 	// VSync
-	unsigned int checkFlags;
 	if (vdraw_get_fullscreen())
-		checkFlags = (Video.VSync_FS ? MF_CHECKED : MF_UNCHECKED);
+		flags = (Video.VSync_FS ? MF_CHECKED : MF_UNCHECKED);
 	else
-		checkFlags = (Video.VSync_W ? MF_CHECKED : MF_UNCHECKED);
-	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | checkFlags);
+		flags = (Video.VSync_W ? MF_CHECKED : MF_UNCHECKED);
+	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | flags);
 	
 	// Stretch
 	HMENU mnuStretch = findMenuItem(IDM_GRAPHICS_STRETCH);
