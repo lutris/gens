@@ -311,8 +311,8 @@ int vdraw_backend_end(void)
  * @param pitch_src Pitch of the source surface.
  */
 void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
-			 int width, int height,
-			 int pitch_dest, int pitch_src)
+			 unsigned int width, unsigned int height,
+			 unsigned int pitch_dest, unsigned int pitch_src)
 {
 	// Make sure the lookup table is referenced.
 	if (!vdraw_LUT16to32)

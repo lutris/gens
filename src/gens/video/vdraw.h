@@ -176,8 +176,8 @@ extern uint16_t	*vdraw_16to32_surface;
 extern int	vdraw_16to32_scale;
 extern int	vdraw_16to32_pitch;
 void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
-			 int width, int height,
-			 int pitch_dest, int pitch_src);
+			 unsigned int width, unsigned int height,
+			 unsigned int pitch_dest, unsigned int pitch_src);
 
 #ifdef __cplusplus
 }
