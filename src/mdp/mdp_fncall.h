@@ -68,6 +68,21 @@ extern "C" {
 	#endif
 #endif
 
+// Endianness defines ported from libsdl.
+#define MDP_LIL_ENDIAN 1234
+#define MDP_BIG_ENDIAN 4321
+#ifndef MDP_BYTEORDER
+#if defined(__hppa__) || \
+    defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
+    (defined(__MIPS__) && defined(__MIPSEB__)) || \
+    defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
+    defined(__SPARC__)
+#define MDP_BYTEORDER MDP_BIG_ENDIAN
+#else
+#define MDP_BYTEORDER MDP_LIL_ENDIAN
+#endif
+#endif
+
 #ifdef __cplusplus
 }
 #endif
