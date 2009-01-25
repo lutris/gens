@@ -138,6 +138,10 @@ typedef struct
 	// Event handler functions.
 	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
 	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
+	
+	// Window registration.
+	int (MDP_FNCALL *window_register)(struct MDP_t *plugin, void *window);
+	int (MDP_FNCALL *window_unregister)(struct MDP_t *plugin, void *window);
 } MDP_Host_t;
 
 #ifdef __cplusplus
