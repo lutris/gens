@@ -48,15 +48,19 @@
 static int	vdraw_gdi_init(void);
 static int	vdraw_gdi_end(void);
 
-static int	vdraw_gdi_init_subsystem(void);
-static int	vdraw_gdi_shutdown(void);
-
 static void	vdraw_gdi_clear_screen(void);
 
 static int	vdraw_gdi_flip(void);
 static void	vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_gdi_stretch_adjust(void);
 static void	vdraw_gdi_update_renderer(void);
+
+// Win32-specific functions.
+static int	vdraw_gdi_reinit_gens_window(void);
+static int	vdraw_gdi_clear_primary_screen(void);
+static int	vdraw_gdi_clear_back_screen(void);
+static int	vdraw_gdi_restore_primary(void);
+static int	vdraw_gdi_set_cooperative_level(void);
 
 
 // VDraw Backend struct.
@@ -76,7 +80,14 @@ const vdraw_backend_t vdraw_backend_gdi =
 	
 	.flip = vdraw_gdi_flip,
 	.stretch_adjust = vdraw_gdi_stretch_adjust,
-	.update_renderer = vdraw_gdi_update_renderer
+	.update_renderer = vdraw_gdi_update_renderer,
+	
+	// Win32-specific functions.
+	.reinit_gens_window	= vdraw_gdi_reinit_gens_window,
+	.clear_primary_screen	= vdraw_gdi_clear_primary_screen,
+	.clear_back_screen	= vdraw_gdi_clear_back_screen,
+	.restore_primary	= vdraw_gdi_restore_primary,
+	.set_cooperative_level	= vdraw_gdi_set_cooperative_level
 };
 
 
