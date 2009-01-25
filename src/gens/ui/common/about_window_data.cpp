@@ -24,6 +24,14 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#ifdef GENS_PNG_INTERNAL
+#include <png.h>
+#endif
+
+#ifdef GENS_ZLIB_INTERNAL
+#include <zlib.h>
+#endif
+
 #include "about/about_window.hpp"
 
 // git version
@@ -47,13 +55,31 @@ const char* AboutWindow::StrDescription =
 const char* AboutWindow::StrCopyright =
 		"(c) 1999-2002 by Stéphane Dallongeville\n"
 		"(c) 2003-2004 by Stéphane Akhoun\n\n"
-		"Gens/GS (c) 2008 by David Korth\n\n"
-		"Reverse-engineered 32X firmware by DevSter\n"
-		"http://devster.monkeeh.com/segapage.html\n\n"
+		"Gens/GS (c) 2008-2009 by David Korth\n\n"
 		"Visit the Gens homepage:\n"
 		"http://gens.consolemul.com\n\n"
 		"For news on Gens/GS, visit Sonic Retro:\n"
 		"http://www.sonicretro.org";
+
+const char* AboutWindow::StrIncludedLibs =
+		"Reverse-engineered 32X firmware by DevSter\n"
+		"http://devster.monkeeh.com/segapage.html"
+		#ifdef GENS_MP3
+			"\n\n"
+			"Internal mp3 decoder based on mpg123\n"
+			"Copyright (c) 1995,1996,1997 by Michael Hipp."
+		#endif
+		#ifdef GENS_PNG_INTERNAL
+			"\n\n"
+			"Internal copy of libpng-" PNG_LIBPNG_VER_STRING "\n"
+			"Copyright (c) 1998-2008 Glenn Randers-Pehrson."
+		#endif
+		#ifdef GENS_ZLIB_INTERNAL
+			"\n\n"
+			"Internal copy of zlib-" ZLIB_VERSION "\n"
+			"Copyright (c) 1995-2005 Jean-loup Gailly and Mark Adler."
+		#endif
+		;
 
 const unsigned char AboutWindow::Data[] =
 {

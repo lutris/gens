@@ -150,15 +150,21 @@ AboutWindow::AboutWindow()
 	g_object_set_data_full(G_OBJECT(m_Window), "lblVersion",
 			       g_object_ref(lblVersion), (GDestroyNotify)g_object_unref);
 	
-	// Copyright frame
-	GtkWidget *fraCopyright = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraCopyright, "fraCopyright");
-	gtk_container_set_border_width(GTK_CONTAINER(fraCopyright), 4);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraCopyright), GTK_SHADOW_ETCHED_IN);
-	gtk_widget_show(fraCopyright);
-	gtk_box_pack_start(GTK_BOX(vboxMain), fraCopyright, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraCopyright",
-			       g_object_ref(fraCopyright), (GDestroyNotify)g_object_unref);
+	// Create a set of tabs for the main information.
+	GtkWidget *tabInfo = gtk_notebook_new();
+	gtk_widget_set_name(tabInfo, "tabInfo");
+	gtk_container_set_border_width(GTK_CONTAINER(tabInfo), 4);
+	gtk_widget_show(tabInfo);
+	gtk_box_pack_start(GTK_BOX(vboxMain), tabInfo, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(m_Window), "tabInfo",
+			       g_object_ref(tabInfo), (GDestroyNotify)g_object_unref);
+	
+	// Label for the copyright frame tab.
+	GtkWidget *lblCopyrightTab = gtk_label_new_with_mnemonic("_Copyrights");
+	gtk_widget_set_name(lblCopyrightTab, "lblCopyrightTab");
+	gtk_widget_show(lblCopyrightTab);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyrightTab",
+			       g_object_ref(lblCopyrightTab), (GDestroyNotify)g_object_unref);
 	
 	// Copyright label
 	GtkWidget *lblCopyright = gtk_label_new(StrCopyright);
@@ -166,9 +172,26 @@ AboutWindow::AboutWindow()
 	gtk_misc_set_padding(GTK_MISC(lblCopyright), 8, 8);
 	gtk_misc_set_alignment(GTK_MISC(lblCopyright), 0.0f, 0.0f);
 	gtk_widget_show(lblCopyright);
-	gtk_container_add(GTK_CONTAINER(fraCopyright), lblCopyright);
+	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), lblCopyright, lblCopyrightTab);
 	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyright",
 			       g_object_ref(lblCopyright), (GDestroyNotify)g_object_unref);
+	
+	// Label for the Included Libraries tab.
+	GtkWidget *lblIncludedLibsTab = gtk_label_new_with_mnemonic("Included _Libraries");
+	gtk_widget_set_name(lblIncludedLibsTab, "lblIncludedLibsTab");
+	gtk_widget_show(lblIncludedLibsTab);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblIncludedLibsTab",
+			       g_object_ref(lblIncludedLibsTab), (GDestroyNotify)g_object_unref);
+	
+	// Included Libraries label
+	GtkWidget *lblIncludedLibs = gtk_label_new(StrIncludedLibs);
+	gtk_widget_set_name(lblCopyright, "lblIncludedLibs");
+	gtk_misc_set_padding(GTK_MISC(lblIncludedLibs), 8, 8);
+	gtk_misc_set_alignment(GTK_MISC(lblIncludedLibs), 0.0f, 0.0f);
+	gtk_widget_show(lblIncludedLibs);
+	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), lblIncludedLibs, lblIncludedLibsTab);
+	g_object_set_data_full(G_OBJECT(m_Window), "lblIncludedLibs",
+			       g_object_ref(lblIncludedLibs), (GDestroyNotify)g_object_unref);
 	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();

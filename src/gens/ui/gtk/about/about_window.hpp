@@ -57,6 +57,7 @@ class AboutWindow : public WndBase
 		static const char* StrTitle;
 		static const char* StrDescription;
 		static const char* StrCopyright;
+		static const char* StrIncludedLibs;
 		
 		// Data
 		static const unsigned char Data[];
