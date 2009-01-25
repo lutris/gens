@@ -141,6 +141,18 @@ int MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 			mdp_host_ptr_unref_RGB16toYUV();
 			break;
 		
+		case MDP_PTR_ROM_MD:
+		case MDP_PTR_ROM_32X:
+		case MDP_PTR_RAM_MD:
+		case MDP_PTR_RAM_VRAM:
+		case MDP_PTR_RAM_Z80:
+		case MDP_PTR_RAM_MCD_PRG:
+		case MDP_PTR_RAM_MCD_WORD1M:
+		case MDP_PTR_RAM_MCD_WORD2M:
+		case MDP_PTR_RAM_32X:
+			// Nothing to unreference.
+			break;
+		
 		default:
 			fprintf(stderr, "%s: Unknown ptrID: 0x%08X\n", __func__, ptrID);
 			return -MDP_ERR_UNKNOWN_PTRID;
