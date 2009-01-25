@@ -51,6 +51,7 @@ extern "C" {
 typedef enum
 {
 	#ifdef GENS_OS_WIN32
+		VDRAW_BACKEND_GDI,
 		VDRAW_BACKEND_DDRAW,
 	#else /* !GENS_OS_WIN32 */
 		VDRAW_BACKEND_SDL,
