@@ -32,7 +32,8 @@
 #include "util/file/config_file.hpp"
 
 #include "ui/gens_ui.hpp"
-#include "gtk-misc.h"
+#include "ui/gtk/gtk-misc.h"
+#include "ui/gtk/gtk-uri.h"
 
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
@@ -123,7 +124,7 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 		}
 		
 		// Unescape the URI.
-		char* unescaped = g_uri_unescape_string(filename.c_str(), NULL);
+		char* unescaped = gens_g_uri_unescape_string(filename.c_str(), NULL);
 		filename = string(unescaped);
 		g_free(unescaped);
 		
