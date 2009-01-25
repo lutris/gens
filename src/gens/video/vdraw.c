@@ -353,11 +353,7 @@ int vdraw_flip(void)
 	// TODO: Make constnats for Intro_Style.
 	if (Game != NULL)
 	{
-		if (Video.pauseTint && (!Active || Paused))
-		{
-			// Emulation is paused.
-			Pause_Screen();
-		}
+		// Don't do any intro effects if a game is loaded.
 	}
 	else if (Intro_Style == 1)
 	{

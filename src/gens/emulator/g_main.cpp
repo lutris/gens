@@ -66,6 +66,9 @@
 #include "audio/audio.h"
 #include "input/input.h"
 
+// Video effects.
+#include "video/v_effects.hpp"
+
 // Gens Settings struct
 struct Gens_Settings_t Settings;
 struct Gens_PathNames_t PathNames;
@@ -547,7 +550,13 @@ void GensMainLoop(void)
 					Do_32X_VDP_Only();
 				else
 					Do_VDP_Only();
-				//Pause_Screen();
+				
+				if (Video.pauseTint)
+				{
+					// Emulation is paused.
+					Pause_Screen();
+				}
+				
 				vdraw_flip();
 				GensUI::sleep(100);
 			}
