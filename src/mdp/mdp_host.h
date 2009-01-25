@@ -142,6 +142,7 @@ typedef struct
 	// Window registration.
 	int (MDP_FNCALL *window_register)(struct MDP_t *plugin, void *window);
 	int (MDP_FNCALL *window_unregister)(struct MDP_t *plugin, void *window);
+	void* (MDP_FNCALL *window_get_main)(void);
 } MDP_Host_t;
 
 #ifdef __cplusplus

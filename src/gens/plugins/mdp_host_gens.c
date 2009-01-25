@@ -47,6 +47,9 @@
 // ROM information.
 #include "util/file/rom.hpp"
 
+// Main window.
+#include "gens/gens_window.hpp"
+
 // MDP_PTR functions.
 static inline int* mdp_host_ptr_ref_LUT16to32(void);
 static inline void mdp_host_ptr_unref_LUT16to32(void);
@@ -86,7 +89,8 @@ MDP_Host_t Gens_MDP_Host =
 	.event_unregister = mdp_host_event_unregister,
 	
 	.window_register = mdp_host_window_register,
-	.window_unregister = mdp_host_window_unregister
+	.window_unregister = mdp_host_window_unregister,
+	.window_get_main = mdp_host_window_get_main
 };
 
 
@@ -331,3 +335,19 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 	return MDP_ERR_OK;
 }
 
+
+/**
+ * mdp_host_window_get_main(): Get a pointer to the main window.
+ * @return Pointer to the main window.
+ */
+void* MDP_FNCALL mdp_host_window_get_main(void)
+{
+	#if defined(GENS_UI_GTK)
+		return gens_window;
+	#elif defined(GENS_UI_WIN32)
+		return Gens_hWnd;
+	#else
+		fprintf(stderr, "%s(): Unknown UI. Returning NULL.\n", __func__);
+		return NULL;
+	#endif
+}
