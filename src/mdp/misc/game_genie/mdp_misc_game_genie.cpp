@@ -30,6 +30,7 @@
 
 #include "mdp_misc_game_genie.hpp"
 #include "mdp_misc_game_genie_plugin.h"
+#include "mdp_misc_game_genie_window.hpp"
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
@@ -70,7 +71,7 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	}
 	
 	// Create a menu item.
-	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &mdp_misc_game_genie_menu_handler, 0, "&Hack Rings!");
+	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &mdp_misc_game_genie_menu_handler, 0, "&Game Genie");
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
 	
 	// Register the MDP_EVENT_OPEN_ROM event.
@@ -114,15 +115,8 @@ static int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 	if (menu_item_id != gg_menuItemID)
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	
-	// Hack rings!
-	
-	// Set the ring counter to 0x1FF (511);
-	MDP_MEM_16(mdp_ptr_ram_md, 0xFE20) = 0x1FF;
-	
-	// Force the ring counter to be updated.
-	MDP_MEM_BE_8(mdp_ptr_ram_md, 0xFE1D) = 1;
-	
-	printf("Rings hacked!\n");
+	// Show the Game Genie window.
+	GG_window::Instance(gg_host_srv->window_get_main(), gg_host_srv);
 	return MDP_ERR_OK;
 }
 
