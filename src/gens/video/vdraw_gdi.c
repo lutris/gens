@@ -46,6 +46,7 @@
 
 // Windows API.
 #include <windows.h>
+#include <windowsx.h>
 
 
 // Function prototypes.
@@ -183,7 +184,7 @@ static int vdraw_gdi_end(void)
 	
 	if (hbmpDraw)
 	{
-		DeleteObject(hbmpDraw);
+		DeleteBitmap(hbmpDraw);
 		hbmpDraw = NULL;
 		pbmpData = NULL;
 	}
@@ -215,7 +216,6 @@ static int vdraw_gdi_clear_primary_screen(void)
 	memset(pbmpData, 0, (szGDIBuf.cx << 1) * szGDIBuf.cy);
 	
 	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
 	vdraw_border_color_32 = ~MD_Palette32[0];
 	
 	return 0;
@@ -237,7 +237,6 @@ static int vdraw_gdi_clear_back_screen(void)
 	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	
 	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
 	vdraw_border_color_32 = ~MD_Palette32[0];
 	
 	return 0;
@@ -460,5 +459,44 @@ static void vdraw_gdi_stretch_adjust(void)
  */
 static void vdraw_gdi_draw_border(void)
 {
-	// TODO
+	if (!Video.borderColorEmulation)
+	{
+		// Border color emulation is disabled.
+		// Don't do anything if the border color is currently black.
+		if (vdraw_border_color_32 == 0)
+			return;
+	}
+	
+	unsigned int new_border_color_32 = MD_Palette32[0];
+	
+	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
+	{
+		// Either no game is loaded or the debugger is enabled.
+		// Make sure the border color is black.
+		new_border_color_32 = 0;
+	}
+	
+	if (vdraw_border_color_32 != new_border_color_32)
+	{
+		vdraw_border_color_32 = new_border_color_32;
+		
+		// MD color has R and B channels swapped from Windows GDI.
+		uint8_t r = (vdraw_border_color_32 >> 16) & 0xFF;
+		uint8_t g = (vdraw_border_color_32 >> 8) & 0xFF;
+		uint8_t b = (vdraw_border_color_32) & 0xFF;
+		
+		// TODO: Actual borders.
+		HBRUSH hbrBorder = CreateSolidBrush(RGB(r, g, b));
+		
+		RECT rectBorder;
+		rectBorder.left = 0;
+		rectBorder.top = 0;
+		rectBorder.right = szGDIBuf.cx;
+		rectBorder.bottom = szGDIBuf.cy;
+		
+		FillRect(hdcComp, &rectBorder, hbrBorder);
+		
+		// Delete the brush.
+		DeleteBrush(hbrBorder);
+	}
 }
