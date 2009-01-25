@@ -14,20 +14,14 @@
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/z80/cpu_z80.h"
 #include "gens_core/cpu/sh2/cpu_sh2.h"
-#include "mdZ80/mdZ80.h"
 
 // VDP
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 
 // Miscellaneous
-#include "gens_core/io/io.h"
-
 #include "macros/math_m.h"
 #include "audio/audio.h"
-#include "util/sound/wave.h"
-#include "util/sound/gym.hpp"
 
 int Debug;
 int Frame_Skip;
@@ -169,153 +163,4 @@ void Set_Clock_Freq(const int system)
 	
 	if (system == 2) // 32X
 		_32X_VDP.State |= 0x2000;
-}
-
-
-/**
- * gens_do_MD_frame(): Do an MD frame.
- * @param VDP If true, VDP is enabled.
- */
-static inline int __attribute__((always_inline)) gens_do_MD_frame(bool VDP)
-{
-	int *buf[2];
-	int HInt_Counter;
-	
-	// Set the number of visible lines.
-	SET_VISIBLE_LINES;
-	
-	YM_Buf[0] = PSG_Buf[0] = Seg_L;
-	YM_Buf[1] = PSG_Buf[1] = Seg_R;
-	YM_Len = PSG_Len = 0;
-	
-	Cycles_M68K = Cycles_Z80 = 0;
-	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer();
-	mdZ80_clear_odo(&M_Z80);
-	
-	// TODO: Send "Before Frame" event to registered MDP event handlers.
-	//Patch_Codes();
-	
-	VRam_Flag = 1;
-	
-	VDP_Status &= 0xFFF7;		// Clear V Blank
-	if (VDP_Reg.Set4 & 0x2)
-		VDP_Status ^= 0x0010;
-	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step H interrupt
-	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (DMAT_Length)
-			main68k_addCycles(Update_DMA());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec (Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		if (--HInt_Counter < 0)
-		{
-			HInt_Counter = VDP_Reg.H_Int;
-			VDP_Int |= 0x4;
-			Update_IRQ_Line();
-		}
-		
-		if (VDP)
-		{
-			// VDP is enabled.
-			Render_Line();
-		}
-		
-		main68k_exec(Cycles_M68K);
-		Z80_EXEC(0);
-	}
-	
-	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-	
-	Fix_Controllers();
-	Cycles_M68K += CPL_M68K;
-	Cycles_Z80 += CPL_Z80;
-	if (DMAT_Length)
-		main68k_addCycles(Update_DMA());
-	
-	if (--HInt_Counter < 0)
-	{
-		VDP_Int |= 0x4;
-		Update_IRQ_Line();
-	}
-	
-	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-	main68k_exec(Cycles_M68K - 360);
-	Z80_EXEC(168);
-	
-	VDP_Status &= 0xFFFB;		// HBlank = 0
-	VDP_Status |= 0x0080;		// V Int happened
-	
-	VDP_Int |= 0x8;
-	Update_IRQ_Line();
-	mdZ80_interrupt(&M_Z80, 0xFF);
-	
-	main68k_exec(Cycles_M68K);
-	Z80_EXEC(0);
-	
-	for (VDP_Current_Line++;
-	     VDP_Current_Line < VDP_Num_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (DMAT_Length)
-			main68k_addCycles(Update_DMA());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec(Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		main68k_exec(Cycles_M68K);
-		Z80_EXEC(0);
-	}
-	
-	PSG_Special_Update();
-	YM2612_Special_Update();
-	
-	// If WAV or GYM is being dumped, update the WAV or GYM.
-	// TODO: VGM dumping
-	if (audio_get_wav_dumping())
-		audio_wav_dump_update();
-	if (GYM_Dumping)
-		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
-	
-	return 1;
-}
-
-
-int Do_Genesis_Frame_No_VDP(void)
-{
-	return gens_do_MD_frame(false);
-}
-int Do_Genesis_Frame(void)
-{
-	return gens_do_MD_frame(true);
 }
