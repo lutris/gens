@@ -1,6 +1,6 @@
 MDP: Mega Drive Plugins
-Interface Specification Version 0.1.0
-(c) Copyright 2008 by David Korth.
+Interface Specification Version 1.0.0-draft
+(c) Copyright 2008-2009 by David Korth.
 
 Permission is granted to copy, distribute and/or modify this
 document under the terms of the GNU Free Documentation License,
@@ -29,11 +29,9 @@ to extend the abilities of Sega Genesis emulators.
 
 2. External Plugins
 
-MDP Version 0.1.0 does not currently define an external plugin interface.
-This means that all plugins have to be statically linked to the main binary.
-Support for external plugins will be added in MDP Version 1.0.0, using the
-dynamic-link library (.dll) interface on Windows and the shared object (.so)
-interface on Linux.
+MDP Version 1.0.0 supports external plugins using the operating system's
+native shared library interface. On Linux, this uses the Shared Object (.so)
+system, and on Windows, this uses the Dynamic-Link Library (.dll) system.
 
 ================================================================
 
@@ -49,7 +47,7 @@ this format: 0xMMNNRRRR
 - NN == minor version.
 - RR == revision number.
 
-So for MDP interface version 0.1.0, you would use MDP_VERSION(0, 1, 0).
+So for MDP interface version 1.0.0, you would use MDP_VERSION(1, 0, 0).
 As a convenience, the MDP_INTERFACE_VERSION macro provides the version
 number of the MDP interface definition as specified in that particular
 mdp.h header file.
@@ -78,13 +76,13 @@ that section.
 
 ================================================================
 
-4. Basic Plugin Interface [MDP_VERSION(0, 1, 0)]
+4. Basic Plugin Interface [MDP_VERSION(1, 0, 0)]
 
 Every plugin must export a struct of type MDP_t. This struct contains the
-basic information about the plugin. MDP Version 0.1.0 does not have support
-for external plugins, so the name of the MDP_t struct is not required to be
-anything specific. Later versions of MDP will support external plugins,
-in which case the MDP_t struct will require a specific symbol name.
+basic information about the plugin. For internal plugins, the MDP_t struct
+is referenced in the host program's MDP implementation, so it can have any
+name. For external plugins, the MDP_t struct must be exported with the name
+"mdp" ("_mdp" on platforms that prefix C symbols with underscores).
 
 Format of the MDP_t struct:
 
@@ -93,21 +91,22 @@ Format of the MDP_t struct:
 
 typedef struct
 {
+	// Plugin version information.
 	const uint32_t interfaceVersion;
 	const uint32_t pluginVersion;
-	const uint32_t type;
-	const uint32_t reserved1;
 	
-	const unsigned char uuid[16];
-	
+	// CPU flags.
 	const uint32_t cpuFlagsSupported;
 	const uint32_t cpuFlagsRequired;
 	
+	// UUID - each plugin must have a unique ID.
+	const unsigned char uuid[16];
+	
+	// Description.
 	MDP_Desc_t *desc;
 	
+	// Functions.
 	MDP_Func_t *func;
-	
-	void *plugin_t;
 } MDP_t;
 
 Fields:
@@ -117,15 +116,6 @@ Fields:
 - pluginVersion: Version number of the specific plugin. This is user-defined
                  and can be anything.
 
-- type: Plugin type. Can be one of the following:
-  - MDPT_NULL: NULL plugin. Does nothing.
-  - MDPT_RENDER: Render plugin. (See Section 5 for more information)
-
-- reserved1: Reserved.
-
-- uuid: 16-byte UUID used to uniquely identify the plugin. Use a tool such as
-        uuidgen to generate the UUID.
-
 - cpuFlagsSupported: [bitfield] CPU flags that are supported by the plugin.
                      The CPU flag values are defined in mdp_cpuflags.h.
 
@@ -133,13 +123,12 @@ Fields:
                     the current CPU does not support any flags specified in
                     this field, the plugin will not be loaded.
 
+- uuid: 16-byte UUID used to uniquely identify the plugin. Use a tool such as
+        uuidgen to generate the UUID.
+
 - desc: Pointer to MDP_Desc_t with description information about the plugin.
 
-- MDP_Func_t: Pointer to a struct containing various plugin functions.
-
-- plugin_t: Pointer to a type-specific struct. For a plugin of type
-            MDPT_RENDER, this points to a struct of type MDP_Render_t.
-            (See Section 5 for more information.)
+- func: Pointer to a struct containing various plugin functions.
 
 ----------------------------------------------------------------
 
@@ -161,9 +150,11 @@ typedef struct
 	const char* website;
 	const char* license;
 	
+	// Filler for alignment purposes.
 	const void* reserved1;
 	const void* reserved2;
 	
+	// Icon data. (PNG format)
 	const unsigned char* icon;
 	const unsigned int iconLength;
 } MDP_Desc_t;
@@ -196,14 +187,14 @@ Fields:
 
 ----------------------------------------------------------------
 
-4.2. MDP Function Field
+4.2. MDP Function Field [MDP_VERSION(1, 0, 0)]
 
 The MDP_t.func field points to a struct of type MDP_Func_t, which contains
 several pointers to functions within the plugin.
 
 #include "mdp/mdp.h"
 
-typedef void (MDP_FNCALL *mdp_init)(MDP_Host_t *hostSrv);
+typedef void (MDP_FNCALL *mdp_init)(MDP_Host_t *host_srv);
 typedef void (MDP_FNCALL *mdp_end)(void);
 
 typedef struct
@@ -216,16 +207,17 @@ typedef struct
 Fields:
 
 - init: Pointer to a function used to initialize the plugin.
-        This function is called at Gens startup.
+        This function is called at Gens startup. The host_srv parameter
+        contains a pointer to MDP Host Services.
 
 - end: Pointer to a function used to shut down the plugin.
        This function is called at Gens shutdown.
 
 ----------------------------------------------------------------
 
-4.3. MDP Host Services [MDP_VERSION(0, 1, 0)]
+4.3. MDP Host Services [MDP_VERSION(1, 0, 0)]
 
-The MDP_Func_t.init() function has one parameter, hostSrv, which is a pointer
+The MDP_Func_t.init() function has one parameter, host_srv, which is a pointer
 to a struct containing various services offered by the MDP host.
 
 #include "mdp/mdp_host.h"
@@ -234,8 +226,25 @@ typedef struct
 {
 	const uint32_t interfaceVersion;
 	
-	void* (MDP_FNCALL *refPtr)(MDP_PTR ptrID);
-	void  (MDP_FNCALL *unrefPtr)(MDP_PTR ptrID);
+	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
+	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
+	
+	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
+	int (MDP_FNCALL *val_get)(uint32_t valID);
+	
+	int (MDP_FNCALL *renderer_register)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *renderer_unregister)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	
+	int (MDP_FNCALL *menu_item_add)(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
+	int (MDP_FNCALL *menu_item_remove)(struct MDP_t *plugin, int menu_item_id);
+	int (MDP_FNCALL *menu_item_set_text)(struct MDP_t *plugin, int menu_item_id, const char *text);
+	int (MDP_FNCALL *menu_item_get_text)(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size);
+	int (MDP_FNCALL *menu_item_set_checked)(struct MDP_t *plugin, int menu_item_id, int checked);
+	int (MDP_FNCALL *menu_item_get_checked)(struct MDP_t *plugin, int menu_item_id);
+	
+	// Event handler functions.
+	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
+	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
 } MDP_Host_t;
 
 Fields:
@@ -243,14 +252,41 @@ Fields:
 - interfaceVersion: MDP Host Services interface version. Usually the same
                     as the MDP interface version.
 
-- refPtr: Function to reference a Gens pointer.
+Pointers: (See section 4.3.1)
 
-- unrefPtr: Function to unreference a Gens pointer. This function must be
-            called for any pointers referenced with refPtr() by the plugin
-            when the plugin is shut down.
+- ptr_ref: Function to reference a Gens pointer.
 
-MDP_PTR is an enum containing various pointers that can be referenced by
-plugins.
+- ptr_unref: Function to unreference a Gens pointer. This function must be
+             called for any pointers referenced with refPtr() by the plugin
+             when the plugin is shut down.
+
+Values: (See section 4.3.2)
+- val_set: Set an MDP value.
+- val_get: Get an MDP value.
+
+Renderers: (See section 4.3.3)
+- renderer_register: Register a renderer plugin.
+- renderer_unregister: Unregister a renderer plugin.
+
+Menu Items: (See section 4.3.4)
+- menu_item_add: Add a menu item.
+- menu_item_remove: Remove a menu item.
+- menu_item_set_text: Set a menu item's text.
+- menu_item_get_text: Get a menu item's text.
+- menu_item_set_checked: Set a menu item's checked state.
+- menu_item_get_checked: Get a menu item's checked state.
+
+Event Handlers: (See section 4.3.5)
+- event_register: Register an event handler.
+- event_unregister: Unregister an event handler.
+
+----------------------------------------------------------------
+
+4.3.1. Pointer Referencing [MDP_VERSION(1, 0, 0)]
+
+The host service functions ptr_ref and ptr_unref are used to reference and
+unreference pointer to various aspects of the emulator. The pointer is
+selected by using a value from the MDP_PTR enum.
 
 typedef enum
 {
@@ -298,9 +334,15 @@ Items:
 - MDP_PTR_RAM_MCD_WORD2M: Word RAM, 2M mode. Size: 256k (TODO: What's the difference?)
 - MDP_PTR_RAM_32X: 32X RAM. Size: 256k
 
-================================================================
+----------------------------------------------------------------
 
-5. MDP Render Plugins [MDP_VERSION(0, 1, 0)]
+4.3.2. Values [MDP_VERSION(1, 0, 0)]
+
+TODO
+
+----------------------------------------------------------------
+
+4.3.3. MDP Render Plugins [MDP_VERSION(1, 0, 0)]
 
 Render plugins are used to render the original Genesis display to the main
 video display. The basic renderers, Normal and Double, merely do a blit or
@@ -308,8 +350,14 @@ a 2x scaled blit, respectively. More advanced renderers can apply
 interpolation and scanline effects in order to improve the output of the
 image on high-resolution monitors.
 
-All render plugins have their MDP_t.type field set to MDPT_RENDER, and
-their MDP_t.plugin field pointing to a struct of type MDP_Render_t.
+To register a renderer, a plugin can call the following function in its
+initialization function:
+
+host_srv->renderer_register(&mdp, &mdp_render_t);
+
+where mdp is the MDP_t struct and mdp_render_t is the MDP_Render_t struct.
+
+The MDP_Render_t struct contains information about the renderer:
 
 #include "mdp/mdp_render.h"
 
@@ -317,7 +365,7 @@ typedef void (MDP_FNCALL *MDP_Render_Fn)(MDP_Render_Info_t *renderInfo);
 typedef struct
 {
 	const uint32_t interfaceVersion;
-	MDP_Render_Fn blit;
+	mdp_render_fn blit;
 	const int scale;
 	const uint32_t flags;
 	const char* tag;
@@ -329,7 +377,7 @@ Fields:
                     The MDP_RENDER_INTERFACE_VERSION macro in mdp_render.h
                     defines the current render interface version.
 
-- blit: Pointer to a function of type MDP_Render_Fn. This function is called
+- blit: Pointer to a function of type mdp_render_fn. This function is called
         after every frame to blit the MD image to the output display.
 
 - scale: Scaling factor of the renderer. For the "Normal" renderer, this would
@@ -345,10 +393,6 @@ The MDP_Render_t.flags field can be a combination of the following flags:
 - MDP_RENDER_FLAG_SRC16DST32: Indicates that the renderer only supports 16-bit
                               color. Gens will convert the output to 32-bit
                               color, if necessary.
-
-----------------------------------------------------------------
-
-5.1. MDP_Render_t.blit()
 
 The MDP_Render_t.blit function must point to a function of type MDP_Render_fn.
 For example, the Normal renderer has this function:
@@ -417,6 +461,18 @@ MDP_RENDER_FLAG_SRC16DST32 flag set.
 The MDP_Render_Info_t.renderFlags field is currently unused in this version
 of the MDP Render interface.
 
+----------------------------------------------------------------
+
+4.3.4. Menu Items [MDP_VERSION(1, 0, 0)]
+
+TODO
+
+----------------------------------------------------------------
+
+4.3.5. Event Handlers [MDP_VERSION(1, 0, 0)]
+
+TODO
+
 ================================================================
 
-End of MDP Interface Specification Version 0.1.0.
+End of MDP Interface Specification Version 1.0.0-draft.
