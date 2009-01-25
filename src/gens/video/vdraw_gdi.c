@@ -468,7 +468,6 @@ static void vdraw_gdi_draw_border(void)
 	}
 	
 	unsigned int new_border_color_32 = MD_Palette32[0];
-	
 	if (!Video.borderColorEmulation || (Game == NULL) || (Debug > 0))
 	{
 		// Either no game is loaded or the debugger is enabled.
@@ -479,22 +478,45 @@ static void vdraw_gdi_draw_border(void)
 	if (vdraw_border_color_32 != new_border_color_32)
 	{
 		vdraw_border_color_32 = new_border_color_32;
+		const uint8_t stretch = vdraw_get_stretch();
 		
 		// MD color has R and B channels swapped from Windows GDI.
 		uint8_t r = (vdraw_border_color_32 >> 16) & 0xFF;
 		uint8_t g = (vdraw_border_color_32 >> 8) & 0xFF;
 		uint8_t b = (vdraw_border_color_32) & 0xFF;
-		
-		// TODO: Actual borders.
 		HBRUSH hbrBorder = CreateSolidBrush(RGB(r, g, b));
 		
 		RECT rectBorder;
-		rectBorder.left = 0;
-		rectBorder.top = 0;
-		rectBorder.right = szGDIBuf.cx;
-		rectBorder.bottom = szGDIBuf.cy;
 		
-		FillRect(hdcComp, &rectBorder, hbrBorder);
+		if (VDP_Num_Vis_Lines < 240 && !(stretch & STRETCH_V))
+		{
+			// Top/Bottom borders.
+			rectBorder.left = 0;
+			rectBorder.right = szGDIBuf.cx;
+			
+			rectBorder.top = 0;
+			rectBorder.bottom = 8 * vdraw_scale;
+			FillRect(hdcComp, &rectBorder, hbrBorder);
+			
+			rectBorder.top = szGDIBuf.cy - (8 * vdraw_scale);
+			rectBorder.bottom = szGDIBuf.cy;
+			FillRect(hdcComp, &rectBorder, hbrBorder);
+		}
+		
+		if (!isFullXRes() && !(stretch & STRETCH_H))
+		{
+			// Left/Right borders.
+			rectBorder.top = 0;
+			rectBorder.bottom = szGDIBuf.cy;
+			
+			rectBorder.left = 0;
+			rectBorder.right = 32 * vdraw_scale;
+			FillRect(hdcComp, &rectBorder, hbrBorder);
+			
+			rectBorder.left = szGDIBuf.cx - (32 * vdraw_scale);
+			rectBorder.right = szGDIBuf.cx;
+			FillRect(hdcComp, &rectBorder, hbrBorder);
+		}
 		
 		// Delete the brush.
 		DeleteBrush(hbrBorder);
