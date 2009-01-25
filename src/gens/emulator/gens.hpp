@@ -68,6 +68,10 @@ void Check_Country_Order(void);
 
 void Set_Clock_Freq(const int system);
 
+// Emulation functions.
+int Do_Genesis_Frame_No_VDP(void);
+int Do_Genesis_Frame(void);
+
 #ifdef __cplusplus
 }
 #endif
