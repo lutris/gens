@@ -55,7 +55,7 @@ static void	vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
 static void	vdraw_gdi_update_renderer(void);
 
 // Win32-specific functions.
-static int	vdraw_gdi_reinit_gens_window(void) { return 0; }
+static int	vdraw_gdi_reinit_gens_window(void);
 static int	vdraw_gdi_clear_primary_screen(void);
 static int	vdraw_gdi_clear_back_screen(void);
 static int	vdraw_gdi_restore_primary(void) { return 0; }
@@ -327,4 +327,55 @@ static int vdraw_gdi_flip(void)
 	InvalidateRect(Gens_hWnd, NULL, FALSE);
 	ReleaseDC(Gens_hWnd, hdcDest);
 	return 0;
+}
+
+
+/**
+ * vdraw_gdi_reinit_gens_window(): Reinitialize the Gens window.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_gdi_reinit_gens_window(void)
+{
+	// Clear the sound buffer.
+	audio_clear_sound_buffer();
+	
+	// Stop DirectDraw.
+	vdraw_gdi_end();
+	
+	// Rebuild the menu bar.
+	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
+	create_gens_window_menubar();
+	
+	MDP_Render_t *rendMode = get_mdp_render_t();
+	const int scale = rendMode->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return -1;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	
+	if (vdraw_get_fullscreen())
+	{
+		while (ShowCursor(TRUE) < 1) { }
+		while (ShowCursor(FALSE) >= 0) { }
+		
+		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(NULL));
+		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+	}
+	else
+	{
+		while (ShowCursor(FALSE) >= 0) { }
+		while (ShowCursor(TRUE) < 1) { }
+		
+		// MoveWindow / ResizeWindow code
+		LONG_PTR curStyle = GetWindowLongPtr(Gens_hWnd, GWL_STYLE);
+		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(curStyle  | WS_OVERLAPPEDWINDOW));
+		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+		Win32_setActualWindowSize(Gens_hWnd, w, h);
+	}
+	
+	// Reinitialize DirectDraw.
+	return vdraw_gdi_init();
 }
