@@ -25,6 +25,7 @@ if GENS_UI_GTK
 gens_SOURCES += \
 		ui/gtk/gens_ui_gtk.cpp \
 		ui/gtk/gtk-misc.c \
+		ui/gtk/gtk-uri.c \
 		ui/gtk/gens/gens_window.cpp \
 		ui/gtk/gens/gens_window_callbacks.cpp \
 		ui/gtk/gens/gens_window_sync.cpp \
@@ -86,6 +87,7 @@ if GENS_UI_GTK
 
 noinst_HEADERS += \
 		ui/gtk/gtk-misc.h \
+		ui/gtk/gtk-uri.h \
 		ui/gtk/gens/gens_window.hpp \
 		ui/gtk/gens/gens_window_callbacks.hpp \
 		ui/gtk/gens/gens_window_sync.hpp \
