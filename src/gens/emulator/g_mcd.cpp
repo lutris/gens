@@ -302,444 +302,6 @@ void Reset_SegaCD(void)
 
 
 /**
- * Do_SegaCD_Frame_No_VDP(): Runs a Sega CD frame without updating the VDP.
- * @return 1 if successful.
- */
-int Do_SegaCD_Frame_No_VDP(void)
-{
-	int *buf[2];
-	int HInt_Counter;
-	
-	// Set the number of visible lines.
-	SET_VISIBLE_LINES;
-
-	CPL_S68K = 795;
-	
-	YM_Buf[0] = PSG_Buf[0] = Seg_L;
-	YM_Buf[1] = PSG_Buf[1] = Seg_R;
-	YM_Len = PSG_Len = 0;
-	
-	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
-	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer();
-	sub68k_tripOdometer();
-	mdZ80_clear_odo(&M_Z80);
-	
-	VRam_Flag = 1;
-	
-	VDP_Status &= 0xFFF7;
-	if (VDP_Reg.Set4 & 0x2)
-		VDP_Status ^= 0x0010;
-	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step H interrupt
-	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert();
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (DMAT_Length)
-			main68k_addCycles(Update_DMA ());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec(Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		if (--HInt_Counter < 0)
-		{
-			HInt_Counter = VDP_Reg.H_Int;
-			VDP_Int |= 0x4;
-			Update_IRQ_Line();
-		}
-		
-		main68k_exec(Cycles_M68K);
-		sub68k_exec(Cycles_S68K);
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer ();
-	}
-	
-	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-	if (PCM_Enable)
-		PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-	Update_CDC_TRansfert();
-	
-	Fix_Controllers();
-	Cycles_M68K += CPL_M68K;
-	Cycles_Z80 += CPL_Z80;
-	if (S68K_State == 1)
-		Cycles_S68K += CPL_S68K;
-	if (DMAT_Length)
-		main68k_addCycles (Update_DMA ());
-	
-	if (--HInt_Counter < 0)
-	{
-		VDP_Int |= 0x4;
-		Update_IRQ_Line();
-	}
-	
-	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-	main68k_exec(Cycles_M68K - 360);
-	sub68k_exec(Cycles_S68K - 586);
-	Z80_EXEC(168);
-	
-	VDP_Status &= 0xFFFB;		// HBlank = 0
-	VDP_Status |= 0x0080;		// V Int happened
-	VDP_Int |= 0x8;
-	Update_IRQ_Line();
-	mdZ80_interrupt(&M_Z80, 0xFF);
-	
-	main68k_exec (Cycles_M68K);
-	sub68k_exec (Cycles_S68K);
-	Z80_EXEC(0);
-	
-	Update_SegaCD_Timer ();
-	
-	for (VDP_Current_Line++;
-	     VDP_Current_Line < VDP_Num_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert();
-		
-		Fix_Controllers();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (DMAT_Length)
-			main68k_addCycles(Update_DMA ());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec (Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		main68k_exec(Cycles_M68K);
-		sub68k_exec(Cycles_S68K);
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer();
-	}
-	
-	buf[0] = Seg_L;
-	buf[1] = Seg_R;
-	
-	PSG_Special_Update();
-	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio_seg_length);
-	
-	// If WAV or GYM is being dumped, update the WAV or GYM.
-	// TODO: VGM dumping
-	if (audio_get_wav_dumping())
-		audio_wav_dump_update();
-	if (GYM_Dumping)
-		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
-	
-	return 1;
-}
-
-
-/**
- * Do_SegaCD_Frame_No_VDP_Cycle_Accurate(): Runs a cycle-accurate Sega CD frame without updating the VDP.
- * @return 1 if successful.
- */
-int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
-{
-	int *buf[2], i, j;
-	int HInt_Counter;
-	
-	// Set the number of visible lines.
-	SET_VISIBLE_LINES;
-	
-	CPL_S68K = 795;
-	
-	YM_Buf[0] = PSG_Buf[0] = Seg_L;
-	YM_Buf[1] = PSG_Buf[1] = Seg_R;
-	YM_Len = PSG_Len = 0;
-	
-	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
-	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer();
-	sub68k_tripOdometer();
-	mdZ80_clear_odo(&M_Z80);
-	
-	VRam_Flag = 1;
-	
-	VDP_Status &= 0xFFF7;
-	if (VDP_Reg.Set4 & 0x2)
-		VDP_Status ^= 0x0010;
-	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step H interrupt
-	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert ();
-		
-		i = Cycles_M68K + 24;
-		j = Cycles_S68K + 39;
-		
-		Fix_Controllers ();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		
-		/* instruction by instruction execution */
-		
-		while (i < (Cycles_M68K - 404))
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < (Cycles_S68K - 658))
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K - 404);
-		sub68k_exec (Cycles_S68K - 658);
-		
-		/* end instruction by instruction execution */
-		
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		if (--HInt_Counter < 0)
-		{
-			HInt_Counter = VDP_Reg.H_Int;
-			VDP_Int |= 0x4;
-			Update_IRQ_Line ();
-		}
-		
-		/* instruction by instruction execution */
-		
-		while (i < Cycles_M68K)
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < Cycles_S68K)
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K);
-		sub68k_exec (Cycles_S68K);
-		
-		/* end instruction by instruction execution */
-		
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer ();
-	}
-	
-	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-	if (PCM_Enable)
-		PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-	Update_CDC_TRansfert ();
-	
-	i = Cycles_M68K + 24;
-	j = Cycles_S68K + 39;
-	
-	Fix_Controllers ();
-	Cycles_M68K += CPL_M68K;
-	Cycles_Z80 += CPL_Z80;
-	if (S68K_State == 1)
-		Cycles_S68K += CPL_S68K;
-	if (DMAT_Length)
-		main68k_addCycles (Update_DMA ());
-	
-	if (--HInt_Counter < 0)
-	{
-		VDP_Int |= 0x4;
-		Update_IRQ_Line ();
-	}
-	
-	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-	
-	/* instruction by instruction execution */
-	
-	while (i < (Cycles_M68K - 360))
-	{
-		main68k_exec (i);
-		i += 24;
-		
-		if (j < (Cycles_S68K - 586))
-		{
-			sub68k_exec (j);
-			j += 39;
-		}
-	}
-	
-	main68k_exec (Cycles_M68K - 360);
-	sub68k_exec (Cycles_S68K - 586);
-	
-	/* end instruction by instruction execution */
-	
-	Z80_EXEC(168);
-	
-	VDP_Status &= 0xFFFB;		// HBlank = 0
-	VDP_Status |= 0x0080;		// V Int happened
-	VDP_Int |= 0x8;
-	Update_IRQ_Line();
-	mdZ80_interrupt(&M_Z80, 0xFF);
-	
-	/* instruction by instruction execution */
-	
-	while (i < Cycles_M68K)
-	{
-		main68k_exec(i);
-		i += 24;
-		
-		if (j < Cycles_S68K)
-		{
-			sub68k_exec(j);
-			j += 39;
-		}
-	}
-	
-	main68k_exec(Cycles_M68K);
-	sub68k_exec(Cycles_S68K);
-	
-	/* end instruction by instruction execution */
-	
-	Z80_EXEC(0);
-	
-	Update_SegaCD_Timer();
-	
-	for (VDP_Current_Line++;
-	     VDP_Current_Line < VDP_Num_Lines;
-             VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert ();
-		
-		i = Cycles_M68K + 24;
-		j = Cycles_S68K + 39;
-		
-		Fix_Controllers ();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		
-		/* instruction by instruction execution */
-		
-		while (i < (Cycles_M68K - 404))
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < (Cycles_S68K - 658))
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K - 404);
-		sub68k_exec (Cycles_S68K - 658);
-		
-		/* end instruction by instruction execution */
-		
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		/* instruction by instruction execution */
-		
-		while (i < Cycles_M68K)
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < Cycles_S68K)
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K);
-		sub68k_exec (Cycles_S68K);
-		
-		/* end instruction by instruction execution */
-		
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer ();
-	}
-	
-	buf[0] = Seg_L;
-	buf[1] = Seg_R;
-	
-	PSG_Special_Update();
-	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio_seg_length);
-	
-  	// If WAV or GYM is being dumped, update the WAV or GYM.
-	// TODO: VGM dumping
-	if (audio_get_wav_dumping())
-		audio_wav_dump_update();
-	if (GYM_Dumping)
-		Update_GYM_Dump ((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
-	
-	return 1;
-}
-
-
-/**
  * draw_SegaCD_LED(): Draw a SegaCD LED.
  * @param screen Screen buffer.
  * @param color LED color.
@@ -803,17 +365,18 @@ static void SegaCD_Display_LED(void)
 
 
 /**
- * Do_SegaCD_Frame(): Runs a Sega CD frame.
- * @return 1 if successful.
+ * gens_do_MCD_frame(): Do an MCD frame.
+ * @param VDP If true, VDP is updated.
+ * @param perfect_sync If true, use perfect synchronization.
  */
-int Do_SegaCD_Frame(void)
+static inline int __attribute__((always_inline)) gens_do_MCD_frame(bool VDP, bool perfect_sync)
 {
-	int *buf[2];
+	int *buf[2], i, j;
 	int HInt_Counter;
 	
 	// Set the number of visible lines.
 	SET_VISIBLE_LINES;
-	
+
 	CPL_S68K = 795;
 	
 	YM_Buf[0] = PSG_Buf[0] = Seg_L;
@@ -832,7 +395,7 @@ int Do_SegaCD_Frame(void)
 	if (VDP_Reg.Set4 & 0x2)
 		VDP_Status ^= 0x0010;
 	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step d'interruption H
+	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step H interrupt
 	
 	for (VDP_Current_Line = 0;
 	     VDP_Current_Line < VDP_Num_Vis_Lines;
@@ -841,11 +404,17 @@ int Do_SegaCD_Frame(void)
 		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 		if (PCM_Enable)
-			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
+			PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
+		YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
 		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		Update_CDC_TRansfert();
+		
+		if (perfect_sync)
+		{
+			i = Cycles_M68K + 24;
+			j = Cycles_S68K + 39;
+		}
 		
 		Fix_Controllers();
 		Cycles_M68K += CPL_M68K;
@@ -853,36 +422,88 @@ int Do_SegaCD_Frame(void)
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
 		if (DMAT_Length)
-			main68k_addCycles(Update_DMA ());
+			main68k_addCycles(Update_DMA());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec(Cycles_M68K - 404);
+		
+		if (!perfect_sync)
+		{
+			// Perfect Sync is disabled.
+			main68k_exec(Cycles_M68K - 404);
+		}
+		else
+		{
+			// Perfect sync is enabled.
+			// Use instruction by instruction execution.
+			while (i < (Cycles_M68K - 404))
+			{
+				main68k_exec(i);
+				i += 24;
+				
+				if (j < (Cycles_S68K - 658))
+				{
+					sub68k_exec(j);
+					j += 39;
+				}
+			}
+			
+			main68k_exec(Cycles_M68K - 404);
+			sub68k_exec(Cycles_S68K - 658);
+		}
+		
 		VDP_Status &= 0xFFFB;	// HBlank = 0
 		
 		if (--HInt_Counter < 0)
 		{
 			HInt_Counter = VDP_Reg.H_Int;
 			VDP_Int |= 0x4;
-			Update_IRQ_Line ();
+			Update_IRQ_Line();
 		}
 		
-		Render_Line ();
+		if (VDP)
+		{
+			// VDP needs to be updated.
+			Render_Line();
+		}
+		
+		if (perfect_sync)
+		{
+			// Perfect sync is enabled.
+			// Use instruction by instruction execution.
+			while (i < Cycles_M68K)
+			{
+				main68k_exec(i);
+				i += 24;
+				
+				if (j < Cycles_S68K)
+				{
+					sub68k_exec(j);
+					j += 39;
+				}
+			}
+		}
 		
 		main68k_exec(Cycles_M68K);
 		sub68k_exec(Cycles_S68K);
 		Z80_EXEC(0);
 		
-		Update_SegaCD_Timer ();
+		Update_SegaCD_Timer();
 	}
 	
 	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
 	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
 	if (PCM_Enable)
 		PCM_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM2612_DacAndTimers_Update(buf, Sound_Extrapol[VDP_Current_Line][1]);
+	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
 	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
 	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 	Update_CDC_TRansfert();
+	
+	if (perfect_sync)
+	{
+		i = Cycles_M68K + 24;
+		j = Cycles_S68K + 39;
+	}
 	
 	Fix_Controllers();
 	Cycles_M68K += CPL_M68K;
@@ -890,7 +511,7 @@ int Do_SegaCD_Frame(void)
 	if (S68K_State == 1)
 		Cycles_S68K += CPL_S68K;
 	if (DMAT_Length)
-		main68k_addCycles (Update_DMA());
+		main68k_addCycles (Update_DMA ());
 	
 	if (--HInt_Counter < 0)
 	{
@@ -899,6 +520,24 @@ int Do_SegaCD_Frame(void)
 	}
 	
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
+	
+	if (perfect_sync)
+	{
+		// Perfect sync is enabled.
+		// Use instruction by instruction execution.
+		while (i < (Cycles_M68K - 360))
+		{
+			main68k_exec(i);
+			i += 24;
+			
+			if (j < (Cycles_S68K - 586))
+			{
+				sub68k_exec(j);
+				j += 39;
+			}
+		}
+	}
+	
 	main68k_exec(Cycles_M68K - 360);
 	sub68k_exec(Cycles_S68K - 586);
 	Z80_EXEC(168);
@@ -908,6 +547,23 @@ int Do_SegaCD_Frame(void)
 	VDP_Int |= 0x8;
 	Update_IRQ_Line();
 	mdZ80_interrupt(&M_Z80, 0xFF);
+	
+	if (perfect_sync)
+	{
+		// Perfect sync is enabled.
+		// Use instruction by instruction execution.
+		while (i < Cycles_M68K)
+		{
+			main68k_exec(i);
+			i += 24;
+			
+			if (j < Cycles_S68K)
+			{
+				sub68k_exec(j);
+				j += 39;
+			}
+		}
+	}
 	
 	main68k_exec(Cycles_M68K);
 	sub68k_exec(Cycles_S68K);
@@ -928,17 +584,61 @@ int Do_SegaCD_Frame(void)
 		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
 		Update_CDC_TRansfert();
 		
+		if (perfect_sync)
+		{
+			i = Cycles_M68K + 24;
+			j = Cycles_S68K + 39;
+		}
+		
 		Fix_Controllers();
 		Cycles_M68K += CPL_M68K;
 		Cycles_Z80 += CPL_Z80;
 		if (S68K_State == 1)
 			Cycles_S68K += CPL_S68K;
 		if (DMAT_Length)
-			main68k_addCycles(Update_DMA());
+			main68k_addCycles(Update_DMA ());
 		
 		VDP_Status |= 0x0004;	// HBlank = 1
-		main68k_exec (Cycles_M68K - 404);
-		VDP_Status &= 0xFFFB;	// HBlank = 0
+		
+		if (!perfect_sync)
+		{
+			// Perfect sync is disabled.
+			main68k_exec(Cycles_M68K - 404);
+			VDP_Status &= 0xFFFB;	// HBlank = 0
+		}
+		else
+		{
+			// Perfect sync is enabled.
+			// Use instruction by instruction execution.
+			while (i < (Cycles_M68K - 404))
+			{
+				main68k_exec(i);
+				i += 24;
+				
+				if (j < (Cycles_S68K - 658))
+				{
+					sub68k_exec(j);
+					j += 39;
+				}
+			}
+			
+			main68k_exec(Cycles_M68K - 404);
+			sub68k_exec(Cycles_S68K - 658);
+			
+			VDP_Status &= 0xFFFB;	// HBlank = 0
+			
+			while (i < Cycles_M68K)
+			{
+				main68k_exec(i);
+				i += 24;
+				
+				if (j < Cycles_S68K)
+				{
+					sub68k_exec(j);
+					j += 39;
+				}
+			}
+		}
 		
 		main68k_exec(Cycles_M68K);
 		sub68k_exec(Cycles_S68K);
@@ -961,290 +661,26 @@ int Do_SegaCD_Frame(void)
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
 	
-	if (Show_LED)
+	if (VDP && Show_LED)
 		SegaCD_Display_LED();
 	
 	return 1;
 }
 
 
-/**
- * Do_SegaCD_Frame_Cycle_Accurate(): Runs a cycle-accurate Sega CD frame.
- * @return 1 if successful.
- */
+int Do_SegaCD_Frame_No_VDP(void)
+{
+	return gens_do_MCD_frame(false, false);
+}
+int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
+{
+	return gens_do_MCD_frame(false, true);
+}
+int Do_SegaCD_Frame(void)
+{
+	return gens_do_MCD_frame(true, false);
+}
 int Do_SegaCD_Frame_Cycle_Accurate(void)
 {
-	int *buf[2], i, j;
-	int HInt_Counter;
-	
-	// Set the number of visible lines.
-	SET_VISIBLE_LINES;
-	
-	CPL_S68K = 795;
-	
-	YM_Buf[0] = PSG_Buf[0] = Seg_L;
-	YM_Buf[1] = PSG_Buf[1] = Seg_R;
-	YM_Len = PSG_Len = 0;
-	
-	Cycles_S68K = Cycles_M68K = Cycles_Z80 = 0;
-	Last_BUS_REQ_Cnt = -1000;
-	main68k_tripOdometer();
-	sub68k_tripOdometer();
-	mdZ80_clear_odo(&M_Z80);
-	
-	VRam_Flag = 1;
-	
-	VDP_Status &= 0xFFF7;
-	if (VDP_Reg.Set4 & 0x2)
-		VDP_Status ^= 0x0010;
-	
-	HInt_Counter = VDP_Reg.H_Int;	// Hint_Counter = step d'interruption H
-	
-	for (VDP_Current_Line = 0;
-	     VDP_Current_Line < VDP_Num_Vis_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert ();
-		
-		i = Cycles_M68K + 24;
-		j = Cycles_S68K + 39;
-		
-		Fix_Controllers ();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		
-		/* instruction by instruction execution */
-		
-		while (i < (Cycles_M68K - 404))
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < (Cycles_S68K - 658))
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K - 404);
-		sub68k_exec (Cycles_S68K - 658);
-		
-		/* end instruction by instruction execution */
-		
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		if (--HInt_Counter < 0)
-		{
-			HInt_Counter = VDP_Reg.H_Int;
-			VDP_Int |= 0x4;
-			Update_IRQ_Line ();
-		}
-		
-		Render_Line ();
-		
-		/* instruction by instruction execution */
-		
-		while (i < Cycles_M68K)
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < Cycles_S68K)
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K);
-		sub68k_exec (Cycles_S68K);
-		
-		/* end instruction by instruction execution */
-		
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer ();
-	}
-	
-	buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-	buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-	if (PCM_Enable)
-		PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-	YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-	PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-	Update_CDC_TRansfert ();
-	
-	i = Cycles_M68K + 24;
-	j = Cycles_S68K + 39;
-	
-	Fix_Controllers ();
-	Cycles_M68K += CPL_M68K;
-	Cycles_Z80 += CPL_Z80;
-	if (S68K_State == 1)
-		Cycles_S68K += CPL_S68K;
-	if (DMAT_Length)
-		main68k_addCycles (Update_DMA ());
-	
-	if (--HInt_Counter < 0)
-	{
-		VDP_Int |= 0x4;
-		Update_IRQ_Line ();
-	}
-	
-	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
-	
-	/* instruction by instruction execution */
-	
-	while (i < (Cycles_M68K - 360))
-	{
-		main68k_exec (i);
-		i += 24;
-		
-		if (j < (Cycles_S68K - 586))
-		{
-			sub68k_exec (j);
-			j += 39;
-		}
-	}
-	
-	main68k_exec (Cycles_M68K - 360);
-	sub68k_exec (Cycles_S68K - 586);
-	
-	/* end instruction by instruction execution */
-	
-	Z80_EXEC(168);
-	
-	VDP_Status &= 0xFFFB;		// HBlank = 0
-	VDP_Status |= 0x0080;		// V Int happened
-	VDP_Int |= 0x8;
-	Update_IRQ_Line();
-	mdZ80_interrupt(&M_Z80, 0xFF);
-	
-	/* instruction by instruction execution */
-	
-	while (i < Cycles_M68K)
-	{
-		main68k_exec(i);
-		i += 24;
-		
-		if (j < Cycles_S68K)
-		{
-			sub68k_exec(j);
-			j += 39;
-		}
-	}
-	
-	main68k_exec(Cycles_M68K);
-	sub68k_exec(Cycles_S68K);
-	
-	/* end instruction by instruction execution */
-	
-	Z80_EXEC(0);
-	
-	Update_SegaCD_Timer();
-	
-	for (VDP_Current_Line++;
-	     VDP_Current_Line < VDP_Num_Lines;
-	     VDP_Current_Line++)
-	{
-		buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line][0];
-		buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line][0];
-		if (PCM_Enable)
-			PCM_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM2612_DacAndTimers_Update (buf, Sound_Extrapol[VDP_Current_Line][1]);
-		YM_Len += Sound_Extrapol[VDP_Current_Line][1];
-		PSG_Len += Sound_Extrapol[VDP_Current_Line][1];
-		Update_CDC_TRansfert();
-		
-		i = Cycles_M68K + 24;
-		j = Cycles_S68K + 39;
-		
-		Fix_Controllers ();
-		Cycles_M68K += CPL_M68K;
-		Cycles_Z80 += CPL_Z80;
-		if (S68K_State == 1)
-			Cycles_S68K += CPL_S68K;
-		if (DMAT_Length)
-			main68k_addCycles (Update_DMA ());
-		
-		VDP_Status |= 0x0004;	// HBlank = 1
-		
-		/* instruction by instruction execution */
-		
-		while (i < (Cycles_M68K - 404))
-		{
-			main68k_exec (i);
-			i += 24;
-			
-			if (j < (Cycles_S68K - 658))
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K - 404);
-		sub68k_exec (Cycles_S68K - 658);
-		
-		/* end instruction by instruction execution */
-		
-		VDP_Status &= 0xFFFB;	// HBlank = 0
-		
-		/* instruction by instruction execution */
-		
-		while (i < Cycles_M68K)
-		{
-			main68k_exec (i);
-			i += 24;		// Chuck Rock intro need faster timing ... strange.
-			
-			if (j < Cycles_S68K)
-			{
-				sub68k_exec (j);
-				j += 39;
-			}
-		}
-		
-		main68k_exec (Cycles_M68K);
-		sub68k_exec (Cycles_S68K);
-		
-		/* end instruction by instruction execution */
-		
-		Z80_EXEC(0);
-		
-		Update_SegaCD_Timer();
-	}
-	
-	buf[0] = Seg_L;
-	buf[1] = Seg_R;
-	
-	PSG_Special_Update();
-	YM2612_Special_Update();
-	Update_CD_Audio(buf, audio_seg_length);
-	
-	// If WAV or GYM is being dumped, update the WAV or GYM.
-	// TODO: VGM dumping
-	if (audio_get_wav_dumping())
-		audio_wav_dump_update();
-	if (GYM_Dumping)
-		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
-	
-	if (Show_LED)
-		SegaCD_Display_LED();
-	
-	return 1;
+	return gens_do_MCD_frame(true, true);
 }
