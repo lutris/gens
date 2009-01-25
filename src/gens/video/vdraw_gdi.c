@@ -98,7 +98,7 @@ SIZE    szGDIBuf;
 
 
 /**
- * vdraw_sdl_init(): Initialize the GDI video subsystem.
+ * vdraw_gdi_init(): Initialize the GDI video subsystem.
  * @return 0 on success; non-zero on error.
  */
 static int vdraw_gdi_init(void)
@@ -171,6 +171,49 @@ static int vdraw_gdi_end(void)
 		hbmpDraw = NULL;
 		pbmpData = NULL;
 	}
+	
+	return 0;
+}
+
+
+/**
+ * vdraw_gdi_clear_screen(): Clear the screen.
+ */
+static void vdraw_gdi_clear_screen(void)
+{
+	// Clear both screen buffers.
+	vdraw_gdi_clear_primary_screen();
+	vdraw_gdi_clear_back_screen();
+}
+
+
+/**
+ * vdraw_gdi_clear_primary_screen(): Clear the primary screen.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_gdi_clear_primary_screen(void)
+{
+	if (!pbmpData)
+		return -1;
+	
+	memset(pbmpData, 0, (szGDIBuf.cx << 1) * szGDIBuf.cy);
+	return 0;
+}
+
+
+/**
+ * vdraw_gdi_clear_back_screen(): Clear the back buffer.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_gdi_clear_back_screen(void)
+{
+	HDC  hdcDest;
+	RECT rectDest;
+	
+	hdcDest = GetDC(Gens_hWnd);
+	InvalidateRect(Gens_hWnd, NULL, FALSE);
+	GetClientRect(Gens_hWnd, &rectDest);
+	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	
 	return 0;
 }
