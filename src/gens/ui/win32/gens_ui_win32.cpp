@@ -55,6 +55,15 @@
 #include "about/about_window.hpp"
 #include "plugin_manager/plugin_manager_window.hpp"
 
+// Plugins.
+#include "plugins/pluginmgr.hpp"
+
+// C++ includes.
+#include <list>
+#include <string>
+using std::list;
+using std::string;
+
 // Filename filters.
 static const char* UI_Win32_FileFilter_AllFiles =
 	"All Files\0*.*\0\0";
@@ -231,9 +240,27 @@ void GensUI::update(void)
 			// Dialog message. Don't process it as a regular message.
 			continue;
 		}
-			
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		
+		// Check plugin windows.
+		bool isDialogMessage = false;
+		
+		for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
+		     lstIter != PluginMgr::lstWindows.end(); lstIter++)
+		{
+			if (IsDialogMessage((HWND)((*lstIter).window), &msg))
+			{
+				// Dialog message. Don't process it as a regular message.
+				isDialogMessage = true;
+				break;
+			}
+		}
+		
+		if (!isDialogMessage)
+		{
+			// Not a dialog message. Process it normally.
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
 }
 
