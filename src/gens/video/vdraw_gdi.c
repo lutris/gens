@@ -22,6 +22,7 @@
 
 #include "vdraw.h"
 #include "vdraw_gdi.h"
+#include "v_inline.h"
 
 #include "emulator/g_main.hpp"
 
@@ -261,6 +262,28 @@ static int vdraw_gdi_flip(void)
 	
 	GetClientRect(Gens_hWnd, &rectDest);
 	hdcDest = GetDC(Gens_hWnd);
+	
+	// Check if the screen needs to be cleared.
+	if (isFullXRes())
+	{
+		// Width == 320px.
+		if (Flag_Clr_Scr != 40)
+		{
+			// Screen needs to be cleared.
+			vdraw_gdi_clear_screen();
+			Flag_Clr_Scr = 40;
+		}
+	}
+	else
+	{
+		// Width == 256px.
+		if (Flag_Clr_Scr != 32)
+		{
+			// Screen needs to be cleared.
+			vdraw_gdi_clear_screen();
+			Flag_Clr_Scr = 32;
+		}
+	}
 	
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
