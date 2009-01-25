@@ -402,7 +402,7 @@ int Do_VDP_Only(void)
 
 /**
  * gens_do_MD_frame(): Do an MD frame.
- * @param VDP If true, VDP is enabled.
+ * @param VDP If true, VDP is updated.
  */
 static inline int __attribute__((always_inline)) gens_do_MD_frame(bool VDP)
 {
@@ -461,7 +461,7 @@ static inline int __attribute__((always_inline)) gens_do_MD_frame(bool VDP)
 		
 		if (VDP)
 		{
-			// VDP is enabled.
+			// VDP needs to be updated.
 			Render_Line();
 		}
 		
