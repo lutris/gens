@@ -54,6 +54,29 @@ typedef enum
 	MDP_PTR_RAM_32X		= 11, /* LE */
 } MDP_PTR;
 
+// Convenience macros to access 8-bit and 16-bit memory.
+
+#define MDP_MEM_16(ptr, address)	\
+	(((unsigned short*)ptr)[address >> 1])
+
+#if MDP_BYTEORDER == MDP_LIL_ENDIAN
+
+// Litle-endian.
+#define MDP_MEM_BE_8(ptr, address)	\
+	(((unsigned char*)ptr)[address ^ 1])
+#define MDP_MEM_LE_8(ptr, address)	\
+	(((unsigned char*)ptr)[address])
+
+#else
+
+// Big-endian.
+#define MDP_MEM_BE_8(ptr, address)	\
+	(((unsigned char*)ptr)[address])
+#define MDP_MEM_LE_8(ptr, address)	\
+	(((unsigned char*)ptr)[address ^ 1])
+
+#endif
+
 // MDP_VAL: Value IDs.
 typedef enum
 {
