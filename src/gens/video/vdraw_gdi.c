@@ -53,6 +53,7 @@ static void	vdraw_gdi_clear_screen(void);
 
 static int	vdraw_gdi_flip(void);
 static void	vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
+static void	vdraw_gdi_stretch_adjust(void);
 static void	vdraw_gdi_update_renderer(void);
 
 // Win32-specific functions.
@@ -79,7 +80,7 @@ const vdraw_backend_t vdraw_backend_gdi =
 	.update_vsync = NULL,
 	
 	.flip = vdraw_gdi_flip,
-	.stretch_adjust = NULL,
+	.stretch_adjust = vdraw_gdi_stretch_adjust,
 	.update_renderer = vdraw_gdi_update_renderer,
 	
 	// Win32-specific functions.
@@ -95,6 +96,14 @@ static HDC     hdcComp  = NULL;    // DC associado ao bitmap
 static HBITMAP hbmpDraw = NULL;    // bitmap usado como buffer para imprimir a imagem
 static LPBYTE  pbmpData = NULL;    // buffer
 static SIZE    szGDIBuf;
+
+
+// Stretch variables.
+static int vdraw_gdi_stretch_flags;
+static int vdraw_gdi_stretch_srcX;
+static int vdraw_gdi_stretch_srcY;
+static int vdraw_gdi_stretch_srcW;
+static int vdraw_gdi_stretch_srcH;
 
 
 /**
@@ -346,41 +355,15 @@ static int vdraw_gdi_flip(void)
 	}
 	
 	// Blit the image to the GDI window.
-	const uint8_t stretch = vdraw_get_stretch();
-	if (stretch == STRETCH_NONE)
+	if (vdraw_gdi_stretch_flags == STRETCH_NONE)
 	{
 		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy, hdcComp, 0, 0, SRCCOPY);
 	}
 	else
 	{
-		// Stretching is enabled.
-		int srcX, srcY, srcW, srcH;
-		
-		if ((stretch & STRETCH_H) && !isFullXRes())
-		{
-			// Horizontal stretch.
-			srcX = ((320 - 256) / 2) * vdraw_scale;
-			srcW = 256 * vdraw_scale;
-		}
-		else
-		{
-			srcX = 0;
-			srcW = 320 * vdraw_scale;
-		}
-		
-		if (stretch & STRETCH_V)
-		{
-			srcY = ((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale;
-			srcH = VDP_Num_Vis_Lines * vdraw_scale;
-		}
-		else
-		{
-			srcY = 0;
-			srcH = 240 * vdraw_scale;
-		}
-		
 		StretchBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy,
-			   hdcComp, srcX, srcY, srcW, srcH, SRCCOPY);
+			   hdcComp, vdraw_gdi_stretch_srcX, vdraw_gdi_stretch_srcY,
+			   vdraw_gdi_stretch_srcW, vdraw_gdi_stretch_srcH, SRCCOPY);
 	}
 	InvalidateRect(Gens_hWnd, NULL, FALSE);
 	ReleaseDC(Gens_hWnd, hdcDest);
@@ -436,4 +419,35 @@ int vdraw_gdi_reinit_gens_window(void)
 	
 	// Reinitialize DirectDraw.
 	return vdraw_gdi_init();
+}
+
+
+static void vdraw_gdi_stretch_adjust(void)
+{
+	// Adjust the stretch parameters.
+	vdraw_gdi_stretch_flags = vdraw_get_stretch();
+	
+	if ((vdraw_gdi_stretch_flags & STRETCH_H) && !isFullXRes())
+	{
+		// Horizontal stretch.
+		vdraw_gdi_stretch_srcX = ((320 - 256) / 2) * vdraw_scale;
+		vdraw_gdi_stretch_srcW = 256 * vdraw_scale;
+	}
+	else
+	{
+		vdraw_gdi_stretch_srcX = 0;
+		vdraw_gdi_stretch_srcW = 320 * vdraw_scale;
+	}
+		
+	if (vdraw_gdi_stretch_flags & STRETCH_V)
+	{
+		// Vertical stretch.
+		vdraw_gdi_stretch_srcY = ((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale;
+		vdraw_gdi_stretch_srcH = VDP_Num_Vis_Lines * vdraw_scale;
+	}
+	else
+	{
+		vdraw_gdi_stretch_srcY = 0;
+		vdraw_gdi_stretch_srcH = 240 * vdraw_scale;
+	}
 }
