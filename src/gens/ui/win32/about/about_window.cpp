@@ -118,11 +118,11 @@ AboutWindow::AboutWindow()
 	m_Window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  320, 344+lblTitle_HeightInc,
+				  328, 344+lblTitle_HeightInc,
 				  Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, 320, 344+lblTitle_HeightInc);
+	Win32_setActualWindowSize(m_Window, 328, 344+lblTitle_HeightInc);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(m_Window);
@@ -196,7 +196,7 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 				SetBkMode((HDC)wParam, TRANSPARENT);
 				return (LRESULT)GetStockObject(NULL_BRUSH);
 			}
-			return TRUE;
+			return true;
 			break;
 		
 		case WM_COMMAND:
@@ -208,6 +208,31 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			
 			break;
 		
+		case WM_NOTIFY:
+			if (((LPNMHDR)lParam)->code == TCN_SELCHANGE)
+			{
+				// Tab change.
+				string sTabContents;
+				
+				switch (TabCtrl_GetCurSel(tabInfo))
+				{
+					case 0:
+						// Copyright.
+						sTabContents = charset_utf8_to_cp1252(StrCopyright);
+						break;
+					case 1:
+						// Included Libraries.
+						sTabContents = charset_utf8_to_cp1252(StrIncludedLibs);
+						break;
+					default:
+						// Unknown.
+						break;
+				}
+				
+				Static_SetText(lblTabContents, sTabContents.c_str());
+			}
+			break;
+			
 		case WM_DESTROY:
 			if (hWnd != m_Window)
 				break;
@@ -254,28 +279,58 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	
 	// Title and version information.
 	lblGensTitle = CreateWindow(WC_STATIC, StrTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    128, 8, 184, 32+lblTitle_HeightInc,
+				    128, 8, 192, 32+lblTitle_HeightInc,
 				    hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensTitle, fntTitle, TRUE);
+	SetWindowFont(lblGensTitle, fntTitle, true);
 	
 	lblGensDesc = CreateWindow(WC_STATIC, StrDescription, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				   128, 42+lblTitle_HeightInc, 184, 100,
+				   128, 42+lblTitle_HeightInc, 192, 100,
 				   hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensDesc, fntMain, TRUE);
+	SetWindowFont(lblGensDesc, fntMain, true);
 	
-	// Box for the copyright message.
-	HWND grpGensCopyright;
-	grpGensCopyright = CreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					8, 88+lblTitle_HeightInc, 304, 216,
-					hWnd, NULL, ghInstance, NULL);
+	// Tab control.
+	tabInfo = CreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
+			       8, 88+lblTitle_HeightInc, 312, 216,
+			       hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(tabInfo, fntMain, true);
 	
-	// Copyright message.
-	HWND lblGensCopyright;
-	string sCopyright = charset_utf8_to_cp1252(StrCopyright);
-	lblGensCopyright = CreateWindow(WC_STATIC, sCopyright.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
-					8, 16, 288, 192,
-					grpGensCopyright, NULL, ghInstance, NULL);
-	SetWindowFont(lblGensCopyright, fntMain, TRUE);
+	// Make sure the tab control is in front of all other windows.
+	SetWindowPos(tabInfo, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+	
+	// Add tabs for "Copyright" and "Included Libraries".
+	TCITEM tab;
+	memset(&tab, 0x00, sizeof(tab));
+	tab.mask = TCIF_TEXT;
+	tab.pszText = "Copyright";
+	TabCtrl_InsertItem(tabInfo, 0, &tab);
+	tab.pszText = "Included Libraries";
+	TabCtrl_InsertItem(tabInfo, 1, &tab);
+	
+	// Calculate the tab's display area.
+	RECT rectTab;
+	rectTab.left = 0;
+	rectTab.top = 0;
+	rectTab.right = 312;
+	rectTab.bottom = 216;
+	TabCtrl_AdjustRect(tabInfo, false, &rectTab);
+	
+	// Box for the tab contents.
+	HWND grpTabContents;
+	grpTabContents = CreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				      rectTab.left + 4, rectTab.top + 4,
+				      rectTab.right - rectTab.left - 8,
+				      rectTab.bottom - rectTab.top - 8,
+				      tabInfo, NULL, ghInstance, NULL);
+	SetWindowFont(grpTabContents, fntMain, true);
+	
+	// Tab contents.
+	string sTabContents = charset_utf8_to_cp1252(StrCopyright);
+	lblTabContents = CreateWindow(WC_STATIC, sTabContents.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
+				      8, 16,
+				      rectTab.right - rectTab.left - 24,
+				      rectTab.bottom - rectTab.top - 40,
+				      grpTabContents, NULL, ghInstance, NULL);
+	SetWindowFont(lblTabContents, fntMain, true);
 	
 	// Add the OK button.
 	addDialogButtons(hWnd, WndBase::BAlign_Right,
@@ -375,7 +430,7 @@ void AboutWindow::iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 	rIce.top = iceOffsetY;
 	rIce.right = iceOffsetX + 80 - 1;
 	rIce.bottom = iceOffsetY + 80 - 1;
-	InvalidateRect(m_Window, &rIce, FALSE);
+	InvalidateRect(m_Window, &rIce, false);
 	SendMessage(m_Window, WM_PAINT, 0, 0);
 	
 	iceLastTicks = dwTime;

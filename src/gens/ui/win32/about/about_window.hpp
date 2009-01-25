@@ -55,12 +55,16 @@ class AboutWindow : WndBase
 		void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 		void updateIce(void);
 		
-		// Labels and boxes
+		// Tab control.
+		HWND tabInfo;
+		
+		// Labels and boxes.
 		HWND lblGensTitle;
 		HWND lblGensDesc;
 		HWND imgGensLogo;
+		HWND lblTabContents;
 		
-		// Gens logo
+		// Gens logo.
 		HWND m_imgGensLogo;
 		HBITMAP bmpGensLogo;
 		

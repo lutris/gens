@@ -66,17 +66,17 @@ const char* AboutWindow::StrIncludedLibs =
 		"http://devster.monkeeh.com/segapage.html"
 		#ifdef GENS_MP3
 			"\n\n"
-			"Internal mp3 decoder based on mpg123\n"
+			"Internal MP3 decoder based on mpg123.\n"
 			"Copyright (c) 1995,1996,1997 by Michael Hipp."
 		#endif
 		#ifdef GENS_PNG_INTERNAL
 			"\n\n"
-			"Internal copy of libpng-" PNG_LIBPNG_VER_STRING "\n"
+			"Internal copy of libpng-" PNG_LIBPNG_VER_STRING ".\n"
 			"Copyright (c) 1998-2008 Glenn Randers-Pehrson."
 		#endif
 		#ifdef GENS_ZLIB_INTERNAL
 			"\n\n"
-			"Internal copy of zlib-" ZLIB_VERSION "\n"
+			"Internal copy of zlib-" ZLIB_VERSION ".\n"
 			"Copyright (c) 1995-2005 Jean-loup Gailly and Mark Adler."
 		#endif
 		;
