@@ -140,3 +140,26 @@ static int vdraw_gdi_init(void)
 	// GDI initialized.
 	return 0;
 }
+
+
+/**
+ * vdraw_gdi_end(): Close the GDI renderer.
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_gdi_end(void)
+{
+	if (hdcComp)
+	{
+		DeleteDC(hdcComp);
+		hdcComp = NULL;
+	}
+	
+	if (hbmpDraw)
+	{
+		DeleteObject(hbmpDraw);
+		hbmpDraw = NULL;
+		pbmpData = NULL;
+	}
+	
+	return 0;
+}
