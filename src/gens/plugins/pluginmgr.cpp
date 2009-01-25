@@ -78,19 +78,23 @@ static MDP_t* mdp_internal[] =
  */
 list<MDP_t*> PluginMgr::lstMDP;
 
-
 /**
  * lstRenderPlugins, tblRenderPlugins: List and map containing all loaded render plugins.
  */
 list<MDP_Render_t*> PluginMgr::lstRenderPlugins;
 mapRenderPlugin PluginMgr::tblRenderPlugins;
 
-
 /**
  * List and map containing plugin menu items.
  */
 list<mdpMenuItem_t> PluginMgr::lstMenuItems;
 mapMenuItems PluginMgr::tblMenuItems;
+
+/**
+ * List containing plugin windows.
+ */
+list<mdpWindow_t> PluginMgr::lstWindows;
+
 
 /**
  * init(): Initialize the plugin system.

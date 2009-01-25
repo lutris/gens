@@ -94,3 +94,67 @@ int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *
 	// TODO: Implement this function.
 	return MDP_ERR_OK;
 }
+
+
+/**
+ * mdp_host_window_register(): Register a window.
+ * @param plugin MDP_t requesting window registration.
+ * @param window Window to be registered.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_window_register(struct MDP_t *plugin, void *window)
+{
+	// Check the plugin window list to see if this window is already registered.
+	for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
+	     lstIter != PluginMgr::lstWindows.end(); lstIter++)
+	{
+		if ((*lstIter).window == window)
+		{
+			// Window is already registered.
+			return -MDP_ERR_WINDOW_ALREADY_REGISTERED;
+		}
+	}
+	
+	// Window is not registered. Register it.
+	mdpWindow_t win;
+	win.window = window;
+	win.owner = plugin;
+	PluginMgr::lstWindows.push_back(win);
+	
+	// Window is registered.
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * mdp_host_window_unregister(): Unregister a window.
+ * @param plugin MDP_t requesting window unregistration.
+ * @param window Window to be unregistered.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_window_unregister(struct MDP_t *plugin, void *window)
+{
+	// Search for the window to be unregistered.
+	for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
+	     lstIter != PluginMgr::lstWindows.end(); lstIter++)
+	{
+		if ((*lstIter).window == window)
+		{
+			// Found the window.
+			if ((*lstIter).owner == plugin)
+			{
+				// Owner is correct. Unregister the window.
+				PluginMgr::lstWindows.erase(lstIter);
+				return MDP_ERR_OK;
+			}
+			else
+			{
+				// Owner is incorrect. Return an error code.
+				return -MDP_ERR_WINDOW_INVALID_WINDOW;
+			}
+		}
+	}
+	
+	// Window not found. Return an error code.
+	return -MDP_ERR_WINDOW_INVALID_WINDOW;
+}

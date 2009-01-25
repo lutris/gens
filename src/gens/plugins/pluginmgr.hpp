@@ -49,6 +49,13 @@ struct mdpMenuItem_t
 typedef GENS_HASHTABLE<uint16_t, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
 typedef std::pair<uint16_t, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 
+// Windows
+struct mdpWindow_t
+{
+	void	*window;
+	MDP_t	*owner;
+};
+
 class PluginMgr
 {
 	public:
@@ -67,6 +74,9 @@ class PluginMgr
 		// List and map containing plugin menu items.
 		static std::list<mdpMenuItem_t> lstMenuItems;
 		static mapMenuItems tblMenuItems;
+		
+		// List containing plugin windows.
+		static std::list<mdpWindow_t> lstWindows;
 		
 	protected:
 		static bool loadPlugin(MDP_t *plugin);

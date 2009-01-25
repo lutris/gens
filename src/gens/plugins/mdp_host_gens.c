@@ -83,7 +83,10 @@ MDP_Host_t Gens_MDP_Host =
 	.menu_item_get_checked = mdp_host_menu_item_get_checked,
 	
 	.event_register = mdp_host_event_register,
-	.event_unregister = mdp_host_event_unregister
+	.event_unregister = mdp_host_event_unregister,
+	
+	.window_register = mdp_host_window_register,
+	.window_unregister = mdp_host_window_unregister
 };
 
 
