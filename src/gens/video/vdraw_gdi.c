@@ -346,7 +346,42 @@ static int vdraw_gdi_flip(void)
 	}
 	
 	// Blit the image to the GDI window.
-	BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy, hdcComp, 0, 0, SRCCOPY);
+	const uint8_t stretch = vdraw_get_stretch();
+	if (stretch == STRETCH_NONE)
+	{
+		BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy, hdcComp, 0, 0, SRCCOPY);
+	}
+	else
+	{
+		// Stretching is enabled.
+		int srcX, srcY, srcW, srcH;
+		
+		if ((stretch & STRETCH_H) && !isFullXRes())
+		{
+			// Horizontal stretch.
+			srcX = ((320 - 256) / 2) * vdraw_scale;
+			srcW = 256 * vdraw_scale;
+		}
+		else
+		{
+			srcX = 0;
+			srcW = 320 * vdraw_scale;
+		}
+		
+		if (stretch & STRETCH_V)
+		{
+			srcY = ((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale;
+			srcH = VDP_Num_Vis_Lines * vdraw_scale;
+		}
+		else
+		{
+			srcY = 0;
+			srcH = 240 * vdraw_scale;
+		}
+		
+		StretchBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy,
+			   hdcComp, srcX, srcY, srcW, srcH, SRCCOPY);
+	}
 	InvalidateRect(Gens_hWnd, NULL, FALSE);
 	ReleaseDC(Gens_hWnd, hdcDest);
 	return 0;
@@ -393,7 +428,7 @@ int vdraw_gdi_reinit_gens_window(void)
 		
 		// MoveWindow / ResizeWindow code
 		LONG_PTR curStyle = GetWindowLongPtr(Gens_hWnd, GWL_STYLE);
-		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(curStyle  | WS_OVERLAPPEDWINDOW));
+		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
 		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 		Win32_setActualWindowSize(Gens_hWnd, w, h);
