@@ -41,6 +41,9 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
+// Audio Handler.
+#include "audio/audio.h"
+
 // Windows API.
 #include <windows.h>
 
