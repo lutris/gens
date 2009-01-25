@@ -39,6 +39,7 @@
 // MDP Host Services.
 static MDP_Host_t *gg_host_srv = NULL;
 static int gg_menuItemID = 0;
+static void *mdp_ptr_ram_md = NULL;
 
 
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
@@ -68,12 +69,14 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	}
 	
 	// Create a menu item.
-	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &mdp_misc_game_genie_menu_handler, 0, "&Game Genie");
+	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &mdp_misc_game_genie_menu_handler, 0, "&Hack Rings!");
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
 	
 	// Register the MDP_EVENT_OPEN_ROM event.
-	
 	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
+	
+	// Get the MD RAM.
+	mdp_ptr_ram_md = gg_host_srv->ptr_ref(MDP_PTR_RAM_MD);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -92,6 +95,9 @@ int MDP_FNCALL mdp_misc_game_genie_end(void)
 	// Remove the menu item.
 	gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);
 	
+	// Unreference MD RAM.
+	gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
+	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
 }
@@ -104,7 +110,13 @@ int MDP_FNCALL mdp_misc_game_genie_end(void)
  */
 int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 {
-	printf("Game Genie Menu Handler: Menu item 0x%04X\n", menu_item_id);
+	if (menu_item_id != gg_menuItemID)
+		return MDP_ERR_OK;
+	
+	// Hack rings!
+	MDP_MEM_BE_8(mdp_ptr_ram_md, 0xFE1D) = 1;
+	MDP_MEM_16(mdp_ptr_ram_md, 0xFE20) = 0x1FF;
+	printf("Rings hacked!\n");
 	return MDP_ERR_OK;
 }
 
