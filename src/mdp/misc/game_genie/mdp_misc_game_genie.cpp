@@ -114,8 +114,13 @@ int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	
 	// Hack rings!
-	MDP_MEM_BE_8(mdp_ptr_ram_md, 0xFE1D) = 1;
+	
+	// Set the ring counter to 0x1FF (511);
 	MDP_MEM_16(mdp_ptr_ram_md, 0xFE20) = 0x1FF;
+	
+	// Force the ring coutner to be updated.
+	MDP_MEM_BE_8(mdp_ptr_ram_md, 0xFE1D) = 1;
+	
 	printf("Rings hacked!\n");
 	return MDP_ERR_OK;
 }
