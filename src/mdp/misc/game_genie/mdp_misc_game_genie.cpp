@@ -111,7 +111,7 @@ int MDP_FNCALL mdp_misc_game_genie_end(void)
 int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 {
 	if (menu_item_id != gg_menuItemID)
-		return MDP_ERR_OK;
+		return -MDP_ERR_MENU_INVALID_MENUID;
 	
 	// Hack rings!
 	MDP_MEM_BE_8(mdp_ptr_ram_md, 0xFE1D) = 1;
