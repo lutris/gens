@@ -52,15 +52,14 @@ static void	vdraw_gdi_clear_screen(void);
 
 static int	vdraw_gdi_flip(void);
 static void	vdraw_gdi_draw_border(void); // Not used in vdraw_backend_t.
-static void	vdraw_gdi_stretch_adjust(void);
 static void	vdraw_gdi_update_renderer(void);
 
 // Win32-specific functions.
-static int	vdraw_gdi_reinit_gens_window(void);
+static int	vdraw_gdi_reinit_gens_window(void) { return 0; }
 static int	vdraw_gdi_clear_primary_screen(void);
 static int	vdraw_gdi_clear_back_screen(void);
-static int	vdraw_gdi_restore_primary(void);
-static int	vdraw_gdi_set_cooperative_level(void);
+static int	vdraw_gdi_restore_primary(void) { return 0; }
+static int	vdraw_gdi_set_cooperative_level(void) { return 0; }
 
 
 // VDraw Backend struct.
@@ -79,7 +78,7 @@ const vdraw_backend_t vdraw_backend_gdi =
 	.update_vsync = NULL,
 	
 	.flip = vdraw_gdi_flip,
-	.stretch_adjust = vdraw_gdi_stretch_adjust,
+	.stretch_adjust = NULL,
 	.update_renderer = vdraw_gdi_update_renderer,
 	
 	// Win32-specific functions.
@@ -144,9 +143,10 @@ static int vdraw_gdi_init(void)
 	// Select the bitmap object on the device context.
 	SelectObject(hdcComp, hbmpDraw);
 	
-	// Set bpp to 16-bit color.
-	if (bppOut != 16)
-		vdraw_set_bpp(16, FALSE);
+	// Set bpp to 15-bit color.
+	// GDI doesn't actually support 16-bit color.
+	if (bppOut != 15)
+		vdraw_set_bpp(15, FALSE);
 	
 	// GDI initialized.
 	return 0;
@@ -215,5 +215,116 @@ static int vdraw_gdi_clear_back_screen(void)
 	GetClientRect(Gens_hWnd, &rectDest);
 	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	
+	return 0;
+}
+
+
+/**
+ * vdraw_gdi_update_renderer(): Update the renderer.
+ */
+static void vdraw_gdi_update_renderer(void)
+{
+	// Check if a resolution switch is needed.
+	MDP_Render_t *rendMode = get_mdp_render_t();
+	const int scale = rendMode->scale;
+	
+	// Determine the window size using the scaling factor.
+	if (scale <= 0)
+		return;
+	const int w = 320 * scale;
+	const int h = 240 * scale;
+	
+	if (szGDIBuf.cx == w && szGDIBuf.cy == h)
+	{
+		// No resolution switch is necessary. Simply clear the screen.
+		vdraw_gdi_clear_screen();
+		return;
+	}
+	
+	// Resolution switch is needed.
+	vdraw_gdi_end();
+	vdraw_gdi_init();
+	
+	// Clear the screen.
+	vdraw_gdi_clear_screen();
+}
+
+
+/**
+ * vdraw_gdi_flip(): Flip the screen buffer. [Called by vdraw_flip().]
+ * @return 0 on success; non-zero on error.
+ */
+static int vdraw_gdi_flip(void)
+{
+	HDC	hdcDest;
+	RECT	rectDest;
+	
+	GetClientRect(Gens_hWnd, &rectDest);
+	hdcDest = GetDC(Gens_hWnd);
+	
+	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
+	
+	// Start of the GDI framebuffer.
+	const int pitch = szGDIBuf.cx * bytespp;
+	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
+	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
+	
+	const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
+	
+	// Start of the SDL framebuffer.
+	unsigned char *start = &(((unsigned char*)(pbmpData))[startPos]);
+	
+	// Set up the render information.
+	if (vdraw_rInfo.bpp != bppMD)
+	{
+		// bpp has changed. Reinitialize the screen pointers.
+		vdraw_rInfo.bpp = bppMD;
+		vdraw_rInfo.cpuFlags = CPU_Flags;
+	}
+	
+	vdraw_rInfo.destScreen = (void*)start;
+	vdraw_rInfo.width = 320 - vdraw_border_h;
+	vdraw_rInfo.height = VDP_Num_Vis_Lines;
+	vdraw_rInfo.destPitch = pitch;
+	
+	if (bppMD == 16 && bppOut != 16)
+	{
+		// MDP_RENDER_FLAG_SRC16DST32.
+		// Render as 16-bit to an internal surface.
+		
+		// Make sure the internal surface is initialized.
+		if (vdraw_16to32_scale != vdraw_scale)
+		{
+			if (vdraw_16to32_surface)
+				free(vdraw_16to32_surface);
+			
+			vdraw_16to32_scale = vdraw_scale;
+			vdraw_16to32_pitch = 320 * vdraw_scale * 2;
+			vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
+		}
+		
+		vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
+		vdraw_rInfo.destPitch = vdraw_16to32_pitch;
+		if (vdraw_get_fullscreen())
+			vdraw_blitFS(&vdraw_rInfo);
+		else
+			vdraw_blitW(&vdraw_rInfo);
+		
+		vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
+				    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+				    pitch, vdraw_16to32_pitch);
+	}
+	else
+	{
+		if (vdraw_get_fullscreen())
+			vdraw_blitFS(&vdraw_rInfo);
+		else
+			vdraw_blitW(&vdraw_rInfo);
+	}
+	
+	// Blit the image to the GDI window.
+	BitBlt(hdcDest, rectDest.left, rectDest.top, szGDIBuf.cx, szGDIBuf.cy, hdcComp, 0, 0, SRCCOPY);
+	InvalidateRect(Gens_hWnd, NULL, FALSE);
+	ReleaseDC(Gens_hWnd, hdcDest);
 	return 0;
 }
