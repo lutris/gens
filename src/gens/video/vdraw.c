@@ -67,6 +67,7 @@
 
 // VDraw backends.
 #ifdef GENS_OS_WIN32
+	#include "vdraw_gdi.h"
 	#include "vdraw_ddraw_t.h"
 #else /* !GENS_OS_WIN32 */
 	#include "vdraw_sdl.h"
@@ -78,6 +79,7 @@
 const vdraw_backend_t* const vdraw_backends[] =
 {
 	#ifdef GENS_OS_WIN32
+		&vdraw_backend_gdi,
 		&vdraw_backend_ddraw,
 	#else /* !GENS_OS_WIN32 */
 		&vdraw_backend_sdl,
