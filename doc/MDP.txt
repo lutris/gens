@@ -255,8 +255,25 @@ plugins.
 typedef enum
 {
 	MDP_PTR_NULL		= 0,
-	MDP_PTR_LUT16to32,
+	MDP_PTR_LUT16to32	= 1,
+	MDP_PTR_RGB16toYUV	= 2,
+	MDP_PTR_ROM_MD		= 3, /* BE */
+	MDP_PTR_ROM_32X		= 4, /* LE */
+	MDP_PTR_RAM_MD		= 5,
+	MDP_PTR_RAM_VDP		= 6,
+	MDP_PTR_RAM_Z80		= 7,
+	MDP_PTR_RAM_MCD_PRG	= 8, /* unknown */
+	MDP_PTR_RAM_MCD_WORD1M	= 9, /* unknown */
+	MDP_PTR_RAM_MCD_WORD2M	= 10, /* unknown */
+	MDP_PTR_RAM_32X		= 11, /* LE */
 } MDP_PTR;
+
+Note: All ROM/RAM data is stored in 16-bit host-endian. That is, you can read
+16-bit values from the ROM and RAM buffers normally, but 8-bit reads may
+require XOR'ing the address with 1. This is required if reading an 8-bit value
+on x86 from MDP_PTR_ROM_MD, but not from MDP_PTR_ROM_32X. (MDP_PTR_ROM_32X is
+a byteswapped version of the ROM used for 32X emulation, since the SH2 CPU is
+little-endian.)
 
 Items:
 
@@ -267,6 +284,19 @@ Items:
 
   To convert a 16-bit color to a 32-bit color, use the 16-bit color value as
   the table offset. The value stored at that offset is the 32-bit color value.
+
+- MDP_PTR_RGB16toYUV: A lookup table for converting 16-bit RGB to YUV valus.
+  This is mainly used for hq?x plugins.
+
+- MDP_PTR_ROM_MD: MD ROM. Check MDP_VAL_ROM_SIZE for the loaded ROM size.
+- MDP_PTR_ROM_32X: 32X ROM. Check MDP_VAL_ROM_SIZE for the loaded ROM size.
+- MDP_PTR_RAM_MD: MD RAM. Size: 64k
+- MDP_PTR_RAM_VDP: VDP RAM. Size: 64k
+- MDP_PTR_RAM_Z80: Z80 RAM. Size: 8k
+- MDP_PTR_RAM_MCD_PRG: SegaCD PRG RAM. Size: 512k
+- MDP_PTR_RAM_MCD_WORD1M: Word RAM, 1M mode. Size: 256k (TODO: What's the difference?)
+- MDP_PTR_RAM_MCD_WORD2M: Word RAM, 2M mode. Size: 256k (TODO: What's the difference?)
+- MDP_PTR_RAM_32X: 32X RAM. Size: 256k
 
 ================================================================
 
