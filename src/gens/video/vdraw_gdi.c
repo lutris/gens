@@ -91,10 +91,10 @@ const vdraw_backend_t vdraw_backend_gdi =
 };
 
 
-HDC     hdcComp  = NULL;    // DC associado ao bitmap
-HBITMAP hbmpDraw = NULL;    // bitmap usado como buffer para imprimir a imagem
-LPBYTE  pbmpData = NULL;    // buffer
-SIZE    szGDIBuf;
+static HDC     hdcComp  = NULL;    // DC associado ao bitmap
+static HBITMAP hbmpDraw = NULL;    // bitmap usado como buffer para imprimir a imagem
+static LPBYTE  pbmpData = NULL;    // buffer
+static SIZE    szGDIBuf;
 
 
 /**
