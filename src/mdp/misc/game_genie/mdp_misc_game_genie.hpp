@@ -33,8 +33,6 @@ extern "C" {
 DLL_LOCAL int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_misc_game_genie_end(void);
 
-DLL_LOCAL int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id);
-
 #ifdef __cplusplus
 }
 #endif

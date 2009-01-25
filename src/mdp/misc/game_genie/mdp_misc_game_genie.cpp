@@ -42,7 +42,8 @@ static int gg_menuItemID = 0;
 static void *mdp_ptr_ram_md = NULL;
 
 
-static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
+static int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id);
+static int MDP_FNCALL mdp_misc_game_genie_event_handler(int event_id, void *event_info);
 
 
 /**
@@ -73,7 +74,7 @@ int MDP_FNCALL mdp_misc_game_genie_init(MDP_Host_t *host_srv)
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
 	
 	// Register the MDP_EVENT_OPEN_ROM event.
-	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
+	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, mdp_misc_game_genie_event_handler);
 	
 	// Get the MD RAM.
 	mdp_ptr_ram_md = gg_host_srv->ptr_ref(MDP_PTR_RAM_MD);
@@ -108,7 +109,7 @@ int MDP_FNCALL mdp_misc_game_genie_end(void)
  * @param menu_item_id Menu item ID.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
+static int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 {
 	if (menu_item_id != gg_menuItemID)
 		return -MDP_ERR_MENU_INVALID_MENUID;
@@ -126,7 +127,7 @@ int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 }
 
 
-static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
+static int MDP_FNCALL mdp_misc_game_genie_event_handler(int event_id, void *event_info)
 {
 	printf("Event: %d\n", event_id);
 	if (event_id == MDP_EVENT_OPEN_ROM)
