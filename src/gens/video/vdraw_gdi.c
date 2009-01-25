@@ -158,6 +158,9 @@ static int vdraw_gdi_init(void)
 	if (bppOut != 15)
 		vdraw_set_bpp(15, FALSE);
 	
+	// Adjust stretch parameters.
+	vdraw_gdi_stretch_adjust();
+	
 	// GDI initialized.
 	return 0;
 }
@@ -207,6 +210,11 @@ static int vdraw_gdi_clear_primary_screen(void)
 		return -1;
 	
 	memset(pbmpData, 0, (szGDIBuf.cx << 1) * szGDIBuf.cy);
+	
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
+	
 	return 0;
 }
 
@@ -224,6 +232,10 @@ static int vdraw_gdi_clear_back_screen(void)
 	InvalidateRect(Gens_hWnd, NULL, FALSE);
 	GetClientRect(Gens_hWnd, &rectDest);
 	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
 	
 	return 0;
 }
@@ -332,6 +344,9 @@ static int vdraw_gdi_flip(void)
 			vdraw_blitW(&vdraw_rInfo);
 	}
 	
+	// Draw the border.
+	vdraw_gdi_draw_border();
+	
 	// Blit the image to the GDI window.
 	if (vdraw_gdi_stretch_flags == STRETCH_NONE)
 	{
@@ -343,6 +358,7 @@ static int vdraw_gdi_flip(void)
 			   hdcComp, vdraw_gdi_stretch_srcX, vdraw_gdi_stretch_srcY,
 			   vdraw_gdi_stretch_srcW, vdraw_gdi_stretch_srcH, SRCCOPY);
 	}
+	
 	InvalidateRect(Gens_hWnd, NULL, FALSE);
 	ReleaseDC(Gens_hWnd, hdcDest);
 	return 0;
@@ -400,6 +416,10 @@ int vdraw_gdi_reinit_gens_window(void)
 }
 
 
+/**
+ * vdraw_gdi_stretch_adjust(): Adjust stretch parameters.
+ * Called by either vdraw or another function in vdraw_gdi.
+ */
 static void vdraw_gdi_stretch_adjust(void)
 {
 	// Adjust the stretch parameters.
@@ -428,4 +448,14 @@ static void vdraw_gdi_stretch_adjust(void)
 		vdraw_gdi_stretch_srcY = 0;
 		vdraw_gdi_stretch_srcH = 240 * vdraw_scale;
 	}
+}
+
+
+/**
+ * vdraw_gdi_draw_border(): Draw the border color.
+ * Called from vdraw_gdi_flip().
+ */
+static void vdraw_gdi_draw_border(void)
+{
+	// TODO
 }
