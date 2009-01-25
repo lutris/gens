@@ -27,6 +27,7 @@
 #include "mdp/mdp_cpuflags.h"
 
 #include "mdp_misc_game_genie.hpp"
+#include "mdp_misc_game_genie_icon.h"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -37,8 +38,8 @@ static MDP_Desc_t MDP_Desc =
 	.website = NULL,
 	.license = MDP_LICENSE_GPL_2,
 	
-	.icon = NULL,
-	.iconLength = 0
+	.icon = mdp_misc_game_genie_icon,
+	.iconLength = sizeof(mdp_misc_game_genie_icon)
 };
 
 static MDP_Func_t MDP_Func =

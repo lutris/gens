@@ -13,5 +13,6 @@ mdp_misc_game_genie_la_SOURCES = \
 
 noinst_HEADERS = \
 		mdp_misc_game_genie_plugin.h \
+		mdp_misc_game_genie_icon.h \
 		mdp_misc_game_genie.hpp \
 		patch_code.hpp
