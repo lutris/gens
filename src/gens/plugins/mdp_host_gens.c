@@ -37,6 +37,16 @@
 // MDP includes.
 #include "mdp/mdp_error.h"
 
+// MD variables.
+#include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_sh2.h"
+#include "gens_core/vdp/vdp_io.h"
+#include "gens_core/mem/mem_z80.h"
+#include "gens_core/mem/mem_s68k.h"
+
+// ROM information.
+#include "util/file/rom.hpp"
+
 // MDP_PTR functions.
 static inline int* mdp_host_ptr_ref_LUT16to32(void);
 static inline void mdp_host_ptr_unref_LUT16to32(void);
@@ -88,10 +98,26 @@ void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 	{
 		case MDP_PTR_LUT16to32:
 			return (void*)mdp_host_ptr_ref_LUT16to32();
-		
 		case MDP_PTR_RGB16toYUV:
 			return (void*)mdp_host_ptr_ref_RGB16toYUV();
-		
+		case MDP_PTR_ROM_MD:
+			return &Rom_Data;
+		case MDP_PTR_ROM_32X:
+			return &_32X_Rom;
+		case MDP_PTR_RAM_MD:
+			return &Ram_68k;
+		case MDP_PTR_RAM_VRAM:
+			return &VRam;
+		case MDP_PTR_RAM_Z80:
+			return &Ram_Z80;
+		case MDP_PTR_RAM_MCD_PRG:
+			return &Ram_Prg;
+		case MDP_PTR_RAM_MCD_WORD1M:
+			return &Ram_Word_1M;
+		case MDP_PTR_RAM_MCD_WORD2M:
+			return &Ram_Word_2M;
+		case MDP_PTR_RAM_32X:
+			return &_32X_Ram;
 		default:
 			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
 			return NULL;
@@ -235,6 +261,7 @@ int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
 	switch (valID)
 	{
 		case MDP_VAL_UI:
+		case MDP_VAL_ROM_SIZE:
 			// Read-only values.
 			return -MDP_ERR_VAL_READ_ONLY;
 			break;
@@ -273,6 +300,12 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 			#endif
 			
 			break;
+		
+		case MDP_VAL_ROM_SIZE:
+			// ROM size.
+			if (!Game)
+				return 0;
+			return Rom_Size;
 		
 		default:
 			// Unknown value ID.

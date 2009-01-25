@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -43,12 +43,22 @@ typedef enum
 	MDP_PTR_NULL		= 0,
 	MDP_PTR_LUT16to32	= 1,
 	MDP_PTR_RGB16toYUV	= 2,
+	MDP_PTR_ROM_MD		= 3, /* BE */
+	MDP_PTR_ROM_32X		= 4, /* LE */
+	MDP_PTR_RAM_MD		= 5, /* BE */
+	MDP_PTR_RAM_VRAM	= 6,
+	MDP_PTR_RAM_Z80		= 7,
+	MDP_PTR_RAM_MCD_PRG	= 8, /* unknown */
+	MDP_PTR_RAM_MCD_WORD1M	= 9, /* unknown */
+	MDP_PTR_RAM_MCD_WORD2M	= 10, /* unknown */
+	MDP_PTR_RAM_32X		= 11, /* LE */
 } MDP_PTR;
 
 // MDP_VAL: Value IDs.
 typedef enum
 {
 	MDP_VAL_UI		= 0,
+	MDP_VAL_ROM_SIZE	= 1,
 } MDP_VAL;
 
 // MDP_UI: UI identifiers.
