@@ -27,8 +27,10 @@
 #include <config.h>
 #endif
 
-#ifdef GENS_UI_GTK
+#if defined(GENS_UI_GTK)
 #include <gtk/gtk.h>
+#elif defined(GENS_UI_WIN32)
+#include <windows.h>
 #endif
 
 #include "mdp/mdp_host.h"
@@ -72,6 +74,15 @@ class GG_window
 		
 		void *m_Window;
 		MDP_Host_t *m_host_srv;
+		
+		// Widgets.
+		#if defined(GENS_UI_GTK)
+			GtkWidget *txtEntry_Code;
+			GtkWidget *txtEntry_Name;
+		#elif defined(GENS_UI_WIN32)
+			HWND txtEntry_Code;
+			HWND txtEntry_Name;
+		#endif
 };
 
 #endif /* _MDP_MISC_GAME_GENIE_WINDOW_HPP */
