@@ -185,6 +185,45 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	g_object_set_data_full(G_OBJECT(m_Window), "btnAddCode_icon",
 			       g_object_ref(btnAddCode_icon), (GDestroyNotify)g_object_unref);
 	
+	// Set the focus chain for the entry boxes.
+	GList *lFocusChain = NULL;
+	lFocusChain = g_list_append(lFocusChain, txtEntry_Code);
+	lFocusChain = g_list_append(lFocusChain, txtEntry_Name);
+	lFocusChain = g_list_append(lFocusChain, btnAddCode);
+	lFocusChain = g_list_first(lFocusChain);
+	gtk_container_set_focus_chain(GTK_CONTAINER(tblEntry), lFocusChain);
+	g_list_free(lFocusChain);
+	
+	// HBox for the code list.
+	GtkWidget *hboxList = gtk_hbox_new(false, 0);
+	gtk_widget_set_name(hboxList, "hboxList");
+	gtk_widget_show(hboxList);
+	gtk_box_pack_start(GTK_BOX(vboxMain), hboxList, true, true, 0);
+	g_object_set_data_full(G_OBJECT(m_Window), "hboxList",
+			       g_object_ref(hboxList), (GDestroyNotify)g_object_unref);
+	
+	// Scrolled Window for the code list.
+	GtkWidget *scrlList = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_name(scrlList, "scrlList");
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlList), GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlList),
+				       GTK_POLICY_AUTOMATIC,
+				       GTK_POLICY_AUTOMATIC);
+	gtk_widget_show(scrlList);
+	gtk_box_pack_start(GTK_BOX(hboxList), scrlList, true, true, 0);
+	g_object_set_data_full(G_OBJECT(m_Window), "scrlList",
+			       g_object_ref(scrlList), (GDestroyNotify)g_object_unref);
+	
+	// Treeview containing the Game Genie codes.
+	lstCodes = gtk_tree_view_new();
+	gtk_widget_set_name(lstCodes, "lstCodes");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), true);
+	gtk_widget_set_size_request(lstCodes, -1, 160);
+	gtk_widget_show(lstCodes);
+	gtk_container_add(GTK_CONTAINER(scrlList), lstCodes);
+	g_object_set_data_full(G_OBJECT(m_Window), "lstCodes",
+			       g_object_ref(lstCodes), (GDestroyNotify)g_object_unref);
+	
 	// Show the window.
 	gtk_widget_show_all(GTK_WIDGET(m_Window));
 	

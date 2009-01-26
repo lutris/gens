@@ -79,9 +79,11 @@ class GG_window
 		#if defined(GENS_UI_GTK)
 			GtkWidget *txtEntry_Code;
 			GtkWidget *txtEntry_Name;
+			GtkWidget *lstCodes;
 		#elif defined(GENS_UI_WIN32)
 			HWND txtEntry_Code;
 			HWND txtEntry_Name;
+			HWND lstCodes;
 		#endif
 };
 
