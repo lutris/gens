@@ -24,6 +24,9 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+// Main window.
+#include "gens/gens_window.hpp"
+
 // C includes.
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,9 +49,6 @@
 
 // ROM information.
 #include "util/file/rom.hpp"
-
-// Main window.
-#include "gens/gens_window.hpp"
 
 // MDP_PTR functions.
 static inline int* mdp_host_ptr_ref_LUT16to32(void);
