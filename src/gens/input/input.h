@@ -51,10 +51,10 @@ extern "C" {
 // Controller key mapping.
 typedef struct
 {
-	unsigned int Start, Mode;
-	unsigned int A, B, C;
-	unsigned int X, Y, Z;
-	unsigned int Up, Down, Left, Right;
+	uint16_t Start, Mode;
+	uint16_t A, B, C;
+	uint16_t X, Y, Z;
+	uint16_t Up, Down, Left, Right;
 } input_keymap_t;
 
 // Input backends.
