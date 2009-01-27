@@ -121,55 +121,23 @@ int Reconfigure_Input(int player, int padtype)
 	
 	CC_Configuring = 1;
 	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR UP\n");
-	keyConfig[player].Up = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR DOWN\n");
-	keyConfig[player].Down = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR LEFT\n");
-	keyConfig[player].Left = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR RIGHT\n");
-	keyConfig[player].Right = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR START\n");
-	keyConfig[player].Start = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR A\n");
-	keyConfig[player].A = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR B\n");
-	keyConfig[player].B = input_get_key();
-	GensUI::sleep(250);
-	
-	gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR C\n");
-	keyConfig[player].C = input_get_key();
-	GensUI::sleep(250);
-	
-	if (padtype & 0x01)
+	// Array of key names.
+	static const char keyNames[][8] =
 	{
-		// 6-button control pad. Get additional keys.
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR MODE\n");
-		keyConfig[player].Mode = input_get_key();
-		GensUI::sleep(250);
-		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR X\n");
-		keyConfig[player].X = input_get_key();
-		GensUI::sleep(250);
-		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Y\n");
-		keyConfig[player].Y = input_get_key();
-		GensUI::sleep(250);
-		
-		gtk_label_set_text(GTK_LABEL(label_echo), "INPUT KEY FOR Z\n");
-		keyConfig[player].Z = input_get_key();
+		"UP", "DOWN", "LEFT", "RIGHT",
+		"START", "A", "B", "C",
+		"MODE", "X", "Y", "Z"
+	};
+	
+	const int maxKeys = (padtype & 0x01 ? 12 : 8);
+	uint16_t *curKey = (uint16_t*)(&keyConfig[player]);
+	char buf[32];
+	
+	for (int i = 0; i < maxKeys; i++)
+	{
+		sprintf(buf, "INPUT KEY FOR %s\n", keyNames[i]);
+		gtk_label_set_text(GTK_LABEL(label_echo), buf);
+		*curKey++ = input_get_key();
 		GensUI::sleep(250);
 	}
 	
