@@ -49,6 +49,24 @@ extern "C" {
 #include "macros/bool_m.h"
 
 // Controller key mapping.
+/*******************************************************************
+ * Controller key mapping.
+ * If the high bit of the key value is 0, it is a keyboard key.
+ * If the high bit of the key value is 1, it is a joystick input.
+ * Joystick inputs have the following format:
+ *
+ * 1TTT JJJJ WWWW WWWW
+ *
+ * TTT       == type of input. (0 == axis, 1 == button, 2 == POV
+ * JJJJ      == joystick number.
+ * WWWW WWWW == which axis/button.
+ *
+ * For axes, WWWW WWWW is the axis number multiplied by 2. The
+ * least-significant bit indicates negative (0) or positive (1).
+ *
+ * POV: TODO
+ *******************************************************************/
+
 typedef struct
 {
 	uint16_t Start, Mode;
@@ -56,6 +74,39 @@ typedef struct
 	uint16_t X, Y, Z;
 	uint16_t Up, Down, Left, Right;
 } input_keymap_t;
+
+// Joystick input types.
+typedef enum
+{
+	INPUT_JOYSTICK_TYPE_AXIS = 0,
+	INPUT_JOYSTICK_TYPE_BUTTON = 1,
+	INPUT_JOYSTICK_TYPE_POV = 2,
+} INPUT_JOYSTICK_TYPE;
+
+// Joystick axis sign values.
+#define INPUT_JOYSTICK_AXIS_NEGATIVE 0
+#define INPUT_JOYSTICK_AXIS_POSITIVE 1
+
+// Macros to manipulate joystick button "key" values.
+#define INPUT_IS_JOYSTICK(key)		\
+	((key) & 0x8000)
+#define INPUT_JOYSTICK_GET_NUMBER(key)	\
+	((key >> 8) & 0xF)
+#define INPUT_JOYSTICK_GET_TYPE(key)	\
+	((key >> 12) & 0x7)
+#define INPUT_JOYSTICK_GET_BUTTON(key)	\
+	(key & 0xFF)
+
+// Macros for get_key().
+#define INPUT_GETKEY_AXIS(joystick, axis, positive)		\
+	(0x8000 | ((uint16_t)INPUT_JOYSTICK_TYPE_AXIS << 12) |	\
+		((joystick & 0xF) << 8) | ((axis & 0x7F) << 1) | (positive & 0x01))
+
+#define INPUT_GETKEY_BUTTON(joystick, button)				\
+	(0x8000 | ((uint16_t)INPUT_JOYSTICK_TYPE_BUTTON << 12) |	\
+		((joystick & 0xF) << 8) | (button & 0xFF))
+
+// TODO: INPUT_GETKEY_POV()
 
 // Input backends.
 typedef enum

@@ -23,6 +23,7 @@
 #include "input_sdl.h"
 #include "input_sdl_keys.h"
 #include "input_sdl_events.hpp"
+#include "input_sdl_joystate.h"
 #include "gdk/gdkkeysyms.h"
 
 #include "emulator/g_main.hpp"
@@ -52,16 +53,22 @@ static BOOL		input_sdl_joy_exists(int joy_num);
 static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
 static int input_sdl_gdk_to_sdl_keyval(int gdk_key);
 
+// Maximum number of keys and joysticks.
+#define INPUT_SDL_MAX_KEYS 1024
+#define INPUT_SDL_MAX_JOYSTICKS 6
+
 // Check an SDL joystick axis.
 static void input_sdl_check_joystick_axis(SDL_Event *event);
 
 // Internal variables.
 static int input_sdl_num_joysticks;	// Number of joysticks connected
-static SDL_Joystick *input_sdl_joys[6];	// SDL joystick structs
+static SDL_Joystick *input_sdl_joys[INPUT_SDL_MAX_JOYSTICKS];	// SDL joystick structs
 
-// Key and joystick state.
-static BOOL input_sdl_keys[1024];
-static BOOL input_sdl_joy_state[0x530];
+// Key state.
+static uint8_t input_sdl_keys[INPUT_SDL_MAX_KEYS];
+
+// Joystick state.
+static input_joy_state_t input_sdl_joy_state[INPUT_SDL_MAX_JOYSTICKS];
 
 // Default keymap.
 static const input_keymap_t input_sdl_keymap_default[8] =
@@ -143,7 +150,7 @@ int input_sdl_init(void)
 	{
 		SDL_JoystickEventState(SDL_ENABLE);
 		
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < INPUT_SDL_MAX_JOYSTICKS; i++)
 		{
 			input_sdl_joys[i] = SDL_JoystickOpen(i);
 			if (input_sdl_joys[i])
@@ -163,7 +170,7 @@ int input_sdl_init(void)
 int input_sdl_end(void)
 {
 	// If any joysticks were opened, close them.
-	for (unsigned int i = 0; i < 6; i++)
+	for (unsigned int i = 0; i < INPUT_SDL_MAX_JOYSTICKS; i++)
 	{
 		if (SDL_JoystickOpened(i))
 		{
@@ -229,7 +236,7 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
  */
 BOOL input_sdl_joy_exists(int joyNum)
 {
-	if (joyNum < 0 || joyNum >= 6)
+	if (joyNum < 0 || joyNum >= INPUT_SDL_MAX_JOYSTICKS)
 		return FALSE;
 	
 	if (input_sdl_joys[joyNum])
@@ -253,7 +260,7 @@ unsigned int input_sdl_get_key(void)
 	SDL_JoystickEventState(SDL_ENABLE);
 	
 	// Open all 6 joysticks.
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < INPUT_SDL_MAX_JOYSTICKS; i++)
 	{
 		js[i] = SDL_JoystickOpen(i);
 	}
@@ -273,13 +280,15 @@ unsigned int input_sdl_get_key(void)
 					
 					if (sdl_event.jaxis.value < -10000)
 					{
-						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							input_sdl_joy_axis_values[0][sdl_event.jaxis.axis]);
+						return INPUT_GETKEY_AXIS(sdl_event.jaxis.which,
+									 sdl_event.jaxis.axis,
+									 INPUT_JOYSTICK_AXIS_NEGATIVE);
 					}
 					else if (sdl_event.jaxis.value > 10000)
 					{
-						return (0x1000 + (0x100 * sdl_event.jaxis.which) +
-							input_sdl_joy_axis_values[1][sdl_event.jaxis.axis]);
+						return INPUT_GETKEY_AXIS(sdl_event.jaxis.which,
+									 sdl_event.jaxis.axis,
+									 INPUT_JOYSTICK_AXIS_POSITIVE);
 					}
 					else
 					{
@@ -289,11 +298,14 @@ unsigned int input_sdl_get_key(void)
 					break;
 				
 				case SDL_JOYBUTTONUP:
-					return (0x1010 + (0x100 * sdl_event.jbutton.which) + sdl_event.jbutton.button);
+					return INPUT_GETKEY_BUTTON(sdl_event.jbutton.which,
+								   sdl_event.jbutton.button);
 					break;
 				
-				//case SDL_JOYHATMOTION:
-				//	return (0xdeadbeef + (0x100 * sdl_event.jhat.which) + sdl_event.jhat.hat + sdl_event.jhat.value);
+				case SDL_JOYHATMOTION:
+					// TODO: Joystick POV hat.
+					//return (0xdeadbeef + (0x100 * sdl_event.jhat.which) + sdl_event.jhat.hat + sdl_event.jhat.value);
+					break;
 			}
 		}
 		
@@ -343,14 +355,19 @@ int input_sdl_update(void)
 				break;
 			
 			case SDL_JOYBUTTONDOWN:
-				input_sdl_joy_state[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = TRUE;
+				INPUT_SDL_JOYSTICK_SET_BUTTON(input_sdl_joy_state,
+							      event.jbutton.which,
+							      event.jbutton.button, TRUE);
 				break;
 			
 			case SDL_JOYBUTTONUP:
-				input_sdl_joy_state[0x10 + (0x100 * event.jbutton.which) + event.jbutton.button] = FALSE;
+				INPUT_SDL_JOYSTICK_SET_BUTTON(input_sdl_joy_state,
+							      event.jbutton.which,
+							      event.jbutton.button, FALSE);
 				break;
 			
 			case SDL_JOYHATMOTION:
+				// TODO: Joystick POV hat.
 				break;
 			
 			default:
@@ -368,33 +385,29 @@ int input_sdl_update(void)
  */
 static void input_sdl_check_joystick_axis(SDL_Event *event)
 {
-	if (event->jaxis.axis >= 6)
+	if (event->jaxis.axis >= 128)
 	{
-		// Gens doesn't support more than 6 axes.
-		// TODO: Fix this sometime.
+		// Gens doesn't support more than 128 axes.
 		return;
 	}
 	
 	if (event->jaxis.value < -10000)
 	{
-		input_sdl_joy_state[(0x100 * event->jaxis.which) +
-			input_sdl_joy_axis_values[0][event->jaxis.axis]] = TRUE;
-		input_sdl_joy_state[(0x100 * event->jaxis.which) +
-			input_sdl_joy_axis_values[1][event->jaxis.axis]] = FALSE;
+		INPUT_SDL_JOYSTICK_SET_AXIS_NEGATIVE(input_sdl_joy_state,
+						     event->jaxis.which,
+						     event->jaxis.axis);
 	}
 	else if (event->jaxis.value > 10000)
 	{
-		input_sdl_joy_state[(0x100 * event->jaxis.which) +
-			input_sdl_joy_axis_values[0][event->jaxis.axis]] = FALSE;
-		input_sdl_joy_state[(0x100 * event->jaxis.which) +
-			input_sdl_joy_axis_values[1][event->jaxis.axis]] = TRUE;
+		INPUT_SDL_JOYSTICK_SET_AXIS_POSITIVE(input_sdl_joy_state,
+						     event->jaxis.which,
+						     event->jaxis.axis);
 	}
 	else
 	{
-		input_sdl_joy_state[(0x100 * event->jaxis.which) +
-			input_sdl_joy_axis_values[0][event->jaxis.axis]] = FALSE;
-		input_sdl_joy_state[(0x100 * event->jaxis.which) +
-			input_sdl_joy_axis_values[1][event->jaxis.axis]] = FALSE;
+		INPUT_SDL_JOYSTICK_SET_AXIS_NONE(input_sdl_joy_state,
+						 event->jaxis.which,
+						 event->jaxis.axis);
 	}
 }
 
@@ -406,61 +419,41 @@ static void input_sdl_check_joystick_axis(SDL_Event *event)
  */
 BOOL input_sdl_check_key_pressed(unsigned int key)
 {
-	// If the key value is <1024, it's a keyboard key.
-	if (key < 1024)
+	// If the key value is <INPUT_SDL_MAX_KEYS, it's a keyboard key.
+	if (key < INPUT_SDL_MAX_KEYS)
 		return input_sdl_keys[key];
+	
+	// If this isn't a joystick input, don't check anything else.
+	if (!INPUT_IS_JOYSTICK(key))
+		return FALSE;
 	
 	// Joystick "key" check.
 	
 	// Determine which joystick we're looking for.
-	int joyNum = ((key >> 8) & 0xF);
+	int joyNum = INPUT_JOYSTICK_GET_NUMBER(key);
 	
 	// Check that this joystick exists.
 	if (!input_sdl_joy_exists(joyNum))
 		return FALSE;
 	
 	// Joystick exists. Check the state.
-#if 0
-	if (key & 0x80)
+	switch (INPUT_JOYSTICK_GET_TYPE(key))
 	{
-		// Joystick POV
-		// TODO: This doesn't seem to be implemented in Gens/Linux for some reason...
-#if 0
-		switch (key & 0xF)
-		{
-			case 1:
-					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 0) return(1); break;
-					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 0) return(1); break;
-			case 2:
-					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 9000) return(1); break;
-					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 9000) return(1); break;
-			case 3:
-					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 18000) return(1); break;
-					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 18000) return(1); break;
-			case 4:
-					//if (Joy_State[Num_Joy].rgdwPOV[(key >> 4) & 3] == 27000) return(1); break;
-					//if (joystate[0x100*Num_Joy].rgdwPOV[(key >> 4) & 3] == 27000) return(1); break;
-			default:
-			break;
-		}
-#endif
-	}
-	else
-#endif
-	if (key & 0x70)
-	{
-		// Joystick buttons
-		if (input_sdl_joy_state[0x10 + (0x100 * joyNum) + ((key & 0xFF) - 0x10)])
-			return TRUE;
-	}
-	else
-	{
-		// Joystick axes
-		if (((key & 0xF) >= 1) && ((key & 0xF) <= 12))
-		{
-			if (input_sdl_joy_state[(0x100 * joyNum) + (key & 0xF)])
+		case INPUT_JOYSTICK_TYPE_AXIS:
+			// Joystick axis.
+			if (INPUT_SDL_JOYSTICK_CHECK_AXIS(input_sdl_joy_state, joyNum, key))
 				return TRUE;
-		}
+			break;
+		
+		case INPUT_JOYSTICK_TYPE_BUTTON:
+			// Joystick button.
+			if (INPUT_SDL_JOYSTICK_CHECK_BUTTON(input_sdl_joy_state, joyNum, key))
+				return TRUE;
+			break;
+		
+		case INPUT_JOYSTICK_TYPE_POV:
+			// TODO
+			break;
 	}
 	
 	// Key is not pressed.

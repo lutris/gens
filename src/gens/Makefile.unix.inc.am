@@ -75,6 +75,7 @@ noinst_HEADERS += \
 		input/input_sdl.h \
 		input/input_sdl_events.hpp \
 		input/input_sdl_keys.h \
+		input/input_sdl_joystate.h \
 		audio/audio_sdl.h
 
 if GENS_CDROM
