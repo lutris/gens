@@ -166,13 +166,23 @@ AboutWindow::AboutWindow()
 	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyrightTab",
 			       g_object_ref(lblCopyrightTab), (GDestroyNotify)g_object_unref);
 	
+	// Copyright frame.
+	GtkWidget *fraCopyright = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraCopyright, "fraCopyright");
+	gtk_container_set_border_width(GTK_CONTAINER(fraCopyright), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraCopyright), GTK_SHADOW_ETCHED_IN);
+	gtk_widget_show(fraCopyright);
+	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), fraCopyright, lblCopyrightTab);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraCopyright",
+			       g_object_ref(fraCopyright), (GDestroyNotify)g_object_unref);
+	
 	// Copyright label
 	GtkWidget *lblCopyright = gtk_label_new(StrCopyright);
 	gtk_widget_set_name(lblCopyright, "lblCopyright");
 	gtk_misc_set_padding(GTK_MISC(lblCopyright), 8, 8);
 	gtk_misc_set_alignment(GTK_MISC(lblCopyright), 0.0f, 0.0f);
 	gtk_widget_show(lblCopyright);
-	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), lblCopyright, lblCopyrightTab);
+	gtk_container_add(GTK_CONTAINER(fraCopyright), lblCopyright);
 	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyright",
 			       g_object_ref(lblCopyright), (GDestroyNotify)g_object_unref);
 	
@@ -183,13 +193,23 @@ AboutWindow::AboutWindow()
 	g_object_set_data_full(G_OBJECT(m_Window), "lblIncludedLibsTab",
 			       g_object_ref(lblIncludedLibsTab), (GDestroyNotify)g_object_unref);
 	
+	// Included Libraries frame.
+	GtkWidget *fraIncludedLibs = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraIncludedLibs, "fraIncludedLibs");
+	gtk_container_set_border_width(GTK_CONTAINER(fraIncludedLibs), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraIncludedLibs), GTK_SHADOW_ETCHED_IN);
+	gtk_widget_show(fraIncludedLibs);
+	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), fraIncludedLibs, lblIncludedLibsTab);
+	g_object_set_data_full(G_OBJECT(m_Window), "fraIncludedLibs",
+			       g_object_ref(fraIncludedLibs), (GDestroyNotify)g_object_unref);
+	
 	// Included Libraries label
 	GtkWidget *lblIncludedLibs = gtk_label_new(StrIncludedLibs);
 	gtk_widget_set_name(lblCopyright, "lblIncludedLibs");
 	gtk_misc_set_padding(GTK_MISC(lblIncludedLibs), 8, 8);
 	gtk_misc_set_alignment(GTK_MISC(lblIncludedLibs), 0.0f, 0.0f);
 	gtk_widget_show(lblIncludedLibs);
-	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), lblIncludedLibs, lblIncludedLibsTab);
+	gtk_container_add(GTK_CONTAINER(fraIncludedLibs), lblIncludedLibs);
 	g_object_set_data_full(G_OBJECT(m_Window), "lblIncludedLibs",
 			       g_object_ref(lblIncludedLibs), (GDestroyNotify)g_object_unref);
 	
