@@ -74,10 +74,9 @@ static input_joy_state_t input_sdl_joy_state[INPUT_SDL_MAX_JOYSTICKS];
 static const input_keymap_t input_sdl_keymap_default[8] =
 {
 	// Player 1
-	{GENS_KEY_RETURN, GENS_KEY_RSHIFT,
-	GENS_KEY_a, GENS_KEY_s, GENS_KEY_d,
-	GENS_KEY_z, GENS_KEY_x, GENS_KEY_c,
-	GENS_KEY_UP, GENS_KEY_DOWN, GENS_KEY_LEFT, GENS_KEY_RIGHT},
+	{GENS_KEY_UP, GENS_KEY_DOWN, GENS_KEY_LEFT, GENS_KEY_RIGHT,
+	GENS_KEY_RETURN, GENS_KEY_a, GENS_KEY_s, GENS_KEY_d,
+	GENS_KEY_RSHIFT, GENS_KEY_z, GENS_KEY_x, GENS_KEY_c},
 	
 	// Players 1B, 1C, 1D
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -85,10 +84,9 @@ static const input_keymap_t input_sdl_keymap_default[8] =
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	
 	// Player 2
-	{GENS_KEY_u, GENS_KEY_t,
-	GENS_KEY_k, GENS_KEY_l, GENS_KEY_m,
-	GENS_KEY_i, GENS_KEY_o, GENS_KEY_p,
-	GENS_KEY_y, GENS_KEY_h, GENS_KEY_h, GENS_KEY_j},
+	{GENS_KEY_y, GENS_KEY_h, GENS_KEY_g, GENS_KEY_j,
+	GENS_KEY_u, GENS_KEY_k, GENS_KEY_l, GENS_KEY_m,
+	GENS_KEY_t, GENS_KEY_i, GENS_KEY_o, GENS_KEY_p},
 	
 	// Players 2B, 2C, 2D
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

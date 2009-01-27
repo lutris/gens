@@ -69,10 +69,9 @@ extern "C" {
 
 typedef struct
 {
-	uint16_t Start, Mode;
-	uint16_t A, B, C;
-	uint16_t X, Y, Z;
 	uint16_t Up, Down, Left, Right;
+	uint16_t Start, A, B, C;
+	uint16_t Mode, X, Y, Z;
 } input_keymap_t;
 
 // Joystick input types.

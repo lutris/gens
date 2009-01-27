@@ -92,10 +92,9 @@ static inline void input_dinput_restore_input(void);
 const input_keymap_t input_dinput_keymap_default[8] =
 {
 	// Player 1
-	{DIK_RETURN, DIK_RSHIFT,
-	DIK_A, DIK_S, DIK_D,
-	DIK_Z, DIK_X, DIK_C,
-	DIK_UP, DIK_DOWN, DIK_LEFT, DIK_RIGHT},
+	{DIK_UP, DIK_DOWN, DIK_LEFT, DIK_RIGHT,
+	DIK_RETURN, DIK_A, DIK_S, DIK_D,
+	DIK_RSHIFT, DIK_Z, DIK_X, DIK_C},
 	
 	// Players 1B, 1C, 1D
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -103,10 +102,9 @@ const input_keymap_t input_dinput_keymap_default[8] =
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	
 	// Player 2
-	{DIK_U, DIK_T,
-	DIK_K, DIK_L, DIK_M,
-	DIK_I, DIK_O, DIK_P,
-	DIK_Y, DIK_H, DIK_H, DIK_J},
+	{DIK_Y, DIK_H, DIK_G, DIK_J,
+	DIK_U, DIK_K, DIK_L, DIK_M,
+	DIK_T, DIK_I, DIK_O, DIK_P},
 	
 	// Players 2B, 2C, 2D
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
