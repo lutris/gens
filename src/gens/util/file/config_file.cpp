@@ -108,7 +108,6 @@ const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2
  */
 int Config::save(const string& filename)
 {
-	int i;
 	char buf[256];
 	
 #ifdef GENS_OS_WIN32
@@ -280,7 +279,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Input", "P2D.Type", Controller_2D_Type & 0x13);
 	
 	char tmpKey[16];
-	for (i = 0; i < 8; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
 		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Up, true, 4);
@@ -343,9 +342,6 @@ int Config::saveAs(void)
  */
 int Config::load(const string& filename, void* gameActive)
 {
-	int new_val, i;
-	char buf[256];
-	
 #ifdef GENS_OS_WIN32
 	SetCurrentDirectory(PathNames.Gens_EXE_Path);
 #endif /* GENS_OS_WIN32 */
@@ -383,6 +379,7 @@ int Config::load(const string& filename, void* gameActive)
 	ROM::Recent_ROM_t recentROM;
 	string tmpFilename;
 	
+	char buf[256];
 	for (int romNum = 1; romNum <= 9; romNum++)
 	{
 		sprintf(buf, "ROM %d", romNum);
@@ -531,7 +528,7 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Only load the IC sound settings if sound can be initialized.
 	// TODO: Change it to load the settings unconditionally?
-	new_val = cfg.getInt("Sound", "State", 1);
+	int new_val = cfg.getInt("Sound", "State", 1);
 	if (new_val == audio_get_enabled() ||
 	    (new_val != audio_get_enabled() && Options::setSoundEnable(true)))
 	{
@@ -613,7 +610,7 @@ int Config::load(const string& filename, void* gameActive)
 	Controller_2D_Type = cfg.getInt("Input", "P2D.Type", 1);
 	
 	const input_keymap_t *cur_keymap = input_keymap_default;
-	for (i = 0; i < 8; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		sprintf(buf, "%s.Up", PlayerNames[i]);
 		input_keymap[i].keys.Up = cfg.getInt("Input", buf, cur_keymap->keys.Up);
