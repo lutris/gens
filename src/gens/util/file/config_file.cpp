@@ -283,7 +283,7 @@ int Config::save(const string& filename)
 	{
 		for (int button = 0; button < 12; button++)
 		{
-			sprintf(buf, "%s,%s", PlayerNames[player], input_key_names[button]);
+			sprintf(buf, "%s.%s", PlayerNames[player], input_key_names[button]);
 			cfg.writeInt("Input", buf, input_keymap[player].data[button], true, 4);
 		}
 	}
@@ -596,7 +596,7 @@ int Config::load(const string& filename, void* gameActive)
 	{
 		for (int button = 0; button < 12; button++)
 		{
-			sprintf(buf, "%s,%s", PlayerNames[player], input_key_names[button]);
+			sprintf(buf, "%s.%s", PlayerNames[player], input_key_names[button]);
 			input_keymap[player].data[button] = cfg.getInt("Input", buf, cur_def_keymap->data[button]);
 		}
 		
