@@ -231,12 +231,24 @@ uint16_t input_update_joykey_format(uint16_t key)
 	{
 		// POV Hat.
 		// TODO
+		return key;
 	}
 	else
 	{
 		// Axis.
-		// TODO
+		static const uint8_t mapOldJoyAxisToNew[12] =
+		{
+			0x02, 0x03, 0x00, 0x01, 0x06, 0x07,
+			0x04, 0x05, 0x0A, 0x0B, 0x08, 0x09
+		};
+		
+		uint8_t axis = (key & 0x0F);
+		if (axis == 0 || axis > 12)
+		{
+			// Invalid axis.
+			return key;
+		}
+		
+		return (0x8000 | (INPUT_JOYSTICK_TYPE_AXIS << 12) | (key & 0x0F00) | (mapOldJoyAxisToNew[(key & 0x0F) - 1]));
 	}
-	
-	return key;
 }
