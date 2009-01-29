@@ -12,4 +12,8 @@
 - Analog joystick have not been completely tested.
   If someone reports it runs OK, we could remove this potential misfeature from the bug list.
 
-- POV Hats are not yet supported.
+Release 7:
+
+- Initial support for POV hats in the SDL input handler has been added.
+  I (David Korth) do not have any devices that report POV hats on Linux,
+  so I am unable to test this functionality.
