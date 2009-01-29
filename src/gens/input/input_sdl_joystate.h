@@ -28,6 +28,11 @@ typedef struct
 {
 	uint8_t buttons[256];
 	uint8_t axes[128];
+	uint8_t povhats[64];
+	
+	// Reserved for future use.
+	// Also, this aligns input_joy_state_t to 512 bytes.
+	uint8_t reserved[64];
 } input_joy_state_t;
 
 // Axis values.
@@ -36,20 +41,46 @@ typedef struct
 #define INPUT_SDL_JOYSTATE_AXIS_POSITIVE	(1 << 1)
 #define INPUT_SDL_JOYSTATE_AXIS_MASK		0x03
 
-// Macros to manipulate input_joy_state_t.
+// POV hat values.
+typedef enum
+{
+	INPUT_SDL_JOYSTATE_POVHAT_CENTER	= 0,
+	INPUT_SDL_JOYSTATE_POVHAT_UP		= 1,
+	INPUT_SDL_JOYSTATE_POVHAT_RIGHT		= 2,
+	INPUT_SDL_JOYSTATE_POVHAT_DOWN		= 3,
+	INPUT_SDL_JOYSTATE_POVHAT_LEFT		= 4,
+} INPUT_SDL_JOYSTATE_POVHAT;
+
+// Axis manipulation macros.
 #define INPUT_SDL_JOYSTICK_SET_AXIS_NEGATIVE(joystate, joystick, axis)		\
 	joystate[joystick].axes[axis] = INPUT_SDL_JOYSTATE_AXIS_NEGATIVE;
 #define INPUT_SDL_JOYSTICK_SET_AXIS_POSITIVE(joystate, joystick, axis)		\
 	joystate[joystick].axes[axis] = INPUT_SDL_JOYSTATE_AXIS_POSITIVE;
 #define INPUT_SDL_JOYSTICK_SET_AXIS_CENTER(joystate, joystick, axis)		\
 	joystate[joystick].axes[axis] = INPUT_SDL_JOYSTATE_AXIS_CENTER;
+
+// Button manipulation macros.
 #define INPUT_SDL_JOYSTICK_SET_BUTTON(joystate, joystick, button, value) \
 	joystate[joystick].buttons[button] = value
+
+// POV Hat manipulation macros.
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_CENTER(joystate, joystick, povhat)	\
+	joystate[joystick].povhats[povhat] = (uint8_t)INPUT_SDL_JOYSTATE_POVHAT_CENTER
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_UP(joystate, joystick, povhat)		\
+	joystate[joystick].povhats[povhat] = (uint8_t)INPUT_SDL_JOYSTATE_POVHAT_UP
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_RIGHT(joystate, joystick, povhat)		\
+	joystate[joystick].povhats[povhat] = (uint8_t)INPUT_SDL_JOYSTATE_POVHAT_RIGHT
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_DOWN(joystate, joystick, povhat)		\
+	joystate[joystick].povhats[povhat] = (uint8_t)INPUT_SDL_JOYSTATE_POVHAT_DOWN
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_LEFT(joystate, joystick, povhat)		\
+	joystate[joystick].povhats[povhat] = (uint8_t)INPUT_SDL_JOYSTATE_POVHAT_LEFT
 
 // Macros to manipulate joystick button "key" values.
 #define INPUT_SDL_JOYSTICK_CHECK_AXIS(joystate, joystick, key)		\
 	(joystate[joystick].axes[(key >> 1) & 0x7F] == ((key & 0x01) + 1))
 #define INPUT_SDL_JOYSTICK_CHECK_BUTTON(joystate, joystick, key)	\
 	((joystate[joystick].buttons[key & 0xFF]) & 0x01)
+#define INPUT_SDL_JOYSTICK_CHECK_POVHAT(joystate, joystick, key)	\
+	(joystate[joystick].povhat[(key >> 2) & 0x3F] == ((key & 0x03) + 1))
 
 #endif /* GENS_INPUT_SDL_JOYSTATE_H */
