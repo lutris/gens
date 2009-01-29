@@ -204,3 +204,39 @@ void input_update_controllers(void)
 		CHECK_PLAYER_PAD(7, 2D);
 	}
 }
+
+
+/**
+ * input_update_joykey_format(): Update a joystick "key" from the old format to the new format.
+ * @param key Joystick "key".
+ * @return Updated joystick "key", or original value if no update was necessary.
+ */
+uint16_t input_update_joykey_format(uint16_t key)
+{
+	// The old joystick key mapping has a "1" in the most-significant nybble.
+	if ((key & 0xF000) != 0x1000)
+	{
+		// Not in the old format.
+		return key;
+	}
+	
+	// Joystick "key" is in the old format.
+	// Check what type of "key" it is.
+	if (key & 0x70)
+	{
+		// Button.
+		return (0x8000 | (INPUT_JOYSTICK_TYPE_BUTTON << 12) | (key & 0x0F00) | ((key & 0x7F) - 0x10));
+	}
+	else if (key & 0x80)
+	{
+		// POV Hat.
+		// TODO
+	}
+	else
+	{
+		// Axis.
+		// TODO
+	}
+	
+	return key;
+}

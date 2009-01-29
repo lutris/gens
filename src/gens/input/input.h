@@ -187,6 +187,9 @@ extern int			(*input_set_cooperative_level)(HWND hWnd);
 // Current keymap.
 extern input_keymap_t	input_keymap[8];
 
+// Update a joystick "key" from the old format to the new format.
+uint16_t input_update_joykey_format(uint16_t key);
+
 #ifdef __cplusplus
 }
 #endif
