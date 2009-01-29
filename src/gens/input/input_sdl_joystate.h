@@ -54,7 +54,7 @@ typedef struct
 	joystate[joystick].buttons[button] = value
 
 // POV Hat manipulation macros.
-#define INPUT_SDL_JOYSTICK_SET_POVHAT(joystate, joystick, povhat, value)	\
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_DIRECTION(joystate, joystick, povhat, value)	\
 	joystate[joystick].povhats[povhat & 0x3F] = value
 
 // Macros to manipulate joystick button "key" values.

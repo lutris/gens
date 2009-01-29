@@ -365,10 +365,10 @@ int input_sdl_update(void)
 				break;
 			
 			case SDL_JOYHATMOTION:
-				INPUT_SDL_JOYSTICK_SET_POVHAT(input_sdl_joy_state,
-							      event.jhat.which,
-							      event.jhat.hat,
-							      event.jhat.value);
+				INPUT_SDL_JOYSTICK_SET_POVHAT_DIRECTION(input_sdl_joy_state,
+									event.jhat.which,
+									event.jhat.hat,
+									event.jhat.value);
 				break;
 			
 			default:
