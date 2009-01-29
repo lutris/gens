@@ -138,6 +138,7 @@ int Reconfigure_Input(int player, int padtype)
 		sprintf(buf, "INPUT KEY FOR %s\n", keyNames[i]);
 		gtk_label_set_text(GTK_LABEL(label_echo), buf);
 		*curKey++ = input_get_key();
+		printf("Key: 0x%04X\n", *(curKey - 1));
 		GensUI::sleep(250);
 	}
 	

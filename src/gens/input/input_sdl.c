@@ -403,9 +403,9 @@ static void input_sdl_check_joystick_axis(SDL_Event *event)
 	}
 	else
 	{
-		INPUT_SDL_JOYSTICK_SET_AXIS_NONE(input_sdl_joy_state,
-						 event->jaxis.which,
-						 event->jaxis.axis);
+		INPUT_SDL_JOYSTICK_SET_AXIS_CENTER(input_sdl_joy_state,
+						   event->jaxis.which,
+						   event->jaxis.axis);
 	}
 }
 

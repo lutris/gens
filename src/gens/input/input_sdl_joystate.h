@@ -26,27 +26,30 @@
 // Joystick state struct.
 typedef struct
 {
-	uint8_t axes[128][2];	// index 0 == negative; index 1 == positive
 	uint8_t buttons[256];
+	uint8_t axes[128];
 } input_joy_state_t;
 
+// Axis values.
+#define INPUT_SDL_JOYSTATE_AXIS_CENTER		0
+#define INPUT_SDL_JOYSTATE_AXIS_NEGATIVE	(1 << 0)
+#define INPUT_SDL_JOYSTATE_AXIS_POSITIVE	(1 << 1)
+#define INPUT_SDL_JOYSTATE_AXIS_MASK		0x03
+
 // Macros to manipulate input_joy_state_t.
-#define INPUT_SDL_JOYSTICK_SET_AXIS_NEGATIVE(joystate, joystick, axis)	\
-	joystate[joystick].axes[axis][0] = TRUE;			\
-	joystate[joystick].axes[axis][1] = FALSE
-#define INPUT_SDL_JOYSTICK_SET_AXIS_POSITIVE(joystate, joystick, axis)	\
-	joystate[joystick].axes[axis][0] = FALSE;			\
-	joystate[joystick].axes[axis][1] = TRUE
-#define INPUT_SDL_JOYSTICK_SET_AXIS_NONE(joystate, joystick, axis)	\
-	joystate[joystick].axes[axis][0] = FALSE;			\
-	joystate[joystick].axes[axis][1] = FALSE
+#define INPUT_SDL_JOYSTICK_SET_AXIS_NEGATIVE(joystate, joystick, axis)		\
+	joystate[joystick].axes[axis] = INPUT_SDL_JOYSTATE_AXIS_NEGATIVE;
+#define INPUT_SDL_JOYSTICK_SET_AXIS_POSITIVE(joystate, joystick, axis)		\
+	joystate[joystick].axes[axis] = INPUT_SDL_JOYSTATE_AXIS_POSITIVE;
+#define INPUT_SDL_JOYSTICK_SET_AXIS_CENTER(joystate, joystick, axis)		\
+	joystate[joystick].axes[axis] = INPUT_SDL_JOYSTATE_AXIS_CENTER;
 #define INPUT_SDL_JOYSTICK_SET_BUTTON(joystate, joystick, button, value) \
 	joystate[joystick].buttons[button] = value
 
 // Macros to manipulate joystick button "key" values.
 #define INPUT_SDL_JOYSTICK_CHECK_AXIS(joystate, joystick, key)		\
-	joystate[joystick].axes[(key >> 1) & 0x7F][key & 0x01]
+	(joystate[joystick].axes[(key >> 1) & 0x7F] == ((key & 0x01) + 1))
 #define INPUT_SDL_JOYSTICK_CHECK_BUTTON(joystate, joystick, key)	\
-	joystate[joystick].buttons[key]
+	(joystate[joystick].buttons[key])
 
 #endif /* GENS_INPUT_SDL_JOYSTATE_H */
