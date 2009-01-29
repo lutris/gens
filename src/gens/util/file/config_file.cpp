@@ -99,7 +99,7 @@ using std::deque;
 
 
 // TODO: Make this a global array somewhere better.
-const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2D"};
+static const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2D"};
 
 
 /**
@@ -609,36 +609,18 @@ int Config::load(const string& filename, void* gameActive)
 	Controller_2C_Type = cfg.getInt("Input", "P2C.Type", 1);
 	Controller_2D_Type = cfg.getInt("Input", "P2D.Type", 1);
 	
-	const input_keymap_t *cur_keymap = input_keymap_default;
-	for (int i = 0; i < 8; i++)
+	// Controller keymaps.
+	const input_keymap_t *cur_def_keymap = input_keymap_default;
+	for (int player = 0; player < 8; player++)
 	{
-		sprintf(buf, "%s.Up", PlayerNames[i]);
-		input_keymap[i].keys.Up = cfg.getInt("Input", buf, cur_keymap->keys.Up);
-		sprintf(buf, "%s.Down", PlayerNames[i]);
-		input_keymap[i].keys.Down = cfg.getInt("Input", buf, cur_keymap->keys.Down);
-		sprintf(buf, "%s.Left", PlayerNames[i]);
-		input_keymap[i].keys.Left = cfg.getInt("Input", buf, cur_keymap->keys.Left);
-		sprintf(buf, "%s.Right", PlayerNames[i]);
-		input_keymap[i].keys.Right = cfg.getInt("Input", buf, cur_keymap->keys.Right);
-		sprintf(buf, "%s.Start", PlayerNames[i]);
-		input_keymap[i].keys.Start = cfg.getInt("Input", buf, cur_keymap->keys.Start);
-		sprintf(buf, "%s.A", PlayerNames[i]);
-		input_keymap[i].keys.A = cfg.getInt("Input", buf, cur_keymap->keys.A);
-		sprintf(buf, "%s.B", PlayerNames[i]);
-		input_keymap[i].keys.B = cfg.getInt("Input", buf, cur_keymap->keys.B);
-		sprintf(buf, "%s.C", PlayerNames[i]);
-		input_keymap[i].keys.C = cfg.getInt("Input", buf, cur_keymap->keys.C);
-		sprintf(buf, "%s.Mode", PlayerNames[i]);
-		input_keymap[i].keys.Mode = cfg.getInt("Input", buf, cur_keymap->keys.Mode);
-		sprintf(buf, "%s.X", PlayerNames[i]);
-		input_keymap[i].keys.X = cfg.getInt("Input", buf, cur_keymap->keys.X);
-		sprintf(buf, "%s.Y", PlayerNames[i]);
-		input_keymap[i].keys.Y = cfg.getInt("Input", buf, cur_keymap->keys.Y);
-		sprintf(buf, "%s.Z", PlayerNames[i]);
-		input_keymap[i].keys.Z = cfg.getInt("Input", buf, cur_keymap->keys.Z);
+		for (int button = 0; button < 12; button++)
+		{
+			sprintf(buf, "%s,%s", PlayerNames[player], input_key_names[button]);
+			input_keymap[player].data[button] = cfg.getInt("Input", buf, cur_def_keymap->data[button]);
+		}
 		
-		// Next keymap.
-		cur_keymap++;
+		// Next default keymap.
+		cur_def_keymap++;
 	}
 	
 	// Create the TeamPlayer I/O table.
