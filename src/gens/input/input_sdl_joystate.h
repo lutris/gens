@@ -50,6 +50,6 @@ typedef struct
 #define INPUT_SDL_JOYSTICK_CHECK_AXIS(joystate, joystick, key)		\
 	(joystate[joystick].axes[(key >> 1) & 0x7F] == ((key & 0x01) + 1))
 #define INPUT_SDL_JOYSTICK_CHECK_BUTTON(joystate, joystick, key)	\
-	(joystate[joystick].buttons[key])
+	((joystate[joystick].buttons[key & 0xFF]) & 0x01)
 
 #endif /* GENS_INPUT_SDL_JOYSTATE_H */
