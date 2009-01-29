@@ -417,15 +417,13 @@ BOOL input_dinput_joy_exists(int joyNum)
  */
 unsigned int input_dinput_get_key(void)
 {
-	int i, j, joyIndex;
-	
 	bool prevReady = false;
 	
 	BOOL prevDiKeys[256];
-	BOOL prevJoyKeys[256];
+	BOOL prevJoyKeys[48*6];
 	
 	BOOL curDiKeys[256];
-	BOOL curJoyKeys[256];
+	BOOL curJoyKeys[48*6];
 	
 	while (true)
 	{
@@ -433,40 +431,42 @@ unsigned int input_dinput_get_key(void)
 		input_dinput_update();
 		
 		// Current state of DirectInput keys
-		for (i = 0; i < 256; i++)
-			curDiKeys[i] = (input_dinput_keys[i] & 0x80);
+		memcpy(&curDiKeys[0], &input_dinput_keys[0], 256);
 		
 		// Current state of recognized buttons on joypad
-		joyIndex = 0;
-		for (i = 0; i < input_dinput_num_joysticks; i++)
+		int joyIndex = 0;
+		for (int joystick = 0; joystick < input_dinput_num_joysticks; joystick++)
 		{
-			if (!input_dinput_joy_exists(i))
+			if (!input_dinput_joy_exists(joystick))
 				continue;
 			
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lY < -500);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lY > +500);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lX < -500);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lX > +500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lX < -500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lX > +500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY < -500);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY > +500);
 			
-			for (j = 0; j < 4; j++)
+			for (int povhat = 0; povhat < 4; povhat++)
 			{
-				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 0);
-				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 9000);
-				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 18000);
-				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgdwPOV[j] == 27000);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgdwPOV[povhat] == 0);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgdwPOV[povhat] == 9000);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgdwPOV[povhat] == 18000);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgdwPOV[povhat] == 27000);
 			}
 			
-			for (j = 0; j < 32; j++)
+			for (int button = 0; button < 32; button++)
 			{
-				curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].rgbButtons[j]);
+				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgbButtons[button]);
 			}
 			
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRx < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRx > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRy < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lRy > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lZ < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[i].lZ > 0xBFFF);
+			// TODO: Verify these values.
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz > 0xBFFF);
 		}
 		
 		// Compare buttons against the previous state to determine
@@ -475,10 +475,10 @@ unsigned int input_dinput_get_key(void)
 		if (prevReady)
 		{
 			// Check for new DirectInput key presses.
-			for (i = 1; i < 255; i++)
+			for (int key = 1; key < 255; key++)
 			{
-				if (curDiKeys[i] && !prevDiKeys[i])
-					return i;
+				if (curDiKeys[key] && !prevDiKeys[key])
+					return key;
 			}
 			
 			// Check for new recognized joypad button presses.
@@ -487,72 +487,50 @@ unsigned int input_dinput_get_key(void)
 				if (curJoyKeys[index] && !prevJoyKeys[index])
 				{
 					int joyIndex2 = 0;
-					for (i = 0; i < input_dinput_num_joysticks; i++)
+					for (int joystick = 0; joystick < input_dinput_num_joysticks; joystick++)
 					{
-						if (!input_dinput_joy_exists(i))
+						if (!input_dinput_joy_exists(joystick))
 							continue;
 						
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x1);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 0, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x2);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 0, INPUT_JOYSTICK_AXIS_POSITIVE);
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x3);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 1, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
+							return INPUT_GETKEY_AXIS(joystick, 1, INPUT_JOYSTICK_AXIS_POSITIVE);
+						
+						for (int povhat = 0; povhat < 4; povhat++)
 						{
-							return (0x1000 + (0x100 * i) + 0x4);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_UP);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_RIGHT);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_DOWN);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_LEFT);
 						}
 						
-						for (j = 0; j < 4; j++)
+						for (int button = 0; button < 32; button++)
 						{
 							if (index == joyIndex2++)
-							{
-								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x1);
-							}
-							if (index == joyIndex2++)
-							{
-								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x2);
-							}
-							if (index == joyIndex2++)
-							{
-								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x3);
-							}
-							if (index == joyIndex2++)
-							{
-								return (0x1080 + (0x100 * i) + (0x10 * j) + 0x4);
-							}
-						}
-						
-						for (j = 0; j < 32; j++)
-						{
-							if (index == joyIndex2++)
-							{
-								return (0x1010 + (0x100 * i) + j);
-							}
+								return INPUT_GETKEY_BUTTON(joystick, button);
 						}
 						
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x5);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 2, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x6);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 2, INPUT_JOYSTICK_AXIS_POSITIVE);
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x7);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 3, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
-						{
-							return (0x1000 + (0x100 * i) + 0x8);
-						}
+							return INPUT_GETKEY_AXIS(joystick, 3, INPUT_JOYSTICK_AXIS_POSITIVE);
+						if (index == joyIndex2++)
+							return INPUT_GETKEY_AXIS(joystick, 4, INPUT_JOYSTICK_AXIS_NEGATIVE);
+						if (index == joyIndex2++)
+							return INPUT_GETKEY_AXIS(joystick, 4, INPUT_JOYSTICK_AXIS_POSITIVE);
 					}
 				}
 			}
