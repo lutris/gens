@@ -28,6 +28,15 @@
 #include "gens_core/io/io.h"
 
 
+// Array of key names.
+const char input_key_names[12][8] =
+{
+	"Up", "Down", "Left", "Right",
+	"Start", "A", "B", "C",
+	"Mode", "X", "Y", "Z"
+};
+
+
 // Input backends.
 #ifdef GENS_OS_WIN32
 	#include "input_dinput_t.h"

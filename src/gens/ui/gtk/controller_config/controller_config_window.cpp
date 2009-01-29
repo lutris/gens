@@ -174,10 +174,10 @@ GtkWidget* create_controller_config_window(void)
 	
 	// Label indicating what key needs to be pressed.
 	label_cc_echo = gtk_label_new("\n");
-	gtk_widget_set_name(label_cc_echo, "label_echo");
+	gtk_widget_set_name(label_cc_echo, "label_cc_echo");
 	gtk_misc_set_padding(GTK_MISC(label_cc_echo), 8, 8);
 	gtk_widget_show(label_cc_echo);
-	GLADE_HOOKUP_OBJECT(controller_config_window, label_cc_echo, "label_echo");
+	GLADE_HOOKUP_OBJECT(controller_config_window, label_cc_echo, "label_cc_echo");
 	gtk_container_add(GTK_CONTAINER(frame_setting_keys), label_cc_echo);
 	
 	// HButton Box for the buttons.

@@ -80,6 +80,9 @@ typedef union
 	uint16_t data[12];
 } input_keymap_t;
 
+// Key names.
+extern const char input_key_names[12][8];
+
 // Joystick input types.
 typedef enum
 {

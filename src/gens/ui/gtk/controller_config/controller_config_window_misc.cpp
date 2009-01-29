@@ -115,19 +115,11 @@ void Open_Controller_Config(void)
  */
 int Reconfigure_Input(int player, int padtype)
 {
-	GtkWidget *label_echo = lookup_widget(controller_config_window, "label_echo");
+	GtkWidget *label_cc_echo = lookup_widget(controller_config_window, "label_cc_echo");
 	
 	// TODO: Somehow condense this code.
 	
 	CC_Configuring = 1;
-	
-	// Array of key names.
-	static const char keyNames[][8] =
-	{
-		"UP", "DOWN", "LEFT", "RIGHT",
-		"START", "A", "B", "C",
-		"MODE", "X", "Y", "Z"
-	};
 	
 	const int maxKeys = (padtype & 0x01 ? 12 : 8);
 	uint16_t *curKey = &keyConfig[player].data[0];
@@ -135,20 +127,21 @@ int Reconfigure_Input(int player, int padtype)
 	
 	for (int i = 0; i < maxKeys; i++)
 	{
-		sprintf(buf, "INPUT KEY FOR %s\n", keyNames[i]);
-		gtk_label_set_text(GTK_LABEL(label_echo), buf);
+		sprintf(buf, "Press a key for: <b>%s</b>\n", input_key_names[i]);
+		gtk_label_set_text(GTK_LABEL(label_cc_echo), buf);
+		gtk_label_set_use_markup(GTK_LABEL(label_cc_echo), TRUE);
 		*curKey++ = input_get_key();
 		printf("Key: 0x%04X\n", *(curKey - 1));
 		GensUI::sleep(250);
 	}
 	
 	// Configuration successful.
-	gtk_label_set_text(GTK_LABEL(label_echo),
-			"CONFIGURATION SUCCESSFUL.\n"
-			"PRESS ANY KEY TO CONTINUE...");
+	gtk_label_set_text(GTK_LABEL(label_cc_echo),
+			"Controller configuration successful.\n"
+			"Press any key to continue...");
 	input_get_key();
 	GensUI::sleep(500);
-	gtk_label_set_text(GTK_LABEL(label_echo), "\n");
+	gtk_label_set_text(GTK_LABEL(label_cc_echo), "\n");
 	
 	CC_Configuring = 0;
 	
