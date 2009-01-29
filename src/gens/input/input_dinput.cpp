@@ -461,7 +461,7 @@ unsigned int input_dinput_get_key(void)
 				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgbButtons[button]);
 			}
 			
-			// TODO: Verify these values.
+			// TODO: Determine the correct axis order and the correct axis values.
 			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx < 0x3FFF);
 			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx > 0xBFFF);
 			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy < 0x3FFF);
@@ -647,84 +647,106 @@ BOOL input_dinput_check_key_pressed(unsigned int key)
 		return FALSE;
 	
 	// Joystick exists. Check the state.
-	if (key & 0x80)
+	switch (INPUT_JOYSTICK_GET_TYPE(key))
 	{
-		// Joystick POV
-		int value = input_dinput_joy_state[joyNum].rgdwPOV[(key >> 4) & 3];
-		if (value == -1)
-			return FALSE;
+		case INPUT_JOYSTICK_TYPE_AXIS:
+			// Joystick axis.
+			// TODO: Determine the correct axis order and the correct axis values.
+			switch (key & 0xFF)
+			{
+				case 0:
+					if (input_dinput_joy_state[joyNum].lX < -500)
+						return TRUE;
+					break;
+				case 1:
+					if (input_dinput_joy_state[joyNum].lX > +500)
+						return TRUE;
+					break;
+				case 2:
+					if (input_dinput_joy_state[joyNum].lY < -500)
+						return TRUE;
+					break;
+				case 3:
+					if (input_dinput_joy_state[joyNum].lY > +500)
+						return TRUE;
+					break;
+				case 4:
+					if (input_dinput_joy_state[joyNum].lRx < 0x3FFF)
+						return TRUE;
+					break;
+				case 5:
+					if (input_dinput_joy_state[joyNum].lRx > 0xBFFF)
+						return TRUE;
+					break;
+				case 6:
+					if (input_dinput_joy_state[joyNum].lRy < 0x3FFF)
+						return TRUE;
+					break;
+				case 7:
+					if (input_dinput_joy_state[joyNum].lRy > 0xBFFF)
+						return TRUE;
+					break;
+				case 8:
+					if (input_dinput_joy_state[joyNum].lZ < 0x3FFF)
+						return TRUE;
+					break;
+				case 9:
+					if (input_dinput_joy_state[joyNum].lZ > 0xBFFF)
+						return TRUE;
+					break;
+				case 10:
+					if (input_dinput_joy_state[joyNum].lRz < 0x3FFF)
+						return TRUE;
+					break;
+				case 11:
+					if (input_dinput_joy_state[joyNum].lRz > 0xBFFF)
+						return TRUE;
+					break;
+				default:
+					// Unknown axis.
+					// TODO: Add support for rglSlider (formerly u-axis and v-axis).
+					break;
+			}
+			
+			break;
 		
-		switch (key & 0xF)
+		case INPUT_JOYSTICK_TYPE_BUTTON:
+			// Joystick button.
+			if (input_dinput_joy_state[joyNum].rgbButtons[key & 0xFF])
+				return TRUE;
+			break;
+		
+		case INPUT_JOYSTICK_TYPE_POVHAT:
 		{
-			case 1:
-				if (value >= 29250 || value <= 6750)
-					return TRUE;
-				break;
-			case 2:
-				if (value >= 2250 && value <= 15750)
-					return TRUE;
-				break;
-			case 3:
-				if (value >= 11250 && value <= 24750)
-					return TRUE;
-				break;
-			case 4:
-				if (value >= 20250 && value <= 33750)
-					return TRUE;
-				break;
-		}
-	}
-	else if (key & 0x70)
-	{
-		// Joystick buttons
-		if (input_dinput_joy_state[joyNum].rgbButtons[(key & 0xFF) - 0x10])
-			return TRUE;
-	}
-	else
-	{
-		// Joystick axes
-		switch (key & 0xF)
-		{
-			case 1:
-				if (input_dinput_joy_state[joyNum].lY < -500)
-					return TRUE;
-				break;
-			case 2:
-				if (input_dinput_joy_state[joyNum].lY > +500)
-					return TRUE;
-				break;
-			case 3:
-				if (input_dinput_joy_state[joyNum].lX < -500)
-					return TRUE;
-				break;
-			case 4:
-				if (input_dinput_joy_state[joyNum].lX > +500)
-					return TRUE;
-				break;
-			case 5:
-				if (input_dinput_joy_state[joyNum].lRx < 0x3FFF)
-					return TRUE;
-				break;
-			case 6:
-				if (input_dinput_joy_state[joyNum].lRx > 0xBFFF)
-					return TRUE;
-				break;
-			case 7:
-				if (input_dinput_joy_state[joyNum].lRy < 0x3FFF)
-					return TRUE;
-				break;
-			case 8:
-				if (input_dinput_joy_state[joyNum].lRy > 0xBFFF)
-					return TRUE;
-				break;
-			case 9:
-				if (input_dinput_joy_state[joyNum].lZ < 0x3FFF)
-					return TRUE;
-				break;
-			case 10:
-				if (input_dinput_joy_state[joyNum].lZ > 0xBFFF)
-					return TRUE;
-				break;
+			// Joystick POV hat.
+			unsigned int povAngle = input_dinput_joy_state[joyNum].rgdwPOV[(key >> 2) & 0x3F];
+			
+			// A value of -1 or 65,535 indicates the POV hat switch is centered.
+			if (LOWORD(povAngle) == 0xFFFF)
+				return FALSE;
+			
+			// Check the angles based on the key value.
+			switch (key & 0x03)
+			{
+				case INPUT_JOYSTICK_POVHAT_UP:
+					if (povAngle >= 29250 || povAngle <= 6750)
+						return TRUE;
+					break;
+				case INPUT_JOYSTICK_POVHAT_RIGHT:
+					if (povAngle >= 2250 && povAngle <= 15750)
+						return TRUE;
+					break;
+				case INPUT_JOYSTICK_POVHAT_DOWN:
+					if (povAngle >= 11250 && povAngle <= 24750)
+						return TRUE;
+					break;
+				case INPUT_JOYSTICK_POVHAT_LEFT:
+					if (povAngle >= 20250 && povAngle <= 33750)
+						return TRUE;
+					break;
+			}
+			
+			break;
 		}
 	}
 	
