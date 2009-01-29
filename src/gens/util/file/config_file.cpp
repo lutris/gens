@@ -268,7 +268,7 @@ int Config::save(const string& filename)
 	cfg.writeString("Options", "7z Binary", Misc_Filenames._7z_Binary);
 	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
 	
-	// Controller settings
+	// Controller settings.
 	cfg.writeInt("Input", "P1.Type", Controller_1_Type & 0x13);
 	cfg.writeInt("Input", "P1B.Type", Controller_2B_Type & 0x13);
 	cfg.writeInt("Input", "P1C.Type", Controller_2C_Type & 0x13);
@@ -278,33 +278,14 @@ int Config::save(const string& filename)
 	cfg.writeInt("Input", "P2C.Type", Controller_2C_Type & 0x13);
 	cfg.writeInt("Input", "P2D.Type", Controller_2D_Type & 0x13);
 	
-	char tmpKey[16];
-	for (int i = 0; i < 8; i++)
+	// Controller keymaps.
+	for (int player = 0; player < 8; player++)
 	{
-		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Up, true, 4);
-		sprintf(tmpKey, "%s.Down", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Down, true, 4);
-		sprintf(tmpKey, "%s.Left", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Left, true, 4);
-		sprintf(tmpKey, "%s.Right", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Right, true, 4);
-		sprintf(tmpKey, "%s.Start", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Start, true, 4);
-		sprintf(tmpKey, "%s.A", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.A, true, 4);
-		sprintf(tmpKey, "%s.B", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.B, true, 4);
-		sprintf(tmpKey, "%s.C", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.C, true, 4);
-		sprintf(tmpKey, "%s.Mode", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Mode, true, 4);
-		sprintf(tmpKey, "%s.X", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.X, true, 4);
-		sprintf(tmpKey, "%s.Y", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Y, true, 4);
-		sprintf(tmpKey, "%s.Z", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Z, true, 4);
+		for (int button = 0; button < 12; button++)
+		{
+			sprintf(buf, "%s,%s", PlayerNames[player], input_key_names[button]);
+			cfg.writeInt("Input", buf, input_keymap[player].data[button], true, 4);
+		}
 	}
 	
 	// Save the INI file.
@@ -599,7 +580,7 @@ int Config::load(const string& filename, void* gameActive)
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
 #endif	
 	
-	// Controller settings
+	// Controller settings.
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 1);
 	Controller_1B_Type = cfg.getInt("Input", "P1B.Type", 1);
 	Controller_1C_Type = cfg.getInt("Input", "P1C.Type", 1);
