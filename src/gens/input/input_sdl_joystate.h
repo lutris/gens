@@ -54,15 +54,15 @@ typedef struct
 	joystate[joystick].buttons[button] = value
 
 // POV Hat manipulation macros.
-#define INPUT_SDL_JOYSTICK_SET_POVHAT_DIRECTION(joystate, joystick, povhat, value)	\
-	joystate[joystick].povhats[povhat & 0x3F] = value
+#define INPUT_SDL_JOYSTICK_SET_POVHAT_DIRECTION(joystate, joystick, povhat, direction)	\
+	joystate[joystick].povhats[povhat & 0x3F] = direction
 
 // Macros to manipulate joystick button "key" values.
 #define INPUT_SDL_JOYSTICK_CHECK_AXIS(joystate, joystick, key)		\
 	(joystate[joystick].axes[(key >> 1) & 0x7F] == ((key & 0x01) + 1))
 #define INPUT_SDL_JOYSTICK_CHECK_BUTTON(joystate, joystick, key)	\
 	((joystate[joystick].buttons[key & 0xFF]) & 0x01)
-#define INPUT_SDL_JOYSTICK_CHECK_POVHAT_DIRECTION(joystate, joystick, key, povBit)	\
-	(joystate[joystick].povhats[(key >> 2) & 0x3F] == (povBit))
+#define INPUT_SDL_JOYSTICK_CHECK_POVHAT_DIRECTION(joystate, joystick, key, direction)	\
+	(joystate[joystick].povhats[(key >> 2) & 0x3F] == (direction))
 
 #endif /* GENS_INPUT_SDL_JOYSTATE_H */

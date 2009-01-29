@@ -301,9 +301,24 @@ unsigned int input_sdl_get_key(void)
 					break;
 				
 				case SDL_JOYHATMOTION:
-					// TODO: Joystick POV hat.
-					//return (0xdeadbeef + (0x100 * sdl_event.jhat.which) + sdl_event.jhat.hat + sdl_event.jhat.value);
+				{
+					uint8_t povHatDirection;
+					if (sdl_event.jhat.value & SDL_HAT_UP)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_UP;
+					else if (sdl_event.jhat.value & SDL_HAT_RIGHT)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_RIGHT;
+					else if (sdl_event.jhat.value & SDL_HAT_DOWN)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_DOWN;
+					else if (sdl_event.jhat.value & SDL_HAT_LEFT)
+						povHatDirection = INPUT_JOYSTICK_POVHAT_LEFT;
+					else
+						break;
+					
+					return INPUT_GETKEY_POVHAT_DIRECTION(sdl_event.jhat.which,
+									     sdl_event.jhat.hat,
+									     povHatDirection);
 					break;
+				}
 			}
 		}
 		
@@ -452,7 +467,7 @@ BOOL input_sdl_check_key_pressed(unsigned int key)
 				return TRUE;
 			break;
 		
-		case INPUT_JOYSTICK_TYPE_POV:
+		case INPUT_JOYSTICK_TYPE_POVHAT:
 		{
 			// POV hat.
 			static const uint8_t povKeyToBit[4] = {SDL_HAT_UP, SDL_HAT_RIGHT, SDL_HAT_DOWN, SDL_HAT_LEFT};
