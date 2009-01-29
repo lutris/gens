@@ -58,7 +58,7 @@ static int input_sdl_gdk_to_sdl_keyval(int gdk_key);
 #define INPUT_SDL_MAX_JOYSTICKS 6
 
 // Check an SDL joystick axis.
-static void input_sdl_check_joystick_axis(SDL_Event *event);
+static inline void input_sdl_check_joystick_axis(SDL_Event *event);
 
 // Internal variables.
 static int input_sdl_num_joysticks;	// Number of joysticks connected
@@ -384,7 +384,7 @@ int input_sdl_update(void)
  * input_sdl_check_joystick_axis: Check the SDL_Event for a joystick axis event.
  * @param event Pointer to SDL_Event.
  */
-static void input_sdl_check_joystick_axis(SDL_Event *event)
+static inline void input_sdl_check_joystick_axis(SDL_Event *event)
 {
 	if (event->jaxis.axis >= 128)
 	{
