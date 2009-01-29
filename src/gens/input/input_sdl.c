@@ -469,7 +469,7 @@ BOOL input_sdl_check_key_pressed(unsigned int key)
 		
 		case INPUT_JOYSTICK_TYPE_POVHAT:
 		{
-			// POV hat.
+			// Joystick POV hat.
 			static const uint8_t povKeyToBit[4] = {SDL_HAT_UP, SDL_HAT_RIGHT, SDL_HAT_DOWN, SDL_HAT_LEFT};
 			uint8_t povBit = povKeyToBit[INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)];
 			
