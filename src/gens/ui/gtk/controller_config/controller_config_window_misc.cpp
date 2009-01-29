@@ -130,7 +130,7 @@ int Reconfigure_Input(int player, int padtype)
 	};
 	
 	const int maxKeys = (padtype & 0x01 ? 12 : 8);
-	uint16_t *curKey = (uint16_t*)(&keyConfig[player]);
+	uint16_t *curKey = &keyConfig[player].data[0];
 	char buf[32];
 	
 	for (int i = 0; i < maxKeys; i++)

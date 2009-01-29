@@ -124,12 +124,12 @@ int input_end(void)
 
 
 #define CHECK_BUTTON(player, ctrl, button, mask)			\
-	if (input_check_key_pressed(input_keymap[player].button)) 	\
+	if (input_check_key_pressed(input_keymap[player].keys.button))	\
 		Controller_ ## ctrl ## _Buttons &= ~mask;		\
 	else Controller_ ## ctrl ## _Buttons |= mask;
 
 #define CHECK_DIR(player, ctrl)						\
-	if (input_check_key_pressed(input_keymap[player].Up)) 		\
+	if (input_check_key_pressed(input_keymap[player].keys.Up))	\
 	{					   			\
 		Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_UP;	\
 		Controller_ ## ctrl ## _Buttons |= CONTROLLER_DOWN;	\
@@ -139,7 +139,7 @@ int input_end(void)
 		Controller_ ## ctrl ## _Buttons |= CONTROLLER_UP;	\
 		CHECK_BUTTON(player, ctrl, Down, CONTROLLER_DOWN)	\
 	}								\
-	if (input_check_key_pressed(input_keymap[player].Left))		\
+	if (input_check_key_pressed(input_keymap[player].keys.Left))	\
 	{					   			\
 		Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_LEFT;	\
 		Controller_ ## ctrl ## _Buttons |= CONTROLLER_RIGHT;	\

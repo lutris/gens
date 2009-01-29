@@ -102,54 +102,54 @@ int Reconfigure_Input(int player, int padtype)
 	audio_clear_sound_buffer();
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
-	keyConfig[player].Up = input_get_key();
+	keyConfig[player].keys.Up = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR DOWN");
-	keyConfig[player].Down = input_get_key();
+	keyConfig[player].keys.Down = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR LEFT");
-	keyConfig[player].Left = input_get_key();
+	keyConfig[player].keys.Left = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR RIGHT");
-	keyConfig[player].Right = input_get_key();
+	keyConfig[player].keys.Right = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR START");
-	keyConfig[player].Start = input_get_key();
+	keyConfig[player].keys.Start = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR A");
-	keyConfig[player].A = input_get_key();
+	keyConfig[player].keys.A = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR B");
-	keyConfig[player].B = input_get_key();
+	keyConfig[player].keys.B = input_get_key();
 	GensUI::sleep(250, true);
 	
 	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR C");
-	keyConfig[player].C = input_get_key();
+	keyConfig[player].keys.C = input_get_key();
 	GensUI::sleep(250, true);
 	
 	if (padtype & 0x01)
 	{
 		// 6-button control pad. Get additional keys.
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR MODE");
-		keyConfig[player].Mode = input_get_key();
+		keyConfig[player].keys.Mode = input_get_key();
 		GensUI::sleep(250, true);
 		
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR X");
-		keyConfig[player].X = input_get_key();
+		keyConfig[player].keys.X = input_get_key();
 		GensUI::sleep(250, true);
 		
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Y");
-		keyConfig[player].Y = input_get_key();
+		keyConfig[player].keys.Y = input_get_key();
 		GensUI::sleep(250, true);
 		
 		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Z");
-		keyConfig[player].Z = input_get_key();
+		keyConfig[player].keys.Z = input_get_key();
 		GensUI::sleep(250, true);
 	}
 	

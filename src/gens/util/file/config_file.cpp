@@ -283,29 +283,29 @@ int Config::save(const string& filename)
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(tmpKey, "%s.Up", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Up, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Up, true, 4);
 		sprintf(tmpKey, "%s.Down", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Down, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Down, true, 4);
 		sprintf(tmpKey, "%s.Left", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Left, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Left, true, 4);
 		sprintf(tmpKey, "%s.Right", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Right, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Right, true, 4);
 		sprintf(tmpKey, "%s.Start", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Start, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Start, true, 4);
 		sprintf(tmpKey, "%s.A", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].A, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.A, true, 4);
 		sprintf(tmpKey, "%s.B", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].B, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.B, true, 4);
 		sprintf(tmpKey, "%s.C", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].C, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.C, true, 4);
 		sprintf(tmpKey, "%s.Mode", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Mode, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Mode, true, 4);
 		sprintf(tmpKey, "%s.X", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].X, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.X, true, 4);
 		sprintf(tmpKey, "%s.Y", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Y, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Y, true, 4);
 		sprintf(tmpKey, "%s.Z", PlayerNames[i]);
-		cfg.writeInt("Input", tmpKey, input_keymap[i].Z, true, 4);
+		cfg.writeInt("Input", tmpKey, input_keymap[i].keys.Z, true, 4);
 	}
 	
 	// Save the INI file.
@@ -616,29 +616,29 @@ int Config::load(const string& filename, void* gameActive)
 	for (i = 0; i < 8; i++)
 	{
 		sprintf(buf, "%s.Up", PlayerNames[i]);
-		input_keymap[i].Up = cfg.getInt("Input", buf, cur_keymap->Up);
+		input_keymap[i].keys.Up = cfg.getInt("Input", buf, cur_keymap->keys.Up);
 		sprintf(buf, "%s.Down", PlayerNames[i]);
-		input_keymap[i].Down = cfg.getInt("Input", buf, cur_keymap->Down);
+		input_keymap[i].keys.Down = cfg.getInt("Input", buf, cur_keymap->keys.Down);
 		sprintf(buf, "%s.Left", PlayerNames[i]);
-		input_keymap[i].Left = cfg.getInt("Input", buf, cur_keymap->Left);
+		input_keymap[i].keys.Left = cfg.getInt("Input", buf, cur_keymap->keys.Left);
 		sprintf(buf, "%s.Right", PlayerNames[i]);
-		input_keymap[i].Right = cfg.getInt("Input", buf, cur_keymap->Right);
+		input_keymap[i].keys.Right = cfg.getInt("Input", buf, cur_keymap->keys.Right);
 		sprintf(buf, "%s.Start", PlayerNames[i]);
-		input_keymap[i].Start = cfg.getInt("Input", buf, cur_keymap->Start);
+		input_keymap[i].keys.Start = cfg.getInt("Input", buf, cur_keymap->keys.Start);
 		sprintf(buf, "%s.A", PlayerNames[i]);
-		input_keymap[i].A = cfg.getInt("Input", buf, cur_keymap->A);
+		input_keymap[i].keys.A = cfg.getInt("Input", buf, cur_keymap->keys.A);
 		sprintf(buf, "%s.B", PlayerNames[i]);
-		input_keymap[i].B = cfg.getInt("Input", buf, cur_keymap->B);
+		input_keymap[i].keys.B = cfg.getInt("Input", buf, cur_keymap->keys.B);
 		sprintf(buf, "%s.C", PlayerNames[i]);
-		input_keymap[i].C = cfg.getInt("Input", buf, cur_keymap->C);
+		input_keymap[i].keys.C = cfg.getInt("Input", buf, cur_keymap->keys.C);
 		sprintf(buf, "%s.Mode", PlayerNames[i]);
-		input_keymap[i].Mode = cfg.getInt("Input", buf, cur_keymap->Mode);
+		input_keymap[i].keys.Mode = cfg.getInt("Input", buf, cur_keymap->keys.Mode);
 		sprintf(buf, "%s.X", PlayerNames[i]);
-		input_keymap[i].X = cfg.getInt("Input", buf, cur_keymap->X);
+		input_keymap[i].keys.X = cfg.getInt("Input", buf, cur_keymap->keys.X);
 		sprintf(buf, "%s.Y", PlayerNames[i]);
-		input_keymap[i].Y = cfg.getInt("Input", buf, cur_keymap->Y);
+		input_keymap[i].keys.Y = cfg.getInt("Input", buf, cur_keymap->keys.Y);
 		sprintf(buf, "%s.Z", PlayerNames[i]);
-		input_keymap[i].Z = cfg.getInt("Input", buf, cur_keymap->Z);
+		input_keymap[i].keys.Z = cfg.getInt("Input", buf, cur_keymap->keys.Z);
 		
 		// Next keymap.
 		cur_keymap++;

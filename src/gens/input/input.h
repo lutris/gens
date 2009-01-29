@@ -69,11 +69,15 @@ extern "C" {
  * - DD: POV hat direction. (0 = up; 1 = right; 2 = down; 3 = left)
  ************************************************************************/
 
-typedef struct
+typedef union
 {
-	uint16_t Up, Down, Left, Right;
-	uint16_t Start, A, B, C;
-	uint16_t Mode, X, Y, Z;
+	struct
+	{
+		uint16_t Up, Down, Left, Right;
+		uint16_t Start, A, B, C;
+		uint16_t Mode, X, Y, Z;
+	} keys;
+	uint16_t data[12];
 } input_keymap_t;
 
 // Joystick input types.
