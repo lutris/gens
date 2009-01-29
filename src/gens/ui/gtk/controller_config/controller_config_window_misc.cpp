@@ -132,7 +132,7 @@ int Reconfigure_Input(int player, int padtype)
 		gtk_label_set_use_markup(GTK_LABEL(label_cc_echo), TRUE);
 		*curKey++ = input_get_key();
 		printf("Key: 0x%04X\n", *(curKey - 1));
-		GensUI::sleep(250);
+		GensUI::sleep(250, true);
 	}
 	
 	// Configuration successful.
@@ -140,7 +140,7 @@ int Reconfigure_Input(int player, int padtype)
 			"Controller configuration successful.\n"
 			"Press any key to continue...");
 	input_get_key();
-	GensUI::sleep(500);
+	GensUI::sleep(500, true);
 	gtk_label_set_text(GTK_LABEL(label_cc_echo), "\n");
 	
 	CC_Configuring = 0;
