@@ -453,8 +453,15 @@ BOOL input_sdl_check_key_pressed(unsigned int key)
 			break;
 		
 		case INPUT_JOYSTICK_TYPE_POV:
-			// TODO
+		{
+			// POV hat.
+			static const uint8_t povKeyToBit[4] = {SDL_HAT_UP, SDL_HAT_RIGHT, SDL_HAT_DOWN, SDL_HAT_LEFT};
+			uint8_t povBit = povKeyToBit[INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)];
+			
+			if (INPUT_SDL_JOYSTICK_CHECK_POVHAT_DIRECTION(input_sdl_joy_state, joyNum, key, povBit))
+				return TRUE;
 			break;
+		}
 	}
 	
 	// Key is not pressed.

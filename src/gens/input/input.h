@@ -85,8 +85,14 @@ typedef enum
 } INPUT_JOYSTICK_TYPE;
 
 // Joystick axis sign values.
-#define INPUT_JOYSTICK_AXIS_NEGATIVE 0
-#define INPUT_JOYSTICK_AXIS_POSITIVE 1
+#define INPUT_JOYSTICK_AXIS_NEGATIVE	0
+#define INPUT_JOYSTICK_AXIS_POSITIVE	1
+
+// POV hat directions.
+#define INPUT_JOYSTICK_POVHAT_UP	0
+#define INPUT_JOYSTICK_POVHAT_RIGHT	1
+#define INPUT_JOYSTICK_POVHAT_DOWN	2
+#define INPUT_JOYSTICK_POVHAT_LEFT	3
 
 // Macros to manipulate joystick button "key" values.
 #define INPUT_IS_JOYSTICK(key)		\
@@ -97,6 +103,8 @@ typedef enum
 	((key >> 12) & 0x7)
 #define INPUT_JOYSTICK_GET_BUTTON(key)	\
 	(key & 0xFF)
+#define INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)	\
+	(key & 0x03)
 
 // Macros for get_key().
 #define INPUT_GETKEY_AXIS(joystick, axis, positive)		\
