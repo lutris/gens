@@ -48,8 +48,7 @@ extern "C" {
 #include <stdint.h>
 #include "macros/bool_m.h"
 
-// Controller key mapping.
-/*******************************************************************
+/************************************************************************
  * Controller key mapping.
  * If the high bit of the key value is 0, it is a keyboard key.
  * If the high bit of the key value is 1, it is a joystick input.
@@ -57,15 +56,18 @@ extern "C" {
  *
  * 1TTT JJJJ WWWW WWWW
  *
- * TTT       == type of input. (0 == axis, 1 == button, 2 == POV
+ * TTT       == type of input. (0 == axis, 1 == button, 2 == POV hat)
  * JJJJ      == joystick number.
  * WWWW WWWW == which axis/button.
  *
- * For axes, WWWW WWWW is the axis number multiplied by 2. The
- * least-significant bit indicates negative (0) or positive (1).
+ * Axis format: NNNN NNND
+ * - NNNN NNN == the axis number. (0 to 127)
+ * - D == the axis direction. 0 == negative; 1 == positive.
  *
- * POV: TODO
- *******************************************************************/
+ * POV Hat format: NNNN NNDD
+ * - NNNN NN: POV hat number.
+ * - DD: POV hat direction. (0 = up; 1 = right; 2 = down; 3 = left)
+ ************************************************************************/
 
 typedef struct
 {
