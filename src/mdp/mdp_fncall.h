@@ -83,6 +83,16 @@ extern "C" {
 #endif
 #endif
 
+/**
+ * A macro to suppress some compilers' "Parameter is not used" warnings.
+ * Copied from Subversion.
+ */
+#define MDP_UNUSED_PARAMETER(x) ((void)x)
+/* Possible alternative:
+ *
+ * #define MDP_UNUSED_PARAMETER(x) ((x) = (x))
+ */
+
 #ifdef __cplusplus
 }
 #endif
