@@ -20,56 +20,82 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp_misc_game_genie_window.hpp"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include "mdp_misc_game_genie_window.h"
 #include "mdp_misc_game_genie_plugin.h"
+#include "mdp_misc_game_genie.hpp"
 #include <gtk/gtk.h>
 
-GG_window* GG_window::m_Instance = NULL;
+// Window.
+static GtkWidget *gg_window = NULL;
+
+// Widgets.
+static GtkWidget *txtEntry_Code;
+static GtkWidget *txtEntry_Name;
+static GtkWidget *lstCodes;
+
+// Callbacks.
+static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 
 
-GG_window::GG_window(MDP_Host_t *host_srv)
+/**
+ * gg_window_show(): Show the Game Genie window.
+ * @param parent Parent window.
+ */
+void gg_window_show(void *parent)
 {
+	if (gg_window)
+	{
+		// Game Genie window is already visible.
+		// Set focus.
+		gtk_widget_grab_focus(gg_window);
+		return;
+	}
+	
 	// Create the Game Genie window.
-	m_Window = gtk_dialog_new();
-	gtk_widget_set_name(GTK_WIDGET(m_Window), "GG_window");
-	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 4);
-	gtk_window_set_title(GTK_WINDOW(m_Window), "Game Genie");
-	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
-	gtk_window_set_resizable(GTK_WINDOW(m_Window), true);
-	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), false);
+	gg_window = gtk_dialog_new();
+	gtk_widget_set_name(gg_window, "gg_window");
+	gtk_container_set_border_width(GTK_CONTAINER(gg_window), 4);
+	gtk_window_set_title(GTK_WINDOW(gg_window), "Game Genie");
+	gtk_window_set_position(GTK_WINDOW(gg_window), GTK_WIN_POS_CENTER);
+	gtk_window_set_resizable(GTK_WINDOW(gg_window), TRUE);
+	gtk_window_set_type_hint(GTK_WINDOW(gg_window), GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_dialog_set_has_separator(GTK_DIALOG(gg_window), FALSE);
 	
 	// Set the window data.
-	g_object_set_data(G_OBJECT(m_Window), "GG_window", m_Window);
+	g_object_set_data(G_OBJECT(gg_window), "gg_window", gg_window);
 	
 	// Callbacks for if the window is closed.
-	g_signal_connect((gpointer)m_Window, "delete_event",
-			 G_CALLBACK(this->GTK_closed), this);
-	g_signal_connect((gpointer)m_Window, "destroy_event",
-			 G_CALLBACK(this->GTK_closed), this);
+	g_signal_connect((gpointer)gg_window, "delete_event",
+			 G_CALLBACK(gg_window_callback_close), NULL);
+	g_signal_connect((gpointer)gg_window, "destroy_event",
+			 G_CALLBACK(gg_window_callback_close), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(m_Window)->vbox;
+	GtkWidget *vboxDialog = GTK_DIALOG(gg_window)->vbox;
 	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxDialog",
+	g_object_set_data_full(G_OBJECT(gg_window), "vboxDialog",
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main VBox.
-	GtkWidget *vboxMain = gtk_vbox_new(false, 5);
+	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 5);
 	gtk_widget_set_name(vboxMain, "vboxMain");
 	gtk_widget_show(vboxMain);
 	gtk_container_add(GTK_CONTAINER(vboxDialog), vboxMain);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxMain",
+	g_object_set_data_full(G_OBJECT(gg_window), "vboxMain",
 			       g_object_ref(vboxMain), (GDestroyNotify)g_object_unref);
 	
 	// Create the main frame.
 	GtkWidget *fraMain = gtk_frame_new(NULL);
 	gtk_widget_set_name(fraMain, "fraMain");
 	gtk_widget_show(fraMain);
-	gtk_box_pack_start(GTK_BOX(vboxMain), fraMain, false, true, 0);
+	gtk_box_pack_start(GTK_BOX(vboxMain), fraMain, FALSE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_NONE);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraMain",
+	g_object_set_data_full(G_OBJECT(gg_window), "fraMain",
 			       g_object_ref(fraMain), (GDestroyNotify)g_object_unref);
 	
 	// Strings.
@@ -83,10 +109,10 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	// Header label.
 	GtkWidget *lblInfoTitle = gtk_label_new(strInfoTitle);
 	gtk_widget_set_name(lblInfoTitle, "lblInfoTitle");
-	gtk_label_set_use_markup(GTK_LABEL(lblInfoTitle), true);
+	gtk_label_set_use_markup(GTK_LABEL(lblInfoTitle), TRUE);
 	gtk_widget_show(lblInfoTitle);
 	gtk_frame_set_label_widget(GTK_FRAME(fraMain), lblInfoTitle);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblInfoTitle",
+	g_object_set_data_full(G_OBJECT(gg_window), "lblInfoTitle",
 			       g_object_ref(lblInfoTitle), (GDestroyNotify)g_object_unref);
 	
 	// Description label.
@@ -95,24 +121,24 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_widget_show(lblInfo);
 	gtk_container_add(GTK_CONTAINER(fraMain), lblInfo);
 	gtk_misc_set_alignment(GTK_MISC(lblInfo), 0.02f, 0.0f);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblInfo",
+	g_object_set_data_full(G_OBJECT(gg_window), "lblInfo",
 			       g_object_ref(lblInfo), (GDestroyNotify)g_object_unref);
 	
 	// VBox for table layout.
-	GtkWidget *vboxTable = gtk_vbox_new(false, 0);
+	GtkWidget *vboxTable = gtk_vbox_new(FALSE, 0);
 	gtk_widget_set_name(vboxTable, "vboxTable");
 	gtk_widget_show(vboxTable);
-	gtk_box_pack_start(GTK_BOX(vboxMain), vboxTable, false, true, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxMain",
+	gtk_box_pack_start(GTK_BOX(vboxMain), vboxTable, FALSE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(gg_window), "vboxMain",
 			       g_object_ref(vboxMain), (GDestroyNotify)g_object_unref);
 	
 	// Table layout.
-	GtkWidget *tblEntry = gtk_table_new(2, 3, false);
+	GtkWidget *tblEntry = gtk_table_new(2, 3, FALSE);
 	gtk_widget_set_name(tblEntry, "tblEntry");
 	gtk_widget_show(tblEntry);
 	gtk_table_set_col_spacings(GTK_TABLE(tblEntry), 10);
-	gtk_box_pack_start(GTK_BOX(vboxTable), tblEntry, false, true, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "tblEntry",
+	gtk_box_pack_start(GTK_BOX(vboxTable), tblEntry, FALSE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(gg_window), "tblEntry",
 			       g_object_ref(tblEntry), (GDestroyNotify)g_object_unref);
 	
 	// Code label and entry widgets.
@@ -123,7 +149,7 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_table_attach(GTK_TABLE(tblEntry), lblEntry_Code, 0, 1, 0, 1,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblEntry_Code",
+	g_object_set_data_full(G_OBJECT(gg_window), "lblEntry_Code",
 			       g_object_ref(lblEntry_Code), (GDestroyNotify)g_object_unref);
 	
 	txtEntry_Code = gtk_entry_new();
@@ -133,7 +159,7 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Code, 1, 2, 0, 1,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "txtEntry_Code",
+	g_object_set_data_full(G_OBJECT(gg_window), "txtEntry_Code",
 			       g_object_ref(txtEntry_Code), (GDestroyNotify)g_object_unref);
 	// TODO
 	/*
@@ -149,7 +175,7 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_table_attach(GTK_TABLE(tblEntry), lblEntry_Name, 0, 1, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblEntry_Name",
+	g_object_set_data_full(G_OBJECT(gg_window), "lblEntry_Name",
 			       g_object_ref(lblEntry_Name), (GDestroyNotify)g_object_unref);
 	
 	txtEntry_Name = gtk_entry_new();
@@ -159,7 +185,7 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Name, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "txtEntry_Name",
+	g_object_set_data_full(G_OBJECT(gg_window), "txtEntry_Name",
 			       g_object_ref(txtEntry_Name), (GDestroyNotify)g_object_unref);
 	// TODO
 	/*
@@ -174,7 +200,7 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_table_attach(GTK_TABLE(tblEntry), btnAddCode, 2, 3, 0, 1,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "btnAddCode",
+	g_object_set_data_full(G_OBJECT(gg_window), "btnAddCode",
 			       g_object_ref(btnAddCode), (GDestroyNotify)g_object_unref);
 	
 	// Set the button's icon to "gtk-add".
@@ -182,7 +208,7 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	gtk_widget_set_name(btnAddCode_icon, "btnAddCode_icon");
 	gtk_widget_show(btnAddCode_icon);
 	gtk_button_set_image(GTK_BUTTON(btnAddCode), btnAddCode_icon);
-	g_object_set_data_full(G_OBJECT(m_Window), "btnAddCode_icon",
+	g_object_set_data_full(G_OBJECT(gg_window), "btnAddCode_icon",
 			       g_object_ref(btnAddCode_icon), (GDestroyNotify)g_object_unref);
 	
 	// Set the focus chain for the entry boxes.
@@ -195,11 +221,11 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 	g_list_free(lFocusChain);
 	
 	// HBox for the code list.
-	GtkWidget *hboxList = gtk_hbox_new(false, 0);
+	GtkWidget *hboxList = gtk_hbox_new(FALSE, 0);
 	gtk_widget_set_name(hboxList, "hboxList");
 	gtk_widget_show(hboxList);
-	gtk_box_pack_start(GTK_BOX(vboxMain), hboxList, true, true, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "hboxList",
+	gtk_box_pack_start(GTK_BOX(vboxMain), hboxList, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(gg_window), "hboxList",
 			       g_object_ref(hboxList), (GDestroyNotify)g_object_unref);
 	
 	// Scrolled Window for the code list.
@@ -210,60 +236,48 @@ GG_window::GG_window(MDP_Host_t *host_srv)
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrlList);
-	gtk_box_pack_start(GTK_BOX(hboxList), scrlList, true, true, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "scrlList",
+	gtk_box_pack_start(GTK_BOX(hboxList), scrlList, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(gg_window), "scrlList",
 			       g_object_ref(scrlList), (GDestroyNotify)g_object_unref);
 	
 	// Treeview containing the Game Genie codes.
 	lstCodes = gtk_tree_view_new();
 	gtk_widget_set_name(lstCodes, "lstCodes");
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), true);
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), TRUE);
 	gtk_widget_set_size_request(lstCodes, -1, 160);
 	gtk_widget_show(lstCodes);
 	gtk_container_add(GTK_CONTAINER(scrlList), lstCodes);
-	g_object_set_data_full(G_OBJECT(m_Window), "lstCodes",
+	g_object_set_data_full(G_OBJECT(gg_window), "lstCodes",
 			       g_object_ref(lstCodes), (GDestroyNotify)g_object_unref);
 	
+	// Set the window as modal to the main application window.
+	if (parent)
+		gtk_window_set_transient_for(GTK_WINDOW(gg_window), GTK_WINDOW(parent));
+	
 	// Show the window.
-	gtk_widget_show_all(GTK_WIDGET(m_Window));
+	gtk_widget_show_all(gg_window);
 	
 	// Register the window with MDP Host Services.
-	m_host_srv = host_srv;
-	m_host_srv->window_register(&mdp, m_Window);
+	gg_host_srv->window_register(&mdp, gg_window);
 }
 
 
-GG_window::~GG_window()
+/**
+ * gg_window_callback_close(): Close Window callback.
+ * @param widget
+ * @param event
+ * @param user_data
+ */
+static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	// Delete the window.
-	if (GTK_IS_WINDOW(m_Window))
-	{
-		gtk_widget_destroy(GTK_WIDGET(m_Window));
-		
-		// Unregister the window from MDP Host Services.
-		m_host_srv->window_unregister(&mdp, m_Window);
-	}
+	if (!gg_window)
+		return FALSE;
 	
-	m_Window = NULL;
-	m_Instance = NULL;
-}
-
-
-void GG_window::setFocus(void)
-{
-	if (m_Window)
-		gtk_widget_grab_focus(GTK_WIDGET(m_Window));
-}
-
-void GG_window::setModal(void *parent)
-{
-	if (m_Window)
-		gtk_window_set_transient_for(GTK_WINDOW(m_Window), GTK_WINDOW(parent));
-}
-
-gboolean GG_window::GTK_closed(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	// Delete the window.
-	delete reinterpret_cast<GG_window*>(user_data);
-	return false;
+	gtk_widget_destroy(gg_window);
+	
+	// Unregister the window from MDP Host Services.
+	gg_host_srv->window_unregister(&mdp, gg_window);
+	
+	gg_window = NULL;
+	return FALSE;
 }

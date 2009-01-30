@@ -30,7 +30,7 @@
 
 #include "mdp_misc_game_genie.hpp"
 #include "mdp_misc_game_genie_plugin.h"
-#include "mdp_misc_game_genie_window.hpp"
+#include "mdp_misc_game_genie_window.h"
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
@@ -38,7 +38,8 @@
 #include "mdp/mdp_event.h"
 
 // MDP Host Services.
-static MDP_Host_t *gg_host_srv = NULL;
+MDP_Host_t *gg_host_srv = NULL;
+
 static int gg_menuItemID = 0;
 static void *mdp_ptr_ram_md = NULL;
 
@@ -116,7 +117,7 @@ static int MDP_FNCALL mdp_misc_game_genie_menu_handler(int menu_item_id)
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	
 	// Show the Game Genie window.
-	GG_window::Instance(gg_host_srv->window_get_main(), gg_host_srv);
+	gg_window_show(gg_host_srv->window_get_main());
 	return MDP_ERR_OK;
 }
 
