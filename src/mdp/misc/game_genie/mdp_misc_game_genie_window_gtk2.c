@@ -31,14 +31,29 @@
 
 // Window.
 static GtkWidget *gg_window = NULL;
+static GtkAccelGroup *gg_accel_group;
 
 // Widgets.
 static GtkWidget *txtEntry_Code;
 static GtkWidget *txtEntry_Name;
 static GtkWidget *lstCodes;
 
+// Button IDs.
+typedef enum
+{
+	GG_WINDOW_BUTTON_SAVE = 0x1000,
+	GG_WINDOW_BUTTON_APPLY = 0x1001,
+	GG_WINDOW_BUTTON_CANCEL = 0x1002,
+	GG_WINDOW_BUTTON_DEACTIVATE_ALL = 0x1003,
+	GG_WINDOW_BUTTON_DELETE = 0x1004,
+	GG_WINDOW_BUTTON_ADD_CODE = 0x1005
+} gg_window_buttons;
+
+static void gg_window_add_button(gg_window_buttons id);
+
 // Callbacks.
 static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+static gboolean gg_window_callback_button(GtkButton *button, gpointer user_data);
 
 
 /**
@@ -64,6 +79,11 @@ void gg_window_show(void *parent)
 	gtk_window_set_resizable(GTK_WINDOW(gg_window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(gg_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(gg_window), FALSE);
+	
+	// Create the accelerator group.
+	gg_accel_group = gtk_accel_group_new();
+	g_object_set_data_full(G_OBJECT(gg_window), "gg_accel_group",
+			       g_object_ref(gg_accel_group), (GDestroyNotify)g_object_unref);
 	
 	// Set the window data.
 	g_object_set_data(G_OBJECT(gg_window), "gg_window", gg_window);
@@ -250,6 +270,16 @@ void gg_window_show(void *parent)
 	g_object_set_data_full(G_OBJECT(gg_window), "lstCodes",
 			       g_object_ref(lstCodes), (GDestroyNotify)g_object_unref);
 	
+	// Add buttons.
+	gg_window_add_button(GG_WINDOW_BUTTON_DELETE);
+	gg_window_add_button(GG_WINDOW_BUTTON_DEACTIVATE_ALL);
+	gg_window_add_button(GG_WINDOW_BUTTON_CANCEL);
+	gg_window_add_button(GG_WINDOW_BUTTON_APPLY);
+	gg_window_add_button(GG_WINDOW_BUTTON_SAVE);
+	
+	// Add the accel group to the window.
+	gtk_window_add_accel_group(GTK_WINDOW(gg_window), gg_accel_group);
+	
 	// Set the window as modal to the main application window.
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(gg_window), GTK_WINDOW(parent));
@@ -290,4 +320,71 @@ static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
 {
 	gg_window_close();
 	return FALSE;
+}
+
+
+/**
+ * gg_window_add_button(): Add a button to the button area in the dialog.
+ * @param id Button ID.
+ */
+static void gg_window_add_button(gg_window_buttons id)
+{
+	GtkWidget *button, *icon;
+	int responseID;
+	const char* name;
+	
+	switch (id)
+	{
+		case GG_WINDOW_BUTTON_SAVE:
+			button = gtk_button_new_from_stock("gtk-save");
+			name = "btnSave";
+			responseID = GTK_RESPONSE_OK;
+			break;
+		
+		case GG_WINDOW_BUTTON_APPLY:
+			button = gtk_button_new_from_stock("gtk-apply");
+			name = "btnApply";
+			responseID = GTK_RESPONSE_APPLY;
+			break;
+		
+		case GG_WINDOW_BUTTON_CANCEL:
+			button = gtk_button_new_from_stock("gtk-cancel");
+			name = "btnCancel";
+			responseID = GTK_RESPONSE_CANCEL;
+			break;
+		
+		case GG_WINDOW_BUTTON_DEACTIVATE_ALL:
+			button = gtk_button_new_with_mnemonic("Deac_tivate All");
+			name = "btnDeactivateAll";
+			responseID = (int)GG_WINDOW_BUTTON_DEACTIVATE_ALL;
+			
+			icon = gtk_image_new_from_stock("gtk-remove", GTK_ICON_SIZE_BUTTON);
+			gtk_widget_set_name(icon, "btnDeactivateAll_icon");
+			gtk_widget_show(icon);
+			gtk_button_set_image(GTK_BUTTON(button), icon);
+			g_object_set_data_full(G_OBJECT(button), "btnDeactivateAll_icon",
+					       g_object_ref(icon), (GDestroyNotify)g_object_unref);
+			
+			break;
+		
+		case GG_WINDOW_BUTTON_DELETE:
+			button = gtk_button_new_from_stock("gtk-delete");
+			name = "btnDelete";
+			responseID = (int)GG_WINDOW_BUTTON_DELETE;
+			break;
+		
+		default:
+			// Unknown button ID.
+			return;
+	}
+	
+	// Set the button's name.
+	gtk_widget_set_name(button, name);
+	
+	// Add the button to the dialog.
+	gtk_dialog_add_action_widget(GTK_DIALOG(gg_window), button, responseID);
+	
+	// Make sure the button is destroyed when the window is closed.
+	g_object_set_data_full(G_OBJECT(gg_window), name,
+			       g_object_ref(button), (GDestroyNotify)g_object_unref);
 }
