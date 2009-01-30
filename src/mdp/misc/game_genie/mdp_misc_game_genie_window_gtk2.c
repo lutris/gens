@@ -27,7 +27,10 @@
 #include "mdp_misc_game_genie_window.h"
 #include "mdp_misc_game_genie_plugin.h"
 #include "mdp_misc_game_genie.hpp"
+
+// GTK includes.
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 // Window.
 static GtkWidget *gg_window = NULL;
@@ -339,6 +342,17 @@ static void gg_window_add_button(gg_window_buttons id)
 			button = gtk_button_new_from_stock("gtk-save");
 			name = "btnSave";
 			responseID = GTK_RESPONSE_OK;
+			
+			/* TODO: Figure out how to add this accelerator without interfering
+			   with the "Press Enter" action to add codes. */
+			#if 0
+			// Add accelerators.
+			gtk_widget_add_accelerator(button, "activate", gg_accel_group,
+					GDK_Return, (GdkModifierType)(0), (GtkAccelFlags)(0));
+			gtk_widget_add_accelerator(button, "activate", gg_accel_group,
+					GDK_KP_Enter, (GdkModifierType)(0), (GtkAccelFlags)(0));
+			#endif
+			
 			break;
 		
 		case GG_WINDOW_BUTTON_APPLY:
@@ -351,6 +365,11 @@ static void gg_window_add_button(gg_window_buttons id)
 			button = gtk_button_new_from_stock("gtk-cancel");
 			name = "btnCancel";
 			responseID = GTK_RESPONSE_CANCEL;
+			
+			// Add accelerator.
+			gtk_widget_add_accelerator(button, "activate", gg_accel_group,
+					GDK_Escape, (GdkModifierType)(0), (GtkAccelFlags)(0));
+			
 			break;
 		
 		case GG_WINDOW_BUTTON_DEACTIVATE_ALL:
