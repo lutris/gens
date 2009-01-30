@@ -263,6 +263,24 @@ void gg_window_show(void *parent)
 
 
 /**
+ * gg_window_close(): Close the Game Genie window.
+ */
+void gg_window_close(void)
+{
+	if (!gg_window)
+		return;
+	
+	gtk_widget_destroy(gg_window);
+	
+	// Unregister the window from MDP Host Services.
+	gg_host_srv->window_unregister(&mdp, gg_window);
+	
+	// Set the window pointer to NULL to indicate that it's closed.
+	gg_window = NULL;
+}
+
+
+/**
  * gg_window_callback_close(): Close Window callback.
  * @param widget
  * @param event
@@ -270,14 +288,6 @@ void gg_window_show(void *parent)
  */
 static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	if (!gg_window)
-		return FALSE;
-	
-	gtk_widget_destroy(gg_window);
-	
-	// Unregister the window from MDP Host Services.
-	gg_host_srv->window_unregister(&mdp, gg_window);
-	
-	gg_window = NULL;
+	gg_window_close();
 	return FALSE;
 }

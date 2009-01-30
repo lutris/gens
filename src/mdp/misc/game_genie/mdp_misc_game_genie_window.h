@@ -30,6 +30,7 @@ extern "C" {
 #endif
 
 DLL_LOCAL void MDP_FNCALL gg_window_show(void *parent);
+DLL_LOCAL void MDP_FNCALL gg_window_close(void);
 
 #ifdef __cplusplus
 }
