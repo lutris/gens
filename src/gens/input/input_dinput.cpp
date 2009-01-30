@@ -448,6 +448,16 @@ unsigned int input_dinput_get_key(void)
 			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY < -500);
 			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lY > +500);
 			
+			// TODO: Determine the correct axis order and the correct axis values.
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy > 0xBFFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz < 0x3FFF);
+			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz > 0xBFFF);
+			
 			for (int povhat = 0; povhat < 4; povhat++)
 			{
 				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgdwPOV[povhat] == 0);
@@ -460,16 +470,6 @@ unsigned int input_dinput_get_key(void)
 			{
 				curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].rgbButtons[button]);
 			}
-			
-			// TODO: Determine the correct axis order and the correct axis values.
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRx > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRy > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lZ > 0xBFFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz < 0x3FFF);
-			curJoyKeys[joyIndex++] = (input_dinput_joy_state[joystick].lRz > 0xBFFF);
 		}
 		
 		// Compare buttons against the previous state to determine
@@ -495,6 +495,7 @@ unsigned int input_dinput_get_key(void)
 						if (!input_dinput_joy_exists(joystick))
 							continue;
 						
+						// X, Y
 						if (index == joyIndex2++)
 							return INPUT_GETKEY_AXIS(joystick, 0, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
@@ -504,24 +505,7 @@ unsigned int input_dinput_get_key(void)
 						if (index == joyIndex2++)
 							return INPUT_GETKEY_AXIS(joystick, 1, INPUT_JOYSTICK_AXIS_POSITIVE);
 						
-						for (int povhat = 0; povhat < 4; povhat++)
-						{
-							if (index == joyIndex2++)
-								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_UP);
-							if (index == joyIndex2++)
-								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_RIGHT);
-							if (index == joyIndex2++)
-								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_DOWN);
-							if (index == joyIndex2++)
-								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_LEFT);
-						}
-						
-						for (int button = 0; button < 32; button++)
-						{
-							if (index == joyIndex2++)
-								return INPUT_GETKEY_BUTTON(joystick, button);
-						}
-						
+						// Z, Rx, Ry, Rz
 						if (index == joyIndex2++)
 							return INPUT_GETKEY_AXIS(joystick, 2, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
@@ -534,6 +518,26 @@ unsigned int input_dinput_get_key(void)
 							return INPUT_GETKEY_AXIS(joystick, 4, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
 							return INPUT_GETKEY_AXIS(joystick, 4, INPUT_JOYSTICK_AXIS_POSITIVE);
+						
+						// POV hats
+						for (int povhat = 0; povhat < 4; povhat++)
+						{
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_UP);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_RIGHT);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_DOWN);
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_POVHAT_DIRECTION(joystick, povhat, INPUT_JOYSTICK_POVHAT_LEFT);
+						}
+						
+						// Buttons
+						for (int button = 0; button < 32; button++)
+						{
+							if (index == joyIndex2++)
+								return INPUT_GETKEY_BUTTON(joystick, button);
+						}
 					}
 				}
 			}
@@ -671,27 +675,27 @@ BOOL input_dinput_check_key_pressed(unsigned int key)
 						return TRUE;
 					break;
 				case 4:
-					if (input_dinput_joy_state[joyNum].lRx < 0x3FFF)
-						return TRUE;
-					break;
-				case 5:
-					if (input_dinput_joy_state[joyNum].lRx > 0xBFFF)
-						return TRUE;
-					break;
-				case 6:
-					if (input_dinput_joy_state[joyNum].lRy < 0x3FFF)
-						return TRUE;
-					break;
-				case 7:
-					if (input_dinput_joy_state[joyNum].lRy > 0xBFFF)
-						return TRUE;
-					break;
-				case 8:
 					if (input_dinput_joy_state[joyNum].lZ < 0x3FFF)
 						return TRUE;
 					break;
-				case 9:
+				case 5:
 					if (input_dinput_joy_state[joyNum].lZ > 0xBFFF)
+						return TRUE;
+					break;
+				case 6:
+					if (input_dinput_joy_state[joyNum].lRx < 0x3FFF)
+						return TRUE;
+					break;
+				case 7:
+					if (input_dinput_joy_state[joyNum].lRx > 0xBFFF)
+						return TRUE;
+					break;
+				case 8:
+					if (input_dinput_joy_state[joyNum].lRy < 0x3FFF)
+						return TRUE;
+					break;
+				case 9:
+					if (input_dinput_joy_state[joyNum].lRy > 0xBFFF)
 						return TRUE;
 					break;
 				case 10:
