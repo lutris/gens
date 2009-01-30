@@ -117,25 +117,84 @@ key=value
 
 6. How do I configure controller inputs without the GUI?
 
-If you must edit gens.cfg by hand to configure your joystick:
+----------------------------------------------------------------
 
-Down  : 0x1000 + 0x100*which + 1
-Up    : 0x1000 + 0x100*which + 2
-Left  : 0x1000 + 0x100*which + 3
-Right : 0x1000 + 0x100*which + 4
+6.1. Old Gens joystick configuration format.
 
-Buttons : 0x1010 + 0x100*which + x 
+Older versions of Gens/GS (m6 and older), and the original Gens, used
+a relatively limited format for storing controller configuration.
 
-where which = 0 for first joystick,
-            = 1 for second joystick,
-      x     = the number of the button
-		  
-Here how a typical gens.cfg with joystick would look like (modify for your own needs)
+Older joystick input format: (16-bit binary)
+0001 JJJJ TTTT WWWW
 
-P1.Up=0x1002
-P1.Down=0x1001
-P1.Left=0x1003
-P1.Right=0x1004
-P1.Start=0x1010
-P1.A=0x1011
-...
+where:
+- 0001: High nybble is always set to 1.
+- JJJJ: Joystick number.
+- TTTT: Type of input. (0 == axis; 1-7 == button; 8 == POV hat)
+- WWWW: Which axis, button, or POV hat.
+
+For axes, the following values are allowed:
+- 1: Axis 1, negative. (Up) [TODO: Original documentation said Down, verify this!]
+- 2: Axis 1, positive. (Down) [TODO: Original documentation said Up, verify this!]
+- 3: Axis 0, negative. (Left)
+- 4: Axis 0, positive. (Right)
+- 5: Axis 3, negative.
+- 6: Axis 3, positive.
+- 7: Axis 2, negative.
+- 8: Axis 2, positive.
+- 9: Axis 5, negative.
+- 10: Axis 5, positive.
+- 11: Axis 4, negative.
+- 12: Axis 4, positive.
+
+Among the problems with this scheme are the "backwards" notation (axis 1 before 0)
+and the 6 axis limitation. On Windows, the 6 axis limitation (actually 5, since
+the DirectInput handler ignores the 6th axis) isn't much of a problem, since
+most Windows joystick drivers map some axes to POV hats. On Linux, most
+joystick drivers map all axes to axes instead of POV hats, which does create
+a problem. Notably, the Xbox 360 controller's D-pad is mapped as axes 6 and 7,
+which doesn't work with this scheme.
+
+For buttons, TTTT WWWW is taken as a whole byte. The number 0x10 is subtracted
+from the byte, resulting in the button value. For example, the first button,
+button 0, would have a TTTT WWWW value of 0x10.
+
+For POV hats, the following format is used: NNDD
+
+where:
+- NN: POV hat number.
+- DD: Direction. (0 = up; 1 = right; 2 = down; 3 = left)
+
+Thus, the "Up" direction on the first POV hat on the first joystick would be
+indicated as 0x1080.
+
+----------------------------------------------------------------
+
+6.2. New Gens/GS joystick configuration format.
+
+Starting with Gens/GS r6+, a newer format is used for storing joystick
+configuration. The new format allows up to 128 axes, 256 buttons, and
+64 POV hats.
+
+New joystick input format: (16-bit binary)
+1TTT JJJJ WWWW WWWW
+
+where:
+- 1: High bit is always set to indicate new joystick input format.
+- TTT: Type of input. (0 == axis; 1 == button; 2 == POV hat)
+- JJJJ: Joystick number.
+- WWWW WWWW: Which axis, button, or POV hat.
+
+For axes, the following format is used: NNNN NNND
+
+where:
+- NNNN NNN: Axis number.
+- D: Axis direction. (0 == negative; 1 == positive)
+
+For buttons, the entire WWWW WWWW value is used as the button number.
+
+For POV hats, the following format is used: NNNN NNDD
+
+where:
+- NNNN NN: POV hat number.
+- DD: Direction. (0 = up; 1 = right; 2 = down; 3 = left)
