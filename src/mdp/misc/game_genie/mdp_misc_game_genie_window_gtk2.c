@@ -321,6 +321,10 @@ void gg_window_close(void)
  */
 static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	MDP_UNUSED_PARAMETER(widget);
+	MDP_UNUSED_PARAMETER(event);
+	MDP_UNUSED_PARAMETER(user_data);
+	
 	gg_window_close();
 	return FALSE;
 }
