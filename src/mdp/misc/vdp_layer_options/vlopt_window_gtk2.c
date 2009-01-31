@@ -76,7 +76,7 @@ void vlopt_window_show(void *parent)
 	gtk_container_set_border_width(GTK_CONTAINER(vlopt_window), 4);
 	gtk_window_set_title(GTK_WINDOW(vlopt_window), "VDP Layer Options");
 	gtk_window_set_position(GTK_WINDOW(vlopt_window), GTK_WIN_POS_CENTER);
-	gtk_window_set_resizable(GTK_WINDOW(vlopt_window), TRUE);
+	gtk_window_set_resizable(GTK_WINDOW(vlopt_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(vlopt_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(vlopt_window), FALSE);
 	
