@@ -33,6 +33,9 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+// Response ID for the "Reset" button.
+#define VLOPT_RESPONSE_RESET -64
+
 // Window.
 static GtkWidget *vlopt_window = NULL;
 static GtkAccelGroup *vlopt_accel_group;
@@ -239,6 +242,31 @@ void vlopt_window_show(void *parent)
 				       g_object_ref(vlopt_checkboxes[i]),
 				       (GDestroyNotify)g_object_unref);
 	}
+	
+	// Create the "Reset" button.
+	GtkWidget *btnReset = gtk_button_new_with_mnemonic("_Reset");
+	gtk_widget_set_name(btnReset, "btnReset");
+	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnReset, VLOPT_RESPONSE_RESET);
+	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+			       g_object_ref(btnReset),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Create the icon for the "Reset" button.
+	GtkWidget *imgReset = gtk_image_new_from_stock("gtk-refresh", GTK_ICON_SIZE_BUTTON);
+	gtk_widget_set_name(imgReset, "imgReset");
+	gtk_widget_show(imgReset);
+	gtk_button_set_image(GTK_BUTTON(btnReset), imgReset);
+	g_object_set_data_full(G_OBJECT(btnReset), "imgReset",
+			       g_object_ref(imgReset),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Create the "Close" button.
+	GtkWidget *btnClose = gtk_button_new_from_stock("gtk-close");
+	gtk_widget_set_name(btnClose, "btnClose");
+	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnClose, GTK_RESPONSE_CLOSE);
+	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+			       g_object_ref(btnClose),
+			       (GDestroyNotify)g_object_unref);
 	
 	// Add the accel group to the window.
 	gtk_window_add_accel_group(GTK_WINDOW(vlopt_window), vlopt_accel_group);
