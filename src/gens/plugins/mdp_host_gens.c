@@ -42,10 +42,11 @@
 
 // MD variables.
 #include "gens_core/mem/mem_m68k.h"
+#include "gens_core/mem/mem_s68k.h"
+#include "gens_core/mem/mem_z80.h"
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/mem/mem_z80.h"
-#include "gens_core/mem/mem_s68k.h"
+#include "gens_core/vdp/vdp_rend.h"
 
 // ROM information.
 #include "util/file/rom.hpp"
@@ -285,6 +286,11 @@ int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
 			return -MDP_ERR_VAL_READ_ONLY;
 			break;
 		
+		case MDP_VAL_LAYER_OPTIONS:
+			// Layer options.
+			VDP_Layers = (unsigned int)val;
+			break;
+		
 		default:
 			// Unknown value ID.
 			return -MDP_ERR_UNKNOWN_VALID;
@@ -325,6 +331,10 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 			if (!Game)
 				return 0;
 			return Rom_Size;
+		
+		case MDP_VAL_LAYER_OPTIONS:
+			// Layer options.
+			return VDP_Layers;
 		
 		default:
 			// Unknown value ID.
