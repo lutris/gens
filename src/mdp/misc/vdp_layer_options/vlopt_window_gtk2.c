@@ -356,11 +356,20 @@ static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, 
 	MDP_UNUSED_PARAMETER(dialog);
 	MDP_UNUSED_PARAMETER(user_data);
 	
+	int rval;
+	
 	switch (response_id)
 	{
 		case VLOPT_RESPONSE_RESET:
-			// Reset.
-			// TODO
+			// Reset the VDP layer options to the default value.
+			rval = vlopt_host_srv->val_set(MDP_VAL_VDP_LAYER_OPTIONS, MDP_VDP_LAYER_OPTIONS_DEFAULT);
+			if (rval != MDP_ERR_OK)
+			{
+				fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, rval);
+			}
+			
+			// Reload the VDP layer options.
+			vlopt_window_load_options();
 			break;
 		
 		case GTK_RESPONSE_CLOSE:
