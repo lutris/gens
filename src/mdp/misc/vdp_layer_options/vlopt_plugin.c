@@ -34,7 +34,7 @@ static MDP_Desc_t MDP_Desc =
 	.name = "VDP Layer Options",
 	.author_mdp = "David Korth",
 	.author_orig = NULL,
-	.description = "VDP Layer Options adjustment plugin.\n\nIcon provided by SkyLights.",
+	.description = "VDP Layer Options adjustment plugin.\nIcon provided by SkyLights.",
 	.website = NULL,
 	.license = MDP_LICENSE_GPL_2,
 	
@@ -52,7 +52,7 @@ MDP_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 1, 0),
+	.pluginVersion = MDP_VERSION(0, 2, 0),
 	
 	// CPU flags.
 	.cpuFlagsSupported = 0,
