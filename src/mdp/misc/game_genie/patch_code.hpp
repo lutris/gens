@@ -59,8 +59,6 @@ class DLL_LOCAL PatchCode
 		
 		void setCode(const std::string& code, CPU cpu = CPU_M68K);
 		
-		std::string getGG(void);
-		
 		// Properties
 		uint32_t address(void)		{ return m_address; }
 		uint32_t data(void)		{ return m_data; }
@@ -69,6 +67,7 @@ class DLL_LOCAL PatchCode
 		
 	protected:
 		bool decodeGG(const std::string& code);
+		bool encodeGG(void);
 		
 		// Game Genie characters.
 		static const char gg_chars[];
@@ -77,6 +76,9 @@ class DLL_LOCAL PatchCode
 		uint32_t m_data;
 		DataSize m_dataSize;
 		CPU m_cpu;
+		
+		// Game Genie code.
+		char m_ggCode[16];
 };
 
 #endif /* __MDP_GAME_GENIE_PATCH_CODE_HPP */
