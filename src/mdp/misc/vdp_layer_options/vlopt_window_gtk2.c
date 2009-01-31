@@ -45,7 +45,7 @@ static GtkWidget *vlopt_checkboxes[VLOPT_OPTIONS_COUNT];
 
 // Callbacks.
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-static gboolean vlopt_window_callback_button(GtkButton *button, gpointer user_data);
+static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 
 
 /**
@@ -85,6 +85,10 @@ void vlopt_window_show(void *parent)
 			 G_CALLBACK(vlopt_window_callback_close), NULL);
 	g_signal_connect((gpointer)vlopt_window, "destroy_event",
 			 G_CALLBACK(vlopt_window_callback_close), NULL);
+	
+	// Dialog response callback.
+	g_signal_connect((gpointer)vlopt_window, "response",
+			  G_CALLBACK(vlopt_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(vlopt_window)->vbox;
@@ -306,6 +310,7 @@ void vlopt_window_close(void)
  * @param widget
  * @param event
  * @param user_data
+ * @return FALSE to continue processing events; TRUE to stop processing events.
  */
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
@@ -315,4 +320,34 @@ static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, 
 	
 	vlopt_window_close();
 	return FALSE;
+}
+
+
+/**
+ * vlopt_window_callback_response(): Dialog Response callback.
+ * @param dialog
+ * @param response_id
+ * @param user_data
+ */
+static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(dialog);
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	switch (response_id)
+	{
+		case VLOPT_RESPONSE_RESET:
+			// Reset.
+			// TODO
+			break;
+		
+		case GTK_RESPONSE_CLOSE:
+			// Close.
+			vlopt_window_close();
+			break;
+		
+		default:
+			// Unknown response ID.
+			break;
+	}
 }
