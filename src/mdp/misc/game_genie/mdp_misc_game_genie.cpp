@@ -95,6 +95,9 @@ int MDP_FNCALL mdp_misc_game_genie_end(void)
 	if (!gg_host_srv)
 		return MDP_ERR_OK;
 	
+	// Make sure the window is closed.
+	gg_window_close();
+	
 	// Remove the menu item.
 	gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);
 	
