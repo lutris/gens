@@ -286,8 +286,8 @@ int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
 			return -MDP_ERR_VAL_READ_ONLY;
 			break;
 		
-		case MDP_VAL_LAYER_OPTIONS:
-			// Layer options.
+		case MDP_VAL_VDP_LAYER_OPTIONS:
+			// VDP layer options.
 			VDP_Layers = (unsigned int)val;
 			break;
 		
@@ -332,8 +332,8 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 				return 0;
 			return Rom_Size;
 		
-		case MDP_VAL_LAYER_OPTIONS:
-			// Layer options.
+		case MDP_VAL_VDP_LAYER_OPTIONS:
+			// VDP layer options.
 			return VDP_Layers;
 		
 		default:
