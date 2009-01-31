@@ -82,6 +82,7 @@ typedef enum
 {
 	MDP_VAL_UI		= 0,
 	MDP_VAL_ROM_SIZE	= 1,
+	MDP_VAL_LAYER_OPTIONS	= 2,
 } MDP_VAL;
 
 // MDP_UI: UI identifiers.
