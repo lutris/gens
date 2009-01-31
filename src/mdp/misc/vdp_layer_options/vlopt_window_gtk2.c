@@ -29,6 +29,9 @@
 #include "vlopt_plugin.h"
 #include "vlopt.hpp"
 
+// MDP error codes.
+#include "mdp/mdp_error.h"
+
 // GTK includes.
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
@@ -49,6 +52,7 @@ static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, 
 
 // Option handling functions.
 static void vlopt_window_load_options(void);
+static void vlopt_window_save_options(void);
 
 
 /**
@@ -375,6 +379,29 @@ static void vlopt_window_load_options(void)
 	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
 		gboolean flag_enabled = (vdp_layer_options & vlopt_options[i].flag);
-		gtk_toggle_button_set_active(vlopt_checkboxes[i], flag_enabled);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vlopt_checkboxes[i]), flag_enabled);
+	}
+}
+
+
+/**
+ * vlopt_window_save_options(): Save the options to MDP_VAL_VDP_LAYER_OPTIONS.
+ */
+static void vlopt_window_save_options(void)
+{
+	int vdp_layer_options = 0;
+	
+	// Go through the options.
+	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
+	{
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(vlopt_checkboxes[i])))
+			vdp_layer_options |= vlopt_options[i].flag;
+	}
+	
+	// Set the new options.
+	int rval = vlopt_host_srv->val_set(MDP_VAL_VDP_LAYER_OPTIONS, vdp_layer_options);
+	if (rval != MDP_ERR_OK)
+	{
+		fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, vdp_layer_options);
 	}
 }
