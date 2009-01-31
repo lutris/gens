@@ -49,6 +49,7 @@ static GtkWidget *vlopt_checkboxes[VLOPT_OPTIONS_COUNT];
 // Callbacks.
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void vlopt_window_callback_checkbox_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 
 // Option handling functions.
 static void vlopt_window_load_options(void);
@@ -95,7 +96,7 @@ void vlopt_window_show(void *parent)
 	
 	// Dialog response callback.
 	g_signal_connect((gpointer)vlopt_window, "response",
-			  G_CALLBACK(vlopt_window_callback_response), NULL);
+			 G_CALLBACK(vlopt_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(vlopt_window)->vbox;
@@ -235,6 +236,11 @@ void vlopt_window_show(void *parent)
 			row++;
 		}
 		
+		// Set the callback.
+		g_signal_connect((gpointer)vlopt_checkboxes[i], "toggled",
+				 G_CALLBACK(vlopt_window_callback_checkbox_toggled),
+				 GINT_TO_POINTER(i));
+		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 				       g_object_ref(vlopt_checkboxes[i]),
 				       (GDestroyNotify)g_object_unref);
@@ -249,6 +255,12 @@ void vlopt_window_show(void *parent)
 		gtk_widget_show(vlopt_checkboxes[i]);
 		
 		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_checkboxes[i], FALSE, FALSE, 0);
+		
+		// Set the callback.
+		g_signal_connect((gpointer)vlopt_checkboxes[i], "toggled",
+				 G_CALLBACK(vlopt_window_callback_checkbox_toggled),
+				 GINT_TO_POINTER(i));
+		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 				       g_object_ref(vlopt_checkboxes[i]),
 				       (GDestroyNotify)g_object_unref);
@@ -404,4 +416,17 @@ static void vlopt_window_save_options(void)
 	{
 		fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, vdp_layer_options);
 	}
+}
+
+
+/**
+ * vlopt_window_callback_checkbox_toggled(): A checkbox was toggled.
+ */
+static void vlopt_window_callback_checkbox_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(togglebutton);
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	// Save the current layer options.
+	vlopt_window_save_options();
 }
