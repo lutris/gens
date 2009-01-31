@@ -33,8 +33,12 @@ extern "C" {
 // VDP layer options.
 typedef struct
 {
-	const char* const description;
+	const char* const layer;
+	const char* const sublayer;
 	const unsigned int flag;
+	
+	// Reserved for padding.
+	const unsigned int reserved;
 } vlopt_option;
 
 #define VLOPT_OPTIONS_COUNT 11

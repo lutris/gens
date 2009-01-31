@@ -28,16 +28,16 @@
 // Array of VDP layer options.
 const vlopt_option vlopt_options[VLOPT_OPTIONS_COUNT + 1] =
 {
-	{"Scroll A Low",		MDP_VDP_LAYER_OPTIONS_SCROLLA_LOW},
-	{"Scroll A High",		MDP_VDP_LAYER_OPTIONS_SCROLLA_HIGH},
-	{"Scroll A Swap Priority",	MDP_VDP_LAYER_OPTIONS_SCROLLA_SWAP},
-	{"Scroll B Low",		MDP_VDP_LAYER_OPTIONS_SCROLLB_LOW},
-	{"Scroll B High"	,	MDP_VDP_LAYER_OPTIONS_SCROLLB_HIGH},
-	{"Scroll B Swap Priority",	MDP_VDP_LAYER_OPTIONS_SCROLLB_SWAP},
-	{"Sprite Low",			MDP_VDP_LAYER_OPTIONS_SPRITE_LOW},
-	{"Sprite High"		,	MDP_VDP_LAYER_OPTIONS_SPRITE_HIGH},
-	{"Sprite Swap Priority",	MDP_VDP_LAYER_OPTIONS_SPRITE_SWAP},
-	{"Sprite Always On Top",	MDP_VDP_LAYER_OPTIONS_SPRITE_ALWAYSONTOP},
-	{"Palette Lock",		MDP_VDP_LAYER_OPTIONS_PALETTE_LOCK},
-	{0, 0}
+	{"Scroll A",	"Low",		MDP_VDP_LAYER_OPTIONS_SCROLLA_LOW, 0},
+	{"Scroll A",	"High",		MDP_VDP_LAYER_OPTIONS_SCROLLA_HIGH, 0},
+	{"Scroll A",	"Swap",		MDP_VDP_LAYER_OPTIONS_SCROLLA_SWAP, 0},
+	{"Scroll B",	"Low",		MDP_VDP_LAYER_OPTIONS_SCROLLB_LOW, 0},
+	{"Scroll B",	"High",		MDP_VDP_LAYER_OPTIONS_SCROLLB_HIGH, 0},
+	{"Scroll B",	"Swap",		MDP_VDP_LAYER_OPTIONS_SCROLLB_SWAP, 0},
+	{"Sprite",	"Low",		MDP_VDP_LAYER_OPTIONS_SPRITE_LOW, 0},
+	{"Sprite",	"High",		MDP_VDP_LAYER_OPTIONS_SPRITE_HIGH, 0},
+	{"Sprite",	"Swap",		MDP_VDP_LAYER_OPTIONS_SPRITE_SWAP, 0},
+	{"Sprite Always On Top", 0,	MDP_VDP_LAYER_OPTIONS_SPRITE_ALWAYSONTOP, 0},
+	{"Palette Lock", 0,		MDP_VDP_LAYER_OPTIONS_PALETTE_LOCK, 0},
+	{0, 0, 0, 0}
 };
