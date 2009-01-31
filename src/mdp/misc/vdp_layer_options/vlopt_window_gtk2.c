@@ -47,6 +47,9 @@ static GtkWidget *vlopt_checkboxes[VLOPT_OPTIONS_COUNT];
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 
+// Option handling functions.
+static void vlopt_window_load_options(void);
+
 
 /**
  * vlopt_window_show(): Show the Game Genie window.
@@ -279,6 +282,9 @@ void vlopt_window_show(void *parent)
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(vlopt_window), GTK_WINDOW(parent));
 	
+	// Load the options.
+	vlopt_window_load_options();
+	
 	// Show the window.
 	gtk_widget_show_all(vlopt_window);
 	
@@ -349,5 +355,26 @@ static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, 
 		default:
 			// Unknown response ID.
 			break;
+	}
+}
+
+
+/**
+ * vlopt_window_load_options(): Load the options from MDP_VAL_VDP_LAYER_OPTIONS.
+ */
+static void vlopt_window_load_options(void)
+{
+	int vdp_layer_options = vlopt_host_srv->val_get(MDP_VAL_VDP_LAYER_OPTIONS);
+	if (vdp_layer_options < 0)
+	{
+		fprintf(stderr, "%s(): Error getting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, vdp_layer_options);
+		return;
+	}
+	
+	// Go through the options.
+	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
+	{
+		gboolean flag_enabled = (vdp_layer_options & vlopt_options[i].flag);
+		gtk_toggle_button_set_active(vlopt_checkboxes[i], flag_enabled);
 	}
 }
