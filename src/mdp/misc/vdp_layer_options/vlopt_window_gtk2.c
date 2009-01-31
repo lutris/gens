@@ -25,6 +25,7 @@
 #endif
 
 #include "vlopt_window.h"
+#include "vlopt_options.h"
 #include "vlopt_plugin.h"
 #include "vlopt.hpp"
 
@@ -59,7 +60,7 @@ void vlopt_window_show(void *parent)
 	vlopt_window = gtk_dialog_new();
 	gtk_widget_set_name(vlopt_window, "vlopt_window");
 	gtk_container_set_border_width(GTK_CONTAINER(vlopt_window), 4);
-	gtk_window_set_title(GTK_WINDOW(vlopt_window), "Game Genie");
+	gtk_window_set_title(GTK_WINDOW(vlopt_window), "VDP Layer Options");
 	gtk_window_set_position(GTK_WINDOW(vlopt_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(vlopt_window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(vlopt_window), GDK_WINDOW_TYPE_HINT_DIALOG);
@@ -87,7 +88,7 @@ void vlopt_window_show(void *parent)
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main VBox.
-	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 5);
+	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 4);
 	gtk_widget_set_name(vboxMain, "vboxMain");
 	gtk_widget_show(vboxMain);
 	gtk_container_add(GTK_CONTAINER(vboxDialog), vboxMain);
@@ -103,14 +104,22 @@ void vlopt_window_show(void *parent)
 	g_object_set_data_full(G_OBJECT(vlopt_window), "fraMain",
 			       g_object_ref(fraMain), (GDestroyNotify)g_object_unref);
 	
-	// Header label.
-	GtkWidget *lblInfoTitle = gtk_label_new("VDP Layer Options");
-	gtk_widget_set_name(lblInfoTitle, "lblInfoTitle");
-	gtk_label_set_use_markup(GTK_LABEL(lblInfoTitle), TRUE);
-	gtk_widget_show(lblInfoTitle);
-	gtk_frame_set_label_widget(GTK_FRAME(fraMain), lblInfoTitle);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "lblInfoTitle",
-			       g_object_ref(lblInfoTitle), (GDestroyNotify)g_object_unref);
+	// Main frame label.
+	GtkWidget *lblFrameTitle = gtk_label_new("VDP Layer Options");
+	gtk_widget_set_name(lblFrameTitle, "lblInfoTitle");
+	gtk_label_set_use_markup(GTK_LABEL(lblFrameTitle), TRUE);
+	gtk_widget_show(lblFrameTitle);
+	gtk_frame_set_label_widget(GTK_FRAME(fraMain), lblFrameTitle);
+	g_object_set_data_full(G_OBJECT(vlopt_window), "lblFrameTitle",
+			       g_object_ref(lblFrameTitle), (GDestroyNotify)g_object_unref);
+	
+	// Create the frame VBox.
+	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
+	gtk_widget_set_name(vboxFrame, "vboxFrame");
+	gtk_widget_show(vboxFrame);
+	gtk_container_add(GTK_CONTAINER(fraMain), vboxFrame);
+	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxFrame",
+			       g_object_ref(vboxFrame), (GDestroyNotify)g_object_unref);
 	
 	// Add the accel group to the window.
 	gtk_window_add_accel_group(GTK_WINDOW(vlopt_window), vlopt_accel_group);
