@@ -103,7 +103,7 @@ void vlopt_window_show(void *parent)
 	gtk_widget_set_name(fraMain, "fraMain");
 	gtk_widget_show(fraMain);
 	gtk_box_pack_start(GTK_BOX(vboxMain), fraMain, FALSE, TRUE, 0);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_NONE);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_ETCHED_IN);
 	g_object_set_data_full(G_OBJECT(vlopt_window), "fraMain",
 			       g_object_ref(fraMain), (GDestroyNotify)g_object_unref);
 	
@@ -117,22 +117,101 @@ void vlopt_window_show(void *parent)
 			       g_object_ref(lblFrameTitle), (GDestroyNotify)g_object_unref);
 	
 	// Create the frame VBox.
-	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 0);
+	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
 	gtk_widget_set_name(vboxFrame, "vboxFrame");
 	gtk_widget_show(vboxFrame);
 	gtk_container_add(GTK_CONTAINER(fraMain), vboxFrame);
 	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxFrame",
 			       g_object_ref(vboxFrame), (GDestroyNotify)g_object_unref);
 	
-	// Create the VDP Layer Options checkboxes.
+	// Create the outer table layout for the first 9 layer options.
+	GtkWidget *tblOptionsRows = gtk_table_new(4, 2, FALSE);
+	gtk_widget_set_name(tblOptionsRows, "tblOptionsRows");
+	gtk_widget_show(tblOptionsRows);
+	gtk_box_pack_start(GTK_BOX(vboxFrame), tblOptionsRows, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(vlopt_window), "tblOptionsRows",
+			       g_object_ref(tblOptionsRows),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Create a blank label for the first row.
+	GtkWidget *lblBlankRow = gtk_label_new(NULL);
+	gtk_widget_set_name(lblBlankRow, "lblBlankRow");
+	gtk_widget_show(lblBlankRow);
+	gtk_table_attach(GTK_TABLE(tblOptionsRows), lblBlankRow,
+			 0, 1, 0, 1,
+			 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
+	g_object_set_data_full(G_OBJECT(vlopt_window), "lblBlankRow",
+			       g_object_ref(lblBlankRow),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Create the inner table layout for the first 9 layer options.
+	GtkWidget *tblOptions = gtk_table_new(4, 3, TRUE);
+	gtk_widget_set_name(tblOptions, "tblOptions");
+	gtk_widget_show(tblOptions);
+	gtk_table_attach(GTK_TABLE(tblOptionsRows), tblOptions,
+			 1, 2, 0, 4,
+			 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
+	g_object_set_data_full(G_OBJECT(vlopt_window), "tblOptions",
+			       g_object_ref(tblOptions),
+			       (GDestroyNotify)g_object_unref);
+	
+	// Buffer for widget names.
 	char buf[32];
-	for (int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
+	
+	// Create column and row labels.
+	for (int i = 0; i < 3; i++)
+	{
+		// Column label.
+		sprintf(buf, "lblTblColHeader_%d", i);
+		GtkWidget *lblTblColHeader = gtk_label_new(vlopt_options[i].sublayer);
+		gtk_widget_set_name(lblTblColHeader, buf);
+		gtk_misc_set_alignment(GTK_MISC(lblTblColHeader), 0.5f, 0.5f);
+		gtk_widget_show(lblTblColHeader);
+		
+		gtk_table_attach(GTK_TABLE(tblOptions), lblTblColHeader,
+				 i, i + 1, 0, 1,
+				 (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+		
+		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+				       g_object_ref(lblTblColHeader),
+				       (GDestroyNotify)g_object_unref);
+		
+		// Row label.
+		sprintf(buf, "lblTblRowHeader_%d", i);
+		GtkWidget *lblTblRowHeader = gtk_label_new(vlopt_options[i * 3].layer);
+		gtk_widget_set_name(lblTblRowHeader, buf);
+		gtk_misc_set_alignment(GTK_MISC(lblTblRowHeader), 0.5f, 0.5f);
+		gtk_widget_show(lblTblRowHeader);
+		
+		gtk_table_attach(GTK_TABLE(tblOptionsRows), lblTblRowHeader,
+				 0, 1, i + 1, i + 2,
+				 (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+		
+		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+				       g_object_ref(lblTblRowHeader),
+				       (GDestroyNotify)g_object_unref);
+	}
+	
+	// Create the VDP Layer Options checkboxes.
+	uint8_t row = 1, col = 0;
+	for (int i = 0; i < 9; i++)
 	{
 		sprintf(buf, "vlopt_checkboxes_%d", i);
-		vlopt_checkboxes[i] = gtk_check_button_new_with_label(vlopt_options[i].description);
+		vlopt_checkboxes[i] = gtk_check_button_new();
 		gtk_widget_set_name(vlopt_checkboxes[i], buf);
 		gtk_widget_show(vlopt_checkboxes[i]);
-		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_checkboxes[i], FALSE, FALSE, 0);
+		
+		gtk_table_attach(GTK_TABLE(tblOptions), vlopt_checkboxes[i],
+				 col, col + 1, row, row + 1,
+				 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
+		
+		// Next cell.
+		col++;
+		if (col >= 3)
+		{
+			col = 0;
+			row++;
+		}
 		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 				       g_object_ref(vlopt_checkboxes[i]),
