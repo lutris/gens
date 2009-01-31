@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Game Genie. (Window Code)                                   *
+ * Gens: [MDP] VDP Layer Options. (Options Definitions)                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,21 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_WINDOW_H
-#define _MDP_MISC_VDP_LAYER_OPTIONS_WINDOW_H
+#include "vlopt_options.h"
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_fncall.h"
+// Contains VDP Layer Options definitions.
+#include "mdp/mdp_host.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-DLL_LOCAL void MDP_FNCALL vlopt_window_show(void *parent);
-DLL_LOCAL void MDP_FNCALL vlopt_window_close(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_WINDOW_H */
+// Array of VDP layer options.
+const vlopt_option vlopt_options[] =
+{
+	{"Scroll A Low",		MDP_VDP_LAYER_OPTIONS_SCROLLA_LOW},
+	{"Scroll A High",		MDP_VDP_LAYER_OPTIONS_SCROLLA_HIGH},
+	{"Scroll A Swap Priority",	MDP_VDP_LAYER_OPTIONS_SCROLLA_SWAP},
+	{"Scroll B Low",		MDP_VDP_LAYER_OPTIONS_SCROLLB_LOW},
+	{"Scroll B High"	,	MDP_VDP_LAYER_OPTIONS_SCROLLB_HIGH},
+	{"Scroll B Swap Priority",	MDP_VDP_LAYER_OPTIONS_SCROLLB_SWAP},
+	{"Sprite Low",			MDP_VDP_LAYER_OPTIONS_SPRITE_LOW},
+	{"Sprite High"		,	MDP_VDP_LAYER_OPTIONS_SPRITE_HIGH},
+	{"Sprite Swap Priority",	MDP_VDP_LAYER_OPTIONS_SPRITE_SWAP},
+	{"Sprite Always On Top",	MDP_VDP_LAYER_OPTIONS_SPRITE_ALWAYSONTOP},
+	{"Palette Lock",		MDP_VDP_LAYER_OPTIONS_PALETTE_LOCK},
+	{0, 0}
+};

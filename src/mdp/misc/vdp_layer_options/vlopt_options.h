@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Game Genie. (Window Code)                                   *
+ * Gens: [MDP] VDP Layer Options. (Options Definitions)                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_WINDOW_H
-#define _MDP_MISC_VDP_LAYER_OPTIONS_WINDOW_H
+#ifndef _VLOPT_OPTIONS_H
+#define _VLOPT_OPTIONS_H
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_fncall.h"
@@ -30,11 +30,17 @@
 extern "C" {
 #endif
 
-DLL_LOCAL void MDP_FNCALL vlopt_window_show(void *parent);
-DLL_LOCAL void MDP_FNCALL vlopt_window_close(void);
+// VDP layer options.
+typedef struct
+{
+	const char* const description;
+	const unsigned int flag;
+} vlopt_option;
+
+DLL_LOCAL extern const vlopt_option vlopt_options[];
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_WINDOW_H */
+#endif /* _VLOPT_OPTIONS_H */
