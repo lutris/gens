@@ -37,7 +37,8 @@ typedef struct
 	const unsigned int flag;
 } vlopt_option;
 
-DLL_LOCAL extern const vlopt_option vlopt_options[];
+#define VLOPT_OPTIONS_COUNT 11
+DLL_LOCAL extern const vlopt_option vlopt_options[VLOPT_OPTIONS_COUNT + 1];
 
 #ifdef __cplusplus
 }

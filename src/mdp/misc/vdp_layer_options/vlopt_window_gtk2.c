@@ -37,6 +37,9 @@
 static GtkWidget *vlopt_window = NULL;
 static GtkAccelGroup *vlopt_accel_group;
 
+// Checkboxes.
+static GtkWidget *vlopt_checkboxes[VLOPT_OPTIONS_COUNT];
+
 // Callbacks.
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static gboolean vlopt_window_callback_button(GtkButton *button, gpointer user_data);
@@ -88,7 +91,7 @@ void vlopt_window_show(void *parent)
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main VBox.
-	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 4);
+	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 0);
 	gtk_widget_set_name(vboxMain, "vboxMain");
 	gtk_widget_show(vboxMain);
 	gtk_container_add(GTK_CONTAINER(vboxDialog), vboxMain);
@@ -114,12 +117,27 @@ void vlopt_window_show(void *parent)
 			       g_object_ref(lblFrameTitle), (GDestroyNotify)g_object_unref);
 	
 	// Create the frame VBox.
-	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
+	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 0);
 	gtk_widget_set_name(vboxFrame, "vboxFrame");
 	gtk_widget_show(vboxFrame);
 	gtk_container_add(GTK_CONTAINER(fraMain), vboxFrame);
 	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxFrame",
 			       g_object_ref(vboxFrame), (GDestroyNotify)g_object_unref);
+	
+	// Create the VDP Layer Options checkboxes.
+	char buf[32];
+	for (int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
+	{
+		sprintf(buf, "vlopt_checkboxes_%d", i);
+		vlopt_checkboxes[i] = gtk_check_button_new_with_label(vlopt_options[i].description);
+		gtk_widget_set_name(vlopt_checkboxes[i], buf);
+		gtk_widget_show(vlopt_checkboxes[i]);
+		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_checkboxes[i], FALSE, FALSE, 0);
+		
+		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+				       g_object_ref(vlopt_checkboxes[i]),
+				       (GDestroyNotify)g_object_unref);
+	}
 	
 	// Add the accel group to the window.
 	gtk_window_add_accel_group(GTK_WINDOW(vlopt_window), vlopt_accel_group);

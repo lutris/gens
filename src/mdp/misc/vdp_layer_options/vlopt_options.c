@@ -26,7 +26,7 @@
 #include "mdp/mdp_host.h"
 
 // Array of VDP layer options.
-const vlopt_option vlopt_options[] =
+const vlopt_option vlopt_options[VLOPT_OPTIONS_COUNT + 1] =
 {
 	{"Scroll A Low",		MDP_VDP_LAYER_OPTIONS_SCROLLA_LOW},
 	{"Scroll A High",		MDP_VDP_LAYER_OPTIONS_SCROLLA_HIGH},
