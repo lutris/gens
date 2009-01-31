@@ -116,11 +116,19 @@ void vlopt_window_show(void *parent)
 	g_object_set_data_full(G_OBJECT(vlopt_window), "lblFrameTitle",
 			       g_object_ref(lblFrameTitle), (GDestroyNotify)g_object_unref);
 	
+	// Horizontal padding for the frame VBox.
+	GtkWidget *alignVBoxFrame = gtk_alignment_new(0.0f, 0.0f, 0.0f, 0.0f);
+	gtk_widget_set_name(alignVBoxFrame, "alignVBoxFrame");
+	gtk_alignment_set_padding(GTK_ALIGNMENT(alignVBoxFrame), 0, 0, 4, 4);
+	gtk_container_add(GTK_CONTAINER(fraMain), alignVBoxFrame);
+	g_object_set_data_full(G_OBJECT(vlopt_window), "alignVBoxFrame",
+			       g_object_ref(alignVBoxFrame), (GDestroyNotify)g_object_unref);
+	
 	// Create the frame VBox.
 	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
 	gtk_widget_set_name(vboxFrame, "vboxFrame");
 	gtk_widget_show(vboxFrame);
-	gtk_container_add(GTK_CONTAINER(fraMain), vboxFrame);
+	gtk_container_add(GTK_CONTAINER(alignVBoxFrame), vboxFrame);
 	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxFrame",
 			       g_object_ref(vboxFrame), (GDestroyNotify)g_object_unref);
 	
@@ -194,7 +202,7 @@ void vlopt_window_show(void *parent)
 	
 	// Create the VDP Layer Options checkboxes.
 	uint8_t row = 1, col = 0;
-	for (int i = 0; i < 9; i++)
+	for (unsigned int i = 0; i < 9; i++)
 	{
 		sprintf(buf, "vlopt_checkboxes_%d", i);
 		vlopt_checkboxes[i] = gtk_check_button_new();
@@ -213,6 +221,20 @@ void vlopt_window_show(void *parent)
 			row++;
 		}
 		
+		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+				       g_object_ref(vlopt_checkboxes[i]),
+				       (GDestroyNotify)g_object_unref);
+	}
+	
+	// Create the checkboxes for the remaining VDP Layer Options.
+	for (unsigned int i = 9; i < VLOPT_OPTIONS_COUNT; i++)
+	{
+		sprintf(buf, "vlopt_checkboxes_%d", i);
+		vlopt_checkboxes[i] = gtk_check_button_new_with_label(vlopt_options[i].layer);
+		gtk_widget_set_name(vlopt_checkboxes[i], buf);
+		gtk_widget_show(vlopt_checkboxes[i]);
+		
+		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_checkboxes[i], FALSE, FALSE, 0);
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 				       g_object_ref(vlopt_checkboxes[i]),
 				       (GDestroyNotify)g_object_unref);
