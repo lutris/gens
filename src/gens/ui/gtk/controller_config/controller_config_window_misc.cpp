@@ -117,8 +117,6 @@ int Reconfigure_Input(int player, int padtype)
 {
 	GtkWidget *label_cc_echo = lookup_widget(controller_config_window, "label_cc_echo");
 	
-	// TODO: Somehow condense this code.
-	
 	CC_Configuring = 1;
 	
 	const int maxKeys = (padtype & 0x01 ? 12 : 8);
