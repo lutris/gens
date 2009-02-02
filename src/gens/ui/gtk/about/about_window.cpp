@@ -285,8 +285,7 @@ void AboutWindow::updateIce(void)
 	
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
-	const int r = gdk_pixbuf_get_rowstride(m_pbufIce);
-	const int rd = (r >> 2) - 0120;
+	const int r = gdk_pixbuf_get_rowstride(m_pbufIce) >> 2;
 	
 	unsigned int *destPixel1 = (unsigned int*)gdk_pixbuf_get_pixels(m_pbufIce);
 	unsigned int *destPixel2 = destPixel1 + 0120;
@@ -319,8 +318,8 @@ void AboutWindow::updateIce(void)
 			src++;
 		}
 		
-		destPixel1 += 0120;
-		destPixel2 += 0120;
+		destPixel1 += r;
+		destPixel2 += r;
 	}
 	
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgGensLogo), m_pbufIce);
