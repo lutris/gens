@@ -275,6 +275,9 @@ gboolean AboutWindow::close(void)
 }
 
 
+// TODO: Verify that this works on big-endian machines.
+#define ICE_RGB(r, g, b) (0xFF000000 | (r) | ((g) << 8) | (b << 16))
+
 void AboutWindow::updateIce(void)
 {
 	if (!m_imgGensLogo)
@@ -282,43 +285,42 @@ void AboutWindow::updateIce(void)
 	
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
-	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufIce);
 	const int r = gdk_pixbuf_get_rowstride(m_pbufIce);
-	const int rd = r - (0120 << 2);
+	const int rd = (r >> 2) - 0120;
 	
-	memset(pixels, 0, 062000);
+	unsigned int *destPixel1 = (unsigned int*)gdk_pixbuf_get_pixels(m_pbufIce);
+	unsigned int *destPixel2 = destPixel1 + 0120;
+	
 	for (int y = 0120; y != 0; y -= 2)
 	{
 		for (int x = 0120; x != 0; x -= 4)
 		{
+			unsigned int pxc;
+			
 			unsigned char px1 = (*src & 0360) >> 3;
 			unsigned char px2 = (*src & 0017) << 1;
 			
-			*pixels++ = (src2[px1 + 1] & 0017) << 4;
-			*pixels++ = (src2[px1 + 1] & 0360);
-			*pixels++ = (src2[px1 + 0] & 0017) << 4;
-			*pixels++ = (px1 ? '\377' : '\000');
+			pxc = (!px1 ? 0 : ICE_RGB(((src2[px1 + 1] & 0017) << 4),
+						   (src2[px1 + 1] & 0360),
+						  ((src2[px1 + 0] & 0017) << 4)));
+			*destPixel1++ = pxc;
+			*destPixel1++ = pxc;
+			*destPixel2++ = pxc;
+			*destPixel2++ = pxc;
 			
-			*pixels++ = (src2[px1 + 1] & 0017) << 4;
-			*pixels++ = (src2[px1 + 1] & 0360);
-			*pixels++ = (src2[px1 + 0] & 0017) << 4;
-			*pixels++ = (px1 ? '\377' : '\000');
-			
-			*pixels++ = (src2[px2 + 1] & 0017) << 4;
-			*pixels++ = (src2[px2 + 1] & 0360);
-			*pixels++ = (src2[px2 + 0] & 0017) << 4;
-			*pixels++ = (px2 ? '\377' : '\000');
-			
-			*pixels++ = (src2[px2 + 1] & 0017) << 4;
-			*pixels++ = (src2[px2 + 1] & 0360);
-			*pixels++ = (src2[px2 + 0] & 0017) << 4;
-			*pixels++ = (px2 ? '\377' : '\000');
-			
-			memcpy(pixels + r - 16, pixels - 16, 16);
+			pxc = (!px2 ? 0 : ICE_RGB(((src2[px2 + 1] & 0017) << 4),
+						   (src2[px2 + 1] & 0360),
+						  ((src2[px2 + 0] & 0017) << 4)));
+			*destPixel1++ = pxc;
+			*destPixel1++ = pxc;
+			*destPixel2++ = pxc;
+			*destPixel2++ = pxc;
 			
 			src++;
 		}
-		pixels += (rd + r);
+		
+		destPixel1 += 0120;
+		destPixel2 += 0120;
 	}
 	
 	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgGensLogo), m_pbufIce);
