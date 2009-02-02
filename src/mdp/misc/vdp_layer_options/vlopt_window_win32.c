@@ -354,18 +354,6 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			vlopt_window_close();
 			return 0;
 		
-		case WM_MENUSELECT:
-		case WM_ENTERSIZEMOVE:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCRBUTTONDOWN:
-			// Prevent audio stuttering when one of the following events occurs:
-			// - Menu is opened.
-			// - Window is resized.
-			// - Left/Right mouse button down on title bar.
-			// TODO: Add MDP Host Services function for this.
-			//audio_clear_sound_buffer();
-			break;
-		
 		case WM_COMMAND:
 			// TODO
 			break;
