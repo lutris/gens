@@ -112,16 +112,6 @@ const input_keymap_t input_dinput_keymap_default[8] =
 	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 };
 
-// Axis values.
-static const unsigned char input_dinput_joy_axis_values[2][6] =
-{
-	// axis value < -10,000
-	{0x03, 0x01, 0x07, 0x05, 0x0B, 0x09},
-	
-	// axis value > 10,000
-	{0x04, 0x02, 0x08, 0x06, 0x0C, 0x0A},
-};
-
 #define MOD_NONE 0
 #define VK_NONE 0
 #define ID_NONE 0
