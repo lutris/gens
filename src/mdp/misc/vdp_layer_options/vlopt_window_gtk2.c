@@ -41,10 +41,10 @@
 
 // Window.
 static GtkWidget *vlopt_window = NULL;
-static GtkAccelGroup *vlopt_accel_group;
+static GtkAccelGroup *vlopt_window_accel_group;
 
 // Checkboxes.
-static GtkWidget *vlopt_checkboxes[VLOPT_OPTIONS_COUNT];
+static GtkWidget *vlopt_window_checkboxes[VLOPT_OPTIONS_COUNT];
 
 // Callbacks.
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -81,9 +81,10 @@ void vlopt_window_show(void *parent)
 	gtk_dialog_set_has_separator(GTK_DIALOG(vlopt_window), FALSE);
 	
 	// Create the accelerator group.
-	vlopt_accel_group = gtk_accel_group_new();
-	g_object_set_data_full(G_OBJECT(vlopt_window), "vlopt_accel_group",
-			       g_object_ref(vlopt_accel_group), (GDestroyNotify)g_object_unref);
+	vlopt_window_accel_group = gtk_accel_group_new();
+	g_object_set_data_full(G_OBJECT(vlopt_window), "vlopt_window_accel_group",
+			       g_object_ref(vlopt_window_accel_group),
+			       (GDestroyNotify)g_object_unref);
 	
 	// Set the window data.
 	g_object_set_data(G_OBJECT(vlopt_window), "vlopt_window", vlopt_window);
@@ -219,12 +220,12 @@ void vlopt_window_show(void *parent)
 	uint8_t row = 1, col = 0;
 	for (unsigned int i = 0; i < 9; i++)
 	{
-		sprintf(buf, "vlopt_checkboxes_%d", i);
-		vlopt_checkboxes[i] = gtk_check_button_new();
-		gtk_widget_set_name(vlopt_checkboxes[i], buf);
-		gtk_widget_show(vlopt_checkboxes[i]);
+		sprintf(buf, "vlopt_window_checkboxes_%d", i);
+		vlopt_window_checkboxes[i] = gtk_check_button_new();
+		gtk_widget_set_name(vlopt_window_checkboxes[i], buf);
+		gtk_widget_show(vlopt_window_checkboxes[i]);
 		
-		gtk_table_attach(GTK_TABLE(tblOptions), vlopt_checkboxes[i],
+		gtk_table_attach(GTK_TABLE(tblOptions), vlopt_window_checkboxes[i],
 				 col, col + 1, row, row + 1,
 				 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
 		
@@ -237,32 +238,32 @@ void vlopt_window_show(void *parent)
 		}
 		
 		// Set the callback.
-		g_signal_connect((gpointer)vlopt_checkboxes[i], "toggled",
+		g_signal_connect((gpointer)vlopt_window_checkboxes[i], "toggled",
 				 G_CALLBACK(vlopt_window_callback_checkbox_toggled),
 				 GINT_TO_POINTER(i));
 		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-				       g_object_ref(vlopt_checkboxes[i]),
+				       g_object_ref(vlopt_window_checkboxes[i]),
 				       (GDestroyNotify)g_object_unref);
 	}
 	
 	// Create the checkboxes for the remaining VDP Layer Options.
 	for (unsigned int i = 9; i < VLOPT_OPTIONS_COUNT; i++)
 	{
-		sprintf(buf, "vlopt_checkboxes_%d", i);
-		vlopt_checkboxes[i] = gtk_check_button_new_with_label(vlopt_options[i].layer);
-		gtk_widget_set_name(vlopt_checkboxes[i], buf);
-		gtk_widget_show(vlopt_checkboxes[i]);
+		sprintf(buf, "vlopt_window_checkboxes_%d", i);
+		vlopt_window_checkboxes[i] = gtk_check_button_new_with_label(vlopt_options[i].layer);
+		gtk_widget_set_name(vlopt_window_checkboxes[i], buf);
+		gtk_widget_show(vlopt_window_checkboxes[i]);
 		
-		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_checkboxes[i], FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_window_checkboxes[i], FALSE, FALSE, 0);
 		
 		// Set the callback.
-		g_signal_connect((gpointer)vlopt_checkboxes[i], "toggled",
+		g_signal_connect((gpointer)vlopt_window_checkboxes[i], "toggled",
 				 G_CALLBACK(vlopt_window_callback_checkbox_toggled),
 				 GINT_TO_POINTER(i));
 		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-				       g_object_ref(vlopt_checkboxes[i]),
+				       g_object_ref(vlopt_window_checkboxes[i]),
 				       (GDestroyNotify)g_object_unref);
 	}
 	
@@ -292,7 +293,7 @@ void vlopt_window_show(void *parent)
 			       (GDestroyNotify)g_object_unref);
 	
 	// Add the accel group to the window.
-	gtk_window_add_accel_group(GTK_WINDOW(vlopt_window), vlopt_accel_group);
+	gtk_window_add_accel_group(GTK_WINDOW(vlopt_window), vlopt_window_accel_group);
 	
 	// Set the window as modal to the main application window.
 	if (parent)
@@ -399,7 +400,7 @@ static void vlopt_window_load_options(void)
 	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
 		gboolean flag_enabled = (vdp_layer_options & vlopt_options[i].flag);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vlopt_checkboxes[i]), flag_enabled);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vlopt_window_checkboxes[i]), flag_enabled);
 	}
 }
 
@@ -414,7 +415,7 @@ static void vlopt_window_save_options(void)
 	// Go through the options.
 	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(vlopt_checkboxes[i])))
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(vlopt_window_checkboxes[i])))
 			vdp_layer_options |= vlopt_options[i].flag;
 	}
 	

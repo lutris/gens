@@ -42,14 +42,17 @@
 
 // Window.
 static HWND vlopt_window = NULL;
-static HACCEL vlopt_accel_table;
 static WNDCLASS vlopt_wndclass;
 
 // Checkboxes.
-static HWND vlopt_checkboxes[VLOPT_OPTIONS_COUNT];
+static HWND vlopt_window_checkboxes[VLOPT_OPTIONS_COUNT];
 
 // Window Procedure.
-static LRESULT CALLBACK vlopt_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+// Create Child Windows function.
+static void vlopt_window_create_child_windows(HWND hWnd);
+BOOL vlopt_window_child_windows_created;
 
 // Option handling functions.
 static void vlopt_window_load_options(void);
@@ -70,11 +73,13 @@ void vlopt_window_show(void *parent)
 		return;
 	}
 	
+	vlopt_window_child_windows_created = FALSE;
+	
 	// Create the window class.
 	if (vlopt_wndclass.lpfnWndProc != vlopt_wndproc)
 	{
 		vlopt_wndclass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-		vlopt_wndclass.lpfnWndProc = vlopt_wndproc;
+		vlopt_wndclass.lpfnWndProc = vlopt_window_wndproc;
 		vlopt_wndclass.cbClsExtra = 0;
 		vlopt_wndclass.cbWndExtra = 0;
 		vlopt_wndclass.hInstance = GetModuleHandle(NULL);
@@ -95,30 +100,6 @@ void vlopt_window_show(void *parent)
 				      (HWND)parent, NULL, GetModuleHandle(NULL), NULL);
 	
 #if 0
-	// Create the VDP Layer Options window.
-	vlopt_window = gtk_dialog_new();
-	gtk_widget_set_name(vlopt_window, "vlopt_window");
-	gtk_container_set_border_width(GTK_CONTAINER(vlopt_window), 4);
-	gtk_window_set_title(GTK_WINDOW(vlopt_window), "VDP Layer Options");
-	gtk_window_set_position(GTK_WINDOW(vlopt_window), GTK_WIN_POS_CENTER);
-	gtk_window_set_resizable(GTK_WINDOW(vlopt_window), FALSE);
-	gtk_window_set_type_hint(GTK_WINDOW(vlopt_window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_dialog_set_has_separator(GTK_DIALOG(vlopt_window), FALSE);
-	
-	// Create the accelerator group.
-	vlopt_accel_group = gtk_accel_group_new();
-	g_object_set_data_full(G_OBJECT(vlopt_window), "vlopt_accel_group",
-			       g_object_ref(vlopt_accel_group), (GDestroyNotify)g_object_unref);
-	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(vlopt_window), "vlopt_window", vlopt_window);
-	
-	// Callbacks for if the window is closed.
-	g_signal_connect((gpointer)vlopt_window, "delete_event",
-			 G_CALLBACK(vlopt_window_callback_close), NULL);
-	g_signal_connect((gpointer)vlopt_window, "destroy_event",
-			 G_CALLBACK(vlopt_window_callback_close), NULL);
-	
 	// Dialog response callback.
 	g_signal_connect((gpointer)vlopt_window, "response",
 			 G_CALLBACK(vlopt_window_callback_response), NULL);
@@ -316,9 +297,6 @@ void vlopt_window_show(void *parent)
 			       g_object_ref(btnClose),
 			       (GDestroyNotify)g_object_unref);
 	
-	// Add the accel group to the window.
-	gtk_window_add_accel_group(GTK_WINDOW(vlopt_window), vlopt_accel_group);
-	
 	// Set the window as modal to the main application window.
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(vlopt_window), GTK_WINDOW(parent));
@@ -364,12 +342,12 @@ void vlopt_window_close(void)
  * @param lParam
  * @return
  */
-LRESULT CALLBACK vlopt_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
 		case WM_CREATE:
-			// TODO: Create child windows.
+			vlopt_window_create_child_windows(hWnd);
 			break;
 		
 		case WM_CLOSE:
@@ -399,6 +377,22 @@ LRESULT CALLBACK vlopt_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
+
+/**
+ * vlopt_window_create_child_windows(): Create child windows.
+ * @param hWnd Parent window.
+ */
+static void vlopt_window_create_child_windows(HWND hWnd)
+{
+	if (vlopt_window_child_windows_created)
+		return;
+	
+	// TODO
+	
+	vlopt_window_child_windows_created = TRUE;
+}
+
 
 
 #if 0
