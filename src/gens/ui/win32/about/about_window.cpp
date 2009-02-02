@@ -365,7 +365,7 @@ void AboutWindow::updateIce(void)
 	bgc = ((bgc >> 16) & 0xFF) | (bgc & 0xFF00) | ((bgc & 0xFF) << 16);
 	
 	unsigned int *destPixel1 = (unsigned int*)m_pbmpData;
-	unsigned int *destPixel2 = (unsigned int*)m_pbmpData + 0120;
+	unsigned int *destPixel2 = destPixel1 + 0120;
 	
 	for (y = 0; y < 0120; y += 2)
 	{
