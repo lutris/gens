@@ -83,6 +83,9 @@ typedef union
 // Key names.
 extern const char input_key_names[12][8];
 
+// Player names.
+extern const char input_player_names[8][4];
+
 // Joystick input types.
 typedef enum
 {

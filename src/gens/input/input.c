@@ -37,6 +37,15 @@ const char input_key_names[12][8] =
 };
 
 
+// Array of player names.
+const char input_player_names[8][4] =
+{
+	"P1", "P2",
+	"P1B", "P1C", "P1D",
+	"P2B", "P2C", "P2D"
+};
+
+
 // Input backends.
 #ifdef GENS_OS_WIN32
 	#include "input_dinput_t.h"

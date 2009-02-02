@@ -98,10 +98,6 @@ using std::deque;
 #endif /* GENS_OS_WIN32 */
 
 
-// TODO: Make this a global array somewhere better.
-static const char* PlayerNames[8] = {"P1", "P1B", "P1C", "P1D", "P2", "P2B", "P2C", "P2D"};
-
-
 /**
  * save(): Save Gens configuration.
  * @param filename Configuration filename.
@@ -270,10 +266,12 @@ int Config::save(const string& filename)
 	
 	// Controller settings.
 	cfg.writeInt("Input", "P1.Type", Controller_1_Type & 0x13);
+	cfg.writeInt("Input", "P2.Type", Controller_2_Type & 0x13);
+	
 	cfg.writeInt("Input", "P1B.Type", Controller_2B_Type & 0x13);
 	cfg.writeInt("Input", "P1C.Type", Controller_2C_Type & 0x13);
 	cfg.writeInt("Input", "P1D.Type", Controller_2D_Type & 0x13);
-	cfg.writeInt("Input", "P2.Type", Controller_2_Type & 0x13);
+	
 	cfg.writeInt("Input", "P2B.Type", Controller_2B_Type & 0x13);
 	cfg.writeInt("Input", "P2C.Type", Controller_2C_Type & 0x13);
 	cfg.writeInt("Input", "P2D.Type", Controller_2D_Type & 0x13);
@@ -283,7 +281,7 @@ int Config::save(const string& filename)
 	{
 		for (int button = 0; button < 12; button++)
 		{
-			sprintf(buf, "%s.%s", PlayerNames[player], input_key_names[button]);
+			sprintf(buf, "%s.%s", input_player_names[player], input_key_names[button]);
 			cfg.writeInt("Input", buf, input_keymap[player].data[button], true, 4);
 		}
 	}
@@ -582,10 +580,12 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Controller settings.
 	Controller_1_Type = cfg.getInt("Input", "P1.Type", 1);
+	Controller_2_Type = cfg.getInt("Input", "P2.Type", 1);
+	
 	Controller_1B_Type = cfg.getInt("Input", "P1B.Type", 1);
 	Controller_1C_Type = cfg.getInt("Input", "P1C.Type", 1);
 	Controller_1D_Type = cfg.getInt("Input", "P1D.Type", 1);
-	Controller_2_Type = cfg.getInt("Input", "P2.Type", 1);
+	
 	Controller_2B_Type = cfg.getInt("Input", "P2B.Type", 1);
 	Controller_2C_Type = cfg.getInt("Input", "P2C.Type", 1);
 	Controller_2D_Type = cfg.getInt("Input", "P2D.Type", 1);
@@ -596,7 +596,7 @@ int Config::load(const string& filename, void* gameActive)
 	{
 		for (int button = 0; button < 12; button++)
 		{
-			sprintf(buf, "%s.%s", PlayerNames[player], input_key_names[button]);
+			sprintf(buf, "%s.%s", input_player_names[player], input_key_names[button]);
 			input_keymap[player].data[button] = input_update_joykey_format(
 					cfg.getInt("Input", buf, cur_def_keymap->data[button]));
 		}

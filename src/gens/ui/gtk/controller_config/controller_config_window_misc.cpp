@@ -48,14 +48,14 @@ void Open_Controller_Config(void)
 {
 	GtkWidget *cc;
 	GtkWidget *check_teamplayer_1, *check_teamplayer_2;
-	GtkWidget *combobox_padtype_1;
-	GtkWidget *combobox_padtype_1B;
-	GtkWidget *combobox_padtype_1C;
-	GtkWidget *combobox_padtype_1D;
-	GtkWidget *combobox_padtype_2;
-	GtkWidget *combobox_padtype_2B;
-	GtkWidget *combobox_padtype_2C;
-	GtkWidget *combobox_padtype_2D;
+	GtkWidget *combobox_padtype_P1;
+	GtkWidget *combobox_padtype_P1B;
+	GtkWidget *combobox_padtype_P1C;
+	GtkWidget *combobox_padtype_P1D;
+	GtkWidget *combobox_padtype_P2;
+	GtkWidget *combobox_padtype_P2B;
+	GtkWidget *combobox_padtype_P2C;
+	GtkWidget *combobox_padtype_P2D;
 	
 	cc = create_controller_config_window();
 	if (!cc)
@@ -81,22 +81,22 @@ void Open_Controller_Config(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_teamplayer_2), (Controller_2_Type & 0x10));
 	
 	// Set 3/6 button options.
-	combobox_padtype_1 = lookup_widget(cc, "combobox_padtype_1");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1), (Controller_1_Type & 0x01));
-	combobox_padtype_1B = lookup_widget(cc, "combobox_padtype_1B");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1B), (Controller_1B_Type & 0x01));
-	combobox_padtype_1C = lookup_widget(cc, "combobox_padtype_1C");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1C), (Controller_1C_Type & 0x01));
-	combobox_padtype_1D = lookup_widget(cc, "combobox_padtype_1D");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_1D), (Controller_1D_Type & 0x01));
-	combobox_padtype_2 = lookup_widget(cc, "combobox_padtype_2");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2), (Controller_2_Type & 0x01));
-	combobox_padtype_2B = lookup_widget(cc, "combobox_padtype_2B");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2B), (Controller_2B_Type & 0x01));
-	combobox_padtype_2C = lookup_widget(cc, "combobox_padtype_2C");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2C), (Controller_2C_Type & 0x01));
-	combobox_padtype_2D = lookup_widget(cc, "combobox_padtype_2D");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_2D), (Controller_2D_Type & 0x01));
+	combobox_padtype_P1 = lookup_widget(cc, "combobox_padtype_P1");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P1), (Controller_1_Type & 0x01));
+	combobox_padtype_P1B = lookup_widget(cc, "combobox_padtype_P1B");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P1B), (Controller_1B_Type & 0x01));
+	combobox_padtype_P1C = lookup_widget(cc, "combobox_padtype_P1C");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P1C), (Controller_1C_Type & 0x01));
+	combobox_padtype_P1D = lookup_widget(cc, "combobox_padtype_P1D");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P1D), (Controller_1D_Type & 0x01));
+	combobox_padtype_P2 = lookup_widget(cc, "combobox_padtype_P2");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P2), (Controller_2_Type & 0x01));
+	combobox_padtype_P2B = lookup_widget(cc, "combobox_padtype_P2B");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P2B), (Controller_2B_Type & 0x01));
+	combobox_padtype_P2C = lookup_widget(cc, "combobox_padtype_P2C");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P2C), (Controller_2C_Type & 0x01));
+	combobox_padtype_P2D = lookup_widget(cc, "combobox_padtype_P2D");
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_padtype_P2D), (Controller_2D_Type & 0x01));
 	
 	// Initialize the Teamplayer state.
 	on_check_cc_Teamplayer_clicked(GTK_BUTTON(check_teamplayer_1), GINT_TO_POINTER(1));
@@ -155,14 +155,14 @@ int Reconfigure_Input(int player, int padtype)
 void Controller_Config_Save(void)
 {
 	GtkWidget *check_teamplayer_1, *check_teamplayer_2;
-	GtkWidget *combobox_padtype_1;
-	GtkWidget *combobox_padtype_1B;
-	GtkWidget *combobox_padtype_1C;
-	GtkWidget *combobox_padtype_1D;
-	GtkWidget *combobox_padtype_2;
-	GtkWidget *combobox_padtype_2B;
-	GtkWidget *combobox_padtype_2C;
-	GtkWidget *combobox_padtype_2D;
+	GtkWidget *combobox_padtype_P1;
+	GtkWidget *combobox_padtype_P1B;
+	GtkWidget *combobox_padtype_P1C;
+	GtkWidget *combobox_padtype_P1D;
+	GtkWidget *combobox_padtype_P2;
+	GtkWidget *combobox_padtype_P2B;
+	GtkWidget *combobox_padtype_P2C;
+	GtkWidget *combobox_padtype_P2D;
 	
 	// Copy the new controller key configuration.
 	memcpy(input_keymap, keyConfig, sizeof(input_keymap));
@@ -186,50 +186,50 @@ void Controller_Config_Save(void)
 		Controller_2_Type &= ~0x10;
 	
 	// Set 3/6 button options.
-	combobox_padtype_1 = lookup_widget(controller_config_window, "combobox_padtype_1");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1)) == 1)
+	combobox_padtype_P1 = lookup_widget(controller_config_window, "combobox_padtype_P1");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P1)) == 1)
 		Controller_1_Type |= 0x01;
 	else
 		Controller_1_Type &= ~0x01;
 	
-	combobox_padtype_1B = lookup_widget(controller_config_window, "combobox_padtype_1B");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1B)) == 1)
+	combobox_padtype_P1B = lookup_widget(controller_config_window, "combobox_padtype_P1B");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P1B)) == 1)
 		Controller_1B_Type |= 0x01;
 	else
 		Controller_1B_Type &= ~0x01;
 	
-	combobox_padtype_1C = lookup_widget(controller_config_window, "combobox_padtype_1C");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1C)) == 1)
+	combobox_padtype_P1C = lookup_widget(controller_config_window, "combobox_padtype_P1C");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P1C)) == 1)
 		Controller_1C_Type |= 0x01;
 	else
 		Controller_1C_Type &= ~0x01;
 	
-	combobox_padtype_1D = lookup_widget(controller_config_window, "combobox_padtype_1D");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_1D)) == 1)
+	combobox_padtype_P1D = lookup_widget(controller_config_window, "combobox_padtype_P1D");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P1D)) == 1)
 		Controller_1D_Type |= 0x01;
 	else
 		Controller_1D_Type &= ~0x01;
 	
-	combobox_padtype_2 = lookup_widget(controller_config_window, "combobox_padtype_2");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2)) == 1)
+	combobox_padtype_P2 = lookup_widget(controller_config_window, "combobox_padtype_P2");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P2)) == 1)
 		Controller_2_Type |= 0x01;
 	else
 		Controller_2_Type &= ~0x01;
 	
-	combobox_padtype_2B = lookup_widget(controller_config_window, "combobox_padtype_2B");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2B)) == 1)
+	combobox_padtype_P2B = lookup_widget(controller_config_window, "combobox_padtype_P2B");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P2B)) == 1)
 		Controller_2B_Type |= 0x01;
 	else
 		Controller_2B_Type &= ~0x01;
 	
-	combobox_padtype_2C = lookup_widget(controller_config_window, "combobox_padtype_2C");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2C)) == 1)
+	combobox_padtype_P2C = lookup_widget(controller_config_window, "combobox_padtype_P2C");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P2C)) == 1)
 		Controller_2C_Type |= 0x01;
 	else
 		Controller_2C_Type &= ~0x01;
 	
-	combobox_padtype_2D = lookup_widget(controller_config_window, "combobox_padtype_2D");
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_2D)) == 1)
+	combobox_padtype_P2D = lookup_widget(controller_config_window, "combobox_padtype_P2D");
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_padtype_P2D)) == 1)
 		Controller_2D_Type |= 0x01;
 	else
 		Controller_2D_Type &= ~0x01;

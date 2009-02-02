@@ -320,7 +320,7 @@ static void AddControllerVBox(GtkWidget *frame, int port)
 		
 		// Pad type
 		combobox_padtype = gtk_combo_box_new_text();
-		sprintf(tmp, "combobox_padtype_%s", player);
+		sprintf(tmp, "combobox_padtype_P%s", player);
 		gtk_widget_set_name(combobox_padtype, tmp);
 		gtk_widget_show(combobox_padtype);
 		GLADE_HOOKUP_OBJECT(controller_config_window, combobox_padtype, tmp);
