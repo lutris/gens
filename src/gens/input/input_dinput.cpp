@@ -94,7 +94,7 @@ const input_keymap_t input_dinput_keymap_default[8] =
 	// Player 1
 	{{DIK_UP, DIK_DOWN, DIK_LEFT, DIK_RIGHT,
 	DIK_RETURN, DIK_A, DIK_S, DIK_D,
-	DIK_RSHIFT, DIK_Z, DIK_X, DIK_C}},
+	DIK_RSHIFT, DIK_Q, DIK_W, DIK_E}},
 	
 	// Player 2
 	{{DIK_Y, DIK_H, DIK_G, DIK_J,
