@@ -277,9 +277,13 @@ void AboutWindow::createChildWindows(HWND hWnd)
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, true);
 	
+	// Tab content size.
+	static const unsigned int tabWidth = 312;
+	static const unsigned int tabHeight = 224;
+	
 	// Tab control.
 	tabInfo = CreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
-			       8, 88+lblTitle_HeightInc, 312, 216,
+			       8, 88+lblTitle_HeightInc, tabWidth, tabHeight,
 			       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(tabInfo, fntMain, true);
 	
@@ -299,16 +303,16 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	RECT rectTab;
 	rectTab.left = 0;
 	rectTab.top = 0;
-	rectTab.right = 312;
-	rectTab.bottom = 216;
+	rectTab.right = tabWidth;
+	rectTab.bottom = tabHeight;
 	TabCtrl_AdjustRect(tabInfo, false, &rectTab);
 	
 	// Box for the tab contents.
 	HWND grpTabContents;
 	grpTabContents = CreateWindow(WC_BUTTON, NULL, WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				      rectTab.left + 4, rectTab.top + 4,
+				      rectTab.left + 4, rectTab.top,
 				      rectTab.right - rectTab.left - 8,
-				      rectTab.bottom - rectTab.top - 8,
+				      rectTab.bottom - rectTab.top - 4,
 				      tabInfo, NULL, ghInstance, NULL);
 	SetWindowFont(grpTabContents, fntMain, true);
 	
@@ -317,7 +321,7 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	lblTabContents = CreateWindow(WC_STATIC, sTabContents.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 				      8, 16,
 				      rectTab.right - rectTab.left - 24,
-				      rectTab.bottom - rectTab.top - 40,
+				      rectTab.bottom - rectTab.top - 32,
 				      grpTabContents, NULL, ghInstance, NULL);
 	SetWindowFont(lblTabContents, fntMain, true);
 	
