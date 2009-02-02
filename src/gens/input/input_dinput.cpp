@@ -65,20 +65,20 @@
 static const unsigned short DIRECTINPUT_VERSION_5 = 0x0500;
 static const unsigned short DIRECTINPUT_VERSION_3 = 0x0300;
 
-// DirectInput variables
+// DirectInput variables.
 static LPDIRECTINPUT lpDI = NULL;
 static LPDIRECTINPUTDEVICE lpDIDKeyboard = NULL;
 static LPDIRECTINPUTDEVICE lpDIDMouse = NULL;
 static IDirectInputDevice2 *input_dinput_joy_id[MAX_JOYS];
 static DIJOYSTATE input_dinput_joy_state[MAX_JOYS];
 
-// DirectInput version
+// DirectInput version.
 static unsigned short input_dinput_version = 0;
 
-// DirectInput Keys array
+// DirectInput Keys array.
 static unsigned char input_dinput_keys[256];
 
-// Joysticks
+// Joysticks.
 static BOOL input_dinput_joystick_initialized;
 static BOOL input_dinput_joystick_error;
 static int input_dinput_num_joysticks;	// Number of joysticks connected
@@ -239,6 +239,9 @@ int input_dinput_end(void)
 	input_dinput_num_joysticks = 0;
 	lpDI->Release();
 	lpDI = NULL;
+	
+	// Clear the DirectInput version variable.
+	input_dinput_version = 0;
 	
 	// DirectInput shut down.
 	return 0;
