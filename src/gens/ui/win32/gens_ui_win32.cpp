@@ -226,7 +226,6 @@ void GensUI::update(void)
 		}
 			
 		// Check for dialog messages.
-		// TODO: Check for dialog messages for registered MDP windows.
 		if ((controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 		    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
@@ -241,7 +240,7 @@ void GensUI::update(void)
 			continue;
 		}
 		
-		// Check plugin windows.
+		// Check plugin windows for dialog messages.
 		bool isDialogMessage = false;
 		
 		for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
@@ -255,12 +254,27 @@ void GensUI::update(void)
 			}
 		}
 		
-		if (!isDialogMessage)
+		if (isDialogMessage)
 		{
-			// Not a dialog message. Process it normally.
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			// Dialog message. Don't process it normally.
+			continue;
 		}
+		
+		// Not a dialog message.
+		
+		// Check if this message requires clearing the audio buffer.
+		if (msg.message == WM_MENUSELECT ||
+		    msg.message == WM_ENTERSIZEMOVE ||
+		    msg.message == WM_NCLBUTTONDOWN ||
+		    msg.message == WM_NCRBUTTONDOWN)
+		{
+			// Clear the sound buffer.
+			audio_clear_sound_buffer();
+		}
+		
+		// Process the message.
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 }
 
