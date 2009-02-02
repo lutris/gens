@@ -66,7 +66,9 @@ class AboutWindow : WndBase
 		
 		// Gens logo.
 		HWND m_imgGensLogo;
-		HBITMAP bmpGensLogo;
+		HBITMAP m_hbmpGensLogo;
+		LPBYTE m_pbmpData;
+		HDC m_hdcComp;
 		
 		unsigned short ax, bx, cx;
 		

@@ -89,8 +89,9 @@ AboutWindow* AboutWindow::Instance(HWND parent)
 AboutWindow::AboutWindow()
 {
 	tmrIce = NULL;
-	bmpGensLogo = NULL;
+	m_hbmpGensLogo = NULL;
 	m_childWindowsCreated = false;
+	m_hdcComp = NULL;
 	
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
@@ -118,11 +119,11 @@ AboutWindow::AboutWindow()
 	m_Window = CreateWindowEx(NULL, "Gens_About", "About Gens",
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  328, 344+lblTitle_HeightInc,
+				  328, 352+lblTitle_HeightInc,
 				  Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, 328, 344+lblTitle_HeightInc);
+	Win32_setActualWindowSize(m_Window, 328, 352+lblTitle_HeightInc);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(m_Window);
@@ -134,8 +135,10 @@ AboutWindow::AboutWindow()
 
 AboutWindow::~AboutWindow()
 {
-	if (bmpGensLogo)
-		DeleteObject(bmpGensLogo);
+	if (m_hbmpGensLogo)
+		DeleteBitmap(m_hbmpGensLogo);
+	if (m_hdcComp)
+		DeleteDC(m_hdcComp);
 	
 	m_Instance = NULL;
 }
@@ -246,19 +249,34 @@ void AboutWindow::createChildWindows(HWND hWnd)
 		return;
 	
 	cx = 0; iceLastTicks = 0;
+	ice = 3;
 	if (ice != 3)
 	{
 		// Gens logo
-		imgGensLogo = CreateWindow("Static", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
+		imgGensLogo = CreateWindow(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		bmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+		m_hbmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 						 IMAGE_BITMAP, 0, 0,
 						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
-		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpGensLogo);
+		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)m_hbmpGensLogo);
 	}
 	else
 	{
 		// "ice" timer
+		
+		m_hdcComp = CreateCompatibleDC(GetDC(Gens_hWnd));
+		
+		// Create the DIB.
+		BITMAPINFOHEADER bih;
+		memset(&bih, 0x00, sizeof(bih));
+		bih.biSize	= sizeof(bih);
+		bih.biPlanes	= 1;
+		bih.biBitCount	= 32;
+		bih.biWidth	= 80;
+		bih.biHeight	= -80;
+		m_hbmpGensLogo = CreateDIBSection(m_hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&m_pbmpData, NULL, 0);
+		SelectObject(m_hdcComp, m_hbmpGensLogo);
+		
 		ax = 0; bx = 0; cx = 1;
 		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, (TIMERPROC)iceTime_STATIC);
 		
@@ -334,20 +352,22 @@ void AboutWindow::createChildWindows(HWND hWnd)
 }
 
 
+#define ICE_RGB(r, g, b) (((r) << 16) | ((g) << 8) | (b))
+
 void AboutWindow::updateIce(void)
 {
-	HDC hDC;
-	PAINTSTRUCT ps;
-	
-	hDC = BeginPaint(m_Window, &ps);
-	
 	int x, y;
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
 	unsigned char px1, px2;
 	
-	int bgc = GetSysColor(COLOR_3DFACE);
-	int pxc;
+	int bgc, pxc;
+	
+	bgc = GetSysColor(COLOR_3DFACE);
+	bgc = ((bgc >> 16) & 0xFF) | (bgc & 0xFF00) | ((bgc & 0xFF) << 16);
+	
+	unsigned int *destPixel1 = (unsigned int*)m_pbmpData;
+	unsigned int *destPixel2 = (unsigned int*)m_pbmpData + 0120;
 	
 	for (y = 0; y < 0120; y += 2)
 	{
@@ -356,41 +376,34 @@ void AboutWindow::updateIce(void)
 			px1 = (*src & 0360) >> 3;
 			px2 = (*src & 0017) << 1;
 			
-			if (!px1)
-			{
-				pxc = bgc;
-			}
-			else
-			{
-				pxc = RGB((src2[px1 + 1] & 0017) << 4,
-					  (src2[px1 + 1] & 0360),
-					  (src2[px1 + 0] & 0017) << 4);
-			}
+			pxc = (!px1 ? bgc : ICE_RGB((src2[px1 + 1] & 0017) << 4,
+						    (src2[px1 + 1] & 0360),
+						    (src2[px1 + 0] & 0017) << 4));
+			*destPixel1++ = pxc;
+			*destPixel1++ = pxc;
+			*destPixel2++ = pxc;
+			*destPixel2++ = pxc;
 			
-			SetPixel(hDC, x + 0 + iceOffsetX, y + 0 + iceOffsetY, pxc);
-			SetPixel(hDC, x + 1 + iceOffsetX, y + 0 + iceOffsetY, pxc);
-			SetPixel(hDC, x + 0 + iceOffsetX, y + 1 + iceOffsetY, pxc);
-			SetPixel(hDC, x + 1 + iceOffsetX, y + 1 + iceOffsetY, pxc);
-			
-			if (!px2)
-			{
-				pxc = bgc;
-			}
-			else
-			{
-				pxc = RGB((src2[px2 + 1] & 0017) << 4,
-					  (src2[px2 + 1] & 0360),
-					  (src2[px2 + 0] & 0017) << 4);
-			}
-			SetPixel(hDC, x + 2 + iceOffsetX, y + 0 + iceOffsetY, pxc);
-			SetPixel(hDC, x + 3 + iceOffsetX, y + 0 + iceOffsetY, pxc);
-			SetPixel(hDC, x + 2 + iceOffsetX, y + 1 + iceOffsetY, pxc);
-			SetPixel(hDC, x + 3 + iceOffsetX, y + 1 + iceOffsetY, pxc);
+			pxc = (!px2 ? bgc : ICE_RGB((src2[px2 + 1] & 0017) << 4,
+						    (src2[px2 + 1] & 0360),
+						    (src2[px2 + 0] & 0017) << 4));
+			*destPixel1++ = pxc;
+			*destPixel1++ = pxc;
+			*destPixel2++ = pxc;
+			*destPixel2++ = pxc;
 			
 			src++;
 		}
+		
+		destPixel1 += 0120;
+		destPixel2 += 0120;
 	}
 	
+	HDC hDC;
+	PAINTSTRUCT ps;
+	
+	hDC = BeginPaint(m_Window, &ps);
+	BitBlt(hDC, iceOffsetX, iceOffsetY, 0120, 0120, m_hdcComp, 0, 0, SRCCOPY);
 	EndPaint(m_Window, &ps);
 }
 
