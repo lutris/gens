@@ -303,12 +303,11 @@ void gg_window_close(void)
 	if (!gg_window)
 		return;
 	
-	gtk_widget_destroy(gg_window);
-	
 	// Unregister the window from MDP Host Services.
 	gg_host_srv->window_unregister(&mdp, gg_window);
 	
-	// Set the window pointer to NULL to indicate that it's closed.
+	// Destroy the window.
+	gtk_widget_destroy(gg_window);
 	gg_window = NULL;
 }
 

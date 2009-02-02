@@ -317,12 +317,11 @@ void vlopt_window_close(void)
 	if (!vlopt_window)
 		return;
 	
-	gtk_widget_destroy(vlopt_window);
-	
 	// Unregister the window from MDP Host Services.
 	vlopt_host_srv->window_unregister(&mdp, vlopt_window);
 	
-	// Set the window pointer to NULL to indicate that it's closed.
+	// Destroy the window.
+	gtk_widget_destroy(vlopt_window);
 	vlopt_window = NULL;
 }
 
