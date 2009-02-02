@@ -249,7 +249,6 @@ void AboutWindow::createChildWindows(HWND hWnd)
 		return;
 	
 	cx = 0; iceLastTicks = 0;
-	ice = 3;
 	if (ice != 3)
 	{
 		// Gens logo
@@ -359,9 +358,8 @@ void AboutWindow::updateIce(void)
 	int x, y;
 	const unsigned char *src = &Data[ax*01440];
 	const unsigned char *src2 = &DX[bx*040];
-	unsigned char px1, px2;
 	
-	int bgc, pxc;
+	unsigned int bgc;
 	
 	bgc = GetSysColor(COLOR_3DFACE);
 	bgc = ((bgc >> 16) & 0xFF) | (bgc & 0xFF00) | ((bgc & 0xFF) << 16);
@@ -373,20 +371,22 @@ void AboutWindow::updateIce(void)
 	{
 		for (x = 0; x < 0120; x += 4)
 		{
-			px1 = (*src & 0360) >> 3;
-			px2 = (*src & 0017) << 1;
+			unsigned int pxc;
 			
-			pxc = (!px1 ? bgc : ICE_RGB((src2[px1 + 1] & 0017) << 4,
-						    (src2[px1 + 1] & 0360),
-						    (src2[px1 + 0] & 0017) << 4));
+			unsigned char px1 = (*src & 0360) >> 3;
+			unsigned char px2 = (*src & 0017) << 1;
+			
+			pxc = (!px1 ? bgc : ICE_RGB(((src2[px1 + 1] & 0017) << 4),
+						     (src2[px1 + 1] & 0360),
+						    ((src2[px1 + 0] & 0017) << 4)));
 			*destPixel1++ = pxc;
 			*destPixel1++ = pxc;
 			*destPixel2++ = pxc;
 			*destPixel2++ = pxc;
 			
-			pxc = (!px2 ? bgc : ICE_RGB((src2[px2 + 1] & 0017) << 4,
-						    (src2[px2 + 1] & 0360),
-						    (src2[px2 + 0] & 0017) << 4));
+			pxc = (!px2 ? bgc : ICE_RGB(((src2[px2 + 1] & 0017) << 4),
+						     (src2[px2 + 1] & 0360),
+						    ((src2[px2 + 0] & 0017) << 4)));
 			*destPixel1++ = pxc;
 			*destPixel1++ = pxc;
 			*destPixel2++ = pxc;
