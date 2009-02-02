@@ -101,62 +101,22 @@ int Reconfigure_Input(int player, int padtype)
 	// Prevent audio stuttering.
 	audio_clear_sound_buffer();
 	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR UP");
-	keyConfig[player].keys.Up = input_get_key();
-	GensUI::sleep(250, true);
+	const int maxKeys = (padtype & 0x01 ? 12 : 8);
+	uint16_t *curKey = &keyConfig[player].data[0];
+	char buf[32];
 	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR DOWN");
-	keyConfig[player].keys.Down = input_get_key();
-	GensUI::sleep(250, true);
-	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR LEFT");
-	keyConfig[player].keys.Left = input_get_key();
-	GensUI::sleep(250, true);
-	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR RIGHT");
-	keyConfig[player].keys.Right = input_get_key();
-	GensUI::sleep(250, true);
-	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR START");
-	keyConfig[player].keys.Start = input_get_key();
-	GensUI::sleep(250, true);
-	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR A");
-	keyConfig[player].keys.A = input_get_key();
-	GensUI::sleep(250, true);
-	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR B");
-	keyConfig[player].keys.B = input_get_key();
-	GensUI::sleep(250, true);
-	
-	SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR C");
-	keyConfig[player].keys.C = input_get_key();
-	GensUI::sleep(250, true);
-	
-	if (padtype & 0x01)
+	for (int i = 0; i < maxKeys; i++)
 	{
-		// 6-button control pad. Get additional keys.
-		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR MODE");
-		keyConfig[player].keys.Mode = input_get_key();
-		GensUI::sleep(250, true);
-		
-		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR X");
-		keyConfig[player].keys.X = input_get_key();
-		GensUI::sleep(250, true);
-		
-		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Y");
-		keyConfig[player].keys.Y = input_get_key();
-		GensUI::sleep(250, true);
-		
-		SetWindowText(cc_lblSettingKeys, "INPUT KEY FOR Z");
-		keyConfig[player].keys.Z = input_get_key();
+		sprintf(buf, "Press a key for: %s\n", input_key_names[i]);
+		SetWindowText(cc_lblSettingKeys, buf);
+		*curKey++ = input_get_key();
 		GensUI::sleep(250, true);
 	}
 	
 	// Configuration successful.
 	SetWindowText(cc_lblSettingKeys,
-			"CONFIGURATION SUCCESSFUL.\n"
-			"PRESS ANY KEY TO CONTINUE...");
+			"Controller configuration successful.\n"
+			"Press any key to continue...");
 	input_get_key();
 	GensUI::sleep(500, true);
 	SetWindowText(cc_lblSettingKeys, "");
