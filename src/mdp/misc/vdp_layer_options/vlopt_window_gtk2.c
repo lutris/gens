@@ -57,20 +57,20 @@ static void vlopt_window_save_options(void);
 
 
 /**
- * vlopt_window_show(): Show the Game Genie window.
+ * vlopt_window_show(): Show the VDP Layer Options window.
  * @param parent Parent window.
  */
 void vlopt_window_show(void *parent)
 {
 	if (vlopt_window)
 	{
-		// Game Genie window is already visible.
+		// VDP Layer Options window is already visible.
 		// Set focus.
 		gtk_widget_grab_focus(vlopt_window);
 		return;
 	}
 	
-	// Create the Game Genie window.
+	// Create the VDP Layer Options window.
 	vlopt_window = gtk_dialog_new();
 	gtk_widget_set_name(vlopt_window, "vlopt_window");
 	gtk_container_set_border_width(GTK_CONTAINER(vlopt_window), 4);
@@ -310,7 +310,7 @@ void vlopt_window_show(void *parent)
 
 
 /**
- * vlopt_window_close(): Close the Game Genie window.
+ * vlopt_window_close(): Close the VDP Layer Options window.
  */
 void vlopt_window_close(void)
 {
