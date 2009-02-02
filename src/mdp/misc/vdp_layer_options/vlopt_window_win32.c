@@ -42,7 +42,7 @@
 
 // Window.
 static HWND vlopt_window = NULL;
-static WNDCLASS vlopt_wndclass;
+static WNDCLASS vlopt_window_wndclass;
 
 // Checkboxes.
 static HWND vlopt_window_checkboxes[VLOPT_OPTIONS_COUNT];
@@ -76,24 +76,24 @@ void vlopt_window_show(void *parent)
 	vlopt_window_child_windows_created = FALSE;
 	
 	// Create the window class.
-	if (vlopt_wndclass.lpfnWndProc != vlopt_wndproc)
+	if (vlopt_window_wndclass.lpfnWndProc != vlopt_window_wndproc)
 	{
-		vlopt_wndclass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-		vlopt_wndclass.lpfnWndProc = vlopt_window_wndproc;
-		vlopt_wndclass.cbClsExtra = 0;
-		vlopt_wndclass.cbWndExtra = 0;
-		vlopt_wndclass.hInstance = GetModuleHandle(NULL);
-		vlopt_wndclass.hIcon = NULL;
-		vlopt_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
-		vlopt_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
-		vlopt_wndclass.lpszMenuName = NULL;
-		vlopt_wndclass.lpszClassName = "vlopt_wndclass";
+		vlopt_window_wndclass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+		vlopt_window_wndclass.lpfnWndProc = vlopt_window_wndproc;
+		vlopt_window_wndclass.cbClsExtra = 0;
+		vlopt_window_wndclass.cbWndExtra = 0;
+		vlopt_window_wndclass.hInstance = GetModuleHandle(NULL);
+		vlopt_window_wndclass.hIcon = NULL;
+		vlopt_window_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		vlopt_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+		vlopt_window_wndclass.lpszMenuName = NULL;
+		vlopt_window_wndclass.lpszClassName = "vlopt_window_wndclass";
 		
-		RegisterClass(&vlopt_wndclass);
+		RegisterClass(&vlopt_window_wndclass);
 	}
 	
 	// Create the window.
-	vlopt_window = CreateWindowEx(0, "vlopt_wndclass", "VDP Layer Options",
+	vlopt_window = CreateWindowEx(0, "vlopt_window_wndclass", "VDP Layer Options",
 				      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				      CW_USEDEFAULT, CW_USEDEFAULT,
 				      320, 240,
