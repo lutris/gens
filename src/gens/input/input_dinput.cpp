@@ -96,15 +96,15 @@ const input_keymap_t input_dinput_keymap_default[8] =
 	DIK_RETURN, DIK_A, DIK_S, DIK_D,
 	DIK_RSHIFT, DIK_Z, DIK_X, DIK_C}},
 	
-	// Players 1B, 1C, 1D
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	
 	// Player 2
 	{{DIK_Y, DIK_H, DIK_G, DIK_J,
 	DIK_U, DIK_K, DIK_L, DIK_M,
 	DIK_T, DIK_I, DIK_O, DIK_P}},
+	
+	// Players 1B, 1C, 1D
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
 	
 	// Players 2B, 2C, 2D
 	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
