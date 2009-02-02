@@ -43,7 +43,6 @@ static int vlopt_menuItemID = 0;
 
 
 static int MDP_FNCALL vlopt_menu_handler(int menu_item_id);
-static int MDP_FNCALL vlopt_event_handler(int event_id, void *event_info);
 
 
 /**
@@ -110,17 +109,5 @@ static int MDP_FNCALL vlopt_menu_handler(int menu_item_id)
 	
 	// Show the Game Genie window.
 	vlopt_window_show(vlopt_host_srv->window_get_main());
-	return MDP_ERR_OK;
-}
-
-
-static int MDP_FNCALL vlopt_event_handler(int event_id, void *event_info)
-{
-	printf("Event: %d\n", event_id);
-	if (event_id == MDP_EVENT_OPEN_ROM)
-	{
-		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)(event_info);
-		printf("GG: ROM opened: %s, system_id %d\n", openROM->rom_name, openROM->system_id);
-	}
 	return MDP_ERR_OK;
 }
