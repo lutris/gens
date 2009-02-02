@@ -434,7 +434,8 @@ unsigned int input_dinput_get_key(void)
 		input_dinput_update();
 		
 		// Current state of DirectInput keys
-		memcpy(&curDiKeys[0], &input_dinput_keys[0], 256);
+		for (int key = 0; key < 256; key++)
+			curDiKeys[key] = (input_dinput_keys[key] & 0x80);
 		
 		// Current state of recognized buttons on joypad
 		int joyIndex = 0;
