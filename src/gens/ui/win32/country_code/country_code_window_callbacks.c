@@ -48,17 +48,6 @@ LRESULT CALLBACK Country_Code_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			DestroyWindow(country_code_window);
 			return 0;
 		
-		case WM_MENUSELECT:
-		case WM_ENTERSIZEMOVE:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCRBUTTONDOWN:
-			// Prevent audio stuttering when one of the following events occurs:
-			// - Menu is opened.
-			// - Window is resized.
-			// - Left/Right mouse button down on title bar.
-			audio_clear_sound_buffer();
-			break;
-		
 		case WM_COMMAND:
 			// Button press, or Enter pressed in textbox
 			switch (LOWORD(wParam))

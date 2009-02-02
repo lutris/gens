@@ -157,7 +157,7 @@ LRESULT CALLBACK AboutWindow::WndProc_STATIC(HWND hWnd, UINT message, WPARAM wPa
  */
 LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch(message)
+	switch (message)
 	{
 		case WM_CREATE:
 			if (!m_childWindowsCreated)
@@ -167,17 +167,6 @@ LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		case WM_CLOSE:
 			DestroyWindow(m_Window);
 			return 0;
-		
-		case WM_MENUSELECT:
-		case WM_ENTERSIZEMOVE:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCRBUTTONDOWN:
-			// Prevent audio stuttering when one of the following events occurs:
-			// - Menu is opened.
-			// - Window is resized.
-			// - Left/Right mouse button down on title bar.
-			audio_clear_sound_buffer();
-			break;
 		
 		case WM_PAINT:
 			if (ice == 3)

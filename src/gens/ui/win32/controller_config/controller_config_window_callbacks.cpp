@@ -55,17 +55,6 @@ LRESULT CALLBACK Controller_Config_Window_WndProc(HWND hWnd, UINT message, WPARA
 			DestroyWindow(controller_config_window);
 			return 0;
 		
-		case WM_MENUSELECT:
-		case WM_ENTERSIZEMOVE:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCRBUTTONDOWN:
-			// Prevent audio stuttering when one of the following events occurs:
-			// - Menu is opened.
-			// - Window is resized.
-			// - Left/Right mouse button down on title bar.
-			audio_clear_sound_buffer();
-			break;
-		
 		case WM_ACTIVATE:
 			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
 			{
