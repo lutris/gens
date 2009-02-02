@@ -343,7 +343,7 @@ static BOOL input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOI
 	diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
 	diprg.diph.dwObj = DIJOFS_X;
 	diprg.diph.dwHow = DIPH_BYOFFSET;
-	diprg.lMin = -1000; 
+	diprg.lMin = -1000;
 	diprg.lMax = +1000;
  
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
@@ -356,7 +356,7 @@ static BOOL input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOI
 	diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
 	diprg.diph.dwObj = DIJOFS_Y;
 	diprg.diph.dwHow = DIPH_BYOFFSET;
-	diprg.lMin = -1000; 
+	diprg.lMin = -1000;
 	diprg.lMax = +1000;
  
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
