@@ -42,6 +42,7 @@ using std::deque;
 #include "util/file/decompressor/decompressor.h"
 #include "util/file/decompressor/md_gzip.h"
 #include "util/file/decompressor/md_zip.h"
+#include "util/file/decompressor/md_7z.h"
 
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"
@@ -467,6 +468,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	{
 		&decompressor_gzip,
 		&decompressor_zip,
+		&decompressor_7z,
 		NULL
 	};
 	

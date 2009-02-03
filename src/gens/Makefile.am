@@ -125,6 +125,7 @@ gens_SOURCES = \
 		util/file/save.cpp \
 		util/file/file.cpp \
 		util/file/decompressor/decompressor.c \
+		util/file/decompressor/md_7z.c \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
@@ -219,6 +220,7 @@ noinst_HEADERS = \
 		util/file/file.hpp \
 		util/file/decompressor/decompressor.h \
 		util/file/decompressor/popen_wrapper.h \
+		util/file/decompressor/md_7z.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
@@ -274,6 +276,7 @@ gens_LDADD = \
 		${gens_mdp_static} \
 		../starscream/libstarscream.a \
 		../mdZ80/libmdZ80.a \
+		../lzma/liblzma.a \
 		-lm $(LIBLTDL)
 
 if GENS_MP3
