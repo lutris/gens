@@ -80,7 +80,7 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 		return NULL;
 	
 	file_list_t *file_list_head = NULL;
-	file_list_t *file_list_cur = NULL;
+	file_list_t *file_list_end = NULL;
 	
 	// Find the first ROM file in the Zip archive.
 	int i = unzGoToFirstFile(f);
@@ -91,26 +91,25 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
 		
 		// Allocate memory for the next file list element.
-		if (file_list_cur)
-		{
-			file_list_cur->next = malloc(sizeof(file_list_t));
-			file_list_cur = file_list_cur->next;
-		}
-		else
-		{
-			file_list_cur = malloc(sizeof(file_list_t));
-		}
+		file_list_t *file_list_cur = malloc(sizeof(file_list_t));
 		
 		// Store the ROM file information.
 		file_list_cur->filename = strdup(ROMFileName);
 		file_list_cur->filesize = zinfo.uncompressed_size;
 		file_list_cur->next = NULL;
 		
-		// Add the ROM file information to the list.
 		if (!file_list_head)
+		{
+			// List hasn't been created yet. Create it.
 			file_list_head = file_list_cur;
+			file_list_end = file_list_cur;
+		}
 		else
-			file_list_head->next = file_list_cur;
+		{
+			// Append the file list entry to the end of the list.
+			file_list_end->next = file_list_cur;
+			file_list_end = file_list_cur;
+		}
 		
 		// Go to the next file.
 		i = unzGoToNextFile(f);
