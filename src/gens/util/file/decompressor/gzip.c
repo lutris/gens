@@ -69,7 +69,7 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
 	gzFile gzfd;
 	char buf[1024];
 	
-	gzfd = gzdopen(dup(fileno(zF)), "rb");
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
 		// Error obtaining a GZip file descriptor.
@@ -123,7 +123,8 @@ int decompressor_gzip_get_file(FILE *zF, const char *filename,
 	gzFile gzfd;
 	int retval;
 	
-	gzfd = gzdopen(dup(fileno(zF)), "rb");
+	fseek(zF, 0, SEEK_SET);
+	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
 		// Error obtaining a GZip file descriptor.

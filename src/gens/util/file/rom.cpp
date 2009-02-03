@@ -38,8 +38,9 @@ using std::deque;
 #include "zip_select/zip_select_dialog.hpp"
 #include "gens/gens_window.hpp"
 
-// New file compression handler.
-#include "util/file/compress/compressor.hpp"
+// File Decompressors.
+#include "util/file/decompressor/decompressor.h"
+#include "util/file/decompressor/gzip.h"
 
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"
@@ -460,51 +461,81 @@ ROM_t* ROM::loadSegaCD_BIOS(const string& filename)
  */
 unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 {
-	Compressor *cmp;
-	list<CompressedFile> *files;
-	CompressedFile* selFile;
+	// Array of decompressors.
+	static const decompressor_t* const decompressors[] =
+	{
+		&decompressor_gzip,
+		NULL
+	};
+	
+	const decompressor_t *cmp = NULL;
 	unsigned int romType;
 	
-	// Set up the compressor.
-	cmp = new Compressor(filename, true);
-	if (!cmp->isFileLoaded())
+	// Open the file.
+	FILE *fROM = fopen(filename.c_str(), "rb");
+	if (!fROM)
 	{
-		// Error loading the file.
-		delete cmp;
+		// Error opening the file.
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
+	// Attempt to find a usable decompressor.
+	int zID = 0;
+	while (decompressors[zID])
+	{
+		if (decompressors[zID]->detect_format(fROM))
+		{
+			// Found a usable decompressor.
+			cmp = decompressors[zID];
+			break;
+		}
+		
+		// Next decompressor.
+		zID++;
+	}
+	
+	if (!cmp)
+	{
+		// No usable decompressors found.
+		fprintf(stderr, "ROM::loadROM(): No usable decompressors found.\n");
+		fclose(fROM);
+		Game = NULL;
+		*retROM = NULL;
+		return ROMTYPE_SYS_NONE;
+	}
+	
+	file_list_t *file_list, *sel_file;
+	
 	// Get the file information.
-	files = cmp->getFileInfo();
+	file_list = cmp->get_file_info(fROM, filename.c_str());
 	
 	// Check how many files are available.
-	if (!files || files->empty())
+	if (!file_list)
 	{
 		// No files in the archive.
 		GensUI::msgBox("No files were detected in this archive.", "No Files Detected");
 		
-		if (files)
-			delete files;
-		if (cmp)
-			delete cmp;
+		if (file_list)
+			file_list_t_free(file_list);
 		
-		files = NULL;
-		cmp = NULL;
+		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
-	else if (files->size() == 1)
+	else if (!file_list->next)
 	{
 		// One file is in the archive. Load it.
-		selFile = &(*files->begin());
+		sel_file = file_list;
 	}
 	else
 	{
 		// More than one file is in the archive. Load it.
 		// TODO: Improve this!
+		// TODO: Port ZipSelectDialog to use file_list_t.
+#if 0
 		#if defined(GENS_UI_GTK)
 			ZipSelectDialog *zip = new ZipSelectDialog(GTK_WINDOW(gens_window));
 		#elif defined(GENS_UI_WIN32)
@@ -514,13 +545,15 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		#endif
 		selFile = zip->getFile(files);
 		delete zip;
+#endif
+		sel_file = file_list;
 	}
 	
-	if (!selFile)
+	if (!sel_file)
 	{
 		// No file was selected and/or Cancel was clicked.
-		delete files;
-		delete cmp;
+		file_list_t_free(file_list);
+		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
@@ -528,25 +561,25 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	
 	// Determine the ROM type.
 	unsigned char detectBuf[2048];
-	cmp->getFile(&(*selFile), detectBuf, sizeof(detectBuf));
+	cmp->get_file(fROM, filename.c_str(), sel_file, detectBuf, sizeof(detectBuf));
 	romType = detectFormat(detectBuf);
 	unsigned int romSys = romType & ROMTYPE_SYS_MASK;
 	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
 	{
 		// Unknown ROM type, or this is a SegaCD image.
-		delete files;
-		delete cmp;
+		file_list_t_free(file_list);
+		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
-	if (selFile->filesize > ((6 * 1024 * 1024) + 512))
+	if (sel_file->filesize > ((6 * 1024 * 1024) + 512))
 	{
 		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
-		delete files;
-		delete cmp;
+		file_list_t_free(file_list);
+		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
@@ -556,37 +589,38 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	if (!myROM)
 	{
 		// Memory allocation error
-		delete files;
-		delete cmp;
+		file_list_t_free(file_list);
+		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
-	//fseek(ROM_File, 0, SEEK_SET);
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	int loadedSize = cmp->getFile(&(*selFile), Rom_Data, selFile->filesize);
-	if (loadedSize != selFile->filesize)
+	int loadedSize = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
+	if (loadedSize != sel_file->filesize)
 	{
+		printf("retval: %d; expected: %d\n", loadedSize, sel_file->filesize);
 		// Incorrect filesize.
 		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
+		file_list_t_free(file_list);
+		fclose(fROM);
 		free(myROM);
-		delete files;
-		delete cmp;
 		myROM = NULL;
 		Game = NULL;
 		*retROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
-	//fclose(ROM_File);
+	
+	// Close the ROM file.
+	fclose(fROM);
 	
 	updateROMName(filename.c_str());
-	Rom_Size = selFile->filesize;
+	Rom_Size = sel_file->filesize;
 	
-	// Delete the compression objects.
-	delete files;
-	delete cmp;
+	// Delete the file_list_t.
+	file_list_t_free(file_list);
 	
 	// Deinterleave the ROM, if necessary.
 	if (romType & ROMTYPE_FLAG_INTERLEAVED)
