@@ -56,19 +56,22 @@ typedef int (*decompressor_detect_format)(FILE *zF);
 /**
  * decompressor_get_file_info(): Get information from all files in the archive.
  * @param zF Open file handle.
- * @return Pointer to the first file in the list.
+ * @param filename Filename of the archive.
+ * @return Pointer to the first file in the list, or NULL on error.
  */
-typedef file_list_t* (*decompressor_get_file_info)(FILE *zF);
+typedef file_list_t* (*decompressor_get_file_info)(FILE *zF, const char *filename);
 
 /**
  * decompressor_get_file(): Get a file from the archive.
  * @param zF Open file handle.
+ * @param filename Filename of the archive.
  * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
- * @return Number of bytes read.
+ * @return Number of bytes read, or -1 on error.
  */
-typedef int (*decompressor_get_file)(FILE *zF, file_list_t *file_list,
+typedef int (*decompressor_get_file)(FILE *zF, const char *filename,
+				     file_list_t *file_list,
 				     unsigned char *buf, const int size);
 
 /**
