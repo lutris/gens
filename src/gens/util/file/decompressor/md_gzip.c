@@ -65,6 +65,9 @@ static int decompressor_gzip_detect_format(FILE *zF)
  */
 static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename)
 {
+	// Unused parameters.
+	((void)zF);
+	
 	// GZip-compressed files can only have one file.
 	gzFile gzfd;
 	char buf[1024];
@@ -113,17 +116,16 @@ int decompressor_gzip_get_file(FILE *zF, const char *filename,
 			       unsigned char *buf, const int size)
 {
 	// Unused parameters.
-	((void)filename);
+	((void)zF);
 	((void)file_list);
 	
-	// All parameters (except filename and file_list) must be specified.
-	if (!zF || !buf || (size < 0))
+	// All parameters (except zF and file_list) must be specified.
+	if (!filename || !buf || (size < 0))
 		return -1;
 	
 	gzFile gzfd;
 	int retval;
 	
-	fseek(zF, 0, SEEK_SET);
 	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
 	{
