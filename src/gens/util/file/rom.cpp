@@ -40,7 +40,7 @@ using std::deque;
 
 // File Decompressors.
 #include "util/file/decompressor/decompressor.h"
-#include "util/file/decompressor/gzip.h"
+#include "util/file/decompressor/md_gzip.h"
 
 #include "mdp/mdp_constants.h"
 #include "plugins/eventmgr.hpp"

@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "gzip.h"
+#include "md_gzip.h"
 
 #include <stdio.h>
 #include <stdlib.h>
