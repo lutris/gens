@@ -20,11 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_DECOMPRESSOR_GZIP_H
-#define GENS_DECOMPRESSOR_GZIP_H
+#ifndef GENS_DECOMPRESSOR_MD_GZIP_H
+#define GENS_DECOMPRESSOR_MD_GZIP_H
 
 #include "decompressor.h"
 
 extern decompressor_t decompressor_gzip;
 
-#endif /* GENS_DECOMPRESSOR_GZIP_H */
+#endif /* GENS_DECOMPRESSOR_MD_GZIP_H */
