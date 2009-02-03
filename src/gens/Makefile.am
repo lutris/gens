@@ -124,13 +124,7 @@ gens_SOURCES = \
 		util/file/rom.cpp \
 		util/file/save.cpp \
 		util/file/file.cpp \
-		util/file/compress/compressor.cpp \
-		util/file/compress/subcompressor.cpp \
-		util/file/compress/7z.cpp \
-		util/file/compress/rar.cpp \
 		util/file/decompressor/decompressor.c \
-		util/file/decompressor/md_gzip.c \
-		util/file/decompressor/md_zip.c \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
@@ -166,8 +160,8 @@ endif
 
 if GENS_ZLIB
 gens_SOURCES += \
-		util/file/compress/gzip.cpp \
-		util/file/compress/Zip.cpp
+		util/file/decompressor/md_gzip.c \
+		util/file/decompressor/md_zip.c
 endif
 
 noinst_HEADERS = \
@@ -223,14 +217,7 @@ noinst_HEADERS = \
 		util/file/rom.hpp \
 		util/file/save.hpp \
 		util/file/file.hpp \
-		util/file/compress/compressor.hpp \
-		util/file/compress/subcompressor.hpp \
-		util/file/compress/7z.hpp \
-		util/file/compress/rar.hpp \
-		util/file/compress/popen_wrapper.h \
 		util/file/decompressor/decompressor.h \
-		util/file/decompressor/md_gzip.h \
-		util/file/decompressor/md_zip.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
@@ -270,8 +257,8 @@ endif
 
 if GENS_ZLIB
 noinst_HEADERS += \
-		util/file/compress/gzip.hpp \
-		util/file/compress/Zip.hpp
+		util/file/decompressor/md_gzip.h \
+		util/file/decompressor/md_zip.h
 endif
 
 
