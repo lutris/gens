@@ -125,9 +125,9 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 
 
 /**
- * decompressor_gzip_get_file(): Get a file from the archive.
- * @param zF Open file handle. (Unused in the GZip handler.)
- * @param filename Filename of the archive. (Unused in the GZip handler.)
+ * decompressor_zip_get_file(): Get a file from the archive.
+ * @param zF Open file handle. (Unused in the Zip handler.)
+ * @param filename Filename of the archive.
  * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
