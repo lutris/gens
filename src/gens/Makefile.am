@@ -218,6 +218,7 @@ noinst_HEADERS = \
 		util/file/save.hpp \
 		util/file/file.hpp \
 		util/file/decompressor/decompressor.h \
+		util/file/decompressor/popen_wrapper.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \

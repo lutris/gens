@@ -12,7 +12,7 @@ gens_SOURCES += \
 		input/input_dinput_t.c \
 		audio/audio_dsound_t.c \
 		audio/audio_dsound.cpp \
-		util/file/compress/popen_wrapper.c \
+		util/file/decompressor/popen_wrapper.c \
 		ui/win32/charset.cpp \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.cpp \
