@@ -114,6 +114,7 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 		// Error opening the file.
 		SzArEx_Free(&db, &allocImp);
 		File_Close(&archiveStream.file);
+		return NULL;
 	}
 	
 	file_list_t *file_list_head = NULL;
