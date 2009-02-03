@@ -85,7 +85,7 @@ HWND create_bios_misc_files_window(void)
 	}
 	
 	// Create the window class.
-	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	WndClass.style = 0;
 	WndClass.lpfnWndProc = BIOS_Misc_Files_Window_WndProc;
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;

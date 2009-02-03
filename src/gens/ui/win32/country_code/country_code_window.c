@@ -97,7 +97,7 @@ HWND create_country_code_window(void)
 	}
 	
 	// Create the window class.
-	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	WndClass.style = 0;
 	WndClass.lpfnWndProc = Country_Code_Window_WndProc;
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;

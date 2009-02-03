@@ -78,7 +78,7 @@ void vlopt_window_show(void *parent)
 	// Create the window class.
 	if (vlopt_window_wndclass.lpfnWndProc != vlopt_window_wndproc)
 	{
-		vlopt_window_wndclass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+		vlopt_window_wndclass.style = 0;
 		vlopt_window_wndclass.lpfnWndProc = vlopt_window_wndproc;
 		vlopt_window_wndclass.cbClsExtra = 0;
 		vlopt_window_wndclass.cbWndExtra = 0;

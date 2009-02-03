@@ -81,7 +81,7 @@ HWND initGens_hWnd(void)
 	// This function simply initializes the base window.
 	// It's needed because DirectX needs the window handle in order to set cooperative levels.
 	
-	WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	WndClass.style = CS_HREDRAW | CS_VREDRAW;
 	WndClass.lpfnWndProc = Gens_Window_WndProc;
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;

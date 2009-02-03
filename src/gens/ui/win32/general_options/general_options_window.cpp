@@ -107,7 +107,7 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	// Create the window class.
 	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
 	{
-		m_WndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+		m_WndClass.style = 0;
 		m_WndClass.lpfnWndProc = WndProc_STATIC;
 		m_WndClass.cbClsExtra = 0;
 		m_WndClass.cbWndExtra = 0;
