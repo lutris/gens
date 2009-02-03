@@ -52,7 +52,7 @@ static int decompressor_gzip_detect_format(FILE *zF)
 {
 	unsigned char buf[2];
 	fseek(zF, 0, SEEK_SET);
-	fread(buf, 2, sizeof(unsigned char), zF);
+	fread(buf, sizeof(unsigned char), 2, zF);
 	return (buf[0] == 0x1F && buf[1] == 0x8B);
 }
 
