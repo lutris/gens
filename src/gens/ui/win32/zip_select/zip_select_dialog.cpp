@@ -60,18 +60,18 @@ ZipSelectDialog::~ZipSelectDialog()
 /**
  * getFile(): Opens the Zip File Selection Dialog.
  */
-CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
+file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 {
-	if (!lst)
+	if (!file_list)
 	{
 		// NULL list pointer passed. Don't do anything.
 		return NULL;
 	}
 	
-	m_fileList = lst;
+	m_fileList = file_list;
 	
-	CompressedFile* file;
-	file = reinterpret_cast<CompressedFile*>(DialogBoxParam(
+	file_list_t *file;
+	file = reinterpret_cast<file_list_t*>(DialogBoxParam(
 				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
 				  m_Parent,
 				  reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
@@ -127,15 +127,17 @@ void ZipSelectDialog::init(HWND hWndDlg)
 	
 	// Reserve space in the listbox for the file listing.
 	// Assuming maximum of 128 bytes per filename.
-	SendMessage(lstFiles, LB_INITSTORAGE, static_cast<WPARAM>(m_fileList->size()), 128);
+	SendMessage(lstFiles, LB_INITSTORAGE, static_cast<WPARAM>(m_fileList->filesize), 128);
 	
 	// Add all strings.
-	list<CompressedFile>::iterator lstIter;
-	int index;
-	for (lstIter = m_fileList->begin(); lstIter != m_fileList->end(); lstIter++)
+	file_list_t *file_list_cur = m_fileList;
+	while (file_list_cur)
 	{
-		index = ListBox_AddString(lstFiles, (*lstIter).filename.c_str());
-		ListBox_SetItemData(lstFiles, index, &(*lstIter));
+		int index = ListBox_AddString(lstFiles, file_list_cur->filename);
+		ListBox_SetItemData(lstFiles, index, file_list_cur);
+		
+		// Next file.
+		file_list_cur = file_list_cur->next;
 	}
 	
 	// Select the first item by default.

@@ -23,7 +23,7 @@
 #ifndef GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP
 #define GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP
 
-#include "util/file/compress/compressedfile.hpp"
+#include "util/file/decompressor/decompressor.h"
 
 #ifdef __cplusplus
 
@@ -38,13 +38,13 @@ class ZipSelectDialog : public WndBase
 		ZipSelectDialog(HWND parent = NULL);
 		~ZipSelectDialog();
 		
-		CompressedFile* getFile(std::list<CompressedFile>* lst);
+		file_list_t* getFile(file_list_t *file_list);
 		
 		void init(HWND hWndDlg);
 	
 	protected:
 		HWND m_Parent;
-		std::list<CompressedFile> *m_fileList;
+		file_list_t *m_fileList;
 };
 
 #endif /* __cplusplus */
