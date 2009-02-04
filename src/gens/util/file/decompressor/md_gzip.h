@@ -25,6 +25,14 @@
 
 #include "decompressor.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern decompressor_t decompressor_gzip;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GENS_DECOMPRESSOR_MD_GZIP_H */
