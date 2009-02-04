@@ -256,8 +256,8 @@ int decompressor_7z_get_file(FILE *zF, const char *filename,
 		}
 		
 		// Copy the 7z buffer to the output buffer.
-		extractedSize = (size < outBufferSize ? size : outBufferSize);
-		memcpy(buf, outBuffer, extractedSize);
+		extractedSize = (size < outSizeProcessed ? size : outSizeProcessed);
+		memcpy(buf, outBuffer + offset, extractedSize);
 		
 		// ROM processed.
 		break;
