@@ -125,6 +125,8 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 	for (i = 0; i < db.db.NumFiles; i++)
 	{
 		CSzFileItem *f = db.db.Files + i;
+		if (f->IsDir)
+			continue;
 		
 		// Allocate memory for the next file list element.
 		file_list_t *file_list_cur = malloc(sizeof(file_list_t));
@@ -171,65 +173,102 @@ int decompressor_7z_get_file(FILE *zF, const char *filename,
 			     file_list_t *file_list,
 			     unsigned char *buf, const int size)
 {
-	return -1;
-#if 0
+	// Unused parameters.
+	((void)zF);
+	
 	// All parameters (except zF) must be specified.
 	if (!filename || !file_list || !buf || (size < 0))
 		return -1;
 	
-	unzFile f = unzOpen(filename);
-	if (!f)
+	CFileInStream archiveStream;
+	CLookToRead lookStream;
+	CSzArEx db;
+	SRes res;
+	ISzAlloc allocImp;
+	ISzAlloc allocTempImp;
+	
+	// Open the 7z file.
+	if (InFile_Open(&archiveStream.file, filename))
 		return -1;
 	
-	// Locate the ROM in the Zip file.
-	if (unzLocateFile(f, file_list->filename, 1) != UNZ_OK ||
-	    unzOpenCurrentFile(f) != UNZ_OK)
+	FileInStream_CreateVTable(&archiveStream);
+	LookToRead_CreateVTable(&lookStream, False);
+	
+	lookStream.realStream = &archiveStream.s;
+	LookToRead_Init(&lookStream);
+	
+	allocImp.Alloc = SzAlloc;
+	allocImp.Free = SzFree;
+	
+	allocTempImp.Alloc = SzAllocTemp;
+	allocTempImp.Free = SzFreeTemp;
+	
+	CrcGenerateTable();
+	
+	SzArEx_Init(&db);
+	res = SzArEx_Open(&db, &lookStream.s, &allocImp, &allocTempImp);
+	if (res != SZ_OK)
 	{
-		// Error loading the ROM file.
-		// TODO: Show a message box.
-		//GensUI::msgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");
-		fprintf(stderr, "%s(): Error loading the ROM file from the ZIP archive.\n", __func__);
-		unzClose(f);
+		// Error opening the file.
+		SzArEx_Free(&db, &allocImp);
+		File_Close(&archiveStream.file);
 		return -1;
 	}
 	
-	// Decompress the ROM.
-	int zResult = unzReadCurrentFile(f, buf, size);
-	unzClose(f);
-	if ((zResult <= 0) || (zResult != size))
+	UInt32 blockIndex = 0xFFFFFFFF;	/* it can have any value before first call (if outBuffer = 0) */
+	Byte *outBuffer = NULL;		/* it must be 0 before first call for each new archive. */
+	size_t outBufferSize = 0; 	/* it can have any value before first call (if outBuffer = 0) */
+	
+	// Extract the specified file.
+	unsigned int i;
+	const unsigned int numFiles = db.db.NumFiles;
+	size_t extractedSize = 0;
+	
+	for (i = 0; i < numFiles; i++)
 	{
-		char tmp[64];
-		strcpy(tmp, "Error in ZIP file: \n");
+		size_t offset;
+		size_t outSizeProcessed;
 		
-		switch (zResult)
+		CSzFileItem *f = db.db.Files + i;
+		if (f->IsDir)
+			continue;
+		
+#ifdef GENS_OS_WIN32
+		if (strcasecmp(file_list->filename, f->Name) != 0)
+#else /* !GENS_OS_WIN32 */
+		if (strcmp(file_list->filename, f->Name) != 0)
+#endif /* GENS_OS_WIN32 */
 		{
-			case UNZ_ERRNO:
-				strcat(tmp, "Unknown...");
-				break;
-			case UNZ_EOF:
-				strcat(tmp, "Unexpected end of file.");
-				break;
-			case UNZ_PARAMERROR:
-				strcat(tmp, "Parameter error.");
-				break;
-			case UNZ_BADZIPFILE:
-				strcat(tmp, "Bad ZIP file.");
-				break;
-			case UNZ_INTERNALERROR:
-				strcat(tmp, "Internal error.");
-				break;
-			case UNZ_CRCERROR:
-				strcat(tmp, "CRC error.");
-				break;
+			// Not the correct file.
+			continue;
 		}
 		
-		// TODO: Show a message box.
-		//GensUI::msgBox(tmp, "ZIP File Error");
-		fprintf(stderr, "%s(): %s\n", __func__, tmp);
-		return -1;
+		// Found the file.
+		res = SzAr_Extract(&db, &lookStream.s, i,
+				   &blockIndex, &outBuffer, &outBufferSize,
+				   &offset, &outSizeProcessed,
+				   &allocImp, &allocTempImp);
+		
+		if (res != SZ_OK)
+		{
+			// Error extracting.
+			break;
+		}
+		
+		// Copy the 7z buffer to the output buffer.
+		extractedSize = (size < outBufferSize ? size : outBufferSize);
+		memcpy(buf, outBuffer, extractedSize);
+		
+		// ROM processed.
+		break;
 	}
 	
-	// Return the filesize.
-	return size;
-#endif
+	// Close the 7z file.
+	SzArEx_Free(&db, &allocImp);
+	File_Close(&archiveStream.file);
+	
+	if (i >= numFiles)
+		return -1;
+	
+	return extractedSize;
 }
