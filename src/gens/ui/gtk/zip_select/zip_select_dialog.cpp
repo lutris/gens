@@ -159,9 +159,9 @@ static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *ev
 /**
  * getFile(): Get a file using the Zip Select dialog.
  */
-CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
+file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 {
-	if (!lst)
+	if (!file_list)
 	{
 		// NULL list pointer passed. Don't do anything.
 		return NULL;
@@ -170,9 +170,7 @@ CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 	gint dialogResponse;
 	GtkTreeSelection *selection;
 	gboolean valid;
-	list<CompressedFile>::iterator lstIter;
 	GtkTreeIter iter;
-	CompressedFile *selFile;
 	
 	// Stores the entries in the TreeView.
 	GtkListStore *lstdataFiles = NULL;
@@ -189,11 +187,13 @@ CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(m_lstFiles), colText);
 	
 	// Add all files from the CompressedFile list.
-	for (lstIter = lst->begin(); lstIter != lst->end(); lstIter++)
+	file_list_t *file_list_cur = file_list;
+	while (file_list_cur)
 	{
 		gtk_list_store_append(lstdataFiles, &iter);
 		gtk_list_store_set(GTK_LIST_STORE(lstdataFiles), &iter,
-				   0, (*lstIter).filename.c_str(), 1, &(*lstIter), -1);
+				   0, file_list_cur->filename, 1, file_list_cur, -1);
+		file_list_cur = file_list_cur->next;
 	}
 	
 	// Select the first item by default.
@@ -219,7 +219,7 @@ CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 		if (gtk_tree_selection_iter_is_selected(selection, &iter))
 		{
 			// Found the selected file.
-			gtk_tree_model_get(GTK_TREE_MODEL(lstdataFiles), &iter, 1, &selFile, -1);
+			gtk_tree_model_get(GTK_TREE_MODEL(lstdataFiles), &iter, 1, &file_list_cur, -1);
 			break;
 		}
 		else
@@ -229,6 +229,6 @@ CompressedFile* ZipSelectDialog::getFile(list<CompressedFile>* lst)
 		}
 	}
 	
-	// Return the selected CompressedFile*.
-	return selFile;
+	// Return the selected file_list_t*.
+	return file_list_cur;
 }

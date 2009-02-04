@@ -29,7 +29,7 @@
 #include <list>
 
 #include "wndbase.hpp"
-#include "util/file/compress/compressedfile.hpp"
+#include "util/file/decompressor/decompressor.h"
 
 class ZipSelectDialog : public WndBase
 {
@@ -37,7 +37,7 @@ class ZipSelectDialog : public WndBase
 		ZipSelectDialog(GtkWindow *parent = NULL);
 		~ZipSelectDialog();
 		
-		CompressedFile* getFile(std::list<CompressedFile>* lst);
+		file_list_t* getFile(file_list_t *file_list);
 	
 	protected:
 		GtkWidget *m_lstFiles;
