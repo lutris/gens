@@ -1,8 +1,8 @@
-Gens/GS v2.15.5/GS-r6+ (Gens/GS)
+Gens/GS v2.15.5/GS-r7 (Gens/GS)
 
 Copyright (c) 1999-2002 by Stéphane Dallongeville
 Copyright (c) 2003-2004 by Stéphane Akhoun
-Copyright (c) 2008 by David Korth
+Copyright (c) 2008-2009 by David Korth
 
 This version of Gens is maintained by David Korth.
 E-mail: gerbilsoft@verizon.net
@@ -14,37 +14,77 @@ http://www.sonicretro.org
 
 What is Gens/GS?
 
-Gens v2.15.5/GS-r6+ is David Korth's fork of Gens, initially based
+Gens v2.15.5/GS-r7 is David Korth's fork of Gens, initially based
 on Gens for Linux v2.15.5. The number after the "r" indicates the
 Gens/GS release. Releases are usually made after a significant new
 feature has been added, with minor releases if a major bug is found.
 
 ================================================================
 
-Milestone 6 introduces the following new features:
+Release 7 introduces the following new features:
 
-- Mega Drive Plugins v0.1.0. The initial version of the plugin system
-  only supports render plugins and only if they're built into the
-  main executable. A later version will add support for external
-  plugins (.dll on Windows, .so on Linux), as well as more types of
-  plugins, such as netplay, debugging, and movie recording.
+- Mega Drive Plugins v1.0.0. This major update to the plugins system
+  adds support for external plugins (.dll on Windows, .so on Linux),
+  a swell as support for more than just rendering plugins.
 
-- doc/MDP.txt contains the MDP Interface Specifiction Version 0.1.0.
+- doc/MDP.txt contains the MDP Interface Specifiction Version 1.0.0.
   This document is licensed under the GNU Free Documentation License v1.3.
 
-- All renderers now support 32-bit color.
+- The Game Genie functionality has been moved to an MDP plugin.
 
-- [Win32] hq2x has been fixed.
+- New MDP Plugin: VDP Layer Options. This lets you adjust the visible layers
+  on screen, so e.g. you can hide sprites, swap scroll priorities, and lock
+  the palette to prevent color changes.
 
-- Scale2x now has optimized C and x86 mmx implementations.
+- New renderers:
+  - EPX (ported from Gens Rerecording)
+  - EPX Plus (ported from Gens Rerecording)
+  - Super 2xSaI (ported from Gens Plus)
+  - Super Eagle (ported from Gens Plus)
 
-- New renderers: Scale3x, Scale4x, hq3x, hq4x.
+- [Win32] Ported the GDI video backend from Gens Plus. It still has
+  a few bugs, but it mostly works.
 
-- Added a 32-bit color asm version of the Fast Blur effect, with mmx
-  optimizations if available.
+- Extended controller configuration format. The new configuration format
+  allows for up to 128 axes, 256 buttons, and 64 POV hats, whereas the
+  old configuration format only allowed for 6 axes [5 axes on Win32],
+  112 buttons, and 4 POV hats. This mainly affects the Linux version, since
+  Linux usually reports all axes as axes instead of mapping some axes to
+  POV hats, and some newer controllers (e.g. the Xbox 360 controller) have
+  more than 6 axes. Older configurations are automatically updated to use
+  the new controller configuration format.
 
-Milestone 6 fixes the following bugs:
+- The reverse-engineered 32X firmware, written by DevSter, is now included
+  in Gens/GS. If you do not have the original Sega 32X firmware files, the
+  reverse-engineered ones are used instead.
 
-- [SDL] Ctrl+Q did not work in fullscreen mode.
+Release 7 fixes the following bugs:
 
-For more changes, see the ChangeLog.txt file.
+- Dragging and dropping a ROM image onto the Gens/GS window will now
+  synchronize the menus. This bug was reported by Tets on the Sonic
+  Retro forums.
+
+- Loading a GSX savestate file that is not in GSX format will now show
+  an error instead of crashing. Apparently, Gens Plus GZips its savestate
+  files when saving by default. This bug was reported by SoNick in #retro.
+
+- [GTK+] Copied g_uri_unescape_string() (and dependent functions) from
+  GLib 2.18.4 into Gens/GS. This function was introduced in GLib 2.16,
+  but Gens/GS should be compatible with versions of GLib 2.4 and later.
+
+Release 7 has the following low-level code changes:
+
+- The video, audio, and input subsystems have been ported back to C.
+  The C++ system was too awkward and had too much overhead.
+
+- Similarly, the decompression subsystem has been ported back to C.
+  In addition, the LZMA SDK is now built into Gens/GS, so 7z archives
+  can be read without an external 7z binary.
+
+- Initial port of the Z80 emulator to C. The Z80 emulator has been moved
+  out of the src/gens directory and into its own directory, src/mdZ80.
+  Currently, the only functions that have been ported to C are the helper
+  functions. The actual emulation code is currently being worked on in the
+  mdZ80 branch on the Gens/GS git repository.
+
+For information about previous releases, see the ChangeLog.txt file.
