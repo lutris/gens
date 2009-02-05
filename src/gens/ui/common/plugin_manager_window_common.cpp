@@ -52,6 +52,9 @@ unsigned int PluginManagerWindow::png_datapos;
  */
 void PluginManagerWindow::png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
+	// Mark unused parameters.
+	((void)png_ptr);
+	
 	// Make sure there's enough data available.
 	assert(png_datapos + length <= png_datalen);
 	
