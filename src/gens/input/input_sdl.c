@@ -202,10 +202,12 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 			sdlev.type = SDL_KEYDOWN;
 			sdlev.key.state = SDL_PRESSED;
 			break;
+		
 		case GDK_KEY_RELEASE:
 			sdlev.type = SDL_KEYUP;
 			sdlev.key.state = SDL_RELEASED;
 			break;
+		
 		default:
 			fputs("Can't happen: keysnoop got a bad type\n", stderr);
 			return 0;
