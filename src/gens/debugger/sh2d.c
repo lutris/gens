@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "sh2d.h"
+
 #define SH2D_VERSION "0.2"
 
 #define ZERO_F  0	/* 0 format */
