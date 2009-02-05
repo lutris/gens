@@ -25,7 +25,7 @@ Release 7 introduces the following new features:
 
 - Mega Drive Plugins v1.0.0. This major update to the plugins system
   adds support for external plugins (.dll on Windows, .so on Linux),
-  a swell as support for more than just rendering plugins.
+  as well as support for more than just rendering plugins.
 
 - doc/MDP.txt contains the MDP Interface Specifiction Version 1.0.0.
   This document is licensed under the GNU Free Documentation License v1.3.
@@ -85,6 +85,6 @@ Release 7 has the following low-level code changes:
   out of the src/gens directory and into its own directory, src/mdZ80.
   Currently, the only functions that have been ported to C are the helper
   functions. The actual emulation code is currently being worked on in the
-  mdZ80 branch on the Gens/GS git repository.
+  mdZ80 branch in the Gens/GS git repository.
 
 For information about previous releases, see the ChangeLog.txt file.
