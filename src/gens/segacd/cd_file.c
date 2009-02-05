@@ -24,7 +24,7 @@
 struct _file_track Tracks[100];
 
 char cp_buf[2560];
-char Track_Played;
+unsigned char Track_Played;
 
 int FILE_Init(void)
 {

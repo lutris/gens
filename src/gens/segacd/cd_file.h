@@ -22,7 +22,7 @@ struct _file_track {
 extern struct _file_track Tracks[100];
 
 extern char cp_buf[2560];
-extern char Track_Played;
+extern unsigned char Track_Played;
 
 
 int FILE_Init(void);
