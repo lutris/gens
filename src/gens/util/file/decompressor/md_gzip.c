@@ -30,9 +30,10 @@
 // GZip decompressor functions.
 static int decompressor_gzip_detect_format(FILE *zF);
 static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename);
-static int decompressor_gzip_get_file(FILE *zF, const char* filename,
-				      file_list_t *file_list,
-				      unsigned char *buf, const int size);
+static size_t decompressor_gzip_get_file(FILE *zF, const char* filename,
+					 file_list_t *file_list,
+					 unsigned char *buf,
+					 const size_t size);
 
 // GZip decompressor struct.
 decompressor_t decompressor_gzip =
@@ -90,7 +91,7 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
 	gzclose(gzfd);
 	
 	// Allocate memory for the file_list_t.
-	file_list_t *file_list = malloc(sizeof(file_list_t));
+	file_list_t *file_list = (file_list_t*)malloc(sizeof(file_list_t));
 	
 	// Set the elements of the list.
 	file_list->filesize = filesize;
@@ -109,22 +110,22 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
  * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
- * @return Number of bytes read, or -1 on error.
+ * @return Number of bytes read, or 0 on error.
  */
-int decompressor_gzip_get_file(FILE *zF, const char *filename,
-			       file_list_t *file_list,
-			       unsigned char *buf, const int size)
+size_t decompressor_gzip_get_file(FILE *zF, const char *filename,
+				  file_list_t *file_list,
+				  unsigned char *buf,
+				  const size_t size)
 {
 	// Unused parameters.
 	((void)zF);
 	((void)file_list);
 	
 	// All parameters (except zF and file_list) must be specified.
-	if (!filename || !buf || (size < 0))
-		return -1;
+	if (!filename || !buf || !size)
+		return 0;
 	
 	gzFile gzfd;
-	int retval;
 	
 	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
@@ -134,7 +135,7 @@ int decompressor_gzip_get_file(FILE *zF, const char *filename,
 	}
 	
 	// Decompress the GZip file into memory.
-	retval = gzread(gzfd, buf, size);
+	size_t retval = gzread(gzfd, buf, size);
 	gzclose(gzfd);
 	return retval;
 }

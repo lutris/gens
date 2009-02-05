@@ -32,9 +32,9 @@
 // Zip decompressor functions.
 static int decompressor_zip_detect_format(FILE *zF);
 static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filename);
-static int decompressor_zip_get_file(FILE *zF, const char* filename,
-				     file_list_t *file_list,
-				     unsigned char *buf, const int size);
+static size_t decompressor_zip_get_file(FILE *zF, const char* filename,
+					file_list_t *file_list,
+					unsigned char *buf, const size_t size);
 
 // Zip decompressor struct.
 decompressor_t decompressor_zip =
@@ -91,7 +91,7 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
 		
 		// Allocate memory for the next file list element.
-		file_list_t *file_list_cur = malloc(sizeof(file_list_t));
+		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
 		
 		// Store the ROM file information.
 		file_list_cur->filename = strdup(ROMFileName);
@@ -130,19 +130,19 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
  * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
- * @return Number of bytes read, or -1 on error.
+ * @return Number of bytes read, or 0 on error.
  */
-int decompressor_zip_get_file(FILE *zF, const char *filename,
-			      file_list_t *file_list,
-			      unsigned char *buf, const int size)
+size_t decompressor_zip_get_file(FILE *zF, const char *filename,
+				 file_list_t *file_list,
+				 unsigned char *buf, const size_t size)
 {
 	// All parameters (except zF) must be specified.
-	if (!filename || !file_list || !buf || (size < 0))
-		return -1;
+	if (!filename || !file_list || !buf || size)
+		return 0;
 	
 	unzFile f = unzOpen(filename);
 	if (!f)
-		return -1;
+		return 0;
 	
 	// Locate the ROM in the Zip file.
 	if (unzLocateFile(f, file_list->filename, 1) != UNZ_OK ||

@@ -598,7 +598,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	int loadedSize = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
+	size_t loadedSize = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
 	if (loadedSize != sel_file->filesize)
 	{
 		printf("retval: %d; expected: %d\n", loadedSize, sel_file->filesize);

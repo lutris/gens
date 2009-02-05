@@ -40,9 +40,9 @@
 // 7z decompressor functions.
 static int decompressor_7z_detect_format(FILE *zF);
 static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename);
-static int decompressor_7z_get_file(FILE *zF, const char* filename,
-				    file_list_t *file_list,
-				    unsigned char *buf, const int size);
+static size_t decompressor_7z_get_file(FILE *zF, const char* filename,
+				       file_list_t *file_list,
+				       unsigned char *buf, const size_t size);
 
 // 7z decompressor struct.
 decompressor_t decompressor_7z =
@@ -129,7 +129,7 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 			continue;
 		
 		// Allocate memory for the next file list element.
-		file_list_t *file_list_cur = malloc(sizeof(file_list_t));
+		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
 		
 		// Store the ROM file information.
 		file_list_cur->filename = strdup(f->Name);
@@ -167,17 +167,17 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
  * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
- * @return Number of bytes read, or -1 on error.
+ * @return Number of bytes read, or 0 on error.
  */
-int decompressor_7z_get_file(FILE *zF, const char *filename,
-			     file_list_t *file_list,
-			     unsigned char *buf, const int size)
+size_t decompressor_7z_get_file(FILE *zF, const char *filename,
+				file_list_t *file_list,
+				unsigned char *buf, const size_t size)
 {
 	// Unused parameters.
 	((void)zF);
 	
 	// All parameters (except zF) must be specified.
-	if (!filename || !file_list || !buf || (size < 0))
+	if (!filename || !file_list || !buf || !size)
 		return -1;
 	
 	CFileInStream archiveStream;
@@ -189,7 +189,7 @@ int decompressor_7z_get_file(FILE *zF, const char *filename,
 	
 	// Open the 7z file.
 	if (InFile_Open(&archiveStream.file, filename))
-		return -1;
+		return 0;
 	
 	FileInStream_CreateVTable(&archiveStream);
 	LookToRead_CreateVTable(&lookStream, False);
@@ -212,7 +212,7 @@ int decompressor_7z_get_file(FILE *zF, const char *filename,
 		// Error opening the file.
 		SzArEx_Free(&db, &allocImp);
 		File_Close(&archiveStream.file);
-		return -1;
+		return 0;
 	}
 	
 	UInt32 blockIndex = 0xFFFFFFFF;	/* it can have any value before first call (if outBuffer = 0) */
@@ -268,7 +268,7 @@ int decompressor_7z_get_file(FILE *zF, const char *filename,
 	File_Close(&archiveStream.file);
 	
 	if (i >= numFiles)
-		return -1;
+		return 0;
 	
 	return extractedSize;
 }
