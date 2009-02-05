@@ -40,10 +40,6 @@
 #include "scalebit_2x.h"
 #include "scale2x.h"
 
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
-
 #include <assert.h>
 #include <stdlib.h>
 

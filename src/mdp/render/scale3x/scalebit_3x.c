@@ -40,10 +40,6 @@
 #include "scalebit_3x.h"
 #include "scale3x.h"
 
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
-
 #include <assert.h>
 #include <stdlib.h>
 
