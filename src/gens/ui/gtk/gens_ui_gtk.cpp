@@ -326,21 +326,28 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 		case ROMFile:
 			UI_GTK_AddFilter_ROMFile(dialog);
 			break;
+		
 		case SavestateFile:
 			UI_GTK_AddFilter_SavestateFile(dialog);
 			break;
+		
 		case CDImage:
 			UI_GTK_AddFilter_CDImage(dialog);
 			break;
+		
 		case ConfigFile:
 			UI_GTK_AddFilter_ConfigFile(dialog);
 			break;
+		
 		case GYMFile:
 			UI_GTK_AddFilter_GYMFile(dialog);
 			break;
+		
+		case AnyFile:
 		default:
 			break;
 	}
+	
 	// All Files filter
 	all_files_filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(all_files_filter, "All Files");
