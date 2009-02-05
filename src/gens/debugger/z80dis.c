@@ -1,3 +1,27 @@
+/***************************************************************************
+ * Gens: Z80 disassembler.                                                 *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
+#include "z80dis.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -147,6 +171,7 @@ static const char MnemonicsXX[256][16] =
 	"RET M", "LD SP,I%", "JP M,#h", "EI", "CALL M,#h", "PFX_FD", "CP *h", "RST 38h"
 };
 
+
 /**
  * z80dis(): Disassemble Z80 code.
  * @param buf ???
@@ -154,7 +179,7 @@ static const char MnemonicsXX[256][16] =
  * @param str ???
  * @return ???
  */
-int z80dis(unsigned char *buf, int *Counter, char str[128])
+int z80dis(unsigned char *buf, unsigned int *Counter, char str[128])
 {
 	char S[80], T[80], U[80], *P, *R;
 	int I, J;
@@ -162,12 +187,12 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 	if ((I = buf[*Counter]) < 0)
 		return (0);
 	
-	memset (S, 0, 80);
-	memset (T, 0, 80);
-	memset (U, 0, 80);
-	memset (str, 0, 128);
+	memset(S, 0, 80);
+	memset(T, 0, 80);
+	memset(U, 0, 80);
+	memset(str, 0, 128);
 	
-	sprintf (str, "%.4X: %.2X", (*Counter)++, I);
+	sprintf(str, "%.4X: %.2X", (*Counter)++, I);
 	
 	switch (I)
 	{
@@ -203,7 +228,7 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 			else
 			{
 				strcpy(S, MnemonicsXX[I]);
-				if (P = strchr(S, '%'))
+				if ((P = strchr(S, '%')))
 					*P = 'Y';
 			}
 			(*Counter)++;
@@ -226,7 +251,7 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 		else
 		{
 			strcpy(S, MnemonicsXX[I]);
-			if (P = strchr(S, '%'))
+			if ((P = strchr(S, '%')))
 				*P = 'X';
 		}
 		(*Counter)++;
@@ -235,7 +260,7 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 		strcpy(S, Mnemonics[I]);
 	}
 	
-	if (P = strchr(S, '*'))
+	if ((P = strchr(S, '*')))
 	{
 		if ((I = buf[*Counter]) < 0)
 			return 0;
@@ -243,7 +268,7 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 		*P++ = '\0';
 		(*Counter)++;
 		sprintf(T, "%s%hX", S, I);
-		if (R = strchr(P, '*'))
+		if ((R = strchr(P, '*')))
 		{
 			if ((I = buf[*Counter]) < 0)
 				return 0;
@@ -255,7 +280,7 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 		else
 			strcat(T, P);
 	}
-	else if (P = strchr(S, '#'))
+	else if ((P = strchr(S, '#')))
 	{
 		if ((I = buf[*Counter]) < 0)
 			return 0;
@@ -279,12 +304,13 @@ int z80dis(unsigned char *buf, int *Counter, char str[128])
 	return 1;
 }
 
+
 /**
- * z80log(): ???
- * @param PC ???
- * @return ???
+ * z80log(): Z80 logging function.
+ * @param PC Program counter.
+ * @return 0 on success; non-zero on error.
  */
-int __fastcall z80log (unsigned int PC)
+int FASTCALL z80log(unsigned int PC)
 {
 	static FILE *F = NULL;
 	unsigned int nPC = PC;
@@ -294,7 +320,7 @@ int __fastcall z80log (unsigned int PC)
 		F = fopen("z80.txt", "wb");
 	
 	z80dis(Ram_Z80, &nPC, ch);
-	fwrite(ch, 1, strlen (ch), F);
+	fwrite(ch, 1, strlen(ch), F);
 	
 	return 0;
 }
