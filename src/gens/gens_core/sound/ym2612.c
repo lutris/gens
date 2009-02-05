@@ -286,8 +286,6 @@ static FILE *debug_file = NULL;
 #include "audio/audio.h"
 #include "util/sound/gym.hpp"
 extern int VDP_Current_Line;
-extern int YM2612_Enable;
-extern int DAC_Enable;
 
 int YM2612_Enable;
 int YM2612_Improv;
@@ -406,7 +404,7 @@ static inline void KEY_OFF(channel_ *CH, int nsl)
 }
 
 
-static inline void CSM_Key_Control()
+static inline void CSM_Key_Control(void)
 {
 	KEY_ON(&YM2612.CHANNEL[2], 0);
 	KEY_ON(&YM2612.CHANNEL[2], 1);
