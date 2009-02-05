@@ -233,7 +233,7 @@ static const Env_Event ENV_NEXT_EVENT[8] =
 	Env_NULL_Next
 };
 
-static const unsigned int DT_DEF_TAB[4 * 32] =
+static const uint8_t DT_DEF_TAB[4 * 32] =
 {
 	// FD = 0
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -252,7 +252,7 @@ static const unsigned int DT_DEF_TAB[4 * 32] =
 	8, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 20, 22, 22, 22, 22
 };
 
-static const unsigned int FKEY_TAB[16] =
+static const uint8_t FKEY_TAB[16] =
 {
 	0, 0, 0, 0,
 	0, 0, 0, 1,
@@ -260,7 +260,7 @@ static const unsigned int FKEY_TAB[16] =
 	3, 3, 3, 3
 };
 
-static const unsigned int LFO_AMS_TAB[4] =
+static const uint8_t LFO_AMS_TAB[4] =
 {
 	31, 4, 1, 0
 };
