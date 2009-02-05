@@ -80,17 +80,24 @@ AM_CONDITIONAL([GENS_OBJ_ELF32], [test x$obj_format = xelf32])
 AM_CONDITIONAL([GENS_OBJ_ELF64], [test x$obj_format = xelf64])
 AM_CONDITIONAL([GENS_OBJ_MACHO], [test x$obj_format = xmacho])
 
-# Debugging symbols
+# Debugging symbols and warnings.
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
 	# Debugging symbols enabled.
 	nasm_debug_enabled="-g"
 	cflags_debug="-g"
+	# Removed from cflags_warnings_common: "-Wconversion -Wsign-conversion -Wpadded -Wdisabled-optimization -Waggregate-return"
+	cflags_warnings_common="-Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch -Wswitch-default -Wswitch-enum -Wfloat-equal -Wundef -Wshadow -Wunsafe-loop-optimizations -Wcast-qual -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wmissing-field-initializers -Wnormalized=nfc -Wpacked -Wredundant-decls -Wunreachable-code -Winline"
+	cflags_warnings_c="-Wc++-compat -Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmissing-parameter-type -Wmissing-prototypes -Wnested-externs"
+	cflags_warnings_cxx="-Wc++0x-compat"
 else
 	# Debugging symbols disabled.
 	nasm_debug_enabled=""
 	nasm_debug_format=""
 	cflags_debug=""
+	cflags_warnings_common=""
+	cflags_warnings_c=""
+	cflags_warnings_cxx=""
 fi
 
 # BEGIN: Unix/Linux (and MacOS X for now)
@@ -520,8 +527,8 @@ else
 	cflags_win32=""
 fi
 
-CFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_99} ${cflags_win32} $CFLAGS"
-CXXFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_win32} ${cxxflags_visibility} $CXXFLAGS"
+CFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_c} ${cflags_99} ${cflags_win32} $CFLAGS"
+CXXFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_cxx} ${cflags_win32} ${cxxflags_visibility} $CXXFLAGS"
 LDFLAGS="${ldflags_as_needed} ${ldflags_win32} $LDFLAGS"
 
 # Make sure all packages have the base source directory in their #include search path.
