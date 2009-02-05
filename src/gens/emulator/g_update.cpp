@@ -151,9 +151,9 @@ int Update_Emulation(void)
 	{
 		if (ice >= 3)
 			ice = 1;
-#if GENS_BYTE_ORDER == GENS_LIL_ENDIAN
+#if GENS_BYTEORDER == GENS_LIL_ENDIAN
 		if (Ram_68k[0xFFB0] == 7)
-#else // GENS_BYTE_ORDER == GENS_BIG_ENDIAN
+#else // GENS_BYTEORDER == GENS_BIG_ENDIAN
 		if (Ram_68k[0xFFB1] == 7)
 #endif
 		{
