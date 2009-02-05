@@ -282,17 +282,17 @@ int Init_Genesis(ROM_t* MD_ROM)
 	// Check which ROM name should be used.
 	// Default: ROM_Name_W
 	// If ROM_Name_W is blank (i.e. all characters are <= 0x20), use ROM_Name.
-	char* ROM_Name = MD_ROM->ROM_Name;
+	char* tmpROMName = MD_ROM->ROM_Name;
 	for (unsigned short cpos = 0; cpos < sizeof(MD_ROM->ROM_Name_W); cpos++)
 	{
 		if (MD_ROM->ROM_Name_W[cpos] > 0x20)
 		{
 			// ROM_Name_W isn't blank. Use it.
-			ROM_Name = MD_ROM->ROM_Name_W;
+			tmpROMName = MD_ROM->ROM_Name_W;
 			break;
 		}
 	}
-	GensUI::setWindowTitle_Game(Str_Err, ROM_Name);
+	GensUI::setWindowTitle_Game(Str_Err, tmpROMName);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
