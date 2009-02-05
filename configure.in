@@ -537,8 +537,11 @@ CPPFLAGS="-I${srcdir}/src $CPPFLAGS"
 # Use package-specific libdir.
 libdir="$libdir/gens"
 
+# Check for system libraries and functions.
 AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
+AC_FUNC_ALLOCA
+
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
 AC_SUBST(GTK_CFLAGS)
