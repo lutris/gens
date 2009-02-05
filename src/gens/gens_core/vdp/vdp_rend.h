@@ -35,8 +35,8 @@ extern struct
 
 extern int Sprite_Over;
 
-void Render_Line();
-void Render_Line_32X();
+void Render_Line(void);
+void Render_Line_32X(void);
 
 // VDP layer control
 extern unsigned int VDP_Layers;
