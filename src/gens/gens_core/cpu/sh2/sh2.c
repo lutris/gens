@@ -61,14 +61,14 @@ typedef enum __ifmt
 } _IFMT;
 
 
-typedef void SH2_INST_CALL ();
+typedef void (*SH2_INST_CALL)(void);
 
 
 typedef struct
 {
-  _IFMT IFMT;
-  UINT32 Mask;
-  SH2_INST_CALL *Func;
+	_IFMT IFMT;
+	UINT32 Mask;
+	SH2_INST_CALL Func;
 
 } PACKED_OP_TAB;
 
