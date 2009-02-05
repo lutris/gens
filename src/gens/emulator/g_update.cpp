@@ -27,6 +27,9 @@
 #include "audio/audio.h"
 #include "input/input.h"
 
+// Byteswapping functions.
+#include "gens_core/misc/byteswap.h"
+
 clock_t Last_Time = 0;
 clock_t New_Time = 0;
 clock_t Used_Time = 0;

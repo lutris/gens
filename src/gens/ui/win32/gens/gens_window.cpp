@@ -52,7 +52,7 @@ HWND Gens_hWnd = NULL;
 // New menu handler.
 #include "ui/common/gens/gens_menu.h"
 #include "ui/common/gens/gens_menu_callbacks.hpp"
-static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container);
+static void Win32_ParseMenu(const GensMenuItem_t *menu, HMENU container);
 
 // Accelerator table for the main Gens window. [Menu commands.]
 HACCEL hAccelTable_Menu = NULL;
@@ -143,7 +143,7 @@ void create_gens_window_menubar(void)
  * @param menu First item of the array of menu structs to parse.
  * @param container Container to add the menu items to.
  */
-static void Win32_ParseMenu(GensMenuItem_t *menu, HMENU container)
+static void Win32_ParseMenu(const GensMenuItem_t *menu, HMENU container)
 {
 	HMENU mnuSubMenu;
 	string sMenuText;

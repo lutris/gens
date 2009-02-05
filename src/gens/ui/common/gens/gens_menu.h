@@ -93,19 +93,19 @@ extern "C" {
 
 struct GensMenuItem_t
 {
-	uint16_t id;				// Menu identifier. (0xFFFF == separator)
-	uint16_t flags;				// Menu item flags.
-	char* text;				// Menu text.
-	struct GensMenuItem_t* submenu;		// First element of submenu.
+	const uint16_t id;				// Menu identifier. (0xFFFF == separator)
+	const uint16_t flags;				// Menu item flags.
+	const char* const text;				// Menu text.
+	const struct GensMenuItem_t* const submenu;	// First element of submenu.
 	
 	// Accelerator. (Set both values to 0 for no accelerator.)
-	uint16_t accelModifier;
-	uint16_t accelKey;
+	const uint16_t accelModifier;
+	const uint16_t accelKey;
 	
-	uint16_t icon;				// Icon ID.
+	const uint16_t icon;				// Icon ID.
 };
 
-extern struct GensMenuItem_t gmiMain[];
+extern const struct GensMenuItem_t gmiMain[];
 
 // Menu #defines
 // Menu identifier & 0xF000 == the menu it's from

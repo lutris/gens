@@ -57,7 +57,7 @@ static void create_gens_window_menubar(GtkWidget *container);
 // New menu handler.
 #include "ui/common/gens/gens_menu.h"
 #include "ui/common/gens/gens_menu_callbacks.hpp"
-static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container);
+static void GTK_ParseMenu(const GensMenuItem_t* menu, GtkWidget *container);
 
 // Hash table containing all the menu items.
 // Key is the menu ID.
@@ -199,7 +199,7 @@ static void create_gens_window_menubar(GtkWidget *container)
  * @param menu First item of the array of menu structs to parse.
  * @param container Container to add the menu items to.
  */
-static void GTK_ParseMenu(GensMenuItem_t *menu, GtkWidget *container)
+static void GTK_ParseMenu(const GensMenuItem_t* menu, GtkWidget *container)
 {
 	GtkWidget *mnuItem, *subMenu;
 	GtkWidget *icon;
