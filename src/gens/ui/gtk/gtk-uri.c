@@ -23,6 +23,8 @@
  * Author: Alexander Larsson <alexl@redhat.com>                            *
  ***************************************************************************/
 
+#include "gtk-uri.h"
+
 #include <glib-2.0/glib.h>
 #include <string.h>
 
@@ -88,7 +90,7 @@ static char* gens_g_uri_unescape_segment(const char *escaped_string,
 	if (escaped_string_end == NULL)
 		escaped_string_end = escaped_string + strlen (escaped_string);
 	
-	result = g_malloc(escaped_string_end - escaped_string + 1);
+	result = (char*)g_malloc(escaped_string_end - escaped_string + 1);
 	
 	out = result;
 	for (in = escaped_string; in < escaped_string_end; in++)
