@@ -24,6 +24,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <unistd.h>
 #if HAVE_LIBRT
@@ -33,7 +36,6 @@
 #endif
 #include <stddef.h>
 #include "timer.h"
-
 
 // Time #defines from WINE's dlls/ntdll/time.c
 #define TICKSPERSEC        10000000
