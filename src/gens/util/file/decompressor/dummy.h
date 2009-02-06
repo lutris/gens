@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-extern decompressor_t decompressor_dummy;
+extern const decompressor_t decompressor_dummy;
 
 #ifdef __cplusplus
 }

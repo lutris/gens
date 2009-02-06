@@ -37,7 +37,7 @@ static size_t decompressor_zip_get_file(FILE *zF, const char* filename,
 					unsigned char *buf, const size_t size);
 
 // Zip decompressor struct.
-decompressor_t decompressor_zip =
+const decompressor_t decompressor_zip =
 {
 	.detect_format	= decompressor_zip_detect_format,
 	.get_file_info	= decompressor_zip_get_file_info,

@@ -45,7 +45,7 @@ static size_t decompressor_7z_get_file(FILE *zF, const char* filename,
 				       unsigned char *buf, const size_t size);
 
 // 7z decompressor struct.
-decompressor_t decompressor_7z =
+const decompressor_t decompressor_7z =
 {
 	.detect_format	= decompressor_7z_detect_format,
 	.get_file_info	= decompressor_7z_get_file_info,

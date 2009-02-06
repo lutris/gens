@@ -40,7 +40,7 @@ static size_t decompressor_dummy_get_file(FILE *zF, const char* filename,
 					  const size_t size);
 
 // Dummy decompressor struct.
-decompressor_t decompressor_dummy =
+const decompressor_t decompressor_dummy =
 {
 	.detect_format	= decompressor_dummy_detect_format,
 	.get_file_info	= decompressor_dummy_get_file_info,
