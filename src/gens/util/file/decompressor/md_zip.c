@@ -34,7 +34,7 @@ static int decompressor_zip_detect_format(FILE *zF);
 static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filename);
 static size_t decompressor_zip_get_file(FILE *zF, const char* filename,
 					file_list_t *file_list,
-					unsigned char *buf, const size_t size);
+					void *buf, const size_t size);
 
 // Zip decompressor struct.
 const decompressor_t decompressor_zip =
@@ -134,7 +134,7 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
  */
 size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 				 file_list_t *file_list,
-				 unsigned char *buf, const size_t size)
+				 void *buf, const size_t size)
 {
 	// All parameters (except zF) must be specified.
 	if (!filename || !file_list || !buf || size)

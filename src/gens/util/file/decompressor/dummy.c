@@ -36,8 +36,7 @@ static int decompressor_dummy_detect_format(FILE *zF);
 static file_list_t* decompressor_dummy_get_file_info(FILE *zF, const char* filename);
 static size_t decompressor_dummy_get_file(FILE *zF, const char* filename,
 					  file_list_t *file_list,
-					  unsigned char *buf,
-					  const size_t size);
+					  void *buf, const size_t size);
 
 // Dummy decompressor struct.
 const decompressor_t decompressor_dummy =
@@ -101,8 +100,7 @@ static file_list_t* decompressor_dummy_get_file_info(FILE *zF, const char* filen
  */
 size_t decompressor_dummy_get_file(FILE *zF, const char *filename,
 				   file_list_t *file_list,
-				   unsigned char *buf,
-				   const size_t size)
+				   void *buf, const size_t size)
 {
 	// Unused parameters.
 	((void)filename);

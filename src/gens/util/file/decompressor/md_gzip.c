@@ -32,8 +32,7 @@ static int decompressor_gzip_detect_format(FILE *zF);
 static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename);
 static size_t decompressor_gzip_get_file(FILE *zF, const char* filename,
 					 file_list_t *file_list,
-					 unsigned char *buf,
-					 const size_t size);
+					 void *buf, const size_t size);
 
 // GZip decompressor struct.
 const decompressor_t decompressor_gzip =
@@ -114,8 +113,7 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
  */
 size_t decompressor_gzip_get_file(FILE *zF, const char *filename,
 				  file_list_t *file_list,
-				  unsigned char *buf,
-				  const size_t size)
+				  void *buf, const size_t size)
 {
 	// Unused parameters.
 	((void)zF);

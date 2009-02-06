@@ -73,8 +73,7 @@ typedef file_list_t* (*decompressor_get_file_info)(FILE *zF, const char *filenam
  */
 typedef size_t (*decompressor_get_file)(FILE *zF, const char *filename,
 					file_list_t *file_list,
-					unsigned char *buf,
-					const size_t size);
+					void *buf, const size_t size);
 
 /**
  * decompressor_t: Struct containing function pointers to various decompresssors.
