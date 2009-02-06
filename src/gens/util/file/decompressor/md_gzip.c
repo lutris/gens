@@ -71,7 +71,7 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
 	
 	// GZip-compressed files can only have one file.
 	gzFile gzfd;
-	char buf[1024];
+	unsigned char buf[1024];
 	
 	gzfd = gzopen(filename, "rb");
 	if (!gzfd)
