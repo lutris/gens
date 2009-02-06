@@ -2836,7 +2836,7 @@ void YM2612_DacAndTimers_Update(int **buffer, int length)
 }
 
 
-void YM2612_Special_Update (void)
+void YM2612_Special_Update(void)
 {
 	if (YM_Len && YM2612_Enable)
 	{
