@@ -37,32 +37,7 @@ int z80dis(unsigned char *buf, unsigned int *Counter, char str[128]);
 
 
 /* The Z80 logging function uses the FASTCALL calling convention. */
-
-#ifndef __WIN32__
-
-#ifndef __GNUC__
-
-#define FASTCALL				__fastcall
-#define DECL_FASTCALL(type, name)	type FASTCALL name
-
-#else //__GNUC__
-#define __fastcall __attribute__ ((regparm(2)))
-#define FASTCALL __attribute__ ((regparm(2)))
-#define DECL_FASTCALL(type, name)	type name __attribute__ ((regparm(2)))
-
-#endif //!__GNUC__
-
-#else /* __WIN32__ */
-
-#ifndef FASTCALL
-#define FASTCALL __fastcall
-#endif /* FASTCALL */
-
-#ifndef DECL_FASTCALL
-#define DECL_FASTCALL(type, name)	type FASTCALL name
-#endif /* DECL_FASTCALL */
-
-#endif /* __WIN32__ */
+#include "macros/fastcall.h"
 
 int FASTCALL z80log(unsigned int PC);
 
