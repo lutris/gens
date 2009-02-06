@@ -125,6 +125,7 @@ gens_SOURCES = \
 		util/file/save.cpp \
 		util/file/file.cpp \
 		util/file/decompressor/decompressor.c \
+		util/file/decompressor/dummy.c \
 		util/file/decompressor/md_7z.c \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
@@ -220,6 +221,7 @@ noinst_HEADERS = \
 		util/file/file.hpp \
 		util/file/decompressor/decompressor.h \
 		util/file/decompressor/popen_wrapper.h \
+		util/file/decompressor/dummy.h \
 		util/file/decompressor/md_7z.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \

@@ -40,6 +40,7 @@ using std::deque;
 
 // File Decompressors.
 #include "util/file/decompressor/decompressor.h"
+#include "util/file/decompressor/dummy.h"
 #include "util/file/decompressor/md_gzip.h"
 #include "util/file/decompressor/md_zip.h"
 #include "util/file/decompressor/md_7z.h"
@@ -469,6 +470,9 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		&decompressor_gzip,
 		&decompressor_zip,
 		&decompressor_7z,
+		
+		// Last decompressor is the Dummy decompressor.
+		&decompressor_dummy,
 		NULL
 	};
 	
