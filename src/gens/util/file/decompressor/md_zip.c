@@ -137,7 +137,7 @@ size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 				 void *buf, const size_t size)
 {
 	// All parameters (except zF) must be specified.
-	if (!filename || !file_list || !buf || size)
+	if (!filename || !file_list || !buf || !size)
 		return 0;
 	
 	unzFile f = unzOpen(filename);
