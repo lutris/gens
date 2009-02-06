@@ -223,49 +223,49 @@ void SH2_Add_WriteL(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_W
 
 void SH2_Map_Cache_Trough(SH2_CONTEXT *SH2);
 
-DECL_FASTCALL(uint8_t,	Def_READB(uint32_t));
-DECL_FASTCALL(uint16_t,	Def_READW(uint32_t));
-DECL_FASTCALL(uint32_t,	Def_READL(uint32_t));
+uint8_t  FASTCALL Def_READB(uint32_t);
+uint16_t FASTCALL Def_READW(uint32_t);
+uint32_t FASTCALL Def_READL(uint32_t);
 
-DECL_FASTCALL(void,	Def_WRITEB(uint32_t, uint8_t));
-DECL_FASTCALL(void,	Def_WRITEW(uint32_t, uint16_t));
-DECL_FASTCALL(void,	Def_WRITEL(uint32_t, uint32_t));
+void FASTCALL Def_WRITEB(uint32_t, uint8_t);
+void FASTCALL Def_WRITEW(uint32_t, uint16_t);
+void FASTCALL Def_WRITEL(uint32_t, uint32_t);
 
 // ASM emulation functions
 
-DECL_FASTCALL(uint32_t,	SH2_Reset(SH2_CONTEXT *, uint32_t));			/* SH2, manual */
-DECL_FASTCALL(void,	SH2_Enable(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(void,	SH2_Disable(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Exec(SH2_CONTEXT *, uint32_t));			/* SH2, odo */
-DECL_FASTCALL(void,	SH2_Interrupt(SH2_CONTEXT *, uint32_t));		/* SH2, level */
-DECL_FASTCALL(void,	SH2_Interrupt_Internal(SH2_CONTEXT *, uint32_t));	/* SH2, level_vector */
-DECL_FASTCALL(void,	SH2_NMI(SH2_CONTEXT *));					/* SH2 */
+uint32_t FASTCALL SH2_Reset(SH2_CONTEXT*, uint32_t);		/* SH2, manual */
+void FASTCALL SH2_Enable(SH2_CONTEXT*);				/* SH2 */
+void FASTCALL SH2_Disable(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Exec(SH2_CONTEXT*, uint32_t);		/* SH2, odo */
+void FASTCALL SH2_Interrupt(SH2_CONTEXT*, uint32_t);		/* SH2, level */
+void FASTCALL SH2_Interrupt_Internal(SH2_CONTEXT*, uint32_t);	/* SH2, level_vector */
+void FASTCALL SH2_NMI(SH2_CONTEXT*);				/* SH2 */
 
-DECL_FASTCALL(uint32_t,	SH2_Read_Odo(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(void,	SH2_Write_Odo(SH2_CONTEXT *, uint32_t));		/* SH2 */
-DECL_FASTCALL(void,	SH2_Clear_Odo(SH2_CONTEXT *));			/* SH2 */
-DECL_FASTCALL(void,	SH2_Add_Cycles(SH2_CONTEXT *, uint32_t));		/* SH2, cycles */
+uint32_t FASTCALL SH2_Read_Odo(SH2_CONTEXT*);			/* SH2 */
+void FASTCALL SH2_Write_Odo(SH2_CONTEXT*, uint32_t);		/* SH2 */
+void FASTCALL SH2_Clear_Odo(SH2_CONTEXT*);			/* SH2 */
+void FASTCALL SH2_Add_Cycles(SH2_CONTEXT*, uint32_t);		/* SH2, cycles */
 
-DECL_FASTCALL(void,	SH2_DMA0_Request(SH2_CONTEXT *, uint8_t));		/* SH2, state */
-DECL_FASTCALL(void,	SH2_DMA1_Request(SH2_CONTEXT *, uint8_t));		/* SH2, state */
-DECL_FASTCALL(void,	SH2_FRT_Signal(SH2_CONTEXT *));			/* SH2 */
+void FASTCALL SH2_DMA0_Request(SH2_CONTEXT*, uint8_t);		/* SH2, state */
+void FASTCALL SH2_DMA1_Request(SH2_CONTEXT*, uint8_t);		/* SH2, state */
+void FASTCALL SH2_FRT_Signal(SH2_CONTEXT*);			/* SH2 */
 
-DECL_FASTCALL(uint32_t,	SH2_Get_R(SH2_CONTEXT *, uint32_t));			/* SH2, num */
-DECL_FASTCALL(uint32_t,	SH2_Get_PC(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Get_SR(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Get_GBR(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Get_VBR(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Get_PR(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Get_MACH(SH2_CONTEXT *));				/* SH2 */
-DECL_FASTCALL(uint32_t,	SH2_Get_MACL(SH2_CONTEXT *));				/* SH2 */
+uint32_t FASTCALL SH2_Get_R(SH2_CONTEXT*, uint32_t);		/* SH2, num */
+uint32_t FASTCALL SH2_Get_PC(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Get_SR(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Get_GBR(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Get_VBR(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Get_PR(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Get_MACH(SH2_CONTEXT*);			/* SH2 */
+uint32_t FASTCALL SH2_Get_MACL(SH2_CONTEXT*);			/* SH2 */
 
-DECL_FASTCALL(void,	SH2_Set_PC(SH2_CONTEXT *, uint32_t));			/* SH2, val */
-DECL_FASTCALL(void,	SH2_Set_SR(SH2_CONTEXT *, uint32_t));			/* SH2, val */
-DECL_FASTCALL(void,	SH2_Set_GBR(SH2_CONTEXT *, uint32_t));		/* SH2, val */
-DECL_FASTCALL(void,	SH2_Set_VBR(SH2_CONTEXT *, uint32_t));		/* SH2, val */
-DECL_FASTCALL(void,	SH2_Set_PR(SH2_CONTEXT *, uint32_t));			/* SH2, val */
-DECL_FASTCALL(void,	SH2_Set_MACH(SH2_CONTEXT *, uint32_t));		/* SH2, val */
-DECL_FASTCALL(void,	SH2_Set_MACL(SH2_CONTEXT *, uint32_t));		/* SH2, val */
+void FASTCALL SH2_Set_PC(SH2_CONTEXT *, uint32_t);		/* SH2, val */
+void FASTCALL SH2_Set_SR(SH2_CONTEXT *, uint32_t);		/* SH2, val */
+void FASTCALL SH2_Set_GBR(SH2_CONTEXT *, uint32_t);		/* SH2, val */
+void FASTCALL SH2_Set_VBR(SH2_CONTEXT *, uint32_t);		/* SH2, val */
+void FASTCALL SH2_Set_PR(SH2_CONTEXT *, uint32_t);		/* SH2, val */
+void FASTCALL SH2_Set_MACH(SH2_CONTEXT *, uint32_t);		/* SH2, val */
+void FASTCALL SH2_Set_MACL(SH2_CONTEXT *, uint32_t);		/* SH2, val */
 
 uint8_t  SH2_Read_Byte(SH2_CONTEXT *SH2, uint32_t adr);
 uint16_t SH2_Read_Word(SH2_CONTEXT *SH2, uint32_t adr);
@@ -291,19 +291,19 @@ extern uint32_t Set_SR_Table[0x400];
 
 // ASM Memories handlers
 
-DECL_FASTCALL(uint8_t,	SH2_Read_Byte_C0(uint32_t));
-DECL_FASTCALL(uint16_t,	SH2_Read_Word_C0(uint32_t));
-DECL_FASTCALL(uint32_t,	SH2_Read_Long_C0(uint32_t));
-DECL_FASTCALL(uint8_t,	SH2_Read_Byte_FF(uint32_t));
-DECL_FASTCALL(uint16_t,	SH2_Read_Word_FF(uint32_t));
-DECL_FASTCALL(uint32_t,	SH2_Read_Long_FF(uint32_t));
+uint8_t  FASTCALL SH2_Read_Byte_C0(uint32_t);
+uint16_t FASTCALL SH2_Read_Word_C0(uint32_t);
+uint32_t FASTCALL SH2_Read_Long_C0(uint32_t);
+uint8_t  FASTCALL SH2_Read_Byte_FF(uint32_t);
+uint16_t FASTCALL SH2_Read_Word_FF(uint32_t);
+uint32_t FASTCALL SH2_Read_Long_FF(uint32_t);
 
-DECL_FASTCALL(void,	SH2_Write_Byte_C0(uint32_t, uint8_t));
-DECL_FASTCALL(void,	SH2_Write_Word_C0(uint32_t, uint16_t));
-DECL_FASTCALL(void,	SH2_Write_Long_C0(uint32_t, uint32_t));
-DECL_FASTCALL(void,	SH2_Write_Byte_FF(uint32_t, uint8_t));
-DECL_FASTCALL(void,	SH2_Write_Word_FF(uint32_t, uint16_t));
-DECL_FASTCALL(void,	SH2_Write_Long_FF(uint32_t, uint32_t));
+void FASTCALL SH2_Write_Byte_C0(uint32_t, uint8_t);
+void FASTCALL SH2_Write_Word_C0(uint32_t, uint16_t);
+void FASTCALL SH2_Write_Long_C0(uint32_t, uint32_t);
+void FASTCALL SH2_Write_Byte_FF(uint32_t, uint8_t);
+void FASTCALL SH2_Write_Word_FF(uint32_t, uint16_t);
+void FASTCALL SH2_Write_Long_FF(uint32_t, uint32_t);
 
 
 // Instruction function definition
