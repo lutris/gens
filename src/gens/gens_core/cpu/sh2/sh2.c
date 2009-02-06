@@ -66,7 +66,7 @@ typedef void (*SH2_INST_CALL)(void);
 typedef struct
 {
 	_IFMT IFMT;
-	UINT32 Mask;
+	uint32_t Mask;
 	SH2_INST_CALL Func;
 } PACKED_OP_TAB;
 
@@ -358,35 +358,35 @@ const PACKED_OP_TAB InitOpDS[] = {
 /*******************************/
 
 
-UINT8 FASTCALL Def_READB(UINT32 adr)
+uint8_t FASTCALL Def_READB(uint32_t adr)
 {
 	SH2_LOG1("SH2 read byte at %.8X\n", adr);
 	return 0;
 }
 
-UINT16 FASTCALL Def_READW(UINT32 adr)
+uint16_t FASTCALL Def_READW(uint32_t adr)
 {
 	SH2_LOG1("SH2 read word at %.8X\n", adr);
 	return 0;
 }
 
-UINT32 FASTCALL Def_READL(UINT32 adr)
+uint32_t FASTCALL Def_READL(uint32_t adr)
 {
 	SH2_LOG1("SH2 read long at %.8X\n", adr);
 	return 0;
 }
 
-void FASTCALL Def_WRITEB(UINT32 adr, UINT8 data)
+void FASTCALL Def_WRITEB(uint32_t adr, uint8_t data)
 {
 	SH2_LOG2("SH2 write byte %.2X at %.8X\n", data, adr);
 }
 
-void FASTCALL Def_WRITEW (UINT32 adr, UINT16 data)
+void FASTCALL Def_WRITEW (uint32_t adr, uint16_t data)
 {
 	SH2_LOG2("SH2 write word %.4X at %.8X\n", data, adr);
 }
 
-void FASTCALL Def_WRITEL (UINT32 adr, UINT32 data)
+void FASTCALL Def_WRITEL (uint32_t adr, uint32_t data)
 {
 	SH2_LOG2("SH2 write long %.8X at %.8X\n", data, adr);
 }
@@ -399,9 +399,9 @@ void FASTCALL Def_WRITEL (UINT32 adr, UINT32 data)
 
 // IMPORTANT : *Fetch have to be DWORD aligned !!!!
 
-void SH2_Add_Fetch(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, UINT16 *Fetch)
+void SH2_Add_Fetch(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, uint16_t *Fetch)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = 0; i < 0x100; i++)
 	{
@@ -418,8 +418,8 @@ void SH2_Add_Fetch(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, UINT16 *Fe
 
 // IMPORTANT : *Fetch have to be DWORD aligned !!!!
 
-void SH2_Set_Fetch_Reg(SH2_CONTEXT *SH2, UINT32 reg, UINT32 low_adr,
-		       UINT32 high_adr, UINT16 *Fetch)
+void SH2_Set_Fetch_Reg(SH2_CONTEXT *SH2, uint32_t reg, uint32_t low_adr,
+		       uint32_t high_adr, uint16_t *Fetch)
 {
 	reg &= 0xFF;
 	
@@ -429,54 +429,54 @@ void SH2_Set_Fetch_Reg(SH2_CONTEXT *SH2, UINT32 reg, UINT32 low_adr,
 }
 
 
-void SH2_Add_ReadB(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_RB *Func)
+void SH2_Add_ReadB(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_RB *Func)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = (low_adr & 0xFF); i <= (high_adr & 0xFF); i++)
 		SH2->Read_Byte[i] = Func;
 }
 
 
-void SH2_Add_ReadW(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_RW *Func)
+void SH2_Add_ReadW(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_RW *Func)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = (low_adr & 0xFF); i <= (high_adr & 0xFF); i++)
 		SH2->Read_Word[i] = Func;
 }
 
 
-void SH2_Add_ReadL(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_RL *Func)
+void SH2_Add_ReadL(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_RL *Func)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = (low_adr & 0xFF); i <= (high_adr & 0xFF); i++)
 		SH2->Read_Long[i] = Func;
 }
 
 
-void SH2_Add_WriteB(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_WB *Func)
+void SH2_Add_WriteB(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_WB *Func)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = (low_adr & 0xFF); i <= (high_adr & 0xFF); i++)
 		SH2->Write_Byte[i] = Func;
 }
 
 
-void SH2_Add_WriteW(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_WW *Func)
+void SH2_Add_WriteW(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_WW *Func)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = (low_adr & 0xFF); i <= (high_adr & 0xFF); i++)
 		SH2->Write_Word[i] = Func;
 }
 
 
-void SH2_Add_WriteL(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_WL *Func)
+void SH2_Add_WriteL(SH2_CONTEXT *SH2, uint32_t low_adr, uint32_t high_adr, SH2_WL *Func)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = (low_adr & 0xFF); i <= (high_adr & 0xFF); i++)
 		SH2->Write_Long[i] = Func;
@@ -485,7 +485,7 @@ void SH2_Add_WriteL(SH2_CONTEXT *SH2, UINT32 low_adr, UINT32 high_adr, SH2_WL *F
 
 void SH2_Map_Cache_Trough(SH2_CONTEXT *SH2)
 {
-	UINT32 i;
+	uint32_t i;
 	
 	for (i = 0; i < 0x10; i++)
 	{
@@ -499,10 +499,10 @@ void SH2_Map_Cache_Trough(SH2_CONTEXT *SH2)
 }
 
 
-void SH2_Init(SH2_CONTEXT *SH2, UINT32 slave)
+void SH2_Init(SH2_CONTEXT *SH2, uint32_t slave)
 {
-	static UINT32 SH2_Initialised = 0;
-	INT32 i, j, m, q, s, t, il;
+	static uint32_t SH2_Initialised = 0;
+	int32_t i, j, m, q, s, t, il;
 	void *OP_Table_Temp[0x10000];
 	
 	if (!SH2_Initialised)

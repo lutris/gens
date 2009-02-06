@@ -20,20 +20,20 @@ int MSH2_Init(void)
 	SH2_Init (&M_SH2, 0);
 	
 	SH2_Set_Fetch_Reg(&M_SH2, 0, 0x06000000, 0x0603FFFF,
-			  (UINT16*)&_32X_Ram[0]);
+			  (uint16_t*)&_32X_Ram[0]);
 	SH2_Set_Fetch_Reg(&M_SH2, 1, 0x26000000, 0x2603FFFF,
-			  (UINT16*)&_32X_Ram[0]);
+			  (uint16_t*)&_32X_Ram[0]);
 	SH2_Set_Fetch_Reg(&M_SH2, 2, 0x02000000, 0x023FFFFF,
-			  (UINT16*)&_32X_Rom[0]);
+			  (uint16_t*)&_32X_Rom[0]);
 	SH2_Set_Fetch_Reg(&M_SH2, 3, 0x22000000, 0x223FFFFF,
-			  (UINT16*)&_32X_Rom[0]);
+			  (uint16_t*)&_32X_Rom[0]);
 	SH2_Set_Fetch_Reg(&M_SH2, 4, 0x00000000, 0x000003FF,
-			  (UINT16*)&_32X_MSH2_Rom[0]);
+			  (uint16_t*)&_32X_MSH2_Rom[0]);
 	SH2_Set_Fetch_Reg(&M_SH2, 5, 0x20000000, 0x200003FF,
-			  (UINT16*)&_32X_MSH2_Rom[0]);
+			  (uint16_t*)&_32X_MSH2_Rom[0]);
 	SH2_Set_Fetch_Reg(&M_SH2, 6, 0xC0000000, 0xC0000FFF,
-			  (UINT16 *)&(M_SH2.Cache[0]));
-	SH2_Set_Fetch_Reg(&M_SH2, 7, 0x00000000, 0x00000000, (UINT16*)(-1));
+			  (uint16_t *)&(M_SH2.Cache[0]));
+	SH2_Set_Fetch_Reg(&M_SH2, 7, 0x00000000, 0x00000000, (uint16_t*)(-1));
 	
 	SH2_Add_ReadB (&M_SH2, 0x00, 0x00, MSH2_Read_Byte_00);
 	SH2_Add_ReadW (&M_SH2, 0x00, 0x00, MSH2_Read_Word_00);
@@ -91,29 +91,29 @@ int SSH2_Init(void)
 	SH2_Init(&S_SH2, 1);
 	
 	SH2_Set_Fetch_Reg(&S_SH2, 0, 0x06000000, 0x0603FFFF,
-			  (UINT16*)&_32X_Ram[0]);
+			  (uint16_t*)&_32X_Ram[0]);
 	SH2_Set_Fetch_Reg(&S_SH2, 1, 0x26000000, 0x2603FFFF,
-			  (UINT16*)&_32X_Ram[0]);
+			  (uint16_t*)&_32X_Ram[0]);
 	SH2_Set_Fetch_Reg(&S_SH2, 2, 0x02000000, 0x023FFFFF,
-			  (UINT16*)&_32X_Rom[0]);
+			  (uint16_t*)&_32X_Rom[0]);
 	SH2_Set_Fetch_Reg(&S_SH2, 3, 0x22000000, 0x223FFFFF,
-			  (UINT16*)&_32X_Rom[0]);
+			  (uint16_t*)&_32X_Rom[0]);
 	SH2_Set_Fetch_Reg(&S_SH2, 4, 0x00000000, 0x000003FF,
-			  (UINT16*)&_32X_SSH2_Rom[0]);
+			  (uint16_t*)&_32X_SSH2_Rom[0]);
 	SH2_Set_Fetch_Reg(&S_SH2, 5, 0x20000000, 0x200003FF,
-			  (UINT16*)&_32X_SSH2_Rom[0]);
+			  (uint16_t*)&_32X_SSH2_Rom[0]);
 	SH2_Set_Fetch_Reg(&S_SH2, 6, 0xC0000000, 0xC0000FFF,
-			  (UINT16*)&(S_SH2.Cache[0]));
-	SH2_Set_Fetch_Reg(&S_SH2, 7, 0x00000000, 0x00000000, (UINT16*)(-1));
+			  (uint16_t*)&(S_SH2.Cache[0]));
+	SH2_Set_Fetch_Reg(&S_SH2, 7, 0x00000000, 0x00000000, (uint16_t*)(-1));
 	
 	/*
-	SH2_Add_Fetch(&S_SH2, 0x06000000, 0x0603FFFF, (UINT16*)&_32X_Ram[0]);
-	SH2_Add_Fetch(&S_SH2, 0x26000000, 0x2603FFFF, (UINT16*)&_32X_Ram[0]);
-	SH2_Add_Fetch(&S_SH2, 0x02000000, 0x003FFFFF, (UINT16*)&_32X_Rom[0]);
-	SH2_Add_Fetch(&S_SH2, 0x22000000, 0x203FFFFF, (UINT16*)&_32X_Rom[0]);
-	SH2_Add_Fetch(&S_SH2, 0x00000000, 0x000003FF, (UINT16*)&_32X_SSH2_Rom[0]);
-	SH2_Add_Fetch(&S_SH2, 0x20000000, 0x200003FF, (UINT16*)&_32X_SSH2_Rom[0]);
-	SH2_Add_Fetch(&S_SH2, 0x00000000, 0x00000000, (UINT16*)(-1));
+	SH2_Add_Fetch(&S_SH2, 0x06000000, 0x0603FFFF, (uint16_t*)&_32X_Ram[0]);
+	SH2_Add_Fetch(&S_SH2, 0x26000000, 0x2603FFFF, (uint16_t*)&_32X_Ram[0]);
+	SH2_Add_Fetch(&S_SH2, 0x02000000, 0x003FFFFF, (uint16_t*)&_32X_Rom[0]);
+	SH2_Add_Fetch(&S_SH2, 0x22000000, 0x203FFFFF, (uint16_t*)&_32X_Rom[0]);
+	SH2_Add_Fetch(&S_SH2, 0x00000000, 0x000003FF, (uint16_t*)&_32X_SSH2_Rom[0]);
+	SH2_Add_Fetch(&S_SH2, 0x20000000, 0x200003FF, (uint16_t*)&_32X_SSH2_Rom[0]);
+	SH2_Add_Fetch(&S_SH2, 0x00000000, 0x00000000, (uint16_t*)(-1));
 	*/
 	
 	SH2_Add_ReadB (&S_SH2, 0x00, 0x00, SSH2_Read_Byte_00);

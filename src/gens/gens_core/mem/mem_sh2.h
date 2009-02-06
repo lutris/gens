@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 #include "gens_core/cpu/sh2/sh2.h"
 
 extern unsigned char _32X_Rom[4 * 1024 * 1024];
@@ -42,46 +44,46 @@ extern int Cycles_MSH2;
 extern int Cycles_SSH2;
 
 
-UINT8 FASTCALL MSH2_Read_Byte_00(UINT32 adr);
-UINT8 FASTCALL SSH2_Read_Byte_00(UINT32 adr);
-UINT16 FASTCALL MSH2_Read_Word_00(UINT32 adr);
-UINT16 FASTCALL SSH2_Read_Word_00(UINT32 adr);
-UINT32 FASTCALL MSH2_Read_Long_00(UINT32 adr);
-UINT32 FASTCALL SSH2_Read_Long_00(UINT32 adr);
+uint8_t  FASTCALL MSH2_Read_Byte_00(uint32_t adr);
+uint8_t  FASTCALL SSH2_Read_Byte_00(uint32_t adr);
+uint16_t FASTCALL MSH2_Read_Word_00(uint32_t adr);
+uint16_t FASTCALL SSH2_Read_Word_00(uint32_t adr);
+uint32_t FASTCALL MSH2_Read_Long_00(uint32_t adr);
+uint32_t FASTCALL SSH2_Read_Long_00(uint32_t adr);
 
-UINT8 FASTCALL SH2_Read_Byte_Rom(UINT32 adr);
-UINT16 FASTCALL SH2_Read_Word_Rom(UINT32 adr);
-UINT32 FASTCALL SH2_Read_Long_Rom(UINT32 adr);
+uint8_t  FASTCALL SH2_Read_Byte_Rom(uint32_t adr);
+uint16_t FASTCALL SH2_Read_Word_Rom(uint32_t adr);
+uint32_t FASTCALL SH2_Read_Long_Rom(uint32_t adr);
 
-UINT8 FASTCALL SH2_Read_Byte_FB0(UINT32 adr);
-UINT8 FASTCALL SH2_Read_Byte_FB1(UINT32 adr);
-UINT16 FASTCALL SH2_Read_Word_FB0(UINT32 adr);
-UINT16 FASTCALL SH2_Read_Word_FB1(UINT32 adr);
-UINT32 FASTCALL SH2_Read_Long_FB0(UINT32 adr);
-UINT32 FASTCALL SH2_Read_Long_FB1(UINT32 adr);
+uint8_t  FASTCALL SH2_Read_Byte_FB0(uint32_t adr);
+uint8_t  FASTCALL SH2_Read_Byte_FB1(uint32_t adr);
+uint16_t FASTCALL SH2_Read_Word_FB0(uint32_t adr);
+uint16_t FASTCALL SH2_Read_Word_FB1(uint32_t adr);
+uint32_t FASTCALL SH2_Read_Long_FB0(uint32_t adr);
+uint32_t FASTCALL SH2_Read_Long_FB1(uint32_t adr);
 
-UINT8 FASTCALL SH2_Read_Byte_Ram(UINT32 adr);
-UINT16 FASTCALL SH2_Read_Word_Ram(UINT32 adr);
-UINT32 FASTCALL SH2_Read_Long_Ram(UINT32 adr);
+uint8_t  FASTCALL SH2_Read_Byte_Ram(uint32_t adr);
+uint16_t FASTCALL SH2_Read_Word_Ram(uint32_t adr);
+uint32_t FASTCALL SH2_Read_Long_Ram(uint32_t adr);
 
 
-void FASTCALL MSH2_Write_Byte_00(UINT32 adr, UINT8 data);
-void FASTCALL SSH2_Write_Byte_00(UINT32 adr, UINT8 data);
-void FASTCALL MSH2_Write_Word_00(UINT32 adr, UINT16 data);
-void FASTCALL SSH2_Write_Word_00(UINT32 adr, UINT16 data);
-void FASTCALL MSH2_Write_Long_00(UINT32 adr, UINT32 data);
-void FASTCALL SSH2_Write_Long_00(UINT32 adr, UINT32 data);
+void FASTCALL MSH2_Write_Byte_00(uint32_t adr, uint8_t data);
+void FASTCALL SSH2_Write_Byte_00(uint32_t adr, uint8_t data);
+void FASTCALL MSH2_Write_Word_00(uint32_t adr, uint16_t data);
+void FASTCALL SSH2_Write_Word_00(uint32_t adr, uint16_t data);
+void FASTCALL MSH2_Write_Long_00(uint32_t adr, uint32_t data);
+void FASTCALL SSH2_Write_Long_00(uint32_t adr, uint32_t data);
 
-void FASTCALL SH2_Write_Byte_FB0(UINT32 adr, UINT8 data);
-void FASTCALL SH2_Write_Byte_FB1(UINT32 adr, UINT8 data);
-void FASTCALL SH2_Write_Word_FB0(UINT32 adr, UINT16 data);
-void FASTCALL SH2_Write_Word_FB1(UINT32 adr, UINT16 data);
-void FASTCALL SH2_Write_Long_FB0(UINT32 adr, UINT32 data);
-void FASTCALL SH2_Write_Long_FB1(UINT32 adr, UINT32 data);
+void FASTCALL SH2_Write_Byte_FB0(uint32_t adr, uint8_t data);
+void FASTCALL SH2_Write_Byte_FB1(uint32_t adr, uint8_t data);
+void FASTCALL SH2_Write_Word_FB0(uint32_t adr, uint16_t data);
+void FASTCALL SH2_Write_Word_FB1(uint32_t adr, uint16_t data);
+void FASTCALL SH2_Write_Long_FB0(uint32_t adr, uint32_t data);
+void FASTCALL SH2_Write_Long_FB1(uint32_t adr, uint32_t data);
 
-void FASTCALL SH2_Write_Byte_Ram(UINT32 adr, UINT8 data);
-void FASTCALL SH2_Write_Word_Ram(UINT32 adr, UINT16 data);
-void FASTCALL SH2_Write_Long_Ram(UINT32 adr, UINT32 data);
+void FASTCALL SH2_Write_Byte_Ram(uint32_t adr, uint8_t data);
+void FASTCALL SH2_Write_Word_Ram(uint32_t adr, uint16_t data);
+void FASTCALL SH2_Write_Long_Ram(uint32_t adr, uint32_t data);
 
 #ifdef __cplusplus
 }
