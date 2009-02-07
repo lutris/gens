@@ -24,6 +24,8 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
+
 #include "vlopt_window.h"
 #include "vlopt_options.h"
 #include "vlopt_plugin.h"
@@ -177,6 +179,11 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			return 0;
 		
 		case WM_COMMAND:
+			if (wParam >= IDC_VLOPT_CHECKBOX && wParam < (IDC_VLOPT_CHECKBOX + VLOPT_OPTIONS_COUNT))
+			{
+				// Checkbox selected. Save the options.
+				vlopt_window_save_options();
+			}
 			// TODO
 			break;
 		
@@ -256,6 +263,11 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 		}
 	}
 	
+	// TODO: Checkboxes for the remaining VDP Layer Options.
+	
+	// Load the options.
+	vlopt_window_load_options();
+	
 #if 0
 	// Create the checkboxes for the remaining VDP Layer Options.
 	for (unsigned int i = 9; i < VLOPT_OPTIONS_COUNT; i++)
@@ -301,16 +313,6 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 			       g_object_ref(btnClose),
 			       (GDestroyNotify)g_object_unref);
-	
-	// Set the window as modal to the main application window.
-	if (parent)
-		gtk_window_set_transient_for(GTK_WINDOW(vlopt_window), GTK_WINDOW(parent));
-	
-	// Load the options.
-	vlopt_window_load_options();
-	
-	// Show the window.
-	gtk_widget_show_all(vlopt_window);
 #endif
 	
 	// TODO
@@ -358,6 +360,7 @@ static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, 
 			break;
 	}
 }
+#endif
 
 
 /**
@@ -373,10 +376,11 @@ static void vlopt_window_load_options(void)
 	}
 	
 	// Go through the options.
-	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
+	unsigned int i;
+	for (i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
-		gboolean flag_enabled = (vdp_layer_options & vlopt_options[i].flag);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(vlopt_checkboxes[i]), flag_enabled);
+		unsigned int flag_enabled = ((vdp_layer_options & vlopt_options[i].flag) ? BST_CHECKED : BST_UNCHECKED);
+		Button_SetCheck(vlopt_window_checkboxes[i], flag_enabled);
 	}
 }
 
@@ -389,9 +393,10 @@ static void vlopt_window_save_options(void)
 	int vdp_layer_options = 0;
 	
 	// Go through the options.
-	for (unsigned int i = 0; i < VLOPT_OPTIONS_COUNT; i++)
+	unsigned int i;
+	for (i = 0; i < VLOPT_OPTIONS_COUNT; i++)
 	{
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(vlopt_checkboxes[i])))
+		if (Button_GetCheck(vlopt_window_checkboxes[i]) == BST_CHECKED)
 			vdp_layer_options |= vlopt_options[i].flag;
 	}
 	
@@ -402,17 +407,3 @@ static void vlopt_window_save_options(void)
 		fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, vdp_layer_options);
 	}
 }
-
-
-/**
- * vlopt_window_callback_checkbox_toggled(): A checkbox was toggled.
- */
-static void vlopt_window_callback_checkbox_toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(togglebutton);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	// Save the current layer options.
-	vlopt_window_save_options();
-}
-#endif
