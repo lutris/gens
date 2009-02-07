@@ -1,0 +1,78 @@
+/***************************************************************************
+ * Gens: MDP: Mega Drive Plugin - Win32 convenience functions.             *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008 by David Korth                                       *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
+#ifdef _WIN32
+
+#ifndef __MDP_WIN32_H
+#define __MDP_WIN32_H
+
+#include <windows.h>
+
+
+/**
+ * mdp_win32_center_on_window(): Center one window on top of another window.
+ * @param hWnd_top Window to center on top.
+ * @param hWnd_bottom Window to be centered over.
+ */
+static void mdp_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
+{
+	RECT r, r2;
+	int dx1, dy1, dx2, dy2;
+	
+	GetWindowRect(hWnd_bottom, &r);
+	dx1 = (r.right - r.left) / 2;
+	dy1 = (r.bottom - r.top) / 2;
+	
+	GetWindowRect(hWnd_top, &r2);
+	dx2 = (r2.right - r2.left) / 2;
+	dy2 = (r2.bottom - r2.top) / 2;
+	
+	SetWindowPos(hWnd_top, NULL,
+		     max(0, r.left + (dx1 - dx2)),
+		     max(0, r.top + (dy1 - dy2)), 0, 0,
+		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+
+/**
+ * mdp_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
+ * @param hWnd Window handle.
+ * @param reqW Required width.
+ * @param reqH Required height.
+ */
+static void mdp_win32_set_actual_window_size(HWND hWnd, const int reqW, const int reqH)
+{
+	RECT r;
+	SetRect(&r, 0, 0, reqW, reqH);
+	
+	// Adjust the rectangle.
+	AdjustWindowRectEx(&r, GetWindowStyle(hWnd), (GetMenu(hWnd) != NULL), GetWindowExStyle(hWnd));
+	
+	// Set the window size.
+	SetWindowPos(hWnd, NULL, 0, 0, r.right - r.left, r.bottom - r.top,
+		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+}
+
+
+#endif /* __MDP_WIN32_H */
+
+#endif /* _WIN32 */
