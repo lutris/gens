@@ -186,6 +186,11 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 }
 
 
+// Grid size constants.
+#define VLOPT_GRID_COL1 56
+#define VLOPT_GRID_COLX 40
+#define VLOPT_GRID_ROW  20
+
 /**
  * vlopt_window_create_child_windows(): Create child windows.
  * @param hWnd Parent window.
@@ -200,109 +205,30 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-16-24,
 			      hWnd, NULL, vlopt_hinstance, NULL);
 	SetWindowFont(grpBox, vlopt_hfont, TRUE);
-#if 0
-	// Create the main frame.
-	GtkWidget *fraMain = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraMain, "fraMain");
-	gtk_widget_show(fraMain);
-	gtk_box_pack_start(GTK_BOX(vboxMain), fraMain, FALSE, TRUE, 0);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_ETCHED_IN);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "fraMain",
-			       g_object_ref(fraMain), (GDestroyNotify)g_object_unref);
 	
-	// Main frame label.
-	GtkWidget *lblFrameTitle = gtk_label_new("VDP Layer Options");
-	gtk_widget_set_name(lblFrameTitle, "lblInfoTitle");
-	gtk_label_set_use_markup(GTK_LABEL(lblFrameTitle), TRUE);
-	gtk_widget_show(lblFrameTitle);
-	gtk_frame_set_label_widget(GTK_FRAME(fraMain), lblFrameTitle);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "lblFrameTitle",
-			       g_object_ref(lblFrameTitle), (GDestroyNotify)g_object_unref);
+	int i;
 	
-	// Horizontal padding for the frame VBox.
-	GtkWidget *alignVBoxFrame = gtk_alignment_new(0.0f, 0.0f, 0.0f, 0.0f);
-	gtk_widget_set_name(alignVBoxFrame, "alignVBoxFrame");
-	gtk_alignment_set_padding(GTK_ALIGNMENT(alignVBoxFrame), 0, 0, 4, 4);
-	gtk_container_add(GTK_CONTAINER(fraMain), alignVBoxFrame);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "alignVBoxFrame",
-			       g_object_ref(alignVBoxFrame), (GDestroyNotify)g_object_unref);
-	
-	// Create the frame VBox.
-	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
-	gtk_widget_set_name(vboxFrame, "vboxFrame");
-	gtk_widget_show(vboxFrame);
-	gtk_container_add(GTK_CONTAINER(alignVBoxFrame), vboxFrame);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxFrame",
-			       g_object_ref(vboxFrame), (GDestroyNotify)g_object_unref);
-	
-	// Create the outer table layout for the first 9 layer options.
-	GtkWidget *tblOptionsRows = gtk_table_new(4, 2, FALSE);
-	gtk_widget_set_name(tblOptionsRows, "tblOptionsRows");
-	gtk_widget_show(tblOptionsRows);
-	gtk_box_pack_start(GTK_BOX(vboxFrame), tblOptionsRows, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "tblOptionsRows",
-			       g_object_ref(tblOptionsRows),
-			       (GDestroyNotify)g_object_unref);
-	
-	// Create a blank label for the first row.
-	GtkWidget *lblBlankRow = gtk_label_new(NULL);
-	gtk_widget_set_name(lblBlankRow, "lblBlankRow");
-	gtk_widget_show(lblBlankRow);
-	gtk_table_attach(GTK_TABLE(tblOptionsRows), lblBlankRow,
-			 0, 1, 0, 1,
-			 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "lblBlankRow",
-			       g_object_ref(lblBlankRow),
-			       (GDestroyNotify)g_object_unref);
-	
-	// Create the inner table layout for the first 9 layer options.
-	GtkWidget *tblOptions = gtk_table_new(4, 3, TRUE);
-	gtk_widget_set_name(tblOptions, "tblOptions");
-	gtk_widget_show(tblOptions);
-	gtk_table_attach(GTK_TABLE(tblOptionsRows), tblOptions,
-			 1, 2, 0, 4,
-			 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "tblOptions",
-			       g_object_ref(tblOptions),
-			       (GDestroyNotify)g_object_unref);
-	
-	// Buffer for widget names.
-	char buf[32];
-	
-	// Create column and row labels.
-	for (int i = 0; i < 3; i++)
+	// Create the column and row headers.
+	for (i = 0; i < 3; i++)
 	{
-		// Column label.
-		sprintf(buf, "lblTblColHeader_%d", i);
-		GtkWidget *lblTblColHeader = gtk_label_new(vlopt_options[i].sublayer);
-		gtk_widget_set_name(lblTblColHeader, buf);
-		gtk_misc_set_alignment(GTK_MISC(lblTblColHeader), 0.5f, 0.5f);
-		gtk_widget_show(lblTblColHeader);
+		HWND lblColHeader, lblRowHeader;
 		
-		gtk_table_attach(GTK_TABLE(tblOptions), lblTblColHeader,
-				 i, i + 1, 0, 1,
-				 (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+		lblColHeader = CreateWindow(WC_STATIC, vlopt_options[i].sublayer,
+					    WS_CHILD | WS_VISIBLE | SS_CENTER,
+					    8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*i), 16,
+					    VLOPT_GRID_COLX, VLOPT_GRID_ROW,
+					    grpBox, NULL, vlopt_hinstance, NULL);
+		SetWindowFont(lblColHeader, vlopt_hfont, TRUE);
 		
-		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-				       g_object_ref(lblTblColHeader),
-				       (GDestroyNotify)g_object_unref);
-		
-		// Row label.
-		sprintf(buf, "lblTblRowHeader_%d", i);
-		GtkWidget *lblTblRowHeader = gtk_label_new(vlopt_options[i * 3].layer);
-		gtk_widget_set_name(lblTblRowHeader, buf);
-		gtk_misc_set_alignment(GTK_MISC(lblTblRowHeader), 0.5f, 0.5f);
-		gtk_widget_show(lblTblRowHeader);
-		
-		gtk_table_attach(GTK_TABLE(tblOptionsRows), lblTblRowHeader,
-				 0, 1, i + 1, i + 2,
-				 (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
-		
-		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-				       g_object_ref(lblTblRowHeader),
-				       (GDestroyNotify)g_object_unref);
+		lblRowHeader = CreateWindow(WC_STATIC, vlopt_options[i * 3].layer,
+					    WS_CHILD | WS_VISIBLE | SS_RIGHT,
+					    8, 16+(VLOPT_GRID_ROW*(i+1)),
+					    VLOPT_GRID_COL1, VLOPT_GRID_ROW,
+					    grpBox, NULL, vlopt_hinstance, NULL);
+		SetWindowFont(lblRowHeader, vlopt_hfont, TRUE);
 	}
 	
+#if 0
 	// Create the VDP Layer Options checkboxes.
 	uint8_t row = 1, col = 0;
 	for (unsigned int i = 0; i < 9; i++)
