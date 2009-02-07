@@ -513,7 +513,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Set_VDP_Reg(i, md_save.vdp_reg[i]);
 	
 	// 68000 registers.
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		Context_68K.dreg[i] = le32_to_cpu(md_save.mc68000_reg.dreg[i]);
 		Context_68K.areg[i] = le32_to_cpu(md_save.mc68000_reg.areg[i]);
@@ -821,7 +821,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	main68k_GetContext(&Context_68K);
 	
 	// 68000 registers
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		md_save.mc68000_reg.dreg[i] = cpu_to_le32(Context_68K.dreg[i]);
 		md_save.mc68000_reg.areg[i] = cpu_to_le32(Context_68K.areg[i]);
