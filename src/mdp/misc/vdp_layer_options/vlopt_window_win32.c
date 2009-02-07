@@ -37,6 +37,9 @@
 #include <windowsx.h>
 #include <commctrl.h>
 
+// MDP Win32 convenience functions.
+#include "mdp/mdp_win32.h"
+
 // Response ID for the "Reset" button.
 #define VLOPT_RESPONSE_RESET -64
 
@@ -57,6 +60,16 @@ BOOL vlopt_window_child_windows_created;
 // Option handling functions.
 static void vlopt_window_load_options(void);
 static void vlopt_window_save_options(void);
+
+// Instance.
+static HINSTANCE vlopt_hinstance;
+
+// Font.
+static HFONT vlopt_hfont = NULL;
+
+// Window size.
+#define VLOPT_WINDOW_WIDTH  320
+#define VLOPT_WINDOW_HEIGHT 240
 
 
 /**
@@ -92,33 +105,102 @@ void vlopt_window_show(void *parent)
 		RegisterClass(&vlopt_window_wndclass);
 	}
 	
+	// Get the HINSTANCE.
+	vlopt_hinstance = GetModuleHandle(NULL);
+	
+	// Create the font.
+	vlopt_hfont = mdp_win32_get_message_font();
+	
 	// Create the window.
 	vlopt_window = CreateWindowEx(0, "vlopt_window_wndclass", "VDP Layer Options",
 				      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      320, 240,
-				      (HWND)parent, NULL, GetModuleHandle(NULL), NULL);
+				      VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT,
+				      (HWND)parent, NULL, vlopt_hinstance, NULL);
 	
+	// Window adjustment.
+	mdp_win32_set_actual_window_size(vlopt_window, VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT);
+	mdp_win32_center_on_window(vlopt_window, (HWND)parent);
+	
+	UpdateWindow(vlopt_window);
+	ShowWindow(vlopt_window, TRUE);
+	
+	// Register the window with MDP Host Services.
+	vlopt_host_srv->window_register(&mdp, vlopt_window);
+}
+
+
+/**
+ * vlopt_window_close(): Close the VDP Layer Options window.
+ */
+void vlopt_window_close(void)
+{
+	if (!vlopt_window)
+		return;
+	
+	// Unregister the window from MDP Host Services.
+	vlopt_host_srv->window_unregister(&mdp, vlopt_window);
+	
+	
+	// Destroy the window.
+	HWND tmp = vlopt_window;
+	vlopt_window = NULL;
+	DestroyWindow(tmp);
+	
+	// Delete the font.
+	DeleteFont(vlopt_hfont);
+	vlopt_hfont = NULL;
+}
+
+
+/**
+ * vlopt_wndproc(): Window procedure.
+ * @param hWnd hWnd of the object sending a message.
+ * @param message Message being sent by the object.
+ * @param wParam
+ * @param lParam
+ * @return
+ */
+static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch(message)
+	{
+		case WM_CREATE:
+			vlopt_window_create_child_windows(hWnd);
+			break;
+		
+		case WM_CLOSE:
+			vlopt_window_close();
+			return 0;
+		
+		case WM_COMMAND:
+			// TODO
+			break;
+		
+		case WM_DESTROY:
+			vlopt_window_close();
+			break;
+	}
+	
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+/**
+ * vlopt_window_create_child_windows(): Create child windows.
+ * @param hWnd Parent window.
+ */
+static void vlopt_window_create_child_windows(HWND hWnd)
+{
+	if (vlopt_window_child_windows_created)
+		return;
+	
+	HWND grpBox = CreateWindow(WC_BUTTON, "VDP Layer Options",
+			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-16-24,
+			      hWnd, NULL, vlopt_hinstance, NULL);
+	SetWindowFont(grpBox, vlopt_hfont, TRUE);
 #if 0
-	// Dialog response callback.
-	g_signal_connect((gpointer)vlopt_window, "response",
-			 G_CALLBACK(vlopt_window_callback_response), NULL);
-	
-	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(vlopt_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
-	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
-	
-	// Create the main VBox.
-	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxMain, "vboxMain");
-	gtk_widget_show(vboxMain);
-	gtk_container_add(GTK_CONTAINER(vboxDialog), vboxMain);
-	g_object_set_data_full(G_OBJECT(vlopt_window), "vboxMain",
-			       g_object_ref(vboxMain), (GDestroyNotify)g_object_unref);
-	
 	// Create the main frame.
 	GtkWidget *fraMain = gtk_frame_new(NULL);
 	gtk_widget_set_name(fraMain, "fraMain");
@@ -307,74 +389,6 @@ void vlopt_window_show(void *parent)
 	// Show the window.
 	gtk_widget_show_all(vlopt_window);
 #endif
-	
-	UpdateWindow(vlopt_window);
-	ShowWindow(vlopt_window, TRUE);
-	
-	// Register the window with MDP Host Services.
-	vlopt_host_srv->window_register(&mdp, vlopt_window);
-}
-
-
-/**
- * vlopt_window_close(): Close the VDP Layer Options window.
- */
-void vlopt_window_close(void)
-{
-	if (!vlopt_window)
-		return;
-	
-	// Unregister the window from MDP Host Services.
-	vlopt_host_srv->window_unregister(&mdp, vlopt_window);
-	
-	// Destroy the window.
-	HWND tmp = vlopt_window;
-	vlopt_window = NULL;
-	DestroyWindow(tmp);
-}
-
-
-/**
- * vlopt_wndproc(): Window procedure.
- * @param hWnd hWnd of the object sending a message.
- * @param message Message being sent by the object.
- * @param wParam
- * @param lParam
- * @return
- */
-static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch(message)
-	{
-		case WM_CREATE:
-			vlopt_window_create_child_windows(hWnd);
-			break;
-		
-		case WM_CLOSE:
-			vlopt_window_close();
-			return 0;
-		
-		case WM_COMMAND:
-			// TODO
-			break;
-		
-		case WM_DESTROY:
-			vlopt_window_close();
-			break;
-	}
-	
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-
-
-/**
- * vlopt_window_create_child_windows(): Create child windows.
- * @param hWnd Parent window.
- */
-static void vlopt_window_create_child_windows(HWND hWnd)
-{
-	if (vlopt_window_child_windows_created)
-		return;
 	
 	// TODO
 	
