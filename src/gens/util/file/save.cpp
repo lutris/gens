@@ -375,9 +375,6 @@ inline void Savestate::ExportDataAuto(const void* from, void* data,
  */
 int Savestate::GsxImportGenesis(const unsigned char* data)
 {
-	unsigned char Reg_1[0x200], *src;
-	int i;
-	
 	// Savestate V6 and V7 code from Gens Rerecording.
 	
 	/*
@@ -389,57 +386,63 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	// Length of the savestate.
 	int len = GENESIS_STATE_LENGTH;
 	
+	// Copy the first part of the data into a gsx_struct_md_t struct.
+	gsx_struct_md_t md_save;
+	memcpy(&md_save, &data[0], sizeof(md_save));
+	
 	// Get the savestate version.
-	m_Version = data[0x50];
+	m_Version = md_save.version.version;
 	
 	// Savestates earlier than Version 6 are shitty.
 	if (m_Version < 6)
 		len -= 0x10000;
 	
-	ImportData(CRam, data, 0x112, 0x80);
-	ImportData(VSRam, data, 0x192, 0x50);
-	ImportData(Ram_Z80, data, 0x474, 0x2000);
+	// Copy the CRam, VSRam, and Z80 RAM.
+	memcpy(&CRam, &md_save.cram, sizeof(CRam));
+	memcpy(&VSRam, &md_save.vsram, sizeof(VSRam));
+	memcpy(&Ram_Z80, &md_save.z80_ram, sizeof(Ram_Z80));
 	
-	// 68000 RAM
-	for (i = 0; i < 0x10000; i += 2)
-	{
-		Ram_68k[i + 0] = data[i + 0x2478 + 1];
-		Ram_68k[i + 1] = data[i + 0x2478 + 0];
-	}
+	// 68000 RAM.
+	memcpy(&Ram_68k, &md_save.mc68000_ram, sizeof(Ram_68k));
+	be16_to_cpu_array(&Ram_68k, sizeof(Ram_68k));
 	
-	// VRAM
-	for (i = 0; i < 0x10000; i += 2)
-	{
-		VRam[i + 0] = data[i + 0x12478 + 1];
-		VRam[i + 1] = data[i + 0x12478 + 0];
-	}
+	// VRAM.
+	memcpy(&VRam, &md_save.vram, sizeof(VRam));
+	be16_to_cpu_array(&VRam, sizeof(VRam));
 	
-	ImportData(Reg_1, data, 0x1E4, 0x200);
-	YM2612_Restore(Reg_1);
+	// YM2612 registers.
+	YM2612_Restore(&md_save.ym2612[0]);
 	
-	// Version 2, 3, and 4 save files
+	// Special data based on the savestate version.
 	if ((m_Version >= 2) && (m_Version < 4))
 	{
+		// TODO: Create a struct fr this.
 		ImportData(&Ctrl, data, 0x30, 7 * 4);
 		
+		// 0x440: Z80 busreq
+		// 0x444: Z80 reset
 		Z80_State &= ~6;
 		if (data[0x440] & 1)
 			Z80_State |= 2;
 		if (data[0x444] & 1)
 			Z80_State |= 4;
 		
+		// 0x448: Z80 bank.
 		ImportData(&Bank_Z80, data, 0x448, 4);
 		
+		// 0x22488: PSG registers.
+		// TODO: Import this using correct endianness.
 		ImportData(&PSG_Save, data, 0x224B8, 8 * 4);
 		PSG_Restore_State();
 	}
 	else if ((m_Version >= 4) || (m_Version == 0))
 	{
-		// New savestate version compatible with Kega
+		// New savestate version compatible with Kega.
 		Z80_State &= ~6;
 		
 		if (m_Version == 4)
 		{
+			// Version 4 stores IFF and State differently.
 			M_Z80.IM = data[0x437];
 			M_Z80.IFF.b.IFF1 = (data[0x438] & 1) << 2;
 			M_Z80.IFF.b.IFF2 = (data[0x438] & 1) << 2;
@@ -448,80 +451,92 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		}
 		else
 		{
+			// Other versions use the Gens v5 format.
 			M_Z80.IM = 1;
-			M_Z80.IFF.b.IFF1 = (data[0x436] & 1) << 2;
-			M_Z80.IFF.b.IFF2 = (data[0x436] & 1) << 2;
+			M_Z80.IFF.b.IFF1 = (md_save.z80_reg.IFF1 & 1) << 2;
+			M_Z80.IFF.b.IFF2 = M_Z80.IFF.b.IFF1;
 			
-			Z80_State |= ((data[0x439] & 1) ^ 1) << 1;
-			Z80_State |= ((data[0x438] & 1) ^ 1) << 2;
+			Z80_State |= (md_save.z80_reg.state_busreq ^ 1) << 1;
+			Z80_State |= (md_save.z80_reg.state_reset ^ 1) << 2;
 		}
 		
-		src = (unsigned char *) &Ctrl;
-		for (i = 0; i < 7 * 4; i++)
-			*src++ = 0;
+		// Clear VDP control.
+		memset(&Ctrl, 0x00, sizeof(Ctrl));
 		
-		Write_VDP_Ctrl(data[0x40] + (data[0x41] << 8));
-		Write_VDP_Ctrl(data[0x42] + (data[0x43] << 8));
+		// Load VDP control settings.
+		uint32_t lastCtrlData = le32_to_cpu(md_save.vdp_ctrl.ctrl_data);
+		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
+		Write_VDP_Ctrl(lastCtrlData >> 16);
 		
-		Ctrl.Flag = data[0x44];
-		Ctrl.DMA = (data[0x45] & 1) << 2;
-		Ctrl.Access = data[0x46] + (data[0x47] << 8); //Nitsuja added this
-		Ctrl.Address = data[0x48] + (data[0x49] << 8);
+		Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
+		Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
+		Ctrl.Access = le16_to_cpu(md_save.vdp_ctrl.ctrl_access); //Nitsuja added this
+		Ctrl.Address = le32_to_cpu(md_save.vdp_ctrl.write_address) & 0xFFFF;
 		
-		ImportData(&Bank_Z80, data, 0x43C, 4);
+		// Load the Z80 bank register.
+		Bank_Z80 = le32_to_cpu(md_save.z80_reg.bank);
 		
 		if (m_Version >= 4)
 		{
-			for (i = 0; i < 8; i++)
-				PSG_Save[i] = data[i * 2 + 0x60] + (data[i * 2 + 0x61] << 8);
+			// Load the PSG registers.
+			for (int i = 0; i < 8; i++)
+			{
+				PSG_Save[i] = (uint16_t)(le32_to_cpu(md_save.psg[i]));
+			}
 			PSG_Restore_State();
 		}
 	}
-
-	mdZ80_set_AF (&M_Z80, data[0x404] + (data[0x405] << 8));
-	M_Z80.AF.b.FXY = data[0x406]; //Modif N [Gens Rerecording]
-	M_Z80.BC.w.BC = data[0x408] + (data[0x409] << 8);
-	M_Z80.DE.w.DE = data[0x40C] + (data[0x40D] << 8);
-	M_Z80.HL.w.HL = data[0x410] + (data[0x411] << 8);
-	M_Z80.IX.w.IX = data[0x414] + (data[0x415] << 8);
-	M_Z80.IY.w.IY = data[0x418] + (data[0x419] << 8);
-	mdZ80_set_PC(&M_Z80, data[0x41C] + (data[0x41D] << 8));
-	M_Z80.SP.w.SP = data[0x420] + (data[0x421] << 8);
-	mdZ80_set_AF2(&M_Z80, data[0x424] + (data[0x425] << 8));
-	M_Z80.BC2.w.BC2 = data[0x428] + (data[0x429] << 8);
-	M_Z80.DE2.w.DE2 = data[0x42C] + (data[0x42D] << 8);
-	M_Z80.HL2.w.HL2 = data[0x430] + (data[0x431] << 8);
-	M_Z80.I = data[0x434] & 0xFF;
+	
+	// Z80 registers.
+	mdZ80_set_AF(&M_Z80, le16_to_cpu(md_save.z80_reg.AF));
+	M_Z80.AF.b.FXY = md_save.z80_reg.FXY; //Modif N [Gens Rerecording]
+	M_Z80.BC.w.BC = le16_to_cpu(md_save.z80_reg.BC);
+	M_Z80.DE.w.DE = le16_to_cpu(md_save.z80_reg.DE);
+	M_Z80.HL.w.HL = le16_to_cpu(md_save.z80_reg.HL);
+	M_Z80.IX.w.IX = le16_to_cpu(md_save.z80_reg.IX);
+	M_Z80.IY.w.IY = le16_to_cpu(md_save.z80_reg.IY);
+	mdZ80_set_PC(&M_Z80, le16_to_cpu(md_save.z80_reg.PC));
+	M_Z80.SP.w.SP = le16_to_cpu(md_save.z80_reg.SP);
+	mdZ80_set_AF2(&M_Z80, le16_to_cpu(md_save.z80_reg.AF2));
+	M_Z80.BC2.w.BC2 = le16_to_cpu(md_save.z80_reg.BC2);
+	M_Z80.DE2.w.DE2 = le16_to_cpu(md_save.z80_reg.DE2);
+	M_Z80.HL2.w.HL2 = le16_to_cpu(md_save.z80_reg.HL2);
+	M_Z80.I = md_save.z80_reg.I;
 	
 	// Gens Rerecording: This seems to only be used for movies (e.g. *.giz), so ignore it for now.
 	//FrameCount = data[0x22478] + (data[0x22479] << 8) + (data[0x2247A] << 16) + (data[0x2247B] << 24);
 	
 	main68k_GetContext(&Context_68K);
 	
-	// VDP registers
-	for (i = 0; i < 24; i++)
-		Set_VDP_Reg(i, data[0xFA + i]);
+	// VDP registers.
+	for (int i = 0; i < 24; i++)
+		Set_VDP_Reg(i, md_save.vdp_reg[i]);
 	
-	// 68000 registers
-	ImportData(&Context_68K.dreg[0], data, 0x80, 8 * 2 * 4);
-	ImportData(&Context_68K.pc, data, 0xC8, 4);
-	ImportData(&Context_68K.sr, data, 0xD0, 2);
+	// 68000 registers.
+	for (int i = 0; i < 7; i++)
+	{
+		Context_68K.dreg[i] = le32_to_cpu(md_save.mc68000_reg.dreg[i]);
+		Context_68K.areg[i] = le32_to_cpu(md_save.mc68000_reg.areg[i]);
+	}
+	Context_68K.pc = le32_to_cpu(md_save.mc68000_reg.pc);
+	Context_68K.sr = (uint32_t)(le16_to_cpu(md_save.mc68000_reg.sr));
 	
+	// Stack pointer.
 	if ((m_Version >= 3) || (m_Version == 0))
 	{
-		if (data[0xD1] & 0x20)
+		if (Context_68K.sr & 0x2000)
 		{
-			// Supervisor
-			ImportData(&Context_68K.asp, data, 0xD2, 2);
+			// Supervisor.
+			Context_68K.asp = le32_to_cpu(md_save.mc68000_reg.usp);
 		}
 		else
 		{
-			// User
-			ImportData(&Context_68K.asp, data, 0xD6, 2);
+			// User.
+			Context_68K.asp = le32_to_cpu(md_save.mc68000_reg.ssp);
 		}
 	}
 	
-	// NEW AND IMPROVED! GENS v6 and v7 savestate formats are here!
+	// NEW AND IMPROVED! Gens v6 and v7 savestate formats are here!
 	// Ported from Gens Rerecording.
 	unsigned int offset = GENESIS_LENGTH_EX1;
 	if (m_Version == 6)
@@ -794,7 +809,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// Copy the PSG state into the savestate buffer.
 	for (int i = 0; i < 8; i++)
 	{
-		md_save.psg[i] = cpu_to_le32(PSG_Save[i]);
+		md_save.psg[i] = cpu_to_le16((uint16_t)PSG_Save[i]);
 	}
 	
 #ifdef GENS_DEBUG_SAVESTATE
@@ -812,17 +827,18 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 		md_save.mc68000_reg.areg[i] = cpu_to_le32(Context_68K.areg[i]);
 	}
 	md_save.mc68000_reg.pc = cpu_to_le32(Context_68K.pc);
-	md_save.mc68000_reg.pc = cpu_to_le16((uint16_t)(Context_68K.sr));
+	md_save.mc68000_reg.sr = cpu_to_le16((uint16_t)(Context_68K.sr));
 	
+	// Stack pointer.
 	if (Context_68K.sr & 0x2000)
 	{
-		// Supervisor
+		// Supervisor.
 		md_save.mc68000_reg.usp = cpu_to_le32(Context_68K.asp);
 		md_save.mc68000_reg.ssp = cpu_to_le32(Context_68K.areg[7]);
 	}
 	else
 	{
-		// User
+		// User.
 		md_save.mc68000_reg.usp = cpu_to_le32(Context_68K.areg[7]);
 		md_save.mc68000_reg.ssp = cpu_to_le32(Context_68K.asp);
 	}
@@ -866,7 +882,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	// Z80 registers.
 	md_save.z80_reg.AF  = cpu_to_le16((uint16_t)(mdZ80_get_AF(&M_Z80)));
-	md_save.z80_reg.FXY = cpu_to_le16((uint16_t)(M_Z80.AF.b.FXY));
+	md_save.z80_reg.FXY = M_Z80.AF.b.FXY; // Modif N [Gens Rerecording]
 	md_save.z80_reg.BC  = cpu_to_le16((uint16_t)(M_Z80.BC.w.BC));
 	md_save.z80_reg.DE  = cpu_to_le16((uint16_t)(M_Z80.DE.w.DE));
 	md_save.z80_reg.HL  = cpu_to_le16((uint16_t)(M_Z80.HL.w.HL));
@@ -888,7 +904,6 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	memcpy(&md_save.z80_ram, &Ram_Z80, sizeof(md_save.z80_ram));
 	
 	// 68000 RAM.
-	printf("END: %c%c%c%c\n", Ram_68k[0xFFFC], Ram_68k[0xFFFD], Ram_68k[0xFFFE], Ram_68k[0xFFFF]);
 	memcpy(&md_save.mc68000_ram, &Ram_68k, sizeof(md_save.mc68000_ram));
 	cpu_to_be16_array(&md_save.mc68000_ram, sizeof(md_save.mc68000_ram));
 	
