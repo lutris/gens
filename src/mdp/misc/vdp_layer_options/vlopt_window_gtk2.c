@@ -24,6 +24,8 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
+
 #include "vlopt_window.h"
 #include "vlopt_options.h"
 #include "vlopt_plugin.h"
