@@ -36,7 +36,7 @@ extern "C" {
 // All integer data types are stored in little-endian.
 
 /**
- * gsx_struct_md_t: MD savestate data.
+ * gsx_struct_md_t: Gens v5 savestate data.
  * This struct also contains the GSX header.
  */
 typedef struct PACKED _gsx_struct_md_t
