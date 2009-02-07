@@ -82,7 +82,7 @@ static unsigned char input_dinput_keys[256];
 static BOOL input_dinput_joystick_initialized;
 static BOOL input_dinput_joystick_error;
 static int input_dinput_num_joysticks;	// Number of joysticks connected
-static BOOL input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
+static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 int input_dinput_set_cooperative_level_joysticks(HWND hWnd);
 
 // Miscellaneous DirectInput functions.
@@ -274,8 +274,7 @@ int input_dinput_init_joysticks(HWND hWnd)
 	input_dinput_joystick_initialized = true;
 	
 	HRESULT rval;
-	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK,
-				 (LPDIENUMDEVICESCALLBACK)(&input_dinput_init_joysticks_enum),
+	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &input_dinput_init_joysticks_enum,
 				 hWnd, DIEDFL_ATTACHEDONLY);
 	if (rval != DI_OK)
 	{
@@ -291,7 +290,7 @@ int input_dinput_init_joysticks(HWND hWnd)
 }
 
 
-static BOOL input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
+static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
 	HRESULT rval;
 	LPDIRECTINPUTDEVICE	lpDIJoy;
