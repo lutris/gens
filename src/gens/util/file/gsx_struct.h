@@ -96,36 +96,37 @@ typedef struct PACKED _gsx_struct_md_t
 	struct PACKED
 	{
 		uint16_t AF;
-		uint16_t FXY; // Gens Rerecording addition.
+		uint8_t  FXY; // Gens Rerecording addition.
+		uint8_t  reserved1;
 		uint16_t BC;
-		uint16_t reserved1;
-		uint16_t DE;
 		uint16_t reserved2;
-		uint16_t HL;
+		uint16_t DE;
 		uint16_t reserved3;
-		uint16_t IX;
+		uint16_t HL;
 		uint16_t reserved4;
-		uint16_t IY;
+		uint16_t IX;
 		uint16_t reserved5;
-		uint16_t PC;
+		uint16_t IY;
 		uint16_t reserved6;
-		uint16_t SP;
+		uint16_t PC;
 		uint16_t reserved7;
-		uint16_t AF2;
+		uint16_t SP;
 		uint16_t reserved8;
-		uint16_t BC2;
+		uint16_t AF2;
 		uint16_t reserved9;
-		uint16_t DE2;
+		uint16_t BC2;
 		uint16_t reservedA;
-		uint16_t HL2;
+		uint16_t DE2;
 		uint16_t reservedB;
+		uint16_t HL2;
+		uint16_t reservedC;
 		uint8_t  I;
-		uint8_t  reservedC;
-		uint8_t  IFF1;
 		uint8_t  reservedD;
+		uint8_t  IFF1;
+		uint8_t  reservedE;
 		uint8_t  state_reset;
 		uint8_t  state_busreq;
-		uint16_t reservedE;
+		uint16_t reservedF;
 		uint32_t bank;
 	} z80_reg;
 	
