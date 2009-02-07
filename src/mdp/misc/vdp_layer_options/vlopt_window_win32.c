@@ -71,6 +71,9 @@ static HFONT vlopt_hfont = NULL;
 #define VLOPT_WINDOW_WIDTH  320
 #define VLOPT_WINDOW_HEIGHT 240
 
+// Checkbox command value.
+#define IDC_VLOPT_CHECKBOX 0x1000
+
 
 /**
  * vlopt_window_show(): Show the VDP Layer Options window.
@@ -191,6 +194,9 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 #define VLOPT_GRID_COLX 40
 #define VLOPT_GRID_ROW  20
 
+// Assume a checkbox is 16x16.
+#define VLOPT_CHECKBOX_SIZE 16
+
 /**
  * vlopt_window_create_child_windows(): Create child windows.
  * @param hWnd Parent window.
@@ -206,7 +212,8 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 			      hWnd, NULL, vlopt_hinstance, NULL);
 	SetWindowFont(grpBox, vlopt_hfont, TRUE);
 	
-	int i;
+	// Counter variable.
+	unsigned int i;
 	
 	// Create the column and row headers.
 	for (i = 0; i < 3; i++)
@@ -228,19 +235,17 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 		SetWindowFont(lblRowHeader, vlopt_hfont, TRUE);
 	}
 	
-#if 0
 	// Create the VDP Layer Options checkboxes.
 	uint8_t row = 1, col = 0;
-	for (unsigned int i = 0; i < 9; i++)
+	for (i = 0; i < 9; i++)
 	{
-		sprintf(buf, "vlopt_checkboxes_%d", i);
-		vlopt_checkboxes[i] = gtk_check_button_new();
-		gtk_widget_set_name(vlopt_checkboxes[i], buf);
-		gtk_widget_show(vlopt_checkboxes[i]);
-		
-		gtk_table_attach(GTK_TABLE(tblOptions), vlopt_checkboxes[i],
-				 col, col + 1, row, row + 1,
-				 (GtkAttachOptions)0, (GtkAttachOptions)0, 0, 0);
+		vlopt_window_checkboxes[i] = CreateWindow(
+				WC_BUTTON, NULL,
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+				8+8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*col)+((VLOPT_GRID_COLX-VLOPT_CHECKBOX_SIZE)/2),
+				8+16+(VLOPT_GRID_ROW*row),
+				VLOPT_CHECKBOX_SIZE, VLOPT_CHECKBOX_SIZE,
+				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hinstance, NULL);
 		
 		// Next cell.
 		col++;
@@ -249,17 +254,9 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 			col = 0;
 			row++;
 		}
-		
-		// Set the callback.
-		g_signal_connect((gpointer)vlopt_checkboxes[i], "toggled",
-				 G_CALLBACK(vlopt_window_callback_checkbox_toggled),
-				 GINT_TO_POINTER(i));
-		
-		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-				       g_object_ref(vlopt_checkboxes[i]),
-				       (GDestroyNotify)g_object_unref);
 	}
 	
+#if 0
 	// Create the checkboxes for the remaining VDP Layer Options.
 	for (unsigned int i = 9; i < VLOPT_OPTIONS_COUNT; i++)
 	{
