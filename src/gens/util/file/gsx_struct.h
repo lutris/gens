@@ -95,25 +95,37 @@ typedef struct PACKED _gsx_struct_md_t
 	// [0x404] Z80 registers.
 	struct PACKED
 	{
-		uint32_t AF;
-		uint32_t BC;
-		uint32_t DE;
-		uint32_t HL;
-		uint32_t IX;
-		uint32_t IY;
-		uint32_t PC;
-		uint32_t SP;
-		uint32_t AF2;
-		uint32_t BC2;
-		uint32_t DE2;
-		uint32_t HL2;
+		uint16_t AF;
+		uint16_t FXY; // Gens Rerecording addition.
+		uint16_t BC;
+		uint16_t reserved1;
+		uint16_t DE;
+		uint16_t reserved2;
+		uint16_t HL;
+		uint16_t reserved3;
+		uint16_t IX;
+		uint16_t reserved4;
+		uint16_t IY;
+		uint16_t reserved5;
+		uint16_t PC;
+		uint16_t reserved6;
+		uint16_t SP;
+		uint16_t reserved7;
+		uint16_t AF2;
+		uint16_t reserved8;
+		uint16_t BC2;
+		uint16_t reserved9;
+		uint16_t DE2;
+		uint16_t reservedA;
+		uint16_t HL2;
+		uint16_t reservedB;
 		uint8_t  I;
-		uint8_t  reserved1;
+		uint8_t  reservedC;
 		uint8_t  IFF1;
-		uint8_t  reserved2;
+		uint8_t  reservedD;
 		uint8_t  state_reset;
 		uint8_t  state_busreq;
-		uint16_t reserved3;
+		uint16_t reservedE;
 		uint32_t bank;
 	} z80_reg;
 	
