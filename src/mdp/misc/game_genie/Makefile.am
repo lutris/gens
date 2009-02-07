@@ -24,3 +24,7 @@ mdp_misc_game_genie_la_SOURCES += \
 mdp_misc_game_genie_la_CFLAGS = @GTK_CFLAGS@
 mdp_misc_game_genie_la_CXXFLAGS = @GTK_CFLAGS@
 endif
+
+if GENS_UI_WIN32
+mdp_misc_game_genie_la_LIBADD = -lgdi32
+endif
