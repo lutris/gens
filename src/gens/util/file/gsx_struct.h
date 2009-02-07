@@ -66,7 +66,7 @@ typedef struct PACKED _gsx_struct_md_t
 		uint8_t reserved2[0x0E];
 	} version;
 	
-	uint8_t psg[0x10];		// [0x60] PSG register data.
+	uint16_t psg[0x08];		// [0x60] PSG register data.
 	uint8_t reserved1[0x10];	// [0x70] Reserved.
 	
 	// [0x80] MC68000 registers.
