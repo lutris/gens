@@ -34,8 +34,6 @@ void Create_Save_Directory(const char *dir);
 void Win32_centerOnGensWindow(HWND hWnd);
 void Win32_clientResize(HWND hWnd, int width, int height);
 
-int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow);
-
 #ifdef __cplusplus
 }
 #endif

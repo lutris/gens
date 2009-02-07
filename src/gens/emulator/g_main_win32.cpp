@@ -135,7 +135,7 @@ void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
  * @param nCmdShow How to show the Gens window.
  * @return Error code.
  */
-int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
 	// Save hInst for other functions.
 	ghInstance = hInst;
