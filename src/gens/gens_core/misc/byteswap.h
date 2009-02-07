@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 // Endianness defines ported from libsdl.
 #define GENS_LIL_ENDIAN 1234
 #define GENS_BIG_ENDIAN 4321
@@ -56,16 +58,47 @@ void __byte_swap_16_array(void *ptr, int n);
 	(ptr)[2] = (((val) >> 8) & 0xFF);  \
 	(ptr)[3] = ((val) & 0xFF);
 
+static inline uint16_t __swab16(uint16_t x)
+{
+	 return x << 8 | x >> 8;
+}
+static inline uint32_t __swab32(uint32_t x)
+{
+	return x << 24 | x >> 24 |
+		(x & (uint32_t)0x0000FF00UL) << 8 |
+		(x & (uint32_t)0x00FF0000UL) >> 8;
+}
+
 #if GENS_BYTEORDER == GENS_LIL_ENDIAN
 	#define be16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	#define le16_to_cpu_array(ptr, n)
 	#define cpu_to_be16_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	#define cpu_to_le16_array(ptr, n)
+	
+	#define be16_to_cpu(x) __swab16(x)
+	#define be32_to_cpu(x) __swab32(x)
+	#define le16_to_cpu(x)
+	#define le32_to_cpu(x)
+	
+	#define cpu_to_be16(x) __swab16(x)
+	#define cpu_to_be32(x) __swab32(x)
+	#define cpu_to_le16(x)
+	#define cpu_to_le32(x)
 #else /* GENS_BYTEORDER == GENS_BIG_ENDIAN */
 	#define be16_to_cpu_array(ptr, n)
 	#define le16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	#define cpu_to_be16_array(ptr, n)
 	#define cpu_to_le16_array(ptr, n) __byte_swap_16_array((ptr), (n));
+	
+	#define be16_to_cpu(x)
+	#define be32_to_cpu(x)
+	#define le16_to_cpu(x) __swab16(x)
+	#define le32_to_cpu(x) __swab32(x)
+	
+	#define cpu_to_be16(x)
+	#define cpu_to_be32(x)
+	#define cpu_to_le16(x) __swab16(x)
+	#define cpu_to_le32(x) __swab32(x)
 #endif
 
 #ifdef __cplusplus
