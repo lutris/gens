@@ -132,8 +132,8 @@ typedef struct PACKED _gsx_struct_md_t
 	uint8_t  reserved5[0x34];	// [0x440] Reserved.
 	uint8_t  z80_ram[0x2000];	// [0x474] Z80 RAM.
 	uint32_t reserved6;		// [0x2474] Reserved.
-	uint8_t  mc68000_ram[0x10000];	// [0x2478] MC68000 RAM. [big-endian]
-	uint8_t  vram[0x10000];		// [0x12478] VRAM. [big-endian]
+	uint8_t  mc68000_ram[0x10000];	// [0x2478] MC68000 RAM. [be16]
+	uint8_t  vram[0x10000];		// [0x12478] VRAM. [be16]
 } gsx_struct_md_t;
 
 #ifdef __cplusplus
