@@ -70,8 +70,8 @@ static HINSTANCE vlopt_hinstance;
 static HFONT vlopt_hfont = NULL;
 
 // Window size.
-#define VLOPT_WINDOW_WIDTH  320
-#define VLOPT_WINDOW_HEIGHT 240
+#define VLOPT_WINDOW_WIDTH  216
+#define VLOPT_WINDOW_HEIGHT 184
 
 // Checkbox command value.
 #define IDC_VLOPT_CHECKBOX 0x1000
