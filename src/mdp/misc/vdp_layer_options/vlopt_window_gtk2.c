@@ -190,11 +190,12 @@ void vlopt_window_show(void *parent)
 		GtkWidget *lblTblColHeader = gtk_label_new(vlopt_options[i].sublayer);
 		gtk_widget_set_name(lblTblColHeader, buf);
 		gtk_misc_set_alignment(GTK_MISC(lblTblColHeader), 0.5f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblTblColHeader), GTK_JUSTIFY_CENTER);
 		gtk_widget_show(lblTblColHeader);
 		
 		gtk_table_attach(GTK_TABLE(tblOptions), lblTblColHeader,
 				 i, i + 1, 0, 1,
-				 (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+				 GTK_FILL, (GtkAttachOptions)0, 2, 2);
 		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 				       g_object_ref(lblTblColHeader),
@@ -204,12 +205,13 @@ void vlopt_window_show(void *parent)
 		sprintf(buf, "lblTblRowHeader_%d", i);
 		GtkWidget *lblTblRowHeader = gtk_label_new(vlopt_options[i * 3].layer);
 		gtk_widget_set_name(lblTblRowHeader, buf);
-		gtk_misc_set_alignment(GTK_MISC(lblTblRowHeader), 0.5f, 0.5f);
+		gtk_misc_set_alignment(GTK_MISC(lblTblRowHeader), 1.0f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblTblRowHeader), GTK_JUSTIFY_RIGHT);
 		gtk_widget_show(lblTblRowHeader);
 		
 		gtk_table_attach(GTK_TABLE(tblOptionsRows), lblTblRowHeader,
 				 0, 1, i + 1, i + 2,
-				 (GtkAttachOptions)0, (GtkAttachOptions)0, 2, 2);
+				 GTK_FILL, (GtkAttachOptions)0, 2, 2);
 		
 		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
 				       g_object_ref(lblTblRowHeader),
