@@ -55,6 +55,9 @@
 // Video Drawing.
 #include "video/vdraw.h"
 
+// GSX savestate structs.
+#include "gsx_struct.h"
+
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
 #include <windows.h>
@@ -758,17 +761,14 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
  */
 void Savestate::GsxExportGenesis(unsigned char* data)
 {
-	// This savestate function uses the GENS v7 savestate format.
-	// Note about GENS v7 savestate format:
+	// This savestate function uses the Gens v7 savestate format, ported from Gens Rerecording.
+	// Note about Gens v7 savestate format:
 	// - Plain MD savestates will work in older versions of GENS.
 	// - Sega CD savestates won't work in older versions, but then again, older versions didn't properly support it.
 	// - 32X savestates will *not* work in older versions of GENS. :(
 	
 	// from Gens Rerecording
 	struct S68000CONTEXT Context_68K; // Modif N.: apparently no longer necessary but I'm leaving it here just to be safe: purposely shadows the global Context_68K variable with this local copy to avoid tampering with it while saving
-	
-	unsigned char Reg_1[0x200], *src;
-	int i;
 	
 	// Be sure to finish DMA before save
 	// [from Gens Rerecording] commented out; this may cause the saving to change the current state
@@ -777,24 +777,24 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 		Update_DMA();
 	*/
 	
-	// Genecyst savestate header
-	data[0x00] = 'G';
-	data[0x01] = 'S';
-	data[0x02] = 'T';
-	data[0x03] = 0x40;
-	data[0x04] = 0xE0;
+	gsx_struct_md_t md_save;
+	memset(&md_save, 0x00, sizeof(md_save));
 	
-	data[0x50] = 7;		// Version
-	data[0x51] = 0;		// Gens
+	// Genecyst savestate header.
+	static const unsigned char gsx_magic[5] = {'G', 'S', 'T', 0x40, 0xE0};
+	memcpy(&md_save.header.magic[0], &gsx_magic[0], sizeof(gsx_magic));
+	
+	// Genecyst savestate version information.
+	md_save.version.version = 7;	// Version
+	md_save.version.emulator = 0;	// Emulator ID (0 == Gens)
 	
 	// Save the PSG state.
-	PSG_Save_State ();
+	PSG_Save_State();
 	
 	// Copy the PSG state into the savestate buffer.
-	for (i = 0; i < 8; i++)
+	for (int i = 0; i < 8; i++)
 	{
-		data[0x60 + i * 2] = PSG_Save[i] & 0xFF;
-		data[0x61 + i * 2] = (PSG_Save[i] >> 8) & 0xFF;
+		md_save.psg[i] = cpu_to_le32(PSG_Save[i]);
 	}
 	
 #ifdef GENS_DEBUG_SAVESTATE
@@ -806,35 +806,39 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	main68k_GetContext(&Context_68K);
 	
 	// 68000 registers
-	ExportData(&Context_68K.dreg[0], data, 0x80, 8 * 2 * 4);
-	ExportData(&Context_68K.pc, data, 0xC8, 4);
-	ExportData(&Context_68K.sr, data, 0xD0, 2);
+	for (int i = 0; i < 7; i++)
+	{
+		md_save.mc68000_reg.dreg[i] = cpu_to_le32(Context_68K.dreg[i]);
+		md_save.mc68000_reg.areg[i] = cpu_to_le32(Context_68K.areg[i]);
+	}
+	md_save.mc68000_reg.pc = cpu_to_le32(Context_68K.pc);
+	md_save.mc68000_reg.pc = cpu_to_le16((uint16_t)(Context_68K.sr));
 	
 	if (Context_68K.sr & 0x2000)
 	{
 		// Supervisor
-		ExportData(&Context_68K.asp, data, 0xD2, 4);
-		ExportData(&Context_68K.areg[7], data, 0xD6, 4);
+		md_save.mc68000_reg.usp = cpu_to_le32(Context_68K.asp);
+		md_save.mc68000_reg.ssp = cpu_to_le32(Context_68K.areg[7]);
 	}
 	else
 	{
 		// User
-		ExportData(&Context_68K.asp, data, 0xD6, 4);
-		ExportData(&Context_68K.areg[7], data, 0xD2, 4);
+		md_save.mc68000_reg.usp = cpu_to_le32(Context_68K.areg[7]);
+		md_save.mc68000_reg.ssp = cpu_to_le32(Context_68K.asp);
 	}
 	
-	ExportData(&Ctrl.Data, data, 0x40, 4);
+	// VDP control data.
+	md_save.vdp_ctrl.ctrl_data = cpu_to_le32(Ctrl.Data);
 	
-	data[0x44] = Ctrl.Flag;
-	data[0x45] = (Ctrl.DMA >> 2) & 1;
+	md_save.vdp_ctrl.write_flag_2 = (uint8_t)(Ctrl.Flag);
+	md_save.vdp_ctrl.dma_fill_flag = (uint8_t)((Ctrl.DMA >> 2) & 1);
 	
-	// Gens Rerecording
-	data[0x46] = Ctrl.Access & 0xFF; //Nitsuja added this
-	data[0x47] = (Ctrl.Access >> 8) & 0xFF; //Nitsuja added this
+	// Ctrl.Access added by Gens Rerecording.
+	md_save.vdp_ctrl.ctrl_access = cpu_to_le16((uint16_t)(Ctrl.Access));
 	
-	data[0x48] = Ctrl.Address & 0xFF;
-	data[0x49] = (Ctrl.Address >> 8) & 0xFF;
+	md_save.vdp_ctrl.write_address = cpu_to_le32(Ctrl.Address & 0xFFFF);
 	
+	// VDP registers.
 	VDP_Reg.DMA_Length_L = VDP_Reg.DMA_Length & 0xFF;
 	VDP_Reg.DMA_Length_H = (VDP_Reg.DMA_Length >> 8) & 0xFF;
 	
@@ -844,72 +848,56 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	VDP_Reg.DMA_Src_Adr_H |= Ctrl.DMA_Mode & 0xC0;
 	
-	src = (unsigned char *) &(VDP_Reg.Set1);
-	for (i = 0; i < 24; i++)
+	// Registers are currently stored as 32-bit unsigned int,
+	// but only the lower byte is used.
+	uint32_t *vdp_src = (uint32_t*)&(VDP_Reg.Set1);
+	for (int i = 0; i < 24; i++)
 	{
-		data[0xFA + i] = *src;
-		src += 4;
+		md_save.vdp_reg[i] = (uint8_t)(*vdp_src);
+		vdp_src++;
 	}
 	
-	for (i = 0; i < 0x80; i++)
-		data[i + 0x112] = (CRam[i] & 0xFF);
-	for (i = 0; i < 0x50; i++)
-		data[i + 0x192] = VSRam[i];
+	// CRAM and VSRAM.
+	memcpy(&md_save.cram, CRam, sizeof(md_save.cram));
+	memcpy(&md_save.vsram, VSRam, sizeof(md_save.vsram));
 	
-	YM2612_Save(Reg_1);
-	for (i = 0; i < 0x200; i++)
-		data[i + 0x1E4] = Reg_1[i];
+	// YM2612 registers.
+	YM2612_Save(&md_save.ym2612[0]);
 	
-	data[0x404] = (unsigned char) (mdZ80_get_AF(&M_Z80) & 0xFF);
-	data[0x405] = (unsigned char) (mdZ80_get_AF(&M_Z80) >> 8);
-	data[0x406] = (unsigned char) (M_Z80.AF.b.FXY & 0xFF); //Modif N
-	data[0x407] = (unsigned char) 0; //Modif N
-	data[0x408] = (unsigned char) (M_Z80.BC.w.BC & 0xFF);
-	data[0x409] = (unsigned char) (M_Z80.BC.w.BC >> 8);
-	data[0x40C] = (unsigned char) (M_Z80.DE.w.DE & 0xFF);
-	data[0x40D] = (unsigned char) (M_Z80.DE.w.DE >> 8);
-	data[0x410] = (unsigned char) (M_Z80.HL.w.HL & 0xFF);
-	data[0x411] = (unsigned char) (M_Z80.HL.w.HL >> 8);
-	data[0x414] = (unsigned char) (M_Z80.IX.w.IX & 0xFF);
-	data[0x415] = (unsigned char) (M_Z80.IX.w.IX >> 8);
-	data[0x418] = (unsigned char) (M_Z80.IY.w.IY & 0xFF);
-	data[0x419] = (unsigned char) (M_Z80.IY.w.IY >> 8);
-	data[0x41C] = (unsigned char) (mdZ80_get_PC(&M_Z80) & 0xFF);
-	data[0x41D] = (unsigned char) ((mdZ80_get_PC(&M_Z80) >> 8) & 0xFF);
-	data[0x420] = (unsigned char) (M_Z80.SP.w.SP & 0xFF);
-	data[0x421] = (unsigned char) (M_Z80.SP.w.SP >> 8);
-	data[0x424] = (unsigned char) (mdZ80_get_AF2(&M_Z80) & 0xFF);
-	data[0x425] = (unsigned char) (mdZ80_get_AF2(&M_Z80) >> 8);
-	data[0x428] = (unsigned char) (M_Z80.BC2.w.BC2 & 0xFF);
-	data[0x429] = (unsigned char) (M_Z80.BC2.w.BC2 >> 8);
-	data[0x42C] = (unsigned char) (M_Z80.DE2.w.DE2 & 0xFF);
-	data[0x42D] = (unsigned char) (M_Z80.DE2.w.DE2 >> 8);
-	data[0x430] = (unsigned char) (M_Z80.HL2.w.HL2 & 0xFF);
-	data[0x431] = (unsigned char) (M_Z80.HL2.w.HL2 >> 8);
-	data[0x434] = (unsigned char) (M_Z80.I);
-	data[0x436] = (unsigned char) (M_Z80.IFF.b.IFF1 >> 2);
+	// Z80 registers.
+	md_save.z80_reg.AF  = cpu_to_le16((uint16_t)(mdZ80_get_AF(&M_Z80)));
+	md_save.z80_reg.FXY = cpu_to_le16((uint16_t)(M_Z80.AF.b.FXY));
+	md_save.z80_reg.BC  = cpu_to_le16((uint16_t)(M_Z80.BC.w.BC));
+	md_save.z80_reg.DE  = cpu_to_le16((uint16_t)(M_Z80.DE.w.DE));
+	md_save.z80_reg.HL  = cpu_to_le16((uint16_t)(M_Z80.HL.w.HL));
+	md_save.z80_reg.IX  = cpu_to_le16((uint16_t)(M_Z80.IX.w.IX));
+	md_save.z80_reg.IY  = cpu_to_le16((uint16_t)(M_Z80.IY.w.IY));
+	md_save.z80_reg.PC  = cpu_to_le16((uint16_t)(mdZ80_get_PC(&M_Z80)));
+	md_save.z80_reg.SP  = cpu_to_le16((uint16_t)(M_Z80.SP.w.SP));
+	md_save.z80_reg.AF2 = cpu_to_le16((uint16_t)(mdZ80_get_AF2(&M_Z80)));
+	md_save.z80_reg.BC2 = cpu_to_le16((uint16_t)(M_Z80.BC2.w.BC2));
+	md_save.z80_reg.DE2 = cpu_to_le16((uint16_t)(M_Z80.DE2.w.DE2));
+	md_save.z80_reg.HL2 = cpu_to_le16((uint16_t)(M_Z80.HL2.w.HL2));
+	md_save.z80_reg.I = M_Z80.I;
+	md_save.z80_reg.IFF1 = (M_Z80.IFF.b.IFF1 >> 2);
+	md_save.z80_reg.state_reset  = (((Z80_State & 4) >> 2) ^ 1);
+	md_save.z80_reg.state_busreq = (((Z80_State & 2) >> 1) ^ 1);
+	md_save.z80_reg.bank = cpu_to_le32(Bank_Z80);
 	
-	data[0x438] = (unsigned char) (((Z80_State & 4) >> 2) ^ 1);
-	data[0x439] = (unsigned char) (((Z80_State & 2) >> 1) ^ 1);
+	// Z80 RAM.
+	memcpy(&md_save.z80_ram, &Ram_Z80, sizeof(md_save.z80_ram));
 	
-	ExportData(&Bank_Z80, data, 0x43C, 4);
+	// 68000 RAM.
+	printf("END: %c%c%c%c\n", Ram_68k[0xFFFC], Ram_68k[0xFFFD], Ram_68k[0xFFFE], Ram_68k[0xFFFF]);
+	memcpy(&md_save.mc68000_ram, &Ram_68k, sizeof(md_save.mc68000_ram));
+	cpu_to_be16_array(&md_save.mc68000_ram, sizeof(md_save.mc68000_ram));
 	
-	for (i = 0; i < 0x2000; i++)
-		data[i + 0x474] = Ram_Z80[i];
+	// VRAM.
+	memcpy(&md_save.vram, &VRam, sizeof(md_save.vram));
+	cpu_to_be16_array(&md_save.vram, sizeof(md_save.vram));
 	
-	// 68000 RAM
-	for (i = 0; i < 0x10000; i += 2)
-	{
-		data[i + 0x2478 + 1] = Ram_68k[i + 0];
-		data[i + 0x2478 + 0] = Ram_68k[i + 1];
-	}
-	
-	// VRAM
-	for (i = 0; i < 0x10000; i += 2)
-	{
-		data[i + 0x12478 + 1] = VRam[i + 0];
-		data[i + 0x12478 + 0] = VRam[i + 1];
-	}
+	// Copy md_save to the data variable.
+	memcpy(&data[0], &md_save, sizeof(md_save));
 	
 	// TODO: This is from Gens Rerecording, and is probably not any use right now.
 	/*
