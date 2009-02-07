@@ -73,6 +73,20 @@ static void mdp_win32_set_actual_window_size(HWND hWnd, const int reqW, const in
 }
 
 
+/**
+ * mdp_win32_get_message_font(): Get the message font.
+ * @return Main font. (Must be deleted with DeleteFont() when finished.)
+ */
+static HFONT mdp_win32_get_message_font(void)
+{
+	NONCLIENTMETRICS ncm;
+	ncm.cbSize = sizeof(ncm);
+	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
+	
+	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
+}
+
+
 #endif /* __MDP_WIN32_H */
 
 #endif /* _WIN32 */
