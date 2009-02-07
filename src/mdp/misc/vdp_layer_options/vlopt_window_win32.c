@@ -253,6 +253,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 				8+16+(VLOPT_GRID_ROW*row),
 				VLOPT_CHECKBOX_SIZE, VLOPT_CHECKBOX_SIZE,
 				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hinstance, NULL);
+		SetWindowFont(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
 		
 		// Next cell.
 		col++;
@@ -263,7 +264,17 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 		}
 	}
 	
-	// TODO: Checkboxes for the remaining VDP Layer Options.
+	// Create the checkboxes for the remaining VDP Layer Options.
+	for (i = 9; i < VLOPT_OPTIONS_COUNT; i++)
+	{
+		vlopt_window_checkboxes[i] = CreateWindow(
+				WC_BUTTON, vlopt_options[i].layer,
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+				8+8+8, 8+16+(VLOPT_GRID_ROW*(i-5)),
+				VLOPT_WINDOW_WIDTH-16-16-16, VLOPT_GRID_ROW,
+				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hinstance, NULL);
+		SetWindowFont(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
+	}
 	
 	// Load the options.
 	vlopt_window_load_options();
