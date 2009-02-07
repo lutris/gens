@@ -82,7 +82,7 @@ typedef struct PACKED _gsx_struct_md_t
 		// Stack pointers. (0xD2, 0xD6)
 		uint32_t usp;	// User stack pointer.
 		uint32_t ssp;	// Supervisor stack pointer.
-	} mc68000;
+	} mc68000_reg;
 	
 	uint8_t  reserved2[0x20];	// [0xDA] Reserved.
 	uint8_t  vdp_reg[0x18];		// [0xFA] VDP registers.
@@ -115,7 +115,7 @@ typedef struct PACKED _gsx_struct_md_t
 		uint8_t  state_busreq;
 		uint16_t reserved3;
 		uint32_t bank;
-	} z80;
+	} z80_reg;
 	
 	uint8_t  reserved5[0x34];	// [0x440] Reserved.
 	uint8_t  z80_ram[0x2000];	// [0x474] Z80 RAM.
