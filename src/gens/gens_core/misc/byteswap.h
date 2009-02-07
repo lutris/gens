@@ -77,26 +77,26 @@ static inline uint32_t __swab32(uint32_t x)
 	
 	#define be16_to_cpu(x) __swab16(x)
 	#define be32_to_cpu(x) __swab32(x)
-	#define le16_to_cpu(x)
-	#define le32_to_cpu(x)
+	#define le16_to_cpu(x) (x)
+	#define le32_to_cpu(x) (x)
 	
 	#define cpu_to_be16(x) __swab16(x)
 	#define cpu_to_be32(x) __swab32(x)
-	#define cpu_to_le16(x)
-	#define cpu_to_le32(x)
+	#define cpu_to_le16(x) (x)
+	#define cpu_to_le32(x) (x)
 #else /* GENS_BYTEORDER == GENS_BIG_ENDIAN */
 	#define be16_to_cpu_array(ptr, n)
 	#define le16_to_cpu_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	#define cpu_to_be16_array(ptr, n)
 	#define cpu_to_le16_array(ptr, n) __byte_swap_16_array((ptr), (n));
 	
-	#define be16_to_cpu(x)
-	#define be32_to_cpu(x)
+	#define be16_to_cpu(x) (x)
+	#define be32_to_cpu(x) (x)
 	#define le16_to_cpu(x) __swab16(x)
 	#define le32_to_cpu(x) __swab32(x)
 	
-	#define cpu_to_be16(x)
-	#define cpu_to_be32(x)
+	#define cpu_to_be16(x) (x)
+	#define cpu_to_be32(x) (x)
 	#define cpu_to_le16(x) __swab16(x)
 	#define cpu_to_le32(x) __swab32(x)
 #endif
