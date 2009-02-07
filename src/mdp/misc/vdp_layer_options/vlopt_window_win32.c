@@ -71,10 +71,11 @@ static HFONT vlopt_hfont = NULL;
 
 // Window size.
 #define VLOPT_WINDOW_WIDTH  216
-#define VLOPT_WINDOW_HEIGHT 184
+#define VLOPT_WINDOW_HEIGHT 192
 
-// Checkbox command value.
-#define IDC_VLOPT_CHECKBOX 0x1000
+// Command values.
+#define IDC_VLOPT_CHECKBOX 	0x1000
+#define IDC_VLOPT_RESET		0x1100
 
 
 /**
@@ -168,6 +169,8 @@ void vlopt_window_close(void)
  */
 static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	int rval;
+	
 	switch(message)
 	{
 		case WM_CREATE:
@@ -179,12 +182,36 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			return 0;
 		
 		case WM_COMMAND:
-			if (wParam >= IDC_VLOPT_CHECKBOX && wParam < (IDC_VLOPT_CHECKBOX + VLOPT_OPTIONS_COUNT))
+			switch (wParam)
 			{
-				// Checkbox selected. Save the options.
-				vlopt_window_save_options();
+				case IDC_VLOPT_RESET:
+					// Reset the VDP layer options to the default value.
+					rval = vlopt_host_srv->val_set(MDP_VAL_VDP_LAYER_OPTIONS, MDP_VDP_LAYER_OPTIONS_DEFAULT);
+					if (rval != MDP_ERR_OK)
+					{
+						fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, rval);
+					}
+					
+					// Reload the VDP layer options.
+					vlopt_window_load_options();
+					break;
+				
+				case IDCANCEL:
+				case IDCLOSE:
+					// Close.
+					vlopt_window_close();
+					break;
+				
+				default:
+					if ((wParam >= IDC_VLOPT_CHECKBOX) &&
+					    (wParam < (IDC_VLOPT_CHECKBOX + VLOPT_OPTIONS_COUNT)))
+					{
+						// Checkbox toggled. Save the options.
+						vlopt_window_save_options();
+					}
+					break;
 			}
-			// TODO
+			
 			break;
 		
 		case WM_DESTROY:
@@ -215,7 +242,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	
 	HWND grpBox = CreateWindow(WC_BUTTON, "VDP Layer Options",
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-16-24,
+			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-8-16-24,
 			      hWnd, NULL, vlopt_hinstance, NULL);
 	SetWindowFont(grpBox, vlopt_hfont, TRUE);
 	
@@ -279,55 +306,22 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	// Load the options.
 	vlopt_window_load_options();
 	
-#if 0
-	// Create the checkboxes for the remaining VDP Layer Options.
-	for (unsigned int i = 9; i < VLOPT_OPTIONS_COUNT; i++)
-	{
-		sprintf(buf, "vlopt_checkboxes_%d", i);
-		vlopt_checkboxes[i] = gtk_check_button_new_with_label(vlopt_options[i].layer);
-		gtk_widget_set_name(vlopt_checkboxes[i], buf);
-		gtk_widget_show(vlopt_checkboxes[i]);
-		
-		gtk_box_pack_start(GTK_BOX(vboxFrame), vlopt_checkboxes[i], FALSE, FALSE, 0);
-		
-		// Set the callback.
-		g_signal_connect((gpointer)vlopt_checkboxes[i], "toggled",
-				 G_CALLBACK(vlopt_window_callback_checkbox_toggled),
-				 GINT_TO_POINTER(i));
-		
-		g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-				       g_object_ref(vlopt_checkboxes[i]),
-				       (GDestroyNotify)g_object_unref);
-	}
+	// Center the buttons within the window.
+	const int posBtnLeft = (VLOPT_WINDOW_WIDTH - 75 - 75 - 8) / 2;
 	
 	// Create the "Reset" button.
-	GtkWidget *btnReset = gtk_button_new_with_mnemonic("_Reset");
-	gtk_widget_set_name(btnReset, "btnReset");
-	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnReset, VLOPT_RESPONSE_RESET);
-	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-			       g_object_ref(btnReset),
-			       (GDestroyNotify)g_object_unref);
-	
-	// Create the icon for the "Reset" button.
-	GtkWidget *imgReset = gtk_image_new_from_stock("gtk-refresh", GTK_ICON_SIZE_BUTTON);
-	gtk_widget_set_name(imgReset, "imgReset");
-	gtk_widget_show(imgReset);
-	gtk_button_set_image(GTK_BUTTON(btnReset), imgReset);
-	g_object_set_data_full(G_OBJECT(btnReset), "imgReset",
-			       g_object_ref(imgReset),
-			       (GDestroyNotify)g_object_unref);
+	HWND btnReset = CreateWindow(WC_BUTTON, "&Reset", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     posBtnLeft, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
+				     hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hinstance, NULL);
+	SetWindowFont(btnReset, vlopt_hfont, TRUE);
 	
 	// Create the "Close" button.
-	GtkWidget *btnClose = gtk_button_new_from_stock("gtk-close");
-	gtk_widget_set_name(btnClose, "btnClose");
-	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnClose, GTK_RESPONSE_CLOSE);
-	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
-			       g_object_ref(btnClose),
-			       (GDestroyNotify)g_object_unref);
-#endif
+	HWND btnClose = CreateWindow(WC_BUTTON, "&Close", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     posBtnLeft+75+8, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
+				     hWnd, (HMENU)IDCLOSE, vlopt_hinstance, NULL);
+	SetWindowFont(btnClose, vlopt_hfont, TRUE);
 	
-	// TODO
-	
+	// Child windows created.
 	vlopt_window_child_windows_created = TRUE;
 }
 
