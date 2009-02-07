@@ -16,9 +16,6 @@
 #include <string.h>
 #include "ym2612.h"
 
-// Use FASTCALL3 for Update_Chan_Fn.
-#include "macros/fastcall.h"
-
 
 /********************************************
  *            Partie définition             *
@@ -136,43 +133,43 @@ static int en0, en1, en2, en3;		// current enveloppe calculation
 
 
 // Channel function declarations
-static void FASTCALL3 Update_Chan_Algo0(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo1(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo2(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo3(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo4(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo5(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo6(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo7(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo0(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7(channel_ *CH, int **buf, int length);
 
-static void FASTCALL3 Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length);
 
-static void FASTCALL3 Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length);
 
-static void FASTCALL3 Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length);
-static void FASTCALL3 Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length);
+static void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length);
 
-typedef void FASTCALL3 (*Update_Chan_Fn)(channel_ *CH, int **buf, int length);
+typedef void (*Update_Chan_Fn)(channel_ *CH, int **buf, int length);
 
 // Update Channel functions pointer table
 static const Update_Chan_Fn UPDATE_CHAN[8*8] =
@@ -1285,7 +1282,7 @@ en3 = ENV_TAB[(CH->SLOT[S3].Ecnt >> ENV_LBITS)] + CH->SLOT[S3].TLL + (env_LFO >>
 }
 
 
-static void FASTCALL3 Update_Chan_Algo0(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo0(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1308,7 +1305,7 @@ static void FASTCALL3 Update_Chan_Algo0(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo1(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo1(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1331,7 +1328,7 @@ static void FASTCALL3 Update_Chan_Algo1(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo2(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo2(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1354,7 +1351,7 @@ static void FASTCALL3 Update_Chan_Algo2(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo3(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo3(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1377,7 +1374,7 @@ static void FASTCALL3 Update_Chan_Algo3(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo4(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo4(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1400,7 +1397,7 @@ static void FASTCALL3 Update_Chan_Algo4(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo5(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo5(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1425,7 +1422,7 @@ static void FASTCALL3 Update_Chan_Algo5(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo6(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo6(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1450,7 +1447,7 @@ static void FASTCALL3 Update_Chan_Algo6(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo7(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo7(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1476,7 +1473,7 @@ static void FASTCALL3 Update_Chan_Algo7(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1499,7 +1496,7 @@ static void FASTCALL3 Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1522,7 +1519,7 @@ static void FASTCALL3 Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1545,7 +1542,7 @@ static void FASTCALL3 Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1568,7 +1565,7 @@ static void FASTCALL3 Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1592,7 +1589,7 @@ static void FASTCALL3 Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1617,7 +1614,7 @@ static void FASTCALL3 Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1642,7 +1639,7 @@ static void FASTCALL3 Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1673,7 +1670,7 @@ static void FASTCALL3 Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
  *****************************************************/
 
 
-static void FASTCALL3 Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1698,7 +1695,7 @@ static void FASTCALL3 Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1723,7 +1720,7 @@ static void FASTCALL3 Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1748,7 +1745,7 @@ static void FASTCALL3 Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1773,7 +1770,7 @@ static void FASTCALL3 Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1798,7 +1795,7 @@ static void FASTCALL3 Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1827,7 +1824,7 @@ static void FASTCALL3 Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1856,7 +1853,7 @@ static void FASTCALL3 Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length)
 {
 	int i;
 	
@@ -1886,7 +1883,7 @@ static void FASTCALL3 Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length)
 }
 
 
-static void FASTCALL3 Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1911,7 +1908,7 @@ static void FASTCALL3 Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1936,7 +1933,7 @@ static void FASTCALL3 Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1961,7 +1958,7 @@ static void FASTCALL3 Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -1986,7 +1983,7 @@ static void FASTCALL3 Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -2011,7 +2008,7 @@ static void FASTCALL3 Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -2040,7 +2037,7 @@ static void FASTCALL3 Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -2069,7 +2066,7 @@ static void FASTCALL3 Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int len
 }
 
 
-static void FASTCALL3 Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length)
+static void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length)
 {
 	int i, env_LFO, freq_LFO;
 	
@@ -2097,6 +2094,8 @@ static void FASTCALL3 Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int len
 		DO_OUTPUT_INT
 	}
 }
+
+typedef void (*UPDATE_FUNC) (channel_ *CH, int **buf, int length);
 
 
 
