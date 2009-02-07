@@ -220,6 +220,7 @@ noinst_HEADERS = \
 		util/file/rom.hpp \
 		util/file/save.hpp \
 		util/file/file.hpp \
+		util/file/gsx_struct.h \
 		util/file/decompressor/decompressor.h \
 		util/file/decompressor/popen_wrapper.h \
 		util/file/decompressor/dummy.h \
