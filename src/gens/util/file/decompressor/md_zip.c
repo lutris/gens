@@ -132,7 +132,7 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
-statoc size_t decompressor_zip_get_file(FILE *zF, const char *filename,
+static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 					file_list_t *file_list,
 					void *buf, const size_t size)
 {
