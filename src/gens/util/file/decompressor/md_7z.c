@@ -222,7 +222,7 @@ static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
 	// Extract the specified file.
 	unsigned int i;
 	const unsigned int numFiles = db.db.NumFiles;
-	size_t extractedSize = 0;
+	size_t extracted_size = 0;
 	
 	for (i = 0; i < numFiles; i++)
 	{
@@ -256,8 +256,8 @@ static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
 		}
 		
 		// Copy the 7z buffer to the output buffer.
-		extractedSize = (size < outSizeProcessed ? size : outSizeProcessed);
-		memcpy(buf, outBuffer + offset, extractedSize);
+		extracted_size = (size < outSizeProcessed ? size : outSizeProcessed);
+		memcpy(buf, outBuffer + offset, extracted_size);
 		
 		// ROM processed.
 		break;
@@ -270,5 +270,5 @@ static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
 	if (i >= numFiles)
 		return 0;
 	
-	return extractedSize;
+	return extracted_size;
 }
