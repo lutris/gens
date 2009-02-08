@@ -86,15 +86,14 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	FILE *pRAR = gens_popen(ssCmd.str().c_str(), "r");
 	if (!pRAR)
 	{
-		// Error opening RAR.
+		// Error opening `rar`.
 		// TODO: Show an error message.
-		printf("ERR1\n");
 		return NULL;
 	}
 	
 	// Read from the pipe.
 	char buf[1025];
-	int rv;
+	size_t rv;
 	stringstream ss;
 	while ((rv = fread(buf, 1, 1024, pRAR)))
 	{
@@ -112,7 +111,6 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
-		printf("ERR2\n");
 		return NULL;
 	}
 	
@@ -121,7 +119,6 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	if (listStart == string::npos)
 	{
 		// Not found. Either there are no files, or the archive is broken.
-		printf("ERR3\n");
 		return NULL;
 	}
 	
@@ -145,7 +142,6 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		if (curEndPos == string::npos)
 		{
 			// End of file listing.
-			printf("ERR4\n");
 			break;
 		}
 		
@@ -155,13 +151,11 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		// First line in a RAR file listing is the filename. (starting at the second character)
 		if (curLine.length() < 2)
 		{
-			printf("ERR5\n");
 			break;
 		}
 		if (curLine.at(0) == '-')
 		{
 			// End of file listing.
-			printf("ERR6\n");
 			break;
 		}
 		tmp_filename = curLine.substr(1);
@@ -172,7 +166,6 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		if (curEndPos == string::npos)
 		{
 			// End of file listing.
-			printf("ERR7\n");
 			break;
 		}
 		
@@ -181,14 +174,10 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		
 		// Check if this is a normal file.
 		if (curLine.length() < 62)
-		{
-			printf("ERR8\n");
 			break;
-		}
 		
 		// Normal file.
 		tmp_filesize = atoi(curLine.substr(12, 10).c_str());
-		printf("NORMAL: %s %d\n", tmp_filename.c_str(), tmp_filesize);
 		
 		// Allocate memory for the next file list element.
 		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
@@ -233,64 +222,40 @@ size_t decompressor_rar_get_file(FILE *zF, const char *filename,
 				 file_list_t *file_list,
 				 void *buf, const size_t size)
 {
-#if 0
 	// All parameters (except zF) must be specified.
 	if (!filename || !file_list || !buf || !size)
 		return 0;
 	
-	unzFile f = unzOpen(filename);
-	if (!f)
+	// Build the command line.
+	stringstream ssCmd;
+	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" p -ierr \"" << filename
+	      << "\" \"" << file_list->filename << "\"";
+#ifndef GENS_OS_WIN32
+	ssCmd << " 2>/dev/null";
+#endif
+	
+	// Open the RAR file.
+	FILE *pRAR = gens_popen(ssCmd.str().c_str(), "r");
+	if (!pRAR)
+	{
+		// Error opening `rar`.
+		// TODO: Show an error message.
 		return 0;
-	
-	// Locate the ROM in the RAR file.
-	if (unzLocateFile(f, file_list->filename, 1) != UNZ_OK ||
-	    unzOpenCurrentFile(f) != UNZ_OK)
-	{
-		// Error loading the ROM file.
-		// TODO: Show a message box.
-		//GensUI::msgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");
-		fprintf(stderr, "%s(): Error loading the ROM file from the ZIP archive.\n", __func__);
-		unzClose(f);
-		return -1;
 	}
 	
-	// Decompress the ROM.
-	int zResult = unzReadCurrentFile(f, buf, size);
-	unzClose(f);
-	if ((zResult <= 0) || (zResult != size))
+	// Read from the pipe.
+	size_t extracted_size = 0;
+	size_t rv;
+	unsigned char bufRAR[1024];
+	while ((rv = fread(bufRAR, 1, 1024, pRAR)))
 	{
-		char tmp[64];
-		strcpy(tmp, "Error in ZIP file: \n");
-		
-		switch (zResult)
-		{
-			case UNZ_ERRNO:
-				strcat(tmp, "Unknown...");
-				break;
-			case UNZ_EOF:
-				strcat(tmp, "Unexpected end of file.");
-				break;
-			case UNZ_PARAMERROR:
-				strcat(tmp, "Parameter error.");
-				break;
-			case UNZ_BADZIPFILE:
-				strcat(tmp, "Bad ZIP file.");
-				break;
-			case UNZ_INTERNALERROR:
-				strcat(tmp, "Internal error.");
-				break;
-			case UNZ_CRCERROR:
-				strcat(tmp, "CRC error.");
-				break;
-		}
-		
-		// TODO: Show a message box.
-		//GensUI::msgBox(tmp, "ZIP File Error");
-		fprintf(stderr, "%s(): %s\n", __func__, tmp);
-		return -1;
+		if (extracted_size + rv > size)
+			break;
+		memcpy(&((unsigned char*)buf)[extracted_size], &bufRAR, rv);
+		extracted_size += rv;
 	}
+	gens_pclose(pRAR);
 	
 	// Return the filesize.
-	return size;
-#endif
+	return extracted_size;
 }
