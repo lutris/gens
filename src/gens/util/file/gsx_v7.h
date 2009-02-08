@@ -40,7 +40,7 @@
  */
 typedef struct PACKED _gsx_v7_ym2612_slot
 {
-	int DT;		// Detune parameter.
+	unsigned int DT; // Detune parameter.
 	int MUL;	// "Multiple Frequency" parameter.
 	int TL;		// Total Level == volume when the envelope is at the highest point.
 	int TLL;	// Total Level, adjusted.
@@ -52,10 +52,10 @@ typedef struct PACKED _gsx_v7_ym2612_slot
 	
 	// In the Gens v7 savestate extension, these are normalized to valies between 0-63.
 	// They are converted back to pointers by ym2612.c.
-	int AR;		// Attack Rate (table pointer)	= AR[KSR]
-	int DR;		// Decay Rate (table pointer)	= DR[KSR]
-	int SR;		// Sustain Rate (table pointeR)	= SR[KSR]
-	int RR;		// Release Rate (table pointer)	= RR[KSR]
+	unsigned int AR; // Attack Rate (table pointer offset)		= AR[KSR]
+	unsigned int DR; // Decay Rate (table pointer offset)		= DR[KSR]
+	unsigned int SR; // Sustain Rate (table pointer offset)		= SR[KSR]
+	unsigned int RR; // Release Rate (table pointer offset)		= RR[KSR]
 	
 	int Fcnt;	// Frequency count = frequency meter to determine the current amplitude. (SIN[Finc >> 16])
 	int Finc;	// Frequency step = pas d'incrémentation du compteur-fréquence
