@@ -167,7 +167,7 @@ typedef struct PACKED _gsx_v7_z80_reg
 	uint8_t  FXY;
 	
 	uint16_t BC;
-	uint16_t reservedBC;
+	uint16_t reserved_BC;
 	
 	uint16_t DE;
 	uint16_t reserved_DE;
@@ -183,7 +183,8 @@ typedef struct PACKED _gsx_v7_z80_reg
 	
 	// This was originally "PC", but mdZ80 stores the program counter
 	// as an x86 pointer, not as a Z80 pointer. So, it is written as
-	// 0xDEADBEEF (big-endian) in the Gens v7 savestate.
+	// 0xDEADBEEF (big-endian) in the Gens v7 savestate extension,
+	// and the original Gens v5 Z80 PC is used instead.
 	uint32_t DEADBEEF_1;	// be32
 	
 	uint16_t SP;
@@ -218,7 +219,8 @@ typedef struct PACKED _gsx_v7_z80_reg
 	
 	// This was originally "BasePC", but mdZ80 stores the program counter
 	// as an x86 pointer, not as a Z80 pointer. So, it is written as
-	// 0xDEADBEEF (big-endian) in the Gens v7 savestate.
+	// 0xDEADBEEF (big-endian) in the Gens v7 savestate extension,
+	// and the original Gens v5 Z80 PC is used instead.
 	uint32_t DEADBEEF_2;	// be32
 	
 	uint32_t TmpSav0;
