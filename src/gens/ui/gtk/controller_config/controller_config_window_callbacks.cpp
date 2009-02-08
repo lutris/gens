@@ -27,8 +27,8 @@
 #include "controller_config_window_callbacks.hpp"
 #include "controller_config_window_misc.hpp"
 
+#include "macros/unused.h"
 #include "gtk-misc.h"
-#include "emulator/gens.hpp"
 
 
 /**

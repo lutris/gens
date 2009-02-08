@@ -24,7 +24,7 @@
 #include "directory_config_window_callbacks.h"
 #include "directory_config_window_misc.hpp"
 
-#include "emulator/gens.hpp"
+#include "macros/unused.h"
 
 
 /**

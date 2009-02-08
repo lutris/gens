@@ -31,14 +31,10 @@
 #include <list>
 using std::list;
 
-#include "emulator/gens.hpp"
+#include "macros/unused.h"
 
 // Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
-
-#if 0
-static GtkWidget *zip_select_dialog;
-#endif
 
 static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 

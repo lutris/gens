@@ -31,6 +31,7 @@
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
+#include "macros/unused.h"
 
 // Win32 common controls
 #include <commctrl.h>
