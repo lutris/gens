@@ -228,6 +228,7 @@ noinst_HEADERS = \
 		util/file/save.hpp \
 		util/file/file.hpp \
 		util/file/gsx_struct.h \
+		util/file/gsx_v6.h \
 		util/file/gsx_v7.h \
 		util/file/decompressor/decompressor.h \
 		util/file/decompressor/popen_wrapper.h \

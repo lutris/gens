@@ -152,6 +152,10 @@ static int vdraw_sdl_init(void)
 	// Disable the cursor in fullscreen mode.
 	SDL_ShowCursor(vdraw_get_fullscreen() ? SDL_DISABLE : SDL_ENABLE);
 	
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_16 = ~MD_Palette[0];
+	vdraw_border_color_32 = ~MD_Palette32[0];
+	
 	// SDL initialized successfully.
 	return 0;
 }
