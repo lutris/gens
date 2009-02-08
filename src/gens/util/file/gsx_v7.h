@@ -251,4 +251,93 @@ typedef struct PACKED _gsx_v7_mc68000_reg
 } gsx_v7_mc68000_reg;
 
 
+/**
+ * gsx_v7_controller_port: Controller port information.
+ */
+typedef struct PACKED _gsx_v7_controller_port
+{
+	uint32_t state;
+	uint32_t COM;
+	uint32_t counter;
+	uint32_t delay;
+} gsx_v7_controller_port;
+
+/**
+ * gsx_v7_controller_status: Controller status information.
+ */
+typedef struct PACKED _gsx_v7_controller_status
+{
+	uint32_t type;
+	uint32_t up;
+	uint32_t down;
+	uint32_t left;
+	uint32_t right;
+	uint32_t start;
+	uint32_t mode;
+	uint32_t A;
+	uint32_t B;
+	uint32_t C;
+	uint32_t X;
+	uint32_t Y;
+	uint32_t Z;
+} gsx_v7_controller_status;
+
+/**
+ * gsx_v7_controllers: Controller status.
+ */
+typedef struct PACKED _gsx_v7_controllers
+{
+	gsx_v7_controller_port		port1;
+	gsx_v7_controller_status	player1;
+	
+	gsx_v7_controller_port		port2;
+	gsx_v7_controller_status	player2;
+	
+	gsx_v7_controller_status	player1B;
+	gsx_v7_controller_status	player1C;
+	gsx_v7_controller_status	player1D;
+	
+	gsx_v7_controller_status	player2B;
+	gsx_v7_controller_status	player2C;
+	gsx_v7_controller_status	player2D;
+} gsx_v7_controllers;
+
+
+/**
+ * gsx_v7_sram: Save RAM.
+ */
+typedef struct PACKED _gsx_v7_sram
+{
+	uint8_t  SRAM[64 * 1024];
+	uint32_t sram_start;
+	uint32_t sram_end;
+	uint32_t sram_on;
+	uint32_t sram_write;
+	uint32_t sram_custom;
+} gsx_v7_sram;
+
+
+/**
+ * gsx_v7_starscream_extra: Extra Starscream 68000 information.
+ */
+typedef struct PACKED _gsx_v7_starscream_extra
+{
+	uint32_t cycles_needed;
+	uint32_t cycles_leftover;
+	uint32_t fetch_region_start;
+	uint32_t fetch_region_end;
+	
+	uint8_t  xflag;
+	uint8_t  execinfo;
+	uint8_t  trace_trickybit;
+	uint8_t  filler;
+	
+	uint32_t io_cycle_counter;
+	uint32_t io_fetchbase;
+	uint32_t io_fetchbased_pc;
+	uint32_t access_address;
+	uint32_t save_01;
+	uint32_t save_02;
+} gsx_v7_starscream_extra;
+
 #endif /* GENS_GSX_V7_H */

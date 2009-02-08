@@ -921,6 +921,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	data[0x2247A]=unsigned char ((FrameCount>>16)&0xFF);   //Modif
 	data[0x2247B]=unsigned char ((FrameCount>>24)&0xFF);   //Modif
 	*/
+	printf("sizeof(gsx_struct_md_v7_t): %d\n", sizeof(gsx_struct_md_v7_t));
 	
 	// everything after this should use this offset variable for ease of extensibility
 	unsigned int offset = GENESIS_LENGTH_EX1; // Modif U. - got rid of about 12 KB of 00 bytes.
