@@ -2991,26 +2991,6 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 	}
 	
 	return 0;
-#if 0
-	int channel = 0;
-	int slot = 0;
-	
-	memcpy(&YM2612, SAVE, sizeof(ym2612_));
-	
-	// re-pointerify / fix pointers
-	// WARNING: This code may break on 64-bit machines!
-	for (channel = 0; channel < 6; channel++)
-	{
-		for (slot = 0; slot < 4; slot++)
-		{
-			YM2612.CHANNEL[channel].SLOT[slot].DT = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].DT + (int*)&DT_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].AR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].AR + (int*)&AR_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].DR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].DR + (int*)&DR_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].SR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].SR + (int*)&DR_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].RR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].RR + (int*)&DR_TAB);
-		}
-	}
-#endif
 }
 
 
