@@ -325,6 +325,7 @@ section .text align=64
 	extern _Write_To_68K_Space
 	extern __32X_Set_FB
 	extern SH2_DMA0_Request
+	extern SH2_DMA1_Request
 	extern _PWM_Set_Cycle
 	extern _PWM_Set_Int
 
@@ -1723,7 +1724,43 @@ section .text align=64
 	SH2_WB_PWM_Pulse_L_H:
 		mov	[_PWM_FIFO_L_Tmp + 1], dl
 		ret
+
+%macro FUNC_CALL_IN 0
+%ifdef __GCC
+	push ebp
+	mov eax, ecx
+%endif
+%endmacro
+
+%macro FUNC_CALL_OUT 0
+%ifdef __GCC
+	pop ebp
+%endif
+%endmacro
+
+%macro PWM_DMA 0
+	; PWM DMA code submitted by Joseph Fenton.
 	
+	; Test if the FIFO is full. If it is, deassert DREQ1.
+	test	byte [_PWM_FULL_TAB + ecx * PWM_BUF_SIZE + eax], 0x80
+	jz	short %%not_full
+	
+	; FIFO is full.
+	xor	edx, edx
+	mov	ecx, S_SH2
+	FUNC_CALL_IN
+	call	SH2_DMA1_Request
+	FUNC_CALL_OUT
+	
+	xor	edx, edx
+	mov	ecx, M_SH2
+	FUNC_CALL_IN
+	call	SH2_DMA1_Request
+	FUNC_CALL_OUT
+	
+%%not_full:
+%endmacro
+
 	align 16
 	
 	SH2_WB_PWM_Pulse_L_L:
@@ -1737,7 +1774,9 @@ section .text align=64
 		inc	eax
 		and	eax, byte (PWM_BUF_SIZE - 1)
 		mov	[_PWM_WP_L], eax
-		ret
+		
+		; Check for PWM DMA.
+		PWM_DMA
 	
 	align 4
 	
@@ -1763,7 +1802,9 @@ section .text align=64
 		inc	eax
 		and	eax, byte (PWM_BUF_SIZE - 1)
 		mov	[_PWM_WP_R], eax
-		ret
+		
+		; Check for PWM DMA.
+		PWM_DMA
 	
 	align 4
 	
@@ -1791,8 +1832,10 @@ section .text align=64
 		and	eax, byte (PWM_BUF_SIZE - 1)
 		mov	[_PWM_WP_L], eax
 		mov	[_PWM_WP_R], eax
-		ret
-	
+		
+		; Check for PWM DMA.
+		PWM_DMA
+		
 	align 4
 	
 	.full:
@@ -2001,7 +2044,9 @@ section .text align=64
 		inc	eax
 		and	eax, byte (PWM_BUF_SIZE - 1)
 		mov	[_PWM_WP_L], eax
-		ret
+		
+		; Check for PWM DMA.
+		PWM_DMA
 	
 	align 4
 	
@@ -2020,7 +2065,9 @@ section .text align=64
 		inc	eax
 		and	eax, byte (PWM_BUF_SIZE - 1)
 		mov	[_PWM_WP_R], eax
-		ret
+		
+		; Check for PWM DMA.
+		PWM_DMA
 	
 	align 4
 	
@@ -2041,7 +2088,9 @@ section .text align=64
 		and	eax, byte (PWM_BUF_SIZE - 1)
 		mov	[_PWM_WP_L], eax
 		mov	[_PWM_WP_R], eax
-		ret
+		
+		; Check for PWM DMA.
+		PWM_DMA
 	
 	align 4
 	
