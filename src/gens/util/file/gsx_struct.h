@@ -32,6 +32,9 @@ extern "C" {
 // Make sure structs are packed.
 #define PACKED __attribute__ ((__packed__))
 
+// Gens v7 savestate extensions.
+#include "gsx_v7.h"
+
 // GSX savestate structs.
 // All integer data types are stored in little-endian.
 
@@ -136,6 +139,18 @@ typedef struct PACKED _gsx_struct_md_t
 	uint8_t  mc68000_ram[0x10000];	// [0x2478] MC68000 RAM. [be16]
 	uint8_t  vram[0x10000];		// [0x12478] VRAM. [be16]
 } gsx_struct_md_t;
+
+
+/**
+ * gsx_struct_md_v7_t: Gens v7 savestate extensions (MD portion).
+ */
+typedef struct PACKED _gsx_struct_md_v7_t
+{
+	gsx_v7_ym2612		ym2612;
+	gsx_v7_psg		psg;
+	gsx_v7_z80_reg		z80_reg;
+	gsx_v7_mc68000_reg	mc68000_reg;
+} gsx_struct_md_v7_t;
 
 #ifdef __cplusplus
 }
