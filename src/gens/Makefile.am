@@ -210,6 +210,7 @@ noinst_HEADERS = \
 		macros/hashtable.hpp \
 		macros/malloc_align.h \
 		macros/math_m.h \
+		macros/unused.h \
 		port/ini.hpp \
 		segacd/cd_file.h \
 		segacd/cd_sys.hpp \
