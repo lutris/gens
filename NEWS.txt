@@ -58,6 +58,9 @@ Release 7 introduces the following new features:
   in Gens/GS. If you do not have the original Sega 32X firmware files, the
   reverse-engineered ones are used instead.
 
+- Added SH2 DMA support for PWM audio. Thanks to Joseph Fenton for
+  submitting a patch.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
