@@ -89,7 +89,7 @@ void Read_To_68K_Space(int adr)
 #endif
 }
 
-void Write_To_68K_Space (int adr, int data)
+void Write_To_68K_Space(int adr, int data)
 {
 #ifdef DEBUG_CD
 	fprintf(debug_SCD_file, "Z80 write in 68K space : $(%.8X) = %.8X\n", adr, data);

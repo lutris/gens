@@ -8,6 +8,11 @@ extern "C" {
 int Z80_Init(void);
 void Z80_Reset(void);
 
+/** Stub functions for SegaCD debugging. **/
+void Write_To_Bank(int val);
+void Read_To_68K_Space(int adr);
+void Write_To_68K_Space(int adr, int data);
+
 #ifdef __cplusplus
 }
 #endif
