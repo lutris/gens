@@ -821,7 +821,7 @@ void Options::setSoundSampleRate(const int newRate)
  * segaCD_SRAMSize(): Get the SegaCD SRAM Size ID.
  * @return SegaCD SRAM Size ID. (TODO: Make this an enum?)
  */
-int segaCD_SRAMSize(void)
+int Options::segaCD_SRAMSize(void)
 {
 	if (BRAM_Ex_State & 0x100)
 		return BRAM_Ex_Size;
