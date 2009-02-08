@@ -27,12 +27,12 @@
 
 typedef struct
 {
-	const int format;
-	const char* const mnem;
-	const unsigned short mask;	/* mask used to obtain opcode bits */
-	const unsigned short bits;	/* opcode bits */
-	const int dat;			/* specific data for situation */
-	const int sh2;			/* SH-2 specific */
+	int format;
+	const char* mnem;
+	unsigned short mask;	/* mask used to obtain opcode bits */
+	unsigned short bits;	/* opcode bits */
+	int dat;			/* specific data for situation */
+	int sh2;			/* SH-2 specific */
 } i_descr;
 
 static const i_descr tab[] =
