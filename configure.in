@@ -86,8 +86,8 @@ if test x$enable_debug = xyes -o x$enable_debug = xfull; then
 	# Debugging symbols enabled.
 	nasm_debug_enabled="-g"
 	cflags_debug="-g"
-	# Removed from cflags_warnings_common: "-Wconversion -Wsign-conversion -Wpadded -Wdisabled-optimization -Waggregate-return"
-	cflags_warnings_common="-Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch -Wswitch-default -Wswitch-enum -Wfloat-equal -Wundef -Wshadow -Wunsafe-loop-optimizations -Wcast-qual -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wmissing-field-initializers -Wnormalized=nfc -Wpacked -Wredundant-decls -Wunreachable-code -Winline"
+	# Removed from cflags_warnings_common: "-Wconversion -Wsign-conversion -Wpadded -Wdisabled-optimization -Waggregate-return -Wpacked"
+	cflags_warnings_common="-Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch -Wswitch-default -Wswitch-enum -Wfloat-equal -Wundef -Wshadow -Wunsafe-loop-optimizations -Wcast-qual -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wmissing-field-initializers -Wnormalized=nfc -Wredundant-decls -Wunreachable-code -Winline"
 	cflags_warnings_c="-Wc++-compat -Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmissing-parameter-type -Wmissing-prototypes -Wnested-externs"
 	cflags_warnings_cxx="-Wc++0x-compat"
 else
