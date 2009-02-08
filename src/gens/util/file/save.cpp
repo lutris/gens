@@ -377,6 +377,12 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 {
 	// Savestate V6 and V7 code from Gens Rerecording.
 	
+#ifdef GENS_DEBUG_SAVESTATE
+	// Make sure the save structs are the correct size.
+	assert(sizeof(gsx_struct_md_t) == GENESIS_LENGTH_EX1);
+	assert(sizeof(gsx_struct_md_v7_t) == GENESIS_LENGTH_EX2);
+#endif
+	
 	/*
 	// Commented out in Gens Rerecording.
 	VDP_Int = 0;
@@ -781,6 +787,12 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// - Plain MD savestates will work in older versions of GENS.
 	// - Sega CD savestates won't work in older versions, but then again, older versions didn't properly support it.
 	// - 32X savestates will *not* work in older versions of GENS. :(
+	
+#ifdef GENS_DEBUG_SAVESTATE
+	// Make sure the save structs are the correct size.
+	assert(sizeof(gsx_struct_md_t) == GENESIS_LENGTH_EX1);
+	assert(sizeof(gsx_struct_md_v7_t) == GENESIS_LENGTH_EX2);
+#endif
 	
 	// from Gens Rerecording
 	struct S68000CONTEXT Context_68K; // Modif N.: apparently no longer necessary but I'm leaving it here just to be safe: purposely shadows the global Context_68K variable with this local copy to avoid tampering with it while saving
