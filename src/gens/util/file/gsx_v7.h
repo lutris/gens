@@ -233,7 +233,7 @@ typedef struct PACKED _gsx_v7_z80_reg
 	// but are used by the Gens v7 savestate format.
 	uint32_t RetIC;
 	uint32_t IntAckC;
-} gsx_v7_z80;
+} gsx_v7_z80_reg;
 
 
 /**
@@ -248,7 +248,7 @@ typedef struct PACKED _gsx_v7_mc68000_reg
 	uint32_t odometer;
 	uint8_t  interrupts[8];
 	uint16_t sr;
-}
+} gsx_v7_mc68000_reg;
 
 
 #endif /* GENS_GSX_V7_H */
