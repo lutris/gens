@@ -133,7 +133,7 @@ int YM2612_Restore(unsigned char SAVE[0x200]);
 /* GSX v7 savestate functionality. */
 struct _gsx_v7_ym2612;
 int YM2612_Save_Full(struct _gsx_v7_ym2612 *save);
-int YM2612_Restore_Full(const unsigned char SAVE[0x14d0]); 
+int YM2612_Restore_Full(struct _gsx_v7_ym2612 *save); 
 
 /* end */
 

@@ -43,9 +43,8 @@ void PSG_Special_Update(void);
 
 // Full PSG save/restore functions from Gens Rerecording.
 struct _gsx_v7_psg;
-extern unsigned char PSG_Save_Full[sizeof(struct _psg)];
 void PSG_Save_State_Full(struct _gsx_v7_psg *save);
-void PSG_Restore_State_Full(void); 
+void PSG_Restore_State_Full(struct _gsx_v7_psg *save); 
 
 #ifdef __cplusplus
 }

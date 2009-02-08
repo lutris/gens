@@ -537,7 +537,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	for (int i = 0; i < 24; i++)
 		Set_VDP_Reg(i, md_save.vdp_reg[i]);
 	
-	// 68000 registers.
+	// MC68000 registers.
 	for (int i = 0; i < 8; i++)
 	{
 		Context_68K.dreg[i] = le32_to_cpu(md_save.mc68000_reg.dreg[i]);
@@ -711,82 +711,201 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	}
 	else if (m_Version >= 7)
 	{
-		// Gens v7 savestate
-		unsigned char Reg_2[sizeof(ym2612_)];
-		ImportDataAuto(Reg_2, data, offset, sizeof(ym2612_)); // some Important parts of this weren't saved above
-		YM2612_Restore_Full(Reg_2);
+		// Gens v7 savestate extensions.
+		gsx_struct_md_v7_t md_save_v7;
+		memcpy(&md_save_v7, &data[GENESIS_LENGTH_EX1], sizeof(md_save_v7));
 		
-		ImportDataAuto(PSG_Save_Full, data, offset, sizeof(struct _psg)); // some Important parts of this weren't saved above
-		PSG_Restore_State_Full();
+		// Load all YM2612 registers.
+		// some Important parts of this weren't saved above
+		YM2612_Restore_Full(&md_save_v7.ym2612);
 		
-		// BUG: The Gens v7 savestate stores M_Z80.BasePC, which is a *real* pointer.
-		// Also, it stores M_Z80.PC, which is *relative* to M_Z80.BasePC.
-		// Workaround: Save M_Z80.BasePC and M_Z80.PC, and restore them after.
-		// The PC is set correctly by the older savestate code above via z80_Set_PC().
-		unsigned int oldBasePC = M_Z80.BasePC;
-		unsigned int oldPC = M_Z80.PC.d;
-		ImportDataAuto(&M_Z80, data, offset, 0x5C); // some Important parts of this weren't saved above
-		M_Z80.PC.d = oldPC;
-		M_Z80.BasePC = oldBasePC;
+		// Load all PSG registers.
+		// some Important parts of this weren't saved above
+		PSG_Restore_State_Full(&md_save_v7.psg);
 		
-		ImportDataAuto(&M_Z80.RetIC, data, offset, 4); // not sure about the last two variables, might as well save them too
-		ImportDataAuto(&M_Z80.IntAckC, data, offset, 4);
+		// Load all Z80 registers.
+		M_Z80.AF.w.AF		= le16_to_cpu(md_save_v7.z80_reg.FA);
+		M_Z80.AF.b.x		= md_save_v7.z80_reg.reserved_AF;
+		M_Z80.AF.b.FXY		= md_save_v7.z80_reg.FXY;
+		M_Z80.BC.w.BC		= le16_to_cpu(md_save_v7.z80_reg.BC);
+		M_Z80.BC.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_BC);
+		M_Z80.DE.w.DE		= le16_to_cpu(md_save_v7.z80_reg.DE);
+		M_Z80.DE.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_DE);
+		M_Z80.HL.w.HL		= le16_to_cpu(md_save_v7.z80_reg.HL);
+		M_Z80.HL.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_HL);
+		M_Z80.IX.w.IX		= le16_to_cpu(md_save_v7.z80_reg.IX);
+		M_Z80.IX.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_IX);
+		M_Z80.IY.w.IY		= le16_to_cpu(md_save_v7.z80_reg.IY);
+		M_Z80.IY.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_IY);
+		M_Z80.SP.w.SP		= le16_to_cpu(md_save_v7.z80_reg.SP);
+		M_Z80.SP.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_SP);
 		
-		ImportDataAuto(&Context_68K.dreg[0], data, offset, 86); // some Important parts of this weren't saved above
+		M_Z80.AF2.w.AF2		= le16_to_cpu(md_save_v7.z80_reg.FA2);
+		M_Z80.AF2.b.x		= md_save_v7.z80_reg.reserved_AF2;
+		M_Z80.AF2.b.FXY2	= md_save_v7.z80_reg.FXY2;
+		M_Z80.BC2.w.BC2		= le16_to_cpu(md_save_v7.z80_reg.BC2);
+		M_Z80.BC2.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_BC2);
+		M_Z80.DE2.w.DE2		= le16_to_cpu(md_save_v7.z80_reg.DE2);
+		M_Z80.DE2.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_DE2);
+		M_Z80.HL2.w.HL2		= le16_to_cpu(md_save_v7.z80_reg.HL2);
+		M_Z80.HL2.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_HL2);
 		
-		ImportDataAuto(&Controller_1_State, data, offset, 448); // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
+		M_Z80.IFF.b.IFF1	= md_save_v7.z80_reg.IFF1;
+		M_Z80.IFF.b.IFF2	= md_save_v7.z80_reg.IFF2;
+		M_Z80.IFF.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_IFF);
+		M_Z80.R.w.R		= le16_to_cpu(md_save_v7.z80_reg.R);
+		M_Z80.R.w.x		= le16_to_cpu(md_save_v7.z80_reg.reserved_R);
 		
-		// apparently necessary
-		ImportDataAuto(&VDP_Status, data, offset, 4);
-		ImportDataAuto(&VDP_Int, data, offset, 4);
-		ImportDataAuto(&VDP_Current_Line, data, offset, 4);
-		ImportDataAuto(&VDP_Num_Lines, data, offset, 4);
-		ImportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-		ImportDataAuto(&DMAT_Length, data, offset, 4);
-		ImportDataAuto(&DMAT_Type, data, offset, 4);
+		M_Z80.I			= md_save_v7.z80_reg.I;
+		M_Z80.IM		= md_save_v7.z80_reg.IM;
+		M_Z80.IntVect		= md_save_v7.z80_reg.IntVect;
+		M_Z80.IntLine		= md_save_v7.z80_reg.IntLine;
+		M_Z80.Status		= le32_to_cpu(md_save_v7.z80_reg.status);
+		
+		M_Z80.TmpSav0		= le32_to_cpu(md_save_v7.z80_reg.TmpSav0);
+		M_Z80.TmpSav1		= le32_to_cpu(md_save_v7.z80_reg.TmpSav1);
+		
+		M_Z80.CycleCnt		= le32_to_cpu(md_save_v7.z80_reg.CycleCnt);
+		M_Z80.CycleTD		= le32_to_cpu(md_save_v7.z80_reg.CycleTD);
+		M_Z80.CycleIO		= le32_to_cpu(md_save_v7.z80_reg.CycleIO);
+		M_Z80.CycleSup		= le32_to_cpu(md_save_v7.z80_reg.CycleSup);
+		
+		// [Gens Rerecording] not sure about the last two variables, might as well save them too
+		M_Z80.RetIC		= le32_to_cpu(md_save_v7.z80_reg.RetIC);
+		M_Z80.IntAckC		= le32_to_cpu(md_save_v7.z80_reg.IntAckC);
+		
+		// All MC68000 registers.
+		// some Important parts of this weren't saved above
+		for (unsigned int i = 0; i < 8; i++)
+		{
+			Context_68K.dreg[i] = le32_to_cpu(md_save_v7.mc68000_reg.dreg[i]);
+			Context_68K.areg[i] = le32_to_cpu(md_save_v7.mc68000_reg.areg[i]);
+			Context_68K.interrupts[i] = md_save_v7.mc68000_reg.interrupts[i];
+		}
+		Context_68K.asp		= cpu_to_le32(md_save_v7.mc68000_reg.asp);
+		Context_68K.pc		= cpu_to_le32(md_save_v7.mc68000_reg.pc);
+		Context_68K.odometer	= cpu_to_le32(md_save_v7.mc68000_reg.odometer);
+		Context_68K.sr		= cpu_to_le32(md_save_v7.mc68000_reg.sr);
+		
+		// Controller status. (apparently necessary)
+		#define LOAD_V7_CONTROLLER_STATUS(gsx_save, player)			\
+		{									\
+			Controller_ ## player ## _Type		= le32_to_cpu(gsx_save.type);		\
+			Controller_ ## player ## _Buttons =						\
+				((le32_to_cpu(gsx_save.up) & 0x01)    ? CONTROLLER_UP : 0)		|	\
+				((le32_to_cpu(gsx_save.down) & 0x01)  ? CONTROLLER_DOWN : 0)	|	\
+				((le32_to_cpu(gsx_save.left) & 0x01)  ? CONTROLLER_LEFT : 0)	|	\
+				((le32_to_cpu(gsx_save.right) & 0x01) ? CONTROLLER_RIGHT : 0)	|	\
+				((le32_to_cpu(gsx_save.start) & 0x01) ? CONTROLLER_START : 0)	|	\
+				((le32_to_cpu(gsx_save.mode) & 0x01)  ? CONTROLLER_MODE : 0)	|	\
+				((le32_to_cpu(gsx_save.A) & 0x01)     ? CONTROLLER_A : 0)	|	\
+				((le32_to_cpu(gsx_save.B) & 0x01)     ? CONTROLLER_B : 0)	|	\
+				((le32_to_cpu(gsx_save.C) & 0x01)     ? CONTROLLER_C : 0)	|	\
+				((le32_to_cpu(gsx_save.X) & 0x01)     ? CONTROLLER_X : 0)	|	\
+				((le32_to_cpu(gsx_save.Y) & 0x01)     ? CONTROLLER_Y : 0)	|	\
+				((le32_to_cpu(gsx_save.Z) & 0x01)     ? CONTROLLER_Z : 0);		\
+		}
+		
+		Controller_1_State	= le32_to_cpu(md_save_v7.controllers.port1.state);
+		Controller_1_COM	= le32_to_cpu(md_save_v7.controllers.port1.COM);
+		Controller_1_Counter	= le32_to_cpu(md_save_v7.controllers.port1.counter);
+		Controller_1_Delay	= le32_to_cpu(md_save_v7.controllers.port1.delay);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1, 1);
+		
+		Controller_2_State	= le32_to_cpu(md_save_v7.controllers.port2.state);
+		Controller_2_COM	= le32_to_cpu(md_save_v7.controllers.port2.COM);
+		Controller_2_Counter	= le32_to_cpu(md_save_v7.controllers.port2.counter);
+		Controller_2_Delay	= le32_to_cpu(md_save_v7.controllers.port2.delay);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2, 2);
+		
+		// Teamplayer controllers.
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1B, 1B);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1C, 1C);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1D, 1D);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2B, 2B);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2C, 2C);
+		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
+		
+		// Miscellaneous. (apparently necessary)
+		VDP_Status		= le32_to_cpu(md_save_v7.vdp_status);
+		VDP_Int			= le32_to_cpu(md_save_v7.vdp_int);
+		VDP_Current_Line	= le32_to_cpu(md_save_v7.vdp_current_line);
+		VDP_Num_Lines		= le32_to_cpu(md_save_v7.vdp_num_lines);
+		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v7.vdp_num_vis_lines);
+		DMAT_Length		= le32_to_cpu(md_save_v7.dmat_length);
+		DMAT_Type		= le32_to_cpu(md_save_v7.dmat_type);
 		//ImportDataAuto(&CRam_Flag. data. &offset, 4); //emulator flag which causes Gens not to update its draw palette, but doesn't affect sync state
 		
 		// TODO: LagCount for Gens Rerecording.
-		//ImportDataAuto(&LagCount, data, offset, 4);
-		offset += 4;
+		//Lag_Count		= le32_to_cpu(md_save_v7.lag_count);
+		VRam_Flag		= le32_to_cpu(md_save_v7.vram_flag);
 		
-		ImportDataAuto(&VRam_Flag, data, offset, 4);
-		ImportDataAuto(&CRam, data, offset, 256 * 2);
+		// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
+		memcpy(&CRam, &md_save_v7.cram, 256 * 2);
 		
+		// Save RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 		// it's probably safer sync-wise to keep SRAM stuff in the savestate
-		ImportDataAuto(&SRAM, data, offset, sizeof(SRAM));
-		ImportDataAuto(&SRAM_Start, data, offset, 4);
-		ImportDataAuto(&SRAM_End, data, offset, 4);
-		ImportDataAuto(&SRAM_ON, data, offset, 4);
-		ImportDataAuto(&SRAM_Write, data, offset, 4);
-		ImportDataAuto(&SRAM_Custom, data, offset, 4);
+		memcpy(&SRAM, &md_save_v7.sram.sram, 64 * 1024);
+		SRAM_Start		= le32_to_cpu(md_save_v7.sram.sram_start);
+		SRAM_End		= le32_to_cpu(md_save_v7.sram.sram_end);
+		SRAM_ON			= le32_to_cpu(md_save_v7.sram.sram_on);
+		SRAM_Write		= le32_to_cpu(md_save_v7.sram.sram_write);
+		SRAM_Custom		= le32_to_cpu(md_save_v7.sram.sram_custom);
 		
-		// this group I'm not sure about, they don't seem to be necessary but I'm keeping them around just in case
-		ImportDataAuto(&Bank_M68K, data, offset, 4);
-		ImportDataAuto(&S68K_State, data, offset, 4);
-		ImportDataAuto(&Z80_State, data, offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
-		ImportDataAuto(&Fake_Fetch, data, offset, 4);
-		ImportDataAuto(&Game_Mode, data, offset, 4);
-		ImportDataAuto(&CPU_Mode, data, offset, 4);
-		ImportDataAuto(&CPL_M68K, data, offset, 4);
-		ImportDataAuto(&CPL_S68K, data, offset, 4);
-		ImportDataAuto(&CPL_Z80, data, offset, 4);
-		ImportDataAuto(&Cycles_S68K, data, offset, 4);
-		ImportDataAuto(&Cycles_M68K, data, offset, 4);
-		ImportDataAuto(&Cycles_Z80, data, offset, 4);
-		ImportDataAuto(&Gen_Mode, data, offset, 4);
-		ImportDataAuto(&Gen_Version, data, offset, 4);
-		ImportDataAuto(H_Counter_Table, data, offset, 512 * 2);
-		ImportDataAuto(&VDP_Reg, data, offset, sizeof(VDP_Reg));
-		ImportDataAuto(&Ctrl, data, offset, sizeof(Ctrl));
+		// More miscellaneous.
+		// (Gens Rerecording) this group I'm not sure about,
+		// they don't seem to be necessary but I'm keeping them around just in case
+		Bank_M68K		= le32_to_cpu(md_save_v7.bank_m68k);
+		S68K_State		= le32_to_cpu(md_save_v7.s68k_state);
+		Z80_State		= le32_to_cpu(md_save_v7.z80_state);
+		Last_BUS_REQ_Cnt	= le32_to_cpu(md_save_v7.last_bus_req_cnt);
+		Last_BUS_REQ_St		= le32_to_cpu(md_save_v7.last_bus_req_st);
+		Fake_Fetch		= le32_to_cpu(md_save_v7.fake_fetch);
+		Game_Mode		= le32_to_cpu(md_save_v7.game_mode);
+		CPU_Mode		= le32_to_cpu(md_save_v7.cpu_mode);
+		CPL_M68K		= le32_to_cpu(md_save_v7.cpl_m68k);
+		CPL_S68K		= le32_to_cpu(md_save_v7.cpl_s68k);
+		CPL_Z80			= le32_to_cpu(md_save_v7.cpl_z80);
+		Cycles_S68K		= le32_to_cpu(md_save_v7.cycles_s68k);
+		Cycles_M68K		= le32_to_cpu(md_save_v7.cycles_m68k);
+		Cycles_Z80		= le32_to_cpu(md_save_v7.cycles_z80);
+		Gen_Mode		= le32_to_cpu(md_save_v7.gen_mode);
+		Gen_Version		= le32_to_cpu(md_save_v7.gen_version);
 		
-		ImportDataAuto(&Context_68K.cycles_needed, data, offset, 44);
+		// TODO: Is this supposed to be 16-bit bytewapped?
+		memcpy(&H_Counter_Table, &md_save_v7.h_counter_table, 512 * 2);
 		
-#ifdef GENS_DEBUG_SAVESTATE
-		assert(offset == GENESIS_STATE_LENGTH);
-#endif		
+		// VDP registers.
+		uint32_t *reg = (uint32_t*)&VDP_Reg;
+		for (unsigned int i = 0; i < 26; i++)
+		{
+			*reg = le32_to_cpu(md_save_v7.vdp_reg[i]);
+			reg++;
+		}
+		
+		// VDP control.
+		reg = (uint32_t*)&Ctrl;
+		for (unsigned int i = 0; i < 7; i++)
+		{
+			*reg = le32_to_cpu(md_save_v7.vdp_ctrl[i]);
+			reg++;
+		}
+		
+		// Extra Starscream MC68000 information.
+		Context_68K.cycles_needed		= le32_to_cpu(md_save_v7.starscream_extra.cycles_needed);
+		Context_68K.cycles_leftover		= le32_to_cpu(md_save_v7.starscream_extra.cycles_leftover);
+		Context_68K.fetch_region_start		= le32_to_cpu(md_save_v7.starscream_extra.fetch_region_start);
+		Context_68K.fetch_region_end		= le32_to_cpu(md_save_v7.starscream_extra.fetch_region_end);
+		Context_68K.xflag			= md_save_v7.starscream_extra.xflag;
+		Context_68K.execinfo			= md_save_v7.starscream_extra.execinfo;
+		Context_68K.trace_trickybit		= md_save_v7.starscream_extra.trace_trickybit;
+		Context_68K.filler			= md_save_v7.starscream_extra.filler;
+		Context_68K.io_cycle_counter		= le32_to_cpu(md_save_v7.starscream_extra.io_cycle_counter);
+		Context_68K.io_fetchbase		= le32_to_cpu(md_save_v7.starscream_extra.io_fetchbase);
+		Context_68K.io_fetchbased_pc		= le32_to_cpu(md_save_v7.starscream_extra.io_fetchbased_pc);
+		Context_68K.access_address		= le32_to_cpu(md_save_v7.starscream_extra.access_address);
+		Context_68K.save_01			= le32_to_cpu(md_save_v7.starscream_extra.save_01);
+		Context_68K.save_02			= le32_to_cpu(md_save_v7.starscream_extra.save_02);
 	}
 	
 	main68k_SetContext(&Context_68K);
@@ -956,13 +1075,13 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	gsx_struct_md_v7_t md_save_v7;
 	memset(&md_save_v7, 0x00, sizeof(md_save_v7));
 	
-	// All YM2612 registers.
+	// Save all YM2612 registers.
 	YM2612_Save_Full(&md_save_v7.ym2612);
 	
-	// All PSG registers.
+	// Save all PSG registers.
 	PSG_Save_State_Full(&md_save_v7.psg);
 	
-	// All Z80 registers.
+	// Save all Z80 registers.
 	md_save_v7.z80_reg.FA		= cpu_to_le16(M_Z80.AF.w.AF);
 	md_save_v7.z80_reg.reserved_AF	= M_Z80.AF.b.x;
 	md_save_v7.z80_reg.FXY		= M_Z80.AF.b.FXY;
@@ -985,6 +1104,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	md_save_v7.z80_reg.SP		= cpu_to_le16(M_Z80.SP.w.SP);
 	md_save_v7.z80_reg.reserved_SP	= cpu_to_le16(M_Z80.SP.w.x);
+	
 	md_save_v7.z80_reg.FA2		= cpu_to_le16(M_Z80.AF2.w.AF2);
 	md_save_v7.z80_reg.reserved_AF2	= M_Z80.AF2.b.x;
 	md_save_v7.z80_reg.FXY2		= M_Z80.AF2.b.FXY2;
@@ -994,11 +1114,13 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.z80_reg.reserved_DE2	= cpu_to_le16(M_Z80.DE2.w.x);
 	md_save_v7.z80_reg.HL2		= cpu_to_le16(M_Z80.HL2.w.HL2);
 	md_save_v7.z80_reg.reserved_HL2	= cpu_to_le16(M_Z80.HL2.w.x);
+	
 	md_save_v7.z80_reg.IFF1		= M_Z80.IFF.b.IFF1;
 	md_save_v7.z80_reg.IFF2		= M_Z80.IFF.b.IFF2;
 	md_save_v7.z80_reg.reserved_IFF	= cpu_to_le16(M_Z80.IFF.w.x);
 	md_save_v7.z80_reg.R		= cpu_to_le16(M_Z80.R.w.R);
 	md_save_v7.z80_reg.reserved_R	= cpu_to_le16(M_Z80.R.w.x);
+	
 	md_save_v7.z80_reg.I		= M_Z80.I;
 	md_save_v7.z80_reg.IM		= M_Z80.IM;
 	md_save_v7.z80_reg.IntVect	= M_Z80.IntVect;
@@ -1035,7 +1157,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.mc68000_reg.odometer	= cpu_to_le32(Context_68K.odometer);
 	md_save_v7.mc68000_reg.sr	= cpu_to_le32(Context_68K.sr);
 	
-	// Controller states.
+	// Controller status.
 	#define SAVE_V7_CONTROLLER_STATUS(gsx_save, player)			\
 	{									\
 		gsx_save.type	= cpu_to_le32(Controller_ ## player ## _Type);	\
@@ -1087,11 +1209,11 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.vram_flag		= cpu_to_le32(VRam_Flag);
 	
 	// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
-	memcpy(&md_save_v7.cram, &CRam, sizeof(md_save_v7.cram));
+	memcpy(&md_save_v7.cram, &CRam, 256 * 2);
 	
 	// Save RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 	// it's probably safer sync-wise to keep SRAM stuff in the savestate
-	memcpy(&md_save_v7.sram.sram, &SRAM, sizeof(md_save_v7.sram.sram));
+	memcpy(&md_save_v7.sram.sram, &SRAM, 64 * 1024);
 	md_save_v7.sram.sram_start	= cpu_to_le32(SRAM_Start);
 	md_save_v7.sram.sram_end	= cpu_to_le32(SRAM_End);
 	md_save_v7.sram.sram_on		= cpu_to_le32(SRAM_ON);
@@ -1119,25 +1241,25 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.gen_version		= cpu_to_le32(Gen_Version);
 	
 	// TODO: Is this supposed to be 16-bit byteswapped?
-	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, sizeof(md_save_v7.h_counter_table));
+	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, 512 * 2);
 	
 	// VDP registers.
 	uint32_t *reg = (uint32_t*)&VDP_Reg;
-	for (int i = 0; i < 26; i++)
+	for (unsigned int i = 0; i < 26; i++)
 	{
-		md_save_v7.vdp_reg[i]	= cpu_to_le32(*reg);
+		md_save_v7.vdp_reg[i] = cpu_to_le32(*reg);
 		reg++;
 	}
 	
 	// VDP control.
 	reg = (uint32_t*)&Ctrl;
-	for (int i = 0; i < 7; i++)
+	for (unsigned int i = 0; i < 7; i++)
 	{
-		md_save_v7.vdp_ctrl[i]	= cpu_to_le32(*reg);
+		md_save_v7.vdp_ctrl[i] = cpu_to_le32(*reg);
 		reg++;
 	}
 	
-	// Extra Starscream 68000 information.
+	// Extra Starscream MC68000 information.
 	md_save_v7.starscream_extra.cycles_needed	= cpu_to_le32(Context_68K.cycles_needed);
 	md_save_v7.starscream_extra.cycles_leftover	= cpu_to_le32(Context_68K.cycles_leftover);
 	md_save_v7.starscream_extra.fetch_region_start	= cpu_to_le32(Context_68K.fetch_region_start);

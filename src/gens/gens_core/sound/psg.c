@@ -494,8 +494,6 @@ void PSG_Special_Update(void)
 
 // Full PSG save/restore functions from Gens Rerecording.
 
-unsigned char PSG_Save_Full[sizeof(struct _psg)];
-
 void PSG_Save_State_Full(struct _gsx_v7_psg *save)
 {
 	save->current_channel	= cpu_to_le32(PSG.Current_Channel);
@@ -529,9 +527,37 @@ void PSG_Save_State_Full(struct _gsx_v7_psg *save)
 	save->noise		= cpu_to_le32(PSG.Noise);
 }
 
-void PSG_Restore_State_Full(void)
+void PSG_Restore_State_Full(struct _gsx_v7_psg *save)
 {
-	memcpy(&PSG, PSG_Save_Full, sizeof(PSG));
+	PSG.Current_Channel	= le32_to_cpu(save->current_channel);
+	PSG.Current_Register	= le32_to_cpu(save->current_reg);
+	
+	PSG.Register[0]		= le32_to_cpu(save->reg[0]);
+	PSG.Register[1]		= le32_to_cpu(save->reg[1]);
+	PSG.Register[2]		= le32_to_cpu(save->reg[2]);
+	PSG.Register[3]		= le32_to_cpu(save->reg[3]);
+	PSG.Register[4]		= le32_to_cpu(save->reg[4]);
+	PSG.Register[5]		= le32_to_cpu(save->reg[5]);
+	PSG.Register[6]		= le32_to_cpu(save->reg[6]);
+	PSG.Register[7]		= le32_to_cpu(save->reg[7]);
+	
+	PSG.Counter[0]		= le32_to_cpu(save->counter[0]);
+	PSG.Counter[1]		= le32_to_cpu(save->counter[1]);
+	PSG.Counter[2]		= le32_to_cpu(save->counter[2]);
+	PSG.Counter[3]		= le32_to_cpu(save->counter[3]);
+	
+	PSG.CntStep[0]		= le32_to_cpu(save->cntstep[0]);
+	PSG.CntStep[1]		= le32_to_cpu(save->cntstep[1]);
+	PSG.CntStep[2]		= le32_to_cpu(save->cntstep[2]);
+	PSG.CntStep[3]		= le32_to_cpu(save->cntstep[3]);
+	
+	PSG.Volume[0]		= le32_to_cpu(save->volume[0]);
+	PSG.Volume[1]		= le32_to_cpu(save->volume[1]);
+	PSG.Volume[2]		= le32_to_cpu(save->volume[2]);
+	PSG.Volume[3]		= le32_to_cpu(save->volume[3]);
+	
+	PSG.Noise_Type		= le32_to_cpu(save->noise_type);
+	PSG.Noise		= le32_to_cpu(save->noise);
 }
 
 
