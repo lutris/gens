@@ -15,6 +15,10 @@
 #include <string.h>
 #include "psg.h"
 
+/* GSX v7 savestate functionality. */
+#include "util/file/gsx_v7.h"
+#include "gens_core/misc/byteswap.h"
+
 /** Defines **/
 
 #ifndef PI
@@ -492,9 +496,37 @@ void PSG_Special_Update(void)
 
 unsigned char PSG_Save_Full[sizeof(struct _psg)];
 
-void PSG_Save_State_Full(void)
+void PSG_Save_State_Full(struct _gsx_v7_psg *save)
 {
-	memcpy(PSG_Save_Full, &PSG, sizeof(PSG));
+	save->current_channel	= cpu_to_le32(PSG.Current_Channel);
+	save->current_reg	= cpu_to_le32(PSG.Current_Register);
+	
+	save->reg[0]		= cpu_to_le32(PSG.Register[0]);
+	save->reg[1]		= cpu_to_le32(PSG.Register[1]);
+	save->reg[2]		= cpu_to_le32(PSG.Register[2]);
+	save->reg[3]		= cpu_to_le32(PSG.Register[3]);
+	save->reg[4]		= cpu_to_le32(PSG.Register[4]);
+	save->reg[5]		= cpu_to_le32(PSG.Register[5]);
+	save->reg[6]		= cpu_to_le32(PSG.Register[6]);
+	save->reg[7]		= cpu_to_le32(PSG.Register[7]);
+	
+	save->counter[0]	= cpu_to_le32(PSG.Counter[0]);
+	save->counter[1]	= cpu_to_le32(PSG.Counter[1]);
+	save->counter[2]	= cpu_to_le32(PSG.Counter[2]);
+	save->counter[3]	= cpu_to_le32(PSG.Counter[3]);
+	
+	save->cntstep[0]	= cpu_to_le32(PSG.CntStep[0]);
+	save->cntstep[1]	= cpu_to_le32(PSG.CntStep[1]);
+	save->cntstep[2]	= cpu_to_le32(PSG.CntStep[2]);
+	save->cntstep[3]	= cpu_to_le32(PSG.CntStep[3]);
+	
+	save->volume[0]		= cpu_to_le32(PSG.Volume[0]);
+	save->volume[1]		= cpu_to_le32(PSG.Volume[1]);
+	save->volume[2]		= cpu_to_le32(PSG.Volume[2]);
+	save->volume[3]		= cpu_to_le32(PSG.Volume[3]);
+	
+	save->noise_type	= cpu_to_le32(PSG.Noise_Type);
+	save->noise		= cpu_to_le32(PSG.Noise);
 }
 
 void PSG_Restore_State_Full(void)

@@ -403,7 +403,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	if (m_Version < 6)
 		len -= 0x10000;
 	
-	// Copy the CRam, VSRam, and Z80 RAM.
+	// Copy the CRAM, VSRAM, and Z80 RAM.
+	// [TODO: Is CRAM supposed to be 16-bit byteswapped?]
 	memcpy(&CRam, &md_save.cram, sizeof(CRam));
 	memcpy(&VSRam, &md_save.vsram, sizeof(VSRam));
 	memcpy(&Ram_Z80, &md_save.z80_ram, sizeof(Ram_Z80));
@@ -819,7 +820,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	PSG_Save_State();
 	
 	// Copy the PSG state into the savestate buffer.
-	for (int i = 0; i < 8; i++)
+	for (unsigned int i = 0; i < 8; i++)
 	{
 		md_save.psg[i] = cpu_to_le16((uint16_t)PSG_Save[i]);
 	}
@@ -832,8 +833,8 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	
 	main68k_GetContext(&Context_68K);
 	
-	// 68000 registers
-	for (int i = 0; i < 8; i++)
+	// MC68000 registers.
+	for (unsigned int i = 0; i < 8; i++)
 	{
 		md_save.mc68000_reg.dreg[i] = cpu_to_le32(Context_68K.dreg[i]);
 		md_save.mc68000_reg.areg[i] = cpu_to_le32(Context_68K.areg[i]);
@@ -879,13 +880,14 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	// Registers are currently stored as 32-bit unsigned int,
 	// but only the lower byte is used.
 	uint32_t *vdp_src = (uint32_t*)&(VDP_Reg.Set1);
-	for (int i = 0; i < 24; i++)
+	for (unsigned int i = 0; i < 24; i++)
 	{
 		md_save.vdp_reg[i] = (uint8_t)(*vdp_src);
 		vdp_src++;
 	}
 	
 	// CRAM and VSRAM.
+	// [TODO: Is CRAM supposed to be 16-bit byteswapped?]
 	memcpy(&md_save.cram, CRam, sizeof(md_save.cram));
 	memcpy(&md_save.vsram, VSRam, sizeof(md_save.vsram));
 	
@@ -923,109 +925,218 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	memcpy(&md_save.vram, &VRam, sizeof(md_save.vram));
 	cpu_to_be16_array(&md_save.vram, sizeof(md_save.vram));
 	
+	// TODO: This is from Gens Rerecording, and is probably not any use right now.
+	//md_save.frame_count = cpu_to_le32(FrameCount);	//Modif
+	
 	// Copy md_save to the data variable.
 	memcpy(&data[0], &md_save, sizeof(md_save));
 	
-	// TODO: This is from Gens Rerecording, and is probably not any use right now.
-	/*
-	data[0x22478]=unsigned char (FrameCount&0xFF);   //Modif
-	data[0x22479]=unsigned char ((FrameCount>>8)&0xFF);   //Modif
-	data[0x2247A]=unsigned char ((FrameCount>>16)&0xFF);   //Modif
-	data[0x2247B]=unsigned char ((FrameCount>>24)&0xFF);   //Modif
-	*/
-	printf("sizeof(gsx_struct_md_v7_t): %d\n", sizeof(gsx_struct_md_v7_t));
-	
-	// everything after this should use this offset variable for ease of extensibility
-	unsigned int offset = GENESIS_LENGTH_EX1; // Modif U. - got rid of about 12 KB of 00 bytes.
-	
-	// GENS v7 Savestate Additions
+	// Gens v7 Savestate Additions
 	// version 7 additions (version 6 additions deleted)
 	//Modif N. - saving more stuff (added everything after this)
 	
-	unsigned char Reg_2[sizeof(ym2612_)];
-	YM2612_Save_Full(Reg_2);
-	ExportDataAuto(Reg_2, data, offset, sizeof(ym2612_)); // some Important parts of this weren't saved above
+	gsx_struct_md_v7_t md_save_v7;
+	memset(&md_save_v7, 0x00, sizeof(md_save_v7));
 	
-	PSG_Save_State_Full();
-	ExportDataAuto(PSG_Save_Full, data, offset, sizeof(struct _psg));  // some Important parts of this weren't saved above
+	// All YM2612 registers.
+	YM2612_Save_Full(&md_save_v7.ym2612);
 	
-	ExportDataAuto(&M_Z80, data, offset, 0x5C); // some Important parts of this weren't saved above
+	// All PSG registers.
+	PSG_Save_State_Full(&md_save_v7.psg);
 	
-	// BUG: The above ExportDataAuto call saves the PC and BasePC registers,
-	// which are based on x86 memory locations and not emulated memory.
-	// Set them to 0xDEADBEEF in the savestate, in big-endian format
-	// so it's readable by a hex editor.
+	// All Z80 registers.
+	md_save_v7.z80_reg.FA		= cpu_to_le16(M_Z80.AF.w.AF);
+	md_save_v7.z80_reg.reserved_AF	= M_Z80.AF.b.x;
+	md_save_v7.z80_reg.FXY		= M_Z80.AF.b.FXY;
+	md_save_v7.z80_reg.BC		= cpu_to_le16(M_Z80.BC.w.BC);
+	md_save_v7.z80_reg.reserved_BC	= cpu_to_le16(M_Z80.BC.w.x);
+	md_save_v7.z80_reg.DE		= cpu_to_le16(M_Z80.DE.w.DE);
+	md_save_v7.z80_reg.reserved_DE	= cpu_to_le16(M_Z80.DE.w.x);
+	md_save_v7.z80_reg.HL		= cpu_to_le16(M_Z80.HL.w.HL);
+	md_save_v7.z80_reg.reserved_HL	= cpu_to_le16(M_Z80.HL.w.x);
+	md_save_v7.z80_reg.IX		= cpu_to_le16(M_Z80.IX.w.IX);
+	md_save_v7.z80_reg.reserved_IX	= cpu_to_le16(M_Z80.IX.w.x);
+	md_save_v7.z80_reg.IY		= cpu_to_le16(M_Z80.IY.w.IY);
+	md_save_v7.z80_reg.reserved_IY	= cpu_to_le16(M_Z80.IY.w.x);
 	
-	// PC
-	data[offset - 0x5C + 0x18] = 0xDE;
-	data[offset - 0x5C + 0x19] = 0xAD;
-	data[offset - 0x5C + 0x1A] = 0xBE;
-	data[offset - 0x5C + 0x1B] = 0xEF;
+	// This was originally "PC", but mdZ80 stores the program counter
+	// as an x86 pointer, not as a Z80 pointer. So, it is written as
+	// 0xDEADBEEF (big-endian) in the Gens v7 savestate extension,
+	// and the original Gens v5 Z80 PC is used instead.
+	md_save_v7.z80_reg.DEADBEEF_1	= cpu_to_be32(0xDEADBEEF);
 	
-	// BasePC
-	data[offset - 0x5C + 0x40] = 0xDE;
-	data[offset - 0x5C + 0x41] = 0xAD;
-	data[offset - 0x5C + 0x42] = 0xBE;
-	data[offset - 0x5C + 0x43] = 0xEF;
+	md_save_v7.z80_reg.SP		= cpu_to_le16(M_Z80.SP.w.SP);
+	md_save_v7.z80_reg.reserved_SP	= cpu_to_le16(M_Z80.SP.w.x);
+	md_save_v7.z80_reg.FA2		= cpu_to_le16(M_Z80.AF2.w.AF2);
+	md_save_v7.z80_reg.reserved_AF2	= M_Z80.AF2.b.x;
+	md_save_v7.z80_reg.FXY2		= M_Z80.AF2.b.FXY2;
+	md_save_v7.z80_reg.BC2		= cpu_to_le16(M_Z80.BC2.w.BC2);
+	md_save_v7.z80_reg.reserved_BC2	= cpu_to_le16(M_Z80.BC2.w.x);
+	md_save_v7.z80_reg.DE2		= cpu_to_le16(M_Z80.DE2.w.DE2);
+	md_save_v7.z80_reg.reserved_DE2	= cpu_to_le16(M_Z80.DE2.w.x);
+	md_save_v7.z80_reg.HL2		= cpu_to_le16(M_Z80.HL2.w.HL2);
+	md_save_v7.z80_reg.reserved_HL2	= cpu_to_le16(M_Z80.HL2.w.x);
+	md_save_v7.z80_reg.IFF1		= M_Z80.IFF.b.IFF1;
+	md_save_v7.z80_reg.IFF2		= M_Z80.IFF.b.IFF2;
+	md_save_v7.z80_reg.reserved_IFF	= cpu_to_le16(M_Z80.IFF.w.x);
+	md_save_v7.z80_reg.R		= cpu_to_le16(M_Z80.R.w.R);
+	md_save_v7.z80_reg.reserved_R	= cpu_to_le16(M_Z80.R.w.x);
+	md_save_v7.z80_reg.I		= M_Z80.I;
+	md_save_v7.z80_reg.IM		= M_Z80.IM;
+	md_save_v7.z80_reg.IntVect	= M_Z80.IntVect;
+	md_save_v7.z80_reg.IntLine	= M_Z80.IntLine;
+	md_save_v7.z80_reg.status	= cpu_to_le32(M_Z80.Status);
 	
-	ExportDataAuto(&M_Z80.RetIC, data, offset, 4); // not sure about the last two variables, might as well save them too
-	ExportDataAuto(&M_Z80.IntAckC, data, offset, 4);
+	// This was originally "BasePC", but mdZ80 stores the program counter
+	// as an x86 pointer, not as a Z80 pointer. So, it is written as
+	// 0xDEADBEEF (big-endian) in the Gens v7 savestate extension,
+	// and the original Gens v5 Z80 PC is used instead.
+	md_save_v7.z80_reg.DEADBEEF_2	= cpu_to_be32(0xDEADBEEF);
 	
-	ExportDataAuto(&Context_68K.dreg[0], data, offset, 86); // some Important parts of this weren't saved above
+	md_save_v7.z80_reg.TmpSav0	= cpu_to_le32(M_Z80.TmpSav0);
+	md_save_v7.z80_reg.TmpSav1	= cpu_to_le32(M_Z80.TmpSav1);
 	
-	ExportDataAuto(&Controller_1_State, data, offset, 448);   // apparently necessary (note: 448 == (((char*)&Controller_2D_Z)+sizeof(Controller_2D_Z) - (char*)&Controller_1_State))
+	md_save_v7.z80_reg.CycleCnt	= cpu_to_le32(M_Z80.CycleCnt);
+	md_save_v7.z80_reg.CycleTD	= cpu_to_le32(M_Z80.CycleTD);
+	md_save_v7.z80_reg.CycleIO	= cpu_to_le32(M_Z80.CycleIO);
+	md_save_v7.z80_reg.CycleSup	= cpu_to_le32(M_Z80.CycleSup);
 	
-	// apparently necessary
-	ExportDataAuto(&VDP_Status, data, offset, 4);
-	ExportDataAuto(&VDP_Int, data, offset, 4);
-	ExportDataAuto(&VDP_Current_Line, data, offset, 4);
-	ExportDataAuto(&VDP_Num_Lines, data, offset, 4);
-	ExportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-	ExportDataAuto(&DMAT_Length, data, offset, 4);
-	ExportDataAuto(&DMAT_Type, data, offset, 4);
-	//ExportDataAuto(&CRam_Flag, data, offset, 4);
-	// TODO: LagCount for GENS ReRecording.
-	//ExportDataAuto(&LagCount, data, offset, 4);
-	offset += 4;
-	ExportDataAuto(&VRam_Flag, data, offset, 4);
-	ExportDataAuto(&CRam, data, offset, 256 * 2);
+	// [Gens Rerecording] not sure about the last two variables, might as well save them too
+	md_save_v7.z80_reg.RetIC	= cpu_to_le32(M_Z80.RetIC);
+	md_save_v7.z80_reg.IntAckC	= cpu_to_le32(M_Z80.IntAckC);
 	
+	// All MC68000 registers.
+	for (unsigned int i = 0; i < 8; i++)
+	{
+		md_save_v7.mc68000_reg.dreg[i] = cpu_to_le32(Context_68K.dreg[i]);
+		md_save_v7.mc68000_reg.areg[i] = cpu_to_le32(Context_68K.areg[i]);
+		md_save_v7.mc68000_reg.interrupts[i] = Context_68K.interrupts[i];
+	}
+	md_save_v7.mc68000_reg.asp	= cpu_to_le32(Context_68K.asp);
+	md_save_v7.mc68000_reg.pc	= cpu_to_le32(Context_68K.pc);
+	md_save_v7.mc68000_reg.odometer	= cpu_to_le32(Context_68K.odometer);
+	md_save_v7.mc68000_reg.sr	= cpu_to_le32(Context_68K.sr);
+	
+	// Controller states.
+	#define SAVE_V7_CONTROLLER_STATUS(gsx_save, player)			\
+	{									\
+		gsx_save.type	= cpu_to_le32(Controller_ ## player ## _Type);	\
+		gsx_save.up	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_UP) ? 1 : 0); \
+		gsx_save.down	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_DOWN) ? 1 : 0); \
+		gsx_save.left	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_LEFT) ? 1 : 0); \
+		gsx_save.right	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_RIGHT) ? 1 : 0); \
+		gsx_save.start	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_START) ? 1 : 0); \
+		gsx_save.mode	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_MODE) ? 1 : 0); \
+		gsx_save.A	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_A) ? 1 : 0); \
+		gsx_save.B	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_B) ? 1 : 0); \
+		gsx_save.C	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_C) ? 1 : 0); \
+		gsx_save.X	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_X) ? 1 : 0); \
+		gsx_save.Y	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_Y) ? 1 : 0); \
+		gsx_save.Z	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_Z) ? 1 : 0); \
+	}
+	
+	md_save_v7.controllers.port1.state	= cpu_to_le32(Controller_1_State);
+	md_save_v7.controllers.port1.COM	= cpu_to_le32(Controller_1_COM);
+	md_save_v7.controllers.port1.counter	= cpu_to_le32(Controller_1_Counter);
+	md_save_v7.controllers.port1.delay	= cpu_to_le32(Controller_1_Delay);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1, 1);
+	
+	md_save_v7.controllers.port2.state	= cpu_to_le32(Controller_2_State);
+	md_save_v7.controllers.port2.COM	= cpu_to_le32(Controller_2_COM);
+	md_save_v7.controllers.port2.counter	= cpu_to_le32(Controller_2_Counter);
+	md_save_v7.controllers.port2.delay	= cpu_to_le32(Controller_2_Delay);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2, 2);
+	
+	// Teamplayer controllers.
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1B, 1B);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1C, 1C);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1D, 1D);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2B, 2B);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2C, 2C);
+	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
+	
+	// Miscellaneous.
+	md_save_v7.vdp_status		= cpu_to_le32(VDP_Status);
+	md_save_v7.vdp_int		= cpu_to_le32(VDP_Int);
+	md_save_v7.vdp_current_line	= cpu_to_le32(VDP_Current_Line);
+	md_save_v7.vdp_num_lines	= cpu_to_le32(VDP_Num_Lines);
+	md_save_v7.vdp_num_vis_lines	= cpu_to_le32(VDP_Num_Vis_Lines);
+	md_save_v7.dmat_length		= cpu_to_le32(DMAT_Length);
+	md_save_v7.dmat_type		= cpu_to_le32(DMAT_Type);
+	//ExportDataAuto(&CRam_Flag, data, offset, 4); [CRam Flag was not used at all in Gens Rerecording, not even for offsets.]
+	// TODO: LagCount for Gens Rerecording.
+	//md_save_v7.lag_count		= cpu_to_le32(LagCount);
+	md_save_v7.vram_flag		= cpu_to_le32(VRam_Flag);
+	
+	// Color RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
+	memcpy(&md_save_v7.cram, &CRam, sizeof(md_save_v7.cram));
+	
+	// Save RAM. [TODO: Is this supposed to be 16-bit byteswapped?]
 	// it's probably safer sync-wise to keep SRAM stuff in the savestate
-	ExportDataAuto(&SRAM, data, offset, sizeof(SRAM));
-	ExportDataAuto(&SRAM_Start, data, offset, 4);
-	ExportDataAuto(&SRAM_End, data, offset, 4);
-	ExportDataAuto(&SRAM_ON, data, offset, 4);
-	ExportDataAuto(&SRAM_Write, data, offset, 4);
-	ExportDataAuto(&SRAM_Custom, data, offset, 4);
+	memcpy(&md_save_v7.sram.sram, &SRAM, sizeof(md_save_v7.sram.sram));
+	md_save_v7.sram.sram_start	= cpu_to_le32(SRAM_Start);
+	md_save_v7.sram.sram_end	= cpu_to_le32(SRAM_End);
+	md_save_v7.sram.sram_on		= cpu_to_le32(SRAM_ON);
+	md_save_v7.sram.sram_write	= cpu_to_le32(SRAM_Write);
+	md_save_v7.sram.sram_custom	= cpu_to_le32(SRAM_Custom);
 	
-	// this group I'm not sure about, they don't seem to be necessary but I'm keeping them around just in case
-	ExportDataAuto(&Bank_M68K, data, offset, 4);
-	ExportDataAuto(&S68K_State, data, offset, 4);
-	ExportDataAuto(&Z80_State, data, offset, 4);
-	ExportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
-	ExportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
-	ExportDataAuto(&Fake_Fetch, data, offset, 4);
-	ExportDataAuto(&Game_Mode, data, offset, 4);
-	ExportDataAuto(&CPU_Mode, data, offset, 4);
-	ExportDataAuto(&CPL_M68K, data, offset, 4);
-	ExportDataAuto(&CPL_S68K, data, offset, 4);
-	ExportDataAuto(&CPL_Z80, data, offset, 4);
-	ExportDataAuto(&Cycles_S68K, data, offset, 4);
-	ExportDataAuto(&Cycles_M68K, data, offset, 4);
-	ExportDataAuto(&Cycles_Z80, data, offset, 4);
-	ExportDataAuto(&Gen_Mode, data, offset, 4);
-	ExportDataAuto(&Gen_Version, data, offset, 4);
-	ExportDataAuto(H_Counter_Table, data, offset, 512 * 2);
-	ExportDataAuto(&VDP_Reg, data, offset, sizeof(VDP_Reg));
-	ExportDataAuto(&Ctrl, data, offset, sizeof(Ctrl));
+	// More miscellaneous.
+	// (Gens Rerecording) this group I'm not sure about,
+	// they don't seem to be necessary but I'm keeping them around just in case
+	md_save_v7.bank_m68k		= cpu_to_le32(Bank_M68K);
+	md_save_v7.s68k_state		= cpu_to_le32(S68K_State);
+	md_save_v7.z80_state		= cpu_to_le32(Z80_State);
+	md_save_v7.last_bus_req_cnt	= cpu_to_le32(Last_BUS_REQ_Cnt);
+	md_save_v7.last_bus_req_st	= cpu_to_le32(Last_BUS_REQ_St);
+	md_save_v7.fake_fetch		= cpu_to_le32(Fake_Fetch);
+	md_save_v7.game_mode		= cpu_to_le32(Game_Mode);
+	md_save_v7.cpu_mode		= cpu_to_le32(CPU_Mode);
+	md_save_v7.cpl_m68k		= cpu_to_le32(CPL_M68K);
+	md_save_v7.cpl_s68k		= cpu_to_le32(CPL_S68K);
+	md_save_v7.cpl_z80		= cpu_to_le32(CPL_Z80);
+	md_save_v7.cycles_s68k		= cpu_to_le32(Cycles_S68K);
+	md_save_v7.cycles_m68k		= cpu_to_le32(Cycles_M68K);
+	md_save_v7.cycles_z80		= cpu_to_le32(Cycles_Z80);
+	md_save_v7.gen_mode		= cpu_to_le32(Gen_Mode);
+	md_save_v7.gen_version		= cpu_to_le32(Gen_Version);
 	
-	ExportDataAuto(&Context_68K.cycles_needed, data, offset, 44);
+	// TODO: Is this supposed to be 16-bit byteswapped?
+	memcpy(&md_save_v7.h_counter_table, &H_Counter_Table, sizeof(md_save_v7.h_counter_table));
 	
-	#ifdef GENS_DEBUG_SAVESTATE
-		// assert that the final offset value equals our savestate size, otherwise we screwed up
-		// if it fails, that probably means you have to add ((int)offset-(int)desiredoffset) to the last GENESIS_LENGTH_EX define
-		assert(offset == GENESIS_STATE_LENGTH);
-	#endif	
+	// VDP registers.
+	uint32_t *reg = (uint32_t*)&VDP_Reg;
+	for (int i = 0; i < 26; i++)
+	{
+		md_save_v7.vdp_reg[i]	= cpu_to_le32(*reg);
+		reg++;
+	}
+	
+	// VDP control.
+	reg = (uint32_t*)&Ctrl;
+	for (int i = 0; i < 7; i++)
+	{
+		md_save_v7.vdp_ctrl[i]	= cpu_to_le32(*reg);
+		reg++;
+	}
+	
+	// Extra Starscream 68000 information.
+	md_save_v7.starscream_extra.cycles_needed	= cpu_to_le32(Context_68K.cycles_needed);
+	md_save_v7.starscream_extra.cycles_leftover	= cpu_to_le32(Context_68K.cycles_leftover);
+	md_save_v7.starscream_extra.fetch_region_start	= cpu_to_le32(Context_68K.fetch_region_start);
+	md_save_v7.starscream_extra.fetch_region_end	= cpu_to_le32(Context_68K.fetch_region_end);
+	md_save_v7.starscream_extra.xflag		= Context_68K.xflag;
+	md_save_v7.starscream_extra.execinfo		= Context_68K.execinfo;
+	md_save_v7.starscream_extra.trace_trickybit	= Context_68K.trace_trickybit;
+	md_save_v7.starscream_extra.filler		= Context_68K.filler;
+	md_save_v7.starscream_extra.io_cycle_counter	= cpu_to_le32(Context_68K.io_cycle_counter);
+	md_save_v7.starscream_extra.io_fetchbase	= cpu_to_le32(Context_68K.io_fetchbase);
+	md_save_v7.starscream_extra.io_fetchbased_pc	= cpu_to_le32(Context_68K.io_fetchbased_pc);
+	md_save_v7.starscream_extra.access_address	= cpu_to_le32(Context_68K.access_address);
+	md_save_v7.starscream_extra.save_01		= cpu_to_le32(Context_68K.save_01);
+	md_save_v7.starscream_extra.save_02		= cpu_to_le32(Context_68K.save_02);
+	
+	// Copy md_save to the data variable.
+	memcpy(&data[GENESIS_LENGTH_EX1], &md_save_v7, sizeof(md_save_v7));
 }
 
 

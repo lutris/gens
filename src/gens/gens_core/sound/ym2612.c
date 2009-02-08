@@ -16,6 +16,10 @@
 #include <string.h>
 #include "ym2612.h"
 
+/* GSX v7 savestate functionality. */
+#include "util/file/gsx_v7.h"
+#include "gens_core/misc/byteswap.h"
+
 
 /********************************************
  *            Partie définition             *
@@ -2690,66 +2694,6 @@ void YM2612_Update(int **buf, int length)
 }
 
 
-/**
- * YM2612_Restore_Full(): Restore the entire contents of the YM2612's registers. (GENS Re-Recording)
- * @param SAVE Buffer containing the registers to restore.
- * @return 0 on success.
- */
-int YM2612_Restore_Full(const unsigned char SAVE[sizeof(ym2612_)])
-{
-	int channel = 0;
-	int slot = 0;
-	
-	memcpy(&YM2612, SAVE, sizeof(ym2612_));
-	
-	// re-pointerify / fix pointers
-	// WARNING: This code may break on 64-bit machines!
-	for (channel = 0; channel < 6; channel++)
-	{
-		for (slot = 0; slot < 4; slot++)
-		{
-			YM2612.CHANNEL[channel].SLOT[slot].DT = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].DT + (int*)&DT_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].AR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].AR + (int*)&AR_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].DR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].DR + (int*)&DR_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].SR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].SR + (int*)&DR_TAB);
-			YM2612.CHANNEL[channel].SLOT[slot].RR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].RR + (int*)&DR_TAB);
-		}
-	}
-	
-	return 0;
-}
-
-
-/**
- * YM2612_Save_Full(): Save the entire contents of the YM2612's registers. (GENS Re-Recording)
- * @param SAVE Buffer to save the registers in.
- * @return 0 on success.
- */
-int YM2612_Save_Full(unsigned char SAVE[sizeof(ym2612_)])
-{
-	ym2612_ *ymp = ((ym2612_*)SAVE);
-	int channel = 0;
-	int slot = 0;
-	
-	memcpy(SAVE, &YM2612, sizeof(ym2612_));
-	
-	// un-pointerify
-	for (channel = 0; channel < 6; channel++)
-	{
-		for (slot = 0; slot < 4; slot++)
-		{
-			ymp->CHANNEL[channel].SLOT[slot].DT = (int*)((int*)ymp->CHANNEL[channel].SLOT[slot].DT - (int*)&DT_TAB);
-			ymp->CHANNEL[channel].SLOT[slot].AR = (int*)((int*)ymp->CHANNEL[channel].SLOT[slot].AR - (int*)&AR_TAB);
-			ymp->CHANNEL[channel].SLOT[slot].DR = (int*)((int*)ymp->CHANNEL[channel].SLOT[slot].DR - (int*)&DR_TAB);
-			ymp->CHANNEL[channel].SLOT[slot].SR = (int*)((int*)ymp->CHANNEL[channel].SLOT[slot].SR - (int*)&DR_TAB);
-			ymp->CHANNEL[channel].SLOT[slot].RR = (int*)((int*)ymp->CHANNEL[channel].SLOT[slot].RR - (int*)&DR_TAB);
-		}
-	}
-	
-	return 0;
-}
-
-
 int YM2612_Save(unsigned char SAVE[0x200])
 {
 	int i;
@@ -2780,6 +2724,171 @@ int YM2612_Restore(unsigned char SAVE[0x200])
 	
 	return 0;
 }
+
+
+/**
+ * YM2612_Restore_Full(): Restore the entire contents of the YM2612's registers. (Gens Rerecording)
+ * @param SAVE Buffer containing the registers to restore.
+ * @return 0 on success.
+ */
+int YM2612_Restore_Full(const unsigned char SAVE[sizeof(ym2612_)])
+{
+	int channel = 0;
+	int slot = 0;
+	
+	memcpy(&YM2612, SAVE, sizeof(ym2612_));
+	
+	// re-pointerify / fix pointers
+	// WARNING: This code may break on 64-bit machines!
+	for (channel = 0; channel < 6; channel++)
+	{
+		for (slot = 0; slot < 4; slot++)
+		{
+			YM2612.CHANNEL[channel].SLOT[slot].DT = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].DT + (int*)&DT_TAB);
+			YM2612.CHANNEL[channel].SLOT[slot].AR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].AR + (int*)&AR_TAB);
+			YM2612.CHANNEL[channel].SLOT[slot].DR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].DR + (int*)&DR_TAB);
+			YM2612.CHANNEL[channel].SLOT[slot].SR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].SR + (int*)&DR_TAB);
+			YM2612.CHANNEL[channel].SLOT[slot].RR = (int*)((intptr_t)YM2612.CHANNEL[channel].SLOT[slot].RR + (int*)&DR_TAB);
+		}
+	}
+	
+	return 0;
+}
+
+
+/**
+ * YM2612_Save_Full(): Save the entire contents of the YM2612's registers. (Gens Rerecording)
+ * @param save GSX v7 YM2612 struct to save the registers in.
+ * @return 0 on success.
+ */
+int YM2612_Save_Full(gsx_v7_ym2612 *save)
+{
+	// Copy the main YM2612 data.
+	save->clock_freq	= cpu_to_le32(YM2612.Clock);
+	save->sample_rate	= cpu_to_le32(YM2612.Rate);
+	save->timer_base	= cpu_to_le32(YM2612.TimerBase);
+	save->status		= cpu_to_le32(YM2612.status);
+	save->OPNA_addr		= cpu_to_le32(YM2612.OPNAadr);
+	save->OPNB_addr		= cpu_to_le32(YM2612.OPNBadr);
+	save->LFOcnt		= cpu_to_le32(YM2612.LFOcnt);
+	save->LFOinc		= cpu_to_le32(YM2612.LFOinc);
+	
+	save->timerA		= cpu_to_le32(YM2612.TimerA);
+	save->timerAL		= cpu_to_le32(YM2612.TimerAL);
+	save->timerAcnt		= cpu_to_le32(YM2612.TimerAcnt);
+	save->timerB		= cpu_to_le32(YM2612.TimerB);
+	save->timerBL		= cpu_to_le32(YM2612.TimerBL);
+	save->timerBcnt		= cpu_to_le32(YM2612.TimerBcnt);
+	save->mode		= cpu_to_le32(YM2612.Mode);
+	save->dac_enabled	= cpu_to_le32(YM2612.DAC);
+	save->dac_data		= cpu_to_le32(YM2612.DACdata);
+	
+	save->reserved1		= cpu_to_le32(YM2612.dummy);
+	save->frequency_base	= YM2612.Frequence;		// TODO: Figure out endian conversion for floating-point.
+	
+	save->interp_cnt	= cpu_to_le32(YM2612.Inter_Cnt);
+	save->interp_step	= cpu_to_le32(YM2612.Inter_Step);
+	
+	// Registers.
+	int bank, reg;
+	for (bank = 0; bank < 2; bank++)
+	{
+		for (reg = 0; reg < 0x100; reg++)
+		{
+			save->reg[bank][reg] = cpu_to_le32(YM2612.REG[bank][reg]);
+		}
+	}
+	
+	// Channels.
+	int channel;
+	for (channel = 0; channel < 6; channel++)
+	{
+		gsx_v7_ym2612_channel *chanGSX = &save->channels[channel];
+		channel_ *chanYM = &YM2612.CHANNEL[channel];
+		
+		chanGSX->S0_OUT[0]	= cpu_to_le32(chanYM->S0_OUT[0]);
+		chanGSX->S0_OUT[1]	= cpu_to_le32(chanYM->S0_OUT[1]);
+		chanGSX->S0_OUT[2]	= cpu_to_le32(chanYM->S0_OUT[2]);
+		chanGSX->S0_OUT[3]	= cpu_to_le32(chanYM->S0_OUT[3]);
+		
+		chanGSX->Old_OUTd	= cpu_to_le32(chanYM->Old_OUTd);
+		chanGSX->OUTd		= cpu_to_le32(chanYM->OUTd);
+		chanGSX->LEFT		= cpu_to_le32(chanYM->LEFT);
+		chanGSX->RIGHT		= cpu_to_le32(chanYM->RIGHT);
+		chanGSX->ALGO		= cpu_to_le32(chanYM->ALGO);
+		chanGSX->FB		= cpu_to_le32(chanYM->FB);
+		chanGSX->FMS		= cpu_to_le32(chanYM->FMS);
+		chanGSX->AMS		= cpu_to_le32(chanYM->AMS);
+		
+		chanGSX->FNUM[0]	= cpu_to_le32(chanYM->FNUM[0]);
+		chanGSX->FNUM[1]	= cpu_to_le32(chanYM->FNUM[1]);
+		chanGSX->FNUM[2]	= cpu_to_le32(chanYM->FNUM[2]);
+		chanGSX->FNUM[3]	= cpu_to_le32(chanYM->FNUM[3]);
+		
+		chanGSX->FOCT[0]	= cpu_to_le32(chanYM->FOCT[0]);
+		chanGSX->FOCT[1]	= cpu_to_le32(chanYM->FOCT[1]);
+		chanGSX->FOCT[2]	= cpu_to_le32(chanYM->FOCT[2]);
+		chanGSX->FOCT[3]	= cpu_to_le32(chanYM->FOCT[3]);
+		
+		chanGSX->KC[0]		= cpu_to_le32(chanYM->KC[0]);
+		chanGSX->KC[1]		= cpu_to_le32(chanYM->KC[1]);
+		chanGSX->KC[2]		= cpu_to_le32(chanYM->KC[2]);
+		chanGSX->KC[3]		= cpu_to_le32(chanYM->KC[3]);
+		
+		chanGSX->FFlag		= cpu_to_le32(chanYM->FFlag);
+		
+		// Slots.
+		int slot;
+		for (slot = 0; slot < 4; slot++)
+		{
+			gsx_v7_ym2612_slot *slotGSX = &chanGSX->slot[slot];
+			slot_ *slotYM = &chanYM->SLOT[slot];
+			
+			// DT is a pointer, so it needs to be normalized to an offset.
+			slotGSX->DT		= cpu_to_le32((int)(slotYM->DT - (int*)&DT_TAB));
+			
+			// Regular ints.
+			slotGSX->MUL		= cpu_to_le32(slotYM->MUL);
+			slotGSX->TL		= cpu_to_le32(slotYM->TL);
+			slotGSX->TLL		= cpu_to_le32(slotYM->TLL);
+			slotGSX->SLL		= cpu_to_le32(slotYM->SLL);
+			slotGSX->KSR_S		= cpu_to_le32(slotYM->KSR_S);
+			slotGSX->KSR		= cpu_to_le32(slotYM->KSR);
+			slotGSX->SEG		= cpu_to_le32(slotYM->SEG);
+			
+			// The following four values are pointers, so they
+			// need to be normalized to offsets.
+			slotGSX->AR		= cpu_to_le32((int)(slotYM->AR - (int*)&AR_TAB));
+			slotGSX->DR		= cpu_to_le32((int)(slotYM->DR - (int*)&DR_TAB));
+			slotGSX->SR		= cpu_to_le32((int)(slotYM->SR - (int*)&DR_TAB));
+			slotGSX->RR		= cpu_to_le32((int)(slotYM->RR - (int*)&DR_TAB));
+			
+			// Regular ints.
+			slotGSX->Fcnt		= cpu_to_le32(slotYM->Fcnt);
+			slotGSX->Finc		= cpu_to_le32(slotYM->Finc);
+			
+			slotGSX->Ecurp		= cpu_to_le32(slotYM->Ecurp);
+			slotGSX->Ecnt		= cpu_to_le32(slotYM->Ecnt);
+			slotGSX->Ecmp		= cpu_to_le32(slotYM->Ecmp);
+			
+			slotGSX->EincA		= cpu_to_le32(slotYM->EincA);
+			slotGSX->EincD		= cpu_to_le32(slotYM->EincD);
+			slotGSX->EincS		= cpu_to_le32(slotYM->EincS);
+			slotGSX->EincR		= cpu_to_le32(slotYM->EincR);
+			
+			// NOTE: This seems to be unused...
+			slotGSX->OUTp		= cpu_to_le32((int)(slotYM->OUTp));
+			
+			slotGSX->INd		= cpu_to_le32(slotYM->INd);
+			slotGSX->ChgEnM		= cpu_to_le32(slotYM->ChgEnM);
+			slotGSX->AMS		= cpu_to_le32(slotYM->AMS);
+			slotGSX->AMSon		= cpu_to_le32(slotYM->AMSon);
+		}
+	}
+	
+	return 0;
+}
+
 
 /* Gens */
 

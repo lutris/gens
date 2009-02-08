@@ -120,15 +120,20 @@ int YM2612_Reset(void);
 int YM2612_Read(void);
 int YM2612_Write(unsigned char adr, unsigned char data);
 void YM2612_Update(int **buf, int length);
-int YM2612_Save_Full(unsigned char SAVE[0x14d0]);
-int YM2612_Restore_Full(const unsigned char SAVE[0x14d0]); 
-int YM2612_Save(unsigned char SAVE[0x200]);
-int YM2612_Restore(unsigned char SAVE[0x200]);
 
 /* Gens */
 
 void YM2612_DacAndTimers_Update(int **buffer, int length);
 void YM2612_Special_Update(void);
+
+/* Savestate functionality. */
+int YM2612_Save(unsigned char SAVE[0x200]);
+int YM2612_Restore(unsigned char SAVE[0x200]);
+
+/* GSX v7 savestate functionality. */
+struct _gsx_v7_ym2612;
+int YM2612_Save_Full(struct _gsx_v7_ym2612 *save);
+int YM2612_Restore_Full(const unsigned char SAVE[0x14d0]); 
 
 /* end */
 

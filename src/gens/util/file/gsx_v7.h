@@ -310,7 +310,7 @@ typedef struct PACKED _gsx_v7_controllers
  */
 typedef struct PACKED _gsx_v7_sram
 {
-	uint8_t  SRAM[64 * 1024];
+	uint8_t  sram[64 * 1024];
 	uint32_t sram_start;
 	uint32_t sram_end;
 	uint32_t sram_on;
