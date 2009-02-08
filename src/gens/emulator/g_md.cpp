@@ -401,10 +401,11 @@ int Do_VDP_Only(void)
 
 
 /**
- * gens_do_MD_frame(): Do an MD frame.
+ * T_gens_do_MD_frame(): Do an MD frame.
  * @param VDP If true, VDP is updated.
  */
-static inline int __attribute__((always_inline)) gens_do_MD_frame(bool VDP)
+template<bool VDP>
+static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 {
 	int *buf[2];
 	int HInt_Counter;
@@ -541,9 +542,9 @@ static inline int __attribute__((always_inline)) gens_do_MD_frame(bool VDP)
 
 int Do_Genesis_Frame_No_VDP(void)
 {
-	return gens_do_MD_frame(false);
+	return T_gens_do_MD_frame<false>();
 }
 int Do_Genesis_Frame(void)
 {
-	return gens_do_MD_frame(true);
+	return T_gens_do_MD_frame<true>();
 }

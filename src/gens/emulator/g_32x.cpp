@@ -323,10 +323,11 @@ int Do_32X_VDP_Only(void)
 
 
 /**
- * gens_do_MD_frame(): Do a 32X frame.
+ * T_gens_do_32X_frame(): Do a 32X frame.
  * @param VDP If true, VDP is updated.
  */
-static inline int __attribute__((always_inline)) gens_do_32X_frame(bool VDP)
+template<bool VDP>
+static inline int __attribute__((always_inline)) T_gens_do_32X_frame(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
@@ -617,9 +618,9 @@ static inline int __attribute__((always_inline)) gens_do_32X_frame(bool VDP)
 
 int Do_32X_Frame_No_VDP(void)
 {
-	return gens_do_32X_frame(false);
+	return T_gens_do_32X_frame<false>();
 }
 int Do_32X_Frame(void)
 {
-	return gens_do_32X_frame(true);
+	return T_gens_do_32X_frame<true>();
 }

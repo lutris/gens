@@ -365,11 +365,12 @@ static void SegaCD_Display_LED(void)
 
 
 /**
- * gens_do_MCD_frame(): Do an MCD frame.
+ * T_gens_do_MCD_frame(): Do an MCD frame.
  * @param VDP If true, VDP is updated.
  * @param perfect_sync If true, use perfect synchronization.
  */
-static inline int __attribute__((always_inline)) gens_do_MCD_frame(bool VDP, bool perfect_sync)
+template<bool VDP, bool perfect_sync>
+static inline int __attribute__((always_inline)) T_gens_do_MCD_frame(void)
 {
 	int *buf[2], i, j;
 	int HInt_Counter;
@@ -670,17 +671,17 @@ static inline int __attribute__((always_inline)) gens_do_MCD_frame(bool VDP, boo
 
 int Do_SegaCD_Frame_No_VDP(void)
 {
-	return gens_do_MCD_frame(false, false);
+	return T_gens_do_MCD_frame<false, false>();
 }
 int Do_SegaCD_Frame_No_VDP_Cycle_Accurate(void)
 {
-	return gens_do_MCD_frame(false, true);
+	return T_gens_do_MCD_frame<false, true>();
 }
 int Do_SegaCD_Frame(void)
 {
-	return gens_do_MCD_frame(true, false);
+	return T_gens_do_MCD_frame<true, false>();
 }
 int Do_SegaCD_Frame_Cycle_Accurate(void)
 {
-	return gens_do_MCD_frame(true, true);
+	return T_gens_do_MCD_frame<true, true>();
 }
