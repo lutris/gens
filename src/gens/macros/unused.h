@@ -24,4 +24,4 @@
  * A macro to suppress some compilers' "Parameter is not used" warnings.
  * Copied from Subversion.
  */
-#define GENS_UNUSED_PARAMETER(x) ((void)x)
+#define GENS_UNUSED_PARAMETER(x) ((void)(x))
