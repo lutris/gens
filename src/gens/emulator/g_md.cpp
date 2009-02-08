@@ -393,7 +393,7 @@ int Do_VDP_Only(void)
 	     VDP_Current_Line < VDP_Num_Vis_Lines;
 	     VDP_Current_Line++)
 	{
-		Render_Line ();
+		Render_Line();
 	}
 
 	return 0;
