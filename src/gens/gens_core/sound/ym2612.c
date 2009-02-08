@@ -2949,7 +2949,7 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be converted from an offset.
-			slotYM->DT		= ((le32_to_cpu(slotGSX->DT) & 0x3FF) / sizeof(int)) + (int*)&DT_TAB;
+			slotYM->DT		= (le32_to_cpu(slotGSX->DT) & 0xFF) + (int*)&DT_TAB;
 			
 			// Regular ints.
 			slotYM->MUL		= le32_to_cpu(slotGSX->MUL);
@@ -2962,10 +2962,10 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotYM->AR		= ((le32_to_cpu(slotGSX->AR) & 0x1FF) / sizeof(int)) + (int*)&AR_TAB;
-			slotYM->DR		= ((le32_to_cpu(slotGSX->DR) & 0x1FF) / sizeof(int)) + (int*)&DR_TAB;
-			slotYM->SR		= ((le32_to_cpu(slotGSX->SR) & 0x1FF) / sizeof(int)) + (int*)&DR_TAB;
-			slotYM->RR		= ((le32_to_cpu(slotGSX->RR) & 0x1FF) / sizeof(int)) + (int*)&DR_TAB;
+			slotYM->AR		= (le32_to_cpu(slotGSX->AR) & 0x7F) + (int*)&AR_TAB;
+			slotYM->DR		= (le32_to_cpu(slotGSX->DR) & 0x7F) + (int*)&DR_TAB;
+			slotYM->SR		= (le32_to_cpu(slotGSX->SR) & 0x7F) + (int*)&DR_TAB;
+			slotYM->RR		= (le32_to_cpu(slotGSX->RR) & 0x7F) + (int*)&DR_TAB;
 			
 			// Regular ints.
 			slotYM->Fcnt		= le32_to_cpu(slotGSX->Fcnt);
