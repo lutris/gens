@@ -1,3 +1,27 @@
+/***************************************************************************
+ * Gens: Motorola 68000 disassembler.                                      *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
+#include "m68kd.h"
+
 #include <stdio.h>
 #include <string.h>
 #include "gens_core/mem/mem_m68k.h"
@@ -12,12 +36,12 @@ static unsigned short (*Next_Word)(void);
 static unsigned int (*Next_Long)(void);
 
 
-static char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
+static const char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 {
 	int i;
 	
 	// printf format strings for EA_Num types 0-4
-	const char* EAStr_0_4[] =
+	const char* const EAStr_0_4[] =
 	{
 		"D%.1d",	// 000 rrr  Dr
 		"A%.1d",	// 001 rrr  Ar
@@ -91,7 +115,7 @@ static char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 }
 
 
-static char* Make_Dbg_Size_Str(int Size)
+static const char* Make_Dbg_Size_Str(int Size)
 {
 	switch (Size)
 	{
@@ -113,7 +137,7 @@ static char* Make_Dbg_Size_Str(int Size)
 }
 
 
-static char* Make_Dbg_Size_Str_2(int Size)
+static const char* Make_Dbg_Size_Str_2(int Size)
 {
 	switch (Size)
 	{
@@ -132,9 +156,9 @@ static char* Make_Dbg_Size_Str_2(int Size)
 }
 
 
-static char* Make_Dbg_Cond_Str(int Cond)
+static const char* Make_Dbg_Cond_Str(int Cond)
 {
-	const char* Conditions[] =
+	const char Conditions[][4] =
 	{
 		"Tr", "Fa", "HI", "LS",
 		"CC", "CS", "NE", "EQ",
@@ -153,7 +177,13 @@ static char* Make_Dbg_Cond_Str(int Cond)
 }
 
 
-char* M68KDisasm(unsigned short (*NW) (), unsigned int (*NL) ())
+/**
+ * M68KDisasm(): Motorola 68000 disassembler function.
+ * @param NW Function for retrieving the next 16-bit word.
+ * @param NL Function for retrieving the next 32-bit long word.
+ * @return Disassembled opcode.
+ */
+const char* M68KDisasm(unsigned short (*NW)(void), unsigned int (*NL)(void))
 {
 	int i;
 	unsigned short OPC;
