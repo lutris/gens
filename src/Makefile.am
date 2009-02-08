@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = starscream mdZ80 lzma
+SUBDIRS = starscream mdZ80
 
 if GENS_MP3
 SUBDIRS += mp3_dec
@@ -18,5 +18,9 @@ if GENS_PNG_INTERNAL
 SUBDIRS += libpng
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
+
+if GENS_LZMA
+SUBDIRS += lzma
+endif # GENS_LZMA
 
 SUBDIRS += gens mdp

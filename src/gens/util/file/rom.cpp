@@ -41,9 +41,13 @@ using std::deque;
 // File Decompressors.
 #include "util/file/decompressor/decompressor.h"
 #include "util/file/decompressor/dummy.h"
-#include "util/file/decompressor/md_gzip.h"
-#include "util/file/decompressor/md_zip.h"
-#include "util/file/decompressor/md_7z.h"
+#ifdef GENS_ZLIB
+	#include "util/file/decompressor/md_gzip.h"
+	#include "util/file/decompressor/md_zip.h"
+#endif
+#ifdef GENS_LZMA
+	#include "util/file/decompressor/md_7z.h"
+#endif
 #include "util/file/decompressor/md_rar_t.h"
 
 #include "mdp/mdp_constants.h"
@@ -468,9 +472,13 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	// Array of decompressors.
 	static const decompressor_t* const decompressors[] =
 	{
-		&decompressor_gzip,
-		&decompressor_zip,
-		&decompressor_7z,
+		#ifdef GENS_ZLIB
+			&decompressor_gzip,
+			&decompressor_zip,
+		#endif
+		#ifdef GENS_LZMA
+			&decompressor_7z,
+		#endif
 		&decompressor_rar,
 		
 		// Last decompressor is the Dummy decompressor.

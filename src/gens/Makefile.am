@@ -126,7 +126,6 @@ gens_SOURCES = \
 		util/file/file.cpp \
 		util/file/decompressor/decompressor.c \
 		util/file/decompressor/dummy.c \
-		util/file/decompressor/md_7z.c \
 		util/file/decompressor/md_rar.cpp \
 		util/file/decompressor/md_rar_t.c \
 		util/gfx/imageutil.cpp \
@@ -166,6 +165,11 @@ if GENS_ZLIB
 gens_SOURCES += \
 		util/file/decompressor/md_gzip.c \
 		util/file/decompressor/md_zip.c
+endif
+
+if GENS_LZMA
+gens_SOURCES += \
+		util/file/decompressor/md_7z.c
 endif
 
 noinst_HEADERS = \
@@ -228,7 +232,6 @@ noinst_HEADERS = \
 		util/file/decompressor/decompressor.h \
 		util/file/decompressor/popen_wrapper.h \
 		util/file/decompressor/dummy.h \
-		util/file/decompressor/md_7z.h \
 		util/file/decompressor/md_rar.hpp \
 		util/file/decompressor/md_rar_t.h \
 		util/gfx/imageutil.hpp \
@@ -274,6 +277,11 @@ noinst_HEADERS += \
 		util/file/decompressor/md_zip.h
 endif
 
+if GENS_LZMA
+noinst_HEADERS += \
+		util/file/decompressor/md_7z.h
+endif
+
 
 # Statically-linked MDP plugins.
 # TODO: Add built-in renderers automatically.
@@ -286,7 +294,6 @@ gens_LDADD = \
 		${gens_mdp_static} \
 		../starscream/libstarscream.a \
 		../mdZ80/libmdZ80.a \
-		../lzma/liblzma.a \
 		-lm $(LIBLTDL)
 
 if GENS_MP3
@@ -310,6 +317,11 @@ else
 gens_LDADD += -lpng
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
+
+if GENS_LZMA
+gens_LDADD += ../lzma/liblzma.a
+endif # GENS_LZMA
+
 
 ## ARGH!! Get me some C4 and the address of the programmer who made me 
 ## have to do this!!
@@ -338,6 +350,10 @@ if GENS_PNG_INTERNAL
 gens_DEPENDENCIES += ../libpng/libpng.a
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
+
+if GENS_LZMA
+gens_DEPENDENCIES += ../lzma/liblzma.a
+endif # GENS_LZMA
 
 CLEANFILES = ${ASMFILES}
 

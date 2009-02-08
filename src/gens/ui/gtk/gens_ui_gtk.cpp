@@ -385,8 +385,10 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	static const char* filter_zip  = "*.[zZ][iI][pP]";
 	static const char* filter_gz   = "*.[gG][zZ]";
 	static const char* filter_zsg  = "*.[zZ][sS][gG]";
-#endif /* GENS_ZLIB */
+#endif
+#ifdef GENS_LZMA
 	static const char* filter_7z  = "*.7[zZ]";
+#endif
 	static const char* filter_rar  = "*.[rR][aA][rR]";
 	
 	GtkFileFilter *filter = gtk_file_filter_new();
@@ -403,8 +405,10 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, filter_zip);
 	gtk_file_filter_add_pattern(filter, filter_gz);
 	gtk_file_filter_add_pattern(filter, filter_zsg);
-#endif /* GENS_ZLIB */
+#endif
+#ifdef GENS_LZMA
 	gtk_file_filter_add_pattern(filter, filter_7z);
+#endif
 	gtk_file_filter_add_pattern(filter, filter_rar);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	
@@ -418,20 +422,25 @@ static void UI_GTK_AddFilter_ROMFile(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, filter_zip);
 	gtk_file_filter_add_pattern(filter, filter_gz);
 	gtk_file_filter_add_pattern(filter, filter_zsg);
-#endif /* GENS_ZLIB */
+#endif
+#ifdef GENS_LZMA
 	gtk_file_filter_add_pattern(filter, filter_7z);
+#endif
 	gtk_file_filter_add_pattern(filter, filter_rar);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);	
 	
 	// 32X ROM files only
 	filter = gtk_file_filter_new();
 	gtk_file_filter_set_name(filter, "32X ROMs");
+	gtk_file_filter_add_pattern(filter, filter_32x);
 #ifdef GENS_ZLIB
 	gtk_file_filter_add_pattern(filter, filter_zip);
 	gtk_file_filter_add_pattern(filter, filter_gz);
-#endif /* GENS_ZLIB */
-	gtk_file_filter_add_pattern(filter, filter_32x);
+	gtk_file_filter_add_pattern(filter, filter_zsg);
+#endif
+#ifdef GENS_LZMA
 	gtk_file_filter_add_pattern(filter, filter_7z);
+#endif
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	
 	// SegaCD disc image files only

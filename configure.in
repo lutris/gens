@@ -379,13 +379,26 @@ fi
 fi
 
 if test x$with_png = xyes; then
-AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
-if test x$with_internal_png = xyes; then
-AC_DEFINE(GENS_PNG_INTERNAL, 1, Use internal libpng instead of system libpng)
-fi # GENS_PNG_INTERNAL
+	AC_DEFINE(GENS_PNG, 1, PNG support via libpng)
+	if test x$with_internal_png = xyes; then
+		AC_DEFINE(GENS_PNG_INTERNAL, 1, Use internal libpng instead of system libpng)
+	fi # GENS_PNG_INTERNAL
 fi # GENS_PNG
+
 AM_CONDITIONAL([GENS_PNG], [test x$with_png = xyes])
 AM_CONDITIONAL([GENS_PNG_INTERNAL], [test x$with_internal_png = xyes])
+
+
+###
+# LZMA / 7z. (internal only)
+###
+
+AC_ARG_WITH(7z, AC_HELP_STRING([--without-7z], [Build without internal 7z support [[default=no]]]), with_7z=$withval, with_7z=yes)
+if test x$with_7z = xyes; then
+	AC_DEFINE(GENS_LZMA, 1, LZMA/7z support via internal LZMA SDK)
+fi # GENS_LZMA
+
+AM_CONDITIONAL([GENS_LZMA], [test x$with_7z = xyes])
 
 
 ###
