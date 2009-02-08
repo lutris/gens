@@ -48,26 +48,26 @@ static long long start_time;
 
 /**
  * NtQuerySystemTime(): Retrieves the current system time.
- * @param time Pointer to 64-bit variable to store the time in.
+ * @param pTime Pointer to 64-bit variable to store the time in.
  */
-static void NtQuerySystemTime(long long* time)
+static void NtQuerySystemTime(long long* pTime)
 {
 	// Originally from Wine 1.1.6
 	// dlls/ntdll/time.c
 	
-	if (!time)
+	if (!pTime)
 		return;
 	
 #if HAVE_LIBRT
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
-	*time = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
-	*time += (now.tv_nsec / 1000) * 10;
+	*pTime = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
+	*pTime += (now.tv_nsec / 1000) * 10;
 #else
 	struct timeval now;
 	gettimeofday(&now, NULL);
-	*time = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
-	*time += now.tv_usec * 10;
+	*pTime = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
+	*pTime += now.tv_usec * 10;
 #endif
 }
 
