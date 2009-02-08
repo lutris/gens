@@ -169,9 +169,9 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
-size_t decompressor_7z_get_file(FILE *zF, const char *filename,
-				file_list_t *file_list,
-				void *buf, const size_t size)
+static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
+				       file_list_t *file_list,
+				       void *buf, const size_t size)
 {
 	// Unused parameters.
 	((void)zF);
