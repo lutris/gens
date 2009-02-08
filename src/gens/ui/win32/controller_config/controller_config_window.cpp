@@ -97,11 +97,11 @@ HWND create_controller_config_window(void)
 	RegisterClass(&WndClass);
 	
 	// Create the window.
-	controller_config_window = CreateWindowEx(NULL, "Gens_Controller_Config", "Controller Configuration",
-						  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-						  CW_USEDEFAULT, CW_USEDEFAULT,
-						  wndWidth, wndHeight,
-						  Gens_hWnd, NULL, ghInstance, NULL);
+	controller_config_window = CreateWindow("Gens_Controller_Config", "Controller Configuration",
+						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+						CW_USEDEFAULT, CW_USEDEFAULT,
+						wndWidth, wndHeight,
+						Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(controller_config_window, wndWidth, wndHeight);

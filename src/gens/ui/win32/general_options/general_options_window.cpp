@@ -72,8 +72,8 @@ const COLORREF GeneralOptionsWindow::Colors_IntroEffect[8][2] =
 	{RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00)},
 };
 
-static const int frameWidth = 160;
-static const int frameHeight = 256-16;
+#define GENOPT_FRAME_WIDTH  160
+#define GENOPT_FRAME_HEIGHT 240
 
 
 GeneralOptionsWindow* GeneralOptionsWindow::m_Instance = NULL;
@@ -127,14 +127,14 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	
 	// Create the window.
 	// TODO: Don't hardcode the parent window.
-	m_Window = CreateWindowEx(NULL, "Gens_General_Options", "General Options",
-				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  (frameWidth*2)+16+8, frameHeight+16+24+8,
-				  Gens_hWnd, NULL, ghInstance, NULL);
+	m_Window = CreateWindow("Gens_General_Options", "General Options",
+				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				CW_USEDEFAULT, CW_USEDEFAULT,
+				(GENOPT_FRAME_WIDTH*2)+16+8, GENOPT_FRAME_HEIGHT+16+24+8,
+				Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, (frameWidth*2)+16+8, frameHeight+16+24+8);
+	Win32_setActualWindowSize(m_Window, (GENOPT_FRAME_WIDTH*2)+16+8, GENOPT_FRAME_HEIGHT+16+24+8);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(m_Window);
@@ -287,22 +287,22 @@ void GeneralOptionsWindow::createChildWindows(HWND hWnd)
 	// On-Screen Display frame
 	HWND fraOSD = CreateWindow(WC_BUTTON, "On-Screen Display",
 				   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				   8, 8, frameWidth, frameHeight,
+				   8, 8, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(fraOSD, fntMain, TRUE);
 	
 	// FPS counter frame
-	createOSDFrame(hWnd, 0, 16, 24, frameWidth-16, (frameHeight/2)-16, "FPS counter");
+	createOSDFrame(hWnd, 0, 16, 24, GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16, "FPS counter");
 	
 	// Message counter frame
-	createOSDFrame(hWnd, 1, 16, (frameHeight/2)+16, frameWidth-16, (frameHeight/2)-16, "Message");
+	createOSDFrame(hWnd, 1, 16, (GENOPT_FRAME_HEIGHT/2)+16, GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16, "Message");
 	
 	// Miscellaneous frame
-	frameLeft += frameWidth + 8;
+	frameLeft += GENOPT_FRAME_WIDTH + 8;
 	
 	grpBox = CreateWindow(WC_BUTTON, "Miscellaneous",
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-			      frameLeft, frameTop, frameWidth, frameHeight,
+			      frameLeft, frameTop, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
 			      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, TRUE);
 	
@@ -358,12 +358,12 @@ void GeneralOptionsWindow::createChildWindows(HWND hWnd)
 	frameTop += 20+16+2;
 	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
 					   WS_CHILD | WS_VISIBLE | SS_CENTER,
-					   frameLeft+8, frameTop, frameWidth-16, 20,
+					   frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
 					   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblIntroEffectColor, fntMain, TRUE);
 	
 	// Intro effect color buttons
-	frameLeft += 8+4 + (((frameWidth-16) - (4*(16+8))) / 2);
+	frameLeft += 8+4 + (((GENOPT_FRAME_WIDTH-16) - (4*(16+8))) / 2);
 	frameTop += 20;
 	for (i = 0; i < 8; i++)
 	{
@@ -386,10 +386,10 @@ void GeneralOptionsWindow::createChildWindows(HWND hWnd)
 
 
 void GeneralOptionsWindow::createOSDFrame(HWND hWnd, const int index,
-					  const short frameLeft,
-					  const short frameTop,
-					  const short frameWidth,
-					  const short frameHeight,
+					  const short osdFrameLeft,
+					  const short osdFrameTop,
+					  const short osdFrameWidth,
+					  const short osdFrameHeight,
 					  const char* title)
 {
 	// Message frame
@@ -398,35 +398,36 @@ void GeneralOptionsWindow::createOSDFrame(HWND hWnd, const int index,
 	
 	grpBox = CreateWindow(WC_BUTTON, title,
 			      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_GROUPBOX,
-			      frameLeft, frameTop, frameWidth, frameHeight,
+			      osdFrameLeft, osdFrameTop,
+			      osdFrameWidth, osdFrameHeight,
 			      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Enable
 	chkOSD_Enable[index] = CreateWindow(WC_BUTTON, "Enable",
 					    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-					    frameLeft+8, frameTop+16, 128, 20,
+					    osdFrameLeft+8, osdFrameTop+16, 128, 20,
 					    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Enable[index], fntMain, TRUE);
 	
 	// Double Sized
 	chkOSD_DoubleSized[index] = CreateWindow(WC_BUTTON, "Double Sized",
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						 frameLeft+8, frameTop+16+20, 128, 20,
+						 osdFrameLeft+8, osdFrameTop+16+20, 128, 20,
 						 hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_DoubleSized[index], fntMain, TRUE);
 	
 	// Transparency
 	chkOSD_Transparency[index] = CreateWindow(WC_BUTTON, "Transparency",
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
-						  frameLeft+8, frameTop+16+20+20, 128, 20,
+						  osdFrameLeft+8, osdFrameTop+16+20+20, 128, 20,
 						  hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Transparency[index], fntMain, TRUE);
 	
 	// Color label
 	lblColor = CreateWindow(WC_STATIC, "Color:",
 				WS_CHILD | WS_VISIBLE | SS_LEFT,
-				frameLeft+8, frameTop+16+20+20+20+2, 36, 20,
+				osdFrameLeft+8, osdFrameTop+16+20+20+20+2, 36, 20,
 				hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblColor, fntMain, TRUE);
 	
@@ -435,7 +436,7 @@ void GeneralOptionsWindow::createOSDFrame(HWND hWnd, const int index,
 	{
 		optOSD_Color[index][i] = CreateWindow(
 				WC_STATIC, "", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW | SS_NOTIFY,
-				frameLeft+8+36+4+(i*(16+8)), frameTop+16+20+20+20+2, 16, 16,
+				osdFrameLeft+8+36+4+(i*(16+8)), osdFrameTop+16+20+20+20+2, 16, 16,
 				hWnd, (HMENU)(0xA000 + ((index * 4) + i)), ghInstance, NULL);
 	}
 }

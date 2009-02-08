@@ -93,7 +93,6 @@ void on_button_cc_Reconfigure_clicked(GtkButton *button, gpointer user_data)
 	GENS_UNUSED_PARAMETER(button);
 	
 	int player, padtype;
-	char playerID[4];
 	char objID[64];
 	GtkWidget *combobox_padtype;
 	

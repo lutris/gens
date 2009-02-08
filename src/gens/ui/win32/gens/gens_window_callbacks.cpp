@@ -32,6 +32,9 @@
 #include "emulator/options.hpp"
 #include "util/file/config_file.hpp"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 #include "ui/gens_ui.hpp"
 
 #include "util/sound/gym.hpp"
@@ -272,6 +275,10 @@ static void on_gens_window_close(void)
  */
 static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	GENS_UNUSED_PARAMETER(hWnd);
+	GENS_UNUSED_PARAMETER(message);
+	GENS_UNUSED_PARAMETER(lParam);
+	
 	switch (LOWORD(wParam))
 	{
 		case IDCMD_ESC:

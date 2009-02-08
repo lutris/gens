@@ -31,6 +31,8 @@
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
+
+// Unused Parameter macro.
 #include "macros/unused.h"
 
 // Win32 common controls
@@ -472,6 +474,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 		case GYMFile:
 			ofn.lpstrFilter = UI_Win32_FileFilter_GYMFile;
 			break;
+		case AnyFile:
 		default:
 			ofn.lpstrFilter = UI_Win32_FileFilter_AllFiles;
 			break;
@@ -572,6 +575,8 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
  */
 static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
+	GENS_UNUSED_PARAMETER(lParam);
+	
 	if (uMsg == BFFM_INITIALIZED)
 		SendMessage(hWnd, BFFM_SETSELECTION, TRUE, lpData);
 	

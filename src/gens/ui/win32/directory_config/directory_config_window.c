@@ -101,11 +101,11 @@ HWND create_directory_config_window(void)
 	RegisterClass(&WndClass);
 	
 	// Create the window.
-	directory_config_window = CreateWindowEx(NULL, "Gens_Directory_Config", "Configure Directories",
-						 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-						 CW_USEDEFAULT, CW_USEDEFAULT,
-						 frameWidth + 16, 264,
-						 Gens_hWnd, NULL, ghInstance, NULL);	
+	directory_config_window = CreateWindow("Gens_Directory_Config", "Configure Directories",
+					       WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					       CW_USEDEFAULT, CW_USEDEFAULT,
+					       frameWidth + 16, 264,
+					       Gens_hWnd, NULL, ghInstance, NULL);	
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(directory_config_window, frameWidth + 16, 264);

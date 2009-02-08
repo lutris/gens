@@ -43,8 +43,8 @@
  */
 void Open_Country_Code(void)
 {
-	HWND Country = create_country_code_window();
-	if (!Country)
+	HWND cc_window = create_country_code_window();
+	if (!cc_window)
 	{
 		// Either an error occurred while creating the Country Code window,
 		// or the Country Code window is already created.
@@ -55,7 +55,7 @@ void Open_Country_Code(void)
 	//gtk_window_set_transient_for(GTK_WINDOW(Country), GTK_WINDOW(gens_window));
 	
 	// Show the Country Code window.
-	ShowWindow(Country, 1);
+	ShowWindow(cc_window, 1);
 	
 	// Set up the country order treeview.
 	// Elements in Country_Order[3] can have one of three values:
@@ -82,8 +82,7 @@ void Open_Country_Code(void)
 void Country_Save(void)
 {
 	// Save settings.
-	int i, countryID;
-	
+	int i;
 	for (i = 0; i < 3; i++)
 	{
 		Country_Order[i] = ListBox_GetItemData(cc_lstCountryCodes, i);

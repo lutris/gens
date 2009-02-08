@@ -30,6 +30,9 @@
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 // C includes
 #include <cstring>
 
@@ -139,7 +142,7 @@ AboutWindow::AboutWindow()
 			       g_object_ref(m_imgGensLogo), (GDestroyNotify)g_object_unref);
 	
 	// Version information
-	const string title = "<b><i>" + string(StrTitle) + "</i></b>\n<small>\n</small>" + string(StrDescription);
+	static const string title = "<b><i>" + string(StrTitle) + "</i></b>\n<small>\n</small>" + string(StrDescription);
 	GtkWidget *lblVersion = gtk_label_new(title.c_str());
 	gtk_widget_set_name(lblVersion, "lblVersion");
 	gtk_misc_set_padding(GTK_MISC(lblVersion), 8, 8);
@@ -248,6 +251,9 @@ AboutWindow::~AboutWindow()
 
 gboolean AboutWindow::GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	
 	return reinterpret_cast<AboutWindow*>(user_data)->close();
 }
 

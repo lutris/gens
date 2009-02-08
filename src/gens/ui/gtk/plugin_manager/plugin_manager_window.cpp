@@ -35,6 +35,9 @@
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
@@ -82,18 +85,17 @@ PluginManagerWindow::~PluginManagerWindow()
 
 gboolean PluginManagerWindow::GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	
 	return reinterpret_cast<PluginManagerWindow*>(user_data)->close();
 }
 
 
 void PluginManagerWindow::dlgButtonPress(uint32_t button)
 {
-	switch (button)
-	{
-		case WndBase::BUTTON_OK:
-			close();
-			break;
-	}
+	if (button == WndBase::BUTTON_OK)
+		close();
 }
 
 
@@ -382,7 +384,6 @@ void PluginManagerWindow::populatePluginList(void)
 		{
 			// No description or name.
 			// TODO: For external plugins, indicate the external file.
-			char tmp[64];
 			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
 			pluginName = tmp;
 		}
@@ -400,6 +401,8 @@ void PluginManagerWindow::lstPluginList_cursor_changed_STATIC(GtkTreeView *tree_
 
 void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 {
+	GENS_UNUSED_PARAMETER(tree_view);
+	
 	// Check which plugin is clicked.
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
 	

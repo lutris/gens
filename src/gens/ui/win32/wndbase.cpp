@@ -26,8 +26,10 @@
 #include <commctrl.h>
 
 #include "emulator/g_main.hpp"
-
 #include "ui/win32/resource.h"
+
+// Unused Parameter macro.
+#include "macros/unused.h"
 
 
 void WndBase::setFocus(void)
@@ -38,6 +40,8 @@ void WndBase::setFocus(void)
 
 void WndBase::setModal(void *parent)
 {
+	GENS_UNUSED_PARAMETER(parent);
+	
 	// TODO
 }
 

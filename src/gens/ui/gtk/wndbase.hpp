@@ -44,7 +44,7 @@ class WndBase
 		static const uint32_t BUTTON_CANCEL	= (1 << 3);
 		static const uint32_t BUTTON_ALL	= ~0;
 		
-		virtual void dlgButtonPress(uint32_t button) { };
+		virtual void dlgButtonPress(uint32_t button) { ((void)button); };
 		
 	protected:
 		WndBase() { }

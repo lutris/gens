@@ -34,6 +34,9 @@
 
 #include "emulator/g_main.hpp"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 // Audio Handler.
 #include "audio/audio.h"
 
@@ -116,11 +119,11 @@ AboutWindow::AboutWindow()
 	
 	// Create the window.
 	// TODO: Don't hardcode the parent window.
-	m_Window = CreateWindowEx(NULL, "Gens_About", "About Gens",
-				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  328, 352+lblTitle_HeightInc,
-				  Gens_hWnd, NULL, ghInstance, NULL);
+	m_Window = CreateWindow("Gens_About", "About Gens",
+				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				CW_USEDEFAULT, CW_USEDEFAULT,
+				328, 352+lblTitle_HeightInc,
+				Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(m_Window, 328, 352+lblTitle_HeightInc);
@@ -416,6 +419,8 @@ void AboutWindow::iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD d
 
 void AboutWindow::iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
+	GENS_UNUSED_PARAMETER(uMsg);
+	
 	if (!(hWnd == m_Window && idEvent == ID_TIMER_ICE && ice == 3))
 		return;
 	

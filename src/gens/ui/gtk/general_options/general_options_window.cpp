@@ -34,6 +34,9 @@
 // TODO: Get rid of gtk-misc.h
 #include "gtk-misc.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
 
@@ -102,6 +105,9 @@ GeneralOptionsWindow::~GeneralOptionsWindow()
 
 gboolean GeneralOptionsWindow::GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	
 	return reinterpret_cast<GeneralOptionsWindow*>(user_data)->close();
 }
 
@@ -121,6 +127,9 @@ void GeneralOptionsWindow::dlgButtonPress(uint32_t button)
 		
 		case WndBase::BUTTON_CANCEL:
 			close();
+			break;
+		
+		default:
 			break;
 	}
 }

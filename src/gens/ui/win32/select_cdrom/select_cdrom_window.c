@@ -82,11 +82,11 @@ HWND create_select_cdrom_window(void)
 	RegisterClass(&WndClass);
 	
 	// Create the window.
-	select_cdrom_window = CreateWindowEx(NULL, "Gens_Select_CDROM", "Select CD-ROM Drive",
-					     WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-					     CW_USEDEFAULT, CW_USEDEFAULT,
-					     320, 72,
-					     Gens_hWnd, NULL, ghInstance, NULL);
+	select_cdrom_window = CreateWindow("Gens_Select_CDROM", "Select CD-ROM Drive",
+					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					   CW_USEDEFAULT, CW_USEDEFAULT,
+					   320, 72,
+					   Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(select_cdrom_window, 320, 72);

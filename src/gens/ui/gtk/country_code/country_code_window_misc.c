@@ -43,20 +43,20 @@ GtkListStore *listmodel_country = NULL;
  */
 void Open_Country_Code(void)
 {
-	GtkWidget *Country, *treeview;
+	GtkWidget *cc_window, *treeview;
 	GtkCellRenderer *text_renderer;
 	GtkTreeViewColumn *col_text;
 	GtkTreeIter iter;
 	int i;
 	
-	Country = create_country_code_window();
-	if (!Country)
+	cc_window = create_country_code_window();
+	if (!cc_window)
 	{
 		// Either an error occurred while creating the Country Code window,
 		// or the Country Code window is already created.
 		return;
 	}
-	gtk_window_set_transient_for(GTK_WINDOW(Country), GTK_WINDOW(gens_window));
+	gtk_window_set_transient_for(GTK_WINDOW(cc_window), GTK_WINDOW(gens_window));
 	
 	// Set up the country order treeview.
 	// Elements in Country_Order[3] can have one of three values:
@@ -68,7 +68,7 @@ void Open_Country_Code(void)
 	Check_Country_Order();
 	
 	// Populate the TreeView.
-	treeview = lookup_widget(Country, "treeview_country_list");
+	treeview = lookup_widget(cc_window, "treeview_country_list");
 	
 	// Check if the listmodel_country is already created.
 	// If it is, clear it; if not, create a new one.
@@ -95,7 +95,7 @@ void Open_Country_Code(void)
 	}
 	
 	// Show the Country Code window.
-	gtk_widget_show_all(Country);
+	gtk_widget_show_all(cc_window);
 }
 
 

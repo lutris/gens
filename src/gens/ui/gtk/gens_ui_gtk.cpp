@@ -33,6 +33,9 @@
 #include "ui/gens_ui.hpp"
 #include "gtk-misc.h"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 
 // File Chooser function
 static string UI_GTK_FileChooser(const string& title, const string& initFile,
@@ -94,6 +97,8 @@ void GensUI::update(void)
  */
 gboolean GensUI_GLib_SleepCallback(gpointer data)
 {
+	GENS_UNUSED_PARAMETER(data);
+	
 	sleeping = false;
 	return false;
 }
@@ -326,23 +331,18 @@ static string UI_GTK_FileChooser(const string& title, const string& initFile,
 		case ROMFile:
 			UI_GTK_AddFilter_ROMFile(dialog);
 			break;
-		
 		case SavestateFile:
 			UI_GTK_AddFilter_SavestateFile(dialog);
 			break;
-		
 		case CDImage:
 			UI_GTK_AddFilter_CDImage(dialog);
 			break;
-		
 		case ConfigFile:
 			UI_GTK_AddFilter_ConfigFile(dialog);
 			break;
-		
 		case GYMFile:
 			UI_GTK_AddFilter_GYMFile(dialog);
 			break;
-		
 		case AnyFile:
 		default:
 			break;

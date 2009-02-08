@@ -44,7 +44,7 @@ class WndBase
 		static const uint32_t BUTTON_ALL	= ~0;
 		
 		// GTK+ only.
-		virtual void dlgButtonPress(uint32_t button) { };
+		virtual void dlgButtonPress(uint32_t button) { ((void)button); };
 		
 	protected:
 		WndBase() { }

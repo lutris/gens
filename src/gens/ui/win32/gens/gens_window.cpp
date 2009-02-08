@@ -69,7 +69,6 @@ using std::vector;
 
 // Main menu.
 HMENU MainMenu;
-void create_gens_window_menubar(void);
 
 
 /**
@@ -94,8 +93,8 @@ HWND initGens_hWnd(void)
 	
 	RegisterClass(&WndClass);
 	
-	Gens_hWnd = CreateWindowEx(NULL, "Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-				   320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
+	Gens_hWnd = CreateWindow("Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+				 320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
 	
 	// Accept dragged files.
 	DragAcceptFiles(Gens_hWnd, TRUE);

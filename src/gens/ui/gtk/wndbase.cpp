@@ -24,6 +24,9 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 
 void WndBase::setFocus(void)
 {
@@ -69,6 +72,7 @@ static inline void WndBase_GTK_AddBtnToContainer(void *container, GtkWidget *but
 #define WndBase_GTK_btnCallback(btnName, BUTTON_VALUE) \
 static void WndBase_GTK_##btnName(GtkButton *button, gpointer user_data)	\
 {										\
+	GENS_UNUSED_PARAMETER(button);						\
 	reinterpret_cast<WndBase*>(user_data)->dlgButtonPress(BUTTON_VALUE);	\
 }
 
@@ -90,6 +94,9 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 			       uint32_t buttons, uint32_t buttonFocus,
 			       uint32_t buttonAccel)
 {
+	// TODO: Figure out what to do with the "alignment" parameter.
+	GENS_UNUSED_PARAMETER(alignment);
+	
 	if (buttons & BUTTON_CANCEL)
 	{
 		GtkWidget *btnCancel = gtk_button_new_from_stock("gtk-cancel");

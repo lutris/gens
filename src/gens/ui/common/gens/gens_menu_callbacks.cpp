@@ -50,6 +50,9 @@
 #include "emulator/options.hpp"
 #include "util/file/config_file.hpp"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -148,6 +151,8 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 
 static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 {
+	GENS_UNUSED_PARAMETER(state);
+	
 	string filename;
 	
 	switch (menuID)
@@ -706,6 +711,8 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 
 static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state)
 {
+	GENS_UNUSED_PARAMETER(state);
+	
 	switch (menuID)
 	{
 		case IDM_OPTIONS_GENERAL:
@@ -761,6 +768,8 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 
 static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t state)
 {
+	GENS_UNUSED_PARAMETER(state);
+	
 	switch (menuID)
 	{
 		case IDM_PLUGINS_MANAGER:
@@ -789,6 +798,8 @@ static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t sta
 
 static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state)
 {
+	GENS_UNUSED_PARAMETER(state);
+	
 	switch (menuID)
 	{
 		case IDM_HELP_ABOUT:

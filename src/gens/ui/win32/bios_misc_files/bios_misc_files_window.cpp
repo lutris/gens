@@ -102,11 +102,11 @@ HWND create_bios_misc_files_window(void)
 	RegisterClass(&WndClass);
 	
 	// Create the window.
-	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
-						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-						CW_USEDEFAULT, CW_USEDEFAULT,
-						BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
-						Gens_hWnd, NULL, ghInstance, NULL);
+	bios_misc_files_window = CreateWindow("Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
+					      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+					      CW_USEDEFAULT, CW_USEDEFAULT,
+					      BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
+					      Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(bios_misc_files_window, 

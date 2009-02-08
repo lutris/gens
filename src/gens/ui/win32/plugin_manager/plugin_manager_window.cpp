@@ -125,11 +125,11 @@ PluginManagerWindow::PluginManagerWindow()
 	
 	// Create the window.
 	// TODO: Don't hardcode the parent window.
-	m_Window = CreateWindowEx(NULL, "Gens_Plugin_Manager", "Plugin Manager",
-				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  m_WndWidth, m_WndHeight,
-				  Gens_hWnd, NULL, ghInstance, NULL);
+	m_Window = CreateWindow("Gens_Plugin_Manager", "Plugin Manager",
+				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				CW_USEDEFAULT, CW_USEDEFAULT,
+				m_WndWidth, m_WndHeight,
+				Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(m_Window, m_WndWidth, m_WndHeight);

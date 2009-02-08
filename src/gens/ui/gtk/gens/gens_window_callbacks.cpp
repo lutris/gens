@@ -36,6 +36,9 @@
 #include "ui/gtk/gtk-misc.h"
 #include "ui/gtk/gtk-uri.h"
 
+// Unued Parameter macro.
+#include "macros/unused.h"
+
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -93,6 +96,12 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 				    GtkSelectionData *selection_data, guint target_type, guint time,
 				    gpointer data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(x);
+	GENS_UNUSED_PARAMETER(y);
+	GENS_UNUSED_PARAMETER(target_type);
+	GENS_UNUSED_PARAMETER(data);
+	
 	gboolean dnd_success = FALSE;
 	gboolean delete_selection_data = FALSE;
 	
@@ -150,6 +159,10 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
 			       gint x, gint y, guint time, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(x);
+	GENS_UNUSED_PARAMETER(y);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	if (context->targets)
 	{
 		GdkAtom target_type = GDK_POINTER_TO_ATOM(g_list_nth_data(context->targets, 0));
@@ -172,6 +185,10 @@ gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
  */
 gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	Active = 1;
 	return FALSE;
 }
@@ -186,6 +203,10 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
  */
 gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
 	if (Auto_Pause && Active)
 	{
 		Active = 0;
