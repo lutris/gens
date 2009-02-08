@@ -127,6 +127,8 @@ gens_SOURCES = \
 		util/file/decompressor/decompressor.c \
 		util/file/decompressor/dummy.c \
 		util/file/decompressor/md_7z.c \
+		util/file/decompressor/md_rar.cpp \
+		util/file/decompressor/md_rar_t.c \
 		util/gfx/imageutil.cpp \
 		util/sound/gym.cpp \
 		util/sound/wave.c \
@@ -226,6 +228,8 @@ noinst_HEADERS = \
 		util/file/decompressor/popen_wrapper.h \
 		util/file/decompressor/dummy.h \
 		util/file/decompressor/md_7z.h \
+		util/file/decompressor/md_rar.hpp \
+		util/file/decompressor/md_rar_t.h \
 		util/gfx/imageutil.hpp \
 		util/sound/gym.hpp \
 		util/sound/wave.h \
