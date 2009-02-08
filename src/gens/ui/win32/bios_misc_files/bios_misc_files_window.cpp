@@ -43,8 +43,12 @@
 static WNDCLASS WndClass;
 HWND bios_misc_files_window = NULL;
 
+// Window size.
+#define BMF_WINDOW_WIDTH  392
+#define BMF_WINDOW_HEIGHT 360
+
 // Frame width.
-static const int frameWidth = 376;
+#define BMF_FRAME_WIDTH   (BMF_WINDOW_WIDTH - 16)
 
 // All textboxes to be displayed on the BIOS/Misc Files window are defined here.
 const unsigned short BIOSMiscFiles_Count = 13;
@@ -61,7 +65,6 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[BIOSMiscFiles_Count + 1] =
 	{"Europe", "mcd_bios_eur", ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
 	{"Compression Utilities", "compression", (FileFilterType)0, NULL},
-	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
 	{"RAR Binary", "rar", AnyFile, Misc_Filenames.RAR_Binary},
 	{NULL, NULL, (FileFilterType)0, NULL},
 };
@@ -102,11 +105,13 @@ HWND create_bios_misc_files_window(void)
 	bios_misc_files_window = CreateWindowEx(NULL, "Gens_BIOS_Misc_Files", "Configure BIOS/Misc Files",
 						WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 						CW_USEDEFAULT, CW_USEDEFAULT,
-						frameWidth + 16, 384,
+						BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
 						Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(bios_misc_files_window, frameWidth + 16, 384);
+	Win32_setActualWindowSize(bios_misc_files_window, 
+				  BMF_WINDOW_WIDTH,
+				  BMF_WINDOW_HEIGHT);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(bios_misc_files_window);
@@ -140,7 +145,8 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			
 			grpBox = CreateWindow(WC_BUTTON, BIOSMiscFiles[file].title,
 					      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					      grpBox_Left, grpBox_Top, frameWidth, grpBox_Height,
+					      grpBox_Left, grpBox_Top,
+					      BMF_FRAME_WIDTH, grpBox_Height,
 					      hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the groupbox title.
@@ -151,7 +157,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// File entry.
 			grpBox_Height += 24;
 			entryTop = 20 + (grpBox_Entry * 24);
-			SetWindowPos(grpBox, NULL, 0, 0, frameWidth, grpBox_Height, SWP_NOMOVE | SWP_NOZORDER);
+			SetWindowPos(grpBox, NULL, 0, 0, BMF_FRAME_WIDTH, grpBox_Height, SWP_NOMOVE | SWP_NOZORDER);
 			
 			// Create the label for the title.
 			lblTitle = CreateWindow(WC_STATIC, BIOSMiscFiles[file].title,
@@ -166,7 +172,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			txtEntry = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, BIOSMiscFiles[file].entry,
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | SS_LEFT | ES_AUTOHSCROLL,
 						  grpBox_Left + 8+56+8, grpBox_Top + entryTop,
-						  frameWidth - (8+64+8+72+8), 20,
+						  BMF_FRAME_WIDTH - (8+64+8+72+8), 20,
 						  hWnd, NULL, ghInstance, NULL);
 			
 			// Set the font for the entry.
@@ -175,7 +181,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 			// Create the change button for the entry.
 			btnChange = CreateWindow(WC_BUTTON, "Change...",
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-						 grpBox_Left + frameWidth - (8+72), grpBox_Top + entryTop, 72, 20,
+						 grpBox_Left + BMF_FRAME_WIDTH - (8+72), grpBox_Top + entryTop, 72, 20,
 						 hWnd, (HMENU)(IDC_BTN_CHANGE + file), ghInstance, NULL);
 						 
 			// Set the font for the button.
@@ -194,7 +200,7 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 	
 	// Buttons
 	int btnTop = grpBox_Top + grpBox_Height + 8;
-	const int btnLeft = ((frameWidth - (75+8+75+8+75)) / 2) + 8;
+	const int btnLeft = ((BMF_WINDOW_WIDTH - (75+8+75+8+75)) / 2);
 	HWND btnOK, btnApply, btnCancel;
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,

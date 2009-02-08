@@ -113,7 +113,7 @@ int Config::save(const string& filename)
 	// Load the configuration file into the INI handler.
 	INI cfg(filename);
 	
-	// Paths
+	// Paths.
 	cfg.writeString("General", "ROM Path", Rom_Dir);
 	cfg.writeString("General", "Save Path", State_Dir);
 	cfg.writeString("General", "SRAM Path", SRAM_Dir);
@@ -124,15 +124,15 @@ int Config::save(const string& filename)
 	cfg.writeString("General", "Patch Path", PathNames.Patch_Dir);
 	cfg.writeString("General", "IPS Patch Path", IPS_Dir);
 	
-	// Genesis BIOS
+	// Genesis firmware.
 	cfg.writeString("General", "Genesis BIOS", BIOS_Filenames.MD_TMSS);
 	
-	// SegaCD BIOSes
+	// SegaCD firmware.
 	cfg.writeString("General", "USA CD BIOS", BIOS_Filenames.SegaCD_US);
 	cfg.writeString("General", "Europe CD BIOS", BIOS_Filenames.MegaCD_EU);
 	cfg.writeString("General", "Japan CD BIOS", BIOS_Filenames.MegaCD_JP);
 	
-	// 32X BIOSes
+	// 32X firmware.
 	cfg.writeString("General", "32X 68000 BIOS", BIOS_Filenames._32X_MC68000);
 	cfg.writeString("General", "32X Master SH2 BIOS", BIOS_Filenames._32X_MSH2);
 	cfg.writeString("General", "32X Slave SH2 BIOS", BIOS_Filenames._32X_SSH2);
@@ -213,7 +213,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Graphics", "Sprite Limit", Sprite_Over & 1);
 	cfg.writeInt("Graphics", "Frame Skip", Frame_Skip);
 	
-	// Sound settings
+	// Sound settings.
 	cfg.writeBool("Sound", "State", audio_get_enabled());
 	cfg.writeInt("Sound", "Rate", audio_get_sound_rate());
 	cfg.writeBool("Sound", "Stereo", audio_get_stereo());
@@ -226,25 +226,23 @@ int Config::save(const string& filename)
 	cfg.writeInt("Sound", "PWM State", PWM_Enable & 1);
 	cfg.writeInt("Sound", "CDDA State", CDDA_Enable & 1);
 	
-	// Improved sound options
+	// Improved sound options.
 	cfg.writeInt("Sound", "YM2612 Improvement", YM2612_Improv & 1);
 	cfg.writeInt("Sound", "DAC Improvement", DAC_Improv & 1);
 	cfg.writeInt("Sound", "PSG Improvement", PSG_Improv & 1);
 	
-	// Country codes
+	// Country codes.
 	cfg.writeInt("CPU", "Country", Country);
 	cfg.writeInt("CPU", "Prefered Country 1", Country_Order[0]);
 	cfg.writeInt("CPU", "Prefered Country 2", Country_Order[1]);
 	cfg.writeInt("CPU", "Prefered Country 3", Country_Order[2]);
 	
-	// CPU options
-	
+	// CPU options.
 	cfg.writeInt("CPU", "Perfect synchro between main and sub CPU (Sega CD)", SegaCD_Accurate);
-	
 	cfg.writeInt("CPU", "Main SH2 Speed", MSH2_Speed);
 	cfg.writeInt("CPU", "Slave SH2 Speed", SSH2_Speed);
 	
-	// Various settings
+	// Various settings.
 	cfg.writeBool("Options", "Fast Blur", Options::fastBlur());
 	cfg.writeBool("Options", "FPS", vdraw_get_fps_enabled());
 	cfg.writeInt("Options", "FPS Style", vdraw_get_fps_style());
@@ -254,14 +252,13 @@ int Config::save(const string& filename)
 	cfg.writeInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	cfg.writeInt("Options", "Auto Pause", Auto_Pause & 1);
 	
-	// SegaCD BRAM cartridge
+	// SegaCD BRAM cartridge.
 	if (BRAM_Ex_State & 0x100)
 		cfg.writeInt("Options", "RAM Cart Size", BRAM_Ex_Size);
 	else
 		cfg.writeInt("Options", "RAM Cart Size", -1);
 	
-	// Miscellaneous files
-	cfg.writeString("Options", "7z Binary", Misc_Filenames._7z_Binary);
+	// Miscellaneous files.
 	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
 	
 	// Controller settings.
@@ -329,7 +326,7 @@ int Config::load(const string& filename, void* gameActive)
 	
 	CRam_Flag = 1;
 	
-	// Paths
+	// Paths.
 	cfg.getString("General", "ROM Path", PathNames.Gens_Path, Rom_Dir, sizeof(Rom_Dir));
 	cfg.getString("General", "Save Path", PathNames.Gens_Path, State_Dir, sizeof(State_Dir));
 	cfg.getString("General", "SRAM Path", PathNames.Gens_Path, SRAM_Dir, sizeof(SRAM_Dir));
@@ -340,15 +337,15 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("General", "Patch Path", PathNames.Gens_Path, PathNames.Patch_Dir, sizeof(PathNames.Patch_Dir));
 	cfg.getString("General", "IPS Patch Path", PathNames.Gens_Path, IPS_Dir, sizeof(IPS_Dir));
 	
-	// Genesis BIOS
+	// Genesis firmware.
 	cfg.getString("General", "Genesis BIOS", "", BIOS_Filenames.MD_TMSS, sizeof(BIOS_Filenames.MD_TMSS));
 	
-	// SegaCD BIOSes
+	// SegaCD firmware.
 	cfg.getString("General", "USA CD BIOS", "", BIOS_Filenames.SegaCD_US, sizeof(BIOS_Filenames.SegaCD_US));
 	cfg.getString("General", "Europe CD BIOS", "", BIOS_Filenames.MegaCD_EU, sizeof(BIOS_Filenames.MegaCD_EU));
 	cfg.getString("General", "Japan CD BIOS", "", BIOS_Filenames.MegaCD_JP, sizeof(BIOS_Filenames.MegaCD_JP));
 	
-	// 32X BIOSes
+	// 32X firmware.
 	cfg.getString("General", "32X 68000 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MC68000));
 	cfg.getString("General", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MSH2, sizeof(BIOS_Filenames._32X_MSH2));
 	cfg.getString("General", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_SSH2, sizeof(BIOS_Filenames._32X_SSH2));
@@ -394,20 +391,20 @@ int Config::load(const string& filename, void* gameActive)
 	vdraw_set_intro_effect_color(cfg.getInt("General", "Free Mode Color", 7));
 	Sleep_Time = cfg.getInt("General", "Allow Idle", 0) & 1;
 	
-	// Video adjustments
+	// Video adjustments.
 	Contrast_Level = cfg.getInt("Graphics", "Contrast", 100);
 	Brightness_Level = cfg.getInt("Graphics", "Brightness", 100);
 	Greyscale = cfg.getInt("Graphics", "Greyscale", 0);
 	Invert_Color = cfg.getInt("Graphics", "Invert", 0);
 	
-	// Video settings
+	// Video settings.
 	Video.VSync_FS = cfg.getInt("Graphics", "Full Screen VSync", 0) & 1;
 	Video.VSync_W = cfg.getInt("Graphics", "Windows VSync", 0) & 1;
 	vdraw_set_fullscreen(cfg.getBool("Graphics", "Full Screen", false));
 	Video.borderColorEmulation = cfg.getBool("Graphics", "Border Color Emulation", true);
 	Video.pauseTint = cfg.getBool("Graphics", "Pause Tint", true);
 	
-	// Renderer: Full Screen
+	// Renderer: Full Screen.
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "");
 	rendMode_FS = PluginMgr::getMDPIterFromTag_Render(renderTag);
 	if (rendMode_FS == PluginMgr::lstRenderPlugins.end())
@@ -416,7 +413,7 @@ int Config::load(const string& filename, void* gameActive)
 		rendMode_FS = PluginMgr::lstRenderPlugins.begin();
 	}
 	
-	// Renderer: Windowed
+	// Renderer: Windowed.
 	renderTag = cfg.getString("Graphics", "Render Windowed", "");
 	rendMode_W = PluginMgr::getMDPIterFromTag_Render(renderTag);
 	if (rendMode_W == PluginMgr::lstRenderPlugins.end())
@@ -496,7 +493,7 @@ int Config::load(const string& filename, void* gameActive)
 	Sprite_Over = cfg.getInt("Graphics", "Sprite Limit", 1);
 	Frame_Skip = cfg.getInt("Graphics", "Frame Skip", -1);
 	
-	// Sound settings
+	// Sound settings.
 	audio_set_sound_rate(cfg.getInt("Sound", "Rate", 22050));
 	audio_set_stereo(cfg.getBool("Sound", "Stereo", true));
 	
@@ -524,15 +521,14 @@ int Config::load(const string& filename, void* gameActive)
 		PSG_Improv = cfg.getInt("Sound", "PSG Improvement", 0);
 	}
 	
-	// Country codes
+	// Country codes.
 	Country = cfg.getInt("CPU", "Country", -1);
 	Country_Order[0] = cfg.getInt("CPU", "Prefered Country 1", 0);
 	Country_Order[1] = cfg.getInt("CPU", "Prefered Country 2", 1);
 	Country_Order[2] = cfg.getInt("CPU", "Prefered Country 3", 2);
 	Check_Country_Order();
 	
-	// CPU options
-	
+	// CPU options.
 	SegaCD_Accurate = cfg.getInt("CPU", "Perfect synchro between main and sub CPU (Sega CD)", 0);
 	MSH2_Speed = cfg.getInt("CPU", "Main SH2 Speed", 100);
 	SSH2_Speed = cfg.getInt("CPU", "Slave SH2 Speed", 100);
@@ -543,7 +539,7 @@ int Config::load(const string& filename, void* gameActive)
 	if (SSH2_Speed < 0)
 		SSH2_Speed = 0;
 	
-	// Various settings
+	// Various settings.
 	Options::setFastBlur(cfg.getBool("Options", "Fast Blur", false));
 	vdraw_set_fps_enabled(cfg.getBool("Options", "FPS", false));
 	vdraw_set_fps_style(cfg.getInt("Options", "FPS Style", 0));
@@ -565,15 +561,11 @@ int Config::load(const string& filename, void* gameActive)
 	else
 		BRAM_Ex_State |= 0x100;
 	
-	// Miscellaneous files
+	// Miscellaneous files.
 #if defined(__WIN32__)
-	cfg.getString("Options", "7z Binary", "C:\\Program Files\\7-Zip\\7z.exe",
-		      Misc_Filenames._7z_Binary, sizeof(Misc_Filenames._7z_Binary));
 	cfg.getString("Options", "RAR Binary", "C:\\Program Files\\WinRAR\\Rar.exe",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
 #else /* !defined(__WIN32__) */
-	cfg.getString("Options", "7z Binary", "/usr/bin/7z",
-		      Misc_Filenames._7z_Binary, sizeof(Misc_Filenames._7z_Binary));
 	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
 #endif	

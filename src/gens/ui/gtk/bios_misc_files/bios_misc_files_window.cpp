@@ -56,8 +56,7 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
 	{"USA", "mcd_bios_usa", ROMFile, BIOS_Filenames.SegaCD_US},
 	{"Europe", "mcd_bios_eur", ROMFile, BIOS_Filenames.MegaCD_EU},
 	{"Japan", "mcd_bios_jap", ROMFile, BIOS_Filenames.MegaCD_JP},
-	{"Miscellaneous Files", "misc", (FileFilterType)0, NULL},
-	{"7z Binary", "_7z", AnyFile, Misc_Filenames._7z_Binary},
+	{"Compression Utilities", "misc", (FileFilterType)0, NULL},
 	{"RAR Binary", "rar", AnyFile, Misc_Filenames.RAR_Binary},
 	{NULL, NULL, (FileFilterType)0, NULL},
 };
