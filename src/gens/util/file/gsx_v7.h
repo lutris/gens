@@ -111,7 +111,7 @@ typedef struct PACKED _gsx_v7_ym2612_channel
 typedef struct PACKED _gsx_v7_ym2612
 {
 	int clock_freq;		// YM2612 clock frequency. (Hz)
-	int sample_rate;		// Sample rate. (11025, 22050, 44100)
+	int sample_rate;	// Sample rate. (11025, 22050, 44100)
 	int timer_base;		// Timer base calculation.
 	int status;		// YM2612 status. (timer overflow)
 	int OPNA_addr;		// OPNA address.

@@ -787,12 +787,13 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Context_68K.odometer	= cpu_to_le32(md_save_v7.mc68000_reg.odometer);
 		Context_68K.sr		= cpu_to_le32(md_save_v7.mc68000_reg.sr);
 		
+		// TODO: Add a configuration option to enable/disable loading controller types.
 		// Controller status. (apparently necessary)
 		#define LOAD_V7_CONTROLLER_STATUS(gsx_save, player)			\
 		{									\
-			Controller_ ## player ## _Type		= le32_to_cpu(gsx_save.type);		\
+			/* Controller_ ## player ## _Type = le32_to_cpu(gsx_save.type); */		\
 			Controller_ ## player ## _Buttons =						\
-				((le32_to_cpu(gsx_save.up) & 0x01)    ? CONTROLLER_UP : 0)		|	\
+				((le32_to_cpu(gsx_save.up) & 0x01)    ? CONTROLLER_UP : 0)	|	\
 				((le32_to_cpu(gsx_save.down) & 0x01)  ? CONTROLLER_DOWN : 0)	|	\
 				((le32_to_cpu(gsx_save.left) & 0x01)  ? CONTROLLER_LEFT : 0)	|	\
 				((le32_to_cpu(gsx_save.right) & 0x01) ? CONTROLLER_RIGHT : 0)	|	\
