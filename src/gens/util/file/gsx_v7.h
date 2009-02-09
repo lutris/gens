@@ -344,7 +344,7 @@ typedef struct PACKED _gsx_v7_starscream_extra
 
 
 /**
- * gsx_struct_md_v7_t: Gens v7 savestate extensions (MD portion).
+ * gsx_struct_md_v7_t: Gens v7 savestate extensions. (MD portion)
  */
 typedef struct PACKED _gsx_struct_md_v7_t
 {
