@@ -2838,6 +2838,7 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			slotGSX->Finc		= cpu_to_le32(slotYM->Finc);
 			
 			slotGSX->Ecurp		= cpu_to_le32(slotYM->Ecurp);
+			slotGSX->Einc		= cpu_to_le32(slotYM->Einc);
 			slotGSX->Ecnt		= cpu_to_le32(slotYM->Ecnt);
 			slotGSX->Ecmp		= cpu_to_le32(slotYM->Ecmp);
 			
@@ -2972,6 +2973,7 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			slotYM->Finc		= le32_to_cpu(slotGSX->Finc);
 			
 			slotYM->Ecurp		= le32_to_cpu(slotGSX->Ecurp);
+			slotYM->Einc		= le32_to_cpu(slotGSX->Einc);
 			slotYM->Ecnt		= le32_to_cpu(slotGSX->Ecnt);
 			slotYM->Ecmp		= le32_to_cpu(slotGSX->Ecmp);
 			
