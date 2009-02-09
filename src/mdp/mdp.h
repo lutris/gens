@@ -36,7 +36,7 @@ extern "C" {
 #include "mdp_version.h"
 
 // MDP interface version.
-#define MDP_INTERFACE_VERSION MDP_VERSION(1, 0, 0)
+#define MDP_INTERFACE_VERSION MDP_VERSION(0, 255, 65535)
 
 // Licenses
 #define MDP_LICENSE_GPL_2	"GPL-2"
