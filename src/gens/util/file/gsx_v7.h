@@ -342,4 +342,65 @@ typedef struct PACKED _gsx_v7_starscream_extra
 	uint32_t save_02;
 } gsx_v7_starscream_extra;
 
+
+/**
+ * gsx_struct_md_v7_t: Gens v7 savestate extensions (MD portion).
+ */
+typedef struct PACKED _gsx_struct_md_v7_t
+{
+	gsx_v7_ym2612		ym2612;
+	gsx_v7_psg		psg;
+	gsx_v7_z80_reg		z80_reg;
+	gsx_v7_mc68000_reg	mc68000_reg;
+	
+	gsx_v7_controllers	controllers;
+	
+	// Miscellaneous.
+	uint32_t vdp_status;
+	uint32_t vdp_int;
+	uint32_t vdp_current_line;
+	uint32_t vdp_num_lines;
+	uint32_t vdp_num_vis_lines;
+	uint32_t dmat_length;
+	uint32_t dmat_type;
+	uint32_t lag_count;	// Gens Rerecording
+	uint32_t vram_flag;
+	
+	// Color RAM.
+	uint8_t  cram[256*2];
+	
+	// Save RAM.
+	gsx_v7_sram		sram;
+	
+	// More miscellaneous.
+	uint32_t bank_m68k;
+	uint32_t s68k_state;
+	uint32_t z80_state;
+	uint32_t last_bus_req_cnt;
+	uint32_t last_bus_req_st;
+	uint32_t fake_fetch;
+	uint32_t game_mode;
+	uint32_t cpu_mode;
+	uint32_t cpl_m68k;
+	uint32_t cpl_s68k;
+	uint32_t cpl_z80;
+	uint32_t cycles_s68k;
+	uint32_t cycles_m68k;
+	uint32_t cycles_z80;
+	uint32_t gen_mode;
+	uint32_t gen_version;
+	
+	// H Counter Table.
+	uint8_t  h_counter_table[512 * 2];
+	
+	// VDP registers.
+	uint32_t vdp_reg[26];
+	
+	// VDP control.
+	uint32_t vdp_ctrl[7];
+	
+	// Extra Starscream 68000 information.
+	gsx_v7_starscream_extra		starscream_extra;
+} gsx_struct_md_v7_t;
+
 #endif /* GENS_GSX_V7_H */
