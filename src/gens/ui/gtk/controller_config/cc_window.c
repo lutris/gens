@@ -310,7 +310,10 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		g_object_set_data_full(G_OBJECT(container), tmp,
 				       g_object_ref(optConfigure[player]), (GDestroyNotify)g_object_unref);
 		
-		// TODO: "clicked" signal for the "Configure" button.
+		// Connect the "toggled" signal for the "Configure" button.
+		g_signal_connect(GTK_OBJECT(optConfigure[player]), "toggled",
+				 G_CALLBACK(cc_window_callback_player_toggled),
+				 GINT_TO_POINTER(player));
 	}
 }
 
