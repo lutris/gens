@@ -161,6 +161,18 @@ void cc_window_show(GtkWindow *parent)
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
 	
+	// Create the dialog buttons.
+	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
+			       "gtk-cancel", GTK_RESPONSE_CANCEL,
+			       "gtk-apply", GTK_RESPONSE_APPLY,
+			       "gtk-save", GTK_RESPONSE_OK,
+			       NULL);
+	gtk_dialog_set_alternative_button_order(GTK_DIALOG(cc_window),
+						GTK_RESPONSE_OK,
+						GTK_RESPONSE_APPLY,
+						GTK_RESPONSE_CANCEL,
+						-1);
+	
 	// Initialize the internal data variables.
 	cc_window_init();
 	
