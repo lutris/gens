@@ -75,7 +75,8 @@ static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 // Callbacks.
 static gboolean	cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
-static void	cc_window_callback_player_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
@@ -231,7 +232,11 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer[port-1], FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(container), tmp,
 			       g_object_ref(chkTeamplayer[port-1]), (GDestroyNotify)g_object_unref);
-	// TODO: Connect the "clicked" signal (or "toggled"?).
+	
+	// Connect the "toggled" signal for the Teamplayer checkbox.
+	g_signal_connect(GTK_OBJECT(chkTeamplayer[port-1]), "toggled",
+			 G_CALLBACK(cc_window_callback_teamplayer_toggled),
+			 GINT_TO_POINTER(port-1));
 	
 	// Table for the player controls.
 	GtkWidget *tblPlayers = gtk_table_new(4, 3, FALSE);
@@ -312,7 +317,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		
 		// Connect the "toggled" signal for the "Configure" button.
 		g_signal_connect(GTK_OBJECT(optConfigure[player]), "toggled",
-				 G_CALLBACK(cc_window_callback_player_toggled),
+				 G_CALLBACK(cc_window_callback_configure_toggled),
 				 GINT_TO_POINTER(player));
 	}
 }
@@ -512,11 +517,52 @@ static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 
 
 /**
- * cc_window_callback_player_toggled(): Player was toggled.
+ * cc_window_callback_teamplayer_toggled(): "Teamplayer" checkbox was toggled.
  * @param togglebutton Button that was toggled.
  * @param user_data Player number.
  */
-static void cc_window_callback_player_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	gboolean active = gtk_toggle_button_get_active(togglebutton);
+	
+	// Disable/Enable teamplayer ports for this port.
+	int port = GPOINTER_TO_INT(user_data);
+	if (port < 0 || port > 1)
+		return;
+	
+	int startPort = (port == 0 ? 2: 5);
+	int i;
+	
+	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
+	if (!active)
+	{
+		for (i = startPort; i < startPort + 3; i++)
+		{
+			if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[i])))
+			{
+				// One of the buttons is toggled.
+				// Toggle the main button for the port.
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optConfigure[port]), TRUE);
+				break;
+			}
+		}
+	}
+	
+	for (i = startPort; i < startPort + 3; i++)
+	{
+		gtk_widget_set_sensitive(lblPlayer[i], active);
+		gtk_widget_set_sensitive(cboPadType[i], active);
+		gtk_widget_set_sensitive(optConfigure[i], active);
+	}
+}
+
+
+/**
+ * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
+ * @param togglebutton Button that was toggled.
+ * @param user_data Player number.
+ */
+static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
 	if (!gtk_toggle_button_get_active(togglebutton))
 		return;
@@ -547,6 +593,10 @@ static void cc_window_init(void)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[5]), (Controller_2B_Type & 0x01));
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[6]), (Controller_2C_Type & 0x01));
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[7]), (Controller_2D_Type & 0x01));
+	
+	// Run the teamplayer callbacks.
+	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), GINT_TO_POINTER(0));
+	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), GINT_TO_POINTER(1));
 }
 
 
