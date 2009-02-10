@@ -47,6 +47,7 @@ static int		input_sdl_update(void);
 static BOOL		input_sdl_check_key_pressed(uint16_t key);
 static unsigned int	input_sdl_get_key(void);
 static BOOL		input_sdl_joy_exists(int joy_num);
+static int		input_sdl_get_key_name(uint16_t key, char* buf, int size);
 
 // Miscellaneous.
 static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
@@ -112,10 +113,11 @@ const input_backend_t input_backend_sdl =
 	
 	.keymap_default = &input_sdl_keymap_default[0],
 	
-	.update = input_sdl_update,
-	.check_key_pressed = input_sdl_check_key_pressed,
-	.get_key = input_sdl_get_key,
-	.joy_exists = input_sdl_joy_exists
+	.update			= input_sdl_update,
+	.check_key_pressed	= input_sdl_check_key_pressed,
+	.get_key		= input_sdl_get_key,
+	.joy_exists		= input_sdl_joy_exists,
+	.get_key_name		= input_sdl_get_key_name
 };
 
 
@@ -655,4 +657,70 @@ static int input_sdl_gdk_to_sdl_keyval(int gdk_key)
 			fprintf(stderr, "%s(): Unknown GDK key: 0x%04X\n", __func__, gdk_key);
 			return -1;
 	}
+}
+
+
+/**
+ * input_sdl_get_key_name(): Get an SDL key name.
+ * @param key Key.
+ * @param buf Buffer to store the key name in.
+ * @param size Size of the buffer.
+ * @return 0 on success; non-zero on error.
+ */
+static int input_sdl_get_key_name(uint16_t key, char* buf, int size)
+{
+	const char* key_name;
+	
+	// TODO: Add more comprehensive SDL key mapping.
+	switch (key)
+	{
+		case SDLK_UP:
+			key_name = "Up";
+			break;
+		case SDLK_DOWN:
+			key_name = "Down";
+			break;
+		case SDLK_LEFT:
+			key_name = "Left";
+			break;
+		case SDLK_RIGHT:
+			key_name = "Right";
+			break;
+		case SDLK_RETURN:
+			key_name = "Enter";
+			break;
+		case SDLK_LSHIFT:
+			key_name = "Left Shift";
+			break;
+		case SDLK_RSHIFT:
+			key_name = "Right Shift";
+			break;
+		default:
+			if (key >= 'A' && key <= 'Z')
+			{
+				buf[0] = key;
+				buf[1] = 0x00;
+				return 0;
+			}
+			else if (key >= 'a' && key <= 'z')
+			{
+				buf[0] = key - ('a' - 'A');
+				buf[1] = 0x00;
+				return 0;
+			}
+			
+			key_name = NULL;
+			break;
+	}
+	
+	if (!key_name)
+	{
+		// Unknown key.
+		return -1;
+	}
+	
+	// Known key.
+	strncpy(buf, key_name, size);
+	buf[size - 1] = 0x00;
+	return 0;
 }
