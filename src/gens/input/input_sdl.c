@@ -44,7 +44,7 @@ static int		input_sdl_init(void);
 static int		input_sdl_end(void);
 
 static int		input_sdl_update(void);
-static BOOL		input_sdl_check_key_pressed(unsigned int key);
+static BOOL		input_sdl_check_key_pressed(uint16_t key);
 static unsigned int	input_sdl_get_key(void);
 static BOOL		input_sdl_joy_exists(int joy_num);
 
@@ -434,7 +434,7 @@ static inline void input_sdl_check_joystick_axis(SDL_Event *event)
  * @param key Key to check.
  * @return TRUE if the key is pressed; FALSE if the key is not pressed.
  */
-BOOL input_sdl_check_key_pressed(unsigned int key)
+BOOL input_sdl_check_key_pressed(uint16_t key)
 {
 	// If the key value is <INPUT_SDL_MAX_KEYS, it's a keyboard key.
 	if (key < INPUT_SDL_MAX_KEYS)

@@ -155,7 +155,7 @@ typedef struct
 	int	(*update)(void);
 	
 	// Check if the specified key is pressed.
-	BOOL	(*check_key_pressed)(unsigned int key);
+	BOOL	(*check_key_pressed)(uint16_t key);
 	
 	// Get a key. (Used for controller configuration.)
 	unsigned int	(*get_key)(void);

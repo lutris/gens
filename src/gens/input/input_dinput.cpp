@@ -628,7 +628,7 @@ int input_dinput_update(void)
  * @param key Key to check.
  * @return TRUE if the key is pressed; FALSE if the key is not pressed.
  */
-BOOL input_dinput_check_key_pressed(unsigned int key)
+BOOL input_dinput_check_key_pressed(uint16_t key)
 {
 	// If the key value is <256, it's a keyboard key.
 	if (key < 0x100)

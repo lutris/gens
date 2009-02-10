@@ -35,7 +35,7 @@ int		input_dinput_init(void);
 int		input_dinput_end(void);
 
 int		input_dinput_update(void);
-BOOL		input_dinput_check_key_pressed(unsigned int key);
+BOOL		input_dinput_check_key_pressed(uint16_t key);
 unsigned int	input_dinput_get_key(void);
 BOOL		input_dinput_joy_exists(int joy_num);
 
