@@ -275,6 +275,14 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 	if (size == 0)
 		return -1;
 	
+	if (key == 0)
+	{
+		// 0 == not configured.
+		strncpy(buf, "Not Configured", size);
+		buf[size - 1] = 0x00;
+		return 0;
+	}
+	
 	if (!INPUT_IS_JOYSTICK(key))
 	{
 		// Not a joystick input.
