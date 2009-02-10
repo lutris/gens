@@ -58,6 +58,8 @@ static GtkWidget	*cboInputDevice;
 // Widgets: "Configure Controller" frame.
 static GtkWidget	*lblShowConfig;
 static GtkWidget	*lblButton[12];
+static GtkWidget	*lblCurConfig[12];
+static GtkWidget	*btnChange[12];
 
 // GSList used to link the "Configure" radio buttons.
 static GSList		*gslConfigure;
@@ -390,6 +392,7 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	char tmp[16];
 	for (button = 0; button < 12; button++)
 	{
+		// Button label.
 		sprintf(tmp, "%s:", input_key_names[button]);
 		lblButton[button] = gtk_label_new(tmp);
 		sprintf(tmp, "lblButton_%d", button);
@@ -403,6 +406,33 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
 				       g_object_ref(lblButton[button]), (GDestroyNotify)g_object_unref);
+		
+		// Current configuration label.
+		lblCurConfig[button] = gtk_label_new(NULL);
+		sprintf(tmp, "lblCurConfig_%d", button);
+		gtk_widget_set_name(lblCurConfig[button], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblCurConfig[button]), 0.0f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblCurConfig[button]), GTK_JUSTIFY_CENTER);
+		gtk_label_set_width_chars(GTK_LABEL(lblCurConfig[button]), 24);
+		gtk_widget_show(lblCurConfig[button]);
+		gtk_table_attach(GTK_TABLE(tblButtonRemap), lblCurConfig[button],
+				 1, 2, button, button + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(lblCurConfig[button]), (GDestroyNotify)g_object_unref);
+		
+		// "Change" button.
+		btnChange[button] = gtk_button_new_with_label("Change");
+		sprintf(tmp, "btnChange_%d", button);
+		gtk_widget_set_name(btnChange[button], tmp);
+		gtk_widget_show(btnChange[button]);
+		gtk_table_attach(GTK_TABLE(tblButtonRemap), btnChange[button],
+				 2, 3, button, button + 1,
+				 (GtkAttachOptions)(0),
+				 (GtkAttachOptions)(0), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(btnChange[button]), (GDestroyNotify)g_object_unref);
 	}
 }
 
