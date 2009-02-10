@@ -273,7 +273,7 @@ void vlopt_window_show(void *parent)
 	GtkWidget *btnReset = gtk_button_new_with_mnemonic("_Reset");
 	gtk_widget_set_name(btnReset, "btnReset");
 	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnReset, VLOPT_RESPONSE_RESET);
-	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+	g_object_set_data_full(G_OBJECT(vlopt_window), "btnReset",
 			       g_object_ref(btnReset),
 			       (GDestroyNotify)g_object_unref);
 	
@@ -290,7 +290,7 @@ void vlopt_window_show(void *parent)
 	GtkWidget *btnClose = gtk_button_new_from_stock("gtk-close");
 	gtk_widget_set_name(btnClose, "btnClose");
 	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnClose, GTK_RESPONSE_CLOSE);
-	g_object_set_data_full(G_OBJECT(vlopt_window), buf,
+	g_object_set_data_full(G_OBJECT(vlopt_window), "btnClose",
 			       g_object_ref(btnClose),
 			       (GDestroyNotify)g_object_unref);
 	
