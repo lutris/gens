@@ -48,6 +48,12 @@ extern int cc_window_is_configuring = FALSE;
 // Internal key configuration, which is copied when Save is clicked.
 static input_keymap_t cc_key_config[8];
 
+// Widgets.
+static GtkWidget	*chkTeamplayer[2];
+static GtkWidget	*lblPlayer[8];
+static GtkWidget	*cboPadType[8];
+static GtkWidget	*btnConfigure[8];
+
 // Miscellaneous functions.
 static void	cc_window_create_controller_port_frame(GtkWidget *container, int port);
 
@@ -172,13 +178,13 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 			       g_object_ref(vboxController), (GDestroyNotify)g_object_unref);
 	
 	// Checkbox for enabling teamplayer.
-	GtkWidget *chkTeamplayer = gtk_check_button_new_with_label("Use Teamplayer");
+	chkTeamplayer[port] = gtk_check_button_new_with_label("Use Teamplayer");
 	sprintf(tmp, "chkTeamplayer_%d", port);
-	gtk_widget_set_name(chkTeamplayer, tmp);
-	gtk_widget_show(chkTeamplayer);
-	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer, FALSE, FALSE, 0);
+	gtk_widget_set_name(chkTeamplayer[port], tmp);
+	gtk_widget_show(chkTeamplayer[port]);
+	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer[port], FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(chkTeamplayer), (GDestroyNotify)g_object_unref);
+			       g_object_ref(chkTeamplayer[port]), (GDestroyNotify)g_object_unref);
 	// TODO: Connect the "clicked" signal (or "toggled"?).
 	
 	// Table for the player controls.
@@ -193,68 +199,69 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 			       g_object_ref(tblPlayers), (GDestroyNotify)g_object_unref);
 	
 	// Player inputs.
-	unsigned int i;
-	char player[4];
+	unsigned int i, player;
+	char playerName[4];
+	
 	for (i = 0; i < 4; i++)
 	{
 		if (i == 0)
-			sprintf(player, "%d", port);
+			sprintf(playerName, "%d", port);
 		else
-			sprintf(player, "%d%c", port, 'A' + (char)i);
+			sprintf(playerName, "%d%c", port, 'A' + (char)i);
+		
+		// Determine the player number to use for the callback and widget pointer storage.
+		if (i == 0)
+			player = port - 1;
+		else
+		{
+			if (port == 1)
+				player = i + 1;
+			else //if (port == 2)
+				player = i + 4;
+		}
 		
 		// Player label.
-		sprintf(tmp, "Player %s", player);
-		GtkWidget *lblPlayer = gtk_label_new(tmp);
-		sprintf(tmp, "lblPlayer_%s", player);
-		gtk_widget_set_name(lblPlayer, tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblPlayer), 0, 0.5);
-		gtk_widget_show(lblPlayer);
-		gtk_table_attach(GTK_TABLE(tblPlayers), lblPlayer,
+		sprintf(tmp, "Player %s", playerName);
+		lblPlayer[player] = gtk_label_new(tmp);
+		sprintf(tmp, "lblPlayer_%s", playerName);
+		gtk_widget_set_name(lblPlayer[player], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblPlayer[player]), 0, 0.5);
+		gtk_widget_show(lblPlayer[player]);
+		gtk_table_attach(GTK_TABLE(tblPlayers), lblPlayer[player],
 				 0, 1, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayer), (GDestroyNotify)g_object_unref);
+				       g_object_ref(lblPlayer[player]), (GDestroyNotify)g_object_unref);
 		
 		// Pad type.
-		GtkWidget *cboPadType = gtk_combo_box_new_text();
-		sprintf(tmp, "cboPadType_%s", player);
-		gtk_widget_set_name(cboPadType, tmp);
-		gtk_widget_show(cboPadType);
-		gtk_table_attach(GTK_TABLE(tblPlayers), cboPadType,
+		cboPadType[player] = gtk_combo_box_new_text();
+		sprintf(tmp, "cboPadType_%s", playerName);
+		gtk_widget_set_name(cboPadType[player], tmp);
+		gtk_widget_show(cboPadType[player]);
+		gtk_table_attach(GTK_TABLE(tblPlayers), cboPadType[player],
 				 1, 2, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(cboPadType), (GDestroyNotify)g_object_unref);
+				       g_object_ref(cboPadType[player]), (GDestroyNotify)g_object_unref);
 		
 		// Pad type dropdown.
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType), "3 buttons");
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType), "6 buttons");
+		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "3 buttons");
+		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "6 buttons");
 		
 		// "Configure" button.
-		GtkWidget *btnConfigure = gtk_button_new_with_label("Configure");
-		sprintf(tmp, "btnConfigure_%s", player);
-		gtk_widget_set_name(btnConfigure, tmp);
-		gtk_widget_show(btnConfigure);
-		gtk_table_attach(GTK_TABLE(tblPlayers), btnConfigure,
+		btnConfigure[player] = gtk_button_new_with_label("Configure");
+		sprintf(tmp, "btnConfigure_%s", playerName);
+		gtk_widget_set_name(btnConfigure[player], tmp);
+		gtk_widget_show(btnConfigure[player]);
+		gtk_table_attach(GTK_TABLE(tblPlayers), btnConfigure[player],
 				 2, 3, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(btnConfigure), (GDestroyNotify)g_object_unref);
+				       g_object_ref(btnConfigure[player]), (GDestroyNotify)g_object_unref);
 		
-		// Determine the port number to use for the callback.
-		unsigned int callbackPort;
-		if (i == 0)
-			callbackPort = port - 1;
-		else
-		{
-			if (port == 1)
-				callbackPort = i + 1;
-			else //if (port == 2)
-				callbackPort = i + 4;
-		}
 		// TODO: "clicked" signal for the "Configure" button.
 	}
 }
