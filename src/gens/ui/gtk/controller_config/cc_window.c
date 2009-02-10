@@ -43,7 +43,7 @@
 
 // Window.
 GtkWidget *cc_window = NULL;
-extern int cc_window_is_configuring = FALSE;
+int cc_window_is_configuring = FALSE;
 
 // Internal key configuration, which is copied when Save is clicked.
 static input_keymap_t cc_key_config[8];
@@ -52,7 +52,10 @@ static input_keymap_t cc_key_config[8];
 static GtkWidget	*chkTeamplayer[2];
 static GtkWidget	*lblPlayer[8];
 static GtkWidget	*cboPadType[8];
-static GtkWidget	*btnConfigure[8];
+static GtkWidget	*optConfigure[8];
+
+// GSList used to link the "Configure" radio buttons.
+static GSList		*gslConfigure;
 
 // Miscellaneous functions.
 static void	cc_window_create_controller_port_frame(GtkWidget *container, int port);
@@ -121,6 +124,7 @@ void cc_window_show(GtkWindow *parent)
 			       g_object_ref(vboxControllerPorts), (GDestroyNotify)g_object_unref);
 	
 	// Create the controller port frames.
+	gslConfigure = NULL;
 	cc_window_create_controller_port_frame(vboxControllerPorts, 1);
 	cc_window_create_controller_port_frame(vboxControllerPorts, 2);
 	
@@ -251,16 +255,18 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "6 buttons");
 		
 		// "Configure" button.
-		btnConfigure[player] = gtk_button_new_with_label("Configure");
+		optConfigure[player] = gtk_radio_button_new_with_label(gslConfigure, "Configure");
+		gslConfigure = gtk_radio_button_get_group(GTK_RADIO_BUTTON(optConfigure[player]));
+		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(optConfigure[player]), FALSE);
 		sprintf(tmp, "btnConfigure_%s", playerName);
-		gtk_widget_set_name(btnConfigure[player], tmp);
-		gtk_widget_show(btnConfigure[player]);
-		gtk_table_attach(GTK_TABLE(tblPlayers), btnConfigure[player],
+		gtk_widget_set_name(optConfigure[player], tmp);
+		gtk_widget_show(optConfigure[player]);
+		gtk_table_attach(GTK_TABLE(tblPlayers), optConfigure[player],
 				 2, 3, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(btnConfigure[player]), (GDestroyNotify)g_object_unref);
+				       g_object_ref(optConfigure[player]), (GDestroyNotify)g_object_unref);
 		
 		// TODO: "clicked" signal for the "Configure" button.
 	}
