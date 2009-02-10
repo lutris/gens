@@ -167,6 +167,15 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	
 	char tmp[32];
 	
+	// Align the frame to the top of the window.
+	GtkWidget *alignPort = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+	sprintf(tmp, "alignPort_%d", port);
+	gtk_widget_set_name(alignPort, tmp);
+	gtk_widget_show(alignPort);
+	gtk_box_pack_start(GTK_BOX(container), alignPort, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "alignPort",
+			       g_object_ref(alignPort), (GDestroyNotify)g_object_unref);
+	
 	// Create the frame.
 	GtkWidget *fraPort = gtk_frame_new(NULL);
 	sprintf(tmp, "fraPort_%d", port);
@@ -174,7 +183,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPort), GTK_SHADOW_ETCHED_IN);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPort), 4);
 	gtk_widget_show(fraPort);
-	gtk_box_pack_start(GTK_BOX(container), fraPort, TRUE, TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(alignPort), fraPort);
 	g_object_set_data_full(G_OBJECT(container), tmp,
 			       g_object_ref(fraPort), (GDestroyNotify)g_object_unref);
 	
