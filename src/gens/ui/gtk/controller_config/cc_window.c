@@ -77,6 +77,7 @@ static gboolean	cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
 static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
@@ -301,6 +302,11 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "3 buttons");
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "6 buttons");
 		
+		// Connect the "changed" signal for the pad type dropdown.
+		g_signal_connect(GTK_OBJECT(cboPadType[player]), "changed",
+				 G_CALLBACK(cc_window_callback_padtype_changed),
+				 GINT_TO_POINTER(player));
+		
 		// "Configure" button.
 		optConfigure[player] = gtk_radio_button_new_with_label(gslConfigure, "Configure");
 		gslConfigure = gtk_radio_button_get_group(GTK_RADIO_BUTTON(optConfigure[player]));
@@ -484,95 +490,6 @@ void cc_window_close(void)
 
 
 /**
- * cc_window_callback_close(): Close Window callback.
- * @param widget
- * @param event
- * @param user_data
- * @return FALSE to continue processing events; TRUE to stop processing events.
- */
-static gboolean cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	cc_window_close();
-	return FALSE;
-}
-
-
-/**
- * cc_window_callback_response(): Dialog Response callback.
- * @param dialog
- * @param response_id
- * @param user_data
- */
-static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	// TODO
-}
-
-
-/**
- * cc_window_callback_teamplayer_toggled(): "Teamplayer" checkbox was toggled.
- * @param togglebutton Button that was toggled.
- * @param user_data Player number.
- */
-static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-	gboolean active = gtk_toggle_button_get_active(togglebutton);
-	
-	// Disable/Enable teamplayer ports for this port.
-	int port = GPOINTER_TO_INT(user_data);
-	if (port < 0 || port > 1)
-		return;
-	
-	int startPort = (port == 0 ? 2: 5);
-	int i;
-	
-	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
-	if (!active)
-	{
-		for (i = startPort; i < startPort + 3; i++)
-		{
-			if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[i])))
-			{
-				// One of the buttons is toggled.
-				// Toggle the main button for the port.
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optConfigure[port]), TRUE);
-				break;
-			}
-		}
-	}
-	
-	for (i = startPort; i < startPort + 3; i++)
-	{
-		gtk_widget_set_sensitive(lblPlayer[i], active);
-		gtk_widget_set_sensitive(cboPadType[i], active);
-		gtk_widget_set_sensitive(optConfigure[i], active);
-	}
-}
-
-
-/**
- * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
- * @param togglebutton Button that was toggled.
- * @param user_data Player number.
- */
-static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-	if (!gtk_toggle_button_get_active(togglebutton))
-		return;
-	
-	// Load the controller configuration.
-	cc_window_load_configuration(GPOINTER_TO_INT(user_data));
-}
-
-
-/**
  * cc_window_init(): Initialize the internal variables.
  */
 static void cc_window_init(void)
@@ -626,5 +543,132 @@ static void cc_window_load_configuration(int player)
 		gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
 	}
 	
-	// Set enabled/disabled on Mode/X/Y/Z, depending on whether the pad is set to 3 or 6.
+	// Enable/Disable the Mode/X/Y/Z buttons, depending on whether the pad is set to 3-button or 6-button.
+	gboolean is6button = (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[player])) == 1);
+	for (button = 8; button < 12; button++)
+	{
+		gtk_widget_set_sensitive(lblButton[button], is6button);
+		gtk_widget_set_sensitive(lblCurConfig[button], is6button);
+		gtk_widget_set_sensitive(btnChange[button], is6button);
+	}
+}
+
+
+/**
+ * cc_window_callback_close(): Close Window callback.
+ * @param widget
+ * @param event
+ * @param user_data
+ * @return FALSE to continue processing events; TRUE to stop processing events.
+ */
+static gboolean cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	cc_window_close();
+	return FALSE;
+}
+
+
+/**
+ * cc_window_callback_response(): Dialog Response callback.
+ * @param dialog
+ * @param response_id
+ * @param user_data
+ */
+static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(dialog);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// TODO
+}
+
+
+/**
+ * cc_window_callback_teamplayer_toggled(): "Teamplayer" checkbox was toggled.
+ * @param togglebutton Button that was toggled.
+ * @param user_data Player number.
+ */
+static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	gboolean active = gtk_toggle_button_get_active(togglebutton);
+	
+	int port = GPOINTER_TO_INT(user_data);
+	if (port < 0 || port > 1)
+		return;
+	
+	unsigned int startPort = (port == 0 ? 2: 5);
+	unsigned int i;
+	
+	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
+	if (!active)
+	{
+		for (i = startPort; i < startPort + 3; i++)
+		{
+			if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[i])))
+			{
+				// One of the buttons is toggled.
+				// Toggle the main button for the port.
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optConfigure[port]), TRUE);
+				break;
+			}
+		}
+	}
+	
+	// Enable/Disable teamplayer ports for this port.
+	for (i = startPort; i < startPort + 3; i++)
+	{
+		gtk_widget_set_sensitive(lblPlayer[i], active);
+		gtk_widget_set_sensitive(cboPadType[i], active);
+		gtk_widget_set_sensitive(optConfigure[i], active);
+	}
+}
+
+
+/**
+ * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
+ * @param togglebutton Button that was toggled.
+ * @param user_data Player number.
+ */
+static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	if (!gtk_toggle_button_get_active(togglebutton))
+		return;
+	
+	// Load the controller configuration.
+	cc_window_load_configuration(GPOINTER_TO_INT(user_data));
+}
+
+
+/**
+ * cc_window_callback_padtype_changed(): Pad Type for a player was changed.
+ * @param widget Combo box that was changed.
+ * @param user_data Player number.
+ */
+static void cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data)
+{
+	int player = GPOINTER_TO_INT(user_data);
+	if (player < 0 || player > 8)
+		return;
+	
+	// Check if this player is currently being configured.
+	if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[player])))
+	{
+		// Player is not currently being configured.
+		return;
+	}
+	
+	// Player is currently being configured.
+	// Enable/Disable the appropriate widgets in the table.
+	unsigned int button;
+	gboolean is6button = (gtk_combo_box_get_active(widget) == 1);
+	for (button = 8; button < 12; button++)
+	{
+		gtk_widget_set_sensitive(lblButton[button], is6button);
+		gtk_widget_set_sensitive(lblCurConfig[button], is6button);
+		gtk_widget_set_sensitive(btnChange[button], is6button);
+	}
 }
