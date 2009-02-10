@@ -71,6 +71,10 @@ static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 // Callbacks.
 static gboolean	cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	cc_window_callback_player_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+
+// Configuration load/save functions.
+static void	cc_window_load_configuration(int player);
 
 
 /**
@@ -146,6 +150,12 @@ void cc_window_show(GtkWindow *parent)
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
+	
+	// Copy the current controller configuration into the internal input_keymap_t array.
+	memcpy(&cc_key_config, &input_keymap, sizeof(cc_key_config));
+	
+	// Load the controller configuration for the first player.
+	cc_window_load_configuration(0);
 	
 	// Set the window as modal to the main application window.
 	if (parent)
@@ -378,9 +388,8 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 			       g_object_ref(fraShowConfig), (GDestroyNotify)g_object_unref);
 	
 	// Create the label for showing the configuration.
-	lblShowConfig = gtk_label_new("<b><i>Configure Player X</i></b>");
+	lblShowConfig = gtk_label_new(NULL);
 	gtk_widget_set_name(lblShowConfig, "lblShowConfig");
-	gtk_label_set_use_markup(GTK_LABEL(lblShowConfig), TRUE);
 	gtk_widget_show(lblShowConfig);
 	gtk_frame_set_label_widget(GTK_FRAME(fraShowConfig), lblShowConfig);
 	g_object_set_data_full(G_OBJECT(container), "lblShowConfig",
@@ -423,6 +432,7 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 		gtk_misc_set_alignment(GTK_MISC(lblCurConfig[button]), 0.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblCurConfig[button]), GTK_JUSTIFY_CENTER);
 		gtk_label_set_width_chars(GTK_LABEL(lblCurConfig[button]), 24);
+		gtk_label_set_selectable(GTK_LABEL(lblCurConfig[button]), TRUE);
 		gtk_widget_show(lblCurConfig[button]);
 		gtk_table_attach(GTK_TABLE(tblButtonRemap), lblCurConfig[button],
 				 1, 2, button, button + 1,
@@ -490,4 +500,47 @@ static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	// TODO
+}
+
+
+/**
+ * cc_window_callback_player_toggled(): Player was toggled.
+ * @param togglebutton Button that was toggled.
+ * @param user_data Player number.
+ */
+static void cc_window_callback_player_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	if (!gtk_toggle_button_get_active(togglebutton))
+		return;
+	
+	// Load the controller configuration.
+	cc_window_load_configuration(GPOINTER_TO_INT(user_data));
+}
+
+
+/**
+ * cc_window_load_configuration(): Load controller configuration.
+ * @param player Player number.
+ */
+static void cc_window_load_configuration(int player)
+{
+	if (player < 0 || player > 8)
+		return;
+	
+	char tmp[64];
+	
+	// Set the "Configure Controller" frame title.
+	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
+	gtk_label_set_text(GTK_LABEL(lblShowConfig), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblShowConfig), TRUE);
+	
+	// Load the key configuration.
+	// TODO: Convert thm to human-readable text.
+	unsigned int button;
+	for (button = 0; button < 12; button++)
+	{
+		sprintf(tmp, "<tt>0x%04X</tt>", cc_key_config[player].data[button]);
+		gtk_label_set_text(lblCurConfig[button], tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
+	}
 }
