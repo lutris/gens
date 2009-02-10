@@ -387,7 +387,7 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 			       g_object_ref(vboxConfigure), (GDestroyNotify)g_object_unref);
 	
 	// HBox for input device selection.
-	GtkWidget *hboxInputDevice = gtk_hbox_new(FALSE, 0);
+	GtkWidget *hboxInputDevice = gtk_hbox_new(FALSE, 8);
 	gtk_widget_set_name(hboxInputDevice, "hboxInputDevice");
 	gtk_container_set_border_width(GTK_CONTAINER(hboxInputDevice), 8);
 	gtk_widget_show(hboxInputDevice);
@@ -396,7 +396,7 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 			       g_object_ref(hboxInputDevice), (GDestroyNotify)g_object_unref);
 	
 	// Label for input device selection.
-	GtkWidget *lblInputDevice = gtk_label_new("Input Device: ");
+	GtkWidget *lblInputDevice = gtk_label_new("Input Device:");
 	gtk_widget_set_name(lblInputDevice, "lblInputDevice");
 	gtk_widget_show(lblInputDevice);
 	gtk_box_pack_start(GTK_BOX(hboxInputDevice), lblInputDevice, FALSE, FALSE, 0);
