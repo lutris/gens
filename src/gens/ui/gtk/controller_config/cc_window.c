@@ -527,6 +527,7 @@ static void cc_window_load_configuration(int player)
 		return;
 	
 	char tmp[64];
+	char key_name[64];
 	
 	// Set the "Configure Controller" frame title.
 	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
@@ -536,9 +537,11 @@ static void cc_window_load_configuration(int player)
 	// Load the key configuration.
 	// TODO: Convert thm to human-readable text.
 	unsigned int button;
+	int rval;
 	for (button = 0; button < 12; button++)
 	{
-		sprintf(tmp, "<tt>0x%04X</tt>", cc_key_config[player].data[button]);
+		input_get_key_name(cc_key_config[player].data[button], &key_name, sizeof(key_name));
+		sprintf(tmp, "<tt>0x%04X: %s</tt>", cc_key_config[player].data[button], key_name);
 		gtk_label_set_text(GTK_LABEL(lblCurConfig[button]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
 	}
