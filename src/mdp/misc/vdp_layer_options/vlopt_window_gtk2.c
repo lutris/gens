@@ -81,15 +81,13 @@ void vlopt_window_show(void *parent)
 	gtk_window_set_resizable(GTK_WINDOW(vlopt_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(vlopt_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(vlopt_window), FALSE);
+	g_object_set_data(G_OBJECT(vlopt_window), "vlopt_window", vlopt_window);
 	
 	// Create the accelerator group.
 	vlopt_window_accel_group = gtk_accel_group_new();
 	g_object_set_data_full(G_OBJECT(vlopt_window), "vlopt_window_accel_group",
 			       g_object_ref(vlopt_window_accel_group),
 			       (GDestroyNotify)g_object_unref);
-	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(vlopt_window), "vlopt_window", vlopt_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)vlopt_window, "delete_event",

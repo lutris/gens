@@ -82,14 +82,12 @@ void gg_window_show(void *parent)
 	gtk_window_set_resizable(GTK_WINDOW(gg_window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(gg_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(gg_window), FALSE);
+	g_object_set_data(G_OBJECT(gg_window), "gg_window", gg_window);
 	
 	// Create the accelerator group.
 	gg_accel_group = gtk_accel_group_new();
 	g_object_set_data_full(G_OBJECT(gg_window), "gg_accel_group",
 			       g_object_ref(gg_accel_group), (GDestroyNotify)g_object_unref);
-	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(gg_window), "gg_window", gg_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)gg_window, "delete_event",
