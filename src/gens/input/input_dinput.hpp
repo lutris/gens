@@ -48,66 +48,6 @@ int		input_dinput_init_joysticks(HWND hWnd);
 // Default keymap.
 extern const input_keymap_t input_dinput_keymap_default[8];
 
-#if 0
-class Input_DInput : public Input
-{
-	public:
-		Input_DInput();
-		~Input_DInput();
-		
-		// DirectInput only acquires joysticks if the window is visible.
-		// So, this function is called when the Gens window is made visible.
-		void initJoysticks(HWND hWnd);
-		
-		// Update the input subsystem.
-		void update(void);
-		
-		// Check if the specified key is pressed.
-		bool checkKeyPressed(unsigned int key);
-		
-		// Get a key. (Used for controller configuration.)
-		unsigned int getKey(void);
-		
-		// EnumDevices callback for joysticks.
-		static BOOL CALLBACK EnumDevices_Joysticks(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
-		BOOL EnumDevices_Joysticks_int(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
-		
-		// Cooperative level (Win32)
-		void setCooperativeLevel(HWND hWnd = NULL);
-	
-	protected:
-		// Functions required by the Input class.
-		bool joyExists(int joyNum);
-		
-		// Number of joysticks connected
-		int m_numJoysticks;
-		
-		// DirectInput versions.
-		static const unsigned short DIRECTINPUT_VERSION_5 = 0x0500;
-		static const unsigned short DIRECTINPUT_VERSION_3 = 0x0300;
-		
-		// DirectInput variables
-		LPDIRECTINPUT lpDI;
-		LPDIRECTINPUTDEVICE lpDIDKeyboard;
-		LPDIRECTINPUTDEVICE lpDIDMouse;
-		IDirectInputDevice2 *m_joyID[MAX_JOYS];
-		DIJOYSTATE m_joyState[MAX_JOYS];
-		
-		// DirectInput version
-		unsigned short m_diVersion;
-		
-		// DirectInput Keys array
-		unsigned char m_DIKeys[256];
-		
-		void restoreInput(void);
-		
-		// Joysticks
-		void setCooperativeLevel_Joysticks(HWND hWnd = NULL);
-		bool joysticksInitialized;
-		bool joystickError;
-};
-#endif
-
 #ifdef __cplusplus
 }
 #endif
