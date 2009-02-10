@@ -55,6 +55,10 @@ static GtkWidget	*cboPadType[8];
 static GtkWidget	*optConfigure[8];
 static GtkWidget	*cboInputDevice;
 
+// Widgets: "Configure Controller" frame.
+static GtkWidget	*lblShowConfig;
+static GtkWidget	*lblButton[12];
+
 // GSList used to link the "Configure" radio buttons.
 static GSList		*gslConfigure;
 
@@ -305,7 +309,6 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	gtk_frame_set_shadow_type(GTK_FRAME(fraConfigure), GTK_SHADOW_ETCHED_IN);
 	gtk_container_set_border_width(GTK_CONTAINER(fraConfigure), 4);
 	gtk_widget_show(fraConfigure);
-	//gtk_box_pack_start(GTK_BOX(container), fraConfigure, TRUE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(alignConfigure), fraConfigure);
 	g_object_set_data_full(G_OBJECT(container), "fraConfigure",
 			       g_object_ref(fraConfigure), (GDestroyNotify)g_object_unref);
@@ -352,6 +355,55 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	gtk_box_pack_start(GTK_BOX(hboxInputDevice), cboInputDevice, TRUE, TRUE, 0);
 	g_object_set_data_full(G_OBJECT(container), "cboInputDevice",
 			       g_object_ref(cboInputDevice), (GDestroyNotify)g_object_unref);
+	
+	// Create the frame for showing the configuration.
+	GtkWidget *fraShowConfig = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraShowConfig, "fraShowConfig");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraShowConfig), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraShowConfig), 0);
+	gtk_widget_show(fraShowConfig);
+	gtk_box_pack_start(GTK_BOX(vboxConfigure), fraShowConfig, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "fraShowConfig",
+			       g_object_ref(fraShowConfig), (GDestroyNotify)g_object_unref);
+	
+	// Create the label for showing the configuration.
+	lblShowConfig = gtk_label_new("<b><i>Configure Player X</i></b>");
+	gtk_widget_set_name(lblShowConfig, "lblShowConfig");
+	gtk_label_set_use_markup(GTK_LABEL(lblShowConfig), TRUE);
+	gtk_widget_show(lblShowConfig);
+	gtk_frame_set_label_widget(GTK_FRAME(fraShowConfig), lblShowConfig);
+	g_object_set_data_full(G_OBJECT(container), "lblShowConfig",
+			       g_object_ref(lblShowConfig), (GDestroyNotify)g_object_unref);
+	
+	// Create the table for button remapping.
+	GtkWidget *tblButtonRemap = gtk_table_new(12, 3, FALSE);
+	gtk_widget_set_name(tblButtonRemap, "tblButtonRemap");
+	gtk_container_set_border_width(GTK_CONTAINER(tblButtonRemap), 4);
+	gtk_table_set_col_spacings(GTK_TABLE(tblButtonRemap), 12);
+	gtk_widget_show(tblButtonRemap);
+	gtk_container_add(GTK_CONTAINER(fraShowConfig), tblButtonRemap);
+	g_object_set_data_full(G_OBJECT(container), "tblButtonRemap",
+			       g_object_ref(tblButtonRemap), (GDestroyNotify)g_object_unref);
+	
+	// Populate the table.
+	unsigned int button;
+	char tmp[16];
+	for (button = 0; button < 12; button++)
+	{
+		sprintf(tmp, "%s:", input_key_names[button]);
+		lblButton[button] = gtk_label_new(tmp);
+		sprintf(tmp, "lblButton_%d", button);
+		gtk_widget_set_name(lblButton[button], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblButton[button]), 1.0f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblButton[button]), GTK_JUSTIFY_RIGHT);
+		gtk_widget_show(lblButton[button]);
+		gtk_table_attach(GTK_TABLE(tblButtonRemap), lblButton[button],
+				 0, 1, button, button + 1,
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(lblButton[button]), (GDestroyNotify)g_object_unref);
+	}
 }
 
 
