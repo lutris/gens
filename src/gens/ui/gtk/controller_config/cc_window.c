@@ -34,6 +34,10 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+// Gens input variables.
+#include "gens_core/io/io.h"
+#include "gens_core/io/io_teamplayer.h"
+
 // Input Handler.
 #include "input/input.h"
 
@@ -74,6 +78,7 @@ static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 static void	cc_window_callback_player_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 
 // Configuration load/save functions.
+static void	cc_window_init(void);
 static void	cc_window_load_configuration(int player);
 
 
@@ -151,8 +156,8 @@ void cc_window_show(GtkWindow *parent)
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
 	
-	// Copy the current controller configuration into the internal input_keymap_t array.
-	memcpy(&cc_key_config, &input_keymap, sizeof(cc_key_config));
+	// Initialize the internal data variables.
+	cc_window_init();
 	
 	// Load the controller configuration for the first player.
 	cc_window_load_configuration(0);
@@ -219,13 +224,13 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 			       g_object_ref(vboxController), (GDestroyNotify)g_object_unref);
 	
 	// Checkbox for enabling teamplayer.
-	chkTeamplayer[port] = gtk_check_button_new_with_label("Use Teamplayer");
+	chkTeamplayer[port-1] = gtk_check_button_new_with_label("Use Teamplayer");
 	sprintf(tmp, "chkTeamplayer_%d", port);
-	gtk_widget_set_name(chkTeamplayer[port], tmp);
-	gtk_widget_show(chkTeamplayer[port]);
-	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer[port], FALSE, FALSE, 0);
+	gtk_widget_set_name(chkTeamplayer[port-1], tmp);
+	gtk_widget_show(chkTeamplayer[port-1]);
+	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer[port-1], FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(chkTeamplayer[port]), (GDestroyNotify)g_object_unref);
+			       g_object_ref(chkTeamplayer[port-1]), (GDestroyNotify)g_object_unref);
 	// TODO: Connect the "clicked" signal (or "toggled"?).
 	
 	// Table for the player controls.
@@ -519,6 +524,30 @@ static void cc_window_callback_player_toggled(GtkToggleButton *togglebutton, gpo
 
 
 /**
+ * cc_window_init(): Initialize the internal variables.
+ */
+static void cc_window_init(void)
+{
+	// Copy the current controller configuration into the internal input_keymap_t array.
+	memcpy(&cc_key_config, &input_keymap, sizeof(cc_key_config));
+	
+	// Set the Teamplayer checkboxes.
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), (Controller_1_Type & 0x10));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), (Controller_2_Type & 0x10));
+	
+	// Set the pad type dropdowns.
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[0]), (Controller_1_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[1]), (Controller_2_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[2]), (Controller_1B_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[3]), (Controller_1C_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[4]), (Controller_1D_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[5]), (Controller_2B_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[6]), (Controller_2C_Type & 0x01));
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[7]), (Controller_2D_Type & 0x01));
+}
+
+
+/**
  * cc_window_load_configuration(): Load controller configuration.
  * @param player Player number.
  */
@@ -540,7 +569,9 @@ static void cc_window_load_configuration(int player)
 	for (button = 0; button < 12; button++)
 	{
 		sprintf(tmp, "<tt>0x%04X</tt>", cc_key_config[player].data[button]);
-		gtk_label_set_text(lblCurConfig[button], tmp);
+		gtk_label_set_text(GTK_LABEL(lblCurConfig[button]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
 	}
+	
+	// Set enabled/disabled on Mode/X/Y/Z, depending on whether the pad is set to 3 or 6.
 }
