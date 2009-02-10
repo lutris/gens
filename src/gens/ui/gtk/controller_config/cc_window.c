@@ -41,6 +41,9 @@
 // Input Handler.
 #include "input/input.h"
 
+// TODO: Move SDL-specific code to input_sdl.c.
+#include <SDL/SDL.h>
+
 // Unused Parameter macro.
 #include "macros/unused.h"
 
@@ -514,6 +517,32 @@ static void cc_window_init(void)
 	// Run the teamplayer callbacks.
 	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), GINT_TO_POINTER(0));
 	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), GINT_TO_POINTER(1));
+	
+	// Populate the "Input Device" dropdown.
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboInputDevice), "Keyboard");
+	
+	// TODO: This is SDL-specific. Move to input.c/input_sdl.c?
+	int joysticks = SDL_NumJoysticks();
+	int joy;
+	char tmp[64];
+	
+	for (joy = 0; joy < joysticks; joy++)
+	{
+		const char *joy_name = SDL_JoystickName(joy);
+		
+		if (joy_name)
+			snprintf(tmp, sizeof(tmp), "Joystick %d: %s", joy, joy_name);
+		else
+			snprintf(tmp, sizeof(tmp), "Joystick %d", joy);
+		
+		tmp[sizeof(tmp) - 1] = 0x00;
+		
+		// Add the joystick entry to the dropdown.
+		gtk_combo_box_append_text(GTK_COMBO_BOX(cboInputDevice), tmp);
+	}
+	
+	// Select the first item in the "Input Device" dropdown.
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboInputDevice), 0);
 }
 
 
@@ -537,10 +566,9 @@ static void cc_window_load_configuration(int player)
 	// Load the key configuration.
 	// TODO: Convert thm to human-readable text.
 	unsigned int button;
-	int rval;
 	for (button = 0; button < 12; button++)
 	{
-		input_get_key_name(cc_key_config[player].data[button], &key_name, sizeof(key_name));
+		input_get_key_name(cc_key_config[player].data[button], &key_name[0], sizeof(key_name));
 		sprintf(tmp, "<tt>0x%04X: %s</tt>", cc_key_config[player].data[button], key_name);
 		gtk_label_set_text(GTK_LABEL(lblCurConfig[button]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
