@@ -30,7 +30,7 @@
 #include "emulator/g_main.hpp"
 #include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
-#include "controller_config/controller_config_window_misc.hpp"
+#include "controller_config/cc_window.h"
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/directory_config_window_misc.hpp"
 #include "general_options/general_options_window.hpp"
@@ -720,7 +720,7 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			break;
 		
 		case IDM_OPTIONS_JOYPADS:
-			Open_Controller_Config();
+			cc_window_show(GTK_WINDOW(gens_window));
 			break;
 		
 		case IDM_OPTIONS_BIOSMISCFILES:

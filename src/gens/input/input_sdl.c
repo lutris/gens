@@ -30,9 +30,8 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
 
-// Needed to handle controller input configuration
-#include "controller_config/controller_config_window.hpp"
-#include "controller_config/controller_config_window_misc.hpp"
+// Needed to handle controller input configuration.
+#include "controller_config/cc_window.h"
 
 
 #include <SDL/SDL.h>
@@ -193,7 +192,7 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	SDL_Event sdlev;
 	
 	// Only grab keys from the Gens window. (or controller config window)
-	if (grab != gens_window && grab != controller_config_window)
+	if (grab != gens_window && grab != cc_window)
 		return FALSE;
 	
 	switch(event->type)
@@ -219,7 +218,7 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
 	
-	if (grab == controller_config_window && CC_Configuring)
+	if (grab == cc_window && cc_window_is_configuring)
 	{
 		// Configuring controllers. Don't allow GTK+ to handle this keypress.
 		return TRUE;

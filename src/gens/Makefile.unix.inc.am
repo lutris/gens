@@ -29,9 +29,7 @@ gens_SOURCES += \
 		ui/gtk/gens/gens_window.cpp \
 		ui/gtk/gens/gens_window_callbacks.cpp \
 		ui/gtk/gens/gens_window_sync.cpp \
-		ui/gtk/controller_config/controller_config_window.cpp \
-		ui/gtk/controller_config/controller_config_window_callbacks.cpp \
-		ui/gtk/controller_config/controller_config_window_misc.cpp \
+		ui/gtk/controller_config/cc_window.c \
 		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
 		ui/gtk/bios_misc_files/bios_misc_files_window_misc.cpp \
@@ -92,9 +90,7 @@ noinst_HEADERS += \
 		ui/gtk/gens/gens_window.hpp \
 		ui/gtk/gens/gens_window_callbacks.hpp \
 		ui/gtk/gens/gens_window_sync.hpp \
-		ui/gtk/controller_config/controller_config_window.hpp \
-		ui/gtk/controller_config/controller_config_window_callbacks.hpp \
-		ui/gtk/controller_config/controller_config_window_misc.hpp \
+		ui/gtk/controller_config/cc_window.h \
 		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \
 		ui/gtk/bios_misc_files/bios_misc_files_window_misc.hpp \
