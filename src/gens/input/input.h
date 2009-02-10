@@ -163,6 +163,9 @@ typedef struct
 	// Check if a joystick exists.
 	BOOL	(*joy_exists)(int joy_num);
 	
+	// Get a key name.
+	int	(*get_key_name)(uint16_t key, char* buf, int size);
+	
 #ifdef GENS_OS_WIN32
 	// Win32-specific functions.
 	int	(*set_cooperative_level)(HWND hWnd);
@@ -192,6 +195,9 @@ extern input_keymap_t	input_keymap[8];
 
 // Update a joystick "key" from the old format to the new format.
 uint16_t input_update_joykey_format(uint16_t key);
+
+// Get a key name.
+int input_get_key_name(uint16_t key, char* buf, int size);
 
 #ifdef __cplusplus
 }

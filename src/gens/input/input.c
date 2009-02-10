@@ -261,3 +261,29 @@ uint16_t input_update_joykey_format(uint16_t key)
 		return (0x8000 | (INPUT_JOYSTICK_TYPE_AXIS << 12) | (key & 0x0F00) | (mapOldJoyAxisToNew[(key & 0x0F) - 1]));
 	}
 }
+
+
+/**
+ * input_get_key_name(): Get a key name.
+ * @param key Key.
+ * @param buf Buffer to store the name in.
+ * @param size Size of the buffer.
+ * @return 0 on success; non-zero on error.
+ */
+int input_get_key_name(uint16_t key, char* buf, int size)
+{
+	if (!INPUT_IS_JOYSTICK(key))
+	{
+		// Not a joystick input.
+		// Defer the key name lookup to the current input handler.
+		if (input_cur_backend)
+			return input_cur_backend->get_key_name(key, buf, size);
+		
+		// No backend available. Return an error.
+		return -1;
+	}
+	
+	// Joystick input.
+	// TODO
+	return -1;
+}
