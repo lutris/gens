@@ -262,16 +262,16 @@ int Config::save(const string& filename)
 	cfg.writeString("Options", "RAR Binary", Misc_Filenames.RAR_Binary);
 	
 	// Controller settings.
-	cfg.writeInt("Input", "P1.Type", Controller_1_Type & 0x13);
-	cfg.writeInt("Input", "P2.Type", Controller_2_Type & 0x13);
+	cfg.writeInt("Input", "P1.Type", (Controller_1_Type & 0x11), true, 2);
+	cfg.writeInt("Input", "P2.Type", (Controller_2_Type & 0x11), true, 2);
 	
-	cfg.writeInt("Input", "P1B.Type", Controller_2B_Type & 0x13);
-	cfg.writeInt("Input", "P1C.Type", Controller_2C_Type & 0x13);
-	cfg.writeInt("Input", "P1D.Type", Controller_2D_Type & 0x13);
+	cfg.writeInt("Input", "P1B.Type", (Controller_1B_Type & 0x01), true, 2);
+	cfg.writeInt("Input", "P1C.Type", (Controller_1C_Type & 0x01), true, 2);
+	cfg.writeInt("Input", "P1D.Type", (Controller_1D_Type & 0x01), true, 2);
 	
-	cfg.writeInt("Input", "P2B.Type", Controller_2B_Type & 0x13);
-	cfg.writeInt("Input", "P2C.Type", Controller_2C_Type & 0x13);
-	cfg.writeInt("Input", "P2D.Type", Controller_2D_Type & 0x13);
+	cfg.writeInt("Input", "P2B.Type", (Controller_2B_Type & 0x01), true, 2);
+	cfg.writeInt("Input", "P2C.Type", (Controller_2C_Type & 0x01), true, 2);
+	cfg.writeInt("Input", "P2D.Type", (Controller_2D_Type & 0x01), true, 2);
 	
 	// Controller keymaps.
 	for (int player = 0; player < 8; player++)
@@ -571,16 +571,16 @@ int Config::load(const string& filename, void* gameActive)
 #endif	
 	
 	// Controller settings.
-	Controller_1_Type = cfg.getInt("Input", "P1.Type", 1);
-	Controller_2_Type = cfg.getInt("Input", "P2.Type", 1);
+	Controller_1_Type = cfg.getInt("Input", "P1.Type", 0x01);
+	Controller_2_Type = cfg.getInt("Input", "P2.Type", 0x01);
 	
-	Controller_1B_Type = cfg.getInt("Input", "P1B.Type", 1);
-	Controller_1C_Type = cfg.getInt("Input", "P1C.Type", 1);
-	Controller_1D_Type = cfg.getInt("Input", "P1D.Type", 1);
+	Controller_1B_Type = cfg.getInt("Input", "P1B.Type", 0x01);
+	Controller_1C_Type = cfg.getInt("Input", "P1C.Type", 0x01);
+	Controller_1D_Type = cfg.getInt("Input", "P1D.Type", 0x01);
 	
-	Controller_2B_Type = cfg.getInt("Input", "P2B.Type", 1);
-	Controller_2C_Type = cfg.getInt("Input", "P2C.Type", 1);
-	Controller_2D_Type = cfg.getInt("Input", "P2D.Type", 1);
+	Controller_2B_Type = cfg.getInt("Input", "P2B.Type", 0x01);
+	Controller_2C_Type = cfg.getInt("Input", "P2C.Type", 0x01);
+	Controller_2D_Type = cfg.getInt("Input", "P2D.Type", 0x01);
 	
 	// Controller keymaps.
 	const input_keymap_t *cur_def_keymap = input_keymap_default;
