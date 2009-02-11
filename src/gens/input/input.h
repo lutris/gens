@@ -113,6 +113,8 @@ typedef enum
 	((key >> 12) & 0x7)
 #define INPUT_JOYSTICK_GET_AXIS(key)	\
 	((key >> 1) & 0x7F)
+#define INPUT_JOYSTICK_GET_AXIS_DIRECTION(key)	\
+	(key & 0x01)
 #define INPUT_JOYSTICK_GET_BUTTON(key)	\
 	(key & 0xFF)
 #define INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)	\
