@@ -68,7 +68,7 @@ static WNDCLASS	cc_wndclass;
 #define CC_FRAME_PORT_WIDTH  240
 #define CC_FRAME_PORT_HEIGHT 140
 
-#define CC_FRAME_INPUT_DEVICES_WIDTH  256
+#define CC_FRAME_INPUT_DEVICES_WIDTH  272
 #define CC_FRAME_INPUT_DEVICES_HEIGHT 96
 
 // Command value bases.
@@ -105,8 +105,8 @@ static HWND	btnChange[12];
 static void	cc_window_create_child_windows(HWND hWnd);
 static void	cc_window_create_controller_port_frame(HWND container, int port);
 static void	cc_window_create_input_devices_frame(HWND container);
+static void	cc_window_populate_input_devices(HWND lstBox);
 #if 0
-static void	cc_window_populate_input_devices(void);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 
 // Callbacks.
@@ -190,9 +190,9 @@ static void cc_window_create_child_windows(HWND hWnd)
 	
 	// Create the "Input Devices" frame and populate the "Input Devices" listbox.
 	cc_window_create_input_devices_frame(hWnd);
-#if 0
-	cc_window_populate_input_devices();
+	cc_window_populate_input_devices(lstInputDevices);
 	
+#if 0
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
 	
@@ -317,45 +317,25 @@ static void cc_window_create_input_devices_frame(HWND container)
 }
 
 
-#if 0
 /**
- * cc_window_populate_input_devices(): Populate the "Input Devices" treeview.
+ * cc_window_populate_input_devices(): Populate the "Input Devices" listbox.
+ * @param lstBox Listbox to store the input devices in.
  */
-static void cc_window_populate_input_devices(void)
+static void cc_window_populate_input_devices(HWND lstBox)
 {
-	GtkTreeIter iter;
-	
-	// Clear the list model.
-	gtk_list_store_clear(lstoreInputDevices);
+	// Clear the listbox.
+	ListBox_ResetContent(lstBox);
 	
 	// Add "Keyboard" as the first entry.
-	gtk_list_store_append(lstoreInputDevices, &iter);
-	gtk_list_store_set(GTK_LIST_STORE(lstoreInputDevices), &iter, 0, "Keyboard", -1);
+	ListBox_AddString(lstBox, "Keyboard");
 	
 	// Add any detected joysticks to the list model.
-	// TODO: This is SDL-specific. Move to input.c/input_sdl.c?
-	int joysticks = SDL_NumJoysticks();
-	int joy;
-	char joy_name[64];
-	
-	for (joy = 0; joy < joysticks; joy++)
-	{
-		const char *joy_name_SDL = SDL_JoystickName(joy);
-		
-		if (joy_name_SDL)
-			snprintf(joy_name, sizeof(joy_name), "Joystick %d: %s", joy, joy_name_SDL);
-		else
-			snprintf(joy_name, sizeof(joy_name), "Joystick %d", joy);
-		
-		joy_name[sizeof(joy_name) - 1] = 0x00;
-		
-		// Add the joystick entry to the list model.
-		gtk_list_store_append(lstoreInputDevices, &iter);
-		gtk_list_store_set(GTK_LIST_STORE(lstoreInputDevices), &iter, 0, joy_name, -1);
-	}
+	// TODO: This is DirectInput-specific.
+	input_dinput_add_joysticks_to_listbox(lstBox);
 }
 
 
+#if 0
 /**
  * cc_window_create_configure_controller_frame(): Create the "Configure Controller" frame.
  * @param container Container for the frame.

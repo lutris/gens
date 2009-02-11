@@ -31,6 +31,8 @@
 #include "controller_config/controller_config_window.hpp"
 
 #include <windows.h>
+#include <windowsx.h>
+
 #include <dinput.h>
 //#include <mmsystem.h>
 
@@ -82,11 +84,15 @@ static unsigned char input_dinput_keys[256];
 static BOOL input_dinput_joystick_initialized;
 static BOOL input_dinput_joystick_error;
 static int input_dinput_num_joysticks;	// Number of joysticks connected
-static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
+static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 int input_dinput_set_cooperative_level_joysticks(HWND hWnd);
 
 // Miscellaneous DirectInput functions.
 static inline void input_dinput_restore_input(void);
+
+// Used for the Controller Configuration window.
+static BOOL CALLBACK input_dinput_callback_add_joysticks_to_listbox(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
+static int input_dinput_add_joysticks_count;
 
 // Default keymap.
 const input_keymap_t input_dinput_keymap_default[8] =
@@ -274,7 +280,7 @@ int input_dinput_init_joysticks(HWND hWnd)
 	input_dinput_joystick_initialized = true;
 	
 	HRESULT rval;
-	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &input_dinput_init_joysticks_enum,
+	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &input_dinput_callback_init_joysticks_enum,
 				 hWnd, DIEDFL_ATTACHEDONLY);
 	if (rval != DI_OK)
 	{
@@ -290,7 +296,13 @@ int input_dinput_init_joysticks(HWND hWnd)
 }
 
 
-static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
+/**
+ * input_dinput_callback_init_joysticks_enum(): EnumDevices callback for initializing joysticks.
+ * @param lpDIIJoy Joystick information.
+ * @param pvRef hWnd of the Gens window.
+ * @return DIENUM_CONTINUE to continue the enumeration; DIENUM_STOP to stop the enumeration.
+ */
+static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
 {
 	HRESULT rval;
 	LPDIRECTINPUTDEVICE	lpDIJoy;
@@ -306,7 +318,7 @@ static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJ
 	if (rval != DI_OK)
 	{
 		GensUI::msgBox("IDirectInput::CreateDevice() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
-		return(DIENUM_CONTINUE);
+		return DIENUM_CONTINUE;
 	}
 	
 	rval = lpDIJoy->QueryInterface(IID_IDirectInputDevice2, (void **)&input_dinput_joy_id[input_dinput_num_joysticks]);
@@ -315,7 +327,7 @@ static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJ
 	{
 		GensUI::msgBox("IDirectInputDevice2::QueryInterface() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
-		return(DIENUM_CONTINUE);
+		return DIENUM_CONTINUE;
 	}
 	
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetDataFormat(&c_dfDIJoystick);
@@ -324,7 +336,7 @@ static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJ
 		GensUI::msgBox("IDirectInputDevice::SetDataFormat() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
-		return(DIENUM_CONTINUE);
+		return DIENUM_CONTINUE;
 	}
 	
 	// TODO: Add an option to specify DISCL_FOREGROUND so the joysticks only work when the Gens window is active.
@@ -335,7 +347,7 @@ static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJ
 		GensUI::msgBox("IDirectInputDevice::SetCooperativeLevel() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
-		return(DIENUM_CONTINUE);
+		return DIENUM_CONTINUE;
 	}
 	
 	diprg.diph.dwSize = sizeof(diprg); 
@@ -374,7 +386,7 @@ static BOOL CALLBACK input_dinput_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJ
 	
 	input_dinput_num_joysticks++;
 	
-	return(DIENUM_CONTINUE);
+	return DIENUM_CONTINUE;
 }
 
 
@@ -815,4 +827,61 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 	}
 	
 	return 0;
+}
+
+
+/**
+ * input_dinput_add_joysticks_to_listbox(): Enumerate joysticks and add them to a listbox.
+ * @param lstBox Listbox to add the joystick information to.
+ */
+void input_dinput_add_joysticks_to_listbox(HWND lstBox)
+{
+	if (!lpDI || input_dinput_joystick_error)
+		return;
+	
+	// Initialize the "Add Joysticks" counter.
+	input_dinput_add_joysticks_count = 0;
+	
+	// Enumerate the joysticks.
+	lpDI->EnumDevices(DIDEVTYPE_JOYSTICK,
+			  &input_dinput_callback_add_joysticks_to_listbox,
+			  lstBox, DIEDFL_ATTACHEDONLY);
+}
+
+
+/**
+ * input_dinput_callback_add_joysticks_to_listbox(): EnumDevices callback for adding joysticks to a listbox.
+ * @param lpDIIJoy Joystick information.
+ * @param pvRef Listbox to add the joystick information to.
+ * @return DIENUM_CONTINUE to continue the enumeration; DIENUM_STOP to stop the enumeration.
+ */
+static BOOL CALLBACK input_dinput_callback_add_joysticks_to_listbox(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef)
+{
+	char joy_name[64];
+	
+	if (lpDIIJoy->tszProductName)
+	{
+		snprintf(joy_name, sizeof(joy_name), "Joystick %d: %s",
+			 input_dinput_add_joysticks_count,
+			 lpDIIJoy->tszProductName);
+	}
+	else
+	{
+		snprintf(joy_name, sizeof(joy_name), "Joystick %d",
+			 input_dinput_add_joysticks_count);
+	}
+	joy_name[sizeof(joy_name) - 1] = 0x00;
+	
+	// Add the joystick name to the listbox.
+	ListBox_AddString((HWND)pvRef, joy_name);
+	
+	// Increment the joystick counter.
+	input_dinput_add_joysticks_count++;
+	
+	// If the joystick counter exceeds the maximum number of joysticks, don't enumerate any more.
+	if (input_dinput_add_joysticks_count >= MAX_JOYS)
+		return DIENUM_STOP;
+	
+	// Next joystick.
+	return DIENUM_CONTINUE;
 }
