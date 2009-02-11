@@ -83,7 +83,7 @@ static GSList		*gslConfigure;
 // Widget creation functions.
 static void	cc_window_create_controller_port_frame(GtkWidget *container, int port);
 static void	cc_window_create_input_devices_frame(GtkWidget *container);
-static void	cc_window_populate_input_devices(void);
+static void	cc_window_populate_input_devices(GtkListStore *list);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 
 // Callbacks.
@@ -175,7 +175,7 @@ void cc_window_show(GtkWindow *parent)
 	
 	// Create the "Input Devices" frame and populate the "Input Devices" treeview.
 	cc_window_create_input_devices_frame(vboxConfigureOuter);
-	cc_window_populate_input_devices();
+	cc_window_populate_input_devices(lstoreInputDevices);
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
@@ -433,17 +433,18 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 
 /**
  * cc_window_populate_input_devices(): Populate the "Input Devices" treeview.
+ * @param list List to store the input devices in.
  */
-static void cc_window_populate_input_devices(void)
+static void cc_window_populate_input_devices(GtkListStore *list)
 {
 	GtkTreeIter iter;
 	
 	// Clear the list model.
-	gtk_list_store_clear(lstoreInputDevices);
+	gtk_list_store_clear(list);
 	
 	// Add "Keyboard" as the first entry.
-	gtk_list_store_append(lstoreInputDevices, &iter);
-	gtk_list_store_set(GTK_LIST_STORE(lstoreInputDevices), &iter, 0, "Keyboard", -1);
+	gtk_list_store_append(list, &iter);
+	gtk_list_store_set(GTK_LIST_STORE(list), &iter, 0, "Keyboard", -1);
 	
 	// Add any detected joysticks to the list model.
 	// TODO: This is SDL-specific. Move to input.c/input_sdl.c?
@@ -463,8 +464,8 @@ static void cc_window_populate_input_devices(void)
 		joy_name[sizeof(joy_name) - 1] = 0x00;
 		
 		// Add the joystick entry to the list model.
-		gtk_list_store_append(lstoreInputDevices, &iter);
-		gtk_list_store_set(GTK_LIST_STORE(lstoreInputDevices), &iter, 0, joy_name, -1);
+		gtk_list_store_append(list, &iter);
+		gtk_list_store_set(GTK_LIST_STORE(list), &iter, 0, joy_name, -1);
 	}
 }
 
