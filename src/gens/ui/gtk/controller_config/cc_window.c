@@ -576,6 +576,9 @@ void cc_window_close(void)
 	if (!cc_window)
 		return;
 	
+	// Clear the "Configuring" variable.
+	cc_window_is_configuring = FALSE;
+	
 	// Destroy the window.
 	gtk_widget_destroy(cc_window);
 	cc_window = NULL;
