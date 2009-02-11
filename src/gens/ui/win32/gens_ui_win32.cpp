@@ -48,7 +48,7 @@
 #include "audio/audio.h"
 
 // Windows
-#include "controller_config/controller_config_window.hpp"
+#include "controller_config/cc_window.h"
 #include "bios_misc_files/bios_misc_files_window.hpp"
 #include "directory_config/directory_config_window.h"
 #include "general_options/general_options_window.hpp"
@@ -241,7 +241,7 @@ void GensUI::update(void)
 		}
 			
 		// Check for dialog messages.
-		if ((controller_config_window && IsDialogMessage(controller_config_window, &msg)) ||
+		if ((cc_window && IsDialogMessage(cc_window, &msg)) ||
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 		    (directory_config_window && IsDialogMessage(directory_config_window, &msg)) ||
 		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||

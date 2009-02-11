@@ -720,7 +720,14 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			break;
 		
 		case IDM_OPTIONS_JOYPADS:
-			cc_window_show(GTK_WINDOW(gens_window));
+			// TODO: Make this UI-independent.
+			#if defined(GENS_UI_GTK)
+				cc_window_show(GTK_WINDOW(gens_window));
+			#elif defined(GENS_UI_WIN32)
+				cc_window_show(Gens_hWnd);
+			#else
+				#error Cannot determine UI.
+			#endif
 			break;
 		
 		case IDM_OPTIONS_BIOSMISCFILES:
