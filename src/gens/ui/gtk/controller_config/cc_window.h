@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_CC_WINDOW_H
-#define GENS_UI_CC_WINDOW_H
+#ifndef GENS_UI_GTK_CC_WINDOW_H
+#define GENS_UI_GTK_CC_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,4 +43,4 @@ void cc_window_close(void);
 }
 #endif
 
-#endif /* GENS_UI_CC_WINDOW_H */
+#endif /* GENS_UI_GTK_CC_WINDOW_H */
