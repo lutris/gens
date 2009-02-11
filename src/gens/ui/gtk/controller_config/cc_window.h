@@ -27,11 +27,14 @@
 extern "C" {
 #endif
 
-// GTK+ include.
+// GTK+ includes.
 #include <gtk/gtk.h>
 
+// BOOL macros.
+#include "macros/bool_m.h"
+
 extern GtkWidget *cc_window;
-extern int cc_window_is_configuring;
+extern BOOL cc_window_is_configuring;
 
 void cc_window_show(GtkWindow *parent);
 void cc_window_close(void);

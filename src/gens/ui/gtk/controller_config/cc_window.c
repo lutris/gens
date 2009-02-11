@@ -34,6 +34,9 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+// BOOL macros.
+#include "macros/bool_m.h"
+
 // Gens input variables.
 #include "gens_core/io/io.h"
 #include "gens_core/io/io_teamplayer.h"
@@ -50,7 +53,7 @@
 
 // Window.
 GtkWidget *cc_window = NULL;
-int cc_window_is_configuring = FALSE;
+BOOL cc_window_is_configuring = FALSE;
 
 // Internal key configuration, which is copied when Save is clicked.
 static input_keymap_t cc_key_config[8];
