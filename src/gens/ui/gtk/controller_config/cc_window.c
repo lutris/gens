@@ -111,8 +111,7 @@ void cc_window_show(GtkWindow *parent)
 {
 	if (cc_window)
 	{
-		// Controller Configuration window is already visible.
-		// Set focus.
+		// Controller Configuration window is already visible. Set focus.
 		gtk_widget_grab_focus(cc_window);
 		return;
 	}
