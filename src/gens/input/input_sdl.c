@@ -227,7 +227,7 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	
 	// Convert this keypress from GDK to SDL.
 	// TODO: Use GENS key defines instead.
-	sdlev.key.keysym.sym = (SDLKey)input_sdl_gdk_to_sdl_keyval(event->keyval);
+	sdlev.key.keysym.sym = (SDLKey)input_sdl_gdk_to_gens_keyval(event->keyval);
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
 	
@@ -334,7 +334,7 @@ unsigned int input_sdl_get_key(void)
 		// Check if a GDK key press occurred.
 		event = gdk_event_get();
 		if (event && event->type == GDK_KEY_PRESS)
-			return input_sdl_gdk_to_sdl_keyval(event->key.keyval);
+			return input_sdl_gdk_to_gens_keyval(event->key.keyval);
 	}
 }
 

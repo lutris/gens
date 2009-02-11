@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-int input_sdl_gdk_to_sdl_keyval(int gdk_key);
+uint16_t input_sdl_gdk_to_gens_keyval(int gdk_key);
 int input_sdl_get_key_name(uint16_t key, char* buf, int size);
 
 #ifdef __cplusplus

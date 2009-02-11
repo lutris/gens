@@ -27,11 +27,11 @@
 #include "input_sdl_keys.h"
 
 /**
- * input_sdl_gdk_to_sdl_keyval(): Converts a GDK key value to a Gens key value.
+ * input_sdl_gdk_to_gens_keyval(): Converts a GDK key value to a Gens key value.
  * @param gdk_key GDK key value.
  * @return Gens key value.
  */
-int input_sdl_gdk_to_sdl_keyval(int gdk_key)
+uint16_t input_sdl_gdk_to_gens_keyval(int gdk_key)
 {
 	if (!(gdk_key & 0xFF00))
 	{
@@ -46,156 +46,110 @@ int input_sdl_gdk_to_sdl_keyval(int gdk_key)
 	}
 	
 	// Non-ASCII symbol.
-	switch (gdk_key)
+	static const uint16_t gdk_to_sdl_table[0x100] =
 	{
-		case GDK_BackSpace:
-			return GENS_KEY_BACKSPACE;
-		case GDK_Tab:
-			return GENS_KEY_TAB;
-		case GDK_Clear:
-			return GENS_KEY_CLEAR;
-		case GDK_Return:
-			return GENS_KEY_RETURN;
-		case GDK_Pause:
-			return GENS_KEY_PAUSE;
-		case GDK_Escape:
-			return GENS_KEY_ESCAPE;
-		case GDK_KP_Space:
-			return GENS_KEY_SPACE;
-		case GDK_Delete:
-			return GENS_KEY_DELETE;
-		case GDK_KP_0:
-			return GENS_KEY_NUM_0;
-		case GDK_KP_1:
-			return GENS_KEY_NUM_1;
-		case GDK_KP_2:
-			return GENS_KEY_NUM_2;
-		case GDK_KP_3:
-			return GENS_KEY_NUM_3;
-		case GDK_KP_4:
-			return GENS_KEY_NUM_4;
-		case GDK_KP_5:
-			return GENS_KEY_NUM_5;
-		case GDK_KP_6:
-			return GENS_KEY_NUM_6;
-		case GDK_KP_7:
-			return GENS_KEY_NUM_7;
-		case GDK_KP_8:
-			return GENS_KEY_NUM_8;
-		case GDK_KP_9:
-			return GENS_KEY_NUM_9;
-		case GDK_KP_Decimal:
-			return GENS_KEY_NUM_PERIOD;
-		case GDK_KP_Divide:
-			return GENS_KEY_NUM_DIVIDE;
-		case GDK_KP_Multiply:
-			return GENS_KEY_NUM_MULTIPLY;
-		case GDK_KP_Subtract:
-			return GENS_KEY_NUM_MINUS;
-		case GDK_KP_Add:
-			return GENS_KEY_NUM_PLUS;
-		case GDK_KP_Enter:
-			return GENS_KEY_NUM_ENTER;
-		case GDK_KP_Equal:
-			return GENS_KEY_NUM_EQUALS;
-		case GDK_Up:
-			return GENS_KEY_UP;
-		case GDK_Down:
-			return GENS_KEY_DOWN;
-		case GDK_Right:
-			return GENS_KEY_RIGHT;
-		case GDK_Left:
-			return GENS_KEY_LEFT;
-		case GDK_Insert:
-			return GENS_KEY_INSERT;
-		case GDK_Home:
-			return GENS_KEY_HOME;
-		case GDK_End:
-			return GENS_KEY_END;
-		case GDK_Page_Up:
-			return GENS_KEY_PAGEUP;
-		case GDK_Page_Down:
-			return GENS_KEY_PAGEDOWN;
-		case GDK_F1:
-			return GENS_KEY_F1;
-		case GDK_F2:
-			return GENS_KEY_F2;
-		case GDK_F3:
-			return GENS_KEY_F3;
-		case GDK_F4:
-			return GENS_KEY_F4;
-		case GDK_F5:
-			return GENS_KEY_F5;
-		case GDK_F6:
-			return GENS_KEY_F6;
-		case GDK_F7:
-			return GENS_KEY_F7;
-		case GDK_F8:
-			return GENS_KEY_F8;
-		case GDK_F9:
-			return GENS_KEY_F9;
-		case GDK_F10:
-			return GENS_KEY_F10;
-		case GDK_F11:
-			return GENS_KEY_F11;
-		case GDK_F12:
-			return GENS_KEY_F12;
-		case GDK_F13:
-			return GENS_KEY_F13;
-		case GDK_F14:
-			return GENS_KEY_F14;
-		case GDK_F15:
-			return GENS_KEY_F15;
-		case GDK_Num_Lock:
-			return GENS_KEY_NUMLOCK;
-		case GDK_Caps_Lock:
-			return GENS_KEY_CAPSLOCK;
-		case GDK_Scroll_Lock:
-			return GENS_KEY_SCROLLOCK;
-		case GDK_Shift_R:
-			return GENS_KEY_RSHIFT;
-		case GDK_Shift_L:
-			return GENS_KEY_LSHIFT;
-		case GDK_Control_R:
-			return GENS_KEY_RCTRL;
-		case GDK_Control_L:
-			return GENS_KEY_LCTRL;
-		case GDK_Alt_R:
-			return GENS_KEY_RALT;
-		case GDK_Alt_L:
-			return GENS_KEY_LALT;
-		case GDK_Meta_R:
-			return GENS_KEY_RMETA;
-		case GDK_Meta_L:
-			return GENS_KEY_LMETA;
-		case GDK_Super_L:
-			return GENS_KEY_LSUPER;
-		case GDK_Super_R:
-			return GENS_KEY_RSUPER;
-		case GDK_Mode_switch:
-			return GENS_KEY_MODE;
-		//case GDK_:
-		//	return GENS_KEY_COMPOSE;
-		case GDK_Help:
-			return GENS_KEY_HELP;
-		case GDK_Print:
-			return GENS_KEY_PRINT;
-		case GDK_Sys_Req:
-			return GENS_KEY_SYSREQ;
-		case GDK_Break:
-			return GENS_KEY_BREAK;
-		case GDK_Menu:
-			return GENS_KEY_MENU;
-		//case GDK_:
-		//	return GENS_KEY_POWER;
-		case GDK_EuroSign:
-			return GENS_KEY_EURO;
-		case GDK_Undo:
-			return GENS_KEY_UNDO;
-		default:
-			fprintf(stderr, "%s(): Unknown GDK key: 0x%04X\n", __func__, gdk_key);
-			return -1;
-	}
+		// 0x00 - 0x0F
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		GENS_KEY_BACKSPACE, GENS_KEY_TAB, GENS_KEY_RETURN, GENS_KEY_CLEAR,
+		0x0000, GENS_KEY_RETURN, 0x0000, 0x0000,
+		
+		// 0x10 - 0x1F
+		0x0000, 0x0000, 0x0000, GENS_KEY_PAUSE,
+		GENS_KEY_SCROLLLOCK, GENS_KEY_SYSREQ, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, GENS_KEY_ESCAPE,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0x20 - 0x2F
+		GENS_KEY_COMPOSE, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0x30 - 0x3F [Japanese keys]
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0x40 - 0x4F [unused]
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0x50 - 0x5F
+		GENS_KEY_HOME, GENS_KEY_LEFT, GENS_KEY_UP, GENS_KEY_RIGHT,
+		GENS_KEY_DOWN, GENS_KEY_PAGEUP, GENS_KEY_PAGEDOWN, GENS_KEY_END,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0x60 - 0x6F
+		0x0000, GENS_KEY_PRINT, 0x0000, GENS_KEY_INSERT,
+		GENS_KEY_UNDO, 0x0000, GENS_KEY_MENU, 0x0000,
+		0x0000, GENS_KEY_HELP, GENS_KEY_BREAK, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0x70 - 0x7F [mostly unused, except for Alt Gr and Num Lock]
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, GENS_KEY_MODE, GENS_KEY_NUMLOCK,
+		
+		// 0x80 - 0x8F [mostly unused, except for some numeric keypad keys]
+		GENS_KEY_NUM_5, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, GENS_KEY_NUM_ENTER, 0x0000, 0x0000,
+		
+		// 0x90 - 0x9F
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, GENS_KEY_NUM_7, GENS_KEY_NUM_4, GENS_KEY_NUM_8,
+		GENS_KEY_NUM_6, GENS_KEY_NUM_2, GENS_KEY_NUM_9, GENS_KEY_NUM_3,
+		GENS_KEY_NUM_1, GENS_KEY_NUM_5, GENS_KEY_NUM_0, GENS_KEY_NUM_PERIOD,
+		
+		// 0xA0 - 0xAF
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, GENS_KEY_NUM_MULTIPLY, GENS_KEY_NUM_PLUS,
+		0x0000, GENS_KEY_NUM_MINUS, GENS_KEY_NUM_PERIOD, GENS_KEY_NUM_DIVIDE,
+		
+		// 0xB0 - 0xBF
+		GENS_KEY_NUM_0, GENS_KEY_NUM_1, GENS_KEY_NUM_2, GENS_KEY_NUM_3,
+		GENS_KEY_NUM_4, GENS_KEY_NUM_5, GENS_KEY_NUM_6, GENS_KEY_NUM_7,
+		GENS_KEY_NUM_8, GENS_KEY_NUM_9, 0x0000, 0x0000,
+		0x0000, GENS_KEY_NUM_EQUALS, GENS_KEY_F1, GENS_KEY_F2,
+		
+		// 0xC0 - 0xCF
+		GENS_KEY_F3, GENS_KEY_F4, GENS_KEY_F5, GENS_KEY_F6,
+		GENS_KEY_F7, GENS_KEY_F8, GENS_KEY_F9, GENS_KEY_F10,
+		GENS_KEY_F11, GENS_KEY_F12, GENS_KEY_F13, GENS_KEY_F14,
+		GENS_KEY_F15, 0x0000, 0x0000, 0x0000,
+		
+		// 0xD0 - 0xDF [L* and R* function keys]
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		
+		// 0xE0 - 0xEF
+		0x0000, GENS_KEY_LSHIFT, GENS_KEY_RSHIFT, GENS_KEY_LCTRL,
+		GENS_KEY_RCTRL, GENS_KEY_CAPSLOCK, 0x0000, GENS_KEY_LMETA,
+		GENS_KEY_RMETA, GENS_KEY_LALT, GENS_KEY_RALT, GENS_KEY_LSUPER,
+		GENS_KEY_RSUPER, 0x0000, 0x0000, 0x0000,
+		
+		// 0xF0 - 0xFF [mostly unused, except for Delete]
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, 0x0000,
+		0x0000, 0x0000, 0x0000, GENS_KEY_DELETE,		
+	};
+	
+	uint16_t sdl_key = gdk_to_sdl_table[gdk_key & 0xFF];
+	
+	fprintf(stderr, "%s(): Unknown GDK key: 0x%04X [mapped to 0x%04X]\n", __func__, gdk_key, sdl_key);
+	//return -1;
+	return sdl_key;
 }
 
 
@@ -233,7 +187,7 @@ int input_sdl_get_key_name(uint16_t key, char* buf, int size)
 		"`", "A", "B", "C", "D", "E", "F", "G",
 		"H", "I", "J", "K", "L", "M", "N", "O",
 		"P", "Q", "R", "S", "T", "U", "V", "W",
-		"X", "Y", "Z", NULL, NULL, NULL, NULL, "Delete",
+		"X", "Y", "Z", "{", "|", "}", "~", "Delete",
 		
 		// 0x80 - 0x9F
 		NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -298,8 +252,8 @@ int input_sdl_get_key_name(uint16_t key, char* buf, int size)
 		
 		// 0x130 - 0x13F
 		"Left Shift", "Right Ctrl", "Left Ctrl", "Right Alt",
-		"Left Alt", "Right Meta", "Left Meta", "Right Super",
-		"Left Super", "Alt Gr", "Compose", "Help",
+		"Left Alt", "Right Meta", "Left Meta", "Left Super",
+		"Right Super", "Alt Gr", "Compose", "Help",
 		"Print Screen", "SysRq", "Break", "Menu",
 		
 		// 0x140 - 0x142

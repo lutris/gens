@@ -140,7 +140,7 @@ extern "C" {
 // Modifier Keys (not the same as modifiers, which are included with regular keypresses)
 #define GENS_KEY_NUMLOCK	SDLK_NUMLOCK
 #define GENS_KEY_CAPSLOCK	SDLK_CAPSLOCK
-#define GENS_KEY_SCROLLOCK	SDLK_SCROLLOCK
+#define GENS_KEY_SCROLLLOCK	SDLK_SCROLLOCK
 #define GENS_KEY_LSHIFT		SDLK_LSHIFT
 #define GENS_KEY_RSHIFT		SDLK_RSHIFT
 #define GENS_KEY_LCTRL		SDLK_LCTRL
