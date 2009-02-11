@@ -117,6 +117,8 @@ typedef enum
 	(key & 0x01)
 #define INPUT_JOYSTICK_GET_BUTTON(key)	\
 	(key & 0xFF)
+#define INPUT_JOYSTICK_GET_POVHAT_NUMBER(key)	\
+	((key >> 2) & 0x3F)
 #define INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)	\
 	(key & 0x03)
 
