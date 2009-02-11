@@ -60,7 +60,10 @@ static GtkWidget	*chkTeamplayer[2];
 static GtkWidget	*lblPlayer[8];
 static GtkWidget	*cboPadType[8];
 static GtkWidget	*optConfigure[8];
-static GtkWidget	*cboInputDevice;
+
+// Widgets: "Input Devices" frame.
+static GtkWidget	*lstInputDevices;
+static GtkListStore	*lstoreInputDevices;
 
 // Widgets: "Configure Controller" frame.
 static GtkWidget	*lblConfigure;
@@ -74,6 +77,7 @@ static GSList		*gslConfigure;
 // Widget creation functions.
 static void	cc_window_create_controller_port_frame(GtkWidget *container, int port);
 static void	cc_window_create_input_devices_frame(GtkWidget *container);
+static void	cc_window_populate_input_devices(void);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 
 // Callbacks.
@@ -159,8 +163,9 @@ void cc_window_show(GtkWindow *parent)
 	g_object_set_data_full(G_OBJECT(cc_window), "vboxConfigureOuter",
 			       g_object_ref(vboxConfigureOuter), (GDestroyNotify)g_object_unref);
 	
-	// Create the "Input Devices" frame.
+	// Create the "Input Devices" frame and populate the "Input Devices" treeview.
 	cc_window_create_input_devices_frame(vboxConfigureOuter);
+	cc_window_populate_input_devices();
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
@@ -381,30 +386,78 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 	g_object_set_data_full(G_OBJECT(container), "lblInputDevices",
 			       g_object_ref(lblInputDevices), (GDestroyNotify)g_object_unref);
 	
-	// HBox for input device selection.
-	GtkWidget *hboxInputDevice = gtk_hbox_new(FALSE, 8);
-	gtk_widget_set_name(hboxInputDevice, "hboxInputDevice");
-	gtk_container_set_border_width(GTK_CONTAINER(hboxInputDevice), 8);
-	gtk_widget_show(hboxInputDevice);
-	gtk_container_add(GTK_CONTAINER(fraInputDevices), hboxInputDevice);
-	g_object_set_data_full(G_OBJECT(container), "hboxInputDevice",
-			       g_object_ref(hboxInputDevice), (GDestroyNotify)g_object_unref);
+	// Scrolled Window for the list of input devices.
+	GtkWidget *scrlInputDevices = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_set_name(scrlInputDevices, "scrlInputDevices");
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlInputDevices), GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlInputDevices),
+				       GTK_POLICY_NEVER,
+				       GTK_POLICY_AUTOMATIC);
+	gtk_container_set_border_width(GTK_CONTAINER(scrlInputDevices), 4);
+	gtk_widget_show(scrlInputDevices);
+	gtk_container_add(GTK_CONTAINER(fraInputDevices), scrlInputDevices);
+	g_object_set_data_full(G_OBJECT(container), "scrlInputDevices",
+			       g_object_ref(scrlInputDevices), (GDestroyNotify)g_object_unref);
 	
-	// Label for input device selection.
-	GtkWidget *lblInputDevice = gtk_label_new("Input Device:");
-	gtk_widget_set_name(lblInputDevice, "lblInputDevice");
-	gtk_widget_show(lblInputDevice);
-	gtk_box_pack_start(GTK_BOX(hboxInputDevice), lblInputDevice, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblInputDevice",
-			       g_object_ref(lblInputDevice), (GDestroyNotify)g_object_unref);
+	// Create a treeview for the list of input devices.
+	lstInputDevices = gtk_tree_view_new();
+	gtk_widget_set_name(lstInputDevices, "lstInputDevices");
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstInputDevices), FALSE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstInputDevices), FALSE);
+	gtk_widget_set_size_request(lstInputDevices, -1, 80);
+	gtk_widget_show(lstInputDevices);
+	gtk_container_add(GTK_CONTAINER(scrlInputDevices), lstInputDevices);
+	g_object_set_data_full(G_OBJECT(container), "lstInputDevices",
+			       g_object_ref(lstInputDevices), (GDestroyNotify)g_object_unref);
 	
-	// Dropdown box for input device selection.
-	cboInputDevice = gtk_combo_box_new_text();
-	gtk_widget_set_name(cboInputDevice, "cboInputDevice");
-	gtk_widget_show(cboInputDevice);
-	gtk_box_pack_start(GTK_BOX(hboxInputDevice), cboInputDevice, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "cboInputDevice",
-			       g_object_ref(cboInputDevice), (GDestroyNotify)g_object_unref);
+	// Create the list model.
+	lstoreInputDevices = gtk_list_store_new(1, G_TYPE_STRING);
+	gtk_tree_view_set_model(GTK_TREE_VIEW(lstInputDevices), GTK_TREE_MODEL(lstoreInputDevices));
+	g_object_set_data_full(G_OBJECT(container), "lstoreInputDevices",
+			       g_object_ref(lstoreInputDevices), (GDestroyNotify)g_object_unref);
+	
+	// Create the renderer and columns.
+	GtkCellRenderer  *rendText = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colText = gtk_tree_view_column_new_with_attributes("Input Device", rendText, "text", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstInputDevices), colText);
+}
+
+
+/**
+ * cc_window_populate_input_devices(): Populate the "Input Devices" treeview.
+ */
+static void cc_window_populate_input_devices(void)
+{
+	GtkTreeIter iter;
+	
+	// Clear the list model.
+	gtk_list_store_clear(lstoreInputDevices);
+	
+	// Add "Keyboard" as the first entry.
+	gtk_list_store_append(lstoreInputDevices, &iter);
+	gtk_list_store_set(GTK_LIST_STORE(lstoreInputDevices), &iter, 0, "Keyboard", -1);
+	
+	// Add any detected joysticks to the list model.
+	// TODO: This is SDL-specific. Move to input.c/input_sdl.c?
+	int joysticks = SDL_NumJoysticks();
+	int joy;
+	char joy_name[64];
+	
+	for (joy = 0; joy < joysticks; joy++)
+	{
+		const char *joy_name_SDL = SDL_JoystickName(joy);
+		
+		if (joy_name_SDL)
+			snprintf(joy_name, sizeof(joy_name), "Joystick %d: %s", joy, joy_name_SDL);
+		else
+			snprintf(joy_name, sizeof(joy_name), "Joystick %d", joy);
+		
+		joy_name[sizeof(joy_name) - 1] = 0x00;
+		
+		// Add the joystick entry to the list model.
+		gtk_list_store_append(lstoreInputDevices, &iter);
+		gtk_list_store_set(GTK_LIST_STORE(lstoreInputDevices), &iter, 0, joy_name, -1);
+	}
 }
 
 
@@ -541,32 +594,6 @@ static void cc_window_init(void)
 	// Run the teamplayer callbacks.
 	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), GINT_TO_POINTER(0));
 	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), GINT_TO_POINTER(1));
-	
-	// Populate the "Input Device" dropdown.
-	gtk_combo_box_append_text(GTK_COMBO_BOX(cboInputDevice), "Keyboard");
-	
-	// TODO: This is SDL-specific. Move to input.c/input_sdl.c?
-	int joysticks = SDL_NumJoysticks();
-	int joy;
-	char tmp[64];
-	
-	for (joy = 0; joy < joysticks; joy++)
-	{
-		const char *joy_name = SDL_JoystickName(joy);
-		
-		if (joy_name)
-			snprintf(tmp, sizeof(tmp), "Joystick %d: %s", joy, joy_name);
-		else
-			snprintf(tmp, sizeof(tmp), "Joystick %d", joy);
-		
-		tmp[sizeof(tmp) - 1] = 0x00;
-		
-		// Add the joystick entry to the dropdown.
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboInputDevice), tmp);
-	}
-	
-	// Select the first item in the "Input Device" dropdown.
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboInputDevice), 0);
 }
 
 
