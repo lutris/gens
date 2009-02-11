@@ -229,8 +229,6 @@ static void cc_window_create_child_windows(HWND hWnd)
  */
 static void cc_window_create_controller_port_frame(HWND container, int port)
 {
-	// TODO: Store the widget pointers.
-	
 	char tmp[32];
 	
 	// Top of the frame.

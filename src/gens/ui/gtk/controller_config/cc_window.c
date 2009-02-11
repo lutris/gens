@@ -214,8 +214,6 @@ void cc_window_show(GtkWindow *parent)
  */
 static void cc_window_create_controller_port_frame(GtkWidget *container, int port)
 {
-	// TODO: Store the widget pointers.
-	
 	char tmp[32];
 	
 	// Align the frame to the top of the window.
