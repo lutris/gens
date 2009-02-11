@@ -11,6 +11,7 @@ gens_SOURCES += \
 		video/vdraw_sdl.c \
 		input/input_sdl.c \
 		input/input_sdl_events.cpp \
+		input/input_sdl_key_names.c \
 		audio/audio_sdl.c
 
 if GENS_CDROM
@@ -73,6 +74,7 @@ noinst_HEADERS += \
 		input/input_sdl.h \
 		input/input_sdl_events.hpp \
 		input/input_sdl_keys.h \
+		input/input_sdl_key_names.h \
 		input/input_sdl_joystate.h \
 		audio/audio_sdl.h
 

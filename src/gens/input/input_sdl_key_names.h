@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Input Handler - SDL Backend.                                      *
+ * Gens: Input Handler - SDL Backend. (Key Names)                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,19 +20,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_INPUT_SDL_H
-#define GENS_INPUT_SDL_H
+#ifndef GENS_INPUT_SDL_KEY_NAMES_H
+#define GENS_INPUT_SDL_KEY_NAMES_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "input.h"
-
-extern const input_backend_t input_backend_sdl;
+int input_sdl_gdk_to_sdl_keyval(int gdk_key);
+int input_sdl_get_key_name(uint16_t key, char* buf, int size);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_INPUT_SDL_H */
+#endif /* GENS_INPUT_SDL_KEY_NAMES_H */
