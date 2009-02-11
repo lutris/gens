@@ -89,7 +89,7 @@ static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
-static void	cc_window_load_configuration(int player);
+static void	cc_window_show_configuration(int player);
 
 
 /**
@@ -185,8 +185,8 @@ void cc_window_show(GtkWindow *parent)
 	// Initialize the internal data variables.
 	cc_window_init();
 	
-	// Load the controller configuration for the first player.
-	cc_window_load_configuration(0);
+	// Show the controller configuration for the first player.
+	cc_window_show_configuration(0);
 	
 	// Set the window as modal to the main application window.
 	if (parent)
@@ -598,10 +598,10 @@ static void cc_window_init(void)
 
 
 /**
- * cc_window_load_configuration(): Load controller configuration.
+ * cc_window_show_configuration(): Show controller configuration.
  * @param player Player number.
  */
-static void cc_window_load_configuration(int player)
+static void cc_window_show_configuration(int player)
 {
 	if (player < 0 || player > 8)
 		return;
@@ -614,8 +614,7 @@ static void cc_window_load_configuration(int player)
 	gtk_label_set_text(GTK_LABEL(lblConfigure), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
 	
-	// Load the key configuration.
-	// TODO: Convert thm to human-readable text.
+	// Show the key configuration.
 	unsigned int button;
 	for (button = 0; button < 12; button++)
 	{
@@ -737,8 +736,8 @@ static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, 
 	if (!gtk_toggle_button_get_active(togglebutton))
 		return;
 	
-	// Load the controller configuration.
-	cc_window_load_configuration(GPOINTER_TO_INT(user_data));
+	// Show the controller configuration.
+	cc_window_show_configuration(GPOINTER_TO_INT(user_data));
 }
 
 
