@@ -68,6 +68,9 @@ static WNDCLASS	cc_wndclass;
 #define CC_FRAME_PORT_WIDTH  240
 #define CC_FRAME_PORT_HEIGHT 140
 
+#define CC_FRAME_INPUT_DEVICES_WIDTH  256
+#define CC_FRAME_INPUT_DEVICES_HEIGHT 96
+
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
 #define IDC_CC_CBOPADTYPE	0x1200
@@ -101,8 +104,8 @@ static HWND	btnChange[12];
 // Widget creation functions.
 static void	cc_window_create_child_windows(HWND hWnd);
 static void	cc_window_create_controller_port_frame(HWND container, int port);
+static void	cc_window_create_input_devices_frame(HWND container);
 #if 0
-static void	cc_window_create_input_devices_frame(GtkWidget *container);
 static void	cc_window_populate_input_devices(void);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 
@@ -185,17 +188,9 @@ static void cc_window_create_child_windows(HWND hWnd)
 	cc_window_create_controller_port_frame(hWnd, 1);
 	cc_window_create_controller_port_frame(hWnd, 2);
 	
+	// Create the "Input Devices" frame and populate the "Input Devices" listbox.
+	cc_window_create_input_devices_frame(hWnd);
 #if 0
-	// "Configure Controller" outer VBox.
-	GtkWidget *vboxConfigureOuter = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxConfigureOuter, "vboxConfigureOuter");
-	gtk_widget_show(vboxConfigureOuter);
-	gtk_box_pack_start(GTK_BOX(hboxMain), vboxConfigureOuter, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(cc_window), "vboxConfigureOuter",
-			       g_object_ref(vboxConfigureOuter), (GDestroyNotify)g_object_unref);
-	
-	// Create the "Input Devices" frame and populate the "Input Devices" treeview.
-	cc_window_create_input_devices_frame(vboxConfigureOuter);
 	cc_window_populate_input_devices();
 	
 	// Create the "Configure Controller" frame.
@@ -298,77 +293,31 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 }
 
 
-#if 0
 /**
  * cc_window_create_input_devices_frame(): Create the "Input Devices" frame.
  * @param container Container for the frame.
  */
-static void cc_window_create_input_devices_frame(GtkWidget *container)
+static void cc_window_create_input_devices_frame(HWND container)
 {
-	// Align the "Input Devices" frame to the top of the window.
-	GtkWidget *alignInputDevices = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	gtk_widget_set_name(alignInputDevices, "alignInputDevices");
-	gtk_widget_show(alignInputDevices);
-	gtk_box_pack_start(GTK_BOX(container), alignInputDevices, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignInputDevices",
-			       g_object_ref(alignInputDevices), (GDestroyNotify)g_object_unref);
+	// Create the frame.
+	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Input Devices",
+					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					    8+CC_FRAME_PORT_WIDTH+8, 8,
+					    CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
+					    container, NULL, ghInstance, NULL);
+	SetWindowFont(fraInputDevices, fntMain, TRUE);
 	
-	// "Input Devices" frame.
-	GtkWidget *fraInputDevices = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraInputDevices, "fraInputDevices");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraInputDevices), GTK_SHADOW_ETCHED_IN);
-	gtk_container_set_border_width(GTK_CONTAINER(fraInputDevices), 4);
-	gtk_widget_show(fraInputDevices);
-	gtk_container_add(GTK_CONTAINER(alignInputDevices), fraInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "fraInputDevices",
-			       g_object_ref(fraInputDevices), (GDestroyNotify)g_object_unref);
-	
-	// Frame label.
-	GtkWidget *lblInputDevices = gtk_label_new("<b><i>Input Devices</i></b>");
-	gtk_widget_set_name(lblInputDevices, "lblInputDevices");
-	gtk_label_set_use_markup(GTK_LABEL(lblInputDevices), TRUE);
-	gtk_widget_show(lblInputDevices);
-	gtk_frame_set_label_widget(GTK_FRAME(fraInputDevices), lblInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "lblInputDevices",
-			       g_object_ref(lblInputDevices), (GDestroyNotify)g_object_unref);
-	
-	// Scrolled Window for the list of input devices.
-	GtkWidget *scrlInputDevices = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_name(scrlInputDevices, "scrlInputDevices");
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlInputDevices), GTK_SHADOW_IN);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlInputDevices),
-				       GTK_POLICY_NEVER,
-				       GTK_POLICY_AUTOMATIC);
-	gtk_container_set_border_width(GTK_CONTAINER(scrlInputDevices), 4);
-	gtk_widget_show(scrlInputDevices);
-	gtk_container_add(GTK_CONTAINER(fraInputDevices), scrlInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "scrlInputDevices",
-			       g_object_ref(scrlInputDevices), (GDestroyNotify)g_object_unref);
-	
-	// Create a treeview for the list of input devices.
-	lstInputDevices = gtk_tree_view_new();
-	gtk_widget_set_name(lstInputDevices, "lstInputDevices");
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstInputDevices), FALSE);
-	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstInputDevices), FALSE);
-	gtk_widget_set_size_request(lstInputDevices, -1, 80);
-	gtk_widget_show(lstInputDevices);
-	gtk_container_add(GTK_CONTAINER(scrlInputDevices), lstInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "lstInputDevices",
-			       g_object_ref(lstInputDevices), (GDestroyNotify)g_object_unref);
-	
-	// Create the list model.
-	lstoreInputDevices = gtk_list_store_new(1, G_TYPE_STRING);
-	gtk_tree_view_set_model(GTK_TREE_VIEW(lstInputDevices), GTK_TREE_MODEL(lstoreInputDevices));
-	g_object_set_data_full(G_OBJECT(container), "lstoreInputDevices",
-			       g_object_ref(lstoreInputDevices), (GDestroyNotify)g_object_unref);
-	
-	// Create the renderer and columns.
-	GtkCellRenderer  *rendText = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colText = gtk_tree_view_column_new_with_attributes("Input Device", rendText, "text", 0, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(lstInputDevices), colText);
+	// Create a listbox for the list of input devices.
+	lstInputDevices = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_BORDER,
+					 8, 16,
+					 CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
+					 fraInputDevices, NULL, ghInstance, NULL);
+	SetWindowFont(lstInputDevices, fntMain, TRUE);
 }
 
 
+#if 0
 /**
  * cc_window_populate_input_devices(): Populate the "Input Devices" treeview.
  */
