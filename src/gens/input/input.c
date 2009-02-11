@@ -23,6 +23,7 @@
 #include "input.h"
 
 // C includes.
+#include <stdio.h>
 #include <string.h>
 
 #include "gens_core/io/io.h"
@@ -308,8 +309,36 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 	}
 	
 	// Joystick input.
-	// TODO
-	strncpy(buf, "Unknown Joystick Key", size);
+	static const char pov_directions[4][8] = {"Up", "Right", "Down", "Left"};
+	
+	switch (INPUT_JOYSTICK_GET_TYPE(key))
+	{
+		case INPUT_JOYSTICK_TYPE_AXIS:
+			snprintf(buf, size, "Joy %d, Axis %d%c",
+				 INPUT_JOYSTICK_GET_NUMBER(key),
+				 INPUT_JOYSTICK_GET_AXIS(key),
+				 (INPUT_JOYSTICK_GET_AXIS_DIRECTION(key) == INPUT_JOYSTICK_AXIS_NEGATIVE ? '-' : '+'));
+			break;
+		
+		case INPUT_JOYSTICK_TYPE_BUTTON:
+			snprintf(buf, size, "Joy %d, Button %d",
+				 INPUT_JOYSTICK_GET_NUMBER(key),
+				 INPUT_JOYSTICK_GET_BUTTON(key));
+			break;
+		
+		case INPUT_JOYSTICK_TYPE_POVHAT:
+			snprintf(buf, size, "Joy %d, POV %d %s",
+				 INPUT_JOYSTICK_GET_NUMBER(key),
+				 INPUT_JOYSTICK_GET_POVHAT_NUMBER(key),
+				 pov_directions[INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)]);
+			break;
+		
+		default:
+			strncpy(buf, "Unknown Joy Key", size);
+			buf[size - 1] = 0x00;
+			return -1;
+	}
+	
 	buf[size - 1] = 0x00;
-	return -1;
+	return 0;
 }
