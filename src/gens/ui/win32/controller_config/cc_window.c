@@ -62,14 +62,17 @@ BOOL cc_window_is_configuring = FALSE;
 static WNDCLASS	cc_wndclass;
 
 // Window size.
-#define CC_WINDOW_WIDTH  640
-#define CC_WINDOW_HEIGHT 480
+#define CC_WINDOW_WIDTH  580
+#define CC_WINDOW_HEIGHT 456
 
-#define CC_FRAME_PORT_WIDTH  240
+#define CC_FRAME_PORT_WIDTH  236
 #define CC_FRAME_PORT_HEIGHT 140
 
-#define CC_FRAME_INPUT_DEVICES_WIDTH  272
+#define CC_FRAME_INPUT_DEVICES_WIDTH  320
 #define CC_FRAME_INPUT_DEVICES_HEIGHT 96
+
+#define CC_FRAME_CONFIGURE_WIDTH  CC_FRAME_INPUT_DEVICES_WIDTH
+#define CC_FRAME_CONFIGURE_HEIGHT (CC_WINDOW_HEIGHT-8-CC_FRAME_INPUT_DEVICES_HEIGHT-8-24-8)
 
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
@@ -86,6 +89,9 @@ static input_keymap_t cc_key_config[8];
 // Current player number being configured.
 static int cc_cur_player;
 
+// Monospace font for the current key configuration.
+static HFONT	cc_fntMonospace = NULL;
+
 // Widgets.
 static HWND	chkTeamplayer[2];
 static HWND	lblPlayer[8];
@@ -96,7 +102,7 @@ static HWND	optConfigure[8];
 static HWND	lstInputDevices;
 
 // Widgets: "Configure Controller" frame.
-static HWND	lblConfigure;
+static HWND	fraConfigure;
 static HWND	lblButton[12];
 static HWND	lblCurConfig[12];
 static HWND	btnChange[12];
@@ -106,9 +112,9 @@ static void	cc_window_create_child_windows(HWND hWnd);
 static void	cc_window_create_controller_port_frame(HWND container, int port);
 static void	cc_window_create_input_devices_frame(HWND container);
 static void	cc_window_populate_input_devices(HWND lstBox);
-#if 0
-static void	cc_window_create_configure_controller_frame(GtkWidget *container);
+static void	cc_window_create_configure_controller_frame(HWND container);
 
+#if 0
 // Callbacks.
 static gboolean	cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
@@ -192,10 +198,10 @@ static void cc_window_create_child_windows(HWND hWnd)
 	cc_window_create_input_devices_frame(hWnd);
 	cc_window_populate_input_devices(lstInputDevices);
 	
-#if 0
 	// Create the "Configure Controller" frame.
-	cc_window_create_configure_controller_frame(vboxConfigureOuter);
+	cc_window_create_configure_controller_frame(hWnd);
 	
+#if 0
 	// Create the dialog buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
 			       "gtk-cancel", GTK_RESPONSE_CANCEL,
@@ -285,7 +291,7 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 		// "Configure" button.
 		optConfigure[player] = CreateWindow(WC_BUTTON, "Configure",
 						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
-						    8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75+4, 23,
+						    8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75, 23,
 						    container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
 						    ghInstance, NULL);
 		SetWindowFont(optConfigure[player], fntMain, TRUE);
@@ -299,7 +305,7 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
  */
 static void cc_window_create_input_devices_frame(HWND container)
 {
-	// Create the frame.
+	// "Input Devices" frame.
 	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Input Devices",
 					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					    8+CC_FRAME_PORT_WIDTH+8, 8,
@@ -335,105 +341,55 @@ static void cc_window_populate_input_devices(HWND lstBox)
 }
 
 
-#if 0
 /**
  * cc_window_create_configure_controller_frame(): Create the "Configure Controller" frame.
  * @param container Container for the frame.
  */
-static void cc_window_create_configure_controller_frame(GtkWidget *container)
+static void cc_window_create_configure_controller_frame(HWND container)
 {
-	// Align the "Configure Controller" frame to the top of the window.
-	GtkWidget *alignConfigure = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	gtk_widget_set_name(alignConfigure, "alignConfigure");
-	gtk_widget_show(alignConfigure);
-	gtk_box_pack_start(GTK_BOX(container), alignConfigure, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignConfigure",
-			       g_object_ref(alignConfigure), (GDestroyNotify)g_object_unref);
+	// Top and left sides of the frame.
+	const int fraConfigure_top = 8+CC_FRAME_INPUT_DEVICES_HEIGHT+8;
+	const int fraConfigure_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
-	GtkWidget *fraConfigure = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraConfigure, "fraConfigure");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraConfigure), GTK_SHADOW_ETCHED_IN);
-	gtk_container_set_border_width(GTK_CONTAINER(fraConfigure), 4);
-	gtk_widget_show(fraConfigure);
-	gtk_container_add(GTK_CONTAINER(alignConfigure), fraConfigure);
-	g_object_set_data_full(G_OBJECT(container), "fraConfigure",
-			       g_object_ref(fraConfigure), (GDestroyNotify)g_object_unref);
+	fraConfigure = CreateWindow(WC_BUTTON, NULL,
+				    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				    fraConfigure_left, fraConfigure_top,
+				    CC_FRAME_CONFIGURE_WIDTH, CC_FRAME_CONFIGURE_HEIGHT,
+				    container, NULL, ghInstance, NULL);
+	SetWindowFont(fraConfigure, fntMain, TRUE);
 	
-	// Frame label.
-	lblConfigure = gtk_label_new(NULL);
-	gtk_widget_set_name(lblConfigure, "lblConfigure");
-	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
-	gtk_widget_show(lblConfigure);
-	gtk_frame_set_label_widget(GTK_FRAME(fraConfigure), lblConfigure);
-	g_object_set_data_full(G_OBJECT(container), "lblConfigure",
-			       g_object_ref(lblConfigure), (GDestroyNotify)g_object_unref);
-	
-	// Create the table for button remapping.
-	GtkWidget *tblButtonRemap = gtk_table_new(12, 3, FALSE);
-	gtk_widget_set_name(tblButtonRemap, "tblButtonRemap");
-	gtk_container_set_border_width(GTK_CONTAINER(tblButtonRemap), 4);
-	gtk_table_set_col_spacings(GTK_TABLE(tblButtonRemap), 12);
-	gtk_widget_show(tblButtonRemap);
-	gtk_container_add(GTK_CONTAINER(fraConfigure), tblButtonRemap);
-	g_object_set_data_full(G_OBJECT(container), "tblButtonRemap",
-			       g_object_ref(tblButtonRemap), (GDestroyNotify)g_object_unref);
-	
-	// Populate the table.
+	// Create the widgets for the "Configure Controller" frame.
 	unsigned int button;
 	char tmp[16];
 	for (button = 0; button < 12; button++)
 	{
 		// Button label.
 		sprintf(tmp, "%s:", input_key_names[button]);
-		lblButton[button] = gtk_label_new(tmp);
-		sprintf(tmp, "lblButton_%d", button);
-		gtk_widget_set_name(lblButton[button], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblButton[button]), 1.0f, 0.5f);
-		gtk_label_set_justify(GTK_LABEL(lblButton[button]), GTK_JUSTIFY_RIGHT);
-		gtk_widget_show(lblButton[button]);
-		gtk_table_attach(GTK_TABLE(tblButtonRemap), lblButton[button],
-				 0, 1, button, button + 1,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblButton[button]), (GDestroyNotify)g_object_unref);
+		lblButton[button] = CreateWindow(WC_STATIC, tmp,
+						 WS_CHILD | WS_VISIBLE | SS_RIGHT,
+						 fraConfigure_left+8, fraConfigure_top+16+(button*24)+2,
+						 36, 16,
+						 container, NULL, ghInstance, NULL);
+		SetWindowFont(lblButton[button], fntMain, TRUE);
 		
 		// Current configuration label.
-		lblCurConfig[button] = gtk_label_new(NULL);
-		sprintf(tmp, "lblCurConfig_%d", button);
-		gtk_widget_set_name(lblCurConfig[button], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblCurConfig[button]), 0.0f, 0.5f);
-		gtk_label_set_justify(GTK_LABEL(lblCurConfig[button]), GTK_JUSTIFY_CENTER);
-		gtk_label_set_width_chars(GTK_LABEL(lblCurConfig[button]), 24);
-		gtk_label_set_selectable(GTK_LABEL(lblCurConfig[button]), TRUE);
-		gtk_widget_show(lblCurConfig[button]);
-		gtk_table_attach(GTK_TABLE(tblButtonRemap), lblCurConfig[button],
-				 1, 2, button, button + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblCurConfig[button]), (GDestroyNotify)g_object_unref);
+		lblCurConfig[button] = CreateWindow(WC_STATIC, "Testing 1 2 3",
+						    WS_CHILD | WS_VISIBLE | SS_LEFT,
+						    fraConfigure_left+8+36+8, fraConfigure_top+16+(button*24)+2,
+						    CC_FRAME_CONFIGURE_WIDTH-8-36-8-75-8-8, 16,
+						    container, NULL, ghInstance, NULL);
 		
 		// "Change" button.
-		btnChange[button] = gtk_button_new_with_label("Change");
-		sprintf(tmp, "btnChange_%d", button);
-		gtk_widget_set_name(btnChange[button], tmp);
-		gtk_widget_show(btnChange[button]);
-		gtk_table_attach(GTK_TABLE(tblButtonRemap), btnChange[button],
-				 2, 3, button, button + 1,
-				 (GtkAttachOptions)(0),
-				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(btnChange[button]), (GDestroyNotify)g_object_unref);
-		
-		// Connect the "clicked" signal for the "Change" button.
-		g_signal_connect(GTK_OBJECT(btnChange[button]), "clicked",
-				 G_CALLBACK(cc_window_callback_btnChange_clicked),
-				 GINT_TO_POINTER(button));
+		btnChange[button] = CreateWindow(WC_BUTTON, "Change",
+						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+						 fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-75,
+						 fraConfigure_top+16+(button*24),
+						 75, 23,
+						 container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
+		SetWindowFont(btnChange[button], fntMain, TRUE);
 	}
 }
-#endif
 
 
 /**
@@ -450,6 +406,13 @@ void cc_window_close(void)
 	// Destroy the window.
 	DestroyWindow(cc_window);
 	cc_window = NULL;
+	
+	// Delete the monospace font.
+	if (cc_fntMonospace)
+	{
+		DeleteFont(cc_fntMonospace);
+		cc_fntMonospace = NULL;
+	}
 }
 
 
@@ -598,6 +561,14 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			
 			cc_window_is_configuring = FALSE;
 			cc_window = NULL;
+			
+			// Delete the monospace font.
+			if (cc_fntMonospace)
+			{
+				DeleteFont(cc_fntMonospace);
+				cc_fntMonospace = NULL;
+			}
+			
 			break;
 	}
 	
