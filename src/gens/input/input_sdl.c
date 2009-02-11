@@ -194,8 +194,19 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	SDL_Event sdlev;
 	
 	// Only grab keys from the Gens window. (or controller config window)
-	if (grab != gens_window && grab != cc_window)
+	if (grab != gens_window)
+	{
+		// Not the Gens window.
+		if (grab == cc_window && cc_window_is_configuring)
+		{
+			// Configuring controllers.
+			// Don't allow GTK+ to handle this keypress.
+			return TRUE;
+		}
+		
+		// Don't push this key onto the SDL event stack.
 		return FALSE;
+	}
 	
 	switch(event->type)
 	{
@@ -220,12 +231,7 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	if (sdlev.key.keysym.sym != -1)
 		SDL_PushEvent(&sdlev);
 	
-	if (grab == cc_window && cc_window_is_configuring)
-	{
-		// Configuring controllers. Don't allow GTK+ to handle this keypress.
-		return TRUE;
-	}
-	
+	// Allow GTK+ to process this key.
 	return FALSE;
 }
 
