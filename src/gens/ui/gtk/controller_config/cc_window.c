@@ -320,7 +320,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		g_object_set_data_full(G_OBJECT(container), tmp,
 				       g_object_ref(lblPlayer[player]), (GDestroyNotify)g_object_unref);
 		
-		// Pad type.
+		// Pad type dropdown.
 		cboPadType[player] = gtk_combo_box_new_text();
 		sprintf(tmp, "cboPadType_%s", playerName);
 		gtk_widget_set_name(cboPadType[player], tmp);
@@ -332,7 +332,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		g_object_set_data_full(G_OBJECT(container), tmp,
 				       g_object_ref(cboPadType[player]), (GDestroyNotify)g_object_unref);
 		
-		// Pad type dropdown.
+		// Pad type dropdown entries.
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "3 buttons");
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "6 buttons");
 		
