@@ -146,9 +146,12 @@ uint16_t input_sdl_gdk_to_gens_keyval(int gdk_key)
 	};
 	
 	uint16_t sdl_key = gdk_to_sdl_table[gdk_key & 0xFF];
+	if (sdl_key == 0)
+	{
+		fprintf(stderr, "%s(): Unknown GDK key: 0x%04X\n", __func__, gdk_key);
+		return 0;
+	}
 	
-	fprintf(stderr, "%s(): Unknown GDK key: 0x%04X [mapped to 0x%04X]\n", __func__, gdk_key, sdl_key);
-	//return -1;
 	return sdl_key;
 }
 
