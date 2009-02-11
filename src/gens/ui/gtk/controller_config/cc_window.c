@@ -63,7 +63,7 @@ static GtkWidget	*optConfigure[8];
 static GtkWidget	*cboInputDevice;
 
 // Widgets: "Configure Controller" frame.
-static GtkWidget	*lblShowConfig;
+static GtkWidget	*lblConfigure;
 static GtkWidget	*lblButton[12];
 static GtkWidget	*lblCurConfig[12];
 static GtkWidget	*btnChange[12];
@@ -73,6 +73,7 @@ static GSList		*gslConfigure;
 
 // Widget creation functions.
 static void	cc_window_create_controller_port_frame(GtkWidget *container, int port);
+static void	cc_window_create_input_devices_frame(GtkWidget *container);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 
 // Callbacks.
@@ -157,6 +158,9 @@ void cc_window_show(GtkWindow *parent)
 	gtk_box_pack_start(GTK_BOX(hboxMain), vboxConfigureOuter, FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(cc_window), "vboxConfigureOuter",
 			       g_object_ref(vboxConfigureOuter), (GDestroyNotify)g_object_unref);
+	
+	// Create the "Input Devices" frame.
+	cc_window_create_input_devices_frame(vboxConfigureOuter);
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
@@ -345,6 +349,66 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 
 
 /**
+ * cc_window_create_input_devices_frame(): Create the "Input Devices" frame.
+ * @param container Container for the frame.
+ */
+static void cc_window_create_input_devices_frame(GtkWidget *container)
+{
+	// Align the "Input Devices" frame to the top of the window.
+	GtkWidget *alignInputDevices = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+	gtk_widget_set_name(alignInputDevices, "alignInputDevices");
+	gtk_widget_show(alignInputDevices);
+	gtk_box_pack_start(GTK_BOX(container), alignInputDevices, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "alignInputDevices",
+			       g_object_ref(alignInputDevices), (GDestroyNotify)g_object_unref);
+	
+	// "Input Devices" frame.
+	GtkWidget *fraInputDevices = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraInputDevices, "fraInputDevices");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraInputDevices), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraInputDevices), 4);
+	gtk_widget_show(fraInputDevices);
+	gtk_container_add(GTK_CONTAINER(alignInputDevices), fraInputDevices);
+	g_object_set_data_full(G_OBJECT(container), "fraInputDevices",
+			       g_object_ref(fraInputDevices), (GDestroyNotify)g_object_unref);
+	
+	// Frame label.
+	GtkWidget *lblInputDevices = gtk_label_new("<b><i>Input Devices</i></b>");
+	gtk_widget_set_name(lblInputDevices, "lblInputDevices");
+	gtk_label_set_use_markup(GTK_LABEL(lblInputDevices), TRUE);
+	gtk_widget_show(lblInputDevices);
+	gtk_frame_set_label_widget(GTK_FRAME(fraInputDevices), lblInputDevices);
+	g_object_set_data_full(G_OBJECT(container), "lblInputDevices",
+			       g_object_ref(lblInputDevices), (GDestroyNotify)g_object_unref);
+	
+	// HBox for input device selection.
+	GtkWidget *hboxInputDevice = gtk_hbox_new(FALSE, 8);
+	gtk_widget_set_name(hboxInputDevice, "hboxInputDevice");
+	gtk_container_set_border_width(GTK_CONTAINER(hboxInputDevice), 8);
+	gtk_widget_show(hboxInputDevice);
+	gtk_container_add(GTK_CONTAINER(fraInputDevices), hboxInputDevice);
+	g_object_set_data_full(G_OBJECT(container), "hboxInputDevice",
+			       g_object_ref(hboxInputDevice), (GDestroyNotify)g_object_unref);
+	
+	// Label for input device selection.
+	GtkWidget *lblInputDevice = gtk_label_new("Input Device:");
+	gtk_widget_set_name(lblInputDevice, "lblInputDevice");
+	gtk_widget_show(lblInputDevice);
+	gtk_box_pack_start(GTK_BOX(hboxInputDevice), lblInputDevice, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "lblInputDevice",
+			       g_object_ref(lblInputDevice), (GDestroyNotify)g_object_unref);
+	
+	// Dropdown box for input device selection.
+	cboInputDevice = gtk_combo_box_new_text();
+	gtk_widget_set_name(cboInputDevice, "cboInputDevice");
+	gtk_widget_show(cboInputDevice);
+	gtk_box_pack_start(GTK_BOX(hboxInputDevice), cboInputDevice, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(container), "cboInputDevice",
+			       g_object_ref(cboInputDevice), (GDestroyNotify)g_object_unref);
+}
+
+
+/**
  * cc_window_create_configure_controller_frame(): Create the "Configure Controller" frame.
  * @param container Container for the frame.
  */
@@ -369,7 +433,7 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 			       g_object_ref(fraConfigure), (GDestroyNotify)g_object_unref);
 	
 	// Frame label.
-	GtkWidget *lblConfigure = gtk_label_new("<b><i>Configure Controller</i></b>");
+	lblConfigure = gtk_label_new(NULL);
 	gtk_widget_set_name(lblConfigure, "lblConfigure");
 	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
 	gtk_widget_show(lblConfigure);
@@ -377,65 +441,13 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	g_object_set_data_full(G_OBJECT(container), "lblConfigure",
 			       g_object_ref(lblConfigure), (GDestroyNotify)g_object_unref);
 	
-	// VBox for "Configure Controller".
-	GtkWidget *vboxConfigure = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxConfigure, "vboxConfigure");
-	gtk_container_set_border_width(GTK_CONTAINER(vboxConfigure), 8);
-	gtk_widget_show(vboxConfigure);
-	gtk_container_add(GTK_CONTAINER(fraConfigure), vboxConfigure);
-	g_object_set_data_full(G_OBJECT(container), "vboxConfigure",
-			       g_object_ref(vboxConfigure), (GDestroyNotify)g_object_unref);
-	
-	// HBox for input device selection.
-	GtkWidget *hboxInputDevice = gtk_hbox_new(FALSE, 8);
-	gtk_widget_set_name(hboxInputDevice, "hboxInputDevice");
-	gtk_container_set_border_width(GTK_CONTAINER(hboxInputDevice), 8);
-	gtk_widget_show(hboxInputDevice);
-	gtk_box_pack_start(GTK_BOX(vboxConfigure), hboxInputDevice, TRUE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "hboxInputDevice",
-			       g_object_ref(hboxInputDevice), (GDestroyNotify)g_object_unref);
-	
-	// Label for input device selection.
-	GtkWidget *lblInputDevice = gtk_label_new("Input Device:");
-	gtk_widget_set_name(lblInputDevice, "lblInputDevice");
-	gtk_widget_show(lblInputDevice);
-	gtk_box_pack_start(GTK_BOX(hboxInputDevice), lblInputDevice, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblInputDevice",
-			       g_object_ref(lblInputDevice), (GDestroyNotify)g_object_unref);
-	
-	// Dropdown box for input device selection.
-	cboInputDevice = gtk_combo_box_new_text();
-	gtk_widget_set_name(cboInputDevice, "cboInputDevice");
-	gtk_widget_show(cboInputDevice);
-	gtk_box_pack_start(GTK_BOX(hboxInputDevice), cboInputDevice, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "cboInputDevice",
-			       g_object_ref(cboInputDevice), (GDestroyNotify)g_object_unref);
-	
-	// Create the frame for showing the configuration.
-	GtkWidget *fraShowConfig = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraShowConfig, "fraShowConfig");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraShowConfig), GTK_SHADOW_ETCHED_IN);
-	gtk_container_set_border_width(GTK_CONTAINER(fraShowConfig), 0);
-	gtk_widget_show(fraShowConfig);
-	gtk_box_pack_start(GTK_BOX(vboxConfigure), fraShowConfig, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "fraShowConfig",
-			       g_object_ref(fraShowConfig), (GDestroyNotify)g_object_unref);
-	
-	// Create the label for showing the configuration.
-	lblShowConfig = gtk_label_new(NULL);
-	gtk_widget_set_name(lblShowConfig, "lblShowConfig");
-	gtk_widget_show(lblShowConfig);
-	gtk_frame_set_label_widget(GTK_FRAME(fraShowConfig), lblShowConfig);
-	g_object_set_data_full(G_OBJECT(container), "lblShowConfig",
-			       g_object_ref(lblShowConfig), (GDestroyNotify)g_object_unref);
-	
 	// Create the table for button remapping.
 	GtkWidget *tblButtonRemap = gtk_table_new(12, 3, FALSE);
 	gtk_widget_set_name(tblButtonRemap, "tblButtonRemap");
 	gtk_container_set_border_width(GTK_CONTAINER(tblButtonRemap), 4);
 	gtk_table_set_col_spacings(GTK_TABLE(tblButtonRemap), 12);
 	gtk_widget_show(tblButtonRemap);
-	gtk_container_add(GTK_CONTAINER(fraShowConfig), tblButtonRemap);
+	gtk_container_add(GTK_CONTAINER(fraConfigure), tblButtonRemap);
 	g_object_set_data_full(G_OBJECT(container), "tblButtonRemap",
 			       g_object_ref(tblButtonRemap), (GDestroyNotify)g_object_unref);
 	
@@ -572,8 +584,8 @@ static void cc_window_load_configuration(int player)
 	
 	// Set the "Configure Controller" frame title.
 	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
-	gtk_label_set_text(GTK_LABEL(lblShowConfig), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblShowConfig), TRUE);
+	gtk_label_set_text(GTK_LABEL(lblConfigure), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
 	
 	// Load the key configuration.
 	// TODO: Convert thm to human-readable text.
