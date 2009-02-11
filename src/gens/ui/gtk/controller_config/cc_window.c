@@ -251,18 +251,28 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	GtkWidget *vboxController = gtk_vbox_new(FALSE, 0);
 	sprintf(tmp, "vboxController_%d", port);
 	gtk_widget_set_name(vboxController, tmp);
-	gtk_container_set_border_width(GTK_CONTAINER(vboxController), 8);
+	gtk_container_set_border_width(GTK_CONTAINER(vboxController), 0);
 	gtk_widget_show(vboxController);
 	gtk_container_add(GTK_CONTAINER(fraPort), vboxController);
 	g_object_set_data_full(G_OBJECT(container), tmp,
 			       g_object_ref(vboxController), (GDestroyNotify)g_object_unref);
+	
+	// Padding for the teamplayer checkbox.
+	GtkWidget *alignTeamplayer = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+	sprintf(tmp, "alignTeamplayer_%d", port);
+	gtk_widget_set_name(alignTeamplayer, tmp);
+	gtk_alignment_set_padding(GTK_ALIGNMENT(alignTeamplayer), 4, 4, 8, 8);
+	gtk_widget_show(alignTeamplayer);
+	gtk_box_pack_start(GTK_BOX(vboxController), alignTeamplayer, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "alignTeamplayer",
+			       g_object_ref(alignTeamplayer), (GDestroyNotify)g_object_unref);
 	
 	// Checkbox for enabling teamplayer.
 	chkTeamplayer[port-1] = gtk_check_button_new_with_label("Use Teamplayer");
 	sprintf(tmp, "chkTeamplayer_%d", port);
 	gtk_widget_set_name(chkTeamplayer[port-1], tmp);
 	gtk_widget_show(chkTeamplayer[port-1]);
-	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer[port-1], FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(alignTeamplayer), chkTeamplayer[port-1]);
 	g_object_set_data_full(G_OBJECT(container), tmp,
 			       g_object_ref(chkTeamplayer[port-1]), (GDestroyNotify)g_object_unref);
 	
@@ -271,6 +281,16 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 			 G_CALLBACK(cc_window_callback_teamplayer_toggled),
 			 GINT_TO_POINTER(port-1));
 	
+	// Padding for the player control table.
+	GtkWidget *alignPlayers = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+	sprintf(tmp, "alignPlayers_%d", port);
+	gtk_widget_set_name(alignPlayers, tmp);
+	gtk_alignment_set_padding(GTK_ALIGNMENT(alignPlayers), 0, 8, 8, 8);
+	gtk_widget_show(alignPlayers);
+	gtk_box_pack_start(GTK_BOX(vboxController), alignPlayers, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(container), "alignPlayers",
+			       g_object_ref(alignPlayers), (GDestroyNotify)g_object_unref);
+	
 	// Table for the player controls.
 	GtkWidget *tblPlayers = gtk_table_new(4, 3, FALSE);
 	sprintf(tmp, "tblPlayers_%d", port);
@@ -278,7 +298,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	gtk_container_set_border_width(GTK_CONTAINER(tblPlayers), 0);
 	gtk_table_set_col_spacings(GTK_TABLE(tblPlayers), 12);
 	gtk_widget_show(tblPlayers);
-	gtk_box_pack_start(GTK_BOX(vboxController), tblPlayers, TRUE, TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(alignPlayers), tblPlayers);
 	g_object_set_data_full(G_OBJECT(container), tmp,
 			       g_object_ref(tblPlayers), (GDestroyNotify)g_object_unref);
 	
