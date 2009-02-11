@@ -55,6 +55,9 @@ int cc_window_is_configuring = FALSE;
 // Internal key configuration, which is copied when Save is clicked.
 static input_keymap_t cc_key_config[8];
 
+// Current player number being configured.
+static int cc_cur_player;
+
 // Widgets.
 static GtkWidget	*chkTeamplayer[2];
 static GtkWidget	*lblPlayer[8];
@@ -86,6 +89,7 @@ static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
+static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
@@ -552,6 +556,11 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 				 (GtkAttachOptions)(0), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
 				       g_object_ref(btnChange[button]), (GDestroyNotify)g_object_unref);
+		
+		// Connect the "clicked" signal for the "Change" button.
+		g_signal_connect(GTK_OBJECT(btnChange[button]), "clicked",
+				 G_CALLBACK(cc_window_callback_btnChange_clicked),
+				 GINT_TO_POINTER(button));
 	}
 }
 
@@ -641,8 +650,10 @@ static void cc_window_show_configuration(int player)
 	if (player < 0 || player > 8)
 		return;
 	
-	char tmp[64];
-	char key_name[64];
+	char tmp[64], key_name[64];
+	
+	// Set the current player number.
+	cc_cur_player = player;
 	
 	// Set the "Configure Controller" frame title.
 	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
@@ -734,25 +745,21 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 	if (port < 0 || port > 1)
 		return;
 	
-	unsigned int startPort = (port == 0 ? 2: 5);
-	unsigned int i;
+	int startPort = (port == 0 ? 2: 5);
 	
 	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
 	if (!active)
 	{
-		for (i = startPort; i < startPort + 3; i++)
+		if ((cc_cur_player >= startPort) && (cc_cur_player < startPort + 3))
 		{
-			if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[i])))
-			{
-				// One of the buttons is toggled.
-				// Toggle the main button for the port.
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optConfigure[port]), TRUE);
-				break;
-			}
+			// One of the teamplayer players is selected.
+			// Select the main player for the port.
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optConfigure[port]), TRUE);
 		}
 	}
 	
 	// Enable/Disable teamplayer ports for this port.
+	int i;
 	for (i = startPort; i < startPort + 3; i++)
 	{
 		gtk_widget_set_sensitive(lblPlayer[i], active);
@@ -805,4 +812,51 @@ static void cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 		gtk_widget_set_sensitive(lblCurConfig[button], is6button);
 		gtk_widget_set_sensitive(btnChange[button], is6button);
 	}
+}
+
+
+/**
+ * cc_window_callback_btnChange_clicked(): A "Change" button was clicked.
+ * @param button Button that was clicked.
+ * @param user_data Button number.
+ */
+static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(button);
+	
+	if (cc_window_is_configuring)
+		return;
+	
+	int btnID = GPOINTER_TO_INT(user_data);
+	if (btnID < 0 || btnID >= 12)
+		return;
+	
+	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 1)
+	{
+		if (btnID >= 8)
+			return;
+	}
+	
+	// Set cc_window_is_configuring to indicate that the key is being configured.
+	cc_window_is_configuring = TRUE;
+	
+	// Set the current configure text.
+	gtk_label_set_text(GTK_LABEL(lblCurConfig[btnID]), "<tt>Press a Key...</tt>");
+	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[btnID]), TRUE);
+	
+	// TODO: Make the label blink.
+	
+	// Get a key value.
+	cc_key_config[cc_cur_player].data[btnID] = input_get_key();
+	
+	// Set the text of the label with the key name.
+	char tmp[64], key_name[64];
+	input_get_key_name(cc_key_config[cc_cur_player].data[btnID], &key_name[0], sizeof(key_name));
+	sprintf(tmp, "<tt>0x%04X: %s</tt>", cc_key_config[cc_cur_player].data[btnID], key_name);
+	gtk_label_set_text(GTK_LABEL(lblCurConfig[btnID]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[btnID]), TRUE);
+	
+	// Key is no longer being configured.
+	cc_window_is_configuring = FALSE;
 }
