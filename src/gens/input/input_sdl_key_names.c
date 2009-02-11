@@ -285,13 +285,13 @@ int input_sdl_get_key_name(uint16_t key, char* buf, int size)
 
 		// 0x100 - 0x10F
 		// Numeric Keypad
-		"NumPad 0", "NumPad 1", "NumPad 2", "NumPad 3",
-		"NumPad 4", "NumPad 5", "NumPad 6", "NumPad 7",
-		"NumPad 8", "NumPad 9", "NumPad .", "NumPad /",
-		"NumPad *", "NumPad -", "NumPad +", "NumPad Enter",
+		"Numpad 0", "Numpad 1", "Numpad 2", "Numpad 3",
+		"Numpad 4", "Numpad 5", "Numpad 6", "Numpad 7",
+		"Numpad 8", "Numpad 9", "Numpad .", "Numpad /",
+		"Numpad *", "Numpad -", "Numpad +", "Numpad Enter",
 		
 		// 0x110 - 0x12F
-		"NumPad =", "Up", "Down", "Right", "Left", "Insert", "Home", "End",
+		"Numpad =", "Up", "Down", "Right", "Left", "Insert", "Home", "End",
 		"Page Up", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6",
 		"F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14",
 		"F15", NULL, NULL, NULL, "Num Lock", "Caps Lock", "Scroll Lock", "Right Shift",
