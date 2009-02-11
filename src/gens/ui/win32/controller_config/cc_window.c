@@ -62,8 +62,17 @@ BOOL cc_window_is_configuring = FALSE;
 static WNDCLASS	cc_wndclass;
 
 // Window size.
-#define CC_WINDOW_WIDTH  320
-#define CC_WINDOW_HEIGHT 240
+#define CC_WINDOW_WIDTH  640
+#define CC_WINDOW_HEIGHT 480
+
+#define CC_FRAME_PORT_WIDTH  240
+#define CC_FRAME_PORT_HEIGHT 140
+
+// Command value bases.
+#define IDC_CC_CHKTEAMPLAYER	0x1100
+#define IDC_CC_CBOPADTYPE	0x1200
+#define IDC_CC_OPTCONFIGURE	0x1300
+#define IDC_CC_BTNCHANGE	0x1400
 
 // Window procedure.
 static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -91,8 +100,8 @@ static HWND	btnChange[12];
 
 // Widget creation functions.
 static void	cc_window_create_child_windows(HWND hWnd);
+static void	cc_window_create_controller_port_frame(HWND container, int port);
 #if 0
-static void	cc_window_create_controller_port_frame(GtkWidget *container, int port);
 static void	cc_window_create_input_devices_frame(GtkWidget *container);
 static void	cc_window_populate_input_devices(void);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
@@ -172,35 +181,11 @@ void cc_window_show(HWND parent)
  */
 static void cc_window_create_child_windows(HWND hWnd)
 {
-#if 0
-	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(cc_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
-	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(cc_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
-	
-	// Create the main HBox.
-	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 0);
-	gtk_widget_set_name(hboxMain, "hboxMain");
-	gtk_widget_show(hboxMain);
-	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxMain, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(cc_window), "hboxMain",
-			       g_object_ref(hboxMain), (GDestroyNotify)g_object_unref);
-	
-	// Controller port VBox.
-	GtkWidget *vboxControllerPorts = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxControllerPorts, "vboxControllerPorts");
-	gtk_widget_show(vboxControllerPorts);
-	gtk_box_pack_start(GTK_BOX(hboxMain), vboxControllerPorts, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(cc_window), "vboxControllerPorts",
-			       g_object_ref(vboxControllerPorts), (GDestroyNotify)g_object_unref);
-	
 	// Create the controller port frames.
-	gslConfigure = NULL;
-	cc_window_create_controller_port_frame(vboxControllerPorts, 1);
-	cc_window_create_controller_port_frame(vboxControllerPorts, 2);
+	cc_window_create_controller_port_frame(hWnd, 1);
+	cc_window_create_controller_port_frame(hWnd, 2);
 	
+#if 0
 	// "Configure Controller" outer VBox.
 	GtkWidget *vboxConfigureOuter = gtk_vbox_new(FALSE, 0);
 	gtk_widget_set_name(vboxConfigureOuter, "vboxConfigureOuter");
@@ -238,141 +223,41 @@ static void cc_window_create_child_windows(HWND hWnd)
 
 
 /**
- * cc_window_wndproc(): Window procedure.
- * @param hWnd hWnd of the window.
- * @param message Window message.
- * @param wParam
- * @param lParam
- * @return
- */
-static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-		case WM_CREATE:
-			cc_window_create_child_windows(hWnd);
-			break;
-		
-		case WM_CLOSE:
-			DestroyWindow(hWnd);
-			return 0;
-		
-		case WM_ACTIVATE:
-			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
-			{
-				// Set the DirectInput cooperative level.
-				input_set_cooperative_level(hWnd);
-				
-				// Initialize joysticks.
-				input_dinput_init_joysticks(hWnd);
-			}
-			break;
-		
-		case WM_COMMAND:
-			// TODO
-			break;
-		
-		case WM_DESTROY:
-			if (hWnd != cc_window)
-				break;
-			
-			cc_window_is_configuring = FALSE;
-			cc_window = NULL;
-			break;
-	}
-	
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-
-
-#if 0
-/**
  * cc_window_create_controller_port_frame(): Create a controller port frame.
  * @param container Container for the frame.
  * @param port Port number.
  */
-static void cc_window_create_controller_port_frame(GtkWidget *container, int port)
+static void cc_window_create_controller_port_frame(HWND container, int port)
 {
 	// TODO: Store the widget pointers.
 	
 	char tmp[32];
 	
-	// Align the frame to the top of the window.
-	GtkWidget *alignPort = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	sprintf(tmp, "alignPort_%d", port);
-	gtk_widget_set_name(alignPort, tmp);
-	gtk_widget_show(alignPort);
-	gtk_box_pack_start(GTK_BOX(container), alignPort, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignPort",
-			       g_object_ref(alignPort), (GDestroyNotify)g_object_unref);
+	// Top of the frame.
+	const int fraPort_top = 8 + ((port-1)*(CC_FRAME_PORT_HEIGHT + 8));
 	
 	// Create the frame.
-	GtkWidget *fraPort = gtk_frame_new(NULL);
-	sprintf(tmp, "fraPort_%d", port);
-	gtk_widget_set_name(fraPort, tmp);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraPort), GTK_SHADOW_ETCHED_IN);
-	gtk_container_set_border_width(GTK_CONTAINER(fraPort), 4);
-	gtk_widget_show(fraPort);
-	gtk_container_add(GTK_CONTAINER(alignPort), fraPort);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(fraPort), (GDestroyNotify)g_object_unref);
-	
-	// Port label.
-	sprintf(tmp, "<b><i>Port %d</i></b>", port);
-	GtkWidget *lblPort = gtk_label_new(tmp);
-	sprintf(tmp, "lblPort_%d", port);
-	gtk_widget_set_name(lblPort, tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblPort), TRUE);
-	gtk_widget_show(lblPort);
-	gtk_frame_set_label_widget(GTK_FRAME(fraPort), lblPort);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(fraPort), (GDestroyNotify)g_object_unref);
-	
-	// VBox for the controller frame.
-	GtkWidget *vboxController = gtk_vbox_new(FALSE, 0);
-	sprintf(tmp, "vboxController_%d", port);
-	gtk_widget_set_name(vboxController, tmp);
-	gtk_container_set_border_width(GTK_CONTAINER(vboxController), 8);
-	gtk_widget_show(vboxController);
-	gtk_container_add(GTK_CONTAINER(fraPort), vboxController);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(vboxController), (GDestroyNotify)g_object_unref);
+	sprintf(tmp, "Port %d", port);
+	HWND fraPort = CreateWindow(WC_BUTTON, tmp,
+				    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				    8, fraPort_top, CC_FRAME_PORT_WIDTH, CC_FRAME_PORT_HEIGHT,
+				    container, NULL, ghInstance, NULL);
+	SetWindowFont(fraPort, fntMain, TRUE);
 	
 	// Checkbox for enabling teamplayer.
-	chkTeamplayer[port-1] = gtk_check_button_new_with_label("Use Teamplayer");
-	sprintf(tmp, "chkTeamplayer_%d", port);
-	gtk_widget_set_name(chkTeamplayer[port-1], tmp);
-	gtk_widget_show(chkTeamplayer[port-1]);
-	gtk_box_pack_start(GTK_BOX(vboxController), chkTeamplayer[port-1], FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(chkTeamplayer[port-1]), (GDestroyNotify)g_object_unref);
-	
-	// Connect the "toggled" signal for the Teamplayer checkbox.
-	g_signal_connect(GTK_OBJECT(chkTeamplayer[port-1]), "toggled",
-			 G_CALLBACK(cc_window_callback_teamplayer_toggled),
-			 GINT_TO_POINTER(port-1));
-	
-	// Table for the player controls.
-	GtkWidget *tblPlayers = gtk_table_new(4, 3, FALSE);
-	sprintf(tmp, "tblPlayers_%d", port);
-	gtk_widget_set_name(tblPlayers, tmp);
-	gtk_container_set_border_width(GTK_CONTAINER(tblPlayers), 0);
-	gtk_table_set_col_spacings(GTK_TABLE(tblPlayers), 12);
-	gtk_widget_show(tblPlayers);
-	gtk_box_pack_start(GTK_BOX(vboxController), tblPlayers, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(tblPlayers), (GDestroyNotify)g_object_unref);
+	chkTeamplayer[port-1] = CreateWindow(WC_BUTTON, "Use Teamplayer",
+					     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+					     8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
+					     container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
+					     ghInstance, NULL);
+	SetWindowFont(chkTeamplayer[port-1], fntMain, TRUE);
 	
 	// Player inputs.
 	unsigned int i, player;
-	char playerName[4];
 	
 	for (i = 0; i < 4; i++)
 	{
-		if (i == 0)
-			sprintf(playerName, "%d", port);
-		else
-			sprintf(playerName, "%d%c", port, 'A' + (char)i);
+		sprintf(tmp, "Player %d%c", port, (i == 0 ? 0x00 : 'A' + i));
 		
 		// Determine the player number to use for the callback and widget pointer storage.
 		if (i == 0)
@@ -386,62 +271,36 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		}
 		
 		// Player label.
-		sprintf(tmp, "Player %s", playerName);
-		lblPlayer[player] = gtk_label_new(tmp);
-		sprintf(tmp, "lblPlayer_%s", playerName);
-		gtk_widget_set_name(lblPlayer[player], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblPlayer[player]), 0, 0.5);
-		gtk_widget_show(lblPlayer[player]);
-		gtk_table_attach(GTK_TABLE(tblPlayers), lblPlayer[player],
-				 0, 1, i, i + 1,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayer[player]), (GDestroyNotify)g_object_unref);
-		
-		// Pad type.
-		cboPadType[player] = gtk_combo_box_new_text();
-		sprintf(tmp, "cboPadType_%s", playerName);
-		gtk_widget_set_name(cboPadType[player], tmp);
-		gtk_widget_show(cboPadType[player]);
-		gtk_table_attach(GTK_TABLE(tblPlayers), cboPadType[player],
-				 1, 2, i, i + 1,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(cboPadType[player]), (GDestroyNotify)g_object_unref);
+		lblPlayer[player] = CreateWindow(WC_STATIC, tmp,
+						 WS_CHILD | WS_VISIBLE | SS_LEFT,
+						 8+8, fraPort_top+16+16+4+(i*24)+2, 48, 16,
+						 container, NULL, ghInstance, NULL);
+		SetWindowFont(lblPlayer[player], fntMain, TRUE);
 		
 		// Pad type dropdown.
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "3 buttons");
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "6 buttons");
+		cboPadType[player] = CreateWindow(WC_COMBOBOX, tmp,
+						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
+						  8+8+48+8, fraPort_top+16+16+4+(i*24), 80, 23*2,
+						  container, (HMENU)(IDC_CC_CBOPADTYPE + player),
+						  ghInstance, NULL);
+		SetWindowFont(cboPadType[player], fntMain, TRUE);
 		
-		// Connect the "changed" signal for the pad type dropdown.
-		g_signal_connect(GTK_OBJECT(cboPadType[player]), "changed",
-				 G_CALLBACK(cc_window_callback_padtype_changed),
-				 GINT_TO_POINTER(player));
+		// Pad type dropdown entries.
+		ComboBox_AddString(cboPadType[player], "3 buttons");
+		ComboBox_AddString(cboPadType[player], "6 buttons");
 		
 		// "Configure" button.
-		optConfigure[player] = gtk_radio_button_new_with_label(gslConfigure, "Configure");
-		gslConfigure = gtk_radio_button_get_group(GTK_RADIO_BUTTON(optConfigure[player]));
-		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(optConfigure[player]), FALSE);
-		sprintf(tmp, "btnConfigure_%s", playerName);
-		gtk_widget_set_name(optConfigure[player], tmp);
-		gtk_widget_show(optConfigure[player]);
-		gtk_table_attach(GTK_TABLE(tblPlayers), optConfigure[player],
-				 2, 3, i, i + 1,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(optConfigure[player]), (GDestroyNotify)g_object_unref);
-		
-		// Connect the "toggled" signal for the "Configure" button.
-		g_signal_connect(GTK_OBJECT(optConfigure[player]), "toggled",
-				 G_CALLBACK(cc_window_callback_configure_toggled),
-				 GINT_TO_POINTER(player));
+		optConfigure[player] = CreateWindow(WC_BUTTON, "Configure",
+						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
+						    8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75+4, 23,
+						    container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
+						    ghInstance, NULL);
+		SetWindowFont(optConfigure[player], fntMain, TRUE);
 	}
 }
 
 
+#if 0
 /**
  * cc_window_create_input_devices_frame(): Create the "Input Devices" frame.
  * @param container Container for the frame.
@@ -768,8 +627,58 @@ static void cc_window_show_configuration(int player)
 		gtk_widget_set_sensitive(btnChange[button], is6button);
 	}
 }
+#endif
 
 
+/**
+ * cc_window_wndproc(): Window procedure.
+ * @param hWnd hWnd of the window.
+ * @param message Window message.
+ * @param wParam
+ * @param lParam
+ * @return
+ */
+static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+		case WM_CREATE:
+			cc_window_create_child_windows(hWnd);
+			break;
+		
+		case WM_CLOSE:
+			DestroyWindow(hWnd);
+			return 0;
+		
+		case WM_ACTIVATE:
+			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
+			{
+				// Set the DirectInput cooperative level.
+				input_set_cooperative_level(hWnd);
+				
+				// Initialize joysticks.
+				input_dinput_init_joysticks(hWnd);
+			}
+			break;
+		
+		case WM_COMMAND:
+			// TODO
+			break;
+		
+		case WM_DESTROY:
+			if (hWnd != cc_window)
+				break;
+			
+			cc_window_is_configuring = FALSE;
+			cc_window = NULL;
+			break;
+	}
+	
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+#if 0
 /**
  * cc_window_callback_close(): Close Window callback.
  * @param widget
