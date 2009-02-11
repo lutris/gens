@@ -665,7 +665,24 @@ static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 	GENS_UNUSED_PARAMETER(dialog);
 	GENS_UNUSED_PARAMETER(user_data);
 	
-	// TODO
+	switch (response_id)
+	{
+		case GTK_RESPONSE_CANCEL:
+			cc_window_close();
+			break;
+		case GTK_RESPONSE_APPLY:
+			// TODO
+			break;
+		case GTK_RESPONSE_OK:
+			// TODO
+			break;
+		
+		case GTK_RESPONSE_DELETE_EVENT:
+		default:
+			// Other event. Don't do anything.
+			// Also, don't do anything when the dialog is deleted.
+			break;
+	}
 }
 
 
