@@ -89,6 +89,7 @@ static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
+static void	cc_window_save(void);
 static void	cc_window_show_configuration(int player);
 
 
@@ -598,6 +599,40 @@ static void cc_window_init(void)
 
 
 /**
+ * cc_window_save(): Save the controller configuration.
+ */
+static void cc_window_save(void)
+{
+	// Copy the modified controller configuration into the Gens keymap array.
+	memcpy(&input_keymap, &cc_key_config, sizeof(input_keymap));
+	
+	// Clear the Controller Type variables.
+	Controller_1_Type = 0;
+	Controller_2_Type = 0;
+	Controller_1B_Type = 0;
+	Controller_1C_Type = 0;
+	Controller_1D_Type = 0;
+	Controller_2B_Type = 0;
+	Controller_2C_Type = 0;
+	Controller_2D_Type = 0;
+	
+	// Save the Teamplayer settings.
+	Controller_1_Type |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkTeamplayer[0])) ? 0x10 : 0x00);
+	Controller_2_Type |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkTeamplayer[1])) ? 0x10 : 0x00);
+	
+	// Save the pad type settings.
+	Controller_1_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[0])) ? 0x01 : 0x00);
+	Controller_2_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[1])) ? 0x01 : 0x00);
+	Controller_1B_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[2])) ? 0x01 : 0x00);
+	Controller_1C_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[3])) ? 0x01 : 0x00);
+	Controller_1D_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[4])) ? 0x01 : 0x00);
+	Controller_2B_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[5])) ? 0x01 : 0x00);
+	Controller_2C_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[6])) ? 0x01 : 0x00);
+	Controller_2D_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[7])) ? 0x01 : 0x00);
+}
+
+
+/**
  * cc_window_show_configuration(): Show controller configuration.
  * @param player Player number.
  */
@@ -670,10 +705,11 @@ static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 			cc_window_close();
 			break;
 		case GTK_RESPONSE_APPLY:
-			// TODO
+			cc_window_save();
 			break;
 		case GTK_RESPONSE_OK:
-			// TODO
+			cc_window_save();
+			cc_window_close();
 			break;
 		
 		case GTK_RESPONSE_DELETE_EVENT:
