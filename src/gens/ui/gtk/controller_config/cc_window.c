@@ -90,8 +90,8 @@ static void	cc_window_create_configure_controller_frame(GtkWidget *container);
 static gboolean	cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
+static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
 
 // Configuration load/save functions.
@@ -796,21 +796,6 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 
 
 /**
- * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
- * @param togglebutton Button that was toggled.
- * @param user_data Player number.
- */
-static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-	if (!gtk_toggle_button_get_active(togglebutton))
-		return;
-	
-	// Show the controller configuration.
-	cc_window_show_configuration(GPOINTER_TO_INT(user_data));
-}
-
-
-/**
  * cc_window_callback_padtype_changed(): Pad Type for a player was changed.
  * @param widget Combo box that was changed.
  * @param user_data Player number.
@@ -838,6 +823,21 @@ static void cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 		gtk_widget_set_sensitive(lblCurConfig[button], is6button);
 		gtk_widget_set_sensitive(btnChange[button], is6button);
 	}
+}
+
+
+/**
+ * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
+ * @param togglebutton Button that was toggled.
+ * @param user_data Player number.
+ */
+static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	if (!gtk_toggle_button_get_active(togglebutton))
+		return;
+	
+	// Show the controller configuration.
+	cc_window_show_configuration(GPOINTER_TO_INT(user_data));
 }
 
 
