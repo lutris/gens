@@ -79,6 +79,9 @@ static WNDCLASS	cc_wndclass;
 #define IDC_CC_OPTCONFIGURE	0x1300
 #define IDC_CC_BTNCHANGE	0x1400
 
+// Timer ID.
+#define IDT_CONFIGURE_BLINK	0x2000
+
 // Apply button.
 #define IDAPPLY 0x0010
 
@@ -88,8 +91,9 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 // Internal key configuration, which is copied when Save is clicked.
 static input_keymap_t cc_key_config[8];
 
-// Current player number being configured.
-static int cc_cur_player;
+// Current player number and button being configured.
+static int	cc_cur_player;
+static int	cc_cur_player_button;
 
 // Monospace font for the current key configuration.
 static HFONT	cc_fntMonospace = NULL;
@@ -126,10 +130,8 @@ static void	cc_window_init(void);
 static void	cc_window_save(void);
 static void	cc_window_show_configuration(int player);
 
-#if 0
 // Blink handler. (Blinks the current button configuration label when configuring.)
-static gboolean cc_window_callback_blink(gpointer data);
-#endif
+static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 
 
 /**
@@ -705,15 +707,13 @@ static void cc_window_callback_btnChange_clicked(int btnID)
 	
 	// Set cc_window_is_configuring to indicate that the key is being configured.
 	cc_window_is_configuring = TRUE;
+	cc_cur_player_button = btnID;
 	
 	// Set the current configure text.
 	Static_SetText(lblCurConfig[btnID], "Press a Key...");
 	
-	// TODO
-#if 0
 	// Set the blink timer for 500 ms.
-	g_timeout_add(500, cc_window_callback_blink, GINT_TO_POINTER(btnID));
-#endif
+	UINT_PTR x = SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);
 	
 	// Get a key value.
 	cc_key_config[cc_cur_player].data[btnID] = input_get_key();
@@ -727,38 +727,44 @@ static void cc_window_callback_btnChange_clicked(int btnID)
 	// Key is no longer being configured.
 	cc_window_is_configuring = FALSE;
 	
+	// Kill the timer.
+	KillTimer(cc_window, IDT_CONFIGURE_BLINK);
+	
 	// Make sure the label is visible now.
 	ShowWindow(lblCurConfig[btnID], SW_SHOW);
+	
+	// Remove various dialog messages from the window message queue.
+	MSG msg;
+	while (PeekMessage(&msg, cc_window, WM_KEYDOWN, WM_CHAR, PM_REMOVE)) { }
+	while (PeekMessage(&msg, cc_window, WM_COMMAND, WM_COMMAND, PM_REMOVE)) { }
+	while (PeekMessage(&msg, cc_window, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE)) { }
 }
 
 
-#if 0
 /**
  * cc_window_callback_blink(): Blink handler.
  * Blinks the current button configuration label when configuring.
- * @param data Data set when setting up the timer.
- * @return FALSE to disable the timer; TRUE to continue the timer.
+ * @param hWnd HWND of the window.
+ * @param uMsg WM_TIMER.
+ * @param idEvent Timer identifier.
+ * @param dwTime Time elapsed since the system has started.
  */
-static gboolean cc_window_callback_blink(gpointer data)
+static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-	int btnID = GPOINTER_TO_INT(data);
-	if (btnID < 0 || btnID > 12)
-		return FALSE;
+	if (idEvent != IDT_CONFIGURE_BLINK)
+		return;
 	
 	if (!cc_window_is_configuring)
 	{
 		// Not configuring. Show the label and disable the timer.
-		gtk_widget_show(lblCurConfig[btnID]);
-		return FALSE;
+		ShowWindow(lblCurConfig[cc_cur_player_button], SW_SHOW);
+		KillTimer(hWnd, idEvent);
+		return;
 	}
 	
 	// Invert the label visibility.
-	if (GTK_WIDGET_VISIBLE(lblCurConfig[btnID]))
-		gtk_widget_hide(lblCurConfig[btnID]);
+	if (IsWindowVisible(lblCurConfig[cc_cur_player_button]))
+		ShowWindow(lblCurConfig[cc_cur_player_button], SW_HIDE);
 	else
-		gtk_widget_show(lblCurConfig[btnID]);
-	
-	// If the window is still configuring, keep the timer going.
-	return cc_window_is_configuring;
+		ShowWindow(lblCurConfig[cc_cur_player_button], SW_SHOW);
 }
-#endif

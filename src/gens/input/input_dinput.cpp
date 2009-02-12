@@ -552,6 +552,9 @@ unsigned int input_dinput_get_key(void)
 		memcpy(prevDiKeys, curDiKeys, sizeof(prevDiKeys));
 		memcpy(prevJoyKeys, curJoyKeys, sizeof(prevJoyKeys));
 		prevReady = true;
+		
+		// Sleep for 10 ms.
+		GensUI::sleep(10);
 	}
 }
 
