@@ -127,8 +127,10 @@ static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 static void	cc_window_init(void);
 #if 0
 static void	cc_window_save(void);
+#endif
 static void	cc_window_show_configuration(int player);
 
+#if 0
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static gboolean cc_window_callback_blink(gpointer data);
 #endif
@@ -231,10 +233,8 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Initialize the internal data variables.
 	cc_window_init();
 	
-#if 0
 	// Show the controller configuration for the first player.
 	cc_window_show_configuration(0);
-#endif
 }
 
 
@@ -492,6 +492,7 @@ static void cc_window_save(void)
 	Controller_2C_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[6])) ? 0x01 : 0x00);
 	Controller_2D_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[7])) ? 0x01 : 0x00);
 }
+#endif
 
 
 /**
@@ -509,30 +510,27 @@ static void cc_window_show_configuration(int player)
 	cc_cur_player = player;
 	
 	// Set the "Configure Controller" frame title.
-	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
-	gtk_label_set_text(GTK_LABEL(lblConfigure), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
+	sprintf(tmp, "Configure Player %s", &input_player_names[player][1]);
+	Button_SetText(fraConfigure, tmp);
 	
 	// Show the key configuration.
 	unsigned int button;
 	for (button = 0; button < 12; button++)
 	{
 		input_get_key_name(cc_key_config[player].data[button], &key_name[0], sizeof(key_name));
-		sprintf(tmp, "<tt>0x%04X: %s</tt>", cc_key_config[player].data[button], key_name);
-		gtk_label_set_text(GTK_LABEL(lblCurConfig[button]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
+		sprintf(tmp, "0x%04X: %s", cc_key_config[player].data[button], key_name);
+		Static_SetText(lblCurConfig[button], tmp);
 	}
 	
 	// Enable/Disable the Mode/X/Y/Z buttons, depending on whether the pad is set to 3-button or 6-button.
-	gboolean is6button = (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[player])) == 1);
+	BOOL is6button = (ComboBox_GetCurSel(cboPadType[player]) == 1);
 	for (button = 8; button < 12; button++)
 	{
-		gtk_widget_set_sensitive(lblButton[button], is6button);
-		gtk_widget_set_sensitive(lblCurConfig[button], is6button);
-		gtk_widget_set_sensitive(btnChange[button], is6button);
+		Static_Enable(lblButton[button], is6button);
+		Static_Enable(lblCurConfig[button], is6button);
+		Button_Enable(btnChange[button], is6button);
 	}
 }
-#endif
 
 
 /**
@@ -589,8 +587,7 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 								cc_window_callback_padtype_changed(LOWORD(wParam) & 0xFF);
 							break;
 						case IDC_CC_OPTCONFIGURE:
-							// TODO
-							//cc_window_show_configuration(LOWORD(wParam) & 0xFF);
+							cc_window_show_configuration(LOWORD(wParam) & 0xFF);
 							break;
 						case IDC_CC_BTNCHANGE:
 							// TODO
