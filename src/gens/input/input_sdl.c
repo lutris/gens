@@ -54,7 +54,7 @@ static BOOL		input_sdl_joy_exists(int joy_num);
 static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
 
 // Maximum number of keys and joysticks.
-#define INPUT_SDL_MAX_KEYS 1024
+#define INPUT_SDL_MAX_KEYS 512
 #define INPUT_SDL_MAX_JOYSTICKS 6
 
 // Check an SDL joystick axis.
