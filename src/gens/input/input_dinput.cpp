@@ -551,8 +551,31 @@ unsigned int input_dinput_get_key(void)
 		memcpy(prevJoyKeys, curJoyKeys, sizeof(prevJoyKeys));
 		prevReady = true;
 		
-		// Sleep for 10 ms.
-		GensUI::sleep(10);
+		// Sleep for 1 ms.
+		Sleep(1);
+		
+		// Check for messages.
+		// GensUI::update() isn't used here because some messages
+		// need to be filtered out.
+		MSG msg;
+		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+		{
+			if (!GetMessage(&msg, NULL, 0, 0))
+				close_gens();
+			
+			if (msg.message == WM_COMMAND ||
+			    (msg.message >= WM_KEYFIRST && msg.message <= WM_KEYLAST) ||
+			    (msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST) ||
+			    (msg.message >= WM_NCMOUSEMOVE && msg.message <= WM_NCXBUTTONDBLCLK))
+			{
+				// Ignore the message.
+				continue;
+			}
+			
+			// Process the message.
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
 }
 

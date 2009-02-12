@@ -240,20 +240,6 @@ void GensUI::update(void)
 			continue;
 		}
 		
-		// If this is from the controller configuration window,
-		// and the controller is being configured, ignore the following messages:
-		// - WM_KEYDOWN; WM_KEYUP; WM_CHAR; WM_COMMAND
-		if (cc_window && cc_window_is_configuring &&
-		    (msg.message == WM_KEYDOWN ||
-		     msg.message == WM_KEYUP ||
-		     msg.message == WM_CHAR ||
-		     msg.message == WM_COMMAND ||
-		     (msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST)))
-		{
-			// Ignore the message.
-			continue;
-		}
-		
 		// Check for dialog messages.
 		if ((cc_window && IsDialogMessage(cc_window, &msg)) ||
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
