@@ -321,10 +321,12 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
  */
 static void cc_window_create_input_devices_frame(HWND container)
 {
+	static const int fraInputDevices_top = 8+CC_FRAME_PORT_WIDTH+8;
+	
 	// "Input Devices" frame.
 	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Input Devices",
 					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					    8+CC_FRAME_PORT_WIDTH+8, 8,
+					    fraInputDevices_top, 8,
 					    CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
 					    container, NULL, ghInstance, NULL);
 	SetWindowFont(fraInputDevices, fntMain, TRUE);
@@ -332,9 +334,9 @@ static void cc_window_create_input_devices_frame(HWND container)
 	// Create a listbox for the list of input devices.
 	lstInputDevices = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
 					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_BORDER,
-					 8, 16,
+					 fraInputDevices_top+8, 16+8,
 					 CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
-					 fraInputDevices, NULL, ghInstance, NULL);
+					 container, NULL, ghInstance, NULL);
 	SetWindowFont(lstInputDevices, fntMain, TRUE);
 }
 
