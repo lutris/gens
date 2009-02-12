@@ -26,6 +26,8 @@
 #include "input_sdl_key_names.h"
 #include "input_sdl_keys.h"
 
+#include <string.h>
+
 /**
  * input_sdl_gdk_to_gens_keyval(): Converts a GDK key value to a Gens key value.
  * @param gdk_key GDK key value.
