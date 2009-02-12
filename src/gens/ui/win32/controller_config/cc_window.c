@@ -132,7 +132,9 @@ static void	cc_window_show_configuration(int player);
 // Callbacks.
 static void	cc_window_callback_teamplayer_toggled(int port);
 static void	cc_window_callback_padtype_changed(int player);
-static void	cc_window_callback_btnChange_clicked(int btnID);
+
+// Configure a key.
+static void	cc_window_configure_key(int player, int button);
 
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -607,7 +609,7 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 							cc_window_show_configuration(LOWORD(wParam) & 0xFF);
 							break;
 						case IDC_CC_BTNCHANGE:
-							cc_window_callback_btnChange_clicked(LOWORD(wParam) & 0xFF);
+							cc_window_configure_key(cc_cur_player, LOWORD(wParam) & 0xFF);
 							break;
 						default:
 							// Unknown command identifier.
@@ -704,39 +706,40 @@ static void cc_window_callback_padtype_changed(int player)
 
 
 /**
- * cc_window_callback_btnChange_clicked(): A "Change" button was clicked.
- * @param btnID Button number.
+ * cc_window_configure_key(): Configure a key.
+ * @param player Player to configure.
+ * @param button Button ID.
  */
-static void cc_window_callback_btnChange_clicked(int btnID)
+static void cc_window_configure_key(int player, int button)
 {
 	if (cc_window_is_configuring)
 		return;
 	
-	if (btnID < 0 || btnID >= 12)
+	if (button < 0 || button >= 12)
 		return;
 	
 	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
-	if (ComboBox_GetCurSel(cboPadType[cc_cur_player]) == 0)
+	if (ComboBox_GetCurSel(cboPadType[player]) == 0)
 	{
-		if (btnID >= 8)
+		if (button >= 8)
 			return;
 	}
 	
 	// Set cc_window_is_configuring to indicate that the key is being configured.
 	cc_window_is_configuring = TRUE;
-	cc_cur_player_button = btnID;
+	cc_cur_player_button = button;
 	
 	// Set the current configure text.
-	Static_SetText(lblCurConfig[btnID], "Press a Key...");
+	Static_SetText(lblCurConfig[button], "Press a Key...");
 	
 	// Set the blink timer for 500 ms.
 	SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);
 	
 	// Get a key value.
-	cc_key_config[cc_cur_player].data[btnID] = input_get_key();
+	cc_key_config[player].data[button] = input_get_key();
 	
 	// Set the text of the label with the key name.
-	cc_window_display_key_name(lblCurConfig[btnID], cc_key_config[cc_cur_player].data[btnID]);
+	cc_window_display_key_name(lblCurConfig[button], cc_key_config[player].data[button]);
 	
 	// Key is no longer being configured.
 	cc_window_is_configuring = FALSE;
@@ -745,7 +748,7 @@ static void cc_window_callback_btnChange_clicked(int btnID)
 	KillTimer(cc_window, IDT_CONFIGURE_BLINK);
 	
 	// Make sure the label is visible now.
-	ShowWindow(lblCurConfig[btnID], SW_SHOW);
+	ShowWindow(lblCurConfig[button], SW_SHOW);
 	
 	// Remove various dialog messages from the window message queue.
 	MSG msg;

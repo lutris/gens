@@ -102,6 +102,9 @@ static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
 
+// Configure a key.
+static void	cc_window_configure_key(int player, int button);
+
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static gboolean	cc_window_callback_blink(gpointer data);
 
@@ -865,17 +868,27 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 {
 	GENS_UNUSED_PARAMETER(button);
 	
+	cc_window_configure_key(cc_cur_player, GPOINTER_TO_INT(user_data));
+}
+
+
+/**
+ * cc_window_configure_key(): Configure a key.
+ * @param player Player to configure.
+ * @param button Button ID.
+ */
+static void cc_window_configure_key(int player, int button)
+{
 	if (cc_window_is_configuring)
 		return;
 	
-	int btnID = GPOINTER_TO_INT(user_data);
-	if (btnID < 0 || btnID >= 12)
+	if (button < 0 || button >= 12)
 		return;
 	
 	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 0)
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[player])) == 0)
 	{
-		if (btnID >= 8)
+		if (button >= 8)
 			return;
 	}
 	
@@ -883,23 +896,23 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 	cc_window_is_configuring = TRUE;
 	
 	// Set the current configure text.
-	gtk_label_set_text(GTK_LABEL(lblCurConfig[btnID]), "<tt>Press a Key...</tt>");
-	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[btnID]), TRUE);
+	gtk_label_set_text(GTK_LABEL(lblCurConfig[button]), "<tt>Press a Key...</tt>");
+	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
 	
 	// Set the blink timer for 500 ms.
-	g_timeout_add(500, cc_window_callback_blink, GINT_TO_POINTER(btnID));
+	g_timeout_add(500, cc_window_callback_blink, GINT_TO_POINTER(button));
 	
 	// Get a key value.
-	cc_key_config[cc_cur_player].data[btnID] = input_get_key();
+	cc_key_config[cc_cur_player].data[button] = input_get_key();
 	
 	// Set the text of the label with the key name.
-	cc_window_display_key_name(lblCurConfig[btnID], cc_key_config[cc_cur_player].data[btnID]);
+	cc_window_display_key_name(lblCurConfig[button], cc_key_config[cc_cur_player].data[button]);
 	
 	// Key is no longer being configured.
 	cc_window_is_configuring = FALSE;
 	
 	// Make sure the label is visible now.
-	gtk_widget_show(lblCurConfig[btnID]);
+	gtk_widget_show(lblCurConfig[button]);
 }
 
 
@@ -931,4 +944,3 @@ static gboolean cc_window_callback_blink(gpointer data)
 	// If the window is still configuring, keep the timer going.
 	return cc_window_is_configuring;
 }
-
