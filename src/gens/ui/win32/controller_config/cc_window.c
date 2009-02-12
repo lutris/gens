@@ -63,15 +63,16 @@ static WNDCLASS	cc_wndclass;
 
 // Window size.
 #define CC_WINDOW_WIDTH  580
-#define CC_WINDOW_HEIGHT 464
+#define CC_WINDOW_HEIGHT 440
+
 #define CC_FRAME_PORT_WIDTH  236
 #define CC_FRAME_PORT_HEIGHT 140
 
-#define CC_FRAME_INPUT_DEVICES_WIDTH  320
+#define CC_FRAME_INPUT_DEVICES_WIDTH  CC_FRAME_PORT_WIDTH
 #define CC_FRAME_INPUT_DEVICES_HEIGHT 96
 
-#define CC_FRAME_CONFIGURE_WIDTH  CC_FRAME_INPUT_DEVICES_WIDTH
-#define CC_FRAME_CONFIGURE_HEIGHT (CC_WINDOW_HEIGHT-8-CC_FRAME_INPUT_DEVICES_HEIGHT-8-24-8-8)
+#define CC_FRAME_CONFIGURE_WIDTH  320
+#define CC_FRAME_CONFIGURE_HEIGHT 312
 
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
@@ -322,20 +323,20 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
  */
 static void cc_window_create_input_devices_frame(HWND container)
 {
-	static const int fraInputDevices_top = 8+CC_FRAME_PORT_WIDTH+8;
+	static const int fraInputDevices_top = 8+CC_FRAME_PORT_HEIGHT+8+CC_FRAME_PORT_HEIGHT+8;
 	
 	// "Input Devices" frame.
 	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Input Devices",
 					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					    fraInputDevices_top, 8,
+					    8, fraInputDevices_top,
 					    CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
 					    container, NULL, ghInstance, NULL);
 	SetWindowFont(fraInputDevices, fntMain, TRUE);
 	
 	// Create a listbox for the list of input devices.
 	lstInputDevices = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_BORDER,
-					 fraInputDevices_top+8, 16+8,
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | WS_BORDER,
+					 8+8, fraInputDevices_top+16,
 					 CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
 					 container, NULL, ghInstance, NULL);
 	SetWindowFont(lstInputDevices, fntMain, TRUE);
@@ -367,7 +368,7 @@ static void cc_window_populate_input_devices(HWND lstBox)
 static void cc_window_create_configure_controller_frame(HWND container)
 {
 	// Top and left sides of the frame.
-	const int fraConfigure_top = 8+CC_FRAME_INPUT_DEVICES_HEIGHT+8;
+	const int fraConfigure_top = 8;
 	const int fraConfigure_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
@@ -393,7 +394,7 @@ static void cc_window_create_configure_controller_frame(HWND container)
 		SetWindowFont(lblButton[button], fntMain, TRUE);
 		
 		// Current configuration label.
-		lblCurConfig[button] = CreateWindow(WC_STATIC, "Testing 1 2 3",
+		lblCurConfig[button] = CreateWindow(WC_STATIC, NULL,
 						    WS_CHILD | WS_VISIBLE | SS_LEFT,
 						    fraConfigure_left+8+36+8, fraConfigure_top+16+(button*24)+2,
 						    CC_FRAME_CONFIGURE_WIDTH-8-36-8-75-8-8, 16,

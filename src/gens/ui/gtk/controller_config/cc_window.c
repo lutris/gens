@@ -168,6 +168,10 @@ void cc_window_show(GtkWindow *parent)
 	cc_window_create_controller_port_frame(vboxControllerPorts, 1);
 	cc_window_create_controller_port_frame(vboxControllerPorts, 2);
 	
+	// Create the "Input Devices" frame and populate the "Input Devices" treeview.
+	cc_window_create_input_devices_frame(vboxControllerPorts);
+	cc_window_populate_input_devices(lstoreInputDevices);
+	
 	// "Configure Controller" outer VBox.
 	GtkWidget *vboxConfigureOuter = gtk_vbox_new(FALSE, 0);
 	gtk_widget_set_name(vboxConfigureOuter, "vboxConfigureOuter");
@@ -175,10 +179,6 @@ void cc_window_show(GtkWindow *parent)
 	gtk_box_pack_start(GTK_BOX(hboxMain), vboxConfigureOuter, FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(cc_window), "vboxConfigureOuter",
 			       g_object_ref(vboxConfigureOuter), (GDestroyNotify)g_object_unref);
-	
-	// Create the "Input Devices" frame and populate the "Input Devices" treeview.
-	cc_window_create_input_devices_frame(vboxConfigureOuter);
-	cc_window_populate_input_devices(lstoreInputDevices);
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
@@ -422,7 +422,7 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 	gtk_widget_set_name(scrlInputDevices, "scrlInputDevices");
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlInputDevices), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlInputDevices),
-				       GTK_POLICY_NEVER,
+				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_container_set_border_width(GTK_CONTAINER(scrlInputDevices), 4);
 	gtk_widget_show(scrlInputDevices);
@@ -435,7 +435,7 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 	gtk_widget_set_name(lstInputDevices, "lstInputDevices");
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstInputDevices), FALSE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstInputDevices), FALSE);
-	gtk_widget_set_size_request(lstInputDevices, -1, 80);
+	gtk_widget_set_size_request(lstInputDevices, -1, 96);
 	gtk_widget_show(lstInputDevices);
 	gtk_container_add(GTK_CONTAINER(scrlInputDevices), lstInputDevices);
 	g_object_set_data_full(G_OBJECT(container), "lstInputDevices",
