@@ -560,7 +560,6 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 		gtk_misc_set_alignment(GTK_MISC(lblCurConfig[button]), 0.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblCurConfig[button]), GTK_JUSTIFY_CENTER);
 		gtk_label_set_width_chars(GTK_LABEL(lblCurConfig[button]), 24);
-		gtk_label_set_selectable(GTK_LABEL(lblCurConfig[button]), TRUE);
 		gtk_widget_show(lblCurConfig[button]);
 		gtk_table_attach(GTK_TABLE(tblButtonRemap), lblCurConfig[button],
 				 1, 2, button, button + 1,
