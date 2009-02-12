@@ -118,9 +118,8 @@ static void	cc_window_create_configure_controller_frame(HWND container);
 
 // Callbacks.
 static void	cc_window_callback_teamplayer_toggled(int port);
+static void	cc_window_callback_padtype_changed(int player);
 #if 0
-static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
 
 // Configuration load/save functions.
@@ -583,6 +582,17 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 						case IDC_CC_CHKTEAMPLAYER:
 							cc_window_callback_teamplayer_toggled(LOWORD(wParam) & 0xFF);
 							break;
+						case IDC_CC_CBOPADTYPE:
+							if (HIWORD(wParam) == CBN_SELCHANGE)
+								cc_window_callback_padtype_changed(LOWORD(wParam) & 0xFF);
+							break;
+						case IDC_CC_OPTCONFIGURE:
+							// TODO
+							//cc_window_show_configuration(LOWORD(wParam) & 0xFF);
+							break;
+						case IDC_CC_BTNCHANGE:
+							// TODO
+							break;
 						default:
 							// Unknown command identifier.
 							break;
@@ -648,35 +658,17 @@ static void cc_window_callback_teamplayer_toggled(int port)
 }
 
 
-#if 0
 /**
- * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
- * @param togglebutton Button that was toggled.
- * @param user_data Player number.
+ * cc_window_callback_padtype_changed(): Pad type for a player was changed.
+ * @param player Player number.
  */
-static void cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+static void cc_window_callback_padtype_changed(int player)
 {
-	if (!gtk_toggle_button_get_active(togglebutton))
-		return;
-	
-	// Show the controller configuration.
-	cc_window_show_configuration(GPOINTER_TO_INT(user_data));
-}
-
-
-/**
- * cc_window_callback_padtype_changed(): Pad Type for a player was changed.
- * @param widget Combo box that was changed.
- * @param user_data Player number.
- */
-static void cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data)
-{
-	int player = GPOINTER_TO_INT(user_data);
 	if (player < 0 || player > 8)
 		return;
 	
 	// Check if this player is currently being configured.
-	if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[player])))
+	if (Button_GetCheck(optConfigure[player]) != BST_CHECKED)
 	{
 		// Player is not currently being configured.
 		return;
@@ -685,16 +677,17 @@ static void cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 	// Player is currently being configured.
 	// Enable/Disable the appropriate widgets in the table.
 	unsigned int button;
-	gboolean is6button = (gtk_combo_box_get_active(widget) == 1);
+	BOOL is6button = (ComboBox_GetCurSel(cboPadType[player]) == 1);
 	for (button = 8; button < 12; button++)
 	{
-		gtk_widget_set_sensitive(lblButton[button], is6button);
-		gtk_widget_set_sensitive(lblCurConfig[button], is6button);
-		gtk_widget_set_sensitive(btnChange[button], is6button);
+		Static_Enable(lblButton[button], is6button);
+		Static_Enable(lblCurConfig[button], is6button);
+		Button_Enable(btnChange[button], is6button);
 	}
 }
 
 
+#if 0
 /**
  * cc_window_callback_btnChange_clicked(): A "Change" button was clicked.
  * @param button Button that was clicked.
