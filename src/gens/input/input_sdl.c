@@ -342,6 +342,10 @@ unsigned int input_sdl_get_key(void)
 		
 		// Sleep for 1 ms.
 		usleep(1000);
+		
+		// Make sure the "Controller Configuration" window is still configuring.
+		if (!cc_window_is_configuring)
+			break;
 	}
 }
 

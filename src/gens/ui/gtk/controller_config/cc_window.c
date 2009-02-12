@@ -29,6 +29,7 @@
 // C includes.
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -58,8 +59,9 @@ BOOL cc_window_is_configuring = FALSE;
 // Internal key configuration, which is copied when Save is clicked.
 static input_keymap_t cc_key_config[8];
 
-// Current player number being configured.
-static int cc_cur_player;
+// Current player number and button being configured.
+static int		cc_cur_player;
+static int		cc_cur_player_button;
 
 // Widgets.
 static GtkWidget	*chkTeamplayer[2];
@@ -102,6 +104,8 @@ static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
 static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
+static void	cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer user_data);
+static void	cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer user_data);
 
 // Configure a key.
 static void	cc_window_configure_key(int player, int button);
@@ -613,7 +617,10 @@ static void cc_window_create_options_frame(GtkWidget *container)
 	gtk_box_pack_start(GTK_BOX(hbtnOptions), btnChangeAll, FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(container), "btnChangeAll",
 			       g_object_ref(btnChangeAll), (GDestroyNotify)g_object_unref);
-	// TODO: Connect signal.
+	
+	// Connect the "clicked" signal for the "Change All Buttons" button.
+	g_signal_connect(GTK_OBJECT(btnChangeAll), "clicked",
+			 G_CALLBACK(cc_window_callback_btnChangeAll_clicked), NULL);
 	
 	// "Clear All Buttons" button.
 	GtkWidget *btnClearAll = gtk_button_new_with_label("Clear All Buttons");
@@ -622,7 +629,10 @@ static void cc_window_create_options_frame(GtkWidget *container)
 	gtk_box_pack_start(GTK_BOX(hbtnOptions), btnClearAll, FALSE, FALSE, 0);
 	g_object_set_data_full(G_OBJECT(container), "btnClearAll",
 			       g_object_ref(btnClearAll), (GDestroyNotify)g_object_unref);
-	// TODO: Connect signal.
+	
+	// Connect the "clicked" signal for the "Clear All Buttons" button.
+	g_signal_connect(GTK_OBJECT(btnClearAll), "clicked",
+			 G_CALLBACK(cc_window_callback_btnClearAll_clicked), NULL);
 }
 
 
@@ -927,6 +937,7 @@ static void cc_window_configure_key(int player, int button)
 	
 	// Set cc_window_is_configuring to indicate that the key is being configured.
 	cc_window_is_configuring = TRUE;
+	cc_cur_player_button = button;
 	
 	// Set the current configure text.
 	gtk_label_set_text(GTK_LABEL(lblCurConfig[button]), "<tt>Press a Key...</tt>");
@@ -938,10 +949,19 @@ static void cc_window_configure_key(int player, int button)
 	// Get a key value.
 	cc_key_config[cc_cur_player].data[button] = input_get_key();
 	
+	if (!cc_window)
+	{
+		// Window has closed.
+		cc_cur_player_button = -1;
+		cc_window_is_configuring = FALSE;
+		return;
+	}
+	
 	// Set the text of the label with the key name.
 	cc_window_display_key_name(lblCurConfig[button], cc_key_config[cc_cur_player].data[button]);
 	
 	// Key is no longer being configured.
+	cc_cur_player_button = -1;
 	cc_window_is_configuring = FALSE;
 	
 	// Make sure the label is visible now.
@@ -961,10 +981,13 @@ static gboolean cc_window_callback_blink(gpointer data)
 	if (btnID < 0 || btnID > 12)
 		return FALSE;
 	
-	if (!cc_window_is_configuring)
+	if (!cc_window_is_configuring || cc_cur_player_button != btnID || !cc_window)
 	{
-		// Not configuring. Show the label and disable the timer.
-		gtk_widget_show(lblCurConfig[btnID]);
+		// Not configuring, or configuring a different button.
+		// Show the label and disable the timer.
+		if (cc_window)
+			gtk_widget_show(lblCurConfig[btnID]);
+		
 		return FALSE;
 	}
 	
@@ -976,4 +999,51 @@ static gboolean cc_window_callback_blink(gpointer data)
 	
 	// If the window is still configuring, keep the timer going.
 	return cc_window_is_configuring;
+}
+
+
+/**
+ * cc_window_callback_btnChangeAll_clicked(): "Change All Buttons" button was clicked.
+ * @param button Button that was clicked.
+ * @param user_data Button number.
+ */
+static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Number of buttons to configure.
+	int btnCount = (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 1 ? 12 : 8);
+	
+	int i;
+	for (i = 0; i < btnCount; i++)
+	{
+		// Sleep for 250 ms between button presses.
+		if (i != 0)
+		{
+			while (gtk_events_pending())
+				gtk_main_iteration_do(FALSE);
+			usleep(250000);
+		}
+		
+		cc_window_configure_key(cc_cur_player, i);
+		
+		if (!cc_window)
+		{
+			// Window has closed.
+			break;
+		}
+	}
+}
+
+
+/**
+ * cc_window_callback_btnClearAll_clicked(): "Clear All Buttons" button was clicked.
+ * @param button Button that was clicked.
+ * @param user_data Button number.
+ */
+static void cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(button);
+	GENS_UNUSED_PARAMETER(user_data);
 }
