@@ -121,9 +121,11 @@ static void	cc_window_callback_teamplayer_toggled(int port);
 static void	cc_window_callback_padtype_changed(int player);
 #if 0
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
+#endif
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
+#if 0
 static void	cc_window_save(void);
 static void	cc_window_show_configuration(int player);
 
@@ -226,10 +228,10 @@ static void cc_window_create_child_windows(HWND hWnd)
 				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
-#if 0
 	// Initialize the internal data variables.
 	cc_window_init();
 	
+#if 0
 	// Show the controller configuration for the first player.
 	cc_window_show_configuration(0);
 #endif
@@ -429,7 +431,6 @@ void cc_window_close(void)
 }
 
 
-#if 0
 /**
  * cc_window_init(): Initialize the internal variables.
  */
@@ -439,25 +440,26 @@ static void cc_window_init(void)
 	memcpy(&cc_key_config, &input_keymap, sizeof(cc_key_config));
 	
 	// Set the Teamplayer checkboxes.
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), (Controller_1_Type & 0x10));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), (Controller_2_Type & 0x10));
+	Button_SetCheck(chkTeamplayer[0], ((Controller_1_Type & 0x10) ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkTeamplayer[1], ((Controller_2_Type & 0x10) ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Set the pad type dropdowns.
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[0]), (Controller_1_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[1]), (Controller_2_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[2]), (Controller_1B_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[3]), (Controller_1C_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[4]), (Controller_1D_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[5]), (Controller_2B_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[6]), (Controller_2C_Type & 0x01));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPadType[7]), (Controller_2D_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[0], (Controller_1_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[1], (Controller_2_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[2], (Controller_1B_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[3], (Controller_1C_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[4], (Controller_1D_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[5], (Controller_2B_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[6], (Controller_2C_Type & 0x01));
+	ComboBox_SetCurSel(cboPadType[7], (Controller_2D_Type & 0x01));
 	
 	// Run the teamplayer callbacks.
-	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), GINT_TO_POINTER(0));
-	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), GINT_TO_POINTER(1));
+	cc_window_callback_teamplayer_toggled(0);
+	cc_window_callback_teamplayer_toggled(1);
 }
 
 
+#if 0
 /**
  * cc_window_save(): Save the controller configuration.
  */
