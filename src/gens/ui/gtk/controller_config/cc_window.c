@@ -796,7 +796,7 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 
 
 /**
- * cc_window_callback_padtype_changed(): Pad Type for a player was changed.
+ * cc_window_callback_padtype_changed(): Pad type for a player was changed.
  * @param widget Combo box that was changed.
  * @param user_data Player number.
  */
