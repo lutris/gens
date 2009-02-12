@@ -563,10 +563,18 @@ unsigned int input_dinput_get_key(void)
 			if (!GetMessage(&msg, NULL, 0, 0))
 				close_gens();
 			
+			// Ignore key input and mouse input.
 			if (msg.message == WM_COMMAND ||
 			    (msg.message >= WM_KEYFIRST && msg.message <= WM_KEYLAST) ||
-			    (msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST) ||
-			    (msg.message >= WM_NCMOUSEMOVE && msg.message <= WM_NCXBUTTONDBLCLK))
+			    (msg.message >= WM_MOUSEFIRST && msg.message <= WM_MOUSELAST))
+			{
+				// Ignore the message.
+				continue;
+			}
+			
+			// Ignore menu clicks.
+			if ((msg.message >= WM_NCMOUSEMOVE && msg.message <= WM_NCXBUTTONDBLCLK) &&
+			    (msg.wParam == HTMENU || msg.wParam == HTSYSMENU))
 			{
 				// Ignore the message.
 				continue;
