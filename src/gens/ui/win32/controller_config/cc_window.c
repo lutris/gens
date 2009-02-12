@@ -120,15 +120,18 @@ static void	cc_window_create_input_devices_frame(HWND container);
 static void	cc_window_populate_input_devices(HWND lstBox);
 static void	cc_window_create_configure_controller_frame(HWND container);
 
-// Callbacks.
-static void	cc_window_callback_teamplayer_toggled(int port);
-static void	cc_window_callback_padtype_changed(int player);
-static void	cc_window_callback_btnChange_clicked(int btnID);
+// Display key name function.
+static inline void cc_window_display_key_name(HWND label, uint16_t key);
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
 static void	cc_window_save(void);
 static void	cc_window_show_configuration(int player);
+
+// Callbacks.
+static void	cc_window_callback_teamplayer_toggled(int port);
+static void	cc_window_callback_padtype_changed(int player);
+static void	cc_window_callback_btnChange_clicked(int btnID);
 
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
@@ -495,6 +498,21 @@ static void cc_window_save(void)
 
 
 /**
+ * cc_window_display_key_name(): Display a key name.
+ * @param label Label widget.
+ * @param key Key value.
+ */
+static inline void cc_window_display_key_name(HWND label, uint16_t key)
+{
+	char tmp[64], key_name[64];
+	
+	input_get_key_name(key, &key_name[0], sizeof(key_name));
+	sprintf(tmp, "0x%04X: %s", key, key_name);
+	Static_SetText(label, tmp);
+}
+
+
+/**
  * cc_window_show_configuration(): Show controller configuration.
  * @param player Player number.
  */
@@ -503,7 +521,7 @@ static void cc_window_show_configuration(int player)
 	if (player < 0 || player > 8)
 		return;
 	
-	char tmp[64], key_name[64];
+	char tmp[64];
 	
 	// Set the current player number.
 	cc_cur_player = player;
@@ -516,9 +534,7 @@ static void cc_window_show_configuration(int player)
 	unsigned int button;
 	for (button = 0; button < 12; button++)
 	{
-		input_get_key_name(cc_key_config[player].data[button], &key_name[0], sizeof(key_name));
-		sprintf(tmp, "0x%04X: %s", cc_key_config[player].data[button], key_name);
-		Static_SetText(lblCurConfig[button], tmp);
+		cc_window_display_key_name(lblCurConfig[button], cc_key_config[player].data[button]);
 	}
 	
 	// Enable/Disable the Mode/X/Y/Z buttons, depending on whether the pad is set to 3-button or 6-button.
@@ -713,16 +729,13 @@ static void cc_window_callback_btnChange_clicked(int btnID)
 	Static_SetText(lblCurConfig[btnID], "Press a Key...");
 	
 	// Set the blink timer for 500 ms.
-	UINT_PTR x = SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);
+	SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);
 	
 	// Get a key value.
 	cc_key_config[cc_cur_player].data[btnID] = input_get_key();
 	
 	// Set the text of the label with the key name.
-	char tmp[64], key_name[64];
-	input_get_key_name(cc_key_config[cc_cur_player].data[btnID], &key_name[0], sizeof(key_name));
-	sprintf(tmp, "0x%04X: %s", cc_key_config[cc_cur_player].data[btnID], key_name);
-	Static_SetText(lblCurConfig[btnID], tmp);
+	cc_window_display_key_name(lblCurConfig[btnID], cc_key_config[cc_cur_player].data[btnID]);
 	
 	// Key is no longer being configured.
 	cc_window_is_configuring = FALSE;
@@ -751,6 +764,9 @@ static void cc_window_callback_btnChange_clicked(int btnID)
  */
 static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
+	GENS_UNUSED_PARAMETER(uMsg);
+	GENS_UNUSED_PARAMETER(dwTime);
+	
 	if (idEvent != IDT_CONFIGURE_BLINK)
 		return;
 	
