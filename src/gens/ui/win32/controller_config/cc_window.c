@@ -116,9 +116,9 @@ static void	cc_window_create_input_devices_frame(HWND container);
 static void	cc_window_populate_input_devices(HWND lstBox);
 static void	cc_window_create_configure_controller_frame(HWND container);
 
-#if 0
 // Callbacks.
-static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+static void	cc_window_callback_teamplayer_toggled(int port);
+#if 0
 static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
@@ -578,7 +578,15 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 					// TODO
 					break;
 				default:
-					// TODO
+					switch (LOWORD(wParam) & 0xFF00)
+					{
+						case IDC_CC_CHKTEAMPLAYER:
+							cc_window_callback_teamplayer_toggled(LOWORD(wParam) & 0xFF);
+							break;
+						default:
+							// Unknown command identifier.
+							break;
+					}
 					break;
 			}
 			break;
@@ -604,20 +612,16 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 }
 
 
-#if 0
 /**
  * cc_window_callback_teamplayer_toggled(): "Teamplayer" checkbox was toggled.
- * @param togglebutton Button that was toggled.
- * @param user_data Player number.
+ * @param port Port number of the checkbox that was toggled.
  */
-static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+static void cc_window_callback_teamplayer_toggled(int port)
 {
-	gboolean active = gtk_toggle_button_get_active(togglebutton);
-	
-	int port = GPOINTER_TO_INT(user_data);
 	if (port < 0 || port > 1)
 		return;
 	
+	BOOL active = (Button_GetCheck(chkTeamplayer[port]) == BST_CHECKED);
 	int startPort = (port == 0 ? 2: 5);
 	
 	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
@@ -627,7 +631,9 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 		{
 			// One of the teamplayer players is selected.
 			// Select the main player for the port.
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(optConfigure[port]), TRUE);
+			printf("port: %d\n", port);
+			Button_SetCheck(optConfigure[port], BST_CHECKED);
+			// TODO: Run the callback. (Win32 doesn't automatically do this.)
 		}
 	}
 	
@@ -635,13 +641,14 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 	int i;
 	for (i = startPort; i < startPort + 3; i++)
 	{
-		gtk_widget_set_sensitive(lblPlayer[i], active);
-		gtk_widget_set_sensitive(cboPadType[i], active);
-		gtk_widget_set_sensitive(optConfigure[i], active);
+		Static_Enable(lblPlayer[i], active);
+		ComboBox_Enable(cboPadType[i], active);
+		Button_Enable(optConfigure[i], active);
 	}
 }
 
 
+#if 0
 /**
  * cc_window_callback_configure_toggled(): "Configure" button for a player was toggled.
  * @param togglebutton Button that was toggled.
