@@ -85,6 +85,7 @@ static void	cc_window_create_controller_port_frame(GtkWidget *container, int por
 static void	cc_window_create_input_devices_frame(GtkWidget *container);
 static void	cc_window_populate_input_devices(GtkListStore *list);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
+static void	cc_window_create_options_frame(GtkWidget *container);
 
 // Display key name function.
 static inline void cc_window_display_key_name(GtkWidget *label, uint16_t key);
@@ -186,6 +187,9 @@ void cc_window_show(GtkWindow *parent)
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
 	
+	// Create the "Options" frame.
+	cc_window_create_options_frame(vboxConfigureOuter);
+	
 	// Create the dialog buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
 			       "gtk-cancel", GTK_RESPONSE_CANCEL,
@@ -222,7 +226,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 {
 	char tmp[32];
 	
-	// Align the frame to the top of the window.
+	// Align the frame to the top of the container.
 	GtkWidget *alignPort = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
 	sprintf(tmp, "alignPort_%d", port);
 	gtk_widget_set_name(alignPort, tmp);
@@ -393,7 +397,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
  */
 static void cc_window_create_input_devices_frame(GtkWidget *container)
 {
-	// Align the "Input Devices" frame to the top of the window.
+	// Align the "Input Devices" frame to the top of the container.
 	GtkWidget *alignInputDevices = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
 	gtk_widget_set_name(alignInputDevices, "alignInputDevices");
 	gtk_widget_show(alignInputDevices);
@@ -502,7 +506,7 @@ static void cc_window_populate_input_devices(GtkListStore *list)
  */
 static void cc_window_create_configure_controller_frame(GtkWidget *container)
 {
-	// Align the "Configure Controller" frame to the top of the window.
+	// Align the "Configure Controller" frame to the top of the container.
 	GtkWidget *alignConfigure = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
 	gtk_widget_set_name(alignConfigure, "alignConfigure");
 	gtk_widget_show(alignConfigure);
@@ -591,6 +595,68 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 				 G_CALLBACK(cc_window_callback_btnChange_clicked),
 				 GINT_TO_POINTER(button));
 	}
+}
+
+
+/**
+ * cc_window_create_options_frame(): Create the "Options" frame.
+ * @param container Container for the frame.
+ */
+static void cc_window_create_options_frame(GtkWidget *container)
+{
+	// Align the "Options" frame to the top of the container.
+	GtkWidget *alignOptions = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+	gtk_widget_set_name(alignOptions, "alignOptions");
+	gtk_widget_show(alignOptions);
+	gtk_box_pack_start(GTK_BOX(container), alignOptions, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "alignOptions",
+			       g_object_ref(alignOptions), (GDestroyNotify)g_object_unref);
+	
+	// "Options" frame.
+	GtkWidget *fraOptions = gtk_frame_new(NULL);
+	gtk_widget_set_name(fraOptions, "fraOptions");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraOptions), GTK_SHADOW_ETCHED_IN);
+	gtk_container_set_border_width(GTK_CONTAINER(fraOptions), 4);
+	gtk_widget_show(fraOptions);
+	gtk_container_add(GTK_CONTAINER(alignOptions), fraOptions);
+	g_object_set_data_full(G_OBJECT(container), "fraOptions",
+			       g_object_ref(fraOptions), (GDestroyNotify)g_object_unref);
+	
+	// Frame label.
+	GtkWidget *lblOptions = gtk_label_new("<b><i>Options</i></b>");
+	gtk_widget_set_name(lblOptions, "lblOptions");
+	gtk_label_set_use_markup(GTK_LABEL(lblOptions), TRUE);
+	gtk_widget_show(lblOptions);
+	gtk_frame_set_label_widget(GTK_FRAME(fraOptions), lblOptions);
+	g_object_set_data_full(G_OBJECT(container), "lblOptions",
+			       g_object_ref(lblOptions), (GDestroyNotify)g_object_unref);
+	
+	// HButton Box for the "Options" frame.
+	GtkWidget *hbtnOptions = gtk_hbutton_box_new();
+	gtk_widget_set_name(hbtnOptions, "hbtnOptions");
+	gtk_container_set_border_width(GTK_CONTAINER(hbtnOptions), 4);
+	gtk_widget_show(hbtnOptions);
+	gtk_container_add(GTK_CONTAINER(fraOptions), hbtnOptions);
+	g_object_set_data_full(G_OBJECT(container), "hbtnOptions",
+			       g_object_ref(hbtnOptions), (GDestroyNotify)g_object_unref);
+	
+	// "Change All Buttons" button.
+	GtkWidget *btnChangeAll = gtk_button_new_with_label("Change All Buttons");
+	gtk_widget_set_name(btnChangeAll, "btnChangeAll");
+	gtk_widget_show(btnChangeAll);
+	gtk_box_pack_start(GTK_BOX(hbtnOptions), btnChangeAll, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "btnChangeAll",
+			       g_object_ref(btnChangeAll), (GDestroyNotify)g_object_unref);
+	// TODO: Connect signal.
+	
+	// "Clear All Buttons" button.
+	GtkWidget *btnClearAll = gtk_button_new_with_label("Clear All Buttons");
+	gtk_widget_set_name(btnClearAll, "btnClearAll");
+	gtk_widget_show(btnClearAll);
+	gtk_box_pack_start(GTK_BOX(hbtnOptions), btnClearAll, FALSE, FALSE, 0);
+	g_object_set_data_full(G_OBJECT(container), "btnClearAll",
+			       g_object_ref(btnClearAll), (GDestroyNotify)g_object_unref);
+	// TODO: Connect signal.
 }
 
 
