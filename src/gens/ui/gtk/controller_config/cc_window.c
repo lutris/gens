@@ -766,12 +766,11 @@ static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpo
  */
 static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
-	gboolean active = gtk_toggle_button_get_active(togglebutton);
-	
 	int port = GPOINTER_TO_INT(user_data);
 	if (port < 0 || port > 1)
 		return;
 	
+	gboolean active = gtk_toggle_button_get_active(togglebutton);
 	int startPort = (port == 0 ? 2: 5);
 	
 	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
