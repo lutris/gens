@@ -23,6 +23,8 @@
 #ifndef GENS_INPUT_SDL_KEY_NAMES_H
 #define GENS_INPUT_SDL_KEY_NAMES_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
