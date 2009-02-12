@@ -63,8 +63,7 @@ static WNDCLASS	cc_wndclass;
 
 // Window size.
 #define CC_WINDOW_WIDTH  580
-#define CC_WINDOW_HEIGHT 456
-
+#define CC_WINDOW_HEIGHT 464
 #define CC_FRAME_PORT_WIDTH  236
 #define CC_FRAME_PORT_HEIGHT 140
 
@@ -72,13 +71,16 @@ static WNDCLASS	cc_wndclass;
 #define CC_FRAME_INPUT_DEVICES_HEIGHT 96
 
 #define CC_FRAME_CONFIGURE_WIDTH  CC_FRAME_INPUT_DEVICES_WIDTH
-#define CC_FRAME_CONFIGURE_HEIGHT (CC_WINDOW_HEIGHT-8-CC_FRAME_INPUT_DEVICES_HEIGHT-8-24-8)
+#define CC_FRAME_CONFIGURE_HEIGHT (CC_WINDOW_HEIGHT-8-CC_FRAME_INPUT_DEVICES_HEIGHT-8-24-8-8)
 
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
 #define IDC_CC_CBOPADTYPE	0x1200
 #define IDC_CC_OPTCONFIGURE	0x1300
 #define IDC_CC_BTNCHANGE	0x1400
+
+// Apply button.
+#define IDAPPLY 0x0010
 
 // Window procedure.
 static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -116,8 +118,6 @@ static void	cc_window_create_configure_controller_frame(HWND container);
 
 #if 0
 // Callbacks.
-static gboolean	cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-static void	cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer user_data);
@@ -201,19 +201,33 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(hWnd);
 	
-#if 0
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
-			       "gtk-cancel", GTK_RESPONSE_CANCEL,
-			       "gtk-apply", GTK_RESPONSE_APPLY,
-			       "gtk-save", GTK_RESPONSE_OK,
-			       NULL);
-	gtk_dialog_set_alternative_button_order(GTK_DIALOG(cc_window),
-						GTK_RESPONSE_OK,
-						GTK_RESPONSE_APPLY,
-						GTK_RESPONSE_CANCEL,
-						-1);
 	
+	// OK button.
+	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+				  CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
+				  75, 23,
+				  hWnd, (HMENU)IDOK, ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, TRUE);
+	
+	// Apply button.
+	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
+				     75, 23,
+				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	SetWindowFont(btnApply, fntMain, TRUE);
+	
+	// Cancel button.
+	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				      CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
+				      75, 23,
+				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+	SetWindowFont(btnCancel, fntMain, TRUE);
+	
+#if 0
 	// Initialize the internal data variables.
 	cc_window_init();
 	
@@ -552,7 +566,21 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			break;
 		
 		case WM_COMMAND:
-			// TODO
+			switch (LOWORD(wParam))
+			{
+				case IDOK:
+					// TODO
+					break;
+				case IDCANCEL:
+					DestroyWindow(hWnd);
+					break;
+				case IDAPPLY:
+					// TODO
+					break;
+				default:
+					// TODO
+					break;
+			}
 			break;
 		
 		case WM_DESTROY:
@@ -577,57 +605,6 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 
 
 #if 0
-/**
- * cc_window_callback_close(): Close Window callback.
- * @param widget
- * @param event
- * @param user_data
- * @return FALSE to continue processing events; TRUE to stop processing events.
- */
-static gboolean cc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	cc_window_close();
-	return FALSE;
-}
-
-
-/**
- * cc_window_callback_response(): Dialog Response callback.
- * @param dialog
- * @param response_id
- * @param user_data
- */
-static void cc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(dialog);
-	GENS_UNUSED_PARAMETER(user_data);
-	
-	switch (response_id)
-	{
-		case GTK_RESPONSE_CANCEL:
-			cc_window_close();
-			break;
-		case GTK_RESPONSE_APPLY:
-			cc_window_save();
-			break;
-		case GTK_RESPONSE_OK:
-			cc_window_save();
-			cc_window_close();
-			break;
-		
-		case GTK_RESPONSE_DELETE_EVENT:
-		default:
-			// Other event. Don't do anything.
-			// Also, don't do anything when the dialog is deleted.
-			break;
-	}
-}
-
-
 /**
  * cc_window_callback_teamplayer_toggled(): "Teamplayer" checkbox was toggled.
  * @param togglebutton Button that was toggled.
