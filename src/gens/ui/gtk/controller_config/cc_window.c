@@ -1012,6 +1012,9 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
 	GENS_UNUSED_PARAMETER(button);
 	GENS_UNUSED_PARAMETER(user_data);
 	
+	if (cc_cur_player < 0 || cc_cur_player > 8)
+		return;
+	
 	// Number of buttons to configure.
 	int btnCount = (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 1 ? 12 : 8);
 	
@@ -1046,4 +1049,13 @@ static void cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer u
 {
 	GENS_UNUSED_PARAMETER(button);
 	GENS_UNUSED_PARAMETER(user_data);
+	
+	if (cc_cur_player < 0 || cc_cur_player > 8)
+		return;
+	
+	// Clear all buttons for the current player.
+	memset(&cc_key_config[cc_cur_player], 0x00, sizeof(cc_key_config[cc_cur_player]));
+	
+	// Show the cleared configuration.
+	cc_window_show_configuration(cc_cur_player);
 }
