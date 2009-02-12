@@ -125,9 +125,7 @@ static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
-#if 0
 static void	cc_window_save(void);
-#endif
 static void	cc_window_show_configuration(int player);
 
 #if 0
@@ -462,7 +460,6 @@ static void cc_window_init(void)
 }
 
 
-#if 0
 /**
  * cc_window_save(): Save the controller configuration.
  */
@@ -482,20 +479,19 @@ static void cc_window_save(void)
 	Controller_2D_Type = 0;
 	
 	// Save the Teamplayer settings.
-	Controller_1_Type |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkTeamplayer[0])) ? 0x10 : 0x00);
-	Controller_2_Type |= (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkTeamplayer[1])) ? 0x10 : 0x00);
+	Controller_1_Type  |= ((Button_GetCheck(chkTeamplayer[0]) == BST_CHECKED) ? 0x10 : 0x00);
+	Controller_2_Type  |= ((Button_GetCheck(chkTeamplayer[1]) == BST_CHECKED) ? 0x10 : 0x00);
 	
 	// Save the pad type settings.
-	Controller_1_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[0])) ? 0x01 : 0x00);
-	Controller_2_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[1])) ? 0x01 : 0x00);
-	Controller_1B_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[2])) ? 0x01 : 0x00);
-	Controller_1C_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[3])) ? 0x01 : 0x00);
-	Controller_1D_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[4])) ? 0x01 : 0x00);
-	Controller_2B_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[5])) ? 0x01 : 0x00);
-	Controller_2C_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[6])) ? 0x01 : 0x00);
-	Controller_2D_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[7])) ? 0x01 : 0x00);
+	Controller_1_Type  |= (ComboBox_GetCurSel(cboPadType[0]) ? 0x01 : 0x00);
+	Controller_2_Type  |= (ComboBox_GetCurSel(cboPadType[1]) ? 0x01 : 0x00);
+	Controller_1B_Type |= (ComboBox_GetCurSel(cboPadType[2]) ? 0x01 : 0x00);
+	Controller_1C_Type |= (ComboBox_GetCurSel(cboPadType[3]) ? 0x01 : 0x00);
+	Controller_1D_Type |= (ComboBox_GetCurSel(cboPadType[4]) ? 0x01 : 0x00);
+	Controller_2B_Type |= (ComboBox_GetCurSel(cboPadType[5]) ? 0x01 : 0x00);
+	Controller_2C_Type |= (ComboBox_GetCurSel(cboPadType[6]) ? 0x01 : 0x00);
+	Controller_2D_Type |= (ComboBox_GetCurSel(cboPadType[7]) ? 0x01 : 0x00);
 }
-#endif
 
 
 /**
@@ -571,13 +567,14 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			switch (LOWORD(wParam))
 			{
 				case IDOK:
-					// TODO
+					cc_window_save();
+					DestroyWindow(hWnd);
 					break;
 				case IDCANCEL:
 					DestroyWindow(hWnd);
 					break;
 				case IDAPPLY:
-					// TODO
+					cc_window_save();
 					break;
 				default:
 					switch (LOWORD(wParam) & 0xFF00)
