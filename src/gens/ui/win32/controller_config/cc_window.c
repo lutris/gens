@@ -119,9 +119,7 @@ static void	cc_window_create_configure_controller_frame(HWND container);
 // Callbacks.
 static void	cc_window_callback_teamplayer_toggled(int port);
 static void	cc_window_callback_padtype_changed(int player);
-#if 0
-static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
-#endif
+static void	cc_window_callback_btnChange_clicked(int btnID);
 
 // Configuration load/save functions.
 static void	cc_window_init(void);
@@ -590,7 +588,7 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 							cc_window_show_configuration(LOWORD(wParam) & 0xFF);
 							break;
 						case IDC_CC_BTNCHANGE:
-							// TODO
+							cc_window_callback_btnChange_clicked(LOWORD(wParam) & 0xFF);
 							break;
 						default:
 							// Unknown command identifier.
@@ -686,25 +684,20 @@ static void cc_window_callback_padtype_changed(int player)
 }
 
 
-#if 0
 /**
  * cc_window_callback_btnChange_clicked(): A "Change" button was clicked.
- * @param button Button that was clicked.
- * @param user_data Button number.
+ * @param btnID Button number.
  */
-static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
+static void cc_window_callback_btnChange_clicked(int btnID)
 {
-	GENS_UNUSED_PARAMETER(button);
-	
 	if (cc_window_is_configuring)
 		return;
 	
-	int btnID = GPOINTER_TO_INT(user_data);
 	if (btnID < 0 || btnID >= 12)
 		return;
 	
 	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
-	if (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 0)
+	if (ComboBox_GetCurSel(cboPadType[cc_cur_player]) == 0)
 	{
 		if (btnID >= 8)
 			return;
@@ -714,11 +707,13 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 	cc_window_is_configuring = TRUE;
 	
 	// Set the current configure text.
-	gtk_label_set_text(GTK_LABEL(lblCurConfig[btnID]), "<tt>Press a Key...</tt>");
-	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[btnID]), TRUE);
+	Static_SetText(lblCurConfig[btnID], "Press a Key...");
 	
+	// TODO
+#if 0
 	// Set the blink timer for 500 ms.
 	g_timeout_add(500, cc_window_callback_blink, GINT_TO_POINTER(btnID));
+#endif
 	
 	// Get a key value.
 	cc_key_config[cc_cur_player].data[btnID] = input_get_key();
@@ -726,18 +721,18 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 	// Set the text of the label with the key name.
 	char tmp[64], key_name[64];
 	input_get_key_name(cc_key_config[cc_cur_player].data[btnID], &key_name[0], sizeof(key_name));
-	sprintf(tmp, "<tt>0x%04X: %s</tt>", cc_key_config[cc_cur_player].data[btnID], key_name);
-	gtk_label_set_text(GTK_LABEL(lblCurConfig[btnID]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[btnID]), TRUE);
+	sprintf(tmp, "0x%04X: %s", cc_key_config[cc_cur_player].data[btnID], key_name);
+	Static_SetText(lblCurConfig[btnID], tmp);
 	
 	// Key is no longer being configured.
 	cc_window_is_configuring = FALSE;
 	
 	// Make sure the label is visible now.
-	gtk_widget_show(lblCurConfig[btnID]);
+	ShowWindow(lblCurConfig[btnID], SW_SHOW);
 }
 
 
+#if 0
 /**
  * cc_window_callback_blink(): Blink handler.
  * Blinks the current button configuration label when configuring.
