@@ -138,9 +138,11 @@ int input_sdl_init(void)
 	input_sdl_num_joysticks = 0;
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
 	{
-		// Error initializing SDL.
-		fprintf(stderr, "%s(): Error initializing SDL's joystick handler: %s\n", __func__, SDL_GetError());
-		return -1;
+		// Error initializing the SDL joystick handler.
+		// Disable joysticks.
+		fprintf(stderr, "%s(): Error initializing SDL's joystick handler: %s\n"
+				"%s(): Joystick input will be disabled.", __func__, SDL_GetError(), __func__);
+		return 0;
 	}
 	
 	// If any joysticks are connected, set them up.
