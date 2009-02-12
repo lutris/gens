@@ -28,8 +28,6 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
 
-#include "controller_config/controller_config_window.hpp"
-
 #include <windows.h>
 #include <windowsx.h>
 
