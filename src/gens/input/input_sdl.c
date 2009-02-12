@@ -25,6 +25,8 @@
 #include "input_sdl_events.hpp"
 #include "input_sdl_joystate.h"
 
+#include <unistd.h>
+
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
@@ -337,6 +339,9 @@ unsigned int input_sdl_get_key(void)
 		event = gdk_event_get();
 		if (event && event->type == GDK_KEY_PRESS)
 			return input_sdl_gdk_to_gens_keyval(event->key.keyval);
+		
+		// Sleep for 1 ms.
+		usleep(1000);
 	}
 }
 
