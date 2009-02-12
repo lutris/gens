@@ -642,7 +642,7 @@ static void cc_window_callback_teamplayer_toggled(int port)
 			// Select the main player for the port.
 			printf("port: %d\n", port);
 			Button_SetCheck(optConfigure[port], BST_CHECKED);
-			// TODO: Run the callback. (Win32 doesn't automatically do this.)
+			cc_window_show_configuration(port);
 		}
 	}
 	
