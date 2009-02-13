@@ -140,6 +140,8 @@ static void	cc_window_show_configuration(int player);
 // Callbacks.
 static void	cc_window_callback_teamplayer_toggled(int port);
 static void	cc_window_callback_padtype_changed(int player);
+static void	cc_window_callback_btnChangeAll_clicked(void);
+static void	cc_window_callback_btnClearAll_clicked(void);
 
 // Configure a key.
 static void	cc_window_configure_key(int player, int button);
@@ -642,6 +644,12 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 				case IDAPPLY:
 					cc_window_save();
 					break;
+				case IDC_CC_BTNCHANGEALL:
+					cc_window_callback_btnChangeAll_clicked();
+					break;
+				case IDC_CC_BTNCLEARALL:
+					cc_window_callback_btnClearAll_clicked();
+					break;
 				default:
 					switch (LOWORD(wParam) & 0xFF00)
 					{
@@ -834,4 +842,29 @@ static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idE
 		ShowWindow(lblCurConfig[cc_cur_player_button], SW_HIDE);
 	else
 		ShowWindow(lblCurConfig[cc_cur_player_button], SW_SHOW);
+}
+
+
+/**
+ * cc_window_callback_btnChangeAll_clicked(): "Change All Buttons" button was clicked.
+ */
+static void cc_window_callback_btnChangeAll_clicked(void)
+{
+	// TODO
+}
+
+
+/**
+ * cc_window_callback_btnClearAll_clicked(): "Clear All Buttons" button was clicked.
+ */
+static void cc_window_callback_btnClearAll_clicked(void)
+{
+	if (cc_cur_player < 0 || cc_cur_player > 8)
+		return;
+	
+	// Clear all buttons for the current player.
+	memset(&cc_key_config[cc_cur_player], 0x00, sizeof(cc_key_config[cc_cur_player]));
+	
+	// Show the cleared configuration.
+	cc_window_show_configuration(cc_cur_player);
 }
