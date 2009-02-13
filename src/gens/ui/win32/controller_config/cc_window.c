@@ -74,11 +74,18 @@ static WNDCLASS	cc_wndclass;
 #define CC_FRAME_CONFIGURE_WIDTH  320
 #define CC_FRAME_CONFIGURE_HEIGHT 312
 
+#define CC_FRAME_OPTIONS_WIDTH  CC_FRAME_CONFIGURE_WIDTH 
+#define CC_FRAME_OPTIONS_HEIGHT 48
+
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
 #define IDC_CC_CBOPADTYPE	0x1200
 #define IDC_CC_OPTCONFIGURE	0x1300
 #define IDC_CC_BTNCHANGE	0x1400
+
+// "Options" buttons.
+#define IDC_CC_BTNCHANGEALL	0x1801
+#define IDC_CC_BTNCLEARALL	0x1802
 
 // Timer ID.
 #define IDT_CONFIGURE_BLINK	0x2000
@@ -120,6 +127,7 @@ static void	cc_window_create_controller_port_frame(HWND container, int port);
 static void	cc_window_create_input_devices_frame(HWND container);
 static void	cc_window_populate_input_devices(HWND lstBox);
 static void	cc_window_create_configure_controller_frame(HWND container);
+static void	cc_window_create_options_frame(HWND container);
 
 // Display key name function.
 static inline void cc_window_display_key_name(HWND label, uint16_t key);
@@ -208,6 +216,9 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(hWnd);
 	
+	// Create the "Options" frame.
+	cc_window_create_options_frame(hWnd);
+	
 	// Create the dialog buttons.
 	
 	// OK button.
@@ -215,7 +226,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				  75, 23,
-				  hWnd, (HMENU)IDOK, ghInstance, NULL);
+				  hWnd, (HMENU)(IDOK), ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Apply button.
@@ -223,7 +234,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				     75, 23,
-				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+				     hWnd, (HMENU)(IDAPPLY), ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	// Cancel button.
@@ -231,7 +242,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
 				      75, 23,
-				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
+				      hWnd, (HMENU)(IDCANCEL), ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Initialize the internal data variables.
@@ -370,8 +381,8 @@ static void cc_window_populate_input_devices(HWND lstBox)
 static void cc_window_create_configure_controller_frame(HWND container)
 {
 	// Top and left sides of the frame.
-	const int fraConfigure_top = 8;
-	const int fraConfigure_left = 8+CC_FRAME_PORT_WIDTH+8;
+	static const int fraConfigure_top = 8;
+	static const int fraConfigure_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
 	fraConfigure = CreateWindow(WC_BUTTON, NULL,
@@ -411,6 +422,42 @@ static void cc_window_create_configure_controller_frame(HWND container)
 						 container, (HMENU)(IDC_CC_BTNCHANGE + button), ghInstance, NULL);
 		SetWindowFont(btnChange[button], fntMain, TRUE);
 	}
+}
+
+
+/**
+ * cc_window_create_options_frame(): Create the "Options" frame.
+ * @param container Container for the frame.
+ */
+static void cc_window_create_options_frame(HWND container)
+{
+	// Top and left sides of the frame.
+	static const int fraOptions_top = 8+CC_FRAME_CONFIGURE_HEIGHT+8;
+	static const int fraOptions_left = 8+CC_FRAME_PORT_WIDTH+8;
+	
+	// "Configure Controller" frame.
+	HWND fraOptions = CreateWindow(WC_BUTTON, "Options",
+				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				       fraOptions_left, fraOptions_top,
+				       CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
+				       container, NULL, ghInstance, NULL);
+	SetWindowFont(fraOptions, fntMain, TRUE);
+	
+	// "Change All Buttons" button.
+	HWND btnChangeAll = CreateWindow(WC_BUTTON, "Change All Buttons",
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					 fraOptions_left+8, fraOptions_top+16,
+					 127, 23,
+					 container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
+	SetWindowFont(btnChangeAll, fntMain, TRUE);
+	
+	// "Clear All Buttons" button.
+	HWND btnClearAll = CreateWindow(WC_BUTTON, "Clear All Buttons",
+					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					fraOptions_left+CC_FRAME_OPTIONS_WIDTH-8-128, fraOptions_top+16,
+					127, 23,
+					container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
+	SetWindowFont(btnClearAll, fntMain, TRUE);
 }
 
 
