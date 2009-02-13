@@ -721,7 +721,7 @@ static void cc_window_callback_teamplayer_toggled(int port)
 		return;
 	
 	BOOL active = (Button_GetCheck(chkTeamplayer[port]) == BST_CHECKED);
-	int startPort = (port == 0 ? 2: 5);
+	int startPort = (port == 0 ? 2 : 5);
 	
 	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
 	if (!active)

@@ -843,7 +843,7 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 		return;
 	
 	gboolean active = gtk_toggle_button_get_active(togglebutton);
-	int startPort = (port == 0 ? 2: 5);
+	int startPort = (port == 0 ? 2 : 5);
 	
 	// If new state is "Disabled", check if any of the buttons to be disabled are currently toggled.
 	if (!active)
