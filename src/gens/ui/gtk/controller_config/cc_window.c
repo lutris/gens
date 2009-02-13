@@ -142,13 +142,13 @@ void cc_window_show(GtkWindow *parent)
 	g_object_set_data(G_OBJECT(cc_window), "cc_window", cc_window);
 	
 	// Callbacks for if the window is closed.
-	g_signal_connect((gpointer)cc_window, "delete_event",
+	g_signal_connect((gpointer)(cc_window), "delete_event",
 			 G_CALLBACK(cc_window_callback_close), NULL);
-	g_signal_connect((gpointer)cc_window, "destroy_event",
+	g_signal_connect((gpointer)(cc_window), "destroy_event",
 			 G_CALLBACK(cc_window_callback_close), NULL);
 	
 	// Dialog response callback.
-	g_signal_connect((gpointer)cc_window, "response",
+	g_signal_connect((gpointer)(cc_window), "response",
 			 G_CALLBACK(cc_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
