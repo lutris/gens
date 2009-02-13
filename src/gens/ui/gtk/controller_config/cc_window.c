@@ -911,7 +911,12 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 {
 	GENS_UNUSED_PARAMETER(button);
 	
+	if (cc_window_is_configuring)
+		return;
+	
+	cc_window_is_configuring = TRUE;
 	cc_window_configure_key(cc_cur_player, GPOINTER_TO_INT(user_data));
+	cc_window_is_configuring = FALSE;
 }
 
 
@@ -922,7 +927,7 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
  */
 static void cc_window_configure_key(int player, int button)
 {
-	if (cc_window_is_configuring)
+	if (!cc_window_is_configuring)
 		return;
 	
 	if (button < 0 || button >= 12)
@@ -936,7 +941,6 @@ static void cc_window_configure_key(int player, int button)
 	}
 	
 	// Set cc_window_is_configuring to indicate that the key is being configured.
-	cc_window_is_configuring = TRUE;
 	cc_cur_player_button = button;
 	
 	// Set the current configure text.
@@ -953,7 +957,6 @@ static void cc_window_configure_key(int player, int button)
 	{
 		// Window has closed.
 		cc_cur_player_button = -1;
-		cc_window_is_configuring = FALSE;
 		return;
 	}
 	
@@ -962,7 +965,6 @@ static void cc_window_configure_key(int player, int button)
 	
 	// Key is no longer being configured.
 	cc_cur_player_button = -1;
-	cc_window_is_configuring = FALSE;
 	
 	// Make sure the label is visible now.
 	gtk_widget_show(lblCurConfig[button]);
@@ -1012,11 +1014,17 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
 	GENS_UNUSED_PARAMETER(button);
 	GENS_UNUSED_PARAMETER(user_data);
 	
+	if (cc_window_is_configuring)
+		return;
+	
 	if (cc_cur_player < 0 || cc_cur_player > 8)
 		return;
 	
 	// Number of buttons to configure.
 	int btnCount = (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 1 ? 12 : 8);
+	
+	// Set the "Configuring" flag.
+	cc_window_is_configuring = TRUE;
 	
 	int i;
 	for (i = 0; i < btnCount; i++)
@@ -1037,6 +1045,9 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
 			break;
 		}
 	}
+	
+	// Unset the "Configuring" flag.
+	cc_window_is_configuring = FALSE;
 }
 
 
