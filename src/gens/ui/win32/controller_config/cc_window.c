@@ -121,6 +121,11 @@ static HWND	lblButton[12];
 static HWND	lblCurConfig[12];
 static HWND	btnChange[12];
 
+// Widgets: "Options" frame.
+static HWND	fraOptions;
+static HWND	btnChangeAll;
+static HWND	btnClearAll;
+
 // Widget creation functions.
 static void	cc_window_create_child_windows(HWND hWnd);
 static void	cc_window_create_controller_port_frame(HWND container, int port);
@@ -438,27 +443,27 @@ static void cc_window_create_options_frame(HWND container)
 	static const int fraOptions_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
-	HWND fraOptions = CreateWindow(WC_BUTTON, "Options",
-				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-				       fraOptions_left, fraOptions_top,
-				       CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
-				       container, NULL, ghInstance, NULL);
+	fraOptions = CreateWindow(WC_BUTTON, NULL,
+				  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				  fraOptions_left, fraOptions_top,
+				  CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
+				  container, NULL, ghInstance, NULL);
 	SetWindowFont(fraOptions, fntMain, TRUE);
 	
 	// "Change All Buttons" button.
-	HWND btnChangeAll = CreateWindow(WC_BUTTON, "Change All Buttons",
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					 fraOptions_left+8, fraOptions_top+16,
-					 127, 23,
-					 container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
+	btnChangeAll = CreateWindow(WC_BUTTON, "Change All Buttons",
+				    WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				    fraOptions_left+8, fraOptions_top+16,
+				    127, 23,
+				    container, (HMENU)(IDC_CC_BTNCHANGEALL), ghInstance, NULL);
 	SetWindowFont(btnChangeAll, fntMain, TRUE);
 	
 	// "Clear All Buttons" button.
-	HWND btnClearAll = CreateWindow(WC_BUTTON, "Clear All Buttons",
-					WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					fraOptions_left+CC_FRAME_OPTIONS_WIDTH-8-128, fraOptions_top+16,
-					127, 23,
-					container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
+	btnClearAll = CreateWindow(WC_BUTTON, "Clear All Buttons",
+				   WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				   fraOptions_left+CC_FRAME_OPTIONS_WIDTH-8-128, fraOptions_top+16,
+				   127, 23,
+				   container, (HMENU)(IDC_CC_BTNCLEARALL), ghInstance, NULL);
 	SetWindowFont(btnClearAll, fntMain, TRUE);
 }
 
@@ -581,6 +586,17 @@ static void cc_window_show_configuration(int player)
 	// Set the "Configure Controller" frame title.
 	sprintf(tmp, "Configure Player %s", &input_player_names[player][1]);
 	Button_SetText(fraConfigure, tmp);
+	
+	// Set the "Options" frame title.
+	sprintf(tmp, "Options for Player %s", &input_player_names[player][1]);
+	Button_SetText(fraOptions, tmp);
+	
+	// Make sure the "Change All Buttons" and "Clear All Buttons" buttons aren't
+	// obscured by the frame label. Not sure if this is intended behavior or
+	// if it's simply a bug in Wine.
+	// TODO: Test this on Windows.
+	InvalidateRect(btnChangeAll, NULL, TRUE);
+	InvalidateRect(btnClearAll, NULL, TRUE);
 	
 	// Show the key configuration.
 	unsigned int button;

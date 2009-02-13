@@ -79,6 +79,9 @@ static GtkWidget	*lblButton[12];
 static GtkWidget	*lblCurConfig[12];
 static GtkWidget	*btnChange[12];
 
+// Widgets: "Options" frame.
+static GtkWidget	*fraOptions;
+
 // GSList used to link the "Configure" radio buttons.
 static GSList		*gslConfigure;
 
@@ -591,7 +594,7 @@ static void cc_window_create_options_frame(GtkWidget *container)
 			       g_object_ref(alignOptions), (GDestroyNotify)g_object_unref);
 	
 	// "Options" frame.
-	GtkWidget *fraOptions = gtk_frame_new("<b><i>Options</i></b>");
+	fraOptions = gtk_frame_new("");
 	gtk_widget_set_name(fraOptions, "fraOptions");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraOptions), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraOptions))), TRUE);
@@ -750,6 +753,12 @@ static void cc_window_show_configuration(int player)
 	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
 	gtk_label_set_text(GTK_LABEL(lblConfigure), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
+	
+	// Set the "Options" frame title.
+	GtkWidget *lblOptions = gtk_frame_get_label_widget(GTK_FRAME(fraOptions));
+	sprintf(tmp, "<b><i>Options for Player %s</i></b>", &input_player_names[player][1]);
+	gtk_label_set_text(GTK_LABEL(lblOptions), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblOptions), TRUE);
 	
 	// Show the key configuration.
 	unsigned int button;
