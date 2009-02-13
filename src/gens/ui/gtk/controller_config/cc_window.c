@@ -203,11 +203,13 @@ void cc_window_show(GtkWindow *parent)
 			       "gtk-apply", GTK_RESPONSE_APPLY,
 			       "gtk-save", GTK_RESPONSE_OK,
 			       NULL);
+#if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(cc_window),
 						GTK_RESPONSE_OK,
 						GTK_RESPONSE_APPLY,
 						GTK_RESPONSE_CANCEL,
 						-1);
+#endif
 	
 	// Initialize the internal data variables.
 	cc_window_init();
