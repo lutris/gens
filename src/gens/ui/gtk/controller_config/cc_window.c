@@ -217,7 +217,7 @@ void cc_window_show(GtkWindow *parent)
 	
 	// Set the window as modal to the main application window.
 	if (parent)
-		gtk_window_set_transient_for(GTK_WINDOW(cc_window), GTK_WINDOW(parent));
+		gtk_window_set_transient_for(GTK_WINDOW(cc_window), parent);
 	
 	// Show the window.
 	gtk_widget_show_all(cc_window);
