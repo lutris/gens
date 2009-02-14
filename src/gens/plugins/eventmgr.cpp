@@ -38,12 +38,12 @@ using std::list;
 
 
 // Event lists.
-list<mdpEventItem_t> EventMgr::lstEvents[MaxEventID];
+list<mdpEventItem_t> EventMgr::lstEvents[MDP_EVENT_MAX];
 
 
 void EventMgr::RaiseEvent(int event_id, void *event_info)
 {
-	if (event_id <= 0 || event_id > MaxEventID)
+	if (event_id <= 0 || event_id > MDP_EVENT_MAX)
 		return;
 	
 	for (list<mdpEventItem_t>::iterator lstIter = lstEvents[event_id - 1].begin();

@@ -51,7 +51,7 @@ int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id,
 				       mdp_event_handler_fn handler)
 {
 	// Check that tne event ID is valid.
-	if (event_id <= MDP_EVENT_UNKNOWN || event_id > EventMgr::MaxEventID)
+	if (event_id <= MDP_EVENT_UNKNOWN || event_id >= MDP_EVENT_MAX)
 		return -MDP_ERR_EVENT_INVALID_EVENTID;
 	
 	// Check if this plugin and handler are already registered for this event.

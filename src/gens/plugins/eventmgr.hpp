@@ -41,11 +41,8 @@ struct mdpEventItem_t
 class EventMgr
 {
 	public:
-		// Maximum event ID handled.
-		static const int MaxEventID = 2;
-		
 		// Event lists.
-		static std::list<mdpEventItem_t> lstEvents[MaxEventID];
+		static std::list<mdpEventItem_t> lstEvents[MDP_EVENT_MAX];
 		
 		// Events.
 		static void RaiseEvent(int event_id, void *event_info);
