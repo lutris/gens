@@ -7,4 +7,5 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 # Miscellaneous
 SUBDIRS = \
+		game_genie \
 		vdp_layer_options
