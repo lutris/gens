@@ -26,7 +26,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "sgens.hpp"
 #include "sgens_plugin.h"
@@ -77,7 +76,6 @@ int MDP_FNCALL sgens_init(MDP_Host_t *host_srv)
 	
 	// Create a menu item.
 	sgens_menuItemID = sgens_host_srv->menu_item_add(&mdp, &sgens_menu_handler, 0, "&Sonic Gens");
-	printf("Sonic Gens plugin initialized. Menu item ID: 0x%04X\n", sgens_menuItemID);
 	
 	// Register the MDP event handlers.
 	sgens_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, sgens_event_handler);
