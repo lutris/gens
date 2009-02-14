@@ -79,9 +79,6 @@ static GtkWidget	*lblButton[12];
 static GtkWidget	*lblCurConfig[12];
 static GtkWidget	*btnChange[12];
 
-// Widgets: "Options" frame.
-static GtkWidget	*fraOptions;
-
 // GSList used to link the "Configure" radio buttons.
 static GSList		*gslConfigure;
 
@@ -90,7 +87,6 @@ static void	cc_window_create_controller_port_frame(GtkWidget *container, int por
 static void	cc_window_create_input_devices_frame(GtkWidget *container);
 static void	cc_window_populate_input_devices(GtkListStore *list);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
-static void	cc_window_create_options_frame(GtkWidget *container);
 
 // Display key name function.
 static inline void cc_window_display_key_name(GtkWidget *label, uint16_t key);
@@ -193,9 +189,6 @@ void cc_window_show(GtkWindow *parent)
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
-	
-	// Create the "Options" frame.
-	cc_window_create_options_frame(vboxConfigureOuter);
 	
 	// Create the dialog buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
@@ -516,13 +509,22 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	g_object_set_data_full(G_OBJECT(container), "fraConfigure",
 			       g_object_ref(fraConfigure), (GDestroyNotify)g_object_unref);
 	
+	// VBox for the "Configure Controller" frame.
+	GtkWidget *vboxConfigure = gtk_vbox_new(FALSE, 4);
+	gtk_widget_set_name(vboxConfigure, "vboxConfigure");
+	gtk_container_set_border_width(GTK_CONTAINER(vboxConfigure), 0);
+	gtk_widget_show(vboxConfigure);
+	gtk_container_add(GTK_CONTAINER(fraConfigure), vboxConfigure);
+	g_object_set_data_full(G_OBJECT(container), "vboxConfigure",
+			       g_object_ref(vboxConfigure), (GDestroyNotify)g_object_unref);
+		
 	// Create the table for button remapping.
 	GtkWidget *tblButtonRemap = gtk_table_new(12, 3, FALSE);
 	gtk_widget_set_name(tblButtonRemap, "tblButtonRemap");
 	gtk_container_set_border_width(GTK_CONTAINER(tblButtonRemap), 4);
 	gtk_table_set_col_spacings(GTK_TABLE(tblButtonRemap), 12);
 	gtk_widget_show(tblButtonRemap);
-	gtk_container_add(GTK_CONTAINER(fraConfigure), tblButtonRemap);
+	gtk_box_pack_start(GTK_BOX(vboxConfigure), tblButtonRemap, TRUE, TRUE, 0);
 	g_object_set_data_full(G_OBJECT(container), "tblButtonRemap",
 			       g_object_ref(tblButtonRemap), (GDestroyNotify)g_object_unref);
 	
@@ -578,40 +580,21 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 				 G_CALLBACK(cc_window_callback_btnChange_clicked),
 				 GINT_TO_POINTER(button));
 	}
-}
-
-
-/**
- * cc_window_create_options_frame(): Create the "Options" frame.
- * @param container Container for the frame.
- */
-static void cc_window_create_options_frame(GtkWidget *container)
-{
-	// Align the "Options" frame to the top of the container.
-	GtkWidget *alignOptions = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	gtk_widget_set_name(alignOptions, "alignOptions");
-	gtk_widget_show(alignOptions);
-	gtk_box_pack_start(GTK_BOX(container), alignOptions, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignOptions",
-			       g_object_ref(alignOptions), (GDestroyNotify)g_object_unref);
 	
-	// "Options" frame.
-	fraOptions = gtk_frame_new("");
-	gtk_widget_set_name(fraOptions, "fraOptions");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraOptions), GTK_SHADOW_ETCHED_IN);
-	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraOptions))), TRUE);
-	gtk_container_set_border_width(GTK_CONTAINER(fraOptions), 4);
-	gtk_widget_show(fraOptions);
-	gtk_container_add(GTK_CONTAINER(alignOptions), fraOptions);
-	g_object_set_data_full(G_OBJECT(container), "fraOptions",
-			       g_object_ref(fraOptions), (GDestroyNotify)g_object_unref);
+	// Separator between the table and the miscellaneous buttons.
+	GtkWidget *hsepConfigure = gtk_hseparator_new();
+	gtk_widget_set_name(hsepConfigure, "hsepConfigure");
+	gtk_widget_show(hsepConfigure);
+	gtk_box_pack_start(GTK_BOX(vboxConfigure), hsepConfigure, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(container), "hsepConfigure",
+			       g_object_ref(hsepConfigure), (GDestroyNotify)g_object_unref);
 	
-	// HButton Box for the "Options" frame.
+	// HButton Box for miscellaneous controller configuration buttons.
 	GtkWidget *hbtnOptions = gtk_hbutton_box_new();
 	gtk_widget_set_name(hbtnOptions, "hbtnOptions");
 	gtk_container_set_border_width(GTK_CONTAINER(hbtnOptions), 4);
 	gtk_widget_show(hbtnOptions);
-	gtk_container_add(GTK_CONTAINER(fraOptions), hbtnOptions);
+	gtk_box_pack_start(GTK_BOX(vboxConfigure), hbtnOptions, FALSE, TRUE, 0);
 	g_object_set_data_full(G_OBJECT(container), "hbtnOptions",
 			       g_object_ref(hbtnOptions), (GDestroyNotify)g_object_unref);
 	
@@ -755,12 +738,6 @@ static void cc_window_show_configuration(int player)
 	sprintf(tmp, "<b><i>Configure Player %s</i></b>", &input_player_names[player][1]);
 	gtk_label_set_text(GTK_LABEL(lblConfigure), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblConfigure), TRUE);
-	
-	// Set the "Options" frame title.
-	GtkWidget *lblOptions = gtk_frame_get_label_widget(GTK_FRAME(fraOptions));
-	sprintf(tmp, "<b><i>Options for Player %s</i></b>", &input_player_names[player][1]);
-	gtk_label_set_text(GTK_LABEL(lblOptions), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblOptions), TRUE);
 	
 	// Show the key configuration.
 	unsigned int button;
