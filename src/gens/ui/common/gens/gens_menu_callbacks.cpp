@@ -40,7 +40,7 @@
 #include "plugin_manager/plugin_manager_window.hpp"
 
 #ifdef GENS_OPENGL
-#include "opengl_resolution/opengl_resolution_window_misc.hpp"
+#include "opengl_resolution/glres_window.hpp"
 #endif /* GENS_OPENGL */
 
 #ifdef GENS_CDROM
@@ -398,7 +398,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_CUSTOM:
-			Open_OpenGL_Resolution();
+			glres_window_show(GTK_WINDOW(gens_window));
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 #endif /* GENS_OPENGL */

@@ -52,9 +52,7 @@ gens_SOURCES += \
 if GENS_OPENGL
 gens_SOURCES += \
 		video/vdraw_sdl_gl.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.c \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.cpp
+		ui/gtk/opengl_resolution/glres_window.cpp
 endif # GENS_OPENGL
 
 if GENS_CDROM
@@ -114,9 +112,7 @@ noinst_HEADERS += \
 if GENS_OPENGL
 noinst_HEADERS += \
 		video/vdraw_sdl_gl.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_callbacks.h \
-		ui/gtk/opengl_resolution/opengl_resolution_window_misc.hpp
+		ui/gtk/opengl_resolution/glres_window.hpp
 endif # GENS_OPENGL
 
 if GENS_CDROM
