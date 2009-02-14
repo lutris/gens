@@ -36,8 +36,8 @@ Release 7 introduces the following new features:
   on screen, so e.g. you can hide sprites, swap scroll priorities, and lock
   the palette to prevent color changes.
 
-- New MDP Plugin: Sonic Gens. This lets you view various values in memory
-  in several Sonic games. Sonic Gens was originally written by LOst as a
+- New MDP Plugin: Sonic Gens. This lets you view various information in
+  memory in several Sonic games. Sonic Gens was originally written by LOst as a
   standalone version of Gens.
 
 - New renderers:

@@ -33,7 +33,7 @@ static MDP_Desc_t MDP_Desc =
 	.name = "Sonic Gens",
 	.author_mdp = "David Korth",
 	.author_orig = "LOst",
-	.description = "Allows you to view various information in memory from a Sonic game.",
+	.description = "Allows you to view various information in memory in several Sonic games.",
 	.website = NULL,
 	.license = MDP_LICENSE_GPL_2,
 	
@@ -51,7 +51,7 @@ MDP_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(0, 2, 0),
+	.pluginVersion = MDP_VERSION(0, 1, 0),
 	
 	// CPU flags.
 	.cpuFlagsSupported = 0,
