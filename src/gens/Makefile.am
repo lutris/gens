@@ -120,6 +120,7 @@ gens_SOURCES = \
 		ui/common/gens/gens_window_sync.c \
 		ui/common/about_window_data.cpp \
 		ui/common/plugin_manager_window_common.cpp \
+		ui/common/dir_window_common.c \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -223,6 +224,7 @@ noinst_HEADERS = \
 		ui/common/gens/gens_menu.h \
 		ui/common/gens/gens_menu_callbacks.cpp \
 		ui/common/gens/gens_window_sync.h \
+		ui/common/dir_window_common.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \

@@ -25,6 +25,7 @@
 #endif
 
 #include "dir_window.hpp"
+#include "ui/common/dir_window_common.h"
 
 // C includes.
 #include <string.h>
@@ -43,36 +44,6 @@ using std::string;
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 #include "util/file/file.hpp"
-
-// Includes with directory defines.
-// TODO: Consolidate these into Settings.PathNames
-#include "util/file/save.hpp"
-#include "util/gfx/imageutil.hpp"
-#include "util/file/rom.hpp"
-
-
-// Directory struct.
-struct dir_entry_t
-{
-	const char* title;
-	char* entry;
-};
-
-// Directory entries.
-static const dir_entry_t dir_entries[] =
-{
-	{"Savestates",	State_Dir},
-	{"SRAM Backup",	SRAM_Dir},
-	{"BRAM Backup",	BRAM_Dir},
-	{"WAV Dump",	PathNames.Dump_WAV_Dir},
-	{"GYM Dump",	PathNames.Dump_GYM_Dir},
-	{"Screenshots",	PathNames.Screenshot_Dir},
-	{"PAT patches",	PathNames.Patch_Dir},
-	{"IPS patches",	IPS_Dir},
-	{NULL, NULL}
-};
-#define DIR_ENTRIES_COUNT ((sizeof(dir_entries) / sizeof(dir_entry_t)) - 1)
-
 
 // Window.
 GtkWidget *dir_window = NULL;
@@ -159,7 +130,7 @@ void dir_window_show(GtkWindow *parent)
 	{
 		// Create tbe label for the directory.
 		sprintf(tmp, "lblDirectory_%d", dir);
-		GtkWidget *lblDirectory = gtk_label_new(dir_entries[dir].title);
+		GtkWidget *lblDirectory = gtk_label_new(dir_window_entries[dir].title);
 		gtk_widget_set_name(lblDirectory, tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblDirectory), 0.0f, 0.5f);
 		gtk_widget_show(lblDirectory);
@@ -249,7 +220,7 @@ static void dir_window_init(void)
 {
 	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
 	{
-		gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), dir_entries[dir].entry);
+		gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), dir_window_entries[dir].entry);
 	}
 }
 
@@ -263,24 +234,24 @@ static void dir_window_save(void)
 	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
 	{
 		// Get the entry text.
-		strncpy(dir_entries[dir].entry,
+		strncpy(dir_window_entries[dir].entry,
 			gtk_entry_get_text(GTK_ENTRY(txtDirectory[dir])),
 			GENS_PATH_MAX);
 		
 		// Make sure the entry is null-terminated.
-		dir_entries[dir].entry[GENS_PATH_MAX - 1] = 0x00;
+		dir_window_entries[dir].entry[GENS_PATH_MAX - 1] = 0x00;
 		
 		// Make sure the end of the directory has a slash.
 		// TODO: Do this in functions that use pathnames.
-		len = strlen(dir_entries[dir].entry);
-		if (len > 0 && dir_entries[dir].entry[len - 1] != GENS_DIR_SEPARATOR_CHR)
+		len = strlen(dir_window_entries[dir].entry);
+		if (len > 0 && dir_window_entries[dir].entry[len - 1] != GENS_DIR_SEPARATOR_CHR)
 		{
 			// String needs to be less than 1 minus the max path length
 			// in order to be able to append the directory separator.
 			if (len < (GENS_PATH_MAX - 1))
 			{
-				dir_entries[dir].entry[len] = GENS_DIR_SEPARATOR_CHR;
-				dir_entries[dir].entry[len + 1] = 0x00;
+				dir_window_entries[dir].entry[len] = GENS_DIR_SEPARATOR_CHR;
+				dir_window_entries[dir].entry[len + 1] = 0x00;
 			}
 		}
 	}
@@ -351,7 +322,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 		return;
 	
 	char tmp[64];
-	sprintf(tmp, "Select %s Directory", dir_entries[dir].title);
+	sprintf(tmp, "Select %s Directory", dir_window_entries[dir].title);
 	
 	// Request a new directory.
 	string new_dir = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(txtDirectory[dir])));
