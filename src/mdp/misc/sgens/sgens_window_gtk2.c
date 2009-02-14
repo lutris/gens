@@ -24,6 +24,7 @@
 #include <config.h>
 #endif
 
+#include <stdint.h>
 #include <stdio.h>
 
 #include "sgens_window.h"
@@ -406,6 +407,8 @@ void MDP_FNCALL sgens_window_update(void)
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
 	
+	uint16_t water_level;
+	
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC1_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC1_REVXB)
 	{
@@ -425,6 +428,17 @@ void MDP_FNCALL sgens_window_update(void)
 		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF14));
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
+		
+		// Water status.
+		water_level = MDP_MEM_16(sgens_md_RAM, 0xF648);
+		sprintf(tmp, "<tt>%s</tt>", (MDP_MEM_16(sgens_md_RAM, 0xF648) != 0 ? "ON" : "OFF"));
+		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), TRUE);
+		
+		// Water level.
+		sprintf(tmp, "<tt>%04X</tt>", water_level);
+		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), TRUE);
 	}
 	
 	// sGens window has been updated.
