@@ -156,7 +156,7 @@ void dir_window_show(GtkWindow *parent)
 		g_object_set_data_full(G_OBJECT(dir_window), tmp,
 				       g_object_ref(txtDirectory[dir]), (GDestroyNotify)g_object_unref);
 		
-		// Create the "Change" button for this directory.
+		// Create the "Change" button for the directory.
 		// TODO: Use an icon?
 		sprintf(tmp, "btnChange_%d", dir);
 		GtkWidget *btnChange = gtk_button_new_with_label("Change...");
