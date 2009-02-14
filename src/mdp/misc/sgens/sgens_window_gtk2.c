@@ -74,8 +74,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 {
 	if (sgens_window)
 	{
-		// Sonic Gens window is already visible.
-		// Set focus.
+		// Sonic Gens window is already visible. Set focus.
 		gtk_widget_grab_focus(sgens_window);
 		return;
 	}
