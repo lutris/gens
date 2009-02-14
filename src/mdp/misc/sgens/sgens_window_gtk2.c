@@ -89,6 +89,10 @@ static void	sgens_window_callback_response(GtkDialog *dialog, gint response_id, 
 // MDP Event Handler.
 static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_info);
 
+// Pointers to MD ROM and RAM.
+static void	*sgens_md_ROM = NULL;
+static void	*sgens_md_RAM = NULL;
+
 
 /**
  * sgens_window_show(): Show the VDP Layer Options window.
@@ -146,6 +150,10 @@ void sgens_window_show(void *parent)
 	
 	// Show the window.
 	gtk_widget_show_all(sgens_window);
+	
+	// Reference the MD ROM and RAM pointers.
+	sgens_md_ROM = sgens_host_srv->ptr_ref(MDP_PTR_ROM_MD);
+	sgens_md_RAM = sgens_host_srv->ptr_ref(MDP_PTR_RAM_MD);
 	
 	// Register the window with MDP Host Services.
 	sgens_host_srv->window_register(&mdp, sgens_window);
@@ -266,6 +274,18 @@ void sgens_window_close(void)
 {
 	if (!sgens_window)
 		return;
+	
+	// Uneference the MD ROM and RAM pointers.
+	if (sgens_md_ROM)
+	{
+		sgens_host_srv->ptr_unref(MDP_PTR_ROM_MD);
+		sgens_md_ROM = NULL;
+	}
+	if (sgens_md_RAM)
+	{
+		sgens_host_srv->ptr_unref(MDP_PTR_RAM_MD);
+		sgens_md_RAM = NULL;
+	}
 	
 	// Unregister the MDP_EVENT_PRE_FRAME event handler.
 	sgens_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, sgens_window_mdp_event_handler);
