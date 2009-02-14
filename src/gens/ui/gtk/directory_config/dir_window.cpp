@@ -258,6 +258,7 @@ static void dir_window_save(void)
 	}
 }
 
+
 /**
  * dir_window_callback_close(): Close Window callback.
  * @param widget

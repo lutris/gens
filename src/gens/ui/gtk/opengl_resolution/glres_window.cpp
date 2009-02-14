@@ -213,6 +213,7 @@ static void glres_window_save(void)
 	Options::setOpenGL_Resolution(w, h);
 }
 
+
 /**
  * glres_window_callback_close(): Close Window callback.
  * @param widget
