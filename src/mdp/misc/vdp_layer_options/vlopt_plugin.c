@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Game Genie. (Plugin Data File)                              *
+ * Gens: [MDP] VDP Layer Options. (Plugin Data File)                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *

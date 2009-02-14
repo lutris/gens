@@ -107,7 +107,7 @@ static int MDP_FNCALL vlopt_menu_handler(int menu_item_id)
 	if (menu_item_id != vlopt_menuItemID)
 		return -MDP_ERR_MENU_INVALID_MENUID;
 	
-	// Show the Game Genie window.
+	// Show the VDP Layer Options window.
 	vlopt_window_show(vlopt_host_srv->window_get_main());
 	return MDP_ERR_OK;
 }
