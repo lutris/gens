@@ -31,8 +31,9 @@
 #include "sgens_plugin.h"
 #include "sgens.hpp"
 
-// sGens ROM type information.
+// sGens ROM type information and widget information.
 #include "sgens_rom_type.h"
+#include "sgens_widget_info.h"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -50,57 +51,8 @@ static GtkWidget *lblLoadedGame;
 static GtkWidget *lblLevelInfo_Zone;
 static GtkWidget *lblLevelInfo_Act;
 
-#define LEVEL_INFO_COUNT 11
-static sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
-{
-	{"Score:",	"0",		0, 0, FALSE},
-	{"Time:",	"00:00:00",	0, 1, FALSE},
-	{"Rings:",	"0",		0, 2, FALSE},
-	{"Lives:",	"0",		0, 3, FALSE},
-	{"Continues:",	"0",		0, 4, FALSE},
-	{"Emeralds:",	"0",		0, 5, FALSE},
-	{"Camera X position:",	"0000",	1, 0, FALSE},
-	{"Camera Y position:",	"0000",	1, 1, FALSE},
-	{"Water level:",	"0000",	1, 3, FALSE},
-	{"Rings remaining to get the Perfect Bonus:", "0", 0, 6, TRUE},
-	{"Water in Act:",	"OFF",	0, 7, FALSE},
-	{NULL, NULL, 0, 0, FALSE}
-};
-
-typedef enum _LEVEL_INFO_ID
-{
-	LEVEL_INFO_SCORE	= 0,
-	LEVEL_INFO_TIME		= 1,
-	LEVEL_INFO_RINGS	= 2,
-	LEVEL_INFO_LIVES	= 3,
-	LEVEL_INFO_CONTINUES	= 4,
-	LEVEL_INFO_EMERALDS	= 5,
-	LEVEL_INFO_CAMERA_X	= 6,
-	LEVEL_INFO_CAMERA_Y	= 7,
-	LEVEL_INFO_WATER_LEVEL	= 8,
-	LEVEL_INFO_RINGS_PERFECT = 9,
-	LEVEL_INFO_WATER_ENABLED = 10,
-} LEVEL_INFO_ID;
-
 static GtkWidget *lblLevelInfo_Desc[LEVEL_INFO_COUNT];
 static GtkWidget *lblLevelInfo[LEVEL_INFO_COUNT];
-
-#define PLAYER_INFO_COUNT 3
-static sgens_window_info_widget_t player_info[PLAYER_INFO_COUNT+1] =
-{
-	{"Angle:",	"0.00°", 0, 0, FALSE},
-	{"X position:",	"0000",	 0, 1, FALSE},
-	{"Y position:", "0000",	 0, 2, FALSE},
-	{NULL, NULL, 0, 0, FALSE}
-};
-
-typedef enum _PLAYER_INFO_ID
-{
-	PLAYER_INFO_ANGLE	= 0,
-	PLAYER_INFO_X		= 1,
-	PLAYER_INFO_Y		= 2,
-	PLAYER_INFO_DUMMY	= 3,
-} PLAYER_INFO_ID;
 
 static GtkWidget *lblPlayerInfo_Desc[PLAYER_INFO_COUNT];
 static GtkWidget *lblPlayerInfo[PLAYER_INFO_COUNT];
