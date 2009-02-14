@@ -31,6 +31,10 @@
 #include "video/vdraw.h"
 #include "audio/audio.h"
 
+// MDP Event Manager.
+#include "plugins/eventmgr.hpp"
+#include "video/v_inline.h"
+
 
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.
@@ -422,8 +426,8 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 	main68k_tripOdometer();
 	mdZ80_clear_odo(&M_Z80);
 	
-	// TODO: Send "Before Frame" event to registered MDP event handlers.
-	//Patch_Codes();
+	// Raise the MDP_EVENT_PRE_FRAME event.
+	EventMgr::RaiseEvent(MDP_EVENT_PRE_FRAME, NULL);
 	
 	VRam_Flag = 1;
 	
@@ -535,6 +539,19 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+	
+	// Raise the MDP_EVENT_POST_FRAME event.
+	mdp_event_post_frame_t post_frame;
+	if (bppMD == 32)
+		post_frame.md_screen = &MD_Screen32[8];
+	else
+		post_frame.md_screen = &MD_Screen[8];
+	post_frame.width = (isFullXRes() ? 320 : 256);
+	post_frame.height = VDP_Num_Vis_Lines;
+	post_frame.pitch = 336;
+	post_frame.bpp = bppMD;
+	
+	EventMgr::RaiseEvent(MDP_EVENT_POST_FRAME, &post_frame);
 	
 	return 1;
 }
