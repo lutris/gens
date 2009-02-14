@@ -255,11 +255,13 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 				       g_object_ref(lblLevelInfo_Desc), (GDestroyNotify)g_object_unref);
 		
 		// Information label.
-		lblLevelInfo[i] = gtk_label_new(level_info[i].initial);
+		sprintf(tmp, "<tt>%s</tt>", level_info[i].initial);
+		lblLevelInfo[i] = gtk_label_new(tmp);
 		sprintf(tmp, "lblLevelInfo_%d", i);
 		gtk_widget_set_name(lblLevelInfo[i], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo[i]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblLevelInfo[i]), GTK_JUSTIFY_RIGHT);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[i]), TRUE);
 		gtk_widget_show(lblLevelInfo[i]);
 		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo[i],
 				 start_col + 1, end_col + 1,
@@ -372,31 +374,37 @@ void MDP_FNCALL sgens_window_update(void)
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	sprintf(tmp, "%d", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
+	sprintf(tmp, "<tt>%d</tt>", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), TRUE);
 	
 	// Time.
-	sprintf(tmp, "%02d:%02d:%02d",
+	sprintf(tmp, "<tt>%02d:%02d:%02d</tt>",
 		MDP_MEM_BE_8(sgens_md_RAM, 0xFE23),
 		MDP_MEM_BE_8(sgens_md_RAM, 0xFE24),
 		MDP_MEM_BE_8(sgens_md_RAM, 0xFE25));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), TRUE);
 	
 	// Rings.
-	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFE20));
+	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_16(sgens_md_RAM, 0xFE20));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), TRUE);
 	
 	// Lives.
-	sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE12));
+	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFE12));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), TRUE);
 	
 	// Continues.
-	sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE18));
+	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFE18));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), TRUE);
 	
 	// Rings remaining for Perfect Bonus.
-	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFF40));
+	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF40));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
 	
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC1_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC1_REVXB)
@@ -404,8 +412,19 @@ void MDP_FNCALL sgens_window_update(void)
 		// S1-specific data.
 		
 		// Number of emeralds.
-		sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE57));
+		sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFE57));
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), TRUE);
+		
+		// Camera X position.
+		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF10));
+		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), TRUE);
+		
+		// Camera Y position.
+		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF14));
+		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
 	}
 	
 	// sGens window has been updated.
