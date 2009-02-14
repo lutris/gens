@@ -45,6 +45,7 @@ using std::string;
 #include "ui/gens_ui.hpp"
 #include "util/file/file.hpp"
 
+
 // Window.
 GtkWidget *dir_window = NULL;
 
