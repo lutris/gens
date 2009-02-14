@@ -41,6 +41,7 @@ typedef struct _sgens_window_info_widget_t
 
 DLL_LOCAL void MDP_FNCALL sgens_window_show(void *parent);
 DLL_LOCAL void MDP_FNCALL sgens_window_close(void);
+DLL_LOCAL void MDP_FNCALL sgens_window_update_rom_type(void);
 DLL_LOCAL void MDP_FNCALL sgens_window_update(void);
 
 #ifdef __cplusplus

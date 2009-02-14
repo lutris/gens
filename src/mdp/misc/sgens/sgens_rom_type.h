@@ -23,11 +23,11 @@
 #ifndef _MDP_MISC_SGENS_ROM_TYPE_H
 #define _MDP_MISC_SGENS_ROM_TYPE_H
 
+#include "mdp/mdp_fncall.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "mdp/mdp_fncall.h"
 
 // sGens ROM definitions.
 typedef enum _sgens_ROM_type
@@ -57,11 +57,11 @@ typedef enum _sgens_ROM_type
 	SGENS_ROM_TYPE_SONIC2_KNUCKLES		= 19,
 	
 	SGENS_ROM_TYPE_MAX			= 20
-} sgens_ROM_type;
+} SGENS_ROM_TYPE;
 
 DLL_LOCAL extern const char* const sgens_ROM_type_name[SGENS_ROM_TYPE_MAX + 1];
 
-DLL_LOCAL sgens_ROM_type MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom);
+DLL_LOCAL SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom);
 
 #ifdef __cplusplus
 }

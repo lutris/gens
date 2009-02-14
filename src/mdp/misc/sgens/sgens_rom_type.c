@@ -62,7 +62,7 @@ const char* const sgens_ROM_type_name[SGENS_ROM_TYPE_MAX + 1] =
  * @param ROM Pointer to ROM buffer.
  * @return ROM type.
  */
-sgens_ROM_type MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom)
+SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom)
 {
 	if (system_id != MDP_SYSTEM_MD)
 	{

@@ -30,6 +30,9 @@
 #include "sgens_plugin.h"
 #include "sgens.hpp"
 
+// sGens ROM type information.
+#include "sgens_rom_type.h"
+
 // MDP includes.
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
@@ -42,6 +45,7 @@
 static GtkWidget *sgens_window = NULL;
 
 // Widgets.
+static GtkWidget *lblLoadedGame;
 static GtkWidget *lblLevelInfo_Zone;
 static GtkWidget *lblLevelInfo_Act;
 
@@ -129,6 +133,16 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	g_object_set_data_full(G_OBJECT(sgens_window), "vboxDialog",
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
+	// Create the label for the loaded game.
+	lblLoadedGame = gtk_label_new(NULL);
+	gtk_widget_set_name(lblLoadedGame, "lblLoadedGame");
+	gtk_misc_set_alignment(GTK_MISC(lblLoadedGame), 0.5f, 0.0f);
+	gtk_label_set_justify(GTK_LABEL(lblLoadedGame), GTK_JUSTIFY_CENTER);
+	gtk_widget_show(lblLoadedGame);
+	gtk_box_pack_start(GTK_BOX(vboxDialog), lblLoadedGame, FALSE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(sgens_window), "lblLoadedGame",
+			       g_object_ref(lblLoadedGame), (GDestroyNotify)g_object_unref);
+	
 	// Create the "Level Information" frame.
 	sgens_window_create_level_info_frame(vboxDialog);
 	
@@ -140,6 +154,9 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	// Set the window as modal to the main application window.
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(sgens_window), GTK_WINDOW(parent));
+	
+	// Update the current ROM type.
+	sgens_window_update_rom_type();
 	
 	// Show the window.
 	gtk_widget_show_all(sgens_window);
@@ -269,6 +286,27 @@ void MDP_FNCALL sgens_window_close(void)
 	sgens_window = NULL;
 }
 
+
+/**
+ * sgens_window_update_rom_type(): Update the current ROM type.
+ */
+void MDP_FNCALL sgens_window_update_rom_type(void)
+{
+	if (!sgens_window)
+		return;
+	
+	if (sgens_current_rom_type < SGENS_ROM_TYPE_NONE ||
+	    sgens_current_rom_type >= SGENS_ROM_TYPE_MAX)
+	{
+		// Invalid ROM type. Assume SGENS_ROM_TYPE_UNSUPPORTED.
+		sgens_current_rom_type = SGENS_ROM_TYPE_UNSUPPORTED;
+	}
+	
+	// Set the "Loaded Game" label.
+	gtk_label_set_text(GTK_LABEL(lblLoadedGame), sgens_ROM_type_name[sgens_current_rom_type]);
+	
+	// TODO: Any other initialization stuff.
+}
 
 /**
  * sgens_window_callback_close(): Close Window callback.
