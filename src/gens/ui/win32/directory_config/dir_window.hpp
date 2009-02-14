@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,34 +20,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_DIRECTORY_CONFIG_WINDOW_H
-#define GENS_WIN32_DIRECTORY_CONFIG_WINDOW_H
+#ifndef GENS_UI_WIN32_DIR_WINDOW_HPP
+#define GENS_UI_WIN32_DIR_WINDOW_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// Win32 includes.
 #include <windows.h>
 
-// Directory entries
-struct DirEntry_t
-{
-	const char* title;
-	const char* tag;
-	char* entry;
-};
+extern HWND dir_window;
 
-// Contains all the Directory entries.
-extern const unsigned short DirEntries_Count;
-extern const struct DirEntry_t DirEntries[];
-extern HWND dc_txtEntry[/*DirEntries_Count*/];
-
-HWND create_directory_config_window(void); 
-extern HWND directory_config_window;
-void Directory_Config_Window_CreateChildWindows(HWND hWnd);
+void dir_window_show(HWND parent);
+void dir_window_close(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_WIN32_DIRECTORY_CONFIG_WINDOW_H */
+#endif /* GENS_UI_WIN32_DIR_WINDOW_HPP */
