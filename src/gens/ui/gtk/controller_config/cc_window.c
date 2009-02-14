@@ -332,7 +332,7 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		lblPlayer[player] = gtk_label_new(tmp);
 		sprintf(tmp, "lblPlayer_%s", playerName);
 		gtk_widget_set_name(lblPlayer[player], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblPlayer[player]), 0, 0.5);
+		gtk_misc_set_alignment(GTK_MISC(lblPlayer[player]), 0.0f, 0.5f);
 		gtk_widget_show(lblPlayer[player]);
 		gtk_table_attach(GTK_TABLE(tblPlayers), lblPlayer[player],
 				 0, 1, i, i + 1,
