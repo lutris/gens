@@ -1,0 +1,29 @@
+# MDP Miscellaneous Plugin: Sonic Gens.
+
+AUTOMAKE_OPTIONS = subdir-objects
+
+lib_LTLIBRARIES = mdp_misc_sgens.la
+
+mdp_misc_sgens_la_LDFLAGS = -module -no-undefined -avoid-version
+
+mdp_misc_sgens_la_SOURCES = \
+		sgens_plugin.c \
+		sgens.cpp
+
+noinst_HEADERS = \
+		sgens_plugin.h \
+		sgens.hpp \
+		sgens_window.h
+
+if GENS_UI_GTK
+mdp_misc_sgens_la_SOURCES += \
+		sgens_window_gtk2.c
+mdp_misc_sgens_la_CFLAGS = @GTK_CFLAGS@
+mdp_misc_sgens_la_CXXFLAGS = @GTK_CFLAGS@
+endif
+
+if GENS_UI_WIN32
+mdp_misc_sgens_la_SOURCES += \
+		sgens_window_win32.c
+mdp_misc_sgens_la_LIBADD = -lgdi32
+endif
