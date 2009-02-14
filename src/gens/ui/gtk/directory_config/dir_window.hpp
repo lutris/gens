@@ -30,9 +30,6 @@ extern "C" {
 // GTK+ includes.
 #include <gtk/gtk.h>
 
-// BOOL macros.
-#include "macros/bool_m.h"
-
 extern GtkWidget *dir_window;
 
 void dir_window_show(GtkWindow *parent);

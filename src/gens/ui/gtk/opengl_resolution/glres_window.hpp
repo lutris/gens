@@ -30,9 +30,6 @@ extern "C" {
 // GTK+ includes.
 #include <gtk/gtk.h>
 
-// BOOL macros.
-#include "macros/bool_m.h"
-
 extern GtkWidget *glres_window;
 
 void glres_window_show(GtkWindow *parent);
