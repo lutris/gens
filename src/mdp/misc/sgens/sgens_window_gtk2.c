@@ -53,17 +53,17 @@ static GtkWidget *lblLevelInfo_Act;
 #define LEVEL_INFO_COUNT 11
 static sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
 {
-	{"Score:", "0", 0, 0, FALSE},
-	{"Time:", "00:00:00", 0, 1, FALSE},
-	{"Rings:", "0", 0, 2, FALSE},
-	{"Lives:", "0", 0, 3, FALSE},
-	{"Continues:", "0", 0, 4, FALSE},
-	{"Emeralds:", "0", 0, 5, FALSE},
-	{"Camera X position:", "0000", 1, 0, FALSE},
-	{"Camera Y position:", "0000", 1, 1, FALSE},
-	{"Water level:", "0000", 1, 3, FALSE},
+	{"Score:",	"0",		0, 0, FALSE},
+	{"Time:",	"00:00:00",	0, 1, FALSE},
+	{"Rings:",	"0",		0, 2, FALSE},
+	{"Lives:",	"0",		0, 3, FALSE},
+	{"Continues:",	"0",		0, 4, FALSE},
+	{"Emeralds:",	"0",		0, 5, FALSE},
+	{"Camera X position:",	"0000",	1, 0, FALSE},
+	{"Camera Y position:",	"0000",	1, 1, FALSE},
+	{"Water level:",	"0000",	1, 3, FALSE},
 	{"Rings remaining to get the Perfect Bonus:", "0", 0, 6, TRUE},
-	{"Water in Act:", "OFF", 0, 7, FALSE},
+	{"Water in Act:",	"OFF",	0, 7, FALSE},
 	{NULL, NULL, 0, 0, FALSE}
 };
 
@@ -84,8 +84,28 @@ typedef enum _LEVEL_INFO_ID
 
 static GtkWidget *lblLevelInfo[LEVEL_INFO_COUNT];
 
+#define PLAYER_INFO_COUNT 3
+static sgens_window_info_widget_t player_info[PLAYER_INFO_COUNT+1] =
+{
+	{"Angle:",	"0°",	0, 0, FALSE},
+	{"X position:",	"0000",	0, 1, FALSE},
+	{"Y position:", "0000",	0, 2, FALSE},
+	{NULL, NULL, 0, 0, FALSE}
+};
+
+typedef enum _PLAYER_INFO_ID
+{
+	PLAYER_INFO_ANGLE	= 0,
+	PLAYER_INFO_X		= 1,
+	PLAYER_INFO_Y		= 2,
+	PLAYER_INFO_DUMMY	= 3,
+} PLAYER_INFO_ID;
+
+static GtkWidget *lblPlayerInfo[PLAYER_INFO_COUNT];
+
 // Widget creation functions.
 static void	sgens_window_create_level_info_frame(GtkWidget *container);
+static void	sgens_window_create_player_info_frame(GtkWidget *container);
 
 // Callbacks.
 static gboolean	sgens_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -130,6 +150,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(sgens_window)->vbox;
 	gtk_widget_set_name(vboxDialog, "vboxDialog");
+	gtk_box_set_spacing(GTK_BOX(vboxDialog), 8);
 	gtk_widget_show(vboxDialog);
 	g_object_set_data_full(G_OBJECT(sgens_window), "vboxDialog",
 			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
@@ -146,6 +167,9 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	
 	// Create the "Level Information" frame.
 	sgens_window_create_level_info_frame(vboxDialog);
+	
+	// Create the "Player Information" frame.
+	sgens_window_create_player_info_frame(vboxDialog);
 	
 	// Create the dialog buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(sgens_window),
@@ -177,9 +201,9 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 	// "Level Information" frame.
 	GtkWidget *fraLevelInfo = gtk_frame_new("Level Information");
 	gtk_widget_set_name(fraLevelInfo, "fraLevelInfo");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraLevelInfo), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraLevelInfo);
 	gtk_box_pack_start(GTK_BOX(container), fraLevelInfo, TRUE, TRUE, 0);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraLevelInfo), GTK_SHADOW_ETCHED_IN);
 	g_object_set_data_full(G_OBJECT(container), "fraLevelInfo",
 			       g_object_ref(fraLevelInfo), (GDestroyNotify)g_object_unref);
 	
@@ -212,7 +236,7 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Act",
 			       g_object_ref(lblLevelInfo_Act), (GDestroyNotify)g_object_unref);
 	
-	// Table for various information.
+	// Table for level information.
 	GtkWidget *tblLevelInfo = gtk_table_new(5, 4, FALSE);
 	gtk_widget_set_name(tblLevelInfo, "tblLevelInfo");
 	gtk_container_set_border_width(GTK_CONTAINER(tblLevelInfo), 8);
@@ -273,6 +297,70 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 				       g_object_ref(lblLevelInfo[i]), (GDestroyNotify)g_object_unref);
 	}
 }
+
+/**
+ * sgens_window_create_player_info_frame(): Create the "Player Information" frame.
+ * @param container Container for the frame.
+ */
+static void sgens_window_create_player_info_frame(GtkWidget *container)
+{
+	// "Player Information" frame.
+	GtkWidget *fraPlayerInfo = gtk_frame_new("Player Information");
+	gtk_widget_set_name(fraPlayerInfo, "fraPlayerInfo");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraPlayerInfo), GTK_SHADOW_ETCHED_IN);
+	gtk_widget_show(fraPlayerInfo);
+	gtk_box_pack_start(GTK_BOX(container), fraPlayerInfo, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(container), "fraPlayerInfo",
+			       g_object_ref(fraPlayerInfo), (GDestroyNotify)g_object_unref);
+	
+	// Table for player information.
+	GtkWidget *tblPlayerInfo = gtk_table_new(3, 2, FALSE);
+	gtk_widget_set_name(tblPlayerInfo, "tblPlayerInfo");
+	gtk_container_set_border_width(GTK_CONTAINER(tblPlayerInfo), 8);
+	gtk_table_set_col_spacings(GTK_TABLE(tblPlayerInfo), 16);
+	gtk_widget_show(tblPlayerInfo);
+	gtk_container_add(GTK_CONTAINER(fraPlayerInfo), tblPlayerInfo);
+	g_object_set_data_full(G_OBJECT(container), "tblPlayerInfo",
+			       g_object_ref(tblPlayerInfo), (GDestroyNotify)g_object_unref);
+	
+	// Add the player information widgets.
+	unsigned int i;
+	char tmp[64];
+	for (i = 0; i < PLAYER_INFO_COUNT; i++)
+	{
+		// Description label.
+		GtkWidget *lblPlayerInfo_Desc = gtk_label_new(player_info[i].description);
+		sprintf(tmp, "lblPlayerInfo_Desc_%d", i);
+		gtk_widget_set_name(lblPlayerInfo_Desc, tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo_Desc), 0.0f, 0.5f);
+		gtk_widget_show(lblPlayerInfo_Desc);
+		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo_Desc,
+				 0, 1,
+				 player_info[i].row, player_info[i].row + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(lblPlayerInfo_Desc), (GDestroyNotify)g_object_unref);
+		
+		// Information label.
+		sprintf(tmp, "<tt>%s</tt>", player_info[i].initial);
+		lblPlayerInfo[i] = gtk_label_new(tmp);
+		sprintf(tmp, "lblPlayerInfo_%d", i);
+		gtk_widget_set_name(lblPlayerInfo[i], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo[i]), 1.0f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblPlayerInfo[i]), GTK_JUSTIFY_RIGHT);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[i]), TRUE);
+		gtk_widget_show(lblPlayerInfo[i]);
+		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo[i],
+				 1, 2,
+				 player_info[i].row, player_info[i].row + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(lblPlayerInfo[i]), (GDestroyNotify)g_object_unref);
+	}
+}
+
 
 /**
  * sgens_window_close(): Close the VDP Layer Options window.
@@ -340,8 +428,6 @@ static void sgens_window_callback_response(GtkDialog *dialog, gint response_id, 
 {
 	MDP_UNUSED_PARAMETER(dialog);
 	MDP_UNUSED_PARAMETER(user_data);
-	
-	int rval;
 	
 	switch (response_id)
 	{
