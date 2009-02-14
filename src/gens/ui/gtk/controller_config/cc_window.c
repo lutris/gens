@@ -928,7 +928,7 @@ static void cc_window_configure_key(int player, int button)
 			return;
 	}
 	
-	// Set cc_window_is_configuring to indicate that the key is being configured.
+	// Set the current button that is being configured.
 	cc_cur_player_button = button;
 	
 	// Set the current configure text.
