@@ -30,7 +30,7 @@
 
 
 // Directory entries.
-const dir_entry_t dir_window_entries[DIR_ENTRIES_COUNT + 1] =
+const dir_entry_t dir_window_entries[DIR_WINDOW_ENTRIES_COUNT + 1] =
 {
 	{"Savestates",	State_Dir},
 	{"SRAM Backup",	SRAM_Dir},

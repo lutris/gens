@@ -35,8 +35,8 @@ typedef struct _dir_entry_t
 } dir_entry_t;
 
 // TODO: Make the number of directory entries dynamic.
-#define DIR_ENTRIES_COUNT 8
-extern const dir_entry_t dir_window_entries[DIR_ENTRIES_COUNT + 1];
+#define DIR_WINDOW_ENTRIES_COUNT 8
+extern const dir_entry_t dir_window_entries[DIR_WINDOW_ENTRIES_COUNT + 1];
 
 #ifdef __cplusplus
 }

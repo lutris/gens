@@ -59,10 +59,10 @@ static WNDCLASS dir_wndclass;
 
 // Window size.
 #define DIR_WINDOW_WIDTH  360
-#define DIR_WINDOW_HEIGHT ((DIR_ENTRIES_COUNT*24)+16+16+16+24)
+#define DIR_WINDOW_HEIGHT ((DIR_WINDOW_ENTRIES_COUNT*24)+16+16+16+24)
 
 // Widgets.
-static HWND	txtDirectory[DIR_ENTRIES_COUNT];
+static HWND	txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
 
 // Command value bases.
 #define IDC_DIR_BTNCHANGE	0x1100
@@ -149,7 +149,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 	SetWindowFont(fraDirectories, fntMain, TRUE);
 	
 	// Add the directory entries.
-	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		const int curTop = 8+20+(dir*24);
 		
@@ -228,7 +228,7 @@ void dir_window_close(void)
  */
 static void dir_window_init(void)
 {
-	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		Edit_SetText(txtDirectory[dir], dir_window_entries[dir].entry);
 	}
@@ -241,7 +241,7 @@ static void dir_window_save(void)
 {
 	size_t len;
 	
-	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		// Get the entry text.
 		Edit_GetText(txtDirectory[dir], dir_window_entries[dir].entry, GENS_PATH_MAX);

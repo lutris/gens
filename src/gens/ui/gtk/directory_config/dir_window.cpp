@@ -50,7 +50,7 @@ using std::string;
 GtkWidget *dir_window = NULL;
 
 // Widgets.
-static GtkWidget	*txtDirectory[DIR_ENTRIES_COUNT];
+static GtkWidget	*txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -115,7 +115,7 @@ void dir_window_show(GtkWindow *parent)
 			       g_object_ref(fraDirectories), (GDestroyNotify)g_object_unref);
 	
 	// Create the table for the directories.
-	GtkWidget *tblDirectories = gtk_table_new(DIR_ENTRIES_COUNT, 3, FALSE);
+	GtkWidget *tblDirectories = gtk_table_new(DIR_WINDOW_ENTRIES_COUNT, 3, FALSE);
 	gtk_widget_set_name(tblDirectories, "tblDirectories");
 	gtk_container_set_border_width(GTK_CONTAINER(tblDirectories), 8);
 	gtk_table_set_row_spacings(GTK_TABLE(tblDirectories), 4);
@@ -127,7 +127,7 @@ void dir_window_show(GtkWindow *parent)
 	
 	// Create all directory entry widgets.
 	char tmp[64];
-	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		// Create tbe label for the directory.
 		sprintf(tmp, "lblDirectory_%d", dir);
@@ -219,7 +219,7 @@ void dir_window_close(void)
  */
 static void dir_window_init(void)
 {
-	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), dir_window_entries[dir].entry);
 	}
@@ -232,7 +232,7 @@ static void dir_window_save(void)
 {
 	size_t len;
 	
-	for (unsigned int dir = 0; dir < DIR_ENTRIES_COUNT; dir++)
+	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		// Get the entry text.
 		strncpy(dir_window_entries[dir].entry,
@@ -320,7 +320,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 	GENS_UNUSED_PARAMETER(button);
 	
 	int dir = GPOINTER_TO_INT(user_data);
-	if (dir < 0 || dir >= DIR_ENTRIES_COUNT)
+	if (dir < 0 || dir >= DIR_WINDOW_ENTRIES_COUNT)
 		return;
 	
 	char tmp[64];
