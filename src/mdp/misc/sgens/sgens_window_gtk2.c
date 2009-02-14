@@ -42,8 +42,8 @@
 static GtkWidget *sgens_window = NULL;
 
 // Widgets.
-static GtkWidget *lblZone_Info;
-static GtkWidget *lblAct_Info;
+static GtkWidget *lblLevelInfo_Zone;
+static GtkWidget *lblLevelInfo_Act;
 
 #define LEVEL_INFO_COUNT 11
 static sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
@@ -77,7 +77,7 @@ typedef enum _LEVEL_INFO_ID
 	LEVEL_INFO_WATER_ENABLED = 10,
 } LEVEL_INFO_ID;
 
-static GtkWidget *lblInfo[LEVEL_INFO_COUNT];
+static GtkWidget *lblLevelInfo[LEVEL_INFO_COUNT];
 
 // Widget creation functions.
 static void	sgens_window_create_level_info_frame(GtkWidget *container);
@@ -188,24 +188,24 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 			       g_object_ref(vboxLevelInfo), (GDestroyNotify)g_object_unref);
 	
 	// "Zone" information label.
-	lblZone_Info = gtk_label_new("Zone");
-	gtk_widget_set_name(lblZone_Info, "lblZone_Info");
-	gtk_misc_set_alignment(GTK_MISC(lblZone_Info), 0.5f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblZone_Info), GTK_JUSTIFY_CENTER);
-	gtk_widget_show(lblZone_Info);
-	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblZone_Info, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblZone_Info",
-			       g_object_ref(lblZone_Info), (GDestroyNotify)g_object_unref);
+	lblLevelInfo_Zone = gtk_label_new("Zone");
+	gtk_widget_set_name(lblLevelInfo_Zone, "lblLevelInfo_Zone");
+	gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Zone), 0.5f, 0.5f);
+	gtk_label_set_justify(GTK_LABEL(lblLevelInfo_Zone), GTK_JUSTIFY_CENTER);
+	gtk_widget_show(lblLevelInfo_Zone);
+	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblLevelInfo_Zone, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Zone",
+			       g_object_ref(lblLevelInfo_Zone), (GDestroyNotify)g_object_unref);
 	
 	// "Act" information label.
-	lblAct_Info = gtk_label_new("Act");
-	gtk_widget_set_name(lblAct_Info, "lblAct_Info");
-	gtk_misc_set_alignment(GTK_MISC(lblAct_Info), 0.5f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblAct_Info), GTK_JUSTIFY_CENTER);
-	gtk_widget_show(lblAct_Info);
-	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblAct_Info, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblAct_Info",
-			       g_object_ref(lblAct_Info), (GDestroyNotify)g_object_unref);
+	lblLevelInfo_Act = gtk_label_new("Act");
+	gtk_widget_set_name(lblLevelInfo_Act, "lblLevelInfo_Act");
+	gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Act), 0.5f, 0.5f);
+	gtk_label_set_justify(GTK_LABEL(lblLevelInfo_Act), GTK_JUSTIFY_CENTER);
+	gtk_widget_show(lblLevelInfo_Act);
+	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblLevelInfo_Act, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Act",
+			       g_object_ref(lblLevelInfo_Act), (GDestroyNotify)g_object_unref);
 	
 	// Table for various information.
 	GtkWidget *tblLevelInfo = gtk_table_new(5, 4, FALSE);
@@ -237,33 +237,33 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 		}
 		
 		// Description label.
-		GtkWidget *lblInfo_Desc = gtk_label_new(level_info[i].description);
-		sprintf(tmp, "lblInfo_Desc_%d", i);
-		gtk_widget_set_name(lblInfo_Desc, tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblInfo_Desc), 0.0f, 0.5f);
-		gtk_widget_show(lblInfo_Desc);
-		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblInfo_Desc,
+		GtkWidget *lblLevelInfo_Desc = gtk_label_new(level_info[i].description);
+		sprintf(tmp, "lblLevelInfo_Desc_%d", i);
+		gtk_widget_set_name(lblLevelInfo_Desc, tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Desc), 0.0f, 0.5f);
+		gtk_widget_show(lblLevelInfo_Desc);
+		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo_Desc,
 				 start_col, end_col,
 				 level_info[i].row, level_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblInfo_Desc), (GDestroyNotify)g_object_unref);
+				       g_object_ref(lblLevelInfo_Desc), (GDestroyNotify)g_object_unref);
 		
 		// Information label.
-		lblInfo[i] = gtk_label_new(level_info[i].initial);
-		sprintf(tmp, "lblInfo_%d", i);
-		gtk_widget_set_name(lblInfo[i], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblInfo[i]), 1.0f, 0.5f);
-		gtk_label_set_justify(GTK_LABEL(lblInfo[i]), GTK_JUSTIFY_RIGHT);
-		gtk_widget_show(lblInfo[i]);
-		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblInfo[i],
+		lblLevelInfo[i] = gtk_label_new(level_info[i].initial);
+		sprintf(tmp, "lblLevelInfo_%d", i);
+		gtk_widget_set_name(lblLevelInfo[i], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo[i]), 1.0f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblLevelInfo[i]), GTK_JUSTIFY_RIGHT);
+		gtk_widget_show(lblLevelInfo[i]);
+		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo[i],
 				 start_col + 1, end_col + 1,
 				 level_info[i].row, level_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblInfo[i]), (GDestroyNotify)g_object_unref);
+				       g_object_ref(lblLevelInfo[i]), (GDestroyNotify)g_object_unref);
 	}
 }
 
@@ -357,5 +357,25 @@ static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_i
 		return MDP_ERR_OK;
 	
 	// Pre-frame - update the information labels.
-	printf("sgens: PRE-FRAME\n");
+	
+	// TODO: Check what Sonic game is loaded.
+	
+	char tmp[64];
+	
+	// Score.
+	sprintf(tmp, "%d", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), tmp);
+	
+	// Time.
+	sprintf(tmp, "%02d:%02d:%02d",
+		MDP_MEM_BE_8(sgens_md_RAM, 0xFE23),
+		MDP_MEM_BE_8(sgens_md_RAM, 0xFE24),
+		MDP_MEM_BE_8(sgens_md_RAM, 0xFE25));
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), tmp);
+	
+	// Rings.
+	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFE20));
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
+	
+	return MDP_ERR_OK;
 }
