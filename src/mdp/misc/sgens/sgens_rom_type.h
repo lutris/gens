@@ -20,6 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef _MDP_MISC_SGENS_ROM_TYPE_H
+#define _MDP_MISC_SGENS_ROM_TYPE_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -63,3 +66,5 @@ DLL_LOCAL sgens_ROM_type MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom)
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _MDP_MISC_SGENS_ROM_TYPE_H */
