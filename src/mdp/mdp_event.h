@@ -36,8 +36,12 @@ extern "C" {
 enum MDP_EVENT_ID
 {
 	MDP_EVENT_UNKNOWN	= 0,
-	MDP_EVENT_OPEN_ROM	= 1,
-	MDP_EVENT_CLOSE_ROM	= 2
+	MDP_EVENT_OPEN_ROM	= 1,	// event_info == mdp_event_open_rom_t
+	MDP_EVENT_CLOSE_ROM	= 2,	// event_info == NULL
+	MDP_EVENT_PRE_FRAME	= 3,	// event_info == NULL
+	MDP_EVENT_POST_FRAME	= 4,	// event_info == mdp_event_post_frame_t
+	
+	MDP_EVENT_MAX			// Maximum number of events.
 };
 
 
@@ -55,11 +59,26 @@ typedef int (MDP_FNCALL *mdp_event_handler_fn)(int event_id, void *event_info);
 /**
  * mdp_event_open_rom_t: Event information for when a ROM is opened.
  */
-typedef struct
+typedef struct _mdp_event_open_rom_t
 {
 	const char *rom_name;	// ROM name.
 	int system_id;		// System ID.
 } mdp_event_open_rom_t;
+
+
+/**
+ * mdp_event_post_frame_t: Event raised when a frame has been drawn to the internal framebuffer.
+ */
+typedef struct _mdp_event_post_frame_t
+{
+	void    *md_screen;	// MD frame buffer.
+	
+	uint32_t width;		// Width of the image.
+	uint32_t height;	// Height of the image.
+	
+	uint32_t pitch;		// Pitch. (bytes per scanline)
+	uint32_t bpp;		// Bits per pixel.
+} mdp_event_post_frame_t;
 
 
 #ifdef __cplusplus
