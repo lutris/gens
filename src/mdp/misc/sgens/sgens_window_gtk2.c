@@ -362,6 +362,7 @@ void MDP_FNCALL sgens_window_update_rom_type(void)
 	gtk_widget_set_sensitive(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], isS2);
 }
 
+
 /**
  * sgens_window_callback_close(): Close Window callback.
  * @param widget
