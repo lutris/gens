@@ -86,19 +86,12 @@ static void	sgens_window_create_level_info_frame(GtkWidget *container);
 static gboolean	sgens_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	sgens_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 
-// MDP Event Handler.
-static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_info);
-
-// Pointers to MD ROM and RAM.
-static void	*sgens_md_ROM = NULL;
-static void	*sgens_md_RAM = NULL;
-
 
 /**
  * sgens_window_show(): Show the VDP Layer Options window.
  * @param parent Parent window.
  */
-void sgens_window_show(void *parent)
+void MDP_FNCALL sgens_window_show(void *parent)
 {
 	if (sgens_window)
 	{
@@ -151,15 +144,8 @@ void sgens_window_show(void *parent)
 	// Show the window.
 	gtk_widget_show_all(sgens_window);
 	
-	// Reference the MD ROM and RAM pointers.
-	sgens_md_ROM = sgens_host_srv->ptr_ref(MDP_PTR_ROM_MD);
-	sgens_md_RAM = sgens_host_srv->ptr_ref(MDP_PTR_RAM_MD);
-	
 	// Register the window with MDP Host Services.
 	sgens_host_srv->window_register(&mdp, sgens_window);
-	
-	// Register the MDP_EVENT_PRE_FRAME event handler.
-	sgens_host_srv->event_register(&mdp, MDP_EVENT_PRE_FRAME, sgens_window_mdp_event_handler);
 }
 
 
@@ -270,25 +256,10 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 /**
  * sgens_window_close(): Close the VDP Layer Options window.
  */
-void sgens_window_close(void)
+void MDP_FNCALL sgens_window_close(void)
 {
 	if (!sgens_window)
 		return;
-	
-	// Uneference the MD ROM and RAM pointers.
-	if (sgens_md_ROM)
-	{
-		sgens_host_srv->ptr_unref(MDP_PTR_ROM_MD);
-		sgens_md_ROM = NULL;
-	}
-	if (sgens_md_RAM)
-	{
-		sgens_host_srv->ptr_unref(MDP_PTR_RAM_MD);
-		sgens_md_RAM = NULL;
-	}
-	
-	// Unregister the MDP_EVENT_PRE_FRAME event handler.
-	sgens_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, sgens_window_mdp_event_handler);
 	
 	// Unregister the window from MDP Host Services.
 	sgens_host_srv->window_unregister(&mdp, sgens_window);
@@ -347,16 +318,12 @@ static void sgens_window_callback_response(GtkDialog *dialog, gint response_id, 
 
 
 /**
- * sgens_window_mdp_event_handler(): Handle an MDP event.
- * @param event_id MDP event ID.
- * @param event_info MDP event information.
+ * sgens_window_update(): Update the information display.
  */
-static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_info)
+void MDP_FNCALL sgens_window_update(void)
 {
-	if (event_id != MDP_EVENT_PRE_FRAME)
-		return MDP_ERR_OK;
-	
-	// Pre-frame - update the information labels.
+	if (!sgens_window)
+		return;
 	
 	// TODO: Check what Sonic game is loaded.
 	
@@ -377,5 +344,6 @@ static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_i
 	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFE20));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
 	
-	return MDP_ERR_OK;
+	// Updated.
+	return;
 }

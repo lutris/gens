@@ -41,8 +41,13 @@
 MDP_Host_t *sgens_host_srv = NULL;
 static int sgens_menuItemID = 0;
 
+// Pointers to MD ROM and RAM.
+void	*sgens_md_ROM = NULL;
+void	*sgens_md_RAM = NULL;
+
 
 static int MDP_FNCALL sgens_menu_handler(int menu_item_id);
+static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info);
 
 
 /**
@@ -71,6 +76,10 @@ int MDP_FNCALL sgens_init(MDP_Host_t *host_srv)
 	// Create a menu item.
 	sgens_menuItemID = sgens_host_srv->menu_item_add(&mdp, &sgens_menu_handler, 0, "&Sonic Gens");
 	printf("Sonic Gens plugin initialized. Menu item ID: 0x%04X\n", sgens_menuItemID);
+	
+	// Register the MDP event handlers.
+	sgens_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, sgens_event_handler);
+	sgens_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, sgens_event_handler);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -109,5 +118,49 @@ static int MDP_FNCALL sgens_menu_handler(int menu_item_id)
 	
 	// Show the Sonic Gens window.
 	sgens_window_show(sgens_host_srv->window_get_main());
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * sgens_window_mdp_event_handler(): Handle an MDP event.
+ * @param event_id MDP event ID.
+ * @param event_info MDP event information.
+ */
+static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info)
+{
+	switch (event_id)
+	{
+		case MDP_EVENT_OPEN_ROM:
+			// Check the ROM to make sure sGens can handle it.
+			// TODO
+			sgens_md_ROM = sgens_host_srv->ptr_ref(MDP_PTR_ROM_MD);
+			sgens_md_RAM = sgens_host_srv->ptr_ref(MDP_PTR_RAM_MD);
+			sgens_host_srv->event_register(&mdp, MDP_EVENT_PRE_FRAME, sgens_event_handler);
+			break;
+		
+		case MDP_EVENT_CLOSE_ROM:
+			// If sGens is handling the ROM, unregister the PRE_FRAME event handler.
+			// Also, unreference the pointers.
+			sgens_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, sgens_event_handler);
+			// Uneference the MD ROM and RAM pointers.
+			if (sgens_md_ROM)
+			{
+				sgens_host_srv->ptr_unref(MDP_PTR_ROM_MD);
+				sgens_md_ROM = NULL;
+			}
+			if (sgens_md_RAM)
+			{
+				sgens_host_srv->ptr_unref(MDP_PTR_RAM_MD);
+				sgens_md_RAM = NULL;
+			}
+			break;
+		
+		case MDP_EVENT_PRE_FRAME:
+			// Update the window.
+			sgens_window_update();
+			break;
+	}
+	
 	return MDP_ERR_OK;
 }
