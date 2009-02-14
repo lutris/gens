@@ -1,4 +1,4 @@
-# MDP Miscellaneous Plugin: Layer Options.
+# MDP Miscellaneous Plugin: VDP Layer Options.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
