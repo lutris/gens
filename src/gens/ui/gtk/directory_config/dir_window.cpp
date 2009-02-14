@@ -329,7 +329,7 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 	// Request a new directory.
 	string new_dir = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(txtDirectory[dir])));
 	
-	// If Cancel was selected, don't do anything.
+	// If "Cancel" was selected, don't do anything.
 	if (new_dir.empty())
 		return;
 	
