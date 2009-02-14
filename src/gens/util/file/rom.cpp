@@ -815,5 +815,8 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	if (Intro_Style == 3)
 		Init_Genesis_Bios();
 	
+	// Raise the MDP_EVENT_CLOSE_ROM event.
+	EventMgr::RaiseEvent(MDP_EVENT_CLOSE_ROM, NULL);
+	
 	GensUI::setWindowTitle_Idle();
 }
