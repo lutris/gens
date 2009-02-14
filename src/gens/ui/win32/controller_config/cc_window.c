@@ -661,7 +661,9 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 							cc_window_show_configuration(LOWORD(wParam) & 0xFF);
 							break;
 						case IDC_CC_BTNCHANGE:
+							cc_window_is_configuring = TRUE;
 							cc_window_configure_key(cc_cur_player, LOWORD(wParam) & 0xFF);
+							cc_window_is_configuring = FALSE;
 							break;
 						default:
 							// Unknown command identifier.
@@ -764,7 +766,7 @@ static void cc_window_callback_padtype_changed(int player)
  */
 static void cc_window_configure_key(int player, int button)
 {
-	if (cc_window_is_configuring)
+	if (!cc_window_is_configuring)
 		return;
 	
 	if (button < 0 || button >= 12)
@@ -777,8 +779,7 @@ static void cc_window_configure_key(int player, int button)
 			return;
 	}
 	
-	// Set cc_window_is_configuring to indicate that the key is being configured.
-	cc_window_is_configuring = TRUE;
+	// Set the current button that is being configured.
 	cc_cur_player_button = button;
 	
 	// Set the current configure text.
@@ -794,7 +795,7 @@ static void cc_window_configure_key(int player, int button)
 	cc_window_display_key_name(lblCurConfig[button], cc_key_config[player].data[button]);
 	
 	// Key is no longer being configured.
-	cc_window_is_configuring = FALSE;
+	cc_cur_player_button = -1;
 	
 	// Kill the timer.
 	KillTimer(cc_window, IDT_CONFIGURE_BLINK);
