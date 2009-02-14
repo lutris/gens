@@ -87,9 +87,9 @@ static GtkWidget *lblLevelInfo[LEVEL_INFO_COUNT];
 #define PLAYER_INFO_COUNT 3
 static sgens_window_info_widget_t player_info[PLAYER_INFO_COUNT+1] =
 {
-	{"Angle:",	"0°",	0, 0, FALSE},
-	{"X position:",	"0000",	0, 1, FALSE},
-	{"Y position:", "0000",	0, 2, FALSE},
+	{"Angle:",	"0.00°", 0, 0, FALSE},
+	{"X position:",	"0000",	 0, 1, FALSE},
+	{"Y position:", "0000",	 0, 2, FALSE},
 	{NULL, NULL, 0, 0, FALSE}
 };
 
@@ -524,7 +524,21 @@ void MDP_FNCALL sgens_window_update(void)
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
 		
-		// TODO: Player angle and position.
+		// Player angle.
+		uint16_t angle = (MDP_MEM_BE_8(sgens_md_RAM, 0xD026) | (MDP_MEM_BE_8(sgens_md_RAM, 0xD027) << 8));
+		sprintf(tmp, "<tt>%0.02f°</tt>", ((double)(angle) * 1.40625));
+		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
+		
+		// Player X position.
+		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xD008));
+		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
+		
+		// Player Y position.
+		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xD00C));
+		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
 	}
 	else
 	{
@@ -545,7 +559,21 @@ void MDP_FNCALL sgens_window_update(void)
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
 		
-		// TODO: Player angle and position.
+		// Player angle.
+		uint16_t angle = (MDP_MEM_BE_8(sgens_md_RAM, 0xB026) | (MDP_MEM_BE_8(sgens_md_RAM, 0xB027) << 8));
+		sprintf(tmp, "<tt>%0.02f°</tt>", ((double)(angle) * 1.40625));
+		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
+		
+		// Player X position.
+		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xB008));
+		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
+		
+		// Player Y position.
+		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xB00C));
+		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
 	}
 	
 	// sGens window has been updated.
