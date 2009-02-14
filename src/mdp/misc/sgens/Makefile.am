@@ -8,10 +8,12 @@ mdp_misc_sgens_la_LDFLAGS = -module -no-undefined -avoid-version
 
 mdp_misc_sgens_la_SOURCES = \
 		sgens_plugin.c \
+		sgens_rom_type.c \
 		sgens.cpp
 
 noinst_HEADERS = \
 		sgens_plugin.h \
+		sgens_rom_type.h \
 		sgens.hpp \
 		sgens_window.h
 
