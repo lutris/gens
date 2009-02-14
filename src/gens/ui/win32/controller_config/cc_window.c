@@ -848,7 +848,51 @@ static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idE
  */
 static void cc_window_callback_btnChangeAll_clicked(void)
 {
-	// TODO
+	if (cc_window_is_configuring)
+		return;
+	
+	if (cc_cur_player < 0 || cc_cur_player > 8)
+		return;
+	
+	// Number of buttons to configure.
+	int btnCount = (ComboBox_GetCurSel(cboPadType[cc_cur_player]) == 1 ? 12 : 8);
+	
+	// Set the "Configuring" flag.
+	cc_window_is_configuring = TRUE;
+	
+	int i;
+	MSG msg;
+	for (i = 0; i < btnCount; i++)
+	{
+		// Sleep for 250 ms between button presses.
+		if (i != 0)
+		{
+			// Process WM_PAINT messages.
+			while (PeekMessage(&msg, NULL, WM_PAINT, WM_PAINT, PM_NOREMOVE))
+			{
+				if (!GetMessage(&msg, NULL, 0, 0))
+					close_gens();
+				
+				// Process the message.
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			
+			// Sleep for 250 ms.
+			Sleep(250);
+		}
+		
+		cc_window_configure_key(cc_cur_player, i);
+		
+		if (!cc_window)
+		{
+			// Window has closed.
+			break;
+		}
+	}
+	
+	// Unset the "Configuring" flag.
+	cc_window_is_configuring = FALSE;
 }
 
 
