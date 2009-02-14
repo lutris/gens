@@ -124,12 +124,12 @@ void glres_window_show(GtkWindow *parent)
 	gtk_box_pack_start(GTK_BOX(hboxMain), spnWidth, FALSE, FALSE, 0);
 	
 	// Create the separator.
-	GtkWidget *sepResolution = gtk_vseparator_new();
-	gtk_widget_set_name(sepResolution, "sepResolution");
-	gtk_widget_show(sepResolution);
-	gtk_box_pack_start(GTK_BOX(hboxMain), sepResolution, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "sepResolution",
-			       g_object_ref(sepResolution), (GDestroyNotify)g_object_unref);
+	GtkWidget *vsepResolution = gtk_vseparator_new();
+	gtk_widget_set_name(vsepResolution, "vsepResolution");
+	gtk_widget_show(vsepResolution);
+	gtk_box_pack_start(GTK_BOX(hboxMain), vsepResolution, TRUE, TRUE, 0);
+	g_object_set_data_full(G_OBJECT(glres_window), "vsepResolution",
+			       g_object_ref(vsepResolution), (GDestroyNotify)g_object_unref);
 	
 	// Create the Height spinbutton label.
 	GtkWidget *lblHeight = gtk_label_new_with_mnemonic("_Height");
