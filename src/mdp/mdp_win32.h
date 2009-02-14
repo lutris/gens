@@ -26,6 +26,7 @@
 #define __MDP_WIN32_H
 
 #include <windows.h>
+#include <windowsx.h>
 
 
 /**
