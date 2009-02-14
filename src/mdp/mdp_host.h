@@ -46,7 +46,7 @@ typedef enum
 	MDP_PTR_ROM_MD		= 3, /* BE */
 	MDP_PTR_ROM_32X		= 4, /* LE */
 	MDP_PTR_RAM_MD		= 5, /* BE */
-	MDP_PTR_RAM_VRAM	= 6,
+	MDP_PTR_RAM_VRAM	= 6, /* BE */
 	MDP_PTR_RAM_Z80		= 7,
 	MDP_PTR_RAM_MCD_PRG	= 8, /* unknown */
 	MDP_PTR_RAM_MCD_WORD1M	= 9, /* unknown */
@@ -54,14 +54,18 @@ typedef enum
 	MDP_PTR_RAM_32X		= 11, /* LE */
 } MDP_PTR;
 
-// Convenience macros to access 8-bit and 16-bit memory.
+// Convenience macros to access 8-bit, 16-bit, and 32-bit memory.
 
 #define MDP_MEM_16(ptr, address)	\
 	(((unsigned short*)ptr)[address >> 1])
 
+// TODO: Add an optimized version for big-endian host systems.
+#define MDP_MEM_32(ptr, address)	\
+	(((((unsigned short*)ptr)[address >> 1]) << 16) | (((unsigned short*)ptr)[(address >> 1) + 2]))
+
 #if MDP_BYTEORDER == MDP_LIL_ENDIAN
 
-// Litle-endian.
+// Little-endian host system.
 #define MDP_MEM_BE_8(ptr, address)	\
 	(((unsigned char*)ptr)[address ^ 1])
 #define MDP_MEM_LE_8(ptr, address)	\
@@ -69,7 +73,7 @@ typedef enum
 
 #else
 
-// Big-endian.
+// Big-endian host system.
 #define MDP_MEM_BE_8(ptr, address)	\
 	(((unsigned char*)ptr)[address])
 #define MDP_MEM_LE_8(ptr, address)	\
