@@ -83,6 +83,22 @@ int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id,
 int MDP_FNCALL mdp_host_event_unregister(struct MDP_t *plugin, int event_id,
 					 mdp_event_handler_fn handler)
 {
-	// TODO: Implement this function.
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	// Check that tne event ID is valid.
+	if (event_id <= MDP_EVENT_UNKNOWN || event_id >= MDP_EVENT_MAX)
+		return -MDP_ERR_EVENT_INVALID_EVENTID;
+	
+	// Check if this plugin and handler are registered for this event.
+	for (list<mdpEventItem_t>::iterator lstIter = EventMgr::lstEvents[event_id - 1].begin();
+	     lstIter != EventMgr::lstEvents[event_id - 1].end(); lstIter++)
+	{
+		if ((*lstIter).handler == handler && (*lstIter).owner == plugin)
+		{
+			// Found the registration. Remove it.
+			EventMgr::lstEvents[event_id - 1].erase(lstIter);
+			return MDP_ERR_OK;
+		}
+	}
+	
+	// Not registered. Return an error.
+	return -MDP_ERR_EVENT_NOT_REGISTERED;
 }
