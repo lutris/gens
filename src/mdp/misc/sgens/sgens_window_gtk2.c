@@ -155,8 +155,9 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(sgens_window), GTK_WINDOW(parent));
 	
-	// Update the current ROM type.
+	// Update the current ROM type and information display.
 	sgens_window_update_rom_type();
+	sgens_window_update();
 	
 	// Show the window.
 	gtk_widget_show_all(sgens_window);
@@ -363,9 +364,12 @@ void MDP_FNCALL sgens_window_update(void)
 	if (!sgens_window)
 		return;
 	
-	// TODO: Check what Sonic game is loaded.
+	if (sgens_current_rom_type <= SGENS_ROM_TYPE_UNSUPPORTED)
+		return;
 	
 	char tmp[64];
+	
+	// Values common to all supported Sonic games.
 	
 	// Score.
 	sprintf(tmp, "%d", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
@@ -382,6 +386,28 @@ void MDP_FNCALL sgens_window_update(void)
 	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFE20));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
 	
-	// Updated.
+	// Lives.
+	sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE12));
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), tmp);
+	
+	// Continues.
+	sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE18));
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), tmp);
+	
+	// Rings remaining for Perfect Bonus.
+	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFF40));
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
+	
+	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC1_REV00 &&
+	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC1_REVXB)
+	{
+		// S1-specific data.
+		
+		// Number of emeralds.
+		sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE57));
+		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
+	}
+	
+	// sGens window has been updated.
 	return;
 }
