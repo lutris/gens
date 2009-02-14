@@ -61,7 +61,7 @@ typedef enum
 
 // TODO: Add an optimized version for big-endian host systems.
 #define MDP_MEM_32(ptr, address)	\
-	(((((unsigned short*)ptr)[address >> 1]) << 16) | (((unsigned short*)ptr)[(address >> 1) + 2]))
+	(((((unsigned short*)ptr)[address >> 1]) << 16) | (((unsigned short*)ptr)[(address >> 1) + 1]))
 
 #if MDP_BYTEORDER == MDP_LIL_ENDIAN
 
