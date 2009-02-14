@@ -30,8 +30,9 @@
 #include "sgens_plugin.h"
 #include "sgens.hpp"
 
-// MDP error codes.
+// MDP includes.
 #include "mdp/mdp_error.h"
+#include "mdp/mdp_event.h"
 
 // GTK includes.
 #include <gtk/gtk.h>
@@ -84,6 +85,9 @@ static void	sgens_window_create_level_info_frame(GtkWidget *container);
 // Callbacks.
 static gboolean	sgens_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	sgens_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+
+// MDP Event Handler.
+static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_info);
 
 
 /**
@@ -145,6 +149,9 @@ void sgens_window_show(void *parent)
 	
 	// Register the window with MDP Host Services.
 	sgens_host_srv->window_register(&mdp, sgens_window);
+	
+	// Register the MDP_EVENT_PRE_FRAME event handler.
+	sgens_host_srv->event_register(&mdp, MDP_EVENT_PRE_FRAME, sgens_window_mdp_event_handler);
 }
 
 
@@ -260,6 +267,9 @@ void sgens_window_close(void)
 	if (!sgens_window)
 		return;
 	
+	// Unregister the MDP_EVENT_PRE_FRAME event handler.
+	sgens_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, sgens_window_mdp_event_handler);
+	
 	// Unregister the window from MDP Host Services.
 	sgens_host_srv->window_unregister(&mdp, sgens_window);
 	
@@ -313,4 +323,19 @@ static void sgens_window_callback_response(GtkDialog *dialog, gint response_id, 
 			// Also, don't do anything when the dialog is deleted.
 			break;
 	}
+}
+
+
+/**
+ * sgens_window_mdp_event_handler(): Handle an MDP event.
+ * @param event_id MDP event ID.
+ * @param event_info MDP event information.
+ */
+static int MDP_FNCALL sgens_window_mdp_event_handler(int event_id, void *event_info)
+{
+	if (event_id != MDP_EVENT_PRE_FRAME)
+		return MDP_ERR_OK;
+	
+	// Pre-frame - update the information labels.
+	printf("sgens: PRE-FRAME\n");
 }
