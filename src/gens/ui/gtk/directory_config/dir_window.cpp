@@ -188,7 +188,7 @@ void dir_window_show(GtkWindow *parent)
 						-1);
 #endif
 	
-	// Initialize the OpenGL resolution spinbuttons.
+	// Initialize the directory entries.
 	dir_window_init();
 	
 	// Set the window as modal to the main application window.
