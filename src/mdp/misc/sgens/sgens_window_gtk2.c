@@ -82,6 +82,7 @@ typedef enum _LEVEL_INFO_ID
 	LEVEL_INFO_WATER_ENABLED = 10,
 } LEVEL_INFO_ID;
 
+static GtkWidget *lblLevelInfo_Desc[LEVEL_INFO_COUNT];
 static GtkWidget *lblLevelInfo[LEVEL_INFO_COUNT];
 
 #define PLAYER_INFO_COUNT 3
@@ -101,6 +102,7 @@ typedef enum _PLAYER_INFO_ID
 	PLAYER_INFO_DUMMY	= 3,
 } PLAYER_INFO_ID;
 
+static GtkWidget *lblPlayerInfo_Desc[PLAYER_INFO_COUNT];
 static GtkWidget *lblPlayerInfo[PLAYER_INFO_COUNT];
 
 // Widget creation functions.
@@ -266,18 +268,18 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 		}
 		
 		// Description label.
-		GtkWidget *lblLevelInfo_Desc = gtk_label_new(level_info[i].description);
+		lblLevelInfo_Desc[i] = gtk_label_new(level_info[i].description);
 		sprintf(tmp, "lblLevelInfo_Desc_%d", i);
-		gtk_widget_set_name(lblLevelInfo_Desc, tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Desc), 0.0f, 0.5f);
-		gtk_widget_show(lblLevelInfo_Desc);
-		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo_Desc,
+		gtk_widget_set_name(lblLevelInfo_Desc[i], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Desc[i]), 0.0f, 0.5f);
+		gtk_widget_show(lblLevelInfo_Desc[i]);
+		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo_Desc[i],
 				 start_col, end_col,
 				 level_info[i].row, level_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblLevelInfo_Desc), (GDestroyNotify)g_object_unref);
+				       g_object_ref(lblLevelInfo_Desc[i]), (GDestroyNotify)g_object_unref);
 		
 		// Information label.
 		sprintf(tmp, "<tt>%s</tt>", level_info[i].initial);
@@ -297,6 +299,7 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 				       g_object_ref(lblLevelInfo[i]), (GDestroyNotify)g_object_unref);
 	}
 }
+
 
 /**
  * sgens_window_create_player_info_frame(): Create the "Player Information" frame.
@@ -329,18 +332,18 @@ static void sgens_window_create_player_info_frame(GtkWidget *container)
 	for (i = 0; i < PLAYER_INFO_COUNT; i++)
 	{
 		// Description label.
-		GtkWidget *lblPlayerInfo_Desc = gtk_label_new(player_info[i].description);
+		lblPlayerInfo_Desc[i] = gtk_label_new(player_info[i].description);
 		sprintf(tmp, "lblPlayerInfo_Desc_%d", i);
-		gtk_widget_set_name(lblPlayerInfo_Desc, tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo_Desc), 0.0f, 0.5f);
-		gtk_widget_show(lblPlayerInfo_Desc);
-		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo_Desc,
+		gtk_widget_set_name(lblPlayerInfo_Desc[i], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo_Desc[i]), 0.0f, 0.5f);
+		gtk_widget_show(lblPlayerInfo_Desc[i]);
+		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo_Desc[i],
 				 0, 1,
 				 player_info[i].row, player_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
 		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayerInfo_Desc), (GDestroyNotify)g_object_unref);
+				       g_object_ref(lblPlayerInfo_Desc[i]), (GDestroyNotify)g_object_unref);
 		
 		// Information label.
 		sprintf(tmp, "<tt>%s</tt>", player_info[i].initial);
@@ -397,7 +400,15 @@ void MDP_FNCALL sgens_window_update_rom_type(void)
 	// Set the "Loaded Game" label.
 	gtk_label_set_text(GTK_LABEL(lblLoadedGame), sgens_ROM_type_name[sgens_current_rom_type]);
 	
-	// TODO: Any other initialization stuff.
+	// Reset the "Rings for Perfect Bonus" information label.
+	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), "<tt>0</tt>");
+	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
+	
+	// Enable/Disable the "Rings for Perfect Bonus" labels, depending on ROM type.
+	gboolean isS2 = (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
+			 sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02);
+	gtk_widget_set_sensitive(lblLevelInfo_Desc[LEVEL_INFO_RINGS_PERFECT], isS2);
+	gtk_widget_set_sensitive(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], isS2);
 }
 
 /**
@@ -489,9 +500,14 @@ void MDP_FNCALL sgens_window_update(void)
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), TRUE);
 	
 	// Rings remaining for Perfect Bonus.
-	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF40));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
+	// This is only applicable for Sonic 2.
+	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
+	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
+	{
+		sprintf(tmp, "<tt>%d</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF40));
+		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
+		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
+	}
 	
 	// Water status.
 	uint16_t water_level = MDP_MEM_16(sgens_md_RAM, 0xF648);
@@ -503,6 +519,9 @@ void MDP_FNCALL sgens_window_update(void)
 	sprintf(tmp, "<tt>%04X</tt>", water_level);
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), TRUE);
+	
+	// TODO: Camera position and player position don't seem to be working
+	// correctly with Sonic 3, S&K, etc.
 	
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC1_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC1_REVXB)
