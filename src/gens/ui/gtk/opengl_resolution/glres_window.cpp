@@ -66,7 +66,7 @@ void glres_window_show(GtkWindow *parent)
 		return;
 	}
 	
-	// Create the OpenGL Resolution window.
+	// Create the window.
 	glres_window = gtk_dialog_new();
 	gtk_widget_set_name(glres_window, "glres_window");
 	gtk_container_set_border_width(GTK_CONTAINER(glres_window), 4);

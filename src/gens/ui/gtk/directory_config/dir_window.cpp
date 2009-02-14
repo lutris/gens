@@ -75,7 +75,7 @@ void dir_window_show(GtkWindow *parent)
 		return;
 	}
 	
-	// Create the OpenGL Resolution window.
+	// Create the window.
 	dir_window = gtk_dialog_new();
 	gtk_widget_set_name(dir_window, "dir_window");
 	gtk_container_set_border_width(GTK_CONTAINER(dir_window), 4);

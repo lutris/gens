@@ -126,7 +126,7 @@ void cc_window_show(GtkWindow *parent)
 		return;
 	}
 	
-	// Create the Controller Configuration window.
+	// Create the window.
 	cc_window = gtk_dialog_new();
 	gtk_widget_set_name(cc_window, "cc_window");
 	gtk_container_set_border_width(GTK_CONTAINER(cc_window), 4);
