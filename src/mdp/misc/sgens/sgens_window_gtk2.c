@@ -43,9 +43,40 @@ static GtkWidget *sgens_window = NULL;
 // Widgets.
 static GtkWidget *lblZone_Info;
 static GtkWidget *lblAct_Info;
-static GtkWidget *lblScore_Info;
-static GtkWidget *lblTime_Info;
-static GtkWidget *lblRings_Info;
+
+#define LEVEL_INFO_COUNT 11
+static sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
+{
+	{"Score:", "0", 0, 0, FALSE},
+	{"Time:", "00:00:00", 0, 1, FALSE},
+	{"Rings:", "0", 0, 2, FALSE},
+	{"Lives:", "0", 0, 3, FALSE},
+	{"Continues:", "0", 0, 4, FALSE},
+	{"Emeralds:", "0", 0, 5, FALSE},
+	{"Camera X position:", "0000", 1, 0, FALSE},
+	{"Camera Y position:", "0000", 1, 1, FALSE},
+	{"Water level:", "0000", 1, 3, FALSE},
+	{"Rings remaining to get the Perfect Bonus:", "0", 0, 6, TRUE},
+	{"Water in Act:", "OFF", 0, 7, FALSE},
+	{NULL, NULL, 0, 0, FALSE}
+};
+
+typedef enum _LEVEL_INFO_ID
+{
+	LEVEL_INFO_SCORE	= 0,
+	LEVEL_INFO_TIME		= 1,
+	LEVEL_INFO_RINGS	= 2,
+	LEVEL_INFO_LIVES	= 3,
+	LEVEL_INFO_CONTINUES	= 4,
+	LEVEL_INFO_EMERALDS	= 5,
+	LEVEL_INFO_CAMERA_X	= 6,
+	LEVEL_INFO_CAMERA_Y	= 7,
+	LEVEL_INFO_WATER_LEVEL	= 8,
+	LEVEL_INFO_RINGS_PERFECT = 9,
+	LEVEL_INFO_WATER_ENABLED = 10,
+} LEVEL_INFO_ID;
+
+static GtkWidget *lblInfo[LEVEL_INFO_COUNT];
 
 // Widget creation functions.
 static void	sgens_window_create_level_info_frame(GtkWidget *container);
@@ -172,80 +203,53 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 	g_object_set_data_full(G_OBJECT(container), "tblLevelInfo",
 			       g_object_ref(tblLevelInfo), (GDestroyNotify)g_object_unref);
 	
-	// "Score" label.
-	GtkWidget *lblScore = gtk_label_new("Score:");
-	gtk_widget_set_name(lblScore, "lblScore");
-	gtk_misc_set_alignment(GTK_MISC(lblScore), 0.0f, 0.5f);
-	gtk_widget_show(lblScore);
-	gtk_table_attach(GTK_TABLE(tblLevelInfo), lblScore,
-			 0, 1, 0, 1,
-			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblScore",
-			       g_object_ref(lblScore), (GDestroyNotify)g_object_unref);
-	
-	// "Score" information label.
-	lblScore_Info = gtk_label_new("0");
-	gtk_widget_set_name(lblScore_Info, "lblScore_Info");
-	gtk_misc_set_alignment(GTK_MISC(lblScore_Info), 1.0f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblScore_Info), GTK_JUSTIFY_RIGHT);
-	gtk_widget_show(lblScore_Info);
-	gtk_table_attach(GTK_TABLE(tblLevelInfo), lblScore_Info,
-			 1, 2, 0, 1,
-			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblScore_Info",
-			       g_object_ref(lblScore_Info), (GDestroyNotify)g_object_unref);
-	
-	// "Time" label.
-	GtkWidget *lblTime = gtk_label_new("Time:");
-	gtk_widget_set_name(lblTime, "lblTime");
-	gtk_misc_set_alignment(GTK_MISC(lblTime), 0.0f, 0.5f);
-	gtk_widget_show(lblTime);
-	gtk_table_attach(GTK_TABLE(tblLevelInfo), lblTime,
-			 0, 1, 1, 2,
-			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblTime",
-			       g_object_ref(lblTime), (GDestroyNotify)g_object_unref);
-	
-	// "Time" information label.
-	lblTime_Info = gtk_label_new("00:00:00");
-	gtk_widget_set_name(lblTime_Info, "lblTime_Info");
-	gtk_misc_set_alignment(GTK_MISC(lblTime_Info), 1.0f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblTime_Info), GTK_JUSTIFY_RIGHT);
-	gtk_widget_show(lblTime_Info);
-	gtk_table_attach(GTK_TABLE(tblLevelInfo), lblTime_Info,
-			 1, 2, 1, 2,
-			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblTime_Info",
-			       g_object_ref(lblTime_Info), (GDestroyNotify)g_object_unref);
-	
-	// "Rings" label.
-	GtkWidget *lblRings = gtk_label_new("Rings:");
-	gtk_widget_set_name(lblRings, "lblRings");
-	gtk_misc_set_alignment(GTK_MISC(lblRings), 0.0f, 0.5f);
-	gtk_widget_show(lblRings);
-	gtk_table_attach(GTK_TABLE(tblLevelInfo), lblRings,
-			 0, 1, 2, 3,
-			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblRings",
-			       g_object_ref(lblRings), (GDestroyNotify)g_object_unref);
-	
-	// "Rings" information label.
-	lblRings_Info = gtk_label_new("0");
-	gtk_widget_set_name(lblRings_Info, "lblRings_Info");
-	gtk_misc_set_alignment(GTK_MISC(lblRings_Info), 1.0f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblRings_Info), GTK_JUSTIFY_RIGHT);
-	gtk_widget_show(lblRings_Info);
-	gtk_table_attach(GTK_TABLE(tblLevelInfo), lblRings_Info,
-			 1, 2, 2, 3,
-			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-			 (GtkAttachOptions)(GTK_FILL), 0, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblRings_Info",
-			       g_object_ref(lblRings_Info), (GDestroyNotify)g_object_unref);
+	// Add the level information widgets.
+	unsigned int i;
+	char tmp[64];
+	for (i = 0; i < LEVEL_INFO_COUNT; i++)
+	{
+		// Determine the column starting and ending positions.
+		int start_col, end_col;
+		if (level_info[i].fill_all_cols)
+		{
+			start_col = 0;
+			end_col = 3;
+		}
+		else
+		{
+			start_col = (level_info[i].column * 2);
+			end_col = (level_info[i].column * 2) + 1;
+		}
+		
+		// Description label.
+		GtkWidget *lblInfo_Desc = gtk_label_new(level_info[i].description);
+		sprintf(tmp, "lblInfo_Desc_%d", i);
+		gtk_widget_set_name(lblInfo_Desc, tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblInfo_Desc), 0.0f, 0.5f);
+		gtk_widget_show(lblInfo_Desc);
+		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblInfo_Desc,
+				 start_col, end_col,
+				 level_info[i].row, level_info[i].row + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(lblInfo_Desc), (GDestroyNotify)g_object_unref);
+		
+		// Information label.
+		lblInfo[i] = gtk_label_new(level_info[i].initial);
+		sprintf(tmp, "lblInfo_%d", i);
+		gtk_widget_set_name(lblInfo[i], tmp);
+		gtk_misc_set_alignment(GTK_MISC(lblInfo[i]), 1.0f, 0.5f);
+		gtk_label_set_justify(GTK_LABEL(lblInfo[i]), GTK_JUSTIFY_RIGHT);
+		gtk_widget_show(lblInfo[i]);
+		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblInfo[i],
+				 start_col + 1, end_col + 1,
+				 level_info[i].row, level_info[i].row + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL), 0, 0);
+		g_object_set_data_full(G_OBJECT(container), tmp,
+				       g_object_ref(lblInfo[i]), (GDestroyNotify)g_object_unref);
+	}
 }
 
 /**

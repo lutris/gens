@@ -30,6 +30,15 @@
 extern "C" {
 #endif
 
+typedef struct _sgens_window_info_widget_t
+{
+	const char* description;	// Description.
+	const char* initial;		// Initial value. (If NULL, default to "0".)
+	int column;			// Column. (0 == left; 1 == right)
+	int row;			// Row.
+	int fill_all_cols;		// If non-zero, fills all columns.
+} sgens_window_info_widget_t;
+
 DLL_LOCAL void MDP_FNCALL sgens_window_show(void *parent);
 DLL_LOCAL void MDP_FNCALL sgens_window_close(void);
 
