@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (GTK+) Directory Configuration Window - Callback Functions.       *
+ * Gens: (GTK+) Directory Configuration Window.                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,24 +20,26 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
-#define GTK_DIRECTORY_CONFIG_WINDOW_CALLBACKS_H
+#ifndef GENS_UI_GTK_DIR_WINDOW_HPP
+#define GENS_UI_GTK_DIR_WINDOW_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// GTK+ includes.
 #include <gtk/gtk.h>
-#include <gdk/gdkevents.h>
 
-gboolean on_directory_config_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-void on_button_dc_Change_clicked(GtkButton *button, gpointer user_data);
-void on_button_dc_Cancel_clicked(GtkButton *button, gpointer user_data);
-void on_button_dc_Apply_clicked(GtkButton *button, gpointer user_data);
-void on_button_dc_Save_clicked(GtkButton *button, gpointer user_data);
+// BOOL macros.
+#include "macros/bool_m.h"
+
+extern GtkWidget *dir_window;
+
+void dir_window_show(GtkWindow *parent);
+void dir_window_close(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* GENS_UI_GTK_DIR_WINDOW_HPP */

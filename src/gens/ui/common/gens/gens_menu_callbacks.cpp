@@ -32,7 +32,7 @@
 #include "gens/gens_window_sync.hpp"
 #include "controller_config/cc_window.h"
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
-#include "directory_config/directory_config_window_misc.hpp"
+#include "directory_config/dir_window.hpp"
 #include "general_options/general_options_window.hpp"
 #include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
@@ -746,7 +746,14 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 			break;
 		
 		case IDM_OPTIONS_DIRECTORIES:
-			Open_Directory_Config();
+			// TODO: Make this UI-independent.
+			#if defined(GENS_UI_GTK)
+				dir_window_show(GTK_WINDOW(gens_window));
+			#elif defined(GENS_UI_WIN32)
+				dir_window_show(Gens_hWnd);
+			#else
+				#error Cannot determine UI.
+			#endif
 			break;
 		
 		case IDM_OPTIONS_SAVECONFIGAS:
