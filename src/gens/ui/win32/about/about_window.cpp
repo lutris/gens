@@ -122,11 +122,11 @@ AboutWindow::AboutWindow()
 	m_Window = CreateWindow("Gens_About", "About Gens",
 				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				CW_USEDEFAULT, CW_USEDEFAULT,
-				328, 352+lblTitle_HeightInc,
+				328, 360+lblTitle_HeightInc,
 				Gens_hWnd, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, 328, 352+lblTitle_HeightInc);
+	Win32_setActualWindowSize(m_Window, 328, 360+lblTitle_HeightInc);
 	
 	// Center the window on the Gens window.
 	Win32_centerOnGensWindow(m_Window);
@@ -303,7 +303,7 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	
 	// Tab control.
 	tabInfo = CreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
-			       8, 88+lblTitle_HeightInc, tabWidth, tabHeight,
+			       8, 96+lblTitle_HeightInc, tabWidth, tabHeight,
 			       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(tabInfo, fntMain, true);
 	
