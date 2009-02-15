@@ -34,7 +34,6 @@
 
 // Window.
 static GtkWidget *gg_window = NULL;
-static GtkAccelGroup *gg_accel_group;
 
 // Widgets.
 static GtkWidget *txtEntry_Code;
@@ -74,11 +73,6 @@ void gg_window_show(void *parent)
 	gtk_window_set_type_hint(GTK_WINDOW(gg_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(gg_window), FALSE);
 	g_object_set_data(G_OBJECT(gg_window), "gg_window", gg_window);
-	
-	// Create the accelerator group.
-	gg_accel_group = gtk_accel_group_new();
-	g_object_set_data_full(G_OBJECT(gg_window), "gg_accel_group",
-			       g_object_ref(gg_accel_group), (GDestroyNotify)g_object_unref);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)gg_window, "delete_event",
@@ -289,9 +283,6 @@ void gg_window_show(void *parent)
 						GG_RESPONSE_DELETE,
 						-1);
 #endif
-	
-	// Add the accel group to the window.
-	gtk_window_add_accel_group(GTK_WINDOW(gg_window), gg_accel_group);
 	
 	// Set the window as modal to the main application window.
 	if (parent)
