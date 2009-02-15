@@ -12,7 +12,8 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
 lib_LTLIBRARIES = mdp_render_super_eagle.la
 
-mdp_render_super_eagle_la_LDFLAGS = -module -no-undefined -avoid-version
+mdp_render_super_eagle_la_CFLAGS	= $(AM_CFLAGS)
+mdp_render_super_eagle_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 
 NASM += -I@srcdir@/../
 

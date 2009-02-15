@@ -12,7 +12,9 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
 lib_LTLIBRARIES = mdp_render_epx.la
 
-mdp_render_epx_la_LDFLAGS = -module -no-undefined -avoid-version
+mdp_render_epx_la_CFLAGS	= $(AM_CFLAGS)
+mdp_render_epx_la_CXXFLAGS	= $(AM_CXXFLAGS)
+mdp_render_epx_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 
 mdp_render_epx_la_SOURCES = \
 		mdp_render_epx_plugin.c \

@@ -9,6 +9,8 @@ ASMFILES = mdZ80_x86.o
 
 noinst_LIBRARIES = libmdZ80.a
 
+libmdZ80_a_CFLAGS = $(AM_CFLAGS)
+
 libmdZ80_a_SOURCES = \
 		mdZ80_x86.asm \
 		mdZ80.c \

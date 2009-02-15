@@ -12,7 +12,8 @@ STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
 lib_LTLIBRARIES = mdp_render_scale2x.la
 
-mdp_render_scale2x_la_LDFLAGS = -module -no-undefined -avoid-version
+mdp_render_scale2x_la_CFLAGS	= $(AM_CFLAGS)
+mdp_render_scale2x_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 
 mdp_render_scale2x_la_SOURCES = \
 		mdp_render_scale2x_plugin.c \
