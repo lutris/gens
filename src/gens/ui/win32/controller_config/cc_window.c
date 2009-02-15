@@ -62,7 +62,7 @@ BOOL cc_window_is_configuring = FALSE;
 static WNDCLASS	cc_wndclass;
 
 // Window size.
-#define CC_WINDOW_WIDTH  580
+#define CC_WINDOW_WIDTH  600
 #define CC_WINDOW_HEIGHT 440
 
 #define CC_FRAME_PORT_WIDTH  236
@@ -71,7 +71,7 @@ static WNDCLASS	cc_wndclass;
 #define CC_FRAME_INPUT_DEVICES_WIDTH  CC_FRAME_PORT_WIDTH
 #define CC_FRAME_INPUT_DEVICES_HEIGHT 96
 
-#define CC_FRAME_CONFIGURE_WIDTH  320
+#define CC_FRAME_CONFIGURE_WIDTH  340
 #define CC_FRAME_CONFIGURE_HEIGHT 354
 
 // Command value bases.
