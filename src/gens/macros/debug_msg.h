@@ -35,6 +35,8 @@
 #define DEBUG_CHANNEL_input	1
 
 #define DEBUG_CHANNEL_mdp	1
+
+// Sound chip emulation.
 #define DEBUG_CHANNEL_ym2612	0
 #define DEBUG_CHANNEL_psg	0
 #define DEBUG_CHANNEL_pcm	0
