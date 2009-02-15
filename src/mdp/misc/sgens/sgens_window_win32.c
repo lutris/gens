@@ -138,6 +138,10 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	mdp_win32_set_actual_window_size(sgens_window, SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT);
 	mdp_win32_center_on_window(sgens_window, (HWND)parent);
 	
+	// Update the current ROM type and information display.
+	sgens_window_update_rom_type();
+	sgens_window_update();
+	
 	UpdateWindow(sgens_window);
 	ShowWindow(sgens_window, TRUE);
 	
@@ -174,10 +178,6 @@ static void sgens_window_create_child_windows(HWND hWnd)
 				     75, 23,
 				     hWnd, (HMENU)IDCLOSE, sgens_hInstance, NULL);
 	SetWindowFont(btnClose, sgens_hFont, TRUE);
-	
-	// Update the current ROM type and information display.
-	sgens_window_update_rom_type();
-	sgens_window_update();
 }
 
 
@@ -211,7 +211,6 @@ static void sgens_window_create_level_info_frame(HWND container)
 	
 	// Table for level information.
 	unsigned int i;
-	char tmp[64];
 	for (i = 0; i < LEVEL_INFO_COUNT; i++)
 	{
 		// Determine the column starting and ending positions.
@@ -269,7 +268,6 @@ static void sgens_window_create_player_info_frame(HWND container)
 	
 	// Table for player information.
 	unsigned int i;
-	char tmp[64];
 	for (i = 0; i < PLAYER_INFO_COUNT; i++)
 	{
 		// Determine the column starting and ending positions.
@@ -378,7 +376,6 @@ static LRESULT CALLBACK sgens_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
  */
 void MDP_FNCALL sgens_window_update_rom_type(void)
 {
-#if 0
 	if (!sgens_window)
 		return;
 	
@@ -390,18 +387,17 @@ void MDP_FNCALL sgens_window_update_rom_type(void)
 	}
 	
 	// Set the "Loaded Game" label.
-	gtk_label_set_text(GTK_LABEL(lblLoadedGame), sgens_ROM_type_name[sgens_current_rom_type]);
+	Static_SetText(lblLoadedGame, sgens_ROM_type_name[sgens_current_rom_type]);
 	
 	// Reset the "Rings for Perfect Bonus" information label.
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), "<tt>0</tt>");
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
+	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], "0");
 	
 	// Enable/Disable the "Rings for Perfect Bonus" labels, depending on ROM type.
-	gboolean isS2 = (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
-			 sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02);
-	gtk_widget_set_sensitive(lblLevelInfo_Desc[LEVEL_INFO_RINGS_PERFECT], isS2);
-	gtk_widget_set_sensitive(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], isS2);
-#endif
+	BOOL isS2 = (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
+		     sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02);
+	
+	Static_Enable(lblLevelInfo_Desc[LEVEL_INFO_RINGS_PERFECT], isS2);
+	Static_Enable(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], isS2);
 }
 
 
