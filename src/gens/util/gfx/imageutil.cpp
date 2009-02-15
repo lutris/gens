@@ -50,7 +50,7 @@
 #endif /* GENS_PNG */
 
 
-// Pixel masks
+// Pixel masks.
 static const uint16_t MASK_RED_15	= 0x7C00;
 static const uint16_t MASK_GREEN_15	= 0x03E0;
 static const uint16_t MASK_BLUE_15	= 0x001F;
@@ -63,7 +63,7 @@ static const uint32_t MASK_RED_32	= 0xFF0000;
 static const uint32_t MASK_GREEN_32	= 0x00FF00;
 static const uint32_t MASK_BLUE_32	= 0x0000FF;
 
-// Pixel shifts
+// Pixel shifts.
 static const uint8_t SHIFT_RED_15	= 7;
 static const uint8_t SHIFT_GREEN_15	= 2;
 static const uint8_t SHIFT_BLUE_15	= 3;
