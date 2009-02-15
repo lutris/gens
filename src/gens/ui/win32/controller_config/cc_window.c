@@ -542,11 +542,17 @@ static void cc_window_save(void)
  */
 static inline void cc_window_display_key_name(HWND label, uint16_t key)
 {
-	char tmp[64], key_name[64];
+	char key_name[32];
 	
 	input_get_key_name(key, &key_name[0], sizeof(key_name));
-	sprintf(tmp, "0x%04X: %s", key, key_name);
-	Static_SetText(label, tmp);
+	
+	#ifdef GENS_DEBUG
+		char tmp[64];
+		sprintf(tmp, "0x%04X: %s", key, key_name);
+		Static_SetText(label, tmp);
+	#else
+		Static_SetText(label, key_name);
+	#endif
 }
 
 

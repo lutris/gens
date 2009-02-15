@@ -710,10 +710,15 @@ static void cc_window_save(void)
  */
 static inline void cc_window_display_key_name(GtkWidget *label, uint16_t key)
 {
-	char tmp[64], key_name[64];
+	char tmp[64], key_name[32];
 	
 	input_get_key_name(key, &key_name[0], sizeof(key_name));
-	sprintf(tmp, "<tt>0x%04X: %s</tt>", key, key_name);
+	
+	#ifdef GENS_DEBUG
+		sprintf(tmp, "<tt>0x%04X: %s</tt>", key, key_name);
+	#else
+		sprintf(tmp, "<tt>%s</tt>", key_name);
+	#endif
 	gtk_label_set_text(GTK_LABEL(label), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 }
