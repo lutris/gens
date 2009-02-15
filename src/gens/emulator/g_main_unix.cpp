@@ -81,9 +81,11 @@ int main(int argc, char *argv[])
 	if (geteuid() == 0)
 	{
 		// Don't run Gens/GS as root!
-		const char gensRootErr[] = "Error: Gens/GS should not be run as root.\nPlease log in as a regular user.";
+		static const char gensRootErr[] =
+				"Error: Gens/GS should not be run as root.\n"
+				"Please log in as a regular user.";
 		
-		fputs(gensRootErr, stderr);
+		fprintf(stderr, "%s\n", gensRootErr);
 		
 		#ifdef GENS_UI_GTK
 			// Check if X is running.
