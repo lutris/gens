@@ -30,6 +30,8 @@
 #include <stdio.h>
 
 #define DEBUG_CHANNEL_gens	1
+#define DEBUG_CHANENL_video	1
+#define DEBUG_CHANNEL_audio	1
 #define DEBUG_CHANNEL_input	1
 
 #define DEBUG_CHANNEL_mdp	1
