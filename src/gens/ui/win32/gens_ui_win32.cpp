@@ -123,7 +123,7 @@ HACCEL hAccelTable_NonMenu;
  * @param argc main()'s argc. (unused)
  * @param argv main()'s argv. (unused)
  */
-void GensUI::init(int argc, char *argv[])
+void GensUI::init(int *argc, char **argv[])
 {
 	GENS_UNUSED_PARAMETER(argc);
 	GENS_UNUSED_PARAMETER(argv);
