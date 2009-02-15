@@ -46,7 +46,8 @@ static GtkWidget *lstCodes;
 
 // Callbacks.
 static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-static gboolean gg_window_callback_button(GtkButton *button, gpointer user_data);
+//static void gg_window_callback_button(GtkButton *button, gpointer user_data);
+static void gg_window_callback_btnAddCode(GtkButton *button, gpointer user_data);
 
 
 /**
@@ -191,8 +192,8 @@ void gg_window_show(void *parent)
 			  G_CALLBACK(on_entry_gg_keypress), NULL);
 	*/
 	
-	// Add Code button.
-	GtkWidget *btnAddCode = gtk_button_new_with_mnemonic("_Add Code");
+	// "Add Code" button.
+	GtkWidget *btnAddCode = gtk_button_new_with_mnemonic("Add C_ode");
 	gtk_widget_set_name(btnAddCode, "btnAddCode");
 	gtk_widget_show(btnAddCode);
 	gtk_table_attach(GTK_TABLE(tblEntry), btnAddCode, 2, 3, 0, 1,
@@ -201,13 +202,17 @@ void gg_window_show(void *parent)
 	g_object_set_data_full(G_OBJECT(gg_window), "btnAddCode",
 			       g_object_ref(btnAddCode), (GDestroyNotify)g_object_unref);
 	
-	// Set the button's icon to "gtk-add".
+	// Set the "Add Code" button's icon to "gtk-add".
 	GtkWidget *btnAddCode_icon = gtk_image_new_from_stock("gtk-add", GTK_ICON_SIZE_BUTTON);
 	gtk_widget_set_name(btnAddCode_icon, "btnAddCode_icon");
 	gtk_widget_show(btnAddCode_icon);
 	gtk_button_set_image(GTK_BUTTON(btnAddCode), btnAddCode_icon);
 	g_object_set_data_full(G_OBJECT(gg_window), "btnAddCode_icon",
 			       g_object_ref(btnAddCode_icon), (GDestroyNotify)g_object_unref);
+	
+	// Connect the "clicked" signal for the "Add Code" button.
+	g_signal_connect((gpointer)btnAddCode, "clicked",
+			 G_CALLBACK(gg_window_callback_btnAddCode), NULL);
 	
 	// Set the focus chain for the entry boxes.
 	GList *lFocusChain = NULL;
@@ -272,7 +277,8 @@ void gg_window_show(void *parent)
 	gtk_dialog_add_buttons(GTK_DIALOG(gg_window),
 			       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 			       GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
-			       GTK_STOCK_SAVE, GTK_RESPONSE_OK);
+			       GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+			       NULL);
 	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(gg_window),
@@ -327,4 +333,19 @@ static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
 	
 	gg_window_close();
 	return FALSE;
+}
+
+
+/**
+ * gg_window_callback_btnAddCode(): "Add Code" button was clicked.
+ * @param button Button widget.
+ * @param user_data User data.
+ */
+static void gg_window_callback_btnAddCode(GtkButton *button, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(button);
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	// TODO: Add the code.
+	fprintf(stderr, "Code entered: %s\n", gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)));
 }
