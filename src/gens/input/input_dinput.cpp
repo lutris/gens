@@ -40,15 +40,7 @@
 #include <dinput.h>
 //#include <mmsystem.h>
 
-// Wine's headers are missing these definitions...
-#ifndef IID_IDirectInputDevice2
-#ifdef UNICODE
-#define IID_IDirectInputDevice2 IID_IDirectInputDevice2W
-#else
-#define IID_IDirectInputDevice2 IID_IDirectInputDevice2A
-#endif /* UNICODE */
-#endif /* IID_IDirectInputDevice2 */
-
+// Wine's headers are missing this definition...
 #ifndef IDirectInputDevice2
 #ifdef UNICODE
 #define IDirectInputDevice2 IDirectInputDevice2W
@@ -56,14 +48,6 @@
 #define IDirectInputDevice2 IDirectInputDevice2A
 #endif /* UNICODE */
 #endif /* IDirectInputDevice2 */
-
-#ifndef IDirectInputDevice2Vtbl
-#ifdef UNICODE
-#define IDirectInputDevice2Vtbl IDirectInputDevice2WVtbl
-#else
-#define IDirectInputDevice2Vtbl IDirectInputDevice2AVtbl
-#endif /* UNICODE */
-#endif /* IDirectInputDevice2Vtbl */
 
 #define MAX_JOYS 8
 
