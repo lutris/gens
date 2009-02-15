@@ -267,14 +267,6 @@ unsigned int input_sdl_get_key(void)
 	// TODO: Optimize this function.
 	GdkEvent *event;
 	SDL_Event sdl_event;
-	SDL_Joystick *js[6];
-	SDL_JoystickEventState(SDL_ENABLE);
-	
-	// Open all 6 joysticks.
-	for (int i = 0; i < INPUT_SDL_MAX_JOYSTICKS; i++)
-	{
-		js[i] = SDL_JoystickOpen(i);
-	}
 	
 	// Update the UI.
 	GensUI_update();
