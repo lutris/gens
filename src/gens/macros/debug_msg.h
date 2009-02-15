@@ -40,7 +40,7 @@
 #define DEBUG_MSG(channel, level, msg, ...)	\
 {						\
 	if (DEBUG_CHANNEL_ ##channel >= level)	\
-		fprintf(stderr, "%s:%d:%s: " msg "\n", #channel, level, __func__, ##__VA_ARGS__);	\
+		fprintf(stderr, "%s:%d:%s(): " msg "\n", #channel, level, __func__, ##__VA_ARGS__);	\
 }
 
 #endif /* GENS_DEBUG_MSG_H */
