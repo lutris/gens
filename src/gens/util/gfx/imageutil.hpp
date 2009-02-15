@@ -39,9 +39,6 @@ extern "C" {
 
 #ifdef __cplusplus
 
-// C++ includes
-#include <string>
-
 class ImageUtil
 {
 	public:
@@ -66,7 +63,7 @@ class ImageUtil
 			static const ImageFormat DefaultImageFormat = IMAGEFORMAT_BMP;
 		#endif /* GENS_PNG */
 		
-		static int write(const std::string& filename, const ImageFormat format,
+		static int write(const char* filename, const ImageFormat format,
 				 const int w, const int h, const int pitch,
 				 const void *screen, const int bpp,
 				 const AlphaChannel alpha = ALPHACHANNEL_NONE);

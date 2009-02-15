@@ -33,10 +33,6 @@
 #include <stdlib.h>
 #include <cstring>
 
-// C++ includes
-#include <string>
-using std::string;
-
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
@@ -395,15 +391,18 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 #endif /* GENS_PNG */
 
 
-int ImageUtil::write(const string& filename, const ImageFormat format,
+int ImageUtil::write(const char* filename, const ImageFormat format,
 		     const int w, const int h, const int pitch,
 		     const void *screen, const int bpp, const AlphaChannel alpha)
 {
+	if (!filename)
+		return 1;
+	
 	// Write an image file.
-	FILE *fImg = fopen(filename.c_str(), "wb");
+	FILE *fImg = fopen(filename, "wb");
 	if (!fImg)
 	{
-		DEBUG_MSG(gens, 0, "Error opening %s.", filename.c_str());
+		DEBUG_MSG(gens, 0, "Error opening %s.", filename);
 		return 0;
 	}
 	
