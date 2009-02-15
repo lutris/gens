@@ -166,7 +166,7 @@ int audio_dsound_init(void)
 	dsbdesc.dwBufferBytes = audio_seg_length * Sound_Segs * Bytes_Per_Unit;
 	dsbdesc.lpwfxFormat = &MainWfx;
 	
-	DEBUG_MSG(audio, 2, "Seg l : %d   Num Seg : %d   Taille : %d", Seg_Length, Sound_Segs, Bytes_Per_Unit);
+	DEBUG_MSG(audio, 2, "Seg l : %d   Num Seg : %d   Taille : %d", audio_seg_length, Sound_Segs, Bytes_Per_Unit);
 	
 	rval = lpDS->CreateSoundBuffer(&dsbdesc, &lpDSBuffer, NULL);
 	if (rval != DS_OK)
