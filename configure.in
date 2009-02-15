@@ -90,6 +90,7 @@ if test x$enable_debug = xyes -o x$enable_debug = xfull; then
 	cflags_warnings_common="-Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch -Wswitch-default -Wswitch-enum -Wfloat-equal -Wundef -Wshadow -Wunsafe-loop-optimizations -Wcast-qual -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wmissing-field-initializers -Wnormalized=nfc -Wredundant-decls -Winline"
 	cflags_warnings_c="-Wc++-compat -Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmissing-parameter-type -Wmissing-prototypes -Wnested-externs"
 	cflags_warnings_cxx="-Wc++0x-compat"
+	AC_DEFINE(GENS_DEBUG, 1, Enable debugging)	
 else
 	# Debugging symbols disabled.
 	nasm_debug_enabled=""
@@ -99,6 +100,7 @@ else
 	cflags_warnings_c=""
 	cflags_warnings_cxx=""
 fi
+AM_CONDITIONAL([GENS_DEBUG], [test x$enable_debug = xyes -o x$enable_debug = xfull])
 
 # BEGIN: Unix/Linux (and MacOS X for now)
 
