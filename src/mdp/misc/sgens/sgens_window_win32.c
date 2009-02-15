@@ -308,44 +308,6 @@ static void sgens_window_create_player_info_frame(HWND container)
 					       WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
 					       fraPlayerInfo, NULL, sgens_hInstance, NULL);
 	}
-#if 0
-	// Add the player information widgets.
-	unsigned int i;
-	char tmp[64];
-	for (i = 0; i < PLAYER_INFO_COUNT; i++)
-	{
-		// Description label.
-		lblPlayerInfo_Desc[i] = gtk_label_new(player_info[i].description);
-		sprintf(tmp, "lblPlayerInfo_Desc_%d", i);
-		gtk_widget_set_name(lblPlayerInfo_Desc[i], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo_Desc[i]), 0.0f, 0.5f);
-		gtk_widget_show(lblPlayerInfo_Desc[i]);
-		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo_Desc[i],
-				 0, 1,
-				 player_info[i].row, player_info[i].row + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayerInfo_Desc[i]), (GDestroyNotify)g_object_unref);
-		
-		// Information label.
-		sprintf(tmp, "<tt>%s</tt>", player_info[i].initial);
-		lblPlayerInfo[i] = gtk_label_new(tmp);
-		sprintf(tmp, "lblPlayerInfo_%d", i);
-		gtk_widget_set_name(lblPlayerInfo[i], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo[i]), 1.0f, 0.5f);
-		gtk_label_set_justify(GTK_LABEL(lblPlayerInfo[i]), GTK_JUSTIFY_RIGHT);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[i]), TRUE);
-		gtk_widget_show(lblPlayerInfo[i]);
-		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo[i],
-				 1, 2,
-				 player_info[i].row, player_info[i].row + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayerInfo[i]), (GDestroyNotify)g_object_unref);
-	}
-#endif
 }
 
 
