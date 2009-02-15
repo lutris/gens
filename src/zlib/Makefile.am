@@ -2,6 +2,14 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+CFLAGS = @CFLAGS@ -O3 -funroll-loops \
+	-Wno-old-style-definition \
+	-Wno-cast-qual \
+	-Wno-unreachable-code \
+	-Wno-unsafe-loop-optimizations \
+	-Wno-switch-default \
+	-Wno-switch-enum
+
 noinst_LIBRARIES = libz.a
 libz_a_SOURCES = \
 		adler32.c \

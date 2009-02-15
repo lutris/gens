@@ -6,6 +6,14 @@ if GENS_ZLIB_INTERNAL
 INCLUDES = -I@srcdir@/../zlib/
 endif # GENS_ZLIB_INTERNAL
 
+CFLAGS = @CFLAGS@ -O3 -funroll-loops \
+	-Wno-old-style-definition \
+	-Wno-unused \
+	-Wno-strict-prototypes \
+	-Wno-parentheses \
+	-Wno-switch-default \
+	-Wno-uninitialized
+
 noinst_LIBRARIES = libminizip.a
 libminizip_a_SOURCES = \
 		ioapi.c \

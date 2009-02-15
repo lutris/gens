@@ -2,6 +2,15 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+CFLAGS = @CFLAGS@ -O3 -funroll-loops \
+	-Wno-cast-qual \
+	-Wno-shadow \
+	-Wno-unreachable-code \
+	-Wno-missing-prototypes \
+	-Wno-missing-declarations \
+	-Wno-redundant-decls \
+	-Wno-unsafe-loop-optimizations
+
 noinst_LIBRARIES = liblzma.a
 
 liblzma_a_SOURCES = \
