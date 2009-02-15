@@ -367,8 +367,8 @@ endif # GENS_LZMA
 CLEANFILES = ${ASMFILES}
 
 # Initialize CFLAGS and CXXFLAGS.
-gens_CFLAGS =
-gens_CXXFLAGS =
+gens_CFLAGS = $(AM_CFLAGS)
+gens_CXXFLAGS = $(AM_CXXFLAGS)
 
 # OS-specific includes
 
@@ -379,7 +379,3 @@ endif # GENS_OS_UNIX
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am
 endif # GENS_OS_WIN32
-
-# Add CFLAGS and CXXFLAGS to the end of the OS-specific flags.
-gens_CFLAGS += @CFLAGS@
-gens_CXXFLAGS += @CXXFLAGS@
