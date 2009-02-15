@@ -24,6 +24,9 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+// Debug messages.
+#include "macros/debug_msg.h"
+
 #include "pluginmgr.hpp"
 #include "macros/hashtable.hpp"
 
@@ -219,8 +222,7 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	if (!mdpDir)
 	{
 		// Could not open the MDP plugin directory.
-		fprintf(stderr, "PluginMgr::%s(): Could not open MDP plugin directory: %s\n",
-			__func__, directory.c_str());
+		DEBUG_MSG(mdp, 1, "Could not open MDP plugin directory: %s", directory.c_str());
 		return;
 	}
 	
@@ -336,8 +338,8 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	if (!handle)
 	{
 		Incompat.add(NULL, MDP_ERR_CANNOT_OPEN_DLL, filename);
-		fprintf(stderr, "PluginMgr::%s(): Could not open external plugin: %s\n",
-			__func__, File::GetNameFromPath(filename).c_str());
+		DEBUG_MSG(mdp, 1, "Could not open external plugin: %s",
+			  File::GetNameFromPath(filename).c_str());
 		return;
 	}
 	
@@ -346,15 +348,15 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	if (!plugin)
 	{
 		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
-		fprintf(stderr, "PluginMgr::%s(): \"mdp\" symbol not found in plugin: %s\n",
-			__func__, File::GetNameFromPath(filename).c_str());
+		DEBUG_MSG(mdp, 1, "\"mdp\" symbol not found in plugin: %s",
+			  File::GetNameFromPath(filename).c_str());
 		lt_dlclose(handle);
 		return;
 	}
 	
 	// Symbol loaded. Load the plugin.
-	fprintf(stderr, "PluginMgr::%s(): \"mdp\" symbol loaded from plugin: %s\n",
-		__func__, File::GetNameFromPath(filename).c_str());
+	DEBUG_MSG(mdp, 1, "\"mdp\" symbol loaded from plugin: %s",
+		  File::GetNameFromPath(filename).c_str());
 	loadPlugin(plugin, filename);
 }
 
