@@ -20,67 +20,34 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_DEBUG_MSG_H
-#define GENS_DEBUG_MSG_H
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <stdio.h>
+#include "debug_msg.h"
 
-#define DEBUG_CHANNEL_gens	1
-#define DEBUG_CHANNEL_input	1
-
-#define DEBUG_CHANNEL_mdp	1
-#define DEBUG_CHANNEL_ym2612	0
-#define DEBUG_CHANNEL_psg	0
-#define DEBUG_CHANNEL_pcm	0
-
-/**
- * Debug levels:
- * 0 == error.
- * 1 == informative.
- * 2 and higher == debugging. (TODO: Clarify this.)
- */
-
-#ifdef __cplusplus
-extern "C" {
+#if defined(GENS_UI_WIN32)
+	#include <windows.h>
+#elif defined(GENS_UI_GTK)
+	#include <gtk/gtk.h>
 #endif
 
-/**
- * debug_msgbox(): Function used to show a message box for Level 0 messages.
- * @param msg Message.
- * @param title Title.
- */
-void debug_msgbox(const char* msg, const char* title);
+// Needed for the parent window.
+#include "gens/gens_window.hpp"
 
-#ifdef __cplusplus
+
+void debug_msgbox(const char* msg, const char* title)
+{
+	#if defined(GENS_UI_WIN32)
+		MessageBox(Gens_hWnd, msg, title, MB_ICONSTOP);
+	#elif defined(GENS_UI_GTK)
+		GtkWidget *msgbox = gtk_message_dialog_new(
+					GTK_WINDOW(gens_window),
+					GTK_DIALOG_MODAL,
+					GTK_MESSAGE_ERROR,
+					GTK_BUTTONS_OK,	msg);
+		gtk_window_set_title(GTK_WINDOW(msgbox), title);
+		gtk_dialog_run(GTK_DIALOG(msgbox));
+		gtk_widget_destroy(msgbox);
+	#endif
 }
-#endif
-
-/**
- * DEBUG_MSG(): Output a debug message.
- * @param channel Debug channel. (string)
- * @param level Debug level. (integer)
- * @param msg Message.
- * @param ... Parameters.
- */
-#define DEBUG_MSG(channel, level, msg, ...)		\
-{							\
-	if (DEBUG_CHANNEL_ ##channel >= level)		\
-	{						\
-		fprintf(stderr, "%s:%d:%s(): " msg "\n", #channel, level, __func__, ##__VA_ARGS__);	\
-		if (level == 0)										\
-		{											\
-			char box_msg[256], box_title[256];						\
-			snprintf(box_msg, sizeof(box_msg), "%s(): " msg, __func__, ##__VA_ARGS__);	\
-			box_msg[sizeof(box_msg) - 1] = 0x00;						\
-			snprintf(box_title, sizeof(box_msg), "Gens Error: %s", #channel);		\
-			box_title[sizeof(box_msg) - 1] = 0x00;						\
-			debug_msgbox(box_msg, box_title);						\
-		}											\
-	}												\
-}
-
-#endif /* GENS_DEBUG_MSG_H */
