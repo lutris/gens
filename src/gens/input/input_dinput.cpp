@@ -24,6 +24,12 @@
 #include "input_dinput.hpp"
 #include "input_win32_keys.h"
 
+// C includes.
+#include <stdio.h>
+
+// Debug messages.
+#include "macros/debug_msg.h"
+
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.hpp"
@@ -82,6 +88,7 @@ static unsigned char input_dinput_keys[256];
 static BOOL input_dinput_joystick_initialized;
 static BOOL input_dinput_joystick_error;
 static int input_dinput_num_joysticks;	// Number of joysticks connected
+static int input_dinput_callback_init_joysticks_enum_counter;	// Number of times the enumeration function has been called.
 static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTANCE lpDIIJoy, LPVOID pvRef);
 int input_dinput_set_cooperative_level_joysticks(HWND hWnd);
 
@@ -136,7 +143,7 @@ int input_dinput_init(void)
 	if (rval == DI_OK)
 	{
 		// DirectInput 5 initialized.
-		fprintf(stderr, "Input_DInput(): Initialized DirectInput 5.\n");
+		DEBUG_MSG(input, 1, "Initialized DirectInput 5.");
 		input_dinput_version = DIRECTINPUT_VERSION_5;
 	}
 	else
@@ -146,16 +153,13 @@ int input_dinput_init(void)
 		if (rval == DI_OK)
 		{
 			// DirectInput 3 initialized.
-			fprintf(stderr, "Input_DInput(): Initialized DirectInput 3.\n");
+			DEBUG_MSG(input, 1, "Initialized DirectInput 3.");
 			input_dinput_version = DIRECTINPUT_VERSION_3;
 		}
 		else
 		{
 			// DirectInput could not be initialized.
-			fprintf(stderr, "Input_DInput(): Could not initialize DirectInput 3 or DirectInput 5.\n");
-			
-			GensUI::msgBox("input_dinput_init(): DirectInputCreate() failed.\n\nYou must have DirectX 3 or later.",
-				       "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
+			DEBUG_MSG(input, 0, "Could not initialize DirectInput 3 or DirectInput 5.\n\nYou must have DirectX 3 or later.");
 			return -1;
 		}
 	}
@@ -170,7 +174,7 @@ int input_dinput_init(void)
 	rval = lpDI->CreateDevice(GUID_SysKeyboard, &lpDIDKeyboard, NULL);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("input_dinput_init(): CreateDevice() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "lpDI->CreateDevice() failed. (Keyboard)");
 		
 		// TODO: Use cross-platform error numbers, not just DirectInput return values.
 		return -2;
@@ -183,7 +187,7 @@ int input_dinput_init(void)
 	rval = lpDIDKeyboard->SetDataFormat(&c_dfDIKeyboard);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("Input_DInput(): SetDataFormat() failed.", "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "lpDIDKeyboard->SetDataFormat() failed.");
 		
 		// TODO: Use cross-platform error numbers, not just DirectInput return values.
 		return -1;
@@ -289,6 +293,7 @@ int input_dinput_init_joysticks(HWND hWnd)
 	
 	// Joysticks are being initialized.
 	input_dinput_joystick_initialized = true;
+	input_dinput_callback_init_joysticks_enum_counter = 0;
 	
 	HRESULT rval;
 	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK,
@@ -297,8 +302,23 @@ int input_dinput_init_joysticks(HWND hWnd)
 	if (rval != DI_OK)
 	{
 		input_dinput_joystick_error = true;
-		GensUI::msgBox("input_dinput_init_joysticks(): EnumDevices() failed.",
-			       "DirectInput Error", GensUI::MSGBOX_ICON_ERROR);
+		
+		// Close all joysticks.
+		for (int i = 0; i < MAX_JOYS; i++)
+		{
+			if (input_dinput_joy_id[i])
+			{
+				input_dinput_joy_id[i]->Unacquire();
+				input_dinput_joy_id[i]->Release();
+				input_dinput_joy_id[i] = NULL;
+			}
+		}
+		
+		// Reset number of joysticks.
+		input_dinput_num_joysticks = 0;
+		
+		DEBUG_MSG(input, 0, "lpDI->EnumDevices() failed. Joysticks will be unavailable.");
+		
 		// TODO: Error handling.
 		return -2;
 	}
@@ -321,15 +341,20 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	DIPROPRANGE diprg;
 	int i;
  
-	if (input_dinput_num_joysticks >= MAX_JOYS)
+	if (!lpDIIJoy || input_dinput_num_joysticks >= MAX_JOYS ||
+	    input_dinput_callback_init_joysticks_enum_counter >= 2)
 		return DIENUM_STOP;
-		
+	
+	// Number of times this function has been called.
+	input_dinput_callback_init_joysticks_enum_counter++;
+	
 	input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 	
 	rval = lpDI->CreateDevice(lpDIIJoy->guidInstance, &lpDIJoy, NULL);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInput::CreateDevice() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "lpDI->CreateDevice() failed. (Joystick %d)",
+			  input_dinput_callback_init_joysticks_enum_counter);
 		return DIENUM_CONTINUE;
 	}
 	
@@ -337,7 +362,8 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	lpDIJoy->Release();
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInputDevice2::QueryInterface() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "lpDIJoy->QueryInterface() failed. (Joystick %d)",
+			  input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		return DIENUM_CONTINUE;
 	}
@@ -345,7 +371,8 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetDataFormat(&c_dfDIJoystick);
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInputDevice::SetDataFormat() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetDatFormat(&c_dfDIJoystick) failed. (Joystick %d)",
+			  input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		return DIENUM_CONTINUE;
@@ -356,7 +383,8 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	
 	if (rval != DI_OK)
 	{
-		GensUI::msgBox("IDirectInputDevice::SetCooperativeLevel() FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetCooperativeLevel() failed. (Joystick %d)",
+			  input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		return DIENUM_CONTINUE;
@@ -372,7 +400,8 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
 	{
-		GensUI::msgBox("IDirectInputDevice::SetProperty() (X-Axis) FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetProperty() (X-axis) failed. (Joystick %d)",
+			  input_dinput_callback_init_joysticks_enum_counter);
 	}
 	
 	diprg.diph.dwSize = sizeof(diprg); 
@@ -385,7 +414,8 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
 	{
-		GensUI::msgBox("IDirectInputDevice::SetProperty() (Y-Axis) FAILED", "Joystick Error", GensUI::MSGBOX_ICON_ERROR);
+		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetProperty() (Y-axis) failed. (Joystick %d)",
+			  input_dinput_callback_init_joysticks_enum_counter);
 	}
 	
 	for(i = 0; i < 10; i++)
@@ -833,12 +863,12 @@ int input_dinput_set_cooperative_level(HWND hWnd)
 	rval = lpDIDKeyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	if (rval != DI_OK)
 	{
-		fprintf(stderr, "%s(): lpDIDKeyboard->SetCooperativeLevel() failed.\n", __func__);
+		DEBUG_MSG(input, 1, "lpDIDKeyboard->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}
 	else
 	{
-		fprintf(stderr, "%s(): lpDIDKeyboard->SetCooperativeLevel() succeeded.\n", __func__);
+		DEBUG_MSG(input, 1, "lpDIDKeyboard->SetCooperativeLevel() succeeded.");
 	}
 	
 	return 0;
@@ -866,13 +896,13 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 		
 		if (rval != DI_OK)
 		{
-			fprintf(stderr, "%s(): SetCooperativeLevel() failed on joystick %d.\n", __func__, i);
+			DEBUG_MSG(input, 1, "SetCooperativeLevel() failed on joystick %d.", i);
 			input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 			input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		}
 		else
 		{
-			fprintf(stderr, "%s(): SetCooperativeLevel() succeeded on joystick %d.\n", __func__, i);
+			DEBUG_MSG(input, 1, "SetCooperativeLevel() succeeded on joystick %d.", i);
 		}
 	}
 	
