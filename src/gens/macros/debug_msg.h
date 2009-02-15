@@ -26,17 +26,19 @@
 #include <stdio.h>
 
 #define DEBUG_CHANNEL_mdp	1
+#define DEBUG_CHANNEL_ym2612	0
 
 /**
  * DEBUG_MSG(): Output a debug message.
  * @param channel Debug channel. (string)
+ * @param level Debug level. (integer)
  * @param msg Message.
  * @param ... Parameters.
  */
-#define DEBUG_MSG(channel, msg, ...)	\
-{					\
-	if (DEBUG_CHANNEL_ ##channel)	\
-		fprintf(stderr, "%s:%s: " msg "\n", #channel, __func__, ##__VA_ARGS__);	\
+#define DEBUG_MSG(channel, level, msg, ...)	\
+{						\
+	if (DEBUG_CHANNEL_ ##channel >= level)	\
+		fprintf(stderr, "%s:%d:%s: " msg "\n", #channel, level, __func__, ##__VA_ARGS__);	\
 }
 
 #endif /* GENS_DEBUG_MSG_H */
