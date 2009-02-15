@@ -65,6 +65,9 @@ Release 7 introduces the following new features:
 - Added SH2 DMA support for PWM audio. Thanks to Joseph Fenton for
   submitting a patch.
 
+- [Win32] Joysticks connected after loading Gens/GS will now be detected
+  in the Controller Configuration dialog.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
