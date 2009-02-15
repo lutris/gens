@@ -52,7 +52,7 @@ static HWND	sgens_window = NULL;
 static WNDCLASS	sgens_wndclass;
 
 // Window size.
-#define SGENS_WINDOW_WIDTH  312
+#define SGENS_WINDOW_WIDTH  336
 #define SGENS_WINDOW_HEIGHT 328
 
 #define FRAME_WIDTH (SGENS_WINDOW_WIDTH-16)
@@ -60,8 +60,8 @@ static WNDCLASS	sgens_wndclass;
 #define FRAME_PLAYER_INFO_HEIGHT 72
 
 // Table size defines.
+#define WIDGET_DESC_WIDTH 76
 #define WIDGET_INFO_WIDTH 64
-#define WIDGET_DESC_WIDTH 64
 #define WIDGET_INTRACOL_SPACING 4
 #define WIDGET_COL_SPACING 16
 #define WIDGET_ROW_HEIGHT 16
@@ -214,21 +214,24 @@ static void sgens_window_create_level_info_frame(HWND container)
 	for (i = 0; i < LEVEL_INFO_COUNT; i++)
 	{
 		// Determine the column starting and ending positions.
-		int widget_left, widget_width;
+		int widget_desc_left, widget_desc_width, widget_info_width;
 		if (level_info[i].fill_all_cols)
 		{
-			widget_left = 8;
-			widget_width = SGENS_WINDOW_WIDTH-16-16 -
-					WIDGET_INTRACOL_SPACING -
-					WIDGET_INFO_WIDTH;
+			widget_desc_left = 8;
+			widget_desc_width = FRAME_WIDTH - 48;
+			widget_info_width = FRAME_WIDTH - 8 -
+					    widget_desc_left -
+					    widget_desc_width -
+					    WIDGET_INTRACOL_SPACING;
 		}
 		else
 		{
-			widget_left = 8 + ((WIDGET_DESC_WIDTH +
+			widget_desc_left = 8 + ((WIDGET_DESC_WIDTH +
 					    WIDGET_INTRACOL_SPACING +
 					    WIDGET_INFO_WIDTH +
 					    WIDGET_COL_SPACING) * level_info[i].column);
-			widget_width = WIDGET_DESC_WIDTH;
+			widget_desc_width = WIDGET_DESC_WIDTH;
+			widget_info_width = WIDGET_INFO_WIDTH;
 		}
 		
 		const int widget_top = (16*3)+(level_info[i].row * WIDGET_ROW_HEIGHT);
@@ -236,8 +239,8 @@ static void sgens_window_create_level_info_frame(HWND container)
 		// Description label.
 		lblLevelInfo_Desc[i] = CreateWindow(WC_STATIC, level_info[i].description,
 						    WS_CHILD | WS_VISIBLE | SS_LEFT,
-						    widget_left, widget_top,
-						    widget_width, WIDGET_ROW_HEIGHT,
+						    widget_desc_left, widget_top,
+						    widget_desc_width, WIDGET_ROW_HEIGHT,
 						    fraLevelInfo, NULL, sgens_hInstance, NULL);
 		SetWindowFont(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
 		
@@ -245,8 +248,8 @@ static void sgens_window_create_level_info_frame(HWND container)
 		// TODO: Monospace font.
 		lblLevelInfo[i] = CreateWindow(WC_STATIC, level_info[i].initial,
 					       WS_CHILD | WS_VISIBLE | SS_RIGHT,
-					       widget_left+widget_width+WIDGET_INTRACOL_SPACING, widget_top,
-					       WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
+					       widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
+					       widget_info_width, WIDGET_ROW_HEIGHT,
 					       fraLevelInfo, NULL, sgens_hInstance, NULL);
 	}
 }
@@ -271,21 +274,24 @@ static void sgens_window_create_player_info_frame(HWND container)
 	for (i = 0; i < PLAYER_INFO_COUNT; i++)
 	{
 		// Determine the column starting and ending positions.
-		int widget_left, widget_width;
+		int widget_desc_left, widget_desc_width, widget_info_width;
 		if (player_info[i].fill_all_cols)
 		{
-			widget_left = 8;
-			widget_width = SGENS_WINDOW_WIDTH-16-16 -
-					WIDGET_INTRACOL_SPACING -
-					WIDGET_INFO_WIDTH;
+			widget_desc_left = 8;
+			widget_desc_width = FRAME_WIDTH - 48;
+			widget_info_width = FRAME_WIDTH - 8 -
+					    widget_desc_left -
+					    widget_desc_width -
+					    WIDGET_INTRACOL_SPACING;
 		}
 		else
 		{
-			widget_left = 8 + ((WIDGET_DESC_WIDTH +
+			widget_desc_left = 8 + ((WIDGET_DESC_WIDTH +
 					    WIDGET_INTRACOL_SPACING +
 					    WIDGET_INFO_WIDTH +
 					    WIDGET_COL_SPACING) * player_info[i].column);
-			widget_width = WIDGET_DESC_WIDTH;
+			widget_desc_width = WIDGET_DESC_WIDTH;
+			widget_info_width = WIDGET_INFO_WIDTH;
 		}
 		
 		const int widget_top = 16 + (player_info[i].row * WIDGET_ROW_HEIGHT);
@@ -293,8 +299,8 @@ static void sgens_window_create_player_info_frame(HWND container)
 		// Description label.
 		lblPlayerInfo_Desc[i] = CreateWindow(WC_STATIC, player_info[i].description,
 						    WS_CHILD | WS_VISIBLE | SS_LEFT,
-						    widget_left, widget_top,
-						    widget_width, WIDGET_ROW_HEIGHT,
+						    widget_desc_left, widget_top,
+						    widget_desc_width, WIDGET_ROW_HEIGHT,
 						    fraPlayerInfo, NULL, sgens_hInstance, NULL);
 		SetWindowFont(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
 		
@@ -302,8 +308,8 @@ static void sgens_window_create_player_info_frame(HWND container)
 		// TODO: Monospace font.
 		lblPlayerInfo[i] = CreateWindow(WC_STATIC, player_info[i].initial,
 						WS_CHILD | WS_VISIBLE | SS_RIGHT,
-						widget_left+widget_width+WIDGET_INTRACOL_SPACING, widget_top,
-						WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
+						widget_desc_left+widget_desc_width+WIDGET_INTRACOL_SPACING, widget_top,
+						widget_info_width, WIDGET_ROW_HEIGHT,
 						fraPlayerInfo, NULL, sgens_hInstance, NULL);
 	}
 }
@@ -406,7 +412,6 @@ void MDP_FNCALL sgens_window_update_rom_type(void)
  */
 void MDP_FNCALL sgens_window_update(void)
 {
-#if 0
 	if (!sgens_window)
 		return;
 	
@@ -418,53 +423,45 @@ void MDP_FNCALL sgens_window_update(void)
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	sprintf(tmp, "<tt>%d</tt>", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), TRUE);
+	sprintf(tmp, "%d", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
+	Static_SetText(lblLevelInfo[LEVEL_INFO_SCORE], tmp);
 	
 	// Time.
-	sprintf(tmp, "<tt>%02d:%02d:%02d</tt>",
+	sprintf(tmp, "%02d:%02d:%02d",
 		MDP_MEM_BE_8(sgens_md_RAM, 0xFE23),
 		MDP_MEM_BE_8(sgens_md_RAM, 0xFE24),
 		MDP_MEM_BE_8(sgens_md_RAM, 0xFE25));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), TRUE);
+	Static_SetText(lblLevelInfo[LEVEL_INFO_TIME], tmp);
 	
 	// Rings.
-	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_16(sgens_md_RAM, 0xFE20));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), TRUE);
+	sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFE20));
+	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS], tmp);
 	
 	// Lives.
-	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFE12));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), TRUE);
+	sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE12));
+	Static_SetText(lblLevelInfo[LEVEL_INFO_LIVES], tmp);
 	
 	// Continues.
-	sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFE18));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), TRUE);
+	sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE18));
+	Static_SetText(lblLevelInfo[LEVEL_INFO_CONTINUES], tmp);
 	
 	// Rings remaining for Perfect Bonus.
 	// This is only applicable for Sonic 2.
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
 	{
-		sprintf(tmp, "<tt>%d</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF40));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
+		sprintf(tmp, "%d", MDP_MEM_16(sgens_md_RAM, 0xFF40));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], tmp);
 	}
 	
 	// Water status.
 	uint16_t water_level = MDP_MEM_16(sgens_md_RAM, 0xF648);
-	sprintf(tmp, "<tt>%s</tt>", (MDP_MEM_16(sgens_md_RAM, 0xF648) != 0 ? "ON" : "OFF"));
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), TRUE);
+	sprintf(tmp, "%s", (MDP_MEM_16(sgens_md_RAM, 0xF648) != 0 ? "ON" : "OFF"));
+	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_ENABLED], tmp);
 	
 	// Water level.
-	sprintf(tmp, "<tt>%04X</tt>", water_level);
-	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), TRUE);
+	sprintf(tmp, "%04X", water_level);
+	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_LEVEL], tmp);
 	
 	// TODO: Camera position and player position don't seem to be working
 	// correctly with Sonic 3, S&K, etc.
@@ -475,73 +472,60 @@ void MDP_FNCALL sgens_window_update(void)
 		// S1-specific information.
 		
 		// Number of emeralds.
-		sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFE57));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), TRUE);
+		sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFE57));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
 		
 		// Camera X position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF10));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xFF10));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
 		
 		// Camera Y position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xFF14));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xFF14));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
 		
 		// Player angle.
 		uint16_t angle = (MDP_MEM_BE_8(sgens_md_RAM, 0xD026) | (MDP_MEM_BE_8(sgens_md_RAM, 0xD027) << 8));
-		sprintf(tmp, "<tt>%0.02f°</tt>", ((double)(angle) * 1.40625));
-		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
+		sprintf(tmp, "%0.02f\xB0", ((double)(angle) * 1.40625));
+		Static_SetText(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
 		
 		// Player X position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xD008));
-		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xD008));
+		Static_SetText(lblPlayerInfo[PLAYER_INFO_X], tmp);
 		
 		// Player Y position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xD00C));
-		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xD00C));
+		Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	}
 	else
 	{
 		// Information for games other than S1.
 		
 		// Number of emeralds.
-		sprintf(tmp, "<tt>%d</tt>", MDP_MEM_BE_8(sgens_md_RAM, 0xFEB1));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), TRUE);
+		sprintf(tmp, "%d", MDP_MEM_BE_8(sgens_md_RAM, 0xFEB1));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
 		
 		// Camera X position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xEE00));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xEE00));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
 		
 		// Camera Y position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xEE04));
-		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xEE04));
+		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
 		
 		// Player angle.
 		uint16_t angle = (MDP_MEM_BE_8(sgens_md_RAM, 0xB026) | (MDP_MEM_BE_8(sgens_md_RAM, 0xB027) << 8));
-		sprintf(tmp, "<tt>%0.02f°</tt>", ((double)(angle) * 1.40625));
-		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
+		sprintf(tmp, "%0.02f\xB0", ((double)(angle) * 1.40625));
+		Static_SetText(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
 		
 		// Player X position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xB008));
-		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xB008));
+		Static_SetText(lblPlayerInfo[PLAYER_INFO_X], tmp);
 		
 		// Player Y position.
-		sprintf(tmp, "<tt>%04X</tt>", MDP_MEM_16(sgens_md_RAM, 0xB00C));
-		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
-		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
+		sprintf(tmp, "%04X", MDP_MEM_16(sgens_md_RAM, 0xB00C));
+		Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	}
 	
 	// sGens window has been updated.
 	return;
-#endif
 }
