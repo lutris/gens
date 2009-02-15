@@ -25,6 +25,14 @@ AM_PROG_CC_C_O
 AC_ISC_POSIX
 AC_HEADER_STDC
 
+# Work around autoconf's default "-g -O2" CFLAGS and CXXFLAGS.
+if test "$CFLAGS" = "-g -O2"; then
+	CFLAGS=""
+fi
+if test "$CXXFLAGS" = "-g -O2"; then
+	CXXFLAGS=""
+fi
+
 # Check operating system.
 nasm_debug_format=""
 case $host in
@@ -32,18 +40,21 @@ case $host in
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
+		cflags_debug="-gstabs"
 		;;
 	i?86*cygwin*)
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		cflags_win32="-mno-cygwin ${cflags_win32}";
+		cflags_debug="-gstabs"
 		;;
 	i?86*darwin*)
 		os=macosx;
 		obj_format=macho;
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
+		cflags_debug="-ggdb"
 		;;
 	i?86*linux*)
 		os=linux;
@@ -51,17 +62,20 @@ case $host in
 		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		nasm_debug_format="-F dwarf";
+		cflags_debug="-ggdb"
 		;;
 	i?86*)
 		os=unix;
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		nasm_debug_format="-F dwarf";
+		cflags_debug="-ggdb"
 		;;
 	x86_64*)
 		obj_format=elf64;
 		AC_MSG_ERROR([64-bit is currently not supported.]);
 		nasm_debug_format="-F dwarf";
+		cflags_debug="-ggdb"
 		;;
 	*)
 		AC_MSG_ERROR([Unsupported system architecture: $host]);
@@ -81,18 +95,19 @@ AM_CONDITIONAL([GENS_OBJ_ELF64], [test x$obj_format = xelf64])
 AM_CONDITIONAL([GENS_OBJ_MACHO], [test x$obj_format = xmacho])
 
 # Debugging symbols and warnings.
-AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
+AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols. [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
 	# Debugging symbols enabled.
+	cflags_optimization="-O0"
 	nasm_debug_enabled="-g"
-	cflags_debug="-g"
 	# Removed from cflags_warnings_common: "-Wconversion -Wsign-conversion -Wpadded -Wdisabled-optimization -Waggregate-return -Wpacked -Wunreachable-code"
 	cflags_warnings_common="-Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch -Wswitch-default -Wswitch-enum -Wfloat-equal -Wundef -Wshadow -Wunsafe-loop-optimizations -Wcast-qual -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wmissing-field-initializers -Wnormalized=nfc -Wredundant-decls -Winline"
 	cflags_warnings_c="-Wc++-compat -Wstrict-prototypes -Wold-style-declaration -Wold-style-definition -Wmissing-parameter-type -Wmissing-prototypes -Wnested-externs"
 	cflags_warnings_cxx="-Wc++0x-compat"
 	AC_DEFINE(GENS_DEBUG, 1, Enable debugging)	
 else
-	# Debugging symbols disabled.
+	# Debugging disabled.
+	cflags_optimization="-O2"
 	nasm_debug_enabled=""
 	nasm_debug_format=""
 	cflags_debug=""
@@ -542,12 +557,12 @@ else
 	cflags_win32=""
 fi
 
-CFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_c} ${cflags_99} ${cflags_win32} $CFLAGS"
-CXXFLAGS="-O2 -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_cxx} ${cflags_win32} ${cxxflags_visibility} $CXXFLAGS"
-LDFLAGS="${ldflags_as_needed} ${ldflags_win32} $LDFLAGS"
+AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_c} ${cflags_99} ${cflags_win32}"
+AM_CXXFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_cxx} ${cflags_win32} ${cxxflags_visibility}"
+AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 
 # Make sure all packages have the base source directory in their #include search path.
-CPPFLAGS="-I${srcdir}/src $CPPFLAGS"
+AM_CPPFLAGS="-I${srcdir}/src"
 
 # Use package-specific libdir.
 libdir="$libdir/gens"
@@ -567,6 +582,9 @@ AC_SUBST(GETTIMEFLAG)
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CPPFLAGS)
+AC_SUBST(AM_CFLAGS)
+AC_SUBST(AM_LDFLAGS)
+AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(libdir)
 
 AC_CONFIG_FILES([

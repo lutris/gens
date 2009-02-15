@@ -2,7 +2,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-CFLAGS = @CFLAGS@ -O3 -funroll-loops \
+liblzma_a_CFLAGS = $(AM_CFLAGS) \
+	-O3 -funroll-loops \
 	-Wno-cast-qual \
 	-Wno-shadow \
 	-Wno-unreachable-code \

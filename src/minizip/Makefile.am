@@ -2,7 +2,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-CFLAGS = @CFLAGS@ -O3 -funroll-loops \
+libminizip_a_CFLAGS = $(AM_CFLAGS) \
+	-O3 -funroll-loops \
 	-Wno-old-style-definition \
 	-Wno-unused \
 	-Wno-strict-prototypes \
