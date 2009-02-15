@@ -278,7 +278,7 @@ unsigned int input_sdl_get_key(void)
 			switch (sdl_event.type)
 			{
 				case SDL_JOYAXISMOTION:
-					if (/*sdl_event.jaxis.axis < 0 ||*/ sdl_event.jaxis.axis >= 6)
+					if (/*sdl_event.jaxis.axis < 0 ||*/ sdl_event.jaxis.axis >= 128)
 						break;
 					
 					if (sdl_event.jaxis.value < -10000)
