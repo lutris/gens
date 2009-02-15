@@ -24,9 +24,9 @@
 #include <config.h>
 #endif
 
-#include "mdp_misc_game_genie_window.h"
-#include "mdp_misc_game_genie_plugin.h"
-#include "mdp_misc_game_genie.hpp"
+#include "gg_window.h"
+#include "gg_plugin.h"
+#include "gg.hpp"
 
 // GTK includes.
 #include <gtk/gtk.h>
