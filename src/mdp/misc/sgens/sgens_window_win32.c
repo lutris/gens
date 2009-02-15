@@ -53,7 +53,7 @@ static WNDCLASS	sgens_wndclass;
 
 // Window size.
 #define SGENS_WINDOW_WIDTH  312
-#define SGENS_WINDOW_HEIGHT 320
+#define SGENS_WINDOW_HEIGHT 328
 
 #define FRAME_WIDTH (SGENS_WINDOW_WIDTH-16)
 #define FRAME_LEVEL_INFO_HEIGHT  184
