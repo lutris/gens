@@ -39,12 +39,16 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
 
+// Language handler.
+#include "emulator/language.h"
+
 // File management functions.
 #include "util/file/file.hpp"
 
 #ifdef GENS_PNG
 #include <png.h>
 #endif /* GENS_PNG */
+
 
 // Pixel masks
 static const uint16_t MASK_RED_15	= 0x7C00;

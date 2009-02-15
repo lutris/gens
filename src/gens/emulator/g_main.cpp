@@ -54,12 +54,8 @@
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pwm.h"
 
-// INI handling
+// INI handling.
 #include "port/ini.hpp"
-#ifndef GENS_OS_WIN32
-// Old INI handling functions are still needed for now.
-#include "port/ini_old.h"
-#endif /* !GENS_OS_WIN32 */
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
@@ -89,6 +85,9 @@
 
 // Video effects.
 #include "video/v_effects.hpp"
+
+// Language handler.
+#include "language.h"
 
 // Gens Settings struct
 struct Gens_Settings_t Settings;
@@ -124,7 +123,6 @@ int Show_LED = 0;
 int FS_Minimised = 0;
 int Auto_Pause = 0;
 int Auto_Fix_CS = 0;
-int Language = 0;
 int Country = -1;
 int Country_Order[3];
 int Intro_Style = 2;
@@ -133,109 +131,6 @@ int Kaillera_Client_Running = 0;
 int Quick_Exit = 0;
 
 static int Gens_Running = 0;
-
-// TODO: Rewrite the language system so it doesn't depend on the old INI functions.
-static int Build_Language_String (void)
-{
-	unsigned long nb_lue = 1;
-	int sec_alloue = 1, poscar = 0;
-	enum etat_sec
-	{
-		DEB_LIGNE,
-		SECTION,
-		NORMAL,
-	} etat = DEB_LIGNE;
-	
-	FILE *LFile;
-	
-	char c;
-	
-	if (language_name)
-	{
-		free (language_name);
-		language_name = NULL;
-	}
-	
-	language_name = (char **)malloc(sec_alloue * sizeof(char*));
-	language_name[0] = NULL;
-	
-	LFile = fopen(PathNames.Language_Path, "r");
-	if (!LFile)
-	{
-		LFile = fopen(PathNames.Language_Path, "w");
-	}
-	
-	while (nb_lue)
-	{
-		nb_lue = fread (&c, 1, 1, LFile);
-		switch (etat)
-		{
-			case DEB_LIGNE:
-				switch (c)
-				{
-					case '[':
-						etat = SECTION;
-						sec_alloue++;
-						language_name =
-							(char **) realloc (language_name,
-									sec_alloue * sizeof (char *));
-						language_name[sec_alloue - 2] =
-							(char *) malloc (32 * sizeof (char));
-						language_name[sec_alloue - 1] = NULL;
-						poscar = 0;
-						break;
-					
-					case '\n':
-						break;
-					
-					default:
-						etat = NORMAL;
-						break;
-				}
-				break;
-			
-			case NORMAL:
-				switch (c)
-				{
-					case '\n':
-						etat = DEB_LIGNE;
-						break;
-					
-					default:
-						break;
-				}
-				break;
-			
-			case SECTION:
-				switch (c)
-				{
-					case ']':
-						language_name[sec_alloue - 2][poscar] = 0;
-						etat = DEB_LIGNE;
-						break;
-					
-					default:
-						if (poscar < 32)
-							language_name[sec_alloue - 2][poscar++] = c;
-						break;
-				}
-				break;
-		}
-	}
-	
-	fclose (LFile);
-	
-	if (sec_alloue == 1)
-	{
-		language_name = (char **) realloc (language_name, 2 * sizeof (char *));
-		language_name[0] = (char *) malloc (32 * sizeof (char));
-		strcpy (language_name[0], "English");
-		language_name[1] = NULL;
-		WritePrivateProfileString("English", "Menu Language", "&English menu", PathNames.Language_Path);
-	}
-	
-	return 0;
-}
 
 
 /**
@@ -306,6 +201,7 @@ int Init_Settings(void)
 	{
 		// No render plugins found.
 		DEBUG_MSG(gens, 0, "Fatal Error: No render plugins found.");
+		fprintf(stderr, "%s(): FATAL ERROR: No render plugins found.\n", __func__);
 		return 1;	// TODO: Replace with a better error code.
 	}
 	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
@@ -420,72 +316,6 @@ int IsAsyncAllowed(void)
 	if(MainMovie.Status == MOVIE_PLAYING)
 		return false;
 #endif
-}
-
-
-/**
- * MESSAGE_L(): Print a localized message.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param time Time to display the message (in milliseconds).
- */
-void MESSAGE_L(const char* str, const char* def, int time)
-{
-	char buf[1024];
-	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	vdraw_write_text(buf, time);
-}
-
-
-/**
- * MESSAGE_NUM_L(): Print a localized message with one number in a printf()-formatted string.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param num Number.
- * @param time Time to display the message (in milliseconds).
- */
-void MESSAGE_NUM_L(const char* str, const char* def, int num, int time)
-{
-	char msg_tmp[1024];
-	char buf[1024];
-	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	sprintf(msg_tmp, buf, num);
-	vdraw_write_text(msg_tmp, time);
-}
-
-
-/**
- * MESSAGE_STR_L(): Print a localized message with a substring in a printf()-formatted string.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param str2 Substring.
- * @param time Time to display the message (in milliseconds).
- */
-void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time)
-{
-	char msg_tmp[1024];
-	char buf[1024];
-	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	sprintf(msg_tmp, buf, str2);
-	vdraw_write_text(msg_tmp, time);
-}
-
-
-/**
- * MESSAGE_NUM_2L(): Print a localized message with two numbers in a printf()-formatted string.
- * @param str String.
- * @param def Default string if the string isn't found in the language file.
- * @param num1 First number.
- * @param num2 Second number.
- * @param time Time to display the message (in milliseconds).
- */
-void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int time)
-{
-	char msg_tmp[1024];
-	char buf[1024];
-	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	sprintf(msg_tmp, buf, num1, num2);
-	vdraw_write_text(msg_tmp, time);
 }
 
 

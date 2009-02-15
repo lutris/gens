@@ -49,6 +49,9 @@ using std::list;
 #include "video/vdraw_cpp.hpp"
 #include "audio/audio.h"
 
+// Language handler.
+#include "emulator/language.h"
+
 
 /**
  * spriteLimit(): Get the current sprite limit setting.

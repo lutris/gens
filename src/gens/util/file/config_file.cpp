@@ -88,6 +88,9 @@
 #include "audio/audio.h"
 #include "input/input.h"
 
+// Language handler.
+#include "emulator/language.h"
+
 // C++ includes
 #include <deque>
 using std::deque;

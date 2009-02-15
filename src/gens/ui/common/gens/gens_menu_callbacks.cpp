@@ -81,6 +81,9 @@
 #include "video/vdraw_cpp.hpp"
 #include "audio/audio.h"
 
+// Language handler.
+#include "emulator/language.h"
+
 // For some reason, these aren't extern'd anywhere...
 extern "C"
 {

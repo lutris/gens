@@ -33,6 +33,9 @@
 #include <list>
 using std::list;
 
+// Language handler.
+#include "emulator/language.h"
+
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
