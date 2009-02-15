@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "sgens_widget_info.h"
 
 #ifndef TRUE
@@ -48,7 +52,11 @@ sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
 
 sgens_window_info_widget_t player_info[PLAYER_INFO_COUNT+1] =
 {
+#ifdef GENS_OS_WIN32
+	{"Angle:",	"0.00\xB0", 0, 0, FALSE},
+#else
 	{"Angle:",	"0.00°", 0, 0, FALSE},
+#endif
 	{"X position:",	"0000",	 0, 1, FALSE},
 	{"Y position:", "0000",	 0, 2, FALSE},
 	{NULL, NULL, 0, 0, FALSE}
