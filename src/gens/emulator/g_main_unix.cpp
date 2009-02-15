@@ -33,6 +33,7 @@ using std::list;
 #include "audio/audio_sdl.h"
 #include "input/input_sdl.h"
 
+#include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
 
 #include "port/timer.h"
@@ -80,16 +81,16 @@ int main(int argc, char *argv[])
 	if (geteuid() == 0)
 	{
 		// Don't run Gens/GS as root!
-		const char gensRootErr[] = "Error: Gens/GS should not be run as root.\nPlease log in as a regular user.\n";
+		const char gensRootErr[] = "Error: Gens/GS should not be run as root.\nPlease log in as a regular user.";
 		
-		fprintf(stderr, gensRootErr);
+		fputs(gensRootErr, stderr);
 		
 		#ifdef GENS_UI_GTK
 			// Check if X is running.
 			char *display = getenv("DISPLAY");
 			if (display)
 			{
-				gtk_init(0, NULL);
+				gtk_init(NULL, NULL);
 				GensUI::msgBox(gensRootErr, GENS_APPNAME " - Permissions Error", GensUI::MSGBOX_ICON_ERROR);
 			}
 		#endif /* GENS_UI_GTK */
@@ -100,6 +101,9 @@ int main(int argc, char *argv[])
 	// Initialize the timer.
 	// TODO: Make this unnecessary.
 	init_timer();
+	
+	// Initialize the UI.
+	GensUI::init(&argc, &argv);
 	
 	// Initialize vdraw_sdl.
 	vdraw_init();
@@ -128,9 +132,6 @@ int main(int argc, char *argv[])
 	// Initialize Gens.
 	if (!Init())
 		return 0;
-	
-	// Initialize the UI.
-	GensUI::init(argc, argv);
 	
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();
@@ -163,6 +164,9 @@ int main(int argc, char *argv[])
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();
+	
+	// Show the Gens window.
+	gtk_widget_show(gens_window);
 	
 	// Run the Gens Main Loop.
 	GensMainLoop();

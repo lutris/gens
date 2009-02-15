@@ -187,7 +187,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		return 0;
 	
 	// Initialize the UI.
-	GensUI::init(0, NULL);
+	GensUI::init(NULL, NULL);
 	
 	// not yet finished (? - wryun)
 	//initializeConsoleRomsView();

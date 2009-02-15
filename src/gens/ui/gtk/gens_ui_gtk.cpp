@@ -62,18 +62,17 @@ gboolean GensUI_GLib_SleepCallback(gpointer data);
  * @param argc main()'s argc.
  * @param argv main()'s argv.
  */
-void GensUI::init(int argc, char *argv[])
+void GensUI::init(int *argc, char **argv[])
 {
 	// Add the pixmap directories.
 	add_pixmap_directory(GENS_DATADIR);
 	add_pixmap_directory("images");
 	
 	// Initialize GTK+.
-	gtk_init(&argc, &argv);
+	gtk_init(argc, argv);
 	
-	// Create and show the Gens window.
+	// Create the Gens window.
 	create_gens_window();
-	gtk_widget_show(gens_window);
 	
 	// Set the window title to Idle.
 	setWindowTitle_Idle();
