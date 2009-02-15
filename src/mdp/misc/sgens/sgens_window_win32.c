@@ -52,12 +52,12 @@ static HWND	sgens_window = NULL;
 static WNDCLASS	sgens_wndclass;
 
 // Window size.
-#define SGENS_WINDOW_WIDTH  640
-#define SGENS_WINDOW_HEIGHT 480
+#define SGENS_WINDOW_WIDTH  312
+#define SGENS_WINDOW_HEIGHT 320
 
 // Instance and font.
-static HINSTANCE sgens_hinstance;
-static HFONT sgens_hfont = NULL;
+static HINSTANCE sgens_hInstance;
+static HFONT sgens_hFont = NULL;
 
 // Widgets.
 static HWND	lblLoadedGame;
@@ -94,7 +94,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	}
 	
 	// Get the HINSTANCE.
-	sgens_hinstance = GetModuleHandle(NULL);
+	sgens_hInstance = GetModuleHandle(NULL);
 	
 	if (sgens_wndclass.lpfnWndProc != sgens_window_wndproc)
 	{
@@ -103,7 +103,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		sgens_wndclass.lpfnWndProc = sgens_window_wndproc;
 		sgens_wndclass.cbClsExtra = 0;
 		sgens_wndclass.cbWndExtra = 0;
-		sgens_wndclass.hInstance = sgens_hinstance;
+		sgens_wndclass.hInstance = sgens_hInstance;
 		sgens_wndclass.hIcon = NULL;
 		sgens_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		sgens_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
@@ -114,14 +114,14 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	}
 	
 	// Create the font.
-	sgens_hfont = mdp_win32_get_message_font();
+	sgens_hFont = mdp_win32_get_message_font();
 	
 	// Create the window.
 	sgens_window = CreateWindow("mdp_misc_sgens_window", "Sonic Gens",
 				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT,
-				    (HWND)parent, NULL, sgens_hinstance, NULL);
+				    (HWND)parent, NULL, sgens_hInstance, NULL);
 	
 	// Window adjustment.
 	mdp_win32_set_actual_window_size(sgens_window, SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT);
@@ -141,36 +141,32 @@ void MDP_FNCALL sgens_window_show(void *parent)
  */
 static void sgens_window_create_child_windows(HWND hWnd)
 {
-#if 0
 	// Create the label for the loaded game.
-	lblLoadedGame = gtk_label_new(NULL);
-	gtk_widget_set_name(lblLoadedGame, "lblLoadedGame");
-	gtk_misc_set_alignment(GTK_MISC(lblLoadedGame), 0.5f, 0.0f);
-	gtk_label_set_justify(GTK_LABEL(lblLoadedGame), GTK_JUSTIFY_CENTER);
-	gtk_widget_show(lblLoadedGame);
-	gtk_box_pack_start(GTK_BOX(vboxDialog), lblLoadedGame, FALSE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(sgens_window), "lblLoadedGame",
-			       g_object_ref(lblLoadedGame), (GDestroyNotify)g_object_unref);
+	lblLoadedGame = CreateWindow(WC_STATIC, NULL,
+				     WS_CHILD | WS_VISIBLE | SS_CENTER,
+				     8, 8, SGENS_WINDOW_WIDTH-16, 16,
+				     hWnd, NULL, sgens_hInstance, NULL);
+	SetWindowFont(lblLoadedGame, sgens_hFont, TRUE);
 	
 	// Create the "Level Information" frame.
-	sgens_window_create_level_info_frame(vboxDialog);
+	sgens_window_create_level_info_frame(hWnd);
 	
 	// Create the "Player Information" frame.
-	sgens_window_create_player_info_frame(vboxDialog);
+	sgens_window_create_player_info_frame(hWnd);
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(sgens_window),
-			       "gtk-close", GTK_RESPONSE_CLOSE,
-			       NULL);
 	
-	// Set the window as modal to the main application window.
-	if (parent)
-		gtk_window_set_transient_for(GTK_WINDOW(sgens_window), GTK_WINDOW(parent));
+	// Close button.
+	HWND btnClose = CreateWindow(WC_BUTTON, "&Close",
+				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     SGENS_WINDOW_WIDTH-8-75, SGENS_WINDOW_HEIGHT-8-24,
+				     75, 23,
+				     hWnd, (HMENU)IDCLOSE, sgens_hInstance, NULL);
+	SetWindowFont(btnClose, sgens_hFont, TRUE);
 	
 	// Update the current ROM type and information display.
 	sgens_window_update_rom_type();
 	sgens_window_update();
-#endif
 }
 
 
@@ -180,106 +176,74 @@ static void sgens_window_create_child_windows(HWND hWnd)
  */
 static void sgens_window_create_level_info_frame(HWND container)
 {
-#if 0
 	// "Level Information" frame.
-	HWND fraLevelInfo = gtk_frame_new("Level Information");
-	gtk_widget_set_name(fraLevelInfo, "fraLevelInfo");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraLevelInfo), GTK_SHADOW_ETCHED_IN);
-	gtk_widget_show(fraLevelInfo);
-	gtk_box_pack_start(GTK_BOX(container), fraLevelInfo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "fraLevelInfo",
-			       g_object_ref(fraLevelInfo), (GDestroyNotify)g_object_unref);
-	
-	// Create a VBox for the frame.
-	HWND vboxLevelInfo = gtk_vbox_new(FALSE, 4);
-	gtk_widget_set_name(vboxLevelInfo, "vboxLevelInfo");
-	gtk_container_set_border_width(GTK_CONTAINER(vboxLevelInfo), 0);
-	gtk_widget_show(vboxLevelInfo);
-	gtk_container_add(GTK_CONTAINER(fraLevelInfo), vboxLevelInfo);
-	g_object_set_data_full(G_OBJECT(container), "vboxLevelInfo",
-			       g_object_ref(vboxLevelInfo), (GDestroyNotify)g_object_unref);
+	HWND fraLevelInfo = CreateWindow(WC_BUTTON, "Level Information",
+					 WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					 8, 8+8, SGENS_WINDOW_WIDTH-16, 184,
+					 container, NULL, sgens_hInstance, NULL);
+	SetWindowFont(fraLevelInfo, sgens_hFont, TRUE);
 	
 	// "Zone" information label.
-	lblLevelInfo_Zone = gtk_label_new("Zone");
-	gtk_widget_set_name(lblLevelInfo_Zone, "lblLevelInfo_Zone");
-	gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Zone), 0.5f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblLevelInfo_Zone), GTK_JUSTIFY_CENTER);
-	gtk_widget_show(lblLevelInfo_Zone);
-	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblLevelInfo_Zone, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Zone",
-			       g_object_ref(lblLevelInfo_Zone), (GDestroyNotify)g_object_unref);
+	lblLevelInfo_Zone = CreateWindow(WC_STATIC, "Zone",
+					 WS_CHILD | WS_VISIBLE | SS_CENTER,
+					 8, 16, SGENS_WINDOW_WIDTH-16-16, 16,
+					 fraLevelInfo, NULL, sgens_hInstance, NULL);
+	SetWindowFont(lblLevelInfo_Zone, sgens_hFont, TRUE);
 	
 	// "Act" information label.
-	lblLevelInfo_Act = gtk_label_new("Act");
-	gtk_widget_set_name(lblLevelInfo_Act, "lblLevelInfo_Act");
-	gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Act), 0.5f, 0.5f);
-	gtk_label_set_justify(GTK_LABEL(lblLevelInfo_Act), GTK_JUSTIFY_CENTER);
-	gtk_widget_show(lblLevelInfo_Act);
-	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblLevelInfo_Act, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Act",
-			       g_object_ref(lblLevelInfo_Act), (GDestroyNotify)g_object_unref);
+	lblLevelInfo_Act = CreateWindow(WC_STATIC, "Act",
+					WS_CHILD | WS_VISIBLE | SS_CENTER,
+					8, 16+16, SGENS_WINDOW_WIDTH-16-16, 16,
+					fraLevelInfo, NULL, sgens_hInstance, NULL);
+	SetWindowFont(lblLevelInfo_Act, sgens_hFont, TRUE);
 	
 	// Table for level information.
-	HWND tblLevelInfo = gtk_table_new(5, 4, FALSE);
-	gtk_widget_set_name(tblLevelInfo, "tblLevelInfo");
-	gtk_container_set_border_width(GTK_CONTAINER(tblLevelInfo), 8);
-	gtk_table_set_col_spacings(GTK_TABLE(tblLevelInfo), 16);
-	gtk_table_set_col_spacing(GTK_TABLE(tblLevelInfo), 3, 8);
-	gtk_widget_show(tblLevelInfo);
-	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), tblLevelInfo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "tblLevelInfo",
-			       g_object_ref(tblLevelInfo), (GDestroyNotify)g_object_unref);
+	#define WIDGET_INFO_WIDTH 64
+	#define WIDGET_DESC_WIDTH 64
+	#define WIDGET_INTRACOL_SPACING 4
+	#define WIDGET_COL_SPACING 16
+	#define WIDGET_ROW_HEIGHT 16
 	
-	// Add the level information widgets.
 	unsigned int i;
 	char tmp[64];
 	for (i = 0; i < LEVEL_INFO_COUNT; i++)
 	{
 		// Determine the column starting and ending positions.
-		int start_col, end_col;
+		int widget_left, widget_width;
 		if (level_info[i].fill_all_cols)
 		{
-			start_col = 0;
-			end_col = 3;
+			widget_left = 8;
+			widget_width = SGENS_WINDOW_WIDTH-16-16 -
+					WIDGET_INTRACOL_SPACING -
+					WIDGET_INFO_WIDTH;
 		}
 		else
 		{
-			start_col = (level_info[i].column * 2);
-			end_col = (level_info[i].column * 2) + 1;
+			widget_left = 8 + ((WIDGET_DESC_WIDTH +
+					    WIDGET_INTRACOL_SPACING +
+					    WIDGET_INFO_WIDTH +
+					    WIDGET_COL_SPACING) * level_info[i].column);
+			widget_width = WIDGET_DESC_WIDTH;
 		}
 		
+		const int widget_top = (16*3)+(level_info[i].row * WIDGET_ROW_HEIGHT);
+		
 		// Description label.
-		lblLevelInfo_Desc[i] = gtk_label_new(level_info[i].description);
-		sprintf(tmp, "lblLevelInfo_Desc_%d", i);
-		gtk_widget_set_name(lblLevelInfo_Desc[i], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Desc[i]), 0.0f, 0.5f);
-		gtk_widget_show(lblLevelInfo_Desc[i]);
-		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo_Desc[i],
-				 start_col, end_col,
-				 level_info[i].row, level_info[i].row + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblLevelInfo_Desc[i]), (GDestroyNotify)g_object_unref);
+		lblLevelInfo_Desc[i] = CreateWindow(WC_STATIC, level_info[i].description,
+						    WS_CHILD | WS_VISIBLE | SS_LEFT,
+						    widget_left, widget_top,
+						    widget_width, WIDGET_ROW_HEIGHT,
+						    fraLevelInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFont(lblLevelInfo_Desc[i], sgens_hFont, TRUE);
 		
 		// Information label.
-		sprintf(tmp, "<tt>%s</tt>", level_info[i].initial);
-		lblLevelInfo[i] = gtk_label_new(tmp);
-		sprintf(tmp, "lblLevelInfo_%d", i);
-		gtk_widget_set_name(lblLevelInfo[i], tmp);
-		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo[i]), 1.0f, 0.5f);
-		gtk_label_set_justify(GTK_LABEL(lblLevelInfo[i]), GTK_JUSTIFY_RIGHT);
-		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[i]), TRUE);
-		gtk_widget_show(lblLevelInfo[i]);
-		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo[i],
-				 start_col + 1, end_col + 1,
-				 level_info[i].row, level_info[i].row + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblLevelInfo[i]), (GDestroyNotify)g_object_unref);
+		// TODO: Monospace font.
+		lblLevelInfo[i] = CreateWindow(WC_STATIC, level_info[i].initial,
+					       WS_CHILD | WS_VISIBLE | SS_RIGHT,
+					       widget_left+widget_width+WIDGET_INTRACOL_SPACING, widget_top,
+					       WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
+					       fraLevelInfo, NULL, sgens_hInstance, NULL);
 	}
-#endif
 }
 
 
