@@ -521,6 +521,10 @@ unsigned int input_dinput_get_key(void)
 							return INPUT_GETKEY_AXIS(joystick, 4, INPUT_JOYSTICK_AXIS_NEGATIVE);
 						if (index == joyIndex2++)
 							return INPUT_GETKEY_AXIS(joystick, 4, INPUT_JOYSTICK_AXIS_POSITIVE);
+						if (index == joyIndex2++)
+							return INPUT_GETKEY_AXIS(joystick, 5, INPUT_JOYSTICK_AXIS_NEGATIVE);
+						if (index == joyIndex2++)
+							return INPUT_GETKEY_AXIS(joystick, 5, INPUT_JOYSTICK_AXIS_POSITIVE);
 						
 						// POV hats
 						for (int povhat = 0; povhat < 4; povhat++)
