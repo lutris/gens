@@ -1,8 +1,33 @@
+/***************************************************************************
+ * Gens: Image Utilities.                                                  *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include "imageutil.hpp"
+
+// Debug messages.
+#include "macros/debug_msg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,7 +135,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	if (!bmpData)
 	{
 		// Could not allocate enough memory.
-		fprintf(stderr, "writeBMP): Could not allocate enough memory for the bitmap data.\n");
+		DEBUG_MSG(gens, 0, "Could not allocate enough memory for the bitmap data.");
 		return 0;
 	}
 	
@@ -196,7 +221,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 	if ((rowBuffer = static_cast<uint8_t*>(malloc(width * 3))) == NULL)
 	{
 		// Could not allocate enough memory.
-		fprintf(stderr, "%s: Could not allocate enough memory for the row buffer.\n", __func__);
+		DEBUG_MSG(gens, 0, "Could not allocate enough memory for the row buffer.");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 0;
 	}
@@ -250,20 +275,20 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 	{
-		fprintf(stderr, "writePNG(): Error initializing the PNG pointer.\n");
+		DEBUG_MSG(gens, 0, "Error initializing the PNG pointer.");
 		return 0;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
-		fprintf(stderr, "writePNG(): Error initializing the PNG info pointer.\n");
+		DEBUG_MSG(gens, 0, "Error initializing the PNG info pointer.");
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 		return 0;
 	}
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		// TODO: Is setjmp() really necessary?
-		fprintf(stderr, "writePNG(): Error initializing the PNG setjmp pointer.\n");
+		DEBUG_MSG(gens, 0, "Error initializing the PNG setjmp pointer.");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 0;
 	}
@@ -378,7 +403,7 @@ int ImageUtil::write(const string& filename, const ImageFormat format,
 	FILE *fImg = fopen(filename.c_str(), "wb");
 	if (!fImg)
 	{
-		fprintf(stderr, "Image::write(): Error opening %s.\n", filename.c_str());
+		DEBUG_MSG(gens, 0, "Error opening %s.", filename.c_str());
 		return 0;
 	}
 	
@@ -437,7 +462,7 @@ int ImageUtil::screenShot(void)
 	if (!img)
 	{
 		// Error opening the file.
-		fprintf(stderr, "ImageUtil::screenShot(): Error opening %s\n", filename);
+		DEBUG_MSG(gens, 0, "Error opening %s.", filename);
 		return 0;
 	}
 	
