@@ -55,6 +55,17 @@ static WNDCLASS	sgens_wndclass;
 #define SGENS_WINDOW_WIDTH  312
 #define SGENS_WINDOW_HEIGHT 320
 
+#define FRAME_WIDTH (SGENS_WINDOW_WIDTH-16)
+#define FRAME_LEVEL_INFO_HEIGHT  184
+#define FRAME_PLAYER_INFO_HEIGHT 72
+
+// Table size defines.
+#define WIDGET_INFO_WIDTH 64
+#define WIDGET_DESC_WIDTH 64
+#define WIDGET_INTRACOL_SPACING 4
+#define WIDGET_COL_SPACING 16
+#define WIDGET_ROW_HEIGHT 16
+
 // Instance and font.
 static HINSTANCE sgens_hInstance;
 static HFONT sgens_hFont = NULL;
@@ -179,7 +190,8 @@ static void sgens_window_create_level_info_frame(HWND container)
 	// "Level Information" frame.
 	HWND fraLevelInfo = CreateWindow(WC_BUTTON, "Level Information",
 					 WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					 8, 8+8, SGENS_WINDOW_WIDTH-16, 184,
+					 8, 8+16,
+					 FRAME_WIDTH, FRAME_LEVEL_INFO_HEIGHT,
 					 container, NULL, sgens_hInstance, NULL);
 	SetWindowFont(fraLevelInfo, sgens_hFont, TRUE);
 	
@@ -198,12 +210,6 @@ static void sgens_window_create_level_info_frame(HWND container)
 	SetWindowFont(lblLevelInfo_Act, sgens_hFont, TRUE);
 	
 	// Table for level information.
-	#define WIDGET_INFO_WIDTH 64
-	#define WIDGET_DESC_WIDTH 64
-	#define WIDGET_INTRACOL_SPACING 4
-	#define WIDGET_COL_SPACING 16
-	#define WIDGET_ROW_HEIGHT 16
-	
 	unsigned int i;
 	char tmp[64];
 	for (i = 0; i < LEVEL_INFO_COUNT; i++)
@@ -253,26 +259,56 @@ static void sgens_window_create_level_info_frame(HWND container)
  */
 static void sgens_window_create_player_info_frame(HWND container)
 {
-#if 0
-	// "Player Information" frame.
-	HWND fraPlayerInfo = gtk_frame_new("Player Information");
-	gtk_widget_set_name(fraPlayerInfo, "fraPlayerInfo");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraPlayerInfo), GTK_SHADOW_ETCHED_IN);
-	gtk_widget_show(fraPlayerInfo);
-	gtk_box_pack_start(GTK_BOX(container), fraPlayerInfo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "fraPlayerInfo",
-			       g_object_ref(fraPlayerInfo), (GDestroyNotify)g_object_unref);
+	// "Level Information" frame.
+	HWND fraPlayerInfo = CreateWindow(WC_BUTTON, "Player Information",
+					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					  8, 8+16+FRAME_LEVEL_INFO_HEIGHT+8,
+					  FRAME_WIDTH, FRAME_PLAYER_INFO_HEIGHT,
+					  container, NULL, sgens_hInstance, NULL);
+	SetWindowFont(fraPlayerInfo, sgens_hFont, TRUE);
 	
 	// Table for player information.
-	HWND tblPlayerInfo = gtk_table_new(3, 2, FALSE);
-	gtk_widget_set_name(tblPlayerInfo, "tblPlayerInfo");
-	gtk_container_set_border_width(GTK_CONTAINER(tblPlayerInfo), 8);
-	gtk_table_set_col_spacings(GTK_TABLE(tblPlayerInfo), 16);
-	gtk_widget_show(tblPlayerInfo);
-	gtk_container_add(GTK_CONTAINER(fraPlayerInfo), tblPlayerInfo);
-	g_object_set_data_full(G_OBJECT(container), "tblPlayerInfo",
-			       g_object_ref(tblPlayerInfo), (GDestroyNotify)g_object_unref);
-	
+	unsigned int i;
+	char tmp[64];
+	for (i = 0; i < PLAYER_INFO_COUNT; i++)
+	{
+		// Determine the column starting and ending positions.
+		int widget_left, widget_width;
+		if (player_info[i].fill_all_cols)
+		{
+			widget_left = 8;
+			widget_width = SGENS_WINDOW_WIDTH-16-16 -
+					WIDGET_INTRACOL_SPACING -
+					WIDGET_INFO_WIDTH;
+		}
+		else
+		{
+			widget_left = 8 + ((WIDGET_DESC_WIDTH +
+					    WIDGET_INTRACOL_SPACING +
+					    WIDGET_INFO_WIDTH +
+					    WIDGET_COL_SPACING) * player_info[i].column);
+			widget_width = WIDGET_DESC_WIDTH;
+		}
+		
+		const int widget_top = 16 + (player_info[i].row * WIDGET_ROW_HEIGHT);
+		
+		// Description label.
+		lblPlayerInfo_Desc[i] = CreateWindow(WC_STATIC, player_info[i].description,
+						    WS_CHILD | WS_VISIBLE | SS_LEFT,
+						    widget_left, widget_top,
+						    widget_width, WIDGET_ROW_HEIGHT,
+						    fraPlayerInfo, NULL, sgens_hInstance, NULL);
+		SetWindowFont(lblPlayerInfo_Desc[i], sgens_hFont, TRUE);
+		
+		// Information label.
+		// TODO: Monospace font.
+		lblPlayerInfo[i] = CreateWindow(WC_STATIC, player_info[i].initial,
+					       WS_CHILD | WS_VISIBLE | SS_RIGHT,
+					       widget_left+widget_width+WIDGET_INTRACOL_SPACING, widget_top,
+					       WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
+					       fraPlayerInfo, NULL, sgens_hInstance, NULL);
+	}
+#if 0
 	// Add the player information widgets.
 	unsigned int i;
 	char tmp[64];
