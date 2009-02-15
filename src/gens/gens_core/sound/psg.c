@@ -10,6 +10,9 @@
 /*                                                         */
 /***********************************************************/
 
+// Debug messages.
+#include "macros/debug_msg.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -37,33 +40,6 @@
 #define NOISE_DEF 0x4000
 
 
-/** PSG debug macros **/
-
-#define PSG_DEBUG_LEVEL 0
-
-#if PSG_DEBUG_LEVEL > 0
-
-#define PSG_DEBUG_0(x)					\
-	fprintf(psg_debug_file, (x));
-#define PSG_DEBUG_1(x, a)				\
-	fprintf(psg_debug_file, (x), (a));
-#define PSG_DEBUG_2(x, a, b)				\
-	fprintf(psg_debug_file, (x), (a), (b));
-#define PSG_DEBUG_3(x, a, b, c)				\
-	fprintf(psg_debug_file, (x), (a), (b), (c));
-#define PSG_DEBUG_4(x, a, b, c, d)			\
-	fprintf(psg_debug_file, (x), (a), (b), (c), (d));
-
-#else /* PSG_DEBUG_LEVEL == 0 */
-
-#define PSG_DEBUG_0(x)
-#define PSG_DEBUG_1(x, a)
-#define PSG_DEBUG_2(x, a, b)
-#define PSG_DEBUG_3(x, a, b, c)
-#define PSG_DEBUG_4(x, a, b, c, d)
-
-#endif /* PSG_DEBUG_LEVEL > 0 */
-
 /** Variables **/
 
 static unsigned int PSG_SIN_Table[16][512];
@@ -75,10 +51,6 @@ static unsigned int PSG_Noise_Step_Table[4];
 unsigned int PSG_Save[8];
 
 struct _psg PSG;
-
-#if PSG_DEBUG_LEVEL > 0
-FILE *psg_debug_file = NULL;
-#endif
 
 
 /** Gens-specific externs and variables **/
@@ -127,9 +99,9 @@ void PSG_Write(int data)
 			PSG_Special_Update();
 			PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
 			
-			PSG_DEBUG_2("channel %d    volume = %.8X\n",
-				    PSG.Current_Channel,
-				    PSG.Volume[PSG.Current_Channel]);
+			DEBUG_MSG(psg, 1, "channel %d    volume = %.8X",
+				  PSG.Current_Channel,
+				  PSG.Volume[PSG.Current_Channel]);
 		}
 		else
 		{
@@ -145,9 +117,9 @@ void PSG_Write(int data)
 				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
 					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
 				
-				PSG_DEBUG_2("channel %d    step = %.8X\n",
-					    PSG.Current_Channel,
-					    PSG.CntStep[PSG.Current_Channel]);
+				DEBUG_MSG(psg, 1, "channel %d    step = %.8X",
+					  PSG.Current_Channel,
+					  PSG.CntStep[PSG.Current_Channel]);
 			}
 			else
 			{
@@ -161,7 +133,7 @@ void PSG_Write(int data)
 				else
 					PSG.Noise_Type = P_NOISE;
 				
-				PSG_DEBUG_1("channel N    type = %.2X\n", data);
+				DEBUG_MSG(psg, 1, "channel N    type = %.2X", data);
 			}
 		}
 	}
@@ -183,9 +155,9 @@ void PSG_Write(int data)
 				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
 					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
 				
-				PSG_DEBUG_2("channel %d    step = %.8X\n",
-					    PSG.Current_Channel,
-					    PSG.CntStep[PSG.Current_Channel]);
+				DEBUG_MSG(psg, 1, "channel %d    step = %.8X",
+					  PSG.Current_Channel,
+					  PSG.CntStep[PSG.Current_Channel]);
 			}
 		}
 	}
@@ -341,14 +313,6 @@ void PSG_Init(int clock, int rate)
 {
 	int i, j;
 	double out;
-	
-#if PSG_DEBUG_LEVEL > 0
-	if (psg_debug_file == NULL)
-	{
-		psg_debug_file = fopen("psg.log", "w");
-		fprintf(psg_debug_file, "PSG logging :\n\n");
-	}
-#endif
 	
 	// Step calculation
 	for (i = 1; i < 1024; i++)
