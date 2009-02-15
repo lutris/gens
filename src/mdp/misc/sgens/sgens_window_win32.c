@@ -303,10 +303,10 @@ static void sgens_window_create_player_info_frame(HWND container)
 		// Information label.
 		// TODO: Monospace font.
 		lblPlayerInfo[i] = CreateWindow(WC_STATIC, player_info[i].initial,
-					       WS_CHILD | WS_VISIBLE | SS_RIGHT,
-					       widget_left+widget_width+WIDGET_INTRACOL_SPACING, widget_top,
-					       WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
-					       fraPlayerInfo, NULL, sgens_hInstance, NULL);
+						WS_CHILD | WS_VISIBLE | SS_RIGHT,
+						widget_left+widget_width+WIDGET_INTRACOL_SPACING, widget_top,
+						WIDGET_INFO_WIDTH, WIDGET_ROW_HEIGHT,
+						fraPlayerInfo, NULL, sgens_hInstance, NULL);
 	}
 }
 
@@ -349,7 +349,16 @@ static LRESULT CALLBACK sgens_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			return 0;
 		
 		case WM_COMMAND:
-			// TODO
+			switch (LOWORD(wParam))
+			{
+				case IDCANCEL:
+				case IDCLOSE:
+					sgens_window_close();
+					break;
+				default:
+					// Unknown identifier.
+					break;
+			}
 			break;
 		
 		case WM_DESTROY:
