@@ -265,20 +265,34 @@ int input_dinput_init_joysticks(HWND hWnd)
 	
 	if (input_dinput_joystick_initialized)
 	{
-		// Joysticks are already initialized.
+		// Close and re-initialize joysticks.
+		for (int i = 0; i < MAX_JOYS; i++)
+		{
+			if (input_dinput_joy_id[i])
+			{
+				input_dinput_joy_id[i]->Unacquire();
+				input_dinput_joy_id[i]->Release();
+				input_dinput_joy_id[i] = NULL;
+			}
+		}
+		
+		input_dinput_joystick_error = false;
+		input_dinput_num_joysticks = 0;
+		memset(input_dinput_joy_id, 0x00, sizeof(input_dinput_joy_id));
+		
 		// Set the cooperative level.
 		// TODO: If set to DISCL_FOREGROUND, run setCooperativeLevel_Joysticks().
 		// TODO: If set to DISCL_BACKGROUND, don't run setCooperativeLevel_Joysticks().
 		// Currently hard-coded for DISCL_BACKGROUND.
 		//setCooperativeLevel_Joysticks(hWnd);
-		return 0;
 	}
 	
 	// Joysticks are being initialized.
 	input_dinput_joystick_initialized = true;
 	
 	HRESULT rval;
-	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK, &input_dinput_callback_init_joysticks_enum,
+	rval = lpDI->EnumDevices(DIDEVTYPE_JOYSTICK,
+				 &input_dinput_callback_init_joysticks_enum,
 				 hWnd, DIEDFL_ATTACHEDONLY);
 	if (rval != DI_OK)
 	{
@@ -878,7 +892,8 @@ void input_dinput_add_joysticks_to_listbox(HWND lstBox)
 	// Initialize the "Add Joysticks" counter.
 	input_dinput_add_joysticks_count = 0;
 	
-	// Enumerate the joysticks.
+	// Enumerate the joysticks to get their names.
+	// TODO: Somehow add this to the first EnumDevices().
 	lpDI->EnumDevices(DIDEVTYPE_JOYSTICK,
 			  &input_dinput_callback_add_joysticks_to_listbox,
 			  lstBox, DIEDFL_ATTACHEDONLY);
