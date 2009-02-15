@@ -144,7 +144,8 @@ gens_SOURCES = \
 		plugins/mdp_host_gens_cpp.cpp \
 		plugins/mdp_host_gens_menu.cpp \
 		plugins/mdp_host_gens_event.cpp \
-		plugins/eventmgr.cpp
+		plugins/eventmgr.cpp \
+		plugins/mdp_incompat.cpp
 
 if GENS_DEBUGGER
 gens_SOURCES += \
@@ -253,7 +254,8 @@ noinst_HEADERS = \
 		plugins/mdp_host_gens_cpp.hpp \
 		plugins/mdp_host_gens_menu.hpp \
 		plugins/mdp_host_gens_event.hpp \
-		plugins/eventmgr.hpp
+		plugins/eventmgr.hpp \
+		plugins/mdp_incompat.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \

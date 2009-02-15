@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -31,11 +31,14 @@
 #include <list>
 #include "macros/hashtable.hpp"
 
+// MDP Incompatibility List.
+#include "mdp_incompat.hpp"
+
 typedef GENS_HASHTABLE<std::string, std::list<MDP_Render_t*>::iterator> mapRenderPlugin;
 typedef std::pair<std::string, std::list<MDP_Render_t*>::iterator> pairRenderPlugin;
 
 // Menu items
-struct mdpMenuItem_t
+typedef struct _mdpMenuItem_t
 {
 	uint16_t 		id;
 	mdp_menu_handler_fn	handler;
@@ -44,17 +47,17 @@ struct mdpMenuItem_t
 	// Attributes
 	std::string		text;
 	bool			checked;
-};
+} mdpMenuItem_t;
 
 typedef GENS_HASHTABLE<uint16_t, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
 typedef std::pair<uint16_t, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 
 // Windows
-struct mdpWindow_t
+typedef struct _mdpWindow_t
 {
 	void	*window;
 	MDP_t	*owner;
-};
+} mdpWindow_t;
 
 class PluginMgr
 {
@@ -66,6 +69,9 @@ class PluginMgr
 		
 		// List containing all loaded plugins.
 		static std::list<MDP_t*> lstMDP;
+		
+		// MDP Incompatibility List.
+		static MDP_Incompat Incompat;
 		
 		// List and map containing all loaded render plugins.
 		static std::list<MDP_Render_t*> lstRenderPlugins;
@@ -79,9 +85,11 @@ class PluginMgr
 		static std::list<mdpWindow_t> lstWindows;
 		
 	protected:
-		static bool loadPlugin(MDP_t *plugin);
+		static bool loadPlugin(MDP_t *plugin, const std::string& filename = "");
 		static void scanExternalPlugins(const std::string& directory, bool recursive = true);
 		static void loadExternalPlugin(const std::string& filename);
+		
+		static void errLoadPlugin(MDP_t *plugin, int err, const std::string& filename = "");
 		
 		// TODO: Replace with MDP_Host_t->registerRenderer().
 		//static bool initPlugin_Render(MDP_t *plugin);

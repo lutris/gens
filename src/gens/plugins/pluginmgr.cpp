@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -38,6 +38,9 @@
 
 // MDP Host Services
 #include "mdp_host_gens.h"
+
+// MDP error codes.
+#include "mdp/mdp_error.h"
 
 // opendir/closedir/readdir/etc
 #include <sys/types.h>
@@ -75,8 +78,11 @@ static MDP_t* mdp_internal[] =
 
 /**
  * lstMDP: List containing all loaded plugins.
+ * Incompat: MDP Incompatibility List.
  */
 list<MDP_t*> PluginMgr::lstMDP;
+MDP_Incompat PluginMgr::Incompat;
+
 
 /**
  * lstRenderPlugins, tblRenderPlugins: List and map containing all loaded render plugins.
@@ -135,16 +141,17 @@ void PluginMgr::init(void)
 /**
  * loadPlugin(): Attempt to load a plugin.
  * @param plugin Plugin struct.
+ * @param filename Filename of the plugin. (Empty if internal.)
  * @return True if loaded; false if not.
  */
-bool PluginMgr::loadPlugin(MDP_t *plugin)
+bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 {
 	// Check the MDP_t version.
 	if (MDP_VERSION_MAJOR(plugin->interfaceVersion) !=
 	    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
 	{
 		// Incorrect major interface version.
-		// TODO: Add to a list of "incompatible" plugins.
+		Incompat.add(plugin, MDP_ERR_INCORRECT_MAJOR_VERSION, filename);
 		return false;
 	}
 	
@@ -153,7 +160,7 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
 	{
 		// CPU does not support some required CPU flags.
-		// TODO: Add to a list of "incompatible" plugins.
+		Incompat.add(plugin, MDP_ERR_NEEDS_CPUFLAGS, filename);
 		return false;
 	}
 	
@@ -161,9 +168,16 @@ bool PluginMgr::loadPlugin(MDP_t *plugin)
 	// Probably not needed right now, but may be needed later.
 	
 	// Run the plugin initialization function.
-	// TODO: Add return value to init(), and check it for errors.
 	if (plugin->func && plugin->func->init)
-		plugin->func->init(&Gens_MDP_Host);
+	{
+		int rval = plugin->func->init(&Gens_MDP_Host);
+		if (rval != MDP_ERR_OK)
+		{
+			// Error occurred while initializing the plugin.
+			Incompat.add(plugin, rval, filename);
+			return false;
+		}
+	}
 	
 	// Add the plugin to the list of plugins.
 	lstMDP.push_back(plugin);
@@ -321,6 +335,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	
 	if (!handle)
 	{
+		Incompat.add(NULL, MDP_ERR_CANNOT_OPEN_DLL, filename);
 		fprintf(stderr, "PluginMgr::%s(): Could not open external plugin: %s\n",
 			__func__, File::GetNameFromPath(filename).c_str());
 		return;
@@ -330,6 +345,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	MDP_t *plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
 	if (!plugin)
 	{
+		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
 		fprintf(stderr, "PluginMgr::%s(): \"mdp\" symbol not found in plugin: %s\n",
 			__func__, File::GetNameFromPath(filename).c_str());
 		lt_dlclose(handle);
@@ -339,7 +355,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	// Symbol loaded. Load the plugin.
 	fprintf(stderr, "PluginMgr::%s(): \"mdp\" symbol loaded from plugin: %s\n",
 		__func__, File::GetNameFromPath(filename).c_str());
-	loadPlugin(plugin);
+	loadPlugin(plugin, filename);
 }
 
 
