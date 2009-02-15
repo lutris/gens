@@ -52,8 +52,8 @@
 #define MAX_JOYS 8
 
 // DirectInput versions.
-static const unsigned short DIRECTINPUT_VERSION_5 = 0x0500;
-static const unsigned short DIRECTINPUT_VERSION_3 = 0x0300;
+#define DIRECTINPUT_VERSION_5 0x0500
+#define DIRECTINPUT_VERSION_3 0x0300
 
 // DirectInput variables.
 static LPDIRECTINPUT lpDI = NULL;
