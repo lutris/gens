@@ -1,5 +1,4 @@
 TODO for Gens/GS r7:
-- Port the RAR decompressor from the old C++ compressor system.
 - hq3x: Broken on Win32 in some cases. (Check width division!)
 - GDI: Add text drawing.
 - Add --boot-cd command line option.
@@ -15,14 +14,12 @@ Controller Input TODO for Gens/GS r7:
 - Add option to allow pressing U+D/L+R simultaneously.
 - Fix it so that if U is held and D is pressed, D is ignored;
   if D is held and U is pressed, U is ignored.
-- Show key values (and what they mean) in the controller configuration dialog.
 
 MDP TODO for Gens/GS r7:
 - Port Game Genie to MDP, and add the following:
   - 8-bit writes: 000000:00
   - Support for S68K, Z80, MSH2, and SSH2 address spaces
   - Improved file format (but maintain read-only compatibility with the old version).
-- Add Win32 UI to the VDP Layer Options plugin.
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
   - Disables reset, close ROM, etc.
 - "Directory" registration for "Configure Directories".
@@ -81,7 +78,9 @@ High-Level TODO:
 
 Low-Level TODO:
 - Fix VRAM overwrite bug, as seen in Sonic 2 Delta. Gens doesn't
-  overwrite the VRAM, but Kega and the actual MD do.
+  overwrite the VRAM, but Kega and the actual MD do. This is caused by
+  a DMA request with a length of 0. The actual hardware overflows the
+  counter and does a 64k DMA transfer, but Gens doesn't.
 - Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual
   MD do. (Possible: Make an option to crash on illegal address.)
 - CD audio fixes in Gens Rerecording r65, r66, etc.
