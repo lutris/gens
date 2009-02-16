@@ -11,6 +11,8 @@
 extern "C" {
 #endif
 
+extern int congratulations;
+
 void Detect_Country_Genesis(void);
 
 void Init_Genesis_Bios(void);

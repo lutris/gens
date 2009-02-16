@@ -36,6 +36,9 @@
 #include "video/v_inline.h"
 
 
+int congratulations = 0;
+
+
 /**
  * Detect_Country_Genesis(): Detect the country code of a Genesis game.
  */
@@ -404,6 +407,26 @@ int Do_VDP_Only(void)
 }
 
 
+#define CONGRATULATIONS_PRECHECK				\
+	unsigned int old_pc = main68k_context.pc;		\
+	if (congratulations == 1 && old_pc < Rom_Size)		\
+	{							\
+		congratulations = 2;				\
+		Rom_Data[old_pc] = ~Rom_Data[old_pc];		\
+		Rom_Data[old_pc + 1] = ~Rom_Data[old_pc + 1];	\
+	} do { } while (0)
+
+#define CONGRATULATIONS_POSTCHECK				\
+	if (congratulations == 2)				\
+	{							\
+		congratulations = 3;				\
+		Rom_Data[old_pc] = ~Rom_Data[old_pc];		\
+		Rom_Data[old_pc + 1] = ~Rom_Data[old_pc + 1];	\
+	}							\
+	congratulations = 0;					\
+	do { } while (0)
+
+
 /**
  * T_gens_do_MD_frame(): Do an MD frame.
  * @param VDP If true, VDP is updated.
@@ -492,9 +515,11 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 		Update_IRQ_Line();
 	}
 	
+	CONGRATULATIONS_PRECHECK;
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
 	main68k_exec(Cycles_M68K - 360);
 	Z80_EXEC(168);
+	CONGRATULATIONS_POSTCHECK;
 	
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened

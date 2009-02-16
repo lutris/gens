@@ -28,6 +28,7 @@
 #include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
+#include "emulator/g_md.hpp"
 
 #include "emulator/options.hpp"
 #include "util/file/config_file.hpp"
@@ -430,6 +431,12 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			Options::setBackend((VDRAW_BACKEND)curBackend);
 			break;
 		}
+		
+		case IDCMD_CONGRATULATIONS:
+			// Congratulations!
+			if (congratulations == 0)
+				congratulations = 1;
+			break;
 		
 		default:
 		{

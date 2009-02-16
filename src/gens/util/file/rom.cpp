@@ -387,6 +387,7 @@ int ROM::openROM(const string& filename)
 	
 	// Close any loaded ROM first.
 	freeROM(Game);
+	congratulations = 0;
 	
 	romType = loadROM(filename, &Game);
 	if (romType <= 0)
@@ -805,6 +806,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	
 	Game = NULL;
 	ice = 0;
+	congratulations = 0;
 	
 	if (ROM_MD)
 	{

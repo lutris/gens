@@ -30,6 +30,7 @@
 #include <cstring>
 
 #include "emulator/g_main.hpp"
+#include "emulator/g_md.hpp"
 #include "emulator/g_mcd.hpp"
 #include "emulator/options.hpp"
 #include "util/file/save.hpp"
@@ -143,6 +144,12 @@ void input_sdl_event_key_down(int key)
 			{
 				audio_clear_sound_buffer();
 				ImageUtil::screenShot();
+			}
+			else if (mod & KMOD_CTRL)
+			{
+				// Congratulations!
+				if (congratulations == 0)
+					congratulations = 1;
 			}
 			break;
 		
