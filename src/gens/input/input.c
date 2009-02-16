@@ -309,26 +309,33 @@ int input_get_key_name(uint16_t key, char* buf, int size)
 	}
 	
 	// Joystick input.
-	static const char pov_directions[4][8] = {"Up", "Right", "Down", "Left"};
+	static const char pov_directions[4][8]	= {"Up", "Right", "Down", "Left"};
+	static const char axis_names[6][4]	= {"X", "Y", "Z", "Rx", "Ry", "Rz"};
+	
+	// Joystick number.
+	const int joy_num = INPUT_JOYSTICK_GET_NUMBER(key);
 	
 	switch (INPUT_JOYSTICK_GET_TYPE(key))
 	{
 		case INPUT_JOYSTICK_TYPE_AXIS:
-			snprintf(buf, size, "Joy %d, Axis %d%c",
-				 INPUT_JOYSTICK_GET_NUMBER(key),
-				 INPUT_JOYSTICK_GET_AXIS(key),
-				 (INPUT_JOYSTICK_GET_AXIS_DIRECTION(key) == INPUT_JOYSTICK_AXIS_NEGATIVE ? '-' : '+'));
+		{
+			int axis = INPUT_JOYSTICK_GET_AXIS(key);
+			char dir = (INPUT_JOYSTICK_GET_AXIS_DIRECTION(key) == INPUT_JOYSTICK_AXIS_NEGATIVE ? '-' : '+');
+			
+			if (axis < 6)
+				snprintf(buf, size, "Joy %d, Axis %s%c", joy_num, axis_names[axis], dir);
+			else
+				snprintf(buf, size, "Joy %d, Axis %d%c", joy_num, axis, dir);
 			break;
+		}
 		
 		case INPUT_JOYSTICK_TYPE_BUTTON:
-			snprintf(buf, size, "Joy %d, Button %d",
-				 INPUT_JOYSTICK_GET_NUMBER(key),
+			snprintf(buf, size, "Joy %d, Button %d", joy_num,
 				 INPUT_JOYSTICK_GET_BUTTON(key));
 			break;
 		
 		case INPUT_JOYSTICK_TYPE_POVHAT:
-			snprintf(buf, size, "Joy %d, POV %d %s",
-				 INPUT_JOYSTICK_GET_NUMBER(key),
+			snprintf(buf, size, "Joy %d, POV %d %s", joy_num,
 				 INPUT_JOYSTICK_GET_POVHAT_NUMBER(key),
 				 pov_directions[INPUT_JOYSTICK_GET_POVHAT_DIRECTION(key)]);
 			break;
