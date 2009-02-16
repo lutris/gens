@@ -75,6 +75,7 @@
 
 // GSX savestate structs.
 #include "gsx_struct.h"
+#include "gsx_v7.h"
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32

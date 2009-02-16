@@ -32,9 +32,6 @@ extern "C" {
 // Make sure structs are packed.
 #define PACKED __attribute__ ((__packed__))
 
-// Gens v7 savestate extensions.
-#include "gsx_v7.h"
-
 // GSX savestate structs.
 // All integer data types are stored in little-endian.
 
