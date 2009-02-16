@@ -326,7 +326,7 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	int i;
  
 	if (!lpDIIJoy || input_dinput_num_joysticks >= MAX_JOYS ||
-	    input_dinput_callback_init_joysticks_enum_counter >= 2)
+	    input_dinput_callback_init_joysticks_enum_counter >= MAX_JOYS)
 		return DIENUM_STOP;
 	
 	// Number of times this function has been called.
