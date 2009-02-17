@@ -134,6 +134,8 @@ extern int CDC_Decode_Reg_Read;
 
 void LC89510_Reset(void);
 void Update_CDC_TRansfert(void);
+unsigned short Read_CDC_Host_SUB(void);
+unsigned short Read_CDC_Host_MAIN(void);
 void CDC_Update_Header(void);
 unsigned char CDC_Read_Reg(void);
 void CDC_Write_Reg(unsigned char Data);

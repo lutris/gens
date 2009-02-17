@@ -42,7 +42,10 @@
 int CDC_Decode_Reg_Read;
 
 
-void CDD_Reset(void)
+/**
+ * CDD_Reset(): Reset the CDD.
+ */
+static void CDD_Reset(void)
 {
 	int i;
 	
@@ -72,7 +75,10 @@ void CDD_Reset(void)
 }
 
 
-void CDC_Reset(void)
+/**
+ * CDC_Reset(): Reset the CDC.
+ */
+static void CDC_Reset(void)
 {
 	//int i;
 	
