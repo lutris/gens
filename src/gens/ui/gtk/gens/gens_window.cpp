@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
@@ -35,23 +31,12 @@
 // Debug messages.
 #include "macros/debug_msg.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
-
 #include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
 
-// Gens GTK+ miscellaneous functions
+// Gens GTK+ miscellaneous functions (NOTE: DEPRECATED)
 #include "gtk-misc.h"
 
 #include "emulator/g_main.hpp"
-
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
 
 GtkWidget *gens_window = NULL;
 GtkWidget *MenuBar;
