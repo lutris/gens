@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Main Window.                                               *
+ * Gens: (GTK+) Main Window. (Menu Handling Code)                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,25 +20,38 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_GTK_GENS_WINDOW_HPP
-#define GENS_GTK_GENS_WINDOW_HPP
+#ifndef GENS_GTK_MENU_HPP
+#define GENS_GTK_MENU_HPP
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ui/common/gens/gens_menu.h"
+#include <gtk/gtk.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <gtk/gtk.h>
-#include <stdint.h>
+extern int	gens_menu_do_callbacks;
 
-GtkWidget* create_gens_window(void); 
-extern GtkWidget *gens_window;
+void		gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelGroup *accel_group);
+
+void		gens_gtk_menu_callback(GtkMenuItem *menuitem, gpointer user_data);
+GtkWidget*	gens_menu_find_item(uint16_t id);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_GTK_GENS_WINDOW_HPP */
+#ifdef __cplusplus
+
+// Hash table containing all the menu items.
+// Key is the menu ID.
+#include "macros/hashtable.hpp"
+#include <utility>
+typedef GENS_HASHTABLE<uint16_t, GtkWidget*> gensMenuMap_t;
+typedef std::pair<uint16_t, GtkWidget*> gensMenuMapItem_t;
+
+extern gensMenuMap_t gens_menu_map;
+
+#endif /* __cplusplus */
+
+#endif /* GENS_GTK_MENU_HPP */

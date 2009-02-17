@@ -30,6 +30,7 @@ gens_SOURCES += \
 		ui/gtk/gens/gens_window.cpp \
 		ui/gtk/gens/gens_window_callbacks.cpp \
 		ui/gtk/gens/gens_window_sync.cpp \
+		ui/gtk/gens/gens_menu.cpp \
 		ui/gtk/controller_config/cc_window.c \
 		ui/gtk/bios_misc_files/bios_misc_files_window.cpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.c \
@@ -88,6 +89,7 @@ noinst_HEADERS += \
 		ui/gtk/gens/gens_window.hpp \
 		ui/gtk/gens/gens_window_callbacks.hpp \
 		ui/gtk/gens/gens_window_sync.hpp \
+		ui/gtk/gens/gens_menu.hpp \
 		ui/gtk/controller_config/cc_window.h \
 		ui/gtk/bios_misc_files/bios_misc_files_window.hpp \
 		ui/gtk/bios_misc_files/bios_misc_files_window_callbacks.h \

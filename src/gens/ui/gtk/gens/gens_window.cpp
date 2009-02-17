@@ -28,6 +28,10 @@
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 
+// Menus.
+#include "gens_menu.hpp"
+#include "ui/common/gens/gens_menu.h"
+
 // Debug messages.
 #include "macros/debug_msg.h"
 
@@ -53,61 +57,9 @@ GtkWidget *gens_window = NULL;
 GtkWidget *MenuBar;
 
 
-GtkAccelGroup *accel_group;
+GtkAccelGroup *gens_window_accel_group;
 
 static void create_gens_window_menubar(GtkWidget *container);
-
-// New menu handler.
-#include "ui/common/gens/gens_menu.h"
-#include "ui/common/gens/gens_menu_callbacks.hpp"
-static void GTK_ParseMenu(const GensMenuItem_t* menu, GtkWidget *container);
-
-// Hash table containing all the menu items.
-// Key is the menu ID.
-gtkMenuMap gensMenuMap;
-
-// Menu icons.
-// See ui/common/gens/gens_menu.h:IDIM_* for the icon constants.
-#include <utility>
-using std::pair;
-
-// GTK_MenuIcon_t:
-// - first: bool - true if stock icon; false if filename.
-// - second: stock icon name or filename, depending on first.
-typedef pair<bool, const char*> GTK_MenuIcon_t;
-static GTK_MenuIcon_t GTK_MenuIcons[] =
-{
-	GTK_MenuIcon_t(false, NULL),	// IDIM_MENU_ICON == 0x0100 == not used
-	GTK_MenuIcon_t(true,  "gtk-open"),
-	GTK_MenuIcon_t(true,  "gtk-save"),
-	GTK_MenuIcon_t(true,  "gtk-save-as"),
-	GTK_MenuIcon_t(true,  "gtk-refresh"),
-	GTK_MenuIcon_t(true,  "gtk-revert-to-saved"),
-	GTK_MenuIcon_t(true,  "gtk-close"),
-	GTK_MenuIcon_t(true,  "gtk-quit"),
-	GTK_MenuIcon_t(true,  "gtk-cdrom"),
-	GTK_MenuIcon_t(true,  "gtk-cdrom"),
-	GTK_MenuIcon_t(false, "modem.png"),
-	GTK_MenuIcon_t(false, "chronometer.png"),
-	GTK_MenuIcon_t(false, "dialog-password.png"),
-	GTK_MenuIcon_t(true,  "gtk-fullscreen"),
-	GTK_MenuIcon_t(true,  "gtk-select-color"),
-	GTK_MenuIcon_t(false, "viewmag.png"),
-	GTK_MenuIcon_t(false, "2rightarrow.png"),
-	GTK_MenuIcon_t(true,  "gtk-copy"),
-	GTK_MenuIcon_t(true,  "gtk-refresh"),
-	GTK_MenuIcon_t(false, "preferences-system.png"),
-	GTK_MenuIcon_t(false, "preferences-desktop-gaming.png"),
-	GTK_MenuIcon_t(false, "document-open-folder.png"),
-	GTK_MenuIcon_t(false, "binary.png"),
-	GTK_MenuIcon_t(false, "memory.png"),
-	GTK_MenuIcon_t(true,  "gtk-help"),
-	GTK_MenuIcon_t(false, NULL),	// End of array.
-};
-
-
-// Set to 0 to temporarily disable callbacks.
-int do_callbacks = 1;
 
 
 GtkWidget* create_gens_window(void)
@@ -158,7 +110,7 @@ GtkWidget* create_gens_window(void)
 	g_list_free(gens_icon_list);
 	
 	// Create the accelerator group.
-	accel_group = gtk_accel_group_new();
+	gens_window_accel_group = gtk_accel_group_new();
 	
 	// Create the Gens window.
 	gens_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -183,7 +135,7 @@ GtkWidget* create_gens_window(void)
 	GLADE_HOOKUP_OBJECT(gens_window, sdlsock, "sdlsock");
 	
 	// Add the accel group.
-	gtk_window_add_accel_group(GTK_WINDOW(gens_window), accel_group);
+	gtk_window_add_accel_group(GTK_WINDOW(gens_window), gens_window_accel_group);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)gens_window, "delete-event",
@@ -234,294 +186,6 @@ static void create_gens_window_menubar(GtkWidget *container)
 	gtk_widget_show(MenuBar);
 	gtk_container_add(GTK_CONTAINER(container), MenuBar);
 	
-	// Menus
-	GTK_ParseMenu(&gmiMain[0], MenuBar);
-}
-
-
-/**
- * GTK_ParseMenu(): Parse the menu structs.
- * @param menu First item of the array of menu structs to parse.
- * @param container Container to add the menu items to.
- */
-static void GTK_ParseMenu(const GensMenuItem_t* menu, GtkWidget *container)
-{
-	GtkWidget *mnuItem, *subMenu;
-	GtkWidget *icon;
-	char widgetName[64];
-	char *sMenuText, *mnemonicPos;
-	bool bMenuTextSet, bMenuHasIcon;
-	GSList *radioGroup = NULL;
-	bool bSetCallbackHandler;
-	
-	while (menu->id != 0)
-	{
-		// Convert the Win32/Qt mnemonic symbol ("&") to the GTK+ mnemonic symbol ("_").
-		if (menu->text)
-		{
-			// Menu text specified.
-			bMenuTextSet = true;
-			sMenuText = strdup(menu->text);
-			mnemonicPos = strchr(sMenuText, '&');
-			if (mnemonicPos)
-				*mnemonicPos = '_';
-		}
-		else
-		{
-			// No menu text.
-			sMenuText = "";
-			bMenuTextSet = false;
-		}
-		
-		// TODO: Radio/Check support.
-		bMenuHasIcon = false;
-		switch ((menu->flags & GMF_ITEM_MASK))
-		{
-			case GMF_ITEM_SEPARATOR:
-				// Separator.
-				mnuItem = gtk_separator_menu_item_new();
-				gtk_widget_set_sensitive(mnuItem, FALSE);
-				radioGroup = NULL;
-				bSetCallbackHandler = false;
-				break;
-			
-			case GMF_ITEM_CHECK:
-				// Check menu item.
-				mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText);
-				radioGroup = NULL;
-				bSetCallbackHandler = true;
-				break;
-			
-			case GMF_ITEM_RADIO:
-				// Radio menu item.
-				mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, sMenuText);
-				radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
-				bSetCallbackHandler = true;
-				break;
-				
-			default:
-				// Not a special menu item.
-				radioGroup = NULL;
-				
-				// If this isn't a submenu, set the callback handler.
-				bSetCallbackHandler = ((menu->flags & GMF_ITEM_MASK) != GMF_ITEM_SUBMENU);
-				
-				// Check if an icon was specified.
-				if (menu->icon > 0)
-				{
-					bMenuHasIcon = true;
-					mnuItem = gtk_image_menu_item_new_with_mnemonic(sMenuText);
-				}
-				else
-				{
-					mnuItem = gtk_menu_item_new_with_mnemonic(sMenuText);
-				}
-				
-				break;
-		}
-		
-		if (bMenuTextSet)
-			free(sMenuText);
-		
-		sprintf(widgetName, "mnu_0x%08X_0x%04X", (unsigned int)menu, menu->id);
-		gtk_widget_set_name(mnuItem, widgetName);
-		gtk_widget_show(mnuItem);
-		gtk_container_add(GTK_CONTAINER(container), mnuItem);
-		
-		g_object_set_data_full(G_OBJECT(gens_window), widgetName,
-				       g_object_ref(mnuItem),
-				       (GDestroyNotify)g_object_unref);
-		
-		// Check if an icon is specified.
-		if (bMenuHasIcon)
-		{
-			// Icon specified.
-			const char* iconName = NULL;
-			if (menu->icon > IDIM_MENU_ICON && menu->icon <= IDIM_MENU_ICON_MAX)
-			{
-				// Valid icon.
-				iconName = GTK_MenuIcons[menu->icon - IDIM_MENU_ICON].second;
-			}
-			
-			icon = NULL;
-			if (iconName)
-			{
-				if (GTK_MenuIcons[menu->icon - IDIM_MENU_ICON].first)
-				{
-					// GTK+ stock icon.
-					icon = gtk_image_new_from_stock(iconName, GTK_ICON_SIZE_MENU);
-					if (!icon)
-					{
-						// Icon not found.
-						fprintf(stderr, "%s: GTK+ stock icon not found: %s\n", __func__, iconName);
-					}
-				}
-				else
-				{
-					// Load an icon from a file.
-					icon = create_pixmap(iconName);
-					if (!icon)
-					{
-						// Icon not found.
-						fprintf(stderr, "%s: Icon file not found: %s\n", __func__, iconName);
-					}
-				}
-			}
-			
-			if (icon)
-			{
-				// Icon loaded.
-				sprintf(widgetName, "mnu_icon_0x%08X_0x%04X", (unsigned int)menu, menu->id);
-				gtk_widget_set_name(icon, widgetName);
-				gtk_widget_show(icon);
-				gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(mnuItem), icon);
-				
-				g_object_set_data_full(G_OBJECT(gens_window), widgetName,
-						       g_object_ref(icon),
-						       (GDestroyNotify)g_object_unref);
-			}
-		}
-		
-		// Check for an accelerator.
-		if (menu->accelKey != 0)
-		{
-			// Accelerator specified.
-			int accelModifier = 0;
-			guint accelKey;
-			
-			// Determine the modifier.
-			if (menu->accelModifier & GMAM_CTRL)
-				accelModifier |= GDK_CONTROL_MASK;
-			if (menu->accelModifier & GMAM_ALT)
-				accelModifier |= GDK_MOD1_MASK;
-			if (menu->accelModifier & GMAM_SHIFT)
-				accelModifier |= GDK_SHIFT_MASK;
-			
-			// Determine the key.
-			// TODO: Add more special keys.
-			switch (menu->accelKey)
-			{
-				case GMAK_BACKSPACE:
-					accelKey = GDK_BackSpace;
-					break;
-				
-				case GMAK_ENTER:
-					accelKey = GDK_Return;
-					break;
-				
-				case GMAK_TAB:
-					accelKey = GDK_Tab;
-					break;
-				
-				case GMAK_F1: case GMAK_F2:  case GMAK_F3:  case GMAK_F4:
-				case GMAK_F5: case GMAK_F6:  case GMAK_F7:  case GMAK_F8:
-				case GMAK_F9: case GMAK_F10: case GMAK_F11: case GMAK_F12:
-					accelKey = (menu->accelKey - GMAK_F1) + GDK_F1;
-					break;
-					
-				default:
-					accelKey = menu->accelKey;
-					break;
-			}
-			
-			// Add the accelerator.
-			gtk_widget_add_accelerator(mnuItem, "activate", accel_group,
-						   accelKey, (GdkModifierType)accelModifier,
-						   GTK_ACCEL_VISIBLE);
-		}
-		
-		// Check for a submenu.
-		if (((menu->flags & GMF_ITEM_MASK) == GMF_ITEM_SUBMENU) && (menu->submenu))
-		{
-			// Submenu.
-			subMenu = gtk_menu_new();
-			
-			sprintf(widgetName, "mnu_sub_0x%08X_0x%04X", (unsigned int)menu, menu->id);
-			gtk_widget_set_name(subMenu, widgetName);
-			gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuItem), subMenu);
-			
-			g_object_set_data_full(G_OBJECT(gens_window), widgetName,
-					       g_object_ref(subMenu),
-					       (GDestroyNotify)g_object_unref);
-			
-			// Parse the submenu.
-			GTK_ParseMenu(menu->submenu, subMenu);
-		}
-		
-		if (bSetCallbackHandler)
-		{
-			// Set the callback handler.
-			g_signal_connect((gpointer)mnuItem, "activate",
-					 G_CALLBACK(GensWindow_GTK_MenuItemCallback), GINT_TO_POINTER(menu->id));
-		}
-		
-		// Add the menu to the menu map. (Exception is if id is 0 or IDM_SEPARATOR.)
-		if (menu->id != 0 && menu->id != IDM_SEPARATOR)
-		{
-			gensMenuMap.insert(gtkMenuMapItem(menu->id, mnuItem));
-		}
-		
-		// Next menu item.
-		menu++;
-	}
-}
-
-
-/**
- * GensWindow_GTK_MenuItemCallback(): Menu item callback.
- * @param menuitem Menu item widget.
- * @param user_data Menu item ID.
- */
-void GensWindow_GTK_MenuItemCallback(GtkMenuItem *menuitem, gpointer user_data)
-{
-	if (!do_callbacks)
-		return;
-	
-	bool state = false;
-	uint16_t menuItemID = (uint16_t)(GPOINTER_TO_INT(user_data));
-	
-	if (GTK_IS_RADIO_MENU_ITEM(menuitem))
-	{
-		// Radio menu items should only trigger the callback if they're selected.
-		if (!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
-			return;
-		state = true;
-	}
-	else if (GTK_IS_CHECK_MENU_ITEM(menuitem))
-	{
-		// Check menu items automatically toggle, so the state value should be
-		// the opposite value of its current state.
-		state = !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
-		
-		// Revert the automatic toggle if this is in the Plugins Menu.
-		if ((menuItemID & 0xF000) == IDM_PLUGINS_MENU)
-		{
-			// Plugins menu. Revert the automatic toggle.
-			do_callbacks = 0;
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem), state);
-			do_callbacks = 1;
-		}
-	}
-	
-	// Run the callback function.
-	GensWindow_MenuItemCallback(menuItemID, state);
-};
-
-
-/**
- * findMenuItem(): Find a menu item in the menu map.
- * @param id Menu item ID.
- * @return Menu item.
- */
-GtkWidget* findMenuItem(uint16_t id)
-{
-	// TODO: Make this a common function.
-	
-	gtkMenuMap::iterator mnuIter;
-	
-	mnuIter = gensMenuMap.find(id);
-	if (mnuIter == gensMenuMap.end())
-		return NULL;
-	
-	return (*mnuIter).second;
+	// Parse the menus.
+	gens_menu_parse(&gmiMain[0], MenuBar, gens_window_accel_group);
 }

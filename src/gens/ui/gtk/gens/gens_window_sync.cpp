@@ -38,6 +38,7 @@ using std::deque;
 
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
+#include "gens_menu.hpp"
 
 // Common UI functions.
 #include "ui/common/gens/gens_menu.h"
@@ -104,27 +105,27 @@ void Sync_Gens_Window(void)
 void Sync_Gens_Window_FileMenu(void)
 {
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 	// Netplay is currently not usable.
-	GtkWidget *mnuNetplay = findMenuItem(IDM_FILE_NETPLAY);
+	GtkWidget *mnuNetplay = gens_menu_find_item(IDM_FILE_NETPLAY);
 	gtk_widget_set_sensitive(mnuNetplay, FALSE);
 	
 	// Disable "Close ROM" if no ROM is loaded.
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_CLOSEROM), (Game != NULL));
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_FILE_CLOSEROM), (Game != NULL));
 	
 	// Savestate menu items
 	gboolean saveStateEnable = (Game != NULL);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_LOADSTATE), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_SAVESTATE), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKLOAD), saveStateEnable);
-	gtk_widget_set_sensitive(findMenuItem(IDM_FILE_QUICKSAVE), saveStateEnable);
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_FILE_LOADSTATE), saveStateEnable);
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_FILE_SAVESTATE), saveStateEnable);
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_FILE_QUICKLOAD), saveStateEnable);
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_FILE_QUICKSAVE), saveStateEnable);
 	
 	// Current savestate
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_FILE_CHANGESTATE_0 + Current_State)), TRUE);
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
 
 
@@ -136,10 +137,10 @@ void Sync_Gens_Window_FileMenu(void)
 void Sync_Gens_Window_FileMenu_ROMHistory(void)
 {
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 	// ROM History
-	GtkWidget *mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
+	GtkWidget *mnuROMHistory = gens_menu_find_item(IDM_FILE_ROMHISTORY);
 	
 	// Check if the ROM History submenu already exists.
 	GtkWidget *mnuROMHistory_sub = gtk_menu_item_get_submenu(GTK_MENU_ITEM(mnuROMHistory));
@@ -193,7 +194,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuROMHistory_item, "activate",
-				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				  G_CALLBACK(gens_gtk_menu_callback),
 				  GINT_TO_POINTER(IDM_FILE_ROMHISTORY_1 + romNum));
 		
 		// Increment the ROM number.
@@ -204,7 +205,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	gtk_widget_set_sensitive(mnuROMHistory, romNum);
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
 
 
@@ -216,19 +217,19 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	uint16_t id;
 	
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 	// Simple checkbox items
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_VSYNC)), Video.VSync_W);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_SPRITELIMIT)), Sprite_Over);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_VSYNC)), Video.VSync_W);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_SPRITELIMIT)), Sprite_Over);
 	
 	// Stretch mode
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_STRETCH_NONE + Options::stretch())), TRUE);
 	
 	// Enable VSync/Stretch only if the current backend supports it.
-	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_VSYNC),
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_VSYNC),
 				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_VSYNC));
-	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_STRETCH),
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_STRETCH),
 				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH));
 	
 	// Bits per pixel
@@ -249,24 +250,24 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	}
 	
 	if (id != 0)
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
 	
 	// Rebuild the Render submenu.
-	Sync_Gens_Window_GraphicsMenu_Render(findMenuItem(IDM_GRAPHICS_RENDER));
+	Sync_Gens_Window_GraphicsMenu_Render(gens_menu_find_item(IDM_GRAPHICS_RENDER));
 	
 	// Frame Skip
 	id = (IDM_GRAPHICS_FRAMESKIP_AUTO + 1) + Frame_Skip;
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
 	
 	// Screen Shot
-	gtk_widget_set_sensitive(findMenuItem(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_SCREENSHOT), (Game != NULL));
 	
 	// Backend
-	Sync_Gens_Window_GraphicsMenu_Backend(findMenuItem(IDM_GRAPHICS_BACKEND));
+	Sync_Gens_Window_GraphicsMenu_Backend(gens_menu_find_item(IDM_GRAPHICS_BACKEND));
 	
 #ifdef GENS_OPENGL
-	//gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_GRAPHICS_OPENGL_FILTER)), Video.glLinearFilter);
+	//gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)), Video.glLinearFilter);
 	
 	// OpenGL Resolution
 	int resID = 0;
@@ -286,10 +287,10 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	if (gws_opengl_resolutions[resID][0] == 0)
 		id = IDM_GRAPHICS_OPENGL_RES_CUSTOM;
 	
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
 	
 	// Set the text of the custom resolution item.
-	GtkWidget *mnuGLResCustom = findMenuItem(IDM_GRAPHICS_OPENGL_RES_CUSTOM);
+	GtkWidget *mnuGLResCustom = gens_menu_find_item(IDM_GRAPHICS_OPENGL_RES_CUSTOM);
 	if (id == IDM_GRAPHICS_OPENGL_RES_CUSTOM)
 	{
 		// Custom resolution. Set the text.
@@ -305,7 +306,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 #endif
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
 
 
@@ -359,7 +360,7 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(GtkWidget *container)
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuItem, "activate",
-				 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				 G_CALLBACK(gens_gtk_menu_callback),
 				 GINT_TO_POINTER(IDM_GRAPHICS_BACKEND + 1 + curBackend));
 		
 		// Next backend.
@@ -404,7 +405,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)
 	{
 		// Delete the menu item from the map, if it exists.
-		gensMenuMap.erase(i);
+		gens_menu_map.erase(i);
 		
 		sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
 		
@@ -428,11 +429,11 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuItem, "activate",
-				  G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+				  G_CALLBACK(gens_gtk_menu_callback),
 				  GINT_TO_POINTER(i));
 		
 		// Add the menu item to the map.
-		gensMenuMap.insert(gtkMenuMapItem(i, mnuItem));
+		gens_menu_map.insert(gensMenuMapItem_t(i, mnuItem));
 		
 		// Insert a separator between the built-in renderers
 		// and the external renderers if external renderers exist.
@@ -461,10 +462,10 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 void Sync_Gens_Window_CPUMenu(void)
 {
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 #ifdef GENS_DEBUGGER
-	gtk_widget_set_sensitive(findMenuItem(IDM_CPU_DEBUG), (Game != NULL));
+	gtk_widget_set_sensitive(gens_menu_find_item(IDM_CPU_DEBUG), (Game != NULL));
 	
 	// Hide/Show debug entries depending on the active console.
 	if (Game != NULL)
@@ -487,7 +488,7 @@ void Sync_Gens_Window_CPUMenu(void)
 				checkDebug = 0;
 			}
 			
-			mnuDebugItem = findMenuItem(IDM_CPU_DEBUG + i);
+			mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG + i);
 			if (checkDebug)
 				gtk_widget_show(mnuDebugItem);
 			else
@@ -498,13 +499,13 @@ void Sync_Gens_Window_CPUMenu(void)
 		}
 		
 		// Separators
-		mnuDebugItem = findMenuItem(IDM_CPU_DEBUG_SEGACD_SEPARATOR);
+		mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG_SEGACD_SEPARATOR);
 		if (SegaCD_Started)
 			gtk_widget_show(mnuDebugItem);
 		else
 			gtk_widget_hide(mnuDebugItem);
 		
-		mnuDebugItem = findMenuItem(IDM_CPU_DEBUG_32X_SEPARATOR);
+		mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG_32X_SEPARATOR);
 		if (_32X_Started)
 			gtk_widget_show(mnuDebugItem);
 		else
@@ -513,14 +514,14 @@ void Sync_Gens_Window_CPUMenu(void)
 #endif /* GENS_DEBUGGER */
 	
 	// Country code
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_CPU_COUNTRY_AUTO + Country + 1)), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_CPU_COUNTRY_AUTO + Country + 1)), TRUE);
 	
 	// Hide and show the appropriate RESET items.
-	GtkWidget *mnuReset68K  = findMenuItem(IDM_CPU_RESET68K);
-	GtkWidget *mnuResetM68K = findMenuItem(IDM_CPU_RESETMAIN68K);
-	GtkWidget *mnuResetS68K = findMenuItem(IDM_CPU_RESETSUB68K);
-	GtkWidget *mnuResetMSH2 = findMenuItem(IDM_CPU_RESETMAINSH2);
-	GtkWidget *mnuResetSSH2 = findMenuItem(IDM_CPU_RESETSUBSH2);
+	GtkWidget *mnuReset68K  = gens_menu_find_item(IDM_CPU_RESET68K);
+	GtkWidget *mnuResetM68K = gens_menu_find_item(IDM_CPU_RESETMAIN68K);
+	GtkWidget *mnuResetS68K = gens_menu_find_item(IDM_CPU_RESETSUB68K);
+	GtkWidget *mnuResetMSH2 = gens_menu_find_item(IDM_CPU_RESETMAINSH2);
+	GtkWidget *mnuResetSSH2 = gens_menu_find_item(IDM_CPU_RESETSUBSH2);
 	
 	if (SegaCD_Started)
 	{
@@ -551,10 +552,10 @@ void Sync_Gens_Window_CPUMenu(void)
 	}
 	
 	// SegaCD Perfect Sync
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_CPU_SEGACDPERFECTSYNC)), SegaCD_Accurate);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_CPU_SEGACDPERFECTSYNC)), SegaCD_Accurate);
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
 
 
@@ -564,13 +565,13 @@ void Sync_Gens_Window_CPUMenu(void)
 void Sync_Gens_Window_SoundMenu(void)
 {
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 	// Get the Enabled flag for the other menu items.
 	bool soundEnabled = audio_get_enabled();
 	
 	// Enabled
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(IDM_SOUND_ENABLE)), soundEnabled);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_SOUND_ENABLE)), soundEnabled);
 	
 	const uint16_t soundMenuItems[11][2] =
 	{
@@ -590,7 +591,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	GtkWidget *mnuItem;
 	for (int i = 0; i < 11; i++)
 	{
-		mnuItem = findMenuItem(soundMenuItems[i][0]);
+		mnuItem = gens_menu_find_item(soundMenuItems[i][0]);
 		
 		gtk_widget_set_sensitive(mnuItem, soundEnabled);
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), soundMenuItems[i][1]);
@@ -615,18 +616,18 @@ void Sync_Gens_Window_SoundMenu(void)
 			id = IDM_SOUND_RATE_22050;
 			break;
 	}
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(findMenuItem(id)), TRUE);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
 	
 	const char* sLabel;
 	
 	// WAV dumping
 	sLabel = (audio_get_wav_dumping() ? "Stop WAV Dump" : "Start WAV Dump");
-	GtkWidget *mnuWAVDump = findMenuItem(IDM_SOUND_WAVDUMP);
+	GtkWidget *mnuWAVDump = gens_menu_find_item(IDM_SOUND_WAVDUMP);
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuWAVDump)->child), sLabel);
 	
 	// GYM dumping
 	sLabel = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
-	GtkWidget *mnuGYMDump = findMenuItem(IDM_SOUND_GYMDUMP);
+	GtkWidget *mnuGYMDump = gens_menu_find_item(IDM_SOUND_GYMDUMP);
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGYMDump)->child), sLabel);
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
@@ -642,7 +643,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	gtk_widget_set_sensitive(mnuGYMDump, allowAudioDump);
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
 
 
@@ -652,10 +653,10 @@ void Sync_Gens_Window_SoundMenu(void)
 void Sync_Gens_Window_PluginsMenu(void)
 {
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 	// Get the Plugins menu.
-	GtkWidget *mnuPlugins = findMenuItem(IDM_PLUGINS_MENU);
+	GtkWidget *mnuPlugins = gens_menu_find_item(IDM_PLUGINS_MENU);
 	
 	// Delete the Plugins submenu.
 	GtkWidget *mnuPlugins_sub = gtk_menu_item_get_submenu(GTK_MENU_ITEM(mnuPlugins));
@@ -702,7 +703,7 @@ void Sync_Gens_Window_PluginsMenu(void)
 		
 		// Set the callback handler.
 		g_signal_connect((gpointer)mnuItem, "activate",
-			 	G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+			 	G_CALLBACK(gens_gtk_menu_callback),
 				GINT_TO_POINTER((*curMenuItem).id));
 	}
 	
@@ -733,11 +734,11 @@ void Sync_Gens_Window_PluginsMenu(void)
 	
 	// Set the callback handler.
 	g_signal_connect((gpointer)mnuItem, "activate",
-			 G_CALLBACK(GensWindow_GTK_MenuItemCallback),
+			 G_CALLBACK(gens_gtk_menu_callback),
 			 GINT_TO_POINTER(IDM_PLUGINS_MANAGER));
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
 
 
@@ -747,13 +748,13 @@ void Sync_Gens_Window_PluginsMenu(void)
 void Sync_Gens_Window_OptionsMenu(void)
 {
 	// Disable callbacks so nothing gets screwed up.
-	do_callbacks = 0;
+	gens_menu_do_callbacks = 0;
 	
 	// SegaCD SRAM Size
 	int bramID = ((BRAM_Ex_State & 0x100) ? BRAM_Ex_Size : -1);
-	GtkWidget *mnuBRAMSize = findMenuItem(IDM_OPTIONS_SEGACDSRAMSIZE_NONE + (bramID + 1));
+	GtkWidget *mnuBRAMSize = gens_menu_find_item(IDM_OPTIONS_SEGACDSRAMSIZE_NONE + (bramID + 1));
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuBRAMSize), TRUE);
 	
 	// Enable callbacks.
-	do_callbacks = 1;
+	gens_menu_do_callbacks = 1;
 }
