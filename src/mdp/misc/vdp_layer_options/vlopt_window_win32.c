@@ -177,10 +177,6 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			vlopt_window_create_child_windows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			vlopt_window_close();
-			return 0;
-		
 		case WM_COMMAND:
 			switch (wParam)
 			{

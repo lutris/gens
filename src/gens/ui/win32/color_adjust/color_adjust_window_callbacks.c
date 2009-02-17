@@ -51,10 +51,6 @@ LRESULT CALLBACK Color_Adjust_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			Color_Adjust_Window_CreateChildWindows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(color_adjust_window);
-			return 0;
-		
 		case WM_COMMAND:
 			// Button press
 			switch (LOWORD(wParam))

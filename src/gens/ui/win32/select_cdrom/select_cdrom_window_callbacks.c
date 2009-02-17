@@ -43,10 +43,6 @@ LRESULT CALLBACK Select_CDROM_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			Select_CDROM_Window_CreateChildWindows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(select_cdrom_window);
-			return 0;
-		
 		case WM_COMMAND:
 			// Button press, or Enter pressed in textbox
 			switch (LOWORD(wParam))

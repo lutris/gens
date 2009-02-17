@@ -177,10 +177,6 @@ LRESULT CALLBACK PluginManagerWindow::WndProc(HWND hWnd, UINT message, WPARAM wP
 				createChildWindows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(m_Window);
-			return 0;
-		
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{

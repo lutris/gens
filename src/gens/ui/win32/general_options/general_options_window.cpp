@@ -179,10 +179,6 @@ LRESULT CALLBACK GeneralOptionsWindow::WndProc(HWND hWnd, UINT message, WPARAM w
 				createChildWindows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(m_Window);
-			return 0;
-		
 		case WM_DRAWITEM:
 			drawMsgRadioButton(LOWORD(wParam), (LPDRAWITEMSTRUCT)lParam);
 			break;

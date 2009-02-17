@@ -313,12 +313,6 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 		case WM_CREATE:
 			about_window_create_child_windows(hWnd);
 			break;
-			break;
-		
-		case WM_CLOSE:
-			printf("CLOSE\n");
-			DestroyWindow(hWnd);
-			return 0;
 		
 		case WM_PAINT:
 			if (ice == 3)

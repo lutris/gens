@@ -619,10 +619,6 @@ static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 			cc_window_create_child_windows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(hWnd);
-			return 0;
-		
 		case WM_ACTIVATE:
 			if (LOWORD(wParam) == WA_ACTIVE || LOWORD(wParam) == WA_CLICKACTIVE)
 			{

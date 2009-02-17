@@ -348,10 +348,6 @@ static LRESULT CALLBACK sgens_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			sgens_window_create_child_windows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(hWnd);
-			return 0;
-		
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{

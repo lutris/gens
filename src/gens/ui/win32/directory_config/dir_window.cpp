@@ -282,10 +282,6 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 			dir_window_create_child_windows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(hWnd);
-			return 0;
-		
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{

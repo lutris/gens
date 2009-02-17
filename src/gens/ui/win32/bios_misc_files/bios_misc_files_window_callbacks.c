@@ -41,10 +41,6 @@ LRESULT CALLBACK BIOS_Misc_Files_Window_WndProc(HWND hWnd, UINT message, WPARAM 
 			BIOS_Misc_Files_Window_CreateChildWindows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(bios_misc_files_window);
-			return 0;
-		
 		case WM_COMMAND:
 			// Button press
 			switch (LOWORD(wParam))

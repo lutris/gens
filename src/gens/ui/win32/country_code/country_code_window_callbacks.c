@@ -44,10 +44,6 @@ LRESULT CALLBACK Country_Code_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			Country_Code_Window_CreateChildWindows(hWnd);
 			break;
 		
-		case WM_CLOSE:
-			DestroyWindow(country_code_window);
-			return 0;
-		
 		case WM_COMMAND:
 			// Button press, or Enter pressed in textbox
 			switch (LOWORD(wParam))
