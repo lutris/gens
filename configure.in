@@ -589,7 +589,7 @@ AC_SUBST(libdir)
 
 AC_CONFIG_FILES([
 Makefile
-pixmaps/Makefile
+images/Makefile
 xdg/Makefile
 src/Makefile
 src/zlib/Makefile

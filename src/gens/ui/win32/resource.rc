@@ -15,17 +15,17 @@
 #include "gens/gens_window_cmds.h"
 
 // Icons
-IDI_GENS_APP		ICON		"../../../../pixmaps/Gens2.ico"
-IDI_GENS_MD		ICON		"../../../../pixmaps/gens.ico"
-IDI_SONIC_HEAD		ICON		"../../../../pixmaps/sonic.ico"
-IDI_SONIC_WAITING	ICON		"../../../../pixmaps/sonic2.ico"
+IDI_GENS_APP		ICON		"../../../../images/Gens2.ico"
+IDI_GENS_MD		ICON		"../../../../images/gens.ico"
+IDI_SONIC_HEAD		ICON		"../../../../images/sonic.ico"
+IDI_SONIC_WAITING	ICON		"../../../../images/sonic2.ico"
 
-IDI_ARROW_UP		ICON		"../../../../pixmaps/ARW07UP.ico"
-IDI_ARROW_DOWN		ICON		"../../../../pixmaps/ARW07DN.ico"
+IDI_ARROW_UP		ICON		"../../../../images/ARW07UP.ico"
+IDI_ARROW_DOWN		ICON		"../../../../images/ARW07DN.ico"
 
 // Bitmaps
-IDB_GENS_LOGO_SMALL	BITMAP		"../../../../pixmaps/gens_small.bmp"
-IDB_GENS_LOGO_BIG	BITMAP		"../../../../pixmaps/gens_big.bmp"
+IDB_GENS_LOGO_SMALL	BITMAP		"../../../../images/gens_small.bmp"
+IDB_GENS_LOGO_BIG	BITMAP		"../../../../images/gens_big.bmp"
 
 // Dialogs
 IDD_ZIPSELECT		DIALOGEX	0, 0, 224, 148
