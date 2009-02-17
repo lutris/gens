@@ -20,12 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_HASHTABLE_HPP
+#define GENS_HASHTABLE_HPP
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
-
-#ifndef GENS_HASHTABLE_HPP
-#define GENS_HASHTABLE_HPP
 
 #ifdef __cplusplus
 
