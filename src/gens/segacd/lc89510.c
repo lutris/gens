@@ -20,8 +20,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <stdio.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+//#include <stdio.h>
 #include <string.h>
+
+// Debug messages.
+#include "macros/debug_msg.h"
 
 #include "gens_core/misc/misc.h"
 #include "lc89510.h"
@@ -29,11 +36,6 @@
 #include "gens_core/mem/mem_s68k.h"
 #include "gens_core/sound/pcm.h"
 #include "cd_sys.hpp"
-
-// CD-ROM drive access
-#ifdef GENS_CDROM
-#include "cd_aspi.h"
-#endif
 
 #define CDC_DMA_SPEED 256
 
@@ -137,9 +139,8 @@ void Update_CDC_TRansfert(void)
 			dest = (unsigned char *) Ram_Prg;
 			dep = (CDC.DMA_Adr & 0xFFFF) << 3;
 			add_dest = 2;
-#ifdef DEBUG_CD
-//                      fprintf(debug_SCD_file, "DMA transfert PRG RAM : adr = %.8X  ", dep);
-#endif
+			
+			DEBUG_MSG(lc89510, 1, "DMA transfert PRG RAM : adr = %.8X", dep);
 			break;
 		
 		case 0x0700:		// WORD RAM
@@ -179,20 +180,16 @@ void Update_CDC_TRansfert(void)
 			
 			if (Int_Mask_S68K & 0x20)
 				sub68k_interrupt (5, -1);
-#ifdef DEBUG_CD
-			fprintf(debug_SCD_file, "CDC - DTE interrupt\n");
-#endif
+			
+			DEBUG_MSG(lc89510, 1, "CDC - DTE interrupt");
 		}
 	}
 	else
 		length = CDC_DMA_SPEED;
-
-#ifdef DEBUG_CD
-//      fprintf(debug_SCD_file, "DMA length = %.4X\n", length);
-#endif
 	
+	DEBUG_MSG(lc89510, 1, "DMA length = %.4X", length);
 	
-  	if ((CDC.RS0 & 0x0700) == 0x0400)
+	if ((CDC.RS0 & 0x0700) == 0x0400)
 	{
 		// PCM DMA
 		int len = length;
@@ -261,18 +258,15 @@ unsigned short Read_CDC_Host_SUB(void)
 					if (Int_Mask_S68K & 0x20)
 					sub68k_interrupt (5, -1);
 					
-					#ifdef DEBUG_CD
-						fprintf(debug_SCD_file, "CDC - DTE interrupt\n");
-					#endif
+					DEBUG_MSG(lc89510, 1, "CDC - DTE interrupt");
 				}
 			}
 			val = *(unsigned short *) &CDC.Buffer[CDC.DAC.N];
 			CDC.DAC.N += 2;
 			val = (val >> 8) | (val << 8);
-			#ifdef DEBUG_CD
-			//      fprintf(debug_SCD_file, "Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X\n", val, CDC.DBC.N, CDC.DAC.N);
-			#endif
 			
+			DEBUG_MSG(lc89510, 1, "Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X",
+				  val, CDC.DBC.N, CDC.DAC.N);
 			return val;
 		}
 	}
@@ -304,19 +298,16 @@ unsigned short Read_CDC_Host_MAIN(void)
 					
 					if (Int_Mask_S68K & 0x20)
 						sub68k_interrupt (5, -1);
-						
-					#ifdef DEBUG_CD
-						fprintf(debug_SCD_file, "CDC - DTE interrupt\n");
-					#endif
+					
+					DEBUG_MSG(lc89510, 1, "CDC - DTE interrupt");
 				}
 			}
 			val = *(unsigned short *) &CDC.Buffer[CDC.DAC.N];
 			CDC.DAC.N += 2;
 			val = (val >> 8) | (val << 8);
-			#ifdef DEBUG_CD
-			//      fprintf(debug_SCD_file, "Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X\n", val, CDC.DBC.N, CDC.DAC.N);
-			#endif
 			
+			DEBUG_MSG(lc89510, 1, "Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X",
+				  val, CDC.DBC.N, CDC.DAC.N);
 			return val;
 		}
 	}
@@ -352,146 +343,110 @@ unsigned char CDC_Read_Reg(void)
 {
 	unsigned char ret;
 	
-	#ifdef DEBUG_CD
-		fprintf(debug_SCD_file, "CDC read reg %.2d = ", CDC.RS0 & 0xF);
-	#endif
-	
 	switch (CDC.RS0 & 0xF)
 	{
 		case 0x0:			// COMIN
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.COMIN);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.COMIN);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x1;
 			return CDC.COMIN;
 		
 		case 0x1:			// IFSTAT
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.IFSTAT);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.IFSTAT);
 			
 			CDC_Decode_Reg_Read |= (1 << 1);	// Reg 1 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x2;
 			return CDC.IFSTAT;
 		
 		case 0x2:			// DBCL
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.DBC.B.L);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.DBC.B.L);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x3;
 			return CDC.DBC.B.L;
 		
 		case 0x3:			// DBCH
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.DBC.B.H);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.DBC.B.H);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x4;
 			return CDC.DBC.B.H;
 		
 		case 0x4:			// HEAD0
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.HEAD.B.B0);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B0);
 			
 			CDC_Decode_Reg_Read |= (1 << 4);	// Reg 4 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x5;
 			return CDC.HEAD.B.B0;
 		
 		case 0x5:			// HEAD1
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.HEAD.B.B1);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B1);
 			
 			CDC_Decode_Reg_Read |= (1 << 5);	// Reg 5 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x6;
 			return CDC.HEAD.B.B1;
 		
 		case 0x6:			// HEAD2
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.HEAD.B.B2);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B2);
 			
 			CDC_Decode_Reg_Read |= (1 << 6);	// Reg 6 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x7;
 			return CDC.HEAD.B.B2;
 		
 		case 0x7:			// HEAD3
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.HEAD.B.B3);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B3);
 			
 			CDC_Decode_Reg_Read |= (1 << 7);	// Reg 7 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x8;
 			return CDC.HEAD.B.B3;
 		
 		case 0x8:			// PTL
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.PT.B.L);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.PT.B.L);
 			
 			CDC_Decode_Reg_Read |= (1 << 8);	// Reg 8 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x9;
 			return CDC.PT.B.L;
 		
 		case 0x9:			// PTH
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.PT.B.H);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.PT.B.H);
 			
 			CDC_Decode_Reg_Read |= (1 << 9);	// Reg 9 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xA;
 			return CDC.PT.B.H;
 		
 		case 0xA:			// WAL
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.WA.B.L);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.WA.B.L);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xB;
 			return CDC.WA.B.L;
 		
 		case 0xB:			// WAH
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.WA.B.H);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.WA.B.H);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xC;
 			return CDC.WA.B.H;
 		
 		case 0xC:			// STAT0
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.STAT.B.B0);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B0);
 			
 			CDC_Decode_Reg_Read |= (1 << 12);	// Reg 12 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xD;
 			return CDC.STAT.B.B0;
 		
 		case 0xD:			// STAT1
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.STAT.B.B1);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B1);
 			
 			CDC_Decode_Reg_Read |= (1 << 13);	// Reg 13 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xE;
 			return CDC.STAT.B.B1;
 		
 		case 0xE:			// STAT2
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.STAT.B.B2);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B2);
 			
 			CDC_Decode_Reg_Read |= (1 << 14);	// Reg 14 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xF;
 			return CDC.STAT.B.B2;
 		
 		case 0xF:			// STAT3
-			#ifdef DEBUG_CD
-				fprintf(debug_SCD_file, "%.2X\n", CDC.STAT.B.B3);
-			#endif
+			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B3);
 			
 			ret = CDC.STAT.B.B3;
 			CDC.IFSTAT |= 0x20;	// decoding interrupt flag cleared
@@ -509,9 +464,7 @@ unsigned char CDC_Read_Reg(void)
 
 void CDC_Write_Reg(unsigned char Data)
 {
-	#ifdef DEBUG_CD
-		fprintf(debug_SCD_file, "CDC write reg%d = %.2X\n", CDC.RS0 & 0xF, Data);
-	#endif
+	DEBUG_MSG(lc89510, 1, "CDC write reg%d = %.2X", CDC.RS0 & 0xF, Data);
 	
 	switch (CDC.RS0 & 0xF)
 	{
@@ -566,14 +519,10 @@ void CDC_Write_Reg(unsigned char Data)
 				CDC.IFSTAT &= ~0x08;	// Data transfert in progress
 				SCD.Status_CDC |= 0x08;	// Data transfert in progress
 				CDC.RS0 &= 0x7FFF;	// A data transfert start
-			
-				#ifdef DEBUG_CD
-					fprintf(debug_SCD_file,
-						"\n************** Starting Data Transfert ***********\n");
-					fprintf(debug_SCD_file,
-						"RS0 = %.4X  DAC = %.4X  DBC = %.4X  DMA adr = %.4X\n\n",
-						CDC.RS0, CDC.DAC.N, CDC.DBC.N, CDC.DMA_Adr);
-				#endif
+				
+				DEBUG_MSG(lc89510, 1, "************** Starting Data Transfert ***********");
+				DEBUG_MSG(lc89510, 1, "RS0 = %.4X  DAC = %.4X  DBC = %.4X  DMA adr = %.4X",
+					  CDC.RS0, CDC.DAC.N, CDC.DBC.N, CDC.DMA_Adr);
 			}
 			break;
 		
@@ -624,12 +573,9 @@ void CDC_Write_Reg(unsigned char Data)
 
 void CDD_Processing(void)
 {
-	#ifdef DEBUG_CD
-		fprintf(debug_SCD_file, "CDD exporting status\n");
-		fprintf(debug_SCD_file,
-			"Status=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X, Ext=%.4X\n",
-			CDD.Status, CDD.Minute, CDD.Seconde, CDD.Frame, CDD.Ext);
-	#endif
+	DEBUG_MSG(lc89510, 1, "CDD exporting status");
+	DEBUG_MSG(lc89510, 1, "Status=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X, Ext=%.4X",
+		  CDD.Status, CDD.Minute, CDD.Seconde, CDD.Frame, CDD.Ext);
 	
 	CDD_Export_Status();
 	sub68k_interrupt(4, -1);
@@ -638,16 +584,13 @@ void CDD_Processing(void)
 
 void CDD_Import_Command(void)
 {
-	#ifdef DEBUG_CD
-		fprintf(debug_SCD_file, "CDD importing command\n");
-		fprintf(debug_SCD_file,
-			"Commande=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X  Checksum=%.4X\n",
+	DEBUG_MSG(lc89510, 1, "CDD importing command");
+	DEBUG_MSG(lc89510, 1, "Commande=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X  Checksum=%.4X",
 			(CDD.Trans_Comm[0] & 0xFF) + ((CDD.Trans_Comm[1] & 0xFF) << 8),
 			(CDD.Trans_Comm[2] & 0xFF) + ((CDD.Trans_Comm[3] & 0xFF) << 8),
 			(CDD.Trans_Comm[4] & 0xFF) + ((CDD.Trans_Comm[5] & 0xFF) << 8),
 			(CDD.Trans_Comm[6] & 0xFF) + ((CDD.Trans_Comm[7] & 0xFF) << 8),
 			(CDD.Trans_Comm[8] & 0xFF) + ((CDD.Trans_Comm[9] & 0xFF) << 8));
-	#endif
 	
 	switch (CDD.Trans_Comm[1])
 	{
@@ -745,18 +688,14 @@ void CDD_Import_Command(void)
 
 unsigned char SCD_Read_Byte(unsigned int Adr)
 {
-	#ifdef DEBUG_CD
-		fprintf(debug_SCD_file, "SCD read (B), address = %.8X\n", Adr);
-	#endif
+	DEBUG_MSG(lc89510, 1, "SCD read (B), address = %.8X", Adr);
 	return 0;
 }
 
 
 unsigned short SCD_Read_Word(unsigned int Adr)
 {
-	#ifdef DEBUG_CD
-		fprintf(debug_SCD_file, "SCD read (W), address = %.8X\n", Adr);
-	#endif
+	DEBUG_MSG(lc89510, 1, "SCD read (W), address = %.8X", Adr);
 	return 0;
 }
 
