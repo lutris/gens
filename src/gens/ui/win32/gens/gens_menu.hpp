@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Main Window.                                              *
+ * Gens: (Win32) Main Window. (Menu Handling Code)                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,27 +20,39 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_GENS_WINDOW_HPP
-#define GENS_WIN32_GENS_WINDOW_HPP
+#ifndef GENS_WIN32_MENU_HPP
+#define GENS_WIN32_MENU_HPP
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ui/common/gens/gens_menu.h"
+#include <windows.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <windows.h>
-#include <stdint.h>
+void		gens_menu_parse(const GensMenuItem_t* menu, HMENU container);
 
-HWND initGens_hWnd(void);
-HWND create_gens_window(void);
-void create_gens_window_menubar(void);
-extern HWND Gens_hWnd;
+// New menu handler.
+HMENU		gens_menu_find_item(uint16_t id);
+
+extern HMENU	MainMenu;
+extern HACCEL	hAccelTable_Menu;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_WIN32_GENS_WINDOW_HPP */
+#ifdef __cplusplus
+
+// Hash table containing all the menu items.
+// Key is the menu ID.
+#include "macros/hashtable.hpp"
+#include <utility>
+typedef GENS_HASHTABLE<uint16_t, HMENU> gensMenuMap_t;
+typedef std::pair<uint16_t, HMENU> gensMenuMapItem_t;
+
+extern gensMenuMap_t gens_menu_map;
+
+#endif /* __cplusplus */
+
+#endif /* GENS_WIN32_MENU_HPP */

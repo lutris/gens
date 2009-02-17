@@ -30,6 +30,7 @@
 #include "gens_window.hpp"
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
+#include "gens_menu.hpp"
 
 // Common UI functions.
 #include "ui/common/gens/gens_menu.h"
@@ -107,7 +108,7 @@ void Sync_Gens_Window(void)
 void Sync_Gens_Window_FileMenu(void)
 {
 	// Find the file menu.
-	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
+	HMENU mnuFile = gens_menu_find_item(IDM_FILE_MENU);
 	
         // Netplay is currently not usable.
 	EnableMenuItem(mnuFile, IDM_FILE_NETPLAY, MF_BYCOMMAND | MF_GRAYED);
@@ -125,7 +126,7 @@ void Sync_Gens_Window_FileMenu(void)
 	EnableMenuItem(mnuFile, IDM_FILE_QUICKSAVE, MF_BYCOMMAND | enableFlags);
 	
 	// Current savestate
-	HMENU mnuChangeState = findMenuItem(IDM_FILE_CHANGESTATE);
+	HMENU mnuChangeState = gens_menu_find_item(IDM_FILE_CHANGESTATE);
 	CheckMenuRadioItem(mnuChangeState,
 			   IDM_FILE_CHANGESTATE_0,
 			   IDM_FILE_CHANGESTATE_9,
@@ -142,10 +143,10 @@ void Sync_Gens_Window_FileMenu(void)
 void Sync_Gens_Window_FileMenu_ROMHistory(void)
 {
 	// Find the file menu.
-	HMENU mnuFile = findMenuItem(IDM_FILE_MENU);
+	HMENU mnuFile = gens_menu_find_item(IDM_FILE_MENU);
 	
 	// Find the ROM History submenu.
-	HMENU mnuROMHistory = findMenuItem(IDM_FILE_ROMHISTORY);
+	HMENU mnuROMHistory = gens_menu_find_item(IDM_FILE_ROMHISTORY);
 	
 	// Delete and/or recreate the ROM History submenu.
 #ifdef GENS_CDROM
@@ -156,13 +157,13 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	
 	DeleteMenu(mnuFile, (UINT)mnuROMHistory, MF_BYCOMMAND);
 	DeleteMenu(mnuFile, IDM_FILE_ROMHISTORY, MF_BYCOMMAND);
-	gensMenuMap.erase(IDM_FILE_ROMHISTORY);
+	gens_menu_map.erase(IDM_FILE_ROMHISTORY);
 	if (mnuROMHistory)
 		DestroyMenu(mnuROMHistory);
 	
 	mnuROMHistory = CreatePopupMenu();
 	InsertMenu(mnuFile, posROMHistory, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
-	gensMenuMap.insert(win32MenuMapItem(IDM_FILE_ROMHISTORY, mnuROMHistory));
+	gens_menu_map.insert(gensMenuMapItem_t(IDM_FILE_ROMHISTORY, mnuROMHistory));
 	
 	string sROMHistoryEntry;
 	int romFormat;
@@ -204,7 +205,7 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
  */
 void Sync_Gens_Window_GraphicsMenu(void)
 {
-	HMENU mnuGraphics = findMenuItem(IDM_GRAPHICS_MENU);
+	HMENU mnuGraphics = gens_menu_find_item(IDM_GRAPHICS_MENU);
 	
 	// Full Screen
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_FULLSCREEN,
@@ -216,7 +217,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	flags = (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_VSYNC ? MF_ENABLED : MF_GRAYED);
 	EnableMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | flags);
 	flags = (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH ? MF_ENABLED : MF_GRAYED);
-	EnableMenuItem(mnuGraphics, (UINT)(findMenuItem(IDM_GRAPHICS_STRETCH)), MF_BYCOMMAND | flags);
+	EnableMenuItem(mnuGraphics, (UINT)(gens_menu_find_item(IDM_GRAPHICS_STRETCH)), MF_BYCOMMAND | flags);
 	
 	// VSync
 	if (vdraw_get_fullscreen())
@@ -226,7 +227,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	CheckMenuItem(mnuGraphics, IDM_GRAPHICS_VSYNC, MF_BYCOMMAND | flags);
 	
 	// Stretch
-	HMENU mnuStretch = findMenuItem(IDM_GRAPHICS_STRETCH);
+	HMENU mnuStretch = gens_menu_find_item(IDM_GRAPHICS_STRETCH);
 	CheckMenuRadioItem(mnuStretch,
 			   IDM_GRAPHICS_STRETCH_NONE,
 			   IDM_GRAPHICS_STRETCH_FULL,
@@ -244,7 +245,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		      MF_BYCOMMAND | (Sprite_Over ? MF_CHECKED : MF_UNCHECKED));
 	
 	// Frame Skip
-	HMENU mnuFrameSkip = findMenuItem(IDM_GRAPHICS_FRAMESKIP);
+	HMENU mnuFrameSkip = gens_menu_find_item(IDM_GRAPHICS_FRAMESKIP);
 	CheckMenuRadioItem(mnuFrameSkip,
 			   IDM_GRAPHICS_FRAMESKIP_AUTO,
 			   IDM_GRAPHICS_FRAMESKIP_8,
@@ -265,19 +266,19 @@ void Sync_Gens_Window_GraphicsMenu(void)
 static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 {
 	// Find the Backend submenu.
-	HMENU mnuBackend = findMenuItem(IDM_GRAPHICS_BACKEND);
+	HMENU mnuBackend = gens_menu_find_item(IDM_GRAPHICS_BACKEND);
 	
 	// Delete and/or recreate the Backend submenu.
 	DeleteMenu(parent, (UINT)mnuBackend, MF_BYCOMMAND);
 	DeleteMenu(parent, IDM_GRAPHICS_BACKEND, MF_BYCOMMAND);
-	gensMenuMap.erase(IDM_GRAPHICS_BACKEND);
+	gens_menu_map.erase(IDM_GRAPHICS_BACKEND);
 	if (mnuBackend)
 		DestroyMenu(mnuBackend);
 	
 	// Create a new submenu.
 	mnuBackend = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuBackend, "&Backend\tShift+R");
-	gensMenuMap.insert(win32MenuMapItem(IDM_GRAPHICS_BACKEND, mnuBackend));
+	gens_menu_map.insert(gensMenuMapItem_t(IDM_GRAPHICS_BACKEND, mnuBackend));
 	
 	// Add the backends.
 	int curBackend = 0;
@@ -307,19 +308,19 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 {
 	// Find the Render submenu.
-	HMENU mnuRender = findMenuItem(IDM_GRAPHICS_RENDER);
+	HMENU mnuRender = gens_menu_find_item(IDM_GRAPHICS_RENDER);
 	
 	// Delete and/or recreate the Render submenu.
 	DeleteMenu(parent, (UINT)mnuRender, MF_BYCOMMAND);
 	DeleteMenu(parent, IDM_GRAPHICS_RENDER, MF_BYCOMMAND);
-	gensMenuMap.erase(IDM_GRAPHICS_RENDER);
+	gens_menu_map.erase(IDM_GRAPHICS_RENDER);
 	if (mnuRender)
 		DestroyMenu(mnuRender);
 	
 	// Render submenu
 	mnuRender = CreatePopupMenu();
 	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuRender, "&Render");
-	gensMenuMap.insert(win32MenuMapItem(IDM_GRAPHICS_RENDER, mnuRender));
+	gens_menu_map.insert(gensMenuMapItem_t(IDM_GRAPHICS_RENDER, mnuRender));
 	
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
@@ -364,7 +365,7 @@ void Sync_Gens_Window_CPUMenu(void)
 	
 	static const unsigned int flags = MF_BYCOMMAND | MF_STRING;
 	
-	HMENU mnuCPU = findMenuItem(IDM_CPU_MENU);
+	HMENU mnuCPU = gens_menu_find_item(IDM_CPU_MENU);
 	
 #ifdef GENS_DEBUGGER
 	// Synchronize the Debug submenu.
@@ -398,7 +399,7 @@ void Sync_Gens_Window_CPUMenu(void)
 	}
 	
 	// Country code
-	HMENU mnuCountry = findMenuItem(IDM_CPU_COUNTRY);
+	HMENU mnuCountry = gens_menu_find_item(IDM_CPU_COUNTRY);
 	CheckMenuRadioItem(mnuCountry,
 			   IDM_CPU_COUNTRY_AUTO,
 			   IDM_CPU_COUNTRY_JAPAN_PAL,
@@ -424,18 +425,18 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 	if (Game == NULL)
 		flags |= MF_GRAYED;
 	
-	HMENU mnuDebug = findMenuItem(IDM_CPU_DEBUG);
+	HMENU mnuDebug = gens_menu_find_item(IDM_CPU_DEBUG);
 	
 	// Delete and/or recreate the Debug submenu.
 	DeleteMenu(parent, (UINT)mnuDebug, MF_BYCOMMAND);
-	gensMenuMap.erase(IDM_CPU_DEBUG);
+	gens_menu_map.erase(IDM_CPU_DEBUG);
 	if (mnuDebug)
 		DestroyMenu(mnuDebug);
 	
 	// Debug submenu
 	mnuDebug = CreatePopupMenu();
 	InsertMenu(parent, position, flags, (UINT_PTR)mnuDebug, "&Debug");
-	gensMenuMap.insert(win32MenuMapItem(IDM_CPU_DEBUG, mnuDebug));
+	gens_menu_map.insert(gensMenuMapItem_t(IDM_CPU_DEBUG, mnuDebug));
 	
 	if (flags & MF_GRAYED)
 		return;
@@ -470,7 +471,7 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
  */
 void Sync_Gens_Window_SoundMenu(void)
 {
-	HMENU mnuSound = findMenuItem(IDM_SOUND_MENU);
+	HMENU mnuSound = gens_menu_find_item(IDM_SOUND_MENU);
 	
 	// Get the Enabled flag for the other menu items.
 	bool soundEnabled = audio_get_enabled();
@@ -508,7 +509,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	// Move it somewhere else.
 	const int SndRates[6][2] = {{0, 11025}, {1, 22050}, {2, 44100}};
 	
-	HMENU mnuRate = findMenuItem(IDM_SOUND_RATE);
+	HMENU mnuRate = gens_menu_find_item(IDM_SOUND_RATE);
 	for (int i = 0; i < 3; i++)
 	{
 		if (SndRates[i][1] == audio_get_sound_rate())
@@ -547,20 +548,20 @@ void Sync_Gens_Window_SoundMenu(void)
 void Sync_Gens_Window_PluginsMenu(void)
 {
 	// Find the Plugins menu.
-	HMENU mnuPlugins = findMenuItem(IDM_PLUGINS_MENU);
+	HMENU mnuPlugins = gens_menu_find_item(IDM_PLUGINS_MENU);
 	
 	// Delete and/or recreate the Plugins menu.
 	static const unsigned short posPlugins = 5;
 	
 	DeleteMenu(MainMenu, (UINT)mnuPlugins, MF_BYCOMMAND);
-	gensMenuMap.erase(IDM_PLUGINS_MENU);
+	gens_menu_map.erase(IDM_PLUGINS_MENU);
 	if (mnuPlugins)
 		DestroyMenu(mnuPlugins);
 	
 	mnuPlugins = CreatePopupMenu();
 	InsertMenu(MainMenu, posPlugins, MF_BYPOSITION | MF_POPUP | MF_STRING,
 		   (UINT_PTR)mnuPlugins, "&Plugins");
-	gensMenuMap.insert(win32MenuMapItem(IDM_PLUGINS_MENU, mnuPlugins));
+	gens_menu_map.insert(gensMenuMapItem_t(IDM_PLUGINS_MENU, mnuPlugins));
 	
 	// Create the plugin menu items.
 	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
@@ -597,7 +598,7 @@ void Sync_Gens_Window_PluginsMenu(void)
  */
 void Sync_Gens_Window_OptionsMenu(void)
 {
-	HMENU mnuOptions = findMenuItem(IDM_OPTIONS_MENU);
+	HMENU mnuOptions = gens_menu_find_item(IDM_OPTIONS_MENU);
 	
 	// SegaCD SRAM Size
 	int SRAM_ID = (BRAM_Ex_State & 0x100 ? BRAM_Ex_Size : -1);

@@ -30,6 +30,9 @@
 #include "gens_window_sync.hpp"
 #include "emulator/g_md.hpp"
 
+// Menus.
+#include "gens_menu.hpp"
+
 #include "emulator/options.hpp"
 #include "util/file/config_file.hpp"
 
@@ -220,7 +223,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 				
 				default:
 					// Menu item selected.
-					mnuCallback = findMenuItem(LOWORD(wParam));
+					mnuCallback = gens_menu_find_item(LOWORD(wParam));
 					state = (GetMenuState(mnuCallback, LOWORD(wParam), MF_BYCOMMAND) & MF_CHECKED);
 					gens_common_menu_callback(LOWORD(wParam), state);
 					break;

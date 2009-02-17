@@ -19,6 +19,7 @@ gens_SOURCES += \
 		ui/win32/gens/gens_window.cpp \
 		ui/win32/gens/gens_window_callbacks.cpp \
 		ui/win32/gens/gens_window_sync.cpp \
+		ui/win32/gens/gens_menu.cpp \
 		ui/win32/controller_config/cc_window.c \
 		ui/win32/bios_misc_files/bios_misc_files_window.cpp \
 		ui/win32/bios_misc_files/bios_misc_files_window_callbacks.c \
@@ -61,6 +62,7 @@ noinst_HEADERS += \
 		ui/win32/gens/gens_window.hpp \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \
+		ui/win32/gens/gens_menu.hpp \
 		ui/win32/controller_config/cc_window.h \
 		ui/win32/bios_misc_files/bios_misc_files_window.hpp \
 		ui/win32/bios_misc_files/bios_misc_files_window_callbacks.h \

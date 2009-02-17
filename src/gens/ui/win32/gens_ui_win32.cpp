@@ -27,7 +27,9 @@
 
 #include <unistd.h>
 #include <string.h>
+
 #include "gens/gens_window.hpp"
+#include "ui/win32/gens/gens_menu.hpp"
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
