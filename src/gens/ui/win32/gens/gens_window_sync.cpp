@@ -27,7 +27,6 @@
 #include <string.h>
 #include <windows.h>
 
-#include "gens_window.hpp"
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_menu.hpp"

@@ -25,7 +25,6 @@
 #include "bios_misc_files_window.hpp"
 #include "bios_misc_files_window_callbacks.h"
 #include "bios_misc_files_window_misc.hpp"
-#include "gens/gens_window.hpp"
 
 #include "emulator/g_main.hpp"
 

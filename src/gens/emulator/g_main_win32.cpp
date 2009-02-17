@@ -42,7 +42,7 @@
 // VDraw C++ functions.
 #include "video/vdraw_cpp.hpp"
 
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 
 #ifdef GENS_DEBUGGER
@@ -159,7 +159,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
-	initGens_hWnd();
+	gens_window_init_hWnd();
 	
 	// Initialize vdraw_ddraw.
 	vdraw_init();

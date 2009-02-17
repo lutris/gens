@@ -32,7 +32,7 @@
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 #include <windows.h>
 #include <windowsx.h>

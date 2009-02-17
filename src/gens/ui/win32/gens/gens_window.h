@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Debug Messages.                                                   *
+ * Gens: (Win32) Main Window.                                              *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,34 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
+#ifndef GENS_WIN32_GENS_WINDOW_H
+#define GENS_WIN32_GENS_WINDOW_H
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#include "debug_msg.h"
+// Win32 includes.
+#include <windows.h>
 
-#if defined(GENS_UI_WIN32)
-	#include <windows.h>
-#elif defined(GENS_UI_GTK)
-	#include <gtk/gtk.h>
-#endif
+extern HWND gens_window;
 
-// Needed for the parent window.
-#include "gens/gens_window.h"
+void gens_window_init_hWnd(void);
+void gens_window_create(void);
+void gens_window_create_menubar(void);
 
-
-void debug_msgbox(const char* msg, const char* title)
-{
-	#if defined(GENS_UI_WIN32)
-		MessageBox(gens_window, msg, title, MB_ICONSTOP);
-	#elif defined(GENS_UI_GTK)
-		GtkWidget *msgbox = gtk_message_dialog_new(
-					GTK_WINDOW(gens_window),
-					GTK_DIALOG_MODAL,
-					GTK_MESSAGE_ERROR,
-					GTK_BUTTONS_OK,	msg);
-		gtk_window_set_title(GTK_WINDOW(msgbox), title);
-		gtk_dialog_run(GTK_DIALOG(msgbox));
-		gtk_widget_destroy(msgbox);
-	#endif
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* GENS_WIN32_GENS_WINDOW_H */

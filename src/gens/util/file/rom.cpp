@@ -36,7 +36,7 @@ using std::deque;
 
 #include "ui/gens_ui.hpp"
 #include "zip_select/zip_select_dialog.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // File Decompressors.
 #include "util/file/decompressor/decompressor.h"

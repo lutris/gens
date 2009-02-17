@@ -22,7 +22,7 @@
 
 #include "country_code_window.h"
 #include "country_code_window_callbacks.h"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

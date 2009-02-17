@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 
 #include "zip_select_dialog.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 #include "emulator/g_main.hpp"
 
@@ -47,9 +47,8 @@ static inline int getCurListItemData(HWND hWndDlg, int nIDDlgItem);
 static LRESULT CALLBACK Zip_Select_Dialog_DlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 
-ZipSelectDialog::ZipSelectDialog(HWND parent)
+ZipSelectDialog::ZipSelectDialog()
 {
-	m_Parent = parent;
 }
 
 ZipSelectDialog::~ZipSelectDialog()
@@ -73,7 +72,7 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 	file_list_t *file;
 	file = reinterpret_cast<file_list_t*>(DialogBoxParam(
 				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
-				  m_Parent,
+				  gens_window,
 				  reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
 				  reinterpret_cast<LPARAM>(this)));
 	

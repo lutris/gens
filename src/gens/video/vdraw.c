@@ -61,7 +61,7 @@
 // windows.h is needed on Win32 for MessageBox().
 #ifdef GENS_OS_WIN32
 #include <windows.h>
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 #endif /* GENS_OS_WIN32 */
 
 

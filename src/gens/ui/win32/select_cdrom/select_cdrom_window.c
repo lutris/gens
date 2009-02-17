@@ -24,7 +24,7 @@
 
 #include "select_cdrom_window.h"
 #include "select_cdrom_window_callbacks.h"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // SegaCD
 #include "emulator/g_mcd.hpp"

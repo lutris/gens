@@ -25,7 +25,7 @@
 #endif /* HAVE_CONFIG_H */
 
 // Main window.
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // C includes.
 #include <stdio.h>

@@ -27,7 +27,7 @@
 #include "emulator/g_main.hpp"
 
 // Gens window.
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 #include "ui/gens_ui.hpp"
 
@@ -381,7 +381,7 @@ int vdraw_gdi_reinit_gens_window(void)
 	
 	// Rebuild the menu bar.
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
-	create_gens_window_menubar();
+	gens_window_create_menubar();
 	
 	MDP_Render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;

@@ -26,7 +26,7 @@
 
 #include "cc_window.h"
 #include "emulator/g_main.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // C includes.
 #include <stdio.h>

@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 #include "ui/win32/gens/gens_menu.hpp"
 
 #include "emulator/g_main.hpp"
@@ -192,7 +192,7 @@ void GensUI::init(int *argc, char **argv[])
 	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));
 	
 	// Create and show the Gens window.
-	create_gens_window();
+	gens_window_create();
 	
 	// Set the window title to Idle.
 	setWindowTitle_Idle();

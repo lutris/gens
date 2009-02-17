@@ -35,7 +35,7 @@
 class ZipSelectDialog : public WndBase
 {
 	public:
-		ZipSelectDialog(HWND parent = NULL);
+		ZipSelectDialog();
 		~ZipSelectDialog();
 		
 		file_list_t* getFile(file_list_t *file_list);
@@ -43,7 +43,6 @@ class ZipSelectDialog : public WndBase
 		void init(HWND hWndDlg);
 	
 	protected:
-		HWND m_Parent;
 		file_list_t *m_fileList;
 };
 

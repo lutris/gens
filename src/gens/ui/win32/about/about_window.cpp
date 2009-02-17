@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #include "about_window.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
