@@ -214,12 +214,9 @@ struct pluginDirEntry
 void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 {
 	// Scan the plugin directory for external plugins.
-	DIR *mdpDir;
+	DIR *dir_mdp = opendir(directory.c_str());
 	
-	// Scan the plugin directory for external plugins.
-	mdpDir = opendir(directory.c_str());
-	
-	if (!mdpDir)
+	if (!dir_mdp)
 	{
 		// Could not open the MDP plugin directory.
 		DEBUG_MSG(mdp, 1, "Could not open MDP plugin directory: %s", directory.c_str());
@@ -240,8 +237,7 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 		struct stat dirstat;
 	#endif /* !_DIRENT_HAVE_D_TYPE */
 	
-	d_entry = readdir(mdpDir);
-	while (d_entry)
+	while ((d_entry = readdir(dir_mdp)))
 	{
 		// Check the file type.
 		#ifdef _DIRENT_HAVE_D_TYPE
@@ -300,10 +296,10 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 				}
 			}
 		}
-		
-		// Get the next directory entry.
-		d_entry = readdir(mdpDir);
 	}
+	
+	// Close the directory.
+	closedir(dir_mdp);
 	
 	// Sort the list of plugins.
 	pluginEntries.sort();
