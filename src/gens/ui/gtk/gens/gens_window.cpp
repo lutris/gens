@@ -28,6 +28,9 @@
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 
+// Debug messages.
+#include "macros/debug_msg.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -109,17 +112,59 @@ int do_callbacks = 1;
 
 GtkWidget* create_gens_window(void)
 {
-	GdkPixbuf *gens_window_icon_pixbuf;
 	GtkWidget *vbox1;
 	GtkWidget *sdlsock;
 	
+	// Create the icon for the Gens window, and set it as default for all windows.
+	// TODO: Move this to a common C file.
+	
+	GList *gens_icon_list = NULL;
+	static const char* const gens_icon_filename[2] =
+	{
+		GENS_DATADIR "/gens_32x32.png",
+		GENS_DATADIR "/gens_16x16.png"
+	};
+	
+	// Add the icons.
+	for (int i = 0; i < 2; i++)
+	{
+		if (!g_file_test(gens_icon_filename[i], G_FILE_TEST_EXISTS))
+		{
+			// File not found.
+			DEBUG_MSG(gens, 1, "Image file not found: %s",
+				  gens_icon_filename[i]);
+			continue;
+		}
+		
+		// Load the icon.
+		GError *error = NULL;
+		GdkPixbuf *gens_icon = gdk_pixbuf_new_from_file(gens_icon_filename[i], &error);
+		if (!gens_icon)
+		{
+			DEBUG_MSG(gens, 1, "Error loading image file %s: %s",
+				  gens_icon_filename[i], error->message);
+			g_error_free(error);
+			continue;
+		}
+		
+		// Add the icon to the icon list.
+		gens_icon_list = g_list_append(gens_icon_list, gens_icon);
+	}
+	
+	// Set the icon list as the default icon list.
+	gtk_window_set_default_icon_list(gens_icon_list);
+	
+	// Free the icon list.
+	g_list_free(gens_icon_list);
+	
+	// Create the accelerator group.
 	accel_group = gtk_accel_group_new();
 	
 	// Create the Gens window.
-	CREATE_GTK_WINDOW(gens_window, "gens_window", "Gens",
-			  gens_window_icon_pixbuf, "Gens2.ico");
-	gtk_window_set_resizable(GTK_WINDOW(gens_window), FALSE);
+	gens_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_container_set_border_width(GTK_CONTAINER(gens_window), 0);
+	gtk_window_set_title(GTK_WINDOW(gens_window), "Gens");
+	gtk_window_set_position(GTK_WINDOW(gens_window), GTK_WIN_POS_CENTER);
 	
 	// Layout objects.
 	vbox1 = gtk_vbox_new(FALSE, 0);
