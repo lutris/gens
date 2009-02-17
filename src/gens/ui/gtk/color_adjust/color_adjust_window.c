@@ -91,7 +91,6 @@ GtkAccelGroup *accel_group;
  */
 GtkWidget* create_color_adjust_window(void)
 {
-	GdkPixbuf *color_adjust_window_icon_pixbuf;
 	GtkWidget *vbox_ca;
 	GtkWidget *vbox_adjustment;
 	GtkWidget *table_sliders;
@@ -114,8 +113,7 @@ GtkWidget* create_color_adjust_window(void)
 	// Create the Color Adjustment window.
 	CREATE_GTK_WINDOW(color_adjust_window,
 			  "color_adjust_window",
-			  "Color Adjustment",
-			  color_adjust_window_icon_pixbuf, "Gens2.ico");
+			  "Color Adjustment");
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)color_adjust_window, "delete_event",

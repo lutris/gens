@@ -50,7 +50,6 @@ GtkAccelGroup *accel_group;
  */
 GtkWidget* create_country_code_window(void)
 {
-	GdkPixbuf *country_code_window_icon_pixbuf;
 	GtkWidget *vbox_country;
 	GtkWidget *frame_country, *label_frame_country;
 	GtkWidget *hbox_list, *treeview_country_list;
@@ -70,8 +69,7 @@ GtkWidget* create_country_code_window(void)
 	// Create the Country Code window.
 	CREATE_GTK_WINDOW(country_code_window,
 			  "country_code_window",
-			  "Country Code Order",
-			  country_code_window_icon_pixbuf, "Gens2.ico");
+			  "Country Code Order");
 	
 	// Disable resizing.
 	gtk_window_set_resizable(GTK_WINDOW(country_code_window), FALSE);

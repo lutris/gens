@@ -50,7 +50,6 @@ GtkAccelGroup *accel_group;
  */
 GtkWidget* create_select_cdrom_window(void)
 {
-	GdkPixbuf *select_cdrom_window_icon_pixbuf;
 	GtkWidget *vbox_SelCD;
 	GtkWidget *frame_drive, *label_frame_drive;
 	GtkWidget *hbox_drive, *label_drive, *combo_drive;
@@ -71,8 +70,7 @@ GtkWidget* create_select_cdrom_window(void)
 	// Create the Select CD-ROM Drive Window.
 	CREATE_GTK_WINDOW(select_cdrom_window,
 			  "select_cdrom_window",
-			  "Select CD-ROM Drive",
-			  select_cdrom_window_icon_pixbuf, "Gens2.ico");
+			  "Select CD-ROM Drive");
 	
 	// Disable resizing.
 	gtk_window_set_resizable(GTK_WINDOW(select_cdrom_window), FALSE);

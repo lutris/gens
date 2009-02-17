@@ -68,7 +68,6 @@ const struct BIOSMiscFileEntry_t BIOSMiscFiles[] =
  */
 GtkWidget* create_bios_misc_files_window(void)
 {
-	GdkPixbuf *bios_misc_files_window_icon_pixbuf;
 	GtkWidget *vbox_bmf;
 	GtkWidget *frame_file = NULL, *label_frame_file = NULL, *table_frame_file = NULL;
 	GtkWidget *label_file = NULL, *entry_file = NULL, *button_file = NULL;
@@ -90,8 +89,7 @@ GtkWidget* create_bios_misc_files_window(void)
 	// Create the BIOS/Misc Files window.
 	CREATE_GTK_WINDOW(bios_misc_files_window,
 			  "bios_misc_files_window",
-			  "Configure BIOS/Misc Files",
-			  bios_misc_files_window_icon_pixbuf, "Gens2.ico");
+			  "Configure BIOS/Misc Files");
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)bios_misc_files_window, "delete_event",

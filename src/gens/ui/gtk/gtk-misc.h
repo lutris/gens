@@ -65,21 +65,14 @@ DEPRECATED GtkWidget* create_pixmap(const gchar* filename);
 
 
 // Create a GtkWindow.
-#define CREATE_GTK_WINDOW(Widget, Name, Title, IconWidget, IconFilename)			\
-{												\
-	Widget = gtk_window_new(GTK_WINDOW_TOPLEVEL);						\
-	gtk_widget_set_name(Widget, Name);							\
-	gtk_container_set_border_width(GTK_CONTAINER(Widget), 5);				\
-	gtk_window_set_title(GTK_WINDOW(Widget), Title);					\
-	gtk_window_set_position(GTK_WINDOW(Widget), GTK_WIN_POS_CENTER);			\
-	GLADE_HOOKUP_OBJECT_NO_REF(Widget, Widget, Name);					\
-												\
-	IconWidget = create_pixbuf(IconFilename);						\
-	if (IconWidget)										\
-	{											\
-		gtk_window_set_icon(GTK_WINDOW(Widget), IconWidget);				\
-		gdk_pixbuf_unref(IconWidget);							\
-	}											\
+#define CREATE_GTK_WINDOW(Widget, Name, Title)					\
+{										\
+	Widget = gtk_window_new(GTK_WINDOW_TOPLEVEL);				\
+	gtk_widget_set_name(Widget, Name);					\
+	gtk_container_set_border_width(GTK_CONTAINER(Widget), 5);		\
+	gtk_window_set_title(GTK_WINDOW(Widget), Title);			\
+	gtk_window_set_position(GTK_WINDOW(Widget), GTK_WIN_POS_CENTER);	\
+	GLADE_HOOKUP_OBJECT_NO_REF(Widget, Widget, Name);			\
 }
 
 
