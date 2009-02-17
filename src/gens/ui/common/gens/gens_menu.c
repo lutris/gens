@@ -35,15 +35,15 @@
 /** Main Menu **/
 
 
-static const struct GensMenuItem_t gmiFile[];
-static const struct GensMenuItem_t gmiGraphics[];
-static const struct GensMenuItem_t gmiCPU[];
-static const struct GensMenuItem_t gmiSound[];
-static const struct GensMenuItem_t gmiOptions[];
-static const struct GensMenuItem_t gmiPlugins[];
-static const struct GensMenuItem_t gmiHelp[];
+static const GensMenuItem_t gmiFile[];
+static const GensMenuItem_t gmiGraphics[];
+static const GensMenuItem_t gmiCPU[];
+static const GensMenuItem_t gmiSound[];
+static const GensMenuItem_t gmiOptions[];
+static const GensMenuItem_t gmiPlugins[];
+static const GensMenuItem_t gmiHelp[];
 
-const struct GensMenuItem_t gmiMain[] =
+const GensMenuItem_t gmiMain[] =
 {
 	{IDM_FILE_MENU,		GMF_ITEM_SUBMENU,	"&File",		&gmiFile[0],		0, 0, 0},
 	{IDM_GRAPHICS_MENU,	GMF_ITEM_SUBMENU,	"&Graphics",		&gmiGraphics[0],	0, 0, 0},
@@ -59,9 +59,9 @@ const struct GensMenuItem_t gmiMain[] =
 /** File Menu **/
 
 
-static const struct GensMenuItem_t gmiFile_ChgState[];
+static const GensMenuItem_t gmiFile_ChgState[];
 
-static const struct GensMenuItem_t gmiFile[] =
+static const GensMenuItem_t gmiFile[] =
 {
 	{IDM_FILE_OPENROM,	GMF_ITEM_NORMAL,	"&Open ROM...",		NULL,	GMAM_CTRL, 'O', IDIM_OPEN},
 #ifdef GENS_CDROM
@@ -85,7 +85,7 @@ static const struct GensMenuItem_t gmiFile[] =
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
-static const struct GensMenuItem_t gmiFile_ChgState[] =
+static const GensMenuItem_t gmiFile_ChgState[] =
 {
 	{IDM_FILE_CHANGESTATE_0, GMF_ITEM_RADIO, "0", NULL, 0, 0, 0},
 	{IDM_FILE_CHANGESTATE_1, GMF_ITEM_RADIO, "1", NULL, 0, 0, 0},
@@ -104,16 +104,16 @@ static const struct GensMenuItem_t gmiFile_ChgState[] =
 /** Graphics Menu **/
 
 
-static const struct GensMenuItem_t gmiGraphics_Stretch[];
+static const GensMenuItem_t gmiGraphics_Stretch[];
 #ifdef GENS_OPENGL
-static const struct GensMenuItem_t gmiGraphics_GLRes[];
+static const GensMenuItem_t gmiGraphics_GLRes[];
 #endif
 #ifdef GENS_OS_UNIX
-static const struct GensMenuItem_t gmiGraphics_bpp[];
+static const GensMenuItem_t gmiGraphics_bpp[];
 #endif
-static const struct GensMenuItem_t gmiGraphics_FrameSkip[];
+static const GensMenuItem_t gmiGraphics_FrameSkip[];
 
-static const struct GensMenuItem_t gmiGraphics[] =
+static const GensMenuItem_t gmiGraphics[] =
 {
 	{IDM_GRAPHICS_FULLSCREEN,	GMF_ITEM_NORMAL,	"&Full Screen",			NULL,	GMAM_ALT, GMAK_ENTER, IDIM_FULLSCREEN},
 	{IDM_GRAPHICS_VSYNC,		GMF_ITEM_CHECK,		"&VSync",			NULL,	GMAM_SHIFT, GMAK_F3, 0},
@@ -138,7 +138,7 @@ static const struct GensMenuItem_t gmiGraphics[] =
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
-static const struct GensMenuItem_t gmiGraphics_Stretch[] =
+static const GensMenuItem_t gmiGraphics_Stretch[] =
 {
 	{IDM_GRAPHICS_STRETCH_NONE,	GMF_ITEM_RADIO,		"&None",		NULL, 0, 0, 0},
 	{IDM_GRAPHICS_STRETCH_H,	GMF_ITEM_RADIO,		"&Horizontal Only",	NULL, 0, 0, 0},
@@ -148,7 +148,7 @@ static const struct GensMenuItem_t gmiGraphics_Stretch[] =
 };
 
 #ifdef GENS_OPENGL
-static const struct GensMenuItem_t gmiGraphics_GLRes[] =
+static const GensMenuItem_t gmiGraphics_GLRes[] =
 {
 	{IDM_GRAPHICS_OPENGL_RES_320x240,	GMF_ITEM_RADIO,		"320x240 (1x)",		NULL,	0, 0, 0},
 	{IDM_GRAPHICS_OPENGL_RES_640x480,	GMF_ITEM_RADIO,		"640x480 (2x)",		NULL,	0, 0, 0},
@@ -165,7 +165,7 @@ static const struct GensMenuItem_t gmiGraphics_GLRes[] =
 #endif
 
 #ifdef GENS_OS_UNIX
-static const struct GensMenuItem_t gmiGraphics_bpp[] =
+static const GensMenuItem_t gmiGraphics_bpp[] =
 {
 	{IDM_GRAPHICS_BPP_15,	GMF_ITEM_RADIO,		"15 (555)",	NULL,	0, 0, 0},
 	{IDM_GRAPHICS_BPP_16,	GMF_ITEM_RADIO,		"16 (565)",	NULL,	0, 0, 0},
@@ -174,7 +174,7 @@ static const struct GensMenuItem_t gmiGraphics_bpp[] =
 };
 #endif
 
-static const struct GensMenuItem_t gmiGraphics_FrameSkip[] =
+static const GensMenuItem_t gmiGraphics_FrameSkip[] =
 {
 	{IDM_GRAPHICS_FRAMESKIP_AUTO,	GMF_ITEM_RADIO,		"Auto",		NULL,	0, 0, 0},
 	{IDM_GRAPHICS_FRAMESKIP_0,	GMF_ITEM_RADIO,		"0",		NULL,	0, 0, 0},
@@ -194,11 +194,11 @@ static const struct GensMenuItem_t gmiGraphics_FrameSkip[] =
 
 
 #ifdef GENS_DEBUGGER
-static const struct GensMenuItem_t gmiCPU_Debug[];
+static const GensMenuItem_t gmiCPU_Debug[];
 #endif /* GENS_DEBUGGER */
-static const struct GensMenuItem_t gmiCPU_Country[];
+static const GensMenuItem_t gmiCPU_Country[];
 
-static const struct GensMenuItem_t gmiCPU[] =
+static const GensMenuItem_t gmiCPU[] =
 {
 #ifdef GENS_DEBUGGER
 	{IDM_CPU_DEBUG,			GMF_ITEM_SUBMENU,	"&Debug",			&gmiCPU_Debug[0], 0, 0, 0},
@@ -219,7 +219,7 @@ static const struct GensMenuItem_t gmiCPU[] =
 };
 
 #ifdef GENS_DEBUGGER
-static const struct GensMenuItem_t gmiCPU_Debug[] =
+static const GensMenuItem_t gmiCPU_Debug[] =
 {
 	{IDM_CPU_DEBUG_MC68000,			GMF_ITEM_CHECK,		"&Genesis - 680000",	NULL, 0, 0, 0},
 	{IDM_CPU_DEBUG_Z80,			GMF_ITEM_CHECK,		"Genesis - &Z80",	NULL, 0, 0, 0},
@@ -236,7 +236,7 @@ static const struct GensMenuItem_t gmiCPU_Debug[] =
 };
 #endif /* GENS_DEBUGGER */
 
-static const struct GensMenuItem_t gmiCPU_Country[] =
+static const GensMenuItem_t gmiCPU_Country[] =
 {
 	{IDM_CPU_COUNTRY_AUTO,		GMF_ITEM_RADIO,		"Auto Detect",		NULL, 0, 0, 0},
 	{IDM_CPU_COUNTRY_JAPAN_NTSC,	GMF_ITEM_RADIO,		"Japan (NTSC)",		NULL, 0, 0, 0},
@@ -252,9 +252,9 @@ static const struct GensMenuItem_t gmiCPU_Country[] =
 /** Sound Menu **/
 
 
-static const struct GensMenuItem_t gmiSound_Rate[];
+static const GensMenuItem_t gmiSound_Rate[];
 
-static const struct GensMenuItem_t gmiSound[] =
+static const GensMenuItem_t gmiSound[] =
 {
 	{IDM_SOUND_ENABLE,		GMF_ITEM_CHECK,		"&Enable",		NULL, 0, 0, 0},
 	{IDM_SEPARATOR,			GMF_ITEM_SEPARATOR,	NULL,			NULL, 0, 0, 0},
@@ -278,7 +278,7 @@ static const struct GensMenuItem_t gmiSound[] =
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
-static const struct GensMenuItem_t gmiSound_Rate[] =
+static const GensMenuItem_t gmiSound_Rate[] =
 {
 	{IDM_SOUND_RATE_11025,		GMF_ITEM_RADIO,		"11,025 Hz",		NULL, 0, 0, 0},
 	{IDM_SOUND_RATE_22050,		GMF_ITEM_RADIO,		"22,050 Hz",		NULL, 0, 0, 0},
@@ -290,9 +290,9 @@ static const struct GensMenuItem_t gmiSound_Rate[] =
 /** Options Menu **/
 
 
-static const struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[];
+static const GensMenuItem_t gmiOptions_SegaCDSRAMSize[];
 
-static const struct GensMenuItem_t gmiOptions[] =
+static const GensMenuItem_t gmiOptions[] =
 {
 	{IDM_OPTIONS_GENERAL,		GMF_ITEM_NORMAL,	"&General Options...",	NULL, 0, 0, IDIM_GENERAL_OPTIONS},
 	{IDM_OPTIONS_JOYPADS,		GMF_ITEM_NORMAL,	"&Joypads...",		NULL, 0, 0, IDIM_JOYPADS},
@@ -309,7 +309,7 @@ static const struct GensMenuItem_t gmiOptions[] =
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
 
-static const struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
+static const GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 {
 	{IDM_OPTIONS_SEGACDSRAMSIZE_NONE,	GMF_ITEM_RADIO, "None",  NULL, 0, 0, 0},
 	{IDM_OPTIONS_SEGACDSRAMSIZE_8KB,	GMF_ITEM_RADIO, "8 KB",  NULL, 0, 0, 0},
@@ -323,7 +323,7 @@ static const struct GensMenuItem_t gmiOptions_SegaCDSRAMSize[] =
 /** Plugins Menu **/
 
 
-static const struct GensMenuItem_t gmiPlugins[] =
+static const GensMenuItem_t gmiPlugins[] =
 {
 	{0, 0, NULL, NULL, 0, 0, 0}
 };
@@ -332,7 +332,7 @@ static const struct GensMenuItem_t gmiPlugins[] =
 /** Help Menu **/
 
 
-static const struct GensMenuItem_t gmiHelp[] =
+static const GensMenuItem_t gmiHelp[] =
 {
 	{IDM_HELP_ABOUT,	GMF_ITEM_NORMAL,	"&About",	NULL,	0, 0, IDIM_HELP},
 	{0, 0, NULL, NULL, 0, 0, 0}

@@ -91,21 +91,21 @@ extern "C" {
 #define IDIM_HELP		(IDIM_MENU_ICON + 24)
 #define IDIM_MENU_ICON_MAX	IDIM_HELP
 
-struct GensMenuItem_t
+typedef struct _GensMenuItem_t
 {
 	uint16_t id;				// Menu identifier. (0xFFFF == separator)
 	uint16_t flags;				// Menu item flags.
 	const char* text;			// Menu text.
-	const struct GensMenuItem_t* submenu;	// First element of submenu.
+	const struct _GensMenuItem_t* submenu;	// First element of submenu.
 	
 	// Accelerator. (Set both values to 0 for no accelerator.)
 	uint16_t accelModifier;
 	uint16_t accelKey;
 	
 	uint16_t icon;				// Icon ID.
-};
+} GensMenuItem_t;
 
-extern const struct GensMenuItem_t gmiMain[];
+extern const GensMenuItem_t gmiMain[];
 
 // Menu #defines
 // Menu identifier & 0xF000 == the menu it's from

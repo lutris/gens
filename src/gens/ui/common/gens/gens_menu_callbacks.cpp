@@ -28,7 +28,6 @@
 #include "gens_menu.h"
 
 #include "emulator/g_main.hpp"
-#include "gens/gens_window.hpp"
 #include "gens/gens_window_sync.hpp"
 #include "controller_config/cc_window.h"
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
