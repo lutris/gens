@@ -81,14 +81,12 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	
 	// Create the window.
 	sgens_window = gtk_dialog_new();
-	gtk_widget_set_name(sgens_window, "sgens_window");
 	gtk_container_set_border_width(GTK_CONTAINER(sgens_window), 4);
 	gtk_window_set_title(GTK_WINDOW(sgens_window), "Sonic Gens");
 	gtk_window_set_position(GTK_WINDOW(sgens_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(sgens_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(sgens_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(sgens_window), FALSE);
-	g_object_set_data(G_OBJECT(sgens_window), "sgens_window", sgens_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)sgens_window, "delete_event",
@@ -102,21 +100,15 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(sgens_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_box_set_spacing(GTK_BOX(vboxDialog), 8);
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(sgens_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the label for the loaded game.
 	lblLoadedGame = gtk_label_new(NULL);
-	gtk_widget_set_name(lblLoadedGame, "lblLoadedGame");
 	gtk_misc_set_alignment(GTK_MISC(lblLoadedGame), 0.5f, 0.0f);
 	gtk_label_set_justify(GTK_LABEL(lblLoadedGame), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(lblLoadedGame);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), lblLoadedGame, FALSE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(sgens_window), "lblLoadedGame",
-			       g_object_ref(lblLoadedGame), (GDestroyNotify)g_object_unref);
 	
 	// Create the "Level Information" frame.
 	sgens_window_create_level_info_frame(vboxDialog);
@@ -153,52 +145,37 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 {
 	// "Level Information" frame.
 	GtkWidget *fraLevelInfo = gtk_frame_new("Level Information");
-	gtk_widget_set_name(fraLevelInfo, "fraLevelInfo");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraLevelInfo), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraLevelInfo);
 	gtk_box_pack_start(GTK_BOX(container), fraLevelInfo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "fraLevelInfo",
-			       g_object_ref(fraLevelInfo), (GDestroyNotify)g_object_unref);
 	
 	// Create a VBox for the frame.
 	GtkWidget *vboxLevelInfo = gtk_vbox_new(FALSE, 4);
-	gtk_widget_set_name(vboxLevelInfo, "vboxLevelInfo");
 	gtk_container_set_border_width(GTK_CONTAINER(vboxLevelInfo), 0);
 	gtk_widget_show(vboxLevelInfo);
 	gtk_container_add(GTK_CONTAINER(fraLevelInfo), vboxLevelInfo);
-	g_object_set_data_full(G_OBJECT(container), "vboxLevelInfo",
-			       g_object_ref(vboxLevelInfo), (GDestroyNotify)g_object_unref);
 	
 	// "Zone" information label.
 	lblLevelInfo_Zone = gtk_label_new("Zone");
-	gtk_widget_set_name(lblLevelInfo_Zone, "lblLevelInfo_Zone");
 	gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Zone), 0.5f, 0.5f);
 	gtk_label_set_justify(GTK_LABEL(lblLevelInfo_Zone), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(lblLevelInfo_Zone);
 	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblLevelInfo_Zone, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Zone",
-			       g_object_ref(lblLevelInfo_Zone), (GDestroyNotify)g_object_unref);
 	
 	// "Act" information label.
 	lblLevelInfo_Act = gtk_label_new("Act");
-	gtk_widget_set_name(lblLevelInfo_Act, "lblLevelInfo_Act");
 	gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Act), 0.5f, 0.5f);
 	gtk_label_set_justify(GTK_LABEL(lblLevelInfo_Act), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(lblLevelInfo_Act);
 	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), lblLevelInfo_Act, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "lblLevelInfo_Act",
-			       g_object_ref(lblLevelInfo_Act), (GDestroyNotify)g_object_unref);
 	
 	// Table for level information.
 	GtkWidget *tblLevelInfo = gtk_table_new(5, 4, FALSE);
-	gtk_widget_set_name(tblLevelInfo, "tblLevelInfo");
 	gtk_container_set_border_width(GTK_CONTAINER(tblLevelInfo), 8);
 	gtk_table_set_col_spacings(GTK_TABLE(tblLevelInfo), 16);
 	gtk_table_set_col_spacing(GTK_TABLE(tblLevelInfo), 3, 8);
 	gtk_widget_show(tblLevelInfo);
 	gtk_box_pack_start(GTK_BOX(vboxLevelInfo), tblLevelInfo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "tblLevelInfo",
-			       g_object_ref(tblLevelInfo), (GDestroyNotify)g_object_unref);
 	
 	// Add the level information widgets.
 	unsigned int i;
@@ -220,8 +197,6 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 		
 		// Description label.
 		lblLevelInfo_Desc[i] = gtk_label_new(level_info[i].description);
-		sprintf(tmp, "lblLevelInfo_Desc_%d", i);
-		gtk_widget_set_name(lblLevelInfo_Desc[i], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo_Desc[i]), 0.0f, 0.5f);
 		gtk_widget_show(lblLevelInfo_Desc[i]);
 		gtk_table_attach(GTK_TABLE(tblLevelInfo), lblLevelInfo_Desc[i],
@@ -229,14 +204,10 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 				 level_info[i].row, level_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblLevelInfo_Desc[i]), (GDestroyNotify)g_object_unref);
 		
 		// Information label.
 		sprintf(tmp, "<tt>%s</tt>", level_info[i].initial);
 		lblLevelInfo[i] = gtk_label_new(tmp);
-		sprintf(tmp, "lblLevelInfo_%d", i);
-		gtk_widget_set_name(lblLevelInfo[i], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblLevelInfo[i]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblLevelInfo[i]), GTK_JUSTIFY_RIGHT);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[i]), TRUE);
@@ -246,8 +217,6 @@ static void sgens_window_create_level_info_frame(GtkWidget *container)
 				 level_info[i].row, level_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblLevelInfo[i]), (GDestroyNotify)g_object_unref);
 	}
 }
 
@@ -260,22 +229,16 @@ static void sgens_window_create_player_info_frame(GtkWidget *container)
 {
 	// "Player Information" frame.
 	GtkWidget *fraPlayerInfo = gtk_frame_new("Player Information");
-	gtk_widget_set_name(fraPlayerInfo, "fraPlayerInfo");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPlayerInfo), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraPlayerInfo);
 	gtk_box_pack_start(GTK_BOX(container), fraPlayerInfo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "fraPlayerInfo",
-			       g_object_ref(fraPlayerInfo), (GDestroyNotify)g_object_unref);
 	
 	// Table for player information.
 	GtkWidget *tblPlayerInfo = gtk_table_new(3, 2, FALSE);
-	gtk_widget_set_name(tblPlayerInfo, "tblPlayerInfo");
 	gtk_container_set_border_width(GTK_CONTAINER(tblPlayerInfo), 8);
 	gtk_table_set_col_spacings(GTK_TABLE(tblPlayerInfo), 16);
 	gtk_widget_show(tblPlayerInfo);
 	gtk_container_add(GTK_CONTAINER(fraPlayerInfo), tblPlayerInfo);
-	g_object_set_data_full(G_OBJECT(container), "tblPlayerInfo",
-			       g_object_ref(tblPlayerInfo), (GDestroyNotify)g_object_unref);
 	
 	// Add the player information widgets.
 	unsigned int i;
@@ -284,8 +247,6 @@ static void sgens_window_create_player_info_frame(GtkWidget *container)
 	{
 		// Description label.
 		lblPlayerInfo_Desc[i] = gtk_label_new(player_info[i].description);
-		sprintf(tmp, "lblPlayerInfo_Desc_%d", i);
-		gtk_widget_set_name(lblPlayerInfo_Desc[i], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo_Desc[i]), 0.0f, 0.5f);
 		gtk_widget_show(lblPlayerInfo_Desc[i]);
 		gtk_table_attach(GTK_TABLE(tblPlayerInfo), lblPlayerInfo_Desc[i],
@@ -293,14 +254,10 @@ static void sgens_window_create_player_info_frame(GtkWidget *container)
 				 player_info[i].row, player_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayerInfo_Desc[i]), (GDestroyNotify)g_object_unref);
 		
 		// Information label.
 		sprintf(tmp, "<tt>%s</tt>", player_info[i].initial);
 		lblPlayerInfo[i] = gtk_label_new(tmp);
-		sprintf(tmp, "lblPlayerInfo_%d", i);
-		gtk_widget_set_name(lblPlayerInfo[i], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblPlayerInfo[i]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblPlayerInfo[i]), GTK_JUSTIFY_RIGHT);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[i]), TRUE);
@@ -310,8 +267,6 @@ static void sgens_window_create_player_info_frame(GtkWidget *container)
 				 player_info[i].row, player_info[i].row + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayerInfo[i]), (GDestroyNotify)g_object_unref);
 	}
 }
 

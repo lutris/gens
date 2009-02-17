@@ -71,16 +71,12 @@ AboutWindow::AboutWindow()
 {
 	// Create the About window.
 	m_Window = gtk_dialog_new();
-	gtk_widget_set_name(GTK_WIDGET(m_Window), "about_window");
 	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 0);
 	gtk_window_set_title(GTK_WINDOW(m_Window), "About Gens");
 	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(m_Window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
-	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(m_Window), "Gens_About_Window", m_Window);
 	
 	// Load the Gens icon.
 	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
@@ -98,26 +94,12 @@ AboutWindow::AboutWindow()
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(m_Window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
-	
-	// Create the main VBox.
-	GtkWidget *vboxMain = gtk_vbox_new(FALSE, 5);
-	gtk_widget_set_name(vboxMain, "vboxMain");
-	gtk_widget_show(vboxMain);
-	gtk_container_add(GTK_CONTAINER(vboxDialog), vboxMain);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxMain",
-			       g_object_ref(vboxMain), (GDestroyNotify)g_object_unref);
 	
 	// Create the HBox for the logo and the program information.
 	GtkWidget *hboxLogo = gtk_hbox_new(FALSE, 0);
-	gtk_widget_set_name(hboxLogo, "hboxLogo");
 	gtk_widget_show(hboxLogo);
-	gtk_box_pack_start(GTK_BOX(vboxMain), hboxLogo, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "hboxLogo",
-			       g_object_ref(hboxLogo), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxLogo, TRUE, TRUE, 0);
 	
 	cx = 0;
 	m_pbufIce = NULL;
@@ -135,86 +117,59 @@ AboutWindow::AboutWindow()
 		updateIce();
 	}
 	
-	gtk_widget_set_name(GTK_WIDGET(m_imgGensLogo), "m_imgGensLogo");
 	gtk_widget_show(GTK_WIDGET(m_imgGensLogo));
 	gtk_box_pack_start(GTK_BOX(hboxLogo), GTK_WIDGET(m_imgGensLogo), TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "imgGensLogo",
-			       g_object_ref(m_imgGensLogo), (GDestroyNotify)g_object_unref);
 	
 	// Version information
 	static const string title = "<b><i>" + string(StrTitle) + "</i></b>\n<small>\n</small>" + string(StrDescription);
 	GtkWidget *lblVersion = gtk_label_new(title.c_str());
-	gtk_widget_set_name(lblVersion, "lblVersion");
 	gtk_misc_set_padding(GTK_MISC(lblVersion), 8, 8);
 	gtk_label_set_use_markup(GTK_LABEL(lblVersion), TRUE);
 	gtk_label_set_justify(GTK_LABEL(lblVersion), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(lblVersion);
 	gtk_box_pack_start(GTK_BOX(hboxLogo), lblVersion, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblVersion",
-			       g_object_ref(lblVersion), (GDestroyNotify)g_object_unref);
 	
 	// Create a set of tabs for the main information.
 	GtkWidget *tabInfo = gtk_notebook_new();
-	gtk_widget_set_name(tabInfo, "tabInfo");
 	gtk_container_set_border_width(GTK_CONTAINER(tabInfo), 4);
 	gtk_widget_show(tabInfo);
-	gtk_box_pack_start(GTK_BOX(vboxMain), tabInfo, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "tabInfo",
-			       g_object_ref(tabInfo), (GDestroyNotify)g_object_unref);
+	gtk_box_pack_start(GTK_BOX(vboxDialog), tabInfo, FALSE, FALSE, 0);
 	
 	// Label for the copyright frame tab.
 	GtkWidget *lblCopyrightTab = gtk_label_new_with_mnemonic("_Copyrights");
-	gtk_widget_set_name(lblCopyrightTab, "lblCopyrightTab");
 	gtk_widget_show(lblCopyrightTab);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyrightTab",
-			       g_object_ref(lblCopyrightTab), (GDestroyNotify)g_object_unref);
 	
 	// Copyright frame.
 	GtkWidget *fraCopyright = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraCopyright, "fraCopyright");
 	gtk_container_set_border_width(GTK_CONTAINER(fraCopyright), 4);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraCopyright), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraCopyright);
 	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), fraCopyright, lblCopyrightTab);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraCopyright",
-			       g_object_ref(fraCopyright), (GDestroyNotify)g_object_unref);
 	
 	// Copyright label
 	GtkWidget *lblCopyright = gtk_label_new(StrCopyright);
-	gtk_widget_set_name(lblCopyright, "lblCopyright");
 	gtk_misc_set_padding(GTK_MISC(lblCopyright), 8, 8);
 	gtk_misc_set_alignment(GTK_MISC(lblCopyright), 0.0f, 0.0f);
 	gtk_widget_show(lblCopyright);
 	gtk_container_add(GTK_CONTAINER(fraCopyright), lblCopyright);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblCopyright",
-			       g_object_ref(lblCopyright), (GDestroyNotify)g_object_unref);
 	
 	// Label for the Included Libraries tab.
 	GtkWidget *lblIncludedLibsTab = gtk_label_new_with_mnemonic("Included _Libraries");
-	gtk_widget_set_name(lblIncludedLibsTab, "lblIncludedLibsTab");
 	gtk_widget_show(lblIncludedLibsTab);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblIncludedLibsTab",
-			       g_object_ref(lblIncludedLibsTab), (GDestroyNotify)g_object_unref);
 	
 	// Included Libraries frame.
 	GtkWidget *fraIncludedLibs = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraIncludedLibs, "fraIncludedLibs");
 	gtk_container_set_border_width(GTK_CONTAINER(fraIncludedLibs), 4);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraIncludedLibs), GTK_SHADOW_ETCHED_IN);
 	gtk_widget_show(fraIncludedLibs);
 	gtk_notebook_append_page(GTK_NOTEBOOK(tabInfo), fraIncludedLibs, lblIncludedLibsTab);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraIncludedLibs",
-			       g_object_ref(fraIncludedLibs), (GDestroyNotify)g_object_unref);
 	
 	// Included Libraries label
 	GtkWidget *lblIncludedLibs = gtk_label_new(StrIncludedLibs);
-	gtk_widget_set_name(lblCopyright, "lblIncludedLibs");
 	gtk_misc_set_padding(GTK_MISC(lblIncludedLibs), 8, 8);
 	gtk_misc_set_alignment(GTK_MISC(lblIncludedLibs), 0.0f, 0.0f);
 	gtk_widget_show(lblIncludedLibs);
 	gtk_container_add(GTK_CONTAINER(fraIncludedLibs), lblIncludedLibs);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblIncludedLibs",
-			       g_object_ref(lblIncludedLibs), (GDestroyNotify)g_object_unref);
 	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();

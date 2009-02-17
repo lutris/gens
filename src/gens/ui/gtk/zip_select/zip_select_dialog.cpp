@@ -49,7 +49,6 @@ ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
 {
 	// Create the Zip File Selection window.
 	m_Window = gtk_dialog_new();
-	gtk_widget_set_name(m_Window, "zip_select_dialog");
 	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 5);
 	gtk_window_set_title(GTK_WINDOW(m_Window), "Archive File Selection");
 	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
@@ -58,9 +57,6 @@ ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
 	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
 	gtk_window_set_transient_for(GTK_WINDOW(m_Window), parent);
-	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(m_Window), "ZipSelectDialog", m_Window);
 	
 	// Make the window a decent size.
 	gtk_widget_set_size_request(m_Window, 480, 280);
@@ -75,47 +71,35 @@ ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
 	
 	// Add a frame for zip file selection.
 	GtkWidget *fraZip = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraZip, "fraZip");
 	gtk_container_set_border_width(GTK_CONTAINER(fraZip), 5);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraZip), GTK_SHADOW_NONE);
 	gtk_widget_show(fraZip);
 	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(m_Window)->vbox), fraZip);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraZip",
-			       g_object_ref(fraZip), (GDestroyNotify)g_object_unref);
 	
 	// Add a label to the zip file selection frame.
 	GtkWidget *lblZip = gtk_label_new("This archive contains multiple files.\nSelect which file you want to load.");
-	gtk_widget_set_name(lblZip, "lblZip");
 	gtk_label_set_justify(GTK_LABEL(lblZip), GTK_JUSTIFY_CENTER);
 	gtk_widget_show(lblZip);
 	gtk_frame_set_label_widget(GTK_FRAME(fraZip), lblZip);
 	gtk_frame_set_label_align(GTK_FRAME(fraZip), 0.5, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraZip), GTK_SHADOW_NONE);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblZip",
-			       g_object_ref(lblZip), (GDestroyNotify)g_object_unref);
 	
 	// Scrolled Window for the file list
 	GtkWidget *scrlFileList = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_name(scrlFileList, "scrlFileList");
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlFileList),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrlFileList);
 	gtk_container_add(GTK_CONTAINER(fraZip), scrlFileList);
-	g_object_set_data_full(G_OBJECT(m_Window), "scrlFileList",
-			       g_object_ref(scrlFileList), (GDestroyNotify)g_object_unref);
 	
 	// Tree view containing the files in the archive.
 	m_lstFiles = gtk_tree_view_new();
-	gtk_widget_set_name(m_lstFiles, "m_lstFiles");
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(m_lstFiles), TRUE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(m_lstFiles), FALSE);
 	gtk_widget_show(m_lstFiles);
 	gtk_container_add(GTK_CONTAINER(scrlFileList), m_lstFiles);
 	g_signal_connect((gpointer)m_lstFiles, "button_press_event",
 			  G_CALLBACK(on_m_lstFiles_button_press), m_Window);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_lstFiles",
-			       g_object_ref(m_lstFiles), (GDestroyNotify)g_object_unref);
 	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();

@@ -71,7 +71,7 @@ static GtkWidget	*optConfigure[8];
 
 // Widgets: "Input Devices" frame.
 static GtkWidget	*lstInputDevices;
-static GtkListStore	*lstoreInputDevices;
+static GtkListStore	*lstoreInputDevices = NULL;
 
 // Widgets: "Configure Controller" frame.
 static GtkWidget	*fraConfigure;
@@ -128,14 +128,12 @@ void cc_window_show(GtkWindow *parent)
 	
 	// Create the window.
 	cc_window = gtk_dialog_new();
-	gtk_widget_set_name(cc_window, "cc_window");
 	gtk_container_set_border_width(GTK_CONTAINER(cc_window), 4);
 	gtk_window_set_title(GTK_WINDOW(cc_window), "Controller Configuration");
 	gtk_window_set_position(GTK_WINDOW(cc_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(cc_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(cc_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(cc_window), FALSE);
-	g_object_set_data(G_OBJECT(cc_window), "cc_window", cc_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)(cc_window), "delete_event",
@@ -149,26 +147,17 @@ void cc_window_show(GtkWindow *parent)
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(cc_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(cc_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main HBox.
 	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 0);
-	gtk_widget_set_name(hboxMain, "hboxMain");
 	gtk_widget_show(hboxMain);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxMain, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(cc_window), "hboxMain",
-			       g_object_ref(hboxMain), (GDestroyNotify)g_object_unref);
 	
 	// Controller port VBox.
 	GtkWidget *vboxControllerPorts = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxControllerPorts, "vboxControllerPorts");
 	gtk_widget_show(vboxControllerPorts);
 	gtk_box_pack_start(GTK_BOX(hboxMain), vboxControllerPorts, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(cc_window), "vboxControllerPorts",
-			       g_object_ref(vboxControllerPorts), (GDestroyNotify)g_object_unref);
 	
 	// Create the controller port frames.
 	gslConfigure = NULL;
@@ -181,11 +170,8 @@ void cc_window_show(GtkWindow *parent)
 	
 	// "Configure Controller" outer VBox.
 	GtkWidget *vboxConfigureOuter = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxConfigureOuter, "vboxConfigureOuter");
 	gtk_widget_show(vboxConfigureOuter);
 	gtk_box_pack_start(GTK_BOX(hboxMain), vboxConfigureOuter, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(cc_window), "vboxConfigureOuter",
-			       g_object_ref(vboxConfigureOuter), (GDestroyNotify)g_object_unref);
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
@@ -230,54 +216,34 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	
 	// Align the frame to the top of the container.
 	GtkWidget *alignPort = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	sprintf(tmp, "alignPort_%d", port);
-	gtk_widget_set_name(alignPort, tmp);
 	gtk_widget_show(alignPort);
 	gtk_box_pack_start(GTK_BOX(container), alignPort, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignPort",
-			       g_object_ref(alignPort), (GDestroyNotify)g_object_unref);
 	
 	// Create the frame.
 	sprintf(tmp, "<b><i>Port %d</i></b>", port);
 	GtkWidget *fraPort = gtk_frame_new(tmp);
-	sprintf(tmp, "fraPort_%d", port);
-	gtk_widget_set_name(fraPort, tmp);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPort), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPort))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPort), 4);
 	gtk_widget_show(fraPort);
 	gtk_container_add(GTK_CONTAINER(alignPort), fraPort);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(fraPort), (GDestroyNotify)g_object_unref);
 	
 	// VBox for the controller frame.
 	GtkWidget *vboxController = gtk_vbox_new(FALSE, 0);
-	sprintf(tmp, "vboxController_%d", port);
-	gtk_widget_set_name(vboxController, tmp);
 	gtk_container_set_border_width(GTK_CONTAINER(vboxController), 0);
 	gtk_widget_show(vboxController);
 	gtk_container_add(GTK_CONTAINER(fraPort), vboxController);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(vboxController), (GDestroyNotify)g_object_unref);
 	
 	// Padding for the teamplayer checkbox.
 	GtkWidget *alignTeamplayer = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	sprintf(tmp, "alignTeamplayer_%d", port);
-	gtk_widget_set_name(alignTeamplayer, tmp);
 	gtk_alignment_set_padding(GTK_ALIGNMENT(alignTeamplayer), 4, 4, 8, 8);
 	gtk_widget_show(alignTeamplayer);
 	gtk_box_pack_start(GTK_BOX(vboxController), alignTeamplayer, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignTeamplayer",
-			       g_object_ref(alignTeamplayer), (GDestroyNotify)g_object_unref);
 	
 	// Checkbox for enabling teamplayer.
 	chkTeamplayer[port-1] = gtk_check_button_new_with_label("Use Teamplayer");
-	sprintf(tmp, "chkTeamplayer_%d", port);
-	gtk_widget_set_name(chkTeamplayer[port-1], tmp);
 	gtk_widget_show(chkTeamplayer[port-1]);
 	gtk_container_add(GTK_CONTAINER(alignTeamplayer), chkTeamplayer[port-1]);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(chkTeamplayer[port-1]), (GDestroyNotify)g_object_unref);
 	
 	// Connect the "toggled" signal for the Teamplayer checkbox.
 	g_signal_connect(GTK_OBJECT(chkTeamplayer[port-1]), "toggled",
@@ -286,35 +252,27 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	
 	// Padding for the player control table.
 	GtkWidget *alignPlayers = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	sprintf(tmp, "alignPlayers_%d", port);
-	gtk_widget_set_name(alignPlayers, tmp);
 	gtk_alignment_set_padding(GTK_ALIGNMENT(alignPlayers), 0, 8, 8, 8);
 	gtk_widget_show(alignPlayers);
 	gtk_box_pack_start(GTK_BOX(vboxController), alignPlayers, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignPlayers",
-			       g_object_ref(alignPlayers), (GDestroyNotify)g_object_unref);
 	
 	// Table for the player controls.
 	GtkWidget *tblPlayers = gtk_table_new(4, 3, FALSE);
-	sprintf(tmp, "tblPlayers_%d", port);
-	gtk_widget_set_name(tblPlayers, tmp);
 	gtk_container_set_border_width(GTK_CONTAINER(tblPlayers), 0);
 	gtk_table_set_col_spacings(GTK_TABLE(tblPlayers), 12);
 	gtk_widget_show(tblPlayers);
 	gtk_container_add(GTK_CONTAINER(alignPlayers), tblPlayers);
-	g_object_set_data_full(G_OBJECT(container), tmp,
-			       g_object_ref(tblPlayers), (GDestroyNotify)g_object_unref);
 	
 	// Player inputs.
 	unsigned int i, player;
-	char playerName[4];
+	char playerName[16];
 	
 	for (i = 0; i < 4; i++)
 	{
 		if (i == 0)
-			sprintf(playerName, "%d", port);
+			sprintf(playerName, "Player %d", port);
 		else
-			sprintf(playerName, "%d%c", port, 'A' + (char)i);
+			sprintf(playerName, "Player %d%c", port, 'A' + (char)i);
 		
 		// Determine the player number to use for the callback and widget pointer storage.
 		if (i == 0)
@@ -328,30 +286,21 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		}
 		
 		// Player label.
-		sprintf(tmp, "Player %s", playerName);
-		lblPlayer[player] = gtk_label_new(tmp);
-		sprintf(tmp, "lblPlayer_%s", playerName);
-		gtk_widget_set_name(lblPlayer[player], tmp);
+		lblPlayer[player] = gtk_label_new(playerName);
 		gtk_misc_set_alignment(GTK_MISC(lblPlayer[player]), 0.0f, 0.5f);
 		gtk_widget_show(lblPlayer[player]);
 		gtk_table_attach(GTK_TABLE(tblPlayers), lblPlayer[player],
 				 0, 1, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblPlayer[player]), (GDestroyNotify)g_object_unref);
 		
 		// Pad type dropdown.
 		cboPadType[player] = gtk_combo_box_new_text();
-		sprintf(tmp, "cboPadType_%s", playerName);
-		gtk_widget_set_name(cboPadType[player], tmp);
 		gtk_widget_show(cboPadType[player]);
 		gtk_table_attach(GTK_TABLE(tblPlayers), cboPadType[player],
 				 1, 2, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(cboPadType[player]), (GDestroyNotify)g_object_unref);
 		
 		// Pad type dropdown entries.
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPadType[player]), "3 buttons");
@@ -366,15 +315,11 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 		optConfigure[player] = gtk_radio_button_new_with_label(gslConfigure, "Configure");
 		gslConfigure = gtk_radio_button_get_group(GTK_RADIO_BUTTON(optConfigure[player]));
 		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(optConfigure[player]), FALSE);
-		sprintf(tmp, "btnConfigure_%s", playerName);
-		gtk_widget_set_name(optConfigure[player], tmp);
 		gtk_widget_show(optConfigure[player]);
 		gtk_table_attach(GTK_TABLE(tblPlayers), optConfigure[player],
 				 2, 3, i, i + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(optConfigure[player]), (GDestroyNotify)g_object_unref);
 		
 		// Connect the "toggled" signal for the "Configure" button.
 		g_signal_connect(GTK_OBJECT(optConfigure[player]), "toggled",
@@ -392,26 +337,19 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 {
 	// Align the "Input Devices" frame to the top of the container.
 	GtkWidget *alignInputDevices = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	gtk_widget_set_name(alignInputDevices, "alignInputDevices");
 	gtk_widget_show(alignInputDevices);
 	gtk_box_pack_start(GTK_BOX(container), alignInputDevices, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignInputDevices",
-			       g_object_ref(alignInputDevices), (GDestroyNotify)g_object_unref);
 	
 	// "Input Devices" frame.
 	GtkWidget *fraInputDevices = gtk_frame_new("<b><i>Input Devices</i></b>");
-	gtk_widget_set_name(fraInputDevices, "fraInputDevices");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraInputDevices), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraInputDevices))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraInputDevices), 4);
 	gtk_widget_show(fraInputDevices);
 	gtk_container_add(GTK_CONTAINER(alignInputDevices), fraInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "fraInputDevices",
-			       g_object_ref(fraInputDevices), (GDestroyNotify)g_object_unref);
 	
 	// Scrolled Window for the list of input devices.
 	GtkWidget *scrlInputDevices = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_name(scrlInputDevices, "scrlInputDevices");
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlInputDevices), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlInputDevices),
 				       GTK_POLICY_AUTOMATIC,
@@ -419,25 +357,20 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 	gtk_container_set_border_width(GTK_CONTAINER(scrlInputDevices), 4);
 	gtk_widget_show(scrlInputDevices);
 	gtk_container_add(GTK_CONTAINER(fraInputDevices), scrlInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "scrlInputDevices",
-			       g_object_ref(scrlInputDevices), (GDestroyNotify)g_object_unref);
+	
+	// Create the list model.
+	if (lstoreInputDevices)
+		gtk_list_store_clear(GTK_LIST_STORE(lstoreInputDevices));
+	else
+		lstoreInputDevices = gtk_list_store_new(1, G_TYPE_STRING);
 	
 	// Create a treeview for the list of input devices.
-	lstInputDevices = gtk_tree_view_new();
-	gtk_widget_set_name(lstInputDevices, "lstInputDevices");
+	lstInputDevices = gtk_tree_view_new_with_model(GTK_TREE_MODEL(lstoreInputDevices));
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstInputDevices), FALSE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstInputDevices), FALSE);
 	gtk_widget_set_size_request(lstInputDevices, -1, 96);
 	gtk_widget_show(lstInputDevices);
 	gtk_container_add(GTK_CONTAINER(scrlInputDevices), lstInputDevices);
-	g_object_set_data_full(G_OBJECT(container), "lstInputDevices",
-			       g_object_ref(lstInputDevices), (GDestroyNotify)g_object_unref);
-	
-	// Create the list model.
-	lstoreInputDevices = gtk_list_store_new(1, G_TYPE_STRING);
-	gtk_tree_view_set_model(GTK_TREE_VIEW(lstInputDevices), GTK_TREE_MODEL(lstoreInputDevices));
-	g_object_set_data_full(G_OBJECT(container), "lstoreInputDevices",
-			       g_object_ref(lstoreInputDevices), (GDestroyNotify)g_object_unref);
 	
 	// Create the renderer and columns.
 	GtkCellRenderer  *rendText = gtk_cell_renderer_text_new();
@@ -493,40 +426,28 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 {
 	// Align the "Configure Controller" frame to the top of the container.
 	GtkWidget *alignConfigure = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-	gtk_widget_set_name(alignConfigure, "alignConfigure");
 	gtk_widget_show(alignConfigure);
 	gtk_box_pack_start(GTK_BOX(container), alignConfigure, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "alignConfigure",
-			       g_object_ref(alignConfigure), (GDestroyNotify)g_object_unref);
 	
 	// "Configure Controller" frame.
 	fraConfigure = gtk_frame_new("");
-	gtk_widget_set_name(fraConfigure, "fraConfigure");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraConfigure), GTK_SHADOW_ETCHED_IN);
 	gtk_container_set_border_width(GTK_CONTAINER(fraConfigure), 4);
 	gtk_widget_show(fraConfigure);
 	gtk_container_add(GTK_CONTAINER(alignConfigure), fraConfigure);
-	g_object_set_data_full(G_OBJECT(container), "fraConfigure",
-			       g_object_ref(fraConfigure), (GDestroyNotify)g_object_unref);
 	
 	// VBox for the "Configure Controller" frame.
 	GtkWidget *vboxConfigure = gtk_vbox_new(FALSE, 4);
-	gtk_widget_set_name(vboxConfigure, "vboxConfigure");
 	gtk_container_set_border_width(GTK_CONTAINER(vboxConfigure), 0);
 	gtk_widget_show(vboxConfigure);
 	gtk_container_add(GTK_CONTAINER(fraConfigure), vboxConfigure);
-	g_object_set_data_full(G_OBJECT(container), "vboxConfigure",
-			       g_object_ref(vboxConfigure), (GDestroyNotify)g_object_unref);
 		
 	// Create the table for button remapping.
 	GtkWidget *tblButtonRemap = gtk_table_new(12, 3, FALSE);
-	gtk_widget_set_name(tblButtonRemap, "tblButtonRemap");
 	gtk_container_set_border_width(GTK_CONTAINER(tblButtonRemap), 4);
 	gtk_table_set_col_spacings(GTK_TABLE(tblButtonRemap), 12);
 	gtk_widget_show(tblButtonRemap);
 	gtk_box_pack_start(GTK_BOX(vboxConfigure), tblButtonRemap, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "tblButtonRemap",
-			       g_object_ref(tblButtonRemap), (GDestroyNotify)g_object_unref);
 	
 	// Populate the table.
 	unsigned int button;
@@ -536,8 +457,6 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 		// Button label.
 		sprintf(tmp, "%s:", input_key_names[button]);
 		lblButton[button] = gtk_label_new(tmp);
-		sprintf(tmp, "lblButton_%d", button);
-		gtk_widget_set_name(lblButton[button], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblButton[button]), 1.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblButton[button]), GTK_JUSTIFY_RIGHT);
 		gtk_widget_show(lblButton[button]);
@@ -545,13 +464,9 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 				 0, 1, button, button + 1,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblButton[button]), (GDestroyNotify)g_object_unref);
 		
 		// Current configuration label.
 		lblCurConfig[button] = gtk_label_new(NULL);
-		sprintf(tmp, "lblCurConfig_%d", button);
-		gtk_widget_set_name(lblCurConfig[button], tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblCurConfig[button]), 0.0f, 0.5f);
 		gtk_label_set_justify(GTK_LABEL(lblCurConfig[button]), GTK_JUSTIFY_CENTER);
 		gtk_label_set_width_chars(GTK_LABEL(lblCurConfig[button]), 24);
@@ -560,20 +475,14 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 				 1, 2, button, button + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(lblCurConfig[button]), (GDestroyNotify)g_object_unref);
 		
 		// "Change" button.
 		btnChange[button] = gtk_button_new_with_label("Change");
-		sprintf(tmp, "btnChange_%d", button);
-		gtk_widget_set_name(btnChange[button], tmp);
 		gtk_widget_show(btnChange[button]);
 		gtk_table_attach(GTK_TABLE(tblButtonRemap), btnChange[button],
 				 2, 3, button, button + 1,
 				 (GtkAttachOptions)(0),
 				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(container), tmp,
-				       g_object_ref(btnChange[button]), (GDestroyNotify)g_object_unref);
 		
 		// Connect the "clicked" signal for the "Change" button.
 		g_signal_connect(GTK_OBJECT(btnChange[button]), "clicked",
@@ -583,28 +492,19 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	
 	// Separator between the table and the miscellaneous buttons.
 	GtkWidget *hsepConfigure = gtk_hseparator_new();
-	gtk_widget_set_name(hsepConfigure, "hsepConfigure");
 	gtk_widget_show(hsepConfigure);
 	gtk_box_pack_start(GTK_BOX(vboxConfigure), hsepConfigure, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "hsepConfigure",
-			       g_object_ref(hsepConfigure), (GDestroyNotify)g_object_unref);
 	
 	// HButton Box for miscellaneous controller configuration buttons.
 	GtkWidget *hbtnOptions = gtk_hbutton_box_new();
-	gtk_widget_set_name(hbtnOptions, "hbtnOptions");
 	gtk_container_set_border_width(GTK_CONTAINER(hbtnOptions), 4);
 	gtk_widget_show(hbtnOptions);
 	gtk_box_pack_start(GTK_BOX(vboxConfigure), hbtnOptions, FALSE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(container), "hbtnOptions",
-			       g_object_ref(hbtnOptions), (GDestroyNotify)g_object_unref);
 	
 	// "Change All Buttons" button.
 	GtkWidget *btnChangeAll = gtk_button_new_with_label("Change All Buttons");
-	gtk_widget_set_name(btnChangeAll, "btnChangeAll");
 	gtk_widget_show(btnChangeAll);
 	gtk_box_pack_start(GTK_BOX(hbtnOptions), btnChangeAll, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "btnChangeAll",
-			       g_object_ref(btnChangeAll), (GDestroyNotify)g_object_unref);
 	
 	// Connect the "clicked" signal for the "Change All Buttons" button.
 	g_signal_connect(GTK_OBJECT(btnChangeAll), "clicked",
@@ -612,11 +512,8 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 	
 	// "Clear All Buttons" button.
 	GtkWidget *btnClearAll = gtk_button_new_with_label("Clear All Buttons");
-	gtk_widget_set_name(btnClearAll, "btnClearAll");
 	gtk_widget_show(btnClearAll);
 	gtk_box_pack_start(GTK_BOX(hbtnOptions), btnClearAll, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(container), "btnClearAll",
-			       g_object_ref(btnClearAll), (GDestroyNotify)g_object_unref);
 	
 	// Connect the "clicked" signal for the "Clear All Buttons" button.
 	g_signal_connect(GTK_OBJECT(btnClearAll), "clicked",

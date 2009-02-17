@@ -151,16 +151,12 @@ gboolean GeneralOptionsWindow::close(void)
 GeneralOptionsWindow::GeneralOptionsWindow()
 {
 	m_Window = gtk_dialog_new();
-	gtk_widget_set_name(GTK_WIDGET(m_Window), "GeneralOptionsWindow");
 	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 0);
 	gtk_window_set_title(GTK_WINDOW(m_Window), "General Options");
 	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(m_Window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
-	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(m_Window), "GeneralOptionsWindow", m_Window);
 	
 	// Load the Gens icon.
 	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
@@ -178,44 +174,29 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(m_Window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main HBox.
 	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 0);
-	gtk_widget_set_name(hboxMain, "hboxMain");
 	gtk_widget_show(hboxMain);
-	g_object_set_data_full(G_OBJECT(m_Window), "hboxMain",
-			       g_object_ref(hboxMain), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxMain, TRUE, TRUE, 0);
 	
 	// On-screen display frame.
 	GtkWidget *fraOSDMain = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraOSDMain, "fraOSDMain");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraOSDMain), GTK_SHADOW_ETCHED_IN);
 	gtk_container_set_border_width(GTK_CONTAINER(fraOSDMain), 4);
 	gtk_widget_show(fraOSDMain);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraOSDMain",
-			       g_object_ref(fraOSDMain), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(hboxMain), fraOSDMain, TRUE, TRUE, 0);
 	
 	// Label for the on-screen display frame.
 	GtkWidget *lblOSDMain = gtk_label_new("<b><i>On-Screen Display</i></b>");
-	gtk_widget_set_name(lblOSDMain, "lblOSDMain");
 	gtk_label_set_use_markup(GTK_LABEL(lblOSDMain), TRUE);
 	gtk_widget_show(lblOSDMain);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblOSDMain",
-			       g_object_ref(lblOSDMain), (GDestroyNotify)g_object_unref);
 	gtk_frame_set_label_widget(GTK_FRAME(fraOSDMain), lblOSDMain);
 	
 	// VBox for the on-screen display frame.
 	GtkWidget *vboxOSDMain = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxOSDMain, "vboxOSDMain");
 	gtk_widget_show(vboxOSDMain);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxOSDMain",
-			       g_object_ref(vboxOSDMain), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraOSDMain), vboxOSDMain);
 	
 	// Add FPS and Message frames to the OSD frame.
@@ -224,106 +205,73 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	
 	// Miscellaneous settings frame.
 	GtkWidget *fraMisc = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraMisc, "fraMisc");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMisc), GTK_SHADOW_ETCHED_IN);
 	gtk_container_set_border_width(GTK_CONTAINER(fraMisc), 4);
 	gtk_widget_show(fraMisc);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraMisc",
-			       g_object_ref(fraMisc), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(hboxMain), fraMisc, TRUE, TRUE, 0);
 	
 	// Label for the miscellaneous settings frame.
 	GtkWidget *lblMisc = gtk_label_new("<b><i>Miscellaneous</i></b>");
-	gtk_widget_set_name(lblMisc, "lblMisc");
 	gtk_label_set_use_markup(GTK_LABEL(lblMisc), TRUE);
 	gtk_widget_show(lblMisc);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblMisc",
-			       g_object_ref(lblMisc), (GDestroyNotify)g_object_unref);
 	gtk_frame_set_label_widget(GTK_FRAME(fraMisc), lblMisc);
 	
 	// VBox for the miscellaneous settings frame.
 	GtkWidget *vboxMisc = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxMisc, "vboxMisc");
 	gtk_widget_show(vboxMisc);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxMisc",
-			       g_object_ref(vboxMisc), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraMisc), vboxMisc);
 	
 	// Miscellaneous settings checkboxes.
 	
 	// Auto Fix Checksum
 	chkMisc_AutoFixChecksum = gtk_check_button_new_with_label("Auto Fix Checksum");
-	gtk_widget_set_name(chkMisc_AutoFixChecksum, "chkMisc_AutoFixChecksum");
 	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_AutoFixChecksum), 2);
 	gtk_widget_show(chkMisc_AutoFixChecksum);
-	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_AutoFixChecksum",
-			       g_object_ref(chkMisc_AutoFixChecksum), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_AutoFixChecksum, FALSE, FALSE, 0);
 	
 	// Auto Fix Checksum
 	chkMisc_AutoPause = gtk_check_button_new_with_label("Auto Pause");
-	gtk_widget_set_name(chkMisc_AutoPause, "chkMisc_AutoPause");
 	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_AutoPause), 2);
 	gtk_widget_show(chkMisc_AutoPause);
-	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_AutoPause",
-			       g_object_ref(chkMisc_AutoPause), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_AutoPause, FALSE, FALSE, 0);
 	
 	// Fast Blur
 	chkMisc_FastBlur = gtk_check_button_new_with_label("Fast Blur");
-	gtk_widget_set_name(chkMisc_FastBlur, "chkMisc_FastBlur");
 	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_FastBlur), 2);
 	gtk_widget_show(chkMisc_FastBlur);
-	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_FastBlur",
-			       g_object_ref(chkMisc_FastBlur), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_FastBlur, FALSE, FALSE, 0);
 	
 	// Show SegaCD LEDs
 	chkMisc_SegaCDLEDs = gtk_check_button_new_with_label("Show SegaCD LEDs");
-	gtk_widget_set_name(chkMisc_SegaCDLEDs, "chkMisc_SegaCDLEDs");
 	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_SegaCDLEDs), 2);
 	gtk_widget_show(chkMisc_SegaCDLEDs);
-	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_SegaCDLEDs",
-			       g_object_ref(chkMisc_SegaCDLEDs), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_SegaCDLEDs, FALSE, FALSE, 0);
 	
 	// Border Color Emulation
 	chkMisc_BorderColorEmulation = gtk_check_button_new_with_label("Border Color Emulation");
-	gtk_widget_set_name(chkMisc_BorderColorEmulation, "chkMisc_BorderColorEmulation");
 	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_BorderColorEmulation), 2);
 	gtk_widget_show(chkMisc_BorderColorEmulation);
-	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_BorderColorEmulation",
-			       g_object_ref(chkMisc_BorderColorEmulation), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_BorderColorEmulation, FALSE, FALSE, 0);
 	
 	// Pause Tint
 	chkMisc_PauseTint = gtk_check_button_new_with_label("Pause Tint");
-	gtk_widget_set_name(chkMisc_PauseTint, "chkMisc_PauseTint");
 	gtk_container_set_border_width(GTK_CONTAINER(chkMisc_PauseTint), 2);
 	gtk_widget_show(chkMisc_PauseTint);
-	g_object_set_data_full(G_OBJECT(m_Window), "chkMisc_PauseTint",
-			       g_object_ref(chkMisc_PauseTint), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxMisc), chkMisc_PauseTint, FALSE, FALSE, 0);
 	
 	// VBox for intro effect color
 	GtkWidget *vboxIntroEffectColor = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxIntroEffectColor, "vboxIntroEffectColor");
 	gtk_container_set_border_width(GTK_CONTAINER(vboxIntroEffectColor), 8);
 	gtk_widget_show(vboxIntroEffectColor);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxIntroEffectColor",
-			       g_object_ref(vboxIntroEffectColor), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(vboxMisc), vboxIntroEffectColor);
 	
 	// Label for intro effect color
 	GtkWidget *lblIntroEffectColor = gtk_label_new("Intro Effect Color:");
-	gtk_widget_set_name(lblIntroEffectColor, "lblIntroEffectColor");
 	gtk_widget_show(lblIntroEffectColor);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblIntroEffectColor",
-			       g_object_ref(lblIntroEffectColor), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxIntroEffectColor), lblIntroEffectColor, FALSE, FALSE, 0);
 	
-	createColorRadioButtons(NULL, "misc_intro_effect",
-				Colors_IntroEffect, 0, vboxIntroEffectColor);
+	// Color Radio Buttons for intro effect color
+	createColorRadioButtons(NULL, Colors_IntroEffect, 0, vboxIntroEffectColor);
 	
 	// Create an accelerator group.
 	m_AccelTable = gtk_accel_group_new();
@@ -355,97 +303,59 @@ void GeneralOptionsWindow::createOSDFrame(const char* title, const int index, Gt
 	char tmp[64];
 	
 	// Create the frame.
-	GtkWidget *fraOSD = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraOSD, "fraOSD");
+	sprintf(tmp, "<b><i>%s</i></b>", title);
+	GtkWidget *fraOSD = gtk_frame_new(tmp);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraOSD), GTK_SHADOW_ETCHED_IN);
+	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraOSD))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraOSD), 4);
 	gtk_widget_show(fraOSD);
-	sprintf(tmp, "fraOSD_%d", index);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(fraOSD), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(container), fraOSD, TRUE, TRUE, 0);
-	
-	// Create the label for the frame.
-	snprintf(tmp, sizeof(tmp), "<b><i>%s</i></b>", title);
-	tmp[sizeof(tmp) - 1] = 0x00;
-	GtkWidget *lblOSD = gtk_label_new(tmp);
-	
-	sprintf(tmp, "lblOSD_%d", index);
-	gtk_widget_set_name(lblOSD, tmp);
-	gtk_label_set_use_markup(GTK_LABEL(lblOSD), TRUE);
-	gtk_widget_show(lblOSD);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(lblOSD), (GDestroyNotify)g_object_unref);
-	gtk_frame_set_label_widget(GTK_FRAME(fraOSD), lblOSD);
 	
 	// Create the vbox for the frame.
 	GtkWidget *vboxOSD = gtk_vbox_new(FALSE, 0);
-	sprintf(tmp, "vboxOSD_%d", index);
-	gtk_widget_set_name(vboxOSD, tmp);
 	gtk_widget_show(vboxOSD);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(vboxOSD), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraOSD), vboxOSD);
 	
 	// Create the checkboxes.
 	
 	// Enable
 	chkOSD_Enable[index] = gtk_check_button_new_with_label("Enable");
-	sprintf(tmp, "chkOSD_Enable_%d", index);
-	gtk_widget_set_name(chkOSD_Enable[index], tmp);
 	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_Enable[index]), 2);
 	gtk_widget_show(chkOSD_Enable[index]);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(chkOSD_Enable[index]), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_Enable[index], FALSE, FALSE, 0);
 	
 	// Double Sized
 	chkOSD_DoubleSized[index] = gtk_check_button_new_with_label("Double Sized");
-	sprintf(tmp, "chkOSD_DoubleSized_%d", index);
-	gtk_widget_set_name(chkOSD_DoubleSized[index], tmp);
 	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_DoubleSized[index]), 2);
 	gtk_widget_show(chkOSD_DoubleSized[index]);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(chkOSD_DoubleSized[index]), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_DoubleSized[index], FALSE, FALSE, 0);
 	
 	// Transparency
 	chkOSD_Transparency[index] = gtk_check_button_new_with_label("Transparency");
-	sprintf(tmp, "chkOSD_Transparency_%d", index);
-	gtk_widget_set_name(chkOSD_Transparency[index], tmp);
 	gtk_container_set_border_width(GTK_CONTAINER(chkOSD_Transparency[index]), 2);
 	gtk_widget_show(chkOSD_Transparency[index]);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(chkOSD_Transparency[index]), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxOSD), chkOSD_Transparency[index], FALSE, FALSE, 0);
 	
 	// Color HBox
 	GtkWidget *hboxOSD_Color = gtk_hbox_new(FALSE, 0);
-	sprintf(tmp, "hboxOSD_Color_%d", index);
-	gtk_widget_set_name(hboxOSD_Color, tmp);
 	gtk_container_set_border_width(GTK_CONTAINER(hboxOSD_Color), 8);
 	gtk_widget_show(hboxOSD_Color);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(hboxOSD_Color), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(vboxOSD), hboxOSD_Color);
 	
 	// Color Radio Buttons
-	sprintf(tmp, "OSD_%d", index);
-	createColorRadioButtons("Color:", tmp, Colors_OSD, index, hboxOSD_Color);
+	createColorRadioButtons("Color:", Colors_OSD, index, hboxOSD_Color);
 }
 
 
 /**
  * createColorRadioButtons(): Create color radio buttons.
  * @param title Title for this color button group.
- * @param groupName Prefix for each button's name.
  * @param colors Array of colors.
  * @param num Number of colors to use.
  * @param buttonSet Button set ID.
  * @param container Container for the radio buttons.
  */
 void GeneralOptionsWindow::createColorRadioButtons(const char* title,
-						   const char* groupName,
 						   const char* colors[][6],
 						   const int buttonSet,
 						   GtkWidget* container)
@@ -470,37 +380,24 @@ void GeneralOptionsWindow::createColorRadioButtons(const char* title,
 		return;
 	}
 	
-	char tmp[64];
-	
 	// Color label
 	if (title)
 	{
 		// Alignment object.
 		GtkWidget *alignColor = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
-		sprintf(tmp, "alignColor_%s", groupName);
 		gtk_alignment_set_padding(GTK_ALIGNMENT(alignColor), 0, 0, 0, 8);
 		gtk_widget_show(alignColor);
-		g_object_set_data_full(G_OBJECT(m_Window), tmp,
-				       g_object_ref(alignColor), (GDestroyNotify)g_object_unref);
 		gtk_box_pack_start(GTK_BOX(container), alignColor, FALSE, FALSE, 0);
 		
 		// Label object.
 		GtkWidget *lblColor = gtk_label_new(title);
-		sprintf(tmp, "lblColor_%s", groupName);
-		gtk_widget_set_name(lblColor, tmp);
 		gtk_widget_show(lblColor);
-		g_object_set_data_full(G_OBJECT(m_Window), tmp,
-				       g_object_ref(lblColor), (GDestroyNotify)g_object_unref);
 		gtk_container_add(GTK_CONTAINER(alignColor), lblColor);
 	}
 	
 	// HBox for the color buttons.
 	GtkWidget *hboxButtons = gtk_hbox_new(TRUE, 0);
-	sprintf(tmp, "hboxButtons_%s", groupName);
-	gtk_widget_set_name(hboxButtons, tmp);
 	gtk_widget_show(hboxButtons);
-	g_object_set_data_full(G_OBJECT(m_Window), tmp,
-			       g_object_ref(hboxButtons), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(container), hboxButtons, FALSE, FALSE, 0);
 	
 	// Color Buttons
@@ -515,8 +412,6 @@ void GeneralOptionsWindow::createColorRadioButtons(const char* title,
 		
 		optColorButton = gtk_radio_button_new(gslColorButton);
 		gslColorButton = gtk_radio_button_get_group(GTK_RADIO_BUTTON(optColorButton));
-		sprintf(tmp, "optColorButton_%s_%d", groupName, i);
-		gtk_widget_set_name(optColorButton, tmp);
 		
 		// Display as a regular button, not as a radio button.
 		gtk_toggle_button_set_mode(GTK_TOGGLE_BUTTON(optColorButton), FALSE);
@@ -532,8 +427,6 @@ void GeneralOptionsWindow::createColorRadioButtons(const char* title,
 		
 		gtk_widget_set_size_request(optColorButton, 16, 16);
 		gtk_widget_show(optColorButton);
-		g_object_set_data_full(G_OBJECT(m_Window), tmp,
-				       g_object_ref(optColorButton), (GDestroyNotify)g_object_unref);
 		gtk_box_pack_start(GTK_BOX(hboxButtons), optColorButton, TRUE, TRUE, 0);
 		
 		// Save the color button.

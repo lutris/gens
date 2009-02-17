@@ -77,14 +77,12 @@ void dir_window_show(GtkWindow *parent)
 	
 	// Create the window.
 	dir_window = gtk_dialog_new();
-	gtk_widget_set_name(dir_window, "dir_window");
 	gtk_container_set_border_width(GTK_CONTAINER(dir_window), 4);
 	gtk_window_set_title(GTK_WINDOW(dir_window), "Configure Directories");
 	gtk_window_set_position(GTK_WINDOW(dir_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(dir_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(dir_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(dir_window), FALSE);
-	g_object_set_data(G_OBJECT(dir_window), "dir_window", dir_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)(dir_window), "delete_event",
@@ -98,54 +96,38 @@ void dir_window_show(GtkWindow *parent)
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(dir_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(dir_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the directory entry frame.
 	GtkWidget *fraDirectories = gtk_frame_new("<b><i>Configure Directories</i></b>");
-	gtk_widget_set_name(fraDirectories, "fraDirectories");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraDirectories), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraDirectories))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraDirectories), 4);
 	gtk_widget_show(fraDirectories);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), fraDirectories, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(dir_window), "fraDirectories",
-			       g_object_ref(fraDirectories), (GDestroyNotify)g_object_unref);
 	
 	// Create the table for the directories.
 	GtkWidget *tblDirectories = gtk_table_new(DIR_WINDOW_ENTRIES_COUNT, 3, FALSE);
-	gtk_widget_set_name(tblDirectories, "tblDirectories");
 	gtk_container_set_border_width(GTK_CONTAINER(tblDirectories), 8);
 	gtk_table_set_row_spacings(GTK_TABLE(tblDirectories), 4);
 	gtk_table_set_col_spacings(GTK_TABLE(tblDirectories), 4);
 	gtk_widget_show(tblDirectories);
 	gtk_container_add(GTK_CONTAINER(fraDirectories), tblDirectories);
-	g_object_set_data_full(G_OBJECT(dir_window), "tblDirectories",
-			       g_object_ref(tblDirectories), (GDestroyNotify)g_object_unref);
 	
 	// Create all directory entry widgets.
-	char tmp[64];
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		// Create tbe label for the directory.
-		sprintf(tmp, "lblDirectory_%d", dir);
 		GtkWidget *lblDirectory = gtk_label_new(dir_window_entries[dir].title);
-		gtk_widget_set_name(lblDirectory, tmp);
 		gtk_misc_set_alignment(GTK_MISC(lblDirectory), 0.0f, 0.5f);
 		gtk_widget_show(lblDirectory);
 		gtk_table_attach(GTK_TABLE(tblDirectories), lblDirectory,
 				 0, 1, dir, dir + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
-		g_object_set_data_full(G_OBJECT(dir_window), tmp,
-				       g_object_ref(lblDirectory), (GDestroyNotify)g_object_unref);
 		
 		// Create the textbox for the directory.
-		sprintf(tmp, "txtDirectory_%d", dir);
 		txtDirectory[dir] = gtk_entry_new();
-		gtk_widget_set_name(txtDirectory[dir], tmp);
 		gtk_entry_set_max_length(GTK_ENTRY(txtDirectory[dir]), GENS_PATH_MAX - 1);
 		gtk_widget_set_size_request(txtDirectory[dir], 256, -1);
 		gtk_widget_show(txtDirectory[dir]);
@@ -153,21 +135,15 @@ void dir_window_show(GtkWindow *parent)
 				 1, 2, dir, dir + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(dir_window), tmp,
-				       g_object_ref(txtDirectory[dir]), (GDestroyNotify)g_object_unref);
 		
 		// Create the "Change" button for the directory.
 		// TODO: Use an icon?
-		sprintf(tmp, "btnChange_%d", dir);
 		GtkWidget *btnChange = gtk_button_new_with_label("Change...");
-		gtk_widget_set_name(btnChange, tmp);
 		gtk_widget_show(btnChange);
 		gtk_table_attach(GTK_TABLE(tblDirectories), btnChange,
 				 2, 3, dir, dir + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
-		g_object_set_data_full(G_OBJECT(dir_window), tmp,
-				       g_object_ref(btnChange), (GDestroyNotify)g_object_unref);
 		
 		// Connect the "clicked" signal for the "Change" button.
 		g_signal_connect(GTK_OBJECT(btnChange), "clicked",

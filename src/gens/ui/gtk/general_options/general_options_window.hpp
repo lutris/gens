@@ -43,7 +43,6 @@ class GeneralOptionsWindow : public WndBase
 		void dlgButtonPress(uint32_t button);
 		
 		void createColorRadioButtons(const char* title,
-					     const char* groupName, 
 					     const char* colors[][6],
 					     const int buttonSet,
 					     GtkWidget* container);

@@ -66,14 +66,12 @@ void gg_window_show(void *parent)
 	
 	// Create the Game Genie window.
 	gg_window = gtk_dialog_new();
-	gtk_widget_set_name(gg_window, "gg_window");
 	gtk_container_set_border_width(GTK_CONTAINER(gg_window), 4);
 	gtk_window_set_title(GTK_WINDOW(gg_window), "Game Genie");
 	gtk_window_set_position(GTK_WINDOW(gg_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(gg_window), TRUE);
 	gtk_window_set_type_hint(GTK_WINDOW(gg_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(gg_window), FALSE);
-	g_object_set_data(G_OBJECT(gg_window), "gg_window", gg_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)gg_window, "delete_event",
@@ -83,19 +81,13 @@ void gg_window_show(void *parent)
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(gg_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(gg_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main frame.
 	GtkWidget *fraMain = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraMain, "fraMain");
 	gtk_widget_show(fraMain);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), fraMain, FALSE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_NONE);
-	g_object_set_data_full(G_OBJECT(gg_window), "fraMain",
-			       g_object_ref(fraMain), (GDestroyNotify)g_object_unref);
 	
 	// Strings.
 	static const char* const strInfoTitle = "<b><i>Information about Game Genie / Patch codes</i></b>";
@@ -107,59 +99,41 @@ void gg_window_show(void *parent)
 	
 	// Header label.
 	GtkWidget *lblInfoTitle = gtk_label_new(strInfoTitle);
-	gtk_widget_set_name(lblInfoTitle, "lblInfoTitle");
 	gtk_label_set_use_markup(GTK_LABEL(lblInfoTitle), TRUE);
 	gtk_widget_show(lblInfoTitle);
 	gtk_frame_set_label_widget(GTK_FRAME(fraMain), lblInfoTitle);
-	g_object_set_data_full(G_OBJECT(gg_window), "lblInfoTitle",
-			       g_object_ref(lblInfoTitle), (GDestroyNotify)g_object_unref);
 	
 	// Description label.
 	GtkWidget *lblInfo = gtk_label_new(strInfo);
-	gtk_widget_set_name(lblInfo, "lblInfo");
 	gtk_widget_show(lblInfo);
 	gtk_container_add(GTK_CONTAINER(fraMain), lblInfo);
 	gtk_misc_set_alignment(GTK_MISC(lblInfo), 0.02f, 0.0f);
-	g_object_set_data_full(G_OBJECT(gg_window), "lblInfo",
-			       g_object_ref(lblInfo), (GDestroyNotify)g_object_unref);
 	
 	// VBox for table layout.
 	GtkWidget *vboxTable = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxTable, "vboxTable");
 	gtk_widget_show(vboxTable);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), vboxTable, FALSE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "vboxTable",
-			       g_object_ref(vboxTable), (GDestroyNotify)g_object_unref);
 	
 	// Table layout.
 	GtkWidget *tblEntry = gtk_table_new(2, 3, FALSE);
-	gtk_widget_set_name(tblEntry, "tblEntry");
 	gtk_widget_show(tblEntry);
 	gtk_table_set_col_spacings(GTK_TABLE(tblEntry), 10);
 	gtk_box_pack_start(GTK_BOX(vboxTable), tblEntry, FALSE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "tblEntry",
-			       g_object_ref(tblEntry), (GDestroyNotify)g_object_unref);
 	
 	// Code label and entry widgets.
 	GtkWidget *lblEntry_Code = gtk_label_new("Code");
-	gtk_widget_set_name(lblEntry_Code, "lblEntry_Code");
 	gtk_misc_set_alignment(GTK_MISC(lblEntry_Code), 0.0f, 0.5f);
 	gtk_widget_show(lblEntry_Code);
 	gtk_table_attach(GTK_TABLE(tblEntry), lblEntry_Code, 0, 1, 0, 1,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "lblEntry_Code",
-			       g_object_ref(lblEntry_Code), (GDestroyNotify)g_object_unref);
 	
 	txtEntry_Code = gtk_entry_new();
-	gtk_widget_set_name(txtEntry_Code, "txtEntry_Code");
 	gtk_entry_set_max_length(GTK_ENTRY(txtEntry_Code), 11);
 	gtk_widget_show(txtEntry_Code);
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Code, 1, 2, 0, 1,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "txtEntry_Code",
-			       g_object_ref(txtEntry_Code), (GDestroyNotify)g_object_unref);
 	// TODO
 	/*
 	g_signal_connect((gpointer)txtEntry_Code, "key-press-event",
@@ -168,24 +142,18 @@ void gg_window_show(void *parent)
 	
 	// Name label and entry widgets.
 	GtkWidget *lblEntry_Name = gtk_label_new("Name");
-	gtk_widget_set_name(lblEntry_Name, "lblEntry_Name");
 	gtk_misc_set_alignment(GTK_MISC(lblEntry_Name), 0.0f, 0.5f);
 	gtk_widget_show(lblEntry_Name);
 	gtk_table_attach(GTK_TABLE(tblEntry), lblEntry_Name, 0, 1, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "lblEntry_Name",
-			       g_object_ref(lblEntry_Name), (GDestroyNotify)g_object_unref);
 	
 	txtEntry_Name = gtk_entry_new();
-	gtk_widget_set_name(txtEntry_Name, "txtEntry_Name");
 	gtk_entry_set_max_length(GTK_ENTRY(txtEntry_Name), 11);
 	gtk_widget_show(txtEntry_Name);
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Name, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "txtEntry_Name",
-			       g_object_ref(txtEntry_Name), (GDestroyNotify)g_object_unref);
 	// TODO
 	/*
 	g_signal_connect((gpointer)txtEntry_Code, "key-press-event",
@@ -194,21 +162,15 @@ void gg_window_show(void *parent)
 	
 	// "Add Code" button.
 	GtkWidget *btnAddCode = gtk_button_new_with_mnemonic("Add C_ode");
-	gtk_widget_set_name(btnAddCode, "btnAddCode");
 	gtk_widget_show(btnAddCode);
 	gtk_table_attach(GTK_TABLE(tblEntry), btnAddCode, 2, 3, 0, 1,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "btnAddCode",
-			       g_object_ref(btnAddCode), (GDestroyNotify)g_object_unref);
 	
 	// Set the "Add Code" button's icon to "gtk-add".
 	GtkWidget *btnAddCode_icon = gtk_image_new_from_stock("gtk-add", GTK_ICON_SIZE_BUTTON);
-	gtk_widget_set_name(btnAddCode_icon, "btnAddCode_icon");
 	gtk_widget_show(btnAddCode_icon);
 	gtk_button_set_image(GTK_BUTTON(btnAddCode), btnAddCode_icon);
-	g_object_set_data_full(G_OBJECT(gg_window), "btnAddCode_icon",
-			       g_object_ref(btnAddCode_icon), (GDestroyNotify)g_object_unref);
 	
 	// Connect the "clicked" signal for the "Add Code" button.
 	g_signal_connect((gpointer)btnAddCode, "clicked",
@@ -225,33 +187,24 @@ void gg_window_show(void *parent)
 	
 	// HBox for the code list.
 	GtkWidget *hboxList = gtk_hbox_new(FALSE, 0);
-	gtk_widget_set_name(hboxList, "hboxList");
 	gtk_widget_show(hboxList);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxList, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "hboxList",
-			       g_object_ref(hboxList), (GDestroyNotify)g_object_unref);
 	
 	// Scrolled Window for the code list.
 	GtkWidget *scrlList = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_name(scrlList, "scrlList");
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlList), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlList),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrlList);
 	gtk_box_pack_start(GTK_BOX(hboxList), scrlList, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(gg_window), "scrlList",
-			       g_object_ref(scrlList), (GDestroyNotify)g_object_unref);
 	
 	// Treeview containing the Game Genie codes.
 	lstCodes = gtk_tree_view_new();
-	gtk_widget_set_name(lstCodes, "lstCodes");
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), TRUE);
 	gtk_widget_set_size_request(lstCodes, -1, 160);
 	gtk_widget_show(lstCodes);
 	gtk_container_add(GTK_CONTAINER(scrlList), lstCodes);
-	g_object_set_data_full(G_OBJECT(gg_window), "lstCodes",
-			       g_object_ref(lstCodes), (GDestroyNotify)g_object_unref);
 	
 	// Create the dialog buttons.
 	
@@ -267,11 +220,8 @@ void gg_window_show(void *parent)
 	
 	// Create the icon for the "Deactivate All" button.
 	GtkWidget *btnDeactivateAll_icon = gtk_image_new_from_stock(GTK_STOCK_REMOVE, GTK_ICON_SIZE_BUTTON);
-	gtk_widget_set_name(btnDeactivateAll_icon, "btnDeactivateAll_icon");
 	gtk_widget_show(btnDeactivateAll_icon);
 	gtk_button_set_image(GTK_BUTTON(btnDeactivateAll), btnDeactivateAll_icon);
-	g_object_set_data_full(G_OBJECT(btnDeactivateAll), "btnDeactivateAll_icon",
-			       g_object_ref(btnDeactivateAll_icon), (GDestroyNotify)g_object_unref);
 	
 	// Add the rest of the buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(gg_window),

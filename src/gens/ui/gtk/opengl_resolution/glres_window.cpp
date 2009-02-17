@@ -68,14 +68,12 @@ void glres_window_show(GtkWindow *parent)
 	
 	// Create the window.
 	glres_window = gtk_dialog_new();
-	gtk_widget_set_name(glres_window, "glres_window");
 	gtk_container_set_border_width(GTK_CONTAINER(glres_window), 4);
 	gtk_window_set_title(GTK_WINDOW(glres_window), "OpenGL Resolution");
 	gtk_window_set_position(GTK_WINDOW(glres_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(glres_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(glres_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(glres_window), FALSE);
-	g_object_set_data(G_OBJECT(glres_window), "glres_window", glres_window);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)(glres_window), "delete_event",
@@ -89,65 +87,44 @@ void glres_window_show(GtkWindow *parent)
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(glres_window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(glres_window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the main HBox.
 	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 4);
-	gtk_widget_set_name(hboxMain, "hboxMain");
 	gtk_widget_show(hboxMain);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxMain, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "hboxMain",
-			       g_object_ref(hboxMain), (GDestroyNotify)g_object_unref);
 	
 	// Create the Width spinbutton label.
 	GtkWidget *lblWidth = gtk_label_new_with_mnemonic("_Width");
-	gtk_widget_set_name(lblWidth, "lblWidth");
 	gtk_misc_set_alignment(GTK_MISC(lblWidth), 0.0f, 0.5f);
 	gtk_widget_show(lblWidth);
 	gtk_box_pack_start(GTK_BOX(hboxMain), lblWidth, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "lblWidth",
-			       g_object_ref(lblWidth), (GDestroyNotify)g_object_unref);
 	
 	// Create the adjustment object for the Width spinbutton.
 	GtkObject *adjWidth = gtk_adjustment_new(1, 0, 9999, 1, 10, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "adjWidth",
-			       g_object_ref(adjWidth), (GDestroyNotify)g_object_unref);
-	
+
 	// Create the Width spinbutton.
 	spnWidth = gtk_spin_button_new(GTK_ADJUSTMENT(adjWidth), 1, 0);
-	gtk_widget_set_name(spnWidth, "spnWidth");
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblWidth), spnWidth);
 	gtk_widget_show(spnWidth);
 	gtk_box_pack_start(GTK_BOX(hboxMain), spnWidth, FALSE, FALSE, 0);
 	
 	// Create the separator.
 	GtkWidget *vsepResolution = gtk_vseparator_new();
-	gtk_widget_set_name(vsepResolution, "vsepResolution");
 	gtk_widget_show(vsepResolution);
 	gtk_box_pack_start(GTK_BOX(hboxMain), vsepResolution, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "vsepResolution",
-			       g_object_ref(vsepResolution), (GDestroyNotify)g_object_unref);
 	
 	// Create the Height spinbutton label.
 	GtkWidget *lblHeight = gtk_label_new_with_mnemonic("_Height");
-	gtk_widget_set_name(lblHeight, "lblHeight");
 	gtk_misc_set_alignment(GTK_MISC(lblHeight), 0.0f, 0.5f);
 	gtk_widget_show(lblHeight);
 	gtk_box_pack_start(GTK_BOX(hboxMain), lblHeight, FALSE, FALSE, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "lblHeight",
-			       g_object_ref(lblHeight), (GDestroyNotify)g_object_unref);
 	
 	// Create the adjustment object for the Height spinbutton.
 	GtkObject *adjHeight = gtk_adjustment_new(1, 0, 9999, 1, 10, 0);
-	g_object_set_data_full(G_OBJECT(glres_window), "adjHeight",
-			       g_object_ref(adjHeight), (GDestroyNotify)g_object_unref);
 	
 	// Create the Height spinbutton.
 	spnHeight = gtk_spin_button_new(GTK_ADJUSTMENT(adjHeight), 1, 0);
-	gtk_widget_set_name(spnHeight, "spnHeight");
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblHeight), spnHeight);
 	gtk_widget_show(spnHeight);
 	gtk_box_pack_start(GTK_BOX(hboxMain), spnHeight, FALSE, FALSE, 0);
