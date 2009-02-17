@@ -38,14 +38,14 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
-// Response ID for the "Reset" button.
-#define VLOPT_RESPONSE_RESET -64
-
 // Window.
 static GtkWidget *vlopt_window = NULL;
 
-// Checkboxes.
+// Widgets.
 static GtkWidget *vlopt_window_checkboxes[VLOPT_OPTIONS_COUNT];
+
+// Custom response IDs.
+#define VLOPT_RESPONSE_RESET 1
 
 // Callbacks.
 static gboolean vlopt_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -203,18 +203,21 @@ void vlopt_window_show(void *parent)
 				 GINT_TO_POINTER(i));
 	}
 	
-	// Create the "Reset" button.
-	GtkWidget *btnReset = gtk_button_new_with_mnemonic("_Reset");
-	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnReset, VLOPT_RESPONSE_RESET);
+	// Create the dialog buttons.
+	
+	// "Reset" button.
+	GtkWidget *btnReset = gtk_dialog_add_button(
+				GTK_DIALOG(vlopt_window),
+				"_Reset", VLOPT_RESPONSE_RESET);
 	
 	// Create the icon for the "Reset" button.
-	GtkWidget *imgReset = gtk_image_new_from_stock("gtk-refresh", GTK_ICON_SIZE_BUTTON);
-	gtk_widget_show(imgReset);
-	gtk_button_set_image(GTK_BUTTON(btnReset), imgReset);
+	GtkWidget *btnReset_icon = gtk_image_new_from_stock(GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON);
+	gtk_widget_show(btnReset_icon);
+	gtk_button_set_image(GTK_BUTTON(btnReset), btnReset_icon);
 	
-	// Create the "Close" button.
-	GtkWidget *btnClose = gtk_button_new_from_stock("gtk-close");
-	gtk_dialog_add_action_widget(GTK_DIALOG(vlopt_window), btnClose, GTK_RESPONSE_CLOSE);
+	// "Close" button.
+	gtk_dialog_add_button(GTK_DIALOG(vlopt_window),
+			      GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE);
 	
 	// Set the window as modal to the main application window.
 	if (parent)
