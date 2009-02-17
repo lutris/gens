@@ -27,43 +27,20 @@
 #include "emulator/g_main.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
-#include "macros/unused.h"
 
-#include "util/file/config_file.hpp"
+#include "util/file/rom.hpp"
 
 #include "ui/gens_ui.hpp"
-#include "ui/gtk/gtk-misc.h"
 #include "ui/gtk/gtk-uri.h"
 
 // Unued Parameter macro.
 #include "macros/unused.h"
 
-#include "util/sound/gym.hpp"
-#include "util/file/rom.hpp"
-#include "gens_core/vdp/vdp_io.h"
-#include "util/file/save.hpp"
-#include "mdZ80/mdZ80.h"
-#include "util/gfx/imageutil.hpp"
-
 // File management functions.
 #include "util/file/file.hpp"
 
-// Sega CD
-#include "emulator/g_mcd.hpp"
-
-// 32X
-#include "gens_core/cpu/sh2/sh2.h"
-
-// CD-ROM drive access
-#ifdef GENS_CDROM
-#include "segacd/cd_aspi.hpp"
-#endif /* GENS_CDROM */
-
 // Audio Handler.
 #include "audio/audio.h"
-
-#include <sys/types.h>
-#include <unistd.h>
 
 // C++ includes
 #include <string>

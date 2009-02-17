@@ -28,12 +28,10 @@
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 #include "emulator/g_md.hpp"
+#include "emulator/options.hpp"
 
 // Menus.
 #include "gens_menu.hpp"
-
-#include "emulator/options.hpp"
-#include "util/file/config_file.hpp"
 
 // Unused Parameter macro.
 #include "macros/unused.h"
@@ -43,13 +41,6 @@
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
-#include "gens_core/vdp/vdp_rend.h"
-#include "util/file/save.hpp"
-#include "mdZ80/mdZ80.h"
-#include "util/gfx/imageutil.hpp"
-
-// Sega CD
-#include "emulator/g_mcd.hpp"
 
 // 32X
 #include "gens_core/cpu/sh2/sh2.h"
@@ -73,24 +64,8 @@
 // Audio Handler.
 #include "audio/audio.h"
 
-// Needed on Win32
-#include "gens_core/mem/mem_m68k.h"
-#include "gens_core/sound/ym2612.h"
-#include "gens_core/sound/psg.h"
-#include "gens_core/sound/pcm.h"
-#include "gens_core/sound/pwm.h"
-#include "segacd/cd_sys.hpp"
-
-#include <sys/types.h>
-#include <unistd.h>
-
-// C includes
-#include <cstring>
-
 // C++ includes
-#include <string>
 #include <list>
-using std::string;
 using std::list;
 
 // For some reason, these aren't extern'd anywhere...
