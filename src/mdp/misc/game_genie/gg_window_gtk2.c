@@ -214,9 +214,10 @@ void gg_window_show(void *parent)
 			      GG_RESPONSE_DELETE);
 	
 	// "Deactivate All" button.
-	GtkWidget *btnDeactivateAll = gtk_dialog_add_button(GTK_DIALOG(gg_window),
-							    "Deac_tivate All",
-							    GG_RESPONSE_DEACTIVATE_ALL);
+	GtkWidget *btnDeactivateAll = gtk_dialog_add_button(
+					GTK_DIALOG(gg_window),
+					"Deac_tivate All",
+					GG_RESPONSE_DEACTIVATE_ALL);
 	
 	// Create the icon for the "Deactivate All" button.
 	GtkWidget *btnDeactivateAll_icon = gtk_image_new_from_stock(GTK_STOCK_REMOVE, GTK_ICON_SIZE_BUTTON);
