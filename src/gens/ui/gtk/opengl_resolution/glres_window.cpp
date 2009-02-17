@@ -25,7 +25,7 @@
 #endif
 
 #include "glres_window.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // GTK+ includes.
 #include <gtk/gtk.h>

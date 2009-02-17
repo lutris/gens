@@ -32,7 +32,7 @@
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // Needed to handle controller input configuration.
 #include "controller_config/cc_window.h"

@@ -26,7 +26,7 @@
 
 #include "dir_window.hpp"
 #include "ui/common/dir_window_common.h"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // C includes.
 #include <string.h>

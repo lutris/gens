@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 #include "ui/gens_ui.hpp"
 #include "gtk-misc.h"
@@ -72,7 +72,7 @@ void GensUI::init(int *argc, char **argv[])
 	gtk_init(argc, argv);
 	
 	// Create the Gens window.
-	create_gens_window();
+	gens_window_create();
 	
 	// Set the window title to Idle.
 	setWindowTitle_Idle();

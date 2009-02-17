@@ -25,7 +25,6 @@
 #endif
 
 #include "emulator/g_main.hpp"
-#include "gens_window.hpp"
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 #include "macros/unused.h"

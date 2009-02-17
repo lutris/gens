@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Win32) Main Window.                                              *
+ * Gens: (GTK+) Main Window.                                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,27 +20,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_GENS_WINDOW_HPP
-#define GENS_WIN32_GENS_WINDOW_HPP
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef GENS_GTK_GENS_WINDOW_H
+#define GENS_GTK_GENS_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <windows.h>
-#include <stdint.h>
+// GTK+ includes.
+#include <gtk/gtk.h>
 
-HWND initGens_hWnd(void);
-HWND create_gens_window(void);
-void create_gens_window_menubar(void);
-extern HWND gens_window;
+extern GtkWidget *gens_window;
+extern GtkWidget *gens_window_sdlsock;
+
+void gens_window_create(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_WIN32_GENS_WINDOW_HPP */
+#endif /* GENS_GTK_GENS_WINDOW_H */

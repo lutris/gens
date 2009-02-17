@@ -25,7 +25,7 @@
 #endif
 
 #include "cc_window.h"
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // C includes.
 #include <stdio.h>

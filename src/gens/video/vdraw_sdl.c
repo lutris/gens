@@ -33,11 +33,10 @@
 #include <SDL/SDL.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include "ui/gtk/gtk-misc.h"
 #include "util/file/rom.hpp"
 
 // Gens window.
-#include "gens/gens_window.hpp"
+#include "gens/gens_window.h"
 
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
@@ -108,17 +107,15 @@ static int vdraw_sdl_init(void)
 	if (vdraw_get_fullscreen())
 	{
 		// Hide the embedded SDL window.
-		gtk_widget_hide(lookup_widget(gens_window, "sdlsock"));
-		
+		gtk_widget_hide(gens_window_sdlsock);
 		unsetenv("SDL_WINDOWID");
 	}
 	else
 	{
 		// Show the embedded SDL window.
-		GtkWidget *sdlsock = lookup_widget(gens_window, "sdlsock");
-		gtk_widget_set_size_request(sdlsock, w, h);
-		gtk_widget_realize(sdlsock);
-		gtk_widget_show(sdlsock);
+		gtk_widget_set_size_request(gens_window_sdlsock, w, h);
+		gtk_widget_realize(gens_window_sdlsock);
+		gtk_widget_show(gens_window_sdlsock);
 		
 		// Wait for GTK+ to catch up.
 		// TODO: If gtk_main_iteration_do() returns TRUE, exit the program.
@@ -127,7 +124,7 @@ static int vdraw_sdl_init(void)
 		
 		// Get the Window ID of the SDL socket.
 		char SDL_WindowID[24];
-		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(sdlsock->window)));
+		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(gens_window_sdlsock->window)));
 		setenv("SDL_WINDOWID", SDL_WindowID, 1);
 	}
 	
