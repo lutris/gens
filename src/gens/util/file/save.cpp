@@ -75,6 +75,7 @@
 
 // GSX savestate structs.
 #include "gsx_struct.h"
+#include "gsx_v6.h"
 #include "gsx_v7.h"
 
 // Needed for SetCurrentDirectory.
@@ -399,6 +400,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 #ifdef GENS_DEBUG_SAVESTATE
 	// Make sure the save structs are the correct size.
 	assert(sizeof(gsx_struct_md_t) == GENESIS_LENGTH_EX1);
+	assert(sizeof(gsx_struct_md_v6_t) == GENESIS_V6_LENGTH_EX2);
 	assert(sizeof(gsx_struct_md_v7_t) == GENESIS_LENGTH_EX2);
 #endif
 	
@@ -567,148 +569,144 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	unsigned int offset = GENESIS_LENGTH_EX1;
 	if (m_Version == 6)
 	{
-		// Gens v6 savestate
+		// Gens v6 savestate extensions.
+		gsx_struct_md_v6_t md_save_v6;
+		memcpy(&md_save_v6, &data[GENESIS_LENGTH_EX1], sizeof(md_save_v6));
+		
 		//Modif N. - saving more stuff (although a couple of these are saved above in a weird way that I don't trust)
-		ImportDataAuto(&Context_68K.dreg, data, offset, 4*8);
-		ImportDataAuto(&Context_68K.areg, data, offset, 4*8);
-		ImportDataAuto(&Context_68K.asp, data, offset, 4);
-		ImportDataAuto(&Context_68K.pc, data, offset, 4);
-		ImportDataAuto(&Context_68K.odometer, data, offset, 4);
-		ImportDataAuto(&Context_68K.interrupts, data, offset, 8);
-		ImportDataAuto(&Context_68K.sr, data, offset, 2);
-		ImportDataAuto(&Context_68K.contextfiller00, data, offset, 2);
 		
-		ImportDataAuto(&VDP_Reg.H_Int, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Set1, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Set2, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_ScrA_Adr, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_Win_Adr, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Pat_ScrB_Adr, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Spr_Att_Adr, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg6, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.BG_Color, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg8, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg9, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.H_Int, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Set3, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Set4, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.H_Scr_Adr, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Reg14, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Auto_Inc, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Scr_Size, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Win_H_Pos, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Win_V_Pos, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_L, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_H, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Address, data, offset, 4);
+		for (unsigned int i = 0; i < 8; i++)
+		{
+			Context_68K.dreg[i] = le32_to_cpu(md_save_v6.mc68000_reg.dreg[i]);
+			Context_68K.areg[i] = le32_to_cpu(md_save_v6.mc68000_reg.areg[i]);
+			Context_68K.interrupts[i] = md_save_v6.mc68000_reg.interrupts[i];
+		}
+		Context_68K.asp		= le32_to_cpu(md_save_v6.mc68000_reg.asp);
+		Context_68K.pc		= le32_to_cpu(md_save_v6.mc68000_reg.pc);
+		Context_68K.odometer	= le32_to_cpu(md_save_v6.mc68000_reg.odometer);
+		Context_68K.sr		= le16_to_cpu(md_save_v6.mc68000_reg.sr);
+		Context_68K.contextfiller00 = le16_to_cpu(md_save_v6.mc68000_reg.contextfiller00);
 		
-		ImportDataAuto(&Controller_1_Counter, data, offset, 4);
-		ImportDataAuto(&Controller_1_Delay, data, offset, 4);
-		ImportDataAuto(&Controller_1_State, data, offset, 4);
-		ImportDataAuto(&Controller_1_COM, data, offset, 4);
-		ImportDataAuto(&Controller_2_Counter, data, offset, 4);
-		ImportDataAuto(&Controller_2_Delay, data, offset, 4);
-		ImportDataAuto(&Controller_2_State, data, offset, 4);
-		ImportDataAuto(&Controller_2_COM, data, offset, 4);
-		ImportDataAuto(&Memory_Control_Status, data, offset, 4);
-		ImportDataAuto(&Cell_Conv_Tab, data, offset, 4);
+		VDP_Reg.H_Int		= le32_to_cpu(md_save_v6.vdp_reg.DUPE_H_Int);
+		VDP_Reg.Set1		= le32_to_cpu(md_save_v6.vdp_reg.Set1);
+		VDP_Reg.Set2		= le32_to_cpu(md_save_v6.vdp_reg.Set2);
+		VDP_Reg.Pat_ScrA_Adr	= le32_to_cpu(md_save_v6.vdp_reg.DUPE_Pat_ScrA_Adr);
+		VDP_Reg.Pat_ScrA_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrA_Adr);
+		VDP_Reg.Pat_Win_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_Win_Adr);
+		VDP_Reg.Pat_ScrB_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Pat_ScrB_Adr);
+		VDP_Reg.Spr_Att_Adr	= le32_to_cpu(md_save_v6.vdp_reg.Spr_Att_Adr);
+		VDP_Reg.Reg6		= le32_to_cpu(md_save_v6.vdp_reg.Reg6);
+		VDP_Reg.BG_Color	= le32_to_cpu(md_save_v6.vdp_reg.BG_Color);
+		VDP_Reg.Reg8		= le32_to_cpu(md_save_v6.vdp_reg.Reg8);
+		VDP_Reg.Reg9		= le32_to_cpu(md_save_v6.vdp_reg.Reg9);
+		VDP_Reg.H_Int		= le32_to_cpu(md_save_v6.vdp_reg.H_Int);
+		VDP_Reg.Set3		= le32_to_cpu(md_save_v6.vdp_reg.Set3);
+		VDP_Reg.Set4		= le32_to_cpu(md_save_v6.vdp_reg.Set4);
+		VDP_Reg.H_Scr_Adr	= le32_to_cpu(md_save_v6.vdp_reg.H_Scr_Adr);
+		VDP_Reg.Reg14		= le32_to_cpu(md_save_v6.vdp_reg.Reg14);
+		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg.Auto_Inc);
+		VDP_Reg.Scr_Size	= le32_to_cpu(md_save_v6.vdp_reg.Scr_Size);
+		VDP_Reg.Win_H_Pos	= le32_to_cpu(md_save_v6.vdp_reg.Win_H_Pos);
+		VDP_Reg.Win_V_Pos	= le32_to_cpu(md_save_v6.vdp_reg.Win_V_Pos);
+		VDP_Reg.DMA_Length_L	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_L);
+		VDP_Reg.DMA_Length_H	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length_H);
+		VDP_Reg.DMA_Src_Adr_L	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_L);
+		VDP_Reg.DMA_Src_Adr_M	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_M);
+		VDP_Reg.DMA_Src_Adr_H	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Src_Adr_H);
+		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Length);
+		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg.DMA_Address);
 		
-		ImportDataAuto(&Controller_1_Type, data, offset, 4);
-		/* TODO: Make this stuff use bitfields.
-		         For now, it's disabled, especially since v6 is rare.
-		ImportDataAuto(&Controller_1_Up, data, offset, 4);
-		ImportDataAuto(&Controller_1_Down, data, offset, 4);
-		ImportDataAuto(&Controller_1_Left, data, offset, 4);
-		ImportDataAuto(&Controller_1_Right, data, offset, 4);
-		ImportDataAuto(&Controller_1_Start, data, offset, 4);
-		ImportDataAuto(&Controller_1_Mode, data, offset, 4);
-		ImportDataAuto(&Controller_1_A, data, offset, 4);
-		ImportDataAuto(&Controller_1_B, data, offset, 4);
-		ImportDataAuto(&Controller_1_C, data, offset, 4);
-		ImportDataAuto(&Controller_1_X, data, offset, 4);
-		ImportDataAuto(&Controller_1_Y, data, offset, 4);
-		ImportDataAuto(&Controller_1_Z, data, offset, 4);
-		*/
-		offset += 12*4;
+		// Control Port 1. (Port Information)
+		Controller_1_Counter	= le32_to_cpu(md_save_v6.control_port1.counter);
+		Controller_1_Delay	= le32_to_cpu(md_save_v6.control_port1.delay);
+		Controller_1_State	= le32_to_cpu(md_save_v6.control_port1.state);
+		Controller_1_COM	= le32_to_cpu(md_save_v6.control_port1.COM);
 		
-		ImportDataAuto(&Controller_2_Type, data, offset, 4);
-		/* TODO: Make this stuff use bitfields.
-		         For now, it's disabled, especially since v6 is rare.
-		ImportDataAuto(&Controller_2_Up, data, offset, 4);
-		ImportDataAuto(&Controller_2_Down, data, offset, 4);
-		ImportDataAuto(&Controller_2_Left, data, offset, 4);
-		ImportDataAuto(&Controller_2_Right, data, offset, 4);
-		ImportDataAuto(&Controller_2_Start, data, offset, 4);
-		ImportDataAuto(&Controller_2_Mode, data, offset, 4);
-		ImportDataAuto(&Controller_2_A, data, offset, 4);
-		ImportDataAuto(&Controller_2_B, data, offset, 4);
-		ImportDataAuto(&Controller_2_C, data, offset, 4);
-		ImportDataAuto(&Controller_2_X, data, offset, 4);
-		ImportDataAuto(&Controller_2_Y, data, offset, 4);
-		ImportDataAuto(&Controller_2_Z, data, offset, 4);
-		*/
-		offset += 12*4;
+		// Control Port 2. (Port Information)
+		Controller_2_State	= le32_to_cpu(md_save_v6.control_port2.state);
+		Controller_2_COM	= le32_to_cpu(md_save_v6.control_port2.COM);
+		Controller_2_Counter	= le32_to_cpu(md_save_v6.control_port2.counter);
+		Controller_2_Delay	= le32_to_cpu(md_save_v6.control_port2.delay);
 		
-		ImportDataAuto(&DMAT_Length, data, offset, 4);
-		ImportDataAuto(&DMAT_Type, data, offset, 4);
-		ImportDataAuto(&DMAT_Tmp, data, offset, 4);
-		ImportDataAuto(&VDP_Current_Line, data, offset, 4);
-		ImportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-		ImportDataAuto(&VDP_Num_Vis_Lines, data, offset, 4);
-		ImportDataAuto(&Bank_M68K, data, offset, 4);
-		ImportDataAuto(&S68K_State, data, offset, 4);
-		ImportDataAuto(&Z80_State, data, offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_Cnt, data, offset, 4);
-		ImportDataAuto(&Last_BUS_REQ_St, data, offset, 4);
-		ImportDataAuto(&Fake_Fetch, data, offset, 4);
-		ImportDataAuto(&Game_Mode, data, offset, 4);
-		ImportDataAuto(&CPU_Mode, data, offset, 4);
-		ImportDataAuto(&CPL_M68K, data, offset, 4);
-		ImportDataAuto(&CPL_S68K, data, offset, 4);
-		ImportDataAuto(&CPL_Z80, data, offset, 4);
-		ImportDataAuto(&Cycles_S68K, data, offset, 4);
-		ImportDataAuto(&Cycles_M68K, data, offset, 4);
-		ImportDataAuto(&Cycles_Z80, data, offset, 4);
-		ImportDataAuto(&VDP_Status, data, offset, 4);
-		ImportDataAuto(&VDP_Int, data, offset, 4);
-		ImportDataAuto(&Ctrl.Write, data, offset, 4);
-		ImportDataAuto(&Ctrl.DMA_Mode, data, offset, 4);
-		ImportDataAuto(&Ctrl.DMA, data, offset, 4);
+		Memory_Control_Status	= le32_to_cpu(md_save_v6.memory_control_status);
+		// TODO: Cell_Conv_Tab can't be saved like this...
+		//ImportDataAuto(&Cell_Conv_Tab, data, offset, 4);
+		//Cell_Conv_Tab		= le32_to_cpu(md_save_v6.cell_conv_tab);
+		
+		// TODO: Add a configuration option to enable/disable loading controller types.
+		#define GSX_V6_LOAD_CONTROLLER_STATUS(gsx_save, player)			\
+		{									\
+			/* Controller_ ## player ## _Type = le32_to_cpu(gsx_save.type); */		\
+			Controller_ ## player ## _Buttons =						\
+				((le32_to_cpu(gsx_save.up) & 0x01)    ? CONTROLLER_UP : 0)	|	\
+				((le32_to_cpu(gsx_save.down) & 0x01)  ? CONTROLLER_DOWN : 0)	|	\
+				((le32_to_cpu(gsx_save.left) & 0x01)  ? CONTROLLER_LEFT : 0)	|	\
+				((le32_to_cpu(gsx_save.right) & 0x01) ? CONTROLLER_RIGHT : 0)	|	\
+				((le32_to_cpu(gsx_save.start) & 0x01) ? CONTROLLER_START : 0)	|	\
+				((le32_to_cpu(gsx_save.mode) & 0x01)  ? CONTROLLER_MODE : 0)	|	\
+				((le32_to_cpu(gsx_save.A) & 0x01)     ? CONTROLLER_A : 0)	|	\
+				((le32_to_cpu(gsx_save.B) & 0x01)     ? CONTROLLER_B : 0)	|	\
+				((le32_to_cpu(gsx_save.C) & 0x01)     ? CONTROLLER_C : 0)	|	\
+				((le32_to_cpu(gsx_save.X) & 0x01)     ? CONTROLLER_X : 0)	|	\
+				((le32_to_cpu(gsx_save.Y) & 0x01)     ? CONTROLLER_Y : 0)	|	\
+				((le32_to_cpu(gsx_save.Z) & 0x01)     ? CONTROLLER_Z : 0);		\
+		}
+		
+		// Button/Type information for control ports 1 and 2.
+		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player1, 1);
+		GSX_V6_LOAD_CONTROLLER_STATUS(md_save_v6.player2, 2);
+		
+		// MIscellaneous.
+		DMAT_Length		= le32_to_cpu(md_save_v6.dmat_length);
+		DMAT_Type		= le32_to_cpu(md_save_v6.dmat_type);
+		DMAT_Tmp		= le32_to_cpu(md_save_v6.dmat_tmp);
+		VDP_Current_Line	= le32_to_cpu(md_save_v6.vdp_current_line);
+		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.DUPE_vdp_num_vis_lines);
+		VDP_Num_Vis_Lines	= le32_to_cpu(md_save_v6.vdp_num_vis_lines);
+		Bank_M68K		= le32_to_cpu(md_save_v6.bank_m68k);
+		S68K_State		= le32_to_cpu(md_save_v6.s68k_state);
+		Z80_State		= le32_to_cpu(md_save_v6.z80_state);
+		Last_BUS_REQ_Cnt	= le32_to_cpu(md_save_v6.last_bus_req_cnt);
+		Last_BUS_REQ_St		= le32_to_cpu(md_save_v6.last_bus_req_st);
+		Fake_Fetch		= le32_to_cpu(md_save_v6.fake_fetch);
+		Game_Mode		= le32_to_cpu(md_save_v6.game_mode);
+		CPU_Mode		= le32_to_cpu(md_save_v6.cpu_mode);
+		CPL_M68K		= le32_to_cpu(md_save_v6.cpl_m68k);
+		CPL_S68K		= le32_to_cpu(md_save_v6.cpl_s68k);
+		CPL_Z80			= le32_to_cpu(md_save_v6.cpl_z80);
+		Cycles_S68K		= le32_to_cpu(md_save_v6.cycles_s68k);
+		Cycles_M68K		= le32_to_cpu(md_save_v6.cycles_m68k);
+		Cycles_Z80		= le32_to_cpu(md_save_v6.cycles_z80);
+		VDP_Status		= le32_to_cpu(md_save_v6.vdp_status);
+		VDP_Int			= le32_to_cpu(md_save_v6.vdp_int);
+		Ctrl.Write		= le32_to_cpu(md_save_v6.vdp_ctrl_write);
+		Ctrl.DMA_Mode		= le32_to_cpu(md_save_v6.vdp_ctrl_dma_mode);
+		Ctrl.DMA		= le32_to_cpu(md_save_v6.vdp_ctrl_dma);
 		//ImportDataAuto(&CRam_Flag, data, offset, 4); //Causes screen to blank
 		//offset+=4;
 		
 		// TODO: LagCount from Gens Rerecording.
-		//LagCount = ImportNumber_le32(data, &offset);
-		offset += 4;
+		//LadCount		= le32_to_cpu(md_save_v6.lag_count);
 		
-		ImportDataAuto(&VRam_Flag, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.Auto_Inc, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
+		VRam_Flag		= le32_to_cpu(md_save_v6.vram_flag);
+		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE1_vdp_reg_dma_length);
+		VDP_Reg.Auto_Inc	= le32_to_cpu(md_save_v6.vdp_reg_auto_inc);
+		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.DUPE2_vdp_reg_dma_length);
 		//ImportDataAuto(VRam, data, offset, 65536);
-		ImportDataAuto(CRam, data, offset, 512);
+		memcpy(&CRam, &md_save_v6.cram, 512);
 		//ImportDataAuto(VSRam, data, offset, 64);
-		ImportDataAuto(H_Counter_Table, data, offset, 512 * 2);
+		memcpy(&H_Counter_Table, &md_save_v6.h_counter_table, 512 * 2);
 		//ImportDataAuto(Spr_Link, data, offset, 4*256);
 		//extern int DMAT_Tmp, VSRam_Over;
 		//ImportDataAuto(&DMAT_Tmp, data, offset, 4);
 		//ImportDataAuto(&VSRam_Over, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_L, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length_H, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_L, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_M, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Src_Adr_H, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Length, data, offset, 4);
-		ImportDataAuto(&VDP_Reg.DMA_Address, data, offset, 4);
-		
-#ifdef GENS_DEBUG_SAVESTATE
-		assert(offset == GENESIS_V6_STATE_LENGTH);
-#endif
+		VDP_Reg.DMA_Length_L	= le32_to_cpu(md_save_v6.vdp_reg_dma_length_l);
+		VDP_Reg.DMA_Length_H	= le32_to_cpu(md_save_v6.vdp_reg_dma_length_h);
+		VDP_Reg.DMA_Src_Adr_L	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_l);
+		VDP_Reg.DMA_Src_Adr_M	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_m);
+		VDP_Reg.DMA_Src_Adr_H	= le32_to_cpu(md_save_v6.vdp_reg_dma_src_adr_h);
+		VDP_Reg.DMA_Length	= le32_to_cpu(md_save_v6.vdp_reg_dma_length);
+		VDP_Reg.DMA_Address	= le32_to_cpu(md_save_v6.vdp_reg_dma_address);
 	}
 	else if (m_Version >= 7)
 	{
@@ -790,7 +788,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// TODO: Add a configuration option to enable/disable loading controller types.
 		// Controller status. (apparently necessary)
-		#define LOAD_V7_CONTROLLER_STATUS(gsx_save, player)			\
+		#define GSX_V7_LOAD_CONTROLLER_STATUS(gsx_save, player)			\
 		{									\
 			/* Controller_ ## player ## _Type = le32_to_cpu(gsx_save.type); */		\
 			Controller_ ## player ## _Buttons =						\
@@ -808,25 +806,27 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 				((le32_to_cpu(gsx_save.Z) & 0x01)     ? CONTROLLER_Z : 0);		\
 		}
 		
+		// Control Port 1.
 		Controller_1_State	= le32_to_cpu(md_save_v7.controllers.port1.state);
 		Controller_1_COM	= le32_to_cpu(md_save_v7.controllers.port1.COM);
 		Controller_1_Counter	= le32_to_cpu(md_save_v7.controllers.port1.counter);
 		Controller_1_Delay	= le32_to_cpu(md_save_v7.controllers.port1.delay);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1, 1);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player1, 1);
 		
+		// Control Port 2.
 		Controller_2_State	= le32_to_cpu(md_save_v7.controllers.port2.state);
 		Controller_2_COM	= le32_to_cpu(md_save_v7.controllers.port2.COM);
 		Controller_2_Counter	= le32_to_cpu(md_save_v7.controllers.port2.counter);
 		Controller_2_Delay	= le32_to_cpu(md_save_v7.controllers.port2.delay);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2, 2);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2, 2);
 		
 		// Teamplayer controllers.
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1B, 1B);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1C, 1C);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1D, 1D);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2B, 2B);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2C, 2C);
-		LOAD_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player1B, 1B);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player1C, 1C);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player1D, 1D);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2B, 2B);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2C, 2C);
+		GSX_V7_LOAD_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
 		
 		// Miscellaneous. (apparently necessary)
 		VDP_Status		= le32_to_cpu(md_save_v7.vdp_status);
@@ -1160,7 +1160,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.mc68000_reg.sr	= cpu_to_le32(Context_68K.sr);
 	
 	// Controller status.
-	#define SAVE_V7_CONTROLLER_STATUS(gsx_save, player)			\
+	#define GSX_V7_SAVE_CONTROLLER_STATUS(gsx_save, player)			\
 	{									\
 		gsx_save.type	= cpu_to_le32(Controller_ ## player ## _Type);	\
 		gsx_save.up	= cpu_to_le32((Controller_ ## player ## _Buttons & CONTROLLER_UP) ? 1 : 0); \
@@ -1181,21 +1181,21 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save_v7.controllers.port1.COM	= cpu_to_le32(Controller_1_COM);
 	md_save_v7.controllers.port1.counter	= cpu_to_le32(Controller_1_Counter);
 	md_save_v7.controllers.port1.delay	= cpu_to_le32(Controller_1_Delay);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1, 1);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player1, 1);
 	
 	md_save_v7.controllers.port2.state	= cpu_to_le32(Controller_2_State);
 	md_save_v7.controllers.port2.COM	= cpu_to_le32(Controller_2_COM);
 	md_save_v7.controllers.port2.counter	= cpu_to_le32(Controller_2_Counter);
 	md_save_v7.controllers.port2.delay	= cpu_to_le32(Controller_2_Delay);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2, 2);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player2, 2);
 	
 	// Teamplayer controllers.
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1B, 1B);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1C, 1C);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player1D, 1D);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2B, 2B);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2C, 2C);
-	SAVE_V7_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player1B, 1B);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player1C, 1C);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player1D, 1D);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player2B, 2B);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player2C, 2C);
+	GSX_V7_SAVE_CONTROLLER_STATUS(md_save_v7.controllers.player2D, 2D);
 	
 	// Miscellaneous.
 	md_save_v7.vdp_status		= cpu_to_le32(VDP_Status);

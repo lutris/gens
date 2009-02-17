@@ -57,10 +57,11 @@ typedef struct PACKED _gsx_v6_vdp_reg
 {
 	uint32_t DUPE_H_Int;		// Contains H_Int, but isn't used.
 	uint32_t Set1;
+	uint32_t Set2;
 	uint32_t DUPE_Pat_ScrA_Adr;	// Contains Pat_ScrA_Adr, but isn't used.
 	uint32_t Pat_ScrA_Adr;
 	uint32_t Pat_Win_Adr;
-	uint32_t Pat_ScrB_adr;
+	uint32_t Pat_ScrB_Adr;
 	uint32_t Spr_Att_Adr;
 	uint32_t Reg6;
 	uint32_t BG_Color;
@@ -119,7 +120,7 @@ typedef struct PACKED _gsx_v6_controller_status
 /**
  * gsx_struct_md_v6_t: Gens v6 savestate extensions. (MD portion)
  */
-typedef struct PACT _gsx_struct_md_v6_t
+typedef struct PACKED _gsx_struct_md_v6_t
 {
 	gsx_v6_mc68000_reg	mc68000_reg;
 	gsx_v6_vdp_reg		vdp_reg;
@@ -164,18 +165,18 @@ typedef struct PACT _gsx_struct_md_v6_t
 	uint32_t	lag_count;		// Gens Rerecording
 	
 	uint32_t	vram_flag;
-	uint32_t	DUPE_vdp_reg_dma_length;
+	uint32_t	DUPE1_vdp_reg_dma_length;
 	uint32_t	vdp_reg_auto_inc;
-	uint32_t	vdp_reg_dma_length;
+	uint32_t	DUPE2_vdp_reg_dma_length;
 	
 	uint8_t		cram[512];
 	uint8_t		h_counter_table[512 * 2];
 	
 	uint32_t	vdp_reg_dma_length_l;
 	uint32_t	vdp_reg_dma_length_h;
-	uint32_t	vdp_reg_src_adr_l;
-	uint32_t	vdp_reg_src_adr_m;
-	uint32_t	vdp_reg_src_adr_h;
+	uint32_t	vdp_reg_dma_src_adr_l;
+	uint32_t	vdp_reg_dma_src_adr_m;
+	uint32_t	vdp_reg_dma_src_adr_h;
 	uint32_t	vdp_reg_dma_length;
 	uint32_t	vdp_reg_dma_address;
 } gsx_struct_md_v6_t;
