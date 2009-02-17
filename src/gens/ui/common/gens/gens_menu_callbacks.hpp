@@ -29,7 +29,7 @@ extern "C" {
 
 #include <stdint.h>
 
-int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state);
+int gens_common_menu_callback(uint16_t menuID, uint16_t state);
 
 #ifdef __cplusplus
 }

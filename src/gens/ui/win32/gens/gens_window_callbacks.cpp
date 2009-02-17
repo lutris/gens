@@ -222,7 +222,7 @@ LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 					// Menu item selected.
 					mnuCallback = findMenuItem(LOWORD(wParam));
 					state = (GetMenuState(mnuCallback, LOWORD(wParam), MF_BYCOMMAND) & MF_CHECKED);
-					GensWindow_MenuItemCallback(LOWORD(wParam), state);
+					gens_common_menu_callback(LOWORD(wParam), state);
 					break;
 			}
 			break;

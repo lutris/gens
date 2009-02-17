@@ -101,46 +101,46 @@ using std::string;
 using std::list;
 
 
-static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state);
-static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state);
-static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state);
-static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state);
-static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state);
-static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t state);
-static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_PluginsMenu(uint16_t menuID, uint16_t state);
+static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state);
 
 
 /**
- * GensWindow_MenuItemCallback(): Menu item callback handler.
+ * gens_common_menu_callback(): Menu item callback handler.
  * @param menuID Menu ID.
  * @param state Menu state. (Used for check/radio menu items.)
  * @return Non-zero if the callback was handled; 0 if the callback wasn't handled.
  */
-int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
+int gens_common_menu_callback(uint16_t menuID, uint16_t state)
 {
 	// Determine which menu this menu item is from.
 	switch (menuID & 0xF000)
 	{
 		case IDM_FILE_MENU:
-			return GensWindow_MenuItemCallback_FileMenu(menuID, state);
+			return gens_menu_callback_FileMenu(menuID, state);
 			break;
 		case IDM_GRAPHICS_MENU:
-			return GensWindow_MenuItemCallback_GraphicsMenu(menuID, state);
+			return gens_menu_callback_GraphicsMenu(menuID, state);
 			break;
 		case IDM_CPU_MENU:
-			return GensWindow_MenuItemCallback_CPUMenu(menuID, state);
+			return gens_menu_callback_CPUMenu(menuID, state);
 			break;
 		case IDM_SOUND_MENU:
-			return GensWindow_MenuItemCallback_SoundMenu(menuID, state);
+			return gens_menu_callback_SoundMenu(menuID, state);
 			break;
 		case IDM_OPTIONS_MENU:
-			return GensWindow_MenuItemCallback_OptionsMenu(menuID, state);
+			return gens_menu_callback_OptionsMenu(menuID, state);
 			break;
 		case IDM_PLUGINS_MENU:
-			return GensWindow_MenuItemCallback_PluginsMenu(menuID, state);
+			return gens_menu_callback_PluginsMenu(menuID, state);
 			break;
 		case IDM_HELP_MENU:
-			return GensWindow_MenuItemCallback_HelpMenu(menuID, state);
+			return gens_menu_callback_HelpMenu(menuID, state);
 			break;
 		default:
 			// Menu item not handled.
@@ -152,7 +152,7 @@ int GensWindow_MenuItemCallback(uint16_t menuID, uint16_t state)
 }
 
 
-static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 {
 	GENS_UNUSED_PARAMETER(state);
 	
@@ -313,7 +313,7 @@ static int GensWindow_MenuItemCallback_FileMenu(uint16_t menuID, uint16_t state)
 }
 
 
-static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 {
 	switch (menuID)
 	{
@@ -497,7 +497,7 @@ static int GensWindow_MenuItemCallback_GraphicsMenu(uint16_t menuID, uint16_t st
 }
 
 
-static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 {
 	switch (menuID)
 	{
@@ -622,7 +622,7 @@ static int GensWindow_MenuItemCallback_CPUMenu(uint16_t menuID, uint16_t state)
 }
 
 
-static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 {
 	switch (menuID)
 	{
@@ -712,7 +712,7 @@ static int GensWindow_MenuItemCallback_SoundMenu(uint16_t menuID, uint16_t state
 }
 
 
-static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 {
 	GENS_UNUSED_PARAMETER(state);
 	
@@ -783,7 +783,7 @@ static int GensWindow_MenuItemCallback_OptionsMenu(uint16_t menuID, uint16_t sta
 }
 
 
-static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_PluginsMenu(uint16_t menuID, uint16_t state)
 {
 	GENS_UNUSED_PARAMETER(state);
 	
@@ -813,7 +813,7 @@ static int GensWindow_MenuItemCallback_PluginsMenu(uint16_t menuID, uint16_t sta
 }
 
 
-static int GensWindow_MenuItemCallback_HelpMenu(uint16_t menuID, uint16_t state)
+static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 {
 	GENS_UNUSED_PARAMETER(state);
 	
