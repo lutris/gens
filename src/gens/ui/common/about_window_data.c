@@ -32,7 +32,7 @@
 #include <zlib.h>
 #endif
 
-#include "about/about_window.h"
+#include "about/about_window.hpp"
 
 // git version
 #include "macros/git.h"

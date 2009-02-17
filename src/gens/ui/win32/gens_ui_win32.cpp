@@ -250,7 +250,7 @@ void GensUI::update(void)
 		    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
-		    (AboutWindow::isOpen() && AboutWindow::Instance()->isDialogMessage(&msg)) ||
+		    (about_window && IsDialogMessage(about_window, &msg)) ||
 		    (PluginManagerWindow::isOpen() && PluginManagerWindow::Instance()->isDialogMessage(&msg)))
 		{
 			// Dialog message. Don't process it as a regular message.

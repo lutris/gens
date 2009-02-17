@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -24,66 +24,19 @@
 #define GENS_WIN32_ABOUT_WINDOW_HPP
 
 #ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "wndbase.hpp"
+// Win32 includes.
 #include <windows.h>
 
-class AboutWindow : WndBase
-{
-	public:
-		static AboutWindow* Instance(HWND parent = NULL);
-		static bool isOpen(void) { return (m_Instance != NULL); }
-		
-		bool isDialogMessage(MSG *msg) { return IsDialogMessage((HWND)m_Window, msg); }
-	
-	protected:
-		AboutWindow();
-		~AboutWindow();
-		
-		static AboutWindow* m_Instance;
-		
-		static LRESULT CALLBACK WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		
-		bool m_childWindowsCreated;
-		void createChildWindows(HWND hWnd);
-		
-		unsigned int iceLastTicks;
-		UINT_PTR tmrIce;
-		
-		static void iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-		void iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
-		void updateIce(void);
-		
-		// Tab control.
-		HWND tabInfo;
-		
-		// Labels and boxes.
-		HWND lblGensTitle;
-		HWND lblGensDesc;
-		HWND imgGensLogo;
-		HWND lblTabContents;
-		
-		// Gens logo.
-		HWND m_imgGensLogo;
-		HBITMAP m_hbmpGensLogo;
-		LPBYTE m_pbmpData;
-		HDC m_hdcComp;
-		
-		unsigned short ax, bx, cx;
-		
-		// Strings
-		static const char* StrTitle;
-		static const char* StrDescription;
-		static const char* StrCopyright;
-		static const char* StrIncludedLibs;
-		
-		// Data
-		static const unsigned char Data[];
-		static const unsigned char DX[];
+extern HWND about_window;
 
-};
+void about_window_show(void);
+void about_window_close(void);
 
-#endif /* __cplusplus */
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GENS_WIN32_ABOUT_WINDOW_HPP */

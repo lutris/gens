@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,19 +20,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "about_window.hpp"
+#include "ui/common/about_window_data.h"
 #include "gens/gens_window.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
+#include "emulator/g_main.hpp"
+
+// C includes.
 #include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+// C++ includes.
+#include <string.h>
+using std::string;
+
+// Win32 includes.
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
 
 // git version
 #include "macros/git.h"
-
-#include "emulator/g_main.hpp"
 
 // Unused Parameter macro.
 #include "macros/unused.h"
@@ -43,230 +56,129 @@
 #include "ui/win32/charset.hpp"
 #include "ui/win32/resource.h"
 
-#include <windowsx.h>
-#include <commctrl.h>
 
-// C++ includes
-#include <string>
-using std::string;
+// Window.
+HWND about_window = NULL;
 
-#define ID_TIMER_ICE 0x1234
+// Window class.
+static WNDCLASS about_wndclass;
 
 #ifdef GENS_GIT_VERSION
-static const unsigned short lblTitle_HeightInc = 16;
+#define ABOUT_WINDOW_GIT_HEIGHT 16
 #else
-static const unsigned short lblTitle_HeightInc = 0;
-#endif /* GENS_GIT_VERSION */
+#define ABOUT_WINDOW_GIT_HEIGHT 0
+#endif
 
-static const unsigned short iceOffsetX = 32;
-static const unsigned short iceOffsetY = 8;
+// Window size.
+#define ABOUT_WINDOW_WIDTH  328
+#define ABOUT_WINDOW_HEIGHT (360+ABOUT_WINDOW_GIT_HEIGHT)
 
+// Tab content size.
+#define TAB_WIDTH  312
+#define TAB_HEIGHT 224
 
-static WNDCLASS m_WndClass;
+// Timer ID.
+#define IDT_ICETIMER 0x1234
 
+// ice offsets.
+#define ICE_OFFSET_X 32
+#define ICE_OFFSET_Y 8
 
-AboutWindow* AboutWindow::m_Instance = NULL;
-AboutWindow* AboutWindow::Instance(HWND parent)
-{
-	if (m_Instance == NULL)
-	{
-		// Instance is deleted. Initialize the About window.
-		m_Instance = new AboutWindow();
-	}
-	else
-	{
-		// Instance already exists. Set focus.
-		m_Instance->setFocus();
-	}
-	
-	// Set modality of the window.
-	m_Instance->setModal(parent);
-	
-	return m_Instance;
-}
+// Window procedure.
+static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+// Widgets.
+static HWND	tabInfo;
+static HWND	lblGensTitle;
+static HWND	lblGensDesc;
+static HWND	imgGensLogo;
+static HWND	lblTabContents;
+
+// Gens logo.
+static HBITMAP	hbmpGensLogo = NULL;
+static LPBYTE	pbmpData = NULL;
+static HDC	hdcComp = NULL;
+
+// Widget creation functions.
+static void	about_window_create_child_windows(HWND hWnd);
+
+// ice variables and functions.
+static uint8_t		ax, bx, cx;
+static unsigned int	iceLastTicks;
+static UINT_PTR		tmrIce = NULL;
+static void		about_window_update_ice(void);
+static void CALLBACK	about_window_callback_iceTimer(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
 
 
 /**
- * AboutWindow(): Create the About Window.
+ * about_window_show(): Show the About window.
  */
-AboutWindow::AboutWindow()
+void about_window_show(void)
 {
-	tmrIce = NULL;
-	m_hbmpGensLogo = NULL;
-	m_childWindowsCreated = false;
-	m_hdcComp = NULL;
+	if (about_window)
+	{
+		// About window is already visible. Set focus.
+		// TODO: Figure out how to do this.
+		ShowWindow(about_window, SW_SHOW);
+		return;
+	}
 	
 	// Create the window class.
-	if (m_WndClass.lpfnWndProc != WndProc_STATIC)
+	if (about_wndclass.lpfnWndProc != about_window_wndproc)
 	{
-		m_WndClass.style = 0;
-		m_WndClass.lpfnWndProc = WndProc_STATIC;
-		m_WndClass.cbClsExtra = 0;
-		m_WndClass.cbWndExtra = 0;
-		m_WndClass.hInstance = ghInstance;
-		m_WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-		m_WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-		m_WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
-		m_WndClass.lpszMenuName = NULL;
-		m_WndClass.lpszClassName = "Gens_About";
+		about_wndclass.style = 0;
+		about_wndclass.lpfnWndProc = about_window_wndproc;
+		about_wndclass.cbClsExtra = 0;
+		about_wndclass.cbWndExtra = 0;
+		about_wndclass.hInstance = ghInstance;
+		about_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
+		about_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+		about_wndclass.lpszMenuName = NULL;
+		about_wndclass.lpszClassName = "about_window";
 		
-		RegisterClass(&m_WndClass);
+		RegisterClass(&about_wndclass);
 	}
 	
-	// Messages are processed before the object is finished being created,
-	// so this assignment is needed.
-	m_Instance = this;
-	
 	// Create the window.
-	// TODO: Don't hardcode the parent window.
-	m_Window = CreateWindow("Gens_About", "About Gens",
-				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				CW_USEDEFAULT, CW_USEDEFAULT,
-				328, 360+lblTitle_HeightInc,
-				gens_window, NULL, ghInstance, NULL);
+	about_window = CreateWindow("about_window", "About Gens/GS",
+				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				    CW_USEDEFAULT, CW_USEDEFAULT,
+				    ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,
+				    gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(m_Window, 328, 360+lblTitle_HeightInc);
+	Win32_setActualWindowSize(about_window, ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT);
 	
 	// Center the window on the Gens window.
-	Win32_centerOnGensWindow(m_Window);
+	Win32_centerOnGensWindow(about_window);
 	
-	UpdateWindow(m_Window);
-	ShowWindow(m_Window, 1);
-}
-
-
-AboutWindow::~AboutWindow()
-{
-	if (m_hbmpGensLogo)
-		DeleteBitmap(m_hbmpGensLogo);
-	if (m_hdcComp)
-		DeleteDC(m_hdcComp);
-	
-	m_Instance = NULL;
-}
-
-
-LRESULT CALLBACK AboutWindow::WndProc_STATIC(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	return m_Instance->WndProc(hWnd, message, wParam, lParam);
+	UpdateWindow(about_window);
+	ShowWindow(about_window, SW_SHOW);
 }
 
 
 /**
- * About_Window_WndProc(): The About window procedure.
- * @param hWnd hWnd of the object sending a message.
- * @param message Message being sent by the object.
- * @param wParam
- * @param lParam
- * @return
+ * about_window_create_child_windows(): Create child windows.
+ * @param hWnd HWND of the parent window.
  */
-LRESULT CALLBACK AboutWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static void about_window_create_child_windows(HWND hWnd)
 {
-	switch (message)
-	{
-		case WM_CREATE:
-			if (!m_childWindowsCreated)
-				createChildWindows(hWnd);
-			break;
-		
-		case WM_CLOSE:
-			DestroyWindow(m_Window);
-			return 0;
-		
-		case WM_PAINT:
-			if (ice == 3)
-				updateIce();
-			break;
-		
-		case WM_CTLCOLORSTATIC:
-			if (hWnd != m_Window)
-				break;
-			
-			// Set the title and version labels to transparent.
-			if ((HWND)lParam == lblGensTitle ||
-			    (HWND)lParam == lblGensDesc ||
-			    (HWND)lParam == imgGensLogo)
-			{
-				SetBkMode((HDC)wParam, TRANSPARENT);
-				return (LRESULT)GetStockObject(NULL_BRUSH);
-			}
-			return true;
-			break;
-		
-		case WM_COMMAND:
-			if (LOWORD(wParam) == IDC_BTN_OK || LOWORD(wParam) == IDOK ||
-			    LOWORD(wParam) == IDC_BTN_CANCEL || LOWORD(wParam) == IDCANCEL)
-			{
-				DestroyWindow(m_Window);
-			}
-			
-			break;
-		
-		case WM_NOTIFY:
-			if (((LPNMHDR)lParam)->code == TCN_SELCHANGE)
-			{
-				// Tab change.
-				string sTabContents;
-				
-				switch (TabCtrl_GetCurSel(tabInfo))
-				{
-					case 0:
-						// Copyright.
-						sTabContents = charset_utf8_to_cp1252(StrCopyright);
-						break;
-					case 1:
-						// Included Libraries.
-						sTabContents = charset_utf8_to_cp1252(StrIncludedLibs);
-						break;
-					default:
-						// Unknown.
-						break;
-				}
-				
-				Static_SetText(lblTabContents, sTabContents.c_str());
-			}
-			break;
-			
-		case WM_DESTROY:
-			if (hWnd != m_Window)
-				break;
-			
-			if (tmrIce)
-			{
-				KillTimer(m_Window, tmrIce);
-				tmrIce = 0;
-			}
-			
-			delete this;
-			break;
-	}
-	
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-
-
-void AboutWindow::createChildWindows(HWND hWnd)
-{
-	if (m_childWindowsCreated)
-		return;
-	
 	cx = 0; iceLastTicks = 0;
 	if (ice != 3)
 	{
 		// Gens logo
 		imgGensLogo = CreateWindow(WC_STATIC, NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP,
 					   12, 0, 128, 96, hWnd, NULL, ghInstance, NULL);
-		m_hbmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
+		hbmpGensLogo = (HBITMAP)LoadImage(ghInstance, MAKEINTRESOURCE(IDB_GENS_LOGO_SMALL),
 						 IMAGE_BITMAP, 0, 0,
 						 LR_DEFAULTSIZE | LR_LOADMAP3DCOLORS | LR_LOADTRANSPARENT);
-		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)m_hbmpGensLogo);
+		SendMessage(imgGensLogo, STM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hbmpGensLogo);
 	}
 	else
 	{
 		// "ice" timer
-		
-		m_hdcComp = CreateCompatibleDC(GetDC(gens_window));
+		hdcComp = CreateCompatibleDC(GetDC(hWnd));
 		
 		// Create the DIB.
 		BITMAPINFOHEADER bih;
@@ -276,34 +188,29 @@ void AboutWindow::createChildWindows(HWND hWnd)
 		bih.biBitCount	= 32;
 		bih.biWidth	= 80;
 		bih.biHeight	= -80;
-		m_hbmpGensLogo = CreateDIBSection(m_hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&m_pbmpData, NULL, 0);
-		SelectObject(m_hdcComp, m_hbmpGensLogo);
+		hbmpGensLogo = CreateDIBSection(hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&pbmpData, NULL, 0);
+		SelectObject(hdcComp, hbmpGensLogo);
 		
 		ax = 0; bx = 0; cx = 1;
-		tmrIce = SetTimer(hWnd, ID_TIMER_ICE, 10, (TIMERPROC)iceTime_STATIC);
+		tmrIce = SetTimer(hWnd, IDT_ICETIMER, 10, about_window_callback_iceTimer);
 		
-		m_Window = hWnd;
-		updateIce();
+		about_window_update_ice();
 	}
 	
 	// Title and version information.
-	lblGensTitle = CreateWindow(WC_STATIC, StrTitle, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				    128, 8, 192, 32+lblTitle_HeightInc,
+	lblGensTitle = CreateWindow(WC_STATIC, about_window_title, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				    128, 8, 192, 32+ABOUT_WINDOW_GIT_HEIGHT,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensTitle, fntTitle, true);
 	
-	lblGensDesc = CreateWindow(WC_STATIC, StrDescription, WS_CHILD | WS_VISIBLE | SS_CENTER,
-				   128, 42+lblTitle_HeightInc, 192, 100,
+	lblGensDesc = CreateWindow(WC_STATIC, about_window_description, WS_CHILD | WS_VISIBLE | SS_CENTER,
+				   128, 42+ABOUT_WINDOW_GIT_HEIGHT, 192, 100,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblGensDesc, fntMain, true);
 	
-	// Tab content size.
-	static const unsigned int tabWidth = 312;
-	static const unsigned int tabHeight = 224;
-	
 	// Tab control.
 	tabInfo = CreateWindow(WC_TABCONTROL, NULL, WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE | WS_TABSTOP,
-			       8, 96+lblTitle_HeightInc, tabWidth, tabHeight,
+			       8, 96+ABOUT_WINDOW_GIT_HEIGHT, TAB_WIDTH, TAB_HEIGHT,
 			       hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(tabInfo, fntMain, true);
 	
@@ -314,17 +221,17 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	TCITEM tab;
 	memset(&tab, 0x00, sizeof(tab));
 	tab.mask = TCIF_TEXT;
-	tab.pszText = "Copyright";
+	tab.pszText = "&Copyright";
 	TabCtrl_InsertItem(tabInfo, 0, &tab);
-	tab.pszText = "Included Libraries";
+	tab.pszText = "Included &Libraries";
 	TabCtrl_InsertItem(tabInfo, 1, &tab);
 	
 	// Calculate the tab's display area.
 	RECT rectTab;
 	rectTab.left = 0;
 	rectTab.top = 0;
-	rectTab.right = tabWidth;
-	rectTab.bottom = tabHeight;
+	rectTab.right = TAB_WIDTH;
+	rectTab.bottom = TAB_HEIGHT;
 	TabCtrl_AdjustRect(tabInfo, false, &rectTab);
 	
 	// Box for the tab contents.
@@ -337,7 +244,7 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	SetWindowFont(grpTabContents, fntMain, true);
 	
 	// Tab contents.
-	string sTabContents = charset_utf8_to_cp1252(StrCopyright);
+	string sTabContents = charset_utf8_to_cp1252(about_window_copyright);
 	lblTabContents = CreateWindow(WC_STATIC, sTabContents.c_str(), WS_CHILD | WS_VISIBLE | SS_LEFT,
 				      8, 16,
 				      rectTab.right - rectTab.left - 24,
@@ -345,29 +252,174 @@ void AboutWindow::createChildWindows(HWND hWnd)
 				      grpTabContents, NULL, ghInstance, NULL);
 	SetWindowFont(lblTabContents, fntMain, true);
 	
-	// Add the OK button.
-	addDialogButtons(hWnd, WndBase::BAlign_Right,
-			 WndBase::BUTTON_OK, WndBase::BUTTON_OK);
+	// Create the OK button.
+	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+				  ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
+				  75, 23,
+				  hWnd, (HMENU)(IDOK), ghInstance, NULL);
+	SetWindowFont(btnOK, fntMain, TRUE);
 	
-	// Child windows created.
-	m_childWindowsCreated = true;
+	// Set focus to the OK button.
+	SetFocus(btnOK);
+}
+
+
+/**
+ * about_window_close(): Close the About window.
+ */
+void about_window_close(void)
+{
+	if (!about_window)
+		return;
+	
+	// Stop the timer.
+	if (tmrIce)
+	{
+		KillTimer(about_window, tmrIce);
+		tmrIce = NULL;
+	}
+	
+	// Destroy the window.
+	DestroyWindow(about_window);
+	about_window = NULL;
+	
+	// Make sure the bitmap and DC are deleted.
+	if (hbmpGensLogo)
+	{
+		DeleteBitmap(hbmpGensLogo);
+		hbmpGensLogo = NULL;
+	}
+	if (hdcComp)
+	{
+		DeleteDC(hdcComp);
+		hdcComp = NULL;
+	}
+}
+
+
+/**
+ * about_window_wndproc(): Window procedure.
+ * @param hWnd hWnd of the window.
+ * @param message Window message.
+ * @param wParam
+ * @param lParam
+ * @return
+ */
+static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+		case WM_CREATE:
+			about_window_create_child_windows(hWnd);
+			break;
+			break;
+		
+		case WM_CLOSE:
+			DestroyWindow(hWnd);
+			return 0;
+		
+		case WM_PAINT:
+			if (ice == 3)
+				about_window_update_ice();
+			break;
+		
+		case WM_CTLCOLORSTATIC:
+			// Set the title and version labels to transparent.
+			if ((HWND)lParam == lblGensTitle ||
+			    (HWND)lParam == lblGensDesc ||
+			    (HWND)lParam == imgGensLogo)
+			{
+				SetBkMode((HDC)wParam, TRANSPARENT);
+				return (LRESULT)GetStockObject(NULL_BRUSH);
+			}
+			break;
+		
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+				case IDOK:
+				case IDCANCEL:
+					DestroyWindow(hWnd);
+					break;
+				default:
+					// Unknown command identifier.
+					break;
+			}
+			break;
+		
+		case WM_NOTIFY:
+			if (((LPNMHDR)lParam)->code == TCN_SELCHANGE)
+			{
+				// Tab change.
+				string sTabContents;
+				
+				switch (TabCtrl_GetCurSel(tabInfo))
+				{
+					case 0:
+						// Copyright.
+						sTabContents = charset_utf8_to_cp1252(about_window_copyright);
+						break;
+					case 1:
+						// Included Libraries.
+						sTabContents = charset_utf8_to_cp1252(about_window_included_libs);
+						break;
+					default:
+						// Unknown.
+						break;
+				}
+				
+				Static_SetText(lblTabContents, sTabContents.c_str());
+			}
+			break;
+			
+		case WM_DESTROY:
+			if (hWnd != about_window)
+				break;
+			
+			// Stop the timer.
+			if (tmrIce)
+			{
+				KillTimer(about_window, tmrIce);
+				tmrIce = NULL;
+			}
+			
+			// Clear the About window hWnd.
+			about_window = NULL;
+			
+			// Make sure the bitmap and DC are deleted.
+			if (hbmpGensLogo)
+			{
+				DeleteBitmap(hbmpGensLogo);
+				hbmpGensLogo = NULL;
+			}
+			if (hdcComp)
+			{
+				DeleteDC(hdcComp);
+				hdcComp = NULL;
+			}
+			
+			break;
+	}
+	
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 
 #define ICE_RGB(r, g, b) (((r) << 16) | ((g) << 8) | (b))
 
-void AboutWindow::updateIce(void)
+static void about_window_update_ice(void)
 {
 	int x, y;
-	const unsigned char *src = &Data[ax*01440];
-	const unsigned char *src2 = &DX[bx*040];
+	const unsigned char *src = &about_window_data[ax*01440];
+	const unsigned char *src2 = &about_window_dx[bx*040];
 	
 	unsigned int bgc;
 	
 	bgc = GetSysColor(COLOR_3DFACE);
 	bgc = ((bgc >> 16) & 0xFF) | (bgc & 0xFF00) | ((bgc & 0xFF) << 16);
 	
-	unsigned int *destPixel1 = (unsigned int*)m_pbmpData;
+	unsigned int *destPixel1 = (unsigned int*)pbmpData;
 	unsigned int *destPixel2 = destPixel1 + 0120;
 	
 	for (y = 0; y < 0120; y += 2)
@@ -405,23 +457,17 @@ void AboutWindow::updateIce(void)
 	HDC hDC;
 	PAINTSTRUCT ps;
 	
-	hDC = BeginPaint(m_Window, &ps);
-	BitBlt(hDC, iceOffsetX, iceOffsetY, 0120, 0120, m_hdcComp, 0, 0, SRCCOPY);
-	EndPaint(m_Window, &ps);
+	hDC = BeginPaint(about_window, &ps);
+	BitBlt(hDC, ICE_OFFSET_X, ICE_OFFSET_Y, 0120, 0120, hdcComp, 0, 0, SRCCOPY);
+	EndPaint(about_window, &ps);
 }
 
 
-void AboutWindow::iceTime_STATIC(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
-{
-	m_Instance->iceTime(hWnd, uMsg, idEvent, dwTime);
-}
-
-
-void AboutWindow::iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+static void CALLBACK about_window_callback_iceTimer(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
 	GENS_UNUSED_PARAMETER(uMsg);
 	
-	if (!(hWnd == m_Window && idEvent == ID_TIMER_ICE && ice == 3))
+	if (!(hWnd == about_window && idEvent == IDT_ICETIMER && ice == 3))
 		return;
 	
 	if (iceLastTicks + 100 > dwTime)
@@ -437,12 +483,12 @@ void AboutWindow::iceTime(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 	
 	// Force a repaint.
 	RECT rIce;
-	rIce.left = iceOffsetX;
-	rIce.top = iceOffsetY;
-	rIce.right = iceOffsetX + 80 - 1;
-	rIce.bottom = iceOffsetY + 80 - 1;
-	InvalidateRect(m_Window, &rIce, false);
-	SendMessage(m_Window, WM_PAINT, 0, 0);
+	rIce.left = ICE_OFFSET_X;
+	rIce.top = ICE_OFFSET_Y;
+	rIce.right = ICE_OFFSET_X + 80 - 1;
+	rIce.bottom = ICE_OFFSET_Y + 80 - 1;
+	InvalidateRect(about_window, &rIce, false);
+	SendMessage(about_window, WM_PAINT, 0, 0);
 	
 	iceLastTicks = dwTime;
 }
