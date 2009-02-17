@@ -93,7 +93,7 @@ HWND create_bios_misc_files_window(void)
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
 	WndClass.hInstance = ghInstance;
-	WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
+	WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
 	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 	WndClass.lpszMenuName = NULL;

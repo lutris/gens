@@ -15,16 +15,16 @@
 #include "gens/gens_window_cmds.h"
 
 // Icons
-IDI_GENS_APP		ICON		"../../../../images/Gens2.ico"
-IDI_GENS_MD		ICON		"../../../../images/gens.ico"
-IDI_SONIC_HEAD		ICON		"../../../../images/sonic.ico"
-IDI_SONIC_WAITING	ICON		"../../../../images/sonic2.ico"
+IDI_GENS_APP		ICON		"../../../../images/win32/gens.ico"
+IDI_GENS_MD		ICON		"../../../../images/win32/gens_md.ico"
+IDI_SONIC		ICON		"../../../../images/win32/sonic.ico"
+IDI_SONIC_WAITING	ICON		"../../../../images/win32/sonic_wait.ico"
 
-IDI_ARROW_UP		ICON		"../../../../images/ARW07UP.ico"
-IDI_ARROW_DOWN		ICON		"../../../../images/ARW07DN.ico"
+IDI_ARROW_UP		ICON		"../../../../images/win32/ARW07UP.ico"
+IDI_ARROW_DOWN		ICON		"../../../../images/win32/ARW07DN.ico"
 
 // Bitmaps
-IDB_GENS_LOGO_SMALL	BITMAP		"../../../../images/gens_small.bmp"
+IDB_GENS_LOGO_SMALL	BITMAP		"../../../../images/win32/gens_small.bmp"
 IDB_GENS_LOGO_BIG	BITMAP		"../../../../images/gens_big.bmp"
 
 // Dialogs

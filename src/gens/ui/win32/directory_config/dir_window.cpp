@@ -106,7 +106,7 @@ void dir_window_show(HWND parent)
 		dir_wndclass.cbClsExtra = 0;
 		dir_wndclass.cbWndExtra = 0;
 		dir_wndclass.hInstance = ghInstance;
-		dir_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
+		dir_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
 		dir_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		dir_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		dir_wndclass.lpszMenuName = NULL;

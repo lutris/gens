@@ -1,13 +1,13 @@
 // Resources for Gens/GS Win32
 
 // Icons
-#define IDI_GENS_APP		0x0001
-#define IDI_GENS_MD		0x0002
-#define IDI_SONIC_HEAD		0x0003
-#define IDI_SONIC_WAITING	0x0004
+#define IDI_GENS_APP		0x0100
+#define IDI_GENS_MD		0x0101
+#define IDI_SONIC		0x0102
+#define IDI_SONIC_WAITING	0x0103
 
-#define IDI_ARROW_UP		0x0011
-#define IDI_ARROW_DOWN		0x0012
+#define IDI_ARROW_UP		0x0110
+#define IDI_ARROW_DOWN		0x0111
 
 // Bitmaps
 #define IDB_GENS_LOGO_SMALL	0x0501

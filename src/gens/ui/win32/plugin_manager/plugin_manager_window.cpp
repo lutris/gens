@@ -110,7 +110,7 @@ PluginManagerWindow::PluginManagerWindow()
 		m_WndClass.cbClsExtra = 0;
 		m_WndClass.cbWndExtra = 0;
 		m_WndClass.hInstance = ghInstance;
-		m_WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
+		m_WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
 		m_WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		m_WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		m_WndClass.lpszMenuName = NULL;

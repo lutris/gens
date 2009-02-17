@@ -173,7 +173,7 @@ void cc_window_show(HWND parent)
 		cc_wndclass.cbClsExtra = 0;
 		cc_wndclass.cbWndExtra = 0;
 		cc_wndclass.hInstance = ghInstance;
-		cc_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC_HEAD));
+		cc_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
 		cc_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		cc_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		cc_wndclass.lpszMenuName = NULL;
