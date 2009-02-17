@@ -46,7 +46,7 @@ gens_SOURCES += \
 		ui/gtk/zip_select/zip_select_dialog.cpp \
 		ui/gtk/plugin_manager/plugin_manager_window.cpp \
 		ui/gtk/wndbase.cpp \
-		ui/gtk/about/about_window.c
+		ui/gtk/about/about_window.cpp
 
 if GENS_OPENGL
 gens_SOURCES += \
@@ -105,7 +105,7 @@ noinst_HEADERS += \
 		ui/gtk/zip_select/zip_select_dialog.hpp \
 		ui/gtk/plugin_manager/plugin_manager_window.hpp \
 		ui/gtk/wndbase.hpp \
-		ui/gtk/about/about_window.h
+		ui/gtk/about/about_window.hpp
 
 if GENS_OPENGL
 noinst_HEADERS += \

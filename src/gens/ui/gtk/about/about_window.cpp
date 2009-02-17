@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "about_window.h"
+#include "about_window.hpp"
 #include "ui/common/about_window_data.h"
 #include "gens/gens_window.h"
 

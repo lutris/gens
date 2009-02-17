@@ -316,6 +316,7 @@ static LRESULT CALLBACK about_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			break;
 		
 		case WM_CLOSE:
+			printf("CLOSE\n");
 			DestroyWindow(hWnd);
 			return 0;
 		
