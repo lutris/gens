@@ -39,43 +39,4 @@ void about_window_close(void);
 }
 #endif
 
-#if 0
-class AboutWindow : public WndBase
-{
-	public:
-		static AboutWindow* Instance(GtkWindow *parent = NULL);
-		
-		gboolean close(void);
-		gboolean iceTime(void);
-	
-	protected:
-		AboutWindow();
-		~AboutWindow();
-		
-		static AboutWindow* m_Instance;
-		
-		void dlgButtonPress(uint32_t button);
-		
-		// Static functions required for GTK+ callbacks.
-		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		static gboolean GTK_iceTime(gpointer user_data);
-		
-		GtkWidget *m_imgGensLogo;
-		GdkPixbuf *m_pbufIce;
-		unsigned short ax, bx, cx;
-		
-		void updateIce(void);
-		
-		// Strings
-		static const char* StrTitle;
-		static const char* StrDescription;
-		static const char* StrCopyright;
-		static const char* StrIncludedLibs;
-		
-		// Data
-		static const unsigned char Data[];
-		static const unsigned char DX[];
-};
-#endif
-
 #endif /* GENS_UI_GTK_ABOUT_WINDOW_H */
