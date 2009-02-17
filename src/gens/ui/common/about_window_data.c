@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: About Window data.                                                *
+ * Gens: About Window. (Data)                                              *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -32,56 +32,56 @@
 #include <zlib.h>
 #endif
 
-#include "about/about_window.hpp"
+#include "about/about_window.h"
 
 // git version
 #include "macros/git.h"
 
-const char* AboutWindow::StrTitle =
-		"Gens/GS"
-		#ifdef VERSION
-		"\nVersion " VERSION
-		#endif
-		#ifdef GENS_GIT_VERSION
-		"\n" GENS_GIT_VERSION
-		#endif
-		;
+const char* const about_window_title =
+			"Gens/GS"
+			#ifdef VERSION
+				"\nVersion " VERSION
+			#endif
+			#ifdef GENS_GIT_VERSION
+				"\n" GENS_GIT_VERSION
+			#endif
+			;
 
-const char* AboutWindow::StrDescription =
-		"Sega Genesis / Mega Drive,\n"
-		"Sega CD / Mega CD,\n"
-		"Sega 32X emulator";
+const char* const about_window_description =
+			"Sega Genesis / Mega Drive,\n"
+			"Sega CD / Mega CD,\n"
+			"Sega 32X emulator";
 
-const char* AboutWindow::StrCopyright =
-		"(c) 1999-2002 by Stéphane Dallongeville\n"
-		"(c) 2003-2004 by Stéphane Akhoun\n\n"
-		"Gens/GS (c) 2008-2009 by David Korth\n\n"
-		"Visit the Gens homepage:\n"
-		"http://gens.consolemul.com\n\n"
-		"For news on Gens/GS, visit Sonic Retro:\n"
-		"http://www.sonicretro.org";
+const char* const about_window_copyright =
+			"(c) 1999-2002 by Stéphane Dallongeville\n"
+			"(c) 2003-2004 by Stéphane Akhoun\n\n"
+			"Gens/GS (c) 2008-2009 by David Korth\n\n"
+			"Visit the Gens homepage:\n"
+			"http://gens.consolemul.com\n\n"
+			"For news on Gens/GS, visit Sonic Retro:\n"
+			"http://www.sonicretro.org";
 
-const char* AboutWindow::StrIncludedLibs =
-		"Reverse-engineered 32X firmware by DevSter\n"
-		"http://devster.monkeeh.com/segapage.html"
-		#ifdef GENS_MP3
-			"\n\n"
-			"Internal MP3 decoder based on mpg123.\n"
-			"Copyright (c) 1995,1996,1997 by Michael Hipp."
-		#endif
-		#ifdef GENS_PNG_INTERNAL
-			"\n\n"
-			"Internal copy of libpng-" PNG_LIBPNG_VER_STRING ".\n"
-			"Copyright (c) 1998-2008 Glenn Randers-Pehrson."
-		#endif
-		#ifdef GENS_ZLIB_INTERNAL
-			"\n\n"
-			"Internal copy of zlib-" ZLIB_VERSION ".\n"
-			"Copyright (c) 1995-2005 Jean-loup Gailly and Mark Adler."
-		#endif
-		;
+const char* const about_window_included_libs =
+			"Reverse-engineered 32X firmware by DevSter\n"
+			"http://devster.monkeeh.com/segapage.html"
+			#ifdef GENS_MP3
+				"\n\n"
+				"Internal MP3 decoder based on mpg123.\n"
+				"Copyright (c) 1995,1996,1997 by Michael Hipp."
+			#endif
+			#ifdef GENS_PNG_INTERNAL
+				"\n\n"
+				"Internal copy of libpng-" PNG_LIBPNG_VER_STRING ".\n"
+				"Copyright (c) 1998-2008 Glenn Randers-Pehrson."
+			#endif
+			#ifdef GENS_ZLIB_INTERNAL
+				"\n\n"
+				"Internal copy of zlib-" ZLIB_VERSION ".\n"
+				"Copyright (c) 1995-2005 Jean-loup Gailly and Mark Adler."
+			#endif
+			;
 
-const unsigned char AboutWindow::Data[] =
+const unsigned char about_window_data[] =
 {
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
@@ -245,7 +245,7 @@ const unsigned char AboutWindow::Data[] =
 	'\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000', '\000',
 };
 
-const unsigned char AboutWindow::DX[] =
+const unsigned char about_window_dx[] =
 {
 	'\000', '\000', '\000', '\000', '\004', '\356', '\012', '\356', '\016', '\356',
 	'\016', '\356', '\016', '\356', '\012', '\252', '\010', '\210', '\004', '\104',

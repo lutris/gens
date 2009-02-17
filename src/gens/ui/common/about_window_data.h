@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (GTK+) About Window.                                              *
+ * Gens: About Window. (Data)                                              *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,50 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_GTK_ABOUT_WINDOW_HPP
-#define GENS_GTK_ABOUT_WINDOW_HPP
+#ifndef GENS_UI_COMMON_ABOUT_WINDOW_DATA_H
+#define GENS_UI_COMMON_ABOUT_WINDOW_DATA_H
 
 #ifdef __cplusplus
-
-#include "wndbase.hpp"
-
-class AboutWindow : public WndBase
-{
-	public:
-		static AboutWindow* Instance(GtkWindow *parent = NULL);
-		
-		gboolean close(void);
-		gboolean iceTime(void);
-	
-	protected:
-		AboutWindow();
-		~AboutWindow();
-		
-		static AboutWindow* m_Instance;
-		
-		void dlgButtonPress(uint32_t button);
-		
-		// Static functions required for GTK+ callbacks.
-		static gboolean GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-		static gboolean GTK_iceTime(gpointer user_data);
-		
-		GtkWidget *m_imgGensLogo;
-		GdkPixbuf *m_pbufIce;
-		unsigned short ax, bx, cx;
-		
-		void updateIce(void);
-		
-		// Strings
-		static const char* StrTitle;
-		static const char* StrDescription;
-		static const char* StrCopyright;
-		static const char* StrIncludedLibs;
-		
-		// Data
-		static const unsigned char Data[];
-		static const unsigned char DX[];
-};
-
+extern "C" {
 #endif
 
-#endif /* GENS_GTK_ABOUT_WINDOW_HPP */
+extern const char* const about_window_title;
+extern const char* const about_window_description;
+
+extern const char* const about_window_copyright;
+extern const char* const about_window_included_libs;
+
+extern const unsigned char about_window_data[];
+extern const unsigned char about_window_dx[];
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_UI_COMMON_ABOUT_WINDOW_DATA_H */

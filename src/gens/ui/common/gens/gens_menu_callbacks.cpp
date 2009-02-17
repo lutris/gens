@@ -33,7 +33,7 @@
 #include "bios_misc_files/bios_misc_files_window_misc.hpp"
 #include "directory_config/dir_window.hpp"
 #include "general_options/general_options_window.hpp"
-#include "about/about_window.hpp"
+#include "about/about_window.h"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
 #include "plugin_manager/plugin_manager_window.hpp"
@@ -805,7 +805,7 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state)
 	switch (menuID)
 	{
 		case IDM_HELP_ABOUT:
-			AboutWindow::Instance();
+			about_window_show();
 			break;
 			
 		default:
