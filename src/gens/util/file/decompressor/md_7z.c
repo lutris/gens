@@ -259,6 +259,9 @@ static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
 		extracted_size = (size < outSizeProcessed ? size : outSizeProcessed);
 		memcpy(buf, outBuffer + offset, extracted_size);
 		
+		// Free the 7z buffer.
+		IAlloc_Free(&allocImp, outBuffer);
+		
 		// ROM processed.
 		break;
 	}
