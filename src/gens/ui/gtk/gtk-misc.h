@@ -30,11 +30,15 @@ extern "C" {
 
 #include <gtk/gtk.h>
 
+#ifndef DEPRECATED
+#define DEPRECATED __attribute__ ((deprecated))
+#endif
 
-GtkWidget* lookup_widget(GtkWidget *widget, const gchar* widget_name);
-void add_pixmap_directory(const gchar* directory);
-GdkPixbuf* create_pixbuf(const gchar* filename);
-GtkWidget* create_pixmap(const gchar* filename);
+
+DEPRECATED GtkWidget* lookup_widget(GtkWidget *widget, const gchar* widget_name);
+DEPRECATED void add_pixmap_directory(const gchar* directory);
+DEPRECATED GdkPixbuf* create_pixbuf(const gchar* filename);
+DEPRECATED GtkWidget* create_pixmap(const gchar* filename);
 
 
 // Macros from Glade used to store GtkWidget pointers.
