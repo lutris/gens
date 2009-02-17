@@ -26,6 +26,7 @@
 
 #include "dir_window.hpp"
 #include "ui/common/dir_window_common.h"
+#include "gens/gens_window.hpp"
 
 // C includes.
 #include <string.h>
@@ -64,9 +65,8 @@ static void	dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 
 /**
  * dir_window_show(): Show the Directory Configuration window.
- * @param parent Parent window.
  */
-void dir_window_show(GtkWindow *parent)
+void dir_window_show(void)
 {
 	if (dir_window)
 	{
@@ -167,9 +167,8 @@ void dir_window_show(GtkWindow *parent)
 	// Initialize the directory entries.
 	dir_window_init();
 	
-	// Set the window as modal to the main application window.
-	if (parent)
-		gtk_window_set_transient_for(GTK_WINDOW(dir_window), parent);
+	// Set the window as transient to the main application window.
+	gtk_window_set_transient_for(GTK_WINDOW(dir_window), GTK_WINDOW(gens_window));
 	
 	// Show the window.
 	gtk_widget_show_all(dir_window);

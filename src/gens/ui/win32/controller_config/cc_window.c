@@ -26,6 +26,7 @@
 
 #include "cc_window.h"
 #include "emulator/g_main.hpp"
+#include "gens/gens_window.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -153,9 +154,8 @@ static void CALLBACK cc_window_callback_blink(HWND hWnd, UINT uMsg, UINT_PTR idE
 
 /**
  * cc_window_show(): Show the Controller Configuration window.
- * @param parent Parent window.
  */
-void cc_window_show(HWND parent)
+void cc_window_show(void)
 {
 	if (cc_window)
 	{
@@ -187,7 +187,7 @@ void cc_window_show(HWND parent)
 				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				 CW_USEDEFAULT, CW_USEDEFAULT,
 				 CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT,
-				 parent, NULL, ghInstance, NULL);
+				 gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(cc_window, CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT);

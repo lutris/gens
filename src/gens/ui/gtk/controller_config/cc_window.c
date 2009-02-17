@@ -25,6 +25,7 @@
 #endif
 
 #include "cc_window.h"
+#include "gens/gens_window.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -115,9 +116,8 @@ static gboolean	cc_window_callback_blink(gpointer data);
 
 /**
  * cc_window_show(): Show the Controller Configuration window.
- * @param parent Parent window.
  */
-void cc_window_show(GtkWindow *parent)
+void cc_window_show(void)
 {
 	if (cc_window)
 	{
@@ -196,9 +196,8 @@ void cc_window_show(GtkWindow *parent)
 	// Show the controller configuration for the first player.
 	cc_window_show_configuration(0);
 	
-	// Set the window as modal to the main application window.
-	if (parent)
-		gtk_window_set_transient_for(GTK_WINDOW(cc_window), parent);
+	// Set the window as transient to the main application window.
+	gtk_window_set_transient_for(GTK_WINDOW(cc_window), GTK_WINDOW(gens_window));
 	
 	// Show the window.
 	gtk_widget_show_all(cc_window);

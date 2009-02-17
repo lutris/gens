@@ -34,7 +34,7 @@
 class ZipSelectDialog : public WndBase
 {
 	public:
-		ZipSelectDialog(GtkWindow *parent = NULL);
+		ZipSelectDialog();
 		~ZipSelectDialog();
 		
 		file_list_t* getFile(file_list_t *file_list);

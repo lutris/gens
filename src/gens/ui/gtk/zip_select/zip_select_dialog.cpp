@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include "zip_select_dialog.hpp"
+#include "gens/gens_window.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -45,7 +46,7 @@ static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *ev
  * ZipSelectDialog(): Create the Zip File Selection Dialog.
  * @return Zip File Selection Dialog.
  */
-ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
+ZipSelectDialog::ZipSelectDialog()
 {
 	// Create the Zip File Selection window.
 	m_Window = gtk_dialog_new();
@@ -56,7 +57,7 @@ ZipSelectDialog::ZipSelectDialog(GtkWindow *parent)
 	gtk_window_set_resizable(GTK_WINDOW(m_Window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
-	gtk_window_set_transient_for(GTK_WINDOW(m_Window), parent);
+	gtk_window_set_transient_for(GTK_WINDOW(m_Window), GTK_WINDOW(gens_window));
 	
 	// Make the window a decent size.
 	gtk_widget_set_size_request(m_Window, 480, 280);

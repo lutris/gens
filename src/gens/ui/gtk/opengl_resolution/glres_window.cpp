@@ -25,6 +25,7 @@
 #endif
 
 #include "glres_window.hpp"
+#include "gens/gens_window.hpp"
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -55,9 +56,8 @@ static void	glres_window_callback_response(GtkDialog *dialog, gint response_id, 
 
 /**
  * glres_window_show(): Show the OpenGL Resolution window.
- * @param parent Parent window.
  */
-void glres_window_show(GtkWindow *parent)
+void glres_window_show(void)
 {
 	if (glres_window)
 	{
@@ -146,9 +146,8 @@ void glres_window_show(GtkWindow *parent)
 	// Initialize the OpenGL resolution spinbuttons.
 	glres_window_init();
 	
-	// Set the window as modal to the main application window.
-	if (parent)
-		gtk_window_set_transient_for(GTK_WINDOW(glres_window), parent);
+	// Set the window as transient to the main application window.
+	gtk_window_set_transient_for(GTK_WINDOW(glres_window), GTK_WINDOW(gens_window));
 	
 	// Show the window.
 	gtk_widget_show_all(glres_window);

@@ -401,7 +401,7 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_GRAPHICS_OPENGL_RES_CUSTOM:
-			glres_window_show(GTK_WINDOW(gens_window));
+			glres_window_show();
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 #endif /* GENS_OPENGL */
@@ -723,7 +723,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_OPTIONS_JOYPADS:
-			cc_window_show(gens_window);
+			cc_window_show();
 			break;
 		
 		case IDM_OPTIONS_BIOSMISCFILES:
@@ -742,7 +742,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_OPTIONS_DIRECTORIES:
-			dir_window_show(gens_window);
+			dir_window_show();
 			break;
 		
 		case IDM_OPTIONS_SAVECONFIGAS:

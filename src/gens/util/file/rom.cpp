@@ -553,7 +553,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	{
 		// More than one file is in the archive. Load it.
 		// TODO: Improve this!
-		ZipSelectDialog *zip = new ZipSelectDialog(gens_window);
+		ZipSelectDialog *zip = new ZipSelectDialog();
 		sel_file = zip->getFile(file_list);
 		delete zip;
 	}

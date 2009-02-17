@@ -32,7 +32,7 @@ extern "C" {
 
 extern GtkWidget *dir_window;
 
-void dir_window_show(GtkWindow *parent);
+void dir_window_show(void);
 void dir_window_close(void);
 
 #ifdef __cplusplus

@@ -33,7 +33,7 @@ extern "C" {
 extern HWND cc_window;
 extern BOOL cc_window_is_configuring;
 
-void cc_window_show(HWND parent);
+void cc_window_show(void);
 void cc_window_close(void);
 
 #ifdef __cplusplus

@@ -32,7 +32,7 @@ extern "C" {
 
 extern HWND dir_window;
 
-void dir_window_show(HWND parent);
+void dir_window_show(void);
 void dir_window_close(void);
 
 #ifdef __cplusplus

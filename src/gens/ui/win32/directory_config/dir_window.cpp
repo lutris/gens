@@ -26,6 +26,7 @@
 
 #include "dir_window.hpp"
 #include "ui/common/dir_window_common.h"
+#include "gens/gens_window.hpp"
 
 // C includes.
 #include <string.h>
@@ -86,9 +87,8 @@ static void	dir_window_callback_btnChange_clicked(int dir);
 
 /**
  * dir_window_show(): Show the Directory Configuration window.
- * @param parent Parent window.
  */
-void dir_window_show(HWND parent)
+void dir_window_show(void)
 {
 	if (dir_window)
 	{
@@ -120,7 +120,7 @@ void dir_window_show(HWND parent)
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
 				  DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT,
-				  parent, NULL, ghInstance, NULL);
+				  gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(dir_window, DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT);

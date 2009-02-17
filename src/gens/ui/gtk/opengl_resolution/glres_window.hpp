@@ -32,7 +32,7 @@ extern "C" {
 
 extern GtkWidget *glres_window;
 
-void glres_window_show(GtkWindow *parent);
+void glres_window_show(void);
 void glres_window_close(void);
 
 #ifdef __cplusplus
