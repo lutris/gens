@@ -41,6 +41,9 @@
 #define DEBUG_CHANNEL_psg	0
 #define DEBUG_CHANNEL_pcm	0
 
+// SegaCD emulation.
+#define DEBUG_CHANNEL_lc89510	0
+
 /**
  * Debug levels:
  * 0 == error.
