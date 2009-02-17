@@ -115,7 +115,7 @@ HWND create_country_code_window(void)
 					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					   CW_USEDEFAULT, CW_USEDEFAULT,
 					   wndWidth, wndHeight,
-					   Gens_hWnd, NULL, ghInstance, NULL);
+					   gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	// NOTE: This is done in Country_Code_Window_CreateChildWindows to compensate for listbox variations.

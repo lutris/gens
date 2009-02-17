@@ -37,7 +37,7 @@ extern "C" {
 HWND initGens_hWnd(void);
 HWND create_gens_window(void);
 void create_gens_window_menubar(void);
-extern HWND Gens_hWnd;
+extern HWND gens_window;
 
 #ifdef __cplusplus
 }

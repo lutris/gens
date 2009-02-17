@@ -432,11 +432,11 @@ void audio_dsound_wait_for_audio_buffer(void)
  */
 static void audio_dsound_set_cooperative_level(void)
 {
-	if (!Gens_hWnd || !lpDS)
+	if (!gens_window || !lpDS)
 		return;
 	
 	HRESULT rval;
-	rval = lpDS->SetCooperativeLevel(Gens_hWnd, DSSCL_PRIORITY);
+	rval = lpDS->SetCooperativeLevel(gens_window, DSSCL_PRIORITY);
 	if (rval != DS_OK)
 	{
 		DEBUG_MSG(audio, 1, "lpDS->SetCooperativeLevel() failed.");

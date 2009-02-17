@@ -123,7 +123,7 @@ AboutWindow::AboutWindow()
 				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				CW_USEDEFAULT, CW_USEDEFAULT,
 				328, 360+lblTitle_HeightInc,
-				Gens_hWnd, NULL, ghInstance, NULL);
+				gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(m_Window, 328, 360+lblTitle_HeightInc);
@@ -266,7 +266,7 @@ void AboutWindow::createChildWindows(HWND hWnd)
 	{
 		// "ice" timer
 		
-		m_hdcComp = CreateCompatibleDC(GetDC(Gens_hWnd));
+		m_hdcComp = CreateCompatibleDC(GetDC(gens_window));
 		
 		// Create the DIB.
 		BITMAPINFOHEADER bih;

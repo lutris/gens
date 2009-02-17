@@ -251,7 +251,7 @@ int vdraw_ddraw_init(void)
 			return -7;
 		}
 		
-		if (FAILED(lpDDC_Clipper->SetHWnd(0, Gens_hWnd)))
+		if (FAILED(lpDDC_Clipper->SetHWnd(0, gens_window)))
 		{
 			vdraw_init_fail("Error with lpDDC_Clipper->SetHWnd()!");
 			return -8;
@@ -381,7 +381,7 @@ int vdraw_ddraw_end(void)
 	
 	if (lpDD)
 	{
-		lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
+		lpDD->SetCooperativeLevel(gens_window, DDSCL_NORMAL);
 		lpDD->Release();
 		lpDD = NULL;
 	}
@@ -444,8 +444,8 @@ int vdraw_ddraw_clear_primary_screen(void)
 	else
 	{
 		p.x = p.y = 0;
-		GetClientRect(Gens_hWnd, &rd);
-		ClientToScreen(Gens_hWnd, &p);
+		GetClientRect(gens_window, &rd);
+		ClientToScreen(gens_window, &p);
 		
 		rd.left = p.x;
 		rd.top = p.y;
@@ -933,7 +933,7 @@ int vdraw_ddraw_flip(void)
 	else
 	{
 		// Windowed mode
-		GetClientRect(Gens_hWnd, &RectDest);
+		GetClientRect(gens_window, &RectDest);
 		vdraw_ddraw_calc_draw_area(RectDest, RectSrc, Ratio_X, Ratio_Y, Dep);
 		
 		int Clr_Cmp_Val = isFullXRes() ? 40 : 32;
@@ -1005,7 +1005,7 @@ int vdraw_ddraw_flip(void)
 		}
 		
 		p.x = p.y = 0;
-		ClientToScreen(Gens_hWnd, &p);
+		ClientToScreen(gens_window, &p);
 		
 		// Draw the border.
 		vdraw_ddraw_draw_border(&ddsd, lpDDS_Primary, RectDest);
@@ -1085,8 +1085,8 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 		POINT ptWin;
 		ptWin.x = 0;
 		ptWin.y = 0;
-		GetClientRect(Gens_hWnd, &rectDD);
-		ClientToScreen(Gens_hWnd, &ptWin);
+		GetClientRect(gens_window, &rectDD);
+		ClientToScreen(gens_window, &ptWin);
 		
 		rectDD.left += ptWin.x;
 		rectDD.top += ptWin.y;
@@ -1174,8 +1174,8 @@ int vdraw_ddraw_reinit_gens_window(void)
 		while (ShowCursor(TRUE) < 1) { }
 		while (ShowCursor(FALSE) >= 0) { }
 		
-		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(NULL));
-		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(NULL));
+		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else
 	{
@@ -1183,11 +1183,11 @@ int vdraw_ddraw_reinit_gens_window(void)
 		while (ShowCursor(TRUE) < 1) { }
 		
 		// MoveWindow / ResizeWindow code
-		LONG_PTR curStyle = GetWindowLongPtr(Gens_hWnd, GWL_STYLE);
-		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
-		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
+		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-		Win32_setActualWindowSize(Gens_hWnd, w, h);
+		Win32_setActualWindowSize(gens_window, w, h);
 	}
 	
 	// Reinitialize DirectDraw.
@@ -1237,18 +1237,18 @@ int vdraw_ddraw_restore_primary(void)
  */
 int vdraw_ddraw_set_cooperative_level(void)
 {
-	if (!Gens_hWnd || !lpDD)
+	if (!gens_window || !lpDD)
 		return -1;
 	
 	HRESULT rval;
 #ifdef DISABLE_EXCLUSIVE_FULLSCREEN_LOCK
 	Video.VSync_FS = 0;
-	rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
+	rval = lpDD->SetCooperativeLevel(gens_window, DDSCL_NORMAL);
 #else
 	if (vdraw_get_fullscreen())
-		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
+		rval = lpDD->SetCooperativeLevel(gens_window, DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
 	else
-		rval = lpDD->SetCooperativeLevel(Gens_hWnd, DDSCL_NORMAL);
+		rval = lpDD->SetCooperativeLevel(gens_window, DDSCL_NORMAL);
 #endif
 	
 	if (FAILED(rval))

@@ -234,9 +234,9 @@ void GensUI::update(void)
 			close_gens();
 		
 		// Check for an accelerator.
-		if (Gens_hWnd && msg.hwnd == Gens_hWnd &&
-		    ((hAccelTable_NonMenu && TranslateAccelerator(Gens_hWnd, hAccelTable_NonMenu, &msg)) ||
-		     (hAccelTable_Menu    && TranslateAccelerator(Gens_hWnd, hAccelTable_Menu, &msg))))
+		if (gens_window && msg.hwnd == gens_window &&
+		    ((hAccelTable_NonMenu && TranslateAccelerator(gens_window, hAccelTable_NonMenu, &msg)) ||
+		     (hAccelTable_Menu    && TranslateAccelerator(gens_window, hAccelTable_Menu, &msg))))
 		{
 			// Accelerator. Don't process it as a regular message.
 			continue;
@@ -326,7 +326,7 @@ void GensUI::sleep(const int ms, const bool noUpdate)
  */
 void GensUI::setWindowTitle(const string& title)
 {
-	SetWindowText(Gens_hWnd, title.c_str());
+	SetWindowText(gens_window, title.c_str());
 	update();
 }
 
@@ -386,7 +386,7 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 	
 	// If no owner was specified, use the Gens window.
 	if (!owner)
-		owner = static_cast<void*>(Gens_hWnd);
+		owner = static_cast<void*>(gens_window);
 	
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
@@ -460,7 +460,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	
 	// If no owner was specified, use the Gens window.
 	if (!owner)
-		owner = Gens_hWnd;
+		owner = gens_window;
 	
 	// Open Filename dialog settings
 	ofn.lStructSize = sizeof(OPENFILENAME);
@@ -544,7 +544,7 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	
 	// If no owner was specified, use the Gens window.
 	if (!owner)
-		owner = static_cast<void*>(Gens_hWnd);
+		owner = static_cast<void*>(gens_window);
 	
 	bi.hwndOwner = static_cast<HWND>(owner);
 	bi.pidlRoot = NULL;

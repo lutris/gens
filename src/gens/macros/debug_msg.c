@@ -39,7 +39,7 @@
 void debug_msgbox(const char* msg, const char* title)
 {
 	#if defined(GENS_UI_WIN32)
-		MessageBox(Gens_hWnd, msg, title, MB_ICONSTOP);
+		MessageBox(gens_window, msg, title, MB_ICONSTOP);
 	#elif defined(GENS_UI_GTK)
 		GtkWidget *msgbox = gtk_message_dialog_new(
 					GTK_WINDOW(gens_window),

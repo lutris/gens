@@ -41,7 +41,7 @@
 #include "ui/win32/resource.h"
 
 WNDCLASS WndClass;
-HWND Gens_hWnd = NULL;
+HWND gens_window = NULL;
 
 
 /**
@@ -66,13 +66,13 @@ HWND initGens_hWnd(void)
 	
 	RegisterClass(&WndClass);
 	
-	Gens_hWnd = CreateWindow("Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+	gens_window = CreateWindow("Gens", "Gens", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
 				 320 * 2, 240 * 2, NULL, NULL, ghInstance, NULL);
 	
 	// Accept dragged files.
-	DragAcceptFiles(Gens_hWnd, TRUE);
+	DragAcceptFiles(gens_window, TRUE);
 	
-	return Gens_hWnd;
+	return gens_window;
 }
 
 
@@ -81,7 +81,7 @@ HWND create_gens_window(void)
 	// Create the menu bar.
 	create_gens_window_menubar();
 	
-	return Gens_hWnd;
+	return gens_window;
 }
 
 
@@ -104,7 +104,7 @@ void create_gens_window_menubar(void)
 	
 	// Set the menu bar.
 	if (vdraw_get_fullscreen())
-		SetMenu(Gens_hWnd, NULL);
+		SetMenu(gens_window, NULL);
 	else
-		SetMenu(Gens_hWnd, MainMenu);
+		SetMenu(gens_window, MainMenu);
 }

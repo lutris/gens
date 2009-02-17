@@ -85,7 +85,7 @@ HWND create_color_adjust_window(void)
 					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					   CW_USEDEFAULT, CW_USEDEFAULT,
 					   296, 112,
-					   Gens_hWnd, NULL, ghInstance, NULL);
+					   gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(color_adjust_window, 296, 112);

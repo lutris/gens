@@ -131,7 +131,7 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				CW_USEDEFAULT, CW_USEDEFAULT,
 				(GENOPT_FRAME_WIDTH*2)+16+8, GENOPT_FRAME_HEIGHT+16+24+8,
-				Gens_hWnd, NULL, ghInstance, NULL);
+				gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(m_Window, (GENOPT_FRAME_WIDTH*2)+16+8, GENOPT_FRAME_HEIGHT+16+24+8);

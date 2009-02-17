@@ -87,7 +87,7 @@ PluginManagerWindow* PluginManagerWindow::Instance(HWND parent)
 	
 	// Set modality of the window.
 	if (!parent)
-		parent = Gens_hWnd;
+		parent = gens_window;
 	m_Instance->setModal(parent);
 	
 	return m_Instance;
@@ -129,7 +129,7 @@ PluginManagerWindow::PluginManagerWindow()
 				WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				CW_USEDEFAULT, CW_USEDEFAULT,
 				m_WndWidth, m_WndHeight,
-				Gens_hWnd, NULL, ghInstance, NULL);
+				gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(m_Window, m_WndWidth, m_WndHeight);

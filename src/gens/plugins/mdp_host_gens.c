@@ -352,12 +352,5 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
  */
 void* MDP_FNCALL mdp_host_window_get_main(void)
 {
-	#if defined(GENS_UI_GTK)
-		return gens_window;
-	#elif defined(GENS_UI_WIN32)
-		return Gens_hWnd;
-	#else
-		fprintf(stderr, "%s(): Unknown UI. Returning NULL.\n", __func__);
-		return NULL;
-	#endif
+	return gens_window;
 }

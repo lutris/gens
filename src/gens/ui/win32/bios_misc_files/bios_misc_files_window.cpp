@@ -106,7 +106,7 @@ HWND create_bios_misc_files_window(void)
 					      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					      CW_USEDEFAULT, CW_USEDEFAULT,
 					      BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
-					      Gens_hWnd, NULL, ghInstance, NULL);
+					      gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(bios_misc_files_window, 

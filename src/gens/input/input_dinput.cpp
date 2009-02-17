@@ -693,7 +693,7 @@ int input_dinput_update(void)
 		button.heldNow = pressed;
 
 		if (pressed && !oldPressed && button.eventID && !button.ShouldUseAccelerator())
-			SendMessage(Gens_hWnd, WM_COMMAND, button.eventID, 0);
+			SendMessage(gens_window, WM_COMMAND, button.eventID, 0);
 	}
 #endif
 }
@@ -837,7 +837,7 @@ int input_dinput_set_cooperative_level(HWND hWnd)
 {
 	// If no hWnd was specified, use the Gens window.
 	if (!hWnd)
-		hWnd = Gens_hWnd;
+		hWnd = gens_window;
 	
 	if (!hWnd || !lpDIDKeyboard /*|| lpDIDMouse*/)
 		return -1;
@@ -868,7 +868,7 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 {
 	// If no hWnd was specified, use the Gens window.
 	if (!hWnd)
-		hWnd = Gens_hWnd;
+		hWnd = gens_window;
 	
 	HRESULT rval;
 	for (int i = 0; i < MAX_JOYS; i++)

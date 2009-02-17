@@ -553,13 +553,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	{
 		// More than one file is in the archive. Load it.
 		// TODO: Improve this!
-		#if defined(GENS_UI_GTK)
-			ZipSelectDialog *zip = new ZipSelectDialog(GTK_WINDOW(gens_window));
-		#elif defined(GENS_UI_WIN32)
-			ZipSelectDialog *zip = new ZipSelectDialog(Gens_hWnd);
-		#else
-			#error Cannot determine UI.
-		#endif
+		ZipSelectDialog *zip = new ZipSelectDialog(gens_window);
 		sel_file = zip->getFile(file_list);
 		delete zip;
 	}

@@ -109,7 +109,7 @@ void Win32_centerOnGensWindow(HWND hWnd)
 	RECT r, r2;
 	int dx1, dy1, dx2, dy2;
 	
-	GetWindowRect(Gens_hWnd, &r);
+	GetWindowRect(gens_window, &r);
 	dx1 = (r.right - r.left) / 2;
 	dy1 = (r.bottom - r.top) / 2;
 	
@@ -157,7 +157,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Save hInst for other functions.
 	ghInstance = hInst;
 	
-	// Gens_hWnd is needed before anything else is set up.
+	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
 	initGens_hWnd();
 	
@@ -239,7 +239,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	Sync_Gens_Window();
 	
 	// Show the Gens window.
-	ShowWindow(Gens_hWnd, nCmdShow);
+	ShowWindow(gens_window, nCmdShow);
 	
 	// Run the Gens Main Loop.
 	GensMainLoop();
@@ -251,7 +251,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	
 	End_All();
 	ChangeDisplaySettings(NULL, 0);
-	DestroyWindow(Gens_hWnd);
+	DestroyWindow(gens_window);
 	
 	// Delete the fonts.
 	DeleteFont(fntMain);

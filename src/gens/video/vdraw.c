@@ -275,7 +275,7 @@ void vdraw_init_fail(const char* err)
 		fprintf(stderr, "vdraw initialization failed.\n");
 	
 #ifdef GENS_OS_WIN32
-	MessageBox(Gens_hWnd, err, "DirectDraw Error", MB_ICONERROR);
+	MessageBox(gens_window, err, "DirectDraw Error", MB_ICONERROR);
 	TerminateProcess(GetCurrentProcess(), 1); //Modif N
 #endif /* GENS_OS_WIN32 */
 	

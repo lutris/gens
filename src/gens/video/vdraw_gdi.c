@@ -128,7 +128,7 @@ static int vdraw_gdi_init(void)
 	szGDIBuf.cy = 240 * scale;
 	
 	// Create the DC.
-	hdcComp = CreateCompatibleDC(GetDC(Gens_hWnd));
+	hdcComp = CreateCompatibleDC(GetDC(gens_window));
 	if (!hdcComp)
 	{
 		// Error creating the DC.
@@ -231,9 +231,9 @@ static int vdraw_gdi_clear_back_screen(void)
 	HDC  hdcDest;
 	RECT rectDest;
 	
-	hdcDest = GetDC(Gens_hWnd);
-	InvalidateRect(Gens_hWnd, NULL, FALSE);
-	GetClientRect(Gens_hWnd, &rectDest);
+	hdcDest = GetDC(gens_window);
+	InvalidateRect(gens_window, NULL, FALSE);
+	GetClientRect(gens_window, &rectDest);
 	FillRect(hdcDest, &rectDest, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	
 	// Reset the border color to make sure it's redrawn.
@@ -283,8 +283,8 @@ static int vdraw_gdi_flip(void)
 	HDC	hdcDest;
 	RECT	rectDest;
 	
-	GetClientRect(Gens_hWnd, &rectDest);
-	hdcDest = GetDC(Gens_hWnd);
+	GetClientRect(gens_window, &rectDest);
+	hdcDest = GetDC(gens_window);
 	
 	const int bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
@@ -361,8 +361,8 @@ static int vdraw_gdi_flip(void)
 			   vdraw_gdi_stretch_srcW, vdraw_gdi_stretch_srcH, SRCCOPY);
 	}
 	
-	InvalidateRect(Gens_hWnd, NULL, FALSE);
-	ReleaseDC(Gens_hWnd, hdcDest);
+	InvalidateRect(gens_window, NULL, FALSE);
+	ReleaseDC(gens_window, hdcDest);
 	return 0;
 }
 
@@ -397,8 +397,8 @@ int vdraw_gdi_reinit_gens_window(void)
 		while (ShowCursor(TRUE) < 1) { }
 		while (ShowCursor(FALSE) >= 0) { }
 		
-		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(NULL));
-		SetWindowPos(Gens_hWnd, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(NULL));
+		SetWindowPos(gens_window, NULL, 0, 0, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else
 	{
@@ -406,11 +406,11 @@ int vdraw_gdi_reinit_gens_window(void)
 		while (ShowCursor(TRUE) < 1) { }
 		
 		// MoveWindow / ResizeWindow code
-		LONG_PTR curStyle = GetWindowLongPtr(Gens_hWnd, GWL_STYLE);
-		SetWindowLongPtr(Gens_hWnd, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
-		SetWindowPos(Gens_hWnd, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
+		LONG_PTR curStyle = GetWindowLongPtr(gens_window, GWL_STYLE);
+		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
+		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-		Win32_setActualWindowSize(Gens_hWnd, w, h);
+		Win32_setActualWindowSize(gens_window, w, h);
 	}
 	
 	// Reinitialize DirectDraw.

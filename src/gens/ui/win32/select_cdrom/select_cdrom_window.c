@@ -86,7 +86,7 @@ HWND create_select_cdrom_window(void)
 					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					   CW_USEDEFAULT, CW_USEDEFAULT,
 					   320, 72,
-					   Gens_hWnd, NULL, ghInstance, NULL);
+					   gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
 	Win32_setActualWindowSize(select_cdrom_window, 320, 72);

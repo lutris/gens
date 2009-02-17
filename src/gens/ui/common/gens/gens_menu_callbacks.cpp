@@ -723,14 +723,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_OPTIONS_JOYPADS:
-			// TODO: Make this UI-independent.
-			#if defined(GENS_UI_GTK)
-				cc_window_show(GTK_WINDOW(gens_window));
-			#elif defined(GENS_UI_WIN32)
-				cc_window_show(Gens_hWnd);
-			#else
-				#error Cannot determine UI.
-			#endif
+			cc_window_show(gens_window);
 			break;
 		
 		case IDM_OPTIONS_BIOSMISCFILES:
@@ -749,14 +742,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_OPTIONS_DIRECTORIES:
-			// TODO: Make this UI-independent.
-			#if defined(GENS_UI_GTK)
-				dir_window_show(GTK_WINDOW(gens_window));
-			#elif defined(GENS_UI_WIN32)
-				dir_window_show(Gens_hWnd);
-			#else
-				#error Cannot determine UI.
-			#endif
+			dir_window_show(gens_window);
 			break;
 		
 		case IDM_OPTIONS_SAVECONFIGAS:
