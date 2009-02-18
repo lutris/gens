@@ -27,6 +27,7 @@
 #include "mdp/mdp_cpuflags.h"
 
 #include "sgens.hpp"
+#include "sgens_icon.h"
 
 static MDP_Desc_t MDP_Desc =
 {
@@ -37,8 +38,8 @@ static MDP_Desc_t MDP_Desc =
 	.website = NULL,
 	.license = MDP_LICENSE_GPL_2,
 	
-	.icon = NULL,
-	.iconLength = 0
+	.icon = sgens_icon,
+	.iconLength = sizeof(sgens_icon)
 };
 
 static MDP_Func_t MDP_Func =

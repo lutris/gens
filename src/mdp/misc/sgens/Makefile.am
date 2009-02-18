@@ -16,6 +16,7 @@ mdp_misc_sgens_la_SOURCES = \
 
 noinst_HEADERS = \
 		sgens_plugin.h \
+		sgens_icon.h \
 		sgens_rom_type.h \
 		sgens.hpp \
 		sgens_window.h \
