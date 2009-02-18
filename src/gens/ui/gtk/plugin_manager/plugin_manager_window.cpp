@@ -126,14 +126,6 @@ PluginManagerWindow::PluginManagerWindow()
 	// Set the window data.
 	g_object_set_data(G_OBJECT(m_Window), "PluginManagerWindow", m_Window);
 	
-	// Load the Gens icon.
-	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
-	if (icon)
-	{
-		gtk_window_set_icon(GTK_WINDOW(m_Window), icon);
-		gdk_pixbuf_unref(icon);
-	}
-	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)m_Window, "delete_event",
 			  G_CALLBACK(PluginManagerWindow::GTK_Close), (gpointer)this);

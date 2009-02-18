@@ -62,14 +62,6 @@ ZipSelectDialog::ZipSelectDialog()
 	// Make the window a decent size.
 	gtk_widget_set_size_request(m_Window, 480, 280);
 	
-	// Load the Gens icon.
-	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
-	if (icon)
-	{
-		gtk_window_set_icon(GTK_WINDOW(m_Window), icon);
-		gdk_pixbuf_unref(icon);
-	}
-	
 	// Add a frame for zip file selection.
 	GtkWidget *fraZip = gtk_frame_new(NULL);
 	gtk_container_set_border_width(GTK_CONTAINER(fraZip), 5);

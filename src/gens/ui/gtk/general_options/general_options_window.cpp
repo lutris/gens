@@ -158,14 +158,6 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
 	
-	// Load the Gens icon.
-	GdkPixbuf *icon = create_pixbuf("Gens2.ico");
-	if (icon)
-	{
-		gtk_window_set_icon(GTK_WINDOW(m_Window), icon);
-		gdk_pixbuf_unref(icon);
-	}
-	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)m_Window, "delete_event",
 			  G_CALLBACK(GeneralOptionsWindow::GTK_Close), (gpointer)this);
