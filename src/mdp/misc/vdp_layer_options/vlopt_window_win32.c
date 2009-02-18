@@ -147,7 +147,6 @@ void vlopt_window_close(void)
 	// Unregister the window from MDP Host Services.
 	vlopt_host_srv->window_unregister(&mdp, vlopt_window);
 	
-	
 	// Destroy the window.
 	HWND tmp = vlopt_window;
 	vlopt_window = NULL;
