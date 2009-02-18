@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_HPP
-#define _MDP_MISC_VDP_LAYER_OPTIONS_HPP
+#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_H
+#define _MDP_MISC_VDP_LAYER_OPTIONS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,4 +39,4 @@ DLL_LOCAL extern MDP_Host_t *vlopt_host_srv;
 }
 #endif
 
-#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_HPP */
+#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_H */

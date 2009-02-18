@@ -22,8 +22,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_H
-#define _MDP_MISC_VDP_LAYER_OPTIONS_H
+#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_ICON_H
+#define _MDP_MISC_VDP_LAYER_OPTIONS_ICON_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,4 +59,4 @@ static const unsigned char vlopt_icon[337] =
 }
 #endif
 
-#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_H */
+#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_ICON_H */
