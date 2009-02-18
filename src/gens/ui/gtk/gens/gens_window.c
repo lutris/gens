@@ -115,9 +115,18 @@ void gens_window_create(void)
 	// Create the menu bar.
 	gens_window_create_menubar(vboxMain);
 	
+	// Create the HBox for the SDL "socket".
+	GtkWidget *hboxSocket = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hboxSocket);
+	gtk_box_pack_start(GTK_BOX(vboxMain), hboxSocket, TRUE, TRUE, 0);
+	
 	// Create the SDL "socket".
 	gens_window_sdlsock = gtk_event_box_new();
-	gtk_box_pack_end(GTK_BOX(vboxMain), gens_window_sdlsock, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(hboxSocket), gens_window_sdlsock, TRUE, FALSE, 0);
+	
+	// Set the background color of the SDL "socket" to black.
+	GdkColor bg = {0, 0, 0, 0};
+	gtk_widget_modify_bg(gens_window_sdlsock, GTK_STATE_NORMAL, &bg);
 	
 	// Add the accel group.
 	gtk_window_add_accel_group(GTK_WINDOW(gens_window), gens_window_accel_group);
