@@ -113,6 +113,9 @@ section .text align=64
 		%define	_Read_VDP_V_Counter	Read_VDP_V_Counter
 		%define	_Write_Byte_VDP_Data	Write_Byte_VDP_Data
 		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
+		
+		%define _YM2612_Read		YM2612_Read
+		%define _YM2612_Write		YM2612_Write
 	%endif
 	
 	extern _Read_VDP_Status

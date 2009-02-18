@@ -9,7 +9,7 @@
 #include "g_main.hpp"
 #include "g_update.hpp"
 #include "gens_core/mem/mem_m68k.h"
-#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/ym2612.hpp"
 #include "gens_core/sound/psg.h"
 #include "gens_core/cpu/68k/cpu_68k.h"
 #include "gens_core/cpu/z80/cpu_z80.h"

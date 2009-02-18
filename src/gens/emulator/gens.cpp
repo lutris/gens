@@ -7,7 +7,7 @@
 #include "gens_core/mem/mem_sh2.h"
 
 // Sound
-#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/ym2612.hpp"
 #include "gens_core/sound/psg.h"
 
 // CPUs

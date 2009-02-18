@@ -38,13 +38,6 @@
 #include "gens_core/vdp/vdp_io.h"
 #include "util/gfx/imageutil.hpp"
 
-// Sound includes.
-#include "gens_core/sound/ym2612.h"
-#include "gens_core/sound/psg.h"
-
-// VDP
-#include "gens_core/vdp/vdp_rend.h"
-
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
 #endif /* GENS_DEBUGGER */

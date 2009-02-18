@@ -53,7 +53,7 @@
 #include "gens_core/vdp/vdp_32x.h"
 
 // Audio
-#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/ym2612.hpp"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"

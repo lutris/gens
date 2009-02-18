@@ -91,7 +91,7 @@ gens_SOURCES = \
 		gens_core/cpu/z80/cpu_z80.c \
 		gens_core/sound/pcm.c \
 		gens_core/sound/psg.c \
-		gens_core/sound/ym2612.c \
+		gens_core/sound/ym2612.cpp \
 		gens_core/sound/pwm.c \
 		gens_core/mem/mem_m68k.asm \
 		gens_core/mem/mem_s68k.asm \
@@ -196,7 +196,7 @@ noinst_HEADERS = \
 		gens_core/cpu/z80/cpu_z80.h \
 		gens_core/sound/pcm.h \
 		gens_core/sound/psg.h \
-		gens_core/sound/ym2612.h \
+		gens_core/sound/ym2612.hpp \
 		gens_core/sound/pwm.h \
 		gens_core/mem/mem_m68k.h \
 		gens_core/mem/mem_s68k.h \

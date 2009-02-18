@@ -9,7 +9,7 @@
 #include "gens_core/mem/mem_sh2.h"
 
 #include "util/file/save.hpp"
-#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/ym2612.hpp"
 #include "gens_core/misc/misc.h"
 #include "gens_core/gfx/gfx_cd.h"
 

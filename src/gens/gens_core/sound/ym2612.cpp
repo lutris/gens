@@ -1,3 +1,25 @@
+/***************************************************************************
+ * Gens: Yamaha YM2612 FM synthesis chip emulator.                         *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
 /***********************************************************
  *                                                         *
  * YM2612.C : YM2612 emulator                              *
@@ -10,16 +32,18 @@
  *                                                         *
  ***********************************************************/
 
+#include "ym2612.hpp"
+
+// C includes.
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
 #include <string.h>
-#include "ym2612.h"
 
 // Debug messages.
 #include "macros/debug_msg.h"
 
-/* GSX v7 savestate functionality. */
+// GSX v7 savestate functionality.
 #include "util/file/gsx_v7.h"
 #include "gens_core/misc/byteswap.h"
 
@@ -2811,7 +2835,7 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			slotYM->EincR		= le32_to_cpu(slotGSX->EincR);
 			
 			// NOTE: This seems to be unused...
-			slotYM->OUTp		= le32_to_cpu((int)(slotGSX->OUTp));
+			slotYM->OUTp		= (int*)(le32_to_cpu((int)(slotGSX->OUTp)));
 			
 			slotYM->INd		= le32_to_cpu(slotGSX->INd);
 			slotYM->ChgEnM		= le32_to_cpu(slotGSX->ChgEnM);

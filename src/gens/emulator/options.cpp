@@ -28,7 +28,7 @@ using std::list;
 #include "gens_core/mem/mem_s68k.h"
 #include "gens_core/mem/mem_sh2.h"
 
-#include "gens_core/sound/ym2612.h"
+#include "gens_core/sound/ym2612.hpp"
 #include "gens_core/sound/psg.h"
 #include "gens_core/sound/pcm.h"
 #include "gens_core/sound/pwm.h"

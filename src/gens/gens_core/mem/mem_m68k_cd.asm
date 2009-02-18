@@ -251,8 +251,10 @@ section .text align=64
 	
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
-		%define	_mdZ80_reset	mdZ80_reset
-		%define	_mdZ80_set_odo	mdZ80_set_odo
+		%define	_mdZ80_reset		mdZ80_reset
+		%define	_mdZ80_set_odo		mdZ80_set_odo
+		
+		%define _YM2612_Reset		YM2612_Reset
 	%endif
 	
 	extern Z80_ReadB_Table

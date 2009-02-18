@@ -272,8 +272,10 @@ section .text align=64
 		%define	_Write_Word_VDP_Data	Write_Word_VDP_Data
 		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
 		
-		%define	_mdZ80_reset	mdZ80_reset
-		%define	_mdZ80_set_odo	mdZ80_set_odo
+		%define	_mdZ80_reset		mdZ80_reset
+		%define	_mdZ80_set_odo		mdZ80_set_odo
+		
+		%define _YM2612_Reset		YM2612_Reset
 	%endif
 	
 	extern _Read_VDP_Data
