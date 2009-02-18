@@ -26,7 +26,7 @@
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"
 
-#include "sgens.hpp"
+#include "sgens.h"
 #include "sgens_icon.h"
 
 static MDP_Desc_t MDP_Desc =

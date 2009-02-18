@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_SGENS_HPP
+#ifndef _MDP_MISC_SGENS_H
 #define _MDP_MISC_SGENS_HPP
 
 #ifdef __cplusplus
@@ -43,4 +43,4 @@ DLL_LOCAL extern SGENS_ROM_TYPE sgens_current_rom_type;
 }
 #endif
 
-#endif /* _MDP_MISC_SGENS_HPP */
+#endif /* _MDP_MISC_SGENS_H */

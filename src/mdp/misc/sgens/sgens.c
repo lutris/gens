@@ -27,7 +27,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "sgens.hpp"
+#include "sgens.h"
 #include "sgens_plugin.h"
 #include "sgens_window.h"
 

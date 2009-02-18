@@ -29,7 +29,7 @@
 
 #include "sgens_window.h"
 #include "sgens_plugin.h"
-#include "sgens.hpp"
+#include "sgens.h"
 
 // sGens ROM type information and widget information.
 #include "sgens_rom_type.h"
