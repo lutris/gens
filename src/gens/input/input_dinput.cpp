@@ -27,8 +27,8 @@
 // C includes.
 #include <stdio.h>
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
@@ -127,7 +127,8 @@ int input_dinput_init(void)
 	if (rval == DI_OK)
 	{
 		// DirectInput 5 initialized.
-		DEBUG_MSG(input, 1, "Initialized DirectInput 5.");
+		LOG_MSG(input, LOG_MSG_LEVEL_INFO,
+			"Initialized DirectInput 5.");
 		input_dinput_version = DIRECTINPUT_VERSION_5;
 	}
 	else
@@ -137,13 +138,15 @@ int input_dinput_init(void)
 		if (rval == DI_OK)
 		{
 			// DirectInput 3 initialized.
-			DEBUG_MSG(input, 1, "Initialized DirectInput 3.");
+			LOG_MSG(input, LOG_MSG_LEVEL_INFO,
+				"Initialized DirectInput 3.");
 			input_dinput_version = DIRECTINPUT_VERSION_3;
 		}
 		else
 		{
 			// DirectInput could not be initialized.
-			DEBUG_MSG(input, 0, "Could not initialize DirectInput 3 or DirectInput 5.\n\nYou must have DirectX 3 or later.");
+			LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+				"Could not initialize DirectInput 3 or DirectInput 5.\n\nYou must have DirectX 3 or later.");
 			return -1;
 		}
 	}
@@ -158,7 +161,8 @@ int input_dinput_init(void)
 	rval = lpDI->CreateDevice(GUID_SysKeyboard, &lpDIDKeyboard, NULL);
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 0, "lpDI->CreateDevice() failed. (Keyboard)");
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"lpDI->CreateDevice() failed. (Keyboard)");
 		
 		// TODO: Use cross-platform error numbers, not just DirectInput return values.
 		return -2;
@@ -171,7 +175,8 @@ int input_dinput_init(void)
 	rval = lpDIDKeyboard->SetDataFormat(&c_dfDIKeyboard);
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 0, "lpDIDKeyboard->SetDataFormat() failed.");
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"lpDIDKeyboard->SetDataFormat() failed.");
 		
 		// TODO: Use cross-platform error numbers, not just DirectInput return values.
 		return -1;
@@ -301,7 +306,8 @@ int input_dinput_init_joysticks(HWND hWnd)
 		// Reset number of joysticks.
 		input_dinput_num_joysticks = 0;
 		
-		DEBUG_MSG(input, 0, "lpDI->EnumDevices() failed. Joysticks will be unavailable.");
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"lpDI->EnumDevices() failed. Joysticks will be unavailable.");
 		
 		// TODO: Error handling.
 		return -2;
@@ -337,8 +343,9 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = lpDI->CreateDevice(lpDIIJoy->guidInstance, &lpDIJoy, NULL);
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 0, "lpDI->CreateDevice() failed. (Joystick %d)",
-			  input_dinput_callback_init_joysticks_enum_counter);
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"lpDI->CreateDevice() failed. (Joystick %d)",
+			input_dinput_callback_init_joysticks_enum_counter);
 		return DIENUM_CONTINUE;
 	}
 	
@@ -346,8 +353,9 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	lpDIJoy->Release();
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 0, "lpDIJoy->QueryInterface() failed. (Joystick %d)",
-			  input_dinput_callback_init_joysticks_enum_counter);
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"lpDIJoy->QueryInterface() failed. (Joystick %d)",
+			input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		return DIENUM_CONTINUE;
 	}
@@ -355,8 +363,9 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetDataFormat(&c_dfDIJoystick);
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetDatFormat(&c_dfDIJoystick) failed. (Joystick %d)",
-			  input_dinput_callback_init_joysticks_enum_counter);
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"input_dinput_joy_id[]->SetDatFormat(&c_dfDIJoystick) failed. (Joystick %d)",
+			input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		return DIENUM_CONTINUE;
@@ -367,8 +376,9 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetCooperativeLevel() failed. (Joystick %d)",
-			  input_dinput_callback_init_joysticks_enum_counter);
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"input_dinput_joy_id[]->SetCooperativeLevel() failed. (Joystick %d)",
+			input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 		input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		return DIENUM_CONTINUE;
@@ -384,8 +394,9 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
 	{
-		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetProperty() (X-axis) failed. (Joystick %d)",
-			  input_dinput_callback_init_joysticks_enum_counter);
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"input_dinput_joy_id[]->SetProperty() (X-axis) failed. (Joystick %d)",
+			input_dinput_callback_init_joysticks_enum_counter);
 	}
 	
 	diprg.diph.dwSize = sizeof(diprg); 
@@ -398,8 +409,9 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	rval = input_dinput_joy_id[input_dinput_num_joysticks]->SetProperty(DIPROP_RANGE, &diprg.diph);
 	if ((rval != DI_OK) && (rval != DI_PROPNOEFFECT))
 	{
-		DEBUG_MSG(input, 0, "input_dinput_joy_id[]->SetProperty() (Y-axis) failed. (Joystick %d)",
-			  input_dinput_callback_init_joysticks_enum_counter);
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"input_dinput_joy_id[]->SetProperty() (Y-axis) failed. (Joystick %d)",
+			input_dinput_callback_init_joysticks_enum_counter);
 	}
 	
 	for(i = 0; i < 10; i++)
@@ -847,12 +859,14 @@ int input_dinput_set_cooperative_level(HWND hWnd)
 	rval = lpDIDKeyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	if (rval != DI_OK)
 	{
-		DEBUG_MSG(input, 1, "lpDIDKeyboard->SetCooperativeLevel() failed.");
+		LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+			"lpDIDKeyboard->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}
 	else
 	{
-		DEBUG_MSG(input, 1, "lpDIDKeyboard->SetCooperativeLevel() succeeded.");
+		LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+			"lpDIDKeyboard->SetCooperativeLevel() succeeded.");
 	}
 	
 	return 0;
@@ -880,13 +894,15 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 		
 		if (rval != DI_OK)
 		{
-			DEBUG_MSG(input, 1, "SetCooperativeLevel() failed on joystick %d.", i);
+			LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+				"SetCooperativeLevel() failed on joystick %d.", i);
 			input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 			input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		}
 		else
 		{
-			DEBUG_MSG(input, 1, "SetCooperativeLevel() succeeded on joystick %d.", i);
+			LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+				"SetCooperativeLevel() succeeded on joystick %d.", i);
 		}
 	}
 	

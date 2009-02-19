@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Debug Messages.                                                   *
+ * Gens: Message Logging.                                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -24,19 +24,26 @@
 #include <config.h>
 #endif
 
-#include "debug_msg.h"
+#include "log_msg.h"
 
 #if defined(GENS_UI_WIN32)
 	#include <windows.h>
 #elif defined(GENS_UI_GTK)
 	#include <gtk/gtk.h>
+#else
+	#warning No UI defined. log_msgbox() will do nothing.
 #endif
 
 // Needed for the parent window.
 #include "gens/gens_window.h"
 
 
-void debug_msgbox(const char* msg, const char* title)
+/**
+ * log_msgbox(): Function used to show a message box for messages with level LOG_MSG_LEVEL_CRITICAL.
+ * @param msg Message.
+ * @param title Title.
+ */
+void log_msgbox(const char* msg, const char* title)
 {
 	#if defined(GENS_UI_WIN32)
 		MessageBox(gens_window, msg, title, MB_ICONSTOP);

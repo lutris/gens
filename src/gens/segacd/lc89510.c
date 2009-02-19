@@ -27,8 +27,8 @@
 //#include <stdio.h>
 #include <string.h>
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include "gens_core/misc/misc.h"
 #include "lc89510.h"
@@ -146,7 +146,8 @@ void Update_CDC_TRansfert(void)
 			dep = (CDC.DMA_Adr & 0xFFFF) << 3;
 			add_dest = 2;
 			
-			DEBUG_MSG(lc89510, 1, "DMA transfert PRG RAM : adr = %.8X", dep);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"DMA transfert PRG RAM : adr = %.8X", dep);
 			break;
 		
 		case 0x0700:		// WORD RAM
@@ -187,13 +188,15 @@ void Update_CDC_TRansfert(void)
 			if (Int_Mask_S68K & 0x20)
 				sub68k_interrupt (5, -1);
 			
-			DEBUG_MSG(lc89510, 1, "CDC - DTE interrupt");
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC - DTE interrupt");
 		}
 	}
 	else
 		length = CDC_DMA_SPEED;
 	
-	DEBUG_MSG(lc89510, 1, "DMA length = %.4X", length);
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"DMA length = %.4X", length);
 	
 	if ((CDC.RS0 & 0x0700) == 0x0400)
 	{
@@ -264,15 +267,17 @@ unsigned short Read_CDC_Host_SUB(void)
 					if (Int_Mask_S68K & 0x20)
 					sub68k_interrupt (5, -1);
 					
-					DEBUG_MSG(lc89510, 1, "CDC - DTE interrupt");
+					LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+						"CDC - DTE interrupt");
 				}
 			}
 			val = *(unsigned short *) &CDC.Buffer[CDC.DAC.N];
 			CDC.DAC.N += 2;
 			val = (val >> 8) | (val << 8);
 			
-			DEBUG_MSG(lc89510, 1, "Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X",
-				  val, CDC.DBC.N, CDC.DAC.N);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X",
+				val, CDC.DBC.N, CDC.DAC.N);
 			return val;
 		}
 	}
@@ -305,15 +310,17 @@ unsigned short Read_CDC_Host_MAIN(void)
 					if (Int_Mask_S68K & 0x20)
 						sub68k_interrupt (5, -1);
 					
-					DEBUG_MSG(lc89510, 1, "CDC - DTE interrupt");
+					LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+						"CDC - DTE interrupt");
 				}
 			}
 			val = *(unsigned short *) &CDC.Buffer[CDC.DAC.N];
 			CDC.DAC.N += 2;
 			val = (val >> 8) | (val << 8);
 			
-			DEBUG_MSG(lc89510, 1, "Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X",
-				  val, CDC.DBC.N, CDC.DAC.N);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"Host READ on SUB CPU side : %.4X  DBA = %.4X  DBC = %.4X",
+				val, CDC.DBC.N, CDC.DAC.N);
 			return val;
 		}
 	}
@@ -352,107 +359,139 @@ unsigned char CDC_Read_Reg(void)
 	switch (CDC.RS0 & 0xF)
 	{
 		case 0x0:			// COMIN
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.COMIN);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.COMIN);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x1;
 			return CDC.COMIN;
 		
 		case 0x1:			// IFSTAT
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.IFSTAT);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.IFSTAT);
 			
 			CDC_Decode_Reg_Read |= (1 << 1);	// Reg 1 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x2;
 			return CDC.IFSTAT;
 		
 		case 0x2:			// DBCL
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.DBC.B.L);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.DBC.B.L);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x3;
 			return CDC.DBC.B.L;
 		
 		case 0x3:			// DBCH
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.DBC.B.H);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.DBC.B.H);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x4;
 			return CDC.DBC.B.H;
 		
 		case 0x4:			// HEAD0
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B0);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.HEAD.B.B0);
 			
 			CDC_Decode_Reg_Read |= (1 << 4);	// Reg 4 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x5;
 			return CDC.HEAD.B.B0;
 		
 		case 0x5:			// HEAD1
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B1);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.HEAD.B.B1);
 			
 			CDC_Decode_Reg_Read |= (1 << 5);	// Reg 5 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x6;
 			return CDC.HEAD.B.B1;
 		
 		case 0x6:			// HEAD2
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B2);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.HEAD.B.B2);
 			
 			CDC_Decode_Reg_Read |= (1 << 6);	// Reg 6 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x7;
 			return CDC.HEAD.B.B2;
 		
 		case 0x7:			// HEAD3
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.HEAD.B.B3);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.HEAD.B.B3);
 			
 			CDC_Decode_Reg_Read |= (1 << 7);	// Reg 7 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x8;
 			return CDC.HEAD.B.B3;
 		
 		case 0x8:			// PTL
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.PT.B.L);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.PT.B.L);
 			
 			CDC_Decode_Reg_Read |= (1 << 8);	// Reg 8 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0x9;
 			return CDC.PT.B.L;
 		
 		case 0x9:			// PTH
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.PT.B.H);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.PT.B.H);
 			
 			CDC_Decode_Reg_Read |= (1 << 9);	// Reg 9 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xA;
 			return CDC.PT.B.H;
 		
 		case 0xA:			// WAL
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.WA.B.L);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.WA.B.L);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xB;
 			return CDC.WA.B.L;
 		
 		case 0xB:			// WAH
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.WA.B.H);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.WA.B.H);
 			
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xC;
 			return CDC.WA.B.H;
 		
 		case 0xC:			// STAT0
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B0);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.STAT.B.B0);
 			
 			CDC_Decode_Reg_Read |= (1 << 12);	// Reg 12 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xD;
 			return CDC.STAT.B.B0;
 		
 		case 0xD:			// STAT1
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B1);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.STAT.B.B1);
 			
 			CDC_Decode_Reg_Read |= (1 << 13);	// Reg 13 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xE;
 			return CDC.STAT.B.B1;
 		
 		case 0xE:			// STAT2
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B2);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.STAT.B.B2);
 			
 			CDC_Decode_Reg_Read |= (1 << 14);	// Reg 14 (decoding)
 			CDC.RS0 = (CDC.RS0 & 0xFFF0) | 0xF;
 			return CDC.STAT.B.B2;
 		
 		case 0xF:			// STAT3
-			DEBUG_MSG(lc89510, 1, "CDC read reg %.2d = %.2X", CDC.RS0 & 0xF, CDC.STAT.B.B3);
+			LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+				"CDC read reg %.2d = %.2X",
+				CDC.RS0 & 0xF, CDC.STAT.B.B3);
 			
 			ret = CDC.STAT.B.B3;
 			CDC.IFSTAT |= 0x20;	// decoding interrupt flag cleared
@@ -470,7 +509,9 @@ unsigned char CDC_Read_Reg(void)
 
 void CDC_Write_Reg(unsigned char Data)
 {
-	DEBUG_MSG(lc89510, 1, "CDC write reg%d = %.2X", CDC.RS0 & 0xF, Data);
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"CDC write reg%d = %.2X",
+		CDC.RS0 & 0xF, Data);
 	
 	switch (CDC.RS0 & 0xF)
 	{
@@ -526,9 +567,11 @@ void CDC_Write_Reg(unsigned char Data)
 				SCD.Status_CDC |= 0x08;	// Data transfert in progress
 				CDC.RS0 &= 0x7FFF;	// A data transfert start
 				
-				DEBUG_MSG(lc89510, 1, "************** Starting Data Transfert ***********");
-				DEBUG_MSG(lc89510, 1, "RS0 = %.4X  DAC = %.4X  DBC = %.4X  DMA adr = %.4X",
-					  CDC.RS0, CDC.DAC.N, CDC.DBC.N, CDC.DMA_Adr);
+				LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+					"************** Starting Data Transfert ***********");
+				LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+					"RS0 = %.4X  DAC = %.4X  DBC = %.4X  DMA adr = %.4X",
+					CDC.RS0, CDC.DAC.N, CDC.DBC.N, CDC.DMA_Adr);
 			}
 			break;
 		
@@ -579,9 +622,11 @@ void CDC_Write_Reg(unsigned char Data)
 
 void CDD_Processing(void)
 {
-	DEBUG_MSG(lc89510, 1, "CDD exporting status");
-	DEBUG_MSG(lc89510, 1, "Status=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X, Ext=%.4X",
-		  CDD.Status, CDD.Minute, CDD.Seconde, CDD.Frame, CDD.Ext);
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"CDD exporting status");
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"Status=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X, Ext=%.4X",
+		CDD.Status, CDD.Minute, CDD.Seconde, CDD.Frame, CDD.Ext);
 	
 	CDD_Export_Status();
 	sub68k_interrupt(4, -1);
@@ -590,13 +635,15 @@ void CDD_Processing(void)
 
 void CDD_Import_Command(void)
 {
-	DEBUG_MSG(lc89510, 1, "CDD importing command");
-	DEBUG_MSG(lc89510, 1, "Commande=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X  Checksum=%.4X",
-			(CDD.Trans_Comm[0] & 0xFF) + ((CDD.Trans_Comm[1] & 0xFF) << 8),
-			(CDD.Trans_Comm[2] & 0xFF) + ((CDD.Trans_Comm[3] & 0xFF) << 8),
-			(CDD.Trans_Comm[4] & 0xFF) + ((CDD.Trans_Comm[5] & 0xFF) << 8),
-			(CDD.Trans_Comm[6] & 0xFF) + ((CDD.Trans_Comm[7] & 0xFF) << 8),
-			(CDD.Trans_Comm[8] & 0xFF) + ((CDD.Trans_Comm[9] & 0xFF) << 8));
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"CDD importing command");
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"Commande=%.4X, Minute=%.4X, Seconde=%.4X, Frame=%.4X  Checksum=%.4X",
+		(CDD.Trans_Comm[0] & 0xFF) + ((CDD.Trans_Comm[1] & 0xFF) << 8),
+		(CDD.Trans_Comm[2] & 0xFF) + ((CDD.Trans_Comm[3] & 0xFF) << 8),
+		(CDD.Trans_Comm[4] & 0xFF) + ((CDD.Trans_Comm[5] & 0xFF) << 8),
+		(CDD.Trans_Comm[6] & 0xFF) + ((CDD.Trans_Comm[7] & 0xFF) << 8),
+		(CDD.Trans_Comm[8] & 0xFF) + ((CDD.Trans_Comm[9] & 0xFF) << 8));
 	
 	switch (CDD.Trans_Comm[1])
 	{
@@ -694,14 +741,16 @@ void CDD_Import_Command(void)
 
 unsigned char SCD_Read_Byte(unsigned int Adr)
 {
-	DEBUG_MSG(lc89510, 1, "SCD read (B), address = %.8X", Adr);
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"SCD read (B), address = %.8X", Adr);
 	return 0;
 }
 
 
 unsigned short SCD_Read_Word(unsigned int Adr)
 {
-	DEBUG_MSG(lc89510, 1, "SCD read (W), address = %.8X", Adr);
+	LOG_MSG(lc89510, LOG_MSG_LEVEL_DEBUG1,
+		"SCD read (W), address = %.8X", Adr);
 	return 0;
 }
 

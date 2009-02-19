@@ -25,8 +25,8 @@
 #include "input_sdl_events.hpp"
 #include "input_sdl_joystate.h"
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include <unistd.h>
 
@@ -145,8 +145,9 @@ int input_sdl_init(void)
 	{
 		// Error initializing the SDL joystick handler.
 		// Disable joysticks.
-		DEBUG_MSG(input, 0, "SDL joystick initialization failed: %s. Joysticks will be unavailable.",
-			  SDL_GetError());
+		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+			"SDL joystick initialization failed: %s. Joysticks will be unavailable.",
+			SDL_GetError());
 		return 0;
 	}
 	
@@ -228,7 +229,8 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 			break;
 		
 		default:
-			DEBUG_MSG(input, 1, "Unhandled GDK event type: %d", event->type);
+			LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+				"Unhandled GDK event type: %d", event->type);
 			return FALSE;
 	}
 	

@@ -10,8 +10,8 @@
 /*                                                         */
 /***********************************************************/
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -99,9 +99,10 @@ void PSG_Write(int data)
 			PSG_Special_Update();
 			PSG.Volume[PSG.Current_Channel] = PSG_Volume_Table[data];
 			
-			DEBUG_MSG(psg, 1, "channel %d    volume = %.8X",
-				  PSG.Current_Channel,
-				  PSG.Volume[PSG.Current_Channel]);
+			LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+				"channel %d    volume = %.8X",
+				PSG.Current_Channel,
+				PSG.Volume[PSG.Current_Channel]);
 		}
 		else
 		{
@@ -117,9 +118,10 @@ void PSG_Write(int data)
 				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
 					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
 				
-				DEBUG_MSG(psg, 1, "channel %d    step = %.8X",
-					  PSG.Current_Channel,
-					  PSG.CntStep[PSG.Current_Channel]);
+				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+					"channel %d    step = %.8X",
+					PSG.Current_Channel,
+					PSG.CntStep[PSG.Current_Channel]);
 			}
 			else
 			{
@@ -133,7 +135,8 @@ void PSG_Write(int data)
 				else
 					PSG.Noise_Type = P_NOISE;
 				
-				DEBUG_MSG(psg, 1, "channel N    type = %.2X", data);
+				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+					"channel N    type = %.2X", data);
 			}
 		}
 	}
@@ -155,9 +158,10 @@ void PSG_Write(int data)
 				if ((PSG.Current_Channel == 2) && ((PSG.Register[6] & 3) == 3))
 					PSG.CntStep[3] = PSG.CntStep[2] >> 1;
 				
-				DEBUG_MSG(psg, 1, "channel %d    step = %.8X",
-					  PSG.Current_Channel,
-					  PSG.CntStep[PSG.Current_Channel]);
+				LOG_MSG(psg, LOG_MSG_LEVEL_DEBUG1,
+					"channel %d    step = %.8X",
+					PSG.Current_Channel,
+					PSG.CntStep[PSG.Current_Channel]);
 			}
 		}
 	}

@@ -8,8 +8,8 @@
 /*                                                         */
 /***********************************************************/
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -150,8 +150,9 @@ void PCM_Write_Reg(unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step =
 				(int)((float)PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B * PCM_Chip.Rate);
 			
-			DEBUG_MSG(pcm, 1, "Step low = %.2X   Step calculated = %.8X",
-				  Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"Step low = %.2X   Step calculated = %.8X",
+				Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step);
 			break;
 		
 		case 0x03:
@@ -161,16 +162,18 @@ void PCM_Write_Reg(unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step =
 				(int)((float)PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step_B * PCM_Chip.Rate);
 			
-			DEBUG_MSG(pcm, 1, "Step high = %.2X   Step calculated = %.8X",
-				  Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"Step high = %.2X   Step calculated = %.8X",
+				Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Step);
 			break;
 		
 		case 0x04:
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr &= 0xFF00;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr += Data;			
 			
-			DEBUG_MSG(pcm, 1, "Loop low = %.2X   Loop = %.8X",
-				  Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"Loop low = %.2X   Loop = %.8X",
+				Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr);
 			break;
 		
 		case 0x05:
@@ -178,8 +181,9 @@ void PCM_Write_Reg(unsigned int Reg, unsigned int Data)
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr &= 0x00FF;
 			PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr += Data << 8;
 			
-			DEBUG_MSG(pcm, 1, "Loop high = %.2X   Loop = %.8X",
-				  Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"Loop high = %.2X   Loop = %.8X",
+				Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Loop_Addr);
 			break;
 		
 		case 0x06:
@@ -188,8 +192,9 @@ void PCM_Write_Reg(unsigned int Reg, unsigned int Data)
 				Data << (PCM_STEP_SHIFT + 8);
 			//PCM_Chip.Channel[PCM_Chip.Cur_Chan].Addr = PCM_Chip.Channel[PCM_Chip.Cur_Chan].St_Addr;
 			
-			DEBUG_MSG(pcm, 1, "Start addr = %.2X   New Addr = %.8X",
-				  Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Addr);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"Start addr = %.2X   New Addr = %.8X",
+				Data, PCM_Chip.Channel[PCM_Chip.Cur_Chan].Addr);
 			break;
 		
 		case 0x07:
@@ -213,14 +218,16 @@ void PCM_Write_Reg(unsigned int Reg, unsigned int Data)
 			else
 				PCM_Chip.Enable = 0;
 			
-			DEBUG_MSG(pcm, 1, "General Enable = %.2X", Data);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"General Enable = %.2X", Data);
 			break;
 		
 		case 0x08:
 			/* sound on/off register */
 			Data ^= 0xFF;
 			
-			DEBUG_MSG(pcm, 1, "Channel Enable = %.2X", Data);
+			LOG_MSG(pcm, LOG_MSG_LEVEL_DEBUG1,
+				"Channel Enable = %.2X", Data);
 			
 			for (i = 0; i < 8; i++)
 			{

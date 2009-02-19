@@ -40,8 +40,8 @@
 #include <math.h>
 #include <string.h>
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 // GSX v7 savestate functionality.
 #include "util/file/gsx_v7.h"
@@ -332,7 +332,8 @@ static inline void CALC_FINC_SL(slot_ * SL, int finc, int kc)
 	SL->Finc = (finc + SL->DT[kc]) * SL->MUL;
 	ksr = kc >> SL->KSR_S;	// keycode atténuation
 	
-	DEBUG_MSG(ym2612, 2, "FINC = %d  SL->Finc = %d", finc, SL->Finc);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"FINC = %d  SL->Finc = %d", finc, SL->Finc);
 	
 	if (SL->KSR != ksr)		// si le KSR a changé alors
 	{				// les différents taux pour l'enveloppe sont mis à jour
@@ -355,9 +356,9 @@ static inline void CALC_FINC_SL(slot_ * SL, int finc, int kc)
 			SL->Einc = SL->EincR;
 		}
 		
-		DEBUG_MSG(ym2612, 2,
-			  "KSR = %.4X  EincA = %.8X EincD = %.8X EincS = %.8X EincR = %.8X",
-			  ksr, SL->EincA, SL->EincD, SL->EincS, SL->EincR);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"KSR = %.4X  EincA = %.8X EincD = %.8X EincS = %.8X EincR = %.8X",
+			ksr, SL->EincA, SL->EincD, SL->EincS, SL->EincR);
 	}
 }
 
@@ -461,7 +462,8 @@ static int SLOT_SET(int Adr, unsigned char data)
 		
 		CH->SLOT[0].Finc = -1;
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] DTMUL = %.2X", nch, nsl, data & 0x7F);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] DTMUL = %.2X", nch, nsl, data & 0x7F);
 		break;
 	
 	case 0x40:
@@ -476,7 +478,8 @@ static int SLOT_SET(int Adr, unsigned char data)
 		SL->TLL = SL->TL << (ENV_HBITS - 7);
 #endif
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] TL = %.2X", nch, nsl, SL->TL);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] TL = %.2X", nch, nsl, SL->TL);
 		break;
 	
 	case 0x50:
@@ -493,7 +496,8 @@ static int SLOT_SET(int Adr, unsigned char data)
 		if (SL->Ecurp == ATTACK)
 			SL->Einc = SL->EincA;
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] AR = %.2X  EincA = %.6X", nch, nsl, data, SL->EincA);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] AR = %.2X  EincA = %.6X", nch, nsl, data, SL->EincA);
 		break;
 	
 	case 0x60:
@@ -511,8 +515,9 @@ static int SLOT_SET(int Adr, unsigned char data)
 		if (SL->Ecurp == DECAY)
 			SL->Einc = SL->EincD;
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] AMS = %d  DR = %.2X  EincD = %.6X",
-			  nch, nsl, SL->AMSon, data, SL->EincD);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] AMS = %d  DR = %.2X  EincD = %.6X",
+			nch, nsl, SL->AMSon, data, SL->EincD);
 		break;
 	
 	case 0x70:
@@ -525,8 +530,9 @@ static int SLOT_SET(int Adr, unsigned char data)
 		if ((SL->Ecurp == SUBSTAIN) && (SL->Ecnt < ENV_END))
 			SL->Einc = SL->EincS;
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] SR = %.2X  EincS = %.6X",
-			  nch, nsl, data, SL->EincS);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] SR = %.2X  EincS = %.6X",
+			nch, nsl, data, SL->EincS);
 		break;
 	
 	case 0x80:
@@ -538,9 +544,11 @@ static int SLOT_SET(int Adr, unsigned char data)
 		if ((SL->Ecurp == RELEASE) && (SL->Ecnt < ENV_END))
 			SL->Einc = SL->EincR;
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] SL = %.8X", nch, nsl, SL->SLL);
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] RR = %.2X  EincR = %.2X",
-			  nch, nsl, ((data & 0xF) << 1) | 2, SL->EincR);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] SL = %.8X", nch, nsl, SL->SLL);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] RR = %.2X  EincR = %.2X",
+			nch, nsl, ((data & 0xF) << 1) | 2, SL->EincR);
 		
 		break;
 	
@@ -575,7 +583,8 @@ static int SLOT_SET(int Adr, unsigned char data)
 		else
 			SL->SEG = 0;
 		
-		DEBUG_MSG(ym2612, 2, "CHANNEL[%d], SLOT[%d] SSG-EG = %.2X", nch, nsl, data);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+			"CHANNEL[%d], SLOT[%d] SSG-EG = %.2X", nch, nsl, data);
 		break;
 	}
 	
@@ -605,8 +614,9 @@ static int CHANNEL_SET(int Adr, unsigned char data)
 			
 			CH->SLOT[0].Finc = -1;
 			
-			DEBUG_MSG(ym2612, 2, "CHANNEL[%d] part1 FNUM = %d  KC = %d",
-				  num, CH->FNUM[0], CH->KC[0]);
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+				"CHANNEL[%d] part1 FNUM = %d  KC = %d",
+				num, CH->FNUM[0], CH->KC[0]);
 			break;
 		
 		case 0xA4:
@@ -622,8 +632,9 @@ static int CHANNEL_SET(int Adr, unsigned char data)
 			
 			CH->SLOT[0].Finc = -1;
 			
-			DEBUG_MSG(ym2612, 2, "CHANNEL[%d] part2 FNUM = %d  FOCT = %d  KC = %d",
-				  num, CH->FNUM[0], CH->FOCT[0], CH->KC[0]);
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+				"CHANNEL[%d] part2 FNUM = %d  FOCT = %d  KC = %d",
+				num, CH->FNUM[0], CH->FOCT[0], CH->KC[0]);
 			break;
 		
 		case 0xA8:
@@ -639,9 +650,10 @@ static int CHANNEL_SET(int Adr, unsigned char data)
 				
 				YM2612.CHANNEL[2].SLOT[0].Finc = -1;
 				
-				DEBUG_MSG(ym2612, 2, "CHANNEL[2] part1 FNUM[%d] = %d  KC[%d] = %d",
-					  num, YM2612.CHANNEL[2].FNUM[num],
-					  num, YM2612.CHANNEL[2].KC[num]);
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+					"CHANNEL[2] part1 FNUM[%d] = %d  KC[%d] = %d",
+					num, YM2612.CHANNEL[2].FNUM[num],
+					num, YM2612.CHANNEL[2].KC[num]);
 			}
 			break;
 		
@@ -660,10 +672,11 @@ static int CHANNEL_SET(int Adr, unsigned char data)
 				
 				YM2612.CHANNEL[2].SLOT[0].Finc = -1;
 				
-				DEBUG_MSG(ym2612, 2, "CHANNEL[2] part2 FNUM[%d] = %d  FOCT[%d] = %d  KC[%d] = %d",
-					  num, YM2612.CHANNEL[2].FNUM[num],
-					  num, YM2612.CHANNEL[2].FOCT[num],
-					  num, YM2612.CHANNEL[2].KC[num]);
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+					"CHANNEL[2] part2 FNUM[%d] = %d  FOCT[%d] = %d  KC[%d] = %d",
+					num, YM2612.CHANNEL[2].FNUM[num],
+					num, YM2612.CHANNEL[2].FOCT[num],
+					num, YM2612.CHANNEL[2].KC[num]);
 			}
 			break;
 		
@@ -694,7 +707,8 @@ static int CHANNEL_SET(int Adr, unsigned char data)
 				CH->FB = 31;
 			*/
 			
-			DEBUG_MSG(ym2612, 2, "CHANNEL[%d] ALGO = %d  FB = %d", num, CH->ALGO, CH->FB);
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+				"CHANNEL[%d] ALGO = %d  FB = %d", num, CH->ALGO, CH->FB);
 			break;
 		
 		case 0xB4:
@@ -734,7 +748,8 @@ static int CHANNEL_SET(int Adr, unsigned char data)
 			else
 				CH->SLOT[3].AMS = 31;
 			
-			DEBUG_MSG(ym2612, 1, "CHANNEL[%d] AMS = %d  FMS = %d", num, CH->AMS, CH->FMS);
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+				"CHANNEL[%d] AMS = %d  FMS = %d", num, CH->AMS, CH->FMS);
 			break;
 	}
 	
@@ -756,12 +771,14 @@ static int YM_SET(int Adr, unsigned char data)
 				// distord the sound, have to check that on a real genesis...
 				
 				YM2612.LFOinc = LFO_INC_TAB[data & 7];
-				DEBUG_MSG(ym2612, 1, "LFO Enable, LFOinc = %.8X   %d", YM2612.LFOinc, data & 7);
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+					"LFO Enable, LFOinc = %.8X   %d", YM2612.LFOinc, data & 7);
 			}
 			else
 			{
 				YM2612.LFOinc = YM2612.LFOcnt = 0;
-				DEBUG_MSG(ym2612, 1, "LFO Disable");
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+					"LFO Disable");
 			}
 			break;
 		
@@ -771,7 +788,8 @@ static int YM_SET(int Adr, unsigned char data)
 			if (YM2612.TimerAL != (1024 - YM2612.TimerA) << 12)
 			{
 				YM2612.TimerAcnt = YM2612.TimerAL = (1024 - YM2612.TimerA) << 12;
-				DEBUG_MSG(ym2612, 2, "Timer A Set = %.8X", YM2612.TimerAcnt);
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+					"Timer A Set = %.8X", YM2612.TimerAcnt);
 			}
 			break;
 		
@@ -781,7 +799,8 @@ static int YM_SET(int Adr, unsigned char data)
 			if (YM2612.TimerAL != (1024 - YM2612.TimerA) << 12)
 			{
 				YM2612.TimerAcnt = YM2612.TimerAL = (1024 - YM2612.TimerA) << 12;
-				DEBUG_MSG(ym2612, 2, "Timer A Set = %.8X", YM2612.TimerAcnt);
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+					"Timer A Set = %.8X", YM2612.TimerAcnt);
 			}
 			break;
 		
@@ -791,7 +810,8 @@ static int YM_SET(int Adr, unsigned char data)
 			if (YM2612.TimerBL != (256 - YM2612.TimerB) << (4 + 12))
 			{
 				YM2612.TimerBcnt = YM2612.TimerBL = (256 - YM2612.TimerB) << (4 + 12);
-				DEBUG_MSG(ym2612, 2, "Timer B Set = %.8X", YM2612.TimerBcnt);
+				LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+					"Timer B Set = %.8X", YM2612.TimerBcnt);
 			}
 			break;
 		
@@ -828,7 +848,8 @@ static int YM_SET(int Adr, unsigned char data)
 			
 			YM2612.Mode = data;
 			
-			DEBUG_MSG(ym2612, 1, "Mode reg = %.2X", data);
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+				"Mode reg = %.2X", data);
 			break;
 		
 		case 0x28:
@@ -858,7 +879,8 @@ static int YM_SET(int Adr, unsigned char data)
 			else
 				KEY_OFF (CH, S3);	// On relâche la touche pour le slot 4
 			
-			DEBUG_MSG(ym2612, 1, "CHANNEL[%d]  KEY %.1X", nch, ((data & 0xf0) >> 4));
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+				"CHANNEL[%d]  KEY %.1X", nch, ((data & 0xf0) >> 4));
 			break;
 		
 		case 0x2A:
@@ -1256,7 +1278,8 @@ static void Update_Chan_Algo0(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 0 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 0 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1277,7 +1300,8 @@ static void Update_Chan_Algo1(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 1 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 1 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1298,7 +1322,8 @@ static void Update_Chan_Algo2(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 2 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 2 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1319,7 +1344,8 @@ static void Update_Chan_Algo3(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 3 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 3 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1340,7 +1366,8 @@ static void Update_Chan_Algo4(channel_ *CH, int **buf, int length)
 	if ((CH->SLOT[S1].Ecnt == ENV_END) && (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 4 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 4 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1363,7 +1390,8 @@ static void Update_Chan_Algo5(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 5 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 5 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1386,7 +1414,8 @@ static void Update_Chan_Algo6(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 6 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 6 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1410,7 +1439,8 @@ static void Update_Chan_Algo7(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 7 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 7 len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1431,7 +1461,8 @@ static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 0 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 0 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1452,7 +1483,8 @@ static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 1 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 1 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1473,7 +1505,8 @@ static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 2 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 2 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1494,7 +1527,8 @@ static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 3 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 3 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1516,7 +1550,8 @@ static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 4 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 4 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1539,7 +1574,8 @@ static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 5 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 5 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1562,7 +1598,8 @@ static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 6 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 6 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1586,7 +1623,8 @@ static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
 	    (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 7 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 7 LFO len = %d", length);
 	
 	for (i = 0; i < length; i++)
 	{
@@ -1612,7 +1650,8 @@ static void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 0 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 0 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1635,7 +1674,8 @@ static void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 1 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 1 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1658,7 +1698,8 @@ static void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 2 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 2 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1681,7 +1722,8 @@ static void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 3 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 3 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1704,7 +1746,8 @@ static void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length)
 	if ((CH->SLOT[S1].Ecnt == ENV_END) && (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 4 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 4 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1731,7 +1774,8 @@ static void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length)
 		return;
 	}
 	
-	DEBUG_MSG(ym2612, 2, "Algo 5 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 5 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1758,7 +1802,8 @@ static void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length)
 		return;
 	}
 	
-	DEBUG_MSG(ym2612, 2, "Algo 6 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 6 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1786,7 +1831,8 @@ static void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length)
 		return;
 	}
 	
-	DEBUG_MSG(ym2612, 2, "Algo 7 len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 7 len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1809,7 +1855,8 @@ static void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 0 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 0 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1832,7 +1879,8 @@ static void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 1 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 1 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1855,7 +1903,8 @@ static void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 2 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 2 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1878,7 +1927,8 @@ static void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length)
 	if (CH->SLOT[S3].Ecnt == ENV_END)
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 3 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 3 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1901,7 +1951,8 @@ static void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length)
 	if ((CH->SLOT[S1].Ecnt == ENV_END) && (CH->SLOT[S3].Ecnt == ENV_END))
 		return;
 	
-	DEBUG_MSG(ym2612, 2, "Algo 4 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 4 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1928,7 +1979,8 @@ static void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length)
 		return;
 	}
 		
-	DEBUG_MSG(ym2612, 2, "Algo 5 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 5 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1955,7 +2007,8 @@ static void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length)
 		return;
 	}
 	
-	DEBUG_MSG(ym2612, 2, "Algo 6 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 6 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -1983,7 +2036,8 @@ static void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length)
 		return;
 	}
 	
-	DEBUG_MSG(ym2612, 2, "Algo 7 LFO len = %d", length);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo 7 LFO len = %d", length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
@@ -2050,8 +2104,9 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		YM2612.Inter_Cnt = 0;
 	}
 	
-	DEBUG_MSG(ym2612, 2, "YM2612 frequency = %g, rate = %d, interp step = %.8X",
-		  YM2612.Frequence, YM2612.Rate, YM2612.Inter_Step);
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"YM2612 frequency = %g, rate = %d, interp step = %.8X",
+		YM2612.Frequence, YM2612.Rate, YM2612.Inter_Step);
 	
 	// Tableau TL :
 	// [0     -  4095] = +output  [4095  - ...] = +output overflow (fill with 0)
@@ -2072,8 +2127,9 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 			TL_TAB[TL_LENGTH + i] = -TL_TAB[i];
 		}
 		
-		DEBUG_MSG(ym2612, 3, "TL_TAB[%d] = %.8X    TL_TAB[%d] = %.8X",
-			  i, TL_TAB[i], TL_LENGTH + i, TL_TAB[TL_LENGTH + i]);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG3,
+			"TL_TAB[%d] = %.8X    TL_TAB[%d] = %.8X",
+			i, TL_TAB[i], TL_LENGTH + i, TL_TAB[TL_LENGTH + i]);
 	}
 	
 	// Tableau SIN :
@@ -2095,11 +2151,12 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		SIN_TAB[i] = SIN_TAB[(SIN_LENGTH / 2) - i] = &TL_TAB[j];
 		SIN_TAB[(SIN_LENGTH / 2) + i] = SIN_TAB[SIN_LENGTH - i] = &TL_TAB[TL_LENGTH + j];
 		
-		DEBUG_MSG(ym2612, 3, "SIN[%d][0] = %.8X    SIN[%d][0] = %.8X    SIN[%d][0] = %.8X    SIN[%d][0] = %.8X",
-				i, SIN_TAB[i][0], (SIN_LENGTH / 2) - i,
-				SIN_TAB[(SIN_LENGTH / 2) - i][0], (SIN_LENGTH / 2) + i,
-				SIN_TAB[(SIN_LENGTH / 2) + i][0], SIN_LENGTH - i,
-				SIN_TAB[SIN_LENGTH - i][0]);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG3,
+			"SIN[%d][0] = %.8X    SIN[%d][0] = %.8X    SIN[%d][0] = %.8X    SIN[%d][0] = %.8X",
+			i, SIN_TAB[i][0], (SIN_LENGTH / 2) - i,
+			SIN_TAB[(SIN_LENGTH / 2) - i][0], (SIN_LENGTH / 2) + i,
+			SIN_TAB[(SIN_LENGTH / 2) + i][0], SIN_LENGTH - i,
+			SIN_TAB[SIN_LENGTH - i][0]);
 	}
 	
 	// Tableau LFO (LFO wav) :
@@ -2118,7 +2175,8 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		
 		LFO_FREQ_TAB[i] = (int) x;
 		
-		DEBUG_MSG(ym2612, 3, "LFO[%d] = %.8X", i, LFO_ENV_TAB[i]);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG3,
+			"LFO[%d] = %.8X", i, LFO_ENV_TAB[i]);
 	}
 	
 	// Tableau Enveloppe :
@@ -2139,8 +2197,9 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		
 		ENV_TAB[ENV_LENGTH + i] = (int) x;
 		
-		DEBUG_MSG(ym2612, 3, "ATTACK[%d] = %d   DECAY[%d] = %d",
-			  i, ENV_TAB[i], i, ENV_TAB[ENV_LENGTH + i]);
+		LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG3,
+			"ATTACK[%d] = %d   DECAY[%d] = %d",
+			i, ENV_TAB[i], i, ENV_TAB[ENV_LENGTH + i]);
 	}
 	
 	ENV_TAB[ENV_END >> ENV_LBITS] = ENV_LENGTH - 1;	// for the stopped state
@@ -2265,7 +2324,8 @@ int YM2612_Reset(void)
 {
 	int i, j;
 	
-	DEBUG_MSG(ym2612, 1, "Starting reseting YM2612 ...");
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+		"Starting reseting YM2612 ...");
 	
 	YM2612.LFOcnt = 0;
 	YM2612.TimerA = 0;
@@ -2337,7 +2397,8 @@ int YM2612_Reset(void)
 	YM2612_Write(0, 0x2A);
 	YM2612_Write(1, 0x80);
 	
-	DEBUG_MSG(ym2612, 1, "Finishing reseting YM2612 ...");
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+		"Finishing reseting YM2612 ...");
 	
 	return 0;
 }
@@ -2452,7 +2513,8 @@ void YM2612_Update(int **buf, int length)
 {
 	int i, j, algo_type;
 	
-	DEBUG_MSG(ym2612, 2, "Starting generating sound...");
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Starting generating sound...");
 	
 	// Mise à jour des pas des compteurs-fréquences s'ils ont été modifiés
 	
@@ -2524,8 +2586,9 @@ void YM2612_Update(int **buf, int length)
 			LFO_ENV_UP[i] = LFO_ENV_TAB[j];
 			LFO_FREQ_UP[i] = LFO_FREQ_TAB[j];
 			
-			DEBUG_MSG(ym2612, 4, "LFO_ENV_UP[%d] = %d   LFO_FREQ_UP[%d] = %d",
-				  i, LFO_ENV_UP[i], i, LFO_FREQ_UP[i]);
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG4,
+				"LFO_ENV_UP[%d] = %d   LFO_FREQ_UP[%d] = %d",
+				i, LFO_ENV_UP[i], i, LFO_FREQ_UP[i]);
 		}
 		
 		algo_type |= 8;
@@ -2541,7 +2604,8 @@ void YM2612_Update(int **buf, int length)
 	
 	YM2612.Inter_Cnt = int_cnt;
 	
-	DEBUG_MSG(ym2612, 2, "Finishing generating sound...");
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Finishing generating sound...");
 
 }
 
@@ -2877,7 +2941,8 @@ void YM2612_DacAndTimers_Update(int **buffer, int length)
 			YM2612.status |= (YM2612.Mode & 0x04) >> 2;
 			YM2612.TimerAcnt += YM2612.TimerAL;
 			
-			DEBUG_MSG(ym2612, 1, "Counter A overflow");
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+				"Counter A overflow");
 			
 			if (YM2612.Mode & 0x80)
 				CSM_Key_Control();
@@ -2892,7 +2957,8 @@ void YM2612_DacAndTimers_Update(int **buffer, int length)
 			YM2612.status |= (YM2612.Mode & 0x08) >> 2;
 			YM2612.TimerBcnt += YM2612.TimerBL;
 			
-			DEBUG_MSG(ym2612, 1, "Counter B overflow");
+			LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG1,
+				"Counter B overflow");
 		}
 	}
 }

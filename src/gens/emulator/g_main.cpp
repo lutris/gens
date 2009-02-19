@@ -24,8 +24,8 @@
 #include <config.h>
 #endif
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -200,8 +200,8 @@ int Init_Settings(void)
 	if (PluginMgr::lstRenderPlugins.empty())
 	{
 		// No render plugins found.
-		DEBUG_MSG(gens, 0, "Fatal Error: No render plugins found.");
-		fprintf(stderr, "%s(): FATAL ERROR: No render plugins found.\n", __func__);
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Fatal Error: No render plugins found.");
 		return 1;	// TODO: Replace with a better error code.
 	}
 	rendMode_FS = PluginMgr::lstRenderPlugins.begin();

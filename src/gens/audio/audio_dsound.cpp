@@ -27,8 +27,8 @@
 #include "audio.h"
 #include "audio_dsound.hpp"
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 // MMX audio functions.
 #ifdef GENS_X86_ASM
@@ -166,7 +166,8 @@ int audio_dsound_init(void)
 	dsbdesc.dwBufferBytes = audio_seg_length * Sound_Segs * Bytes_Per_Unit;
 	dsbdesc.lpwfxFormat = &MainWfx;
 	
-	DEBUG_MSG(audio, 2, "Seg l : %d   Num Seg : %d   Taille : %d", audio_seg_length, Sound_Segs, Bytes_Per_Unit);
+	LOG_MSG(audio, LOG_MSG_LEVEL_DEBUG1,
+		"Seg l : %d   Num Seg : %d   Taille : %d", audio_seg_length, Sound_Segs, Bytes_Per_Unit);
 	
 	rval = lpDS->CreateSoundBuffer(&dsbdesc, &lpDSBuffer, NULL);
 	if (rval != DS_OK)
@@ -439,11 +440,13 @@ static void audio_dsound_set_cooperative_level(void)
 	rval = lpDS->SetCooperativeLevel(gens_window, DSSCL_PRIORITY);
 	if (rval != DS_OK)
 	{
-		DEBUG_MSG(audio, 1, "lpDS->SetCooperativeLevel() failed.");
+		LOG_MSG(audio, LOG_MSG_LEVEL_INFO,
+			"lpDS->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}
 	else
 	{
-		DEBUG_MSG(audio, 1, "lpDS->SetCooperativeLevel() succeeded.");
+		LOG_MSG(audio, LOG_MSG_LEVEL_INFO,
+			"lpDS->SetCooperativeLevel() succeeded.");
 	}
 }

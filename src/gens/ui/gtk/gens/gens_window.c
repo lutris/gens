@@ -30,8 +30,8 @@
 #include "gens_menu.hpp"
 #include "ui/common/gens/gens_menu.h"
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -71,8 +71,9 @@ void gens_window_create(void)
 		if (!g_file_test(gens_icon_filename[i], G_FILE_TEST_EXISTS))
 		{
 			// File not found.
-			DEBUG_MSG(gens, 1, "Image file not found: %s",
-				  gens_icon_filename[i]);
+			LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+				"Image file not found: %s",
+				gens_icon_filename[i]);
 			continue;
 		}
 		
@@ -81,8 +82,9 @@ void gens_window_create(void)
 		GdkPixbuf *gens_icon = gdk_pixbuf_new_from_file(gens_icon_filename[i], &error);
 		if (!gens_icon)
 		{
-			DEBUG_MSG(gens, 1, "Error loading image file %s: %s",
-				  gens_icon_filename[i], error->message);
+			LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+				"Error loading image file %s: %s",
+				gens_icon_filename[i], error->message);
 			g_error_free(error);
 			continue;
 		}

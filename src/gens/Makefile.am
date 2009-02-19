@@ -111,7 +111,7 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_rend.asm \
 		gens_core/vdp/vdp_32x_x86.asm \
 		gens_core/vdp/vdp_32x.c \
-		macros/debug_msg.c \
+		macros/log_msg.c \
 		port/ini.cpp \
 		segacd/cd_file.c \
 		segacd/cd_sys.cpp \
@@ -122,7 +122,7 @@ gens_SOURCES = \
 		ui/common/gens/gens_window_sync.c \
 		ui/common/about_window_data.c \
 		ui/common/dir_window_common.c \
-		ui/common/plugin_manager_window_common.cpp \
+		ui/common/pmgr_window_common.cpp \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -215,7 +215,7 @@ noinst_HEADERS = \
 		gens_core/vdp/vdp_rend.h \
 		macros/git.h \
 		macros/bool_m.h \
-		macros/debug_msg.h \
+		macros/log_msg.h \
 		macros/fastcall.h \
 		macros/hashtable.hpp \
 		macros/malloc_align.h \
@@ -231,7 +231,7 @@ noinst_HEADERS = \
 		ui/common/gens/gens_window_sync.h \
 		ui/common/about_window_data.h \
 		ui/common/dir_window_common.h \
-		ui/common/plugin_manager_window_common.hpp \
+		ui/common/pmgr_window_common.hpp \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \

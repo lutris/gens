@@ -26,8 +26,8 @@
 
 #include "imageutil.hpp"
 
-// Debug messages.
-#include "macros/debug_msg.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -135,7 +135,8 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	if (!bmpData)
 	{
 		// Could not allocate enough memory.
-		DEBUG_MSG(gens, 0, "Could not allocate enough memory for the bitmap data.");
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Could not allocate enough memory for the bitmap data.");
 		return 0;
 	}
 	
@@ -221,7 +222,8 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 	if ((rowBuffer = static_cast<uint8_t*>(malloc(width * 3))) == NULL)
 	{
 		// Could not allocate enough memory.
-		DEBUG_MSG(gens, 0, "Could not allocate enough memory for the row buffer.");
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Could not allocate enough memory for the PNG row buffer.");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 0;
 	}
@@ -275,20 +277,23 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 	{
-		DEBUG_MSG(gens, 0, "Error initializing the PNG pointer.");
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing the PNG pointer.");
 		return 0;
 	}
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
-		DEBUG_MSG(gens, 0, "Error initializing the PNG info pointer.");
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing the PNG info pointer.");
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 		return 0;
 	}
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		// TODO: Is setjmp() really necessary?
-		DEBUG_MSG(gens, 0, "Error initializing the PNG setjmp pointer.");
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing the PNG setjmp pointer.");
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 0;
 	}
@@ -406,7 +411,8 @@ int ImageUtil::write(const char* filename, const ImageFormat format,
 	FILE *fImg = fopen(filename, "wb");
 	if (!fImg)
 	{
-		DEBUG_MSG(gens, 0, "Error opening %s.", filename);
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Error opening %s.", filename);
 		return 0;
 	}
 	
@@ -465,7 +471,8 @@ int ImageUtil::screenShot(void)
 	if (!img)
 	{
 		// Error opening the file.
-		DEBUG_MSG(gens, 0, "Error opening %s.", filename);
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Error opening %s.", filename);
 		return 0;
 	}
 	
