@@ -58,7 +58,7 @@
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/country_code_window.h"
 #include "about/about_window.hpp"
-#include "plugin_manager/plugin_manager_window.hpp"
+#include "plugin_manager/pmgr_window.hpp"
 
 // Plugins.
 #include "plugins/pluginmgr.hpp"
@@ -251,7 +251,7 @@ void GensUI::update(void)
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
 		    (about_window && IsDialogMessage(about_window, &msg)) ||
-		    (PluginManagerWindow::isOpen() && PluginManagerWindow::Instance()->isDialogMessage(&msg)))
+		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)))
 		{
 			// Dialog message. Don't process it as a regular message.
 			continue;
