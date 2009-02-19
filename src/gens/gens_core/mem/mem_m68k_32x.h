@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-extern unsigned char _32X_Genesis_Rom[512];
+extern unsigned char _32X_Genesis_Rom[1024];
 
 extern unsigned int _32X_M68K_Read_Byte_Table[0x20];
 extern unsigned int _32X_M68K_Read_Word_Table[0x20];

@@ -159,7 +159,7 @@ section .bss align=64
 	
 	; 32X MC68000 firmware
 	DECL _32X_Genesis_Rom
-		resb 512
+		resb 1024
 	
 	DECL Bank_SH2
 		resd 1
@@ -368,7 +368,7 @@ section .text align=64
 	align 64
 	
 	M68K_Read_Byte_Bios_32X:
-		and	ebx, 0x1FF
+		and	ebx, 0x3FF
 		xor	ebx, byte 1
 		mov	al, [_32X_Genesis_Rom + ebx]
 		pop	ebx
@@ -377,7 +377,7 @@ section .text align=64
 	align 16
 	
 	M68K_Read_Byte_BiosR_32X:
-		cmp	ebx, 0x100
+		cmp	ebx, 0x400
 		jae	short .Rom
 		
 		xor	ebx, byte 1

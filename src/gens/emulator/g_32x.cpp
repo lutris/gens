@@ -66,53 +66,51 @@ int Init_32X(ROM_t* MD_ROM)
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
+	// Clear the firmware buffers.
+	memset(&_32X_Genesis_Rom[0], 0x00, sizeof(_32X_Genesis_Rom));
+	memset(&_32X_MSH2_Rom[0], 0x00, sizeof(_32X_MSH2_Rom));
+	memset(&_32X_SSH2_Rom[0], 0x00, sizeof(_32X_SSH2_Rom));
+
 	// Read the 32X MC68000 firmware. (usually "32X_G_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_MC68000, "rb")))
 	{
 		// External firmware file opened.
-		fread(&_32X_Genesis_Rom[0], 1, 256, f);
-		memset(&_32X_Genesis_Rom[256], 0x00, 256);
-		be16_to_cpu_array(&_32X_Genesis_Rom[0], 256);
+		fread(&_32X_Genesis_Rom[0], 1, sizeof(_32X_Genesis_Rom), f);
+		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(_32X_Genesis_Rom));
 		fclose(f);
 	}
 	else
 	{
 		// Use the reverse-engineered firmware.
 		memcpy(&_32X_Genesis_Rom[0], &fw_re_32X_mc68000[0], sizeof(fw_re_32X_mc68000));
-		memset(&_32X_Genesis_Rom[sizeof(fw_re_32X_mc68000)], 0x00,
-			sizeof(_32X_Genesis_Rom) - sizeof(fw_re_32X_mc68000));
 		be16_to_cpu_array(&_32X_Genesis_Rom[0], sizeof(fw_re_32X_mc68000));
 	}
 	
 	// Read the Master SH2 firmware. (usually "32X_M_BIOS.BIN")	
 	if ((f = fopen(BIOS_Filenames._32X_MSH2, "rb")))
 	{
-		fread(&_32X_MSH2_Rom[0], 1, 2048, f);
-		le16_to_cpu_array(&_32X_MSH2_Rom[0], 2048);
+		fread(&_32X_MSH2_Rom[0], 1, sizeof(_32X_MSH2_Rom), f);
+		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(_32X_MSH2_Rom));
 		fclose(f);
 	}
 	else
 	{
 		// Use the reverse-engineered firmware.
 		memcpy(&_32X_MSH2_Rom[0], &fw_re_32X_msh2[0], sizeof(fw_re_32X_msh2));
-		memset(&_32X_MSH2_Rom[sizeof(fw_re_32X_msh2)], 0x00,
-			sizeof(_32X_MSH2_Rom) - sizeof(fw_re_32X_msh2));
 		le16_to_cpu_array(&_32X_MSH2_Rom[0], sizeof(fw_re_32X_msh2));
 	}
 	
 	// Read the Slave SH2 firmware. (usually "32X_S_BIOS.BIN")
 	if ((f = fopen(BIOS_Filenames._32X_SSH2, "rb")))
 	{
-		fread(&_32X_SSH2_Rom[0], 1, 1024, f);
-		le16_to_cpu_array(&_32X_SSH2_Rom[0], 1024);
+		fread(&_32X_SSH2_Rom[0], 1, sizeof(_32X_SSH2_Rom), f);
+		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(_32X_SSH2_Rom));
 		fclose(f);
 	}
 	else
 	{
 		// Use the reverse-engineered firmware.
 		memcpy(&_32X_SSH2_Rom[0], &fw_re_32X_ssh2[0], sizeof(fw_re_32X_ssh2));
-		memset(&_32X_SSH2_Rom[sizeof(fw_re_32X_ssh2)], 0x00,
-			sizeof(_32X_SSH2_Rom) - sizeof(fw_re_32X_ssh2));
 		le16_to_cpu_array(&_32X_SSH2_Rom[0], sizeof(fw_re_32X_ssh2));
 	}
 	
