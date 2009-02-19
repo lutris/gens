@@ -131,7 +131,6 @@ void dir_window_show(void)
 	
 	UpdateWindow(dir_window);
 	ShowWindow(dir_window, SW_SHOW);
-	return;
 }
 
 

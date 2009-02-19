@@ -198,7 +198,6 @@ void cc_window_show(void)
 	
 	UpdateWindow(cc_window);
 	ShowWindow(cc_window, SW_SHOW);
-	return;
 }
 
 
