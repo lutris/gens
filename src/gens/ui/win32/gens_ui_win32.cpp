@@ -37,13 +37,13 @@
 // Unused Parameter macro.
 #include "macros/unused.h"
 
-// Win32 common controls
+// Win32 includes.
+#include <windows.h>
+#include <windowsx.h>
 #include <commctrl.h>
-
-// Shell objects
 #include <shlobj.h>
 
-// Gens Win32 resources
+// Gens Win32 resources.
 #include "ui/win32/resource.h"
 
 // Audio Handler.
