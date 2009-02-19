@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: Plugin Manager Window - common functions.                         *
+ * Gens: Plugin Manager Window. (Common Functions)                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -22,9 +22,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif /* HAVE_CONFIG_H */
-
-#include "plugin_manager/plugin_manager_window.hpp"
+#endif
 
 #include <cassert>
 
@@ -35,47 +33,50 @@ using std::string;
 using std::stringstream;
 using std::endl;
 
-#ifdef GENS_PNG
-// PNG-related variables and functions.
 
-const unsigned char *PluginManagerWindow::png_dataptr;
-unsigned int PluginManagerWindow::png_datalen;
-unsigned int PluginManagerWindow::png_datapos;
+#ifdef GENS_PNG
+
+// PNG-related variables and functions.
+#include <png.h>
+
+const unsigned char	*plugin_manager_window_png_dataptr;
+unsigned int		plugin_manager_window_png_datalen;
+unsigned int		plugin_manager_window_png_datapos;
 
 
 /**
- * png_user_read_data(): libpng user-specified read data function.
+ * plugin_manager_window_png_user_read_data(): libpng user-specified read data function.
  * Used to read PNG data from memory instead of from a file.
  * @param png_ptr Pointer to the PNG information struct.
  * @param png_bytep Pointer to memory to write PNG data to.
  * @param length Length of data requested.
  */
-void PluginManagerWindow::png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
+void plugin_manager_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
 	// Mark unused parameters.
 	((void)png_ptr);
 	
 	// Make sure there's enough data available.
-	assert(png_datapos + length <= png_datalen);
+	assert(plugin_manager_window_png_datapos + length <= plugin_manager_window_png_datalen);
 	
 	// Copy the data.
-	memcpy(data, &png_dataptr[png_datapos], length);
+	memcpy(data, &plugin_manager_window_png_dataptr[plugin_manager_window_png_datapos], length);
 	
 	// Increment the data position.
-	png_datapos += length;
+	plugin_manager_window_png_datapos += length;
 }
 #endif /* GENS_PNG */
 
 
 /**
- * getCPUFlags(): Convert required and supported CPU flags into a string.
+ * GetCPUFlags_string(): Convert required and supported CPU flags into a string.
  * @param cpuFlagsRequired Required CPU flags.
  * @param cpuFlagsSupported Supported CPU flags.
  * @param formatting If true, uses "<b></b>" to indicate required flags; if false, uses "[flag]*".
  */
-string PluginManagerWindow::GetCPUFlags(uint32_t cpuFlagsRequired,
-					uint32_t cpuFlagsSupported,
-					bool formatting)
+string GetCPUFlags_string(const uint32_t cpuFlagsRequired,
+			  const uint32_t cpuFlagsSupported,
+			  const bool formatting)
 {
 	stringstream ssFlags;
 	ssFlags << "CPU Flags: ";
@@ -150,7 +151,7 @@ static inline char numToHex(unsigned char num)
  * @param uuid Pointer to UUID.
  * @return UUID as a string.
  */
-string PluginManagerWindow::UUIDtoString(const unsigned char *uuid)
+string UUIDtoString(const unsigned char *uuid)
 {
 	char sUUID[48];
 	char *pUUIDChar = sUUID;

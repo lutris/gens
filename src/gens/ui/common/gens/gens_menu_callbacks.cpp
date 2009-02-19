@@ -775,7 +775,7 @@ static int gens_menu_callback_PluginsMenu(uint16_t menuID, uint16_t state)
 	switch (menuID)
 	{
 		case IDM_PLUGINS_MANAGER:
-			PluginManagerWindow::Instance();
+			plugin_manager_window_show();
 			break;
 		
 		default:

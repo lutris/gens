@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (GTK+) Plugin Manager Window.                                     *
+ * Gens: Plugin Manager Window. (Common Functions)                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,21 +20,34 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UI_GTK_PLUGIN_MANAGER_WINDOW_HPP
-#define GENS_UI_GTK_PLUGIN_MANAGER_WINDOW_HPP
+#ifndef GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP
+#define GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP
 
-#ifdef __cplusplus
-extern "C" {
+#ifdef HAVE_CONFIG_H
+#include <config.h>
 #endif
 
-// GTK+ includes.
-#include <gtk/gtk.h>
+#ifdef GENS_PNG
 
-void plugin_manager_window_show(void);
-void plugin_manager_window_close(void);
+#include <png.h>
+extern const unsigned char	*plugin_manager_window_png_dataptr;
+extern unsigned int		plugin_manager_window_png_datalen;
+extern unsigned int		plugin_manager_window_png_datapos;
 
-#ifdef __cplusplus
-}
+void plugin_manager_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 #endif
 
-#endif /* GENS_GTK_PLUGIN_MANAGER_WINDOW_HPP */
+#ifdef __cplusplus
+
+#include <string>
+#include <stdint.h>
+
+std::string GetCPUFlags_string(const uint32_t cpuFlagsRequired,
+			       const uint32_t cpuFlagsSupported,
+			       const bool formatting);
+
+std::string UUIDtoString(const unsigned char *uuid);
+
+#endif /* __cplusplus */
+
+#endif /* GENS_PLUGIN_MANAGER_WINDOW_COMMON_HPP */

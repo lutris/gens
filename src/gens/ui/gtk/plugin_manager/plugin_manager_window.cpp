@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,20 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "plugin_manager_window.hpp"
+#include "ui/common/plugin_manager_window_common.hpp"
 #include "gens/gens_window.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
+// C includes.
 #include <stdio.h>
-#include <stdint.h>
+#include <string.h>
 
+// GTK+ includes.
 #include <gtk/gtk.h>
-
-// TODO: Get rid of gtk-misc.h
-#include "gtk-misc.h"
 
 // Unused Parameter macro.
 #include "macros/unused.h"
@@ -51,286 +51,217 @@ using std::stringstream;
 using std::list;
 
 
-PluginManagerWindow* PluginManagerWindow::m_Instance = NULL;
-PluginManagerWindow* PluginManagerWindow::Instance(GtkWindow *parent)
-{
-	if (m_Instance == NULL)
-	{
-		// Instance is deleted. Initialize the General Options window.
-		m_Instance = new PluginManagerWindow();
-	}
-	else
-	{
-		// Instance already exists. Set focus.
-		m_Instance->setFocus();
-	}
-	
-	// Set modality of the window.
-	if (!parent)
-		parent = GTK_WINDOW(gens_window);
-	m_Instance->setModal(parent);
-	
-	return m_Instance;
-}
+// Window.
+GtkWidget *plugin_manager_window = NULL;
 
+// Widgets.
+static GtkWidget	*lstPluginList;
+static GtkWidget	*lblPluginMainInfo;
+static GtkWidget	*lblPluginSecInfo;
+static GtkWidget	*lblPluginDesc;
+static GtkWidget	*fraPluginDesc;
 
-PluginManagerWindow::~PluginManagerWindow()
-{
-	if (m_Window)
-		gtk_widget_destroy(GTK_WIDGET(m_Window));
-	
-	m_Instance = NULL;
-}
+// Plugin List.
+static GtkListStore	*lmPluginList = NULL;
 
+// Widget creation functions.
+static void	plugin_manager_window_create_plugin_list_frame(GtkWidget *container);
+static void	plugin_manager_window_create_plugin_info_frame(GtkWidget *container);
+static void	plugin_manager_window_populate_plugin_list(void);
 
-gboolean PluginManagerWindow::GTK_Close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-	GENS_UNUSED_PARAMETER(widget);
-	GENS_UNUSED_PARAMETER(event);
-	
-	return reinterpret_cast<PluginManagerWindow*>(user_data)->close();
-}
+// Callbacks.
+static gboolean	plugin_manager_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+static void	plugin_manager_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	plugin_manager_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_view, gpointer user_data);
 
+// Plugin icon functions and variables.
+#ifdef GENS_PNG
+static GdkPixbuf *pbufPluginIcon;
+static GtkWidget *imgPluginIcon;
 
-void PluginManagerWindow::dlgButtonPress(uint32_t button)
-{
-	if (button == WndBase::BUTTON_OK)
-		close();
-}
+static void	plugin_manager_window_create_plugin_icon_widget(GtkWidget *container);
+static bool	plugin_manager_window_display_plugin_icon(const unsigned char* icon, const unsigned int iconLength);
+static void	plugin_manager_window_clear_plugin_icon(void);
+#endif
 
 
 /**
- * Window is closed.
+ * plugin_manager_window_show(): Show the Plugin Manager window.
  */
-gboolean PluginManagerWindow::close(void)
+void plugin_manager_window_show()
 {
-	delete this;
-	return FALSE;
-}
-
-
-/**
- * PluginManagerWindow: Create the General Options Window.
- */
-PluginManagerWindow::PluginManagerWindow()
-{
-	m_Window = gtk_dialog_new();
-	gtk_widget_set_name(GTK_WIDGET(m_Window), "PluginManagerWindow");
-	gtk_container_set_border_width(GTK_CONTAINER(m_Window), 0);
-	gtk_window_set_title(GTK_WINDOW(m_Window), "Plugin Manager");
-	gtk_window_set_position(GTK_WINDOW(m_Window), GTK_WIN_POS_CENTER);
-	gtk_window_set_resizable(GTK_WINDOW(m_Window), FALSE);
-	gtk_window_set_type_hint(GTK_WINDOW(m_Window), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_dialog_set_has_separator(GTK_DIALOG(m_Window), FALSE);
+	if (plugin_manager_window)
+	{
+		// Plugin Manager window is already visible. Set focus.
+		gtk_widget_grab_focus(plugin_manager_window);
+		return;
+	}
 	
-	// Set the window data.
-	g_object_set_data(G_OBJECT(m_Window), "PluginManagerWindow", m_Window);
+	// Create the window.
+	plugin_manager_window = gtk_dialog_new();
+	gtk_container_set_border_width(GTK_CONTAINER(plugin_manager_window), 4);
+	gtk_window_set_title(GTK_WINDOW(plugin_manager_window), "Plugin Manager");
+	gtk_window_set_position(GTK_WINDOW(plugin_manager_window), GTK_WIN_POS_CENTER);
+	gtk_window_set_resizable(GTK_WINDOW(plugin_manager_window), FALSE);
+	gtk_window_set_type_hint(GTK_WINDOW(plugin_manager_window), GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_dialog_set_has_separator(GTK_DIALOG(plugin_manager_window), FALSE);
 	
 	// Callbacks for if the window is closed.
-	g_signal_connect((gpointer)m_Window, "delete_event",
-			  G_CALLBACK(PluginManagerWindow::GTK_Close), (gpointer)this);
-	g_signal_connect((gpointer)m_Window, "destroy_event",
-			  G_CALLBACK(PluginManagerWindow::GTK_Close), (gpointer)this);
+	g_signal_connect((gpointer)plugin_manager_window, "delete_event",
+			  G_CALLBACK(plugin_manager_window_callback_close), NULL);
+	g_signal_connect((gpointer)plugin_manager_window, "destroy_event",
+			  G_CALLBACK(plugin_manager_window_callback_close), NULL);
+	
+	// Dialog response callback.
+	g_signal_connect((gpointer)(plugin_manager_window), "response",
+			  G_CALLBACK(plugin_manager_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(m_Window)->vbox;
-	gtk_widget_set_name(vboxDialog, "vboxDialog");
+	GtkWidget *vboxDialog = GTK_DIALOG(plugin_manager_window)->vbox;
 	gtk_widget_show(vboxDialog);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxDialog",
-			       g_object_ref(vboxDialog), (GDestroyNotify)g_object_unref);
 	
 	// Create the plugin list frame.
-	createPluginListFrame(GTK_BOX(vboxDialog));
+	plugin_manager_window_create_plugin_list_frame(vboxDialog);
 	
 	// Create the plugin information frame.
-	createPluginInfoFrame(GTK_BOX(vboxDialog));
+	plugin_manager_window_create_plugin_info_frame(vboxDialog);
 	
-	// Create an accelerator group.
-	m_AccelTable = gtk_accel_group_new();
-	
-	// Add the OK button.
-	addDialogButtons(m_Window, WndBase::BAlign_Default,
-			 WndBase::BUTTON_OK, 0,
-			 WndBase::BUTTON_ALL);
-	
-	// Add the accel group to the window.
-	gtk_window_add_accel_group(GTK_WINDOW(m_Window), GTK_ACCEL_GROUP(m_AccelTable));
+	// Create the "Close" button.
+	gtk_dialog_add_button(GTK_DIALOG(plugin_manager_window),
+			      GTK_STOCK_CLOSE,
+			      GTK_RESPONSE_CLOSE);
 	
 	// Populate the plugin list.
-	lmPluginList = NULL;
-	populatePluginList();
+	plugin_manager_window_populate_plugin_list();
+	
+	// Set the window as transient to the main application window.
+	gtk_window_set_transient_for(GTK_WINDOW(plugin_manager_window), GTK_WINDOW(gens_window));
 	
 	// Show the window.
-	setVisible(true);
+	gtk_widget_show_all(plugin_manager_window);
 	
 	// Make sure nothing is selected initially.
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
 	gtk_tree_selection_unselect_all(selection);
-	lstPluginList_cursor_changed(NULL);
+	plugin_manager_window_callback_lstPluginList_cursor_changed(GTK_TREE_VIEW(lstPluginList), NULL);
 }
 
 
-void PluginManagerWindow::createPluginListFrame(GtkBox *container)
+/**
+ * plugin_manager_window_create_plugin_list_frame(): Create the plugin list frame.
+ * @param container Container for the frame.
+ */
+static void plugin_manager_window_create_plugin_list_frame(GtkWidget *container)
 {
 	// Create the plugin list frame.
-	GtkWidget *fraPluginList = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraPluginList, "fraPluginList");
+	GtkWidget *fraPluginList = gtk_frame_new("<b><i>Internal Plugins</i></b>");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginList), GTK_SHADOW_ETCHED_IN);
+	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginList))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPluginList), 4);
 	gtk_widget_show(fraPluginList);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraPluginList",
-			       g_object_ref(fraPluginList), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(container, fraPluginList, TRUE, TRUE, 0);
-	
-	// Label for the plugin list frame.
-	GtkWidget *lblPluginList = gtk_label_new("<b><i>Internal Plugins</i></b>");
-	gtk_widget_set_name(lblPluginList, "lblPluginList");
-	gtk_label_set_use_markup(GTK_LABEL(lblPluginList), TRUE);
-	gtk_widget_show(lblPluginList);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginList",
-			       g_object_ref(lblPluginList), (GDestroyNotify)g_object_unref);
-	gtk_frame_set_label_widget(GTK_FRAME(fraPluginList), lblPluginList);
+	gtk_box_pack_start(GTK_BOX(container), fraPluginList, TRUE, TRUE, 0);
 	
 	// VBox for the plugin list.
 	GtkWidget *vboxPluginList = gtk_vbox_new(FALSE, 0);
-	gtk_widget_set_name(vboxPluginList, "vboxPluginList");
 	gtk_container_set_border_width(GTK_CONTAINER(vboxPluginList), 8);
 	gtk_widget_show(vboxPluginList);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginList",
-			       g_object_ref(vboxPluginList), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraPluginList), vboxPluginList);
 	
 	// Scrolled Window for the plugin list.
 	GtkWidget *scrlPluginList = gtk_scrolled_window_new(NULL, NULL);
-	gtk_widget_set_name(scrlPluginList, "scrlPluginList");
 	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrlPluginList), GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrlPluginList),
 				       GTK_POLICY_AUTOMATIC,
 				       GTK_POLICY_AUTOMATIC);
 	gtk_widget_show(scrlPluginList);
 	gtk_box_pack_start(GTK_BOX(vboxPluginList), scrlPluginList, TRUE, TRUE, 0);
-	g_object_set_data_full(G_OBJECT(m_Window), "scrlPluginList",
-			       g_object_ref(scrlPluginList), (GDestroyNotify)g_object_unref);
 	
 	// Tree view containing the plugins.
 	lstPluginList = gtk_tree_view_new();
-	gtk_widget_set_name(lstPluginList, "lstPluginList");
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstPluginList), FALSE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstPluginList), FALSE);
 	gtk_widget_set_size_request(lstPluginList, 480, 160);
 	gtk_widget_show(lstPluginList);
 	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList);
-	g_object_set_data_full(G_OBJECT(m_Window), "lstPluginList",
-			       g_object_ref(lstPluginList), (GDestroyNotify)g_object_unref);
 	
 	// Connect the treeview's "cursor-changed" signal.
 	g_signal_connect((gpointer)lstPluginList, "cursor-changed",
-			 G_CALLBACK(lstPluginList_cursor_changed_STATIC), this);
+			 G_CALLBACK(plugin_manager_window_callback_lstPluginList_cursor_changed), NULL);
 }
 
 
-void PluginManagerWindow::createPluginInfoFrame(GtkBox *container)
+/**
+ * plugin_manager_window_create_plugin_info_frame(): Create the plugin information frame.
+ * @param container Container for the frame.
+ */
+static void plugin_manager_window_create_plugin_info_frame(GtkWidget *container)
 {
 	// Create the plugin information frame.
-	GtkWidget *fraPluginInfo = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraPluginInfo, "fraPluginInfo");
+	GtkWidget *fraPluginInfo = gtk_frame_new("<b><i>Plugin Information</i></b>");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginInfo), GTK_SHADOW_ETCHED_IN);
+	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginInfo))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPluginInfo), 4);
 	gtk_widget_show(fraPluginInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraPluginInfo",
-			       g_object_ref(fraPluginInfo), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(container, fraPluginInfo, TRUE, TRUE, 0);
-	
-	// Label for the plugin information frame.
-	GtkWidget *lblPluginInfo = gtk_label_new("<b><i>Plugin Information</i></b>");
-	gtk_widget_set_name(lblPluginInfo, "lblPluginInfo");
-	gtk_label_set_use_markup(GTK_LABEL(lblPluginInfo), TRUE);
-	gtk_widget_show(lblPluginInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginInfo",
-			       g_object_ref(lblPluginInfo), (GDestroyNotify)g_object_unref);
-	gtk_frame_set_label_widget(GTK_FRAME(fraPluginInfo), lblPluginInfo);
+	gtk_box_pack_start(GTK_BOX(container), fraPluginInfo, TRUE, TRUE, 0);
 	
 	// VBox for the plugin information frame.
 	GtkWidget *vboxPluginInfo = gtk_vbox_new(FALSE, 8);
 	gtk_container_set_border_width(GTK_CONTAINER(vboxPluginInfo), 8);
-	gtk_widget_set_name(vboxPluginInfo, "vboxPluginInfo");
 	gtk_widget_show(vboxPluginInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginInfo",
-			       g_object_ref(vboxPluginInfo), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraPluginInfo), vboxPluginInfo);
 	
 	// HBox for the main plugin info.
 	GtkWidget *hboxPluginMainInfo = gtk_hbox_new(FALSE, 8);
-	gtk_widget_set_name(hboxPluginMainInfo, "hboxPluginMainInfo");
 	gtk_widget_show(hboxPluginMainInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "hboxPluginMainInfo",
-			       g_object_ref(hboxPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), hboxPluginMainInfo, TRUE, FALSE, 0);
 	
 #ifdef GENS_PNG
 	// Create the plugin icon widget.
-	createPluginIconWidget(GTK_BOX(hboxPluginMainInfo));
+	plugin_manager_window_create_plugin_icon_widget(hboxPluginMainInfo);
 #endif /* GENS_PNG */
 	
 	// VBox for the main plugin info.
 	GtkWidget *vboxPluginMainInfo = gtk_vbox_new(FALSE, 4);
-	gtk_widget_set_name(vboxPluginMainInfo, "vboxPluginMainInfo");
 	gtk_widget_show(vboxPluginMainInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "vboxPluginMainInfo",
-			       g_object_ref(vboxPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(hboxPluginMainInfo), vboxPluginMainInfo, TRUE, TRUE, 0);
 	
 	// Label for the main plugin info.
 	lblPluginMainInfo = gtk_label_new("\n\n\n\n\n");
-	gtk_widget_set_name(lblPluginMainInfo, "lblPluginMainInfo");
 	gtk_label_set_selectable(GTK_LABEL(lblPluginMainInfo), TRUE);
 	gtk_misc_set_alignment(GTK_MISC(lblPluginMainInfo), 0.0f, 0.0f);
 	gtk_widget_show(lblPluginMainInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginMainInfo",
-			       g_object_ref(lblPluginMainInfo), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginMainInfo), lblPluginMainInfo, TRUE, FALSE, 0);
 	
 	// Label for secondary plugin info.
-	m_lblPluginSecInfo = gtk_label_new("\n");
-	gtk_widget_set_name(m_lblPluginSecInfo, "m_lblPluginSecInfo");
-	gtk_label_set_selectable(GTK_LABEL(m_lblPluginSecInfo), TRUE);
-	gtk_misc_set_alignment(GTK_MISC(m_lblPluginSecInfo), 0.0f, 0.0f);
-	gtk_widget_show(m_lblPluginSecInfo);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_lblPluginSecInfo",
-			       g_object_ref(m_lblPluginSecInfo), (GDestroyNotify)g_object_unref);
-	gtk_container_add(GTK_CONTAINER(vboxPluginInfo), m_lblPluginSecInfo);
+	lblPluginSecInfo = gtk_label_new("\n");
+	gtk_label_set_selectable(GTK_LABEL(lblPluginSecInfo), TRUE);
+	gtk_misc_set_alignment(GTK_MISC(lblPluginSecInfo), 0.0f, 0.0f);
+	gtk_widget_show(lblPluginSecInfo);
+	gtk_container_add(GTK_CONTAINER(vboxPluginInfo), lblPluginSecInfo);
 	
 	// Frame for the plugin description.
-	GtkWidget *fraPluginDesc = gtk_frame_new(NULL);
-	gtk_widget_set_name(fraPluginDesc, "fraPluginDesc");
+	fraPluginDesc = gtk_frame_new(" ");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginDesc), GTK_SHADOW_NONE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPluginDesc), 4);
 	gtk_widget_show(fraPluginDesc);
-	g_object_set_data_full(G_OBJECT(m_Window), "fraPluginDesc",
-			       g_object_ref(fraPluginDesc), (GDestroyNotify)g_object_unref);
 	gtk_box_pack_start(GTK_BOX(vboxPluginInfo), fraPluginDesc, TRUE, TRUE, 0);
-	
-	// Label for the plugin description frame.
-	lblPluginDescTitle = gtk_label_new(" ");
-	gtk_widget_set_name(lblPluginDescTitle, "lblPluginDescTitle");
-	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginDescTitle",
-			       g_object_ref(lblPluginDescTitle), (GDestroyNotify)g_object_unref);
-	gtk_frame_set_label_widget(GTK_FRAME(fraPluginDesc), lblPluginDescTitle);
 	
 	// Label for the plugin description.
 	lblPluginDesc = gtk_label_new(NULL);
-	gtk_widget_set_name(lblPluginDesc, "lblPluginDesc");
 	gtk_label_set_selectable(GTK_LABEL(lblPluginDesc), TRUE);
-	gtk_misc_set_alignment(GTK_MISC(lblPluginDesc), 0.0f, 0.0f);
+	gtk_label_set_line_wrap(GTK_LABEL(lblPluginDesc), TRUE);
 	gtk_widget_set_size_request(lblPluginDesc, -1, 64);
+	gtk_misc_set_alignment(GTK_MISC(lblPluginDesc), 0.0f, 0.0f);
 	gtk_widget_show(lblPluginDesc);
-	g_object_set_data_full(G_OBJECT(m_Window), "lblPluginDesc",
-			       g_object_ref(lblPluginDesc), (GDestroyNotify)g_object_unref);
 	gtk_container_add(GTK_CONTAINER(fraPluginDesc), lblPluginDesc);
+	gtk_widget_show_all(plugin_manager_window);
 }
 
 
-void PluginManagerWindow::populatePluginList(void)
+/**
+ * plugin_manager_window_populate_plugin_list(): Populate the plugin list.
+ */
+static void plugin_manager_window_populate_plugin_list(void)
 {
 	// Check if the list model is already created.
 	// If it is, clear it; if not, create a new one.
@@ -385,15 +316,76 @@ void PluginManagerWindow::populatePluginList(void)
 }
 
 
-void PluginManagerWindow::lstPluginList_cursor_changed_STATIC(GtkTreeView *tree_view, gpointer user_data)
+/**
+ * plugin_manager_window_close(): Close the Plugin Manager window.
+ */
+void plugin_manager_window_close(void)
 {
-	reinterpret_cast<PluginManagerWindow*>(user_data)->lstPluginList_cursor_changed(tree_view);
+	if (!plugin_manager_window)
+		return;
+	
+	// Destroy the window.
+	gtk_widget_destroy(plugin_manager_window);
+	plugin_manager_window = NULL;
+	
+	// Clear the plugin list.
+	gtk_list_store_clear(lmPluginList);
 }
 
 
-void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
+/**
+ * plugin_manager_window_callback_close(): Close Window callback.
+ * @param widget
+ * @param event
+ * @param user_data
+ * @return FALSE to continue processing events; TRUE to stop processing events.
+ */
+static gboolean plugin_manager_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	plugin_manager_window_close();
+	return FALSE;
+}
+
+
+/**
+ * plugin_manager_window_callback_response(): Dialog Response callback.
+ * @param dialog
+ * @param response_id
+ * @param user_data
+ */
+static void plugin_manager_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(dialog);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	switch (response_id)
+	{
+		case GTK_RESPONSE_CLOSE:
+			plugin_manager_window_close();
+			break;
+		
+		case GTK_RESPONSE_DELETE_EVENT:
+		default:
+			// Other event. Don't do anything.
+			// Also, don't do anything when the dialog is deleted.
+			break;
+	}
+}
+
+
+/**
+ * plugin_manager_window_callback_lstPluginList_cursor_changed(): Cursor position has changed.
+ * @param tree_view Tree view.
+ * @param user_data User data.
+ */
+static void plugin_manager_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_view, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(tree_view);
+	GENS_UNUSED_PARAMETER(user_data);
 	
 	// Check which plugin is clicked.
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
@@ -403,11 +395,11 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// No plugin selected.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(lblPluginSecInfo), "\n");
+		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 #ifdef GENS_PNG
-		clearIcon();
+		plugin_manager_window_clear_plugin_icon();
 #endif /* GENS_PNG */
 		return;
 	}
@@ -425,11 +417,11 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	{
 		// Invalid plugin.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "Invalid plugin selected.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(lblPluginSecInfo), "\n");
+		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 #ifdef GENS_PNG
-		clearIcon();
+		plugin_manager_window_clear_plugin_icon();
 #endif /* GENS_PNG */
 		return;
 	}
@@ -437,11 +429,11 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	if (!plugin->desc)
 	{
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "This plugin does not have a valid description field.\n\n\n\n\n");
-		gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), "\n");
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(lblPluginSecInfo), "\n");
+		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 #ifdef GENS_PNG
-		clearIcon();
+		plugin_manager_window_clear_plugin_icon();
 #endif /* GENS_PNG */
 		return;
 	}
@@ -497,30 +489,31 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 	// Includes UUID and CPU flags.
 	stringstream ssSecInfo;
 	ssSecInfo << "UUID: " << sUUID << endl
-		  << GetCPUFlags(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, true);
+		  << GetCPUFlags_string(plugin->cpuFlagsRequired, plugin->cpuFlagsSupported, true);
 	
 	// Set the secondary information label.
-	gtk_label_set_text(GTK_LABEL(m_lblPluginSecInfo), ssSecInfo.str().c_str());
-	gtk_label_set_use_markup(GTK_LABEL(m_lblPluginSecInfo), TRUE);
+	gtk_label_set_text(GTK_LABEL(lblPluginSecInfo), ssSecInfo.str().c_str());
+	gtk_label_set_use_markup(GTK_LABEL(lblPluginSecInfo), TRUE);
 	
 	// Plugin description.
 	gtk_label_set_text(GTK_LABEL(lblPluginDesc), desc->description);
 	if (desc->description)
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), "<b><i>Description:</i></b>");
-		gtk_label_set_use_markup(GTK_LABEL(lblPluginDescTitle), TRUE);
+		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), "<b><i>Description:</i></b>");
+		gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), TRUE);
+		gtk_widget_set_size_request(lblPluginDesc, fraPluginDesc->allocation.width - 12, 64);
 	}
 	else
 	{
-		gtk_label_set_text(GTK_LABEL(lblPluginDescTitle), " ");
+		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 	}
 	
 #ifdef GENS_PNG
 	// Plugin icon.
-	if (!displayIcon(desc->icon, desc->iconLength))
+	if (!plugin_manager_window_display_plugin_icon(desc->icon, desc->iconLength))
 	{
 		// No plugin icon found. Clear the pixbuf.
-		clearIcon();
+		plugin_manager_window_clear_plugin_icon();
 	}
 #endif /* GENS_PNG */
 }
@@ -528,37 +521,32 @@ void PluginManagerWindow::lstPluginList_cursor_changed(GtkTreeView *tree_view)
 
 #ifdef GENS_PNG
 /**
- * createPluginIconWidget(): Create the GTK+ plugin icon widget and pixbuf.
+ * plugin_manager_window_create_plugin_icon_widget(): Create the GTK+ plugin icon widget and pixbuf.
  * @param container Container for the plugin icon widget.
  */
-inline void PluginManagerWindow::createPluginIconWidget(GtkBox *container)
+static void plugin_manager_window_create_plugin_icon_widget(GtkWidget *container)
 {
 	// Plugin icon pixbuf.
-	m_pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_pbufPluginIcon",
-			       g_object_ref(m_pbufPluginIcon), (GDestroyNotify)g_object_unref);
+	pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
 	
 	// Plugin icon widget.
-	m_imgPluginIcon = gtk_image_new();
-	gtk_widget_set_name(m_imgPluginIcon, "m_imgPluginIcon");
-	gtk_misc_set_alignment(GTK_MISC(m_imgPluginIcon), 0.0f, 0.0f);
-	gtk_widget_show(m_imgPluginIcon);
-	g_object_set_data_full(G_OBJECT(m_Window), "m_imgPluginIcon",
-			       g_object_ref(m_imgPluginIcon), (GDestroyNotify)g_object_unref);
-	gtk_box_pack_start(GTK_BOX(container), m_imgPluginIcon, FALSE, FALSE, 0);
+	imgPluginIcon = gtk_image_new();
+	gtk_misc_set_alignment(GTK_MISC(imgPluginIcon), 0.0f, 0.0f);
+	gtk_widget_show(imgPluginIcon);
+	gtk_box_pack_start(GTK_BOX(container), imgPluginIcon, FALSE, FALSE, 0);
 	
 	// Clear the icon.
-	clearIcon();
+	plugin_manager_window_clear_plugin_icon();
 }
 
 
 /**
- * displayIcon(): Displays the plugin icon.
+ * plugin_manager_window_display_plugin_icon(): Display the plugin icon.
  * @param icon Icon data. (PNG format)
  * @param iconLength Length of the icon data.
  * @return True if the icon was displayed; false otherwise.
  */
-bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned int iconLength)
+static bool plugin_manager_window_display_plugin_icon(const unsigned char* icon, const unsigned int iconLength)
 {
 	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
 	
@@ -600,12 +588,12 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	}
 	
 	// Set the custom read function.
-	png_dataptr = icon;
-	png_datalen = iconLength;
-	png_datapos = 0;
+	plugin_manager_window_png_dataptr = icon;
+	plugin_manager_window_png_datalen = iconLength;
+	plugin_manager_window_png_datapos = 0;
 	
 	void *read_io_ptr = png_get_io_ptr(png_ptr);
-	png_set_read_fn(png_ptr, read_io_ptr, &png_user_read_data);
+	png_set_read_fn(png_ptr, read_io_ptr, &plugin_manager_window_png_user_read_data);
 	
 	// Get the PNG information.
 	png_read_info(png_ptr, info_ptr);
@@ -664,8 +652,8 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	png_read_update_info(png_ptr, info_ptr);
 	
 	// Create the row pointers.
-	int rowstride = gdk_pixbuf_get_rowstride(m_pbufPluginIcon);
-	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufPluginIcon);
+	int rowstride = gdk_pixbuf_get_rowstride(pbufPluginIcon);
+	guchar *pixels = gdk_pixbuf_get_pixels(pbufPluginIcon);
 	png_bytep row_pointers[32];
 	for (unsigned int i = 0; i < 32; i++)
 	{
@@ -680,32 +668,32 @@ bool PluginManagerWindow::displayIcon(const unsigned char* icon, const unsigned 
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	
 	// Set the GTK+ image to the new icon.
-	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
+	gtk_image_set_from_pixbuf(GTK_IMAGE(imgPluginIcon), pbufPluginIcon);
 	
 	return true;
 }
 
 
 /**
- * clearIcon(): Clear the plugin icon.
+ * plugin_manager_window_clear_plugin_icon(): Clear the plugin icon.
  */
-void PluginManagerWindow::clearIcon(void)
+static void plugin_manager_window_clear_plugin_icon(void)
 {
-	if (!m_pbufPluginIcon)
+	if (!pbufPluginIcon)
 		return;
 	
-	guchar *pixels = gdk_pixbuf_get_pixels(m_pbufPluginIcon);
-	int rowstride = gdk_pixbuf_get_rowstride(m_pbufPluginIcon);
-	int height = gdk_pixbuf_get_height(m_pbufPluginIcon);
-	int width = gdk_pixbuf_get_width(m_pbufPluginIcon);
-	int bits_per_sample = gdk_pixbuf_get_bits_per_sample(m_pbufPluginIcon);
-	int n_channels = gdk_pixbuf_get_n_channels(m_pbufPluginIcon);
+	guchar *pixels	= gdk_pixbuf_get_pixels(pbufPluginIcon);
+	int rowstride	= gdk_pixbuf_get_rowstride(pbufPluginIcon);
+	int height	= gdk_pixbuf_get_height(pbufPluginIcon);
+	int width	= gdk_pixbuf_get_width(pbufPluginIcon);
+	int bits_per_sample = gdk_pixbuf_get_bits_per_sample(pbufPluginIcon);
+	int n_channels	= gdk_pixbuf_get_n_channels(pbufPluginIcon);
 	
 	// The last row of the pixbuf data may not be fully allocated.
 	// See http://library.gnome.org/devel/gdk-pixbuf/stable/gdk-pixbuf-gdk-pixbuf.html
 	int size = (rowstride * (height - 1)) + (width * ((n_channels * bits_per_sample + 7) / 8));
 	memset(pixels, 0x00, size);
 	
-	gtk_image_set_from_pixbuf(GTK_IMAGE(m_imgPluginIcon), m_pbufPluginIcon);
+	gtk_image_set_from_pixbuf(GTK_IMAGE(imgPluginIcon), pbufPluginIcon);
 }
 #endif /* GENS_PNG */
