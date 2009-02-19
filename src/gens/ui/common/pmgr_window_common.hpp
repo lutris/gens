@@ -30,11 +30,11 @@
 #ifdef GENS_PNG
 
 #include <png.h>
-extern const unsigned char	*plugin_manager_window_png_dataptr;
-extern unsigned int		plugin_manager_window_png_datalen;
-extern unsigned int		plugin_manager_window_png_datapos;
+extern const unsigned char	*pmgr_window_png_dataptr;
+extern unsigned int		pmgr_window_png_datalen;
+extern unsigned int		pmgr_window_png_datapos;
 
-void plugin_manager_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
+void pmgr_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 #endif
 
 #ifdef __cplusplus

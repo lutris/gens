@@ -36,7 +36,7 @@
 #include "about/about_window.hpp"
 #include "color_adjust/color_adjust_window_misc.h"
 #include "country_code/country_code_window_misc.h"
-#include "plugin_manager/plugin_manager_window.hpp"
+#include "plugin_manager/pmgr_window.hpp"
 
 #ifdef GENS_OPENGL
 #include "opengl_resolution/glres_window.hpp"
@@ -775,7 +775,7 @@ static int gens_menu_callback_PluginsMenu(uint16_t menuID, uint16_t state)
 	switch (menuID)
 	{
 		case IDM_PLUGINS_MANAGER:
-			plugin_manager_window_show();
+			pmgr_window_show();
 			break;
 		
 		default:

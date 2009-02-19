@@ -30,8 +30,10 @@ extern "C" {
 // GTK+ includes.
 #include <gtk/gtk.h>
 
-void plugin_manager_window_show(void);
-void plugin_manager_window_close(void);
+extern GtkWidget *pmgr_window;
+
+void pmgr_window_show(void);
+void pmgr_window_close(void);
 
 #ifdef __cplusplus
 }

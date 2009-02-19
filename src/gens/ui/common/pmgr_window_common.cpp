@@ -39,31 +39,31 @@ using std::endl;
 // PNG-related variables and functions.
 #include <png.h>
 
-const unsigned char	*plugin_manager_window_png_dataptr;
-unsigned int		plugin_manager_window_png_datalen;
-unsigned int		plugin_manager_window_png_datapos;
+const unsigned char	*pmgr_window_png_dataptr;
+unsigned int		pmgr_window_png_datalen;
+unsigned int		pmgr_window_png_datapos;
 
 
 /**
- * plugin_manager_window_png_user_read_data(): libpng user-specified read data function.
+ * pmgr_window_png_user_read_data(): libpng user-specified read data function.
  * Used to read PNG data from memory instead of from a file.
  * @param png_ptr Pointer to the PNG information struct.
  * @param png_bytep Pointer to memory to write PNG data to.
  * @param length Length of data requested.
  */
-void plugin_manager_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
+void pmgr_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_size_t length)
 {
 	// Mark unused parameters.
 	((void)png_ptr);
 	
 	// Make sure there's enough data available.
-	assert(plugin_manager_window_png_datapos + length <= plugin_manager_window_png_datalen);
+	assert(pmgr_window_png_datapos + length <= pmgr_window_png_datalen);
 	
 	// Copy the data.
-	memcpy(data, &plugin_manager_window_png_dataptr[plugin_manager_window_png_datapos], length);
+	memcpy(data, &pmgr_window_png_dataptr[pmgr_window_png_datapos], length);
 	
 	// Increment the data position.
-	plugin_manager_window_png_datapos += length;
+	pmgr_window_png_datapos += length;
 }
 #endif /* GENS_PNG */
 
