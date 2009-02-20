@@ -26,9 +26,7 @@ gens_SOURCES += \
 		ui/win32/bios_misc_files/bios_misc_files_window_misc.cpp \
 		ui/win32/directory_config/dir_window.cpp \
 		ui/win32/general_options/general_options_window.cpp \
-		ui/win32/color_adjust/color_adjust_window.c \
-		ui/win32/color_adjust/color_adjust_window_callbacks.c \
-		ui/win32/color_adjust/color_adjust_window_misc.c \
+		ui/win32/color_adjust/ca_window.c \
 		ui/win32/country_code/country_code_window.c \
 		ui/win32/country_code/country_code_window_callbacks.c \
 		ui/win32/country_code/country_code_window_misc.c \
@@ -69,9 +67,7 @@ noinst_HEADERS += \
 		ui/win32/bios_misc_files/bios_misc_files_window_misc.hpp \
 		ui/win32/directory_config/dir_window.hpp \
 		ui/win32/general_options/general_options_window.hpp \
-		ui/win32/color_adjust/color_adjust_window.h \
-		ui/win32/color_adjust/color_adjust_window_callbacks.h \
-		ui/win32/color_adjust/color_adjust_window_misc.h \
+		ui/win32/color_adjust/ca_window.h \
 		ui/win32/country_code/country_code_window.h \
 		ui/win32/country_code/country_code_window_callbacks.h \
 		ui/win32/country_code/country_code_window_misc.h \

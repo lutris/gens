@@ -54,7 +54,7 @@
 #include "bios_misc_files/bios_misc_files_window.hpp"
 #include "directory_config/dir_window.hpp"
 #include "general_options/general_options_window.hpp"
-#include "color_adjust/color_adjust_window.h"
+#include "color_adjust/ca_window.h"
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/country_code_window.h"
 #include "about/about_window.hpp"
@@ -247,7 +247,7 @@ void GensUI::update(void)
 		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
 		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
 		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||
-		    (color_adjust_window && IsDialogMessage(color_adjust_window, &msg)) ||
+		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
 		    (about_window && IsDialogMessage(about_window, &msg)) ||
