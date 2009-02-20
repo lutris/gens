@@ -48,19 +48,16 @@ LRESULT CALLBACK Country_Code_Window_WndProc(HWND hWnd, UINT message, WPARAM wPa
 			// Button press, or Enter pressed in textbox
 			switch (LOWORD(wParam))
 			{
-				case IDOK: // Standard dialog button ID
-				case IDC_BTN_OK:
-				case IDC_BTN_SAVE:
+				case IDOK:
 					Country_Save();
 					DestroyWindow(hWnd);
 					break;
 				
-				case IDC_BTN_APPLY:
+				case IDAPPLY:
 					Country_Save();
 					break;
 				
-				case IDCANCEL: // Standard dialog button ID
-				case IDC_BTN_CANCEL:
+				case IDCANCEL:
 					DestroyWindow(hWnd);
 					break;
 				

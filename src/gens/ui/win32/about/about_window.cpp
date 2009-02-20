@@ -257,7 +257,7 @@ static void about_window_create_child_windows(HWND hWnd)
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
 				  75, 23,
-				  hWnd, (HMENU)(IDOK), ghInstance, NULL);
+				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Set focus to the OK button.

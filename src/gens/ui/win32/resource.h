@@ -17,13 +17,10 @@
 #define IDR_GENS_WINDOW_ACCEL_NONMENU	0x0201
 
 // Buttons
-#define IDC_BTN_OK		0x1001
-#define IDC_BTN_CANCEL		0x1002
-#define IDC_BTN_APPLY		0x1003
-#define IDC_BTN_SAVE		0x1004
-#define IDC_BTN_ADD		0x1005
-#define IDC_BTN_DELETE		0x1006
-#define IDC_BTN_DEACTIVATEALL	0x1007
+#define IDAPPLY			0x000F
+#define IDC_BTN_ADD		0x1011
+#define IDC_BTN_DELETE		0x1012
+#define IDC_BTN_DEACTIVATEALL	0x1013
 
 // Change Button. (LOWORD(wParam) & 0xFF) == file ID.
 #define IDC_BTN_CHANGE		0x1100

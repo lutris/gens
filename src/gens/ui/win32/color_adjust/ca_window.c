@@ -66,9 +66,6 @@ static WNDCLASS ca_wndclass;
 #define CA_TRACKBAR_WIDTH  201
 #define CA_TRACKBAR_HEIGHT 24
 
-// Apply button.
-#define IDAPPLY 0x0010
-
 // Window procedure.
 static LRESULT CALLBACK ca_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

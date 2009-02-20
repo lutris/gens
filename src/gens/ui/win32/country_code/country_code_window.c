@@ -237,17 +237,17 @@ void Country_Code_Window_CreateChildWindows(HWND hWnd)
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     btnLeft, btnTop, btnWidth, 23,
-			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+			     hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				btnLeft+btnWidth+8, btnTop, btnWidth, 23,
-				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+				hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 btnLeft+btnWidth+8+btnWidth+8, btnTop, btnWidth, 23,
-				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+				 hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Set focus to the listbox.

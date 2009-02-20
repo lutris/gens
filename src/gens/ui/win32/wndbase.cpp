@@ -106,7 +106,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		HWND btnOK;
 		btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				     btnLeft, btnTop, btnWidth, btnHeight,
-				     (HWND)container, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+				     (HWND)container, (HMENU)IDOK, ghInstance, NULL);
 		SetWindowFont(btnOK, fntMain, TRUE);
 		
 		if (buttonFocus & (BUTTON_SAVE | BUTTON_OK))
@@ -120,7 +120,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		HWND btnApply;
 		btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft, btnTop, btnWidth, btnHeight,
-					(HWND)container, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+					(HWND)container, (HMENU)IDAPPLY, ghInstance, NULL);
 		SetWindowFont(btnApply, fntMain, TRUE);
 		
 		if (buttonFocus & BUTTON_APPLY)
@@ -134,7 +134,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		HWND btnCancel;
 		btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					 btnLeft, btnTop, btnWidth, btnHeight,
-					 (HWND)container, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+					 (HWND)container, (HMENU)IDCANCEL, ghInstance, NULL);
 		SetWindowFont(btnCancel, fntMain, TRUE);
 		
 		if (buttonFocus & BUTTON_CANCEL)

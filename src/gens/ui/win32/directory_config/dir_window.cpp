@@ -68,9 +68,6 @@ static HWND	txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
 // Command value bases.
 #define IDC_DIR_BTNCHANGE	0x1100
 
-// Apply button.
-#define IDAPPLY 0x0010
-
 // Window procedure.
 static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -184,7 +181,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  DIR_WINDOW_WIDTH-8-75-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
 				  75, 23,
-				  hWnd, (HMENU)(IDOK), ghInstance, NULL);
+				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Apply button.
@@ -192,7 +189,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     DIR_WINDOW_WIDTH-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
 				     75, 23,
-				     hWnd, (HMENU)(IDAPPLY), ghInstance, NULL);
+				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	// Cancel button.
@@ -200,7 +197,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      DIR_WINDOW_WIDTH-8-75, DIR_WINDOW_HEIGHT-8-24,
 				      75, 23,
-				      hWnd, (HMENU)(IDCANCEL), ghInstance, NULL);
+				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Initialize the directory entries.

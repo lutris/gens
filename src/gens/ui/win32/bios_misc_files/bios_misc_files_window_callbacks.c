@@ -45,19 +45,16 @@ LRESULT CALLBACK BIOS_Misc_Files_Window_WndProc(HWND hWnd, UINT message, WPARAM 
 			// Button press
 			switch (LOWORD(wParam))
 			{
-				case IDOK: // Standard dialog button ID
-				case IDC_BTN_OK:
-				case IDC_BTN_SAVE:
+				case IDOK:
 					BIOS_Misc_Files_Save();
 					DestroyWindow(hWnd);
 					break;
 				
-				case IDC_BTN_APPLY:
+				case IDAPPLY:
 					BIOS_Misc_Files_Save();
 					break;
 				
-				case IDCANCEL: // Standard dialog button ID
-				case IDC_BTN_CANCEL:
+				case IDCANCEL:
 					DestroyWindow(hWnd);
 					break;
 				

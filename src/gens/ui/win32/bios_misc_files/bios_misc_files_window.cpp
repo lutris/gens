@@ -205,17 +205,17 @@ void BIOS_Misc_Files_Window_CreateChildWindows(HWND hWnd)
 	
 	btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     btnLeft, btnTop, 75, 23,
-			     hWnd, (HMENU)IDC_BTN_OK, ghInstance, NULL);
+			     hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				btnLeft+75+8, btnTop, 75, 23,
-				hWnd, (HMENU)IDC_BTN_APPLY, ghInstance, NULL);
+				hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 btnLeft+75+8+75+8, btnTop, 75, 23,
-				 hWnd, (HMENU)IDC_BTN_CANCEL, ghInstance, NULL);
+				 hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Set focus to the first textbox.

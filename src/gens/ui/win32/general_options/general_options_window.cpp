@@ -187,19 +187,16 @@ LRESULT CALLBACK GeneralOptionsWindow::WndProc(HWND hWnd, UINT message, WPARAM w
 			// Button press
 			switch (LOWORD(wParam))
 			{
-				case IDOK: // Standard dialog button ID
-				case IDC_BTN_OK:
-				case IDC_BTN_SAVE:
+				case IDOK:
 					save();
 					DestroyWindow(hWnd);
 					break;
 				
-				case IDC_BTN_APPLY:
+				case IDAPPLY:
 					save();
 					break;
 				
-				case IDCANCEL: // Standard dialog button ID
-				case IDC_BTN_CANCEL:
+				case IDCANCEL:
 					DestroyWindow(hWnd);
 					break;
 				

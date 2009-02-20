@@ -88,9 +88,6 @@ static WNDCLASS	cc_wndclass;
 // Timer ID.
 #define IDT_CONFIGURE_BLINK	0x2000
 
-// Apply button.
-#define IDAPPLY 0x0010
-
 // Window procedure.
 static LRESULT CALLBACK cc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -225,7 +222,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				  75, 23,
-				  hWnd, (HMENU)(IDOK), ghInstance, NULL);
+				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Apply button.
@@ -233,7 +230,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				     75, 23,
-				     hWnd, (HMENU)(IDAPPLY), ghInstance, NULL);
+				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	// Cancel button.
@@ -241,7 +238,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
 				      75, 23,
-				      hWnd, (HMENU)(IDCANCEL), ghInstance, NULL);
+				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Initialize the internal data variables.
