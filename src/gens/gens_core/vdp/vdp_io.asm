@@ -223,6 +223,8 @@ section .bss align=64
 		%define	_VDP_Num_Vis_Lines	VDP_Num_Vis_Lines
 		%define	_CRam_Flag		CRam_Flag
 		%define	_VRam_Flag		VRam_Flag
+		
+		%define	_Zero_Length_DMA	Zero_Length_DMA
 	%endif
 
 	global _VRam
@@ -366,6 +368,10 @@ section .bss align=64
 		resd 1
 	global _VRam_Flag
 	_VRam_Flag:
+		resd 1
+	
+	global _Zero_Length_DMA
+	_Zero_Length_DMA:
 		resd 1
 	
 section .text align=64
@@ -1173,6 +1179,15 @@ section .text align=64
 		
 		; If the DMA length is 0, set it to 0x10000.
 		jnz	short .non_zero_DMA
+		
+		; If Zero_Length_DMA is enabled, don't do any DMA request.
+		test	byte [_Zero_Length_DMA], 1
+		jnz	near .NO_DMA
+		
+		; Zero_Length_DMA is disabled.
+		; The MD hardware has a bug where the DMA counter is decremented before
+		; it is checked. So, doing a zero-length DMA request will actually do a
+		; 65,536-byte DMA request.
 		mov	ecx, 0x10000
 		
 	.non_zero_DMA:

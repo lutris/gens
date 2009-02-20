@@ -66,6 +66,10 @@ extern struct
 	int DMA;
 } Ctrl;
 
+// Set this to 1 to enable zero-length DMA requests.
+// Default is 0. (hardware-accurate)
+extern int Zero_Length_DMA;
+
 void Reset_VDP(void);
 unsigned int Update_DMA(void);
 unsigned short Read_VDP_Data(void);

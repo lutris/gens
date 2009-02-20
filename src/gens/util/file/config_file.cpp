@@ -254,6 +254,7 @@ int Config::save(const string& filename)
 	cfg.writeInt("Options", "LED", Show_LED & 1);
 	cfg.writeInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	cfg.writeInt("Options", "Auto Pause", Auto_Pause & 1);
+	cfg.writeInt("Options", "Zero-Length DMA", Zero_Length_DMA & 1);
 	
 	// SegaCD BRAM cartridge.
 	if (BRAM_Ex_State & 0x100)
@@ -551,6 +552,7 @@ int Config::load(const string& filename, void* gameActive)
 	Show_LED = cfg.getInt("Options", "LED", 1);
 	Auto_Fix_CS = cfg.getInt("Options", "Auto Fix Checksum", 0);
 	Auto_Pause = cfg.getInt("Options", "Auto Pause", 0);
+	Zero_Length_DMA = cfg.getInt("Options", "Zero-Length DMA", 0);
 	
 	// SegaCD BRAM cartridge size
 	BRAM_Ex_Size = cfg.getInt("Options", "RAM Cart Size", 3);
