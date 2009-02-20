@@ -154,6 +154,16 @@ bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 	    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
 	{
 		// Incorrect major interface version.
+		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+			"%s: MDP major interface version mismatch. (plugin == %d.%d.%d; host == %d.%d.%d)",
+			File::GetNameFromPath(filename).c_str(),
+			MDP_VERSION_MAJOR(plugin->interfaceVersion),
+			MDP_VERSION_MINOR(plugin->interfaceVersion),
+			MDP_VERSION_REVISION(plugin->interfaceVersion),
+			MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION),
+			MDP_VERSION_MINOR(MDP_INTERFACE_VERSION),
+			MDP_VERSION_REVISION(MDP_INTERFACE_VERSION));
+		
 		Incompat.add(plugin, -MDP_ERR_INCORRECT_MAJOR_VERSION, filename);
 		return false;
 	}
@@ -162,19 +172,29 @@ bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 	if (!plugin->desc || !plugin->desc->license)
 	{
 		// No license.
+		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+			"%s has no license specified.",
+			File::GetNameFromPath(filename).c_str());
+		
 		Incompat.add(plugin, -MDP_ERR_INVALID_LICENSE, filename);
 		return false;
 	}
 	
-	if (strncasecmp(plugin->desc->license, MDP_LICENSE_GPL_2,	sizeof(MDP_LICENSE_GPL_2))	&&
-	    strncasecmp(plugin->desc->license, MDP_LICENSE_GPL_3,	sizeof(MDP_LICENSE_GPL_3))	&&
-	    strncasecmp(plugin->desc->license, MDP_LICENSE_LGPL_2,	sizeof(MDP_LICENSE_LGPL_2))	&&
-	    strncasecmp(plugin->desc->license, MDP_LICENSE_LGPL_21,	sizeof(MDP_LICENSE_LGPL_21))	&&
-	    strncasecmp(plugin->desc->license, MDP_LICENSE_LGPL_3,	sizeof(MDP_LICENSE_LGPL_3))	&&
-	    strncasecmp(plugin->desc->license, MDP_LICENSE_BSD,		sizeof(MDP_LICENSE_BSD))	&&
-	    strncasecmp(plugin->desc->license, MDP_LICENSE_PD,		sizeof(MDP_LICENSE_PD)))
+	const char* const &license = plugin->desc->license;
+	
+	if (strncasecmp(license, MDP_LICENSE_GPL_2,	sizeof(MDP_LICENSE_GPL_2))	&&
+	    strncasecmp(license, MDP_LICENSE_GPL_3,	sizeof(MDP_LICENSE_GPL_3))	&&
+	    strncasecmp(license, MDP_LICENSE_LGPL_2,	sizeof(MDP_LICENSE_LGPL_2))	&&
+	    strncasecmp(license, MDP_LICENSE_LGPL_21,	sizeof(MDP_LICENSE_LGPL_21))	&&
+	    strncasecmp(license, MDP_LICENSE_LGPL_3,	sizeof(MDP_LICENSE_LGPL_3))	&&
+	    strncasecmp(license, MDP_LICENSE_BSD,	sizeof(MDP_LICENSE_BSD))	&&
+	    strncasecmp(license, MDP_LICENSE_PD,	sizeof(MDP_LICENSE_PD)))
 	{
 		// Invalid license.
+		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+			"%s has an unacceptable license: %s",
+			File::GetNameFromPath(filename).c_str(), license);
+		
 		Incompat.add(plugin, -MDP_ERR_INVALID_LICENSE, filename);
 		return false;
 	}
@@ -184,6 +204,12 @@ bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
 	{
 		// CPU does not support some required CPU flags.
+		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+			"%s: Required CPU flags mismatch. (plugin requires 0x%08X; host has 0x%08X)",
+			File::GetNameFromPath(filename).c_str(),
+			plugin->cpuFlagsRequired,
+			CPU_Flags);
+		
 		Incompat.add(plugin, -MDP_ERR_NEEDS_CPUFLAGS, filename);
 		return false;
 	}
@@ -198,6 +224,10 @@ bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 		if (rval != MDP_ERR_OK)
 		{
 			// Error occurred while initializing the plugin.
+			LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+				"%s: mdp->func->init() failed: 0x%08X",
+				File::GetNameFromPath(filename).c_str(), rval);
+			
 			Incompat.add(plugin, rval, filename);
 			return false;
 		}
