@@ -38,13 +38,14 @@ extern "C" {
 // MDP interface version.
 #define MDP_INTERFACE_VERSION MDP_VERSION(0, 255, 65535)
 
-// Licenses
+// Licenses.
 #define MDP_LICENSE_GPL_2	"GPL-2"
 #define MDP_LICENSE_GPL_3	"GPL-3"
 #define MDP_LICENSE_LGPL_2	"LGPL-2"
 #define MDP_LICENSE_LGPL_21	"LGPL-2.1"
 #define MDP_LICENSE_LGPL_3	"LGPL-3"
 #define MDP_LICENSE_BSD		"BSD"
+#define MDP_LICENSE_PD		"Public Domain"
 
 // Plugin description struct.
 typedef struct
