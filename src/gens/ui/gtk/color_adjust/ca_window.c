@@ -167,7 +167,7 @@ void ca_window_show(void)
 	gtk_widget_show(chkGrayscale);
 	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkGrayscale, TRUE, FALSE, 0);
 	
-	// "Invertd" checkbox.
+	// "Inverted" checkbox.
 	chkInverted = gtk_check_button_new_with_mnemonic("_Inverted");
 	gtk_widget_show(chkInverted);
 	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkInverted, TRUE, FALSE, 0);
