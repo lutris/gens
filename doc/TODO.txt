@@ -77,10 +77,6 @@ High-Level TODO:
 - [Win32] Mono sound works on Windows, but not in Wine.
 
 Low-Level TODO:
-- Fix VRAM overwrite bug, as seen in Sonic 2 Delta. Gens doesn't
-  overwrite the VRAM, but Kega and the actual MD do. This is caused by
-  a DMA request with a length of 0. The actual hardware overflows the
-  counter and does a 64k DMA transfer, but Gens doesn't.
 - Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual
   MD do. (Possible: Make an option to crash on illegal address.)
 - CD audio fixes in Gens Rerecording r65, r66, etc.
