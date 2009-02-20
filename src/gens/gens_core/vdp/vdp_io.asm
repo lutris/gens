@@ -1019,7 +1019,9 @@ section .text align=64
 		mov	dword [_DMAT_Length], ecx
 		jnz	short .Loop
 		
-		mov	ecx, 0xFFFF
+		; DMA length is 0. Set it to 65,536 bytes.
+		mov	ecx, 0x10000
+		
 		mov	[_DMAT_Length], ecx
 		jmp	short .Loop
 	
@@ -1168,8 +1170,12 @@ section .text align=64
 		mov	esi, [_VDP_Reg.DMA_Address]		; esi = DMA Source Address / 2
 		and	ecx, 0xFFFF
 		mov	edi, [_Ctrl.Address]			; edi = Address Dest
-		jz	near .NO_DMA
 		
+		; If the DMA length is 0, set it to 0x10000.
+		jnz	short .non_zero_DMA
+		mov	ecx, 0x10000
+		
+	.non_zero_DMA:
 		and	edi, 0xFFFF				; edi = Address Dest
 		cmp	byte [_Ctrl.DMA_Mode], 0xC0		; DMA Copy ?
 		mov	edx, [_VDP_Reg.Auto_Inc]		; edx = Auto Inc
