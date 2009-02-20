@@ -580,7 +580,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
-		return ROMTYPE_SYS_NONE;
+		return romSys;
 	}
 	
 	// If the ROM is larger than 6MB (+512 bytes for SMD interleaving), don't load it.
