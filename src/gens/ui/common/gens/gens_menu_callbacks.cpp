@@ -34,7 +34,7 @@
 #include "directory_config/dir_window.hpp"
 #include "general_options/general_options_window.hpp"
 #include "about/about_window.hpp"
-#include "color_adjust/color_adjust_window_misc.h"
+#include "color_adjust/ca_window.h"
 #include "country_code/country_code_window_misc.h"
 #include "plugin_manager/pmgr_window.hpp"
 
@@ -426,15 +426,15 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 #endif /* GENS_OS_UNIX */
 		
 		case IDM_GRAPHICS_COLORADJUST:
-			Open_Color_Adjust();
+			ca_window_show();
 			break;
-				
+		
 		case IDM_GRAPHICS_SPRITELIMIT:
 			// Sprite Limit
 			Options::setSpriteLimit(!state);
 			Sync_Gens_Window_GraphicsMenu();
 			break;
-			
+		
 		case IDM_GRAPHICS_FRAMESKIP_AUTO:
 		case IDM_GRAPHICS_FRAMESKIP_0:
 		case IDM_GRAPHICS_FRAMESKIP_1:
