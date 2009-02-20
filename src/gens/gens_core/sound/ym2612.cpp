@@ -160,86 +160,6 @@ static int LFO_INC_TAB[8];		// LFO step table
 static int in0, in1, in2, in3;		// current phase calculation
 static int en0, en1, en2, en3;		// current enveloppe calculation
 
-
-// Channel function declarations
-static void Update_Chan_Algo0(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo1(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo2(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo3(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo4(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo5(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo6(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo7(channel_ *CH, int **buf, int length);
-
-static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length);
-
-static void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length);
-
-static void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length);
-static void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length);
-
-typedef void (*Update_Chan_Fn)(channel_ *CH, int **buf, int length);
-
-// Update Channel functions pointer table
-static const Update_Chan_Fn UPDATE_CHAN[8*8] =
-{
-	Update_Chan_Algo0,
-	Update_Chan_Algo1,
-	Update_Chan_Algo2,
-	Update_Chan_Algo3,
-	Update_Chan_Algo4,
-	Update_Chan_Algo5,
-	Update_Chan_Algo6,
-	Update_Chan_Algo7,
-	
-	Update_Chan_Algo0_LFO,
-	Update_Chan_Algo1_LFO,
-	Update_Chan_Algo2_LFO,
-	Update_Chan_Algo3_LFO,
-	Update_Chan_Algo4_LFO,
-	Update_Chan_Algo5_LFO,
-	Update_Chan_Algo6_LFO,
-	Update_Chan_Algo7_LFO,
-	
-	Update_Chan_Algo0_Int,
-	Update_Chan_Algo1_Int,
-	Update_Chan_Algo2_Int,
-	Update_Chan_Algo3_Int,
-	Update_Chan_Algo4_Int,
-	Update_Chan_Algo5_Int,
-	Update_Chan_Algo6_Int,
-	Update_Chan_Algo7_Int,
-	
-	Update_Chan_Algo0_LFO_Int,
-	Update_Chan_Algo1_LFO_Int,
-	Update_Chan_Algo2_LFO_Int,
-	Update_Chan_Algo3_LFO_Int,
-	Update_Chan_Algo4_LFO_Int,
-	Update_Chan_Algo5_LFO_Int,
-	Update_Chan_Algo6_LFO_Int,
-	Update_Chan_Algo7_LFO_Int
-};
-
 // Envelope function declarations
 static void Env_Attack_Next(slot_ *SL);
 static void Env_Decay_Next(slot_ *SL);
@@ -1271,368 +1191,129 @@ en3 = ENV_TAB[(CH->SLOT[S3].Ecnt >> ENV_LBITS)] + CH->SLOT[S3].TLL + (env_LFO >>
 }
 
 
-static void Update_Chan_Algo0(channel_ *CH, int **buf, int length)
+template<int algo>
+static void T_Update_Chan(channel_ *CH, int **buf, int length)
 {
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
+	// Check if the channel has reached the end of the update.
+	{
+		int not_end = (CH->SLOT[S3].Ecnt - ENV_END);
+		
+		// Special cases.
+		// Copied from Game_Music_Emu v0.5.2.
+		if (algo == 7)
+			not_end |= (CH->SLOT[S0].Ecnt - ENV_END);
+		if (algo >= 5)
+			not_end |= (CH->SLOT[S2].Ecnt - ENV_END);
+		if (algo >= 4)
+			not_end |= (CH->SLOT[S1].Ecnt - ENV_END);
+		
+		if (not_end == 0)
+			return;
+	}
 	
 	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 0 len = %d", length);
+		"Algo %d len = %d", algo, length);
 	
-	for (i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
 		GET_CURRENT_PHASE;
 		UPDATE_PHASE;
 		GET_CURRENT_ENV;
 		UPDATE_ENV;
-		DO_ALGO_0;
+		
+		switch (algo)
+		{
+			case 0:
+				DO_ALGO_0;
+				break;
+			case 1:
+				DO_ALGO_1;
+				break;
+			case 2:
+				DO_ALGO_2;
+				break;
+			case 3:
+				DO_ALGO_3;
+				break;
+			case 4:
+				DO_ALGO_4;
+				break;
+			case 5:
+				DO_ALGO_5;
+				break;
+			case 6:
+				DO_ALGO_6;
+				break;
+			case 7:
+				DO_ALGO_7;
+				break;
+		}
+		
 		DO_OUTPUT;
 	}
 }
 
 
-static void Update_Chan_Algo1(channel_ *CH, int **buf, int length)
+template<int algo>
+static void T_Update_Chan_LFO(channel_ *CH, int **buf, int length)
 {
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 1 len = %d", length);
-	
-	for (i = 0; i < length; i++)
+	// Check if the channel has reached the end of the update.
 	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_1;
-		DO_OUTPUT;
+		int not_end = (CH->SLOT[S3].Ecnt - ENV_END);
+		
+		// Special cases.
+		// Copied from Game_Music_Emu v0.5.2.
+		if (algo == 7)
+			not_end |= (CH->SLOT[S0].Ecnt - ENV_END);
+		if (algo >= 5)
+			not_end |= (CH->SLOT[S2].Ecnt - ENV_END);
+		if (algo >= 4)
+			not_end |= (CH->SLOT[S1].Ecnt - ENV_END);
+		
+		if (not_end == 0)
+			return;
 	}
-}
-
-
-static void Update_Chan_Algo2(channel_ *CH, int **buf, int length)
-{
-	int i;
 	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
+	int env_LFO, freq_LFO;
+
 	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 2 len = %d", length);
+		"Algo %d LFO len = %d", algo, length);
 	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_2;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo3(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 3 len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_3;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo4(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) && (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 4 len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_4;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo5(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 5 len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_5;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo6(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 6 len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_6;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo7(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S0].Ecnt == ENV_END) &&
-	    (CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 7 len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE;
-		GET_CURRENT_ENV;
-		UPDATE_ENV;
-		DO_ALGO_7;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo0_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 0 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
 		GET_CURRENT_PHASE;
 		UPDATE_PHASE_LFO;
 		GET_CURRENT_ENV_LFO;
 		UPDATE_ENV;
-		DO_ALGO_0;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo1_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 1 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_1;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo2_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 2 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_2;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo3_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 3 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_3;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo4_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 4 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_4;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo5_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 5 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_5;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo6_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 6 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_6;
-		DO_OUTPUT;
-	}
-}
-
-
-static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S0].Ecnt == ENV_END) &&
-	    (CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 7 LFO len = %d", length);
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE;
-		UPDATE_PHASE_LFO;
-		GET_CURRENT_ENV_LFO;
-		UPDATE_ENV;
-		DO_ALGO_7;
+		
+		switch (algo)
+		{
+			case 0:
+				DO_ALGO_0;
+				break;
+			case 1:
+				DO_ALGO_1;
+				break;
+			case 2:
+				DO_ALGO_2;
+				break;
+			case 3:
+				DO_ALGO_3;
+				break;
+			case 4:
+				DO_ALGO_4;
+				break;
+			case 5:
+				DO_ALGO_5;
+				break;
+			case 6:
+				DO_ALGO_6;
+				break;
+			case 7:
+				DO_ALGO_7;
+				break;
+		}
+		
 		DO_OUTPUT;
 	}
 }
@@ -1643,417 +1324,178 @@ static void Update_Chan_Algo7_LFO(channel_ *CH, int **buf, int length)
  *****************************************************/
 
 
-static void Update_Chan_Algo0_Int(channel_ *CH, int **buf, int length)
+template<int algo>
+static void T_Update_Chan_Int(channel_ *CH, int **buf, int length)
 {
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 0 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
+	// Check if the channel has reached the end of the update.
 	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_0
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo1_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 1 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_1
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo2_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 2 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_2
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo3_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 3 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_3
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo4_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) && (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 4 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_4
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo5_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-	{
-		return;
-	}
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 5 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_5
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo6_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-	{
-		return;
-	}
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 6 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_6
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo7_Int(channel_ *CH, int **buf, int length)
-{
-	int i;
-	
-	if ((CH->SLOT[S0].Ecnt == ENV_END) &&
-	    (CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-	{
-		return;
-	}
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 7 len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE
-		GET_CURRENT_ENV
-		UPDATE_ENV
-		DO_ALGO_7
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo0_LFO_Int(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 0 LFO len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_0
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo1_LFO_Int(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 1 LFO len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_1
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo2_LFO_Int(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 2 LFO len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_2
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo3_LFO_Int(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if (CH->SLOT[S3].Ecnt == ENV_END)
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 3 LFO len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_3
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo4_LFO_Int(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) && (CH->SLOT[S3].Ecnt == ENV_END))
-		return;
-	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 4 LFO len = %d", length);
-	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_4
-		DO_OUTPUT_INT
-	}
-}
-
-
-static void Update_Chan_Algo5_LFO_Int(channel_ *CH, int **buf, int length)
-{
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-	{
-		return;
-	}
+		int not_end = (CH->SLOT[S3].Ecnt - ENV_END);
 		
+		// Special cases.
+		// Copied from Game_Music_Emu v0.5.2.
+		if (algo == 7)
+			not_end |= (CH->SLOT[S0].Ecnt - ENV_END);
+		if (algo >= 5)
+			not_end |= (CH->SLOT[S2].Ecnt - ENV_END);
+		if (algo >= 4)
+			not_end |= (CH->SLOT[S1].Ecnt - ENV_END);
+		
+		if (not_end == 0)
+			return;
+	}
+	
 	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 5 LFO len = %d", length);
+		"Algo %d Int len = %d", algo, length);
 	
 	int_cnt = YM2612.Inter_Cnt;
 	
-	for (i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_5
-		DO_OUTPUT_INT
+		GET_CURRENT_PHASE;
+		UPDATE_PHASE;
+		GET_CURRENT_ENV;
+		UPDATE_ENV;
+		
+		switch (algo)
+		{
+			case 0:
+				DO_ALGO_0;
+				break;
+			case 1:
+				DO_ALGO_1;
+				break;
+			case 2:
+				DO_ALGO_2;
+				break;
+			case 3:
+				DO_ALGO_3;
+				break;
+			case 4:
+				DO_ALGO_4;
+				break;
+			case 5:
+				DO_ALGO_5;
+				break;
+			case 6:
+				DO_ALGO_6;
+				break;
+			case 7:
+				DO_ALGO_7;
+				break;
+		}
+		
+		DO_OUTPUT_INT;
 	}
 }
 
 
-static void Update_Chan_Algo6_LFO_Int(channel_ *CH, int **buf, int length)
+template<int algo>
+static void T_Update_Chan_LFO_Int(channel_ *CH, int **buf, int length)
 {
-	int i, env_LFO, freq_LFO;
-	
-	if ((CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
+	// Check if the channel has reached the end of the update.
 	{
-		return;
+		int not_end = (CH->SLOT[S3].Ecnt - ENV_END);
+		
+		// Special cases.
+		// Copied from Game_Music_Emu v0.5.2.
+		if (algo == 7)
+			not_end |= (CH->SLOT[S0].Ecnt - ENV_END);
+		if (algo >= 5)
+			not_end |= (CH->SLOT[S2].Ecnt - ENV_END);
+		if (algo >= 4)
+			not_end |= (CH->SLOT[S1].Ecnt - ENV_END);
+		
+		if (not_end == 0)
+			return;
 	}
 	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 6 LFO len = %d", length);
-	
 	int_cnt = YM2612.Inter_Cnt;
+	int env_LFO, freq_LFO;
+
+	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
+		"Algo %d LFO Int len = %d", algo, length);
 	
-	for (i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_6
-		DO_OUTPUT_INT
+		GET_CURRENT_PHASE;
+		UPDATE_PHASE_LFO;
+		GET_CURRENT_ENV_LFO;
+		UPDATE_ENV;
+		
+		switch (algo)
+		{
+			case 0:
+				DO_ALGO_0;
+				break;
+			case 1:
+				DO_ALGO_1;
+				break;
+			case 2:
+				DO_ALGO_2;
+				break;
+			case 3:
+				DO_ALGO_3;
+				break;
+			case 4:
+				DO_ALGO_4;
+				break;
+			case 5:
+				DO_ALGO_5;
+				break;
+			case 6:
+				DO_ALGO_6;
+				break;
+			case 7:
+				DO_ALGO_7;
+				break;
+		}
+		
+		DO_OUTPUT_INT;
 	}
 }
 
 
-static void Update_Chan_Algo7_LFO_Int(channel_ *CH, int **buf, int length)
+// Update Channel functions pointer table
+typedef void (*Update_Chan_Fn)(channel_ *CH, int **buf, int length);
+
+static const Update_Chan_Fn UPDATE_CHAN[8*8] =
 {
-	int i, env_LFO, freq_LFO;
+	T_Update_Chan<0>,
+	T_Update_Chan<1>,
+	T_Update_Chan<2>,
+	T_Update_Chan<3>,
+	T_Update_Chan<4>,
+	T_Update_Chan<5>,
+	T_Update_Chan<6>,
+	T_Update_Chan<7>,
 	
-	if ((CH->SLOT[S0].Ecnt == ENV_END) &&
-	    (CH->SLOT[S1].Ecnt == ENV_END) &&
-	    (CH->SLOT[S2].Ecnt == ENV_END) &&
-	    (CH->SLOT[S3].Ecnt == ENV_END))
-	{
-		return;
-	}
+	T_Update_Chan_LFO<0>,
+	T_Update_Chan_LFO<1>,
+	T_Update_Chan_LFO<2>,
+	T_Update_Chan_LFO<3>,
+	T_Update_Chan_LFO<4>,
+	T_Update_Chan_LFO<5>,
+	T_Update_Chan_LFO<6>,
+	T_Update_Chan_LFO<7>,
 	
-	LOG_MSG(ym2612, LOG_MSG_LEVEL_DEBUG2,
-		"Algo 7 LFO len = %d", length);
+	T_Update_Chan_Int<0>,
+	T_Update_Chan_Int<1>,
+	T_Update_Chan_Int<2>,
+	T_Update_Chan_Int<3>,
+	T_Update_Chan_Int<4>,
+	T_Update_Chan_Int<5>,
+	T_Update_Chan_Int<6>,
+	T_Update_Chan_Int<7>,
 	
-	int_cnt = YM2612.Inter_Cnt;
-	
-	for (i = 0; i < length; i++)
-	{
-		GET_CURRENT_PHASE
-		UPDATE_PHASE_LFO
-		GET_CURRENT_ENV_LFO
-		UPDATE_ENV
-		DO_ALGO_7
-		DO_OUTPUT_INT
-	}
-}
-
-typedef void (*UPDATE_FUNC) (channel_ *CH, int **buf, int length);
-
+	T_Update_Chan_LFO_Int<0>,
+	T_Update_Chan_LFO_Int<1>,
+	T_Update_Chan_LFO_Int<2>,
+	T_Update_Chan_LFO_Int<3>,
+	T_Update_Chan_LFO_Int<4>,
+	T_Update_Chan_LFO_Int<5>,
+	T_Update_Chan_LFO_Int<6>,
+	T_Update_Chan_LFO_Int<7>,
+};
 
 
 /***********************************************
@@ -2085,12 +1527,12 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 	// 144 = 12 * (prescale * 2) = 12 * 6 * 2
 	// prescale set to 6 by default
 	
-	YM2612.Frequence = ((double) YM2612.Clock / (double) YM2612.Rate) / 144.0;
-	YM2612.TimerBase = (int) (YM2612.Frequence * 4096.0);
+	YM2612.Frequence = ((double)(YM2612.Clock) / (double)(YM2612.Rate)) / 144.0;
+	YM2612.TimerBase = (int)(YM2612.Frequence * 4096.0);
 	
 	if ((Interpolation) && (YM2612.Frequence > 1.0))
 	{
-		YM2612.Inter_Step = (unsigned int) ((1.0 / YM2612.Frequence) * (double) (0x4000));
+		YM2612.Inter_Step = (unsigned int)((1.0 / YM2612.Frequence) * (double)(0x4000));
 		YM2612.Inter_Cnt = 0;
 		
 		// We recalculate rate and frequence after interpolation
@@ -2968,7 +2410,7 @@ void YM2612_Special_Update(void)
 {
 	if (YM_Len && YM2612_Enable)
 	{
-		YM2612_Update (YM_Buf, YM_Len);
+		YM2612_Update(YM_Buf, YM_Len);
 		
 		YM_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
 		YM_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
