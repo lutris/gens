@@ -154,7 +154,28 @@ bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 	    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
 	{
 		// Incorrect major interface version.
-		Incompat.add(plugin, MDP_ERR_INCORRECT_MAJOR_VERSION, filename);
+		Incompat.add(plugin, -MDP_ERR_INCORRECT_MAJOR_VERSION, filename);
+		return false;
+	}
+	
+	// Check the license.
+	if (!plugin->desc || !plugin->desc->license)
+	{
+		// No license.
+		Incompat.add(plugin, -MDP_ERR_INVALID_LICENSE, filename);
+		return false;
+	}
+	
+	if (strncasecmp(plugin->desc->license, MDP_LICENSE_GPL_2,	sizeof(MDP_LICENSE_GPL_2))	&&
+	    strncasecmp(plugin->desc->license, MDP_LICENSE_GPL_3,	sizeof(MDP_LICENSE_GPL_3))	&&
+	    strncasecmp(plugin->desc->license, MDP_LICENSE_LGPL_2,	sizeof(MDP_LICENSE_LGPL_2))	&&
+	    strncasecmp(plugin->desc->license, MDP_LICENSE_LGPL_21,	sizeof(MDP_LICENSE_LGPL_21))	&&
+	    strncasecmp(plugin->desc->license, MDP_LICENSE_LGPL_3,	sizeof(MDP_LICENSE_LGPL_3))	&&
+	    strncasecmp(plugin->desc->license, MDP_LICENSE_BSD,		sizeof(MDP_LICENSE_BSD))	&&
+	    strncasecmp(plugin->desc->license, MDP_LICENSE_PD,		sizeof(MDP_LICENSE_PD)))
+	{
+		// Invalid license.
+		Incompat.add(plugin, -MDP_ERR_INVALID_LICENSE, filename);
 		return false;
 	}
 	
@@ -163,7 +184,7 @@ bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
 	{
 		// CPU does not support some required CPU flags.
-		Incompat.add(plugin, MDP_ERR_NEEDS_CPUFLAGS, filename);
+		Incompat.add(plugin, -MDP_ERR_NEEDS_CPUFLAGS, filename);
 		return false;
 	}
 	
