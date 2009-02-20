@@ -182,23 +182,25 @@ static const Env_Event ENV_NEXT_EVENT[8] =
 	Env_NULL_Next
 };
 
-static const uint8_t DT_DEF_TAB[4 * 32] =
+// Default detune table.
+// FD == F number
+static const uint8_t DT_DEF_TAB[4][32] =
 {
 	// FD = 0
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	
 	// FD = 1
-	0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2,
-	2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 8, 8, 8, 8,
+	{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2,
+	 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 8, 8, 8, 8},
 	
 	// FD = 2
-	1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5,
-	5, 6, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 16, 16, 16, 16,
+	{1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5,
+	 5, 6, 6, 7, 8, 8, 9, 10, 11, 12, 13, 14, 16, 16, 16, 16},
 	
 	// FD = 3
-	2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7,
-	8, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 20, 22, 22, 22, 22
+	{2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7,
+	 8, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 20, 22, 22, 22, 22}
 };
 
 static const uint8_t FKEY_TAB[16] =
@@ -1725,10 +1727,10 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		for (j = 0; j < 32; j++)
 		{
 			#if ((SIN_LBITS + SIN_HBITS - 21) < 0)
-				x = (double)DT_DEF_TAB[(i << 5) + j] * YM2612.Frequence /
+				x = (double)DT_DEF_TAB[i][j] * YM2612.Frequence /
 				    (double)(1 << (21 - SIN_LBITS - SIN_HBITS));
 			#else
-				x = (double)DT_DEF_TAB[(i << 5) + j] * YM2612.Frequence *
+				x = (double)DT_DEF_TAB[i][j] * YM2612.Frequence *
 				    (double)(1 << (SIN_LBITS + SIN_HBITS - 21));
 			#endif
 			
