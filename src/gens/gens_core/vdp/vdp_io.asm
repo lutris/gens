@@ -1185,8 +1185,8 @@ section .text align=64
 		jnz	near .NO_DMA
 		
 		; Zero_Length_DMA is disabled.
-		; The MD hardware has a bug where the DMA counter is decremented before
-		; it is checked. So, doing a zero-length DMA request will actually do a
+		; The MD VDP decrements the DMA length counter before checking if it has
+		; reached zero. So, doing a zero-length DMA request will actually do a
 		; 65,536-byte DMA request.
 		mov	ecx, 0x10000
 		
