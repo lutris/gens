@@ -150,7 +150,7 @@ void bmf_window_show(void)
 					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions)(0), 0, 0);
 			
-			// Create the "Change..." button for this file.
+			// Create the "Change..." button for the file.
 			GtkWidget *btnChange = gtk_button_new_with_label("Change...");
 			gtk_widget_show(btnChange);
 			gtk_table_attach(GTK_TABLE(tblBMF), btnChange,
