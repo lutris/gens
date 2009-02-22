@@ -549,6 +549,8 @@ static inline void cc_window_display_key_name(HWND label, uint16_t key)
 	#else
 		Static_SetText(label, key_name);
 	#endif
+	
+	SetWindowFont(label, Win32_Get_MonoFont(), TRUE);
 }
 
 
