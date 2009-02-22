@@ -1,0 +1,349 @@
+/***************************************************************************
+ * Gens: (GTK+) BIOS/Misc Files Window.                                    *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include "bmf_window.hpp"
+#include "gens/gens_window.h"
+
+#include "emulator/g_main.hpp"
+#include "gens_ui.hpp"
+
+// C includes.
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+// C++ includes.
+#include <string>
+using std::string;
+
+// GTK+ includes.
+#include <gtk/gtk.h>
+
+// Unused Parameter macro.
+#include "macros/unused.h"
+
+
+// BIOS/Misc File entries
+// If entry is NULL, it's a frame heading.
+struct bmf_entry_t
+{
+	const char* title;
+	FileFilterType filter;
+	char* entry;
+};
+
+// All textboxes to be displayed on the BIOS/Misc Files window are defined here.
+static const struct bmf_entry_t bmf_entries[] =
+{
+	{"Genesis BIOS File",		(FileFilterType)0, NULL},
+	{"Genesis",			ROMFile, BIOS_Filenames.MD_TMSS},
+	{"External 32X Firmware",	(FileFilterType)0, NULL},
+	{"MC68000",			ROMFile, BIOS_Filenames._32X_MC68000},
+	{"Master SH2",			ROMFile, BIOS_Filenames._32X_MSH2},
+	{"Slave SH2",			ROMFile, BIOS_Filenames._32X_SSH2},
+	{"SegaCD BIOS Files",		(FileFilterType)0, NULL},
+	{"USA",				ROMFile, BIOS_Filenames.SegaCD_US},
+	{"Europe",			ROMFile, BIOS_Filenames.MegaCD_EU},
+	{"Japan",			ROMFile, BIOS_Filenames.MegaCD_JP},
+	{"Compression Utilities",	(FileFilterType)0, NULL},
+	{"RAR Binary",			AnyFile, Misc_Filenames.RAR_Binary},
+	{NULL, (FileFilterType)0, NULL},
+};
+
+
+// Window.
+GtkWidget *bmf_window = NULL;
+
+// Widgets.
+GtkWidget	*txtFile[12];
+
+// Configuration load/save functions.
+static void	bmf_window_init(void);
+static void	bmf_window_save(void);
+
+// Callbacks.
+static gboolean	bmf_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+static void	bmf_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	bmf_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
+
+
+/**
+ * bmf_window_show(): Show the BIOS/Misc Files window.
+ */
+void bmf_window_show(void)
+{
+	if (bmf_window)
+	{
+		// BIOS/Misc Files window is already visible. Set focus.
+		gtk_widget_grab_focus(bmf_window);
+		return;
+	}
+	
+	// Create the window.
+	bmf_window = gtk_dialog_new();
+	gtk_container_set_border_width(GTK_CONTAINER(bmf_window), 4);
+	gtk_window_set_title(GTK_WINDOW(bmf_window), "BIOS/Misc Files");
+	gtk_window_set_position(GTK_WINDOW(bmf_window), GTK_WIN_POS_CENTER);
+	gtk_window_set_resizable(GTK_WINDOW(bmf_window), FALSE);
+	gtk_window_set_type_hint(GTK_WINDOW(bmf_window), GDK_WINDOW_TYPE_HINT_DIALOG);
+	gtk_dialog_set_has_separator(GTK_DIALOG(bmf_window), FALSE);
+	
+	// Callbacks for if the window is closed.
+	g_signal_connect((gpointer)bmf_window, "delete_event",
+			 G_CALLBACK(bmf_window_callback_close), NULL);
+	g_signal_connect((gpointer)bmf_window, "destroy_event",
+			 G_CALLBACK(bmf_window_callback_close), NULL);
+	
+	// Dialog response callback.
+	g_signal_connect((gpointer)(bmf_window), "response",
+			 G_CALLBACK(bmf_window_callback_response), NULL);
+	
+	// Get the dialog VBox.
+	GtkWidget *vboxDialog = GTK_DIALOG(bmf_window)->vbox;
+	gtk_widget_show(vboxDialog);
+	
+	// Create all frames.
+	int tblRow = 0;
+	GtkWidget *tblBMF;
+	
+	int file;
+	for (file = 0; bmf_entries[file].title != NULL; file++)
+	{
+		if (!bmf_entries[file].entry)
+		{
+			// No entry buffer. This is a new frame.
+			GtkWidget *fraBMF = gtk_frame_new(bmf_entries[file].title);
+			gtk_frame_set_shadow_type(GTK_FRAME(fraBMF), GTK_SHADOW_ETCHED_IN);
+			gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraBMF))), true);
+			gtk_container_set_border_width(GTK_CONTAINER(fraBMF), 4);
+			gtk_box_pack_start(GTK_BOX(vboxDialog), fraBMF, true, true, 0);
+			
+			// Add the frame table.
+			tblBMF = gtk_table_new(1, 3, false);
+			gtk_container_set_border_width(GTK_CONTAINER(tblBMF), 8);
+			gtk_table_set_row_spacings(GTK_TABLE(tblBMF), 4);
+			gtk_table_set_col_spacings(GTK_TABLE(tblBMF), 4);
+			gtk_widget_show(tblBMF);
+			gtk_container_add(GTK_CONTAINER(fraBMF), tblBMF);
+			
+			// Reset the table row.
+			tblRow = 0;
+		}
+		else
+		{
+			// File entry.
+			
+			// Check if the table needs to be resized.
+			if (tblRow > 0)
+				gtk_table_resize(GTK_TABLE(tblBMF), tblRow + 1, 3);
+			
+			// Create the label for the file.
+			GtkWidget *lblFile = gtk_label_new(bmf_entries[file].title);
+			gtk_widget_set_size_request(lblFile, 85, -1);
+			gtk_misc_set_alignment(GTK_MISC(lblFile), 0.0f, 0.5f);
+			gtk_widget_show(lblFile);
+			gtk_table_attach(GTK_TABLE(tblBMF), lblFile,
+					 0, 1, tblRow, tblRow + 1,
+					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions)(0), 0, 0);
+			
+			// Create the entry for the file.
+			txtFile[file] = gtk_entry_new();
+			gtk_entry_set_max_length(GTK_ENTRY(txtFile[file]), GENS_PATH_MAX - 1);
+			gtk_widget_set_size_request(txtFile[file], 256, -1);
+			gtk_widget_show(txtFile[file]);
+			gtk_table_attach(GTK_TABLE(tblBMF), txtFile[file],
+					 1, 2, tblRow, tblRow + 1,
+					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions)(0), 0, 0);
+			
+			// Create the "Change..." button for this file.
+			GtkWidget *btnChange = gtk_button_new_with_label("Change...");
+			gtk_widget_show(btnChange);
+			gtk_table_attach(GTK_TABLE(tblBMF), btnChange,
+					 2, 3, tblRow, tblRow + 1,
+					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions)(0), 0, 0);
+			g_signal_connect((gpointer)btnChange, "clicked",
+					 G_CALLBACK(bmf_window_callback_btnChange_clicked),
+					 GINT_TO_POINTER(file));
+			
+			// Next table row.
+			tblRow++;
+		}
+	}
+	
+	// Create the dialog buttons.
+	gtk_dialog_add_buttons(GTK_DIALOG(bmf_window),
+			       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			       GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
+			       GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+			       NULL);
+#if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
+	gtk_dialog_set_alternative_button_order(GTK_DIALOG(bmf_window),
+						GTK_RESPONSE_OK,
+						GTK_RESPONSE_APPLY,
+						GTK_RESPONSE_CANCEL,
+						-1);
+#endif
+	
+	// Initialize the internal data variables.
+	bmf_window_init();
+	
+	// Set the window as transient to the main application window.
+	gtk_window_set_transient_for(GTK_WINDOW(bmf_window), GTK_WINDOW(gens_window));
+	
+	// Show the window.
+	gtk_widget_show_all(bmf_window);
+}
+
+
+/**
+ * bmf_window_close(): Close the About window.
+ */
+void bmf_window_close(void)
+{
+	if (!bmf_window)
+		return;
+	
+	// Destroy the window.
+	gtk_widget_destroy(bmf_window);
+	bmf_window = NULL;
+}
+
+
+/**
+ * bmf_window_init(): Initialize the file text boxes.
+ */
+static void bmf_window_init(void)
+{
+	int file;
+	for (file = 0; bmf_entries[file].title != NULL; file++)
+	{
+		if (!bmf_entries[file].entry)
+			continue;
+		
+		// Set the entry text.
+		gtk_entry_set_text(GTK_ENTRY(txtFile[file]), bmf_entries[file].entry);
+	}
+}
+
+
+/**
+ * bmf_window_save(): Save the BIOS/Misc Files.
+ */
+static void bmf_window_save(void)
+{
+	int file;
+	for (file = 0; bmf_entries[file].title != NULL; file++)
+	{
+		if (!bmf_entries[file].entry)
+			continue;
+		
+		// Save the entry text.
+		strncpy(bmf_entries[file].entry, gtk_entry_get_text(GTK_ENTRY(txtFile[file])), GENS_PATH_MAX);
+	}
+}
+
+
+/**
+ * bmf_window_callback_close(): Close Window callback.
+ * @param widget
+ * @param event
+ * @param user_data
+ * @return FALSE to continue processing events; TRUE to stop processing events.
+ */
+static gboolean bmf_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(event);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	bmf_window_close();
+	return FALSE;
+}
+
+
+/**
+ * bmf_window_callback_response(): Dialog Response callback.
+ * @param dialog
+ * @param response_id
+ * @param user_data
+ */
+static void bmf_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(dialog);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	switch (response_id)
+	{
+		case GTK_RESPONSE_CANCEL:
+			bmf_window_close();
+			break;
+		case GTK_RESPONSE_APPLY:
+			bmf_window_save();
+			break;
+		case GTK_RESPONSE_OK:
+			bmf_window_save();
+			bmf_window_close();
+			break;
+		
+		case GTK_RESPONSE_DELETE_EVENT:
+		default:
+			// Other event. Don't do anything.
+			// Also, don't do anything when the dialog is deleted.
+			break;
+	}
+}
+
+
+/**
+ * bmf_window_callback_btnChange_clicked(): A "Change..." button was clicked.
+ * @param button Button that was clicked.
+ * @param user_data File ID number.
+ */
+static void bmf_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
+{
+	const int file = GPOINTER_TO_INT(user_data);
+	
+	// Check that this is a valid file entry.
+	if (!bmf_entries[file].entry)
+		return;
+	
+	char tmp[64];
+	sprintf(tmp, "Select %s File", bmf_entries[file].title);
+	
+	// Request a new file.
+	string new_file = GensUI::openFile(tmp, gtk_entry_get_text(GTK_ENTRY(txtFile[file])),
+					   bmf_entries[file].filter);
+	
+	// If "Cancel" was selected, don't do anything.
+	if (new_file.empty())
+		return;
+	
+	// Set the new file.
+	gtk_entry_set_text(GTK_ENTRY(txtFile[file]), new_file.c_str());
+}

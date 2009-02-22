@@ -30,7 +30,7 @@
 #include "emulator/g_main.hpp"
 #include "gens/gens_window_sync.hpp"
 #include "controller_config/cc_window.h"
-#include "bios_misc_files/bios_misc_files_window_misc.hpp"
+#include "bios_misc_files/bmf_window.hpp"
 #include "directory_config/dir_window.hpp"
 #include "general_options/general_options_window.hpp"
 #include "about/about_window.hpp"
@@ -726,7 +726,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_OPTIONS_BIOSMISCFILES:
-			Open_BIOS_Misc_Files();
+			bmf_window_show();
 			break;
 		
 #ifdef GENS_CDROM
