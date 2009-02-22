@@ -21,11 +21,14 @@
  ***************************************************************************/
 
 #include "wndbase.hpp"
+
+#include "emulator/g_main.hpp"
+
+// Win32 includes.
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
-
-#include "emulator/g_main.hpp"
+#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // Unused Parameter macro.

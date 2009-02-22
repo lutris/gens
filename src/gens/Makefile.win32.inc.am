@@ -15,6 +15,7 @@ gens_SOURCES += \
 		audio/audio_dsound.cpp \
 		util/file/decompressor/popen_wrapper.c \
 		ui/win32/charset.cpp \
+		ui/win32/fonts.c \
 		ui/win32/gens_ui_win32.cpp \
 		ui/win32/gens/gens_window.c \
 		ui/win32/gens/gens_window_callbacks.cpp \
@@ -55,6 +56,7 @@ noinst_HEADERS += \
 		audio/audio_dsound_t.h \
 		audio/audio_dsound.hpp \
 		ui/win32/charset.hpp \
+		ui/win32/fonts.h \
 		ui/win32/gens/gens_window.h \
 		ui/win32/gens/gens_window_callbacks.hpp \
 		ui/win32/gens/gens_window_sync.hpp \

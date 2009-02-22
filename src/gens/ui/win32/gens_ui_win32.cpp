@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -173,20 +173,8 @@ void GensUI::init(int *argc, char **argv[])
 	// Initialize COM.
 	CoInitialize(NULL);
 	
-	// Create the fonts used by the rest of the program.
-	NONCLIENTMETRICS ncm;
-	ncm.cbSize = sizeof(ncm);
-	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
-	
-	// Main font.
-	fntMain = static_cast<HFONT>(CreateFontIndirect(&ncm.lfMessageFont));
-	
-	// Create the title font.
-	// Title font is the main font with bold and italics.
-	LOGFONT lf = ncm.lfMessageFont;
-	lf.lfItalic = 1;
-	lf.lfWeight = FW_BOLD;
-	fntTitle = CreateFontIndirect(&lf);
+	// Create the fonts.
+	// TODO
 	
 	// Load the accelerator table for non-menu commands.
 	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));

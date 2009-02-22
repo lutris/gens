@@ -32,13 +32,12 @@
 
 #include "emulator/g_main.hpp"
 
+// Win32 includes.
+#include <windows.h>
 #include <windowsx.h>
-
-// Gens Win32 resources
-#include "ui/win32/resource.h"
-
-// Win32 common controls
 #include <commctrl.h>
+#include "ui/win32/fonts.h"
+#include "ui/win32/resource.h"
 
 // WINE's headers don't include BUTTON_IMAGELIST or related macros and constants.
 #ifndef BUTTON_IMAGELIST

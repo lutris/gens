@@ -43,6 +43,9 @@ using std::string;
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include "ui/win32/fonts.h"
+#include "ui/win32/resource.h"
+#include "ui/win32/charset.hpp"
 
 // git version
 #include "macros/git.h"
@@ -52,9 +55,6 @@ using std::string;
 
 // Audio Handler.
 #include "audio/audio.h"
-
-#include "ui/win32/charset.hpp"
-#include "ui/win32/resource.h"
 
 
 // Window.

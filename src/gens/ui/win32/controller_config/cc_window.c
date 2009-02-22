@@ -36,8 +36,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
-
-// Gens Win32 resources.
+#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // Gens input variables.
@@ -550,7 +549,7 @@ static inline void cc_window_display_key_name(HWND label, uint16_t key)
 		Static_SetText(label, key_name);
 	#endif
 	
-	SetWindowFont(label, Win32_Get_MonoFont(), TRUE);
+	SetWindowFont(label, fntMono, TRUE);
 }
 
 

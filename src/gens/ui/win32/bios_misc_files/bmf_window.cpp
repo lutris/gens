@@ -43,8 +43,7 @@ using std::string;
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
-
-// Gens Win32 resources.
+#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
 // Unused Parameter macro.

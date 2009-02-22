@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Main Loop. (Win32-specific code)                                  *
+ * Gens: (Win32) Font functions and variables.                             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,36 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_G_MAIN_WIN32_HPP
-#define GENS_G_MAIN_WIN32_HPP
+#ifndef GENS_UI_WIN32_FONTS_H
+#define GENS_UI_WIN32_FONTS_H
+
+#include <windows.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <windows.h>
+extern HFONT fntMain;
+extern HFONT fntTitle;
+extern HFONT fntMono;
 
-// Win32 instance
-extern HINSTANCE ghInstance;
-
-// Windows version
-extern OSVERSIONINFO winVersion;
-
-// If extended Common Controls are enabled, this is set to non-zero.
-extern int win32_CommCtrlEx;
-
-// Set actual window size.
-void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH);
-
-void Get_Save_Path(char *buf, size_t n);
-void Create_Save_Directory(const char *dir);
-
-// TODO: Move this stuff to GensUI.
-void Win32_centerOnGensWindow(HWND hWnd);
-void Win32_clientResize(HWND hWnd, int width, int height);
+void fonts_init(void);
+void fonts_end(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_G_MAIN_WIN32_HPP */
+#endif /* GENS_UI_WIN32_FONTS_H */

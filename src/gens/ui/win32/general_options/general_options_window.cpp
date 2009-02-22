@@ -32,16 +32,15 @@
 #include "emulator/g_main.hpp"
 #include "gens_ui.hpp"
 
+// Win32 includes.
+#include <windows.h>
 #include <windowsx.h>
+#include <commctrl.h>
+#include "ui/win32/fonts.h"
+#include "ui/win32/resource.h"
 
 // Audio Handler.
 #include "audio/audio.h"
-
-// Gens Win32 resources
-#include "ui/win32/resource.h"
-
-// Win32 common controls
-#include <commctrl.h>
 
 // Video Drawing.
 #include "video/vdraw.h"

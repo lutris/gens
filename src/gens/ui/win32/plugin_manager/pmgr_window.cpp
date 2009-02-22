@@ -37,10 +37,9 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
-
-// Gens Win32 resources.
-#include "ui/win32/charset.hpp"
+#include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
+#include "ui/win32/charset.hpp"
 
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"

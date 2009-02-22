@@ -30,20 +30,16 @@
 #include "emulator/g_mcd.hpp"
 #include "segacd/cd_aspi.hpp"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
+// C includes.
 #include <stdio.h>
-#include <ctype.h>
+#include <string.h>
 
+// Win32 includes.
+#include <windows.h>
 #include <windowsx.h>
-
-// Gens Win32 resources
-#include "ui/win32/resource.h"
-
-// Win32 common controls
 #include <commctrl.h>
+#include "ui/win32/fonts.h"
+#include "ui/win32/resource.h"
 
 static WNDCLASS WndClass;
 HWND select_cdrom_window = NULL;
