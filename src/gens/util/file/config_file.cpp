@@ -568,7 +568,7 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Miscellaneous files.
 #if defined(__WIN32__)
-	cfg.getString("Options", "RAR Binary", "C:\\Program Files\\WinRAR\\Rar.exe",
+	cfg.getString("Options", "RAR Binary", "C:\\Program Files\\WinRAR\\rar.exe",
 		      Misc_Filenames.RAR_Binary, sizeof(Misc_Filenames.RAR_Binary));
 #else /* !defined(__WIN32__) */
 	cfg.getString("Options", "RAR Binary", "/usr/bin/rar",
