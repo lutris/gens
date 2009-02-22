@@ -100,8 +100,7 @@ void bmf_window_show(void)
 	int tblRow = 0;
 	GtkWidget *tblBMF;
 	
-	int file;
-	for (file = 0; bmf_entries[file].title != NULL; file++)
+	for (int file = 0; bmf_entries[file].title != NULL; file++)
 	{
 		if (!bmf_entries[file].entry)
 		{
@@ -211,8 +210,7 @@ void bmf_window_close(void)
  */
 static void bmf_window_init(void)
 {
-	int file;
-	for (file = 0; bmf_entries[file].title != NULL; file++)
+	for (int file = 0; bmf_entries[file].title != NULL; file++)
 	{
 		if (!bmf_entries[file].entry)
 			continue;
@@ -228,8 +226,7 @@ static void bmf_window_init(void)
  */
 static void bmf_window_save(void)
 {
-	int file;
-	for (file = 0; bmf_entries[file].title != NULL; file++)
+	for (int file = 0; bmf_entries[file].title != NULL; file++)
 	{
 		if (!bmf_entries[file].entry)
 			continue;
