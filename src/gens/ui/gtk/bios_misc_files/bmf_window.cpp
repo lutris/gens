@@ -140,7 +140,7 @@ void bmf_window_show(void)
 					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions)(0), 0, 0);
 			
-			// Create the entry for the file.
+			// Create the textbox for the file.
 			txtFile[file] = gtk_entry_new();
 			gtk_entry_set_max_length(GTK_ENTRY(txtFile[file]), GENS_PATH_MAX - 1);
 			gtk_widget_set_size_request(txtFile[file], 256, -1);
