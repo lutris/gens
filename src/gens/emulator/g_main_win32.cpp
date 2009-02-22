@@ -62,6 +62,15 @@ int win32_CommCtrlEx = 0;
 HFONT fntMain = NULL;
 HFONT fntTitle = NULL;
 
+// Monospace font stuff.
+// mono_status is a bitfield:
+// - 0: no monospace fonts detected. Use default.
+// - 1: Fixedsys detected.
+// - 2: Courier New detected.
+// - 3: Both Fixedsys and Courier New detected.
+static int mono_status = 0;
+static HFONT fntMono = NULL;
+
 // Maximum value function
 #ifndef max
 #define max(a,b)   (((a) > (b)) ? (a) : (b))
@@ -144,6 +153,61 @@ void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
 }
 
 
+static const char fntnFixedsys[] = "Fixedsys";
+static const char fntnCourierNew[] = "Courier New";
+
+/**
+ * Win32_Enum_Callback_MonoFont(): Callback for finding a monospace font.
+ * @param lpelfe
+ * @param lpntme
+ * @param FontType
+ * @param lParam
+ */
+static int CALLBACK Win32_Enum_Callback_MonoFont(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme,
+						 DWORD FontType, LPARAM lParam)
+{
+	// Check what this font is.
+	if (!strncasecmp(lpelfe->elfLogFont.lfFaceName, fntnFixedsys, sizeof(fntnFixedsys)))
+		mono_status |= 1;
+	else if (!strncasecmp(lpelfe->elfLogFont.lfFaceName, fntnCourierNew, sizeof(fntnCourierNew)))
+		mono_status |= 2;
+}
+
+
+/**
+ * Win32_Get_MonoFont(): Get the monospaced font.
+ * @return Monospaced font.
+ */
+HFONT Win32_Get_MonoFont(void)
+{
+	if (fntMono)
+		return fntMono;
+	
+	// Create the monospaced font.
+	if (mono_status == 0)
+	{
+		// Unable to create a monospaced font. Return NULL.
+		return NULL;
+	}
+	
+	// Create the font.
+	LOGFONT lfMono;
+	memset(&lfMono, 0x00, sizeof(lfMono));
+	
+	// Set the font name.
+	if (mono_status & 1)
+		strcpy(lfMono.lfFaceName, fntnFixedsys);
+	else if (mono_status & 2)
+		strcpy(lfMono.lfFaceName, fntnCourierNew);
+	
+	// Create the font.
+	fntMono = CreateFontIndirect(&lfMono);
+	
+	// Return the font.
+	return fntMono;
+}
+
+
 /**
  * WinMain: Win32 main loop.
  * @param hInst Instance ID of the Gens process.
@@ -160,6 +224,15 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
 	gens_window_init_hWnd();
+	
+	// Initialize the monospace fonts.
+	LOGFONT lfMonoFont;
+	lfMonoFont.lfCharSet = DEFAULT_CHARSET;
+	lfMonoFont.lfPitchAndFamily = 0;
+	strcpy(lfMonoFont.lfFaceName, fntnFixedsys);
+	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, (FONTENUMPROC)Win32_Enum_Callback_MonoFont, NULL, 0);
+	strcpy(lfMonoFont.lfFaceName, fntnCourierNew);
+	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, (FONTENUMPROC)Win32_Enum_Callback_MonoFont, NULL, 0);
 	
 	// Initialize vdraw_ddraw.
 	vdraw_init();
@@ -256,6 +329,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Delete the fonts.
 	DeleteFont(fntMain);
 	DeleteFont(fntTitle);
+	DeleteFont(fntMono);
 	
 	// Empty the message queue.
 	MSG msg;

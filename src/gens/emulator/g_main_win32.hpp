@@ -26,6 +26,7 @@ void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH);
 // Fonts
 extern HFONT fntMain;
 extern HFONT fntTitle;
+HFONT Win32_Get_MonoFont(void);
 
 void Get_Save_Path(char *buf, size_t n);
 void Create_Save_Directory(const char *dir);
