@@ -7,10 +7,10 @@ TODO for Gens/GS r7:
   but only one has a ROM file extension.
 - Add --boot-cd command line option.
 - Re-add v5 32X savestate load support.
+- [GTK+] Update all windows to support gtk_dialog_set_alternative_button_order().
+  "gtk-alternative-button-order=1" in ~/.gtkrc-2.0-kde4
 
 Controller Input TODO for Gens/GS r7:
-- Test new controller configuration format on Win32.
-- Make sure DirectInput axes are enumerated correctly.
 - Add option to allow pressing U+D/L+R simultaneously.
 - Fix it so that if U is held and D is pressed, D is ignored;
   if D is held and U is pressed, U is ignored.
