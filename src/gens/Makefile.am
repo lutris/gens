@@ -123,6 +123,7 @@ gens_SOURCES = \
 		ui/common/about_window_data.c \
 		ui/common/dir_window_common.c \
 		ui/common/pmgr_window_common.cpp \
+		ui/common/bmf_window_common.c \
 		util/file/config_file.cpp \
 		util/file/rom.cpp \
 		util/file/save.cpp \
@@ -232,6 +233,7 @@ noinst_HEADERS = \
 		ui/common/about_window_data.h \
 		ui/common/dir_window_common.h \
 		ui/common/pmgr_window_common.hpp \
+		ui/common/bmf_window_common.h \
 		util/file/config_file.hpp \
 		util/file/rom.hpp \
 		util/file/save.hpp \

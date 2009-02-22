@@ -25,9 +25,9 @@
 #endif
 
 #include "bmf_window.hpp"
+#include "ui/common/bmf_window_common.h"
 #include "gens/gens_window.h"
 
-#include "emulator/g_main.hpp"
 #include "gens_ui.hpp"
 
 // C includes.
@@ -44,34 +44,6 @@ using std::string;
 
 // Unused Parameter macro.
 #include "macros/unused.h"
-
-
-// BIOS/Misc File entries
-// If entry is NULL, it's a frame heading.
-struct bmf_entry_t
-{
-	const char* title;
-	FileFilterType filter;
-	char* entry;
-};
-
-// All textboxes to be displayed on the BIOS/Misc Files window are defined here.
-static const struct bmf_entry_t bmf_entries[] =
-{
-	{"Genesis BIOS File",		(FileFilterType)0, NULL},
-	{"Genesis",			ROMFile, BIOS_Filenames.MD_TMSS},
-	{"External 32X Firmware",	(FileFilterType)0, NULL},
-	{"MC68000",			ROMFile, BIOS_Filenames._32X_MC68000},
-	{"Master SH2",			ROMFile, BIOS_Filenames._32X_MSH2},
-	{"Slave SH2",			ROMFile, BIOS_Filenames._32X_SSH2},
-	{"SegaCD BIOS Files",		(FileFilterType)0, NULL},
-	{"USA",				ROMFile, BIOS_Filenames.SegaCD_US},
-	{"Europe",			ROMFile, BIOS_Filenames.MegaCD_EU},
-	{"Japan",			ROMFile, BIOS_Filenames.MegaCD_JP},
-	{"Compression Utilities",	(FileFilterType)0, NULL},
-	{"RAR Binary",			AnyFile, Misc_Filenames.RAR_Binary},
-	{NULL, (FileFilterType)0, NULL},
-};
 
 
 // Window.
