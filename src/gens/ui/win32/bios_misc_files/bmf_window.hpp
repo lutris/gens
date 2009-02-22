@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (Win32) BIOS/Misc Files Window - Callback Functions.              *
+ * Gens: (Win32) BIOS/Misc Files Window.                                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,61 +20,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "bios_misc_files_window.hpp"
-#include "bios_misc_files_window_callbacks.h"
-#include "bios_misc_files_window_misc.hpp"
+#ifndef GENS_UI_WIN32_BIOS_MISC_FILES_WINDOW_HPP
+#define GENS_UI_WIN32_BIOS_MISC_FILES_WINDOW_HPP
 
-#include "emulator/gens.hpp"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// Audio Handler.
-#include "audio/audio.h"
+// Win32 includes.
+#include <windows.h>
 
-// Gens Win32 resources
-#include "ui/win32/resource.h"
+extern HWND bmf_window;
 
+void bmf_window_show(void);
+void bmf_window_close(void);
 
-LRESULT CALLBACK BIOS_Misc_Files_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch(message)
-	{
-		case WM_CREATE:
-			BIOS_Misc_Files_Window_CreateChildWindows(hWnd);
-			break;
-		
-		case WM_COMMAND:
-			// Button press
-			switch (LOWORD(wParam))
-			{
-				case IDOK:
-					BIOS_Misc_Files_Save();
-					DestroyWindow(hWnd);
-					break;
-				
-				case IDAPPLY:
-					BIOS_Misc_Files_Save();
-					break;
-				
-				case IDCANCEL:
-					DestroyWindow(hWnd);
-					break;
-				
-				default:
-					if ((LOWORD(wParam) & 0xFF00) == IDC_BTN_CHANGE)
-					{
-						// Change a file.
-						BIOS_Misc_Files_Change(LOWORD(wParam) & 0xFF);
-					}
-					break;
-			}
-			break;
-		
-		case WM_DESTROY:
-			if (hWnd != bios_misc_files_window)
-				break;
-			
-			bios_misc_files_window = NULL;
-			break;
-	}
-	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* GENS_UI_WIN32_BIOS_MISC_FILES_WINDOW_HPP */

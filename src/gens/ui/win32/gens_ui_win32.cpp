@@ -51,7 +51,7 @@
 
 // Windows
 #include "controller_config/cc_window.h"
-#include "bios_misc_files/bios_misc_files_window.hpp"
+#include "bios_misc_files/bmf_window.hpp"
 #include "directory_config/dir_window.hpp"
 #include "general_options/general_options_window.hpp"
 #include "color_adjust/ca_window.h"
@@ -244,7 +244,7 @@ void GensUI::update(void)
 		
 		// Check for dialog messages.
 		if ((cc_window && IsDialogMessage(cc_window, &msg)) ||
-		    (bios_misc_files_window && IsDialogMessage(bios_misc_files_window, &msg)) ||
+		    (bmf_window && IsDialogMessage(bmf_window, &msg)) ||
 		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
 		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||
 		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
