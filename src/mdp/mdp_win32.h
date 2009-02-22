@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Win32 convenience functions.             *
+ * MDP: Mega Drive Plugins - Win32 convenience functions.                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -27,7 +27,6 @@
 
 #include <windows.h>
 #include <windowsx.h>
-
 
 /**
  * mdp_win32_center_on_window(): Center one window on top of another window.
@@ -53,7 +52,6 @@ static void mdp_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-
 /**
  * mdp_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
  * @param hWnd Window handle.
@@ -73,7 +71,6 @@ static void mdp_win32_set_actual_window_size(HWND hWnd, const int reqW, const in
 		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
-
 /**
  * mdp_win32_get_message_font(): Get the message font.
  * @return Main font. (Must be deleted with DeleteFont() when finished.)
@@ -86,7 +83,6 @@ static HFONT mdp_win32_get_message_font(void)
 	
 	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
 }
-
 
 #endif /* __MDP_WIN32_H */
 

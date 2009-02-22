@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Render Plugin Interface Definitions.     *
+ * MDP: Mega Drive Plugins - Render Plugin Interface Definitions.          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,21 +20,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_RENDER_H
-#define GENS_MDP_RENDER_H
+#ifndef __MDP_RENDER_H
+#define __MDP_RENDER_H
+
+#include <stdint.h>
+
+#include "mdp_fncall.h"
+#include "mdp_version.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include "mdp_fncall.h"
-#include "mdp_version.h"
-
 // MDP Render Plugin interface version.
 #define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
 
-// Gens rendering info
+// Render information struct.
 typedef struct
 {
 	// Screen buffers.
@@ -61,7 +62,9 @@ typedef struct
 
 // Render plugin flags.
 
-// SRC16DST32: Plugin only supports 16-bit color; Gens/GS has to convert it to 32-bit.
+// SRC16DST32: Plugin only supports 16-bit color.
+// If the emulator is using 32-bit color, the emulator will have to
+// convert it from 16-bit to 32-bit manually.
 #define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
 
 // Render plugin definition.
@@ -89,4 +92,4 @@ typedef struct
 }
 #endif
 
-#endif /* GENS_MDP_RENDER_H */
+#endif /* __MDP_RENDER_H */

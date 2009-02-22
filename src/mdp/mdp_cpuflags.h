@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - CPU Flag Definitions.                    *
+ * MDP: Mega Drive Plugins - CPU Flag Definitions.                         *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -22,8 +22,8 @@
 
 // The definitions in this file match gens_core/misc/cpuflags.h.
 
-#ifndef GENS_MDP_CPUFLAGS_H
-#define GENS_MDP_CPUFLAGS_H
+#ifndef __MDP_CPUFLAGS_H
+#define __MDP_CPUFLAGS_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -45,4 +45,4 @@
 #define MDP_CPUFLAG_3DNOW	(1 << 10)
 #define MDP_CPUFLAG_3DNOWEXT	(1 << 11)
 
-#endif /* GENS_MDP_CPUFLAGS_H */
+#endif /* __MDP_CPUFLAGS_H */

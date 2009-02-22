@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Mega Drive Plugin - Host Services.                                 *
+ * MDP: Mega Drive Plugins - Host Services.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,12 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_HOST_H
-#define MDP_HOST_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __MDP_HOST_H
+#define __MDP_HOST_H
 
 #include <stdint.h>
 
@@ -33,6 +29,10 @@ extern "C" {
 #include "mdp_version.h"
 #include "mdp_render.h"
 #include "mdp_event.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // MDP Host Services interface version.
 #define MDP_HOST_INTERFACE_VERSION MDP_VERSION(0, 2, 0)
@@ -175,4 +175,4 @@ typedef struct
 }
 #endif
 
-#endif /* MDP_HOST_H */
+#endif /* __MDP_HOST_H */
