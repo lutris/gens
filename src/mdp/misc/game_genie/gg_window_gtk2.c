@@ -40,6 +40,12 @@ static GtkWidget *txtEntry_Code;
 static GtkWidget *txtEntry_Name;
 static GtkWidget *lstCodes;
 
+// List model for the code listing.
+static GtkListStore *lmCodes = NULL;
+
+// Widget creation functions.
+static void gg_window_create_lstCodes(GtkWidget *container);
+
 // Custom response IDs.
 #define GG_RESPONSE_DELETE		1
 #define GG_RESPONSE_DEACTIVATE_ALL	2
@@ -199,12 +205,8 @@ void gg_window_show(void *parent)
 	gtk_widget_show(scrlList);
 	gtk_box_pack_start(GTK_BOX(hboxList), scrlList, TRUE, TRUE, 0);
 	
-	// Treeview containing the Game Genie codes.
-	lstCodes = gtk_tree_view_new();
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), TRUE);
-	gtk_widget_set_size_request(lstCodes, -1, 160);
-	gtk_widget_show(lstCodes);
-	gtk_container_add(GTK_CONTAINER(scrlList), lstCodes);
+	// Create the treeview for the Game Genie codes.
+	gg_window_create_lstCodes(scrlList);
 	
 	// Create the dialog buttons.
 	
@@ -250,6 +252,49 @@ void gg_window_show(void *parent)
 	
 	// Register the window with MDP Host Services.
 	gg_host_srv->window_register(&mdp, gg_window);
+}
+
+
+/**
+ * gg_window_create_lstCodes(): Create the treeview for the Game Genie codes.
+ * @param container Container for the treeview.
+ */
+static void gg_window_create_lstCodes(GtkWidget *container)
+{
+	// Create the list model.
+	if (lmCodes)
+	{
+		// List model already exists. Clear it.
+		gtk_list_store_clear(GTK_LIST_STORE(lmCodes));
+	}
+	else
+	{
+		lmCodes = gtk_list_store_new(4,
+				G_TYPE_BOOLEAN,		// Enabled
+				G_TYPE_STRING,		// Code
+				G_TYPE_STRING,		// Name
+				G_TYPE_POINTER);	// Pointer to gg_code_t
+	}
+	
+	// Treeview containing the Game Genie codes.
+	lstCodes = gtk_tree_view_new_with_model(GTK_TREE_MODEL(lmCodes));
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), TRUE);
+	gtk_widget_set_size_request(lstCodes, -1, 160);
+	gtk_widget_show(lstCodes);
+	gtk_container_add(GTK_CONTAINER(container), lstCodes);
+	
+	// Create the renderers and columns for the treeview.
+	GtkCellRenderer  *rendEnabled = gtk_cell_renderer_toggle_new();
+	GtkTreeViewColumn *colEnabled = gtk_tree_view_column_new_with_attributes("Enabled", rendEnabled, "active", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colEnabled);
+	
+	GtkCellRenderer  *rendCode = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colCode = gtk_tree_view_column_new_with_attributes("Code", rendCode, "active", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCode);
+	
+	GtkCellRenderer  *rendName = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "active", 0, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colName);
 }
 
 
