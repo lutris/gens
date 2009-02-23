@@ -28,6 +28,8 @@
 #include "gg_plugin.h"
 #include "gg.hpp"
 
+#include "gg_code.h"
+
 // GTK includes.
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
@@ -346,6 +348,115 @@ static void gg_window_callback_btnAddCode(GtkButton *button, gpointer user_data)
 	MDP_UNUSED_PARAMETER(button);
 	MDP_UNUSED_PARAMETER(user_data);
 	
-	// TODO: Add the code.
-	fprintf(stderr, "Code entered: %s\n", gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)));
+	// Decode the code.
+	// TODO: Add support for more CPUs, datasizes, etc.
+	gg_code_t code;
+	if (gg_code_parse(gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)), &code, CPU_M68K))
+	{
+		// Error parsing the code.
+		// TODO: Show an error message.
+		return;
+	}
+	
+	// Create the hex version of the code.
+	char s_code_hex[32];
+	
+	switch (code.cpu)
+	{
+		case CPU_M68K:
+		case CPU_S68K:
+		{
+			// 68000: 24-bit address.
+			switch (code.datasize)
+			{
+				case DS_BYTE:
+					sprintf(s_code_hex, "%06X:%02X", code.address, code.data);
+					break;
+				case DS_WORD:
+					sprintf(s_code_hex, "%06X:%04X", code.address, code.data);
+					break;
+				case DS_DWORD:
+					sprintf(s_code_hex, "%06X:%08X", code.address, code.data);
+					break;
+				case DS_INVALID:
+				default:
+					// Invalid code.
+					// TODO: Show an error message.
+					return;
+			}
+			break;
+		}
+		case CPU_Z80:
+		{
+			// Z80: 16-bit address.
+			switch (code.datasize)
+			{
+				case DS_BYTE:
+					sprintf(s_code_hex, "%04X:%02X", code.address, code.data);
+					break;
+				case DS_WORD:
+					sprintf(s_code_hex, "%04X:%04X", code.address, code.data);
+					break;
+				case DS_DWORD:
+					sprintf(s_code_hex, "%04X:%08X", code.address, code.data);
+					break;
+				case DS_INVALID:
+				default:
+					// Invalid code.
+					// TODO: Show an error message.
+					return;
+			}
+			break;
+		}
+		case CPU_MSH2:
+		case CPU_SSH2:
+		{
+			// SH2: 32-bit address.
+			switch (code.datasize)
+			{
+				case DS_BYTE:
+					sprintf(s_code_hex, "%08X:%02X", code.address, code.data);
+					break;
+				case DS_WORD:
+					sprintf(s_code_hex, "%08X:%04X", code.address, code.data);
+					break;
+				case DS_DWORD:
+					sprintf(s_code_hex, "%08X:%08X", code.address, code.data);
+					break;
+				case DS_INVALID:
+				default:
+					// Invalid code.
+					// TODO: Show an error message.
+					return;
+			}
+			break;
+		}
+		case CPU_INVALID:
+		default:
+			// Invalid code.
+			// TODO: Show an error message.
+			return;
+	}
+	
+	// Determine what should be used for the Game Genie code.
+	const char* s_code_gg;
+	if (!code.game_genie[0])
+	{
+		// The code can't be converted to Game Genie.
+		s_code_gg = "N/A";
+	}
+	else
+	{
+		// The code can be converted to Game Genie.
+		s_code_gg = code.game_genie;
+	}
+	
+	// Code is decoded. Add it to the treeview.
+	GtkTreeIter iter;
+	gtk_list_store_append(lmCodes, &iter);
+	gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter,
+			   0, FALSE,		// Disable the code by default.
+			   1, s_code_hex,	// Hex code.
+			   2, s_code_gg,	// Game Genie code. (if applicable)
+			   3, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)), -1);
 }
