@@ -43,9 +43,14 @@ MDP_Host_t *gg_host_srv = NULL;
 static int gg_menuItemID = 0;
 static void *mdp_ptr_ram_md = NULL;
 
-
 static int MDP_FNCALL gg_menu_handler(int menu_item_id);
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
+
+// List of Game Genie codes.
+#include "gg_code.h"
+#include <list>
+using std::list;
+list<gg_code_t> gg_code_list;
 
 
 /**

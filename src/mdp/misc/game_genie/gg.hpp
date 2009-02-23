@@ -39,4 +39,13 @@ DLL_LOCAL extern MDP_Host_t *gg_host_srv;
 }
 #endif
 
+#ifdef __cplusplus
+
+// List of Game Genie codes.
+#include "gg_code.h"
+#include <list>
+extern std::list<gg_code_t> gg_code_list;
+
+#endif
+
 #endif /* MDP_MISC_GAME_GENIE_HPP */
