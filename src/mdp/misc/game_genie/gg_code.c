@@ -29,9 +29,12 @@
 static const char gg_chars[] =
 	"AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 
-// Parse functions.
+// Decode/Encode functions.
 static int gg_code_decode_gg(const char* code, gg_code_t *gg_code);
 static int gg_code_encode_gg(gg_code_t *gg_code);
+
+static int gg_code_decode_ar(const char* code, gg_code_t *gg_code);
+
 
 /**
  * gg_code_parse(): Parse a Game Genie and/or patch code.
@@ -54,6 +57,15 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	{
 		// This is potentially a Game Genie code.
 		if (!gg_code_decode_gg(code, gg_code))
+			return 0;
+	}
+	
+	// Check if this is a 16-bit data code for M68K.
+	// TODO: Make this more flexible.
+	if (cpu == CPU_M68K && code_len == 11 && code[6] == ':')
+	{
+		// This is potentially an AR code.
+		if (!gg_code_decode_ar(code, gg_code))
 			return 0;
 	}
 	
@@ -192,5 +204,69 @@ static int gg_code_encode_gg(gg_code_t *gg_code)
 	gg_code->game_genie[8] = gg_chars[ch << 1];
 	
 	// Code encoded successfully.
+	return 0;
+}
+
+
+static inline uint8_t hexToNum(char hex)
+{
+	if (hex >= '0' && hex <= '9')
+		return (hex - '0');
+	else if (hex >= 'A' && hex <= 'F')
+		return ((hex - 'A') + 10);
+	else if (hex >= 'a' && hex <= 'f')
+		return ((hex - 'a') + 10);
+	
+	// Invalid hex character.
+	return ~0;
+}
+
+#define AR_CHAR_DECODE(var, chr, shift)	\
+{					\
+	char hex = hexToNum(chr);	\
+	if (hex == ~0)			\
+		return 1;		\
+	var |= (hex << shift);		\
+}
+
+/**
+ * gg_code_decode_ar(): Decode an Action Replay code.
+ * @param code Action Replay code.
+ * @param gg_code gg_code_t to store the parsed code in.
+ * @return 0 on success; non-zero on error.
+ */
+static int gg_code_decode_ar(const char* code, gg_code_t *gg_code)
+{
+	// TODO: Make this more flexible, so it'll accept any length code.
+	if (strlen(code) != 11 || code[6] != ':')
+		return 1;
+	
+	uint32_t address = 0;
+	uint16_t data = 0;
+	
+	// First six characters are the address.
+	AR_CHAR_DECODE(address, code[0], 20);
+	AR_CHAR_DECODE(address, code[1], 16);
+	AR_CHAR_DECODE(address, code[2], 12);
+	AR_CHAR_DECODE(address, code[3], 8);
+	AR_CHAR_DECODE(address, code[4], 4);
+	AR_CHAR_DECODE(address, code[5], 0);
+	
+	// Last four characters are the data.
+	AR_CHAR_DECODE(data, code[7], 12);
+	AR_CHAR_DECODE(data, code[8], 8);
+	AR_CHAR_DECODE(data, code[9], 4);
+	AR_CHAR_DECODE(data, code[10], 0);
+	
+	// Code decoded successfully.
+	gg_code->address  = address;
+	gg_code->data     = data;
+	gg_code->datasize = DS_WORD;
+	gg_code->cpu      = CPU_M68K;
+	
+	// Attempt to encode as Game Genie for good measure.
+	gg_code_encode_gg(gg_code);
+	
+	// Done.
 	return 0;
 }
