@@ -69,6 +69,8 @@ static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer us
 static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data);
 static void	gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
 						    gchar *path, gpointer user_data);
+static void	gg_window_callback_delete(void);
+static void	gg_window_callback_deactivate_all(void);
 
 // Miscellaneous.
 static int	gg_window_add_code_from_textboxes(void);
@@ -444,7 +446,13 @@ static void gg_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 			gg_window_save();
 			gg_window_close();
 			break;
-		
+		case GG_RESPONSE_DELETE:
+			gg_window_callback_delete();
+			break;
+		case GG_RESPONSE_DEACTIVATE_ALL:
+			gg_window_callback_deactivate_all();
+			break;
+			
 		case GTK_RESPONSE_DELETE_EVENT:
 		default:
 			// Other event. Don't do anything.
@@ -664,4 +672,57 @@ static void gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_rend
 	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(user_data), &iter, path);
 	gtk_tree_model_get(GTK_TREE_MODEL(user_data), &iter, 0, &cur_state, -1);
 	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !cur_state, -1);
+}
+
+
+/**
+ * gg_window_callback_delete(): Delete the selected code(s).
+ */
+static void gg_window_callback_delete(void)
+{
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+	gboolean need_check, row_erased, valid;
+	
+	// Get the current selection.
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstCodes));
+	
+	// Delete all selected codes.
+	need_check = true;
+	while (need_check)
+	{
+		row_erased = false;
+		valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
+		while (valid && !row_erased)
+		{
+			if (gtk_tree_selection_iter_is_selected(selection, &iter))
+			{
+				gtk_list_store_remove(lmCodes, &iter);
+				row_erased = true;
+			}
+			else
+			{
+				valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+			}
+		}
+		if (!valid && !row_erased)
+			need_check = false;
+	}
+}
+
+
+/**
+ * gg_window_callback_deactivate_all(): Deactivate all codes.
+ */
+static void gg_window_callback_deactivate_all(void)
+{
+	GtkTreeIter iter;
+	gboolean valid;
+	
+	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
+	while (valid)
+	{
+		gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter, 0, 0, -1);
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+	}
 }
