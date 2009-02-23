@@ -61,7 +61,8 @@ static void	gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_rend
 						    gchar *path, gpointer user_data);
 
 // Miscellaneous.
-static void	gg_window_add_code(void);
+static int	gg_window_add_code_from_textboxes(void);
+static int	gg_window_add_code(const gg_code_t *gg_code, const char* name);
 
 
 /**
@@ -356,7 +357,7 @@ static void gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer us
 	MDP_UNUSED_PARAMETER(button);
 	MDP_UNUSED_PARAMETER(user_data);
 	
-	gg_window_add_code();
+	gg_window_add_code_from_textboxes();
 }
 
 
@@ -374,7 +375,7 @@ static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEvent
 	    event->keyval == GDK_KP_Enter)
 	{
 		// "Enter" was pressed. Add the code.
-		gg_window_add_code();
+		gg_window_add_code_from_textboxes();
 		
 		// Stop processing the key.
 		return TRUE;
@@ -386,67 +387,92 @@ static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEvent
 
 
 /**
- * gg_window_add_code(): Add a code to the treeview.
+ * gg_window_add_code_from_textboxes(): Add a code to the treeview from the textboxes.
+ * @return 0 on success; non-zero on error.
  */
-static void gg_window_add_code(void)
+static int gg_window_add_code_from_textboxes(void)
 {
 	// Decode the code.
 	// TODO: Add support for more CPUs, datasizes, etc.
-	gg_code_t code;
-	if (gg_code_parse(gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)), &code, CPU_M68K))
+	gg_code_t gg_code;
+	if (gg_code_parse(gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)), &gg_code, CPU_M68K))
 	{
 		// Error parsing the code.
 		// TODO: Show an error message.
-		return;
+		return 1;
 	}
+	
+	int rval = gg_window_add_code(&gg_code, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)));
+	if (rval == 0)
+	{
+		// Code added successfully.
+		// Clear the textboxes and set focus to the "Code" textbox.
+		gtk_entry_set_text(GTK_ENTRY(txtEntry_Code), "");
+		gtk_entry_set_text(GTK_ENTRY(txtEntry_Name), "");
+		gtk_widget_grab_focus(txtEntry_Code);
+	}
+	
+	return rval;
+}
+	
+/**
+ * gg_window_add_code(): Add a code to the treeview.
+ * @param gg_code Pointer to gg_code_t containing the code to add.
+ * @param name Name of the code. (If NULL, no name is used.)
+ * @return 0 on success; non-zero on error.
+ */
+static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
+{
+	if (!gg_code)
+		return 1;
 	
 	// Create the hex version of the code.
 	char s_code_hex[32];
 	
-	switch (code.cpu)
+	switch (gg_code->cpu)
 	{
 		case CPU_M68K:
 		case CPU_S68K:
 		{
 			// 68000: 24-bit address.
-			switch (code.datasize)
+			switch (gg_code->datasize)
 			{
 				case DS_BYTE:
-					sprintf(s_code_hex, "%06X:%02X", code.address, code.data);
+					sprintf(s_code_hex, "%06X:%02X", gg_code->address, gg_code->data);
 					break;
 				case DS_WORD:
-					sprintf(s_code_hex, "%06X:%04X", code.address, code.data);
+					sprintf(s_code_hex, "%06X:%04X", gg_code->address, gg_code->data);
 					break;
 				case DS_DWORD:
-					sprintf(s_code_hex, "%06X:%08X", code.address, code.data);
+					sprintf(s_code_hex, "%06X:%08X", gg_code->address, gg_code->data);
 					break;
 				case DS_INVALID:
 				default:
 					// Invalid code.
 					// TODO: Show an error message.
-					return;
+					return 1;
 			}
 			break;
 		}
 		case CPU_Z80:
 		{
 			// Z80: 16-bit address.
-			switch (code.datasize)
+			switch (gg_code->datasize)
 			{
 				case DS_BYTE:
-					sprintf(s_code_hex, "%04X:%02X", code.address, code.data);
+					sprintf(s_code_hex, "%04X:%02X", gg_code->address, gg_code->data);
 					break;
 				case DS_WORD:
-					sprintf(s_code_hex, "%04X:%04X", code.address, code.data);
+					sprintf(s_code_hex, "%04X:%04X", gg_code->address, gg_code->data);
 					break;
 				case DS_DWORD:
-					sprintf(s_code_hex, "%04X:%08X", code.address, code.data);
+					sprintf(s_code_hex, "%04X:%08X", gg_code->address, gg_code->data);
 					break;
 				case DS_INVALID:
 				default:
 					// Invalid code.
 					// TODO: Show an error message.
-					return;
+					return 1;
 			}
 			break;
 		}
@@ -454,22 +480,22 @@ static void gg_window_add_code(void)
 		case CPU_SSH2:
 		{
 			// SH2: 32-bit address.
-			switch (code.datasize)
+			switch (gg_code->datasize)
 			{
 				case DS_BYTE:
-					sprintf(s_code_hex, "%08X:%02X", code.address, code.data);
+					sprintf(s_code_hex, "%08X:%02X", gg_code->address, gg_code->data);
 					break;
 				case DS_WORD:
-					sprintf(s_code_hex, "%08X:%04X", code.address, code.data);
+					sprintf(s_code_hex, "%08X:%04X", gg_code->address, gg_code->data);
 					break;
 				case DS_DWORD:
-					sprintf(s_code_hex, "%08X:%08X", code.address, code.data);
+					sprintf(s_code_hex, "%08X:%08X", gg_code->address, gg_code->data);
 					break;
 				case DS_INVALID:
 				default:
 					// Invalid code.
 					// TODO: Show an error message.
-					return;
+					return 1;
 			}
 			break;
 		}
@@ -477,12 +503,12 @@ static void gg_window_add_code(void)
 		default:
 			// Invalid code.
 			// TODO: Show an error message.
-			return;
+			return 1;
 	}
 	
 	// Determine what should be used for the Game Genie code.
 	const char* s_code_gg;
-	if (!code.game_genie[0])
+	if (!gg_code->game_genie[0])
 	{
 		// The code can't be converted to Game Genie.
 		s_code_gg = "N/A";
@@ -490,8 +516,12 @@ static void gg_window_add_code(void)
 	else
 	{
 		// The code can be converted to Game Genie.
-		s_code_gg = code.game_genie;
+		s_code_gg = gg_code->game_genie;
 	}
+	
+	// If no name is given, use an empty string.
+	if (!name)
+		name = "";
 	
 	// Code is decoded. Add it to the treeview.
 	GtkTreeIter iter;
@@ -500,12 +530,10 @@ static void gg_window_add_code(void)
 			   0, FALSE,		// Disable the code by default.
 			   1, s_code_hex,	// Hex code.
 			   2, s_code_gg,	// Game Genie code. (if applicable)
-			   3, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)), -1);
+			   3, name, -1);
 	
-	// Clear the textboxes and set focus to the "Code" textbox.
-	gtk_entry_set_text(GTK_ENTRY(txtEntry_Code), "");
-	gtk_entry_set_text(GTK_ENTRY(txtEntry_Name), "");
-	gtk_widget_grab_focus(txtEntry_Code);
+	// Code added successfully.
+	return 0;
 }
 
 
