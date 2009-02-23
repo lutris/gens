@@ -459,4 +459,9 @@ static void gg_window_callback_btnAddCode(GtkButton *button, gpointer user_data)
 			   1, s_code_hex,	// Hex code.
 			   2, s_code_gg,	// Game Genie code. (if applicable)
 			   3, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)), -1);
+	
+	// Clear the textboxes and set focus to the "Code" textbox.
+	gtk_entry_set_text(GTK_ENTRY(txtEntry_Code), "");
+	gtk_entry_set_text(GTK_ENTRY(txtEntry_Name), "");
+	gtk_widget_grab_focus(txtEntry_Code);
 }
