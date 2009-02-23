@@ -127,7 +127,7 @@ void gg_window_show(void *parent)
 			"Both Game Genie codes and Patch codes are supported.\n"
 			"Check the box next to the code to activate it.\n"
 			"Syntax for Game Genie codes: XXXX-YYYY\n"
-			"Syntax for Patch codes: AAAAAA-DDDD (address-data)";
+			"Syntax for Patch codes: AAAAAA:DDDD (address:data)";
 	
 	// Header label.
 	GtkWidget *lblInfoTitle = gtk_label_new(strInfoTitle);
