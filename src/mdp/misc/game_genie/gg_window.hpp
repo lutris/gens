@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_MISC_GAME_GENIE_WINDOW_H
-#define _MDP_MISC_GAME_GENIE_WINDOW_H
+#ifndef _MDP_MISC_GAME_GENIE_WINDOW_HPP
+#define _MDP_MISC_GAME_GENIE_WINDOW_HPP
 
 #include "mdp/mdp_fncall.h"
 
@@ -36,4 +36,4 @@ DLL_LOCAL void MDP_FNCALL gg_window_close(void);
 }
 #endif
 
-#endif /* _MDP_MISC_GAME_GENIE_WINDOW_H */
+#endif /* _MDP_MISC_GAME_GENIE_WINDOW_HPP */

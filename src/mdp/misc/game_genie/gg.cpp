@@ -30,7 +30,7 @@
 
 #include "gg.hpp"
 #include "gg_plugin.h"
-#include "gg_window.h"
+#include "gg_window.hpp"
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"

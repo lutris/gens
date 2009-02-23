@@ -17,16 +17,16 @@ noinst_HEADERS = \
 		gg_plugin.h \
 		gg_icon.h \
 		gg.hpp \
-		gg_window.h \
+		gg_window.hpp \
 		gg_code.h
 
 if GENS_UI_GTK
-mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.c
+mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.cpp
 mdp_misc_game_genie_la_CFLAGS	+= @GTK_CFLAGS@
 mdp_misc_game_genie_la_CXXFLAGS	+= @GTK_CFLAGS@
 endif
 
 if GENS_UI_WIN32
-mdp_misc_game_genie_la_SOURCES	+= gg_window_win32.c
+mdp_misc_game_genie_la_SOURCES	+= gg_window_win32.cpp
 mdp_misc_game_genie_la_LIBADD	 = -lgdi32
 endif

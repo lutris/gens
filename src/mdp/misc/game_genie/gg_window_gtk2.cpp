@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include "gg_window.h"
+#include "gg_window.hpp"
 #include "gg_plugin.h"
 #include "gg.hpp"
 
