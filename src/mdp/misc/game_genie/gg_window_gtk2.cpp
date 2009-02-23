@@ -31,6 +31,7 @@
 
 // C includes.
 #include <string.h>
+#include <stdlib.h>
 
 // C++ includes.
 #include <list>
@@ -295,11 +296,12 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	}
 	else
 	{
-		lmCodes = gtk_list_store_new(4,
+		lmCodes = gtk_list_store_new(5,
 				G_TYPE_BOOLEAN,		// Enabled
 				G_TYPE_STRING,		// Code (Hex)
 				G_TYPE_STRING,		// Code (GG)
-				G_TYPE_STRING);		// Name
+				G_TYPE_STRING,		// Name
+				G_TYPE_POINTER);	// gg_code_t*
 	}
 	
 	// Treeview containing the Game Genie codes.
@@ -341,6 +343,28 @@ void gg_window_close(void)
 	if (!gg_window)
 		return;
 	
+	// Delete any gg_code pointers that may be stored in the list store.
+	if (lmCodes)
+	{
+		GtkTreeIter iter;
+		gg_code_t *stored_code;
+		
+		gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
+		for (int i = 0; valid == true; i++)
+		{
+			gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 4, &stored_code, -1);
+			
+			// Delete the code.
+			free(stored_code);
+			
+			// Get the next list element.
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+		}
+		
+		// Clear the list store.
+		gtk_list_store_clear(GTK_LIST_STORE(lmCodes));
+	}
+	
 	// Unregister the window from MDP Host Services.
 	gg_host_srv->window_unregister(&mdp, gg_window);
 	
@@ -375,24 +399,22 @@ static void gg_window_save(void)
 	gg_code_list.clear();
 	
 	gg_code_t gg_code;
+	
+	// Values retrieved from the list model.
+	gg_code_t *stored_code;
 	gboolean enabled;
-	gchar *code_hex, *name;
 	
 	// Add all codes in the listview to the code list.
 	GtkTreeIter iter;
 	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
 	for (int i = 0; valid == true; i++)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 1, &code_hex, 3, &name, -1);
+		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 4, &stored_code, -1);
 		
-		// Parse the code.
-		// TODO: Store the already-parsed code in the list model?
-		// TODO: Error handling.
-		gg_code_parse(code_hex, &gg_code, CPU_M68K);
+		// Copy the code.
+		memcpy(&gg_code, stored_code, sizeof(gg_code));
 		
-		// Copy the name of the code into gg_code_t.
-		strncpy(gg_code.name, name, sizeof(gg_code.name));
-		gg_code.name[sizeof(gg_code.name)-1] = 0x00;
+		// Copy the "enabled" value.
 		gg_code.enabled = enabled;
 		
 		// Add the code to the list of codes.
@@ -400,7 +422,7 @@ static void gg_window_save(void)
 		
 		// Get the next list element.
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
-	}	
+	}
 	
 	// TODO: Apply codes if a game is running.
 }
@@ -636,9 +658,19 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 		s_code_gg = gg_code->game_genie;
 	}
 	
+	// Store the gg_code_t in the list store.
+	gg_code_t *lst_code = (gg_code_t*)(malloc(sizeof(gg_code_t)));
+	memcpy(lst_code, gg_code, sizeof(gg_code_t));
+	
 	// If no name is given, use the name in the gg_code.
 	if (!name)
 		name = &gg_code->name[0];
+	else
+	{
+		// Copy the specified name into lst_code.
+		memcpy(lst_code->name, name, sizeof(lst_code->name));
+		lst_code->name[sizeof(lst_code->name)-1] = 0x00;
+	}
 	
 	// Code is decoded. Add it to the treeview.
 	GtkTreeIter iter;
@@ -647,7 +679,8 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 			   0, FALSE,		// Disable the code by default.
 			   1, s_code_hex,	// Hex code.
 			   2, s_code_gg,	// Game Genie code. (if applicable)
-			   3, name, -1);
+			   3, name,		// Code name.
+			   4, lst_code, -1);	// gg_code_t
 	
 	// Code added successfully.
 	return 0;
@@ -697,6 +730,12 @@ static void gg_window_callback_delete(void)
 		{
 			if (gtk_tree_selection_iter_is_selected(selection, &iter))
 			{
+				// Delete the gg_code_t first.
+				gg_code_t *stored_code;
+				gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 4, &stored_code, -1);
+				free(stored_code);
+				
+				// Delete the row.
 				gtk_list_store_remove(lmCodes, &iter);
 				row_erased = true;
 			}
