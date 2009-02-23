@@ -57,6 +57,8 @@ static gboolean	gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
 //static void gg_window_callback_button(GtkButton *button, gpointer user_data);
 static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data);
 static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data);
+static void	gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
+						    gchar *path, gpointer user_data);
 
 // Miscellaneous.
 static void	gg_window_add_code(void);
@@ -291,6 +293,11 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	GtkTreeViewColumn *colEnabled = gtk_tree_view_column_new_with_attributes("Enabled", rendEnabled, "active", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colEnabled);
 	
+	// Connect the toggle renderer to the callback.
+	g_signal_connect((gpointer)rendEnabled, "toggled",
+			 G_CALLBACK(gg_window_callback_lstCodes_toggled),
+			 (gpointer)lmCodes);
+	
 	GtkCellRenderer  *rendCodeHex = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 1, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeHex);
@@ -499,4 +506,25 @@ static void gg_window_add_code(void)
 	gtk_entry_set_text(GTK_ENTRY(txtEntry_Code), "");
 	gtk_entry_set_text(GTK_ENTRY(txtEntry_Name), "");
 	gtk_widget_grab_focus(txtEntry_Code);
+}
+
+
+/**
+ * gg_window_callback_lstCodes_toggled(): Code was toggled.
+ * @param cell_renderer
+ * @param path
+ * @param user_data Pointer to the list model.
+ */
+static void gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
+						gchar *path, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(cell_renderer);
+	
+	// Toggle the state of this item.
+	GtkTreeIter iter;
+	gboolean cur_state;
+	
+	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(user_data), &iter, path);
+	gtk_tree_model_get(GTK_TREE_MODEL(user_data), &iter, 0, &cur_state, -1);
+	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !cur_state, -1);
 }
