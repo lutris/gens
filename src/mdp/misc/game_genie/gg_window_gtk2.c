@@ -53,9 +53,13 @@ static void gg_window_create_lstCodes(GtkWidget *container);
 #define GG_RESPONSE_DEACTIVATE_ALL	2
 
 // Callbacks.
-static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+static gboolean	gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 //static void gg_window_callback_button(GtkButton *button, gpointer user_data);
-static void gg_window_callback_btnAddCode(GtkButton *button, gpointer user_data);
+static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data);
+static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data);
+
+// Miscellaneous.
+static void	gg_window_add_code(void);
 
 
 /**
@@ -142,11 +146,10 @@ void gg_window_show(void *parent)
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Code, 1, 2, 0, 1,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	// TODO
-	/*
+	
+	// Connect the "key-press-event" signal for the textbox.
 	g_signal_connect((gpointer)txtEntry_Code, "key-press-event",
-			  G_CALLBACK(on_entry_gg_keypress), NULL);
-	*/
+			  G_CALLBACK(gg_window_callback_txtEntry_keypress), NULL);
 	
 	// Name label and entry widgets.
 	GtkWidget *lblEntry_Name = gtk_label_new("Name");
@@ -161,11 +164,10 @@ void gg_window_show(void *parent)
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Name, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
-	// TODO
-	/*
-	g_signal_connect((gpointer)txtEntry_Code, "key-press-event",
-			  G_CALLBACK(on_entry_gg_keypress), NULL);
-	*/
+	
+	// Connect the "key-press-event" signal for the textbox.
+	g_signal_connect((gpointer)txtEntry_Name, "key-press-event",
+			  G_CALLBACK(gg_window_callback_txtEntry_keypress), NULL);
 	
 	// "Add Code" button.
 	GtkWidget *btnAddCode = gtk_button_new_with_mnemonic("Add C_ode");
@@ -181,7 +183,7 @@ void gg_window_show(void *parent)
 	
 	// Connect the "clicked" signal for the "Add Code" button.
 	g_signal_connect((gpointer)btnAddCode, "clicked",
-			 G_CALLBACK(gg_window_callback_btnAddCode), NULL);
+			 G_CALLBACK(gg_window_callback_btnAddCode_clicked), NULL);
 	
 	// Set the focus chain for the entry boxes.
 	GList *lFocusChain = NULL;
@@ -338,15 +340,49 @@ static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
 
 
 /**
- * gg_window_callback_btnAddCode(): "Add Code" button was clicked.
+ * gg_window_callback_btnAddCode_clicked(): "Add Code" button was clicked.
  * @param button Button widget.
  * @param user_data User data.
  */
-static void gg_window_callback_btnAddCode(GtkButton *button, gpointer user_data)
+static void gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data)
 {
 	MDP_UNUSED_PARAMETER(button);
 	MDP_UNUSED_PARAMETER(user_data);
 	
+	gg_window_add_code();
+}
+
+
+/**
+ * gg_window_callback_txtEntry_keypress(): A key was pressed in a txtEntry textbox.
+ * @param button Button widget.
+ * @param user_data User data.
+ */
+static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(widget);
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	if (event->keyval == GDK_Return ||
+	    event->keyval == GDK_KP_Enter)
+	{
+		// "Enter" was pressed. Add the code.
+		gg_window_add_code();
+		
+		// Stop processing the key.
+		return TRUE;
+	}
+	
+	// Continue processing the key.
+	return FALSE;
+}
+
+
+/**
+ * gg_window_add_code(): Add a code to the treeview.
+ */
+static void gg_window_add_code(void)
+{
 	// Decode the code.
 	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t code;
