@@ -11,14 +11,14 @@ mdp_misc_game_genie_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-vers
 mdp_misc_game_genie_la_SOURCES = \
 		gg_plugin.c \
 		gg.cpp \
-		patch_code.cpp
+		gg_code.c
 
 noinst_HEADERS = \
 		gg_plugin.h \
 		gg_icon.h \
 		gg.hpp \
 		gg_window.h \
-		patch_code.hpp
+		gg_code.h
 
 if GENS_UI_GTK
 mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.c

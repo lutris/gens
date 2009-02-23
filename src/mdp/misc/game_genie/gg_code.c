@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] Game Genie - Patch Code Handler.                            *
+ * [MDP] Game Genie - Code Handling Functions.                             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,76 +20,64 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "patch_code.hpp"
+#include "gg_code.h"
 
-#include <cstring>
-#include <string>
-using std::string;
-
+// C includes.
+#include <string.h>
 
 // Game Genie characters.
-const char PatchCode::gg_chars[] =
+static const char gg_chars[] =
 	"AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 
-PatchCode::PatchCode()
-{
-	m_cpu = CPU_INVALID;
-	m_dataSize = DS_INVALID;
-	m_ggCode[0] = 0x00;
-}
-
-PatchCode::PatchCode(const string& code, CPU cpu)
-{
-	m_cpu = CPU_INVALID;
-	m_dataSize = DS_INVALID;
-	m_ggCode[0] = 0x00;
-	
-	// Set the initial code.
-	setCode(code, cpu);
-}
-
-PatchCode::~PatchCode()
-{
-}
-
+// Parse functions.
+static int gg_code_decode_gg(const char* code, gg_code_t *gg_code);
+static int gg_code_encode_gg(gg_code_t *gg_code);
 
 /**
- * setCode(): Set the code information.
- * @param code Code string.
- * @param cpu CPU for the code.
+ * gg_code_parse(): Parse a Game Genie and/or patch code.
+ * @param code Original code.
+ * @param gg_code gg_code_t struct to store the code.
+ * @param cpu CPU this code is targetting.
+ * @return 0 on success; non-zero on error.
  */
-void PatchCode::setCode(const string& code, CPU cpu)
+int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 {
-	// Decode the code.
+	// Check that code and gg_code aren't NULL.
+	if (!code || !gg_code)
+		return 1;
 	
-	// First, check if this is potentially an M68K Game Genie code.
-	if (cpu == CPU_M68K && code.length() == 9 && code.at(4) == '-')
+	// Get the length of the code.
+	int code_len = strlen(code);
+	
+	// Check if this is a Main 68K Game Genie code.
+	if (cpu == CPU_M68K && code_len == 9 && code[4] == '-')
 	{
-		// Check if it's a Game Genie code.
-		if (decodeGG(code))
-			return;
+		// This is potentially a Game Genie code.
+		if (!gg_code_decode_gg(code, gg_code))
+			return 0;
 	}
 	
-	// TODO
-	return;
+	// TODO: Patch codes and other CPUs.
+	return 1;
 }
 
 
 // Macro to get a Game Genie character.
-#define GET_GENIE_CHAR(ch)				\
-	if (!(x = strchr(gg_chars, code.at(ch))))	\
-		return false;				\
+#define GET_GENIE_CHAR(ch)			\
+	if (!(x = strchr(gg_chars, code[ch])))	\
+		return 1;			\
 	n = ((int)(x - gg_chars)) >> 1;
 
 /**
- * decodeGG(): Decode a Game Genie code.
+ * gg_code_decode_gg(): Decode a Game Genie code.
  * @param code Game Genie code.
- * @return True if decoded successfully; false if not.
+ * @param gg_code gg_code_t to store the parsed code in.
+ * @return 0 on success; non-zero on error.
  */
-bool PatchCode::decodeGG(const std::string& code)
+static int gg_code_decode_gg(const char* code, gg_code_t *gg_code)
 {
-	if (code.length() != 9 || code.at(4) != '-')
-		return false;
+	if (strlen(code) != 9 || code[4] != '-')
+		return 1;
 	
 	// Go through all 9 characters, one at a time.
 	uint32_t address = 0;
@@ -134,76 +122,75 @@ bool PatchCode::decodeGG(const std::string& code)
 	address |= n;
 	
 	// Code decoded successfully.
-	m_address = address;
-	m_data = data;
-	m_dataSize = DS_WORD;
-	m_cpu = CPU_M68K;
+	gg_code->address  = address;
+	gg_code->data     = data;
+	gg_code->datasize = DS_WORD;
+	gg_code->cpu      = CPU_M68K;
 	
 	// Re-encode the Game Genie code to ensure that the letters are correct.
-	encodeGG();
-	
-	return true;
+	return gg_code_encode_gg(gg_code);
 }
 
 
 /**
- * encodeGG(): Encode the Game Genie code.
- * @return True if the code can be encoded as Game Genie; otherwise, false.
+ * gg_code_encode_gg(): Encode a code as Game Genie.
+ * @param gg_code Pointer to gg_code_t struct with a code to encode as Game Genie.
+ * @return 0 on success; non-zero on error (e.g. if the code can't be encoded as Game Genie).
  */
-bool PatchCode::encodeGG(void)
+static int gg_code_encode_gg(gg_code_t *gg_code)
 {
-	// Code must be for M68K and have a 16-bit data size.
+	// Code must be for the Main 68K and have a 16-bit data size.
 	// Also, address must be <0x400000.
-	if (m_cpu != CPU_M68K ||
-	    m_dataSize != DS_WORD ||
-	    m_address >= 0x400000)
+	if (gg_code->cpu != CPU_M68K ||
+	    gg_code->datasize != DS_WORD ||
+	    gg_code->address >= 0x400000)
 	{
 		// Cannot be encoded as a Game Genie code.
-		m_ggCode[0] = 0x00;
-		return false;
+		gg_code->game_genie[0] = 0x00;
+		return 1;
 	}
 	
 	// Initialize the Game Genie code.
-	m_ggCode[4] = '-';
-	m_ggCode[9] = 0x00;
+	gg_code->game_genie[4] = '-';
+	gg_code->game_genie[9] = 0x00;
 	
 	// Current character.
 	int ch;
 	
 	// Character 0: ____ ____ ____ ____ ____ ____ : ____ ____ ABCD E___
-	ch = (m_data >> 3) & 0x1F;
-	m_ggCode[0] = gg_chars[ch << 1];
+	ch = (gg_code->data >> 3) & 0x1F;
+	gg_code->game_genie[0] = gg_chars[ch << 1];
 	
 	// Character 1: ____ ____ DE__ ____ ____ ____ : ____ ____ ____ _ABC
-	ch = ((m_data << 2) & 0x1C) | ((m_address >> 14) & 0x03);
-	m_ggCode[1] = gg_chars[ch << 1];
+	ch = ((gg_code->data << 2) & 0x1C) | ((gg_code->address >> 14) & 0x03);
+	gg_code->game_genie[1] = gg_chars[ch << 1];
 	
 	// Character 2: ____ ____ __AB CDE_ ____ ____ : ____ ____ ____ ____
-	ch = (m_address >> 9) & 0x1F;
-	m_ggCode[2] = gg_chars[ch << 1];
+	ch = (gg_code->address >> 9) & 0x1F;
+	gg_code->game_genie[2] = gg_chars[ch << 1];
 	
 	// Character 3: BCDE ____ ____ ___A ____ ____ : ____ ____ ____ ____
-	ch = ((m_address >> 4) & 0x10) | ((m_address >> 20) & 0x0F);
-	m_ggCode[3] = gg_chars[ch << 1];
+	ch = ((gg_code->address >> 4) & 0x10) | ((gg_code->address >> 20) & 0x0F);
+	gg_code->game_genie[3] = gg_chars[ch << 1];
 	
 	// Character 4: '-'
 	
 	// Character 5: ____ ABCD ____ ____ ____ ____ : ___E ____ ____ ____
-	ch = ((m_address >> 15) & 0x1E) | ((m_data >> 12) & 0x01);
-	m_ggCode[5] = gg_chars[ch << 1];
+	ch = ((gg_code->address >> 15) & 0x1E) | ((gg_code->data >> 12) & 0x01);
+	gg_code->game_genie[5] = gg_chars[ch << 1];
 	
 	// Character 6: ____ ____ ____ ____ ____ ____ : E___ ABCD ____ ____
-	ch = ((m_data >> 7) & 0x1E) | ((m_data >> 15) & 0x01);
-	m_ggCode[6] = gg_chars[ch << 1];
+	ch = ((gg_code->data >> 7) & 0x1E) | ((gg_code->data >> 15) & 0x01);
+	gg_code->game_genie[6] = gg_chars[ch << 1];
 	
 	// Character 7: ____ ____ ____ ____ CDE_ ____ : _AB_ ____ ____ ____
-	ch = ((m_data >> 10) & 0x18) | ((m_address >> 5) & 0x07);
-	m_ggCode[7] = gg_chars[ch << 1];
+	ch = ((gg_code->data >> 10) & 0x18) | ((gg_code->address >> 5) & 0x07);
+	gg_code->game_genie[7] = gg_chars[ch << 1];
 	
 	// Character 8: ____ ____ ____ ____ ___A BCDE : ____ ____ ____ ____
-	ch = m_address & 0x1F;
-	m_ggCode[8] = gg_chars[ch << 1];
+	ch = gg_code->address & 0x1F;
+	gg_code->game_genie[8] = gg_chars[ch << 1];
 	
 	// Code encoded successfully.
-	return true;
+	return 0;
 }
