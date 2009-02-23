@@ -64,7 +64,7 @@ static void	gg_window_save(void);
 
 // Callbacks.
 static gboolean	gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-//static void gg_window_callback_button(GtkButton *button, gpointer user_data);
+static void	gg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data);
 static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEventKey *event, gpointer user_data);
 static void	gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
@@ -103,6 +103,10 @@ void gg_window_show(void *parent)
 			 G_CALLBACK(gg_window_callback_close), NULL);
 	g_signal_connect((gpointer)gg_window, "destroy_event",
 			 G_CALLBACK(gg_window_callback_close), NULL);
+	
+	// Dialog response callback.
+	g_signal_connect((gpointer)(gg_window), "response",
+			 G_CALLBACK(gg_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
 	GtkWidget *vboxDialog = GTK_DIALOG(gg_window)->vbox;
@@ -414,6 +418,39 @@ static gboolean gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpo
 	
 	gg_window_close();
 	return FALSE;
+}
+
+
+/**
+ * gg_window_callback_response(): Dialog Response callback.
+ * @param dialog
+ * @param response_id
+ * @param user_data
+ */
+static void gg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(dialog);
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	switch (response_id)
+	{
+		case GTK_RESPONSE_CANCEL:
+			gg_window_close();
+			break;
+		case GTK_RESPONSE_APPLY:
+			gg_window_save();
+			break;
+		case GTK_RESPONSE_OK:
+			gg_window_save();
+			gg_window_close();
+			break;
+		
+		case GTK_RESPONSE_DELETE_EVENT:
+		default:
+			// Other event. Don't do anything.
+			// Also, don't do anything when the dialog is deleted.
+			break;
+	}
 }
 
 
