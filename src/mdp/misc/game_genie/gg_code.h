@@ -72,6 +72,9 @@ typedef struct _gg_code_t
 	
 	// Game Genie code.
 	char		game_genie[16];
+	
+	// Code name.
+	char		name[128];
 } gg_code_t;
 
 /**
