@@ -269,9 +269,10 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	}
 	else
 	{
-		lmCodes = gtk_list_store_new(3,
+		lmCodes = gtk_list_store_new(4,
 				G_TYPE_BOOLEAN,		// Enabled
-				G_TYPE_STRING,		// Code
+				G_TYPE_STRING,		// Code (Hex)
+				G_TYPE_STRING,		// Code (GG)
 				G_TYPE_STRING);		// Name
 	}
 	
@@ -287,12 +288,16 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	GtkTreeViewColumn *colEnabled = gtk_tree_view_column_new_with_attributes("Enabled", rendEnabled, "active", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colEnabled);
 	
-	GtkCellRenderer  *rendCode = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colCode = gtk_tree_view_column_new_with_attributes("Code", rendCode, "active", 0, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCode);
+	GtkCellRenderer  *rendCodeHex = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 1, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeHex);
+	
+	GtkCellRenderer  *rendCodeGG = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colCodeGG = gtk_tree_view_column_new_with_attributes("Code (GG)", rendCodeGG, "text", 2, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeGG);
 	
 	GtkCellRenderer  *rendName = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "active", 0, NULL);
+	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "text", 3, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colName);
 }
 
