@@ -157,7 +157,6 @@ void gg_window_show(void *parent)
 			 (GtkAttachOptions)(0), 0, 0);
 	
 	txtEntry_Name = gtk_entry_new();
-	gtk_entry_set_max_length(GTK_ENTRY(txtEntry_Name), 11);
 	gtk_widget_show(txtEntry_Name);
 	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Name, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
