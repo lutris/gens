@@ -29,6 +29,9 @@
 #include "gg.hpp"
 #include "gg_code.h"
 
+// C includes.
+#include <string.h>
+
 // C++ includes.
 #include <list>
 using std::list;
@@ -360,7 +363,40 @@ static void gg_window_init(void)
  */
 static void gg_window_save(void)
 {
-	// TODO
+	// TODO: Undo any ROM-modifying codes.
+	
+	// Clear the code list.
+	gg_code_list.clear();
+	
+	gg_code_t gg_code;
+	gboolean enabled;
+	gchar *code_hex, *name;
+	
+	// Add all codes in the listview to the code list.
+	GtkTreeIter iter;
+	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
+	for (int i = 0; valid == true; i++)
+	{
+		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 1, &code_hex, 3, &name, -1);
+		
+		// Parse the code.
+		// TODO: Store the already-parsed code in the list model?
+		// TODO: Error handling.
+		gg_code_parse(code_hex, &gg_code, CPU_M68K);
+		
+		// Copy the name of the code into gg_code_t.
+		strncpy(gg_code.name, name, sizeof(gg_code.name));
+		gg_code.name[sizeof(gg_code.name)-1] = 0x00;
+		gg_code.enabled = enabled;
+		
+		// Add the code to the list of codes.
+		gg_code_list.push_back(gg_code);
+		
+		// Get the next list element.
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+	}	
+	
+	// TODO: Apply codes if a game is running.
 }
 
 
