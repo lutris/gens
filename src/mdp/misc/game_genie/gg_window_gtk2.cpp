@@ -27,10 +27,13 @@
 #include "gg_window.hpp"
 #include "gg_plugin.h"
 #include "gg.hpp"
-
 #include "gg_code.h"
 
-// GTK includes.
+// C++ includes.
+#include <list>
+using std::list;
+
+// GTK+ includes.
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -51,6 +54,10 @@ static void gg_window_create_lstCodes(GtkWidget *container);
 // Custom response IDs.
 #define GG_RESPONSE_DELETE		1
 #define GG_RESPONSE_DEACTIVATE_ALL	2
+
+// Code load/save functions.
+static void	gg_window_init(void);
+static void	gg_window_save(void);
 
 // Callbacks.
 static gboolean	gg_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -249,6 +256,9 @@ void gg_window_show(void *parent)
 						-1);
 #endif
 	
+	// Initialize the Game Genie code treeview.
+	gg_window_init();
+	
 	// Set the window as modal to the main application window.
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(gg_window), GTK_WINDOW(parent));
@@ -331,6 +341,29 @@ void gg_window_close(void)
 
 
 /**
+ * gg_window_init(): Initialize the Game Genie code treeview.
+ */
+static void gg_window_init(void)
+{
+	// Add all loaded codes to the treeview.
+	for (list<gg_code_t>::iterator iter = gg_code_list.begin();
+	     iter != gg_code_list.end(); iter++)
+	{
+		gg_window_add_code(&(*iter), NULL);
+	}
+}
+
+
+/**
+ * gg_window_save(): Save the Game Genie codes.
+ */
+static void gg_window_save(void)
+{
+	// TODO
+}
+
+
+/**
  * gg_window_callback_close(): Close Window callback.
  * @param widget
  * @param event
@@ -395,6 +428,8 @@ static int gg_window_add_code_from_textboxes(void)
 	// Decode the code.
 	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t gg_code;
+	gg_code.name[0] = 0x00;
+	
 	if (gg_code_parse(gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)), &gg_code, CPU_M68K))
 	{
 		// Error parsing the code.
@@ -418,7 +453,7 @@ static int gg_window_add_code_from_textboxes(void)
 /**
  * gg_window_add_code(): Add a code to the treeview.
  * @param gg_code Pointer to gg_code_t containing the code to add.
- * @param name Name of the code. (If NULL, no name is used.)
+ * @param name Name of the code. (If NULL, the name in gg_code is used.)
  * @return 0 on success; non-zero on error.
  */
 static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
@@ -519,9 +554,9 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 		s_code_gg = gg_code->game_genie;
 	}
 	
-	// If no name is given, use an empty string.
+	// If no name is given, use the name in the gg_code.
 	if (!name)
-		name = "";
+		name = &gg_code->name[0];
 	
 	// Code is decoded. Add it to the treeview.
 	GtkTreeIter iter;
