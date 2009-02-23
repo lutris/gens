@@ -269,11 +269,10 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	}
 	else
 	{
-		lmCodes = gtk_list_store_new(4,
+		lmCodes = gtk_list_store_new(3,
 				G_TYPE_BOOLEAN,		// Enabled
 				G_TYPE_STRING,		// Code
-				G_TYPE_STRING,		// Name
-				G_TYPE_POINTER);	// Pointer to gg_code_t
+				G_TYPE_STRING);		// Name
 	}
 	
 	// Treeview containing the Game Genie codes.
