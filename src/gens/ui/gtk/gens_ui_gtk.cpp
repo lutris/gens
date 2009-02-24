@@ -218,8 +218,11 @@ GensUI::MsgBox_Response GensUI::msgBox(const string& msg, const string& title,
 	
 	gint response;
 	GtkWidget *dialog = gtk_message_dialog_new(
-			GTK_WINDOW(owner), GTK_DIALOG_MODAL,
-			gtkMsgIcon, gtkButtons, msg.c_str());
+				GTK_WINDOW(owner),
+				GTK_DIALOG_MODAL,
+				gtkMsgIcon,
+				gtkButtons,
+				"%s", msg.c_str());
 	gtk_window_set_title(GTK_WINDOW(dialog), title.c_str());
 	response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);

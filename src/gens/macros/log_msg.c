@@ -52,7 +52,8 @@ void log_msgbox(const char* msg, const char* title)
 					GTK_WINDOW(gens_window),
 					GTK_DIALOG_MODAL,
 					GTK_MESSAGE_ERROR,
-					GTK_BUTTONS_OK,	msg);
+					GTK_BUTTONS_OK,
+					"%s", msg);
 		gtk_window_set_title(GTK_WINDOW(msgbox), title);
 		gtk_dialog_run(GTK_DIALOG(msgbox));
 		gtk_widget_destroy(msgbox);
