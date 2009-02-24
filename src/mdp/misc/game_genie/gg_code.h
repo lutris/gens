@@ -95,9 +95,9 @@ typedef enum _GG_CODE_ERR
  * @param code Original code.
  * @param gg_code gg_code_t struct to store the code.
  * @param cpu CPU this code is targetting.
- * @return 0 on success; non-zero on error.
+ * @return GGCE_OK on success; other gg_code_parse_err on error.
  */
-DLL_LOCAL int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu);
+DLL_LOCAL GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu);
 
 #ifdef __cplusplus
 }

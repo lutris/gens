@@ -40,13 +40,13 @@ static int gg_code_encode_gg(gg_code_t *gg_code);
  * @param code Original code.
  * @param gg_code gg_code_t struct to store the code.
  * @param cpu CPU this code is targetting.
- * @return 0 on success; non-zero on error. [TODO: Define error codes.]
+ * @return GGCE_OK on success; other GG_CODE_ERR on error.
  */
-int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
+GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 {
 	// Check that code and gg_code aren't NULL.
 	if (!code || !gg_code)
-		return 1;
+		return GGCE_NULL;
 	
 	// Get the length of the code.
 	int code_len = strlen(code);
@@ -56,7 +56,7 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	{
 		// This is potentially a Game Genie code.
 		if (!gg_code_decode_gg(code, gg_code))
-			return 0;
+			return GGCE_OK;
 	}
 	
 	// Check for a patch code.
@@ -68,18 +68,18 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	
 	// Make sure that at least three items were read by sscanf.
 	if (rval < 3)
-		return 1;
+		return GGCE_UNRECOGNIZED;
 	
 	// Check that the colon character is a colon.
 	if (chrColon != ':')
-		return 1;
+		return GGCE_UNRECOGNIZED;
 	
 	// If more than four arguments were read, make sure the fourth argument
 	// is either NULL, a newline, or a carriage return.
 	if (rval >= 4)
 	{
 		if (chrEnd != 0x00 && chrEnd != '\n' && chrEnd != '\r')
-			return 1;
+			return GGCE_UNRECOGNIZED;
 	}
 	
 	// Valid patch code.
@@ -90,13 +90,13 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	{
 		// MC68000 has a 24-bit address bus.
 		if (address & 0xFF000000)
-			return 1;
+			return GGCE_ADDRESS_RANGE;
 	}
 	else if (cpu == CPU_Z80)
 	{
 		// Z80 has a 16-bit address bus.
 		if (address & 0xFFFF0000)
-			return 1;
+			return GGCE_ADDRESS_RANGE;
 	}
 	
 	// Determine the data size based on the number of characters entered.
@@ -125,7 +125,7 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	else
 	{
 		// More than 8 characters: not valid.
-		return 1;
+		return GGCE_DATA_TOO_LARGE;
 	}
 	
 	// Check that the address is aligned properly for the specified CPU.
@@ -135,7 +135,7 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 		if ((datasize == DS_WORD || datasize == DS_DWORD) && (address & 1))
 		{
 			// 16-bit access, but not word-aligned.
-			return 1;
+			return GGCE_ADDRESS_ALIGNMENT;
 		}
 	}
 #if 0
@@ -156,7 +156,7 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	gg_code_encode_gg(gg_code);
 	
 	// Code parsed successfully.
-	return 0;
+	return GGCE_OK;
 }
 
 
