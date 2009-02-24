@@ -233,7 +233,10 @@ static int gg_code_decode_gg(const char* code, gg_code_t *gg_code)
 	gg_code->cpu      = CPU_M68K;
 	
 	// Re-encode the Game Genie code to ensure that the letters are correct.
-	return gg_code_encode_gg(gg_code);
+	gg_code_encode_gg(gg_code);
+	
+	// Decoded successfully.
+	return 0;
 }
 
 
