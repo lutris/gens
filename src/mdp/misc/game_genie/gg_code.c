@@ -56,7 +56,14 @@ GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	{
 		// This is potentially a Game Genie code.
 		if (!gg_code_decode_gg(code, gg_code))
+		{
+			// Make sure the address is aligned.
+			if (gg_code->address & 1)
+				return GGCE_ADDRESS_ALIGNMENT;
+			
+			// Address is aligned.
 			return GGCE_OK;
+		}
 	}
 	
 	// Check for a patch code.
