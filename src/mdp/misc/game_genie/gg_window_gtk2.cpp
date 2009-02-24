@@ -564,7 +564,7 @@ static int gg_window_add_code_from_textboxes(void)
 				break;
 			default:
 				// Other error.
-				sprintf(err_msg, "Unknown error %d.", gcp_rval);
+				sprintf(err_msg, "Unknown error code %d.", gcp_rval);
 				break;
 		}
 		
