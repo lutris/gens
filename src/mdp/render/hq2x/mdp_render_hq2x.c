@@ -48,7 +48,7 @@ static MDP_Host_t *mdp_render_hq2x_hostSrv;
 int *mdp_render_hq2x_LUT16to32 = NULL;
 
 // 16-bit RGB to YUV lookup table.
-const int *mdp_render_hq2x_RGB16toYUV = NULL;
+int *mdp_render_hq2x_RGB16toYUV = NULL;
 
 
 // TODO: Proper 15-bit color support.
@@ -93,7 +93,7 @@ int MDP_FNCALL mdp_render_hq2x_end(void)
 	}
 	
 	// If the RGB16toYUV table was allocated, free it.
-	free((void*)mdp_render_hq2x_RGB16toYUV);
+	free(mdp_render_hq2x_RGB16toYUV);
 	mdp_render_hq2x_RGB16toYUV = NULL;
 	
 	// Plugin is shut down.

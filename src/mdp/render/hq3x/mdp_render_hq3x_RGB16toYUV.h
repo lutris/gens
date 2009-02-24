@@ -30,7 +30,7 @@ extern "C" {
 
 #include "mdp/mdp_fncall.h"
 
-DLL_LOCAL const int* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void);
+DLL_LOCAL int* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void);
 
 #ifdef __cplusplus
 }

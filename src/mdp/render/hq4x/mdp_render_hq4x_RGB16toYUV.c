@@ -26,16 +26,12 @@
 // C includes.
 #include <stdlib.h>
 
-// Used for mprotect().
-// TODO: Does mprotect() work on Win32?
-#include <sys/mman.h>
-
 
 /**
  * mdp_render_hq4x_build_rgb16toyuv(): Build a 16-bit RGB to YUV table.
  * @return RGB16toYUV.
  */
-const int* MDP_FNCALL mdp_render_hq4x_build_RGB16toYUV(void)
+int* MDP_FNCALL mdp_render_hq4x_build_RGB16toYUV(void)
 {
 	int *RGB16toYUV = (int*)(malloc(65536 * sizeof(int)));
 	
@@ -58,9 +54,6 @@ const int* MDP_FNCALL mdp_render_hq4x_build_RGB16toYUV(void)
 			}
 		}
 	}
-	
-	// Mark the lookup table as read-only.
-	mprotect(RGB16toYUV, (65536 * sizeof(int)), PROT_READ);
 	
 	// Return the pointer.
 	return RGB16toYUV;

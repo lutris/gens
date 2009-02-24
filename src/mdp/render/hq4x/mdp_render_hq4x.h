@@ -37,7 +37,7 @@ DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_cpp(MDP_Render_Info_t *renderInfo);
 
 DLL_LOCAL extern int *mdp_render_hq4x_LUT16to32;
-DLL_LOCAL extern const int *mdp_render_hq4x_RGB16toYUV;
+DLL_LOCAL extern int *mdp_render_hq4x_RGB16toYUV;
 
 #ifdef __cplusplus
 }
