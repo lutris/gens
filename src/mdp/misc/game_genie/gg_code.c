@@ -85,13 +85,18 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	// Valid patch code.
 	printf("Address: 0x%08X; Data: 0x%08X\n", address, data);
 	
-	// Check that the address is in range for the specified CPU.
-	// If it isn't, return an error code.
-	if (((cpu == CPU_M68K || cpu == CPU_S68K) && (address & 0xFF000000)) ||
-	    ((cpu == CPU_Z80) && (address & 0xFFFF0000)))
+	// Check that the address is valid for the specified CPU.
+	if (cpu == CPU_M68K || cpu == CPU_S68K)
 	{
-		// Address is out of range for this CPU.
-		return 1;
+		// MC68000 has a 24-bit address bus.
+		if (address & 0xFF000000)
+			return 1;
+	}
+	else if (cpu == CPU_Z80)
+	{
+		// Z80 has a 16-bit address bus.
+		if (address & 0xFFFF0000)
+			return 1;
 	}
 	
 	// Determine the data size based on the number of characters entered.
@@ -122,6 +127,23 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 		// More than 8 characters: not valid.
 		return 1;
 	}
+	
+	// Check that the address is aligned properly for the specified CPU.
+	if (cpu == CPU_M68K || cpu == CPU_S68K)
+	{
+		// 68000 requires word-alignment for 16-bit and 32-bit data.
+		if ((datasize == DS_WORD || datasize == DS_DWORD) && (address & 1))
+		{
+			// 16-bit access, but not word-aligned.
+			return 1;
+		}
+	}
+#if 0
+	else if (cpu == CPU_MSH2 || cpu == CPU_SSH2)
+	{
+		// TODO: Check the SH2's alignment restrictions.
+	}
+#endif
 	
 	// Set the members of the gg_code struct.
 	gg_code->enabled  = 0;
