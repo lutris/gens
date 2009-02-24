@@ -78,6 +78,19 @@ typedef struct _gg_code_t
 } gg_code_t;
 
 /**
+ * GG_CODE_ERR: Error codes from gg_code_parse().
+ */
+typedef enum _GG_CODE_ERR
+{
+	GGCE_OK			= 0, // Decoded successfully.
+	GGCE_NULL		= 1, // NULL pointers were passed.
+	GGCE_UNRECOGNIZED	= 2, // Unrecognized code.
+	GGCE_ADDRESS_RANGE	= 3, // Address out of range.
+	GGCE_ADDRESS_ALIGNMENT	= 4, // Adddress alignment is incorrect for the datasize.
+	GGCE_DATA_TOO_LARGE	= 5, // Data is too large.
+} GG_CODE_ERR;
+
+/**
  * gg_code_parse(): Parse a Game Genie and/or patch code.
  * @param code Original code.
  * @param gg_code gg_code_t struct to store the code.
