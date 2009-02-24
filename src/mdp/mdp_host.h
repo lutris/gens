@@ -42,7 +42,6 @@ typedef enum
 {
 	MDP_PTR_NULL		= 0,
 	MDP_PTR_LUT16to32	= 1,
-	MDP_PTR_RGB16toYUV	= 2,
 	MDP_PTR_ROM_MD		= 3, /* BE */
 	MDP_PTR_ROM_32X		= 4, /* LE */
 	MDP_PTR_RAM_MD		= 5, /* BE */

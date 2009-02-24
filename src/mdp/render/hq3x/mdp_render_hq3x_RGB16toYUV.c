@@ -1,10 +1,10 @@
 /***************************************************************************
- * Gens: [MDP] hq4x renderer.                                              *
+ * Gens: [MDP] hq3x renderer. (16-bit RGB to YUV lookup table)             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
- * hq4x Copyright (c) 2003 by Maxim Stepin                                 *
+ * hq3x Copyright (c) 2003 by Maxim Stepin                                 *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU Lesser General Public License as published   *
@@ -21,26 +21,47 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_RENDER_HQ4X_H
-#define MDP_RENDER_HQ4X_H
+#include "mdp_render_hq3x_RGB16toYUV.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// C includes.
+#include <stdlib.h>
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_render.h"
-#include "mdp/mdp_host.h"
+// Used for mprotect().
+// TODO: Does mprotect() work on Win32?
+#include <sys/mman.h>
 
-DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_init(MDP_Host_t *hostSrv);
-DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_cpp(MDP_Render_Info_t *renderInfo);
 
-DLL_LOCAL extern int *mdp_render_hq4x_LUT16to32;
-DLL_LOCAL extern const int *mdp_render_hq4x_RGB16toYUV;
-
-#ifdef __cplusplus
+/**
+ * mdp_render_hq3x_build_rgb16toyuv(): Build a 16-bit RGB to YUV table.
+ * @return RGB16toYUV.
+ */
+const int* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void)
+{
+	int *RGB16toYUV = (int*)(malloc(65536 * sizeof(int)));
+	
+	// Initialize the 16-bit RGB to YUV conversion table.
+	int i, j, k, r, g, b, Y, u, v;
+	
+	for (i = 0; i < 32; i++)
+	{
+		for (j = 0; j < 64; j++)
+		{
+			for (k = 0; k < 32; k++)
+			{
+				r = i << 3;
+				g = j << 2;
+				b = k << 3;
+				Y = (r + g + b) >> 2;
+				u = 128 + ((r - b) >> 2);
+				v = 128 + ((-r + 2*g -b) >> 3);
+				RGB16toYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
+			}
+		}
+	}
+	
+	// Mark the lookup table as read-only.
+	mprotect(RGB16toYUV, (65536 * sizeof(int)), PROT_READ);
+	
+	// Return the pointer.
+	return RGB16toYUV;
 }
-#endif
-
-#endif /* MDP_RENDER_HQ4X_H */

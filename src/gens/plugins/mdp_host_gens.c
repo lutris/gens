@@ -60,8 +60,6 @@ static inline void mdp_host_ptr_unref_RGB16toYUV(void);
 // MDP_PTR variables.
 static int* mdp_ptr_LUT16to32 = NULL;
 static int  mdp_ptr_LUT16to32_count = 0;
-static int* mdp_ptr_RGB16toYUV = NULL;
-static int  mdp_ptr_RGB16toYUV_count = 0;
 
 
 MDP_Host_t Gens_MDP_Host =
@@ -106,8 +104,6 @@ void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 	{
 		case MDP_PTR_LUT16to32:
 			return (void*)mdp_host_ptr_ref_LUT16to32();
-		case MDP_PTR_RGB16toYUV:
-			return (void*)mdp_host_ptr_ref_RGB16toYUV();
 		case MDP_PTR_ROM_MD:
 			return &Rom_Data;
 		case MDP_PTR_ROM_32X:
@@ -143,10 +139,6 @@ int MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 	{
 		case MDP_PTR_LUT16to32:
 			mdp_host_ptr_unref_LUT16to32();
-			break;
-		
-		case MDP_PTR_RGB16toYUV:
-			mdp_host_ptr_unref_RGB16toYUV();
 			break;
 		
 		case MDP_PTR_ROM_MD:
@@ -209,63 +201,6 @@ static inline void mdp_host_ptr_unref_LUT16to32(void)
 		// All references are gone. Free the lookup table.
 		free(mdp_ptr_LUT16to32);
 		mdp_ptr_LUT16to32 = NULL;
-	}
-}
-
-
-/**
- * mdp_host_ptr_ref_LUT16to32(): Get a reference for RGB16toYUV.
- * @return RGB16toYUV.
- */
-static inline int* mdp_host_ptr_ref_RGB16toYUV(void)
-{
-	if (!mdp_ptr_RGB16toYUV)
-	{
-		// Allocate memory for the lookup table.
-		mdp_ptr_RGB16toYUV = (int*)(malloc(65536 * sizeof(int)));
-		
-		// Initialize the RGB to YUV conversion table.
-		int i, j, k, r, g, b, Y, u, v;
-		
-		for (i = 0; i < 32; i++)
-		{
-			for (j = 0; j < 64; j++)
-			{
-				for (k = 0; k < 32; k++)
-				{
-					r = i << 3;
-					g = j << 2;
-					b = k << 3;
-					Y = (r + g + b) >> 2;
-					u = 128 + ((r - b) >> 2);
-					v = 128 + ((-r + 2*g -b) >> 3);
-					mdp_ptr_RGB16toYUV[(i << 11) + (j << 5) + k] = (Y << 16) + (u << 8) + v;
-				}
-			}
-		}
-	}
-	
-	// Increment the reference counter.
-	mdp_ptr_RGB16toYUV_count++;
-	
-	// Return the pointer.
-	return mdp_ptr_RGB16toYUV;
-}
-
-/**
- * mdp_host_ptr_unref_RGB16toYUV(): Unreference LUT16to32.
- * @return RGB16toYUV.
- */
-static inline void mdp_host_ptr_unref_RGB16toYUV(void)
-{
-	// Decrement the reference counter.
-	mdp_ptr_RGB16toYUV_count--;
-	
-	if (mdp_ptr_RGB16toYUV_count <= 0)
-	{
-		// All references are gone. Free the lookup table.
-		free(mdp_ptr_RGB16toYUV);
-		mdp_ptr_RGB16toYUV = NULL;
 	}
 }
 

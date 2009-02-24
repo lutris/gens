@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  * hq2x Copyright (c) 2003 by Maxim Stepin                                 *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -27,8 +27,11 @@
 
 #include "mdp_render_hq2x.h"
 #include "mdp_render_hq2x_plugin.h"
+#include "mdp_render_hq2x_RGB16toYUV.h"
 
+// C includes.
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 // MDP includes.
@@ -43,7 +46,9 @@
 // MDP Host Services.
 static MDP_Host_t *mdp_render_hq2x_hostSrv;
 int *mdp_render_hq2x_LUT16to32 = NULL;
-int *mdp_render_hq2x_RGB16toYUV = NULL;
+
+// 16-bit RGB to YUV lookup table.
+const int *mdp_render_hq2x_RGB16toYUV = NULL;
 
 
 // TODO: Proper 15-bit color support.
@@ -87,12 +92,9 @@ int MDP_FNCALL mdp_render_hq2x_end(void)
 		mdp_render_hq2x_LUT16to32 = NULL;
 	}
 	
-	// If the RGB16toYUV pointer was referenced, unreference it.
-	if (mdp_render_hq2x_RGB16toYUV)
-	{
-		mdp_render_hq2x_hostSrv->ptr_unref(MDP_PTR_RGB16toYUV);
-		mdp_render_hq2x_RGB16toYUV = NULL;
-	}
+	// If the RGB16toYUV table was allocated, free it.
+	free((void*)mdp_render_hq2x_RGB16toYUV);
+	mdp_render_hq2x_RGB16toYUV = NULL;
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
@@ -113,7 +115,7 @@ int MDP_FNCALL mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
 	if (!mdp_render_hq2x_LUT16to32)
 		mdp_render_hq2x_LUT16to32 = (int*)(mdp_render_hq2x_hostSrv->ptr_ref(MDP_PTR_LUT16to32));
 	if (!mdp_render_hq2x_RGB16toYUV)
-		mdp_render_hq2x_RGB16toYUV = (int*)(mdp_render_hq2x_hostSrv->ptr_ref(MDP_PTR_RGB16toYUV));
+		mdp_render_hq2x_RGB16toYUV = mdp_render_hq2x_build_RGB16toYUV();
 	
 #ifdef GENS_X86_ASM
 	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)

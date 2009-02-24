@@ -1,10 +1,10 @@
 /***************************************************************************
- * Gens: [MDP] hq4x renderer.                                              *
+ * Gens: [MDP] hq3x renderer. (16-bit RGB to YUV lookup table)             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
- * hq4x Copyright (c) 2003 by Maxim Stepin                                 *
+ * hq3x Copyright (c) 2003 by Maxim Stepin                                 *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU Lesser General Public License as published   *
@@ -21,26 +21,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_RENDER_HQ4X_H
-#define MDP_RENDER_HQ4X_H
+#ifndef _MDP_RENDER_HQ2X_RGB16TOYUV_H
+#define _MDP_RENDER_HQ2X_RGB16TOYUV_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_render.h"
-#include "mdp/mdp_host.h"
+#include "mdp/mdp_fncall.h"
 
-DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_init(MDP_Host_t *hostSrv);
-DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_render_hq4x_cpp(MDP_Render_Info_t *renderInfo);
-
-DLL_LOCAL extern int *mdp_render_hq4x_LUT16to32;
-DLL_LOCAL extern const int *mdp_render_hq4x_RGB16toYUV;
+DLL_LOCAL const int* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* MDP_RENDER_HQ4X_H */
+#endif /* _MDP_RENDER_HQ2X_RGB16TOYUV_H */
