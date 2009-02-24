@@ -64,8 +64,8 @@ typedef struct _gg_code_t
 	uint32_t	address;
 	uint32_t	data;
 	
-	gg_code_datasize	datasize;
 	gg_code_cpu		cpu;
+	gg_code_datasize	datasize;
 	
 	// Backup area for ROM-modifying codes.
 	uint32_t	backup_data;

@@ -23,6 +23,7 @@
 #include "gg_code.h"
 
 // C includes.
+#include <stdio.h>
 #include <string.h>
 
 // Game Genie characters.
@@ -33,17 +34,13 @@ static const char gg_chars[] =
 static int gg_code_decode_gg(const char* code, gg_code_t *gg_code);
 static int gg_code_encode_gg(gg_code_t *gg_code);
 
-static int gg_code_decode_68k_16(const char* code, gg_code_t *gg_code, const gg_code_cpu cpu);
-static int gg_code_decode_68k_8(const char* code, gg_code_t *gg_code, const gg_code_cpu cpu);
-static int gg_code_decode_68k_32(const char* code, gg_code_t *gg_code, const gg_code_cpu cpu);
-
 
 /**
  * gg_code_parse(): Parse a Game Genie and/or patch code.
  * @param code Original code.
  * @param gg_code gg_code_t struct to store the code.
  * @param cpu CPU this code is targetting.
- * @return 0 on success; non-zero on error.
+ * @return 0 on success; non-zero on error. [TODO: Define error codes.]
  */
 int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 {
@@ -62,34 +59,82 @@ int gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 			return 0;
 	}
 	
-	// TODO: Make these functions more flexible.
+	// Check for a patch code.
+	uint32_t address = 0, data = 0;
+	char chrColon = 0, chrEnd = 0;
 	
-	// Check if this is a 16-bit data code for a 68000 CPU.
-	if ((cpu == CPU_M68K || cpu == CPU_S68K) && code_len == 11 && code[6] == ':')
+	// Scan the input data.
+	int rval = sscanf(code, "%X%c%X%c", &address, &chrColon, &data, &chrEnd);
+	
+	// Make sure that at least three items were read by sscanf.
+	if (rval < 3)
+		return 1;
+	
+	// Check that the colon character is a colon.
+	if (chrColon != ':')
+		return 1;
+	
+	// If more than four arguments were read, make sure the fourth argument
+	// is either NULL, a newline, or a carriage return.
+	if (rval >= 4)
 	{
-		// This is potentially a 16-bit data code for a 68000 CPU.
-		if (!gg_code_decode_68k_16(code, gg_code, cpu))
-			return 0;
+		if (chrEnd != 0x00 && chrEnd != '\n' && chrEnd != '\r')
+			return 1;
 	}
 	
-	// Check if this is an 8-bit data code for a 68000 CPU.
-	if ((cpu == CPU_M68K || cpu == CPU_S68K) && code_len == 9 && code[6] == ':')
+	// Valid patch code.
+	printf("Address: 0x%08X; Data: 0x%08X\n", address, data);
+	
+	// Check that the address is in range for the specified CPU.
+	// If it isn't, return an error code.
+	if (((cpu == CPU_M68K || cpu == CPU_S68K) && (address & 0xFF000000)) ||
+	    ((cpu == CPU_Z80) && (address & 0xFFFF0000)))
 	{
-		// This is potentially an 8-bit data code for a 68000 CPU.
-		if (!gg_code_decode_68k_8(code, gg_code, cpu))
-			return 0;
+		// Address is out of range for this CPU.
+		return 1;
 	}
 	
-	// Check if this is a 32-bit data code for a 68000 CPU.
-	if ((cpu == CPU_M68K || cpu == CPU_S68K) && code_len == 15 && code[6] == ':')
+	// Determine the data size based on the number of characters entered.
+	gg_code_datasize datasize;
+	
+	int pos_colon = (int)(strchr(code, ':') - code);	// Position of the ':' within the code.
+	int data_chr_len = strlen(code) - pos_colon - 1;	// Length of the data segment.
+	
+	if (data_chr_len <= 2)
 	{
-		// This is potentially a 32-bit data code for a 68000 CPU.
-		if (!gg_code_decode_68k_32(code, gg_code, cpu))
-			return 0;
+		// 1-2 characters: 8-bit code.
+		datasize = DS_BYTE;
+		data &= 0xFF;
+	}
+	else if (data_chr_len <= 4)
+	{
+		// 3-4 characters: 16-bit code.
+		datasize = DS_WORD;
+		data &= 0xFFFF;
+	}
+	else if (data_chr_len <= 8)
+	{
+		// 5-8 characters: 32-bit code.
+		datasize = DS_DWORD;
+	}
+	else
+	{
+		// More than 8 characters: not valid.
+		return 1;
 	}
 	
-	// TODO: Patch codes and other CPUs.
-	return 1;
+	// Set the members of the gg_code struct.
+	gg_code->enabled  = 0;
+	gg_code->address  = address;
+	gg_code->data     = data;
+	gg_code->cpu      = cpu;
+	gg_code->datasize = datasize;
+	
+	// Attempt to encode the code as a Game Genie code.
+	gg_code_encode_gg(gg_code);
+	
+	// Code parsed successfully.
+	return 0;
 }
 
 
@@ -223,160 +268,5 @@ static int gg_code_encode_gg(gg_code_t *gg_code)
 	gg_code->game_genie[8] = gg_chars[ch << 1];
 	
 	// Code encoded successfully.
-	return 0;
-}
-
-
-static inline uint8_t hexToNum(char hex)
-{
-	if (hex >= '0' && hex <= '9')
-		return (hex - '0');
-	else if (hex >= 'A' && hex <= 'F')
-		return ((hex - 'A') + 10);
-	else if (hex >= 'a' && hex <= 'f')
-		return ((hex - 'a') + 10);
-	
-	// Invalid hex character.
-	return ~0;
-}
-
-#define PATCH_CHAR_DECODE(var, chr, shift)	\
-{						\
-	char hex = hexToNum(chr);		\
-	if (hex == ~0)				\
-		return 1;			\
-	var |= (hex << shift);			\
-}
-
-/**
- * gg_code_decode_68k_16(): Decode a 68000 patch code with 16-bit data.
- * @param code Action Replay code.
- * @param gg_code gg_code_t to store the parsed code in.
- * @param cpu CPU.
- * @return 0 on success; non-zero on error.
- */
-static int gg_code_decode_68k_16(const char* code, gg_code_t *gg_code, const gg_code_cpu cpu)
-{
-	// TODO: Make this more flexible, so it'll accept any length code.
-	if ((cpu != CPU_M68K && cpu != CPU_S68K) || strlen(code) != 11 || code[6] != ':')
-		return 1;
-	
-	uint32_t address = 0;
-	uint16_t data = 0;
-	
-	// First six characters are the address.
-	PATCH_CHAR_DECODE(address, code[0], 20);
-	PATCH_CHAR_DECODE(address, code[1], 16);
-	PATCH_CHAR_DECODE(address, code[2], 12);
-	PATCH_CHAR_DECODE(address, code[3], 8);
-	PATCH_CHAR_DECODE(address, code[4], 4);
-	PATCH_CHAR_DECODE(address, code[5], 0);
-	
-	// Last four characters are the data.
-	PATCH_CHAR_DECODE(data, code[7],  12);
-	PATCH_CHAR_DECODE(data, code[8],  8);
-	PATCH_CHAR_DECODE(data, code[9],  4);
-	PATCH_CHAR_DECODE(data, code[10], 0);
-	
-	// Code decoded successfully.
-	gg_code->address  = address;
-	gg_code->data     = data;
-	gg_code->datasize = DS_WORD;
-	gg_code->cpu      = cpu;
-	
-	// Attempt to encode as Game Genie for good measure.
-	gg_code_encode_gg(gg_code);
-	
-	// Done.
-	return 0;
-}
-
-
-/**
- * gg_code_decode_68k_8(): Decode a 68000 patch code with 8-bit data.
- * @param code Action Replay code.
- * @param gg_code gg_code_t to store the parsed code in.
- * @param cpu CPU.
- * @return 0 on success; non-zero on error.
- */
-static int gg_code_decode_68k_8(const char* code, gg_code_t *gg_code, const gg_code_cpu cpu)
-{
-	// TODO: Make this more flexible, so it'll accept any length code.
-	if ((cpu != CPU_M68K && cpu != CPU_S68K) || strlen(code) != 9 || code[6] != ':')
-		return 1;
-	
-	uint32_t address = 0;
-	uint8_t  data = 0;
-	
-	// First six characters are the address.
-	PATCH_CHAR_DECODE(address, code[0], 20);
-	PATCH_CHAR_DECODE(address, code[1], 16);
-	PATCH_CHAR_DECODE(address, code[2], 12);
-	PATCH_CHAR_DECODE(address, code[3], 8);
-	PATCH_CHAR_DECODE(address, code[4], 4);
-	PATCH_CHAR_DECODE(address, code[5], 0);
-	
-	// Last two characters are the data.
-	PATCH_CHAR_DECODE(data, code[7], 4);
-	PATCH_CHAR_DECODE(data, code[8], 0);
-	
-	// Code decoded successfully.
-	gg_code->address  = address;
-	gg_code->data     = data;
-	gg_code->datasize = DS_BYTE;
-	gg_code->cpu      = cpu;
-	
-	// Attempt to encode as Game Genie for good measure.
-	gg_code_encode_gg(gg_code);
-	
-	// Done.
-	return 0;
-}
-
-
-/**
- * gg_code_decode_68k_32(): Decode a 68000 patch code with 32-bit data.
- * @param code Action Replay code.
- * @param gg_code gg_code_t to store the parsed code in.
- * @param cpu CPU.
- * @return 0 on success; non-zero on error.
- */
-static int gg_code_decode_68k_32(const char* code, gg_code_t *gg_code, const gg_code_cpu cpu)
-{
-	// TODO: Make this more flexible, so it'll accept any length code.
-	if ((cpu != CPU_M68K && cpu != CPU_S68K) || strlen(code) != 15 || code[6] != ':')
-		return 1;
-	
-	uint32_t address = 0;
-	uint32_t data = 0;
-	
-	// First six characters are the address.
-	PATCH_CHAR_DECODE(address, code[0], 20);
-	PATCH_CHAR_DECODE(address, code[1], 16);
-	PATCH_CHAR_DECODE(address, code[2], 12);
-	PATCH_CHAR_DECODE(address, code[3], 8);
-	PATCH_CHAR_DECODE(address, code[4], 4);
-	PATCH_CHAR_DECODE(address, code[5], 0);
-	
-	// Last eight characters are the data.
-	PATCH_CHAR_DECODE(data, code[7],  28);
-	PATCH_CHAR_DECODE(data, code[8],  24);
-	PATCH_CHAR_DECODE(data, code[9],  20);
-	PATCH_CHAR_DECODE(data, code[10], 16);
-	PATCH_CHAR_DECODE(data, code[11], 12);
-	PATCH_CHAR_DECODE(data, code[12], 8);
-	PATCH_CHAR_DECODE(data, code[13], 4);
-	PATCH_CHAR_DECODE(data, code[14], 0);
-	
-	// Code decoded successfully.
-	gg_code->address  = address;
-	gg_code->data     = data;
-	gg_code->datasize = DS_DWORD;
-	gg_code->cpu      = cpu;
-	
-	// Attempt to encode as Game Genie for good measure.
-	gg_code_encode_gg(gg_code);
-	
-	// Done.
 	return 0;
 }
