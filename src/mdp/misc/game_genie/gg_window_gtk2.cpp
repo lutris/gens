@@ -534,15 +534,59 @@ static int gg_window_add_code_from_textboxes(void)
 	gg_code_t gg_code;
 	gg_code.name[0] = 0x00;
 	
-	if (gg_code_parse(gtk_entry_get_text(GTK_ENTRY(txtEntry_Code)), &gg_code, CPU_M68K))
+	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtEntry_Code));
+	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
+	
+	if (gcp_rval != GGCE_OK)
 	{
 		// Error parsing the code.
-		// TODO: Show an error message.
-		return 1;
+		char err_msg_full[1024];
+		char err_msg[1024];
+		
+		switch (gcp_rval)
+		{
+			case GGCE_UNRECOGNIZED:
+				strcpy(err_msg, "The code could not be parsed correctly.");
+				break;
+			case GGCE_ADDRESS_RANGE:
+				// TODO: Show range depending on the selected CPU.
+				strcpy(err_msg, "The address for this code is out of range for the specified CPU.\n"
+						"Valid range for MC68000 CPUs: 0x000000 - 0xFFFFFF");
+				break;
+			case GGCE_ADDRESS_ALIGNMENT:
+				// TODO: Show range and alignment info based on CPU and datasize.
+				strcpy(err_msg, "The address is not aligned properly for the specified data.\n"
+						"For MC68000, 16-bit data must be stored at even addresses.");
+				break;
+			case GGCE_DATA_TOO_LARGE:
+				strcpy(err_msg, "The data value is too large. Usually, this means that you"
+						"entered too many characters.");
+				break;
+			default:
+				// Other error.
+				sprintf(err_msg, "Unknown error %d.", gcp_rval);
+				break;
+		}
+		
+		sprintf(err_msg_full, "The specified code, \"%s\", could not be added due to an error:\n\n%s",
+				      code_txt, err_msg);
+		
+		// Show an error message.
+		GtkWidget *msgbox = gtk_message_dialog_new(
+					GTK_WINDOW(gg_window),
+					GTK_DIALOG_MODAL,
+					GTK_MESSAGE_ERROR,
+					GTK_BUTTONS_OK,
+					"%s", err_msg_full);
+		gtk_window_set_title(GTK_WINDOW(msgbox), "Game Genie: Code Error");
+		gtk_dialog_run(GTK_DIALOG(msgbox));
+		gtk_widget_destroy(msgbox);
+		
+		return gcp_rval;
 	}
 	
-	int rval = gg_window_add_code(&gg_code, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)));
-	if (rval == 0)
+	int ggw_ac_rval = gg_window_add_code(&gg_code, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)));
+	if (ggw_ac_rval == 0)
 	{
 		// Code added successfully.
 		// Clear the textboxes and set focus to the "Code" textbox.
@@ -551,7 +595,7 @@ static int gg_window_add_code_from_textboxes(void)
 		gtk_widget_grab_focus(txtEntry_Code);
 	}
 	
-	return rval;
+	return ggw_ac_rval;
 }
 	
 /**
