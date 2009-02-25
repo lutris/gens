@@ -296,8 +296,9 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	}
 	else
 	{
-		lmCodes = gtk_list_store_new(5,
+		lmCodes = gtk_list_store_new(6,
 				G_TYPE_BOOLEAN,		// Enabled
+				G_TYPE_STRING,		// CPU
 				G_TYPE_STRING,		// Code (Hex)
 				G_TYPE_STRING,		// Code (GG)
 				G_TYPE_STRING,		// Name
@@ -321,16 +322,20 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 			 G_CALLBACK(gg_window_callback_lstCodes_toggled),
 			 (gpointer)lmCodes);
 	
+	GtkCellRenderer  *rendCPU = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colCPU = gtk_tree_view_column_new_with_attributes("CPU", rendCPU, "text", 1, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCPU);
+	
 	GtkCellRenderer  *rendCodeHex = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 1, NULL);
+	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeHex);
 	
 	GtkCellRenderer  *rendCodeGG = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colCodeGG = gtk_tree_view_column_new_with_attributes("Code (GG)", rendCodeGG, "text", 2, NULL);
+	GtkTreeViewColumn *colCodeGG = gtk_tree_view_column_new_with_attributes("Code (GG)", rendCodeGG, "text", 3, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeGG);
 	
 	GtkCellRenderer  *rendName = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "text", 3, NULL);
+	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "text", 4, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colName);
 }
 
@@ -352,7 +357,7 @@ void gg_window_close(void)
 		gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
 		for (int i = 0; valid == true; i++)
 		{
-			gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 4, &stored_code, -1);
+			gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 5, &stored_code, -1);
 			
 			// Delete the code.
 			free(stored_code);
@@ -409,7 +414,7 @@ static void gg_window_save(void)
 	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
 	for (int i = 0; valid == true; i++)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 4, &stored_code, -1);
+		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 5, &stored_code, -1);
 		
 		// Copy the code.
 		memcpy(&gg_code, stored_code, sizeof(gg_code));
@@ -617,6 +622,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 		case CPU_M68K:
 		case CPU_S68K:
 		{
+			
 			// 68000: 24-bit address.
 			switch (gg_code->datasize)
 			{
@@ -662,6 +668,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 		case CPU_MSH2:
 		case CPU_SSH2:
 		{
+			
 			// SH2: 32-bit address.
 			switch (gg_code->datasize)
 			{
@@ -688,6 +695,10 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 			// TODO: Show an error message.
 			return 1;
 	}
+	
+	// CPU string.
+	static const char* const s_cpu_list[8] = {NULL, "M68K", "S68K", "Z80", "MSH2", "SSH2", NULL, NULL};
+	const char* s_cpu = s_cpu_list[(int)(gg_code->cpu) & 0x07];
 	
 	// Determine what should be used for the Game Genie code.
 	const char* s_code_gg;
@@ -721,10 +732,11 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	gtk_list_store_append(lmCodes, &iter);
 	gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter,
 			   0, FALSE,		// Disable the code by default.
-			   1, s_code_hex,	// Hex code.
-			   2, s_code_gg,	// Game Genie code. (if applicable)
-			   3, name,		// Code name.
-			   4, lst_code, -1);	// gg_code_t
+			   1, s_cpu,		// CPU.
+			   2, s_code_hex,	// Hex code.
+			   3, s_code_gg,	// Game Genie code. (if applicable)
+			   4, name,		// Code name.
+			   5, lst_code, -1);	// gg_code_t
 	
 	// Code added successfully.
 	return 0;
