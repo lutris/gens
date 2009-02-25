@@ -324,18 +324,22 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 			 G_CALLBACK(gg_window_callback_lstCodes_toggled),
 			 (gpointer)lmCodes);
 	
+	// CPU
 	GtkCellRenderer  *rendCPU = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colCPU = gtk_tree_view_column_new_with_attributes("CPU", rendCPU, "text", 1, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCPU);
 	
+	// Code (Hex)
 	GtkCellRenderer  *rendCodeHex = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeHex);
 	
+	// Code (GG)
 	GtkCellRenderer  *rendCodeGG = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colCodeGG = gtk_tree_view_column_new_with_attributes("Code (GG)", rendCodeGG, "text", 3, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeGG);
 	
+	// Name
 	GtkCellRenderer  *rendName = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "text", 4, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colName);
