@@ -699,6 +699,8 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	// CPU string.
 	static const char* const s_cpu_list[8] = {NULL, "M68K", "S68K", "Z80", "MSH2", "SSH2", NULL, NULL};
 	const char* s_cpu = s_cpu_list[(int)(gg_code->cpu) & 0x07];
+	if (!s_cpu)
+		return 1;
 	
 	// Determine what should be used for the Game Genie code.
 	const char* s_code_gg;
