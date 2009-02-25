@@ -27,6 +27,7 @@
 
 #include <windows.h>
 #include <windowsx.h>
+#include <minmax.h>
 
 /**
  * mdp_win32_center_on_window(): Center one window on top of another window.

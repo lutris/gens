@@ -61,10 +61,8 @@ int win32_CommCtrlEx = 0;
 // Fonts.
 #include "ui/win32/fonts.h"
 
-// Maximum value function
-#ifndef max
-#define max(a,b)   (((a) > (b)) ? (a) : (b))
-#endif /* max */
+// min() and max().
+#include <minmax.h>
 
 // Windows macros.
 #include <windowsx.h>
