@@ -45,8 +45,8 @@ using std::list;
 static GtkWidget *gg_window = NULL;
 
 // Widgets.
-static GtkWidget *txtEntry_Code;
-static GtkWidget *txtEntry_Name;
+static GtkWidget *txtCode;
+static GtkWidget *txtName;
 static GtkWidget *lstCodes;
 
 // List model for the code listing.
@@ -153,41 +153,41 @@ void gg_window_show(void *parent)
 	gtk_box_pack_start(GTK_BOX(vboxTable), tblEntry, FALSE, TRUE, 0);
 	
 	// Code label and textbox.
-	GtkWidget *lblEntry_Code = gtk_label_new("Code");
-	gtk_misc_set_alignment(GTK_MISC(lblEntry_Code), 0.0f, 0.5f);
-	gtk_widget_show(lblEntry_Code);
-	gtk_table_attach(GTK_TABLE(tblEntry), lblEntry_Code, 0, 1, 0, 1,
+	GtkWidget *lblCode = gtk_label_new("Code");
+	gtk_misc_set_alignment(GTK_MISC(lblCode), 0.0f, 0.5f);
+	gtk_widget_show(lblCode);
+	gtk_table_attach(GTK_TABLE(tblEntry), lblCode, 0, 1, 0, 1,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	
-	txtEntry_Code = gtk_entry_new();
-	gtk_entry_set_max_length(GTK_ENTRY(txtEntry_Code), 17);
-	gtk_widget_show(txtEntry_Code);
-	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Code, 1, 2, 0, 1,
+	txtCode = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(txtCode), 17);
+	gtk_widget_show(txtCode);
+	gtk_table_attach(GTK_TABLE(tblEntry), txtCode, 1, 2, 0, 1,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	
 	// Connect the "key-press-event" signal for the textbox.
-	g_signal_connect((gpointer)txtEntry_Code, "key-press-event",
+	g_signal_connect((gpointer)txtCode, "key-press-event",
 			  G_CALLBACK(gg_window_callback_txtEntry_keypress), NULL);
 	
 	// Name label and textbox.
-	GtkWidget *lblEntry_Name = gtk_label_new("Name");
-	gtk_misc_set_alignment(GTK_MISC(lblEntry_Name), 0.0f, 0.5f);
-	gtk_widget_show(lblEntry_Name);
-	gtk_table_attach(GTK_TABLE(tblEntry), lblEntry_Name, 0, 1, 1, 2,
+	GtkWidget *lblName = gtk_label_new("Name");
+	gtk_misc_set_alignment(GTK_MISC(lblName), 0.0f, 0.5f);
+	gtk_widget_show(lblName);
+	gtk_table_attach(GTK_TABLE(tblEntry), lblName, 0, 1, 1, 2,
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	
-	txtEntry_Name = gtk_entry_new();
-	gtk_entry_set_max_length(GTK_ENTRY(txtEntry_Name), 127);
-	gtk_widget_show(txtEntry_Name);
-	gtk_table_attach(GTK_TABLE(tblEntry), txtEntry_Name, 1, 2, 1, 2,
+	txtName = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(txtName), 127);
+	gtk_widget_show(txtName);
+	gtk_table_attach(GTK_TABLE(tblEntry), txtName, 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	
 	// Connect the "key-press-event" signal for the textbox.
-	g_signal_connect((gpointer)txtEntry_Name, "key-press-event",
+	g_signal_connect((gpointer)txtName, "key-press-event",
 			  G_CALLBACK(gg_window_callback_txtEntry_keypress), NULL);
 	
 	// "Add Code" button.
@@ -208,8 +208,8 @@ void gg_window_show(void *parent)
 	
 	// Set the focus chain for the entry boxes.
 	GList *lFocusChain = NULL;
-	lFocusChain = g_list_append(lFocusChain, txtEntry_Code);
-	lFocusChain = g_list_append(lFocusChain, txtEntry_Name);
+	lFocusChain = g_list_append(lFocusChain, txtCode);
+	lFocusChain = g_list_append(lFocusChain, txtName);
 	lFocusChain = g_list_append(lFocusChain, btnAddCode);
 	lFocusChain = g_list_first(lFocusChain);
 	gtk_container_set_focus_chain(GTK_CONTAINER(tblEntry), lFocusChain);
@@ -539,7 +539,7 @@ static int gg_window_add_code_from_textboxes(void)
 	gg_code_t gg_code;
 	gg_code.name[0] = 0x00;
 	
-	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtEntry_Code));
+	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtCode));
 	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
 	
 	if (gcp_rval != GGCE_OK)
@@ -590,14 +590,14 @@ static int gg_window_add_code_from_textboxes(void)
 		return gcp_rval;
 	}
 	
-	int ggw_ac_rval = gg_window_add_code(&gg_code, gtk_entry_get_text(GTK_ENTRY(txtEntry_Name)));
+	int ggw_ac_rval = gg_window_add_code(&gg_code, gtk_entry_get_text(GTK_ENTRY(txtName)));
 	if (ggw_ac_rval == 0)
 	{
 		// Code added successfully.
 		// Clear the textboxes and set focus to the "Code" textbox.
-		gtk_entry_set_text(GTK_ENTRY(txtEntry_Code), "");
-		gtk_entry_set_text(GTK_ENTRY(txtEntry_Name), "");
-		gtk_widget_grab_focus(txtEntry_Code);
+		gtk_entry_set_text(GTK_ENTRY(txtCode), "");
+		gtk_entry_set_text(GTK_ENTRY(txtName), "");
+		gtk_widget_grab_focus(txtCode);
 	}
 	
 	return ggw_ac_rval;
