@@ -90,9 +90,9 @@ static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer us
 static gboolean	gg_window_callback_txtkeypress(HWND widget, GdkEventKey *event, gpointer user_data);
 static void	gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
 						    gchar *path, gpointer user_data);
+#endif
 static void	gg_window_callback_delete(void);
 static void	gg_window_callback_deactivate_all(void);
-#endif
 
 // Miscellaneous.
 #if 0
@@ -459,6 +459,12 @@ static LRESULT CALLBACK gg_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 				case IDAPPLY:
 					gg_window_save();
 					break;
+				case IDC_BTNDELETE:
+					gg_window_callback_delete();
+					break;
+				case IDC_BTNDEACTIVATEALL:
+					gg_window_callback_deactivate_all();
+					break;
 				default:
 					// Unknown command identifier.
 					break;
@@ -472,63 +478,9 @@ static LRESULT CALLBACK gg_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 	
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
+
 #if 0
-/**
- * gg_window_callback_close(): Close Window callback.
- * @param widget
- * @param event
- * @param user_data
- */
-static gboolean gg_window_callback_close(HWND widget, GdkEvent *event, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(widget);
-	MDP_UNUSED_PARAMETER(event);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	gg_window_close();
-	return FALSE;
-}
-
-
-/**
- * gg_window_callback_response(): Dialog Response callback.
- * @param dialog
- * @param response_id
- * @param user_data
- */
-static void gg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(dialog);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	switch (response_id)
-	{
-		case GTK_RESPONSE_CANCEL:
-			gg_window_close();
-			break;
-		case GTK_RESPONSE_APPLY:
-			gg_window_save();
-			break;
-		case GTK_RESPONSE_OK:
-			gg_window_save();
-			gg_window_close();
-			break;
-		case GG_RESPONSE_DELETE:
-			gg_window_callback_delete();
-			break;
-		case GG_RESPONSE_DEACTIVATE_ALL:
-			gg_window_callback_deactivate_all();
-			break;
-			
-		case GTK_RESPONSE_DELETE_EVENT:
-		default:
-			// Other event. Don't do anything.
-			// Also, don't do anything when the dialog is deleted.
-			break;
-	}
-}
-
-
 /**
  * gg_window_callback_btnAddCode_clicked(): "Add Code" button was clicked.
  * @param button Button widget.
@@ -804,6 +756,7 @@ static void gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_rend
 	gtk_tree_model_get(GTK_TREE_MODEL(user_data), &iter, 0, &cur_state, -1);
 	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !cur_state, -1);
 }
+#endif
 
 
 /**
@@ -811,6 +764,7 @@ static void gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_rend
  */
 static void gg_window_callback_delete(void)
 {
+#if 0
 	GtkTreeSelection *selection;
 	GtkTreeIter iter;
 	gboolean need_check, row_erased, valid;
@@ -845,6 +799,7 @@ static void gg_window_callback_delete(void)
 		if (!valid && !row_erased)
 			need_check = false;
 	}
+#endif
 }
 
 
@@ -853,6 +808,7 @@ static void gg_window_callback_delete(void)
  */
 static void gg_window_callback_deactivate_all(void)
 {
+#if 0
 	GtkTreeIter iter;
 	gboolean valid;
 	
@@ -862,5 +818,5 @@ static void gg_window_callback_deactivate_all(void)
 		gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter, 0, 0, -1);
 		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
 	}
-}
 #endif
+}
