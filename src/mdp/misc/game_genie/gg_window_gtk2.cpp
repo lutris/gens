@@ -152,7 +152,7 @@ void gg_window_show(void *parent)
 	gtk_table_set_col_spacings(GTK_TABLE(tblEntry), 10);
 	gtk_box_pack_start(GTK_BOX(vboxTable), tblEntry, FALSE, TRUE, 0);
 	
-	// Code label and textbox.
+	// "Code" label.
 	GtkWidget *lblCode = gtk_label_new("Code");
 	gtk_misc_set_alignment(GTK_MISC(lblCode), 0.0f, 0.5f);
 	gtk_widget_show(lblCode);
@@ -160,6 +160,7 @@ void gg_window_show(void *parent)
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	
+	// "Code" textbox.
 	txtCode = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(txtCode), 17);
 	gtk_widget_show(txtCode);
@@ -171,7 +172,7 @@ void gg_window_show(void *parent)
 	g_signal_connect((gpointer)txtCode, "key-press-event",
 			  G_CALLBACK(gg_window_callback_txtEntry_keypress), NULL);
 	
-	// Name label and textbox.
+	// "Name" label.
 	GtkWidget *lblName = gtk_label_new("Name");
 	gtk_misc_set_alignment(GTK_MISC(lblName), 0.0f, 0.5f);
 	gtk_widget_show(lblName);
@@ -179,6 +180,7 @@ void gg_window_show(void *parent)
 			 (GtkAttachOptions)(GTK_FILL),
 			 (GtkAttachOptions)(0), 0, 0);
 	
+	// "Name" textbox.
 	txtName = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(txtName), 127);
 	gtk_widget_show(txtName);
