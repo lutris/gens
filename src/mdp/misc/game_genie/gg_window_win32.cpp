@@ -46,6 +46,16 @@ using std::list;
 #include <windowsx.h>
 #include <commctrl.h>
 
+// For whatever reason, Wine's headers don't include the ListView_(Set|Get)CheckState macros.
+#ifndef ListView_SetCheckState
+#define ListView_SetCheckState(hwnd,iIndex,bCheck) \
+	ListView_SetItemState(hwnd,iIndex,INDEXTOSTATEIMAGEMASK((bCheck)+1),LVIS_STATEIMAGEMASK)
+#endif
+#ifndef ListView_GetCheckState
+#define ListView_GetCheckState(hwnd,iIndex) \
+	((((UINT)(ListView_GetItemState(hwnd,iIndex,LVIS_STATEIMAGEMASK)))>>12)-1)
+#endif
+
 // Window.
 static HWND gg_window = NULL;
 static WNDCLASS gg_window_wndclass;
@@ -808,15 +818,10 @@ static void gg_window_callback_delete(void)
  */
 static void gg_window_callback_deactivate_all(void)
 {
-#if 0
-	GtkTreeIter iter;
-	gboolean valid;
+	const int lvItems = ListView_GetItemCount(lstCodes);
 	
-	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
-	while (valid)
+	for (int i = 0; i < lvItems; i++)
 	{
-		gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter, 0, 0, -1);
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+		ListView_SetCheckState(lstCodes, lvItems, false);
 	}
-#endif
 }
