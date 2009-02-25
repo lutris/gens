@@ -85,6 +85,23 @@ static HFONT mdp_win32_get_message_font(void)
 	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
 }
 
+/**
+ * mdp_win32_get_title_font(): Get the title font.
+ * @return Main font. (Must be deleted with DeleteFont() when finished.)
+ */
+static HFONT mdp_win32_get_title_font(void)
+{
+	NONCLIENTMETRICS ncm;
+	ncm.cbSize = sizeof(ncm);
+	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
+	
+	// Title font is the message font with bold and italics.
+	ncm.lfMessageFont.lfItalic = 1;
+	ncm.lfMessageFont.lfWeight = FW_BOLD;
+	
+	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
+}
+
 #endif /* __MDP_WIN32_H */
 
 #endif /* _WIN32 */
