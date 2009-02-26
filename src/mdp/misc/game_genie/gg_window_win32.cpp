@@ -804,42 +804,32 @@ static void gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_rend
  */
 static void gg_window_callback_delete(void)
 {
-#if 0
-	GtkTreeSelection *selection;
-	GtkTreeIter iter;
-	gboolean need_check, row_erased, valid;
-	
-	// Get the current selection.
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstCodes));
-	
 	// Delete all selected codes.
-	need_check = true;
-	while (need_check)
+	const int lvItems = SendMessage(lstCodes, LVM_GETITEMCOUNT, 0, 0);
+	
+	LVITEM lvItem;
+	lvItem.iSubItem = 0;
+	lvItem.mask = LVIF_STATE | LVIF_PARAM;
+	lvItem.stateMask = LVIS_SELECTED;
+	
+	for (int i = lvItems - 1; i >= 0; i--)
 	{
-		row_erased = false;
-		valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
-		while (valid && !row_erased)
+		lvItem.iItem = i;
+		if (ListView_GetItem(lstCodes, &lvItem))
 		{
-			if (gtk_tree_selection_iter_is_selected(selection, &iter))
+			// Item retrieved. Check if it should be deleted.
+			if (lvItem.state & LVIS_SELECTED)
 			{
-				// Delete the gg_code_t first.
-				gg_code_t *stored_code;
-				gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 4, &stored_code, -1);
-				free(stored_code);
+				// Selected item. Delete it.
 				
-				// Delete the row.
-				gtk_list_store_remove(lmCodes, &iter);
-				row_erased = true;
-			}
-			else
-			{
-				valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+				// lvItem.lParam contains the gg_code_t* pointer.
+				free((gg_code_t*)(lvItem.lParam));
+				
+				// Delete the item from the ListView.
+				ListView_DeleteItem(lstCodes, i);
 			}
 		}
-		if (!valid && !row_erased)
-			need_check = false;
 	}
-#endif
 }
 
 
