@@ -99,8 +99,6 @@ static gboolean	gg_window_callback_close(HWND widget, GdkEvent *event, gpointer 
 static void	gg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data);
 static gboolean	gg_window_callback_txtkeypress(HWND widget, GdkEventKey *event, gpointer user_data);
-static void	gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
-						    gchar *path, gpointer user_data);
 #endif
 static void	gg_window_callback_delete(void);
 static void	gg_window_callback_deactivate_all(void);
@@ -774,29 +772,6 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	// Code added successfully.
 	return 0;
 }
-
-
-#if 0
-/**
- * gg_window_callback_lstCodes_toggled(): Code was toggled.
- * @param cell_renderer
- * @param path
- * @param user_data Pointer to the list model.
- */
-static void gg_window_callback_lstCodes_toggled(GtkCellRendererToggle *cell_renderer,
-						gchar *path, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(cell_renderer);
-	
-	// Toggle the state of this item.
-	GtkTreeIter iter;
-	gboolean cur_state;
-	
-	gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(user_data), &iter, path);
-	gtk_tree_model_get(GTK_TREE_MODEL(user_data), &iter, 0, &cur_state, -1);
-	gtk_list_store_set(GTK_LIST_STORE(user_data), &iter, 0, !cur_state, -1);
-}
-#endif
 
 
 /**
