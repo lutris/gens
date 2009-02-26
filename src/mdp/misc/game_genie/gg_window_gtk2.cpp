@@ -309,7 +309,9 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	
 	// Treeview containing the Game Genie codes.
 	lstCodes = gtk_tree_view_new_with_model(GTK_TREE_MODEL(lmCodes));
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), TRUE);
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstCodes), true);
+	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(lstCodes)),
+				    GTK_SELECTION_MULTIPLE);
 	gtk_widget_set_size_request(lstCodes, -1, 160);
 	gtk_widget_show(lstCodes);
 	gtk_container_add(GTK_CONTAINER(container), lstCodes);
