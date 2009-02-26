@@ -343,6 +343,9 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	GtkCellRenderer  *rendName = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *colName = gtk_tree_view_column_new_with_attributes("Name", rendName, "text", 4, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colName);
+	
+	// Set focus to the "Code" textbox.
+	gtk_widget_grab_focus(txtCode);
 }
 
 
@@ -592,6 +595,9 @@ static int gg_window_add_code_from_textboxes(void)
 		gtk_window_set_title(GTK_WINDOW(msgbox), "Game Genie: Code Error");
 		gtk_dialog_run(GTK_DIALOG(msgbox));
 		gtk_widget_destroy(msgbox);
+		
+		// Set focus to the "Code" textbox.
+		gtk_widget_grab_focus(txtCode);
 		
 		return gcp_rval;
 	}
