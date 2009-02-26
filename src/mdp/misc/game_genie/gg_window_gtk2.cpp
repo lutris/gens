@@ -545,6 +545,9 @@ static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEvent
  */
 static int gg_window_add_code_from_textboxes(void)
 {
+	if (gtk_entry_get_text_length(GTK_ENTRY(txtCode)) == 0)
+		return 1;
+	
 	// Decode the code.
 	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t gg_code;
