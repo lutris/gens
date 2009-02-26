@@ -531,15 +531,19 @@ static LRESULT CALLBACK gg_window_wndproc_textbox(HWND hWnd, UINT message, WPARA
 	
 	// Note: WM_GETDLGCODE may show up instead of WM_KEYDOWN,
 	// since this window handles dialog messages.
-	if ((message == WM_KEYDOWN || message == WM_GETDLGCODE) && wParam == VK_RETURN)
+	if (wParam == VK_RETURN)
 	{
-		// Enter is pressed. Add the code.
-		gg_window_add_code_from_textboxes();
-		
 		if (message == WM_GETDLGCODE)
+		{
+			// Dialog code. Request all keys.
 			return DLGC_WANTALLKEYS;
-		else //if (message == WM_KEYDOWN)
+		}
+		else if (message == WM_KEYDOWN)
+		{
+			// Enter is pressed. Add the code.
+			gg_window_add_code_from_textboxes();
 			return true;
+		}
 	}
 	
 	// Not Enter. Run the regular procedure.
@@ -586,6 +590,9 @@ static gboolean	gg_window_callback_txtkeypress(HWND widget, GdkEventKey *event, 
  */
 static int gg_window_add_code_from_textboxes(void)
 {
+	if (Edit_GetTextLength(txtCode) == 0)
+		return 1;
+	
 	// Decode the code.
 	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t gg_code;
