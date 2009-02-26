@@ -30,8 +30,9 @@
 #include "gg_code.h"
 
 // C includes.
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // C++ includes.
 #include <list>
@@ -62,7 +63,7 @@ static WNDCLASS gg_window_wndclass;
 static bool gg_window_child_windows_created = false;
 
 // Window size.
-#define GG_WINDOW_WIDTH  454
+#define GG_WINDOW_WIDTH  516
 #define GG_WINDOW_HEIGHT 316
 
 // Window procedure.
@@ -105,10 +106,8 @@ static void	gg_window_callback_delete(void);
 static void	gg_window_callback_deactivate_all(void);
 
 // Miscellaneous.
-#if 0
 static int	gg_window_add_code_from_textboxes(void);
 static int	gg_window_add_code(const gg_code_t *gg_code, const char* name);
-#endif
 
 
 /**
@@ -250,32 +249,32 @@ static void gg_window_create_child_windows(HWND hWnd)
 	// "OK" button.
 	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  GG_WINDOW_WIDTH-(8+81+8+81+8+81+8+81+8+81), btnTop,
-				  81, 24,
+				  8, btnTop,
+				  75, 24,
 				  hWnd, (HMENU)IDOK, gg_hInstance, NULL);
 	SetWindowFont(btnOK, gg_hFont, true);
 	
 	// "Apply" button.
 	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     GG_WINDOW_WIDTH-(8+81+8+81+8+81+8+81), btnTop,
-				     81, 24,
+				     8+75+8, btnTop,
+				     75, 24,
 				     hWnd, (HMENU)IDAPPLY, gg_hInstance, NULL);
 	SetWindowFont(btnApply, gg_hFont, true);
 	
 	// "Cancel" button.
 	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      GG_WINDOW_WIDTH-(8+81+8+81+8+81), btnTop,
-				      81, 24,
+				      8+75+8+75+8, btnTop,
+				      75, 24,
 				      hWnd, (HMENU)IDCANCEL, gg_hInstance, NULL);
 	SetWindowFont(btnCancel, gg_hFont, true);
 	
 	// "Delete" button.
 	HWND btnDelete = CreateWindow(WC_BUTTON, "&Delete",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      GG_WINDOW_WIDTH-(8+81+8+81), btnTop,
-				      81, 24,
+				      GG_WINDOW_WIDTH-(8+81+8+75), btnTop,
+				      75, 24,
 				      hWnd, (HMENU)IDC_BTNDELETE, gg_hInstance, NULL);
 	SetWindowFont(btnDelete, gg_hFont, true);
 	
@@ -289,6 +288,9 @@ static void gg_window_create_child_windows(HWND hWnd)
 	
 	// Initialize the Game Genie code listview.
 	gg_window_init();
+	
+	// Set focus to the "Code" textbox.
+	SetFocus(txtCode);
 }
 
 
@@ -314,17 +316,17 @@ static void gg_window_create_lstCodes(HWND container)
 	
 	// CPU
 	lvCol.pszText = "CPU";
-	lvCol.cx = 48;
+	lvCol.cx = 64;
 	SendMessage(lstCodes, LVM_INSERTCOLUMN, 0, (LPARAM)&lvCol);
 	
 	// Code (Hex)
 	lvCol.pszText = "Code (Hex)";
-	lvCol.cx = 96;
+	lvCol.cx = 136;
 	SendMessage(lstCodes, LVM_INSERTCOLUMN, 1, (LPARAM)&lvCol);
 	
 	// Code (GG)
 	lvCol.pszText = "Code (GG)";
-	lvCol.cx = 96;
+	lvCol.cx = 104;
 	SendMessage(lstCodes, LVM_INSERTCOLUMN, 2, (LPARAM)&lvCol);
 	
 	// Name
@@ -469,6 +471,9 @@ static LRESULT CALLBACK gg_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 				case IDAPPLY:
 					gg_window_save();
 					break;
+				case IDC_BTNADDCODE:
+					gg_window_add_code_from_textboxes();
+					break;
 				case IDC_BTNDELETE:
 					gg_window_callback_delete();
 					break;
@@ -528,6 +533,7 @@ static gboolean	gg_window_callback_txtkeypress(HWND widget, GdkEventKey *event, 
 	// Continue processing the key.
 	return FALSE;
 }
+#endif
 
 
 /**
@@ -540,8 +546,9 @@ static int gg_window_add_code_from_textboxes(void)
 	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t gg_code;
 	gg_code.name[0] = 0x00;
+	char code_txt[32];
 	
-	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtCode));
+	Edit_GetText(txtCode, code_txt, sizeof(code_txt));
 	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
 	
 	if (gcp_rval != GGCE_OK)
@@ -579,32 +586,33 @@ static int gg_window_add_code_from_textboxes(void)
 				      code_txt, err_msg);
 		
 		// Show an error message.
-		HWND msgbox = gtk_message_dialog_new(
-					GTK_WINDOW(gg_window),
-					GTK_DIALOG_MODAL,
-					GTK_MESSAGE_ERROR,
-					GTK_BUTTONS_OK,
-					"%s", err_msg_full);
-		gtk_window_set_title(GTK_WINDOW(msgbox), "Game Genie: Code Error");
-		gtk_dialog_run(GTK_DIALOG(msgbox));
-		gtk_widget_destroy(msgbox);
+		MessageBox(gg_window, err_msg_full, "Game Genie: Code Error", MB_ICONSTOP);
+		
+		// Set focus to the "Code" textbox.
+		SetFocus(txtCode);
 		
 		return gcp_rval;
 	}
 	
-	int ggw_ac_rval = gg_window_add_code(&gg_code, gtk_entry_get_text(GTK_ENTRY(txtName)));
+	// Get the name entry.
+	char s_name[128];
+	Edit_GetText(txtName, s_name, sizeof(s_name));
+	
+	// Add the code.
+	int ggw_ac_rval = gg_window_add_code(&gg_code, s_name);
 	if (ggw_ac_rval == 0)
 	{
 		// Code added successfully.
 		// Clear the textboxes and set focus to the "Code" textbox.
-		gtk_entry_set_text(GTK_ENTRY(txtCode), "");
-		gtk_entry_set_text(GTK_ENTRY(txtName), "");
-		gtk_widget_grab_focus(txtCode);
+		Edit_SetText(txtCode, NULL);
+		Edit_SetText(txtName, NULL);
+		SetFocus(txtCode);
 	}
 	
 	return ggw_ac_rval;
 }
-	
+
+
 /**
  * gg_window_add_code(): Add a code to the listview.
  * @param gg_code Pointer to gg_code_t containing the code to add.
@@ -732,21 +740,43 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	}
 	
 	// Code is decoded. Add it to the listview.
-	GtkTreeIter iter;
-	gtk_list_store_append(lmCodes, &iter);
-	gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter,
-			   0, FALSE,		// Disable the code by default.
-			   1, s_cpu,		// CPU.
-			   2, s_code_hex,	// Hex code.
-			   3, s_code_gg,	// Game Genie code. (if applicable)
-			   4, name,		// Code name.
-			   5, lst_code, -1);	// gg_code_t
+	LVITEM lviCode;
+	memset(&lviCode, 0x00, sizeof(lviCode));
+	lviCode.mask = LVIF_TEXT | LVIF_PARAM;
+	lviCode.cchTextMax = 256;
+	lviCode.iItem = ListView_GetItemCount(lstCodes);
+	lviCode.lParam = (LPARAM)lst_code;
+	
+	// First column: CPU
+	lviCode.iSubItem = 0;
+	lviCode.pszText = (char*)s_cpu;
+	ListView_InsertItem(lstCodes, &lviCode);
+	
+	// lParam doesn't need to be set for the subitems.
+	lviCode.mask = LVIF_TEXT;
+	lviCode.lParam = NULL;
+	
+	// Second column: Code (Hex)
+	lviCode.iSubItem = 1;
+	lviCode.pszText = s_code_hex;
+	ListView_SetItem(lstCodes, &lviCode);
+	
+	// Third column: Code (GG)
+	lviCode.iSubItem = 2;
+	lviCode.pszText = const_cast<char*>(s_code_gg);
+	ListView_SetItem(lstCodes, &lviCode);
+	
+	// Fourth column: Name
+	lviCode.iSubItem = 3;
+	lviCode.pszText = const_cast<char*>(name);
+	ListView_SetItem(lstCodes, &lviCode);
 	
 	// Code added successfully.
 	return 0;
 }
 
 
+#if 0
 /**
  * gg_window_callback_lstCodes_toggled(): Code was toggled.
  * @param cell_renderer
