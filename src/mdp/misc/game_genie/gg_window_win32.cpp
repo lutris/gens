@@ -74,6 +74,10 @@ static HWND	txtCode;
 static HWND	txtName;
 static HWND	lstCodes;
 
+// Old window procedures for txtCode and txtName.
+static WNDPROC	txtCode_old_wndproc;
+static WNDPROC	txtName_old_wndproc;
+
 // Widget creation functions.
 static void	gg_window_create_child_windows(HWND hWnd);
 static void	gg_window_create_lstCodes(HWND container);
@@ -98,8 +102,8 @@ static void	gg_window_save(void);
 static gboolean	gg_window_callback_close(HWND widget, GdkEvent *event, gpointer user_data);
 static void	gg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data);
-static gboolean	gg_window_callback_txtkeypress(HWND widget, GdkEventKey *event, gpointer user_data);
 #endif
+static LRESULT CALLBACK gg_window_wndproc_textbox(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void	gg_window_callback_delete(void);
 static void	gg_window_callback_deactivate_all(void);
 
@@ -212,7 +216,9 @@ static void gg_window_create_child_windows(HWND hWnd)
 				 hWnd, NULL, gg_hInstance, NULL);
 	SetWindowFont(txtCode, gg_hFont, true);
 	SendMessage(txtCode, EM_LIMITTEXT, 17, 0);
-	// TODO: Subclass the "Code" textbox to handle the "Enter" key.
+	txtCode_old_wndproc = (WNDPROC)SetWindowLongPtr(
+			       txtCode, GWL_WNDPROC,
+			       (LONG_PTR)gg_window_wndproc_textbox);
 	
 	// "Name" label.
 	HWND lblName = CreateWindow(WC_STATIC, "Name",
@@ -228,7 +234,9 @@ static void gg_window_create_child_windows(HWND hWnd)
 				 GG_WINDOW_WIDTH-(8+32+8+64+8+8+16), 20,
 				 hWnd, NULL, gg_hInstance, NULL);
 	SetWindowFont(txtName, gg_hFont, true);
-	// TODO: Subclass the "Name" textbox to handle the "Enter" key.
+	txtName_old_wndproc = (WNDPROC)SetWindowLongPtr(
+			       txtName, GWL_WNDPROC,
+			       (LONG_PTR)gg_window_wndproc_textbox);
 	
 	// "Add Code" button.
 	HWND btnAddCode = CreateWindow(WC_BUTTON, "Add C&ode",
@@ -506,8 +514,46 @@ static void gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer us
 	
 	gg_window_add_code_from_textboxes();
 }
+#endif
 
 
+/**
+ * gg_window_wndproc_textbox(): Window procedure for textboxes. (Subclassed)
+ * @param hWnd
+ * @param message
+ * @param wParam
+ * @param lParam
+ */
+static LRESULT CALLBACK gg_window_wndproc_textbox(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// Game Genie textbox subclassing
+	// This is only used to capture the Enter keypress.
+	
+	// Note: WM_GETDLGCODE may show up instead of WM_KEYDOWN,
+	// since this window handles dialog messages.
+	if ((message == WM_KEYDOWN || message == WM_GETDLGCODE) && wParam == VK_RETURN)
+	{
+		// Enter is pressed. Add the code.
+		gg_window_add_code_from_textboxes();
+		
+		if (message == WM_GETDLGCODE)
+			return DLGC_WANTALLKEYS;
+		else //if (message == WM_KEYDOWN)
+			return true;
+	}
+	
+	// Not Enter. Run the regular procedure.
+	if (hWnd == txtCode)
+		return CallWindowProc(txtCode_old_wndproc, hWnd, message, wParam, lParam);
+	else if (hWnd == txtName)
+		return CallWindowProc(txtName_old_wndproc, hWnd, message, wParam, lParam);
+	
+	// Unknown control.
+	return false;
+}
+
+
+#if 0
 /**
  * gg_window_callback_txtkeypress(): A key was pressed in a txtEntry textbox.
  * @param button Button widget.
