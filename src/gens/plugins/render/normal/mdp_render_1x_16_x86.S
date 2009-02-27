@@ -31,6 +31,7 @@
 	#define _mdp_render_1x_16_x86_mmx	mdp_render_1x_16_x86_mmx
 #endif
 
+/* Function parameters. */
 #define arg_destScreen	 8(%ebp)
 #define arg_mdScreen	12(%ebp)
 #define arg_destPitch	16(%ebp)
