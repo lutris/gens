@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #if defined(__linux__) && defined(__ELF__)
-/* Mark the stack as non-executable on ELF. */
+	/* Mark the stack as non-executable on ELF. */
 	.section .note.GNU-stack, "", %progbits
 #endif
 
@@ -89,7 +89,7 @@ _mdp_render_2x_16_x86:
 			addl	$16, %edi
 			decl	%ecx
 			jnz	1b
-
+		
 		movl	arg_width, %ecx		/* %ecx = Number of pixels per line */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		shll	$3, %ecx

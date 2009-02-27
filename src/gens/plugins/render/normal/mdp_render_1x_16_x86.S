@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #if defined(__linux__) && defined(__ELF__)
-/* Mark the stack as non-executable on ELF. */
+	/* Mark the stack as non-executable on ELF. */
 	.section .note.GNU-stack, "", %progbits
 #endif
 
@@ -39,7 +39,7 @@
 #define arg_height	28(%ebp)
 
 .section .text
-	
+
 /***********************************************************************
  * void mdp_render_1x_16_x86(uint16_t *destScreen, uint16_t *mdScreen, *
  *                           int destPitch, int srcPitch,              *
