@@ -67,8 +67,8 @@ _mdp_render_2x_32_x86:
 	jmp	0f
 
 .balign 16
-0: /* Loop_Y */
-1: /* Loop_X1 */
+0: /* .Loop_Y */
+1: /* .Loop_X1 */
 			/* Get source pixels. */
 			movl	 (%esi), %eax
 			movl	4(%esi), %edx
@@ -94,7 +94,7 @@ _mdp_render_2x_32_x86:
 
 .balign 16
 
-2: /* Loop_X2 */
+2: /* .Loop_X2 */
 			/* Get source pixels. */
 			movl	 (%esi), %eax
 			movl	4(%esi), %edx
@@ -152,8 +152,8 @@ _mdp_render_2x_32_x86_mmx:
 
 .balign 16
 
-0: /* Loop_Y */
-1: /* Loop_X1 */
+0: /* .Loop_Y */
+1: /* .Loop_X1 */
 			/* Get source pixels. */
 			movq	  (%esi), %mm0
 			movq	 8(%esi), %mm2
@@ -201,7 +201,7 @@ _mdp_render_2x_32_x86_mmx:
 
 .balign 16
 
-2: /* Loop_X2 */
+2: /* .Loop_X2 */
 			/* Get source pixels. */
 			movq	  (%esi), %mm0
 			movq	 8(%esi), %mm2
