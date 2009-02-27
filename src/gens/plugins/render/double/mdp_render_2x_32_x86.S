@@ -64,7 +64,7 @@ _mdp_render_2x_32_x86:
 	movl	arg_destScreen, %edi	/* %edi = Destination */
 	shrl	$4, %ecx		/* Transfer 16 bytes per cycle. (4 32-bit pixels) */
 	movl	%ecx, arg_width		/* Initialize the X counter. */
-	jmp	0f	/* .Loop_Y */
+	jmp	0f /* .Loop_Y */
 
 .balign 16
 0: /* .Loop_Y */
@@ -83,14 +83,14 @@ _mdp_render_2x_32_x86:
 			addl	$8,  %esi
 			addl	$16, %edi
 			decl	%ecx
-			jnz	1b	/* .Loop_X1 */
+			jnz	1b /* .Loop_X1 */
 		
 		movl	arg_width, %ecx		/* %ecx = Number of pixels per line */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		shll	$3, %ecx
 		subl	%ecx, %esi		/* Go back to the beginning of the source line. */
 		shrl	$3, %ecx
-		jmp	2f	/* .Loop_X2 */
+		jmp	2f /* .Loop_X2 */
 
 .balign 16
 
@@ -109,13 +109,13 @@ _mdp_render_2x_32_x86:
 			addl	$8,  %esi
 			addl	$16, %edi
 			decl	%ecx
-			jnz	2b	/* .Loop_X2 */
+			jnz	2b /* .Loop_X2 */
 		
 		addl	arg_srcPitch, %esi	/* Add the source pitch difference. */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		movl	arg_width, %ecx		/* Reset the X conuter. */
 		decl	arg_height		/* Decrement the Y counter. */
-		jnz	0b	/* .Loop_Y */
+		jnz	0b /* .Loop_Y */
 	
 	/* Reset the frame pointer. */
 	popal
@@ -148,7 +148,7 @@ _mdp_render_2x_32_x86_mmx:
 	movl	arg_destScreen, %edi	/* %edi = Destination */
 	shrl	$6, %ecx		/* Transfer 64 bytes per cycle. (16 32-bit pixels) */
 	movl	%ecx, arg_width		/* Initialize the X counter. */
-	jmp	0f	/* .Loop_Y */
+	jmp	0f /* .Loop_Y */
 
 .balign 16
 
@@ -190,14 +190,14 @@ _mdp_render_2x_32_x86_mmx:
 			
 			/* Next group of pixels. */
 			decl	%ecx
-			jnz	1b	/* .Loop_X1 */
+			jnz	1b /* .Loop_X1 */
 		
 		movl	arg_width, %ecx		/* Reset the X counter. */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		shll	$5, %ecx
 		subl	%ecx, %esi		/* Go back to the beginning of the source line. */
 		shrl	$5, %ecx
-		jmp	2f	/* .Loop_X2 */
+		jmp	2f /* .Loop_X2 */
 
 .balign 16
 
@@ -238,13 +238,13 @@ _mdp_render_2x_32_x86_mmx:
 			
 			/* Next group of pixels. */
 			decl	%ecx
-			jnz	2b	/* .Loop_X2 */
+			jnz	2b /* .Loop_X2 */
 		
 		addl	arg_srcPitch, %esi	/* Add the source pitch difference. */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		movl	arg_width, %ecx		/* Reset the X counter. */
 		decl	arg_height		/* Decrement the Y counter. */
-		jnz	0b	/* .Loop_Y */
+		jnz	0b /* .Loop_Y */
 	
 	/* Reset the frame pointer. */
 	popal

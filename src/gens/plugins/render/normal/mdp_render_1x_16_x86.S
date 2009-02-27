@@ -63,7 +63,7 @@ _mdp_render_1x_16_x86:
 	movl	arg_destScreen, %edi	/* %edi = Destination */
 	shrl	$3, %ecx		/* Transfer 8 bytes per cycle. (4 16-bit pixels) */
 	movl	%ecx, arg_width		/* Initialize the X counter. */
-	jmp	0f	/* .Loop_Y */
+	jmp	0f /* .Loop_Y */
 	
 .balign 16
 0: /* .Loop_Y */
@@ -80,13 +80,13 @@ _mdp_render_1x_16_x86:
 			
 			/* Next group of pixels. */
 			decl	%ecx
-			jnz	1b	/* .Loop_X */
+			jnz	1b /* .Loop_X */
 		
 		addl	arg_srcPitch, %esi	/* Add the source pitch difference. */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		movl	arg_width, %ecx		/* Reset the X counter. */
 		decl	arg_height		/* Decrement the Y counter. */
-		jnz	0b	/* .Loop_Y */
+		jnz	0b /* .Loop_Y */
 	
 	/* Reset the frame pointer. */
 	popal
@@ -118,7 +118,7 @@ _mdp_render_1x_16_x86_mmx:
 	movl	arg_destScreen, %edi	/* %edi = Destination */
 	shrl	$6, %ecx		/* Transfer 64 bytes per cycle. (32 16-bit pixels) */
 	movl	%ecx, arg_width		/* Initialize the X counter. */
-	jmp	0f	/* .Loop_Y */
+	jmp	0f /* .Loop_Y */
 
 .balign 16
 0: /* .Loop_Y */
@@ -147,13 +147,13 @@ _mdp_render_1x_16_x86_mmx:
 			
 			/* Next group of pixels. */
 			decl	%ecx
-			jnz	1b	/* .Loop_X */
+			jnz	1b /* .Loop_X */
 		
 		addl	arg_srcPitch, %esi	/* Add the source pitch difference. */
 		addl	%ebx, %edi		/* Add the destination pitch difference. */
 		movl	arg_width, %ecx		/* Reset the X counter. */
 		decl	arg_height		/* Decrement the Y counter. */
-		jnz	0b	/* .Loop_Y */
+		jnz	0b /* .Loop_Y */
 	
 	/* Reset the frame pointer. */
 	popal
