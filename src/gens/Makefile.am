@@ -7,12 +7,11 @@ SUBDIRS = plugins/render/normal plugins/render/double
 if GENS_X86_ASM
 gens_x86_asm_o = \
 		gens_core/gfx/fastblur_16_x86.o \
-		gens_core/gfx/fastblur_32_x86.o \
-		audio/audio_mmx.o
+		gens_core/gfx/fastblur_32_x86.o
 gens_x86_asm_src = \
 		gens_core/gfx/fastblur_16_x86.asm \
 		gens_core/gfx/fastblur_32_x86.asm \
-		audio/audio_mmx.asm
+		audio/audio_mmx.S
 gens_x86_asm_h = \
 		gens_core/gfx/fastblur_x86.h \
 		audio/audio_mmx.h
@@ -54,6 +53,10 @@ endif # GENS_ZLIB_INTERNAL
 if GENS_PNG_INTERNAL
 INCLUDES += -I@srcdir@/../libpng/
 endif # GENS_PNG_INTERNAL
+
+# x86 assembly language (using gcc)
+%.o: %.S
+	$(CC) -g -O2 -c $< -o $@
 
 # x86 assembly language (using nasm)
 %.o: %.asm
@@ -256,7 +259,6 @@ noinst_HEADERS = \
 		video/v_effects.hpp \
 		input/input.h \
 		audio/audio.h \
-		audio/audio_mmx.h \
 		plugins/pluginmgr.hpp \
 		plugins/mdp_host_gens.h \
 		plugins/mdp_host_gens_cpp.hpp \
