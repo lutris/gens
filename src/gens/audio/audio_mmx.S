@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MMX audio functions.                                              *
+ * Gens: Audio output functions, MMX-optimized.                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -27,8 +27,8 @@
 
 /* Symbol redefines for ELF. */
 #if defined(__ELF__)
-	#define _writeSoundMono_MMX	writeSoundMono_MMX
-	#define _writeSoundStereo_MMX	writeSoundStereo_MMX
+	#define _audio_write_sound_mono_x86_mmx		audio_write_sound_mono_x86_mmx
+	#define _audio_write_sound_stereo_x86_mmx	audio_write_sound_stereo_x86_mmx
 #endif
 
 /* Function parameters. */
@@ -39,11 +39,11 @@
 
 .section .text
 
-/****************************************************************************
- * void writeSoundMono_MMX(int *left, int *right, short *dest, int length); *
- ****************************************************************************/
-.globl _writeSoundMono_MMX
-_writeSoundMono_MMX:
+/****************************************************************************************
+ * void audio_write_sound_mono_x86_mmx(int *left, int *right, short *dest, int length); *
+ ****************************************************************************************/
+.globl _audio_write_sound_mono_x86_mmx
+_audio_write_sound_mono_x86_mmx:
 	
 	/* Set up the frame pointer. */
 	pushl	%ebp
@@ -127,11 +127,11 @@ _writeSoundMono_MMX:
 
 .balign 64
 
-/******************************************************************************
- * void writeSoundStereo_MMX(int *left, int *right, short *dest, int length); *
- ******************************************************************************/
-.globl _writeSoundStereo_MMX
-_writeSoundStereo_MMX:
+/******************************************************************************************
+ * void audio_write_sound_stereo_x86_mmx(int *left, int *right, short *dest, int length); *
+ ******************************************************************************************/
+.globl _audio_write_sound_stereo_x86_mmx
+_audio_write_sound_stereo_x86_mmx:
 	
 	/* Set up the frame pointer. */
 	pushl	%ebp

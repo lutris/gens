@@ -297,7 +297,7 @@ int audio_dsound_write_sound_buffer(void *dump_buf)
 	{
 #ifdef GENS_X86_ASM
 		if (CPU_Flags & CPUFLAG_MMX)
-			writeSoundStereo_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
+			audio_write_sound_stereo_x86_mmx(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
 		else
 #endif
 			audio_write_sound_stereo(reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
@@ -306,7 +306,7 @@ int audio_dsound_write_sound_buffer(void *dump_buf)
 	{
 #ifdef GENS_X86_ASM
 		if (CPU_Flags & CPUFLAG_MMX)
-			writeSoundMono_MMX(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
+			audio_write_sound_mono_x86_mmx(Seg_L, Seg_R, reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
 		else
 #endif
 			audio_write_sound_mono(reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
