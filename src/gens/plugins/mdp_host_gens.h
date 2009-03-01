@@ -45,6 +45,8 @@ int   MDP_FNCALL mdp_host_val_get(uint32_t valID);
 
 void* MDP_FNCALL mdp_host_window_get_main(void);
 
+int   MDP_FNCALL mdp_host_directory_get_default_save_path(char *buf, int size);
+
 #ifdef __cplusplus
 }
 #endif
