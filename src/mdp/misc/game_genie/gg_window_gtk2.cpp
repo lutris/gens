@@ -300,9 +300,9 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 	{
 		lmCodes = gtk_list_store_new(6,
 				G_TYPE_BOOLEAN,		// Enabled
-				G_TYPE_STRING,		// CPU
 				G_TYPE_STRING,		// Code (Hex)
 				G_TYPE_STRING,		// Code (GG)
+				G_TYPE_STRING,		// CPU
 				G_TYPE_STRING,		// Name
 				G_TYPE_POINTER);	// gg_code_t*
 	}
@@ -326,20 +326,20 @@ static void gg_window_create_lstCodes(GtkWidget *container)
 			 G_CALLBACK(gg_window_callback_lstCodes_toggled),
 			 (gpointer)lmCodes);
 	
-	// CPU
-	GtkCellRenderer  *rendCPU = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colCPU = gtk_tree_view_column_new_with_attributes("CPU", rendCPU, "text", 1, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCPU);
-	
 	// Code (Hex)
 	GtkCellRenderer  *rendCodeHex = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 2, NULL);
+	GtkTreeViewColumn *colCodeHex = gtk_tree_view_column_new_with_attributes("Code (Hex)", rendCodeHex, "text", 1, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeHex);
 	
 	// Code (GG)
 	GtkCellRenderer  *rendCodeGG = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *colCodeGG = gtk_tree_view_column_new_with_attributes("Code (GG)", rendCodeGG, "text", 3, NULL);
+	GtkTreeViewColumn *colCodeGG = gtk_tree_view_column_new_with_attributes("Code (GG)", rendCodeGG, "text", 2, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCodeGG);
+	
+	// CPU
+	GtkCellRenderer  *rendCPU = gtk_cell_renderer_text_new();
+	GtkTreeViewColumn *colCPU = gtk_tree_view_column_new_with_attributes("CPU", rendCPU, "text", 3, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstCodes), colCPU);
 	
 	// Name
 	GtkCellRenderer  *rendName = gtk_cell_renderer_text_new();
@@ -677,9 +677,9 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	gtk_list_store_append(lmCodes, &iter);
 	gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter,
 			   0, FALSE,		// Disable the code by default.
-			   1, s_cpu,		// CPU.
-			   2, s_code_hex,	// Hex code.
-			   3, s_code_gg,	// Game Genie code. (if applicable)
+			   1, s_code_hex,	// Hex code.
+			   2, s_code_gg,	// Game Genie code. (if applicable)
+			   3, s_cpu,		// CPU.
 			   4, name,		// Code name.
 			   5, lst_code, -1);	// gg_code_t
 	

@@ -63,7 +63,7 @@ static WNDCLASS gg_window_wndclass;
 static bool gg_window_child_windows_created = false;
 
 // Window size.
-#define GG_WINDOW_WIDTH  516
+#define GG_WINDOW_WIDTH  508
 #define GG_WINDOW_HEIGHT 316
 
 // Window procedure.
@@ -320,19 +320,19 @@ static void gg_window_create_lstCodes(HWND container)
 	memset(&lvCol, 0, sizeof(lvCol));
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 	
-	// CPU
-	lvCol.pszText = "CPU";
-	lvCol.cx = 64;
-	SendMessage(lstCodes, LVM_INSERTCOLUMN, 0, (LPARAM)&lvCol);
-	
 	// Code (Hex)
 	lvCol.pszText = "Code (Hex)";
-	lvCol.cx = 136;
-	SendMessage(lstCodes, LVM_INSERTCOLUMN, 1, (LPARAM)&lvCol);
+	lvCol.cx = 144;
+	SendMessage(lstCodes, LVM_INSERTCOLUMN, 0, (LPARAM)&lvCol);
 	
 	// Code (GG)
 	lvCol.pszText = "Code (GG)";
 	lvCol.cx = 104;
+	SendMessage(lstCodes, LVM_INSERTCOLUMN, 1, (LPARAM)&lvCol);
+	
+	// CPU
+	lvCol.pszText = "CPU";
+	lvCol.cx = 48;
 	SendMessage(lstCodes, LVM_INSERTCOLUMN, 2, (LPARAM)&lvCol);
 	
 	// Name
@@ -724,23 +724,23 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	lviCode.iItem = ListView_GetItemCount(lstCodes);
 	lviCode.lParam = (LPARAM)lst_code;
 	
-	// First column: CPU
+	// First column: Code (Hex)
 	lviCode.iSubItem = 0;
-	lviCode.pszText = (char*)s_cpu;
+	lviCode.pszText = s_code_hex;
 	ListView_InsertItem(lstCodes, &lviCode);
 	
 	// lParam doesn't need to be set for the subitems.
 	lviCode.mask = LVIF_TEXT;
 	lviCode.lParam = NULL;
 	
-	// Second column: Code (Hex)
+	// Second column: Code (GG)
 	lviCode.iSubItem = 1;
-	lviCode.pszText = s_code_hex;
+	lviCode.pszText = const_cast<char*>(s_code_gg);
 	ListView_SetItem(lstCodes, &lviCode);
 	
-	// Third column: Code (GG)
+	// Third column: CPU
 	lviCode.iSubItem = 2;
-	lviCode.pszText = const_cast<char*>(s_code_gg);
+	lviCode.pszText = (char*)s_cpu;
 	ListView_SetItem(lstCodes, &lviCode);
 	
 	// Fourth column: Name
