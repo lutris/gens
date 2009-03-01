@@ -98,11 +98,6 @@ static void	gg_window_init(void);
 static void	gg_window_save(void);
 
 // Callbacks.
-#if 0
-static gboolean	gg_window_callback_close(HWND widget, GdkEvent *event, gpointer user_data);
-static void	gg_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
-static void	gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data);
-#endif
 static LRESULT CALLBACK gg_window_wndproc_textbox(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 static void	gg_window_callback_delete(void);
 static void	gg_window_callback_deactivate_all(void);
@@ -490,22 +485,6 @@ static LRESULT CALLBACK gg_window_wndproc(HWND hWnd, UINT message, WPARAM wParam
 }
 
 
-#if 0
-/**
- * gg_window_callback_btnAddCode_clicked(): "Add Code" button was clicked.
- * @param button Button widget.
- * @param user_data User data.
- */
-static void gg_window_callback_btnAddCode_clicked(GtkButton *button, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(button);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	gg_window_add_code_from_textboxes();
-}
-#endif
-
-
 /**
  * gg_window_wndproc_textbox(): Window procedure for textboxes. (Subclassed)
  * @param hWnd
@@ -544,33 +523,6 @@ static LRESULT CALLBACK gg_window_wndproc_textbox(HWND hWnd, UINT message, WPARA
 	// Unknown control.
 	return false;
 }
-
-
-#if 0
-/**
- * gg_window_callback_txtkeypress(): A key was pressed in a txtEntry textbox.
- * @param button Button widget.
- * @param user_data User data.
- */
-static gboolean	gg_window_callback_txtkeypress(HWND widget, GdkEventKey *event, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(widget);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	if (event->keyval == GDK_Return ||
-	    event->keyval == GDK_KP_Enter)
-	{
-		// "Enter" was pressed. Add the code.
-		gg_window_add_code_from_textboxes();
-		
-		// Stop processing the key.
-		return TRUE;
-	}
-	
-	// Continue processing the key.
-	return FALSE;
-}
-#endif
 
 
 /**
