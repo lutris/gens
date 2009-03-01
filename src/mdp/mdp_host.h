@@ -177,6 +177,9 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *window_register)(struct _mdp_t *plugin, void *window);
 	int (MDP_FNCALL *window_unregister)(struct _mdp_t *plugin, void *window);
 	void* (MDP_FNCALL *window_get_main)(void);
+	
+	/* Directory functions. */
+	int (MDP_FNCALL *directory_get_default_save_path)(struct _mdp_t *plugin, char* buf, int size);
 } mdp_host_t;
 
 #ifdef __cplusplus
