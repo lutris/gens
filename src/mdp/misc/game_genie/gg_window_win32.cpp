@@ -313,7 +313,7 @@ static void gg_window_create_lstCodes(HWND container)
 				  GG_WINDOW_WIDTH-(8+8), 128,
 				  container, NULL, gg_hInstance, NULL);
 	SetWindowFont(lstCodes, gg_hFont, true);
-	SendMessage(lstCodes, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
+	ListView_SetExtendedListViewStyle(lstCodes, LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	
 	// Create the ListView columns.
 	LV_COLUMN lvCol;
@@ -323,22 +323,22 @@ static void gg_window_create_lstCodes(HWND container)
 	// Code (Hex)
 	lvCol.pszText = "Code (Hex)";
 	lvCol.cx = 144;
-	SendMessage(lstCodes, LVM_INSERTCOLUMN, 0, (LPARAM)&lvCol);
+	ListView_InsertColumn(lstCodes, 0, &lvCol);
 	
 	// Code (GG)
 	lvCol.pszText = "Code (GG)";
 	lvCol.cx = 104;
-	SendMessage(lstCodes, LVM_INSERTCOLUMN, 1, (LPARAM)&lvCol);
+	ListView_InsertColumn(lstCodes, 1, &lvCol);
 	
 	// CPU
 	lvCol.pszText = "CPU";
 	lvCol.cx = 48;
-	SendMessage(lstCodes, LVM_INSERTCOLUMN, 2, (LPARAM)&lvCol);
+	ListView_InsertColumn(lstCodes, 2, &lvCol);
 	
 	// Name
 	lvCol.pszText = "Name";
 	lvCol.cx = 192;
-	SendMessage(lstCodes, LVM_INSERTCOLUMN, 3, (LPARAM)&lvCol);
+	ListView_InsertColumn(lstCodes, 3, &lvCol);
 }
 
 
@@ -759,7 +759,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 static void gg_window_callback_delete(void)
 {
 	// Delete all selected codes.
-	const int lvItems = SendMessage(lstCodes, LVM_GETITEMCOUNT, 0, 0);
+	const int lvItems = ListView_GetItemCount(lstCodes);
 	
 	LVITEM lvItem;
 	lvItem.iSubItem = 0;
