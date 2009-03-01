@@ -292,7 +292,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 					     hWnd, (HMENU)IDC_BTNDEACTIVATEALL, gg_hInstance, NULL);
 	SetWindowFont(btnDeactivateAll, gg_hFont, true);
 	
-	// Initialize the Game Genie code listview.
+	// Initialize the Game Genie code ListView.
 	gg_window_init();
 	
 	// Set focus to the "Code" textbox.
@@ -302,7 +302,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 
 /**
  * gg_window_create_lstCodes(): Create the treeview for the Game Genie codes.
- * @param container Container for the listview.
+ * @param container Container for the ListView.
  */
 static void gg_window_create_lstCodes(HWND container)
 {
@@ -353,29 +353,22 @@ void gg_window_close(void)
 	// Unregister the window from MDP Host Services.
 	gg_host_srv->window_unregister(&mdp, gg_window);
 	
-#if 0
-	// Delete any gg_code pointers that may be stored in the list store.
-	if (lmCodes)
+	// Delete any gg_code pointers that may be stored in the ListView.
+	const int lvItems = ListView_GetItemCount(lstCodes);
+	
+	LVITEM lvItem;
+	lvItem.iSubItem = 0;
+	lvItem.mask = LVIF_PARAM;
+	
+	for (int i = lvItems - 1; i >= 0; i--)
 	{
-		GtkTreeIter iter;
-		gg_code_t *stored_code;
-		
-		gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
-		for (int i = 0; valid == true; i++)
+		lvItem.iItem = i;
+		if (ListView_GetItem(lstCodes, &lvItem))
 		{
-			gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 5, &stored_code, -1);
-			
-			// Delete the code.
-			free(stored_code);
-			
-			// Get the next list element.
-			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+			// Item retrieved. Delete the associated gg_code_t*.
+			free((gg_code_t*)(lvItem.lParam));
 		}
-		
-		// Clear the list store.
-		gtk_list_store_clear(GTK_LIST_STORE(lmCodes));
 	}
-#endif
 	
 	// Destroy the window.
 	HWND tmp = gg_window;
@@ -391,18 +384,16 @@ void gg_window_close(void)
 
 
 /**
- * gg_window_init(): Initialize the Game Genie code listview.
+ * gg_window_init(): Initialize the Game Genie code ListView.
  */
 static void gg_window_init(void)
 {
-#if 0
-	// Add all loaded codes to the listview.
+	// Add all loaded codes to the ListView.
 	for (list<gg_code_t>::iterator iter = gg_code_list.begin();
 	     iter != gg_code_list.end(); iter++)
 	{
 		gg_window_add_code(&(*iter), NULL);
 	}
-#endif
 }
 
 
@@ -413,36 +404,34 @@ static void gg_window_save(void)
 {
 	// TODO: Undo any ROM-modifying codes.
 	
-#if 0
 	// Clear the code list.
 	gg_code_list.clear();
 	
 	gg_code_t gg_code;
 	
-	// Values retrieved from the list model.
-	gg_code_t *stored_code;
-	gboolean enabled;
+	const int lvItems = ListView_GetItemCount(lstCodes);
 	
-	// Add all codes in the listview to the code list.
-	GtkTreeIter iter;
-	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmCodes), &iter);
-	for (int i = 0; valid == true; i++)
+	LVITEM lvItem;
+	lvItem.iSubItem = 0;
+	lvItem.mask = LVIF_STATE | LVIF_PARAM;
+	
+	for (int i = 0; i < lvItems; i++)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(lmCodes), &iter, 0, &enabled, 5, &stored_code, -1);
-		
-		// Copy the code.
-		memcpy(&gg_code, stored_code, sizeof(gg_code));
-		
-		// Copy the "enabled" value.
-		gg_code.enabled = enabled;
-		
-		// Add the code to the list of codes.
-		gg_code_list.push_back(gg_code);
-		
-		// Get the next list element.
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCodes), &iter);
+		lvItem.iItem = i;
+		if (ListView_GetItem(lstCodes, &lvItem))
+		{
+			// Item retrieved.
+			
+			// Copy the code.
+			memcpy(&gg_code, (gg_code_t*)(lvItem.lParam), sizeof(gg_code));
+			
+			// Copy the "enabled" value.
+			gg_code.enabled = (ListView_GetCheckState(lstCodes, i) ? 1 : 0);
+			
+			// Add the code to the list of codes.
+			gg_code_list.push_back(gg_code);
+		}
 	}
-#endif
 	
 	// TODO: Apply codes if a game is running.
 }
@@ -665,7 +654,7 @@ static int gg_window_add_code_from_textboxes(void)
 
 
 /**
- * gg_window_add_code(): Add a code to the listview.
+ * gg_window_add_code(): Add a code to the ListView.
  * @param gg_code Pointer to gg_code_t containing the code to add.
  * @param name Name of the code. (If NULL, the name in gg_code is used.)
  * @return 0 on success; non-zero on error.
@@ -716,7 +705,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 		lst_code->name[sizeof(lst_code->name)-1] = 0x00;
 	}
 	
-	// Code is decoded. Add it to the listview.
+	// Code is decoded. Add it to the ListView.
 	LVITEM lviCode;
 	memset(&lviCode, 0x00, sizeof(lviCode));
 	lviCode.mask = LVIF_TEXT | LVIF_PARAM;
