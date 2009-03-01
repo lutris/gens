@@ -21,10 +21,16 @@
  ***************************************************************************/
 
 #include <SDL/SDL.h>
+
 #include "gdk/gdkkeysyms.h"
+#include "gdk/gdkkeys.h"
+#include "X11/Xlib.h"
 
 #include "input_sdl_key_names.h"
 #include "input_sdl_keys.h"
+
+// Message logging.
+#include "macros/log_msg.h"
 
 #include <string.h>
 
@@ -45,6 +51,15 @@ uint16_t input_sdl_gdk_to_gens_keyval(int gdk_key)
 		
 		// Return the key value.
 		return gdk_key;
+	}
+	
+	if (gdk_key & 0xFFFF0000)
+	{
+		// Extended X11 key. Not supported by SDL.
+		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
+			"Unhandled extended X11 key: 0x%08X (%s)",
+			gdk_key, XKeysymToString(gdk_key));
+		return 0;
 	}
 	
 	// Non-ASCII symbol.
@@ -150,7 +165,10 @@ uint16_t input_sdl_gdk_to_gens_keyval(int gdk_key)
 	uint16_t sdl_key = gdk_to_sdl_table[gdk_key & 0xFF];
 	if (sdl_key == 0)
 	{
-		fprintf(stderr, "%s(): Unknown GDK key: 0x%04X\n", __func__, gdk_key);
+		// Unhandled GDK key.
+		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
+			"Unhandled GDK key: 0x%04X (%s)",
+			gdk_key, gdk_keyval_name(gdk_key));
 		return 0;
 	}
 	
