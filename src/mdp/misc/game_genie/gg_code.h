@@ -24,6 +24,7 @@
 #define __MDP_MISC_GAME_GENIE_CODE_H
 
 #include <stdint.h>
+#include <string.h>
 
 #include "mdp/mdp_fncall.h"
 
@@ -98,6 +99,15 @@ typedef enum _GG_CODE_ERR
  * @return GGCE_OK on success; other gg_code_parse_err on error.
  */
 DLL_LOCAL GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu);
+
+/**
+ * gg_code_format_hex(): Create the formatted hexadecimal version of a code.
+ * @param gg_code Pointer to gg_code_t struct to format.
+ * @param buf Buffer to write formatted code to.
+ * @param size Size of the buffer.
+ * @return 0 on success; non-zero on error.
+ */
+DLL_LOCAL int gg_code_format_hex(const gg_code_t *gg_code, char *buf, size_t size);
 
 #ifdef __cplusplus
 }

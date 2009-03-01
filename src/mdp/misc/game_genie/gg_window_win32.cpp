@@ -677,84 +677,10 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	
 	// Create the hex version of the code.
 	char s_code_hex[32];
-	
-	switch (gg_code->cpu)
+	if (gg_code_format_hex(gg_code, s_code_hex, sizeof(s_code_hex)))
 	{
-		case CPU_M68K:
-		case CPU_S68K:
-		{
-			
-			// 68000: 24-bit address.
-			switch (gg_code->datasize)
-			{
-				case DS_BYTE:
-					sprintf(s_code_hex, "%06X:%02X", gg_code->address, gg_code->data);
-					break;
-				case DS_WORD:
-					sprintf(s_code_hex, "%06X:%04X", gg_code->address, gg_code->data);
-					break;
-				case DS_DWORD:
-					sprintf(s_code_hex, "%06X:%08X", gg_code->address, gg_code->data);
-					break;
-				case DS_INVALID:
-				default:
-					// Invalid code.
-					// TODO: Show an error message.
-					return 1;
-			}
-			break;
-		}
-		case CPU_Z80:
-		{
-			// Z80: 16-bit address.
-			switch (gg_code->datasize)
-			{
-				case DS_BYTE:
-					sprintf(s_code_hex, "%04X:%02X", gg_code->address, gg_code->data);
-					break;
-				case DS_WORD:
-					sprintf(s_code_hex, "%04X:%04X", gg_code->address, gg_code->data);
-					break;
-				case DS_DWORD:
-					sprintf(s_code_hex, "%04X:%08X", gg_code->address, gg_code->data);
-					break;
-				case DS_INVALID:
-				default:
-					// Invalid code.
-					// TODO: Show an error message.
-					return 1;
-			}
-			break;
-		}
-		case CPU_MSH2:
-		case CPU_SSH2:
-		{
-			
-			// SH2: 32-bit address.
-			switch (gg_code->datasize)
-			{
-				case DS_BYTE:
-					sprintf(s_code_hex, "%08X:%02X", gg_code->address, gg_code->data);
-					break;
-				case DS_WORD:
-					sprintf(s_code_hex, "%08X:%04X", gg_code->address, gg_code->data);
-					break;
-				case DS_DWORD:
-					sprintf(s_code_hex, "%08X:%08X", gg_code->address, gg_code->data);
-					break;
-				case DS_INVALID:
-				default:
-					// Invalid code.
-					// TODO: Show an error message.
-					return 1;
-			}
-			break;
-		}
-		case CPU_INVALID:
-		default:
-			// Invalid code.
-			// TODO: Show an error message.
-			return 1;
+		// TODO: Show an error message.
+		return 1;
 	}
 	
 	// CPU string.

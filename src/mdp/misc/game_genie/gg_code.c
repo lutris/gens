@@ -302,3 +302,95 @@ static int gg_code_encode_gg(gg_code_t *gg_code)
 	// Code encoded successfully.
 	return 0;
 }
+
+
+/**
+ * gg_code_format_hex(): Create the formatted hexadecimal version of a code.
+ * @param gg_code Pointer to gg_code_t struct to format.
+ * @param buf Buffer to write formatted code to.
+ * @param size Size of the buffer.
+ * @return 0 on success; non-zero on error.
+ */
+int gg_code_format_hex(const gg_code_t *gg_code, char *buf, size_t size)
+{
+	switch (gg_code->cpu)
+	{
+		case CPU_M68K:
+		case CPU_S68K:
+		{
+			
+			// 68000: 24-bit address.
+			switch (gg_code->datasize)
+			{
+				case DS_BYTE:
+					snprintf(buf, size, "%06X:%02X", gg_code->address, gg_code->data);
+					break;
+				case DS_WORD:
+					snprintf(buf, size, "%06X:%04X", gg_code->address, gg_code->data);
+					break;
+				case DS_DWORD:
+					snprintf(buf, size, "%06X:%08X", gg_code->address, gg_code->data);
+					break;
+				case DS_INVALID:
+				default:
+					// Invalid code.
+					return 1;
+			}
+			break;
+		}
+		case CPU_Z80:
+		{
+			// Z80: 16-bit address.
+			switch (gg_code->datasize)
+			{
+				case DS_BYTE:
+					snprintf(buf, size, "%04X:%02X", gg_code->address, gg_code->data);
+					break;
+				case DS_WORD:
+					snprintf(buf, size, "%04X:%04X", gg_code->address, gg_code->data);
+					break;
+				case DS_DWORD:
+					snprintf(buf, size, "%04X:%08X", gg_code->address, gg_code->data);
+					break;
+				case DS_INVALID:
+				default:
+					// Invalid code.
+					return 1;
+			}
+			break;
+		}
+		case CPU_MSH2:
+		case CPU_SSH2:
+		{
+			
+			// SH2: 32-bit address.
+			switch (gg_code->datasize)
+			{
+				case DS_BYTE:
+					snprintf(buf, size, "%08X:%02X", gg_code->address, gg_code->data);
+					break;
+				case DS_WORD:
+					snprintf(buf, size, "%08X:%04X", gg_code->address, gg_code->data);
+					break;
+				case DS_DWORD:
+					snprintf(buf, size, "%08X:%08X", gg_code->address, gg_code->data);
+					break;
+				case DS_INVALID:
+				default:
+					// Invalid code.
+					return 1;
+			}
+			break;
+		}
+		case CPU_INVALID:
+		default:
+			// Invalid code.
+			return 1;
+	}
+	
+	// Make sure the code is null-terminated.
+	buf[size-1] = 0x00;
+	
+	// Code formatted successfully.
+	return 0;
+}
