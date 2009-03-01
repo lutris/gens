@@ -29,7 +29,7 @@
 #include "vlopt.h"
 #include "vlopt_icon.h"
 
-static MDP_Desc_t MDP_Desc =
+static mdp_desc_t mdp_desc =
 {
 	.name = "VDP Layer Options",
 	.author_mdp = "David Korth",
@@ -42,13 +42,13 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = sizeof(vlopt_icon)
 };
 
-static MDP_Func_t MDP_Func =
+static mdp_func_t mdp_func =
 {
 	.init = vlopt_init,
 	.end = vlopt_end
 };
 
-MDP_t mdp =
+mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -66,8 +66,8 @@ MDP_t mdp =
 		 0x35, 0x83, 0x8B, 0xC3, 0x17, 0x8D},
 	
 	// Description.
-	.desc = &MDP_Desc,
+	.desc = &mdp_desc,
 	
 	// Functions.
-	.func = &MDP_Func
+	.func = &mdp_func
 };

@@ -258,7 +258,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	// Update VSync.
 	vdraw_sdl_gl_update_vsync(TRUE);
 	
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
         // Determine the texture size using the scaling factor.
@@ -664,7 +664,7 @@ static void vdraw_sdl_gl_draw_border(void)
 static void vdraw_sdl_gl_update_renderer(void)
 {
 	// Check if a resolution switch is needed.
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.

@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-// The definitions in this file match gens_core/misc/cpuflags.h.
+/* The definitions in this file match gens_core/misc/cpuflags.h. */
 
 #ifndef __MDP_CPUFLAGS_H
 #define __MDP_CPUFLAGS_H
@@ -29,7 +29,7 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-// CPU flags (IA32/x86_64)
+/* CPU flags (IA32/x86_64) */
 #define MDP_CPUFLAG_MMX		(1 << 0)
 #define MDP_CPUFLAG_SSE		(1 << 1)
 #define MDP_CPUFLAG_SSE2	(1 << 2)
@@ -40,7 +40,7 @@
 #define MDP_CPUFLAG_SSE4A	(1 << 7)
 #define MDP_CPUFLAG_SSE5	(1 << 8)
 
-// CPU flags (IA32/x86_64; AMD only)
+/* CPU flags (IA32/x86_64; AMD only) */
 #define MDP_CPUFLAG_MMXEXT	(1 << 9)
 #define MDP_CPUFLAG_3DNOW	(1 << 10)
 #define MDP_CPUFLAG_3DNOWEXT	(1 << 11)

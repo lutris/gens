@@ -32,9 +32,9 @@ extern "C" {
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-DLL_LOCAL int MDP_FNCALL mdp_render_hq3x_init(MDP_Host_t *hostSrv);
+DLL_LOCAL int MDP_FNCALL mdp_render_hq3x_init(mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_hq3x_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_render_hq3x_cpp(MDP_Render_Info_t *renderInfo);
+DLL_LOCAL int MDP_FNCALL mdp_render_hq3x_cpp(mdp_render_info_t *render_info);
 
 DLL_LOCAL extern int *mdp_render_hq3x_LUT16to32;
 DLL_LOCAL extern int *mdp_render_hq3x_RGB16toYUV;

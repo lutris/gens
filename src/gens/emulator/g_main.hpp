@@ -179,9 +179,9 @@ void Clear_Screen_MD(void);
 // The main program loop.
 void GensMainLoop(void);
 
-// Get the current MDP_Render_t*.
+// Get the current mdp_render_t*.
 #include "mdp/mdp_render.h"
-MDP_Render_t* get_mdp_render_t(void);
+mdp_render_t* get_mdp_render_t(void);
 
 #ifdef __cplusplus
 }
@@ -193,8 +193,8 @@ MDP_Render_t* get_mdp_render_t(void);
 
 // Renderers
 #include "plugins/pluginmgr.hpp"
-extern std::list<MDP_Render_t*>::iterator rendMode_FS;
-extern std::list<MDP_Render_t*>::iterator rendMode_W;
+extern std::list<mdp_render_t*>::iterator rendMode_FS;
+extern std::list<mdp_render_t*>::iterator rendMode_W;
 
 #endif
 

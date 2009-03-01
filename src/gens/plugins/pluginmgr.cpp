@@ -71,7 +71,7 @@ using std::list;
 // Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
 #include "render/double/mdp_render_2x_plugin.h"
-static MDP_t* mdp_internal[] =
+static mdp_t* mdp_internal[] =
 {
 	&mdp_render_1x,
 	&mdp_render_2x,
@@ -83,14 +83,14 @@ static MDP_t* mdp_internal[] =
  * lstMDP: List containing all loaded plugins.
  * Incompat: MDP Incompatibility List.
  */
-list<MDP_t*> PluginMgr::lstMDP;
+list<mdp_t*> PluginMgr::lstMDP;
 MDP_Incompat PluginMgr::Incompat;
 
 
 /**
  * lstRenderPlugins, tblRenderPlugins: List and map containing all loaded render plugins.
  */
-list<MDP_Render_t*> PluginMgr::lstRenderPlugins;
+list<mdp_render_t*> PluginMgr::lstRenderPlugins;
 mapRenderPlugin PluginMgr::tblRenderPlugins;
 
 /**
@@ -147,9 +147,9 @@ void PluginMgr::init(void)
  * @param filename Filename of the plugin. (Empty if internal.)
  * @return True if loaded; false if not.
  */
-bool PluginMgr::loadPlugin(MDP_t *plugin, const string& filename)
+bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 {
-	// Check the MDP_t version.
+	// Check the mdp_t version.
 	if (MDP_VERSION_MAJOR(plugin->interfaceVersion) !=
 	    MDP_VERSION_MAJOR(MDP_INTERFACE_VERSION))
 	{
@@ -394,7 +394,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	}
 	
 	// Attempt to load the mdp symbol.
-	MDP_t *plugin = static_cast<MDP_t*>(lt_dlsym(handle, "mdp"));
+	mdp_t *plugin = static_cast<mdp_t*>(lt_dlsym(handle, "mdp"));
 	if (!plugin)
 	{
 		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
@@ -419,10 +419,10 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 void PluginMgr::end(void)
 {
 	// Shut down all render plugins.
-	for (list<MDP_t*>::iterator curMDP = lstMDP.begin();
+	for (list<mdp_t*>::iterator curMDP = lstMDP.begin();
 	     curMDP != lstMDP.end(); curMDP++)
 	{
-		MDP_Func_t *func = (*curMDP)->func;
+		mdp_func_t *func = (*curMDP)->func;
 		if (func && func->end)
 			func->end();
 	}
@@ -440,7 +440,7 @@ void PluginMgr::end(void)
  * @param tag Plugin tag.
  * @return Render plugin iterator from lstRenderPlugins.
  */
-std::list<MDP_Render_t*>::iterator PluginMgr::getMDPIterFromTag_Render(string tag)
+std::list<mdp_render_t*>::iterator PluginMgr::getMDPIterFromTag_Render(string tag)
 {
 	if (tag.empty())
 		return lstRenderPlugins.end();

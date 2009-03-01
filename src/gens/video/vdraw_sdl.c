@@ -95,7 +95,7 @@ const vdraw_backend_t vdraw_backend_sdl =
  */
 static int vdraw_sdl_init(void)
 {
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.
@@ -417,7 +417,7 @@ static void vdraw_sdl_draw_border(void)
 static void vdraw_sdl_update_renderer(void)
 {
 	// Check if a resolution switch is needed.
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.

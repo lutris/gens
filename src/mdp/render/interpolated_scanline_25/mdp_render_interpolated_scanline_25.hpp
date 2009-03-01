@@ -31,9 +31,9 @@ extern "C" {
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-DLL_LOCAL int MDP_FNCALL mdp_render_interpolated_scanline_25_init(MDP_Host_t *hostSrv);
+DLL_LOCAL int MDP_FNCALL mdp_render_interpolated_scanline_25_init(mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_interpolated_scanline_25_end(void);
-DLL_LOCAL int MDP_FNCALL mdp_render_interpolated_scanline_25_cpp(MDP_Render_Info_t *renderInfo);
+DLL_LOCAL int MDP_FNCALL mdp_render_interpolated_scanline_25_cpp(mdp_render_info_t *render_info);
 
 #ifdef __cplusplus
 }

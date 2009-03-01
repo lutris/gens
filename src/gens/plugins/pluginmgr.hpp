@@ -34,15 +34,15 @@
 // MDP Incompatibility List.
 #include "mdp_incompat.hpp"
 
-typedef GENS_HASHTABLE<std::string, std::list<MDP_Render_t*>::iterator> mapRenderPlugin;
-typedef std::pair<std::string, std::list<MDP_Render_t*>::iterator> pairRenderPlugin;
+typedef GENS_HASHTABLE<std::string, std::list<mdp_render_t*>::iterator> mapRenderPlugin;
+typedef std::pair<std::string, std::list<mdp_render_t*>::iterator> pairRenderPlugin;
 
 // Menu items
 typedef struct _mdpMenuItem_t
 {
 	uint16_t 		id;
 	mdp_menu_handler_fn	handler;
-	MDP_t			*owner;
+	mdp_t			*owner;
 	
 	// Attributes
 	std::string		text;
@@ -56,7 +56,7 @@ typedef std::pair<uint16_t, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 typedef struct _mdpWindow_t
 {
 	void	*window;
-	MDP_t	*owner;
+	mdp_t	*owner;
 } mdpWindow_t;
 
 class PluginMgr
@@ -65,16 +65,16 @@ class PluginMgr
 		static void init(void);
 		static void end(void);
 		
-		static std::list<MDP_Render_t*>::iterator getMDPIterFromTag_Render(std::string tag);
+		static std::list<mdp_render_t*>::iterator getMDPIterFromTag_Render(std::string tag);
 		
 		// List containing all loaded plugins.
-		static std::list<MDP_t*> lstMDP;
+		static std::list<mdp_t*> lstMDP;
 		
 		// MDP Incompatibility List.
 		static MDP_Incompat Incompat;
 		
 		// List and map containing all loaded render plugins.
-		static std::list<MDP_Render_t*> lstRenderPlugins;
+		static std::list<mdp_render_t*> lstRenderPlugins;
 		static mapRenderPlugin tblRenderPlugins;
 		
 		// List and map containing plugin menu items.
@@ -85,14 +85,14 @@ class PluginMgr
 		static std::list<mdpWindow_t> lstWindows;
 		
 	protected:
-		static bool loadPlugin(MDP_t *plugin, const std::string& filename = "");
+		static bool loadPlugin(mdp_t *plugin, const std::string& filename = "");
 		static void scanExternalPlugins(const std::string& directory, bool recursive = true);
 		static void loadExternalPlugin(const std::string& filename);
 		
-		static void errLoadPlugin(MDP_t *plugin, int err, const std::string& filename = "");
+		static void errLoadPlugin(mdp_t *plugin, int err, const std::string& filename = "");
 		
 		// TODO: Replace with MDP_Host_t->registerRenderer().
-		//static bool initPlugin_Render(MDP_t *plugin);
+		//static bool initPlugin_Render(mdp_t *plugin);
 };
 
 #endif /* GENS_PLUGINMGR_HPP */

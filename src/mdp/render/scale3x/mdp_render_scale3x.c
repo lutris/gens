@@ -39,20 +39,20 @@
 #include "mdp/mdp_error.h"
 
 // MDP Host Services.
-static MDP_Host_t *mdp_render_scale3x_hostSrv = NULL;
+static mdp_host_t *mdp_render_scale3x_host_srv = NULL;
 
 
 /**
  * mdp_render_scale3x_init(): Initialize the Scale3x rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_scale3x_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_scale3x_init(mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
-	mdp_render_scale3x_hostSrv = hostSrv;
+	mdp_render_scale3x_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_scale3x_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	mdp_render_scale3x_host_srv->renderer_register(&mdp, &mdp_render);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -65,27 +65,27 @@ int MDP_FNCALL mdp_render_scale3x_init(MDP_Host_t *hostSrv)
  */
 int MDP_FNCALL mdp_render_scale3x_end(void)
 {
-	if (!mdp_render_scale3x_hostSrv)
+	if (!mdp_render_scale3x_host_srv)
 		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
-	mdp_render_scale3x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	mdp_render_scale3x_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
 }
 
 
-int MDP_FNCALL mdp_render_scale3x_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_scale3x_cpp(mdp_render_info_t *render_info)
 {
-	if (!renderInfo)
+	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 
-	const unsigned int bytespp = (renderInfo->bpp == 15 ? 2 : renderInfo->bpp / 8);
+	const unsigned int bytespp = (render_info->bpp == 15 ? 2 : render_info->bpp / 8);
 	
-	scale3x(renderInfo->destScreen, renderInfo->destPitch,
-		renderInfo->mdScreen, renderInfo->srcPitch,
-		bytespp, renderInfo->width, renderInfo->height);
+	scale3x(render_info->destScreen, render_info->destPitch,
+		render_info->mdScreen, render_info->srcPitch,
+		bytespp, render_info->width, render_info->height);
 	
 	return MDP_ERR_OK;
 }

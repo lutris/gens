@@ -34,10 +34,10 @@
 extern "C" {
 #endif
 
-// MDP Host Services interface version.
+/* MDP Host Services interface version. */
 #define MDP_HOST_INTERFACE_VERSION MDP_VERSION(0, 2, 0)
 
-// MDP_PTR: Pointer IDs.
+/* MDP_PTR: Pointer IDs. */
 typedef enum
 {
 	MDP_PTR_NULL		= 0,
@@ -53,18 +53,19 @@ typedef enum
 	MDP_PTR_RAM_32X		= 11, /* LE */
 } MDP_PTR;
 
-// Convenience macros to access 8-bit, 16-bit, and 32-bit memory.
+/* Convenience macros to access 8-bit, 16-bit, and 32-bit memory. */
 
 #define MDP_MEM_16(ptr, address)	\
 	(((unsigned short*)ptr)[address >> 1])
 
-// TODO: Add an optimized version for big-endian host systems.
+/* TODO: Add an optimized version for big-endian host systems. */
+/* TODO: This only works for reading 32-bit data. */
 #define MDP_MEM_32(ptr, address)	\
 	(((((unsigned short*)ptr)[address >> 1]) << 16) | (((unsigned short*)ptr)[(address >> 1) + 1]))
 
 #if MDP_BYTEORDER == MDP_LIL_ENDIAN
 
-// Little-endian host system.
+/* Little-endian host system. */
 #define MDP_MEM_BE_8(ptr, address)	\
 	(((unsigned char*)ptr)[address ^ 1])
 #define MDP_MEM_LE_8(ptr, address)	\
@@ -72,7 +73,7 @@ typedef enum
 
 #else
 
-// Big-endian host system.
+/* Big-endian host system. */
 #define MDP_MEM_BE_8(ptr, address)	\
 	(((unsigned char*)ptr)[address])
 #define MDP_MEM_LE_8(ptr, address)	\
@@ -80,15 +81,25 @@ typedef enum
 
 #endif
 
-// MDP_VAL: Value IDs.
-typedef enum
+/* MDP_VAL: Value IDs. */
+typedef enum _MDP_VAL
 {
 	MDP_VAL_UI			= 0,
 	MDP_VAL_ROM_SIZE		= 1,
 	MDP_VAL_VDP_LAYER_OPTIONS	= 2,
 } MDP_VAL;
 
-// MDP_VDP_LAYER_OPTIONS: Layer options bits.
+/* MDP_UI: UI identifiers. */
+typedef enum _MDP_UI
+{
+	MDP_UI_NONE		= 0,
+	MDP_UI_GTK2		= 1,
+	MDP_UI_QT4		= 2,
+	MDP_UI_WIN32		= 3,
+	MDP_UI_MACOSX_COCOA	= 4,
+} MDP_UI;
+
+/* MDP_VDP_LAYER_OPTIONS: Layer options bits. */
 #define MDP_VDP_LAYER_OPTIONS_SCROLLA_LOW		(1 << 0)
 #define MDP_VDP_LAYER_OPTIONS_SCROLLA_HIGH		(1 << 1)
 #define MDP_VDP_LAYER_OPTIONS_SCROLLA_SWAP		(1 << 2)
@@ -109,18 +120,8 @@ typedef enum
 	 MDP_VDP_LAYER_OPTIONS_SPRITE_LOW	| \
 	 MDP_VDP_LAYER_OPTIONS_SPRITE_HIGH)
 
-// MDP_UI: UI identifiers.
-typedef enum
-{
-	MDP_UI_NONE		= 0,
-	MDP_UI_GTK2		= 1,
-	MDP_UI_QT4		= 2,
-	MDP_UI_WIN32		= 3,
-	MDP_UI_MACOSX_COCOA	= 4,
-} MDP_UI;
-
 // MDP_MENU: Menu IDs.
-typedef enum
+typedef enum _MDP_MENU
 {
 	MDP_MENU_DEFAULT	= 0,
 } MDP_MENU;
@@ -129,46 +130,54 @@ typedef enum
 typedef int (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
 
 // MDP Host Services struct.
-typedef struct
+typedef struct _mdp_host_t
 {
 	const uint32_t interfaceVersion;
 	
-	// ptr_ref(): Get a reference for a pointer.
-	// ptr_unref(): Unreference a pointer.
+	/**
+	 * ptr_ref(): Get a reference for a pointer.
+	 * ptr_unref(): Unreference a pointer.
+	 */
 	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
 	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
 	
-	// val_set(), val_get(): Set or get int values.
+	/**
+	 * val_set(), val_get(): Set or get int values.
+	 */
 	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
 	int (MDP_FNCALL *val_get)(uint32_t valID);
 	
-	// renderer_register(): Register a renderer.
-	// renderer_unregister(): Unregister a renderer.
-	int (MDP_FNCALL *renderer_register)(struct MDP_t *plugin, MDP_Render_t *renderer);
-	int (MDP_FNCALL *renderer_unregister)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	/**
+	 * renderer_register(): Register a renderer.
+	 * renderer_unregister(): Unregister a renderer.
+	 */
+	int (MDP_FNCALL *renderer_register)(struct _mdp_t *plugin, mdp_render_t *renderer);
+	int (MDP_FNCALL *renderer_unregister)(struct _mdp_t *plugin, mdp_render_t *renderer);
 	
-	// menu_item_add(): Add a menu item.
-	// menu_item_remove(): Remove a menu item.
-	// menu_item_set_text(): Set menu item text.
-	// menu_item_get_text(): Get menu item text.
-	// menu_item_set_checked(): Set menu item "checked" state.
-	// menu_item_get_checked(): Get menu item "checked" state.
-	int (MDP_FNCALL *menu_item_add)(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
-	int (MDP_FNCALL *menu_item_remove)(struct MDP_t *plugin, int menu_item_id);
-	int (MDP_FNCALL *menu_item_set_text)(struct MDP_t *plugin, int menu_item_id, const char *text);
-	int (MDP_FNCALL *menu_item_get_text)(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size);
-	int (MDP_FNCALL *menu_item_set_checked)(struct MDP_t *plugin, int menu_item_id, int checked);
-	int (MDP_FNCALL *menu_item_get_checked)(struct MDP_t *plugin, int menu_item_id);
+	/**
+	 * menu_item_add(): Add a menu item.
+	 * menu_item_remove(): Remove a menu item.
+	 * menu_item_set_text(): Set menu item text.
+	 * menu_item_get_text(): Get menu item text.
+	 * menu_item_set_checked(): Set menu item "checked" state.
+	 * menu_item_get_checked(): Get menu item "checked" state.
+	 */
+	int (MDP_FNCALL *menu_item_add)(struct _mdp_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
+	int (MDP_FNCALL *menu_item_remove)(struct _mdp_t *plugin, int menu_item_id);
+	int (MDP_FNCALL *menu_item_set_text)(struct _mdp_t *plugin, int menu_item_id, const char *text);
+	int (MDP_FNCALL *menu_item_get_text)(struct _mdp_t *plugin, int menu_item_id, char *text_buf, int size);
+	int (MDP_FNCALL *menu_item_set_checked)(struct _mdp_t *plugin, int menu_item_id, int checked);
+	int (MDP_FNCALL *menu_item_get_checked)(struct _mdp_t *plugin, int menu_item_id);
 	
-	// Event handler functions.
-	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
-	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
+	/* Event handler functions. */
+	int (MDP_FNCALL *event_register)(struct _mdp_t *plugin, int event_id, mdp_event_handler_fn handler);
+	int (MDP_FNCALL *event_unregister)(struct _mdp_t *plugin, int event_id, mdp_event_handler_fn handler);
 	
-	// Window registration.
-	int (MDP_FNCALL *window_register)(struct MDP_t *plugin, void *window);
-	int (MDP_FNCALL *window_unregister)(struct MDP_t *plugin, void *window);
+	/* Window registration. */
+	int (MDP_FNCALL *window_register)(struct _mdp_t *plugin, void *window);
+	int (MDP_FNCALL *window_unregister)(struct _mdp_t *plugin, void *window);
 	void* (MDP_FNCALL *window_get_main)(void);
-} MDP_Host_t;
+} mdp_host_t;
 
 #ifdef __cplusplus
 }

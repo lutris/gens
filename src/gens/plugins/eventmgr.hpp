@@ -34,7 +34,7 @@
 // Event item.
 struct mdpEventItem_t
 {
-	MDP_t			*owner;
+	mdp_t			*owner;
 	mdp_event_handler_fn	handler;
 };
 

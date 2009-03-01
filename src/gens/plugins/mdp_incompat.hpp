@@ -33,7 +33,7 @@
 // Struct for storing information about incompatible MDP plugins.
 typedef struct _mdp_incompat_t
 {
-	MDP_t		*mdp;		// Copy of the MDP_t. (NULL if the plugin couldn't be loaded.)
+	mdp_t		*mdp;		// Copy of the mdp_t. (NULL if the plugin couldn't be loaded.)
 	int		err;		// Error code.
 	std::string	filename;	// Filename of the plugin. (Empty if internal.)
 } mdp_incompat_t;
@@ -44,7 +44,7 @@ class MDP_Incompat
 		MDP_Incompat();
 		~MDP_Incompat();
 		
-		void add(MDP_t *plugin, int err, const std::string& filename);
+		void add(mdp_t *plugin, int err, const std::string& filename);
 	
 	protected:
 		std::list<mdp_incompat_t> m_lstIncompat;

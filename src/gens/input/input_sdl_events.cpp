@@ -302,7 +302,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else //if (!mod)
 			{
-				list<MDP_Render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				if (rendMode != PluginMgr::lstRenderPlugins.begin())
 				{
 					rendMode--;
@@ -320,7 +320,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else //if (!mod)
 			{
-				list<MDP_Render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				rendMode++;
 				if (rendMode != PluginMgr::lstRenderPlugins.end())
 				{

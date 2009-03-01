@@ -27,7 +27,7 @@
 
 #include "mdp_render_epx_plus.hpp"
 
-static MDP_Desc_t MDP_Desc =
+static mdp_desc_t mdp_desc =
 {
 	.name = "EPX Plus Renderer",
 	.author_mdp = "David Korth",
@@ -40,7 +40,7 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = 0
 };
 
-MDP_Render_t mdp_render_t =
+mdp_render_t mdp_render =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_epx_plus_cpp,
@@ -49,13 +49,13 @@ MDP_Render_t mdp_render_t =
 	.tag = "EPX Plus"
 };
 
-static MDP_Func_t MDP_Func =
+static mdp_func_t mdp_func =
 {
 	.init = mdp_render_epx_plus_init,
 	.end = mdp_render_epx_plus_end
 };
 
-MDP_t mdp =
+mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -73,8 +73,8 @@ MDP_t mdp =
 		 0x15, 0x8B, 0x90, 0x06, 0xEF, 0x88},
 	
 	// Description.
-	.desc = &MDP_Desc,
+	.desc = &mdp_desc,
 	
 	// Functions.
-	.func = &MDP_Func
+	.func = &mdp_func
 };

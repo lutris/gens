@@ -31,11 +31,11 @@ extern "C" {
 
 // Host Services functions. (C++)
 
-int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *renderer);
-int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *renderer);
+int MDP_FNCALL mdp_host_renderer_register(mdp_t *plugin, mdp_render_t *renderer);
+int MDP_FNCALL mdp_host_renderer_unregister(mdp_t *plugin, mdp_render_t *renderer);
 
-int MDP_FNCALL mdp_host_window_register(struct MDP_t *plugin, void *window);
-int MDP_FNCALL mdp_host_window_unregister(struct MDP_t *plugin, void *window);
+int MDP_FNCALL mdp_host_window_register(mdp_t *plugin, void *window);
+int MDP_FNCALL mdp_host_window_unregister(mdp_t *plugin, void *window);
 
 #ifdef __cplusplus
 }

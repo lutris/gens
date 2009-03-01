@@ -144,7 +144,7 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 	
 	const bool fullScreen = vdraw_get_fullscreen();
 	
-	const list<MDP_Render_t*>::iterator& rendMode = (fullScreen ? rendMode_FS : rendMode_W);
+	const list<mdp_render_t*>::iterator& rendMode = (fullScreen ? rendMode_FS : rendMode_W);
 	
 	// The message must be specified.
 	if (!msg)

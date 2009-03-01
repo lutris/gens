@@ -29,7 +29,7 @@ extern "C" {
 
 #include "mdp/mdp.h"
 
-extern DLL_PUBLIC MDP_t mdp;
+extern DLL_PUBLIC mdp_t mdp;
 
 #ifdef __cplusplus
 }

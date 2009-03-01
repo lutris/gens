@@ -30,10 +30,10 @@ extern "C" {
 #include "mdp_host_gens.h"
 #include "mdp/mdp_event.h"
 
-int MDP_FNCALL mdp_host_event_register(struct MDP_t *plugin, int event_id,
+int MDP_FNCALL mdp_host_event_register(mdp_t *plugin, int event_id,
 				       mdp_event_handler_fn handler);
 
-int MDP_FNCALL mdp_host_event_unregister(struct MDP_t *plugin, int event_id,
+int MDP_FNCALL mdp_host_event_unregister(mdp_t *plugin, int event_id,
 					 mdp_event_handler_fn handler);
 
 #ifdef __cplusplus

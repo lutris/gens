@@ -47,20 +47,20 @@
 #define MASK_DIV2_32		((uint32_t)(0x7F7F7F7F))
 
 // MDP Host Services.
-static MDP_Host_t *mdp_render_scanline_50_hostSrv = NULL;
+static mdp_host_t *mdp_render_scanline_50_host_srv = NULL;
 
 
 /**
  * mdp_render_scanline_50_init(): Initialize the 50% Scanline rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_scanline_50_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_scanline_50_init(mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
-	mdp_render_scanline_50_hostSrv = hostSrv;
+	mdp_render_scanline_50_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_scanline_50_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	mdp_render_scanline_50_host_srv->renderer_register(&mdp, &mdp_render);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -73,11 +73,11 @@ int MDP_FNCALL mdp_render_scanline_50_init(MDP_Host_t *hostSrv)
  */
 int MDP_FNCALL mdp_render_scanline_50_end(void)
 {
-	if (!mdp_render_scanline_50_hostSrv)
+	if (!mdp_render_scanline_50_host_srv)
 		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
-	mdp_render_scanline_50_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	mdp_render_scanline_50_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
@@ -133,66 +133,66 @@ static inline void T_mdp_render_scanline_50_cpp(pixel *destScreen, pixel *mdScre
 #endif /* GENS_X86_ASM */
 
 
-int MDP_FNCALL mdp_render_scanline_50_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_scanline_50_cpp(mdp_render_info_t *render_info)
 {
-	if (!renderInfo)
+	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
-	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
+	if (render_info->bpp == 16 || render_info->bpp == 15)
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+		if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
 		{
 			mdp_render_scanline_50_16_x86_mmx(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15));
+				    (uint16_t*)render_info->destScreen,
+				    (uint16_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height,
+				    (render_info->bpp == 15));
 		}
 		else
 		{
 			mdp_render_scanline_50_16_x86(
-				    (uint16_t*)renderInfo->destScreen,
-				    (uint16_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height,
-				    (renderInfo->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM));
+				    (uint16_t*)render_info->destScreen,
+				    (uint16_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height,
+				    (render_info->bpp == 15 ? MASK_DIV2_15_ASM : MASK_DIV2_16_ASM));
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_scanline_50_cpp(
-			    (uint16_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height,
-			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
+			    (uint16_t*)render_info->destScreen,
+			    (uint16_t*)render_info->mdScreen,
+			    render_info->destPitch, render_info->srcPitch,
+			    render_info->width, render_info->height,
+			    (render_info->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 #endif /* GENS_X86_ASM */
 	}
 	else
 	{
 #ifdef GENS_X86_ASM
-		if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+		if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
 		{
 			mdp_render_scanline_50_32_x86_mmx(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height);
+				    (uint32_t*)render_info->destScreen,
+				    (uint32_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height);
 		}
 		else
 		{
 			mdp_render_scanline_50_32_x86(
-				    (uint32_t*)renderInfo->destScreen,
-				    (uint32_t*)renderInfo->mdScreen,
-				    renderInfo->destPitch, renderInfo->srcPitch,
-				    renderInfo->width, renderInfo->height);
+				    (uint32_t*)render_info->destScreen,
+				    (uint32_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height);
 		}
 #else /* !GENS_X86_ASM */
 		T_mdp_render_scanline_50_cpp(
-			    (uint32_t*)renderInfo->destScreen,
-			    (uint32_t*)renderInfo->mdScreen,
-			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height,
+			    (uint32_t*)render_info->destScreen,
+			    (uint32_t*)render_info->mdScreen,
+			    render_info->destPitch, render_info->srcPitch,
+			    render_info->width, render_info->height,
 			    MASK_DIV2_32);
 #endif /* GENS_X86_ASM */
 	}

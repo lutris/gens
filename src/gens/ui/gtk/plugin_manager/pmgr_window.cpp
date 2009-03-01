@@ -290,14 +290,14 @@ static void pmgr_window_populate_plugin_list(void)
 	
 	// Add all plugins to the treeview.
 	char tmp[64];
-	list<MDP_t*>::iterator curPlugin;
+	list<mdp_t*>::iterator curPlugin;
 	for (curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
 		GtkTreeIter iter;
 		gtk_list_store_append(lmPluginList, &iter);
 		
-		MDP_t *plugin = (*curPlugin);
+		mdp_t *plugin = (*curPlugin);
 		const char *pluginName;
 		if (plugin->desc && plugin->desc->name)
 		{
@@ -406,10 +406,10 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	
 	// Found a selected plugin.
 	GValue gVal = { 0 };
-	MDP_t *plugin;
+	mdp_t *plugin;
 	
 	gtk_tree_model_get_value(GTK_TREE_MODEL(lmPluginList), &iter, 1, &gVal);
-	plugin = (MDP_t*)g_value_peek_pointer(&gVal);
+	plugin = (mdp_t*)g_value_peek_pointer(&gVal);
 	g_value_unset(&gVal);
 	
 	// Get the plugin information.
@@ -439,7 +439,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	}
 	
 	// Fill in the descriptions.
-	MDP_Desc_t *desc = plugin->desc;
+	mdp_desc_t *desc = plugin->desc;
 	stringstream ssMainInfo;
 	int lines = 4;			// Name, MDP Author, Version, and License are always printed.
 	const int linesReserved = 6;	// Number of lines reserved.

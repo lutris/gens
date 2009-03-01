@@ -46,13 +46,13 @@ using std::list;
 
 /**
  * mdp_host_menu_item_add(): Add a menu item.
- * @param plugin MDP_t requesting the menu item.
+ * @param plugin mdp_t requesting the menu item.
  * @param handler Function to handle menu item callbacks.
  * @param menu_id Menu to add the menu item to. (Currently ignored.)
  * @param text Initial menu item text.
  * @return Menu item ID, or MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler,
+int MDP_FNCALL mdp_host_menu_item_add(mdp_t *plugin, mdp_menu_handler_fn handler,
 				      int menu_id, const char *text)
 {
 	// Check to see what the largest menu ID is.
@@ -125,7 +125,7 @@ typedef list<mdpMenuItem_t>::iterator menuIter;
  * @param lstIter_ret List iterator. (Output)
  * @return True if found; false if not found or not owned by the plugin.
  */
-static inline bool getMenuItemIter(struct MDP_t *plugin, int menu_item_id, menuIter& lstIter_ret)
+static inline bool getMenuItemIter(mdp_t *plugin, int menu_item_id, menuIter& lstIter_ret)
 {
 	// Search for the menu item.
 	mapMenuItems::iterator curMenuItem = PluginMgr::tblMenuItems.find(menu_item_id);
@@ -152,11 +152,11 @@ static inline bool getMenuItemIter(struct MDP_t *plugin, int menu_item_id, menuI
 
 /**
  * mdp_host_menu_item_remove(): Remove a menu item.
- * @param plugin MDP_t requesting the menu item.
+ * @param plugin mdp_t requesting the menu item.
  * @param menu_item_id Menu item ID.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
+int MDP_FNCALL mdp_host_menu_item_remove(mdp_t *plugin, int menu_item_id)
 {
 	menuIter lstIter;
 	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
@@ -180,12 +180,12 @@ int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id)
 
 /**
  * mdp_host_menu_item_set_text(): Set menu item text.
- * @param plugin MDP_t requesting the menu item.
+ * @param plugin mdp_t requesting the menu item.
  * @param menu_item_id Menu item ID.
  * @param text Text to set.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_id, const char *text)
+int MDP_FNCALL mdp_host_menu_item_set_text(mdp_t *plugin, int menu_item_id, const char *text)
 {
 	menuIter lstIter;
 	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
@@ -212,13 +212,13 @@ int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_i
 
 /**
  * mdp_host_menu_item_get_text(): get menu item text.
- * @param plugin MDP_t requesting the menu item.
+ * @param plugin mdp_t requesting the menu item.
  * @param menu_item_id Menu item ID.
  * @param text_buf Buffer to copy the text to.
  * @param size Size of text_buf.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size)
+int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id, char *text_buf, int size)
 {
 	menuIter lstIter;
 	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
@@ -238,12 +238,12 @@ int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_i
 
 /**
  * mdp_host_menu_item_set_checked(): Set menu item "checked" state.
- * @param plugin MDP_t requesting the menu item.
+ * @param plugin mdp_t requesting the menu item.
  * @param menu_item_id Menu item ID.
  * @param checked "Checked" state.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_set_checked(struct MDP_t *plugin, int menu_item_id, int checked)
+int MDP_FNCALL mdp_host_menu_item_set_checked(mdp_t *plugin, int menu_item_id, int checked)
 {
 	menuIter lstIter;
 	if (!getMenuItemIter(plugin, menu_item_id, lstIter))
@@ -267,11 +267,11 @@ int MDP_FNCALL mdp_host_menu_item_set_checked(struct MDP_t *plugin, int menu_ite
 
 /**
  * mdp_host_menu_item_get_checked(): Get menu item "checked" state.
- * @param plugin MDP_t requesting the menu item.
+ * @param plugin mdp_t requesting the menu item.
  * @param menu_item_id Menu item ID.
  * @return 0 if not checked; 1 if checked; negative number for MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_get_checked(struct MDP_t *plugin, int menu_item_id)
+int MDP_FNCALL mdp_host_menu_item_get_checked(mdp_t *plugin, int menu_item_id)
 {
 	menuIter lstIter;
 	if (!getMenuItemIter(plugin, menu_item_id, lstIter))

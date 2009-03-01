@@ -38,7 +38,7 @@
 #include "mdp/mdp_event.h"
 
 // MDP Host Services.
-MDP_Host_t *gg_host_srv = NULL;
+mdp_host_t *gg_host_srv = NULL;
 
 static int gg_menuItemID = 0;
 static void *mdp_ptr_ram_md = NULL;
@@ -57,7 +57,7 @@ list<gg_code_t> gg_code_list;
  * gg_init(): Initialize the Game Genie plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL gg_init(MDP_Host_t *host_srv)
+int MDP_FNCALL gg_init(mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	gg_host_srv = host_srv;

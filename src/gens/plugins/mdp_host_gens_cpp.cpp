@@ -38,11 +38,11 @@ using std::list;
 
 /**
  * mdp_host_renderer_register(): Register a render plugin.
- * @param plugin MDP_t requesting plugin registration.
- * @param renderer MDP_Render_t struct containing renderer information.
+ * @param plugin mdp_t requesting plugin registration.
+ * @param renderer mdp_render_t struct containing renderer information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *renderer)
+int MDP_FNCALL mdp_host_renderer_register(mdp_t *plugin, mdp_render_t *renderer)
 {
 	if (!plugin || !renderer)
 		return 1;	// TODO: Return an MDP error code.
@@ -74,7 +74,7 @@ int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *re
 	PluginMgr::lstRenderPlugins.push_back(renderer);
 	
 	// Add the plugin tag to the map.
-	list<MDP_Render_t*>::iterator lstIter = PluginMgr::lstRenderPlugins.end();
+	list<mdp_render_t*>::iterator lstIter = PluginMgr::lstRenderPlugins.end();
 	lstIter--;
 	PluginMgr::tblRenderPlugins.insert(pairRenderPlugin(tag, lstIter));
 	
@@ -85,11 +85,11 @@ int MDP_FNCALL mdp_host_renderer_register(struct MDP_t *plugin, MDP_Render_t *re
 
 /**
  * mdp_host_renderer_unregister(): Unregister a render plugin.
- * @param plugin MDP_t requesting plugin unregistration.
- * @param renderer MDP_Render_t struct containing renderer information.
+ * @param plugin mdp_t requesting plugin unregistration.
+ * @param renderer mdp_render_t struct containing renderer information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *renderer)
+int MDP_FNCALL mdp_host_renderer_unregister(mdp_t *plugin, mdp_render_t *renderer)
 {
 	// TODO: Implement this function.
 	return MDP_ERR_OK;
@@ -98,11 +98,11 @@ int MDP_FNCALL mdp_host_renderer_unregister(struct MDP_t *plugin, MDP_Render_t *
 
 /**
  * mdp_host_window_register(): Register a window.
- * @param plugin MDP_t requesting window registration.
+ * @param plugin mdp_t requesting window registration.
  * @param window Window to be registered.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_window_register(struct MDP_t *plugin, void *window)
+int MDP_FNCALL mdp_host_window_register(mdp_t *plugin, void *window)
 {
 	// Check the plugin window list to see if this window is already registered.
 	for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();
@@ -128,11 +128,11 @@ int MDP_FNCALL mdp_host_window_register(struct MDP_t *plugin, void *window)
 
 /**
  * mdp_host_window_unregister(): Unregister a window.
- * @param plugin MDP_t requesting window unregistration.
+ * @param plugin mdp_t requesting window unregistration.
  * @param window Window to be unregistered.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_window_unregister(struct MDP_t *plugin, void *window)
+int MDP_FNCALL mdp_host_window_unregister(mdp_t *plugin, void *window)
 {
 	// Search for the window to be unregistered.
 	for (list<mdpWindow_t>::iterator lstIter = PluginMgr::lstWindows.begin();

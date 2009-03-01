@@ -103,8 +103,8 @@ uint8_t bppOut;	// Output bpp.
 // Renderers
 #include <list>
 using std::list;
-list<MDP_Render_t*>::iterator rendMode_FS;
-list<MDP_Render_t*>::iterator rendMode_W;
+list<mdp_render_t*>::iterator rendMode_FS;
+list<mdp_render_t*>::iterator rendMode_W;
 
 int fast_forward = 0;
 
@@ -344,12 +344,12 @@ void Clear_Screen_MD(void)
 
 
 /**
- * get_mdp_render_t(): Get the current MDP_Render_t*. (C wrapper)
- * @return Current MDP_Render_t*.
+ * get_mdp_render_t(): Get the current mdp_render_t*. (C wrapper)
+ * @return Current mdp_render_t*.
  */
-MDP_Render_t* get_mdp_render_t(void)
+mdp_render_t* get_mdp_render_t(void)
 {
-	const list<MDP_Render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	const list<mdp_render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	return (*rendMode);
 }
 

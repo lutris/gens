@@ -44,7 +44,7 @@
 #endif /* GENS_X86_ASM */
 
 // MDP Host Services.
-static MDP_Host_t *mdp_render_hq2x_hostSrv;
+static mdp_host_t *mdp_render_hq2x_host_srv;
 int *mdp_render_hq2x_LUT16to32 = NULL;
 
 // 16-bit RGB to YUV lookup table.
@@ -60,13 +60,13 @@ int *mdp_render_hq2x_RGB16toYUV = NULL;
  * mdp_render_hq2x_end(): Initialize the hq2x plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_hq2x_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_hq2x_init(mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
-	mdp_render_hq2x_hostSrv = hostSrv;
+	mdp_render_hq2x_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_hq2x_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	mdp_render_hq2x_host_srv->renderer_register(&mdp, &mdp_render);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -79,16 +79,16 @@ int MDP_FNCALL mdp_render_hq2x_init(MDP_Host_t *hostSrv)
  */
 int MDP_FNCALL mdp_render_hq2x_end(void)
 {
-	if (!mdp_render_hq2x_hostSrv)
+	if (!mdp_render_hq2x_host_srv)
 		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
-	mdp_render_hq2x_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	mdp_render_hq2x_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
 	// If the LUT16to32 pointer was referenced, unreference it.
 	if (mdp_render_hq2x_LUT16to32)
 	{
-		mdp_render_hq2x_hostSrv->ptr_unref(MDP_PTR_LUT16to32);
+		mdp_render_hq2x_host_srv->ptr_unref(MDP_PTR_LUT16to32);
 		mdp_render_hq2x_LUT16to32 = NULL;
 	}
 	
@@ -103,36 +103,36 @@ int MDP_FNCALL mdp_render_hq2x_end(void)
 
 /**
  * mdp_render_hq2x_cpp(): hq2x rendering function.
- * @param renderInfo Render information.
+ * @param render_info Render information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_hq2x_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_hq2x_cpp(mdp_render_info_t *render_info)
 {
-	if (!renderInfo)
+	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
 	// Make sure the lookup tables are initialized.
 	if (!mdp_render_hq2x_LUT16to32)
-		mdp_render_hq2x_LUT16to32 = (int*)(mdp_render_hq2x_hostSrv->ptr_ref(MDP_PTR_LUT16to32));
+		mdp_render_hq2x_LUT16to32 = (int*)(mdp_render_hq2x_host_srv->ptr_ref(MDP_PTR_LUT16to32));
 	if (!mdp_render_hq2x_RGB16toYUV)
 		mdp_render_hq2x_RGB16toYUV = mdp_render_hq2x_build_RGB16toYUV();
 	
 #ifdef GENS_X86_ASM
-	if (renderInfo->cpuFlags & MDP_CPUFLAG_MMX)
+	if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
 	{
 		mdp_render_hq2x_16_x86_mmx(
-			    (uint16_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height,
-			    (renderInfo->bpp == 15));
+			    (uint16_t*)render_info->destScreen,
+			    (uint16_t*)render_info->mdScreen,
+			    render_info->destPitch, render_info->srcPitch,
+			    render_info->width, render_info->height,
+			    (render_info->bpp == 15));
 	}
 #else /* !GENS_X86_ASM */
 	T_mdp_render_hq2x_cpp(
-		    (uint16_t*)renderInfo->destScreen,
-		    (uint16_t*)renderInfo->mdScreen,
-		    renderInfo->destPitch, renderInfo->srcPitch,
-		    renderInfo->width, renderInfo->height);
+		    (uint16_t*)render_info->destScreen,
+		    (uint16_t*)render_info->mdScreen,
+		    render_info->destPitch, render_info->srcPitch,
+		    render_info->width, render_info->height);
 #endif /* GENS_X86_ASM */
 	
 	return MDP_ERR_OK;

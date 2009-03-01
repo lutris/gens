@@ -29,7 +29,7 @@
 #include "sgens.h"
 #include "sgens_icon.h"
 
-static MDP_Desc_t MDP_Desc =
+static mdp_desc_t mdp_desc =
 {
 	.name = "Sonic Gens",
 	.author_mdp = "David Korth",
@@ -42,13 +42,13 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = sizeof(sgens_icon)
 };
 
-static MDP_Func_t MDP_Func =
+static mdp_func_t mdp_func =
 {
 	.init = sgens_init,
 	.end = sgens_end
 };
 
-MDP_t mdp =
+mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -66,8 +66,8 @@ MDP_t mdp =
 		 0x93, 0x01, 0x2A, 0x01, 0x56, 0x83},
 	
 	// Description.
-	.desc = &MDP_Desc,
+	.desc = &mdp_desc,
 	
 	// Functions.
-	.func = &MDP_Func
+	.func = &mdp_func
 };

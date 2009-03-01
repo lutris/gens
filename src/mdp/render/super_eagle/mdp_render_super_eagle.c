@@ -41,20 +41,20 @@
 #endif /* GENS_X86_ASM */
 
 // MDP Host Services.
-static MDP_Host_t *mdp_render_super_eagle_host_srv = NULL;
+static mdp_host_t *mdp_render_super_eagle_host_srv = NULL;
 
 
 /**
  * mdp_render_super_eagle_init(): Initialize the Super Eagle rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_super_eagle_init(MDP_Host_t *host_srv)
+int MDP_FNCALL mdp_render_super_eagle_init(mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
 	mdp_render_super_eagle_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_super_eagle_host_srv->renderer_register(&mdp, &mdp_render_t);
+	mdp_render_super_eagle_host_srv->renderer_register(&mdp, &mdp_render);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -71,7 +71,7 @@ int MDP_FNCALL mdp_render_super_eagle_end(void)
 		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
-	mdp_render_super_eagle_host_srv->renderer_unregister(&mdp, &mdp_render_t);
+	mdp_render_super_eagle_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
@@ -80,20 +80,20 @@ int MDP_FNCALL mdp_render_super_eagle_end(void)
 
 /**
  * mdp_render_super_eagle_cpp(): Super Eagle rendering function.
- * @param renderInfo Render information.
+ * @param render_info Render information.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_super_eagle_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_super_eagle_cpp(mdp_render_info_t *render_info)
 {
-	if (!renderInfo)
+	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
 	mdp_render_super_eagle_16_x86_mmx(
-		    (uint16_t*)renderInfo->destScreen,
-		    (uint16_t*)renderInfo->mdScreen,
-		    renderInfo->destPitch, renderInfo->srcPitch,
-		    renderInfo->width, renderInfo->height,
-		    (renderInfo->bpp == 15));
+		    (uint16_t*)render_info->destScreen,
+		    (uint16_t*)render_info->mdScreen,
+		    render_info->destPitch, render_info->srcPitch,
+		    render_info->width, render_info->height,
+		    (render_info->bpp == 15));
 	
 	return MDP_ERR_OK;
 }

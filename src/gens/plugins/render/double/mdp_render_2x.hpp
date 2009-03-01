@@ -31,9 +31,9 @@ extern "C" {
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-int MDP_FNCALL mdp_render_2x_init(MDP_Host_t *hostSrv);
+int MDP_FNCALL mdp_render_2x_init(mdp_host_t *host_srv);
 int MDP_FNCALL mdp_render_2x_end(void);
-int MDP_FNCALL mdp_render_2x_cpp(MDP_Render_Info_t *renderInfo);
+int MDP_FNCALL mdp_render_2x_cpp(mdp_render_info_t *render_info);
 
 #ifdef __cplusplus
 }

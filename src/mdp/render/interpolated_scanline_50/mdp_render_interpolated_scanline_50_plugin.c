@@ -29,7 +29,7 @@
 #include "mdp_render_interpolated_scanline_50.hpp"
 #include "mdp_render_interpolated_scanline_50_icon.h"
 
-static MDP_Desc_t MDP_Desc =
+static mdp_desc_t mdp_desc =
 {
 	.name = "Interpolated 50% Scanline Renderer",
 	.author_mdp = "David Korth",
@@ -42,7 +42,7 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = sizeof(mdp_render_interpolated_scanline_50_icon)
 };
 
-MDP_Render_t mdp_render_t =
+mdp_render_t mdp_render =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_interpolated_scanline_50_cpp,
@@ -51,13 +51,13 @@ MDP_Render_t mdp_render_t =
 	.tag = "Interpolated 50% Scanline"
 };
 
-static MDP_Func_t MDP_Func =
+static mdp_func_t mdp_func =
 {
 	.init = mdp_render_interpolated_scanline_50_init,
 	.end = mdp_render_interpolated_scanline_50_end
 };
 
-MDP_t mdp =
+mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -75,8 +75,8 @@ MDP_t mdp =
 		 0x93, 0x54, 0xC1, 0xEA, 0x7C, 0x28},
 	
 	// Description.
-	.desc = &MDP_Desc,
+	.desc = &mdp_desc,
 	
 	// Functions.
-	.func = &MDP_Func
+	.func = &mdp_func
 };

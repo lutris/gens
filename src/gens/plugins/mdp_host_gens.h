@@ -33,7 +33,7 @@ extern "C" {
 #include "mdp/mdp_host.h"
 
 // MDP Host Services struct.
-extern MDP_Host_t Gens_MDP_Host;
+extern mdp_host_t Gens_MDP_Host;
 
 // Host Services functions.
 

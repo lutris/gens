@@ -165,7 +165,7 @@ extern mdp_render_fn vdraw_blitFS;
 extern mdp_render_fn vdraw_blitW;
 
 // Render plugin information.
-extern MDP_Render_Info_t vdraw_rInfo;
+extern mdp_render_info_t vdraw_rInfo;
 
 // Scale factor.
 extern int vdraw_scale;

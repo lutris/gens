@@ -47,7 +47,7 @@ using std::list;
 void vdraw_reset_renderer(const BOOL reset_video)
 {
 	// Reset the renderer.
-	const list<MDP_Render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	const list<mdp_render_t*>::iterator& rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	if (vdraw_set_renderer(rendMode, reset_video))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
@@ -67,7 +67,7 @@ void vdraw_reset_renderer(const BOOL reset_video)
  * @param forceUpdate If true, forces a renderer update.
  * @return 0 on success; non-zero on error.
  */
-int vdraw_set_renderer(const list<MDP_Render_t*>::iterator& newMode, const bool forceUpdate)
+int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool forceUpdate)
 {
 	if (PluginMgr::lstRenderPlugins.size() == 0 ||
 	    newMode == PluginMgr::lstRenderPlugins.end())
@@ -75,8 +75,8 @@ int vdraw_set_renderer(const list<MDP_Render_t*>::iterator& newMode, const bool 
 		return 1;
 	}
 	
-	list<MDP_Render_t*>::iterator& Rend = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
-	list<MDP_Render_t*>::iterator oldRend = Rend;
+	list<mdp_render_t*>::iterator& Rend = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+	list<mdp_render_t*>::iterator oldRend = Rend;
 	mdp_render_fn& rendFn = (vdraw_get_fullscreen() ? vdraw_blitFS : vdraw_blitW);
 	
 	bool reinit = false;
@@ -85,7 +85,7 @@ int vdraw_set_renderer(const list<MDP_Render_t*>::iterator& newMode, const bool 
 	const int oldScale = (*oldRend)->scale;
 	
 	// Renderer function found.
-	MDP_Render_t *rendPlugin = (*newMode);
+	mdp_render_t *rendPlugin = (*newMode);
 	rendFn = rendPlugin->blit;
 	
 	if (Rend != newMode)

@@ -33,17 +33,17 @@ extern "C" {
 #endif
 
 
-// MDP Event IDs
-enum MDP_EVENT_ID
+/* MDP Event IDs */
+typedef enum _MDP_EVENT_ID
 {
 	MDP_EVENT_UNKNOWN	= 0,
-	MDP_EVENT_OPEN_ROM	= 1,	// event_info == mdp_event_open_rom_t
-	MDP_EVENT_CLOSE_ROM	= 2,	// event_info == NULL
-	MDP_EVENT_PRE_FRAME	= 3,	// event_info == NULL
-	MDP_EVENT_POST_FRAME	= 4,	// event_info == mdp_event_post_frame_t
+	MDP_EVENT_OPEN_ROM	= 1,	/* event_info == mdp_event_open_rom_t */
+	MDP_EVENT_CLOSE_ROM	= 2,	/* event_info == NULL */
+	MDP_EVENT_PRE_FRAME	= 3,	/* event_info == NULL */
+	MDP_EVENT_POST_FRAME	= 4,	/* event_info == mdp_event_post_frame_t */
 	
-	MDP_EVENT_MAX			// Maximum number of events.
-};
+	MDP_EVENT_MAX			/* Maximum number of events. */
+} MDP_EVENT_ID;
 
 
 /**
@@ -72,13 +72,13 @@ typedef struct _mdp_event_open_rom_t
  */
 typedef struct _mdp_event_post_frame_t
 {
-	void    *md_screen;	// MD frame buffer.
+	void    *md_screen;	/* MD frame buffer. */
 	
-	uint32_t width;		// Width of the image.
-	uint32_t height;	// Height of the image.
+	uint32_t width;		/* Width of the image. */
+	uint32_t height;	/* Height of the image. */
 	
-	uint32_t pitch;		// Pitch. (bytes per scanline)
-	uint32_t bpp;		// Bits per pixel.
+	uint32_t pitch;		/* Pitch. (bytes per scanline) */
+	uint32_t bpp;		/* Bits per pixel. */
 } mdp_event_post_frame_t;
 
 

@@ -29,7 +29,7 @@
 #include "gg.hpp"
 #include "gg_icon.h"
 
-static MDP_Desc_t MDP_Desc =
+static mdp_desc_t mdp_desc =
 {
 	.name = "Game Genie",
 	.author_mdp = "David Korth",
@@ -42,13 +42,13 @@ static MDP_Desc_t MDP_Desc =
 	.iconLength = sizeof(gg_icon)
 };
 
-static MDP_Func_t MDP_Func =
+static mdp_func_t mdp_func =
 {
 	.init = gg_init,
 	.end = gg_end
 };
 
-MDP_t mdp =
+mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -66,8 +66,8 @@ MDP_t mdp =
 		 0x40, 0xCE, 0x3F, 0xC7, 0x50, 0xBC},
 	
 	// Description.
-	.desc = &MDP_Desc,
+	.desc = &mdp_desc,
 	
 	// Functions.
-	.func = &MDP_Func
+	.func = &mdp_func
 };

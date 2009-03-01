@@ -46,16 +46,16 @@ MDP_Incompat::~MDP_Incompat()
 	for (list<mdp_incompat_t>::iterator iter = m_lstIncompat.begin();
 	     iter != m_lstIncompat.end(); iter++)
 	{
-		MDP_t *mdp = (*iter).mdp;
+		mdp_t *mdp = (*iter).mdp;
 		if (!mdp)
 			continue;
 		
-		// An MDP_t has been allocated for this list item.
+		// An mdp_t has been allocated for this list item.
 		// Check if a description field has been allocated.
 		if (mdp->desc)
 		{
 			// Description field allocated. Free all of the strings.
-			MDP_Desc_t *mdp_desc = mdp->desc;
+			mdp_desc_t *mdp_desc = mdp->desc;
 			
 			free((void*)(mdp_desc->name));
 			free((void*)(mdp_desc->author_mdp));
@@ -68,7 +68,7 @@ MDP_Incompat::~MDP_Incompat()
 			free(mdp_desc);
 		}
 		
-		// Free the MDP_t.
+		// Free the mdp_t.
 		free(mdp);
 	}
 	
@@ -82,27 +82,27 @@ MDP_Incompat::~MDP_Incompat()
  * @param err Error number.
  * @param filename Filename of the plugin. (Empty if internal.)
  */
-void MDP_Incompat::add(MDP_t *plugin, int err, const string& filename)
+void MDP_Incompat::add(mdp_t *plugin, int err, const string& filename)
 {
 	mdp_incompat_t incompat;
 	
 	incompat.filename = filename;
 	incompat.err = err;
 	
-	// Copy the contents of the MDP_t.
+	// Copy the contents of the mdp_t.
 	if (plugin)
 	{
-		MDP_t *tmp_mdp = (MDP_t*)(malloc(sizeof(MDP_t)));
-		memcpy(tmp_mdp, plugin, sizeof(MDP_t));
+		mdp_t *tmp_mdp = (mdp_t*)(malloc(sizeof(mdp_t)));
+		memcpy(tmp_mdp, plugin, sizeof(mdp_t));
 		tmp_mdp->func = NULL;
 		
 		// Check if a description field is available.
 		if (tmp_mdp->desc)
 		{
 			// Copy the MDP description field.
-			MDP_Desc_t *orig_desc = tmp_mdp->desc;
-			MDP_Desc_t *tmp_mdp_desc = (MDP_Desc_t*)(malloc(sizeof(MDP_Desc_t)));
-			memset(tmp_mdp_desc, 0x00, sizeof(MDP_Desc_t));
+			mdp_desc_t *orig_desc = tmp_mdp->desc;
+			mdp_desc_t *tmp_mdp_desc = (mdp_desc_t*)(malloc(sizeof(mdp_desc_t)));
+			memset(tmp_mdp_desc, 0x00, sizeof(mdp_desc_t));
 			
 			if (orig_desc->name)
 				tmp_mdp_desc->name = strdup(orig_desc->name);

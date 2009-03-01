@@ -32,60 +32,46 @@
 extern "C" {
 #endif
 
-// MDP Render Plugin interface version.
+/* MDP Render Plugin interface version. */
 #define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
 
-// Render information struct.
-typedef struct
+/* Render information struct. */
+typedef struct _mdp_render_info_t
 {
-	// Screen buffers.
-	void *destScreen;
-	void *mdScreen;
+	void *destScreen;	/* Destination screen buffer. */
+	void *mdScreen;		/* Source screen buffer. */
 	
-	// Screen buffer pitch.
-	int destPitch;
-	int srcPitch;
+	int destPitch;		/* Destination screen buffer pitch. */
+	int srcPitch;		/* Source screen buffer pitch. */
 	
-	// Image parameters.
-	int width;
-	int height;
+	int width;		/* Image width. */
+	int height;		/* Image height. */
 	
-	// Current bpp.
-	uint32_t bpp;
+	uint32_t bpp;		/* Current color depth. */
 	
-	// CPU flags.
-	uint32_t cpuFlags;
-	
-	// Rendering flags. Currently unused.
-	uint32_t renderFlags;
-} MDP_Render_Info_t;
+	uint32_t cpuFlags;	/* CPU flags. */
+	uint32_t renderFlags;	/* Rendering flags. (Currently unused.) */
+} mdp_render_info_t;
 
-// Render plugin flags.
+/* Render plugin flags. */
 
-// SRC16DST32: Plugin only supports 16-bit color.
-// If the emulator is using 32-bit color, the emulator will have to
-// convert it from 16-bit to 32-bit manually.
+/**
+ * SRC16DST32: Plugin only supports 16-bit color.
+ * If the emulator is using 32-bit color, the emulator will have to
+ * convert it from 16-bit to 32-bit manually.
+ */
 #define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
 
 // Render plugin definition.
-typedef int (MDP_FNCALL *mdp_render_fn)(MDP_Render_Info_t *renderInfo);
-typedef struct
+typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
+typedef struct _mdp_render_t
 {
-	// Render interface version.
-	const uint32_t interfaceVersion;
-	
-	// Blit function.
-	mdp_render_fn blit;
-	
-	// Scaling ratio. (1 == 320x240; 2 = 640x480; etc)
-	const int scale;
-	
-	// Render flags.
-	const uint32_t flags;
-	
-	// Render tag.
-	const char* tag;
-} MDP_Render_t;
+	const uint32_t interfaceVersion;	/* Render interface version. */
+	mdp_render_fn blit;			/* Blit function. */
+	const int scale;			/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
+	const uint32_t flags;			/* Render flags. */
+	const char* tag;			/* Render tag. */
+} mdp_render_t;
 
 
 #ifdef __cplusplus

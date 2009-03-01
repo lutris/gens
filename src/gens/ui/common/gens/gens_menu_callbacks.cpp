@@ -468,7 +468,7 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 				{
 					// Render mode change.
 					// TODO: Improve performance here.
-					list<MDP_Render_t*>::iterator mdpIter = PluginMgr::lstRenderPlugins.begin();
+					list<mdp_render_t*>::iterator mdpIter = PluginMgr::lstRenderPlugins.begin();
 					for (unsigned int i = 1; i < (menuID & 0x00FF); i++)
 					{
 						mdpIter++;

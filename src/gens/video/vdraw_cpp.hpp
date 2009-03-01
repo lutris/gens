@@ -47,7 +47,7 @@ void vdraw_reset_renderer(const BOOL reset_video);
 // C++ includes
 #include <list>
 
-int vdraw_set_renderer(const std::list<MDP_Render_t*>::iterator& newMode, const bool forceUpdate = true);
+int vdraw_set_renderer(const std::list<mdp_render_t*>::iterator& newMode, const bool forceUpdate = true);
 
 #endif /* __cplusplus */
 

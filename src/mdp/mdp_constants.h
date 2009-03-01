@@ -27,8 +27,8 @@
 extern "C" {
 #endif
 
-// System ID constants.
-enum MDP_SYSTEM_ID
+/* System ID constants. */
+typedef enum _MDP_SYSTEM_ID
 {
 	MDP_SYSTEM_UNKNOWN = 0,
 	MDP_SYSTEM_MD      = 1,
@@ -39,7 +39,7 @@ enum MDP_SYSTEM_ID
 	MDP_SYSTEM_GG      = 6,
 	MDP_SYSTEM_SG1000  = 7,
 	MDP_SYSTEM_PICO    = 8,
-};
+} MDP_SYSTEM_ID;
 
 #ifdef __cplusplus
 }

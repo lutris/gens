@@ -29,7 +29,7 @@
 
 #include "mdp_render_super_eagle.h"
 
-static MDP_Desc_t MDP_Desc =
+static mdp_desc_t mdp_desc =
 {
 	.name = "Super Eagle Renderer",
 	.author_mdp = "David Korth",
@@ -39,7 +39,7 @@ static MDP_Desc_t MDP_Desc =
 	.license = MDP_LICENSE_LGPL_21
 };
 
-MDP_Render_t mdp_render_t =
+mdp_render_t mdp_render =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
 	.blit = mdp_render_super_eagle_cpp,
@@ -48,13 +48,13 @@ MDP_Render_t mdp_render_t =
 	.tag = "Super Eagle"
 };
 
-static MDP_Func_t MDP_Func =
+static mdp_func_t mdp_func =
 {
 	.init = mdp_render_super_eagle_init,
 	.end = mdp_render_super_eagle_end
 };
 
-MDP_t mdp =
+mdp_t mdp =
 {
 	// Plugin version information.
 	.interfaceVersion = MDP_INTERFACE_VERSION,
@@ -72,8 +72,8 @@ MDP_t mdp =
 		 0xC7, 0x45, 0x58, 0xAE, 0x44, 0x62},
 	
 	// Description.
-	.desc = &MDP_Desc,
+	.desc = &mdp_desc,
 	
 	// Functions.
-	.func = &MDP_Func
+	.func = &mdp_func
 };

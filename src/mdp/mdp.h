@@ -32,10 +32,10 @@
 extern "C" {
 #endif
 
-// MDP interface version.
+/* MDP interface version. */
 #define MDP_INTERFACE_VERSION MDP_VERSION(0, 255, 65535)
 
-// Licenses.
+/* Licenses. */
 #define MDP_LICENSE_GPL_2	"GPL-2"
 #define MDP_LICENSE_GPL_3	"GPL-3"
 #define MDP_LICENSE_LGPL_2	"LGPL-2"
@@ -44,8 +44,8 @@ extern "C" {
 #define MDP_LICENSE_BSD		"BSD"
 #define MDP_LICENSE_PD		"Public Domain"
 
-// Plugin description struct.
-typedef struct
+/* Plugin description struct. */
+typedef struct _mdp_desc_t
 {
 	const char* name;
 	const char* author_mdp;
@@ -54,33 +54,33 @@ typedef struct
 	const char* website;
 	const char* license;
 	
-	// Filler for alignment purposes.
+	/* Filler for alignment purposes. */
 	const void* reserved1;
 	const void* reserved2;
 	
-	// Icon data. (PNG format)
+	/* Icon data. (PNG format) */
 	const unsigned char* icon;
 	const unsigned int iconLength;
-} MDP_Desc_t;
+} mdp_desc_t;
 
-typedef struct MDP_t MDP_t;
-
-// MDP Host Services.
+/* MDP Host Services. */
+struct _mdp_t;
 #include "mdp_host.h"
 
-// Plugin functions.
-typedef int (MDP_FNCALL *mdp_init_fn)(MDP_Host_t *host_srv);
+/* Plugin functions. */
+typedef int (MDP_FNCALL *mdp_init_fn)(mdp_host_t *host_srv);
 typedef int (MDP_FNCALL *mdp_end_fn)(void);
 
-// Plugin function struct.
-typedef struct
+/* Plugin function struct. */
+typedef struct _mdp_func_t
 {
 	// Init/Shutdown functions
 	mdp_init_fn	init;
 	mdp_end_fn	end;
-} MDP_Func_t;
+} mdp_func_t;
 
-struct MDP_t
+/* Main MDP plugin struct. */
+typedef struct _mdp_t
 {
 	// Plugin version information.
 	const uint32_t interfaceVersion;
@@ -94,11 +94,11 @@ struct MDP_t
 	const unsigned char uuid[16];
 	
 	// Description.
-	MDP_Desc_t *desc;
+	mdp_desc_t *desc;
 	
 	// Functions.
-	MDP_Func_t *func;
-};
+	mdp_func_t *func;
+} mdp_t;
 
 #ifdef __cplusplus
 }

@@ -31,15 +31,15 @@ extern "C" {
 
 // Host Services functions. (Menus)
 
-int MDP_FNCALL mdp_host_menu_item_add(struct MDP_t *plugin, mdp_menu_handler_fn handler,
+int MDP_FNCALL mdp_host_menu_item_add(mdp_t *plugin, mdp_menu_handler_fn handler,
 				      int menu_id, const char *text);
-int MDP_FNCALL mdp_host_menu_item_remove(struct MDP_t *plugin, int menu_item_id);
+int MDP_FNCALL mdp_host_menu_item_remove(mdp_t *plugin, int menu_item_id);
 
-int MDP_FNCALL mdp_host_menu_item_set_text(struct MDP_t *plugin, int menu_item_id, const char *text);
-int MDP_FNCALL mdp_host_menu_item_get_text(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size);
+int MDP_FNCALL mdp_host_menu_item_set_text(mdp_t *plugin, int menu_item_id, const char *text);
+int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id, char *text_buf, int size);
 
-int MDP_FNCALL mdp_host_menu_item_set_checked(struct MDP_t *plugin, int menu_item_id, int checked);
-int MDP_FNCALL mdp_host_menu_item_get_checked(struct MDP_t *plugin, int menu_item_id);
+int MDP_FNCALL mdp_host_menu_item_set_checked(mdp_t *plugin, int menu_item_id, int checked);
+int MDP_FNCALL mdp_host_menu_item_get_checked(mdp_t *plugin, int menu_item_id);
 
 #ifdef __cplusplus
 }

@@ -40,20 +40,20 @@
 #define MASK_DIV2_32		((uint32_t)(0x7F7F7F7F))
 
 // MDP Host Services.
-static MDP_Host_t *mdp_render_interpolated_hostSrv = NULL;
+static mdp_host_t *mdp_render_interpolated_host_srv = NULL;
 
 
 /**
  * mdp_render_interpolated_init(): Initialize the Interpolated rendering plugin.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_render_interpolated_init(MDP_Host_t *hostSrv)
+int MDP_FNCALL mdp_render_interpolated_init(mdp_host_t *host_srv)
 {
 	// Save the MDP Host Services pointer.
-	mdp_render_interpolated_hostSrv = hostSrv;
+	mdp_render_interpolated_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_interpolated_hostSrv->renderer_register(&mdp, &mdp_render_t);
+	mdp_render_interpolated_host_srv->renderer_register(&mdp, &mdp_render);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -66,11 +66,11 @@ int MDP_FNCALL mdp_render_interpolated_init(MDP_Host_t *hostSrv)
  */
 int MDP_FNCALL mdp_render_interpolated_end(void)
 {
-	if (!mdp_render_interpolated_hostSrv)
+	if (!mdp_render_interpolated_host_srv)
 		return MDP_ERR_OK;
 	
 	// Unregister the renderer.
-	mdp_render_interpolated_hostSrv->renderer_unregister(&mdp, &mdp_render_t);
+	mdp_render_interpolated_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
@@ -120,27 +120,27 @@ static inline void T_mdp_render_interpolated_cpp(pixel *destScreen, pixel *mdScr
 }
 
 
-int MDP_FNCALL mdp_render_interpolated_cpp(MDP_Render_Info_t *renderInfo)
+int MDP_FNCALL mdp_render_interpolated_cpp(mdp_render_info_t *render_info)
 {
-	if (!renderInfo)
+	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
-	if (renderInfo->bpp == 16 || renderInfo->bpp == 15)
+	if (render_info->bpp == 16 || render_info->bpp == 15)
 	{
 		T_mdp_render_interpolated_cpp(
-			    (uint16_t*)renderInfo->destScreen,
-			    (uint16_t*)renderInfo->mdScreen,
-			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height,
-			    (renderInfo->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
+			    (uint16_t*)render_info->destScreen,
+			    (uint16_t*)render_info->mdScreen,
+			    render_info->destPitch, render_info->srcPitch,
+			    render_info->width, render_info->height,
+			    (render_info->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
 	}
-	else //if (renderInfo->bpp == 32)
+	else //if (render_info->bpp == 32)
 	{
 		T_mdp_render_interpolated_cpp(
-			    (uint32_t*)renderInfo->destScreen,
-			    (uint32_t*)renderInfo->mdScreen,
-			    renderInfo->destPitch, renderInfo->srcPitch,
-			    renderInfo->width, renderInfo->height,
+			    (uint32_t*)render_info->destScreen,
+			    (uint32_t*)render_info->mdScreen,
+			    render_info->destPitch, render_info->srcPitch,
+			    render_info->width, render_info->height,
 			    MASK_DIV2_32);
 	}
 	

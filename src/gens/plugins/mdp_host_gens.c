@@ -54,15 +54,13 @@
 // MDP_PTR functions.
 static inline int* mdp_host_ptr_ref_LUT16to32(void);
 static inline void mdp_host_ptr_unref_LUT16to32(void);
-static inline int* mdp_host_ptr_ref_RGB16toYUV(void);
-static inline void mdp_host_ptr_unref_RGB16toYUV(void);
 
 // MDP_PTR variables.
 static int* mdp_ptr_LUT16to32 = NULL;
 static int  mdp_ptr_LUT16to32_count = 0;
 
 
-MDP_Host_t Gens_MDP_Host =
+mdp_host_t Gens_MDP_Host =
 {
 	.interfaceVersion = MDP_HOST_INTERFACE_VERSION,
 	

@@ -27,22 +27,23 @@
 extern "C" {
 #endif
 
-// Function pointer calling conventions from SDL's begin_code.h
-// TODO: Combine this with the #defines from compress.h
+/**
+ * Function pointer calling conventions from SDL's begin_code.h
+ */
 #ifndef MDP_FNCALL
-#if defined(__WIN32__) && !defined(__GNUC__)
-#define MDP_FNCALL __cdecl
-#else
-#ifdef __OS2__
-#define MDP_FNCALL _System
-#else
-#define MDP_FNCALL
-#endif
-#endif
+	#if defined(__WIN32__) && !defined(__GNUC__)
+		#define MDP_FNCALL __cdecl
+	#elif defined(__OS2__)
+		#define MDP_FNCALL _System
+	#else
+		#define MDP_FNCALL
+	#endif
 #endif
 
-// DLL import/export.
-// See http://gcc.gnu.org/wiki/Visibility
+/**
+ * DLL import/export.
+ * See http://gcc.gnu.org/wiki/Visibility
+ */
 #if defined(_WIN32) || defined(__CYGWIN__)
 	#if defined(BUILDING_DLL) || defined(DLL_EXPORT)
 		#ifdef __GNUC__
@@ -68,7 +69,7 @@ extern "C" {
 	#endif
 #endif
 
-// Endianness defines ported from libsdl.
+/* Endianness defines ported from libsdl. */
 #define MDP_LIL_ENDIAN 1234
 #define MDP_BIG_ENDIAN 4321
 #ifndef MDP_BYTEORDER
