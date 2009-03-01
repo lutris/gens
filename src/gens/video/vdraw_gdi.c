@@ -118,7 +118,7 @@ static int vdraw_gdi_init(void)
 {
 	// TODO: GDI doesn't support fullscreen.
 	
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.
@@ -249,7 +249,7 @@ static int vdraw_gdi_clear_back_screen(void)
 static void vdraw_gdi_update_renderer(void)
 {
 	// Check if a resolution switch is needed.
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.
@@ -383,7 +383,7 @@ int vdraw_gdi_reinit_gens_window(void)
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
 	gens_window_create_menubar();
 	
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.

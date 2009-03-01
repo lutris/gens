@@ -282,11 +282,11 @@ static void pmgr_window_populate_plugin_list(void)
 	
 	// Add all plugins to the listbox.
 	char tmp[64];
-	list<MDP_t*>::iterator curPlugin;
+	list<mdp_t*>::iterator curPlugin;
 	for (curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
-		MDP_t *plugin = (*curPlugin);
+		mdp_t *plugin = (*curPlugin);
 		const char *pluginName;
 		if (plugin->desc && plugin->desc->name)
 		{
@@ -409,7 +409,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	}
 	
 	// Found a selected plugin.
-	MDP_t *plugin = reinterpret_cast<MDP_t*>(ListBox_GetItemData(lstPluginList, index));
+	mdp_t *plugin = reinterpret_cast<mdp_t*>(ListBox_GetItemData(lstPluginList, index));
 	
 	// Get the plugin information.
 	if (!plugin)
@@ -436,7 +436,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	}
 	
 	// Fill in the descriptions.
-	MDP_Desc_t *desc = plugin->desc;
+	mdp_desc_t *desc = plugin->desc;
 	stringstream ssMainInfo;
 	
 	// Plugin name.

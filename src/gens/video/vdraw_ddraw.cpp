@@ -130,7 +130,7 @@ int vdraw_ddraw_init(void)
 	
 	vdraw_ddraw_end();
 	
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.
@@ -1160,7 +1160,7 @@ int vdraw_ddraw_reinit_gens_window(void)
 	// This is needed if the mode is switched from windowed to fullscreen, or vice-versa.
 	gens_window_create_menubar();
 	
-	MDP_Render_t *rendMode = get_mdp_render_t();
+	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
 	
 	// Determine the window size using the scaling factor.
