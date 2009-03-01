@@ -549,9 +549,9 @@ static int gg_window_add_code_from_textboxes(void)
 		return 1;
 	
 	// Decode the code.
-	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t gg_code;
 	gg_code.name[0] = 0x00;
+	gg_code.enabled = 0;
 	
 	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtCode));
 	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
@@ -676,7 +676,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	GtkTreeIter iter;
 	gtk_list_store_append(lmCodes, &iter);
 	gtk_list_store_set(GTK_LIST_STORE(lmCodes), &iter,
-			   0, FALSE,		// Disable the code by default.
+			   0, gg_code->enabled,	// Enabled.
 			   1, s_code_hex,	// Hex code.
 			   2, s_code_gg,	// Game Genie code. (if applicable)
 			   3, s_cpu,		// CPU.

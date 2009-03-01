@@ -583,11 +583,11 @@ static int gg_window_add_code_from_textboxes(void)
 		return 1;
 	
 	// Decode the code.
-	// TODO: Add support for more CPUs, datasizes, etc.
 	gg_code_t gg_code;
 	gg_code.name[0] = 0x00;
-	char code_txt[32];
+	gg_code.enabled = 0;
 	
+	char code_txt[32];
 	Edit_GetText(txtCode, code_txt, sizeof(code_txt));
 	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
 	
@@ -736,6 +736,9 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	lviCode.iSubItem = 3;
 	lviCode.pszText = const_cast<char*>(name);
 	ListView_SetItem(lstCodes, &lviCode);
+	
+	// Set the "Enabled" state.
+	ListView_SetCheckState(lstCodes, lviCode.iItem, gg_code->enabled);
 	
 	// Code added successfully.
 	return 0;
