@@ -28,6 +28,7 @@ extern "C" {
 #endif
 
 #include <windows.h>
+#include <string.h>
 
 // Win32 instance
 extern HINSTANCE ghInstance;
@@ -41,8 +42,8 @@ extern int win32_CommCtrlEx;
 // Set actual window size.
 void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH);
 
-void Get_Save_Path(char *buf, size_t n);
-void Create_Save_Directory(const char *dir);
+// Get the default save path.
+void get_default_save_path(char *buf, size_t size);
 
 // TODO: Move this stuff to GensUI.
 void Win32_centerOnGensWindow(HWND hWnd);

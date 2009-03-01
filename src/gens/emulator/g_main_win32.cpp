@@ -75,23 +75,33 @@ int win32_CommCtrlEx = 0;
 using std::list;
 
 
-/**
- * Get_Save_Path(): Get the default save path.
- * @param *buf Buffer to store the default save path in.
- */
-void Get_Save_Path(char *buf, size_t n)
-{
-	strncpy(buf, ".\\", n);
-}
+#define GENS_DEFAULT_SAVE_PATH ".\\"
 
 
 /**
- * Create_Save_Directory(): Create the default save directory.
- * @param *dir Directory name.
+ * get_default_save_path(): Get the default save path.
+ * @param buf Buffer to store the default save path in.
+ * @param size Size of the buffer.
  */
-void Create_Save_Directory(const char *dir)
+void get_default_save_path(char *buf, size_t size)
 {
-	// Does nothing on Win32.
+	// Win32 needs the program's pathname.
+	GetModuleFileName(NULL, PathNames.Gens_EXE_Path, sizeof(PathNames.Gens_EXE_Path));
+	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path)-1] = 0x00;
+	
+	// Set the current directory.
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+	
+	// Eliminate the filename portion of the pathname.
+	char *last_backslash = strrchr(PathNames.Gens_EXE_Path, '\\');
+	if (last_backslash)
+	{
+		*(last_backslash + 1) = 0x00;
+	}
+	
+	// Set the default save path.
+	strncpy(buf, GENS_DEFAULT_SAVE_PATH, size);
+	buf[size-1] = 0x00;
 }
 
 
@@ -245,9 +255,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	GensMainLoop();
 	
 	audio_clear_sound_buffer();
-	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
-	strcat(Str_Tmp, "gens.cfg");
-	Config::save(Str_Tmp);
+	
+	// Save the configuration file.
+	char save_path[GENS_PATH_MAX];
+	get_default_save_path(save_path, sizeof(save_path));
+	strcat(save_path, "gens.cfg");
+	Config::save(save_path);
 	
 	End_All();
 	ChangeDisplaySettings(NULL, 0);

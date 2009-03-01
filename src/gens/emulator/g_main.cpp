@@ -169,18 +169,8 @@ int Init_Settings(void)
 	// This is needed even if the built-in debugger isn't compiled in.
 	Debug = 0;
 	
-#ifdef GENS_OS_WIN32
-	// Win32 needs the program's pathname.
-	char exeFilename[1024];
-	string tmpEXEPath;
-	GetModuleFileName(NULL, exeFilename, sizeof(exeFilename));
-	tmpEXEPath = File::GetDirFromPath(exeFilename);
-	strncpy(PathNames.Gens_EXE_Path, tmpEXEPath.c_str(), sizeof(PathNames.Gens_EXE_Path));
-	PathNames.Gens_EXE_Path[sizeof(PathNames.Gens_EXE_Path) - 1] = 0x00;
-#endif
-	
-	Get_Save_Path(PathNames.Gens_Path, GENS_PATH_MAX);
-	Create_Save_Directory(PathNames.Gens_Path);
+	// Get the default save path.
+	get_default_save_path(PathNames.Gens_Path, sizeof(PathNames.Gens_Path));
 	
 	// Create default language filename.
 	strncpy(PathNames.Language_Path, PathNames.Gens_Path, GENS_PATH_MAX);

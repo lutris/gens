@@ -60,30 +60,30 @@ using std::list;
 #endif /* GENS_DEBUGGER */
 
 
+// On UNIX, the default save path is prefixed with the user's home directory.
+#ifdef GENS_OS_MACOSX
+	#define GENS_DEFAULT_SAVE_PATH "/Library/Application Support/Gens/"
+#else
+	#define GENS_DEFAULT_SAVE_PATH "/.gens/"
+#endif
+
+
 /**
- * Get_Save_Path(): Create the default save path.
- * @param *buf Buffer to store the default save path in.
+ * get_default_save_path(): Get the default save path.
+ * @param buf Buffer to store the default save path in.
+ * @param size Size of the buffer.
  */
-void Get_Save_Path(char *buf, size_t n)
+void get_default_save_path(char *buf, size_t size)
 {
-	strncpy(buf, getenv("HOME"), n);
+	// Prepend the user's home directory to the save path.
+	snprintf(buf, size, "%s%s", getenv("HOME"), GENS_DEFAULT_SAVE_PATH);
 	
-	// OS-specific save path.
-	#ifdef GENS_OS_MACOSX
-		strcat(buf, "/Library/Application Support/Gens/");
-	#else // Other Unix or Linux system.
-		strcat(buf, "/.gens/");
-	#endif
-}
-
-
-/**
- * Create_Save_Directory(): Create the default save directory.
- * @param *dir Directory name.
- */
-void Create_Save_Directory(const char *dir)
-{
-	mkdir(dir, 0755);
+	// Make sure the buffer is null-terminated.
+	buf[size-1] = 0x00;
+	
+	// Make sure the directory exists.
+	// NOTE: 0777 is used to allow for custom umask settings.
+	mkdir(buf, 0777);
 }
 
 
@@ -190,9 +190,11 @@ int main(int argc, char *argv[])
 	// Run the Gens Main Loop.
 	GensMainLoop();
 	
-	Get_Save_Path(Str_Tmp, GENS_PATH_MAX);
-	strcat(Str_Tmp, "gens.cfg");
-	Config::save(Str_Tmp);
+	// Save the configuration file.
+	char save_path[GENS_PATH_MAX];
+	get_default_save_path(save_path, sizeof(save_path));
+	strcat(save_path, "gens.cfg");
+	Config::save(save_path);
 	
 	End_All();
 	return 0;

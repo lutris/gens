@@ -1,19 +1,40 @@
-/**
- * Gens: Main loop. (Linux-specific code)
- */
+/***************************************************************************
+ * Gens: Main Loop. (Unix-specific code)                                   *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
 
-#ifndef G_MAIN_LINUX_HPP
-#define G_MAIN_LINUX_HPP
+#ifndef GENS_G_MAIN_UNIX_HPP
+#define GENS_G_MAIN_UNIX_HPP
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <sys/stat.h>
-#include <stdlib.h>
-
-void Get_Save_Path(char *buf, size_t n);
-void Create_Save_Directory(const char *dir);
+// Get the default save path.
+void get_default_save_path(char *buf, size_t size);
 
 // Main loop.
 int main(int argc, char *argv[]);
@@ -22,4 +43,4 @@ int main(int argc, char *argv[]);
 }
 #endif
 
-#endif
+#endif /* GENS_G_MAIN_UNIX_HPP */
