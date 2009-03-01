@@ -49,7 +49,7 @@ using std::string;
 GtkWidget *bmf_window = NULL;
 
 // Widgets.
-GtkWidget	*txtFile[12];
+static GtkWidget	*txtFile[12];
 
 // Configuration load/save functions.
 static void	bmf_window_init(void);

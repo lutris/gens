@@ -63,7 +63,7 @@ static WNDCLASS bmf_wndclass;
 #define BMF_FRAME_WIDTH (BMF_WINDOW_WIDTH - 16)
 
 // Widgets.
-HWND	txtFile[12];
+static HWND	txtFile[12];
 
 // Window procedure.
 static LRESULT CALLBACK bmf_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
