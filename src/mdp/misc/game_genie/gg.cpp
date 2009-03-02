@@ -186,6 +186,12 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 				return -MDP_ERR_UNKNOWN;
 			}
 		}
+		else
+		{
+			// Unsupported system ID.
+			gg_loaded_rom.clear();
+			return -MDP_ERR_UNKNOWN;
+		}
 		
 		// TODO: Other system support.
 		
