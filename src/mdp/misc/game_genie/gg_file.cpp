@@ -140,15 +140,9 @@ int MDP_FNCALL gg_file_load(const char* filename)
 		if (gg_code.cpu == CPU_INVALID)
 			continue;
 		
-		// Get the address.
+		// Get the address and data.
 		gg_code.address = strtol(tokens[1], &endptr, 16);
-		if (((int)(endptr) - (int)(tokens[1])) != strlen(tokens[1]))
-			continue;
-		
-		// Get the data.
 		gg_code.data = strtol(tokens[2], &endptr, 16);
-		if (((int)(endptr) - (int)(tokens[2])) != strlen(tokens[2]))
-			continue;
 		
 		// Check that the address is valid for the specified CPU.
 		if (gg_code.cpu == CPU_M68K || gg_code.cpu == CPU_S68K)
@@ -169,6 +163,7 @@ int MDP_FNCALL gg_file_load(const char* filename)
 		
 		// Determine the size of the data.
 		int s_data_len = strlen(tokens[2]);
+		printf("Data: %s\n", tokens[2]);
 		
 		if (s_data_len == 0)
 		{
