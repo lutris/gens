@@ -56,7 +56,7 @@
 #include "general_options/general_options_window.hpp"
 #include "color_adjust/ca_window.h"
 #include "select_cdrom/select_cdrom_window.h"
-#include "country_code/country_code_window.h"
+#include "country_code/ccode_window.h"
 #include "about/about_window.hpp"
 #include "plugin_manager/pmgr_window.hpp"
 
@@ -237,7 +237,7 @@ void GensUI::update(void)
 		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||
 		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
-		    (country_code_window && IsDialogMessage(country_code_window, &msg)) ||
+		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
 		    (about_window && IsDialogMessage(about_window, &msg)) ||
 		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)))
 		{
