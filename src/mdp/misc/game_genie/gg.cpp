@@ -36,6 +36,7 @@ using std::string;
 #include "gg.hpp"
 #include "gg_plugin.h"
 #include "gg_window.hpp"
+#include "gg_engine.hpp"
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
@@ -47,7 +48,13 @@ using std::string;
 mdp_host_t *gg_host_srv = NULL;
 
 static int gg_menuItemID = 0;
-static void *mdp_ptr_ram_md = NULL;
+
+// ROM/RAM pointers.
+void *gg_mdp_ptr_rom_md = NULL;
+void *gg_mdp_ptr_ram_md = NULL;
+
+// ROM size.
+int gg_mdp_rom_md_size;
 
 static int MDP_FNCALL gg_menu_handler(int menu_item_id);
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
@@ -96,9 +103,6 @@ int MDP_FNCALL gg_init(mdp_host_t *host_srv)
 	// Register the event handler.
 	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
 	gg_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, gg_event_handler);
-	
-	// Get the MD RAM.
-	mdp_ptr_ram_md = gg_host_srv->ptr_ref(MDP_PTR_RAM_MD);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -155,6 +159,36 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		gg_loaded_rom = string(openROM->rom_name);
 		gg_system_id = (MDP_SYSTEM_ID)(openROM->system_id);
 		
+		// Get the ROM and RAM pointers.
+		if (gg_system_id == MDP_SYSTEM_MD ||
+		    gg_system_id == MDP_SYSTEM_MCD ||
+		    gg_system_id == MDP_SYSTEM_32X ||
+		    gg_system_id == MDP_SYSTEM_MCD32X)
+		{
+			gg_mdp_ptr_rom_md = gg_host_srv->ptr_ref(MDP_PTR_ROM_MD);
+			gg_mdp_ptr_ram_md = gg_host_srv->ptr_ref(MDP_PTR_RAM_MD);
+			gg_mdp_rom_md_size = gg_host_srv->val_get(MDP_VAL_ROM_SIZE);
+			
+			if (!gg_mdp_ptr_rom_md ||
+			    !gg_mdp_ptr_ram_md ||
+			     gg_mdp_rom_md_size <= 0)
+			{
+				// Error retrieving a pointer or value.
+				if (gg_mdp_ptr_rom_md)
+					gg_host_srv->ptr_unref(MDP_PTR_ROM_MD);
+				if (gg_mdp_ptr_ram_md)
+					gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
+				
+				gg_mdp_ptr_rom_md = NULL;
+				gg_mdp_ptr_ram_md = NULL;
+				
+				gg_loaded_rom.clear();
+				return -MDP_ERR_UNKNOWN;
+			}
+		}
+		
+		// TODO: Other system support.
+		
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.
 		char def_save_path[1024];
@@ -163,30 +197,69 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		// Load the patch file.
 		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
 		gg_file_load(full_path.c_str());
+		
+		// Set up the pre-frame event handler.
+		if (gg_host_srv->event_register(&mdp, MDP_EVENT_PRE_FRAME, gg_engine_pre_frame) != MDP_ERR_OK)
+		{
+			// Error registering the pre-frame event handler.
+			if (gg_system_id == MDP_SYSTEM_MD ||
+			    gg_system_id == MDP_SYSTEM_MCD ||
+			    gg_system_id == MDP_SYSTEM_32X ||
+			    gg_system_id == MDP_SYSTEM_MCD32X)
+			{
+				if (gg_mdp_ptr_rom_md)
+					gg_host_srv->ptr_unref(MDP_PTR_ROM_MD);
+				if (gg_mdp_ptr_ram_md)
+					gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
+				
+				gg_mdp_ptr_rom_md = NULL;
+				gg_mdp_ptr_ram_md = NULL;
+			}
+			
+			return -MDP_ERR_UNKNOWN;
+		}
 	}
 	else if (event_id == MDP_EVENT_CLOSE_ROM)
 	{
 		// ROM closed.
-		if (!gg_loaded_rom.empty())
+		if (gg_loaded_rom.empty())
+			return MDP_ERR_OK;
+		
+		// ROM name specified. Save the patch code file.
+		
+		// Patch file is [save directory]/ROM_name.pat
+		// TODO: Register a Game Genie-specific directory.
+		char def_save_path[1024];
+		gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
+		
+		// Save the patch file.
+		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
+		gg_file_save(full_path.c_str());
+		
+		// Clear the loaded ROM name and system ID.
+		gg_loaded_rom.clear();
+		gg_system_id = MDP_SYSTEM_UNKNOWN;
+		
+		// Clear all loaded codes.
+		gg_code_list.clear();
+		
+		// Unreference the ROM/RAM pointers.
+		if (gg_system_id == MDP_SYSTEM_MD ||
+		    gg_system_id == MDP_SYSTEM_MCD ||
+		    gg_system_id == MDP_SYSTEM_32X ||
+		    gg_system_id == MDP_SYSTEM_MCD32X)
 		{
-			// ROM name specified. Save the patch code file.
+			if (gg_mdp_ptr_rom_md)
+				gg_host_srv->ptr_unref(MDP_PTR_ROM_MD);
+			if (gg_mdp_ptr_ram_md)
+				gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
 			
-			// Patch file is [save directory]/ROM_name.pat
-			// TODO: Register a Game Genie-specific directory.
-			char def_save_path[1024];
-			gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
-			
-			// Save the patch file.
-			string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
-			gg_file_save(full_path.c_str());
-			
-			// Clear the loaded ROM name and system ID.
-			gg_loaded_rom.clear();
-			gg_system_id = MDP_SYSTEM_UNKNOWN;
-			
-			// Clear all loaded codes.
-			gg_code_list.clear();
+			gg_mdp_ptr_rom_md = NULL;
+			gg_mdp_ptr_ram_md = NULL;
 		}
+		
+		// Shut down the pre-frame event handler.
+		gg_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, gg_engine_pre_frame);
 	}
 	
 	return MDP_ERR_OK;

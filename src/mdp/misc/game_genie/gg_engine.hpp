@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Game Genie.                                                        *
+ * MDP: Game Genie. (Code Engine)                                          *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,38 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_MISC_GAME_GENIE_HPP
-#define MDP_MISC_GAME_GENIE_HPP
+#ifndef _MDP_MISC_GAME_GENIE_ENGINE_HPP
+#define _MDP_MISC_GAME_GENIE_ENGINE_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "mdp/mdp_fncall.h"
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_host.h"
-#include "mdp/mdp_constants.h"
+DLL_LOCAL void MDP_FNCALL gg_engine_apply_rom_codes(void);
+DLL_LOCAL void MDP_FNCALL gg_engine_unapply_rom_codes(void);
 
-DLL_LOCAL int MDP_FNCALL gg_init(mdp_host_t *host_srv);
-DLL_LOCAL int MDP_FNCALL gg_end(void);
+DLL_LOCAL int  MDP_FNCALL gg_engine_pre_frame(int event_id, void *event_info);
 
-DLL_LOCAL extern mdp_host_t *gg_host_srv;
-DLL_LOCAL extern MDP_SYSTEM_ID gg_system_id;
-
-DLL_LOCAL extern void *gg_mdp_ptr_rom_md;
-DLL_LOCAL extern void *gg_mdp_ptr_ram_md;
-DLL_LOCAL extern int   gg_mdp_rom_md_size;
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-
-// List of Game Genie codes.
-#include "gg_code.h"
-#include <list>
-extern std::list<gg_code_t> gg_code_list;
-
-#endif
-
-#endif /* MDP_MISC_GAME_GENIE_HPP */
+#endif /* _MDP_MISC_GAME_GENIE_ENGINE_HPP */
