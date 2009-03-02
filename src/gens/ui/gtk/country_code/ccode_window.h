@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (GTK+) Country Code Window - Miscellaneous Functions.             *
+ * Gens: (GTK+) Country Code Window.                                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,22 +20,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GTK_COUNTRY_CODE_WINDOW_MISC_H
-#define GTK_COUNTRY_CODE_WINDOW_MISC_H
+#ifndef GENS_UI_GTK_COUNTRY_CODE_WINDOW_H
+#define GENS_UI_GTK_COUNTRY_CODE_WINDOW_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// GTK+ includes.
 #include <gtk/gtk.h>
 
-void Open_Country_Code(void);
-void Country_Save(void);
-void Country_MoveUp(void);
-void Country_MoveDown(void);
+extern GtkWidget *ccode_window;
+
+void ccode_window_show(void);
+void ccode_window_close(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* GENS_UI_GTK_COUNTRY_CODE_WINDOW_H */

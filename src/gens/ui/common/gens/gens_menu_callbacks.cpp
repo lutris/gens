@@ -35,7 +35,7 @@
 #include "general_options/general_options_window.hpp"
 #include "about/about_window.hpp"
 #include "color_adjust/ca_window.h"
-#include "country_code/country_code_window_misc.h"
+#include "country_code/ccode_window.h"
 #include "plugin_manager/pmgr_window.hpp"
 
 #ifdef GENS_OPENGL
@@ -510,7 +510,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			break;
 		
 		case IDM_CPU_COUNTRY_ORDER:
-			Open_Country_Code();
+			ccode_window_show();
 			break;
 		
 		case IDM_CPU_HARDRESET:
