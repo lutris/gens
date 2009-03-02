@@ -321,7 +321,12 @@ section .bss align=64
 		resd 1
 	
 section .text align=64
-
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define __32X_Set_FB	_32X_Set_FB
+	%endif
+	
 	extern _Write_To_68K_Space
 	extern __32X_Set_FB
 	extern SH2_DMA0_Request

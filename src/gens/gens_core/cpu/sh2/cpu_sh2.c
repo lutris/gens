@@ -371,8 +371,3 @@ void _32X_Set_FB(void)
 		}
 	}
 }
-
-
-// Symbol aliases for cross-OS asm compatibility.
-void __32X_Set_FB(void)
-	__attribute__ ((weak, alias ("_32X_Set_FB")));

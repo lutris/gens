@@ -306,6 +306,8 @@ section .text align=64
 		%define _WR_Controller_2	WR_Controller_2
 		
 		%define _YM2612_Reset		YM2612_Reset
+		
+		%define __32X_Set_FB		_32X_Set_FB
 	%endif
 	
 	extern Z80_ReadB_Table
