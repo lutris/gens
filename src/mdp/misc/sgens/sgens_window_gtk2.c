@@ -379,7 +379,7 @@ void MDP_FNCALL sgens_window_update(void)
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	sprintf(tmp, "<tt>%d</tt>", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
+	sprintf(tmp, "<tt>%d</tt>", (MDP_MEM_BE_32_READ(sgens_md_RAM, 0xFE26) * 10));
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), TRUE);
 	

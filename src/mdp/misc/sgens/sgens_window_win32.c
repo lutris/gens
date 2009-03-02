@@ -419,7 +419,7 @@ void MDP_FNCALL sgens_window_update(void)
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	sprintf(tmp, "%d", (MDP_MEM_32(sgens_md_RAM, 0xFE26) * 10));
+	sprintf(tmp, "%d", (MDP_MEM_BE_32_READ(sgens_md_RAM, 0xFE26) * 10));
 	Static_SetText(lblLevelInfo[LEVEL_INFO_SCORE], tmp);
 	
 	// Time.
