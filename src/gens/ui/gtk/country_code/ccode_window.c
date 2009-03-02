@@ -62,9 +62,6 @@ static void	ccode_window_callback_response(GtkDialog *dialog, gint response_id, 
 static void	ccode_window_callback_btnUp_clicked(GtkButton *button, gpointer user_data);
 static void	ccode_window_callback_btnDown_clicked(GtkButton *button, gpointer user_data);
 
-// Country codes.
-static const char* const ccode_window_countries[3] = {"USA", "Japan", "Europe"};
-
 
 /**
  * ccode_window_show(): Show the Country Code window.
@@ -248,6 +245,10 @@ static void ccode_window_init(void)
 	// Clear the list store.
 	gtk_list_store_clear(lmCountryCodes);
 	
+	// Country codes.
+	// TODO: Move this to a common file.
+	static const char* const ccodes[3] = {"USA", "Japan", "Europe"};
+	
 	// Add the country codes to the treeview in the appropriate order.
 	GtkTreeIter iter;
 	int i;
@@ -255,7 +256,7 @@ static void ccode_window_init(void)
 	{
 		gtk_list_store_append(lmCountryCodes, &iter);
 		gtk_list_store_set(GTK_LIST_STORE(lmCountryCodes), &iter,
-				   0, ccode_window_countries[Country_Order[i]],
+				   0, ccodes[Country_Order[i]],
 				   1, Country_Order[i], -1);
 	}
 }
