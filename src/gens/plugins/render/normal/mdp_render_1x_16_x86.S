@@ -52,7 +52,13 @@ _mdp_render_1x_16_x86:
 	/* Set up the frame pointer. */
 	pushl	%ebp
 	movl	%esp, %ebp
-	pushal
+	
+	/* Save registers for later. */
+	pushl	%ecx
+	pushl	%edx
+	pushl	%ebx
+	pushl	%esi
+	pushl	%edi
 	
 	movl	arg_width, %ecx		/* %ecx = Number of pixels per line */
 	movl	arg_destPitch, %ebx	/* %ebx = Pitch of destination surface (bytes per line) */
@@ -88,8 +94,14 @@ _mdp_render_1x_16_x86:
 		decl	arg_height		/* Decrement the Y counter. */
 		jnz	0b /* .Loop_Y */
 	
+	/* Restore registers. */
+	popl	%edi
+	popl	%esi
+	popl	%ebx
+	popl	%edx
+	popl	%ecx
+	
 	/* Reset the frame pointer. */
-	popal
 	movl	%ebp, %esp
 	popl	%ebp
 	ret
@@ -107,7 +119,13 @@ _mdp_render_1x_16_x86_mmx:
 	/* Set up the frame pointer. */
 	pushl	%ebp
 	movl	%esp, %ebp
-	pushal
+	
+	/* Save registers for later. */
+	pushl	%ecx
+	pushl	%edx
+	pushl	%ebx
+	pushl	%esi
+	pushl	%edi
 	
 	movl	arg_width, %ecx		/* %ecx = Number of pixels per line */
 	movl	arg_destPitch, %ebx	/* %ebx = Pitch of destination surface (bytes per line) */
@@ -155,8 +173,14 @@ _mdp_render_1x_16_x86_mmx:
 		decl	arg_height		/* Decrement the Y counter. */
 		jnz	0b /* .Loop_Y */
 	
+	/* Restore registers. */
+	popl	%edi
+	popl	%esi
+	popl	%ebx
+	popl	%edx
+	popl	%ecx
+	
 	/* Reset the frame pointer. */
-	popal
 	movl	%ebp, %esp
 	popl	%ebp
 	emms
