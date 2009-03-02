@@ -41,6 +41,7 @@ using std::string;
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
+#include "mdp/mdp_constants.h"
 
 // MDP Host Services.
 mdp_host_t *gg_host_srv = NULL;
@@ -53,6 +54,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
 
 // Currently loaded ROM.
 static string gg_loaded_rom;
+MDP_SYSTEM_ID gg_system_id = MDP_SYSTEM_UNKNOWN;
 
 // List of Game Genie codes.
 #include "gg_code.h"
@@ -148,9 +150,10 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 	{
 		// ROM opened.
 		
-		// Save the ROM name.
+		// Save the ROM name and system ID.
 		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)(event_info);
 		gg_loaded_rom = string(openROM->rom_name);
+		gg_system_id = (MDP_SYSTEM_ID)(openROM->system_id);
 		
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.
@@ -177,8 +180,9 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 			string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
 			gg_file_save(full_path.c_str());
 			
-			// Clear the loaded ROM name.
+			// Clear the loaded ROM name and system ID.
 			gg_loaded_rom.clear();
+			gg_system_id = MDP_SYSTEM_UNKNOWN;
 			
 			// Clear all loaded codes.
 			gg_code_list.clear();

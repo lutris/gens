@@ -29,11 +29,13 @@ extern "C" {
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_host.h"
+#include "mdp/mdp_constants.h"
 
 DLL_LOCAL int MDP_FNCALL gg_init(mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL gg_end(void);
 
 DLL_LOCAL extern mdp_host_t *gg_host_srv;
+DLL_LOCAL extern MDP_SYSTEM_ID gg_system_id;
 
 #ifdef __cplusplus
 }
