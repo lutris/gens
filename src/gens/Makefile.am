@@ -6,10 +6,9 @@ SUBDIRS = plugins/render/normal plugins/render/double
 
 if GENS_X86_ASM
 gens_x86_asm_o = \
-		gens_core/gfx/fastblur_16_x86.o \
 		gens_core/gfx/fastblur_32_x86.o
 gens_x86_asm_src = \
-		gens_core/gfx/fastblur_16_x86.asm \
+		gens_core/gfx/fastblur_16_x86.S \
 		gens_core/gfx/fastblur_32_x86.asm \
 		audio/audio_mmx.S
 gens_x86_asm_h = \
