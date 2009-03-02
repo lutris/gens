@@ -57,7 +57,7 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 
 // Create Child Windows function.
 static void vlopt_window_create_child_windows(HWND hWnd);
-BOOL vlopt_window_child_windows_created;
+static BOOL vlopt_window_child_windows_created;
 
 // Option handling functions.
 static void vlopt_window_load_options(void);
