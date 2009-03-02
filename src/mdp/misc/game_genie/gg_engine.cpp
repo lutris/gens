@@ -93,7 +93,7 @@ int MDP_FNCALL gg_engine_pre_frame(int event_id, void *event_info)
 						MDP_MEM_16(gg_mdp_ptr_ram_md, address) = (gg_code.data & 0xFFFF);
 						break;
 					case DS_DWORD:
-						// TODO
+						MDP_MEM_BE_32_WRITE(gg_mdp_ptr_ram_md, address, gg_code.data);
 						break;
 				}
 				break;
