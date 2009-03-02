@@ -36,7 +36,7 @@
 #include <list>
 using std::list;
 
-#include <stdio.h>
+
 /**
  * gg_engine_apply_rom_codes(): Apply ROM codes.
  */
