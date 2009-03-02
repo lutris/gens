@@ -153,8 +153,8 @@ int MDP_FNCALL gg_file_load(const char* filename)
 			continue;
 		
 		// Get the address and data.
-		gg_code.address = strtol(tokens[1], &endptr, 16);
-		gg_code.data = strtol(tokens[2], &endptr, 16);
+		gg_code.address = strtoul(tokens[1], &endptr, 16);
+		gg_code.data = strtoul(tokens[2], &endptr, 16);
 		
 		// Check that the address is valid for the specified CPU.
 		if (gg_code.cpu == CPU_M68K || gg_code.cpu == CPU_S68K)
