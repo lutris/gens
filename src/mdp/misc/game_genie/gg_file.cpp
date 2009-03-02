@@ -61,6 +61,9 @@ static const char gg_file_header[] = "MDP Game Genie Patch Code File";
 // Consolidate it!
 static const char* const s_cpu_list[8] = {NULL, "M68K", "S68K", "Z80", "MSH2", "SSH2", NULL, NULL};
 
+// Load an old format Game Genie patch code file.
+static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes);
+
 
 /**
  * ELIMINATE_NEWLINES(): Eliminate newlines from a string.
@@ -110,18 +113,17 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	if (strncmp(in_line, gg_file_header, sizeof(gg_file_header) - 1))
 	{
 		// Not in the new patch code file format.
-		// TODO: Add read-only support for the old patch code file format.
+		gg_file_load_old_format(f_codes);
 		fclose(f_codes);
 		return 1;
 	}
 	
-	// Data buffers.
+	// Tokens.
 	char *tokens[4];
 	
 	// Game Genie code.
 	gg_code_t gg_code;
 	int i, s_data_len;
-	char *endptr;
 	
 	// Make sure codes are disabled initially.
 	gg_code.enabled = 0;
@@ -153,8 +155,8 @@ int MDP_FNCALL gg_file_load(const char* filename)
 			continue;
 		
 		// Get the address and data.
-		gg_code.address = strtoul(tokens[1], &endptr, 16);
-		gg_code.data = strtoul(tokens[2], &endptr, 16);
+		gg_code.address = strtoul(tokens[1], NULL, 16);
+		gg_code.data = strtoul(tokens[2], NULL, 16);
 		
 		// Check that the address is valid for the specified CPU.
 		if (gg_code.cpu == CPU_M68K || gg_code.cpu == CPU_S68K)
@@ -237,6 +239,76 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	
 	// Close the file.
 	fclose(f_codes);
+}
+
+
+/**
+ * gg_file_load_old_format(): Load an old format Game Genie patch code file.
+ * @param f_codes Pointer to an open file.
+ */
+static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
+{
+	/**
+	 * Old format:
+	 *
+	 * Code\tName
+	 *
+	 * where code is the original representation of the code
+	 * as entered by the user.
+	 */
+	
+	// Seek to the beginning of the file.
+	fseek(f_codes, 0, SEEK_SET);
+	
+	// Tokens.
+	char *tokens[2];
+	
+	// Game Genie code.
+	gg_code_t gg_code;
+	
+	// Make sure codes are disabled initially.
+	gg_code.enabled = 0;
+	
+	char in_line[256];
+	while (fgets(in_line, sizeof(in_line), f_codes))
+	{
+		// Tokenize the string.
+		tokens[0] = strtok(in_line, "\t");	// Code
+		tokens[1] = strtok(NULL, "");		// Name (optional)
+		
+		// Make sure at least a code was specified.
+		if (!tokens[0])
+			continue;
+		
+		// Eliminate newlines from the code.
+		ELIMINATE_NEWLINES(tokens[0]);
+		
+		// Attempt to parse the code.
+		if (gg_code_parse(tokens[0], &gg_code, CPU_M68K))
+		{
+			// Cannot parse the code.
+			continue;
+		}
+		
+		// Check if a name was specified.
+		if (tokens[1])
+		{
+			// Eliminate newlines from the name.
+			ELIMINATE_NEWLINES(tokens[1]);
+			
+			// Copy the name of the code.
+			strncpy(gg_code.name, tokens[1], sizeof(gg_code.name));
+			gg_code.name[sizeof(gg_code.name)-1] = 0x00;
+		}
+		else
+		{
+			// No name.
+			gg_code.name[0] = 0x00;
+		}
+		
+		// Add the code to the list of codes.
+		gg_code_list.push_back(gg_code);
+	}
 }
 
 
