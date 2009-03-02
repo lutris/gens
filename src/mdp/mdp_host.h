@@ -56,28 +56,35 @@ typedef enum
 /* Convenience macros to access 8-bit, 16-bit, and 32-bit memory. */
 
 #define MDP_MEM_16(ptr, address)	\
-	(((unsigned short*)ptr)[address >> 1])
+	(((unsigned short*)ptr)[(address) >> 1])
 
-/* TODO: Add an optimized version for big-endian host systems. */
-/* TODO: This only works for reading 32-bit data. */
-#define MDP_MEM_32(ptr, address)	\
-	(((((unsigned short*)ptr)[address >> 1]) << 16) | (((unsigned short*)ptr)[(address >> 1) + 1]))
+#define MDP_MEM_BE_32_READ(ptr, address)	\
+	(((((unsigned short*)(ptr))[(address) >> 1]) << 16) | (((unsigned short*)ptr)[((address) >> 1) + 1]))
+#define MDP_MEM_BE_32_WRITE(ptr, address, data)	\
+	((unsigned short*)(ptr))[(address) >> 1] = (((data) >> 16) & 0xFFFF);	\
+	((unsigned short*)(ptr))[((address) >> 1) + 1] = ((data) & 0xFFFF);
+
+#define MDP_MEM_LE_32_READ(ptr, address)	\
+	(((((unsigned short*)(ptr))[((address) >> 1) + 1]) << 16) | (((unsigned short*)ptr)[(address) >> 1]))
+#define MDP_MEM_LE_32_WRITE(ptr, address, data)	\
+	((unsigned short*)(ptr))[((address) >> 1) + 1] = (((data) >> 16) & 0xFFFF);	\
+	((unsigned short*)(ptr))[(address) >> 1] = ((data) & 0xFFFF);
 
 #if MDP_BYTEORDER == MDP_LIL_ENDIAN
 
 /* Little-endian host system. */
 #define MDP_MEM_BE_8(ptr, address)	\
-	(((unsigned char*)ptr)[address ^ 1])
+	(((unsigned char*)(ptr))[(address) ^ 1])
 #define MDP_MEM_LE_8(ptr, address)	\
-	(((unsigned char*)ptr)[address])
+	(((unsigned char*)(ptr))[(address)])
 
 #else
 
 /* Big-endian host system. */
 #define MDP_MEM_BE_8(ptr, address)	\
-	(((unsigned char*)ptr)[address])
+	(((unsigned char*)(ptr))[(address)])
 #define MDP_MEM_LE_8(ptr, address)	\
-	(((unsigned char*)ptr)[address ^ 1])
+	(((unsigned char*)(ptr))[(address) ^ 1])
 
 #endif
 
