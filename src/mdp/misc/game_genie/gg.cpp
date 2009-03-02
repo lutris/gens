@@ -179,6 +179,9 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 			
 			// Clear the loaded ROM name.
 			gg_loaded_rom.clear();
+			
+			// Clear all loaded codes.
+			gg_code_list.clear();
 		}
 	}
 	

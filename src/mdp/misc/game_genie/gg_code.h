@@ -33,9 +33,9 @@ extern "C" {
 #endif
 
 /**
- * gg_code_cpu: CPU type for a code.
+ * GG_CODE_CPU: CPU type for a code.
  */
-typedef enum _gg_code_cpu
+typedef enum _GG_CODE_CPU
 {
 	CPU_INVALID = 0,
 	CPU_M68K    = 1,
@@ -43,18 +43,18 @@ typedef enum _gg_code_cpu
 	CPU_Z80     = 3,
 	CPU_MSH2    = 4,
 	CPU_SSH2    = 5,
-} gg_code_cpu;
+} GG_CODE_CPU;
 
 /**
  * gg_code_datasize: Data size of a code.
  */
-typedef enum _gg_code_datasize
+typedef enum _GG_CODE_DATASIZE
 {
 	DS_INVALID = 0,
 	DS_BYTE    = 1, // 8-bit
 	DS_WORD    = 2, // 16-bit
 	DS_DWORD   = 3, // 32-bit
-} gg_code_datasize;
+} GG_CODE_DATASIZE;
 
 /**
  * gg_code_t: Contains a Game Genie and/or patch code.
@@ -65,8 +65,8 @@ typedef struct _gg_code_t
 	uint32_t	address;
 	uint32_t	data;
 	
-	gg_code_cpu		cpu;
-	gg_code_datasize	datasize;
+	GG_CODE_CPU		cpu;
+	GG_CODE_DATASIZE	datasize;
 	
 	// Backup area for ROM-modifying codes.
 	uint32_t	backup_data;
@@ -94,11 +94,18 @@ typedef enum _GG_CODE_ERR
 /**
  * gg_code_parse(): Parse a Game Genie and/or patch code.
  * @param code Original code.
- * @param gg_code gg_code_t struct to store the code.
+ * @param gg_code Pointer to gg_code_t struct to store the code.
  * @param cpu CPU this code is targetting.
  * @return GGCE_OK on success; other gg_code_parse_err on error.
  */
-DLL_LOCAL GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu);
+DLL_LOCAL GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, GG_CODE_CPU cpu);
+
+/**
+ * gg_code_encode_gg(): Encode a code as Game Genie.
+ * @param gg_code Pointer to gg_code_t struct with a code to encode as Game Genie.
+ * @return 0 on success; non-zero on error (e.g. if the code can't be encoded as Game Genie).
+ */
+DLL_LOCAL int MDP_FNCALL gg_code_encode_gg(gg_code_t *gg_code);
 
 /**
  * gg_code_format_hex(): Create the formatted hexadecimal version of a code.

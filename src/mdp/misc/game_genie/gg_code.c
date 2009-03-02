@@ -30,19 +30,18 @@
 static const char gg_chars[] =
 	"AaBbCcDdEeFfGgHhJjKkLlMmNnPpRrSsTtVvWwXxYyZz0O1I2233445566778899";
 
-// Decode/Encode functions.
+// Game Genie decode function.
 static int gg_code_decode_gg(const char* code, gg_code_t *gg_code);
-static int gg_code_encode_gg(gg_code_t *gg_code);
 
 
 /**
  * gg_code_parse(): Parse a Game Genie and/or patch code.
  * @param code Original code.
- * @param gg_code gg_code_t struct to store the code.
+ * @param gg_code Pointer to gg_code_t struct to store the code.
  * @param cpu CPU this code is targetting.
  * @return GGCE_OK on success; other GG_CODE_ERR on error.
  */
-GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
+GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, GG_CODE_CPU cpu)
 {
 	// Check that code and gg_code aren't NULL.
 	if (!code || !gg_code)
@@ -107,7 +106,7 @@ GG_CODE_ERR gg_code_parse(const char* code, gg_code_t *gg_code, gg_code_cpu cpu)
 	}
 	
 	// Determine the data size based on the number of characters entered.
-	gg_code_datasize datasize;
+	GG_CODE_DATASIZE datasize;
 	
 	int pos_colon = (int)(strchr(code, ':') - code);	// Position of the ':' within the code.
 	int data_chr_len = strlen(code) - pos_colon - 1;	// Length of the data segment.
@@ -245,7 +244,7 @@ static int gg_code_decode_gg(const char* code, gg_code_t *gg_code)
  * @param gg_code Pointer to gg_code_t struct with a code to encode as Game Genie.
  * @return 0 on success; non-zero on error (e.g. if the code can't be encoded as Game Genie).
  */
-static int gg_code_encode_gg(gg_code_t *gg_code)
+int MDP_FNCALL gg_code_encode_gg(gg_code_t *gg_code)
 {
 	// Code must be for the Main 68K and have a 16-bit data size.
 	// Also, address must be <0x400000.
