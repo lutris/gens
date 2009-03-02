@@ -42,15 +42,17 @@ typedef enum
 {
 	MDP_PTR_NULL		= 0,
 	MDP_PTR_LUT16to32	= 1,
-	MDP_PTR_ROM_MD		= 3, /* BE */
-	MDP_PTR_ROM_32X		= 4, /* LE */
-	MDP_PTR_RAM_MD		= 5, /* BE */
-	MDP_PTR_RAM_VRAM	= 6, /* BE */
-	MDP_PTR_RAM_Z80		= 7,
-	MDP_PTR_RAM_MCD_PRG	= 8, /* unknown */
-	MDP_PTR_RAM_MCD_WORD1M	= 9, /* unknown */
-	MDP_PTR_RAM_MCD_WORD2M	= 10, /* unknown */
-	MDP_PTR_RAM_32X		= 11, /* LE */
+	MDP_PTR_ROM_MD		= 2,	/* BE */
+	MDP_PTR_RAM_MD		= 3,	/* BE */
+	MDP_PTR_RAM_VRAM	= 4,	/* BE */
+#if 0 /* TODO: Figure out how to manage these. */
+	MDP_PTR_RAM_Z80		= 5,
+	MDP_PTR_RAM_MCD_PRG	= 6,	/* unknown */
+	MDP_PTR_RAM_MCD_WORD1M	= 7,	/* unknown */
+	MDP_PTR_RAM_MCD_WORD2M	= 8,	/* unknown */
+	MDP_PTR_ROM_32X		= 9,	/* LE */
+	MDP_PTR_RAM_32X		= 10,	/* LE */
+#endif
 } MDP_PTR;
 
 /* Convenience macros to access 8-bit, 16-bit, and 32-bit memory. */

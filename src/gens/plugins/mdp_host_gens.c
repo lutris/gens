@@ -109,12 +109,11 @@ void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 			return (void*)mdp_host_ptr_ref_LUT16to32();
 		case MDP_PTR_ROM_MD:
 			return &Rom_Data;
-		case MDP_PTR_ROM_32X:
-			return &_32X_Rom;
 		case MDP_PTR_RAM_MD:
 			return &Ram_68k;
 		case MDP_PTR_RAM_VRAM:
 			return &VRam;
+#if 0 /* TODO: Figure out how to manage these. */
 		case MDP_PTR_RAM_Z80:
 			return &Ram_Z80;
 		case MDP_PTR_RAM_MCD_PRG:
@@ -123,8 +122,11 @@ void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 			return &Ram_Word_1M;
 		case MDP_PTR_RAM_MCD_WORD2M:
 			return &Ram_Word_2M;
+		case MDP_PTR_ROM_32X:
+			return &_32X_Rom;
 		case MDP_PTR_RAM_32X:
 			return &_32X_Ram;
+#endif
 		default:
 			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
 			return NULL;
@@ -145,14 +147,16 @@ int MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 			break;
 		
 		case MDP_PTR_ROM_MD:
-		case MDP_PTR_ROM_32X:
 		case MDP_PTR_RAM_MD:
 		case MDP_PTR_RAM_VRAM:
+#if 0 /* TODO: Figure out how to manage these. */
 		case MDP_PTR_RAM_Z80:
 		case MDP_PTR_RAM_MCD_PRG:
 		case MDP_PTR_RAM_MCD_WORD1M:
 		case MDP_PTR_RAM_MCD_WORD2M:
+		case MDP_PTR_ROM_32X:
 		case MDP_PTR_RAM_32X:
+#endif
 			// Nothing to unreference.
 			break;
 		
