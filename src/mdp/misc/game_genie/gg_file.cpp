@@ -38,6 +38,9 @@ using std::list;
 // MDP includes.
 #include "mdp/mdp_fncall.h"
 
+// Header line for new patch code files.
+static const char gg_file_header[] = "MDP Game Genie Patch Code File";
+
 
 /**
  * The MDP Game Genie plugin uses a new patch code file format
@@ -92,8 +95,6 @@ static inline void ELIMINATE_NEWLINES(char *str)
  */
 int MDP_FNCALL gg_file_load(const char* filename)
 {
-	// TODO: Add read-only support for the old patch code file format.
-	
 	// Clear the code list.
 	gg_code_list.clear();
 	
@@ -101,6 +102,18 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	FILE *f_codes = fopen(filename, "r");
 	if (!f_codes)
 		return 0;
+	
+	char in_line[256];
+	
+	// Check the first line to determine what format the file is in.
+	fgets(in_line, sizeof(in_line), f_codes);
+	if (strncmp(in_line, gg_file_header, sizeof(gg_file_header) - 1))
+	{
+		// Not in the new patch code file format.
+		// TODO: Add read-only support for the old patch code file format.
+		fclose(f_codes);
+		return 1;
+	}
 	
 	// Data buffers.
 	char *tokens[4];
@@ -113,7 +126,6 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	// Make sure codes are disabled initially.
 	gg_code.enabled = 0;
 	
-	char in_line[256];
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
@@ -163,7 +175,6 @@ int MDP_FNCALL gg_file_load(const char* filename)
 		
 		// Determine the size of the data.
 		int s_data_len = strlen(tokens[2]);
-		printf("Data: %s\n", tokens[2]);
 		
 		if (s_data_len == 0)
 		{
@@ -246,6 +257,10 @@ int MDP_FNCALL gg_file_save(const char* filename)
 	FILE *f_codes = fopen(filename, "w");
 	if (!f_codes)
 		return 0;
+	
+	// Print the header line.
+	fputs(gg_file_header, f_codes);
+	fputs("\n", f_codes);
 	
 	// Buffer for the hexadecimal equivalent of the code.
 	char s_code_hex[32];
