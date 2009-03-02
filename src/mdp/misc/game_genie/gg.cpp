@@ -24,9 +24,14 @@
 #include <config.h>
 #endif
 
+// C includes.
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+
+// C++ includes.
+#include <string>
+using std::string;
 
 #include "gg.hpp"
 #include "gg_plugin.h"
@@ -46,11 +51,17 @@ static void *mdp_ptr_ram_md = NULL;
 static int MDP_FNCALL gg_menu_handler(int menu_item_id);
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
 
+// Currently loaded ROM.
+static string gg_loaded_rom;
+
 // List of Game Genie codes.
 #include "gg_code.h"
 #include <list>
 using std::list;
 list<gg_code_t> gg_code_list;
+
+// Patch code file handler.
+#include "gg_file.hpp"
 
 
 /**
@@ -80,8 +91,9 @@ int MDP_FNCALL gg_init(mdp_host_t *host_srv)
 	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &gg_menu_handler, 0, "&Game Genie");
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
 	
-	// Register the MDP_EVENT_OPEN_ROM event.
+	// Register the event handler.
 	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
+	gg_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, gg_event_handler);
 	
 	// Get the MD RAM.
 	mdp_ptr_ram_md = gg_host_srv->ptr_ref(MDP_PTR_RAM_MD);
@@ -132,11 +144,43 @@ static int MDP_FNCALL gg_menu_handler(int menu_item_id)
 
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 {
-	printf("Event: %d\n", event_id);
 	if (event_id == MDP_EVENT_OPEN_ROM)
 	{
+		// ROM opened.
+		
+		// Save the ROM name.
 		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)(event_info);
-		printf("GG: ROM opened: %s, system_id %d\n", openROM->rom_name, openROM->system_id);
+		gg_loaded_rom = string(openROM->rom_name);
+		
+		// Patch file is [save directory]/ROM_name.pat
+		// TODO: Register a Game Genie-specific directory.
+		char def_save_path[1024];
+		gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
+		
+		// Load the patch file.
+		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
+		gg_file_load(full_path.c_str());
 	}
+	else if (event_id == MDP_EVENT_CLOSE_ROM)
+	{
+		// ROM closed.
+		if (!gg_loaded_rom.empty())
+		{
+			// ROM name specified. Save the patch code file.
+			
+			// Patch file is [save directory]/ROM_name.pat
+			// TODO: Register a Game Genie-specific directory.
+			char def_save_path[1024];
+			gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
+			
+			// Save the patch file.
+			string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
+			gg_file_save(full_path.c_str());
+			
+			// Clear the loaded ROM name.
+			gg_loaded_rom.clear();
+		}
+	}
+	
 	return MDP_ERR_OK;
 }
