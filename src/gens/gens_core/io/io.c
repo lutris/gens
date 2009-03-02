@@ -349,14 +349,3 @@ void Fix_Controllers(void)
 		Controller_2_Counter = 0;
 	}
 }
-
-
-// Symbol aliases for cross-OS asm compatibility.
-unsigned char _RD_Controller_1(void)
-	__attribute__ ((weak, alias ("RD_Controller_1")));
-unsigned char _RD_Controller_2(void)
-	__attribute__ ((weak, alias ("RD_Controller_2")));
-unsigned char _WR_Controller_1(void)
-	__attribute__ ((weak, alias ("WR_Controller_1")));
-unsigned char _WR_Controller_2(void)
-	__attribute__ ((weak, alias ("WR_Controller_2")));

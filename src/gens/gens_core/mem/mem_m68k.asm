@@ -275,6 +275,11 @@ section .text align=64
 		%define	_mdZ80_reset		mdZ80_reset
 		%define	_mdZ80_set_odo		mdZ80_set_odo
 		
+		%define _RD_Controller_1	RD_Controller_1
+		%define _RD_Controller_2	RD_Controller_2
+		%define _WR_Controller_1	WR_Controller_1
+		%define _WR_Controller_2	WR_Controller_2
+		
 		%define _YM2612_Reset		YM2612_Reset
 	%endif
 	
