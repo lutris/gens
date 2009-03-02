@@ -28,6 +28,7 @@
 #include "gg_plugin.h"
 #include "gg.hpp"
 #include "gg_code.h"
+#include "gg_engine.hpp"
 
 // C includes.
 #include <stdio.h>
@@ -397,7 +398,8 @@ static void gg_window_init(void)
  */
 static void gg_window_save(void)
 {
-	// TODO: Undo any ROM-modifying codes.
+	// Unapply ROM codes.
+	gg_engine_unapply_rom_codes();
 	
 	// Clear the code list.
 	gg_code_list.clear();
@@ -428,7 +430,8 @@ static void gg_window_save(void)
 		}
 	}
 	
-	// TODO: Apply codes if a game is running.
+	// Apply ROM codes.
+	gg_engine_apply_rom_codes();
 }
 
 

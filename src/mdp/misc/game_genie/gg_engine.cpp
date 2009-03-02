@@ -36,12 +36,62 @@
 #include <list>
 using std::list;
 
-
+#include <stdio.h>
 /**
  * gg_engine_apply_rom_codes(): Apply ROM codes.
  */
 void MDP_FNCALL gg_engine_apply_rom_codes(void)
 {
+	if (gg_system_id == MDP_SYSTEM_UNKNOWN)
+		return;
+	
+	for (list<gg_code_t>::iterator iter = gg_code_list.begin();
+	     iter != gg_code_list.end(); iter++)
+	{
+		gg_code_t& gg_code = (*iter);
+		
+		if (!gg_code.enabled)
+			continue;
+		
+		switch (gg_code.cpu)
+		{
+			case CPU_M68K:
+			{
+				if (gg_system_id < MDP_SYSTEM_MD || gg_system_id > MDP_SYSTEM_MCD32X)
+					break;
+				
+				// Check if this code is in ROM.
+				if (gg_code.address >= gg_mdp_rom_md_size)
+					break;
+				
+				// Code is in ROM.
+				switch (gg_code.datasize)
+				{
+					case DS_BYTE:
+						gg_code.backup_data = MDP_MEM_BE_8(gg_mdp_ptr_rom_md, gg_code.address);
+						MDP_MEM_BE_8(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.data & 0xFF);
+						break;
+					case DS_WORD:
+						gg_code.backup_data = MDP_MEM_16(gg_mdp_ptr_rom_md, gg_code.address);
+						MDP_MEM_16(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.data & 0xFFFF);
+						break;
+					case DS_DWORD:
+						gg_code.backup_data = MDP_MEM_BE_32_READ(gg_mdp_ptr_rom_md, gg_code.address);
+						MDP_MEM_BE_32_WRITE(gg_mdp_ptr_rom_md, gg_code.address, gg_code.data);
+						break;
+				}
+				break;
+			}
+			
+			case CPU_S68K:
+			case CPU_Z80:
+			case CPU_MSH2:
+			case CPU_SSH2:
+			default:
+				// TODO: Add support for these CPUs later.
+				break;
+		}
+	}
 }
 
 
@@ -50,6 +100,53 @@ void MDP_FNCALL gg_engine_apply_rom_codes(void)
  */
 void MDP_FNCALL gg_engine_unapply_rom_codes(void)
 {
+	if (gg_system_id == MDP_SYSTEM_UNKNOWN)
+		return;
+	
+	for (list<gg_code_t>::iterator iter = gg_code_list.begin();
+	     iter != gg_code_list.end(); iter++)
+	{
+		gg_code_t& gg_code = (*iter);
+		
+		if (!gg_code.enabled)
+			continue;
+		
+		switch (gg_code.cpu)
+		{
+			case CPU_M68K:
+			{
+				if (gg_system_id < MDP_SYSTEM_MD || gg_system_id > MDP_SYSTEM_MCD32X)
+					break;
+				
+				// Check if this code is in ROM.
+				if (gg_code.address >= gg_mdp_rom_md_size)
+					break;
+				
+				// Code is in ROM.
+				switch (gg_code.datasize)
+				{
+					case DS_BYTE:
+						MDP_MEM_BE_8(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.backup_data & 0xFF);
+						break;
+					case DS_WORD:
+						MDP_MEM_16(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.backup_data & 0xFFFF);
+						break;
+					case DS_DWORD:
+						MDP_MEM_BE_32_WRITE(gg_mdp_ptr_rom_md, gg_code.address, gg_code.backup_data);
+						break;
+				}
+				break;
+			}
+			
+			case CPU_S68K:
+			case CPU_Z80:
+			case CPU_MSH2:
+			case CPU_SSH2:
+			default:
+				// TODO: Add support for these CPUs later.
+				break;
+		}
+	}
 }
 
 
