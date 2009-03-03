@@ -409,7 +409,13 @@ if (!strcmp(long_options[option_index].name, option))		\
 	continue;						\
 }
 
-void parseArgs(int argc, char **argv)
+
+/**
+ * parse_args(): Parse command line arguments.
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ */
+void parse_args(int argc, char *argv[])
 {
 	int c;
 	int error = 0;

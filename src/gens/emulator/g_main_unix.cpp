@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Parse command line arguments.
-	parseArgs(argc, argv);
+	parse_args(argc, argv);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();

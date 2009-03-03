@@ -194,15 +194,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	}
 	
 	// Parse command line arguments.
-	// TODO: This causes a crash.
 	argc_argv arg;
 	convertCmdLineToArgv(lpCmdLine, &arg);
-	parseArgs(arg.c, arg.v);
+	parse_args(arg.c, arg.v);
 	deleteArgcArgv(&arg);
-	
-	// Old Gens/Win32 command line parser.
-	// It merely checks for a ROM filename.
-	//parseCmdLine_Old(lpCmdLine);
 	
 	// Recalculate the palettes, in case a command line argument changed a video setting.
 	Recalculate_Palettes();
