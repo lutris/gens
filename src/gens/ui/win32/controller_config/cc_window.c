@@ -250,6 +250,9 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Initialize the internal data variables.
 	cc_window_init();
 	
+	// Set focus to the "Use Teamplayer" checkbox for Port 1.
+	SetFocus(chkTeamplayer[0]);
+	
 	// Show the controller configuration for the first player.
 	Button_SetCheck(optConfigure[0], BST_CHECKED);
 	cc_window_show_configuration(0);
