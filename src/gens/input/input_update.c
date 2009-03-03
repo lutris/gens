@@ -54,25 +54,44 @@
 #define CHECK_DIR_RESTRICT(player, ctrl)					\
 	do									\
 	{									\
-		if (input_check_key_pressed(input_keymap[player].keys.Up))	\
+		/* Up / Down */							\
+		if (input_check_key_pressed(input_keymap[player].keys.Up) &&	\
+		    Controller_ ## ctrl ## _Buttons & CONTROLLER_DOWN)		\
 		{					   			\
 			Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_UP;	\
-			Controller_ ## ctrl ## _Buttons |= CONTROLLER_DOWN;	\
 		}								\
 		else								\
 		{								\
 			Controller_ ## ctrl ## _Buttons |= CONTROLLER_UP;	\
-			CHECK_BUTTON(player, ctrl, Down, CONTROLLER_DOWN);	\
 		}								\
-		if (input_check_key_pressed(input_keymap[player].keys.Left))	\
+		if (input_check_key_pressed(input_keymap[player].keys.Down) &&	\
+		    Controller_ ## ctrl ## _Buttons & CONTROLLER_UP)		\
+		{					   			\
+			Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_DOWN;	\
+		}								\
+		else								\
+		{								\
+			Controller_ ## ctrl ## _Buttons |= CONTROLLER_DOWN;	\
+		}								\
+										\
+		/* Left / Right */						\
+		if (input_check_key_pressed(input_keymap[player].keys.Left) &&	\
+		    Controller_ ## ctrl ## _Buttons & CONTROLLER_RIGHT)		\
 		{					   			\
 			Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_LEFT;	\
-			Controller_ ## ctrl ## _Buttons |= CONTROLLER_RIGHT;	\
 		}								\
 		else								\
 		{								\
 			Controller_ ## ctrl ## _Buttons |= CONTROLLER_LEFT;	\
-			CHECK_BUTTON(player, ctrl, Right, CONTROLLER_RIGHT);	\
+		}								\
+		if (input_check_key_pressed(input_keymap[player].keys.Right) &&	\
+		    Controller_ ## ctrl ## _Buttons & CONTROLLER_LEFT)		\
+		{					   			\
+			Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_RIGHT;	\
+		}								\
+		else								\
+		{								\
+			Controller_ ## ctrl ## _Buttons |= CONTROLLER_RIGHT;	\
 		}								\
 	} while (0)
 
