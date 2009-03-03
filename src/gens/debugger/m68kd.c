@@ -41,7 +41,7 @@ static const char* Make_Dbg_EA_Str(int Size, int EA_Num, int Reg_Num)
 	int i;
 	
 	// printf format strings for EA_Num types 0-4
-	const char* const EAStr_0_4[] =
+	static const char* const EAStr_0_4[] =
 	{
 		"D%.1d",	// 000 rrr  Dr
 		"A%.1d",	// 001 rrr  Ar
@@ -158,7 +158,7 @@ static const char* Make_Dbg_Size_Str_2(int Size)
 
 static const char* Make_Dbg_Cond_Str(int Cond)
 {
-	const char Conditions[][4] =
+	static const char Conditions[][4] =
 	{
 		"Tr", "Fa", "HI", "LS",
 		"CC", "CS", "NE", "EQ",
@@ -198,7 +198,7 @@ const char* M68KDisasm(unsigned short (*NW)(void), unsigned int (*NL)(void))
 	OPC = Next_Word();
 	
 	// Invalid Opcode
-	const char* InvalidOpcode = "Invalid Opcode";
+	static const char* const InvalidOpcode = "Invalid Opcode";
 	
 	// Set the debug string to Unknown Opcode initially.
 	// TODO: Move this to the end of the function instead?
