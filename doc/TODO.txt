@@ -10,16 +10,7 @@ TODO for Gens/GS r7:
 - [GTK+] Update all windows to support gtk_dialog_set_alternative_button_order().
   "gtk-alternative-button-order=1" in ~/.gtkrc-2.0-kde4
 
-Controller Input TODO for Gens/GS r7:
-- Add option to allow pressing U+D/L+R simultaneously.
-- Fix it so that if U is held and D is pressed, D is ignored;
-  if D is held and U is pressed, U is ignored.
-
 MDP TODO for Gens/GS r7:
-- Port Game Genie to MDP, and add the following:
-  - 8-bit writes: 000000:00
-  - Support for S68K, Z80, MSH2, and SSH2 address spaces
-  - Improved file format (but maintain read-only compatibility with the old version).
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
   - Disables reset, close ROM, etc.
 - "Directory" registration for "Configure Directories".
@@ -29,6 +20,9 @@ MDP TODO for Gens/GS r7:
 Stuff done in r7:
 - 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
   (commit 4bd10d59fd6b043258027c2d9032c1d5a47b6399)
+
+MDP TODO for Gens/GS r7+
+- Game Genie: Add support for S68K, Z80, MSH2, and SSH2.
 
 High-Level TODO:
 - Move most global variables to global Settings struct
