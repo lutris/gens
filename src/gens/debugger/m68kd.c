@@ -197,7 +197,7 @@ const char* M68KDisasm(unsigned short (*NW)(void), unsigned int (*NL)(void))
 	
 	OPC = Next_Word();
 	
-	// Invalid Opcode
+	// Invalid Opcode.
 	static const char* const InvalidOpcode = "Invalid Opcode";
 	
 	// Set the debug string to Unknown Opcode initially.
