@@ -344,7 +344,7 @@ static void cc_window_create_input_devices_frame(HWND container)
 	static const int fraInputDevices_top = 8+CC_FRAME_PORT_HEIGHT+8+CC_FRAME_PORT_HEIGHT+8;
 	
 	// "Input Devices" frame.
-	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Input Devices",
+	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Detected Input Devices",
 					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					    8, fraInputDevices_top,
 					    CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,

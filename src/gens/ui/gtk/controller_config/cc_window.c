@@ -350,7 +350,7 @@ static void cc_window_create_input_devices_frame(GtkWidget *container)
 	gtk_box_pack_start(GTK_BOX(container), alignInputDevices, FALSE, FALSE, 0);
 	
 	// "Input Devices" frame.
-	GtkWidget *fraInputDevices = gtk_frame_new("<b><i>Input Devices</i></b>");
+	GtkWidget *fraInputDevices = gtk_frame_new("<b><i>Detected Input Devices</i></b>");
 	gtk_frame_set_shadow_type(GTK_FRAME(fraInputDevices), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraInputDevices))), TRUE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraInputDevices), 4);
