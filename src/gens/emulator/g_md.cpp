@@ -237,8 +237,6 @@ void Init_Genesis_SRAM(ROM_t* MD_ROM)
  */
 int Init_Genesis(ROM_t* MD_ROM)
 {
-	char Str_Err[256];
-	
 	// Clear the sound buffer.
 	audio_clear_sound_buffer();
 	
@@ -280,16 +278,10 @@ int Init_Genesis(ROM_t* MD_ROM)
 			break;
 	}
 	
-	// Set the window title to the localized console name and the game name.
-	if ((CPU_Mode == 1) || (Game_Mode == 0))
-		strcpy(Str_Err, "Mega Drive");
-	else
-		strcpy(Str_Err, "Genesis");
-	
 	// Check which ROM name should be used.
 	// Default: ROM_Name_W
 	// If ROM_Name_W is blank (i.e. all characters are <= 0x20), use ROM_Name.
-	char* tmpROMName = MD_ROM->ROM_Name;
+	const char* tmpROMName = MD_ROM->ROM_Name;
 	for (unsigned short cpos = 0; cpos < sizeof(MD_ROM->ROM_Name_W); cpos++)
 	{
 		if (MD_ROM->ROM_Name_W[cpos] > 0x20)
@@ -299,7 +291,9 @@ int Init_Genesis(ROM_t* MD_ROM)
 			break;
 		}
 	}
-	GensUI::setWindowTitle_Game(Str_Err, tmpROMName);
+	
+	// Set the window title to the localized console name and the game name.	
+	GensUI::setWindowTitle_Game(((CPU_Mode == 0 && Game_Mode == 1) ? "Genesis" : "Mega Drive"), tmpROMName);
 	
 	VDP_Num_Vis_Lines = 224;
 	Gen_Version = 0x20 + 0x0;	// Version de la megadrive (0x0 - 0xF)
