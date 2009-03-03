@@ -78,9 +78,9 @@
 // 1-argument parameter struct.
 struct opt1arg_str_t
 {
-	const char* const option;
-	const char* const argument;
-	const char* const description;
+	const char* option;
+	const char* argument;
+	const char* description;
 };
 
 // 1-argument parameters.
@@ -146,8 +146,8 @@ enum opt1arg_enum
 // 0-argument parameter struct.
 struct opt0arg_str_t
 {
-	const char* const option;
-	const char* const description;
+	const char* option;
+	const char* description;
 };
 
 // 0-argument parameters.
@@ -173,9 +173,9 @@ enum opt0arg_enum
 // Boolean argument parameter struct.
 struct optBarg_str_t
 {
-	const char* const enable;
-	const char* const disable;
-	const char* const description;
+	const char* enable;
+	const char* disable;
+	const char* description;
 };
 
 // Boolean parameters.
