@@ -79,8 +79,8 @@
 const vdraw_backend_t* const vdraw_backends[] =
 {
 	#ifdef GENS_OS_WIN32
-		&vdraw_backend_gdi,
 		&vdraw_backend_ddraw,
+		&vdraw_backend_gdi,
 	#else /* !GENS_OS_WIN32 */
 		&vdraw_backend_sdl,
 		#ifdef GENS_OPENGL
