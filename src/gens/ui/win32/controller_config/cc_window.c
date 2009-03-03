@@ -63,7 +63,7 @@ static WNDCLASS	cc_wndclass;
 
 // Window size.
 #define CC_WINDOW_WIDTH  600
-#define CC_WINDOW_HEIGHT 440
+#define CC_WINDOW_HEIGHT 466
 
 #define CC_FRAME_PORT_WIDTH  236
 #define CC_FRAME_PORT_HEIGHT 140
@@ -73,6 +73,9 @@ static WNDCLASS	cc_wndclass;
 
 #define CC_FRAME_CONFIGURE_WIDTH  340
 #define CC_FRAME_CONFIGURE_HEIGHT 354
+
+#define CC_FRAME_OPTIONS_WIDTH  CC_FRAME_CONFIGURE_WIDTH
+#define CC_FRAME_OPTIONS_HEIGHT 56
 
 // Command value bases.
 #define IDC_CC_CHKTEAMPLAYER	0x1100
@@ -114,11 +117,11 @@ static HWND	fraConfigure;
 static HWND	lblButton[12];
 static HWND	lblCurConfig[12];
 static HWND	btnChange[12];
-
-// Widgets: "Options" frame.
-static HWND	fraOptions;
 static HWND	btnChangeAll;
 static HWND	btnClearAll;
+
+// Widgets: "Options" frame.
+static HWND	chkRestrictInput;
 
 // Widget creation functions.
 static void	cc_window_create_child_windows(HWND hWnd);
@@ -126,6 +129,7 @@ static void	cc_window_create_controller_port_frame(HWND container, int port);
 static void	cc_window_create_input_devices_frame(HWND container);
 static void	cc_window_populate_input_devices(HWND lstBox);
 static void	cc_window_create_configure_controller_frame(HWND container);
+static void	cc_window_create_options_frame(HWND container);
 
 // Display key name function.
 static inline void cc_window_display_key_name(HWND label, uint16_t key);
@@ -213,6 +217,9 @@ static void cc_window_create_child_windows(HWND hWnd)
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(hWnd);
+	
+	// Create the "Options" frame.
+	cc_window_create_options_frame(hWnd);
 	
 	// Create the dialog buttons.
 	
@@ -445,6 +452,34 @@ static void cc_window_create_configure_controller_frame(HWND container)
 
 
 /**
+ * cc_window_create_options_frame(): Create the "Options" frame.
+ * @param container Container for the frame.
+ */
+static void cc_window_create_options_frame(HWND container)
+{
+	// Top and left sides of the frame.
+	static const int fraOptions_top = 8+CC_FRAME_CONFIGURE_HEIGHT+8;
+	static const int fraOptions_left = 8+CC_FRAME_PORT_WIDTH+8;
+	
+	// "Configure Controller" frame.
+	HWND fraOptions = CreateWindow(WC_BUTTON, "Options",
+				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+				       fraOptions_left, fraOptions_top,
+				       CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
+				       container, NULL, ghInstance, NULL);
+	SetWindowFont(fraOptions, fntMain, TRUE);
+	
+	// "Restrict Input" checkbox.
+	chkRestrictInput = CreateWindow(WC_BUTTON, "&Restrict Input\n(Disables Up+Down, Left+Right)",
+					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_MULTILINE,
+					8, 16,
+					CC_FRAME_OPTIONS_WIDTH-16, 32,
+					fraOptions, NULL, ghInstance, NULL);
+	SetWindowFont(chkRestrictInput, fntMain, TRUE);
+}
+
+
+/**
  * cc_window_close(): Close the Controller Configuration window.
  */
 void cc_window_close(void)
@@ -493,6 +528,9 @@ static void cc_window_init(void)
 	// Run the teamplayer callbacks.
 	cc_window_callback_teamplayer_toggled(0);
 	cc_window_callback_teamplayer_toggled(1);
+	
+	// Restrict Input.
+	Button_SetCheck(chkRestrictInput, (Settings.restrict_input ? BST_CHECKED : BST_UNCHECKED));
 }
 
 
@@ -527,6 +565,9 @@ static void cc_window_save(void)
 	Controller_2B_Type |= (ComboBox_GetCurSel(cboPadType[5]) ? 0x01 : 0x00);
 	Controller_2C_Type |= (ComboBox_GetCurSel(cboPadType[6]) ? 0x01 : 0x00);
 	Controller_2D_Type |= (ComboBox_GetCurSel(cboPadType[7]) ? 0x01 : 0x00);
+	
+	// Restrict Input.
+	Settings.restrict_input = ((Button_GetCheck(chkRestrictInput) == BST_CHECKED) ? TRUE : FALSE);
 }
 
 
@@ -570,10 +611,6 @@ static void cc_window_show_configuration(int player)
 	// Set the "Configure Controller" frame title.
 	sprintf(tmp, "Configure Player %s", &input_player_names[player][1]);
 	Button_SetText(fraConfigure, tmp);
-	
-	// Set the "Options" frame title.
-	sprintf(tmp, "Options for Player %s", &input_player_names[player][1]);
-	Button_SetText(fraOptions, tmp);
 	
 	// Make sure the "Change All Buttons" and "Clear All Buttons" buttons aren't
 	// obscured by the frame label. Not sure if this is intended behavior or
