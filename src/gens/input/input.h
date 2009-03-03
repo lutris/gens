@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -185,11 +185,9 @@ int	input_end(void);
 extern const input_backend_t *input_cur_backend;
 extern INPUT_BACKEND input_cur_backend_id;
 
-// Update the controller bitfields.
-void	input_update_controllers(void);
-
 // Function and array pointers.
 extern int			(*input_update)(void);
+extern BOOL			(*input_check_key_pressed)(uint16_t key);
 extern unsigned int		(*input_get_key)(void);
 extern const input_keymap_t	*input_keymap_default;
 #ifdef GENS_OS_WIN32

@@ -142,6 +142,7 @@ gens_SOURCES = \
 		video/vdraw_text.cpp \
 		video/v_effects.cpp \
 		input/input.c \
+		input/input_update.c \
 		audio/audio.c \
 		plugins/pluginmgr.cpp \
 		plugins/mdp_host_gens.c \
@@ -256,6 +257,7 @@ noinst_HEADERS = \
 		video/vdraw_text.hpp \
 		video/v_effects.hpp \
 		input/input.h \
+		input/input_update.h \
 		audio/audio.h \
 		plugins/pluginmgr.hpp \
 		plugins/mdp_host_gens.h \

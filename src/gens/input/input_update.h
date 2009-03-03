@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Update Emulation functions.                                       *
+ * Gens: Input Handler - Update Controllers.                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,27 +20,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_UPDATE_HPP
-#define GENS_UPDATE_HPP
+#ifndef GENS_INPUT_UPDATE_H
+#define GENS_INPUT_UPDATE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int Sleep_Time;
-
-void Reset_Update_Timers(void);
-
-int Update_Emulation(void);
-int Update_Emulation_One(void);
-
-#if 0
-extern int Kaillera_Error;
-int Update_Emulation_Netplay(int player, int num_player);
-#endif
+// Update the controller bitfields.
+void input_update_controllers(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_UPDATE_H */
+#endif /* GENS_INPUT_UPDATE_H */

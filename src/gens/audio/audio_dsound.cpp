@@ -40,8 +40,8 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "gens/gens_window.h"
 
-// Input Handler.
-#include "input/input.h"
+// Input Handler - Update Controllers.
+#include "input/input_update.h"
 
 // C includes.
 #include <string.h>
