@@ -195,9 +195,9 @@ void SH2Disasm(char *cdeb, unsigned int v_addr, unsigned short op, int mode)
 	char s_addr[32], s_op[128];
 	
 	// Invalid Opcode
-	const char* InvalidOpcode = "Invalid Opcode";
+	static const char* const InvalidOpcode = "Invalid Opcode";
 	
-	sprintf (s_addr, "%08X:%04X   ", v_addr, op);
+	sprintf(s_addr, "%08X:%04X   ", v_addr, op);
 	
 	for (i = 0; tab[i].mnem != NULL; i++)	/* 0 format */
 	{
