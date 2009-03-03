@@ -26,7 +26,17 @@
 #include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
 
+// C includes.
+#include <stdint.h>
 
+
+/**
+ * CHECK_BUTTON(): Check if a button is pressed.
+ * @param player Player number.
+ * @param ctrl Controller ID. (Player 0 == ID 1)
+ * @param button Button.
+ * @param mask Button mask.
+ */
 #define CHECK_BUTTON(player, ctrl, button, mask)				\
 	do									\
 	{									\
@@ -35,6 +45,12 @@
 		else Controller_ ## ctrl ## _Buttons |= mask;			\
 	} while (0)
 
+
+/**
+ * CHECK_DIR_RESTRICT(): Check the player's direction, with input restrictions.
+ * @param player Player number.
+ * @param ctrl Controller ID. (Player 0 == ID 1)
+ */
 #define CHECK_DIR_RESTRICT(player, ctrl)					\
 	do									\
 	{									\
@@ -60,6 +76,12 @@
 		}								\
 	} while (0)
 
+
+/**
+ * CHECK_DIR_NO_RESTRICT(): Check the player's direction, without input restrictions.
+ * @param player Player number.
+ * @param ctrl Controller ID. (Player 0 == ID 1)
+ */
 #define CHECK_DIR_NO_RESTRICT(player, ctrl)					\
 	do									\
 	{									\
@@ -69,6 +91,12 @@
 		CHECK_BUTTON(player, ctrl, Right, CONTROLLER_RIGHT);		\
 	} while (0)
 
+
+/**
+ * CHECK_ALL_BUTTONS(): Check all buttons on a controller (excluding D-pad).
+ * @param player Player number.
+ * @param ctrl Controller ID. (Player 0 == ID 1)
+ */
 #define CHECK_ALL_BUTTONS(player, ctrl)						\
 	do									\
 	{									\
@@ -86,6 +114,12 @@
 		}								\
 	} while (0)
 
+
+/**
+ * CHECK_PLAYER_PAD(): Check a controller.
+ * @param player Player number.
+ * @param ctrl Controller ID. (Player 0 == ID 1)
+ */
 #define CHECK_PLAYER_PAD(player, ctrl)				\
 	do							\
 	{							\
