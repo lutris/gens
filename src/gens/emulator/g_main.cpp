@@ -89,12 +89,12 @@
 // Language handler.
 #include "language.h"
 
-// Gens Settings struct
-struct Gens_Settings_t Settings;
-struct Gens_PathNames_t PathNames;
-struct Gens_BIOS_Filenames_t BIOS_Filenames;
-struct Gens_Misc_Filenames_t Misc_Filenames;
-struct Gens_VideoSettings_t Video;
+// Gens Settings structs.
+Gens_Settings_t Settings;
+Gens_PathNames_t PathNames;
+Gens_BIOS_Filenames_t BIOS_Filenames;
+Gens_Misc_Filenames_t Misc_Filenames;
+Gens_VideoSettings_t Video;
 
 // bpp settings.
 uint8_t bppMD;	// MD bpp

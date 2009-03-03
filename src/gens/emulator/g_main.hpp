@@ -49,13 +49,13 @@ extern "C" {
 
 
 // Gens settings
-struct Gens_Settings_t
+typedef struct _Gens_Settings_t
 {
-};
+} Gens_Settings_t;
 
 
 // Gens Pathnames
-struct Gens_PathNames_t
+typedef struct _Gens_PathNames_t
 {
 	char Gens_Path[GENS_PATH_MAX];	// TODO: Rename to Gens_Save_Path.
 #ifdef GENS_OS_WIN32
@@ -69,11 +69,11 @@ struct Gens_PathNames_t
 	
 	// TODO: Implement a way to allow plugins to add directories.
 	char Patch_Dir[GENS_PATH_MAX];
-};
+} Gens_PathNames_t;
 
 
 // BIOS filenames
-struct Gens_BIOS_Filenames_t
+typedef struct _Gens_BIOS_Filenames_t
 {
 	char MD_TMSS[GENS_PATH_MAX];
 	char SegaCD_US[GENS_PATH_MAX];
@@ -82,18 +82,18 @@ struct Gens_BIOS_Filenames_t
 	char _32X_MC68000[GENS_PATH_MAX];
 	char _32X_MSH2[GENS_PATH_MAX];
 	char _32X_SSH2[GENS_PATH_MAX];
-};
+} Gens_BIOS_Filenames_t;
 
 
 // Miscellaneous filenames
-struct Gens_Misc_Filenames_t
+typedef struct _Gens_Misc_Filenames_t
 {
 	char RAR_Binary[GENS_PATH_MAX];
-};
+} Gens_Misc_Filenames_t;
 
 
 // Video settings
-struct Gens_VideoSettings_t
+typedef struct _Gens_VideoSettings_t
 {
 	int VSync_FS;
 	int VSync_W;
@@ -104,17 +104,17 @@ struct Gens_VideoSettings_t
 	int Height_GL;
 	int glLinearFilter;
 #endif
-};
+} Gens_VideoSettings_t;
 
 // bpp settings.
 extern uint8_t bppMD;	// MD bpp
 extern uint8_t bppOut;	// Output bpp.
 
-extern struct Gens_Settings_t Settings;
-extern struct Gens_PathNames_t PathNames;
-extern struct Gens_BIOS_Filenames_t BIOS_Filenames;
-extern struct Gens_Misc_Filenames_t Misc_Filenames;
-extern struct Gens_VideoSettings_t Video;
+extern Gens_Settings_t Settings;
+extern Gens_PathNames_t PathNames;
+extern Gens_BIOS_Filenames_t BIOS_Filenames;
+extern Gens_Misc_Filenames_t Misc_Filenames;
+extern Gens_VideoSettings_t Video;
 
 // TODO: Only used for DirectDraw.
 extern int Flag_Clr_Scr;
