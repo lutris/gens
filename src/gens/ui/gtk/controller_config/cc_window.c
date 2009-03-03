@@ -39,6 +39,9 @@
 // BOOL macros.
 #include "macros/bool_m.h"
 
+// Main settings.
+#include "emulator/g_main.hpp"
+
 // Gens input variables.
 #include "gens_core/io/io.h"
 #include "gens_core/io/io_teamplayer.h"
@@ -80,6 +83,9 @@ static GtkWidget	*lblButton[12];
 static GtkWidget	*lblCurConfig[12];
 static GtkWidget	*btnChange[12];
 
+// Widgets: "Options" frame.
+static GtkWidget	*chkRestrictInput;
+
 // GSList used to link the "Configure" radio buttons.
 static GSList		*gslConfigure;
 
@@ -88,6 +94,7 @@ static void	cc_window_create_controller_port_frame(GtkWidget *container, int por
 static void	cc_window_create_input_devices_frame(GtkWidget *container);
 static void	cc_window_populate_input_devices(GtkListStore *list);
 static void	cc_window_create_configure_controller_frame(GtkWidget *container);
+static void	cc_window_create_options_frame(GtkWidget *container);
 
 // Display key name function.
 static inline void cc_window_display_key_name(GtkWidget *label, uint16_t key);
@@ -175,6 +182,9 @@ void cc_window_show(void)
 	
 	// Create the "Configure Controller" frame.
 	cc_window_create_configure_controller_frame(vboxConfigureOuter);
+	
+	// Create the "Options" frame.
+	cc_window_create_options_frame(vboxConfigureOuter);
 	
 	// Create the dialog buttons.
 	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
@@ -521,6 +531,38 @@ static void cc_window_create_configure_controller_frame(GtkWidget *container)
 
 
 /**
+ * cc_window_create_options_frame(): Create the "Options" frame.
+ * @param container Container for the frame.
+ */
+static void cc_window_create_options_frame(GtkWidget *container)
+{
+	// Align the "Options" frame to the top of the container.
+	GtkWidget *alignOptions = gtk_alignment_new(0.0f, 0.0f, 1.0f, 1.0f);
+	gtk_widget_show(alignOptions);
+	gtk_box_pack_start(GTK_BOX(container), alignOptions, FALSE, FALSE, 0);
+	
+	// "Options" frame.
+	GtkWidget *fraOptions = gtk_frame_new("<b><i>Options</i></b>");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraOptions), GTK_SHADOW_ETCHED_IN);
+	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraOptions))), TRUE);
+	gtk_container_set_border_width(GTK_CONTAINER(fraOptions), 4);
+	gtk_widget_show(fraOptions);
+	gtk_container_add(GTK_CONTAINER(alignOptions), fraOptions);
+	
+	// VBox for the "Options" frame.
+	GtkWidget *vboxOptions = gtk_vbox_new(FALSE, 4);
+	gtk_container_set_border_width(GTK_CONTAINER(vboxOptions), 4);
+	gtk_widget_show(vboxOptions);
+	gtk_container_add(GTK_CONTAINER(fraOptions), vboxOptions);
+	
+	// "Restrict Input" checkbox.
+	chkRestrictInput = gtk_check_button_new_with_mnemonic("_Restrict Input\n(Disables Up+Down, Left+Right)");
+	gtk_widget_show(chkRestrictInput);
+	gtk_box_pack_start(GTK_BOX(vboxOptions), chkRestrictInput, FALSE, FALSE, 0);
+}
+
+
+/**
  * cc_window_close(): Close the Controller Configuration window.
  */
 void cc_window_close(void)
@@ -562,6 +604,9 @@ static void cc_window_init(void)
 	// Run the teamplayer callbacks.
 	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[0]), GINT_TO_POINTER(0));
 	cc_window_callback_teamplayer_toggled(GTK_TOGGLE_BUTTON(chkTeamplayer[1]), GINT_TO_POINTER(1));
+	
+	// Restrict Input.
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkRestrictInput), Settings.restrict_input);
 }
 
 
@@ -596,6 +641,9 @@ static void cc_window_save(void)
 	Controller_2B_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[5])) ? 0x01 : 0x00);
 	Controller_2C_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[6])) ? 0x01 : 0x00);
 	Controller_2D_Type |= (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[7])) ? 0x01 : 0x00);
+	
+	// Restrict Input.
+	Settings.restrict_input = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkRestrictInput));
 }
 
 
