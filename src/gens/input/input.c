@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "emulator/g_main.hpp"
 #include "gens_core/io/io.h"
 
 
@@ -142,50 +143,74 @@ int input_end(void)
 }
 
 
-#define CHECK_BUTTON(player, ctrl, button, mask)			\
-	if (input_check_key_pressed(input_keymap[player].keys.button))	\
-		Controller_ ## ctrl ## _Buttons &= ~mask;		\
-	else Controller_ ## ctrl ## _Buttons |= mask;
+#define CHECK_BUTTON(player, ctrl, button, mask)				\
+	do									\
+	{									\
+		if (input_check_key_pressed(input_keymap[player].keys.button))	\
+			Controller_ ## ctrl ## _Buttons &= ~mask;		\
+		else Controller_ ## ctrl ## _Buttons |= mask;			\
+	} while (0)
 
-#define CHECK_DIR(player, ctrl)						\
-	if (input_check_key_pressed(input_keymap[player].keys.Up))	\
-	{					   			\
-		Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_UP;	\
-		Controller_ ## ctrl ## _Buttons |= CONTROLLER_DOWN;	\
-	}								\
-	else								\
+#define CHECK_DIR_RESTRICT(player, ctrl)				\
+	do								\
 	{								\
-		Controller_ ## ctrl ## _Buttons |= CONTROLLER_UP;	\
-		CHECK_BUTTON(player, ctrl, Down, CONTROLLER_DOWN)	\
-	}								\
-	if (input_check_key_pressed(input_keymap[player].keys.Left))	\
-	{					   			\
-		Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_LEFT;	\
-		Controller_ ## ctrl ## _Buttons |= CONTROLLER_RIGHT;	\
-	}								\
-	else								\
-	{								\
-		Controller_ ## ctrl ## _Buttons |= CONTROLLER_LEFT;	\
-		CHECK_BUTTON(player, ctrl, Right, CONTROLLER_RIGHT)	\
-	}
+		if (input_check_key_pressed(input_keymap[player].keys.Up))	\
+		{					   			\
+			Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_UP;	\
+			Controller_ ## ctrl ## _Buttons |= CONTROLLER_DOWN;	\
+		}								\
+		else								\
+		{								\
+			Controller_ ## ctrl ## _Buttons |= CONTROLLER_UP;	\
+			CHECK_BUTTON(player, ctrl, Down, CONTROLLER_DOWN);	\
+		}								\
+		if (input_check_key_pressed(input_keymap[player].keys.Left))	\
+		{					   			\
+			Controller_ ## ctrl ## _Buttons &= ~CONTROLLER_LEFT;	\
+			Controller_ ## ctrl ## _Buttons |= CONTROLLER_RIGHT;	\
+		}								\
+		else								\
+		{								\
+			Controller_ ## ctrl ## _Buttons |= CONTROLLER_LEFT;	\
+			CHECK_BUTTON(player, ctrl, Right, CONTROLLER_RIGHT);	\
+		}								\
+	} while (0)
 
-#define CHECK_ALL_BUTTONS(player, ctrl)					\
-	CHECK_BUTTON(player, ctrl, Start, CONTROLLER_START)		\
-	CHECK_BUTTON(player, ctrl, A, CONTROLLER_A)			\
-	CHECK_BUTTON(player, ctrl, B, CONTROLLER_B)			\
-	CHECK_BUTTON(player, ctrl, C, CONTROLLER_C)			\
-									\
-	if (Controller_ ## ctrl ## _Type & 1)				\
-	{								\
-		CHECK_BUTTON(player, ctrl, Mode, CONTROLLER_MODE)	\
-		CHECK_BUTTON(player, ctrl, X, CONTROLLER_X)		\
-		CHECK_BUTTON(player, ctrl, Y, CONTROLLER_Y)		\
-		CHECK_BUTTON(player, ctrl, Z, CONTROLLER_Z)		\
-	}
+#define CHECK_DIR_NO_RESTRICT(player, ctrl)					\
+	do									\
+	{									\
+		CHECK_BUTTON(player, ctrl, Up, CONTROLLER_UP);			\
+		CHECK_BUTTON(player, ctrl, Down, CONTROLLER_DOWN);		\
+		CHECK_BUTTON(player, ctrl, Left, CONTROLLER_LEFT);		\
+		CHECK_BUTTON(player, ctrl, Right, CONTROLLER_RIGHT);		\
+	} while (0)
 
-#define CHECK_PLAYER_PAD(player, ctrl)					\
-	CHECK_DIR(player, ctrl)						\
-	CHECK_ALL_BUTTONS(player, ctrl)
+#define CHECK_ALL_BUTTONS(player, ctrl)						\
+	do									\
+	{									\
+		CHECK_BUTTON(player, ctrl, Start, CONTROLLER_START);		\
+		CHECK_BUTTON(player, ctrl, A, CONTROLLER_A);			\
+		CHECK_BUTTON(player, ctrl, B, CONTROLLER_B);			\
+		CHECK_BUTTON(player, ctrl, C, CONTROLLER_C);			\
+										\
+		if (Controller_ ## ctrl ## _Type & 1)				\
+		{								\
+			CHECK_BUTTON(player, ctrl, Mode, CONTROLLER_MODE);	\
+			CHECK_BUTTON(player, ctrl, X, CONTROLLER_X);		\
+			CHECK_BUTTON(player, ctrl, Y, CONTROLLER_Y);		\
+			CHECK_BUTTON(player, ctrl, Z, CONTROLLER_Z);		\
+		}								\
+	} while (0)
+
+#define CHECK_PLAYER_PAD(player, ctrl)				\
+	do							\
+	{							\
+		if (Settings.restrict_input)			\
+			CHECK_DIR_RESTRICT(player, ctrl);	\
+		else						\
+			CHECK_DIR_NO_RESTRICT(player, ctrl);	\
+		CHECK_ALL_BUTTONS(player, ctrl);		\
+	} while (0)
 
 /**
  * input_update_controllers(): Update the controller bitfields.

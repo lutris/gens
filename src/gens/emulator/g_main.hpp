@@ -51,6 +51,7 @@ extern "C" {
 // Gens settings
 typedef struct _Gens_Settings_t
 {
+	int restrict_input;	// If 1, restructs U+D/L+R.
 } Gens_Settings_t;
 
 

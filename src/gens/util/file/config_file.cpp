@@ -287,6 +287,9 @@ int Config::save(const string& filename)
 		}
 	}
 	
+	// Restrict input. (Restricts U+D/L+R)
+	cfg.writeBool("Input", "Restrict Input", Settings.restrict_input);
+	
 	// Save the INI file.
 	cfg.save(filename);
 	
@@ -601,6 +604,9 @@ int Config::load(const string& filename, void* gameActive)
 		// Next default keymap.
 		cur_def_keymap++;
 	}
+	
+	// Restrict input. (Restricts U+D/L+R)
+	Settings.restrict_input = cfg.getBool("Input", "Restrict Input", true);
 	
 	// Create the TeamPlayer I/O table.
 	Make_IO_Table();
