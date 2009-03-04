@@ -65,10 +65,7 @@ static uint8_t tbl_tp_io[2][256] =
  */
 unsigned char RD_Controller_1_TP(void)
 {
-	uint32_t eax, ebx;
-	
-	eax = Controller_1_State;
-	ebx = Controller_1_Counter;
+	uint32_t tp_state, tp_val;
 	
 	if (Controller_2_State & 0x0C)
 	{
@@ -76,19 +73,15 @@ unsigned char RD_Controller_1_TP(void)
 		return 0;
 	}
 	
-	eax >>= 3;
-	ebx &= 0x0F0000;
-	eax &= 0x0C;
-	ebx >>= 12;
-	eax += ebx;
-	ebx = eax;
-	if (eax & 0x04)
-		ebx |= 0x02;
+	tp_state = ((Controller_1_State >> 5) & 0x03) +
+		   ((Controller_1_Counter >> 14) & 0x3C);
+	tp_val = tp_state;
+	if (tp_state & 0x01)
+		tp_val |= 0x02;
 	
-	ebx <<= 3;
-	ebx &= 0x70;
+	tp_val = (tp_val << 3) & 0x70;
 	
-	switch (tbl_tp_io[0][eax / 4])
+	switch (tbl_tp_io[0][tp_state])
 	{
 		case TP_H0H:
 			return 0x73;
@@ -100,134 +93,112 @@ unsigned char RD_Controller_1_TP(void)
 		case TP_L0L:
 		case TP_H1H:
 		case TP_L1H:
-			return ebx;
+			return tp_val;
 		
 		case TP_H1L:
 		case TP_L1L:
-			eax = (Controller_1_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_1_Type & 1) | tp_val;
 		
 		case TP_H2H:
 		case TP_L2H:
-			eax = (Controller_1B_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_1B_Type & 1) | tp_val;
 			
 		case TP_H2L:
 		case TP_L2L:
-			eax = (Controller_1C_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_1C_Type & 1) | tp_val;
 		
 		case TP_H3H:
 		case TP_L3H:
-			eax = (Controller_1D_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_1D_Type & 1) | tp_val;
 		
 		case TP_PA_DIR:
 			// Player A: D-pad.
-			eax = ((Controller_1_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_1_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_1_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_1_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PA_ABC:
 			// Player A: ABC/Start.
-			eax = ((Controller_1_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_1_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_1_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_1_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PA_XYZ:
 			// Player A: XYZ/Mode.
-			eax = ((Controller_1_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_1_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_1_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_1_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_1_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_PB_DIR:
 			// Player B: D-pad.
-			eax = ((Controller_1B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PB_ABC:
 			// Player B: ABC/Start.
-			eax = ((Controller_1B_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1B_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PB_XYZ:
 			// Player B: XYZ/Mode.
-			eax = ((Controller_1B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_1B_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_1B_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_PC_DIR:
 			// Player C: D-pad.
-			eax = ((Controller_1C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PC_ABC:
 			// Player C: ABC/Start.
-			eax = ((Controller_1C_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1C_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PC_XYZ:
 			// Player C: XYZ/Mode.
-			eax = ((Controller_1C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_1C_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_1C_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_PD_DIR:
 			// Player D: D-pad.
-			eax = ((Controller_1D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PD_ABC:
 			// Player D: ABC/Start.
-			eax = ((Controller_1D_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1D_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PD_XYZ:
 			// Player D: XYZ/Mode.
-			eax = ((Controller_1D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_1D_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_1D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_1D_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_UNDEF:
 		default:
 			// Unknown state.
-			eax = 0x0F;
-			eax |= ebx;
-			return eax;
+			return (0x0F | tp_val);
 	}
 }
 
@@ -238,24 +209,17 @@ unsigned char RD_Controller_1_TP(void)
  */
 unsigned char RD_Controller_2_TP(void)
 {
-	uint32_t eax, ebx;
+	uint32_t tp_state, tp_val;
 	
-	eax = Controller_2_State;
-	ebx = Controller_2_Counter;
+	tp_state = ((Controller_2_State >> 5) & 0x03) +
+		   ((Controller_2_Counter >> 14) & 0x3C);
+	tp_val = tp_state;
+	if (tp_state & 0x01)
+		tp_val |= 0x02;
 	
-	eax >>= 3;
-	ebx &= 0x0F0000;
-	eax &= 0x0C;
-	ebx >>= 12;
-	eax += ebx;
-	ebx = eax;
-	if (eax & 0x04)
-		ebx |= 0x02;
+	tp_val = (tp_val << 3) & 0x70;
 	
-	ebx <<= 3;
-	ebx &= 0x70;
-	
-	switch (tbl_tp_io[0][eax / 4])
+	switch (tbl_tp_io[0][tp_state])
 	{
 		case TP_H0H:
 			return 0x73;
@@ -267,157 +231,137 @@ unsigned char RD_Controller_2_TP(void)
 		case TP_L0L:
 		case TP_H1H:
 		case TP_L1H:
-			return ebx;
+			return tp_val;
 		
 		case TP_H1L:
 		case TP_L1L:
-			eax = (Controller_2_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_2_Type & 1) | tp_val;
 		
 		case TP_H2H:
 		case TP_L2H:
-			eax = (Controller_2B_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_2B_Type & 1) | tp_val;
 			
 		case TP_H2L:
 		case TP_L2L:
-			eax = (Controller_2C_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_2C_Type & 1) | tp_val;
 		
 		case TP_H3H:
 		case TP_L3H:
-			eax = (Controller_2D_Type & 1);
-			eax |= (ebx & 0xFFFF);
-			return eax;
+			return (Controller_2D_Type & 1) | tp_val;
 		
 		case TP_PA_DIR:
 			// Player A: D-pad.
-			eax = ((Controller_2_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_2_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_2_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_2_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PA_ABC:
 			// Player A: ABC/Start.
-			eax = ((Controller_2_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_2_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_2_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_2_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PA_XYZ:
 			// Player A: XYZ/Mode.
-			eax = ((Controller_2_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_2_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_2_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_2_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_2_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_PB_DIR:
 			// Player B: D-pad.
-			eax = ((Controller_2B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PB_ABC:
 			// Player B: ABC/Start.
-			eax = ((Controller_2B_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2B_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PB_XYZ:
 			// Player B: XYZ/Mode.
-			eax = ((Controller_2B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_2B_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_2B_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_PC_DIR:
 			// Player C: D-pad.
-			eax = ((Controller_2C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PC_ABC:
 			// Player C: ABC/Start.
-			eax = ((Controller_2C_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2C_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PC_XYZ:
 			// Player C: XYZ/Mode.
-			eax = ((Controller_2C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_2C_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_2C_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_PD_DIR:
 			// Player D: D-pad.
-			eax = ((Controller_2D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_UP    ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
 		
 		case TP_PD_ABC:
 			// Player D: ABC/Start.
-			eax = ((Controller_2D_Buttons & CONTROLLER_START ? 8 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_A     ? 4 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_C     ? 2 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_B     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2D_Buttons & CONTROLLER_START ? 8 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_A     ? 4 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_C     ? 2 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
 		
 		case TP_PD_XYZ:
 			// Player D: XYZ/Mode.
-			eax = ((Controller_2D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_X     ? 4 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_Y     ? 2 : 0) |
-			       (Controller_2D_Buttons & CONTROLLER_Z     ? 1 : 0)) + ebx;
-			return eax;
+			return ((Controller_2D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_X     ? 4 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				(Controller_2D_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
 		
 		case TP_UNDEF:
 		default:
 			// Unknown state.
-			eax = 0x0F;
-			eax |= ebx;
-			return eax;
+			return (0x0F | tp_val);
 	}
 }
 
 
+/**
+ * calc_IO_offset(): Calculate the offset in the I/O table for a teamplayer input.
+ * @param tp_num Teamplayer input ID.
+ */
 static inline int calc_IO_offset(int tp_num)
 {
-	//return (!(tp_num & 0x01) | ((tp_num & 0x0E) << 3));
-	int ecx, edx;
-	
-	ecx = tp_num;
-	edx = tp_num;
-	ecx &= 0x1;
-	edx &= 0xE;
-	ecx ^= 0x1;
-	edx <<= 3;
-	
-	return ((edx + (ecx * 4)) / 4) + 0xC;
+	return (0xC + !(tp_num & 1) + ((tp_num & 0xE) << 1));
 }
 
 
+/**
+ * Make_IO_Table_Player(): Make an I/O table for a player.
+ * @param port Port number. (0 or 1)
+ * @param typeA Type of controller in port A.
+ * @param typeB Type of controller in port B.
+ * @param typeC Type of controller in port C.
+ * @param typeD Type of controller in port D.
+ */
 static void Make_IO_Table_Player(int port, int typeA, int typeB, int typeC, int typeD)
 {
-	int tp_num = 1;	// Teamplayer number. (Each direction, ABC, and XYZ group counts as one.)
+	int tp_num = 1;	// Teamplayer input ID. (Each direction, ABC, and XYZ group counts as one.)
 	int offset;	// Offset in the I/O table. (Calculated by calc_IO_offset().)
 	
 	// Player A
