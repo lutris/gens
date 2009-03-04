@@ -571,6 +571,9 @@ static void cc_window_save(void)
 	
 	// Restrict Input.
 	Settings.restrict_input = ((Button_GetCheck(chkRestrictInput) == BST_CHECKED) ? TRUE : FALSE);
+	
+	// Rebuild the Teamplayer I/O table.
+	Make_IO_Table();
 }
 
 

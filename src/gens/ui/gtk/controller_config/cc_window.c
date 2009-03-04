@@ -644,6 +644,9 @@ static void cc_window_save(void)
 	
 	// Restrict Input.
 	Settings.restrict_input = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(chkRestrictInput));
+	
+	// Rebuild the Teamplayer I/O table.
+	Make_IO_Table();
 }
 
 
