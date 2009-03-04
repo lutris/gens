@@ -250,7 +250,12 @@ static void cc_window_create_controller_port_frame(GtkWidget *container, int por
 	gtk_box_pack_start(GTK_BOX(vboxController), alignTeamplayer, FALSE, FALSE, 0);
 	
 	// Checkbox for enabling teamplayer.
-	chkTeamplayer[port-1] = gtk_check_button_new_with_label("Use Teamplayer");
+	const char *tp_label;
+	if (port == 1)
+		tp_label = "Use Teamplayer / 4-Way Play";
+	else
+		tp_label = "Use Teamplayer";
+	chkTeamplayer[port-1] = gtk_check_button_new_with_label(tp_label);
 	gtk_widget_show(chkTeamplayer[port-1]);
 	gtk_container_add(GTK_CONTAINER(alignTeamplayer), chkTeamplayer[port-1]);
 	

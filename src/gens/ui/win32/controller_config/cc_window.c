@@ -280,7 +280,12 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 	SetWindowFont(fraPort, fntMain, TRUE);
 	
 	// Checkbox for enabling teamplayer.
-	chkTeamplayer[port-1] = CreateWindow(WC_BUTTON, "Use Teamplayer",
+	const char *tp_label;
+	if (port == 1)
+		tp_label = "Use Teamplayer / 4-Way Play";
+	else
+		tp_label = "Use Teamplayer";
+	chkTeamplayer[port-1] = CreateWindow(WC_BUTTON, tp_label,
 					     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					     8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
 					     container, (HMENU)(IDC_CC_CHKTEAMPLAYER + (port-1)),
