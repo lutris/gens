@@ -30,7 +30,11 @@ Release 7 introduces the following new features:
 - doc/MDP.txt contains the MDP Interface Specifiction Version 1.0.0.
   This document is licensed under the GNU Free Documentation License v1.3.
 
-- The Game Genie functionality has been moved to an MDP plugin.
+- The Game Genie functionality has been moved to an MDP plugin. It now supports
+  8-bit, 16-bit, and 32-bit patch codes, and uses a new patch code file format.
+  Old patch code files are supported for loading; however, they will be written
+  in the new format when saved. Later versions will add support for patching
+  CPU address spaces other than the main MC68000.
 
 - New MDP Plugin: VDP Layer Options. This lets you adjust the visible layers
   on screen, so e.g. you can hide sprites, swap scroll priorities, and lock
@@ -81,6 +85,12 @@ Release 7 fixes the following bugs:
 - [GTK+] Copied g_uri_unescape_string() (and dependent functions) from
   GLib 2.18.4 into Gens/GS. This function was introduced in GLib 2.16,
   but Gens/GS should be compatible with versions of GLib 2.4 and later.
+
+- Multitap support has been ported from x86 assembler to C. In the process,
+  both Sega Teamplayer and 4-Way Play support have been improved. Notably,
+  Teamplayer now works on "NBA Jam" and "NBA Jam TE", and 4-Way Play now
+  works (sometimes) on "Triple Play '96". A complete list of tested multitap
+  games can be found in doc/teamplayer.txt .
 
 Release 7 has the following low-level code changes:
 
