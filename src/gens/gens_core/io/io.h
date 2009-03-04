@@ -72,6 +72,12 @@ extern unsigned int Controller_2D_Type;
 
 void Init_Controllers(void);
 
+/* NOTE: Should only be used by io.c and io_teamplayer.c */
+unsigned char RD_Controller(unsigned int state,
+			    unsigned int type,
+			    unsigned int counter,
+			    unsigned int buttons);
+
 unsigned char RD_Controller_1(void);
 unsigned char RD_Controller_2(void);
 unsigned char WR_Controller_1(unsigned char data);

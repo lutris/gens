@@ -59,6 +59,9 @@ static uint8_t tbl_tp_io[2][256] =
 };
 
 
+static unsigned char RD_Controller_4WP(void);
+
+
 /**
  * RD_Controller_1_TP(): Read a Teamplayer device plugged into Port 1.
  * @return Controller port data.
@@ -67,8 +70,8 @@ unsigned char RD_Controller_1_TP(void)
 {
 	if (Controller_2_State & 0x0C)
 	{
-		// TODO: I believe this is for 4-Way Play.
-		return 0;
+		// EA's "4-Way Play" adapter is active.
+		return RD_Controller_4WP();
 	}
 	
 	uint32_t tp_state = ((Controller_1_State >> 5) & 0x03) +
@@ -233,8 +236,8 @@ unsigned char RD_Controller_2_TP(void)
 {
 	if (Controller_2_State & 0x0C)
 	{
-		// TODO: I believe this is for 4-Way Play.
-		return 0;
+		// EA's "4-Way Play" adapter is active.
+		return 0x7F;
 	}
 	
 	uint32_t tp_state = ((Controller_2_State >> 5) & 0x03) +
@@ -388,6 +391,49 @@ unsigned char RD_Controller_2_TP(void)
 		retval |= 0x10;
 	
 	return retval;
+}
+
+
+/**
+ * RD_Controller_4WP(): Read a byte from an EA "4-Way Play" device.
+ * @return Controller port data.
+ */
+static unsigned char RD_Controller_4WP(void)
+{
+	if (Controller_2_State & 0x40)
+		return 0x70;
+	
+	// Get the player number.
+	uint8_t player = (Controller_2_State & 0x30) >> 4;
+	
+	// Get the player information based on the number.
+	uint32_t controller_type;
+	uint32_t controller_buttons;
+	switch (player & 0x03)
+	{
+		case 0:
+			controller_type = Controller_1_Type;
+			controller_buttons = Controller_1_Buttons;
+			break;
+		case 1:
+			controller_type = Controller_1B_Type;
+			controller_buttons = Controller_1B_Buttons;
+			break;
+		case 2:
+			controller_type = Controller_1C_Type;
+			controller_buttons = Controller_1C_Buttons;
+			break;
+		case 3:
+			controller_type = Controller_1D_Type;
+			controller_buttons = Controller_1D_Buttons;
+			break;
+	}
+	
+	// Read the controller normally.
+	return RD_Controller(Controller_1_State,
+			     controller_type,
+			     Controller_1_Counter,
+			     controller_buttons);
 }
 
 

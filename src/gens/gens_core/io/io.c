@@ -122,12 +122,6 @@ enum SelectLine
 };
 
 
-static unsigned char RD_Controller(unsigned int state,
-				   unsigned int type,
-				   unsigned int counter,
-				   unsigned int buttons[4]);
-
-
 #define CREATE_CONTROLLER_OLD(player)											\
 {															\
 	Controller_ ## player ## _Up		= (Controller_ ## player ## _Buttons & CONTROLLER_UP) ? 1 : 0;		\
@@ -163,25 +157,22 @@ unsigned char RD_Controller_1(void)
 		return RD_Controller_1_TP();
 	}
 	
-	// Create the bitfields.
-	// TODO: This will be unnecessary when controllers are converted to bitfields.
-	unsigned int buttons[4] =
-	{
-		Controller_1_Buttons,
-		Controller_1B_Buttons,
-		Controller_1C_Buttons,
-		Controller_1D_Buttons,
-	};
-	
 	// Read the controller data.
-	return RD_Controller(Controller_1_State, Controller_1_Type,
-			     Controller_1_Counter, buttons);
+	return RD_Controller(Controller_1_State,
+			     Controller_1_Type,
+			     Controller_1_Counter,
+			     Controller_1_Buttons);
 }
 
 
 unsigned char RD_Controller_2(void)
 {
 	// Read controller 2.
+	if (Controller_2_State & 0x0C)
+	{
+		// EA's "4-Way Play" adapter is active.
+		return 0x7F;
+	}
 	
 	if (Controller_2_Type & 0x10)
 	{
@@ -197,26 +188,18 @@ unsigned char RD_Controller_2(void)
 		return RD_Controller_2_TP();
 	}
 	
-	// Create the bitfields.
-	// TODO: This will be unnecessary when controllers are converted to bitfields.
-	unsigned int buttons[4] =
-	{
-		Controller_2_Buttons,
-		Controller_2B_Buttons,
-		Controller_2C_Buttons,
-		Controller_2D_Buttons,
-	};
-	
 	// Read the controller data.
-	return RD_Controller(Controller_2_State, Controller_2_Type,
-			     Controller_2_Counter, buttons);
+	return RD_Controller(Controller_2_State,
+			     Controller_2_Type,
+			     Controller_2_Counter,
+			     Controller_2_Buttons);
 }
 
 
-static unsigned char RD_Controller(unsigned int state,
-				   unsigned int type,
-				   unsigned int counter,
-				   unsigned int buttons[4])
+unsigned char RD_Controller(unsigned int state,
+			    unsigned int type,
+			    unsigned int counter,
+			    unsigned int buttons)
 {
 	// Read the specified controller.
 	
@@ -234,17 +217,17 @@ static unsigned char RD_Controller(unsigned int state,
 		case Second_High:
 		case Third_High:
 			// Format: 01CBRLDU
-			if (buttons[0] & CONTROLLER_UP)
+			if (buttons & CONTROLLER_UP)
 				out |= 0x01;
-			if (buttons[0] & CONTROLLER_DOWN)
+			if (buttons & CONTROLLER_DOWN)
 				out |= 0x02;
-			if (buttons[0] & CONTROLLER_LEFT)
+			if (buttons & CONTROLLER_LEFT)
 				out |= 0x04;
-			if (buttons[0] & CONTROLLER_RIGHT)
+			if (buttons & CONTROLLER_RIGHT)
 				out |= 0x08;
-			if (buttons[0] & CONTROLLER_B)
+			if (buttons & CONTROLLER_B)
 				out |= 0x10;
-			if (buttons[0] & CONTROLLER_C)
+			if (buttons & CONTROLLER_C)
 				out |= 0x20;
 			
 			return (out | 0x40);
@@ -252,48 +235,48 @@ static unsigned char RD_Controller(unsigned int state,
 		case First_Low:
 		case Second_Low:
 			// Format: 00SA00DU
-			if (buttons[0] & CONTROLLER_UP)
+			if (buttons & CONTROLLER_UP)
 				out |= 0x01;
-			if (buttons[0] & CONTROLLER_DOWN)
+			if (buttons & CONTROLLER_DOWN)
 				out |= 0x02;
-			if (buttons[0] & CONTROLLER_A)
+			if (buttons & CONTROLLER_A)
 				out |= 0x10;
-			if (buttons[0] & CONTROLLER_START)
+			if (buttons & CONTROLLER_START)
 				out |= 0x20;
 			
 			return out;
 		
 		case Third_Low:
 			// Format: 00SA0000
-			if (buttons[0] & CONTROLLER_A)
+			if (buttons & CONTROLLER_A)
 				out |= 0x10;
-			if (buttons[0] & CONTROLLER_START)
+			if (buttons & CONTROLLER_START)
 				out |= 0x20;
 			
 			return out;
 		
 		case Fourth_High:
 			// Format: 01CBMXYZ
-			if (buttons[0] & CONTROLLER_Z)
+			if (buttons & CONTROLLER_Z)
 				out |= 0x01;
-			if (buttons[0] & CONTROLLER_Y)
+			if (buttons & CONTROLLER_Y)
 				out |= 0x02;
-			if (buttons[0] & CONTROLLER_X)
+			if (buttons & CONTROLLER_X)
 				out |= 0x04;
-			if (buttons[0] & CONTROLLER_MODE)
+			if (buttons & CONTROLLER_MODE)
 				out |= 0x08;
-			if (buttons[0] & CONTROLLER_B)
+			if (buttons & CONTROLLER_B)
 				out |= 0x10;
-			if (buttons[0] & CONTROLLER_C)
+			if (buttons & CONTROLLER_C)
 				out |= 0x20;
 			
 			return (out | 0x40);
 		
 		case Fourth_Low:
 			// Format: 00SA1111
-			if (buttons[0] & CONTROLLER_A)
+			if (buttons & CONTROLLER_A)
 				out |= 0x10;
-			if (buttons[0] & CONTROLLER_START)
+			if (buttons & CONTROLLER_START)
 				out |= 0x20;
 			
 			return (out | 0x0F);
