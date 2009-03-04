@@ -25,35 +25,63 @@
 #include "io.h"
 #include "io_teamplayer.h"
 
-unsigned int Controller_1_State		= 0x40;
-unsigned int Controller_1_COM		= 0;
-unsigned int Controller_1_Counter	= 0;
-unsigned int Controller_1_Delay		= 0;
+unsigned int Controller_1_State;
+unsigned int Controller_1_COM;
+unsigned int Controller_1_Counter;
+unsigned int Controller_1_Delay;
 
 unsigned int Controller_1_Type		= 0;
 unsigned int Controller_1B_Type		= 0;
 unsigned int Controller_1C_Type		= 0;
 unsigned int Controller_1D_Type		= 0;
 
-unsigned int Controller_1_Buttons	= 0xFFFFFFFF;
-unsigned int Controller_1B_Buttons	= 0xFFFFFFFF;
-unsigned int Controller_1C_Buttons	= 0xFFFFFFFF;
-unsigned int Controller_1D_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_1_Buttons;
+unsigned int Controller_1B_Buttons;
+unsigned int Controller_1C_Buttons;
+unsigned int Controller_1D_Buttons;
 
-unsigned int Controller_2_State		= 0x40;
-unsigned int Controller_2_COM		= 0;
-unsigned int Controller_2_Counter	= 0;
-unsigned int Controller_2_Delay		= 0;
+unsigned int Controller_2_State;
+unsigned int Controller_2_COM;
+unsigned int Controller_2_Counter;
+unsigned int Controller_2_Delay;
 
 unsigned int Controller_2_Type		= 0;
 unsigned int Controller_2B_Type		= 0;
 unsigned int Controller_2C_Type		= 0;
 unsigned int Controller_2D_Type		= 0;
 
-unsigned int Controller_2_Buttons	= 0xFFFFFFFF;
-unsigned int Controller_2B_Buttons	= 0xFFFFFFFF;
-unsigned int Controller_2C_Buttons	= 0xFFFFFFFF;
-unsigned int Controller_2D_Buttons	= 0xFFFFFFFF;
+unsigned int Controller_2_Buttons;
+unsigned int Controller_2B_Buttons;
+unsigned int Controller_2C_Buttons;
+unsigned int Controller_2D_Buttons;
+
+
+/**
+ * Init_Controllers(): Initialize the controller state.
+ */
+void Init_Controllers(void)
+{
+	Controller_1_State	= 0x60;
+	Controller_1_COM	= 0;
+	Controller_1_Counter	= 0;
+	Controller_1_Delay	= 0;
+	
+	Controller_1_Buttons	= ~0;
+	Controller_1B_Buttons	= ~0;
+	Controller_1C_Buttons	= ~0;
+	Controller_1D_Buttons	= ~0;
+	
+	Controller_2_State	= 0x60;
+	Controller_2_COM	= 0;
+	Controller_2_Counter	= 0;
+	Controller_2_Delay	= 0;
+	
+	Controller_2_Buttons	= ~0;
+	Controller_2B_Buttons	= ~0;
+	Controller_2C_Buttons	= ~0;
+	Controller_2D_Buttons	= ~0;
+}
+
 
 // These are only for io_old.asm compatibility.
 #define CREATE_CONTROLLER_OLD_VARIABLES(player)			\

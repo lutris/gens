@@ -70,6 +70,8 @@ extern unsigned int Controller_2B_Type;
 extern unsigned int Controller_2C_Type;
 extern unsigned int Controller_2D_Type;
 
+void Init_Controllers(void);
+
 unsigned char RD_Controller_1(void);
 unsigned char RD_Controller_2(void);
 unsigned char WR_Controller_1(unsigned char data);

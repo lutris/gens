@@ -194,6 +194,9 @@ int Init_32X(ROM_t* MD_ROM)
 	_32X_Set_FB();
 	PWM_Init();
 	
+	// Initialize the controller state.
+	Init_Controllers();
+	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
 	Set_Clock_Freq(2);
 	
@@ -263,15 +266,18 @@ void Reset_32X(void)
 	}
 	
 	// Reset all CPUs and other components.
-	MSH2_Reset ();
-	SSH2_Reset ();
-	M68K_Reset (1);
-	Z80_Reset ();
-	Reset_VDP ();
-	_32X_VDP_Reset ();
-	_32X_Set_FB ();
-	YM2612_Reset ();
-	PWM_Init ();
+	MSH2_Reset();
+	SSH2_Reset();
+	M68K_Reset(1);
+	Z80_Reset();
+	Reset_VDP();
+	_32X_VDP_Reset();
+	_32X_Set_FB();
+	YM2612_Reset();
+	PWM_Init();
+	
+	// Initialize the controller state.
+	Init_Controllers();
 	
 	if (CPU_Mode)
 	{

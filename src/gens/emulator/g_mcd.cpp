@@ -179,6 +179,9 @@ int Init_SegaCD(const char* iso_name)
 	
 	PCM_Init(audio_get_sound_rate());
 	
+	// Initialize the controller state.
+	Init_Controllers();
+	
 	// Initialize sound.
 	if (audio_get_enabled())
 	{
@@ -297,6 +300,9 @@ void Reset_SegaCD(void)
 	Init_RS_GFX();
 	PCM_Reset();
 	YM2612_Reset();
+	
+	// Initialize the controller state.
+	Init_Controllers();
 	
 	if (CPU_Mode)
 		VDP_Status |= 1;

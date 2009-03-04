@@ -302,9 +302,12 @@ int Init_Genesis(ROM_t* MD_ROM)
 	be16_to_cpu_array(Rom_Data, Rom_Size);
 	
 	// Reset all CPUs and other components.
-	M68K_Reset (0);
-	Z80_Reset ();
-	Reset_VDP ();
+	M68K_Reset(0);
+	Z80_Reset();
+	Reset_VDP();
+	
+	// Initialize the controller state.
+	Init_Controllers();
 	
 	// Set clock rates depending on the CPU mode (NTSC / PAL).
 	Set_Clock_Freq(0);
@@ -366,10 +369,13 @@ void Reset_Genesis(void)
 	}
 	
 	// Reset all CPUs and other components.
-	M68K_Reset (0);
-	Z80_Reset ();
-	Reset_VDP ();
-	YM2612_Reset ();
+	M68K_Reset(0);
+	Z80_Reset();
+	Reset_VDP();
+	YM2612_Reset();
+	
+	// Initialize the controller state.
+	Init_Controllers();
 	
 	if (CPU_Mode)
 		VDP_Status |= 1;

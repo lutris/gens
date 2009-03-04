@@ -65,141 +65,163 @@ static uint8_t tbl_tp_io[2][256] =
  */
 unsigned char RD_Controller_1_TP(void)
 {
-	uint32_t tp_state, tp_val;
-	
 	if (Controller_2_State & 0x0C)
 	{
 		// TODO: I believe this is for 4-Way Play.
 		return 0;
 	}
 	
-	tp_state = ((Controller_1_State >> 5) & 0x03) +
-		   ((Controller_1_Counter >> 14) & 0x3C);
-	tp_val = tp_state;
-	if (tp_state & 0x01)
-		tp_val |= 0x02;
+	uint32_t tp_state = ((Controller_1_State >> 5) & 0x03) +
+			    ((Controller_1_Counter >> 14) & 0x3C);
 	
-	tp_val = (tp_val << 3) & 0x70;
+	// retval code borrowed from Genesis Plus.
+	uint8_t retval = 0x7F;
 	
 	switch (tbl_tp_io[0][tp_state])
 	{
 		case TP_H0H:
-			return 0x73;
+			retval = 0x73;
+			break;
 		
 		case TP_L0H:
-			return 0x3F;
+			retval = 0x3F;
+			break;
 		
 		case TP_H0L:
 		case TP_L0L:
 		case TP_H1H:
 		case TP_L1H:
-			return tp_val;
+			retval = 0;
+			break;
 		
 		case TP_H1L:
 		case TP_L1L:
-			return (Controller_1_Type & 1) | tp_val;
+			retval = (Controller_1_Type & 1);
+			break;
 		
 		case TP_H2H:
 		case TP_L2H:
-			return (Controller_1B_Type & 1) | tp_val;
+			retval = (Controller_1B_Type & 1);
+			break;
 			
 		case TP_H2L:
 		case TP_L2L:
-			return (Controller_1C_Type & 1) | tp_val;
+			retval = (Controller_1C_Type & 1);
+			break;
 		
 		case TP_H3H:
 		case TP_L3H:
-			return (Controller_1D_Type & 1) | tp_val;
+			retval = (Controller_1D_Type & 1);
+			break;
 		
 		case TP_PA_DIR:
 			// Player A: D-pad.
-			return ((Controller_1_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_1_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_1_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_1_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_1_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PA_ABC:
 			// Player A: ABC/Start.
-			return ((Controller_1_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_1_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_1_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_1_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PA_XYZ:
 			// Player A: XYZ/Mode.
-			return ((Controller_1_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_1_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_1_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_1_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_1_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
 		
 		case TP_PB_DIR:
 			// Player B: D-pad.
-			return ((Controller_1B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_1B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PB_ABC:
 			// Player B: ABC/Start.
-			return ((Controller_1B_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1B_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PB_XYZ:
 			// Player B: XYZ/Mode.
-			return ((Controller_1B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_1B_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_1B_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
 		
 		case TP_PC_DIR:
 			// Player C: D-pad.
-			return ((Controller_1C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_1C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PC_ABC:
 			// Player C: ABC/Start.
-			return ((Controller_1C_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1C_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PC_XYZ:
 			// Player C: XYZ/Mode.
-			return ((Controller_1C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_1C_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_1C_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
 		
 		case TP_PD_DIR:
 			// Player D: D-pad.
-			return ((Controller_1D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_1D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PD_ABC:
 			// Player D: ABC/Start.
-			return ((Controller_1D_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_1D_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PD_XYZ:
 			// Player D: XYZ/Mode.
-			return ((Controller_1D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_1D_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
-		
+			retval = ((Controller_1D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_1D_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
+			
 		case TP_UNDEF:
 		default:
 			// Unknown state.
-			return (0x0F | tp_val);
+			retval = 0x0F;
+			break;
 	}
+	
+	retval &= ~0x10;
+	if (Controller_1_State & 0x20)
+		retval |= 0x10;
+	
+	return retval;
 }
 
 
@@ -209,135 +231,163 @@ unsigned char RD_Controller_1_TP(void)
  */
 unsigned char RD_Controller_2_TP(void)
 {
-	uint32_t tp_state, tp_val;
+	if (Controller_2_State & 0x0C)
+	{
+		// TODO: I believe this is for 4-Way Play.
+		return 0;
+	}
 	
-	tp_state = ((Controller_2_State >> 5) & 0x03) +
-		   ((Controller_2_Counter >> 14) & 0x3C);
-	tp_val = tp_state;
-	if (tp_state & 0x01)
-		tp_val |= 0x02;
+	uint32_t tp_state = ((Controller_2_State >> 5) & 0x03) +
+			    ((Controller_2_Counter >> 14) & 0x3C);
 	
-	tp_val = (tp_val << 3) & 0x70;
+	// retval code borrowed from Genesis Plus.
+	uint8_t retval = 0x7F;
 	
 	switch (tbl_tp_io[0][tp_state])
 	{
 		case TP_H0H:
-			return 0x73;
+			retval = 0x73;
+			break;
 		
 		case TP_L0H:
-			return 0x3F;
+			retval = 0x3F;
+			break;
 		
 		case TP_H0L:
 		case TP_L0L:
 		case TP_H1H:
 		case TP_L1H:
-			return tp_val;
+			retval = 0;
+			break;
 		
 		case TP_H1L:
 		case TP_L1L:
-			return (Controller_2_Type & 1) | tp_val;
+			retval = (Controller_2_Type & 1);
+			break;
 		
 		case TP_H2H:
 		case TP_L2H:
-			return (Controller_2B_Type & 1) | tp_val;
+			retval = (Controller_2B_Type & 1);
+			break;
 			
 		case TP_H2L:
 		case TP_L2L:
-			return (Controller_2C_Type & 1) | tp_val;
+			retval = (Controller_2C_Type & 1);
+			break;
 		
 		case TP_H3H:
 		case TP_L3H:
-			return (Controller_2D_Type & 1) | tp_val;
+			retval = (Controller_2D_Type & 1);
+			break;
 		
 		case TP_PA_DIR:
 			// Player A: D-pad.
-			return ((Controller_2_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_2_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_2_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_2_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_2_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PA_ABC:
 			// Player A: ABC/Start.
-			return ((Controller_2_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_2_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_2_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_2_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PA_XYZ:
 			// Player A: XYZ/Mode.
-			return ((Controller_2_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_2_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_2_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_2_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_2_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
 		
 		case TP_PB_DIR:
 			// Player B: D-pad.
-			return ((Controller_2B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_2B_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PB_ABC:
 			// Player B: ABC/Start.
-			return ((Controller_2B_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2B_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PB_XYZ:
 			// Player B: XYZ/Mode.
-			return ((Controller_2B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_2B_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2B_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_2B_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
 		
 		case TP_PC_DIR:
 			// Player C: D-pad.
-			return ((Controller_2C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_2C_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PC_ABC:
 			// Player C: ABC/Start.
-			return ((Controller_2C_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2C_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PC_XYZ:
 			// Player C: XYZ/Mode.
-			return ((Controller_2C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_2C_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2C_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_2C_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
 		
 		case TP_PD_DIR:
 			// Player D: D-pad.
-			return ((Controller_2D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_UP    ? 1 : 0)) + tp_val;
+			retval = ((Controller_2D_Buttons & CONTROLLER_RIGHT ? 8 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_LEFT  ? 4 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_DOWN  ? 2 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_UP    ? 1 : 0));
+			break;
 		
 		case TP_PD_ABC:
 			// Player D: ABC/Start.
-			return ((Controller_2D_Buttons & CONTROLLER_START ? 8 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_A     ? 4 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_C     ? 2 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_B     ? 1 : 0)) + tp_val;
+			retval = ((Controller_2D_Buttons & CONTROLLER_START ? 8 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_A     ? 4 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_C     ? 2 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_B     ? 1 : 0));
+			break;
 		
 		case TP_PD_XYZ:
 			// Player D: XYZ/Mode.
-			return ((Controller_2D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_X     ? 4 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_Y     ? 2 : 0) |
-				(Controller_2D_Buttons & CONTROLLER_Z     ? 1 : 0)) + tp_val;
-		
+			retval = ((Controller_2D_Buttons & CONTROLLER_MODE  ? 8 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_X     ? 4 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_Y     ? 2 : 0) |
+				  (Controller_2D_Buttons & CONTROLLER_Z     ? 1 : 0));
+			break;
+			
 		case TP_UNDEF:
 		default:
 			// Unknown state.
-			return (0x0F | tp_val);
+			retval = 0x0F;
+			break;
 	}
+	
+	retval &= ~0x10;
+	if (Controller_2_State & 0x20)
+		retval |= 0x10;
+	
+	return retval;
 }
 
 
