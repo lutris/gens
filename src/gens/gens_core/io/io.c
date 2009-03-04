@@ -319,8 +319,7 @@ unsigned char WR_Controller_2(unsigned char data)
 	if (!(Controller_2_State & 0x40) && (data & 0x40))
 		Controller_2_Counter++;
 	
-	// Team Player on Port 1
-	// TODO: Why is this here?
+	// If an EA "4-Way Play" adapter is connected, reset the Controller 1 counter.
 	if ((Controller_1_Type & 0x10) && (data & 0x0C))
 		Controller_1_Counter = 0;
 	
