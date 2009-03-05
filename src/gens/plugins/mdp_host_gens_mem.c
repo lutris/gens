@@ -45,7 +45,7 @@
 #endif
 
 /* Endian-neutral memory macros. */
-#define MEM_RW_16(ptr, address)		(((uint16_t*)(ptr))[(address >> 1)])
+#define MEM_RW_16(ptr, address)		(((uint16_t*)(ptr))[(address) >> 1])
 
 /* TODO: Optimize 32-bit reads/writes for their respective architectures. */
 
