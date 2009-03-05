@@ -548,7 +548,7 @@ static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEvent
  */
 static int gg_window_add_code_from_textboxes(void)
 {
-	if (gtk_entry_get_text_length(GTK_ENTRY(txtCode)) == 0)
+	if (!code_txt || code_txt[0] == 0x00)
 		return 1;
 	
 	// Decode the code.
