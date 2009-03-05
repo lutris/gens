@@ -38,57 +38,26 @@ extern "C" {
 #define MDP_HOST_INTERFACE_VERSION MDP_VERSION(0, 2, 0)
 
 /* MDP_PTR: Pointer IDs. */
-typedef enum
+typedef enum _MDP_PTR
 {
 	MDP_PTR_NULL		= 0,
 	MDP_PTR_LUT16to32	= 1,
-	MDP_PTR_ROM_MD		= 2,	/* BE */
-	MDP_PTR_RAM_MD		= 3,	/* BE */
-	MDP_PTR_RAM_VRAM	= 4,	/* BE */
-#if 0 /* TODO: Figure out how to manage these. */
-	MDP_PTR_RAM_Z80		= 5,
-	MDP_PTR_RAM_MCD_PRG	= 6,	/* unknown */
-	MDP_PTR_RAM_MCD_WORD1M	= 7,	/* unknown */
-	MDP_PTR_RAM_MCD_WORD2M	= 8,	/* unknown */
-	MDP_PTR_ROM_32X		= 9,	/* LE */
-	MDP_PTR_RAM_32X		= 10,	/* LE */
-#endif
 } MDP_PTR;
 
-/* Convenience macros to access 8-bit, 16-bit, and 32-bit memory. */
-
-#define MDP_MEM_16(ptr, address)	\
-	(((unsigned short*)ptr)[(address) >> 1])
-
-#define MDP_MEM_BE_32_READ(ptr, address)	\
-	(((((unsigned short*)(ptr))[(address) >> 1]) << 16) | (((unsigned short*)ptr)[((address) >> 1) + 1]))
-#define MDP_MEM_BE_32_WRITE(ptr, address, data)	\
-	((unsigned short*)(ptr))[(address) >> 1] = (((data) >> 16) & 0xFFFF);	\
-	((unsigned short*)(ptr))[((address) >> 1) + 1] = ((data) & 0xFFFF);
-
-#define MDP_MEM_LE_32_READ(ptr, address)	\
-	(((((unsigned short*)(ptr))[((address) >> 1) + 1]) << 16) | (((unsigned short*)ptr)[(address) >> 1]))
-#define MDP_MEM_LE_32_WRITE(ptr, address, data)	\
-	((unsigned short*)(ptr))[((address) >> 1) + 1] = (((data) >> 16) & 0xFFFF);	\
-	((unsigned short*)(ptr))[(address) >> 1] = ((data) & 0xFFFF);
-
-#if MDP_BYTEORDER == MDP_LIL_ENDIAN
-
-/* Little-endian host system. */
-#define MDP_MEM_BE_8(ptr, address)	\
-	(((unsigned char*)(ptr))[(address) ^ 1])
-#define MDP_MEM_LE_8(ptr, address)	\
-	(((unsigned char*)(ptr))[(address)])
-
-#else
-
-/* Big-endian host system. */
-#define MDP_MEM_BE_8(ptr, address)	\
-	(((unsigned char*)(ptr))[(address)])
-#define MDP_MEM_LE_8(ptr, address)	\
-	(((unsigned char*)(ptr))[(address) ^ 1])
-
-#endif
+/* MDP_MEM: Memory IDs. */
+typedef enum _MDP_MEM
+{
+	MDP_MEM_NULL		= 0,
+	MDP_MEM_MD_ROM		= 1,
+	MDP_MEM_MD_RAM		= 2,
+	MDP_MEM_MD_VRAM		= 3,
+	#if 0 /* TODO: Figure out how to manage these. */
+	MDP_MEM_Z80_RAM		= 4,
+	MDP_MEM_MCD_PRG_RAM	= 5,
+	MDP_MEM_MCD_WORD_RAM	= 6,
+	MDP_MEM_32X_RAM		= 7,
+	#endif
+} MDP_MEM;
 
 /* MDP_VAL: Value IDs. */
 typedef enum _MDP_VAL
@@ -142,6 +111,51 @@ typedef int (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
 typedef struct _mdp_host_t
 {
 	const uint32_t interfaceVersion;
+	
+	/**
+	 * mem_read_*(): Memory read functions.
+	 * @param memID Memory ID.
+	 * @param address Address.
+	 * @return Data.
+	 */
+	uint8_t  (MDP_FNCALL *mem_read_8) (int memID, uint32_t address);
+	uint16_t (MDP_FNCALL *mem_read_16)(int memID, uint32_t address);
+	uint32_t (MDP_FNCALL *mem_read_32)(int memID, uint32_t address);
+	
+	/**
+	 * mem_write_*(): Memory write functions.
+	 * @param memID Memory ID.
+	 * @param address Address.
+	 * @param data Data.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_write_8) (int memID, uint32_t address, uint8_t  data);
+	int (MDP_FNCALL *mem_write_16)(int memID, uint32_t address, uint16_t data);
+	int (MDP_FNCALL *mem_write_32)(int memID, uint32_t address, uint32_t data);
+	
+	/**
+	 * mem_read_block_*: Memory block read functions.
+	 * @param memID Memory ID.
+	 * @param address Starting address.
+	 * @param data Data buffer to store the data in.
+	 * @param length Length of the data.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_read_block_8) (int memID, uint32_t address, uint8_t  *data, uint32_t length);
+	int (MDP_FNCALL *mem_read_block_16)(int memID, uint32_t address, uint16_t *data, uint32_t length);
+	int (MDP_FNCALL *mem_read_block_32)(int memID, uint32_t address, uint32_t *data, uint32_t length);
+	
+	/**
+	 * mem_write_block_*: Memory block write functions.
+	 * @param memID Memory ID.
+	 * @param address Starting address.
+	 * @param data Data buffer containing the data to write.
+	 * @param length Length of the data.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_write_block_8) (int memID, uint32_t address, uint8_t  *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_16)(int memID, uint32_t address, uint16_t *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_32)(int memID, uint32_t address, uint32_t *data, uint32_t length);
 	
 	/**
 	 * ptr_ref(): Get a reference for a pointer.
