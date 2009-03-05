@@ -79,6 +79,9 @@ using std::deque;
 // Internal functions.
 static void Sync_Gens_Window_GraphicsMenu_Backend(GtkWidget *container);
 static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container);
+#ifdef GENS_DEBUGGER
+static void Sync_Gens_Window_CPUMenu_Debug(GtkWidget *container);
+#endif /* GENS_DEBUGGER */
 
 
 /**
@@ -300,7 +303,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 
 /**
  * Sync_Gens_Window_GraphicsMenu_Backend(): Synchronize the Graphics, Backend submenu.
- * @param container Container for this menu.
+ * @param container Container for this submenu.
  */
 static void Sync_Gens_Window_GraphicsMenu_Backend(GtkWidget *container)
 {
@@ -345,7 +348,7 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(GtkWidget *container)
 
 /**
  * Sync_Gens_Window_GraphicsMenu_Render(): Synchronize the Graphics, Render submenu.
- * @param container Container for this menu.
+ * @param container Container for this submenu.
  */
 static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 {
@@ -418,52 +421,8 @@ void Sync_Gens_Window_CPUMenu(void)
 	gens_menu_do_callbacks = 0;
 	
 #ifdef GENS_DEBUGGER
-	gtk_widget_set_sensitive(gens_menu_find_item(IDM_CPU_DEBUG), (Game != NULL));
-	
-	// Hide/Show debug entries depending on the active console.
-	if (Game != NULL)
-	{
-		GtkWidget *mnuDebugItem;
-		bool checkDebug;
-		for (unsigned short i = 1; i <= 9; i++)
-		{
-			// TODO: Use debug constants instead?
-			if (i >= 1 && i <= 3)
-				checkDebug = 1;
-			else if (i >= 4 && i <= 6)
-				checkDebug = SegaCD_Started;
-			else if (i >= 7 && i <= 9)
-				checkDebug = _32X_Started;
-			else
-			{
-				// Shouldn't happen...
-				fprintf(stderr, "%s: ERROR: i == %d\n", __func__, i);
-				checkDebug = 0;
-			}
-			
-			mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG + i);
-			if (checkDebug)
-				gtk_widget_show(mnuDebugItem);
-			else
-				gtk_widget_hide(mnuDebugItem);
-			
-			// Make sure the check state for this debug item is correct.
-			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDebugItem), (Debug == i));
-		}
-		
-		// Separators
-		mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG_SEGACD_SEPARATOR);
-		if (SegaCD_Started)
-			gtk_widget_show(mnuDebugItem);
-		else
-			gtk_widget_hide(mnuDebugItem);
-		
-		mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG_32X_SEPARATOR);
-		if (_32X_Started)
-			gtk_widget_show(mnuDebugItem);
-		else
-			gtk_widget_hide(mnuDebugItem);
-	}
+	// Debug
+	Sync_Gens_Window_CPUMenu_Debug(gens_menu_find_item(IDM_CPU_DEBUG));
 #endif /* GENS_DEBUGGER */
 	
 	// Country code
@@ -510,6 +469,63 @@ void Sync_Gens_Window_CPUMenu(void)
 	// Enable callbacks.
 	gens_menu_do_callbacks = 1;
 }
+
+
+#ifdef GENS_DEBUGGER
+/**
+ * Sync_Gens_Window_CPUMenu_Debug(): Synchronize the CPU, Debug submenu.
+ * @param container Container for this submenu.
+ */
+static void Sync_Gens_Window_CPUMenu_Debug(GtkWidget *container)
+{
+	gtk_widget_set_sensitive(container, (Game != NULL));
+	
+	// Hide/Show debug entries depending on the active console.
+	if (Game != NULL)
+	{
+		GtkWidget *mnuDebugItem;
+		bool checkDebug;
+		for (int i = 1; i <= 9; i++)
+		{
+			// TODO: Use debug constants instead?
+			if (i >= 1 && i <= 3)
+				checkDebug = 1;
+			else if (i >= 4 && i <= 6)
+				checkDebug = SegaCD_Started;
+			else if (i >= 7 && i <= 9)
+				checkDebug = _32X_Started;
+			else
+			{
+				// Shouldn't happen...
+				fprintf(stderr, "%s: ERROR: i == %d\n", __func__, i);
+				checkDebug = 0;
+			}
+			
+			mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG + i);
+			if (checkDebug)
+				gtk_widget_show(mnuDebugItem);
+			else
+				gtk_widget_hide(mnuDebugItem);
+			
+			// Make sure the check state for this debug item is correct.
+			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuDebugItem), (Debug == i));
+		}
+		
+		// Separators
+		mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG_SEGACD_SEPARATOR);
+		if (SegaCD_Started)
+			gtk_widget_show(mnuDebugItem);
+		else
+			gtk_widget_hide(mnuDebugItem);
+		
+		mnuDebugItem = gens_menu_find_item(IDM_CPU_DEBUG_32X_SEPARATOR);
+		if (_32X_Started)
+			gtk_widget_show(mnuDebugItem);
+		else
+			gtk_widget_hide(mnuDebugItem);
+	}
+}
+#endif /* GENS_DEBUGGER */
 
 
 /**
