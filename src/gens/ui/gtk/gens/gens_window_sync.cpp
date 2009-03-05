@@ -24,7 +24,11 @@
 #include <config.h>
 #endif
 
-#include <cstring>
+// Message logging.
+#include "macros/log_msg.h"
+
+// C includes.
+#include <string.h>
 
 // C++ includes
 #include <string>
@@ -497,7 +501,8 @@ static void Sync_Gens_Window_CPUMenu_Debug(GtkWidget *container)
 			else
 			{
 				// Shouldn't happen...
-				fprintf(stderr, "%s: ERROR: i == %d\n", __func__, i);
+				LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+					"ERROR: i == %d", i);
 				checkDebug = 0;
 			}
 			
