@@ -152,16 +152,10 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	
 	// Create a new submenu.
 	mnuROMHistory_sub = gtk_menu_new();
-	gtk_widget_set_name(mnuROMHistory_sub, "FileMenu_ROMHistory_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuROMHistory), mnuROMHistory_sub);
-	
-	g_object_set_data_full(G_OBJECT(mnuROMHistory), "FileMenu_ROMHistory_SubMenu",
-			       g_object_ref(mnuROMHistory_sub),
-			       (GDestroyNotify)g_object_unref);
 	
 	GtkWidget *mnuROMHistory_item;
 	string sROMHistoryEntry;
-	char sMenuKey[24];
 	unsigned int romFormat;
 	int romNum = 0;
 	
@@ -185,12 +179,6 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());
 		gtk_widget_show(mnuROMHistory_item);
 		gtk_container_add(GTK_CONTAINER(mnuROMHistory_sub), mnuROMHistory_item);
-		
-		// Make sure the menu item is deleted when the submenu is deleted.
-		sprintf(sMenuKey, "ROMHistory_Sub_%d", romNum);
-		g_object_set_data_full(G_OBJECT(mnuROMHistory_sub), sMenuKey,
-				       g_object_ref(mnuROMHistory_item),
-						       (GDestroyNotify)g_object_unref);
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuROMHistory_item, "activate",
@@ -326,37 +314,23 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(GtkWidget *container)
 	
 	// Create a new submenu.
 	mnuBackend_sub = gtk_menu_new();
-	gtk_widget_set_name(mnuBackend_sub, "GraphicsMenu_Backend_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), mnuBackend_sub);
-	
-	g_object_set_data_full(G_OBJECT(container), "GraphicsMenu_Backend_SubMenu",
-			       g_object_ref(mnuBackend_sub),
-			       (GDestroyNotify)g_object_unref);
 	
 	// Add the backends.
 	int curBackend = 0;
 	GSList *radioGroup = NULL;
-	char sObjName[64];
 	GtkWidget *mnuItem;
 	
 	while (vdraw_backends[curBackend])
 	{
 		mnuItem = gtk_radio_menu_item_new_with_label(radioGroup, vdraw_backends[curBackend]->name);
 		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
-		
-		sprintf(sObjName, "GraphicsMenu_Backends_SubMenu_%d", curBackend);
-		gtk_widget_set_name(mnuItem, sObjName);
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuBackend_sub), mnuItem);
 		
 		// Check if this backend is currently active.
 		if (vdraw_cur_backend_id == curBackend)
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), true);
-		
-		// Make sure the menu item is deleted when the submenu is deleted.
-		g_object_set_data_full(G_OBJECT(mnuBackend_sub), sObjName,
-				       g_object_ref(mnuItem),
-				       (GDestroyNotify)g_object_unref);
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuItem, "activate",
@@ -378,8 +352,6 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	GtkWidget *mnuItem;
 	GSList *radioGroup = NULL;
 	
-	char sObjName[64];
-	
 	// Check if the Render submenu already exists.
 	GtkWidget *mnuSubMenu = gtk_menu_item_get_submenu(GTK_MENU_ITEM(container));
 	if (mnuSubMenu)
@@ -390,12 +362,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	
 	// Create a new submenu.
 	mnuSubMenu = gtk_menu_new();
-	gtk_widget_set_name(mnuSubMenu, "GraphicsMenu_Render_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(container), mnuSubMenu);
-	
-	g_object_set_data_full(G_OBJECT(container), "GraphicsMenu_Render_SubMenu",
-			       g_object_ref(mnuSubMenu),
-			       (GDestroyNotify)g_object_unref);
 	
 	// Create the render entries.
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
@@ -407,11 +374,8 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		// Delete the menu item from the map, if it exists.
 		gens_menu_map.erase(i);
 		
-		sprintf(sObjName, "GraphicsMenu_Render_SubMenu_%d", i);
-		
 		mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, (*curPlugin)->tag);
 		radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
-		gtk_widget_set_name(mnuItem, sObjName);
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
 		
@@ -421,11 +385,6 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 			// Render mode is selected.
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), true);
 		}
-		
-		// Make sure the menu item is deleted when the submenu is deleted.
-		g_object_set_data_full(G_OBJECT(mnuSubMenu), sObjName,
-				       g_object_ref(mnuItem),
-				       (GDestroyNotify)g_object_unref);
 		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuItem, "activate",
@@ -442,14 +401,8 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 			if (PluginMgr::lstRenderPlugins.size() > 2)
 			{
 				mnuItem = gtk_separator_menu_item_new();
-				gtk_widget_set_name(mnuItem, "GraphicsMenu_Render_SubMenu_sep");
 				gtk_widget_show(mnuItem);
 				gtk_container_add(GTK_CONTAINER(mnuSubMenu), mnuItem);
-				
-				// Make sure the menu item is deleted when the submenu is deleted.
-				g_object_set_data_full(G_OBJECT(mnuSubMenu), "GraphicsMenu_Render_SubMenu_sep",
-						       g_object_ref(mnuItem),
-						       (GDestroyNotify)g_object_unref);
 			}
 		}
 	}
@@ -668,16 +621,10 @@ void Sync_Gens_Window_PluginsMenu(void)
 	
 	// Create a new submenu.
 	mnuPlugins_sub = gtk_menu_new();
-	gtk_widget_set_name(mnuPlugins_sub, "FileMenu_Plugins_SubMenu");
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(mnuPlugins), mnuPlugins_sub);
-	
-	g_object_set_data_full(G_OBJECT(mnuPlugins), "FileMenu_Plugins_SubMenu",
-			       g_object_ref(mnuPlugins_sub),
-			       (GDestroyNotify)g_object_unref);
 	
 	// Create the plugin menu items.
 	GtkWidget *mnuItem;
-	char widgetName[64];
 	string sMenuText;
 	size_t mnemonicPos;
 	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
@@ -689,18 +636,11 @@ void Sync_Gens_Window_PluginsMenu(void)
 			sMenuText[mnemonicPos] = '_';
 		
 		mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText.c_str());
-		
-		sprintf(widgetName, "mnuPlugins_0x%04X", (*curMenuItem).id);
-		gtk_widget_set_name(mnuItem, widgetName);
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
 		
 		// Set the menu item check state.
 		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), (*curMenuItem).checked);
-		
-		g_object_set_data_full(G_OBJECT(mnuPlugins_sub), widgetName,
-				       g_object_ref(mnuItem),
-				       (GDestroyNotify)g_object_unref);
 		
 		// Set the callback handler.
 		g_signal_connect((gpointer)mnuItem, "activate",
@@ -711,27 +651,15 @@ void Sync_Gens_Window_PluginsMenu(void)
 	// If plugin menu items were added, add the Plugin Manager separator.
 	if (PluginMgr::lstMenuItems.size() != 0)
 	{
-		const char* sSepName = "mnuPlugins_sep_PluginManager";
 		mnuItem = gtk_separator_menu_item_new();
-		gtk_widget_set_name(mnuItem, sSepName);
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
-		
-		g_object_set_data_full(G_OBJECT(mnuPlugins_sub), sSepName,
-				       g_object_ref(mnuItem),
-				       (GDestroyNotify)g_object_unref);
 	}
 	
 	// Add the Plugin Manager menu item.
-	const char* sMgrName = "mnuPlugins_sep_PluginManager";
 	mnuItem = gtk_menu_item_new_with_mnemonic("Plugin Manager");
-	gtk_widget_set_name(mnuItem, sMgrName);
 	gtk_widget_show(mnuItem);
 	gtk_container_add(GTK_CONTAINER(mnuPlugins_sub), mnuItem);
-	
-	g_object_set_data_full(G_OBJECT(mnuPlugins_sub), sMgrName,
-			       g_object_ref(mnuItem),
-			       (GDestroyNotify)g_object_unref);
 	
 	// Set the callback handler.
 	g_signal_connect((gpointer)mnuItem, "activate",
