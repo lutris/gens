@@ -22,6 +22,9 @@
 
 #include "vdraw.h"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 #include "emulator/g_main.hpp"
 
 // C includes.
@@ -270,12 +273,17 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 void vdraw_init_fail(const char* err)
 {
 	if (!err)
-		fprintf(stderr, "vdraw initialization failed: %s\n", err);
+	{
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"vdraw initialization failed: %s", err);
+	}
 	else
-		fprintf(stderr, "vdraw initialization failed.\n");
+	{
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"vdraw initialization failed.");
+	}
 	
 #ifdef GENS_OS_WIN32
-	MessageBox(gens_window, err, "DirectDraw Error", MB_ICONERROR);
 	TerminateProcess(GetCurrentProcess(), 1); //Modif N
 #endif /* GENS_OS_WIN32 */
 	

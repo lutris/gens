@@ -22,6 +22,9 @@
 
 #include "vdraw_sdl.h"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 #include "emulator/g_main.hpp"
 
 // C includes.
@@ -141,8 +144,8 @@ static int vdraw_sdl_init(void)
 	if (!vdraw_sdl_screen)
 	{
 		// Error initializing SDL.
-		fprintf(stderr, "%s(): Error creating SDL primary surface: %s\n",
-			__func__, SDL_GetError());
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"Error creating SDL primary surface: %s", SDL_GetError());
 		exit(1);
 	}
 	
@@ -177,14 +180,14 @@ static int vdraw_sdl_init_subsystem(void)
 {
 	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
 	{
-		fprintf(stderr, "%s(): Error initializing SDL timers: %s\n",
-			__func__, SDL_GetError());
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing SDL timers: %s", SDL_GetError());
 		return -1;
 	}
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
 	{
-		fprintf(stderr, "%s(): Error initializing SDL video: %s\n",
-			__func__, SDL_GetError());
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing SDL video: %s", SDL_GetError());
 		return -1;
 	}
 	

@@ -23,6 +23,9 @@
 #include "vdraw_cpp.hpp"
 #include "vdraw.h"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 #include "emulator/g_main.hpp"
 
 // C includes.
@@ -54,7 +57,8 @@ void vdraw_reset_renderer(const BOOL reset_video)
 		if (vdraw_set_renderer(PluginMgr::lstRenderPlugins.begin(), reset_video))
 		{
 			// Cannot initialize normal mode.
-			fprintf(stderr, "%s(): FATAL ERROR: Cannot initialize any renderers.\n", __func__);
+			LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+				"FATAL ERROR: Cannot initialize any renderers.");
 			exit(1);
 		}
 	}
