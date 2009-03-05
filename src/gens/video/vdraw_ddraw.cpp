@@ -23,6 +23,9 @@
 #include "vdraw.h"
 #include "vdraw_ddraw.hpp"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"
 
@@ -1253,12 +1256,14 @@ int vdraw_ddraw_set_cooperative_level(void)
 	
 	if (FAILED(rval))
 	{
-		fprintf(stderr, "%s(): lpDD->SetCooperativeLevel() failed.\n", __func__);
+		LOG_MSG(video, LOG_MSG_LEVEL_INFO,
+			"lpDD->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}
 	else
 	{
-		fprintf(stderr, "%s(): lpDD->SetCooperativeLevel() succeeded.\n", __func__);
+		LOG_MSG(video, LOG_MSG_LEVEL_INFO,
+			"lpDD->SetCooperativeLevel() succeeded.");
 	}
 	
 	return 0;
