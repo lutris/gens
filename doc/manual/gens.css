@@ -3,7 +3,7 @@ h1.doc_title, h2.doc_title
 	text-align: center;
 }
 
-div.screenshot
+div.screenshot, p.screenshot
 {
 	text-align: center;
 }
@@ -57,4 +57,9 @@ table.compatibility td.compat_partial
 table.compatibility td.compat_yes
 {
 	background-color: lime;
+}
+
+.option
+{
+	text-decoration: underline;
 }

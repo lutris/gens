@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Gens/GS - I/O - Controller Configuration</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='gens.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>Gens/GS - I/O - Controller Configuration</h1>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'>I/O</nav>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="io-config.html">Controller Configuration</a></span>
+</div>
+
+<p class='screenshot'>
+	<img src='images/io-config.png' alt="Controller Configuration" title="Controller Configuration">
+</p>
+
+<p>The Controller Configuration window allows you to remap controllers.</p>
+
+<p>
+To remap a controller's key configuration, click the &quot;Configure&quot;
+button next to that controller's definition. The current configuration will
+be displayed in the &quot;Configure Player X&quot; box. You can change a
+single button by clicking the &quot;Change&quot; button for that button, or
+you can change the entire configuration by clicking &quot;Change All Buttons&quot;.
+Note that Gens/GS will respond to joystick input as well as keyboard input.
+</p>
+
+<p>
+<span class='option'>Use Teamplayer / 4-Way Play</span>: If this option is
+enabled, a virtual Sega Teamplayer multitap is connected to the specified port.
+This allows up to 4 controllers to be plugged in at once. Each controller can
+be configured by using the &quot;Configure&quot; buttons.<br>
+<br>
+Games that support 8 players are supported by enabling the Sega Teamplayer on
+both controller ports.<br>
+<br>
+To use 4-Way Play, enable the Teamplayer option for Port 1 only. Gens/GS will
+automatically detect that the game uses the 4-Way Play adapter instead of the
+Sega Teamplayer adapter, and will adjust emulation parameters to support the game.
+</p>
+
+<p>
+<span class='option'>Detected Input Devices</span>: This lists all detected
+input devices. If Gens/GS is not responding to input from a controller, make
+sure that the controller is listed here.
+</p>
+
+<p>
+<span class='option'>Restrict Input</span>: If this is enabled, you will not
+be able to press Up and Down or Left and Right at the same time. This is
+similar to how the original controllers function. Some games exhibit weird
+behavior if opposite directions are pressed at the same time, which is why
+this option is enabled by default.
+</p>
+
+</body>
+</html>
