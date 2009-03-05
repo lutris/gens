@@ -358,7 +358,7 @@ static void cc_window_create_input_devices_frame(HWND container)
 	
 	// Create a listbox for the list of input devices.
 	lstInputDevices = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, NULL,
-					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_HSCROLL | WS_BORDER,
+					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | WS_BORDER,
 					 8+8, fraInputDevices_top+16,
 					 CC_FRAME_INPUT_DEVICES_WIDTH-16, CC_FRAME_INPUT_DEVICES_HEIGHT-16-8,
 					 container, NULL, ghInstance, NULL);
