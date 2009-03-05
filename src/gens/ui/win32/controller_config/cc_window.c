@@ -760,7 +760,6 @@ static void cc_window_callback_teamplayer_toggled(int port)
 		{
 			// One of the teamplayer players is selected.
 			// Select the main player for the port.
-			printf("port: %d\n", port);
 			Button_SetCheck(optConfigure[port], BST_CHECKED);
 			cc_window_show_configuration(port);
 		}
