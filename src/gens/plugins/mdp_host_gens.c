@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -39,16 +39,13 @@
 #include "mdp_host_gens_cpp.hpp"
 #include "mdp_host_gens_menu.hpp"
 #include "mdp_host_gens_event.hpp"
+#include "mdp_host_gens_mem.h"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
 
 // MD variables.
 #include "gens_core/mem/mem_m68k.h"
-#include "gens_core/mem/mem_s68k.h"
-#include "gens_core/mem/mem_z80.h"
-#include "gens_core/mem/mem_sh2.h"
-#include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 
 // ROM information.
@@ -65,32 +62,48 @@ static int  mdp_ptr_LUT16to32_count = 0;
 
 mdp_host_t Gens_MDP_Host =
 {
-	.interfaceVersion = MDP_HOST_INTERFACE_VERSION,
+	.interfaceVersion	= MDP_HOST_INTERFACE_VERSION,
 	
-	.ptr_ref = mdp_host_ptr_ref,
-	.ptr_unref = mdp_host_ptr_unref,
+	.mem_read_8		= mdp_host_mem_read_8,
+	.mem_read_16		= mdp_host_mem_read_16,
+	.mem_read_32		= mdp_host_mem_read_32,
 	
-	.val_set = mdp_host_val_set,
-	.val_get = mdp_host_val_get,
+	.mem_write_8		= mdp_host_mem_write_8,
+	.mem_write_16		= mdp_host_mem_write_16,
+	.mem_write_32		= mdp_host_mem_write_32,
 	
-	.renderer_register = mdp_host_renderer_register,
-	.renderer_unregister = mdp_host_renderer_unregister,
+	.mem_read_block_8	= mdp_host_mem_read_block_8,
+	.mem_read_block_16	= mdp_host_mem_read_block_16,
+	.mem_read_block_32	= mdp_host_mem_read_block_32,
 	
-	.menu_item_add = mdp_host_menu_item_add,
-	.menu_item_remove = mdp_host_menu_item_remove,
+	.mem_write_block_8	= mdp_host_mem_write_block_8,
+	.mem_write_block_16	= mdp_host_mem_write_block_16,
+	.mem_write_block_32	= mdp_host_mem_write_block_32,
 	
-	.menu_item_set_text = mdp_host_menu_item_set_text,
-	.menu_item_get_text = mdp_host_menu_item_get_text,
+	.ptr_ref		= mdp_host_ptr_ref,
+	.ptr_unref		= mdp_host_ptr_unref,
 	
-	.menu_item_set_checked = mdp_host_menu_item_set_checked,
-	.menu_item_get_checked = mdp_host_menu_item_get_checked,
+	.val_set		= mdp_host_val_set,
+	.val_get		= mdp_host_val_get,
 	
-	.event_register = mdp_host_event_register,
-	.event_unregister = mdp_host_event_unregister,
+	.renderer_register	= mdp_host_renderer_register,
+	.renderer_unregister	= mdp_host_renderer_unregister,
 	
-	.window_register = mdp_host_window_register,
-	.window_unregister = mdp_host_window_unregister,
-	.window_get_main = mdp_host_window_get_main,
+	.menu_item_add		= mdp_host_menu_item_add,
+	.menu_item_remove	= mdp_host_menu_item_remove,
+	
+	.menu_item_set_text	= mdp_host_menu_item_set_text,
+	.menu_item_get_text	= mdp_host_menu_item_get_text,
+	
+	.menu_item_set_checked	= mdp_host_menu_item_set_checked,
+	.menu_item_get_checked	= mdp_host_menu_item_get_checked,
+	
+	.event_register		= mdp_host_event_register,
+	.event_unregister	= mdp_host_event_unregister,
+	
+	.window_register	= mdp_host_window_register,
+	.window_unregister	= mdp_host_window_unregister,
+	.window_get_main	= mdp_host_window_get_main,
 	
 	.directory_get_default_save_path = mdp_host_directory_get_default_save_path
 };
@@ -107,26 +120,6 @@ void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
 	{
 		case MDP_PTR_LUT16to32:
 			return (void*)mdp_host_ptr_ref_LUT16to32();
-		case MDP_PTR_ROM_MD:
-			return &Rom_Data;
-		case MDP_PTR_RAM_MD:
-			return &Ram_68k;
-		case MDP_PTR_RAM_VRAM:
-			return &VRam;
-#if 0 /* TODO: Figure out how to manage these. */
-		case MDP_PTR_RAM_Z80:
-			return &Ram_Z80;
-		case MDP_PTR_RAM_MCD_PRG:
-			return &Ram_Prg;
-		case MDP_PTR_RAM_MCD_WORD1M:
-			return &Ram_Word_1M;
-		case MDP_PTR_RAM_MCD_WORD2M:
-			return &Ram_Word_2M;
-		case MDP_PTR_ROM_32X:
-			return &_32X_Rom;
-		case MDP_PTR_RAM_32X:
-			return &_32X_Ram;
-#endif
 		default:
 			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
 			return NULL;
@@ -145,21 +138,6 @@ int MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
 		case MDP_PTR_LUT16to32:
 			mdp_host_ptr_unref_LUT16to32();
 			break;
-		
-		case MDP_PTR_ROM_MD:
-		case MDP_PTR_RAM_MD:
-		case MDP_PTR_RAM_VRAM:
-#if 0 /* TODO: Figure out how to manage these. */
-		case MDP_PTR_RAM_Z80:
-		case MDP_PTR_RAM_MCD_PRG:
-		case MDP_PTR_RAM_MCD_WORD1M:
-		case MDP_PTR_RAM_MCD_WORD2M:
-		case MDP_PTR_ROM_32X:
-		case MDP_PTR_RAM_32X:
-#endif
-			// Nothing to unreference.
-			break;
-		
 		default:
 			fprintf(stderr, "%s: Unknown ptrID: 0x%08X\n", __func__, ptrID);
 			return -MDP_ERR_UNKNOWN_PTRID;
