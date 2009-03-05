@@ -1,0 +1,43 @@
+h1.doc_title
+{
+	text-align: center;
+}
+
+table, table td, table th
+{
+	border: 1px solid black;
+}
+
+table.compatibility td.compat_name
+{
+	text-align: left;
+}
+
+table.compatibility td.compat_max_players,
+table.compatibility td.compat_unknown,
+table.compatibility td.compat_no,
+table.compatibility td.compat_partial,
+table.compatibility td.compat_yes
+{
+	text-align: center;
+}
+
+table.compatibility td.compat_unknown
+{
+	background-color: silver;
+}
+
+table.compatibility td.compat_no
+{
+	background-color: red;
+}
+
+table.compatibility td.compat_partial
+{
+	background-color: yellow;
+}
+
+table.compatibility td.compat_yes
+{
+	background-color: lime;
+}

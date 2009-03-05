@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+ <html>
+<head>
+	<title>Gens/GS - I/O - Teamplayer Adapter</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='gens.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>Gens/GS - I/O - Teamplayer Adapter</h1>
+
+<p>Gens/GS supports both the Sega Teamplayer adapter and the EA 4-Way Play adapter.</p>
+
+<h2>Sega Teamplayer compatibility chart</h2>
+<table class='compatibility'>
+	<tr>
+		<th>Game</th>
+		<th>Max Players</th>
+		<th>Gens 2.12b</th>
+		<th>Gens/GS m6</th>
+		<th>Gens/GS r6+</th>
+	</tr>
+	<tr>
+		<td class='compat_name'>Barkley: Shut Up and Jam 2</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Bomberman 8-Player Demo</td>
+		<td class='compat_max_players'>8</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>College Football's National Championship</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>College Football's National Championship 2</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>College Slam</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Columns III</td>
+		<td class='compat_max_players'>5</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>ESPN National Hockey Night</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Gauntlet IV</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_partial'>Partial<br><small>Player 4's &quot;Start&quot;<br>button sometimes<br>doesn't work.</small></td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Mega Bomberman</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Multitap I/O Sample Program</td>
+		<td class='compat_max_players'>8</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Action '94</td>
+		<td class='compat_max_players'>5</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Action '95</td>
+		<td class='compat_max_players'>5</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Jam (U)</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Jam (J)</td>
+		<td class='compat_max_players'>8</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Jam (CD)</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Jam TE</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NBA Jam TE (32X)</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NFL '95</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NFL Quarterback Club '96</td>
+		<td class='compat_max_players'>5</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NFL Quarterback Club '96 (32X)</td>
+		<td class='compat_max_players'>5</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Pele II World Tournament Soccer</td>
+		<td class='compat_max_players'>4?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Prime Time NFL</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Tiny Toon ACME All Stars</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Wayne Gretzky All Stars</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Wheel of Fortune (CD)</td>
+		<td class='compat_max_players'>3</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>World Cup USA '94</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>WWF Raw</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Yu Yu Hakusho</td>
+		<td class='compat_max_players'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+</table>
+
+<h2>EA 4-Way Play compatibility chart</h2>
+<table class='compatibility'>
+	<tr>
+		<th>Game</th>
+		<th>Max Players</th>
+		<th>Gens 2.12b</th>
+		<th>Gens/GS m6</th>
+		<th>Gens/GS r6+</th>
+	</tr>
+	<tr>
+		<td class='compat_name'>Bill Walsh College Football</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Bill Walsh College Football (CD)</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Coach K College Basketball</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>College Football USA '96</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Columns III</td>
+		<td class='compat_max_players'>X</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Gauntlet IV</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_partial'>Partial<br><small>Gens defaults to<br>Sega Teamplayer.</small></td>
+	</tr>
+	<tr>
+		<td class='compat_name'>FIFA International Soccer</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>FIFA International Soccer (CD)</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>FIFA Soccer '95</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>FIFA Soccer '96</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>General Chaos</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Mutant League Hockey</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NHL '94</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NHL '94 (CD)</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>NHL '96</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>PGA Tour Golf III</td>
+		<td class='compat_max_players'>4?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Rugby World Cup '95</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Triple Play '96</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_unknown'>?</td>
+		<td class='compat_partial'>Partial<br><small>Sometimes, the controllers<br>are recognized; other<br>times, they aren't.</small></td>
+	</tr>
+</table>
+
+<h2>J-Cart compatibility chart</h2>
+<table class='compatibility'>
+	<tr>
+		<th>Game</th>
+		<th>Max Players</th>
+		<th>Gens 2.12b</th>
+		<th>Gens/GS m6</th>
+		<th>Gens/GS r6+</th>
+	</tr>
+	<tr>
+		<td class='compat_name'>Micro Machines 2</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Micro Machines '96</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Micro Machines Military</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Pete Sampras Tennis</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+	</tr>
+	<tr>
+		<td class='compat_name'>Super Skidmarks</td>
+		<td class='compat_max_players'>4</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+		<td class='compat_no'>No</td>
+	</tr>
+</table>
+
+<p>
+	Sega Teamplayer and EA 4-Way Play lists from<a href="http://home.comcast.net/~metrbb/vidgames/multiplayer.html">http://home.comcast.net/~metrbb/vidgames/multiplayer.html</a>.<br>
+	J-Cart list from <a href="http://en.wikipedia.org/wiki/J-Cart">http://en.wikipedia.org/wiki/J-Cart</a>.
+</p>
+
+</body>
+</html>
