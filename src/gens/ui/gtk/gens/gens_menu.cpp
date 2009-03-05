@@ -23,6 +23,9 @@
 #include "gens_menu.hpp"
 #include "ui/common/gens/gens_menu_callbacks.hpp"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 // C includes.
 #include <stdlib.h>
 #include <string.h>
@@ -200,7 +203,8 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 					if (!icon)
 					{
 						// Icon not found.
-						fprintf(stderr, "%s: GTK+ stock icon not found: %s\n", __func__, iconName);
+						LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+							"GTK+ stock icon not found: '%s'", iconName);
 					}
 				}
 				else
@@ -210,7 +214,8 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 					if (!icon)
 					{
 						// Icon not found.
-						fprintf(stderr, "%s: Icon file not found: %s\n", __func__, iconName);
+						LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+							"Icon file not found: '%s'", iconName);
 					}
 				}
 			}
