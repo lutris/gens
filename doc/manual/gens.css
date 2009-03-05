@@ -61,5 +61,5 @@ table.compatibility td.compat_yes
 
 .option
 {
-	text-decoration: underline;
+	font-style: italic;
 }
