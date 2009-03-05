@@ -149,9 +149,9 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 	
 	// Delete and/or recreate the ROM History submenu.
 #ifdef GENS_CDROM
-	static const unsigned short posROMHistory = 3;
+	static const unsigned int posROMHistory = 3;
 #else /* !GENS_CDROM */
-	static const unsigned short posROMHistory = 2;
+	static const unsigned int posROMHistory = 2;
 #endif /* GENS_CDROM */
 	
 	DeleteMenu(mnuFile, (UINT)mnuROMHistory, MF_BYCOMMAND);
@@ -550,7 +550,7 @@ void Sync_Gens_Window_PluginsMenu(void)
 	HMENU mnuPlugins = gens_menu_find_item(IDM_PLUGINS_MENU);
 	
 	// Delete and/or recreate the Plugins menu.
-	static const unsigned short posPlugins = 5;
+	static const unsigned int posPlugins = 5;
 	
 	DeleteMenu(MainMenu, (UINT)mnuPlugins, MF_BYCOMMAND);
 	gens_menu_map.erase(IDM_PLUGINS_MENU);
