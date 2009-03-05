@@ -1256,7 +1256,7 @@ int vdraw_ddraw_set_cooperative_level(void)
 	
 	if (FAILED(rval))
 	{
-		LOG_MSG(video, LOG_MSG_LEVEL_INFO,
+		LOG_MSG(video, LOG_MSG_LEVEL_WARNING,
 			"lpDD->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}

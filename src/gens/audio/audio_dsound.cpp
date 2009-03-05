@@ -440,7 +440,7 @@ static void audio_dsound_set_cooperative_level(void)
 	rval = lpDS->SetCooperativeLevel(gens_window, DSSCL_PRIORITY);
 	if (rval != DS_OK)
 	{
-		LOG_MSG(audio, LOG_MSG_LEVEL_INFO,
+		LOG_MSG(audio, LOG_MSG_LEVEL_WARNING,
 			"lpDS->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}

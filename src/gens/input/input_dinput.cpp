@@ -376,7 +376,7 @@ static BOOL CALLBACK input_dinput_callback_init_joysticks_enum(LPCDIDEVICEINSTAN
 	
 	if (rval != DI_OK)
 	{
-		LOG_MSG(input, LOG_MSG_LEVEL_CRITICAL,
+		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
 			"input_dinput_joy_id[]->SetCooperativeLevel() failed. (Joystick %d)",
 			input_dinput_callback_init_joysticks_enum_counter);
 		input_dinput_joy_id[input_dinput_num_joysticks]->Release();
@@ -859,13 +859,13 @@ int input_dinput_set_cooperative_level(HWND hWnd)
 	rval = lpDIDKeyboard->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	if (rval != DI_OK)
 	{
-		LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
 			"lpDIDKeyboard->SetCooperativeLevel() failed.");
 		// TODO: Error handling code.
 	}
 	else
 	{
-		LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+		LOG_MSG(input, LOG_MSG_LEVEL_INFO,
 			"lpDIDKeyboard->SetCooperativeLevel() succeeded.");
 	}
 	
@@ -894,14 +894,14 @@ int input_dinput_set_cooperative_level_joysticks(HWND hWnd)
 		
 		if (rval != DI_OK)
 		{
-			LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+			LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
 				"SetCooperativeLevel() failed on joystick %d.", i);
 			input_dinput_joy_id[input_dinput_num_joysticks]->Release();
 			input_dinput_joy_id[input_dinput_num_joysticks] = NULL;
 		}
 		else
 		{
-			LOG_MSG(input, LOG_MSG_LEVEL_ERROR,
+			LOG_MSG(input, LOG_MSG_LEVEL_INFO,
 				"SetCooperativeLevel() succeeded on joystick %d.", i);
 		}
 	}
