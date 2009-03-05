@@ -27,18 +27,22 @@
 extern "C" {
 #endif
 
+// C includes.
 #include <stdio.h>
 #include <string.h>
+
+// gens_strdup()
+#include "macros/compat_m.h"
 
 /**
  * file_list_t: Linked list of files from a decompressor.
  */
 typedef struct _file_list_t
 {
-	char *filename;		// Created using strdup().
-	size_t filesize;	// Filesize.
+	char*	filename;		// Created using gens_strdup().
+	size_t	filesize;		// Filesize.
 	
-	struct _file_list_t *next;	// Next file.
+	struct	_file_list_t *next;	// Next file.
 } file_list_t;
 
 /**

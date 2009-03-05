@@ -27,6 +27,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// C++ includes.
+#include <string>
+using std::string;
+
 // GTK+ includes.
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
@@ -94,10 +98,14 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 {
 	GtkWidget *mnuItem, *subMenu;
 	GtkWidget *icon;
-	char *sMenuText, *mnemonicPos;
-	bool bMenuTextSet, bMenuHasIcon;
+	bool bMenuHasIcon;
 	GSList *radioGroup = NULL;
 	bool bSetCallbackHandler;
+	
+	// Menu text.
+	string sMenuText;
+	size_t mnemonicPos;
+	const char* sMenuText_cstr;
 	
 	while (menu->id != 0)
 	{
@@ -105,18 +113,21 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 		if (menu->text)
 		{
 			// Menu text specified.
-			bMenuTextSet = true;
-			sMenuText = strdup(menu->text);
-			mnemonicPos = strchr(sMenuText, '&');
-			if (mnemonicPos)
-				*mnemonicPos = '_';
+			sMenuText = string(menu->text);
+			mnemonicPos = sMenuText.find('&');
+			if (mnemonicPos != string::npos)
+				sMenuText[mnemonicPos] = '_';
 		}
 		else
 		{
 			// No menu text.
-			sMenuText = "";
-			bMenuTextSet = false;
+			sMenuText.clear();
 		}
+		
+		if (sMenuText.empty())
+			sMenuText_cstr = NULL;
+		else
+			sMenuText_cstr = sMenuText.c_str();
 		
 		// TODO: Radio/Check support.
 		bMenuHasIcon = false;
@@ -132,14 +143,14 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 			
 			case GMF_ITEM_CHECK:
 				// Check menu item.
-				mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText);
+				mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText_cstr);
 				radioGroup = NULL;
 				bSetCallbackHandler = true;
 				break;
 			
 			case GMF_ITEM_RADIO:
 				// Radio menu item.
-				mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, sMenuText);
+				mnuItem = gtk_radio_menu_item_new_with_mnemonic(radioGroup, sMenuText_cstr);
 				radioGroup = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(mnuItem));
 				bSetCallbackHandler = true;
 				break;
@@ -155,18 +166,15 @@ void gens_menu_parse(const GensMenuItem_t* menu, GtkWidget *container, GtkAccelG
 				if (menu->icon > 0)
 				{
 					bMenuHasIcon = true;
-					mnuItem = gtk_image_menu_item_new_with_mnemonic(sMenuText);
+					mnuItem = gtk_image_menu_item_new_with_mnemonic(sMenuText_cstr);
 				}
 				else
 				{
-					mnuItem = gtk_menu_item_new_with_mnemonic(sMenuText);
+					mnuItem = gtk_menu_item_new_with_mnemonic(sMenuText_cstr);
 				}
 				
 				break;
 		}
-		
-		if (bMenuTextSet)
-			free(sMenuText);
 		
 		gtk_widget_show(mnuItem);
 		gtk_container_add(GTK_CONTAINER(container), mnuItem);

@@ -678,16 +678,17 @@ void Sync_Gens_Window_PluginsMenu(void)
 	// Create the plugin menu items.
 	GtkWidget *mnuItem;
 	char widgetName[64];
+	string sMenuText;
+	size_t mnemonicPos;
 	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
 	     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
 	{
-		char *sMenuText = strdup((*curMenuItem).text.c_str());
-		char *mnemonicPos = strchr(sMenuText, '&');
-		if (mnemonicPos)
-			*mnemonicPos = '_';
+		sMenuText = (*curMenuItem).text;
+		mnemonicPos = sMenuText.find('&');
+		if (mnemonicPos != string::npos)
+			sMenuText[mnemonicPos] = '_';
 		
-		mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText);
-		free(sMenuText);
+		mnuItem = gtk_check_menu_item_new_with_mnemonic(sMenuText.c_str());
 		
 		sprintf(widgetName, "mnuPlugins_0x%04X", (*curMenuItem).id);
 		gtk_widget_set_name(mnuItem, widgetName);

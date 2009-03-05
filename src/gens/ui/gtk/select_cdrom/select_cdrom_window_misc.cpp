@@ -136,7 +136,7 @@ void Open_Select_CDROM(void)
 int SelCD_Save(void)
 {
 	GtkWidget *combo_drive, *entry_combo_drive, *combo_speed;
-	gchar *tmpDrive; int driveSpeed;
+	const gchar *tmpDrive; int driveSpeed;
 	
 	// Save settings.
 	bool restartASPI = false;
@@ -146,8 +146,8 @@ int SelCD_Save(void)
 	combo_drive = lookup_widget(select_cdrom_window, "combo_drive");
 	
 	entry_combo_drive = gtk_bin_get_child(GTK_BIN(combo_drive));
-	tmpDrive = strdup(gtk_entry_get_text(GTK_ENTRY(entry_combo_drive)));
-	if (strlen(tmpDrive))
+	tmpDrive = gtk_entry_get_text(GTK_ENTRY(entry_combo_drive));
+	if (tmpDrive && tmpDrive[0] != 0x00)
 	{
 		// Check if the drive name was changed.
 		if (strncmp(tmpDrive, cdromDeviceName, sizeof(cdromDeviceName)) != 0)
@@ -186,7 +186,6 @@ int SelCD_Save(void)
 		strncpy(cdromDeviceName, tmpDrive, sizeof(cdromDeviceName) - 1);
 		cdromDeviceName[63] = 0x00;
 	}
-	free(tmpDrive);
 	
 	// Drive speed
 	combo_speed = lookup_widget(select_cdrom_window, "combo_speed");

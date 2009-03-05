@@ -22,12 +22,10 @@
 
 #include "md_zip.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "minizip/unzip.h"
 #include "ui/gens_ui.hpp"
+
+// MiniZip.
+#include "minizip/unzip.h"
 
 // Zip decompressor functions.
 static int decompressor_zip_detect_format(FILE *zF);
@@ -94,7 +92,7 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
 		
 		// Store the ROM file information.
-		file_list_cur->filename = strdup(ROMFileName);
+		file_list_cur->filename = gens_strdup(ROMFileName);
 		file_list_cur->filesize = zinfo.uncompressed_size;
 		file_list_cur->next = NULL;
 		

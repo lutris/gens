@@ -566,11 +566,6 @@ void Sync_Gens_Window_PluginsMenu(void)
 	for (list<mdpMenuItem_t>::iterator curMenuItem = PluginMgr::lstMenuItems.begin();
 	     curMenuItem != PluginMgr::lstMenuItems.end(); curMenuItem++)
 	{
-		char *sMenuText = strdup((*curMenuItem).text.c_str());
-		char *mnemonicPos = strchr(sMenuText, '&');
-		if (mnemonicPos)
-			*mnemonicPos = '_';
-		
 		InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
 			   (*curMenuItem).id, (*curMenuItem).text.c_str());
 		

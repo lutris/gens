@@ -26,11 +26,6 @@
 
 #include "dummy.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <zlib.h>
-
 // Dummy decompressor functions.
 static int decompressor_dummy_detect_format(FILE *zF);
 static file_list_t* decompressor_dummy_get_file_info(FILE *zF, const char* filename);
@@ -81,7 +76,7 @@ static file_list_t* decompressor_dummy_get_file_info(FILE *zF, const char* filen
 	
 	// Set the elements of the list.
 	file_list->filesize = filesize;
-	file_list->filename = (filename ? strdup(filename) : NULL);
+	file_list->filename = (filename ? gens_strdup(filename) : NULL);
 	file_list->next = NULL;
 	
 	// Return the list.

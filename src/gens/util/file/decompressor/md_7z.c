@@ -22,10 +22,6 @@
 
 #include "md_7z.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "ui/gens_ui.hpp"
 
 // 7z includes.
@@ -132,7 +128,7 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
 		
 		// Store the ROM file information.
-		file_list_cur->filename = strdup(f->Name);
+		file_list_cur->filename = (f->Name ? gens_strdup(f->Name) : NULL);
 		file_list_cur->filesize = f->Size;
 		file_list_cur->next = NULL;
 		

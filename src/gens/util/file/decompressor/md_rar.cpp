@@ -22,10 +22,6 @@
 
 #include "md_rar.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "emulator/g_main.hpp"
 #include "ui/gens_ui.hpp"
 
@@ -183,7 +179,7 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
 		
 		// Store the ROM file information.
-		file_list_cur->filename = strdup(tmp_filename.c_str());
+		file_list_cur->filename = gens_strdup(tmp_filename.c_str());
 		file_list_cur->filesize = tmp_filesize;
 		file_list_cur->next = NULL;
 		

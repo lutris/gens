@@ -22,9 +22,7 @@
 
 #include "md_gzip.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// ZLib.
 #include <zlib.h>
 
 // GZip decompressor functions.
@@ -93,8 +91,8 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
 	file_list_t *file_list = (file_list_t*)malloc(sizeof(file_list_t));
 	
 	// Set the elements of the list.
+	file_list->filename = (filename ? gens_strdup(filename) : NULL);
 	file_list->filesize = filesize;
-	file_list->filename = (filename ? strdup(filename) : NULL);
 	file_list->next = NULL;
 	
 	// Return the list.
