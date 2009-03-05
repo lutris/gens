@@ -68,16 +68,16 @@ void MDP_FNCALL gg_engine_apply_rom_codes(void)
 				switch (gg_code.datasize)
 				{
 					case DS_BYTE:
-						gg_code.backup_data = MDP_MEM_BE_8(gg_mdp_ptr_rom_md, gg_code.address);
-						MDP_MEM_BE_8(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.data & 0xFF);
+						gg_code.backup_data = gg_host_srv->mem_read_8(MDP_MEM_MD_ROM, gg_code.address);
+						gg_host_srv->mem_write_8(MDP_MEM_MD_ROM, gg_code.address, (gg_code.data & 0xFF));
 						break;
 					case DS_WORD:
-						gg_code.backup_data = MDP_MEM_16(gg_mdp_ptr_rom_md, gg_code.address);
-						MDP_MEM_16(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.data & 0xFFFF);
+						gg_code.backup_data = gg_host_srv->mem_read_16(MDP_MEM_MD_ROM, gg_code.address);
+						gg_host_srv->mem_write_16(MDP_MEM_MD_ROM, gg_code.address, (gg_code.data & 0xFFFF));
 						break;
 					case DS_DWORD:
-						gg_code.backup_data = MDP_MEM_BE_32_READ(gg_mdp_ptr_rom_md, gg_code.address);
-						MDP_MEM_BE_32_WRITE(gg_mdp_ptr_rom_md, gg_code.address, gg_code.data);
+						gg_code.backup_data = gg_host_srv->mem_read_32(MDP_MEM_MD_ROM, gg_code.address);
+						gg_host_srv->mem_write_32(MDP_MEM_MD_ROM, gg_code.address, gg_code.data);
 						break;
 				}
 				break;
@@ -126,13 +126,13 @@ void MDP_FNCALL gg_engine_unapply_rom_codes(void)
 				switch (gg_code.datasize)
 				{
 					case DS_BYTE:
-						MDP_MEM_BE_8(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.backup_data & 0xFF);
+						gg_host_srv->mem_write_8(MDP_MEM_MD_ROM, gg_code.address, (gg_code.backup_data & 0xFF));
 						break;
 					case DS_WORD:
-						MDP_MEM_16(gg_mdp_ptr_rom_md, gg_code.address) = (gg_code.backup_data & 0xFFFF);
+						gg_host_srv->mem_write_16(MDP_MEM_MD_ROM, gg_code.address, (gg_code.backup_data & 0xFFFF));
 						break;
 					case DS_DWORD:
-						MDP_MEM_BE_32_WRITE(gg_mdp_ptr_rom_md, gg_code.address, gg_code.backup_data);
+						gg_host_srv->mem_write_32(MDP_MEM_MD_ROM, gg_code.address, gg_code.backup_data);
 						break;
 				}
 				break;
@@ -184,13 +184,13 @@ int MDP_FNCALL gg_engine_pre_frame(int event_id, void *event_info)
 				switch (gg_code.datasize)
 				{
 					case DS_BYTE:
-						MDP_MEM_BE_8(gg_mdp_ptr_ram_md, address) = (gg_code.data & 0xFF);
+						gg_host_srv->mem_write_8(MDP_MEM_MD_RAM, gg_code.address, (gg_code.data & 0xFF));
 						break;
 					case DS_WORD:
-						MDP_MEM_16(gg_mdp_ptr_ram_md, address) = (gg_code.data & 0xFFFF);
+						gg_host_srv->mem_write_16(MDP_MEM_MD_RAM, gg_code.address, (gg_code.data & 0xFFFF));
 						break;
 					case DS_DWORD:
-						MDP_MEM_BE_32_WRITE(gg_mdp_ptr_ram_md, address, gg_code.data);
+						gg_host_srv->mem_write_32(MDP_MEM_MD_RAM, gg_code.address, gg_code.data);
 						break;
 				}
 				break;

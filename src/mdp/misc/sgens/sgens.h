@@ -35,8 +35,6 @@ DLL_LOCAL int MDP_FNCALL sgens_init(mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL sgens_end(void);
 
 DLL_LOCAL extern mdp_host_t *sgens_host_srv;
-DLL_LOCAL extern void *sgens_md_ROM;
-DLL_LOCAL extern void *sgens_md_RAM;
 DLL_LOCAL extern SGENS_ROM_TYPE sgens_current_rom_type;
 
 #ifdef __cplusplus

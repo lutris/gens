@@ -21,10 +21,14 @@
  ***************************************************************************/
 
 #include "sgens_rom_type.h"
+#include "sgens.h"
+
+// MDP includes.
 #include "mdp/mdp_constants.h"
 #include "mdp/mdp.h"
 #include "mdp/mdp_host.h"
 
+// C includes.
 #include <string.h>
 
 const char* const sgens_ROM_type_name[SGENS_ROM_TYPE_MAX + 1] =
@@ -59,10 +63,9 @@ const char* const sgens_ROM_type_name[SGENS_ROM_TYPE_MAX + 1] =
 /**
  * sgens_get_ROM_type(): Get the ROM type of an MD ROM.
  * @param system_id System ID.
- * @param ROM Pointer to ROM buffer.
  * @return ROM type.
  */
-SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom)
+SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id)
 {
 	if (system_id != MDP_SYSTEM_MD)
 	{
@@ -92,25 +95,25 @@ SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom)
 	// Determine what game this is.
 	// TODO: Rewrite this to be more accurate.
 	
-	if (MDP_MEM_16(rom, 0xD354) == 0x4E91)
+	if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0xD354) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC1_REV00;
-	else if (MDP_MEM_16(rom, 0xD9E2) == 0x4E91)
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0xD9E2) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC1_REV01;
-	else if (MDP_MEM_16(rom, 0x0000) == 0x4E91)		// TODO: This doesn't seem right...
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x0000) == 0x4E91)		// TODO: This doesn't seem right...
 		return SGENS_ROM_TYPE_SONIC1_REVXB;
-	else if (MDP_MEM_16(rom, 0xCFEC) == 0x4E91)
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0xCFEC) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC2_PROTO_WAI;
-	//else if (MDP_MEM_16(rom, 0x0000) == 0x4E91)	// TODO: Proper value for Sonic 2 rev. 00
+	//else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x0000) == 0x4E91)	// TODO: Proper value for Sonic 2 rev. 00
 	//	return SGENS_ROM_TYPE_SONIC2_REV00;
-	else if (MDP_MEM_16(rom, 0x15FD8) == 0x4E91)
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x15FD8) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC2_REV01;
-	else if (MDP_MEM_16(rom, 0x15F5E) == 0x4E91)
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x15F5E) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC2_REV02;
-	else if (MDP_MEM_16(rom, 0x191C6) == 0x4E91)
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x191C6) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC3;
-	else if (MDP_MEM_16(rom, 0x1AB02) == 0x4E91)
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x1AB02) == 0x4E91)
 		return SGENS_ROM_TYPE_SONIC_KNUCKLES;
-	else if (MDP_MEM_16(rom, 0x1AB02) == 0x4E91)		// TODO: This doesn't make any sense...
+	else if (sgens_host_srv->mem_read_16(MDP_MEM_MD_ROM, 0x1AB02) == 0x4E91)	// TODO: This doesn't make any sense...
 		return SGENS_ROM_TYPE_SONIC2_KNUCKLES;
 	
 	// Unsupported MD ROM.

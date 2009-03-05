@@ -40,10 +40,6 @@
 mdp_host_t *sgens_host_srv = NULL;
 static int sgens_menuItemID = 0;
 
-// Pointers to MD ROM and RAM.
-void	*sgens_md_ROM = NULL;
-void	*sgens_md_RAM = NULL;
-
 // Current ROM type.
 SGENS_ROM_TYPE	sgens_current_rom_type = SGENS_ROM_TYPE_NONE;
 
@@ -133,12 +129,9 @@ static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info)
 	{
 		case MDP_EVENT_OPEN_ROM:
 		{
-			sgens_md_ROM = sgens_host_srv->ptr_ref(MDP_PTR_ROM_MD);
-			sgens_md_RAM = sgens_host_srv->ptr_ref(MDP_PTR_RAM_MD);
-			
 			// Check the ROM to make sure sGens can handle it.
 			mdp_event_open_rom_t *open_rom = (mdp_event_open_rom_t*)(event_info);
-			sgens_current_rom_type = sgens_get_ROM_type(open_rom->system_id, sgens_md_ROM);
+			sgens_current_rom_type = sgens_get_ROM_type(open_rom->system_id);
 			
 			if (sgens_current_rom_type > SGENS_ROM_TYPE_UNSUPPORTED &&
 			    sgens_current_rom_type < SGENS_ROM_TYPE_MAX)
@@ -161,18 +154,6 @@ static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info)
 		{
 			// If sGens is handling the ROM, unregister the PRE_FRAME event handler.
 			sgens_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, sgens_event_handler);
-			
-			// Uneference the MD ROM and RAM pointers.
-			if (sgens_md_ROM)
-			{
-				sgens_host_srv->ptr_unref(MDP_PTR_ROM_MD);
-				sgens_md_ROM = NULL;
-			}
-			if (sgens_md_RAM)
-			{
-				sgens_host_srv->ptr_unref(MDP_PTR_RAM_MD);
-				sgens_md_RAM = NULL;
-			}
 			
 			// ROM type is "None".
 			sgens_current_rom_type = SGENS_ROM_TYPE_NONE;

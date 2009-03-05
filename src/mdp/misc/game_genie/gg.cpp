@@ -49,12 +49,8 @@ mdp_host_t *gg_host_srv = NULL;
 
 static int gg_menuItemID = 0;
 
-// ROM/RAM pointers.
-void *gg_mdp_ptr_rom_md = NULL;
-void *gg_mdp_ptr_ram_md = NULL;
-
 // ROM size.
-int gg_mdp_rom_md_size;
+int gg_mdp_rom_md_size = 0;
 
 static int MDP_FNCALL gg_menu_handler(int menu_item_id);
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
@@ -124,9 +120,6 @@ int MDP_FNCALL gg_end(void)
 	// Remove the menu item.
 	gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);
 	
-	// Unreference MD RAM.
-	gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
-	
 	// Plugin is shut down.
 	return MDP_ERR_OK;
 }
@@ -159,41 +152,8 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		gg_loaded_rom = string(openROM->rom_name);
 		gg_system_id = (MDP_SYSTEM_ID)(openROM->system_id);
 		
-		// Get the ROM and RAM pointers.
-		if (gg_system_id == MDP_SYSTEM_MD ||
-		    gg_system_id == MDP_SYSTEM_MCD ||
-		    gg_system_id == MDP_SYSTEM_32X ||
-		    gg_system_id == MDP_SYSTEM_MCD32X)
-		{
-			gg_mdp_ptr_rom_md = gg_host_srv->ptr_ref(MDP_PTR_ROM_MD);
-			gg_mdp_ptr_ram_md = gg_host_srv->ptr_ref(MDP_PTR_RAM_MD);
-			gg_mdp_rom_md_size = gg_host_srv->val_get(MDP_VAL_ROM_SIZE);
-			
-			if (!gg_mdp_ptr_rom_md ||
-			    !gg_mdp_ptr_ram_md ||
-			     gg_mdp_rom_md_size <= 0)
-			{
-				// Error retrieving a pointer or value.
-				if (gg_mdp_ptr_rom_md)
-					gg_host_srv->ptr_unref(MDP_PTR_ROM_MD);
-				if (gg_mdp_ptr_ram_md)
-					gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
-				
-				gg_mdp_ptr_rom_md = NULL;
-				gg_mdp_ptr_ram_md = NULL;
-				
-				gg_loaded_rom.clear();
-				return -MDP_ERR_UNKNOWN;
-			}
-		}
-		else
-		{
-			// Unsupported system ID.
-			gg_loaded_rom.clear();
-			return -MDP_ERR_UNKNOWN;
-		}
-		
-		// TODO: Other system support.
+		// Get the ROM size.
+		gg_mdp_rom_md_size = gg_host_srv->val_get(MDP_VAL_ROM_SIZE);
 		
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.
@@ -208,20 +168,6 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		if (gg_host_srv->event_register(&mdp, MDP_EVENT_PRE_FRAME, gg_engine_pre_frame) != MDP_ERR_OK)
 		{
 			// Error registering the pre-frame event handler.
-			if (gg_system_id == MDP_SYSTEM_MD ||
-			    gg_system_id == MDP_SYSTEM_MCD ||
-			    gg_system_id == MDP_SYSTEM_32X ||
-			    gg_system_id == MDP_SYSTEM_MCD32X)
-			{
-				if (gg_mdp_ptr_rom_md)
-					gg_host_srv->ptr_unref(MDP_PTR_ROM_MD);
-				if (gg_mdp_ptr_ram_md)
-					gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
-				
-				gg_mdp_ptr_rom_md = NULL;
-				gg_mdp_ptr_ram_md = NULL;
-			}
-			
 			return -MDP_ERR_UNKNOWN;
 		}
 	}
@@ -242,27 +188,13 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
 		gg_file_save(full_path.c_str());
 		
-		// Clear the loaded ROM name and system ID.
+		// Clear the loaded ROM name, system ID, and ROM size.
 		gg_loaded_rom.clear();
 		gg_system_id = MDP_SYSTEM_UNKNOWN;
+		gg_mdp_rom_md_size = 0;
 		
 		// Clear all loaded codes.
 		gg_code_list.clear();
-		
-		// Unreference the ROM/RAM pointers.
-		if (gg_system_id == MDP_SYSTEM_MD ||
-		    gg_system_id == MDP_SYSTEM_MCD ||
-		    gg_system_id == MDP_SYSTEM_32X ||
-		    gg_system_id == MDP_SYSTEM_MCD32X)
-		{
-			if (gg_mdp_ptr_rom_md)
-				gg_host_srv->ptr_unref(MDP_PTR_ROM_MD);
-			if (gg_mdp_ptr_ram_md)
-				gg_host_srv->ptr_unref(MDP_PTR_RAM_MD);
-			
-			gg_mdp_ptr_rom_md = NULL;
-			gg_mdp_ptr_ram_md = NULL;
-		}
 		
 		// Shut down the pre-frame event handler.
 		gg_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, gg_engine_pre_frame);

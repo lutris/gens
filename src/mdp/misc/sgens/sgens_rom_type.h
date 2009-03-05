@@ -61,7 +61,7 @@ typedef enum _sgens_ROM_type
 
 DLL_LOCAL extern const char* const sgens_ROM_type_name[SGENS_ROM_TYPE_MAX + 1];
 
-DLL_LOCAL SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id, void *rom);
+DLL_LOCAL SGENS_ROM_TYPE MDP_FNCALL sgens_get_ROM_type(int system_id);
 
 #ifdef __cplusplus
 }
