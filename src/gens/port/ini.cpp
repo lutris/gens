@@ -20,10 +20,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <cstdlib>
-
 #include "ini.hpp"
 
+// Message logging.
+#include "macros/log_msg.h"
+
+// C includes.
+#include <stdlib.h>
+
+// C++ includes.
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -79,7 +84,8 @@ void INI::load(const string& filename)
 	if (!cfgFile.is_open())
 	{
 		// Error opening the INI file.
-		fprintf(stderr, "INI::%s(): Error opening INI file %s\n", __func__, filename.c_str());
+		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+			"Error opening INI file '%s'.", filename.c_str());
 		return;
 	}
 	
@@ -344,7 +350,8 @@ void INI::writeString(const string& section, const string& key, const string& va
 		if (iniSectIter == m_INI.end())
 		{
 			// Error creating the new section.
-			fprintf(stderr, "INI::%s(): Error creating new INI section: %s\n", __func__, section.c_str());
+			LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+				"Error creating new INI section '%s'.", section.c_str());
 			return;
 		}
 	}
@@ -415,7 +422,8 @@ void INI::save(const string& filename)
 	if (!cfgFile.is_open())
 	{
 		// Error opening the INI file.
-		fprintf(stderr, "INI::%s(): Error opening INI file %s", __func__, filename.c_str());
+		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+			"Error opening INI file '%s'.", filename.c_str());
 		return;
 	}
 	
