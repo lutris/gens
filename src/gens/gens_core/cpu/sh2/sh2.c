@@ -8,30 +8,16 @@
 /**********************************************************/
 
 #define SH2_VERSION "1.60"
-#define SH2_DEBUG   0
 
+// Message logging.
+#include "macros/log_msg.h"
+
+// C includes.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
 #include "sh2.h"
-
-#if SH2_DEBUG > 0
-	FILE *SH2_Debug = NULL;
-	#define SH2_LOG0(a) fprintf(SH2_Debug, a)
-	#define SH2_LOG1(a, b) fprintf(SH2_Debug, a, b)
-	#define SH2_LOG2(a, b, c) fprintf(SH2_Debug, a, b, c)
-	#define SH2_LOG3(a, b, c, d) fprintf(SH2_Debug, a, b, c, d)
-	#define SH2_LOG4(a, b, c, d, e) fprintf(SH2_Debug, a, b, c, d, e)
-#else
-	#define SH2_LOG0(a)
-	#define SH2_LOG1(a, b)
-	#define SH2_LOG2(a, b, c)
-	#define SH2_LOG3(a, b, c, d)
-	#define SH2_LOG4(a, b, c, d, e)
-#endif
-
 
 
 /************************************************************/
@@ -360,35 +346,41 @@ const PACKED_OP_TAB InitOpDS[] = {
 
 uint8_t FASTCALL Def_READB(uint32_t adr)
 {
-	SH2_LOG1("SH2 read byte at %.8X\n", adr);
+	LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+		"SH2 read byte at %.8X\n", adr);
 	return 0;
 }
 
 uint16_t FASTCALL Def_READW(uint32_t adr)
 {
-	SH2_LOG1("SH2 read word at %.8X\n", adr);
+	LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+		"SH2 read word at %.8X\n", adr);
 	return 0;
 }
 
 uint32_t FASTCALL Def_READL(uint32_t adr)
 {
-	SH2_LOG1("SH2 read long at %.8X\n", adr);
+	LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+		"SH2 read long at %.8X\n", adr);
 	return 0;
 }
 
 void FASTCALL Def_WRITEB(uint32_t adr, uint8_t data)
 {
-	SH2_LOG2("SH2 write byte %.2X at %.8X\n", data, adr);
+	LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+		"SH2 write byte %.2X at %.8X\n", data, adr);
 }
 
 void FASTCALL Def_WRITEW (uint32_t adr, uint16_t data)
 {
-	SH2_LOG2("SH2 write word %.4X at %.8X\n", data, adr);
+	LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+		"SH2 write word %.4X at %.8X\n", data, adr);
 }
 
 void FASTCALL Def_WRITEL (uint32_t adr, uint32_t data)
 {
-	SH2_LOG2("SH2 write long %.8X at %.8X\n", data, adr);
+	LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+		"SH2 write long %.8X at %.8X\n", data, adr);
 }
 
 
@@ -507,11 +499,8 @@ void SH2_Init(SH2_CONTEXT *SH2, uint32_t slave)
 	
 	if (!SH2_Initialised)
 	{
-		#if SH2_DEBUG > 0
-			SH2_Debug = fopen("sh2.log", "wb");
-		#endif
-		
-		SH2_LOG0("Starting to log :\n\n");
+		LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG1,
+			"Starting to log");
 		
 		// Unpacking the 'normal' opcode jump table
 		
@@ -651,7 +640,8 @@ void SH2_Init(SH2_CONTEXT *SH2, uint32_t slave)
 			
 			Set_SR_Table[i] = (t << 0) | (s << 8) | (il << 16) | (m << 25) | (q << 24);
 			
-			SH2_LOG2("SR Table %.3X = %.8X\n", i, Set_SR_Table[i]);
+			LOG_MSG(sh2, LOG_MSG_LEVEL_DEBUG2,
+				"SR Table %.3X = %.8X\n", i, Set_SR_Table[i]);
 		}
 		
 		SH2_Initialised = 1;
