@@ -20,11 +20,48 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp_host_gens_mem.h"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#include "mdp_host_gens_mem.h"
+#include "mdp/mdp_error.h"
+
+/* Byteswapping macros. */
+#include "gens_core/misc/byteswap.h"
+
+#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+
+/* Little-endian memory macros. */
+#define MEM_RW_8_BE(ptr, address)	(((uint8_t*)(ptr))[(address) ^ 1])
+#define MEM_RW_8_LE(ptr, address)	(((uint8_t*)(ptr))[(address)])
+
+#else
+
+/* Big-endian memory macros. */
+#define MEM_RW_8_BE(ptr, address)	(((uint8_t*)(ptr))[(address)])
+#define MEM_RW_8_LE(ptr, address)	(((uint8_t*)(ptr))[(address) ^ 1])
+
+#endif
+
+/* Endian-neutral memory macros. */
+#define MEM_RW_16(ptr, address)		(((uint16_t*)(ptr))[(address >> 1)])
+
+/* TODO: Optimize 32-bit reads/writes for their respective architectures. */
+
+#define MEM_READ_32_BE(ptr, address)	\
+	(((((uint16_t*)(ptr))[(address) >> 1]) << 16) | (((uint16_t*)(ptr))[((address) >> 1) + 1]))
+
+#define MEM_READ_32_LE(ptr, address)	\
+	(((((uint16_t*)(ptr))[((address) >> 1) + 1]) << 16) | (((uint16_t*)(ptr))[(address) >> 1]))
+
+#define MEM_WRITE_32_BE(ptr, address, data)					\
+	((uint16_t*)(ptr))[(address) >> 1]       = (((data) >> 16) & 0xFFFF);	\
+	((uint16_t*)(ptr))[((address) >> 1) + 1] = ((data) & 0xFFFF);
+
+#define MEM_WRITE_32_BE(ptr, address, data)					\
+	((uint16_t*)(ptr))[(address) >> 1]       = (((data) >> 16) & 0xFFFF);	\
+	((uint16_t*)(ptr))[((address) >> 1) + 1] = ((data) & 0xFFFF);
 
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_s68k.h"
@@ -38,14 +75,59 @@
 
 uint8_t MDP_FNCALL mdp_host_mem_read_8(int memID, uint32_t address)
 {
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			address &= 0x003FFFFF;
+			return MEM_RW_8_BE(Rom_Data, address);
+		case MDP_MEM_MD_RAM:
+			address &= 0x0000FFFF;
+			return MEM_RW_8_BE(Ram_68k, address);
+		case MDP_MEM_MD_VRAM:
+			address &= 0x0000FFFF;
+			return MEM_RW_8_BE(VRam, address);
+		default:
+			/* Unknown memory ID. */
+			return -1;
+	}
 }
 
 uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address)
 {
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			address &= 0x003FFFFE;
+			return MEM_RW_16(Rom_Data, address);
+		case MDP_MEM_MD_RAM:
+			address &= 0x0000FFFE;
+			return MEM_RW_16(Ram_68k, address);
+		case MDP_MEM_MD_VRAM:
+			address &= 0x0000FFFE;
+			return MEM_RW_16(VRam, address);
+		default:
+			/* Unknown memory ID. */
+			return -1;
+	}
 }
 
 uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
 {
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			address &= 0x003FFFFE;
+			return MEM_READ_32_BE(Rom_Data, address);
+		case MDP_MEM_MD_RAM:
+			address &= 0x0000FFFE;
+			return MEM_READ_32_BE(Ram_68k, address);
+		case MDP_MEM_MD_VRAM:
+			address &= 0x0000FFFE;
+			return MEM_READ_32_BE(VRam, address);
+		default:
+			/* Unknown memory ID. */
+			return -1;
+	}
 }
 
 
@@ -53,14 +135,74 @@ uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
 
 int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 {
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			address &= 0x003FFFFF;
+			MEM_RW_8_BE(Rom_Data, address) = data;
+			break;
+		case MDP_MEM_MD_RAM:
+			address &= 0x0000FFFF;
+			MEM_RW_8_BE(Ram_68k, address) = data;
+			break;
+		case MDP_MEM_MD_VRAM:
+			address &= 0x0000FFFF;
+			MEM_RW_8_BE(VRam, address) = data;
+			break;
+		default:
+			/* Unknown memory ID. */
+			return -MDP_ERR_UNKNOWN_MEMID;
+	}
+	
+	return MDP_ERR_OK;
 }
 
 int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 {
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			address &= 0x003FFFFF;
+			MEM_RW_16(Rom_Data, address) = data;
+			break;
+		case MDP_MEM_MD_RAM:
+			address &= 0x0000FFFF;
+			MEM_RW_16(Ram_68k, address) = data;
+			break;
+		case MDP_MEM_MD_VRAM:
+			address &= 0x0000FFFF;
+			MEM_RW_16(VRam, address) = data;
+			break;
+		default:
+			/* Unknown memory ID. */
+			return -MDP_ERR_UNKNOWN_MEMID;
+	}
+	
+	return MDP_ERR_OK;
 }
 
 int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 {
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			address &= 0x003FFFFF;
+			MEM_WRITE_32_BE(Rom_Data, address, data)
+			break;
+		case MDP_MEM_MD_RAM:
+			address &= 0x0000FFFF;
+			MEM_WRITE_32_BE(Ram_68k, address, data)
+			break;
+		case MDP_MEM_MD_VRAM:
+			address &= 0x0000FFFF;
+			MEM_WRITE_32_BE(VRam, address, data)
+			break;
+		default:
+			/* Unknown memory ID. */
+			return -MDP_ERR_UNKNOWN_MEMID;
+	}
+	
+	return MDP_ERR_OK;
 }
 
 
@@ -68,14 +210,35 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 
 int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
+	MDP_UNUSED_PARAMETER(memID);
+	MDP_UNUSED_PARAMETER(address);
+	MDP_UNUSED_PARAMETER(data);
+	MDP_UNUSED_PARAMETER(length);
+	
+	/* TODO */
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
 
 int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
+	MDP_UNUSED_PARAMETER(memID);
+	MDP_UNUSED_PARAMETER(address);
+	MDP_UNUSED_PARAMETER(data);
+	MDP_UNUSED_PARAMETER(length);
+	
+	/* TODO */
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
 
 int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
+	MDP_UNUSED_PARAMETER(memID);
+	MDP_UNUSED_PARAMETER(address);
+	MDP_UNUSED_PARAMETER(data);
+	MDP_UNUSED_PARAMETER(length);
+	
+	/* TODO */
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
 
 
@@ -83,12 +246,33 @@ int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t 
 
 int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t  *data, uint32_t length)
 {
+	MDP_UNUSED_PARAMETER(memID);
+	MDP_UNUSED_PARAMETER(address);
+	MDP_UNUSED_PARAMETER(data);
+	MDP_UNUSED_PARAMETER(length);
+	
+	/* TODO */
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
 
 int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
+	MDP_UNUSED_PARAMETER(memID);
+	MDP_UNUSED_PARAMETER(address);
+	MDP_UNUSED_PARAMETER(data);
+	MDP_UNUSED_PARAMETER(length);
+	
+	/* TODO */
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
 
 int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
+	MDP_UNUSED_PARAMETER(memID);
+	MDP_UNUSED_PARAMETER(address);
+	MDP_UNUSED_PARAMETER(data);
+	MDP_UNUSED_PARAMETER(length);
+	
+	/* TODO */
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }

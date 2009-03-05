@@ -29,14 +29,14 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* MDP Host Services. */
 #include "mdp/mdp.h"
 #include "mdp/mdp_fncall.h"
 #include "mdp/mdp_host.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Memory functions. */
 
