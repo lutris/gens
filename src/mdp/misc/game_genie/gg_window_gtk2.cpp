@@ -548,6 +548,7 @@ static gboolean	gg_window_callback_txtEntry_keypress(GtkWidget *widget, GdkEvent
  */
 static int gg_window_add_code_from_textboxes(void)
 {
+	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtCode));
 	if (!code_txt || code_txt[0] == 0x00)
 		return 1;
 	
@@ -556,7 +557,6 @@ static int gg_window_add_code_from_textboxes(void)
 	gg_code.name[0] = 0x00;
 	gg_code.enabled = 0;
 	
-	const gchar* code_txt = gtk_entry_get_text(GTK_ENTRY(txtCode));
 	GG_CODE_ERR gcp_rval = gg_code_parse(code_txt, &gg_code, CPU_M68K);
 	
 	if (gcp_rval != GGCE_OK)
