@@ -15,6 +15,11 @@ div.navbar
 	border-collapse: collapsed;
 }
 
+div.contents li.sublist
+{
+	list-style: none;
+}
+
 table, table td, table th
 {
 	border: 1px solid black;
