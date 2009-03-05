@@ -542,7 +542,8 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	if (!cmp)
 	{
 		// No usable decompressors found.
-		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
+		// This is an error, since the "dummy" decompressor should always be usable.
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
 			"No usable decompressors found.");
 		fclose(fROM);
 		Game = NULL;
@@ -633,11 +634,14 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	
 	// Clear the ROM buffer and load the ROM.
 	memset(Rom_Data, 0, 6 * 1024 * 1024);
-	size_t loadedSize = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
-	if (loadedSize != sel_file->filesize)
+	size_t loaded_size = cmp->get_file(fROM, filename.c_str(), sel_file, Rom_Data, sel_file->filesize);
+	if (loaded_size != sel_file->filesize)
 	{
-		printf("retval: %d; expected: %d\n", loadedSize, sel_file->filesize);
 		// Incorrect filesize.
+		LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+			"Incorrect filesize. Got %d; expected %d.",
+			loaded_size, sel_file->filesize);
+		
 		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
 		file_list_t_free(file_list);
 		fclose(fROM);
