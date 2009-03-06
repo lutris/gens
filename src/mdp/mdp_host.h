@@ -113,6 +113,26 @@ typedef struct _mdp_host_t
 	const uint32_t interfaceVersion;
 	
 	/**
+	 * ptr_ref(): Get a reference for a pointer.
+	 * ptr_unref(): Unreference a pointer.
+	 */
+	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
+	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
+	
+	/**
+	 * val_set(), val_get(): Set or get int values.
+	 */
+	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
+	int (MDP_FNCALL *val_get)(uint32_t valID);
+	
+	/**
+	 * renderer_register(): Register a renderer.
+	 * renderer_unregister(): Unregister a renderer.
+	 */
+	int (MDP_FNCALL *renderer_register)(struct _mdp_t *plugin, mdp_render_t *renderer);
+	int (MDP_FNCALL *renderer_unregister)(struct _mdp_t *plugin, mdp_render_t *renderer);
+	
+	/**
 	 * mem_read_*(): Memory read functions.
 	 * @param memID Memory ID.
 	 * @param address Address.
@@ -156,26 +176,6 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *mem_write_block_8) (int memID, uint32_t address, uint8_t  *data, uint32_t length);
 	int (MDP_FNCALL *mem_write_block_16)(int memID, uint32_t address, uint16_t *data, uint32_t length);
 	int (MDP_FNCALL *mem_write_block_32)(int memID, uint32_t address, uint32_t *data, uint32_t length);
-	
-	/**
-	 * ptr_ref(): Get a reference for a pointer.
-	 * ptr_unref(): Unreference a pointer.
-	 */
-	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
-	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
-	
-	/**
-	 * val_set(), val_get(): Set or get int values.
-	 */
-	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
-	int (MDP_FNCALL *val_get)(uint32_t valID);
-	
-	/**
-	 * renderer_register(): Register a renderer.
-	 * renderer_unregister(): Unregister a renderer.
-	 */
-	int (MDP_FNCALL *renderer_register)(struct _mdp_t *plugin, mdp_render_t *renderer);
-	int (MDP_FNCALL *renderer_unregister)(struct _mdp_t *plugin, mdp_render_t *renderer);
 	
 	/**
 	 * menu_item_add(): Add a menu item.

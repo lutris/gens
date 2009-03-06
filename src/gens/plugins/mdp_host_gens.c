@@ -64,6 +64,15 @@ mdp_host_t Gens_MDP_Host =
 {
 	.interfaceVersion	= MDP_HOST_INTERFACE_VERSION,
 	
+	.ptr_ref		= mdp_host_ptr_ref,
+	.ptr_unref		= mdp_host_ptr_unref,
+	
+	.val_set		= mdp_host_val_set,
+	.val_get		= mdp_host_val_get,
+	
+	.renderer_register	= mdp_host_renderer_register,
+	.renderer_unregister	= mdp_host_renderer_unregister,
+	
 	.mem_read_8		= mdp_host_mem_read_8,
 	.mem_read_16		= mdp_host_mem_read_16,
 	.mem_read_32		= mdp_host_mem_read_32,
@@ -79,15 +88,6 @@ mdp_host_t Gens_MDP_Host =
 	.mem_write_block_8	= mdp_host_mem_write_block_8,
 	.mem_write_block_16	= mdp_host_mem_write_block_16,
 	.mem_write_block_32	= mdp_host_mem_write_block_32,
-	
-	.ptr_ref		= mdp_host_ptr_ref,
-	.ptr_unref		= mdp_host_ptr_unref,
-	
-	.val_set		= mdp_host_val_set,
-	.val_get		= mdp_host_val_get,
-	
-	.renderer_register	= mdp_host_renderer_register,
-	.renderer_unregister	= mdp_host_renderer_unregister,
 	
 	.menu_item_add		= mdp_host_menu_item_add,
 	.menu_item_remove	= mdp_host_menu_item_remove,
