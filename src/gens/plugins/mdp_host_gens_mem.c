@@ -59,9 +59,9 @@
 	((uint16_t*)(ptr))[(address) >> 1]       = (((data) >> 16) & 0xFFFF);	\
 	((uint16_t*)(ptr))[((address) >> 1) + 1] = ((data) & 0xFFFF);
 
-#define MEM_WRITE_32_BE(ptr, address, data)					\
-	((uint16_t*)(ptr))[(address) >> 1]       = (((data) >> 16) & 0xFFFF);	\
-	((uint16_t*)(ptr))[((address) >> 1) + 1] = ((data) & 0xFFFF);
+#define MEM_WRITE_32_LE(ptr, address, data)					\
+	((uint16_t*)(ptr))[((address) >> 1) + 1] = (((data) >> 16) & 0xFFFF);	\
+	((uint16_t*)(ptr))[(address) >> 1]       = ((data) & 0xFFFF);
 
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_s68k.h"
@@ -140,6 +140,7 @@ int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFF;
 			MEM_RW_8_BE(Rom_Data, address) = data;
+			MEM_RW_8_LE(_32X_Rom, address) = data;
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFF;
@@ -164,6 +165,7 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFF;
 			MEM_RW_16(Rom_Data, address) = data;
+			MEM_RW_16(_32X_Rom, address) = data;
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFF;
@@ -188,6 +190,7 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFF;
 			MEM_WRITE_32_BE(Rom_Data, address, data)
+			MEM_WRITE_32_LE(_32X_Rom, address, data);
 			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFF;
