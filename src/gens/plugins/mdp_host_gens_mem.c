@@ -150,8 +150,8 @@ int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 			MEM_RW_8_BE(VRam, address) = data;
 			break;
 		default:
-			/* Unknown memory ID. */
-			return -MDP_ERR_UNKNOWN_MEMID;
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
 	}
 	
 	return MDP_ERR_OK;
@@ -174,8 +174,8 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 			MEM_RW_16(VRam, address) = data;
 			break;
 		default:
-			/* Unknown memory ID. */
-			return -MDP_ERR_UNKNOWN_MEMID;
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
 	}
 	
 	return MDP_ERR_OK;
@@ -198,8 +198,8 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 			MEM_WRITE_32_BE(VRam, address, data)
 			break;
 		default:
-			/* Unknown memory ID. */
-			return -MDP_ERR_UNKNOWN_MEMID;
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
 	}
 	
 	return MDP_ERR_OK;
