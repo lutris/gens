@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+INCLUDES = -I@top_srcdir@/src/
+
 lib_LTLIBRARIES = mdp_misc_vdp_layer_options.la
 
 mdp_misc_vdp_layer_options_la_CFLAGS	= $(AM_CFLAGS)

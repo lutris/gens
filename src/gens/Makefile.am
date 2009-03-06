@@ -41,7 +41,7 @@ NASM_INCLUDES = \
 -I@srcdir@/gens_core/cpu/sh2/ -I@srcdir@/gens_core/cpu/z80/ -I@srcdir@/gens_core/mem/
 
 NASM += $(NASM_INCLUDES)
-INCLUDES = -I@srcdir@ -I@srcdir@/../ -I@srcdir@/ui/
+INCLUDES = -I@srcdir@/ -I@top_srcdir@/src/ -I@srcdir@/ui/
 
 if GENS_ZLIB_INTERNAL
 INCLUDES += -I@srcdir@/../zlib/

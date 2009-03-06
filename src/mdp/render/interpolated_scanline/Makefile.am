@@ -5,6 +5,8 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
+INCLUDES = -I@top_srcdir@/src/
+
 STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
 .asm.lo:

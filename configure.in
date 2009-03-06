@@ -564,9 +564,6 @@ AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warning
 AM_CXXFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_cxx} ${cflags_win32} ${cxxflags_visibility}"
 AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 
-# Make sure all packages have the base source directory in their #include search path.
-AM_CPPFLAGS="-I${srcdir}/src"
-
 # Use package-specific libdir.
 libdir="$libdir/gens"
 
