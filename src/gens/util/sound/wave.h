@@ -1,58 +1,36 @@
-/*========================================================================== 
- * 
- *  Copyright (C) 1995-1997 Microsoft Corporation. All Rights Reserved. 
- * 
- *  File:wave.h 
- *  Content:wave header 
- * 
- ***************************************************************************/ 
-#ifndef __WAVE_INCLUDED__
-#define __WAVE_INCLUDED__
+/***************************************************************************
+ * Gens: WAV file handler.                                                 *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
+#ifndef GENS_WAVE_H
+#define GENS_WAVE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define WAVEVERSION 1
 
-#ifndef ER_MEM
-#define ER_MEM 0xe000
-#endif
-
-#ifndef ER_CANNOTOPEN
-#define ER_CANNOTOPEN 0xe100
-#endif
-
-#ifndef ER_NOTWAVEFILE
-#define ER_NOTWAVEFILE 0xe101
-#endif
-
-#ifndef ER_CANNOTREAD
-#define ER_CANNOTREAD 0xe102
-#endif
-
-#ifndef ER_CORRUPTWAVEFILE
-#define ER_CORRUPTWAVEFILE 0xe103
-#endif
-
-#ifndef ER_CANNOTWRITE
-#define ER_CANNOTWRITE 0xe104
-#endif
-
-#if 0
-int WaveCreateFile(char *, HMMIO *, WAVEFORMATEX *, MMCKINFO *, MMCKINFO *);
-int WaveStartDataWrite(HMMIO *, MMCKINFO *, MMIOINFO *);
-int WaveWriteFile(HMMIO, UINT, BYTE *, MMCKINFO *, UINT *, MMIOINFO *);
-int WaveCloseWriteFile(HMMIO *, MMCKINFO *, MMCKINFO *, MMIOINFO *, DWORD);
-
-int WaveSaveFile(char *, UINT, DWORD, WAVEFORMATEX *, BYTE *);
-
-int WaveCopyUselessChunks(HMMIO *, MMCKINFO *, MMCKINFO *, HMMIO *, MMCKINFO *, MMCKINFO *);
-BOOL riffCopyChunk(HMMIO, HMMIO, const LPMMCKINFO);
-#endif
 
 #ifdef __cplusplus
-};
+}
 #endif
 
-#endif
+#endif /* GENS_WAVE_H */
