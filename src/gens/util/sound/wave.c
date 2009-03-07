@@ -161,3 +161,35 @@ int wav_dump_stop(void)
 	Sync_Gens_Window_SoundMenu();
 	return 0;
 }
+
+
+/**
+ * wav_dump_update(): Update the WAV file.
+ * @return 0 on success; non-zero on error.
+ */
+int wav_dump_update(void)
+{
+	if (!WAV_Dumping || !WAV_File)
+	{
+		if (WAV_File)
+		{
+			fclose(WAV_File);
+			WAV_File = 0;
+		}
+		
+		WAV_Dumping = 0;
+		Sync_Gens_Window_SoundMenu();
+		return 1;
+	}
+	
+	uint8_t buf[(882 * 4) + 16];
+	audio_write_sound_buffer(buf);
+	
+	unsigned int length = (audio_seg_length * 2);
+	if (audio_get_stereo())
+		length *= 2;
+	
+	/* Write the sound data. */
+	fwrite(buf, 1, length, WAV_File);
+	return 0;
+}

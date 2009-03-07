@@ -94,12 +94,6 @@ extern void	(*audio_wp_seg_wait)(void);
 extern void	(*audio_wp_inc)(void);
 #endif /* GENS_OS_WIN32 */
 
-// WAV dumping.
-// TODO: Move to util/sound/wav.c(pp)
-int	audio_wav_dump_start(void);
-int	audio_wav_dump_update(void);
-int	audio_wav_dump_stop(void);
-
 // Write sound data.
 void	audio_write_sound_stereo(short *dest, int length);
 void	audio_dump_sound_stereo(short *dest, int length);

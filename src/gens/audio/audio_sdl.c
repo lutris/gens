@@ -190,18 +190,16 @@ static void audio_sdl_callback(void *user, uint8_t *buffer, int len)
  */
 static int audio_sdl_write_sound_buffer(void *dump_buf)
 {
-	SDL_LockAudio();
-	
-	// TODO: Fix dumpBuf support.
-#if 0
 	if (dump_buf)
 	{
 		if (audio_get_stereo())
 			audio_dump_sound_stereo(dump_buf, audio_seg_length);
 		else
 			audio_dump_sound_mono(dump_buf, audio_seg_length);
+		return 0;
 	}
-#endif
+	
+	SDL_LockAudio();
 	
 	if (audio_get_stereo())
 	{

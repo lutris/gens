@@ -69,6 +69,7 @@ extern int WAV_Dumping;
 /* WAV dump functions. */
 int wav_dump_start(void);
 int wav_dump_stop(void);
+int wav_dump_update(void);
 
 #ifdef __cplusplus
 }
