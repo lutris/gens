@@ -457,7 +457,7 @@ section .text align=64
 %if %1 < 1
 	mov	ax, [Rom_Data + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 %elif %1 < 2
 	mov	ax, [Ram_68k + esi]
@@ -465,33 +465,33 @@ section .text align=64
 %elif %1 < 3
 	mov	ax, [_Ram_Prg + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 %elif %1 < 4
 	mov	ax, [_Ram_Word_2M + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 %elif %1 < 6
 	mov	ax, [_Ram_Word_1M + esi + 0x00000]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 %elif %1 < 7
 	mov	ax, [_Ram_Word_1M + esi + 0x20000]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 %elif %1 < 8
 	mov	ax, [_Cell_Conv_Tab + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 	mov	ax, [_Ram_Word_1M + eax * 2 + 0x00000]
 %elif %1 < 9
 	mov	ax, [_Cell_Conv_Tab + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
-	jnc	%%No_Carry
+	jnc	short %%No_Carry
 	xor	esi, 0x10000
 	mov	ax, [_Ram_Word_1M + eax * 2 + 0x20000]
 %endif
