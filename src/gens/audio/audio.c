@@ -289,42 +289,6 @@ void audio_dump_sound_mono(short *dest, int length)
 
 
 // TODO: Move the WAV functions to util/file/wav.c(pp).
-
-int audio_wav_dump_start(void)
-{
-#if 0
-	char Name[1024] = "";
-	
-	if (!Sound_Is_Playing || !Game)
-		return 0;
-	
-	if (WAV_Dumping)
-	{
-		draw->writeText("WAV sound is already dumping", 1000);
-		return 0;
-	}
-	
-	strcpy(Name, Dump_Dir);
-	strcat(Name, Rom_Name);
-	
-	if (WaveCreateFile(Name, &MMIOOut, &MainWfx, &CkOut, &CkRIFF))
-	{
-		draw->writeText("Error in WAV dumping", 1000);
-		return 0;
-	}
-	
-	if (WaveStartDataWrite(&MMIOOut, &CkOut, &MMIOInfoOut))
-	{
-		draw->writeText("Error in WAV dumping", 1000);
-		return 0;
-	}
-	
-	draw->writeText("Starting to dump WAV sound", 1000);
-	WAV_Dumping = 1;
-#endif
-	return 1;
-}
-
 int audio_wav_dump_update(void)
 {
 #if 0
@@ -346,25 +310,6 @@ int audio_wav_dump_update(void)
 		draw->writeText("Error in WAV dumping", 1000);
 		return 0;
 	}
-#endif
-	return 1;
-}
-
-
-int audio_wav_dump_stop(void)
-{
-#if 0
-	if (!WAV_Dumping)
-	{
-		draw->writeText("Already stopped", 1000);
-		return 0;
-	}
-	
-	if (WaveCloseWriteFile(&MMIOOut, &CkOut, &CkRIFF, &MMIOInfoOut, 0))
-		return 0;
-	
-	draw->writeText("WAV dump stopped", 1000);
-	WAV_Dumping = 0;
 #endif
 	return 1;
 }
