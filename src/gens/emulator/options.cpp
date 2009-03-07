@@ -52,6 +52,9 @@ using std::list;
 // Language handler.
 #include "emulator/language.h"
 
+// WAV dumping.
+#include "util/sound/wave.h"
+
 
 /**
  * spriteLimit(): Get the current sprite limit setting.
@@ -333,6 +336,13 @@ bool Options::soundEnable(void)
  */
 int Options::setSoundEnable(const bool newSoundEnable)
 {
+	if (newSoundEnable == audio_get_enabled())
+		return 0;
+	
+	// Make sure WAV dumping has stopped.
+	if (WAV_Dumping)
+		wav_dump_stop();
+	
 	audio_set_enabled(newSoundEnable);
 	
 	if (!audio_get_enabled())
@@ -397,6 +407,13 @@ bool Options::soundStereo(void)
  */
 void Options::setSoundStereo(const bool newSoundStereo)
 {
+	if (newSoundStereo == audio_get_stereo())
+		return;
+	
+	// Make sure WAV dumping has stopped.
+	if (WAV_Dumping)
+		wav_dump_stop();
+	
 	// TODO: Move most of this code to the Audio class.
 	unsigned char Reg_1[0x200];
 	
@@ -752,6 +769,10 @@ int Options::soundSampleRate(void)
  */
 void Options::setSoundSampleRate(const int newRate)
 {
+	// Make sure WAV dumping has stopped.
+	if (WAV_Dumping)
+		wav_dump_stop();
+	
 	// Make sure the rate ID is valid.
 	assert(newRate >= 0 && newRate <= 2);
 	
