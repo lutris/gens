@@ -288,33 +288,6 @@ void audio_dump_sound_mono(short *dest, int length)
 }
 
 
-// TODO: Move the WAV functions to util/file/wav.c(pp).
-int audio_wav_dump_update(void)
-{
-#if 0
-	unsigned char Buf_Tmp[882 * 4 + 16];
-	unsigned int length, Writted;
-	
-	if (!WAV_Dumping)
-		return 0;
-	
-	Write_Sound_Buffer(Buf_Tmp);
-	
-	length = Seg_Length << 1;
-	
-	if (Sound_Stereo)
-		length *= 2;
-	
-	if (WaveWriteFile(MMIOOut, length, &Buf_Tmp[0], &CkOut, &Writted, &MMIOInfoOut))
-	{
-		draw->writeText("Error in WAV dumping", 1000);
-		return 0;
-	}
-#endif
-	return 1;
-}
-
-
 /** Properties **/
 
 
