@@ -73,7 +73,6 @@ int	audio_seg_to_buffer = 8; // for frame skip
 static int	audio_sound_rate = 44100;
 static BOOL	audio_enabled = TRUE;
 static BOOL	audio_stereo = TRUE;
-static BOOL	audio_wav_dumping = FALSE;
 static BOOL	audio_gym_playing = FALSE;
 
 
@@ -382,17 +381,6 @@ void audio_set_sound_rate(const int new_sound_rate)
 {
 	audio_sound_rate = new_sound_rate;
 	// TODO: Adjust the audio subsystem to use the new rate.
-}
-
-
-BOOL audio_get_wav_dumping(void)
-{
-	return audio_wav_dumping;
-}
-void audio_set_wav_dumping(const BOOL new_wav_dumping)
-{
-	audio_wav_dumping = (new_wav_dumping ? TRUE : FALSE);
-	// TODO: WAV code.
 }
 
 

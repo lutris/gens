@@ -19,6 +19,7 @@
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/io/io.h"
 #include "util/file/save.hpp"
+
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
@@ -560,7 +561,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 	
 	// If WAV or GYM is being dumped, update the WAV or GYM.
 	// TODO: VGM dumping
-	if (audio_get_wav_dumping())
+	if (WAV_Dumping)
 		audio_wav_dump_update();
 	if (GYM_Dumping)
 		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);

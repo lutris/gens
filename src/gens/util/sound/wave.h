@@ -23,11 +23,52 @@
 #ifndef GENS_WAVE_H
 #define GENS_WAVE_H
 
+/* C includes. */
+#include <stdint.h>
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/* WAV header struct. */
+/* Description from http://ccrma.stanford.edu/courses/422/projects/WaveFormat/ */
+/* All values are little-endian, except for character fields. */
+typedef struct _wav_header_t
+{
+	/* RIFF chunk descriptor. */
+	struct
+	{
+		char		ChunkID[4];	/* Contains "RIFF". */
+		uint32_t	ChunkSize;	/* Size of the whole WAV, minus 8. */
+		char		Format[4];	/* Contains "WAVE". */
+	} riff;
+	
+	/* "fmt " sub-chunk. */
+	struct
+	{
+		char		SubchunkID[4];	/* Contains "fmt ". */
+		uint32_t	SubchunkSize;	/* Size of the subchunk, minus 8. */
+		uint16_t	AudioFormat;	/* PCM == 1 */
+		uint16_t	NumChannels;
+		uint32_t	SampleRate;
+		uint32_t	ByteRate;
+		uint16_t	BlockAlign;
+		uint16_t	BitsPerSample;
+	} fmt;
+	
+	struct
+	{
+		char		SubchunkID[4];	/* Contains "data". */
+		uint32_t	SubchunkSize;
+	} data;
+} wav_header_t;
 
+extern int WAV_Dumping;
+
+/* WAV dump functions. */
+int wav_dump_start(void);
+int wav_dump_stop(void);
 
 #ifdef __cplusplus
 }

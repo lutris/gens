@@ -52,6 +52,7 @@ using std::deque;
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/save.hpp"
+
 #include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
@@ -811,8 +812,8 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	//Save_Patch_File();
 	
 	// Audio dumping.
-	if (audio_get_wav_dumping())
-		audio_wav_dump_stop();
+	if (WAV_Dumping)
+		wav_dump_stop();
 	if (GYM_Dumping)
 		Stop_GYM_Dump();
 

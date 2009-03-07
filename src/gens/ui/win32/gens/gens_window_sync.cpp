@@ -39,6 +39,8 @@
 #include "emulator/options.hpp"
 #include "segacd/cd_sys.hpp"
 #include "util/file/rom.hpp"
+
+#include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
 #include "gens_core/vdp/vdp_io.h"
@@ -524,20 +526,21 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	char dumpLabel[16];
 	
+	bool allowAudioDump = (Game != NULL) && audio_get_enabled();
+	
 	// WAV dumping
-	// TODO: Always disabled for now, since WAV dumping isn't implemented yet.
-	strcpy(dumpLabel, (audio_get_wav_dumping() ? "Stop WAV Dump" : "Start WAV Dump"));
+	strcpy(dumpLabel, (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump"));
 	ModifyMenu(mnuSound, IDM_SOUND_WAVDUMP,
 		   MF_BYCOMMAND | MF_STRING, IDM_SOUND_WAVDUMP, dumpLabel);
 	EnableMenuItem(mnuSound, IDM_SOUND_WAVDUMP,
-		       MF_BYCOMMAND | MF_GRAYED);
+		       MF_BYCOMMAND | (allowAudioDump ? MF_ENABLED : MF_GRAYED));
 	
 	// GYM dumping
 	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
 	ModifyMenu(mnuSound, IDM_SOUND_GYMDUMP, MF_BYCOMMAND | MF_STRING,
 		   IDM_SOUND_GYMDUMP, dumpLabel);
 	EnableMenuItem(mnuSound, IDM_SOUND_GYMDUMP,
-		       MF_BYCOMMAND | ((Game != NULL) ? MF_ENABLED : MF_GRAYED));
+		       MF_BYCOMMAND | (allowAudioDump ? MF_ENABLED : MF_GRAYED));
 }
 
 

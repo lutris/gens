@@ -123,8 +123,6 @@ void	audio_calc_segment_length(void);
 // Properties.
 int	audio_get_sound_rate(void);
 void	audio_set_sound_rate(const int new_sound_rate);
-BOOL	audio_get_wav_dumping(void);
-void	audio_set_wav_dumping(const BOOL new_wav_dumping);
 BOOL	audio_get_gym_playing(void);
 void	audio_set_gym_playing(const BOOL new_gym_playing);
 BOOL	audio_get_enabled(void);

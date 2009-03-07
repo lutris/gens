@@ -52,6 +52,8 @@ using std::deque;
 #include "emulator/options.hpp"
 #include "segacd/cd_sys.hpp"
 #include "util/file/rom.hpp"
+
+#include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
 
 #include "gens_core/vdp/vdp_io.h"
@@ -595,7 +597,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	const char* sLabel;
 	
 	// WAV dumping
-	sLabel = (audio_get_wav_dumping() ? "Stop WAV Dump" : "Start WAV Dump");
+	sLabel = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
 	GtkWidget *mnuWAVDump = gens_menu_find_item(IDM_SOUND_WAVDUMP);
 	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuWAVDump)->child), sLabel);
 	
@@ -610,8 +612,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	bool allowAudioDump = (Game != NULL) && audio_get_enabled();
 	
 	// WAV dump
-	// TODO: Change from FALSE to allowAudioDump after WAV dumping has been reimplemented.
-	gtk_widget_set_sensitive(mnuWAVDump, FALSE);
+	gtk_widget_set_sensitive(mnuWAVDump, allowAudioDump);
 	
 	// GYM dump
 	gtk_widget_set_sensitive(mnuGYMDump, allowAudioDump);

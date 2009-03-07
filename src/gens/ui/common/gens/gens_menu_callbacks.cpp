@@ -52,7 +52,9 @@
 // Unused Parameter macro.
 #include "macros/unused.h"
 
+#include "util/sound/wave.h"
 #include "util/sound/gym.hpp"
+
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "util/file/save.hpp"
@@ -675,10 +677,10 @@ static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 		
 		case IDM_SOUND_WAVDUMP:
 			// Change WAV dump status.
-			if (!audio_get_wav_dumping())
-				audio_wav_dump_start();
+			if (!WAV_Dumping)
+				wav_dump_start();
 			else
-				audio_wav_dump_stop();
+				wav_dump_stop();
 			break;
 		
 		case IDM_SOUND_GYMDUMP:
