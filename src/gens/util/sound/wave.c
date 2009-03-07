@@ -28,6 +28,7 @@
 
 #include "emulator/g_main.hpp"
 #include "gens_core/misc/byteswap.h"
+#include "gens/gens_window_sync.hpp"
 
 #include "util/file/rom.hpp"
 
@@ -120,6 +121,7 @@ int wav_dump_start(void)
 	/* WAV dump started. */
 	vdraw_write_text("Starting to dump WAV sound.", 1000);
 	WAV_Dumping = 1;
+	Sync_Gens_Window_SoundMenu();
 	return 0;
 }
 
@@ -130,6 +132,32 @@ int wav_dump_start(void)
  */
 int wav_dump_stop(void)
 {
-	// TODO
-	return 1;
+	if (!WAV_Dumping || !WAV_File)
+	{
+		WAV_Dumping = 0;
+		vdraw_write_text("Not dumping WAV sound.", 1000);
+		Sync_Gens_Window_SoundMenu();
+		return 1;
+	}
+	
+	/* Get the current position in the WAV file. */
+	uint32_t wav_pos = (uint32_t)ftell(WAV_File);
+	
+	/* Seek to the beginning of the WAV file in order to update the header. */
+	fseek(WAV_File, 0, SEEK_SET);
+	
+	/* Set the size values in the header. */
+	WAV_Header.riff.ChunkSize = wav_pos - 8;
+	WAV_Header.data.SubchunkSize = wav_pos - 8 - sizeof(WAV_Header.riff) - sizeof(WAV_Header.fmt);
+	
+	/* Write the final header. */
+	fwrite(&WAV_Header, sizeof(WAV_Header), 1, WAV_File);
+	
+	/* Close the file. */
+	fclose(WAV_File);
+	WAV_File = NULL;
+	WAV_Dumping = 0;
+	vdraw_write_text("WAV dump stopped.", 1000);
+	Sync_Gens_Window_SoundMenu();
+	return 0;
 }

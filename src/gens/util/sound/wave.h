@@ -60,7 +60,7 @@ typedef struct _wav_header_t
 	struct
 	{
 		char		SubchunkID[4];	/* Contains "data". */
-		uint32_t	SubchunkSize;
+		uint32_t	SubchunkSize;	/* Size of the whole WAV, minus 8, minus size of riff and fmt. */
 	} data;
 } wav_header_t;
 
