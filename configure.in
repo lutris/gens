@@ -99,24 +99,17 @@ AM_CONDITIONAL([GENS_OBJ_MACHO], [test x$obj_format = xmacho])
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols. [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
 	# Debugging symbols enabled.
-	cflags_optimization="-O0"
 	nasm_debug_enabled="-g"
-	# Removed from cflags_warnings_common: "-Wconversion -Wsign-conversion -Wpadded -Wdisabled-optimization -Waggregate-return -Wpacked -Wunreachable-code"
-	# Removed from cflags_warnings_common (flags added in gcc-4.3): "-Wlogical-op"
-	# Removed from cflags_warnings_c (flags added in gcc-4.3): "-Wold-style-declaration -Wmissing-parameter-type"
-	cflags_warnings_common="-Wformat=2 -Winit-self -Wmissing-include-dirs -Wswitch -Wswitch-default -Wswitch-enum -Wfloat-equal -Wundef -Wshadow -Wunsafe-loop-optimizations -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-declarations -Wmissing-field-initializers -Wnormalized=nfc -Wredundant-decls -Winline"
-	cflags_warnings_c="-Wc++-compat -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes -Wnested-externs"
-	cflags_warnings_cxx="-Wc++0x-compat"
+	cflags_optimization="-O0"
+	cflags_warnings_common="-Wall -Wextra"
 	AC_DEFINE(GENS_DEBUG, 1, Enable debugging)	
 else
 	# Debugging disabled.
-	cflags_optimization="-O2"
 	nasm_debug_enabled=""
 	nasm_debug_format=""
 	cflags_debug=""
-	cflags_warnings_common=""
-	cflags_warnings_c=""
-	cflags_warnings_cxx=""
+	cflags_optimization="-O2"
+	cflags_warnings_common="-Wall -Wextra"
 fi
 AM_CONDITIONAL([GENS_DEBUG], [test x$enable_debug = xyes -o x$enable_debug = xfull])
 
@@ -560,8 +553,8 @@ else
 	cflags_win32=""
 fi
 
-AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_c} ${cflags_99} ${cflags_win32}"
-AM_CXXFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_warnings_cxx} ${cflags_win32} ${cxxflags_visibility}"
+AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_99} ${cflags_win32}"
+AM_CXXFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_win32} ${cxxflags_visibility}"
 AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 
 # Use package-specific libdir.
