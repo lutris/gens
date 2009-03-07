@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "gym.hpp"
 
 #include <string.h>
@@ -63,6 +67,11 @@ int Start_GYM_Dump(void)
 		vdraw_write_text("GYM sound is already dumping", 1000);
 		return 0;
 	}
+	
+	// Make sure relative pathnames are handled correctly on Win32.
+#ifdef GENS_OS_WIN32
+	SetCurrentDirectory(PathNames.Gens_EXE_Path);
+#endif
 	
 	// Build the filename.
 	num = -1;
