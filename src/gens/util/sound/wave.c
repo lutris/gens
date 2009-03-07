@@ -43,13 +43,16 @@
 #include <unistd.h>
 
 
+/* Make sure the structs are packed. */
+#define PACKED __attribute__ ((__packed__))
+
 /* WAV header struct. */
 /* Description from http://ccrma.stanford.edu/courses/422/projects/WaveFormat/ */
 /* All values are little-endian, except for character fields. */
-typedef struct _wav_header_t
+typedef struct PACKED _wav_header_t
 {
 	/* RIFF chunk descriptor. */
-	struct
+	struct PACKED
 	{
 		char		ChunkID[4];	/* Contains "RIFF". */
 		uint32_t	ChunkSize;	/* Size of the whole WAV, minus 8. */
@@ -57,7 +60,7 @@ typedef struct _wav_header_t
 	} riff;
 	
 	/* "fmt " sub-chunk. */
-	struct
+	struct PACKED
 	{
 		char		SubchunkID[4];	/* Contains "fmt ". */
 		uint32_t	SubchunkSize;	/* Size of the subchunk, minus 8. */
@@ -69,7 +72,7 @@ typedef struct _wav_header_t
 		uint16_t	BitsPerSample;
 	} fmt;
 	
-	struct
+	struct PACKED
 	{
 		char		SubchunkID[4];	/* Contains "data". */
 		uint32_t	SubchunkSize;	/* Size of the whole WAV, minus 8, minus size of riff and fmt. */
