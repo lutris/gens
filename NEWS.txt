@@ -72,6 +72,8 @@ Release 7 introduces the following new features:
 - [Win32] Joysticks connected after loading Gens/GS will now be detected
   in the Controller Configuration dialog.
 
+- WAV dumping has been reimplemented.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
