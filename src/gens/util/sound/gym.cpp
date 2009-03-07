@@ -44,7 +44,7 @@
 #include "util/file/file.hpp"
 
 
-static FILE *GYM_File;
+static FILE *GYM_File = NULL;
 int GYM_Dumping = 0;
 
 

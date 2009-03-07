@@ -83,7 +83,7 @@ int WAV_Dumping = 0;
 
 /* Current WAV file. */
 static wav_header_t WAV_Header;
-static FILE *WAV_File;
+static FILE *WAV_File = NULL;
 
 
 /**
