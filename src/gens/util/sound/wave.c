@@ -134,15 +134,15 @@ int wav_dump_start(void)
 	/* "fmt " header. */
 	static const char SubchunkID_fmt[4] = {'f', 'm', 't', ' '};
 	memcpy(WAV_Header.fmt.SubchunkID, SubchunkID_fmt, sizeof(WAV_Header.fmt.SubchunkID));
-	WAV_Header.fmt.SubchunkSize = sizeof(WAV_Header.fmt) - 8;
-	WAV_Header.fmt.AudioFormat = 1; /* PCM */
-	WAV_Header.fmt.NumChannels = (audio_get_stereo() ? 2 : 1);
-	WAV_Header.fmt.SampleRate = audio_get_sound_rate();
-	WAV_Header.fmt.BitsPerSample = 16; /* Gens is currently hard-coded to 16-bit audio. */
+	WAV_Header.fmt.SubchunkSize	= cpu_to_le32(sizeof(WAV_Header.fmt) - 8);
+	WAV_Header.fmt.AudioFormat	= cpu_to_le16(1); /* PCM */
+	WAV_Header.fmt.NumChannels	= cpu_to_le16((audio_get_stereo() ? 2 : 1));
+	WAV_Header.fmt.SampleRate	= cpu_to_le32(audio_get_sound_rate());
+	WAV_Header.fmt.BitsPerSample	= cpu_to_le16(16); /* Gens is currently hard-coded to 16-bit audio. */
 	
 	/* Calculated fields. */
-	WAV_Header.fmt.BlockAlign = WAV_Header.fmt.NumChannels * (WAV_Header.fmt.BitsPerSample / 8);
-	WAV_Header.fmt.ByteRate = WAV_Header.fmt.BlockAlign * WAV_Header.fmt.SampleRate;
+	WAV_Header.fmt.BlockAlign	= cpu_to_le16(WAV_Header.fmt.NumChannels * (WAV_Header.fmt.BitsPerSample / 8));
+	WAV_Header.fmt.ByteRate		= cpu_to_le32(WAV_Header.fmt.BlockAlign * WAV_Header.fmt.SampleRate);
 	
 	/* "data" header. */
 	static const char SubchunkID_data[4] = {'d', 'a', 't', 'a'};
@@ -180,8 +180,8 @@ int wav_dump_stop(void)
 	fseek(WAV_File, 0, SEEK_SET);
 	
 	/* Set the size values in the header. */
-	WAV_Header.riff.ChunkSize = wav_pos - 8;
-	WAV_Header.data.SubchunkSize = wav_pos - 8 - sizeof(WAV_Header.riff) - sizeof(WAV_Header.fmt);
+	WAV_Header.riff.ChunkSize	= cpu_to_le32(wav_pos - 8);
+	WAV_Header.data.SubchunkSize	= cpu_to_le32(wav_pos - 8 - sizeof(WAV_Header.riff) - sizeof(WAV_Header.fmt));
 	
 	/* Write the final header. */
 	fwrite(&WAV_Header, sizeof(WAV_Header), 1, WAV_File);
