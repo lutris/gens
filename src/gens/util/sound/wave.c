@@ -43,6 +43,39 @@
 #include <unistd.h>
 
 
+/* WAV header struct. */
+/* Description from http://ccrma.stanford.edu/courses/422/projects/WaveFormat/ */
+/* All values are little-endian, except for character fields. */
+typedef struct _wav_header_t
+{
+	/* RIFF chunk descriptor. */
+	struct
+	{
+		char		ChunkID[4];	/* Contains "RIFF". */
+		uint32_t	ChunkSize;	/* Size of the whole WAV, minus 8. */
+		char		Format[4];	/* Contains "WAVE". */
+	} riff;
+	
+	/* "fmt " sub-chunk. */
+	struct
+	{
+		char		SubchunkID[4];	/* Contains "fmt ". */
+		uint32_t	SubchunkSize;	/* Size of the subchunk, minus 8. */
+		uint16_t	AudioFormat;	/* PCM == 1 */
+		uint16_t	NumChannels;
+		uint32_t	SampleRate;
+		uint32_t	ByteRate;
+		uint16_t	BlockAlign;
+		uint16_t	BitsPerSample;
+	} fmt;
+	
+	struct
+	{
+		char		SubchunkID[4];	/* Contains "data". */
+		uint32_t	SubchunkSize;	/* Size of the whole WAV, minus 8, minus size of riff and fmt. */
+	} data;
+} wav_header_t;
+
 int WAV_Dumping = 0;
 
 /* Current WAV file. */
