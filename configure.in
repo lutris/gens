@@ -624,6 +624,7 @@ src/mdp/misc/Makefile
 src/mdp/misc/game_genie/Makefile
 src/mdp/misc/vdp_layer_options/Makefile
 src/mdp/misc/sgens/Makefile
+src/mdp/misc/ips_patcher/Makefile
 ])
 
 AC_OUTPUT
