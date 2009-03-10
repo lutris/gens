@@ -319,7 +319,7 @@ void Reset_SegaCD(void)
  * @param startCol Left-most column of the LED.
  */
 template<typename Pixel>
-static inline void draw_SegaCD_LED(Pixel* screen, Pixel color, unsigned short startCol)
+static inline void T_Draw_SegaCD_LED(Pixel* screen, Pixel color, unsigned short startCol)
 {
 	screen[(336*220) + 12 + startCol] = color;
 	screen[(336*220) + 13 + startCol] = color;
@@ -355,22 +355,22 @@ static void SegaCD_Display_LED(void)
 	if (LED_Status & 2)
 	{
 		if (bppMD == 15)
-			draw_SegaCD_LED(MD_Screen, ledReady_15, 0);
+			T_Draw_SegaCD_LED(MD_Screen, ledReady_15, 0);
 		else if (bppMD == 16)
-			draw_SegaCD_LED(MD_Screen, ledReady_16, 0);
+			T_Draw_SegaCD_LED(MD_Screen, ledReady_16, 0);
 		else //if (bppMD == 32)
-			draw_SegaCD_LED(MD_Screen32, ledReady_32, 0);
+			T_Draw_SegaCD_LED(MD_Screen32, ledReady_32, 0);
 	}
 	
 	// Access LED
 	if (LED_Status & 1)
 	{
 		if (bppMD == 15)
-			draw_SegaCD_LED(MD_Screen, ledAccess_15, 8);
+			T_Draw_SegaCD_LED(MD_Screen, ledAccess_15, 8);
 		else if (bppMD == 16)
-			draw_SegaCD_LED(MD_Screen, ledAccess_16, 8);
+			T_Draw_SegaCD_LED(MD_Screen, ledAccess_16, 8);
 		else //if (bppMD == 32)
-			draw_SegaCD_LED(MD_Screen32, ledAccess_32, 8);
+			T_Draw_SegaCD_LED(MD_Screen32, ledAccess_32, 8);
 	}
 }
 
