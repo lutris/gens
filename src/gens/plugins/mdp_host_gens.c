@@ -40,6 +40,7 @@
 #include "mdp_host_gens_menu.hpp"
 #include "mdp_host_gens_event.hpp"
 #include "mdp_host_gens_mem.h"
+#include "mdp_host_gens_emuctrl.hpp"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -104,6 +105,8 @@ mdp_host_t Gens_MDP_Host =
 	.window_register	= mdp_host_window_register,
 	.window_unregister	= mdp_host_window_unregister,
 	.window_get_main	= mdp_host_window_get_main,
+	
+	.emulator_control	= mdp_host_emulator_control,
 	
 	.directory_get_default_save_path = mdp_host_directory_get_default_save_path
 };

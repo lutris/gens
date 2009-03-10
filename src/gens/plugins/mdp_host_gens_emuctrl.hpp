@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Host Services.                           *
+ * Gens: MDP: Mega Drive Plugin - Host Services. (Emulator Control)        *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,35 +20,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_HOST_GENS_H
-#define GENS_MDP_HOST_GENS_H
+#ifndef GENS_MDP_HOST_GENS_EMUCTRL_HPP
+#define GENS_MDP_HOST_GENS_EMUCTRL_HPP
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <stdint.h>
+
+/* MDP Host Services. */
+#include "mdp/mdp.h"
+#include "mdp/mdp_fncall.h"
+#include "mdp/mdp_host.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// MDP Host Services.
-#include "mdp/mdp.h"	// TODO: Fix the typedef struct MDP_t hack for mdp_host.h
-#include "mdp/mdp_fncall.h"
-#include "mdp/mdp_host.h"
-
-// MDP Host Services struct.
-extern mdp_host_t Gens_MDP_Host;
-
-// Host Services functions.
-
-void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID);
-int   MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID);
-
-int   MDP_FNCALL mdp_host_val_set(uint32_t valID, int val);
-int   MDP_FNCALL mdp_host_val_get(uint32_t valID);
-
-void* MDP_FNCALL mdp_host_window_get_main(void);
-
-int   MDP_FNCALL mdp_host_directory_get_default_save_path(char *buf, int size);
+int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *param);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_HOST_GENS_H */
+#endif /* GENS_MDP_HOST_GENS_EMUCTRL_H */
