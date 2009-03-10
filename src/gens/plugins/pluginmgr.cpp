@@ -180,25 +180,6 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 		return false;
 	}
 	
-	const char* const &license = plugin->desc->license;
-	
-	if (strncasecmp(license, MDP_LICENSE_GPL_2,	sizeof(MDP_LICENSE_GPL_2))	&&
-	    strncasecmp(license, MDP_LICENSE_GPL_3,	sizeof(MDP_LICENSE_GPL_3))	&&
-	    strncasecmp(license, MDP_LICENSE_LGPL_2,	sizeof(MDP_LICENSE_LGPL_2))	&&
-	    strncasecmp(license, MDP_LICENSE_LGPL_21,	sizeof(MDP_LICENSE_LGPL_21))	&&
-	    strncasecmp(license, MDP_LICENSE_LGPL_3,	sizeof(MDP_LICENSE_LGPL_3))	&&
-	    strncasecmp(license, MDP_LICENSE_BSD,	sizeof(MDP_LICENSE_BSD))	&&
-	    strncasecmp(license, MDP_LICENSE_PD,	sizeof(MDP_LICENSE_PD)))
-	{
-		// Invalid license.
-		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"%s has an unacceptable license: %s",
-			File::GetNameFromPath(filename).c_str(), license);
-		
-		Incompat.add(plugin, -MDP_ERR_INVALID_LICENSE, filename);
-		return false;
-	}
-	
 	// Check required CPU flags.
 	uint32_t cpuFlagsRequired = plugin->cpuFlagsRequired;
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
