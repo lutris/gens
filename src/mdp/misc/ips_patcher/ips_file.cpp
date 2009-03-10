@@ -214,7 +214,7 @@ static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
 		IPS_Block *block = &(*iter);
 		
 		rval = ips_host_srv->mem_write_block_8(MDP_MEM_MD_ROM,
-				(*iter).address, (*iter).data, (*iter).length);
+				block->address, block->data, block->length);
 		
 		// TODO: Better error handling.
 		if (rval != MDP_ERR_OK)
