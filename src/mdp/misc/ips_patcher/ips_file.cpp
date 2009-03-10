@@ -222,5 +222,6 @@ static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
 	}
 	
 	// Patch applied successfully.
+	// TODO: Tell the emulator to recheck the ROM for changes to the header.
 	return MDP_ERR_OK;
 }
