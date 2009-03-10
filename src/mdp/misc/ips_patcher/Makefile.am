@@ -11,10 +11,12 @@ mdp_misc_ips_patcher_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_misc_ips_patcher_la_LDFLAGS		= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 
 mdp_misc_ips_patcher_la_SOURCES = \
-		ips_plugin.c \
-		ips.c
+		ips_plugin.c	\
+		ips.c		\
+		ips_file.cpp
 
 noinst_HEADERS = \
-		ips_plugin.h \
-		ips_icon.h \
-		ips.h
+		ips_plugin.h	\
+		ips_icon.h	\
+		ips.h		\
+		ips_file.cpp
