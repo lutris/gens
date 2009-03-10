@@ -2,7 +2,9 @@
  * Gens: Sega CD (Mega CD) initialization and main loop code.
  */
 
-#include <cstring>
+// C includes.
+#include <stdint.h>
+#include <string.h>
 
 #include "gens.hpp"
 #include "g_md.hpp"
@@ -342,14 +344,14 @@ static void SegaCD_Display_LED(void)
 	// TODO: Draw the LEDs on the screen buffer, not the MD screen.
 	
 	// Ready LED (green)
-	static const unsigned short ledReady_15 = 0x03E0;
-	static const unsigned short ledReady_16 = 0x07C0;
-	static const unsigned int ledReady_32 = 0x00F800;
+	static const uint16_t ledReady_15 = 0x03E0;
+	static const uint16_t ledReady_16 = 0x07C0;
+	static const uint32_t ledReady_32 = 0x00F800;
 	
 	// Access LED (red)
-	static const unsigned short ledAccess_15 = 0x7C00;
-	static const unsigned short ledAccess_16 = 0xF800;
-	static const unsigned int ledAccess_32 = 0xF80000;
+	static const uint16_t ledAccess_15 = 0x7C00;
+	static const uint16_t ledAccess_16 = 0xF800;
+	static const uint32_t ledAccess_32 = 0xF80000;
 	
 	// Ready LED
 	if (LED_Status & 2)
