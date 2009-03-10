@@ -253,20 +253,24 @@ int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t 
 	
 	uint8_t *ptr;
 	uint32_t max_address;
+	int big_endian;
 	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
 			ptr = Rom_Data;
 			max_address = 0x3FFFFF;
+			big_endian = 1;
 			break;
 		case MDP_MEM_MD_RAM:
 			ptr = Ram_68k;
 			max_address = 0xFFFF;
+			big_endian = 1;
 			break;
 		case MDP_MEM_MD_VRAM:
 			ptr = VRam;
 			max_address = 0xFFFF;
+			big_endian = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -282,19 +286,39 @@ int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t 
 	ptr = &ptr[address];
 	
 	/* Store data in 16-bit chunks. */
-	for (; length > 1; length -= 2)
+	if (big_endian)
 	{
-		MEM_RW_8_BE(ptr, 0) = *data;
-		MEM_RW_8_BE(ptr, 1) = *(data + 1);
+		for (; length > 1; length -= 2)
+		{
+			MEM_RW_8_BE(ptr, 0) = *data;
+			MEM_RW_8_BE(ptr, 1) = *(data + 1);
+			
+			ptr += 2;
+			data += 2;
+		}
 		
-		ptr += 2;
-		data += 2;
+		if (length == 1)
+		{
+			// One byte left.
+			MEM_RW_8_BE(ptr, 0) = *data;
+		}
 	}
-	
-	if (length == 1)
+	else
 	{
-		// One byte left.
-		MEM_RW_8_BE(ptr, 0) = *data;
+		for (; length > 1; length -= 2)
+		{
+			MEM_RW_8_LE(ptr, 0) = *data;
+			MEM_RW_8_LE(ptr, 1) = *(data + 1);
+			
+			ptr += 2;
+			data += 2;
+		}
+		
+		if (length == 1)
+		{
+			// One byte left.
+			MEM_RW_8_LE(ptr, 0) = *data;
+		}
 	}
 	
 	/* Block written. */
