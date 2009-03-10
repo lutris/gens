@@ -98,16 +98,24 @@ typedef enum _MDP_UI
 	 MDP_VDP_LAYER_OPTIONS_SPRITE_LOW	| \
 	 MDP_VDP_LAYER_OPTIONS_SPRITE_HIGH)
 
-// MDP_MENU: Menu IDs.
+/* MDP_MENU: Menu IDs. */
 typedef enum _MDP_MENU
 {
 	MDP_MENU_DEFAULT	= 0,
 } MDP_MENU;
 
-// Menu Handler function.
+/* Menu Handler function. */
 typedef int (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
 
-// MDP Host Services struct.
+/* MDP Emulator Control functions. */
+typedef enum _MDP_EMUCTRL
+{
+	MDP_EMUCTRL_UNKNOWN		= 0,
+	MDP_EMUCTRL_RESET		= 1,	/* Reset emulation. */
+	MDP_EMUCTRL_RELOAD_INFO		= 2,	/* Reload ROM information. */
+} MDP_EMUCTRL;
+
+/* MDP Host Services struct. */
 typedef struct _mdp_host_t
 {
 	const uint32_t interfaceVersion;
@@ -200,6 +208,9 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *window_register)(struct _mdp_t *plugin, void *window);
 	int (MDP_FNCALL *window_unregister)(struct _mdp_t *plugin, void *window);
 	void* (MDP_FNCALL *window_get_main)(void);
+	
+	/* Emulator control. */
+	int (MDP_FNCALL *emulator_control)(struct _mdp_t *plugin, MDP_EMUCTRL ctrl, void *param);
 	
 	/* Directory functions. */
 	int (MDP_FNCALL *directory_get_default_save_path)(char* buf, int size);
