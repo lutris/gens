@@ -463,7 +463,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	}
 	
 	// License.
-	ssMainInfo << "License: " + (desc->license ? charset_utf8_to_cp1252(desc->license) : "(none)");
+	ssMainInfo << "License: " + ((desc->license && desc->license[0]) ? charset_utf8_to_cp1252(desc->license) : "(none)");
 	
 	// Set the main plugin information.
 	Edit_SetText(lblPluginMainInfo, ssMainInfo.str().c_str());

@@ -470,7 +470,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	}
 	
 	// License.
-	ssMainInfo << "License: " + (desc->license ? string(desc->license) : "(none)");
+	ssMainInfo << "License: " + ((desc->license && desc->license[0]) ? string(desc->license) : "(none)");
 	
 	// Linebreaks needed.
 	const int linesNeeded = linesReserved - lines;
