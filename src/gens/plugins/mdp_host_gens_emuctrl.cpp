@@ -27,11 +27,15 @@
 #include "mdp_host_gens_emuctrl.hpp"
 #include "mdp/mdp_error.h"
 
-/* C includes. */
+// C includes.
 #include <string.h>
 
-/* Byteswapping macros. */
+// Byteswapping macros.
 #include "gens_core/misc/byteswap.h"
+
+// Gens functions.
+#include "emulator/options.hpp"
+#include "util/file/rom.hpp"
 
 
 /**
@@ -46,6 +50,17 @@ int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *
 	switch (ctrl)
 	{
 		case MDP_EMUCTRL_RESET:
+			if (!Game)
+			{
+				// No game is running.
+				// TODO: Add EMUCTRL-specific error codes.
+				return -MDP_ERR_UNKNOWN;
+			}
+			
+			// Reset the emulated system.
+			Options::systemReset();
+			break;
+			
 		case MDP_EMUCTRL_RELOAD_INFO:
 			// TODO
 			return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
@@ -56,4 +71,6 @@ int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *
 			// TODO: Add EMUCTRL-specific error codes.
 			return -MDP_ERR_UNKNOWN;
 	}
+	
+	return MDP_ERR_OK;
 }
