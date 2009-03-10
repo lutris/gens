@@ -168,18 +168,6 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 		return false;
 	}
 	
-	// Check the license.
-	if (!plugin->desc || !plugin->desc->license)
-	{
-		// No license.
-		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"%s has no license specified.",
-			File::GetNameFromPath(filename).c_str());
-		
-		Incompat.add(plugin, -MDP_ERR_INVALID_LICENSE, filename);
-		return false;
-	}
-	
 	// Check required CPU flags.
 	uint32_t cpuFlagsRequired = plugin->cpuFlagsRequired;
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
