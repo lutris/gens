@@ -250,7 +250,53 @@ int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t 
 
 /** Memory Block Write Functions **/
 
-int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t  *data, uint32_t length)
+static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint8_t *data, uint32_t length)
+{
+	#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+		for (; length > 1; length -= 2)
+		{
+			MEM_RW_8_BE(ptr, 0) = *data;
+			MEM_RW_8_BE(ptr, 1) = *(data + 1);
+			
+			ptr += 2;
+			data += 2;
+		}
+	#else
+		memcpy(ptr, data, (length & ~1));
+		ptr += (length & ~1);
+	#endif
+	
+	if (length & 1)
+	{
+		// One byte left.
+		MEM_RW_8_BE(ptr, 0) = *data;
+	}
+}
+
+static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint8_t *data, uint32_t length)
+{
+	#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+		for (; length > 1; length -= 2)
+		{
+			MEM_RW_8_LE(ptr, 0) = *data;
+			MEM_RW_8_LE(ptr, 1) = *(data + 1);
+			
+			ptr += 2;
+			data += 2;
+		}
+	#else
+		memcpy(ptr, data, (length & ~1));
+		ptr += (length & ~1);
+	#endif
+	
+	if (length & 1)
+	{
+		// One byte left.
+		MEM_RW_8_LE(ptr, 0) = *data;
+	}
+}
+
+int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
 	/* TODO: Test this function. */
 	
@@ -288,50 +334,16 @@ int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t 
 	
 	ptr = &ptr[address];
 	
-	/* Store data in 16-bit chunks. */
 	if (big_endian)
-	{
-		#if GENS_BYTEORDER == GENS_LIL_ENDIAN
-			for (; length > 1; length -= 2)
-			{
-				MEM_RW_8_BE(ptr, 0) = *data;
-				MEM_RW_8_BE(ptr, 1) = *(data + 1);
-				
-				ptr += 2;
-				data += 2;
-			}
-		#else
-			memcpy(ptr, data, (length & ~1));
-			ptr += (length & ~1);
-		#endif
-		
-		if (length & 1)
-		{
-			// One byte left.
-			MEM_RW_8_BE(ptr, 0) = *data;
-		}
-	}
+		mdp_host_mem_write_block_8_be(ptr, data, length);
 	else
+		mdp_host_mem_write_block_8_le(ptr, data, length);
+	
+	if (memID == MDP_MEM_MD_ROM && _32X_Started)
 	{
-		#if GENS_BYTEORDER == GENS_BIG_ENDIAN
-			for (; length > 1; length -= 2)
-			{
-				MEM_RW_8_LE(ptr, 0) = *data;
-				MEM_RW_8_LE(ptr, 1) = *(data + 1);
-				
-				ptr += 2;
-				data += 2;
-			}
-		#else
-			memcpy(ptr, data, (length & ~1));
-			ptr += (length & ~1);
-		#endif
-		
-		if (length & 1)
-		{
-			// One byte left.
-			MEM_RW_8_LE(ptr, 0) = *data;
-		}
+		// MD ROM, and 32X is active.
+		// Write to the 32X ROM, too.
+		mdp_host_mem_write_block_8_le(&_32X_Rom[address], data, length);
 	}
 	
 	/* Block written. */
