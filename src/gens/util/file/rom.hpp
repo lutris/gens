@@ -52,7 +52,6 @@ typedef struct _ROM_t
 	char Countries[4];
 } ROM_t;
 
-extern char IPS_Dir[GENS_PATH_MAX];
 extern char Rom_Dir[GENS_PATH_MAX];
 
 extern ROM_t* Game;
@@ -94,7 +93,6 @@ class ROM
 		
 		static unsigned int loadROM(const std::string& filename, ROM_t** retROM);
 		static void fixChecksum(void);
-		static int applyIPSPatch(void);
 		static void freeROM(ROM_t* ROM_MD);
 		
 		// Recent ROM struct.

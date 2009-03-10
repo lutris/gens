@@ -85,7 +85,6 @@ using std::deque;
 #include "file.hpp"
 
 char Rom_Dir[GENS_PATH_MAX];
-char IPS_Dir[GENS_PATH_MAX];
 
 ROM_t* Game = NULL;
 char ROM_Name[512];
@@ -326,9 +325,6 @@ void ROM::deinterleaveSMD(void)
  */
 void ROM::fillROMInfo(void)
 {
-	// Finally we do the IPS patch here, we can have the translated game name
-	applyIPSPatch();
-	
 	// Copy ROM text.
 	// TODO: Use constants for the ROM addresses.
 	memcpy(myROM->Console_Name,	&Rom_Data[0x100], 16);
@@ -725,73 +721,6 @@ void ROM::fixChecksum(void)
 		_32X_Rom[0x18E] = checks >> 8;;
 		_32X_Rom[0x18F] = checks & 0xFF;
 	}
-}
-
-
-int ROM::applyIPSPatch(void)
-{
-	FILE* IPS_File;
-	char filename[GENS_PATH_MAX];
-	unsigned char buf[16];
-	unsigned int adr, len, i;
-	
-	strcpy(filename, IPS_Dir);
-	strcat(filename, ROM_Name);
-	strcat(filename, ".ips");
-	
-	IPS_File = fopen(filename, "rb");
-	
-	if (!IPS_File)
-		return 1;
-	
-	fseek(IPS_File, 0, SEEK_SET);
-	fread(buf, 1, 5, IPS_File);
-	buf[5] = 0;
-	
-	// Check the "magic number".
-	if (strcasecmp((char*)buf, "patch"))
-	{
-		fclose(IPS_File);
-		return 2;
-	}
-	
-	fread(buf, 1, 3, IPS_File);
-	buf[3] = 0;
-	
-	while (strcasecmp((char*)buf, "eof"))
-	{
-		adr = (unsigned int)(buf[2] + (buf[1] << 8) + (buf[0] << 16));
-		
-		if (fread(buf, 1, 2, IPS_File) == 0)
-		{
-			fclose(IPS_File);
-			return 3;
-		}
-		
-		len = (unsigned int)(buf[1] + (buf[0] << 8));
-		for (i = 0; i < len; i++)
-		{
-			if (fread(buf, 1, 1, IPS_File) == 0)
-			{
-				fclose(IPS_File);
-				return 3;
-			}
-			
-			if (adr < Rom_Size)
-				Rom_Data[adr++] = buf[0];
-		}
-		
-		if (fread(buf, 1, 3, IPS_File) == 0)
-		{
-			fclose(IPS_File);
-			return 3;
-		}
-		
-		buf[3] = 0;
-	}
-	
-	fclose(IPS_File);
-	return 0;
 }
 
 

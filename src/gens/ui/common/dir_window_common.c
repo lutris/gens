@@ -39,6 +39,5 @@ const dir_entry_t dir_window_entries[DIR_WINDOW_ENTRIES_COUNT + 1] =
 	{"GYM Dump",	PathNames.Dump_GYM_Dir},
 	{"Screenshots",	PathNames.Screenshot_Dir},
 	{"PAT patches",	PathNames.Patch_Dir},
-	{"IPS patches",	IPS_Dir},
 	{NULL, NULL}
 };

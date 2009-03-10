@@ -125,7 +125,6 @@ int Config::save(const string& filename)
 	cfg.writeString("General", "Dump GYM Path", PathNames.Dump_GYM_Dir);
 	cfg.writeString("General", "Screen Shot Path", PathNames.Screenshot_Dir);
 	cfg.writeString("General", "Patch Path", PathNames.Patch_Dir);
-	cfg.writeString("General", "IPS Patch Path", IPS_Dir);
 	
 	// Genesis firmware.
 	cfg.writeString("General", "Genesis BIOS", BIOS_Filenames.MD_TMSS);
@@ -342,7 +341,6 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("General", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
 	cfg.getString("General", "Screen Shot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
 	cfg.getString("General", "Patch Path", PathNames.Gens_Path, PathNames.Patch_Dir, sizeof(PathNames.Patch_Dir));
-	cfg.getString("General", "IPS Patch Path", PathNames.Gens_Path, IPS_Dir, sizeof(IPS_Dir));
 	
 	// Genesis firmware.
 	cfg.getString("General", "Genesis BIOS", "", BIOS_Filenames.MD_TMSS, sizeof(BIOS_Filenames.MD_TMSS));
