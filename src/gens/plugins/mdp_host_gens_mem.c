@@ -27,6 +27,9 @@
 #include "mdp_host_gens_mem.h"
 #include "mdp/mdp_error.h"
 
+/* C includes. */
+#include <string.h>
+
 /* Byteswapping macros. */
 #include "gens_core/misc/byteswap.h"
 
@@ -288,16 +291,21 @@ int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t 
 	/* Store data in 16-bit chunks. */
 	if (big_endian)
 	{
-		for (; length > 1; length -= 2)
-		{
-			MEM_RW_8_BE(ptr, 0) = *data;
-			MEM_RW_8_BE(ptr, 1) = *(data + 1);
-			
-			ptr += 2;
-			data += 2;
-		}
+		#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+			for (; length > 1; length -= 2)
+			{
+				MEM_RW_8_BE(ptr, 0) = *data;
+				MEM_RW_8_BE(ptr, 1) = *(data + 1);
+				
+				ptr += 2;
+				data += 2;
+			}
+		#else
+			memcpy(ptr, data, (length & ~1));
+			ptr += (length & ~1);
+		#endif
 		
-		if (length == 1)
+		if (length & 1)
 		{
 			// One byte left.
 			MEM_RW_8_BE(ptr, 0) = *data;
@@ -305,16 +313,21 @@ int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t 
 	}
 	else
 	{
-		for (; length > 1; length -= 2)
-		{
-			MEM_RW_8_LE(ptr, 0) = *data;
-			MEM_RW_8_LE(ptr, 1) = *(data + 1);
-			
-			ptr += 2;
-			data += 2;
-		}
+		#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+			for (; length > 1; length -= 2)
+			{
+				MEM_RW_8_LE(ptr, 0) = *data;
+				MEM_RW_8_LE(ptr, 1) = *(data + 1);
+				
+				ptr += 2;
+				data += 2;
+			}
+		#else
+			memcpy(ptr, data, (length & ~1));
+			ptr += (length & ~1);
+		#endif
 		
-		if (length == 1)
+		if (length & 1)
 		{
 			// One byte left.
 			MEM_RW_8_LE(ptr, 0) = *data;
