@@ -206,8 +206,12 @@ static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
 	if (dest_length > rom_size)
 	{
 		// Resize the ROM.
-		// TODO
-		return -MDP_ERR_MEM_OUT_OF_RANGE;
+		int rval = ips_host_srv->mem_size_set(MDP_MEM_MD_ROM, dest_length);
+		if (rval != MDP_ERR_OK)
+		{
+			// Error resizing the ROM.
+			return rval;
+		}
 	}
 	
 	// Patch the ROM.

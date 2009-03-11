@@ -31,6 +31,7 @@
 
 #include "ips.h"
 #include "ips_plugin.h"
+#include "ips_file.hpp"
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
@@ -74,8 +75,8 @@ int MDP_FNCALL ips_init(mdp_host_t *host_srv)
 	ips_menuItemID = ips_host_srv->menu_item_add(&mdp, &ips_menu_handler, 0, "&IPS Patcher");
 	
 	// Register the event handler. (TODO)
-	//ips_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
-	//ips_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, ips_event_handler);
+	ips_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
+	ips_host_srv->event_register(&mdp, MDP_EVENT_CLOSE_ROM, ips_event_handler);
 	
 	// Initialized.
 	return MDP_ERR_OK;
@@ -117,6 +118,25 @@ static int MDP_FNCALL ips_menu_handler(int menu_item_id)
 
 static int MDP_FNCALL ips_event_handler(int event_id, void *event_info)
 {
+	if (event_id == MDP_EVENT_OPEN_ROM)
+	{
+		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)(event_info);
+		
+		// IPS patch file is [save directory]/ROM_name.ips.
+		// TODO: Register an IPS patcher-specific directory.
+		char patch_filename[1024];
+		ips_host_srv->directory_get_default_save_path(patch_filename, sizeof(patch_filename));
+		
+		// Append the game's name.
+		strcat(patch_filename, "/");
+		strcat(patch_filename, openROM->rom_name);
+		strcat(patch_filename, ".ips");
+		
+		// Attempt to load the patch.
+		// TODO: Make autoloading based on filename user-configurable.
+		ips_file_load(patch_filename);
+	}
+	
 	// TODO
 	return MDP_ERR_OK;
 }
