@@ -378,7 +378,7 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 	}
 	
 	/* Block written. */
-	return -MDP_ERR_OK;
+	return MDP_ERR_OK;
 }
 
 int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
