@@ -35,6 +35,18 @@ extern "C" {
 /* MDP Render Plugin interface version. */
 #define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
 
+/* Video mode flags. */
+
+/* Bit 0: 555/565 mode (16-bit color) */
+#define MDP_RENDER_VMODE_RGB_MODE	(1 << 0)
+#define MDP_RENDER_VMODE_RGB_555	0
+#define MDP_RENDER_VMODE_RGB_565	(1 << 0)
+
+/* Bit 1: 16/32-bit color. */
+#define MDP_RENDER_VMODE_BPP		(1 << 1)
+#define MDP_RENDER_VMODE_BPP_16		0
+#define MDP_RENDER_VMODE_BPP_32		(1 << 1)
+
 /* Render information struct. */
 typedef struct _mdp_render_info_t
 {
@@ -47,20 +59,14 @@ typedef struct _mdp_render_info_t
 	int width;		/* Image width. */
 	int height;		/* Image height. */
 	
-	uint32_t bpp;		/* Current color depth. */
-	
 	uint32_t cpuFlags;	/* CPU flags. */
-	uint32_t renderFlags;	/* Rendering flags. (Currently unused.) */
+	uint32_t vmodeFlags;	/* Video mode flags. */
 } mdp_render_info_t;
 
 /* Render plugin flags. */
-
-/**
- * SRC16DST32: Plugin only supports 16-bit color.
- * If the emulator is using 32-bit color, the emulator will have to
- * convert it from 16-bit to 32-bit manually.
- */
-#define MDP_RENDER_FLAG_SRC16DST32	(1 << 0)
+#define MDP_RENDER_FLAG_RGB555		(1 << 0)
+#define MDP_RENDER_FLAG_RGB565		(1 << 1)
+#define MDP_RENDER_FLAG_RGB888		(1 << 2)
 
 // Render plugin definition.
 typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
