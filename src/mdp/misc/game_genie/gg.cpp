@@ -154,6 +154,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		
 		// Get the ROM size.
 		gg_mdp_rom_md_size = gg_host_srv->mem_size_get(MDP_MEM_MD_ROM);
+		// TODO: Event handler for "ROM size changed".
 		
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.
