@@ -163,7 +163,7 @@ int MDP_FNCALL ips_file_load(const char* filename)
 		}
 		
 		// Check the destination length.
-		cur_dest_length = block.address + block.length - 1;
+		cur_dest_length = block.address + block.length;
 		if (cur_dest_length > dest_length)
 			dest_length = cur_dest_length;
 		
