@@ -186,6 +186,21 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *mem_write_block_32)(int memID, uint32_t address, uint32_t *data, uint32_t length);
 	
 	/**
+	 * mem_size_get(): Get the size of a memory block.
+	 * @param memID Memory ID.
+	 * @return Memory size, or negative on error.
+	 */
+	int (MDP_FNCALL *mem_size_get)(int memID);
+	
+	/**
+	 * mem_size_set(): Set the size of a memory block.
+	 * @param memID Memory ID.
+	 * @param size New memory size.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_size_set)(int memID, int size);
+	
+	/**
 	 * menu_item_add(): Add a menu item.
 	 * menu_item_remove(): Remove a menu item.
 	 * menu_item_set_text(): Set menu item text.
