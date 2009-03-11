@@ -44,7 +44,7 @@ struct IPS_Block
 	uint8_t  *data;
 	
 	IPS_Block() { data = NULL; }
-	~IPS_Block() { free(data); }
+	~IPS_Block() { free(data); data = NULL; }
 };
 
 
@@ -170,6 +170,10 @@ int MDP_FNCALL ips_file_load(const char* filename)
 		// Add the block to the list.
 		lstIPSBlocks.push_back(block);
 	}
+	
+	// Make sure the temporary block's constructor doesn't free any memory.
+	// TODO: Add a reference counter?
+	block.data = NULL;
 	
 	if (!ips_OK)
 	{
