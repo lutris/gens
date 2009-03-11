@@ -90,6 +90,9 @@ mdp_host_t Gens_MDP_Host =
 	.mem_write_block_16	= mdp_host_mem_write_block_16,
 	.mem_write_block_32	= mdp_host_mem_write_block_32,
 	
+	.mem_size_get		= mdp_host_mem_size_get,
+	.mem_size_set		= mdp_host_mem_size_set,
+	
 	.menu_item_add		= mdp_host_menu_item_add,
 	.menu_item_remove	= mdp_host_menu_item_remove,
 	

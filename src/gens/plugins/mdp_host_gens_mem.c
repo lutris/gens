@@ -408,3 +408,87 @@ int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t
 	/* TODO */
 	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }
+
+
+/** Memory Size Functions **/
+
+int MDP_FNCALL mdp_host_mem_size_get(int memID)
+{
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			return Rom_Size;
+		case MDP_MEM_MD_RAM:
+			return sizeof(Ram_68k);
+		case MDP_MEM_MD_VRAM:
+			return sizeof(VRam);
+		default:
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
+	}
+}
+
+static int mdp_host_mem_size_set_MD_ROM(int size)
+{
+	/* Attempt to resize the ROM. */
+	/* TODO: SSF2 mapper support? */
+	if (size <= 0 || size > 0x400000)
+	{
+		/* New size is out of range. */
+		return -MDP_ERR_MEM_OUT_OF_RANGE;
+	}
+	
+	if (size == Rom_Size)
+	{
+		/* New size is the same as the old size. */
+		return MDP_ERR_OK;
+	}
+	else if (size > Rom_Size)
+	{
+		/* New size is larger. Zero the allocated memory. */
+		int erase_size = size;
+		if (Rom_Size & 1)
+		{
+			MEM_RW_8_BE(Rom_Data, Rom_Size) = 0x00;
+			Rom_Size++;
+			erase_size++;
+			if (erase_size >= 0x400000)
+				erase_size = 0x400000;
+		}
+		
+		memset(&Rom_Data[Rom_Size], 0x00, (erase_size - Rom_Size));
+	}
+	else if (size < Rom_Size)
+	{
+		/* New size is smaller. Zero the blank area. */
+		/* TODO */
+	}
+	
+	/* Set the new ROM size. */
+	Rom_Size = size;
+	return MDP_ERR_OK;
+}
+
+int MDP_FNCALL mdp_host_mem_size_set(int memID, int size)
+{
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			return mdp_host_mem_size_set_MD_ROM(size);
+		
+		case MDP_MEM_MD_RAM:
+		case MDP_MEM_MD_VRAM:
+			/* Non-resizable memory blocks. */
+			return -MDP_ERR_MEM_NOT_RESIZABLE;
+		
+		default:
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
+	}
+}
