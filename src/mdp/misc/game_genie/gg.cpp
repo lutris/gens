@@ -162,7 +162,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
 		
 		// Load the patch file.
-		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
+		string full_path = string(def_save_path) + "/" + gg_loaded_rom + string(GG_FILE_EXT);
 		gg_file_load(full_path.c_str());
 		
 		// Set up the pre-frame event handler.
