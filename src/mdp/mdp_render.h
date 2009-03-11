@@ -73,10 +73,12 @@ typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
 typedef struct _mdp_render_t
 {
 	const uint32_t interfaceVersion;	/* Render interface version. */
-	mdp_render_fn blit;			/* Blit function. */
 	const int scale;			/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
-	const uint32_t flags;			/* Render flags. */
+	
+	mdp_render_fn blit;			/* Blit function. */
 	const char* tag;			/* Render tag. */
+	
+	const uint32_t flags;			/* Render flags. */
 } mdp_render_t;
 
 
