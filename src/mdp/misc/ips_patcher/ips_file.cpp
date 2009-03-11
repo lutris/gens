@@ -22,6 +22,7 @@
 
 #include "ips_file.hpp"
 #include "ips.h"
+#include "ips_plugin.h"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -230,6 +231,11 @@ static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
 	}
 	
 	// Patch applied successfully.
+	// Reset the emulator for the patch to take effect.
 	// TODO: Tell the emulator to recheck the ROM for changes to the header.
+	ips_host_srv->emulator_control(&mdp, MDP_EMUCTRL_RESET, NULL);
+	
+	// TODO: Write a message to the OSD indicating that a patch has been loaded.
+	
 	return MDP_ERR_OK;
 }
