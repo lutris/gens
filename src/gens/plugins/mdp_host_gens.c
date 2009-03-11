@@ -207,7 +207,6 @@ int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
 	switch (valID)
 	{
 		case MDP_VAL_UI:
-		case MDP_VAL_ROM_SIZE:
 			// Read-only values.
 			return -MDP_ERR_VAL_READ_ONLY;
 			break;
@@ -251,12 +250,6 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 			#endif
 			
 			break;
-		
-		case MDP_VAL_ROM_SIZE:
-			// ROM size.
-			if (!Game)
-				return 0;
-			return Rom_Size;
 		
 		case MDP_VAL_VDP_LAYER_OPTIONS:
 			// VDP layer options.

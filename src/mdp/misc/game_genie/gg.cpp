@@ -153,7 +153,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		gg_system_id = (MDP_SYSTEM_ID)(openROM->system_id);
 		
 		// Get the ROM size.
-		gg_mdp_rom_md_size = gg_host_srv->val_get(MDP_VAL_ROM_SIZE);
+		gg_mdp_rom_md_size = gg_host_srv->mem_size_get(MDP_MEM_MD_ROM);
 		
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.

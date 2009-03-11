@@ -63,7 +63,6 @@ typedef enum _MDP_MEM
 typedef enum _MDP_VAL
 {
 	MDP_VAL_UI			= 0,
-	MDP_VAL_ROM_SIZE		= 1,
 	MDP_VAL_VDP_LAYER_OPTIONS	= 2,
 } MDP_VAL;
 

@@ -197,14 +197,14 @@ int MDP_FNCALL ips_file_load(const char* filename)
 static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
 {
 	// Check if the ROM memory area needs to be resized.
-	int rom_size = ips_host_srv->val_get(MDP_VAL_ROM_SIZE);
+	int rom_size = ips_host_srv->mem_size_get(MDP_MEM_MD_ROM);
 	if (rom_size < 0)
 	{
 		// Error obtaining the ROM size.
 		return rom_size;
 	}
 	
-	if (dest_length > rom_size)
+	if (dest_length != rom_size)
 	{
 		// Resize the ROM.
 		int rval = ips_host_srv->mem_size_set(MDP_MEM_MD_ROM, dest_length);
