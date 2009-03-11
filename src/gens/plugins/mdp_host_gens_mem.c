@@ -72,12 +72,16 @@
 #include "gens_core/mem/mem_sh2.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
+#include "util/file/rom.hpp"
 
 
 /** Memory Read Functions **/
 
 uint8_t MDP_FNCALL mdp_host_mem_read_8(int memID, uint32_t address)
 {
+	if (!Game)
+		return 0;
+	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
@@ -97,6 +101,9 @@ uint8_t MDP_FNCALL mdp_host_mem_read_8(int memID, uint32_t address)
 
 uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address)
 {
+	if (!Game)
+		return 0;
+	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
@@ -116,6 +123,9 @@ uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address)
 
 uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
 {
+	if (!Game)
+		return 0;
+	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
@@ -138,6 +148,9 @@ uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
 
 int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
@@ -163,6 +176,9 @@ int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 
 int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
@@ -188,6 +204,9 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 
 int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
@@ -216,6 +235,9 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 
 int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
 	MDP_UNUSED_PARAMETER(data);
@@ -227,6 +249,9 @@ int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *d
 
 int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
 	MDP_UNUSED_PARAMETER(data);
@@ -238,6 +263,9 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 
 int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
 	MDP_UNUSED_PARAMETER(data);
@@ -298,6 +326,9 @@ static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint8_t *data, ui
 
 int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	/* TODO: Test this function. */
 	
 	uint8_t *ptr;
@@ -352,6 +383,9 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 
 int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
 	MDP_UNUSED_PARAMETER(data);
@@ -363,6 +397,9 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 
 int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
 	MDP_UNUSED_PARAMETER(data);
