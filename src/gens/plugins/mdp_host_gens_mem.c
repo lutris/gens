@@ -278,9 +278,17 @@ int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t 
 
 /** Memory Block Write Functions **/
 
-static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint8_t *data, uint32_t length)
+static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
 {
 	#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+		if (address & 1)
+		{
+			/* Starts on an odd byte. */
+			ptr[(address++) ^ 1] = *data++;
+			length--;
+		}
+		
+		ptr = &ptr[address];
 		for (; length > 1; length -= 2)
 		{
 			MEM_RW_8_BE(ptr, 0) = *data;
@@ -290,6 +298,7 @@ static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint8_t *data, ui
 			data += 2;
 		}
 	#else
+		ptr = &ptr[address];
 		memcpy(ptr, data, (length & ~1));
 		ptr += (length & ~1);
 	#endif
@@ -301,9 +310,17 @@ static inline void mdp_host_mem_write_block_8_be(uint8_t *ptr, uint8_t *data, ui
 	}
 }
 
-static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint8_t *data, uint32_t length)
+static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
 {
 	#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+		if (address & 1)
+		{
+			/* Starts on an odd byte. */
+			ptr[(address++) ^ 1] = *data++;
+			length--;
+		}
+		
+		ptr = &ptr[address];
 		for (; length > 1; length -= 2)
 		{
 			MEM_RW_8_LE(ptr, 0) = *data;
@@ -313,6 +330,7 @@ static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint8_t *data, ui
 			data += 2;
 		}
 	#else
+		ptr = &ptr[address];
 		memcpy(ptr, data, (length & ~1));
 		ptr += (length & ~1);
 	#endif
@@ -363,18 +381,16 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 		return -MDP_ERR_MEM_OUT_OF_RANGE;
 	}
 	
-	ptr = &ptr[address];
-	
 	if (big_endian)
-		mdp_host_mem_write_block_8_be(ptr, data, length);
+		mdp_host_mem_write_block_8_be(ptr, address, data, length);
 	else
-		mdp_host_mem_write_block_8_le(ptr, data, length);
+		mdp_host_mem_write_block_8_le(ptr, address, data, length);
 	
 	if (memID == MDP_MEM_MD_ROM && _32X_Started)
 	{
 		// MD ROM, and 32X is active.
 		// Write to the 32X ROM, too.
-		mdp_host_mem_write_block_8_le(&_32X_Rom[address], data, length);
+		mdp_host_mem_write_block_8_le(_32X_Rom, address, data, length);
 	}
 	
 	/* Block written. */
