@@ -116,8 +116,8 @@ mdp_host_t Gens_MDP_Host =
 	
 	.crc32			= mdp_host_crc32,
 	.z_open			= mdp_host_z_open,
-	.z_get_file		= NULL, /* TODO */
-	.z_close		= NULL  /* TODO */
+	.z_get_file		= mdp_host_z_get_file,
+	.z_close		= mdp_host_z_close
 };
 
 

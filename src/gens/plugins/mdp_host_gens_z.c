@@ -220,3 +220,53 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 	/* If 0, return an error code. */
 	return (rval == 0 ? -MDP_ERR_UNKNOWN : rval);	/* TODO: Add a specific error code for this. */
 }
+
+
+/* TODO: Test this function. */
+/**
+ * mdp_host_z_close(): Close a compressed archive.
+ * @param z_file Opened compressed archive.
+ */
+int MDP_FNCALL mdp_host_z_close(mdp_z_t *z_file)
+{
+	if (!z_file)
+	{
+		/* Missing parameter. */
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	}
+	
+	/* Close the FILE stream. */
+	if (z_file->f)
+		fclose(z_file->f);
+	
+	/* Free the filename. */
+	if (z_file->filename)
+		free(z_file->filename);
+	
+	/* Free the list of file entries. */
+	if (z_file->files)
+	{
+		mdp_z_entry_t *z_cur = z_file->files;
+		mdp_z_entry_t *z_next;
+		
+		do
+		{
+			if (z_cur->filename)
+				free(z_cur->filename);
+			
+			/* Save the "next" pointer. */
+			z_next = z_cur->next;
+			
+			/* Free the current entry. */
+			free(z_cur);
+			
+			/* Go to the next entry. */
+			z_cur = z_next;
+		} while (z_cur);
+	}
+	
+	/* Free the mdp_z_t. */
+	free(z_file);
+	
+	return MDP_ERR_OK;
+}
