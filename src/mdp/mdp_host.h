@@ -231,10 +231,10 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *directory_get_default_save_path)(char* buf, int size);
 	
 	/* Compression functions. */
-	uint32_t	(MDP_FNCALL *crc32)(const uint8_t* buf, int length);
-	mdp_z_t*	(MDP_FNCALL *z_open)(const char* filename);
-	int		(MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
-	int		(MDP_FNCALL *z_close)(mdp_z_t *z_file);
+	int	(MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);
+	int	(MDP_FNCALL *z_open)(const char* filename, mdp_z_t **z_out);
+	int	(MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
+	int	(MDP_FNCALL *z_close)(mdp_z_t *z_file);
 } mdp_host_t;
 
 #ifdef __cplusplus

@@ -34,16 +34,22 @@
 
 /**
  * mdp_host_crc32(): Calculate the CRC32 of the specified data.
- * @param buf Data.
- * @param length Length of the data.
+ * @param buf		[in]  Data.
+ * @param length	[in]  Length of the data.
+ * @param crc32_out	[out] Pointer to variable to store the CRC32 in.
+ * @return MDP error code.
  */
-uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length)
+uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_out)
 {
 #ifndef GENS_ZLIB
 	/* ZLib support wasn't compiled in. */
 	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 #else
 	/* ZLib support was compiled in. */
-	return crc32(0, buf, length);
+	if (!crc32_out)
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error for this. */
+	
+	*crc32_out = crc32(0, buf, length);
+	return MDP_ERR_OK;
 #endif
 }

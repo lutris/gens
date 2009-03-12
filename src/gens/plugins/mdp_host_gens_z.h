@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length);
+uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_out);
 
 #ifdef __cplusplus
 }
