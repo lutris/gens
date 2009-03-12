@@ -41,6 +41,7 @@ extern "C" {
 int MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_out);
 
 int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out);
+int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
 
 #ifdef __cplusplus
 }

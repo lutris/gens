@@ -183,3 +183,40 @@ int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
 	
 	return MDP_ERR_OK;
 }
+
+
+/* TODO: Test this function. */
+/**
+ * mdp_host_z_get_file(): Get a file from an opened compressed archive.
+ * @param z_file Opened compressed archive.
+ * @param z_entry File to open.
+ * @param buf Buffer to store the file in.
+ * @param size Size of the buffer.
+ */
+int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size)
+{
+	if (!z_file || !z_entry || !buf || size == 0)
+	{
+		/* Missing parameter. */
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	}
+	else if (!z_file->files || !z_file->filename || !z_file->f || !z_file->data)
+	{
+		/* One or more required elements in z_file is/are missing. */
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	}
+	
+	/* Convert the entry to file_list_t. */
+	file_list_t file_list;
+	file_list.filename = z_entry->filename;
+	file_list.filesize = z_entry->filesize;
+	file_list.next = NULL;
+	
+	/* Get the file from the decompressor. */
+	decompressor_t *cmp = (decompressor_t*)(z_file->data);
+	int rval = cmp->get_file(z_file->f, z_entry->filename, &file_list, buf, size);
+	
+	/* If rval is positive, it's a filesize. */
+	/* If 0, return an error code. */
+	return (rval == 0 ? -MDP_ERR_UNKNOWN : rval);	/* TODO: Add a specific error code for this. */
+}

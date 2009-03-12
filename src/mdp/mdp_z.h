@@ -33,8 +33,8 @@ extern "C" {
 
 typedef struct _mdp_z_entry_t
 {
-	const char*	filename;	/* Filename. (allocated via strdup()) */
-	size_t		filesize;	/* Filesize. */
+	char*	filename;	/* Filename. (allocated via strdup()) */
+	size_t	filesize;	/* Filesize. */
 	
 	struct _mdp_z_entry_t *next;	/* Next file. */
 } mdp_z_entry_t;
@@ -46,9 +46,9 @@ typedef struct _mdp_z_t
 	
 	/* The following variables should not be accessed by plugins directly. */
 	/* They are reserved for the emulator. */
-	const char	*filename;	/* Filename. (allocated via strdup()) */
-	FILE		*f;		/* File handle. */
-	void		*data;		/* Additional data. */
+	char*	filename;	/* Filename. (allocated via strdup()) */
+	FILE	*f;		/* File handle. */
+	void	*data;		/* Additional data. */
 } mdp_z_t;
 
 
