@@ -28,8 +28,40 @@
 #include "mdp/mdp_error.h"
 
 #ifdef GENS_ZLIB
-#include <zlib.h>
+	#include <zlib.h>
 #endif
+
+/* File Decompressors. */
+#include "util/file/decompressor/decompressor.h"
+#include "util/file/decompressor/dummy.h"
+#ifdef GENS_ZLIB
+	#include "util/file/decompressor/md_gzip.h"
+	#include "util/file/decompressor/md_zip.h"
+#endif
+#ifdef GENS_LZMA
+	#include "util/file/decompressor/md_7z.h"
+#endif
+#include "util/file/decompressor/md_rar_t.h"
+
+/* gens_strdup() */
+#include "macros/compat_m.h"
+
+/* Array of decompressors. */
+static const decompressor_t* const decompressors[] =
+{
+	#ifdef GENS_ZLIB
+		&decompressor_gzip,
+		&decompressor_zip,
+	#endif
+	#ifdef GENS_LZMA
+		&decompressor_7z,
+	#endif
+	&decompressor_rar,
+	
+	// Last decompressor is the Dummy decompressor.
+	&decompressor_dummy,
+	NULL
+};
 
 
 /**
@@ -39,7 +71,7 @@
  * @param crc32_out	[out] Pointer to variable to store the CRC32 in.
  * @return MDP error code.
  */
-uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_out)
+int MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_out)
 {
 #ifndef GENS_ZLIB
 	/* ZLib support wasn't compiled in. */
@@ -52,4 +84,102 @@ uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc
 	*crc32_out = crc32(0, buf, length);
 	return MDP_ERR_OK;
 #endif
+}
+
+
+/**
+ * mdp_host_z_open(): Open a compressed file.
+ * @param filename	[in]  Filename of the compressed file.
+ * @param z_out		[out] Pointer to mdp_z_t to store the file information.
+ * @return MDP error code.
+ */
+int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
+{
+	if (!filename || !z_out)
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	
+	// Attempt to open the file.
+	FILE *f = fopen(filename, "rb");
+	if (!f)
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	
+	/* Attempt to find a usable decompressor. */
+	const decompressor_t *cmp = NULL;
+	int zID = 0;
+	while (decompressors[zID])
+	{
+		if (decompressors[zID]->detect_format(f))
+		{
+			/* Found a usable decompressor. */
+			cmp = decompressors[zID];
+			break;
+		}
+		
+		/* Next decompressor. */
+		zID++;
+	}
+	
+	if (!cmp)
+	{
+		/* No decompressors found. */
+		/* This is an error, since the "dummy" decompressor should always be usable. */
+		fclose(f);
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	}
+	
+	/* Get the file information. */
+	file_list_t *file_list_head = cmp->get_file_info(f, filename);
+	if (!file_list_head)
+	{
+		/* No files were in the archive. */
+		fclose(f);
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
+	}
+	
+	/* Convert file_list_t to mdp_z_entry_t. */
+	mdp_z_entry_t	*z_entry_head	= NULL;
+	mdp_z_entry_t	*z_entry_end	= NULL;
+	file_list_t	*file_list_cur	= file_list_head;
+	
+	while (file_list_cur)
+	{
+		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
+		z_entry_cur->filename = (file_list_cur->filename ? gens_strdup(file_list_cur->filename) : NULL);
+		z_entry_cur->filesize = file_list_cur->filesize;
+		z_entry_cur->next = NULL;
+		
+		/* Add the current file to the end of the list. */
+		if (!z_entry_head)
+		{
+			/* List hasn't been created yet. Create it. */
+			z_entry_head = z_entry_cur;
+			z_entry_end  = z_entry_cur;
+		}
+		else
+		{
+			/* Append the entry to the end of the list. */
+			z_entry_end->next = z_entry_cur;
+			z_entry_end = z_entry_cur;
+		}
+		
+		/* Next file_list_t. */
+		file_list_cur = file_list_cur->next;
+	}
+	
+	/* Free the file_list. */
+	file_list_t_free(file_list_head);
+	
+	/* Allocate the mdp_z_t. */
+	mdp_z_t *z = (mdp_z_t*)malloc(sizeof(mdp_z_t));
+	
+	/* Fill the data in the mdp_z_t struct. */
+	z->files	= z_entry_head;
+	z->filename	= gens_strdup(filename);
+	z->f		= f;
+	z->data		= (void*)(cmp);		/* Data parameter contains decompressor function pointers. */
+	
+	/* Return the mdp_z_t struct. */
+	*z_out = z;
+	
+	return MDP_ERR_OK;
 }

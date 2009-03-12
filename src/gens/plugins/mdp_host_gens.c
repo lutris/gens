@@ -115,7 +115,7 @@ mdp_host_t Gens_MDP_Host =
 	.directory_get_default_save_path = mdp_host_directory_get_default_save_path,
 	
 	.crc32			= mdp_host_crc32,
-	.z_open			= NULL, /* TODO */
+	.z_open			= mdp_host_z_open,
 	.z_get_file		= NULL, /* TODO */
 	.z_close		= NULL  /* TODO */
 };
