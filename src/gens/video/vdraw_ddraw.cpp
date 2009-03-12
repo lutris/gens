@@ -50,9 +50,6 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 
-// CPU flags.
-#include "gens_core/misc/cpuflags.h"
-
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
@@ -599,14 +596,6 @@ int vdraw_ddraw_flip(void)
 	float Ratio_X, Ratio_Y;
 	int Dep = 0;
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
-	
-	// Set up the render information.
-	if (vdraw_rInfo.bpp != bppMD)
-	{
-		// bpp has changed. Reinitialize the screen pointers.
-		vdraw_rInfo.bpp = bppMD;
-		vdraw_rInfo.cpuFlags = CPU_Flags;
-	}
 	
 	const uint8_t stretch = vdraw_get_stretch();
 	

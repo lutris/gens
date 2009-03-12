@@ -43,6 +43,9 @@ using std::list;
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 
+// CPU flags.
+#include "gens_core/misc/cpuflags.h"
+
 // Plugin Manager.
 #include "plugins/pluginmgr.hpp"
 
@@ -118,7 +121,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	}
 	else
 	{
-		if (rendPlugin->flags & MDP_RENDER_FLAG_SRC16DST32)
+		if (!(rendPlugin->flags & MDP_RENDER_FLAG_RGB888))
 		{
 			// Render plugin only supports 16-bit color.
 			bppMD = 16;
@@ -131,6 +134,25 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 			vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
 		}
 	}
+	
+	// Set the render video mode flags.
+	switch (bppMD)
+	{
+		case 32:
+			vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_32;
+			break;
+		case 16:
+			vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
+					MDP_RENDER_VMODE_RGB_565;
+			break;
+		case 15:
+			vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
+					MDP_RENDER_VMODE_RGB_555;
+			break;
+	}
+	
+	// Set the CPU flags.
+	vdraw_rInfo.cpuFlags = CPU_Flags;
 	
 	// Set the source pitch.
 	vdraw_rInfo.srcPitch = 336 * (bppMD == 15 ? 2 : bppMD / 8);

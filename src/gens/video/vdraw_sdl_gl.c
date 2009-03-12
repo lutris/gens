@@ -45,9 +45,6 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 
-// CPU flags.
-#include "gens_core/misc/cpuflags.h"
-
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
@@ -494,13 +491,6 @@ static int vdraw_sdl_gl_flip(void)
 	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
 	
 	// Set up the render information.
-	if (vdraw_rInfo.bpp != bppMD)
-	{
-		// bpp has changed. Reinitialize the screen pointers.
-		vdraw_rInfo.bpp = bppMD;
-		vdraw_rInfo.cpuFlags = CPU_Flags;
-	}
-	
 	vdraw_rInfo.destScreen = (void*)start;
 	vdraw_rInfo.width = 320 - vdraw_border_h;
 	vdraw_rInfo.height = VDP_Num_Vis_Lines;

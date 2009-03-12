@@ -116,7 +116,7 @@ mdp_render_fn vdraw_blitFS;
 mdp_render_fn vdraw_blitW;
 
 // Render plugin information.
-mdp_render_info_t vdraw_rInfo = { .bpp = 0, .renderFlags = 0 };
+mdp_render_info_t vdraw_rInfo = { .vmodeFlags = 0 };
 
 // Properties.
 static uint8_t	vdraw_prop_stretch = 0;
