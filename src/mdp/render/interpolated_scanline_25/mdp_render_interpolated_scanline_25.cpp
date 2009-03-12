@@ -34,12 +34,6 @@
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
 
-#undef GENS_X86_ASM
-// x86 asm versions.
-#ifdef GENS_X86_ASM
-#include "mdp_render_interpolated_scanline_25_x86.h"
-#endif /* GENS_X86_ASM */
-
 // Mask constants.
 #define MASK_DIV2_15		((uint16_t)(0x3DEF))
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
@@ -92,7 +86,6 @@ int MDP_FNCALL mdp_render_interpolated_scanline_25_end(void)
 }
 
 
-//#ifndef GENS_X86_ASM
 /**
  * T_mdp_render_interpolated_scanline_25_cpp: Blits the image to the screen, 2x size, interpolation with 25% scanlines.
  * @param destScreen Pointer to the destination screen buffer.
@@ -140,7 +133,6 @@ static inline void T_mdp_render_interpolated_scanline_25_cpp(pixel *destScreen, 
 		}
 	}
 }
-//#endif /* GENS_X86_ASM */
 
 
 int MDP_FNCALL mdp_render_interpolated_scanline_25_cpp(mdp_render_info_t *render_info)
@@ -148,29 +140,15 @@ int MDP_FNCALL mdp_render_interpolated_scanline_25_cpp(mdp_render_info_t *render
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
-	if (render_info->bpp == 16 || render_info->bpp == 15)
+	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
 	{
-#ifdef GENS_X86_ASM
-		if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
-		{
-			mdp_render_interpolated_scanline_25_16_x86_mmx(
-				    (uint16_t*)render_info->destScreen,
-				    (uint16_t*)render_info->mdScreen,
-				    render_info->destPitch, render_info->srcPitch,
-				    render_info->width, render_info->height,
-				    (render_info->bpp == 15));
-		}
-		else
-#endif /* GENS_X86_ASM */
-		{
-			T_mdp_render_interpolated_scanline_25_cpp(
-				    (uint16_t*)render_info->destScreen,
-				    (uint16_t*)render_info->mdScreen,
-					    render_info->destPitch, render_info->srcPitch,
-					    render_info->width, render_info->height,
-				    (render_info->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16),
-				    (render_info->bpp == 15 ? MASK_DIV4_15 : MASK_DIV4_16));
-		}
+		T_mdp_render_interpolated_scanline_25_cpp(
+			    (uint16_t*)render_info->destScreen,
+			    (uint16_t*)render_info->mdScreen,
+			    render_info->destPitch, render_info->srcPitch,
+			    render_info->width, render_info->height,
+			    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV2_16 : MASK_DIV2_15),
+			    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV4_16 : MASK_DIV4_15));
 	}
 	else
 	{

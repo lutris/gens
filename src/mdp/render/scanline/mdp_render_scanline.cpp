@@ -128,7 +128,7 @@ int MDP_FNCALL mdp_render_scanline_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
-	if (render_info->bpp == 16 || render_info->bpp == 15)
+	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
 	{
 #ifdef GENS_X86_ASM
 		if (render_info->cpuFlags & MDP_CPUFLAG_MMX)

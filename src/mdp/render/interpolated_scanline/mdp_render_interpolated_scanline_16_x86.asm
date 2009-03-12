@@ -48,7 +48,7 @@ arg_srcPitch	equ 28+20
 arg_width	equ 28+24
 arg_height	equ 28+28
 arg_mask	equ 28+32
-arg_mode555	equ 28+32
+arg_vmodeFlags	equ 28+32
 
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
@@ -146,7 +146,7 @@ section .text align=64
 	;************************************************************************
 	; void mdp_render_interpolated_scanline_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;						   int destPitch, int srcPitch,
-	;						   int width, int height, int mode555);
+	;						   int width, int height, uint32_t vmodeFlags);
 	global _mdp_render_interpolated_scanline_16_x86_mmx
 	_mdp_render_interpolated_scanline_16_x86_mmx:
 		
@@ -171,8 +171,8 @@ section .text align=64
 		
 		; Default to 16-bit color. (Mode 565)
 		get_movq_localvar	mm7, MASK_DIV2_16_MMX
-		test	byte [esp + arg_mode555], 1
-		jz	short .Loop_Y
+		test	byte [esp + arg_vmodeFlags], 1
+		jnz	short .Loop_Y
 		
 		; 15-bit color is specified. (Mode 555)
 		get_movq_localvar	mm7, MASK_DIV2_15_MMX

@@ -93,7 +93,7 @@ int MDP_FNCALL mdp_render_2xsai_cpp(mdp_render_info_t *render_info)
 		    (uint16_t*)render_info->mdScreen,
 		    render_info->destPitch, render_info->srcPitch,
 		    render_info->width, render_info->height,
-		    (render_info->bpp == 15));
+		    render_info->vmodeFlags);
 	
 	return MDP_ERR_OK;
 }

@@ -35,8 +35,6 @@
 // Mask constants.
 #define MASK_DIV2_15		((uint16_t)(0x3DEF))
 #define MASK_DIV2_16		((uint16_t)(0x7BEF))
-#define MASK_DIV2_15_ASM	((uint32_t)(0x3DEF3DEF))
-#define MASK_DIV2_16_ASM	((uint32_t)(0x7BEF7BEF))
 #define MASK_DIV2_32		((uint32_t)(0x7F7F7F7F))
 
 #define BLEND(a, b, mask) ((((a) >> 1) & mask) + (((b) >> 1) & mask))
@@ -157,16 +155,16 @@ int MDP_FNCALL mdp_render_epx_plus_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
-	if (render_info->bpp == 16 || render_info->bpp == 15)
+	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
 	{
 		T_mdp_render_epx_plus_cpp(
 			    (uint16_t*)render_info->destScreen,
 			    (uint16_t*)render_info->mdScreen,
 			    render_info->destPitch, render_info->srcPitch,
 			    render_info->width, render_info->height,
-			    (render_info->bpp == 15 ? MASK_DIV2_15 : MASK_DIV2_16));
+			    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV2_16 : MASK_DIV2_15));
 	}
-	else //if (render_info->bpp == 32)
+	else
 	{
 		T_mdp_render_epx_plus_cpp(
 			    (uint32_t*)render_info->destScreen,

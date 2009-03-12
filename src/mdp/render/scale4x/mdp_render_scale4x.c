@@ -80,8 +80,8 @@ int MDP_FNCALL mdp_render_scale4x_cpp(mdp_render_info_t *render_info)
 {
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
-
-	const unsigned int bytespp = (render_info->bpp == 15 ? 2 : render_info->bpp / 8);
+	
+	const unsigned int bytespp = (render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) ? 4 : 2;
 	
 #if defined(__GNUC__) && defined(__i386__)
 	if (render_info->cpuFlags & MDP_CPUFLAG_MMX)

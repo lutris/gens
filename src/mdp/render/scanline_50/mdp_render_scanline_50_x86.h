@@ -39,7 +39,7 @@ DLL_LOCAL void MDP_FNCALL mdp_render_scanline_50_16_x86(
 DLL_LOCAL void MDP_FNCALL mdp_render_scanline_50_16_x86_mmx(
 				uint16_t *destScreen, uint16_t *mdScreen,
 				int destPitch, int srcPitch,
-				int width, int height, int mode555);
+				int width, int height, uint32_t vmodeFlags);
 
 DLL_LOCAL void MDP_FNCALL mdp_render_scanline_50_32_x86(
 				uint32_t *destScreen, uint32_t *mdScreen,

@@ -127,7 +127,7 @@ int MDP_FNCALL mdp_render_epx_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
-	if (render_info->bpp == 16 || render_info->bpp == 15)
+	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
 	{
 		T_mdp_render_epx_cpp(
 			    (uint16_t*)render_info->destScreen,
@@ -135,7 +135,7 @@ int MDP_FNCALL mdp_render_epx_cpp(mdp_render_info_t *render_info)
 			    render_info->destPitch, render_info->srcPitch,
 			    render_info->width, render_info->height);
 	}
-	else //if (render_info->bpp == 32)
+	else
 	{
 		T_mdp_render_epx_cpp(
 			    (uint32_t*)render_info->destScreen,

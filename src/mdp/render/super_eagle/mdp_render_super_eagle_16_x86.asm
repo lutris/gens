@@ -112,8 +112,8 @@ section .data align=64
 	qcolorMask:		dd 0xE79CE79C, 0xE79CE79C
 	qlowpixelMask:		dd 0x18631863, 0x18631863
 	
-	; Previous Mode 555 setting.
-	PrevMode555:		dd 0x00000000
+	; Previous video mode flags.
+	PrevVModeFlags:		dd 0x00000000
 	
 section .rodata align=64
 	
@@ -166,13 +166,13 @@ arg_destPitch	equ 28+16
 arg_srcPitch	equ 28+20
 arg_width	equ 28+24
 arg_height	equ 28+28
-arg_mode555	equ 28+32
+arg_vmodeFlags	equ 28+32
 
 
 ;************************************************************************
 ; void mdp_render_super_eagle_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 ;					 int destPitch, int srcPitch,
-;					 int width, int height, int mode555);
+;					 int width, int height, uint32_t vmodeFlags);
 global _mdp_render_super_eagle_16_x86_mmx
 _mdp_render_super_eagle_16_x86_mmx:
 	
@@ -182,18 +182,18 @@ _mdp_render_super_eagle_16_x86_mmx:
 	; (PIC) Get the Global Offset Table.
 	get_GOT
 	
-	; Check if the Mode 555 setting has changed.
-	mov	al, byte [esp + arg_mode555]	; Mode 555 setting
-	get_mov_localvar	ah, PrevMode555
+	; Check if the video mode flags have changed.
+	mov	al, byte [esp + arg_vmodeFlags]	; Video mode flags
+	get_mov_localvar	ah, PrevVModeFlags
 	cmp	al, ah
 	je	near .Parameters
 	
-	; Mode 555 setting has changed.
-	put_mov_localvar	PrevMode555, al
+	; Video mode flags have changed.
+	put_mov_localvar	PrevVModeFlags, al
 	
 	; Check if this is 15-bit color mode.
 	test	al, 1
-	jnz	short .Mode_555
+	jz	short .Mode_555
 
 .Mode_565:
 	; 16-bit: Apply 16-bit color masks.

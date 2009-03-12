@@ -42,10 +42,13 @@ static mdp_desc_t mdp_desc =
 mdp_render_t mdp_render =
 {
 	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
-	.blit = mdp_render_super_eagle_cpp,
 	.scale = 2,
-	.flags = MDP_RENDER_FLAG_SRC16DST32,
-	.tag = "Super Eagle"
+	
+	.blit = mdp_render_super_eagle_cpp,
+	.tag = "Super Eagle",
+	
+	.flags = MDP_RENDER_FLAG_RGB555 |
+		 MDP_RENDER_FLAG_RGB565
 };
 
 static mdp_func_t mdp_func =
