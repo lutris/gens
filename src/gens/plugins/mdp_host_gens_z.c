@@ -192,6 +192,7 @@ int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
  * @param z_entry File to open.
  * @param buf Buffer to store the file in.
  * @param size Size of the buffer.
+ * @return Size of data read, or MDP error code.
  */
 int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size)
 {
@@ -226,6 +227,7 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 /**
  * mdp_host_z_close(): Close a compressed archive.
  * @param z_file Opened compressed archive.
+ * @return MDP error code.
  */
 int MDP_FNCALL mdp_host_z_close(mdp_z_t *z_file)
 {
