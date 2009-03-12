@@ -42,12 +42,13 @@ typedef struct _mdp_z_entry_t
 
 typedef struct _mdp_z_t
 {
-	mdp_z_entry_t *files;	/* List containing all files in the archive. */
+	mdp_z_entry_t	*files;		/* List containing all files in the archive. */
 	
 	/* The following variables should not be accessed by plugins directly. */
 	/* They are reserved for the emulator. */
-	FILE *f;		/* Open file handle. */
-	const char *filename;	/* Filename. (allocated via strdup()) */
+	const char	*filename;	/* Filename. (allocated via strdup()) */
+	FILE		*f;		/* File handle. */
+	void		*data;		/* Additional data. */
 } mdp_z_t;
 
 
