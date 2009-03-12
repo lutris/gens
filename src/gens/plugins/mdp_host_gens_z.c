@@ -47,7 +47,7 @@ uint32_t MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc
 #else
 	/* ZLib support was compiled in. */
 	if (!crc32_out)
-		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error for this. */
+		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
 	
 	*crc32_out = crc32(0, buf, length);
 	return MDP_ERR_OK;
