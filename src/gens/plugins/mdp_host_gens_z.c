@@ -90,7 +90,7 @@ int MDP_FNCALL mdp_host_crc32(const uint8_t* buf, int length, uint32_t *crc32_ou
 /**
  * mdp_host_z_open(): Open a compressed file.
  * @param filename	[in]  Filename of the compressed file.
- * @param z_out		[out] Pointer to mdp_z_t to store the file information.
+ * @param z_out		[out] Pointer to mdp_z_t*, which will contain an allocated mdp_z_t.
  * @return MDP error code.
  */
 int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
