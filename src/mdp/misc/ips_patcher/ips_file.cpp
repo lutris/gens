@@ -56,25 +56,78 @@ static int ips_apply(uint32_t dest_length, list<ips_block_t>& lstIPSBlocks);
  */
 int MDP_FNCALL ips_file_load(const char* filename)
 {
-	mdp_z_t *zf_ips;
-	if (ips_host_srv->z_open(filename, &zf_ips))
-		return -1;
+	int rval;
+	size_t ips_size;
+	mdp_z_t *zf_ips = NULL;
+	uint8_t *ips_buf;
+	
+	if (ips_host_srv->z_open != NULL)
+	{
+		/* MDP decompression functions may be implemented. */
+		rval = ips_host_srv->z_open(filename, &zf_ips);
+		if (rval == -MDP_ERR_FUNCTION_NOT_IMPLEMENTED)
+		{
+			/* MDP decompression functions are not implemented. */
+			zf_ips = NULL;
+		}
+		else if (rval != MDP_ERR_OK)
+		{
+			/* MDP decompression functions are implemented, but an error occurred. */
+			return -1;
+		}
+	}
 	
 	/* Load the entire IPS into memory. */
-	size_t ips_size = zf_ips->files->filesize;
-	uint8_t *ips_buf = (uint8_t*)malloc(ips_size);
-	if (ips_host_srv->z_get_file(zf_ips, zf_ips->files, ips_buf, ips_size) <= 0)
+	if (zf_ips)
 	{
-		/* Error loading the file. */
-		free(ips_buf);
-		return -2;
+		/* MDP decompression functions are implemented. */
+		ips_size = zf_ips->files->filesize;
+		ips_buf = (uint8_t*)malloc(ips_size);
+		if (ips_host_srv->z_get_file(zf_ips, zf_ips->files, ips_buf, ips_size) <= 0)
+		{
+			/* Error loading the file. */
+			free(ips_buf);
+			ips_host_srv->z_close(zf_ips);
+			return -2;
+		}
+		
+		/* Close the file. */
+		ips_host_srv->z_close(zf_ips);
+	}
+	else
+	{
+		/* MDP decompression functions are not implemented. */
+		FILE *f = fopen(filename, "rb");
+		if (!f)
+		{
+			/* Error opening the file. */
+			return -3;
+		}
+		
+		/* Get the length of the file. */
+		fseek(f, 0, SEEK_END);
+		ips_size = ftell(f);
+		fseek(f, 0, SEEK_SET);
+		
+		/* Read the file into memory. */
+		ips_buf = (uint8_t*)malloc(ips_size);
+		size_t rsize = fread(ips_buf, 1, ips_size, f);
+		
+		/* Close the file. */
+		fclose(f);
+		
+		/* Check that the filesize is correct. */
+		if (rsize != ips_size)
+		{
+			/* Short read. Error! */
+			free(ips_buf);
+			return -4;
+		}
 	}
 	
 	// Check the "magic number".
 	static const char ips_magic_number[] = {'P', 'A', 'T', 'C', 'H'};
 	
-	//fseek(f_ips, 0, SEEK_SET);
-	//fread(buf, 1, sizeof(ips_magic_number), f_ips);
 	if (memcmp(&ips_buf[0], ips_magic_number, sizeof(ips_magic_number)) != 0)
 	{
 		// Magic number doesn't match.
@@ -184,9 +237,6 @@ int MDP_FNCALL ips_file_load(const char* filename)
 		lstIPSBlocks.push_back(block);
 	}
 	
-	/* Close the file. */
-	ips_host_srv->z_close(zf_ips);
-	
 	if (!ips_OK)
 	{
 		// Invalid IPS patch.
@@ -195,7 +245,7 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	}
 	
 	// Apply the IPS patch.
-	int rval = ips_apply(dest_length, lstIPSBlocks);
+	rval = ips_apply(dest_length, lstIPSBlocks);
 	
 	/* Free the IPS buffer. */
 	free(ips_buf);
