@@ -442,6 +442,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	YM2612_Restore(&md_save.ym2612[0]);
 	
 	// Special data based on the savestate version.
+	uint8_t psg_state[8];
 	if ((m_Version >= 2) && (m_Version < 4))
 	{
 		// TODO: Create a struct fr this.
@@ -460,8 +461,13 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// 0x22488: PSG registers.
 		// TODO: Import this using correct endianness.
-		ImportData(&PSG_Save, data, 0x224B8, 8 * 4);
-		PSG_Restore_State();
+		int psg_state_int[8];
+		ImportData(&psg_state_int, data, 0x224B8, 8 * 4);
+		
+		for (int i = 0; i < 8; i++)
+			psg_state[i] = psg_state_int[i];
+		
+		PSG_Restore_State(psg_state);
 	}
 	else if ((m_Version >= 4) || (m_Version == 0))
 	{
@@ -508,10 +514,9 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		{
 			// Load the PSG registers.
 			for (int i = 0; i < 8; i++)
-			{
-				PSG_Save[i] = (uint16_t)(le32_to_cpu(md_save.psg[i]));
-			}
-			PSG_Restore_State();
+				psg_state[i] = (uint8_t)(le32_to_cpu(md_save.psg[i]));
+			
+			PSG_Restore_State(psg_state);
 		}
 	}
 	
@@ -720,7 +725,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// Load all PSG registers.
 		// some Important parts of this weren't saved above
-		PSG_Restore_State_Full(&md_save_v7.psg);
+		PSG_Restore_State_GSX_v7(&md_save_v7.psg);
 		
 		// Load all Z80 registers.
 		M_Z80.AF.w.AF		= le16_to_cpu(md_save_v7.z80_reg.FA);
@@ -956,12 +961,13 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save.version.emulator = 0;	// Emulator ID (0 == Gens)
 	
 	// Save the PSG state.
-	PSG_Save_State();
+	uint8_t psg_state[8];
+	PSG_Save_State(psg_state);
 	
 	// Copy the PSG state into the savestate buffer.
 	for (unsigned int i = 0; i < 8; i++)
 	{
-		md_save.psg[i] = cpu_to_le16((uint16_t)PSG_Save[i]);
+		md_save.psg[i] = cpu_to_le16(psg_state[i]);
 	}
 	
 #ifdef GENS_DEBUG_SAVESTATE
@@ -1081,7 +1087,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	YM2612_Save_Full(&md_save_v7.ym2612);
 	
 	// Save all PSG registers.
-	PSG_Save_State_Full(&md_save_v7.psg);
+	PSG_Save_State_GSX_v7(&md_save_v7.psg);
 	
 	// Save all Z80 registers.
 	md_save_v7.z80_reg.FA		= cpu_to_le16(M_Z80.AF.w.AF);

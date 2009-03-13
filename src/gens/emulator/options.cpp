@@ -189,8 +189,6 @@ int Options::country(void)
  */
 void Options::setCountry(const int newCountry)
 {
-	unsigned char Reg_1[0x200];
-	
 	Flag_Clr_Scr = 1;
 	
 	Country = newCountry;
@@ -266,8 +264,11 @@ void Options::setCountry(const int newCountry)
 	
 	if (audio_get_enabled())
 	{
-		PSG_Save_State();
-		YM2612_Save(Reg_1);
+		uint8_t psg_state[8];
+		uint8_t ym2612_reg[0x200];
+		
+		PSG_Save_State(psg_state);
+		YM2612_Save(ym2612_reg);
 		
 		audio_end();
 		audio_set_enabled(false);
@@ -286,8 +287,8 @@ void Options::setCountry(const int newCountry)
 		if (SegaCD_Started)
 			PCM_Set_Rate(audio_get_sound_rate());
 		
-		YM2612_Restore(Reg_1);
-		PSG_Restore_State();
+		YM2612_Restore(ym2612_reg);
+		PSG_Restore_State(psg_state);
 		
 		if (audio_init(AUDIO_BACKEND_DEFAULT))
 			return;
@@ -415,7 +416,6 @@ void Options::setSoundStereo(const bool newSoundStereo)
 		wav_dump_stop();
 	
 	// TODO: Move most of this code to the Audio class.
-	unsigned char Reg_1[0x200];
 	
 	audio_set_stereo(newSoundStereo);
 	
@@ -430,10 +430,13 @@ void Options::setSoundStereo(const bool newSoundStereo)
 		return;
 	}
 	
+	uint8_t psg_state[8];
+	uint8_t ym2612_reg[0x200];
+	
 	// Save the current sound state.
 	// TODO: Use full save instead of partial save?
-	PSG_Save_State();
-	YM2612_Save(Reg_1);
+	PSG_Save_State(psg_state);
+	YM2612_Save(ym2612_reg);
 	
 	// Temporarily disable sound.
 	audio_end();
@@ -455,8 +458,8 @@ void Options::setSoundStereo(const bool newSoundStereo)
 		PCM_Set_Rate(audio_get_sound_rate());
 	
 	// Restore the sound state.
-	YM2612_Restore(Reg_1);
-	PSG_Restore_State();
+	YM2612_Restore(ym2612_reg);
+	PSG_Restore_State(psg_state);
 	
 	// Attempt to re-enable sound.
 	if (audio_init(AUDIO_BACKEND_DEFAULT))
@@ -538,8 +541,6 @@ bool Options::soundYM2612_Improved(void)
  */
 void Options::setSoundYM2612_Improved(const bool newSoundYM2612_Improved)
 {
-	unsigned char Reg_1[0x200];
-	
 	YM2612_Improv = newSoundYM2612_Improved;
 	
 	if (YM2612_Improv)
@@ -555,7 +556,8 @@ void Options::setSoundYM2612_Improved(const bool newSoundYM2612_Improved)
 	
 	// Save the YM2612 registers.
 	// TODO: Use full save instead of partial save?
-	YM2612_Save(Reg_1);
+	uint8_t ym2612_reg[0x200];
+	YM2612_Save(ym2612_reg);
 	
 	if (CPU_Mode)
 		YM2612_Init(CLOCK_PAL / 7, audio_get_sound_rate(), YM2612_Improv);
@@ -563,7 +565,7 @@ void Options::setSoundYM2612_Improved(const bool newSoundYM2612_Improved)
 		YM2612_Init(CLOCK_NTSC / 7, audio_get_sound_rate(), YM2612_Improv);
 	
 	// Restore the YM2612 registers.
-	YM2612_Restore(Reg_1);
+	YM2612_Restore(ym2612_reg);
 }
 
 
@@ -795,12 +797,13 @@ void Options::setSoundSampleRate(const int newRate)
 		return;
 	
 	// Sound's enabled. Reinitialize it.
-	unsigned char Reg_1[0x200];
+	uint8_t psg_state[8];
+	uint8_t ym2612_reg[0x200];
 	
 	// Save the sound registers.
 	// TODO: Use a full save instead of a partial save?
-	PSG_Save_State();
-	YM2612_Save(Reg_1);
+	PSG_Save_State(psg_state);
+	YM2612_Save(ym2612_reg);
 	
 	// Stop sound.
 	audio_end();
@@ -822,8 +825,8 @@ void Options::setSoundSampleRate(const int newRate)
 		PCM_Set_Rate(audio_get_sound_rate());
 	
 	// Restore the sound registers
-	YM2612_Restore(Reg_1);
-	PSG_Restore_State();
+	YM2612_Restore(ym2612_reg);
+	PSG_Restore_State(psg_state);
 	
 	// Attempt to reinitialize sound.
 	if (audio_init(AUDIO_BACKEND_DEFAULT))

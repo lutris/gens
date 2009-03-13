@@ -1,3 +1,25 @@
+/***************************************************************************
+ * Gens: TI SN76489 (PSG) emulator.                                        *
+ *                                                                         *
+ * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
+ * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
+ * Copyright (c) 2008-2009 by David Korth                                  *
+ *                                                                         *
+ * This program is free software; you can redistribute it and/or modify it *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
+ *                                                                         *
+ * This program is distributed in the hope that it will be useful, but     *
+ * WITHOUT ANY WARRANTY; without even the implied warranty of              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ * GNU General Public License for more details.                            *
+ *                                                                         *
+ * You should have received a copy of the GNU General Public License along *
+ * with this program; if not, write to the Free Software Foundation, Inc., *
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
+ ***************************************************************************/
+
 /***********************************************************/
 /*                                                         */
 /* PSG.C : SN76489 emulator                                */
@@ -40,6 +62,22 @@
 #define NOISE_DEF 0x4000
 
 
+/**
+ * psg_chip_t: PSG chip instance.
+ */
+typedef struct _psg_chip_t
+{
+	int Current_Channel;
+	int Current_Register;
+	int Register[8];
+	unsigned int Counter[4];
+	unsigned int CntStep[4];
+	int Volume[4];
+	unsigned int Noise_Type;
+	unsigned int Noise;
+} psg_chip_t;
+
+
 /** Variables **/
 
 static unsigned int PSG_SIN_Table[16][512];
@@ -47,10 +85,8 @@ static unsigned int PSG_Step_Table[1024];
 static unsigned int PSG_Volume_Table[16];
 static unsigned int PSG_Noise_Step_Table[4];
 
-// PSG save buffer
-unsigned int PSG_Save[8];
-
-struct _psg PSG;
+/* PSG chip instance. */
+psg_chip_t PSG;
 
 
 /** Gens-specific externs and variables **/
@@ -76,6 +112,10 @@ int *PSG_Buf[2];
 /** Functions **/
 
 
+/**
+ * PSG_Write(): Write a value to the PSG.
+ * @param data
+ */
 void PSG_Write(int data)
 {
 	if (GYM_Dumping)
@@ -168,6 +208,11 @@ void PSG_Write(int data)
 }
 
 
+/**
+ * PSG_Update_SIN(): Update the PSG audio output using sine waves.
+ * @param buffer
+ * @param length
+ */
 void PSG_Update_SIN(int **buffer, int length)
 {
 	int i, j, out;
@@ -236,6 +281,11 @@ void PSG_Update_SIN(int **buffer, int length)
 }
 
 
+/**
+ * PSG_Update(): Update the PSG audio output using square waves.
+ * @param buffer
+ * @param length
+ */
 void PSG_Update(int **buffer, int length)
 {
 	int i, j;
@@ -313,6 +363,11 @@ void PSG_Update(int **buffer, int length)
 }
 
 
+/**
+ * PSG_Init(): Initialize the PSG chip.
+ * @param clock Clock frequency.
+ * @param rate Sound rate.
+ */
 void PSG_Init(int clock, int rate)
 {
 	int i, j;
@@ -349,34 +404,9 @@ void PSG_Init(int clock, int rate)
 	}
 	PSG_Volume_Table[15] = 0;
 	
-/*
-	// Old SIN table calculation
-	
-	for (i = 0; i < 256; i++)
-	{
-		out = (i + 1.0) / 256.0;
-		
-		for (j = 0; j < 16; j++)
-		{
-			PSG_SIN_Table[j][i] = (unsigned int)(out * (double)PSG_Volume_Table[j]);
-		}
-	}
-
-	for (i = 0; i < 256; i++)
-	{
-		out = 1.0 - ((i + 1.0) / 256.0);
-
-		for (j = 0; j < 16; j++)
-		{
-			PSG_SIN_Table[j][i + 256] = (unsigned int)(out * (double)PSG_Volume_Table[j]);
-		}
-	}
-*/
-	
 	// SIN table calculation
 	for (i = 0; i < 512; i++)
 	{
-		out = sin((2.0 * PI) * ((double)(i) / 512.0));
 		out = sin((2.0 * PI) * ((double)(i) / 512.0));
 		
 		for (j = 0; j < 16; j++)
@@ -400,38 +430,36 @@ void PSG_Init(int clock, int rate)
 	}
 	
 	// Initialize the PSG state.
-	for (i = 0; i < 8; i += 2)
-	{
-		PSG_Save[i] = 0;
-		PSG_Save[i + 1] = 0x0F;	// volume = OFF
-	}
-	PSG_Restore_State();		// Reset
+	static const uint8_t psg_state_init[8] = {0x00, 0x0F, 0x00, 0x0F, 0x00, 0x0F, 0x00, 0x0F};
+	PSG_Restore_State(psg_state_init);
 }
 
 
 /**
- * PSG_Save_State(): Copy PSG.Register[] to PSG_Save[].
+ * PSG_Save_State(): Save the PSG state.
+ * @param buf 8-byte array to save the state to.
  */
-void PSG_Save_State(void)
+void PSG_Save_State(uint8_t *buf)
 {
 	int i;
 	
 	for (i = 0; i < 8; i++)
-		PSG_Save[i] = PSG.Register[i];
+		buf[i] = PSG.Register[i];
 }
 
 
 /**
- * PSG_Restore_State(): Restore the PSG registers from PSG_Save[].
+ * PSG_Restore_State(): Restore the PSG state.
+ * @param buf 8-byte array to load the state from.
  */
-void PSG_Restore_State(void)
+void PSG_Restore_State(const uint8_t *buf)
 {
 	int i;
 	
 	for (i = 0; i < 8; i++)
 	{
-		PSG_Write(0x80 | (i << 4) | (PSG_Save[i] & 0xF));
-		PSG_Write((PSG_Save[i] >> 4) & 0x3F);
+		PSG_Write(0x80 | (i << 4) | (buf[i] & 0xF));
+		PSG_Write((buf[i] >> 4) & 0x3F);
 	}
 }
 
@@ -445,24 +473,32 @@ void PSG_Restore_State(void)
  */
 void PSG_Special_Update(void)
 {
-	if (PSG_Len && PSG_Enable)
-	{
-		if (PSG_Improv)
-			PSG_Update_SIN(PSG_Buf, PSG_Len);
-		else
-			PSG_Update(PSG_Buf, PSG_Len);
-		
-		// NOTE: Seg_L and Seg_R are arrays. This is pointer arithmetic.
-		PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
-		PSG_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
-		PSG_Len = 0;
-	}
+	if (!(PSG_Len && PSG_Enable))
+		return;
+	
+	if (PSG_Improv)
+		PSG_Update_SIN(PSG_Buf, PSG_Len);
+	else
+		PSG_Update(PSG_Buf, PSG_Len);
+	
+	// NOTE: Seg_L and Seg_R are arrays. This is pointer arithmetic.
+	PSG_Buf[0] = Seg_L + Sound_Extrapol[VDP_Current_Line + 1][0];
+	PSG_Buf[1] = Seg_R + Sound_Extrapol[VDP_Current_Line + 1][0];
+	PSG_Len = 0;
 }
 
 
-// Full PSG save/restore functions from Gens Rerecording.
+/**
+ * GSX v7 PSG save/restore functions.
+ * Ported from Gens Rerecording.
+ */
 
-void PSG_Save_State_Full(struct _gsx_v7_psg *save)
+
+/**
+ * PSG_Save_State_GSX_v7(): Restore the PSG state. (GSX v7)
+ * @param save GSX v7 PSG struct to save to.
+ */
+void PSG_Save_State_GSX_v7(struct _gsx_v7_psg *save)
 {
 	save->current_channel	= cpu_to_le32(PSG.Current_Channel);
 	save->current_reg	= cpu_to_le32(PSG.Current_Register);
@@ -495,7 +531,12 @@ void PSG_Save_State_Full(struct _gsx_v7_psg *save)
 	save->noise		= cpu_to_le32(PSG.Noise);
 }
 
-void PSG_Restore_State_Full(struct _gsx_v7_psg *save)
+
+/**
+ * PSG_Restore_State_GSX_v7(): Restore the PSG state. (GSX v7)
+ * @param save GSX v7 PSG struct to restore from.
+ */
+void PSG_Restore_State_GSX_v7(struct _gsx_v7_psg *save)
 {
 	PSG.Current_Channel	= le32_to_cpu(save->current_channel);
 	PSG.Current_Register	= le32_to_cpu(save->current_reg);
