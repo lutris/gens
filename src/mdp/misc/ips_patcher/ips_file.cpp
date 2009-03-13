@@ -82,6 +82,9 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	{
 		/* MDP decompression functions are implemented. */
 		ips_size = zf_ips->files->filesize;
+		if (ips_size > 16*1024*1024)
+			return -0xFF;
+		
 		ips_buf = (uint8_t*)malloc(ips_size);
 		if (ips_host_srv->z_get_file(zf_ips, zf_ips->files, ips_buf, ips_size) <= 0)
 		{
@@ -108,6 +111,13 @@ int MDP_FNCALL ips_file_load(const char* filename)
 		fseek(f, 0, SEEK_END);
 		ips_size = ftell(f);
 		fseek(f, 0, SEEK_SET);
+		
+		if (ips_size > 16*1024*1024)
+		{
+			/* IPS file is too big. */
+			fclose(f);
+			return -0xFF;
+		}
 		
 		/* Read the file into memory. */
 		ips_buf = (uint8_t*)malloc(ips_size);
