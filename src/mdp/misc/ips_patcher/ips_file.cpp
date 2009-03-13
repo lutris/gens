@@ -38,18 +38,15 @@
 using std::list;
 
 
-struct IPS_Block
+typedef struct _ips_block_t
 {
 	uint32_t address;
 	uint16_t length;
 	uint8_t  *data;
-	
-	IPS_Block() { data = NULL; }
-	~IPS_Block() { free(data); data = NULL; }
-};
+} ips_block_t;
 
 
-static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks);
+static int ips_apply(uint32_t dest_length, list<ips_block_t>& lstIPSBlocks);
 
 
 /**
@@ -81,19 +78,17 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	if (memcmp(&ips_buf[0], ips_magic_number, sizeof(ips_magic_number)) != 0)
 	{
 		// Magic number doesn't match.
-		printf("-3\n");
 		return -3;
 	}
 	
 	uint8_t *ips_ptr = &ips_buf[5];
 	uint8_t *const ips_ptr_end = ips_buf + ips_size;
-	uint8_t buf[8];
 	
 	// Read the data into a list.
-	list<IPS_Block> lstIPSBlocks;
+	list<ips_block_t> lstIPSBlocks;
 	
 	bool ips_OK = true;
-	IPS_Block block;
+	ips_block_t block;
 	uint32_t dest_length = 0;
 	uint32_t cur_dest_length;
 	uint16_t rle_length;
@@ -107,16 +102,15 @@ int MDP_FNCALL ips_file_load(const char* filename)
 			ips_OK = false;
 			break;
 		}
-		memcpy(buf, ips_ptr, 3);
-		ips_ptr += 3;
 		
 		// Check if this is an EOF.
 		static const char ips_eof[] = {'E', 'O', 'F'};
-		if (memcmp(buf, ips_eof, sizeof(ips_eof)) == 0)
+		if (!memcmp(ips_ptr, ips_eof, sizeof(ips_eof)))
 			break;
 		
 		// Address is stored as 24-bit, big-endian,
-		block.address = (uint32_t)((buf[0] << 16) | (buf[1] << 8) | buf[2]);
+		block.address = (uint32_t)((ips_ptr[0] << 16) | (ips_ptr[1] << 8) | ips_ptr[2]);
+		ips_ptr += 3;
 		
 		// Get the length of the next block.
 		if ((ips_ptr + 2) > ips_ptr_end)
@@ -125,11 +119,10 @@ int MDP_FNCALL ips_file_load(const char* filename)
 			ips_OK = false;
 			break;
 		}
-		memcpy(buf, ips_ptr, 2);
-		ips_ptr += 2;
 		
 		// Length is stored as 16-bit, big-endian.
-		block.length = (uint16_t)((buf[0] << 8) | buf[1]);
+		block.length = (uint16_t)((ips_ptr[0] << 8) | ips_ptr[1]);
+		ips_ptr += 2;
 		
 		// If the length is 0, this is an RLE-encoded block.
 		if (block.length == 0)
@@ -143,11 +136,10 @@ int MDP_FNCALL ips_file_load(const char* filename)
 				ips_OK = false;
 				break;
 			}
-			memcpy(buf, ips_ptr, 2);
-			ips_ptr += 2;
 			
 			// RLE length is stored as 16-bit, big-endian.
-			block.length = (uint16_t)((buf[0] << 8) | buf[1]);
+			block.length = (uint16_t)((ips_ptr[0] << 8) | ips_ptr[1]);
+			ips_ptr += 2;
 			if (block.length == 0)
 			{
 				// Zero-length RLE block is invalid.
@@ -162,27 +154,24 @@ int MDP_FNCALL ips_file_load(const char* filename)
 				ips_OK = false;
 				break;
 			}
-			memcpy(buf, ips_ptr, 1);
-			ips_ptr += 1;
 			
 			// Create the RLE data block.
 			block.data = (uint8_t*)malloc(block.length);
-			memset(block.data, buf[0], block.length);
+			memset(block.data, *ips_ptr, block.length);
+			ips_ptr += 1;
 		}
 		else
 		{
 			// Regular IPS data block.
 			
 			// Get the data for the block.
-			block.data = (uint8_t*)malloc(block.length);
 			if ((ips_ptr + block.length) > ips_ptr_end)
 			{
 				// Short read. Invalid IPS patch file.
-				free(block.data);
 				ips_OK = false;
 				break;
 			}
-			memcpy(block.data, ips_ptr, block.length);
+			block.data = ips_ptr;
 			ips_ptr += block.length;
 		}
 		
@@ -195,13 +184,6 @@ int MDP_FNCALL ips_file_load(const char* filename)
 		lstIPSBlocks.push_back(block);
 	}
 	
-	// Make sure the temporary block's constructor doesn't free any memory.
-	// TODO: Add a reference counter?
-	block.data = NULL;
-	
-	/* Free the IPS buffer. */
-	free(ips_buf);
-	
 	/* Close the file. */
 	ips_host_srv->z_close(zf_ips);
 	
@@ -209,11 +191,17 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	{
 		// Invalid IPS patch.
 		lstIPSBlocks.clear();
-		return -3;
+		return -4;
 	}
 	
 	// Apply the IPS patch.
-	return ips_apply(dest_length, lstIPSBlocks);
+	int rval = ips_apply(dest_length, lstIPSBlocks);
+	
+	/* Free the IPS buffer. */
+	free(ips_buf);
+	
+	/* Return the MDP error code from ips_apply(). */
+	return rval;
 }
 
 
@@ -223,7 +211,7 @@ int MDP_FNCALL ips_file_load(const char* filename)
  * @param lstIPSBlocks List of IPS blocks to apply.
  * @return MDP error code.
  */
-static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
+static int ips_apply(uint32_t dest_length, list<ips_block_t>& lstIPSBlocks)
 {
 	// Check if the ROM memory area needs to be resized.
 	int rom_size = ips_host_srv->mem_size_get(MDP_MEM_MD_ROM);
@@ -246,10 +234,10 @@ static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks)
 	
 	// Patch the ROM.
 	int rval;
-	for (list<IPS_Block>::iterator iter = lstIPSBlocks.begin();
+	for (list<ips_block_t>::iterator iter = lstIPSBlocks.begin();
 	     iter != lstIPSBlocks.end(); iter++)
 	{
-		IPS_Block *block = &(*iter);
+		ips_block_t *block = &(*iter);
 		
 		rval = ips_host_srv->mem_write_block_8(MDP_MEM_MD_ROM,
 				block->address, block->data, block->length);
