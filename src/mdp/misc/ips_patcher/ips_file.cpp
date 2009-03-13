@@ -59,22 +59,35 @@ static int ips_apply(uint32_t dest_length, list<IPS_Block>& lstIPSBlocks);
  */
 int MDP_FNCALL ips_file_load(const char* filename)
 {
-	FILE* f_ips = fopen(filename, "rb");
-	if (!f_ips)
+	mdp_z_t *zf_ips;
+	if (ips_host_srv->z_open(filename, &zf_ips))
 		return -1;
 	
-	uint8_t buf[16];
+	/* Load the entire IPS into memory. */
+	size_t ips_size = zf_ips->files->filesize;
+	uint8_t *ips_buf = (uint8_t*)malloc(ips_size);
+	if (ips_host_srv->z_get_file(zf_ips, zf_ips->files, ips_buf, ips_size) <= 0)
+	{
+		/* Error loading the file. */
+		free(ips_buf);
+		return -2;
+	}
 	
 	// Check the "magic number".
 	static const char ips_magic_number[] = {'P', 'A', 'T', 'C', 'H'};
 	
-	fseek(f_ips, 0, SEEK_SET);
-	fread(buf, 1, sizeof(ips_magic_number), f_ips);
-	if (memcmp(buf, ips_magic_number, sizeof(ips_magic_number)) != 0)
+	//fseek(f_ips, 0, SEEK_SET);
+	//fread(buf, 1, sizeof(ips_magic_number), f_ips);
+	if (memcmp(&ips_buf[0], ips_magic_number, sizeof(ips_magic_number)) != 0)
 	{
 		// Magic number doesn't match.
-		return -2;
+		printf("-3\n");
+		return -3;
 	}
+	
+	uint8_t *ips_ptr = &ips_buf[5];
+	uint8_t *const ips_ptr_end = ips_buf + ips_size;
+	uint8_t buf[8];
 	
 	// Read the data into a list.
 	list<IPS_Block> lstIPSBlocks;
@@ -88,12 +101,14 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	while (true)
 	{
 		// Get the address for the next block.
-		if (fread(buf, 1, 3, f_ips) != 3)
+		if ((ips_ptr + 3) > ips_ptr_end)
 		{
 			// Short read. Invalid IPS patch file.
 			ips_OK = false;
 			break;
 		}
+		memcpy(buf, ips_ptr, 3);
+		ips_ptr += 3;
 		
 		// Check if this is an EOF.
 		static const char ips_eof[] = {'E', 'O', 'F'};
@@ -104,12 +119,14 @@ int MDP_FNCALL ips_file_load(const char* filename)
 		block.address = (uint32_t)((buf[0] << 16) | (buf[1] << 8) | buf[2]);
 		
 		// Get the length of the next block.
-		if (fread(buf, 1, 2, f_ips) != 2)
+		if ((ips_ptr + 2) > ips_ptr_end)
 		{
 			// Short read. Invalid IPS patch file.
 			ips_OK = false;
 			break;
 		}
+		memcpy(buf, ips_ptr, 2);
+		ips_ptr += 2;
 		
 		// Length is stored as 16-bit, big-endian.
 		block.length = (uint16_t)((buf[0] << 8) | buf[1]);
@@ -120,12 +137,14 @@ int MDP_FNCALL ips_file_load(const char* filename)
 			// RLE-encoded block.
 			
 			// Get the length of the RLE data.
-			if (fread(buf, 1, 2, f_ips) != 2)
+			if ((ips_ptr + 2) > ips_ptr_end)
 			{
 				// Short read. Invalid IPS patch file.
 				ips_OK = false;
 				break;
 			}
+			memcpy(buf, ips_ptr, 2);
+			ips_ptr += 2;
 			
 			// RLE length is stored as 16-bit, big-endian.
 			block.length = (uint16_t)((buf[0] << 8) | buf[1]);
@@ -137,12 +156,14 @@ int MDP_FNCALL ips_file_load(const char* filename)
 			}
 			
 			// Get the data byte for the RLE block.
-			if (fread(buf, 1, 1, f_ips) != 1)
+			if ((ips_ptr + 1) > ips_ptr_end)
 			{
 				// Short read. Invalid IPS patch file.
 				ips_OK = false;
 				break;
 			}
+			memcpy(buf, ips_ptr, 1);
+			ips_ptr += 1;
 			
 			// Create the RLE data block.
 			block.data = (uint8_t*)malloc(block.length);
@@ -154,13 +175,15 @@ int MDP_FNCALL ips_file_load(const char* filename)
 			
 			// Get the data for the block.
 			block.data = (uint8_t*)malloc(block.length);
-			if (fread(block.data, 1, block.length, f_ips) != block.length)
+			if ((ips_ptr + block.length) > ips_ptr_end)
 			{
 				// Short read. Invalid IPS patch file.
 				free(block.data);
 				ips_OK = false;
 				break;
 			}
+			memcpy(block.data, ips_ptr, block.length);
+			ips_ptr += block.length;
 		}
 		
 		// Check the destination length.
@@ -175,6 +198,12 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	// Make sure the temporary block's constructor doesn't free any memory.
 	// TODO: Add a reference counter?
 	block.data = NULL;
+	
+	/* Free the IPS buffer. */
+	free(ips_buf);
+	
+	/* Close the file. */
+	ips_host_srv->z_close(zf_ips);
 	
 	if (!ips_OK)
 	{
