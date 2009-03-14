@@ -271,7 +271,8 @@ noinst_HEADERS = \
 		plugins/mdp_host_gens_emuctrl.hpp \
 		plugins/mdp_host_gens_z.h \
 		plugins/eventmgr.hpp \
-		plugins/mdp_incompat.hpp
+		plugins/mdp_incompat.hpp \
+		plugins/gens_ld.h
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
@@ -315,7 +316,7 @@ gens_LDADD = \
 		${gens_mdp_static} \
 		../starscream/libstarscream.a \
 		../mdZ80/libmdZ80.a \
-		-lm $(LIBLTDL)
+		-lm
 
 if GENS_MP3
 gens_LDADD += \

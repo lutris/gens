@@ -65,8 +65,8 @@ using std::pair;
 using std::string;
 using std::list;
 
-// Libtool Dynamic Loader
-#include <ltdl.h>
+// Dynamic library loader.
+#include "gens_ld.h"
 
 // Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
@@ -298,15 +298,15 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 		{
 			// Regular file or symlink.
 			
-			// Check if the file extension matches libltdl's shared library extension.
+			// Check if the file extension matches the shared library extension.
 			d_name_len = strlen(d_entry->d_name);
-			if (d_name_len >= (sizeof(LTDL_SHLIB_EXT) - 1))
+			if (d_name_len >= (sizeof(GENS_DL_EXT) - 1))
 			{
 				// Filename is long enough.
 				
 				// Compare the file extension.
-				if (!strncasecmp(&d_entry->d_name[d_name_len - sizeof(LTDL_SHLIB_EXT) + 1],
-						 LTDL_SHLIB_EXT, sizeof(LTDL_SHLIB_EXT) - 1))
+				if (!strncasecmp(&d_entry->d_name[d_name_len - sizeof(GENS_DL_EXT) + 1],
+						 GENS_DL_EXT, sizeof(GENS_DL_EXT) - 1))
 				{	
 					// File extension matches.
 					// Found a plugin.
@@ -350,8 +350,7 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
  */
 void PluginMgr::loadExternalPlugin(const string& filename)
 {
-	lt_dlinit();
-	lt_dlhandle handle = lt_dlopen(filename.c_str());
+	void *handle = gens_dlopen(filename.c_str());
 	
 	if (!handle)
 	{
@@ -363,14 +362,14 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	}
 	
 	// Attempt to load the mdp symbol.
-	mdp_t *plugin = static_cast<mdp_t*>(lt_dlsym(handle, "mdp"));
+	mdp_t *plugin = static_cast<mdp_t*>(gens_dlsym(handle, "mdp"));
 	if (!plugin)
 	{
 		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
 			"\"mdp\" symbol not found in plugin: %s",
 			File::GetNameFromPath(filename).c_str());
-		lt_dlclose(handle);
+		gens_dlclose(handle);
 		return;
 	}
 	
