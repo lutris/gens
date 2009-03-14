@@ -251,6 +251,7 @@ int MDP_FNCALL ips_file_load(const char* filename)
 	{
 		// Invalid IPS patch.
 		lstIPSBlocks.clear();
+		free(ips_buf);
 		return -4;
 	}
 	
