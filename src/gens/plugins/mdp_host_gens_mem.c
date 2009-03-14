@@ -237,18 +237,114 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 
 /** Memory Block Read Functions **/
 
+static inline void mdp_host_mem_read_block_8_be(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
+{
+	#if GENS_BYTEORDER == GENS_LIL_ENDIAN
+		if (address & 1)
+		{
+			/* Starts on an odd byte. */
+			*data++ = ptr[(address++) ^ 1];
+			length--;
+		}
+		
+		ptr = &ptr[address];
+		for (; length > 1; length -= 2)
+		{
+			*data       = MEM_RW_8_BE(ptr, 0);
+			*(data + 1) = MEM_RW_8_BE(ptr, 1);
+			
+			ptr += 2;
+			data += 2;
+		}
+	#else
+		ptr = &ptr[address];
+		memcpy(data, ptr, (length & ~1));
+		ptr += (length & ~1);
+	#endif
+	
+	if (length & 1)
+	{
+		// One byte left.
+		*data = MEM_RW_8_BE(ptr, 0);
+	}
+}
+
+static inline void mdp_host_mem_read_block_8_le(uint8_t *ptr, uint32_t address, uint8_t *data, uint32_t length)
+{
+	#if GENS_BYTEORDER == GENS_BIG_ENDIAN
+		if (address & 1)
+		{
+			/* Starts on an odd byte. */
+			*data++ = ptr[(address++) ^ 1];
+			length--;
+		}
+		
+		ptr = &ptr[address];
+		for (; length > 1; length -= 2)
+		{
+			*data       = MEM_RW_8_LE(ptr, 0);
+			*(data + 1) = MEM_RW_8_LE(ptr, 1);
+			
+			ptr += 2;
+			data += 2;
+		}
+	#else
+		ptr = &ptr[address];
+		memcpy(data, ptr, (length & ~1));
+		ptr += (length & ~1);
+	#endif
+	
+	if (length & 1)
+	{
+		// One byte left.
+		*data = MEM_RW_8_LE(ptr, 0);
+	}
+}
+
 int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	
-	MDP_UNUSED_PARAMETER(memID);
-	MDP_UNUSED_PARAMETER(address);
-	MDP_UNUSED_PARAMETER(data);
-	MDP_UNUSED_PARAMETER(length);
+	uint8_t *ptr;
+	uint32_t max_address;
+	int big_endian;
 	
-	/* TODO */
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			ptr = Rom_Data;
+			max_address = 0x3FFFFF;
+			big_endian = 1;
+			break;
+		case MDP_MEM_MD_RAM:
+			ptr = Ram_68k;
+			max_address = 0xFFFF;
+			big_endian = 1;
+			break;
+		case MDP_MEM_MD_VRAM:
+			ptr = VRam;
+			max_address = 0xFFFF;
+			big_endian = 1;
+			break;
+		default:
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
+	}
+	
+	if (address + length > max_address)
+	{
+		/* Out of range. */
+		return -MDP_ERR_MEM_OUT_OF_RANGE;
+	}
+	
+	if (big_endian)
+		mdp_host_mem_read_block_8_be(ptr, address, data, length);
+	else
+		mdp_host_mem_read_block_8_le(ptr, address, data, length);
+	
+	/* Block read. */
+	return MDP_ERR_OK;
 }
 
 int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
