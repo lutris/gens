@@ -271,7 +271,8 @@ void GensUI::update(void)
 		if (msg.message == WM_MENUSELECT ||
 		    msg.message == WM_ENTERSIZEMOVE ||
 		    msg.message == WM_NCLBUTTONDOWN ||
-		    msg.message == WM_NCRBUTTONDOWN)
+		    msg.message == WM_NCRBUTTONDOWN ||
+		    msg.message == WM_SYSCHAR)
 		{
 			// Clear the sound buffer.
 			audio_clear_sound_buffer();
