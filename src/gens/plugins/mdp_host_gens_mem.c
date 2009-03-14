@@ -178,6 +178,8 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	switch (memID)
 	{
@@ -206,6 +208,8 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	switch (memID)
 	{
@@ -251,6 +255,8 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
@@ -265,6 +271,8 @@ int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t 
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
@@ -347,8 +355,6 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	
-	/* TODO: Test this function. */
-	
 	uint8_t *ptr;
 	uint32_t max_address;
 	int big_endian;
@@ -401,6 +407,8 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
@@ -415,6 +423,8 @@ int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
