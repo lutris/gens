@@ -27,16 +27,26 @@
 #include <config.h>
 #endif
 
-#include <dlfcn.h>
+#ifndef GENS_OS_WIN32
 
-#ifdef GENS_OS_WIN32
-#define GENS_DL_EXT ".dll"
-#else
+/* UNIX system. */
+#include <dlfcn.h>
 #define GENS_DL_EXT ".so"
-#endif
 
 #define gens_dlopen(filename)		dlopen(filename, RTLD_NOW | RTLD_LOCAL)
 #define gens_dlsym(handle, symbol)	dlsym(handle, symbol)
 #define gens_dlclose(handle)		dlclose(handle)
+
+#else
+
+/* Win32 system. */
+#include <windows.h>
+#define GENS_DL_EXT ".dll"
+
+#define gens_dlopen(filename)		(void*)(LoadLibrary(filename))
+#define gens_dlsym(handle, symbol)	(void*)(GetProcAddress((HMODULE)(handle), (symbol)))
+#define gens_dlclose(handle)		FreeLibrary((HMODULE)(handle))
+
+#endif
 
 #endif /* GENS_LD_H */
