@@ -44,6 +44,7 @@ GtkWidget *glres_window = NULL;
 // Widgets.
 static GtkWidget	*spnWidth;
 static GtkWidget	*spnHeight;
+static GtkWidget	*btnCancel, *btnApply, *btnOK;
 
 // OpenGL resolution load/save functions.
 static void	glres_window_init(void);
@@ -52,6 +53,7 @@ static void	glres_window_save(void);
 // Callbacks.
 static gboolean	glres_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	glres_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	glres_window_callback_spn_value_changed(GtkSpinButton *spinbutton, gpointer user_data);
 
 
 /**
@@ -91,6 +93,7 @@ void glres_window_show(void)
 	
 	// Create the main HBox.
 	GtkWidget *hboxMain = gtk_hbox_new(FALSE, 4);
+	gtk_container_set_border_width(GTK_CONTAINER(hboxMain), 4);
 	gtk_widget_show(hboxMain);
 	gtk_box_pack_start(GTK_BOX(vboxDialog), hboxMain, TRUE, TRUE, 0);
 	
@@ -108,6 +111,8 @@ void glres_window_show(void)
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblWidth), spnWidth);
 	gtk_widget_show(spnWidth);
 	gtk_box_pack_start(GTK_BOX(hboxMain), spnWidth, FALSE, FALSE, 0);
+	g_signal_connect((gpointer)spnWidth, "value-changed",
+			 G_CALLBACK(glres_window_callback_spn_value_changed), NULL);
 	
 	// Create the separator.
 	GtkWidget *vsepResolution = gtk_vseparator_new();
@@ -128,13 +133,14 @@ void glres_window_show(void)
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblHeight), spnHeight);
 	gtk_widget_show(spnHeight);
 	gtk_box_pack_start(GTK_BOX(hboxMain), spnHeight, FALSE, FALSE, 0);
+	g_signal_connect((gpointer)spnHeight, "value-changed",
+			 G_CALLBACK(glres_window_callback_spn_value_changed), NULL);
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(glres_window),
-			       "gtk-cancel", GTK_RESPONSE_CANCEL,
-			       "gtk-apply", GTK_RESPONSE_APPLY,
-			       "gtk-save", GTK_RESPONSE_OK,
-			       NULL);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(glres_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	btnApply  = gtk_dialog_add_button(GTK_DIALOG(glres_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnOK     = gtk_dialog_add_button(GTK_DIALOG(glres_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(glres_window),
 						GTK_RESPONSE_OK,
@@ -175,6 +181,9 @@ static void glres_window_init(void)
 {
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spnWidth), Video.Width_GL);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spnHeight), Video.Height_GL);
+	
+	// Disable the "Apply" button initially.
+	gtk_widget_set_sensitive(btnApply, false);
 }
 
 
@@ -187,6 +196,9 @@ static void glres_window_save(void)
 	const int h = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spnHeight));
 	
 	Options::setOpenGL_Resolution(w, h);
+	
+	// Disable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, false);
 }
 
 
@@ -238,4 +250,19 @@ static void glres_window_callback_response(GtkDialog *dialog, gint response_id, 
 			// Also, don't do anything when the dialog is deleted.
 			break;
 	}
+}
+
+
+/**
+ * glres_window_callback_spn_value_changed(): One of the spinbuttons was changed.
+ * @param spinbutton
+ * @param user_data
+ */
+static void glres_window_callback_spn_value_changed(GtkSpinButton *spinbutton, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(spinbutton);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, true);
 }

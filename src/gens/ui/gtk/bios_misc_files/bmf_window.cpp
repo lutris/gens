@@ -50,6 +50,7 @@ GtkWidget *bmf_window = NULL;
 
 // Widgets.
 static GtkWidget	*txtFile[12];
+static GtkWidget	*btnCancel, *btnApply, *btnOK;
 
 // Configuration load/save functions.
 static void	bmf_window_init(void);
@@ -59,6 +60,7 @@ static void	bmf_window_save(void);
 static gboolean	bmf_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	bmf_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	bmf_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
+static void	bmf_window_callback_txtFile_changed(GtkEditable *editable, gpointer user_data);
 
 
 /**
@@ -149,6 +151,9 @@ void bmf_window_show(void)
 					 1, 2, tblRow, tblRow + 1,
 					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions)(0), 0, 0);
+			g_signal_connect((gpointer)txtFile[file], "changed",
+					 G_CALLBACK(bmf_window_callback_txtFile_changed),
+					 GINT_TO_POINTER(file));
 			
 			// Create the "Change..." button for the file.
 			GtkWidget *btnChange = gtk_button_new_with_label("Change...");
@@ -167,11 +172,10 @@ void bmf_window_show(void)
 	}
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(bmf_window),
-			       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-			       GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
-			       GTK_STOCK_SAVE, GTK_RESPONSE_OK,
-			       NULL);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(bmf_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	btnApply  = gtk_dialog_add_button(GTK_DIALOG(bmf_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnOK     = gtk_dialog_add_button(GTK_DIALOG(bmf_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(bmf_window),
 						GTK_RESPONSE_OK,
@@ -218,6 +222,9 @@ static void bmf_window_init(void)
 		// Set the entry text.
 		gtk_entry_set_text(GTK_ENTRY(txtFile[file]), bmf_entries[file].entry);
 	}
+	
+	// Disable the "Apply" button initially.
+	gtk_widget_set_sensitive(btnApply, false);
 }
 
 
@@ -234,6 +241,9 @@ static void bmf_window_save(void)
 		// Save the entry text.
 		strncpy(bmf_entries[file].entry, gtk_entry_get_text(GTK_ENTRY(txtFile[file])), GENS_PATH_MAX);
 	}
+	
+	// Disable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, false);
 }
 
 
@@ -314,4 +324,19 @@ static void bmf_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 	
 	// Set the new file.
 	gtk_entry_set_text(GTK_ENTRY(txtFile[file]), new_file.c_str());
+}
+
+
+/**
+ * bmf_window_callback_txtFile_changed(): One of the textboxes was changed.
+ * @param editable
+ * @param user_data File ID number.
+ */
+static void bmf_window_callback_txtFile_changed(GtkEditable *editable, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(editable);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, true);
 }

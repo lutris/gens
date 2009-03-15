@@ -52,6 +52,7 @@ GtkWidget *dir_window = NULL;
 
 // Widgets.
 static GtkWidget	*txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
+static GtkWidget	*btnCancel, *btnApply, *btnOK;
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -61,6 +62,7 @@ static void	dir_window_save(void);
 static gboolean	dir_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	dir_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	dir_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
+static void	dir_window_callback_txtDirectory_changed(GtkEditable *editable, gpointer user_data);
 
 
 /**
@@ -135,6 +137,9 @@ void dir_window_show(void)
 				 1, 2, dir, dir + 1,
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(0), 0, 0);
+		g_signal_connect((gpointer)txtDirectory[dir], "changed",
+				 G_CALLBACK(dir_window_callback_txtDirectory_changed),
+				 GINT_TO_POINTER(dir));
 		
 		// Create the "Change" button for the directory.
 		// TODO: Use an icon?
@@ -151,11 +156,10 @@ void dir_window_show(void)
 	}
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(dir_window),
-			       "gtk-cancel", GTK_RESPONSE_CANCEL,
-			       "gtk-apply", GTK_RESPONSE_APPLY,
-			       "gtk-save", GTK_RESPONSE_OK,
-			       NULL);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	btnApply  = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnOK     = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(dir_window),
 						GTK_RESPONSE_OK,
@@ -198,6 +202,9 @@ static void dir_window_init(void)
 	{
 		gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), dir_window_entries[dir].entry);
 	}
+	
+	// Disable the "Apply" button initially.
+	gtk_widget_set_sensitive(btnApply, false);
 }
 
 /**
@@ -231,6 +238,9 @@ static void dir_window_save(void)
 			}
 		}
 	}
+	
+	// Disable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, false);
 }
 
 
@@ -314,4 +324,19 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 	
 	// Set the new directory.
 	gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), new_dir.c_str());
+}
+
+
+/**
+ * dir_window_callback_txtDirectory_changed(): One of the textboxes was changed.
+ * @param editable
+ * @param user_data File ID number.
+ */
+static void dir_window_callback_txtDirectory_changed(GtkEditable *editable, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(editable);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, true);
 }

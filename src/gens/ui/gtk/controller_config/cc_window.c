@@ -72,6 +72,7 @@ static GtkWidget	*chkTeamplayer[2];
 static GtkWidget	*lblPlayer[8];
 static GtkWidget	*cboPadType[8];
 static GtkWidget	*optConfigure[8];
+static GtkWidget	*btnCancel, *btnApply, *btnOK;
 
 // Widgets: "Input Devices" frame.
 static GtkWidget	*lstInputDevices;
@@ -113,9 +114,10 @@ static void	cc_window_callback_configure_toggled(GtkToggleButton *togglebutton, 
 static void	cc_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
 static void	cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer user_data);
 static void	cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer user_data);
+static void	cc_window_callback_chkRestrictInput_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 
 // Configure a key.
-static void	cc_window_configure_key(int player, int button);
+static BOOL	cc_window_configure_key(int player, int button);
 
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static gboolean	cc_window_callback_blink(gpointer data);
@@ -187,11 +189,10 @@ void cc_window_show(void)
 	cc_window_create_options_frame(vboxConfigureOuter);
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(cc_window),
-			       "gtk-cancel", GTK_RESPONSE_CANCEL,
-			       "gtk-apply", GTK_RESPONSE_APPLY,
-			       "gtk-save", GTK_RESPONSE_OK,
-			       NULL);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(cc_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	btnApply  = gtk_dialog_add_button(GTK_DIALOG(cc_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnOK     = gtk_dialog_add_button(GTK_DIALOG(cc_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(cc_window),
 						GTK_RESPONSE_OK,
@@ -564,6 +565,8 @@ static void cc_window_create_options_frame(GtkWidget *container)
 	chkRestrictInput = gtk_check_button_new_with_mnemonic("_Restrict Input\n(Disables Up+Down, Left+Right)");
 	gtk_widget_show(chkRestrictInput);
 	gtk_box_pack_start(GTK_BOX(vboxOptions), chkRestrictInput, FALSE, FALSE, 0);
+	g_signal_connect((gpointer)chkRestrictInput, "toggled",
+			 G_CALLBACK(cc_window_callback_chkRestrictInput_toggled), NULL);
 }
 
 
@@ -612,6 +615,9 @@ static void cc_window_init(void)
 	
 	// Restrict Input.
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkRestrictInput), Settings.restrict_input);
+	
+	// Disable the "Apply" button initially.
+	gtk_widget_set_sensitive(btnApply, FALSE);
 }
 
 
@@ -652,6 +658,9 @@ static void cc_window_save(void)
 	
 	// Rebuild the Teamplayer I/O table.
 	Make_IO_Table();
+	
+	// Disable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, FALSE);
 }
 
 
@@ -798,6 +807,9 @@ static void cc_window_callback_teamplayer_toggled(GtkToggleButton *togglebutton,
 		gtk_widget_set_sensitive(cboPadType[i], active);
 		gtk_widget_set_sensitive(optConfigure[i], active);
 	}
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, TRUE);
 }
 
 
@@ -811,6 +823,9 @@ static void cc_window_callback_padtype_changed(GtkComboBox *widget, gpointer use
 	int player = GPOINTER_TO_INT(user_data);
 	if (player < 0 || player > 8)
 		return;
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, TRUE);
 	
 	// Check if this player is currently being configured.
 	if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(optConfigure[player])))
@@ -859,9 +874,15 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
 	if (cc_window_is_configuring)
 		return;
 	
+	BOOL key_changed;
+	
 	cc_window_is_configuring = TRUE;
-	cc_window_configure_key(cc_cur_player, GPOINTER_TO_INT(user_data));
+	key_changed = cc_window_configure_key(cc_cur_player, GPOINTER_TO_INT(user_data));
 	cc_window_is_configuring = FALSE;
+	
+	// Enable the "Apply" button.
+	if (key_changed)
+		gtk_widget_set_sensitive(btnApply, TRUE);
 }
 
 
@@ -869,20 +890,21 @@ static void cc_window_callback_btnChange_clicked(GtkButton *button, gpointer use
  * cc_window_configure_key(): Configure a key.
  * @param player Player to configure.
  * @param button Button ID.
+ * @return TRUE if the button was changed; FALSE if it wasn't.
  */
-static void cc_window_configure_key(int player, int button)
+static BOOL cc_window_configure_key(int player, int button)
 {
 	if (!cc_window_is_configuring)
-		return;
+		return FALSE;
 	
 	if (button < 0 || button >= 12)
-		return;
+		return FALSE;
 	
 	// If pad type is set to 3 buttons, don't allow button IDs >= 8.
 	if (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[player])) == 0)
 	{
 		if (button >= 8)
-			return;
+			return FALSE;
 	}
 	
 	// Set the current button that is being configured.
@@ -896,13 +918,19 @@ static void cc_window_configure_key(int player, int button)
 	g_timeout_add(500, cc_window_callback_blink, GINT_TO_POINTER(button));
 	
 	// Get a key value.
-	cc_key_config[cc_cur_player].data[button] = input_get_key();
+	BOOL key_changed = FALSE;
+	uint16_t new_key = input_get_key();
+	if (new_key != cc_key_config[cc_cur_player].data[button])
+	{
+		key_changed = TRUE;
+		cc_key_config[cc_cur_player].data[button] = new_key;
+	}
 	
 	if (!cc_window)
 	{
 		// Window has closed.
 		cc_cur_player_button = -1;
-		return;
+		return FALSE;
 	}
 	
 	// Set the text of the label with the key name.
@@ -913,6 +941,8 @@ static void cc_window_configure_key(int player, int button)
 	
 	// Make sure the label is visible now.
 	gtk_widget_show(lblCurConfig[button]);
+	
+	return key_changed;
 }
 
 
@@ -965,6 +995,9 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
 	if (cc_cur_player < 0 || cc_cur_player > 8)
 		return;
 	
+	BOOL key_changed = FALSE;
+	BOOL rval;
+	
 	// Number of buttons to configure.
 	int btnCount = (gtk_combo_box_get_active(GTK_COMBO_BOX(cboPadType[cc_cur_player])) == 1 ? 12 : 8);
 	
@@ -982,7 +1015,9 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
 			usleep(250000);
 		}
 		
-		cc_window_configure_key(cc_cur_player, i);
+		rval = cc_window_configure_key(cc_cur_player, i);
+		if (rval)
+			key_changed = TRUE;
 		
 		if (!cc_window)
 		{
@@ -993,6 +1028,10 @@ static void cc_window_callback_btnChangeAll_clicked(GtkButton *button, gpointer 
 	
 	// Unset the "Configuring" flag.
 	cc_window_is_configuring = FALSE;
+	
+	// Enable the "Apply" button.
+	if (key_changed)
+		gtk_widget_set_sensitive(btnApply, TRUE);
 }
 
 
@@ -1014,4 +1053,22 @@ static void cc_window_callback_btnClearAll_clicked(GtkButton *button, gpointer u
 	
 	// Show the cleared configuration.
 	cc_window_show_configuration(cc_cur_player);
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, TRUE);
+}
+
+
+/**
+ * cc_window_callback_chkRestrictInput_toggled(): The "Restrict Input" checkbox was toggled.
+ * @param togglebutton
+ * @param user_data
+ */
+static void cc_window_callback_chkRestrictInput_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(togglebutton);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, TRUE);
 }

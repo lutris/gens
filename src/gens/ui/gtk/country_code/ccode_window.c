@@ -47,6 +47,7 @@ GtkWidget *ccode_window = NULL;
 // Widgets.
 static GtkWidget	*lstCountryCodes;
 static GtkListStore	*lmCountryCodes = NULL;
+static GtkWidget	*btnCancel, *btnApply, *btnOK;
 
 // Widget creation functions.
 static void	ccode_window_create_lstCountryCodes(GtkWidget *container);
@@ -61,6 +62,12 @@ static gboolean	ccode_window_callback_close(GtkWidget *widget, GdkEvent *event, 
 static void	ccode_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	ccode_window_callback_btnUp_clicked(GtkButton *button, gpointer user_data);
 static void	ccode_window_callback_btnDown_clicked(GtkButton *button, gpointer user_data);
+static gboolean	ccode_window_callback_lstCountryCodes_drag_drop(GtkWidget	*widget,
+								GdkDragContext	*drag_context,
+								gint		x,
+								gint		y,
+								guint		time_,
+								gpointer	user_data);
 
 
 /**
@@ -119,11 +126,10 @@ void ccode_window_show(void)
 	ccode_window_create_up_down_buttons(hboxList);
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(ccode_window),
-			       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-			       GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
-			       GTK_STOCK_SAVE, GTK_RESPONSE_OK,
-			       NULL);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(ccode_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	btnApply  = gtk_dialog_add_button(GTK_DIALOG(ccode_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnOK     = gtk_dialog_add_button(GTK_DIALOG(ccode_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(ccode_window),
 						GTK_RESPONSE_OK,
@@ -169,6 +175,8 @@ static void ccode_window_create_lstCountryCodes(GtkWidget *container)
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstCountryCodes), FALSE);
 	gtk_widget_show(lstCountryCodes);
 	gtk_container_add(GTK_CONTAINER(scrlList), lstCountryCodes);
+	g_signal_connect((gpointer)lstCountryCodes, "drag-drop",
+			 G_CALLBACK(ccode_window_callback_lstCountryCodes_drag_drop), NULL);
 	
 	// Create the renderer and the columns.
 	GtkCellRenderer  *rendCountry = gtk_cell_renderer_text_new();
@@ -259,6 +267,9 @@ static void ccode_window_init(void)
 				   0, ccodes[Country_Order[i]],
 				   1, Country_Order[i], -1);
 	}
+	
+	// Disable the "Apply" button initially.
+	gtk_widget_set_sensitive(btnApply, FALSE);
 }
 
 
@@ -284,6 +295,9 @@ static void ccode_window_save(void)
 	
 	// Validate the country code order.
 	Check_Country_Order();
+	
+	// Disable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, FALSE);
 }
 
 
@@ -367,6 +381,9 @@ static void ccode_window_callback_btnUp_clicked(GtkButton *button, gpointer user
 			{
 				// Not the first item. Swap it with the previous item.
 				gtk_list_store_swap(lmCountryCodes, &iter, &prevIter);
+			
+				// Enable the "Apply" button.
+				gtk_widget_set_sensitive(btnApply, TRUE);
 			}
 			break;
 		}
@@ -413,6 +430,9 @@ static void ccode_window_callback_btnDown_clicked(GtkButton *button, gpointer us
 			{
 				// Not the last item. Swap it with the next item.
 				gtk_list_store_swap(lmCountryCodes, &iter, &nextIter);
+				
+				// Enable the "Apply" button.
+				gtk_widget_set_sensitive(btnApply, TRUE);
 			}
 			break;
 		}
@@ -422,4 +442,25 @@ static void ccode_window_callback_btnDown_clicked(GtkButton *button, gpointer us
 			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmCountryCodes), &iter);
 		}
 	}
+}
+
+
+static gboolean ccode_window_callback_lstCountryCodes_drag_drop(GtkWidget	*widget,
+								GdkDragContext	*drag_context,
+								gint		x,
+								gint		y,
+								guint		time_,
+								gpointer	user_data)
+{
+	GENS_UNUSED_PARAMETER(widget);
+	GENS_UNUSED_PARAMETER(drag_context);
+	GENS_UNUSED_PARAMETER(x);
+	GENS_UNUSED_PARAMETER(y);
+	GENS_UNUSED_PARAMETER(time_);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, TRUE);
+	
+	return FALSE;
 }

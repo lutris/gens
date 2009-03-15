@@ -53,6 +53,7 @@ static GtkWidget	*sldContrast;
 static GtkWidget	*sldBrightness;
 static GtkWidget	*chkGrayscale;
 static GtkWidget	*chkInverted;
+static GtkWidget	*btnCancel, *btnApply, *btnOK;
 
 // Color adjustment load/save functions.
 static void	ca_window_init(void);
@@ -61,6 +62,7 @@ static void	ca_window_save(void);
 // Callbacks.
 static gboolean	ca_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	ca_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	ca_window_callback_widget_changed(void);
 
 
 /**
@@ -127,6 +129,8 @@ void ca_window_show(void)
 			 1, 2, 0, 1,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	g_signal_connect((gpointer)sldContrast, "value-changed",
+			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
 	// Set the mnemonic widget for the "Contrast" label.
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblContrast), sldContrast);
@@ -153,6 +157,8 @@ void ca_window_show(void)
 			 1, 2, 1, 2,
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	g_signal_connect((gpointer)sldBrightness, "value-changed",
+			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
 	// Set the mnemonic widget for the "Brightness" label.
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblBrightness), sldBrightness);
@@ -166,18 +172,21 @@ void ca_window_show(void)
 	chkGrayscale = gtk_check_button_new_with_mnemonic("_Grayscale");
 	gtk_widget_show(chkGrayscale);
 	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkGrayscale, TRUE, FALSE, 0);
+	g_signal_connect((gpointer)chkGrayscale, "toggled",
+			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
 	// "Inverted" checkbox.
 	chkInverted = gtk_check_button_new_with_mnemonic("_Inverted");
 	gtk_widget_show(chkInverted);
 	gtk_box_pack_start(GTK_BOX(hboxMiscOptions), chkInverted, TRUE, FALSE, 0);
+	g_signal_connect((gpointer)chkInverted, "toggled",
+			 G_CALLBACK(ca_window_callback_widget_changed), NULL);
 	
 	// Create the dialog buttons.
-	gtk_dialog_add_buttons(GTK_DIALOG(ca_window),
-			       "gtk-cancel", GTK_RESPONSE_CANCEL,
-			       "gtk-apply", GTK_RESPONSE_APPLY,
-			       "gtk-save", GTK_RESPONSE_OK,
-			       NULL);
+	btnCancel = gtk_dialog_add_button(GTK_DIALOG(ca_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	btnApply  = gtk_dialog_add_button(GTK_DIALOG(ca_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
+	btnOK     = gtk_dialog_add_button(GTK_DIALOG(ca_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(ca_window),
 						GTK_RESPONSE_OK,
@@ -221,6 +230,9 @@ static void ca_window_init(void)
 	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkGrayscale), Greyscale);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInverted), Invert_Color);
+	
+	// Disable the "Apply" button initially.
+	gtk_widget_set_sensitive(btnApply, FALSE);
 }
 
 
@@ -303,4 +315,11 @@ static void ca_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 			// Also, don't do anything when the dialog is deleted.
 			break;
 	}
+}
+
+
+static void ca_window_callback_widget_changed(void)
+{
+	// Enable the "Apply" button.
+	gtk_widget_set_sensitive(btnApply, TRUE);
 }
