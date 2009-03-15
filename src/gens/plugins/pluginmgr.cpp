@@ -407,7 +407,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
  */
 void PluginMgr::end(void)
 {
-	// Shut down all render plugins.
+	// Shut down all plugins.
 	for (list<mdp_t*>::iterator curMDP = lstMDP.begin();
 	     curMDP != lstMDP.end(); curMDP++)
 	{
