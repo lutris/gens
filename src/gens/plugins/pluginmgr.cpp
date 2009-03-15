@@ -243,7 +243,7 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	{
 		// Could not open the MDP plugin directory.
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"Could not open directory '%s': %s",
+			"Could not open directory '%s': %s.",
 			directory.c_str(), strerror(errno));
 		return;
 	}
