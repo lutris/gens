@@ -456,7 +456,7 @@ void input_sdl_event_key_down(int key)
 		
 		case GENS_KEY_r:
 		{
-			if ((mod & ~KMOD_SHIFT) || !(mod & KMOD_SHIFT))
+			if (!(mod & KMOD_SHIFT))
 				break;
 			
 			int curBackend = vdraw_cur_backend_id;
