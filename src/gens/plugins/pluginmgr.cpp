@@ -283,8 +283,8 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 			{
 				// Recursive scan is enabled.
 				// Make sure the directory isn't "." or "..".
-				if (memcmp(d_entry->d_name, ".", 2) &&
-				    memcmp(d_entry->d_name, "..", 3))
+				if (strncmp(d_entry->d_name, ".", 2) &&
+				    strncmp(d_entry->d_name, "..", 3))
 				{
 					// Directory is not "." or "..".
 					
