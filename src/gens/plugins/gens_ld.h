@@ -27,7 +27,7 @@
 #include <config.h>
 #endif
 
-#ifndef GENS_OS_WIN32
+#if defined(GENS_OS_UNIX)
 
 /* UNIX system. */
 #include <dlfcn.h>
@@ -35,6 +35,10 @@
 
 #define gens_dlopen(filename)		dlopen(filename, RTLD_NOW | RTLD_LOCAL)
 #define gens_dlclose(handle)		dlclose(handle)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static inline void* gens_dlsym(void *handle, const char *symbol)
 {
@@ -58,9 +62,13 @@ static inline const char* gens_dlerror(void)
 	return (endofpath + sizeof(GENS_DL_EXT) + 1);
 }
 
+#ifdef __cplusplus
+}
+#endif
+
 #define gens_dlerror_str_free(errstr)
 
-#else
+#elif defined(GENS_OS_WIN32)
 
 /* Win32 system. */
 #include <windows.h>
@@ -98,6 +106,10 @@ static inline const char* gens_dlerror(void)
 #ifdef __cplusplus
 }
 #endif
+
+#else
+
+#error Unsupported operating system.
 
 #endif
 
