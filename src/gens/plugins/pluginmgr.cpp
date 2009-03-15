@@ -49,12 +49,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include <cstring>
+#include <errno.h>
 
 // mingw doesn't provide S_ISLNK.
 #ifndef S_ISLNK
 #define S_ISLNK(x) (0)
 #endif
+
+// C includes.
+#include <string.h>
 
 // C++ includes
 #include <algorithm>
@@ -240,8 +243,8 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	{
 		// Could not open the MDP plugin directory.
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"Could not open MDP plugin directory: %s",
-			directory.c_str());
+			"Could not open directory '%s': %s",
+			directory.c_str(), strerror(errno));
 		return;
 	}
 	
