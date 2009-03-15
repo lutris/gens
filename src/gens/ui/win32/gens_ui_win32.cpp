@@ -601,5 +601,4 @@ void GensUI::setMousePointer(bool busy)
 		cursor = LoadCursor(NULL, IDC_ARROW);
 	
 	SetCursor(cursor);
-	update();
 }
