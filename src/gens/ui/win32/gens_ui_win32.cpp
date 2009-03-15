@@ -596,9 +596,9 @@ void GensUI::setMousePointer(bool busy)
 	HCURSOR cursor;
 	
 	if (busy)
-		cursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
+		cursor = LoadCursor(NULL, IDC_WAIT);
 	else
-		cursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
+		cursor = LoadCursor(NULL, IDC_ARROW);
 	
 	SetCursor(cursor);
 	update();
