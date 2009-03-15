@@ -585,3 +585,21 @@ static int CALLBACK selectDir_SetSelProc(HWND hWnd, UINT uMsg, LPARAM lParam, LP
 	
 	return 0;
 }
+
+
+/**
+ * setMousePointer(): Set the mouse pointer. 
+ * @param busy True if the pointer should be busy; False if the pointer should be normal.
+ */
+void GensUI::setMousePointer(bool busy)
+{
+	HCURSOR cursor;
+	
+	if (busy)
+		cursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
+	else
+		cursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
+	
+	SetCursor(cursor);
+	update();
+}

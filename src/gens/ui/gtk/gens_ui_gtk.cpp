@@ -521,3 +521,24 @@ static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog)
 	gtk_file_filter_add_pattern(filter, filter_gym);
 	gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 }
+
+
+/**
+ * setMousePointer(): Set the mouse pointer. 
+ * @param busy True if the pointer should be busy; False if the pointer should be normal.
+ */
+void GensUI::setMousePointer(bool busy)
+{
+	GdkCursor *cursor;
+	
+	if (busy)
+		cursor = gdk_cursor_new(GDK_WATCH);
+	else
+		cursor = gdk_cursor_new(GDK_LEFT_PTR);
+	
+	gdk_window_set_cursor(gens_window->window, cursor);
+	gdk_window_set_cursor(gens_window_sdlsock->window, cursor);
+	gdk_cursor_destroy(cursor);
+	
+	update();
+}

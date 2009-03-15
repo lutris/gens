@@ -75,6 +75,8 @@ class GensUI
 				       const FileFilterType filterType, void* owner = NULL);
 		static string selectDir(const string& title, const string& initDir, void* owner = NULL);
 		
+		static void setMousePointer(bool busy);
+		
 		// The following functions are implemented by ui/gens_ui.cpp.
 		static void setWindowTitle_Idle(void);
 		static void setWindowTitle_Game(const string& system, const string& game,
