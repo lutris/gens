@@ -164,12 +164,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	// Save hInst for other functions.
 	ghInstance = hInst;
 	
+	// Initialize fonts.
+	fonts_init();
+	
 	// gens_window is needed before anything else is set up.
 	// Initialize the Gens hWnd.
 	gens_window_init_hWnd();
-	
-	// Initialize fonts.
-	fonts_init();
 	
 	// Initialize vdraw_ddraw.
 	vdraw_init();
