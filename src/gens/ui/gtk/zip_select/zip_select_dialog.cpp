@@ -184,6 +184,14 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 		return NULL;
 	}
 	
+	// Change the mouse pointer to "busy".
+	GdkCursor *cursor = gdk_cursor_new(GDK_WATCH);
+	gdk_window_set_cursor(m_Window->window, cursor);
+	gdk_cursor_destroy(cursor);
+	
+	while (gtk_events_pending())
+		gtk_main_iteration_do(false);
+	
 	// Get the selected file.
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_lstFiles));
 	valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lstdataFiles), &iter);
