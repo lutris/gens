@@ -591,6 +591,9 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		return ROMTYPE_SYS_NONE;
 	}
 	
+	// Change the mouse pointer to "busy".
+	GensUI::setMousePointer(true);
+	
 	// Determine the ROM type.
 	// TODO: Show an error if the ROM can't be opened.
 	unsigned char detectBuf[2048];
@@ -604,6 +607,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
+		GensUI::setMousePointer(false);
 		return romSys;
 	}
 	
@@ -615,6 +619,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
+		GensUI::setMousePointer(false);
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -626,6 +631,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		fclose(fROM);
 		Game = NULL;
 		*retROM = NULL;
+		GensUI::setMousePointer(false);
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -646,6 +652,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		myROM = NULL;
 		Game = NULL;
 		*retROM = NULL;
+		GensUI::setMousePointer(false);
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -664,6 +671,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	
 	fillROMInfo();
 	
+	GensUI::setMousePointer(false);
 	*retROM = myROM;
 	return romType;
 }
