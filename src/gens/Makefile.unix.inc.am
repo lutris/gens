@@ -34,7 +34,7 @@ gens_SOURCES += \
 		ui/gtk/controller_config/cc_window.c \
 		ui/gtk/bios_misc_files/bmf_window.cpp \
 		ui/gtk/directory_config/dir_window.cpp \
-		ui/gtk/general_options/general_options_window.cpp \
+		ui/gtk/general_options/genopt_window.cpp \
 		ui/gtk/color_adjust/ca_window.c \
 		ui/gtk/country_code/ccode_window.c \
 		ui/gtk/zip_select/zip_select_dialog.cpp \
@@ -87,7 +87,7 @@ noinst_HEADERS += \
 		ui/gtk/controller_config/cc_window.h \
 		ui/gtk/bios_misc_files/bmf_window.hpp \
 		ui/gtk/directory_config/dir_window.hpp \
-		ui/gtk/general_options/general_options_window.hpp \
+		ui/gtk/general_options/genopt_window.hpp \
 		ui/gtk/color_adjust/ca_window.h \
 		ui/gtk/country_code/ccode_window.h \
 		ui/gtk/zip_select/zip_select_dialog.hpp \

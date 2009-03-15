@@ -32,7 +32,7 @@
 #include "controller_config/cc_window.h"
 #include "bios_misc_files/bmf_window.hpp"
 #include "directory_config/dir_window.hpp"
-#include "general_options/general_options_window.hpp"
+#include "general_options/genopt_window.hpp"
 #include "about/about_window.hpp"
 #include "color_adjust/ca_window.h"
 #include "country_code/ccode_window.h"
@@ -720,7 +720,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 	switch (menuID)
 	{
 		case IDM_OPTIONS_GENERAL:
-			GeneralOptionsWindow::Instance();
+			genopt_window_show();
 			break;
 		
 		case IDM_OPTIONS_JOYPADS:

@@ -24,6 +24,23 @@
 #define GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP
 
 #ifdef __cplusplus
+extern "C" {
+#endif
+
+// GTK+ includes.
+#include <gtk/gtk.h>
+
+extern GtkWidget *genopt_window;
+
+void genopt_window_show(void);
+void genopt_window_close(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#if 0
+#ifdef __cplusplus
 
 #include "wndbase.hpp"
 
@@ -79,5 +96,6 @@ class GeneralOptionsWindow : public WndBase
 };
 
 #endif /* __cplusplus */
+#endif
 
 #endif /* GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP */
