@@ -350,14 +350,20 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
  */
 void PluginMgr::loadExternalPlugin(const string& filename)
 {
+	const char *err;
+	
 	void *handle = gens_dlopen(filename.c_str());
 	
 	if (!handle)
 	{
 		Incompat.add(NULL, MDP_ERR_CANNOT_OPEN_DLL, filename);
+		
+		err = gens_dlerror();
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"Could not open external plugin: %s",
-			File::GetNameFromPath(filename).c_str());
+			"Could not open external plugin '%s': %s",
+			File::GetNameFromPath(filename).c_str(), err);
+		
+		gens_dlerror_str_free(err);
 		return;
 	}
 	
@@ -366,9 +372,15 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	if (!plugin)
 	{
 		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
+		
+		// NOTE: This will say "Unknown error." if the symbol was found,
+		// but the symbol was defined as NULL. I'll fix this later.
+		err = gens_dlerror();
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
-			"\"mdp\" symbol not found in plugin: %s",
-			File::GetNameFromPath(filename).c_str());
+			"\"mdp\" symbol not found in plugin '%s': %s",
+			File::GetNameFromPath(filename).c_str(), err);
+		
+		gens_dlerror_str_free(err);
 		gens_dlclose(handle);
 		return;
 	}
