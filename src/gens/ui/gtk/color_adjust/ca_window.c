@@ -318,6 +318,9 @@ static void ca_window_callback_response(GtkDialog *dialog, gint response_id, gpo
 }
 
 
+/**
+ * ca_window_callback_widget_changed(): A widget was changed.
+ */
 static void ca_window_callback_widget_changed(void)
 {
 	// Enable the "Apply" button.
