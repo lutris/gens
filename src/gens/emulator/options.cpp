@@ -944,6 +944,9 @@ bool Options::fastBlur(void)
  */
 void Options::setFastBlur(const bool newFastBlur)
 {
+	if (newFastBlur == vdraw_get_fast_blur())
+		return;
+	
 	Flag_Clr_Scr = 1;
 	vdraw_set_fast_blur(newFastBlur);
 	
