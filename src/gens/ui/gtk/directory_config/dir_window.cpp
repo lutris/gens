@@ -52,7 +52,7 @@ GtkWidget *dir_window = NULL;
 
 // Widgets.
 static GtkWidget	*txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
-static GtkWidget	*btnCancel, *btnApply, *btnOK;
+static GtkWidget	*btnCancel, *btnApply, *btnSave;
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -158,7 +158,7 @@ void dir_window_show(void)
 	// Create the dialog buttons.
 	btnCancel = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	btnApply  = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY);
-	btnOK     = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	btnSave   = gtk_dialog_add_button(GTK_DIALOG(dir_window), GTK_STOCK_SAVE, GTK_RESPONSE_OK);
 	
 #if (GTK_MAJOR_VERSION > 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION >= 6))
 	gtk_dialog_set_alternative_button_order(GTK_DIALOG(dir_window),
