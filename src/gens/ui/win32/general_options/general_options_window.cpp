@@ -112,7 +112,7 @@ GeneralOptionsWindow::GeneralOptionsWindow()
 		m_WndClass.cbWndExtra = 0;
 		m_WndClass.hInstance = ghInstance;
 		m_WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-		m_WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		m_WndClass.hCursor = NULL;
 		m_WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		m_WndClass.lpszMenuName = NULL;
 		m_WndClass.lpszClassName = "Gens_General_Options";

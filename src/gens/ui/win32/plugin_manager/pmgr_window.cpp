@@ -127,7 +127,7 @@ void pmgr_window_show(void)
 		pmgr_wndclass.cbWndExtra = 0;
 		pmgr_wndclass.hInstance = ghInstance;
 		pmgr_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-		pmgr_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		pmgr_wndclass.hCursor = NULL;
 		pmgr_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		pmgr_wndclass.lpszMenuName = NULL;
 		pmgr_wndclass.lpszClassName = "pmgr_window";

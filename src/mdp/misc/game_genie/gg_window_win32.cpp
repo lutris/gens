@@ -133,7 +133,7 @@ void gg_window_show(void *parent)
 		gg_window_wndclass.cbWndExtra = 0;
 		gg_window_wndclass.hInstance = GetModuleHandle(NULL);
 		gg_window_wndclass.hIcon = NULL;
-		gg_window_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		gg_window_wndclass.hCursor = NULL;
 		gg_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		gg_window_wndclass.lpszMenuName = NULL;
 		gg_window_wndclass.lpszClassName = "gg_window_wndclass";

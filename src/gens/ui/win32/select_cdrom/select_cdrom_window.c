@@ -70,7 +70,7 @@ HWND create_select_cdrom_window(void)
 	WndClass.cbWndExtra = 0;
 	WndClass.hInstance = ghInstance;
 	WndClass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	WndClass.hCursor = NULL;
 	WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 	WndClass.lpszMenuName = NULL;
 	WndClass.lpszClassName = "Gens_Select_CDROM";

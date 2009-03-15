@@ -60,7 +60,7 @@ void gens_window_init_hWnd(void)
 		gens_wndclass.cbWndExtra = 0;
 		gens_wndclass.hInstance = ghInstance;
 		gens_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-		gens_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		gens_wndclass.hCursor = NULL;
 		gens_wndclass.hbrBackground = NULL;
 		gens_wndclass.lpszMenuName = NULL;
 		gens_wndclass.lpszClassName = "Gens";

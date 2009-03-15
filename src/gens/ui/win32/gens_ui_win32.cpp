@@ -173,8 +173,8 @@ void GensUI::init(int *argc, char **argv[])
 	// Initialize COM.
 	CoInitialize(NULL);
 	
-	// Create the fonts.
-	// TODO
+	// Initialize the cursor.
+	SetCursor(LoadCursor(NULL, IDC_ARROW));
 	
 	// Load the accelerator table for non-menu commands.
 	hAccelTable_NonMenu = LoadAccelerators(ghInstance, MAKEINTRESOURCE(IDR_GENS_WINDOW_ACCEL_NONMENU));

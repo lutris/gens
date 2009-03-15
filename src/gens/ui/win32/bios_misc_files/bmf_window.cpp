@@ -101,7 +101,7 @@ void bmf_window_show(void)
 		bmf_wndclass.cbWndExtra = 0;
 		bmf_wndclass.hInstance = ghInstance;
 		bmf_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-		bmf_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		bmf_wndclass.hCursor = NULL;
 		bmf_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		bmf_wndclass.lpszMenuName = NULL;
 		bmf_wndclass.lpszClassName = "bmf_window";

@@ -107,7 +107,7 @@ void ca_window_show(void)
 		ca_wndclass.cbWndExtra = 0;
 		ca_wndclass.hInstance = ghInstance;
 		ca_wndclass.hIcon = LoadIcon(ghInstance, MAKEINTRESOURCE(IDI_SONIC));
-		ca_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		ca_wndclass.hCursor = NULL;
 		ca_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ca_wndclass.lpszMenuName = NULL;
 		ca_wndclass.lpszClassName = "ca_window";

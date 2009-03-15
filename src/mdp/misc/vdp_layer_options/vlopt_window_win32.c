@@ -103,7 +103,7 @@ void vlopt_window_show(void *parent)
 		vlopt_window_wndclass.cbWndExtra = 0;
 		vlopt_window_wndclass.hInstance = GetModuleHandle(NULL);
 		vlopt_window_wndclass.hIcon = NULL;
-		vlopt_window_wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+		vlopt_window_wndclass.hCursor = NULL;
 		vlopt_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		vlopt_window_wndclass.lpszMenuName = NULL;
 		vlopt_window_wndclass.lpszClassName = "vlopt_window_wndclass";
