@@ -271,7 +271,9 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 		#else /* !_DIRENT_HAVE_D_TYPE */
 			// libc does not provide the dirent->d_type field.
 			// mingw unfortunately doesn't. :(
-			curEntry.filename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+			curEntry.filename = string(directory) +
+					    string(GENS_DIR_SEPARATOR_STR) +
+					    string(d_entry->d_name);
 			stat(curEntry.filename.c_str(), &dirstat);
 			filetype = dirstat.st_mode;
 		#endif /* _DIRENT_HAVE_D_TYPE */
@@ -290,7 +292,9 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 					
 					// Scan the directory.
 					#ifdef _DIRENT_HAVE_D_TYPE
-						curEntry.filename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+						curEntry.filename = string(directory) +
+								    string(GENS_DIR_SEPARATOR_STR) +
+								    string(d_entry->d_name);
 					#endif /* _DIRENT_HAVE_D_TYPE */
 					curEntry.isDirectory = true;
 					pluginEntries.push_back(curEntry);
@@ -314,7 +318,9 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 					// File extension matches.
 					// Found a plugin.
 					#ifdef _DIRENT_HAVE_D_TYPE
-						curEntry.filename = directory + GENS_DIR_SEPARATOR_STR + d_entry->d_name;
+						curEntry.filename = string(directory) +
+								    string(GENS_DIR_SEPARATOR_STR) +
+								    string(d_entry->d_name);
 					#endif
 					curEntry.isDirectory = false;
 					pluginEntries.push_back(curEntry);
