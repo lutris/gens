@@ -183,21 +183,21 @@ static void dir_window_create_child_windows(HWND hWnd)
 				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
-	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     DIR_WINDOW_WIDTH-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
-				     75, 23,
-				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(btnApply, fntMain, TRUE);
-	
 	// Cancel button.
 	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      DIR_WINDOW_WIDTH-8-75, DIR_WINDOW_HEIGHT-8-24,
+				      DIR_WINDOW_WIDTH-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
 				      75, 23,
 				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
+	
+	// Apply button.
+	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     DIR_WINDOW_WIDTH-8-75, DIR_WINDOW_HEIGHT-8-24,
+				     75, 23,
+				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	// Initialize the directory entries.
 	dir_window_init();

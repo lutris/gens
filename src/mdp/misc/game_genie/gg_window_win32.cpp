@@ -256,26 +256,26 @@ static void gg_window_create_child_windows(HWND hWnd)
 				  hWnd, (HMENU)IDOK, gg_hInstance, NULL);
 	SetWindowFont(btnOK, gg_hFont, true);
 	
-	// "Apply" button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
-				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     8+75+8, btnTop,
-				     75, 24,
-				     hWnd, (HMENU)IDAPPLY, gg_hInstance, NULL);
-	SetWindowFont(btnApply, gg_hFont, true);
-	
 	// "Cancel" button.
 	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      8+75+8+75+8, btnTop,
+				      8+75+8, btnTop,
 				      75, 24,
 				      hWnd, (HMENU)IDCANCEL, gg_hInstance, NULL);
 	SetWindowFont(btnCancel, gg_hFont, true);
 	
+	// "Apply" button.
+	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				     8+75+8+75+8, btnTop,
+				     75, 24,
+				     hWnd, (HMENU)IDAPPLY, gg_hInstance, NULL);
+	SetWindowFont(btnApply, gg_hFont, true);
+	
 	// "Delete" button.
 	HWND btnDelete = CreateWindow(WC_BUTTON, "&Delete",
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      GG_WINDOW_WIDTH-(8+81+8+75), btnTop,
+				      GG_WINDOW_WIDTH-(8+91+8+75), btnTop,
 				      75, 24,
 				      hWnd, (HMENU)IDC_BTNDELETE, gg_hInstance, NULL);
 	SetWindowFont(btnDelete, gg_hFont, true);
@@ -283,8 +283,8 @@ static void gg_window_create_child_windows(HWND hWnd)
 	// "Deactivate All" button.
 	HWND btnDeactivateAll = CreateWindow(WC_BUTTON, "Deac&tivate All",
 					     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					     GG_WINDOW_WIDTH-(8+81), btnTop,
-					     81, 24,
+					     GG_WINDOW_WIDTH-(8+91), btnTop,
+					     91, 24,
 					     hWnd, (HMENU)IDC_BTNDEACTIVATEALL, gg_hInstance, NULL);
 	SetWindowFont(btnDeactivateAll, gg_hFont, true);
 	

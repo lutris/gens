@@ -118,20 +118,6 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		btnLeft += (btnWidth + 8);
 	}
 	
-	if (buttons & BUTTON_APPLY)
-	{
-		HWND btnApply;
-		btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					btnLeft, btnTop, btnWidth, btnHeight,
-					(HWND)container, (HMENU)IDAPPLY, ghInstance, NULL);
-		SetWindowFont(btnApply, fntMain, TRUE);
-		
-		if (buttonFocus & BUTTON_APPLY)
-			SetFocus(btnApply);
-		
-		btnLeft += (btnWidth + 8);
-	}
-	
 	if (buttons & BUTTON_CANCEL)
 	{
 		HWND btnCancel;
@@ -142,6 +128,20 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		
 		if (buttonFocus & BUTTON_CANCEL)
 			SetFocus(btnCancel);
+		
+		btnLeft += (btnWidth + 8);
+	}
+	
+	if (buttons & BUTTON_APPLY)
+	{
+		HWND btnApply;
+		btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+					btnLeft, btnTop, btnWidth, btnHeight,
+					(HWND)container, (HMENU)IDAPPLY, ghInstance, NULL);
+		SetWindowFont(btnApply, fntMain, TRUE);
+		
+		if (buttonFocus & BUTTON_APPLY)
+			SetFocus(btnApply);
 		
 		btnLeft += (btnWidth + 8);
 	}

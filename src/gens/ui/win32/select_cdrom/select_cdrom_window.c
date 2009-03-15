@@ -123,15 +123,15 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 				   hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(SelCD_btnOK, fntMain, TRUE);
 	
-	SelCD_btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      btnLeft+8+75+8, btnTop, 75, 23,
-				      hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
-	SetWindowFont(SelCD_btnApply, fntMain, TRUE);
-	
 	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				 btnLeft+8+75+8+75+8, btnTop, 75, 23,
+				 btnLeft+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
+	
+	SelCD_btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				      btnLeft+8+75+8+75+8, btnTop, 75, 23,
+				      hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
+	SetWindowFont(SelCD_btnApply, fntMain, TRUE);
 	
 	if (Num_CD_Drive == 0)
 	{
