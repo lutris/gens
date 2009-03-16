@@ -549,8 +549,8 @@ else
 	cflags_win32=""
 fi
 
-AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_win32}"
-AM_CXXFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_win32} ${cxxflags_visibility}"
+AM_CFLAGS="${cflags_optimization} ${cflags_debug} ${cflags_warnings_common} ${cflags_win32}"
+AM_CXXFLAGS="${cflags_optimization} ${cflags_debug} ${cflags_warnings_common} ${cflags_win32} ${cxxflags_visibility}"
 AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 
 # Use package-specific libdir.
