@@ -15,7 +15,7 @@ div.navbar
 	border-collapse: collapsed;
 }
 
-div.contents li.sublist
+li.sublist
 {
 	list-style: none;
 }

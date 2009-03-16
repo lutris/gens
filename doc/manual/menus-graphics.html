@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Gens/GS - Menus - Graphics Menu</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='gens.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>Gens/GS - Menus - Graphics Menu</h1>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'>Menus</nav>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="menus-graphics.html">Graphics Menu</a></span>
+</div>
+
+<p class='screenshot'>
+	<img src='images/menus-graphics.png' alt="Graphics Menu" title="Graphics Menu">
+</p>
+
+<p>The Graphics Menu allows you to adjust Gens/GS's graphical output.</p>
+
+<p>
+<span class='option'><img src="icons/view-fullscreen.png" alt=""> Full Screen</span>:
+Activate Full Screen mode. (On Linux, the menu system is not accessible in Full Screen
+mode due to GTK+ limitations.)
+</p>
+
+<p>
+<span class='option'>VSync</span>: Enable vertical synchronization. This option
+is only available when using OpenGL (Linux) or DirectDraw (Windows).
+</p>
+
+<p>
+<span class='option'>Stretch</span>: Set the stretch mode option. Stretch can be
+set to either &quot;None&quot;, &quot;Horizontal Only&quot;, &quot;Vertical Only&quot;,
+or &quot;Full Screen&quot;. This option is only available when using OpenGL (Linux)
+or DirectDraw (Windows).
+</p>
+
+<p>
+<span class='option'>Backend</span>: Select a video rendering backend. Backends
+currently implemented:
+<ul>
+	<li>Linux:</li>
+	<li class='sublist'>
+		<ul>
+			<li>SDL</li>
+			<li>SDL+OpenGL</li>
+		</ul>
+	</li>
+	<li>Windows:</li>
+	<li class='sublist'>
+		<ul>
+			<li>DirectDraw 4</li>
+			<li>GDI</li>
+		</ul>
+	</li>
+</ul>
+</p>
+
+<p>
+<span class='option'>OpenGL Linear Filter</span>: Enables linear filtering in
+OpenGL mode, which can improve visual quality at higher resolutions. (Linux only)
+</p>
+
+<p>
+<span class='option'>OpenGL Resolution</span>: Sets the rendering resolution for
+OpenGL mode. (Linux only)
+</p>
+
+<p>
+<span class='option'>Bits per pixel</span>: Sets the color depth to be used by
+SDL and SDL+OpenGL. (The Windows version uses the system color depth setting.)
+</p>
+
+<p>
+<span class='option'><img src="icons/color-picker.png" alt=""> Color Adjust...</span>:
+Allows you to adjust color options, including brightness and contrast.
+</p>
+
+<p>
+<span class='option'><img src="icons/viewmag.png" alt=""> Render</span>:
+Contains a list of all available renderers. The built-in renderers are at the
+top of the list, followed by renderers found in all loaded MDP plugins.
+</p>
+
+<p>
+<span class='option'>Sprite Limit</span>: If enabled, emulates the hardware sprite
+limit found in the original Sega Genesis VDP.
+</p>
+
+<p>
+<span class='option'><img src="icons/2rightarrow.png" alt=""> Frame Skip</span>:
+Specify the number of frames to skip. This is useful on slower machines.
+</p>
+
+<p>
+<span class='option'><img src="icons/edit-copy.png" alt=""> Screen Shot</span>:
+Saves a screenshot of the current image in PNG format. The screenshot is unfiltered.
+</p>
+
+</body>
+</html>
