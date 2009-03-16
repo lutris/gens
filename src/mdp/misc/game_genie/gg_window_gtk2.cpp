@@ -113,7 +113,7 @@ void gg_window_show(void *parent)
 			 G_CALLBACK(gg_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(gg_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(gg_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the main frame.

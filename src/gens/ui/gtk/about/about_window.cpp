@@ -95,7 +95,7 @@ void about_window_show(void)
 			 G_CALLBACK(about_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(about_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(about_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the HBox for the logo and the program information.

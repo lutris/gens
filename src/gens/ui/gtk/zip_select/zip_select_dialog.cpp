@@ -36,6 +36,7 @@ using std::list;
 
 // Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
+#include "ui/gtk/gtk-compat.h"
 
 static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
@@ -67,7 +68,7 @@ ZipSelectDialog::ZipSelectDialog()
 	gtk_container_set_border_width(GTK_CONTAINER(fraZip), 5);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraZip), GTK_SHADOW_NONE);
 	gtk_widget_show(fraZip);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(m_Window)->vbox), fraZip);
+	gtk_container_add(GTK_CONTAINER(gtk_bin_get_child(GTK_BIN(m_Window))), fraZip);
 	
 	// Add a label to the zip file selection frame.
 	GtkWidget *lblZip = gtk_label_new("This archive contains multiple files.\nSelect which file you want to load.");
@@ -186,7 +187,7 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 	
 	// Change the mouse pointer to "busy".
 	GdkCursor *cursor = gdk_cursor_new(GDK_WATCH);
-	gdk_window_set_cursor(m_Window->window, cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(m_Window), cursor);
 	gdk_cursor_destroy(cursor);
 	
 	while (gtk_events_pending())

@@ -32,6 +32,7 @@
 
 #include "ui/gens_ui.hpp"
 #include "ui/gtk/gtk-uri.h"
+#include "ui/gtk/gtk-compat.h"
 
 // Unued Parameter macro.
 #include "macros/unused.h"
@@ -78,57 +79,64 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 	GENS_UNUSED_PARAMETER(target_type);
 	GENS_UNUSED_PARAMETER(data);
 	
-	gboolean dnd_success = FALSE;
-	gboolean delete_selection_data = FALSE;
-	
-	if ((selection_data != NULL) && (selection_data->length >= 0))
+	if (selection_data == NULL || gtk_selection_data_get_length(selection_data) == 0)
 	{
-		string filename;
-		dnd_success = TRUE;
-		
-		filename = string((gchar*)(selection_data->data));
-		
-		if (filename.length() >= 8 && filename.substr(0, 8) == "file:///")
-		{
-			// "file:///" prefix. Remove the prefix.
-			filename = filename.substr(7);
-		}
-		else if (filename.length() >= 7 && filename.substr(0, 7) == "file://")
-		{
-			// "file://" prefix. Remove the prefix.
-			filename = filename.substr(6);
-		}
-		else if (filename.length() >= 6 && filename.substr(0, 6) == "file:/")
-		{
-			// "file:/" prefix. Remove the prefix.
-			filename = filename.substr(5);
-		}
-		else if (filename.length() >= 10 && filename.substr(0, 9) == "desktop:/")
-		{
-			// "desktop:/" prefix. Remove the prefix and prepend the user's desktop directory.
-			filename = string(getenv("HOME")) + "/Desktop/" + filename.substr(9);
-		}
-		
-		// Unescape the URI.
-		char* unescaped = gens_g_uri_unescape_string(filename.c_str(), NULL);
-		filename = string(unescaped);
-		g_free(unescaped);
-		
-		// Check that the file actually exists.
-		if (File::Exists(filename))
-		{
-			// File exists. Open it as a ROM image.
-			ROM::openROM(filename);
-			Sync_Gens_Window();
-		}
-		else
-		{
-			// File does not exist.
-			dnd_success = FALSE;
-		}
+		// No selection data.
+		gtk_drag_finish(context, false, false, time);
 	}
 	
-	gtk_drag_finish(context, dnd_success, delete_selection_data, time);
+	gboolean dnd_success = true;
+	
+	gchar *sel_text = (gchar*)gtk_selection_data_get_text(selection_data);
+	if (!sel_text)
+	{
+		// Selection data was not text.
+		gtk_drag_finish(context, false, false, time);
+	}
+	
+	string filename = string(sel_text);
+	g_free(sel_text);
+	
+	if (filename.length() >= 8 && filename.substr(0, 8) == "file:///")
+	{
+		// "file:///" prefix. Remove the prefix.
+		filename = filename.substr(7);
+	}
+	else if (filename.length() >= 7 && filename.substr(0, 7) == "file://")
+	{
+		// "file://" prefix. Remove the prefix.
+		filename = filename.substr(6);
+	}
+	else if (filename.length() >= 6 && filename.substr(0, 6) == "file:/")
+	{
+		// "file:/" prefix. Remove the prefix.
+		filename = filename.substr(5);
+	}
+	else if (filename.length() >= 10 && filename.substr(0, 9) == "desktop:/")
+	{
+		// "desktop:/" prefix. Remove the prefix and prepend the user's desktop directory.
+		filename = string(getenv("HOME")) + "/Desktop/" + filename.substr(9);
+	}
+	
+	// Unescape the URI.
+	char* unescaped = gens_g_uri_unescape_string(filename.c_str(), NULL);
+	filename = string(unescaped);
+	g_free(unescaped);
+	
+	// Check that the file actually exists.
+	if (File::Exists(filename))
+	{
+		// File exists. Open it as a ROM image.
+		ROM::openROM(filename);
+		Sync_Gens_Window();
+	}
+	else
+	{
+		// File does not exist.
+		dnd_success = false;
+	}
+	
+	gtk_drag_finish(context, dnd_success, false, time);
 }
 
 

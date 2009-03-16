@@ -293,12 +293,12 @@ void Sync_Gens_Window_GraphicsMenu(void)
 		// Custom resolution. Set the text.
 		char sCustomRes[32];
 		sprintf(sCustomRes, "Custom... (%dx%d)", Video.Width_GL, Video.Height_GL);
-		gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGLResCustom)->child), sCustomRes);
+		gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(mnuGLResCustom))), sCustomRes);
 	}
 	else
 	{
 		// Predefined resolution.
-		gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGLResCustom)->child), "Custom...");
+		gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(mnuGLResCustom))), "Custom...");
 	}
 #endif
 	
@@ -599,12 +599,12 @@ void Sync_Gens_Window_SoundMenu(void)
 	// WAV dumping
 	sLabel = (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump");
 	GtkWidget *mnuWAVDump = gens_menu_find_item(IDM_SOUND_WAVDUMP);
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuWAVDump)->child), sLabel);
+	gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(mnuWAVDump))), sLabel);
 	
 	// GYM dumping
 	sLabel = (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump");
 	GtkWidget *mnuGYMDump = gens_menu_find_item(IDM_SOUND_GYMDUMP);
-	gtk_label_set_text(GTK_LABEL(GTK_BIN(mnuGYMDump)->child), sLabel);
+	gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(mnuGYMDump))), sLabel);
 	
 	// Enable or disable GYM/WAV dumping, depending on if a game is running or not.
 	// Also, don't enable this if sound is disabled.

@@ -71,7 +71,7 @@ void Open_Select_CDROM(void)
 	
 	// CD-ROM drive
 	combo_drive = lookup_widget(SelCD, "combo_drive");
-	gtk_entry_set_text(GTK_ENTRY(GTK_BIN(combo_drive)->child), cdromDeviceName);
+	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo_drive))), cdromDeviceName);
 	
 	// Add CD-ROM drives to the dropdown.
 	// TODO: Improve this using udev or something.

@@ -88,7 +88,7 @@ void glres_window_show(void)
 			 G_CALLBACK(glres_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(glres_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(glres_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the main HBox.

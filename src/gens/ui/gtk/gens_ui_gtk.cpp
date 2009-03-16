@@ -32,6 +32,7 @@
 
 #include "ui/gens_ui.hpp"
 #include "gtk-misc.h"
+#include "gtk-compat.h"
 
 // Unused Parameter macro.
 #include "macros/unused.h"
@@ -536,8 +537,8 @@ void GensUI::setMousePointer(bool busy)
 	else
 		cursor = gdk_cursor_new(GDK_LEFT_PTR);
 	
-	gdk_window_set_cursor(gens_window->window, cursor);
-	gdk_window_set_cursor(gens_window_sdlsock->window, cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(gens_window), cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(gens_window_sdlsock), cursor);
 	gdk_cursor_destroy(cursor);
 	
 	update();

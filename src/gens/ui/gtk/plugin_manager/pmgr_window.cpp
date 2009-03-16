@@ -73,6 +73,10 @@ static void	pmgr_window_populate_plugin_list(void);
 static gboolean	pmgr_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	pmgr_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_view, gpointer user_data);
+static void	pmgr_window_callback_fraPluginDesc_size_allocate(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
+
+// Width of fraPluginDesc
+static gint	fraPluginDesc_width;
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
@@ -117,7 +121,7 @@ void pmgr_window_show()
 			  G_CALLBACK(pmgr_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(pmgr_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(pmgr_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the plugin list frame.
@@ -240,7 +244,10 @@ static void pmgr_window_create_plugin_info_frame(GtkWidget *container)
 	gtk_container_add(GTK_CONTAINER(vboxPluginInfo), lblPluginSecInfo);
 	
 	// Frame for the plugin description.
+	fraPluginDesc_width = 0;
 	fraPluginDesc = gtk_frame_new(" ");
+	g_signal_connect((gpointer)fraPluginDesc, "size-allocate",
+			  G_CALLBACK(pmgr_window_callback_fraPluginDesc_size_allocate), NULL);	
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginDesc), GTK_SHADOW_NONE);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPluginDesc), 4);
 	gtk_widget_show(fraPluginDesc);
@@ -501,7 +508,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	{
 		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), "<b><i>Description:</i></b>");
 		gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), TRUE);
-		gtk_widget_set_size_request(lblPluginDesc, fraPluginDesc->allocation.width - 12, 64);
+		gtk_widget_set_size_request(lblPluginDesc, fraPluginDesc_width - 12, 64);
 	}
 	else
 	{
@@ -516,6 +523,18 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 		pmgr_window_clear_plugin_icon();
 	}
 #endif /* GENS_PNG */
+}
+
+
+/**
+ * pmgr_window_callback_fraPluginDesc_size_allocate(): fraPluginDesc's size has been allocated.
+ * @param widget
+ * @param allocation
+ * @param user_data
+ */
+static void pmgr_window_callback_fraPluginDesc_size_allocate(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
+{
+	fraPluginDesc_width = allocation->width;
 }
 
 

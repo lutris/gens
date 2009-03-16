@@ -151,7 +151,7 @@ void genopt_window_show(void)
 			 G_CALLBACK(genopt_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(genopt_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(genopt_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the main HBox.
