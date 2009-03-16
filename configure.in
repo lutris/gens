@@ -92,6 +92,12 @@ AM_CONDITIONAL([GENS_OBJ_ELF32], [test x$obj_format = xelf32])
 AM_CONDITIONAL([GENS_OBJ_ELF64], [test x$obj_format = xelf64])
 AM_CONDITIONAL([GENS_OBJ_MACHO], [test x$obj_format = xmacho])
 
+# Enable C99 mode.
+# (Disabled on Win32 due to some weird issues.)
+if test x$os != xwin32; then
+	AC_PROG_CC_C99
+fi
+
 # Debugging symbols and warnings.
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols. [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
@@ -511,13 +517,6 @@ AC_LANG(C)
 # Miscellaneous
 ###
 
-# C99 doesn't work on the Win32 build for some reason.
-if test x$os != xwin32; then
-	cflags_99="-std=c99"
-else
-	cflags_99=""
-fi
-
 # Check if the linker supports --as-needed.
 AC_MSG_CHECKING(if the linker supports --as-needed)
 as_needed=`$LD --help 2>&1 | grep as-needed`
@@ -550,7 +549,7 @@ else
 	cflags_win32=""
 fi
 
-AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_99} ${cflags_win32}"
+AM_CFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_win32}"
 AM_CXXFLAGS="${cflags_optimization} -Wall -Wextra ${cflags_debug} ${cflags_warnings_common} ${cflags_win32} ${cxxflags_visibility}"
 AM_LDFLAGS="${ldflags_as_needed} ${ldflags_win32}"
 
