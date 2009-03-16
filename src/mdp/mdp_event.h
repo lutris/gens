@@ -62,8 +62,13 @@ typedef int (MDP_FNCALL *mdp_event_handler_fn)(int event_id, void *event_info);
  */
 typedef struct _mdp_event_open_rom_t
 {
-	const char *rom_name;	// ROM name.
-	int system_id;		// System ID.
+	const char *rom_name;	/* ROM name. (For archives, the name of the archive.) */
+	
+	const char *rom_z_name;	/* If the ROM is in a multi-file compressed archive, this *
+				 * is the name of the ROM file from inside the archive.   *
+				 * If not, this is NULL.                                  */
+	
+	int system_id;		/* System ID. */
 } mdp_event_open_rom_t;
 
 
