@@ -44,7 +44,7 @@
 
 
 /* Make sure the structs are packed. */
-#define PACKED __attribute__ ((__packed__))
+#define PACKED __attribute__ ((packed))
 
 /* WAV header struct. */
 /* Description from http://ccrma.stanford.edu/courses/422/projects/WaveFormat/ */

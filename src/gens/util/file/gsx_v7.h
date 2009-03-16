@@ -30,7 +30,7 @@
 
 #include <stdint.h>
 
-#define PACKED __attribute__ ((__packed__))
+#define PACKED __attribute__ ((packed))
 
 // GSX v7 savestate structs.
 // All integer data types are stored in little-endian.
