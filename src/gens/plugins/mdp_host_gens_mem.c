@@ -343,10 +343,11 @@ int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *d
 	else
 		mdp_host_mem_read_block_8_le(ptr, address, data, length);
 	
-	/* Block read. */
+	/* The block has been read. */
 	return MDP_ERR_OK;
 }
 
+/* TODO: Test this function. */
 int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
 	if (!Game)
@@ -354,13 +355,42 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
 	
-	MDP_UNUSED_PARAMETER(memID);
-	MDP_UNUSED_PARAMETER(address);
-	MDP_UNUSED_PARAMETER(data);
-	MDP_UNUSED_PARAMETER(length);
+	uint16_t *ptr;
+	uint32_t max_address;
 	
-	/* TODO */
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			ptr = (uint16_t*)Rom_Data;
+			max_address = 0x3FFFFF;
+			break;
+		case MDP_MEM_MD_RAM:
+			ptr = (uint16_t*)Ram_68k;
+			max_address = 0xFFFF;
+			break;
+		case MDP_MEM_MD_VRAM:
+			ptr = (uint16_t*)VRam;
+			max_address = 0xFFFF;
+			break;
+		default:
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
+	}
+	
+	/* length is the number of 16-bit words. Convert to number of 8-bit bytes. */
+	length <<= 1;
+	
+	if (address + length > max_address)
+	{
+		/* Out of range. */
+		return -MDP_ERR_MEM_OUT_OF_RANGE;
+	}
+	
+	/* Copy the block. */
+	memcpy(data, ptr, length);
+	
+	/* The block has been read. */
+	return MDP_ERR_OK;
 }
 
 int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
@@ -495,10 +525,11 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 		mdp_host_mem_write_block_8_le(_32X_Rom, address, data, length);
 	}
 	
-	/* Block written. */
+	/* The block has been written. */
 	return MDP_ERR_OK;
 }
 
+/* TODO: Test this function. */
 int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
 	if (!Game)
@@ -506,14 +537,44 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
 	
-	MDP_UNUSED_PARAMETER(memID);
-	MDP_UNUSED_PARAMETER(address);
-	MDP_UNUSED_PARAMETER(data);
-	MDP_UNUSED_PARAMETER(length);
+	uint16_t *ptr;
+	uint32_t max_address;
 	
-	/* TODO */
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	switch (memID)
+	{
+		case MDP_MEM_MD_ROM:
+			ptr = (uint16_t*)Rom_Data;
+			max_address = 0x3FFFFF;
+			break;
+		case MDP_MEM_MD_RAM:
+			ptr = (uint16_t*)Ram_68k;
+			max_address = 0xFFFF;
+			break;
+		case MDP_MEM_MD_VRAM:
+			ptr = (uint16_t*)VRam;
+			max_address = 0xFFFF;
+			break;
+		default:
+			/* Invalid memory ID. */
+			return -MDP_ERR_MEM_INVALID_MEMID;
+	}
+	
+	/* length is the number of 16-bit words. Convert to number of 8-bit bytes. */
+	length <<= 1;
+	
+	if (address + length > max_address)
+	{
+		/* Out of range. */
+		return -MDP_ERR_MEM_OUT_OF_RANGE;
+	}
+	
+	/* Copy the block. */
+	memcpy(ptr, data, length);
+	
+	/* The block has been written. */
+	return MDP_ERR_OK;
 }
+
 
 int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
