@@ -27,21 +27,23 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#include <stdint.h>
+
 // CPU flags (IA32/x86_64)
-#define CPUFLAG_MMX		(1 << 0)
-#define CPUFLAG_SSE		(1 << 1)
-#define CPUFLAG_SSE2		(1 << 2)
-#define CPUFLAG_SSE3		(1 << 3)
-#define CPUFLAG_SSSE3		(1 << 4)
-#define CPUFLAG_SSE41		(1 << 5)
-#define CPUFLAG_SSE42		(1 << 6)
-#define CPUFLAG_SSE4A		(1 << 7)
-#define CPUFLAG_SSE5		(1 << 8)
+#define CPUFLAG_MMX		((uint32_t)(1 << 0))
+#define CPUFLAG_SSE		((uint32_t)(1 << 1))
+#define CPUFLAG_SSE2		((uint32_t)(1 << 2))
+#define CPUFLAG_SSE3		((uint32_t)(1 << 3))
+#define CPUFLAG_SSSE3		((uint32_t)(1 << 4))
+#define CPUFLAG_SSE41		((uint32_t)(1 << 5))
+#define CPUFLAG_SSE42		((uint32_t)(1 << 6))
+#define CPUFLAG_SSE4A		((uint32_t)(1 << 7))
+#define CPUFLAG_SSE5		((uint32_t)(1 << 8))
 
 // CPU flags (IA32/x86_64; AMD only)
-#define CPUFLAG_MMXEXT		(1 << 9)
-#define CPUFLAG_3DNOW		(1 << 10)
-#define CPUFLAG_3DNOWEXT	(1 << 11)
+#define CPUFLAG_MMXEXT		((uint32_t)(1 << 9))
+#define CPUFLAG_3DNOW		((uint32_t)(1 << 10))
+#define CPUFLAG_3DNOWEXT	((uint32_t)(1 << 11))
 
 #ifdef __cplusplus
 extern "C" {

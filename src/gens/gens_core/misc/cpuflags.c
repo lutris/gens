@@ -22,6 +22,8 @@
 
 #include "cpuflags.h"
 
+#include <stdint.h>
+
 // IA32 CPU flags
 // Intel: http://download.intel.com/design/processor/applnots/24161832.pdf
 // AMD: http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/25481.pdf
@@ -29,32 +31,32 @@
 // CPUID function 1: Family & Features
 
 // Flags stored in the edx register.
-#define CPUFLAG_IA32_EDX_MMX		(1 << 23)
-#define CPUFLAG_IA32_EDX_SSE		(1 << 25)
-#define CPUFLAG_IA32_EDX_SSE2		(1 << 26)
+#define CPUFLAG_IA32_EDX_MMX		((uint32_t)(1 << 23))
+#define CPUFLAG_IA32_EDX_SSE		((uint32_t)(1 << 25))
+#define CPUFLAG_IA32_EDX_SSE2		((uint32_t)(1 << 26))
 
 // Flags stored in the ecx register.
-#define CPUFLAG_IA32_ECX_SSE3		(1 << 0)
-#define CPUFLAG_IA32_ECX_SSSE3		(1 << 9)
-#define CPUFLAG_IA32_ECX_SSE41		(1 << 19)
-#define CPUFLAG_IA32_ECX_SSE42		(1 << 20)
+#define CPUFLAG_IA32_ECX_SSE3		((uint32_t)(1 << 0))
+#define CPUFLAG_IA32_ECX_SSSE3		((uint32_t)(1 << 9))
+#define CPUFLAG_IA32_ECX_SSE41		((uint32_t)(1 << 19))
+#define CPUFLAG_IA32_ECX_SSE42		((uint32_t)(1 << 20))
 
 // CPUID function 0x80000001: Extended Family & Features
 
 // Flags stored in the edx register.
-#define CPUFLAG_IA32_EXT_EDX_MMXEXT	(1 << 22)
-#define CPUFLAG_IA32_EXT_EDX_3DNOW	(1 << 31)
-#define CPUFLAG_IA32_EXT_EDX_3DNOWEXT	(1 << 30)
+#define CPUFLAG_IA32_EXT_EDX_MMXEXT	((uint32_t)(1 << 22))
+#define CPUFLAG_IA32_EXT_EDX_3DNOW	((uint32_t)(1 << 31))
+#define CPUFLAG_IA32_EXT_EDX_3DNOWEXT	((uint32_t)(1 << 30))
 
 // Flags stored in the ecx register.
-#define CPUFLAG_IA32_EXT_ECX_SSE4A	(1 << 6)
-#define CPUFLAG_IA32_EXT_ECX_SSE5	(1 << 11)
+#define CPUFLAG_IA32_EXT_ECX_SSE4A	((uint32_t)(1 << 6))
+#define CPUFLAG_IA32_EXT_ECX_SSE5	((uint32_t)(1 << 11))
 
 // CPUID functions.
-#define CPUID_MAX_FUNCTIONS		((unsigned int)(0x00000000))
-#define CPUID_FAMILY_FEATURES		((unsigned int)(0x00000001))
-#define CPUID_MAX_EXT_FUNCTIONS		((unsigned int)(0x80000000))
-#define CPUID_EXT_FAMILY_FEATURES	((unsigned int)(0x80000001))
+#define CPUID_MAX_FUNCTIONS		((uint32_t)(0x00000000))
+#define CPUID_FAMILY_FEATURES		((uint32_t)(0x00000001))
+#define CPUID_MAX_EXT_FUNCTIONS		((uint32_t)(0x80000000))
+#define CPUID_EXT_FAMILY_FEATURES	((uint32_t)(0x80000001))
 
 // CPUID macro with PIC support.
 // See http://gcc.gnu.org/ml/gcc-patches/2007-09/msg00324.html
