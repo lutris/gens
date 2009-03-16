@@ -29,20 +29,22 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#include <stdint.h>
+
 /* CPU flags (IA32/x86_64) */
-#define MDP_CPUFLAG_MMX		(1 << 0)
-#define MDP_CPUFLAG_SSE		(1 << 1)
-#define MDP_CPUFLAG_SSE2	(1 << 2)
-#define MDP_CPUFLAG_SSE3	(1 << 3)
-#define MDP_CPUFLAG_SSSE3	(1 << 4)
-#define MDP_CPUFLAG_SSE41	(1 << 5)
-#define MDP_CPUFLAG_SSE42	(1 << 6)
-#define MDP_CPUFLAG_SSE4A	(1 << 7)
-#define MDP_CPUFLAG_SSE5	(1 << 8)
+#define MDP_CPUFLAG_MMX		((uint32_t)(1 << 0))
+#define MDP_CPUFLAG_SSE		((uint32_t)(1 << 1))
+#define MDP_CPUFLAG_SSE2	((uint32_t)(1 << 2))
+#define MDP_CPUFLAG_SSE3	((uint32_t)(1 << 3))
+#define MDP_CPUFLAG_SSSE3	((uint32_t)(1 << 4))
+#define MDP_CPUFLAG_SSE41	((uint32_t)(1 << 5))
+#define MDP_CPUFLAG_SSE42	((uint32_t)(1 << 6))
+#define MDP_CPUFLAG_SSE4A	((uint32_t)(1 << 7))
+#define MDP_CPUFLAG_SSE5	((uint32_t)(1 << 8))
 
 /* CPU flags (IA32/x86_64; AMD only) */
-#define MDP_CPUFLAG_MMXEXT	(1 << 9)
-#define MDP_CPUFLAG_3DNOW	(1 << 10)
-#define MDP_CPUFLAG_3DNOWEXT	(1 << 11)
+#define MDP_CPUFLAG_MMXEXT	((uint32_t)(1 << 9))
+#define MDP_CPUFLAG_3DNOW	((uint32_t)(1 << 10))
+#define MDP_CPUFLAG_3DNOWEXT	((uint32_t)(1 << 11))
 
 #endif /* __MDP_CPUFLAGS_H */

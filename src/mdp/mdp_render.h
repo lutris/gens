@@ -38,14 +38,14 @@ extern "C" {
 /* Video mode flags. */
 
 /* Bit 0: 555/565 mode (16-bit color) */
-#define MDP_RENDER_VMODE_RGB_MODE	(1 << 0)
-#define MDP_RENDER_VMODE_RGB_555	0
-#define MDP_RENDER_VMODE_RGB_565	(1 << 0)
+#define MDP_RENDER_VMODE_RGB_MODE	((uint32_t)(1 << 0))
+#define MDP_RENDER_VMODE_RGB_555	((uint32_t)(0))
+#define MDP_RENDER_VMODE_RGB_565	((uint32_t)(1 << 0))
 
 /* Bit 1: 16/32-bit color. */
-#define MDP_RENDER_VMODE_BPP		(1 << 1)
-#define MDP_RENDER_VMODE_BPP_16		0
-#define MDP_RENDER_VMODE_BPP_32		(1 << 1)
+#define MDP_RENDER_VMODE_BPP		((uint32_t)(1 << 1))
+#define MDP_RENDER_VMODE_BPP_16		((uint32_t)(0))
+#define MDP_RENDER_VMODE_BPP_32		((uint32_t)(1 << 1))
 
 /* Render information struct. */
 typedef struct _mdp_render_info_t
@@ -64,9 +64,9 @@ typedef struct _mdp_render_info_t
 } mdp_render_info_t;
 
 /* Render plugin flags. */
-#define MDP_RENDER_FLAG_RGB555		(1 << 0)
-#define MDP_RENDER_FLAG_RGB565		(1 << 1)
-#define MDP_RENDER_FLAG_RGB888		(1 << 2)
+#define MDP_RENDER_FLAG_RGB555		((uint32_t)(1 << 0))
+#define MDP_RENDER_FLAG_RGB565		((uint32_t)(1 << 1))
+#define MDP_RENDER_FLAG_RGB888		((uint32_t)(1 << 2))
 
 // Render plugin definition.
 typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
