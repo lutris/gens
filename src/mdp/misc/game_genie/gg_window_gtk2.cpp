@@ -42,6 +42,11 @@ using std::list;
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+// gtk_button_set_image() was added in GTK+ 2.6.
+#if (GTK_MAJOR_VERSION < 2) || ((GTK_MAJOR_VERSION == 2) && (GTK_MINOR_VERSION < 6))
+#define gtk_button_set_image(button, image)
+#endif
+
 // Window.
 static GtkWidget *gg_window = NULL;
 
