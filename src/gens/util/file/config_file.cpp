@@ -252,7 +252,6 @@ int Config::save(const string& filename)
 	cfg.writeInt("Options", "LED", Show_LED & 1);
 	cfg.writeInt("Options", "Auto Fix Checksum", Auto_Fix_CS & 1);
 	cfg.writeInt("Options", "Auto Pause", Auto_Pause & 1);
-	cfg.writeInt("Options", "Zero-Length DMA", Zero_Length_DMA & 1);
 	
 	// SegaCD BRAM cartridge.
 	if (BRAM_Ex_State & 0x100)
