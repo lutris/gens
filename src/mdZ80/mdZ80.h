@@ -41,31 +41,12 @@ extern "C" {
 #define INT32   signed int
 #endif
 
-#ifndef __WIN32__
-
-#ifndef __GNUC__
-
-#define FASTCALL				__fastcall
-#define DECL_FASTCALL(type, name)	type FASTCALL name
-
-#else //__GNUC__
-#define __fastcall __attribute__ ((regparm(2)))
-#define FASTCALL __attribute__ ((regparm(2)))
-#define DECL_FASTCALL(type, name)	type name __attribute__ ((regparm(2)))
-
-#endif //!__GNUC__
-
-#else /* __WIN32__ */
-
-#ifndef FASTCALL
-#define FASTCALL __fastcall
-#endif /* FASTCALL */
-
-#ifndef DECL_FASTCALL
-#define DECL_FASTCALL(type, name)	type FASTCALL name
-#endif /* DECL_FASTCALL */
-
-#endif /* __WIN32__ */
+#ifdef _WIN32
+ 	#define FASTCALL	__fastcall
+#else
+	#define __fastcall	__attribute__ ((regparm(2)))
+	#define FASTCALL	__attribute__ ((regparm(2)))
+#endif
 
 
 /****************************/

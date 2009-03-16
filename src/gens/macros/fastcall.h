@@ -23,18 +23,11 @@
 #ifndef GENS_FASTCALL_H
 #define GENS_FASTCALL_H
 
-#ifdef __WIN32__
-	#define FASTCALL  __fastcall
-	#define FASTCALL3 __fastcall
+#ifdef _WIN32
+	#define FASTCALL	__fastcall
 #else
-	#ifdef __GNUC__
-		#define __fastcall __attribute__ ((regparm(2)))
-		#define FASTCALL   __attribute__ ((regparm(2)))
-		#define FASTCALL3  __attribute__ ((regparm(3)))
-	#else
-		#define FASTCALL  __fastcall
-		#define FASTCALL3 __fastcall
-	#endif
+	#define __fastcall	__attribute__ ((regparm(2)))
+	#define FASTCALL	__attribute__ ((regparm(2)))
 #endif
 
 #endif /* GENS_FASTCALL_H */
