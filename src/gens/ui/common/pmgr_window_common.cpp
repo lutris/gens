@@ -20,11 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include "pmgr_window_common.hpp"
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <cassert>
+// C includes.
+#include <assert.h>
 
 // C++ includes
 #include <string>
