@@ -26,17 +26,20 @@
 #include "macros/log_msg.h"
 
 #include "emulator/g_main.hpp"
+#include "util/file/rom.hpp"
 
 // C includes.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// Other includes.
+// SDL includes.
 #include <SDL/SDL.h>
+
+// GTK+ includes.
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include "util/file/rom.hpp"
+#include "ui/gtk/gtk-compat.h"
 
 // Gens window.
 #include "gens/gens_window.h"
@@ -211,7 +214,7 @@ int vdraw_sdl_gl_init(void)
 		
 		// Get the Window ID of the SDL socket.
 		char SDL_WindowID[24];
-		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(gens_window_sdlsock->window)));
+		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(gtk_widget_get_window(gens_window_sdlsock))));
 		setenv("SDL_WINDOWID", SDL_WindowID, 1);
 	}
 	

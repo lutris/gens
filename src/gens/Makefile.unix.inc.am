@@ -80,6 +80,7 @@ if GENS_UI_GTK
 noinst_HEADERS += \
 		ui/gtk/gtk-misc.h \
 		ui/gtk/gtk-uri.h \
+		ui/gtk/gtk-compat.h \
 		ui/gtk/gens/gens_window.h \
 		ui/gtk/gens/gens_window_callbacks.hpp \
 		ui/gtk/gens/gens_window_sync.hpp \

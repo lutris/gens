@@ -102,7 +102,7 @@ void ccode_window_show(void)
 			 G_CALLBACK(ccode_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(ccode_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(ccode_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Add a frame for country code selection.

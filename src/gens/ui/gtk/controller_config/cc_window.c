@@ -121,6 +121,7 @@ static BOOL	cc_window_configure_key(int player, int button);
 
 // Blink handler. (Blinks the current button configuration label when configuring.)
 static gboolean	cc_window_callback_blink(gpointer data);
+static gboolean blink_state;
 
 
 /**
@@ -155,7 +156,7 @@ void cc_window_show(void)
 			 G_CALLBACK(cc_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(cc_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(cc_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the main HBox.
@@ -915,6 +916,7 @@ static BOOL cc_window_configure_key(int player, int button)
 	gtk_label_set_use_markup(GTK_LABEL(lblCurConfig[button]), TRUE);
 	
 	// Set the blink timer for 500 ms.
+	blink_state = TRUE;
 	g_timeout_add(500, cc_window_callback_blink, GINT_TO_POINTER(button));
 	
 	// Get a key value.
@@ -969,10 +971,11 @@ static gboolean cc_window_callback_blink(gpointer data)
 	}
 	
 	// Invert the label visibility.
-	if (GTK_WIDGET_VISIBLE(lblCurConfig[btnID]))
-		gtk_widget_hide(lblCurConfig[btnID]);
-	else
+	blink_state = !blink_state;
+	if (blink_state)
 		gtk_widget_show(lblCurConfig[btnID]);
+	else
+		gtk_widget_hide(lblCurConfig[btnID]);
 	
 	// If the window is still configuring, keep the timer going.
 	return cc_window_is_configuring;
