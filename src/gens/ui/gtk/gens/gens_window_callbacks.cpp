@@ -83,19 +83,20 @@ void gens_window_drag_data_received(GtkWidget *widget, GdkDragContext *context, 
 	{
 		// No selection data.
 		gtk_drag_finish(context, false, false, time);
+		return;
 	}
 	
 	gboolean dnd_success = true;
 	
-	gchar *sel_text = (gchar*)gtk_selection_data_get_text(selection_data);
+	gchar *sel_text = (gchar*)gtk_selection_data_get_data(selection_data);
 	if (!sel_text)
 	{
 		// Selection data was not text.
 		gtk_drag_finish(context, false, false, time);
+		return;
 	}
 	
 	string filename = string(sel_text);
-	g_free(sel_text);
 	
 	if (filename.length() >= 8 && filename.substr(0, 8) == "file:///")
 	{
