@@ -53,7 +53,7 @@
 #include "controller_config/cc_window.h"
 #include "bios_misc_files/bmf_window.hpp"
 #include "directory_config/dir_window.hpp"
-#include "general_options/general_options_window.hpp"
+#include "general_options/genopt_window.hpp"
 #include "color_adjust/ca_window.h"
 #include "select_cdrom/select_cdrom_window.h"
 #include "country_code/ccode_window.h"
@@ -234,7 +234,7 @@ void GensUI::update(void)
 		if ((cc_window && IsDialogMessage(cc_window, &msg)) ||
 		    (bmf_window && IsDialogMessage(bmf_window, &msg)) ||
 		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
-		    (GeneralOptionsWindow::isOpen() && GeneralOptionsWindow::Instance()->isDialogMessage(&msg)) ||
+		    (genopt_window && IsDialogMessage(genopt_window, &msg)) ||
 		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
 		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
 		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
