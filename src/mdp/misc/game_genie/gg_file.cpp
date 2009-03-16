@@ -71,9 +71,9 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes);
  */
 static inline void ELIMINATE_NEWLINES(char *str)
 {
-	int i, s_data_len;
+	int s_data_len;
 	
-	for (i = 0; i < 2; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		s_data_len = strlen(str);
 		if (s_data_len == 0)
