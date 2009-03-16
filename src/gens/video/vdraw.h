@@ -63,8 +63,8 @@ typedef enum
 } VDRAW_BACKEND;
 
 // VDraw backend flags.
-#define VDRAW_BACKEND_FLAG_STRETCH	(1 << 0)
-#define VDRAW_BACKEND_FLAG_VSYNC	(1 << 1)
+#define VDRAW_BACKEND_FLAG_STRETCH	((uint32_t)(1 << 0))
+#define VDRAW_BACKEND_FLAG_VSYNC	((uint32_t)(1 << 1))
 
 // VDraw backend function pointers.
 typedef struct

@@ -1,6 +1,8 @@
 #ifndef GENS_VDP_REND_H
 #define GENS_VDP_REND_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,17 +44,17 @@ void Render_Line_32X(void);
 extern unsigned int VDP_Layers;
 
 // VDP layer flags
-#define VDP_LAYER_SCROLLA_LOW		(1 << 0)
-#define VDP_LAYER_SCROLLA_HIGH		(1 << 1)
-#define VDP_LAYER_SCROLLA_SWAP		(1 << 2)
-#define VDP_LAYER_SCROLLB_LOW		(1 << 3)
-#define VDP_LAYER_SCROLLB_HIGH		(1 << 4)
-#define VDP_LAYER_SCROLLB_SWAP		(1 << 5)
-#define VDP_LAYER_SPRITE_LOW		(1 << 6)
-#define VDP_LAYER_SPRITE_HIGH		(1 << 7)
-#define VDP_LAYER_SPRITE_SWAP		(1 << 8)
-#define VDP_LAYER_SPRITE_ALWAYSONTOP	(1 << 9)
-#define	VDP_LAYER_PALETTE_LOCK		(1 << 10)
+#define VDP_LAYER_SCROLLA_LOW		((uint32_t)(1 << 0))
+#define VDP_LAYER_SCROLLA_HIGH		((uint32_t)(1 << 1))
+#define VDP_LAYER_SCROLLA_SWAP		((uint32_t)(1 << 2))
+#define VDP_LAYER_SCROLLB_LOW		((uint32_t)(1 << 3))
+#define VDP_LAYER_SCROLLB_HIGH		((uint32_t)(1 << 4))
+#define VDP_LAYER_SCROLLB_SWAP		((uint32_t)(1 << 5))
+#define VDP_LAYER_SPRITE_LOW		((uint32_t)(1 << 6))
+#define VDP_LAYER_SPRITE_HIGH		((uint32_t)(1 << 7))
+#define VDP_LAYER_SPRITE_SWAP		((uint32_t)(1 << 8))
+#define VDP_LAYER_SPRITE_ALWAYSONTOP	((uint32_t)(1 << 9))
+#define	VDP_LAYER_PALETTE_LOCK		((uint32_t)(1 << 10))
 
 #define VDP_LAYER_DEFAULT	  \
 	(VDP_LAYER_SCROLLA_LOW	| \
