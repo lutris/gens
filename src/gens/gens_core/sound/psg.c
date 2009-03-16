@@ -32,17 +32,13 @@
 /*                                                         */
 /***********************************************************/
 
-// Message logging.
-#include "macros/log_msg.h"
-
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
 #include "psg.h"
 
-/* GSX v7 savestate functionality. */
-#include "util/file/gsx_v7.h"
-#include "gens_core/misc/byteswap.h"
+/* C includes. */
+#include <math.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
 
 /** Defines **/
 
@@ -90,14 +86,19 @@ psg_chip_t PSG;
 
 
 /** Gens-specific externs and variables **/
+
+/* Message logging. */
+#include "macros/log_msg.h"
+
+/* GSX v7 savestate functionality. */
+#include "util/file/gsx_v7.h"
+#include "gens_core/misc/byteswap.h"
+
+/* GYM dumping. */
+#include "util/sound/gym.hpp"
+
 #include "audio/audio.h"
 extern int VDP_Current_Line;
-extern int GYM_Dumping;
-
-
-// TODO: Include gym.h instead of declaring this here.
-int Update_GYM_Dump(char v0, char v1, char v2);
-
 
 int PSG_Enable;
 int PSG_Improv;
@@ -119,9 +120,7 @@ int *PSG_Buf[2];
 void PSG_Write(int data)
 {
 	if (GYM_Dumping)
-		Update_GYM_Dump((unsigned char)3,
-				(unsigned char)data,
-				(unsigned char)0);
+		gym_dump_update(3, (uint8_t)data, 0);
 	
 	if (data & 0x80)
 	{

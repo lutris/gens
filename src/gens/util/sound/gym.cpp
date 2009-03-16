@@ -49,10 +49,10 @@ int GYM_Dumping = 0;
 
 
 /**
- * Start_GYM_Dump(): Start dumping a GYM file.
- * @return 1 on success; 0 on error.
+ * gym_dump_start(): Start dumping a GYM file.
+ * @return 0 on success; non-zero on error.
  */
-int Start_GYM_Dump(void)
+int gym_dump_start(void)
 {
 	char filename[GENS_PATH_MAX];
 	unsigned char YM_Save[0x200], t_buf[4];
@@ -60,12 +60,12 @@ int Start_GYM_Dump(void)
 	
 	// A game must be loaded in order to dump a GYM.
 	if (!Game)
-		return 0;
+		return -1;
 	
 	if (GYM_Dumping)
 	{
 		vdraw_write_text("GYM sound is already dumping", 1000);
-		return 0;
+		return -2;
 	}
 	
 	// Make sure relative pathnames are handled correctly on Win32.
@@ -83,7 +83,7 @@ int Start_GYM_Dump(void)
 	
 	GYM_File = fopen(filename, "w");
 	if (!GYM_File)
-		return 0;
+		return -3;
 	
 	// Save the YM2612 registers.
 	YM2612_Save(YM_Save);
@@ -132,20 +132,20 @@ int Start_GYM_Dump(void)
 	vdraw_write_text("Starting to dump GYM sound", 1000);
 	GYM_Dumping = 1;
 	
-	return 1;
+	return 0;
 }
 
 
 /**
- * Stop_GYM_Dump(): Stop dumping a GYM file.
- * @return 1 on success; 0 on error.
+ * gym_dump_stop(): Stop dumping a GYM file.
+ * @return 0 on success; non-zero on error.
  */
-int Stop_GYM_Dump(void)
+int gym_dump_stop(void)
 {
 	if (!GYM_Dumping)
 	{
 		vdraw_write_text("Already stopped", 1000);
-		return 0;
+		return -1;
 	}
 	
 	if (GYM_File)
@@ -154,25 +154,64 @@ int Stop_GYM_Dump(void)
 	GYM_Dumping = 0;
 	
 	vdraw_write_text("GYM dump stopped", 1000);
-	return 1;
+	return 0;
 }
 
 
 /**
- * Start_Play_GYM(): Start playing a GYM file.
- * @return 1 on success; 0 on error.
+ * gym_dump_update(): Update a GYM dump.
+ * @param v0
+ * @param v1
+ * @param v2
+ * @return 0 on success; non-zero on error.
  */
-int Start_Play_GYM(void)
+int gym_dump_update(uint8_t v0, uint8_t v1, uint8_t v2)
 {
-	string filename;
+	if (!GYM_Dumping || !GYM_File)
+		return -1;
 	
+	char buf_tmp[4];
+	size_t l;
+	
+	buf_tmp[0] = v0;
+	l = 1;
+	
+	switch (v0)
+	{
+		case 1:
+		case 2:
+			buf_tmp[1] = v1;
+			buf_tmp[2] = v2;
+			l = 3;
+			break;
+		
+		case 3:
+			buf_tmp[1] = v1;
+			l = 2;
+			break;
+	}
+	
+	int rval = fwrite(buf_tmp, l, 1, GYM_File);
+	if (!rval)
+		return -2;
+	
+	return 0;
+}
+
+
+/**
+ * gym_play_start(): Start playing a GYM file.
+ * @return 0 on success; non-zero on error.
+ */
+int gym_play_start(void)
+{
 	if (Game || audio_get_enabled())
-		return 0;
+		return -1;
 	
 	if (audio_get_gym_playing())
 	{
 		vdraw_write_text("Already playing GYM.", 1000);
-		return 0;
+		return -2;
 	}
 	
 	audio_end();
@@ -182,40 +221,40 @@ int Start_Play_GYM(void)
 	{
 		audio_set_enabled(false);
 		vdraw_write_text("Can't initialize sound.", 1000);
-		return 0;
+		return -3;
 	}
 	
 	if (audio_play_sound)
 		audio_play_sound();
 	
-	filename = GensUI::openFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile);
+	string filename = GensUI::openFile("Load GYM File", NULL /*Rom_Dir*/, GYMFile);
 	if (filename.length() == 0)
-		return 0;
+		return -4;
 	
 	// Attempt to open the GYM file.
 	GYM_File = fopen(filename.c_str(), "rb");
 	if (!GYM_File)
-		return 0;
+		return -5;
 	
 	YM2612_Init(CLOCK_NTSC / 7, audio_get_sound_rate(), YM2612_Improv);
 	PSG_Init(CLOCK_NTSC / 15, audio_get_sound_rate());
 	audio_set_gym_playing(true);
 	
 	vdraw_write_text("Starting to play GYM", 1000);
-	return 1;
+	return 0;
 }
 
 
 /**
- * Stop_Play_GYM(): Stop playing a GYM file.
- * @return 1 on success; 0 on error.
+ * gym_play_stop(): Stop playing a GYM file.
+ * @return 0 on success; non-zero on error.
  */
-int Stop_Play_GYM(void)
+int gym_play_stop(void)
 {
 	if (!audio_get_gym_playing())
 	{
 		vdraw_write_text("Already stopped.", 1000);
-		return 0;
+		return -1;
 	}
 	
 	if (GYM_File)
@@ -224,18 +263,22 @@ int Stop_Play_GYM(void)
 	audio_set_gym_playing(false);
 	
 	vdraw_write_text("Stopped playing GYM.", 1000);
-	return 1;
+	return 0;
 }
 
 
-int GYM_Next(void)
+/**
+ * gym_play_next(): Play the next part of the GYM file.
+ * @return 0 on success; non-zero on error.
+ */
+static int gym_play_next(void)
 {
 	unsigned char c, c2;
 	unsigned int l;
 	int *buf[2];
 	
 	if (!audio_get_gym_playing() || !GYM_File)
-		return 0;
+		return -1;
 	
 	buf[0] = Seg_L;
 	buf[1] = Seg_R;
@@ -275,56 +318,22 @@ int GYM_Next(void)
 		}
 	} while (c);
 	
-	return 1;
+	return 0;
 }
 
 
-int Play_GYM(void)
+/**
+ * gym_play(): Play the currently opened GYM file.
+ * @return 0 on success; non-zero on error.
+ */
+int gym_play(void)
 {
-	if (!GYM_Next())
+	if (gym_play_next())
 	{
-		Stop_Play_GYM();
-		return 0;
+		gym_play_stop();
+		return -1;
 	}
 	
 	audio_write_sound_buffer(NULL);
-	return 1;
-}
-
-
-int Update_GYM_Dump(int v0, int v1, unsigned char v2)
-{
-	int bResult;
-	char buf_tmp[4];
-	unsigned int l;
-	
-	if (!GYM_Dumping || !GYM_File)
-		return 0;
-	
-	// TODO: Should v1 be an unsigned char instead of an int?
-	v1 &= 0xFF;
-	
-	buf_tmp[0] = v0;
-	l = 1;
-	
-	switch (v0)
-	{
-		case 1:
-		case 2:
-			buf_tmp[1] = (unsigned char)v1;
-			buf_tmp[2] = v2;
-			l = 3;
-			break;
-		
-		case 3:
-			buf_tmp[1] = (unsigned char)v1;
-			l = 2;
-			break;
-	}
-	
-	bResult = fwrite(buf_tmp, l, 1, GYM_File);
-	if (!bResult)
-		return 0;
-	
-	return 1;
+	return 0;
 }

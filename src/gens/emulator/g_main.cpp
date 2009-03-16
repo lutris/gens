@@ -414,7 +414,7 @@ void GensMainLoop(void)
 			if (audio_get_gym_playing())
 			{
 				// PLAY GYM
-				Play_GYM();
+				gym_play();
 			}
 			else if (Intro_Style == 1)
 			{

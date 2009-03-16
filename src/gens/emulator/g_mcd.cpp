@@ -676,7 +676,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MCD_frame(void)
 	if (WAV_Dumping)
 		wav_dump_update();
 	if (GYM_Dumping)
-		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+		gym_dump_update(0, 0, 0);
 	
 	if (VDP && Show_LED)
 		SegaCD_Display_LED();

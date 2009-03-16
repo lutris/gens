@@ -1866,8 +1866,6 @@ int YM2612_Read(void)
 int YM2612_Write(unsigned char adr, unsigned char data)
 {
 	int d;
-	
-	data &= 0xFF;
 	adr &= 0x3;
 	
 	switch (adr)
@@ -1894,7 +1892,7 @@ int YM2612_Write(unsigned char adr, unsigned char data)
 				YM2612.REG[0][YM2612.OPNAadr] = data;
 				
 				if (GYM_Dumping)
-					Update_GYM_Dump(1, YM2612.OPNAadr, data);
+					gym_dump_update(1, (uint8_t)YM2612.OPNAadr, data);
 				
 				if (d < 0xA0)		// SLOT
 				{
@@ -1913,7 +1911,9 @@ int YM2612_Write(unsigned char adr, unsigned char data)
 				    ((YM2612.OPNAadr == 0x22) ||
 				     (YM2612.OPNAadr == 0x27) ||
 				     (YM2612.OPNAadr == 0x28)))
-					Update_GYM_Dump(1, YM2612.OPNAadr, data);
+				{
+					gym_dump_update(1, (uint8_t)YM2612.OPNAadr, data);
+				}
 				
 				YM_SET(YM2612.OPNAadr, data);
 			}
@@ -1933,7 +1933,7 @@ int YM2612_Write(unsigned char adr, unsigned char data)
 				YM2612.REG[1][YM2612.OPNBadr] = data;
 				
 				if (GYM_Dumping)
-					Update_GYM_Dump(2, YM2612.OPNBadr, data);
+					gym_dump_update(2, (uint8_t)YM2612.OPNBadr, data);
 				
 				if (d < 0xA0)		// SLOT
 				{

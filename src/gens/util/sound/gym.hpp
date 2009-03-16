@@ -27,16 +27,17 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
+#include <stdint.h>
 
 extern int GYM_Dumping;
 
-int Update_GYM_Dump(int v0, int v1, unsigned char v2);
-int Start_GYM_Dump(void);
-int Stop_GYM_Dump(void);
-int Start_Play_GYM(void);
-int Play_GYM(void);
-int Stop_Play_GYM(void);
+int gym_dump_start(void);
+int gym_dump_stop(void);
+int gym_dump_update(uint8_t v0, uint8_t v1, uint8_t v2);
+
+int gym_play_start(void);
+int gym_play_stop(void);
+int gym_play(void);
 
 #ifdef __cplusplus
 }

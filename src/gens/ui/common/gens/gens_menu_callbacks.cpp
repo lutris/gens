@@ -167,7 +167,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 				return 0;
 			*/
 			if (audio_get_gym_playing())
-				Stop_Play_GYM();
+				gym_play_stop();
 			if (ROM::getROM() != -1)
 				Sync_Gens_Window();
 			break;
@@ -185,7 +185,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 				return 0;
 			*/
 			if (audio_get_gym_playing())
-				Stop_Play_GYM();
+				gym_play_stop();
 			
 			ROM::freeROM(Game); // Don't forget it !
 			SegaCD_Started = Init_SegaCD(NULL);
@@ -239,7 +239,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 		case IDM_FILE_ROMHISTORY_9:
 			// ROM History.
 			if (audio_get_gym_playing())
-				Stop_Play_GYM();
+				gym_play_stop();
 			
 			if (ROM::Recent_ROMs.size() > (menuID - IDM_FILE_ROMHISTORY_1))
 				ROM::openROM(ROM::Recent_ROMs.at(menuID - IDM_FILE_ROMHISTORY_1).filename);
@@ -686,9 +686,9 @@ static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 		case IDM_SOUND_GYMDUMP:
 			// Change GYM dump status.
 			if (!GYM_Dumping)
-				Start_GYM_Dump();
+				gym_dump_start();
 			else
-				Stop_GYM_Dump();
+				gym_dump_stop();
 			break;
 		
 		default:

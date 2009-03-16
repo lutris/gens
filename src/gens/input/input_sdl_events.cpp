@@ -357,7 +357,7 @@ void input_sdl_event_key_down(int key)
 				
 				//if ((Check_If_Kaillera_Running())) return 0;
 				if (audio_get_gym_playing())
-					Stop_Play_GYM();
+					gym_play_stop();
 				
 				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename);
 				
@@ -375,7 +375,7 @@ void input_sdl_event_key_down(int key)
 					return;	// return 1;
 				//if (Check_If_Kaillera_Running()) return 0;
 				if (audio_get_gym_playing())
-					Stop_Play_GYM();
+					gym_play_stop();
 				ROM::freeROM(Game);	// Don't forget it !
 				SegaCD_Started = Init_SegaCD(NULL);
 			}

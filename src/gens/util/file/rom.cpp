@@ -752,7 +752,7 @@ void ROM::freeROM(ROM_t* ROM_MD)
 	if (WAV_Dumping)
 		wav_dump_stop();
 	if (GYM_Dumping)
-		Stop_GYM_Dump();
+		gym_dump_stop();
 
 	if (SegaCD_Started)
 		Stop_CD();

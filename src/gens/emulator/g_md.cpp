@@ -564,7 +564,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 	if (WAV_Dumping)
 		wav_dump_update();
 	if (GYM_Dumping)
-		Update_GYM_Dump((unsigned char) 0, (unsigned char) 0, (unsigned char) 0);
+		gym_dump_update(0, 0, 0);
 	
 	// Raise the MDP_EVENT_POST_FRAME event.
 	mdp_event_post_frame_t post_frame;
