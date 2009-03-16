@@ -91,7 +91,7 @@ void vlopt_window_show(void *parent)
 			 G_CALLBACK(vlopt_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(vlopt_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(vlopt_window));
 	gtk_widget_show(vboxDialog);
 	
 	// Create the main VBox.

@@ -99,7 +99,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 			 G_CALLBACK(sgens_window_callback_response), NULL);
 	
 	// Get the dialog VBox.
-	GtkWidget *vboxDialog = GTK_DIALOG(sgens_window)->vbox;
+	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(sgens_window));
 	gtk_box_set_spacing(GTK_BOX(vboxDialog), 8);
 	gtk_widget_show(vboxDialog);
 	
