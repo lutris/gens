@@ -458,6 +458,7 @@ int ROM::openROM(const string& filename, string z_filename)
 	}
 	
 	// Raise the MDP_EVENT_OPEN_ROM event.
+	// TODO: Get rid of the file extension for event.rom_z_name.
 	mdp_event_open_rom_t event;
 	event.rom_name = ROM_Name;
 	event.rom_z_name = (z_filename.empty() ? NULL : z_filename.c_str());
