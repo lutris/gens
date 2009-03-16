@@ -40,7 +40,7 @@ typedef enum
 	SavestateFile	= 2,
 	CDImage		= 3,
 	ConfigFile	= 4,
-	GYMFile		= 5,
+	GYMFile		= 5
 } FileFilterType;
 
 /**
@@ -108,7 +108,7 @@ class GensUI
 			MSGBOX_RESPONSE_OK	= 0,
 			MSGBOX_RESPONSE_CANCEL	= 1,
 			MSGBOX_RESPONSE_YES	= 2,
-			MSGBOX_RESPONSE_NO	= 3,
+			MSGBOX_RESPONSE_NO	= 3
 		};
 		
 		// msgBox function

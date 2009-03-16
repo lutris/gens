@@ -183,9 +183,9 @@ extern SH2_CONTEXT S_SH2;
 /*************************/
 
 // C functions
-;
+
 void SH2_Init(SH2_CONTEXT *SH2, uint32_t slave);
-			 
+
 // VERY IMPORTANT : Fetch have to be a DWORD aligned pointer !
 
 void SH2_Set_Fetch_Reg(SH2_CONTEXT *SH2, uint32_t reg, uint32_t low_adr, uint32_t high_adr, uint16_t *Fetch);

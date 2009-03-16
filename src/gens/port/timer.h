@@ -27,6 +27,8 @@
 #ifndef GENS_TIMER_H
 #define GENS_TIMER_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,8 +37,8 @@ void init_timer(void);
 //unsigned int gettime(void);
 
 unsigned int GetTickCount(void);
-void QueryPerformanceFrequency(long long *frequency);
-void QueryPerformanceCounter(long long *counter);
+void QueryPerformanceFrequency(int64_t *frequency);
+void QueryPerformanceCounter(int64_t *counter);
 
 #ifdef __cplusplus
 }

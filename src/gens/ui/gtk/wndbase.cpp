@@ -76,10 +76,10 @@ static void WndBase_GTK_##btnName(GtkButton *button, gpointer user_data)	\
 	reinterpret_cast<WndBase*>(user_data)->dlgButtonPress(BUTTON_VALUE);	\
 }
 
-WndBase_GTK_btnCallback(btnCancel, WndBase::BUTTON_CANCEL);
-WndBase_GTK_btnCallback(btnApply, WndBase::BUTTON_APPLY);
-WndBase_GTK_btnCallback(btnSave, WndBase::BUTTON_SAVE);
-WndBase_GTK_btnCallback(btnOK, WndBase::BUTTON_OK);
+WndBase_GTK_btnCallback(btnCancel, WndBase::BUTTON_CANCEL)
+WndBase_GTK_btnCallback(btnApply, WndBase::BUTTON_APPLY)
+WndBase_GTK_btnCallback(btnSave, WndBase::BUTTON_SAVE)
+WndBase_GTK_btnCallback(btnOK, WndBase::BUTTON_OK)
 
 
 /**

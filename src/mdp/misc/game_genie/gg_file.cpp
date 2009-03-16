@@ -176,7 +176,7 @@ int MDP_FNCALL gg_file_load(const char* filename)
 		ELIMINATE_NEWLINES(tokens[2]);
 		
 		// Determine the size of the data.
-		int s_data_len = strlen(tokens[2]);
+		s_data_len = strlen(tokens[2]);
 		
 		if (s_data_len == 0)
 		{

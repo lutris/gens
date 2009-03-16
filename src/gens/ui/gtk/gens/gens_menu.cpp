@@ -366,4 +366,4 @@ void gens_gtk_menu_callback(GtkMenuItem *menuitem, gpointer user_data)
 	
 	// Run the callback function.
 	gens_common_menu_callback(menuItemID, state);
-};
+}

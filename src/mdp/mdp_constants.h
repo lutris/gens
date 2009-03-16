@@ -38,7 +38,7 @@ typedef enum _MDP_SYSTEM_ID
 	MDP_SYSTEM_SMS     = 5,
 	MDP_SYSTEM_GG      = 6,
 	MDP_SYSTEM_SG1000  = 7,
-	MDP_SYSTEM_PICO    = 8,
+	MDP_SYSTEM_PICO    = 8
 } MDP_SYSTEM_ID;
 
 #ifdef __cplusplus

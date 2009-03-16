@@ -55,7 +55,7 @@ class WndBase
 			BAlign_Default = 0,
 			BAlign_Left = 1,
 			BAlign_Center = 2,
-			BAlign_Right = 3,
+			BAlign_Right = 3
 		};
 		
 		void addDialogButtons(void *container, ButtonAlignment alignment,

@@ -42,7 +42,7 @@ typedef enum _GG_CODE_CPU
 	CPU_S68K    = 2,
 	CPU_Z80     = 3,
 	CPU_MSH2    = 4,
-	CPU_SSH2    = 5,
+	CPU_SSH2    = 5
 } GG_CODE_CPU;
 
 /**
@@ -53,7 +53,7 @@ typedef enum _GG_CODE_DATASIZE
 	DS_INVALID = 0,
 	DS_BYTE    = 1, // 8-bit
 	DS_WORD    = 2, // 16-bit
-	DS_DWORD   = 3, // 32-bit
+	DS_DWORD   = 3  // 32-bit
 } GG_CODE_DATASIZE;
 
 /**
@@ -88,7 +88,7 @@ typedef enum _GG_CODE_ERR
 	GGCE_UNRECOGNIZED	= 2, // Unrecognized code.
 	GGCE_ADDRESS_RANGE	= 3, // Address out of range.
 	GGCE_ADDRESS_ALIGNMENT	= 4, // Adddress alignment is incorrect for the datasize.
-	GGCE_DATA_TOO_LARGE	= 5, // Data is too large.
+	GGCE_DATA_TOO_LARGE	= 5  // Data is too large.
 } GG_CODE_ERR;
 
 /**

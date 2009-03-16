@@ -48,13 +48,14 @@ class ImageUtil
 			#ifdef GENS_PNG
 				IMAGEFORMAT_PNG = 1,
 			#endif /* GENS_PNG */
+			IMAGEFORMAT_COUNT
 		};
 		
 		enum AlphaChannel
 		{
 			ALPHACHANNEL_NONE,
 			ALPHACHANNEL_OPACITY,
-			ALPHACHANNEL_TRANSPARENCY,
+			ALPHACHANNEL_TRANSPARENCY
 		};
 		
 		#ifdef GENS_PNG

@@ -42,7 +42,7 @@ extern "C" {
 typedef enum _MDP_PTR
 {
 	MDP_PTR_NULL		= 0,
-	MDP_PTR_LUT16to32	= 1,
+	MDP_PTR_LUT16to32	= 1
 } MDP_PTR;
 
 /* MDP_MEM: Memory IDs. */
@@ -51,12 +51,12 @@ typedef enum _MDP_MEM
 	MDP_MEM_NULL		= 0,
 	MDP_MEM_MD_ROM		= 1,
 	MDP_MEM_MD_RAM		= 2,
-	MDP_MEM_MD_VRAM		= 3,
+	MDP_MEM_MD_VRAM		= 3
 	#if 0 /* TODO: Figure out how to manage these. */
 	MDP_MEM_Z80_RAM		= 4,
 	MDP_MEM_MCD_PRG_RAM	= 5,
 	MDP_MEM_MCD_WORD_RAM	= 6,
-	MDP_MEM_32X_RAM		= 7,
+	MDP_MEM_32X_RAM		= 7
 	#endif
 } MDP_MEM;
 
@@ -64,7 +64,7 @@ typedef enum _MDP_MEM
 typedef enum _MDP_VAL
 {
 	MDP_VAL_UI			= 0,
-	MDP_VAL_VDP_LAYER_OPTIONS	= 2,
+	MDP_VAL_VDP_LAYER_OPTIONS	= 2
 } MDP_VAL;
 
 /* MDP_UI: UI identifiers. */
@@ -74,7 +74,7 @@ typedef enum _MDP_UI
 	MDP_UI_GTK2		= 1,
 	MDP_UI_QT4		= 2,
 	MDP_UI_WIN32		= 3,
-	MDP_UI_MACOSX_COCOA	= 4,
+	MDP_UI_MACOSX_COCOA	= 4
 } MDP_UI;
 
 /* MDP_VDP_LAYER_OPTIONS: Layer options bits. */
@@ -101,7 +101,7 @@ typedef enum _MDP_UI
 /* MDP_MENU: Menu IDs. */
 typedef enum _MDP_MENU
 {
-	MDP_MENU_DEFAULT	= 0,
+	MDP_MENU_DEFAULT	= 0
 } MDP_MENU;
 
 /* Menu Handler function. */
@@ -112,7 +112,7 @@ typedef enum _MDP_EMUCTRL
 {
 	MDP_EMUCTRL_UNKNOWN		= 0,
 	MDP_EMUCTRL_RESET		= 1,	/* Reset emulation. */
-	MDP_EMUCTRL_RELOAD_INFO		= 2,	/* Reload ROM information. */
+	MDP_EMUCTRL_RELOAD_INFO		= 2	/* Reload ROM information. */
 } MDP_EMUCTRL;
 
 /* MDP Host Services struct. */

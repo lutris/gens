@@ -104,6 +104,7 @@ void log_msgbox(const char* msg, const char* title);
  * @param ... Parameters.
  */
 #define LOG_MSG(channel, level, msg, ...)								\
+do													\
 {													\
 	if (LOG_MSG_CHANNEL_ ##channel >= level)							\
 	{												\
@@ -118,6 +119,6 @@ void log_msgbox(const char* msg, const char* title);
 			log_msgbox(box_msg, box_title);						\
 		}											\
 	}												\
-}
+} while (0)
 
 #endif /* GENS_LOG_MSG_H */

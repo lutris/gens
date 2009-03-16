@@ -28,6 +28,8 @@
 #include <config.h>
 #endif
 
+#include "timer.h"
+
 #include <unistd.h>
 #if HAVE_LIBRT
 #include <time.h>
@@ -35,22 +37,21 @@
 #include <sys/time.h>
 #endif
 #include <stddef.h>
-#include "timer.h"
 
 // Time #defines from WINE's dlls/ntdll/time.c
 #define TICKSPERSEC        10000000
 #define SECSPERDAY         86400
-#define SECS_1601_TO_1970  ((369 * 365 + 89) * (unsigned long long)SECSPERDAY)
+#define SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)SECSPERDAY)
 #define TICKS_1601_TO_1970 (SECS_1601_TO_1970 * TICKSPERSEC)
 
-static long long start_time;
+static int64_t start_time;
 
 
 /**
  * NtQuerySystemTime(): Retrieves the current system time.
  * @param pTime Pointer to 64-bit variable to store the time in.
  */
-static void NtQuerySystemTime(long long* pTime)
+static void NtQuerySystemTime(int64_t* pTime)
 {
 	// Originally from Wine 1.1.6
 	// dlls/ntdll/time.c
@@ -61,12 +62,12 @@ static void NtQuerySystemTime(long long* pTime)
 #if HAVE_LIBRT
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
-	*pTime = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
+	*pTime = now.tv_sec * (int64_t)TICKSPERSEC + TICKS_1601_TO_1970;
 	*pTime += (now.tv_nsec / 1000) * 10;
 #else
 	struct timeval now;
 	gettimeofday(&now, NULL);
-	*pTime = now.tv_sec * (long long)TICKSPERSEC + TICKS_1601_TO_1970;
+	*pTime = now.tv_sec * (int64_t)TICKSPERSEC + TICKS_1601_TO_1970;
 	*pTime += now.tv_usec * 10;
 #endif
 }
@@ -90,7 +91,7 @@ unsigned int GetTickCount(void)
 	// Originally from Wine 1.1.6
 	// dlls/ntdll/time.c
 	
-	long long now;
+	int64_t now;
 	NtQuerySystemTime(&now);
 	return (now - start_time) / 10000;
 }
@@ -100,7 +101,7 @@ unsigned int GetTickCount(void)
  * QueryPerformanceFrequency(): Get the frequency of the high-resolution performance counter.
  * @param freq Pointer to 64-bit variable to store the frequency in.
  */
-void QueryPerformanceFrequency(long long *frequency)
+void QueryPerformanceFrequency(int64_t *frequency)
 {
 	// Originally from Wine 1.1.6
 	// dlls/ntdll/time.c
@@ -116,7 +117,7 @@ void QueryPerformanceFrequency(long long *frequency)
  * QueryPerformanceCounter(): Get the high-resolution performance counter value.
  * @param counter Pointer to 64-bit variable to store the counter in.
  */
-void QueryPerformanceCounter(long long *counter)
+void QueryPerformanceCounter(int64_t *counter)
 {
 	// Originally from Wine 1.1.6
 	// dlls/ntdll/time.c
@@ -124,7 +125,7 @@ void QueryPerformanceCounter(long long *counter)
 	if (!counter)
 		return;
 	
-	long long now;
+	int64_t now;
 	NtQuerySystemTime(&now);
 	*counter = ((now - start_time) * 21) / 176;
 }
