@@ -281,6 +281,7 @@ section .text align=64
 		%define _WR_Controller_2	WR_Controller_2
 		
 		%define _YM2612_Reset		YM2612_Reset
+		%define _PSG_Write		PSG_Write
 	%endif
 	
 	extern _Read_VDP_Data

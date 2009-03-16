@@ -571,8 +571,3 @@ void PSG_Restore_State_GSX_v7(struct _gsx_v7_psg *save)
 
 
 /** end **/
-
-
-// Symbol aliases for cross-OS asm compatibility.
-void _PSG_Write(int data)
-	__attribute__ ((weak, alias ("PSG_Write")));

@@ -116,6 +116,7 @@ section .text align=64
 		
 		%define _YM2612_Read		YM2612_Read
 		%define _YM2612_Write		YM2612_Write
+		%define _PSG_Write		PSG_Write
 	%endif
 	
 	extern _Read_VDP_Status
