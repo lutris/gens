@@ -86,27 +86,33 @@ class ROM
 		static void updateCDROMName(const char *cdromName);
 		
 		static int getROM(void);
-		static int openROM(const std::string& filename);
+		static int openROM(const std::string& filename, std::string z_filename = "");
 		static ROM_t* loadSegaCD_BIOS(const std::string& filename);
 		
 		static unsigned int detectFormat(const unsigned char buf[2048]);
 		
-		static unsigned int loadROM(const std::string& filename, ROM_t** retROM);
+		static unsigned int loadROM(const std::string& filename,
+					    std::string& z_filename,
+					    ROM_t*& out_ROM);
 		static void fixChecksum(void);
 		static void freeROM(ROM_t* ROM_MD);
 		
 		// Recent ROM struct.
 		struct Recent_ROM_t
 		{
-			unsigned int type;
-			std::string filename;
+			unsigned int type;	/* ROM type. */
+			std::string filename;	/* ROM filename. */
+			std::string z_filename;	/* Filename of the ROM inside of an archive. */
 		};
 		
 		// Double-ended queue containing all Recent ROMs.
 		static std::deque<Recent_ROM_t> Recent_ROMs;
 	
 	protected:
-		static void updateRecentROMList(const std::string& filename, const unsigned int type);
+		static void updateRecentROMList(const std::string& filename,
+						const std::string& z_filename,
+						const unsigned int type);
+		
 		static void updateROMDir(const std::string& filename);
 		static void updateROMName(const char* filename);
 		static void deinterleaveSMD(void);

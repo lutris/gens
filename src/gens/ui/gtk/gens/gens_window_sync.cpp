@@ -184,6 +184,12 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		// Get the ROM filename.
 		sROMHistoryEntry += File::GetNameFromPath((*rom).filename);
 		
+		if (!(*rom).z_filename.empty())
+		{
+			// ROM has a compressed filename.
+			sROMHistoryEntry += " [" + (*rom).z_filename + "]";
+		}
+		
 		// Add the ROM item to the ROM History submenu.
 		mnuROMHistory_item = gtk_menu_item_new_with_label(sROMHistoryEntry.c_str());
 		gtk_widget_show(mnuROMHistory_item);

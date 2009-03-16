@@ -187,6 +187,12 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		// Get the ROM filename.
 		sROMHistoryEntry += File::GetNameFromPath((*rom).filename);
 		
+		if (!(*rom).z_filename.empty())
+		{
+			// ROM has a compressed filename.
+			sROMHistoryEntry += " [" + (*rom).z_filename + "]";
+		}
+		
 		// Add the ROM item to the ROM History submenu.
 		InsertMenu(mnuROMHistory, -1, MF_BYPOSITION | MF_STRING,
 			   IDM_FILE_ROMHISTORY_1 + romNum, sROMHistoryEntry.c_str());

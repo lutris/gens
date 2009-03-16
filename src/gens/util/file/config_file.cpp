@@ -146,6 +146,12 @@ int Config::save(const string& filename)
 		sprintf(buf, "ROM %d", romNum);
 		cfg.writeString("ROM History", buf, (*rom).filename);
 		
+		if (!(*rom).z_filename.empty())
+		{
+			sprintf(buf, "ROM %d Compressed", romNum);
+			cfg.writeString("ROM History", buf, (*rom).z_filename);
+		}
+		
 		sprintf(buf, "ROM %d Type", romNum);
 		cfg.writeInt("ROM History", buf, (*rom).type, true, 4);
 		
@@ -158,8 +164,19 @@ int Config::save(const string& filename)
 		sprintf(buf, "ROM %d", i);
 		cfg.deleteEntry("ROM History", buf);
 		
+		sprintf(buf, "ROM %d Compressed", i);
+		cfg.deleteEntry("ROM History", buf);
+		
 		sprintf(buf, "ROM %d Type", i);
 		cfg.deleteEntry("ROM History", buf);
+	}
+	
+	// Delete any empty "Compressed" entries.
+	for (int i = 1; i <= 9; i++)
+	{
+		sprintf(buf, "ROM %d Compressed", i);
+		if (cfg.getString("ROM History", buf, "").empty())
+			cfg.deleteEntry("ROM History", buf);
 	}
 	
 #ifdef GENS_CDROM
@@ -366,6 +383,9 @@ int Config::load(const string& filename, void* gameActive)
 			continue;
 		
 		recentROM.filename = tmpFilename;
+		
+		sprintf(buf, "ROM %d Compressed", romNum);
+		recentROM.z_filename = cfg.getString("ROM History", buf, "");
 		
 		sprintf(buf, "ROM %d Type", romNum);
 		recentROM.type = cfg.getInt("ROM History", buf, 0);

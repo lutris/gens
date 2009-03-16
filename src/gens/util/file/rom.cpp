@@ -98,9 +98,12 @@ deque<ROM::Recent_ROM_t> ROM::Recent_ROMs;
 /**
  * updateRecentROMList(): Update the Recent ROM list with the given ROM filename.
  * @param filename Full pathname to a ROM file.
+ * @param z_filename ROM filename from inside of an archive.
  * @param type ROM type.
  */
-void ROM::updateRecentROMList(const string& filename, const unsigned int type)
+void ROM::updateRecentROMList(const string& filename,
+			      const string& z_filename,
+			      const unsigned int type)
 {
 	for (deque<Recent_ROM_t>::iterator rom = Recent_ROMs.begin();
 	     rom != Recent_ROMs.end(); rom++)
@@ -108,7 +111,9 @@ void ROM::updateRecentROMList(const string& filename, const unsigned int type)
 		// Check if the ROM exists in the Recent ROM list.
 		// If it does, update its ROM type and return.
 		// TODO: If it does, move it up to position 1.
-		if ((*rom).filename == filename)
+		
+		if ((*rom).filename == filename &&
+		    (*rom).z_filename == z_filename)
 		{
 			// ROM exists.
 			(*rom).type = type;
@@ -120,6 +125,7 @@ void ROM::updateRecentROMList(const string& filename, const unsigned int type)
 	Recent_ROM_t newROM;
 	newROM.type = type;
 	newROM.filename = filename;
+	newROM.z_filename = z_filename;
 	Recent_ROMs.push_front(newROM);
 	
 	// Make sure there's no more than 9 elements in the deque.
@@ -390,11 +396,12 @@ int ROM::getROM(void)
 
 
 /**
- * Open_Rom(): Open the specified ROM file.
+ * openROM(): Open the specified ROM file.
  * @param filename Filename of the ROM file.
+ * @param z_filename Filename of the compressed file inside of the ROM to open.
  * @return Unknown.
  */
-int ROM::openROM(const string& filename)
+int ROM::openROM(const string& filename, string z_filename)
 {
 	int romType;
 	
@@ -410,11 +417,11 @@ int ROM::openROM(const string& filename)
 	freeROM(Game);
 	congratulations = 0;
 	
-	romType = loadROM(filename, &Game);
+	romType = loadROM(filename, z_filename, Game);
 	if (romType <= 0)
 		return -1;
 	
-	updateRecentROMList(filename, romType);
+	updateRecentROMList(filename, z_filename, romType);
 	updateROMDir(filename);
 	
 	int started, sysID;
@@ -478,18 +485,22 @@ ROM_t* ROM::loadSegaCD_BIOS(const string& filename)
 	freeROM(Game);
 	
 	// Load the SegaCD BIOS ROM image.
-	loadROM(filename, &Game);
+	string z_filename;
+	loadROM(filename, z_filename, Game);
 	return Game;
 }
 
 
 /**
  * loadROM(): Load a ROM file.
- * @param filename Filename of the ROM file.
- * @param interleaved If non-zero, the ROM is interleaved.
+ * @param filename	[in]  Filename of the ROM file.
+ * @param out_ROM	[out] ROM_t output.
+ * @param z_filename	[in/out] Filename of the ROM selected from inside a compressed archive.
  * @return ROM type.
  */
-unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
+unsigned int ROM::loadROM(const string& filename,
+			  string& z_filename,
+			  ROM_t*& out_ROM)
 {
 	// Array of decompressors.
 	static const decompressor_t* const decompressors[] =
@@ -517,7 +528,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	{
 		// Error opening the file.
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -544,14 +555,15 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 			"No usable decompressors found.");
 		fclose(fROM);
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
-	file_list_t *file_list, *sel_file;
+	// Selected file.
+	file_list_t *sel_file = NULL;
 	
 	// Get the file information.
-	file_list = cmp->get_file_info(fROM, filename.c_str());
+	file_list_t *file_list = cmp->get_file_info(fROM, filename.c_str());
 	
 	// Check how many files are available.
 	if (!file_list)
@@ -564,7 +576,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		
 		fclose(fROM);
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	else if (!file_list->next)
@@ -575,10 +587,38 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	else
 	{
 		// More than one file is in the archive. Load it.
-		// TODO: Improve this!
-		ZipSelectDialog *zip = new ZipSelectDialog();
-		sel_file = zip->getFile(file_list);
-		delete zip;
+		
+		if (!z_filename.empty())
+		{
+			// Compressed filename provided. Check if it exists inside of the archive.
+			file_list_t *cur = file_list;
+			while (cur)
+			{
+#ifdef GENS_OS_WIN32
+				if (!strcasecmp(z_filename.c_str(), cur->filename))
+#else
+				if (!strcmp(z_filename.c_str(), cur->filename))
+#endif
+				{
+					// Found the compressed file.
+					sel_file = cur;
+					break;
+				}
+				
+				// Check the next file.
+				cur = cur->next;
+			}
+		}
+		
+		if (!sel_file)
+		{
+			// No file specified, or the specified file wasn't found.
+			// Show the Zip File Selection Dialog.
+			// TODO: Improve this!
+			ZipSelectDialog *zip = new ZipSelectDialog();
+			sel_file = zip->getFile(file_list);
+			delete zip;
+		}
 	}
 	
 	if (!sel_file)
@@ -587,7 +627,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		file_list_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		return ROMTYPE_SYS_NONE;
 	}
 	
@@ -606,7 +646,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		file_list_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		GensUI::setMousePointer(false);
 		return romSys;
 	}
@@ -618,7 +658,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		file_list_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		GensUI::setMousePointer(false);
 		return ROMTYPE_SYS_NONE;
 	}
@@ -630,7 +670,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		file_list_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		GensUI::setMousePointer(false);
 		return ROMTYPE_SYS_NONE;
 	}
@@ -651,7 +691,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 		free(myROM);
 		myROM = NULL;
 		Game = NULL;
-		*retROM = NULL;
+		out_ROM = NULL;
 		GensUI::setMousePointer(false);
 		return ROMTYPE_SYS_NONE;
 	}
@@ -659,8 +699,21 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	// Close the ROM file.
 	fclose(fROM);
 	
+	// TODO: Should the compressed filename be included here?
 	updateROMName(filename.c_str());
 	Rom_Size = sel_file->filesize;
+	
+	// Set the compressed ROM filename.
+	if (file_list && file_list->next)
+	{
+		// Multi-file archive.
+		z_filename = string(sel_file->filename);
+	}
+	else
+	{
+		// Single-file archive.
+		z_filename.clear();
+	}
 	
 	// Delete the file_list_t.
 	file_list_t_free(file_list);
@@ -672,7 +725,7 @@ unsigned int ROM::loadROM(const string& filename, ROM_t** retROM)
 	fillROMInfo();
 	
 	GensUI::setMousePointer(false);
-	*retROM = myROM;
+	out_ROM = myROM;
 	return romType;
 }
 

@@ -270,7 +270,8 @@ void Reset_SegaCD(void)
 		BIOS_To_Use = BIOS_Filenames.SegaCD_US;
 	
 	// Load the BIOS file.
-	if (ROM::loadROM(BIOS_To_Use, &Game) <= 0)
+	string z_filename;
+	if (ROM::loadROM(BIOS_To_Use, z_filename, Game) <= 0)
 	{
 		GensUI::msgBox(
 			"Your Sega CD BIOS files aren't configured correctly.\n"

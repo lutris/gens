@@ -359,7 +359,8 @@ void input_sdl_event_key_down(int key)
 				if (audio_get_gym_playing())
 					gym_play_stop();
 				
-				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename);
+				ROM::openROM(ROM::Recent_ROMs.at(value - 1).filename,
+					     ROM::Recent_ROMs.at(value - 1).z_filename);
 				
 				Sync_Gens_Window();
 			}
