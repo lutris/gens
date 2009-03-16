@@ -116,27 +116,27 @@ int Config::save(const string& filename)
 	// Load the configuration file into the INI handler.
 	INI cfg(filename);
 	
-	// Paths.
-	cfg.writeString("General", "ROM Path", Rom_Dir);
-	cfg.writeString("General", "Save Path", State_Dir);
-	cfg.writeString("General", "SRAM Path", SRAM_Dir);
-	cfg.writeString("General", "BRAM Path", BRAM_Dir);
-	cfg.writeString("General", "Dump Path", PathNames.Dump_WAV_Dir);
-	cfg.writeString("General", "Dump GYM Path", PathNames.Dump_GYM_Dir);
-	cfg.writeString("General", "Screen Shot Path", PathNames.Screenshot_Dir);
+	// Directories.
+	cfg.writeString("Directories", "ROM Path", Rom_Dir);
+	cfg.writeString("Directories", "Save Path", State_Dir);
+	cfg.writeString("Directories", "SRAM Path", SRAM_Dir);
+	cfg.writeString("Directories", "BRAM Path", BRAM_Dir);
+	cfg.writeString("Directories", "Dump WAV Path", PathNames.Dump_WAV_Dir);
+	cfg.writeString("Directories", "Dump GYM Path", PathNames.Dump_GYM_Dir);
+	cfg.writeString("Directories", "Screen Shot Path", PathNames.Screenshot_Dir);
 	
 	// Genesis firmware.
-	cfg.writeString("General", "Genesis BIOS", BIOS_Filenames.MD_TMSS);
+	cfg.writeString("Firmware", "Genesis BIOS", BIOS_Filenames.MD_TMSS);
 	
 	// SegaCD firmware.
-	cfg.writeString("General", "USA CD BIOS", BIOS_Filenames.SegaCD_US);
-	cfg.writeString("General", "Europe CD BIOS", BIOS_Filenames.MegaCD_EU);
-	cfg.writeString("General", "Japan CD BIOS", BIOS_Filenames.MegaCD_JP);
+	cfg.writeString("Firmware", "USA CD BIOS", BIOS_Filenames.SegaCD_US);
+	cfg.writeString("Firmware", "Europe CD BIOS", BIOS_Filenames.MegaCD_EU);
+	cfg.writeString("Firmware", "Japan CD BIOS", BIOS_Filenames.MegaCD_JP);
 	
 	// 32X firmware.
-	cfg.writeString("General", "32X 68000 BIOS", BIOS_Filenames._32X_MC68000);
-	cfg.writeString("General", "32X Master SH2 BIOS", BIOS_Filenames._32X_MSH2);
-	cfg.writeString("General", "32X Slave SH2 BIOS", BIOS_Filenames._32X_SSH2);
+	cfg.writeString("Firmware", "32X 68000 BIOS", BIOS_Filenames._32X_MC68000);
+	cfg.writeString("Firmware", "32X Master SH2 BIOS", BIOS_Filenames._32X_MSH2);
+	cfg.writeString("Firmware", "32X Slave SH2 BIOS", BIOS_Filenames._32X_SSH2);
 	
 	// ROM History. (Last 9 ROMs.)
 	int romNum = 1;
@@ -144,10 +144,10 @@ int Config::save(const string& filename)
 	     rom != ROM::Recent_ROMs.end(); rom++)
 	{
 		sprintf(buf, "ROM %d", romNum);
-		cfg.writeString("General", buf, (*rom).filename);
+		cfg.writeString("ROM History", buf, (*rom).filename);
 		
 		sprintf(buf, "ROM %d Type", romNum);
-		cfg.writeInt("General", buf, (*rom).type, true, 4);
+		cfg.writeInt("ROM History", buf, (*rom).type, true, 4);
 		
 		romNum++;
 	}
@@ -156,10 +156,10 @@ int Config::save(const string& filename)
 	for (int i = romNum; i <= 9; i++)
 	{
 		sprintf(buf, "ROM %d", i);
-		cfg.deleteEntry("General", buf);
+		cfg.deleteEntry("ROM History", buf);
 		
 		sprintf(buf, "ROM %d Type", i);
-		cfg.deleteEntry("General", buf);
+		cfg.deleteEntry("ROM History", buf);
 	}
 	
 #ifdef GENS_CDROM
@@ -332,26 +332,26 @@ int Config::load(const string& filename, void* gameActive)
 	CRam_Flag = 1;
 	
 	// Paths.
-	cfg.getString("General", "ROM Path", PathNames.Gens_Path, Rom_Dir, sizeof(Rom_Dir));
-	cfg.getString("General", "Save Path", PathNames.Gens_Path, State_Dir, sizeof(State_Dir));
-	cfg.getString("General", "SRAM Path", PathNames.Gens_Path, SRAM_Dir, sizeof(SRAM_Dir));
-	cfg.getString("General", "BRAM Path", PathNames.Gens_Path, BRAM_Dir, sizeof(BRAM_Dir));
-	cfg.getString("General", "Dump Path", PathNames.Gens_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
-	cfg.getString("General", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
-	cfg.getString("General", "Screen Shot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
+	cfg.getString("Directories", "ROM Path", PathNames.Gens_Path, Rom_Dir, sizeof(Rom_Dir));
+	cfg.getString("Directories", "Save Path", PathNames.Gens_Path, State_Dir, sizeof(State_Dir));
+	cfg.getString("Directories", "SRAM Path", PathNames.Gens_Path, SRAM_Dir, sizeof(SRAM_Dir));
+	cfg.getString("Directories", "BRAM Path", PathNames.Gens_Path, BRAM_Dir, sizeof(BRAM_Dir));
+	cfg.getString("Directories", "Dump WAV Path", PathNames.Gens_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
+	cfg.getString("Directories", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
+	cfg.getString("Directories", "Screen Shot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
 	
 	// Genesis firmware.
-	cfg.getString("General", "Genesis BIOS", "", BIOS_Filenames.MD_TMSS, sizeof(BIOS_Filenames.MD_TMSS));
+	cfg.getString("Firmware", "Genesis BIOS", "", BIOS_Filenames.MD_TMSS, sizeof(BIOS_Filenames.MD_TMSS));
 	
 	// SegaCD firmware.
-	cfg.getString("General", "USA CD BIOS", "", BIOS_Filenames.SegaCD_US, sizeof(BIOS_Filenames.SegaCD_US));
-	cfg.getString("General", "Europe CD BIOS", "", BIOS_Filenames.MegaCD_EU, sizeof(BIOS_Filenames.MegaCD_EU));
-	cfg.getString("General", "Japan CD BIOS", "", BIOS_Filenames.MegaCD_JP, sizeof(BIOS_Filenames.MegaCD_JP));
+	cfg.getString("Firmware", "USA CD BIOS", "", BIOS_Filenames.SegaCD_US, sizeof(BIOS_Filenames.SegaCD_US));
+	cfg.getString("Firmware", "Europe CD BIOS", "", BIOS_Filenames.MegaCD_EU, sizeof(BIOS_Filenames.MegaCD_EU));
+	cfg.getString("Firmware", "Japan CD BIOS", "", BIOS_Filenames.MegaCD_JP, sizeof(BIOS_Filenames.MegaCD_JP));
 	
 	// 32X firmware.
-	cfg.getString("General", "32X 68000 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MC68000));
-	cfg.getString("General", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MSH2, sizeof(BIOS_Filenames._32X_MSH2));
-	cfg.getString("General", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_SSH2, sizeof(BIOS_Filenames._32X_SSH2));
+	cfg.getString("Firmware", "32X 68000 BIOS", "", BIOS_Filenames._32X_MC68000, sizeof(BIOS_Filenames._32X_MC68000));
+	cfg.getString("Firmware", "32X Master SH2 BIOS", "", BIOS_Filenames._32X_MSH2, sizeof(BIOS_Filenames._32X_MSH2));
+	cfg.getString("Firmware", "32X Slave SH2 BIOS", "", BIOS_Filenames._32X_SSH2, sizeof(BIOS_Filenames._32X_SSH2));
 	
 	// ROM History. (Last 9 ROMs.)
 	ROM::Recent_ROMs.clear();
@@ -362,14 +362,14 @@ int Config::load(const string& filename, void* gameActive)
 	for (int romNum = 1; romNum <= 9; romNum++)
 	{
 		sprintf(buf, "ROM %d", romNum);
-		tmpFilename = cfg.getString("General", buf, "");
+		tmpFilename = cfg.getString("ROM History", buf, "");
 		if (tmpFilename.empty())
 			continue;
 		
 		recentROM.filename = tmpFilename;
 		
 		sprintf(buf, "ROM %d Type", romNum);
-		recentROM.type = cfg.getInt("General", buf, 0);
+		recentROM.type = cfg.getInt("ROM History", buf, 0);
 		
 		ROM::Recent_ROMs.push_back(recentROM);
 	}
