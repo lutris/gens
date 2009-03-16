@@ -2,14 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-libminizip_a_CFLAGS = $(AM_CFLAGS) \
-	-O3 -funroll-loops \
-	-Wno-old-style-definition \
-	-Wno-unused \
-	-Wno-strict-prototypes \
-	-Wno-parentheses \
-	-Wno-switch-default \
-	-Wno-uninitialized
+libminizip_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
 
 if GENS_ZLIB_INTERNAL
 INCLUDES = -I@srcdir@/../zlib/

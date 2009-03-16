@@ -2,15 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-libpng_a_CFLAGS = $(AM_CFLAGS) \
-	-O3 -funroll-loops \
-	-Wno-unreachable-code \
-	-Wno-cast-qual \
-	-Wno-unsafe-loop-optimizations \
-	-Wno-switch-default \
-	-Wno-float-equal \
-	-Wno-missing-prototypes \
-	-Wno-missing-declarations
+libpng_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
 
 if !GENS_X86_ASM
 libpng_a_CFLAGS += -DPNG_NO_MMX_CODE

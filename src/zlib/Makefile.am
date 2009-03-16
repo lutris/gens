@@ -2,14 +2,7 @@
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-libz_a_CFLAGS = $(AM_CFLAGS) \
-	-O3 -funroll-loops \
-	-Wno-old-style-definition \
-	-Wno-cast-qual \
-	-Wno-unreachable-code \
-	-Wno-unsafe-loop-optimizations \
-	-Wno-switch-default \
-	-Wno-switch-enum
+libz_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
 
 noinst_LIBRARIES = libz.a
 libz_a_SOURCES = \
