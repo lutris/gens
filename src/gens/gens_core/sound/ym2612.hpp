@@ -77,20 +77,20 @@ typedef struct slot__
 
 typedef struct channel__ 
 {
-	int S0_OUT[4];			// anciennes sorties slot 0 (pour le feed back)
-	int Old_OUTd;			// ancienne sortie de la voie (son brut)
-	int OUTd;			// sortie de la voie (son brut)
-	int LEFT;			// LEFT enable flag
-	int RIGHT;			// RIGHT enable flag
-	int ALGO;			// Algorythm = détermine les connections entre les opérateurs
-	int FB;				// shift count of self feed back = degré de "Feed-Back" du SLOT 1 (il est son unique entrée)
-	int FMS;			// Fréquency Modulation Sensitivity of channel = degré de modulation de la fréquence sur la voie par le LFO
-	int AMS;			// Amplitude Modulation Sensitivity of channel = degré de modulation de l'amplitude sur la voie par le LFO
-	int FNUM[4];			// hauteur fréquence de la voie (+ 3 pour le mode spécial)
-	int FOCT[4];			// octave de la voie (+ 3 pour le mode spécial)
-	int KC[4];			// Key Code = valeur fonction de la fréquence (voir KSR pour les slots, KSR = KC >> KSR_S)
-	struct slot__ SLOT[4];		// four slot.operators = les 4 slots de la voie
-	int FFlag;			// Frequency step recalculation flag
+	int S0_OUT[4];	// anciennes sorties slot 0 (pour le feed back)
+	int Old_OUTd;	// ancienne sortie de la voie (son brut)
+	int OUTd;	// sortie de la voie (son brut)
+	int LEFT;	// LEFT enable flag
+	int RIGHT;	// RIGHT enable flag
+	int ALGO;	// Algorythm = détermine les connections entre les opérateurs
+	int FB;		// shift count of self feed back = degré de "Feed-Back" du SLOT 1 (il est son unique entrée)
+	int FMS;	// Fréquency Modulation Sensitivity of channel = degré de modulation de la fréquence sur la voie par le LFO
+	int AMS;	// Amplitude Modulation Sensitivity of channel = degré de modulation de l'amplitude sur la voie par le LFO
+	int FNUM[4];	// hauteur fréquence de la voie (+ 3 pour le mode spécial)
+	int FOCT[4];	// octave de la voie (+ 3 pour le mode spécial)
+	int KC[4];	// Key Code = valeur fonction de la fréquence (voir KSR pour les slots, KSR = KC >> KSR_S)
+	slot_ SLOT[4];	// four slot.operators = les 4 slots de la voie
+	int FFlag;	// Frequency step recalculation flag
 } channel_;
 
 typedef struct ym2612__
@@ -120,7 +120,7 @@ typedef struct ym2612__
 	
 	unsigned int Inter_Cnt;		// Interpolation Counter
 	unsigned int Inter_Step;	// Interpolation Step
-	struct channel__ CHANNEL[6];	// Les 6 voies du YM2612
+	channel_ CHANNEL[6];	// Les 6 voies du YM2612
 	
 	int REG[2][0x100];	// Sauvegardes des valeurs de tout les registres, c'est facultatif
 				// cela nous rend le débuggage plus facile
