@@ -101,6 +101,12 @@ Release 7 fixes the following bugs:
 
   - DMA operations now wrap on a 128k boundary. This bug was reported by TmEE.
 
+- ROM History now keeps track of compressed files inside of multi-file
+  archives. For example, if you have a 7z archive containing several different
+  versions of a game, selecting version 1 will result in a ROM History entry
+  for that specific version, and selecting version 2 will result in another
+  ROM History entry.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
