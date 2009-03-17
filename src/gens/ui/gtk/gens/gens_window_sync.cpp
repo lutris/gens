@@ -616,10 +616,10 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	bool allowAudioDump = (Game != NULL) && audio_get_enabled();
 	
-	// WAV dump
+	// WAV dumping.
 	gtk_widget_set_sensitive(mnuWAVDump, allowAudioDump);
 	
-	// GYM dump
+	// GYM dumping.
 	gtk_widget_set_sensitive(mnuGYMDump, allowAudioDump);
 	
 	// Enable callbacks.

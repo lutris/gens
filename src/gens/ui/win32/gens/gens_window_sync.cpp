@@ -531,21 +531,21 @@ void Sync_Gens_Window_SoundMenu(void)
 	
 	char dumpLabel[16];
 	
-	bool allowAudioDump = (Game != NULL) && audio_get_enabled();
+	uint32_t audioDumpFlags = MF_BYCOMMAND | (((Game != NULL) && audio_get_enabled()) ? MF_ENABLED : MF_GRAYED);
 	
-	// WAV dumping
+	// WAV dumping.
 	strcpy(dumpLabel, (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump"));
 	ModifyMenu(mnuSound, IDM_SOUND_WAVDUMP,
-		   MF_BYCOMMAND | MF_STRING, IDM_SOUND_WAVDUMP, dumpLabel);
-	EnableMenuItem(mnuSound, IDM_SOUND_WAVDUMP,
-		       MF_BYCOMMAND | (allowAudioDump ? MF_ENABLED : MF_GRAYED));
+		   MF_BYCOMMAND | MF_STRING,
+		   IDM_SOUND_WAVDUMP, dumpLabel);
+	EnableMenuItem(mnuSound, IDM_SOUND_WAVDUMP, audioDumpFlags);
 	
-	// GYM dumping
+	// GYM dumping.
 	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
-	ModifyMenu(mnuSound, IDM_SOUND_GYMDUMP, MF_BYCOMMAND | MF_STRING,
+	ModifyMenu(mnuSound, IDM_SOUND_GYMDUMP,
+		   MF_BYCOMMAND | MF_STRING,
 		   IDM_SOUND_GYMDUMP, dumpLabel);
-	EnableMenuItem(mnuSound, IDM_SOUND_GYMDUMP,
-		       MF_BYCOMMAND | (allowAudioDump ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(mnuSound, IDM_SOUND_GYMDUMP, audioDumpFlags);
 }
 
 
