@@ -59,9 +59,6 @@ class Options
 		static bool soundDAC(void);
 		static void setSoundDAC(const bool newSoundDAC);
 		
-		static bool soundDAC_Improved(void);
-		static void setSoundDAC_Improved(const bool newSoundDAC_Improved);
-		
 		static bool soundPSG(void);
 		static void setSoundPSG(const bool newSoundPSG);
 		

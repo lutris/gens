@@ -283,12 +283,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F10:
-			if (mod & GENS_KMOD_SHIFT)
-			{
-				Options::setSoundDAC_Improved(!Options::soundDAC_Improved());
-				Sync_Gens_Window_SoundMenu();
-			}
-			else if (vdraw_get_fullscreen() && !mod)
+			if (vdraw_get_fullscreen() && !mod)
 			{
 				vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			}

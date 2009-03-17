@@ -594,36 +594,6 @@ void Options::setSoundDAC(const bool newSoundDAC)
 
 
 /**
- * soundDAC_Improved(): Get the improved DAC sound emulation setting.
- * @return Improved DAC sound emulation setting.
- */
-bool Options::soundDAC_Improved(void)
-{
-	return DAC_Improv;
-}
-
-/**
- * setSoundDAC_Improved(): Enable or disable improved DAC sound emulation.
- * @param newDACImproved New improved DAC sound emulation setting.
- */
-void Options::setSoundDAC_Improved(const bool newSoundDAC_Improved)
-{
-	DAC_Improv = newSoundDAC_Improved;
-	
-	if (DAC_Improv)
-	{
-		MESSAGE_L("Improved DAC sound (voices)",
-			  "Improved DAC sound (voices)", 1000);
-	}
-	else
-	{
-		MESSAGE_L("Normal DAC sound",
-			  "Normal DAC sound", 1000);
-	}
-}
-
-
-/**
  * soundPSG(): Get the PSG sound emulation setting.
  * @return PSG sound emulation setting.
  */

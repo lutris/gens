@@ -562,7 +562,6 @@ void Sync_Gens_Window_SoundMenu(void)
 		{IDM_SOUND_YM2612,		YM2612_Enable},
 		{IDM_SOUND_YM2612_IMPROVED,	YM2612_Improv},
 		{IDM_SOUND_DAC,			DAC_Enable},
-		{IDM_SOUND_DAC_IMPROVED,	DAC_Improv},
 		{IDM_SOUND_PSG,			PSG_Enable},
 		{IDM_SOUND_PSG_SINE,		PSG_Improv},
 		{IDM_SOUND_PCM,			PCM_Enable},

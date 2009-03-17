@@ -26,7 +26,6 @@
 int Debug;
 int Frame_Skip;
 int Frame_Number;
-int DAC_Improv;
 
 
 void Init_Tab(void)

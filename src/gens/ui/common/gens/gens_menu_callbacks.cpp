@@ -654,10 +654,6 @@ static int gens_menu_callback_SoundMenu(uint16_t menuID, uint16_t state)
 			Options::setSoundDAC(!state);
 			break;
 		
-		case IDM_SOUND_DAC_IMPROVED:
-			Options::setSoundDAC_Improved(!state);
-			break;
-		
 		case IDM_SOUND_PSG:
 			Options::setSoundPSG(!state);
 			break;

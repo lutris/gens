@@ -192,9 +192,8 @@ static const optBarg_str_t optBarg_str[] =
 	OPTBARG_STR("ym2612",		"YM2612"),
 	OPTBARG_STR("ym2612-improved",	"YM2612 Improved"),
 	OPTBARG_STR("dac",		"DAC"),
-	OPTBARG_STR("dac-improved",	"DAC Improved"),
 	OPTBARG_STR("psg",		"PSG"),
-	OPTBARG_STR("psg-improved",	"PSG Improved"),
+	OPTBARG_STR("psg-sine",		"PSG (Sine Wave)"),
 	OPTBARG_STR("pcm",		"PCM"),
 	OPTBARG_STR("pwm",		"PWM"),
 	OPTBARG_STR("cdda",		"CDDA"),
@@ -221,9 +220,8 @@ enum optBarg_enum
 	OPTB_YM2612,
 	OPTB_YM2612_IMPROVED,
 	OPTB_DAC,
-	OPTB_DAC_IMPROVED,
 	OPTB_PSG,
-	OPTB_PSG_IMPROVED,
+	OPTB_PSG_SINE,
 	OPTB_PCM,
 	OPTB_PWM,
 	OPTB_CDDA,
@@ -291,9 +289,8 @@ static const struct option long_options[] =
 	LONGOPT_BARG(OPTB_YM2612),
 	LONGOPT_BARG(OPTB_YM2612_IMPROVED),
 	LONGOPT_BARG(OPTB_DAC),
-	LONGOPT_BARG(OPTB_DAC_IMPROVED),
 	LONGOPT_BARG(OPTB_PSG),
-	LONGOPT_BARG(OPTB_PSG_IMPROVED),
+	LONGOPT_BARG(OPTB_PSG_SINE),
 	LONGOPT_BARG(OPTB_PCM),
 	LONGOPT_BARG(OPTB_PWM),
 	LONGOPT_BARG(OPTB_CDDA),
@@ -458,9 +455,8 @@ void parse_args(int argc, char *argv[])
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_YM2612], YM2612_Enable);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_YM2612_IMPROVED], YM2612_Improv);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_DAC], DAC_Enable);
-		TEST_OPTION_ENABLE(optBarg_str[OPTB_DAC_IMPROVED], DAC_Improv);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG], PSG_Enable);
-		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG_IMPROVED], PSG_Improv);
+		TEST_OPTION_ENABLE(optBarg_str[OPTB_PSG_SINE], PSG_Improv);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_PCM], PCM_Enable);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_PWM], PWM_Enable);
 		TEST_OPTION_ENABLE(optBarg_str[OPTB_CDDA], CDDA_Enable);

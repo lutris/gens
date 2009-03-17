@@ -358,11 +358,6 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 			Sync_Gens_Window_SoundMenu();
 			break;
 		
-		case IDCMD_DAC_IMPROVED:
-			Options::setSoundDAC_Improved(!Options::soundDAC_Improved());
-			Sync_Gens_Window_SoundMenu();
-			break;
-		
 		case IDCMD_PSG_IMPROVED:
 			Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
 			Sync_Gens_Window_SoundMenu();

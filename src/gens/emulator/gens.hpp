@@ -51,7 +51,6 @@ extern "C" {
 extern int Debug;
 extern int Frame_Skip;
 extern int Frame_Number;
-extern int DAC_Improv;
 
 void Init_Tab(void);
 void Check_Country_Order(void);
