@@ -487,7 +487,7 @@ void Sync_Gens_Window_SoundMenu(void)
 	CheckMenuItem(mnuSound, IDM_SOUND_ENABLE,
 		      MF_BYCOMMAND | (soundEnabled ? MF_CHECKED : MF_UNCHECKED));
 	
-	const uint16_t soundMenuItems[11][2] =
+	const uint16_t soundMenuItems[10][2] =
 	{
 		{IDM_SOUND_STEREO,		audio_get_stereo()},
 		{IDM_SOUND_Z80,			Z80_State & 1},
@@ -501,7 +501,7 @@ void Sync_Gens_Window_SoundMenu(void)
 		{IDM_SOUND_CDDA,		CDDA_Enable},
 	};
 	
-	for (int i = 0; i < 11; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		EnableMenuItem(mnuSound, soundMenuItems[i][0],
 			       MF_BYCOMMAND | (soundEnabled ? MF_ENABLED : MF_GRAYED));
