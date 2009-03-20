@@ -1,5 +1,5 @@
 ;
-; Gens: [MDP] NASM (x86) macros.
+; MDP: NASM (x86) macros.
 ;
 ; Copyright (c) 1999-2002 by Stéphane Dallongeville
 ; Copyright (c) 2003-2004 by Stéphane Akhoun
