@@ -31,6 +31,13 @@
 	#define _Fast_Blur_32_x86_mmx	Fast_Blur_32_x86_mmx
 #endif
 
+/* Symbol types. */
+#if defined(__ELF__)
+	#define SYMTYPE(sym, symtype) .type sym, ## symtype
+#else
+	#define SYMTYPE(sym, symtype)
+#endif
+
 #define MD_SCREEN_SIZE	(336*240)
 #define MASK_DIV2_32	$0x007F7F7F
 
@@ -60,6 +67,7 @@ MASK_DIV2_32_MMX:	.long	0x007F7F7F, 0x007F7F7F
  * 32-bit color Fast Blur function, non-MMX. *
  *********************************************/
 .globl _Fast_Blur_32_x86
+SYMTYPE(_Fast_Blur_32_x86,@function)
 _Fast_Blur_32_x86:
 	
 	/* Save registers for later. */
@@ -102,6 +110,7 @@ _Fast_Blur_32_x86:
  * 32-bit color Fast Blur function, using MMX instructions. *
  ************************************************************/
 .globl _Fast_Blur_32_x86_mmx
+SYMTYPE(_Fast_Blur_32_x86_mmx,@function)
 _Fast_Blur_32_x86_mmx:
 	
 	/* Save registers for later. */

@@ -31,6 +31,13 @@
 	#define _audio_write_sound_stereo_x86_mmx	audio_write_sound_stereo_x86_mmx
 #endif
 
+/* Symbol types. */
+#if defined(__ELF__)
+	#define SYMTYPE(sym, symtype) .type sym, ## symtype
+#else
+	#define SYMTYPE(sym, symtype)
+#endif
+
 /* Function parameters. */
 #define arg_left	 8(%ebp)
 #define arg_right	12(%ebp)
@@ -43,6 +50,7 @@
  * void audio_write_sound_mono_x86_mmx(int *left, int *right, short *dest, int length); *
  ****************************************************************************************/
 .globl _audio_write_sound_mono_x86_mmx
+SYMTYPE(_audio_write_sound_mono_x86_mmx,@function)
 _audio_write_sound_mono_x86_mmx:
 	
 	/* Set up the frame pointer. */
@@ -131,6 +139,7 @@ _audio_write_sound_mono_x86_mmx:
  * void audio_write_sound_stereo_x86_mmx(int *left, int *right, short *dest, int length); *
  ******************************************************************************************/
 .globl _audio_write_sound_stereo_x86_mmx
+SYMTYPE(_audio_write_sound_stereo_x86_mmx,@function)
 _audio_write_sound_stereo_x86_mmx:
 	
 	/* Set up the frame pointer. */

@@ -31,6 +31,13 @@
 	#define _Fast_Blur_16_x86_mmx	Fast_Blur_16_x86_mmx
 #endif
 
+/* Symbol types. */
+#if defined(__ELF__)
+	#define SYMTYPE(sym, symtype) .type sym, ## symtype
+#else
+	#define SYMTYPE(sym, symtype)
+#endif
+
 #define MD_SCREEN_SIZE	(336*240)
 #define MASK_DIV2_15	$0x3DEF
 #define MASK_DIV2_16	$0x7BEF
@@ -62,6 +69,7 @@ MASK_DIV2_16_MMX:	.long	0x7BEF7BEF, 0x7BEF7BEF
  * 15/16-bit color Fast Blur function, non-MMX. *
  ************************************************/
 .globl _Fast_Blur_16_x86
+SYMTYPE(_Fast_Blur_16_x86,@function)
 _Fast_Blur_16_x86:
 	
 	/* Save registers for later. */
@@ -112,6 +120,7 @@ _Fast_Blur_16_x86:
  * 15/16-bit color Fast Blur function, using MMX instructions. *
  ***************************************************************/
 .globl _Fast_Blur_16_x86_mmx
+SYMTYPE(_Fast_Blur_16_x86_mmx,@function)
 _Fast_Blur_16_x86_mmx:
 	
 	/* Save registers for later. */

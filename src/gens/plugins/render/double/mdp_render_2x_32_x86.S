@@ -31,6 +31,13 @@
 	#define _mdp_render_2x_32_x86_mmx	mdp_render_2x_32_x86_mmx
 #endif
 
+/* Symbol types. */
+#if defined(__ELF__)
+	#define SYMTYPE(sym, symtype) .type sym, ## symtype
+#else
+	#define SYMTYPE(sym, symtype)
+#endif
+
 /* Function parameters. */
 #define arg_destScreen	 8(%ebp)
 #define arg_mdScreen	12(%ebp)
@@ -47,6 +54,7 @@
  *                           int width, int height);                   *
  ***********************************************************************/
 .globl _mdp_render_2x_32_x86
+SYMTYPE(_mdp_render_2x_32_x86,@function)
 _mdp_render_2x_32_x86:
 	
 	/* Set up the frame pointer. */
@@ -143,6 +151,7 @@ _mdp_render_2x_32_x86:
  *                               int width, int height);                   *
  ***************************************************************************/
 .globl _mdp_render_2x_32_x86_mmx
+SYMTYPE(_mdp_render_2x_32_x86_mmx,@function)
 _mdp_render_2x_32_x86_mmx:
 	
 	/* Set up the frame pointer. */
