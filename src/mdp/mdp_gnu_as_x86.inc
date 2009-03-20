@@ -47,4 +47,11 @@
 	#define INIT_PIC()
 #endif
 
+/* Symbol types. */
+#if defined(__ELF__)
+	#define SYMTYPE(sym, symtype) .type sym, ## symtype
+#else
+	#define SYMTYPE(sym, symtype)
+#endif
+
 #endif /* _MDP_GNU_AS_X86_INC */
