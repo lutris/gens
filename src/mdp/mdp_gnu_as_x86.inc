@@ -28,4 +28,23 @@
 	.section .note.GNU-stack, "", %progbits
 #endif
 
+/* PIC macros from http://www.gentoo.org/proj/en/hardened/pic-fix-guide.xml */
+
+#ifdef __PIC__
+	/* Position-independent code. */
+	#undef __i686			/* gcc builtin define gets in our way */
+	#define MUNG_LOCAL(sym)		sym ## @GOTOFF(%ebx)
+	#define MUNG_EXTERN(sym)	sym ## @GOT(%ebx)
+	#define DEREF_EXTERN(reg)	movl (reg), reg
+	#define INIT_PIC() \
+		call __i686.get_pc_thunk.bx ; \
+		addl $_GLOBAL_OFFSET_TABLE_, %ebx
+#else
+	/* Non-PIC code. */
+	#define MUNG_LOCAL(sym)   sym
+	#define MUNG_EXTERN(sym)  sym
+	#define DEREF_EXTERN(reg)
+	#define INIT_PIC()
+#endif
+
 #endif /* _MDP_GNU_AS_X86_INC */
