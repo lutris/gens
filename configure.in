@@ -234,7 +234,7 @@ elif test x$enable_nasm_opt != x0 -a x$enable_nasm_opt != x1 -a x$enable_nasm_op
 	enable_nasm_opt=3
 fi
 
-NASM="${NASM} -O${enable_nasm_opt} ${nasm_obj_format} ${nasm_debug_enabled} ${nasm_debug_format} -w-orphan-labels"
+NASM="${NASM} -O${enable_nasm_opt} ${nasm_obj_format} ${nasm_debug_enabled} ${nasm_debug_format} -I\$(top_srcdir)/src/ -w-orphan-labels"
 
 AC_ARG_ENABLE(debugger, AC_HELP_STRING([--enable-debugger], [Enable the built-in debugger [[default=yes]]]), enable_debugger=$enableval, enable_debugger=yes)
 if test x$enable_debugger = xyes; then
