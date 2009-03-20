@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Scanline renderer. [16-bit color] (x86 asm version)         *
+ * MDP: Scanline renderer. [16-bit color] (x86 asm version)                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
