@@ -20,10 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#if defined(__linux__) && defined(__ELF__)
-	/* Mark the stack as non-executable on ELF. */
-	.section .note.GNU-stack, "", %progbits
-#endif
+/* MDP GNU `as` (x86) macros. */
+#include "mdp/mdp_gnu_as_x86.inc"
 
 /* Symbol redefines for ELF. */
 #if defined(__ELF__)
