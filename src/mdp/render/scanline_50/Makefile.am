@@ -1,18 +1,11 @@
 # MDP Render Plugin: 50% Scanline renderer.
 
-# libtool/nasm stuff from http://osdir.com/ml/sysutils.automake.general/2002-08/msg00134.html
-# strip_fPIC.sh from http://networkmultimedia.org/
-
 AUTOMAKE_OPTIONS = subdir-objects
 
-INCLUDES = -I@top_srcdir@/src/
-
-STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
-
-.asm.lo:
-	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
-
 lib_LTLIBRARIES = mdp_render_scanline_50.la
+
+INCLUDES  = -I@top_srcdir@/src/
+mdp_render_scanline_50_la_CCASFLAGS	= $(INCLUDES)
 
 mdp_render_scanline_50_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_scanline_50_la_CXXFLAGS	= $(AM_CXXFLAGS)
@@ -29,8 +22,9 @@ noinst_HEADERS = \
 		mdp_render_scanline_50_x86.h
 
 if GENS_X86_ASM
-NASM += -I@srcdir@/../
 mdp_render_scanline_50_la_SOURCES += \
-		mdp_render_scanline_50_16_x86.asm \
-		mdp_render_scanline_50_32_x86.asm
+		mdp_render_scanline_50_16_x86.S \
+		mdp_render_scanline_50_32_x86.S
+noinst_HEADERS += \
+		mdp_render_scanline_50_x86.h
 endif # GENS_X86_ASM
