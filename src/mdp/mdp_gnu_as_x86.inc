@@ -39,6 +39,15 @@
 	#define INIT_PIC() \
 		call __i686.get_pc_thunk.bx ; \
 		addl $_GLOBAL_OFFSET_TABLE_, %ebx
+
+/* __i686.get_pc_thunk.bx - retrieves the current PC in %ebx */
+.section .gnu.linkonce.t.__i686.get_pc_thunk.bx,"ax",@progbits
+.globl __i686.get_pc_thunk.bx
+	.hidden	__i686.get_pc_thunk.bx
+	.type	__i686.get_pc_thunk.bx,@function
+__i686.get_pc_thunk.bx:
+	movl	(%esp), %ebx
+	ret
 #else
 	/* Non-PIC code. */
 	#define MUNG_LOCAL(sym)   sym
