@@ -3,7 +3,7 @@
 ;
 ; Copyright (c) 1999-2002 by Stéphane Dallongeville
 ; Copyright (c) 2003-2004 by Stéphane Akhoun
-; Copyright (c) 2008 by David Korth
+; Copyright (c) 2008-2009 by David Korth
 ;
 ; This program is free software; you can redistribute it and/or modify it
 ; under the terms of the GNU General Public License as published by the
@@ -20,26 +20,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+; MDP NASM (x86) macros.
+%include "mdp/mdp_nasm_x86.inc"
 
 arg_destScreen	equ 28+8
 arg_mdScreen	equ 28+12
@@ -56,9 +38,6 @@ arg_vmodeFlags	equ 28+32
 	%define	_mdp_render_scanline_25_16_x86		mdp_render_scanline_25_16_x86
 	%define	_mdp_render_scanline_25_16_x86_mmx	mdp_render_scanline_25_16_x86_mmx
 %endif
-
-; Position-independent code macros.
-%include "pic.inc"
 
 section .rodata align=64
 	

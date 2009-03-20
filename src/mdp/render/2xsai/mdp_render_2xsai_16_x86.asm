@@ -3,7 +3,7 @@
 ;
 ; Copyright (c) 1999-2002 by Stéphane Dallongeville
 ; Copyright (c) 2003-2004 by Stéphane Akhoun
-; Copyright (c) 2008 by David Korth
+; Copyright (c) 2008-2009 by David Korth
 ; 2xSaI Copyright (c) by Derek Liauw Kie Fa and Robert J. Ohannessian
 ;
 ; This program is free software; you can redistribute it and/or modify it
@@ -21,31 +21,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
-
-; Symbol redefines for ELF.
-%ifdef __OBJ_ELF
-	%define	_mdp_render_2xsai_16_x86_mmx	mdp_render_2xsai_16_x86_mmx
-%endif
+; MDP NASM (x86) macros.
+%include "mdp/mdp_nasm_x86.inc"
 
 srcPtr		equ 28+8
 srcPitch	equ 28+12
@@ -74,8 +51,10 @@ colorN		equ 0
 colorO		equ 2
 colorP		equ 4
 
-; Position-independent code macros.
-%include "pic.inc"
+; Symbol redefines for ELF.
+%ifdef __OBJ_ELF
+	%define	_mdp_render_2xsai_16_x86_mmx	mdp_render_2xsai_16_x86_mmx
+%endif
 
 section .data align=64
 	

@@ -2,7 +2,7 @@
 ;16bpp output
 ;----------------------------------------------------------
 ;Copyright (C) 2003 MaxSt ( maxst@hiend3d.com )
-;MDP port Copyright (c) 2008 by David Korth
+;MDP port Copyright (c) 2008-2009 by David Korth
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -19,26 +19,8 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+; MDP NASM (x86) macros.
+%include "mdp/mdp_nasm_x86.inc"
 
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF

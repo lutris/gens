@@ -16,4 +16,5 @@ noinst_HEADERS = \
 		mdp_event.h \
 		mdp_constants.h \
 		mdp_z.h \
-		mdp_win32.h
+		mdp_win32.h \
+		mdp_nasm_x86.inc

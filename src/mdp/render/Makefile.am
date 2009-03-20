@@ -29,6 +29,4 @@ SUBDIRS += \
 		super_eagle \
 		super_2xsai
 
-noinst_HEADERS = pic.inc
-
 endif # GENS_X86_ASM

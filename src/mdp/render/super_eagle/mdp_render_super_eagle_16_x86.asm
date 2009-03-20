@@ -21,26 +21,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ;
 
-%ifidn	__OUTPUT_FORMAT__, elf
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf32
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, elf64
-	%define	__OBJ_ELF
-%elifidn __OUTPUT_FORMAT__, win32
-	%define	__OBJ_WIN32
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, win64
-	%define	__OBJ_WIN64
-	%define	.rodata	.rdata
-%elifidn __OUTPUT_FORMAT__, macho
-	%define	__OBJ_MACHO
-%endif
-
-%ifdef __OBJ_ELF
-	; Mark the stack as non-executable on ELF.
-	section .note.GNU-stack noalloc noexec nowrite progbits
-%endif
+; MDP NASM (x86) macros.
+%include "mdp/mdp_nasm_x86.inc"
 
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
@@ -97,9 +79,6 @@ colorM		equ -2
 colorN		equ 0
 colorO		equ 2
 colorP		equ 4
-
-; Position-independent code macros.
-%include "pic.inc"
 
 section .data align=64
 	
