@@ -54,4 +54,9 @@
 	#define SYMTYPE(sym, symtype)
 #endif
 
+/* Win32: Read-only data section are named ".rdata", not ".rodata" */
+#if defined(_WIN32)
+	#define rodata rdata
+#endif
+
 #endif /* _MDP_GNU_AS_X86_INC */
