@@ -81,6 +81,7 @@ _mdp_render_2x_32_x86:
 	jmp	0f /* .Loop_Y */
 
 .balign 16
+
 0: /* .Loop_Y */
 1: /* .Loop_X1 */
 			/* Get source pixels. */

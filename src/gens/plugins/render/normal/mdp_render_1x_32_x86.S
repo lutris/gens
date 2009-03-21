@@ -79,8 +79,9 @@ _mdp_render_1x_32_x86:
 	shrl	$3, %ecx		/* Transfer 8 bytes per cycle. (2 32-bit pixels) */
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
-	
+
 .balign 16
+
 0: /* .Loop_Y */
 1: /* .Loop_X */
 			/* Get source pixels. */
@@ -149,6 +150,7 @@ _mdp_render_1x_32_x86_mmx:
 	jmp	0f /* .Loop_Y */
 
 .balign 16
+
 0: /* .Loop_Y */
 1: /* .Loop_X */
 			/* Get source pixels. */
