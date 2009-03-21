@@ -18,8 +18,7 @@ mdp_render_scanline_50_la_SOURCES = \
 noinst_HEADERS = \
 		mdp_render_scanline_50_plugin.h \
 		mdp_render_scanline_50_icon.h \
-		mdp_render_scanline_50.hpp \
-		mdp_render_scanline_50_x86.h
+		mdp_render_scanline_50.hpp
 
 if GENS_X86_ASM
 mdp_render_scanline_50_la_SOURCES += \
