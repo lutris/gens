@@ -499,8 +499,8 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// Load VDP control settings.
 		uint32_t lastCtrlData = le32_to_cpu(md_save.vdp_ctrl.ctrl_data);
-		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
 		Write_VDP_Ctrl(lastCtrlData >> 16);
+		Write_VDP_Ctrl(lastCtrlData & 0xFFFF);
 		
 		Ctrl.Flag = md_save.vdp_ctrl.write_flag_2;
 		Ctrl.DMA = (md_save.vdp_ctrl.dma_fill_flag & 1) << 2;
