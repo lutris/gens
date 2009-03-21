@@ -42,6 +42,7 @@
 #include "mdp_host_gens_mem.h"
 #include "mdp_host_gens_emuctrl.hpp"
 #include "mdp_host_gens_z.h"
+#include "mdp_host_gens_config.hpp"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -114,6 +115,9 @@ mdp_host_t Gens_MDP_Host =
 	.window_get_main	= mdp_host_window_get_main,
 	
 	.emulator_control	= mdp_host_emulator_control,
+	
+	.config_set		= mdp_host_config_set,
+	.config_get		= mdp_host_config_get,
 	
 	.directory_get_default_save_path = mdp_host_directory_get_default_save_path,
 	
