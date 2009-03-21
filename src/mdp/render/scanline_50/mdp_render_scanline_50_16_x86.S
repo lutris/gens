@@ -77,7 +77,7 @@ _mdp_render_scanline_50_16_x86:
 	shrl	$4, %ecx		/* Transfer 16 bytes per cycle. (8 16-bit pixels) */
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
-	
+
 .balign 16
 
 0: /* .Loop_Y */
