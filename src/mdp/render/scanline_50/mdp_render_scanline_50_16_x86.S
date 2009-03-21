@@ -156,11 +156,11 @@ _mdp_render_scanline_50_16_x86:
 
 .balign 64
 
-/***********************************************************************************
- * void mdp_render_scanline_50_16_x86(uint16_t *destScreen, uint16_t *mdScreen,    *
- *                                    int destPitch, int srcPitch,                 *
- *                                    int width, int height, uint32_t vmodeFlags); *
- ***********************************************************************************/
+/************************************************************************************
+ * void mdp_render_scanline_50_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, *
+ *                                    int destPitch, int srcPitch,                  *
+ *                                    int width, int height);                       *
+ ************************************************************************************/
 .globl _mdp_render_scanline_50_16_x86_mmx
 SYMTYPE(_mdp_render_scanline_50_16_x86_mmx,@function)
 _mdp_render_scanline_50_16_x86_mmx:
