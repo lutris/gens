@@ -262,8 +262,6 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 			#else
 				return MDP_UI_NONE;
 			#endif
-			
-			break;
 		
 		case MDP_VAL_CPU_FLAGS:
 			// CPU flags.
@@ -276,7 +274,6 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 		default:
 			// Unknown value ID.
 			return -MDP_ERR_UNKNOWN_VALID;
-			break;
 	}
 	
 	return MDP_ERR_OK;
