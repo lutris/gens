@@ -50,6 +50,9 @@
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/vdp/vdp_rend.h"
 
+// CPU flags.
+#include "gens_core/misc/cpuflags.h"
+
 // ROM information.
 #include "util/file/rom.hpp"
 
@@ -213,6 +216,7 @@ int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
 	switch (valID)
 	{
 		case MDP_VAL_UI:
+		case MDP_VAL_CPU_FLAGS:
 			// Read-only values.
 			return -MDP_ERR_VAL_READ_ONLY;
 			break;
@@ -256,6 +260,10 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 			#endif
 			
 			break;
+		
+		case MDP_VAL_CPU_FLAGS:
+			// CPU flags.
+			return CPU_Flags;
 		
 		case MDP_VAL_VDP_LAYER_OPTIONS:
 			// VDP layer options.
