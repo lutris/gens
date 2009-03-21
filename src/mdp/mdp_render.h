@@ -61,6 +61,8 @@ typedef struct _mdp_render_info_t
 	
 	uint32_t cpuFlags;	/* CPU flags. */
 	uint32_t vmodeFlags;	/* Video mode flags. */
+	
+	void *data;		/* Extra data set by the plugin. */
 } mdp_render_info_t;
 
 /* Render plugin flags. */
@@ -79,6 +81,8 @@ typedef struct _mdp_render_t
 	const char* tag;			/* Render tag. */
 	
 	const uint32_t flags;			/* Render flags. */
+	
+	void *data;				/* Extra data. */
 } mdp_render_t;
 
 
