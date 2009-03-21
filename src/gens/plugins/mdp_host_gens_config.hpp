@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* def, char *out_buf, uint32_t size);
+int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* def, char *out_buf, unsigned int size);
 int MDP_FNCALL mdp_host_config_set(mdp_t *plugin, const char* key, const char* value);
 
 #ifdef __cplusplus

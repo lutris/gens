@@ -614,7 +614,7 @@ int MDP_FNCALL mdp_host_mem_size_get(int memID)
 	}
 }
 
-static int mdp_host_mem_size_set_MD_ROM(int size)
+static int mdp_host_mem_size_set_MD_ROM(unsigned int size)
 {
 	/* Attempt to resize the ROM. */
 	/* TODO: SSF2 mapper support? */
@@ -655,7 +655,7 @@ static int mdp_host_mem_size_set_MD_ROM(int size)
 	return MDP_ERR_OK;
 }
 
-int MDP_FNCALL mdp_host_mem_size_set(int memID, int size)
+int MDP_FNCALL mdp_host_mem_size_set(int memID, unsigned int size)
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;

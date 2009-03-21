@@ -219,7 +219,11 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 	
 	/* If rval is positive, it's a filesize. */
 	/* If 0, return an error code. */
-	return (rval == 0 ? -MDP_ERR_UNKNOWN : rval);	/* TODO: Add a specific error code for this. */
+	/* TODO: Add a specific error code for this. */
+	if (rval == 0)
+		return -MDP_ERR_UNKNOWN;
+	else
+		return rval;
 }
 
 

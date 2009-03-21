@@ -299,7 +299,7 @@ void* MDP_FNCALL mdp_host_window_get_main(void)
  * @param size Size of the buffer.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_directory_get_default_save_path(char *buf, int size)
+int MDP_FNCALL mdp_host_directory_get_default_save_path(char *buf, unsigned int size)
 {
 	// TODO: Return an error if the buffer is too small.
 	#ifdef GENS_OS_WIN32

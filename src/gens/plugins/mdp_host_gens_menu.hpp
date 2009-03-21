@@ -36,7 +36,8 @@ int MDP_FNCALL mdp_host_menu_item_add(mdp_t *plugin, mdp_menu_handler_fn handler
 int MDP_FNCALL mdp_host_menu_item_remove(mdp_t *plugin, int menu_item_id);
 
 int MDP_FNCALL mdp_host_menu_item_set_text(mdp_t *plugin, int menu_item_id, const char *text);
-int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id, char *text_buf, int size);
+int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id,
+					   char *text_buf, unsigned int size);
 
 int MDP_FNCALL mdp_host_menu_item_set_checked(mdp_t *plugin, int menu_item_id, int checked);
 int MDP_FNCALL mdp_host_menu_item_get_checked(mdp_t *plugin, int menu_item_id);

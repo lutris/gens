@@ -218,7 +218,8 @@ int MDP_FNCALL mdp_host_menu_item_set_text(mdp_t *plugin, int menu_item_id, cons
  * @param size Size of text_buf.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id, char *text_buf, int size)
+int MDP_FNCALL mdp_host_menu_item_get_text(mdp_t *plugin, int menu_item_id,
+					   char *text_buf, unsigned int size)
 {
 	menuIter lstIter;
 	if (!getMenuItemIter(plugin, menu_item_id, lstIter))

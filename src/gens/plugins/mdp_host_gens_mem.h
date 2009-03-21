@@ -57,7 +57,7 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length);
 
 int MDP_FNCALL mdp_host_mem_size_get(int memID);
-int MDP_FNCALL mdp_host_mem_size_set(int memID, int size);
+int MDP_FNCALL mdp_host_mem_size_set(int memID, unsigned int size);
 
 #ifdef __cplusplus
 }

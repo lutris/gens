@@ -199,7 +199,7 @@ typedef struct _mdp_host_t
 	 * @param size New memory size.
 	 * @return MDP error code.
 	 */
-	int (MDP_FNCALL *mem_size_set)(int memID, int size);
+	int (MDP_FNCALL *mem_size_set)(int memID, unsigned int size);
 	
 	/**
 	 * menu_item_add(): Add a menu item.
@@ -212,7 +212,7 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *menu_item_add)(struct _mdp_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
 	int (MDP_FNCALL *menu_item_remove)(struct _mdp_t *plugin, int menu_item_id);
 	int (MDP_FNCALL *menu_item_set_text)(struct _mdp_t *plugin, int menu_item_id, const char *text);
-	int (MDP_FNCALL *menu_item_get_text)(struct _mdp_t *plugin, int menu_item_id, char *text_buf, int size);
+	int (MDP_FNCALL *menu_item_get_text)(struct _mdp_t *plugin, int menu_item_id, char *text_buf, unsigned int size);
 	int (MDP_FNCALL *menu_item_set_checked)(struct _mdp_t *plugin, int menu_item_id, int checked);
 	int (MDP_FNCALL *menu_item_get_checked)(struct _mdp_t *plugin, int menu_item_id);
 	
@@ -229,11 +229,11 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *emulator_control)(struct _mdp_t *plugin, MDP_EMUCTRL ctrl, void *param);
 	
 	/* Configuration functions. */
-	int (MDP_FNCALL *config_get)(struct _mdp_t *plugin, const char* key, const char* def, char *out_buf, uint32_t size);
+	int (MDP_FNCALL *config_get)(struct _mdp_t *plugin, const char* key, const char* def, char *out_buf, unsigned int size);
 	int (MDP_FNCALL *config_set)(struct _mdp_t *plugin, const char* key, const char* value);
 	
 	/* Directory functions. */
-	int (MDP_FNCALL *directory_get_default_save_path)(char* buf, int size);
+	int (MDP_FNCALL *directory_get_default_save_path)(char* buf, unsigned int size);
 	
 	/* Compression functions. */
 	int	(MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);
