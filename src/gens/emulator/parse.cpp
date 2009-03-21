@@ -343,22 +343,20 @@ static void _usage()
 	// Print the Help option first.
 	printOpt0Arg(OPT0_HELP);
 	
-	int i;
-	
 	// 1-argument parameters.
-	for (i = 0; i < static_cast<int>(OPT1_TOTAL); i++)
+	for (int i = 0; i < static_cast<int>(OPT1_TOTAL); i++)
 	{
 		printOpt1Arg(static_cast<opt1arg_enum>(i));
 	}
 	
 	// 0-argument parameters (except OPT1_HELP).
-	for (i = 1; i < static_cast<int>(OPT0_TOTAL); i++)
+	for (int i = 1; i < static_cast<int>(OPT0_TOTAL); i++)
 	{
 		printOpt0Arg(static_cast<opt0arg_enum>(i));
 	}
 	
 	// Boolean parameters.
-	for (i = 0; i < static_cast<int>(OPTB_TOTAL); i++)
+	for (int i = 0; i < static_cast<int>(OPTB_TOTAL); i++)
 	{
 		printOptBArg(static_cast<optBarg_enum>(i));
 	}
