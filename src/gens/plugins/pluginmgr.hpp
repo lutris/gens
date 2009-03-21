@@ -59,6 +59,10 @@ typedef struct _mdpWindow_t
 	mdp_t	*owner;
 } mdpWindow_t;
 
+// Plugin configuration.
+typedef GENS_HASHTABLE<std::string, std::string> mapConfigItems;
+typedef GENS_HASHTABLE<mdp_t*, mapConfigItems> mapPluginConfig;
+
 class PluginMgr
 {
 	public:
@@ -84,6 +88,9 @@ class PluginMgr
 		// List containing plugin windows.
 		static std::list<mdpWindow_t> lstWindows;
 		
+		// Map containing plugin configuration.
+		static mapPluginConfig tblPluginConfig;
+	
 	protected:
 		static bool loadPlugin(mdp_t *plugin, const std::string& filename = "");
 		static void scanExternalPlugins(const std::string& directory, bool recursive = true);

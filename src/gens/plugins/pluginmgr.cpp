@@ -107,6 +107,11 @@ mapMenuItems PluginMgr::tblMenuItems;
  */
 list<mdpWindow_t> PluginMgr::lstWindows;
 
+/**
+ * Map containing plugin configuration.
+ */
+mapPluginConfig PluginMgr::tblPluginConfig;
+
 
 /**
  * init(): Initialize the plugin system.
