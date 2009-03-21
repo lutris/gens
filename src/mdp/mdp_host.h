@@ -228,6 +228,10 @@ typedef struct _mdp_host_t
 	/* Emulator control. */
 	int (MDP_FNCALL *emulator_control)(struct _mdp_t *plugin, MDP_EMUCTRL ctrl, void *param);
 	
+	/* Configuration functions. */
+	int (MDP_FNCALL *config_get)(struct _mdp_t *plugin, const char* key, const char* def, char *out_buf, uint32_t size);
+	int (MDP_FNCALL *config_set)(struct _mdp_t *plugin, const char* key, const char* value);
+	
 	/* Directory functions. */
 	int (MDP_FNCALL *directory_get_default_save_path)(char* buf, int size);
 	
