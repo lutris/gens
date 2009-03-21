@@ -301,6 +301,12 @@ void* MDP_FNCALL mdp_host_window_get_main(void)
  */
 int MDP_FNCALL mdp_host_directory_get_default_save_path(char *buf, unsigned int size)
 {
+	if (!buf || !size)
+	{
+		// Invalid parameters.
+		return -MDP_ERR_INVALID_PARAMETERS;
+	}
+	
 	// TODO: Return an error if the buffer is too small.
 	#ifdef GENS_OS_WIN32
 		// Win32's default save path is ".\\".
