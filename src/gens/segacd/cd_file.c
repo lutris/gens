@@ -52,7 +52,7 @@ int Load_ISO(char* buf, const char* iso_name)
 	unsigned char detectBuf[2048];
 	char tmp_name[1024], tmp_ext[10];
 	
-	const char exts[20][16] =
+	static const char exts[20][16] =
 	{
 		"%02d.mp3", " %02d.mp3", "-%02d.mp3", "_%02d.mp3", " - %02d.mp3",
 		"%d.mp3", " %d.mp3", "-%d.mp3", "_%d.mp3", " - %d.mp3",
