@@ -57,14 +57,6 @@
 ;**************************
 
 
-%define ALIGN4		align 4
-%define ALIGN32		align 32
-%define ALIGN64		align 64
-%define ALIGNB4		alignb 4
-%define ALIGNB32	alignb 32
-%define ALIGNB64	alignb 64
-
-
 ; By default, regcall functions use the MSVC __fastcall convention.
 ; In case you're using GCC, uncomment the __GCC definition.
 
@@ -207,27 +199,27 @@ section .bss align=64
 
 	%include "sh2_context.inc"
 	
-	ALIGNB64
+	alignb 64
 
 	DECLV OP_Table
 		resd	0x10000
 
-	ALIGNB64
+	alignb 64
 
 	DECLV OPDS_Table
 		resd	0x10000
 
-	ALIGNB64
+	alignb 64
 
 	DECLV Set_SR_Table
 		resd	0x400
 
-	ALIGNB64
+	alignb 64
 
 	DECLV M_SH2
 		SH2_CONTEXT
 
-	ALIGNB64
+	alignb 64
 
 	DECLV S_SH2
 		SH2_CONTEXT
@@ -930,7 +922,7 @@ Do_Exception:
 ; ================
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADD
 
@@ -942,7 +934,7 @@ DECLF SH2I_ADD
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADDI
 
@@ -953,7 +945,7 @@ DECLF SH2I_ADDI
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADDC
 
@@ -968,7 +960,7 @@ DECLF SH2I_ADDC
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADDV
 
@@ -981,7 +973,7 @@ DECLF SH2I_ADDV
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_AND
 
@@ -993,7 +985,7 @@ DECLF SH2I_AND
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ANDI
 
@@ -1004,7 +996,7 @@ DECLF SH2I_ANDI
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ANDM
 
@@ -1021,7 +1013,7 @@ DECLF SH2I_ANDM
 	RET 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BF
 
@@ -1044,13 +1036,13 @@ DECLF SH2I_BF
 	mov eax, ebx
 	jmp [OP_Table + ebx * 4]
 
-ALIGN4
+align 4
 
 .true
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BFfast
 
@@ -1085,12 +1077,12 @@ DECLF SH2I_BFfast
 	mov eax, ebx
 	jmp [OP_Table + ebx * 4]
 
-ALIGN32
+align 32
 
 .true
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .norm
 	sub esi, 2
@@ -1109,7 +1101,7 @@ ALIGN32
 	jmp [OP_Table + ebx * 4]
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BFS
 
@@ -1122,13 +1114,13 @@ DECLF SH2I_BFS
 	add ecx, byte 2
 	GO_DS 2, 3, 5
 
-ALIGN4
+align 4
 
 .true
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BFSfast
 
@@ -1151,12 +1143,12 @@ DECLF SH2I_BFSfast
 	lea esi, [esi + edx * 2 + 4]
 	GO_DS 2, 3, 5
 
-ALIGN32
+align 32
 
 .true
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .special
 	mov eax, [ebp + SH2.R + ebx * 4]
@@ -1181,7 +1173,7 @@ ALIGN32
 	jmp [OP_Table + ebx * 4]
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BRA
 
@@ -1195,7 +1187,7 @@ DECLF SH2I_BRA
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BRAfast1
 
@@ -1216,13 +1208,13 @@ DECLF SH2I_BRAfast1
 	mov [ebp + SH2.Status], eax
 	jmp SH2_Exec_Really_Quit
 
-ALIGN4
+align 4
 
 .not_waiting
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BRAfast2
 
@@ -1246,13 +1238,13 @@ DECLF SH2I_BRAfast2
 	mov [ebp + SH2.Status], eax
 	jmp SH2_Exec_Really_Quit
 
-ALIGN4
+align 4
 
 .not_waiting
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BRAF
 
@@ -1266,7 +1258,7 @@ DECLF SH2I_BRAF
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BSR
 
@@ -1284,7 +1276,7 @@ DECLF SH2I_BSR
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BSRF
 
@@ -1299,7 +1291,7 @@ DECLF SH2I_BSRF
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BT
 
@@ -1322,13 +1314,13 @@ DECLF SH2I_BT
 	mov eax, ebx
 	jmp [OP_Table + ebx * 4]
 
-ALIGN4
+align 4
 
 .false
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_BTS
 
@@ -1340,13 +1332,13 @@ DECLF SH2I_BTS
 	lea esi, [esi + eax * 2 + 4]
 	GO_DS 2, 3, 5
 
-ALIGN4
+align 4
 
 .false
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CLRMAC
 
@@ -1356,7 +1348,7 @@ DECLF SH2I_CLRMAC
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CLRT
 
@@ -1364,7 +1356,7 @@ DECLF SH2I_CLRT
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPEQ
 
@@ -1376,7 +1368,7 @@ DECLF SH2I_CMPEQ
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPGE
 
@@ -1388,7 +1380,7 @@ DECLF SH2I_CMPGE
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPGT
 
@@ -1400,7 +1392,7 @@ DECLF SH2I_CMPGT
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPHI
 
@@ -1412,7 +1404,7 @@ DECLF SH2I_CMPHI
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPHS
 
@@ -1424,7 +1416,7 @@ DECLF SH2I_CMPHS
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPPL
 
@@ -1435,7 +1427,7 @@ DECLF SH2I_CMPPL
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPPZ
 
@@ -1446,7 +1438,7 @@ DECLF SH2I_CMPPZ
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPSTR
 
@@ -1470,7 +1462,7 @@ DECLF SH2I_CMPSTR
 	RET 1, 2, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPIM
 
@@ -1481,7 +1473,7 @@ DECLF SH2I_CMPIM
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DIV0S
 
@@ -1500,7 +1492,7 @@ DECLF SH2I_DIV0S
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DIV0U
 
@@ -1510,7 +1502,7 @@ DECLF SH2I_DIV0U
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DIV1
 
@@ -1524,7 +1516,7 @@ DECLF SH2I_DIV1
 	adc edx, edx						; M | old Q | Q
 	jmp [.table + edx * 4]
 
-ALIGN4
+align 4
 
 .table
 	dd .D0M0Q0, .D0M0Q1
@@ -1532,7 +1524,7 @@ ALIGN4
 	dd .D0M1Q0, .D0M1Q1
 	dd .D1M1Q0, .D1M1Q1
 
-ALIGN32
+align 32
 
 .D0M0Q0
 	mov edx, ecx
@@ -1548,7 +1540,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D0M0Q1
 	mov edx, ecx
@@ -1564,7 +1556,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D0M1Q0
 	mov edx, ecx
@@ -1579,7 +1571,7 @@ ALIGN32
 	mov [ebp + SH2.SR_MQ], al
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D0M1Q1
 	mov edx, ecx
@@ -1594,7 +1586,7 @@ ALIGN32
 	mov [ebp + SH2.SR_MQ], al
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M0Q0
 	mov edx, ecx
@@ -1610,7 +1602,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M0Q1
 	mov edx, ecx
@@ -1626,7 +1618,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M1Q0
 	mov edx, ecx
@@ -1641,7 +1633,7 @@ ALIGN32
 	mov [ebp + SH2.SR_MQ], al
 	RET 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M1Q1
 	mov edx, ecx
@@ -1657,7 +1649,7 @@ ALIGN32
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DMULS
 
@@ -1669,7 +1661,7 @@ DECLF SH2I_DMULS
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DMULU
 
@@ -1681,7 +1673,7 @@ DECLF SH2I_DMULU
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DT
 
@@ -1693,7 +1685,7 @@ DECLF SH2I_DT
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTSB
 
@@ -1703,7 +1695,7 @@ DECLF SH2I_EXTSB
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTSW
 
@@ -1713,7 +1705,7 @@ DECLF SH2I_EXTSW
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTUB
 
@@ -1723,7 +1715,7 @@ DECLF SH2I_EXTUB
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTUW
 
@@ -1733,7 +1725,7 @@ DECLF SH2I_EXTUW
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ILLEGAL
 
@@ -1744,7 +1736,7 @@ DECLF SH2I_ILLEGAL
 	jmp SH2_Exec_Really_Quit
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_JMP
 
@@ -1757,7 +1749,7 @@ DECLF SH2I_JMP
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_JSR
 
@@ -1773,7 +1765,7 @@ DECLF SH2I_JSR
 	GO_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCSR
 
@@ -1787,7 +1779,7 @@ DECLF SH2I_LDCSR
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCGBR
 
@@ -1797,7 +1789,7 @@ DECLF SH2I_LDCGBR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCVBR
 
@@ -1807,7 +1799,7 @@ DECLF SH2I_LDCVBR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCMSR
 
@@ -1824,7 +1816,7 @@ DECLF SH2I_LDCMSR
 	RET 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCMGBR
 
@@ -1837,7 +1829,7 @@ DECLF SH2I_LDCMGBR
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCMVBR
 
@@ -1850,7 +1842,7 @@ DECLF SH2I_LDCMVBR
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMACH
 
@@ -1860,7 +1852,7 @@ DECLF SH2I_LDSMACH
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMACL
 
@@ -1870,7 +1862,7 @@ DECLF SH2I_LDSMACL
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSPR
 
@@ -1880,7 +1872,7 @@ DECLF SH2I_LDSPR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMMACH
 
@@ -1893,7 +1885,7 @@ DECLF SH2I_LDSMMACH
 	RET 1, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMMACL
 
@@ -1906,7 +1898,7 @@ DECLF SH2I_LDSMMACL
 	RET 1, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMPR
 
@@ -1919,7 +1911,7 @@ DECLF SH2I_LDSMPR
 	RET 1, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MACL
 
@@ -1945,7 +1937,7 @@ DECLF SH2I_MACL
 	adc [ebp + SH2.MACH], edx
 	RET 3, 5, 8
 
-ALIGN4
+align 4
 
 .sat48
 	mov ecx, [ebp + SH2.MACH]
@@ -1958,7 +1950,7 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0x00000000
 	RET 3, 5, 8
 
-ALIGN4
+align 4
 
 .no_sign_sat
 	cmp ecx, 0x00007FFF
@@ -1968,14 +1960,14 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0xFFFFFFFF
 	RET 3, 5, 8
 
-ALIGN4
+align 4
 
 .no_sat
 	mov [ebp + SH2.MACH], ecx
 	RET 3, 5, 8
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MACW
 
@@ -2003,7 +1995,7 @@ DECLF SH2I_MACW
 	adc [ebp + SH2.MACH], edx
 	RET 3, 4, 6
 
-ALIGN4
+align 4
 
 .sat32
 	mov ecx, [ebp + SH2.MACH]
@@ -2016,7 +2008,7 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0x80000000
 	RET 3, 4, 6
 
-ALIGN4
+align 4
 
 .no_sign_sat
 	cmp ecx, 0x00000000
@@ -2026,14 +2018,14 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0x7FFFFFFF
 	RET 3, 4, 6
 
-ALIGN4
+align 4
 
 .no_sat
 	mov [ebp + SH2.MACH], ecx
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOV
 
@@ -2043,7 +2035,7 @@ DECLF SH2I_MOV
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBS
 
@@ -2054,7 +2046,7 @@ DECLF SH2I_MOVBS
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWS
 
@@ -2065,7 +2057,7 @@ DECLF SH2I_MOVWS
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLS
 
@@ -2076,7 +2068,7 @@ DECLF SH2I_MOVLS
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBL
 
@@ -2088,7 +2080,7 @@ DECLF SH2I_MOVBL
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWL
 
@@ -2100,7 +2092,7 @@ DECLF SH2I_MOVWL
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLL
 
@@ -2111,7 +2103,7 @@ DECLF SH2I_MOVLL
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBM
 
@@ -2124,7 +2116,7 @@ DECLF SH2I_MOVBM
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWM
 
@@ -2137,7 +2129,7 @@ DECLF SH2I_MOVWM
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLM
 
@@ -2150,7 +2142,7 @@ DECLF SH2I_MOVLM
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBP
 
@@ -2170,7 +2162,7 @@ DECLF SH2I_MOVBP
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWP
 
@@ -2190,7 +2182,7 @@ DECLF SH2I_MOVWP
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLP
 
@@ -2209,7 +2201,7 @@ DECLF SH2I_MOVLP
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBS0
 
@@ -2222,7 +2214,7 @@ DECLF SH2I_MOVBS0
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWS0
 
@@ -2235,7 +2227,7 @@ DECLF SH2I_MOVWS0
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLS0
 
@@ -2248,7 +2240,7 @@ DECLF SH2I_MOVLS0
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBL0
 
@@ -2262,7 +2254,7 @@ DECLF SH2I_MOVBL0
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWL0
 
@@ -2276,7 +2268,7 @@ DECLF SH2I_MOVWL0
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLL0
 
@@ -2289,7 +2281,7 @@ DECLF SH2I_MOVLL0
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVI
 
@@ -2298,7 +2290,7 @@ DECLF SH2I_MOVI
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWI 
 
@@ -2310,7 +2302,7 @@ DECLF SH2I_MOVWI
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLI 
 
@@ -2324,7 +2316,7 @@ DECLF SH2I_MOVLI
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBLG
 
@@ -2337,7 +2329,7 @@ DECLF SH2I_MOVBLG
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWLG
 
@@ -2350,7 +2342,7 @@ DECLF SH2I_MOVWLG
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLLG
 
@@ -2362,7 +2354,7 @@ DECLF SH2I_MOVLLG
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBSG
 
@@ -2374,7 +2366,7 @@ DECLF SH2I_MOVBSG
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWSG
 
@@ -2386,7 +2378,7 @@ DECLF SH2I_MOVWSG
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLSG
 
@@ -2398,7 +2390,7 @@ DECLF SH2I_MOVLSG
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBS4
 
@@ -2410,7 +2402,7 @@ DECLF SH2I_MOVBS4
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWS4
 
@@ -2422,7 +2414,7 @@ DECLF SH2I_MOVWS4
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLS4
 
@@ -2434,7 +2426,7 @@ DECLF SH2I_MOVLS4
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBL4
 
@@ -2447,7 +2439,7 @@ DECLF SH2I_MOVBL4
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWL4
 
@@ -2460,7 +2452,7 @@ DECLF SH2I_MOVWL4
 	RET 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLL4
 
@@ -2472,7 +2464,7 @@ DECLF SH2I_MOVLL4
 	RET 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVA
 
@@ -2486,7 +2478,7 @@ DECLF SH2I_MOVA
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVT
 
@@ -2496,7 +2488,7 @@ DECLF SH2I_MOVT
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MULL
 
@@ -2507,7 +2499,7 @@ DECLF SH2I_MULL
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MULS
 
@@ -2519,7 +2511,7 @@ DECLF SH2I_MULS
 	RET 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MULU
 
@@ -2531,7 +2523,7 @@ DECLF SH2I_MULU
 	RET 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NEG
 
@@ -2542,7 +2534,7 @@ DECLF SH2I_NEG
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NEGC
 
@@ -2557,14 +2549,14 @@ DECLF SH2I_NEGC
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NOP
 
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NOT
 
@@ -2575,7 +2567,7 @@ DECLF SH2I_NOT
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_OR
 
@@ -2587,7 +2579,7 @@ DECLF SH2I_OR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ORI
 
@@ -2598,7 +2590,7 @@ DECLF SH2I_ORI
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ORM
 
@@ -2615,7 +2607,7 @@ DECLF SH2I_ORM
 	RET 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTCL 
 
@@ -2629,7 +2621,7 @@ DECLF SH2I_ROTCL
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTCR 
 
@@ -2643,7 +2635,7 @@ DECLF SH2I_ROTCR
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTL
 
@@ -2655,7 +2647,7 @@ DECLF SH2I_ROTL
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTR
 
@@ -2667,7 +2659,7 @@ DECLF SH2I_ROTR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_RTE
 
@@ -2690,7 +2682,7 @@ DECLF SH2I_RTE
 	GO_DS 4, 6, 8
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_RTS
 
@@ -2701,7 +2693,7 @@ DECLF SH2I_RTS
 	GO_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SETT
 
@@ -2709,7 +2701,7 @@ DECLF SH2I_SETT
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHAL
 
@@ -2721,7 +2713,7 @@ DECLF SH2I_SHAL
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHAR
 
@@ -2733,7 +2725,7 @@ DECLF SH2I_SHAR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL
 
@@ -2745,7 +2737,7 @@ DECLF SH2I_SHLL
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL2 
 
@@ -2756,7 +2748,7 @@ DECLF SH2I_SHLL2
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL8 
 
@@ -2767,7 +2759,7 @@ DECLF SH2I_SHLL8
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL16
 
@@ -2778,7 +2770,7 @@ DECLF SH2I_SHLL16
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR
 
@@ -2790,7 +2782,7 @@ DECLF SH2I_SHLR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR2 
 
@@ -2801,7 +2793,7 @@ DECLF SH2I_SHLR2
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR8 
 
@@ -2812,7 +2804,7 @@ DECLF SH2I_SHLR8
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR16
 
@@ -2823,7 +2815,7 @@ DECLF SH2I_SHLR16
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SLEEP 
 
@@ -2841,7 +2833,7 @@ DECLF SH2I_SLEEP
 ;	RET 3, 3, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCSR
 
@@ -2852,7 +2844,7 @@ DECLF SH2I_STCSR
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCGBR
 
@@ -2862,7 +2854,7 @@ DECLF SH2I_STCGBR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCVBR
 
@@ -2872,7 +2864,7 @@ DECLF SH2I_STCVBR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCMSR
 
@@ -2887,7 +2879,7 @@ DECLF SH2I_STCMSR
 	RET 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCMGBR
 
@@ -2900,7 +2892,7 @@ DECLF SH2I_STCMGBR
 	RET 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCMVBR
 
@@ -2913,7 +2905,7 @@ DECLF SH2I_STCMVBR
 	RET 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMACH
 
@@ -2923,7 +2915,7 @@ DECLF SH2I_STSMACH
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMACL
 
@@ -2933,7 +2925,7 @@ DECLF SH2I_STSMACL
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSPR 
 
@@ -2943,7 +2935,7 @@ DECLF SH2I_STSPR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMMACH
 
@@ -2956,7 +2948,7 @@ DECLF SH2I_STSMMACH
 	RET 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMMACL
 
@@ -2969,7 +2961,7 @@ DECLF SH2I_STSMMACL
 	RET 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMPR
 
@@ -2982,7 +2974,7 @@ DECLF SH2I_STSMPR
 	RET 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SUB
 
@@ -2994,7 +2986,7 @@ DECLF SH2I_SUB
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SUBC
 
@@ -3009,7 +3001,7 @@ DECLF SH2I_SUBC
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SUBV
 
@@ -3022,7 +3014,7 @@ DECLF SH2I_SUBV
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SWAPB
 
@@ -3035,7 +3027,7 @@ DECLF SH2I_SWAPB
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SWAPW
 
@@ -3046,7 +3038,7 @@ DECLF SH2I_SWAPW
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TAS
 
@@ -3062,7 +3054,7 @@ DECLF SH2I_TAS
 	RET 4, 6, 8
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TRAPA
 
@@ -3088,7 +3080,7 @@ DECLF SH2I_TRAPA
 	RET 8, 12, 16
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TST
 
@@ -3100,7 +3092,7 @@ DECLF SH2I_TST
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TSTI
 
@@ -3111,7 +3103,7 @@ DECLF SH2I_TSTI
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TSTM
 
@@ -3125,7 +3117,7 @@ DECLF SH2I_TSTM
 	RET 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XOR
 
@@ -3137,7 +3129,7 @@ DECLF SH2I_XOR
 	RET 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XORI
 
@@ -3148,7 +3140,7 @@ DECLF SH2I_XORI
 	RET 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XORM
 
@@ -3165,7 +3157,7 @@ DECLF SH2I_XORM
 	RET 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XTRCT
 
@@ -3181,7 +3173,7 @@ DECLF SH2I_XTRCT
 ; ===========================
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADD_DS
 
@@ -3193,7 +3185,7 @@ DECLF SH2I_ADD_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADDI_DS
 
@@ -3204,7 +3196,7 @@ DECLF SH2I_ADDI_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADDC_DS
 
@@ -3219,7 +3211,7 @@ DECLF SH2I_ADDC_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ADDV_DS
 
@@ -3232,7 +3224,7 @@ DECLF SH2I_ADDV_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_AND_DS
 
@@ -3244,7 +3236,7 @@ DECLF SH2I_AND_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ANDI_DS
 
@@ -3255,7 +3247,7 @@ DECLF SH2I_ANDI_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ANDM_DS
 
@@ -3272,7 +3264,7 @@ DECLF SH2I_ANDM_DS
 	RET_DS 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CLRMAC_DS
 
@@ -3282,7 +3274,7 @@ DECLF SH2I_CLRMAC_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CLRT_DS
 
@@ -3290,7 +3282,7 @@ DECLF SH2I_CLRT_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPEQ_DS
 
@@ -3302,7 +3294,7 @@ DECLF SH2I_CMPEQ_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPGE_DS
 
@@ -3314,7 +3306,7 @@ DECLF SH2I_CMPGE_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPGT_DS
 
@@ -3326,7 +3318,7 @@ DECLF SH2I_CMPGT_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPHI_DS
 
@@ -3338,7 +3330,7 @@ DECLF SH2I_CMPHI_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPHS_DS
 
@@ -3350,7 +3342,7 @@ DECLF SH2I_CMPHS_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPPL_DS
 
@@ -3361,7 +3353,7 @@ DECLF SH2I_CMPPL_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPPZ_DS
 
@@ -3372,7 +3364,7 @@ DECLF SH2I_CMPPZ_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPSTR_DS
 
@@ -3396,7 +3388,7 @@ DECLF SH2I_CMPSTR_DS
 	RET_DS 1, 2, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_CMPIM_DS
 
@@ -3407,7 +3399,7 @@ DECLF SH2I_CMPIM_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DIV0S_DS
 
@@ -3426,7 +3418,7 @@ DECLF SH2I_DIV0S_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DIV0U_DS
 
@@ -3436,7 +3428,7 @@ DECLF SH2I_DIV0U_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DIV1_DS
 
@@ -3450,7 +3442,7 @@ DECLF SH2I_DIV1_DS
 	adc edx, edx						; M | old Q | Q
 	jmp [.table + edx * 4]
 
-ALIGN4
+align 4
 
 .table
 	dd .D0M0Q0, .D0M0Q1
@@ -3458,7 +3450,7 @@ ALIGN4
 	dd .D0M1Q0, .D0M1Q1
 	dd .D1M1Q0, .D1M1Q1
 
-ALIGN32
+align 32
 
 .D0M0Q0
 	mov edx, ecx
@@ -3474,7 +3466,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D0M0Q1
 	mov edx, ecx
@@ -3490,7 +3482,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D0M1Q0
 	mov edx, ecx
@@ -3505,7 +3497,7 @@ ALIGN32
 	mov [ebp + SH2.SR_MQ], al
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D0M1Q1
 	mov edx, ecx
@@ -3520,7 +3512,7 @@ ALIGN32
 	mov [ebp + SH2.SR_MQ], al
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M0Q0
 	mov edx, ecx
@@ -3536,7 +3528,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M0Q1
 	mov edx, ecx
@@ -3552,7 +3544,7 @@ ALIGN32
 	mov [ebp + SH2.SR_T], ah
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M1Q0
 	mov edx, ecx
@@ -3567,7 +3559,7 @@ ALIGN32
 	mov [ebp + SH2.SR_MQ], al
 	RET_DS 1, 1, 2
 
-ALIGN32
+align 32
 
 .D1M1Q1
 	mov edx, ecx
@@ -3583,7 +3575,7 @@ ALIGN32
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DMULS_DS
 
@@ -3595,7 +3587,7 @@ DECLF SH2I_DMULS_DS
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DMULU_DS
 
@@ -3607,7 +3599,7 @@ DECLF SH2I_DMULU_DS
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_DT_DS
 
@@ -3619,7 +3611,7 @@ DECLF SH2I_DT_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTSB_DS
 
@@ -3629,7 +3621,7 @@ DECLF SH2I_EXTSB_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTSW_DS
 
@@ -3639,7 +3631,7 @@ DECLF SH2I_EXTSW_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTUB_DS
 
@@ -3649,7 +3641,7 @@ DECLF SH2I_EXTUB_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_EXTUW_DS
 
@@ -3659,7 +3651,7 @@ DECLF SH2I_EXTUW_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ILLEGAL_DS
 
@@ -3671,7 +3663,7 @@ DECLF SH2I_ILLEGAL_DS
 	jmp SH2_Exec_Really_Quit
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCSR_DS
 
@@ -3685,7 +3677,7 @@ DECLF SH2I_LDCSR_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCGBR_DS
 
@@ -3695,7 +3687,7 @@ DECLF SH2I_LDCGBR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCVBR_DS
 
@@ -3705,7 +3697,7 @@ DECLF SH2I_LDCVBR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCMSR_DS
 
@@ -3722,7 +3714,7 @@ DECLF SH2I_LDCMSR_DS
 	RET_DS 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCMGBR_DS
 
@@ -3735,7 +3727,7 @@ DECLF SH2I_LDCMGBR_DS
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDCMVBR_DS
 
@@ -3748,7 +3740,7 @@ DECLF SH2I_LDCMVBR_DS
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMACH_DS
 
@@ -3758,7 +3750,7 @@ DECLF SH2I_LDSMACH_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMACL_DS
 
@@ -3768,7 +3760,7 @@ DECLF SH2I_LDSMACL_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSPR_DS
 
@@ -3778,7 +3770,7 @@ DECLF SH2I_LDSPR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMMACH_DS
 
@@ -3791,7 +3783,7 @@ DECLF SH2I_LDSMMACH_DS
 	RET_DS 1, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMMACL_DS
 
@@ -3804,7 +3796,7 @@ DECLF SH2I_LDSMMACL_DS
 	RET_DS 1, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_LDSMPR_DS
 
@@ -3817,7 +3809,7 @@ DECLF SH2I_LDSMPR_DS
 	RET_DS 1, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MACL_DS
 
@@ -3843,7 +3835,7 @@ DECLF SH2I_MACL_DS
 	adc [ebp + SH2.MACH], edx
 	RET_DS 3, 5, 8
 
-ALIGN4
+align 4
 
 .sat48
 	mov ecx, [ebp + SH2.MACH]
@@ -3856,7 +3848,7 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0x00000000
 	RET_DS 3, 5, 8
 
-ALIGN4
+align 4
 
 .no_sign_sat
 	cmp ecx, 0x00007FFF
@@ -3866,14 +3858,14 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0xFFFFFFFF
 	RET_DS 3, 5, 8
 
-ALIGN4
+align 4
 
 .no_sat
 	mov [ebp + SH2.MACH], ecx
 	RET_DS 3, 5, 8
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MACW_DS
 
@@ -3901,7 +3893,7 @@ DECLF SH2I_MACW_DS
 	adc [ebp + SH2.MACH], edx
 	RET_DS 3, 4, 6
 
-ALIGN4
+align 4
 
 .sat32
 	mov ecx, [ebp + SH2.MACH]
@@ -3914,7 +3906,7 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0x80000000
 	RET_DS 3, 4, 6
 
-ALIGN4
+align 4
 
 .no_sign_sat
 	cmp ecx, byte 0
@@ -3924,14 +3916,14 @@ ALIGN4
 	mov dword [ebp + SH2.MACL], 0x7FFFFFFF
 	RET_DS 3, 4, 6
 
-ALIGN4
+align 4
 
 .no_sat
 	mov [ebp + SH2.MACH], ecx
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOV_DS
 
@@ -3941,7 +3933,7 @@ DECLF SH2I_MOV_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBS_DS
 
@@ -3952,7 +3944,7 @@ DECLF SH2I_MOVBS_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWS_DS
 
@@ -3963,7 +3955,7 @@ DECLF SH2I_MOVWS_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLS_DS
 
@@ -3974,7 +3966,7 @@ DECLF SH2I_MOVLS_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBL_DS
 
@@ -3986,7 +3978,7 @@ DECLF SH2I_MOVBL_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWL_DS
 
@@ -3998,7 +3990,7 @@ DECLF SH2I_MOVWL_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLL_DS
 
@@ -4009,7 +4001,7 @@ DECLF SH2I_MOVLL_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBM_DS
 
@@ -4022,7 +4014,7 @@ DECLF SH2I_MOVBM_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWM_DS
 
@@ -4035,7 +4027,7 @@ DECLF SH2I_MOVWM_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLM_DS
 
@@ -4048,7 +4040,7 @@ DECLF SH2I_MOVLM_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBP_DS
 
@@ -4068,7 +4060,7 @@ DECLF SH2I_MOVBP_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWP_DS
 
@@ -4088,7 +4080,7 @@ DECLF SH2I_MOVWP_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLP_DS
 
@@ -4107,7 +4099,7 @@ DECLF SH2I_MOVLP_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBS0_DS
 
@@ -4120,7 +4112,7 @@ DECLF SH2I_MOVBS0_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWS0_DS
 
@@ -4133,7 +4125,7 @@ DECLF SH2I_MOVWS0_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLS0_DS
 
@@ -4146,7 +4138,7 @@ DECLF SH2I_MOVLS0_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBL0_DS
 
@@ -4160,7 +4152,7 @@ DECLF SH2I_MOVBL0_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWL0_DS
 
@@ -4174,7 +4166,7 @@ DECLF SH2I_MOVWL0_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLL0_DS
 
@@ -4187,7 +4179,7 @@ DECLF SH2I_MOVLL0_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVI_DS
 
@@ -4196,7 +4188,7 @@ DECLF SH2I_MOVI_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWI_DS
 
@@ -4208,7 +4200,7 @@ DECLF SH2I_MOVWI_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLI_DS 
 
@@ -4222,7 +4214,7 @@ DECLF SH2I_MOVLI_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBLG_DS
 
@@ -4235,7 +4227,7 @@ DECLF SH2I_MOVBLG_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWLG_DS
 
@@ -4248,7 +4240,7 @@ DECLF SH2I_MOVWLG_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLLG_DS
 
@@ -4260,7 +4252,7 @@ DECLF SH2I_MOVLLG_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBSG_DS
 
@@ -4272,7 +4264,7 @@ DECLF SH2I_MOVBSG_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWSG_DS
 
@@ -4284,7 +4276,7 @@ DECLF SH2I_MOVWSG_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLSG_DS
 
@@ -4296,7 +4288,7 @@ DECLF SH2I_MOVLSG_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBS4_DS
 
@@ -4308,7 +4300,7 @@ DECLF SH2I_MOVBS4_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWS4_DS
 
@@ -4320,7 +4312,7 @@ DECLF SH2I_MOVWS4_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLS4_DS
 
@@ -4332,7 +4324,7 @@ DECLF SH2I_MOVLS4_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVBL4_DS
 
@@ -4345,7 +4337,7 @@ DECLF SH2I_MOVBL4_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVWL4_DS
 
@@ -4358,7 +4350,7 @@ DECLF SH2I_MOVWL4_DS
 	RET_DS 1, 2, 3
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVLL4_DS
 
@@ -4370,7 +4362,7 @@ DECLF SH2I_MOVLL4_DS
 	RET_DS 1, 2, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVA_DS
 
@@ -4384,7 +4376,7 @@ DECLF SH2I_MOVA_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MOVT_DS
 
@@ -4394,7 +4386,7 @@ DECLF SH2I_MOVT_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MULL_DS
 
@@ -4405,7 +4397,7 @@ DECLF SH2I_MULL_DS
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MULS_DS
 
@@ -4417,7 +4409,7 @@ DECLF SH2I_MULS_DS
 	RET_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_MULU_DS
 
@@ -4429,7 +4421,7 @@ DECLF SH2I_MULU_DS
 	RET_DS 2, 3, 5
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NEG_DS
 
@@ -4440,7 +4432,7 @@ DECLF SH2I_NEG_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NEGC_DS
 
@@ -4455,14 +4447,14 @@ DECLF SH2I_NEGC_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NOP_DS
 
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_NOT_DS
 
@@ -4473,7 +4465,7 @@ DECLF SH2I_NOT_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_OR_DS
 
@@ -4485,7 +4477,7 @@ DECLF SH2I_OR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ORI_DS
 
@@ -4496,7 +4488,7 @@ DECLF SH2I_ORI_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ORM_DS
 
@@ -4513,7 +4505,7 @@ DECLF SH2I_ORM_DS
 	RET_DS 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTCL_DS
 
@@ -4527,7 +4519,7 @@ DECLF SH2I_ROTCL_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTCR_DS
 
@@ -4541,7 +4533,7 @@ DECLF SH2I_ROTCR_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTL_DS
 
@@ -4553,7 +4545,7 @@ DECLF SH2I_ROTL_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_ROTR_DS
 
@@ -4565,7 +4557,7 @@ DECLF SH2I_ROTR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SETT_DS
 
@@ -4573,7 +4565,7 @@ DECLF SH2I_SETT_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHAL_DS
 
@@ -4585,7 +4577,7 @@ DECLF SH2I_SHAL_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHAR_DS
 
@@ -4597,7 +4589,7 @@ DECLF SH2I_SHAR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL_DS
 
@@ -4609,7 +4601,7 @@ DECLF SH2I_SHLL_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL2_DS
 
@@ -4620,7 +4612,7 @@ DECLF SH2I_SHLL2_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL8_DS 
 
@@ -4631,7 +4623,7 @@ DECLF SH2I_SHLL8_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLL16_DS
 
@@ -4642,7 +4634,7 @@ DECLF SH2I_SHLL16_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR_DS
 
@@ -4654,7 +4646,7 @@ DECLF SH2I_SHLR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR2_DS
 
@@ -4665,7 +4657,7 @@ DECLF SH2I_SHLR2_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR8_DS 
 
@@ -4676,7 +4668,7 @@ DECLF SH2I_SHLR8_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SHLR16_DS
 
@@ -4687,7 +4679,7 @@ DECLF SH2I_SHLR16_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SLEEP_DS
 
@@ -4699,7 +4691,7 @@ DECLF SH2I_SLEEP_DS
 	jmp SH2_Exec_Really_Quit
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCSR_DS
 
@@ -4710,7 +4702,7 @@ DECLF SH2I_STCSR_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCGBR_DS
 
@@ -4720,7 +4712,7 @@ DECLF SH2I_STCGBR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCVBR_DS
 
@@ -4730,7 +4722,7 @@ DECLF SH2I_STCVBR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCMSR_DS
 
@@ -4745,7 +4737,7 @@ DECLF SH2I_STCMSR_DS
 	RET_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCMGBR_DS
 
@@ -4758,7 +4750,7 @@ DECLF SH2I_STCMGBR_DS
 	RET_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STCMVBR_DS
 
@@ -4771,7 +4763,7 @@ DECLF SH2I_STCMVBR_DS
 	RET_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMACH_DS
 
@@ -4781,7 +4773,7 @@ DECLF SH2I_STSMACH_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMACL_DS
 
@@ -4791,7 +4783,7 @@ DECLF SH2I_STSMACL_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSPR_DS
 
@@ -4801,7 +4793,7 @@ DECLF SH2I_STSPR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMMACH_DS
 
@@ -4814,7 +4806,7 @@ DECLF SH2I_STSMMACH_DS
 	RET_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMMACL_DS
 
@@ -4827,7 +4819,7 @@ DECLF SH2I_STSMMACL_DS
 	RET_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_STSMPR_DS
 
@@ -4840,7 +4832,7 @@ DECLF SH2I_STSMPR_DS
 	RET_DS 2, 3, 4
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SUB_DS
 
@@ -4852,7 +4844,7 @@ DECLF SH2I_SUB_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SUBC_DS
 
@@ -4867,7 +4859,7 @@ DECLF SH2I_SUBC_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SUBV_DS
 
@@ -4880,7 +4872,7 @@ DECLF SH2I_SUBV_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SWAPB_DS
 
@@ -4893,7 +4885,7 @@ DECLF SH2I_SWAPB_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_SWAPW_DS
 
@@ -4904,7 +4896,7 @@ DECLF SH2I_SWAPW_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TAS_DS
 
@@ -4921,7 +4913,7 @@ DECLF SH2I_TAS_DS
 	RET_DS 4, 6, 8
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TST_DS
 
@@ -4933,7 +4925,7 @@ DECLF SH2I_TST_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TSTI_DS
 
@@ -4944,7 +4936,7 @@ DECLF SH2I_TSTI_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_TSTM_DS
 
@@ -4958,7 +4950,7 @@ DECLF SH2I_TSTM_DS
 	RET_DS 3, 4, 6
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XOR_DS
 
@@ -4970,7 +4962,7 @@ DECLF SH2I_XOR_DS
 	RET_DS 1, 1, 1
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XORI_DS
 
@@ -4981,7 +4973,7 @@ DECLF SH2I_XORI_DS
 	RET_DS 1, 1, 2
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XORM_DS
 
@@ -4998,7 +4990,7 @@ DECLF SH2I_XORM_DS
 	RET_DS 3, 5, 7
 
 
-ALIGN32
+align 32
 
 DECLF SH2I_XTRCT_DS
 
@@ -5015,7 +5007,7 @@ DECLF SH2I_XTRCT_DS
 ; ================
 
 
-ALIGN64
+align 64
 
 ; int FASTCALL SH2_Exec(SH2_CONTEXT *sh2, int odo)
 ; eax/ecx = context pointer
@@ -5065,7 +5057,7 @@ SH2_Exec_Error:
 	pop ebx
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 SH2_Exec_OK:
 
@@ -5077,7 +5069,7 @@ SH2_Exec_OK:
 	mov eax, ebx
 	jmp [OP_Table + ebx * 4]
 
-ALIGN32
+align 32
 
 SH2_Exec_Interrupt_Happened:
 
@@ -5087,7 +5079,7 @@ SH2_Exec_Interrupt_Happened:
 	mov eax, ebx
 	jmp [OP_Table + ebx * 4]
 
-ALIGN32
+align 32
 
 SH2_Exec_Quit:
 
@@ -5097,7 +5089,7 @@ SH2_Exec_Quit:
 	mov [ebp + SH2.Cycle_Sup], ebx
 	jns short SH2_Exec_Interrupt_Happened
 
-ALIGN4
+align 4
 
 SH2_Exec_Really_Quit:
 
@@ -5117,7 +5109,7 @@ SH2_Exec_Really_Quit:
 
 	call SH2_Exec_Check_WTC
 
-ALIGN4
+align 4
 
 SH2_Exec_Do_FRT
 
@@ -5206,7 +5198,7 @@ SH2_Exec_Do_FRT
 	pop ebx
 	FUNC_OUT
 
-ALIGN32
+align 32
 
 SH2_Exec_Halted:
 
@@ -5222,7 +5214,7 @@ SH2_Exec_Halted:
 	jmp SH2_Exec_Do_FRT
 
 
-ALIGN32
+align 32
 
 SH2_Exec_Disable:
 
@@ -5237,7 +5229,7 @@ SH2_Exec_Disable:
 	pop ebx
 	FUNC_OUT
 
-ALIGN32
+align 32
 
 SH2_Exec_Check_WTC:
 
@@ -5253,7 +5245,7 @@ SH2_Exec_Check_WTC:
 	mov [ebp + SH2.WDTCNT], ebx
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .Overflow
 	xor eax, eax
@@ -5271,7 +5263,7 @@ ALIGN4
 	FUNC_CALL_OUT
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .W_Mode
 	mov [ebp + SH2.WDTSR], dl
@@ -5287,7 +5279,7 @@ ALIGN4
 	or byte [ebp + SH2.WDTRST], 0x80
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .No_Reset
 	or dl, 0x80
@@ -5295,7 +5287,7 @@ ALIGN4
 	FUNC_OUT
 
 
-ALIGN64
+align 64
 
 ; int FASTCALL SH2_Reset(SH2_CONTEXT *sh2, int manual)
 ; ecx = context pointer
@@ -5368,7 +5360,7 @@ DECLF SH2_Reset, 8
 	pop edi
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .error
 	or eax, byte -1			; SH2 not correctly reseted
@@ -5379,7 +5371,7 @@ ALIGN4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Enable(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5395,7 +5387,7 @@ DECLF SH2_Enable, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Disable(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5411,7 +5403,7 @@ DECLF SH2_Disable, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Read_Odo(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5435,7 +5427,7 @@ DECLF SH2_Read_Odo, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Write_Odo(SH2_CONTEXT *sh2, UINT32 odo)
 ; ecx = context pointer
@@ -5452,7 +5444,7 @@ DECLF SH2_Write_Odo, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Clear_Odo(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5469,7 +5461,7 @@ DECLF SH2_Clear_Odo, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Add_Cycles(SH2_CONTEXT *sh2, UINT32 cycles)
 ; ecx = context pointer
@@ -5489,7 +5481,7 @@ DECLF SH2_Add_Cycles, 8
 	mov [ecx + SH2.Cycle_IO], eax
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .not_running
 	mov eax, [ecx + SH2.Odometer]
@@ -5498,7 +5490,7 @@ ALIGN4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Interrupt(SH2_CONTEXT *sh2, int level)
 ; ecx = context pointer
@@ -5529,7 +5521,7 @@ DECLF SH2_Interrupt, 8
 
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .running
 	mov eax, [ecx + SH2.Cycle_IO]
@@ -5538,14 +5530,14 @@ ALIGN4
 	mov [ecx + SH2.Cycle_IO], edx
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .not_higher
 	mov al, 0
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_Interrupt_Internal(SH2_CONTEXT *sh2, int level_vector)
 ; ecx = context pointer
@@ -5575,7 +5567,7 @@ SH2_Interrupt_Internal_Short
 
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .running
 	mov eax, [ecx + SH2.Cycle_IO]
@@ -5584,14 +5576,14 @@ ALIGN4
 	mov [ecx + SH2.Cycle_IO], edx
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .not_higher
 	mov al, 0
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_NMI(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5608,7 +5600,7 @@ DECLF SH2_NMI, 4
 	jmp short SH2_Interrupt_Internal_Short
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_DMA0_Request(SH2_CONTEXT *sh2, UINT8 state)
 ; ecx = context pointer
@@ -5632,7 +5624,7 @@ DECLF SH2_DMA0_Request, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_DMA1_Request(SH2_CONTEXT *sh2, UINT8 state)
 ; ecx = context pointer
@@ -5656,7 +5648,7 @@ DECLF SH2_DMA1_Request, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; void FASTCALL SH2_FRT_Signal(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5688,7 +5680,7 @@ DECLF SH2_FRT_Signal, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_R(SH2_CONTEXT *sh2, int num)
 ; ecx = context pointer
@@ -5704,7 +5696,7 @@ DECLF SH2_Get_R, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_PC(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5725,14 +5717,14 @@ DECLF SH2_Get_PC, 4
 	sub eax, [ecx + SH2.Base_PC]
 	FUNC_OUT
 
-ALIGN4
+align 4
 
 .running
 	mov eax, -1
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_SR(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5758,7 +5750,7 @@ DECLF SH2_Get_SR, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_GBR(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5776,7 +5768,7 @@ DECLF SH2_Get_GBR, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_VBR(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5794,7 +5786,7 @@ DECLF SH2_Get_VBR, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_PR(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5812,7 +5804,7 @@ DECLF SH2_Get_PR, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_MACH(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5830,7 +5822,7 @@ DECLF SH2_Get_MACH, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Get_MACL(SH2_CONTEXT *sh2)
 ; ecx = context pointer
@@ -5848,7 +5840,7 @@ DECLF SH2_Get_MACL, 4
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_PC(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer
@@ -5908,7 +5900,7 @@ DECLF SH2_Set_PC, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_SR(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer
@@ -5928,7 +5920,7 @@ DECLF SH2_Set_SR, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_GBR(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer
@@ -5946,7 +5938,7 @@ DECLF SH2_Set_GBR, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_VBR(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer
@@ -5964,7 +5956,7 @@ DECLF SH2_Set_VBR, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_PR(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer
@@ -5982,7 +5974,7 @@ DECLF SH2_Set_PR, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_MACH(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer
@@ -6000,7 +5992,7 @@ DECLF SH2_Set_MACH, 8
 	FUNC_OUT
 
 
-ALIGN32
+align 32
 
 ; int FASTCALL SH2_Set_MACL(SH2_CONTEXT *sh2, UINT32 val)
 ; ecx = context pointer

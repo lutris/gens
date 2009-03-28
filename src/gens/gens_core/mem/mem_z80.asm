@@ -153,7 +153,7 @@ section .text align=64
 		ret
 	
 	
-	ALIGN32
+	align 32
 	
 	;unsigned short Z80_ReadW(unsigned int Adr);
 	DECL Z80_ReadW
@@ -172,7 +172,7 @@ section .text align=64
 		ret
 	
 	
-	ALIGN32
+	align 32
 	
 	;void Z80_WriteB(unsigned int Adr, unsigned char Data);
 	DECL Z80_WriteB
@@ -193,7 +193,7 @@ section .text align=64
 		ret
 	
 	
-	ALIGN32
+	align 32
 	
 	;void Z80_WriteW(unsigned int Adr, unsigned short Data);
 	DECL Z80_WriteW
@@ -216,26 +216,26 @@ section .text align=64
 	; Read Byte
 	; ---------
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_ReadB_Bad, 4
 		mov al, 0
 		ret
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_ReadB_Ram, 4
 		and ecx, 0x1FFF
 		mov al, [Ram_Z80 + ecx]
 		ret
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_ReadB_Bank, 4
 		mov al, 0
 		ret
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_ReadB_YM2612, 4
 		and ecx, 0x3
@@ -244,7 +244,7 @@ section .text align=64
 		pop ecx
 		ret
 		
-	ALIGN4
+	align 4
 
 	DECLF Z80_ReadB_PSG, 4
 		cmp ecx, 0x7F04
@@ -262,19 +262,19 @@ section .text align=64
 		call	_Read_VDP_V_Counter
 		ret
 
-	ALIGN4
+	align 4
 	
 	.vdp_h_counter:
 		call	_Read_VDP_H_Counter
 		ret
 
-	ALIGN4
+	align 4
 
 	.bad
 		mov al, 0
 		ret
 
-	ALIGN4
+	align 4
 	
 	.vdp_status:
 		call	_Read_VDP_Status
@@ -285,7 +285,7 @@ section .text align=64
 	.no_swap_status
 		ret
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_ReadB_68K_Ram, 4
 		mov eax, [Bank_Z80]
@@ -300,13 +300,13 @@ section .text align=64
 	; Read Word
 	; ---------
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_ReadW_Bad, 4
 		mov ax, 0
 		ret
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_ReadW_Ram, 4
 		and ecx, 0x1FFF
@@ -314,13 +314,13 @@ section .text align=64
 		mov ah, [Ram_Z80 + ecx + 1]
 		ret
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_ReadW_Bank, 4
 		mov ax, 0
 		ret
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_ReadW_YM2612, 4
 		and ecx, 0x3
@@ -378,20 +378,20 @@ section .text align=64
 	; Write Byte
 	; ----------
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_WriteB_Bad, 8
 	DECLF Z80_WriteW_Bad, 8
 		ret
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_WriteB_Ram, 8
 		and ecx, 0x1FFF
 		mov [Ram_Z80 + ecx], dl
 		ret
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_WriteB_Bank, 8
 	DECLF Z80_WriteW_Bank, 8
@@ -415,7 +415,7 @@ section .text align=64
 	.bad
 		ret
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_WriteB_YM2612, 8
 		and ecx, 0x3
@@ -467,7 +467,7 @@ section .text align=64
 	; Write Word
 	; ----------
 
-	ALIGN4
+	align 4
 	
 	DECLF Z80_WriteW_Ram, 8
 		and ecx, 0x1FFF
@@ -475,7 +475,7 @@ section .text align=64
 		mov [Ram_Z80 + ecx + 1], dh
 		ret
 
-	ALIGN4
+	align 4
 
 	DECLF Z80_WriteW_YM2612, 8
 		and ecx, 0x3

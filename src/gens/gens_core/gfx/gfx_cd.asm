@@ -67,14 +67,14 @@
 		mov ebx, edx
 		jmp [%%Table + edi]
 
-	ALIGN4
+	align 4
 
 	%%Table
 
 		dd %%No_Flip_0, %%No_Flip_90, %%No_Flip_180, %%No_Flip_270
 		dd %%Flip_0, %%Flip_90, %%Flip_180, %%Flip_270
 
-	ALIGN32
+	align 32
 
 	%%No_Flip_90
 		%if %2 > 0				; 32x32 dots
@@ -111,7 +111,7 @@
 			jmp %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%No_Flip_180
 		%if %2 > 0				; 32x32 dots
@@ -150,7 +150,7 @@
 			jmp %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%No_Flip_270
 		%if %2 > 0				; 32x32 dots
@@ -187,7 +187,7 @@
 			jmp %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%Flip_90
 		%if %2 > 0				; 32x32 dots
@@ -226,7 +226,7 @@
 			jmp %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%Flip_180
 		%if %2 > 0				; 32x32 dots
@@ -263,7 +263,7 @@
 			jmp %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%Flip_270
 		%if %2 > 0				; 32x32 dots
@@ -298,7 +298,7 @@
 			jmp %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%Flip_0
 		%if %2 > 0				; 32x32 dots
@@ -335,7 +335,7 @@
 			jmp short %%Finish
 		%endif
 
-	ALIGN32
+	align 32
 
 	%%No_Flip_0
 		%if %2 > 0				; 32x32 dots
@@ -370,7 +370,7 @@
 			jmp short %%Finish
 		%endif
 
-	ALIGN4
+	align 4
 
 %%Pixel_Out
 		xor bl, bl
@@ -398,7 +398,7 @@
 		mov [esi + edi], al
 		jmp short %%End
 
-	ALIGN4
+	align 4
 	
 	%%Other_Pix
 %if %4 == 1
@@ -435,7 +435,7 @@
 
 		jmp short %%LOOP_H
 	
-	ALIGN32
+	align 32
 	
 	%%LOOP_H
 		mov ebx, edx
@@ -666,7 +666,7 @@ section .text align=64
 		mov [Rot_Comp.Reg_66], eax
 		ret
 
-	ALIGN32
+	align 32
 
 	DECL Calcul_Rot_Comp
 		push ebx
@@ -723,7 +723,7 @@ section .text align=64
 		mov [Stamp_Map_Adr], eax
 		jmp short .Initialised
 
-	ALIGN4
+	align 4
 
 	.Dot_32
 		and eax, 0xFFE0
@@ -731,7 +731,7 @@ section .text align=64
 		mov [Stamp_Map_Adr], eax
 		jmp short .Initialised
 
-	ALIGN4
+	align 4
 
 	.Scr_16
 		test ecx, 0x2
@@ -741,14 +741,14 @@ section .text align=64
 		mov [Stamp_Map_Adr], eax
 		jmp short .Initialised
 
-	ALIGN4
+	align 4
 
 	.Scr_16_Dot_32
 		and eax, 0xE000
 		lea eax, [_Ram_Word_2M + eax * 4]
 		mov [Stamp_Map_Adr], eax
 
-	ALIGN4
+	align 4
 	
 	.Initialised
 		call Update_Rot
@@ -759,7 +759,7 @@ section .text align=64
 		ret
 
 
-	ALIGN32
+	align 32
 
 	DECL Update_Rot
 		test byte [V_Dot], 0xFF
@@ -779,7 +779,7 @@ section .text align=64
 	.INT1_OFF_0
 		ret
 
-	ALIGN4
+	align 4
 
 	.GFX_Not_Completed
 		test eax, 0xFFFF0000
@@ -789,7 +789,7 @@ section .text align=64
 		mov [Float_Part], eax
 		ret
 
-	ALIGN4
+	align 4
 	
 	.Have_To_Draw
 		push edx
@@ -807,7 +807,7 @@ section .text align=64
 
 		jmp [Jmp_Adr]
 
-	ALIGN4
+	align 4
 
 	Table_Jump_Rot
 		dd .Norm_D16_S1, .Titled_D16_S1
@@ -830,151 +830,151 @@ section .text align=64
 		dd .Norm_D16_S16, .Titled_D16_S16
 		dd .Norm_D32_S16, .Titled_D32_S16
 
-	ALIGN32
+	align 32
 
 	.Norm_D16_S1
 
 		MAKE_IMAGE 0,0,0,0
 		
-	ALIGN32
+	align 32
 
 	.Titled_D16_S1
 
 		MAKE_IMAGE 1,0,0,0
 
-	ALIGN32
+	align 32
 
 	.Norm_D32_S1
 
 		MAKE_IMAGE 0,1,0,0
 		
-	ALIGN32
+	align 32
 
 	.Titled_D32_S1
 
 		MAKE_IMAGE 1,1,0,0
 
-	ALIGN32
+	align 32
 
 	.Norm_D16_S16
 
 		MAKE_IMAGE 0,0,1,0
 
-	ALIGN32
+	align 32
 
 	.Titled_D16_S16
 
 		MAKE_IMAGE 1,0,1,0
 
-	ALIGN32
+	align 32
 
 	.Norm_D32_S16
 
 		MAKE_IMAGE 0,1,1,0
 		
-	ALIGN32
+	align 32
 
 	.Titled_D32_S16
 
 		MAKE_IMAGE 1,1,1,0
 
-	ALIGN32
+	align 32
 
 	.U_Norm_D16_S1
 
 		MAKE_IMAGE 0,0,0,1
 		
-	ALIGN32
+	align 32
 
 	.U_Titled_D16_S1
 
 		MAKE_IMAGE 1,0,0,1
 
-	ALIGN32
+	align 32
 
 	.U_Norm_D32_S1
 
 		MAKE_IMAGE 0,1,0,1
 		
-	ALIGN32
+	align 32
 
 	.U_Titled_D32_S1
 
 		MAKE_IMAGE 1,1,0,1
 
-	ALIGN32
+	align 32
 
 	.U_Norm_D16_S16
 
 		MAKE_IMAGE 0,0,1,1
 
-	ALIGN32
+	align 32
 
 	.U_Titled_D16_S16
 
 		MAKE_IMAGE 1,0,1,1
 
-	ALIGN32
+	align 32
 
 	.U_Norm_D32_S16
 
 		MAKE_IMAGE 0,1,1,1
 		
-	ALIGN32
+	align 32
 
 	.U_Titled_D32_S16
 
 		MAKE_IMAGE 1,1,1,1
 
-	ALIGN32
+	align 32
 
 	.O_Norm_D16_S1
 
 		MAKE_IMAGE 0,0,0,2
 		
-	ALIGN32
+	align 32
 
 	.O_Titled_D16_S1
 
 		MAKE_IMAGE 1,0,0,2
 
-	ALIGN32
+	align 32
 
 	.O_Norm_D32_S1
 
 		MAKE_IMAGE 0,1,0,2
 		
-	ALIGN32
+	align 32
 
 	.O_Titled_D32_S1
 
 		MAKE_IMAGE 1,1,0,2
 
-	ALIGN32
+	align 32
 
 	.O_Norm_D16_S16
 
 		MAKE_IMAGE 0,0,1,2
 
-	ALIGN32
+	align 32
 
 	.O_Titled_D16_S16
 
 		MAKE_IMAGE 1,0,1,2
 
-	ALIGN32
+	align 32
 
 	.O_Norm_D32_S16
 
 		MAKE_IMAGE 0,1,1,2
 		
-	ALIGN32
+	align 32
 
 	.O_Titled_D32_S16
 
 		MAKE_IMAGE 1,1,1,2
 
-	ALIGN4
+	align 4
 	
 	.Finish
 		jz short GFX_Completed
@@ -982,7 +982,7 @@ section .text align=64
 		jz short GFX_Part_Completed
 		jmp [Jmp_Adr]
 
-	ALIGN4
+	align 4
 
 	GFX_Part_Completed
 		pop eax
@@ -993,7 +993,7 @@ section .text align=64
 		pop ebx
 		ret
 
-	ALIGN4
+	align 4
 
 	GFX_Completed
 		and dword [Stamp_Size], 0x7FFF

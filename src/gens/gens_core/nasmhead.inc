@@ -1,11 +1,3 @@
-%define ALIGN4 times ($$-$) & 3 nop
-%define ALIGN32 times ($$-$) & 31 nop
-%define ALIGN64 times ($$-$) & 63 nop
-
-%define ALIGN_4 times ($$-$) & 3 resb 1
-%define ALIGN_32 times ($$-$) & 31 resb 1
-%define ALIGN_64 times ($$-$) & 63 resb 1
-
 %macro DECL 1
 
 	global _%1
