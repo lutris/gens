@@ -104,14 +104,14 @@ void bmf_window_show(void)
 		bmf_wndclass.hCursor = NULL;
 		bmf_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		bmf_wndclass.lpszMenuName = NULL;
-		bmf_wndclass.lpszClassName = "bmf_window";
+		bmf_wndclass.lpszClassName = TEXT("bmf_window");
 		
 		RegisterClass(&bmf_wndclass);
 	}
 	
 	// Create the window.
 	// Create the window.
-	bmf_window = CreateWindow("bmf_window", "BIOS/Misc Files",
+	bmf_window = CreateWindow(TEXT("bmf_window"), TEXT("BIOS/Misc Files"),
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
 				  BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT,
@@ -184,7 +184,7 @@ static void bmf_window_create_child_windows(HWND hWnd)
 			SendMessage(txtFile[file], EM_LIMITTEXT, GENS_PATH_MAX-1, 0);
 			
 			// Create the "Change..." button for the file.
-			HWND btnChange = CreateWindow(WC_BUTTON, "Change...",
+			HWND btnChange = CreateWindow(WC_BUTTON, TEXT("Change..."),
 						      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 						      grpBox_Left+BMF_FRAME_WIDTH-(8+72), grpBox_Top + entryTop,
 						      72, 20,
@@ -199,7 +199,7 @@ static void bmf_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  BMF_WINDOW_WIDTH-8-75-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
 				  75, 23,
@@ -207,7 +207,7 @@ static void bmf_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      BMF_WINDOW_WIDTH-8-75-8-75, BMF_WINDOW_HEIGHT-8-24,
 				      75, 23,
@@ -215,7 +215,7 @@ static void bmf_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     BMF_WINDOW_WIDTH-8-75, BMF_WINDOW_HEIGHT-8-24,
 				     75, 23,

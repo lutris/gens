@@ -153,13 +153,13 @@ void genopt_window_show(void)
 		genopt_wndclass.hCursor = NULL;
 		genopt_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		genopt_wndclass.lpszMenuName = NULL;
-		genopt_wndclass.lpszClassName = "genopt_window";
+		genopt_wndclass.lpszClassName = TEXT("genopt_window");
 		
 		RegisterClass(&genopt_wndclass);
 	}
 	
 	// Create the window.
-	genopt_window = CreateWindow("genopt_window", "General Options",
+	genopt_window = CreateWindow(TEXT("genopt_window"), TEXT("General Options"),
 				     WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				     CW_USEDEFAULT, CW_USEDEFAULT,
 				     GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT,
@@ -214,24 +214,24 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	state_optColor[2] = 0;
 	
 	// On-Screen Display frame
-	HWND fraOSD = CreateWindow(WC_BUTTON, "On-Screen Display",
+	HWND fraOSD = CreateWindow(WC_BUTTON, TEXT("On-Screen Display"),
 				   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 				   8, 8, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
 				   hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(fraOSD, fntMain, TRUE);
 	
 	// FPS counter frame
-	genopt_window_create_osd_frame(hWnd, "FPS counter", 0, 16, 24,
+	genopt_window_create_osd_frame(hWnd, TEXT("FPS counter"), 0, 16, 24,
 				       GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16);
 	
 	// Message counter frame
-	genopt_window_create_osd_frame(hWnd, "Message", 1, 16, (GENOPT_FRAME_HEIGHT/2)+16,
+	genopt_window_create_osd_frame(hWnd, TEXT("Message"), 1, 16, (GENOPT_FRAME_HEIGHT/2)+16,
 				       GENOPT_FRAME_WIDTH-16, (GENOPT_FRAME_HEIGHT/2)-16);
 	
 	// Miscellaneous frame
 	frameLeft += GENOPT_FRAME_WIDTH + 8;
 	
-	grpBox = CreateWindow(WC_BUTTON, "Miscellaneous",
+	grpBox = CreateWindow(WC_BUTTON, TEXT("Miscellaneous"),
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      frameLeft, frameTop, GENOPT_FRAME_WIDTH, GENOPT_FRAME_HEIGHT,
 			      hWnd, NULL, ghInstance, NULL);
@@ -239,7 +239,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Auto Fix Checksum
 	frameTop += 16;
-	chkMisc_AutoFixChecksum = CreateWindow(WC_BUTTON, "Auto Fix Checksum",
+	chkMisc_AutoFixChecksum = CreateWindow(WC_BUTTON, TEXT("Auto Fix Checksum"),
 					       WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					       frameLeft+8, frameTop, 128, 20,
 					       hWnd, NULL, ghInstance, NULL);
@@ -247,7 +247,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Auto Pause
 	frameTop += 20;
-	chkMisc_AutoPause = CreateWindow(WC_BUTTON, "Auto Pause",
+	chkMisc_AutoPause = CreateWindow(WC_BUTTON, TEXT("Auto Pause"),
 					 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					 frameLeft+8, frameTop, 128, 20,
 					 hWnd, NULL, ghInstance, NULL);
@@ -255,7 +255,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Fast Blur
 	frameTop += 20;
-	chkMisc_FastBlur = CreateWindow(WC_BUTTON, "Fast Blur",
+	chkMisc_FastBlur = CreateWindow(WC_BUTTON, TEXT("Fast Blur"),
 					WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					frameLeft+8, frameTop, 128, 20,
 					hWnd, NULL, ghInstance, NULL);
@@ -263,7 +263,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Show SegaCD LEDs
 	frameTop += 20;
-	chkMisc_SegaCDLEDs = CreateWindow(WC_BUTTON, "Show SegaCD LEDs",
+	chkMisc_SegaCDLEDs = CreateWindow(WC_BUTTON, TEXT("Show SegaCD LEDs"),
 					  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					  frameLeft+8, frameTop, 128, 20,
 					  hWnd, NULL, ghInstance, NULL);
@@ -271,7 +271,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Border Color Emulation
 	frameTop += 20;
-	chkMisc_BorderColorEmulation = CreateWindow(WC_BUTTON, "Border Color Emulation",
+	chkMisc_BorderColorEmulation = CreateWindow(WC_BUTTON, TEXT("Border Color Emulation"),
 						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						    frameLeft+8, frameTop, 128, 20,
 						    hWnd, NULL, ghInstance, NULL);
@@ -279,7 +279,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Pause Tint
 	frameTop += 20;
-	chkMisc_PauseTint = CreateWindow(WC_BUTTON, "Pause Tint",
+	chkMisc_PauseTint = CreateWindow(WC_BUTTON, TEXT("Pause Tint"),
 						WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						frameLeft+8, frameTop, 128, 20,
 						hWnd, NULL, ghInstance, NULL);
@@ -287,7 +287,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	
 	// Intro effect color label
 	frameTop += 20+16+2;
-	lblIntroEffectColor = CreateWindow(WC_STATIC, "Intro Effect Color:",
+	lblIntroEffectColor = CreateWindow(WC_STATIC, TEXT("Intro Effect Color:"),
 					   WS_CHILD | WS_VISIBLE | SS_CENTER,
 					   frameLeft+8, frameTop, GENOPT_FRAME_WIDTH-16, 20,
 					   hWnd, NULL, ghInstance, NULL);
@@ -307,7 +307,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	btnOK = CreateWindow(WC_BUTTON, "&OK",
+	btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 			     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 			     GENOPT_WINDOW_WIDTH-8-75-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
 			     75, 23,
@@ -315,7 +315,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 GENOPT_WINDOW_WIDTH-8-75-8-75, GENOPT_WINDOW_HEIGHT-8-24,
 				 75, 23,
@@ -323,7 +323,7 @@ static void genopt_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				GENOPT_WINDOW_WIDTH-8-75, GENOPT_WINDOW_HEIGHT-8-24,
 				75, 23,
@@ -351,28 +351,28 @@ static void genopt_window_create_osd_frame(HWND container, const char* title, co
 	SetWindowFont(grpBox, fntMain, TRUE);
 	
 	// Enable
-	chkOSD_Enable[index] = CreateWindow(WC_BUTTON, "Enable",
+	chkOSD_Enable[index] = CreateWindow(WC_BUTTON, TEXT("Enable"),
 					    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					    x+8, y+16, 128, 20,
 					    container, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Enable[index], fntMain, TRUE);
 	
 	// Double Sized
-	chkOSD_DoubleSized[index] = CreateWindow(WC_BUTTON, "Double Sized",
+	chkOSD_DoubleSized[index] = CreateWindow(WC_BUTTON, TEXT("Double Sized"),
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						 x+8, y+16+20, 128, 20,
 						 container, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_DoubleSized[index], fntMain, TRUE);
 	
 	// Transparency
-	chkOSD_Transparency[index] = CreateWindow(WC_BUTTON, "Transparency",
+	chkOSD_Transparency[index] = CreateWindow(WC_BUTTON, TEXT("Transparency"),
 						  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 						  x+8, y+16+20+20, 128, 20,
 						  container, NULL, ghInstance, NULL);
 	SetWindowFont(chkOSD_Transparency[index], fntMain, TRUE);
 	
 	// Color label
-	lblColor = CreateWindow(WC_STATIC, "Color:",
+	lblColor = CreateWindow(WC_STATIC, TEXT("Color:"),
 				WS_CHILD | WS_VISIBLE | SS_LEFT,
 				x+8, y+16+20+20+20+2, 36, 20,
 				container, NULL, ghInstance, NULL);

@@ -479,7 +479,7 @@ static void fullScreenPopupMenu(HWND hWnd)
  */
 static void dragDropFile(HDROP hDrop)
 {
-	char filename[GENS_PATH_MAX];
+	TCHAR filename[GENS_PATH_MAX];
 	unsigned int rval;
 	
 	rval = DragQueryFile(hDrop, 0, filename, sizeof(filename));

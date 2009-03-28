@@ -106,13 +106,13 @@ void dir_window_show(void)
 		dir_wndclass.hCursor = NULL;
 		dir_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		dir_wndclass.lpszMenuName = NULL;
-		dir_wndclass.lpszClassName = "dir_window";
+		dir_wndclass.lpszClassName = TEXT("dir_window");
 		
 		RegisterClass(&dir_wndclass);
 	}
 	
 	// Create the window.
-	dir_window = CreateWindow("dir_window", "Configure Directories",
+	dir_window = CreateWindow(TEXT("dir_window"), TEXT("Configure Directories"),
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
 				  DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT,
@@ -137,7 +137,7 @@ void dir_window_show(void)
 static void dir_window_create_child_windows(HWND hWnd)
 {
 	// Create the directory entry frame.
-	HWND fraDirectories = CreateWindow(WC_BUTTON, "Configure Directories",
+	HWND fraDirectories = CreateWindow(WC_BUTTON, TEXT("Configure Directories"),
 					   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					   8, 8, DIR_WINDOW_WIDTH-16, DIR_WINDOW_HEIGHT-16-24-8,
 					   hWnd, NULL, ghInstance, NULL);
@@ -165,7 +165,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 		
 		// Create the "Change" button for the directory.
 		// TODO: Use an icon?
-		HWND btnChange = CreateWindow(WC_BUTTON, "Change...",
+		HWND btnChange = CreateWindow(WC_BUTTON, TEXT("Change..."),
 					      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					      DIR_WINDOW_WIDTH-8-72-8, curTop,
 					      72, 20,
@@ -176,7 +176,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  DIR_WINDOW_WIDTH-8-75-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
 				  75, 23,
@@ -184,7 +184,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      DIR_WINDOW_WIDTH-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
 				      75, 23,
@@ -192,7 +192,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     DIR_WINDOW_WIDTH-8-75, DIR_WINDOW_HEIGHT-8-24,
 				     75, 23,

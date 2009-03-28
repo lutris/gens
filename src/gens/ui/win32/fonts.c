@@ -28,6 +28,7 @@
 // Win32 includes.
 #include <windows.h>
 #include <windowsx.h>
+#include <tchar.h>
 
 // Unused parameter macro.
 #include "macros/unused.h"
@@ -68,9 +69,9 @@ void fonts_init(void)
 	LOGFONT lfMonoFont;
 	lfMonoFont.lfCharSet = DEFAULT_CHARSET;
 	lfMonoFont.lfPitchAndFamily = 0;
-	strcpy(lfMonoFont.lfFaceName, "Fixedsys");
+	_tcscpy(lfMonoFont.lfFaceName, TEXT("Fixedsys"));
 	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, font_enum_callback_fixedsys, 0, 0);
-	strcpy(lfMonoFont.lfFaceName, "Courier New");
+	_tcscpy(lfMonoFont.lfFaceName, TEXT("Courier New"));
 	EnumFontFamiliesEx(GetDC(gens_window), &lfMonoFont, font_enum_callback_courier_new, 0, 0);
 	
 }
@@ -107,7 +108,7 @@ static int CALLBACK font_enum_callback_fixedsys(ENUMLOGFONTEX *lpelfe, NEWTEXTME
 	GENS_UNUSED_PARAMETER(lParam);
 	
 	// Verify that this is the correct font.
-	if (strcasecmp(lpelfe->elfLogFont.lfFaceName, "Fixedsys"))
+	if (_tcsicmp(lpelfe->elfLogFont.lfFaceName, TEXT("Fixedsys")))
 	{
 		// Incorrect font. Continue enumeration.
 		return 1;
@@ -120,7 +121,7 @@ static int CALLBACK font_enum_callback_fixedsys(ENUMLOGFONTEX *lpelfe, NEWTEXTME
 	// Create the "Fixedsys" font.
 	LOGFONT lfMono;
 	memset(&lfMono, 0x00, sizeof(lfMono));
-	strcpy(lfMono.lfFaceName, "Fixedsys");
+	_tcscpy(lfMono.lfFaceName, TEXT("Fixedsys"));
 	fntMono = CreateFontIndirect(&lfMono);
 	
 	// Stop enumeration.
@@ -143,7 +144,7 @@ static int CALLBACK font_enum_callback_courier_new(ENUMLOGFONTEX *lpelfe, NEWTEX
 	GENS_UNUSED_PARAMETER(lParam);
 	
 	// Verify that this is the correct font.
-	if (strcasecmp(lpelfe->elfLogFont.lfFaceName, "Courier New"))
+	if (_tcsicmp(lpelfe->elfLogFont.lfFaceName, TEXT("Courier New")))
 	{
 		// Incorrect font. Continue enumeration.
 		return 1;
@@ -156,7 +157,7 @@ static int CALLBACK font_enum_callback_courier_new(ENUMLOGFONTEX *lpelfe, NEWTEX
 	// Create the "Courier New" font.
 	LOGFONT lfMono;
 	memset(&lfMono, 0x00, sizeof(lfMono));
-	strcpy(lfMono.lfFaceName, "Courier New");
+	_tcscpy(lfMono.lfFaceName, TEXT("Courier New"));
 	fntMono = CreateFontIndirect(&lfMono);
 	
 	// Stop enumeration.

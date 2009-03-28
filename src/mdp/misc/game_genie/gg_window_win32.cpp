@@ -47,6 +47,7 @@ using std::list;
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 
 // For whatever reason, Wine's headers don't include the ListView_(Set|Get)CheckState macros.
 #ifndef ListView_SetCheckState
@@ -136,7 +137,7 @@ void gg_window_show(void *parent)
 		gg_window_wndclass.hCursor = NULL;
 		gg_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		gg_window_wndclass.lpszMenuName = NULL;
-		gg_window_wndclass.lpszClassName = "gg_window_wndclass";
+		gg_window_wndclass.lpszClassName = TEXT("gg_window_wndclass");
 		
 		RegisterClass(&gg_window_wndclass);
 	}
@@ -147,11 +148,11 @@ void gg_window_show(void *parent)
 	gg_hFont_title = mdp_win32_get_title_font();
 	
 	// Create the window.
-	gg_window = CreateWindowEx(0, "gg_window_wndclass", "Game Genie",
-				   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				   CW_USEDEFAULT, CW_USEDEFAULT,
-				   GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT,
-				   (HWND)parent, NULL, gg_hInstance, NULL);
+	gg_window = CreateWindow(TEXT("gg_window_wndclass"), TEXT("Game Genie"),
+				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				 CW_USEDEFAULT, CW_USEDEFAULT,
+				 GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT,
+				 (HWND)parent, NULL, gg_hInstance, NULL);
 	
 	// Window adjustment.
 	mdp_win32_set_actual_window_size(gg_window, GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT);
@@ -174,12 +175,12 @@ static void gg_window_create_child_windows(HWND hWnd)
 		return;
 	
 	// Strings.
-	static const char* const strInfoTitle = "Information about Game Genie / Patch codes";
-	static const char* const strInfo =
+	static const TCHAR* const strInfoTitle = TEXT("Information about Game Genie / Patch codes");
+	static const TCHAR* const strInfo = TEXT(
 			"Both Game Genie codes and Patch codes are supported.\n"
 			"Check the box next to the code to activate it.\n"
 			"Syntax for Game Genie codes: XXXX-YYYY\n"
-			"Syntax for Patch codes: AAAAAA:DDDD (address:data)";
+			"Syntax for Patch codes: AAAAAA:DDDD (address:data)");
 	
 	// Header label.
 	HWND lblInfoTitle = CreateWindow(WC_STATIC, strInfoTitle,
@@ -198,7 +199,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 	SetWindowFont(lblInfo, gg_hFont, true);
 	
 	// "Code" label.
-	HWND lblCode = CreateWindow(WC_STATIC, "Code",
+	HWND lblCode = CreateWindow(WC_STATIC, TEXT("Code"),
 				    WS_CHILD | WS_VISIBLE | SS_LEFT,
 				    8, 8+16+68+8, 32, 16,
 				    hWnd, NULL, gg_hInstance, NULL);
@@ -217,7 +218,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 			       (LONG_PTR)gg_window_wndproc_textbox);
 	
 	// "Name" label.
-	HWND lblName = CreateWindow(WC_STATIC, "Name",
+	HWND lblName = CreateWindow(WC_STATIC, TEXT("Name"),
 				    WS_CHILD | WS_VISIBLE | SS_LEFT,
 				    8, 8+16+68+8+24, 32, 16,
 				    hWnd, NULL, gg_hInstance, NULL);
@@ -235,7 +236,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 			       (LONG_PTR)gg_window_wndproc_textbox);
 	
 	// "Add Code" button.
-	HWND btnAddCode = CreateWindow(WC_BUTTON, "Add C&ode",
+	HWND btnAddCode = CreateWindow(WC_BUTTON, TEXT("Add C&ode"),
 				       WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				       GG_WINDOW_WIDTH-(64+8+16), 8+16+68+8,
 				       63+16, 20,
@@ -249,7 +250,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 	static const int btnTop = GG_WINDOW_HEIGHT-24-8;
 	
 	// "OK" button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  8, btnTop,
 				  75, 24,
@@ -257,7 +258,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, gg_hFont, true);
 	
 	// "Cancel" button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      8+75+8, btnTop,
 				      75, 24,
@@ -265,7 +266,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, gg_hFont, true);
 	
 	// "Apply" button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     8+75+8+75+8, btnTop,
 				     75, 24,
@@ -273,7 +274,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnApply, gg_hFont, true);
 	
 	// "Delete" button.
-	HWND btnDelete = CreateWindow(WC_BUTTON, "&Delete",
+	HWND btnDelete = CreateWindow(WC_BUTTON, TEXT("&Delete"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      GG_WINDOW_WIDTH-(8+91+8+75), btnTop,
 				      75, 24,
@@ -281,7 +282,7 @@ static void gg_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnDelete, gg_hFont, true);
 	
 	// "Deactivate All" button.
-	HWND btnDeactivateAll = CreateWindow(WC_BUTTON, "Deac&tivate All",
+	HWND btnDeactivateAll = CreateWindow(WC_BUTTON, TEXT("Deac&tivate All"),
 					     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					     GG_WINDOW_WIDTH-(8+91), btnTop,
 					     91, 24,
@@ -317,22 +318,22 @@ static void gg_window_create_lstCodes(HWND container)
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 	
 	// Code (Hex)
-	lvCol.pszText = "Code (Hex)";
+	lvCol.pszText = TEXT("Code (Hex)");
 	lvCol.cx = 144;
 	ListView_InsertColumn(lstCodes, 0, &lvCol);
 	
 	// Code (GG)
-	lvCol.pszText = "Code (GG)";
+	lvCol.pszText = TEXT("Code (GG)");
 	lvCol.cx = 104;
 	ListView_InsertColumn(lstCodes, 1, &lvCol);
 	
 	// CPU
-	lvCol.pszText = "CPU";
+	lvCol.pszText = TEXT("CPU");
 	lvCol.cx = 48;
 	ListView_InsertColumn(lstCodes, 2, &lvCol);
 	
 	// Name
-	lvCol.pszText = "Name";
+	lvCol.pszText = TEXT("Name");
 	lvCol.cx = 192;
 	ListView_InsertColumn(lstCodes, 3, &lvCol);
 }
@@ -549,27 +550,27 @@ static int gg_window_add_code_from_textboxes(void)
 	if (gcp_rval != GGCE_OK)
 	{
 		// Error parsing the code.
-		char err_msg_full[1024];
-		char err_msg[1024];
+		TCHAR err_msg_full[1024];
+		TCHAR err_msg[1024];
 		
 		switch (gcp_rval)
 		{
 			case GGCE_UNRECOGNIZED:
-				strcpy(err_msg, "The code could not be parsed correctly.");
+				_tcscpy(err_msg, "The code could not be parsed correctly.");
 				break;
 			case GGCE_ADDRESS_RANGE:
 				// TODO: Show range depending on the selected CPU.
-				strcpy(err_msg, "The address for this code is out of range for the specified CPU.\n"
-						"Valid range for MC68000 CPUs: 0x000000 - 0xFFFFFF");
+				_tcscpy(err_msg, TEXT("The address for this code is out of range for the specified CPU.\n"
+						      "Valid range for MC68000 CPUs: 0x000000 - 0xFFFFFF"));
 				break;
 			case GGCE_ADDRESS_ALIGNMENT:
 				// TODO: Show range and alignment info based on CPU and datasize.
-				strcpy(err_msg, "The address is not aligned properly for the specified data.\n"
-						"For MC68000, 16-bit data must be stored at even addresses.");
+				_tcscpy(err_msg, TEXT("The address is not aligned properly for the specified data.\n"
+						      "For MC68000, 16-bit data must be stored at even addresses."));
 				break;
 			case GGCE_DATA_TOO_LARGE:
-				strcpy(err_msg, "The data value is too large. Usually, this means that you"
-						"entered too many characters.");
+				_tcscpy(err_msg, TEXT("The data value is too large. Usually, this means that you"
+						      "entered too many characters."));
 				break;
 			default:
 				// Other error.
@@ -581,7 +582,7 @@ static int gg_window_add_code_from_textboxes(void)
 				      code_txt, err_msg);
 		
 		// Show an error message.
-		MessageBox(gg_window, err_msg_full, "Game Genie: Code Error", MB_ICONSTOP);
+		MessageBox(gg_window, err_msg_full, TEXT("Game Genie: Code Error"), MB_ICONSTOP);
 		
 		// Set focus to the "Code" textbox.
 		SetFocus(txtCode);
@@ -628,8 +629,8 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	}
 	
 	// CPU string.
-	static const char* const s_cpu_list[8] = {NULL, "M68K", "S68K", "Z80", "MSH2", "SSH2", NULL, NULL};
-	const char* s_cpu = s_cpu_list[(int)(gg_code->cpu) & 0x07];
+	static const TCHAR* const s_cpu_list[8] = {NULL, TEXT("M68K"), TEXT("S68K"), TEXT("Z80"), TEXT("MSH2"), TEXT("SSH2"), NULL, NULL};
+	const TCHAR* s_cpu = s_cpu_list[(int)(gg_code->cpu) & 0x07];
 	if (!s_cpu)
 		return 1;
 	
@@ -684,7 +685,7 @@ static int gg_window_add_code(const gg_code_t *gg_code, const char* name)
 	
 	// Third column: CPU
 	lviCode.iSubItem = 2;
-	lviCode.pszText = (char*)s_cpu;
+	lviCode.pszText = (TCHAR*)s_cpu;
 	ListView_SetItem(lstCodes, &lviCode);
 	
 	// Fourth column: Name

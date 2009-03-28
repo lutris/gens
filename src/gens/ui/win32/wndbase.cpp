@@ -107,7 +107,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 		// It isn't currently used on Win32, so I'm not implementing it right now
 		
 		HWND btnOK;
-		btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+		btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"), WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				     btnLeft, btnTop, btnWidth, btnHeight,
 				     (HWND)container, (HMENU)IDOK, ghInstance, NULL);
 		SetWindowFont(btnOK, fntMain, TRUE);
@@ -121,7 +121,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 	if (buttons & BUTTON_CANCEL)
 	{
 		HWND btnCancel;
-		btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					 btnLeft, btnTop, btnWidth, btnHeight,
 					 (HWND)container, (HMENU)IDCANCEL, ghInstance, NULL);
 		SetWindowFont(btnCancel, fntMain, TRUE);
@@ -135,7 +135,7 @@ void WndBase::addDialogButtons(void *container, ButtonAlignment alignment,
 	if (buttons & BUTTON_APPLY)
 	{
 		HWND btnApply;
-		btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 					btnLeft, btnTop, btnWidth, btnHeight,
 					(HWND)container, (HMENU)IDAPPLY, ghInstance, NULL);
 		SetWindowFont(btnApply, fntMain, TRUE);

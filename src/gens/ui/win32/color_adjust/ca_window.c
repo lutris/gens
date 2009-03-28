@@ -110,13 +110,13 @@ void ca_window_show(void)
 		ca_wndclass.hCursor = NULL;
 		ca_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ca_wndclass.lpszMenuName = NULL;
-		ca_wndclass.lpszClassName = "ca_window";
+		ca_wndclass.lpszClassName = TEXT("ca_window");
 		
 		RegisterClass(&ca_wndclass);
 	}
 	
 	// Create the window.
-	ca_window = CreateWindow("ca_window", "Color Adjustment",
+	ca_window = CreateWindow(TEXT("ca_window"), TEXT("Color Adjustment"),
 				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				 CW_USEDEFAULT, CW_USEDEFAULT,
 				 CA_WINDOW_WIDTH, CA_WINDOW_HEIGHT,
@@ -144,7 +144,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	static const unsigned int trkStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM;
 	
 	// "Contrast" label.
-	HWND lblContrast = CreateWindow(WC_STATIC, "Co&ntrast",
+	HWND lblContrast = CreateWindow(WC_STATIC, TEXT("Co&ntrast"),
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16, 56, 16,
 					hWnd, NULL, ghInstance, NULL);
@@ -161,14 +161,14 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SendMessage(trkContrast, TBM_SETPOS, TRUE, 0);
 	
 	// "Contrast" value label.
-	lblContrastVal = CreateWindow(WC_STATIC, "0",
+	lblContrastVal = CreateWindow(WC_STATIC, TEXT("0"),
 				      WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
 				      8+56+CA_TRACKBAR_WIDTH+8, 16, 32, 16,
 				      hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(lblContrastVal, fntMain, TRUE);
 	
 	// "Brightness" label.
-	HWND lblBrightness = CreateWindow(WC_STATIC, "&Brightness",
+	HWND lblBrightness = CreateWindow(WC_STATIC, TEXT("&Brightness"),
 					WS_CHILD | WS_VISIBLE | SS_LEFT,
 					8, 16+32, 56, 16,
 					hWnd, NULL, ghInstance, NULL);
@@ -185,7 +185,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SendMessage(trkBrightness, TBM_SETPOS, TRUE, 0);
 	
 	// "Brightness" value label.
-	lblBrightnessVal = CreateWindow(WC_STATIC, "0",
+	lblBrightnessVal = CreateWindow(WC_STATIC, TEXT("0"),
 					WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
 					8+56+CA_TRACKBAR_WIDTH+8, 16+32, 32, 16,
 					hWnd, NULL, ghInstance, NULL);
@@ -195,14 +195,14 @@ static void ca_window_create_child_windows(HWND hWnd)
 	static const unsigned int chkLeft = (CA_WINDOW_WIDTH-80-8-80+16)/2;
 	
 	// "Grayscale" checkbox.
-	chkGrayscale = CreateWindow(WC_BUTTON, "&Grayscale",
+	chkGrayscale = CreateWindow(WC_BUTTON, TEXT("&Grayscale"),
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 				    chkLeft, 16+32+32, 80, 16,
 				    hWnd, NULL, ghInstance, NULL);
 	SetWindowFont(chkGrayscale, fntMain, TRUE);
 	
 	// "Inverted" checkbox.
-	chkInverted = CreateWindow(WC_BUTTON, "&Inverted",
+	chkInverted = CreateWindow(WC_BUTTON, TEXT("&Inverted"),
 				   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 				   chkLeft+8+80, 16+32+32, 80, 16,
 				   hWnd, NULL, ghInstance, NULL);
@@ -215,7 +215,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	static const unsigned int btnLeft = (CA_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  btnLeft, CA_WINDOW_HEIGHT-8-24,
 				  75, 23,
@@ -223,7 +223,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      btnLeft+8+75, CA_WINDOW_HEIGHT-8-24,
 				      75, 23,
@@ -231,7 +231,7 @@ static void ca_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     btnLeft+8+75+8+75, CA_WINDOW_HEIGHT-8-24,
 				     75, 23,

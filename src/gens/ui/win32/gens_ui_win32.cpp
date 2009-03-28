@@ -42,6 +42,7 @@
 #include <windowsx.h>
 #include <commctrl.h>
 #include <shlobj.h>
+#include <tchar.h>
 
 // Gens Win32 resources.
 #include "ui/win32/resource.h"
@@ -441,7 +442,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 				    const FileFilterType filterType, HWND owner,
 				    const bool openOrSave)
 {
-	char filename[GENS_PATH_MAX];
+	TCHAR filename[GENS_PATH_MAX];
 	OPENFILENAME ofn;
 	
 	memset(filename, 0, sizeof(filename));
@@ -512,7 +513,7 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
 	if (!ret)
 		return "";
 	
-	return ofn.lpstrFile;
+	return string(ofn.lpstrFile);
 }
 
 
@@ -525,8 +526,8 @@ static string UI_Win32_OpenFile_int(const string& title, const string& initFile,
  */
 string GensUI::selectDir(const string& title, const string& initDir, void* owner)
 {
-	char displayName[GENS_PATH_MAX];
-	char selDir[GENS_PATH_MAX];
+	TCHAR displayName[GENS_PATH_MAX];
+	TCHAR selDir[GENS_PATH_MAX];
 	
 	BROWSEINFO bi;
 	memset(&bi, 0x00, sizeof(bi));
@@ -564,7 +565,7 @@ string GensUI::selectDir(const string& title, const string& initDir, void* owner
 	if (!bRet)
 		return "";
 	
-	return selDir;
+	return string(selDir);
 }
 
 

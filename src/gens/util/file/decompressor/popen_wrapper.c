@@ -3,13 +3,13 @@
  * Adapted from http://lists.trolltech.com/qt-interest/1999-09/thread00282-0.html
  */
 
+#include "popen_wrapper.h"
 
 /*------------------------------------------------------------------------------
   Globals fuer die Routinen pt_popen() / pt_pclose()
 ------------------------------------------------------------------------------*/
 #include <windows.h>
 #include <errno.h>
-#include <stdio.h>
 #include <fcntl.h>
 
 HANDLE my_pipein[2], my_pipeout[2], my_pipeerr[2];
@@ -41,16 +41,16 @@ static int my_pipe(HANDLE *readwrite)
 ------------------------------------------------------------------------------*/
 FILE* gens_popen(const char *cmd, const char *mode)
 {
-	FILE *fptr = (FILE *)0;
+	FILE *fptr = NULL;
 	STARTUPINFO siStartInfo;
 	int success, umlenkung;
 
-	my_pipein[0]   = INVALID_HANDLE_VALUE;
-	my_pipein[1]   = INVALID_HANDLE_VALUE;
-	my_pipeout[0]  = INVALID_HANDLE_VALUE;
-	my_pipeout[1]  = INVALID_HANDLE_VALUE;
-	my_pipeerr[0]  = INVALID_HANDLE_VALUE;
-	my_pipeerr[1]  = INVALID_HANDLE_VALUE;
+	my_pipein[0]	= INVALID_HANDLE_VALUE;
+	my_pipein[1]	= INVALID_HANDLE_VALUE;
+	my_pipeout[0]	= INVALID_HANDLE_VALUE;
+	my_pipeout[1]	= INVALID_HANDLE_VALUE;
+	my_pipeerr[0]	= INVALID_HANDLE_VALUE;
+	my_pipeerr[1]	= INVALID_HANDLE_VALUE;
 	
 	if (!mode || !*mode)
 		goto finito;

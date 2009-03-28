@@ -130,13 +130,13 @@ void pmgr_window_show(void)
 		pmgr_wndclass.hCursor = NULL;
 		pmgr_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		pmgr_wndclass.lpszMenuName = NULL;
-		pmgr_wndclass.lpszClassName = "pmgr_window";
+		pmgr_wndclass.lpszClassName = TEXT("pmgr_window");
 		
 		RegisterClass(&pmgr_wndclass);
 	}
 	
 	// Create the window.
-	pmgr_window = CreateWindow("pmgr_window", "Plugin Manager",
+	pmgr_window = CreateWindow(TEXT("pmgr_window"), TEXT("Plugin Manager"),
 				   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				   CW_USEDEFAULT, CW_USEDEFAULT,
 				   PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT,
@@ -167,7 +167,7 @@ static void pmgr_window_create_child_windows(HWND hWnd)
 	pmgr_window_create_plugin_info_frame(hWnd);
 	
 	// Create the "OK" button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  PMGR_WINDOW_WIDTH-8-75, PMGR_WINDOW_HEIGHT-8-24,
 				  75, 23,
@@ -189,7 +189,7 @@ static void pmgr_window_create_child_windows(HWND hWnd)
 static void pmgr_window_create_plugin_list_frame(HWND container)
 {
 	// Create the plugin list frame.
-	HWND fraPluginList = CreateWindow(WC_BUTTON, "Internal Plugins",
+	HWND fraPluginList = CreateWindow(WC_BUTTON, TEXT("Internal Plugins"),
 					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					  8, 8,
 					  PMGR_FRAME_PLUGIN_LIST_WIDTH,
@@ -198,7 +198,7 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	SetWindowFont(fraPluginList, fntMain, true);
 	
 	// Create the plugin listbox.
-	lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, "",
+	lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, TEXT(""),
 				       WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL | LBS_NOTIFY,
 				       8+8, 8+16,
 				       PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
@@ -216,7 +216,7 @@ static void pmgr_window_create_plugin_info_frame(HWND container)
 {
 	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
 	
-	HWND fraPluginInfo = CreateWindow(WC_BUTTON, "Plugin Information",
+	HWND fraPluginInfo = CreateWindow(WC_BUTTON, TEXT("Plugin Information"),
 					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					  8, top,
 					  PMGR_FRAME_PLUGIN_INFO_WIDTH, PMGR_FRAME_PLUGIN_INFO_HEIGHT,
@@ -399,7 +399,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	if (index == LB_ERR)
 	{
 		// No plugin selected.
-		Edit_SetText(lblPluginMainInfo, "No plugin selected.");
+		Edit_SetText(lblPluginMainInfo, TEXT("No plugin selected."));
 		Edit_SetText(lblPluginSecInfo, NULL);
 		Edit_SetText(lblPluginDesc, NULL);
 		#ifdef GENS_PNG
@@ -415,7 +415,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	if (!plugin)
 	{
 		// Invalid plugin.
-		Edit_SetText(lblPluginMainInfo, "Invalid plugin selected.");
+		Edit_SetText(lblPluginMainInfo, TEXT("Invalid plugin selected."));
 		Edit_SetText(lblPluginSecInfo, NULL);
 		Edit_SetText(lblPluginDesc, NULL);
 		#ifdef GENS_PNG
@@ -426,7 +426,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	
 	if (!plugin->desc)
 	{
-		Edit_SetText(lblPluginMainInfo, "This plugin does not have a valid description field.");
+		Edit_SetText(lblPluginMainInfo, TEXT("This plugin does not have a valid description field."));
 		Edit_SetText(lblPluginSecInfo, NULL);
 		Edit_SetText(lblPluginDesc, NULL);
 		#ifdef GENS_PNG

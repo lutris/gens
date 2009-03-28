@@ -38,6 +38,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -140,13 +141,13 @@ void ccode_window_show(void)
 		ccode_wndclass.hCursor = NULL;
 		ccode_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		ccode_wndclass.lpszMenuName = NULL;
-		ccode_wndclass.lpszClassName = "ccode_window";
+		ccode_wndclass.lpszClassName = TEXT("ccode_window");
 		
 		RegisterClass(&ccode_wndclass);
 	}
 	
 	// Create the window.
-	ccode_window = CreateWindow("ccode_window", "Country Code Order",
+	ccode_window = CreateWindow(TEXT("ccode_window"), TEXT("Country Code Order"),
 				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    CCODE_WINDOW_WIDTH, CCODE_WINDOW_DEF_HEIGHT,
@@ -173,7 +174,7 @@ void ccode_window_show(void)
 static void ccode_window_create_child_windows(HWND hWnd)
 {
 	// Add a frame for country code selection.
-	HWND fraCountry = CreateWindow(WC_BUTTON, "Country Code Order",
+	HWND fraCountry = CreateWindow(WC_BUTTON, TEXT("Country Code Order"),
 				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 				       8, 8,
 				       CCODE_WINDOW_FRACOUNTRY_WIDTH,
@@ -204,7 +205,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	static const int btnLeft = (CCODE_WINDOW_WIDTH-75-8-75-8-75)/2;
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  btnLeft, ccode_window_height-8-24,
 				  75, 23,
@@ -212,7 +213,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      btnLeft+8+75, ccode_window_height-8-24,
 				      75, 23,
@@ -220,7 +221,7 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     btnLeft+8+75+8+75, ccode_window_height-8-24,
 				     75, 23,
@@ -339,8 +340,8 @@ static void ccode_window_create_up_down_buttons(HWND container)
 	else
 	{
 		// Windows 2000 or earlier. Use BM_SETIMAGE.
-		SetWindowText(btnUp, "Up");
-		SetWindowText(btnDown, "Down");
+		SetWindowText(btnUp, TEXT("Up"));
+		SetWindowText(btnDown, TEXT("Down"));
 		SendMessage(btnUp, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoUp);
 		SendMessage(btnDown, BM_SETIMAGE, IMAGE_ICON, (LPARAM)icoDown);
 	}
@@ -392,7 +393,7 @@ static void ccode_window_init(void)
 	
 	// Country codes.
 	// TODO: Move this to a common file.
-	static const char* const ccodes[3] = {"USA", "Japan", "Europe"};
+	static const TCHAR* const ccodes[3] = {TEXT("USA"), TEXT("Japan"), TEXT("Europe")};
 	
 	// Add the country codes to the listbox in the appropriate order.
 	int i;

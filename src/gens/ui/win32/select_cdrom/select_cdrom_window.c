@@ -73,12 +73,12 @@ HWND create_select_cdrom_window(void)
 	WndClass.hCursor = NULL;
 	WndClass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 	WndClass.lpszMenuName = NULL;
-	WndClass.lpszClassName = "Gens_Select_CDROM";
+	WndClass.lpszClassName = TEXT("Gens_Select_CDROM");
 	
 	RegisterClass(&WndClass);
 	
 	// Create the window.
-	select_cdrom_window = CreateWindow("Gens_Select_CDROM", "Select CD-ROM Drive",
+	select_cdrom_window = CreateWindow(TEXT("Gens_Select_CDROM"), TEXT("Select CD-ROM Drive"),
 					   WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 					   CW_USEDEFAULT, CW_USEDEFAULT,
 					   320, 72,
@@ -100,7 +100,7 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	HWND cdromDriveTitle;
 	
 	// CD-ROM Drive title
-	cdromDriveTitle = CreateWindow(WC_STATIC, "CD-ROM Drive:",
+	cdromDriveTitle = CreateWindow(WC_STATIC, TEXT("CD-ROM Drive:"),
 				       WS_CHILD | WS_VISIBLE | SS_LEFT,
 				       8, 8+3, 96, 16,
 				       hWnd, NULL, ghInstance, NULL);
@@ -118,17 +118,17 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	const unsigned short btnLeft = (320-(8+75+8+75+8+75+8))/2;
 	HWND btnCancel;
 	
-	SelCD_btnOK = CreateWindow(WC_BUTTON, "&OK", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+	SelCD_btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"), WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				   btnLeft+8, btnTop, 75, 23,
 				   hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(SelCD_btnOK, fntMain, TRUE);
 	
-	btnCancel = CreateWindow(WC_BUTTON, "&Cancel", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				 btnLeft+8+75+8, btnTop, 75, 23,
 				 hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
-	SelCD_btnApply = CreateWindow(WC_BUTTON, "&Apply", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	SelCD_btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      btnLeft+8+75+8+75+8, btnTop, 75, 23,
 				      hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(SelCD_btnApply, fntMain, TRUE);
@@ -136,7 +136,7 @@ void Select_CDROM_Window_CreateChildWindows(HWND hWnd)
 	if (Num_CD_Drive == 0)
 	{
 		// No CD-ROM drives detected.
-		ComboBox_AddString(SelCD_cdromDropdownBox, "No CD-ROM drives detected.");
+		ComboBox_AddString(SelCD_cdromDropdownBox, TEXT("No CD-ROM drives detected."));
 		Button_Enable(SelCD_btnOK, FALSE);
 		Button_Enable(SelCD_btnApply, FALSE);
 		

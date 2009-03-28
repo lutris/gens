@@ -106,7 +106,7 @@ void vlopt_window_show(void *parent)
 		vlopt_window_wndclass.hCursor = NULL;
 		vlopt_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		vlopt_window_wndclass.lpszMenuName = NULL;
-		vlopt_window_wndclass.lpszClassName = "vlopt_window_wndclass";
+		vlopt_window_wndclass.lpszClassName = TEXT("vlopt_window_wndclass");
 		
 		RegisterClass(&vlopt_window_wndclass);
 	}
@@ -118,11 +118,11 @@ void vlopt_window_show(void *parent)
 	vlopt_hfont = mdp_win32_get_message_font();
 	
 	// Create the window.
-	vlopt_window = CreateWindowEx(0, "vlopt_window_wndclass", "VDP Layer Options",
-				      WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
-				      CW_USEDEFAULT, CW_USEDEFAULT,
-				      VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT,
-				      (HWND)parent, NULL, vlopt_hinstance, NULL);
+	vlopt_window = CreateWindow(TEXT("vlopt_window_wndclass"), TEXT("VDP Layer Options"),
+				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
+				    CW_USEDEFAULT, CW_USEDEFAULT,
+				    VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT,
+				    (HWND)parent, NULL, vlopt_hinstance, NULL);
 	
 	// Window adjustment.
 	mdp_win32_set_actual_window_size(vlopt_window, VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT);
@@ -235,7 +235,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	if (vlopt_window_child_windows_created)
 		return;
 	
-	HWND grpBox = CreateWindow(WC_BUTTON, "VDP Layer Options",
+	HWND grpBox = CreateWindow(WC_BUTTON, TEXT("VDP Layer Options"),
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-8-16-24,
 			      hWnd, NULL, vlopt_hinstance, NULL);
@@ -305,13 +305,13 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	const int posBtnLeft = (VLOPT_WINDOW_WIDTH - 75 - 75 - 8) / 2;
 	
 	// Create the "Reset" button.
-	HWND btnReset = CreateWindow(WC_BUTTON, "&Reset", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	HWND btnReset = CreateWindow(WC_BUTTON, TEXT("&Reset"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     posBtnLeft, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
 				     hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hinstance, NULL);
 	SetWindowFont(btnReset, vlopt_hfont, TRUE);
 	
 	// Create the "Close" button.
-	HWND btnClose = CreateWindow(WC_BUTTON, "&Close", WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	HWND btnClose = CreateWindow(WC_BUTTON, TEXT("&Close"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     posBtnLeft+75+8, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
 				     hWnd, (HMENU)IDCLOSE, vlopt_hinstance, NULL);
 	SetWindowFont(btnClose, vlopt_hfont, TRUE);
@@ -319,48 +319,6 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	// Child windows created.
 	vlopt_window_child_windows_created = TRUE;
 }
-
-
-
-#if 0
-/**
- * vlopt_window_callback_response(): Dialog Response callback.
- * @param dialog
- * @param response_id
- * @param user_data
- */
-static void vlopt_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(dialog);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	int rval;
-	
-	switch (response_id)
-	{
-		case VLOPT_RESPONSE_RESET:
-			// Reset the VDP layer options to the default value.
-			rval = vlopt_host_srv->val_set(MDP_VAL_VDP_LAYER_OPTIONS, MDP_VDP_LAYER_OPTIONS_DEFAULT);
-			if (rval != MDP_ERR_OK)
-			{
-				fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, rval);
-			}
-			
-			// Reload the VDP layer options.
-			vlopt_window_load_options();
-			break;
-		
-		case GTK_RESPONSE_CLOSE:
-			// Close.
-			vlopt_window_close();
-			break;
-		
-		default:
-			// Unknown response ID.
-			break;
-	}
-}
-#endif
 
 
 /**

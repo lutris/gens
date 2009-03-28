@@ -135,13 +135,13 @@ void about_window_show(void)
 		about_wndclass.hCursor = NULL;
 		about_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		about_wndclass.lpszMenuName = NULL;
-		about_wndclass.lpszClassName = "about_window";
+		about_wndclass.lpszClassName = TEXT("about_window");
 		
 		RegisterClass(&about_wndclass);
 	}
 	
 	// Create the window.
-	about_window = CreateWindow("about_window", "About Gens/GS",
+	about_window = CreateWindow(TEXT("about_window"), TEXT("About Gens/GS"),
 				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,
@@ -221,9 +221,9 @@ static void about_window_create_child_windows(HWND hWnd)
 	TCITEM tab;
 	memset(&tab, 0x00, sizeof(tab));
 	tab.mask = TCIF_TEXT;
-	tab.pszText = "&Copyright";
+	tab.pszText = TEXT("&Copyright");
 	TabCtrl_InsertItem(tabInfo, 0, &tab);
-	tab.pszText = "Included &Libraries";
+	tab.pszText = TEXT("Included &Libraries");
 	TabCtrl_InsertItem(tabInfo, 1, &tab);
 	
 	// Calculate the tab's display area.
@@ -253,7 +253,7 @@ static void about_window_create_child_windows(HWND hWnd)
 	SetWindowFont(lblTabContents, fntMain, true);
 	
 	// Create the OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  ABOUT_WINDOW_WIDTH-8-75, ABOUT_WINDOW_HEIGHT-8-24,
 				  75, 23,

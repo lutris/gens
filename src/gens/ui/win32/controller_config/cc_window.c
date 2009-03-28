@@ -36,6 +36,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <tchar.h>
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
@@ -177,13 +178,13 @@ void cc_window_show(void)
 		cc_wndclass.hCursor = NULL;
 		cc_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		cc_wndclass.lpszMenuName = NULL;
-		cc_wndclass.lpszClassName = "cc_window";
+		cc_wndclass.lpszClassName = TEXT("cc_window");
 		
 		RegisterClass(&cc_wndclass);
 	}
 	
 	// Create the window.
-	cc_window = CreateWindow("cc_window", "Controller Configuration",
+	cc_window = CreateWindow(TEXT("cc_window"), TEXT("Controller Configuration"),
 				 WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				 CW_USEDEFAULT, CW_USEDEFAULT,
 				 CC_WINDOW_WIDTH, CC_WINDOW_HEIGHT,
@@ -224,7 +225,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// OK button.
-	HWND btnOK = CreateWindow(WC_BUTTON, "&OK",
+	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 				  CC_WINDOW_WIDTH-8-75-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				  75, 23,
@@ -232,7 +233,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
 	// Cancel button.
-	HWND btnCancel = CreateWindow(WC_BUTTON, "&Cancel",
+	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				      CC_WINDOW_WIDTH-8-75-8-75, CC_WINDOW_HEIGHT-8-24,
 				      75, 23,
@@ -240,7 +241,7 @@ static void cc_window_create_child_windows(HWND hWnd)
 	SetWindowFont(btnCancel, fntMain, TRUE);
 	
 	// Apply button.
-	HWND btnApply = CreateWindow(WC_BUTTON, "&Apply",
+	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     CC_WINDOW_WIDTH-8-75, CC_WINDOW_HEIGHT-8-24,
 				     75, 23,
@@ -280,11 +281,11 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 	SetWindowFont(fraPort, fntMain, TRUE);
 	
 	// Checkbox for enabling teamplayer.
-	const char *tp_label;
+	const TCHAR *tp_label;
 	if (port == 1)
-		tp_label = "Use Teamplayer / 4-Way Play";
+		tp_label = TEXT("Use Teamplayer / 4-Way Play");
 	else
-		tp_label = "Use Teamplayer";
+		tp_label = TEXT("Use Teamplayer");
 	chkTeamplayer[port-1] = CreateWindow(WC_BUTTON, tp_label,
 					     WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 					     8+8, fraPort_top+16, CC_FRAME_PORT_WIDTH-16, 16,
@@ -326,11 +327,11 @@ static void cc_window_create_controller_port_frame(HWND container, int port)
 		SetWindowFont(cboPadType[player], fntMain, TRUE);
 		
 		// Pad type dropdown entries.
-		ComboBox_AddString(cboPadType[player], "3 buttons");
-		ComboBox_AddString(cboPadType[player], "6 buttons");
+		ComboBox_AddString(cboPadType[player], TEXT("3 buttons"));
+		ComboBox_AddString(cboPadType[player], TEXT("6 buttons"));
 		
 		// "Configure" button.
-		optConfigure[player] = CreateWindow(WC_BUTTON, "Configure",
+		optConfigure[player] = CreateWindow(WC_BUTTON, TEXT("Configure"),
 						    WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
 						    8+8+48+8+80+8, fraPort_top+16+16+4+(i*24), 75, 23,
 						    container, (HMENU)(IDC_CC_OPTCONFIGURE + player),
@@ -349,7 +350,7 @@ static void cc_window_create_input_devices_frame(HWND container)
 	static const int fraInputDevices_top = 8+CC_FRAME_PORT_HEIGHT+8+CC_FRAME_PORT_HEIGHT+8;
 	
 	// "Input Devices" frame.
-	HWND fraInputDevices = CreateWindow(WC_BUTTON, "Detected Input Devices",
+	HWND fraInputDevices = CreateWindow(WC_BUTTON, TEXT("Detected Input Devices"),
 					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					    8, fraInputDevices_top,
 					    CC_FRAME_INPUT_DEVICES_WIDTH, CC_FRAME_INPUT_DEVICES_HEIGHT,
@@ -376,7 +377,7 @@ static void cc_window_populate_input_devices(HWND lstBox)
 	ListBox_ResetContent(lstBox);
 	
 	// Add "Keyboard" as the first entry.
-	ListBox_AddString(lstBox, "Keyboard");
+	ListBox_AddString(lstBox, TEXT("Keyboard"));
 	
 	// Add any detected joysticks to the list model.
 	// TODO: This is DirectInput-specific.
@@ -424,7 +425,7 @@ static void cc_window_create_configure_controller_frame(HWND container)
 						    container, NULL, ghInstance, NULL);
 		
 		// "Change" button.
-		btnChange[button] = CreateWindow(WC_BUTTON, "Change",
+		btnChange[button] = CreateWindow(WC_BUTTON, TEXT("Change"),
 						 WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 						 fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-75,
 						 fraConfigure_top+16+(button*24),
@@ -441,7 +442,7 @@ static void cc_window_create_configure_controller_frame(HWND container)
 		     container, NULL, ghInstance, NULL);
 	
 	// "Change All Buttons" button.
-	btnChangeAll = CreateWindow(WC_BUTTON, "Change All Buttons",
+	btnChangeAll = CreateWindow(WC_BUTTON, TEXT("Change All Buttons"),
 				    WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				    fraConfigure_left+8, fraConfigure_top+16+12*24+8+2+8,
 				    127, 23,
@@ -449,7 +450,7 @@ static void cc_window_create_configure_controller_frame(HWND container)
 	SetWindowFont(btnChangeAll, fntMain, TRUE);
 	
 	// "Clear All Buttons" button.
-	btnClearAll = CreateWindow(WC_BUTTON, "Clear All Buttons",
+	btnClearAll = CreateWindow(WC_BUTTON, TEXT("Clear All Buttons"),
 				   WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				   fraConfigure_left+CC_FRAME_CONFIGURE_WIDTH-8-128,
 				   fraConfigure_top+16+12*24+8+2+8,
@@ -470,7 +471,7 @@ static void cc_window_create_options_frame(HWND container)
 	static const int fraOptions_left = 8+CC_FRAME_PORT_WIDTH+8;
 	
 	// "Configure Controller" frame.
-	HWND fraOptions = CreateWindow(WC_BUTTON, "Options",
+	HWND fraOptions = CreateWindow(WC_BUTTON, TEXT("Options"),
 				       WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 				       fraOptions_left, fraOptions_top,
 				       CC_FRAME_OPTIONS_WIDTH, CC_FRAME_OPTIONS_HEIGHT,
@@ -478,7 +479,7 @@ static void cc_window_create_options_frame(HWND container)
 	SetWindowFont(fraOptions, fntMain, TRUE);
 	
 	// "Restrict Input" checkbox.
-	chkRestrictInput = CreateWindow(WC_BUTTON, "&Restrict Input\n(Disables Up+Down, Left+Right)",
+	chkRestrictInput = CreateWindow(WC_BUTTON, TEXT("&Restrict Input\n(Disables Up+Down, Left+Right)"),
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_MULTILINE,
 					8, 16,
 					CC_FRAME_OPTIONS_WIDTH-16, 32,
@@ -829,7 +830,7 @@ static void cc_window_configure_key(int player, int button)
 	cc_cur_player_button = button;
 	
 	// Set the current configure text.
-	Static_SetText(lblCurConfig[button], "Press a Key...");
+	Static_SetText(lblCurConfig[button], TEXT("Press a Key..."));
 	
 	// Set the blink timer for 500 ms.
 	SetTimer(cc_window, IDT_CONFIGURE_BLINK, 500, cc_window_callback_blink);

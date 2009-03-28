@@ -163,7 +163,8 @@ void Sync_Gens_Window_FileMenu_ROMHistory(void)
 		DestroyMenu(mnuROMHistory);
 	
 	mnuROMHistory = CreatePopupMenu();
-	InsertMenu(mnuFile, posROMHistory, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuROMHistory, "ROM &History");
+	InsertMenu(mnuFile, posROMHistory, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)mnuROMHistory, TEXT("ROM &History"));
 	gens_menu_map.insert(gensMenuMapItem_t(IDM_FILE_ROMHISTORY, mnuROMHistory));
 	
 	string sROMHistoryEntry;
@@ -284,7 +285,8 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 	
 	// Create a new submenu.
 	mnuBackend = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuBackend, "&Backend\tShift+R");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)mnuBackend, TEXT("&Backend\tShift+R"));
 	gens_menu_map.insert(gensMenuMapItem_t(IDM_GRAPHICS_BACKEND, mnuBackend));
 	
 	// Add the backends.
@@ -326,7 +328,8 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	
 	// Render submenu
 	mnuRender = CreatePopupMenu();
-	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING, (UINT_PTR)mnuRender, "&Render");
+	InsertMenu(parent, position, MF_BYPOSITION | MF_POPUP | MF_STRING,
+		   (UINT_PTR)mnuRender, TEXT("&Render"));
 	gens_menu_map.insert(gensMenuMapItem_t(IDM_GRAPHICS_RENDER, mnuRender));
 	
 	// Create the render entries.
@@ -389,20 +392,20 @@ void Sync_Gens_Window_CPUMenu(void)
 	if (SegaCD_Started)
 	{
 		// SegaCD: Show Main 68000 and Sub 68000.
-		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETMAIN68K, "Reset Main 68000");
-		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETSUB68K, "Reset Sub 68000");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETMAIN68K, TEXT("Reset Main 68000"));
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETSUB68K, TEXT("Reset Sub 68000"));
 	}
 	else
 	{
 		// No SegaCD: Only show one 68000.
-		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESET68K, "Reset 68000");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESET68K, TEXT("Reset 68000"));
 	}
 	
 	if (_32X_Started)
 	{
 		// 32X: Show Main SH2 and Sub SH2.
-		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETMAINSH2, "Reset Main SH2");
-		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETSUBSH2, "Reset Sub SH2");
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETMAINSH2, TEXT("Reset Main SH2"));
+		InsertMenu(mnuCPU, IDM_CPU_RESETZ80, flags, IDM_CPU_RESETSUBSH2, TEXT("Reset Sub SH2"));
 	}
 	
 	// Country code
@@ -442,7 +445,7 @@ static void Sync_Gens_Window_CPUMenu_Debug(HMENU parent, int position)
 	
 	// Debug submenu
 	mnuDebug = CreatePopupMenu();
-	InsertMenu(parent, position, flags, (UINT_PTR)mnuDebug, "&Debug");
+	InsertMenu(parent, position, flags, (UINT_PTR)mnuDebug, TEXT("&Debug"));
 	gens_menu_map.insert(gensMenuMapItem_t(IDM_CPU_DEBUG, mnuDebug));
 	
 	if (flags & MF_GRAYED)
@@ -529,19 +532,19 @@ void Sync_Gens_Window_SoundMenu(void)
 		}
 	}
 	
-	char dumpLabel[16];
+	const TCHAR *dumpLabel;
 	
 	uint32_t audioDumpFlags = MF_BYCOMMAND | (((Game != NULL) && audio_get_enabled()) ? MF_ENABLED : MF_GRAYED);
 	
 	// WAV dumping.
-	strcpy(dumpLabel, (WAV_Dumping ? "Stop WAV Dump" : "Start WAV Dump"));
+	dumpLabel = (WAV_Dumping ? TEXT("Stop WAV Dump") : TEXT("Start WAV Dump"));
 	ModifyMenu(mnuSound, IDM_SOUND_WAVDUMP,
 		   MF_BYCOMMAND | MF_STRING,
 		   IDM_SOUND_WAVDUMP, dumpLabel);
 	EnableMenuItem(mnuSound, IDM_SOUND_WAVDUMP, audioDumpFlags);
 	
 	// GYM dumping.
-	strcpy(dumpLabel, (GYM_Dumping ? "Stop GYM Dump" : "Start GYM Dump"));
+	dumpLabel = (GYM_Dumping ? TEXT("Stop GYM Dump") : TEXT("Start GYM Dump"));
 	ModifyMenu(mnuSound, IDM_SOUND_GYMDUMP,
 		   MF_BYCOMMAND | MF_STRING,
 		   IDM_SOUND_GYMDUMP, dumpLabel);
@@ -567,7 +570,7 @@ void Sync_Gens_Window_PluginsMenu(void)
 	
 	mnuPlugins = CreatePopupMenu();
 	InsertMenu(MainMenu, posPlugins, MF_BYPOSITION | MF_POPUP | MF_STRING,
-		   (UINT_PTR)mnuPlugins, "&Plugins");
+		   (UINT_PTR)mnuPlugins, TEXT("&Plugins"));
 	gens_menu_map.insert(gensMenuMapItem_t(IDM_PLUGINS_MENU, mnuPlugins));
 	
 	// Create the plugin menu items.
@@ -591,7 +594,7 @@ void Sync_Gens_Window_PluginsMenu(void)
 	
 	// Add the Plugin Manager menu item.
 	InsertMenu(mnuPlugins, -1, MF_BYPOSITION | MF_STRING,
-		   IDM_PLUGINS_MANAGER, "Plugin Manager");
+		   IDM_PLUGINS_MANAGER, TEXT("Plugin Manager"));
 }
 
 

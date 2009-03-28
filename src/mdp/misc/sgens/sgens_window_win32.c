@@ -119,7 +119,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		sgens_wndclass.hCursor = NULL;
 		sgens_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		sgens_wndclass.lpszMenuName = NULL;
-		sgens_wndclass.lpszClassName = "mdp_misc_sgens_window";
+		sgens_wndclass.lpszClassName = TEXT("mdp_misc_sgens_window");
 		
 		RegisterClass(&sgens_wndclass);
 	}
@@ -128,7 +128,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	sgens_hFont = mdp_win32_get_message_font();
 	
 	// Create the window.
-	sgens_window = CreateWindow("mdp_misc_sgens_window", "Sonic Gens",
+	sgens_window = CreateWindow(TEXT("mdp_misc_sgens_window"), TEXT("Sonic Gens"),
 				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT,
@@ -172,7 +172,7 @@ static void sgens_window_create_child_windows(HWND hWnd)
 	// Create the dialog buttons.
 	
 	// Close button.
-	HWND btnClose = CreateWindow(WC_BUTTON, "&Close",
+	HWND btnClose = CreateWindow(WC_BUTTON, TEXT("&Close"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     SGENS_WINDOW_WIDTH-8-75, SGENS_WINDOW_HEIGHT-8-24,
 				     75, 23,
@@ -188,7 +188,7 @@ static void sgens_window_create_child_windows(HWND hWnd)
 static void sgens_window_create_level_info_frame(HWND container)
 {
 	// "Level Information" frame.
-	HWND fraLevelInfo = CreateWindow(WC_BUTTON, "Level Information",
+	HWND fraLevelInfo = CreateWindow(WC_BUTTON, TEXT("Level Information"),
 					 WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					 8, 8+16,
 					 FRAME_WIDTH, FRAME_LEVEL_INFO_HEIGHT,
@@ -196,14 +196,14 @@ static void sgens_window_create_level_info_frame(HWND container)
 	SetWindowFont(fraLevelInfo, sgens_hFont, TRUE);
 	
 	// "Zone" information label.
-	lblLevelInfo_Zone = CreateWindow(WC_STATIC, "Zone",
+	lblLevelInfo_Zone = CreateWindow(WC_STATIC, TEXT("Zone"),
 					 WS_CHILD | WS_VISIBLE | SS_CENTER,
 					 8, 16, SGENS_WINDOW_WIDTH-16-16, 16,
 					 fraLevelInfo, NULL, sgens_hInstance, NULL);
 	SetWindowFont(lblLevelInfo_Zone, sgens_hFont, TRUE);
 	
 	// "Act" information label.
-	lblLevelInfo_Act = CreateWindow(WC_STATIC, "Act",
+	lblLevelInfo_Act = CreateWindow(WC_STATIC, TEXT("Act"),
 					WS_CHILD | WS_VISIBLE | SS_CENTER,
 					8, 16+16, SGENS_WINDOW_WIDTH-16-16, 16,
 					fraLevelInfo, NULL, sgens_hInstance, NULL);
@@ -262,7 +262,7 @@ static void sgens_window_create_level_info_frame(HWND container)
 static void sgens_window_create_player_info_frame(HWND container)
 {
 	// "Level Information" frame.
-	HWND fraPlayerInfo = CreateWindow(WC_BUTTON, "Player Information",
+	HWND fraPlayerInfo = CreateWindow(WC_BUTTON, TEXT("Player Information"),
 					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 					  8, 8+16+FRAME_LEVEL_INFO_HEIGHT+8,
 					  FRAME_WIDTH, FRAME_PLAYER_INFO_HEIGHT,
@@ -392,7 +392,7 @@ void MDP_FNCALL sgens_window_update_rom_type(void)
 	Static_SetText(lblLoadedGame, sgens_ROM_type_name[sgens_current_rom_type]);
 	
 	// Reset the "Rings for Perfect Bonus" information label.
-	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], "0");
+	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], TEXT("0"));
 	
 	// Enable/Disable the "Rings for Perfect Bonus" labels, depending on ROM type.
 	BOOL isS2 = (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
