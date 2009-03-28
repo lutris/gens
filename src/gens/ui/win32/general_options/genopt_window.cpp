@@ -618,13 +618,13 @@ static void genopt_window_callback_drawMsgRadioButton(int identifier, LPDRAWITEM
 		
 		if (index < 2)
 		{
-			SelectObject(hDC, brushOSD[button][1]);
-			SelectObject(hDC, penOSD[button][1]);
+			SelectBrush(hDC, brushOSD[button][1]);
+			SelectPen(hDC, penOSD[button][1]);
 		}
 		else //if (index == 2)
 		{
-			SelectObject(hDC, brushIntroEffect[button][1]);
-			SelectObject(hDC, penIntroEffect[button][1]);
+			SelectBrush(hDC, brushIntroEffect[button][1]);
+			SelectPen(hDC, penIntroEffect[button][1]);
 		}
 		
 		Ellipse(hDC, itemRect.left + 4, itemRect.top + 4,

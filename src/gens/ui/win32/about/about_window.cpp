@@ -189,7 +189,7 @@ static void about_window_create_child_windows(HWND hWnd)
 		bih.biWidth	= 80;
 		bih.biHeight	= -80;
 		hbmpGensLogo = CreateDIBSection(hdcComp, (BITMAPINFO*)&bih, DIB_RGB_COLORS, (LPVOID*)&pbmpData, NULL, 0);
-		SelectObject(hdcComp, hbmpGensLogo);
+		SelectBitmap(hdcComp, hbmpGensLogo);
 		
 		ax = 0; bx = 0; cx = 1;
 		tmrIce = SetTimer(hWnd, IDT_ICETIMER, 10, about_window_callback_iceTimer);
