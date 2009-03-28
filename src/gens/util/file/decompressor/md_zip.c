@@ -159,34 +159,36 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 	unzClose(f);
 	if ((zResult <= 0) || (zResult != size))
 	{
-		char tmp[64];
-		strcpy(tmp, "Error in ZIP file: \n");
+		const char* zip_err;
 		
 		switch (zResult)
 		{
 			case UNZ_ERRNO:
-				strcat(tmp, "Unknown...");
+				zip_err = "Unknown...";
 				break;
 			case UNZ_EOF:
-				strcat(tmp, "Unexpected end of file.");
+				zip_err = "Unexpected end of file.";
 				break;
 			case UNZ_PARAMERROR:
-				strcat(tmp, "Parameter error.");
+				zip_err = "Parameter error.";
 				break;
 			case UNZ_BADZIPFILE:
-				strcat(tmp, "Bad ZIP file.");
+				zip_err = "Bad ZIP file.";
 				break;
 			case UNZ_INTERNALERROR:
-				strcat(tmp, "Internal error.");
+				zip_err = "Internal error.";
 				break;
 			case UNZ_CRCERROR:
-				strcat(tmp, "CRC error.");
+				zip_err = "CRC error.";
+				break;
+			default:
+				zip_err = "Unknown error.";
 				break;
 		}
 		
 		// TODO: Show a message box.
 		//GensUI::msgBox(tmp, "ZIP File Error");
-		fprintf(stderr, "%s(): %s\n", __func__, tmp);
+		fprintf(stderr, "%s(): Error in ZIP file: %s\n", __func__, zip_err);
 		return -1;
 	}
 	

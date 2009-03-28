@@ -425,8 +425,9 @@ void parse_args(int argc, char *argv[])
 		{
 			if (strcmp(optarg, "") != 0)
 			{
-				strcpy(PathNames.Start_Rom, Rom_Dir);
-				strcat(PathNames.Start_Rom, optarg);
+				snprintf(PathNames.Start_Rom, sizeof(PathNames.Start_Rom),
+					 "%s" GENS_DIR_SEPARATOR_STR "%s", Rom_Dir, optarg);
+				PathNames.Start_Rom[sizeof(PathNames.Start_Rom)-1] = 0x00;
 			}
 		}
 		
@@ -579,8 +580,10 @@ void parse_args(int argc, char *argv[])
 		fputs("Arguments not understood.\n", stderr);
 		_usage();
 	}
-	else if (optind == argc - 1)
+	else if (optind == (argc - 1))
 	{
+		// Startup ROM.
+		
 #ifdef GENS_OS_WIN32
 		/* Win32: Check for "C:\" and "\\" prefixes. */
 		if ((!isalpha(argv[optind][0]) && argv[optind][1] != ':' && argv[optind][2] != '\\') &&
@@ -591,8 +594,13 @@ void parse_args(int argc, char *argv[])
 		{
 			getcwd(PathNames.Start_Rom, sizeof(PathNames.Start_Rom));
 			strcat(PathNames.Start_Rom, GENS_DIR_SEPARATOR_STR);
+			strcat(PathNames.Start_Rom, argv[optind]);
 		}
-		strcat(PathNames.Start_Rom, argv[optind]);
+		else
+		{
+			strncpy(PathNames.Start_Rom, argv[optind], sizeof(PathNames.Start_Rom));
+			PathNames.Start_Rom[sizeof(PathNames.Start_Rom)-1] = 0x00;
+		}
 	}
 }
 
