@@ -32,18 +32,21 @@
 #include "wndbase.hpp"
 #include <windows.h>
 
+// MDP decompression structs.
+#include "mdp/mdp_z.h"
+
 class ZipSelectDialog : public WndBase
 {
 	public:
 		ZipSelectDialog();
 		~ZipSelectDialog();
 		
-		file_list_t* getFile(file_list_t *file_list);
+		mdp_z_entry_t* getFile(mdp_z_entry_t *file_list);
 		
 		void init(HWND hWndDlg);
 	
 	protected:
-		file_list_t *m_fileList;
+		mdp_z_entry_t* m_fileList;
 };
 
 #endif /* __cplusplus */

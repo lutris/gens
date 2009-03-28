@@ -27,9 +27,9 @@
 
 // GZip decompressor functions.
 static int decompressor_gzip_detect_format(FILE *zF);
-static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename);
+static mdp_z_entry_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename);
 static size_t decompressor_gzip_get_file(FILE *zF, const char* filename,
-					 file_list_t *file_list,
+					 mdp_z_entry_t *z_entry,
 					 void *buf, const size_t size);
 
 // GZip decompressor struct.
@@ -61,7 +61,7 @@ static int decompressor_gzip_detect_format(FILE *zF)
  * @param filename Filename of the archive.
  * @return Pointer to the first file in the list, or NULL on error.
  */
-static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename)
+static mdp_z_entry_t* decompressor_gzip_get_file_info(FILE *zF, const char* filename)
 {
 	// Unused parameters.
 	((void)zF);
@@ -88,7 +88,7 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
 	gzclose(gzfd);
 	
 	// Allocate memory for the file_list_t.
-	file_list_t *file_list = (file_list_t*)malloc(sizeof(file_list_t));
+	mdp_z_entry_t *file_list = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 	
 	// Set the elements of the list.
 	file_list->filename = (filename ? gens_strdup(filename) : NULL);
@@ -104,18 +104,18 @@ static file_list_t* decompressor_gzip_get_file_info(FILE *zF, const char* filena
  * decompressor_gzip_get_file(): Get a file from the archive.
  * @param zF Open file handle. (Unused in the GZip handler.)
  * @param filename Filename of the archive. (Unused in the GZip handler.)
- * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
 static size_t decompressor_gzip_get_file(FILE *zF, const char *filename,
-					 file_list_t *file_list,
+					 mdp_z_entry_t *z_entry,
 					 void *buf, const size_t size)
 {
 	// Unused parameters.
 	((void)zF);
-	((void)file_list);
+	((void)z_entry);
 	
 	// All parameters (except zF and file_list) must be specified.
 	if (!filename || !buf || !size)

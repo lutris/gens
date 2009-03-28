@@ -34,22 +34,14 @@ extern "C" {
 // gens_strdup()
 #include "macros/compat_m.h"
 
-/**
- * file_list_t: Linked list of files from a decompressor.
- */
-typedef struct _file_list_t
-{
-	char*	filename;		// Created using gens_strdup().
-	size_t	filesize;		// Filesize.
-	
-	struct	_file_list_t *next;	// Next file.
-} file_list_t;
+// MDP decompression structs.
+#include "mdp/mdp_z.h"
 
 /**
- * file_list_t_free(): Free a list of files.
- * @param file_list Pointer to the first file in the list.
+ * z_entry_t_free(): Free a list of files.
+ * @param z_entry Pointer to the first file in the list.
  */
-void file_list_t_free(file_list_t *file_list);
+void z_entry_t_free(mdp_z_entry_t *z_entry);
 
 /**
  * decompressor_detect_format(): Detect if this file can be handled by this decompressor.
@@ -64,7 +56,7 @@ typedef int (*decompressor_detect_format)(FILE *zF);
  * @param filename Filename of the archive.
  * @return Pointer to the first file in the list, or NULL on error.
  */
-typedef file_list_t* (*decompressor_get_file_info)(FILE *zF, const char *filename);
+typedef mdp_z_entry_t* (*decompressor_get_file_info)(FILE *zF, const char *filename);
 
 /**
  * decompressor_get_file(): Get a file from the archive.
@@ -76,7 +68,7 @@ typedef file_list_t* (*decompressor_get_file_info)(FILE *zF, const char *filenam
  * @return Number of bytes read, or 0 on error.
  */
 typedef size_t (*decompressor_get_file)(FILE *zF, const char *filename,
-					file_list_t *file_list,
+					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size);
 
 /**

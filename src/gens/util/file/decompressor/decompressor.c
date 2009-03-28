@@ -25,27 +25,29 @@
 #include <stdlib.h>
 
 /**
- * file_list_t_free(): Free a list of files.
- * @param file_list Pointer to the first file in the list.
+ * z_entry_t_free(): Free a list of files.
+ * @param z_entry Pointer to the first file in the list.
  */
-void file_list_t_free(file_list_t *file_list)
+void z_entry_t_free(mdp_z_entry_t *z_entry)
 {
-	if (!file_list)
+	if (!z_entry)
 		return;
+	
+	mdp_z_entry_t *next;
 	
 	do
 	{
 		// Free the filename, if one's allocated.
-		if (file_list->filename)
-			free(file_list->filename);
+		if (z_entry->filename)
+			free(z_entry->filename);
 		
 		// Save the next pointer.
-		file_list_t *next = file_list->next;
+		next = z_entry->next;
 		
 		// Free the file_list_t.
-		free(file_list);
+		free(z_entry);
 		
 		// Go to the next file_list_t.
-		file_list = next;
-	} while (file_list);
+		z_entry = next;
+	} while (z_entry);
 }

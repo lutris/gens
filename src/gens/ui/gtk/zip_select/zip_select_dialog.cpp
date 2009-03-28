@@ -133,7 +133,7 @@ static gboolean on_m_lstFiles_button_press(GtkWidget *widget, GdkEventButton *ev
 /**
  * getFile(): Get a file using the Zip Select dialog.
  */
-file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
+mdp_z_entry_t* ZipSelectDialog::getFile(mdp_z_entry_t *file_list)
 {
 	if (!file_list)
 	{
@@ -161,13 +161,13 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 	gtk_tree_view_append_column(GTK_TREE_VIEW(m_lstFiles), colText);
 	
 	// Add all files from the CompressedFile list.
-	file_list_t *file_list_cur = file_list;
-	while (file_list_cur)
+	mdp_z_entry_t *z_entry_cur = file_list;
+	while (z_entry_cur)
 	{
 		gtk_list_store_append(lstdataFiles, &iter);
 		gtk_list_store_set(GTK_LIST_STORE(lstdataFiles), &iter,
-				   0, file_list_cur->filename, 1, file_list_cur, -1);
-		file_list_cur = file_list_cur->next;
+				   0, z_entry_cur->filename, 1, z_entry_cur, -1);
+		z_entry_cur = z_entry_cur->next;
 	}
 	
 	// Select the first item by default.
@@ -201,7 +201,7 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 		if (gtk_tree_selection_iter_is_selected(selection, &iter))
 		{
 			// Found the selected file.
-			gtk_tree_model_get(GTK_TREE_MODEL(lstdataFiles), &iter, 1, &file_list_cur, -1);
+			gtk_tree_model_get(GTK_TREE_MODEL(lstdataFiles), &iter, 1, &z_entry_cur, -1);
 			break;
 		}
 		else
@@ -212,5 +212,5 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 	}
 	
 	// Return the selected file_list_t*.
-	return file_list_cur;
+	return z_entry_cur;
 }

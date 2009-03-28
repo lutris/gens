@@ -128,46 +128,13 @@ int MDP_FNCALL mdp_host_z_open(const char* filename, mdp_z_t **z_out)
 	}
 	
 	/* Get the file information. */
-	file_list_t *file_list_head = cmp->get_file_info(f, filename);
-	if (!file_list_head)
+	mdp_z_entry_t *z_entry_head = cmp->get_file_info(f, filename);
+	if (!z_entry_head)
 	{
 		/* No files were in the archive. */
 		fclose(f);
 		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
 	}
-	
-	/* Convert file_list_t to mdp_z_entry_t. */
-	mdp_z_entry_t	*z_entry_head	= NULL;
-	mdp_z_entry_t	*z_entry_end	= NULL;
-	file_list_t	*file_list_cur	= file_list_head;
-	
-	while (file_list_cur)
-	{
-		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
-		z_entry_cur->filename = (file_list_cur->filename ? gens_strdup(file_list_cur->filename) : NULL);
-		z_entry_cur->filesize = file_list_cur->filesize;
-		z_entry_cur->next = NULL;
-		
-		/* Add the current file to the end of the list. */
-		if (!z_entry_head)
-		{
-			/* List hasn't been created yet. Create it. */
-			z_entry_head = z_entry_cur;
-			z_entry_end  = z_entry_cur;
-		}
-		else
-		{
-			/* Append the entry to the end of the list. */
-			z_entry_end->next = z_entry_cur;
-			z_entry_end = z_entry_cur;
-		}
-		
-		/* Next file_list_t. */
-		file_list_cur = file_list_cur->next;
-	}
-	
-	/* Free the file_list. */
-	file_list_t_free(file_list_head);
 	
 	/* Allocate the mdp_z_t. */
 	mdp_z_t *z = (mdp_z_t*)malloc(sizeof(mdp_z_t));
@@ -207,15 +174,9 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 		return -MDP_ERR_UNKNOWN;	/* TODO: Add a specific error code for this. */
 	}
 	
-	/* Convert the entry to file_list_t. */
-	file_list_t file_list;
-	file_list.filename = z_entry->filename;
-	file_list.filesize = z_entry->filesize;
-	file_list.next = NULL;
-	
 	/* Get the file from the decompressor. */
 	decompressor_t *cmp = (decompressor_t*)(z_file->data);
-	int rval = cmp->get_file(z_file->f, z_entry->filename, &file_list, buf, size);
+	int rval = cmp->get_file(z_file->f, z_file->filename, &z_entry, buf, size);
 	
 	/* If rval is positive, it's a filesize. */
 	/* If 0, return an error code. */

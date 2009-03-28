@@ -30,9 +30,9 @@
 
 // Zip decompressor functions.
 static int decompressor_zip_detect_format(FILE *zF);
-static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filename);
+static mdp_z_entry_t* decompressor_zip_get_file_info(FILE *zF, const char* filename);
 static size_t decompressor_zip_get_file(FILE *zF, const char* filename,
-					file_list_t *file_list,
+					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size);
 
 // Zip decompressor struct.
@@ -68,7 +68,7 @@ static int decompressor_zip_detect_format(FILE *zF)
  * @param filename Filename of the archive.
  * @return Pointer to the first file in the list, or NULL on error.
  */
-static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filename)
+static mdp_z_entry_t* decompressor_zip_get_file_info(FILE *zF, const char* filename)
 {
 	// Unused parameters.
 	((void)zF);
@@ -78,8 +78,8 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 	if (!f)
 		return NULL;
 	
-	file_list_t *file_list_head = NULL;
-	file_list_t *file_list_end = NULL;
+	mdp_z_entry_t *z_entry_head = NULL;
+	mdp_z_entry_t *z_entry_end = NULL;
 	
 	// Find the first ROM file in the Zip archive.
 	int i = unzGoToFirstFile(f);
@@ -90,24 +90,24 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 		unzGetCurrentFileInfo(f, &zinfo, ROMFileName, 128, NULL, 0, NULL, 0);
 		
 		// Allocate memory for the next file list element.
-		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
+		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		file_list_cur->filename = gens_strdup(ROMFileName);
-		file_list_cur->filesize = zinfo.uncompressed_size;
-		file_list_cur->next = NULL;
+		z_entry_cur->filename = gens_strdup(ROMFileName);
+		z_entry_cur->filesize = zinfo.uncompressed_size;
+		z_entry_cur->next = NULL;
 		
-		if (!file_list_head)
+		if (!z_entry_head)
 		{
 			// List hasn't been created yet. Create it.
-			file_list_head = file_list_cur;
-			file_list_end = file_list_cur;
+			z_entry_head = z_entry_cur;
+			z_entry_end = z_entry_cur;
 		}
 		else
 		{
 			// Append the file list entry to the end of the list.
-			file_list_end->next = file_list_cur;
-			file_list_end = file_list_cur;
+			z_entry_end->next = z_entry_cur;
+			z_entry_end = z_entry_cur;
 		}
 		
 		// Go to the next file.
@@ -118,7 +118,7 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
 	unzClose(f);
 	
 	// Return the list of files.
-	return file_list_head;
+	return z_entry_head;
 }
 
 
@@ -126,17 +126,17 @@ static file_list_t* decompressor_zip_get_file_info(FILE *zF, const char* filenam
  * decompressor_zip_get_file(): Get a file from the archive.
  * @param zF Open file handle. (Unused in the Zip handler.)
  * @param filename Filename of the archive.
- * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
 static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
-					file_list_t *file_list,
+					mdp_z_entry_t *z_entry,
 					void *buf, const size_t size)
 {
 	// All parameters (except zF) must be specified.
-	if (!filename || !file_list || !buf || !size)
+	if (!filename || !z_entry || !buf || !size)
 		return 0;
 	
 	unzFile f = unzOpen(filename);
@@ -144,13 +144,13 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 		return 0;
 	
 	// Locate the ROM in the Zip file.
-	if (unzLocateFile(f, file_list->filename, 1) != UNZ_OK ||
+	if (unzLocateFile(f, z_entry->filename, 1) != UNZ_OK ||
 	    unzOpenCurrentFile(f) != UNZ_OK)
 	{
 		// Error loading the ROM file.
 		LOG_MSG(z, LOG_MSG_LEVEL_CRITICAL,
 			"Error extracting file '%s' from archive '%s'.",
-			file_list->filename, filename);
+			z_entry->filename, filename);
 		unzClose(f);
 		return -1;
 	}
@@ -189,7 +189,7 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 		
 		LOG_MSG(z, LOG_MSG_LEVEL_CRITICAL,
 			"Error extracting file '%s' from archive '%s': %s",
-			file_list->filename, filename, zip_err);
+			z_entry->filename, filename, zip_err);
 		return -1;
 	}
 	

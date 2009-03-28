@@ -59,7 +59,7 @@ ZipSelectDialog::~ZipSelectDialog()
 /**
  * getFile(): Opens the Zip File Selection Dialog.
  */
-file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
+mdp_z_entry_t* ZipSelectDialog::getFile(mdp_z_entry_t *file_list)
 {
 	if (!file_list)
 	{
@@ -69,8 +69,8 @@ file_list_t* ZipSelectDialog::getFile(file_list_t *file_list)
 	
 	m_fileList = file_list;
 	
-	file_list_t *file;
-	file = reinterpret_cast<file_list_t*>(DialogBoxParam(
+	mdp_z_entry_t *file;
+	file = reinterpret_cast<mdp_z_entry_t*>(DialogBoxParam(
 				  ghInstance, MAKEINTRESOURCE(IDD_ZIPSELECT),
 				  gens_window,
 				  reinterpret_cast<DLGPROC>(Zip_Select_Dialog_DlgProc),
@@ -129,14 +129,14 @@ void ZipSelectDialog::init(HWND hWndDlg)
 	SendMessage(lstFiles, LB_INITSTORAGE, static_cast<WPARAM>(m_fileList->filesize), 128);
 	
 	// Add all strings.
-	file_list_t *file_list_cur = m_fileList;
-	while (file_list_cur)
+	mdp_z_entry_t *z_entry_cur = m_fileList;
+	while (z_entry_cur)
 	{
-		int index = ListBox_AddString(lstFiles, file_list_cur->filename);
-		ListBox_SetItemData(lstFiles, index, file_list_cur);
+		int index = ListBox_AddString(lstFiles, z_entry_cur->filename);
+		ListBox_SetItemData(lstFiles, index, z_entry_cur);
 		
 		// Next file.
-		file_list_cur = file_list_cur->next;
+		z_entry_cur = z_entry_cur->next;
 	}
 	
 	// Select the first item by default.

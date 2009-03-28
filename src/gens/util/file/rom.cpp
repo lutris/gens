@@ -562,10 +562,10 @@ unsigned int ROM::loadROM(const string& filename,
 	}
 	
 	// Selected file.
-	file_list_t *sel_file = NULL;
+	mdp_z_entry_t *sel_file = NULL;
 	
 	// Get the file information.
-	file_list_t *file_list = cmp->get_file_info(fROM, filename.c_str());
+	mdp_z_entry_t *file_list = cmp->get_file_info(fROM, filename.c_str());
 	
 	// Check how many files are available.
 	if (!file_list)
@@ -574,7 +574,7 @@ unsigned int ROM::loadROM(const string& filename,
 		GensUI::msgBox("No files were detected in this archive.", "No Files Detected");
 		
 		if (file_list)
-			file_list_t_free(file_list);
+			z_entry_t_free(file_list);
 		
 		fclose(fROM);
 		Game = NULL;
@@ -593,7 +593,7 @@ unsigned int ROM::loadROM(const string& filename,
 		if (!z_filename.empty())
 		{
 			// Compressed filename provided. Check if it exists inside of the archive.
-			file_list_t *cur = file_list;
+			mdp_z_entry_t *cur = file_list;
 			while (cur)
 			{
 #ifdef GENS_OS_WIN32
@@ -626,7 +626,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!sel_file)
 	{
 		// No file was selected and/or Cancel was clicked.
-		file_list_t_free(file_list);
+		z_entry_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -645,7 +645,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (romSys == ROMTYPE_SYS_NONE || romSys >= ROMTYPE_SYS_MCD)
 	{
 		// Unknown ROM type, or this is a SegaCD image.
-		file_list_t_free(file_list);
+		z_entry_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -657,7 +657,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (sel_file->filesize > ((6 * 1024 * 1024) + 512))
 	{
 		GensUI::msgBox("ROM files larger than 6 MB are not supported.", "ROM File Error");
-		file_list_t_free(file_list);
+		z_entry_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -669,7 +669,7 @@ unsigned int ROM::loadROM(const string& filename,
 	if (!myROM)
 	{
 		// Memory allocation error
-		file_list_t_free(file_list);
+		z_entry_t_free(file_list);
 		fclose(fROM);
 		Game = NULL;
 		out_ROM = NULL;
@@ -688,7 +688,7 @@ unsigned int ROM::loadROM(const string& filename,
 			loaded_size, sel_file->filesize);
 		
 		GensUI::msgBox("Error loading the ROM file.", "ROM File Error");
-		file_list_t_free(file_list);
+		z_entry_t_free(file_list);
 		fclose(fROM);
 		free(myROM);
 		myROM = NULL;
@@ -718,7 +718,7 @@ unsigned int ROM::loadROM(const string& filename,
 	}
 	
 	// Delete the file_list_t.
-	file_list_t_free(file_list);
+	z_entry_t_free(file_list);
 	
 	// Deinterleave the ROM, if necessary.
 	if (romType & ROMTYPE_FLAG_INTERLEAVED)

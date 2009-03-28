@@ -35,9 +35,9 @@
 
 // 7z decompressor functions.
 static int decompressor_7z_detect_format(FILE *zF);
-static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename);
+static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filename);
 static size_t decompressor_7z_get_file(FILE *zF, const char* filename,
-				       file_list_t *file_list,
+				       mdp_z_entry_t *z_entry,
 				       void *buf, const size_t size);
 
 // 7z decompressor struct.
@@ -73,7 +73,7 @@ static int decompressor_7z_detect_format(FILE *zF)
  * @param filename Filename of the archive.
  * @return Pointer to the first file in the list, or NULL on error.
  */
-static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename)
+static mdp_z_entry_t* decompressor_7z_get_file_info(FILE *zF, const char* filename)
 {
 	// Unused parameters.
 	((void)zF);
@@ -113,8 +113,8 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 		return NULL;
 	}
 	
-	file_list_t *file_list_head = NULL;
-	file_list_t *file_list_end = NULL;
+	mdp_z_entry_t *z_entry_head = NULL;
+	mdp_z_entry_t *z_entry_end = NULL;
 	
 	// Go through the list of files.
 	unsigned int i;
@@ -125,25 +125,25 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 			continue;
 		
 		// Allocate memory for the next file list element.
-		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
+		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		file_list_cur->filename = (f->Name ? gens_strdup(f->Name) : NULL);
-		file_list_cur->filesize = f->Size;
-		file_list_cur->next = NULL;
+		z_entry_cur->filename = (f->Name ? gens_strdup(f->Name) : NULL);
+		z_entry_cur->filesize = f->Size;
+		z_entry_cur->next = NULL;
 		
 		// Add the ROM file information to the list.
-		if (!file_list_head)
+		if (!z_entry_head)
 		{
 			// List hasn't been created yet. Create it.
-			file_list_head = file_list_cur;
-			file_list_end = file_list_cur;
+			z_entry_head = z_entry_cur;
+			z_entry_end = z_entry_cur;
 		}
 		else
 		{
 			// Append the file list entry to the end of the list.
-			file_list_end->next = file_list_cur;
-			file_list_end = file_list_cur;
+			z_entry_end->next = z_entry_cur;
+			z_entry_end = z_entry_cur;
 		}
 	}
 	
@@ -152,7 +152,7 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
 	File_Close(&archiveStream.file);
 	
 	// Return the list of files.
-	return file_list_head;
+	return z_entry_head;
 }
 
 
@@ -160,20 +160,20 @@ static file_list_t* decompressor_7z_get_file_info(FILE *zF, const char* filename
  * decompressor_7z_get_file(): Get a file from the archive.
  * @param zF Open file handle. (Unused in the GZip handler.)
  * @param filename Filename of the archive. (Unused in the GZip handler.)
- * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
 static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
-				       file_list_t *file_list,
+				       mdp_z_entry_t *z_entry,
 				       void *buf, const size_t size)
 {
 	// Unused parameters.
 	((void)zF);
 	
 	// All parameters (except zF) must be specified.
-	if (!filename || !file_list || !buf || !size)
+	if (!filename || !z_entry || !buf || !size)
 		return -1;
 	
 	CFileInStream archiveStream;
@@ -230,9 +230,9 @@ static size_t decompressor_7z_get_file(FILE *zF, const char *filename,
 			continue;
 		
 #ifdef GENS_OS_WIN32
-		if (strcasecmp(file_list->filename, f->Name) != 0)
+		if (strcasecmp(z_entry->filename, f->Name) != 0)
 #else /* !GENS_OS_WIN32 */
-		if (strcmp(file_list->filename, f->Name) != 0)
+		if (strcmp(z_entry->filename, f->Name) != 0)
 #endif /* GENS_OS_WIN32 */
 		{
 			// Not the correct file.

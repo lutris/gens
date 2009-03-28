@@ -69,7 +69,7 @@ int decompressor_rar_detect_format(FILE *zF)
  * @param filename Filename of the archive.
  * @return Pointer to the first file in the list, or NULL on error.
  */
-file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
+mdp_z_entry_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 {
 	// Unused parameters.
 	((void)zF);
@@ -119,8 +119,8 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	}
 	
 	// File list pointers.
-	file_list_t *file_list_head = NULL;
-	file_list_t *file_list_end = NULL;
+	mdp_z_entry_t *z_entry_head = NULL;
+	mdp_z_entry_t *z_entry_end = NULL;
 	
 	// Parse all lines until we hit another "---" (or EOF).
 	unsigned int curStartPos = listStartLF + RAR_NEWLINE_LENGTH;
@@ -176,24 +176,24 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 		tmp_filesize = atoi(curLine.substr(12, 10).c_str());
 		
 		// Allocate memory for the next file list element.
-		file_list_t *file_list_cur = (file_list_t*)malloc(sizeof(file_list_t));
+		mdp_z_entry_t *z_entry_cur = (mdp_z_entry_t*)malloc(sizeof(mdp_z_entry_t));
 		
 		// Store the ROM file information.
-		file_list_cur->filename = gens_strdup(tmp_filename.c_str());
-		file_list_cur->filesize = tmp_filesize;
-		file_list_cur->next = NULL;
+		z_entry_cur->filename = gens_strdup(tmp_filename.c_str());
+		z_entry_cur->filesize = tmp_filesize;
+		z_entry_cur->next = NULL;
 		
-		if (!file_list_head)
+		if (!z_entry_head)
 		{
 			// List hasn't been created yet. Create it.
-			file_list_head = file_list_cur;
-			file_list_end = file_list_cur;
+			z_entry_head = z_entry_cur;
+			z_entry_end = z_entry_cur;
 		}
 		else
 		{
 			// Append the file list entry to the end of the list.
-			file_list_end->next = file_list_cur;
-			file_list_end = file_list_cur;
+			z_entry_end->next = z_entry_cur;
+			z_entry_end = z_entry_cur;
 		}
 		
 		// Go to the next file in the listing.
@@ -201,7 +201,7 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
 	}
 	
 	// Return the list of files.
-	return file_list_head;
+	return z_entry_head;
 }
 
 
@@ -209,23 +209,23 @@ file_list_t* decompressor_rar_get_file_info(FILE *zF, const char* filename)
  * decompressor_rar_get_file(): Get a file from the archive.
  * @param zF Open file handle. (Unused in the RAR handler.)
  * @param filename Filename of the archive.
- * @param file_list Pointer to decompressor_file_list_t element to get from the archive.
+ * @param z_entry Pointer to mdp_z_entry_t element to get from the archive.
  * @param buf Buffer to read the file into.
  * @param size Size of buf (in bytes).
  * @return Number of bytes read, or 0 on error.
  */
 size_t decompressor_rar_get_file(FILE *zF, const char *filename,
-				 file_list_t *file_list,
+				 mdp_z_entry_t *z_entry,
 				 void *buf, const size_t size)
 {
 	// All parameters (except zF) must be specified.
-	if (!filename || !file_list || !buf || !size)
+	if (!filename || !z_entry || !buf || !size)
 		return 0;
 	
 	// Build the command line.
 	stringstream ssCmd;
 	ssCmd << "\"" << Misc_Filenames.RAR_Binary << "\" p -ierr \"" << filename
-	      << "\" \"" << file_list->filename << "\"";
+			<< "\" \"" << z_entry->filename << "\"";
 #ifndef GENS_OS_WIN32
 	ssCmd << " 2>/dev/null";
 #endif
