@@ -1,9 +1,10 @@
 /**
- * GENS: Byteswapping functions.
+ * Gens: Byteswapping functions.
  * These functions were ported from x86 assembler to C,
  * since they don't really need assembly optimizations.
  */
 
+#include "byteswap.h"
 
 /**
  * __byte_swap_16_array(): Swaps an array of bytes in 16-bit chunks.
