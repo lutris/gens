@@ -127,11 +127,9 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	if (!fImg || !screen || (w <= 0 || h <= 0 || pitch <= 0))
 		return 0;
 	
-	unsigned char *bmpData = NULL;
-	
 	// Calculate the size of the bitmap image.
 	int bmpSize = (w * h * 3);
-	bmpData = static_cast<unsigned char*>(malloc(bmpSize + 54));
+	uint8_t *bmpData = new uint8_t[bmpSize + 54];
 	if (!bmpData)
 	{
 		// Could not allocate enough memory.
@@ -188,7 +186,7 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	}
 	
 	fwrite(bmpData, 1, bmpSize + 54, fImg);
-	free(bmpData);
+	delete[] bmpData;
 	
 	return 1;
 }
@@ -218,8 +216,8 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 				     const uint8_t shiftR, const uint8_t shiftG, const uint8_t shiftB)
 {
 	// Allocate the row buffer.
-	uint8_t *rowBuffer;
-	if ((rowBuffer = static_cast<uint8_t*>(malloc(width * 3))) == NULL)
+	uint8_t *rowBuffer = new uint8_t[width * 3];
+	if (!rowBuffer)
 	{
 		// Could not allocate enough memory.
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
@@ -248,7 +246,7 @@ static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, p
 	}
 	
 	// Free the row buffer.
-	free(rowBuffer);
+	delete[] rowBuffer;
 	
 	return 1;
 }
