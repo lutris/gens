@@ -22,7 +22,8 @@
 
 #include "md_zip.h"
 
-#include "ui/gens_ui.hpp"
+// Message logging.
+#include "macros/log_msg.h"
 
 // MiniZip.
 #include "minizip/unzip.h"
@@ -147,9 +148,9 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 	    unzOpenCurrentFile(f) != UNZ_OK)
 	{
 		// Error loading the ROM file.
-		// TODO: Show a message box.
-		//GensUI::msgBox("Error loading the ROM file from the ZIP archive.", "ZIP File Error");
-		fprintf(stderr, "%s(): Error loading the ROM file from the ZIP archive.\n", __func__);
+		LOG_MSG(z, LOG_MSG_LEVEL_CRITICAL,
+			"Error extracting file '%s' from archive '%s'.",
+			file_list->filename, filename);
 		unzClose(f);
 		return -1;
 	}
@@ -186,9 +187,9 @@ static size_t decompressor_zip_get_file(FILE *zF, const char *filename,
 				break;
 		}
 		
-		// TODO: Show a message box.
-		//GensUI::msgBox(tmp, "ZIP File Error");
-		fprintf(stderr, "%s(): Error in ZIP file: %s\n", __func__, zip_err);
+		LOG_MSG(z, LOG_MSG_LEVEL_CRITICAL,
+			"Error extracting file '%s' from archive '%s': %s",
+			file_list->filename, filename, zip_err);
 		return -1;
 	}
 	
