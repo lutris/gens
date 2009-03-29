@@ -608,7 +608,7 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	if (width != 32 || height != 32)
 	{
 		// Not 32x32.
-		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		return false;
 	}
 	
@@ -664,7 +664,7 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	png_read_image(png_ptr, row_pointers);
 	
 	// Close the PNG image.
-	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	
 	// Set the plugin icon widget's bitmap to hbmpPluginIcon.
 	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbmpPluginIcon);
