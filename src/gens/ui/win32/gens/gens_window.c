@@ -33,7 +33,8 @@
 // Video Drawing.
 #include "video/vdraw.h"
 
-// Gens Win32 resources
+// Win32 includes.
+#include <shellapi.h>
 #include "ui/win32/resource.h"
 
 

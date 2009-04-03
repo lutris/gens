@@ -88,6 +88,11 @@ extern "C"
 #include "input/input.h"
 #include "input/input_dinput.hpp"
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shellapi.h>
+
 static bool paintsEnabled = true;
 
 static void on_gens_window_close(void);

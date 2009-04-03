@@ -8,9 +8,12 @@
 /*------------------------------------------------------------------------------
   Globals fuer die Routinen pt_popen() / pt_pclose()
 ------------------------------------------------------------------------------*/
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
 #include <errno.h>
 #include <fcntl.h>
+
 
 HANDLE my_pipein[2], my_pipeout[2], my_pipeerr[2];
 char   my_popenmode = ' ';

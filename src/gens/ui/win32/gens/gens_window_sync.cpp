@@ -25,7 +25,6 @@
 #endif
 
 #include <string.h>
-#include <windows.h>
 
 #include "gens_window_sync.hpp"
 #include "gens_window_callbacks.hpp"
@@ -67,6 +66,10 @@
 // Video, Audio.
 #include "video/vdraw.h"
 #include "audio/audio.h"
+
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 // C++ includes
 #include <string>

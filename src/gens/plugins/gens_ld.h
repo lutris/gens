@@ -71,6 +71,7 @@ static inline const char* gens_dlerror(void)
 #elif defined(GENS_OS_WIN32)
 
 /* Win32 system. */
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tchar.h>
 #define GENS_DL_EXT ".dll"

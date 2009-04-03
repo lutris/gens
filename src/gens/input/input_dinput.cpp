@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -34,11 +34,12 @@
 #include "ui/gens_ui.hpp"
 #include "gens/gens_window.h"
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
 
 #include <dinput.h>
-//#include <mmsystem.h>
 
 // Wine's headers are missing this definition...
 #ifndef IDirectInputDevice2

@@ -38,6 +38,7 @@
 #include <string.h>
 
 // Windows / DirectDraw includes.
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <ddraw.h>
 

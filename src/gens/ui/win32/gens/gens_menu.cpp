@@ -30,9 +30,6 @@
 using std::string;
 using std::vector;
 
-// Win32 includes.
-#include <windows.h>
-
 // Main menu.
 HMENU MainMenu;
 // Accelerator table for the Gens main menu.

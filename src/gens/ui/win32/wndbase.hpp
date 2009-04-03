@@ -23,10 +23,11 @@
 #ifndef GENS_WIN32_WNDBASE_HPP
 #define GENS_WIN32_WNDBASE_HPP
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include <stdint.h>
 #include <unistd.h>
-
-#include <windows.h>
 
 #ifdef __cplusplus
 

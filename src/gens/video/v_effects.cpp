@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include <math.h>
+#include <stdlib.h>
 
 #ifdef __linux__
 #include <SDL/SDL.h>

@@ -26,6 +26,7 @@
 #include "gens/gens_window.h"
 
 // Win32 includes.
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
 #include <tchar.h>

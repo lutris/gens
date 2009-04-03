@@ -85,6 +85,13 @@
 // Language handler.
 #include "emulator/language.h"
 
+// Win32 includes.
+#ifdef GENS_OS_WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 // For some reason, these aren't extern'd anywhere...
 extern "C"
 {

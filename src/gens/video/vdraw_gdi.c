@@ -41,7 +41,8 @@
 // Audio Handler.
 #include "audio/audio.h"
 
-// Windows API.
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
 

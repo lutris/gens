@@ -24,6 +24,8 @@
 #define GENS_WIN32_MENU_HPP
 
 #include "ui/common/gens/gens_menu.h"
+
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #ifdef __cplusplus

@@ -23,6 +23,7 @@
 #ifndef GENS_UI_WIN32_FONTS_H
 #define GENS_UI_WIN32_FONTS_H
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #ifdef __cplusplus

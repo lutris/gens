@@ -27,8 +27,8 @@
 extern "C" {
 #endif
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <string.h>
 
 // Win32 instance
 extern HINSTANCE ghInstance;

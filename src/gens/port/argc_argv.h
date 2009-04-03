@@ -30,7 +30,9 @@
 extern "C" {
 #endif
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tchar.h>
 
 /**
  * Struct for argc/argv conversion.

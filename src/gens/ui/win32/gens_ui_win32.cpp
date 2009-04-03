@@ -38,11 +38,14 @@
 #include "macros/unused.h"
 
 // Win32 includes.
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
 #include <shlobj.h>
 #include <tchar.h>
+
+#include <commdlg.h>
 
 // Gens Win32 resources.
 #include "ui/win32/resource.h"

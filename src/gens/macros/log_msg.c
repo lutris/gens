@@ -27,6 +27,7 @@
 #include "log_msg.h"
 
 #if defined(GENS_UI_WIN32)
+	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 #elif defined(GENS_UI_GTK)
 	#include <gtk/gtk.h>

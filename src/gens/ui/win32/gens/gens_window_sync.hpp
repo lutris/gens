@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 void Sync_Gens_Window(void);

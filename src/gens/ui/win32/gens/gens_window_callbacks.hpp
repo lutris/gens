@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
