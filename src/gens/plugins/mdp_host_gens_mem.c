@@ -74,6 +74,8 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/rom.hpp"
 
+extern int ice;
+
 
 /** Memory Read Functions **/
 
@@ -150,6 +152,7 @@ int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	ice = 0;
 	
 	switch (memID)
 	{
@@ -180,6 +183,7 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
+	ice = 0;
 	
 	switch (memID)
 	{
@@ -210,6 +214,7 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
+	ice = 0;
 	
 	switch (memID)
 	{
@@ -480,6 +485,7 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	ice = 0;
 	
 	uint8_t *ptr;
 	uint32_t max_address;
@@ -536,6 +542,7 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
+	ice = 0;
 	
 	uint16_t *ptr;
 	uint32_t max_address;
@@ -582,6 +589,7 @@ int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
+	ice = 0;
 	
 	MDP_UNUSED_PARAMETER(memID);
 	MDP_UNUSED_PARAMETER(address);
