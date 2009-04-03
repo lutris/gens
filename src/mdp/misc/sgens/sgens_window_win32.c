@@ -24,6 +24,13 @@
 #include <config.h>
 #endif
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+
+// C includes.
 #include <stdint.h>
 #include <stdio.h>
 
@@ -39,11 +46,6 @@
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
 #include "mdp/mdp_win32.h"
-
-// Win32 includes.
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
 
 // Window.
 static HWND	sgens_window = NULL;

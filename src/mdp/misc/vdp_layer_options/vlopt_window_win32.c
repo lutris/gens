@@ -24,6 +24,13 @@
 #include <config.h>
 #endif
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+
+// C includes.
 #include <stdio.h>
 
 #include "vlopt_window.h"
@@ -33,11 +40,6 @@
 
 // MDP error codes.
 #include "mdp/mdp_error.h"
-
-// Win32 includes.
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
 
 // MDP Win32 convenience functions.
 #include "mdp/mdp_win32.h"

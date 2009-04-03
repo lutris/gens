@@ -24,11 +24,12 @@
 #include <config.h>
 #endif
 
-#include "gg_window.hpp"
-#include "gg_plugin.h"
-#include "gg.hpp"
-#include "gg_code.h"
-#include "gg_engine.hpp"
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <windowsx.h>
+#include <commctrl.h>
+#include <tchar.h>
 
 // C includes.
 #include <stdio.h>
@@ -39,15 +40,15 @@
 #include <list>
 using std::list;
 
+#include "gg_window.hpp"
+#include "gg_plugin.h"
+#include "gg.hpp"
+#include "gg_code.h"
+#include "gg_engine.hpp"
+
 // MDP includes.
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_win32.h"
-
-// Win32 includes.
-#include <windows.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <tchar.h>
 
 // For whatever reason, Wine's headers don't include the ListView_(Set|Get)CheckState macros.
 #ifndef ListView_SetCheckState
