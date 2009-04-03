@@ -29,13 +29,12 @@
 
 #include "emulator/g_main.hpp"
 
-// Gens Win32 resources
-#include "ui/win32/resource.h"
-
-// Win32 common controls
-#include <commctrl.h>
-
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <windowsx.h>
+#include <commctrl.h>
+#include "ui/win32/resource.h"
 
 #include <string>
 #include <list>

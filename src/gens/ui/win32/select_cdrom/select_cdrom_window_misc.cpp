@@ -41,6 +41,7 @@
 // Synchronization.
 #include "gens/gens_window_sync.hpp"
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
 

@@ -28,6 +28,7 @@ extern "C" {
 #endif
 
 // Win32 includes.
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 extern HWND ccode_window;
