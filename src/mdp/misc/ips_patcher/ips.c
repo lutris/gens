@@ -60,20 +60,6 @@ int MDP_FNCALL ips_init(mdp_host_t *host_srv)
 	// Save the MDP Host Services pointer.
 	ips_host_srv = host_srv;
 	
-#if defined(GENS_UI_GTK)
-	static const int uiType = MDP_UI_GTK2;
-#elif defined(GENS_UI_WIN32)
-	static const int uiType = MDP_UI_WIN32;
-#endif
-	
-	// Check the UI type.
-	if (ips_host_srv->val_get(MDP_VAL_UI) != uiType)
-	{
-		// Unsupported UI type.
-		ips_host_srv = NULL;
-		return -MDP_ERR_UNSUPPORTED_UI;
-	}
-	
 	// Set the Game Genie directory to the default save path initially.
 	ips_host_srv->dir_get_default_save_path(ips_save_path, sizeof(ips_save_path));
 	
