@@ -56,7 +56,7 @@ static int MDP_FNCALL gg_menu_handler(int menu_item_id);
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
 
 // Directory registration.
-static int gg_dir_id;
+static int gg_dir_id = -1;
 static char gg_save_path[1024];
 static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size);
 static int MDP_FNCALL gg_dir_set(int dir_id, const char *buf);
@@ -129,6 +129,10 @@ int MDP_FNCALL gg_end(void)
 	
 	// Make sure the window is closed.
 	gg_window_close();
+	
+	// If a directory was registered, unregister it.
+	if (gg_dir_id >= 0)
+		gg_host_srv->dir_unregister(&mdp, gg_dir_id);
 	
 	// Remove the menu item.
 	gg_host_srv->menu_item_remove(&mdp, gg_menuItemID);

@@ -48,7 +48,7 @@ static int MDP_FNCALL ips_menu_handler(int menu_item_id);
 static int MDP_FNCALL ips_event_handler(int event_id, void *event_info);
 
 // Directory registration.
-static int ips_dir_id;
+static int ips_dir_id = -1;
 static char ips_save_path[1024];
 static int MDP_FNCALL ips_dir_get(int dir_id, char *out_buf, unsigned int size);
 static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf);
@@ -104,6 +104,10 @@ int MDP_FNCALL ips_end(void)
 {
 	if (!ips_host_srv)
 		return MDP_ERR_OK;
+	
+	// If a directory was registered, unregister it.
+	if (ips_dir_id >= 0)
+		ips_host_srv->dir_unregister(&mdp, ips_dir_id);
 	
 	// Remove the menu item.
 	ips_host_srv->menu_item_remove(&mdp, ips_menuItemID);
