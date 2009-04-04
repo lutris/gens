@@ -47,6 +47,12 @@ static int ips_menuItemID = 0;
 static int MDP_FNCALL ips_menu_handler(int menu_item_id);
 static int MDP_FNCALL ips_event_handler(int event_id, void *event_info);
 
+// Directory registration.
+static int ips_dir_id;
+static char ips_save_path[1024];
+static int MDP_FNCALL ips_dir_get(int dir_id, char *out_buf, unsigned int size);
+static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf);
+
 
 /**
  * ips_init(): Initialize the IPS Patcher plugin.
@@ -73,6 +79,13 @@ int MDP_FNCALL ips_init(mdp_host_t *host_srv)
 	
 	// Create a menu item.
 	ips_menuItemID = ips_host_srv->menu_item_add(&mdp, &ips_menu_handler, 0, "&IPS Patcher");
+	
+	// Set the Game Genie directory to the default save path initially.
+	ips_host_srv->dir_get_default_save_path(ips_save_path, sizeof(ips_save_path));
+	
+	// Attempt to register a directory.
+	// If this fails, gg_dir_id will be less than 0.
+	ips_dir_id = ips_host_srv->dir_register(&mdp, "IPS Patches", ips_dir_get, ips_dir_set);
 	
 	// Register the event handler. (TODO)
 	ips_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, ips_event_handler);
@@ -121,16 +134,13 @@ static int MDP_FNCALL ips_event_handler(int event_id, void *event_info)
 	if (event_id == MDP_EVENT_OPEN_ROM)
 	{
 		mdp_event_open_rom_t *openROM = (mdp_event_open_rom_t*)(event_info);
+		if (!openROM->rom_name)
+			return MDP_ERR_OK;
 		
 		// IPS patch file is [save directory]/ROM_name.ips.
-		// TODO: Register an IPS patcher-specific directory.
 		char patch_filename[1024];
-		ips_host_srv->dir_get_default_save_path(patch_filename, sizeof(patch_filename));
-		
-		// Append the game's name.
-		strcat(patch_filename, "/");
-		strcat(patch_filename, openROM->rom_name);
-		strcat(patch_filename, ".ips");
+		snprintf(patch_filename, sizeof(patch_filename),
+			 "%s/%s.ips", ips_save_path, openROM->rom_name);
 		
 		// Attempt to load the patch.
 		// TODO: Make autoloading based on filename user-configurable.
@@ -138,5 +148,42 @@ static int MDP_FNCALL ips_event_handler(int event_id, void *event_info)
 	}
 	
 	// TODO
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * ips_dir_get(): Get the IPS Patcher directory.
+ * @param dir_id Directory ID.
+ * @param out_buf Buffer to store the IPS Patcher directory in.
+ * @param size Size of the buffer.
+ * @return MDP error code.
+ */
+static int MDP_FNCALL ips_dir_get(int dir_id, char *out_buf, unsigned int size)
+{
+	if (dir_id != ips_dir_id)
+		return -MDP_ERR_DIR_INVALID_DIRID;
+	
+	strncpy(out_buf, ips_save_path, size);
+	out_buf[size-1] = 0x00;
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * ips_dir_set(): Set the IPS Patcher directory.
+ * @param dir_id Directory ID.
+ * @param buf New directory.
+ * @return MDP error code.
+ */
+static int MDP_FNCALL ips_dir_set(int dir_id, const char *buf)
+{
+	if (dir_id != ips_dir_id)
+		return -MDP_ERR_DIR_INVALID_DIRID;
+	
+	strncpy(ips_save_path, buf, sizeof(ips_save_path));
+	ips_save_path[sizeof(ips_save_path)-1] = 0x00;
+	
 	return MDP_ERR_OK;
 }
