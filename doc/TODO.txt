@@ -13,9 +13,7 @@ TODO for Gens/GS r7:
 MDP TODO for Gens/GS r7:
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
   - Disables reset, close ROM, etc.
-- "Directory" registration for "Configure Directories".
 - Add plugin configuration save/load based on MDP UUID.
-- Add a variable to indicate if the loaded ROM has been byteswapped.
 
 Stuff done in r7:
 - 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
