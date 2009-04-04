@@ -176,7 +176,7 @@ int MDP_FNCALL mdp_host_z_get_file(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void
 	
 	/* Get the file from the decompressor. */
 	decompressor_t *cmp = (decompressor_t*)(z_file->data);
-	int rval = cmp->get_file(z_file->f, z_file->filename, &z_entry, buf, size);
+	int rval = cmp->get_file(z_file->f, z_file->filename, z_entry, buf, size);
 	
 	/* If rval is positive, it's a filesize. */
 	/* If 0, return an error code. */
