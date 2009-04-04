@@ -163,11 +163,11 @@ int Config::save(const string& filename)
 		sprintf(buf, "ROM %d", romNum);
 		cfg.writeString("ROM History", buf, (*rom).filename);
 		
+		sprintf(buf, "ROM %d Compressed", romNum);
 		if (!(*rom).z_filename.empty())
-		{
-			sprintf(buf, "ROM %d Compressed", romNum);
 			cfg.writeString("ROM History", buf, (*rom).z_filename);
-		}
+		else
+			cfg.deleteEntry("ROM History", buf);
 		
 		sprintf(buf, "ROM %d Type", romNum);
 		cfg.writeInt("ROM History", buf, (*rom).type, true, 4);
