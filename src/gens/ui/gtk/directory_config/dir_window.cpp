@@ -28,12 +28,17 @@
 #include "ui/common/dir_window_common.h"
 #include "gens/gens_window.h"
 
+// Plugin Manager.
+#include "plugins/pluginmgr.hpp"
+
 // C includes.
 #include <string.h>
 
 // C++ includes.
 #include <string>
+#include <list>
 using std::string;
+using std::list;
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -51,8 +56,14 @@ using std::string;
 GtkWidget *dir_window = NULL;
 
 // Widgets.
-static GtkWidget	*txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
+static GtkWidget	*txtInternalDir[DIR_WINDOW_ENTRIES_COUNT];
 static GtkWidget	*btnCancel, *btnApply, *btnSave;
+
+// Plugin directory widgets.
+static list<GtkWidget*>	lstPluginDirs;
+
+// Widget creation functions.
+static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -62,7 +73,7 @@ static void	dir_window_save(void);
 static gboolean	dir_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	dir_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	dir_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data);
-static void	dir_window_callback_txtDirectory_changed(GtkEditable *editable, gpointer user_data);
+static void	dir_window_callback_textbox_changed(GtkEditable *editable, gpointer user_data);
 
 
 /**
@@ -100,59 +111,54 @@ void dir_window_show(void)
 	GtkWidget *vboxDialog = gtk_bin_get_child(GTK_BIN(dir_window));
 	gtk_widget_show(vboxDialog);
 	
-	// Create the directory entry frame.
-	GtkWidget *fraDirectories = gtk_frame_new("<b><i>Configure Directories</i></b>");
-	gtk_frame_set_shadow_type(GTK_FRAME(fraDirectories), GTK_SHADOW_ETCHED_IN);
-	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraDirectories))), TRUE);
-	gtk_container_set_border_width(GTK_CONTAINER(fraDirectories), 4);
-	gtk_widget_show(fraDirectories);
-	gtk_box_pack_start(GTK_BOX(vboxDialog), fraDirectories, TRUE, TRUE, 0);
+	// Create the internal directory entry frame.
+	GtkWidget *fraInternalDirs = gtk_frame_new("<b><i>Gens/GS Directories</i></b>");
+	gtk_frame_set_shadow_type(GTK_FRAME(fraInternalDirs), GTK_SHADOW_ETCHED_IN);
+	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraInternalDirs))), TRUE);
+	gtk_container_set_border_width(GTK_CONTAINER(fraInternalDirs), 4);
+	gtk_widget_show(fraInternalDirs);
+	gtk_box_pack_start(GTK_BOX(vboxDialog), fraInternalDirs, TRUE, TRUE, 0);
 	
-	// Create the table for the directories.
-	GtkWidget *tblDirectories = gtk_table_new(DIR_WINDOW_ENTRIES_COUNT, 3, FALSE);
-	gtk_container_set_border_width(GTK_CONTAINER(tblDirectories), 8);
-	gtk_table_set_row_spacings(GTK_TABLE(tblDirectories), 4);
-	gtk_table_set_col_spacings(GTK_TABLE(tblDirectories), 4);
-	gtk_widget_show(tblDirectories);
-	gtk_container_add(GTK_CONTAINER(fraDirectories), tblDirectories);
+	// Create the table for the internal directories.
+	GtkWidget *tblInternalDirs = gtk_table_new(DIR_WINDOW_ENTRIES_COUNT, 3, FALSE);
+	gtk_container_set_border_width(GTK_CONTAINER(tblInternalDirs), 8);
+	gtk_table_set_row_spacings(GTK_TABLE(tblInternalDirs), 4);
+	gtk_table_set_col_spacings(GTK_TABLE(tblInternalDirs), 4);
+	gtk_widget_show(tblInternalDirs);
+	gtk_container_add(GTK_CONTAINER(fraInternalDirs), tblInternalDirs);
 	
-	// Create all directory entry widgets.
+	// Create all internal directory entry widgets.
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
-		// Create tbe label for the directory.
-		GtkWidget *lblDirectory = gtk_label_new(dir_window_entries[dir].title);
-		gtk_misc_set_alignment(GTK_MISC(lblDirectory), 0.0f, 0.5f);
-		gtk_widget_show(lblDirectory);
-		gtk_table_attach(GTK_TABLE(tblDirectories), lblDirectory,
-				 0, 1, dir, dir + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+		txtInternalDir[dir] = dir_window_create_dir_widgets(dir_window_entries[dir].title, tblInternalDirs, dir);
+	}
+	
+	// If any plugin directories exist, create the plugin directory entry frame.
+	if (!PluginMgr::lstDirectories.empty())
+	{
+		// Create the plugin directory entry frame.
+		GtkWidget *fraPluginDirs = gtk_frame_new("<b><i>Plugin Directories</i></b>");
+		gtk_frame_set_shadow_type(GTK_FRAME(fraPluginDirs), GTK_SHADOW_ETCHED_IN);
+		gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDirs))), TRUE);
+		gtk_container_set_border_width(GTK_CONTAINER(fraPluginDirs), 4);
+		gtk_widget_show(fraPluginDirs);
+		gtk_box_pack_start(GTK_BOX(vboxDialog), fraPluginDirs, TRUE, TRUE, 0);
 		
-		// Create the textbox for the directory.
-		txtDirectory[dir] = gtk_entry_new();
-		gtk_entry_set_max_length(GTK_ENTRY(txtDirectory[dir]), GENS_PATH_MAX - 1);
-		gtk_widget_set_size_request(txtDirectory[dir], 256, -1);
-		gtk_widget_show(txtDirectory[dir]);
-		gtk_table_attach(GTK_TABLE(tblDirectories), txtDirectory[dir],
-				 1, 2, dir, dir + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		g_signal_connect((gpointer)txtDirectory[dir], "changed",
-				 G_CALLBACK(dir_window_callback_txtDirectory_changed),
-				 GINT_TO_POINTER(dir));
+		// Create the table for the plugin directories.
+		GtkWidget *tblPluginDirs = gtk_table_new(PluginMgr::lstDirectories.size(), 3, FALSE);
+		gtk_container_set_border_width(GTK_CONTAINER(tblPluginDirs), 8);
+		gtk_table_set_row_spacings(GTK_TABLE(tblPluginDirs), 4);
+		gtk_table_set_col_spacings(GTK_TABLE(tblPluginDirs), 4);
+		gtk_widget_show(tblPluginDirs);
+		gtk_container_add(GTK_CONTAINER(fraPluginDirs), tblPluginDirs);
 		
-		// Create the "Change" button for the directory.
-		// TODO: Use an icon?
-		GtkWidget *btnChange = gtk_button_new_with_label("Change...");
-		gtk_widget_show(btnChange);
-		gtk_table_attach(GTK_TABLE(tblDirectories), btnChange,
-				 2, 3, dir, dir + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		
-		// Connect the "clicked" signal for the "Change" button.
-		g_signal_connect(GTK_OBJECT(btnChange), "clicked",
-				 G_CALLBACK(dir_window_callback_btnChange_clicked), GINT_TO_POINTER(dir));
+		// Create all plugin directory entry widgets.
+		int dir = 0;
+		for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
+		{
+			dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
+		}
 	}
 	
 	// Create the dialog buttons.
@@ -180,12 +186,63 @@ void dir_window_show(void)
 
 
 /**
+ * dir_window_create_dir_widgets(): Create directory widgets.
+ * @param title Title of the directory.
+ * @param table Table to add the directory widgets to.
+ * @param row Row of the table to add the directory widget to.
+ * @return Textbox.
+ */
+static GtkWidget* dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row)
+{
+	// Create tbe label for the directory.
+	GtkWidget *lblDirectory = gtk_label_new(title);
+	gtk_misc_set_alignment(GTK_MISC(lblDirectory), 0.0f, 0.5f);
+	gtk_widget_show(lblDirectory);
+	gtk_table_attach(GTK_TABLE(table), lblDirectory,
+			 0, 1, row, row + 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), 0, 0);
+	
+	// Create the textbox for the directory.
+	GtkWidget *txtDirectory = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(txtDirectory), GENS_PATH_MAX - 1);
+	gtk_widget_set_size_request(txtDirectory, 256, -1);
+	gtk_widget_show(txtDirectory);
+	gtk_table_attach(GTK_TABLE(table), txtDirectory,
+			 1, 2, row, row + 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	g_signal_connect((gpointer)txtDirectory, "changed",
+			 G_CALLBACK(dir_window_callback_textbox_changed), NULL);
+	
+	// Create the "Change" button for the directory.
+	// TODO: Use an icon?
+	GtkWidget *btnChange = gtk_button_new_with_label("Change...");
+	gtk_widget_show(btnChange);
+	gtk_table_attach(GTK_TABLE(table), btnChange,
+			 2, 3, row, row + 1,
+			 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+			 (GtkAttachOptions)(0), 0, 0);
+	
+	// Connect the "clicked" signal for the "Change" button.
+	g_signal_connect(GTK_OBJECT(btnChange), "clicked",
+			 G_CALLBACK(dir_window_callback_btnChange_clicked),
+			 txtDirectory);
+	
+	return txtDirectory;
+}
+
+
+/**
  * dir_window_close(): Close the OpenGL Resolution window.
  */
 void dir_window_close(void)
 {
 	if (!dir_window)
 		return;
+	
+	// Clear the plugin directory widget list.
+	lstPluginDirs.clear();
 	
 	// Destroy the window.
 	gtk_widget_destroy(dir_window);
@@ -200,7 +257,7 @@ static void dir_window_init(void)
 {
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
-		gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), dir_window_entries[dir].entry);
+		gtk_entry_set_text(GTK_ENTRY(txtInternalDir[dir]), dir_window_entries[dir].entry);
 	}
 	
 	// Disable the "Apply" button initially.
@@ -218,7 +275,7 @@ static void dir_window_save(void)
 	{
 		// Get the entry text.
 		strncpy(dir_window_entries[dir].entry,
-			gtk_entry_get_text(GTK_ENTRY(txtDirectory[dir])),
+			gtk_entry_get_text(GTK_ENTRY(txtInternalDir[dir])),
 			GENS_PATH_MAX);
 		
 		// Make sure the entry is null-terminated.
@@ -298,21 +355,20 @@ static void dir_window_callback_response(GtkDialog *dialog, gint response_id, gp
 /**
  * dir_window_callback_btnChange_clicked(): A "Change" button was clicked.
  * @param button Button that was clicked.
- * @param user_data Button number.
+ * @param user_data Textbox for this button.
  */
 static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(button);
-	
-	int dir = GPOINTER_TO_INT(user_data);
-	if (dir < 0 || dir >= DIR_WINDOW_ENTRIES_COUNT)
+	if (!user_data)
 		return;
 	
-	char tmp[64];
-	sprintf(tmp, "Select %s Directory", dir_window_entries[dir].title);
+	// TODO
+	//char tmp[64];
+	//sprintf(tmp, "Select %s Directory", dir_window_entries[dir].title);
 	
 	// Request a new directory.
-	string new_dir = GensUI::selectDir(tmp, gtk_entry_get_text(GTK_ENTRY(txtDirectory[dir])));
+	string new_dir = GensUI::selectDir("Select Directory", gtk_entry_get_text(GTK_ENTRY(user_data)));
 	
 	// If "Cancel" was selected, don't do anything.
 	if (new_dir.empty())
@@ -323,16 +379,16 @@ static void dir_window_callback_btnChange_clicked(GtkButton *button, gpointer us
 		new_dir += GENS_DIR_SEPARATOR_CHR;
 	
 	// Set the new directory.
-	gtk_entry_set_text(GTK_ENTRY(txtDirectory[dir]), new_dir.c_str());
+	gtk_entry_set_text(GTK_ENTRY(user_data), new_dir.c_str());
 }
 
 
 /**
- * dir_window_callback_txtDirectory_changed(): One of the textboxes was changed.
+ * dir_window_callback_textbox_changed(): One of the textboxes was changed.
  * @param editable
- * @param user_data File ID number.
+ * @param user_data
  */
-static void dir_window_callback_txtDirectory_changed(GtkEditable *editable, gpointer user_data)
+static void dir_window_callback_textbox_changed(GtkEditable *editable, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(editable);
 	GENS_UNUSED_PARAMETER(user_data);
