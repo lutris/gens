@@ -31,6 +31,9 @@
 // Plugin Manager.
 #include "plugins/pluginmgr.hpp"
 
+// MDP error codes.
+#include "mdp/mdp_error.h"
+
 // C includes.
 #include <string.h>
 
@@ -60,7 +63,12 @@ static GtkWidget	*txtInternalDir[DIR_WINDOW_ENTRIES_COUNT];
 static GtkWidget	*btnCancel, *btnApply, *btnSave;
 
 // Plugin directory widgets.
-static list<GtkWidget*>	lstPluginDirs;
+typedef struct _dir_plugin_t
+{
+	GtkWidget	*txt;
+	int		id;
+} dir_plugin_t;
+static list<dir_plugin_t> lstPluginDirs;
 
 // Widget creation functions.
 static GtkWidget*	dir_window_create_dir_widgets(const char* title, GtkWidget *table, int row);
@@ -123,7 +131,7 @@ void dir_window_show(void)
 	GtkWidget *tblInternalDirs = gtk_table_new(DIR_WINDOW_ENTRIES_COUNT, 3, FALSE);
 	gtk_container_set_border_width(GTK_CONTAINER(tblInternalDirs), 8);
 	gtk_table_set_row_spacings(GTK_TABLE(tblInternalDirs), 4);
-	gtk_table_set_col_spacings(GTK_TABLE(tblInternalDirs), 4);
+	gtk_table_set_col_spacings(GTK_TABLE(tblInternalDirs), 8);
 	gtk_widget_show(tblInternalDirs);
 	gtk_container_add(GTK_CONTAINER(fraInternalDirs), tblInternalDirs);
 	
@@ -148,16 +156,21 @@ void dir_window_show(void)
 		GtkWidget *tblPluginDirs = gtk_table_new(PluginMgr::lstDirectories.size(), 3, FALSE);
 		gtk_container_set_border_width(GTK_CONTAINER(tblPluginDirs), 8);
 		gtk_table_set_row_spacings(GTK_TABLE(tblPluginDirs), 4);
-		gtk_table_set_col_spacings(GTK_TABLE(tblPluginDirs), 4);
+		gtk_table_set_col_spacings(GTK_TABLE(tblPluginDirs), 8);
 		gtk_widget_show(tblPluginDirs);
 		gtk_container_add(GTK_CONTAINER(fraPluginDirs), tblPluginDirs);
 		
 		// Create all plugin directory entry widgets.
+		dir_plugin_t dir_plugin;
 		int dir = 0;
+		
 		for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
 		{
-			dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
+			dir_plugin.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
+			dir_plugin.id = (*iter).id;
+			
+			lstPluginDirs.push_back(dir_plugin);
 		}
 	}
 	
@@ -255,9 +268,31 @@ void dir_window_close(void)
  */
 static void dir_window_init(void)
 {
+	// Internal directories.
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		gtk_entry_set_text(GTK_ENTRY(txtInternalDir[dir]), dir_window_entries[dir].entry);
+	}
+	
+	// Plugin directories.
+	char dir_buf[GENS_PATH_MAX];
+	
+	for (list<dir_plugin_t>::iterator iter = lstPluginDirs.begin();
+	     iter != lstPluginDirs.end(); iter++)
+	{
+		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
+		if (dirIter == PluginMgr::tblDirectories.end())
+			continue;
+		
+		list<mdp_dir_t>::iterator lstDirIter = (*dirIter).second;
+		const mdp_dir_t& dir = *lstDirIter;
+		
+		// Get the directory.
+		if (dir.get((*iter).id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+		{
+			// Directory retrieved.
+			gtk_entry_set_text(GTK_ENTRY((*iter).txt), dir_buf);
+		}
 	}
 	
 	// Disable the "Apply" button initially.
