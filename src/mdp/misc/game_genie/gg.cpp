@@ -59,7 +59,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
 static int gg_dir_id;
 static char gg_save_path[1024];
 static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size);
-static int MDP_FNCALL gg_dir_set(int dir_id, char *buf);
+static int MDP_FNCALL gg_dir_set(int dir_id, const char *buf);
 
 // Currently loaded ROM.
 static string gg_loaded_rom;
@@ -235,7 +235,7 @@ static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size)
  * @param buf New directory.
  * @return MDP error code.
  */
-static int MDP_FNCALL gg_dir_set(int dir_id, char *buf)
+static int MDP_FNCALL gg_dir_set(int dir_id, const char *buf)
 {
 	if (dir_id != gg_dir_id)
 		return -MDP_ERR_DIR_INVALID_DIRID;

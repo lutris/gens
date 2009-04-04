@@ -118,7 +118,7 @@ typedef enum _MDP_EMUCTRL
 
 /* Directory Handler functions. */
 typedef int (MDP_FNCALL *mdp_dir_get_fn)(int dir_id, char *out_buf, unsigned int size);
-typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, char *buf);
+typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, const char *buf);
 
 /* MDP Host Services struct. */
 typedef struct _mdp_host_t

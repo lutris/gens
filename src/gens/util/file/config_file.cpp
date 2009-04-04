@@ -93,7 +93,9 @@
 
 // C++ includes
 #include <deque>
+#include <list>
 using std::deque;
+using std::list;
 
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
@@ -125,6 +127,20 @@ int Config::save(const string& filename)
 	cfg.writeString("Directories", "Dump WAV Path", PathNames.Dump_WAV_Dir);
 	cfg.writeString("Directories", "Dump GYM Path", PathNames.Dump_GYM_Dir);
 	cfg.writeString("Directories", "Screen Shot Path", PathNames.Screenshot_Dir);
+	
+	// Plugin directories.
+	for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+	     iter != PluginMgr::lstDirectories.end(); iter++)
+	{
+		char dir_buf[GENS_PATH_MAX];
+		
+		snprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
+		buf[sizeof(buf)-1] = 0x00;
+		
+		(*iter).get((*iter).id, dir_buf, sizeof(dir_buf));
+		
+		cfg.writeString("Directories", buf, dir_buf);
+	}
 	
 	// Genesis firmware.
 	cfg.writeString("Firmware", "Genesis BIOS", BIOS_Filenames.MD_TMSS);
@@ -355,6 +371,21 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("Directories", "Dump WAV Path", PathNames.Gens_Path, PathNames.Dump_WAV_Dir, sizeof(PathNames.Dump_WAV_Dir));
 	cfg.getString("Directories", "Dump GYM Path", PathNames.Gens_Path, PathNames.Dump_GYM_Dir, sizeof(PathNames.Dump_GYM_Dir));
 	cfg.getString("Directories", "Screen Shot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
+	
+	// Plugin directories.
+	for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+	     iter != PluginMgr::lstDirectories.end(); iter++)
+	{
+		char buf[256];
+		snprintf(buf, sizeof(buf), "~MDP:%s", (*iter).name.c_str());
+		buf[sizeof(buf)-1] = 0x00;
+		
+		string dir_buf = cfg.getString("Directories", buf, "");
+		if (!dir_buf.empty())
+		{
+			(*iter).set((*iter).id, dir_buf.c_str());
+		}
+	}
 	
 	// Genesis firmware.
 	cfg.getString("Firmware", "Genesis BIOS", "", BIOS_Filenames.MD_TMSS, sizeof(BIOS_Filenames.MD_TMSS));
