@@ -306,6 +306,7 @@ static void dir_window_save(void)
 {
 	size_t len;
 	
+	// Internal directories.
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		// Get the entry text.
@@ -330,6 +331,45 @@ static void dir_window_save(void)
 			}
 		}
 	}
+	
+	// Plugin directories.
+	char dir_buf[GENS_PATH_MAX];
+	
+	for (list<dir_plugin_t>::iterator iter = lstPluginDirs.begin();
+	     iter != lstPluginDirs.end(); iter++)
+	{
+		// Get the entry text.
+		strncpy(dir_buf, gtk_entry_get_text(GTK_ENTRY((*iter).txt)), sizeof(dir_buf));
+		
+		// Make sure the entry is null-terminated.
+		dir_buf[GENS_PATH_MAX - 1] = 0x00;
+		
+		// Make sure the end of the directory has a slash.
+		// TODO: Do this in functions that use pathnames.
+		len = strlen(dir_buf);
+		if (len > 0 && dir_buf[len - 1] != GENS_DIR_SEPARATOR_CHR)
+		{
+			// String needs to be less than 1 minus the max path length
+			// in order to be able to append the directory separator.
+			if (len < (GENS_PATH_MAX - 1))
+			{
+				dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
+				dir_buf[len + 1] = 0x00;
+			}
+		}
+		
+		// Set the directory entry in the plugin.
+		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
+		if (dirIter == PluginMgr::tblDirectories.end())
+			continue;
+		
+		list<mdp_dir_t>::iterator lstDirIter = (*dirIter).second;
+		const mdp_dir_t& dir = *lstDirIter;
+		
+		// Set the directory.
+		dir.set((*iter).id, dir_buf);
+	}
+	
 	
 	// Disable the "Apply" button.
 	gtk_widget_set_sensitive(btnApply, false);
