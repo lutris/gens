@@ -454,7 +454,7 @@ section .text align=64
 	
 	align 16
 	
-%%Loop
+%%Loop:
 		mov	ax, [ebp + 0]			; ax = Pos Y
 		mov	cx, [ebp + 6]			; cx = Pos X
 		mov	dl, [ebp + (2 ^ 1)]		; dl = Sprite Size
@@ -487,10 +487,24 @@ section .text align=64
 		mov	[_Sprite_Struct + edi - 32 + 24], dx	; store the first tile of the sprite
 		jz	short %%End				; if the next pointer is 0, end
 		lea	ebp, [esi + ebx * 8]			; ebp Pointer towards next the sprite
-		cmp	edi, (8 * 4 * 80)			; if there are already 80 sprites defined then stop
+		
+		; Don't allow more than 80 sprites, regardless of sprite numbers.
+		cmp	edi, (8 * 4 * 80)
+		jae	short %%End
+		
+		; H40 allows 80 sprites; H32 allows 64 sprites.
+		test	byte [_VDP_Reg + 12 * 4], 1
+		jz	short %%H32
+		
+%%H40:
+		cmp	ebx, byte 80				; if the next sprite number is >=80 then stop
+		jb	near  %%Loop
+		jmp	short %%End
+%%H32:
+		cmp	ebx, byte 64				; if the next sprite number is >=64 then stop
 		jb	near %%Loop
 		
-%%End
+%%End:
 	sub	edi, 8 * 4
 	mov	[Data_Misc.Spr_End], edi		; store the pointer to the last sprite
 	
@@ -530,10 +544,24 @@ section .text align=64
 		
 		add	edi, byte (8 * 4)			; advance to the next sprite structure
 		lea	ebp, [esi + ebx * 8]			; ebp Pointer towards next the sprite
-		cmp	edi, (8 * 4 * 80)			; if there are already 80 sprites defined then stop
+		
+		; Don't allow more than 80 sprites, regardless of sprite numbers.
+		cmp	edi, (8 * 4 * 80)
+		jae	short %%End
+		
+		; H40 allows 80 sprites; H32 allows 64 sprites.
+		test	byte [_VDP_Reg + 12 * 4], 1
+		jz	short %%H32
+		
+%%H40:
+		cmp	ebx, byte 80				; if the next sprite number is >=80 then stop
+		jb	short %%Loop
+		jmp	short %%End
+%%H32:
+		cmp	ebx, byte 64				; if the next sprite number is >=64 then stop
 		jb	short %%Loop
 
-%%End
+%%End:
 
 %endmacro
 
