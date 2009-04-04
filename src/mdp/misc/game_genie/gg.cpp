@@ -55,6 +55,12 @@ int gg_mdp_rom_md_size = 0;
 static int MDP_FNCALL gg_menu_handler(int menu_item_id);
 static int MDP_FNCALL gg_event_handler(int event_id, void *event_info);
 
+// Directory registration.
+static int gg_dir_id;
+static char gg_save_path[1024];
+static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size);
+static int MDP_FNCALL gg_dir_set(int dir_id, char *buf);
+
 // Currently loaded ROM.
 static string gg_loaded_rom;
 MDP_SYSTEM_ID gg_system_id = MDP_SYSTEM_UNKNOWN;
@@ -95,6 +101,13 @@ int MDP_FNCALL gg_init(mdp_host_t *host_srv)
 	// Create a menu item.
 	gg_menuItemID = gg_host_srv->menu_item_add(&mdp, &gg_menu_handler, 0, "&Game Genie");
 	printf("Game Genie plugin initialized. Menu item ID: 0x%04X\n", gg_menuItemID);
+	
+	// Set the Game Genie directory to the default save path initially.
+	gg_host_srv->dir_get_default_save_path(gg_save_path, sizeof(gg_save_path));
+	
+	// Attempt to register a directory.
+	// If this fails, gg_dir_id will be less than 0.
+	gg_dir_id = gg_host_srv->dir_register(&mdp, "Patch Codes", gg_dir_get, gg_dir_set);
 	
 	// Register the event handler.
 	gg_host_srv->event_register(&mdp, MDP_EVENT_OPEN_ROM, gg_event_handler);
@@ -157,12 +170,8 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		// TODO: Event handler for "ROM size changed".
 		
 		// Patch file is [save directory]/ROM_name.pat
-		// TODO: Register a Game Genie-specific directory.
-		char def_save_path[1024];
-		gg_host_srv->dir_get_default_save_path(def_save_path, sizeof(def_save_path));
-		
 		// Load the patch file.
-		string full_path = string(def_save_path) + "/" + gg_loaded_rom + string(GG_FILE_EXT);
+		string full_path = string(gg_save_path) + "/" + gg_loaded_rom + string(GG_FILE_EXT);
 		gg_file_load(full_path.c_str());
 		
 		// Set up the pre-frame event handler.
@@ -181,12 +190,8 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		// ROM name specified. Save the patch code file.
 		
 		// Patch file is [save directory]/ROM_name.pat
-		// TODO: Register a Game Genie-specific directory.
-		char def_save_path[1024];
-		gg_host_srv->dir_get_default_save_path(def_save_path, sizeof(def_save_path));
-		
 		// Save the patch file.
-		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
+		string full_path = string(gg_save_path) + gg_loaded_rom + string(GG_FILE_EXT);
 		gg_file_save(full_path.c_str());
 		
 		// Clear the loaded ROM name, system ID, and ROM size.
@@ -200,6 +205,43 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		// Shut down the pre-frame event handler.
 		gg_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, gg_engine_pre_frame);
 	}
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * gg_dir_get(): Get the Game Genie directory.
+ * @param dir_id Directory ID.
+ * @param out_buf Buffer to store the Game Genie directory in.
+ * @param size Size of the buffer.
+ * @return MDP error code.
+ */
+static int MDP_FNCALL gg_dir_get(int dir_id, char *out_buf, unsigned int size)
+{
+	if (dir_id != gg_dir_id)
+		return -MDP_ERR_DIR_INVALID_DIRID;
+	
+	strncpy(out_buf, gg_save_path, size);
+	out_buf[size-1] = 0x00;
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * gg_dir_set(): Set the Game Genie directory.
+ * @param dir_id Directory ID.
+ * @param buf New directory.
+ * @return MDP error code.
+ */
+static int MDP_FNCALL gg_dir_set(int dir_id, char *buf)
+{
+	if (dir_id != gg_dir_id)
+		return -MDP_ERR_DIR_INVALID_DIRID;
+	
+	strncpy(gg_save_path, buf, sizeof(gg_save_path));
+	gg_save_path[sizeof(gg_save_path)-1] = 0x00;
 	
 	return MDP_ERR_OK;
 }
