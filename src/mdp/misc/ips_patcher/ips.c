@@ -42,9 +42,6 @@
 // MDP Host Services.
 mdp_host_t *ips_host_srv = NULL;
 
-static int ips_menuItemID = 0;
-
-static int MDP_FNCALL ips_menu_handler(int menu_item_id);
 static int MDP_FNCALL ips_event_handler(int event_id, void *event_info);
 
 // Directory registration.
@@ -77,9 +74,6 @@ int MDP_FNCALL ips_init(mdp_host_t *host_srv)
 		return -MDP_ERR_UNSUPPORTED_UI;
 	}
 	
-	// Create a menu item.
-	ips_menuItemID = ips_host_srv->menu_item_add(&mdp, &ips_menu_handler, 0, "&IPS Patcher");
-	
 	// Set the Game Genie directory to the default save path initially.
 	ips_host_srv->dir_get_default_save_path(ips_save_path, sizeof(ips_save_path));
 	
@@ -109,26 +103,7 @@ int MDP_FNCALL ips_end(void)
 	if (ips_dir_id >= 0)
 		ips_host_srv->dir_unregister(&mdp, ips_dir_id);
 	
-	// Remove the menu item.
-	ips_host_srv->menu_item_remove(&mdp, ips_menuItemID);
-	
 	// Plugin is shut down.
-	return MDP_ERR_OK;
-}
-
-
-/**
- * ips_menu_handler(): Menu handler function.
- * @param menu_item_id Menu item ID.
- * @return MDP error code.
- */
-static int MDP_FNCALL ips_menu_handler(int menu_item_id)
-{
-	if (menu_item_id != ips_menuItemID)
-		return -MDP_ERR_MENU_INVALID_MENUID;
-	
-	// Show the IPS Patcher window. (TODO)
-	//ips_window_show(ips_host_srv->window_get_main());
 	return MDP_ERR_OK;
 }
 
