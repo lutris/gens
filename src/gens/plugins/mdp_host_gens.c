@@ -27,9 +27,6 @@
 // Main window.
 #include "gens/gens_window.h"
 
-// Main emulation functions.
-#include "emulator/g_main.hpp"
-
 // C includes.
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,6 +40,7 @@
 #include "mdp_host_gens_emuctrl.hpp"
 #include "mdp_host_gens_z.h"
 #include "mdp_host_gens_config.hpp"
+#include "mdp_host_gens_dir.hpp"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
@@ -120,6 +118,8 @@ mdp_host_t Gens_MDP_Host =
 	.config_get		= mdp_host_config_get,
 	
 	.dir_get_default_save_path = mdp_host_dir_get_default_save_path,
+	.dir_register		= mdp_host_dir_register,
+	.dir_unregister		= mdp_host_dir_unregister,
 	
 	.crc32			= mdp_host_crc32,
 	.z_open			= mdp_host_z_open,
@@ -287,35 +287,4 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 void* MDP_FNCALL mdp_host_window_get_main(void)
 {
 	return gens_window;
-}
-
-
-/**
- * mdp_host_dir_get_default_save_path(): Get the default save path.
- * @param buf Buffer to store the default save path in.
- * @param size Size of the buffer.
- * @return MDP error code.
- */
-int MDP_FNCALL mdp_host_dir_get_default_save_path(char *buf, unsigned int size)
-{
-	if (!buf || !size)
-	{
-		// Invalid parameters.
-		return -MDP_ERR_INVALID_PARAMETERS;
-	}
-	
-	// TODO: Return an error if the buffer is too small.
-	#ifdef GENS_OS_WIN32
-		// Win32's default save path is ".\\".
-		// Return the full save path instead.
-		strncpy(buf, PathNames.Gens_EXE_Path, size);
-	#else
-		// Get the actual default save path.
-		get_default_save_path(buf, size);
-	#endif
-	
-	// Make sure the return buffer is null-terminated.
-	buf[size-1] = 0x00;
-	
-	return MDP_ERR_OK;
 }

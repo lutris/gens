@@ -152,6 +152,7 @@ gens_SOURCES = \
 		plugins/mdp_host_gens_emuctrl.cpp \
 		plugins/mdp_host_gens_z.c \
 		plugins/mdp_host_gens_config.cpp \
+		plugins/mdp_host_gens_dir.cpp \
 		plugins/eventmgr.cpp \
 		plugins/mdp_incompat.cpp
 
@@ -272,6 +273,7 @@ noinst_HEADERS = \
 		plugins/mdp_host_gens_emuctrl.hpp \
 		plugins/mdp_host_gens_z.h \
 		plugins/mdp_host_gens_config.hpp \
+		plugins/mdp_host_gens_dir.hpp \
 		plugins/eventmgr.hpp \
 		plugins/mdp_incompat.hpp \
 		plugins/gens_ld.h

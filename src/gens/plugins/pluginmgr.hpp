@@ -27,12 +27,16 @@
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-#include <string>
-#include <list>
 #include "macros/hashtable.hpp"
 
 // MDP Incompatibility List.
 #include "mdp_incompat.hpp"
+
+#ifdef __cplusplus
+
+// C++ includes.
+#include <string>
+#include <list>
 
 typedef GENS_HASHTABLE<std::string, std::list<mdp_render_t*>::iterator> mapRenderPlugin;
 typedef std::pair<std::string, std::list<mdp_render_t*>::iterator> pairRenderPlugin;
@@ -58,6 +62,21 @@ typedef struct _mdpWindow_t
 	void	*window;
 	mdp_t	*owner;
 } mdpWindow_t;
+
+// Directories.
+typedef struct _mdp_dir_t
+{
+	int		id;
+	std::string	name;
+	
+	mdp_dir_get_fn	get;
+	mdp_dir_set_fn	set;
+	
+	mdp_t		*owner;
+} mdp_dir_t;
+
+typedef GENS_HASHTABLE<int, std::list<mdp_dir_t>::iterator> mapDirItems;
+typedef std::pair<int, std::list<mdp_dir_t>::iterator> pairDirItems;
 
 // Plugin configuration.
 typedef GENS_HASHTABLE<std::string, std::string> mapConfigItems;
@@ -88,6 +107,10 @@ class PluginMgr
 		// List containing plugin windows.
 		static std::list<mdpWindow_t> lstWindows;
 		
+		// List and map containing registered directories.
+		static std::list<mdp_dir_t> lstDirectories;
+		static mapDirItems tblDirectories;
+		
 		// Map containing plugin configuration.
 		static mapPluginConfig tblPluginConfig;
 	
@@ -97,9 +120,8 @@ class PluginMgr
 		static void loadExternalPlugin(const std::string& filename);
 		
 		static void errLoadPlugin(mdp_t *plugin, int err, const std::string& filename = "");
-		
-		// TODO: Replace with MDP_Host_t->registerRenderer().
-		//static bool initPlugin_Render(mdp_t *plugin);
 };
+
+#endif /* __cplusplus */
 
 #endif /* GENS_PLUGINMGR_HPP */

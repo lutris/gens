@@ -108,6 +108,12 @@ mapMenuItems PluginMgr::tblMenuItems;
 list<mdpWindow_t> PluginMgr::lstWindows;
 
 /**
+ * List and map containing registered directories.
+ */
+list<mdp_dir_t> PluginMgr::lstDirectories;
+mapDirItems PluginMgr::tblDirectories;
+
+/**
  * Map containing plugin configuration.
  */
 mapPluginConfig PluginMgr::tblPluginConfig;
