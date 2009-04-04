@@ -64,7 +64,7 @@ typedef struct _mdpWindow_t
 } mdpWindow_t;
 
 // Directories.
-typedef struct _mdp_dir_t
+typedef struct _mdpDir_t
 {
 	int		id;
 	std::string	name;
@@ -73,10 +73,10 @@ typedef struct _mdp_dir_t
 	mdp_dir_set_fn	set;
 	
 	mdp_t		*owner;
-} mdp_dir_t;
+} mdpDir_t;
 
-typedef GENS_HASHTABLE<int, std::list<mdp_dir_t>::iterator> mapDirItems;
-typedef std::pair<int, std::list<mdp_dir_t>::iterator> pairDirItems;
+typedef GENS_HASHTABLE<int, std::list<mdpDir_t>::iterator> mapDirItems;
+typedef std::pair<int, std::list<mdpDir_t>::iterator> pairDirItems;
 
 // Plugin configuration.
 typedef GENS_HASHTABLE<std::string, std::string> mapConfigItems;
@@ -108,7 +108,7 @@ class PluginMgr
 		static std::list<mdpWindow_t> lstWindows;
 		
 		// List and map containing registered directories.
-		static std::list<mdp_dir_t> lstDirectories;
+		static std::list<mdpDir_t> lstDirectories;
 		static mapDirItems tblDirectories;
 		
 		// Map containing plugin configuration.

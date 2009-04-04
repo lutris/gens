@@ -129,7 +129,7 @@ int Config::save(const string& filename)
 	cfg.writeString("Directories", "Screen Shot Path", PathNames.Screenshot_Dir);
 	
 	// Plugin directories.
-	for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 	     iter != PluginMgr::lstDirectories.end(); iter++)
 	{
 		char dir_buf[GENS_PATH_MAX];
@@ -373,7 +373,7 @@ int Config::load(const string& filename, void* gameActive)
 	cfg.getString("Directories", "Screen Shot Path", PathNames.Gens_Path, PathNames.Screenshot_Dir, sizeof(PathNames.Screenshot_Dir));
 	
 	// Plugin directories.
-	for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 	     iter != PluginMgr::lstDirectories.end(); iter++)
 	{
 		char buf[256];

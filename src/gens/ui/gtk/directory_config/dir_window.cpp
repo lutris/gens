@@ -164,7 +164,7 @@ void dir_window_show(void)
 		dir_plugin_t dir_plugin;
 		int dir = 0;
 		
-		for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
 		{
 			dir_plugin.txt = dir_window_create_dir_widgets((*iter).name.c_str(), tblPluginDirs, dir);
@@ -284,8 +284,8 @@ static void dir_window_init(void)
 		if (dirIter == PluginMgr::tblDirectories.end())
 			continue;
 		
-		list<mdp_dir_t>::iterator lstDirIter = (*dirIter).second;
-		const mdp_dir_t& dir = *lstDirIter;
+		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+		const mdpDir_t& dir = *lstDirIter;
 		
 		// Get the directory.
 		if (dir.get((*iter).id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
@@ -363,8 +363,8 @@ static void dir_window_save(void)
 		if (dirIter == PluginMgr::tblDirectories.end())
 			continue;
 		
-		list<mdp_dir_t>::iterator lstDirIter = (*dirIter).second;
-		const mdp_dir_t& dir = *lstDirIter;
+		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+		const mdpDir_t& dir = *lstDirIter;
 		
 		// Set the directory.
 		dir.set((*iter).id, dir_buf);

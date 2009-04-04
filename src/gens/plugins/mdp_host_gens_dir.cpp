@@ -95,7 +95,7 @@ int MDP_FNCALL mdp_host_dir_register(mdp_t *plugin, const char *dir_name,
 	// Locate the highest directory ID.
 	int dir_id = 0;
 	
-	for (list<mdp_dir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+	for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
 	     iter != PluginMgr::lstDirectories.end(); iter++)
 	{
 		if ((*iter).id >= dir_id)
@@ -109,7 +109,7 @@ int MDP_FNCALL mdp_host_dir_register(mdp_t *plugin, const char *dir_name,
 	}
 	
 	// Add the directory to the list.
-	mdp_dir_t dir;
+	mdpDir_t dir;
 	dir.id = dir_id;
 	dir.name = string(dir_name);
 	dir.get = get_fn;
@@ -118,7 +118,7 @@ int MDP_FNCALL mdp_host_dir_register(mdp_t *plugin, const char *dir_name,
 	PluginMgr::lstDirectories.push_back(dir);
 	
 	// Add the directory ID to the map.
-	list<mdp_dir_t>::iterator lstIter = PluginMgr::lstDirectories.end();
+	list<mdpDir_t>::iterator lstIter = PluginMgr::lstDirectories.end();
 	lstIter--;
 	PluginMgr::tblDirectories.insert(pairDirItems(dir_id, lstIter));
 	
@@ -149,7 +149,7 @@ int MDP_FNCALL mdp_host_dir_unregister(mdp_t *plugin, int dir_id)
 	}
 	
 	// Get the list iterator.
-	list<mdp_dir_t>::iterator lstIter = (*curDirItem).second;
+	list<mdpDir_t>::iterator lstIter = (*curDirItem).second;
 	
 	// Check if the directory is owned by this plugin.
 	if ((*lstIter).owner != plugin)
