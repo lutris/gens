@@ -240,6 +240,7 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *dir_get_default_save_path)(char* buf, unsigned int size);
 	int (MDP_FNCALL *dir_register)(struct _mdp_t *plugin, const char *dir_name,
 				       mdp_dir_get_fn get_fn, mdp_dir_set_fn set_fn);
+	int (MDP_FNCALL *dir_unregister)(struct _mdp_t *plugin, int dir_id);
 	
 	/* Compression functions. */
 	int	(MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);
