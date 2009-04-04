@@ -125,7 +125,7 @@ static int MDP_FNCALL ips_event_handler(int event_id, void *event_info)
 		// IPS patch file is [save directory]/ROM_name.ips.
 		// TODO: Register an IPS patcher-specific directory.
 		char patch_filename[1024];
-		ips_host_srv->directory_get_default_save_path(patch_filename, sizeof(patch_filename));
+		ips_host_srv->dir_get_default_save_path(patch_filename, sizeof(patch_filename));
 		
 		// Append the game's name.
 		strcat(patch_filename, "/");

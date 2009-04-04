@@ -116,6 +116,10 @@ typedef enum _MDP_EMUCTRL
 	MDP_EMUCTRL_RELOAD_INFO		= 2	/* Reload ROM information. */
 } MDP_EMUCTRL;
 
+/* Directory Handler functions. */
+typedef int (MDP_FNCALL *mdp_dir_get_fn)(int dir_id, char out_buf, size_t size);
+typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, char buf);
+
 /* MDP Host Services struct. */
 typedef struct _mdp_host_t
 {
@@ -233,7 +237,9 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *config_set)(struct _mdp_t *plugin, const char* key, const char* value);
 	
 	/* Directory functions. */
-	int (MDP_FNCALL *directory_get_default_save_path)(char* buf, unsigned int size);
+	int (MDP_FNCALL *dir_get_default_save_path)(char* buf, unsigned int size);
+	int (MDP_FNCALL *dir_register)(struct _mdp_t *plugin, const char *dir_name,
+				       mdp_dir_get_fn get_fn, mdp_dir_set_fn set_fn);
 	
 	/* Compression functions. */
 	int	(MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);

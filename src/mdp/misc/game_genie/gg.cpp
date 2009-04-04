@@ -159,7 +159,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.
 		char def_save_path[1024];
-		gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
+		gg_host_srv->dir_get_default_save_path(def_save_path, sizeof(def_save_path));
 		
 		// Load the patch file.
 		string full_path = string(def_save_path) + "/" + gg_loaded_rom + string(GG_FILE_EXT);
@@ -183,7 +183,7 @@ static int MDP_FNCALL gg_event_handler(int event_id, void *event_info)
 		// Patch file is [save directory]/ROM_name.pat
 		// TODO: Register a Game Genie-specific directory.
 		char def_save_path[1024];
-		gg_host_srv->directory_get_default_save_path(def_save_path, sizeof(def_save_path));
+		gg_host_srv->dir_get_default_save_path(def_save_path, sizeof(def_save_path));
 		
 		// Save the patch file.
 		string full_path = string(def_save_path) + gg_loaded_rom + string(GG_FILE_EXT);

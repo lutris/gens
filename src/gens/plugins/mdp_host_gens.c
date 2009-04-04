@@ -119,7 +119,7 @@ mdp_host_t Gens_MDP_Host =
 	.config_set		= mdp_host_config_set,
 	.config_get		= mdp_host_config_get,
 	
-	.directory_get_default_save_path = mdp_host_directory_get_default_save_path,
+	.dir_get_default_save_path = mdp_host_dir_get_default_save_path,
 	
 	.crc32			= mdp_host_crc32,
 	.z_open			= mdp_host_z_open,
@@ -291,12 +291,12 @@ void* MDP_FNCALL mdp_host_window_get_main(void)
 
 
 /**
- * mdp_host_directory_get_default_save_path(): Get the default save path.
+ * mdp_host_dir_get_default_save_path(): Get the default save path.
  * @param buf Buffer to store the default save path in.
  * @param size Size of the buffer.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_directory_get_default_save_path(char *buf, unsigned int size)
+int MDP_FNCALL mdp_host_dir_get_default_save_path(char *buf, unsigned int size)
 {
 	if (!buf || !size)
 	{
