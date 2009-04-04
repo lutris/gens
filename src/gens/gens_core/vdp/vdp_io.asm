@@ -1191,10 +1191,11 @@ section .text align=64
 	.No_Fill:
 		mov 	ecx, [_VDP_Reg.DMA_Length]		; ecx = DMA Length
 		mov	esi, [_VDP_Reg.DMA_Address]		; esi = DMA Source Address / 2
-		and	ecx, 0xFFFF
 		mov	edi, [_Ctrl.Address]			; edi = Address Dest
+		and	eax, byte 3				; eax = destination DMA (1:VRAM, 2:CRAM, 3:VSRAM)
+		and	ecx, 0xFFFF
 		
-		; If the DMA length is 0, set it to 0x10000.
+		; If the DMA length is 0, set it to the total size of the destination memory.
 		jnz	short .non_zero_DMA
 		
 		; If Zero_Length_DMA is enabled, don't do any DMA request.
@@ -1204,7 +1205,13 @@ section .text align=64
 		; Zero_Length_DMA is disabled.
 		; The MD VDP decrements the DMA length counter before checking if it has
 		; reached zero. So, doing a zero-length DMA request will actually do a
-		; 65,536-byte DMA request.
+		; DMA request for the total size of the destination memory.
+		;
+		; NOTE: This only appears to be correct for MEM-to-VRAM, not MEM-to-CRAM or
+		; MEM-to-VSRAM. Zero-length CRAM and VSRAM transfers are ignored for now.
+		
+		cmp	eax, 1		; VRAM
+		jne	near .NO_DMA
 		mov	ecx, 0x10000
 		
 	.non_zero_DMA:
@@ -1218,7 +1225,6 @@ section .text align=64
 		test	dword [_Ctrl.DMA_Mode], 0x80
 		jnz	near .NO_DMA
 		xor	ebx, ebx
-		and	eax, byte 3				; eax = destination DMA (1:VRAM, 2:CRAM, 3:VSRAM)
 		cmp	esi, [Rom_Size]
 		jb	short .DMA_Src_OK			; Src = ROM (ebx = 0)
 		mov	ebx, 1
