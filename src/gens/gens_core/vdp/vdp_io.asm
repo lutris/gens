@@ -1191,9 +1191,9 @@ section .text align=64
 	.No_Fill:
 		mov 	ecx, [_VDP_Reg.DMA_Length]		; ecx = DMA Length
 		mov	esi, [_VDP_Reg.DMA_Address]		; esi = DMA Source Address / 2
-		mov	edi, [_Ctrl.Address]			; edi = Address Dest
 		and	eax, byte 3				; eax = destination DMA (1:VRAM, 2:CRAM, 3:VSRAM)
 		and	ecx, 0xFFFF
+		mov	edi, [_Ctrl.Address]			; edi = Address Dest
 		
 		; If the DMA length is 0, set it to the total size of the destination memory.
 		jnz	short .non_zero_DMA
