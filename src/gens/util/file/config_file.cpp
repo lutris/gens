@@ -320,6 +320,45 @@ int Config::save(const string& filename)
 	// Restrict input. (Restricts U+D/L+R)
 	cfg.writeBool("Input", "Restrict Input", Settings.restrict_input);
 	
+	// Plugin configuration.
+	char MDP_section[48];
+	
+	for (list<mdp_t*>::iterator lstIter = PluginMgr::lstMDP.begin();
+	     lstIter != PluginMgr::lstMDP.end(); lstIter++)
+	{
+		mapPluginConfig::iterator cfgIter;
+		mdp_t *plugin = (*lstIter);
+		
+		// Check if the plugin has any configuration items.
+		cfgIter = PluginMgr::tblPluginConfig.find(plugin);
+		if (cfgIter == PluginMgr::tblPluginConfig.end())
+			continue;
+		
+		// Write the configuration items.
+		// TODO: Use a standardized function for UUID conversion.
+		const unsigned char *mdp_uuid = plugin->uuid;
+		snprintf(MDP_section, sizeof(MDP_section),
+			 "~MDP:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+			 mdp_uuid[0], mdp_uuid[1], mdp_uuid[2], mdp_uuid[3],
+			 mdp_uuid[4], mdp_uuid[5],
+			 mdp_uuid[6], mdp_uuid[7],
+			 mdp_uuid[8], mdp_uuid[9],
+			 mdp_uuid[10], mdp_uuid[11], mdp_uuid[12], mdp_uuid[13], mdp_uuid[14], mdp_uuid[15]);
+		MDP_section[sizeof(MDP_section)-1] = 0x00;
+		
+		// Write the configuration items.
+		mapConfigItems& mapCfg = ((*cfgIter).second);
+		for (mapConfigItems::iterator cfgItem = mapCfg.begin();
+		     cfgItem != mapCfg.end(); cfgItem++)
+		{
+			cfg.writeString(MDP_section, (*cfgItem).first, (*cfgItem).second);
+		}
+		
+		// Write the plugin information.
+		if (plugin->desc && plugin->desc->name)
+			cfg.writeString(MDP_section, "^MDP_Name", plugin->desc->name);
+	}
+	
 	// Save the INI file.
 	cfg.save(filename);
 	
