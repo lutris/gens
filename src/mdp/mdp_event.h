@@ -38,10 +38,11 @@ typedef enum _MDP_EVENT_ID
 {
 	MDP_EVENT_UNKNOWN	= 0,
 	MDP_EVENT_LOAD_CONFIG	= 1,	/* event_info == NULL */
-	MDP_EVENT_OPEN_ROM	= 2,	/* event_info == mdp_event_open_rom_t */
-	MDP_EVENT_CLOSE_ROM	= 3,	/* event_info == NULL */
-	MDP_EVENT_PRE_FRAME	= 4,	/* event_info == NULL */
-	MDP_EVENT_POST_FRAME	= 5,	/* event_info == mdp_event_post_frame_t */
+	MDP_EVENT_SAVE_CONFIG	= 2,	/* event_info == NULL */
+	MDP_EVENT_OPEN_ROM	= 3,	/* event_info == mdp_event_open_rom_t */
+	MDP_EVENT_CLOSE_ROM	= 4,	/* event_info == NULL */
+	MDP_EVENT_PRE_FRAME	= 5,	/* event_info == NULL */
+	MDP_EVENT_POST_FRAME	= 6,	/* event_info == mdp_event_post_frame_t */
 	
 	MDP_EVENT_MAX			/* Maximum number of events. */
 } MDP_EVENT_ID;
