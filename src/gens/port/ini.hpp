@@ -30,54 +30,59 @@
 
 #include <string>
 #include <map>
-using std::string;
-using std::map;
-using std::pair;
+#include <utility>
 
 // Case-insensitive search from http://www.experts-exchange.com/Programming/Languages/CPP/Q_23025401.html
 class __lesscasecmp
 {
 	public:
-		bool operator() (const string& a, const string& b) const
+		bool operator() (const std::string& a, const std::string& b) const
 		{
 			return (strcasecmp(a.c_str(), b.c_str()) < 0);
 		}
 };
 
-typedef map<string, string, __lesscasecmp> iniSection;
-typedef map<string, iniSection, __lesscasecmp> iniFile;
+typedef std::map<std::string, std::string, __lesscasecmp> iniSection;
+typedef std::pair<std::string, std::string> pairIniSection;
+
+typedef std::map<std::string, iniSection, __lesscasecmp> iniFile;
+typedef std::pair<std::string, iniSection> pairIniFile;
 
 class INI
 {
 	public:
 		INI();
-		INI(const string& filename);
+		INI(const std::string& filename);
 		~INI();
 		
 		// Load an INI file.
-		void load(const string& filename);
+		void load(const std::string& filename);
 		
 		// Save the INI file.
-		void save(const string& filename);
+		void save(const std::string& filename);
 		
 		// Clear the loaded INI file.
 		void clear(void);
 		
 		// Get settings from the loaded INI file.
-		int getInt(const string& section, const string& key, const int def);
-		bool getBool(const string& section, const string& key, const bool def);
-		string getString(const string& section, const string& key, const string& def);
-		void getString(const string& section, const string& key, const string& def,
+		int getInt(const std::string& section, const std::string& key, const int def);
+		bool getBool(const std::string& section, const std::string& key, const bool def);
+		std::string getString(const std::string& section, const std::string& key, const std::string& def);
+		void getString(const std::string& section, const std::string& key, const std::string& def,
 			       char *buf, unsigned int size);
 		
 		// Write settings to the loaded INI file.
-		void writeInt(const string& section, const string& key, const int value,
+		void writeInt(const std::string& section, const std::string& key, const int value,
 			      const bool hex = false, const uint8_t hexFieldWidth = 0);
-		void writeBool(const string& section, const string& key, const bool value);
-		void writeString(const string& section, const string& key, const string& value);
+		void writeBool(const std::string& section, const std::string& key, const bool value);
+		void writeString(const std::string& section, const std::string& key, const std::string& value);
 		
 		// Delete entry.
-		void deleteEntry(const string& section, const string& key);
+		void deleteEntry(const std::string& section, const std::string& key);
+		
+		// Section functions.
+		bool sectionExists(const std::string& section);
+		iniSection getSection(const std::string& section);
 	
 	protected:
 		iniFile m_INI;

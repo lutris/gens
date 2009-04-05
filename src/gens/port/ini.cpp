@@ -33,11 +33,13 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include <string>
 using std::endl;
 using std::ios;
 using std::ifstream;
 using std::ofstream;
 using std::stringstream;
+using std::string;
 
 
 INI::INI()
@@ -118,7 +120,7 @@ void INI::load(const string& filename)
 			// If there's a section right now, add it to the map.
 			if (curSectionName.length() > 0)
 			{
-				m_INI.insert(pair<string, iniSection>(curSectionName, curSection));
+				m_INI.insert(pairIniFile(curSectionName, curSection));
 				curSection.clear();
 				curSectionName.clear();
 			}
@@ -160,14 +162,14 @@ void INI::load(const string& filename)
 			}
 			
 			// Add the key.
-			curSection.insert(pair<string, string>(curKey, curValue));
+			curSection.insert(pairIniSection(curKey, curValue));
 		}
 	}
 	
 	// If a section is still being added, add it to the config.
 	if (curSectionName.length() > 0)
 	{
-		m_INI.insert(pair<string, iniSection>(curSectionName, curSection));
+		m_INI.insert(pairIniFile(curSectionName, curSection));
 		curSection.clear();
 		curSectionName.clear();
 	}
@@ -345,7 +347,7 @@ void INI::writeString(const string& section, const string& key, const string& va
 	{
 		// Section not found. Create it.
 		iniSection newSection;
-		m_INI.insert(pair<string, iniSection>(section, newSection));
+		m_INI.insert(pairIniFile(section, newSection));
 		iniSectIter = m_INI.find(section);
 		if (iniSectIter == m_INI.end())
 		{
@@ -365,7 +367,7 @@ void INI::writeString(const string& section, const string& key, const string& va
 	}
 	
 	// Create the key.
-	(*iniSectIter).second.insert(pair<string, string>(key, value));
+	(*iniSectIter).second.insert(pairIniSection(key, value));
 	
 	// Found the key.
 	return;
@@ -447,4 +449,37 @@ void INI::save(const string& filename)
 	
 	// Done.
 	cfgFile.close();
+}
+
+
+/**
+ * sectionExists(): Check if a section exists.
+ * @param section Section to check.
+ * @return True if the section exists; false if it doesn't exist.
+ */
+bool INI::sectionExists(const string& section)
+{
+	iniFile::iterator iniSectIter;
+	
+	// Search for the section.
+	iniSectIter = m_INI.find(section);
+	return (iniSectIter != m_INI.end());
+}
+
+
+iniSection INI::getSection(const string& section)
+{
+	iniFile::iterator iniSectIter;
+	
+	// Search for the section.
+	iniSectIter = m_INI.find(section);
+	if (iniSectIter == m_INI.end())
+	{
+		// INI section doesn't exist.
+		iniSection blank;
+		return blank;
+	}
+	
+	// INI section found.
+	return (*iniSectIter).second;
 }
