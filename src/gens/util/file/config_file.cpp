@@ -80,8 +80,9 @@
 #include "emulator/options.hpp"
 #include "ui/gens_ui.hpp"
 
-// Plugin Manager
+// Plugin Manager and Event Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/eventmgr.hpp"
 
 // Video, Audio, Input.
 #include "video/vdraw.h"
@@ -730,6 +731,9 @@ int Config::load(const string& filename, void* gameActive)
 		// Delete the "^MDP_name" key from the configuration.
 		PluginMgr::tblPluginConfig[plugin].erase("^MDP_name");
 	}
+	
+	// Plugin configuration is loaded.
+	EventMgr::RaiseEvent(MDP_EVENT_LOAD_CONFIG, NULL);
 	
 	// Done.
 	return 1;
