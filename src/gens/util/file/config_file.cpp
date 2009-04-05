@@ -321,6 +321,9 @@ int Config::save(const string& filename)
 	// Restrict input. (Restricts U+D/L+R)
 	cfg.writeBool("Input", "Restrict Input", Settings.restrict_input);
 	
+	// Tell plugins to save their configurations.
+	EventMgr::RaiseEvent(MDP_EVENT_SAVE_CONFIG, NULL);
+	
 	// Plugin configuration.
 	char MDP_section[48];
 	
