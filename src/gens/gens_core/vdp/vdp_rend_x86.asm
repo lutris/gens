@@ -1954,13 +1954,13 @@ section .text align=64
 	
 	.VDP_OK:
 		test	byte [_CRam_Flag], 1		; teste si la palette a etait modifiee
-		jz	near .Palette_OK		; si oui
+		jz	short .Palette_OK		; si oui
 		
 		test	byte [_VDP_Reg + 12 * 4], 8
-		jnz	near .Palette_HS
+		jnz	short .Palette_HS
 		
 		call	_vdp_update_palette
-		jmp	.Palette_OK
+		jmp	short .Palette_OK
 	
 	align 16
 		
@@ -2124,14 +2124,14 @@ section .text align=64
 			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	near .VDP_OK
 			call	_vdp_update_palette
-			jmp	.VDP_OK
+			jmp	near .VDP_OK
 	
 	align 16
 
 	.HS:
 			RENDER_LINE 0, 1
 			test	byte [_CRam_Flag], 1		; test if palette was modified
-			jz	near .VDP_OK
+			jz	short .VDP_OK
 			call	_vdp_update_palette_hs
 	
 	align 16
