@@ -27,6 +27,13 @@
 #include "mdp_host_gens_config.hpp"
 #include "mdp/mdp_error.h"
 
+// C++ includes.
+#include <string>
+using std::string;
+
+// Plugin Manager.
+#include "pluginmgr.hpp"
+
 
 /**
  * mdp_host_config_get(): Get a configuration setting.
@@ -40,8 +47,47 @@
 int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* def,
 				   char *out_buf, unsigned int size)
 {
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	if (!plugin || !key || !out_buf || size == 0)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
+	// Find the plugin section.
+	mapPluginConfig::iterator cfgIter;
+	
+	cfgIter = PluginMgr::tblPluginConfig.find(plugin);
+	if (cfgIter == PluginMgr::tblPluginConfig.end())
+	{
+		// Plugin section not found. Return the default value.
+		if (!def)
+			out_buf[0] = 0x00;
+		else
+		{
+			strncpy(out_buf, def, size);
+			out_buf[size-1] = 0x00;
+		}
+		return MDP_ERR_OK;
+	}
+	
+	// Find the key.
+	mapConfigItems& mapCfg = ((*cfgIter).second);
+	
+	mapConfigItems::iterator cfgItem = mapCfg.find(key);
+	if (cfgItem == mapCfg.end())
+	{
+		// Key not found. Return the default value.
+		if (!def)
+			out_buf[0] = 0x00;
+		else
+		{
+			strncpy(out_buf, def, size);
+			out_buf[size-1] = 0x00;
+		}
+		return MDP_ERR_OK;
+	}
+	
+	// Key found.
+	strncpy(out_buf, (*cfgItem).second.c_str(), size);
+	out_buf[size-1] = 0x00;
+	return MDP_ERR_OK;
 }
 
 
@@ -54,6 +100,9 @@ int MDP_FNCALL mdp_host_config_get(mdp_t *plugin, const char* key, const char* d
  */
 int MDP_FNCALL mdp_host_config_set(mdp_t *plugin, const char* key, const char* value)
 {
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	if (!plugin || !key || !value)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
+	PluginMgr::tblPluginConfig[plugin][key] = value;
+	return MDP_ERR_OK;
 }

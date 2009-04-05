@@ -80,7 +80,10 @@ typedef std::pair<int, std::list<mdpDir_t>::iterator> pairDirItems;
 
 // Plugin configuration.
 typedef GENS_HASHTABLE<std::string, std::string> mapConfigItems;
+typedef std::pair<std::string, std::string> pairConfigItems;
+
 typedef GENS_HASHTABLE<mdp_t*, mapConfigItems> mapPluginConfig;
+typedef std::pair<mdp_t*, mapConfigItems> pairPluginConfig;
 
 class PluginMgr
 {
