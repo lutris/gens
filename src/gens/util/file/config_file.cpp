@@ -695,6 +695,42 @@ int Config::load(const string& filename, void* gameActive)
 	// Create the TeamPlayer I/O table.
 	Make_IO_Table();
 	
+	// Plugin configuration.
+	char MDP_section[48];
+	
+	for (list<mdp_t*>::iterator lstIter = PluginMgr::lstMDP.begin();
+	     lstIter != PluginMgr::lstMDP.end(); lstIter++)
+	{
+		mdp_t *plugin = (*lstIter);
+		
+		// Write the configuration items.
+		// TODO: Use a standardized function for UUID conversion.
+		const unsigned char *mdp_uuid = plugin->uuid;
+		snprintf(MDP_section, sizeof(MDP_section),
+			 "~MDP:%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+			 mdp_uuid[0], mdp_uuid[1], mdp_uuid[2], mdp_uuid[3],
+			 mdp_uuid[4], mdp_uuid[5],
+			 mdp_uuid[6], mdp_uuid[7],
+			 mdp_uuid[8], mdp_uuid[9],
+			 mdp_uuid[10], mdp_uuid[11], mdp_uuid[12], mdp_uuid[13], mdp_uuid[14], mdp_uuid[15]);
+		MDP_section[sizeof(MDP_section)-1] = 0x00;
+		
+		// Check if the plugin has any configuration items.
+		if (!cfg.sectionExists(MDP_section))
+			continue;
+		
+		// Get the configuration section.
+		iniSection cfgSect = cfg.getSection(MDP_section);
+		for (iniSection::iterator cfgItem = cfgSect.begin();
+		     cfgItem != cfgSect.end(); cfgItem++)
+		{
+			PluginMgr::tblPluginConfig[plugin][(*cfgItem).first] = (*cfgItem).second;
+		}
+		
+		// Delete the "^MDP_name" key from the configuration.
+		PluginMgr::tblPluginConfig[plugin].erase("^MDP_name");
+	}
+	
 	// Done.
 	return 1;
 }
