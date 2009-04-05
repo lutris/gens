@@ -296,8 +296,14 @@ section .text align=64
 	%ifdef __OBJ_ELF
 		%define	_Render_Line		Render_Line
 		%define	_Render_Line_32X	Render_Line_32X
+		
+		%define	_vdp_update_palette	vdp_update_palette
+		%define	_vdp_update_palette_hs	vdp_update_palette_hs
 	%endif
-
+	
+	extern _vdp_update_palette
+	extern _vdp_update_palette_hs
+	
 ;****************************************
 
 ; macro GET_X_OFFSET
@@ -1164,143 +1170,6 @@ section .text align=64
 
 %endmacro
 
-	
-;****************************************
-
-; macro UPDATE_PALETTE
-; param :
-; %1 = Highlight/Shadow Enable
-
-%macro UPDATE_PALETTE 1
-	
-	; Check if the palette is locked.
-	test	dword [_VDP_Layers], VDP_LAYER_PALETTE_LOCK
-	jnz	near %%End
-	
-	xor	eax, eax
-	mov	byte [_CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
-	mov	cx, 0x7BEF
-	xor	edx, edx
-	mov	ebx, (64 / 2) - 1		; ebx = Number of Colours
-	
-	; Check for 15-bit color (555)
-	cmp	byte [_bppMD], 15
-	jne	short %%Loop
-
-	; 15-bit color requires an extra step.
-	mov	cx, 0x3DEF
-	jmp	short %%Loop
-	
-	align 16
-	
-%%Loop
-		mov	ax, [_CRam + ebx * 4 + 0]		; ax = data color
-		mov	dx, [_CRam + ebx * 4 + 2]		; dx = data color
-		and	ax, 0x0FFF
-		and	dx, 0x0FFF
-		mov	ax, [_Palette + eax * 2]
-		mov	dx, [_Palette + edx * 2]
-		mov	[_MD_Palette + ebx * 4 + 0], ax		; normal color
-		mov	[_MD_Palette + ebx * 4 + 2], dx		; normal color
-		
-%if %1 > 0
-		mov	[_MD_Palette + ebx * 4 + 192 * 2 + 0], ax	; normal color
-		mov	[_MD_Palette + ebx * 4 + 192 * 2 + 2], dx	; normal color
-		shr	ax, 1
-		shr	dx, 1
-		and	ax, cx						; one divides by 2 the components for the shadow
-		and	dx, cx						; one divides by 2 the components for the shadow
-		mov	[_MD_Palette + ebx * 4 + 64 * 2 + 0], ax	; darkened color
-		mov	[_MD_Palette + ebx * 4 + 64 * 2 + 2], dx	; darkened color
-		add	ax, cx
-		add	dx, cx
-		mov	[_MD_Palette + ebx * 4 + 128 * 2 + 0], ax	; lightened color
-		mov	[_MD_Palette + ebx * 4 + 128 * 2 + 2], dx	; lightened color
-%endif
-		
-		dec	ebx			; if the 64 colors were not yet made
-		jns	short %%Loop		; then one continues
-		
-		mov	ebx, [_VDP_Reg + 7 * 4]
-		and	ebx, byte 0x3F
-		mov	ax, [_MD_Palette + ebx * 2]
-		mov	[_MD_Palette + 0 * 2], ax
-		
-%if %1 > 0
-		mov	[_MD_Palette + 0 * 2 + 192 * 2], ax
-		shr	ax, 1
-		and	ax, cx
-		mov	[_MD_Palette + 0 * 2 + 64 * 2], ax
-		add	ax, cx
-		mov	[_MD_Palette + 0 * 2 + 128 * 2], ax
-%endif
-%%End
-%endmacro
-
-; %1 = Highlight/Shadow Enable
-
-%macro UPDATE_PALETTE32 1
-	
-	; Check if the palette is locked.
-	test	dword [_VDP_Layers], VDP_LAYER_PALETTE_LOCK
-	jnz	near %%End
-	
-	xor	eax, eax
-	mov	byte [_CRam_Flag], 0		; one updates the palette, one gives the flag has 0 for modified
-	mov	ecx, 0x007F7F7F
-	xor	edx, edx
-	mov	ebx, (64 / 2) - 1		; ebx = Number of Colours
-	jmp	short %%Loop32
-	
-	align 16
-	
-%%Loop32
-		mov	ax, [_CRam + ebx * 4 + 0]			; ax = data color
-		mov	dx, [_CRam + ebx * 4 + 2]			; dx = data color
-		and	eax, 0x0FFF
-		and	edx, 0x0FFF
-		mov	eax, [_Palette32 + eax * 4]
-		mov	edx, [_Palette32 + edx * 4]
-		mov	[_MD_Palette32 + ebx * 8 + 0], eax		; normal color
-		mov	[_MD_Palette32 + ebx * 8 + 4], edx		; normal color
-		
-%if %1 > 0
-		mov	[_MD_Palette32 + ebx * 8 + 192 * 4 + 0], eax	; normal color
-		mov	[_MD_Palette32 + ebx * 8 + 192 * 4 + 4], edx	; normal color
-		shr	eax, 1
-		shr	edx, 1
-		and	eax, ecx					; one divides by 2 the components for the shadow
-		and	edx, ecx					; one divides by 2 the components for the shadow
-		mov	[_MD_Palette32 + ebx * 8 + 64 * 4 + 0], eax	; darkened color
-		mov	[_MD_Palette32 + ebx * 8 + 64 * 4 + 4], edx	; darkened color
-		add	eax, ecx
-		add	edx, ecx
-		mov	[_MD_Palette32 + ebx * 8 + 128 * 4 + 0], eax	; lightened color
-		mov	[_MD_Palette32 + ebx * 8 + 128 * 4 + 4], edx	; lightened color
-%endif
-		
-		dec	ebx			; if the 64 colors were not yet made
-		jns	short %%Loop32		; then one continues
-		
-		mov	ebx, [_VDP_Reg + 7 * 4]
-		and	ebx, byte 0x3F
-		mov	eax, [_MD_Palette32 + ebx * 4]
-		mov	[_MD_Palette32 + 0 * 4], eax
-		
-%if %1 > 0
-		mov	[_MD_Palette32 + 0 * 4 + 192 * 4], eax
-		shr	eax, 1
-		and	eax, ecx
-		mov	[_MD_Palette32 + 0 * 4 + 64 * 4], eax
-		add	eax, ecx
-		mov	[_MD_Palette32 + 0 * 4 + 128 * 4], eax
-%endif
-	
-	UPDATE_PALETTE %1
-	
-%%End
-%endmacro
-
 
 ;****************************************
 
@@ -2090,13 +1959,13 @@ section .text align=64
 		test	byte [_VDP_Reg + 12 * 4], 8
 		jnz	near .Palette_HS
 		
-		UPDATE_PALETTE32 0
+		call	_vdp_update_palette
 		jmp	.Palette_OK
 	
 	align 16
 		
 	.Palette_HS:
-		UPDATE_PALETTE32 1
+		call	_vdp_update_palette_hs
 
 	align 16
 	
@@ -2254,7 +2123,7 @@ section .text align=64
 			RENDER_LINE 0, 0
 			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	near .VDP_OK
-			UPDATE_PALETTE32 0
+			call	_vdp_update_palette
 			jmp	.VDP_OK
 	
 	align 16
@@ -2263,7 +2132,7 @@ section .text align=64
 			RENDER_LINE 0, 1
 			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	near .VDP_OK
-			UPDATE_PALETTE32 1
+			call	_vdp_update_palette_hs
 	
 	align 16
 	

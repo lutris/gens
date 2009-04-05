@@ -64,6 +64,10 @@ extern unsigned int VDP_Layers;
 	 VDP_LAYER_SPRITE_LOW	| \
 	 VDP_LAYER_SPRITE_HIGH)
 
+// C++ functions in vdp_rend.cpp.
+void vdp_update_palette(void);
+void vdp_update_palette_hs(void);
+
 #ifdef __cplusplus
 }
 #endif
