@@ -3,11 +3,13 @@
 	<assemblyIdentity
 		type="win32"
 		name="Gens.GS"
-		version="4.2.0.1"
+		version="6.0.0.1"
 		processorArchitecture="x86"
 	/>
 	
-	<description>Gens 2.15.5/GS-m4.2+</description>
+	<description>Gens 2.15.5/GS-r6+</description>
+	
+	<!-- Common Controls 6. Needed for visual styles on XP and later. -->
 	<dependency>
 		<dependentAssembly>
 			<assemblyIdentity
@@ -20,4 +22,16 @@
 			/>
 		</dependentAssembly>
 	</dependency>
+	
+	<!-- Application security requirements. Used for Vista UAC. -->
+	<trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+		<security>
+			<requestedPrivileges>
+				<requestedExecutionLevel
+					level="asInvoked"
+					uiAccess="false"
+				/>
+			</requestedPrivileges>
+		</security>
+	</trustInfo>
 </assembly>  
