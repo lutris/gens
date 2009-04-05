@@ -162,6 +162,7 @@ static void gens_sighandler(int signum)
 		
 		LOG_MSG(gens, LOG_MSG_LEVEL_WARNING,
 			"Signal %d (%s) received; ignoring.", signum, signame);
+		return;
 	}
 	
 	// Check what signal this is.
