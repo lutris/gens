@@ -111,6 +111,9 @@ static inline void T_vdp_update_palette(pixel mask, pixel *MD_palette, const pix
 }
 
 
+/**
+ * vdp_update_palette(): Update the palette.
+ */
 void vdp_update_palette(void)
 {
 	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
@@ -118,6 +121,9 @@ void vdp_update_palette(void)
 	T_vdp_update_palette<false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
 }
 
+/**
+ * vdp_update_palette(): Update the palette, including highlight and shadow.
+ */
 void vdp_update_palette_hs(void)
 {
 	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
