@@ -23,14 +23,18 @@
 #include "g_main.hpp"
 #include "g_main_unix.hpp"
 
+// C includes.
 #include <sys/stat.h>
-#include <cstdio>
+#include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
+#include <string.h>
 
 // C++ includes
 #include <list>
 using std::list;
+
+// Signal handler.
+#include "sighandler.h"
 
 #include "g_palette.h"
 #include "gens_ui.hpp"
@@ -117,6 +121,9 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
+	// Install the signal handler.
+	gens_sighandler_init();
+	
 	// Initialize the timer.
 	// TODO: Make this unnecessary.
 	init_timer();
@@ -197,5 +204,9 @@ int main(int argc, char *argv[])
 	Config::save(save_path);
 	
 	End_All();
+	
+	// Shut down the signal handler.
+	gens_sighandler_end();
+	
 	return 0;
 }

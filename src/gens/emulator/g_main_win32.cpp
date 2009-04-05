@@ -23,6 +23,13 @@
 #include "g_main.hpp"
 #include "g_main_win32.hpp"
 
+// C++ includes
+#include <list>
+using std::list;
+
+// Signal handler.
+#include "sighandler.h"
+
 #include "g_palette.h"
 #include "gens_ui.hpp"
 #include "parse.hpp"
@@ -69,10 +76,6 @@ int win32_CommCtrlEx = 0;
 
 // argc/argv conversion.
 #include "port/argc_argv.h"
-
-// C++ includes
-#include <list>
-using std::list;
 
 
 #define GENS_DEFAULT_SAVE_PATH ".\\"
@@ -163,6 +166,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 {
 	// Save hInst for other functions.
 	ghInstance = hInst;
+	
+	// Install the signal handler.
+	gens_sighandler_init();
 	
 	// Initialize fonts.
 	fonts_init();
@@ -271,6 +277,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		if (!GetMessage(&msg, NULL, 0, 0))
 			return msg.wParam;
 	}
+	
+	// Shut down the signal handler.
+	gens_sighandler_end();
 	
 	TerminateProcess(GetCurrentProcess(), 0); //Modif N
 	
