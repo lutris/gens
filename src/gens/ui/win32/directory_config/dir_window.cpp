@@ -188,7 +188,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 		vectPluginDirs.clear();
 		vectPluginDirs.reserve(PluginMgr::lstDirectories.size());
 		dir_plugin_t dir_plugin;
-		int dir = 0x80;
+		int dir = 0x10;
 		curTop += 8+16+8;
 		
 		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
@@ -466,10 +466,10 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	HWND txtDir;
 	const char* dir_title;
 	
-	if (dir & 0x80)
+	if (dir >= 0x10)
 	{
 		// Plugin directory.
-		txtDir = vectPluginDirs[dir & 0x7F].txt;
+		txtDir = vectPluginDirs[dir - 0x10].txt;
 		dir_title = "TODO"; // TODO
 	}
 	else
