@@ -28,12 +28,22 @@
 #include "ui/common/dir_window_common.h"
 #include "gens/gens_window.h"
 
+// Plugin Manager.
+#include "plugins/pluginmgr.hpp"
+
+// MDP error codes.
+#include "mdp/mdp_error.h"
+
 // C includes.
 #include <string.h>
 
 // C++ includes.
 #include <string>
+#include <vector>
+#include <list>
 using std::string;
+using std::vector;
+using std::list;
 
 // Win32 includes.
 #define WIN32_LEAN_AND_MEAN
@@ -60,10 +70,21 @@ static WNDCLASS dir_wndclass;
 
 // Window size.
 #define DIR_WINDOW_WIDTH  360
-#define DIR_WINDOW_HEIGHT ((DIR_WINDOW_ENTRIES_COUNT*24)+16+16+16+24)
+#define DIR_WINDOW_HEIGHT_DEFAULT ((DIR_WINDOW_ENTRIES_COUNT*24)+16+16+16+24)
+#define DIR_FRAME_HEIGHT(entries) (((entries)*24)+16+8)
+
+static int	dir_window_height;
 
 // Widgets.
-static HWND	txtDirectory[DIR_WINDOW_ENTRIES_COUNT];
+static HWND	txtInternalDir[DIR_WINDOW_ENTRIES_COUNT];
+
+// Plugin directory widgets.
+typedef struct _dir_plugin_t
+{
+	HWND	txt;
+	int	id;	// 0x00 - 0x7F: internal; 0x80 - 0xFF: plugins
+} dir_plugin_t;
+static vector<dir_plugin_t> vectPluginDirs;
 
 // Command value bases.
 #define IDC_DIR_BTNCHANGE	0x1100
@@ -73,6 +94,7 @@ static LRESULT CALLBACK dir_window_wndproc(HWND hWnd, UINT message, WPARAM wPara
 
 // Widget creation functions.
 static void	dir_window_create_child_windows(HWND hWnd);
+static HWND	dir_window_create_dir_widgets(const char* title, HWND parent, int y, int id);
 
 // Directory configuration load/save functions.
 static void	dir_window_init(void);
@@ -116,15 +138,8 @@ void dir_window_show(void)
 	dir_window = CreateWindow(TEXT("dir_window"), TEXT("Configure Directories"),
 				  WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				  CW_USEDEFAULT, CW_USEDEFAULT,
-				  DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT,
+				  DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT_DEFAULT,
 				  gens_window, NULL, ghInstance, NULL);
-	
-	// Set the actual window size.
-	Win32_setActualWindowSize(dir_window, DIR_WINDOW_WIDTH, DIR_WINDOW_HEIGHT);
-	
-	// Center the window on the parent window.
-	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	Win32_centerOnGensWindow(dir_window);
 	
 	UpdateWindow(dir_window);
 	ShowWindow(dir_window, SW_SHOW);
@@ -137,49 +152,80 @@ void dir_window_show(void)
  */
 static void dir_window_create_child_windows(HWND hWnd)
 {
-	// Create the directory entry frame.
-	HWND fraDirectories = CreateWindow(WC_BUTTON, TEXT("Configure Directories"),
-					   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					   8, 8, DIR_WINDOW_WIDTH-16, DIR_WINDOW_HEIGHT-16-24-8,
-					   hWnd, NULL, ghInstance, NULL);
-	SetWindowFont(fraDirectories, fntMain, TRUE);
+	// Create the internal directory entry frame.
+	HWND fraInternalDirs = CreateWindow(WC_BUTTON, TEXT("Gens/GS Directories"),
+					    WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+					    8, 8,
+					    DIR_WINDOW_WIDTH-16,
+					    DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT),
+					    hWnd, NULL, ghInstance, NULL);
+	SetWindowFont(fraInternalDirs, fntMain, TRUE);
 	
-	// Add the directory entries.
+	// Create all internal directory entry widgets.
+	int curTop = 8+20-24;
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
-		const int curTop = 8+20+(dir*24);
+		curTop += 24;
 		
-		// Create the label for the directory.
-		HWND lblTitle = CreateWindow(WC_STATIC, dir_window_entries[dir].title,
-					     WS_CHILD | WS_VISIBLE | SS_LEFT,
-					     8+8, curTop, 72, 16,
-					     hWnd, NULL, ghInstance, NULL);
-		SetWindowFont(lblTitle, fntMain, TRUE);
-		
-		// Create the textbox for the directory.
-		txtDirectory[dir] = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
-						   WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
-						   8+8+72+8, curTop,
-						   DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
-						   hWnd, NULL, ghInstance, NULL);
-		SetWindowFont(txtDirectory[dir], fntMain, TRUE);
-		
-		// Create the "Change" button for the directory.
-		// TODO: Use an icon?
-		HWND btnChange = CreateWindow(WC_BUTTON, TEXT("Change..."),
-					      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-					      DIR_WINDOW_WIDTH-8-72-8, curTop,
-					      72, 20,
-					      hWnd, (HMENU)(IDC_DIR_BTNCHANGE + dir), ghInstance, NULL);
-		SetWindowFont(btnChange, fntMain, TRUE);
+		txtInternalDir[dir] = dir_window_create_dir_widgets(
+						dir_window_entries[dir].title,
+						hWnd, curTop, dir);
 	}
+	
+	// If any plugin directories exist, create the plugin directory entry frame.
+	if (!PluginMgr::lstDirectories.empty())
+	{
+		// Create the plugin directory entry frame.
+		HWND fraPluginDirs = CreateWindow(WC_BUTTON, TEXT("Plugin Directories"),
+						  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+						  8, 8+DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT)+8,
+						  DIR_WINDOW_WIDTH-16,
+						  DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size()),
+						  hWnd, NULL, ghInstance, NULL);
+		SetWindowFont(fraPluginDirs, fntMain, TRUE);
+		
+		// Create all plugin directory entry widgets.
+		vectPluginDirs.clear();
+		vectPluginDirs.reserve(PluginMgr::lstDirectories.size());
+		dir_plugin_t dir_plugin;
+		int dir = 0x80;
+		curTop += 8+16+8;
+		
+		for (list<mdpDir_t>::iterator iter = PluginMgr::lstDirectories.begin();
+		     iter != PluginMgr::lstDirectories.end(); iter++, dir++)
+		{
+			if (dir >= 0x100)
+				break;
+			
+			curTop += 24;
+			
+			dir_plugin.txt = dir_window_create_dir_widgets((*iter).name.c_str(), hWnd, curTop, dir);
+			dir_plugin.id = (*iter).id;
+			
+			vectPluginDirs.push_back(dir_plugin);
+		}
+	}
+	
+	// Calculate the window height.
+	dir_window_height = 8 + DIR_FRAME_HEIGHT(DIR_WINDOW_ENTRIES_COUNT) + 8 + 24 + 8;
+	if (!PluginMgr::lstDirectories.empty())
+	{
+		dir_window_height += DIR_FRAME_HEIGHT(PluginMgr::lstDirectories.size()) + 8;
+	}
+	
+	// Set the actual window size.
+	Win32_setActualWindowSize(hWnd, DIR_WINDOW_WIDTH, dir_window_height);
+	
+	// Center the window on the parent window.
+	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
+	Win32_centerOnGensWindow(hWnd);
 	
 	// Create the dialog buttons.
 	
 	// OK button.
 	HWND btnOK = CreateWindow(WC_BUTTON, TEXT("&OK"),
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-				  DIR_WINDOW_WIDTH-8-75-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
+				  DIR_WINDOW_WIDTH-8-75-8-75-8-75, dir_window_height-8-24,
 				  75, 23,
 				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
@@ -187,7 +233,7 @@ static void dir_window_create_child_windows(HWND hWnd)
 	// Cancel button.
 	HWND btnCancel = CreateWindow(WC_BUTTON, TEXT("&Cancel"),
 				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				      DIR_WINDOW_WIDTH-8-75-8-75, DIR_WINDOW_HEIGHT-8-24,
+				      DIR_WINDOW_WIDTH-8-75-8-75, dir_window_height-8-24,
 				      75, 23,
 				      hWnd, (HMENU)IDCANCEL, ghInstance, NULL);
 	SetWindowFont(btnCancel, fntMain, TRUE);
@@ -195,13 +241,43 @@ static void dir_window_create_child_windows(HWND hWnd)
 	// Apply button.
 	HWND btnApply = CreateWindow(WC_BUTTON, TEXT("&Apply"),
 				     WS_CHILD | WS_VISIBLE | WS_TABSTOP,
-				     DIR_WINDOW_WIDTH-8-75, DIR_WINDOW_HEIGHT-8-24,
+				     DIR_WINDOW_WIDTH-8-75, dir_window_height-8-24,
 				     75, 23,
 				     hWnd, (HMENU)IDAPPLY, ghInstance, NULL);
 	SetWindowFont(btnApply, fntMain, TRUE);
 	
 	// Initialize the directory entries.
 	dir_window_init();
+}
+
+
+static HWND dir_window_create_dir_widgets(const char* title, HWND container, int y, int id)
+{
+	// Create the label for the directory.
+	HWND lblTitle = CreateWindow(WC_STATIC, title,
+				     WS_CHILD | WS_VISIBLE | SS_LEFT,
+				     8+8, y, 72, 16,
+				     container, NULL, ghInstance, NULL);
+	SetWindowFont(lblTitle, fntMain, TRUE);
+	
+	// Create the textbox for the directory.
+	HWND txtDirectory = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, NULL,
+					   WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL,
+					   8+8+72+8, y,
+					   DIR_WINDOW_WIDTH-(8+72+16+72+8+16), 20,
+					   container, NULL, ghInstance, NULL);
+	SetWindowFont(txtDirectory, fntMain, TRUE);
+	
+	// Create the "Change" button for the directory.
+	// TODO: Use an icon?
+	HWND btnChange = CreateWindow(WC_BUTTON, TEXT("Change..."),
+				      WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+				      DIR_WINDOW_WIDTH-8-72-8, y,
+				      72, 20,
+				      container, (HMENU)(IDC_DIR_BTNCHANGE + id), ghInstance, NULL);
+	SetWindowFont(btnChange, fntMain, TRUE);
+	
+	return txtDirectory;
 }
 
 
@@ -224,9 +300,32 @@ void dir_window_close(void)
  */
 static void dir_window_init(void)
 {
+	// Internal directories.
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
-		Edit_SetText(txtDirectory[dir], dir_window_entries[dir].entry);
+		Edit_SetText(txtInternalDir[dir], dir_window_entries[dir].entry);
+	}
+	
+	// Plugin directories.
+	char dir_buf[GENS_PATH_MAX];
+	
+	for (vector<dir_plugin_t>::iterator iter = vectPluginDirs.begin();
+	     iter != vectPluginDirs.end(); iter++)
+	{
+		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
+		if (dirIter == PluginMgr::tblDirectories.end())
+			continue;
+		
+		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+		const mdpDir_t& dir = *lstDirIter;
+		
+		// Get the directory.
+		if (dir.get((*iter).id, dir_buf, sizeof(dir_buf)) == MDP_ERR_OK)
+		{
+			// Directory retrieved.
+			// TODO: If the path is relative to the Gens directory, shorten it.
+			Edit_SetText((*iter).txt, dir_buf);
+		}
 	}
 }
 
@@ -237,10 +336,11 @@ static void dir_window_save(void)
 {
 	size_t len;
 	
+	// Internal directories.
 	for (unsigned int dir = 0; dir < DIR_WINDOW_ENTRIES_COUNT; dir++)
 	{
 		// Get the entry text.
-		Edit_GetText(txtDirectory[dir], dir_window_entries[dir].entry, GENS_PATH_MAX);
+		Edit_GetText(txtInternalDir[dir], dir_window_entries[dir].entry, GENS_PATH_MAX);
 		
 		// Make sure the entry is null-terminated.
 		dir_window_entries[dir].entry[GENS_PATH_MAX - 1] = 0x00;
@@ -258,6 +358,46 @@ static void dir_window_save(void)
 				dir_window_entries[dir].entry[len + 1] = 0x00;
 			}
 		}
+	}
+	
+	// Plugin directories.
+	char dir_buf[GENS_PATH_MAX];
+	
+	for (vector<dir_plugin_t>::iterator iter = vectPluginDirs.begin();
+	     iter != vectPluginDirs.end(); iter++)
+	{
+		// Get the entry text.
+		Edit_GetText((*iter).txt, dir_buf, sizeof(dir_buf));
+		
+		// Make sure the entry is null-terminated.
+		dir_buf[GENS_PATH_MAX - 1] = 0x00;
+		
+		// Make sure the end of the directory has a slash.
+		// TODO: Do this in functions that use pathnames.
+		len = strlen(dir_buf);
+		if (len > 0 && dir_buf[len - 1] != GENS_DIR_SEPARATOR_CHR)
+		{
+			// String needs to be less than 1 minus the max path length
+			// in order to be able to append the directory separator.
+			if (len < (GENS_PATH_MAX - 1))
+			{
+				dir_buf[len] = GENS_DIR_SEPARATOR_CHR;
+				dir_buf[len + 1] = 0x00;
+			}
+		}
+		
+		// TODO: If the path is relative to the Gens directory, expand it.
+		
+		// Set the directory entry in the plugin.
+		mapDirItems::iterator dirIter = PluginMgr::tblDirectories.find((*iter).id);
+		if (dirIter == PluginMgr::tblDirectories.end())
+			continue;
+		
+		list<mdpDir_t>::iterator lstDirIter = (*dirIter).second;
+		const mdpDir_t& dir = *lstDirIter;
+		
+		// Set the directory.
+		dir.set((*iter).id, dir_buf);
 	}
 }
 
@@ -323,12 +463,28 @@ static void dir_window_callback_btnChange_clicked(int dir)
 	char tmp[64];
 	string new_dir;
 	
+	HWND txtDir;
+	const char* dir_title;
+	
+	if (dir & 0x80)
+	{
+		// Plugin directory.
+		txtDir = vectPluginDirs[dir & 0x7F].txt;
+		dir_title = "TODO"; // TODO
+	}
+	else
+	{
+		// Internal directory.
+		txtDir = txtInternalDir[dir];
+		dir_title = dir_window_entries[dir].title;
+	}
+	
 	// Get the currently entered directory.
-	Edit_GetText(txtDirectory[dir], cur_dir, GENS_PATH_MAX);
+	Edit_GetText(txtDir, cur_dir, GENS_PATH_MAX);
 	cur_dir[GENS_PATH_MAX - 1] = 0x00;
 	
 	// Request a new directory.
-	sprintf(tmp, "Select %s Directory", dir_window_entries[dir].title);
+	sprintf(tmp, "Select %s Directory", dir_title);
 	new_dir = GensUI::selectDir(tmp, cur_dir, dir_window);
 	
 	// If "Cancel" was selected, don't do anything.
@@ -336,5 +492,5 @@ static void dir_window_callback_btnChange_clicked(int dir)
 		return;
 	
 	// Set the new directory.
-	SetWindowText(txtDirectory[dir], new_dir.c_str());
+	SetWindowText(txtDir, new_dir.c_str());
 }
