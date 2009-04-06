@@ -161,6 +161,7 @@ void dir_window_show(void)
 		gtk_container_add(GTK_CONTAINER(fraPluginDirs), tblPluginDirs);
 		
 		// Create all plugin directory entry widgets.
+		lstPluginDirs.clear();
 		dir_plugin_t dir_plugin;
 		int dir = 0;
 		
