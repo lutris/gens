@@ -225,6 +225,18 @@ void GensUI::update(void)
 		if (!GetMessage(&msg, NULL, 0, 0))
 			close_gens();
 		
+		// Check if this message requires clearing the audio buffer.
+		if (msg.message == WM_MENUSELECT ||
+		    msg.message == WM_ENTERSIZEMOVE ||
+		    msg.message == WM_NCLBUTTONDOWN ||
+		    msg.message == WM_NCRBUTTONDOWN ||
+		    msg.message == WM_SYSCHAR ||
+		    msg.message == WM_SYSKEYUP)
+		{
+			// Clear the sound buffer.
+			audio_clear_sound_buffer();
+		}
+		
 		// Check for an accelerator.
 		if (gens_window && msg.hwnd == gens_window &&
 		    ((hAccelTable_NonMenu && TranslateAccelerator(gens_window, hAccelTable_NonMenu, &msg)) ||
@@ -270,18 +282,6 @@ void GensUI::update(void)
 		}
 		
 		// Not a dialog message.
-		
-		// Check if this message requires clearing the audio buffer.
-		if (msg.message == WM_MENUSELECT ||
-		    msg.message == WM_ENTERSIZEMOVE ||
-		    msg.message == WM_NCLBUTTONDOWN ||
-		    msg.message == WM_NCRBUTTONDOWN ||
-		    msg.message == WM_SYSCHAR)
-		{
-			// Clear the sound buffer.
-			audio_clear_sound_buffer();
-		}
-		
 		// Process the message.
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
