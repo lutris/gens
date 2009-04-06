@@ -26,6 +26,12 @@
 
 #include "wave.h"
 
+/* C includes. */
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "emulator/g_main.hpp"
 #include "gens_core/misc/byteswap.h"
 #include "gens/gens_window_sync.hpp"
@@ -35,13 +41,6 @@
 /* Video and audio handlers. */
 #include "video/vdraw.h"
 #include "audio/audio.h"
-
-/* C includes. */
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-
 
 /* Make sure the structs are packed. */
 #define PACKED __attribute__ ((packed))
@@ -114,7 +113,7 @@ int wav_dump_start(void)
 	{
 		num++;
 		snprintf(filename, sizeof(filename), "%s%s_%03d.wav", PathNames.Dump_WAV_Dir, ROM_Name, num);
-		filename[GENS_PATH_MAX-1] = 0x00;
+		filename[sizeof(filename)-1] = 0x00;
 	} while (!access(filename, F_OK));
 	
 	/* Open the file. */

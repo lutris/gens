@@ -26,7 +26,11 @@
 
 #include "gym.hpp"
 
+/* C includes. */
+#include <stdint.h>
+#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "emulator/g_main.hpp"
 #include "gens_core/mem/mem_m68k.h"
@@ -39,9 +43,6 @@
 // Video, Audio.
 #include "video/vdraw.h"
 #include "audio/audio.h"
-
-// File management functions.
-#include "util/file/file.hpp"
 
 
 static FILE *GYM_File = NULL;
@@ -78,8 +79,8 @@ int gym_dump_start(void)
 	do
 	{
 		num++;
-		sprintf(filename, "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, ROM_Name, num);
-	} while (File::Exists(filename));
+		snprintf(filename, sizeof(filename), "%s%s_%03d.gym", PathNames.Dump_GYM_Dir, ROM_Name, num);
+	} while (!access(filename, F_OK));
 	
 	GYM_File = fopen(filename, "w");
 	if (!GYM_File)
