@@ -409,6 +409,7 @@ static void pmgr_window_populate_plugin_list(void)
 		
 		// Add an entry to the list store.
 		gtk_list_store_append(lmPluginList[pmtype], &iter);
+		
 #ifdef GENS_PNG
 		// Create the pixbuf for the plugin icon.
 		GdkPixbuf *pbufIcon = NULL;
