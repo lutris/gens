@@ -183,7 +183,7 @@ static void pmgr_window_create_plugin_list_frame(GtkWidget *container)
 	lstPluginList = gtk_tree_view_new();
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstPluginList), FALSE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstPluginList), FALSE);
-	gtk_widget_set_size_request(lstPluginList, 480, 160);
+	gtk_widget_set_size_request(lstPluginList, 480, 200);
 	gtk_widget_show(lstPluginList);
 	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList);
 	
