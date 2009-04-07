@@ -62,11 +62,17 @@ static GtkWidget	*lblPluginDesc;
 static GtkWidget	*fraPluginDesc;
 
 // Plugin List.
-#define PMGR_INTERNAL	0
-#define PMGR_EXTERNAL	1
-#define PMGR_INCOMPAT	2
-static GtkWidget	*lstPluginList[3];
-static GtkListStore	*lmPluginList[3] = {NULL, NULL, NULL};
+typedef enum _pmgr_type
+{
+	PMGR_INTERNAL = 0,
+	PMGR_EXTERNAL = 1,
+	PMGR_INCOMPAT = 2,
+	
+	PMGR_MAX = 3
+} pmgr_type;
+
+static GtkWidget	*lstPluginList[PMGR_MAX];
+static GtkListStore	*lmPluginList[PMGR_MAX] = {NULL, NULL, NULL};
 
 // Widget creation functions.
 static void	pmgr_window_create_plugin_list_notebook(GtkWidget *container);
@@ -306,7 +312,7 @@ static void pmgr_window_populate_plugin_list(void)
 	GtkTreeViewColumn *colIcon;
 #endif
 	
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < PMGR_MAX; i++)
 	{
 		if (lmPluginList[i])
 			gtk_list_store_clear(lmPluginList[i]);
@@ -413,7 +419,7 @@ void pmgr_window_close(void)
 	GtkTreeIter iter;
 	GdkPixbuf *pbufIcon;
 	
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < PMGR_MAX; i++)
 	{
 		gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmPluginList[i]), &iter);
 		while (valid)
@@ -429,7 +435,7 @@ void pmgr_window_close(void)
 #endif
 	
 	// Clear the plugin lists.
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < PMGR_MAX; i++)
 		gtk_list_store_clear(lmPluginList[i]);
 }
 
@@ -488,7 +494,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	GENS_UNUSED_PARAMETER(tree_view);
 	
 	int id = GPOINTER_TO_INT(user_data);
-	if (id < 0 || id > PMGR_INCOMPAT)
+	if (id < 0 || id >= PMGR_MAX)
 		return;
 	
 	// Check which plugin is clicked.
