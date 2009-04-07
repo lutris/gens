@@ -30,6 +30,7 @@
 
 // C includes.
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
 // GTK+ includes.
@@ -80,12 +81,10 @@ static gint	fraPluginDesc_width;
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
-static GdkPixbuf *pbufPluginIcon;
 static GtkWidget *imgPluginIcon;
 
 static void	pmgr_window_create_plugin_icon_widget(GtkWidget *container);
-static bool	pmgr_window_display_plugin_icon(const unsigned char* icon, const unsigned int iconLength);
-static void	pmgr_window_clear_plugin_icon(void);
+static GdkPixbuf* pmgr_window_create_pixbuf_from_png(const uint8_t *icon, const unsigned int iconLength);
 #endif
 
 
@@ -275,12 +274,23 @@ static void pmgr_window_populate_plugin_list(void)
 	if (lmPluginList)
 		gtk_list_store_clear(lmPluginList);
 	else
-		lmPluginList = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+	{
+#ifdef GENS_PNG
+		lmPluginList = gtk_list_store_new(3,
+			G_TYPE_STRING,		// Plugin name.
+			G_TYPE_POINTER,		// mdp_t* pointer.
+			GDK_TYPE_PIXBUF);	// Plugin icon.
+#else
+		lmPluginList = gtk_list_store_new(2,
+			G_TYPE_STRING,		// Plugin name.
+			G_TYPE_POINTER);	// mdp_t* pointer.
+#endif
+	}
 	
 	// Set the view model of the treeview.
 	gtk_tree_view_set_model(GTK_TREE_VIEW(lstPluginList), GTK_TREE_MODEL(lmPluginList));
 	
-	GtkTreeViewColumn *colPlugin;
+	GtkTreeViewColumn *colPlugin, *colIcon;
 	
 	// Delete any existing columns.
 	do
@@ -290,7 +300,16 @@ static void pmgr_window_populate_plugin_list(void)
 			gtk_tree_view_remove_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
 	} while (colPlugin != NULL);
 	
-	// Create the renderer and columns.
+	// Create the renderers and columns.
+	
+#ifdef GENS_PNG
+	// Icon.
+	GtkCellRenderer *pixbufRenderer = gtk_cell_renderer_pixbuf_new();
+	colIcon = gtk_tree_view_column_new_with_attributes("Icon", pixbufRenderer, "pixbuf", 2, NULL);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colIcon);
+#endif
+	
+	// Plugin name.
 	GtkCellRenderer *textRenderer = gtk_cell_renderer_text_new();
 	colPlugin = gtk_tree_view_column_new_with_attributes("Plugin", textRenderer, "text", 0, NULL);
 	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
@@ -318,7 +337,23 @@ static void pmgr_window_populate_plugin_list(void)
 			pluginName = tmp;
 		}
 		
+#ifdef GENS_PNG
+		// Create the pixbuf for the plugin icon.
+		GdkPixbuf *pbufIcon = NULL;
+		if (plugin->desc)
+		{
+			pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
+		}
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, 2, pbufIcon, -1);
+		
+		if (pbufIcon)
+		{
+			// Unreference the pixbuf.
+			g_object_unref(pbufIcon);
+		}
+#else
 		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, -1);
+#endif /* GENS_PNG */
 	}
 }
 
@@ -334,6 +369,23 @@ void pmgr_window_close(void)
 	// Destroy the window.
 	gtk_widget_destroy(pmgr_window);
 	pmgr_window = NULL;
+	
+#ifdef GENS_PNG
+	// Free all pixbufs in the list model.
+	GtkTreeIter iter;
+	GdkPixbuf *pbufIcon;
+	
+	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmPluginList), &iter);
+	for (int i = 0; valid == true; i++)
+	{
+		gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList), &iter, 2, &pbufIcon, -1);
+		if (pbufIcon)
+			g_object_unref(pbufIcon);
+		
+		// Get the next list element.
+		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmPluginList), &iter);
+	}
+#endif
 	
 	// Clear the plugin list.
 	gtk_list_store_clear(lmPluginList);
@@ -406,18 +458,22 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 #ifdef GENS_PNG
-		pmgr_window_clear_plugin_icon();
+		gtk_image_clear(GTK_IMAGE(imgPluginIcon));
 #endif /* GENS_PNG */
 		return;
 	}
 	
 	// Found a selected plugin.
-	GValue gVal = { 0 };
+#ifdef GENS_PNG
 	mdp_t *plugin;
+	GdkPixbuf *pbufIcon;
 	
-	gtk_tree_model_get_value(GTK_TREE_MODEL(lmPluginList), &iter, 1, &gVal);
-	plugin = (mdp_t*)g_value_peek_pointer(&gVal);
-	g_value_unset(&gVal);
+	// Get the plugin icon and mdp_t*.
+	gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList), &iter, 1, &plugin, 2, &pbufIcon, -1);
+#else
+	// Get the mdp_t*.
+	gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList), &iter, 1, &plugin, -1);
+#endif
 	
 	// Get the plugin information.
 	if (!plugin)
@@ -428,7 +484,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 #ifdef GENS_PNG
-		pmgr_window_clear_plugin_icon();
+		gtk_image_clear(GTK_IMAGE(imgPluginIcon));
 #endif /* GENS_PNG */
 		return;
 	}
@@ -440,7 +496,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 		gtk_label_set_text(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginDesc))), " ");
 		gtk_label_set_text(GTK_LABEL(lblPluginDesc), NULL);
 #ifdef GENS_PNG
-		pmgr_window_clear_plugin_icon();
+		gtk_image_clear(GTK_IMAGE(imgPluginIcon));
 #endif /* GENS_PNG */
 		return;
 	}
@@ -516,13 +572,19 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	}
 	
 #ifdef GENS_PNG
-	// Plugin icon.
-	if (!pmgr_window_display_plugin_icon(desc->icon, desc->iconLength))
+	// Set the plugin icon.
+	if (pbufIcon)
 	{
-		// No plugin icon found. Clear the pixbuf.
-		pmgr_window_clear_plugin_icon();
+		// Plugin icon found. Set it.
+		gtk_image_set_from_pixbuf(GTK_IMAGE(imgPluginIcon), pbufIcon);
+		g_object_unref(pbufIcon);
 	}
-#endif /* GENS_PNG */
+	else
+	{
+		// No plugin icon found. Clear the icon.
+		gtk_image_clear(GTK_IMAGE(imgPluginIcon));
+	}
+#endif
 }
 
 
@@ -545,68 +607,65 @@ static void pmgr_window_callback_fraPluginDesc_size_allocate(GtkWidget *widget, 
  */
 static void pmgr_window_create_plugin_icon_widget(GtkWidget *container)
 {
-	// Plugin icon pixbuf.
-	pbufPluginIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
-	
 	// Plugin icon widget.
 	imgPluginIcon = gtk_image_new();
 	gtk_misc_set_alignment(GTK_MISC(imgPluginIcon), 0.0f, 0.0f);
 	gtk_widget_show(imgPluginIcon);
 	gtk_box_pack_start(GTK_BOX(container), imgPluginIcon, FALSE, FALSE, 0);
+	gtk_widget_set_size_request(imgPluginIcon, 32, 32);
 	
 	// Clear the icon.
-	pmgr_window_clear_plugin_icon();
+	gtk_image_clear(GTK_IMAGE(imgPluginIcon));
 }
 
 
 /**
- * pmgr_window_display_plugin_icon(): Display the plugin icon.
+ * pmgr_window_create_pixbuf_from_png(): Create a pixbuf from a PNG image.
  * @param icon Icon data. (PNG format)
  * @param iconLength Length of the icon data.
- * @return True if the icon was displayed; false otherwise.
+ * @return Pixbuf containing the icon, or NULL on error.
  */
-static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const unsigned int iconLength)
+static GdkPixbuf* pmgr_window_create_pixbuf_from_png(const uint8_t *icon, const unsigned int iconLength)
 {
 	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
 	
 	if (!icon || iconLength < sizeof(pngMagicNumber))
-		return false;
+		return NULL;
 	
 	// Check that the icon is in PNG format.
 	if (memcmp(icon, pngMagicNumber, sizeof(pngMagicNumber)))
 	{
 		// Not in PNG format.
-		return false;
+		return NULL;
 	}
 
 	// Initialize libpng.
-	
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
-		return false;
+		return NULL;
 	
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
-		return false;
+		return NULL;
 	}
 	
 	png_infop end_info = png_create_info_struct(png_ptr);
 	if (!end_info)
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		return false;
+		return NULL;
 	}
 	
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
-		// TODO: Is setjmp() really necessary?
+		// An error occurred while attepmting to decode the PNG image.
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		return false;
+		return NULL;
 	}
 	
-	// Set the custom read function.
+	// Initialize the custom read function.
 	pmgr_window_png_dataptr = icon;
 	pmgr_window_png_datalen = iconLength;
 	pmgr_window_png_datapos = 0;
@@ -625,12 +684,11 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 		     &interlace_type, &compression_type, &filter_method);
 	
-	
 	if (width != 32 || height != 32)
 	{
 		// Not 32x32.
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		return false;
+		return NULL;
 	}
 	
 	// Make sure RGB color is used.
@@ -671,8 +729,10 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	png_read_update_info(png_ptr, info_ptr);
 	
 	// Create the row pointers.
-	int rowstride = gdk_pixbuf_get_rowstride(pbufPluginIcon);
-	guchar *pixels = gdk_pixbuf_get_pixels(pbufPluginIcon);
+	GdkPixbuf *pbufIcon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
+	
+	int rowstride = gdk_pixbuf_get_rowstride(pbufIcon);
+	guchar *pixels = gdk_pixbuf_get_pixels(pbufIcon);
 	png_bytep row_pointers[32];
 	for (unsigned int i = 0; i < 32; i++)
 	{
@@ -686,33 +746,7 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	// Close the PNG image.
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	
-	// Set the GTK+ image to the new icon.
-	gtk_image_set_from_pixbuf(GTK_IMAGE(imgPluginIcon), pbufPluginIcon);
-	
-	return true;
-}
-
-
-/**
- * pmgr_window_clear_plugin_icon(): Clear the plugin icon.
- */
-static void pmgr_window_clear_plugin_icon(void)
-{
-	if (!pbufPluginIcon)
-		return;
-	
-	guchar *pixels	= gdk_pixbuf_get_pixels(pbufPluginIcon);
-	int rowstride	= gdk_pixbuf_get_rowstride(pbufPluginIcon);
-	int height	= gdk_pixbuf_get_height(pbufPluginIcon);
-	int width	= gdk_pixbuf_get_width(pbufPluginIcon);
-	int bits_per_sample = gdk_pixbuf_get_bits_per_sample(pbufPluginIcon);
-	int n_channels	= gdk_pixbuf_get_n_channels(pbufPluginIcon);
-	
-	// The last row of the pixbuf data may not be fully allocated.
-	// See http://library.gnome.org/devel/gdk-pixbuf/stable/gdk-pixbuf-gdk-pixbuf.html
-	int size = (rowstride * (height - 1)) + (width * ((n_channels * bits_per_sample + 7) / 8));
-	memset(pixels, 0x00, size);
-	
-	gtk_image_set_from_pixbuf(GTK_IMAGE(imgPluginIcon), pbufPluginIcon);
+	// Return the pixbuf.
+	return pbufIcon;
 }
 #endif /* GENS_PNG */
