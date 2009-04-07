@@ -56,17 +56,21 @@ using std::list;
 GtkWidget *pmgr_window = NULL;
 
 // Widgets.
-static GtkWidget	*lstPluginList;
 static GtkWidget	*lblPluginMainInfo;
 static GtkWidget	*lblPluginSecInfo;
 static GtkWidget	*lblPluginDesc;
 static GtkWidget	*fraPluginDesc;
 
 // Plugin List.
-static GtkListStore	*lmPluginList = NULL;
+#define PMGR_INTERNAL	0
+#define PMGR_EXTERNAL	1
+#define PMGR_INCOMPAT	2
+static GtkWidget	*lstPluginList[3];
+static GtkListStore	*lmPluginList[3] = {NULL, NULL, NULL};
 
 // Widget creation functions.
-static void	pmgr_window_create_plugin_list_frame(GtkWidget *container);
+static void	pmgr_window_create_plugin_list_notebook(GtkWidget *container);
+static void	pmgr_window_create_plugin_list_page(GtkWidget *container, const char *title, int id);
 static void	pmgr_window_create_plugin_info_frame(GtkWidget *container);
 static void	pmgr_window_populate_plugin_list(void);
 
@@ -124,7 +128,7 @@ void pmgr_window_show()
 	gtk_widget_show(vboxDialog);
 	
 	// Create the plugin list frame.
-	pmgr_window_create_plugin_list_frame(vboxDialog);
+	pmgr_window_create_plugin_list_notebook(vboxDialog);
 	
 	// Create the plugin information frame.
 	pmgr_window_create_plugin_info_frame(vboxDialog);
@@ -144,25 +148,58 @@ void pmgr_window_show()
 	gtk_widget_show_all(pmgr_window);
 	
 	// Make sure nothing is selected initially.
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
-	gtk_tree_selection_unselect_all(selection);
-	pmgr_window_callback_lstPluginList_cursor_changed(GTK_TREE_VIEW(lstPluginList), NULL);
+	for (int i = 0; i < 2; i++)
+	{
+		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList[i]));
+		gtk_tree_selection_unselect_all(selection);
+		pmgr_window_callback_lstPluginList_cursor_changed(GTK_TREE_VIEW(lstPluginList[i]), GINT_TO_POINTER(i));
+	}
 }
 
 
 /**
- * pmgr_window_create_plugin_list_frame(): Create the plugin list frame.
- * @param container Container for the frame.
+ * pmgr_window_create_plugin_list_notebook(): Create the plugin list notebook.
+ * @param container Container for the notebook.
  */
-static void pmgr_window_create_plugin_list_frame(GtkWidget *container)
+static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
 {
-	// Create the plugin list frame.
-	GtkWidget *fraPluginList = gtk_frame_new("<b><i>Internal Plugins</i></b>");
+	// Create the plugin list notebook.
+	GtkWidget *tabPluginList = gtk_notebook_new();
+#if 0
 	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginList), GTK_SHADOW_ETCHED_IN);
 	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginList))), TRUE);
+#endif
+	gtk_container_set_border_width(GTK_CONTAINER(tabPluginList), 4);
+	gtk_widget_show(tabPluginList);
+	gtk_box_pack_start(GTK_BOX(container), tabPluginList, TRUE, TRUE, 0);
+	
+	// Create the pages.
+	pmgr_window_create_plugin_list_page(tabPluginList, "_Internal", PMGR_INTERNAL);
+	pmgr_window_create_plugin_list_page(tabPluginList, "_External", PMGR_EXTERNAL);
+	pmgr_window_create_plugin_list_page(tabPluginList, "I_ncompatible", PMGR_INCOMPAT);
+}
+
+
+/**
+ * pmgr_window_create_plugin_list_page(): Create a plugin list page.
+ * @param container Container for the page.
+ * @param title Title of the page.
+ * @param id Page ID.
+ */
+static void pmgr_window_create_plugin_list_page(GtkWidget *container, const char *title, int id)
+{
+	// Create the plugin list frame.
+	GtkWidget *fraPluginList = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginList), GTK_SHADOW_ETCHED_IN);
 	gtk_container_set_border_width(GTK_CONTAINER(fraPluginList), 4);
 	gtk_widget_show(fraPluginList);
-	gtk_box_pack_start(GTK_BOX(container), fraPluginList, TRUE, TRUE, 0);
+	
+	// Create the label for the notebook page.
+	GtkWidget *lblPluginList = gtk_label_new_with_mnemonic(title);
+	gtk_widget_show(lblPluginList);
+	
+	// Append the page to the notebook.
+	gtk_notebook_append_page(GTK_NOTEBOOK(container), fraPluginList, lblPluginList);
 	
 	// VBox for the plugin list.
 	GtkWidget *vboxPluginList = gtk_vbox_new(FALSE, 0);
@@ -180,16 +217,17 @@ static void pmgr_window_create_plugin_list_frame(GtkWidget *container)
 	gtk_box_pack_start(GTK_BOX(vboxPluginList), scrlPluginList, TRUE, TRUE, 0);
 	
 	// Tree view containing the plugins.
-	lstPluginList = gtk_tree_view_new();
-	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstPluginList), FALSE);
-	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstPluginList), FALSE);
-	gtk_widget_set_size_request(lstPluginList, 480, 200);
-	gtk_widget_show(lstPluginList);
-	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList);
+	lstPluginList[id] = gtk_tree_view_new();
+	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstPluginList[id]), FALSE);
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstPluginList[id]), FALSE);
+	gtk_widget_set_size_request(lstPluginList[id], 480, 200);
+	gtk_widget_show(lstPluginList[id]);
+	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList[id]);
 	
 	// Connect the treeview's "cursor-changed" signal.
-	g_signal_connect((gpointer)lstPluginList, "cursor-changed",
-			 G_CALLBACK(pmgr_window_callback_lstPluginList_cursor_changed), NULL);
+	g_signal_connect((gpointer)lstPluginList[id], "cursor-changed",
+			 G_CALLBACK(pmgr_window_callback_lstPluginList_cursor_changed),
+			 GINT_TO_POINTER(id));
 }
 
 
@@ -269,60 +307,69 @@ static void pmgr_window_create_plugin_info_frame(GtkWidget *container)
  */
 static void pmgr_window_populate_plugin_list(void)
 {
-	// Check if the list model is already created.
-	// If it is, clear it; if not, create a new one.
-	if (lmPluginList)
-		gtk_list_store_clear(lmPluginList);
-	else
-	{
+	// Check if the list models are already created.
+	// If they are, clear them; otherwise, create them.
+	
+	GtkTreeViewColumn *colPlugin;
+	GtkCellRenderer *renderer;
+	
 #ifdef GENS_PNG
-		lmPluginList = gtk_list_store_new(3,
-			G_TYPE_STRING,		// Plugin name.
-			G_TYPE_POINTER,		// mdp_t* pointer.
-			GDK_TYPE_PIXBUF);	// Plugin icon.
-#else
-		lmPluginList = gtk_list_store_new(2,
-			G_TYPE_STRING,		// Plugin name.
-			G_TYPE_POINTER);	// mdp_t* pointer.
+	GtkTreeViewColumn *colIcon;
 #endif
+	
+	for (int i = 0; i < 3; i++)
+	{
+		if (lmPluginList[i])
+			gtk_list_store_clear(lmPluginList[i]);
+		else
+		{
+#ifdef GENS_PNG
+			lmPluginList[i] = gtk_list_store_new(3,
+				G_TYPE_STRING,		// Plugin name.
+				G_TYPE_POINTER,		// mdp_t* pointer.
+				GDK_TYPE_PIXBUF);	// Plugin icon.
+#else
+			lmPluginList[i] = gtk_list_store_new(2,
+				G_TYPE_STRING,		// Plugin name.
+				G_TYPE_POINTER);	// mdp_t* pointer.
+#endif
+		}
+		
+		// Set the view model of the treeview.
+		gtk_tree_view_set_model(GTK_TREE_VIEW(lstPluginList[i]),
+					GTK_TREE_MODEL(lmPluginList[i]));
+		
+		// Delete any existing columns.
+		do
+		{
+			colPlugin = gtk_tree_view_get_column(GTK_TREE_VIEW(lstPluginList[i]), 0);
+			if (colPlugin)
+				gtk_tree_view_remove_column(GTK_TREE_VIEW(lstPluginList[i]), colPlugin);
+		} while (colPlugin != NULL);
+		
+		// Create the renderers and columns.
+		
+#ifdef GENS_PNG
+		// Icon.
+		renderer = gtk_cell_renderer_pixbuf_new();
+		colIcon = gtk_tree_view_column_new_with_attributes("Icon", renderer, "pixbuf", 2, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colIcon);
+#endif
+		
+		// Plugin name.
+		renderer = gtk_cell_renderer_text_new();
+		colPlugin = gtk_tree_view_column_new_with_attributes("Plugin", renderer, "text", 0, NULL);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList[i]), colPlugin);
 	}
 	
-	// Set the view model of the treeview.
-	gtk_tree_view_set_model(GTK_TREE_VIEW(lstPluginList), GTK_TREE_MODEL(lmPluginList));
-	
-	GtkTreeViewColumn *colPlugin, *colIcon;
-	
-	// Delete any existing columns.
-	do
-	{
-		colPlugin = gtk_tree_view_get_column(GTK_TREE_VIEW(lstPluginList), 0);
-		if (colPlugin)
-			gtk_tree_view_remove_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
-	} while (colPlugin != NULL);
-	
-	// Create the renderers and columns.
-	
-#ifdef GENS_PNG
-	// Icon.
-	GtkCellRenderer *pixbufRenderer = gtk_cell_renderer_pixbuf_new();
-	colIcon = gtk_tree_view_column_new_with_attributes("Icon", pixbufRenderer, "pixbuf", 2, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colIcon);
-#endif
-	
-	// Plugin name.
-	GtkCellRenderer *textRenderer = gtk_cell_renderer_text_new();
-	colPlugin = gtk_tree_view_column_new_with_attributes("Plugin", textRenderer, "text", 0, NULL);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(lstPluginList), colPlugin);
-	
-	// Add all plugins to the treeview.
+	// Add all plugins to the treeviews.
+	// TODO: Use the appropriate treeviews, depending on the plugin type/state.
 	char tmp[64];
-	list<mdp_t*>::iterator curPlugin;
-	for (curPlugin = PluginMgr::lstMDP.begin();
+	GtkTreeIter iter;
+	
+	for (list<mdp_t*>::iterator curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
-		GtkTreeIter iter;
-		gtk_list_store_append(lmPluginList, &iter);
-		
 		mdp_t *plugin = (*curPlugin);
 		const char *pluginName;
 		if (plugin->desc && plugin->desc->name)
@@ -337,6 +384,8 @@ static void pmgr_window_populate_plugin_list(void)
 			pluginName = tmp;
 		}
 		
+		// Add an entry to the list store.
+		gtk_list_store_append(lmPluginList[0], &iter);
 #ifdef GENS_PNG
 		// Create the pixbuf for the plugin icon.
 		GdkPixbuf *pbufIcon = NULL;
@@ -344,7 +393,7 @@ static void pmgr_window_populate_plugin_list(void)
 		{
 			pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
 		}
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, 2, pbufIcon, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[0]), &iter, 0, pluginName, 1, plugin, 2, pbufIcon, -1);
 		
 		if (pbufIcon)
 		{
@@ -352,7 +401,7 @@ static void pmgr_window_populate_plugin_list(void)
 			g_object_unref(pbufIcon);
 		}
 #else
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList), &iter, 0, pluginName, 1, plugin, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[0]), &iter, 0, pluginName, 1, plugin, -1);
 #endif /* GENS_PNG */
 	}
 }
@@ -375,20 +424,24 @@ void pmgr_window_close(void)
 	GtkTreeIter iter;
 	GdkPixbuf *pbufIcon;
 	
-	gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmPluginList), &iter);
-	for (int i = 0; valid == true; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList), &iter, 2, &pbufIcon, -1);
-		if (pbufIcon)
-			g_object_unref(pbufIcon);
-		
-		// Get the next list element.
-		valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmPluginList), &iter);
+		gboolean valid = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(lmPluginList[i]), &iter);
+		while (valid)
+		{
+			gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList[i]), &iter, 2, &pbufIcon, -1);
+			if (pbufIcon)
+				g_object_unref(pbufIcon);
+			
+			// Get the next list element.
+			valid = gtk_tree_model_iter_next(GTK_TREE_MODEL(lmPluginList[i]), &iter);
+		}
 	}
 #endif
 	
-	// Clear the plugin list.
-	gtk_list_store_clear(lmPluginList);
+	// Clear the plugin lists.
+	for (int i = 0; i < 3; i++)
+		gtk_list_store_clear(lmPluginList[i]);
 }
 
 
@@ -444,13 +497,18 @@ static void pmgr_window_callback_response(GtkDialog *dialog, gint response_id, g
 static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_view, gpointer user_data)
 {
 	GENS_UNUSED_PARAMETER(tree_view);
-	GENS_UNUSED_PARAMETER(user_data);
+	
+	int id = GPOINTER_TO_INT(user_data);
+	if (id < 0 || id > PMGR_INCOMPAT)
+		return;
 	
 	// Check which plugin is clicked.
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(lstPluginList));
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(tree_view);
 	
 	GtkTreeIter iter;
-	if (!gtk_tree_selection_get_selected(selection, (GtkTreeModel**)(&lmPluginList), &iter))
+	GtkTreeModel *gtm = GTK_TREE_MODEL(lmPluginList[id]);
+	
+	if (!gtk_tree_selection_get_selected(selection, &gtm, &iter))
 	{
 		// No plugin selected.
 		gtk_label_set_text(GTK_LABEL(lblPluginMainInfo), "No plugin selected.\n\n\n\n\n");
@@ -469,10 +527,10 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	GdkPixbuf *pbufIcon;
 	
 	// Get the plugin icon and mdp_t*.
-	gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList), &iter, 1, &plugin, 2, &pbufIcon, -1);
+	gtk_tree_model_get(gtm, &iter, 1, &plugin, 2, &pbufIcon, -1);
 #else
 	// Get the mdp_t*.
-	gtk_tree_model_get(GTK_TREE_MODEL(lmPluginList), &iter, 1, &plugin, -1);
+	gtk_tree_model_get(gtm, &iter, 1, &plugin, -1);
 #endif
 	
 	// Get the plugin information.
