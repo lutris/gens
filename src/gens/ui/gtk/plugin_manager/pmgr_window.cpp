@@ -165,10 +165,6 @@ static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
 {
 	// Create the plugin list notebook.
 	GtkWidget *tabPluginList = gtk_notebook_new();
-#if 0
-	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginList), GTK_SHADOW_ETCHED_IN);
-	gtk_label_set_use_markup(GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(fraPluginList))), TRUE);
-#endif
 	gtk_container_set_border_width(GTK_CONTAINER(tabPluginList), 4);
 	gtk_widget_show(tabPluginList);
 	gtk_box_pack_start(GTK_BOX(container), tabPluginList, TRUE, TRUE, 0);
@@ -188,24 +184,17 @@ static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
  */
 static void pmgr_window_create_plugin_list_page(GtkWidget *container, const char *title, int id)
 {
-	// Create the plugin list frame.
-	GtkWidget *fraPluginList = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(fraPluginList), GTK_SHADOW_ETCHED_IN);
-	gtk_container_set_border_width(GTK_CONTAINER(fraPluginList), 4);
-	gtk_widget_show(fraPluginList);
-	
 	// Create the label for the notebook page.
 	GtkWidget *lblPluginList = gtk_label_new_with_mnemonic(title);
 	gtk_widget_show(lblPluginList);
-	
-	// Append the page to the notebook.
-	gtk_notebook_append_page(GTK_NOTEBOOK(container), fraPluginList, lblPluginList);
 	
 	// VBox for the plugin list.
 	GtkWidget *vboxPluginList = gtk_vbox_new(FALSE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(vboxPluginList), 8);
 	gtk_widget_show(vboxPluginList);
-	gtk_container_add(GTK_CONTAINER(fraPluginList), vboxPluginList);
+	
+	// Append the page to the notebook.
+	gtk_notebook_append_page(GTK_NOTEBOOK(container), vboxPluginList, lblPluginList);
 	
 	// Scrolled Window for the plugin list.
 	GtkWidget *scrlPluginList = gtk_scrolled_window_new(NULL, NULL);
