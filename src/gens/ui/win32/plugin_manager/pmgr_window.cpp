@@ -31,6 +31,7 @@
 
 // C includes.
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
 // Win32 includes.
@@ -49,9 +50,11 @@
 #include <string>
 #include <sstream>
 #include <list>
+#include <vector>
 using std::string;
 using std::stringstream;
 using std::list;
+using std::vector;
 
 // Win32 line ending.
 // For some reason, MinGW's std::endl always outputs "\n", even on Windows.
@@ -67,10 +70,10 @@ static WNDCLASS pmgr_wndclass;
 
 // Window size.
 #define PMGR_WINDOW_WIDTH  (320+8+8)
-#define PMGR_WINDOW_HEIGHT (8+144+8+248+8+24+8)
+#define PMGR_WINDOW_HEIGHT (8+196+8+248+8+24+8)
 
 #define PMGR_FRAME_PLUGIN_LIST_WIDTH  (PMGR_WINDOW_WIDTH-8-8)
-#define PMGR_FRAME_PLUGIN_LIST_HEIGHT 144
+#define PMGR_FRAME_PLUGIN_LIST_HEIGHT 196
 
 #define PMGR_FRAME_PLUGIN_INFO_WIDTH  (PMGR_WINDOW_WIDTH-8-8)
 #define PMGR_FRAME_PLUGIN_INFO_HEIGHT 248
@@ -95,14 +98,13 @@ static void	pmgr_window_callback_lstPluginList_cursor_changed(void);
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
-static HBITMAP	hbmpPluginIcon;
-static void	*bmpPluginIconData;
 static HWND	imgPluginIcon;
+static HIMAGELIST	imglPluginIcons = NULL;
+static vector<HBITMAP>	vectPluginIcons;
 
 static void	pmgr_window_create_plugin_icon_widget(HWND container);
-static bool	pmgr_window_display_plugin_icon(const unsigned char* icon, const unsigned int iconLength);
+static HBITMAP	pmgr_window_create_bitmap_from_png(const uint8_t *icon, const unsigned int iconLength);
 static inline unsigned int pmgr_window_get_bg_color(void);
-static void	pmgr_window_clear_plugin_icon(void);
 #endif
 
 
@@ -198,7 +200,16 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 					  container, NULL, ghInstance, NULL);
 	SetWindowFont(fraPluginList, fntMain, true);
 	
-	// Create the plugin listbox.
+#ifdef GENS_PNG
+	// Create the ImageList.
+	imglPluginIcons = ImageList_Create(32, 32, ILC_MASK | ILC_COLOR32,
+					   PluginMgr::lstMDP.size(),
+					   PluginMgr::lstMDP.size());
+	vectPluginIcons.clear();
+	vectPluginIcons.reserve(PluginMgr::lstMDP.size());
+#endif
+	
+	// Create the plugin ListView.
 	lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
 				       WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
 				       LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
@@ -209,6 +220,13 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	SetWindowFont(lstPluginList, fntMain, true);
 	ListView_SetExtendedListViewStyle(lstPluginList, LVS_EX_FULLROWSELECT);
 	
+#ifdef GENS_PNG
+	// Set the ListView's ImageList.
+	// "Small" is set in addition to "Normal", since LVS_REPORT uses "Small" icons.
+	ListView_SetImageList(lstPluginList, imglPluginIcons, LVSIL_NORMAL);
+	ListView_SetImageList(lstPluginList, imglPluginIcons, LVSIL_SMALL);
+#endif
+	
 	// Create the ListView columns.
 	LV_COLUMN lvCol;
 	memset(&lvCol, 0, sizeof(lvCol));
@@ -216,7 +234,11 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	
 	// Icon.
 	lvCol.pszText = TEXT("Icon");
+#ifdef GENS_PNG
 	lvCol.cx = 32+8;
+#else
+	lvcol.cx = 0;
+#endif
 	ListView_InsertColumn(lstPluginList, 0, &lvCol);
 	
 	// Plugin name.
@@ -320,7 +342,28 @@ static void pmgr_window_populate_plugin_list(void)
 		
 		LVITEM lviPlugin;
 		memset(&lviPlugin, 0x00, sizeof(lviPlugin));
-		lviPlugin.mask = LVIF_TEXT | LVIF_PARAM;
+		
+#ifdef GENS_PNG
+		// Add the plugin's icon to the ImageList.
+		lviPlugin.iImage = -1;
+		HBITMAP hbmpIcon = NULL;
+		if (plugin->desc)
+		{
+			hbmpIcon = pmgr_window_create_bitmap_from_png(plugin->desc->icon, plugin->desc->iconLength);
+		}
+		
+		if (hbmpIcon)
+		{
+			lviPlugin.iImage = ImageList_Add(imglPluginIcons, hbmpIcon, NULL);
+			vectPluginIcons.push_back(hbmpIcon);
+		}
+#endif
+		
+#ifdef GENS_PNG
+		lviPlugin.mask = LVIF_IMAGE | LVIF_PARAM;
+#else
+		lviPlugin.mask = LVIF_PARAM;
+#endif
 		lviPlugin.cchTextMax = 256;
 		lviPlugin.iItem = ListView_GetItemCount(lstPluginList);
 		lviPlugin.lParam = (LPARAM)plugin;
@@ -354,14 +397,21 @@ void pmgr_window_close(void)
 	DestroyWindow(pmgr_window);
 	pmgr_window = NULL;
 	
-	#ifdef GENS_PNG
-		// Delete the plugin icon.
-		if (hbmpPluginIcon)
-		{
-			DeleteBitmap(hbmpPluginIcon);
-			hbmpPluginIcon = NULL;
-		}
-	#endif
+#ifdef GENS_PNG
+	// Destroy the image list.
+	if (imglPluginIcons)
+	{
+		ImageList_Destroy(imglPluginIcons);
+		imglPluginIcons = NULL;
+	}
+	
+	// Destroy the vector of HBITMAPs.
+	for (int i = vectPluginIcons.size() - 1; i >= 0; i--)
+	{
+		DeleteBitmap(vectPluginIcons[i]);
+	}
+	vectPluginIcons.clear();
+#endif
 }
 
 
@@ -421,14 +471,21 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 			
 			pmgr_window = NULL;
 			
-			#ifdef GENS_PNG
-				// Delete the plugin icon.
-				if (hbmpPluginIcon)
-				{
-					DeleteBitmap(hbmpPluginIcon);
-					hbmpPluginIcon = NULL;
-				}
-			#endif
+#ifdef GENS_PNG
+			// Destroy the image list.
+			if (imglPluginIcons)
+			{
+				ImageList_Destroy(imglPluginIcons);
+				imglPluginIcons = NULL;
+			}
+			
+			// Destroy the vector of HBITMAPs.
+			for (int i = vectPluginIcons.size() - 1; i >= 0; i--)
+			{
+				DeleteBitmap(vectPluginIcons[i]);
+			}
+			vectPluginIcons.clear();
+#endif
 			
 			break;
 	}
@@ -451,18 +508,24 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 		Edit_SetText(lblPluginMainInfo, TEXT("No plugin selected."));
 		Edit_SetText(lblPluginSecInfo, NULL);
 		Edit_SetText(lblPluginDesc, NULL);
-		#ifdef GENS_PNG
-			pmgr_window_clear_plugin_icon();
-		#endif
+#ifdef GENS_PNG
+		SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+#endif
 		return;
 	}
 	
 	// Found a selected plugin.
+	
 	LVITEM lvItem;
 	lvItem.iItem = index;
 	lvItem.iSubItem = 0;
+#ifdef GENS_PNG
+	lvItem.mask = LVIF_IMAGE | LVIF_PARAM;
+#else
 	lvItem.mask = LVIF_PARAM;
+#endif
 	int rval = ListView_GetItem(lstPluginList, &lvItem);
+	
 	mdp_t *plugin = reinterpret_cast<mdp_t*>(lvItem.lParam);
 	
 	// Get the plugin information.
@@ -472,9 +535,9 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 		Edit_SetText(lblPluginMainInfo, TEXT("Invalid plugin selected."));
 		Edit_SetText(lblPluginSecInfo, NULL);
 		Edit_SetText(lblPluginDesc, NULL);
-		#ifdef GENS_PNG
-			pmgr_window_clear_plugin_icon();
-		#endif
+#ifdef GENS_PNG
+		SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+#endif
 		return;
 	}
 	
@@ -483,9 +546,9 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 		Edit_SetText(lblPluginMainInfo, TEXT("This plugin does not have a valid description field."));
 		Edit_SetText(lblPluginSecInfo, NULL);
 		Edit_SetText(lblPluginDesc, NULL);
-		#ifdef GENS_PNG
-			pmgr_window_clear_plugin_icon();
-		#endif
+#ifdef GENS_PNG
+		SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
+#endif
 		return;
 	}
 	
@@ -545,14 +608,15 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 		Edit_SetText(lblPluginDesc, NULL);
 	}
 	
-	#ifdef GENS_PNG
-		// Plugin icon.
-		if (!pmgr_window_display_plugin_icon(desc->icon, desc->iconLength))
-		{
-			// No plugin icon found. Clear the pixbuf.
-			pmgr_window_clear_plugin_icon();
-		}
-	#endif /* GENS_PNG */
+#ifdef GENS_PNG
+	// Set the plugin icon.
+	HBITMAP hbmpIcon = NULL;
+	
+	if (lvItem.iImage >= 0 && lvItem.iImage < vectPluginIcons.size())
+		hbmpIcon = vectPluginIcons[lvItem.iImage];
+	
+	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbmpIcon);
+#endif
 }
 
 
@@ -563,23 +627,6 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
  */
 static void pmgr_window_create_plugin_icon_widget(HWND container)
 {
-	// Plugin icon bitmap.
-	HDC dc = CreateCompatibleDC(NULL);
-	BITMAPINFO bmInfo;
-	
-	bmInfo.bmiHeader.biSize = sizeof(bmInfo.bmiHeader);
-	bmInfo.bmiHeader.biWidth = 32;
-	bmInfo.bmiHeader.biHeight = -32;
-	bmInfo.bmiHeader.biPlanes = 1;
-	bmInfo.bmiHeader.biBitCount = 32;
-	bmInfo.bmiHeader.biCompression = 0;
-	bmInfo.bmiHeader.biSizeImage = 0;
-	bmInfo.bmiHeader.biClrUsed = 0;
-	bmInfo.bmiHeader.biClrImportant = 0;
-	
-	hbmpPluginIcon = CreateDIBSection(dc, &bmInfo, DIB_RGB_COLORS,
-					  &bmpPluginIconData, NULL, 0);
-	
 	// Plugin icon widget.
 	const int top = 8+PMGR_FRAME_PLUGIN_LIST_HEIGHT+8;
 	imgPluginIcon = CreateWindow(WC_STATIC, NULL,
@@ -588,55 +635,55 @@ static void pmgr_window_create_plugin_icon_widget(HWND container)
 				     container, NULL, ghInstance, NULL);
 	
 	// Clear the icon.
-	pmgr_window_clear_plugin_icon();
+	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, NULL);
 }
 
 
 /**
- * pmgr_window_display_plugin_icon(): Displays the plugin icon.
+ * pmgr_window_create_bitmap_from_png(): Create a bitmap from a PNG image.
  * @param icon Icon data. (PNG format)
  * @param iconLength Length of the icon data.
- * @return True if the icon was displayed; false otherwise.
+ * @return Bitmap containing the icon, or NULL on error.
  */
-static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const unsigned int iconLength)
+static HBITMAP pmgr_window_create_bitmap_from_png(const uint8_t *icon, const unsigned int iconLength)
 {
 	static const unsigned char pngMagicNumber[8] = {0x89, 'P', 'N', 'G',0x0D, 0x0A, 0x1A, 0x0A};
 	
 	if (!icon || iconLength < sizeof(pngMagicNumber))
-		return false;
+		return NULL;
 	
 	// Check that the icon is in PNG format.
 	if (memcmp(icon, pngMagicNumber, sizeof(pngMagicNumber)))
 	{
 		// Not in PNG format.
-		return false;
+		return NULL;
 	}
 
 	// Initialize libpng.
 	
 	png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
-		return false;
+		return NULL;
 	
 	png_infop info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
-		return false;
+		return NULL;
 	}
 	
 	png_infop end_info = png_create_info_struct(png_ptr);
 	if (!end_info)
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		return false;
+		return NULL;
 	}
 	
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		// TODO: Is setjmp() really necessary?
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		return false;
+		return NULL;
 	}
 	
 	// Set the custom read function.
@@ -663,7 +710,7 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	{
 		// Not 32x32.
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		return false;
+		return NULL;
 	}
 	
 	// Make sure RGB color is used.
@@ -705,6 +752,33 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	// Update the PNG info.
 	png_read_update_info(png_ptr, info_ptr);
 	
+	// Create the bitmap.
+	// Plugin icon bitmap.
+	HDC dc = CreateCompatibleDC(NULL);
+	BITMAPINFO bmInfo;
+	
+	bmInfo.bmiHeader.biSize = sizeof(bmInfo.bmiHeader);
+	bmInfo.bmiHeader.biWidth = 32;
+	bmInfo.bmiHeader.biHeight = -32;
+	bmInfo.bmiHeader.biPlanes = 1;
+	bmInfo.bmiHeader.biBitCount = 32;
+	bmInfo.bmiHeader.biCompression = 0;
+	bmInfo.bmiHeader.biSizeImage = 0;
+	bmInfo.bmiHeader.biClrUsed = 0;
+	bmInfo.bmiHeader.biClrImportant = 0;
+	
+	// TODO: Destroy hbmpPluginIcon later (if the ImageList doesn't do that automatically).
+	void *bmpPluginIconData;
+	HBITMAP hbmpPluginIcon = CreateDIBSection(dc, &bmInfo, DIB_RGB_COLORS,
+						  &bmpPluginIconData, NULL, 0);
+	
+	if (!hbmpPluginIcon)
+	{
+		// Could not allocate a bitmap.
+		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		return NULL;
+	}
+	
 	// Create the row pointers.
 	png_bytep row_pointers[32];
 	unsigned char *pixels = static_cast<unsigned char*>(bmpPluginIconData);
@@ -720,10 +794,8 @@ static bool pmgr_window_display_plugin_icon(const unsigned char* icon, const uns
 	// Close the PNG image.
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	
-	// Set the plugin icon widget's bitmap to hbmpPluginIcon.
-	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbmpPluginIcon);
-	
-	return true;
+	// Return the bitmap.
+	return hbmpPluginIcon;
 }
 
 
@@ -743,30 +815,5 @@ static inline unsigned int pmgr_window_get_bg_color(void)
 		  ((bgColor & 0x000000FF) << 16);
 	
 	return bgColor;
-}
-
-
-/**
- * pmgr_window_clear_plugin_icon(): Clear the plugin icon.
- */
-static void pmgr_window_clear_plugin_icon(void)
-{
-	// Get the background color.
-	const unsigned int bg_color = pmgr_window_get_bg_color();
-	
-	// Clear the icon.
-	unsigned int *bmp_data = static_cast<unsigned int*>(bmpPluginIconData);
-	for (unsigned int pixel = 32*32/4; pixel != 0; pixel--)
-	{
-		bmp_data[0] = bg_color;
-		bmp_data[1] = bg_color;
-		bmp_data[2] = bg_color;
-		bmp_data[3] = bg_color;
-		
-		bmp_data += 4;
-	}
-	
-	// Set the plugin icon widget's bitmap to hbmpPluginIcon.
-	SendMessage(imgPluginIcon, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hbmpPluginIcon);
 }
 #endif /* GENS_PNG */
