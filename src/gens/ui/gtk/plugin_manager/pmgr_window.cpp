@@ -88,6 +88,8 @@ static void	pmgr_window_populate_plugin_list(void);
 // Callbacks.
 static gboolean	pmgr_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	pmgr_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	pmgr_window_callback_tabPluginList_switch_page(GtkNotebook *notebook, GtkNotebookPage *page,
+							       guint page_num, gpointer user_data);
 static void	pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_view, gpointer user_data);
 static void	pmgr_window_callback_fraPluginDesc_size_allocate(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data);
 
@@ -185,6 +187,10 @@ static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
 	pmgr_window_create_plugin_list_page(tabPluginList, "_External", PMGR_EXTERNAL);
 	// TODO
 	//pmgr_window_create_plugin_list_page(tabPluginList, "I_ncompatible", PMGR_INCOMPAT);
+	
+	// Connect the notebook's "switch-page" signal.
+	g_signal_connect((gpointer)tabPluginList, "switch-page",
+			  G_CALLBACK(pmgr_window_callback_tabPluginList_switch_page), NULL);
 }
 
 
@@ -503,6 +509,25 @@ static void pmgr_window_callback_response(GtkDialog *dialog, gint response_id, g
 			// Also, don't do anything when the dialog is deleted.
 			break;
 	}
+}
+
+
+/**
+ * pmgr_window_callback_tabPluginList_switch_page(): Notebook page has changed.
+ * @param notebook Notebook.
+ * @param page New notebook page.
+ * @param page_num New notebook page index.
+ * @param user_data User data.
+ */
+static void pmgr_window_callback_tabPluginList_switch_page(GtkNotebook *notebook, GtkNotebookPage *page,
+							   guint page_num, gpointer user_data)
+{
+	GENS_UNUSED_PARAMETER(notebook);
+	GENS_UNUSED_PARAMETER(page);
+	GENS_UNUSED_PARAMETER(user_data);
+	
+	// Activate the "cursor-changed" callback for the page.
+	pmgr_window_callback_lstPluginList_cursor_changed(GTK_TREE_VIEW(lstPluginList[page_num]), GINT_TO_POINTER(page_num));
 }
 
 
