@@ -26,9 +26,6 @@
 #include <config.h>
 #endif
 
-// C includes.
-#include <assert.h>
-
 // C++ includes
 #include <string>
 #include <sstream>
@@ -60,7 +57,19 @@ void pmgr_window_png_user_read_data(png_structp png_ptr, png_bytep data, png_siz
 	((void)png_ptr);
 	
 	// Make sure there's enough data available.
-	assert(pmgr_window_png_datapos + length <= pmgr_window_png_datalen);
+	if (pmgr_window_png_datapos + length > pmgr_window_png_datalen)
+	{
+		// Not enough data is available.
+		// TODO: This may still result in a crash. Use longjmp()?
+		
+		// Zero the buffer.
+		memset(data, 0x00, length);
+		
+		// Return the rest of the buffer.
+		length = pmgr_window_png_datalen - pmgr_window_png_datapos;
+		if (length <= 0)
+			return;
+	}
 	
 	// Copy the data.
 	memcpy(data, &pmgr_window_png_dataptr[pmgr_window_png_datapos], length);
