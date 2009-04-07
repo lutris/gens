@@ -42,6 +42,11 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// Internal plugins.
+// TODO: Figure out a better way to mark plugins as internal or external.
+#include "plugins/render/normal/mdp_render_1x_plugin.h"
+#include "plugins/render/double/mdp_render_2x_plugin.h"
+
 // C++ includes
 #include <string>
 #include <sstream>
@@ -62,14 +67,14 @@ static GtkWidget	*lblPluginDesc;
 static GtkWidget	*fraPluginDesc;
 
 // Plugin List.
-typedef enum _pmgr_type
+typedef enum _pmgr_type_t
 {
 	PMGR_INTERNAL = 0,
 	PMGR_EXTERNAL = 1,
 	PMGR_INCOMPAT = 2,
 	
 	PMGR_MAX = 3
-} pmgr_type;
+} pmgr_type_t;
 
 static GtkWidget	*lstPluginList[PMGR_MAX];
 static GtkListStore	*lmPluginList[PMGR_MAX] = {NULL, NULL, NULL};
@@ -361,6 +366,7 @@ static void pmgr_window_populate_plugin_list(void)
 	// TODO: Use the appropriate treeviews, depending on the plugin type/state.
 	char tmp[64];
 	GtkTreeIter iter;
+	pmgr_type_t pmtype;
 	
 	for (list<mdp_t*>::iterator curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
@@ -379,8 +385,23 @@ static void pmgr_window_populate_plugin_list(void)
 			pluginName = tmp;
 		}
 		
+		// Check if this is internal or external.
+		// TODO: "Normal" and "Double" are currently hard-coded.
+		// Use a better method for determining internal vs. external.
+		if (plugin == &mdp_render_1x ||
+		    plugin == &mdp_render_2x)
+		{
+			// Internal plugin.
+			pmtype = PMGR_INTERNAL;
+		}
+		else
+		{
+			// External plugin.
+			pmtype = PMGR_EXTERNAL;
+		}
+		
 		// Add an entry to the list store.
-		gtk_list_store_append(lmPluginList[0], &iter);
+		gtk_list_store_append(lmPluginList[pmtype], &iter);
 #ifdef GENS_PNG
 		// Create the pixbuf for the plugin icon.
 		GdkPixbuf *pbufIcon = NULL;
@@ -388,7 +409,7 @@ static void pmgr_window_populate_plugin_list(void)
 		{
 			pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
 		}
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[0]), &iter, 0, pluginName, 1, plugin, 2, pbufIcon, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmtype]), &iter, 0, pluginName, 1, plugin, 2, pbufIcon, -1);
 		
 		if (pbufIcon)
 		{
@@ -396,7 +417,7 @@ static void pmgr_window_populate_plugin_list(void)
 			g_object_unref(pbufIcon);
 		}
 #else
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[0]), &iter, 0, pluginName, 1, plugin, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmtype]), &iter, 0, pluginName, 1, plugin, -1);
 #endif /* GENS_PNG */
 	}
 }
