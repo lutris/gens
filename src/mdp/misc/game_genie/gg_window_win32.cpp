@@ -306,7 +306,7 @@ static void gg_window_create_lstCodes(HWND container)
 {
 	// ListView containing the Game Genie codes.
 	lstCodes = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
-				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT,
+				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | LVS_REPORT | LVS_SHOWSELALWAYS,
 				  8, 8+16+68+8+24+24,
 				  GG_WINDOW_WIDTH-(8+8), 128,
 				  container, NULL, gg_hInstance, NULL);
