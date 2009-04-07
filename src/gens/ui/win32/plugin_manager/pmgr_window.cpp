@@ -199,13 +199,30 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	SetWindowFont(fraPluginList, fntMain, true);
 	
 	// Create the plugin listbox.
-	lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTBOX, TEXT(""),
-				       WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL | LBS_NOTIFY,
+	lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
+				       WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
+				       LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
 				       8+8, 8+16,
 				       PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
 				       PMGR_FRAME_PLUGIN_LIST_HEIGHT-24,
 				       container, (HMENU)IDC_PMGR_WINDOW_LSTPLUGINLIST, ghInstance, NULL);
 	SetWindowFont(lstPluginList, fntMain, true);
+	ListView_SetExtendedListViewStyle(lstPluginList, LVS_EX_FULLROWSELECT);
+	
+	// Create the ListView columns.
+	LV_COLUMN lvCol;
+	memset(&lvCol, 0, sizeof(lvCol));
+	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+	
+	// Icon.
+	lvCol.pszText = TEXT("Icon");
+	lvCol.cx = 32+8;
+	ListView_InsertColumn(lstPluginList, 0, &lvCol);
+	
+	// Plugin name.
+	lvCol.pszText = TEXT("Plugin Name");
+	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-32-8-24;
+	ListView_InsertColumn(lstPluginList, 1, &lvCol);
 }
 
 
@@ -279,7 +296,7 @@ static void pmgr_window_populate_plugin_list(void)
 		return;
 	
 	// Clear the plugin list.
-	ListBox_ResetContent(lstPluginList);
+	ListView_DeleteAllItems(lstPluginList);
 	
 	// Add all plugins to the listbox.
 	char tmp[64];
@@ -301,9 +318,26 @@ static void pmgr_window_populate_plugin_list(void)
 			pluginName = tmp;
 		}
 		
-		int index = ListBox_AddString(lstPluginList, pluginName);
-		if (index != LB_ERR)
-			ListBox_SetItemData(lstPluginList, index, plugin);
+		LVITEM lviPlugin;
+		memset(&lviPlugin, 0x00, sizeof(lviPlugin));
+		lviPlugin.mask = LVIF_TEXT | LVIF_PARAM;
+		lviPlugin.cchTextMax = 256;
+		lviPlugin.iItem = ListView_GetItemCount(lstPluginList);
+		lviPlugin.lParam = (LPARAM)plugin;
+		
+		// First column: Icon.
+		lviPlugin.iSubItem = 0;
+		lviPlugin.pszText = NULL;
+		ListView_InsertItem(lstPluginList, &lviPlugin);
+		
+		// lParam doesn't need to be set for the subitems.
+		lviPlugin.mask = LVIF_TEXT;
+		lviPlugin.lParam = NULL;
+		
+		// Second column: Plugin name.
+		lviPlugin.iSubItem = 1;
+		lviPlugin.pszText = const_cast<char*>(pluginName);
+		ListView_SetItem(lstPluginList, &lviPlugin);
 	}
 }
 
@@ -355,17 +389,31 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 					pmgr_window_close();
 					break;
 				
-				case IDC_PMGR_WINDOW_LSTPLUGINLIST:
-					if (HIWORD(wParam) == LBN_SELCHANGE)
-						pmgr_window_callback_lstPluginList_cursor_changed();
-					break;
-				
 				default:
 					// Unknown command identifier.
 					break;
-			}
-			
+			}			
 			break;
+		
+		case WM_NOTIFY:
+		{
+			LPNMLISTVIEW nmListView = (LPNMLISTVIEW)lParam;
+			
+			switch (nmListView->hdr.code)
+			{
+				case LVN_ITEMCHANGED:
+					if (nmListView->hdr.idFrom == IDC_PMGR_WINDOW_LSTPLUGINLIST &&
+					    (nmListView->uChanged & LVIF_STATE) &&
+					    (!(nmListView->uOldState & LVIS_SELECTED)) &&
+					    (nmListView->uNewState & LVIS_SELECTED))
+					{
+						// Item was newly selected.
+						pmgr_window_callback_lstPluginList_cursor_changed();
+					}
+					break;
+			}
+			break;
+		}
 		
 		case WM_DESTROY:
 			if (hWnd != pmgr_window)
@@ -395,9 +443,9 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 {
 	// Check which plugin is clicked.
-	int index = ListBox_GetCurSel(lstPluginList);
+	int index = ListView_GetNextItem(lstPluginList, -1, LVNI_SELECTED);
 	
-	if (index == LB_ERR)
+	if (index == -1)
 	{
 		// No plugin selected.
 		Edit_SetText(lblPluginMainInfo, TEXT("No plugin selected."));
@@ -410,10 +458,15 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 	}
 	
 	// Found a selected plugin.
-	mdp_t *plugin = reinterpret_cast<mdp_t*>(ListBox_GetItemData(lstPluginList, index));
+	LVITEM lvItem;
+	lvItem.iItem = index;
+	lvItem.iSubItem = 0;
+	lvItem.mask = LVIF_PARAM;
+	int rval = ListView_GetItem(lstPluginList, &lvItem);
+	mdp_t *plugin = reinterpret_cast<mdp_t*>(lvItem.lParam);
 	
 	// Get the plugin information.
-	if (!plugin)
+	if (!rval || !plugin)
 	{
 		// Invalid plugin.
 		Edit_SetText(lblPluginMainInfo, TEXT("Invalid plugin selected."));
