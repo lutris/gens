@@ -71,13 +71,13 @@ typedef enum _pmgr_type_t
 {
 	PMGR_INTERNAL = 0,
 	PMGR_EXTERNAL = 1,
-	PMGR_INCOMPAT = 2,
+	//PMGR_INCOMPAT = 2, // TODO
 	
-	PMGR_MAX = 3
+	PMGR_MAX
 } pmgr_type_t;
 
 static GtkWidget	*lstPluginList[PMGR_MAX];
-static GtkListStore	*lmPluginList[PMGR_MAX] = {NULL, NULL, NULL};
+static GtkListStore	*lmPluginList[PMGR_MAX] = {NULL};
 
 // Widget creation functions.
 static void	pmgr_window_create_plugin_list_notebook(GtkWidget *container);
@@ -183,7 +183,8 @@ static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
 	// Create the pages.
 	pmgr_window_create_plugin_list_page(tabPluginList, "_Internal", PMGR_INTERNAL);
 	pmgr_window_create_plugin_list_page(tabPluginList, "_External", PMGR_EXTERNAL);
-	pmgr_window_create_plugin_list_page(tabPluginList, "I_ncompatible", PMGR_INCOMPAT);
+	// TODO
+	//pmgr_window_create_plugin_list_page(tabPluginList, "I_ncompatible", PMGR_INCOMPAT);
 }
 
 
