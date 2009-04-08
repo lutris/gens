@@ -110,7 +110,7 @@ static inline const char* gens_dlerror(void)
 
 #else
 
-#error Unsupported operating system.
+#error gens_ld.h: Unsupported operating system.
 
 #endif
 

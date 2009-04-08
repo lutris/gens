@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,12 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_VDRAW_H
+#define GENS_VDRAW_H
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#ifndef GENS_VDRAW_H
-#define GENS_VDRAW_H
 
 #ifdef __cplusplus
 extern "C" {

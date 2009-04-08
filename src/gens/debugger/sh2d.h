@@ -1,12 +1,12 @@
 #ifndef GENS_SH2D_H
 #define GENS_SH2D_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 #ifdef GENS_DEBUGGER

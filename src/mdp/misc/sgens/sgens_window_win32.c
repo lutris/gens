@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 // Win32 includes.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

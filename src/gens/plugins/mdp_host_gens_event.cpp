@@ -20,14 +20,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#include "mdp_host_gens_event.hpp"
+
 // C++ includes.
 #include <algorithm>
 #include <string>
 #include <list>
 using std::string;
 using std::list;
-
-#include "mdp_host_gens_event.hpp"
 
 // MDP includes.
 #include "mdp/mdp_error.h"

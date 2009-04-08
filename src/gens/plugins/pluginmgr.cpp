@@ -22,7 +22,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif /* HAVE_CONFIG_H */
+#endif
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -140,20 +140,22 @@ void PluginMgr::init(void)
 	}
 	
 	// Load all external plugins.
-	#ifdef GENS_OS_WIN32
-		scanExternalPlugins(PathNames.Gens_EXE_Path);
-		
-		// Wine path
-		scanExternalPlugins("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp");
-		
-		// VMware path
-		scanExternalPlugins("Z:\\david\\programming\\gens\\debug-win32\\src\\mdp");
-	#endif /* GENS_OS_WIN32 */
+#ifdef GENS_MDP_DIR
+	scanExternalPlugins(GENS_MDP_DIR);
+#endif /* GENS_MDP_DIR */
 	
-	#ifdef GENS_MDP_DIR
-		scanExternalPlugins(GENS_MDP_DIR);
-		scanExternalPlugins("/home/david/programming/gens/debug-linux/src/mdp");
-	#endif /* GENS_MDP_DIR */
+#ifdef GENS_OS_WIN32
+	scanExternalPlugins(PathNames.Gens_EXE_Path);
+	
+	// Wine path
+	scanExternalPlugins("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp");
+	
+	// VMware path
+	scanExternalPlugins("Z:\\david\\programming\\gens\\debug-win32\\src\\mdp");
+#else /* !GENS_OS_WIN32 */
+	// Linux path
+	scanExternalPlugins("/home/david/programming/gens/debug-linux/src/mdp");
+#endif /* GENS_OS_WIN32 */
 }
 
 
@@ -233,11 +235,11 @@ struct pluginDirEntry
 	
 	bool operator< (const pluginDirEntry& compare) const
 	{
-		#ifdef GENS_OS_WIN32
-			return (strcasecmp(filename.c_str(), compare.filename.c_str()) < 0);
-		#else
-			return (strcmp(filename.c_str(), compare.filename.c_str()) < 0);
-		#endif
+#ifdef GENS_OS_WIN32
+		return (strcasecmp(filename.c_str(), compare.filename.c_str()) < 0);
+#else
+		return (strcmp(filename.c_str(), compare.filename.c_str()) < 0);
+#endif
 	}
 };
 
@@ -271,25 +273,25 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	pluginDirEntry curEntry;
 	
 	// Required if libc doesn't provide the dirent->d_type field.
-	#ifndef _DIRENT_HAVE_D_TYPE
-		struct stat dirstat;
-	#endif /* !_DIRENT_HAVE_D_TYPE */
+#ifndef _DIRENT_HAVE_D_TYPE
+	struct stat dirstat;
+#endif /* !_DIRENT_HAVE_D_TYPE */
 	
 	while ((d_entry = readdir(dir_mdp)))
 	{
 		// Check the file type.
-		#ifdef _DIRENT_HAVE_D_TYPE
-			// libc provides the dirent->d_type field.
-			filetype = DTTOIF(d_entry->d_type);
-		#else /* !_DIRENT_HAVE_D_TYPE */
-			// libc does not provide the dirent->d_type field.
-			// mingw unfortunately doesn't. :(
-			curEntry.filename = string(directory) +
-					    string(GENS_DIR_SEPARATOR_STR) +
-					    string(d_entry->d_name);
-			stat(curEntry.filename.c_str(), &dirstat);
-			filetype = dirstat.st_mode;
-		#endif /* _DIRENT_HAVE_D_TYPE */
+#ifdef _DIRENT_HAVE_D_TYPE
+		// libc provides the dirent->d_type field.
+		filetype = DTTOIF(d_entry->d_type);
+#else /* !_DIRENT_HAVE_D_TYPE */
+		// libc does not provide the dirent->d_type field.
+		// mingw unfortunately doesn't. :(
+		curEntry.filename = string(directory) +
+				    string(GENS_DIR_SEPARATOR_STR) +
+				    string(d_entry->d_name);
+		stat(curEntry.filename.c_str(), &dirstat);
+		filetype = dirstat.st_mode;
+#endif /* _DIRENT_HAVE_D_TYPE */
 		
 		if (S_ISDIR(filetype))
 		{
@@ -304,11 +306,11 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 					// Directory is not "." or "..".
 					
 					// Scan the directory.
-					#ifdef _DIRENT_HAVE_D_TYPE
-						curEntry.filename = string(directory) +
-								    string(GENS_DIR_SEPARATOR_STR) +
-								    string(d_entry->d_name);
-					#endif /* _DIRENT_HAVE_D_TYPE */
+#ifdef _DIRENT_HAVE_D_TYPE
+					curEntry.filename = string(directory) +
+							    string(GENS_DIR_SEPARATOR_STR) +
+							    string(d_entry->d_name);
+#endif /* _DIRENT_HAVE_D_TYPE */
 					curEntry.isDirectory = true;
 					pluginEntries.push_back(curEntry);
 				}
@@ -330,11 +332,11 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 				{	
 					// File extension matches.
 					// Found a plugin.
-					#ifdef _DIRENT_HAVE_D_TYPE
-						curEntry.filename = string(directory) +
-								    string(GENS_DIR_SEPARATOR_STR) +
-								    string(d_entry->d_name);
-					#endif
+#ifdef _DIRENT_HAVE_D_TYPE
+					curEntry.filename = string(directory) +
+							    string(GENS_DIR_SEPARATOR_STR) +
+							    string(d_entry->d_name);
+#endif
 					curEntry.isDirectory = false;
 					pluginEntries.push_back(curEntry);
 				}

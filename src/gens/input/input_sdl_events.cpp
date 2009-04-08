@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -40,12 +40,12 @@
 
 #ifdef GENS_DEBUGGER
 #include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
+#endif
 
 // CD-ROM drive access
 #ifdef GENS_CDROM
 #include "segacd/cd_aspi.hpp"
-#endif /* GENS_CDROM */
+#endif
 
 #include "gens/gens_window_sync.hpp"
 #include "gens_ui.hpp"

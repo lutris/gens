@@ -25,10 +25,6 @@
  * CPUs that support mmx and CPUs that don't support mmx.
  */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "scalebit_2x_mmx.h"
 #include "scale2x.h"
 

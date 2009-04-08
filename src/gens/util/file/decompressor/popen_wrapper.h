@@ -3,12 +3,12 @@
  * Adapted from http://lists.trolltech.com/qt-interest/1999-09/thread00282-0.html
  */
 
+#ifndef GENS_POPEN_WRAPPER_H
+#define GENS_POPEN_WRAPPER_H
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#ifndef GENS_POPEN_WRAPPER_H
-#define GENS_POPEN_WRAPPER_H
 
 #ifndef GENS_OS_WIN32
 

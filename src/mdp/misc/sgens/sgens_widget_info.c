@@ -34,6 +34,15 @@
 #define FALSE 0
 #endif
 
+// Degree symbol.
+#ifdef GENS_OS_WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#define DEGREE_SYMBOL TEXT("\xB0")
+#else
+	#define DEGREE_SYMBOL "°"
+#endif
+
 sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
 {
 	{"Score:",	"0",		0, 0, FALSE},
@@ -52,11 +61,7 @@ sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
 
 sgens_window_info_widget_t player_info[PLAYER_INFO_COUNT+1] =
 {
-#ifdef GENS_OS_WIN32
-	{"Angle:",	"0.00\xB0", 0, 0, FALSE},
-#else
-	{"Angle:",	"0.00°", 0, 0, FALSE},
-#endif
+	{"Angle:",	"0.00" DEGREE_SYMBOL, 0, 0, FALSE},
 	{"X position:",	"0000",	 0, 1, FALSE},
 	{"Y position:", "0000",	 0, 2, FALSE},
 	{NULL, NULL, 0, 0, FALSE}

@@ -20,10 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+// GTK+ includes.
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
+// C includes.
 #include <stdio.h>
 
 #include "vlopt_window.h"
@@ -33,10 +34,6 @@
 
 // MDP error codes.
 #include "mdp/mdp_error.h"
-
-// GTK includes.
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
 
 // Window.
 static GtkWidget *vlopt_window = NULL;

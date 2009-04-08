@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "mdp_host_gens_dir.hpp"
 #include "mdp/mdp_error.h"
 
@@ -57,14 +53,14 @@ int MDP_FNCALL mdp_host_dir_get_default_save_path(char *buf, unsigned int size)
 	}
 	
 	// TODO: Return an error if the buffer is too small.
-	#ifdef GENS_OS_WIN32
-		// Win32's default save path is ".\\".
-		// Return the full save path instead.
-		strncpy(buf, PathNames.Gens_EXE_Path, size);
-	#else
-		// Get the actual default save path.
-		get_default_save_path(buf, size);
-	#endif
+#ifdef GENS_OS_WIN32
+	// Win32's default save path is ".\\".
+	// Return the full save path instead.
+	strncpy(buf, PathNames.Gens_EXE_Path, size);
+#else
+	// Get the actual default save path.
+	get_default_save_path(buf, size);
+#endif
 	
 	// Make sure the return buffer is null-terminated.
 	buf[size-1] = 0x00;

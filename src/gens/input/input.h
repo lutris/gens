@@ -20,12 +20,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_INPUT_H
+#define GENS_INPUT_H
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#ifndef GENS_INPUT_H
-#define GENS_INPUT_H
 
 // OS-specific includes.
 #if (defined(GENS_OS_UNIX))
@@ -38,6 +38,7 @@
 
 // Needed for HWND in input_set_cooperative_level.
 #ifdef GENS_OS_WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 

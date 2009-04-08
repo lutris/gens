@@ -6,13 +6,13 @@
 #ifndef GENS_ASPI_H
 #define GENS_ASPI_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif /* HAVE_CONFIG_H */
 
 // Needed for uint_*.
 #include <stdint.h>

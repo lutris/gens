@@ -20,10 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+// GTK+ includes.
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
+// C includes.
 #include <stdint.h>
 #include <stdio.h>
 
@@ -38,10 +39,6 @@
 // MDP includes.
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
-
-// GTK includes.
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
 
 // Window.
 static GtkWidget *sgens_window = NULL;

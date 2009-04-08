@@ -27,10 +27,6 @@
 extern "C" {
 #endif
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 const char* M68KDisasm(unsigned short (*NW)(void), unsigned int (*NL)(void));
 
 #ifdef __cplusplus

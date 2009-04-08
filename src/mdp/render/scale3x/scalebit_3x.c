@@ -33,10 +33,6 @@
  * - derivative works of the program are allowed.
  */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "scalebit_3x.h"
 #include "scale3x.h"
 

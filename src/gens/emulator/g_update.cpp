@@ -22,7 +22,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif /* HAVE_CONFIG_H */
+#endif
 
 #include <time.h>
 
@@ -34,7 +34,7 @@
 
 #ifndef GENS_OS_WIN32
 #include "port/timer.h"
-#endif /* !GENS_OS_WIN32 */
+#endif
 
 #ifndef NULL
 #define NULL 0
@@ -60,7 +60,7 @@ int Sleep_Time;
  */
 void Reset_Update_Timers(void)
 {
-	Last_Time = GetTickCount ();
+	Last_Time = GetTickCount();
 	New_Time = 0;
 	Used_Time = 0;
 }

@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "g_main.hpp"
 #include "g_main_win32.hpp"
 
@@ -68,16 +72,16 @@ int win32_CommCtrlEx = 0;
 // Fonts.
 #include "ui/win32/fonts.h"
 
-// min() and max().
-#include <minmax.h>
-
-// Windows macros.
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <windowsx.h>
+#include <minmax.h>
 
 // argc/argv conversion.
 #include "port/argc_argv.h"
 
-
+// Default save path.
 #define GENS_DEFAULT_SAVE_PATH ".\\"
 
 

@@ -22,8 +22,9 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif /* HAVE_CONFIG_H */
+#endif
 
+// C includes.
 #include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
@@ -62,7 +63,7 @@
 // CD-ROM drive access
 #ifdef GENS_CDROM
 #include "segacd/cd_aspi.hpp"
-#endif /* GENS_CDROM */
+#endif
 
 // File management functions.
 #include "util/file/file.hpp"

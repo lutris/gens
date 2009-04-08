@@ -23,10 +23,6 @@
 #ifndef GENS_MDP_HOST_GENS_MEM_H
 #define GENS_MDP_HOST_GENS_MEM_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdint.h>
 
 /* MDP Host Services. */

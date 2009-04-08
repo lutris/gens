@@ -20,14 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif /* HAVE_CONFIG_H */
+#endif
 
-#include <stdio.h>
 #include "gens_ui.hpp"
 
+// C includes.
+#include <stdio.h>
+
+// C++ includes.
 #include <sstream>
 using std::stringstream;
 

@@ -20,12 +20,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <math.h>
 #include <stdlib.h>
 
-#ifdef __linux__
+#ifndef GENS_OS_WIN32
 #include <SDL/SDL.h>
-#endif /* __linux__ */
+#endif
 
 #include "v_effects.hpp"
 #include "gens_core/misc/misc.h"
@@ -53,7 +57,7 @@ int Update_Gens_Logo(void)
 	{
 		// TODO: Don't use SDL for image loading.
 		// TODO: Fix this for Win32.
-#ifdef __linux__
+#ifndef GENS_OS_WIN32
 		SDL_Surface* Logo;
 		
 		Logo = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");

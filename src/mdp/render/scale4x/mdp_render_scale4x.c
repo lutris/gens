@@ -33,7 +33,11 @@
 
 // Scale4x frontend.
 #include "scalebit_4x.h"
+
+// Scale4x MMX frontend.
+#if defined(GENS_X86_ASM) && defined(__GNUC__) && defined(__i386__)
 #include "scalebit_4x_mmx.h"
+#endif
 
 // MDP includes.
 #include "mdp/mdp_cpuflags.h"
@@ -83,7 +87,7 @@ int MDP_FNCALL mdp_render_scale4x_cpp(mdp_render_info_t *render_info)
 	
 	const unsigned int bytespp = (render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) ? 4 : 2;
 	
-#if defined(__GNUC__) && defined(__i386__)
+#if defined(GENS_X86_ASM) && defined(__GNUC__) && defined(__i386__)
 	if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
 	{
 		scale4x_mmx(render_info->destScreen, render_info->destPitch,
@@ -91,7 +95,7 @@ int MDP_FNCALL mdp_render_scale4x_cpp(mdp_render_info_t *render_info)
 			    bytespp, render_info->width, render_info->height);
 	}
 	else
-#endif /* defined(__GNUC__) && defined(__i386__) */
+#endif /* defined(GENS_X86_ASM) && defined(__GNUC__) && defined(__i386__) */
 	{
 		scale4x(render_info->destScreen, render_info->destPitch,
 			render_info->mdScreen, render_info->srcPitch,

@@ -23,10 +23,6 @@
 #ifndef GENS_WIN32_GENS_WINDOW_CMDS_H
 #define GENS_WIN32_GENS_WINDOW_CMDS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif /* HAVE_CONFIG_H */
-
 #ifdef __cplusplus
 extern "C" {
 #endif

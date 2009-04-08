@@ -23,12 +23,12 @@
 #ifndef GENS_Z80DIS_H
 #define GENS_Z80DIS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 #ifdef GENS_DEBUGGER

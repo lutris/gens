@@ -21,13 +21,16 @@ mdp_render_scale2x_la_SOURCES = \
 		mdp_render_scale2x_plugin.c \
 		mdp_render_scale2x.c \
 		scale2x.c \
-		scalebit_2x.c \
-		scalebit_2x_mmx.c
+		scalebit_2x.c
 
 noinst_HEADERS = \
 		mdp_render_scale2x_plugin.h \
 		mdp_render_scale2x_icon.h \
 		mdp_render_scale2x.h \
 		scale2x.h \
-		scalebit_2x.h \
-		scalebit_2x_mmx.h
+		scalebit_2x.h
+
+if GENS_X86_ASM
+mdp_render_scale2x_la_SOURCES += scalebit_2x_mmx.c
+noinst_HEADERS += scalebit_2x_mmx.h
+endif

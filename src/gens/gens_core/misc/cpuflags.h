@@ -23,10 +23,6 @@
 #ifndef GENS_CPU_FLAGS_H
 #define GENS_CPU_FLAGS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif /* HAVE_CONFIG_H */
-
 #include <stdint.h>
 
 // CPU flags (IA32/x86_64)

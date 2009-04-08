@@ -20,14 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-/* The definitions in this file match gens_core/misc/cpuflags.h. */
+/* The definitions in this file match src/gens/gens_core/misc/cpuflags.h. */
 
 #ifndef __MDP_CPUFLAGS_H
 #define __MDP_CPUFLAGS_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif /* HAVE_CONFIG_H */
 
 #include <stdint.h>
 
