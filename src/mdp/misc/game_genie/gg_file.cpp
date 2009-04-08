@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "gg_file.hpp"
 
 #include "gg.hpp"
@@ -29,11 +33,15 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 // C++ includes.
 #include <list>
 using std::list;
+
+// gg_strtok_r() wrapper.
+#include "gg_strtok_r.h"
 
 // MDP includes.
 #include "mdp/mdp_fncall.h"
@@ -120,6 +128,7 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	
 	// Tokens.
 	char *tokens[4];
+	char *r_ptr;	// Used for strtok_r for reentrancy.
 	
 	// Game Genie code.
 	gg_code_t gg_code;
@@ -131,10 +140,10 @@ int MDP_FNCALL gg_file_load(const char* filename)
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
-		tokens[0] = strtok(in_line, ":");	// CPU
-		tokens[1] = strtok(NULL, ":");		// Address
-		tokens[2] = strtok(NULL, ":");		// Data
-		tokens[3] = strtok(NULL, "");		// Name (optional)
+		tokens[0] = gg_strtok_r(in_line, ":", &r_ptr);	// CPU
+		tokens[1] = gg_strtok_r(NULL,    ":", &r_ptr);	// Address
+		tokens[2] = gg_strtok_r(NULL,    ":", &r_ptr);	// Data
+		tokens[3] = gg_strtok_r(NULL,    "",  &r_ptr);	// Name (optional)
 		
 		// Make sure CPU, Address, and Data are not null.
 		if (!tokens[0] || !tokens[1] || !tokens[2])
@@ -262,6 +271,7 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 	
 	// Tokens.
 	char *tokens[2];
+	char *r_ptr;	// Used for strtok_r for reentrancy.
 	
 	// Game Genie code.
 	gg_code_t gg_code;
@@ -270,11 +280,12 @@ static void MDP_FNCALL gg_file_load_old_format(FILE *f_codes)
 	gg_code.enabled = 0;
 	
 	char in_line[256];
+	
 	while (fgets(in_line, sizeof(in_line), f_codes))
 	{
 		// Tokenize the string.
-		tokens[0] = strtok(in_line, "\t");	// Code
-		tokens[1] = strtok(NULL, "");		// Name (optional)
+		tokens[0] = gg_strtok_r(in_line, "\t", &r_ptr);	// Code
+		tokens[1] = gg_strtok_r(NULL,    "",   &r_ptr);	// Name (optional)
 		
 		// Make sure at least a code was specified.
 		if (!tokens[0])
