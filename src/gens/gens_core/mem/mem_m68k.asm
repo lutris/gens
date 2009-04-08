@@ -1387,6 +1387,7 @@ section .text align=64
 		cmp	ebx, 0xA130FF
 		ja	near .bad
 		
+		; Super Street Fighter II (SSF2) bankswitching system.
 		and	ebx, 0xF
 		and	eax, 0x1F
 		shr	ebx, 1
