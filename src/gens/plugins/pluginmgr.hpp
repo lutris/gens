@@ -38,6 +38,16 @@
 #include <string>
 #include <list>
 
+// Plugin DLL information.
+typedef struct _mdpDLL_t
+{
+	void		*dlhandle;
+	std::string	filename;
+} mdpDLL_t;
+typedef GENS_HASHTABLE<mdp_t*, mdpDLL_t> mapMdpDLL;
+typedef std::pair<mdp_t*, mdpDLL_t> pairMdpDLL;
+
+// Render plugins.
 typedef GENS_HASHTABLE<std::string, std::list<mdp_render_t*>::iterator> mapRenderPlugin;
 typedef std::pair<std::string, std::list<mdp_render_t*>::iterator> pairRenderPlugin;
 
@@ -93,11 +103,14 @@ class PluginMgr
 		
 		static std::list<mdp_render_t*>::iterator getMDPIterFromTag_Render(std::string tag);
 		
-		// List containing all loaded plugins.
+		/**
+		 * lstMDP: List containing all loaded plugins.
+		 * Incompat: MDP Incompatibility List.
+		 * lstMdpDLL: MDP DLL information.
+		 */
 		static std::list<mdp_t*> lstMDP;
-		
-		// MDP Incompatibility List.
 		static MDP_Incompat Incompat;
+		static mapMdpDLL tblMdpDLL;
 		
 		// List and map containing all loaded render plugins.
 		static std::list<mdp_render_t*> lstRenderPlugins;

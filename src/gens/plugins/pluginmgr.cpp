@@ -85,9 +85,11 @@ static mdp_t* mdp_internal[] =
 /**
  * lstMDP: List containing all loaded plugins.
  * Incompat: MDP Incompatibility List.
+ * lstMdpDLL: MDP DLL information.
  */
 list<mdp_t*> PluginMgr::lstMDP;
 MDP_Incompat PluginMgr::Incompat;
+mapMdpDLL    PluginMgr::tblMdpDLL;
 
 
 /**
@@ -372,9 +374,9 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 {
 	const char *err;
 	
-	void *handle = gens_dlopen(filename.c_str());
+	void *dlhandle = gens_dlopen(filename.c_str());
 	
-	if (!handle)
+	if (!dlhandle)
 	{
 		Incompat.add(NULL, MDP_ERR_CANNOT_OPEN_DLL, filename);
 		
@@ -388,7 +390,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	}
 	
 	// Attempt to load the mdp symbol.
-	mdp_t *plugin = static_cast<mdp_t*>(gens_dlsym(handle, "mdp"));
+	mdp_t *plugin = static_cast<mdp_t*>(gens_dlsym(dlhandle, "mdp"));
 	if (!plugin)
 	{
 		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
@@ -401,7 +403,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 			File::GetNameFromPath(filename).c_str(), err);
 		
 		gens_dlerror_str_free(err);
-		gens_dlclose(handle);
+		gens_dlclose(dlhandle);
 		return;
 	}
 	
@@ -409,7 +411,22 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 	LOG_MSG(mdp, LOG_MSG_LEVEL_INFO,
 		 "\"mdp\" symbol loaded from plugin: %s",
 		 File::GetNameFromPath(filename).c_str());
-	loadPlugin(plugin, filename);
+	
+	if (!loadPlugin(plugin, filename))
+	{
+		// Error loading the MDP symbol.
+		// loadPlugin() already added the plugin to Incompat.
+		// Unload the DLL.
+		gens_dlclose(dlhandle);
+	}
+	else
+	{
+		// Plugin loaded.
+		mdpDLL_t dll;
+		dll.dlhandle = dlhandle;
+		dll.filename = filename;
+		tblMdpDLL.insert(pairMdpDLL(plugin, dll));
+	}
 }
 
 
@@ -425,10 +442,20 @@ void PluginMgr::end(void)
 		mdp_func_t *func = (*curMDP)->func;
 		if (func && func->end)
 			func->end();
+		
+		// If this is an external plugin, unload the DLL.
+		mapMdpDLL::iterator iter = tblMdpDLL.find((*curMDP));
+		if (iter != tblMdpDLL.end())
+		{
+			mdpDLL_t &dll = (*iter).second;
+			if (dll.dlhandle)
+				gens_dlclose(dll.dlhandle);
+		}
 	}
 	
 	// Clear all plugin lists and maps.
 	lstMDP.clear();
+	tblMdpDLL.clear();
 	
 	lstRenderPlugins.clear();
 	tblRenderPlugins.clear();
