@@ -225,7 +225,7 @@ static void pmgr_window_create_plugin_list_page(GtkWidget *container, const char
 	lstPluginList[id] = gtk_tree_view_new();
 	gtk_tree_view_set_reorderable(GTK_TREE_VIEW(lstPluginList[id]), FALSE);
 	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(lstPluginList[id]), FALSE);
-	gtk_widget_set_size_request(lstPluginList[id], 480, 200);
+	gtk_widget_set_size_request(lstPluginList[id], 480, 196);
 	gtk_widget_show(lstPluginList[id]);
 	gtk_container_add(GTK_CONTAINER(scrlPluginList), lstPluginList[id]);
 	
