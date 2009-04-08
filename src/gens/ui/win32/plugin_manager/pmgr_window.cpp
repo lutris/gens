@@ -46,6 +46,9 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
+// File functions.
+#include "util/file/file.hpp"
+
 // C++ includes.
 #include <string>
 #include <sstream>
@@ -86,6 +89,16 @@ static HWND	lstPluginList;
 static HWND	lblPluginMainInfo;
 static HWND	lblPluginSecInfo;
 static HWND	lblPluginDesc;
+
+// Plugin List.
+typedef enum _pmgr_type_t
+{
+	PMGR_INTERNAL = 0,
+	PMGR_EXTERNAL = 1,
+	//PMGR_INCOMPAT = 2, // TODO
+	
+	PMGR_MAX
+} pmgr_type_t;
 
 // Widget creation functions.
 static void	pmgr_window_create_child_windows(HWND hWnd);
@@ -324,24 +337,43 @@ static void pmgr_window_populate_plugin_list(void)
 	// Clear the plugin list.
 	ListView_DeleteAllItems(lstPluginList);
 	
-	// Add all plugins to the listbox.
-	char tmp[64];
+	// Add all plugins to the ListView.
+	string pluginName;
 	list<mdp_t*>::iterator curPlugin;
+	pmgr_type_t pmType;
+	
 	for (curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
 		mdp_t *plugin = (*curPlugin);
-		const char *pluginName;
+		
 		if (plugin->desc && plugin->desc->name)
 		{
-			pluginName = plugin->desc->name;
+			pluginName = string(plugin->desc->name);
 		}
 		else
 		{
 			// No description or name.
-			// TODO: For external plugins, indicate the external file.
-			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
-			pluginName = tmp;
+			char tmp[64];
+			snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
+			tmp[sizeof(tmp)-1] = 0x00;
+			pluginName = string(tmp);
+		}
+		
+		// Check for MDP DLL information.
+		mapMdpDLL::iterator dllIter = PluginMgr::tblMdpDLL.find(plugin);
+		if (dllIter != PluginMgr::tblMdpDLL.end())
+		{
+			// External plugin.
+			pmType = PMGR_EXTERNAL;
+			
+			mdpDLL_t& dll = (*dllIter).second;
+			pluginName += " (" + File::GetNameFromPath(dll.filename) + ")";
+		}
+		else
+		{
+			// Internal plugin.
+			pmType = PMGR_INTERNAL;
 		}
 		
 		LVITEM lviPlugin;
@@ -383,7 +415,7 @@ static void pmgr_window_populate_plugin_list(void)
 		
 		// Second column: Plugin name.
 		lviPlugin.iSubItem = 1;
-		lviPlugin.pszText = const_cast<char*>(pluginName);
+		lviPlugin.pszText = const_cast<char*>(pluginName.c_str());
 		ListView_SetItem(lstPluginList, &lviPlugin);
 	}
 }

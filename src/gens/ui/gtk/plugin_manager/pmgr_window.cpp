@@ -42,10 +42,8 @@
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
-// Internal plugins.
-// TODO: Figure out a better way to mark plugins as internal or external.
-#include "plugins/render/normal/mdp_render_1x_plugin.h"
-#include "plugins/render/double/mdp_render_2x_plugin.h"
+// File functions.
+#include "util/file/file.hpp"
 
 // C++ includes
 #include <string>
@@ -371,44 +369,46 @@ static void pmgr_window_populate_plugin_list(void)
 	
 	// Add all plugins to the treeviews.
 	// TODO: Use the appropriate treeviews, depending on the plugin type/state.
-	char tmp[64];
+	string pluginName;
 	GtkTreeIter iter;
-	pmgr_type_t pmtype;
+	pmgr_type_t pmType;
 	
 	for (list<mdp_t*>::iterator curPlugin = PluginMgr::lstMDP.begin();
 	     curPlugin != PluginMgr::lstMDP.end(); curPlugin++)
 	{
 		mdp_t *plugin = (*curPlugin);
-		const char *pluginName;
+		
 		if (plugin->desc && plugin->desc->name)
 		{
-			pluginName = plugin->desc->name;
+			pluginName = string(plugin->desc->name);
 		}
 		else
 		{
 			// No description or name.
-			// TODO: For external plugins, indicate the external file.
-			sprintf(tmp, "[No name: 0x%08X]", (unsigned int)plugin);
-			pluginName = tmp;
+			char tmp[64];
+			snprintf(tmp, sizeof(tmp), "[No name: 0x%08lX]", (unsigned long)plugin);
+			tmp[sizeof(tmp)-1] = 0x00;
+			pluginName = string(tmp);
 		}
 		
-		// Check if this is internal or external.
-		// TODO: "Normal" and "Double" are currently hard-coded.
-		// Use a better method for determining internal vs. external.
-		if (plugin == &mdp_render_1x ||
-		    plugin == &mdp_render_2x)
+		// Check for MDP DLL information.
+		mapMdpDLL::iterator dllIter = PluginMgr::tblMdpDLL.find(plugin);
+		if (dllIter != PluginMgr::tblMdpDLL.end())
 		{
-			// Internal plugin.
-			pmtype = PMGR_INTERNAL;
+			// External plugin.
+			pmType = PMGR_EXTERNAL;
+			
+			mdpDLL_t& dll = (*dllIter).second;
+			pluginName += " (" + File::GetNameFromPath(dll.filename) + ")";
 		}
 		else
 		{
-			// External plugin.
-			pmtype = PMGR_EXTERNAL;
+			// Internal plugin.
+			pmType = PMGR_INTERNAL;
 		}
 		
 		// Add an entry to the list store.
-		gtk_list_store_append(lmPluginList[pmtype], &iter);
+		gtk_list_store_append(lmPluginList[pmType], &iter);
 		
 #ifdef GENS_PNG
 		// Create the pixbuf for the plugin icon.
@@ -417,7 +417,8 @@ static void pmgr_window_populate_plugin_list(void)
 		{
 			pbufIcon = pmgr_window_create_pixbuf_from_png(plugin->desc->icon, plugin->desc->iconLength);
 		}
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmtype]), &iter, 0, pluginName, 1, plugin, 2, pbufIcon, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter,
+				   0, pluginName.c_str(), 1, plugin, 2, pbufIcon, -1);
 		
 		if (pbufIcon)
 		{
@@ -425,7 +426,7 @@ static void pmgr_window_populate_plugin_list(void)
 			g_object_unref(pbufIcon);
 		}
 #else
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmtype]), &iter, 0, pluginName, 1, plugin, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter, 0, pluginName, 1, plugin, -1);
 #endif /* GENS_PNG */
 	}
 }
