@@ -561,10 +561,8 @@ AC_CHECK_LIB(rt, clock_gettime)
 AC_CHECK_LIB(c, getopt)
 AC_FUNC_ALLOCA
 
-AC_CHECK_FUNC(strdup, have_strdup=yes, have_strdup=no)
-if test x$have_strdup = xyes; then
-	AC_DEFINE(HAVE_STRDUP, 1, Define to 1 if you have the `strdup' function.)
-fi
+# Check for various functions.
+AC_CHECK_FUNCS([strdup strtok_r])
 
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
