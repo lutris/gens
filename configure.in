@@ -562,7 +562,11 @@ AC_CHECK_LIB(c, getopt)
 AC_FUNC_ALLOCA
 
 # Check for various functions.
-AC_CHECK_FUNCS([strdup strtok_r])
+AC_CHECK_FUNCS(strdup, has_strdup=yes, has_strdup=no)
+AM_CONDITIONAL([HAVE_STRDUP], [test x$has_strdup = xyes])
+
+AC_CHECK_FUNCS(strtok_r, has_strtok_r=yes, has_strtok_r=no)
+AM_CONDITIONAL([HAVE_STRTOK_R], [test x$has_strtok_r = xyes])
 
 AC_SUBST(SDL_CFLAGS)
 AC_SUBST(SDL_LIBS)
