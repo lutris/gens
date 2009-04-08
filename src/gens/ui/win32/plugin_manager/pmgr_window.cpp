@@ -235,7 +235,7 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	// Icon.
 	lvCol.pszText = TEXT("Icon");
 #ifdef GENS_PNG
-	lvCol.cx = 32+8;
+	lvCol.cx = 32;
 #else
 	lvcol.cx = 0;
 #endif
@@ -243,7 +243,11 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	
 	// Plugin name.
 	lvCol.pszText = TEXT("Plugin Name");
-	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-32-8-24;
+#ifdef GENS_PNG
+	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-32-24;
+#else
+	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-24;
+#endif
 	ListView_InsertColumn(lstPluginList, 1, &lvCol);
 }
 
