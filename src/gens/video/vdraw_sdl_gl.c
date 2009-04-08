@@ -38,8 +38,17 @@
 
 // GTK+ includes.
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include "ui/gtk/gtk-compat.h"
+
+// Hack to disable SDL window embedding on OS X.
+#include <gdkconfig.h>
+#if defined(GDK_WINDOWING_X11)
+#include <gdk/gdkx.h>
+#elif defined(GDK_WINDOWING_QUARTZ)
+// Quartz (MacOS X)
+#else
+#error Unsupported GTK+ windowing system.
+#endif
 
 // Gens window.
 #include "gens/gens_window.h"
@@ -194,6 +203,8 @@ int vdraw_sdl_gl_init(void)
 	const int w = Video.Width_GL;
 	const int h = Video.Height_GL;
 	
+#ifdef GDK_WINDOWING_X11
+	// X11. If windowed, embed the SDL window inside of the GTK+ window.
 	if (vdraw_get_fullscreen())
 	{
 		// Hide the embedded SDL window.
@@ -217,6 +228,12 @@ int vdraw_sdl_gl_init(void)
 		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(gtk_widget_get_window(gens_window_sdlsock))));
 		setenv("SDL_WINDOWID", SDL_WindowID, 1);
 	}
+#elif defined(GDK_WINDOWING_QUARTZ)
+	// Quartz (MacOS X).
+	// Hide the embedded SDL window regardless of anything else.
+	gtk_widget_hide(gens_window_sdlsock);
+	unsetenv("SDL_WINDOWID");
+#endif
 	
 	// Initialize SDL.
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
