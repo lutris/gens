@@ -37,7 +37,8 @@
 #define arg_width	24(%ebp)
 #define arg_height	28(%ebp)
 
-.section .text
+/** .text section **/
+.text
 
 /*****************************************************************************
  * void mdp_render_scanline_32_x86(uint32_t *destScreen, uint32_t *mdScreen, *

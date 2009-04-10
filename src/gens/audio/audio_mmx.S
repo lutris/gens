@@ -44,7 +44,8 @@
 #define arg_dest	16(%ebp)
 #define arg_length	20(%ebp)
 
-.section .text
+/** .text section **/
+.text
 
 /****************************************************************************************
  * void audio_write_sound_mono_x86_mmx(int *left, int *right, short *dest, int length); *

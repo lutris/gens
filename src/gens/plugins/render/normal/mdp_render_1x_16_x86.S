@@ -46,7 +46,8 @@
 #define arg_width	24(%ebp)
 #define arg_height	28(%ebp)
 
-.section .text
+/** .text section **/
+.text
 
 /***********************************************************************
  * void mdp_render_1x_16_x86(uint16_t *destScreen, uint16_t *mdScreen, *

@@ -40,7 +40,8 @@
 #define MASK_DIV2_32	$0x7F7F7F7F
 #define MASK_DIV4_32	$0x3F3F3F3F
 
-.section .rodata
+/** .data section **/
+.data
 	
 	/* 64-bit masks used for the MMX version. */
 	MASK_DIV2_32_MMX:	.long 0x7F7F7F7F, 0x7F7F7F7F
@@ -48,8 +49,9 @@
 	
 	SYMTYPE(MASK_DIV2_32_MMX,@object)
 	SYMTYPE(MASK_DIV4_32_MMX,@object)
-	
-.section .text
+
+/** .text section **/
+.text
 
 /********************************************************************************
  * void mdp_render_scanline_25_32_x86(uint16_t *destScreen, uint16_t *mdScreen, *

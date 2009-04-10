@@ -40,7 +40,8 @@
 #define arg_mask4	16+36(%esp)
 #define arg_vmodeFlags	16+32(%esp)
 
-.section .rodata
+/** .data section **/
+.data
 	
 	/* 64-bit masks used for the mmx version. */
 	MASK_DIV2_15_MMX:	.long 0x3DEF3DEF, 0x3DEF3DEF
@@ -52,8 +53,9 @@
 	SYMTYPE(MASK_DIV2_16_MMX,@object)
 	SYMTYPE(MASK_DIV4_15_MMX,@object)
 	SYMTYPE(MASK_DIV4_16_MMX,@object)
-	
-.section .text
+
+/** .text section **/
+.text
 
 /********************************************************************************
  * void mdp_render_scanline_25_16_x86(uint16_t *destScreen, uint16_t *mdScreen, *

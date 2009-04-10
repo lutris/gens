@@ -51,16 +51,14 @@
 .extern _MD_Screen32
 .extern _bppMD
 
-#if defined(_WIN32)
-.section .rdata
-#else
-.section .rodata
-#endif
+/** .data section **/
+.data
+	
+	/* 64-bit mask used for the MMX fast blur function. */
+	MASK_DIV2_32_MMX:	.long	0x007F7F7F, 0x007F7F7F
 
-/* 64-bit mask used for the MMX fast blur function. */
-MASK_DIV2_32_MMX:	.long	0x007F7F7F, 0x007F7F7F
-
-.section .text
+/** .text section **/
+.text
 
 /*********************************************
  * void Fast_Blur_32_x86()                   *
