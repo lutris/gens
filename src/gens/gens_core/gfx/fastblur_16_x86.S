@@ -49,8 +49,10 @@
 #endif
 
 /* External symbols. */
+#ifndef __APPLE__
 .extern _MD_Screen
 .extern _bppMD
+#endif
 
 /** .data section **/
 .data
