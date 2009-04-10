@@ -79,6 +79,8 @@ _mdp_render_scanline_25_32_x86:
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
 
+.p2align 4 /* 16-byte alignment */
+
 0: /* .Loop_Y */
 1: /* .Loop_X1 */
 			/* Get source pixels. */
@@ -104,7 +106,7 @@ _mdp_render_scanline_25_32_x86:
 		shrl	$3, %ecx
 		jmp	2f
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 2: /* .Loop_X2 */
 			/* First pixel. */
@@ -149,7 +151,7 @@ _mdp_render_scanline_25_32_x86:
 	popl	%ecx
 	ret
 
-.balign 64
+.p2align 6 /* 64-byte alignment */
 
 /************************************************************************************
  * void mdp_render_scanline_25_32_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, *
@@ -186,7 +188,7 @@ _mdp_render_scanline_25_32_x86_mmx:
 	movq	MUNG_LOCAL(MASK_DIV4_32_MMX), %mm6	/* Load the 25% mask. */
 	jmp	0f
 
-.balign 64
+.p2align 4 /* 16-byte alignment */
 
 0: /* .Loop_Y */
 1: /* .Loop_X1 */
@@ -221,7 +223,7 @@ _mdp_render_scanline_25_32_x86_mmx:
 		shrl	$4, %ecx
 		jmp	2f /* .Loop_X2 */
 
-.balign 64
+.p2align 4 /* 16-byte alignment */
 
 2: /* .Loop_X2 */
 			/* Get source pixels. */

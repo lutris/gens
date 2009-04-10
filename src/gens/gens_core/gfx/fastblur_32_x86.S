@@ -82,7 +82,7 @@ _Fast_Blur_32_x86:
 	xorl	%ebx, %ebx
 	jmp	0f
 	
-.balign 16
+.p2align 4 /* 16-byte alignment */
 0: /* .Loop */
 		movl	(%esi), %eax		/* Get the current pixel. */
 		shrl	$1, %eax		/* Reduce pixel brightness by 50%. */
@@ -103,7 +103,7 @@ _Fast_Blur_32_x86:
 	popl	%ecx
 	ret
 
-.balign 64
+.p2align 6 /* 64-byte alignment */
 
 /************************************************************
  * void Fast_Blur_32_x86_mmx()                              *
@@ -126,7 +126,7 @@ _Fast_Blur_32_x86_mmx:
 	movq	(MASK_DIV2_32_MMX), %mm7
 	jmp	0f
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 0: /* .Loop */
 		/* Get source pixels. */
 		movq	 (%esi), %mm0

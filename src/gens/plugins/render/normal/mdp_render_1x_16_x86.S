@@ -79,7 +79,7 @@ _mdp_render_1x_16_x86:
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 0: /* .Loop_Y */
 1: /* .Loop_X */
@@ -115,7 +115,7 @@ _mdp_render_1x_16_x86:
 	popl	%ebp
 	ret
 
-.balign 64
+.p2align 6 /* 64-byte alignment */
 
 /***************************************************************************
  * void mdp_render_1x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, *
@@ -148,7 +148,7 @@ _mdp_render_1x_16_x86_mmx:
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 0: /* .Loop_Y */
 1: /* .Loop_X */

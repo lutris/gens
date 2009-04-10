@@ -105,7 +105,7 @@ _audio_write_sound_mono_x86_mmx:
 	jnz	5f /* .Loop */
 	jmp	6f /* .End */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 5: /* .Loop */
 		movq		(%edi), %mm0		/* L2 | L1 */
@@ -133,7 +133,7 @@ _audio_write_sound_mono_x86_mmx:
 	emms
 	ret
 
-.balign 64
+.p2align 6 /* 64-byte alignment */
 
 /******************************************************************************************
  * void audio_write_sound_stereo_x86_mmx(int *left, int *right, short *dest, int length); *
@@ -207,7 +207,7 @@ _audio_write_sound_stereo_x86_mmx:
 	jnz	8f /* .Loop */
 	jmp	9f /* .End */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 8: /* .Loop */
 		movd		(%esi), %mm0		/* 0 | R1 */

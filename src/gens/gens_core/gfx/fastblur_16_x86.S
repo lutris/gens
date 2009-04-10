@@ -92,7 +92,7 @@ _Fast_Blur_16_x86:
 	movw	MASK_DIV2_15, %dx
 	jmp	0f
 	
-.balign 16
+.p2align 4 /* 16-byte alignment */
 0: /* .Loop */
 		movw	(%esi), %ax	/* Get the current pixel. */
 		shrw	$1, %ax		/* Reduce pixel brightness by 50%. */
@@ -113,7 +113,7 @@ _Fast_Blur_16_x86:
 	popl	%ecx
 	ret
 
-.balign 64
+.p2align 6 /* 64-byte alignment */
 
 /***************************************************************
  * void Fast_Blur_16_x86_mmx()                                 *
@@ -141,7 +141,7 @@ _Fast_Blur_16_x86_mmx:
 	movq	(MASK_DIV2_15_MMX), %mm7
 	jmp	0f
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 0: /* .Loop */
 		/* Get source pixels. */
 		movq	 (%esi), %mm0

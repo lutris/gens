@@ -80,7 +80,7 @@ _mdp_render_2x_16_x86:
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 0: /* .Loop_Y */
 1: /* .Loop_X1 */
@@ -113,7 +113,7 @@ _mdp_render_2x_16_x86:
 		shrl	$3, %ecx
 		jmp	2f /* .Loop_X2 */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 2: /* .Loop_X2 */
 			/* First two pixels. */
@@ -156,7 +156,7 @@ _mdp_render_2x_16_x86:
 	popl	%ebp
 	ret
 
-.balign 64
+.p2align 6 /* 64-byte alignment */
 
 /***************************************************************************
  * void mdp_render_2x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, *
@@ -190,7 +190,7 @@ _mdp_render_2x_16_x86_mmx:
 	movl	%ecx, arg_width		/* Initialize the X counter. */
 	jmp	0f /* .Loop_Y */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 0: /* .Loop_Y */
 1: /* .Loop_X1 */
@@ -239,7 +239,7 @@ _mdp_render_2x_16_x86_mmx:
 		shrl	$5, %ecx
 		jmp	2f /* .Loop_X2 */
 
-.balign 16
+.p2align 4 /* 16-byte alignment */
 
 2: /* .Loop_X2 */
 			/* Get source pixels. */
