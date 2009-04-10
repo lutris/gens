@@ -18,8 +18,8 @@ extern "C" {
 #ifdef _WIN32
  	#define FASTCALL	__fastcall
 #else
-	#define __fastcall	__attribute__ ((regparm(2)))
-	#define FASTCALL	__attribute__ ((regparm(2)))
+	#define __fastcall	__attribute__ ((fastcall))
+	#define FASTCALL	__attribute__ ((fastcall))
 #endif
 
 

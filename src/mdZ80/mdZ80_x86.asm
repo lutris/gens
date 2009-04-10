@@ -32,9 +32,11 @@
 	%define	__OBJ_ELF
 %elifidn __OUTPUT_FORMAT__, win32
 	%define	__OBJ_WIN32
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, win64
 	%define	__OBJ_WIN64
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, macho
 	%define	__OBJ_MACHO
@@ -46,8 +48,6 @@
 %endif
 
 
-;%define __GCC
-
 ;**************************
 ;
 ; Some usefull ASM macros
@@ -58,7 +58,7 @@
 ; function are declared in fastcall when number of arguments < 3
 ; and in cdecl in other case
 
-%ifdef __GCC2
+%ifndef __PLATFORM_WINDOWS
 %macro DECLF 1-2
 
 %if %0 > 1
@@ -4937,9 +4937,6 @@ align 16
 ; !0 -> error (status returned) or no cycle to do (-1)
 
 DECLF z80_Exec, 8
-%ifdef __GCC2
-	mov	ecx, eax
-%endif
 	sub	edx, [ecx + Z80.CycleCnt]
 	jbe	near z80_Cycles_Already_done
 	
