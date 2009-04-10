@@ -45,6 +45,9 @@
 // See http://gcc.gnu.org/ml/libstdc++/2002-04/msg00107.html
 
 #include <string>
+#include <stdint.h>
+struct _mdp_t;
+
 namespace __gnu_cxx
 {
 	template<> struct hash<std::string>
@@ -52,6 +55,14 @@ namespace __gnu_cxx
 		size_t operator() (const std::string& x) const
 		{
 			return hash<const char*>()(x.c_str());
+		}
+	};
+	
+	template<> struct hash<struct _mdp_t*>
+	{
+		size_t operator() (struct _mdp_t* x) const
+		{
+			return hash<uintptr_t>()(reinterpret_cast<uintptr_t>(x));
 		}
 	};
 }
