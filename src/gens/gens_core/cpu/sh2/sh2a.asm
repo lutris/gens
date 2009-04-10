@@ -36,9 +36,11 @@
 	%define	__OBJ_ELF
 %elifidn __OUTPUT_FORMAT__, win32
 	%define	__OBJ_WIN32
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, win64
 	%define	__OBJ_WIN64
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, macho
 	%define	__OBJ_MACHO
@@ -63,6 +65,7 @@
 ;%define __GCC
 ;%define __GCC2
 
+
 %macro DECLV 1
 
 	global _%1
@@ -73,7 +76,7 @@
 
 %endmacro
 
-%ifdef __GCC2
+%ifndef __PLATFORM_WINDOWS
 %macro DECLF 1-2
 
 %if %0 > 1
@@ -109,21 +112,11 @@
 
 %macro FUNC_IN 0
 
-%ifdef __GCC
-;	push ecx
-;	push edx
-	mov ecx, eax
-%endif
-
 %endmacro
 
 
 %macro FUNC_OUT 0
 
-%ifdef __GCC
-;	pop edx
-;	pop ecx
-%endif
 	ret
 
 %endmacro
@@ -131,19 +124,10 @@
 
 %macro FUNC_CALL_IN 0
 
-%ifdef __GCC
-	push ebp
-	mov eax, ecx
-%endif
-
 %endmacro
 
 
 %macro FUNC_CALL_OUT 0
-
-%ifdef __GCC
-	pop ebp
-%endif
 
 %endmacro
 
@@ -181,21 +165,7 @@
 ;
 ;*******************
 
-%ifdef __GCC
-
-section .bss		; sthief: coff format doesn't support section alignment specification, must align manually
-bits 32
-
-%elifdef __GCC2
-
-section .bss; align=64
-bits 32
-
-%else
 section .bss align=64
-;bits 32
-
-%endif
 
 	%include "sh2_context.inc"
 	
@@ -226,17 +196,7 @@ section .bss align=64
 
 
 
-%ifdef __GCC
-
-section .text		; sthief: coff format doesn't support section alignment specification, must align manually
-bits 32
-
-%else
-
 section .text align=64
-bits 32
-
-%endif
 
 
 ;*****************************************
@@ -495,21 +455,11 @@ bits 32
 
 %macro READ_BYTE 0
 
-%ifdef __GCC
-	mov ecx, eax
-	mov [ebp + SH2.Cycle_IO], edi
-	shr ecx, 24
-	push ebp
-	call [ebp + SH2.Read_Byte + ecx * 4]
-	pop ebp
-	mov edi, [ebp + SH2.Cycle_IO]
-%else
 	mov ecx, eax
 	shr eax, 24
 	mov [ebp + SH2.Cycle_IO], edi
 	call [ebp + SH2.Read_Byte + eax * 4]
 	mov edi, [ebp + SH2.Cycle_IO]
-%endif
 
 %endmacro
 
@@ -530,21 +480,11 @@ bits 32
 
 %macro READ_WORD 0
 
-%ifdef __GCC
-	mov ecx, eax
-	mov [ebp + SH2.Cycle_IO], edi
-	shr ecx, 24
-	push ebp
-	call [ebp + SH2.Read_Word + ecx * 4]
-	pop ebp
-	mov edi, [ebp + SH2.Cycle_IO]
-%else
 	mov ecx, eax
 	shr eax, 24
 	mov [ebp + SH2.Cycle_IO], edi
 	call [ebp + SH2.Read_Word + eax * 4]
 	mov edi, [ebp + SH2.Cycle_IO]
-%endif
 
 %endmacro
 
@@ -565,21 +505,11 @@ bits 32
 
 %macro READ_LONG 0
 
-%ifdef __GCC
-	mov ecx, eax
-	mov [ebp + SH2.Cycle_IO], edi
-	shr ecx, 24
-	push ebp
-	call [ebp + SH2.Read_Long + ecx * 4]
-	pop ebp
-	mov edi, [ebp + SH2.Cycle_IO]
-%else
 	mov ecx, eax
 	shr eax, 24
 	mov [ebp + SH2.Cycle_IO], edi
 	call [ebp + SH2.Read_Long + eax * 4]
 	mov edi, [ebp + SH2.Cycle_IO]
-%endif
 
 %endmacro
 
@@ -601,21 +531,11 @@ bits 32
 
 %macro WRITE_BYTE 0
 
-%ifdef __GCC
-	mov ecx, eax
-	mov [ebp + SH2.Cycle_IO], edi
-	shr ecx, 24
-	push ebp
-	call [ebp + SH2.Write_Byte + ecx * 4]
-	pop ebp
-	mov edi, [ebp + SH2.Cycle_IO]
-%else
 	mov ecx, eax
 	shr eax, 24
 	mov [ebp + SH2.Cycle_IO], edi
 	call [ebp + SH2.Write_Byte + eax * 4]
 	mov edi, [ebp + SH2.Cycle_IO]
-%endif
 
 %endmacro
 
@@ -637,21 +557,11 @@ bits 32
 
 %macro WRITE_WORD 0
 
-%ifdef __GCC
-	mov ecx, eax
-	mov [ebp + SH2.Cycle_IO], edi
-	shr ecx, 24
-	push ebp
-	call [ebp + SH2.Write_Word + ecx * 4]
-	pop ebp
-	mov edi, [ebp + SH2.Cycle_IO]
-%else
 	mov ecx, eax
 	shr eax, 24
 	mov [ebp + SH2.Cycle_IO], edi
 	call [ebp + SH2.Write_Word + eax * 4]
 	mov edi, [ebp + SH2.Cycle_IO]
-%endif
 
 %endmacro
 
@@ -673,21 +583,11 @@ bits 32
 
 %macro WRITE_LONG 0
 
-%ifdef __GCC
-	mov ecx, eax
-	mov [ebp + SH2.Cycle_IO], edi
-	shr ecx, 24
-	push ebp
-	call [ebp + SH2.Write_Long + ecx * 4]
-	pop ebp
-	mov edi, [ebp + SH2.Cycle_IO]
-%else
 	mov ecx, eax
 	shr eax, 24
 	mov [ebp + SH2.Cycle_IO], edi
 	call [ebp + SH2.Write_Long + eax * 4]
 	mov edi, [ebp + SH2.Cycle_IO]
-%endif
 
 %endmacro
 
@@ -5020,9 +4920,6 @@ align 64
 DECLF SH2_Exec, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	sub edx, [ecx + SH2.Odometer]
 	push ebx
 	push edi
@@ -5303,9 +5200,6 @@ DECLF SH2_Reset, 8
 	push edi
 	push esi
 	push ebp
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov eax, [ecx + SH2.Status]
 	and eax, SH2_DISABLE
 	push eax
@@ -5453,9 +5347,6 @@ align 32
 ; nothing ...
 
 DECLF SH2_Clear_Odo, 4
-%ifdef __GCC2
-		mov ecx, eax
-%endif
 	FUNC_IN
 	mov dword [ecx + SH2.Odometer], 0
 	FUNC_OUT
@@ -5500,9 +5391,6 @@ align 32
 ; nothing ...
 
 DECLF SH2_Interrupt, 8
-%ifdef __GCC2
-		mov ecx, eax
-%endif
 	FUNC_IN
 	mov ah, dl
 	and edx, byte 0x0F
@@ -5707,9 +5595,6 @@ align 32
 DECLF SH2_Get_PC, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	test byte [ecx + SH2.Status], SH2_RUNNING
 	mov eax, [ecx + SH2.PC]
 	jnz short .running
@@ -5735,9 +5620,6 @@ align 32
 DECLF SH2_Get_SR, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	xor eax, eax
 	mov dh, [ecx + SH2.SR_IMask]
 	mov dl, [ecx + SH2.SR_S]
@@ -5761,9 +5643,6 @@ align 32
 DECLF SH2_Get_GBR, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov eax, [ecx + SH2.GBR]
 	FUNC_OUT
 
@@ -5779,9 +5658,6 @@ align 32
 DECLF SH2_Get_VBR, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov eax, [ecx + SH2.VBR]
 	FUNC_OUT
 
@@ -5797,9 +5673,6 @@ align 32
 DECLF SH2_Get_PR, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov eax, [ecx + SH2.PR]
 	FUNC_OUT
 
@@ -5815,9 +5688,6 @@ align 32
 DECLF SH2_Get_MACH, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov eax, [ecx + SH2.MACH]
 	FUNC_OUT
 
@@ -5833,9 +5703,6 @@ align 32
 DECLF SH2_Get_MACL, 4
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov eax, [ecx + SH2.MACL]
 	FUNC_OUT
 
@@ -5851,9 +5718,6 @@ align 32
 DECLF SH2_Set_PC, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	test byte [ecx + SH2.Status], SH2_RUNNING
 	jz short .not_running
 
@@ -5911,9 +5775,6 @@ align 32
 DECLF SH2_Set_SR, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	and edx, 0x3F3
 	mov edx, [Set_SR_Table + edx * 4]
 	mov [ecx + SH2.SR], edx
@@ -5931,9 +5792,6 @@ align 32
 DECLF SH2_Set_GBR, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov [ecx + SH2.GBR], edx
 	FUNC_OUT
 
@@ -5949,9 +5807,6 @@ align 32
 DECLF SH2_Set_VBR, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov [ecx + SH2.VBR], edx
 	FUNC_OUT
 
@@ -5967,9 +5822,6 @@ align 32
 DECLF SH2_Set_PR, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov [ecx + SH2.PR], edx
 	FUNC_OUT
 
@@ -5985,9 +5837,6 @@ align 32
 DECLF SH2_Set_MACH, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov [ecx + SH2.MACH], edx
 	FUNC_OUT
 
@@ -6003,9 +5852,6 @@ align 32
 DECLF SH2_Set_MACL, 8
 
 	FUNC_IN
-%ifdef __GCC2
-	mov ecx, eax
-%endif
 	mov [ecx + SH2.MACL], edx
 	FUNC_OUT
  

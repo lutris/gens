@@ -30,9 +30,11 @@
 	%define	__OBJ_ELF
 %elifidn __OUTPUT_FORMAT__, win32
 	%define	__OBJ_WIN32
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, win64
 	%define	__OBJ_WIN64
+	%define __PLATFORM_WINDOWS
 	%define	.rodata	.rdata
 %elifidn __OUTPUT_FORMAT__, macho
 	%define	__OBJ_MACHO
@@ -58,7 +60,7 @@
 ;%define __GCC2
 
 
-%ifdef __GCC2
+%ifndef __PLATFORM_WINDOWS
 %macro DECLF 1-2
 
 %if %0 > 1
@@ -94,21 +96,11 @@
 
 %macro FUNC_IN 0
 
-%ifdef __GCC
-;	push ecx
-;	push edx
-	mov ecx, eax
-%endif
-
 %endmacro
 
 
 %macro FUNC_OUT 0
 
-%ifdef __GCC
-;	pop edx
-;	pop ecx
-%endif
 	ret
 
 %endmacro
@@ -116,19 +108,10 @@
 
 %macro FUNC_CALL_IN 0
 
-%ifdef __GCC
-	push ebp
-	mov eax, ecx
-%endif
-
 %endmacro
 
 
 %macro FUNC_CALL_OUT 0
-
-%ifdef __GCC
-	pop ebp
-%endif
 
 %endmacro
 
@@ -164,19 +147,11 @@ _SH2_Read_Byte:
 	push	edx
 	push	ebp
 	
-	%ifdef __GCC
-		mov	ecx, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	eax, ecx
-		shr	ecx, 24
-		call	[ebp + SH2.Read_Byte + ecx * 4]
-	%else
-		mov	eax, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	ecx, eax
-		shr	eax, 24
-		call	[ebp + SH2.Read_Byte + eax * 4]
-	%endif
+	mov	eax, [esp + 16 + 1 * 4]
+	mov	ebp, [esp + 16 + 0 * 4]
+	mov	ecx, eax
+	shr	eax, 24
+	call	[ebp + SH2.Read_Byte + eax * 4]
 	
 	pop	ebp
 	pop	edx
@@ -193,19 +168,11 @@ _SH2_Read_Word:
 	push	edx
 	push	ebp
 
-	%ifdef __GCC
-		mov	ecx, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	eax, ecx
-		shr	ecx, 24
-		call	[ebp + SH2.Read_Word + ecx * 4]
-	%else
-		mov	eax, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	ecx, eax
-		shr	eax, 24
-		call	[ebp + SH2.Read_Word + eax * 4]
-	%endif
+	mov	eax, [esp + 16 + 1 * 4]
+	mov	ebp, [esp + 16 + 0 * 4]
+	mov	ecx, eax
+	shr	eax, 24
+	call	[ebp + SH2.Read_Word + eax * 4]
 	
 	pop	ebp
 	pop	edx
@@ -222,19 +189,11 @@ _SH2_Read_Long:
 	push	edx
 	push	ebp
 	
-	%ifdef __GCC
-		mov	ecx, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	eax, ecx
-		shr	ecx, 24
-		call	[ebp + SH2.Read_Long + ecx * 4]
-	%else
-		mov	eax, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	ecx, eax
-		shr	eax, 24
-		call	[ebp + SH2.Read_Long + eax * 4]
-	%endif
+	mov	eax, [esp + 16 + 1 * 4]
+	mov	ebp, [esp + 16 + 0 * 4]
+	mov	ecx, eax
+	shr	eax, 24
+	call	[ebp + SH2.Read_Long + eax * 4]
 	
 	pop	ebp
 	pop	edx
@@ -251,21 +210,12 @@ _SH2_Write_Byte:
 	push	edx
 	push	ebp
 	
-	%ifdef __GCC
-		mov	ecx, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	eax, ecx
-		shr	ecx, 24
-		mov	edx, [esp + 16 + 2 * 4]
-		call	[ebp + SH2.Write_Byte + ecx * 4]
-	%else
-		mov	eax, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	ecx, eax
-		shr	eax, 24
-		mov	edx, [esp + 16 + 2 * 4]
-		call	[ebp + SH2.Write_Byte + eax * 4]
-	%endif
+	mov	eax, [esp + 16 + 1 * 4]
+	mov	ebp, [esp + 16 + 0 * 4]
+	mov	ecx, eax
+	shr	eax, 24
+	mov	edx, [esp + 16 + 2 * 4]
+	call	[ebp + SH2.Write_Byte + eax * 4]
 	
 	pop	ebp
 	pop	edx
@@ -282,26 +232,17 @@ _SH2_Write_Word:
 	push	edx
 	push	ebp
 	
-	%ifdef __GCC
-		mov	ecx, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	eax, ecx
-		shr	ecx, 24
-		mov	edx, [esp + 16 + 2 * 4]
-		call	[ebp + SH2.Write_Word + ecx * 4]
-	%else
-		mov	eax, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	ecx, eax
-		shr	eax, 24
-		mov	edx, [esp + 16 + 2 * 4]
-		call	[ebp + SH2.Write_Word + eax * 4]
-	%endif
+	mov	eax, [esp + 16 + 1 * 4]
+	mov	ebp, [esp + 16 + 0 * 4]
+	mov	ecx, eax
+	shr	eax, 24
+	mov	edx, [esp + 16 + 2 * 4]
+	call	[ebp + SH2.Write_Word + eax * 4]
 	
-		pop ebp
-		pop edx
-		pop ecx
-		ret
+	pop	ebp
+	pop	edx
+	pop	ecx
+	ret
 
 
 align 32
@@ -1907,27 +1848,14 @@ align 16
 align 16
 
 .DREQ0_D_S_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
 		dec	eax
@@ -1939,27 +1867,14 @@ align 16
 align 16
 
 .DREQ0_D_SI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
@@ -1973,27 +1888,15 @@ align 16
 
 .DREQ0_D_SD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
 		dec	eax
@@ -2005,27 +1908,14 @@ align 16
 align 16
 
 .DREQ0_DIS_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
@@ -2038,27 +1928,14 @@ align 16
 align 16
 
 .DREQ0_DISI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		add	esi, ebx
 		mov	eax, [esp + 8]
@@ -2073,27 +1950,15 @@ align 16
 
 .DREQ0_DISD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
@@ -2107,27 +1972,15 @@ align 16
 
 .DREQ0_DDS_:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
 		dec	eax
@@ -2140,27 +1993,15 @@ align 16
 
 .DREQ0_DDSI:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
@@ -2175,27 +2016,15 @@ align 16
 .DREQ0_DDSD:
 		sub	edi, ebx
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]			; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]			; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]			; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]			; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]			; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]			; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ0]
 		dec	eax
@@ -2281,27 +2110,14 @@ align 16
 align 16
 
 .DMA0_D_S_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA0_D_S_
 	jmp	.DMA0_End
@@ -2309,27 +2125,14 @@ align 16
 align 16
 
 .DMA0_D_SI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA0_D_SI
@@ -2339,27 +2142,15 @@ align 16
 
 .DMA0_D_SD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA0_D_SD
 	jmp	.DMA0_End
@@ -2367,27 +2158,14 @@ align 16
 align 16
 
 .DMA0_DIS_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA0_DIS_
@@ -2396,27 +2174,14 @@ align 16
 align 16
 
 .DMA0_DISI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		add	esi, ebx
 		dec	dword [esp + 8]
@@ -2427,27 +2192,15 @@ align 16
 
 .DMA0_DISD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA0_DISD
@@ -2457,27 +2210,15 @@ align 16
 
 .DMA0_DDS_:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA0_DDS_
 	jmp 	.DMA0_End
@@ -2486,27 +2227,15 @@ align 16
 
 .DMA0_DDSI:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA0_DDSI
@@ -2517,27 +2246,15 @@ align 16
 .DMA0_DDSD:
 		sub	edi, ebx
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA0_DDSD
 	jmp	short .DMA0_End
@@ -2681,27 +2398,14 @@ align 16
 align 16
 
 .DREQ1_D_S_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
 		dec	eax
@@ -2713,27 +2417,14 @@ align 16
 align 16
 
 .DREQ1_D_SI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
@@ -2747,27 +2438,15 @@ align 16
 
 .DREQ1_D_SD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
 		dec	eax
@@ -2779,27 +2458,14 @@ align 16
 align 16
 
 .DREQ1_DIS_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
@@ -2812,27 +2478,14 @@ align 16
 align 16
 
 .DREQ1_DISI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		add	esi, ebx
 		mov	eax, [esp + 8]
@@ -2847,27 +2500,15 @@ align 16
 
 .DREQ1_DISD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
@@ -2881,27 +2522,15 @@ align 16
 
 .DREQ1_DDS_:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
 		dec	eax
@@ -2914,27 +2543,15 @@ align 16
 
 .DREQ1_DDSI:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
@@ -2949,27 +2566,15 @@ align 16
 .DREQ1_DDSD:
 		sub	edi, ebx
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		mov	eax, [esp + 8]
 		mov	dl, [ebp + SH2.DREQ1]
 		dec	eax
@@ -3056,27 +2661,14 @@ align 16
 align 16
 
 .DMA1_D_S_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA1_D_S_
 	jmp	.DMA1_End
@@ -3084,27 +2676,14 @@ align 16
 align 16
 
 .DMA1_D_SI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA1_D_SI
@@ -3114,27 +2693,15 @@ align 16
 
 .DMA1_D_SD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA1_D_SD
 	jmp	.DMA1_End
@@ -3142,27 +2709,14 @@ align 16
 align 16
 
 .DMA1_DIS_:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA1_DIS_
@@ -3171,27 +2725,14 @@ align 16
 align 16
 
 .DMA1_DISI:
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		add	esi, ebx
 		dec	dword [esp + 8]
@@ -3202,27 +2743,15 @@ align 32
 
 .DMA1_DISD:
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	edi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA1_DISD
@@ -3232,27 +2761,15 @@ align 16
 
 .DMA1_DDS_:
 		sub	edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA1_DDS_
 	jmp	.DMA1_End
@@ -3261,27 +2778,15 @@ align 16
 
 .DMA1_DDSI:
 		sub edi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		add	esi, ebx
 		dec	dword [esp + 8]
 		jnz	short .DMA1_DDSI
@@ -3292,27 +2797,15 @@ align 16
 .DMA1_DDSD:
 		sub	edi, ebx
 		sub	esi, ebx
-		%ifdef __GCC
-			mov	ecx, [esp + 4]		; Read function pointer
-			mov	eax, esi
-			push	ebp
-			call	ecx
-			pop	ebp
-			mov	edx, eax
-			mov	ecx, [esp + 0]		; Write function pointer
-			mov	eax, edi
-			push	ebp
-			call	ecx
-			pop	ebp
-		%else
-			mov	eax, [esp + 4]		; Read function pointer
-			mov	ecx, esi
-			call	eax
-			mov	edx, eax
-			mov	eax, [esp + 0]		; Write function pointer
-			mov	ecx, edi
-			call	eax
-		%endif
+		
+		mov	eax, [esp + 4]		; Read function pointer
+		mov	ecx, esi
+		call	eax
+		mov	edx, eax
+		mov	eax, [esp + 0]		; Write function pointer
+		mov	ecx, edi
+		call	eax
+		
 		dec	dword [esp + 8]
 		jnz	short .DMA1_DDSD
 	jmp	short .DMA1_End
