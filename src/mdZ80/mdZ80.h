@@ -9,17 +9,28 @@
 #ifndef __MDZ80_H
 #define __MDZ80_H
 
+
+#ifdef _WIN32
+#define FASTCALL	__fastcall
+#else
+
+/* gcc-3.4 or later is required on non-Windows systems for __attribute__ ((fastcall)). */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if (__GNUC__ < 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__) < 4)
+#error mdZ80 uses __attribute__ ((fastcall)), which requires gcc-3.4 or later.
+#endif
+#endif
+
+#define __fastcall	__attribute__ ((fastcall))
+#define FASTCALL	__attribute__ ((fastcall))
+
+#endif
+
+
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifdef _WIN32
- 	#define FASTCALL	__fastcall
-#else
-	#define __fastcall	__attribute__ ((fastcall))
-	#define FASTCALL	__attribute__ ((fastcall))
 #endif
 
 
