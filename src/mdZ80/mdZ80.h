@@ -9,36 +9,10 @@
 #ifndef __MDZ80_H
 #define __MDZ80_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/******************************/
-/* Compiler dependant defines */
-/******************************/
-
-#ifndef UINT8
-#define UINT8   unsigned char
-#endif
-
-#ifndef INT8
-#define INT8    signed char
-#endif
-
-#ifndef UINT16
-#define UINT16  unsigned short
-#endif
-
-#ifndef INT16
-#define INT16   signed short
-#endif
-
-#ifndef UINT32
-#define UINT32  unsigned int
-#endif
-
-#ifndef INT32
-#define INT32   signed int
 #endif
 
 #ifdef _WIN32
@@ -54,10 +28,10 @@ extern "C" {
 /****************************/
 
 
-typedef UINT8 FASTCALL Z80_RB(UINT32 adr);
-typedef UINT16 FASTCALL Z80_RW(UINT32 adr);
-typedef void FASTCALL Z80_WB(UINT32 adr, UINT8 data);
-typedef void FASTCALL Z80_WW(UINT32 adr, UINT16 data);
+typedef uint8_t FASTCALL Z80_RB(uint32_t adr);
+typedef uint16_t FASTCALL Z80_RW(uint32_t adr);
+typedef void FASTCALL Z80_WB(uint32_t adr, uint8_t data);
+typedef void FASTCALL Z80_WW(uint32_t adr, uint16_t data);
 
 
 struct _Z80_context
@@ -66,240 +40,240 @@ struct _Z80_context
 	{
 		struct
 		{
-			UINT8 A;
-			UINT8 F;
-			UINT8 x;
-			UINT8 FXY;
+			uint8_t A;
+			uint8_t F;
+			uint8_t x;
+			uint8_t FXY;
 		} b;
 		struct
 		{
-			UINT16 AF;
-			UINT16 FXYW;
+			uint16_t AF;
+			uint16_t FXYW;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} AF;
 	union
 	{
 		struct
 		{
-			UINT8 C;
-			UINT8 B;
-			UINT16 x;
+			uint8_t C;
+			uint8_t B;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 BC;
-			UINT16 x;
+			uint16_t BC;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} BC;
 	union
 	{
 		struct
 		{
-			UINT8 E;
-			UINT8 D;
-			UINT16 x;
+			uint8_t E;
+			uint8_t D;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 DE;
-			UINT16 x;
+			uint16_t DE;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} DE;
 	union
 	{
 		struct
 		{
-			UINT8 L;
-			UINT8 H;
-			UINT16 x;
+			uint8_t L;
+			uint8_t H;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 HL;
-			UINT16 x;
+			uint16_t HL;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} HL;
 	union
 	{
 		struct
 		{
-			UINT8 IXL;
-			UINT8 IXH;
-			UINT16 x;
+			uint8_t IXL;
+			uint8_t IXH;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 IX;
-			UINT16 x;
+			uint16_t IX;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} IX;
 	union
 	{
 		struct
 		{
-			UINT8 IYL;
-			UINT8 IYH;
-			UINT16 x;
+			uint8_t IYL;
+			uint8_t IYH;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 IY;
-			UINT16 x;
+			uint16_t IY;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} IY;
 	union
 	{
 		struct
 		{
-			UINT8 PCL;
-			UINT8 PCH;
-			UINT16 x;
+			uint8_t PCL;
+			uint8_t PCH;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 PC;
-			UINT16 x;
+			uint16_t PC;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} PC;	// PC == BasePC + Z80 PC
 	union
 	{
 		struct
 		{
-			UINT8 SPL;
-			UINT8 SPH;
-			UINT16 x;
+			uint8_t SPL;
+			uint8_t SPH;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 SP;
-			UINT16 x;
+			uint16_t SP;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} SP;
 	union
 	{
 		struct
 		{
-			UINT8 A2;
-			UINT8 F2;
-			UINT8 x;
-			UINT8 FXY2;
+			uint8_t A2;
+			uint8_t F2;
+			uint8_t x;
+			uint8_t FXY2;
 		} b;
 		struct
 		{
-			UINT16 AF2;
-			UINT16 FXYW2;
+			uint16_t AF2;
+			uint16_t FXYW2;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} AF2;
 	union
 	{
 		struct
 		{
-			UINT8 C2;
-			UINT8 B2;
-			UINT16 x;
+			uint8_t C2;
+			uint8_t B2;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 BC2;
-			UINT16 x;
+			uint16_t BC2;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} BC2;
 	union
 	{
 		struct
 		{
-			UINT8 E2;
-			UINT8 D2;
-			UINT16 x;
+			uint8_t E2;
+			uint8_t D2;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 DE2;
-			UINT16 x;
+			uint16_t DE2;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} DE2;
 	union
 	{
 		struct
 		{
-			UINT8 L2;
-			UINT8 H2;
-			UINT16 x;
+			uint8_t L2;
+			uint8_t H2;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 HL2;
-			UINT16 x;
+			uint16_t HL2;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} HL2;
 	union
 	{
 		struct
 		{
-			UINT8 IFF1;
-			UINT8 IFF2;
-			UINT16 x;
+			uint8_t IFF1;
+			uint8_t IFF2;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 IFF;
-			UINT16 x;
+			uint16_t IFF;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} IFF;
 	union
 	{
 		struct
 		{
-			UINT8 R1;
-			UINT8 R2;
-			UINT16 x;
+			uint8_t R1;
+			uint8_t R2;
+			uint16_t x;
 		} b;
 		struct
 		{
-			UINT16 R;
-			UINT16 x;
+			uint16_t R;
+			uint16_t x;
 		} w;
-		UINT32 d;
+		uint32_t d;
 	} R;
 
-	UINT8 I;
-	UINT8 IM;
-	UINT8 IntVect;
-	UINT8 IntLine;
+	uint8_t I;
+	uint8_t IM;
+	uint8_t IntVect;
+	uint8_t IntLine;
 
-	UINT32 Status;
-	UINT32 BasePC;	// Pointer to x86 memory location where Z80 RAM starts.
-	UINT32 TmpSav0;
-	UINT32 TmpSav1;
+	uint32_t Status;
+	uint32_t BasePC;	// Pointer to x86 memory location where Z80 RAM starts.
+	uint32_t TmpSav0;
+	uint32_t TmpSav1;
 
-	UINT32 CycleCnt;
-	UINT32 CycleTD;
-	UINT32 CycleIO;
-	UINT32 CycleSup;
+	uint32_t CycleCnt;
+	uint32_t CycleTD;
+	uint32_t CycleIO;
+	uint32_t CycleSup;
 
 	Z80_RB *ReadB[0x100];
 	Z80_WB *WriteB[0x100];
-	UINT8 *Fetch[0x100];
+	uint8_t *Fetch[0x100];
 	Z80_RW *ReadW[0x100];
 	Z80_WW *WriteW[0x100];
 
 	Z80_RB *IN_C;
 	Z80_WB *OUT_C;
-	UINT32 RetIC;
-	UINT32 IntAckC;
+	uint32_t RetIC;
+	uint32_t IntAckC;
 };
 
 typedef struct _Z80_context Z80_CONTEXT;
@@ -318,21 +292,21 @@ extern Z80_CONTEXT M_Z80;
  */
 
 
-//UINT32 FASTCALL z80_Init(Z80_CONTEXT *z80);
-//UINT32 FASTCALL z80_Reset(Z80_CONTEXT *z80);
+//uint32_t FASTCALL z80_Init(Z80_CONTEXT *z80);
+//uint32_t FASTCALL z80_Reset(Z80_CONTEXT *z80);
 
-UINT32 z80_Add_ReadB(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, Z80_RB *Func);
-UINT32 z80_Add_ReadW(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, Z80_RW *Func);
-UINT32 z80_Add_WriteB(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, Z80_WB *Func);
-UINT32 z80_Add_WriteW(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, Z80_WW *Func);
-UINT32 z80_Add_Fetch(Z80_CONTEXT *z80, UINT32 low_adr, UINT32 high_adr, UINT8 *Region);
+uint32_t z80_Add_ReadB(Z80_CONTEXT *z80, uint32_t low_adr, uint32_t high_adr, Z80_RB *Func);
+uint32_t z80_Add_ReadW(Z80_CONTEXT *z80, uint32_t low_adr, uint32_t high_adr, Z80_RW *Func);
+uint32_t z80_Add_WriteB(Z80_CONTEXT *z80, uint32_t low_adr, uint32_t high_adr, Z80_WB *Func);
+uint32_t z80_Add_WriteW(Z80_CONTEXT *z80, uint32_t low_adr, uint32_t high_adr, Z80_WW *Func);
+uint32_t z80_Add_Fetch(Z80_CONTEXT *z80, uint32_t low_adr, uint32_t high_adr, uint8_t *Region);
 
-//UINT32 FASTCALL z80_Read_Odo(Z80_CONTEXT *z80);
+//uint32_t FASTCALL z80_Read_Odo(Z80_CONTEXT *z80);
 //void FASTCALL z80_Clear_Odo(Z80_CONTEXT *z80);
-//void FASTCALL z80_Set_Odo(Z80_CONTEXT *z80, UINT32 Odo);
-//void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, UINT32 cycles);
+//void FASTCALL z80_Set_Odo(Z80_CONTEXT *z80, uint32_t Odo);
+//void FASTCALL z80_Add_Cycles(Z80_CONTEXT *z80, uint32_t cycles);
 
-UINT32 FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
+uint32_t FASTCALL z80_Exec(Z80_CONTEXT *z80, int odo);
 
 
 /**
@@ -348,8 +322,8 @@ unsigned int mdZ80_get_PC(Z80_CONTEXT *z80);
 unsigned int mdZ80_get_AF(Z80_CONTEXT *z80);
 unsigned int mdZ80_get_AF2(Z80_CONTEXT *z80);
 void mdZ80_set_PC(Z80_CONTEXT *z80, unsigned int PC);
-void mdZ80_set_AF(Z80_CONTEXT *z80, UINT32 AF);
-void mdZ80_set_AF2(Z80_CONTEXT *z80, UINT32 AF2);
+void mdZ80_set_AF(Z80_CONTEXT *z80, uint32_t AF);
+void mdZ80_set_AF2(Z80_CONTEXT *z80, uint32_t AF2);
 
 unsigned int mdZ80_read_odo(Z80_CONTEXT *z80);
 static inline void mdZ80_clear_odo(Z80_CONTEXT *z80)
@@ -357,9 +331,9 @@ static inline void mdZ80_clear_odo(Z80_CONTEXT *z80)
 	z80->CycleCnt = 0;
 }
 void mdZ80_set_odo(Z80_CONTEXT *z80, unsigned int odo);
-void mdZ80_add_cycles(Z80_CONTEXT *z80, UINT32 cycles);
+void mdZ80_add_cycles(Z80_CONTEXT *z80, uint32_t cycles);
 
-//UINT32 FASTCALL mdZ80_Exec(Z80_CONTEXT *z80, int odo);
+//uint32_t FASTCALL mdZ80_Exec(Z80_CONTEXT *z80, int odo);
 
 void mdZ80_nmi(Z80_CONTEXT *z80);
 void mdZ80_interrupt(Z80_CONTEXT *z80, unsigned char vector);
@@ -371,12 +345,12 @@ void mdZ80_interrupt(Z80_CONTEXT *z80, unsigned char vector);
  * This requires the Read/Write function prototype to be changed to non-fastcall.
  */
 extern unsigned char mdZ80_def_mem[0x10000];
-unsigned char FASTCALL mdZ80_def_ReadB(UINT32 address);
-unsigned char FASTCALL mdZ80_def_In(UINT32 address);
-unsigned short FASTCALL mdZ80_def_ReadW(UINT32 address);
-void FASTCALL mdZ80_def_WriteB(UINT32 address, unsigned char data);
-void FASTCALL mdZ80_def_Out(UINT32 address, unsigned char data);
-void FASTCALL mdZ80_def_WriteW(UINT32 address, unsigned short data);
+unsigned char FASTCALL mdZ80_def_ReadB(uint32_t address);
+unsigned char FASTCALL mdZ80_def_In(uint32_t address);
+unsigned short FASTCALL mdZ80_def_ReadW(uint32_t address);
+void FASTCALL mdZ80_def_WriteB(uint32_t address, unsigned char data);
+void FASTCALL mdZ80_def_Out(uint32_t address, unsigned char data);
+void FASTCALL mdZ80_def_WriteW(uint32_t address, unsigned short data);
 
 
 #ifdef __cplusplus
