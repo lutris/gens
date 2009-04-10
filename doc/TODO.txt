@@ -65,7 +65,6 @@ High-Level TODO:
 - Check if mingw32 forces 8-byte alignment for doubles. (ym2612 struct)
 - J-Cart: http://spritesmind.net/_GenDev/forum/viewtopic.php?start=15&t=177
 - [Linux] Mono sound is broken.
-- [Win32] Mono sound works on Windows, but not in Wine.
 
 Low-Level TODO:
 - Fix Illegal Address bug. Gens doesn't crash, but Kega and the actual
