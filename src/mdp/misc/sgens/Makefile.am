@@ -26,7 +26,7 @@ noinst_HEADERS = \
 if GENS_UI_GTK
 mdp_misc_sgens_la_SOURCES	+= sgens_window_gtk2.c
 mdp_misc_sgens_la_CFLAGS	+= @GTK_CFLAGS@
-mdp_misc_sgens_la_LIBADD	+= @GTK_LIBS@
+mdp_misc_sgens_la_LIBADD	 = @GTK_LIBS@
 endif
 
 if GENS_UI_WIN32
