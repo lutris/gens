@@ -117,8 +117,8 @@ int main(int argc, char *argv[])
 			char *display = getenv("DISPLAY");
 			if (display)
 			{
-				gtk_init(NULL, NULL);
-				GensUI::msgBox(gensRootErr, GENS_APPNAME " - Permissions Error", GensUI::MSGBOX_ICON_ERROR);
+				if (gtk_init_check(NULL, NULL))
+					GensUI::msgBox(gensRootErr, GENS_APPNAME " - Permissions Error", GensUI::MSGBOX_ICON_ERROR);
 			}
 		#endif /* GENS_UI_GTK */
 		

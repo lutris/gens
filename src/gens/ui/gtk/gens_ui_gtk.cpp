@@ -25,14 +25,21 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-#include <unistd.h>
+// C includes.
+#include <stdlib.h>
 #include <string.h>
-#include <gtk/gtk.h>
-#include "gens/gens_window.h"
+#include <unistd.h>
 
-#include "ui/gens_ui.hpp"
+// GTK+ includes.
+#include <gtk/gtk.h>
 #include "gtk-misc.h"
 #include "gtk-compat.h"
+
+#include "gens/gens_window.h"
+#include "ui/gens_ui.hpp"
+
+// Message logging.
+#include "macros/log_msg.h"
 
 // Unused Parameter macro.
 #include "macros/unused.h"
@@ -70,7 +77,13 @@ void GensUI::init(int *argc, char **argv[])
 	add_pixmap_directory("images");
 	
 	// Initialize GTK+.
-	gtk_init(argc, argv);
+	if (!gtk_init_check(argc, argv))
+	{
+		// Could not initialize GTK+.
+		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
+			"Could not initialize GTK+.");
+		exit(EXIT_FAILURE);
+	}
 	
 	// Create the Gens window.
 	gens_window_create();
