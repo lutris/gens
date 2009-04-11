@@ -286,7 +286,11 @@ if test x$with_opengl = xyes; then
 		AC_MSG_WARN([OpenGL support is not currently available on Win32. Disabling.])
 	else
 		AC_TRY_COMPILE([
+			#ifndef __APPLE__
 			#include <GL/gl.h>
+			#else
+			#include <OpenGL/gl.h>
+			#endif
 		],[
 			GLint g;
 		],[

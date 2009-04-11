@@ -65,8 +65,12 @@
 
 
 // OpenGL includes
-#define GLX_GLXEXT_PROTOTYPES
+#ifndef __APPLE__
+
+// Linux/UNIX.
 #include <GL/gl.h>
+
+#define GLX_GLXEXT_PROTOTYPES
 #include <GL/glx.h>
 #include <GL/glext.h>
 
@@ -76,7 +80,7 @@
 
 #ifndef GLX_MESA_swap_control
 typedef GLint (*PFNGLXSWAPINTERVALMESAPROC)(unsigned interval);
-typedef GLint (*PFNGLXGETSWAPINTERVALMESAPROC)( void );
+typedef GLint (*PFNGLXGETSWAPINTERVALMESAPROC)(void);
 #endif
 
 #if !defined(GLX_OML_sync_control) && defined(_STDINT_H)
@@ -86,9 +90,21 @@ typedef Bool (*PFNGLXGETMSCRATEOMLPROC)(Display *dpy, GLXDrawable drawable, int3
 
 #ifndef GLX_MESA_swap_frame_usage
 #define GLX_MESA_swap_frame_usage 1
-typedef int (*PFNGLXGETFRAMEUSAGEMESAPROC)(Display *dpy, GLXDrawable drawable, float * usage);
+typedef int (*PFNGLXGETFRAMEUSAGEMESAPROC)(Display *dpy, GLXDrawable drawable, float *usage);
 #endif
 
+// OpenGL VSync stuff
+// Copied from Mesa's glxswapcontrol.c
+PFNGLXSWAPINTERVALMESAPROC set_swap_interval = NULL;
+PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval = NULL;
+
+#else /* __APPLE__ */
+
+// MacOS X.
+#include <OpenGL/gl.h>
+#include <OpenGL/OpenGL.h>
+
+#endif /* __APPLE __ */
 
 // Function prototypes.
 static int	vdraw_sdl_gl_init(void);
@@ -126,11 +142,6 @@ double m_HRender = 0.0, m_VRender = 0.0;
 
 // Stretch parameters
 double m_HStretch = 0.0, m_VStretch = 0.0;
-
-// OpenGL VSync stuff
-// Copied from Mesa's glxswapcontrol.c
-PFNGLXSWAPINTERVALMESAPROC set_swap_interval = NULL;
-PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval = NULL;
 
 
 // VDraw Backend struct.
@@ -188,7 +199,8 @@ static inline int vdraw_sdl_gl_calc_texture_size(int scale)
  */
 int vdraw_sdl_gl_init(void)
 {
-	// Get the VSync functions.
+#ifndef __APPLE__
+	// Linux/UNIX: Get the VSync functions.
 	// TODO: Copy functions to test for VSync from Mesa's glxswapcontrol.c
 	/*
 	has_OML_sync_control = is_extension_supported("GLX_OML_sync_control");
@@ -197,6 +209,7 @@ int vdraw_sdl_gl_init(void)
 	*/
 	set_swap_interval = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalSGI");
 	get_swap_interval = (PFNGLXGETSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXGetSwapIntervalSGI");
+#endif
 	
 	// OpenGL width/height.
 	// TODO: Move these values here or something.
@@ -733,7 +746,11 @@ static void vdraw_sdl_gl_update_vsync(const BOOL fromInitSDLGL)
 {
 	// Set the VSync value.
 	// TODO: Turning VSync off seems to require a refresh...
-	int vsync = (vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
+	
+	GLint vsync = (vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
+	
+#ifndef __APPLE__
+	// Linux/UNIX.
 	if (set_swap_interval != NULL)
 	{
 		if (vsync)
@@ -741,4 +758,15 @@ static void vdraw_sdl_gl_update_vsync(const BOOL fromInitSDLGL)
 		else if (!fromInitSDLGL)
 			vdraw_refresh_video();
 	}
+#else /* __APPLE__ */
+	// MacOS X.
+	if (vsync)
+		CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsync);
+	else
+	{
+		CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsync);
+		if (!fromInitSDLGL)
+			vdraw_refresh_video();
+	}
+#endif /* __APPLE __ */
 }
