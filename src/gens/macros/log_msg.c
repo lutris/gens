@@ -49,6 +49,14 @@ void log_msgbox(const char* msg, const char* title)
 	#if defined(GENS_UI_WIN32)
 		MessageBox(gens_window, msg, title, MB_ICONSTOP);
 	#elif defined(GENS_UI_GTK)
+		// Make sure GTK+ is initialized.
+		if (!gtk_init_check(NULL, NULL))
+		{
+			// Could not initialize GTK+. Print the message to the console.
+			return;
+		}
+		
+		// GTK+ initialized.
 		GtkWidget *msgbox = gtk_message_dialog_new(
 					GTK_WINDOW(gens_window),
 					GTK_DIALOG_MODAL,
