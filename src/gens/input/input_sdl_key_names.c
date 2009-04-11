@@ -24,7 +24,11 @@
 
 #include "gdk/gdkkeysyms.h"
 #include "gdk/gdkkeys.h"
+
+#include <gdkconfig.h>
+#ifdef GDK_WINDOWING_X11
 #include "X11/Xlib.h"
+#endif
 
 #include "input_sdl_key_names.h"
 #include "input_sdl_keys.h"
@@ -56,9 +60,15 @@ uint16_t input_sdl_gdk_to_gens_keyval(int gdk_key)
 	if (gdk_key & 0xFFFF0000)
 	{
 		// Extended X11 key. Not supported by SDL.
+#ifdef GDK_WINDOWING_X11
 		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
 			"Unhandled extended X11 key: 0x%08X (%s)",
 			gdk_key, XKeysymToString(gdk_key));
+#else
+		LOG_MSG(input, LOG_MSG_LEVEL_WARNING,
+			"Unhandled extended key: 0x%08X\n",
+			gdk_key);
+#endif
 		return 0;
 	}
 	
