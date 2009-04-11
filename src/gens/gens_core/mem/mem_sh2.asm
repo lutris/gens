@@ -25,10 +25,6 @@
 ; For some convenience, EBP register is never modified because assumed "alive"
 ; so we can access the current SH2 context by using EBP. 
 
-section .data align=64
-	
-	extern VDP_Current_Line
-	
 section .bss align=64
 	
 %macro SH2_CONTEXT 0

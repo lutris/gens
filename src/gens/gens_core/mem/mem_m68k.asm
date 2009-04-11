@@ -51,8 +51,6 @@ section .data align=64
 	extern _Controller_2_State
 	extern _Controller_2_COM
 	
-	extern VDP_Current_Line
-	
 	; Current Main 68000 Jump Table
 	
 	DECL M68K_Read_Byte_Table
