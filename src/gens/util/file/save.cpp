@@ -249,12 +249,10 @@ int Savestate::LoadState(const string& filename)
 			buf += G32X_LENGTH_EX;
 		}
 		
-		/*
-		// Commented out in Gens Rerecording...
+		// Make sure CRAM and VRAM are updated.
 		Flag_Clr_Scr = 1;
 		CRam_Flag = 1;
 		VRam_Flag = 1;
-		*/
 		
 		sprintf(Str_Tmp, "STATE %d LOADED", Current_State);
 		vdraw_write_text(Str_Tmp, 2000);
