@@ -161,7 +161,7 @@ _mdp_render_scanline_50_16_x86:
 /************************************************************************************
  * void mdp_render_scanline_50_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, *
  *                                    int destPitch, int srcPitch,                  *
- *                                    int width, int height);                       *
+ *                                    int width, int height, uint32_t vmodeFlags);  *
  ************************************************************************************/
 .globl _mdp_render_scanline_50_16_x86_mmx
 SYMTYPE(_mdp_render_scanline_50_16_x86_mmx,@function)
