@@ -35,9 +35,9 @@
 #include "mdp/mdp_error.h"
 
 // x86 asm versions.
-#if defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX)
+#if defined(GENS_X86_ASM)
 #include "mdp_render_interpolated_scanline_x86.h"
-#endif /* defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX) */
+#endif /* defined(GENS_X86_ASM) */
 
 // Mask constants.
 #define MASK_DIV2_15 		((uint16_t)(0x3DEF))
@@ -84,7 +84,7 @@ int MDP_FNCALL mdp_render_interpolated_scanline_end(void)
 }
 
 
-//#if !(defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX))
+//#if !defined(GENS_X86_ASM)
 /**
  * T_mdp_render_interpolated_scanline_cpp: Blits the image to the screen, 2x size, interpolation with scanlines.
  * @param destScreen Pointer to the destination screen buffer.
@@ -123,7 +123,7 @@ static inline void T_mdp_render_interpolated_scanline_cpp(pixel *destScreen, pix
 		}
 	}
 }
-//#endif /* !(defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX)) */
+//#endif /* !defined(GENS_X86_ASM) */
 
 
 int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_info)
@@ -133,7 +133,7 @@ int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_in
 	
 	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
 	{
-#if defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX)
+#if defined(GENS_X86_ASM)
 		if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
 		{
 			mdp_render_interpolated_scanline_16_x86_mmx(
@@ -152,19 +152,19 @@ int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_in
 				    render_info->width, render_info->height,
 				    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV2_16_ASM : MASK_DIV2_15_ASM));
 		}
-#else /* !(defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX)) */
+#else /* !defined(GENS_X86_ASM) */
 		T_mdp_render_interpolated_scanline_cpp(
 			    (uint16_t*)render_info->destScreen,
 			    (uint16_t*)render_info->mdScreen,
 				    render_info->destPitch, render_info->srcPitch,
 				    render_info->width, render_info->height,
 			    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV2_16 : MASK_DIV2_15));
-#endif /* defined(GENS_X86_ASM) && !defined(GENS_OS_MACOSX) */
+#endif /* defined(GENS_X86_ASM) */
 	}
 	else
 	{
 #if 0
-#ifdef GENS_X86_ASM
+#if defined(GENS_X86_ASM)
 		if (render_info->cpuFlags & CPUFLAG_MMX)
 		{
 			mdp_render_interpolated_scanline_32_x86_mmx(
@@ -181,7 +181,7 @@ int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_in
 				    render_info->destPitch, render_info->srcPitch,
 				    render_info->width, render_info->height);
 		}
-#else /* !GENS_X86_ASM */
+#else /* !defined(GENS_X86_ASM) */
 #endif
 #endif
 		T_mdp_render_interpolated_scanline_cpp(
@@ -190,7 +190,7 @@ int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_in
 			    render_info->destPitch, render_info->srcPitch,
 			    render_info->width, render_info->height,
 			    MASK_DIV2_32);
-//#endif /* GENS_X86_ASM */
+//#endif /* defined(GENS_X86_ASM) */
 	}
 	
 	return MDP_ERR_OK;
