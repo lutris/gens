@@ -426,7 +426,8 @@ static void pmgr_window_populate_plugin_list(void)
 			g_object_unref(pbufIcon);
 		}
 #else
-		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter, 0, pluginName, 1, plugin, -1);
+		gtk_list_store_set(GTK_LIST_STORE(lmPluginList[pmType]), &iter,
+				   0, pluginName.c_str(), 1, plugin, -1);
 #endif /* GENS_PNG */
 	}
 }
@@ -566,11 +567,11 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(GtkTreeView *tree_
 	}
 	
 	// Found a selected plugin.
-#ifdef GENS_PNG
 	mdp_t *plugin;
-	GdkPixbuf *pbufIcon;
 	
+#ifdef GENS_PNG
 	// Get the plugin icon and mdp_t*.
+	GdkPixbuf *pbufIcon;
 	gtk_tree_model_get(gtm, &iter, 1, &plugin, 2, &pbufIcon, -1);
 #else
 	// Get the mdp_t*.

@@ -250,7 +250,7 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 #ifdef GENS_PNG
 	lvCol.cx = 32;
 #else
-	lvcol.cx = 0;
+	lvCol.cx = 0;
 #endif
 	ListView_InsertColumn(lstPluginList, 0, &lvCol);
 	
