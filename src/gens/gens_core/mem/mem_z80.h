@@ -23,47 +23,49 @@
 #ifndef GENS_MEM_Z80_H
 #define GENS_MEM_Z80_H
 
+#include <stdint.h>
+
 #include "macros/fastcall.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern unsigned char Ram_Z80[8 * 1024];
+extern uint8_t Ram_Z80[8 * 1024];
 extern int Bank_Z80;
 
-unsigned char Z80_ReadB(unsigned int Adr);
-unsigned short Z80_ReadW(unsigned int Adr);
-void Z80_WriteB(unsigned int Adr, unsigned char Data);
-void Z80_WriteW(unsigned int Adr, unsigned short Data);
+uint8_t Z80_ReadB(uint32_t Adr);
+uint16_t Z80_ReadW(uint32_t Adr);
+void Z80_WriteB(uint32_t Adr, uint8_t Data);
+void Z80_WriteW(uint32_t Adr, uint16_t Data);
 
-unsigned char FASTCALL Z80_ReadB_Bad(unsigned int Adr);
-unsigned char FASTCALL Z80_ReadB_Ram(unsigned int Adr);
-unsigned char FASTCALL Z80_ReadB_Bank(unsigned int Adr);
-unsigned char FASTCALL Z80_ReadB_YM2612(unsigned int Adr);
-unsigned char FASTCALL Z80_ReadB_PSG(unsigned int Adr);
-unsigned char FASTCALL Z80_ReadB_68K_Ram(unsigned int Adr);
+uint8_t FASTCALL Z80_ReadB_Bad(uint32_t Adr);
+uint8_t FASTCALL Z80_ReadB_Ram(uint32_t Adr);
+uint8_t FASTCALL Z80_ReadB_Bank(uint32_t Adr);
+uint8_t FASTCALL Z80_ReadB_YM2612(uint32_t Adr);
+uint8_t FASTCALL Z80_ReadB_PSG(uint32_t Adr);
+uint8_t FASTCALL Z80_ReadB_68K_Ram(uint32_t Adr);
 
-unsigned short FASTCALL Z80_ReadW_Bad(unsigned int Adr);
-unsigned short FASTCALL Z80_ReadW_Ram(unsigned int Adr);
-unsigned short FASTCALL Z80_ReadW_Bank(unsigned int Adr);
-unsigned short FASTCALL Z80_ReadW_YM2612(unsigned int Adr);
-unsigned short FASTCALL Z80_ReadW_PSG(unsigned int Adr);
-unsigned short FASTCALL Z80_ReadW_68K_Ram(unsigned int Adr);
+uint16_t FASTCALL Z80_ReadW_Bad(uint32_t Adr);
+uint16_t FASTCALL Z80_ReadW_Ram(uint32_t Adr);
+uint16_t FASTCALL Z80_ReadW_Bank(uint32_t Adr);
+uint16_t FASTCALL Z80_ReadW_YM2612(uint32_t Adr);
+uint16_t FASTCALL Z80_ReadW_PSG(uint32_t Adr);
+uint16_t FASTCALL Z80_ReadW_68K_Ram(uint32_t Adr);
 
-void FASTCALL Z80_WriteB_Bad(unsigned int Adr, unsigned char Data);
-void FASTCALL Z80_WriteB_Ram(unsigned int Adr, unsigned char Data);
-void FASTCALL Z80_WriteB_Bank(unsigned int Adr, unsigned char Data);
-void FASTCALL Z80_WriteB_YM2612(unsigned int Adr, unsigned char Data);
-void FASTCALL Z80_WriteB_PSG(unsigned int Adr, unsigned char Data);
-void FASTCALL Z80_WriteB_68K_Ram(unsigned int Adr, unsigned char Data);
+void FASTCALL Z80_WriteB_Bad(uint32_t Adr, uint8_t Data);
+void FASTCALL Z80_WriteB_Ram(uint32_t Adr, uint8_t Data);
+void FASTCALL Z80_WriteB_Bank(uint32_t Adr, uint8_t Data);
+void FASTCALL Z80_WriteB_YM2612(uint32_t Adr, uint8_t Data);
+void FASTCALL Z80_WriteB_PSG(uint32_t Adr, uint8_t Data);
+void FASTCALL Z80_WriteB_68K_Ram(uint32_t Adr, uint8_t Data);
 
-void FASTCALL Z80_WriteW_Bad(unsigned int Adr, unsigned short Data);
-void FASTCALL Z80_WriteW_Bank(unsigned int Adr, unsigned short Data);
-void FASTCALL Z80_WriteW_Ram(unsigned int Adr, unsigned short Data);
-void FASTCALL Z80_WriteW_YM2612(unsigned int Adr, unsigned short Data);
-void FASTCALL Z80_WriteW_PSG(unsigned int Adr, unsigned short Data);
-void FASTCALL Z80_WriteW_68K_Ram(unsigned int Adr, unsigned short Data);
+void FASTCALL Z80_WriteW_Bad(uint32_t Adr, uint16_t Data);
+void FASTCALL Z80_WriteW_Bank(uint32_t Adr, uint16_t Data);
+void FASTCALL Z80_WriteW_Ram(uint32_t Adr, uint16_t Data);
+void FASTCALL Z80_WriteW_YM2612(uint32_t Adr, uint16_t Data);
+void FASTCALL Z80_WriteW_PSG(uint32_t Adr, uint16_t Data);
+void FASTCALL Z80_WriteW_68K_Ram(uint32_t Adr, uint16_t Data);
 
 #ifdef __cplusplus
 }
