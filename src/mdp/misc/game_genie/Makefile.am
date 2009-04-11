@@ -35,6 +35,7 @@ if GENS_UI_GTK
 mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.cpp
 mdp_misc_game_genie_la_CFLAGS	+= @GTK_CFLAGS@
 mdp_misc_game_genie_la_CXXFLAGS	+= @GTK_CFLAGS@
+mdp_misc_game_genie_la_LIBADD	+= @GTK_LIBS@
 endif
 
 if GENS_UI_WIN32

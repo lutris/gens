@@ -29,7 +29,9 @@ noinst_HEADERS = \
 		mdp_render_interpolated_scanline_x86.h
 
 if GENS_X86_ASM
+if !GENS_OS_MACOSX	# nasm doesn't support PIC on MacOS X.
 NASM += -I@srcdir@/../
 mdp_render_interpolated_scanline_la_SOURCES += \
 		mdp_render_interpolated_scanline_16_x86.asm
+endif #!GENS_OS_MACOSX
 endif # GENS_X86_ASM

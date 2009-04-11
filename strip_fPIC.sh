@@ -13,7 +13,7 @@ while [ $# -gt 0 ]; do
                 pic="yes"
             fi
             ;;
-	-d[pP][iI][cC])
+	-[dD][pP][iI][cC])
             # DPIC - ignore.
             # This variant is used by libtool on mingw.
             ;;
@@ -21,6 +21,9 @@ while [ $# -gt 0 ]; do
             command="$command $1 $2/"
             shift
             ;;
+	-fno-common)
+	    # MacOS X's compiler is stupid.
+	    ;;
         *)
             command="$command $1"
             ;;
