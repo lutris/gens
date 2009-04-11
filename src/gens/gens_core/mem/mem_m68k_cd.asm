@@ -251,6 +251,9 @@ section .text align=64
 	
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
+		%define	_Z80_ReadB_Table	Z80_ReadB_Table
+		%define	_Z80_WriteB_Table	Z80_WriteB_Table
+		
 		%define	_mdZ80_reset		mdZ80_reset
 		%define	_mdZ80_set_odo		mdZ80_set_odo
 		
@@ -262,8 +265,8 @@ section .text align=64
 		%define _YM2612_Reset		YM2612_Reset
 	%endif
 	
-	extern Z80_ReadB_Table
-	extern Z80_WriteB_Table
+	extern _Z80_ReadB_Table
+	extern _Z80_WriteB_Table
 	
 	extern M68K_Read_Byte_Bad
 	extern M68K_Read_Byte_VDP
@@ -459,7 +462,7 @@ section .text align=64
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
 		shr	ebx, 10
-		call	[Z80_ReadB_Table + ebx]
+		call	[_Z80_ReadB_Table + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -899,7 +902,7 @@ section .text align=64
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
 		shr	ebx, 10
-		call	[Z80_ReadB_Table + ebx]
+		call	[_Z80_ReadB_Table + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -1273,7 +1276,7 @@ section .text align=64
 		and	ecx, 0x7FFF
 		shr	ebx, 10
 		mov	edx, eax
-		call	[Z80_WriteB_Table + ebx]
+		call	[_Z80_WriteB_Table + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -1822,10 +1825,10 @@ section .text align=64
 		mov	ecx, ebx
 		and	ebx, 0x7000
 		and	ecx, 0x7FFF
-		mov	dh, al
+		mov	dh, al		; Potential bug: _Z80_WriteB_Table uses FASTCALL; this overwrites the "data" parameter.
 		shr	ebx, 10
-		mov	dl, al
-		call	[Z80_WriteB_Table + ebx]
+		mov	dl, al		; Potential bug: _Z80_WriteB_Table uses FASTCALL; this overwrites the "data" parameter.
+		call	[_Z80_WriteB_Table + ebx]
 		pop	edx
 		pop	ecx
 		pop	ebx

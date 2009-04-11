@@ -27,7 +27,6 @@ ASMFILES = \
 		gens_core/mem/mem_m68k_32x.o \
 		gens_core/mem/mem_s68k.o \
 		gens_core/mem/mem_sh2.o \
-		gens_core/mem/mem_z80.o \
 		gens_core/misc/misc.o \
 		gens_core/cpu/sh2/sh2a.o \
 		gens_core/cpu/sh2/sh2_io.o \
@@ -95,11 +94,11 @@ gens_SOURCES = \
 		gens_core/sound/ym2612.cpp \
 		gens_core/sound/pwm.c \
 		gens_core/mem/mem_m68k.asm \
+		gens_core/mem/mem_m68k_cd.asm \
+		gens_core/mem/mem_m68k_32x.asm \
 		gens_core/mem/mem_s68k.asm \
 		gens_core/mem/mem_sh2.asm \
-		gens_core/mem/mem_z80.asm \
-		gens_core/mem/mem_m68k_32x.inc \
-		gens_core/mem/mem_m68k_cd.inc \
+		gens_core/mem/mem_z80.c \
 		gens_core/misc/byteswap.c \
 		gens_core/misc/misc.asm \
 		gens_core/gfx/fastblur.cpp \
@@ -209,6 +208,8 @@ noinst_HEADERS = \
 		gens_core/sound/ym2612.hpp \
 		gens_core/sound/pwm.h \
 		gens_core/mem/mem_m68k.h \
+		gens_core/mem/mem_m68k_cd.h \
+		gens_core/mem/mem_m68k_32x.h \
 		gens_core/mem/mem_s68k.h \
 		gens_core/mem/mem_sh2.h \
 		gens_core/mem/mem_z80.h \

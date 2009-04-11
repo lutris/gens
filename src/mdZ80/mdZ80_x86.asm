@@ -105,7 +105,10 @@ section .bss align=64
 %define GENS_LOG   0
 
 %if (GENS_OPT == 1)
-	extern Ram_Z80			; Gens stuff
+	%ifdef __OBJ_ELF
+		%define _Ram_Z80 Ram_Z80
+	%endif
+	extern _Ram_Z80			; Gens stuff
 %endif
 
 %if (GENS_LOG == 1)
@@ -453,12 +456,12 @@ section .text align=64
 	
 	and	ecx, 0x1FFF
 %ifidn %1, A
-	mov	al, [Ram_Z80 + ecx]
+	mov	al, [_Ram_Z80 + ecx]
 %elif %0 > 0
-	mov	dl, [Ram_Z80 + ecx]
+	mov	dl, [_Ram_Z80 + ecx]
 	mov	z%1, dl
 %else
-	mov	dl, [Ram_Z80 + ecx]
+	mov	dl, [_Ram_Z80 + ecx]
 %endif
 	jmp	short %%End
 	
@@ -513,7 +516,7 @@ align 16
 %if %0 > 0
 	mov	dl, z%1
 %endif
-	mov	[Ram_Z80 + ecx], dl
+	mov	[_Ram_Z80 + ecx], dl
 	jmp	short %%End
 	
 align 16
@@ -555,12 +558,12 @@ align 16
 	
 	and	ecx, 0x1FFF
 %ifidn %1, AF
-	mov	ax, [Ram_Z80 + ecx]
+	mov	ax, [_Ram_Z80 + ecx]
 %elif %0 > 0
-	mov	dx, [Ram_Z80 + ecx]
+	mov	dx, [_Ram_Z80 + ecx]
 	mov	z%1, dx
 %else
-	mov	dx, [Ram_Z80 + ecx]
+	mov	dx, [_Ram_Z80 + ecx]
 %endif
 	jmp	short %%End
 	
@@ -616,7 +619,7 @@ align 16
 %if %0 > 0
 	mov	dx, z%1
 %endif
-	mov	[Ram_Z80 + ecx], dx
+	mov	[_Ram_Z80 + ecx], dx
 	jmp	short %%End
 	
 align 16
