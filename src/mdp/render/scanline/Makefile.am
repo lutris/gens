@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 lib_LTLIBRARIES = mdp_render_scanline.la
 
-INCLUDES  = -I@top_srcdir@/src/
+INCLUDES = -I@top_srcdir@/src/
 mdp_render_scanline_la_CCASFLAGS = $(INCLUDES)
 
 mdp_render_scanline_la_CFLAGS    = $(AM_CFLAGS)
