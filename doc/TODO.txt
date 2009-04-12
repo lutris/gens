@@ -74,7 +74,6 @@ Low-Level TODO:
 - [MDP] Overclocking! Add an option to overclock the emulated CPUs so Sonic 2 2P doesn't lag.
 - Proper support for 448 lines in interlaced mode. (Sonic 2 2P)
 - Z80 initialization bug: http://forums.sonicretro.org/index.php?showtopic=11192
-- Erase the entire MD palette when a new ROM is loaded.
 - [32X] PWM regressions from the C port, started in m5.1. PWM is broken in
   BC Racer, but BC Racer doesn't work anyway.
 
