@@ -153,6 +153,9 @@ static int cputype     = -1;
 static int quiet       = 0;
 static char *sourcename = NULL;
 
+/* Size of the M68K context. */
+static int context_size = 0;
+
 /* This counts the number of instruction handling routines.  There's not much
 ** point to it except for curiosity. */
 static int routine_counter = 0;
@@ -286,6 +289,10 @@ static void gen_variables(void) {
 	emit("%scontext:\n", sourcename);
 	emit("_%scontext:\n", sourcename);
 	emit("contextbegin:\n");
+	
+	// Initialize the context size.
+	context_size = 0;
+	
 	/*
 	** CONTEXTINFO_MEM16
 	** CONTEXTINFO_MEM16FC
@@ -308,11 +315,14 @@ static void gen_variables(void) {
 		emit("__u_readword           dd 0\n");
 		emit("__u_writebyte          dd 0\n");
 		emit("__u_writeword          dd 0\n");
+		context_size += (15*4);
+		
 		if(cputype == 68010) {
 			emit("__f_readbyte           dd 0\n");
 			emit("__f_readword           dd 0\n");
 			emit("__f_writebyte          dd 0\n");
 			emit("__f_writeword          dd 0\n");
+			context_size += (4*4);
 		}
 	/*
 	** CONTEXTINFO_MEM32
@@ -331,6 +341,7 @@ static void gen_variables(void) {
 		emit("__u_writebus           dd 0\n");
 		emit("__f_readbus            dd 0\n");
 		emit("__f_writebus           dd 0\n");
+		context_size += (11*4);
 	}
 	/*
 	** CONTEXTINFO_COMMON
@@ -352,12 +363,14 @@ static void gen_variables(void) {
 		/* Bit 4 of __interrupts = stopped state */
 		emit("__interrupts           db 0,0,0,0,0,0,0,0\n");
 		emit("__sr                   dw 0\n");
+		context_size += (20*4)+(8*1)+(1*2);
 	}
 	/*
 	** CONTEXTINFO_68000SPECIFIC
 	*/
 	if(cputype == 68000) {
 		emit("__contextfiller00      dw 0\n");
+		context_size += (1*2);
 	}
 	/*
 	** CONTEXTINFO_68010
@@ -369,6 +382,7 @@ static void gen_variables(void) {
 		emit("__dfc                  db 0\n");
 		emit("__vbr                  dd 0\n");
 		emit("__bkpthandler          dd 0\n");
+		context_size += (2*1)+(2*4);
 	}
 	/*
 	** CONTEXTINFO_68010SPECIFIC
@@ -378,6 +392,7 @@ static void gen_variables(void) {
 	if(cputype == 68010) {
 		emit("__loopmode             db 0\n");
 		emit("__contextfiller10      db 0,0,0\n");
+		context_size += (4*1);
 	}
 	/*
 	** CONTEXTINFO_68020
@@ -418,6 +433,7 @@ static void gen_variables(void) {
 		**    - If S=1, swap __xsp and __a7
 		*/
 		emit("__xsp                  dd 0\n");
+		context_size += (1*4);
 	}
 /*	align(4);*/
 	emit("__cycles_needed        dd 0\n");
@@ -425,6 +441,8 @@ static void gen_variables(void) {
 	emit("__fetch_region_start   dd 0\n");/* Fetch region cache */
 	emit("__fetch_region_end     dd 0\n");
 	emit("__xflag                db 0\n");
+	context_size += (4*4)+(1*1);
+	
 	/*
 	**  Format of __execinfo:
 	**  Bit 0:  s680x0exec currently running
@@ -447,10 +465,14 @@ static void gen_variables(void) {
 	emit("__io_fetchbase         dd 0\n");
 	emit("__io_fetchbased_pc     dd 0\n");
 	emit("__access_address       dd 0\n");
+	context_size += (3*1)+(4*4);
+	
 	emit("\n\n");
-	emit("; Dirty variable (Gens)\n\n");
+	emit("; Dirty variable (Gens)\n\n");	// Added by Stef for Gens.
 	emit("save_01				dd 0\n");
 	emit("save_02				dd 0\n");
+	context_size += (2*4);
+	
 	emit("contextend:\n");
 }
 
@@ -992,20 +1014,28 @@ emit("js near execquit\n");
 **  Exit:  Nothing
 */
 	begin_source_proc("GetContext");
-
+	
+	// Context size preprocessor macros.
+	char rep_csize[128], if_csize[128];
+	snprintf(rep_csize, sizeof(rep_csize), "%%%%rep(%d / 8)\n", context_size);
+	snprintf(if_csize,  sizeof(if_csize),  "%%%%if (%d %%%% 8)!=0\n", context_size);
+	
 	emit("push edx\n");
 	emit("push edi\n");
 	if(use_stack) emit("mov edi,[esp+12]\n");
 	else          emit("mov edi,eax\n");
 	emit("%%assign i 0\n");
-	emit("%%rep ((contextend-contextbegin) / 8)\n");
+	
+	//emit("%%rep ((contextend-contextbegin) / 8)\n");
+	emit(rep_csize);
 	emit("  mov eax,[contextbegin+i+0]\n");
 	emit("  mov edx,[contextbegin+i+4]\n");
 	emit("  mov [edi+i+0],eax\n");
 	emit("  mov [edi+i+4],edx\n");
 	emit("%%assign i i+8\n");
 	emit("%%endrep\n");
-	emit("%%if ((contextend-contextbegin) %% 8)!=0\n");
+	//emit("%%if ((contextend-contextbegin) %% 8)!=0\n");
+	emit(if_csize);
 	emit("  mov eax,[contextbegin+i+0]\n");
 	emit("  mov [edi+i+0],eax\n");
 	emit("%%endif\n");
@@ -1028,14 +1058,16 @@ emit("js near execquit\n");
 	if(use_stack) emit("mov esi,[esp+12]\n");
 	else          emit("mov esi,eax\n");
 	emit("%%assign i 0\n");
-	emit("%%rep ((contextend-contextbegin) / 8)\n");
+	//emit("%%rep ((contextend-contextbegin) / 8)\n");
+	emit(rep_csize);
 	emit("  mov eax,[esi+i+0]\n");
 	emit("  mov edx,[esi+i+4]\n");
 	emit("  mov [contextbegin+i+0],eax\n");
 	emit("  mov [contextbegin+i+4],edx\n");
 	emit("%%assign i i+8\n");
 	emit("%%endrep\n");
-	emit("%%if ((contextend-contextbegin) %% 8)!=0\n");
+	//emit("%%if ((contextend-contextbegin) %% 8)!=0\n");
+	emit(if_csize);
 	emit("  mov eax,[esi+i+0]\n");
 	emit("  mov [contextbegin+i+0],eax\n");
 	emit("%%endif\n");
