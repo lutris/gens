@@ -81,7 +81,7 @@ static GtkListStore	*lmPluginList[PMGR_MAX] = {NULL};
 static void	pmgr_window_create_plugin_list_notebook(GtkWidget *container);
 static void	pmgr_window_create_plugin_list_page(GtkWidget *container, const char *title, int id);
 static void	pmgr_window_create_plugin_info_frame(GtkWidget *container);
-static void	pmgr_window_populate_plugin_list(void);
+static void	pmgr_window_populate_plugin_lists(void);
 
 // Callbacks.
 static gboolean	pmgr_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -149,8 +149,8 @@ void pmgr_window_show()
 			      GTK_STOCK_CLOSE,
 			      GTK_RESPONSE_CLOSE);
 	
-	// Populate the plugin list.
-	pmgr_window_populate_plugin_list();
+	// Populate the plugin lists.
+	pmgr_window_populate_plugin_lists();
 	
 	// Set the window as transient to the main application window.
 	gtk_window_set_transient_for(GTK_WINDOW(pmgr_window), GTK_WINDOW(gens_window));
@@ -311,9 +311,9 @@ static void pmgr_window_create_plugin_info_frame(GtkWidget *container)
 
 
 /**
- * pmgr_window_populate_plugin_list(): Populate the plugin list.
+ * pmgr_window_populate_plugin_lists(): Populate the plugin lists.
  */
-static void pmgr_window_populate_plugin_list(void)
+static void pmgr_window_populate_plugin_lists(void)
 {
 	// Check if the list models are already created.
 	// If they are, clear them; otherwise, create them.
