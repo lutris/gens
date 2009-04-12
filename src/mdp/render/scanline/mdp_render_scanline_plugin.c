@@ -20,6 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdint.h>
 #include <string.h>
 
@@ -68,8 +72,13 @@ mdp_t mdp =
 	.pluginVersion = MDP_VERSION(1, 0, 0),
 	
 	// CPU flags.
+#ifdef GENS_X86_ASM
 	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
 	.cpuFlagsRequired = 0,
+#else
+	.cpuFlagsSupported = 0,
+	.cpuFlagsRequired = 0,
+#endif
 	
 	// UUID: 76c92cdb-54d9-48f3-99b6-fe94ad5b6410
 	.uuid = {0x76, 0xC9, 0x2C, 0xDB,
