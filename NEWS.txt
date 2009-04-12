@@ -101,6 +101,10 @@ Release 7 fixes the following bugs:
 
   - DMA operations now wrap on a 128k boundary. This bug was reported by TmEE.
 
+- ROM History now caches the ROM type (MD/MCD/32X), so it doesn't have to check
+  the ROM type every time the ROM History menu is rebuilt. This improves
+  performance significantly if some ROM images were loaded from network shares.
+
 - ROM History now keeps track of compressed files inside of multi-file
   archives. For example, if you have a 7z archive containing several different
   versions of a game, selecting version 1 will result in a ROM History entry
@@ -121,5 +125,14 @@ Release 7 has the following low-level code changes:
   Currently, the only functions that have been ported to C are the helper
   functions. The actual emulation code is currently being worked on in the
   mdZ80 branch in the Gens/GS git repository.
+
+- Many assembly-language files have been converted from Intel-style (nasm)
+  assembly to AT&T-style (GNU `as`) assembly.
+
+- Many assembler functions have been ported to C/C++, including the
+  UPDATE_PALETTE macros and Reset_VDP() (now VDP_Reset()).
+
+- yasm is now supported as an alternative to nasm. To use yasm, add the option
+  --with-nasm=yasm when using the ./configure script.
 
 For information about previous releases, see the ChangeLog.txt file.
