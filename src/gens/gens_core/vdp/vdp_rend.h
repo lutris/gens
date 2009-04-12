@@ -34,6 +34,7 @@ extern struct
 	unsigned int Num_Tile;
 	int dirt;
 } Sprite_Struct[256];
+extern int Sprite_Visible[256];
 
 extern int Sprite_Over;
 
@@ -65,8 +66,8 @@ extern unsigned int VDP_Layers;
 	 VDP_LAYER_SPRITE_HIGH)
 
 // C++ functions in vdp_rend.cpp.
-void vdp_update_palette(void);
-void vdp_update_palette_hs(void);
+void VDP_Update_Palette(void);
+void VDP_Update_Palette_HS(void);
 
 #ifdef __cplusplus
 }

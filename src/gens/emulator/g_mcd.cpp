@@ -176,7 +176,7 @@ int Init_SegaCD(const char* iso_name)
 	M68K_Reset(2);
 	S68K_Reset();
 	Z80_Reset();
-	Reset_VDP();
+	VDP_Reset();
 	LC89510_Reset();
 	Init_RS_GFX();
 	
@@ -300,7 +300,7 @@ void Reset_SegaCD(void)
 	S68K_Reset();
 	Z80_Reset();
 	LC89510_Reset();
-	Reset_VDP();
+	VDP_Reset();
 	Init_RS_GFX();
 	PCM_Reset();
 	YM2612_Reset();

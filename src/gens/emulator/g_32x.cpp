@@ -191,7 +191,7 @@ int Init_32X(ROM_t* MD_ROM)
 	SSH2_Reset();
 	M68K_Reset(1);
 	Z80_Reset();
-	Reset_VDP();
+	VDP_Reset();
 	_32X_VDP_Reset();
 	_32X_Set_FB();
 	PWM_Init();
@@ -272,7 +272,7 @@ void Reset_32X(void)
 	SSH2_Reset();
 	M68K_Reset(1);
 	Z80_Reset();
-	Reset_VDP();
+	VDP_Reset();
 	_32X_VDP_Reset();
 	_32X_Set_FB();
 	YM2612_Reset();

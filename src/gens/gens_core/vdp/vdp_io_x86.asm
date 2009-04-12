@@ -378,7 +378,6 @@ section .text align=64
 	
 	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
-		%define	_Reset_VDP		Reset_VDP
 		%define	_Update_DMA		Update_DMA
 		%define	_Read_VDP_Data		Read_VDP_Data
 		%define	_Read_VDP_Status	Read_VDP_Status
@@ -523,181 +522,6 @@ section .text align=64
 ;***********************************************
 	
 	align 16
-			
-	;void Reset_VDP(void)
-	global _Reset_VDP
-	_Reset_VDP:
-		
-		push	ebx
-		push	ecx
-		push	edx
-		
-		xor	eax, eax
-		
-		mov	ebx, _MD_Screen
-		mov	ecx, (336 * 240 / 2)
-	.loop_MD_Screen:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_MD_Screen
-		
-		mov	ebx, _MD_Screen32
-		mov	ecx, (336 * 240 / 1)
-	.loop_MD_Screen32:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_MD_Screen32
-		
-		mov	ebx, _VRam
-		mov	ecx, (1024 * 16)
-	.loop_VRam:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_VRam
-		
-		mov	ebx, _CRam
-		mov	ecx, 40
-	.loop_CRam:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_CRam
-		
-		mov	ebx, _VSRam
-		mov	ecx, 20
-	.loop_VSRam:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_VSRam
-		
-		; Check if the palette is locked.
-		test	dword [_VDP_Layers], VDP_LAYER_PALETTE_LOCK
-		jnz	.palette_Locked
-		
-		mov	ebx, _MD_Palette
-		mov	ecx, (100 / 2)
-	.loop_Palette:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	 .loop_Palette
-		
-		mov	ebx, _MD_Palette32
-		mov	ecx, 0x100
-	.loop_Palette32:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_Palette32
-		
-	.palette_Locked:
-		mov	ebx, _Sprite_Struct
-		mov	ecx, (100 * 8)
-	.loop_Sprite_Struct:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_Sprite_Struct
-		
-		mov	ebx, _Sprite_Visible
-		mov	ecx, 100
-	.loop_Sprite_Visible:
-		mov	[ebx], eax
-		add	ebx, 4
-		dec	ecx
-		jnz	.loop_Sprite_Visible
-		
-		push	eax
-		push	dword 0
-		mov	ecx, 23
-		
-	.loop_Reg:
-		call	_Set_VDP_Reg
-		inc	dword [esp]
-		dec	ecx
-		jnz	short .loop_Reg
-		
-		add	esp, 8
-		
-		;mov	dword [ebx + 4 * 00], 0x00
-		;mov	dword [ebx + 4 * 01], 0x00
-		;mov	dword [ebx + 4 * 02], 0x00
-		;mov	dword [ebx + 4 * 03], 0x00
-		;mov	dword [ebx + 4 * 04], 0x00
-		;mov	dword [ebx + 4 * 05], 0x00
-		;mov	dword [ebx + 4 * 06], 0x00
-		;mov	dword [ebx + 4 * 07], 0x00
-		;mov	dword [ebx + 4 * 08], 0x00
-		;mov	dword [ebx + 4 * 09], 0x00
-		;mov	dword [ebx + 4 * 10], 0xFF
-		;mov	dword [ebx + 4 * 11], 0x00
-		;mov	dword [ebx + 4 * 12], 0x81
-		;mov	dword [ebx + 4 * 13], 0x00
-		;mov	dword [ebx + 4 * 14], 0x00
-		;mov	dword [ebx + 4 * 15], 0x02
-		;mov	dword [ebx + 4 * 16], 0x00
-		;mov	dword [ebx + 4 * 17], 0x00
-		;mov	dword [ebx + 4 * 18], 0x00
-		;mov	dword [ebx + 4 * 19], 0x00
-		;mov	dword [ebx + 4 * 20], 0x00
-		;mov	 dword [ebx + 4 * 21], 0x00
-		;mov	dword [ebx + 4 * 22], 0x00
-		;mov	dword [ebx + 4 * 23], 0x00
-		
-		mov	dword [ebx + 4 * 24], 0x00
-		mov	dword [ebx + 4 * 25], 0x00
-		mov	dword [ebx + 4 * 26], 0x00
-		
-		mov	dword [_VDP_Status], 0x0200
-		mov	dword [_VDP_Int], 0
-		mov	dword [_DMAT_Tmp], 0
-		mov	dword [_DMAT_Length], 0
-		mov	dword [_DMAT_Type], 0
-		mov	dword [_Ctrl.Flag], 0
-		mov	dword [_Ctrl.Data], 0
-		mov	dword [_Ctrl.Write], 0
-		mov	dword [_Ctrl.Access], 0
-		mov	dword [_Ctrl.Address], 0
-		mov	dword [_Ctrl.DMA_Mode], 0
-		mov	dword [_Ctrl.DMA], 0
-		mov	dword [_CRam_Flag], 1
-		mov	dword [_VRam_Flag], 1
-		
-		xor	ebx, ebx
-		
-	.Loop_HC:
-		mov	ecx, 170
-		mov	eax, ebx
-		mul	ecx
-		xor	edx, edx
-		mov	ecx, 488
-		div	ecx
-		sub	eax, 0x18
-		mov	[_H_Counter_Table + ebx * 2 + 0], al
-		
-		mov	ecx, 205
-		mov	eax, ebx
-		mul	ecx
-		xor	edx, edx
-		mov	ecx, 488
-		div	ecx
-		sub	eax, 0x1C
-		mov	[_H_Counter_Table + ebx * 2 + 1], al
-		
-		inc	ebx
-		cmp	ebx, 512
-		jb	short .Loop_HC
-		
-		mov	dword [_VSRam_Over + 28], 0
-		
-		pop	edx
-		pop	ecx
-		pop	ebx
-		ret
 	
 	; Generic error handler.
 	error:
@@ -1475,14 +1299,14 @@ section .text align=64
 	align 16
 	
 	Table_Set_Reg:
-		dd	Set_Regs.Set1, Set_Regs.Set2, Set_Regs.ScrA, Set_Regs.Win
-		dd	Set_Regs.ScrB, Set_Regs.Spr, Set_Regs, Set_Regs.BGCol
-		dd	Set_Regs, Set_Regs, Set_Regs.HInt, Set_Regs.Set3
-		dd	Set_Regs.Set4, Set_Regs.HScr, Set_Regs, Set_Regs
-		dd	Set_Regs.ScrSize, Set_Regs.WinH, Set_Regs.WinV, Set_Regs.DMALL
-		dd	Set_Regs.DMALH, Set_Regs.DMAAL, Set_Regs.DMAAM, Set_Regs.DMAAH
-		dd	Set_Regs.Wrong, Set_Regs.Wrong, Set_Regs.Wrong, Set_Regs.Wrong
-		dd	Set_Regs.Wrong, Set_Regs.Wrong, Set_Regs.Wrong, Set_Regs.Wrong
+		dd	Set_Regs.Set1,	Set_Regs.Set2,	Set_Regs.ScrA,	Set_Regs.Win
+		dd	Set_Regs.ScrB,	Set_Regs.Spr,	Set_Regs,	Set_Regs.BGCol
+		dd	Set_Regs,	Set_Regs,	Set_Regs.HInt,	Set_Regs.Set3
+		dd	Set_Regs.Set4,	Set_Regs.HScr,	Set_Regs,	Set_Regs
+		dd	Set_Regs.ScrSize, Set_Regs.WinH, Set_Regs.WinV,	Set_Regs.DMALL
+		dd	Set_Regs.DMALH,	Set_Regs.DMAAL,	Set_Regs.DMAAM,	Set_Regs.DMAAH
+		dd	Set_Regs.Wrong,	Set_Regs.Wrong,	Set_Regs.Wrong,	Set_Regs.Wrong
+		dd	Set_Regs.Wrong,	Set_Regs.Wrong,	Set_Regs.Wrong,	Set_Regs.Wrong
 		
 	align 16
 	

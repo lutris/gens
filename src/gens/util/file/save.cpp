@@ -699,7 +699,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		//ImportDataAuto(VRam, data, offset, 65536);
 		memcpy(&CRam, &md_save_v6.cram, 512);
 		//ImportDataAuto(VSRam, data, offset, 64);
-		memcpy(&H_Counter_Table, &md_save_v6.h_counter_table, 512 * 2);
+		memcpy(&H_Counter_Table, &md_save_v6.h_counter_table, sizeof(H_Counter_Table));
 		//ImportDataAuto(Spr_Link, data, offset, 4*256);
 		//extern int DMAT_Tmp, VSRam_Over;
 		//ImportDataAuto(&DMAT_Tmp, data, offset, 4);
@@ -879,7 +879,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		Gen_Version		= le32_to_cpu(md_save_v7.gen_version);
 		
 		// TODO: Is this supposed to be 16-bit bytewapped?
-		memcpy(&H_Counter_Table, &md_save_v7.h_counter_table, 512 * 2);
+		memcpy(&H_Counter_Table, &md_save_v7.h_counter_table, sizeof(H_Counter_Table));
 		
 		// VDP registers.
 		uint32_t *reg = (uint32_t*)&VDP_Reg;

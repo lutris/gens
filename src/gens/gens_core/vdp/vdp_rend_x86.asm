@@ -297,12 +297,12 @@ section .text align=64
 		%define	_Render_Line		Render_Line
 		%define	_Render_Line_32X	Render_Line_32X
 		
-		%define	_vdp_update_palette	vdp_update_palette
-		%define	_vdp_update_palette_hs	vdp_update_palette_hs
+		%define	_VDP_Update_Palette	VDP_Update_Palette
+		%define	_VDP_Update_Palette_HS	VDP_Update_Palette_HS
 	%endif
 	
-	extern _vdp_update_palette
-	extern _vdp_update_palette_hs
+	extern _VDP_Update_Palette
+	extern _VDP_Update_Palette_HS
 	
 ;****************************************
 
@@ -1959,13 +1959,13 @@ section .text align=64
 		test	byte [_VDP_Reg + 12 * 4], 8
 		jnz	short .Palette_HS
 		
-		call	_vdp_update_palette
+		call	_VDP_Update_Palette
 		jmp	short .Palette_OK
 	
 	align 16
 		
 	.Palette_HS:
-		call	_vdp_update_palette_hs
+		call	_VDP_Update_Palette_HS
 
 	align 16
 	
@@ -2123,7 +2123,7 @@ section .text align=64
 			RENDER_LINE 0, 0
 			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	near .VDP_OK
-			call	_vdp_update_palette
+			call	_VDP_Update_Palette
 			jmp	near .VDP_OK
 	
 	align 16
@@ -2132,7 +2132,7 @@ section .text align=64
 			RENDER_LINE 0, 1
 			test	byte [_CRam_Flag], 1		; test if palette was modified
 			jz	short .VDP_OK
-			call	_vdp_update_palette_hs
+			call	_VDP_Update_Palette_HS
 	
 	align 16
 	

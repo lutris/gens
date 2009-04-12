@@ -31,14 +31,14 @@
 
 
 /**
- * T_vdp_update_palette(): VDP palette update function.
+ * T_VDP_Update_Palette(): VDP palette update function.
  * @param hs If true, updates highlight/shadow.
  * @param mask Color mask.
  * @param MD_palette MD color palette.
  * @param palette Full color palette.
  */
 template<bool hs, typename pixel>
-static inline void T_vdp_update_palette(pixel mask, pixel *MD_palette, const pixel *palette)
+		static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pixel *palette)
 {
 	if (VDP_Layers & VDP_LAYER_PALETTE_LOCK)
 		return;
@@ -112,21 +112,21 @@ static inline void T_vdp_update_palette(pixel mask, pixel *MD_palette, const pix
 
 
 /**
- * vdp_update_palette(): Update the palette.
+ * VDP_Update_Palette(): Update the palette.
  */
-void vdp_update_palette(void)
+void VDP_Update_Palette(void)
 {
 	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
-	T_vdp_update_palette<false>(mask16, MD_Palette, Palette);
-	T_vdp_update_palette<false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	T_VDP_Update_Palette<false>(mask16, MD_Palette, Palette);
+	T_VDP_Update_Palette<false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
 }
 
 /**
- * vdp_update_palette(): Update the palette, including highlight and shadow.
+ * VDP_Update_Palette_HS(): Update the palette, including highlight and shadow.
  */
-void vdp_update_palette_hs(void)
+void VDP_Update_Palette_HS(void)
 {
 	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
-	T_vdp_update_palette<true>(mask16, MD_Palette, Palette);
-	T_vdp_update_palette<true>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	T_VDP_Update_Palette<true>(mask16, MD_Palette, Palette);
+	T_VDP_Update_Palette<true>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
 }

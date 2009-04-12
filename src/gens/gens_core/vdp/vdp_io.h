@@ -38,8 +38,9 @@ struct Reg_VDP_Type
 extern unsigned char VRam[64 * 1024];
 extern unsigned char CRam[256];
 extern unsigned char VSRam[256];
-extern unsigned char H_Counter_Table[512 * 2];
-extern unsigned int Spr_Link[256];
+extern unsigned int  VSRam_Over[8];
+extern unsigned char H_Counter_Table[512][2];
+extern unsigned int  Spr_Link[256];
 extern int Genesis_Started;
 extern int SegaCD_Started;
 extern int _32X_Started;
@@ -70,7 +71,7 @@ extern struct
 // Default is 0. (hardware-accurate)
 extern int Zero_Length_DMA;
 
-void Reset_VDP(void);
+void VDP_Reset(void);
 unsigned int Update_DMA(void);
 unsigned short Read_VDP_Data(void);
 unsigned short Read_VDP_Status(void);

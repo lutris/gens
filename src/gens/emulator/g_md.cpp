@@ -170,7 +170,7 @@ void Init_Genesis_Bios(void)
 	// Reset the CPUs.
 	M68K_Reset(0);
 	Z80_Reset();
-	Reset_VDP();
+	VDP_Reset();
 }
 
 
@@ -305,7 +305,7 @@ int Init_Genesis(ROM_t* MD_ROM)
 	// Reset all CPUs and other components.
 	M68K_Reset(0);
 	Z80_Reset();
-	Reset_VDP();
+	VDP_Reset();
 	
 	// Initialize the controller state.
 	Init_Controllers();
@@ -372,7 +372,7 @@ void Reset_Genesis(void)
 	// Reset all CPUs and other components.
 	M68K_Reset(0);
 	Z80_Reset();
-	Reset_VDP();
+	VDP_Reset();
 	YM2612_Reset();
 	
 	// Initialize the controller state.

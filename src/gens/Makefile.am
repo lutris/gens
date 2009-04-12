@@ -31,7 +31,7 @@ ASMFILES = \
 		gens_core/cpu/sh2/sh2a.o \
 		gens_core/cpu/sh2/sh2_io.o \
 		gens_core/vdp/vdp_32x_x86.o \
-		gens_core/vdp/vdp_io.o \
+		gens_core/vdp/vdp_io_x86.o \
 		gens_core/vdp/vdp_rend_x86.o
 
 NASM_INCLUDES = \
@@ -107,7 +107,8 @@ gens_SOURCES = \
 		gens_core/gfx/gfx_cd.asm \
 		gens_core/io/io.c \
 		gens_core/io/io_teamplayer.c \
-		gens_core/vdp/vdp_io.asm \
+		gens_core/vdp/vdp_io_x86.asm \
+		gens_core/vdp/vdp_io.c \
 		gens_core/vdp/vdp_rend_x86.asm \
 		gens_core/vdp/vdp_rend.cpp \
 		gens_core/vdp/vdp_32x_x86.asm \

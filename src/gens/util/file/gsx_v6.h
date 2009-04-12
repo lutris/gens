@@ -170,7 +170,7 @@ typedef struct PACKED _gsx_struct_md_v6_t
 	uint32_t	DUPE2_vdp_reg_dma_length;
 	
 	uint8_t		cram[512];
-	uint8_t		h_counter_table[512 * 2];
+	uint8_t		h_counter_table[512][2];
 	
 	uint32_t	vdp_reg_dma_length_l;
 	uint32_t	vdp_reg_dma_length_h;

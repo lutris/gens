@@ -391,7 +391,7 @@ typedef struct PACKED _gsx_struct_md_v7_t
 	uint32_t gen_version;
 	
 	// H Counter Table.
-	uint8_t  h_counter_table[512 * 2];
+	uint8_t  h_counter_table[512][2];
 	
 	// VDP registers.
 	uint32_t vdp_reg[26];
