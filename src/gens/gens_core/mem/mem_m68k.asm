@@ -185,9 +185,6 @@ section .rodata align=64
 	
 section .bss align=64
 	
-	extern Ram_Z80
-	extern Bank_Z80
-	
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_M_Z80	M_Z80
