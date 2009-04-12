@@ -280,8 +280,7 @@ noinst_HEADERS = \
 		plugins/mdp_host_gens_config.hpp \
 		plugins/mdp_host_gens_dir.hpp \
 		plugins/eventmgr.hpp \
-		plugins/mdp_incompat.hpp \
-		plugins/gens_ld.h
+		plugins/mdp_incompat.hpp
 
 if GENS_DEBUGGER
 noinst_HEADERS += \
