@@ -9,17 +9,38 @@ TODO for Gens/GS r7:
 - Re-add v5 32X savestate load support.
 - [GTK+] Update all windows to support gtk_dialog_set_alternative_button_order().
   "gtk-alternative-button-order=1" in ~/.gtkrc-2.0-kde4
+- cc_window.c: Add checkboxes to the "Input Devices" listbox for filtering.
+- MacOS X: Test VSync.
+- Figure out why YM2612 GSX v7 is messed up. (SR is 28784 in Sonic 2 savestate)
 
-MDP TODO for Gens/GS r7:
-- Add "Exclusive Mode" so a plugin can gain exclusive control.
-  - Disables reset, close ROM, etc.
+Other TODO for Gens/GS r7:
+- [GTK+] Consider setting the event box's background color to match the border color.
+- [Win32] Disable the "Apply" button until a setting is changed.
+- [GTK+] Show directory name in the directory select box.
+- [Win32] Show directory name in the directory select box.
+- Investigate Gens Rerecording commits r250, r252.
+- [Win32] Add tabs to the "Plugin Manager" window.
 
 Stuff done in r7:
 - 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
   (commit 4bd10d59fd6b043258027c2d9032c1d5a47b6399)
 
+BEFORE RELEASE of Gens/GS r7:
+- Update hard-coded plugin paths in pluginmgr.cpp.
+
 MDP TODO for Gens/GS r7+
+- Add "Exclusive Mode" so a plugin can gain exclusive control.
+  - Disables reset, close ROM, etc.
 - Game Genie: Add support for S68K, Z80, MSH2, and SSH2.
+
+Gens/GS r8 TODO:
+- libcdio
+- mdZ80 C port
+- ZOMG
+- Reimplement the language system.
+- Figure out how to do .section .rodata in a way that works on all platforms.
+  - .section .data / .section .text works on Win32 and Linux, but not MacOS X.
+- Fix the interpolated_scanline 16-bit color asm (non-mmx) renderer.
 
 High-Level TODO:
 - Move most global variables to global Settings struct
@@ -29,7 +50,6 @@ High-Level TODO:
 - Add more compression format support
 - Improve the Zip File Selection Dialog
 - SSG-EG: http://www.spritesmind.net/_GenDev/forum/viewtopic.php?p=5716#5716
-- Don't create a main window for MacOS. Instead, create an SDL window only.
 - (possibly?) Use Carbon/Cocoa for menus on MacOS.
 - Write a utility to convert PNG to a static const unsigned char[].
   - Tentative name: "C Binary Object Builder" (CBOB)
