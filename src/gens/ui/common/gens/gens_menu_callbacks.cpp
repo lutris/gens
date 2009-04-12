@@ -43,7 +43,7 @@
 #endif /* GENS_OPENGL */
 
 #ifdef GENS_CDROM
-#include "select_cdrom/select_cdrom_window_misc.hpp"
+#include "select_cdrom/selcd_window.hpp"
 #endif /* GENS_CDROM */
 
 #include "emulator/options.hpp"
@@ -739,7 +739,7 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 		
 #ifdef GENS_CDROM
 		case IDM_OPTIONS_CURRENT_CD_DRIVE:
-			Open_Select_CDROM();
+			selcd_window_show();
 			break;
 #endif /* GENS_CDROM */
 		

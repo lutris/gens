@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (GTK+) Select CD-ROM Drive Window - Miscellaneous Functions.      *
+ * Gens: (GTK+) Select CD-ROM Drive Window.                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,20 +20,23 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_GTK_SELECT_CDROM_WINDOW_MISC_HPP
-#define GENS_GTK_SELECT_CDROM_WINDOW_MISC_HPP
+#ifndef GENS_UI_GTK_SELCD_WINDOW_HPP
+#define GENS_UI_GTK_SELCD_WINDOW_HPP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// GTK+ includes.
 #include <gtk/gtk.h>
 
-void Open_Select_CDROM(void);
-int SelCD_Save(void);
+extern GtkWidget *selcd_window;
+
+void selcd_window_show(void);
+void selcd_window_close(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_GTK_SELECT_CDROM_WINDOW_MISC_HPP */
+#endif /* GENS_UI_GTK_SELCD_WINDOW_HPP */
