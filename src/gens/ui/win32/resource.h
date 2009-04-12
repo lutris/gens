@@ -51,7 +51,7 @@
 
 // Plugin Manager Window
 #define	IDD_PMGR_WINDOW			0x6000
-#define	IDC_PMGR_WINDOW_LSTPLUGINLIST	0x6001
+#define	IDC_PMGR_WINDOW_LSTPLUGINLIST	0x6100
 
 // Manifest
 #define APP_MANIFEST		1

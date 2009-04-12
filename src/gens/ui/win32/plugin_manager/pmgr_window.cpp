@@ -85,7 +85,6 @@ static WNDCLASS pmgr_wndclass;
 static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 // Widgets.
-static HWND	lstPluginList;
 static HWND	lblPluginMainInfo;
 static HWND	lblPluginSecInfo;
 static HWND	lblPluginDesc;
@@ -100,14 +99,18 @@ typedef enum _pmgr_type_t
 	PMGR_MAX
 } pmgr_type_t;
 
+static HWND	tabPluginList;
+static HWND	lstPluginList[PMGR_MAX];
+
 // Widget creation functions.
 static void	pmgr_window_create_child_windows(HWND hWnd);
-static void	pmgr_window_create_plugin_list_frame(HWND container);
+static void	pmgr_window_create_plugin_list_tab_control(HWND container);
+static void	pmgr_window_create_plugin_list_tab(HWND container, const char *title, int id);
 static void	pmgr_window_create_plugin_info_frame(HWND container);
-static void	pmgr_window_populate_plugin_list(void);
+static void	pmgr_window_populate_plugin_lists(void);
 
 // Callbacks.
-static void	pmgr_window_callback_lstPluginList_cursor_changed(void);
+static void	pmgr_window_callback_lstPluginList_cursor_changed(int id);
 
 // Plugin icon functions and variables.
 #ifdef GENS_PNG
@@ -176,8 +179,8 @@ void pmgr_window_show(void)
  */
 static void pmgr_window_create_child_windows(HWND hWnd)
 {
-	// Create the plugin list frame.
-	pmgr_window_create_plugin_list_frame(hWnd);
+	// Create the plugin list tab control.
+	pmgr_window_create_plugin_list_tab_control(hWnd);
 	
 	// Create the plugin information frame.
 	pmgr_window_create_plugin_info_frame(hWnd);
@@ -190,30 +193,44 @@ static void pmgr_window_create_child_windows(HWND hWnd)
 				  hWnd, (HMENU)IDOK, ghInstance, NULL);
 	SetWindowFont(btnOK, fntMain, TRUE);
 	
-	// Populate the plugin list.
-	pmgr_window_populate_plugin_list();
+	// Populate the plugin lists.
+	pmgr_window_populate_plugin_lists();
 	
 	// Initialize the plugin description frame.
-	pmgr_window_callback_lstPluginList_cursor_changed();
+	pmgr_window_callback_lstPluginList_cursor_changed(PMGR_INTERNAL);
 }
 
 
 /**
- * pmgr_window_create_plugin_list_frame(): Create the plugin list frame.
- * @param container Container for the frame.
+ * pmgr_window_create_plugin_list_tabs(): Create the plugin list tab control.
+ * @param container Container for the tabs.
  */
-static void pmgr_window_create_plugin_list_frame(HWND container)
+static void pmgr_window_create_plugin_list_tab_control(HWND container)
 {
-	// Create the plugin list frame.
-	HWND fraPluginList = CreateWindow(WC_BUTTON, TEXT("Internal Plugins"),
-					  WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-					  8, 8,
-					  PMGR_FRAME_PLUGIN_LIST_WIDTH,
-					  PMGR_FRAME_PLUGIN_LIST_HEIGHT,
-					  container, NULL, ghInstance, NULL);
-	SetWindowFont(fraPluginList, fntMain, true);
+	// Create the plugin list tab control.
+	tabPluginList = CreateWindow(WC_TABCONTROL, NULL,
+				     WS_CHILD | WS_CLIPSIBLINGS | WS_VISIBLE,
+				     8, 8,
+				     PMGR_FRAME_PLUGIN_LIST_WIDTH,
+				     PMGR_FRAME_PLUGIN_LIST_HEIGHT,
+				     container, NULL, ghInstance, NULL);
+	SetWindowFont(tabPluginList, fntMain, true);
 	
 #ifdef GENS_PNG
+	// Make sure the image list is empty.
+	if (imglPluginIcons)
+	{
+		ImageList_Destroy(imglPluginIcons);
+		imglPluginIcons = NULL;
+	}
+	
+	// Make sure vectPluginIcons is empty.
+	for (int i = vectPluginIcons.size() - 1; i >= 0; i--)
+	{
+		DeleteBitmap(vectPluginIcons[i]);
+	}
+	vectPluginIcons.clear();
+	
 	// Create the ImageList.
 	imglPluginIcons = ImageList_Create(32, 32, ILC_MASK | ILC_COLOR32,
 					   PluginMgr::lstMDP.size(),
@@ -222,22 +239,50 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 	vectPluginIcons.reserve(PluginMgr::lstMDP.size());
 #endif
 	
+	// Create the tabs.
+	pmgr_window_create_plugin_list_tab(tabPluginList, "&Internal", PMGR_INTERNAL);
+	pmgr_window_create_plugin_list_tab(tabPluginList, "&External", PMGR_EXTERNAL);
+	// TODO
+	//pmgr_window_create_plugin_list_tab(tabPluginList, "I&ncompatible", PMGR_INCOMPAT);
+}
+
+
+/**
+ * pmgr_window_create_plugin_list_tabs(): Create a plugin list tab.
+ * @param container Container for the tab.
+ * @param title Title of the tab.
+ * @param id Tab ID.
+ */
+static void pmgr_window_create_plugin_list_tab(HWND container, const char *title, int id)
+{
+	// Insert a tab.
+	TCITEM tabItem;
+	tabItem.mask = TCIF_TEXT;
+	tabItem.pszText = const_cast<char*>(title);
+	TabCtrl_InsertItem(container, id, &tabItem);
+	
 	// Create the plugin ListView.
-	lstPluginList = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
-				       WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
-				       LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
-				       8+8, 8+16,
-				       PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
-				       PMGR_FRAME_PLUGIN_LIST_HEIGHT-24,
-				       container, (HMENU)IDC_PMGR_WINDOW_LSTPLUGINLIST, ghInstance, NULL);
-	SetWindowFont(lstPluginList, fntMain, true);
-	ListView_SetExtendedListViewStyle(lstPluginList, LVS_EX_FULLROWSELECT);
+	lstPluginList[id] = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
+					   WS_CHILD | WS_TABSTOP | WS_BORDER | WS_VSCROLL |
+					   LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL | LVS_SHOWSELALWAYS,
+					   8, 16+8+4,
+					   PMGR_FRAME_PLUGIN_LIST_WIDTH-16,
+					   PMGR_FRAME_PLUGIN_LIST_HEIGHT-24-8-4,
+					   container, (HMENU)(IDC_PMGR_WINDOW_LSTPLUGINLIST + id), ghInstance, NULL);
+	SetWindowFont(lstPluginList[id], fntMain, true);
+	ListView_SetExtendedListViewStyle(lstPluginList[id], LVS_EX_FULLROWSELECT);
+	
+	if (id == PMGR_INTERNAL)
+	{
+		// Show the "Internal" ListView initially..
+		ShowWindow(lstPluginList[id], SW_SHOW);
+	}
 	
 #ifdef GENS_PNG
 	// Set the ListView's ImageList.
 	// "Small" is set in addition to "Normal", since LVS_REPORT uses "Small" icons.
-	ListView_SetImageList(lstPluginList, imglPluginIcons, LVSIL_NORMAL);
-	ListView_SetImageList(lstPluginList, imglPluginIcons, LVSIL_SMALL);
+	ListView_SetImageList(lstPluginList[id], imglPluginIcons, LVSIL_NORMAL);
+	ListView_SetImageList(lstPluginList[id], imglPluginIcons, LVSIL_SMALL);
 #endif
 	
 	// Create the ListView columns.
@@ -252,7 +297,7 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 #else
 	lvCol.cx = 0;
 #endif
-	ListView_InsertColumn(lstPluginList, 0, &lvCol);
+	ListView_InsertColumn(lstPluginList[id], 0, &lvCol);
 	
 	// Plugin name.
 	lvCol.pszText = TEXT("Plugin Name");
@@ -261,7 +306,7 @@ static void pmgr_window_create_plugin_list_frame(HWND container)
 #else
 	lvCol.cx = PMGR_FRAME_PLUGIN_LIST_WIDTH-16-24;
 #endif
-	ListView_InsertColumn(lstPluginList, 1, &lvCol);
+	ListView_InsertColumn(lstPluginList[id], 1, &lvCol);
 }
 
 
@@ -327,15 +372,16 @@ static void pmgr_window_create_plugin_info_frame(HWND container)
 
 
 /**
- * pmgr_window_populate_plugin_list(): Populate the plugin list.
+ * pmgr_window_populate_plugin_lists(): Populate the plugin list.
  */
-static void pmgr_window_populate_plugin_list(void)
+static void pmgr_window_populate_plugin_lists(void)
 {
 	if (!lstPluginList)
 		return;
 	
-	// Clear the plugin list.
-	ListView_DeleteAllItems(lstPluginList);
+	// Clear the plugin lists.
+	for (int i = 0; i < PMGR_MAX; i++)
+		ListView_DeleteAllItems(lstPluginList[i]);
 	
 	// Add all plugins to the ListView.
 	string pluginName;
@@ -401,13 +447,13 @@ static void pmgr_window_populate_plugin_list(void)
 		lviPlugin.mask = LVIF_PARAM;
 #endif
 		lviPlugin.cchTextMax = 256;
-		lviPlugin.iItem = ListView_GetItemCount(lstPluginList);
+		lviPlugin.iItem = ListView_GetItemCount(lstPluginList[pmType]);
 		lviPlugin.lParam = (LPARAM)plugin;
 		
 		// First column: Icon.
 		lviPlugin.iSubItem = 0;
 		lviPlugin.pszText = NULL;
-		ListView_InsertItem(lstPluginList, &lviPlugin);
+		ListView_InsertItem(lstPluginList[pmType], &lviPlugin);
 		
 		// lParam doesn't need to be set for the subitems.
 		lviPlugin.mask = LVIF_TEXT;
@@ -416,7 +462,7 @@ static void pmgr_window_populate_plugin_list(void)
 		// Second column: Plugin name.
 		lviPlugin.iSubItem = 1;
 		lviPlugin.pszText = const_cast<char*>(pluginName.c_str());
-		ListView_SetItem(lstPluginList, &lviPlugin);
+		ListView_SetItem(lstPluginList[pmType], &lviPlugin);
 	}
 }
 
@@ -483,20 +529,39 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 		
 		case WM_NOTIFY:
 		{
-			LPNMLISTVIEW nmListView = (LPNMLISTVIEW)lParam;
+			LPNMHDR nmHdr = (LPNMHDR)lParam;
 			
-			switch (nmListView->hdr.code)
+			switch (nmHdr->code)
 			{
 				case LVN_ITEMCHANGED:
-					if (nmListView->hdr.idFrom == IDC_PMGR_WINDOW_LSTPLUGINLIST &&
+				{
+					LPNMLISTVIEW nmListView = (LPNMLISTVIEW)lParam;
+					
+					if ((nmListView->hdr.idFrom & 0xFF00) == IDC_PMGR_WINDOW_LSTPLUGINLIST &&
 					    (nmListView->uChanged & LVIF_STATE) &&
 					    (!(nmListView->uOldState & LVIS_SELECTED)) &&
 					    (nmListView->uNewState & LVIS_SELECTED))
 					{
 						// Item was newly selected.
-						pmgr_window_callback_lstPluginList_cursor_changed();
+						pmgr_window_callback_lstPluginList_cursor_changed(nmListView->hdr.idFrom & 0xFF);
 					}
 					break;
+				}
+				case TCN_SELCHANGE:
+				{
+					if (nmHdr->hwndFrom == tabPluginList)
+					{
+						// Tab was changed.
+						int selTab = TabCtrl_GetCurSel(nmHdr->hwndFrom);
+						for (int i = 0; i < PMGR_MAX; i++)
+						{
+							ShowWindow(lstPluginList[i], ((i == selTab) ? SW_SHOW : SW_HIDE));
+						}
+						
+						// Activate the "cursor-changed" callback for the page.
+						pmgr_window_callback_lstPluginList_cursor_changed(selTab);
+					}
+				}
 			}
 			break;
 		}
@@ -532,11 +597,12 @@ static LRESULT CALLBACK pmgr_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 
 /**
  * pmgr_window_callback_lstPluginList_cursor_changed(): Cursor position has changed.
+ * @param id Plugin list ID.
  */
-static void pmgr_window_callback_lstPluginList_cursor_changed(void)
+static void pmgr_window_callback_lstPluginList_cursor_changed(int id)
 {
 	// Check which plugin is clicked.
-	int index = ListView_GetNextItem(lstPluginList, -1, LVNI_SELECTED);
+	int index = ListView_GetNextItem(lstPluginList[id], -1, LVNI_SELECTED);
 	
 	if (index == -1)
 	{
@@ -560,7 +626,7 @@ static void pmgr_window_callback_lstPluginList_cursor_changed(void)
 #else
 	lvItem.mask = LVIF_PARAM;
 #endif
-	int rval = ListView_GetItem(lstPluginList, &lvItem);
+	int rval = ListView_GetItem(lstPluginList[id], &lvItem);
 	
 	mdp_t *plugin = reinterpret_cast<mdp_t*>(lvItem.lParam);
 	
