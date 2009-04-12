@@ -19,7 +19,6 @@ Other TODO for Gens/GS r7:
 - [GTK+] Show directory name in the directory select box.
 - [Win32] Show directory name in the directory select box.
 - Investigate Gens Rerecording commits r250, r252.
-- [Win32] Add tabs to the "Plugin Manager" window.
 
 Stuff done in r7:
 - 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
