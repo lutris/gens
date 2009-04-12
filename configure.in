@@ -32,12 +32,15 @@ if test "$CXXFLAGS" = "-g -O2"; then
 fi
 
 # Check operating system.
-nasm_debug_format=""
+nasm_debug=""
+yasm_debug=""
 case $host in
 	i?86*mingw32*)
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
+		nasm_debug="-g"
+		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
 		;;
 	i?86*cygwin*)
@@ -45,6 +48,8 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		cflags_win32="-mno-cygwin ${cflags_win32}";
+		nasm_debug="-g"
+		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
 		;;
 	i?86*darwin*)
@@ -52,6 +57,8 @@ case $host in
 		obj_format=macho;
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
+		nasm_debug="-g -F dwarf";
+		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
 	i?86*linux*)
@@ -59,20 +66,23 @@ case $host in
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_LINUX, 1, Linux operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
-		nasm_debug_format="-F dwarf";
+		nasm_debug="-g -F dwarf";
+		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
 	i?86*)
 		os=unix;
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
-		nasm_debug_format="-F dwarf";
+		nasm_debug="-g -F dwarf";
+		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
 	x86_64*)
 		obj_format=elf64;
 		AC_MSG_ERROR([64-bit is currently not supported.]);
-		nasm_debug_format="-F dwarf";
+		nasm_debug="-g -F dwarf";
+		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
 	*)
@@ -102,14 +112,13 @@ fi
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug], [Build with debugging symbols. [[default=yes]]]), enable_debug=$enableval, enable_debug=yes)
 if test x$enable_debug = xyes -o x$enable_debug = xfull; then
 	# Debugging symbols enabled.
-	nasm_debug_enabled="-g"
 	cflags_optimization="-O0"
 	cflags_warnings_common="-Wall -Wextra"
 	AC_DEFINE(GENS_DEBUG, 1, Enable debugging)	
 else
 	# Debugging disabled.
-	nasm_debug_enabled=""
-	nasm_debug_format=""
+	nasm_debug=""
+	yasm_debug=""
 	cflags_debug=""
 	cflags_optimization="-O2"
 	cflags_warnings_common="-Wall -Wextra"
@@ -180,41 +189,56 @@ AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
 dnl GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
 # Check for nasm.
-AC_PATH_PROG(NASM, nasm, no)
-if test x"$NASM" != xno; then
-	NASM_VERSION_FOUND=`$NASM -v | awk '{print $3}'`
-dnl	# TODO: Fix the nasm version check.
-dnl	nasm_config_major_version=`echo $NASM_VERSION_FOUND | \
-dnl           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-dnl    	nasm_config_minor_version=`echo $NASM_VERSION_FOUND | \
-dnl           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-dnl    	nasm_config_micro_version=`echo $NASM_VERSION_FOUND | \
-dnl           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+AC_ARG_WITH(nasm, AC_HELP_STRING([--with-nasm[[=nasm]]], [Select nasm or yasm [[default=nasm]]]), with_nasm=$withval, with_nasm=nasm)
 
-dnl	if [[ $nasm_config_major_version == 0 ]] 
-dnl	|| [[ $nasm_config_major_version == 0 && $nasm_config_minor_version -gt 98 ]] 
-dnl	|| [[ $nasm_config_major_version == 0 && $nasm_config_minor_version == 98 && $nasm_config_micro_version -ge 38 ]]; then
-dnl	echo ;
-dnl	else
-dnl	 AC_MSG_ERROR([*** nasm version too old : nasm 0.98.38 or superior required !])
-dnl	fi
+# nasm optimization level.
+AC_ARG_ENABLE(nasm_opt, AC_HELP_STRING([--enable-nasm-opt[[=3]]], [Set nasm optimization level [[default=3]]]), enable_nasm_opt=$enableval, enable_nasm_opt=3)
 
-else
-	# nasm wasn't found.
-	AC_MSG_ERROR([*** nasm not found!])
-fi
-
-# Set nasm flags.
+# Set output format.
 if test x$obj_format = xwin32; then
 	nasm_obj_format="-f win32"
 elif test x$obj_format = xwin64; then
-	AC_MSG_ERROR([*** TODO: Win64 object format.])
+	nasm_obj_format="-f win64"
 elif test x$obj_format = xmacho; then
 	nasm_obj_format="-f macho -D __GCC2"
 elif test x$obj_format = xelf32; then
 	nasm_obj_format="-f elf -D __GCC2"
 elif test x$obj_format = xelf64; then
-	AC_MSG_ERROR([*** TODO: ELF64 object format.])
+	nasm_obj_format="-f elf64 -D __GCC2"
+fi
+
+if test x$with_nasm != x -a x$with_nasm != xnasm -a x$with_nasm != xyasm; then
+	AC_MSG_WARN([Unsupported nasm-compatible assembler $with_nasm; using nasm instead.])
+	with_nasm=nasm
+fi
+
+if test x$with_nasm = xyasm; then
+	# yasm specified as nasm-compatible assembler.
+	AC_PATH_PROG(YASM, yasm, no)
+	if test x$YASM = xno; then
+		# yasm wasn't found.
+		AC_MSG_ERROR([*** yasm not found!])
+	fi
+	
+	# Set the NASM path to YASM.
+	NASM="${YASM} ${nasm_obj_format} ${yasm_debug} -I\$(top_srcdir)/src/ -w"
+elif test x$with_nasm = xnasm; then
+	# nasm specified as nasm-compatible assembler.
+	AC_PATH_PROG(NASM, nasm, no)
+	if test x$NASM = xno; then
+		# nasm wasn't found.
+		AC_MSG_ERROR([*** nasm not found!])
+	fi
+	
+	# nasm optimization level
+	if test x$enable_nasm_opt = xyes; then
+		enable_nasm_opt=3
+	elif test x$enable_nasm_opt = xno; then
+		enable_nasm_opt=1;
+	fi
+	
+	# Set the NASM path to NASM.
+	NASM="${NASM} -O${enable_nasm_opt} ${nasm_obj_format} ${nasm_debug} -I\$(top_srcdir)/src/ -w-orphan-labels"
 fi
 
 AC_ARG_ENABLE(x86_asm, AC_HELP_STRING([--enable-x86-asm], [Enable x86 assembly optimizations [[default=yes]]]), enable_x86_asm=$enableval, enable_x86_asm=yes)
@@ -222,19 +246,6 @@ if test x$enable_x86_asm = xyes; then
 	AC_DEFINE(GENS_X86_ASM, 1, Enable x86 assembly optimizations)
 fi
 AM_CONDITIONAL([GENS_X86_ASM], [test x$enable_x86_asm = xyes])
-
-# nasm optimization level
-AC_ARG_ENABLE(nasm_opt, AC_HELP_STRING([--enable-nasm-opt[[=3]]], [Set nasm optimization level [[default=3]]]), enable_nasm_opt=$enableval, enable_nasm_opt=3)
-if test x$enable_nasm_opt = xyes; then
-	enable_nasm_opt=3
-elif test x$enable_nasm_opt = xno; then
-	enable_nasm_opt=1;
-elif test x$enable_nasm_opt != x0 -a x$enable_nasm_opt != x1 -a x$enable_nasm_opt != x2 -a x$enable_nasm_opt != x3; then
-	AC_MSG_WARN([Invalid nasm optimization level: $nasm_opt - defaulting to level 3.])
-	enable_nasm_opt=3
-fi
-
-NASM="${NASM} -O${enable_nasm_opt} ${nasm_obj_format} ${nasm_debug_enabled} ${nasm_debug_format} -I\$(top_srcdir)/src/ -w-orphan-labels"
 
 AC_ARG_ENABLE(debugger, AC_HELP_STRING([--enable-debugger], [Enable the built-in debugger [[default=yes]]]), enable_debugger=$enableval, enable_debugger=yes)
 if test x$enable_debugger = xyes; then
