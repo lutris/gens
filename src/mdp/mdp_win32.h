@@ -1,8 +1,6 @@
 /***************************************************************************
  * MDP: Mega Drive Plugins - Win32 convenience functions.                  *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
