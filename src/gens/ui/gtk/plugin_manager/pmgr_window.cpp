@@ -200,6 +200,9 @@ static void pmgr_window_create_plugin_list_notebook(GtkWidget *container)
  */
 static void pmgr_window_create_plugin_list_page(GtkWidget *container, const char *title, int id)
 {
+	if (id < PMGR_INTERNAL || id >= PMGR_MAX)
+		return;
+	
 	// Create the label for the notebook page.
 	GtkWidget *lblPluginList = gtk_label_new_with_mnemonic(title);
 	gtk_widget_show(lblPluginList);
