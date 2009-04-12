@@ -69,7 +69,7 @@ using std::string;
 using std::list;
 
 // Dynamic library loader.
-#include "gens_ld.h"
+#include "mdp/mdp_dlopen.h"
 
 // Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
@@ -322,13 +322,13 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 			
 			// Check if the file extension matches the shared library extension.
 			d_name_len = strlen(d_entry->d_name);
-			if (d_name_len >= (sizeof(GENS_DL_EXT) - 1))
+			if (d_name_len >= (sizeof(MDP_DLOPEN_EXT) - 1))
 			{
 				// Filename is long enough.
 				
 				// Compare the file extension.
-				if (!strncasecmp(&d_entry->d_name[d_name_len - sizeof(GENS_DL_EXT) + 1],
-						 GENS_DL_EXT, sizeof(GENS_DL_EXT) - 1))
+				if (!strncasecmp(&d_entry->d_name[d_name_len - sizeof(MDP_DLOPEN_EXT) + 1],
+						 MDP_DLOPEN_EXT, sizeof(MDP_DLOPEN_EXT) - 1))
 				{	
 					// File extension matches.
 					// Found a plugin.
@@ -376,36 +376,36 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 {
 	const char *err;
 	
-	void *dlhandle = gens_dlopen(filename.c_str());
+	void *dlhandle = mdp_dlopen(filename.c_str());
 	
 	if (!dlhandle)
 	{
 		Incompat.add(NULL, MDP_ERR_CANNOT_OPEN_DLL, filename);
 		
-		err = gens_dlerror();
+		err = mdp_dlerror();
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
 			"Could not open external plugin '%s': %s",
 			File::GetNameFromPath(filename).c_str(), err);
 		
-		gens_dlerror_str_free(err);
+		mdp_dlerror_str_free(err);
 		return;
 	}
 	
 	// Attempt to load the mdp symbol.
-	mdp_t *plugin = static_cast<mdp_t*>(gens_dlsym(dlhandle, "mdp"));
+	mdp_t *plugin = static_cast<mdp_t*>(mdp_dlsym(dlhandle, "mdp"));
 	if (!plugin)
 	{
 		Incompat.add(NULL, MDP_ERR_NO_MDP_SYMBOL, filename);
 		
 		// NOTE: This will say "Unknown error." if the symbol was found,
 		// but the symbol was defined as NULL. I'll fix this later.
-		err = gens_dlerror();
+		err = mdp_dlerror();
 		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
 			"\"mdp\" symbol not found in plugin '%s': %s",
 			File::GetNameFromPath(filename).c_str(), err);
 		
-		gens_dlerror_str_free(err);
-		gens_dlclose(dlhandle);
+		mdp_dlerror_str_free(err);
+		mdp_dlclose(dlhandle);
 		return;
 	}
 	
@@ -419,7 +419,7 @@ void PluginMgr::loadExternalPlugin(const string& filename)
 		// Error loading the MDP symbol.
 		// loadPlugin() already added the plugin to Incompat.
 		// Unload the DLL.
-		gens_dlclose(dlhandle);
+		mdp_dlclose(dlhandle);
 	}
 	else
 	{
@@ -451,7 +451,7 @@ void PluginMgr::end(void)
 		{
 			mdpDLL_t &dll = (*iter).second;
 			if (dll.dlhandle)
-				gens_dlclose(dll.dlhandle);
+				mdp_dlclose(dll.dlhandle);
 		}
 	}
 	

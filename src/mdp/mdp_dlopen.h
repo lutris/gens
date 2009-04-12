@@ -1,8 +1,6 @@
 /***************************************************************************
- * Gens: Dynamic Library Loader.                                           *
+ * MDP: Mega Drive Plugins - Dynamic Library Loader.                       *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -20,33 +18,29 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_LD_H
-#define GENS_LD_H
+#ifndef MDP_DLOPEN_H
+#define MDP_DLOPEN_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#if !defined(_WIN32)
 
-#if defined(GENS_OS_UNIX)
-
-/* UNIX system. */
+/* Linux/UNIX system. */
 #include <dlfcn.h>
-#define GENS_DL_EXT ".so"
+#define MDP_DLOPEN_EXT ".so"
 
-#define gens_dlopen(filename)		dlopen(filename, RTLD_NOW | RTLD_LOCAL)
-#define gens_dlclose(handle)		dlclose(handle)
+#define mdp_dlopen(filename)		dlopen(filename, RTLD_NOW | RTLD_LOCAL)
+#define mdp_dlclose(handle)		dlclose(handle)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline void* gens_dlsym(void *handle, const char *symbol)
+static inline void* mdp_dlsym(void *handle, const char *symbol)
 {
 	dlerror();
 	return dlsym(handle, symbol);
 }
 
-static inline const char* gens_dlerror(void)
+static inline const char* mdp_dlerror(void)
 {
 	const char *err = dlerror();
 	if (!err)
@@ -55,37 +49,37 @@ static inline const char* gens_dlerror(void)
 	/* Remove the pathname from the error. */
 	/* NOTE: This isn't perfect, and may result in garbage  */
 	/* for some filenames if the plugin author is retarded. */
-	const char *endofpath = strstr(err, GENS_DL_EXT ": ");
+	const char *endofpath = strstr(err, MDP_DLOPEN_EXT ": ");
 	if (!endofpath)
 		return err;
 	
-	return (endofpath + sizeof(GENS_DL_EXT) + 1);
+	return (endofpath + sizeof(MDP_DLOPEN_EXT) + 1);
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-#define gens_dlerror_str_free(errstr)
+#define mdp_dlerror_str_free(errstr)
 
-#elif defined(GENS_OS_WIN32)
+#else /* defined(_WIN32) */
 
 /* Win32 system. */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tchar.h>
-#define GENS_DL_EXT ".dll"
+#define MDP_DLOPEN_EXT ".dll"
 
-#define gens_dlopen(filename)		(void*)(LoadLibrary(filename))
-#define gens_dlclose(handle)		FreeLibrary((HMODULE)(handle))
+#define mdp_dlopen(filename)		(void*)(LoadLibrary(filename))
+#define mdp_dlclose(handle)		FreeLibrary((HMODULE)(handle))
 
-#define gens_dlsym(handle, symbol)	(void*)(GetProcAddress((HMODULE)(handle), (symbol)))
+#define mdp_dlsym(handle, symbol)	(void*)(GetProcAddress((HMODULE)(handle), (symbol)))
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static inline const char* gens_dlerror(void)
+static inline const char* mdp_dlerror(void)
 {
 	LPTSTR lpBuf;
 	
@@ -102,16 +96,12 @@ static inline const char* gens_dlerror(void)
 	return lpBuf;
 }
 
-#define gens_dlerror_str_free(errstr)	LocalFree((void*)(errstr))
+#define mdp_dlerror_str_free(errstr)	LocalFree((void*)(errstr))
 
 #ifdef __cplusplus
 }
 #endif
 
-#else
+#endif /* defined(_WIN32) */
 
-#error gens_ld.h: Unsupported operating system.
-
-#endif
-
-#endif /* GENS_LD_H */
+#endif /* MDP_DLOPEN_H */
