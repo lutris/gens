@@ -39,6 +39,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <string.h>
+#include <assert.h>
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -1252,6 +1253,9 @@ static void T_Update_Chan(channel_ *CH, int **buf, int length)
 			case 7:
 				DO_ALGO_7;
 				break;
+			default:
+				assert(algo >= 0 && algo <= 7);
+				break;
 		}
 		
 		DO_OUTPUT;
@@ -1316,6 +1320,9 @@ static void T_Update_Chan_LFO(channel_ *CH, int **buf, int length)
 				break;
 			case 7:
 				DO_ALGO_7;
+				break;
+			default:
+				assert(algo >= 0 && algo <= 7);
 				break;
 		}
 		
@@ -1387,6 +1394,9 @@ static void T_Update_Chan_Int(channel_ *CH, int **buf, int length)
 			case 7:
 				DO_ALGO_7;
 				break;
+			default:
+				assert(algo >= 0 && algo <= 7);
+				break;
 		}
 		
 		DO_OUTPUT_INT;
@@ -1452,6 +1462,9 @@ static void T_Update_Chan_LFO_Int(channel_ *CH, int **buf, int length)
 				break;
 			case 7:
 				DO_ALGO_7;
+				break;
+			default:
+				assert(algo >= 0 && algo <= 7);
 				break;
 		}
 		
