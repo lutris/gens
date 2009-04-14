@@ -144,6 +144,11 @@ static unsigned int DECAY_TO_ATTACK[ENV_LENGTH];	// Conversion from decay to att
 static unsigned int FINC_TAB[2048];	// Frequency step table
 
 // Rate tables.
+// NOTE: This is needed in a struct because g++ reorders static
+// elements randomly, causing issues with the GSXv7 code. The
+// GSXv7 code stupidly depends on arrays being placed in the
+// correct order, but I can't really do anything about that
+// at the moment.
 static struct __attribute__ ((packed))
 {
 	unsigned int AR_TAB[128];	// Attack rate table
