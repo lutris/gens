@@ -142,11 +142,14 @@ static unsigned int DECAY_TO_ATTACK[ENV_LENGTH];	// Conversion from decay to att
 
 static unsigned int FINC_TAB[2048];	// Frequency step table
 
-static unsigned int AR_TAB[128];	// Attack rate table
-static unsigned int DR_TAB[96];		// Decay rate table
-static unsigned int DT_TAB[8][32];	// Detune table
-static unsigned int SL_TAB[16];		// Substain level table
-static unsigned int NULL_RATE[32];	// Table for NULL rate
+// Rate tables.
+static struct __attribute__ ((packed)) {
+	unsigned int AR_TAB[128];	// Attack rate table
+	unsigned int DR_TAB[96];	// Decay rate table
+	unsigned int DT_TAB[8][32];	// Detune table
+	unsigned int SL_TAB[16];	// Substain level table
+	unsigned int NULL_RATE[32];	// Table for NULL rate
+} Rate_Tabs;
 
 static int LFO_ENV_TAB[LFO_LENGTH];		// LFO AMS TABLE (adjusted for 11.8 dB)
 static int LFO_FREQ_TAB[LFO_LENGTH];		// LFO FMS TABLE
@@ -380,7 +383,7 @@ static int SLOT_SET(int Adr, unsigned char data)
 			else
 				SL->MUL = 1;
 		
-		SL->DT = DT_TAB[(data >> 4) & 7];
+		SL->DT = Rate_Tabs.DT_TAB[(data >> 4) & 7];
 		
 		CH->SLOT[0].Finc = -1;
 		
@@ -410,9 +413,9 @@ static int SLOT_SET(int Adr, unsigned char data)
 		CH->SLOT[0].Finc = -1;
 		
 		if (data &= 0x1F)
-			SL->AR = &AR_TAB[data << 1];
+			SL->AR = &Rate_Tabs.AR_TAB[data << 1];
 		else
-			SL->AR = &NULL_RATE[0];
+			SL->AR = &Rate_Tabs.NULL_RATE[0];
 		
 		SL->EincA = SL->AR[SL->KSR];
 		if (SL->Ecurp == ATTACK)
@@ -429,9 +432,9 @@ static int SLOT_SET(int Adr, unsigned char data)
 			SL->AMS = 31;
 		
 		if (data &= 0x1F)
-			SL->DR = &DR_TAB[data << 1];
+			SL->DR = &Rate_Tabs.DR_TAB[data << 1];
 		else
-			SL->DR = &NULL_RATE[0];
+			SL->DR = &Rate_Tabs.NULL_RATE[0];
 		
 		SL->EincD = SL->DR[SL->KSR];
 		if (SL->Ecurp == DECAY)
@@ -444,9 +447,9 @@ static int SLOT_SET(int Adr, unsigned char data)
 	
 	case 0x70:
 		if (data &= 0x1F)
-			SL->SR = &DR_TAB[data << 1];
+			SL->SR = &Rate_Tabs.DR_TAB[data << 1];
 		else
-			SL->SR = &NULL_RATE[0];
+			SL->SR = &Rate_Tabs.NULL_RATE[0];
 		
 		SL->EincS = SL->SR[SL->KSR];
 		if ((SL->Ecurp == SUBSTAIN) && (SL->Ecnt < ENV_END))
@@ -458,9 +461,9 @@ static int SLOT_SET(int Adr, unsigned char data)
 		break;
 	
 	case 0x80:
-		SL->SLL = SL_TAB[data >> 4];
+		SL->SLL = Rate_Tabs.SL_TAB[data >> 4];
 		
-		SL->RR = &DR_TAB[((data & 0xF) << 2) + 2];
+		SL->RR = &Rate_Tabs.DR_TAB[((data & 0xF) << 2) + 2];
 		
 		SL->EincR = SL->RR[SL->KSR];
 		if ((SL->Ecurp == RELEASE) && (SL->Ecnt < ENV_END))
@@ -1668,12 +1671,12 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		j = (int) x;
 		j <<= ENV_LBITS;
 		
-		SL_TAB[i] = j + ENV_DECAY;
+		Rate_Tabs.SL_TAB[i] = j + ENV_DECAY;
 	}
 	
 	j = ENV_LENGTH - 1;		// special case : volume off
 	j <<= ENV_LBITS;
-	SL_TAB[15] = j + ENV_DECAY;
+	Rate_Tabs.SL_TAB[15] = j + ENV_DECAY;
 	
 	// Tableau Frequency Step
 	
@@ -1696,8 +1699,8 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 	
 	for (i = 0; i < 4; i++)
 	{
-		AR_TAB[i] = 0;
-		DR_TAB[i] = 0;
+		Rate_Tabs.AR_TAB[i] = 0;
+		Rate_Tabs.DR_TAB[i] = 0;
 	}
 	
 	for (i = 0; i < 60; i++)
@@ -1708,16 +1711,16 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 		x *= (double) (1 << ((i >> 2)));	 // bits 2-5 : shift bits (x2^0 - x2^15)
 		x *= (double) (ENV_LENGTH << ENV_LBITS); // on ajuste pour le tableau ENV_TAB
 		
-		AR_TAB[i + 4] = (unsigned int) (x / AR_RATE);
-		DR_TAB[i + 4] = (unsigned int) (x / DR_RATE);
+		Rate_Tabs.AR_TAB[i + 4] = (unsigned int) (x / AR_RATE);
+		Rate_Tabs.DR_TAB[i + 4] = (unsigned int) (x / DR_RATE);
 	}
 	
 	for (i = 64; i < 96; i++)
 	{
-		AR_TAB[i] = AR_TAB[63];
-		DR_TAB[i] = DR_TAB[63];
+		Rate_Tabs.AR_TAB[i] = Rate_Tabs.AR_TAB[63];
+		Rate_Tabs.DR_TAB[i] = Rate_Tabs.DR_TAB[63];
 		
-		NULL_RATE[i - 64] = 0;
+		Rate_Tabs.NULL_RATE[i - 64] = 0;
 	}
 	
 	// Tableau Detune
@@ -1734,8 +1737,8 @@ int YM2612_Init(int Clock, int Rate, int Interpolation)
 				    (double)(1 << (SIN_LBITS + SIN_HBITS - 21));
 			#endif
 			
-			DT_TAB[i + 0][j] = (int) x;
-			DT_TAB[i + 4][j] = (int) -x;
+			Rate_Tabs.DT_TAB[i + 0][j] = (int) x;
+			Rate_Tabs.DT_TAB[i + 4][j] = (int) -x;
 		}
 	}
 	
@@ -2175,7 +2178,7 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be normalized to an offset.
-			slotGSX->DT		= cpu_to_le32((uint32_t)(slotYM->DT - (unsigned int*)&DT_TAB));
+			slotGSX->DT		= cpu_to_le32((uint32_t)(slotYM->DT - (unsigned int*)&Rate_Tabs.DT_TAB));
 			
 			// Regular ints.
 			slotGSX->MUL		= cpu_to_le32(slotYM->MUL);
@@ -2188,10 +2191,10 @@ int YM2612_Save_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotGSX->AR		= cpu_to_le32((uint32_t)(slotYM->AR - (unsigned int*)&AR_TAB));
-			slotGSX->DR		= cpu_to_le32((uint32_t)(slotYM->DR - (unsigned int*)&DR_TAB));
-			slotGSX->SR		= cpu_to_le32((uint32_t)(slotYM->SR - (unsigned int*)&DR_TAB));
-			slotGSX->RR		= cpu_to_le32((uint32_t)(slotYM->RR - (unsigned int*)&DR_TAB));
+			slotGSX->AR		= cpu_to_le32((uint32_t)(slotYM->AR - (unsigned int*)&Rate_Tabs.AR_TAB));
+			slotGSX->DR		= cpu_to_le32((uint32_t)(slotYM->DR - (unsigned int*)&Rate_Tabs.DR_TAB));
+			slotGSX->SR		= cpu_to_le32((uint32_t)(slotYM->SR - (unsigned int*)&Rate_Tabs.DR_TAB));
+			slotGSX->RR		= cpu_to_le32((uint32_t)(slotYM->RR - (unsigned int*)&Rate_Tabs.DR_TAB));
 			
 			// Regular ints.
 			slotGSX->Fcnt		= cpu_to_le32(slotYM->Fcnt);
@@ -2310,7 +2313,7 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			slot_ *slotYM = &chanYM->SLOT[slot];
 			
 			// DT is a pointer, so it needs to be converted from an offset.
-			slotYM->DT		= le32_to_cpu(slotGSX->DT) + (unsigned int*)&DT_TAB;
+			slotYM->DT		= le32_to_cpu(slotGSX->DT) + (unsigned int*)&Rate_Tabs.DT_TAB;
 			
 			// Regular ints.
 			slotYM->MUL		= le32_to_cpu(slotGSX->MUL);
@@ -2323,10 +2326,10 @@ int YM2612_Restore_Full(gsx_v7_ym2612 *save)
 			
 			// The following four values are pointers, so they
 			// need to be normalized to offsets.
-			slotYM->AR		= le32_to_cpu(slotGSX->AR) + (unsigned int*)&AR_TAB;
-			slotYM->DR		= le32_to_cpu(slotGSX->DR) + (unsigned int*)&DR_TAB;
-			slotYM->SR		= le32_to_cpu(slotGSX->SR) + (unsigned int*)&DR_TAB;
-			slotYM->RR		= le32_to_cpu(slotGSX->RR) + (unsigned int*)&DR_TAB;
+			slotYM->AR		= le32_to_cpu(slotGSX->AR) + (unsigned int*)&Rate_Tabs.AR_TAB;
+			slotYM->DR		= le32_to_cpu(slotGSX->DR) + (unsigned int*)&Rate_Tabs.DR_TAB;
+			slotYM->SR		= le32_to_cpu(slotGSX->SR) + (unsigned int*)&Rate_Tabs.DR_TAB;
+			slotYM->RR		= le32_to_cpu(slotGSX->RR) + (unsigned int*)&Rate_Tabs.DR_TAB;
 			
 			// Regular ints.
 			slotYM->Fcnt		= le32_to_cpu(slotGSX->Fcnt);
