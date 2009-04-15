@@ -26,6 +26,7 @@
 
 #include "mdp_host_gens_mem.h"
 #include "mdp/mdp_error.h"
+#include "mdp/mdp_mem.h"
 
 /* C includes. */
 #include <string.h>
@@ -614,7 +615,7 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam;
+			ptr = (uint16_t*)CRam;
 			mem_size = 0x80;
 			break;
 		default:
