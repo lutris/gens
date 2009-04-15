@@ -347,36 +347,36 @@ int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *d
 		return -MDP_ERR_ROM_NOT_LOADED;
 	
 	uint8_t *ptr;
-	uint32_t max_address;
+	uint32_t mem_size;
 	int big_endian;
 	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
 			ptr = Rom_Data;
-			max_address = 0x3FFFFF;
+			mem_size = 0x400000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_RAM:
 			ptr = Ram_68k;
-			max_address = 0xFFFF;
+			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_VRAM:
 			ptr = VRam;
-			max_address = 0xFFFF;
+			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
 			ptr = CRam;
-			max_address = 0x7F;
+			mem_size = 0x80;
 			big_endian = 1;
 		default:
 			/* Invalid memory ID. */
 			return -MDP_ERR_MEM_INVALID_MEMID;
 	}
 	
-	if (address + length > max_address)
+	if (address + length > mem_size)
 	{
 		/* Out of range. */
 		return -MDP_ERR_MEM_OUT_OF_RANGE;
@@ -400,25 +400,25 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 		return -MDP_ERR_MEM_UNALIGNED;
 	
 	uint16_t *ptr;
-	uint32_t max_address;
+	uint32_t mem_size;
 	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
 			ptr = (uint16_t*)Rom_Data;
-			max_address = 0x3FFFFE;
+			mem_size = 0x400000;
 			break;
 		case MDP_MEM_MD_RAM:
 			ptr = (uint16_t*)Ram_68k;
-			max_address = 0xFFFE;
+			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_VRAM:
 			ptr = (uint16_t*)VRam;
-			max_address = 0xFFFE;
+			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_CRAM:
 			ptr = (uint16_t*)CRam;
-			max_address = 0x7E;
+			mem_size = 0x80;
 		default:
 			/* Invalid memory ID. */
 			return -MDP_ERR_MEM_INVALID_MEMID;
@@ -427,7 +427,7 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 	/* length is the number of 16-bit words. Convert to number of 8-bit bytes. */
 	length <<= 1;
 	
-	if (address + length > max_address)
+	if (address + length > mem_size)
 	{
 		/* Out of range. */
 		return -MDP_ERR_MEM_OUT_OF_RANGE;
@@ -530,29 +530,29 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 	ice = 0;
 	
 	uint8_t *ptr;
-	uint32_t max_address;
+	uint32_t mem_size;
 	int big_endian;
 	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
 			ptr = Rom_Data;
-			max_address = 0x3FFFFE;
+			mem_size = 0x400000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_RAM:
 			ptr = Ram_68k;
-			max_address = 0xFFFF;
+			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_VRAM:
 			ptr = VRam;
-			max_address = 0xFFFF;
+			mem_size = 0x10000;
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
 			ptr = CRam;
-			max_address = 0x7F;
+			mem_size = 0x80;
 			big_endian = 1;
 			break;
 		default:
@@ -560,7 +560,7 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 			return -MDP_ERR_MEM_INVALID_MEMID;
 	}
 	
-	if (address + length > max_address)
+	if (address + length > mem_size)
 	{
 		/* Out of range. */
 		return -MDP_ERR_MEM_OUT_OF_RANGE;
@@ -597,25 +597,25 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 	ice = 0;
 	
 	uint16_t *ptr;
-	uint32_t max_address;
+	uint32_t mem_size;
 	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
 			ptr = (uint16_t*)Rom_Data;
-			max_address = 0x3FFFFE;
+			mem_size = 0x400000;
 			break;
 		case MDP_MEM_MD_RAM:
 			ptr = (uint16_t*)Ram_68k;
-			max_address = 0xFFFE;
+			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_VRAM:
 			ptr = (uint16_t*)VRam;
-			max_address = 0xFFFE;
+			mem_size = 0x10000;
 			break;
 		case MDP_MEM_MD_CRAM:
 			ptr = CRam;
-			max_address = 0x7E;
+			mem_size = 0x80;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -625,7 +625,7 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 	/* length is the number of 16-bit words. Convert to number of 8-bit bytes. */
 	length <<= 1;
 	
-	if (address + length > max_address)
+	if (address + length > mem_size)
 	{
 		/* Out of range. */
 		return -MDP_ERR_MEM_OUT_OF_RANGE;
