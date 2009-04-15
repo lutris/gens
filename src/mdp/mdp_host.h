@@ -49,12 +49,13 @@ typedef enum _MDP_MEM
 	MDP_MEM_NULL		= 0,
 	MDP_MEM_MD_ROM		= 1,
 	MDP_MEM_MD_RAM		= 2,
-	MDP_MEM_MD_VRAM		= 3
+	MDP_MEM_MD_VRAM		= 3,
+	MDP_MEM_MD_CRAM		= 4,
 	#if 0 /* TODO: Figure out how to manage these. */
-	MDP_MEM_Z80_RAM		= 4,
-	MDP_MEM_MCD_PRG_RAM	= 5,
-	MDP_MEM_MCD_WORD_RAM	= 6,
-	MDP_MEM_32X_RAM		= 7
+	MDP_MEM_Z80_RAM		= 5,
+	MDP_MEM_MCD_PRG_RAM	= 6,
+	MDP_MEM_MCD_WORD_RAM	= 7,
+	MDP_MEM_32X_RAM		= 8
 	#endif
 } MDP_MEM;
 
