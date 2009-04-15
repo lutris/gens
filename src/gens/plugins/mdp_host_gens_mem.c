@@ -112,6 +112,8 @@ uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address)
 {
 	if (!Game)
 		return 0;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	switch (memID)
 	{
@@ -137,6 +139,8 @@ uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
 {
 	if (!Game)
 		return 0;
+	if (address & 1)
+		return -MDP_ERR_MEM_UNALIGNED;
 	
 	switch (memID)
 	{
