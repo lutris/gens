@@ -168,6 +168,7 @@ int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFF;
 			MEM_RW_8_BE(VRam, address) = data;
+			VRam_Flag = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -199,6 +200,7 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFF;
 			MEM_RW_16(VRam, address) = data;
+			VRam_Flag = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -230,6 +232,7 @@ int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFF;
 			MEM_WRITE_32_BE(VRam, address, data)
+			VRam_Flag = 1;
 			break;
 		default:
 			/* Invalid memory ID. */
@@ -531,6 +534,12 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 		mdp_host_mem_write_block_8_le(_32X_Rom, address, data, length);
 	}
 	
+	if (memID == MDP_MEM_MD_VRAM)
+	{
+		// Set the VRam flag.
+		VRam_Flag = 1;
+	}
+	
 	/* The block has been written. */
 	return MDP_ERR_OK;
 }
@@ -577,6 +586,12 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 	
 	/* Copy the block. */
 	memcpy(ptr, data, length);
+	
+	if (memID == MDP_MEM_MD_VRAM)
+	{
+		// Set the VRam flag.
+		VRam_Flag = 1;
+	}
 	
 	/* The block has been written. */
 	return MDP_ERR_OK;
