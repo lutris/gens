@@ -31,6 +31,7 @@
 #include "mdp/mdp_fncall.h"
 #include "mdp/mdp_event.h"
 #include "mdp/mdp_error.h"
+#include "mdp/mdp_mem.h"
 
 // C++ includes.
 #include <list>

@@ -43,6 +43,7 @@ using std::string;
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
 #include "mdp/mdp_constants.h"
+#include "mdp/mdp_mem.h"
 
 // MDP Host Services.
 mdp_host_t *gg_host_srv = NULL;

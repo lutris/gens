@@ -39,6 +39,7 @@
 // MDP includes.
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
+#include "mdp/mdp_mem.h"
 
 // Window.
 static GtkWidget *sgens_window = NULL;

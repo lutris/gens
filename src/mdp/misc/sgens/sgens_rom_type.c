@@ -27,6 +27,7 @@
 #include "mdp/mdp_constants.h"
 #include "mdp/mdp.h"
 #include "mdp/mdp_host.h"
+#include "mdp/mdp_mem.h"
 
 // C includes.
 #include <string.h>

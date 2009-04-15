@@ -26,6 +26,7 @@
 
 // MDP includes.
 #include "mdp/mdp_error.h"
+#include "mdp/mdp_mem.h"
 
 // C includes.
 #include <stdint.h>
