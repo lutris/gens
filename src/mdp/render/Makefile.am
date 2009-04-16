@@ -21,6 +21,8 @@ SUBDIRS = \
 		epx_plus
 
 if GENS_X86_ASM
+SUBDIRS += \
+		2xsai
 if !GENS_OS_MACOSX	# nasm doesn't support PIC on MacOS X.
 SUBDIRS += \
 		hq2x \
