@@ -388,7 +388,7 @@ section .text align=64
 		%define	_Write_VDP_Ctrl		Write_VDP_Ctrl
 		%define	_Set_VDP_Reg		Set_VDP_Reg
 		%define	_Int_Ack		Int_Ack
-		%define	_Update_IRQ_Line	Update_IRQ_Line
+		%define	_VDP_Update_IRQ_Line	VDP_Update_IRQ_Line
 	%endif
 
 	extern _main68k_readOdometer
@@ -396,6 +396,9 @@ section .text align=64
 	extern _main68k_interrupt
 	
 	extern _Write_To_68K_Space
+	
+	; Functions found in vdp_io.c
+	extern _VDP_Update_IRQ_Line
 
 ; ******************************************
 
@@ -1337,7 +1340,7 @@ section .text align=64
 	
 	.Set1:
 		mov	[_VDP_Reg.Set_1], al
-		call	_Update_IRQ_Line
+		call	_VDP_Update_IRQ_Line
 		pop	ebx
 		ret
 	
@@ -1345,7 +1348,7 @@ section .text align=64
 	
 	.Set2:
 		mov	[_VDP_Reg.Set_2], al
-		call	_Update_IRQ_Line
+		call	_VDP_Update_IRQ_Line
 		pop	ebx
 		ret
 	
@@ -1736,41 +1739,4 @@ section .text align=64
 	.H_Ack:
 		xor	al, al
 		mov	byte [_VDP_Int], al
-		ret
-	
-	align 16
-	
-	;void Update_IRQ_Line(void);
-	global _Update_IRQ_Line
-	_Update_IRQ_Line:
-		
-		test	byte [_VDP_Reg.Set_2], 0x20
-		jz	short .No_V_Int
-		test	byte [_VDP_Int], 0x8
-		jz	short .No_V_Int
-		
-		push	dword -1
-		push	dword 6
-		call	_main68k_interrupt
-		add	esp, 8
-		ret
-	
-	align 16
-	
-	.No_V_Int:
-		test	byte [_VDP_Reg.Set_1], 0x10
-		jz	short .No_H_Int
-		test	byte [_VDP_Int], 0x4
-		jz	short .No_H_Int
-		
-		push	dword -1
-		push	dword 4
-		call	_main68k_interrupt
-		add	esp, 8
-		ret
-	
-	align 16
-	
-	.No_H_Int:
-		and	byte [_main68k_context + 35 * 4], 0xF0
 		ret

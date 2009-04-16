@@ -475,7 +475,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MCD_frame(void)
 		{
 			HInt_Counter = VDP_Reg.H_Int;
 			VDP_Int |= 0x4;
-			Update_IRQ_Line();
+			VDP_Update_IRQ_Line();
 		}
 		
 		if (VDP)
@@ -534,7 +534,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MCD_frame(void)
 	if (--HInt_Counter < 0)
 	{
 		VDP_Int |= 0x4;
-		Update_IRQ_Line();
+		VDP_Update_IRQ_Line();
 	}
 	
 	VDP_Status |= 0x000C;		// VBlank = 1 et HBlank = 1 (retour de balayage vertical en cours)
@@ -563,7 +563,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MCD_frame(void)
 	VDP_Status &= 0xFFFB;		// HBlank = 0
 	VDP_Status |= 0x0080;		// V Int happened
 	VDP_Int |= 0x8;
-	Update_IRQ_Line();
+	VDP_Update_IRQ_Line();
 	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	if (perfect_sync)

@@ -485,7 +485,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 		{
 			HInt_Counter = VDP_Reg.H_Int;
 			VDP_Int |= 0x4;
-			Update_IRQ_Line();
+			VDP_Update_IRQ_Line();
 		}
 		
 		if (VDP)
@@ -513,7 +513,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 	if (--HInt_Counter < 0)
 	{
 		VDP_Int |= 0x4;
-		Update_IRQ_Line();
+		VDP_Update_IRQ_Line();
 	}
 	
 	CONGRATULATIONS_PRECHECK;
@@ -526,7 +526,7 @@ static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
 	VDP_Status |= 0x0080;		// V Int happened
 	
 	VDP_Int |= 0x8;
-	Update_IRQ_Line();
+	VDP_Update_IRQ_Line();
 	mdZ80_interrupt(&M_Z80, 0xFF);
 	
 	main68k_exec(Cycles_M68K);

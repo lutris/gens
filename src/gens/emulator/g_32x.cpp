@@ -413,7 +413,7 @@ static inline int __attribute__((always_inline)) T_gens_do_32X_frame(void)
 		{
 			HInt_Counter = VDP_Reg.H_Int;
 			VDP_Int |= 0x4;
-			Update_IRQ_Line();
+			VDP_Update_IRQ_Line();
 		}
 		
 		if (--HInt_Counter_32X < 0)
@@ -476,7 +476,7 @@ static inline int __attribute__((always_inline)) T_gens_do_32X_frame(void)
 	if (--HInt_Counter < 0)
 	{
 		VDP_Int |= 0x4;
-		Update_IRQ_Line();
+		VDP_Update_IRQ_Line();
 	}
 	
 	if (--HInt_Counter_32X < 0)
@@ -517,7 +517,7 @@ static inline int __attribute__((always_inline)) T_gens_do_32X_frame(void)
 	VDP_Status |= 0x0080;		// V Int happened
 	
 	VDP_Int |= 0x8;
-	Update_IRQ_Line();
+	VDP_Update_IRQ_Line();
 	
 	if (_32X_MINT & 0x08)
 		SH2_Interrupt(&M_SH2, 12);

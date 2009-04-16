@@ -23,6 +23,9 @@
 #include "vdp_io.h"
 #include "vdp_rend.h"
 
+// Starscream 68000 core.
+#include "gens_core/cpu/68k/star_68k.h"
+
 // C includes.
 #include <string.h>
 
@@ -110,4 +113,24 @@ void VDP_Reset(void)
 	
 	// Clear the VSRam overflow area.
 	memset(&VSRam_Over, 0x00, sizeof(VSRam_Over));
+}
+
+
+void VDP_Update_IRQ_Line(void)
+{
+	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
+	{
+		// VBlank interrupt.
+		main68k_interrupt(6, -1);
+		return;
+	}
+	else if ((VDP_Reg.Set1 & 0x10) && (VDP_Int & 0x04))
+	{
+		// HBlank interrupt.
+		main68k_interrupt(4, -1);
+		return;
+	}
+	
+	// No VDP interrupts.
+	main68k_context.interrupts[0] &= 0xF0;
 }
