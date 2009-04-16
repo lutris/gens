@@ -52,11 +52,23 @@ void VDP_Reset(void)
 	memset(&Sprite_Struct, 0x00, sizeof(Sprite_Struct));
 	memset(&Sprite_Visible, 0x00, sizeof(Sprite_Visible));
 	
-	// VDP registers.
-	int reg;
-	for (reg = 0; reg < 24; reg++)
+	/**
+	 * VDP registers.
+	 * Notes:
+	 * - All registers are set to 0 by default. (TODO: Figure out what they should be set to.)
+	 * - Register 0x0A (H_Int) is set to 0xFF by default. This fixes Sik's test ROM that produced "rain".
+	 */
+	static const uint8_t vdp_reg_init[24] =
 	{
-		Set_VDP_Reg(reg, 0);
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+	};
+	
+	unsigned int reg;
+	for (reg = 0; reg < sizeof(vdp_reg_init); reg++)
+	{
+		Set_VDP_Reg(reg, vdp_reg_init[reg]);
 	}
 	
 	// Reset the non-register parts of the VDP registers.
