@@ -678,6 +678,8 @@ int MDP_FNCALL mdp_host_mem_size_get(int memID)
 			return sizeof(Ram_68k);
 		case MDP_MEM_MD_VRAM:
 			return sizeof(VRam);
+		case MDP_MEM_MD_CRAM:
+			return 0x80;	// CRam[] is actually 256 bytes for some reason.
 		default:
 			/* Invalid memory ID. */
 			return -MDP_ERR_MEM_INVALID_MEMID;
@@ -737,6 +739,7 @@ int MDP_FNCALL mdp_host_mem_size_set(int memID, unsigned int size)
 		
 		case MDP_MEM_MD_RAM:
 		case MDP_MEM_MD_VRAM:
+		case MDP_MEM_MD_CRAM:
 			/* Non-resizable memory blocks. */
 			return -MDP_ERR_MEM_NOT_RESIZABLE;
 		
