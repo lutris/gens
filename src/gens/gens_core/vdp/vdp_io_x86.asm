@@ -235,7 +235,7 @@ section .bss align=64
 	_CRam:
 		resw 64
 	
-	global _VSRam_Over
+	global _VSRam_Over	; VSRam overflow buffer. DO NOT REMOVE!
 	_VSRam_Over:
 		resd 8
 	
