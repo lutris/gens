@@ -108,7 +108,6 @@ void VDP_Reset(void)
 		H_Counter_Table[hc][1] = (unsigned char)hc_val;
 	}
 	
-	// Reset VSRam_Over[7].
-	// TODO: What does this do, and why only reset the 7th item in the array?
-	VSRam_Over[7] = 0;
+	// Clear the VSRam overflow area.
+	memset(&VSRam_Over, 0x00, sizeof(VSRam_Over));
 }
