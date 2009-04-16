@@ -1706,37 +1706,3 @@ section .text align=64
 	.Wrong:
 		pop	ebx
 		ret
-	
-	align 16
-	
-	;void Int_Ack(void);	function called by the 68k when an interrupt is acknowledged...
-	global _Int_Ack
-	_Int_Ack:
-		
-		test	byte [_VDP_Reg.Set_2], 0x20
-		jz	short .H_Ack
-		test	byte [_VDP_Int], 8
-		jz	short .H_Ack
-	
-	.V_Ack:
-		mov	ah, [_VDP_Reg.Set_1]
-		mov	al, [_VDP_Int]
-		and	ah, 0x10
-		and	al, ~8
-		shr	ah, 2
-		mov	[_VDP_Int], al
-		and	al, ah
-		ret
-	
-	align 16
-	
-	.No_H_Int:
-		xor	al, al
-		ret
-	
-	align 16
-	
-	.H_Ack:
-		xor	al, al
-		mov	byte [_VDP_Int], al
-		ret

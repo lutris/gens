@@ -81,6 +81,8 @@ int Write_Byte_VDP_Data(unsigned char Data);
 int Write_Word_VDP_Data(unsigned short Data);
 int Write_VDP_Ctrl(unsigned short Data);
 int Set_VDP_Reg(int Num_Reg, int Val);
+
+unsigned char VDP_Int_Ack(void);
 void VDP_Update_IRQ_Line(void);
 
 #ifdef __cplusplus

@@ -116,6 +116,26 @@ void VDP_Reset(void)
 }
 
 
+unsigned char VDP_Int_Ack(void)
+{
+	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
+	{
+		// VBlank interrupt acknowledge.
+		VDP_Int &= ~0x08;
+		
+		unsigned char rval_mask = VDP_Reg.Set1;
+		rval_mask &= 0x10;
+		rval_mask >>= 2;
+		
+		return ((VDP_Int) & rval_mask);
+	}
+	
+	// Reset the interrupt counter.
+	VDP_Int = 0;
+	return 0;
+}
+
+
 void VDP_Update_IRQ_Line(void)
 {
 	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
