@@ -111,6 +111,9 @@ Release 7 fixes the following bugs:
   for that specific version, and selecting version 2 will result in another
   ROM History entry.
 
+- The VDP H_Int register is now initialized to 0xFF. This fixes Sik's test ROM
+  that produced "rain" on Gens, but not on Regen and the actual hardware.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
