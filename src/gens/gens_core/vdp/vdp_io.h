@@ -35,12 +35,12 @@ struct Reg_VDP_Type
 	unsigned int DMA_Address;
 };
 
-extern unsigned char VRam[64 * 1024];
-extern unsigned char CRam[256];
-extern unsigned char VSRam[256];
-extern unsigned int  VSRam_Over[8];
-extern unsigned char H_Counter_Table[512][2];
-extern unsigned int  Spr_Link[256];
+extern unsigned char  VRam[64 * 1024];
+extern unsigned short CRam[64];
+extern unsigned char  VSRam[256];
+extern unsigned int   VSRam_Over[8];
+extern unsigned char  H_Counter_Table[512][2];
+extern unsigned int   Spr_Link[256];
 extern int Genesis_Started;
 extern int SegaCD_Started;
 extern int _32X_Started;

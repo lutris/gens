@@ -369,7 +369,7 @@ int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *d
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam;
+			ptr = (uint8_t*)CRam;
 			mem_size = 0x80;
 			big_endian = 1;
 		default:
@@ -552,7 +552,7 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 			big_endian = 1;
 			break;
 		case MDP_MEM_MD_CRAM:
-			ptr = CRam;
+			ptr = (uint8_t*)CRam;
 			mem_size = 0x80;
 			big_endian = 1;
 			break;
@@ -679,7 +679,7 @@ int MDP_FNCALL mdp_host_mem_size_get(int memID)
 		case MDP_MEM_MD_VRAM:
 			return sizeof(VRam);
 		case MDP_MEM_MD_CRAM:
-			return 0x80;	// CRam[] is actually 256 bytes for some reason.
+			return sizeof(CRam);
 		default:
 			/* Invalid memory ID. */
 			return -MDP_ERR_MEM_INVALID_MEMID;

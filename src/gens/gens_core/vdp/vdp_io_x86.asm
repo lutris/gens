@@ -233,7 +233,7 @@ section .bss align=64
 	
 	global _CRam
 	_CRam:
-		resd 64
+		resw 64
 	
 	global _VSRam_Over
 	_VSRam_Over:
