@@ -878,12 +878,12 @@ section .text align=64
 		mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
 	%endif
 	
-	; If ScrollA Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
-	jz	near %%Full_Trans
-%else
 	; If ScrollB Low is disabled, don't do anything.
 	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_LOW
+	jz	near %%Full_Trans
+%else
+	; If ScrollA Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
 	jz	near %%Full_Trans
 %endif
 	
@@ -929,12 +929,12 @@ section .text align=64
 		mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
 	%endif
 	
-	; If ScrollA Low is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
-	jz	near %%Full_Trans
-%else
 	; If ScrollB Low is disabled, don't do anything.
 	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_LOW
+	jz	near %%Full_Trans
+%else
+	; If ScrollA Low is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_LOW
 	jz	near %%Full_Trans
 %endif
 	
@@ -972,12 +972,12 @@ section .text align=64
 	mov	dword [_MD_Screen + ebp * 2 +  8], 0x00000000
 	mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
 	
-	; If ScrollA High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
-	jz	near %%Full_Trans
-%else
 	; If ScrollB High is disabled, don't do anything.
 	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_HIGH
+	jz	near %%Full_Trans
+%else
+	; If ScrollA High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
 	jz	near %%Full_Trans
 	
 	%if %2 > 0
@@ -1037,12 +1037,12 @@ section .text align=64
 	mov	dword [_MD_Screen + ebp * 2 +  8], 0x00000000
 	mov	dword [_MD_Screen + ebp * 2 + 12], 0x00000000
 	
-	; If ScrollA High is disabled, don't do anything.
-	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
-	jz	near %%Full_Trans
-%else
 	; If ScrollB High is disabled, don't do anything.
 	test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_HIGH
+	jz	near %%Full_Trans
+%else
+	; If ScrollA High is disabled, don't do anything.
+	test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_HIGH
 	jz	near %%Full_Trans
 	
 	%if %2 > 0
@@ -1227,13 +1227,12 @@ section .text align=64
 		GET_PATTERN_INFO 0
 		GET_PATTERN_DATA %1, 0
 		
-		; Check for swapped Scroll A priority.
-		; Yes, Scroll A. See Gens Rerecording svn commit r222 for more information.
-		test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_SWAP
-		jz	short %%No_Swap_ScrollA_Priority
+		; Check for swapped Scroll B priority.
+		test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_SWAP
+		jz	short %%No_Swap_ScrollB_Priority
 		xor	ax, 0x8000
 		
-	%%No_Swap_ScrollA_Priority
+	%%No_Swap_ScrollB_Priority
 		test	eax, 0x0800		; test if H-Flip?
 		jz	near %%No_H_Flip	; if yes, then
 		
@@ -1392,13 +1391,12 @@ section .text align=64
 		GET_PATTERN_INFO 1
 		GET_PATTERN_DATA %1, 0
 		
-		; Check for swapped Scroll B priority.
-		; Yes, Scroll B. See Gens Rerecording svn commit r222 for more information.
-		test	dword [_VDP_Layers], VDP_LAYER_SCROLLB_SWAP
-		jz	short %%No_Swap_ScrollB_Priority_1
+		; Check for swapped Scroll A priority.
+		test	dword [_VDP_Layers], VDP_LAYER_SCROLLA_SWAP
+		jz	short %%No_Swap_ScrollA_Priority_1
 		xor	ax, 0x8000
 		
-	%%No_Swap_ScrollB_Priority_1
+	%%No_Swap_ScrollA_Priority_1
 		test	 eax, 0x0800		; test if H-Flip ?
 		jz	near %%No_H_Flip	; if yes, then
 		
