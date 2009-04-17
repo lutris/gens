@@ -372,6 +372,7 @@ int MDP_FNCALL mdp_host_mem_read_block_8(int memID, uint32_t address, uint8_t *d
 			ptr = (uint8_t*)CRam;
 			mem_size = 0x80;
 			big_endian = 1;
+			break;
 		default:
 			/* Invalid memory ID. */
 			return -MDP_ERR_MEM_INVALID_MEMID;
@@ -420,6 +421,7 @@ int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t 
 		case MDP_MEM_MD_CRAM:
 			ptr = (uint16_t*)CRam;
 			mem_size = 0x80;
+			break;
 		default:
 			/* Invalid memory ID. */
 			return -MDP_ERR_MEM_INVALID_MEMID;
