@@ -436,9 +436,9 @@ void PSG_Init(int clock, int rate)
 
 /**
  * PSG_Save_State(): Save the PSG state.
- * @param buf 8-byte array to save the state to.
+ * @param buf 8-DWORD array to save the state to.
  */
-void PSG_Save_State(uint8_t *buf)
+void PSG_Save_State(uint32_t *buf)
 {
 	int i;
 	
@@ -449,9 +449,9 @@ void PSG_Save_State(uint8_t *buf)
 
 /**
  * PSG_Restore_State(): Restore the PSG state.
- * @param buf 8-byte array to load the state from.
+ * @param buf 8-DWORD array to load the state from.
  */
-void PSG_Restore_State(const uint8_t *buf)
+void PSG_Restore_State(const uint32_t *buf)
 {
 	int i;
 	

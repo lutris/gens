@@ -285,7 +285,7 @@ void Options::setCountry(const int newCountry)
 	
 	if (audio_get_enabled())
 	{
-		uint8_t psg_state[8];
+		uint32_t psg_state[8];
 		uint8_t ym2612_reg[0x200];
 		
 		PSG_Save_State(psg_state);
@@ -451,7 +451,7 @@ void Options::setSoundStereo(const bool newSoundStereo)
 		return;
 	}
 	
-	uint8_t psg_state[8];
+	uint32_t psg_state[8];
 	uint8_t ym2612_reg[0x200];
 	
 	// Save the current sound state.
@@ -788,7 +788,7 @@ void Options::setSoundSampleRate(const int newRate)
 		return;
 	
 	// Sound's enabled. Reinitialize it.
-	uint8_t psg_state[8];
+	uint32_t psg_state[8];
 	uint8_t ym2612_reg[0x200];
 	
 	// Save the sound registers.

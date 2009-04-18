@@ -43,8 +43,8 @@ void PSG_Update_SIN(int **buffer, int length);
 void PSG_Update(int **buffer, int length);
 void PSG_Init(int clock, int rate);
 
-void PSG_Save_State(uint8_t *buf);
-void PSG_Restore_State(const uint8_t *buf);
+void PSG_Save_State(uint32_t *buf);
+void PSG_Restore_State(const uint32_t *buf);
 
 /* Gens */
 

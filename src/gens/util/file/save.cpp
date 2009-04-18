@@ -441,7 +441,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 	YM2612_Restore(&md_save.ym2612[0]);
 	
 	// Special data based on the savestate version.
-	uint8_t psg_state[8];
+	uint32_t psg_state[8];
 	if ((m_Version >= 2) && (m_Version < 4))
 	{
 		// TODO: Create a struct fr this.
@@ -460,12 +460,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		
 		// 0x22488: PSG registers.
 		// TODO: Import this using correct endianness.
-		int psg_state_int[8];
-		ImportData(&psg_state_int, data, 0x224B8, 8 * 4);
-		
-		for (int i = 0; i < 8; i++)
-			psg_state[i] = psg_state_int[i];
-		
+		ImportData(&psg_state, data, 0x224B8, 8 * 4);
 		PSG_Restore_State(psg_state);
 	}
 	else if ((m_Version >= 4) || (m_Version == 0))
@@ -513,7 +508,7 @@ int Savestate::GsxImportGenesis(const unsigned char* data)
 		{
 			// Load the PSG registers.
 			for (int i = 0; i < 8; i++)
-				psg_state[i] = (uint8_t)(le32_to_cpu(md_save.psg[i]));
+				psg_state[i] = md_save.psg[i];
 			
 			PSG_Restore_State(psg_state);
 		}
@@ -960,7 +955,7 @@ void Savestate::GsxExportGenesis(unsigned char* data)
 	md_save.version.emulator = 0;	// Emulator ID (0 == Gens)
 	
 	// Save the PSG state.
-	uint8_t psg_state[8];
+	uint32_t psg_state[8];
 	PSG_Save_State(psg_state);
 	
 	// Copy the PSG state into the savestate buffer.
