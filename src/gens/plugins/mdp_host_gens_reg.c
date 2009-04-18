@@ -32,6 +32,8 @@
 
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/vdp/vdp_io.h"
+#include "mdZ80/mdZ80.h"
+
 /*
 #include "gens_core/mem/mem_m68k.h"
 #include "gens_core/mem/mem_s68k.h"
@@ -105,6 +107,142 @@ static int mdp_host_reg_get_vdp(int regID, uint32_t *ret_value)
 }
 
 
+static int mdp_host_reg_get_z80(int regID, uint32_t *ret_value)
+{
+	unsigned int tmp;
+	
+	switch (regID)
+	{
+		/* Main registers: BYTE */
+		case MDP_REG_Z80_A:
+			tmp = mdZ80_get_AF(&M_Z80);
+			*ret_value = ((tmp >> 8) & 0xFF);
+			break;
+		case MDP_REG_Z80_F:
+			tmp = mdZ80_get_AF(&M_Z80);
+			*ret_value = (tmp & 0xFF);
+			break;
+		case MDP_REG_Z80_B:
+			*ret_value = M_Z80.BC.b.B;
+			break;
+		case MDP_REG_Z80_C:
+			*ret_value = M_Z80.BC.b.C;
+			break;
+		case MDP_REG_Z80_D:
+			*ret_value = M_Z80.DE.b.D;
+			break;
+		case MDP_REG_Z80_E:
+			*ret_value = M_Z80.DE.b.E;
+			break;
+		case MDP_REG_Z80_H:
+			*ret_value = M_Z80.HL.b.H;
+			break;
+		case MDP_REG_Z80_L:
+			*ret_value = M_Z80.HL.b.L;
+			break;
+		case MDP_REG_Z80_IXH:
+			*ret_value = M_Z80.IX.b.IXH;
+			break;
+		case MDP_REG_Z80_IXL:
+			*ret_value = M_Z80.IX.b.IXL;
+			break;
+		case MDP_REG_Z80_IYH:
+			*ret_value = M_Z80.IY.b.IYH;
+			break;
+		case MDP_REG_Z80_IYL:
+			*ret_value = M_Z80.IY.b.IYL;
+			break;
+		
+		/* Main registers: WORD */
+		case MDP_REG_Z80_AF:
+			*ret_value = mdZ80_get_AF(&M_Z80);
+			break;
+		case MDP_REG_Z80_BC:
+			*ret_value = M_Z80.BC.w.BC;
+			break;
+		case MDP_REG_Z80_DE:
+			*ret_value = M_Z80.DE.w.DE;
+			break;
+		case MDP_REG_Z80_HL:
+			*ret_value = M_Z80.HL.w.HL;
+			break;
+		case MDP_REG_Z80_IX:
+			*ret_value = M_Z80.IX.w.IX;
+			break;
+		case MDP_REG_Z80_IY:
+			*ret_value = M_Z80.IY.w.IY;
+			break;
+		
+		/* Shadow registers: BYTE */
+		case MDP_REG_Z80_A2:
+			tmp = mdZ80_get_AF2(&M_Z80);
+			*ret_value = ((tmp >> 8) & 0xFF);
+			break;
+		case MDP_REG_Z80_F2:
+			tmp = mdZ80_get_AF2(&M_Z80);
+			*ret_value = (tmp & 0xFF);
+			break;
+		case MDP_REG_Z80_B2:
+			*ret_value = M_Z80.BC2.b.B2;
+			break;
+		case MDP_REG_Z80_C2:
+			*ret_value = M_Z80.BC2.b.C2;
+			break;
+		case MDP_REG_Z80_D2:
+			*ret_value = M_Z80.DE2.b.D2;
+			break;
+		case MDP_REG_Z80_E2:
+			*ret_value = M_Z80.DE2.b.E2;
+			break;
+		case MDP_REG_Z80_H2:
+			*ret_value = M_Z80.HL2.b.H2;
+			break;
+		case MDP_REG_Z80_L2:
+			*ret_value = M_Z80.HL2.b.L2;
+			break;
+		
+		/* Shadow registers: WORD */
+		case MDP_REG_Z80_AF2:
+			*ret_value = mdZ80_get_AF2(&M_Z80);
+			break;
+		case MDP_REG_Z80_BC2:
+			*ret_value = M_Z80.BC2.w.BC2;
+			break;
+		case MDP_REG_Z80_DE2:
+			*ret_value = M_Z80.DE2.w.DE2;
+			break;
+		case MDP_REG_Z80_HL2:
+			*ret_value = M_Z80.HL2.w.HL2;
+			break;
+		
+		/* Other registers. */
+		case MDP_REG_Z80_PC:
+			*ret_value = mdZ80_get_PC(&M_Z80);
+			break;
+		case MDP_REG_Z80_SP:
+			*ret_value = M_Z80.SP.w.SP;
+			break;
+		case MDP_REG_Z80_I:
+			*ret_value = M_Z80.I & 0xFF;
+			break;
+		case MDP_REG_Z80_R:
+			*ret_value = M_Z80.R.b.R1 & 0xFF;
+			break;
+		case MDP_REG_Z80_IM:
+			*ret_value = M_Z80.IM & 3;
+			break;
+		case MDP_REG_Z80_IFF:
+			*ret_value = (M_Z80.IFF.b.IFF2 ? 2 : 0) | (M_Z80.IFF.b.IFF1 ? 1 : 0);
+			break;
+		
+		default:
+			return -MDP_ERR_REG_INVALID_REGID;
+	}
+	
+	return MDP_ERR_OK;
+}
+
+
 int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 {
 	if (!Game)
@@ -118,6 +256,11 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 			return mdp_host_reg_get_68k(&main68k_context, regID, ret_value);
 		case MDP_REG_IC_VDP:
 			return mdp_host_reg_get_vdp(regID, ret_value);
+		case MDP_REG_IC_YM2612:
+		case MDP_REG_IC_PSG:
+			return -MDP_ERR_REG_INVALID_ICID;
+		case MDP_REG_IC_Z80:
+			return mdp_host_reg_get_z80(regID, ret_value);
 		default:
 			return -MDP_ERR_REG_INVALID_ICID;
 	}
