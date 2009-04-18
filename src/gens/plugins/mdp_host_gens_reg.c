@@ -385,6 +385,25 @@ static int mdp_host_reg_set_vdp(int regID, uint32_t new_value)
 
 
 /**
+ * mdp_host_reg_set_ym2612(): Set a YM2612 register.
+ * @param regID Register ID.
+ * @param new_value New value for the register.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_set_ym2612(int regID, uint32_t new_value)
+{
+	if (regID < 0 || regID >= 0x200)
+		return -MDP_ERR_REG_INVALID_REGID;
+	
+	const int base_addr = MDP_REG_YM2612_GET_BANK(regID) * 2;
+	new_value &= 0xFF;
+	YM2612_Write(base_addr, MDP_REG_YM2612_GET_REG(regID));
+	YM2612_Write(base_addr + 1, new_value);
+	return MDP_ERR_OK;
+}
+
+
+/**
  * mdp_host_reg_set(): Set a register.
  * @param icID IC ID.
  * @param regID Register ID.
@@ -403,6 +422,7 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 		case MDP_REG_IC_VDP:
 			return mdp_host_reg_set_vdp(regID, new_value);
 		case MDP_REG_IC_YM2612:
+			return mdp_host_reg_set_ym2612(regID, new_value);
 		case MDP_REG_IC_PSG:
 		case MDP_REG_IC_Z80:
 		default:
