@@ -145,16 +145,14 @@ typedef enum _MDP_REG_Z80
 	MDP_REG_Z80_BC2		= 31,	/* WORD */
 	MDP_REG_Z80_DE2		= 32,	/* WORD */
 	MDP_REG_Z80_HL2		= 33,	/* WORD */
-	MDP_REG_Z80_IX2		= 34,	/* WORD */
-	MDP_REG_Z80_IY2		= 35,	/* WORD */
 	
 	/* Other registers. */
-	MDP_REG_Z80_PC		= 36,	/* WORD */
-	MDP_REG_Z80_SP		= 37,	/* WORD */
-	MDP_REG_Z80_I		= 38,	/* BYTE */
-	MDP_REG_Z80_R		= 39,	/* BYTE */
-	MDP_REG_Z80_IM		= 40,	/* Interrupt Mode: 0, 1, or 2. */
-	MDP_REG_Z80_IFF		= 41,	/* Bitfield: Bit 0 == IFF1, Bit 1 == IFF2 */
+	MDP_REG_Z80_PC		= 34,	/* WORD */
+	MDP_REG_Z80_SP		= 35,	/* WORD */
+	MDP_REG_Z80_I		= 36,	/* BYTE */
+	MDP_REG_Z80_R		= 37,	/* BYTE */
+	MDP_REG_Z80_IM		= 38,	/* Interrupt Mode: 0, 1, or 2. */
+	MDP_REG_Z80_IFF		= 39,	/* Bitfield: Bit 0 == IFF1, Bit 1 == IFF2 */
 } MDP_REG_Z80;
 
 #ifdef __cplusplus
