@@ -152,7 +152,7 @@ static int mdp_host_reg_get_psg(int regID, uint32_t *ret_value)
 	if (regID < 0 || regID >= 8)
 		return -MDP_ERR_REG_INVALID_REGID;
 	
-	*ret_value = PSG_Get_Reg(regID) & 0xFF;
+	*ret_value = PSG_Get_Reg(regID) & 0x3FF;
 	return MDP_ERR_OK;
 }
 
@@ -421,6 +421,23 @@ static int mdp_host_reg_set_ym2612(int regID, uint32_t new_value)
 
 
 /**
+ * mdp_host_reg_set_psg(): Set a PSG register.
+ * @param regID Register ID.
+ * @param new_value New value for the register.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_set_psg(int regID, uint32_t new_value)
+{
+	if (regID < 0 || regID >= 8)
+		return -MDP_ERR_REG_INVALID_REGID;
+	
+	PSG_Write(0x80 | (regID << 4) | (new_value & 0x0F));
+	PSG_Write((new_value >> 4) & 0x3F);
+	return MDP_ERR_OK;
+}
+
+
+/**
  * mdp_host_reg_set_z80(): Set a Z80 register.
  * @param regID Register ID.
  * @param new_value New value for the register.
@@ -592,7 +609,7 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 		case MDP_REG_IC_YM2612:
 			return mdp_host_reg_set_ym2612(regID, new_value);
 		case MDP_REG_IC_PSG:
-			return -MDP_ERR_REG_INVALID_ICID;
+			return mdp_host_reg_set_psg(regID, new_value);
 		case MDP_REG_IC_Z80:
 			return mdp_host_reg_set_z80(regID, new_value);
 		default:
