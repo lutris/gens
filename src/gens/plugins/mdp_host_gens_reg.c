@@ -366,6 +366,24 @@ static int mdp_host_reg_set_68k(struct S68000CONTEXT *context, int regID, uint32
 	
 	return MDP_ERR_OK;
 }
+
+
+/**
+ * mdp_host_reg_set_vdp(): Set a VDP register.
+ * @param regID Register ID.
+ * @param new_value New value for the register.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_set_vdp(int regID, uint32_t new_value)
+{
+	if (regID < 0 || regID >= 24)
+		return -MDP_ERR_REG_INVALID_REGID;
+	
+	Set_VDP_Reg(regID, (new_value & 0xFF));
+	return MDP_ERR_OK;
+}
+
+
 /**
  * mdp_host_reg_set(): Set a register.
  * @param icID IC ID.
@@ -383,6 +401,7 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 		case MDP_REG_IC_M68K:
 			return mdp_host_reg_set_68k(&main68k_context, regID, new_value);
 		case MDP_REG_IC_VDP:
+			return mdp_host_reg_set_vdp(regID, new_value);
 		case MDP_REG_IC_YM2612:
 		case MDP_REG_IC_PSG:
 		case MDP_REG_IC_Z80:
