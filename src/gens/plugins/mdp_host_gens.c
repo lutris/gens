@@ -66,7 +66,7 @@ static int  mdp_ptr_LUT16to32_count = 0;
 
 mdp_host_t Gens_MDP_Host =
 {
-	.interfaceVersion	= MDP_HOST_INTERFACE_VERSION,
+	.interfaceVersion	= MDP_INTERFACE_VERSION,
 	
 	.ptr_ref		= mdp_host_ptr_ref,
 	.ptr_unref		= mdp_host_ptr_unref,
