@@ -186,6 +186,24 @@ typedef struct _mdp_host_t
 	int (MDP_FNCALL *mem_size_set)(int memID, unsigned int size);
 	
 	/**
+	 * reg_get(): Get a register value.
+	 * @param icID ID of the IC to get a register value from.
+	 * @param regID Register ID.
+	 * @param ret_value Variable to store the return value in.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_get)(int icID, int regID, uint32_t *ret_value);
+	
+	/**
+	 * reg_set(): Get a register value.
+	 * @param icID ID of the IC to set a register value in.
+	 * @param regID Register ID.
+	 * @param new_value New register value.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_set)(int icID, int regID, uint32_t new_value);
+	
+	/**
 	 * menu_item_add(): Add a menu item.
 	 * menu_item_remove(): Remove a menu item.
 	 * menu_item_set_text(): Set menu item text.
