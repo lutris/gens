@@ -42,6 +42,7 @@
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
 #include "mdp/mdp_win32.h"
+#include "mdp/mdp_mem.h"
 
 // Window.
 static HWND	sgens_window = NULL;
