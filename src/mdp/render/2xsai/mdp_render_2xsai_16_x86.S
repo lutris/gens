@@ -745,7 +745,7 @@ _2xSaILine:
 		popl	%edx
 		
 		addl	$16, %edx
-		addl	$8, %eax
+		addl	$8,  %eax
 		
 		popl	%ecx
 		subl	$4, %ecx
