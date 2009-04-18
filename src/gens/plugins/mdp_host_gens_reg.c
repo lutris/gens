@@ -49,6 +49,13 @@ extern int ice;
 /** Register Read Functions. **/
 
 
+/**
+ * mdp_host_reg_get_68k(): Get a 68000 register.
+ * @param context 68000 context.
+ * @param regID Register ID.
+ * @param ret_value Pointer to variable to store the register in.
+ * @return MDP error code.
+ */
 static int mdp_host_reg_get_68k(struct S68000CONTEXT *context, int regID, uint32_t *ret_value)
 {
 	switch (regID)
@@ -96,6 +103,12 @@ static int mdp_host_reg_get_68k(struct S68000CONTEXT *context, int regID, uint32
 }
 
 
+/**
+ * mdp_host_reg_get_vdp(): Get a VDP register.
+ * @param regID Register ID.
+ * @param ret_value Pointer to variable to store the register in.
+ * @return MDP error code.
+ */
 static int mdp_host_reg_get_vdp(int regID, uint32_t *ret_value)
 {
 	if (regID < 0 || regID >= 24)
@@ -108,6 +121,12 @@ static int mdp_host_reg_get_vdp(int regID, uint32_t *ret_value)
 }
 
 
+/**
+ * mdp_host_reg_get_ym2612(): Get a YM2612 register.
+ * @param regID Register ID.
+ * @param ret_value Pointer to variable to store the register in.
+ * @return MDP error code.
+ */
 static int mdp_host_reg_get_ym2612(int regID, uint32_t *ret_value)
 {
 	if (regID < 0 || regID >= 0x200)
@@ -118,6 +137,12 @@ static int mdp_host_reg_get_ym2612(int regID, uint32_t *ret_value)
 }
 
 
+/**
+ * mdp_host_reg_get_z80(): Get a Z80 register.
+ * @param regID Register ID.
+ * @param ret_value Pointer to variable to store the register in.
+ * @return MDP error code.
+ */
 static int mdp_host_reg_get_z80(int regID, uint32_t *ret_value)
 {
 	unsigned int tmp;
@@ -254,6 +279,13 @@ static int mdp_host_reg_get_z80(int regID, uint32_t *ret_value)
 }
 
 
+/**
+ * mdp_host_reg_get(): Get a register.
+ * @param icID IC ID.
+ * @param regID Register ID.
+ * @param ret_value Pointer to variable to store the register in.
+ * @return MDP error code.
+ */
 int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 {
 	if (!Game)
@@ -279,6 +311,13 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 }
 
 
+/**
+ * mdp_host_reg_set(): Set a register.
+ * @param icID IC ID.
+ * @param regID Register ID.
+ * @param new_value New value for the register.
+ * @return MDP error code.
+ */
 int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 {
 	// TODO
