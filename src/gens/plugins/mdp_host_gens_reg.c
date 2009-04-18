@@ -24,6 +24,9 @@
 #include <config.h>
 #endif
 
+// C includes.
+#include <stdint.h>
+
 #include "mdp_host_gens_reg.h"
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_reg.h"
@@ -312,6 +315,58 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 
 
 /**
+ * mdp_host_reg_get_68k(): Set a 68000 register.
+ * @param context 68000 context.
+ * @param regID Register ID.
+ * @param new_value New value for the register.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_set_68k(struct S68000CONTEXT *context, int regID, uint32_t new_value)
+{
+	switch (regID)
+	{
+		case MDP_REG_68K_D0:
+		case MDP_REG_68K_D1:
+		case MDP_REG_68K_D2:
+		case MDP_REG_68K_D3:
+		case MDP_REG_68K_D4:
+		case MDP_REG_68K_D5:
+		case MDP_REG_68K_D6:
+		case MDP_REG_68K_D7:
+			context->dreg[regID - MDP_REG_68K_D0] = new_value;
+			break;
+			
+		case MDP_REG_68K_A0:
+		case MDP_REG_68K_A1:
+		case MDP_REG_68K_A2:
+		case MDP_REG_68K_A3:
+		case MDP_REG_68K_A4:
+		case MDP_REG_68K_A5:
+		case MDP_REG_68K_A6:
+		case MDP_REG_68K_A7:
+		/*case MDP_REG_68K_SP:*/
+			context->areg[regID - MDP_REG_68K_A0] = new_value;
+			break;
+		
+		case MDP_REG_68K_ASP:
+			context->asp = new_value;
+			break;
+		
+		case MDP_REG_68K_PC:
+			context->pc = new_value;
+			break;
+		
+		case MDP_REG_68K_SR:
+			context->sr = (uint16_t)new_value;
+			break;
+		
+		default:
+			return -MDP_ERR_REG_INVALID_REGID;
+	}
+	
+	return MDP_ERR_OK;
+}
+/**
  * mdp_host_reg_set(): Set a register.
  * @param icID IC ID.
  * @param regID Register ID.
@@ -320,6 +375,18 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
  */
 int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 {
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
+	switch (icID)
+	{
+		case MDP_REG_IC_M68K:
+			return mdp_host_reg_set_68k(&main68k_context, regID, new_value);
+		case MDP_REG_IC_VDP:
+		case MDP_REG_IC_YM2612:
+		case MDP_REG_IC_PSG:
+		case MDP_REG_IC_Z80:
+		default:
+			return -MDP_ERR_REG_INVALID_ICID;
+	}
 }
