@@ -67,6 +67,13 @@
 #define MDP_ERR_MEM_NOT_RESIZABLE		((uint32_t)(0x0004 | MDP_ERR_MEM_CATEGORY))
 #define MDP_ERR_MEM_UNALIGNED			((uint32_t)(0x0005 | MDP_ERR_MEM_CATEGORY))
 
+/* Register errors. */
+#define MDP_ERR_REG_CATEGORY			((uint32_t)(0x0003 << 16))
+#define MDP_ERR_REG_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_MEM_CATEGORY))
+#define MDP_ERR_REG_INVALID_ICID		((uint32_t)(0x0001 | MDP_ERR_MEM_CATEGORY))
+#define MDP_ERR_REG_INVALID_REGID		((uint32_t)(0x0002 | MDP_ERR_MEM_CATEGORY))
+#define MDP_ERR_REG_NOT_ALLOCATED		((uint32_t)(0x0003 | MDP_ERR_MEM_CATEGORY))
+
 /* Menu errors. */
 #define MDP_ERR_MENU_CATEGORY			((uint32_t)(0x0003 << 16))
 #define MDP_ERR_MENU_UNKNOWN			((uint32_t)(0x0000 | MDP_ERR_MENU_CATEGORY))
