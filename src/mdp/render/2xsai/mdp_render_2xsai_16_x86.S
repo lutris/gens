@@ -198,7 +198,7 @@ _mdp_render_2xsai_16_x86_mmx:
 
 .p2align 4 /* 16-byte alignment */
 
-2: /* .Loop */
+2: /* .Loop: */
 		movw	$0, (%esi,%edx,2)	/* Clear clipping. [esi + edx * 2] */
 		
 		call	_2xSaILine		/* Do one line. */
