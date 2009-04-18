@@ -21,12 +21,3 @@ noinst_HEADERS = \
 		mdp_render_2xsai_plugin.h \
 		mdp_render_2xsai.h \
 		mdp_render_2xsai_x86.h
-
-mdp_render_2xsai_la_LIBADD = \
-		$(ASMFILES)
-
-mdp_render_2xsai_la_DEPENDENCIES = \
-		$(ASMFILES)
-
-CLEANFILES = \
-		$(ASMFILES)
