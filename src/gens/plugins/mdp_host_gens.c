@@ -37,6 +37,7 @@
 #include "mdp_host_gens_menu.hpp"
 #include "mdp_host_gens_event.hpp"
 #include "mdp_host_gens_mem.h"
+#include "mdp_host_gens_reg.h"
 #include "mdp_host_gens_emuctrl.hpp"
 #include "mdp_host_gens_z.h"
 #include "mdp_host_gens_config.hpp"
@@ -95,6 +96,9 @@ mdp_host_t Gens_MDP_Host =
 	
 	.mem_size_get		= mdp_host_mem_size_get,
 	.mem_size_set		= mdp_host_mem_size_set,
+	
+	.reg_get		= mdp_host_reg_get,
+	.reg_set		= mdp_host_reg_set,
 	
 	.menu_item_add		= mdp_host_menu_item_add,
 	.menu_item_remove	= mdp_host_menu_item_remove,
