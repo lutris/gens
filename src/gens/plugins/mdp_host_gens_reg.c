@@ -265,7 +265,7 @@ static int mdp_host_reg_get_z80(int regID, uint32_t *ret_value)
 			*ret_value = M_Z80.I & 0xFF;
 			break;
 		case MDP_REG_Z80_R:
-			*ret_value = M_Z80.R.b.R1 & 0xFF;
+			*ret_value = M_Z80.R.b.R1;
 			break;
 		case MDP_REG_Z80_IM:
 			*ret_value = M_Z80.IM & 3;
@@ -404,6 +404,157 @@ static int mdp_host_reg_set_ym2612(int regID, uint32_t new_value)
 
 
 /**
+ * mdp_host_reg_set_z80(): Set a Z80 register.
+ * @param regID Register ID.
+ * @param new_value New value for the register.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_set_z80(int regID, uint32_t new_value)
+{
+	unsigned int tmp;
+	
+	switch (regID)
+	{
+		/* Main registers: BYTE */
+		case MDP_REG_Z80_A:
+			tmp = mdZ80_get_AF(&M_Z80);
+			tmp &= 0xFF; // Save F.
+			tmp |= ((new_value & 0xFF) << 8);
+			mdZ80_set_AF(&M_Z80, tmp);
+			break;
+		case MDP_REG_Z80_F:
+			tmp = mdZ80_get_AF(&M_Z80);
+			tmp &= 0xFF00; // Save A.
+			tmp |= (new_value & 0xFF);
+			mdZ80_set_AF(&M_Z80, tmp);
+			break;
+		case MDP_REG_Z80_B:
+			M_Z80.BC.b.B = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_C:
+			M_Z80.BC.b.C = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_D:
+			M_Z80.DE.b.D = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_E:
+			M_Z80.DE.b.E = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_H:
+			M_Z80.HL.b.H = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_L:
+			M_Z80.HL.b.L = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_IXH:
+			M_Z80.IX.b.IXH = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_IXL:
+			M_Z80.IX.b.IXL = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_IYH:
+			M_Z80.IY.b.IYH = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_IYL:
+			M_Z80.IY.b.IYL = (uint8_t)new_value;
+			break;
+		
+		/* Main registers: WORD */
+		case MDP_REG_Z80_AF:
+			mdZ80_set_AF(&M_Z80, new_value);
+			break;
+		case MDP_REG_Z80_BC:
+			M_Z80.BC.w.BC = (uint16_t)new_value;
+			break;
+		case MDP_REG_Z80_DE:
+			M_Z80.DE.w.DE = (uint16_t)new_value;
+			break;
+		case MDP_REG_Z80_HL:
+			M_Z80.HL.w.HL = (uint16_t)new_value;
+			break;
+		case MDP_REG_Z80_IX:
+			M_Z80.IX.w.IX = (uint16_t)new_value;
+			break;
+		case MDP_REG_Z80_IY:
+			M_Z80.IY.w.IY = (uint16_t)new_value;
+			break;
+		
+		/* Shadow registers: BYTE */
+		case MDP_REG_Z80_A2:
+			tmp = mdZ80_get_AF2(&M_Z80);
+			tmp &= 0xFF; // Save F.
+			tmp |= ((new_value & 0xFF) << 8);
+			mdZ80_set_AF2(&M_Z80, tmp);
+			break;
+		case MDP_REG_Z80_F2:
+			tmp = mdZ80_get_AF2(&M_Z80);
+			tmp &= 0xFF00; // Save A.
+			tmp |= (new_value & 0xFF);
+			mdZ80_set_AF2(&M_Z80, tmp);
+			break;
+		case MDP_REG_Z80_B2:
+			M_Z80.BC2.b.B2 = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_C2:
+			M_Z80.BC2.b.C2 = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_D2:
+			M_Z80.DE2.b.D2 = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_E2:
+			M_Z80.DE2.b.E2 = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_H2:
+			M_Z80.HL2.b.H2 = (uint8_t)new_value;
+			break;
+		case MDP_REG_Z80_L2:
+			M_Z80.HL2.b.L2 = (uint8_t)new_value;
+			break;
+		
+		/* Shadow registers: WORD */
+		case MDP_REG_Z80_AF2:
+			mdZ80_set_AF2(&M_Z80, new_value);
+			break;
+		case MDP_REG_Z80_BC2:
+			M_Z80.BC2.w.BC2 = (uint16_t)new_value;
+			break;
+		case MDP_REG_Z80_DE2:
+			M_Z80.DE2.w.DE2 = (uint16_t)new_value;
+			break;
+		case MDP_REG_Z80_HL2:
+			M_Z80.HL2.w.HL2 = (uint16_t)new_value;
+			break;
+		
+		/* Other registers. */
+		case MDP_REG_Z80_PC:
+			mdZ80_set_PC(&M_Z80, new_value);
+			break;
+		case MDP_REG_Z80_SP:
+			M_Z80.SP.w.SP = new_value;
+			break;
+		case MDP_REG_Z80_I:
+			M_Z80.I = new_value & 0xFF;
+			break;
+		case MDP_REG_Z80_R:
+			M_Z80.R.b.R1 = new_value;
+			break;
+		case MDP_REG_Z80_IM:
+			M_Z80.IM = new_value & 3;
+			break;
+		case MDP_REG_Z80_IFF:
+			M_Z80.IFF.b.IFF1 = (new_value & 1);
+			M_Z80.IFF.b.IFF2 = ((new_value & 2) >> 1);
+			break;
+		
+		default:
+			return -MDP_ERR_REG_INVALID_REGID;
+	}
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
  * mdp_host_reg_set(): Set a register.
  * @param icID IC ID.
  * @param regID Register ID.
@@ -424,7 +575,9 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 		case MDP_REG_IC_YM2612:
 			return mdp_host_reg_set_ym2612(regID, new_value);
 		case MDP_REG_IC_PSG:
+			return -MDP_ERR_REG_INVALID_ICID;
 		case MDP_REG_IC_Z80:
+			return mdp_host_reg_set_z80(regID, new_value);
 		default:
 			return -MDP_ERR_REG_INVALID_ICID;
 	}
