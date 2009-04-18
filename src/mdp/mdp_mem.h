@@ -21,8 +21,6 @@
 #ifndef __MDP_MEM_H
 #define __MDP_MEM_H
 
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
