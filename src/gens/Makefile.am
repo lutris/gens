@@ -74,7 +74,6 @@ gens_SOURCES = \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
 		emulator/g_32x.cpp \
-		emulator/g_32x_32bit.c \
 		emulator/g_palette.c \
 		emulator/g_update.cpp \
 		emulator/parse.cpp \
@@ -113,6 +112,7 @@ gens_SOURCES = \
 		gens_core/vdp/vdp_rend.cpp \
 		gens_core/vdp/vdp_32x_x86.asm \
 		gens_core/vdp/vdp_32x.c \
+		gens_core/vdp/vdp_32x_32bit.c \
 		macros/log_msg.c \
 		port/ini.cpp \
 		segacd/cd_file.c \
@@ -191,7 +191,6 @@ noinst_HEADERS = \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
 		emulator/g_32x.hpp \
-		emulator/g_32x_32bit.h \
 		emulator/g_palette.h \
 		emulator/g_update.hpp \
 		emulator/parse.hpp \
@@ -222,9 +221,10 @@ noinst_HEADERS = \
 		gens_core/gfx/gfx_cd.h \
 		gens_core/io/io.h \
 		gens_core/io/io_teamplayer.h \
-		gens_core/vdp/vdp_32x.h \
 		gens_core/vdp/vdp_io.h \
 		gens_core/vdp/vdp_rend.h \
+		gens_core/vdp/vdp_32x.h \
+		gens_core/vdp/vdp_32x_32bit.h \
 		macros/git.h \
 		macros/bool_m.h \
 		macros/log_msg.h \

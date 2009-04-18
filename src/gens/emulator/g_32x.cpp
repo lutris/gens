@@ -43,7 +43,7 @@
 #include "video/v_inline.h"
 
 // 32X 32-bit color functions
-#include "g_32x_32bit.h"
+#include "gens_core/vdp/vdp_32x_32bit.h"
 
 // Reverse-engineered 32X firmware.
 #include "fw_32x.h"

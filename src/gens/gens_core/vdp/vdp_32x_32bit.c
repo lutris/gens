@@ -1,5 +1,5 @@
 /**
- * GENS: Sega 32X VDP - 32-bit color functions.
+ * Gens: Sega 32X VDP - 32-bit color functions.
  * Provided by Upth, ported from Gens Rerecording
  */
 
@@ -13,7 +13,7 @@
 // TODO: Maybe split up Post_Line_32X() using inline functions?
 
 
-#include "g_32x_32bit.h"
+#include "vdp_32x_32bit.h"
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
