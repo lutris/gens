@@ -466,6 +466,15 @@ void PSG_Restore_State(const uint8_t *buf)
 /** Gens-specific code **/
 
 
+int PSG_Get_Reg(int regID)
+{
+	if (regID < 0 || regID >= 8)
+		return -1;
+	
+	return PSG.Register[regID];
+}
+
+
 /**
  * PSG_Special_Update(): Update the PSG buffer.
  * Calls the appropriate function depending on the "PSG Improved" setting.

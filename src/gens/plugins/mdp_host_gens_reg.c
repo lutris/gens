@@ -36,6 +36,7 @@
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/sound/ym2612.hpp"
+#include "gens_core/sound/psg.h"
 #include "mdZ80/mdZ80.h"
 
 /*
@@ -136,6 +137,22 @@ static int mdp_host_reg_get_ym2612(int regID, uint32_t *ret_value)
 		return -MDP_ERR_REG_INVALID_REGID;
 	
 	*ret_value = YM2612_Get_Reg(regID) & 0xFF;
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * mdp_host_reg_get_psg(): Get a PSG register.
+ * @param regID Register ID.
+ * @param ret_value Pointer to variable to store the register in.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_get_psg(int regID, uint32_t *ret_value)
+{
+	if (regID < 0 || regID >= 8)
+		return -MDP_ERR_REG_INVALID_REGID;
+	
+	*ret_value = PSG_Get_Reg(regID) & 0xFF;
 	return MDP_ERR_OK;
 }
 
@@ -305,7 +322,7 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 		case MDP_REG_IC_YM2612:
 			return mdp_host_reg_get_ym2612(regID, ret_value);
 		case MDP_REG_IC_PSG:
-			return -MDP_ERR_REG_INVALID_ICID;
+			return mdp_host_reg_get_psg(regID, ret_value);
 		case MDP_REG_IC_Z80:
 			return mdp_host_reg_get_z80(regID, ret_value);
 		default:

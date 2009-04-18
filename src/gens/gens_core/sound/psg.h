@@ -48,6 +48,7 @@ void PSG_Restore_State(const uint8_t *buf);
 
 /* Gens */
 
+int PSG_Get_Reg(int regID);
 void PSG_Special_Update(void);
 
 // Full PSG save/restore functions from Gens Rerecording.
