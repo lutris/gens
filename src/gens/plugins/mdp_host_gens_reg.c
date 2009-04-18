@@ -32,6 +32,7 @@
 
 #include "gens_core/cpu/68k/star_68k.h"
 #include "gens_core/vdp/vdp_io.h"
+#include "gens_core/sound/ym2612.hpp"
 #include "mdZ80/mdZ80.h"
 
 /*
@@ -103,6 +104,16 @@ static int mdp_host_reg_get_vdp(int regID, uint32_t *ret_value)
 	// VDP_Reg is an array of 24 unsigned ints.
 	unsigned int *vdp_reg_int = (unsigned int*)(&VDP_Reg);
 	*ret_value = vdp_reg_int[regID] & 0xFF;
+	return MDP_ERR_OK;
+}
+
+
+static int mdp_host_reg_get_ym2612(int regID, uint32_t *ret_value)
+{
+	if (regID < 0 || regID >= 0x200)
+		return -MDP_ERR_REG_INVALID_REGID;
+	
+	*ret_value = YM2612_Get_Reg(regID) & 0xFF;
 	return MDP_ERR_OK;
 }
 
@@ -257,6 +268,7 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 		case MDP_REG_IC_VDP:
 			return mdp_host_reg_get_vdp(regID, ret_value);
 		case MDP_REG_IC_YM2612:
+			return mdp_host_reg_get_ym2612(regID, ret_value);
 		case MDP_REG_IC_PSG:
 			return -MDP_ERR_REG_INVALID_ICID;
 		case MDP_REG_IC_Z80:

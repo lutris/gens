@@ -2442,4 +2442,12 @@ void YM2612_Special_Update(void)
 	}
 }
 
+int YM2612_Get_Reg(int regID)
+{
+	if (regID < 0 || regID >= 0x200)
+		return -1;
+	
+	return YM2612.REG[(regID >> 8) & 1][regID & 0xFF];
+}
+
 /* end */

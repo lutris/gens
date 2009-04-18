@@ -147,6 +147,7 @@ void YM2612_Update(int **buf, int length);
 
 void YM2612_DacAndTimers_Update(int **buffer, int length);
 void YM2612_Special_Update(void);
+int YM2612_Get_Reg(int regID);
 
 /* Savestate functionality. */
 int YM2612_Save(unsigned char SAVE[0x200]);
