@@ -57,8 +57,8 @@ case $host in
 		obj_format=macho;
 		AC_DEFINE(GENS_OS_MACOSX, 1, MacOS X operating system)
 		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
-		nasm_debug="-g -F dwarf";
-		yasm_debug="-g dwarf2";
+		nasm_debug="-g -F null";
+		yasm_debug="-g null";
 		cflags_debug="-ggdb"
 		;;
 	i?86*linux*)
