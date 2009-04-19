@@ -71,37 +71,71 @@ section .bss align=64
 	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
 		%define	_M_Z80	M_Z80
+		%define _Z80_State		Z80_State
+		%define _Last_BUS_REQ_Cnt	Last_BUS_REQ_Cnt
+		%define _Last_BUS_REQ_St	Last_BUS_REQ_St
+		
+		%define _Game_Mode		Game_Mode
+		%define _CPU_Mode		CPU_Mode
+		%define _Gen_Version		Gen_Version
+		
+		%define _Z80_M68K_Cycle_Tab	Z80_M68K_Cycle_Tab
+		%define _Rom_Data		Rom_Data
+		%define _Bank_M68K		Bank_M68K
+		%define _Fake_Fetch		Fake_Fetch
+		
+		%define _Cycles_M68K		Cycles_M68K
+		%define _Cycles_Z80		Cycles_Z80
 	%endif
+	
 	extern _M_Z80
-	extern Z80_State
-	extern Last_BUS_REQ_Cnt
-	extern Last_BUS_REQ_St
+	extern _Z80_State
+	extern _Last_BUS_REQ_Cnt
+	extern _Last_BUS_REQ_St
 	
-	extern Game_Mode
-	extern CPU_Mode
-	extern Gen_Version
+	extern _Game_Mode
+	extern _CPU_Mode
+	extern _Gen_Version
 	
-	extern Z80_M68K_Cycle_Tab
-	extern Rom_Data
-	extern Bank_M68K
-	extern Fake_Fetch
+	extern _Z80_M68K_Cycle_Tab
+	extern _Rom_Data
+	extern _Bank_M68K
+	extern _Fake_Fetch
 	
-	extern Cycles_M68K
-	extern Cycles_Z80
+	extern _Cycles_M68K
+	extern _Cycles_Z80
 	
-	DECL BRAM_Ex_State
+	; Symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define _BRAM_Ex_State		BRAM_Ex_State
+		%define _BRAM_Ex_Size		BRAM_Ex_Size
+		
+		%define _S68K_State		S68K_State
+		%define _CPL_S68K		CPL_S68K
+		%define _Cycles_S68K		Cycles_S68K
+		
+		%define _Ram_Backup_Ex		Ram_Backup_Ex
+	%endif
+	
+	global _BRAM_Ex_State
+	_BRAM_Ex_State:
 		resd 1
-	DECL BRAM_Ex_Size
+	global _BRAM_Ex_Size
+	_BRAM_Ex_Size:
 		resd 1
 	
-	DECL S68K_State
+	global _S68K_State
+	_S68K_State:
 		resd 1
-	DECL CPL_S68K
+	global _CPL_S68K
+	_CPL_S68K:
 		resd 1
-	DECL Cycles_S68K
+	global _Cycles_S68K
+	_Cycles_S68K:
 		resd 1
 	
-	DECL Ram_Backup_Ex
+	global _Ram_Backup_Ex
+	_Ram_Backup_Ex:
 		resb 64 * 1024
 	
 section .data align=64
@@ -307,7 +341,7 @@ section .text align=64
 		ja	short .Bank_RAM
 		
 		xor	ebx, 1
-		mov	al, [Rom_Data + ebx]
+		mov	al, [_Rom_Data + ebx]
 		pop	ebx
 		ret
 	
@@ -317,8 +351,8 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	near M68K_Read_Byte_Bad
 		
-		add	ebx, [Bank_M68K]
-		cmp	byte [S68K_State], 1		; BUS available ?
+		add	ebx, [_Bank_M68K]
+		cmp	byte [_S68K_State], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
 		xor	ebx, 1
@@ -410,7 +444,7 @@ section .text align=64
 		mov	al, 0
 		jne	short .bad
 		
-		mov	al, [BRAM_Ex_Size]
+		mov	al, [_BRAM_Ex_Size]
 		
 	.bad:
 		pop	ebx
@@ -423,12 +457,12 @@ section .text align=64
 		mov	al, 0
 		ja	short .bad
 		
-		test	word [BRAM_Ex_State], 0x100
+		test	word [_BRAM_Ex_State], 0x100
 		jz	short .bad
 		
 		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		mov	al, [Ram_Backup_Ex + ebx]
+		mov	al, [_Ram_Backup_Ex + ebx]
 	
 	.bad:
 		pop	ebx
@@ -441,7 +475,7 @@ section .text align=64
 		mov	al, 0
 		jne	short .bad
 		
-		mov	al, [BRAM_Ex_State]
+		mov	al, [_BRAM_Ex_State]
 	
 	.bad:
 		pop	ebx
@@ -453,7 +487,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [Z80_State], 6
+		test	byte [_Z80_State], 6
 		jnz	near .bad
 		
 		push	ecx
@@ -474,16 +508,16 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [Z80_State], 2
+		test	byte [_Z80_State], 2
 		jnz	short .z80_on
 	
 	.z80_off:
 		call	_main68k_readOdometer
-		sub	eax, [Last_BUS_REQ_Cnt]
+		sub	eax, [_Last_BUS_REQ_Cnt]
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		mov	al, [Last_BUS_REQ_St]
+		mov	al, [_Last_BUS_REQ_St]
 		pop	ebx
 		or	al, 0x80
 		ret
@@ -527,12 +561,12 @@ section .text align=64
 	align 8
 	
 	.MD_Spec:
-		mov	al, [Game_Mode]
+		mov	al, [_Game_Mode]
 		add	al, al
-		or	al, [CPU_Mode]
+		or	al, [_CPU_Mode]
 		shl	al, 6
 		pop	ebx
-		or	al, [Gen_Version]
+		or	al, [_Gen_Version]
 		ret
 	
 	align 8
@@ -593,7 +627,7 @@ section .text align=64
 	align 16
 	
 	.S68K_Ctrl_L:
-		mov	al, [S68K_State]
+		mov	al, [_S68K_State]
 		pop	ebx
 		ret
 	
@@ -609,7 +643,7 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl_L:
-		mov	eax, [Bank_M68K]
+		mov	eax, [_Bank_M68K]
 		mov	ebx, [_Ram_Word_State]
 		shr	eax, 11
 		and	ebx, 3
@@ -641,14 +675,14 @@ section .text align=64
 	align 4
 	
 	.HINT_Vector_H:
-		mov	al, [Rom_Data + 0x73]
+		mov	al, [_Rom_Data + 0x73]
 		pop	ebx
 		ret
 	
 	align 4
 
 	.HINT_Vector_L:
-		mov	al, [Rom_Data + 0x72]
+		mov	al, [_Rom_Data + 0x72]
 		pop	ebx
 		ret
 	
@@ -756,7 +790,7 @@ section .text align=64
 		cmp	ebx, 0x1FFFF
 		ja	short .Bank_RAM
 		
-		mov	ax, [Rom_Data + ebx]
+		mov	ax, [_Rom_Data + ebx]
 		pop	ebx
 		ret
 	
@@ -766,8 +800,8 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	near M68K_Read_Word_Bad
 		
-		add	ebx, [Bank_M68K]
-		cmp	byte [S68K_State], 1		; BUS available ?
+		add	ebx, [_Bank_M68K]
+		cmp	byte [_S68K_State], 1		; BUS available ?
 		je	near M68K_Read_Byte_Bad
 		
 		mov	ax, [_Ram_Prg + ebx - 0x20000]
@@ -849,7 +883,7 @@ section .text align=64
 		mov	ax, 0
 		jne	short .bad
 		
-		mov	ax, [BRAM_Ex_Size]
+		mov	ax, [_BRAM_Ex_Size]
 	
 	.bad:
 		pop	ebx
@@ -862,12 +896,12 @@ section .text align=64
 		mov	ax, 0
 		ja	short .bad
 		
-		test	word [BRAM_Ex_State], 0x100
+		test	word [_BRAM_Ex_State], 0x100
 		jz	short .bad
 		
 		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		mov	ax, [Ram_Backup_Ex + ebx]
+		mov	ax, [_Ram_Backup_Ex + ebx]
 	
 	.bad:
 		pop	ebx
@@ -881,7 +915,7 @@ section .text align=64
 		jne	short .bad
 		
 		xor	ah, ah
-		mov	al, [BRAM_Ex_State]
+		mov	al, [_BRAM_Ex_State]
 		
 	.bad:
 		pop	ebx
@@ -893,7 +927,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [Z80_State], 6
+		test	byte [_Z80_State], 6
 		jnz	near .bad
 		
 		push	ecx
@@ -914,41 +948,41 @@ section .text align=64
 		cmp	ebx, 0xA11100
 		jne	short .no_busreq
 		
-		test	byte [Z80_State], 2
+		test	byte [_Z80_State], 2
 		jnz	short .z80_on
 	
 	.z80_off:
 		call	_main68k_readOdometer
-		sub	eax, [Last_BUS_REQ_Cnt]
+		sub	eax, [_Last_BUS_REQ_Cnt]
 		cmp	eax, CYCLE_FOR_TAKE_Z80_BUS_SEGACD
 		ja	short .bus_taken
 		
-		mov	al, [Fake_Fetch]
-		mov	ah, [Last_BUS_REQ_St]
+		mov	al, [_Fake_Fetch]
+		mov	ah, [_Last_BUS_REQ_St]
 		xor	al, 0xFF
 		or	ah, 0x80
-		mov	[Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
 		pop	ebx
 		ret
 	
 	align 16
 	
 	.bus_taken:
-		mov	al, [Fake_Fetch]
+		mov	al, [_Fake_Fetch]
 		mov	ah, 0x80
 		xor	al, 0xFF
 		pop	ebx
-		mov	[Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
 		ret
 	
 	align 16
 	
 	.z80_on:
-		mov	al, [Fake_Fetch]
+		mov	al, [_Fake_Fetch]
 		mov	ah, 0x81
 		xor	al, 0xFF
 		pop	ebx
-		mov	[Fake_Fetch], al		; fake the next fetched instruction (random)
+		mov	[_Fake_Fetch], al		; fake the next fetched instruction (random)
 		ret
 	
 	align 16
@@ -969,12 +1003,12 @@ section .text align=64
 	align 8
 	
 	.MD_Spec:
-		mov	ax, [Game_Mode]
+		mov	ax, [_Game_Mode]
 		add	ax, ax
-		or	ax, [CPU_Mode]
+		or	ax, [_CPU_Mode]
 		shl	ax, 6
 		pop	ebx
-		or	ax, [Gen_Version]		; on recupere les infos hardware de la machine
+		or	ax, [_Gen_Version]		; on recupere les infos hardware de la machine
 		ret
 	
 	align 8
@@ -1037,7 +1071,7 @@ section .text align=64
 	
 	.S68K_Ctrl:
 		mov	ah, [_Int_Mask_S68K]
-		mov	al, [S68K_State]
+		mov	al, [_S68K_State]
 		and	ah, 4
 		shl	ah, 5
 		pop	ebx
@@ -1046,7 +1080,7 @@ section .text align=64
 	align 16
 	
 	.Memory_Ctrl:
-		mov	eax, [Bank_M68K]
+		mov	eax, [_Bank_M68K]
 		mov	ebx, [_Ram_Word_State]
 		shr	eax, 11
 		and	ebx, 3
@@ -1066,7 +1100,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector:
-		mov	ax, [Rom_Data + 0x72]
+		mov	ax, [_Rom_Data + 0x72]
 		pop	ebx
 		ret
 	
@@ -1137,8 +1171,8 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	short .bad
 		
-		add	ebx, [Bank_M68K]
-		cmp	byte [S68K_State], 1		; BUS available ?
+		add	ebx, [_Bank_M68K]
+		cmp	byte [_S68K_State], 1		; BUS available ?
 		je	short .bad
 		
 		xor	ebx, 1
@@ -1236,12 +1270,12 @@ section .text align=64
 		cmp	ebx, 0x61FFFF
 		ja	short .bad
 		
-		cmp	word [BRAM_Ex_State], 0x101
+		cmp	word [_BRAM_Ex_State], 0x101
 		jne	short .bad
 		
 		and	ebx, 0x1FFFF
 		shr	ebx, 1
-		mov	[Ram_Backup_Ex + ebx], al
+		mov	[_Ram_Backup_Ex + ebx], al
 	
 	.bad:
 		pop	ecx
@@ -1254,7 +1288,7 @@ section .text align=64
 		cmp	ebx, 0x7FFFFF
 		jne	short .bad
 		
-		mov	[BRAM_Ex_State], al
+		mov	[_BRAM_Ex_State], al
 	
 	.bad:
 		pop	ecx
@@ -1267,7 +1301,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_mem
 		
-		test	byte [Z80_State], 6
+		test	byte [_Z80_State], 6
 		jnz	short .bad
 		
 		push	edx
@@ -1296,7 +1330,7 @@ section .text align=64
 		jne	near .no_busreq
 		
 		xor	ecx, ecx
-		mov	ah, [Z80_State]
+		mov	ah, [_Z80_State]
 		mov	dword [_Controller_1_Counter], ecx
 		test	al, 1
 		mov	dword [_Controller_1_Delay], ecx
@@ -1309,12 +1343,12 @@ section .text align=64
 		
 		or	ah, 2
 		push	edx
-		mov	[Z80_State], ah
-		mov	ebx, [Cycles_M68K]
+		mov	[_Z80_State], ah
+		mov	ebx, [_Cycles_M68K]
 		call	_main68k_readOdometer
 		sub	ebx, eax
-		mov	edx, [Cycles_Z80]
-		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	edx, [_Cycles_Z80]
+		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		sub	edx, ebx
 		
 		push	edx
@@ -1332,19 +1366,19 @@ section .text align=64
 	
 	.deactivated:
 		call	_main68k_readOdometer
-		mov	cl, [Z80_State]
-		mov	[Last_BUS_REQ_Cnt], eax
+		mov	cl, [_Z80_State]
+		mov	[_Last_BUS_REQ_Cnt], eax
 		test	cl, 2
-		setnz	[Last_BUS_REQ_St]
+		setnz	[_Last_BUS_REQ_St]
 		jz	short .already_deactivated
 		
 		push	edx
-		mov	ebx, [Cycles_M68K]
+		mov	ebx, [_Cycles_M68K]
 		and	cl, ~2
 		sub	ebx, eax
-		mov	[Z80_State], cl
-		mov	edx, [Cycles_Z80]
-		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	[_Z80_State], cl
+		mov	edx, [_Cycles_Z80]
+		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		mov	ecx, _M_Z80
 		sub	edx, ebx
 %ifdef __GCC2
@@ -1375,7 +1409,7 @@ section .text align=64
 		call	_mdZ80_reset
 		add	esp, 4
 		
-		or	byte [Z80_State], 4
+		or	byte [_Z80_State], 4
 		call	_YM2612_Reset
 		pop	edx
 		pop	ecx
@@ -1383,7 +1417,7 @@ section .text align=64
 		ret
 	
 	.no_reset:
-		and	byte [Z80_State], ~4
+		and	byte [_Z80_State], ~4
 		pop	ecx
 		pop	ebx
 		ret
@@ -1471,7 +1505,7 @@ section .text align=64
 	.S68K_Ctrl_L:
 		test	al, 1
 		jz	short .S68K_Reseting
-		test	byte [S68K_State], 1
+		test	byte [_S68K_State], 1
 		jnz	short .S68K_Already_Running
 	
 	.S68K_Restart:
@@ -1482,7 +1516,7 @@ section .text align=64
 	.S68K_Reseting:
 	.S68K_Already_Running:
 		and	al, 3
-		mov	[S68K_State], al
+		mov	[_S68K_State], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1526,7 +1560,7 @@ section .text align=64
 	.Mode_2M:
 		shl	ebx, 11
 		test	al, 1
-		mov	[Bank_M68K], ebx
+		mov	[_Bank_M68K], ebx
 		jz	short .No_DMNA
 		
 		mov	byte [_Ram_Word_State], 1
@@ -1548,7 +1582,7 @@ section .text align=64
 		or	word [_Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
 	
 	.no_swap:
-		mov	[Bank_M68K], ebx
+		mov	[_Bank_M68K], ebx
 		call	_M68K_Set_Prg_Ram
 		pop	ecx
 		pop	ebx
@@ -1573,7 +1607,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector_H:
-		mov	[Rom_Data + 0x73], al
+		mov	[_Rom_Data + 0x73], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1581,7 +1615,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector_L:
-		mov	[Rom_Data + 0x72], al
+		mov	[_Rom_Data + 0x72], al
 		pop	ecx
 		pop	ebx
 		ret
@@ -1698,8 +1732,8 @@ section .text align=64
 		cmp	ebx, 0x3FFFF
 		ja	short .bad
 		
-		add	ebx, [Bank_M68K]
-		cmp	byte [S68K_State], 1		; BUS available ?
+		add	ebx, [_Bank_M68K]
+		cmp	byte [_S68K_State], 1		; BUS available ?
 		je	short .bad
 		
 		mov	[_Ram_Prg + ebx - 0x20000], ax
@@ -1787,12 +1821,12 @@ section .text align=64
 		cmp	ebx, 0x61FFFF
 		ja	short .bad
 		
-		cmp	word [BRAM_Ex_State], 0x101
+		cmp	word [_BRAM_Ex_State], 0x101
 		jne	short .bad
 		
 		and	ebx, 0x1FFFE
 		shr	ebx, 1
-		mov	[Ram_Backup_Ex + ebx], ax
+		mov	[_Ram_Backup_Ex + ebx], ax
 		
 	.bad:
 		pop	ecx
@@ -1805,7 +1839,7 @@ section .text align=64
 		cmp	ebx, 0x7FFFFE
 		jne	short .bad
 		
-		mov	[BRAM_Ex_State], al
+		mov	[_BRAM_Ex_State], al
 		
 	.bad:
 		pop	ecx
@@ -1818,7 +1852,7 @@ section .text align=64
 		cmp	ebx, 0xA0FFFF
 		ja	short .no_Z80_ram
 		
-		test	byte [Z80_State], 6
+		test	byte [_Z80_State], 6
 		jnz	near .bad
 		
 		push	edx
@@ -1841,7 +1875,7 @@ section .text align=64
 		jne	near .no_busreq
 		
 		xor	ecx, ecx
-		mov	al, [Z80_State]
+		mov	al, [_Z80_State]
 		mov	dword [_Controller_1_Counter], ecx
 		test	ah, 1
 		mov	dword [_Controller_1_Delay], ecx
@@ -1854,12 +1888,12 @@ section .text align=64
 		
 		or	al, 2
 		push	edx
-		mov	[Z80_State], al
-		mov	ebx, [Cycles_M68K]
+		mov	[_Z80_State], al
+		mov	ebx, [_Cycles_M68K]
 		call	_main68k_readOdometer
 		sub	ebx, eax
-		mov	edx, [Cycles_Z80]
-		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	edx, [_Cycles_Z80]
+		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		sub	edx, ebx
 		
 		push	edx
@@ -1877,19 +1911,19 @@ section .text align=64
 	
 	.deactivated:
 		call	_main68k_readOdometer
-		mov	cl, [Z80_State]
-		mov	[Last_BUS_REQ_Cnt], eax
+		mov	cl, [_Z80_State]
+		mov	[_Last_BUS_REQ_Cnt], eax
 		test	cl, 2
-		setnz	[Last_BUS_REQ_St]
+		setnz	[_Last_BUS_REQ_St]
 		jz	short .already_deactivated
 		
 		push	edx
-		mov	ebx, [Cycles_M68K]
+		mov	ebx, [_Cycles_M68K]
 		and	cl, ~2
 		sub	ebx, eax
-		mov	[Z80_State], cl
-		mov	edx, [Cycles_Z80]
-		mov	ebx, [Z80_M68K_Cycle_Tab + ebx * 4]
+		mov	[_Z80_State], cl
+		mov	edx, [_Cycles_Z80]
+		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		mov	ecx, _M_Z80
 		sub	edx, ebx
 %ifdef __GCC2
@@ -1920,7 +1954,7 @@ section .text align=64
 		call	_mdZ80_reset
 		add	esp, 4
 		
-		or	byte [Z80_State], 4
+		or	byte [_Z80_State], 4
 		call	_YM2612_Reset
 		pop	edx
 		pop	ecx
@@ -1928,7 +1962,7 @@ section .text align=64
 		ret
 	
 	.no_reset:
-		and	byte [Z80_State], ~4
+		and	byte [_Z80_State], ~4
 		pop	ecx
 		pop	ebx
 		ret
@@ -2017,7 +2051,7 @@ section .text align=64
 	.S68K_Ctrl:
 		test	al, 1
 		jz	short .S68K_Reseting
-		test	byte [S68K_State], 1
+		test	byte [_S68K_State], 1
 		jnz	short .S68K_Already_Running
 	
 	.S68K_Restart:
@@ -2029,7 +2063,7 @@ section .text align=64
 	.S68K_Already_Running:
 		and	al, 3
 		test	ah, 1
-		mov	[S68K_State], al
+		mov	[_S68K_State], al
 		jz	short .No_Process_INT2
 		test	byte [_Int_Mask_S68K], 0x4
 		jz	short .No_Process_INT2
@@ -2066,7 +2100,7 @@ section .text align=64
 	.Mode_2M:
 		shl	ebx, 11
 		test	al, 1
-		mov	[Bank_M68K], ebx
+		mov	[_Bank_M68K], ebx
 		jz	short .No_DMNA
 		
 		mov	byte [_Ram_Word_State], 1
@@ -2088,7 +2122,7 @@ section .text align=64
 		or	word [_Memory_Control_Status + 2], 0x0202		; DMNA bit = 1
 	
 	.no_swap:
-		mov	[Bank_M68K], ebx
+		mov	[_Bank_M68K], ebx
 		call	_M68K_Set_Prg_Ram
 		pop	ecx
 		pop	ebx
@@ -2104,7 +2138,7 @@ section .text align=64
 	align 8
 	
 	.HINT_Vector:
-		mov	[Rom_Data + 0x72], ax
+		mov	[_Rom_Data + 0x72], ax
 		pop	ecx
 		pop	ebx
 		ret

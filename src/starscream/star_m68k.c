@@ -232,6 +232,24 @@ static void gen_banner(void) {
 	emit("; Options:\n");
 	optiondump(codefile, "; *  ");
 	emit(";\n");
+	
+	// Define __OBJ_ELF if this is being assembled as an ELF object.
+	emit("\n");
+	emit("%%ifidn __OUTPUT_FORMAT__, elf\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%elifidn __OUTPUT_FORMAT__, elf32\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%elifidn __OUTPUT_FORMAT__, elf64\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%endif\n");
+	emit("\n");
+	
+	// Mark the stack as non-executable on ELF.
+	emit("%%ifdef __OBJ_ELF\n");
+	emit("\tsection .note.GNU-stack noalloc noexec nowrite progbits\n");
+	emit("%%endif\n");
+	emit("\n");
+	
 	emit("bits 32\n");
 }
 
@@ -259,8 +277,16 @@ static void gen_variables(void) {
 	emit("section .data\n");
 	emit("bits 32\n");
 
+	// Symbol redefines for ELF.
 	emit("\n");
-	emit("\textern Ram_68k\n");
+	emit("\t%%ifdef __OBJ_ELF\n");
+	emit("\t\t%%define _Ram_68k	Ram_68k\n");
+	emit("\t\t%%define _Rom_Data	Rom_Data\n");
+	emit("\t\t%%define _Rom_Size	Rom_Size\n");
+	emit("\t%%endif\n");
+	
+	emit("\n");
+	emit("\textern _Ram_68k\n");
 
 // TODO: Port from Gens Rerecording
 #if 0
@@ -278,8 +304,8 @@ static void gen_variables(void) {
 //	emit("\textern _Fix_Codes\n");
 #endif
 	
-	emit("\textern Rom_Data\n");
-	emit("\textern Rom_Size\n");
+	emit("\textern _Rom_Data\n");
+	emit("\textern _Rom_Size\n");
 	emit("\n");
 
 	emit("global %scontext\n", sourcename);
@@ -567,22 +593,6 @@ static void copy_memory_map(char *map, char *reg) {
 /***************************************************************************/
 
 static void gen_interface(void) {
-	emit("\n");
-	emit("%%ifidn __OUTPUT_FORMAT__, elf\n");
-	emit("\t%%define __OBJ_ELF\n");
-	emit("%%elifidn __OUTPUT_FORMAT__, elf32\n");
-	emit("\t%%define __OBJ_ELF\n");
-	emit("%%elifidn __OUTPUT_FORMAT__, elf64\n");
-	emit("\t%%define __OBJ_ELF\n");
-	emit("%%endif\n");
-	emit("\n");
-	
-	// Mark the stack as non-executable on ELF.
-	emit("%%ifdef __OBJ_ELF\n");
-	emit("\tsection .note.GNU-stack noalloc noexec nowrite progbits\n");
-	emit("%%endif\n");
-	emit("\n");
-	
 	emit("section .text\n");
 	emit("bits 32\n");
 	
@@ -1592,7 +1602,7 @@ static void gen_readbw(int size)
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\tand edx, 0xFFFF\n");
 		emit("\txor edx, byte 1\n");
-		emit("\tmov cl, [Ram_68k + edx]\n");
+		emit("\tmov cl, [_Ram_68k + edx]\n");
 		emit("\tmov edx, [__access_address]\n");
 		
 // TODO: Port from Gens Rerecording
@@ -1657,7 +1667,7 @@ static void gen_readbw(int size)
 		emit("\tcmp edx, 0xE00000\n");
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\tand edx, 0xFFFF\n");
-		emit("\tmov cx, [Ram_68k + edx]\n");
+		emit("\tmov cx, [_Ram_68k + edx]\n");
 		emit("\tmov edx,[__access_address]\n");
 		
 // TODO: Port from Gens Rerecording
@@ -1717,7 +1727,7 @@ static void gen_readl(void)
 	emit("\tcmp edx, 0xE00000\n");
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov ecx, [Ram_68k + edx]\n");
+	emit("\tmov ecx, [_Ram_68k + edx]\n");
 	emit("\trol ecx, 16\n");
 	emit("\tmov edx, [__access_address]\n");
 	
@@ -1781,7 +1791,7 @@ static void gen_readdecl(void)
 	emit("\tcmp edx, 0xE00000\n");
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov ecx, [Ram_68k + edx]\n");
+	emit("\tmov ecx, [_Ram_68k + edx]\n");
 	emit("\trol ecx, 16\n");
 	emit("\tmov edx, [__access_address]\n");
 
@@ -1864,7 +1874,7 @@ static void gen_writebw(int size)
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\txor edx, 1\n");
 		emit("\tand edx, 0xFFFF\n");
-		emit("\tmov [Ram_68k + edx], cl\n");
+		emit("\tmov [_Ram_68k + edx], cl\n");
 		emit("\tmov edx, [__access_address]\n");
 
 // From Gens Rerecording, but was already commented out.
@@ -1917,7 +1927,7 @@ static void gen_writebw(int size)
 		emit("\tcmp edx, 0xE00000\n");
 		emit("\tjb short .Not_In_Ram\n");
 		emit("\tand edx, 0xFFFF\n");
-		emit("\tmov [Ram_68k + edx], cx\n");
+		emit("\tmov [_Ram_68k + edx], cx\n");
 		emit("\tmov edx, [__access_address]\n");
 
 // From Gens Rerecording, but was already commented out.
@@ -1975,7 +1985,7 @@ static void gen_writel(void)
 	emit("\tcmp edx, 0xE00000\n");
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov [Ram_68k + edx], ecx\n");
+	emit("\tmov [_Ram_68k + edx], ecx\n");
 	emit("\tmov edx, [__access_address]\n");
 	emit("\trol ecx, 16\n");
 
@@ -2037,7 +2047,7 @@ static void gen_writedecl(void)
 	emit("\tjb short .Not_In_Ram\n");
 	emit("\trol ecx, 16\n");
 	emit("\tand edx, 0xFFFF\n");
-	emit("\tmov [Ram_68k + edx], ecx\n");
+	emit("\tmov [_Ram_68k + edx], ecx\n");
 	emit("\tmov edx, [__access_address]\n");
 	emit("\trol ecx, 16\n");
 

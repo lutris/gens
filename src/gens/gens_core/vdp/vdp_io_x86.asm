@@ -104,27 +104,34 @@ section .bss align=64
 	
 	; External symbol redefines for ELF
 	%ifdef __OBJ_ELF
-		%define	_MD_Screen		MD_Screen
-		%define	_MD_Palette		MD_Palette
-		%define	_MD_Screen32		MD_Screen32
-		%define	_MD_Palette32		MD_Palette32
-		%define	_Sprite_Struct		Sprite_Struct
-		%define	_Sprite_Visible		Sprite_Visible
+		%define _Rom_Data		Rom_Data
+		%define _Rom_Size		Rom_Size
+		%define _Sprite_Struct		Sprite_Struct
+		%define _Sprite_Visible		Sprite_Visible
+		%define _CPL_M68K		CPL_M68K
+		%define _Cycles_M68K		Cycles_M68K
 		
-		%define	_Cell_Conv_Tab		Cell_Conv_Tab
-		%define	_Ram_Word_State		Ram_Word_State
+		%define _MD_Screen		MD_Screen
+		%define _MD_Palette		MD_Palette
+		%define _MD_Screen32		MD_Screen32
+		%define _MD_Palette32		MD_Palette32
 		
-		%define	_Ram_Prg		Ram_Prg
-		%define	_Ram_Word_2M		Ram_Word_2M
-		%define	_Ram_Word_1M		Ram_Word_1M
+		%define _Cell_Conv_Tab		Cell_Conv_Tab
+		%define _Ram_Word_State		Ram_Word_State
+		
+		%define _Ram_68k		Ram_68k
+		%define _Ram_Prg		Ram_Prg
+		%define _Ram_Word_2M		Ram_Word_2M
+		%define _Ram_Word_1M		Ram_Word_1M
+		%define _Bank_M68K		Bank_M68K
 	%endif
 	
-	extern Rom_Data
-	extern Rom_Size
+	extern _Rom_Data
+	extern _Rom_Size
 	extern _Sprite_Struct
 	extern _Sprite_Visible
-	extern CPL_M68K
-	extern Cycles_M68K
+	extern _CPL_M68K
+	extern _Cycles_M68K
 	extern _main68k_context		; Starscream context (for interrupts)
 	
 	; SegaCD
@@ -136,11 +143,11 @@ section .bss align=64
 	extern _MD_Screen32
 	extern _MD_Palette32
 	
-	extern Ram_68k
+	extern _Ram_68k
 	extern _Ram_Prg
 	extern _Ram_Word_2M
 	extern _Ram_Word_1M
-	extern Bank_M68K
+	extern _Bank_M68K
 	
 	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
@@ -418,7 +425,7 @@ section .text align=64
 	and	esi, 0xFFFE
 %elif %1 < 3
 	and	esi, 0x0001FFFE
-	add	esi, [Bank_M68K]
+	add	esi, [_Bank_M68K]
 %elif %1 < 4
 	sub	esi, 2
 	and	esi, 0x0003FFFE
@@ -451,12 +458,12 @@ section .text align=64
 %%Loop:
 	mov	di, bx
 %if %1 < 1
-	mov	ax, [Rom_Data + esi]
+	mov	ax, [_Rom_Data + esi]
 	add	si, 2		; Actual hardware wraps on 128K boundaries.
 	jnc	short %%No_Carry
 	xor	esi, 0x10000
 %elif %1 < 2
-	mov	ax, [Ram_68k + esi]
+	mov	ax, [_Ram_68k + esi]
 	add	si, 2
 %elif %1 < 3
 	mov	ax, [_Ram_Prg + esi]
@@ -553,7 +560,7 @@ section .text align=64
 		
 	.Blanking:
 		mov	ecx, [DMA_Timing_Table + ebx * 4]
-		mov	eax, [CPL_M68K]
+		mov	eax, [_CPL_M68K]
 		sub	dword [_DMAT_Length], ecx
 		ja	short .DMA_Not_Finished
 			
@@ -678,8 +685,8 @@ section .text align=64
 		push ebx
 		
 		call	_main68k_readOdometer
-		mov	ebx, [Cycles_M68K]
-		sub	ebx, [CPL_M68K]
+		mov	ebx, [_Cycles_M68K]
+		sub	ebx, [_CPL_M68K]
 		sub	eax, ebx			; Nb cycles effectués sur cette ligne.
 		xor	ebx, ebx
 		and	eax, 0x1FF
@@ -700,8 +707,8 @@ section .text align=64
 		push ebx
 		
 		call	_main68k_readOdometer
-		mov	ebx, [Cycles_M68K]
-		sub	ebx, [CPL_M68K]
+		mov	ebx, [_Cycles_M68K]
+		sub	ebx, [_CPL_M68K]
 		sub	eax, ebx			; Nb cycles effectués sur cette ligne.
 		xor	ebx, ebx
 		and	eax, 0x1FF
@@ -1046,7 +1053,7 @@ section .text align=64
 		test	dword [_Ctrl.DMA_Mode], 0x80
 		jnz	near .NO_DMA
 		xor	ebx, ebx
-		cmp	esi, [Rom_Size]
+		cmp	esi, [_Rom_Size]
 		jb	short .DMA_Src_OK			; Src = ROM (ebx = 0)
 		mov	ebx, 1
 		test	byte [_SegaCD_Started], 0xFF

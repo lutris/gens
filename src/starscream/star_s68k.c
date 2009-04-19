@@ -232,6 +232,24 @@ static void gen_banner(void) {
 	emit("; Options:\n");
 	optiondump(codefile, "; *  ");
 	emit(";\n");
+	
+	// Define __OBJ_ELF if this is being assembled as an ELF object.
+	emit("\n");
+	emit("%%ifidn __OUTPUT_FORMAT__, elf\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%elifidn __OUTPUT_FORMAT__, elf32\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%elifidn __OUTPUT_FORMAT__, elf64\n");
+	emit("\t%%define __OBJ_ELF\n");
+	emit("%%endif\n");
+	emit("\n");
+	
+	// Mark the stack as non-executable on ELF.
+	emit("%%ifdef __OBJ_ELF\n");
+	emit("\tsection .note.GNU-stack noalloc noexec nowrite progbits\n");
+	emit("%%endif\n");
+	emit("\n");
+	
 	emit("bits 32\n");
 }
 
@@ -262,8 +280,16 @@ static void gen_variables(void) {
 
 // TODO: Port from Gens Rerecording
 #if 0
+	// Symbol redefines for ELF.
 	emit("\n");
-	emit("\textern Ram_68k\n");
+	emit("\t%%ifdef __OBJ_ELF\n");
+	emit("\t\t%%define _Ram_68k	Ram_68k\n");
+	emit("\t\t%%define _Rom_Data	Rom_Data\n");
+	emit("\t\t%%define _Rom_Size	Rom_Size\n");
+	emit("\t%%endif\n");
+	
+	emit("\n");
+	emit("\textern _Ram_68k\n");
 	emit("\textern _GensTrace_cd\n");
 
 	emit("\textern _hook_read_byte_cd\n");
@@ -276,8 +302,8 @@ static void gen_variables(void) {
 	emit("\textern _hook_address_cd\n");
 	emit("\textern _hook_value_cd\n");	
 
-	emit("\textern Rom_Data\n");
-	emit("\textern Rom_Size\n");
+	emit("\textern _Rom_Data\n");
+	emit("\textern _Rom_Size\n");
 	emit("\n");
 #endif
 	
@@ -564,22 +590,6 @@ static void copy_memory_map(char *map, char *reg) {
 /***************************************************************************/
 
 static void gen_interface(void) {
-	emit("\n");
-	emit("%%ifidn __OUTPUT_FORMAT__, elf\n");
-	emit("\t%%define __OBJ_ELF\n");
-	emit("%%elifidn __OUTPUT_FORMAT__, elf32\n");
-	emit("\t%%define __OBJ_ELF\n");
-	emit("%%elifidn __OUTPUT_FORMAT__, elf64\n");
-	emit("\t%%define __OBJ_ELF\n");
-	emit("%%endif\n");
-	emit("\n");
-	
-	// Mark the stack as non-executable on ELF.
-	emit("%%ifdef __OBJ_ELF\n");
-	emit("\tsection .note.GNU-stack noalloc noexec nowrite progbits\n");
-	emit("%%endif\n");
-	emit("\n");
-	
 	emit("section .text\n");
 	emit("bits 32\n");
 	
