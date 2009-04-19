@@ -20,10 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "input_sdl.h"
 #include "input_sdl_keys.h"
 #include "input_sdl_events.hpp"
@@ -60,9 +56,7 @@ static unsigned int	input_sdl_get_key(void);
 static BOOL		input_sdl_joy_exists(int joy_num);
 
 // Miscellaneous.
-#ifndef GENS_OS_MACOSX
 static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer user_data);
-#endif
 
 // Maximum number of keys and joysticks.
 #define INPUT_SDL_MAX_KEYS 512
@@ -142,10 +136,8 @@ int input_sdl_init(void)
 	memset(input_sdl_keys, 0x00, sizeof(input_sdl_keys));
 	memset(input_sdl_joy_state, 0x00, sizeof(input_sdl_joy_state));
 	
-#ifndef GENS_OS_MACOSX
 	// Install the GTK+ key snooper.
 	gtk_key_snooper_install(input_sdl_gdk_keysnoop, NULL);
-#endif
 	
 	// Initialize joysticks.
 	input_sdl_num_joysticks = 0;
@@ -198,7 +190,6 @@ int input_sdl_end(void)
 }
 
 
-#ifndef GENS_OS_MACOSX
 /**
  * input_sdl_gdk_keysnoop(): Keysnooping callback event for GTK+/GDK.
  * @param grab_widget Widget this key was snooped from.
@@ -252,7 +243,6 @@ static gint input_sdl_gdk_keysnoop(GtkWidget *grab, GdkEventKey *event, gpointer
 	// Allow GTK+ to process this key.
 	return FALSE;
 }
-#endif /* GENS_OS_MACOSX */
 
 
 /**
