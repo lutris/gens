@@ -69,6 +69,13 @@ using std::list;
 // TODO: This isn't actually a bug with SDL/GTK - it's an issue with keysnooping...
 static int mod = 0;
 
+#define IS_KMOD_NONE(mod) (mod == 0)
+#define IS_KMOD_CTRL(mod) \
+	(!(mod & ~GENS_KMOD_CTRL) && ((mod & GENS_KMOD_LCTRL) || (mod & GENS_KMOD_RCTRL)))
+#define IS_KMOD_ALT(mod) \
+	(!(mod & ~GENS_KMOD_ALT) && ((mod & GENS_KMOD_LALT) || (mod & GENS_KMOD_RALT)))
+#define IS_KMOD_SHIFT(mod) \
+	(!(mod & ~GENS_KMOD_SHIFT) && ((mod & GENS_KMOD_LSHIFT) || (mod & GENS_KMOD_RSHIFT)))
 
 /**
  * input_sdl_event_key_down(): Check if a key is pressed.
@@ -133,12 +140,12 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_BACKSPACE:
-			if (vdraw_get_fullscreen() && (mod & KMOD_SHIFT))
+			if (vdraw_get_fullscreen() && IS_KMOD_SHIFT(mod))
 			{
 				audio_clear_sound_buffer();
 				ImageUtil::screenShot();
 			}
-			else if (mod & KMOD_CTRL)
+			else if (IS_KMOD_CTRL(mod))
 			{
 				// Congratulations!
 				if (congratulations == 0)
@@ -151,7 +158,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_RETURN:
-			if (mod & GENS_KMOD_ALT)
+			if (IS_KMOD_ALT(mod))
 			{
 				if (vdraw_get_fullscreen())
 				{
@@ -169,12 +176,12 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F2:
-			if (mod & GENS_KMOD_SHIFT)
+			if (IS_KMOD_SHIFT(mod))
 			{
 				Options::setStretch((Options::stretch() + 1) % 4);
 				Sync_Gens_Window_GraphicsMenu();
 			}
-			else if (!mod)
+			else if (IS_KMOD_NONE(mod))
 			{
 				Options::setFrameSkip(-1);
 				Sync_Gens_Window_GraphicsMenu();
@@ -182,13 +189,13 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F3:
-			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_SHIFT))
+			if (vdraw_get_fullscreen() && IS_KMOD_SHIFT(mod))
 			{
 				int newVSync = !(vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
 				Options::setVSync(newVSync);
 				Sync_Gens_Window_GraphicsMenu();
 			}
-			else if (!mod)
+			else if (IS_KMOD_NONE(mod))
 			{
 				if (Options::frameSkip() == -1)
 				{
@@ -204,18 +211,18 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F4:
-			if (!mod)
+			if (!IS_KMOD_NONE(mod))
+				break;
+			
+			if (Options::frameSkip() == -1)
 			{
-				if (Options::frameSkip() == -1)
-				{
-					Options::setFrameSkip(1);
-					Sync_Gens_Window_GraphicsMenu();
-				}
-				else if (Options::frameSkip() < 8)
-				{
-					Options::setFrameSkip(Options::frameSkip() + 1);
-					Sync_Gens_Window_GraphicsMenu();
-				}
+				Options::setFrameSkip(1);
+				Sync_Gens_Window_GraphicsMenu();
+			}
+			else if (Options::frameSkip() < 8)
+			{
+				Options::setFrameSkip(Options::frameSkip() + 1);
+				Sync_Gens_Window_GraphicsMenu();
 			}
 			break;
 		
@@ -225,13 +232,13 @@ void input_sdl_event_key_down(int key)
 			
 			//if (Check_If_Kaillera_Running()) return 0;
 			
-			if (mod == KMOD_SHIFT)
+			if (IS_KMOD_SHIFT(mod))
 			{
 				string filename = Savestate::SelectFile(true, State_Dir);
 				if (!filename.empty())
 					Savestate::SaveState(filename);
 			}
-			else if (!mod)
+			else if (IS_KMOD_NONE(mod))
 			{
 				string filename = Savestate::GetStateFilename();
 				Savestate::SaveState(filename);
@@ -239,7 +246,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F6:
-			if (!mod)
+			if (IS_KMOD_NONE(mod))
 			{
 				Options::setSaveSlot((Options::saveSlot() + 9) % 10);
 				Sync_Gens_Window_FileMenu();
@@ -247,7 +254,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F7:
-			if (!mod)
+			if (IS_KMOD_NONE(mod))
 			{
 				Options::setSaveSlot((Options::saveSlot() + 1) % 10);
 				Sync_Gens_Window_FileMenu();
@@ -260,13 +267,13 @@ void input_sdl_event_key_down(int key)
 			
 			//if (Check_If_Kaillera_Running()) return 0;
 			
-			if (mod == KMOD_SHIFT)
+			if (IS_KMOD_SHIFT(mod))
 			{
 				string filename = Savestate::SelectFile(false, State_Dir);
 				if (!filename.empty())
 					Savestate::LoadState(filename);
 			}
-			else if (!mod)
+			else if (IS_KMOD_NONE(mod))
 			{
 				string filename = Savestate::GetStateFilename();
 				Savestate::LoadState(filename);
@@ -275,27 +282,27 @@ void input_sdl_event_key_down(int key)
 		
 		case GENS_KEY_F9:
 			#ifdef GENS_OS_WIN32 // TODO: Implement SW Render options on SDL?
-			if (mod & GENS_KMOD_SHIFT)
+			if (IS_KMOD_SHIFT(mod))
 				Options::setSwRender(!Options::swRender());
-			else //if (!mod)
+			else //if (IS_KMOD_NONE(mod))
 			#endif /* GENS_OS_WIN32 */
 				Options::setFastBlur(!Options::fastBlur());
 			break;
 		
 		case GENS_KEY_F10:
-			if (vdraw_get_fullscreen() && !mod)
+			if (vdraw_get_fullscreen() && IS_KMOD_NONE(mod))
 			{
 				vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			}
 			break;
 		
 		case GENS_KEY_F11:
-			if (mod & GENS_KMOD_SHIFT)
+			if (IS_KMOD_SHIFT(mod))
 			{
 				Options::setSoundPSG_Sine(!Options::soundPSG_Sine());
 				Sync_Gens_Window_SoundMenu();
 			}
-			else //if (!mod)
+			else if (IS_KMOD_NONE(mod))
 			{
 				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				if (rendMode != PluginMgr::lstRenderPlugins.begin())
@@ -308,12 +315,12 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F12:
-			if (mod & GENS_KMOD_SHIFT)
+			if (IS_KMOD_SHIFT(mod))
 			{
 				Options::setSoundYM2612_Improved(!Options::soundYM2612_Improved());
 				Sync_Gens_Window_SoundMenu();
 			}
-			else //if (!mod)
+			else if (IS_KMOD_NONE(mod))
 			{
 				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 				rendMode++;
@@ -338,13 +345,13 @@ void input_sdl_event_key_down(int key)
 		{
 			int value = (key - GENS_KEY_0);
 			
-			if (!mod && (value >= 0 && value <= 9))
+			if (IS_KMOD_NONE(mod) && (value >= 0 && value <= 9))
 			{
 				// No modifier key. Select save slot.
 				Options::setSaveSlot(value);
 				Sync_Gens_Window_FileMenu();
 			}
-			else if ((mod & GENS_KMOD_CTRL) && (value >= 1 && value <= 9))
+			else if (IS_KMOD_CTRL(mod) && (value >= 1 && value <= 9))
 			{
 				// Ctrl. Select ROM from ROM History.
 				if (ROM::Recent_ROMs.size() < value)
@@ -364,7 +371,7 @@ void input_sdl_event_key_down(int key)
 		
 #ifdef GENS_CDROM
 		case GENS_KEY_b:
-			if (vdraw_get_fullscreen() && (mod & GENS_KMOD_CTRL))
+			if (vdraw_get_fullscreen() && IS_KMOD_CTRL(mod))
 			{
 				// Ctrl-B: Boot CD
 				if (Num_CD_Drive == 0)
@@ -380,7 +387,7 @@ void input_sdl_event_key_down(int key)
 		
 		/*
 		case GENS_KEY_w:
-			if (mod & GENS_KMOD_CTRL)
+			if (IS_KMOD_CTRL(mod))
 			{
 				if (Sound_Initialised)
 					Clear_Sound_Buffer ();
@@ -398,14 +405,14 @@ void input_sdl_event_key_down(int key)
 		
 		/*
 		case GENS_KEY_f:
-			if (mod & GENS_KMOD_CTRL)
+			if (IS_KMOD_CTRL(mod))
 				gl_linear_filter = !gl_linear_filter;
 			break;
 		*/
 		
 		/* TODO: Fix MINIMIZE.
 		case GENS_KEY_g:
-			if (mod & GENS_KMOD_CTRL)
+			if (IS_KMOD_CTRL(mod))
 			{
 				//if (Check_If_Kaillera_Running()) return 0;                                            
 				MINIMIZE;
@@ -417,7 +424,7 @@ void input_sdl_event_key_down(int key)
 		
 		/*
 		case GENS_KEY_o:
-			if (mod & GENS_KMOD_CTRL)
+			if (IS_KMOD_CTRL(mod))
 			{
 				//if ((Check_If_Kaillera_Running())) return 0;
 				if (GYM_Playing)
@@ -430,7 +437,7 @@ void input_sdl_event_key_down(int key)
 		
 		/* TODO: Fix MINIMIZE.
 		case GENS_KEY_p:
-			if (mod & (GENS_KMOD_CTRL | GENS_KMOD_SHIFT))
+			if (IS_KMOD_CTRL(mod) || IS_KMOD_SHIFT(mod))
 			{
 				if (!Genesis_Started && !SegaCD_Started && !_32X_Started)
 				{
@@ -446,13 +453,13 @@ void input_sdl_event_key_down(int key)
 		*/
 		
 		case GENS_KEY_q:
-			if (vdraw_get_fullscreen() && (mod & KMOD_CTRL))
+			if (vdraw_get_fullscreen() && IS_KMOD_CTRL(mod))
 				close_gens();
 			break;
 		
 		case GENS_KEY_r:
 		{
-			if (!(mod & KMOD_SHIFT))
+			if (!IS_KMOD_SHIFT(mod))
 				break;
 			
 			int curBackend = vdraw_cur_backend_id;
@@ -465,7 +472,7 @@ void input_sdl_event_key_down(int key)
 		
 #ifdef GENS_CDROM
 		case GENS_KEY_v:
-			if (mod & GENS_KMOD_CTRL)
+			if (IS_KMOD_CTRL(mod))
 			{
 				if (SegaCD_Started)
 					Change_CD();
