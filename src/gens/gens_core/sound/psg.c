@@ -429,7 +429,7 @@ void PSG_Init(int clock, int rate)
 	}
 	
 	// Initialize the PSG state.
-	static const uint8_t psg_state_init[8] = {0x00, 0x0F, 0x00, 0x0F, 0x00, 0x0F, 0x00, 0x0F};
+	static const uint32_t psg_state_init[8] = {0x00, 0x0F, 0x00, 0x0F, 0x00, 0x0F, 0x00, 0x0F};
 	PSG_Restore_State(psg_state_init);
 }
 
