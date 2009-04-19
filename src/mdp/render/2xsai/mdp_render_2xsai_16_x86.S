@@ -100,8 +100,7 @@ SYMTYPE(qlowpixelMask16,@object)
 ONE:			.long	0x00010001, 0x00010001
 SYMTYPE(ONE,@object)
 
-/** .bss section **/
-.bss
+/** Uninitialized data (.bss section) **/
 
 .lcomm	Mask1, 8
 .lcomm	Mask2, 8
@@ -230,6 +229,7 @@ _mdp_render_2xsai_16_x86_mmx:
 /**************************************************************************************************
  * void _2xSaILine(uint8 *srcPtr, uint32 srcPitch, uint32 width, uint8 *dstPtr, uint32 dstPitch); *
  **************************************************************************************************/
+SYMTYPE(_2xSaILine,@function)
 _2xSaILine:
 	
 	/* Save registers for later. */
