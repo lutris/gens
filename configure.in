@@ -309,7 +309,11 @@ if test x$with_opengl = xyes; then
 		])      
 		AC_MSG_RESULT($with_opengl)
 		if test x$with_opengl = xyes; then
-			LDFLAGS="$LDFLAGS -lGL"
+			if test x$os = xmacosx; then
+				LDFLAGS="$LDFLAGS -framework OpenGL"
+			else
+				LDFLAGS="$LDFLAGS -lGL"
+			fi
 			AC_DEFINE(GENS_OPENGL, 1, OpenGL support)
 		fi
 	fi
