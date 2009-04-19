@@ -34,7 +34,13 @@
 #include "macros/log_msg.h"
 
 // GTK+ includes.
+#include <gdkconfig.h>
 #include <gtk/gtk.h>
+
+// MacOS X menu bar integration.
+#ifdef GDK_WINDOWING_QUARTZ
+#include <ige-mac-integration.h>
+#endif
 
 
 // Window.
@@ -181,4 +187,9 @@ static void gens_window_create_menubar(GtkWidget *container)
 	
 	// Parse the menus.
 	gens_menu_parse(&gmiMain[0], menu_bar, gens_window_accel_group);
+	
+#ifdef GDK_WINDOWING_QUARTZ
+	// Set the menu bar as the MacOS X menu bar.
+	ige_mac_menu_set_menu_bar(GTK_MENU_SHELL(menu_bar));
+#endif
 }
