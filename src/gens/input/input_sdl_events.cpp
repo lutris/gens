@@ -83,6 +83,14 @@ static int mod = 0;
  */
 void input_sdl_event_key_down(int key)
 {
+#ifndef GENS_OS_MACOSX
+	const int allow_gtk_hotkeys = vdraw_get_fullscreen();
+#else
+	// GTK+ uses a separate window on MacOS X, and that window may
+	// be removed later by using the standard MacOS X menu bar.
+	const int allow_gtk_hotkeys = 1;
+#endif
+	
 	switch (key)
 	{
 		case GENS_KEY_LCTRL:
@@ -140,7 +148,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_BACKSPACE:
-			if (vdraw_get_fullscreen() && IS_KMOD_SHIFT(mod))
+			if (allow_gtk_hotkeys && IS_KMOD_SHIFT(mod))
 			{
 				audio_clear_sound_buffer();
 				ImageUtil::screenShot();
@@ -160,7 +168,7 @@ void input_sdl_event_key_down(int key)
 		case GENS_KEY_RETURN:
 			if (IS_KMOD_ALT(mod))
 			{
-				if (vdraw_get_fullscreen())
+				if (allow_gtk_hotkeys)
 				{
 					vdraw_set_fullscreen(!vdraw_get_fullscreen());
 					Sync_Gens_Window_GraphicsMenu();
@@ -189,9 +197,9 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F3:
-			if (vdraw_get_fullscreen() && IS_KMOD_SHIFT(mod))
+			if (allow_gtk_hotkeys && IS_KMOD_SHIFT(mod))
 			{
-				int newVSync = !(vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
+				int newVSync = !(allow_gtk_hotkeys ? Video.VSync_FS : Video.VSync_W);
 				Options::setVSync(newVSync);
 				Sync_Gens_Window_GraphicsMenu();
 			}
@@ -227,7 +235,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F5:
-			if (!vdraw_get_fullscreen())
+			if (!allow_gtk_hotkeys)
 				break;
 			
 			//if (Check_If_Kaillera_Running()) return 0;
@@ -262,7 +270,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F8:
-			if (!vdraw_get_fullscreen())
+			if (!allow_gtk_hotkeys)
 				break;
 			
 			//if (Check_If_Kaillera_Running()) return 0;
@@ -290,7 +298,7 @@ void input_sdl_event_key_down(int key)
 			break;
 		
 		case GENS_KEY_F10:
-			if (vdraw_get_fullscreen() && IS_KMOD_NONE(mod))
+			if (allow_gtk_hotkeys && IS_KMOD_NONE(mod))
 			{
 				vdraw_set_fps_enabled(!vdraw_get_fps_enabled());
 			}
@@ -304,7 +312,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else if (IS_KMOD_NONE(mod))
 			{
-				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+				list<mdp_render_t*>::iterator rendMode = (allow_gtk_hotkeys ? rendMode_FS : rendMode_W);
 				if (rendMode != PluginMgr::lstRenderPlugins.begin())
 				{
 					rendMode--;
@@ -322,7 +330,7 @@ void input_sdl_event_key_down(int key)
 			}
 			else if (IS_KMOD_NONE(mod))
 			{
-				list<mdp_render_t*>::iterator rendMode = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
+				list<mdp_render_t*>::iterator rendMode = (allow_gtk_hotkeys ? rendMode_FS : rendMode_W);
 				rendMode++;
 				if (rendMode != PluginMgr::lstRenderPlugins.end())
 				{
@@ -371,7 +379,7 @@ void input_sdl_event_key_down(int key)
 		
 #ifdef GENS_CDROM
 		case GENS_KEY_b:
-			if (vdraw_get_fullscreen() && IS_KMOD_CTRL(mod))
+			if (allow_gtk_hotkeys && IS_KMOD_CTRL(mod))
 			{
 				// Ctrl-B: Boot CD
 				if (Num_CD_Drive == 0)
@@ -453,7 +461,7 @@ void input_sdl_event_key_down(int key)
 		*/
 		
 		case GENS_KEY_q:
-			if (vdraw_get_fullscreen() && IS_KMOD_CTRL(mod))
+			if (allow_gtk_hotkeys && IS_KMOD_CTRL(mod))
 				close_gens();
 			break;
 		
