@@ -148,7 +148,18 @@ void GensUI::sleep(const int ms, const bool noUpdate)
  */
 void GensUI::setWindowTitle(const string& title)
 {
+#ifndef GENS_OS_MACOSX
+	// Set the title of the GTK+ window, since the SDL window
+	// is embedded in the GTK+ window.
 	gtk_window_set_title(GTK_WINDOW(gens_window), title.c_str());
+#else
+	// Set the window title of the SDL window.
+	// The GTK+ window will hopefully be removed later,
+	// since MacOS X uses a system-wide menu bar.
+	gtk_window_set_title(GTK_WINDOW(gens_window), title.c_str());
+	SDL_WM_SetCaption(title.c_str(), title.c_str());
+#endif
+	
 	update();
 }
 
