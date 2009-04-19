@@ -117,8 +117,6 @@ section .bss align=64
 		%define	_Ram_Prg		Ram_Prg
 		%define	_Ram_Word_2M		Ram_Word_2M
 		%define	_Ram_Word_1M		Ram_Word_1M
-		
-		%define	_VDP_Layers		VDP_Layers
 	%endif
 	
 	extern Rom_Data
@@ -137,10 +135,6 @@ section .bss align=64
 	extern _MD_Palette
 	extern _MD_Screen32
 	extern _MD_Palette32
-	
-	; See vdp_rend.asm.
-	VDP_LAYER_PALETTE_LOCK		equ	(1 << 10)
-	extern _VDP_Layers
 	
 	extern Ram_68k
 	extern _Ram_Prg
