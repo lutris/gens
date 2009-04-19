@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: (Win32) Select CD-ROM Drive Window - Callback Functions.          *
+ * Gens: (Win32) Select CD-ROM Drive Window.                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,62 +20,24 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "select_cdrom_window.h"
-#include "select_cdrom_window_callbacks.h"
-#include "select_cdrom_window_misc.hpp"
+#ifndef GENS_UI_WIN32_SELCD_WINDOW_HPP
+#define GENS_UI_WIN32_SELCD_WINDOW_HPP
 
-#include "emulator/gens.hpp"
-#include "gens_ui.hpp"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// Audio Handler.
-#include "audio/audio.h"
-
+// Win32 includes.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-// Gens Win32 resources
-#include "ui/win32/resource.h"
+extern HWND selcd_window;
 
-LRESULT CALLBACK Select_CDROM_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch(message)
-	{
-		case WM_CREATE:
-			Select_CDROM_Window_CreateChildWindows(hWnd);
-			break;
-		
-		case WM_COMMAND:
-			// Button press, or Enter pressed in textbox
-			switch (LOWORD(wParam))
-			{
-				case IDOK:
-					if (!IsWindowEnabled(SelCD_btnOK))
-						break;
-					
-					SelCD_Save();
-					DestroyWindow(hWnd);
-					break;
-				
-				case IDAPPLY:
-					if (!IsWindowEnabled(SelCD_btnApply))
-						break;
-					
-					SelCD_Save();
-					break;
-				
-				case IDCANCEL:
-					DestroyWindow(hWnd);
-					break;
-			}
-			break;
-		
-		case WM_DESTROY:
-			if (hWnd != select_cdrom_window)
-				break;
-			
-			select_cdrom_window = NULL;
-			break;
-	}
-	
-	return DefWindowProc(hWnd, message, wParam, lParam);
+void selcd_window_show(void);
+void selcd_window_close(void);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* GENS_UI_WIN32_SELCD_WINDOW_HPP */

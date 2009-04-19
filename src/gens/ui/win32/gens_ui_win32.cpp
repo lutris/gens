@@ -59,7 +59,7 @@
 #include "directory_config/dir_window.hpp"
 #include "general_options/genopt_window.hpp"
 #include "color_adjust/ca_window.h"
-#include "select_cdrom/select_cdrom_window.h"
+#include "select_cdrom/selcd_window.hpp"
 #include "country_code/ccode_window.h"
 #include "about/about_window.hpp"
 #include "plugin_manager/pmgr_window.hpp"
@@ -252,7 +252,7 @@ void GensUI::update(void)
 		    (dir_window && IsDialogMessage(dir_window, &msg)) ||
 		    (genopt_window && IsDialogMessage(genopt_window, &msg)) ||
 		    (ca_window && IsDialogMessage(ca_window, &msg)) ||
-		    (select_cdrom_window && IsDialogMessage(select_cdrom_window, &msg)) ||
+		    (selcd_window && IsDialogMessage(selcd_window, &msg)) ||
 		    (ccode_window && IsDialogMessage(ccode_window, &msg)) ||
 		    (about_window && IsDialogMessage(about_window, &msg)) ||
 		    (pmgr_window && IsDialogMessage(pmgr_window, &msg)))
