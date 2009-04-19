@@ -44,6 +44,11 @@
 // Unused Parameter macro.
 #include "macros/unused.h"
 
+#ifdef GENS_OS_MACOSX
+// SDL is needed in order to set the SDL window title.
+#include <SDL/SDL.h>
+#endif
+
 
 // File Chooser function
 static string UI_GTK_FileChooser(const string& title, const string& initFile,
