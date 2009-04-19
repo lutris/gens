@@ -28,6 +28,18 @@
 	.section .note.GNU-stack, "", %progbits
 #endif
 
+/* Read-only data macro. */
+#if defined(__APPLE__)
+#define RODATA() \
+	.const_data
+#elif defined(_WIN32)
+#define RODATA() \
+	.section	.rdata
+#else
+#define RODATA() \
+	.section	.rodata
+#endif
+
 /* PIC macros from http://www.gentoo.org/proj/en/hardened/pic-fix-guide.xml */
 
 #ifdef __PIC__
@@ -76,11 +88,6 @@ __i686.get_pc_thunk.bx:
 	#define SYMTYPE(sym, symtype) .type sym, ## symtype
 #else
 	#define SYMTYPE(sym, symtype)
-#endif
-
-/* Win32: Read-only data section are named ".rdata", not ".rodata" */
-#if defined(_WIN32)
-	#define rodata rdata
 #endif
 
 #endif /* _MDP_GNU_AS_X86_INC */
