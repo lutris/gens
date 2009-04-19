@@ -70,6 +70,9 @@ SYMTYPE(qlowpixelMask,@object)
 PrevVModeFlags:		.long	0x00000000
 SYMTYPE(PrevVModeFlags,@object)
 
+/** .rodata section **/
+RODATA()
+
 /* 15-bit color masks. */
 
 colorMask15:		.long	0x7BDE7BDE, 0x7BDE7BDE
@@ -101,6 +104,7 @@ ONE:			.long	0x00010001, 0x00010001
 SYMTYPE(ONE,@object)
 
 /** Uninitialized data (.bss section) **/
+.data
 
 .lcomm	Mask1, 8
 .lcomm	Mask2, 8

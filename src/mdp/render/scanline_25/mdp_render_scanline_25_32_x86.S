@@ -40,8 +40,8 @@
 #define MASK_DIV2_32	$0x7F7F7F7F
 #define MASK_DIV4_32	$0x3F3F3F3F
 
-/** .data section **/
-.data
+/** .rodata section **/
+RODATA()
 	
 	/* 64-bit masks used for the MMX version. */
 	MASK_DIV2_32_MMX:	.long 0x7F7F7F7F, 0x7F7F7F7F

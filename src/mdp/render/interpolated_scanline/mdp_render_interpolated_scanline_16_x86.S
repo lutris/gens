@@ -39,8 +39,8 @@
 #define arg_mask	16+32(%esp)
 #define arg_vmodeFlags	16+32(%esp)
 
-/** .data section **/
-.data
+/** .rodata section **/
+RODATA()
 	
 	/* 64-bit masks used for the mmx version. */
 	MASK_DIV2_15_MMX:	.long 0x3DEF3DEF, 0x3DEF3DEF
