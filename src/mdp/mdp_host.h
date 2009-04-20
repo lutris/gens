@@ -205,6 +205,22 @@ typedef struct PACKED _mdp_host_t
 	int (MDP_FNCALL *reg_set)(int icID, int regID, uint32_t new_value);
 	
 	/**
+	 * reg_get_all(): Get all register values for a given IC.
+	 * @param icID ID of the IC to get all register values from.
+	 * @param reg_struct Pointer to register struct for this IC.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_get_all)(int icID, void *reg_struct);
+	
+	/**
+	 * reg_set_all(): Set all register values for a given IC.
+	 * @param icID ID of the IC to set all register values in.
+	 * @param reg_struct Pointer to register struct for this IC.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_set_all)(int icID, void *reg_struct);
+	
+	/**
 	 * menu_item_add(): Add a menu item.
 	 * menu_item_remove(): Remove a menu item.
 	 * menu_item_set_text(): Set menu item text.
