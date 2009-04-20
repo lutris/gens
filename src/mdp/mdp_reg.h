@@ -60,7 +60,7 @@ typedef enum _MDP_REG_68K
 	MDP_REG_68K_A5		= 13,	/* DWORD */
 	MDP_REG_68K_A6		= 14,	/* DWORD */
 	MDP_REG_68K_A7		= 15,	/* DWORD */
-	MDP_REG_68K_SP		= 15,	/* DWORD [alias for A7] */
+	MDP_REG_68K_SP		= 15,	/* DWORD (alias for A7) */
 	MDP_REG_68K_ASP		= 16,	/* DWORD */
 	MDP_REG_68K_PC		= 17,	/* DWORD */
 	MDP_REG_68K_SR		= 18	/* WORD */
