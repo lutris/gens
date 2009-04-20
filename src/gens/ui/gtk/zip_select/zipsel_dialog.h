@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-mdp_z_entry_t *zipsel_dialog_get_file(mdp_z_entry_t *file_list);
+mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list);
 
 #ifdef __cplusplus
 }
