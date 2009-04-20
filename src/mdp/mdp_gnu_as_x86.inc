@@ -51,7 +51,7 @@
 /* Symbol sizes. */
 /* SYMSIZE_DATA() can be used anywhere. */
 /* SYMSIZE_FUNC() should be used directly after a function. */
-#if !defined(__APPLE__)
+#if defined(__ELF__)
 	#define SYMSIZE_DATA(sym, sym_size) \
 	.size	sym, sym_size
 	#define SYMSIZE_FUNC(sym) \
