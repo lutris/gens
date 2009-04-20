@@ -3,9 +3,10 @@ h1.doc_title, h2.doc_title
 	text-align: center;
 }
 
-h4.mdp_version
+h4.doc_set
 {
 	text-align: center;
+	font-family: monospace;
 }
 
 div.screenshot, p.screenshot
