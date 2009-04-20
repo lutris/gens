@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -20,37 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP
-#define GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP
-
-#include "util/file/decompressor/decompressor.h"
-
-#ifdef __cplusplus
-
-#include <list>
-
-#include "wndbase.hpp"
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#ifndef GENS_WIN32_ZIP_SELECT_DIALOG_H
+#define GENS_WIN32_ZIP_SELECT_DIALOG_H
 
 // MDP decompression structs.
 #include "mdp/mdp_z.h"
 
-class ZipSelectDialog : public WndBase
-{
-	public:
-		ZipSelectDialog();
-		~ZipSelectDialog();
-		
-		mdp_z_entry_t* getFile(mdp_z_entry_t *file_list);
-		
-		void init(HWND hWndDlg);
-	
-	protected:
-		mdp_z_entry_t* m_fileList;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* __cplusplus */
+mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list);
 
-#endif /* GENS_WIN32_ZIP_SELECT_DIALOG_MISC_HPP */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* GENS_WIN32_ZIP_SELECT_DIALOG_H */

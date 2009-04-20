@@ -27,7 +27,7 @@ gens_SOURCES += \
 		ui/win32/general_options/genopt_window.cpp \
 		ui/win32/color_adjust/ca_window.c \
 		ui/win32/country_code/ccode_window.c \
-		ui/win32/zip_select/zip_select_dialog.cpp \
+		ui/win32/zip_select/zipsel_dialog.c \
 		ui/win32/plugin_manager/pmgr_window.cpp \
 		ui/win32/wndbase.cpp \
 		ui/win32/about/about_window.cpp \
@@ -63,7 +63,7 @@ noinst_HEADERS += \
 		ui/win32/general_options/genopt_window.hpp \
 		ui/win32/color_adjust/ca_window.h \
 		ui/win32/country_code/ccode_window.h \
-		ui/win32/zip_select/zip_select_dialog.hpp \
+		ui/win32/zip_select/zipsel_dialog.h \
 		ui/win32/plugin_manager/pmgr_window.cpp \
 		ui/win32/wndbase.hpp \
 		ui/win32/about/about_window.hpp
