@@ -49,8 +49,10 @@ have been added to the MDP specification. That is, if a new feature has been
 added that doesn't break the interface and doesn't require that plugins make
 use of it, the minor version number is incremented. Plugins can check the
 minor version of the host application's MDP interface via the
-<span class='struct'><a href="mdp_host_h">mdp_host_t</a></span> struct and
-enable or disable features, if necessary.
+<span class='struct'><a href="mdp_host_h">mdp_host_t</a></span> struct (which
+is passed to the plugin via the
+<span class='struct'><a href="mdp_h.html#mdp_func_t">mdp_func_t<a></span>.init
+function) and enable or disable features, if necessary.
 </p>
 
 <p>
