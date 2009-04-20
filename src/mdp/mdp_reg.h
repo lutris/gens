@@ -21,6 +21,9 @@
 #ifndef __MDP_REG_H
 #define __MDP_REG_H
 
+#include "mdp/mdp_fncall.h"
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +43,7 @@ typedef enum _MDP_REG_IC
 	MDP_REG_IC_SSH2		= 8,
 #endif
 } MDP_REG_IC;
+
 
 /* MDP_REG_68K: 68K register IDs. */
 typedef enum _MDP_REG_68K
@@ -65,6 +69,19 @@ typedef enum _MDP_REG_68K
 	MDP_REG_68K_PC		= 17,	/* DWORD */
 	MDP_REG_68K_SR		= 18	/* WORD */
 } MDP_REG_68K;
+
+#pragma pack(1)
+/* mdp_reg_68k_t: 68K register struct for reg_get_all() / reg_set_all() */
+typedef struct PACKED _mdp_reg_68k_t
+{
+	uint32_t dreg[8];
+	uint32_t areg[8];
+	uint32_t asp;
+	uint32_t pc;
+	uint16_t sr;
+} mdp_reg_68k_t;
+#pragma pack()
+
 
 /* MDP_REG_VDP: VDP register IDs. */
 typedef enum _MDP_REG_VDP
@@ -95,11 +112,67 @@ typedef enum _MDP_REG_VDP
 	MDP_REG_VDP_DMA_SRC_H	= 23	/* BYTE */
 } MDP_REG_VDP;
 
+#pragma pack(1)
+/* mdp_reg_vdp_t: VDP register struct for reg_get_all() / reg_set_all() */
+typedef struct PACKED _mdp_reg_vdp_t
+{
+	union
+	{
+		uint8_t data[24];
+		struct
+		{
+			uint8_t mode_set1;
+			uint8_t mode_set2;
+			uint8_t pat_scra;
+			uint8_t pat_win;
+			uint8_t spr_att;
+			uint8_t reg6;
+			uint8_t bg_color;
+			uint8_t reg8;
+			uint8_t reg9;
+			uint8_t hint;
+			uint8_t mode_set3;
+			uint8_t mode_set4;
+			uint8_t hscr;
+			uint8_t reg14;
+			uint8_t auto_inc;
+			uint8_t scr_size;
+			uint8_t win_hpos;
+			uint8_t win_vpos;
+			uint8_t dma_len_l;
+			uint8_t dma_len_h;
+			uint8_t dma_src_l;
+			uint8_t dma_src_m;
+			uint8_t dma_src_h;
+		} regs;
+	};
+} mdp_reg_vdp_t;
+#pragma pack()
+
+
 /* Macro for YM2612 register IDs. */
 /* YM2612 has two banks of 256 registers. */
 #define MDP_REG_YM2612_GET_ID(bank, reg)	((uint32_t)(((bank & 1) << 8) | (reg & 0xFF)))
 #define MDP_REG_YM2612_GET_BANK(id)		((id >> 8) & 1)
 #define MDP_REG_YM2612_GET_REG(id)		(id & 0xFF)
+
+#pragma pack(1)
+/* mdp_reg_ym2612_t: YM2612 register struct for reg_get_all() / reg_set_all() */
+typedef struct PACKED _mdp_reg_ym2612_t
+{
+	uint8_t regs[2][0x100];
+} mdp_reg_ym2612_t;
+#pragma pack()
+
+
+#pragma pack(1)
+/* mdp_reg_psg_t: PSG register struct for reg_get_all() / reg_set_all() */
+typedef struct PACKED _mdp_reg_psg_t
+{
+	uint32_t regs[8];
+} mdp_reg_psg_t;
+#pragma pack()
+
 
 /* MDP_REG_Z80: Z80 register IDs. */
 typedef enum _MDP_REG_Z80
@@ -154,6 +227,92 @@ typedef enum _MDP_REG_Z80
 	MDP_REG_Z80_IM		= 38,	/* Interrupt Mode: 0, 1, or 2. */
 	MDP_REG_Z80_IFF		= 39,	/* Bitfield: Bit 0 == IFF1, Bit 1 == IFF2 */
 } MDP_REG_Z80;
+
+
+#if MDP_BYTEORDER == MDP_LIL_ENDIAN
+#define Z80_8BIT_REG_STRUCT(H, L)	\
+	struct				\
+	{				\
+		uint8_t L;		\
+		uint8_t H;		\
+	};
+#else /* MDP_BYTEORDER == MDP_BIG_ENDIAN */
+#define Z80_8BIT_REG_STRUCT(H, L)	\
+	struct				\
+	{				\
+		uint8_t H;		\
+		uint8_t L;		\
+	};
+#endif
+
+#pragma pack(1)
+/* mdp_reg_z80_t: Z80 register struct for reg_get_all() / reg_set_all() */
+typedef struct PACKED _mdp_reg_z80_t
+{
+	/* Main registers. */
+	union
+	{
+		Z80_8BIT_REG_STRUCT(A, F);
+		uint16_t AF;
+	};
+	union
+	{
+		Z80_8BIT_REG_STRUCT(B, C);
+		uint16_t BC;
+	};	
+	union
+	{
+		Z80_8BIT_REG_STRUCT(D, E);
+		uint16_t DE;
+	};	
+	union
+	{
+		Z80_8BIT_REG_STRUCT(H, L);
+		uint16_t HL;
+	};
+	union
+	{
+		Z80_8BIT_REG_STRUCT(IXH, IXL);
+		uint16_t IX;
+	};
+	union
+	{
+		Z80_8BIT_REG_STRUCT(IYH, IYL);
+		uint16_t IY;
+	};
+	
+	/* Shadow registers. */
+	union
+	{
+		Z80_8BIT_REG_STRUCT(A2, F2);
+		uint16_t AF2;
+	};
+	union
+	{
+		Z80_8BIT_REG_STRUCT(B2, C2);
+		uint16_t BC2;
+	};	
+	union
+	{
+		Z80_8BIT_REG_STRUCT(D2, E2);
+		uint16_t DE2;
+	};	
+	union
+	{
+		Z80_8BIT_REG_STRUCT(H2, L2);
+		uint16_t HL2;
+	};
+	
+	/* Other registers. */
+	uint16_t PC;
+	uint16_t SP;
+	uint8_t   I;
+	uint8_t   R;
+	uint8_t  IM;
+	uint8_t IFF;	/* Bitfield: Bit 0 == IFF1, Bit 1 == IFF2 */
+} mdp_reg_z80_t;
+#pragma pack()
+
 
 #ifdef __cplusplus
 }
