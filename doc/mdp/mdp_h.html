@@ -33,7 +33,7 @@ on platforms that prefix C symbols with underscores).
 <pre class='code'>
 #include &quot;mdp/mdp.h&quot;
 
-typedef struct
+typedef struct _mdp_t
 {
 	// Plugin version information.
 	const uint32_t interfaceVersion;
@@ -145,7 +145,7 @@ typedef struct
 <pre class='code'>
 #include &quot;mdp/mdp.h&quot;
 
-typedef struct
+typedef struct _mdp_desc_t
 {
 	const char* name;
 	const char* author_mdp;
@@ -283,7 +283,7 @@ typedef struct
 typedef void (MDP_FNCALL *mdp_init)(mdp_host_t *host_srv);
 typedef void (MDP_FNCALL *mdp_end)(void);
 
-typedef struct
+typedef struct _mdp_func_t
 {
 	// Init/Shutdown functions
 	mdp_init	init;
