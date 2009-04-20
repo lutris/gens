@@ -29,7 +29,6 @@ gens_SOURCES += \
 		ui/win32/country_code/ccode_window.c \
 		ui/win32/zip_select/zipsel_dialog.c \
 		ui/win32/plugin_manager/pmgr_window.cpp \
-		ui/win32/wndbase.cpp \
 		ui/win32/about/about_window.cpp \
 		ui/win32/resource.rc
 
@@ -65,7 +64,6 @@ noinst_HEADERS += \
 		ui/win32/country_code/ccode_window.h \
 		ui/win32/zip_select/zipsel_dialog.h \
 		ui/win32/plugin_manager/pmgr_window.cpp \
-		ui/win32/wndbase.hpp \
 		ui/win32/about/about_window.hpp
 
 if GENS_CDROM

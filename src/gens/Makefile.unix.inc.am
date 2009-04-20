@@ -39,7 +39,6 @@ gens_SOURCES += \
 		ui/gtk/country_code/ccode_window.c \
 		ui/gtk/zip_select/zipsel_dialog.c \
 		ui/gtk/plugin_manager/pmgr_window.cpp \
-		ui/gtk/wndbase.cpp \
 		ui/gtk/about/about_window.cpp
 
 if GENS_OPENGL
@@ -91,7 +90,6 @@ noinst_HEADERS += \
 		ui/gtk/country_code/ccode_window.h \
 		ui/gtk/zip_select/zipsel_dialog.h \
 		ui/gtk/plugin_manager/pmgr_window.hpp \
-		ui/gtk/wndbase.hpp \
 		ui/gtk/about/about_window.hpp
 
 if GENS_OPENGL
