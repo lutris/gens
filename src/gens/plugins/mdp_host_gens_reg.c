@@ -616,14 +616,42 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 /** reg_get_all() **/
 
 
+/**
+ * mdp_host_reg_get_all_68k(): Get all 68000 registers.
+ * @param context 68000 context.
+ * @param reg_struct Pointer to mdp_reg_68k_t struct to store the registers in.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_get_all_68k(struct S68000CONTEXT *context, void *reg_struct)
+{
+	mdp_reg_68k_t *reg_68k = (mdp_reg_68k_t*)reg_struct;
+	int i;
+	
+	for (i = 0; i < 8; i++)
+	{
+		reg_68k->dreg[i] = context->dreg[i];
+		reg_68k->areg[i] = context->areg[i];
+	}
+	
+	reg_68k->asp = context->asp;
+	reg_68k->pc = context->pc;
+	reg_68k->sr = context->sr;
+	
+	return MDP_ERR_OK;
+}
+
+
 int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 {
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
+	if (!reg_struct)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	switch (icID)
 	{
 		case MDP_REG_IC_M68K:
+			return mdp_host_reg_get_all_68k(&main68k_context, reg_struct);
 		case MDP_REG_IC_VDP:
 		case MDP_REG_IC_YM2612:
 		case MDP_REG_IC_PSG:
@@ -639,6 +667,11 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 
 int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct)
 {
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	if (!reg_struct)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
 	switch (icID)
 	{
 		case MDP_REG_IC_M68K:
