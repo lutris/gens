@@ -38,6 +38,19 @@
 	#define SYMTYPE(sym, symtype)
 #endif
 
+/* Symbol sizes. */
+/* SYMSIZE_DATA() can be used anywhere. */
+/* SYMSIZE_FUNC() should be used directly after a function. */
+#if defined(__ELF__)
+	#define SYMSIZE_DATA(sym, sym_size) \
+	.size	sym, sym_size
+	#define SYMSIZE_FUNC(sym) \
+	.size	sym, .-sym
+#else
+	#define SYMSIZE_DATA(sym, sym_size)
+	#define SYMSIZE_FUNC(sym)
+#endif
+
 /* Function parameters. */
 #define arg_left	 8(%ebp)
 #define arg_right	12(%ebp)
@@ -133,6 +146,8 @@ _audio_write_sound_mono_x86_mmx:
 	popl	%ebp
 	emms
 	ret
+
+SYMSIZE_FUNC(_audio_write_sound_mono_x86_mmx)
 
 .p2align 6 /* 64-byte alignment */
 
@@ -237,3 +252,5 @@ _audio_write_sound_stereo_x86_mmx:
 	popl	%ebp
 	emms
 	ret
+
+SYMSIZE_FUNC(_audio_write_sound_stereo_x86_mmx)

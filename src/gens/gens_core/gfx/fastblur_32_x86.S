@@ -38,6 +38,19 @@
 	#define SYMTYPE(sym, symtype)
 #endif
 
+/* Symbol sizes. */
+/* SYMSIZE_DATA() can be used anywhere. */
+/* SYMSIZE_FUNC() should be used directly after a function. */
+#if defined(__ELF__)
+	#define SYMSIZE_DATA(sym, sym_size) \
+	.size	sym, sym_size
+	#define SYMSIZE_FUNC(sym) \
+	.size	sym, .-sym
+#else
+	#define SYMSIZE_DATA(sym, sym_size)
+	#define SYMSIZE_FUNC(sym)
+#endif
+
 #define MD_SCREEN_SIZE	(336*240)
 #define MASK_DIV2_32	$0x007F7F7F
 
@@ -58,6 +71,8 @@
 	
 	/* 64-bit mask used for the MMX fast blur function. */
 	MASK_DIV2_32_MMX:	.long	0x007F7F7F, 0x007F7F7F
+	SYMTYPE(MASK_DIV2_32_MMX,@object)
+	SYMSIZE_DATA(MASK_DIV2_32_MMX, 8)
 
 /** .text section **/
 .text
@@ -102,6 +117,8 @@ _Fast_Blur_32_x86:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_Fast_Blur_32_x86)
 
 .p2align 6 /* 64-byte alignment */
 
@@ -152,3 +169,5 @@ _Fast_Blur_32_x86_mmx:
 	popl	%ebx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_Fast_Blur_32_x86_mmx)
