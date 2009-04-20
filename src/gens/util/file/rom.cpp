@@ -617,9 +617,7 @@ unsigned int ROM::loadROM(const string& filename,
 			// No file specified, or the specified file wasn't found.
 			// Show the Zip File Selection Dialog.
 			// TODO: Improve this!
-			ZipSelectDialog *zip = new ZipSelectDialog();
-			sel_file = zip->getFile(file_list);
-			delete zip;
+			sel_file = zipsel_dialog_get_file(file_list);
 		}
 	}
 	

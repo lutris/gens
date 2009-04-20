@@ -23,29 +23,17 @@
 #ifndef GENS_GTK_ZIP_SELECT_DIALOG_HPP
 #define GENS_GTK_ZIP_SELECT_DIALOG_HPP
 
-#ifdef __cplusplus
-
-#include <gtk/gtk.h>
-#include <list>
-
-#include "wndbase.hpp"
-#include "util/file/decompressor/decompressor.h"
-
 // MDP decompression structs.
 #include "mdp/mdp_z.h"
 
-class ZipSelectDialog : public WndBase
-{
-	public:
-		ZipSelectDialog();
-		~ZipSelectDialog();
-		
-		mdp_z_entry_t* getFile(mdp_z_entry_t *file_list);
-	
-	protected:
-		GtkWidget *m_lstFiles;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* __cplusplus */
+mdp_z_entry_t *zipsel_dialog_get_file(mdp_z_entry_t *file_list);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP */
