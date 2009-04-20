@@ -61,7 +61,7 @@ table, table td, table th
 	color: green;
 }
 
-/* Intrinsic type identifier. */
+/* Intrinsic type identifier. (also used for typedef'd types) */
 .type, .type a:link, .type a:hover, .type a:visited
 {
 	color: blue;
