@@ -618,8 +618,19 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 
 int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 {
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	if (!Game)
+		return -MDP_ERR_ROM_NOT_LOADED;
+	
+	switch (icID)
+	{
+		case MDP_REG_IC_M68K:
+		case MDP_REG_IC_VDP:
+		case MDP_REG_IC_YM2612:
+		case MDP_REG_IC_PSG:
+		case MDP_REG_IC_Z80:
+		default:
+			return -MDP_ERR_REG_INVALID_ICID;
+	}
 }
 
 
@@ -628,6 +639,14 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 
 int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct)
 {
-	// TODO
-	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+	switch (icID)
+	{
+		case MDP_REG_IC_M68K:
+		case MDP_REG_IC_VDP:
+		case MDP_REG_IC_YM2612:
+		case MDP_REG_IC_PSG:
+		case MDP_REG_IC_Z80:
+		default:
+			return -MDP_ERR_REG_INVALID_ICID;
+	}
 }
