@@ -106,6 +106,25 @@ static int mdp_host_reg_get_all_ym2612(void *reg_struct)
 }
 
 
+/**
+ * mdp_host_reg_get_all_psg(): Get all PSG registers.
+ * @param reg_struct Pointer to mdp_reg_psg_t struct to store the registers in.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_get_all_psg(void *reg_struct)
+{
+	mdp_reg_psg_t *reg_psg = (mdp_reg_psg_t*)reg_struct;
+	
+	int i;
+	for (i = 0; i < 8; i++)
+	{
+		reg_psg->regs[i] = PSG_Get_Reg(i) & 0x3FF;
+	}
+	
+	return MDP_ERR_OK;
+}
+
+
 int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 {
 	if (!Game)
@@ -122,6 +141,7 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 		case MDP_REG_IC_YM2612:
 			return mdp_host_reg_get_all_ym2612(reg_struct);
 		case MDP_REG_IC_PSG:
+			return mdp_host_reg_get_all_psg(reg_struct);
 		case MDP_REG_IC_Z80:
 		default:
 			return -MDP_ERR_REG_INVALID_ICID;
