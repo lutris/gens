@@ -66,9 +66,15 @@ SYMTYPE(lowPixelMask,@object)
 SYMTYPE(qcolorMask,@object)
 SYMTYPE(qlowpixelMask,@object)
 
+SYMSIZE_DATA(colorMask, 8);
+SYMSIZE_DATA(lowPixelMask, 8)
+SYMSIZE_DATA(qcolorMask, 8)
+SYMSIZE_DATA(qlowpixelMask, 8)
+
 /* Previous video mode flags. */
 PrevVModeFlags:		.long	0x00000000
 SYMTYPE(PrevVModeFlags,@object)
+SYMSIZE_DATA(PrevVModeFlags, 8)
 
 /** .rodata section **/
 RODATA()
@@ -86,6 +92,11 @@ SYMTYPE(lowPixelMask15,@object)
 SYMTYPE(qcolorMask15,@object)
 SYMTYPE(qlowpixelMask15,@object)
 
+SYMSIZE_DATA(colorMask15, 8);
+SYMSIZE_DATA(lowPixelMask15, 8)
+SYMSIZE_DATA(qcolorMask15, 8)
+SYMSIZE_DATA(qlowpixelMask15, 8)
+
 /* 16-bit color masks. */
 
 colorMask16:		.long	0xF7DEF7DE, 0xF7DEF7DE
@@ -99,9 +110,15 @@ SYMTYPE(lowPixelMask16,@object)
 SYMTYPE(qcolorMask16,@object)
 SYMTYPE(qlowpixelMask16,@object)
 
+SYMSIZE_DATA(colorMask16, 8);
+SYMSIZE_DATA(lowPixelMask16, 8)
+SYMSIZE_DATA(qcolorMask16, 8)
+SYMSIZE_DATA(qlowpixelMask16, 8)
+
 /* Constants. */
 ONE:			.long	0x00010001, 0x00010001
 SYMTYPE(ONE,@object)
+SYMSIZE_DATA(ONE, 8)
 
 /** Uninitialized data (.bss section) **/
 .data
@@ -221,6 +238,8 @@ _mdp_render_2xsai_16_x86_mmx:
 	emms
 	popal
 	ret
+
+SYMSIZE_FUNC(_mdp_render_2xsai_16_x86_mmx)
 
 /* _2xSaILine parameters. */
 #define srcPtr		28+8(%esp)
@@ -759,3 +778,5 @@ _2xSaILine:
 	/* Restore registers. */
 	popal
 	ret
+
+SYMSIZE_FUNC(_2xSaILine);

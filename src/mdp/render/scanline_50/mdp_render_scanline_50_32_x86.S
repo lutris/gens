@@ -46,6 +46,7 @@ RODATA()
 	MASK_DIV2_32_MMX:	.long 0x7F7F7F7F, 0x7F7F7F7F
 	
 	SYMTYPE(MASK_DIV2_32_MMX,@object)
+	SYMSIZE_DATA(MASK_DIV2_32_MMX, 8)
 
 /** .text section **/
 .text
@@ -141,6 +142,8 @@ _mdp_render_scanline_50_32_x86:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_mdp_render_scanline_50_32_x86)
 
 .p2align 6 /* 64-byte alignment */
 
@@ -258,3 +261,5 @@ _mdp_render_scanline_50_32_x86_mmx:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_mdp_render_scanline_50_32_x86_mmx)

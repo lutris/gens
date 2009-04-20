@@ -46,6 +46,7 @@
  *                           int width, int height);                         *
  *****************************************************************************/
 .globl _mdp_render_scanline_32_x86
+SYMTYPE(_mdp_render_scanline_32_x86,@function)
 _mdp_render_scanline_32_x86:
 	
 	/* Set up the frame pointer. */
@@ -128,6 +129,8 @@ _mdp_render_scanline_32_x86:
 	popl	%ebp
 	ret
 
+SYMSIZE_FUNC(_mdp_render_scanline_32_x86)
+
 .p2align 6 /* 64-byte alignment */
 
 /*********************************************************************************
@@ -136,6 +139,7 @@ _mdp_render_scanline_32_x86:
  *                               int width, int height);                         *
  *********************************************************************************/
 .globl _mdp_render_scanline_32_x86_mmx
+SYMTYPE(_mdp_render_scanline_32_x86_mmx,@function)
 _mdp_render_scanline_32_x86_mmx:
 	
 	/* Set up the frame pointer. */
@@ -244,3 +248,5 @@ _mdp_render_scanline_32_x86_mmx:
 	popl	%ebp
 	emms
 	ret
+
+SYMSIZE_FUNC(_mdp_render_scanline_32_x86_mmx)

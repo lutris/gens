@@ -49,6 +49,9 @@ RODATA()
 	
 	SYMTYPE(MASK_DIV2_32_MMX,@object)
 	SYMTYPE(MASK_DIV4_32_MMX,@object)
+	
+	SYMSIZE_DATA(MASK_DIV2_32_MMX, 8)
+	SYMSIZE_DATA(MASK_DIV4_32_MMX, 8)
 
 /** .text section **/
 .text
@@ -104,7 +107,7 @@ _mdp_render_scanline_25_32_x86:
 		movl	arg_width, %ecx		/* %ecx = Number of pixels per line */
 		addl	%ebp, %edi		/* Add the destination pitch difference. */
 		shll	$3, %ecx
-		subl	%ecx, %esi		/* Go back to the beginning of the source line. */
+		subl	%ecx, %esi	/* Go back to the beginning of the source line. */
 		shrl	$3, %ecx
 		jmp	2f
 
@@ -152,6 +155,8 @@ _mdp_render_scanline_25_32_x86:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_mdp_render_scanline_25_32_x86)
 
 .p2align 6 /* 64-byte alignment */
 
@@ -284,3 +289,5 @@ _mdp_render_scanline_25_32_x86_mmx:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_mdp_render_scanline_25_32_x86_mmx)

@@ -48,6 +48,9 @@ RODATA()
 	
 	SYMTYPE(MASK_DIV2_15_MMX,@object)
 	SYMTYPE(MASK_DIV2_16_MMX,@object)
+	
+	SYMSIZE_DATA(MASK_DIV2_15_MMX, 8)
+	SYMSIZE_DATA(MASK_DIV2_16_MMX, 8)
 
 /** .text section **/
 .text
@@ -134,6 +137,8 @@ _mdp_render_interpolated_scanline_16_x86:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_mdp_render_interpolated_scanline_16_x86)
 
 .p2align 6 /* 64-byte alignment */
 
@@ -245,3 +250,5 @@ _mdp_render_interpolated_scanline_16_x86_mmx:
 	popl	%edx
 	popl	%ecx
 	ret
+
+SYMSIZE_FUNC(_mdp_render_interpolated_scanline_16_x86_mmx)
