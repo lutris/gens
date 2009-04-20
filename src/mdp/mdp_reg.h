@@ -86,30 +86,30 @@ typedef struct PACKED _mdp_reg_68k_t
 /* MDP_REG_VDP: VDP register IDs. */
 typedef enum _MDP_REG_VDP
 {
-	MDP_REG_VDP_MODE_SET1	= 0,	/* BYTE */
-	MDP_REG_VDP_MODE_SET2	= 1,	/* BYTE */
-	MDP_REG_VDP_PAT_SCRA	= 2,	/* BYTE */
-	MDP_REG_VDP_PAT_WIN	= 3,	/* BYTE */
-	MDP_REG_VDP_PAT_SCRB	= 4,	/* BYTE */
-	MDP_REG_VDP_SPR_ATT	= 5,	/* BYTE */
-	MDP_REG_VDP_REG6	= 6,	/* BYTE */
-	MDP_REG_VDP_BG_COLOR	= 7,	/* BYTE */
-	MDP_REG_VDP_REG8	= 8,	/* BYTE */
-	MDP_REG_VDP_REG9	= 9,	/* BYTE */
-	MDP_REG_VDP_HINT	= 10,	/* BYTE */
-	MDP_REG_VDP_MODE_SET3	= 11,	/* BYTE */
-	MDP_REG_VDP_MODE_SET4	= 12,	/* BYTE */
-	MDP_REG_VDP_HSCR	= 13,	/* BYTE */
-	MDP_REG_VDP_REG14	= 14,	/* BYTE */
-	MDP_REG_VDP_AUTO_INC	= 15,	/* BYTE */
-	MDP_REG_VDP_SCR_SIZE	= 16,	/* BYTE */
-	MDP_REG_VDP_WIN_HPOS	= 17,	/* BYTE */
-	MDP_REG_VDP_WIN_VPOS	= 18,	/* BYTE */
-	MDP_REG_VDP_DMA_LEN_L	= 19,	/* BYTE */
-	MDP_REG_VDP_DMA_LEN_H	= 20,	/* BYTE */
-	MDP_REG_VDP_DMA_SRC_L	= 21,	/* BYTE */
-	MDP_REG_VDP_DMA_SRC_M	= 22,	/* BYTE */
-	MDP_REG_VDP_DMA_SRC_H	= 23	/* BYTE */
+	MDP_REG_VDP_MODE_SET1		= 0,	/* BYTE */
+	MDP_REG_VDP_MODE_SET2		= 1,	/* BYTE */
+	MDP_REG_VDP_PAT_SCRA_ADDR	= 2,	/* BYTE */
+	MDP_REG_VDP_PAT_WIN_ADDR	= 3,	/* BYTE */
+	MDP_REG_VDP_PAT_SCRB_ADDR	= 4,	/* BYTE */
+	MDP_REG_VDP_SPR_ATT_ADDR	= 5,	/* BYTE */
+	MDP_REG_VDP_REG6		= 6,	/* BYTE */
+	MDP_REG_VDP_BG_COLOR		= 7,	/* BYTE */
+	MDP_REG_VDP_REG8		= 8,	/* BYTE */
+	MDP_REG_VDP_REG9		= 9,	/* BYTE */
+	MDP_REG_VDP_H_INT		= 10,	/* BYTE */
+	MDP_REG_VDP_MODE_SET3		= 11,	/* BYTE */
+	MDP_REG_VDP_MODE_SET4		= 12,	/* BYTE */
+	MDP_REG_VDP_H_SCR_ADDR		= 13,	/* BYTE */
+	MDP_REG_VDP_REG14		= 14,	/* BYTE */
+	MDP_REG_VDP_AUTO_INC		= 15,	/* BYTE */
+	MDP_REG_VDP_SCR_SIZE		= 16,	/* BYTE */
+	MDP_REG_VDP_WIN_HPOS		= 17,	/* BYTE */
+	MDP_REG_VDP_WIN_VPOS		= 18,	/* BYTE */
+	MDP_REG_VDP_DMA_LEN_L		= 19,	/* BYTE */
+	MDP_REG_VDP_DMA_LEN_H		= 20,	/* BYTE */
+	MDP_REG_VDP_DMA_SRC_L		= 21,	/* BYTE */
+	MDP_REG_VDP_DMA_SRC_M		= 22,	/* BYTE */
+	MDP_REG_VDP_DMA_SRC_H		= 23	/* BYTE */
 } MDP_REG_VDP;
 
 #pragma pack(1)
@@ -123,17 +123,18 @@ typedef struct PACKED _mdp_reg_vdp_t
 		{
 			uint8_t mode_set1;
 			uint8_t mode_set2;
-			uint8_t pat_scra;
-			uint8_t pat_win;
-			uint8_t spr_att;
+			uint8_t pat_scra_addr;
+			uint8_t pat_win_addr;
+			uint8_t pat_scrb_addr;
+			uint8_t spr_att_addr;
 			uint8_t reg6;
 			uint8_t bg_color;
 			uint8_t reg8;
 			uint8_t reg9;
-			uint8_t hint;
+			uint8_t h_int;
 			uint8_t mode_set3;
 			uint8_t mode_set4;
-			uint8_t hscr;
+			uint8_t h_scr_addr;
 			uint8_t reg14;
 			uint8_t auto_inc;
 			uint8_t scr_size;
