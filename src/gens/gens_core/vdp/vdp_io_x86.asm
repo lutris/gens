@@ -1342,6 +1342,11 @@ section .text align=64
 	.Set1:
 		mov	[_VDP_Reg.Set_1], al
 		call	_VDP_Update_IRQ_Line
+		
+		; VDP register 0, bit 2: Palette Select
+		; If cleared, only the LSBs of each CRAM component is used.
+		mov	dword [_CRam_Flag], 1
+		
 		pop	ebx
 		ret
 	

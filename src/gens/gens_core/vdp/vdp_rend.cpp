@@ -33,12 +33,13 @@
 /**
  * T_VDP_Update_Palette(): VDP palette update function.
  * @param hs If true, updates highlight/shadow.
+ * @param palette_select If false, only the LSB from CRAM is used.
  * @param mask Color mask.
  * @param MD_palette MD color palette.
  * @param palette Full color palette.
  */
-template<bool hs, typename pixel>
-		static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pixel *palette)
+template<bool hs, bool palette_select, typename pixel>
+static inline void T_VDP_Update_Palette(pixel mask, pixel *MD_palette, const pixel *palette)
 {
 	if (VDP_Layers & VDP_LAYER_PALETTE_LOCK)
 		return;
@@ -55,9 +56,36 @@ template<bool hs, typename pixel>
 		pixel color1 = cram_16[i];
 		pixel color2 = cram_16[i + 1];
 		
-		// AND out the most-significant nybble of each color.
-		color1 &= 0x0FFF;
-		color2 &= 0x0FFF;
+		// Mask and shift the color according to palette_select.
+		if (palette_select)
+		{
+			// Palette Select is enabled. Use normal colors.
+			color1 &= 0x0FFF;
+			color2 &= 0x0FFF;
+		}
+		else
+		{
+			// Palette Select is disabled. Use LSB only.
+			color1 &= 0x0222;
+			color2 &= 0x0222;
+			
+			// Adjust the colors so that 2 == full brightness for each component.
+			// TODO: Figure out how the actual hardware does it.
+			// TODO: Optimize this!
+			if (color1 & 0x0002)
+				color1 |= 0x000C;
+			if (color1 & 0x0020)
+				color1 |= 0x00C0;
+			if (color1 & 0x0200)
+				color1 |= 0x0C00;
+			
+			if (color2 & 0x0002)
+				color2 |= 0x000C;
+			if (color2 & 0x0020)
+				color2 |= 0x00C0;
+			if (color2 & 0x0200)
+				color2 |= 0x0C00;
+		}
 		
 		// Get the palette color.
 		color1 = palette[color1];
@@ -117,8 +145,19 @@ template<bool hs, typename pixel>
 void VDP_Update_Palette(void)
 {
 	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
-	T_VDP_Update_Palette<false>(mask16, MD_Palette, Palette);
-	T_VDP_Update_Palette<false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	
+	if (VDP_Reg.Set1 & 0x04)
+	{
+		// Palette Select is on. Use the full palette.
+		T_VDP_Update_Palette<false, true>(mask16, MD_Palette, Palette);
+		T_VDP_Update_Palette<false, true>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	}
+	else
+	{
+		// Palette Select is off. Use the limited palette.
+		T_VDP_Update_Palette<false, false>(mask16, MD_Palette, Palette);
+		T_VDP_Update_Palette<false, false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	}
 }
 
 /**
@@ -127,6 +166,17 @@ void VDP_Update_Palette(void)
 void VDP_Update_Palette_HS(void)
 {
 	const uint16_t mask16 = (bppMD == 15 ? 0x3DEF : 0x7BEF);
-	T_VDP_Update_Palette<true>(mask16, MD_Palette, Palette);
-	T_VDP_Update_Palette<true>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	
+	if (VDP_Reg.Set1 & 0x04)
+	{
+		// Palette Select is on. Use the full palette.
+		T_VDP_Update_Palette<true, true>(mask16, MD_Palette, Palette);
+		T_VDP_Update_Palette<true, true>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	}
+	else
+	{
+		// Palette Select is off. Use the limited palette. (LSB of each component)
+		T_VDP_Update_Palette<true, false>(mask16, MD_Palette, Palette);
+		T_VDP_Update_Palette<true, false>((uint32_t)0x7F7F7F, MD_Palette32, Palette32);
+	}
 }
