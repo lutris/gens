@@ -3,6 +3,11 @@ h1.doc_title, h2.doc_title
 	text-align: center;
 }
 
+h4.mdp_version
+{
+	text-align: center;
+}
+
 div.screenshot, p.screenshot
 {
 	text-align: center;
