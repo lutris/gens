@@ -40,6 +40,14 @@
 	.section	.rodata
 #endif
 
+/* Symbol types. */
+#if defined(__ELF__)
+	#define SYMTYPE(sym, symtype) \
+	.type sym, ## symtype
+#else
+	#define SYMTYPE(sym, symtype)
+#endif
+
 /* Symbol sizes. */
 /* SYMSIZE_DATA() can be used anywhere. */
 /* SYMSIZE_FUNC() should be used directly after a function. */
@@ -94,14 +102,6 @@ __i686.get_pc_thunk.bx:
 	#define MUNG_EXTERN(sym)  sym
 	#define DEREF_EXTERN(reg)
 	#define INIT_PIC()
-#endif
-
-/* Symbol types. */
-#if defined(__ELF__)
-	#define SYMTYPE(sym, symtype) \
-	.type sym, ## symtype
-#else
-	#define SYMTYPE(sym, symtype)
 #endif
 
 #endif /* _MDP_GNU_AS_X86_INC */
