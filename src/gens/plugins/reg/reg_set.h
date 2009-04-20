@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: MDP: Mega Drive Plugin - Host Services. (Register Functions)      *
+ * Gens: MDP: Mega Drive Plugin - Host Services. (reg_set() functions)     *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_MDP_HOST_GENS_REG_H
-#define GENS_MDP_HOST_GENS_REG_H
+#ifndef GENS_MDP_HOST_GENS_REG_SET_H
+#define GENS_MDP_HOST_GENS_REG_SET_H
 
 #include <stdint.h>
 
@@ -33,16 +33,10 @@
 extern "C" {
 #endif
 
-/* Register functions. */
-
-int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value);
 int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value);
-
-int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct);
-int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_MDP_HOST_GENS_MEM_H */
+#endif /* GENS_MDP_HOST_GENS_REG_SET_H */

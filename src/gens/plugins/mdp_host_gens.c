@@ -37,11 +37,16 @@
 #include "mdp_host_gens_menu.hpp"
 #include "mdp_host_gens_event.hpp"
 #include "mdp_host_gens_mem.h"
-#include "mdp_host_gens_reg.h"
 #include "mdp_host_gens_emuctrl.hpp"
 #include "mdp_host_gens_z.h"
 #include "mdp_host_gens_config.hpp"
 #include "mdp_host_gens_dir.hpp"
+
+// Register functions.
+#include "reg/reg_get.h"
+#include "reg/reg_set.h"
+#include "reg/reg_get_all.h"
+#include "reg/reg_set_all.h"
 
 // MDP includes.
 #include "mdp/mdp_error.h"
