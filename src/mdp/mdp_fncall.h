@@ -21,8 +21,13 @@
 #ifndef __MDP_FNCALL_H
 #define __MDP_FNCALL_H
 
-#ifdef __cplusplus
-extern "C" {
+/* Packed struct define. */
+#ifndef PACKED
+	#if defined(__GNUC__)
+		#define PACKED __attribute__ ((packed))
+	#else
+		#define PACKED
+	#endif
 #endif
 
 /**
@@ -91,9 +96,5 @@ extern "C" {
  *
  * #define MDP_UNUSED_PARAMETER(x) ((x) = (x))
  */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __MDP_FNCALL_H */

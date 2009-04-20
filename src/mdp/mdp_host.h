@@ -101,7 +101,8 @@ typedef int (MDP_FNCALL *mdp_dir_get_fn)(int dir_id, char *out_buf, unsigned int
 typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, const char *buf);
 
 /* MDP Host Services struct. */
-typedef struct _mdp_host_t
+#pragma pack(1)
+typedef struct PACKED _mdp_host_t
 {
 	const uint32_t interfaceVersion;
 	
@@ -246,6 +247,7 @@ typedef struct _mdp_host_t
 	int	(MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
 	int	(MDP_FNCALL *z_close)(mdp_z_t *z_file);
 } mdp_host_t;
+#pragma pack()
 
 #ifdef __cplusplus
 }

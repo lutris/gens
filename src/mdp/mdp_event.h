@@ -60,7 +60,8 @@ typedef int (MDP_FNCALL *mdp_event_handler_fn)(int event_id, void *event_info);
 /**
  * mdp_event_open_rom_t: Event information for when a ROM is opened.
  */
-typedef struct _mdp_event_open_rom_t
+#pragma pack(1)
+typedef struct PACKED _mdp_event_open_rom_t
 {
 	const char *rom_name;	/* ROM name. (For archives, the name of the archive.) */
 	
@@ -70,12 +71,14 @@ typedef struct _mdp_event_open_rom_t
 	
 	int system_id;		/* System ID. */
 } mdp_event_open_rom_t;
+#pragma pack()
 
 
 /**
  * mdp_event_post_frame_t: Event raised when a frame has been drawn to the internal framebuffer.
  */
-typedef struct _mdp_event_post_frame_t
+#pragma pack(1)
+typedef struct PACKED _mdp_event_post_frame_t
 {
 	void    *md_screen;	/* MD frame buffer. */
 	
@@ -85,6 +88,7 @@ typedef struct _mdp_event_post_frame_t
 	uint32_t pitch;		/* Pitch. (bytes per scanline) */
 	uint32_t bpp;		/* Bits per pixel. */
 } mdp_event_post_frame_t;
+#pragma pack()
 
 
 #ifdef __cplusplus

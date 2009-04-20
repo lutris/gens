@@ -48,7 +48,8 @@ extern "C" {
 #define MDP_RENDER_VMODE_BPP_32		((uint32_t)(1 << 1))
 
 /* Render information struct. */
-typedef struct _mdp_render_info_t
+#pragma pack(1)
+typedef struct PACKED _mdp_render_info_t
 {
 	void *destScreen;	/* Destination screen buffer. */
 	void *mdScreen;		/* Source screen buffer. */
@@ -64,6 +65,7 @@ typedef struct _mdp_render_info_t
 	
 	void *data;		/* Extra data set by the plugin. */
 } mdp_render_info_t;
+#pragma pack()
 
 /* Render plugin flags. */
 #define MDP_RENDER_FLAG_RGB555		((uint32_t)(1 << 0))
@@ -72,7 +74,9 @@ typedef struct _mdp_render_info_t
 
 // Render plugin definition.
 typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
-typedef struct _mdp_render_t
+
+#pragma pack(1)
+typedef struct PACKED _mdp_render_t
 {
 	const uint32_t interfaceVersion;	/* Render interface version. */
 	const int scale;			/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
@@ -84,7 +88,7 @@ typedef struct _mdp_render_t
 	
 	void *data;				/* Extra data. */
 } mdp_render_t;
-
+#pragma pack()
 
 #ifdef __cplusplus
 }

@@ -24,21 +24,24 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "mdp_fncall.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-typedef struct _mdp_z_entry_t
+#pragma pack(1)
+typedef struct PACKED _mdp_z_entry_t
 {
 	char*	filename;	/* Filename. (allocated via strdup()) */
 	size_t	filesize;	/* Filesize. */
 	
 	struct _mdp_z_entry_t *next;	/* Next file. */
 } mdp_z_entry_t;
+#pragma pack()
 
-
-typedef struct _mdp_z_t
+#pragma pack(1)
+typedef struct PACKED _mdp_z_t
 {
 	mdp_z_entry_t	*files;		/* List containing all files in the archive. */
 	
@@ -48,7 +51,7 @@ typedef struct _mdp_z_t
 	FILE	*f;		/* File handle. */
 	void	*data;		/* Additional data. */
 } mdp_z_t;
-
+#pragma pack()
 
 #ifdef __cplusplus
 }

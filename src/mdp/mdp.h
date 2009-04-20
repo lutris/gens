@@ -28,10 +28,6 @@
 #include "mdp_fncall.h"
 #include "mdp_version.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* MDP interface version. */
 #define MDP_INTERFACE_VERSION MDP_VERSION(0, 255, 65535)
 
@@ -44,8 +40,13 @@ extern "C" {
 #define MDP_LICENSE_BSD		"BSD"
 #define MDP_LICENSE_PD		"Public Domain"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Plugin description struct. */
-typedef struct _mdp_desc_t
+#pragma pack(1)
+typedef struct PACKED _mdp_desc_t
 {
 	const char* name;
 	const char* author_mdp;
@@ -62,6 +63,7 @@ typedef struct _mdp_desc_t
 	const unsigned char* icon;
 	const unsigned int iconLength;
 } mdp_desc_t;
+#pragma pack()
 
 /* MDP Host Services. */
 struct _mdp_t;
@@ -72,15 +74,18 @@ typedef int (MDP_FNCALL *mdp_init_fn)(mdp_host_t *host_srv);
 typedef int (MDP_FNCALL *mdp_end_fn)(void);
 
 /* Plugin function struct. */
-typedef struct _mdp_func_t
+#pragma pack(1)
+typedef struct PACKED _mdp_func_t
 {
 	// Init/Shutdown functions
 	mdp_init_fn	init;
 	mdp_end_fn	end;
 } mdp_func_t;
+#pragma pack()
 
 /* Main MDP plugin struct. */
-typedef struct _mdp_t
+#pragma pack(1)
+typedef struct PACKED _mdp_t
 {
 	// Plugin version information.
 	const uint32_t interfaceVersion;
@@ -99,6 +104,7 @@ typedef struct _mdp_t
 	// Functions.
 	mdp_func_t *func;
 } mdp_t;
+#pragma pack()
 
 #ifdef __cplusplus
 }
