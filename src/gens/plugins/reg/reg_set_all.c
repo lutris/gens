@@ -42,6 +42,12 @@
 extern int ice;
 
 
+/**
+ * mdp_host_reg_set_all(): Set all registers for the specified IC.
+ * @param icID IC ID.
+ * @param reg_struct Pointer to register structure for the specific IC.
+ * @return MDP error code.
+ */
 int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct)
 {
 	if (!Game)
