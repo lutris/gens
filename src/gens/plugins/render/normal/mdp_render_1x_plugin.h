@@ -23,12 +23,12 @@
 #ifndef MDP_RENDER_1X_PLUGIN_H
 #define MDP_RENDER_1X_PLUGIN_H
 
+#include "mdp/mdp.h"
+#include "mdp/mdp_render.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "mdp/mdp.h"
-#include "mdp/mdp_render.h"
 
 extern mdp_render_t mdp_render_1x_render_t;
 extern mdp_t mdp_render_1x;

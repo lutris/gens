@@ -23,11 +23,11 @@
 #ifndef GENS_MDP_RENDER_2X_X86_H
 #define GENS_MDP_RENDER_2X_X86_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
 
 void mdp_render_2x_16_x86(uint16_t *destScreen, uint16_t *mdScreen,
 			  int destPitch, int srcPitch,

@@ -23,13 +23,13 @@
 #ifndef GENS_MDP_RENDER_2X_HPP
 #define GENS_MDP_RENDER_2X_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "mdp/mdp.h"
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int MDP_FNCALL mdp_render_2x_init(mdp_host_t *host_srv);
 int MDP_FNCALL mdp_render_2x_end(void);
