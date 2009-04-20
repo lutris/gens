@@ -95,13 +95,13 @@ __i686.get_pc_thunk.bx:
 /* SYMSIZE_DATA() can be used anywhere. */
 /* SYMSIZE_FUNC() should be used directly after a function. */
 #if !defined(__APPLE__)
-	#define SYMSIZE_DATA(sym, size) \
-	.size	sym, size
+	#define SYMSIZE_DATA(sym, sym_size) \
+	.size	sym, sym_size
 	#define SYMSIZE_FUNC(sym) \
 	.size	sym, .-sym
 #else
-	#define SYMSIZE_DATA()
-	#define SYMSIZE_FUNC()
+	#define SYMSIZE_DATA(sym, sym_size)
+	#define SYMSIZE_FUNC(sym)
 #endif
 
 #endif /* _MDP_GNU_AS_X86_INC */
