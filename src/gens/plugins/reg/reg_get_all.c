@@ -126,6 +126,40 @@ static int mdp_host_reg_get_all_psg(void *reg_struct)
 
 
 /**
+ * mdp_host_reg_get_z80(): Get all Z80 registers.
+ * @param reg_struct Pointer to mdp_reg_psg_t struct to store the registers in.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_get_z80(void *reg_struct)
+{
+	mdp_reg_z80_t *reg_z80 = (mdp_reg_z80_t*)reg_struct;
+	
+	/* Main registers. */
+	reg_z80->AF = mdZ80_get_AF(&M_Z80);
+	reg_z80->BC = M_Z80.BC.w.BC;
+	reg_z80->DE = M_Z80.DE.w.DE;
+	reg_z80->HL = M_Z80.HL.w.HL;
+	reg_z80->IX = M_Z80.IX.w.IX;
+	reg_z80->IY = M_Z80.IY.w.IY;
+	
+	/* Shadow registers. */
+	reg_z80->AF2 = mdZ80_get_AF2(&M_Z80);
+	reg_z80->BC2 = M_Z80.BC2.w.BC2;
+	reg_z80->DE2 = M_Z80.DE2.w.DE2;
+	reg_z80->HL2 = M_Z80.HL2.w.HL2;
+	
+	/* Other registers. */
+	reg_z80->PC = mdZ80_get_PC(&M_Z80);
+	reg_z80->I = M_Z80.I & 0xFF;
+	reg_z80->R = M_Z80.R.b.R1;
+	reg_z80->IM = M_Z80.IM & 3;
+	reg_z80->IFF = (M_Z80.IFF.b.IFF2 ? 2 : 0) | (M_Z80.IFF.b.IFF1 ? 1 : 0);
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
  * mdp_host_reg_get_all(): Get all registers for the specified IC.
  * @param icID IC ID.
  * @param reg_struct Pointer to register structure for the specific IC.
@@ -149,6 +183,7 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 		case MDP_REG_IC_PSG:
 			return mdp_host_reg_get_all_psg(reg_struct);
 		case MDP_REG_IC_Z80:
+			return mdp_host_reg_get_z80(reg_struct);
 		default:
 			return -MDP_ERR_REG_INVALID_ICID;
 	}
