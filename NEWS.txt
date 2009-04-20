@@ -74,6 +74,11 @@ Release 7 introduces the following new features:
 
 - WAV dumping has been reimplemented.
 
+- Added initial support for the "Palette Select" bit in VDP register 0.
+  If the "Palette Select" bit is cleared, only the LSBs of each color component
+  in CRAM is used to determine the colors to display, resulting in a maximum of
+  8 colors onscreen. Not very useful, but more accurate to how the MD's VDP works.
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
