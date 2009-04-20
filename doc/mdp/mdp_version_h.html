@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MDP - mdp_version.h: Version Macros</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='mdp.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>MDP - mdp_version.h: Version Macros</h1>
+<h4 class='mdp_version'>Mega Drive Plugins v1.0.0-draft</h4>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="mdp_version_h.html">mdp_version.h</a></span>
+</div>
+
+<p>
+The MDP plugin interface uses a hard version numbering system. That is, the
+version number is used to determine whether or not a plugin is compatible
+with a given MDP host application.
+</p>
+
+<p>
+MDP version numbers are 32-bit unsigned integers in the format
+<span class='mdp_version'>0xMMNNRRRR</span>, where:
+</p>
+
+<ul>
+	<li>MM: major version.</li>
+	<li>NN: minor version.</li>
+	<li>RR: revision number.</li>
+</ul>
+
+<p>
+With regards to version compatibility, the major version number indicates
+<span class='struct'><a href="mdp_h.html">mdp_t</a></span> compatibility.
+If the interface major version number of the application's MDP support does
+not match the plugin's interface major version number, then the plugin is
+not compatible.
+</p>
+
+<p>
+The minor version number indicates if any new backwards-compatible features
+have been added to the MDP specification. That is, if a new feature has been
+added that doesn't break the interface and doesn't require that plugins make
+use of it, the minor version number is incremented. Plugins can check the
+minor version of the host application's MDP interface via the
+<span class='struct'><a href="mdp_host_h">mdp_host_t</a></span> struct and
+enable or disable features, if necessary.
+</p>
+
+<p>
+The revision number is not used at all for version compatibility and can
+be used by the MDP host application developer for any purpose.
+</p>
+
+<p>
+To ease the generation and parsing of MDP version numbers,
+<span class='filename'>mdp_version.h</span> provides several macros.
+</p>
+
+<p>Macros:</p>
+
+<table>
+	<tr>
+		<th>Macro</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_VERSION(major, minor, revision)</td>
+		<td>
+			Create a 32-bit MDP version using the specified
+			major, minor, and revision version numbers. The
+			major and minor version numbers may not exceed 255,
+			and the revision number may not exceed 65,535.
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_VERSION_MAJOR(mdp_version)</td>
+		<td>Extract the major version number from an MDP version number.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_VERSION_MINOR(mdp_version)</td>
+		<td>Extract the minor version number from an MDP version number.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_VERSION_REVISION(mdp_version)</td>
+		<td>Extract the revision number from an MDP version number.</td>
+	</tr>
+</table>
+
+</body>
+</html>
