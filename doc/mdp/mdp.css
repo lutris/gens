@@ -31,7 +31,7 @@ table, table td, table th
 }
 
 /* Basic identifiers. */
-.struct, .symbol, .macro, .type, .program, .value
+.struct, .symbol, .macro, .type, .program, .value, .filename
 {
 	font-family: monospace;
 	white-space: nowrap;

@@ -130,6 +130,7 @@ typedef struct
 	</tr>
 </table>
 
+<hr>
 <a name="mdp_desc_t">
 <h2><span class='struct'>mdp_desc_t</span>: MDP Description Field</span></h2>
 
@@ -212,9 +213,9 @@ typedef struct
 			<span class='value'>&quot;GPL-2&quot;</span>,
 			<span class='value'>&quot;GPL-3&quot;</span>,
 			<span class='value'>&quot;LGPL-2.1&quot;</span>, and
-			<span class='value'>&quot;BSD&quot;</span>. See mdp.h's
-			<span class='macro'>MDP_LICENSE_*</span> macros for more
-			predefined licenses.
+			<span class='value'>&quot;BSD&quot;</span>. See the
+			<a href="#mdp_desc_t.license">Predefined Licenses</a>
+			section for more predefined licenses.
 		</td>
 	</tr>
 	<tr>
@@ -245,6 +246,29 @@ typedef struct
 	</tr>
 </table>
 
+<hr>
+<a name="mdp_desc_t.license">
+<h3>Predefined Licenses</h3>
+
+<p>
+	<span class='filename'>mdp.h</span> has several licenses predefined
+	as macros:
+</p>
+
+<pre class='code'>
+#define MDP_LICENSE_GPL_2	&quot;GPL-2&quot;
+#define MDP_LICENSE_GPL_3	&quot;GPL-3&quot;
+#define MDP_LICENSE_LGPL_2	&quot;LGPL-2&quot;
+#define MDP_LICENSE_LGPL_21	&quot;LGPL-2.1&quot;
+#define MDP_LICENSE_LGPL_3	&quot;LGPL-3&quot;
+#define MDP_LICENSE_BSD		&quot;BSD&quot;
+#define MDP_LICENSE_PD		&quot;Public Domain&quot;
+</pre>
+
+
+<p>You may use any of these predefined licenses, or define your own.</p>
+
+<hr>
 <a name="mdp_func_t">
 <h2><span class='struct'>mdp_func_t</span>: MDP Function Field</span></h2>
 
