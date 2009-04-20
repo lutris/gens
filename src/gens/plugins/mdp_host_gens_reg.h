@@ -38,6 +38,9 @@ extern "C" {
 int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value);
 int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value);
 
+int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct);
+int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct);
+
 #ifdef __cplusplus
 }
 #endif

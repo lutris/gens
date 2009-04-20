@@ -39,18 +39,10 @@
 #include "gens_core/sound/psg.h"
 #include "mdZ80/mdZ80.h"
 
-/*
-#include "gens_core/mem/mem_m68k.h"
-#include "gens_core/mem/mem_s68k.h"
-#include "gens_core/mem/mem_z80.h"
-#include "gens_core/mem/mem_sh2.h"
-#include "gens_core/vdp/vdp_rend.h"
-*/
-
 extern int ice;
 
 
-/** Register Read Functions. **/
+/** reg_get() **/
 
 
 /**
@@ -329,6 +321,9 @@ int MDP_FNCALL mdp_host_reg_get(int icID, int regID, uint32_t *ret_value)
 			return -MDP_ERR_REG_INVALID_ICID;
 	}
 }
+
+
+/** reg_set() **/
 
 
 /**
@@ -615,4 +610,24 @@ int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
 		default:
 			return -MDP_ERR_REG_INVALID_ICID;
 	}
+}
+
+
+/** reg_get_all() **/
+
+
+int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
+{
+	// TODO
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+}
+
+
+/** reg_set_all() */
+
+
+int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct)
+{
+	// TODO
+	return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
 }

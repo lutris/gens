@@ -99,6 +99,8 @@ mdp_host_t Gens_MDP_Host =
 	
 	.reg_get		= mdp_host_reg_get,
 	.reg_set		= mdp_host_reg_set,
+	.reg_get_all		= mdp_host_reg_get_all,
+	.reg_set_all		= mdp_host_reg_set_all,
 	
 	.menu_item_add		= mdp_host_menu_item_add,
 	.menu_item_remove	= mdp_host_menu_item_remove,
