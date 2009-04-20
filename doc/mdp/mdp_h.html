@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MDP - Basic Plugin Interface</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='mdp.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>MDP - mdp.h: Basic Plugin Interface</h1>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="mdp_t.html">mdp.h</a></span>
+</div>
+
+<p>
+Every plugin must export a struct of type <span class='struct'>mdp_t</span>.
+This struct contains the basic information about the plugin. For internal
+plugins, the <span class='struct'>mdp_t</span> struct is referenced in the
+host program's MDP implementation, so it can have any name. For external
+plugins, the <span class='struct'>mdp_t</span> struct must be exported with
+the name <span class='symbol'>mdp</span> (<span class='symbol'>_mdp</span>
+on platforms that prefix C symbols with underscores).
+</p>
+
+<p>Format of the <span class='struct'>mdp_t</span> struct:</p>
+
+<pre class='code'>
+#include &quot;mdp/mdp.h&quot;
+#include &quot;mdp/mdp_cpuflags.h&quot;
+
+typedef struct
+{
+	// Plugin version information.
+	const uint32_t interfaceVersion;
+	const uint32_t pluginVersion;
+	
+	// CPU flags.
+	const uint32_t cpuFlagsSupported;
+	const uint32_t cpuFlagsRequired;
+	
+	// UUID - each plugin must have a unique ID.
+	const unsigned char uuid[16];
+	
+	// Description.
+	mdp_desc_t *desc;
+	
+	// Functions.
+	mdp_func_t *func;
+} mdp_t;
+</pre>
+
+<p>Fields:</p>
+
+<table>
+	<tr>
+		<th>Field</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>interfaceVersion</td>
+		<td class='type'>uint32_t</td>
+		<td>
+			The MDP interface version used by the plugin. Can be
+			generated using the
+			<span class="macro">MDP_VERSION(major, minor, revision)</span>
+			macro, or by using the MDP_INTERFACE_VERSION macro,
+			which is defined as the interface version specified in
+			the MDP headers being used.
+		</td>
+	</tr>
+	<tr>
+		<td>pluginVersion</td>
+		<td class='type'>uint32_t</td>
+		<td>
+			Plugin version. This is a user-defined value and can
+			be anything. Use the
+			<span class="macro">MDP_VERSION(major, minor, revision)</span>
+			macro to create the version number.
+		</td>
+	</tr>
+	<tr>
+		<td>cpuFlagsSupported</td>
+		<td class='type'>uint32_t</td>
+		<td>
+			Bitfield of CPU flags supported by the plugin. The
+			CPU flag values are defined in
+			<a href="cpuflags.html">mdp_cpuflags.h</a>.
+		</td>
+	</tr>
+	<tr>
+		<td>cpuFlagsRequired</td>
+		<td class='type'>uint32_t</td>
+		<td>
+			Bitfield of CPU flags required by the plugin. If any
+			of the flags specified in this field are not supported
+			by the current CPU, the plugin will not be loaded.
+		</td>
+	</tr>
+	<tr>
+		<td>uuid</td>
+		<td class='type'>unsigned char[16]</td>
+		<td>
+			Universally Unique Identifier used to uniquely identify
+			the plugin. Use a tool such as <span class='program'>uuidgen</span>
+			to generate the UUID.
+		</td>
+	</tr>
+	<tr>
+		<td>desc</td>
+		<td class='struct'><a href="#mdp_desc_t">mdp_desc_t</a></td>
+		<td>
+			Pointer to <span class='struct'><a href="#mdp_desc_t">mdp_desc_t</a></span>
+			with description information about the plugin.
+		</td>
+	</tr>
+	<tr>
+		<td>func</td>
+		<td class='struct'><a href="#mdp_func_t">mdp_func_t</a></td>
+		<td>
+			Pointer to <span class='struct'><a href="#mdp_func_t">mdp_func_t</a></span>
+			with various plugin functions, such as initialization
+			and shutdown.
+		</td>
+	</tr>
+</table>
+
+<a name="mdp_desc_t">
+<h2><span class='struct'>mdp_desc_t</span>: MDP Description Field</span></h2>
+
+<p>
+	The <span class='struct'>mdp_t</span>.<span class='struct'>desc</span>
+	field points to a struct of type <span class='struct'>mdp_desc_t</span>,
+	which contains a description of the plugin.
+</p>
+
+<p>Note: All strings are encoded using UTF-8.</p>
+
+<pre class='code'>
+#include &quot;mdp/mdp.h&quot;
+
+typedef struct
+{
+	const char* name;
+	const char* author_mdp;
+	const char* author_orig;
+	const char* description;
+	const char* website;
+	const char* license;
+	
+	// Filler for alignment purposes.
+	const void* reserved1;
+	const void* reserved2;
+	
+	// Icon data. (PNG format)
+	const unsigned char* icon;
+	const unsigned int iconLength;
+} mdp_desc_t;
+</pre>
+
+<p>Fields:</p>
+
+<table>
+	<tr>
+		<th>Field</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>name</td>
+		<td class='type'>const char*</td>
+		<td>Name of the plugin.</td>
+	</tr>
+	<tr>
+		<td>author_mdp</td>
+		<td class='type'>const char*</td>
+		<td>Author of the plugin.</td>
+	</tr>
+	<tr>
+		<td>author_orig</td>
+		<td class='type'>const char*</td>
+		<td>
+			Author of the original code. This is mainly used when
+			porting a third-party renderer into the MDP plugin
+			format. If the plugin author is the same as the code
+			author, this field may be set to <span class='value'>NULL</span>.
+		</td>
+	</tr>
+	<tr>
+		<td>description</td>
+		<td class='type'>const char*</td>
+		<td>A short description of the plugin.</td>
+	</tr>
+	<tr>
+		<td>website</td>
+		<td class='type'>const char*</td>
+		<td>
+			The plugin author's website. May be <span class='value'>NULL</span>
+			if no website is available.
+		</td>
+	</tr>
+	<tr>
+		<td>license</td>
+		<td class='type'>const char*</td>
+		<td>
+			Plugin license. Example licenses are
+			<span class='value'>&quot;GPL-2&quot;</span>,
+			<span class='value'>&quot;GPL-3&quot;</span>,
+			<span class='value'>&quot;LGPL-2.1&quot;</span>, and
+			<span class='value'>&quot;BSD&quot;</span>. See mdp.h's
+			<span class='macro'>MDP_LICENSE_*</span> macros for more
+			predefined licenses.
+		</td>
+	</tr>
+	<tr>
+		<td>reserved1</td>
+		<td class='type'>const void*</td>
+		<td>Reserved.</td>
+	</tr>
+	<tr>
+		<td>reserved2</td>
+		<td class='type'>const void*</td>
+		<td>Reserved.</td>
+	</tr>
+	<tr>
+		<td>icon</td>
+		<td class='type'>const unsigned char*</td>
+		<td>
+			Plugin icon. This field must point to a 32x32 PNG-format
+			icon stored within the plugin as an
+			<span class='type'>unsigned char[]</span> array.
+			Alternatively, this field may be set to <span class='value'>NULL</span>
+			to indicate no icon.
+		</td>
+	</tr>
+	<tr>
+		<td>iconLength</td>
+		<td class='type'>const unsigned int</td>
+		<td>Length of the icon data pointed to by the <span class='symbol'>icon</span> field.</td>
+	</tr>
+</table>
+
+<a name="mdp_func_t">
+<h2><span class='struct'>mdp_func_t</span>: MDP Function Field</span></h2>
+
+<p>
+	The <span class='struct'>mdp_t</span>.<span class='struct'>func</span>
+	field points to a struct of type <span class='struct'>mdp_func_t</span>,
+	which contains pointers to various functions within the plugin.
+</p>
+
+<pre class='code'>
+#include &quot;mdp/mdp.h&quot;
+
+typedef void (MDP_FNCALL *mdp_init)(mdp_host_t *host_srv);
+typedef void (MDP_FNCALL *mdp_end)(void);
+
+typedef struct
+{
+	// Init/Shutdown functions
+	mdp_init	init;
+	mdp_end		end;
+} mdp_func_t;
+</pre>
+
+<p>Fields:</p>
+
+<table>
+	<tr>
+		<th>Field</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>init</td>
+		<td class='type'>mdp_init</td>
+		<td>
+			Initialization function. The <span class='struct'>host_srv</span>
+			parameter is a pointer to the
+			<a href="mdp_host_h.html">MDP Host Services</a> struct.
+		</td>
+	</tr>
+	<tr>
+		<td>end</td>
+		<td class='type'>mdp_end</td>
+		<td>
+			Shutdown function.
+		</td>
+	</tr>
+</table>
+
+</body>
+</html>

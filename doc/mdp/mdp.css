@@ -1,0 +1,76 @@
+h1.doc_title, h2.doc_title
+{
+	text-align: center;
+}
+
+div.screenshot, p.screenshot
+{
+	text-align: center;
+}
+
+div.navbar
+{
+	text-align: center;
+	border: 1px solid black;
+	border-collapse: collapsed;
+}
+
+li.sublist
+{
+	list-style: none;
+}
+
+table, table td, table th
+{
+	border: 1px solid black;
+}
+
+.option
+{
+	font-weight: bold;
+}
+
+/* Basic identifiers. */
+.struct, .symbol, .macro, .type, .program, .value
+{
+	font-family: monospace;
+	white-space: nowrap;
+}
+
+/* Struct identifier. */
+.struct, .struct a:link, .struct a:hover, .struct a:visited
+{
+	color: darkcyan;
+}
+
+/* Symbol name. */
+.symbol, .symbol a:link, .symbol a:hover, .symbol a:visited
+{
+	color: purple;
+}
+
+/* Macro identifier. */
+.macro, .macro a:link, .macro a:hover, .macro a:visited
+{
+	color: green;
+}
+
+/* Intrinsic type identifier. */
+.type, .type a:link, .type a:hover, .type a:visited
+{
+	color: blue;
+}
+
+/* Value identifier. */
+.value, .value a:link, .value a:hover, .value a:visited
+{
+	color: peru;
+}
+
+pre.code
+{
+	padding: 8px;
+	border: 1px dashed;
+	background-color: silver;
+	font-family: monospace;
+}
