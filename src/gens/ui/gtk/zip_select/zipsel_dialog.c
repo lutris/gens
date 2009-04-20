@@ -20,7 +20,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "zip_select_dialog.hpp"
+#include "zipsel_dialog.h"
 #include "gens/gens_window.h"
 
 #include <sys/types.h>
@@ -34,6 +34,7 @@
 // Gens GTK+ miscellaneous functions
 #include "gtk-misc.h"
 #include "ui/gtk/gtk-compat.h"
+
 
 typedef struct _zipsel_dialog_t
 {
@@ -195,7 +196,7 @@ mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
 	gdk_cursor_destroy(cursor);
 	
 	while (gtk_events_pending())
-		gtk_main_iteration_do(false);
+		gtk_main_iteration_do(FALSE);
 	
 	// Get the selected file.
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(zs.lstFiles));

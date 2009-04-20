@@ -60,7 +60,7 @@ using std::deque;
 #include "gens_core/misc/byteswap.h"
 
 #include "ui/gens_ui.hpp"
-#include "zip_select/zip_select_dialog.hpp"
+#include "zip_select/zipsel_dialog.h"
 #include "gens/gens_window.h"
 
 // File Decompressors.

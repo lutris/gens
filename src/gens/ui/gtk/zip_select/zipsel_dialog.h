@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_GTK_ZIP_SELECT_DIALOG_HPP
-#define GENS_GTK_ZIP_SELECT_DIALOG_HPP
+#ifndef GENS_GTK_ZIP_SELECT_DIALOG_H
+#define GENS_GTK_ZIP_SELECT_DIALOG_H
 
 // MDP decompression structs.
 #include "mdp/mdp_z.h"
@@ -36,4 +36,4 @@ mdp_z_entry_t *zipsel_dialog_get_file(mdp_z_entry_t *file_list);
 }
 #endif
 
-#endif /* GENS_GTK_GENERAL_OPTIONS_WINDOW_HPP */
+#endif /* GENS_GTK_ZIP_SELECT_DIALOG_H */
