@@ -66,7 +66,7 @@ static int mdp_host_reg_get_all_68k(struct S68000CONTEXT *context, void *reg_str
 
 
 /**
- * mdp_host_reg_get_all_vdp(): Get all VDP register.
+ * mdp_host_reg_get_all_vdp(): Get all VDP registers.
  * @param reg_struct Pointer to mdp_reg_vdp_t struct to store the registers in.
  * @return MDP error code.
  */
@@ -80,6 +80,26 @@ static int mdp_host_reg_get_all_vdp(void *reg_struct)
 	for (i = 0; i < 24; i++)
 	{
 		reg_vdp->data[i] = vdp_reg_int[i] & 0xFF;
+	}
+	
+	return MDP_ERR_OK;
+}
+
+
+/**
+ * mdp_host_reg_get_all_ym2612(): Get all YM2612 registers.
+ * @param reg_struct Pointer to mdp_reg_ym2612_t struct to store the registers in.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_get_all_ym2612(void *reg_struct)
+{
+	mdp_reg_ym2612_t *reg_ym2612 = (mdp_reg_ym2612_t*)reg_struct;
+	
+	int i;
+	for (i = 0; i < 0x100; i++)
+	{
+		reg_ym2612->regs[0][i] = YM2612_Get_Reg(i);
+		reg_ym2612->regs[1][i] = YM2612_Get_Reg(0x100 | i);
 	}
 	
 	return MDP_ERR_OK;
@@ -100,6 +120,7 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 		case MDP_REG_IC_VDP:
 			return mdp_host_reg_get_all_vdp(reg_struct);
 		case MDP_REG_IC_YM2612:
+			return mdp_host_reg_get_all_ym2612(reg_struct);
 		case MDP_REG_IC_PSG:
 		case MDP_REG_IC_Z80:
 		default:
