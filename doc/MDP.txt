@@ -78,13 +78,13 @@ that section.
 
 4. Basic Plugin Interface [MDP_VERSION(1, 0, 0)]
 
-Every plugin must export a struct of type MDP_t. This struct contains the
-basic information about the plugin. For internal plugins, the MDP_t struct
+Every plugin must export a struct of type mdp_t. This struct contains the
+basic information about the plugin. For internal plugins, the mdp_t struct
 is referenced in the host program's MDP implementation, so it can have any
-name. For external plugins, the MDP_t struct must be exported with the name
+name. For external plugins, the mdp_t struct must be exported with the name
 "mdp" ("_mdp" on platforms that prefix C symbols with underscores).
 
-Format of the MDP_t struct:
+Format of the mdp_t struct:
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"
@@ -103,11 +103,11 @@ typedef struct
 	const unsigned char uuid[16];
 	
 	// Description.
-	MDP_Desc_t *desc;
+	mdp_desc_t *desc;
 	
 	// Functions.
-	MDP_Func_t *func;
-} MDP_t;
+	mdp_func_t *func;
+} mdp_t;
 
 Fields:
 
@@ -126,7 +126,7 @@ Fields:
 - uuid: 16-byte UUID used to uniquely identify the plugin. Use a tool such as
         uuidgen to generate the UUID.
 
-- desc: Pointer to MDP_Desc_t with description information about the plugin.
+- desc: Pointer to mdp_desc_t with description information about the plugin.
 
 - func: Pointer to a struct containing various plugin functions.
 
@@ -134,7 +134,7 @@ Fields:
 
 4.1. MDP Description Field
 
-The MDP_t.desc field points to a struct of type MDP_Desc_t, which contains
+The mdp_t.desc field points to a struct of type mdp_desc_t, which contains
 a description of the plugin.
 
 Note: All strings are encoded using UTF-8.
@@ -157,7 +157,7 @@ typedef struct
 	// Icon data. (PNG format)
 	const unsigned char* icon;
 	const unsigned int iconLength;
-} MDP_Desc_t;
+} mdp_desc_t;
 
 Fields:
 
@@ -189,7 +189,7 @@ Fields:
 
 4.2. MDP Function Field [MDP_VERSION(1, 0, 0)]
 
-The MDP_t.func field points to a struct of type MDP_Func_t, which contains
+The mdp_t.func field points to a struct of type mdp_func_t, which contains
 several pointers to functions within the plugin.
 
 #include "mdp/mdp.h"
@@ -202,7 +202,7 @@ typedef struct
 	// Init/Shutdown functions
 	mdp_init	init;
 	mdp_end		end;
-} MDP_Func_t;
+} mdp_func_t;
 
 Fields:
 
@@ -217,7 +217,7 @@ Fields:
 
 4.3. MDP Host Services [MDP_VERSION(1, 0, 0)]
 
-The MDP_Func_t.init() function has one parameter, host_srv, which is a pointer
+The mdp_func_t.init() function has one parameter, host_srv, which is a pointer
 to a struct containing various services offered by the MDP host.
 
 #include "mdp/mdp_host.h"
@@ -232,27 +232,26 @@ typedef struct
 	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
 	int (MDP_FNCALL *val_get)(uint32_t valID);
 	
-	int (MDP_FNCALL *renderer_register)(struct MDP_t *plugin, MDP_Render_t *renderer);
-	int (MDP_FNCALL *renderer_unregister)(struct MDP_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *renderer_register)(struct mdp_t *plugin, MDP_Render_t *renderer);
+	int (MDP_FNCALL *renderer_unregister)(struct mdp_t *plugin, MDP_Render_t *renderer);
 	
-	int (MDP_FNCALL *menu_item_add)(struct MDP_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
-	int (MDP_FNCALL *menu_item_remove)(struct MDP_t *plugin, int menu_item_id);
-	int (MDP_FNCALL *menu_item_set_text)(struct MDP_t *plugin, int menu_item_id, const char *text);
-	int (MDP_FNCALL *menu_item_get_text)(struct MDP_t *plugin, int menu_item_id, char *text_buf, int size);
-	int (MDP_FNCALL *menu_item_set_checked)(struct MDP_t *plugin, int menu_item_id, int checked);
-	int (MDP_FNCALL *menu_item_get_checked)(struct MDP_t *plugin, int menu_item_id);
+	int (MDP_FNCALL *menu_item_add)(struct mdp_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
+	int (MDP_FNCALL *menu_item_remove)(struct mdp_t *plugin, int menu_item_id);
+	int (MDP_FNCALL *menu_item_set_text)(struct mdp_t *plugin, int menu_item_id, const char *text);
+	int (MDP_FNCALL *menu_item_get_text)(struct mdp_t *plugin, int menu_item_id, char *text_buf, int size);
+	int (MDP_FNCALL *menu_item_set_checked)(struct mdp_t *plugin, int menu_item_id, int checked);
+	int (MDP_FNCALL *menu_item_get_checked)(struct mdp_t *plugin, int menu_item_id);
 	
 	// Event handler functions.
-	int (MDP_FNCALL *event_register)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
-	int (MDP_FNCALL *event_unregister)(struct MDP_t *plugin, int event_id, mdp_event_handler_fn handler);
+	int (MDP_FNCALL *event_register)(struct mdp_t *plugin, int event_id, mdp_event_handler_fn handler);
+	int (MDP_FNCALL *event_unregister)(struct mdp_t *plugin, int event_id, mdp_event_handler_fn handler);
 } MDP_Host_t;
 
 Fields:
 
-- interfaceVersion: MDP Host Services interface version. Usually the same
-                    as the MDP interface version.
+- interfaceVersion: MDP interface version supported by the host program.
 
-Pointers: (See section 4.3.1)
+Pointers: (See section 4.3.1) [DEPRECATED; to be removed before MDP v1.0.0]
 
 - ptr_ref: Function to reference a Gens pointer.
 
@@ -355,7 +354,7 @@ initialization function:
 
 host_srv->renderer_register(&mdp, &mdp_render_t);
 
-where mdp is the MDP_t struct and mdp_render_t is the MDP_Render_t struct.
+where mdp is the mdp_t struct and mdp_render_t is the MDP_Render_t struct.
 
 The MDP_Render_t struct contains information about the renderer:
 
