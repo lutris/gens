@@ -39,6 +39,7 @@ extern "C" {
  * gsx_struct_md_t: Gens v5 savestate data.
  * This struct also contains the GSX header.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_struct_md_t
 {
 	// [0x00] Header.
@@ -139,6 +140,7 @@ typedef struct PACKED _gsx_struct_md_t
 	// Frame Count. (Gens Rerecording)
 	uint32_t frame_count;
 } gsx_struct_md_t;
+#pragma pack()
 
 #ifdef __cplusplus
 }

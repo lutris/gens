@@ -38,6 +38,7 @@
 /**
  * gsx_v6_mc68000_reg: MC68000 registers.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v6_mc68000_reg
 {
 	uint32_t dreg[8];
@@ -49,10 +50,12 @@ typedef struct PACKED _gsx_v6_mc68000_reg
 	uint16_t sr;
 	uint16_t contextfiller00;
 } gsx_v6_mc68000_reg;
+#pragma pack()
 
 /**
  * gsx_v6_vdp_reg: VDP registers.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v6_vdp_reg
 {
 	uint32_t DUPE_H_Int;		// Contains H_Int, but isn't used.
@@ -84,10 +87,12 @@ typedef struct PACKED _gsx_v6_vdp_reg
 	uint32_t DMA_Length;
 	uint32_t DMA_Address;
 } gsx_v6_vdp_reg;
+#pragma pack()
 
 /**
  * gsx_v6_controller_port: Controller port information.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v6_controller_port
 {
 	uint32_t counter;
@@ -95,10 +100,12 @@ typedef struct PACKED _gsx_v6_controller_port
 	uint32_t state;
 	uint32_t COM;
 } gsx_v6_controller_port;
+#pragma pack()
 
 /**
  * gsx_v6_controller_status: Controller status information.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v6_controller_status
 {
 	uint32_t type;
@@ -115,11 +122,13 @@ typedef struct PACKED _gsx_v6_controller_status
 	uint32_t Y;
 	uint32_t Z;
 } gsx_v6_controller_status;
+#pragma pack()
 
 
 /**
  * gsx_struct_md_v6_t: Gens v6 savestate extensions. (MD portion)
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_struct_md_v6_t
 {
 	gsx_v6_mc68000_reg	mc68000_reg;
@@ -180,5 +189,6 @@ typedef struct PACKED _gsx_struct_md_v6_t
 	uint32_t	vdp_reg_dma_length;
 	uint32_t	vdp_reg_dma_address;
 } gsx_struct_md_v6_t;
+#pragma pack()
 
 #endif /* GENS_GSX_V6_H */

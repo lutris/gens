@@ -38,6 +38,7 @@
 /**
  * gsx_v7_ym2612_slot: GSX v7 YM2612 slot struct definition.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_ym2612_slot
 {
 	unsigned int DT; // Detune parameter.
@@ -83,10 +84,12 @@ typedef struct PACKED _gsx_v7_ym2612_slot
 	int AMS;	// AMS depth level of this SLOT = degree of amplitude modulation by the LFO.
 	int AMSon;	// AMS enable flag.
 } gsx_v7_ym2612_slot;
+#pragma pack()
 
 /**
  * gsx_v7_ym2612_channel: GSX v7 YM2612 channel struct definition.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_ym2612_channel
 {
 	int S0_OUT[4];		// Previous Slot 0 output. (for feedback)
@@ -104,10 +107,12 @@ typedef struct PACKED _gsx_v7_ym2612_channel
 	gsx_v7_ym2612_slot slot[4];	// Slot operators. (4 slots per channel)
 	int FFlag;		// Frequency step recalculation flag.
 } gsx_v7_ym2612_channel;
+#pragma pack()
 
 /**
  * gsx_v7_ym2612: GSX v7 YM2612 struct definition.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_ym2612
 {
 	int clock_freq;		// YM2612 clock frequency. (Hz)
@@ -139,11 +144,13 @@ typedef struct PACKED _gsx_v7_ym2612
 	
 	unsigned int reg[2][0x100];	// YM2612 registers.
 } gsx_v7_ym2612;
+#pragma pack()
 
 
 /**
  * gsx_v7_psg: GSX v7 PSG struct definition.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_psg
 {
 	int current_channel;
@@ -155,11 +162,13 @@ typedef struct PACKED _gsx_v7_psg
 	unsigned int noise_type;
 	unsigned int noise;
 } gsx_v7_psg;
+#pragma pack()
 
 
 /**
  * gsx_v7_z80_reg: Z80 registers.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_z80_reg
 {
 	uint16_t FA;	// Stored backwards for some reason.
@@ -236,11 +245,13 @@ typedef struct PACKED _gsx_v7_z80_reg
 	uint32_t RetIC;
 	uint32_t IntAckC;
 } gsx_v7_z80_reg;
+#pragma pack()
 
 
 /**
  * gsx_v7_mc68000_reg: MC68000 registers.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_mc68000_reg
 {
 	uint32_t dreg[8];
@@ -251,11 +262,13 @@ typedef struct PACKED _gsx_v7_mc68000_reg
 	uint8_t  interrupts[8];
 	uint16_t sr;
 } gsx_v7_mc68000_reg;
+#pragma pack()
 
 
 /**
  * gsx_v7_controller_port: Controller port information.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_controller_port
 {
 	uint32_t state;
@@ -263,10 +276,12 @@ typedef struct PACKED _gsx_v7_controller_port
 	uint32_t counter;
 	uint32_t delay;
 } gsx_v7_controller_port;
+#pragma pack()
 
 /**
  * gsx_v7_controller_status: Controller status information.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_controller_status
 {
 	uint32_t type;
@@ -283,10 +298,12 @@ typedef struct PACKED _gsx_v7_controller_status
 	uint32_t Y;
 	uint32_t Z;
 } gsx_v7_controller_status;
+#pragma pack()
 
 /**
  * gsx_v7_controllers: Controller status.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_controllers
 {
 	gsx_v7_controller_port		port1;
@@ -303,11 +320,13 @@ typedef struct PACKED _gsx_v7_controllers
 	gsx_v7_controller_status	player2C;
 	gsx_v7_controller_status	player2D;
 } gsx_v7_controllers;
+#pragma pack()
 
 
 /**
  * gsx_v7_sram: Save RAM.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_sram
 {
 	uint8_t  sram[64 * 1024];
@@ -317,11 +336,13 @@ typedef struct PACKED _gsx_v7_sram
 	uint32_t sram_write;
 	uint32_t sram_custom;
 } gsx_v7_sram;
+#pragma pack()
 
 
 /**
  * gsx_v7_starscream_extra: Extra Starscream 68000 information.
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_v7_starscream_extra
 {
 	uint32_t cycles_needed;
@@ -341,11 +362,13 @@ typedef struct PACKED _gsx_v7_starscream_extra
 	uint32_t save_01;
 	uint32_t save_02;
 } gsx_v7_starscream_extra;
+#pragma pack()
 
 
 /**
  * gsx_struct_md_v7_t: Gens v7 savestate extensions. (MD portion)
  */
+#pragma pack(1)
 typedef struct PACKED _gsx_struct_md_v7_t
 {
 	gsx_v7_ym2612		ym2612;
@@ -402,5 +425,6 @@ typedef struct PACKED _gsx_struct_md_v7_t
 	// Extra Starscream 68000 information.
 	gsx_v7_starscream_extra		starscream_extra;
 } gsx_struct_md_v7_t;
+#pragma pack()
 
 #endif /* GENS_GSX_V7_H */
