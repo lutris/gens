@@ -95,7 +95,7 @@ typedef enum _MDP_REG_VDP
 	MDP_REG_VDP_DMA_SRC_H	= 23	/* BYTE */
 } MDP_REG_VDP;
 
-/* Macro for YM2612 register IDs */
+/* Macro for YM2612 register IDs. */
 /* YM2612 has two banks of 256 registers. */
 #define MDP_REG_YM2612_GET_ID(bank, reg)	((uint32_t)(((bank & 1) << 8) | (reg & 0xFF)))
 #define MDP_REG_YM2612_GET_BANK(id)		((id >> 8) & 1)
