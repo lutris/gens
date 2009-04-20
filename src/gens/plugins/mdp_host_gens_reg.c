@@ -641,6 +641,27 @@ static int mdp_host_reg_get_all_68k(struct S68000CONTEXT *context, void *reg_str
 }
 
 
+/**
+ * mdp_host_reg_get_all_vdp(): Get all VDP register.
+ * @param reg_struct Pointer to mdp_reg_vdp_t struct to store the registers in.
+ * @return MDP error code.
+ */
+static int mdp_host_reg_get_all_vdp(void *reg_struct)
+{
+	mdp_reg_vdp_t *reg_vdp = (mdp_reg_vdp_t*)reg_struct;
+	
+	// VDP_Reg is an array of 24 unsigned ints.
+	unsigned int *vdp_reg_int = (unsigned int*)(&VDP_Reg);
+	int i;
+	for (i = 0; i < 24; i++)
+	{
+		reg_vdp->data[i] = vdp_reg_int[i] & 0xFF;
+	}
+	
+	return MDP_ERR_OK;
+}
+
+
 int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 {
 	if (!Game)
@@ -653,6 +674,7 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 		case MDP_REG_IC_M68K:
 			return mdp_host_reg_get_all_68k(&main68k_context, reg_struct);
 		case MDP_REG_IC_VDP:
+			return mdp_host_reg_get_all_vdp(reg_struct);
 		case MDP_REG_IC_YM2612:
 		case MDP_REG_IC_PSG:
 		case MDP_REG_IC_Z80:
