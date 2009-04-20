@@ -40,6 +40,19 @@
 	.section	.rodata
 #endif
 
+/* Symbol sizes. */
+/* SYMSIZE_DATA() can be used anywhere. */
+/* SYMSIZE_FUNC() should be used directly after a function. */
+#if !defined(__APPLE__)
+	#define SYMSIZE_DATA(sym, sym_size) \
+	.size	sym, sym_size
+	#define SYMSIZE_FUNC(sym) \
+	.size	sym, .-sym
+#else
+	#define SYMSIZE_DATA(sym, sym_size)
+	#define SYMSIZE_FUNC(sym)
+#endif
+
 /* PIC macros from http://www.gentoo.org/proj/en/hardened/pic-fix-guide.xml */
 
 #ifdef __PIC__
@@ -89,19 +102,6 @@ __i686.get_pc_thunk.bx:
 	.type sym, ## symtype
 #else
 	#define SYMTYPE(sym, symtype)
-#endif
-
-/* Symbol sizes. */
-/* SYMSIZE_DATA() can be used anywhere. */
-/* SYMSIZE_FUNC() should be used directly after a function. */
-#if !defined(__APPLE__)
-	#define SYMSIZE_DATA(sym, sym_size) \
-	.size	sym, sym_size
-	#define SYMSIZE_FUNC(sym) \
-	.size	sym, .-sym
-#else
-	#define SYMSIZE_DATA(sym, sym_size)
-	#define SYMSIZE_FUNC(sym)
 #endif
 
 #endif /* _MDP_GNU_AS_X86_INC */
