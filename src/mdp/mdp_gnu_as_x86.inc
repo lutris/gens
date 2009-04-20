@@ -84,6 +84,7 @@
 __i686.get_pc_thunk.bx:
 	movl	(%esp), %ebx
 	ret
+SYMSIZE_FUNC(__i686.get_pc_thunk.bx)
 
 #else /* __APPLE__ */
 	/* MacOS X version */
