@@ -390,7 +390,7 @@ void GensMainLoop(void)
 				else
 					Do_VDP_Only();
 				
-				if (Video.pauseTint)
+				if (Paused && Video.pauseTint)
 				{
 					// Emulation is paused.
 					Pause_Screen();
