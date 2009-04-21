@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 // C++ includes.
 #include <list>
@@ -123,16 +124,26 @@ void Options::setSaveSlot(const int newSaveSlot)
 	// Set the new savestate slot number.
 	Current_State = newSaveSlot;
 	
-	// TODO: Change this to just check if the file exists.
-	FILE *f;
-	if ((f = Savestate::GetStateFile()))
+	// Check if the savestate exists.
+	string filename = Savestate::GetStateFilename();
+	if (!access(filename.c_str(), F_OK))
 	{
-		fclose(f);
+		// File exists.
 		MESSAGE_NUM_L("SLOT %d [OCCUPIED]", "SLOT %d [OCCUPIED]", Current_State, 1500);
 	}
 	else
 	{
-		MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
+		// Check what the error value is.
+		if (errno == ENOENT)
+		{
+			// File doesn't exist.
+			MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
+		}
+		else
+		{
+			// Error checking the file.
+			MESSAGE_NUM_L("SLOT %d [ERR]", "SLOT %d [ERR]", Current_State, 1500);
+		}
 	}
 }
 
