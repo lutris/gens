@@ -80,7 +80,6 @@ gens_SOURCES = \
 		emulator/parse.cpp \
 		emulator/options.cpp \
 		emulator/fw_32x.c \
-		emulator/language.c \
 		emulator/sighandler.c \
 		gens_core/nasmhead.inc \
 		gens_core/cpu/68k/cpu_68k.c \
@@ -201,7 +200,6 @@ noinst_HEADERS = \
 		emulator/parse.hpp \
 		emulator/options.hpp \
 		emulator/fw_32x.h \
-		emulator/language.h \
 		emulator/sighandler.h \
 		gens_core/cpu/68k/cpu_68k.h \
 		gens_core/cpu/68k/star_68k.h \

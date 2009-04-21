@@ -89,9 +89,6 @@
 #include "audio/audio.h"
 #include "input/input.h"
 
-// Language handler.
-#include "emulator/language.h"
-
 // C++ includes
 #include <deque>
 #include <list>
@@ -210,7 +207,6 @@ int Config::save(const string& filename)
 #endif /* GENS_CDROM */
 	
 	cfg.writeInt("General", "State Number", Current_State);
-	cfg.writeInt("General", "Language", Language);
 	cfg.writeInt("General", "Window X", Window_Pos.x);
 	cfg.writeInt("General", "Window Y", Window_Pos.y);
 	cfg.writeInt("General", "Intro Style", Intro_Style);
@@ -480,7 +476,6 @@ int Config::load(const string& filename, void* gameActive)
 #endif /* GENS_CDROM */
 	
 	Current_State = cfg.getInt("General", "State Number", 0);
-	Language = cfg.getInt("General", "Language", 0);
 	Window_Pos.x = cfg.getInt("General", "Window X", 0);
 	Window_Pos.y = cfg.getInt("General", "Window Y", 0);
 	Intro_Style = cfg.getInt("General", "Intro Style", 0);

@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 
 // C++ includes.
 #include <list>
@@ -71,9 +72,6 @@ using std::list;
 #include "video/vdraw_cpp.hpp"
 #include "audio/audio.h"
 
-// Language handler.
-#include "emulator/language.h"
-
 // WAV dumping.
 #include "util/sound/wave.h"
 
@@ -96,9 +94,9 @@ void Options::setSpriteLimit(const bool newSpriteLimit)
 	Sprite_Over = newSpriteLimit;
 	
 	if (Sprite_Over)
-		MESSAGE_L("Sprite Limit Enabled", "Sprite Limit Enabled", 1000);
+		vdraw_text_write("Sprite Limit Enabled", 1000);
 	else
-		MESSAGE_L("Sprite Limit Disabled", "Sprite Limit Disabled", 1000);
+		vdraw_text_write("Sprite Limit Disabled", 1000);
 }
 
 
@@ -129,7 +127,7 @@ void Options::setSaveSlot(const int newSaveSlot)
 	if (!access(filename.c_str(), F_OK))
 	{
 		// File exists.
-		MESSAGE_NUM_L("SLOT %d [OCCUPIED]", "SLOT %d [OCCUPIED]", Current_State, 1500);
+		vdraw_text_sprintf(1500, "SLOT %d [OCCUPIED]", Current_State);
 	}
 	else
 	{
@@ -137,12 +135,12 @@ void Options::setSaveSlot(const int newSaveSlot)
 		if (errno == ENOENT)
 		{
 			// File doesn't exist.
-			MESSAGE_NUM_L("SLOT %d [EMPTY]", "SLOT %d [EMPTY]", Current_State, 1500);
+			vdraw_text_sprintf(1500, "SLOT %d [EMPTY]", Current_State);
 		}
 		else
 		{
 			// Error checking the file.
-			MESSAGE_NUM_L("SLOT %d [ERROR]", "SLOT %d [ERROR]", Current_State, 1500);
+			vdraw_text_sprintf(1500, "SLOT %d [ERROR]", Current_State);
 		}
 	}
 }
@@ -170,9 +168,9 @@ void Options::setFrameSkip(const int newFrameSkip)
 	Frame_Skip = newFrameSkip;
 	
 	if (Frame_Skip != -1)
-		MESSAGE_NUM_L("Frame skip set to %d", "Frame skip set to %d", Frame_Skip, 1500);
+		vdraw_text_sprintf(1500, "Frame skip set to %d", Frame_Skip);
 	else
-		MESSAGE_L("Frame skip set to Auto", "Frame skip set to Auto", 1500);
+		vdraw_text_write("Frame skip set to Auto", 1500);
 }
 
 
@@ -333,16 +331,16 @@ void Options::setCountry(const int newCountry)
 	if (Game_Mode)
 	{
 		if (CPU_Mode)
-			MESSAGE_L("Europe system (50 FPS)", "Europe system (50 FPS)", 1500);
+			vdraw_text_write("Europe system (50 FPS)", 1500);
 		else
-			MESSAGE_L("USA system (60 FPS)", "USA system (60 FPS)", 1500);
+			vdraw_text_write("USA system (60 FPS)", 1500);
 	}
 	else
 	{
 		if (CPU_Mode)
-			MESSAGE_L("Japan system (50 FPS)", "Japan system (50 FPS)", 1500);
+			vdraw_text_write("Japan system (50 FPS)", 1500);
 		else
-			MESSAGE_L("Japan system (60 FPS)", "Japan system (60 FPS)", 1500);
+			vdraw_text_write("Japan system (60 FPS)", 1500);
 	}
 	
 	setGameName();
@@ -387,7 +385,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		PCM_Enable = 0;
 		PWM_Enable = 0;
 		CDDA_Enable = 0;
-		MESSAGE_L("Sound Disabled", "Sound Disabled", 1500);
+		vdraw_text_write("Sound Disabled", 1500);
 	}
 	else
 	{
@@ -418,7 +416,7 @@ int Options::setSoundEnable(const bool newSoundEnable)
 		PWM_Enable = 1;
 		CDDA_Enable = 1;
 		
-		MESSAGE_L("Sound Enabled", "Sound Enabled", 1500);
+		vdraw_text_write("Sound Enabled", 1500);
 	}
 	
 	return 1;
@@ -452,9 +450,9 @@ void Options::setSoundStereo(const bool newSoundStereo)
 	audio_set_stereo(newSoundStereo);
 	
 	if (!audio_get_stereo())
-		MESSAGE_L("Mono sound", "Mono sound", 1000);
+		vdraw_text_write("Mono sound", 1000);
 	else
-		MESSAGE_L("Stereo sound", "Stereo sound", 1000);
+		vdraw_text_write("Stereo sound", 1000);
 	
 	if (!audio_get_enabled())
 	{
@@ -524,12 +522,12 @@ void Options::setSoundZ80(const bool newSoundZ80)
 	if (newSoundZ80)
 	{
 		Z80_State |= 1;
-		MESSAGE_L("Z80 Enabled", "Z80 Enabled", 1000);
+		vdraw_text_write("Z80 Enabled", 1000);
 	}
 	else
 	{
 		Z80_State &= ~1;
-		MESSAGE_L("Z80 Disabled", "Z80 Disabled", 1000);
+		vdraw_text_write("Z80 Disabled", 1000);
 	}
 }
 
@@ -552,9 +550,9 @@ void Options::setSoundYM2612(const bool newSoundYM2612)
 	YM2612_Enable = newSoundYM2612;
 	
 	if (YM2612_Enable)
-		MESSAGE_L("YM2612 Enabled", "YM2612 Enabled", 1000);
+		vdraw_text_write("YM2612 Enabled", 1000);
 	else
-		MESSAGE_L("YM2612 Disabled", "YM2612 Disabled", 1000);
+		vdraw_text_write("YM2612 Disabled", 1000);
 }
 
 
@@ -577,13 +575,11 @@ void Options::setSoundYM2612_Improved(const bool newSoundYM2612_Improved)
 	
 	if (YM2612_Improv)
 	{
-		MESSAGE_L("High Quality YM2612 emulation",
-			  "High Quality YM2612 emulation", 1000);
+		vdraw_text_write("High Quality YM2612 emulation", 1000);
 	}
 	else
 	{
-		MESSAGE_L("Normal YM2612 emulation",
-			  "Normal YM2612 emulation", 1000);
+		vdraw_text_write("Normal YM2612 emulation", 1000);
 	}
 	
 	// Save the YM2612 registers.
@@ -619,9 +615,9 @@ void Options::setSoundDAC(const bool newSoundDAC)
 	DAC_Enable = newSoundDAC;
 	
 	if (DAC_Enable)
-		MESSAGE_L("DAC Enabled", "DAC Enabled", 1000);
+		vdraw_text_write("DAC Enabled", 1000);
 	else
-		MESSAGE_L("DAC Disabled", "DAC Disabled", 1000);
+		vdraw_text_write("DAC Disabled", 1000);
 }
 
 
@@ -643,9 +639,9 @@ void Options::setSoundPSG(const bool newSoundPSG)
 	PSG_Enable = newSoundPSG;
 	
 	if (PSG_Enable)
-		MESSAGE_L("PSG Enabled", "PSG Enabled", 1000);
+		vdraw_text_write("PSG Enabled", 1000);
 	else
-		MESSAGE_L("PSG Disabled", "PSG Disabled", 1000);
+		vdraw_text_write("PSG Disabled", 1000);
 }
 
 
@@ -667,9 +663,9 @@ void Options::setSoundPSG_Sine(const bool newSoundPSG_Sine)
 	PSG_Improv = newSoundPSG_Sine;
 	
 	if (PSG_Improv)
-		MESSAGE_L("Sine wave PSG sound", "Sine wave PSG sound", 1000);
+		vdraw_text_write("Sine wave PSG sound", 1000);
 	else
-		MESSAGE_L("Normal PSG sound", "Normal PSG sound", 1000);
+		vdraw_text_write("Normal PSG sound", 1000);
 }
 
 
@@ -691,9 +687,9 @@ void Options::setSoundPCM(const bool newSoundPCM)
 	PCM_Enable = newSoundPCM;
 	
 	if (PCM_Enable)
-		MESSAGE_L("PCM Sound Enabled", "PCM Sound Enabled", 1000);
+		vdraw_text_write("PCM Sound Enabled", 1000);
 	else
-		MESSAGE_L("PCM Sound Disabled", "PCM Sound Disabled", 1000);
+		vdraw_text_write("PCM Sound Disabled", 1000);
 }
 
 
@@ -715,9 +711,9 @@ void Options::setSoundPWM(const bool newSoundPWM)
 	PWM_Enable = newSoundPWM;
 	
 	if (PWM_Enable)
-		MESSAGE_L("PWM Sound Enabled", "PWM Sound Enabled", 1000);
+		vdraw_text_write("PWM Sound Enabled", 1000);
 	else
-		MESSAGE_L("PWM Sound Disabled", "PWM Sound Disabled", 1000);
+		vdraw_text_write("PWM Sound Disabled", 1000);
 }
 
 
@@ -740,9 +736,9 @@ void Options::setSoundCDDA(const bool newSoundCDDA)
 	CDDA_Enable = newSoundCDDA;
 	
 	if (CDDA_Enable)
-		MESSAGE_L("CD Audio Enabled", "CD Audio Enabled", 1000);
+		vdraw_text_write("CD Audio Enabled", 1000);
 	else
-		MESSAGE_L("CD Audio Disabled", "CD Audio Disabled", 1000);
+		vdraw_text_write("CD Audio Disabled", 1000);
 }
 
 
@@ -792,7 +788,7 @@ void Options::setSoundSampleRate(const int newRate)
 			audio_set_sound_rate(44100);
 			break;
 	}
-	MESSAGE_NUM_L("Sound rate set to %d Hz", "Sound rate set to %d Hz", audio_get_sound_rate(), 2500);
+	vdraw_text_sprintf(2500, "Sound rate set to %d Hz", audio_get_sound_rate());
 	
 	// If sound isn't enabled, we're done.
 	if (!audio_get_enabled())
@@ -870,7 +866,7 @@ void Options::setSegaCD_SRAMSize(const int num)
 	if (num == -1)
 	{
 		BRAM_Ex_State &= 1;
-		MESSAGE_L("SegaCD SRAM cart removed", "SegaCD SRAM cart removed", 1500);
+		vdraw_text_write("SegaCD SRAM cart removed", 1500);
 	}
 	else
 	{
@@ -879,8 +875,7 @@ void Options::setSegaCD_SRAMSize(const int num)
 		BRAM_Ex_State |= 0x100;
 		BRAM_Ex_Size = num;
 		
-		sprintf(bsize, "SegaCD SRAM cart plugged in (%d KB)", 8 << num);
-		MESSAGE_L(bsize, bsize, 1500);
+		vdraw_text_sprintf(1500, "SegaCD SRAM cart plugged in (%d KB)", (8 << num));
 	}
 }
 
@@ -911,7 +906,7 @@ void Options::setSegaCD_PerfectSync(const bool newSegaCD_PerfectSync)
 			Update_Frame_Fast = Do_SegaCD_Frame_No_VDP;
 		}
 	
-		MESSAGE_L("SegaCD normal mode", "SegaCD normal mode", 1500);
+		vdraw_text_write("SegaCD normal mode", 1500);
 	}
 	else
 	{
@@ -923,8 +918,7 @@ void Options::setSegaCD_PerfectSync(const bool newSegaCD_PerfectSync)
 			Update_Frame_Fast = Do_SegaCD_Frame_No_VDP_Cycle_Accurate;
 		}
 		
-		MESSAGE_L("SegaCD Perfect Sync mode (slower)",
-			  "SegaCD Perfect Sync mode (slower)", 1500);
+		vdraw_text_write("SegaCD Perfect Sync mode (slower)", 1500);
 	}
 }
 
@@ -953,9 +947,9 @@ void Options::setFastBlur(const bool newFastBlur)
 	vdraw_set_fast_blur(newFastBlur);
 	
 	if (vdraw_get_fast_blur())
-		MESSAGE_L("Fast Blur Enabled", "Fast Blur Enabled", 1000);
+		vdraw_text_write("Fast Blur Enabled", 1000);
 	else
-		MESSAGE_L("Fast Blur Disabled", "Fast Blur Disabled", 1000);
+		vdraw_text_write("Fast Blur Disabled", 1000);
 }
 
 
@@ -986,16 +980,16 @@ void Options::setStretch(const uint8_t newStretch)
 	switch (vdraw_get_stretch())
 	{
 		case STRETCH_NONE:
-			MESSAGE_L("Correct ratio mode", "Correct ratio mode", 1000);
+			vdraw_text_write("Correct ratio mode", 1000);
 			break;
 		case STRETCH_H:
-			MESSAGE_L("Horizontal stretched mode", "Horizontal stretched mode", 1000);
+			vdraw_text_write("Horizontal stretched mode", 1000);
 			break;
 		case STRETCH_V:
-			MESSAGE_L("Vertical stretched mode", "Vertical stretched mode", 1000);
+			vdraw_text_write("Vertical stretched mode", 1000);
 			break;
 		case STRETCH_FULL:
-			MESSAGE_L("Full stretched mode", "Full stretched mode", 1000);
+			vdraw_text_write("Full stretched mode", 1000);
 			break;
 	}
 }
@@ -1025,9 +1019,9 @@ void Options::setVSync(const bool newVSync)
 	*p_vsync = (newVSync == 1 ? 1 : 0);
 	
 	if (*p_vsync)
-		MESSAGE_L("Vertical Sync Enabled", "Vertical Sync Enabled", 1000);
+		vdraw_text_write("Vertical Sync Enabled", 1000);
 	else
-		MESSAGE_L("Vertical Sync Disabled", "Vertical Sync Disabled", 1000);
+		vdraw_text_write("Vertical Sync Disabled", 1000);
 	
 	// Update VSync.
 	if (vdraw_update_vsync)
@@ -1068,10 +1062,7 @@ void Options::setBackend(VDRAW_BACKEND newBackend)
 	// Print a notice about the selected backend.
 	if (is_gens_running())
 	{
-		char buf[64];
-		snprintf(buf, sizeof(buf), "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
-		buf[sizeof(buf) - 1] = 0x00;
-		MESSAGE_L(buf, buf, 1500);
+		vdraw_text_sprintf(1500, "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
 	}
 }
 
@@ -1094,8 +1085,7 @@ void Options::setOpenGL_Resolution(int w, int h)
 	Video.Height_GL = h;
 	
 	// Print the resolution information.
-	MESSAGE_NUM_2L("Selected %dx%d resolution",
-		       "Selected %dx%d resolution", w, h, 1500);
+	vdraw_text_sprintf(1500, "Selected %dx%d resolution", w, h);
 	
 	// If the current backend isn't OpenGL, don't do anything.
 	// TODO: Make this not platform-dependent.
@@ -1139,11 +1129,9 @@ void Options::setSwRender(const bool newSwRender)
 	vdraw_set_sw_render(newSwRender);
 	
 	if (vdraw_get_sw_render())
-		MESSAGE_L("Force software blit for Full-Screen",
-			  "Force software blit for Full-Screen", 1000);
+		vdraw_text_write("Force software blit for Full-Screen", 1000);
 	else
-		MESSAGE_L("Enable hardware blit for Full-Screen",
-			  "Enable hardware blit for Full-Screen", 1000);
+		vdraw_text_write("Enable hardware blit for Full-Screen", 1000);
 }
 #endif /* GENS_OS_WIN32 */
 
@@ -1161,17 +1149,17 @@ void Options::systemReset(void)
 	if (Genesis_Started)
 	{
 		Reset_Genesis();
-		MESSAGE_L("Genesis reset", "Genesis reset", 1500);
+		vdraw_text_write("Genesis reset", 1500);
 	}
 	else if (SegaCD_Started)
 	{
 		Reset_SegaCD();
-		MESSAGE_L("SegaCD reset", "SegaCD reset", 1500);
+		vdraw_text_write("SegaCD reset", 1500);
 	}
 	else if (_32X_Started)
 	{
 		Reset_32X();
-		MESSAGE_L("32X reset", "32X reset", 1500);
+		vdraw_text_write("32X reset", 1500);
 	}
 }
 

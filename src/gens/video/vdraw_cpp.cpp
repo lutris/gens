@@ -40,15 +40,15 @@
 #include <list>
 using std::list;
 
-// Language handler.
-#include "emulator/language.h"
-
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
 
 // CPU flags.
 #include "gens_core/misc/cpuflags.h"
+
+// Text drawing.
+#include "video/vdraw_text.hpp"
 
 // Plugin Manager.
 #include "plugins/pluginmgr.hpp"
@@ -100,13 +100,9 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	rendFn = rendPlugin->blit;
 	
 	if (Rend != newMode)
-	{
-		MESSAGE_STR_L("Render Mode: %s", "Render Mode: %s", rendPlugin->tag, 1500);
-	}
+		vdraw_text_sprintf(1500, "Render Mode: %s", rendPlugin->tag);
 	else
-	{
 		reinit = true;
-	}
 	
 	// Set the new render mode.
 	Rend = newMode;

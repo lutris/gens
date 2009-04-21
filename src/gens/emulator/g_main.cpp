@@ -88,9 +88,6 @@
 // Video effects.
 #include "video/v_effects.hpp"
 
-// Language handler.
-#include "language.h"
-
 // Gens Settings structs.
 Gens_Settings_t Settings;
 Gens_PathNames_t PathNames;
@@ -199,8 +196,7 @@ int Init_Settings(void)
 	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
 	rendMode_W = PluginMgr::lstRenderPlugins.begin();
 	
-	// Build language strings and load the default configuration.
-	Build_Language_String();
+	// Load the default configuration.
 	Config::load(Str_Tmp, NULL);
 	
 	// Success.

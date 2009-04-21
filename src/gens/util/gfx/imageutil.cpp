@@ -39,11 +39,11 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/byteswap.h"
 
-// Language handler.
-#include "emulator/language.h"
-
 // File management functions.
 #include "util/file/file.hpp"
+
+// Text drawing.
+#include "video/vdraw_text.hpp"
 
 #ifdef GENS_PNG
 #include <png.h>
@@ -492,7 +492,7 @@ int ImageUtil::screenShot(void)
 	fclose(img);
 	
 	if (rval == 1)
-		MESSAGE_NUM_L("Screen shot %d saved", "Screen shot %d saved", num, 1500);
+		vdraw_text_sprintf(1500, "Screen shot %d saved", num);
 	
 	return rval;
 }

@@ -82,9 +82,6 @@
 #include "video/vdraw_cpp.hpp"
 #include "audio/audio.h"
 
-// Language handler.
-#include "emulator/language.h"
-
 // Win32 includes.
 #ifdef GENS_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -360,9 +357,9 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Video.glLinearFilter = !state;
 			
 			if (Video.glLinearFilter)
-				MESSAGE_L("Enabled OpenGL Linear Filter", "Enabled OpenGL Linear Filter", 1500);
+				vdraw_text_write("Enabled OpenGL Linear Filter", 1500);
 			else
-				MESSAGE_L("Disabled OpenGL Linear Filter", "Disabled OpenGL Linear Filter", 1500);
+				vdraw_text_write("Disabled OpenGL Linear Filter", 1500);
 			
 			break;
 		
@@ -421,19 +418,19 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 		case IDM_GRAPHICS_BPP_15:
 			vdraw_set_bpp(15, TRUE);
 			Sync_Gens_Window_GraphicsMenu();
-			MESSAGE_L("Selected 15-bit color depth", "Selected 15-bit color depth", 1500);
+			vdraw_text_write("Selected 15-bit color depth", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_16:
 			vdraw_set_bpp(16, TRUE);
 			Sync_Gens_Window_GraphicsMenu();
-			MESSAGE_L("Selected 16-bit color depth", "Selected 16-bit color depth", 1500);
+			vdraw_text_write("Selected 16-bit color depth", 1500);
 			break;
 		
 		case IDM_GRAPHICS_BPP_32:
 			vdraw_set_bpp(32, TRUE);
 			Sync_Gens_Window_GraphicsMenu();
-			MESSAGE_L("Selected 32-bit color depth", "Selected 32-bit color depth", 1500);
+			vdraw_text_write("Selected 32-bit color depth", 1500);
 			break;
 #endif /* GENS_OS_UNIX */
 		
@@ -541,14 +538,12 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			
 			Paused = 0;
 			main68k_reset();
+			
 			if (Genesis_Started || _32X_Started)
-			{
-				MESSAGE_L("68000 CPU reset", "68000 CPU reset", 1000);
-			}
+				vdraw_text_write("68000 CPU reset", 1000);
 			else if (SegaCD_Started)
-			{
-				MESSAGE_L("Main 68000 CPU reset", "Main 68000 CPU reset", 1000);
-			}
+				vdraw_text_write("Main 68000 CPU reset", 1000);
+			
 			break;
 		
 		case IDM_CPU_RESETSUB68K:
@@ -562,7 +557,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			
 			Paused = 0;
 			sub68k_reset();
-			MESSAGE_L("Sub 68000 CPU reset", "Sub 68000 CPU reset", 1000);
+			vdraw_text_write("Sub 68000 CPU reset", 1000);
 			break;
 		
 		case IDM_CPU_RESETMAINSH2:
@@ -576,7 +571,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			
 			Paused = 0;
 			SH2_Reset(&M_SH2, 1);
-			MESSAGE_L("Master SH2 reset", "Master SH2 reset", 1000);
+			vdraw_text_write("Master SH2 reset", 1000);
 			break;
 		
 		case IDM_CPU_RESETSUBSH2:
@@ -590,7 +585,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 			
 			Paused = 0;
 			SH2_Reset(&S_SH2, 1);
-			MESSAGE_L("Slave SH2 reset", "Slave SH2 reset", 1000);
+			vdraw_text_write("Slave SH2 reset", 1000);
 			break;
 		
 		case IDM_CPU_RESETZ80:
@@ -603,7 +598,7 @@ static int gens_menu_callback_CPUMenu(uint16_t menuID, uint16_t state)
 				break;
 			
 			mdZ80_reset(&M_Z80);
-			MESSAGE_L("Z80 reset", "Z80 reset", 1000);
+			vdraw_text_write("Z80 reset", 1000);
 			break;
 		
 		case IDM_CPU_SEGACDPERFECTSYNC:
