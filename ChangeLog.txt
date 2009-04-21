@@ -117,6 +117,8 @@ Milestone 5.2 introduces the following new features:
 - [GTK+] The design of the "Controller Configuration" window has been
   improved.
 
+- The "Auto Pause" feature has been reimplemented.
+
 Milestone 5.2 has the following miscellaneous changes:
 
 - The "BIOS/Misc Files" entries for "GCOffline" and "Gens Manual" have been
