@@ -5,9 +5,10 @@ AUTOMAKE_OPTIONS = subdir-objects
 noinst_LIBRARIES = libmdp_render_2x.a
 
 INCLUDES = -I@top_srcdir@/src/
+libmdp_render_2x_a_CCASFLAGS	= $(INCLUDES)
 
-libmdp_render_2x_a_CFLAGS = $(AM_CFLAGS)
-libmdp_render_2x_a_CXXFLAGS = $(AM_CXXFLAGS)
+libmdp_render_2x_a_CFLAGS	= $(AM_CFLAGS)
+libmdp_render_2x_a_CXXFLAGS	= $(AM_CXXFLAGS)
 
 libmdp_render_2x_a_SOURCES = \
 		mdp_render_2x_plugin.c \

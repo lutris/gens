@@ -41,6 +41,7 @@ NASM_INCLUDES = \
 
 NASM += $(NASM_INCLUDES)
 INCLUDES = -I@srcdir@/ -I@top_srcdir@/src/ -I@srcdir@/ui/
+gens_CCASFLAGS = $(INCLUDES)
 
 if GENS_ZLIB_INTERNAL
 INCLUDES += -I@srcdir@/../zlib/

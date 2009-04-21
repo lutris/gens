@@ -20,35 +20,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#if defined(__linux__) && defined(__ELF__)
-	/* Mark the stack as non-executable on ELF. */
-	.section .note.GNU-stack, "", %progbits
-#endif
+/* MDP GNU `as` (x86) macros. */
+#include "mdp/mdp_gnu_as_x86.inc"
 
 /* Symbol redefines for ELF. */
 #if defined(__ELF__)
-	#define _mdp_render_1x_16_x86		mdp_render_1x_16_x86
-	#define _mdp_render_1x_16_x86_mmx	mdp_render_1x_16_x86_mmx
-#endif
-
-/* Symbol types. */
-#if defined(__ELF__)
-	#define SYMTYPE(sym, symtype) .type sym, ## symtype
-#else
-	#define SYMTYPE(sym, symtype)
-#endif
-
-/* Symbol sizes. */
-/* SYMSIZE_DATA() can be used anywhere. */
-/* SYMSIZE_FUNC() should be used directly after a function. */
-#if defined(__ELF__)
-	#define SYMSIZE_DATA(sym, sym_size) \
-	.size	sym, sym_size
-	#define SYMSIZE_FUNC(sym) \
-	.size	sym, .-sym
-#else
-	#define SYMSIZE_DATA(sym, sym_size)
-	#define SYMSIZE_FUNC(sym)
+       #define _mdp_render_1x_16_x86		mdp_render_1x_16_x86
+       #define _mdp_render_1x_16_x86_mmx	mdp_render_1x_16_x86_mmx
 #endif
 
 /* Function parameters. */
