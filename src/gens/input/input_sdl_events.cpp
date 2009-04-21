@@ -79,7 +79,7 @@ static int mod = 0;
 
 
 /**
- * input_sdl_reset_modifiers(): Reset modifiers.
+ * input_sdl_reset_modifiers(): Reset the key modifier state.
  * @param event Pointer to SDL_Event struct.
  */
 void input_sdl_reset_modifiers(void)

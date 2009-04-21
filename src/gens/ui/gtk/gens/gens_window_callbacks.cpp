@@ -179,7 +179,7 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
 	
 	Active = 1;
 	
-	// Reset SDL modifier key state.
+	// Reset the SDL key modifier state.
 	input_sdl_reset_modifiers();
 	
 	return false;
@@ -205,7 +205,7 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 		audio_clear_sound_buffer();
 	}
 	
-	// Reset SDL modifier key state.
+	// Reset the SDL key modifier state.
 	input_sdl_reset_modifiers();
 	
 	return false;
