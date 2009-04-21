@@ -401,7 +401,7 @@ int vdraw_flip(void)
 				{
 					vdraw_fps_value = (float)(vdraw_fps_freq_cpu[0]) * 16.0f /
 							  (float)(vdraw_fps_new_time[0] - vdraw_fps_old_time);
-					sprintf(vdraw_msg_text, "%.1f", vdraw_fps_value);
+					vdraw_text_sprintf(0, "%.1f", vdraw_fps_value);
 				}
 				else
 				{
@@ -436,7 +436,7 @@ int vdraw_flip(void)
 				vdraw_fps_old_time = vdraw_fps_new_time[0];
 				vdraw_fps_view = 0;
 			}
-			sprintf(vdraw_msg_text, "%.1f", vdraw_fps_value);
+			vdraw_text_sprintf(0, "%.1f", vdraw_fps_value);
 		}
 		else
 		{
