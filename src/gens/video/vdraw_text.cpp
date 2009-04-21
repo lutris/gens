@@ -26,6 +26,8 @@
 
 // C includes.
 #include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 // C++ includes.
 #include <list>
@@ -400,12 +402,29 @@ void vdraw_text_write(const char* msg, const int duration)
 
 /**
  * vdraw_text_sprintf(): Print formatted text to the screen.
- * @param msg Message to write.
  * @param duration Duration for the message to appear, in milliseconds. (If <=0, the message won't disappear.)
+ * @param msg Message to write.
  * @param ... Format arguments.
  */
-void vdraw_text_sprintf(const char* msg, const int duration, ...)
+void vdraw_text_sprintf(const int duration, const char* msg, ...)
 {
+	if (!vdraw_get_msg_enabled())
+		return;
+	
+	va_list args;
+	va_start(args, duration);
+	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, args);
+	va_end(args);
+	
+	// Make sure the string is null-terminated.
+	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
+	
+	if (duration > 0)
+	{
+		// Set the message timer.
+		vdraw_msg_time = GetTickCount() + duration;
+		vdraw_msg_visible = true;
+	}
 }
 
 

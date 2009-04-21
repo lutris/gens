@@ -63,7 +63,7 @@ void calc_transparency_mask(void);
 
 // Text write functions.
 void vdraw_text_write(const char* msg, const int duration);
-void vdraw_text_sprintf(const char* msg, const int duration, ...);
+void vdraw_text_sprintf(const int duration, const char* msg, ...);
 void vdraw_msg_timer_update(void);
 
 // Text buffer.
