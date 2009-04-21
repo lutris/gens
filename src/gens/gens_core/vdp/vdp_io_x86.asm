@@ -536,7 +536,7 @@ section .text align=64
 	
 	align 16
 	
-	;void Update_DMA(void)
+	; unsigned int Update_DMA(void)
 	global _Update_DMA
 	_Update_DMA:
 		
@@ -596,7 +596,7 @@ section .text align=64
 	
 	align 16
 	
-	;unsigned short Read_VDP_Data(void)
+	; uint16_t Read_VDP_Data(void)
 	global _Read_VDP_Data
 	_Read_VDP_Data:
 		
@@ -651,7 +651,7 @@ section .text align=64
 	
 	align 16
 	
-	;unsigned short Read_VDP_Status(void)
+	; uint16_t Read_VDP_Status(void)
 	global _Read_VDP_Status
 	_Read_VDP_Status:
 		
@@ -678,7 +678,7 @@ section .text align=64
 	
 	align 16
 	
-	;unsigned char Read_VDP_H_Counter(void)
+	; uint8_t Read_VDP_H_Counter(void)
 	global _Read_VDP_H_Counter
 	_Read_VDP_H_Counter:
 		
@@ -700,7 +700,7 @@ section .text align=64
 	
 	align 16
 	
-	;unsigned char Read_VDP_V_Counter(void)
+	; uint8_t Read_VDP_V_Counter(void)
 	global _Read_VDP_V_Counter
 	_Read_VDP_V_Counter:
 		
@@ -768,7 +768,7 @@ section .text align=64
 	
 	align 16
 	
-	;void Write_Byte_VDP_Data(unsigned char Data)
+	; void Write_Byte_VDP_Data(uint8_t Data)
 	global _Write_Byte_VDP_Data
 	_Write_Byte_VDP_Data:
 		
@@ -781,7 +781,7 @@ section .text align=64
 	
 	align 16
 	
-	;void Write_Word_VDP_Data(unsigned short Data)
+	;void Write_Word_VDP_Data(uint16_t Data)
 	global _Write_Word_VDP_Data
 	_Write_Word_VDP_Data:
 		
@@ -892,7 +892,7 @@ section .text align=64
 	
 	align 16
 	
-	;void Write_VDP_Ctrl(unsigned short Data)
+	;void Write_VDP_Ctrl(uint16_t Data)
 	global _Write_VDP_Ctrl
 	_Write_VDP_Ctrl:
 		
@@ -1314,16 +1314,15 @@ section .text align=64
 		
 	align 16
 	
-	;void Set_VDP_Reg(int Num_Reg, unsigned char val);
+	;void Set_VDP_Reg(int Num_Reg, uint8_t val);
 	global _Set_VDP_Reg
 	_Set_VDP_Reg:
 		
 		push	ebx
 		
 		mov	ebx, [esp + 8]
-		mov	eax, [esp + 12]
+		movzx	eax, byte [esp + 12]
 		and	ebx, byte 0x1F
-		and	eax, 0xFF
 		jmp	[Table_Set_Reg + ebx * 4]
 	
 	align 16

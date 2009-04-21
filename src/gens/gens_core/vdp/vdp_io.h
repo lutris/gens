@@ -1,6 +1,8 @@
 #ifndef GENS_VDP_IO_H
 #define GENS_VDP_IO_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,11 +37,11 @@ struct Reg_VDP_Type
 	unsigned int DMA_Address;
 };
 
-extern unsigned char  VRam[64 * 1024];
-extern unsigned short CRam[64];
-extern unsigned char  VSRam[256];
-extern unsigned int   VSRam_Over[8];
-extern unsigned char  H_Counter_Table[512][2];
+extern uint8_t  VRam[64 * 1024];
+extern uint16_t CRam[64];
+extern uint8_t  VSRam[256];
+extern uint32_t VSRam_Over[8];
+extern uint8_t  H_Counter_Table[512][2];
 extern int Genesis_Started;
 extern int SegaCD_Started;
 extern int _32X_Started;
@@ -72,16 +74,16 @@ extern int Zero_Length_DMA;
 
 void VDP_Reset(void);
 unsigned int Update_DMA(void);
-unsigned short Read_VDP_Data(void);
-unsigned short Read_VDP_Status(void);
-unsigned char Read_VDP_H_Counter(void);
-unsigned char Read_VDP_V_Counter(void);
-int Write_Byte_VDP_Data(unsigned char Data);
-int Write_Word_VDP_Data(unsigned short Data);
-int Write_VDP_Ctrl(unsigned short Data);
-int Set_VDP_Reg(int Num_Reg, int Val);
+uint16_t Read_VDP_Data(void);
+uint16_t Read_VDP_Status(void);
+uint8_t  Read_VDP_H_Counter(void);
+uint8_t  Read_VDP_V_Counter(void);
+int Write_Byte_VDP_Data(uint8_t  Data);
+int Write_Word_VDP_Data(uint16_t Data);
+int Write_VDP_Ctrl(uint16_t Data);
+int Set_VDP_Reg(int Num_Reg, uint8_t Val);
 
-unsigned char VDP_Int_Ack(void);
+uint8_t VDP_Int_Ack(void);
 void VDP_Update_IRQ_Line(void);
 
 #ifdef __cplusplus

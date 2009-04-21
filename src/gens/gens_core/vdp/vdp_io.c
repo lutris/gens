@@ -116,14 +116,14 @@ void VDP_Reset(void)
 }
 
 
-unsigned char VDP_Int_Ack(void)
+uint8_t VDP_Int_Ack(void)
 {
 	if ((VDP_Reg.Set2 & 0x20) && (VDP_Int & 0x08))
 	{
 		// VBlank interrupt acknowledge.
 		VDP_Int &= ~0x08;
 		
-		unsigned char rval_mask = VDP_Reg.Set1;
+		uint8_t rval_mask = VDP_Reg.Set1;
 		rval_mask &= 0x10;
 		rval_mask >>= 2;
 		
