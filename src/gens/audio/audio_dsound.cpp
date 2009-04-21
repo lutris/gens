@@ -61,17 +61,10 @@ static DSBUFFERDESC dsbdesc;
 static LPDIRECTSOUNDBUFFER lpDSPrimary = NULL;
 static LPDIRECTSOUNDBUFFER lpDSBuffer = NULL;
 
-/* TODO: Used for WAV dumping on Win32.
-static HMMIO MMIOOut;
-static MMCKINFO CkOut;
-static MMCKINFO CkRIFF;
-static MMIOINFO MMIOInfoOut;
-*/
-
 static int Bytes_Per_Unit;
 static int Sound_Segs = 8;
 
-// TODO: Figure out what these things do.
+// DirectSound write and read pointers.
 static int WP, RP;
 
 // DirectSound functions.
