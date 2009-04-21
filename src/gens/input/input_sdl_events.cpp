@@ -84,7 +84,6 @@ static int mod = 0;
  */
 void input_sdl_reset_modifiers(void)
 {
-	printf("RESET\n");
 	mod = 0;
 }
 
