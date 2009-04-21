@@ -98,17 +98,17 @@ void INI::load(const string& filename)
 		
 		// Parse the line.
 		
-		// Remove any comments from the line.
-		commentPos = tmp.find(";");
-		if (commentPos != string::npos)
-		{
-			// Comment found.
-			tmp = tmp.substr(0, commentPos - 1);
-		}
-		
 		if (tmp.length() == 0)
 		{
 			// Empty string.
+			continue;
+		}
+		
+		// Find the first non-whitespace character.
+		commentPos = tmp.find_first_not_of(" \t");
+		if (commentPos == string::npos || tmp.at(commentPos) == ';')
+		{
+			// Comment or blank line found.
 			continue;
 		}
 		
