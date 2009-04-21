@@ -27,6 +27,13 @@
 #ifndef GENS_TIMER_H
 #define GENS_TIMER_H
 
+/* Win32 already provides these functions. */
+#if defined(_WIN32)
+
+#define init_timer()
+
+#else /* !defined(_WIN32) */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -43,5 +50,7 @@ void QueryPerformanceCounter(int64_t *counter);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* defined(_WIN32) */
 
 #endif /* GENS_TIMER_H */
