@@ -388,6 +388,7 @@ void vdraw_text_write(const char* msg, const int duration)
 	if (!vdraw_get_msg_enabled())
 		return;
 	
+	// TODO: Add localization.
 	strncpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
 	
@@ -411,6 +412,7 @@ void vdraw_text_sprintf(const int duration, const char* msg, ...)
 	if (!vdraw_get_msg_enabled())
 		return;
 	
+	// TODO: Add localization.
 	va_list args;
 	va_start(args, duration);
 	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, args);
