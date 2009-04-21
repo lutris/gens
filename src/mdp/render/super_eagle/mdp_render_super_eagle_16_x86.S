@@ -314,7 +314,7 @@ SuperEagleLine:
 .p2align 4	/* 16-byte alignment */
 
 0: /* .Loop */
-		pushl %ecx
+		pushl	%ecx
 		
 		movq	color5(%eax,%ebp), %mm0		/* [eax + ebp + color5] */
 		movq	color6(%eax,%ebp), %mm1		/* [eax + ebp + color6] */

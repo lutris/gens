@@ -274,7 +274,7 @@ _2xSaILine:
 .p2align 4	/* 16-byte alignment */
 
 0: /* .Loop */
-		pushl %ecx
+		pushl	%ecx
 		
 		/* 1	------------------------------------------ */
 		/* if ((colorA == colorD) && (colorB != colorC) && (colorA == colorE) && (colorB == colorL) */
