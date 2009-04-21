@@ -6,7 +6,7 @@ pic="no"
 command=""
 while [ $# -gt 0 ]; do
     case "$1" in
-        -f[pP][iI][cC])
+        -[fK][pP][iI][cC])
             # PIC - define __PIC in nasm.
             if test "x$pic" = "xno"; then
                 command="$command -D __PIC"
