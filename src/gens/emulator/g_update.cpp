@@ -47,7 +47,7 @@
 #include "input/input_update.h"
 
 // Byteswapping functions.
-#include "gens_core/misc/byteswap.h"
+#include "gens_core/misc/byteswap_m.h"
 
 clock_t Last_Time = 0;
 clock_t New_Time = 0;

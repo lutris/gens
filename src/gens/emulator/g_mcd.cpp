@@ -36,7 +36,7 @@
 #include "util/sound/gym.hpp"
 
 #include "gens_core/misc/misc.h"
-#include "gens_core/misc/byteswap.h"
+#include "gens_core/misc/byteswap_m.h"
 
 #include "ui/gens_ui.hpp"
 

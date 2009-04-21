@@ -98,7 +98,7 @@ gens_SOURCES = \
 		gens_core/mem/mem_s68k.asm \
 		gens_core/mem/mem_sh2.asm \
 		gens_core/mem/mem_z80.c \
-		gens_core/misc/byteswap.c \
+		gens_core/misc/byteswap_m.c \
 		gens_core/misc/misc.asm \
 		gens_core/gfx/fastblur.cpp \
 		gens_core/misc/cpuflags.c \
@@ -216,7 +216,7 @@ noinst_HEADERS = \
 		gens_core/mem/mem_s68k.h \
 		gens_core/mem/mem_sh2.h \
 		gens_core/mem/mem_z80.h \
-		gens_core/misc/byteswap.h \
+		gens_core/misc/byteswap_m.h \
 		gens_core/misc/misc.h \
 		gens_core/gfx/fastblur.hpp \
 		gens_core/misc/cpuflags.h \

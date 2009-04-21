@@ -33,7 +33,7 @@
 #include <unistd.h>
 
 #include "emulator/g_main.hpp"
-#include "gens_core/misc/byteswap.h"
+#include "gens_core/misc/byteswap_m.h"
 #include "gens/gens_window_sync.hpp"
 
 #include "util/file/rom.hpp"

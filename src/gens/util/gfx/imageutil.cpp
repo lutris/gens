@@ -37,7 +37,9 @@
 #include "util/file/rom.hpp"
 #include "gens_core/vdp/vdp_io.h"
 #include "gens_core/vdp/vdp_rend.h"
-#include "gens_core/misc/byteswap.h"
+
+// Byteswapping macros.
+#include "gens_core/misc/byteswap_m.h"
 
 // File management functions.
 #include "util/file/file.hpp"

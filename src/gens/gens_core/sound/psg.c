@@ -92,7 +92,7 @@ psg_chip_t PSG;
 
 /* GSX v7 savestate functionality. */
 #include "util/file/gsx_v7.h"
-#include "gens_core/misc/byteswap.h"
+#include "gens_core/misc/byteswap_m.h"
 
 /* GYM dumping. */
 #include "util/sound/gym.hpp"

@@ -4,7 +4,7 @@
  * since they don't really need assembly optimizations.
  */
 
-#include "byteswap.h"
+#include "byteswap_m.h"
 
 /**
  * __byte_swap_16_array(): Swaps an array of bytes in 16-bit chunks.

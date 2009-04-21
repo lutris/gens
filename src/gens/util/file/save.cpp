@@ -67,8 +67,8 @@
 // UI
 #include "ui/gens_ui.hpp"
 
-// Byteswapping
-#include "gens_core/misc/byteswap.h"
+// Byteswapping macros.
+#include "gens_core/misc/byteswap_m.h"
 
 // Video Drawing.
 #include "video/vdraw.h"

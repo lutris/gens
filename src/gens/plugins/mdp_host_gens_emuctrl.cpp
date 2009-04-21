@@ -27,7 +27,7 @@
 #include <string.h>
 
 // Byteswapping macros.
-#include "gens_core/misc/byteswap.h"
+#include "gens_core/misc/byteswap_m.h"
 
 // Gens functions.
 #include "emulator/options.hpp"

@@ -32,7 +32,7 @@
 #include <string.h>
 
 /* Byteswapping macros. */
-#include "gens_core/misc/byteswap.h"
+#include "gens_core/misc/byteswap_m.h"
 
 #if GENS_BYTEORDER == GENS_LIL_ENDIAN
 
