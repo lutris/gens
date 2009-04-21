@@ -142,7 +142,7 @@ void Options::setSaveSlot(const int newSaveSlot)
 		else
 		{
 			// Error checking the file.
-			MESSAGE_NUM_L("SLOT %d [ERR]", "SLOT %d [ERR]", Current_State, 1500);
+			MESSAGE_NUM_L("SLOT %d [ERROR]", "SLOT %d [ERROR]", Current_State, 1500);
 		}
 	}
 }
