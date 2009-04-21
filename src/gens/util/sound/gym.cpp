@@ -65,7 +65,7 @@ int gym_dump_start(void)
 	
 	if (GYM_Dumping)
 	{
-		vdraw_write_text("GYM sound is already dumping", 1000);
+		vdraw_text_write("GYM sound is already dumping", 1000);
 		return -2;
 	}
 	
@@ -130,7 +130,7 @@ int gym_dump_start(void)
 	t_buf[2] = YM_Save[0x28];
 	fwrite(t_buf, 3, 1, GYM_File);
 	
-	vdraw_write_text("Starting to dump GYM sound", 1000);
+	vdraw_text_write("Starting to dump GYM sound", 1000);
 	GYM_Dumping = 1;
 	
 	return 0;
@@ -145,7 +145,7 @@ int gym_dump_stop(void)
 {
 	if (!GYM_Dumping)
 	{
-		vdraw_write_text("Already stopped", 1000);
+		vdraw_text_write("Already stopped", 1000);
 		return -1;
 	}
 	
@@ -154,7 +154,7 @@ int gym_dump_stop(void)
 	audio_clear_sound_buffer();
 	GYM_Dumping = 0;
 	
-	vdraw_write_text("GYM dump stopped", 1000);
+	vdraw_text_write("GYM dump stopped", 1000);
 	return 0;
 }
 
@@ -211,7 +211,7 @@ int gym_play_start(void)
 	
 	if (audio_get_gym_playing())
 	{
-		vdraw_write_text("Already playing GYM.", 1000);
+		vdraw_text_write("Already playing GYM.", 1000);
 		return -2;
 	}
 	
@@ -221,7 +221,7 @@ int gym_play_start(void)
 	if (audio_init(AUDIO_BACKEND_DEFAULT))
 	{
 		audio_set_enabled(false);
-		vdraw_write_text("Can't initialize sound.", 1000);
+		vdraw_text_write("Can't initialize sound.", 1000);
 		return -3;
 	}
 	
@@ -241,7 +241,7 @@ int gym_play_start(void)
 	PSG_Init(CLOCK_NTSC / 15, audio_get_sound_rate());
 	audio_set_gym_playing(true);
 	
-	vdraw_write_text("Starting to play GYM", 1000);
+	vdraw_text_write("Starting to play GYM", 1000);
 	return 0;
 }
 
@@ -254,7 +254,7 @@ int gym_play_stop(void)
 {
 	if (!audio_get_gym_playing())
 	{
-		vdraw_write_text("Already stopped.", 1000);
+		vdraw_text_write("Already stopped.", 1000);
 		return -1;
 	}
 	
@@ -263,7 +263,7 @@ int gym_play_stop(void)
 	audio_clear_sound_buffer();
 	audio_set_gym_playing(false);
 	
-	vdraw_write_text("Stopped playing GYM.", 1000);
+	vdraw_text_write("Stopped playing GYM.", 1000);
 	return 0;
 }
 

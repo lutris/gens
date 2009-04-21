@@ -61,6 +61,15 @@ void draw_text(void *screen, const int fullW, const int w, const int h,
 void calc_text_style(vdraw_style_t *style);
 void calc_transparency_mask(void);
 
+// Text write functions.
+void vdraw_text_write(const char* msg, const int duration);
+void vdraw_text_sprintf(const char* msg, const int duration, ...);
+void vdraw_msg_timer_update(void);
+
+// Text buffer.
+extern char vdraw_msg_text[1024];
+
+
 #ifdef __cplusplus
 }
 #endif

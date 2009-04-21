@@ -386,7 +386,7 @@ int Config::saveAs(void)
 	// Filename selected for the config file.
 	save(filename);
 	string dispText = "Config saved in " + filename;
-	vdraw_write_text(dispText.c_str(), 2000);
+	vdraw_text_write(dispText.c_str(), 2000);
 	return 1;
 }
 
@@ -759,6 +759,6 @@ int Config::loadAs(void* gameActive)
 	// Filename selected for the config file.
 	load(filename, gameActive);
 	string dispText = "Config loaded from " + filename;
-	vdraw_write_text(dispText.c_str(), 2000);
+	vdraw_text_write(dispText.c_str(), 2000);
 	return 1;
 }

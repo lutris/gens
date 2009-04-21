@@ -102,7 +102,7 @@ int wav_dump_start(void)
 	
 	if (WAV_Dumping)
 	{
-		vdraw_write_text("WAV sound is already dumping.", 1000);
+		vdraw_text_write("WAV sound is already dumping.", 1000);
 		return 0;
 	}
 	
@@ -120,7 +120,7 @@ int wav_dump_start(void)
 	WAV_File = fopen(filename, "wb");
 	if (!WAV_File)
 	{
-		vdraw_write_text("Error opening WAV file.", 1000);
+		vdraw_text_write("Error opening WAV file.", 1000);
 		return 1;
 	}
 	
@@ -154,7 +154,7 @@ int wav_dump_start(void)
 	fwrite(&WAV_Header, sizeof(WAV_Header), 1, WAV_File);
 	
 	/* WAV dump started. */
-	vdraw_write_text("Starting to dump WAV sound.", 1000);
+	vdraw_text_write("Starting to dump WAV sound.", 1000);
 	WAV_Dumping = 1;
 	Sync_Gens_Window_SoundMenu();
 	return 0;
@@ -170,7 +170,7 @@ int wav_dump_stop(void)
 	if (!WAV_Dumping || !WAV_File)
 	{
 		WAV_Dumping = 0;
-		vdraw_write_text("Not dumping WAV sound.", 1000);
+		vdraw_text_write("Not dumping WAV sound.", 1000);
 		Sync_Gens_Window_SoundMenu();
 		return 1;
 	}
@@ -192,7 +192,7 @@ int wav_dump_stop(void)
 	fclose(WAV_File);
 	WAV_File = NULL;
 	WAV_Dumping = 0;
-	vdraw_write_text("WAV dump stopped.", 1000);
+	vdraw_text_write("WAV dump stopped.", 1000);
 	Sync_Gens_Window_SoundMenu();
 	return 0;
 }

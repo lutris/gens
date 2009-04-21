@@ -154,7 +154,7 @@ void MESSAGE_L(const char* str, const char* def, int time)
 {
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
-	vdraw_write_text(buf, time);
+	vdraw_text_write(buf, time);
 }
 
 
@@ -171,7 +171,7 @@ void MESSAGE_NUM_L(const char* str, const char* def, int num, int time)
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, num);
-	vdraw_write_text(msg_tmp, time);
+	vdraw_text_write(msg_tmp, time);
 }
 
 
@@ -188,7 +188,7 @@ void MESSAGE_STR_L(const char* str, const char* def, const char* str2, int time)
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, str2);
-	vdraw_write_text(msg_tmp, time);
+	vdraw_text_write(msg_tmp, time);
 }
 
 
@@ -206,5 +206,5 @@ void MESSAGE_NUM_2L(const char* str, const char* def, int num1, int num2, int ti
 	char buf[1024];
 	GetPrivateProfileString(language_name[Language], str, def, buf, 1024, PathNames.Language_Path);
 	sprintf(msg_tmp, buf, num1, num2);
-	vdraw_write_text(msg_tmp, time);
+	vdraw_text_write(msg_tmp, time);
 }

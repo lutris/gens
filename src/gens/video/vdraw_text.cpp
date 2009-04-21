@@ -31,6 +31,9 @@
 #include <list>
 using std::list;
 
+// Video Drawing.
+#include "vdraw.h"
+
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -47,6 +50,13 @@ using std::list;
 
  // Text drawing values.
 static uint32_t m_Transparency_Mask;
+
+// Message timer.
+#include "port/timer.h"
+static uint32_t	vdraw_msg_time = 0;
+
+// Text buffer.
+char vdraw_msg_text[1024];
 
 
 template<typename pixel>
@@ -363,4 +373,50 @@ void calc_transparency_mask(void)
 		m_Transparency_Mask = 0xF7DE;
 	else //if (bppOut == 32)
 		m_Transparency_Mask = 0xFEFEFE;
+}
+
+
+/**
+ * vdraw_text_write(): Write text to the screen.
+ * @param msg Message to write.
+ * @param duration Duration for the message to appear, in milliseconds. (If <=0, the message won't disappear.)
+ */
+void vdraw_text_write(const char* msg, const int duration)
+{
+	if (!vdraw_get_msg_enabled())
+		return;
+	
+	strncpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
+	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
+	
+	if (duration > 0)
+	{
+		// Set the message timer.
+		vdraw_msg_time = GetTickCount() + duration;
+		vdraw_msg_visible = true;
+	}
+}
+
+
+/**
+ * vdraw_text_sprintf(): Print formatted text to the screen.
+ * @param msg Message to write.
+ * @param duration Duration for the message to appear, in milliseconds. (If <=0, the message won't disappear.)
+ * @param ... Format arguments.
+ */
+void vdraw_text_sprintf(const char* msg, const int duration, ...)
+{
+}
+
+
+/**
+ * vdraw_msg_timer_update(): Update the message timer.
+ */
+void vdraw_msg_timer_update(void)
+{
+	if (GetTickCount() > vdraw_msg_time)
+	{
+		vdraw_msg_visible = false;
+		vdraw_msg_text[0] = 0x00;
+	}
 }

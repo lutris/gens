@@ -129,12 +129,9 @@ extern int	(*vdraw_restore_primary)(void);
 extern int	(*vdraw_set_cooperative_level)(void);
 #endif /* GENS_OS_WIN32 */
 
-void	vdraw_write_text(const char* msg, const int duration);
-
 // Message variables used externally.
 extern BOOL vdraw_fps_enabled;
 extern vdraw_style_t vdraw_fps_style;
-extern char vdraw_msg_text[1024];
 extern BOOL vdraw_msg_visible;
 extern vdraw_style_t vdraw_msg_style;
 

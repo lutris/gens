@@ -136,9 +136,7 @@ vdraw_style_t	vdraw_fps_style;
 
 // On-screen message.
 static BOOL	vdraw_msg_enabled = TRUE;
-char		vdraw_msg_text[1024];
 BOOL		vdraw_msg_visible = FALSE;
-static uint32_t	vdraw_msg_time = 0;
 vdraw_style_t	vdraw_msg_style;
 
 // Screen border.
@@ -386,11 +384,7 @@ int vdraw_flip(void)
 	
 	if (vdraw_msg_visible)
 	{
-		if (GetTickCount() > vdraw_msg_time)
-		{
-			vdraw_msg_visible = FALSE;
-			vdraw_msg_text[0] = 0x00;
-		}
+		vdraw_msg_timer_update();
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && !Paused)
 	{
@@ -412,7 +406,7 @@ int vdraw_flip(void)
 				else
 				{
 					// IT'S OVER 9000 FPS!!!111!11!1
-					strcpy(vdraw_msg_text, ">9000");
+					vdraw_text_write(">9000", 0);
 				}
 				
 				vdraw_fps_old_time = vdraw_fps_new_time[0];
@@ -523,23 +517,6 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	Sync_Gens_Window_GraphicsMenu();
 	
 	// TODO: Figure out if 32-bit rendering still occurs in 15/16-bit mode and vice-versa.
-}
-
-
-/**
- * vdraw_write_text(): Write text to the screen.
- * @param msg Message to write.
- * @param duration Duration for the message to appear, in milliseconds.
- */
-void vdraw_write_text(const char* msg, const int duration)
-{
-	if (!vdraw_msg_enabled)
-		return;
-	
-	strncpy(vdraw_msg_text, msg, sizeof(vdraw_msg_text));
-	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
-	vdraw_msg_time = GetTickCount() + duration;
-	vdraw_msg_visible = TRUE;
 }
 
 
