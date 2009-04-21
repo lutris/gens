@@ -1351,11 +1351,6 @@ section .text align=64
 		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		mov	ecx, _M_Z80
 		sub	edx, ebx
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov eax, ecx
-%endif
 		call	z80_Exec
 		pop	edx
 	
@@ -1548,19 +1543,9 @@ section .text align=64
 		push	edx
 		mov	ecx, M_SH2
 		mov	edx, 1
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Reset
 		mov	ecx, S_SH2
 		mov	edx, 1
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Reset
 		pop	edx
 	
@@ -1593,11 +1578,6 @@ section .text align=64
 		
 		mov	edx, 8
 		mov	ecx, M_SH2
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Interrupt
 	
 	.no_MINT:
@@ -1606,11 +1586,6 @@ section .text align=64
 		
 		mov	edx, 8
 		mov	ecx, S_SH2
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Interrupt
 	
 	.no_SINT:
@@ -1991,11 +1966,6 @@ section .text align=64
 		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		mov	ecx, _M_Z80
 		sub	edx, ebx
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	z80_Exec
 		pop	edx
 	
@@ -2185,19 +2155,9 @@ section .text align=64
 		push	edx
 		mov	ecx, M_SH2
 		mov	edx, 1
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Reset
 		mov	ecx, S_SH2
 		mov	edx, 1
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Reset
 		pop	edx
 	
@@ -2230,11 +2190,6 @@ section .text align=64
 		
 		mov	edx, 8
 		mov	ecx, M_SH2
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Interrupt
 	
 	.no_MINT:
@@ -2243,11 +2198,6 @@ section .text align=64
 		
 		mov	edx, 8
 		mov	ecx, S_SH2
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	SH2_Interrupt
 	
 	.no_SINT:

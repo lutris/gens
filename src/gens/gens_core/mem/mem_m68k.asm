@@ -1330,11 +1330,6 @@ section .text align=64
 		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		mov	ecx, _M_Z80
 		sub	edx, ebx
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	z80_Exec
 		pop	edx
 	
@@ -1609,11 +1604,6 @@ section .text align=64
 		mov	ebx, [_Z80_M68K_Cycle_Tab + ebx * 4]
 		mov	ecx, _M_Z80
 		sub	edx, ebx
-%ifdef __GCC2
-		; TODO: This is a fastcall function.
-		; Convert to standard cdecl.
-		mov	eax, ecx
-%endif
 		call	z80_Exec
 		pop	edx
 	
