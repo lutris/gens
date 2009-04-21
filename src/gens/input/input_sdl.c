@@ -370,6 +370,11 @@ int input_sdl_update(void)
 				break;
 			*/
 			
+			case SDL_ACTIVEEVENT:
+				if (event.active.state & SDL_APPINPUTFOCUS)
+					input_sdl_reset_modifiers();
+				break;
+			
 			case SDL_KEYDOWN:
 				input_sdl_keys[event.key.keysym.sym] = TRUE;
 				input_sdl_event_key_down(event.key.keysym.sym);

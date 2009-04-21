@@ -77,6 +77,18 @@ static int mod = 0;
 #define IS_KMOD_SHIFT(mod) \
 	(!(mod & ~GENS_KMOD_SHIFT) && ((mod & GENS_KMOD_LSHIFT) || (mod & GENS_KMOD_RSHIFT)))
 
+
+/**
+ * input_sdl_reset_modifiers(): Reset modifiers.
+ * @param event Pointer to SDL_Event struct.
+ */
+void input_sdl_reset_modifiers(void)
+{
+	printf("RESET\n");
+	mod = 0;
+}
+
+
 /**
  * input_sdl_event_key_down(): Check if a key is pressed.
  * @param key Keycode.

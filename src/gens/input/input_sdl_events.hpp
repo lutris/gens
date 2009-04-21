@@ -23,9 +23,13 @@
 #ifndef GENS_INPUT_SDL_EVENTS_HPP
 #define GENS_INPUT_SDL_EVENTS_HPP
 
+#include <SDL/SDL.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void input_sdl_reset_modifiers(void);
 
 void input_sdl_event_key_down(int key);
 void input_sdl_event_key_up(int key);

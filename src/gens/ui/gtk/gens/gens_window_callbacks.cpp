@@ -43,6 +43,9 @@
 // Audio Handler.
 #include "audio/audio.h"
 
+// SDL input event handler.
+#include "input/input_sdl_events.hpp"
+
 // C++ includes
 #include <string>
 using std::string;
@@ -59,10 +62,10 @@ gboolean on_gens_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_
 	
 	close_gens();
 	
-	// TRUE tells GTK+ not to close the window. This is needed
+	// True tells GTK+ not to close the window. This is needed
 	// in order to prevent an X11 error from occurring due to
 	// the embedded SDL window.
-	return TRUE;
+	return true;
 }
 
 
@@ -152,9 +155,9 @@ gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
 	{
 		GdkAtom target_type = GDK_POINTER_TO_ATOM(g_list_nth_data(context->targets, 0));
 		gtk_drag_get_data(widget, context, target_type, time);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -166,7 +169,7 @@ gboolean gens_window_drag_drop(GtkWidget *widget, GdkDragContext *context,
  * @param widget GTK+ widget.
  * @param event GDK event.
  * @param user_data User data.
- * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ * @return True to stop other handlers from being invoked; false to allow the event to propagate.
  */
 gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
@@ -175,7 +178,11 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
 	GENS_UNUSED_PARAMETER(user_data);
 	
 	Active = 1;
-	return FALSE;
+	
+	// Reset SDL modifier key state.
+	input_sdl_reset_modifiers();
+	
+	return false;
 }
 
 
@@ -184,7 +191,7 @@ gboolean gens_window_focus_in(GtkWidget *widget, GdkEventFocus *event, gpointer 
  * @param widget GTK+ widget.
  * @param event GDK event.
  * @param user_data User data.
- * @return TRUE to stop other handlers from being invoked; FALSE to allow the event to propagate.
+ * @return True to stop other handlers from being invoked; false to allow the event to propagate.
  */
 gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer user_data)
 {
@@ -197,5 +204,9 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 		Active = 0;
 		audio_clear_sound_buffer();
 	}
-	return FALSE;
+	
+	// Reset SDL modifier key state.
+	input_sdl_reset_modifiers();
+	
+	return false;
 }
