@@ -414,7 +414,7 @@ void vdraw_text_sprintf(const int duration, const char* msg, ...)
 	
 	// TODO: Add localization.
 	va_list args;
-	va_start(args, duration);
+	va_start(args, msg);
 	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, args);
 	va_end(args);
 	
