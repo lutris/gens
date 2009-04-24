@@ -207,7 +207,7 @@ static int audio_sdl_write_sound_buffer(void *dump_buf)
 	if (audio_get_stereo())
 	{
 #ifdef GENS_X86_ASM
-		if (CPU_Flags & MDP_CPUFLAG_MMX)
+		if (CPU_Flags & MDP_CPUFLAG_X86_MMX)
 			audio_write_sound_stereo_x86_mmx(Seg_L, Seg_R, (short*)(audio_sdl_pMsndOut), audio_seg_length);
 		else
 #endif
@@ -216,7 +216,7 @@ static int audio_sdl_write_sound_buffer(void *dump_buf)
 	else
 	{
 #ifdef GENS_X86_ASM
-		if (CPU_Flags & MDP_CPUFLAG_MMX)
+		if (CPU_Flags & MDP_CPUFLAG_X86_MMX)
 			audio_write_sound_mono_x86_mmx(Seg_L, Seg_R, (short*)(audio_sdl_pMsndOut), audio_seg_length);
 		else
 #endif

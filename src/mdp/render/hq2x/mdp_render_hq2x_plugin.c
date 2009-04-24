@@ -64,8 +64,8 @@ mdp_t mdp =
 	.pluginVersion = MDP_VERSION(1, 0, 0),
 	
 	// CPU flags.
-	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
-	.cpuFlagsRequired = MDP_CPUFLAG_MMX,
+	.cpuFlagsSupported = MDP_CPUFLAG_X86_MMX,
+	.cpuFlagsRequired = MDP_CPUFLAG_X86_MMX,
 	
 	// UUID: 78618cdd-7c12-442a-a13b-d02cd37346f2
 	.uuid = {0x78, 0x61, 0x8C, 0xDD,

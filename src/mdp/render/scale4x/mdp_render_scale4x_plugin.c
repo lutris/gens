@@ -74,7 +74,7 @@ mdp_t mdp =
 	
 	// CPU flags.
 #ifdef GENS_X86_ASM
-	.cpuFlagsSupported = MDP_CPUFLAG_MMX,
+	.cpuFlagsSupported = MDP_CPUFLAG_X86_MMX,
 	.cpuFlagsRequired = 0,
 #else
 	.cpuFlagsSupported = 0,

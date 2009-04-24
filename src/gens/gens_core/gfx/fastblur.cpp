@@ -90,7 +90,7 @@ void Fast_Blur(void)
 	if (bppMD == 16 || bppMD == 15)
 	{
 #ifdef GENS_X86_ASM
-		if (CPU_Flags & MDP_CPUFLAG_MMX)
+		if (CPU_Flags & MDP_CPUFLAG_X86_MMX)
 			Fast_Blur_16_x86_mmx();
 		else
 			Fast_Blur_16_x86();
@@ -101,7 +101,7 @@ void Fast_Blur(void)
 	else //if (bppMD == 32)
 	{
 #ifdef GENS_X86_ASM
-		if (CPU_Flags & MDP_CPUFLAG_MMX)
+		if (CPU_Flags & MDP_CPUFLAG_X86_MMX)
 			Fast_Blur_32_x86_mmx();
 		else
 			Fast_Blur_32_x86();

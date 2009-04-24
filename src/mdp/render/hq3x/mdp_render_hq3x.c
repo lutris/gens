@@ -118,7 +118,7 @@ int MDP_FNCALL mdp_render_hq3x_cpp(mdp_render_info_t *render_info)
 		mdp_render_hq3x_RGB16toYUV = mdp_render_hq3x_build_RGB16toYUV();
 	
 #ifdef GENS_X86_ASM
-	if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
+	if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
 	{
 		mdp_render_hq3x_16_x86_mmx(
 			    (uint16_t*)render_info->destScreen,

@@ -134,7 +134,7 @@ int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_in
 	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
 	{
 #if defined(GENS_X86_ASM)
-		if (render_info->cpuFlags & MDP_CPUFLAG_MMX)
+		if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
 		{
 			mdp_render_interpolated_scanline_16_x86_mmx(
 				    (uint16_t*)render_info->destScreen,
@@ -165,7 +165,7 @@ int MDP_FNCALL mdp_render_interpolated_scanline_cpp(mdp_render_info_t *render_in
 	{
 #if 0
 #if defined(GENS_X86_ASM)
-		if (render_info->cpuFlags & CPUFLAG_MMX)
+		if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
 		{
 			mdp_render_interpolated_scanline_32_x86_mmx(
 				    (uint32_t*)render_info->destScreen,
