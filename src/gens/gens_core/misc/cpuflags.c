@@ -28,6 +28,9 @@
 
 #include <stdint.h>
 
+// MDP CPU flag definitions.
+#include "mdp/mdp_cpuflags.h"
+
 // IA32 CPU flags
 // Intel: http://download.intel.com/design/processor/applnots/24161832.pdf
 // AMD: http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/25481.pdf
@@ -83,14 +86,14 @@
 #endif
 
 // CPU Flags
-unsigned int CPU_Flags = 0;
+uint32_t CPU_Flags = 0;
 
 
 /**
  * getCPUFlags(): Get the CPU flags.
  * @return CPU flags.
  */
-unsigned int getCPUFlags(void)
+uint32_t getCPUFlags(void)
 {
 #if !defined(GENS_X86_ASM)
 	
@@ -159,19 +162,19 @@ unsigned int getCPUFlags(void)
 	CPU_Flags = 0;
 	
 	if (_edx & CPUFLAG_IA32_EDX_MMX)
-		CPU_Flags |= CPUFLAG_MMX;
+		CPU_Flags |= MDP_CPUFLAG_MMX;
 	if (_edx & CPUFLAG_IA32_EDX_SSE)
-		CPU_Flags |= CPUFLAG_SSE;
+		CPU_Flags |= MDP_CPUFLAG_SSE;
 	if (_edx & CPUFLAG_IA32_EDX_SSE2)
-		CPU_Flags |= CPUFLAG_SSE2;
+		CPU_Flags |= MDP_CPUFLAG_SSE2;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE3)
-		CPU_Flags |= CPUFLAG_SSE3;
+		CPU_Flags |= MDP_CPUFLAG_SSE3;
 	if (_ecx & CPUFLAG_IA32_ECX_SSSE3)
-		CPU_Flags |= CPUFLAG_SSSE3;
+		CPU_Flags |= MDP_CPUFLAG_SSSE3;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE41)
-		CPU_Flags |= CPUFLAG_SSE41;
+		CPU_Flags |= MDP_CPUFLAG_SSE41;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE42)
-		CPU_Flags |= CPUFLAG_SSE42;
+		CPU_Flags |= MDP_CPUFLAG_SSE42;
 	
 	// Check if the CPUID Extended Features function (Function 0x80000001) is supported.
 	__cpuid(CPUID_MAX_EXT_FUNCTIONS, maxFunc, _ebx, _ecx, _edx);
@@ -182,15 +185,15 @@ unsigned int getCPUFlags(void)
 		
 		// Check the extended feature flags.
 		if (_edx & CPUFLAG_IA32_EXT_EDX_MMXEXT)
-			CPU_Flags |= CPUFLAG_MMXEXT;
+			CPU_Flags |= MDP_CPUFLAG_MMXEXT;
 		if (_edx & CPUFLAG_IA32_EXT_EDX_3DNOW)
-			CPU_Flags |= CPUFLAG_3DNOW;
+			CPU_Flags |= MDP_CPUFLAG_3DNOW;
 		if (_edx & CPUFLAG_IA32_EXT_EDX_3DNOWEXT)
-			CPU_Flags |= CPUFLAG_3DNOWEXT;
+			CPU_Flags |= MDP_CPUFLAG_3DNOWEXT;
 		if (_ecx & CPUFLAG_IA32_EXT_ECX_SSE4A)
-			CPU_Flags |= CPUFLAG_SSE4A;
+			CPU_Flags |= MDP_CPUFLAG_SSE4A;
 		if (_ecx & CPUFLAG_IA32_EXT_ECX_SSE5)
-			CPU_Flags |= CPUFLAG_SSE5;
+			CPU_Flags |= MDP_CPUFLAG_SSE5;
 	}
 	
 	// Return the CPU flags.
