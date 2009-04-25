@@ -584,9 +584,9 @@ section .text align=64
 		cmp	ebx, [_SRAM_End]
 		ja	short .Rom
 		
-		; If SRAM is disabled by the user, don't do anything.
+		; If SRAM is disabled by the user, act like SRAM is disabled.
 		test	byte [_SRAM_Enabled], 1
-		jz	short .SRAM_Disabled
+		jz	short .Rom
 		
 		test	byte [_SRAM_Custom], 1
 		jnz	short .Custom_SRAM
@@ -609,13 +609,6 @@ section .text align=64
 	
 	.Custom_SRAM:
 		mov	al, 0
-		pop	ebx
-		ret
-	
-	align 4
-	
-	.SRAM_Disabled:
-		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -938,9 +931,9 @@ section .text align=64
 		cmp	ebx, [_SRAM_End]
 		ja	short .Rom
 		
-		; If SRAM is disabled by the user, don't do anything.
+		; If SRAM is disabled by the user, act like SRAM is disabled.
 		test	byte [_SRAM_Enabled], 1
-		jz	short .SRAM_Disabled
+		jz	short .Rom
 		
 		test	byte [_SRAM_Custom], 1
 		jnz	short .Custom_SRAM
@@ -963,11 +956,6 @@ section .text align=64
 
 	.Custom_SRAM:
 		mov	ax, 0
-		pop	ebx
-		ret
-	
-	.SRAM_Disabled:
-		xor	eax, eax
 		pop	ebx
 		ret
 	
