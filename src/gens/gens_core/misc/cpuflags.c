@@ -164,7 +164,13 @@ uint32_t getCPUFlags(void)
 	if (_edx & CPUFLAG_IA32_EDX_MMX)
 		CPU_Flags |= MDP_CPUFLAG_X86_MMX;
 	if (_edx & CPUFLAG_IA32_EDX_SSE)
+	{
 		CPU_Flags |= MDP_CPUFLAG_X86_SSE;
+		
+		// MMXext is a subset of SSE.
+		// See http://www.x86-64.org/pipermail/patches/2005-March/003261.html
+		CPU_Flags |= MDP_CPUFLAG_X86_MMXEXT;
+	}
 	if (_edx & CPUFLAG_IA32_EDX_SSE2)
 		CPU_Flags |= MDP_CPUFLAG_X86_SSE2;
 	if (_ecx & CPUFLAG_IA32_ECX_SSE3)
