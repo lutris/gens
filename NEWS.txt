@@ -79,6 +79,10 @@ Release 7 introduces the following new features:
   in CRAM is used to determine the colors to display, resulting in a maximum of
   8 colors onscreen. Not very useful, but more accurate to how the MD's VDP works.
 
+- SRAM can now be disabled in the Options menu. This fixes Puggsy, which checks
+  for the existance of SRAM and prevents the user from advancing past a certain
+  point if it exists. (Puggsy uses a password system, not SRAM.)
+
 Release 7 fixes the following bugs:
 
 - Dragging and dropping a ROM image onto the Gens/GS window will now
