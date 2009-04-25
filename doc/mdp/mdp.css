@@ -37,7 +37,7 @@ table, table td, table th
 }
 
 /* Basic identifiers. */
-.struct, .symbol, .macro, .type, .program, .value, .filename, .mdp_version
+.struct, .symbol, .macro, .type, .program, .value, .filename, .mdp_version, .function
 {
 	font-family: monospace;
 	white-space: nowrap;
@@ -71,6 +71,12 @@ table, table td, table th
 .value, .value a:link, .value a:hover, .value a:visited
 {
 	color: peru;
+}
+
+/* Function identifier. */
+.function, .function a:link, .function a:hover, .function a:visited
+{
+	color: mediumvioletred;
 }
 
 pre.code

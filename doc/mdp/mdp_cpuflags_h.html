@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MDP - mdp_cpuflags.h: CPU Flags</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='mdp.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>MDP - mdp_cpuflags.h: CPU Flags</h1>
+<h4 class='doc_set'>Mega Drive Plugins v1.0.0-draft</h4>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="mdp_version_h.html">mdp_version.h</a></span>
+</div>
+
+<p>
+The MDP plugin interface provides a method to determine what CPU functionality
+is available on the host system, such as extra instruction sets. The system's
+CPU flags are provided to plugins in three ways:
+</p>
+
+<p>
+<ol>
+	<li>
+		<span class='struct'><a href="mdp_h.html">mdp_t</a></span>.
+		<span class='type'>cpuFlagsRequired</span> is compared against
+		the system's CPU flags. If the system is missing any specified
+		CPU flags, the plugin is not loaded.
+	</li>
+	<li>
+		CPU flags are passed to renderer functions in the
+		<span class='struct'><a href="mdp_render_h.html">mdp_render_info_t</a></span>
+		struct.
+	</li>
+	<li>
+		CPU flags can be obtained using
+		<span class='struct'><a href="mdp_host_h.html">host_srv</a></span>.
+		<span class='function'>val_get</span>(<span class='macro'>MDP_VAL_CPU_FLAGS</span>).
+	</li>
+</ol>
+</p>
+
+<p>
+CPU flags are architecture-dependent, and may be reused for different meanings
+on different architectures.
+</p>
+
+<p>CPU flags for i386 / x86_64:</p>
+
+<table>
+	<tr>
+		<th>CPU Flag</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_MMX</td>
+		<td>CPU supports the MMX instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSE</td>
+		<td>CPU supports the SSE instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSE2</td>
+		<td>CPU supports the SSE2 instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSE3</td>
+		<td>CPU supports the SSE3 instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSSE3</td>
+		<td>CPU supports the SSSE3 instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSE41</td>
+		<td>CPU supports the SSE4.1 instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSE42</td>
+		<td>CPU supports the SSE4.1 instruction set.</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_SSE4A</td>
+		<td>CPU supports the SSE4a instruction set. (AMD only)</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_MMX</td>
+		<td>
+			CPU supports the extended MMX instruction set.<br>
+			(Note: This is only a separate flag on AMD CPUs;<br>
+			on Intel CPUs, this flag is implied by
+			<span class='macro'>MDP_CPUFLAG_X86_SSE</span>.)
+		</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_3DNOW</td>
+		<td>CPU supports the 3DNOW! instruction set. (AMD only)</td>
+	</tr>
+	<tr>
+		<td class='macro'>MDP_CPUFLAG_X86_3DNOWEXT</td>
+		<td>CPU supports the extended 3DNOW! instruction set. (AMD only)</td>
+	</tr>
+</table>
+
+<p>CPU flags for additional architectures will be added in future versions of MDP.</p>
+
+</body>
+</html>
