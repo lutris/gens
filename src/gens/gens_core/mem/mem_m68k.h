@@ -45,6 +45,7 @@ extern int SRAM_End;
 extern int SRAM_ON;
 extern int SRAM_Write;
 extern int SRAM_Custom;
+extern int SRAM_Enabled;
 
 extern int Z80_M68K_Cycle_Tab[512];
 

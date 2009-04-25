@@ -706,6 +706,9 @@ void Sync_Gens_Window_OptionsMenu(void)
 	// Disable callbacks so nothing gets screwed up.
 	gens_menu_do_callbacks = 0;
 	
+	// SRAM Enabled
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_OPTIONS_SRAM_ENABLED)), SRAM_Enabled);
+	
 	// SegaCD SRAM Size
 	int bramID = ((BRAM_Ex_State & 0x100) ? BRAM_Ex_Size : -1);
 	GtkWidget *mnuBRAMSize = gens_menu_find_item(IDM_OPTIONS_SEGACDSRAMSIZE_NONE + (bramID + 1));

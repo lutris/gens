@@ -839,45 +839,27 @@ void Options::setSoundSampleRate(const int newRate)
 }
 
 
-/** SegaCD **/
+/** SRAM **/
 
 
-/**
- * segaCD_SRAMSize(): Get the SegaCD SRAM Size ID.
- * @return SegaCD SRAM Size ID. (TODO: Make this an enum?)
- */
-int Options::segaCD_SRAMSize(void)
+bool Options::sramEnabled(void)
 {
-	if (BRAM_Ex_State & 0x100)
-		return BRAM_Ex_Size;
-	else
-		return -1;
+	return SRAM_Enabled;
 }
 
-/**
- * setSegaCD_SRAMSize(): Change the Sega CD SRAM size.
- * @param num SegaCD SRAM Size ID. (TODO: Make this an enum?)
- */
-void Options::setSegaCD_SRAMSize(const int num)
+
+void Options::setSramEnabled(bool newEnabled)
 {
-	if (num < -1 || num > 3)
-		return;
+	SRAM_Enabled = newEnabled;
 	
-	if (num == -1)
-	{
-		BRAM_Ex_State &= 1;
-		vdraw_text_write("SegaCD SRAM cart removed", 1500);
-	}
+	if (SRAM_Enabled)
+		vdraw_text_write("SRAM enabled.", 1500);
 	else
-	{
-		char bsize[256];
-		
-		BRAM_Ex_State |= 0x100;
-		BRAM_Ex_Size = num;
-		
-		vdraw_text_sprintf(1500, "SegaCD SRAM cart plugged in (%d KB)", (8 << num));
-	}
+		vdraw_text_write("SRAM disabled.", 1500);
 }
+
+
+/** SegaCD **/
 
 
 /**
@@ -919,6 +901,44 @@ void Options::setSegaCD_PerfectSync(const bool newSegaCD_PerfectSync)
 		}
 		
 		vdraw_text_write("SegaCD Perfect Sync mode (slower)", 1500);
+	}
+}
+
+
+/**
+ * segaCD_SRAMSize(): Get the SegaCD SRAM Size ID.
+ * @return SegaCD SRAM Size ID. (TODO: Make this an enum?)
+ */
+int Options::segaCD_SRAMSize(void)
+{
+	if (BRAM_Ex_State & 0x100)
+		return BRAM_Ex_Size;
+	else
+		return -1;
+}
+
+/**
+ * setSegaCD_SRAMSize(): Change the Sega CD SRAM size.
+ * @param num SegaCD SRAM Size ID. (TODO: Make this an enum?)
+ */
+void Options::setSegaCD_SRAMSize(const int num)
+{
+	if (num < -1 || num > 3)
+		return;
+	
+	if (num == -1)
+	{
+		BRAM_Ex_State &= 1;
+		vdraw_text_write("SegaCD SRAM cart removed", 1500);
+	}
+	else
+	{
+		char bsize[256];
+		
+		BRAM_Ex_State |= 0x100;
+		BRAM_Ex_Size = num;
+		
+		vdraw_text_sprintf(1500, "SegaCD SRAM cart plugged in (%d KB)", (8 << num));
 	}
 }
 

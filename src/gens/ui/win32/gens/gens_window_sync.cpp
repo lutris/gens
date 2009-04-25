@@ -608,6 +608,10 @@ void Sync_Gens_Window_OptionsMenu(void)
 {
 	HMENU mnuOptions = gens_menu_find_item(IDM_OPTIONS_MENU);
 	
+	// SRAM Enabled
+	CheckMenuItem(mnuOptions, IDM_OPTIONS_SRAM_ENABLED,
+		      MF_BYCOMMAND | (SRAM_Enabled ? MF_CHECKED : MF_UNCHECKED));
+	
 	// SegaCD SRAM Size
 	int SRAM_ID = (BRAM_Ex_State & 0x100 ? BRAM_Ex_Size : -1);
 	CheckMenuRadioItem(mnuOptions,

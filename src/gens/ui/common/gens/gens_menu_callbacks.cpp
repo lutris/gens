@@ -732,6 +732,10 @@ static int gens_menu_callback_OptionsMenu(uint16_t menuID, uint16_t state)
 			bmf_window_show();
 			break;
 		
+		case IDM_OPTIONS_SRAM_ENABLED:
+			Options::setSramEnabled(!state);
+			break;
+		
 #ifdef GENS_CDROM
 		case IDM_OPTIONS_CURRENT_CD_DRIVE:
 			selcd_window_show();

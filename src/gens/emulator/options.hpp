@@ -77,6 +77,10 @@ class Options
 		static int soundSampleRate(void);
 		static void setSoundSampleRate(const int newRate);
 		
+		/** SRAM **/
+		static bool sramEnabled(void);
+		static void setSramEnabled(bool newEnabled);
+		
 		/** SegaCD **/
 		
 		static bool segaCD_PerfectSync(void);

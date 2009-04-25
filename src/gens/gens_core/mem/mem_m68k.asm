@@ -205,6 +205,7 @@ section .bss align=64
 		%define _SRAM_ON		SRAM_ON
 		%define _SRAM_Write		SRAM_Write
 		%define _SRAM_Custom		SRAM_Custom
+		%define _SRAM_Enabled		SRAM_Enabled
 		
 		%define _Z80_M68K_Cycle_Tab	Z80_M68K_Cycle_Tab
 		
@@ -260,6 +261,9 @@ section .bss align=64
 		resd 1
 	global _SRAM_Custom
 	_SRAM_Custom:
+		resd 1
+	global _SRAM_Enabled
+	_SRAM_Enabled:
 		resd 1
 	
 	alignb 64
@@ -573,12 +577,16 @@ section .text align=64
 	
 	global M68K_Read_Byte_Rom4
 	M68K_Read_Byte_Rom4:
-		test	dword [_SRAM_ON], 1
+		test	byte [_SRAM_ON], 1
 		jz	short .Rom
 		cmp	ebx, [_SRAM_Start]
 		jb	short .Rom
 		cmp	ebx, [_SRAM_End]
 		ja	short .Rom
+		
+		; If SRAM is disabled by the user, don't do anything.
+		test	byte [_SRAM_Enabled], 1
+		jz	short .SRAM_Disabled
 		
 		test	byte [_SRAM_Custom], 1
 		jnz	short .Custom_SRAM
@@ -601,6 +609,13 @@ section .text align=64
 	
 	.Custom_SRAM:
 		mov	al, 0
+		pop	ebx
+		ret
+	
+	align 4
+	
+	.SRAM_Disabled:
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -923,6 +938,10 @@ section .text align=64
 		cmp	ebx, [_SRAM_End]
 		ja	short .Rom
 		
+		; If SRAM is disabled by the user, don't do anything.
+		test	byte [_SRAM_Enabled], 1
+		jz	short .SRAM_Disabled
+		
 		test	byte [_SRAM_Custom], 1
 		jnz	short .Custom_SRAM
 		
@@ -944,6 +963,11 @@ section .text align=64
 
 	.Custom_SRAM:
 		mov	ax, 0
+		pop	ebx
+		ret
+	
+	.SRAM_Disabled:
+		xor	eax, eax
 		pop	ebx
 		ret
 	
@@ -1227,6 +1251,10 @@ section .text align=64
 		cmp	ebx, [_SRAM_End]
 		ja	near M68K_Write_Bad
 		
+		; If SRAM is disabled by the user, don't do anything.
+		test	byte [_SRAM_Enabled], 1
+		jz	near M68K_Write_Bad
+		
 		sub	ebx, [_SRAM_Start]
 		mov	[_SRAM + ebx], al
 		pop	ecx
@@ -1499,6 +1527,10 @@ section .text align=64
 		jb	short .bad
 		cmp	ebx, [_SRAM_End]
 		ja	short .bad
+		
+		; If SRAM is disabled by the user, don't do anything.
+		test	byte [_SRAM_Enabled], 1
+		jz	near M68K_Write_Bad
 		
 		rol	ax, 8
 		sub	ebx, [_SRAM_Start]
