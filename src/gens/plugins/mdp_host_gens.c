@@ -230,12 +230,15 @@ static inline void mdp_host_ptr_unref_LUT16to32(void)
 
 /**
  * mdp_host_set_val(): Set an MDP value.
+ * @param plugin Plugin requesting the change.
  * @param valID Value ID.
  * @param val Value.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_val_set(uint32_t valID, int val)
+int MDP_FNCALL mdp_host_val_set(mdp_t *plugin, uint32_t valID, int val)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	switch (valID)
 	{
 		case MDP_VAL_UI:

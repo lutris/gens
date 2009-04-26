@@ -116,7 +116,7 @@ typedef struct PACKED _mdp_host_t
 	/**
 	 * val_set(), val_get(): Set or get int values.
 	 */
-	int (MDP_FNCALL *val_set)(uint32_t valID, int val);
+	int (MDP_FNCALL *val_set)(struct _mdp_t *plugin, uint32_t valID, int val);
 	int (MDP_FNCALL *val_get)(uint32_t valID);
 	
 	/**
@@ -136,22 +136,24 @@ typedef struct PACKED _mdp_host_t
 	 * mem_read_*(): Memory read functions.
 	 * @param memID Memory ID.
 	 * @param address Address.
-	 * @return Data.
+	 * @param ret_value Variable to store the return value in.
+	 * @return MDP error code.
 	 */
-	uint8_t  (MDP_FNCALL *mem_read_8) (int memID, uint32_t address);
-	uint16_t (MDP_FNCALL *mem_read_16)(int memID, uint32_t address);
-	uint32_t (MDP_FNCALL *mem_read_32)(int memID, uint32_t address);
+	int (MDP_FNCALL *mem_read_8) (int memID, uint32_t address, uint8_t  *ret_value);
+	int (MDP_FNCALL *mem_read_16)(int memID, uint32_t address, uint16_t *ret_value);
+	int (MDP_FNCALL *mem_read_32)(int memID, uint32_t address, uint32_t *ret_value);
 	
 	/**
 	 * mem_write_*(): Memory write functions.
+	 * @param plugin Plugin requesting memory write.
 	 * @param memID Memory ID.
 	 * @param address Address.
 	 * @param data Data.
 	 * @return MDP error code.
 	 */
-	int (MDP_FNCALL *mem_write_8) (int memID, uint32_t address, uint8_t  data);
-	int (MDP_FNCALL *mem_write_16)(int memID, uint32_t address, uint16_t data);
-	int (MDP_FNCALL *mem_write_32)(int memID, uint32_t address, uint32_t data);
+	int (MDP_FNCALL *mem_write_8) (struct _mdp_t *plugin, int memID, uint32_t address, uint8_t  data);
+	int (MDP_FNCALL *mem_write_16)(struct _mdp_t *plugin, int memID, uint32_t address, uint16_t data);
+	int (MDP_FNCALL *mem_write_32)(struct _mdp_t *plugin, int memID, uint32_t address, uint32_t data);
 	
 	/**
 	 * mem_read_block_*: Memory block read functions.
@@ -167,15 +169,16 @@ typedef struct PACKED _mdp_host_t
 	
 	/**
 	 * mem_write_block_*: Memory block write functions.
+	 * @param plugin Plugin requesting memory write.
 	 * @param memID Memory ID.
 	 * @param address Starting address.
 	 * @param data Data buffer containing the data to write.
 	 * @param length Length of the data.
 	 * @return MDP error code.
 	 */
-	int (MDP_FNCALL *mem_write_block_8) (int memID, uint32_t address, uint8_t  *data, uint32_t length);
-	int (MDP_FNCALL *mem_write_block_16)(int memID, uint32_t address, uint16_t *data, uint32_t length);
-	int (MDP_FNCALL *mem_write_block_32)(int memID, uint32_t address, uint32_t *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_8) (struct _mdp_t *plugin, int memID, uint32_t address, uint8_t  *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_16)(struct _mdp_t *plugin, int memID, uint32_t address, uint16_t *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_32)(struct _mdp_t *plugin, int memID, uint32_t address, uint32_t *data, uint32_t length);
 	
 	/**
 	 * mem_size_get(): Get the size of a memory block.
@@ -186,11 +189,12 @@ typedef struct PACKED _mdp_host_t
 	
 	/**
 	 * mem_size_set(): Set the size of a memory block.
+	 * @param plugin Plugin requesting memory size set.
 	 * @param memID Memory ID.
 	 * @param size New memory size.
 	 * @return MDP error code.
 	 */
-	int (MDP_FNCALL *mem_size_set)(int memID, unsigned int size);
+	int (MDP_FNCALL *mem_size_set)(struct _mdp_t *plugin, int memID, unsigned int size);
 	
 	/**
 	 * reg_get(): Get a register value.
@@ -203,12 +207,13 @@ typedef struct PACKED _mdp_host_t
 	
 	/**
 	 * reg_set(): Get a register value.
+	 * @param plugin Plugin requesting register set.
 	 * @param icID ID of the IC to set a register value in.
 	 * @param regID Register ID.
 	 * @param new_value New register value.
 	 * @return MDP error code.
 	 */
-	int (MDP_FNCALL *reg_set)(int icID, int regID, uint32_t new_value);
+	int (MDP_FNCALL *reg_set)(struct _mdp_t *plugin, int icID, int regID, uint32_t new_value);
 	
 	/**
 	 * reg_get_all(): Get all register values for a given IC.
@@ -220,11 +225,12 @@ typedef struct PACKED _mdp_host_t
 	
 	/**
 	 * reg_set_all(): Set all register values for a given IC.
+	 * @param plugin Plugin requesting register set.
 	 * @param icID ID of the IC to set all register values in.
 	 * @param reg_struct Pointer to register struct for this IC.
 	 * @return MDP error code.
 	 */
-	int (MDP_FNCALL *reg_set_all)(int icID, void *reg_struct);
+	int (MDP_FNCALL *reg_set_all)(struct _mdp_t *plugin, int icID, void *reg_struct);
 	
 	/**
 	 * menu_item_add(): Add a menu item.
@@ -264,10 +270,10 @@ typedef struct PACKED _mdp_host_t
 	int (MDP_FNCALL *dir_unregister)(struct _mdp_t *plugin, int dir_id);
 	
 	/* Compression functions. */
-	int	(MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);
-	int	(MDP_FNCALL *z_open)(const char* filename, mdp_z_t **z_out);
-	int	(MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
-	int	(MDP_FNCALL *z_close)(mdp_z_t *z_file);
+	int (MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);
+	int (MDP_FNCALL *z_open)(const char* filename, mdp_z_t **z_out);
+	int (MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
+	int (MDP_FNCALL *z_close)(mdp_z_t *z_file);
 } mdp_host_t;
 #pragma pack()
 
