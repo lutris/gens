@@ -61,6 +61,9 @@
 // ROM information.
 #include "util/file/rom.hpp"
 
+// Text drawing.
+#include "video/vdraw_text.hpp"
+
 // MDP_PTR functions.
 static inline int* mdp_host_ptr_ref_LUT16to32(void);
 static inline void mdp_host_ptr_unref_LUT16to32(void);
@@ -68,6 +71,9 @@ static inline void mdp_host_ptr_unref_LUT16to32(void);
 // MDP_PTR variables.
 static int* mdp_ptr_LUT16to32 = NULL;
 static int  mdp_ptr_LUT16to32_count = 0;
+
+// Text drawing functions.
+static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, ...);
 
 
 mdp_host_t Gens_MDP_Host =
@@ -79,6 +85,8 @@ mdp_host_t Gens_MDP_Host =
 	
 	.val_set		= mdp_host_val_set,
 	.val_get		= mdp_host_val_get,
+	
+	.osd_printf		= mdp_host_osd_printf,
 	
 	.renderer_register	= mdp_host_renderer_register,
 	.renderer_unregister	= mdp_host_renderer_unregister,
@@ -298,4 +306,26 @@ int MDP_FNCALL mdp_host_val_get(uint32_t valID)
 void* MDP_FNCALL mdp_host_window_get_main(void)
 {
 	return gens_window;
+}
+
+
+/**
+ * mdp_host_osd_printf(): Print formatted text to the screen. (va_list version)
+ * @param duration Duration for the message to appear, in milliseconds.
+ * @param msg Message to write. (printf-formatted)
+ * @param ap Format arguments.
+ * @return MDP error code.
+ */
+static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, ...)
+{
+	if (duration <= 0 || !msg)
+		return -MDP_ERR_INVALID_PARAMETERS;
+	
+	// Print the message.
+	va_list ap;
+	va_start(ap, msg);
+	vdraw_text_vsprintf(duration, msg, ap);
+	va_end(ap);
+	
+	return MDP_ERR_OK;
 }

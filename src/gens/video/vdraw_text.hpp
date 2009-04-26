@@ -20,19 +20,20 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
+#ifndef GENS_VDRAW_TEXT_HPP
+#define GENS_VDRAW_TEXT_HPP
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#ifndef GENS_VDRAW_TEXT_HPP
-#define GENS_VDRAW_TEXT_HPP
+#include <stdint.h>
+#include <stdarg.h>
+#include "macros/bool_m.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-#include "macros/bool_m.h"
 
 // Constants for MsgStyle and FpsStyle.
 // These match the #define's in gens_core/misc/misc.h.
@@ -65,11 +66,12 @@ void calc_transparency_mask(void);
 void vdraw_text_write(const char* msg, const int duration);
 void vdraw_text_sprintf(const int duration, const char* msg, ...)
 	__attribute__ ((format (printf, 2, 3)));
+void vdraw_text_vsprintf(const int duration, const char* msg, va_list ap)
+	__attribute__ ((format (printf, 2, 0)));
 void vdraw_msg_timer_update(void);
 
 // Text buffer.
 extern char vdraw_msg_text[1024];
-
 
 #ifdef __cplusplus
 }

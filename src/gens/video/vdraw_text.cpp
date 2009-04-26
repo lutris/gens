@@ -404,19 +404,31 @@ void vdraw_text_write(const char* msg, const int duration)
 /**
  * vdraw_text_sprintf(): Print formatted text to the screen.
  * @param duration Duration for the message to appear, in milliseconds. (If <=0, the message won't disappear.)
- * @param msg Message to write.
+ * @param msg Message to write. (printf-formatted)
  * @param ... Format arguments.
  */
 void vdraw_text_sprintf(const int duration, const char* msg, ...)
+{
+	va_list ap;
+	va_start(ap, msg);
+	vdraw_text_vsprintf(duration, msg, ap);
+	va_end(ap);
+}
+
+
+/**
+ * vdraw_text_vsprintf(): Print formatted text to the screen. (va_list version)
+ * @param duration Duration for the message to appear, in milliseconds. (If <=0, the message won't disappear.)
+ * @param msg Message to write. (printf-formatted)
+ * @param ap Format arguments.
+ */
+void vdraw_text_vsprintf(const int duration, const char* msg, va_list ap)
 {
 	if (!vdraw_get_msg_enabled())
 		return;
 	
 	// TODO: Add localization.
-	va_list args;
-	va_start(args, msg);
-	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, args);
-	va_end(args);
+	vsnprintf(vdraw_msg_text, sizeof(vdraw_msg_text), msg, ap);
 	
 	// Make sure the string is null-terminated.
 	vdraw_msg_text[sizeof(vdraw_msg_text) - 1] = 0x00;
