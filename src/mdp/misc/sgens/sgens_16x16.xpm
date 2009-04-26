@@ -1,0 +1,26 @@
+/* XPM */
+static const char *sgens_icon_xpm_16x16[] =
+{
+"16 16 5 1",
+". c None",
+"# c #000000",
+"c c #204080",
+"a c #6080c0",
+"b c #a0c0ff",
+"..#####.........",
+".#abbbc##.......",
+"#abaabba#..###..",
+"#cbbcc##.##aba##",
+".#cbbac##cbbbbb#",
+"###abbb#cbb#####",
+"#bbccba#ab#abba#",
+"##abba##bb##cba#",
+"..####.#abbbbb#.",
+"........#abacb#.",
+".######..####a#.",
+"#ab#ab##########",
+"#bc#bc#ab#ba#cb#",
+"#cb#bb#ba#bb#aa#",
+"#ba#ab#ab#bb#bc#",
+"###.###########."
+};

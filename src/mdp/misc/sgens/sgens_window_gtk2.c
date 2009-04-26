@@ -32,6 +32,10 @@
 #include "sgens_plugin.h"
 #include "sgens.h"
 
+// XPM icons.
+#include "sgens_16x16.xpm"
+#include "sgens_32x32.xpm"
+
 // sGens ROM type information and widget information.
 #include "sgens_rom_type.h"
 #include "sgens_widget_info.h"
@@ -85,6 +89,26 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	gtk_window_set_resizable(GTK_WINDOW(sgens_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(sgens_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(sgens_window), FALSE);
+	
+	// Add the window icons.
+	GList *icon_list = NULL;
+	GdkPixbuf *icon_pixbuf_16, *icon_pixbuf_32;
+	
+	// Load the 16x16 icon.
+	icon_pixbuf_16 = gdk_pixbuf_new_from_xpm_data(sgens_icon_xpm_16x16);
+	icon_list = g_list_append(icon_list, icon_pixbuf_16);
+	
+	// Load the 32x32 icon.
+	icon_pixbuf_32 = gdk_pixbuf_new_from_xpm_data(sgens_icon_xpm_32x32);
+	icon_list = g_list_append(icon_list, icon_pixbuf_32);
+	
+	// Set the icon list.
+	gtk_window_set_icon_list(GTK_WINDOW(sgens_window), icon_list);
+	
+	// Unreference everything.
+	g_list_free(icon_list);
+	g_object_unref(icon_pixbuf_16);
+	g_object_unref(icon_pixbuf_32);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)sgens_window, "delete_event",
