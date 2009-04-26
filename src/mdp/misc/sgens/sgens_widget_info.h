@@ -24,6 +24,9 @@
 #define _MDP_MISC_SGENS_WINDOW_INFO_H
 
 #include "mdp/mdp_fncall.h"
+
+// C includes.
+#include <stdint.h>
 #include <string.h>
 
 // Degree symbol.
@@ -73,6 +76,32 @@ typedef enum _PLAYER_INFO_ID
 	PLAYER_INFO_X		= 1,
 	PLAYER_INFO_Y		= 2,
 } PLAYER_INFO_ID;
+
+// Struct for obtaining current widget information.
+typedef struct _sgens_widget_info
+{
+	uint32_t	score;
+	struct
+	{
+		uint8_t min;
+		uint8_t sec;
+		uint8_t frames;
+		uint8_t reserved;
+	} time;
+	uint16_t	rings;
+	uint8_t		lives;
+	uint8_t		continues;
+	uint16_t	rings_for_perfect_bonus;
+	uint16_t	water_level;
+	
+	uint8_t		emeralds;
+	uint16_t	camera_x;
+	uint16_t	camera_y;
+	double		player_angle;
+	uint16_t	player_x;
+	uint16_t	player_y;
+} sgens_widget_info;
+DLL_LOCAL void MDP_FNCALL sgens_get_widget_info(sgens_widget_info *info);
 
 #ifdef __cplusplus
 }
