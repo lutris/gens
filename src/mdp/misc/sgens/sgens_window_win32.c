@@ -413,31 +413,47 @@ void MDP_FNCALL sgens_window_update(void)
 	if (sgens_current_rom_type <= SGENS_ROM_TYPE_UNSUPPORTED)
 		return;
 	
+	// String buffer.
 	char tmp[64];
+	
+	// Memory buffer.
+	uint8_t  tmp8[4];
+	uint16_t tmp16;
+	uint32_t tmp32;
 	
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	sprintf(tmp, "%d", (sgens_host_srv->mem_read_32(MDP_MEM_MD_RAM, 0xFE26) * 10));
+	sgens_host_srv->mem_read_32(MDP_MEM_MD_RAM, 0xFE26, &tmp32);
+	snprintf(tmp, sizeof(tmp), "%d", (tmp32 * 10));
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_SCORE], tmp);
 	
 	// Time.
-	sprintf(tmp, "%02d:%02d:%02d",
-		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE23),
-		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE24),
-		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE25));
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE23, &tmp8[0]);
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE24, &tmp8[1]);
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE25, &tmp8[2]);
+	
+	snprintf(tmp, sizeof(tmp), "%02d:%02d:%02d", tmp8[0], tmp8[1], tmp8[2]);
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_TIME], tmp);
 	
 	// Rings.
-	sprintf(tmp, "%d", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFE20));
+	sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFE20, &tmp16);
+	snprintf(tmp, sizeof(tmp), "%d", tmp16);
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS], tmp);
 	
 	// Lives.
-	sprintf(tmp, "%d", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE12));
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE12, &tmp8[0]);
+	snprintf(tmp, sizeof(tmp), "%d", tmp8[0]);
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_LIVES], tmp);
 	
 	// Continues.
-	sprintf(tmp, "%d", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE18));
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE18, &tmp8[0]);
+	snprintf(tmp, sizeof(tmp), "%d", tmp8[0]);
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_CONTINUES], tmp);
 	
 	// Rings remaining for Perfect Bonus.
@@ -445,17 +461,22 @@ void MDP_FNCALL sgens_window_update(void)
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
 	{
-		sprintf(tmp, "%d", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF40));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF40, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%d", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT], tmp);
 	}
 	
 	// Water status.
-	uint16_t water_level = sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xF648);
-	sprintf(tmp, "%s", (sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xF648) != 0 ? "ON" : "OFF"));
+	uint16_t water_level;
+	sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xF648, &water_level);
+	snprintf(tmp, sizeof(tmp), "%s", (water_level != 0 ? "ON" : "OFF"));
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_ENABLED], tmp);
 	
 	// Water level.
-	sprintf(tmp, "%04X", water_level);
+	snprintf(tmp, sizeof(tmp), "%04X", water_level);
+	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblLevelInfo[LEVEL_INFO_WATER_LEVEL], tmp);
 	
 	// TODO: Camera position and player position don't seem to be working
@@ -467,29 +488,42 @@ void MDP_FNCALL sgens_window_update(void)
 		// S1-specific information.
 		
 		// Number of emeralds.
-		sprintf(tmp, "%d", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE57));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE57, &tmp8[0]);
+		snprintf(tmp, sizeof(tmp), "%d", tmp8[0]);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
 		
 		// Camera X position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF10));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF10, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
 		
 		// Camera Y position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF14));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF14, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
 		
 		// Player angle.
-		uint16_t angle = (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD026) |
-				  (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD027) << 8));
-		sprintf(tmp, "%0.02f\xB0", ((double)(angle) * 1.40625));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD026, &tmp8[0]);
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD027, &tmp8[1]);
+		
+		uint16_t angle = (tmp8[0] | ((uint16_t)tmp8[1] << 8));
+		snprintf(tmp, sizeof(tmp), "%0.02f" DEGREE_SYMBOL, ((double)(angle) * 1.40625));
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
 		
 		// Player X position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD008));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD008, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblPlayerInfo[PLAYER_INFO_X], tmp);
 		
 		// Player Y position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD00C));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD00C, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	}
 	else
@@ -497,29 +531,42 @@ void MDP_FNCALL sgens_window_update(void)
 		// Information for games other than S1.
 		
 		// Number of emeralds.
-		sprintf(tmp, "%d", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFEB1));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFEB1, &tmp8[0]);
+		snprintf(tmp, sizeof(tmp), "%d", tmp8[0]);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_EMERALDS], tmp);
 		
 		// Camera X position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE00));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE00, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_X], tmp);
 		
 		// Camera Y position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE04));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE04, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblLevelInfo[LEVEL_INFO_CAMERA_Y], tmp);
 		
 		// Player angle.
-		uint16_t angle = (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB026) |
-				  (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB027) << 8));
-		sprintf(tmp, "%0.02f\xB0", ((double)(angle) * 1.40625));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB026, &tmp8[0]);
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB027, &tmp8[1]);
+		
+		uint16_t angle = (tmp8[0] | ((uint16_t)tmp8[1] << 8));
+		snprintf(tmp, sizeof(tmp), "%0.02f" DEGREE_SYMBOL, ((double)(angle) * 1.40625));
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblPlayerInfo[PLAYER_INFO_ANGLE], tmp);
 		
 		// Player X position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB008));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB008, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblPlayerInfo[PLAYER_INFO_X], tmp);
 		
 		// Player Y position.
-		sprintf(tmp, "%04X", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB00C));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB00C, &tmp16);
+		snprintf(tmp, sizeof(tmp), "%04X", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	}
 	

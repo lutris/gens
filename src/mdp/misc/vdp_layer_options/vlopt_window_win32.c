@@ -179,7 +179,7 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 			{
 				case IDC_VLOPT_RESET:
 					// Reset the VDP layer options to the default value.
-					rval = vlopt_host_srv->val_set(MDP_VAL_VDP_LAYER_OPTIONS, MDP_VDP_LAYER_OPTIONS_DEFAULT);
+					rval = vlopt_host_srv->val_set(&mdp, MDP_VAL_VDP_LAYER_OPTIONS, MDP_VDP_LAYER_OPTIONS_DEFAULT);
 					if (rval != MDP_ERR_OK)
 					{
 						fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, rval);
@@ -357,7 +357,7 @@ static void vlopt_window_save_options(void)
 	}
 	
 	// Set the new options.
-	int rval = vlopt_host_srv->val_set(MDP_VAL_VDP_LAYER_OPTIONS, vdp_layer_options);
+	int rval = vlopt_host_srv->val_set(&mdp, MDP_VAL_VDP_LAYER_OPTIONS, vdp_layer_options);
 	if (rval != MDP_ERR_OK)
 	{
 		fprintf(stderr, "%s(): Error setting MDP_VAL_VDP_LAYER_OPTIONS: 0x%08X\n", __func__, vdp_layer_options);

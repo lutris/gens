@@ -372,35 +372,51 @@ void MDP_FNCALL sgens_window_update(void)
 	if (sgens_current_rom_type <= SGENS_ROM_TYPE_UNSUPPORTED)
 		return;
 	
+	// String buffer.
 	char tmp[64];
+	
+	// Memory buffer.
+	uint8_t  tmp8[4];
+	uint16_t tmp16;
+	uint32_t tmp32;
 	
 	// Values common to all supported Sonic games.
 	
 	// Score.
-	sprintf(tmp, "<tt>%d</tt>", (sgens_host_srv->mem_read_32(MDP_MEM_MD_RAM, 0xFE26) * 10));
+	sgens_host_srv->mem_read_32(MDP_MEM_MD_RAM, 0xFE26, &tmp32);
+	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", (tmp32 * 10));
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_SCORE]), TRUE);
 	
 	// Time.
-	sprintf(tmp, "<tt>%02d:%02d:%02d</tt>",
-		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE23),
-		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE24),
-		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE25));
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE23, &tmp8[0]);
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE24, &tmp8[1]);
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE25, &tmp8[2]);
+	
+	snprintf(tmp, sizeof(tmp), "<tt>%02d:%02d:%02d</tt>", tmp8[0], tmp8[1], tmp8[2]);
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_TIME]), TRUE);
 	
 	// Rings.
-	sprintf(tmp, "<tt>%d</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFE20));
+	sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFE20, &tmp16);
+	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", tmp16);
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS]), TRUE);
 	
 	// Lives.
-	sprintf(tmp, "<tt>%d</tt>", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE12));
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE12, &tmp8[0]);
+	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", tmp8[0]);
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_LIVES]), TRUE);
 	
 	// Continues.
-	sprintf(tmp, "<tt>%d</tt>", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE18));
+	sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE18, &tmp8[0]);
+	snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", tmp8[0]);
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CONTINUES]), TRUE);
 	
@@ -409,19 +425,24 @@ void MDP_FNCALL sgens_window_update(void)
 	if (sgens_current_rom_type >= SGENS_ROM_TYPE_SONIC2_REV00 &&
 	    sgens_current_rom_type <= SGENS_ROM_TYPE_SONIC2_REV02)
 	{
-		sprintf(tmp, "<tt>%d</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF40));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF40, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_RINGS_PERFECT]), TRUE);
 	}
 	
 	// Water status.
-	uint16_t water_level = sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xF648);
-	sprintf(tmp, "<tt>%s</tt>", (sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xF648) != 0 ? "ON" : "OFF"));
+	uint16_t water_level;
+	sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xF648, &water_level);
+	snprintf(tmp, sizeof(tmp), "<tt>%s</tt>", (water_level != 0 ? "ON" : "OFF"));
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_ENABLED]), TRUE);
 	
 	// Water level.
-	sprintf(tmp, "<tt>%04X</tt>", water_level);
+	snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", water_level);
+	tmp[sizeof(tmp)-1] = 0x00;
 	gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_WATER_LEVEL]), TRUE);
 	
@@ -434,34 +455,46 @@ void MDP_FNCALL sgens_window_update(void)
 		// S1-specific information.
 		
 		// Number of emeralds.
-		sprintf(tmp, "<tt>%d</tt>", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE57));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFE57, &tmp8[0]);
+		snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", tmp8[0]);
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), TRUE);
 		
 		// Camera X position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF10));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF10, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), TRUE);
 		
 		// Camera Y position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF14));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xFF14, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
 		
 		// Player angle.
-		uint16_t angle = (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD026) |
-				  (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD027) << 8));
-		sprintf(tmp, "<tt>%0.02f°</tt>", ((double)(angle) * 1.40625));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD026, &tmp8[0]);
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xD027, &tmp8[1]);
+		
+		uint16_t angle = (tmp8[0] | ((uint16_t)tmp8[1] << 8));
+		snprintf(tmp, sizeof(tmp), "<tt>%0.02f" DEGREE_SYMBOL "</tt>", ((double)(angle) * 1.40625));
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
 		
 		// Player X position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD008));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD008, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
 		
 		// Player Y position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD00C));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xD00C, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
 	}
@@ -470,34 +503,47 @@ void MDP_FNCALL sgens_window_update(void)
 		// Information for games other than S1.
 		
 		// Number of emeralds.
-		sprintf(tmp, "<tt>%d</tt>", sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFEB1));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xFEB1, &tmp8[0]);
+		snprintf(tmp, sizeof(tmp), "<tt>%d</tt>", tmp8[0]);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_EMERALDS]), TRUE);
 		
 		// Camera X position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE00));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE00, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_X]), TRUE);
 		
 		// Camera Y position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE04));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xEE04, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblLevelInfo[LEVEL_INFO_CAMERA_Y]), TRUE);
 		
 		// Player angle.
-		uint16_t angle = (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB026) |
-				  (sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB027) << 8));
-		sprintf(tmp, "<tt>%0.02f°</tt>", ((double)(angle) * 1.40625));
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB026, &tmp8[0]);
+		sgens_host_srv->mem_read_8(MDP_MEM_MD_RAM, 0xB027, &tmp8[1]);
+		
+		uint16_t angle = (tmp8[0] | ((uint16_t)tmp8[1] << 8));
+		snprintf(tmp, sizeof(tmp), "<tt>%0.02f" DEGREE_SYMBOL "</tt>", ((double)(angle) * 1.40625));
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_ANGLE]), TRUE);
 		
 		// Player X position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB008));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB008, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_X]), TRUE);
 		
 		// Player Y position.
-		sprintf(tmp, "<tt>%04X</tt>", sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB00C));
+		sgens_host_srv->mem_read_16(MDP_MEM_MD_RAM, 0xB00C, &tmp16);
+		snprintf(tmp, sizeof(tmp), "<tt>%04X</tt>", tmp16);
+		tmp[sizeof(tmp)-1] = 0x00;
 		gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
 		gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
 	}

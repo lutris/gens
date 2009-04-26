@@ -286,7 +286,7 @@ static int ips_apply(uint32_t dest_length, list<ips_block_t>& lstIPSBlocks)
 	if (dest_length != rom_size)
 	{
 		// Resize the ROM.
-		int rval = ips_host_srv->mem_size_set(MDP_MEM_MD_ROM, dest_length);
+		int rval = ips_host_srv->mem_size_set(&mdp, MDP_MEM_MD_ROM, dest_length);
 		if (rval != MDP_ERR_OK)
 		{
 			// Error resizing the ROM.
@@ -301,7 +301,7 @@ static int ips_apply(uint32_t dest_length, list<ips_block_t>& lstIPSBlocks)
 	{
 		ips_block_t *block = &(*iter);
 		
-		rval = ips_host_srv->mem_write_block_8(MDP_MEM_MD_ROM,
+		rval = ips_host_srv->mem_write_block_8(&mdp, MDP_MEM_MD_ROM,
 				block->address, block->data, block->length);
 		
 		// TODO: Better error handling.

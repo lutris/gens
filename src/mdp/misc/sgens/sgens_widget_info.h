@@ -26,6 +26,15 @@
 #include "mdp/mdp_fncall.h"
 #include <string.h>
 
+// Degree symbol.
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#define DEGREE_SYMBOL TEXT("\xB0")
+#else
+	#define DEGREE_SYMBOL "°"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

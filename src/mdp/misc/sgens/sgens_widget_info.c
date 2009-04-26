@@ -34,15 +34,6 @@
 #define FALSE 0
 #endif
 
-// Degree symbol.
-#ifdef GENS_OS_WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#define DEGREE_SYMBOL TEXT("\xB0")
-#else
-	#define DEGREE_SYMBOL "°"
-#endif
-
 sgens_window_info_widget_t level_info[LEVEL_INFO_COUNT+1] =
 {
 	{"Score:",	"0",		0, 0, FALSE},
