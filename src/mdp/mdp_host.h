@@ -120,6 +120,12 @@ typedef struct PACKED _mdp_host_t
 	int (MDP_FNCALL *val_get)(uint32_t valID);
 	
 	/**
+	 * osd_printf(): Print a message to the on-screen display.
+	 */
+	int (MDP_FNCALL *osd_printf)(const int duration, const char *msg, ...)
+		__attribute__ ((format (printf, 2, 3)));
+	
+	/**
 	 * renderer_register(): Register a renderer.
 	 * renderer_unregister(): Unregister a renderer.
 	 */
