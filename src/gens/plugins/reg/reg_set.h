@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value);
+int MDP_FNCALL mdp_host_reg_set(mdp_t *plugin, int icID, int regID, uint32_t new_value);
 
 #ifdef __cplusplus
 }

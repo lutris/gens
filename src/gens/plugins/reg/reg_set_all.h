@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct);
+	int MDP_FNCALL mdp_host_reg_set_all(mdp_t *plugin, int icID, void *reg_struct);
 
 #ifdef __cplusplus
 }

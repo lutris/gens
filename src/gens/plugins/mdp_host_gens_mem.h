@@ -35,24 +35,24 @@ extern "C" {
 
 /* Memory functions. */
 
-uint8_t  MDP_FNCALL mdp_host_mem_read_8 (int memID, uint32_t address);
-uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address);
-uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address);
+int MDP_FNCALL mdp_host_mem_read_8 (int memID, uint32_t address, uint8_t  *ret_value);
+int MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address, uint16_t *ret_value);
+int MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address, uint32_t *ret_value);
 
-int MDP_FNCALL mdp_host_mem_write_8 (int memID, uint32_t address, uint8_t  data);
-int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data);
-int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data);
+int MDP_FNCALL mdp_host_mem_write_8 (mdp_t *plugin, int memID, uint32_t address, uint8_t  data);
+int MDP_FNCALL mdp_host_mem_write_16(mdp_t *plugin, int memID, uint32_t address, uint16_t data);
+int MDP_FNCALL mdp_host_mem_write_32(mdp_t *plugin, int memID, uint32_t address, uint32_t data);
 
 int MDP_FNCALL mdp_host_mem_read_block_8 (int memID, uint32_t address, uint8_t  *data, uint32_t length);
 int MDP_FNCALL mdp_host_mem_read_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length);
 int MDP_FNCALL mdp_host_mem_read_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length);
 
-int MDP_FNCALL mdp_host_mem_write_block_8 (int memID, uint32_t address, uint8_t  *data, uint32_t length);
-int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length);
-int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length);
+int MDP_FNCALL mdp_host_mem_write_block_8 (mdp_t *plugin, int memID, uint32_t address, uint8_t  *data, uint32_t length);
+int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t address, uint16_t *data, uint32_t length);
+int MDP_FNCALL mdp_host_mem_write_block_32(mdp_t *plugin, int memID, uint32_t address, uint32_t *data, uint32_t length);
 
 int MDP_FNCALL mdp_host_mem_size_get(int memID);
-int MDP_FNCALL mdp_host_mem_size_set(int memID, unsigned int size);
+int MDP_FNCALL mdp_host_mem_size_set(mdp_t *plugin, int memID, unsigned int size);
 
 #ifdef __cplusplus
 }

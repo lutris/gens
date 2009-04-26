@@ -79,40 +79,53 @@ do {										\
 #include "gens_core/vdp/vdp_rend.h"
 #include "util/file/rom.hpp"
 
+// Unused Parameter macro.
+#include "macros/unused.h"
+
 extern int ice;
 
 
 /** Memory Read Functions **/
 
-uint8_t MDP_FNCALL mdp_host_mem_read_8(int memID, uint32_t address)
+int MDP_FNCALL mdp_host_mem_read_8(int memID, uint32_t address, uint8_t *ret_value)
 {
 	if (!Game)
-		return 0;
+		return -MDP_ERR_ROM_NOT_LOADED;
+	if (!ret_value)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	switch (memID)
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFF;
-			return MEM_RW_8_BE(Rom_Data, address);
+			*ret_value = MEM_RW_8_BE(Rom_Data, address);
+			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFF;
-			return MEM_RW_8_BE(Ram_68k, address);
+			*ret_value = MEM_RW_8_BE(Ram_68k, address);
+			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFF;
-			return MEM_RW_8_BE(VRam, address);
+			*ret_value = MEM_RW_8_BE(VRam, address);
+			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7F;
-			return MEM_RW_8_BE(CRam, address);
+			*ret_value = MEM_RW_8_BE(CRam, address);
+			break;
 		default:
 			/* Unknown memory ID. */
 			return -1;
 	}
+	
+	return MDP_ERR_OK;
 }
 
-uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address)
+int MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address, uint16_t *ret_value)
 {
 	if (!Game)
-		return 0;
+		return -MDP_ERR_ROM_NOT_LOADED;
+	if (!ret_value)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
 	
@@ -120,26 +133,34 @@ uint16_t MDP_FNCALL mdp_host_mem_read_16(int memID, uint32_t address)
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFE;
-			return MEM_RW_16(Rom_Data, address);
+			*ret_value = MEM_RW_16(Rom_Data, address);
+			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFE;
-			return MEM_RW_16(Ram_68k, address);
+			*ret_value = MEM_RW_16(Ram_68k, address);
+			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFE;
-			return MEM_RW_16(VRam, address);
+			*ret_value = MEM_RW_16(VRam, address);
+			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7E;
-			return MEM_RW_16(CRam, address);
+			*ret_value = MEM_RW_16(CRam, address);
+			break;
 		default:
 			/* Unknown memory ID. */
 			return -1;
 	}
+	
+	return MDP_ERR_OK;
 }
 
-uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
+int MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address, uint32_t *ret_value)
 {
 	if (!Game)
-		return 0;
+		return -MDP_ERR_ROM_NOT_LOADED;
+	if (!ret_value)
+		return -MDP_ERR_INVALID_PARAMETERS;
 	if (address & 1)
 		return -MDP_ERR_MEM_UNALIGNED;
 	
@@ -147,27 +168,35 @@ uint32_t MDP_FNCALL mdp_host_mem_read_32(int memID, uint32_t address)
 	{
 		case MDP_MEM_MD_ROM:
 			address &= 0x003FFFFE;
-			return MEM_READ_32_BE(Rom_Data, address);
+			*ret_value = MEM_READ_32_BE(Rom_Data, address);
+			break;
 		case MDP_MEM_MD_RAM:
 			address &= 0x0000FFFE;
-			return MEM_READ_32_BE(Ram_68k, address);
+			*ret_value = MEM_READ_32_BE(Ram_68k, address);
+			break;
 		case MDP_MEM_MD_VRAM:
 			address &= 0x0000FFFE;
-			return MEM_READ_32_BE(VRam, address);
+			*ret_value = MEM_READ_32_BE(VRam, address);
+			break;
 		case MDP_MEM_MD_CRAM:
 			address &= 0x7E;
-			return MEM_READ_32_BE(CRam, address);
+			*ret_value = MEM_READ_32_BE(CRam, address);
+			break;
 		default:
 			/* Unknown memory ID. */
 			return -1;
 	}
+	
+	return MDP_ERR_OK;
 }
 
 
 /** Memory Write Functions **/
 
-int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
+int MDP_FNCALL mdp_host_mem_write_8(mdp_t *plugin, int memID, uint32_t address, uint8_t data)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	ice = 0;
@@ -201,8 +230,10 @@ int MDP_FNCALL mdp_host_mem_write_8(int memID, uint32_t address, uint8_t data)
 	return MDP_ERR_OK;
 }
 
-int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
+int MDP_FNCALL mdp_host_mem_write_16(mdp_t *plugin, int memID, uint32_t address, uint16_t data)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
@@ -238,8 +269,10 @@ int MDP_FNCALL mdp_host_mem_write_16(int memID, uint32_t address, uint16_t data)
 	return MDP_ERR_OK;
 }
 
-int MDP_FNCALL mdp_host_mem_write_32(int memID, uint32_t address, uint32_t data)
+int MDP_FNCALL mdp_host_mem_write_32(mdp_t *plugin, int memID, uint32_t address, uint32_t data)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
@@ -526,8 +559,10 @@ static inline void mdp_host_mem_write_block_8_le(uint8_t *ptr, uint32_t address,
 	}
 }
 
-int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *data, uint32_t length)
+int MDP_FNCALL mdp_host_mem_write_block_8(mdp_t *plugin, int memID, uint32_t address, uint8_t *data, uint32_t length)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	ice = 0;
@@ -591,8 +626,10 @@ int MDP_FNCALL mdp_host_mem_write_block_8(int memID, uint32_t address, uint8_t *
 }
 
 /* TODO: Test this function. */
-int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t *data, uint32_t length)
+int MDP_FNCALL mdp_host_mem_write_block_16(mdp_t *plugin, int memID, uint32_t address, uint16_t *data, uint32_t length)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
@@ -647,8 +684,10 @@ int MDP_FNCALL mdp_host_mem_write_block_16(int memID, uint32_t address, uint16_t
 }
 
 
-int MDP_FNCALL mdp_host_mem_write_block_32(int memID, uint32_t address, uint32_t *data, uint32_t length)
+int MDP_FNCALL mdp_host_mem_write_block_32(mdp_t *plugin, int memID, uint32_t address, uint32_t *data, uint32_t length)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (address & 1)
@@ -729,8 +768,10 @@ static int mdp_host_mem_size_set_MD_ROM(unsigned int size)
 	return MDP_ERR_OK;
 }
 
-int MDP_FNCALL mdp_host_mem_size_set(int memID, unsigned int size)
+int MDP_FNCALL mdp_host_mem_size_set(mdp_t *plugin, int memID, unsigned int size)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	

@@ -26,6 +26,7 @@
 
 // C includes.
 #include <stdint.h>
+#include "macros/unused.h"
 
 #include "reg_set_all.h"
 #include "mdp/mdp_error.h"
@@ -48,8 +49,10 @@ extern int ice;
  * @param reg_struct Pointer to register structure for the specific IC.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_reg_set_all(int icID, void *reg_struct)
+int MDP_FNCALL mdp_host_reg_set_all(mdp_t *plugin, int icID, void *reg_struct)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	if (!reg_struct)

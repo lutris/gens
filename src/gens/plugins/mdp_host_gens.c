@@ -26,6 +26,7 @@
 
 // Main window.
 #include "gens/gens_window.h"
+#include "macros/unused.h"
 
 // C includes.
 #include <stdio.h>

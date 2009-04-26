@@ -26,6 +26,7 @@
 
 // C includes.
 #include <stdint.h>
+#include "macros/unused.h"
 
 #include "reg_set.h"
 #include "mdp/mdp_error.h"
@@ -304,13 +305,16 @@ static int mdp_host_reg_set_z80(int regID, uint32_t new_value)
 
 /**
  * mdp_host_reg_set(): Set a register.
+ * @param plugin Plugin requesting register set.
  * @param icID IC ID.
  * @param regID Register ID.
  * @param new_value New value for the register.
  * @return MDP error code.
  */
-int MDP_FNCALL mdp_host_reg_set(int icID, int regID, uint32_t new_value)
+int MDP_FNCALL mdp_host_reg_set(mdp_t *plugin, int icID, int regID, uint32_t new_value)
 {
+	GENS_UNUSED_PARAMETER(plugin);
+	
 	if (!Game)
 		return -MDP_ERR_ROM_NOT_LOADED;
 	
