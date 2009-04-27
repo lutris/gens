@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 int Init_32X(ROM_t* MD_ROM);
-void Reset_32X();
+void Reset_32X(void);
 int Do_32X_VDP_Only(void);
 int Do_32X_Frame_No_VDP(void);
 int Do_32X_Frame(void);
