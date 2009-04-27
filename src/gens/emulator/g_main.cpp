@@ -386,15 +386,6 @@ void GensMainLoop(void)
 			{
 				// EMULATION PAUSED
 				
-				// TODO: This doesn't work properly if the image isn't redrawn to MD_Screen / MD_Screen32.
-				/*
-				if (Paused && Video.pauseTint)
-				{
-					// Emulation is paused.
-					Pause_Screen();
-				}
-				*/
-				
 				vdraw_flip();
 				GensUI::sleep(100);
 			}

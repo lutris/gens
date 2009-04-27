@@ -60,6 +60,9 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
+// Video effects.
+#include "v_effects.hpp"
+
 // Aligned malloc().
 #include "macros/malloc_align.h"
 
@@ -562,6 +565,12 @@ static int vdraw_sdl_gl_flip(void)
 			vdraw_blitFS(&vdraw_rInfo);
 		else
 			vdraw_blitW(&vdraw_rInfo);
+	}
+	
+	// Apply the pause tint, if necessary.
+	if (Paused && Video.pauseTint)
+	{
+		veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
 	}
 	
 	// Draw the message and/or FPS counter.

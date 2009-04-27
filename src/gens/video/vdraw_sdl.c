@@ -60,6 +60,9 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
+// Video effects.
+#include "v_effects.hpp"
+
 
 // Function prototypes.
 static int	vdraw_sdl_init(void);
@@ -305,6 +308,12 @@ static int vdraw_sdl_flip(void)
 			vdraw_blitFS(&vdraw_rInfo);
 		else
 			vdraw_blitW(&vdraw_rInfo);
+	}
+	
+	// Apply the pause tint, if necessary.
+	if (Paused && Video.pauseTint)
+	{
+		veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
 	}
 	
 	// Draw the message and/or FPS counter.
