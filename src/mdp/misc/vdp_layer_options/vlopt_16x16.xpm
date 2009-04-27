@@ -1,0 +1,31 @@
+/* XPM */
+static const char *vlopt_icon_xpm_16x16[] =
+{
+"16 16 10 1",
+"g c #000000",
+"d c #005f7a",
+"c c #00a8db",
+"b c #17c5ff",
+"# c #384f00",
+"a c #71fff8",
+". c #73a400",
+"f c #933d00",
+"h c #a7e900",
+"e c #ff6600",
+".#.#.#.#.#abcccd",
+"#.#.#.#.##bbabbd",
+".#.#.#.#.#ccbebd",
+"#.#.#.#.##bbeebd",
+".#.#.#.#.#aeffed",
+"#.aaaaaaaaaaaagd",
+".#aggggggggggag#",
+"#.ageffeeefffag#",
+".#agfffffffffag#",
+"#.agdddddddddag#",
+"hhagaaaabaabaagh",
+"#.agcccbabbabag.",
+".#agcccccccccag#",
+"#.aaaaaaaaaaaag.",
+".#gggggggggggg##",
+"################"
+};

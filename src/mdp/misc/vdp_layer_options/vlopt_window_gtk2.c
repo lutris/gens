@@ -32,6 +32,10 @@
 #include "vlopt_plugin.h"
 #include "vlopt.h"
 
+// XPM icons.
+#include "vlopt_16x16.xpm"
+#include "vlopt_32x32.xpm"
+
 // MDP error codes.
 #include "mdp/mdp_error.h"
 
@@ -76,6 +80,26 @@ void vlopt_window_show(void *parent)
 	gtk_window_set_resizable(GTK_WINDOW(vlopt_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(vlopt_window), GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_dialog_set_has_separator(GTK_DIALOG(vlopt_window), FALSE);
+	
+	// Add the window icons.
+	GList *icon_list = NULL;
+	GdkPixbuf *icon_pixbuf_16, *icon_pixbuf_32;
+	
+	// Load the 16x16 icon.
+	icon_pixbuf_16 = gdk_pixbuf_new_from_xpm_data(vlopt_icon_xpm_16x16);
+	icon_list = g_list_append(icon_list, icon_pixbuf_16);
+	
+	// Load the 32x32 icon.
+	icon_pixbuf_32 = gdk_pixbuf_new_from_xpm_data(vlopt_icon_xpm_32x32);
+	icon_list = g_list_append(icon_list, icon_pixbuf_32);
+	
+	// Set the icon list.
+	gtk_window_set_icon_list(GTK_WINDOW(vlopt_window), icon_list);
+	
+	// Unreference everything.
+	g_list_free(icon_list);
+	g_object_unref(icon_pixbuf_16);
+	g_object_unref(icon_pixbuf_32);
 	
 	// Callbacks for if the window is closed.
 	g_signal_connect((gpointer)vlopt_window, "delete_event",

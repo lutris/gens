@@ -25,6 +25,9 @@ if GENS_UI_GTK
 mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_gtk2.c
 mdp_misc_vdp_layer_options_la_CFLAGS	+= @GTK_CFLAGS@
 mdp_misc_vdp_layer_options_la_LIBADD	 = @GTK_LIBS@
+noinst_HEADERS += \
+		vlopt_16x16.xpm \
+		vlopt_32x32.xpm
 endif
 
 if GENS_UI_WIN32
