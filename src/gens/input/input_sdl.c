@@ -351,7 +351,7 @@ unsigned int input_sdl_get_key(void)
  * input_sdl_update(): Update the input subsystem.
  * @return 0 on success; non-zero on error.
  */
-int input_sdl_update(void)
+static int input_sdl_update(void)
 {
 	// Check for SDL events
 	SDL_Event event;
