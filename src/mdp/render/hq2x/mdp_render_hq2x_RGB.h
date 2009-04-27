@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] hq2x renderer. (16-bit RGB to YUV lookup table)             *
+ * MDP: hq2x renderer. (RGB lookup tables)                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef _MDP_RENDER_HQ2X_RGB16TOYUV_H
-#define _MDP_RENDER_HQ2X_RGB16TOYUV_H
+#ifndef _MDP_RENDER_HQ2X_RGB_H
+#define _MDP_RENDER_HQ2X_RGB_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,10 +30,11 @@ extern "C" {
 
 #include "mdp/mdp_fncall.h"
 
+DLL_LOCAL int* MDP_FNCALL mdp_render_hq2x_build_RGB16to32(void);
 DLL_LOCAL int* MDP_FNCALL mdp_render_hq2x_build_RGB16toYUV(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _MDP_RENDER_HQ2X_RGB16TOYUV_H */
+#endif /* _MDP_RENDER_HQ2X_RGB_H */

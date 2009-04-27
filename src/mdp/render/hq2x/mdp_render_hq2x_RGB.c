@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] hq2x renderer. (16-bit RGB to YUV lookup table)             *
+ * MDP: hq2x renderer. (RGB lookup tables)                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -28,7 +28,25 @@
 
 
 /**
- * mdp_render_hq2x_build_rgb16toyuv(): Build a 16-bit RGB to YUV table.
+ * mdp_render_hq2x_build_RGB16to32(): Build a 16-bit RGB to 32-bit RGB table.
+ * @return RGB16to32.
+ */
+int* MDP_FNCALL mdp_render_hq2x_build_RGB16to32(void)
+{
+	int *RGB16to32 = (int*)(malloc(65536 * sizeof(int)));
+	
+	// Initialize the 16-bit to 32-bit conversion table.
+	int i;
+	for (i = 0; i < 65536; i++)
+		RGB16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
+	
+	// Return the pointer.
+	return RGB16to32;
+}
+
+
+/**
+ * mdp_render_hq2x_build_RGB16toYUV(): Build a 16-bit RGB to YUV table.
  * @return RGB16toYUV.
  */
 int* MDP_FNCALL mdp_render_hq2x_build_RGB16toYUV(void)

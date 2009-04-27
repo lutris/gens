@@ -45,9 +45,9 @@
 
 // MDP Host Services.
 static mdp_host_t *mdp_render_hq4x_host_srv;
-int *mdp_render_hq4x_LUT16to32 = NULL;
 
-// 16-bit RGB to YUV lookup table.
+// RGB lookup tables.
+int *mdp_render_hq4x_RGB16to32 = NULL;
 int *mdp_render_hq4x_RGB16toYUV = NULL;
 
 
@@ -85,12 +85,9 @@ int MDP_FNCALL mdp_render_hq4x_end(void)
 	// Unregister the renderer.
 	mdp_render_hq4x_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
-	// If the LUT16to32 pointer was referenced, unreference it.
-	if (mdp_render_hq4x_LUT16to32)
-	{
-		mdp_render_hq4x_host_srv->ptr_unref(MDP_PTR_LUT16to32);
-		mdp_render_hq4x_LUT16to32 = NULL;
-	}
+	// If the RGB16to32 table was allocated, free it.
+	free(mdp_render_hq4x_RGB16to32);
+	mdp_render_hq4x_RGB16to32 = NULL;
 	
 	// If the RGB16toYUV table was allocated, free it.
 	free(mdp_render_hq4x_RGB16toYUV);
@@ -112,8 +109,8 @@ int MDP_FNCALL mdp_render_hq4x_cpp(mdp_render_info_t *render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
 	// Make sure the lookup tables are initialized.
-	if (!mdp_render_hq4x_LUT16to32)
-		mdp_render_hq4x_LUT16to32 = (int*)(mdp_render_hq4x_host_srv->ptr_ref(MDP_PTR_LUT16to32));
+	if (!mdp_render_hq4x_RGB16to32)
+		mdp_render_hq4x_RGB16to32 = mdp_render_hq4x_build_RGB16to32();
 	if (!mdp_render_hq4x_RGB16toYUV)
 		mdp_render_hq4x_RGB16toYUV = mdp_render_hq4x_build_RGB16toYUV();
 	

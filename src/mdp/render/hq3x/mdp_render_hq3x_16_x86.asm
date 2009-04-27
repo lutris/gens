@@ -24,7 +24,7 @@
 
 ; Symbol redefines for ELF.
 %ifdef __OBJ_ELF
-	%define	_mdp_render_hq3x_LUT16to32	mdp_render_hq3x_LUT16to32
+	%define	_mdp_render_hq3x_RGB16to32	mdp_render_hq3x_RGB16to32
 	%define	_mdp_render_hq3x_RGB16toYUV	mdp_render_hq3x_RGB16toYUV
 	%define	_mdp_render_hq3x_16_x86_mmx	mdp_render_hq3x_16_x86_mmx
 %endif
@@ -51,7 +51,7 @@ section .bss align=64
 	
 section .data align=64
 	
-	extern _mdp_render_hq3x_LUT16to32
+	extern _mdp_render_hq3x_RGB16to32
 	extern _mdp_render_hq3x_RGB16toYUV
 	
 ; Constants
@@ -220,7 +220,7 @@ section .text align=64
 %endmacro
 
 %macro Interp3 2
-	mov		ecx, [_mdp_render_hq3x_LUT16to32]
+	mov		ecx, [_mdp_render_hq3x_RGB16to32]
 	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
 	movd		mm2, [ecx + edx * 4]
@@ -239,7 +239,7 @@ section .text align=64
 %endmacro
 
 %macro Interp4 3
-	mov		ecx, [_mdp_render_hq3x_LUT16to32]
+	mov		ecx, [_mdp_render_hq3x_RGB16to32]
 	movd		mm1, [ecx + eax * 4]
 	mov		edx, %2
 	movd		mm2, [ecx + edx * 4]
