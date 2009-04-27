@@ -385,9 +385,8 @@ void GensMainLoop(void)
 			else
 			{
 				// EMULATION PAUSED
-				
 				vdraw_flip();
-				GensUI::sleep(100);
+				GensUI::sleep(250);
 			}
 		}
 		else
@@ -422,7 +421,7 @@ void GensMainLoop(void)
 			else
 			{
 				// Blank screen. (MAX IDLE)
-				GensUI::sleep(200);
+				GensUI::sleep(250);
 			}
 		}
 	}
