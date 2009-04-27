@@ -145,7 +145,8 @@ uint16_t	vdraw_border_color_16 = ~0;
 uint32_t	vdraw_border_color_32 = ~0;
 
 // 16-bit color to 32-bit color image conversion.
-static int	*vdraw_LUT16to32 = NULL;
+#include "vdraw_RGB.h"
+static uint32_t	*vdraw_RGB16to32 = NULL;
 uint16_t	*vdraw_16to32_surface;
 int		vdraw_16to32_scale;
 int		vdraw_16to32_pitch;
@@ -180,12 +181,9 @@ int vdraw_end(void)
 		vdraw_cur_backend = NULL;
 	}
 	
-	if (vdraw_LUT16to32)
-	{
-		// Unreference LUT16to32.
-		mdp_host_ptr_unref(MDP_PTR_LUT16to32);
-		vdraw_LUT16to32 = NULL;
-	}
+	// If the RGB16to32 table was allocated, free it.
+	free(vdraw_RGB16to32);
+	vdraw_RGB16to32 = NULL;
 	
 	// Internal surface for rendering the 16-bit temporary image.
 	if (vdraw_16to32_surface)
@@ -320,8 +318,8 @@ void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
 			 unsigned int pitch_dest, unsigned int pitch_src)
 {
 	// Make sure the lookup table is referenced.
-	if (!vdraw_LUT16to32)
-		vdraw_LUT16to32 = (int*)(mdp_host_ptr_ref(MDP_PTR_LUT16to32));
+	if (!vdraw_RGB16to32)
+		vdraw_RGB16to32 = vdraw_build_RGB16to32();
 	
 	const int pitchDestDiff = ((pitch_dest / 4) - width);
 	const int pitchSrcDiff = ((pitch_src / 2) - width);
@@ -334,10 +332,10 @@ void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
 	{
 		for (x = 0; x < width; x++)
 		{
-			*(dest + 0) = vdraw_LUT16to32[*(src + 0)];
-			*(dest + 1) = vdraw_LUT16to32[*(src + 1)];
-			*(dest + 2) = vdraw_LUT16to32[*(src + 2)];
-			*(dest + 3) = vdraw_LUT16to32[*(src + 3)];
+			*(dest + 0) = vdraw_RGB16to32[*(src + 0)];
+			*(dest + 1) = vdraw_RGB16to32[*(src + 1)];
+			*(dest + 2) = vdraw_RGB16to32[*(src + 2)];
+			*(dest + 3) = vdraw_RGB16to32[*(src + 3)];
 			
 			dest += 4;
 			src += 4;

@@ -65,14 +65,6 @@
 // Text drawing.
 #include "video/vdraw_text.hpp"
 
-// MDP_PTR functions.
-static inline int* mdp_host_ptr_ref_LUT16to32(void);
-static inline void mdp_host_ptr_unref_LUT16to32(void);
-
-// MDP_PTR variables.
-static int* mdp_ptr_LUT16to32 = NULL;
-static int  mdp_ptr_LUT16to32_count = 0;
-
 // Text drawing functions.
 static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, ...);
 
@@ -80,9 +72,6 @@ static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, .
 mdp_host_t Gens_MDP_Host =
 {
 	.interfaceVersion	= MDP_INTERFACE_VERSION,
-	
-	.ptr_ref		= mdp_host_ptr_ref,
-	.ptr_unref		= mdp_host_ptr_unref,
 	
 	.val_set		= mdp_host_val_set,
 	.val_get		= mdp_host_val_get,
@@ -146,87 +135,6 @@ mdp_host_t Gens_MDP_Host =
 	.z_get_file		= mdp_host_z_get_file,
 	.z_close		= mdp_host_z_close
 };
-
-
-/**
- * mdp_host_ptr_ref(): Reference a pointer.
- * @param ptrID Pointer ID.
- * @return Pointer.
- */
-void* MDP_FNCALL mdp_host_ptr_ref(uint32_t ptrID)
-{
-	switch (ptrID)
-	{
-		case MDP_PTR_LUT16to32:
-			return (void*)mdp_host_ptr_ref_LUT16to32();
-		default:
-			fprintf(stderr, "%s: Invalid ptrID: 0x%08X\n", __func__, ptrID);
-			return NULL;
-	}
-}
-
-/**
- * mdp_host_ptr_unref(): Unreference a pointer.
- * @param ptrID Pointer ID.
- * @return Error code.
- */
-int MDP_FNCALL mdp_host_ptr_unref(uint32_t ptrID)
-{
-	switch (ptrID)
-	{
-		case MDP_PTR_LUT16to32:
-			mdp_host_ptr_unref_LUT16to32();
-			break;
-		default:
-			fprintf(stderr, "%s: Unknown ptrID: 0x%08X\n", __func__, ptrID);
-			return -MDP_ERR_UNKNOWN_PTRID;
-			break;
-	}
-	
-	return MDP_ERR_OK;
-}
-
-
-/**
- * mdp_host_ptr_ref_LUT16to32(): Get a reference for LUT16to32.
- * @return LUT16to32.
- */
-static inline int* mdp_host_ptr_ref_LUT16to32(void)
-{
-	if (!mdp_ptr_LUT16to32)
-	{
-		// Allocate memory for the lookup table.
-		mdp_ptr_LUT16to32 = (int*)(malloc(65536 * sizeof(int)));
-		
-		// Initialize the 16-bit to 32-bit conversion table.
-		int i;
-		for (i = 0; i < 65536; i++)
-			mdp_ptr_LUT16to32[i] = ((i & 0xF800) << 8) + ((i & 0x07E0) << 5) + ((i & 0x001F) << 3);
-	}
-	
-	// Increment the reference counter.
-	mdp_ptr_LUT16to32_count++;
-	
-	// Return the pointer.
-	return mdp_ptr_LUT16to32;
-}
-
-/**
- * mdp_host_ptr_unref_LUT16to32(): Unreference LUT16to32.
- * @return LUT16to32.
- */
-static inline void mdp_host_ptr_unref_LUT16to32(void)
-{
-	// Decrement the reference counter.
-	mdp_ptr_LUT16to32_count--;
-	
-	if (mdp_ptr_LUT16to32_count <= 0)
-	{
-		// All references are gone. Free the lookup table.
-		free(mdp_ptr_LUT16to32);
-		mdp_ptr_LUT16to32 = NULL;
-	}
-}
 
 
 /**
