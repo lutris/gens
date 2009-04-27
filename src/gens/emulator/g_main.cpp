@@ -385,16 +385,15 @@ void GensMainLoop(void)
 			else
 			{
 				// EMULATION PAUSED
-				if (_32X_Started)
-					Do_32X_VDP_Only();
-				else
-					Do_VDP_Only();
 				
+				// TODO: This doesn't work properly if the image isn't redrawn to MD_Screen / MD_Screen32.
+				/*
 				if (Paused && Video.pauseTint)
 				{
 					// Emulation is paused.
 					Pause_Screen();
 				}
+				*/
 				
 				vdraw_flip();
 				GensUI::sleep(100);
