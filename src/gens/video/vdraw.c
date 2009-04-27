@@ -535,10 +535,13 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	
 	// If paused, redraw the MD screen.
 	// NOTE: This will cause issues with raster effects.
-	if (_32X_Started)
-		Do_32X_VDP_Only();
-	else
-		Do_VDP_Only();
+	if (!(Active && !Paused))
+	{
+		if (_32X_Started)
+			Do_32X_VDP_Only();
+		else
+			Do_VDP_Only();
+	}
 	
 	// Reset the previous Fast Blur state.
 	vdraw_prev_fast_blur = FALSE;
