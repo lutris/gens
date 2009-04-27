@@ -20,11 +20,11 @@ mdp_render_hq4x_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
 mdp_render_hq4x_la_SOURCES = \
 		mdp_render_hq4x_plugin.c \
 		mdp_render_hq4x.c \
-		mdp_render_hq4x_RGB16toYUV.c \
+		mdp_render_hq4x_RGB.c \
 		mdp_render_hq4x_16_x86.asm
 
 noinst_HEADERS = \
 		mdp_render_hq4x_plugin.h \
 		mdp_render_hq4x.h \
-		mdp_render_hq4x_RGB16toYUV.h \
+		mdp_render_hq4x_RGB.h \
 		mdp_render_hq4x_x86.h

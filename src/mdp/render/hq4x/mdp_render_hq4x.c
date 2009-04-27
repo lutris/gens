@@ -27,7 +27,7 @@
 
 #include "mdp_render_hq4x.h"
 #include "mdp_render_hq4x_plugin.h"
-#include "mdp_render_hq4x_RGB16toYUV.h"
+#include "mdp_render_hq4x_RGB.h"
 
 // C includes.
 #include <stdint.h>

@@ -1,10 +1,10 @@
 /***************************************************************************
- * Gens: [MDP] hq2x renderer. (16-bit RGB to YUV lookup table)             *
+ * Gens: [MDP] hq3x renderer. (16-bit RGB to YUV lookup table)             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
- * hq2x Copyright (c) 2003 by Maxim Stepin                                 *
+ * hq3x Copyright (c) 2003 by Maxim Stepin                                 *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU Lesser General Public License as published   *
@@ -21,17 +21,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "mdp_render_hq2x_RGB16toYUV.h"
+#include "mdp_render_hq3x_RGB.h"
 
 // C includes.
 #include <stdlib.h>
 
 
 /**
- * mdp_render_hq2x_build_rgb16toyuv(): Build a 16-bit RGB to YUV table.
+ * mdp_render_hq3x_build_rgb16toyuv(): Build a 16-bit RGB to YUV table.
  * @return RGB16toYUV.
  */
-int* MDP_FNCALL mdp_render_hq2x_build_RGB16toYUV(void)
+int* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void)
 {
 	int *RGB16toYUV = (int*)(malloc(65536 * sizeof(int)));
 	
