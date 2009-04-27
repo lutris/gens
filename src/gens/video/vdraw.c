@@ -451,8 +451,8 @@ int vdraw_flip(void)
 		}
 	}
 	
-	// Blur the screen if requested.
-	if (vdraw_prop_fast_blur)
+	// Blur the screen if requested. (unless paused/inactive)
+	if (vdraw_prop_fast_blur && Active && !Paused)
 		Fast_Blur();
 	
 	// Check if the display width changed.
