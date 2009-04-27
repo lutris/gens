@@ -74,6 +74,16 @@ Release 7 introduces the following new features:
 
 - WAV dumping has been reimplemented.
 
+- ROM History now caches the ROM type (MD/MCD/32X), so it doesn't have to check
+  the ROM type every time the ROM History menu is rebuilt. This improves
+  performance significantly if some ROM images were loaded from network shares.
+
+- ROM History now keeps track of compressed files inside of multi-file
+  archives. For example, if you have a 7z archive containing several different
+  versions of a game, selecting version 1 will result in a ROM History entry
+  for that specific version, and selecting version 2 will result in another
+  ROM History entry.
+
 - Added initial support for the "Palette Select" bit in VDP register 0.
   If the "Palette Select" bit is cleared, only the LSBs of each color component
   in CRAM is used to determine the colors to display, resulting in a maximum of
@@ -109,16 +119,6 @@ Release 7 fixes the following bugs:
     This may break some badly-written hacks.
 
   - DMA operations now wrap on a 128k boundary. This bug was reported by TmEE.
-
-- ROM History now caches the ROM type (MD/MCD/32X), so it doesn't have to check
-  the ROM type every time the ROM History menu is rebuilt. This improves
-  performance significantly if some ROM images were loaded from network shares.
-
-- ROM History now keeps track of compressed files inside of multi-file
-  archives. For example, if you have a 7z archive containing several different
-  versions of a game, selecting version 1 will result in a ROM History entry
-  for that specific version, and selecting version 2 will result in another
-  ROM History entry.
 
 - The VDP H_Int register is now initialized to 0xFF. This fixes Sik's test ROM
   that produced "rain" on Gens, but not on Regen and the actual hardware.
