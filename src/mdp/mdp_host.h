@@ -33,13 +33,6 @@
 extern "C" {
 #endif
 
-/* MDP_PTR: Pointer IDs. */
-typedef enum _MDP_PTR
-{
-	MDP_PTR_NULL		= 0,
-	MDP_PTR_LUT16to32	= 1
-} MDP_PTR;
-
 /* MDP_VAL: Value IDs. */
 typedef enum _MDP_VAL
 {
@@ -105,13 +98,6 @@ typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, const char *buf);
 typedef struct PACKED _mdp_host_t
 {
 	const uint32_t interfaceVersion;
-	
-	/**
-	 * ptr_ref(): Get a reference for a pointer.
-	 * ptr_unref(): Unreference a pointer.
-	 */
-	void* (MDP_FNCALL *ptr_ref)(uint32_t ptrID);
-	int   (MDP_FNCALL *ptr_unref)(uint32_t ptrID);
 	
 	/**
 	 * val_set(), val_get(): Set or get int values.
