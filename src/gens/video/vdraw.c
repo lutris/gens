@@ -153,7 +153,7 @@ int		vdraw_16to32_scale;
 int		vdraw_16to32_pitch;
 
 // Previous Fast Blur state.
-static BOOL	vdraw_prev_fast_blur = FALSE;
+BOOL		vdraw_prev_fast_blur = FALSE;
 
 
 /**
@@ -474,6 +474,17 @@ int vdraw_flip(void)
 	}
 	else
 	{
+		if (vdraw_prev_fast_blur && !(Active && !Paused))
+		{
+			// Fast Blur was enabled previously.
+			// Paused; redraw the MD screen.
+			// NOTE: This will cause issues with raster effects.
+			if (_32X_Started)
+				Do_32X_VDP_Only();
+			else
+				Do_VDP_Only();
+		}
+		
 		vdraw_prev_fast_blur = FALSE;
 	}
 	

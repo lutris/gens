@@ -180,6 +180,9 @@ void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
 			 unsigned int width, unsigned int height,
 			 unsigned int pitch_dest, unsigned int pitch_src);
 
+// Previous Fast Blur state.
+extern BOOL	vdraw_prev_fast_blur;
+
 #ifdef __cplusplus
 }
 #endif
