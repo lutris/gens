@@ -25,13 +25,14 @@
 #define _MDP_RENDER_HQ3X_RGB_H
 
 #include "mdp/mdp_fncall.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-DLL_LOCAL int* MDP_FNCALL mdp_render_hq3x_build_RGB16to32(void);
-DLL_LOCAL int* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void);
+DLL_LOCAL uint32_t* MDP_FNCALL mdp_render_hq3x_build_RGB16to32(void);
+DLL_LOCAL uint32_t* MDP_FNCALL mdp_render_hq3x_build_RGB16toYUV(void);
 
 #ifdef __cplusplus
 }

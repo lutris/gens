@@ -47,8 +47,8 @@
 static mdp_host_t *mdp_render_hq4x_host_srv;
 
 // RGB lookup tables.
-int *mdp_render_hq4x_RGB16to32 = NULL;
-int *mdp_render_hq4x_RGB16toYUV = NULL;
+uint32_t *mdp_render_hq4x_RGB16to32 = NULL;
+uint32_t *mdp_render_hq4x_RGB16toYUV = NULL;
 
 
 // TODO: Proper 15-bit color support.

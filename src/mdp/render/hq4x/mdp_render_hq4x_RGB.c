@@ -31,9 +31,9 @@
  * mdp_render_hq4x_build_RGB16to32(): Build a 16-bit RGB to 32-bit RGB table.
  * @return RGB16to32.
  */
-int* MDP_FNCALL mdp_render_hq4x_build_RGB16to32(void)
+uint32_t* MDP_FNCALL mdp_render_hq4x_build_RGB16to32(void)
 {
-	int *RGB16to32 = (int*)(malloc(65536 * sizeof(int)));
+	uint32_t *RGB16to32 = (uint32_t*)(malloc(65536 * sizeof(uint32_t)));
 	
 	// Initialize the 16-bit to 32-bit conversion table.
 	int i;
@@ -49,9 +49,9 @@ int* MDP_FNCALL mdp_render_hq4x_build_RGB16to32(void)
  * mdp_render_hq4x_build_rgb16toyuv(): Build a 16-bit RGB to YUV table.
  * @return RGB16toYUV.
  */
-int* MDP_FNCALL mdp_render_hq4x_build_RGB16toYUV(void)
+uint32_t* MDP_FNCALL mdp_render_hq4x_build_RGB16toYUV(void)
 {
-	int *RGB16toYUV = (int*)(malloc(65536 * sizeof(int)));
+	uint32_t *RGB16toYUV = (uint32_t*)(malloc(65536 * sizeof(uint32_t)));
 	
 	// Initialize the 16-bit RGB to YUV conversion table.
 	int i, j, k, r, g, b, Y, u, v;

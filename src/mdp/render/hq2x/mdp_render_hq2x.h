@@ -24,20 +24,22 @@
 #ifndef MDP_RENDER_HQ2X_H
 #define MDP_RENDER_HQ2X_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "mdp/mdp.h"
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 DLL_LOCAL int MDP_FNCALL mdp_render_hq2x_init(mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_hq2x_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_render_hq2x_cpp(mdp_render_info_t *render_info);
 
-DLL_LOCAL extern int *mdp_render_hq2x_LUT16to32;
-DLL_LOCAL extern int *mdp_render_hq2x_RGB16toYUV;
+DLL_LOCAL extern uint32_t *mdp_render_hq2x_LUT16to32;
+DLL_LOCAL extern uint32_t *mdp_render_hq2x_RGB16toYUV;
 
 #ifdef __cplusplus
 }
