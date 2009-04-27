@@ -511,7 +511,6 @@ int vdraw_flip(void)
 	
 	// Flip the screen buffer.
 	return vdraw_cur_backend->flip();
-
 }
 
 
