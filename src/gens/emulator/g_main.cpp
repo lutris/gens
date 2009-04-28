@@ -386,7 +386,7 @@ void GensMainLoop(void)
 			{
 				// EMULATION PAUSED
 				vdraw_flip();
-				GensUI::sleep(100);
+				GensUI::sleep(250);
 			}
 		}
 		else
