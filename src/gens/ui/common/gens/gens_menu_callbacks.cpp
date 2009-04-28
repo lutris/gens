@@ -28,6 +28,8 @@
 #include "gens_menu.h"
 
 #include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
+
 #include "gens/gens_window_sync.hpp"
 #include "controller_config/cc_window.h"
 #include "bios_misc_files/bmf_window.hpp"
@@ -123,37 +125,30 @@ static int gens_menu_callback_HelpMenu(uint16_t menuID, uint16_t state);
  */
 int gens_common_menu_callback(uint16_t menuID, uint16_t state)
 {
+	// Force a wakeup.
+	GensUI::wakeup();
+	
 	// Determine which menu this menu item is from.
 	switch (menuID & 0xF000)
 	{
 		case IDM_FILE_MENU:
 			return gens_menu_callback_FileMenu(menuID, state);
-			break;
 		case IDM_GRAPHICS_MENU:
 			return gens_menu_callback_GraphicsMenu(menuID, state);
-			break;
 		case IDM_CPU_MENU:
 			return gens_menu_callback_CPUMenu(menuID, state);
-			break;
 		case IDM_SOUND_MENU:
 			return gens_menu_callback_SoundMenu(menuID, state);
-			break;
 		case IDM_OPTIONS_MENU:
 			return gens_menu_callback_OptionsMenu(menuID, state);
-			break;
 		case IDM_PLUGINS_MENU:
 			return gens_menu_callback_PluginsMenu(menuID, state);
-			break;
 		case IDM_HELP_MENU:
 			return gens_menu_callback_HelpMenu(menuID, state);
-			break;
 		default:
 			// Menu item not handled.
 			return 0;
 	}
-	
-	// Menu item not handled.
-	return 0;
 }
 
 

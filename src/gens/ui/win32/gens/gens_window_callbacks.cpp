@@ -25,6 +25,8 @@
 #endif
 
 #include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
+
 #include "gens_window_callbacks.hpp"
 #include "gens_window_sync.hpp"
 #include "emulator/g_md.hpp"
@@ -35,8 +37,6 @@
 
 // Unused Parameter macro.
 #include "macros/unused.h"
-
-#include "ui/gens_ui.hpp"
 
 #include "util/sound/gym.hpp"
 #include "util/file/rom.hpp"
@@ -261,6 +261,9 @@ static void on_gens_window_NonMenuCmd(HWND hWnd, UINT message, WPARAM wParam, LP
 	GENS_UNUSED_PARAMETER(hWnd);
 	GENS_UNUSED_PARAMETER(message);
 	GENS_UNUSED_PARAMETER(lParam);
+	
+	// Force a wakeup.
+	GensUI::wakeup();
 	
 	switch (LOWORD(wParam))
 	{
