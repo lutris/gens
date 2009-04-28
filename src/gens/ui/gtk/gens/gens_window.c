@@ -172,6 +172,10 @@ void gens_window_create(void)
 			 G_CALLBACK(gens_window_drag_data_received), NULL);
 	g_signal_connect(gens_window_sdlsock, "drag-drop",
 			 G_CALLBACK(gens_window_drag_drop), NULL);
+	
+	// Expose event.
+	g_signal_connect(gens_window_sdlsock, "expose-event",
+			 G_CALLBACK(gens_window_sdlsock_expose), NULL);
 }
 
 

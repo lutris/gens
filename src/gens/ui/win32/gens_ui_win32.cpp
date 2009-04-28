@@ -294,6 +294,7 @@ void GensUI::update(void)
  * @param ms Interval to sleep, in milliseconds.
  * @param noUpdate If true, don't check for GUI updates.
  */
+static bool sleeping = false;
 void GensUI::sleep(const int ms, const bool noUpdate)
 {
 	if (noUpdate)
@@ -304,12 +305,25 @@ void GensUI::sleep(const int ms, const bool noUpdate)
 	}
 	
 	// Sleep 5 ms, then check for messages.
+	sleeping = true;
 	int loops = ms / 5;
 	for (int i = 0; i < loops; i++)
 	{
 		Sleep(5);
 		update();
+		
+		if (!sleeping)
+			break;
 	}
+}
+
+
+/**
+ * wakeup(): Wakeup from sleep.
+ */
+void GensUI::wakeup(void)
+{
+	sleeping = false;
 }
 
 

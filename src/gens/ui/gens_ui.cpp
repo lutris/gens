@@ -125,3 +125,13 @@ void GensUI_update(void)
 {
 	GensUI::update();
 }
+
+
+/**
+ * GensUI_wakeup(): Wakeup from sleep.
+ * Wrapper function for C code.
+ */
+void GensUI_wakeup(void)
+{
+	GensUI::wakeup();
+}

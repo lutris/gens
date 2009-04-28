@@ -210,3 +210,17 @@ gboolean gens_window_focus_out(GtkWidget *widget, GdkEventFocus *event, gpointer
 	
 	return false;
 }
+
+
+/**
+ * gens_window_sdlsock_expose(): SDL socket expose event.
+ * @param widget GTK+ widget.
+ * @param event GDK expose event.
+ * @param user_data User data.
+ * @return True to stop other handlers from being invoked; false to allow the event to propagate.
+ */
+gboolean gens_window_sdlsock_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
+{
+	GensUI::wakeup();
+	return false;
+}

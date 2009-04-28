@@ -65,6 +65,7 @@ class GensUI
 		static void init(int *argc, char **argv[]);
 		static void update(void);
 		static void sleep(const int ms, const bool noUpdate = false);
+		static void wakeup(void);
 		
 		static void setWindowTitle(const string& title);
 		static void setWindowVisibility(const bool visibility);

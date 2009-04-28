@@ -49,6 +49,9 @@
 #include <SDL/SDL.h>
 #endif
 
+// Input handler.
+#include "input/input.h"
+
 
 // File Chooser function
 static string UI_GTK_FileChooser(const string& title, const string& initFile,
@@ -66,8 +69,8 @@ static void UI_GTK_AddFilter_GYMFile(GtkWidget* dialog);
 
 
 // Sleep handler
-bool sleeping;
-gboolean GensUI_GLib_SleepCallback(gpointer data);
+static bool sleeping;
+static gboolean GensUI_GLib_SleepCallback(gpointer data);
 
 
 /**
@@ -113,7 +116,7 @@ void GensUI::update(void)
  * @param data Pointer to data, specified in initial g_timeout_add() call.
  * @return FALSE to disable the timer.
  */
-gboolean GensUI_GLib_SleepCallback(gpointer data)
+static gboolean GensUI_GLib_SleepCallback(gpointer data)
 {
 	GENS_UNUSED_PARAMETER(data);
 	
@@ -143,7 +146,20 @@ void GensUI::sleep(const int ms, const bool noUpdate)
 	{
 		usleep(10000);
 		update();
+		
+		// SDL_PumpEvents() is needed to update video.
+		// SDL events are handled in the Input Handler.
+		input_update();
 	}
+}
+
+
+/**
+ * wakeup(): Wakeup from sleep.
+ */
+void GensUI::wakeup(void)
+{
+	sleeping = false;
 }
 
 
