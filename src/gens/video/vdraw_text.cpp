@@ -23,6 +23,7 @@
 #include "vdraw_text.hpp"
 #include "vdraw.h"
 #include "emulator/g_main.hpp"
+#include "ui/gens_ui.hpp"
 
 // C includes.
 #include <string.h>
@@ -398,6 +399,9 @@ void vdraw_text_write(const char* msg, const int duration)
 		vdraw_msg_time = GetTickCount() + duration;
 		vdraw_msg_visible = true;
 	}
+	
+	// Force a wakeup.
+	GensUI::wakeup();
 }
 
 
@@ -439,6 +443,9 @@ void vdraw_text_vsprintf(const int duration, const char* msg, va_list ap)
 		vdraw_msg_time = GetTickCount() + duration;
 		vdraw_msg_visible = true;
 	}
+	
+	// Force a wakeup.
+	GensUI::wakeup();
 }
 
 
@@ -451,5 +458,8 @@ void vdraw_msg_timer_update(void)
 	{
 		vdraw_msg_visible = false;
 		vdraw_msg_text[0] = 0x00;
+		
+		// Force a wakeup.
+		GensUI::wakeup();
 	}
 }
