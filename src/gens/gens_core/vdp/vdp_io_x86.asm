@@ -30,75 +30,28 @@ RD_Mode		equ 0
 WR_Mode		equ 1
 
 section .data align=64
-	
-	CD_Table:
-		dd 0x0005, 0x0009, 0x0000, 0x000A	; bits 0-2	= Location (0x00:WRONG, 0x01:VRAM, 0x02:CRAM, 0x03:VSRAM)
-		dd 0x0007, 0x000B, 0x0000, 0x0000	; bits 3-4	= Access   (0x00:WRONG, 0x04:READ, 0x08:WRITE)
-		dd 0x0006, 0x0000, 0x0000, 0x0000	; bits 8-11	= DMA MEM TO VRAM (0x0000:NO DMA, 0x0100:MEM TO VRAM, 0x0200: MEM TO CRAM, 0x0300: MEM TO VSRAM)
-		dd 0x0000, 0x0000, 0x0000, 0x0000	; bits 12	= DMA VRAM FILL (0x0000:NO DMA, 0x0400:VRAM FILL)
-		
-		dd 0x0005, 0x0009, 0x0000, 0x000A	; bits 13	= DMA VRAM COPY (0x0000:NO DMA, 0x0800:VRAM COPY)
-		dd 0x0007, 0x000B, 0x0000, 0x0000
-		dd 0x0006, 0x0000, 0x0000, 0x0000
-		dd 0x0000, 0x0000, 0x0000, 0x0000
-		
-		dd 0x0005, 0x0509, 0x0000, 0x020A
-		dd 0x0007, 0x030B, 0x0000, 0x0000
-		dd 0x0006, 0x0000, 0x0000, 0x0000
-		dd 0x0000, 0x0000, 0x0000, 0x0000
-		
-		;dd 0x0800, 0x0000, 0x0000, 0x0000
-		;dd 0x0000, 0x0000, 0x0000, 0x0000
-		;dd 0x0000, 0x0000, 0x0000, 0x0000
-		;dd 0x0000, 0x0000, 0x0000, 0x0000
-		
-		dd 0x0800, 0x0100, 0x0000, 0x0200
-		dd 0x0000, 0x0300, 0x0000, 0x0000
-		dd 0x0000, 0x0000, 0x0000, 0x0000
-		dd 0x0000, 0x0000, 0x0000, 0x0000
-	
-	align 64
-	
-	DMA_Timing_Table:
-		;dd 83,  167, 166,  83,
-		;dd 102, 205, 204, 102,
-		;dd 8,    16,  15,   8,
-		;dd 9,    18,  17,   9
-		
-		;dd 92,  167, 166,  83,
-		;dd 118, 205, 204, 102,
-		;dd 9,    16,  15,   8,
-		;dd 10,   18,  17,   9
-		
-		dd 83,  167, 166,  83,
-		dd 102, 205, 204, 102,
-		dd 8,    16,  15,   8,
-		dd 9,    18,  17,   9	
-	
-	; Symbol redefines for ELF
+	; External symbol redefines for ELF.
 	%ifdef __OBJ_ELF
+		%define _CD_Table		CD_Table
+		%define _DMA_Timing_Table	DMA_Timing_Table
+		
 		%define	_Genesis_Started	Genesis_Started
 		%define	_SegaCD_Started		SegaCD_Started
 		%define	__32X_Started		_32X_Started
+		
+		%define _Size_V_Scroll		Size_V_Scroll
+		%define _H_Scroll_Mask_Table	H_Scroll_Mask_Table
 	%endif
 	
-	global _Genesis_Started
-	_Genesis_Started:
-		dd 0
+	extern _CD_Table
+	extern _DMA_Timing_Table
 	
-	global _SegaCD_Started
-	_SegaCD_Started:
-		dd 0
+	extern _Genesis_Started
+	extern _SegaCD_Started
+	extern __32X_Started
 	
-	global __32X_Started
-	__32X_Started:
-		dd 0
-	
-	Size_V_Scroll:
-		dd 255, 511, 255, 1023
-	
-	H_Scroll_Mask_Table:
-		dd 0x0000, 0x0007, 0x01F8, 0x01FF
+	extern _Size_V_Scroll
+	extern _H_Scroll_Mask_Table
 	
 section .bss align=64
 	
@@ -559,11 +512,11 @@ section .text align=64
 		add	ebx, byte 8
 		
 	.Blanking:
-		mov	ecx, [DMA_Timing_Table + ebx * 4]
+		movzx	ecx, byte [_DMA_Timing_Table + ebx]
 		mov	eax, [_CPL_M68K]
 		sub	dword [_DMAT_Length], ecx
 		ja	short .DMA_Not_Finished
-			
+		
 			shl	eax, 16
 			mov	ebx, [_DMAT_Length]
 			xor	edx, edx
@@ -575,11 +528,11 @@ section .text align=64
 			shr	eax, 16
 			test	byte [_DMAT_Type], 2
 			jnz	short .DMA_68k_CRam_VSRam
-			
-			pop	edx
-			pop	ecx
-			pop	ebx
-			ret
+		
+		pop	edx
+		pop	ecx
+		pop	ebx
+		ret
 
 	.DMA_Not_Finished:
 		test	byte [_DMAT_Type], 2
@@ -956,7 +909,7 @@ section .text align=64
 		shr	ecx, 12				;		"		"
 		mov	[_Ctrl.Address], bx		; Ctrl.Address = Address de depart pour le port VDP Data
 		or	edx, ecx			; edx = CD
-		mov	eax, [CD_Table + edx]		; eax = Location & Read/Write
+		mov	eax, [_CD_Table + edx]		; eax = Location & Read/Write
 		mov	[_Ctrl.Access], al		; on stocke l'accés
 		
 		pop	edx
@@ -981,7 +934,7 @@ section .text align=64
 		shr	ecx, 12				;		"		"
 		mov	[_Ctrl.Address], bx		; Ctrl.Address = Address de depart pour le port VDP Data
 		or	edx, ecx			; edx = CD
-		mov	eax, [CD_Table + edx]		; eax = Location & Read/Write
+		mov	eax, [_CD_Table + edx]		; eax = Location & Read/Write
 		mov	byte [_Ctrl.Flag], 0		; on en a finit avec Address Set
 		test	ah, ah				; on teste si il y a transfert DMA
 		mov	[_Ctrl.Access], al		; on stocke l'accés
@@ -1366,7 +1319,7 @@ section .text align=64
 		
 		and	eax, 3
 		pop	ebx
-		mov	eax, [H_Scroll_Mask_Table + eax * 4]
+		mov	eax, [_H_Scroll_Mask_Table + eax * 4]
 		mov	byte [_V_Scroll_MMask], 0
 		mov	[_H_Scroll_Mask], eax
 		ret
@@ -1376,7 +1329,7 @@ section .text align=64
 	.VScroll_Cell:
 		and	eax, 3
 		pop	ebx
-		mov	eax, [H_Scroll_Mask_Table + eax * 4]
+		mov	eax, [_H_Scroll_Mask_Table + eax * 4]
 		mov	byte [_V_Scroll_MMask], 0x7E
 		mov	[_H_Scroll_Mask], eax
 		ret

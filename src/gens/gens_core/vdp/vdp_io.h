@@ -7,6 +7,17 @@
 extern "C" {
 #endif
 
+// Constant data.
+extern const uint32_t CD_Table[64];
+extern const uint8_t  DMA_Timing_Table[16];
+extern const uint32_t Size_V_Scroll[4];
+extern const uint32_t H_Scroll_Mask_Table[4];
+
+// System status.
+extern int Genesis_Started;
+extern int SegaCD_Started;
+extern int _32X_Started;
+
 struct Reg_VDP_Type
 {
 	unsigned int Set1;
@@ -42,9 +53,6 @@ extern uint16_t CRam[64];
 extern uint8_t  VSRam[256];
 extern uint32_t VSRam_Over[8];
 extern uint8_t  H_Counter_Table[512][2];
-extern int Genesis_Started;
-extern int SegaCD_Started;
-extern int _32X_Started;
 
 extern struct Reg_VDP_Type VDP_Reg;
 extern int VDP_Current_Line;
