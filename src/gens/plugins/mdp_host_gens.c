@@ -236,7 +236,7 @@ static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, .
 	// Print the message.
 	va_list ap;
 	va_start(ap, msg);
-	vdraw_text_vsprintf(duration, msg, ap);
+	vdraw_text_vprintf(duration, msg, ap);
 	va_end(ap);
 	
 	return MDP_ERR_OK;

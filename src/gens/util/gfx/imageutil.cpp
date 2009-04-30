@@ -494,7 +494,7 @@ int ImageUtil::screenShot(void)
 	fclose(img);
 	
 	if (rval == 1)
-		vdraw_text_sprintf(1500, "Screen shot %d saved", num);
+		vdraw_text_printf(1500, "Screen shot %d saved", num);
 	
 	return rval;
 }

@@ -127,7 +127,7 @@ void Options::setSaveSlot(const int newSaveSlot)
 	if (!access(filename.c_str(), F_OK))
 	{
 		// File exists.
-		vdraw_text_sprintf(1500, "SLOT %d [OCCUPIED]", Current_State);
+		vdraw_text_printf(1500, "SLOT %d [OCCUPIED]", Current_State);
 	}
 	else
 	{
@@ -135,12 +135,12 @@ void Options::setSaveSlot(const int newSaveSlot)
 		if (errno == ENOENT)
 		{
 			// File doesn't exist.
-			vdraw_text_sprintf(1500, "SLOT %d [EMPTY]", Current_State);
+			vdraw_text_printf(1500, "SLOT %d [EMPTY]", Current_State);
 		}
 		else
 		{
 			// Error checking the file.
-			vdraw_text_sprintf(1500, "SLOT %d [ERROR]", Current_State);
+			vdraw_text_printf(1500, "SLOT %d [ERROR]", Current_State);
 		}
 	}
 }
@@ -168,7 +168,7 @@ void Options::setFrameSkip(const int newFrameSkip)
 	Frame_Skip = newFrameSkip;
 	
 	if (Frame_Skip != -1)
-		vdraw_text_sprintf(1500, "Frame skip set to %d", Frame_Skip);
+		vdraw_text_printf(1500, "Frame skip set to %d", Frame_Skip);
 	else
 		vdraw_text_write("Frame skip set to Auto", 1500);
 }
@@ -788,7 +788,7 @@ void Options::setSoundSampleRate(const int newRate)
 			audio_set_sound_rate(44100);
 			break;
 	}
-	vdraw_text_sprintf(2500, "Sound rate set to %d Hz", audio_get_sound_rate());
+	vdraw_text_printf(2500, "Sound rate set to %d Hz", audio_get_sound_rate());
 	
 	// If sound isn't enabled, we're done.
 	if (!audio_get_enabled())
@@ -938,7 +938,7 @@ void Options::setSegaCD_SRAMSize(const int num)
 		BRAM_Ex_State |= 0x100;
 		BRAM_Ex_Size = num;
 		
-		vdraw_text_sprintf(1500, "SegaCD SRAM cart plugged in (%d KB)", (8 << num));
+		vdraw_text_printf(1500, "SegaCD SRAM cart plugged in (%d KB)", (8 << num));
 	}
 }
 
@@ -1082,7 +1082,7 @@ void Options::setBackend(VDRAW_BACKEND newBackend)
 	// Print a notice about the selected backend.
 	if (is_gens_running())
 	{
-		vdraw_text_sprintf(1500, "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
+		vdraw_text_printf(1500, "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
 	}
 }
 
@@ -1105,7 +1105,7 @@ void Options::setOpenGL_Resolution(int w, int h)
 	Video.Height_GL = h;
 	
 	// Print the resolution information.
-	vdraw_text_sprintf(1500, "Selected %dx%d resolution", w, h);
+	vdraw_text_printf(1500, "Selected %dx%d resolution", w, h);
 	
 	// If the current backend isn't OpenGL, don't do anything.
 	// TODO: Make this not platform-dependent.

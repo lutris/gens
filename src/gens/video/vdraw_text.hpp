@@ -64,9 +64,9 @@ void calc_transparency_mask(void);
 
 // Text write functions.
 void vdraw_text_write(const char* msg, const int duration);
-void vdraw_text_sprintf(const int duration, const char* msg, ...)
+void vdraw_text_printf(const int duration, const char* msg, ...)
 	__attribute__ ((format (printf, 2, 3)));
-void vdraw_text_vsprintf(const int duration, const char* msg, va_list ap)
+void vdraw_text_vprintf(const int duration, const char* msg, va_list ap)
 	__attribute__ ((format (printf, 2, 0)));
 void vdraw_msg_timer_update(void);
 

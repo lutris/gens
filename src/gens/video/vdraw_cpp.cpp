@@ -104,7 +104,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	rendFn = rendPlugin->blit;
 	
 	if (Rend != newMode)
-		vdraw_text_sprintf(1500, "Render Mode: %s", rendPlugin->tag);
+		vdraw_text_printf(1500, "Render Mode: %s", rendPlugin->tag);
 	else
 		reinit = true;
 	
