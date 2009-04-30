@@ -255,6 +255,8 @@ void Recalculate_Palettes(void)
 	// Set CRam_Flag.
 	CRam_Flag = 1;
 	
+	// TODO: Do_VDP_Only() / Do_32X_VDP_Only() if paused.
+	
 	// Force a wakeup.
 	GensUI::wakeup();
 }
