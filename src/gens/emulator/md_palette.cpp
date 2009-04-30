@@ -21,7 +21,10 @@
  ***************************************************************************/
 
 #include "md_palette.hpp"
+
 #include "g_main.hpp"
+#include "ui/gens_ui.hpp"
+
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_32x.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -236,9 +239,6 @@ static inline void T_Recalculate_Palettes(void)
 	{
 		cramAdjusted32X[i] = pal32X[_32X_VDP_CRam[i]];
 	}
-	
-	// Set CRam_Flag.
-	CRam_Flag = 1;
 }
 
 
@@ -251,4 +251,10 @@ void Recalculate_Palettes(void)
 	
 	// 32-bit color.
 	T_Recalculate_Palettes<uint32_t, MD_Palette32, _32X_Palette_32B, _32X_VDP_CRam_Ajusted32, 8, 8, 8, 0xFF, 0xFF, 0xFF>();
+	
+	// Set CRam_Flag.
+	CRam_Flag = 1;
+	
+	// Force a wakeup.
+	GensUI::wakeup();
 }
