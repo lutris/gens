@@ -34,7 +34,7 @@ using std::list;
 // Signal handler.
 #include "sighandler.h"
 
-#include "g_palette.h"
+#include "md_palette.hpp"
 #include "gens_ui.hpp"
 #include "parse.hpp"
 

@@ -46,7 +46,7 @@
 #include "gens_core/gfx/fastblur.hpp"
 #include "emulator/g_md.hpp"
 #include "emulator/g_32x.hpp"
-#include "emulator/g_palette.h"
+#include "emulator/md_palette.hpp"
 
 // Inline video functions.
 #include "v_inline.h"

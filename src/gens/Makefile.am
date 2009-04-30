@@ -75,7 +75,7 @@ gens_SOURCES = \
 		emulator/g_md.cpp \
 		emulator/g_mcd.cpp \
 		emulator/g_32x.cpp \
-		emulator/g_palette.c \
+		emulator/md_palette.cpp \
 		emulator/g_update.cpp \
 		emulator/parse.cpp \
 		emulator/options.cpp \
@@ -196,7 +196,7 @@ noinst_HEADERS = \
 		emulator/g_md.hpp \
 		emulator/g_mcd.hpp \
 		emulator/g_32x.hpp \
-		emulator/g_palette.h \
+		emulator/md_palette.hpp \
 		emulator/g_update.hpp \
 		emulator/parse.hpp \
 		emulator/options.hpp \

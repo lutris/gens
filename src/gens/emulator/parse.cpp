@@ -34,7 +34,7 @@
 
 #include "g_main.hpp"
 #include "util/file/save.hpp"
-#include "g_palette.h"
+#include "md_palette.hpp"
 #include "util/file/rom.hpp"
 
 #include "gens_core/cpu/68k/cpu_68k.h"

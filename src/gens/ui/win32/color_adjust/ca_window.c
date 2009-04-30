@@ -42,7 +42,7 @@
 #include "macros/unused.h"
 
 // Gens includes.
-#include "emulator/g_palette.h"
+#include "emulator/md_palette.hpp"
 #include "emulator/g_main.hpp"
 #include "emulator/g_update.hpp"
 #include "gens_core/vdp/vdp_io.h"
