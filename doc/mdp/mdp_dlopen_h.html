@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MDP - mdp_dlopen.h: Dynamic Library Loader</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='mdp.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>MDP - mdp_dlopen.h: Dynamic Library Loader</h1>
+<h4 class='doc_set'>Mega Drive Plugins v1.0.0-draft</h4>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="mdp_dlopen_h.html">mdp_dlopen.h</a></span>
+</div>
+
+<p>
+MDP plugins are contained within dynamic libraries. To simplify the loading
+of MDP plugins in emulators, MDP provides a lightweight wrapper file,
+<span class='filename'>mdp_dlopen.h</span>. This file contains macros that
+wrap around operating system functionality for loading dynamic libraries.
+</p>
+
+<p>
+Operating systems currently supported with mdp_dlopen.h:
+<ul>
+	<li>Microsoft Windows 32-bit/64-bit</li>
+	<li>
+		POSIX-compliant operating systems that support
+		<span class='function'>dlopen()</span>, e.g. Unix,
+		Linux, MacOS X, FreeBSD
+	</li>
+</ul>
+</p>
+
+<p>Wrapper macros provided by <span class='filename'>mdp_dlopen.h</span>:</p>
+
+<table>
+	<tr>
+		<th>Function</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td class='function'>
+			<span class='type'>void*</span>
+			mdp_dlopen(<span class='type'>const char*</span>
+			<span class='variable'>filename</span>);
+		</td>
+		<td>
+			Opens a dynamic library.<br>
+			<span class='variable'>filename</span>: Filename of the dynamic library to open.<br>
+			Returns a pointer to the library handle, or <span class='value'>NULL</span> on error.
+		</td>
+	</tr>
+	<tr>
+		<td class='function'>
+			<span class='type'>void</span>
+			mdp_dlclose(<span class='type'>void*</span>
+			<span class='variable'>handle</span>);
+		</td>
+		<td>
+			Closes a dynamic library.<br>
+			<span class='variable'>handle</span>: Library handle previously obtained with <span class='function'>mdp_dlopen()</span><br>
+		</td>
+	</tr>
+	<tr>
+		<td class='function'>
+			<span class='type'>void*</span>
+			mdp_dlsym(<span class='type'>void*</span>
+			<span class='variable'>handle</span>,
+			<span class='type'>const char*</span>
+			<span class='variable'>symbol</span>);
+		</td>
+		<td>
+			Retrieves the specified symbol from an open library.<br>
+			<span class='variable'>handle</span>: Library handle previously obtained with <span class='function'>mdp_dlopen()</span>.<br>
+			<span class='variable'>symbol</span>: Name of the symbol to retrieve.<br>
+			Returns a pointer to the symbol in the library, or <span class='value'>NULL</span> on error.
+		</td>
+	</tr>
+	<tr>
+		<td class='function'>
+			<span class='type'>const char*</span>
+			mdp_dlerror(<span class='type'>void</span>);
+		</td>
+		<td>
+			Retrieves the last error message from the dynamic library loader.<br>
+			Returns a <span class='type'>const char*</span> string, which must be freed later.
+		</td>
+	</tr>
+	<tr>
+		<td class='function'>
+			<span class='type'>void</span>
+			mdp_dlerror_str_free(<span class='type'>const char*</span>
+			<span class='variable'>errstr</span>);
+		</td>
+		<td>
+			Frees an error string obtained by <span class='function'>mdp_dlerror()</span>.<br>
+			<span class='variable'>errstr</span>: String to free.<br>
+		</td>
+	</tr>
+</table>
+
+<p>
+Note: <span class='filename'>mdp_dlopen.h</span> is provided as a convenience.
+Emulators implementing MDP do not need to use this file in order to load plugins.
+</p>
+
+</body>
+</html>

@@ -37,7 +37,7 @@ table, table td, table th
 }
 
 /* Basic identifiers. */
-.struct, .symbol, .macro, .type, .program, .value, .filename, .mdp_version, .function
+.struct, .symbol, .variable, .macro, .type, .program, .value, .filename, .mdp_version, .function
 {
 	font-family: monospace;
 	white-space: nowrap;
@@ -51,6 +51,12 @@ table, table td, table th
 
 /* Symbol name. */
 .symbol, .symbol a:link, .symbol a:hover, .symbol a:visited
+{
+	color: purple;
+}
+
+/* Variable name. */
+.variable, .variable a:link, .variable a:hover, .variable a:visited
 {
 	color: purple;
 }
