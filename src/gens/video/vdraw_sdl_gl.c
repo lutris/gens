@@ -3,7 +3,7 @@
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 #include "vdraw_sdl_gl.h"
+#include "vdraw_sdl_common.h"
 
 // Message logging.
 #include "macros/log_msg.h"
@@ -35,23 +36,6 @@
 
 // SDL includes.
 #include <SDL/SDL.h>
-
-// GTK+ includes.
-#include <gtk/gtk.h>
-#include "ui/gtk/gtk-compat.h"
-
-// Hack to disable SDL window embedding on OS X.
-#include <gdkconfig.h>
-#if defined(GDK_WINDOWING_X11)
-#include <gdk/gdkx.h>
-#elif defined(GDK_WINDOWING_QUARTZ)
-// Quartz (MacOS X)
-#else
-#error Unsupported GTK+ windowing system.
-#endif
-
-// Gens window.
-#include "gens/gens_window.h"
 
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
@@ -219,37 +203,8 @@ int vdraw_sdl_gl_init(void)
 	const int w = Video.Width_GL;
 	const int h = Video.Height_GL;
 	
-#ifdef GDK_WINDOWING_X11
-	// X11. If windowed, embed the SDL window inside of the GTK+ window.
-	if (vdraw_get_fullscreen())
-	{
-		// Hide the embedded SDL window.
-		gtk_widget_hide(gens_window_sdlsock);
-		unsetenv("SDL_WINDOWID");
-	}
-	else
-	{
-		// Show the embedded SDL window.
-		gtk_widget_set_size_request(gens_window_sdlsock, w, h);
-		gtk_widget_realize(gens_window_sdlsock);
-		gtk_widget_show(gens_window_sdlsock);
-		
-		// Wait for GTK+ to catch up.
-		// TODO: If gtk_main_iteration_do() returns TRUE, exit the program.
-		while (gtk_events_pending())
-			gtk_main_iteration_do(FALSE);
-		
-		// Get the Window ID of the SDL socket.
-		char SDL_WindowID[24];
-		sprintf(SDL_WindowID, "%d", (int)(GDK_WINDOW_XWINDOW(gtk_widget_get_window(gens_window_sdlsock))));
-		setenv("SDL_WINDOWID", SDL_WindowID, 1);
-	}
-#elif defined(GDK_WINDOWING_QUARTZ)
-	// Quartz (MacOS X).
-	// Hide the embedded SDL window regardless of anything else.
-	gtk_widget_hide(gens_window_sdlsock);
-	unsetenv("SDL_WINDOWID");
-#endif
+	// Set up SDL embedding.
+	vdraw_sdl_common_embed(w, h);
 	
 	// Initialize SDL.
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)

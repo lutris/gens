@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Video Drawing - SDL+OpenGL Backend.                               *
+ * Gens: Video Drawing - SDL Common Functions.                             *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,19 +20,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_VDRAW_SDL_GL_H
-#define GENS_VDRAW_SDL_GL_H
+#ifndef GENS_VDRAW_SDL_COMMON_H
+#define GENS_VDRAW_SDL_COMMON_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "vdraw.h"
-
-extern const vdraw_backend_t vdraw_backend_sdl_gl;
+void vdraw_sdl_common_embed(const int w, const int h);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_VDRAW_SDL_GL_H */
+#endif /* GENS_VDRAW_SDL_COMMON_H */
