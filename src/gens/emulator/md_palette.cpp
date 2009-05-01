@@ -245,12 +245,12 @@ static inline void T_Recalculate_Palettes(void)
 void Recalculate_Palettes(void)
 {
 	if (bppMD == 15)
-		T_Recalculate_Palettes<uint16_t, MD_Palette, _32X_Palette_16B, _32X_VDP_CRam_Ajusted, 5, 5, 5, 0x1F, 0x1F, 0x1F>();
+		T_Recalculate_Palettes<uint16_t, MD_Palette, _32X_Palette_16B, _32X_VDP_CRam_Adjusted, 5, 5, 5, 0x1F, 0x1F, 0x1F>();
 	else //if (bppMD == 16)
-		T_Recalculate_Palettes<uint16_t, MD_Palette, _32X_Palette_16B, _32X_VDP_CRam_Ajusted, 5, 6, 5, 0x1F, 0x3F, 0x1F>();
+		T_Recalculate_Palettes<uint16_t, MD_Palette, _32X_Palette_16B, _32X_VDP_CRam_Adjusted, 5, 6, 5, 0x1F, 0x3F, 0x1F>();
 	
 	// 32-bit color.
-	T_Recalculate_Palettes<uint32_t, MD_Palette32, _32X_Palette_32B, _32X_VDP_CRam_Ajusted32, 8, 8, 8, 0xFF, 0xFF, 0xFF>();
+	T_Recalculate_Palettes<uint32_t, MD_Palette32, _32X_Palette_32B, _32X_VDP_CRam_Adjusted32, 8, 8, 8, 0xFF, 0xFF, 0xFF>();
 	
 	// Set CRam_Flag.
 	CRam_Flag = 1;

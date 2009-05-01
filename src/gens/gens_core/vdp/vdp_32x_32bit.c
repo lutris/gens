@@ -61,8 +61,8 @@ void Post_Line_32X(void)
 				pixS = _32X_VDP_CRam[pixC];
 				if ((pixS & 0x8000) || !(MD_Screen[pixel] & 0x0F))
 				{
-					MD_Screen32[pixel] = _32X_VDP_CRam_Ajusted32[pixC];
-					MD_Screen[pixel] = _32X_VDP_CRam_Ajusted[pixC];
+					MD_Screen32[pixel] = _32X_VDP_CRam_Adjusted32[pixC];
+					MD_Screen[pixel] = _32X_VDP_CRam_Adjusted[pixC];
 				}
 				else
 				{
@@ -106,8 +106,8 @@ void Post_Line_32X(void)
 				endPixel = curPixel + Num;
 				while (curPixel <= endPixel)
 				{
-					MD_Screen32[curPixel] = _32X_VDP_CRam_Ajusted32[pixC];
-					MD_Screen[curPixel] = _32X_VDP_CRam_Ajusted[pixC];
+					MD_Screen32[curPixel] = _32X_VDP_CRam_Adjusted32[pixC];
+					MD_Screen[curPixel] = _32X_VDP_CRam_Adjusted[pixC];
 					curPixel++;
 				}
 			}
@@ -127,8 +127,8 @@ void Post_Line_32X(void)
 				}
 				else
 				{
-					MD_Screen32[pixel] = _32X_VDP_CRam_Ajusted32[pixC];
-					MD_Screen[pixel] = _32X_VDP_CRam_Ajusted[pixC];
+					MD_Screen32[pixel] = _32X_VDP_CRam_Adjusted32[pixC];
+					MD_Screen[pixel] = _32X_VDP_CRam_Adjusted[pixC];
 				}
 			}
 			break;
@@ -161,8 +161,8 @@ void Post_Line_32X(void)
 				pixS = _32X_VDP_CRam[pixC];
 				if ((pixS & 0x8000) || !(MD_Screen[pixel] & 0x0F))
 				{
-					MD_Screen32[pixel] = _32X_VDP_CRam_Ajusted32[pixC];
-					MD_Screen[pixel] = _32X_VDP_CRam_Ajusted[pixC];
+					MD_Screen32[pixel] = _32X_VDP_CRam_Adjusted32[pixC];
+					MD_Screen[pixel] = _32X_VDP_CRam_Adjusted[pixC];
 				}
 				else
 				{
@@ -186,8 +186,8 @@ void Post_Line_32X(void)
 				}
 				else
 				{
-					MD_Screen32[pixel] = _32X_VDP_CRam_Ajusted32[pixC];
-					MD_Screen[pixel] = _32X_VDP_CRam_Ajusted[pixC];
+					MD_Screen32[pixel] = _32X_VDP_CRam_Adjusted32[pixC];
+					MD_Screen[pixel] = _32X_VDP_CRam_Adjusted[pixC];
 				}
 			}
 			break;

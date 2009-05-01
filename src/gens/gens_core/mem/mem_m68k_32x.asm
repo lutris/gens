@@ -77,8 +77,8 @@ section .bss align=64
 		%define	__32X_VDP_Ram			_32X_VDP_Ram
 		%define __32X_VDP_CRam			_32X_VDP_CRam
 		
-		%define __32X_VDP_CRam_Ajusted		_32X_VDP_CRam_Ajusted
-		%define	__32X_VDP_CRam_Ajusted32	_32X_VDP_CRam_Ajusted32
+		%define __32X_VDP_CRam_Adjusted		_32X_VDP_CRam_Adjusted
+		%define	__32X_VDP_CRam_Adjusted32	_32X_VDP_CRam_Adjusted32
 		
 		%define	__32X_VDP			_32X_VDP
 		%define __32X_VDP.Mode			_32X_VDP.Mode
@@ -91,8 +91,8 @@ section .bss align=64
 	
 	extern __32X_Palette_16B
 	extern __32X_Palette_32B
-	extern __32X_VDP_CRam_Ajusted
-	extern __32X_VDP_CRam_Ajusted32
+	extern __32X_VDP_CRam_Adjusted
+	extern __32X_VDP_CRam_Adjusted32
 	extern __32X_VDP_Ram
 	extern __32X_VDP_CRam
 	extern __32X_VDP
@@ -2602,8 +2602,8 @@ section .text align=64
 		mov	cx, [__32X_Palette_16B + eax * 2]
 		mov	edx, [__32X_Palette_32B + eax * 4]
 		mov	[__32X_VDP_CRam + ebx - 0xA15200], ax
-		mov	[__32X_VDP_CRam_Ajusted + ebx - 0xA15200], cx
-		mov	[__32X_VDP_CRam_Ajusted32 + (ebx - 0xA15200) * 2], edx
+		mov	[__32X_VDP_CRam_Adjusted + ebx - 0xA15200], cx
+		mov	[__32X_VDP_CRam_Adjusted32 + (ebx - 0xA15200) * 2], edx
 		
 		pop	edx
 		pop	ecx

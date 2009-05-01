@@ -1890,8 +1890,8 @@ void Savestate::GsxImport32X(const unsigned char* data)
 	//Recalculate_Palettes();
 	for (i = 0; i < 0x100; i++)
 	{
-		_32X_VDP_CRam_Ajusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
-		_32X_VDP_CRam_Ajusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
+		_32X_VDP_CRam_Adjusted[i] = _32X_Palette_16B[_32X_VDP_CRam[i]];
+		_32X_VDP_CRam_Adjusted32[i] = _32X_Palette_32B[_32X_VDP_CRam[i]];
 	}
 
 #ifdef GENS_DEBUG_SAVESTATE

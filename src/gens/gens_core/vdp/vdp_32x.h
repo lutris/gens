@@ -1,6 +1,8 @@
 #ifndef GENS_VDP_32X_H
 #define GENS_VDP_32X_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,12 +17,17 @@ struct VDP_32X_t
 	unsigned int AF_Line;
 };
 
-extern unsigned short _32X_Palette_16B[0x10000];
-extern unsigned int _32X_Palette_32B[0x10000];
-extern unsigned char _32X_VDP_Ram[0x100 * 1024];
-extern unsigned short _32X_VDP_CRam[0x100];
-extern unsigned short _32X_VDP_CRam_Ajusted[0x100];
-extern unsigned int _32X_VDP_CRam_Ajusted32[0x100];
+// VDP RAM and CRam.
+extern uint8_t  _32X_VDP_Ram[0x100 * 1024];
+extern uint16_t  _32X_VDP_CRam[0x100];
+
+// Full 32X palettes.
+extern uint16_t _32X_Palette_16B[0x10000];
+extern uint32_t _32X_Palette_32B[0x10000];
+
+// Adjusted CRam.
+extern uint16_t _32X_VDP_CRam_Adjusted[0x100];
+extern uint32_t _32X_VDP_CRam_Adjusted32[0x100];
 
 extern struct VDP_32X_t _32X_VDP;
 

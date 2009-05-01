@@ -150,7 +150,7 @@ section .bss align=64
 	extern M_SH2
 	extern S_SH2
 	
-	; 32B and Ajusted32 ported from Gens Rerecording.
+	; 32B and Adjusted32 ported from Gens Rerecording.
 	
 	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
@@ -160,8 +160,8 @@ section .bss align=64
 		%define	__32X_VDP_Ram			_32X_VDP_Ram
 		%define __32X_VDP_CRam			_32X_VDP_CRam
 		
-		%define __32X_VDP_CRam_Ajusted		_32X_VDP_CRam_Ajusted
-		%define	__32X_VDP_CRam_Ajusted32	_32X_VDP_CRam_Ajusted32
+		%define __32X_VDP_CRam_Adjusted		_32X_VDP_CRam_Adjusted
+		%define	__32X_VDP_CRam_Adjusted32	_32X_VDP_CRam_Adjusted32
 		
 		%define	__32X_VDP			_32X_VDP
 		%define __32X_VDP.Mode			_32X_VDP.Mode
@@ -176,8 +176,8 @@ section .bss align=64
 	extern __32X_Palette_32B
 	extern __32X_VDP_Ram
 	extern __32X_VDP_CRam
-	extern __32X_VDP_CRam_Ajusted
-	extern __32X_VDP_CRam_Ajusted32
+	extern __32X_VDP_CRam_Adjusted
+	extern __32X_VDP_CRam_Adjusted32
 	extern __32X_VDP
 	
 	; Symbol redefines for ELF
@@ -794,8 +794,8 @@ section .text align=64
 		mov	ax, [__32X_Palette_16B + edx * 2]
 		mov	ebx, [__32X_Palette_32B + edx * 4]
 		mov	[__32X_VDP_CRam + ecx], dx
-		mov	[__32X_VDP_CRam_Ajusted + ecx], ax
-		mov	[__32X_VDP_CRam_Ajusted32 + ecx * 2], ebx
+		mov	[__32X_VDP_CRam_Adjusted + ecx], ax
+		mov	[__32X_VDP_CRam_Adjusted32 + ecx * 2], ebx
 		pop	ebx
 		ret
 	
@@ -949,9 +949,9 @@ section .text align=64
 		mov	[__32X_VDP_CRam + ecx], eax
 		mov	dx, [__32X_Palette_16B + edx * 2]
 		and	eax, 0xFFFF
-		mov	[__32X_VDP_CRam_Ajusted + ecx + 2], dx
+		mov	[__32X_VDP_CRam_Adjusted + ecx + 2], dx
 		mov	ax, [__32X_Palette_16B + eax * 2]
-		mov	[__32X_VDP_CRam_Ajusted + ecx + 0], ax
+		mov	[__32X_VDP_CRam_Adjusted + ecx + 0], ax
 		
 		; 32-bit color code ported from Gens Re-Recording.
 		mov	eax, [__32X_VDP_CRam + ecx]
@@ -962,8 +962,8 @@ section .text align=64
 		and	edx, 0xFFFF
 		mov	eax, [__32X_Palette_32B + eax * 4]
 		mov	edx, [__32X_Palette_32B + edx * 4]
-		mov	[__32X_VDP_CRam_Ajusted32 + ecx + 0], eax
-		mov	[__32X_VDP_CRam_Ajusted32 + ecx + 4], edx
+		mov	[__32X_VDP_CRam_Adjusted32 + ecx + 0], eax
+		mov	[__32X_VDP_CRam_Adjusted32 + ecx + 4], edx
 		
 		ret
 	
