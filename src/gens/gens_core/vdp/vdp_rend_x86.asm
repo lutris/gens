@@ -198,10 +198,8 @@ section .bss align=64
 	%ifdef __OBJ_ELF
 		%define	_MD_Screen		MD_Screen
 		%define	_MD_Palette		MD_Palette
-		%define	_Palette		Palette
 		%define	_MD_Screen32		MD_Screen32
 		%define	_MD_Palette32		MD_Palette32
-		%define	_Palette32		Palette32
 		%define	_Sprite_Struct		Sprite_Struct
 		%define	_Sprite_Visible		Sprite_Visible
 		%define	__32X_Rend_Mode		_32X_Rend_Mode
@@ -222,12 +220,6 @@ section .bss align=64
 	_MD_Palette:
 		resw 0x100
 	
-	; MD total palette (16-bit)
-	alignb 16
-	global _Palette
-	_Palette:
-		resw 0x1000
-	
 	; MD screen buffer (32-bit)
 	alignb 16
 		resd (320 + 32)
@@ -241,12 +233,6 @@ section .bss align=64
 	global _MD_Palette32
 	_MD_Palette32:
 		resd 0x100
-	
-	; MD total palette (32-bit)
-	alignb 16
-	global _Palette32
-	_Palette32:
-		resd 0x1000
 	
 	global _Sprite_Struct
 	_Sprite_Struct:

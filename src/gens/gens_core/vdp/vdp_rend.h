@@ -8,14 +8,14 @@ extern "C" {
 #endif
 
 // 15/16-bit color
-extern unsigned short MD_Screen[336 * 240];
-extern unsigned short Palette[0x1000];
-extern unsigned short MD_Palette[256];
+extern uint16_t MD_Screen[336 * 240];
+extern uint16_t Palette[0x1000];
+extern uint16_t MD_Palette[256];
 
 // 32-bit color
-extern unsigned int MD_Screen32[336 * 240];
-extern unsigned int Palette32[0x1000];
-extern unsigned int MD_Palette32[256];
+extern uint32_t MD_Screen32[336 * 240];
+extern uint32_t Palette32[0x1000];
+extern uint32_t MD_Palette32[256];
 
 // _32X_Rend_Mode is used for the 32X 32-bit color C functions.
 // See g_32x_32bit.h

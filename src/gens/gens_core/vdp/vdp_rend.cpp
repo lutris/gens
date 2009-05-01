@@ -29,6 +29,10 @@
 // C includes.
 #include <stdint.h>
 
+// Full MD palettes.
+uint16_t Palette[0x1000];
+uint32_t Palette32[0x1000];
+
 
 /**
  * T_VDP_Update_Palette(): VDP palette update function.
