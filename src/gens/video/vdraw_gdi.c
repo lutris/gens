@@ -355,6 +355,24 @@ static int vdraw_gdi_flip(void)
 	// Draw the border.
 	vdraw_gdi_draw_border();
 	
+	// Draw the message and/or FPS counter.
+	if (vdraw_msg_visible)
+	{
+		// Message is visible.
+		draw_text(start, szGDIBuf.cx,
+			  vdraw_rInfo.width * vdraw_scale,
+			  vdraw_rInfo.height * vdraw_scale,
+			  vdraw_msg_text, &vdraw_msg_style, FALSE);
+	}
+	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
+	{
+		// FPS is enabled.
+		draw_text(start, szGDIBuf.cx,
+			  vdraw_rInfo.width * vdraw_scale,
+			  vdraw_rInfo.height * vdraw_scale,
+			  vdraw_msg_text, &vdraw_fps_style, FALSE);
+	}
+	
 	// Blit the image to the GDI window.
 	if (vdraw_gdi_stretch_flags == STRETCH_NONE)
 	{
