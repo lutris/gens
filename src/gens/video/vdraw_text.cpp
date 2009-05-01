@@ -170,15 +170,17 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 		charSize = 8;
 	
 	// Bottom-left of the screen.
+	// TODO: Fix this awful pile of hacks.
 	if (adjustForScreenSize)
 	{
-		// Adjust for screen size. (SDL/GL)
+		// Adjust for screen size. (SDL software rendering)
 		x = ((vdraw_border_h / 2) * vdraw_scale) + 8;
 		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
 	}
 	else
 	{
 		// Don't adjust for screen size. (DDraw)
+#ifdef GENS_OS_WIN32
 		if (!fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hack for windowed 1x rendering.
@@ -207,6 +209,11 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 		
 		if (vdraw_scale > 1)
 			y += (8 * vdraw_scale);
+#else
+		// SDL+OpenGL.
+		x = 8;
+		y = h;
+#endif
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
@@ -222,7 +229,7 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 	msgLength = strlen(msg);
 	
 	// Determine how many linebreaks are needed.
-	msgWidth = w - 16 - (vdraw_border_h * vdraw_scale);
+	msgWidth = w - 16;
 	linebreaks = ((msgLength - 1) * charSize) / msgWidth;
 	y -= (linebreaks * charSize);
 	

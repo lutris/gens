@@ -102,7 +102,6 @@ static void	vdraw_sdl_gl_update_vsync(const BOOL fromInitSDLGL);
 
 static int	vdraw_sdl_gl_flip(void);
 static void	vdraw_sdl_gl_draw_border(void); // Not used in vdraw_backend_t.
-static void	vdraw_sdl_gl_stretch_adjust(void);
 static void	vdraw_sdl_gl_update_renderer(void);
 
 // Used internally. (Not used in vdraw_backend_t.)
@@ -144,7 +143,6 @@ const vdraw_backend_t vdraw_backend_sdl_gl =
 	.update_vsync = vdraw_sdl_gl_update_vsync,
 	
 	.flip = vdraw_sdl_gl_flip,
-	.stretch_adjust = vdraw_sdl_gl_stretch_adjust,
 	.update_renderer = vdraw_sdl_gl_update_renderer,
 };
 
@@ -355,9 +353,6 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, textureSize * 2, textureSize, 0,
 		     m_pixelFormat, m_pixelType, NULL);
 	
-	// Adjust stretch parameters.
-	vdraw_sdl_gl_stretch_adjust();
-	
 	return 0;
 }
 
@@ -382,32 +377,6 @@ static int vdraw_sdl_gl_end(void)
 
 
 /**
- * vdraw_sdl_gl_stretch_adjust(): Adjust stretch parameters.
- * Called by either vdraw or another function in vdraw_sdl_gl.
- */
-static void vdraw_sdl_gl_stretch_adjust(void)
-{
-	uint8_t stretch = vdraw_get_stretch();
-	
-	if (stretch & STRETCH_H)
-		m_HStretch = (((double)vdraw_border_h * (((double)rowLength / (double)textureSize)) / 20.0) / 64.0);
-	else
-		m_HStretch = 0;
-	
-	if (stretch & STRETCH_V)
-	{
-		// TODO: Fix this ugly hack.
-		if (vdraw_scale == 3)
-			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / (2.0 + (2.0/3.0)));
-		else
-			m_VStretch = (((240 - VDP_Num_Vis_Lines) / 240.0f) / 2.0);
-	}
-	else
-		m_VStretch = 0;
-}
-
-
-/**
  * vdraw_sdl_gl_clear_screen(): Clear the screen.
  */
 static void vdraw_sdl_gl_clear_screen(void)
@@ -428,17 +397,16 @@ static void vdraw_sdl_gl_clear_screen(void)
  */
 static int vdraw_sdl_gl_flip(void)
 {
+	// Draw the border.
+	vdraw_sdl_gl_draw_border();
+	
 	const unsigned char bytespp = (bppOut == 15 ? 2 : bppOut / 8);
 	
-	// Start of the SDL framebuffer.
+	// OpenGL framebuffer pitch.
 	const int pitch = rowLength * bytespp;
-	const int VBorder = (240 - VDP_Num_Vis_Lines) / 2;	// Top border height, in pixels.
-	const int HBorder = vdraw_border_h * (bytespp / 2);	// Left border width, in pixels.
-	
-	const int startPos = ((pitch * VBorder) + HBorder) * vdraw_scale;	// Starting position from within the screen.
 	
 	// Start of the SDL framebuffer.
-	unsigned char *start = &(((unsigned char*)(filterBuffer))[startPos]);
+	unsigned char *start = &(((unsigned char*)(filterBuffer))[0]);
 	
 	// Set up the render information.
 	vdraw_rInfo.destScreen = (void*)start;
@@ -487,18 +455,23 @@ static int vdraw_sdl_gl_flip(void)
 		veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
 	}
 	
+	// Calculate the texture size.
+	const int totalHeight = ((rowLength * 3) / 4);
+	const int texHeight = (VDP_Num_Vis_Lines * vdraw_scale);
+	const int texWidth = (320 - vdraw_border_h) * vdraw_scale;
+	
 	// Draw the message and/or FPS counter.
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		draw_text(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3,
-			  vdraw_msg_text, &vdraw_msg_style, TRUE);
+		draw_text(filterBuffer, rowLength, texWidth, texHeight,
+			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
-		draw_text(filterBuffer, rowLength, rowLength, (rowLength / 4) * 3,
-			  vdraw_msg_text, &vdraw_fps_style, TRUE);
+		draw_text(filterBuffer, rowLength, texWidth, texHeight,
+			  vdraw_msg_text, &vdraw_fps_style, FALSE);
 	}
 	
 	// Set the GL MAG filter.
@@ -515,34 +488,62 @@ static int vdraw_sdl_gl_flip(void)
 	
 	// Set the texture data.
 	glTexSubImage2D(GL_TEXTURE_2D, 0,
-			0,						// x offset
-			((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale,	// y offsets
-			rowLength,					// width
-			((rowLength * 3) / 4) - ((240 - VDP_Num_Vis_Lines) * vdraw_scale),	// height
+			0,			// x offset
+			0,			// y offset
+			texWidth,		// width
+			texHeight,		// height
 			m_pixelFormat, m_pixelType,
-			filterBuffer + (bytespp * rowLength * ((240 - VDP_Num_Vis_Lines) >> 1) * vdraw_scale));
+			filterBuffer);
 	
 	// Corners of the rectangle.
 	glBegin(GL_QUADS);
 	
-	glTexCoord2d(0.0 + m_HStretch, m_VStretch);	// Upper-left corner of the texture.
-	glVertex2i(-1,  1);				// Upper-left vertex of the quad.
+	// Get the stretch parameters.
+	uint8_t stretch = vdraw_get_stretch();
 	
-	glTexCoord2d(m_HRender - m_HStretch, m_VStretch);	// Upper-right corner of the texture.
-	glVertex2i( 1,  1);				// Upper-right vertex of the quad.
+	// Calculate the image position.
+	double imgTop, imgBottom;
+	if (texHeight == totalHeight || (stretch & STRETCH_V))
+	{
+		imgTop = 1.0;
+		imgBottom = -1.0;
+	}
+	else
+	{
+		imgTop = (1.0 * ((double)texHeight / (double)totalHeight));
+		imgBottom = -imgTop;
+	}
+	
+	double imgLeft, imgRight;
+	if (vdraw_border_h == 0 || (stretch & STRETCH_H))
+	{
+		imgLeft = -1.0;
+		imgRight = 1.0;
+	}
+	else
+	{
+		imgLeft = -(1.0 * ((double)(320 - vdraw_border_h) / 320.0));
+		imgRight = -imgLeft;
+	}
+	
+	double imgWidth, imgHeight;
+	imgWidth = (double)(texWidth) / (double)(textureSize * 2);
+	imgHeight = (double)(texHeight) / (double)(textureSize);
+	
+	glTexCoord2d(0.0, 0.0);		// Upper-left corner of the texture.
+	glVertex2d(imgLeft,  imgTop);	// Upper-left vertex of the quad.
+	
+	glTexCoord2d(imgWidth, 0.0);	// Upper-right corner of the texture.
+	glVertex2d(imgRight,  imgTop);	// Upper-right vertex of the quad.
 	
 	// 0.9375 = 240/256; 0.9375 = 480/512
-	glTexCoord2d(m_HRender - m_HStretch, m_VRender - m_VStretch);	// Lower-right corner of the texture.
-	glVertex2i( 1, -1);						// Lower-right vertex of the quad.
+	glTexCoord2d(imgWidth, imgHeight);	// Lower-right corner of the texture.
+	glVertex2d(imgRight, imgBottom);	// Lower-right vertex of the quad.
 	
-	glTexCoord2d(0.0 + m_HStretch, m_VRender - m_VStretch);	// Lower-left corner of the texture.
-	glVertex2i(-1, -1);					// Lower-left corner of the quad.
+	glTexCoord2d(0.0, imgHeight);		// Lower-left corner of the texture.
+	glVertex2d(imgLeft, imgBottom);		// Lower-left corner of the quad.
 	
 	glEnd();
-	
-	// Draw the border.
-	if (Video.borderColorEmulation)
-		vdraw_sdl_gl_draw_border();
 	
 	// Swap the SDL GL buffers.
 	SDL_GL_SwapBuffers();
@@ -558,52 +559,49 @@ static int vdraw_sdl_gl_flip(void)
  */
 static void vdraw_sdl_gl_draw_border(void)
 {
+	// Clear the OpenGL buffer.
 	if (!Video.borderColorEmulation)
-		return;
-	
-	if ((Game == NULL) || (Debug > 0))
 	{
-		// Either no system is active or the debugger is enabled.
-		// Make sure the border color is black.
-		vdraw_border_color_16 = 0;
-		vdraw_border_color_32 = 0;
+		// Border color should be black.
+		glClearColor(0.0, 0.0, 0.0, 0.0);
 	}
 	else
 	{
-		// Set the border color to the first palette entry.
-		vdraw_border_color_16 = MD_Palette[0];
-		vdraw_border_color_32 = MD_Palette32[0];
-	}
-	
-	uint8_t stretch = vdraw_get_stretch();
-	
-	if (stretch < STRETCH_FULL)
-	{
-		glDisable(GL_TEXTURE_2D);
+		if ((Game == NULL) || (Debug > 0))
+		{
+			// Either no system is active or the debugger is enabled.
+			// Make sure the border color is black.
+			vdraw_border_color_16 = 0;
+			vdraw_border_color_32 = 0;
+		}
+		else
+		{
+			// Set the border color to the first palette entry.
+			vdraw_border_color_16 = MD_Palette[0];
+			vdraw_border_color_32 = MD_Palette32[0];
+		}
 		
+		// Set the border color.
 		// TODO: This may not work properly on big-endian systems.
-		unsigned char* bcolor = (unsigned char*)(&vdraw_border_color_32);
-		glColor3ub(bcolor[2], bcolor[1], bcolor[0]);
-		
-		if (!(stretch & STRETCH_V) && (VDP_Num_Vis_Lines < 240))
+		union
 		{
-			// Top/Bottom borders.
-			float borderSize = ((float)((240 - VDP_Num_Vis_Lines) / 2)) / 240.0f;
-			glRectf(-1,  1, 1, ( 1.0f - (borderSize * 2.0)));
-			glRectf(-1, -1, 1, (-1.0f + (borderSize * 2.0)));
-		}
+			struct
+			{
+				uint8_t b;
+				uint8_t g;
+				uint8_t r;
+				uint8_t a;
+			};
+			uint32_t b32;
+		} colorU;
 		
-		if (!(stretch & STRETCH_H) && (vdraw_border_h > 0))
-		{
-			// Left/Right borders.
-			float borderSize = (float)(vdraw_border_h / 2) / 320.0f;
-			glRectf(-1, 1, (-1.0f + (borderSize * 2.0)), -1);
-			glRectf( 1, 1, ( 1.0f - (borderSize * 2.0)), -1);
-		}
-		
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glEnable(GL_TEXTURE_2D);
+		colorU.b32 = vdraw_border_color_32;
+		glClearColor((GLclampf)colorU.r / 255.0,
+			     (GLclampf)colorU.g / 255.0,
+			     (GLclampf)colorU.b / 255.0, 0.0);
 	}
+	
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
