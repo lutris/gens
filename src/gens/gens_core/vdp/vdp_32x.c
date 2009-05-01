@@ -21,7 +21,23 @@
  ***************************************************************************/
 
 #include "vdp_32x.h"
+
+// C includes.
+#include <stdint.h>
 #include <string.h>
+
+
+// VDP RAM and CRam.
+uint8_t  _32X_VDP_Ram[0x100 * 1024];
+uint16_t _32X_VDP_CRam[0x100];
+
+// Full 32X palettes.
+uint16_t _32X_Palette_16B[0x10000];
+uint32_t _32X_Palette_32B[0x10000];
+
+// Adjusted CRam.
+uint16_t _32X_VDP_CRam_Adjusted[0x100];
+uint32_t _32X_VDP_CRam_Adjusted32[0x100];
 
 
 /**

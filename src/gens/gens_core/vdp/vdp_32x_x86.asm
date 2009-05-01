@@ -27,15 +27,6 @@ section .bss align=64
 	
 	; Symbol redefines for ELF
 	%ifdef __OBJ_ELF
-		%define	__32X_Palette_16B		_32X_Palette_16B
-		%define	__32X_Palette_32B		_32X_Palette_32B
-		
-		%define	__32X_VDP_Ram			_32X_VDP_Ram
-		%define __32X_VDP_CRam			_32X_VDP_CRam
-		
-		%define __32X_VDP_CRam_Adjusted		_32X_VDP_CRam_Adjusted
-		%define	__32X_VDP_CRam_Adjusted32	_32X_VDP_CRam_Adjusted32
-		
 		%define	__32X_VDP			_32X_VDP
 		%define __32X_VDP.Mode			_32X_VDP.Mode
 		%define __32X_VDP.State			_32X_VDP.State
@@ -43,6 +34,18 @@ section .bss align=64
 		%define __32X_VDP.AF_St			_32X_VDP.AF_St
 		%define __32X_VDP.AF_Len		_32X_VDP.AF_Len
 		%define __32X_VDP.AF_Line		_32X_VDP.AF_Line
+	%endif
+	
+	; External symbol redefines for ELF.
+	%ifdef __OBJ_ELF
+		%define	__32X_VDP_Ram			_32X_VDP_Ram
+		%define __32X_VDP_CRam			_32X_VDP_CRam
+		
+		%define	__32X_Palette_16B		_32X_Palette_16B
+		%define	__32X_Palette_32B		_32X_Palette_32B
+		
+		%define __32X_VDP_CRam_Adjusted		_32X_VDP_CRam_Adjusted
+		%define	__32X_VDP_CRam_Adjusted32	_32X_VDP_CRam_Adjusted32
 		
 		%define	_MD_Screen			MD_Screen
 		%define	_MD_Screen32			MD_Screen32
@@ -55,26 +58,17 @@ section .bss align=64
 	; MD bpp
 	extern _bppMD
 	
-	global __32X_VDP_Ram
-	__32X_VDP_Ram:
-		resb 0x100 * 1024
-	global __32X_VDP_CRam
-	__32X_VDP_CRam:
-		resw 0x100
+	; VDP RAM and CRam.
+	extern __32X_VDP_Ram
+	extern __32X_VDP_CRam
 	
-	global __32X_Palette_16B
-	__32X_Palette_16B:
-		resw 0x10000
-	global __32X_Palette_32B
-	__32X_Palette_32B:
-		resd 0x10000
+	; Full 32X palettes.
+	extern __32X_Palette_16B
+	extern __32X_Palette_32B
 	
-	global __32X_VDP_CRam_Adjusted
-	__32X_VDP_CRam_Adjusted:
-		resw 0x100
-	global __32X_VDP_CRam_Adjusted32
-	__32X_VDP_CRam_Adjusted32:
-		resd 0x100
+	; Adjusted CRam.
+	extern __32X_VDP_CRam_Adjusted
+	extern __32X_VDP_CRam_Adjusted32
 	
 	alignb 32
 	

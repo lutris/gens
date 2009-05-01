@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-struct VDP_32X_t
+typedef struct _VDP_32X_t
 {
 	unsigned int Mode;
 	unsigned int State;
@@ -15,7 +15,7 @@ struct VDP_32X_t
 	unsigned int AF_St;
 	unsigned int AF_Len;
 	unsigned int AF_Line;
-};
+} VDP_32X_t;
 
 // VDP RAM and CRam.
 extern uint8_t  _32X_VDP_Ram[0x100 * 1024];
@@ -29,7 +29,7 @@ extern uint32_t _32X_Palette_32B[0x10000];
 extern uint16_t _32X_VDP_CRam_Adjusted[0x100];
 extern uint32_t _32X_VDP_CRam_Adjusted32[0x100];
 
-extern struct VDP_32X_t _32X_VDP;
+extern VDP_32X_t _32X_VDP;
 
 void _32X_VDP_Reset(void);
 void _32X_VDP_Draw(int FB_Num);
