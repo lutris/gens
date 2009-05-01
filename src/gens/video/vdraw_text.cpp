@@ -148,7 +148,7 @@ static inline void drawChar_2x(pixel *screen, const int pitch, const int x, cons
 template<typename pixel>
 void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		  const char *msg, const pixel transparentMask, const vdraw_style_t *style,
-		  const bool DDRAW_adjustForScreenSize)
+		  const bool isDDraw)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
@@ -171,16 +171,11 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 	
 	// Bottom-left of the screen.
 #if defined(GENS_OS_WIN32)
-	// TODO: Fix this ugly pile of hacks.
-	if (DDRAW_adjustForScreenSize)
-	{
-		// Adjust for screen size.
-		x = ((vdraw_border_h / 2) * vdraw_scale) + 8;
-		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
-	}
-	else
+	if (isDDraw)
 	{
 		// Don't adjust for screen size.
+		// TODO: Fix this ugly pile of hacks.
+		
 		if (!fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hack for windowed 1x rendering.
@@ -210,10 +205,12 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		if (vdraw_scale > 1)
 			y += (8 * vdraw_scale);
 	}
-#else /* !defined(GENS_OS_WIN32) */
-	x = 8;
-	y = h;
+	else
 #endif /* defined(GENS_OS_WIN32) */
+	{
+		x = 8;
+		y = h;
+	}
 	
 	// Move the text down by another 2px in 1x rendering.
 	if (rendMode == PluginMgr::lstRenderPlugins.begin())
@@ -279,7 +276,7 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
  */
 void draw_text(void *screen, const int pitch, const int w, const int h,
 	       const char *msg, const vdraw_style_t *style,
-	       const BOOL DDRAW_adjustForScreenSize)
+	       const BOOL isDDraw)
 {
 	if (!style)
 		return;
@@ -289,14 +286,14 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 		// 15/16-bit color.
 		drawText_int((unsigned short*)screen, pitch, w, h, msg,
 			     (unsigned short)m_Transparency_Mask, style,
-			     DDRAW_adjustForScreenSize);
+			     isDDraw);
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		drawText_int((unsigned int*)screen, pitch, w, h, msg,
 			     m_Transparency_Mask, style,
-			     DDRAW_adjustForScreenSize);
+			     isDDraw);
 	}
 }
 

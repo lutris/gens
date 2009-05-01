@@ -110,13 +110,13 @@ static inline void vdraw_ddraw_draw_text(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURF
 	{
 		// Message is visible.
 		draw_text((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
-			  w, h, vdraw_msg_text, &vdraw_msg_style, FALSE);
+			  w, h, vdraw_msg_text, &vdraw_msg_style, true);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
 		draw_text((unsigned char*)pddsd->lpSurface + (8*bytespp), pddsd->lPitch / bytespp,
-			  w, h, vdraw_msg_text, &vdraw_fps_style, FALSE);
+			  w, h, vdraw_msg_text, &vdraw_fps_style, true);
 	}
 	
 	if (lock)
