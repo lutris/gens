@@ -148,7 +148,7 @@ static inline void drawChar_2x(pixel *screen, const int pitch, const int x, cons
 template<typename pixel>
 void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		  const char *msg, const pixel transparentMask, const vdraw_style_t *style,
-		  const bool isDDraw)
+		  const bool DDRAW_adjustForScreenSize)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
@@ -171,11 +171,16 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 	
 	// Bottom-left of the screen.
 #if defined(GENS_OS_WIN32)
-	if (isDDraw)
+	// TODO: Fix this ugly pile of hacks.
+	if (DDRAW_adjustForScreenSize)
 	{
-		// Don't adjust for screen size. (DDraw)
-		// TODO: Fix this ugly pile of hacks.
-		
+		// Adjust for screen size.
+		x = ((vdraw_border_h / 2) * vdraw_scale) + 8;
+		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
+	}
+	else
+	{
+		// Don't adjust for screen size.
 		if (!fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hack for windowed 1x rendering.
@@ -270,11 +275,11 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
  * @param h Height of the viewable area of the screen surface (in pixels).
  * @param msg Text to draw to the screen.
  * @param style Pointer to style information.
- * @param adjustForScreenSize
+ * @param DDRAW_adjustForScreenSize
  */
 void draw_text(void *screen, const int pitch, const int w, const int h,
 	       const char *msg, const vdraw_style_t *style,
-	       const BOOL adjustForScreenSize)
+	       const BOOL DDRAW_adjustForScreenSize)
 {
 	if (!style)
 		return;
@@ -284,14 +289,14 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 		// 15/16-bit color.
 		drawText_int((unsigned short*)screen, pitch, w, h, msg,
 			     (unsigned short)m_Transparency_Mask, style,
-			     adjustForScreenSize);
+			     DDRAW_adjustForScreenSize);
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
 		drawText_int((unsigned int*)screen, pitch, w, h, msg,
 			     m_Transparency_Mask, style,
-			     adjustForScreenSize);
+			     DDRAW_adjustForScreenSize);
 	}
 }
 
