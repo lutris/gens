@@ -1,6 +1,5 @@
 TODO for Gens/GS r7:
 - hq3x: Broken on Win32 in some cases. (Check width division!)
-- GDI: Add text drawing.
 - Add --boot-cd command line option.
 - Don't show "Zip File Selection Dialog" if a ROM is opened in Full Screen.
 - Don't show "Zip File Selection Dialog" if an archive has multiple files
