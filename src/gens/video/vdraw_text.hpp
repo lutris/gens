@@ -55,7 +55,7 @@ typedef struct
 	BOOL		transparent;
 } vdraw_style_t;
 
-void draw_text(void *screen, const int fullW, const int w, const int h,
+void draw_text(void *screen, const int pitch, const int w, const int h,
 	       const char *msg, const vdraw_style_t *style,
 	       const BOOL adjustForScreenSize);
 

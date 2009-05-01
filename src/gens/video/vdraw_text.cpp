@@ -63,7 +63,7 @@ char vdraw_msg_text[1024];
 
 
 template<typename pixel>
-static inline void drawChar_1x(pixel *screen, const int fullW, const int x, const int y,
+static inline void drawChar_1x(pixel *screen, const int pitch, const int x, const int y,
 			       const vdraw_style_t *style, const pixel transparentMask,
 			       const unsigned char ch)
 {
@@ -71,7 +71,7 @@ static inline void drawChar_1x(pixel *screen, const int fullW, const int x, cons
 	pixel* screenPos;
 	unsigned char cRow;
 	
-	screenPos = &screen[y*fullW + x];
+	screenPos = &screen[y*pitch + x];
 	for (cy = 0; cy < 8; cy++)
 	{
 		// Each character is 8 bytes, with each row representing 8 dots.
@@ -93,13 +93,13 @@ static inline void drawChar_1x(pixel *screen, const int fullW, const int x, cons
 			cRow <<= 1;
 			screenPos++;
 		}
-		screenPos += (fullW - 8);
+		screenPos += (pitch - 8);
 	}
 }
 
 
 template<typename pixel>
-static inline void drawChar_2x(pixel *screen, const int fullW, const int x, const int y,
+static inline void drawChar_2x(pixel *screen, const int pitch, const int x, const int y,
 			       const vdraw_style_t *style, const pixel transparentMask,
 			       const unsigned char ch)
 {
@@ -107,7 +107,7 @@ static inline void drawChar_2x(pixel *screen, const int fullW, const int x, cons
 	pixel* screenPos;
 	unsigned char cRow;
 	
-	screenPos = &screen[y*fullW + x];
+	screenPos = &screen[y*pitch + x];
 	for (cy = 0; cy < 8; cy++)
 	{
 		// Each character is 8 bytes, with each row representing 8 dots.
@@ -125,28 +125,28 @@ static inline void drawChar_2x(pixel *screen, const int fullW, const int x, cons
 					pixel pix = style->dot_color;
 					*screenPos = pix;
 					*(screenPos + 1) = pix;
-					*(screenPos + fullW) = pix;
-					*(screenPos + fullW + 1) = pix;
+					*(screenPos + pitch) = pix;
+					*(screenPos + pitch + 1) = pix;
 				}
 				else
 				{
 					pixel trPix = (style->dot_color & transparentMask) >> 1;
 					*screenPos = trPix + ((*screenPos & transparentMask) >> 1);
 					*(screenPos + 1) = trPix + ((*(screenPos + 1) & transparentMask) >> 1);
-					*(screenPos + fullW) = trPix + ((*(screenPos + fullW) & transparentMask) >> 1);
-					*(screenPos + fullW + 1) = trPix + ((*(screenPos + fullW + 1) & transparentMask) >> 1);
+					*(screenPos + pitch) = trPix + ((*(screenPos + pitch) & transparentMask) >> 1);
+					*(screenPos + pitch + 1) = trPix + ((*(screenPos + pitch + 1) & transparentMask) >> 1);
 				}
 			}
 			cRow <<= 1;
 			screenPos += 2;
 		}
-		screenPos += (fullW*2 - 16);
+		screenPos += (pitch*2 - 16);
 	}
 }
 
 
 template<typename pixel>
-void drawText_int(pixel *screen, const int fullW, const int w, const int h,
+void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		  const char *msg, const pixel transparentMask, const vdraw_style_t *style,
 		  const bool adjustForScreenSize)
 {
@@ -242,19 +242,19 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 		if (style->double_size)
 		{
 			// TODO: Make text shadow an option.
-			drawChar_2x(screen, fullW, cx+1, cy+1, &textShadowStyle,
+			drawChar_2x(screen, pitch, cx+1, cy+1, &textShadowStyle,
 				    transparentMask, (unsigned char)msg[cPos]);
 			
-			drawChar_2x(screen, fullW, cx-1, cy-1, style,
+			drawChar_2x(screen, pitch, cx-1, cy-1, style,
 				    transparentMask, (unsigned char)msg[cPos]);
 		}
 		else
 		{
 			// TODO: Make text shadow an option.
-			drawChar_1x(screen, fullW, cx+1, cy+1, &textShadowStyle,
+			drawChar_1x(screen, pitch, cx+1, cy+1, &textShadowStyle,
 				    transparentMask, (unsigned char)msg[cPos]);
 			
-			drawChar_1x(screen, fullW, cx, cy, style,
+			drawChar_1x(screen, pitch, cx, cy, style,
 				    transparentMask, (unsigned char)msg[cPos]);
 		}
 		
@@ -271,14 +271,14 @@ void drawText_int(pixel *screen, const int fullW, const int w, const int h,
 /**
  * draw_text(): Draw text to the screen.
  * @param screen Pointer to screen surface.
- * @param fullW
- * @param w
- * @param h
+ * @param pitch Pitch of the screen surface (in pixels).
+ * @param w Width of the viewable area of the screen surface (in pixels).
+ * @param h Height of the viewable area of the screen surface (in pixels).
  * @param msg Text to draw to the screen.
  * @param style Pointer to style information.
  * @param adjustForScreenSize
  */
-void draw_text(void *screen, const int fullW, const int w, const int h,
+void draw_text(void *screen, const int pitch, const int w, const int h,
 	       const char *msg, const vdraw_style_t *style,
 	       const BOOL adjustForScreenSize)
 {
@@ -288,14 +288,14 @@ void draw_text(void *screen, const int fullW, const int w, const int h,
 	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
-		drawText_int((unsigned short*)screen, fullW, w, h, msg,
+		drawText_int((unsigned short*)screen, pitch, w, h, msg,
 			     (unsigned short)m_Transparency_Mask, style,
 			     adjustForScreenSize);
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
-		drawText_int((unsigned int*)screen, fullW, w, h, msg,
+		drawText_int((unsigned int*)screen, pitch, w, h, msg,
 			     m_Transparency_Mask, style,
 			     adjustForScreenSize);
 	}
