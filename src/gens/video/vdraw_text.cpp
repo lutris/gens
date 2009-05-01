@@ -148,7 +148,7 @@ static inline void drawChar_2x(pixel *screen, const int pitch, const int x, cons
 template<typename pixel>
 void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		  const char *msg, const pixel transparentMask, const vdraw_style_t *style,
-		  const bool adjustForScreenSize)
+		  const bool isDDraw)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
@@ -170,17 +170,12 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		charSize = 8;
 	
 	// Bottom-left of the screen.
-	// TODO: Fix this awful pile of hacks.
-	if (adjustForScreenSize)
-	{
-		// Adjust for screen size. (SDL software rendering)
-		x = ((vdraw_border_h / 2) * vdraw_scale) + 8;
-		y = h - (((240 - VDP_Num_Vis_Lines) / 2) * vdraw_scale);
-	}
-	else
+#if defined(GENS_OS_WIN32)
+	if (isDDraw)
 	{
 		// Don't adjust for screen size. (DDraw)
-#ifdef GENS_OS_WIN32
+		// TODO: Fix this ugly pile of hacks.
+		
 		if (!fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
 		{
 			// Hack for windowed 1x rendering.
@@ -209,12 +204,11 @@ void drawText_int(pixel *screen, const int pitch, const int w, const int h,
 		
 		if (vdraw_scale > 1)
 			y += (8 * vdraw_scale);
-#else
-		// SDL+OpenGL.
-		x = 8;
-		y = h;
-#endif
 	}
+#else /* !defined(GENS_OS_WIN32) */
+	x = 8;
+	y = h;
+#endif /* defined(GENS_OS_WIN32) */
 	
 	// Move the text down by another 2px in 1x rendering.
 	if (rendMode == PluginMgr::lstRenderPlugins.begin())
