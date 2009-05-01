@@ -51,9 +51,6 @@
 static int	vdraw_sdl_init(void);
 static int	vdraw_sdl_end(void);
 
-static int	vdraw_sdl_init_subsystem(void);
-static int	vdraw_sdl_shutdown(void);
-
 static void	vdraw_sdl_clear_screen(void);
 
 static int	vdraw_sdl_flip(void);
@@ -75,8 +72,8 @@ const vdraw_backend_t vdraw_backend_sdl =
 	.init = vdraw_sdl_init,
 	.end = vdraw_sdl_end,
 	
-	.init_subsystem = vdraw_sdl_init_subsystem,
-	.shutdown = vdraw_sdl_shutdown,
+	.init_subsystem = vdraw_sdl_common_init_subsystem,
+	.shutdown = vdraw_sdl_common_shutdown,
 	
 	.clear_screen = vdraw_sdl_clear_screen,
 	.update_vsync = NULL,
@@ -142,44 +139,6 @@ static int vdraw_sdl_init(void)
 static int vdraw_sdl_end(void)
 {
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	return 0;
-}
-
-
-/**
- * vdraw_sdl_init_subsystem(): Initialize the OS-specific graphics library.
- * @return 0 on success; non-zero on error.
- */
-static int vdraw_sdl_init_subsystem(void)
-{
-	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
-	{
-		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
-			"Error initializing SDL timers: %s", SDL_GetError());
-		return -1;
-	}
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
-	{
-		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
-			"Error initializing SDL video: %s", SDL_GetError());
-		return -1;
-	}
-	
-	// Take it back down now that we know it works.
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	
-	// Initialized successfully.
-	return 0;
-}
-
-
-/**
- * vdraw_sdl_shutdown(): Shut down the OS-specific graphics library.
- * @return 0 on success; non-zero on error.
- */
-static int vdraw_sdl_shutdown(void)
-{
-	SDL_Quit();
 	return 0;
 }
 

@@ -23,11 +23,18 @@
 #include "vdraw_sdl_common.h"
 #include "vdraw.h"
 
-#include "gens/gens_window.h"
+// Message logging.
+#include "macros/log_msg.h"
 
 // C includes.
 #include <stdint.h>
 #include <stdlib.h>
+
+// Gens window.
+#include "gens/gens_window.h"
+
+// SDL includes.
+#include <SDL/SDL.h>
 
 // GTK+ includes.
 #include <gtk/gtk.h>
@@ -85,4 +92,42 @@ void vdraw_sdl_common_embed(const int w, const int h)
 	gtk_widget_hide(gens_window_sdlsock);
 	unsetenv("SDL_WINDOWID");
 #endif
+}
+
+
+/**
+ * vdraw_sdl_common_init_subsystem(): Initialize the OS-specific graphics library.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_sdl_common_init_subsystem(void)
+{
+	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
+	{
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing SDL timers: %s", SDL_GetError());
+		return 1;
+	}
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+	{
+		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+			"Error initializing SDL video: %s", SDL_GetError());
+		return 2;
+	}
+	
+	// Take it back down now that we know it works.
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	
+	// Initialized successfully.
+	return 0;
+}
+
+
+/**
+ * vdraw_sdl_common_shutdown(): Shut down the OS-specific graphics library.
+ * @return 0 on success; non-zero on error.
+ */
+int vdraw_sdl_common_shutdown(void)
+{
+	SDL_Quit();
+	return 0;
 }
