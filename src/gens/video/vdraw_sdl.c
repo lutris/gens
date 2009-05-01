@@ -239,16 +239,18 @@ static int vdraw_sdl_flip(void)
 	if (vdraw_msg_visible)
 	{
 		// Message is visible.
-		draw_text(vdraw_sdl_screen->pixels, vdraw_sdl_screen->w,
-			  vdraw_sdl_screen->w, vdraw_sdl_screen->h,
-			  vdraw_msg_text, &vdraw_msg_style, TRUE);
+		draw_text(start, vdraw_sdl_screen->w,
+			  vdraw_rInfo.width * vdraw_scale,
+			  vdraw_rInfo.height * vdraw_scale,
+			  vdraw_msg_text, &vdraw_msg_style, FALSE);
 	}
 	else if (vdraw_fps_enabled && (Game != NULL) && Active && !Paused && !Debug)
 	{
 		// FPS is enabled.
-		draw_text(vdraw_sdl_screen->pixels, vdraw_sdl_screen->w,
-			  vdraw_sdl_screen->w, vdraw_sdl_screen->h,
-			  vdraw_msg_text, &vdraw_fps_style, TRUE);
+		draw_text(start, vdraw_sdl_screen->w,
+			  vdraw_rInfo.width * vdraw_scale,
+			  vdraw_rInfo.height * vdraw_scale,
+			  vdraw_msg_text, &vdraw_fps_style, FALSE);
 	}
 	
 	SDL_UnlockSurface(vdraw_sdl_screen);
