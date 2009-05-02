@@ -25,7 +25,7 @@
 
 #if defined(__linux__) && defined(__ELF__)
 	/* Mark the stack as non-executable on ELF. */
-	.section .note.GNU-stack, "", %progbits
+	.section .note.GNU-stack,"",%progbits
 #endif
 
 /* Read-only data macro. */
