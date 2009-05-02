@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] VDP Layer Options. (Plugin Data File)                       *
+ * Gens: [MDP] VDP Layer Options. (Win32 Resource Script)                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,54 +20,52 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <stdint.h>
-#include <string.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_cpuflags.h"
+#include "afxres.h"
+#include "winuser.h"
 
-#include "vlopt.h"
-#include "vlopt_icon.h"
+#include "resource.h"
 
-static mdp_desc_t mdp_desc =
-{
-	.name = "VDP Layer Options",
-	.author_mdp = "David Korth",
-	.author_orig = NULL,
-	.description = "VDP Layer Options adjustment plugin.\nIcon provided by SkyLights.",
-	.website = NULL,
-	.license = MDP_LICENSE_GPL_2,
-	
-	.icon = vlopt_icon,
-	.iconLength = sizeof(vlopt_icon)
-};
+// Plugin icon.
+IDI_VLOPT	ICON	"vlopt.ico"
 
-static mdp_func_t mdp_func =
-{
-	.init = vlopt_init,
-	.end = vlopt_end
-};
-
-mdp_t mdp =
-{
-	// Plugin version information.
-	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(1, 0, 0),
-	
-	// CPU flags.
-	.cpuFlagsSupported = 0,
-	.cpuFlagsRequired = 0,
-	
-	// UUID: e383912e-105f-44d1-a23f-35838bc3178d
-	.uuid = {0xE3, 0x83, 0x91, 0x2E,
-		 0x10, 0x5f,
-		 0x44, 0xD1,
-		 0xA2, 0x3F,
-		 0x35, 0x83, 0x8B, 0xC3, 0x17, 0x8D},
-	
-	// Description.
-	.desc = &mdp_desc,
-	
-	// Functions.
-	.func = &mdp_func
-};
+// Application Version
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION 1,0,0,0
+	PRODUCTVERSION 1,0,0,0
+	FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+	FILEFLAGS 0x1L
+#else
+	FILEFLAGS 0x0L
+#endif
+	FILEOS 0x40004L
+	FILETYPE 0x1L
+	FILESUBTYPE 0x0L
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904b0"
+		BEGIN
+			VALUE "Comments", "VDP Layer Options adjustment plugin.\nIcon provided by SkyLights.\0"
+			//VALUE "CompanyName", "\0"
+			VALUE "FileDescription", "[MDP] VDP Layer Options.\0"
+			VALUE "FileVersion", "1.0.0"
+			VALUE "InternalName", "[MDP] VDP Layer Options.\0"
+			//VALUE "LegalCopyright", "\0"
+			//VALUE "LegalTrademarks", "\0"
+			//VALUE "OriginalFilename", "\0"
+			//VALUE "PrivateBuild", "\0"
+			VALUE "ProductName", "[MDP] VDP Layer Options.\0"
+			VALUE "ProductVersion", "1.0.0\0"
+			//VALUE "SpecialBuild", "\0"
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x409, 1200
+	END
+END

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] VDP Layer Options. (Plugin Data File)                       *
+ * Gens: [MDP] VDP Layer Options. (Win32 Resource Script)                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -20,54 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <stdint.h>
-#include <string.h>
+#ifndef _MDP_MISC_VDP_LAYER_OPTIONS_RESOURCE_H
+#define _MDP_MISC_VDP_LAYER_OPTIONS_RESOURCE_H
 
-#include "mdp/mdp.h"
-#include "mdp/mdp_cpuflags.h"
+// Plugin icon.
+#define IDI_VLOPT	0x0001
 
-#include "vlopt.h"
-#include "vlopt_icon.h"
-
-static mdp_desc_t mdp_desc =
-{
-	.name = "VDP Layer Options",
-	.author_mdp = "David Korth",
-	.author_orig = NULL,
-	.description = "VDP Layer Options adjustment plugin.\nIcon provided by SkyLights.",
-	.website = NULL,
-	.license = MDP_LICENSE_GPL_2,
-	
-	.icon = vlopt_icon,
-	.iconLength = sizeof(vlopt_icon)
-};
-
-static mdp_func_t mdp_func =
-{
-	.init = vlopt_init,
-	.end = vlopt_end
-};
-
-mdp_t mdp =
-{
-	// Plugin version information.
-	.interfaceVersion = MDP_INTERFACE_VERSION,
-	.pluginVersion = MDP_VERSION(1, 0, 0),
-	
-	// CPU flags.
-	.cpuFlagsSupported = 0,
-	.cpuFlagsRequired = 0,
-	
-	// UUID: e383912e-105f-44d1-a23f-35838bc3178d
-	.uuid = {0xE3, 0x83, 0x91, 0x2E,
-		 0x10, 0x5f,
-		 0x44, 0xD1,
-		 0xA2, 0x3F,
-		 0x35, 0x83, 0x8B, 0xC3, 0x17, 0x8D},
-	
-	// Description.
-	.desc = &mdp_desc,
-	
-	// Functions.
-	.func = &mdp_func
-};
+#endif /* _MDP_MISC_VDP_LAYER_OPTIONS_RESOURCE_H */

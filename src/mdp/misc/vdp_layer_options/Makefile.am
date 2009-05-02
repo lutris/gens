@@ -1,5 +1,9 @@
 # MDP Miscellaneous Plugin: VDP Layer Options.
 
+# Win32 resources
+.rc.lo:
+	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=RC $(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
+
 AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
@@ -31,6 +35,11 @@ noinst_HEADERS += \
 endif
 
 if GENS_UI_WIN32
-mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_win32.c
+mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_win32.c vlopt_dllmain.c resource.rc
+#mdp_misc_vdp_layer_options_la_DEPENDENCIES = resource.rc
 mdp_misc_vdp_layer_options_la_LIBADD	 = -lgdi32
+noinst_HEADERS += \
+		vlopt.ico \
+		vlopt_dllmain.h \
+		resource.h
 endif

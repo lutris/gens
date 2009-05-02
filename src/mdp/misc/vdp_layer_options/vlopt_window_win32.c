@@ -34,6 +34,10 @@
 #include "vlopt_plugin.h"
 #include "vlopt.h"
 
+// Win32-specific includes.
+#include "vlopt_dllmain.h"
+#include "resource.h"
+
 // MDP error codes.
 #include "mdp/mdp_error.h"
 
@@ -60,9 +64,6 @@ static BOOL vlopt_window_child_windows_created;
 // Option handling functions.
 static void vlopt_window_load_options(void);
 static void vlopt_window_save_options(void);
-
-// Instance.
-static HINSTANCE vlopt_hinstance;
 
 // Font.
 static HFONT vlopt_hfont = NULL;
@@ -92,6 +93,10 @@ void vlopt_window_show(void *parent)
 	
 	vlopt_window_child_windows_created = FALSE;
 	
+	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
+	if (!vlopt_hinstance)
+		vlopt_hinstance = GetModuleHandle(NULL);
+	
 	// Create the window class.
 	if (vlopt_window_wndclass.lpfnWndProc != vlopt_window_wndproc)
 	{
@@ -99,8 +104,8 @@ void vlopt_window_show(void *parent)
 		vlopt_window_wndclass.lpfnWndProc = vlopt_window_wndproc;
 		vlopt_window_wndclass.cbClsExtra = 0;
 		vlopt_window_wndclass.cbWndExtra = 0;
-		vlopt_window_wndclass.hInstance = GetModuleHandle(NULL);
-		vlopt_window_wndclass.hIcon = NULL;
+		vlopt_window_wndclass.hInstance = vlopt_hinstance;
+		vlopt_window_wndclass.hIcon = LoadIcon(vlopt_hinstance, MAKEINTRESOURCE(IDI_VLOPT));
 		vlopt_window_wndclass.hCursor = NULL;
 		vlopt_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		vlopt_window_wndclass.lpszMenuName = NULL;
@@ -108,9 +113,6 @@ void vlopt_window_show(void *parent)
 		
 		RegisterClass(&vlopt_window_wndclass);
 	}
-	
-	// Get the HINSTANCE.
-	vlopt_hinstance = GetModuleHandle(NULL);
 	
 	// Create the font.
 	vlopt_hfont = mdp_win32_get_message_font();
@@ -168,7 +170,7 @@ static LRESULT CALLBACK vlopt_window_wndproc(HWND hWnd, UINT message, WPARAM wPa
 {
 	int rval;
 	
-	switch(message)
+	switch (message)
 	{
 		case WM_CREATE:
 			vlopt_window_create_child_windows(hWnd);
