@@ -126,11 +126,11 @@ static int mdp_host_reg_get_all_psg(void *reg_struct)
 
 
 /**
- * mdp_host_reg_get_z80(): Get all Z80 registers.
+ * mdp_host_reg_get_all_z80(): Get all Z80 registers.
  * @param reg_struct Pointer to mdp_reg_psg_t struct to store the registers in.
  * @return MDP error code.
  */
-static int mdp_host_reg_get_z80(void *reg_struct)
+static int mdp_host_reg_get_all_z80(void *reg_struct)
 {
 	mdp_reg_z80_t *reg_z80 = (mdp_reg_z80_t*)reg_struct;
 	
@@ -183,7 +183,7 @@ int MDP_FNCALL mdp_host_reg_get_all(int icID, void *reg_struct)
 		case MDP_REG_IC_PSG:
 			return mdp_host_reg_get_all_psg(reg_struct);
 		case MDP_REG_IC_Z80:
-			return mdp_host_reg_get_z80(reg_struct);
+			return mdp_host_reg_get_all_z80(reg_struct);
 		default:
 			return -MDP_ERR_REG_INVALID_ICID;
 	}
