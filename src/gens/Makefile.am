@@ -63,9 +63,9 @@ endif # GENS_PNG_INTERNAL
 
 # Win32 resources
 .rc.o:
-	$(host_alias)-windres -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
+	$(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
 %.o: %.rc
-	$(host_alias)-windres -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
+	$(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
 
 bin_PROGRAMS = gens
 
