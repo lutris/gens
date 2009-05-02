@@ -191,5 +191,9 @@ void Post_Line_32X(void)
 				}
 			}
 			break;
+		
+		default:
+			// Invalid.
+			break;
 	}
 }

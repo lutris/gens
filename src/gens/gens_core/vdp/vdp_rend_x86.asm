@@ -269,7 +269,7 @@ section .bss align=64
 	; See g_32x_32bit.h
 	global __32X_Rend_Mode
 	__32X_Rend_Mode:
-		resb 1
+		resd 1
 	
 	; _Sprite_Over: If set, enforces the sprite limit.
 	global _Sprite_Over
@@ -2121,12 +2121,9 @@ section .text align=64
 	align 16
 	
 	.VDP_OK:
-		mov	ecx, 160
 		mov	eax, [_H_Pix_Begin]
 		mov	edi, [esp]
-		sub	ecx, eax
 		add	esp, byte 4
-		lea	edi, [_MD_Screen + edi * 2 + 8 * 2]
 		mov	esi, [__32X_VDP + vx.State]
 		mov	eax, [__32X_VDP + vx.Mode]
 		and	esi, byte 1
@@ -2145,7 +2142,7 @@ section .text align=64
 		
 		; Set the 32X render mode for the 32-bit color C macros.
 		shr	edx, 2
-		mov	[__32X_Rend_Mode], al
+		mov	[__32X_Rend_Mode], eax
 		or	[__32X_Rend_Mode], dl
 		shl	edx, 2
 		
