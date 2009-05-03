@@ -34,6 +34,10 @@
 #include "sgens_plugin.h"
 #include "sgens.h"
 
+// Win32-specific includes.
+#include "sgens_dllmain.h"
+#include "resource.h"
+
 // sGens ROM type information and widget information.
 #include "sgens_rom_type.h"
 #include "sgens_widget_info.h"
@@ -65,8 +69,7 @@ static WNDCLASS	sgens_wndclass;
 #define WIDGET_COL_SPACING 16
 #define WIDGET_ROW_HEIGHT 16
 
-// Instance and font.
-static HINSTANCE sgens_hInstance;
+// Font.
 static HFONT sgens_hFont = NULL;
 
 // Widgets.
@@ -103,8 +106,9 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		return;
 	}
 	
-	// Get the HINSTANCE.
-	sgens_hInstance = GetModuleHandle(NULL);
+	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
+	if (!sgens_hInstance)
+		sgens_hInstance = GetModuleHandle(NULL);
 	
 	if (sgens_wndclass.lpfnWndProc != sgens_window_wndproc)
 	{
@@ -114,7 +118,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 		sgens_wndclass.cbClsExtra = 0;
 		sgens_wndclass.cbWndExtra = 0;
 		sgens_wndclass.hInstance = sgens_hInstance;
-		sgens_wndclass.hIcon = NULL;
+		sgens_wndclass.hIcon = LoadIcon(sgens_hInstance, MAKEINTRESOURCE(IDI_SGENS));
 		sgens_wndclass.hCursor = NULL;
 		sgens_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		sgens_wndclass.lpszMenuName = NULL;

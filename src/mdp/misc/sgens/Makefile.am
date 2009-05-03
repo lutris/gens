@@ -1,5 +1,9 @@
 # MDP Miscellaneous Plugin: Sonic Gens.
 
+# Win32 resources
+.rc.lo:
+	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=RC $(RC) -I@srcdir@ -I$(top_builddir) $(DEFS) $< -o $@
+
 AUTOMAKE_OPTIONS = subdir-objects
 
 INCLUDES = -I@top_srcdir@/src/
@@ -33,6 +37,10 @@ noinst_HEADERS += \
 endif
 
 if GENS_UI_WIN32
-mdp_misc_sgens_la_SOURCES	+= sgens_window_win32.c
+mdp_misc_sgens_la_SOURCES	+= sgens_window_win32.c sgens_dllmain.c resource.rc
 mdp_misc_sgens_la_LIBADD	 = -lgdi32
+noinst_HEADERS += \
+		sgens.ico \
+		sgens_dllmain.h \
+		resource.h
 endif
