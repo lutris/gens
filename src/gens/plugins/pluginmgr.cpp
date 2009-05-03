@@ -272,26 +272,19 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 	list<pluginDirEntry> pluginEntries;
 	pluginDirEntry curEntry;
 	
-	// Required if libc doesn't provide the dirent->d_type field.
-#ifndef _DIRENT_HAVE_D_TYPE
-	struct stat dirstat;
-#endif /* !_DIRENT_HAVE_D_TYPE */
+	// glibc provides a d_type field in struct dirent, but some Linux
+	// filesystems (e.g. xfs) don't properly set the value of d_type,
+	// which leads to all files having the type DT_UNKNOWN.
+	struct stat d_stat;
 	
 	while ((d_entry = readdir(dir_mdp)))
 	{
 		// Check the file type.
-#ifdef _DIRENT_HAVE_D_TYPE
-		// libc provides the dirent->d_type field.
-		filetype = DTTOIF(d_entry->d_type);
-#else /* !_DIRENT_HAVE_D_TYPE */
-		// libc does not provide the dirent->d_type field.
-		// mingw unfortunately doesn't. :(
 		curEntry.filename = string(directory) +
 				    string(GENS_DIR_SEPARATOR_STR) +
 				    string(d_entry->d_name);
-		stat(curEntry.filename.c_str(), &dirstat);
-		filetype = dirstat.st_mode;
-#endif /* _DIRENT_HAVE_D_TYPE */
+		stat(curEntry.filename.c_str(), &d_stat);
+		filetype = d_stat.st_mode;
 		
 		if (S_ISDIR(filetype))
 		{
@@ -306,11 +299,6 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 					// Directory is not "." or "..".
 					
 					// Scan the directory.
-#ifdef _DIRENT_HAVE_D_TYPE
-					curEntry.filename = string(directory) +
-							    string(GENS_DIR_SEPARATOR_STR) +
-							    string(d_entry->d_name);
-#endif /* _DIRENT_HAVE_D_TYPE */
 					curEntry.isDirectory = true;
 					pluginEntries.push_back(curEntry);
 				}
@@ -332,11 +320,6 @@ void PluginMgr::scanExternalPlugins(const string& directory, bool recursive)
 				{	
 					// File extension matches.
 					// Found a plugin.
-#ifdef _DIRENT_HAVE_D_TYPE
-					curEntry.filename = string(directory) +
-							    string(GENS_DIR_SEPARATOR_STR) +
-							    string(d_entry->d_name);
-#endif
 					curEntry.isDirectory = false;
 					pluginEntries.push_back(curEntry);
 				}
