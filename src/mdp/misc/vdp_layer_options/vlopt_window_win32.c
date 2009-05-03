@@ -94,8 +94,8 @@ void vlopt_window_show(void *parent)
 	vlopt_window_child_windows_created = FALSE;
 	
 	// If no HINSTANCE was specified, use the main executable's HINSTANCE.
-	if (!vlopt_hinstance)
-		vlopt_hinstance = GetModuleHandle(NULL);
+	if (!vlopt_hInstance)
+		vlopt_hInstance = GetModuleHandle(NULL);
 	
 	// Create the window class.
 	if (vlopt_window_wndclass.lpfnWndProc != vlopt_window_wndproc)
@@ -104,8 +104,8 @@ void vlopt_window_show(void *parent)
 		vlopt_window_wndclass.lpfnWndProc = vlopt_window_wndproc;
 		vlopt_window_wndclass.cbClsExtra = 0;
 		vlopt_window_wndclass.cbWndExtra = 0;
-		vlopt_window_wndclass.hInstance = vlopt_hinstance;
-		vlopt_window_wndclass.hIcon = LoadIcon(vlopt_hinstance, MAKEINTRESOURCE(IDI_VLOPT));
+		vlopt_window_wndclass.hInstance = vlopt_hInstance;
+		vlopt_window_wndclass.hIcon = LoadIcon(vlopt_hInstance, MAKEINTRESOURCE(IDI_VLOPT));
 		vlopt_window_wndclass.hCursor = NULL;
 		vlopt_window_wndclass.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 		vlopt_window_wndclass.lpszMenuName = NULL;
@@ -122,7 +122,7 @@ void vlopt_window_show(void *parent)
 				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT,
-				    (HWND)parent, NULL, vlopt_hinstance, NULL);
+				    (HWND)parent, NULL, vlopt_hInstance, NULL);
 	
 	// Window adjustment.
 	mdp_win32_set_actual_window_size(vlopt_window, VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT);
@@ -238,7 +238,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	HWND grpBox = CreateWindow(WC_BUTTON, TEXT("VDP Layer Options"),
 			      WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 			      8, 8, VLOPT_WINDOW_WIDTH-16, VLOPT_WINDOW_HEIGHT-8-16-24,
-			      hWnd, NULL, vlopt_hinstance, NULL);
+			      hWnd, NULL, vlopt_hInstance, NULL);
 	SetWindowFont(grpBox, vlopt_hfont, TRUE);
 	
 	// Counter variable.
@@ -253,14 +253,14 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 					    WS_CHILD | WS_VISIBLE | SS_CENTER,
 					    8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*i), 16,
 					    VLOPT_GRID_COLX, VLOPT_GRID_ROW,
-					    grpBox, NULL, vlopt_hinstance, NULL);
+					    grpBox, NULL, vlopt_hInstance, NULL);
 		SetWindowFont(lblColHeader, vlopt_hfont, TRUE);
 		
 		lblRowHeader = CreateWindow(WC_STATIC, vlopt_options[i * 3].layer,
 					    WS_CHILD | WS_VISIBLE | SS_RIGHT,
 					    8, 16+(VLOPT_GRID_ROW*(i+1)),
 					    VLOPT_GRID_COL1, VLOPT_GRID_ROW,
-					    grpBox, NULL, vlopt_hinstance, NULL);
+					    grpBox, NULL, vlopt_hInstance, NULL);
 		SetWindowFont(lblRowHeader, vlopt_hfont, TRUE);
 	}
 	
@@ -274,7 +274,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 				8+8+VLOPT_GRID_COL1+(VLOPT_GRID_COLX*col)+((VLOPT_GRID_COLX-VLOPT_CHECKBOX_SIZE)/2),
 				8+16+(VLOPT_GRID_ROW*row),
 				VLOPT_CHECKBOX_SIZE, VLOPT_CHECKBOX_SIZE,
-				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hinstance, NULL);
+				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hInstance, NULL);
 		SetWindowFont(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
 		
 		// Next cell.
@@ -294,7 +294,7 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
 				8+8+8, 8+16+(VLOPT_GRID_ROW*(i-5)),
 				VLOPT_WINDOW_WIDTH-16-16-16, VLOPT_GRID_ROW,
-				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hinstance, NULL);
+				hWnd, (HMENU)(IDC_VLOPT_CHECKBOX + i), vlopt_hInstance, NULL);
 		SetWindowFont(vlopt_window_checkboxes[i], vlopt_hfont, TRUE);
 	}
 	
@@ -307,13 +307,13 @@ static void vlopt_window_create_child_windows(HWND hWnd)
 	// Create the "Reset" button.
 	HWND btnReset = CreateWindow(WC_BUTTON, TEXT("&Reset"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     posBtnLeft, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
-				     hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hinstance, NULL);
+				     hWnd, (HMENU)IDC_VLOPT_RESET, vlopt_hInstance, NULL);
 	SetWindowFont(btnReset, vlopt_hfont, TRUE);
 	
 	// Create the "Close" button.
 	HWND btnClose = CreateWindow(WC_BUTTON, TEXT("&Close"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 				     posBtnLeft+75+8, VLOPT_WINDOW_HEIGHT-24-8, 75, 23,
-				     hWnd, (HMENU)IDCLOSE, vlopt_hinstance, NULL);
+				     hWnd, (HMENU)IDCLOSE, vlopt_hInstance, NULL);
 	SetWindowFont(btnClose, vlopt_hfont, TRUE);
 	
 	// Child windows created.

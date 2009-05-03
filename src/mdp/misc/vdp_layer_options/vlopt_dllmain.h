@@ -35,7 +35,7 @@ extern "C" {
 
 DLL_LOCAL BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved);
 
-DLL_LOCAL extern HINSTANCE vlopt_hinstance;
+DLL_LOCAL extern HINSTANCE vlopt_hInstance;
 
 #ifdef __cplusplus
 }

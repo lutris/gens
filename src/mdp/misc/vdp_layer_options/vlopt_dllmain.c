@@ -23,7 +23,7 @@
 #include "vlopt_dllmain.h"
 
 // Instance.
-HINSTANCE vlopt_hinstance = NULL;
+HINSTANCE vlopt_hInstance = NULL;
 
 /**
  * DllMain(): Win32 DLL startup function.
@@ -37,7 +37,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 	MDP_UNUSED_PARAMETER(lpReserved);
 	
 	if (fdwReason == DLL_PROCESS_ATTACH)
-		vlopt_hinstance = hinstDLL;
+		vlopt_hInstance = hinstDLL;
 	
 	return TRUE;
 }
