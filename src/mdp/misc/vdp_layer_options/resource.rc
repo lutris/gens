@@ -52,14 +52,14 @@ BEGIN
 		BEGIN
 			VALUE "Comments", "VDP Layer Options adjustment plugin.\nIcon provided by SkyLights.\0"
 			//VALUE "CompanyName", "\0"
-			VALUE "FileDescription", "[MDP] VDP Layer Options.\0"
+			VALUE "FileDescription", "[MDP] VDP Layer Options\0"
 			VALUE "FileVersion", "1.0.0"
-			VALUE "InternalName", "[MDP] VDP Layer Options.\0"
+			VALUE "InternalName", "[MDP] VDP Layer Options\0"
 			//VALUE "LegalCopyright", "\0"
 			//VALUE "LegalTrademarks", "\0"
 			//VALUE "OriginalFilename", "\0"
 			//VALUE "PrivateBuild", "\0"
-			VALUE "ProductName", "[MDP] VDP Layer Options.\0"
+			VALUE "ProductName", "[MDP] VDP Layer Options\0"
 			VALUE "ProductVersion", "1.0.0\0"
 			//VALUE "SpecialBuild", "\0"
 		END
