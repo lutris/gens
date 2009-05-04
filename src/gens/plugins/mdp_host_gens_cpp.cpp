@@ -70,6 +70,14 @@ int MDP_FNCALL mdp_host_renderer_register(mdp_t *plugin, mdp_render_t *renderer)
 	// TODO: Check the minor version.
 	// Probably not needed right now, but may be needed later.
 	
+	// Check for unsupported render flags.
+	if (renderer->flags & MDP_RENDER_FLAG_SRC565DST888)
+	{
+		// Renderer requires 16-bit input for 32-bit output.
+		// TODO: Implement this in Gens/GS.
+		return -MDP_ERR_RENDER_UNSUPPORTED_FLAG;
+	}
+	
 	// Add the plugin to the list.
 	PluginMgr::lstRenderPlugins.push_back(renderer);
 	
