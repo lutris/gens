@@ -57,10 +57,7 @@ int MDP_FNCALL mdp_render_scale2x_init(mdp_host_t *host_srv)
 	mdp_render_scale2x_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_scale2x_host_srv->renderer_register(&mdp, &mdp_render);
-	
-	// Initialized.
-	return MDP_ERR_OK;
+	return mdp_render_scale2x_host_srv->renderer_register(&mdp, &mdp_render);
 }
 
 
