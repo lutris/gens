@@ -22,6 +22,9 @@
 
 #include "md_palette.hpp"
 
+// C includes.
+#include <math.h>
+
 #include "g_main.hpp"
 #include "ui/gens_ui.hpp"
 
@@ -60,9 +63,9 @@ static inline void T_constrainColorComponent(int& c)
 static inline int calculateGrayScale(int r, int g, int b)
 {
 	// Standard grayscale computation: Y = R*0.30 + G*0.59 + B*0.11
-	r = (r * (unsigned int) (0.30 * 65536.0)) >> 16;
-	g = (g * (unsigned int) (0.59 * 65536.0)) >> 16;
-	b = (b * (unsigned int) (0.11 * 65536.0)) >> 16;
+	r = lrint((double)r * 0.30);
+	g = lrint((double)g * 0.59);
+	b = lrint((double)b * 0.11);
 	return (r + g + b);
 }
 
