@@ -416,30 +416,55 @@ static int vdraw_sdl_gl_flip(void)
 	
 	if (bppMD == 16 && bppOut != 16)
 	{
-		// MDP_RENDER_FLAG_SRC16DST32.
-		// Render as 16-bit to an internal surface.
-		
-		// Make sure the internal surface is initialized.
-		if (vdraw_16to32_scale != vdraw_scale)
+		// Renderer does not support 32-bit color input.
+		if (((vdraw_rInfo.vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_32) &&
+		    ((vdraw_rInfo.vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) == MDP_RENDER_VMODE_RGB_SRC565DST888))
 		{
-			if (vdraw_16to32_surface)
-				free(vdraw_16to32_surface);
+			// Renderer supports 16-bit color input and 32-bit color output.
+			if (vdraw_get_fullscreen())
+				vdraw_blitFS(&vdraw_rInfo);
+			else
+				vdraw_blitW(&vdraw_rInfo);
 			
-			vdraw_16to32_scale = vdraw_scale;
-			vdraw_16to32_pitch = 320 * vdraw_scale * 2;
-			vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
+			// Apply the pause tint, if necessary.
+			if (Paused && Video.pauseTint)
+			{
+				veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
+			}
 		}
-		
-		vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
-		vdraw_rInfo.destPitch = vdraw_16to32_pitch;
-		if (vdraw_get_fullscreen())
-			vdraw_blitFS(&vdraw_rInfo);
 		else
-			vdraw_blitW(&vdraw_rInfo);
-		
-		vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
-				    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
-				    pitch, vdraw_16to32_pitch);
+		{
+			// Renderer only supports 16-bit color.
+			// Render as 16-bit to an internal surface.
+			
+			// Make sure the internal surface is initialized.
+			if (vdraw_16to32_scale != vdraw_scale)
+			{
+				if (vdraw_16to32_surface)
+					free(vdraw_16to32_surface);
+				
+				vdraw_16to32_scale = vdraw_scale;
+				vdraw_16to32_pitch = 320 * vdraw_scale * 2;
+				vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
+			}
+			
+			vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
+			vdraw_rInfo.destPitch = vdraw_16to32_pitch;
+			if (vdraw_get_fullscreen())
+				vdraw_blitFS(&vdraw_rInfo);
+			else
+				vdraw_blitW(&vdraw_rInfo);
+			
+			// Apply the pause tint, if necessary.
+			if (Paused && Video.pauseTint)
+			{
+				veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
+			}
+			
+			vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
+					    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
+					    pitch, vdraw_16to32_pitch);
+		}
 	}
 	else
 	{
@@ -447,12 +472,12 @@ static int vdraw_sdl_gl_flip(void)
 			vdraw_blitFS(&vdraw_rInfo);
 		else
 			vdraw_blitW(&vdraw_rInfo);
-	}
-	
-	// Apply the pause tint, if necessary.
-	if (Paused && Video.pauseTint)
-	{
-		veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
+		
+		// Apply the pause tint, if necessary.
+		if (Paused && Video.pauseTint)
+		{
+			veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
+		}
 	}
 	
 	// Calculate the texture size.

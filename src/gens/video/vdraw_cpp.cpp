@@ -127,9 +127,10 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	}
 	else
 	{
-		if (!(rendPlugin->flags & MDP_RENDER_FLAG_RGB888))
+		if (!(rendPlugin->flags & MDP_RENDER_FLAG_RGB888) ||
+		    (rendPlugin->flags & MDP_RENDER_FLAG_SRC565DST888))
 		{
-			// Render plugin only supports 16-bit color.
+			// Render plugin only supports 16-bit color input.
 			bppMD = 16;
 			vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 		}
@@ -159,19 +160,33 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	}
 	
 	// Set the render video mode flags.
-	switch (bppMD)
+	vdraw_rInfo.vmodeFlags = 0;
+	if (bppOut == 32 && (rendPlugin->flags & MDP_RENDER_FLAG_RGB888))
 	{
-		case 32:
-			vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_32;
-			break;
-		case 16:
-			vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
-					MDP_RENDER_VMODE_RGB_565;
-			break;
-		case 15:
-			vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
-					MDP_RENDER_VMODE_RGB_555;
-			break;
+		// Plugin supports 32-bit color.
+		vdraw_rInfo.vmodeFlags |= MDP_RENDER_VMODE_BPP_32;
+		if (rendPlugin->flags & MDP_RENDER_FLAG_SRC565DST888)
+		{
+			// Plugin requires 16-bit input.
+			vdraw_rInfo.vmodeFlags |= MDP_RENDER_VMODE_RGB_SRC565DST888;
+		}
+	}
+	else
+	{
+		switch (bppMD)
+		{
+			case 32:
+				vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_32;
+				break;
+			case 16:
+				vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
+							 MDP_RENDER_VMODE_RGB_565;
+				break;
+			case 15:
+				vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
+							 MDP_RENDER_VMODE_RGB_555;
+				break;
+		}
 	}
 	
 	// Set the CPU flags.
