@@ -38,7 +38,7 @@ DLL_LOCAL int MDP_FNCALL mdp_render_hq2x_init(mdp_host_t *host_srv);
 DLL_LOCAL int MDP_FNCALL mdp_render_hq2x_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_render_hq2x_cpp(mdp_render_info_t *render_info);
 
-DLL_LOCAL extern uint32_t *mdp_render_hq2x_LUT16to32;
+DLL_LOCAL extern uint32_t *mdp_render_hq2x_RGB16to32;
 DLL_LOCAL extern uint32_t *mdp_render_hq2x_RGB16toYUV;
 
 #ifdef __cplusplus
