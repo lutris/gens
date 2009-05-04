@@ -54,10 +54,7 @@ int MDP_FNCALL mdp_render_1x_init(mdp_host_t *host_srv)
 	mdp_render_1x_host_srv = host_srv;
 	
 	// Register the renderer.
-	mdp_render_1x_host_srv->renderer_register(&mdp_render_1x, &mdp_render_1x_render_t);
-	
-	// Initialized.
-	return MDP_ERR_OK;
+	return mdp_render_1x_host_srv->renderer_register(&mdp_render_1x, &mdp_render_1x_render_t);
 }
 
 
