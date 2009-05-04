@@ -9,6 +9,7 @@ TODO for Gens/GS r7:
 - [GTK+] Update all windows to support gtk_dialog_set_alternative_button_order().
   "gtk-alternative-button-order=1" in ~/.gtkrc-2.0-kde4
 - cc_window.c: Add checkboxes to the "Input Devices" listbox for filtering.
+- Add support for MDP_RENDER_FLAG_SRC565DST888.
 
 Other TODO for Gens/GS r7:
 - [GTK+] Consider setting the event box's background color to match the border color.
