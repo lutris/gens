@@ -43,9 +43,6 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
-// Video effects.
-#include "v_effects.hpp"
-
 
 // Function prototypes.
 static int	vdraw_sdl_init(void);
@@ -199,12 +196,6 @@ static int vdraw_sdl_flip(void)
 				vdraw_blitFS(&vdraw_rInfo);
 			else
 				vdraw_blitW(&vdraw_rInfo);
-			
-			// Apply the pause tint, if necessary.
-			if (Paused && Video.pauseTint)
-			{
-				veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-			}
 		}
 		else
 		{
@@ -229,12 +220,6 @@ static int vdraw_sdl_flip(void)
 			else
 				vdraw_blitW(&vdraw_rInfo);
 			
-			// Apply the pause tint, if necessary.
-			if (Paused && Video.pauseTint)
-			{
-				veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-			}
-			
 			vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
 					    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
 					    pitch, vdraw_16to32_pitch);
@@ -246,12 +231,6 @@ static int vdraw_sdl_flip(void)
 			vdraw_blitFS(&vdraw_rInfo);
 		else
 			vdraw_blitW(&vdraw_rInfo);
-		
-		// Apply the pause tint, if necessary.
-		if (Paused && Video.pauseTint)
-		{
-			veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-		}
 	}
 	
 	// Draw the message and/or FPS counter.

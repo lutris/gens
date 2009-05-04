@@ -385,6 +385,17 @@ void GensMainLoop(void)
 			else
 			{
 				// EMULATION PAUSED
+				if (_32X_Started)
+					Do_32X_VDP_Only();
+				else
+					Do_VDP_Only();
+				
+				if (Paused && Video.pauseTint)
+				{
+					// Emulation is paused.
+					veffect_pause_tint();
+				}
+				
 				vdraw_flip();
 				GensUI::sleep(250);
 			}

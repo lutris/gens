@@ -40,10 +40,6 @@
 #include <list>
 using std::list;
 
-// Emulation stuff.
-#include "emulator/g_md.hpp"
-#include "emulator/g_32x.hpp"
-
 // VDP includes.
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/vdp/vdp_io.h"
@@ -117,8 +113,6 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 		vdraw_cur_backend->stretch_adjust();
 	
 	// Set the MD bpp output value.
-	uint8_t bppMD_old = bppMD;
-	
 	if (bppOut != 32)
 	{
 		// Not 32-bit color. Always use the destination surface color depth.
@@ -139,23 +133,6 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 			// MD surface should be the same color depth as the destination surface.
 			bppMD = bppOut;
 			vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
-		}
-	}
-	
-	if (bppMD_old != bppMD)
-	{
-		// MD bpp changed.
-		if (!(Active && !Paused))
-		{
-			// If paused, redraw the MD screen.
-			// NOTE: This will cause issues with raster effects.
-			if (_32X_Started)
-				Do_32X_VDP_Only();
-			else
-				Do_VDP_Only();
-			
-			// Reset the previous Fast Blur state.
-			vdraw_prev_fast_blur = FALSE;
 		}
 	}
 	

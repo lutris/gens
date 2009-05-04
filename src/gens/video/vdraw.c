@@ -45,7 +45,6 @@
 #include "v_effects.hpp"
 #include "gens_core/gfx/fastblur.hpp"
 #include "emulator/g_md.hpp"
-#include "emulator/g_32x.hpp"
 #include "emulator/md_palette.hpp"
 
 // Inline video functions.
@@ -151,9 +150,6 @@ static uint32_t	*vdraw_RGB16to32 = NULL;
 uint16_t	*vdraw_16to32_surface;
 int		vdraw_16to32_scale;
 int		vdraw_16to32_pitch;
-
-// Previous Fast Blur state.
-BOOL		vdraw_prev_fast_blur = FALSE;
 
 
 /**
@@ -455,38 +451,9 @@ int vdraw_flip(void)
 		}
 	}
 	
-	// Blur the screen if requested. (unless paused/inactive)
+	// Blur the screen if requested.
 	if (vdraw_prop_fast_blur)
-	{
-		// Fast Blur is enabled.
-		if (Active && !Paused)
-		{
-			// Not paused. Assume the image has been redrawn.
-			Fast_Blur();
-		}
-		else if (!vdraw_prev_fast_blur)
-		{
-			// Paused, and image was redrawn.
-			Fast_Blur();
-		}
-		
-		vdraw_prev_fast_blur = TRUE;
-	}
-	else
-	{
-		if (vdraw_prev_fast_blur && !(Active && !Paused))
-		{
-			// Fast Blur was enabled previously.
-			// Paused; redraw the MD screen.
-			// NOTE: This will cause issues with raster effects.
-			if (_32X_Started)
-				Do_32X_VDP_Only();
-			else
-				Do_VDP_Only();
-		}
-		
-		vdraw_prev_fast_blur = FALSE;
-	}
+		Fast_Blur();
 	
 	// Check if the display width changed.
 	vdraw_border_h_old = vdraw_border_h;
@@ -542,19 +509,6 @@ void vdraw_set_bpp(const int new_bpp, const BOOL reset_video)
 	calc_transparency_mask();
 	calc_text_style(&vdraw_fps_style);
 	calc_text_style(&vdraw_msg_style);
-	
-	// If paused, redraw the MD screen.
-	// NOTE: This will cause issues with raster effects.
-	if (!(Active && !Paused))
-	{
-		if (_32X_Started)
-			Do_32X_VDP_Only();
-		else
-			Do_VDP_Only();
-	}
-	
-	// Reset the previous Fast Blur state.
-	vdraw_prev_fast_blur = FALSE;
 	
 	// Synchronize the Graphics menu.
 	Sync_Gens_Window_GraphicsMenu();

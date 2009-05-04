@@ -54,9 +54,6 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
-// Video effects.
-#include "v_effects.hpp"
-
 // Inline video functions.
 #include "v_inline.h"
 
@@ -776,12 +773,6 @@ int vdraw_ddraw_flip(void)
 				
 				vdraw_blitFS(&vdraw_rInfo);
 				
-				// Apply the pause tint, if necessary.
-				if (Paused && Video.pauseTint)
-				{
-					veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-				}
-				
 				// Draw the text.
 				vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);
 				
@@ -875,12 +866,6 @@ int vdraw_ddraw_flip(void)
 				{
 					// Renderer supports 16-bit color input and 32-bit color output.
 					vdraw_blitFS(&vdraw_rInfo);
-					
-					// Apply the pause tint, if necessary.
-					if (Paused && Video.pauseTint)
-					{
-						veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-					}
 				}
 				else
 				{
@@ -902,12 +887,6 @@ int vdraw_ddraw_flip(void)
 					vdraw_rInfo.destPitch = vdraw_16to32_pitch;
 					vdraw_blitFS(&vdraw_rInfo);
 					
-					// Apply the pause tint, if necessary.
-					if (Paused && Video.pauseTint)
-					{
-						veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-					}
-					
 					vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
 							    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
 							    ddsd.lPitch, vdraw_16to32_pitch);
@@ -916,12 +895,6 @@ int vdraw_ddraw_flip(void)
 			else
 			{
 				vdraw_blitFS(&vdraw_rInfo);
-				
-				// Apply the pause tint, if necessary.
-				if (Paused && Video.pauseTint)
-				{
-					veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-				}
 			}
 			
 			// Draw the text.
@@ -1002,12 +975,6 @@ int vdraw_ddraw_flip(void)
 				{
 					// Renderer supports 16-bit color input and 32-bit color output.
 					vdraw_blitW(&vdraw_rInfo);
-					
-					// Apply the pause tint, if necessary.
-					if (Paused && Video.pauseTint)
-					{
-						veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-					}
 				}
 				else
 				{
@@ -1029,12 +996,6 @@ int vdraw_ddraw_flip(void)
 					vdraw_rInfo.destPitch = vdraw_16to32_pitch;
 					vdraw_blitW(&vdraw_rInfo);
 					
-					// Apply the pause tint, if necessary.
-					if (Paused && Video.pauseTint)
-					{
-						veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-					}
-					
 					vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
 							    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
 							    ddsd.lPitch, vdraw_16to32_pitch);
@@ -1043,12 +1004,6 @@ int vdraw_ddraw_flip(void)
 			else
 			{
 				vdraw_blitW(&vdraw_rInfo);
-				
-				// Apply the pause tint, if necessary.
-				if (Paused && Video.pauseTint)
-				{
-					veffect_pause_tint(&vdraw_rInfo, vdraw_scale);
-				}
 			}
 			
 			// Draw the text.

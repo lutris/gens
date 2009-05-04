@@ -24,7 +24,6 @@
 #define GENS_V_EFFECTS_HPP
 
 #include "vdraw.h"
-#include "mdp/mdp_render.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +32,7 @@ extern "C" {
 int Update_Gens_Logo(void);
 int Update_Crazy_Effect(unsigned char introEffectColor);
 
-void veffect_pause_tint(mdp_render_info_t *rInfo, int scale);
+void veffect_pause_tint(void);
 
 #ifdef __cplusplus
 }
