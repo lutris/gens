@@ -23,9 +23,7 @@
 #ifndef __MDP_MISC_GAME_GENIE_CODE_H
 #define __MDP_MISC_GAME_GENIE_CODE_H
 
-#include <stdint.h>
-#include <string.h>
-
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_fncall.h"
 
 #ifdef __cplusplus

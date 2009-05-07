@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (Plugin Data File)                              *
+ * MDP: Sonic Gens. (Plugin Data File)                                     *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -19,9 +19,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc., *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
-
-#include <stdint.h>
-#include <string.h>
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"

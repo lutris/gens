@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] VDP Layer Options.                                          *
+ * MDP: VDP Layer Options.                                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -24,8 +24,6 @@
 #include <config.h>
 #endif
 
-#include <stdint.h>
-#include <string.h>
 #include <stdio.h>
 
 #include "vlopt.h"

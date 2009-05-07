@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (Window Code) (GTK+)                            *
+ * MDP: Sonic Gens. (Window Code) (GTK+)                                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -25,7 +25,6 @@
 #include <gdk/gdkkeysyms.h>
 
 // C includes.
-#include <stdint.h>
 #include <stdio.h>
 
 #include "sgens_window.h"

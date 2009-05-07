@@ -25,7 +25,6 @@
 #endif
 
 // C includes.
-#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -39,6 +38,7 @@ using std::string;
 #include "gg_engine.hpp"
 
 // MDP includes.
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"

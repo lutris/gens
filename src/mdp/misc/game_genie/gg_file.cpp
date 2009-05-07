@@ -31,7 +31,6 @@
 
 // C includes.
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -44,6 +43,7 @@ using std::list;
 #include "gg_strtok_r.h"
 
 // MDP includes.
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_fncall.h"
 
 // Header line for new patch code files.

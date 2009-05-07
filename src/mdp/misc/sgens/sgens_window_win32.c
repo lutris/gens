@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (Window Code) (Win32)                           *
+ * MDP: Sonic Gens. (Window Code) (Win32)                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -27,7 +27,6 @@
 #include <commctrl.h>
 
 // C includes.
-#include <stdint.h>
 #include <stdio.h>
 
 #include "sgens_window.h"

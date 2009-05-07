@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens.                                                 *
+ * MDP: Sonic Gens.                                                        *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -23,9 +23,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#include <stdint.h>
-#include <string.h>
 
 #include "sgens.h"
 #include "sgens_plugin.h"

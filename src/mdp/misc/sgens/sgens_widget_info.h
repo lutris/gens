@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (Window Code) (Information)                     *
+ * MDP: Sonic Gens. (Window Code) (Information)                            *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -23,11 +23,12 @@
 #ifndef _MDP_MISC_SGENS_WINDOW_INFO_H
 #define _MDP_MISC_SGENS_WINDOW_INFO_H
 
-#include "mdp/mdp_fncall.h"
-
 // C includes.
-#include <stdint.h>
 #include <string.h>
+
+// MDP includes.
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_fncall.h"
 
 // Degree symbol.
 #ifdef _WIN32

@@ -40,11 +40,7 @@
 #include "ips.h"
 #include "ips_plugin.h"
 
-// MDP includes.
-#include "mdp/mdp_error.h"
-
 // C includes.
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,6 +48,10 @@
 // C++ includes.
 #include <list>
 using std::list;
+
+// MDP includes.
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_error.h"
 
 
 typedef struct _ups_block_t
