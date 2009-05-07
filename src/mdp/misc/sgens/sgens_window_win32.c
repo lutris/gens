@@ -37,7 +37,7 @@
 #include "sgens_dllmain.h"
 #include "resource.h"
 
-// sGens ROM type information and widget information.
+// SGens ROM type information and widget information.
 #include "sgens_rom_type.h"
 #include "sgens_widget_info.h"
 
@@ -500,6 +500,6 @@ void MDP_FNCALL sgens_window_update(void)
 	tmp[sizeof(tmp)-1] = 0x00;
 	Static_SetText(lblPlayerInfo[PLAYER_INFO_Y], tmp);
 	
-	// sGens window has been updated.
+	// SGens window has been updated.
 	return;
 }

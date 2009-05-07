@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] Sonic Gens. (ROM Type Definitions)                          *
+ * MDP: Sonic Gens. (ROM Type Definitions)                                 *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * SGens Copyright (c) 2002 by LOst                                        *
@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-// sGens ROM definitions.
+// SGens ROM definitions.
 typedef enum _sgens_ROM_type
 {
 	SGENS_ROM_TYPE_NONE			= 0,

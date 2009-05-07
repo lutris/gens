@@ -35,7 +35,7 @@
 #include "sgens_16x16.xpm"
 #include "sgens_32x32.xpm"
 
-// sGens ROM type information and widget information.
+// SGens ROM type information and widget information.
 #include "sgens_rom_type.h"
 #include "sgens_widget_info.h"
 
@@ -492,6 +492,6 @@ void MDP_FNCALL sgens_window_update(void)
 	gtk_label_set_text(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), tmp);
 	gtk_label_set_use_markup(GTK_LABEL(lblPlayerInfo[PLAYER_INFO_Y]), TRUE);
 	
-	// sGens window has been updated.
+	// SGens window has been updated.
 	return;
 }

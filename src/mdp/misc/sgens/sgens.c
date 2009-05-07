@@ -126,7 +126,7 @@ static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info)
 	{
 		case MDP_EVENT_OPEN_ROM:
 		{
-			// Check the ROM to make sure sGens can handle it.
+			// Check the ROM to make sure SGens can handle it.
 			mdp_event_open_rom_t *open_rom = (mdp_event_open_rom_t*)(event_info);
 			sgens_current_rom_type = sgens_get_ROM_type(open_rom->system_id);
 			
@@ -143,25 +143,25 @@ static int MDP_FNCALL sgens_event_handler(int event_id, void *event_info)
 				sgens_current_rom_type = SGENS_ROM_TYPE_UNSUPPORTED;
 			}
 			
-			// Update the sGens window.
+			// Update the SGens window.
 			sgens_window_update_rom_type();
 			break;
 		}
 		case MDP_EVENT_CLOSE_ROM:
 		{
-			// If sGens is handling the ROM, unregister the PRE_FRAME event handler.
+			// If SGens is handling the ROM, unregister the PRE_FRAME event handler.
 			sgens_host_srv->event_unregister(&mdp, MDP_EVENT_PRE_FRAME, sgens_event_handler);
 			
 			// ROM type is "None".
 			sgens_current_rom_type = SGENS_ROM_TYPE_NONE;
 			
-			// Update the sGens window.
+			// Update the SGens window.
 			sgens_window_update_rom_type();
 			
 			break;
 		}
 		case MDP_EVENT_PRE_FRAME:
-			// Update the sGens window.
+			// Update the SGens window.
 			sgens_window_update();
 			break;
 	}
