@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] 2xSaI renderer. (x86 asm function prototypes)               *
+ * MDP: 2xSaI renderer. (x86 asm function prototypes)                      *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  * 2xSaI Copyright (c) by Derek Liauw Kie Fa and Robert J. Ohannessian     *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -24,13 +24,12 @@
 #ifndef MDP_RENDER_2XSAI_X86_H
 #define MDP_RENDER_2XSAI_X86_H
 
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_fncall.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-
-#include "mdp/mdp_fncall.h"
 
 DLL_LOCAL void MDP_FNCALL mdp_render_2xsai_16_x86_mmx(
 				uint16_t *destScreen, uint16_t *mdScreen,

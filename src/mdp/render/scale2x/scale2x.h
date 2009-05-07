@@ -21,13 +21,12 @@
 #ifndef MDP_RENDER_SCALE2X_SCALE2X_H
 #define MDP_RENDER_SCALE2X_SCALE2X_H
 
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_fncall.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-
-#include "mdp/mdp_fncall.h"
 
 DLL_LOCAL void MDP_FNCALL scale2x_16_def(
 				uint16_t* dst0, uint16_t* dst1,

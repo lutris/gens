@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] hq4x renderer.                                              *
+ * MDP: hq4x renderer.                                                     *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -24,11 +24,11 @@
 #ifndef MDP_RENDER_HQ4X_H
 #define MDP_RENDER_HQ4X_H
 
+#include "mdp/mdp_stdint.h"
+
 #include "mdp/mdp.h"
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
-
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

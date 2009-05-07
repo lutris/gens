@@ -1,8 +1,8 @@
 /***************************************************************************
- * Gens: [MDP] EPX Plus renderer.                                          *
+ * MDP: EPX Plus renderer.                                                 *
  *                                                                         *
  * Original code from Gens Rerecording.                                    *
- * MDP version Copyright (c) 2008 by David Korth                           *
+ * MDP version Copyright (c) 2008-2009 by David Korth                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -23,13 +23,11 @@
 #include <config.h>
 #endif
 
-#include <stdint.h>
-#include <string.h>
-
 #include "mdp_render_epx_plus.hpp"
 #include "mdp_render_epx_plus_plugin.h"
 
 // MDP includes.
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_error.h"
 
 // Mask constants.

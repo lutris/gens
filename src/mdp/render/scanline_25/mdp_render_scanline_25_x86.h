@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] 25% Scanline renderer. (x86 asm function prototypes)        *
+ * MDP: 25% Scanline renderer. (x86 asm function prototypes)               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -23,13 +23,12 @@
 #ifndef MDP_RENDER_SCANLINE_25_X86_H
 #define MDP_RENDER_SCANLINE_25_X86_H
 
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_fncall.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-
-#include "mdp/mdp_fncall.h"
 
 DLL_LOCAL void MDP_FNCALL mdp_render_scanline_25_16_x86(
 				uint16_t *destScreen, uint16_t *mdScreen,

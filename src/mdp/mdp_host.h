@@ -21,10 +21,10 @@
 #ifndef __MDP_HOST_H
 #define __MDP_HOST_H
 
-#include <stdint.h>
-
 #include "mdp_fncall.h"
 #include "mdp_version.h"
+#include "mdp_stdint.h"
+
 #include "mdp_render.h"
 #include "mdp_event.h"
 #include "mdp_z.h"

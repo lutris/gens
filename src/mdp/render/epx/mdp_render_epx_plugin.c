@@ -1,8 +1,8 @@
 /***************************************************************************
- * Gens: [MDP] EPX renderer. (Plugin Data File)                            *
+ * MDP: EPX renderer. (Plugin Data File)                                   *
  *                                                                         *
  * Original code from Gens Rerecording.                                    *
- * MDP version Copyright (c) 2008 by David Korth                           *
+ * MDP version Copyright (c) 2008-2009 by David Korth                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -19,13 +19,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include <stdint.h>
-#include <string.h>
+#include "mdp_render_epx.hpp"
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"
-
-#include "mdp_render_epx.hpp"
 
 static mdp_desc_t mdp_desc =
 {

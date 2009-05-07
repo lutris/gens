@@ -21,7 +21,7 @@
 #ifndef __MDP_ERROR_H
 #define __MDP_ERROR_H
 
-#include <stdint.h>
+#include "mdp_stdint.h"
 
 /**
  * These error codes are typically returned as negative numbers.

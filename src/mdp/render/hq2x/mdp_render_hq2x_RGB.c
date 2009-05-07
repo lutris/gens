@@ -22,6 +22,7 @@
  ***************************************************************************/
 
 #include "mdp_render_hq2x_RGB.h"
+#include "mdp/mdp_stdint.h"
 
 // C includes.
 #include <stdlib.h>

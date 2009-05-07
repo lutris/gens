@@ -21,8 +21,8 @@
 #ifndef __MDP_REG_H
 #define __MDP_REG_H
 
-#include "mdp/mdp_fncall.h"
-#include <stdint.h>
+#include "mdp_fncall.h"
+#include "mdp_stdint.h"
 
 #ifdef __cplusplus
 extern "C" {

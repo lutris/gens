@@ -23,7 +23,7 @@
 #ifndef __MDP_CPUFLAGS_H
 #define __MDP_CPUFLAGS_H
 
-#include <stdint.h>
+#include "mdp_stdint.h"
 
 /* CPU flags (IA32/x86_64) */
 #if defined(__i386__) || defined(__amd64__)

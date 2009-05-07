@@ -24,8 +24,8 @@
 #ifndef _MDP_RENDER_HQ3X_RGB_H
 #define _MDP_RENDER_HQ3X_RGB_H
 
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_fncall.h"
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

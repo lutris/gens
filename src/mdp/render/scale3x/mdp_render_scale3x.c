@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] Scale3x renderer.                                           *
+ * MDP: Scale3x renderer.                                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  * Scale3x Copyright (c) 2001 by Andrea Mazzoleni                          *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -20,9 +20,6 @@
  * with this program; if not, write to the Free Software Foundation, Inc., *
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
-
-#include <stdint.h>
-#include <string.h>
 
 #include "mdp_render_scale3x.h"
 #include "mdp_render_scale3x_plugin.h"

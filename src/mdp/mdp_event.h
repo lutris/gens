@@ -21,9 +21,8 @@
 #ifndef __MDP_EVENT_H
 #define __MDP_EVENT_H
 
-#include <stdint.h>
-
 #include "mdp_fncall.h"
+#include "mdp_stdint.h"
 #include "mdp_constants.h"
 
 #ifdef __cplusplus

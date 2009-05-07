@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] hq3x renderer. (x86 asm function prototypes)                *
+ * MDP: hq3x renderer. (x86 asm function prototypes)                       *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  * hq4x Copyright (c) 2003 by Maxim Stepin                                 *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -24,13 +24,12 @@
 #ifndef MDP_RENDER_HQ3X_X86_H
 #define MDP_RENDER_HQ3X_X86_H
 
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_fncall.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdint.h>
-
-#include "mdp/mdp_fncall.h"
 
 DLL_LOCAL void MDP_FNCALL mdp_render_hq3x_16_x86_mmx(
 				uint16_t *destScreen, uint16_t *mdScreen,

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: [MDP] hq4x renderer.                                              *
+ * MDP: hq4x renderer.                                                     *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -30,11 +30,11 @@
 #include "mdp_render_hq4x_RGB.h"
 
 // C includes.
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 // MDP includes.
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
 

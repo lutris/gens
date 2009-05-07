@@ -1,9 +1,9 @@
 /***************************************************************************
- * Gens: [MDP] Scale2x renderer.                                           *
+ * MDP: Scale2x renderer.                                                  *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
- * Copyright (c) 2008 by David Korth                                       *
+ * Copyright (c) 2008-2009 by David Korth                                  *
  * Scale2x Copyright (c) 2001 by Andrea Mazzoleni                          *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -24,9 +24,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#include <stdint.h>
-#include <string.h>
 
 #include "mdp_render_scale2x.h"
 #include "mdp_render_scale2x_plugin.h"

@@ -33,6 +33,7 @@
  */
 
 #include "scale3x.h"
+#include "mdp/mdp_stdint.h"
 
 #include <assert.h>
 

@@ -23,10 +23,9 @@
 #ifndef __MDP_RENDER_H
 #define __MDP_RENDER_H
 
-#include <stdint.h>
-
 #include "mdp_fncall.h"
 #include "mdp_version.h"
+#include "mdp_stdint.h"
 
 #ifdef __cplusplus
 extern "C" {

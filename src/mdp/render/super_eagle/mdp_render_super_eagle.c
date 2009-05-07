@@ -28,10 +28,8 @@
 #include "mdp_render_super_eagle.h"
 #include "mdp_render_super_eagle_plugin.h"
 
-#include <stdint.h>
-#include <string.h>
-
 // MDP includes.
+#include "mdp/mdp_stdint.h"
 #include "mdp/mdp_cpuflags.h"
 #include "mdp/mdp_error.h"
 
