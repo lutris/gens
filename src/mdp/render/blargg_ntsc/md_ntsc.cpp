@@ -103,10 +103,6 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	/* Calculate the output pitch difference for one scanline. */
 	const int outPitchDiff = (out_pitch / sizeof(pixel));
 	
-	/* Save the image height and starting position for later. */
-	const int img_height = height;
-	pixel *const rgb_start = rgb_out;
-	
 	while (height--)
 	{
 		uint16_t const* line_in = input;
@@ -159,15 +155,20 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		input += in_row_width;
 		rgb_out += (outPitchDiff * 2);
 	}
+}
+
+template<typename pixel, bool scanline_interp, pixel lowPixelMask>
+static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height, int out_pitch)
+{
+	/* Calculate the output pitch difference for one scanline. */
+	const int outPitchDiff = (out_pitch / sizeof(pixel));
 	
 	/* Fill in the scanlines. */
-	height = img_height;
-	rgb_out = (rgb_start + outPitchDiff);
 	while (height--)
 	{
 		// Simple double-scan.
 		// TODO: Port double_output_height() from the reference implementation.
-		memcpy(rgb_out, (rgb_out - outPitchDiff), in_width * sizeof(pixel) * 2);
+		memcpy(rgb_out + outPitchDiff, rgb_out, in_width * sizeof(pixel) * 2);
 		rgb_out += (outPitchDiff * 2);
 	}
 }
@@ -217,34 +218,46 @@ int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
 		case MDP_RENDER_VMODE_RGB_565:
 			// 16-bit color.
 			T_md_ntsc_blit<uint16_t, 0xF800, 0x07E0, 0x001F, 13, 8, 4>
-				      (mdp_md_ntsc,
-				       (uint16_t*)render_info->mdScreen,
-				       render_info->srcPitch / 2, render_info->width,
-				       render_info->height,
-				       (uint16_t*)render_info->destScreen,
-				       render_info->destPitch);
+					(mdp_md_ntsc,
+					 (uint16_t*)render_info->mdScreen,
+					 render_info->srcPitch / 2,
+					 render_info->width, render_info->height,
+					 (uint16_t*)render_info->destScreen,
+					 render_info->destPitch);
+			T_double_scan_image<uint16_t, false, 0x0421>
+					((uint16_t*)render_info->destScreen,
+					 render_info->width, render_info->height,
+					 render_info->destPitch);
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_555:
 			// 15-bit color.
 			T_md_ntsc_blit<uint16_t, 0x7C00, 0x03E0, 0x001F, 14, 9, 4>
-				      (mdp_md_ntsc,
-				       (uint16_t*)render_info->mdScreen,
-				       render_info->srcPitch / 2, render_info->width,
-				       render_info->height,
-				       (uint16_t*)render_info->destScreen,
-				       render_info->destPitch);
+					(mdp_md_ntsc,
+					 (uint16_t*)render_info->mdScreen,
+					 render_info->srcPitch / 2,
+					 render_info->width, render_info->height,
+					 (uint16_t*)render_info->destScreen,
+					 render_info->destPitch);
+			T_double_scan_image<uint16_t, false, 0x0821>
+					((uint16_t*)render_info->destScreen,
+					 render_info->width, render_info->height,
+					 render_info->destPitch);
 			break;
 		
 		case MDP_RENDER_VMODE_RGB_888:
 			// 32-bit color.
 			T_md_ntsc_blit<uint32_t, (uint32_t)0xFF0000, (uint32_t)0x00FF00, (uint32_t)0x0000FF, 5, 3, 1>
-				      (mdp_md_ntsc,
-				       (uint16_t*)render_info->mdScreen,
-				       render_info->srcPitch / 2, render_info->width,
-				       render_info->height,
-				       (uint32_t*)render_info->destScreen,
-				       render_info->destPitch);
+					(mdp_md_ntsc,
+					 (uint16_t*)render_info->mdScreen,
+					 render_info->srcPitch / 2,
+					 render_info->width, render_info->height,
+					 (uint32_t*)render_info->destScreen,
+					 render_info->destPitch);
+			T_double_scan_image<uint32_t, false, (uint32_t)0x010101>
+					((uint32_t*)render_info->destScreen,
+					 render_info->width, render_info->height,
+					 render_info->destPitch);
 			break;
 		
 		default:
