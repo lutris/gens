@@ -1,0 +1,206 @@
+/* md_ntsc 0.1.2. http://www.slack.net/~ant/ */
+
+#include "md_ntsc.h"
+
+/* Copyright (C) 2006 Shay Green. This module is free software; you
+can redistribute it and/or modify it under the terms of the GNU Lesser
+General Public License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version. This
+module is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+details. You should have received a copy of the GNU Lesser General Public
+License along with this module; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
+
+md_ntsc_setup_t const md_ntsc_monochrome = { 0,-1, 0, 0,.2,  0, 0,-.2,-.2,-1, 0,  0 };
+md_ntsc_setup_t const md_ntsc_composite  = { 0, 0, 0, 0, 0,  0, 0,  0,  0, 0, 0,  0 };
+md_ntsc_setup_t const md_ntsc_svideo     = { 0, 0, 0, 0, 0,  0,.2, -1, -1, 0, 0,  0 };
+md_ntsc_setup_t const md_ntsc_rgb        = { 0, 0, 0, 0,.2,  0,.7, -1, -1,-1, 0,  0 };
+
+#define alignment_count 2
+#define burst_count     1
+#define rescale_in      1
+#define rescale_out     1
+
+#define artifacts_mid   0.40f
+#define fringing_mid    0.30f
+#define std_decoder_hue 0
+
+#define gamma_size      8
+#define artifacts_max   1.00f
+#define LUMA_CUTOFF     0.1974
+
+#include "md_ntsc_impl.h"
+
+/* 2 input pixels -> 4 composite samples */
+pixel_info_t const md_ntsc_pixels [alignment_count] = {
+	{ PIXEL_OFFSET( -4, -9 ), { 0.1f, 0.9f, 0.9f, 0.1f } },
+	{ PIXEL_OFFSET( -2, -7 ), { 0.1f, 0.9f, 0.9f, 0.1f } },
+};
+
+static void correct_errors( md_ntsc_rgb_t color, md_ntsc_rgb_t* out )
+{
+	unsigned i;
+	for ( i = 0; i < rgb_kernel_size / 4; i++ )
+	{
+		md_ntsc_rgb_t error = color -
+				out [i    ] - out [i + 2    +16] - out [i + 4    ] - out [i + 6    +16] -
+				out [i + 8] - out [(i+10)%16+16] - out [(i+12)%16] - out [(i+14)%16+16];
+		CORRECT_ERROR( i + 6 + 16 );
+		/*DISTRIBUTE_ERROR( 2+16, 4, 6+16 );*/
+	}
+}
+
+void md_ntsc_init( md_ntsc_t* ntsc, md_ntsc_setup_t const* setup )
+{
+	int entry;
+	init_t impl;
+	if ( !setup )
+		setup = &md_ntsc_composite;
+	init( &impl, setup );
+	
+	for ( entry = 0; entry < md_ntsc_palette_size; entry++ )
+	{
+		float bb = impl.to_float [entry >> 6 & 7];
+		float gg = impl.to_float [entry >> 3 & 7];
+		float rr = impl.to_float [entry      & 7];
+		
+		float y, i, q = RGB_TO_YIQ( rr, gg, bb, y, i );
+		
+		int r, g, b = YIQ_TO_RGB( y, i, q, impl.to_rgb, int, r, g );
+		md_ntsc_rgb_t rgb = PACK_RGB( r, g, b );
+		
+		if ( setup->palette_out )
+			RGB_PALETTE_OUT( rgb, &setup->palette_out [entry * 3] );
+		
+		if ( ntsc )
+		{
+			gen_kernel( &impl, y, i, q, ntsc->table [entry] );
+			correct_errors( rgb, ntsc->table [entry] );
+		}
+	}
+}
+
+#ifndef MD_NTSC_NO_BLITTERS
+
+void md_ntsc_blit( md_ntsc_t const* ntsc, MD_NTSC_IN_T const* input, long in_row_width,
+		int in_width, int height, void* rgb_out, long out_pitch )
+{
+	int const chunk_count = in_width / md_ntsc_in_chunk - 1;
+	while ( height-- )
+	{
+		MD_NTSC_IN_T const* line_in = input;
+		MD_NTSC_BEGIN_ROW( ntsc, md_ntsc_black,
+				MD_NTSC_ADJ_IN( line_in [0] ),
+				MD_NTSC_ADJ_IN( line_in [1] ),
+				MD_NTSC_ADJ_IN( line_in [2] ) );
+		md_ntsc_out_t* restrict line_out = (md_ntsc_out_t*) rgb_out;
+		int n;
+		line_in += 3;
+		
+		for ( n = chunk_count; n; --n )
+		{
+			/* order of input and output pixels must not be altered */
+			MD_NTSC_COLOR_IN( 0, ntsc, MD_NTSC_ADJ_IN( line_in [0] ) );
+			MD_NTSC_RGB_OUT( 0, line_out [0], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_RGB_OUT( 1, line_out [1], MD_NTSC_OUT_DEPTH );
+			
+			MD_NTSC_COLOR_IN( 1, ntsc, MD_NTSC_ADJ_IN( line_in [1] ) );
+			MD_NTSC_RGB_OUT( 2, line_out [2], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_RGB_OUT( 3, line_out [3], MD_NTSC_OUT_DEPTH );
+			
+			MD_NTSC_COLOR_IN( 2, ntsc, MD_NTSC_ADJ_IN( line_in [2] ) );
+			MD_NTSC_RGB_OUT( 4, line_out [4], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_RGB_OUT( 5, line_out [5], MD_NTSC_OUT_DEPTH );
+			
+			MD_NTSC_COLOR_IN( 3, ntsc, MD_NTSC_ADJ_IN( line_in [3] ) );
+			MD_NTSC_RGB_OUT( 6, line_out [6], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_RGB_OUT( 7, line_out [7], MD_NTSC_OUT_DEPTH );
+			
+			line_in  += 4;
+			line_out += 8;
+		}
+		
+		/* finish final pixels */
+		MD_NTSC_COLOR_IN( 0, ntsc, MD_NTSC_ADJ_IN( line_in [0] ) );
+		MD_NTSC_RGB_OUT( 0, line_out [0], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_RGB_OUT( 1, line_out [1], MD_NTSC_OUT_DEPTH );
+		
+		MD_NTSC_COLOR_IN( 1, ntsc, md_ntsc_black );
+		MD_NTSC_RGB_OUT( 2, line_out [2], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_RGB_OUT( 3, line_out [3], MD_NTSC_OUT_DEPTH );
+		
+		MD_NTSC_COLOR_IN( 2, ntsc, md_ntsc_black );
+		MD_NTSC_RGB_OUT( 4, line_out [4], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_RGB_OUT( 5, line_out [5], MD_NTSC_OUT_DEPTH );
+		
+		MD_NTSC_COLOR_IN( 3, ntsc, md_ntsc_black );
+		MD_NTSC_RGB_OUT( 6, line_out [6], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_RGB_OUT( 7, line_out [7], MD_NTSC_OUT_DEPTH );
+		
+		input += in_row_width;
+		rgb_out = (char*) rgb_out + out_pitch;
+	}
+}
+
+#endif
+
+/* MDP Renderer Function */
+
+#include <stdlib.h>
+
+/* MDP includes. */
+#include "mdp/mdp_stdint.h"
+#include "mdp/mdp_error.h"
+static md_ntsc_t *mdp_md_ntsc = NULL;
+static md_ntsc_setup_t mdp_md_ntsc_setup;
+
+int MDP_FNCALL mdp_md_ntsc_init(void)
+{
+	// Allocate mdp_md_ntsc.
+	mdp_md_ntsc = (md_ntsc_t*)malloc(sizeof(md_ntsc_t));
+	
+	// Initialize mdp_md_ntsc_setup.
+	mdp_md_ntsc_setup = md_ntsc_composite;
+	
+	// Initialize mdp_md_ntsc.
+	md_ntsc_init(mdp_md_ntsc, &mdp_md_ntsc_setup);
+}
+
+int MDP_FNCALL mdp_md_ntsc_end(void)
+{
+	// Free mdp_md_ntsc.
+	free(mdp_md_ntsc);
+	mdp_md_ntsc = NULL;
+}
+
+int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
+{
+	if (!render_info)
+		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
+	
+	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
+	{
+		if ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) == MDP_RENDER_VMODE_RGB_565)
+		{
+			// 16-bit color.
+			md_ntsc_blit(mdp_md_ntsc,
+				     (uint16_t*)render_info->mdScreen,
+				     render_info->srcPitch / 2, render_info->width,
+				     render_info->height,
+				     (uint16_t*)render_info->destScreen,
+				     render_info->destPitch);
+		}
+		else
+		{
+			// TODO: 15-bit color.
+		}
+	}
+	else
+	{
+		// TODO: 32-bit color.
+	}
+	
+	return MDP_ERR_OK;
+}

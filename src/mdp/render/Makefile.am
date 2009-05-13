@@ -18,7 +18,8 @@ SUBDIRS = \
 		scale3x \
 		scale4x \
 		epx \
-		epx_plus
+		epx_plus \
+		blargg_ntsc
 
 if GENS_X86_ASM
 SUBDIRS += \
