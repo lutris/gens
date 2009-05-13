@@ -124,8 +124,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 15;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_555)) |
-					((MDP_RENDER_VMODE_RGB_555) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_555, MDP_RENDER_VMODE_RGB_555);
 			}
 			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_565to555)
 			{
@@ -133,8 +132,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 16;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_565)) |
-					((MDP_RENDER_VMODE_RGB_555) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_555);
 			}
 			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_888to555)
 			{
@@ -142,8 +140,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 32;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_888)) |
-					((MDP_RENDER_VMODE_RGB_555) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_555);
 			}
 			else
 			{
@@ -153,8 +150,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 15;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_555)) |
-					((MDP_RENDER_VMODE_RGB_555) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_555, MDP_RENDER_VMODE_RGB_555);
 			}
 			break;
 		
@@ -166,8 +162,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 16;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_565)) |
-					((MDP_RENDER_VMODE_RGB_565) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_565);
 			}
 			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_555to565)
 			{
@@ -175,8 +170,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 15;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_565)) |
-					((MDP_RENDER_VMODE_RGB_555) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_555, MDP_RENDER_VMODE_RGB_565);
 			}
 			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_888to565)
 			{
@@ -184,8 +178,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 32;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_888)) |
-					((MDP_RENDER_VMODE_RGB_565) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_565);
 			}
 			else
 			{
@@ -195,8 +188,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 16;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_565)) |
-					((MDP_RENDER_VMODE_RGB_565) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_565);
 			}
 			break;
 		
@@ -208,8 +200,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 32;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_888)) |
-					((MDP_RENDER_VMODE_RGB_888) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_888);
 			}
 			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_565to888)
 			{
@@ -217,8 +208,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 16;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_565)) |
-					((MDP_RENDER_VMODE_RGB_888) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_888);
 			}
 			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_555to888)
 			{
@@ -226,8 +216,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 15;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_555)) |
-					((MDP_RENDER_VMODE_RGB_888) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_555, MDP_RENDER_VMODE_RGB_888);
 			}
 			else
 			{
@@ -237,8 +226,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				bppMD = 32;
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
 				vdraw_rInfo.vmodeFlags |=
-					((MDP_RENDER_VMODE_RGB_888)) |
-					((MDP_RENDER_VMODE_RGB_888) << 2);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_888);
 			}
 			break;
 	}
