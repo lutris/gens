@@ -49,6 +49,7 @@ Release 7 introduces the following new features:
   - EPX Plus (ported from Gens Rerecording)
   - Super 2xSaI (ported from Gens Plus)
   - Super Eagle (ported from Gens Plus)
+  - Blargg's NTSC filter for MD
 
 - [Win32] Ported the GDI video backend from Gens Plus. It still has
   a few bugs, but it mostly works.
