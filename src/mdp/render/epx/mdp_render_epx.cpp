@@ -122,21 +122,35 @@ int MDP_FNCALL mdp_render_epx_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
-	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
+	if (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) !=
+	    MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
 	{
-		T_mdp_render_epx_cpp(
-			    (uint16_t*)render_info->destScreen,
-			    (uint16_t*)render_info->mdScreen,
-			    render_info->destPitch, render_info->srcPitch,
-			    render_info->width, render_info->height);
+		// Renderer only supports identical src/dst modes.
+		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
-	else
+	
+	switch (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags))
 	{
-		T_mdp_render_epx_cpp(
-			    (uint32_t*)render_info->destScreen,
-			    (uint32_t*)render_info->mdScreen,
-			    render_info->destPitch, render_info->srcPitch,
-			    render_info->width, render_info->height);
+		case MDP_RENDER_VMODE_RGB_555:
+		case MDP_RENDER_VMODE_RGB_565:
+			T_mdp_render_epx_cpp(
+				    (uint16_t*)render_info->destScreen,
+				    (uint16_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height);
+			break;
+		
+		case MDP_RENDER_VMODE_RGB_888:
+			T_mdp_render_epx_cpp(
+				    (uint32_t*)render_info->destScreen,
+				    (uint32_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height);
+			break;
+		
+		default:
+			// Unsupported video mode.
+			return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
 	
 	return MDP_ERR_OK;

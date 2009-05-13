@@ -80,7 +80,14 @@ int MDP_FNCALL mdp_render_scale2x_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
-	const unsigned int bytespp = (render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) ? 4 : 2;
+	if (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) !=
+	    MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
+	{
+		// Renderer only supports identical src/dst modes.
+		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
+	}
+	
+	const unsigned int bytespp = ((MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) == MDP_RENDER_VMODE_RGB_888) ? 4 : 2);
 	
 #if defined(GENS_X86_ASM) && defined(__GNUC__) && defined(__i386__)
 	if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)

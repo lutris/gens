@@ -105,13 +105,33 @@ int MDP_FNCALL mdp_render_hq2x_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
+	if (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) !=
+	    MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
+	{
+		// Renderer only supports identical src/dst modes.
+		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
+	}
+	
+	int mode565;
+	switch (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags))
+	{
+		case MDP_RENDER_VMODE_RGB_555:
+			mode565 = 0;
+			break;
+		case MDP_RENDER_VMODE_RGB_565:
+			mode565 = 1;
+			break;
+		default:
+			// Unsupported video mode.
+			return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
+	}
+	
 	// Make sure the lookup tables are initialized.
 	if (!mdp_render_hq2x_RGB16to32)
 		mdp_render_hq2x_RGB16to32 = mdp_render_hq2x_build_RGB16to32();
 	if (!mdp_render_hq2x_RGB16toYUV)
 		mdp_render_hq2x_RGB16toYUV = mdp_render_hq2x_build_RGB16toYUV();
 	
-#ifdef GENS_X86_ASM
 	if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
 	{
 		mdp_render_hq2x_16_x86_mmx(
@@ -119,15 +139,8 @@ int MDP_FNCALL mdp_render_hq2x_cpp(mdp_render_info_t *render_info)
 			    (uint16_t*)render_info->mdScreen,
 			    render_info->destPitch, render_info->srcPitch,
 			    render_info->width, render_info->height,
-			    render_info->vmodeFlags);
+			    mode565);
 	}
-#else /* !GENS_X86_ASM */
-	T_mdp_render_hq2x_cpp(
-		    (uint16_t*)render_info->destScreen,
-		    (uint16_t*)render_info->mdScreen,
-		    render_info->destPitch, render_info->srcPitch,
-		    render_info->width, render_info->height);
-#endif /* GENS_X86_ASM */
 	
 	return MDP_ERR_OK;
 }

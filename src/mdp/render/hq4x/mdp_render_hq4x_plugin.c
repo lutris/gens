@@ -44,8 +44,8 @@ mdp_render_t mdp_render =
 	.blit = mdp_render_hq4x_cpp,
 	.tag = "hq4x",
 	
-	.flags = MDP_RENDER_FLAG_RGB555 |
-		 MDP_RENDER_FLAG_RGB565
+	.flags = MDP_RENDER_FLAG_RGB_555to555 |
+		 MDP_RENDER_FLAG_RGB_565to565
 };
 
 static mdp_func_t mdp_func =

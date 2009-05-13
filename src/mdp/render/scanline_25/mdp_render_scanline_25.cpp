@@ -141,65 +141,82 @@ int MDP_FNCALL mdp_render_scanline_25_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
-	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
+	if (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) !=
+	    MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
 	{
-#ifdef GENS_X86_ASM
-		if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
-		{
-			mdp_render_scanline_25_16_x86_mmx(
-				    (uint16_t*)render_info->destScreen,
-				    (uint16_t*)render_info->mdScreen,
-				    render_info->destPitch, render_info->srcPitch,
-				    render_info->width, render_info->height,
-				    render_info->vmodeFlags);
-		}
-		else
-		{
-			mdp_render_scanline_25_16_x86(
-				    (uint16_t*)render_info->destScreen,
-				    (uint16_t*)render_info->mdScreen,
-				    render_info->destPitch, render_info->srcPitch,
-				    render_info->width, render_info->height,
-				    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV2_16_ASM : MASK_DIV2_15_ASM),
-				    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV4_16_ASM : MASK_DIV4_15_ASM));
-		}
-#else /* !GENS_X86_ASM */
-		T_mdp_render_scanline_25_cpp(
-			    (uint16_t*)render_info->destScreen,
-			    (uint16_t*)render_info->mdScreen,
-			    render_info->destPitch, render_info->srcPitch,
-			    render_info->width, render_info->height,
-			    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV2_16 : MASK_DIV2_15),
-			    ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) ? MASK_DIV4_16 : MASK_DIV4_15));
-#endif /* GENS_X86_ASM */
+		// Renderer only supports identical src/dst modes.
+		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
-	else
+	
+	switch (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags))
 	{
+		case MDP_RENDER_VMODE_RGB_555:
+		case MDP_RENDER_VMODE_RGB_565:
+		{
+			const int mode565 = ((MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) == MDP_RENDER_VMODE_RGB_565) ? 1 : 0);
+			
 #ifdef GENS_X86_ASM
-		if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
-		{
-			mdp_render_scanline_25_32_x86_mmx(
-				    (uint32_t*)render_info->destScreen,
-				    (uint32_t*)render_info->mdScreen,
-				    render_info->destPitch, render_info->srcPitch,
-				    render_info->width, render_info->height);
-		}
-		else
-		{
-			mdp_render_scanline_25_32_x86(
-				    (uint32_t*)render_info->destScreen,
-				    (uint32_t*)render_info->mdScreen,
-				    render_info->destPitch, render_info->srcPitch,
-				    render_info->width, render_info->height);
-		}
+			if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
+			{
+				mdp_render_scanline_25_16_x86_mmx(
+					    (uint16_t*)render_info->destScreen,
+					    (uint16_t*)render_info->mdScreen,
+					    render_info->destPitch, render_info->srcPitch,
+					    render_info->width, render_info->height,
+					    mode565);
+			}
+			else
+			{
+				mdp_render_scanline_25_16_x86(
+					    (uint16_t*)render_info->destScreen,
+					    (uint16_t*)render_info->mdScreen,
+					    render_info->destPitch, render_info->srcPitch,
+					    render_info->width, render_info->height,
+					    (mode565 ? MASK_DIV2_16_ASM : MASK_DIV2_15_ASM),
+					    (mode565 ? MASK_DIV4_16_ASM : MASK_DIV4_15_ASM));
+			}
 #else /* !GENS_X86_ASM */
-		T_mdp_render_scanline_25_cpp(
-			    (uint32_t*)render_info->destScreen,
-			    (uint32_t*)render_info->mdScreen,
-			    render_info->destPitch, render_info->srcPitch,
-			    render_info->width, render_info->height,
-			    MASK_DIV2_32, MASK_DIV4_32);
+			T_mdp_render_scanline_25_cpp(
+				    (uint16_t*)render_info->destScreen,
+				    (uint16_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height,
+				    (mode565 ? MASK_DIV2_16 : MASK_DIV2_15),
+				    (mode565 ? MASK_DIV4_16 : MASK_DIV4_15));
 #endif /* GENS_X86_ASM */
+			break;
+		}
+		case MDP_RENDER_VMODE_RGB_888:
+#ifdef GENS_X86_ASM
+			if (render_info->cpuFlags & MDP_CPUFLAG_X86_MMX)
+			{
+				mdp_render_scanline_25_32_x86_mmx(
+					    (uint32_t*)render_info->destScreen,
+					    (uint32_t*)render_info->mdScreen,
+					    render_info->destPitch, render_info->srcPitch,
+					    render_info->width, render_info->height);
+			}
+			else
+			{
+				mdp_render_scanline_25_32_x86(
+					    (uint32_t*)render_info->destScreen,
+					    (uint32_t*)render_info->mdScreen,
+					    render_info->destPitch, render_info->srcPitch,
+					    render_info->width, render_info->height);
+			}
+#else /* !GENS_X86_ASM */
+			T_mdp_render_scanline_25_cpp(
+				    (uint32_t*)render_info->destScreen,
+				    (uint32_t*)render_info->mdScreen,
+				    render_info->destPitch, render_info->srcPitch,
+				    render_info->width, render_info->height,
+				    MASK_DIV2_32, MASK_DIV4_32);
+#endif /* GENS_X86_ASM */
+			break;
+		
+		default:
+			// Unsupported video mode.
+			return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
 	
 	return MDP_ERR_OK;

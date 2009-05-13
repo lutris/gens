@@ -48,9 +48,9 @@ mdp_render_t mdp_render =
 	.blit = mdp_render_scale3x_cpp,
 	.tag = "Scale3x",
 	
-	.flags = MDP_RENDER_FLAG_RGB555 |
-		 MDP_RENDER_FLAG_RGB565 |
-		 MDP_RENDER_FLAG_RGB888
+	.flags = MDP_RENDER_FLAG_RGB_555to555 |
+		 MDP_RENDER_FLAG_RGB_565to565 |
+		 MDP_RENDER_FLAG_RGB_888to888
 };
 
 static mdp_func_t mdp_func =

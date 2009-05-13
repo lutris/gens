@@ -96,10 +96,10 @@ SYMSIZE_DATA(lowPixelMask, 8)
 SYMSIZE_DATA(qcolorMask, 8)
 SYMSIZE_DATA(qlowpixelMask, 8)
 
-/* Previous video mode flags. */
-PrevVModeFlags:		.long	0x00000000
-SYMTYPE(PrevVModeFlags,@object)
-SYMSIZE_DATA(PrevVModeFlags, 8)
+/* Previous Mode 565 state. */
+PrevMode565:		.long	0x00000000
+SYMTYPE(PrevMode565,@object)
+SYMSIZE_DATA(PrevMode565, 8)
 
 /** .rodata section **/
 RODATA()
@@ -182,12 +182,12 @@ SYMSIZE_DATA(ONE, 8)
 #define arg_srcPitch	28+20(%esp)
 #define arg_width	28+24(%esp)
 #define arg_height	28+28(%esp)
-#define arg_vmodeFlags	28+32(%esp)
+#define arg_mode565	28+32(%esp)
 
 /************************************************************************************
  * void mdp_render_super_2xsai_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen, *
  *                           int destPitch, int srcPitch,                           *
- *                           int width, int height, uint32_t vmodeFlags);           *
+ *                           int width, int height, int mode565);                   *
  ************************************************************************************/
 .globl _mdp_render_super_2xsai_16_x86_mmx
 SYMTYPE(_mdp_render_super_2xsai_16_x86_mmx,@function)
@@ -199,14 +199,14 @@ _mdp_render_super_2xsai_16_x86_mmx:
 	/* Initialize PIC. */
 	INIT_PIC();
 	
-	/* Check if the video mode flags have changed. */
-	movb	arg_vmodeFlags, %al
-	movb	MUNG_LOCAL(PrevVModeFlags), %ah
+	/* Check if the Mode 565 state has changed. */
+	movb	arg_mode565, %al
+	movb	MUNG_LOCAL(PrevMode565), %ah
 	cmpb	%ah, %al
 	je	1f /* .Parameters */
 	
-	/* Video mode flags have changed. */
-	movb	%al, MUNG_LOCAL(PrevVModeFlags);
+	/* Mode 565 state has changed. */
+	movb	%al, MUNG_LOCAL(PrevMode565);
 	
 	/* Check if this is 15-bit color mode. */
 	testb	$1, %al

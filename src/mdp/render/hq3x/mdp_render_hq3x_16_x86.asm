@@ -461,14 +461,14 @@ arg_destPitch	equ 16
 arg_srcPitch	equ 20
 arg_width	equ 24
 arg_height	equ 28
-arg_vmodeFlags	equ 32
+arg_mode565	equ 32
 
 loc_calcPitchDiff	equ -4
 
 	;************************************************************************
 	; void mdp_render_hq3x_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,
 	;				  int destPitch, int srcPitch,
-	;				  int width, int height, uint32_t vmodeFlags);
+	;				  int width, int height, int mode565);
 	global _mdp_render_hq3x_16_x86_mmx
 	_mdp_render_hq3x_16_x86_mmx:
 	
@@ -518,7 +518,7 @@ loc_calcPitchDiff	equ -4
 	mov	[linesleft], edx
 	
 	; Check for 15-bit color.
-	test	byte [ebp + arg_vmodeFlags], 1
+	test	byte [ebp + arg_mode565], 1
 	mov	dword [zerolowbits], zerolowbits_16
 	jnz	.LoopY
 	

@@ -71,7 +71,14 @@ int MDP_FNCALL mdp_render_scale3x_cpp(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;
 	
-	const unsigned int bytespp = (render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) ? 4 : 2;
+	if (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) !=
+	    MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
+	{
+		// Renderer only supports identical src/dst modes.
+		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
+	}
+	
+	const unsigned int bytespp = ((MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) == MDP_RENDER_VMODE_RGB_888) ? 4 : 2);
 	
 	scale3x(render_info->destScreen, render_info->destPitch,
 		render_info->mdScreen, render_info->srcPitch,

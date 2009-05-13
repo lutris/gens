@@ -37,7 +37,7 @@
 #define arg_width	16+24(%esp)
 #define arg_height	16+28(%esp)
 #define arg_mask	16+32(%esp)
-#define arg_vmodeFlags	16+32(%esp)
+#define arg_mode565	16+32(%esp)
 
 /** .rodata section **/
 RODATA()
@@ -145,7 +145,7 @@ SYMSIZE_FUNC(_mdp_render_interpolated_scanline_16_x86)
 /*************************************************************************************************
  * void mdp_render_interpolated_scanline_16_x86_mmx(uint16_t *destScreen, uint16_t *mdScreen,    *
  *                                                  int destPitch, int srcPitch,                 *
- *                                                  int width, int height, uint32_t vmodeFlags); *
+ *                                                  int width, int height, int mode565);         *
  *************************************************************************************************/
 .globl _mdp_render_interpolated_scanline_16_x86_mmx
 SYMTYPE(_mdp_render_interpolated_scanline_16_x86_mmx,@function)
@@ -176,7 +176,7 @@ _mdp_render_interpolated_scanline_16_x86_mmx:
 	
 	/* Default to 16-bit color. (Mode 565) */
 	movq	MUNG_LOCAL(MASK_DIV2_16_MMX), %mm7
-	testb	$1, arg_vmodeFlags
+	testb	$1, arg_mode565
 	jnz	0f /* .Loop_Y */
 	
 	/* 15-bit color is specified. (Mode 555) */
