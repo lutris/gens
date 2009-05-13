@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #include "mdp_render_blargg_ntsc.h"
-#include "md_ntsc.h"
+#include "md_ntsc.hpp"
 
 #include "mdp/mdp.h"
 #include "mdp/mdp_cpuflags.h"

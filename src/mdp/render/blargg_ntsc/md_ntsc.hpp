@@ -1,8 +1,8 @@
 /* Sega Genesis/Mega Drive NTSC video filter */
 
 /* md_ntsc 0.1.2 */
-#ifndef MD_NTSC_H
-#define MD_NTSC_H
+#ifndef MD_NTSC_HPP
+#define MD_NTSC_HPP
 
 #include "md_ntsc_config.h"
 
@@ -160,4 +160,4 @@ DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info);
 }
 #endif
 
-#endif
+#endif /* MD_NTSC_HPP */

@@ -1,6 +1,6 @@
 /* md_ntsc 0.1.2. http://www.slack.net/~ant/ */
 
-#include "md_ntsc.h"
+#include "md_ntsc.hpp"
 
 /* Copyright (C) 2006 Shay Green. This module is free software; you
 can redistribute it and/or modify it under the terms of the GNU Lesser
