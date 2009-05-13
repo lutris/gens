@@ -42,9 +42,9 @@ extern "C" {
 #define MDP_RENDER_VMODE_RGB_888		((uint32_t)(0x02))
 
 /* Bits 0-1: Source color mode. */
-#define MDP_RENDER_VMODE_SRC(x)	(x & 0x03)
+#define MDP_RENDER_VMODE_GET_SRC(x)	(x & 0x03)
 /* Bits 2-3: Destination color mode. */
-#define MDP_RENDER_VMODE_DST(x)	((x >> 2) & 0x03)
+#define MDP_RENDER_VMODE_GET_DST(x)	((x >> 2) & 0x03)
 
 /* Render information struct. */
 #pragma pack(1)
