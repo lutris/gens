@@ -112,58 +112,135 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	if (vdraw_cur_backend && vdraw_cur_backend->stretch_adjust)
 		vdraw_cur_backend->stretch_adjust();
 	
-	// Set the MD bpp output value.
-	if (bppOut != 32)
-	{
-		// Not 32-bit color. Always use the destination surface color depth.
-		bppMD = bppOut;
-		vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
-	}
-	else
-	{
-		if (!(rendPlugin->flags & MDP_RENDER_FLAG_RGB888) ||
-		    (rendPlugin->flags & MDP_RENDER_FLAG_SRC565DST888))
-		{
-			// Render plugin only supports 16-bit color input.
-			bppMD = 16;
-			vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
-		}
-		else
-		{
-			// MD surface should be the same color depth as the destination surface.
-			bppMD = bppOut;
-			vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
-		}
-	}
-	
-	// Set the render video mode flags.
+	// Set the MD bpp output value and video mode flags.
 	vdraw_rInfo.vmodeFlags = 0;
-	if (bppOut == 32 && (rendPlugin->flags & MDP_RENDER_FLAG_RGB888))
+	switch (bppOut)
 	{
-		// Plugin supports 32-bit color.
-		vdraw_rInfo.vmodeFlags |= MDP_RENDER_VMODE_BPP_32;
-		if (rendPlugin->flags & MDP_RENDER_FLAG_SRC565DST888)
-		{
-			// Plugin requires 16-bit input.
-			vdraw_rInfo.vmodeFlags |= MDP_RENDER_VMODE_RGB_SRC565DST888;
-		}
-	}
-	else
-	{
-		switch (bppMD)
-		{
-			case 32:
-				vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_32;
-				break;
-			case 16:
-				vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
-							 MDP_RENDER_VMODE_RGB_565;
-				break;
-			case 15:
-				vdraw_rInfo.vmodeFlags = MDP_RENDER_VMODE_BPP_16 |
-							 MDP_RENDER_VMODE_RGB_555;
-				break;
-		}
+		case 15:
+			// 15-bit color. (DST == 555)
+			if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_555to555)
+			{
+				// Plugin supports 555to555.
+				bppMD = 15;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_555)) |
+					((MDP_RENDER_VMODE_RGB_555) << 2);
+			}
+			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_565to555)
+			{
+				// Plugin supports 565to555.
+				bppMD = 16;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_555)) |
+					((MDP_RENDER_VMODE_RGB_565) << 2);
+			}
+			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_888to555)
+			{
+				// Plugin supports 888to555.
+				bppMD = 32;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_555)) |
+					((MDP_RENDER_VMODE_RGB_888) << 2);
+			}
+			else
+			{
+				// Plugin doesn't support 555 output at all.
+				// TODO: Add a variable to indicate automatic color depth conversion.
+				// For now, just outputs 555.
+				bppMD = 15;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_555)) |
+					((MDP_RENDER_VMODE_RGB_555) << 2);
+			}
+			break;
+		
+		case 16:
+			// 16-bit color. (DST == 565)
+			if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_565to565)
+			{
+				// Plugin supports 565to565.
+				bppMD = 16;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_565)) |
+					((MDP_RENDER_VMODE_RGB_565) << 2);
+			}
+			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_555to565)
+			{
+				// Plugin supports 555to565.
+				bppMD = 15;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_555)) |
+					((MDP_RENDER_VMODE_RGB_565) << 2);
+			}
+			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_888to565)
+			{
+				// Plugin supports 888to565.
+				bppMD = 32;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_888)) |
+					((MDP_RENDER_VMODE_RGB_565) << 2);
+			}
+			else
+			{
+				// Plugin doesn't support 565 output at all.
+				// TODO: Add a variable to indicate automatic color depth conversion.
+				// For now, just outputs 565.
+				bppMD = 16;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_565)) |
+					((MDP_RENDER_VMODE_RGB_565) << 2);
+			}
+			break;
+		
+		case 32:
+			// 32-bit color. (DST == 888)
+			if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_888to888)
+			{
+				// Plugin supports 888to888.
+				bppMD = 32;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_888)) |
+					((MDP_RENDER_VMODE_RGB_888) << 2);
+			}
+			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_565to888)
+			{
+				// Plugin supports 565to888.
+				bppMD = 16;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_565)) |
+					((MDP_RENDER_VMODE_RGB_888) << 2);
+			}
+			else if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_555to888)
+			{
+				// Plugin supports 555to888.
+				bppMD = 15;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_555)) |
+					((MDP_RENDER_VMODE_RGB_888) << 2);
+			}
+			else
+			{
+				// Plugin doesn't support 888 output at all.
+				// TODO: Add a variable to indicate automatic color depth conversion.
+				// For now, just outputs 888.
+				bppMD = 32;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+				vdraw_rInfo.vmodeFlags |=
+					((MDP_RENDER_VMODE_RGB_888)) |
+					((MDP_RENDER_VMODE_RGB_888) << 2);
+			}
+			break;
 	}
 	
 	// Set the CPU flags.

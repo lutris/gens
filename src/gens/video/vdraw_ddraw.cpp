@@ -858,6 +858,9 @@ int vdraw_ddraw_flip(void)
 			vdraw_rInfo.height = VDP_Num_Vis_Lines;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
+			// TODO: Automatic color depth conversion.
+			vdraw_blitFS(&vdraw_rInfo);
+#if 0	
 			if (bppMD == 16 && bppOut != 16)
 			{
 				// Renderer does not support 32-bit color input.
@@ -896,6 +899,7 @@ int vdraw_ddraw_flip(void)
 			{
 				vdraw_blitFS(&vdraw_rInfo);
 			}
+#endif
 			
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, curBlit, FALSE);
@@ -967,6 +971,9 @@ int vdraw_ddraw_flip(void)
 			vdraw_rInfo.height = VDP_Num_Vis_Lines;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
+			// TODO: Automatic color depth conversion.
+			vdraw_blitW(&vdraw_rInfo);
+#if 0	
 			if (bppMD == 16 && bppOut != 16)
 			{
 				// Renderer does not support 32-bit color input.
@@ -1005,6 +1012,7 @@ int vdraw_ddraw_flip(void)
 			{
 				vdraw_blitW(&vdraw_rInfo);
 			}
+#endif
 			
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);

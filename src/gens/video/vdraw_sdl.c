@@ -185,6 +185,12 @@ static int vdraw_sdl_flip(void)
 	vdraw_rInfo.height = VDP_Num_Vis_Lines;
 	vdraw_rInfo.destPitch = pitch;
 	
+	// TODO: Automatic color depth conversion.
+	if (vdraw_get_fullscreen())
+		vdraw_blitFS(&vdraw_rInfo);
+	else
+		vdraw_blitW(&vdraw_rInfo);
+#if 0
 	if (bppMD == 16 && bppOut != 16)
 	{
 		// Renderer does not support 32-bit color input.
@@ -232,7 +238,8 @@ static int vdraw_sdl_flip(void)
 		else
 			vdraw_blitW(&vdraw_rInfo);
 	}
-	
+#endif
+		
 	// Draw the message and/or FPS counter.
 	if (vdraw_msg_visible)
 	{
