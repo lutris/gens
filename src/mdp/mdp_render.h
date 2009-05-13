@@ -36,6 +36,9 @@ extern "C" {
 
 /* Video mode flags. */
 
+#define MDP_RENDER_VMODE_CREATE(src, dst)	\
+	(((src) & 0x03) | (((dst) & 0x03) << 2))
+
 /* Color modes. */
 #define MDP_RENDER_VMODE_RGB_555		((uint32_t)(0x00))
 #define MDP_RENDER_VMODE_RGB_565		((uint32_t)(0x01))
