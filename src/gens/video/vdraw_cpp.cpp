@@ -53,6 +53,9 @@ using std::list;
 // Plugin Manager.
 #include "plugins/pluginmgr.hpp"
 
+// Palette handler.
+#include "emulator/md_palette.hpp"
+
 
 void vdraw_reset_renderer(const BOOL reset_video)
 {
@@ -114,6 +117,8 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	
 	// Set the MD bpp output value and video mode flags.
 	vdraw_rInfo.vmodeFlags = 0;
+	const uint8_t bppMD_old = bppMD;
+	
 	switch (bppOut)
 	{
 		case 15:
@@ -155,6 +160,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 			break;
 		
 		case 16:
+		default:
 			// 16-bit color. (DST == 565)
 			if (rendPlugin->flags & MDP_RENDER_FLAG_RGB_565to565)
 			{
@@ -229,6 +235,12 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_888);
 			}
 			break;
+	}
+	
+	if (bppMD_old != bppMD)
+	{
+		// MD bpp has changed. Recalculate the palettes.
+		Recalculate_Palettes();
 	}
 	
 	// Set the CPU flags.
