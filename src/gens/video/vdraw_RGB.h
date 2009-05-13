@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Video Drawing - RGB lookup tables.                                *
+ * Gens: Video Drawing - RGB Color Conversion Functions.                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -23,13 +23,13 @@
 #ifndef GENS_VDRAW_RGB_H
 #define GENS_VDRAW_RGB_H
 
-#include <stdint.h>
+#include "mdp/mdp_render.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-uint32_t* vdraw_build_RGB16to32(void);
+void vdraw_rgb_convert(mdp_render_info_t *rInfo);
 
 #ifdef __cplusplus
 }

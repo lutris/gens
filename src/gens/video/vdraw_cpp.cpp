@@ -118,6 +118,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 	// Set the MD bpp output value and video mode flags.
 	vdraw_rInfo.vmodeFlags = 0;
 	const uint8_t bppMD_old = bppMD;
+	vdraw_needs_conversion = false;
 	
 	switch (bppOut)
 	{
@@ -156,6 +157,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
 					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_555, MDP_RENDER_VMODE_RGB_555);
+				vdraw_needs_conversion = true;
 			}
 			break;
 		
@@ -195,6 +197,7 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
 					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_565);
+				vdraw_needs_conversion = true;
 			}
 			break;
 		
@@ -229,10 +232,11 @@ int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool 
 				// Plugin doesn't support 888 output at all.
 				// TODO: Add a variable to indicate automatic color depth conversion.
 				// For now, just outputs 888.
-				bppMD = 32;
-				vdraw_rInfo.mdScreen = (void*)(&MD_Screen32[8]);
+				bppMD = 16;
+				vdraw_rInfo.mdScreen = (void*)(&MD_Screen[8]);
 				vdraw_rInfo.vmodeFlags |=
-					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_888, MDP_RENDER_VMODE_RGB_888);
+					MDP_RENDER_VMODE_CREATE(MDP_RENDER_VMODE_RGB_565, MDP_RENDER_VMODE_RGB_565);
+				vdraw_needs_conversion = true;
 			}
 			break;
 	}

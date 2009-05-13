@@ -172,13 +172,8 @@ extern int vdraw_border_h, vdraw_border_h_old;
 extern uint16_t vdraw_border_color_16;
 extern uint32_t vdraw_border_color_32;
 
-// 16-bit to 32-bit conversion.
-extern uint16_t	*vdraw_16to32_surface;
-extern int	vdraw_16to32_scale;
-extern int	vdraw_16to32_pitch;
-void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
-			 unsigned int width, unsigned int height,
-			 unsigned int pitch_dest, unsigned int pitch_src);
+// RGB color conversion variables.
+extern BOOL vdraw_needs_conversion;
 
 #ifdef __cplusplus
 }

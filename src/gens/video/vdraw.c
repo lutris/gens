@@ -144,12 +144,9 @@ int		vdraw_border_h = 0, vdraw_border_h_old = ~0;
 uint16_t	vdraw_border_color_16 = ~0;
 uint32_t	vdraw_border_color_32 = ~0;
 
-// 16-bit color to 32-bit color image conversion.
+// RGB color conversion functions.
 #include "vdraw_RGB.h"
-static uint32_t	*vdraw_RGB16to32 = NULL;
-uint16_t	*vdraw_16to32_surface;
-int		vdraw_16to32_scale;
-int		vdraw_16to32_pitch;
+BOOL		vdraw_needs_conversion = FALSE;
 
 
 /**
@@ -179,19 +176,6 @@ int vdraw_end(void)
 	{
 		vdraw_cur_backend->end();
 		vdraw_cur_backend = NULL;
-	}
-	
-	// If the RGB16to32 table was allocated, free it.
-	free(vdraw_RGB16to32);
-	vdraw_RGB16to32 = NULL;
-	
-	// Internal surface for rendering the 16-bit temporary image.
-	if (vdraw_16to32_surface)
-	{
-		free(vdraw_16to32_surface);
-		vdraw_16to32_surface = NULL;
-		vdraw_16to32_scale = 0;
-		vdraw_16to32_pitch = 0;
 	}
 	
 	// TODO: Do something here.
@@ -301,49 +285,6 @@ int vdraw_backend_end(void)
 	
 	vdraw_cur_backend = NULL;
 	return 0;
-}
-
-
-/**
- * vdraw_render_16to32(): Convert a 16-bit color image to 32-bit color using a lookup table.
- * @param dest Destination surface.
- * @param src Source surface.
- * @param width Width of the image.
- * @param height Height of the image.
- * @param pitch_dest Pitch of the destination surface.
- * @param pitch_src Pitch of the source surface.
- */
-void vdraw_render_16to32(uint32_t *dest, uint16_t *src,
-			 unsigned int width, unsigned int height,
-			 unsigned int pitch_dest, unsigned int pitch_src)
-{
-	// Make sure the lookup table is referenced.
-	if (!vdraw_RGB16to32)
-		vdraw_RGB16to32 = vdraw_build_RGB16to32();
-	
-	const int pitchDestDiff = ((pitch_dest / 4) - width);
-	const int pitchSrcDiff = ((pitch_src / 2) - width);
-	
-	// Process four pixels at a time.
-	width >>= 2;
-	
-	unsigned int x, y;
-	for (y = 0; y < height; y++)
-	{
-		for (x = 0; x < width; x++)
-		{
-			*(dest + 0) = vdraw_RGB16to32[*(src + 0)];
-			*(dest + 1) = vdraw_RGB16to32[*(src + 1)];
-			*(dest + 2) = vdraw_RGB16to32[*(src + 2)];
-			*(dest + 3) = vdraw_RGB16to32[*(src + 3)];
-			
-			dest += 4;
-			src += 4;
-		}
-		
-		dest += pitchDestDiff;
-		src += pitchSrcDiff;
-	}
 }
 
 
