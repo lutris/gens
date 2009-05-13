@@ -82,69 +82,75 @@ void md_ntsc_init( md_ntsc_t* ntsc, md_ntsc_setup_t const* setup )
 	}
 }
 
-#ifndef MD_NTSC_NO_BLITTERS
+#include <stdio.h>
+/* x is always zero except in snes_ntsc library */
+template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
+static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
+{
+	*(rgb_out) = ((raw_ >> (shiftR - x)) & maskR) |
+		     ((raw_ >> (shiftG - x)) & maskG) |
+		     ((raw_ >> (shiftB - x)) & maskB);
+}
 
-void md_ntsc_blit( md_ntsc_t const* ntsc, MD_NTSC_IN_T const* input, long in_row_width,
-		int in_width, int height, void* rgb_out, long out_pitch )
+template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
+static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
+				  int in_row_width, int in_width, int height,
+				  pixel* rgb_out, int out_pitch)
 {
 	int const chunk_count = in_width / md_ntsc_in_chunk - 1;
-	while ( height-- )
+	while (height--)
 	{
-		MD_NTSC_IN_T const* line_in = input;
-		MD_NTSC_BEGIN_ROW( ntsc, md_ntsc_black,
-				MD_NTSC_ADJ_IN( line_in [0] ),
-				MD_NTSC_ADJ_IN( line_in [1] ),
-				MD_NTSC_ADJ_IN( line_in [2] ) );
-		md_ntsc_out_t* restrict line_out = (md_ntsc_out_t*) rgb_out;
+		uint16_t const* line_in = input;
+		MD_NTSC_BEGIN_ROW(ntsc, md_ntsc_black,
+				  line_in[0], line_in[1], line_in[2]);
+		pixel *restrict line_out = rgb_out;
 		int n;
 		line_in += 3;
 		
 		for ( n = chunk_count; n; --n )
 		{
 			/* order of input and output pixels must not be altered */
-			MD_NTSC_COLOR_IN( 0, ntsc, MD_NTSC_ADJ_IN( line_in [0] ) );
-			MD_NTSC_RGB_OUT( 0, line_out [0], MD_NTSC_OUT_DEPTH );
-			MD_NTSC_RGB_OUT( 1, line_out [1], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_COLOR_IN(0, ntsc, line_in[0]);
+			MD_NTSC_RGB_OUT(0, line_out[0]);
+			MD_NTSC_RGB_OUT(1, line_out[1]);
 			
-			MD_NTSC_COLOR_IN( 1, ntsc, MD_NTSC_ADJ_IN( line_in [1] ) );
-			MD_NTSC_RGB_OUT( 2, line_out [2], MD_NTSC_OUT_DEPTH );
-			MD_NTSC_RGB_OUT( 3, line_out [3], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_COLOR_IN(1, ntsc, line_in[1]);
+			MD_NTSC_RGB_OUT(2, line_out[2]);
+			MD_NTSC_RGB_OUT(3, line_out[3]);
 			
-			MD_NTSC_COLOR_IN( 2, ntsc, MD_NTSC_ADJ_IN( line_in [2] ) );
-			MD_NTSC_RGB_OUT( 4, line_out [4], MD_NTSC_OUT_DEPTH );
-			MD_NTSC_RGB_OUT( 5, line_out [5], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_COLOR_IN(2, ntsc, line_in[2]);
+			MD_NTSC_RGB_OUT(4, line_out[4]);
+			MD_NTSC_RGB_OUT(5, line_out[5]);
 			
-			MD_NTSC_COLOR_IN( 3, ntsc, MD_NTSC_ADJ_IN( line_in [3] ) );
-			MD_NTSC_RGB_OUT( 6, line_out [6], MD_NTSC_OUT_DEPTH );
-			MD_NTSC_RGB_OUT( 7, line_out [7], MD_NTSC_OUT_DEPTH );
+			MD_NTSC_COLOR_IN(3, ntsc, line_in[3]);
+			MD_NTSC_RGB_OUT(6, line_out[6]);
+			MD_NTSC_RGB_OUT(7, line_out[7]);
 			
 			line_in  += 4;
 			line_out += 8;
 		}
 		
 		/* finish final pixels */
-		MD_NTSC_COLOR_IN( 0, ntsc, MD_NTSC_ADJ_IN( line_in [0] ) );
-		MD_NTSC_RGB_OUT( 0, line_out [0], MD_NTSC_OUT_DEPTH );
-		MD_NTSC_RGB_OUT( 1, line_out [1], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_COLOR_IN(0, ntsc, line_in[0]);
+		MD_NTSC_RGB_OUT(0, line_out[0]);
+		MD_NTSC_RGB_OUT(1, line_out[1]);
 		
-		MD_NTSC_COLOR_IN( 1, ntsc, md_ntsc_black );
-		MD_NTSC_RGB_OUT( 2, line_out [2], MD_NTSC_OUT_DEPTH );
-		MD_NTSC_RGB_OUT( 3, line_out [3], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_COLOR_IN(1, ntsc, md_ntsc_black);
+		MD_NTSC_RGB_OUT(2, line_out[2]);
+		MD_NTSC_RGB_OUT(3, line_out[3]);
 		
-		MD_NTSC_COLOR_IN( 2, ntsc, md_ntsc_black );
-		MD_NTSC_RGB_OUT( 4, line_out [4], MD_NTSC_OUT_DEPTH );
-		MD_NTSC_RGB_OUT( 5, line_out [5], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_COLOR_IN(2, ntsc, md_ntsc_black);
+		MD_NTSC_RGB_OUT(4, line_out[4]);
+		MD_NTSC_RGB_OUT(5, line_out[5]);
 		
-		MD_NTSC_COLOR_IN( 3, ntsc, md_ntsc_black );
-		MD_NTSC_RGB_OUT( 6, line_out [6], MD_NTSC_OUT_DEPTH );
-		MD_NTSC_RGB_OUT( 7, line_out [7], MD_NTSC_OUT_DEPTH );
+		MD_NTSC_COLOR_IN(3, ntsc, md_ntsc_black);
+		MD_NTSC_RGB_OUT(6, line_out[6]);
+		MD_NTSC_RGB_OUT(7, line_out[7]);
 		
 		input += in_row_width;
-		rgb_out = (char*) rgb_out + out_pitch;
+		rgb_out += (out_pitch / sizeof(pixel));
 	}
 }
-
-#endif
 
 /* MDP Renderer Function */
 
@@ -180,26 +186,50 @@ int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
 	if (!render_info)
 		return -MDP_ERR_RENDER_INVALID_RENDERINFO;;
 	
-	if ((render_info->vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_16)
+	if (MDP_RENDER_VMODE_GET_SRC(render_info->vmodeFlags) != MDP_RENDER_VMODE_RGB_565)
 	{
-		if ((render_info->vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) == MDP_RENDER_VMODE_RGB_565)
-		{
-			// 16-bit color.
-			md_ntsc_blit(mdp_md_ntsc,
-				     (uint16_t*)render_info->mdScreen,
-				     render_info->srcPitch / 2, render_info->width,
-				     render_info->height,
-				     (uint16_t*)render_info->destScreen,
-				     render_info->destPitch);
-		}
-		else
-		{
-			// TODO: 15-bit color.
-		}
+		// NTSC filter only supports 16-bit color input.
+		return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
-	else
+	
+	switch (MDP_RENDER_VMODE_GET_DST(render_info->vmodeFlags))
 	{
-		// TODO: 32-bit color.
+		case MDP_RENDER_VMODE_RGB_565:
+			// 16-bit color.
+			T_md_ntsc_blit<uint16_t, 0xF800, 0x07E0, 0x001F, 13, 8, 4>
+				      (mdp_md_ntsc,
+				       (uint16_t*)render_info->mdScreen,
+				       render_info->srcPitch / 2, render_info->width,
+				       render_info->height,
+				       (uint16_t*)render_info->destScreen,
+				       render_info->destPitch);
+			break;
+		
+		case MDP_RENDER_VMODE_RGB_555:
+			// 15-bit color.
+			T_md_ntsc_blit<uint16_t, 0x7C00, 0x03E0, 0x001F, 14, 9, 4>
+				      (mdp_md_ntsc,
+				       (uint16_t*)render_info->mdScreen,
+				       render_info->srcPitch / 2, render_info->width,
+				       render_info->height,
+				       (uint16_t*)render_info->destScreen,
+				       render_info->destPitch);
+			break;
+		
+		case MDP_RENDER_VMODE_RGB_888:
+			// 32-bit color.
+			T_md_ntsc_blit<uint32_t, (uint32_t)0xFF0000, (uint32_t)0x00FF00, (uint32_t)0x0000FF, 5, 3, 1>
+				      (mdp_md_ntsc,
+				       (uint16_t*)render_info->mdScreen,
+				       render_info->srcPitch / 2, render_info->width,
+				       render_info->height,
+				       (uint32_t*)render_info->destScreen,
+				       render_info->destPitch);
+			break;
+		
+		default:
+			// Unsupported video mode.
+			return -MDP_ERR_RENDER_UNSUPPORTED_VMODE;
 	}
 	
 	return MDP_ERR_OK;

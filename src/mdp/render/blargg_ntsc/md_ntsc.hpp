@@ -45,14 +45,6 @@ md_ntsc_t object. Can pass NULL for either parameter. */
 typedef struct md_ntsc_t md_ntsc_t;
 void md_ntsc_init( md_ntsc_t* ntsc, md_ntsc_setup_t const* setup );
 
-/* Filters one or more rows of pixels. Input pixel format is set by MD_NTSC_IN_FORMAT
-and output RGB depth is set by MD_NTSC_OUT_DEPTH. Both default to 16-bit RGB.
-In_row_width is the number of pixels to get to the next input row. Out_pitch
-is the number of *bytes* to get to the next output row. */
-void md_ntsc_blit( md_ntsc_t const* ntsc, MD_NTSC_IN_T const* input,
-		long in_row_width, int in_width, int height,
-		void* rgb_out, long out_pitch );
-
 /* Number of output pixels written by blitter for given input width. */
 #define MD_NTSC_OUT_WIDTH( in_width ) \
 	(((in_width) - 3) / md_ntsc_in_chunk * md_ntsc_out_chunk + md_ntsc_out_chunk)
@@ -96,12 +88,12 @@ statement in a block (unless you're using C++). */
 16:          RRRRRGGG GGGBBBBB
 15:           RRRRRGG GGGBBBBB
  0: xxxRRRRR RRRxxGGG GGGGGxxB BBBBBBBx (native internal format; x = junk bits) */
-#define MD_NTSC_RGB_OUT( x, rgb_out, bits ) {\
+#define MD_NTSC_RGB_OUT( x, rgb_out ) {\
 	md_ntsc_rgb_t raw_ =\
 		kernel0  [x+ 0] + kernel1  [(x+6)%8+16] + kernel2  [(x+4)%8  ] + kernel3  [(x+2)%8+16] +\
 		kernelx0 [x+ 8] + kernelx1 [(x+6)%8+24] + kernelx2 [(x+4)%8+8] + kernelx3 [(x+2)%8+24];\
 	MD_NTSC_CLAMP_( raw_, 0 );\
-	MD_NTSC_RGB_OUT_( rgb_out, bits, 0 );\
+	MD_NTSC_RGB_OUT_<pixel, maskR, maskG, maskB, shiftR, shiftG, shiftB>( &rgb_out, 0, raw_ );\
 }
 
 
@@ -135,18 +127,6 @@ struct md_ntsc_t {
 	unsigned color_;\
 	kernelx##index = kernel##index;\
 	kernel##index = (color_ = (color), ENTRY( table, color_ ));\
-}
-
-/* x is always zero except in snes_ntsc library */
-#define MD_NTSC_RGB_OUT_( rgb_out, bits, x ) {\
-	if ( bits == 16 )\
-		rgb_out = (raw_>>(13-x)& 0xF800)|(raw_>>(8-x)&0x07E0)|(raw_>>(4-x)&0x001F);\
-	if ( bits == 24 || bits == 32 )\
-		rgb_out = (raw_>>(5-x)&0xFF0000)|(raw_>>(3-x)&0xFF00)|(raw_>>(1-x)&0xFF);\
-	if ( bits == 15 )\
-		rgb_out = (raw_>>(14-x)& 0x7C00)|(raw_>>(9-x)&0x03E0)|(raw_>>(4-x)&0x001F);\
-	if ( bits == 0 )\
-		rgb_out = raw_ << x;\
 }
 
 /* MDP Renderer Function */

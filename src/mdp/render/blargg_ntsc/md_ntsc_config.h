@@ -16,10 +16,6 @@ handle things however it wants. */
 /* Type of input pixel values */
 #define MD_NTSC_IN_T unsigned short
 
-/* Each raw pixel input value is passed through this. You might want to mask
-the pixel index if you use the high bits as flags, etc. */
-#define MD_NTSC_ADJ_IN( in ) in
-
 /* For each pixel, this is the basic operation:
 output_color = MD_NTSC_ADJ_IN( MD_NTSC_IN_T ) */
 

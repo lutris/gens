@@ -417,23 +417,3 @@ static void correct_errors( md_ntsc_rgb_t color, md_ntsc_rgb_t* out );
 		#define restrict
 	#endif
 #endif
-
-#include <limits.h>
-
-#if MD_NTSC_OUT_DEPTH <= 16
-	#if USHRT_MAX == 0xFFFF
-		typedef unsigned short md_ntsc_out_t;
-	#else
-		#error "Need 16-bit int type"
-	#endif
-
-#else
-	#if UINT_MAX == 0xFFFFFFFF
-		typedef unsigned int  md_ntsc_out_t;
-	#elif ULONG_MAX == 0xFFFFFFFF
-		typedef unsigned long md_ntsc_out_t;
-	#else
-		#error "Need 32-bit int type"
-	#endif
-
-#endif

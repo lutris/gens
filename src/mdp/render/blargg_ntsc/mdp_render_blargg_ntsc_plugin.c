@@ -46,7 +46,9 @@ mdp_render_t mdp_render =
 	.blit = mdp_md_ntsc_blit,
 	.tag = "Blargg NTSC",
 	
-	.flags = MDP_RENDER_FLAG_RGB565
+	.flags = MDP_RENDER_FLAG_RGB_565to555 |
+		 MDP_RENDER_FLAG_RGB_565to565 |
+		 MDP_RENDER_FLAG_RGB_565to888
 };
 
 static mdp_func_t mdp_func =
