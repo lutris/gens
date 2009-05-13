@@ -36,18 +36,15 @@ extern "C" {
 
 /* Video mode flags. */
 
-/* Bit 0: 555/565 mode (16-bit color) */
-#define MDP_RENDER_VMODE_RGB_MODE		((uint32_t)(1 << 0))
-#define MDP_RENDER_VMODE_RGB_555		((uint32_t)(0))
-#define MDP_RENDER_VMODE_RGB_565		((uint32_t)(1 << 0))
-/* If 32-bit color, this bit is used to indicate if the source is 565 or 888. */
-#define MDP_RENDER_VMODE_RGB_SRC888DST888	((uint32_t)(0))
-#define MDP_RENDER_VMODE_RGB_SRC565DST888	((uint32_t)(1 << 0))
+/* Color modes. */
+#define MDP_RENDER_VMODE_RGB_555		((uint32_t)(0x00))
+#define MDP_RENDER_VMODE_RGB_565		((uint32_t)(0x01))
+#define MDP_RENDER_VMODE_RGB_888		((uint32_t)(0x02))
 
-/* Bit 1: 16/32-bit color. */
-#define MDP_RENDER_VMODE_BPP		((uint32_t)(1 << 1))
-#define MDP_RENDER_VMODE_BPP_16		((uint32_t)(0))
-#define MDP_RENDER_VMODE_BPP_32		((uint32_t)(1 << 1))
+/* Bits 0-1: Source color mode. */
+#define MDP_RENDER_VMODE_SRC(x)	(x & 0x03)
+/* Bits 2-3: Destination color mode. */
+#define MDP_RENDER_VMODE_DST(x)	((x >> 2) & 0x03)
 
 /* Render information struct. */
 #pragma pack(1)
@@ -70,10 +67,12 @@ typedef struct PACKED _mdp_render_info_t
 #pragma pack()
 
 /* Render plugin flags. */
-#define MDP_RENDER_FLAG_RGB555		((uint32_t)(1 << 0))
-#define MDP_RENDER_FLAG_RGB565		((uint32_t)(1 << 1))
-#define MDP_RENDER_FLAG_RGB888		((uint32_t)(1 << 2))
-#define MDP_RENDER_FLAG_SRC565DST888	((uint32_t)(1 << 3))
+#define MDP_RENDER_FLAG_SRC_RGB555	((uint32_t)(1 << 0));
+#define MDP_RENDER_FLAG_SRC_RGB565	((uint32_t)(1 << 1));
+#define MDP_RENDER_FLAG_SRC_RGB888	((uint32_t)(1 << 2));
+#define MDP_RENDER_FLAG_DST_RGB555	((uint32_t)(1 << 3));
+#define MDP_RENDER_FLAG_DST_RGB565	((uint32_t)(1 << 4));
+#define MDP_RENDER_FLAG_DST_RGB888	((uint32_t)(1 << 5));
 
 // Render plugin definition.
 typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
