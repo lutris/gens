@@ -38,6 +38,9 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
+// RGB color conversion functions.
+#include "vdraw_RGB.h"
+
 // Audio Handler.
 #include "audio/audio.h"
 
@@ -302,35 +305,14 @@ static int vdraw_gdi_flip(void)
 	vdraw_rInfo.height = VDP_Num_Vis_Lines;
 	vdraw_rInfo.destPitch = pitch;
 	
-	if (bppMD == 16 && bppOut != 16)
+	if (vdraw_needs_conversion)
 	{
-		// MDP_RENDER_FLAG_SRC16DST32.
-		// Render as 16-bit to an internal surface.
-		
-		// Make sure the internal surface is initialized.
-		if (vdraw_16to32_scale != vdraw_scale)
-		{
-			if (vdraw_16to32_surface)
-				free(vdraw_16to32_surface);
-			
-			vdraw_16to32_scale = vdraw_scale;
-			vdraw_16to32_pitch = 320 * vdraw_scale * 2;
-			vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
-		}
-		
-		vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
-		vdraw_rInfo.destPitch = vdraw_16to32_pitch;
-		if (vdraw_get_fullscreen())
-			vdraw_blitFS(&vdraw_rInfo);
-		else
-			vdraw_blitW(&vdraw_rInfo);
-		
-		vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
-				    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
-				    pitch, vdraw_16to32_pitch);
+		// Color depth conversion is required.
+		vdraw_rgb_convert(&vdraw_rInfo);
 	}
 	else
 	{
+		// Color conversion is not required.
 		if (vdraw_get_fullscreen())
 			vdraw_blitFS(&vdraw_rInfo);
 		else

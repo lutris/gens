@@ -54,6 +54,9 @@
 // Text drawing functions.
 #include "vdraw_text.hpp"
 
+// RGB color conversion functions.
+#include "vdraw_RGB.h"
+
 // Inline video functions.
 #include "v_inline.h"
 
@@ -858,48 +861,16 @@ int vdraw_ddraw_flip(void)
 			vdraw_rInfo.height = VDP_Num_Vis_Lines;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
-			// TODO: Automatic color depth conversion.
-			vdraw_blitFS(&vdraw_rInfo);
-#if 0	
-			if (bppMD == 16 && bppOut != 16)
+			if (vdraw_needs_conversion)
 			{
-				// Renderer does not support 32-bit color input.
-				if (((vdraw_rInfo.vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_32) &&
-				    ((vdraw_rInfo.vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) == MDP_RENDER_VMODE_RGB_SRC565DST888))
-				{
-					// Renderer supports 16-bit color input and 32-bit color output.
-					vdraw_blitFS(&vdraw_rInfo);
-				}
-				else
-				{
-					// MDP_RENDER_FLAG_SRC16DST32.
-					// Render as 16-bit to an internal surface.
-					
-					// Make sure the internal surface is initialized.
-					if (vdraw_16to32_scale != vdraw_scale)
-					{
-						if (vdraw_16to32_surface)
-							free(vdraw_16to32_surface);
-						
-						vdraw_16to32_scale = vdraw_scale;
-						vdraw_16to32_pitch = 320 * vdraw_scale * 2;
-						vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
-					}
-					
-					vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
-					vdraw_rInfo.destPitch = vdraw_16to32_pitch;
-					vdraw_blitFS(&vdraw_rInfo);
-					
-					vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
-							    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
-							    ddsd.lPitch, vdraw_16to32_pitch);
-				}
+				// Color depth conversion is required.
+				vdraw_rgb_convert(&vdraw_rInfo);
 			}
 			else
 			{
+				// Color conversion is not required.
 				vdraw_blitFS(&vdraw_rInfo);
 			}
-#endif
 			
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, curBlit, FALSE);
@@ -971,48 +942,16 @@ int vdraw_ddraw_flip(void)
 			vdraw_rInfo.height = VDP_Num_Vis_Lines;
 			vdraw_rInfo.destPitch = ddsd.lPitch;
 			
-			// TODO: Automatic color depth conversion.
-			vdraw_blitW(&vdraw_rInfo);
-#if 0	
-			if (bppMD == 16 && bppOut != 16)
+			if (vdraw_needs_conversion)
 			{
-				// Renderer does not support 32-bit color input.
-				if (((vdraw_rInfo.vmodeFlags & MDP_RENDER_VMODE_BPP) == MDP_RENDER_VMODE_BPP_32) &&
-				    ((vdraw_rInfo.vmodeFlags & MDP_RENDER_VMODE_RGB_MODE) == MDP_RENDER_VMODE_RGB_SRC565DST888))
-				{
-					// Renderer supports 16-bit color input and 32-bit color output.
-					vdraw_blitW(&vdraw_rInfo);
-				}
-				else
-				{
-					// Renderer only supports 16-bit color.
-					// Render as 16-bit to an internal surface.
-					
-					// Make sure the internal surface is initialized.
-					if (vdraw_16to32_scale != vdraw_scale)
-					{
-						if (vdraw_16to32_surface)
-							free(vdraw_16to32_surface);
-						
-						vdraw_16to32_scale = vdraw_scale;
-						vdraw_16to32_pitch = 320 * vdraw_scale * 2;
-						vdraw_16to32_surface = (uint16_t*)(malloc(vdraw_16to32_pitch * 240 * vdraw_scale));
-					}
-					
-					vdraw_rInfo.destScreen = (void*)vdraw_16to32_surface;
-					vdraw_rInfo.destPitch = vdraw_16to32_pitch;
-					vdraw_blitW(&vdraw_rInfo);
-					
-					vdraw_render_16to32((uint32_t*)start, vdraw_16to32_surface,
-							    vdraw_rInfo.width * vdraw_scale, vdraw_rInfo.height * vdraw_scale,
-							    ddsd.lPitch, vdraw_16to32_pitch);
-				}
+				// Color depth conversion is required.
+				vdraw_rgb_convert(&vdraw_rInfo);
 			}
 			else
 			{
+				// Color conversion is not required.
 				vdraw_blitW(&vdraw_rInfo);
 			}
-#endif
 			
 			// Draw the text.
 			vdraw_ddraw_draw_text(&ddsd, lpDDS_Blit, FALSE);
