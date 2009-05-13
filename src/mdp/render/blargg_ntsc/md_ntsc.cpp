@@ -157,19 +157,52 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	}
 }
 
-template<typename pixel, bool scanline_interp, pixel lowPixelMask>
+template<typename pixel, bool scanline_interp, pixel lowPixelMask, pixel darkenMask>
 static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height, int out_pitch)
 {
-	/* Calculate the output pitch difference for one scanline. */
+	// Calculate the output pitch difference for one scanline.
 	const int outPitchDiff = (out_pitch / sizeof(pixel));
 	
-	/* Fill in the scanlines. */
-	while (height--)
+	// Fill in the scanlines.
+	if (!scanline_interp)
 	{
-		// Simple double-scan.
-		// TODO: Port double_output_height() from the reference implementation.
-		memcpy(rgb_out + outPitchDiff, rgb_out, in_width * sizeof(pixel) * 2);
-		rgb_out += (outPitchDiff * 2);
+		// Scanline interpolation is disabled.
+		// Do a simple double-scan.
+		while (height--)
+		{
+			memcpy(rgb_out + outPitchDiff, rgb_out, in_width * sizeof(pixel) * 2);
+			rgb_out += (outPitchDiff * 2);
+		}
+	}
+	else
+	{
+		// Scanline interpolation is enabled.
+		for (int y = height; y != 0; y--)
+		{
+			const pixel *in = rgb_out;
+			pixel *out = rgb_out + outPitchDiff;
+			
+			for (int x = in_width*2; x != 0; x--)
+			{
+				// Get the current pixel and the pixel on the next scanline.
+				pixel prev = *in;
+				pixel next = (x > 1 ? *(in + (outPitchDiff * 2)) : 0);
+				
+				// Mix RGB without losing low bits.
+				uint32_t mixed = (prev + next) + ((prev ^ next) & lowPixelMask);
+				
+				// Darken by 12%.
+				// TODO: Verify on all color depths.
+				*out = (mixed >> 1) - (mixed >> 4 & darkenMask);
+				
+				// Next set of pixels.
+				in++;
+				out++;
+			}
+			
+			// Next line.
+			rgb_out += (outPitchDiff * 2);
+		}
 	}
 }
 
@@ -224,7 +257,7 @@ int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch);
-			T_double_scan_image<uint16_t, false, 0x0421>
+			T_double_scan_image<uint16_t, true, 0x0821, 0x18E3>
 					((uint16_t*)render_info->destScreen,
 					 render_info->width, render_info->height,
 					 render_info->destPitch);
@@ -239,7 +272,7 @@ int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint16_t*)render_info->destScreen,
 					 render_info->destPitch);
-			T_double_scan_image<uint16_t, false, 0x0821>
+			T_double_scan_image<uint16_t, true, 0x0421, 0x0C63>
 					((uint16_t*)render_info->destScreen,
 					 render_info->width, render_info->height,
 					 render_info->destPitch);
@@ -254,7 +287,7 @@ int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
 					 render_info->width, render_info->height,
 					 (uint32_t*)render_info->destScreen,
 					 render_info->destPitch);
-			T_double_scan_image<uint32_t, false, (uint32_t)0x010101>
+			T_double_scan_image<uint32_t, true, (uint32_t)0x010101, (uint32_t)0x0F0F0F>
 					((uint32_t*)render_info->destScreen,
 					 render_info->width, render_info->height,
 					 render_info->destPitch);
