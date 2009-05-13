@@ -67,12 +67,15 @@ typedef struct PACKED _mdp_render_info_t
 #pragma pack()
 
 /* Render plugin flags. */
-#define MDP_RENDER_FLAG_SRC_RGB555	((uint32_t)(1 << 0));
-#define MDP_RENDER_FLAG_SRC_RGB565	((uint32_t)(1 << 1));
-#define MDP_RENDER_FLAG_SRC_RGB888	((uint32_t)(1 << 2));
-#define MDP_RENDER_FLAG_DST_RGB555	((uint32_t)(1 << 3));
-#define MDP_RENDER_FLAG_DST_RGB565	((uint32_t)(1 << 4));
-#define MDP_RENDER_FLAG_DST_RGB888	((uint32_t)(1 << 5));
+#define MDP_RENDER_FLAG_RGB_555to555	((uint32_t)(1 << 0))
+#define MDP_RENDER_FLAG_RGB_555to565	((uint32_t)(1 << 1))
+#define MDP_RENDER_FLAG_RGB_555to888	((uint32_t)(1 << 2))
+#define MDP_RENDER_FLAG_RGB_565to555	((uint32_t)(1 << 3))
+#define MDP_RENDER_FLAG_RGB_565to565	((uint32_t)(1 << 4))
+#define MDP_RENDER_FLAG_RGB_565to888	((uint32_t)(1 << 5))
+#define MDP_RENDER_FLAG_RGB_888to555	((uint32_t)(1 << 6))
+#define MDP_RENDER_FLAG_RGB_888to565	((uint32_t)(1 << 7))
+#define MDP_RENDER_FLAG_RGB_888to888	((uint32_t)(1 << 8))
 
 // Render plugin definition.
 typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
