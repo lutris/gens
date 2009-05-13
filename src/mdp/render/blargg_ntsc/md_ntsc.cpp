@@ -33,6 +33,8 @@ md_ntsc_setup_t const md_ntsc_rgb        = { 0, 0, 0, 0,.2,  0,.7, -1, -1,-1, 0,
 
 #include "md_ntsc_impl.h"
 
+#include <string.h>
+
 /* 2 input pixels -> 4 composite samples */
 pixel_info_t const md_ntsc_pixels [alignment_count] = {
 	{ PIXEL_OFFSET( -4, -9 ), { 0.1f, 0.9f, 0.9f, 0.1f } },
@@ -82,7 +84,6 @@ void md_ntsc_init( md_ntsc_t* ntsc, md_ntsc_setup_t const* setup )
 	}
 }
 
-#include <stdio.h>
 /* x is always zero except in snes_ntsc library */
 template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
 static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
@@ -95,9 +96,17 @@ static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
 template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
 static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 				  int in_row_width, int in_width, int height,
-				  pixel* rgb_out, int out_pitch)
+				  pixel *rgb_out, int out_pitch)
 {
-	int const chunk_count = in_width / md_ntsc_in_chunk - 1;
+	const int chunk_count = in_width / md_ntsc_in_chunk - 1;
+	
+	/* Calculate the output pitch difference for one scanline. */
+	const int outPitchDiff = (out_pitch / sizeof(pixel));
+	
+	/* Save the image height and starting position for later. */
+	const int img_height = height;
+	pixel *const rgb_start = rgb_out;
+	
 	while (height--)
 	{
 		uint16_t const* line_in = input;
@@ -107,7 +116,7 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		int n;
 		line_in += 3;
 		
-		for ( n = chunk_count; n; --n )
+		for (n = chunk_count; n; --n)
 		{
 			/* order of input and output pixels must not be altered */
 			MD_NTSC_COLOR_IN(0, ntsc, line_in[0]);
@@ -148,7 +157,18 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 		MD_NTSC_RGB_OUT(7, line_out[7]);
 		
 		input += in_row_width;
-		rgb_out += (out_pitch / sizeof(pixel));
+		rgb_out += (outPitchDiff * 2);
+	}
+	
+	/* Fill in the scanlines. */
+	height = img_height;
+	rgb_out = (rgb_start + outPitchDiff);
+	while (height--)
+	{
+		// Simple double-scan.
+		// TODO: Port double_output_height() from the reference implementation.
+		memcpy(rgb_out, (rgb_out - outPitchDiff), in_width * sizeof(pixel) * 2);
+		rgb_out += (outPitchDiff * 2);
 	}
 }
 
