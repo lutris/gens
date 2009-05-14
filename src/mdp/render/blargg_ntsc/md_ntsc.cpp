@@ -186,7 +186,11 @@ static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 			{
 				// Get the current pixel and the pixel on the next scanline.
 				pixel prev = *in;
-				pixel next = (x > 1 ? *(in + (outPitchDiff * 2)) : 0);
+				pixel next;
+				if (x > 1 && y > 1)
+					next = *(in + (outPitchDiff * 2));
+				else
+					next = prev;
 				
 				// Mix RGB without losing low bits.
 				uint32_t mixed = (prev + next) + ((prev ^ next) & lowPixelMask);
