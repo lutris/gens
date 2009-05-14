@@ -386,7 +386,6 @@ static void vdraw_sdl_gl_clear_screen(void)
 	memset(filterBuffer, 0x00, filterBufferSize);
 	
 	// Reset the border color to make sure it's redrawn.
-	vdraw_border_color_16 = ~MD_Palette[0];
 	vdraw_border_color_32 = ~MD_Palette32[0];
 }
 
@@ -544,13 +543,11 @@ static void vdraw_sdl_gl_draw_border(void)
 		{
 			// Either no system is active or the debugger is enabled.
 			// Make sure the border color is black.
-			vdraw_border_color_16 = 0;
 			vdraw_border_color_32 = 0;
 		}
 		else
 		{
 			// Set the border color to the first palette entry.
-			vdraw_border_color_16 = MD_Palette[0];
 			vdraw_border_color_32 = MD_Palette32[0];
 		}
 		
