@@ -39,7 +39,7 @@ static GtkWidget *ntsc_window = NULL;
 
 // Widgets.
 // TODO
-//static GtkWidget *ntsc_window_checkboxes[VLOPT_OPTIONS_COUNT];
+static GtkWidget *cboPresets;
 
 // Callbacks.
 static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
@@ -117,10 +117,37 @@ void ntsc_window_show(void *parent)
 	
 	// Create the main frame.
 	GtkWidget *fraMain = gtk_frame_new("Configuration");
-	gtk_label_set_use_markup(GTK_LABEL(gtk_bin_get_child(GTK_BIN(fraMain))), TRUE);
 	gtk_widget_show(fraMain);
 	gtk_box_pack_start(GTK_BOX(vboxMain), fraMain, FALSE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_ETCHED_IN);
+	
+	// Create the VBox for the frame.
+	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
+	gtk_container_set_border_width(GTK_CONTAINER(vboxFrame), 4);
+	gtk_widget_show(vboxFrame);
+	gtk_container_add(GTK_CONTAINER(fraMain), vboxFrame);
+	
+	// Add an HBox for the presets dropdown.
+	GtkWidget *hboxPresets = gtk_hbox_new(FALSE, 4);
+	gtk_widget_show(hboxPresets);
+	gtk_box_pack_start(GTK_BOX(vboxFrame), hboxPresets, FALSE, FALSE, 0);
+	
+	// Add a label for the presets dropdown.
+	GtkWidget *lblPresets = gtk_label_new_with_mnemonic("_Presets:");
+	gtk_widget_show(lblPresets);
+	gtk_box_pack_start(GTK_BOX(hboxPresets), lblPresets, FALSE, FALSE, 0);
+	
+	// Add the presets dropdown.
+	cboPresets = gtk_combo_box_new_text();
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "Composite");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "S-Video");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "RGB");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "RF");
+	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "Monochrome");
+	gtk_widget_show(cboPresets);
+	gtk_box_pack_start(GTK_BOX(hboxPresets), cboPresets, FALSE, FALSE, 0);
+	gtk_label_set_mnemonic_widget(GTK_LABEL(lblPresets), cboPresets);
+	
 	
 	// Create the dialog buttons.
 	
