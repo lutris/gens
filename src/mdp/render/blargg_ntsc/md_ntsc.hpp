@@ -6,6 +6,10 @@
 
 #include "md_ntsc_config.h"
 
+// MDP includes.
+#include "mdp/mdp_fncall.h"
+#include "mdp/mdp_render.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,10 +37,10 @@ typedef struct md_ntsc_setup_t
 } md_ntsc_setup_t;
 
 /* Video format presets */
-extern md_ntsc_setup_t const md_ntsc_composite; /* color bleeding + artifacts */
-extern md_ntsc_setup_t const md_ntsc_svideo;    /* color bleeding only */
-extern md_ntsc_setup_t const md_ntsc_rgb;       /* crisp image */
-extern md_ntsc_setup_t const md_ntsc_monochrome;/* desaturated + artifacts */
+DLL_LOCAL extern md_ntsc_setup_t const md_ntsc_composite; /* color bleeding + artifacts */
+DLL_LOCAL extern md_ntsc_setup_t const md_ntsc_svideo;    /* color bleeding only */
+DLL_LOCAL extern md_ntsc_setup_t const md_ntsc_rgb;       /* crisp image */
+DLL_LOCAL extern md_ntsc_setup_t const md_ntsc_monochrome;/* desaturated + artifacts */
 
 enum { md_ntsc_palette_size = 512 };
 
@@ -129,12 +133,13 @@ struct md_ntsc_t {
 	kernel##index = (color_ = (color), ENTRY( table, color_ ));\
 }
 
-/* MDP Renderer Function */
-#include "mdp/mdp_fncall.h"
-#include "mdp/mdp_render.h"
+/* MDP Renderer Functions. */
 DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_init(void);
 DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info);
+
+/* NTSC setup struct. */
+DLL_LOCAL extern md_ntsc_setup_t mdp_md_ntsc_setup;
 
 #ifdef __cplusplus
 }

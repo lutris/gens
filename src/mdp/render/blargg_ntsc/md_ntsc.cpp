@@ -214,7 +214,9 @@ static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 #include "mdp/mdp_stdint.h"
 #include "mdp/mdp_error.h"
 static md_ntsc_t *mdp_md_ntsc = NULL;
-static md_ntsc_setup_t mdp_md_ntsc_setup;
+
+// NTSC setup struct.
+md_ntsc_setup_t mdp_md_ntsc_setup;
 
 int MDP_FNCALL mdp_md_ntsc_init(void)
 {
