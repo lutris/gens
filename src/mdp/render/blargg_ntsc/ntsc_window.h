@@ -1,13 +1,13 @@
 /***************************************************************************
- * MDP: Blargg's NTSC renderer.                                            *
+ * MDP: Blargg's NTSC renderer. (Window Code)                              *
  *                                                                         *
  * Copyright (c) 2006 by Shay Green                                        *
  * MDP version Copyright (c) 2008-2009 by David Korth                      *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
- * under the terms of the GNU Lesser General Public License as published   *
- * by the Free Software Foundation; either version 2.1 of the License, or  *
- * (at your option) any later version.                                     *
+ * under the terms of the GNU General Public License as published by the   *
+ * Free Software Foundation; either version 2 of the License, or (at your  *
+ * option) any later version.                                              *
  *                                                                         *
  * This program is distributed in the hope that it will be useful, but     *
  * WITHOUT ANY WARRANTY; without even the implied warranty of              *
@@ -19,24 +19,21 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef MDP_RENDER_BLARGG_NTSC_H
-#define MDP_RENDER_BLARGG_NTSC_H
+#ifndef _MDP_NTSC_WINDOW_H
+#define _MDP_NTSC_WINDOW_H
 
 #include "mdp/mdp.h"
-#include "mdp/mdp_render.h"
-#include "mdp/mdp_host.h"
+#include "mdp/mdp_fncall.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-DLL_LOCAL int MDP_FNCALL mdp_render_blargg_ntsc_init(mdp_host_t *host_srv);
-DLL_LOCAL int MDP_FNCALL mdp_render_blargg_ntsc_end(void);
-
-DLL_LOCAL extern mdp_host_t *ntsc_host_srv;
+DLL_LOCAL void MDP_FNCALL ntsc_window_show(void *parent);
+DLL_LOCAL void MDP_FNCALL ntsc_window_close(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* MDP_RENDER_BLARGG_NTSC_H */
+#endif /* _MDP_NTSC_WINDOW_H */

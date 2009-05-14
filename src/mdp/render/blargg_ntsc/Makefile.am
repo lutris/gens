@@ -20,4 +20,24 @@ noinst_HEADERS = \
 		mdp_render_blargg_ntsc.h \
 		md_ntsc.hpp \
 		md_ntsc_config.h \
-		md_ntsc_impl.h
+		md_ntsc_impl.h \
+		ntsc_window.h
+
+if GENS_UI_GTK
+mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_gtk2.c
+mdp_render_blargg_ntsc_la_CFLAGS	+= @GTK_CFLAGS@
+mdp_render_blargg_ntsc_la_LIBADD	 = @GTK_LIBS@
+#noinst_HEADERS += \
+#		vlopt_16x16.xpm \
+#		vlopt_32x32.xpm
+endif
+
+if GENS_UI_WIN32
+mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_win32.c
+#mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_dllmain.c resource.rc
+mdp_render_blargg_ntsc_la_LIBADD	 = -lgdi32
+#noinst_HEADERS += \
+#		vlopt.ico \
+#		vlopt_dllmain.h \
+#		resource.h
+endif
