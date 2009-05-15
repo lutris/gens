@@ -45,6 +45,7 @@ static GtkWidget *cboPresets;
 static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	ntsc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data);
+static void	ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data);
 
 static gboolean	ntsc_window_do_callbacks;
 
@@ -55,7 +56,7 @@ static void ntsc_window_load_settings(void);
 typedef struct _ntsc_preset_t
 {
 	const char *name;
-	md_ntsc_setup_t *setup;
+	const md_ntsc_setup_t *setup;
 } ntsc_preset_t;
 
 static const ntsc_preset_t ntsc_presets[] =
@@ -67,6 +68,37 @@ static const ntsc_preset_t ntsc_presets[] =
 	{"Custom",	NULL},
 	{NULL, NULL}
 };
+
+// Adjustment controls.
+typedef struct _ntsc_ctrl_t
+{
+	const char *name;
+	const double min;
+	const double max;
+	const double step;
+} ntsc_ctrl_t;
+
+#define NTSC_CTRL_COUNT 10
+static const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
+{
+	{"_Hue",		-180.0, 180.0, 1.0},
+	{"_Saturation",		0.0, 2.0, 0.1},
+	{"_Contrast",		-0.5, 0.5, 0.1},
+	{"_Brightness",		-0.5, 0.5, 0.1},
+	{"S_harpness",		-1.0, 1.0, 0.1},
+	
+	// "Advanced" parameters.
+	{"_Gamma",		0.5, 1.5, 0.1},
+	{"_Resolution",		-1.0, 1.0, 0.1},
+	{"_Artifacts",		-1.0, 1.0, 0.1},
+	{"Color _Fringing",	-1.0, 1.0, 0.1},
+	{"Color B_leed",	-1.0, 1.0, 0.1},
+	
+	{NULL, 0, 0, 0}
+};
+
+static GtkWidget *lblCtrlValues[NTSC_CTRL_COUNT];
+static GtkWidget *hscCtrlValues[NTSC_CTRL_COUNT];
 
 
 /**
@@ -158,7 +190,7 @@ void ntsc_window_show(void *parent)
 	
 	// Add the presets dropdown.
 	cboPresets = gtk_combo_box_new_text();
-	int i = 0;
+	unsigned int i = 0;
 	while (ntsc_presets[i].name)
 	{
 		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), ntsc_presets[i].name);
@@ -170,6 +202,64 @@ void ntsc_window_show(void *parent)
 	g_signal_connect((gpointer)cboPresets, "changed",
 			 G_CALLBACK(ntsc_window_callback_cboPresets_changed), NULL);
 	
+	// Create a table for the adjustment widgets.
+	// First column: Name
+	// Second column: Widget
+	GtkWidget *tblWidgets = gtk_table_new(NTSC_CTRL_COUNT, 3, FALSE);
+	gtk_table_set_row_spacings(GTK_TABLE(tblWidgets), 8);
+	gtk_table_set_col_spacings(GTK_TABLE(tblWidgets), 8);
+	gtk_box_pack_start(GTK_BOX(vboxFrame), tblWidgets, TRUE, TRUE, 0);
+	
+	// Create the widgets.
+	i = 0;
+	while (ntsc_controls[i].name)
+	{
+		// Label alignment.
+		GtkWidget *alignWidgetName = gtk_alignment_new(0.0f, 0.5f, 0, 0);
+		gtk_widget_show(alignWidgetName);
+		gtk_table_attach(GTK_TABLE(tblWidgets), alignWidgetName,
+				 0, 1, i, i + 1,
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(0), 0, 0);
+		
+		// Label.
+		GtkWidget *lblWidgetName = gtk_label_new_with_mnemonic(ntsc_controls[i].name);
+		gtk_widget_show(lblWidgetName);
+		gtk_container_add(GTK_CONTAINER(alignWidgetName), lblWidgetName);
+		
+		// Value Label alignment.
+		GtkWidget *alignCtrlValue = gtk_alignment_new(1.0f, 0.5f, 0, 0);
+		gtk_widget_set_size_request(alignCtrlValue, 32, -1);
+		gtk_widget_show(alignWidgetName);
+		gtk_table_attach(GTK_TABLE(tblWidgets), alignCtrlValue,
+				 1, 2, i, i + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(0), 0, 0);
+		
+		// Value Label.
+		lblCtrlValues[i] = gtk_label_new(NULL);
+		gtk_widget_show(lblCtrlValues[i]);
+		gtk_container_add(GTK_CONTAINER(alignCtrlValue), lblCtrlValues[i]);
+		
+		// GtkHScale.
+		hscCtrlValues[i] = gtk_hscale_new_with_range(ntsc_controls[i].min,
+							     ntsc_controls[i].max,
+							     ntsc_controls[i].step);
+		gtk_scale_set_draw_value(GTK_SCALE(hscCtrlValues[i]), FALSE);
+		gtk_widget_set_size_request(hscCtrlValues[i], 256, -1);
+		gtk_widget_show(hscCtrlValues[i]);
+		gtk_label_set_mnemonic_widget(GTK_LABEL(lblWidgetName), hscCtrlValues[i]);
+		gtk_table_attach(GTK_TABLE(tblWidgets), hscCtrlValues[i],
+				 2, 3, i, i + 1,
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(0), 0, 0);
+		g_signal_connect((gpointer)hscCtrlValues[i], "value-changed",
+				 G_CALLBACK(ntsc_window_callback_hscCtrlValues_value_changed),
+				 GINT_TO_POINTER(i));
+		
+		// Next widget.
+		i++;
+	}
 	
 	// Create the dialog buttons.
 	
@@ -304,7 +394,7 @@ static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointe
 	
 	// Load the specified preset setup.
 	int i = gtk_combo_box_get_active(widget);
-	if (i == -1 || i >= (sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
+	if (i == -1 || i >= (int)(sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
 		return;
 	
 	if (!ntsc_presets[i].setup)
@@ -316,4 +406,33 @@ static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointe
 	
 	// Load the new settings in the window.
 	ntsc_window_load_settings();
+}
+
+
+/**
+ * ntsc_window_callback_hscCtrlValues_value_changed(): One of the adjustment controls has been changed.
+ * @param range
+ * @param user_data
+ */
+static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data)
+{
+	int i = GPOINTER_TO_INT(user_data);
+	if (i < 0 || i >= NTSC_CTRL_COUNT)
+		return;
+	
+	// Update the label for the adjustment widget.
+	char tmp[16];
+	
+	if (i == 0)
+	{
+		// Hue. No decimal places.
+		snprintf(tmp, sizeof(tmp), "%0.0f", gtk_range_get_value(range));
+	}
+	else
+	{
+		// Other adjustment. 1 decimal place.
+		snprintf(tmp, sizeof(tmp), "%0.1f", gtk_range_get_value(range));
+	}
+	
+	gtk_label_set_text(GTK_LABEL(lblCtrlValues[i]), tmp);
 }
