@@ -141,13 +141,13 @@ void ntsc_window_show(void *parent)
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_ETCHED_IN);
 	
 	// Create the VBox for the frame.
-	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 4);
-	gtk_container_set_border_width(GTK_CONTAINER(vboxFrame), 4);
+	GtkWidget *vboxFrame = gtk_vbox_new(FALSE, 8);
+	gtk_container_set_border_width(GTK_CONTAINER(vboxFrame), 8);
 	gtk_widget_show(vboxFrame);
 	gtk_container_add(GTK_CONTAINER(fraMain), vboxFrame);
 	
 	// Add an HBox for the presets dropdown.
-	GtkWidget *hboxPresets = gtk_hbox_new(FALSE, 4);
+	GtkWidget *hboxPresets = gtk_hbox_new(FALSE, 8);
 	gtk_widget_show(hboxPresets);
 	gtk_box_pack_start(GTK_BOX(vboxFrame), hboxPresets, FALSE, FALSE, 0);
 	
