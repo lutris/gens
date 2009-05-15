@@ -204,7 +204,7 @@ static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 					else
 					{
 						// Don't darken the pixel at all.
-						*out = mixed;
+						*out = (mixed >> 1);
 					}
 					
 					// Next set of pixels.
@@ -219,7 +219,6 @@ static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 		else
 		{
 			// Interpolation is disabled.
-			
 			for (unsigned int y = height; y != 0; y--)
 			{
 				const pixel *in = rgb_out;
@@ -229,17 +228,20 @@ static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 				{
 					const pixel prev = *in;
 					
+					// Mix RGB without losing low bits.
+					//const uint32_t mixed = (prev + prev) + ((prev ^ prev) & lowPixelMask);
+					
 					// Darken by 12%.
-					*out = (prev >> 1) - (prev >> 4 & darkenMask);
+					*out = prev - (prev >> 3 & darkenMask);
 					
 					// Next set of pixels.
 					in++;
 					out++;
 				}
+				
+				// Next line.
+				rgb_out += (outPitchDiff * 2);
 			}
-			
-			// Next line.
-			rgb_out += (outPitchDiff * 2);
 		}
 	}
 }
