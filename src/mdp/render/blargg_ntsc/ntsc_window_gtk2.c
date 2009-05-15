@@ -444,17 +444,64 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	
 	// Update the label for the adjustment widget.
 	char tmp[16];
+	double val = gtk_range_get_value(range);
 	
 	if (i == 0)
 	{
 		// Hue. No decimal places.
-		snprintf(tmp, sizeof(tmp), "%0.0f°", gtk_range_get_value(range));
+		snprintf(tmp, sizeof(tmp), "%0.0f°", val);
 	}
 	else
 	{
 		// Other adjustment. 1 decimal place.
-		snprintf(tmp, sizeof(tmp), "%0.1f", gtk_range_get_value(range));
+		snprintf(tmp, sizeof(tmp), "%0.1f", val);
 	}
 	
 	gtk_label_set_text(GTK_LABEL(lblCtrlValues[i]), tmp);
+	
+	if (!ntsc_window_do_callbacks)
+		return;
+	
+	// Adjust the NTSC filter.
+	switch (i)
+	{
+		case 0:
+			mdp_md_ntsc_setup.hue = val / 180.0;
+			break;
+		case 1:
+			mdp_md_ntsc_setup.saturation = val - 1.0;
+			break;
+		case 2:
+			mdp_md_ntsc_setup.contrast = val;
+			break;
+		case 3:
+			mdp_md_ntsc_setup.brightness = val;
+			break;
+		case 4:
+			mdp_md_ntsc_setup.sharpness = val;
+			break;
+		case 5:
+			mdp_md_ntsc_setup.gamma = (val - 1.0) * 2.0;
+			break;
+		case 6:
+			mdp_md_ntsc_setup.resolution = val;
+			break;
+		case 7:
+			mdp_md_ntsc_setup.artifacts = val;
+			break;
+		case 8:
+			mdp_md_ntsc_setup.fringing = val;
+			break;
+		case 9:
+			mdp_md_ntsc_setup.bleed = val;
+			break;
+		default:
+			return;
+	}
+	
+	// Set the "Presets" dropdown to "Custom".
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), 4);
+	
+	// Reinitialize the NTSC filter with the new settings.
+	mdp_md_ntsc_reinit_setup();
 }
