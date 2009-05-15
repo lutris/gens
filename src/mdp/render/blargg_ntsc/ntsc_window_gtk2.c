@@ -44,10 +44,29 @@ static GtkWidget *cboPresets;
 // Callbacks.
 static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 static void	ntsc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data);
+
+static gboolean	ntsc_window_do_callbacks;
 
 // Setting handling functions.
 static void ntsc_window_load_settings(void);
-static void ntsc_window_save_settings(void);
+
+// Presets.
+typedef struct _ntsc_preset_t
+{
+	const char *name;
+	md_ntsc_setup_t *setup;
+} ntsc_preset_t;
+
+static const ntsc_preset_t ntsc_presets[] =
+{
+	{"Composite",	&md_ntsc_composite},
+	{"S-Video",	&md_ntsc_svideo},
+	{"RGB",		&md_ntsc_rgb},
+	{"Monochrome",	&md_ntsc_monochrome},
+	{"Custom",	NULL},
+	{NULL, NULL}
+};
 
 
 /**
@@ -139,14 +158,17 @@ void ntsc_window_show(void *parent)
 	
 	// Add the presets dropdown.
 	cboPresets = gtk_combo_box_new_text();
-	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "Composite");
-	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "S-Video");
-	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "RGB");
-	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "RF");
-	gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), "Monochrome");
+	int i = 0;
+	while (ntsc_presets[i].name)
+	{
+		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), ntsc_presets[i].name);
+		i++;
+	}
 	gtk_widget_show(cboPresets);
 	gtk_box_pack_start(GTK_BOX(hboxPresets), cboPresets, FALSE, FALSE, 0);
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblPresets), cboPresets);
+	g_signal_connect((gpointer)cboPresets, "changed",
+			 G_CALLBACK(ntsc_window_callback_cboPresets_changed), NULL);
 	
 	
 	// Create the dialog buttons.
@@ -235,14 +257,38 @@ static void ntsc_window_callback_response(GtkDialog *dialog, gint response_id, g
  */
 static void ntsc_window_load_settings(void)
 {
+	ntsc_window_do_callbacks = FALSE;
+	
 	// TODO
+	
+	ntsc_window_do_callbacks = TRUE;
 }
 
 
 /**
- * ntsc_window_save_settings(): Save the NTSC settings.
+ * ntsc_window_callback_cboPresets_changed(): The "Presets" combo box has been changed.
+ * @param widget
+ * @param user_data
  */
-static void ntsc_window_save_settings(void)
+static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data)
 {
-	// TODO
+	MDP_UNUSED_PARAMETER(user_data);
+	printf("OMG\n");
+	if (!ntsc_window_do_callbacks)
+		return;
+	
+	// Load the specified preset setup.
+	int i = gtk_combo_box_get_active(widget);
+	if (i == -1 || i >= (sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
+		return;
+	
+	if (!ntsc_presets[i].setup)
+		return;
+	
+	// Reinitialize the NTSC filter with the new settings.
+	mdp_md_ntsc_setup = *(ntsc_presets[i].setup);
+	mdp_md_ntsc_reinit_setup();
+	
+	// Load the new settings in the window.
+	ntsc_window_load_settings();
 }

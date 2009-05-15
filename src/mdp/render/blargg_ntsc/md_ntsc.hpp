@@ -139,6 +139,7 @@ DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_end(void);
 DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info);
 
 /* NTSC setup struct. */
+DLL_LOCAL void MDP_FNCALL mdp_md_ntsc_reinit_setup(void);
 DLL_LOCAL extern md_ntsc_setup_t mdp_md_ntsc_setup;
 
 #ifdef __cplusplus

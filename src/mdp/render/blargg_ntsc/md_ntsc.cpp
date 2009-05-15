@@ -241,6 +241,13 @@ int MDP_FNCALL mdp_md_ntsc_end(void)
 	mdp_md_ntsc = NULL;
 }
 
+void MDP_FNCALL mdp_md_ntsc_reinit_setup(void)
+{
+	// Reinitialize mdp_md_ntsc.
+	md_ntsc_init(mdp_md_ntsc, &mdp_md_ntsc_setup);
+}
+
+
 int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info)
 {
 	if (!render_info)
