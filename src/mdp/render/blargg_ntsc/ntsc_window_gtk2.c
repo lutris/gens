@@ -83,17 +83,17 @@ typedef struct _ntsc_ctrl_t
 static const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
 {
 	{"_Hue",		-180.0, 180.0, 1.0},
-	{"_Saturation",		0.0, 2.0, 0.1},
-	{"_Contrast",		-1.0, 1.0, 0.1},
-	{"_Brightness",		-1.0, 1.0, 0.1},
-	{"S_harpness",		-1.0, 1.0, 0.1},
+	{"_Saturation",		0.0, 2.0, 0.05},
+	{"_Contrast",		-1.0, 1.0, 0.05},
+	{"_Brightness",		-1.0, 1.0, 0.05},
+	{"S_harpness",		-1.0, 1.0, 0.05},
 	
 	// "Advanced" parameters.
-	{"_Gamma",		0.5, 1.5, 0.1},
-	{"_Resolution",		-1.0, 1.0, 0.1},
-	{"_Artifacts",		-1.0, 1.0, 0.1},
-	{"Color _Fringing",	-1.0, 1.0, 0.1},
-	{"Color B_leed",	-1.0, 1.0, 0.1},
+	{"_Gamma",		0.5, 1.5, 0.05},
+	{"_Resolution",		-1.0, 1.0, 0.05},
+	{"_Artifacts",		-1.0, 1.0, 0.05},
+	{"Color _Fringing",	-1.0, 1.0, 0.05},
+	{"Color B_leed",	-1.0, 1.0, 0.05},
 	
 	{NULL, 0, 0, 0}
 };
@@ -456,11 +456,11 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	}
 	else
 	{
-		// Other adjustment. 1 decimal place.
-		val *= 10;
+		// Other adjustment. 2 decimal places.
+		val *= 100;
 		val = round(val);
-		val /= 10;
-		snprintf(tmp, sizeof(tmp), "%0.1f", val);
+		val /= 100;
+		snprintf(tmp, sizeof(tmp), "%0.2f", val);
 	}
 	
 	gtk_label_set_text(GTK_LABEL(lblCtrlValues[i]), tmp);
