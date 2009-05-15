@@ -142,6 +142,10 @@ DLL_LOCAL int MDP_FNCALL mdp_md_ntsc_blit(mdp_render_info_t *render_info);
 DLL_LOCAL void MDP_FNCALL mdp_md_ntsc_reinit_setup(void);
 DLL_LOCAL extern md_ntsc_setup_t mdp_md_ntsc_setup;
 
+/* Scanline / Interpolation options. */
+DLL_LOCAL extern int mdp_md_ntsc_scanline;
+DLL_LOCAL extern int mdp_md_ntsc_interp;
+
 #ifdef __cplusplus
 }
 #endif
