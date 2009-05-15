@@ -83,8 +83,8 @@ static const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
 {
 	{"_Hue",		-180.0, 180.0, 1.0},
 	{"_Saturation",		0.0, 2.0, 0.1},
-	{"_Contrast",		-0.5, 0.5, 0.1},
-	{"_Brightness",		-0.5, 0.5, 0.1},
+	{"_Contrast",		-1.0, 1.0, 0.1},
+	{"_Brightness",		-1.0, 1.0, 0.1},
 	{"S_harpness",		-1.0, 1.0, 0.1},
 	
 	// "Advanced" parameters.
@@ -114,6 +114,9 @@ void ntsc_window_show(void *parent)
 		gtk_widget_grab_focus(ntsc_window);
 		return;
 	}
+	
+	// Don't do any callbacks yet.
+	ntsc_window_do_callbacks = FALSE;
 	
 	// Create the NTSC Plugin Options window.
 	ntsc_window = gtk_dialog_new();
@@ -229,7 +232,7 @@ void ntsc_window_show(void *parent)
 		
 		// Value Label alignment.
 		GtkWidget *alignCtrlValue = gtk_alignment_new(1.0f, 0.5f, 0, 0);
-		gtk_widget_set_size_request(alignCtrlValue, 32, -1);
+		gtk_widget_set_size_request(alignCtrlValue, 40, -1);
 		gtk_widget_show(alignWidgetName);
 		gtk_table_attach(GTK_TABLE(tblWidgets), alignCtrlValue,
 				 1, 2, i, i + 1,
@@ -241,10 +244,14 @@ void ntsc_window_show(void *parent)
 		gtk_widget_show(lblCtrlValues[i]);
 		gtk_container_add(GTK_CONTAINER(alignCtrlValue), lblCtrlValues[i]);
 		
+		// Adjustment object.
+		GtkObject *adjWidget = gtk_adjustment_new(0, ntsc_controls[i].min,
+							  ntsc_controls[i].max,
+							  ntsc_controls[i].step,
+							  ntsc_controls[i].step * 2, 0);
+		
 		// GtkHScale.
-		hscCtrlValues[i] = gtk_hscale_new_with_range(ntsc_controls[i].min,
-							     ntsc_controls[i].max,
-							     ntsc_controls[i].step);
+		hscCtrlValues[i] = gtk_hscale_new(GTK_ADJUSTMENT(adjWidget));
 		gtk_scale_set_draw_value(GTK_SCALE(hscCtrlValues[i]), FALSE);
 		gtk_widget_set_size_request(hscCtrlValues[i], 256, -1);
 		gtk_widget_show(hscCtrlValues[i]);
@@ -256,6 +263,9 @@ void ntsc_window_show(void *parent)
 		g_signal_connect((gpointer)hscCtrlValues[i], "value-changed",
 				 G_CALLBACK(ntsc_window_callback_hscCtrlValues_value_changed),
 				 GINT_TO_POINTER(i));
+		
+		// Initialize the value label.
+		ntsc_window_callback_hscCtrlValues_value_changed(GTK_RANGE(hscCtrlValues[i]), GINT_TO_POINTER(i));
 		
 		// Next widget.
 		i++;
@@ -376,6 +386,18 @@ static void ntsc_window_load_settings(void)
 		i++;
 	}
 	
+	// Load all settings.
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[0]), (mdp_md_ntsc_setup.hue * 180.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[1]), (mdp_md_ntsc_setup.saturation + 1.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[2]), (mdp_md_ntsc_setup.contrast));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[3]), mdp_md_ntsc_setup.brightness);
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[4]), mdp_md_ntsc_setup.sharpness);
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[5]), ((mdp_md_ntsc_setup.gamma / 2.0) + 1.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[6]), mdp_md_ntsc_setup.resolution);
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[7]), mdp_md_ntsc_setup.artifacts);
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[8]), mdp_md_ntsc_setup.fringing);
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[9]), mdp_md_ntsc_setup.bleed);
+	
 	ntsc_window_do_callbacks = TRUE;
 }
 
@@ -426,7 +448,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	if (i == 0)
 	{
 		// Hue. No decimal places.
-		snprintf(tmp, sizeof(tmp), "%0.0f", gtk_range_get_value(range));
+		snprintf(tmp, sizeof(tmp), "%0.0f°", gtk_range_get_value(range));
 	}
 	else
 	{
