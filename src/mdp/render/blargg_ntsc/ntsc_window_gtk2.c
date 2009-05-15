@@ -259,7 +259,32 @@ static void ntsc_window_load_settings(void)
 {
 	ntsc_window_do_callbacks = FALSE;
 	
-	// TODO
+	// Set the preset dropdown box.
+	int i = 0;
+	while (ntsc_presets[i].name)
+	{
+		if (!ntsc_presets[i].setup)
+		{
+			// "Custom". This is the last item in the predefined list.
+			// Since the current setup doesn't match anything else,
+			// it must be a custom setup.
+			gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), i);
+			break;
+		}
+		else
+		{
+			// Check if this preset matches the current setup.
+			if (!memcmp(&mdp_md_ntsc_setup, ntsc_presets[i].setup, sizeof(mdp_md_ntsc_setup)))
+			{
+				// Match found!
+				gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), i);
+				break;
+			}
+		}
+		
+		// Next preset.
+		i++;
+	}
 	
 	ntsc_window_do_callbacks = TRUE;
 }
@@ -273,7 +298,7 @@ static void ntsc_window_load_settings(void)
 static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data)
 {
 	MDP_UNUSED_PARAMETER(user_data);
-	printf("OMG\n");
+	
 	if (!ntsc_window_do_callbacks)
 		return;
 	
