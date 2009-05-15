@@ -35,24 +35,6 @@
 // MDP error codes.
 #include "mdp/mdp_error.h"
 
-// Window.
-static GtkWidget *ntsc_window = NULL;
-
-// Widgets.
-// TODO
-static GtkWidget *cboPresets;
-
-// Callbacks.
-static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-static void	ntsc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
-static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data);
-static void	ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data);
-
-static gboolean	ntsc_window_do_callbacks;
-
-// Setting handling functions.
-static void ntsc_window_load_settings(void);
-
 // Presets.
 typedef struct _ntsc_preset_t
 {
@@ -98,8 +80,29 @@ static const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
 	{NULL, 0, 0, 0}
 };
 
+// Window.
+static GtkWidget *ntsc_window = NULL;
+
+// Widgets.
+// TODO
+static GtkWidget *cboPresets;
+static GtkWidget *chkScanline;
+static GtkWidget *chkInterp;
 static GtkWidget *lblCtrlValues[NTSC_CTRL_COUNT];
 static GtkWidget *hscCtrlValues[NTSC_CTRL_COUNT];
+
+// Callbacks.
+static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+static void	ntsc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
+static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data);
+static void	ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data);
+static void	ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+
+static gboolean	ntsc_window_do_callbacks;
+
+// Setting handling functions.
+static void ntsc_window_load_settings(void);
 
 
 /**
@@ -205,6 +208,20 @@ void ntsc_window_show(void *parent)
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblPresets), cboPresets);
 	g_signal_connect((gpointer)cboPresets, "changed",
 			 G_CALLBACK(ntsc_window_callback_cboPresets_changed), NULL);
+	
+	// Scanlines checkbox.
+	chkScanline = gtk_check_button_new_with_mnemonic("S_canlines");
+	gtk_widget_show(chkScanline);
+	gtk_box_pack_start(GTK_BOX(hboxPresets), chkScanline, FALSE, FALSE, 0);
+	g_signal_connect((gpointer)chkScanline, "toggled",
+			 G_CALLBACK(ntsc_window_callback_chkScanline_toggled), NULL);
+	
+	// Interpolation checkbox.
+	chkInterp = gtk_check_button_new_with_mnemonic("_Interpolation");
+	gtk_widget_show(chkInterp);
+	gtk_box_pack_start(GTK_BOX(hboxPresets), chkInterp, FALSE, FALSE, 0);
+	g_signal_connect((gpointer)chkInterp, "toggled",
+			 G_CALLBACK(ntsc_window_callback_chkInterp_toggled), NULL);
 	
 	// Create a table for the adjustment widgets.
 	// First column: Name
@@ -387,6 +404,10 @@ static void ntsc_window_load_settings(void)
 		i++;
 	}
 	
+	// Scanlines / Interpolation
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScanline), mdp_md_ntsc_scanline);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
+	
 	// Load all settings.
 	gtk_range_set_value(GTK_RANGE(hscCtrlValues[0]), (mdp_md_ntsc_setup.hue * 180.0));
 	gtk_range_set_value(GTK_RANGE(hscCtrlValues[1]), (mdp_md_ntsc_setup.saturation + 1.0));
@@ -510,4 +531,36 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	
 	// Reinitialize the NTSC filter with the new settings.
 	mdp_md_ntsc_reinit_setup();
+}
+
+
+/**
+ * ntsc_window_callback_chkScanline_toggled): The "Scanlines" checkbox was toggled.
+ * @param togglebutton
+ * @param user_data
+ */
+static void ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	if (!ntsc_window_do_callbacks)
+		return;
+	
+	mdp_md_ntsc_scanline = gtk_toggle_button_get_active(togglebutton);
+}
+
+
+/**
+ * ntsc_window_callback_chkScanline_toggled): The "Interpolation" checkbox was toggled.
+ * @param togglebutton
+ * @param user_data
+ */
+static void ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data)
+{
+	MDP_UNUSED_PARAMETER(user_data);
+	
+	if (!ntsc_window_do_callbacks)
+		return;
+	
+	mdp_md_ntsc_interp = gtk_toggle_button_get_active(togglebutton);
 }
