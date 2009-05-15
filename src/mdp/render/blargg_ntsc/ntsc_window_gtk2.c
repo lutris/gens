@@ -24,6 +24,7 @@
 #include <gdk/gdkkeysyms.h>
 
 // C includes.
+#include <math.h>
 #include <stdio.h>
 
 #include "mdp_render_blargg_ntsc.h"
@@ -170,7 +171,7 @@ void ntsc_window_show(void *parent)
 	gtk_container_add(GTK_CONTAINER(vboxDialog), vboxMain);
 	
 	// Create the main frame.
-	GtkWidget *fraMain = gtk_frame_new("Configuration");
+	GtkWidget *fraMain = gtk_frame_new("NTSC Configuration");
 	gtk_widget_show(fraMain);
 	gtk_box_pack_start(GTK_BOX(vboxMain), fraMain, FALSE, TRUE, 0);
 	gtk_frame_set_shadow_type(GTK_FRAME(fraMain), GTK_SHADOW_ETCHED_IN);
@@ -446,14 +447,19 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	char tmp[16];
 	double val = gtk_range_get_value(range);
 	
+	// Round the value.
 	if (i == 0)
 	{
 		// Hue. No decimal places.
+		val = round(val);
 		snprintf(tmp, sizeof(tmp), "%0.0f°", val);
 	}
 	else
 	{
 		// Other adjustment. 1 decimal place.
+		val *= 10;
+		val = round(val);
+		val /= 10;
 		snprintf(tmp, sizeof(tmp), "%0.1f", val);
 	}
 	
