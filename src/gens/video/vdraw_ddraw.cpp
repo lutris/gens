@@ -1021,7 +1021,25 @@ static void vdraw_ddraw_draw_border(DDSURFACEDESC2* pddsd, LPDIRECTDRAWSURFACE4 
 	else if (bppOut == 15 || bppOut == 16)
 	{
 		// 15-bit/16-bit color.
-		ddbltfx_Border_Color.dwFillColor = MD_Palette[0];
+		uint16_t bc16 = MD_Palette[0];
+		
+		// Check if the border color needs to be converted.
+		if (bppMD == 15 && bppOut == 16)
+		{
+			// MD palette is 15-bit; output is 16-bit.
+			// MD:  0RRRRRGG GGGBBBBB
+			// Out: RRRRRGGG GGGBBBBB
+			bc16 = ((bc16 & 0x7C00) << 1) | ((bc16 & 0x03E0) << 1) | (bc16 & 0x1F);
+		}
+		else if (bppMD == 16 && bppOut == 15)
+		{
+			// MD palette is 16-bit; output is 15-bit.
+			// MD:  RRRRRGGG GGGBBBBB
+			// Out: 0RRRRRGG GGGBBBBB
+			bc16 = ((bc16 & 0xF800) >> 1) | ((bc16 & 0x07C0) >> 1) | (bc16 & 0x1F);
+		}
+		
+		ddbltfx_Border_Color.dwFillColor = bc16;
 	}
 	else //if (bppOut == 32)
 	{
