@@ -166,6 +166,9 @@ static int vdraw_gdi_init(void)
 	// Adjust stretch parameters.
 	vdraw_gdi_stretch_adjust();
 	
+	// Reset the border color to make sure it's redrawn.
+	vdraw_border_color_32 = ~MD_Palette32[0];
+	
 	// GDI initialized.
 	return 0;
 }
