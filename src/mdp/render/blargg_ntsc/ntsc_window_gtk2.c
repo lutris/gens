@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Blargg's NTSC renderer. (Window Code)                              *
+ * MDP: Blargg's NTSC renderer. (Window Code) (GTK+)                       *
  *                                                                         *
  * Copyright (c) 2006 by Shay Green                                        *
  * MDP version Copyright (c) 2008-2009 by David Korth                      *
