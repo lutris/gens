@@ -98,6 +98,7 @@ static HWND hscCtrlValues[NTSC_CTRL_COUNT];
 
 // Widget IDs.
 #define IDC_NTSC_TRACKBAR 0x1000
+#define IDC_NTSC_PRESETS  0x1100
 
 // Window Procedure.
 static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -196,6 +197,7 @@ void ntsc_window_show(void *parent)
 #define NTSC_VALUELABEL_HEIGHT 16
 #define NTSC_TRACKBAR_WIDTH  (NTSC_WINDOW_WIDTH-8-16-NTSC_WIDGETNAME_WIDTH-8-NTSC_VALUELABEL_WIDTH-8)
 #define NTSC_TRACKBAR_HEIGHT 24
+#define NTSC_TRACKBAR_STYLE  (WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM)
 /**
  * ntsc_window_create_child_windows(): Create child windows.
  * @param hWnd Parent window.
@@ -205,8 +207,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	if (ntsc_window_child_windows_created)
 		return;
 	
-	// TODO
-	
 	// Create the main frame.
 	HWND grpBox = CreateWindow(WC_BUTTON, TEXT("NTSC Configuration"),
 				   WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
@@ -214,12 +214,30 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 				   hWnd, NULL, ntsc_hInstance, NULL);
 	SetWindowFont(grpBox, ntsc_hFont, TRUE);
 	
-	// Style for the trackbars.
-	static const unsigned int trkStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | TBS_HORZ | TBS_BOTTOM;
+	// Add a label for the presets dropdown.
+	HWND lblPresets = CreateWindow(WC_STATIC, TEXT("&Presets:"),
+				       WS_CHILD | WS_VISIBLE | SS_LEFT,
+				       8+8, 8+16+4, 64, 16,
+				       hWnd, NULL, ntsc_hInstance, NULL);
+	SetWindowFont(lblPresets, ntsc_hFont, TRUE);
+	
+	// Add the presets dropdown.
+	cboPresets = CreateWindow(WC_COMBOBOX, NULL,
+				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
+				  8+64+8, 8+16, 104, 23*((sizeof(ntsc_presets) / sizeof(ntsc_preset_t)) - 1),
+				  hWnd, (HMENU)IDC_NTSC_PRESETS, ntsc_hInstance, NULL);
+	SetWindowFont(cboPresets, ntsc_hFont, TRUE);
+	
+	unsigned int i = 0;
+	while (ntsc_presets[i].name)
+	{
+		ComboBox_AddString(cboPresets, ntsc_presets[i].name);
+		i++;
+	}
 	
 	// Create the adjustment widgets.
-	int hscTop = 8+16;
-	int i = 0;
+	int hscTop = 8+16+24;
+	i = 0;
 	while (ntsc_controls[i].name)
 	{
 		// Label.
@@ -239,7 +257,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 		SetWindowFont(lblCtrlValues[i], ntsc_hFont, TRUE);
 		
 		// Trackbar.
-		hscCtrlValues[i] = CreateWindow(TRACKBAR_CLASS, NULL, trkStyle,
+		hscCtrlValues[i] = CreateWindow(TRACKBAR_CLASS, NULL, NTSC_TRACKBAR_STYLE,
 						8+8+NTSC_WIDGETNAME_WIDTH+8+NTSC_VALUELABEL_WIDTH, hscTop,
 						NTSC_TRACKBAR_WIDTH, NTSC_TRACKBAR_HEIGHT,
 						hWnd, (HMENU)(IDC_NTSC_TRACKBAR + i), ntsc_hInstance, NULL);
