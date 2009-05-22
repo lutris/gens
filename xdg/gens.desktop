@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Name=Gens/GS
 Type=Application
+GenericName=Sega Genesis, Sega CD, and Sega 32X emulator
 Comment=Sega Genesis, Sega CD, and Sega 32X emulator
 Exec=gens
 Icon=/usr/share/gens/Gens2.ico
