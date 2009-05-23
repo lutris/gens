@@ -112,10 +112,10 @@ static HFONT ntsc_hFont = NULL;
 
 // Callbacks.
 #if 0
-static gboolean	ntsc_window_callback_close(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-static void	ntsc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data);
 static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data);
-static void	ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data);
+#endif
+static void	ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL update_setup);
+#if 0
 static void	ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 #endif
@@ -378,9 +378,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 		// Next widget.
 		i++;
 	}
-	
-	// Load the current settings.
-	ntsc_window_load_settings();
 #endif
 	
 	// Create the "Close" button.
@@ -388,6 +385,9 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 				     NTSC_WINDOW_WIDTH-75-8, NTSC_WINDOW_HEIGHT-24-8, 75, 23,
 				     hWnd, (HMENU)IDCLOSE, ntsc_hInstance, NULL);
 	SetWindowFont(btnClose, ntsc_hFont, TRUE);
+	
+	// Load the current settings.
+	ntsc_window_load_settings();
 	
 	// Child windows created.
 	ntsc_window_child_windows_created = TRUE;
@@ -457,39 +457,11 @@ void ntsc_window_close(void)
 }
 
 
-#if 0
-/**
- * ntsc_window_callback_response(): Dialog Response callback.
- * @param dialog
- * @param response_id
- * @param user_data
- */
-static void ntsc_window_callback_response(GtkDialog *dialog, gint response_id, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(dialog);
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	switch (response_id)
-	{
-		case GTK_RESPONSE_CLOSE:
-			// Close.
-			ntsc_window_close();
-			break;
-		
-		default:
-			// Unknown response ID.
-			break;
-	}
-}
-
-
 /**
  * ntsc_window_load_settings(): Load the NTSC settings.
  */
 static void ntsc_window_load_settings(void)
 {
-	ntsc_window_do_callbacks = FALSE;
-	
 	// Set the preset dropdown box.
 	int i = 0;
 	while (ntsc_presets[i].name)
@@ -499,7 +471,7 @@ static void ntsc_window_load_settings(void)
 			// "Custom". This is the last item in the predefined list.
 			// Since the current setup doesn't match anything else,
 			// it must be a custom setup.
-			gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), i);
+			ComboBox_SetCurSel(cboPresets, i);
 			break;
 		}
 		else
@@ -508,7 +480,7 @@ static void ntsc_window_load_settings(void)
 			if (!memcmp(&mdp_md_ntsc_setup, ntsc_presets[i].setup, sizeof(mdp_md_ntsc_setup)))
 			{
 				// Match found!
-				gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), i);
+				ComboBox_SetCurSel(cboPresets, i);
 				break;
 			}
 		}
@@ -518,25 +490,30 @@ static void ntsc_window_load_settings(void)
 	}
 	
 	// Scanlines / Interpolation
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkScanline), mdp_md_ntsc_scanline);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
+	Button_SetCheck(chkScanline, (mdp_md_ntsc_scanline ? BST_CHECKED : BST_UNCHECKED));
+	Button_SetCheck(chkInterp, (mdp_md_ntsc_interp ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Load all settings.
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[0]), (mdp_md_ntsc_setup.hue * 180.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[1]), (mdp_md_ntsc_setup.saturation + 1.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[2]), (mdp_md_ntsc_setup.contrast));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[3]), mdp_md_ntsc_setup.brightness);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[4]), mdp_md_ntsc_setup.sharpness);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[5]), ((mdp_md_ntsc_setup.gamma / 2.0) + 1.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[6]), mdp_md_ntsc_setup.resolution);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[7]), mdp_md_ntsc_setup.artifacts);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[8]), mdp_md_ntsc_setup.fringing);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[9]), mdp_md_ntsc_setup.bleed);
+	SendMessage(hscCtrlValues[0], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.hue * 180.0));
+	SendMessage(hscCtrlValues[1], TBM_SETPOS, TRUE, (int)((mdp_md_ntsc_setup.saturation + 1.0) * 100.0));
+	SendMessage(hscCtrlValues[2], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.contrast * 100.0));
+	SendMessage(hscCtrlValues[3], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.brightness * 100.0));
+	SendMessage(hscCtrlValues[4], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.sharpness * 100.0));
+	SendMessage(hscCtrlValues[5], TBM_SETPOS, TRUE, (int)(((mdp_md_ntsc_setup.gamma / 2.0) + 1.0) * 100.0));
+	SendMessage(hscCtrlValues[6], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.resolution * 100.0));
+	SendMessage(hscCtrlValues[7], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.artifacts * 100.0));
+	SendMessage(hscCtrlValues[8], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.fringing * 100.0));
+	SendMessage(hscCtrlValues[9], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.bleed * 100.0));
 	
-	ntsc_window_do_callbacks = TRUE;
+	// Display all settings.
+	for (i = 0; i < NTSC_CTRL_COUNT; i++)
+	{
+		ntsc_window_callback_hscCtrlValues_value_changed(i, FALSE);
+	}
 }
 
 
+#if 0
 /**
  * ntsc_window_callback_cboPresets_changed(): The "Presets" combo box has been changed.
  * @param widget
@@ -564,46 +541,43 @@ static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointe
 	// Load the new settings in the window.
 	ntsc_window_load_settings();
 }
+#endif
 
 
 /**
  * ntsc_window_callback_hscCtrlValues_value_changed(): One of the adjustment controls has been changed.
- * @param range
- * @param user_data
+ * @param setting Setting ID.
+ * @param update_setup If TRUE, updates NTSC setup.
  */
-static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gpointer user_data)
+static void ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL update_setup)
 {
-	int i = GPOINTER_TO_INT(user_data);
-	if (i < 0 || i >= NTSC_CTRL_COUNT)
+	if (setting < 0 || setting >= NTSC_CTRL_COUNT)
 		return;
 	
 	// Update the label for the adjustment widget.
 	char tmp[16];
-	double val = gtk_range_get_value(range);
+	double val = SendMessage(hscCtrlValues[setting], TBM_GETPOS, 0, 0);
 	
-	// Round the value.
-	if (i == 0)
+	// Adjust the value to have the appropriate number of decimal places.
+	if (setting == 0)
 	{
 		// Hue. No decimal places.
-		val = round(val);
-		snprintf(tmp, sizeof(tmp), "%0.0f°", val);
+		snprintf(tmp, sizeof(tmp), "%0.0f\xB0", val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		val *= 100;
-		val = round(val);
 		val /= 100;
 		snprintf(tmp, sizeof(tmp), "%0.2f", val);
 	}
 	
-	gtk_label_set_text(GTK_LABEL(lblCtrlValues[i]), tmp);
+	Static_SetText(lblCtrlValues[setting], tmp);
 	
-	if (!ntsc_window_do_callbacks)
+	if (!update_setup)
 		return;
 	
 	// Adjust the NTSC filter.
-	switch (i)
+	switch (setting)
 	{
 		case 0:
 			mdp_md_ntsc_setup.hue = val / 180.0;
@@ -640,13 +614,14 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	}
 	
 	// Set the "Presets" dropdown to "Custom".
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), 4);
+	ComboBox_SetCurSel(cboPresets, 4);
 	
 	// Reinitialize the NTSC filter with the new settings.
 	mdp_md_ntsc_reinit_setup();
 }
 
 
+#if 0
 /**
  * ntsc_window_callback_chkScanline_toggled): The "Scanlines" checkbox was toggled.
  * @param togglebutton
