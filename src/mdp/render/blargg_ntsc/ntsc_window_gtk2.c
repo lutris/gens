@@ -435,7 +435,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		val = rint(val) / 100.0;;
+		val = rint(val) / 100.0;
 		snprintf(tmp, sizeof(tmp), "%0.2f", val);
 	}
 	
