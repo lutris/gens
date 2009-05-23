@@ -235,30 +235,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	}
 	
 #if 0
-	// Add an HBox for the presets dropdown.
-	GtkWidget *hboxPresets = gtk_hbox_new(FALSE, 8);
-	gtk_widget_show(hboxPresets);
-	gtk_box_pack_start(GTK_BOX(vboxFrame), hboxPresets, FALSE, FALSE, 0);
-	
-	// Add a label for the presets dropdown.
-	GtkWidget *lblPresets = gtk_label_new_with_mnemonic("_Presets:");
-	gtk_widget_show(lblPresets);
-	gtk_box_pack_start(GTK_BOX(hboxPresets), lblPresets, FALSE, FALSE, 0);
-	
-	// Add the presets dropdown.
-	cboPresets = gtk_combo_box_new_text();
-	unsigned int i = 0;
-	while (ntsc_presets[i].name)
-	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), ntsc_presets[i].name);
-		i++;
-	}
-	gtk_widget_show(cboPresets);
-	gtk_box_pack_start(GTK_BOX(hboxPresets), cboPresets, FALSE, FALSE, 0);
-	gtk_label_set_mnemonic_widget(GTK_LABEL(lblPresets), cboPresets);
-	g_signal_connect((gpointer)cboPresets, "changed",
-			 G_CALLBACK(ntsc_window_callback_cboPresets_changed), NULL);
-	
 	// Scanlines checkbox.
 	chkScanline = gtk_check_button_new_with_mnemonic("S_canlines");
 	gtk_widget_show(chkScanline);
@@ -272,72 +248,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	gtk_box_pack_start(GTK_BOX(hboxPresets), chkInterp, FALSE, FALSE, 0);
 	g_signal_connect((gpointer)chkInterp, "toggled",
 			 G_CALLBACK(ntsc_window_callback_chkInterp_toggled), NULL);
-	
-	// Create a table for the adjustment widgets.
-	// First column: Name
-	// Second column: Widget
-	GtkWidget *tblWidgets = gtk_table_new(NTSC_CTRL_COUNT, 3, FALSE);
-	gtk_table_set_row_spacings(GTK_TABLE(tblWidgets), 8);
-	gtk_table_set_col_spacings(GTK_TABLE(tblWidgets), 8);
-	gtk_box_pack_start(GTK_BOX(vboxFrame), tblWidgets, TRUE, TRUE, 0);
-	
-	// Create the widgets.
-	i = 0;
-	while (ntsc_controls[i].name)
-	{
-		// Label alignment.
-		GtkWidget *alignWidgetName = gtk_alignment_new(0.0f, 0.5f, 0, 0);
-		gtk_widget_show(alignWidgetName);
-		gtk_table_attach(GTK_TABLE(tblWidgets), alignWidgetName,
-				 0, 1, i, i + 1,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		
-		// Label.
-		GtkWidget *lblWidgetName = gtk_label_new_with_mnemonic(ntsc_controls[i].name);
-		gtk_widget_show(lblWidgetName);
-		gtk_container_add(GTK_CONTAINER(alignWidgetName), lblWidgetName);
-		
-		// Value Label alignment.
-		GtkWidget *alignCtrlValue = gtk_alignment_new(1.0f, 0.5f, 0, 0);
-		gtk_widget_set_size_request(alignCtrlValue, 40, -1);
-		gtk_widget_show(alignWidgetName);
-		gtk_table_attach(GTK_TABLE(tblWidgets), alignCtrlValue,
-				 1, 2, i, i + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		
-		// Value Label.
-		lblCtrlValues[i] = gtk_label_new(NULL);
-		gtk_widget_show(lblCtrlValues[i]);
-		gtk_container_add(GTK_CONTAINER(alignCtrlValue), lblCtrlValues[i]);
-		
-		// Adjustment object.
-		GtkObject *adjWidget = gtk_adjustment_new(0, ntsc_controls[i].min,
-							  ntsc_controls[i].max,
-							  ntsc_controls[i].step,
-							  ntsc_controls[i].step * 2, 0);
-		
-		// GtkHScale
-		hscCtrlValues[i] = gtk_hscale_new(GTK_ADJUSTMENT(adjWidget));
-		gtk_scale_set_draw_value(GTK_SCALE(hscCtrlValues[i]), FALSE);
-		gtk_widget_set_size_request(hscCtrlValues[i], 256, -1);
-		gtk_widget_show(hscCtrlValues[i]);
-		gtk_label_set_mnemonic_widget(GTK_LABEL(lblWidgetName), hscCtrlValues[i]);
-		gtk_table_attach(GTK_TABLE(tblWidgets), hscCtrlValues[i],
-				 2, 3, i, i + 1,
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(0), 0, 0);
-		g_signal_connect((gpointer)hscCtrlValues[i], "value-changed",
-				 G_CALLBACK(ntsc_window_callback_hscCtrlValues_value_changed),
-				 GINT_TO_POINTER(i));
-		
-		// Initialize the value label.
-		ntsc_window_callback_hscCtrlValues_value_changed(GTK_RANGE(hscCtrlValues[i]), GINT_TO_POINTER(i));
-		
-		// Next widget.
-		i++;
-	}
 #endif
 	
 	// Create the "Close" button.
