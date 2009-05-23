@@ -50,6 +50,7 @@ DLL_LOCAL extern const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT+1];
 typedef struct _ntsc_ctrl_t
 {
 	const char *name;
+	const char *name_mnemonic;
 	const int min;
 	const int max;
 	const int step;

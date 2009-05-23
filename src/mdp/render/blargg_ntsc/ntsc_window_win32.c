@@ -194,7 +194,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	int i;
 	for (i = 0; i < NTSC_PRESETS_COUNT; i++)
 	{
-		ComboBox_AddString(cboPresets, ntsc_presets[i].name_mnemonic);
+		ComboBox_AddString(cboPresets, ntsc_presets[i].name);
 	}
 	
 	// Scanlines checkbox.
@@ -216,7 +216,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
 		// Label.
-		HWND lblWidgetName = CreateWindow(WC_STATIC, ntsc_controls[i].name,
+		HWND lblWidgetName = CreateWindow(WC_STATIC, ntsc_controls[i].name_mnemonic,
 						  WS_CHILD | WS_VISIBLE | SS_LEFT,
 						  8+8, hscTop+4,
 						  NTSC_WIDGETNAME_WIDTH, NTSC_WIDGETNAME_HEIGHT,

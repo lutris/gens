@@ -201,7 +201,7 @@ void ntsc_window_show(void *parent)
 				 (GtkAttachOptions)(0), 0, 0);
 		
 		// Label.
-		GtkWidget *lblWidgetName = gtk_label_new_with_mnemonic(ntsc_controls[i].name);
+		GtkWidget *lblWidgetName = gtk_label_new_with_mnemonic(ntsc_controls[i].name_mnemonic);
 		gtk_widget_show(lblWidgetName);
 		gtk_container_add(GTK_CONTAINER(alignWidgetName), lblWidgetName);
 		

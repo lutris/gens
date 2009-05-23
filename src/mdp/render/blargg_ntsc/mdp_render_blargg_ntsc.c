@@ -167,7 +167,7 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 				}
 			}
 			
-			// TODO: Save individual values.
+			// Save individual values.
 			
 			break;
 		

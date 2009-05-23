@@ -47,18 +47,18 @@ const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT+1] =
 // Adjustment controls.
 const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT+1] =
 {
-	{NTSC_MNEMONIC_CHAR "Hue",			-180, 180, 1},
-	{NTSC_MNEMONIC_CHAR "Saturation",		0, 200, 5},
-	{NTSC_MNEMONIC_CHAR "Contrast",			-100, 100, 5},
-	{NTSC_MNEMONIC_CHAR "Brightness",		-100, 100, 5},
-	{"S" NTSC_MNEMONIC_CHAR "harpness",		-100, 100, 5},
+	{"Hue",			NTSC_MNEMONIC_CHAR "Hue",		-180, 180, 1},
+	{"Saturation",		NTSC_MNEMONIC_CHAR "Saturation",	0, 200, 5},
+	{"Contrast",		NTSC_MNEMONIC_CHAR "Contrast",		-100, 100, 5},
+	{"Brightness",		NTSC_MNEMONIC_CHAR "Brightness",	-100, 100, 5},
+	{"Sharpness",		"S" NTSC_MNEMONIC_CHAR "harpness",	-100, 100, 5},
 	
 	// "Advanced" parameters.
-	{NTSC_MNEMONIC_CHAR "Gamma",			50, 150, 5},
-	{NTSC_MNEMONIC_CHAR "Resolution",		-100, 100, 5},
-	{NTSC_MNEMONIC_CHAR "Artifacts",		-100, 100, 5},
-	{"Color " NTSC_MNEMONIC_CHAR "Fringing",	-100, 100, 5},
-	{"Color B" NTSC_MNEMONIC_CHAR "leed",		-100, 100, 5},
+	{"Gamma",		NTSC_MNEMONIC_CHAR "Gamma",		50, 150, 5},
+	{"Resolution",		NTSC_MNEMONIC_CHAR "Resolution",	-100, 100, 5},
+	{"Artifacts",		NTSC_MNEMONIC_CHAR "Artifacts",		-100, 100, 5},
+	{"Color Fringing",	"Color " NTSC_MNEMONIC_CHAR "Fringing",	-100, 100, 5},
+	{"Color Bleed",		"Color B" NTSC_MNEMONIC_CHAR "leed",	-100, 100, 5},
 	
 	{NULL, 0, 0, 0}
 };
