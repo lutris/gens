@@ -32,7 +32,7 @@
 #endif
 
 // Presets.
-const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT + 1] =
+const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT+1] =
 {
 	{"Composite",	&md_ntsc_composite},
 	{"S-Video",	&md_ntsc_svideo},
@@ -43,7 +43,7 @@ const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT + 1] =
 };
 
 // Adjustment controls.
-const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
+const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT+1] =
 {
 	{NTSC_MNEMONIC_CHAR "Hue",			-180, 180, 1},
 	{NTSC_MNEMONIC_CHAR "Saturation",		0, 200, 5},

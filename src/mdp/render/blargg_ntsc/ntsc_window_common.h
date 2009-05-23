@@ -44,7 +44,7 @@ typedef struct _ntsc_preset_t
 } ntsc_preset_t;
 
 #define NTSC_PRESETS_COUNT 5
-DLL_LOCAL extern const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT + 1];
+DLL_LOCAL extern const ntsc_preset_t ntsc_presets[NTSC_PRESETS_COUNT+1];
 
 // Adjustment controls.
 typedef struct _ntsc_ctrl_t
@@ -56,7 +56,7 @@ typedef struct _ntsc_ctrl_t
 } ntsc_ctrl_t;
 
 #define NTSC_CTRL_COUNT 10
-DLL_LOCAL extern const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1];
+DLL_LOCAL extern const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT+1];
 
 #ifdef __cplusplus
 }
