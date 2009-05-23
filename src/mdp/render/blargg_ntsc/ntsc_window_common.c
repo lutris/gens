@@ -19,11 +19,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#include "ntsc_window_common.h"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#include "ntsc_window_common.h"
+
+#include <math.h>
 
 #ifdef GENS_UI_GTK
 #define NTSC_MNEMONIC_CHAR "_"
@@ -60,3 +62,81 @@ const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT+1] =
 	
 	{NULL, 0, 0, 0}
 };
+
+
+/**
+ * ntsc_internal_to_display(): Convert an internal value to a display value.
+ * @param valID
+ * @param ntsc_val
+ */
+int MDP_FNCALL ntsc_internal_to_display(ntsc_value_t valID, double ntsc_val)
+{
+	switch (valID)
+	{
+		case NTSC_VALUE_HUE:
+			return (int)rint(ntsc_val * 180.0);
+		
+		case NTSC_VALUE_SATURATION:
+			return (int)rint((ntsc_val + 1.0) * 100.0);
+		
+		case NTSC_VALUE_CONTRAST:
+		case NTSC_VALUE_BRIGHTNESS:
+		case NTSC_VALUE_SHARPNESS:
+			return (int)rint(ntsc_val * 100.0);
+		
+		case NTSC_VALUE_GAMMA:
+			return (int)rint(((ntsc_val / 2.0) + 1.0) * 100.0);
+		
+		case NTSC_VALUE_RESOLUTION:
+		case NTSC_VALUE_ARTIFACTS:
+		case NTSC_VALUE_FRINGING:
+		case NTSC_VALUE_BLEED:
+			return (int)rint(ntsc_val * 100.0);
+		
+		case NTSC_VALUE_MAX:
+		default:
+			return 0;
+	}
+}
+
+
+/**
+ * ntsc_internal_to_display(): Convert a display value to an internal value.
+ * @param valID
+ * @param disp_val
+ */
+double MDP_FNCALL ntsc_display_to_internal(ntsc_value_t valID, int disp_val)
+{
+	double dval;
+	if (valID == NTSC_VALUE_HUE)
+		dval = rint(disp_val);
+	else
+		dval = rint(disp_val) / 100.0;
+	
+	switch (valID)
+	{
+		case NTSC_VALUE_HUE:
+			return (dval / 180.0);
+		
+		case NTSC_VALUE_SATURATION:
+			return (dval - 1.0);
+		
+		case NTSC_VALUE_CONTRAST:
+		case NTSC_VALUE_BRIGHTNESS:
+		case NTSC_VALUE_SHARPNESS:
+			return dval;
+		
+		case NTSC_VALUE_GAMMA:
+			return (dval - 1.0) * 2.0;
+		
+		case NTSC_VALUE_RESOLUTION:
+		case NTSC_VALUE_ARTIFACTS:
+		case NTSC_VALUE_FRINGING:
+		case NTSC_VALUE_BLEED:
+			return dval;
+		
+		case NTSC_VALUE_MAX:
+		default:
+			return 0;
+	}
+}

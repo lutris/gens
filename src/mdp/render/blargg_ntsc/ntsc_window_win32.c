@@ -392,20 +392,10 @@ static void ntsc_window_load_settings(void)
 	Button_SetCheck(chkInterp, (mdp_md_ntsc_interp ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Load all settings.
-	SendMessage(hscCtrlValues[0], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.hue * 180.0));
-	SendMessage(hscCtrlValues[1], TBM_SETPOS, TRUE, (int)rint((mdp_md_ntsc_setup.saturation + 1.0) * 100.0));
-	SendMessage(hscCtrlValues[2], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.contrast * 100.0));
-	SendMessage(hscCtrlValues[3], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.brightness * 100.0));
-	SendMessage(hscCtrlValues[4], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.sharpness * 100.0));
-	SendMessage(hscCtrlValues[5], TBM_SETPOS, TRUE, (int)rint(((mdp_md_ntsc_setup.gamma / 2.0) + 1.0) * 100.0));
-	SendMessage(hscCtrlValues[6], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.resolution * 100.0));
-	SendMessage(hscCtrlValues[7], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.artifacts * 100.0));
-	SendMessage(hscCtrlValues[8], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.fringing * 100.0));
-	SendMessage(hscCtrlValues[9], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.bleed * 100.0));
-	
-	// Update all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
+		SendMessage(hscCtrlValues[i], TBM_SETPOS, TRUE,
+			    ntsc_internal_to_display(i, mdp_md_ntsc_setup.params[i]));
 		ntsc_window_callback_hscCtrlValues_value_changed(i);
 	}
 	
@@ -450,20 +440,17 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 	// Update the label for the adjustment widget.
 	char tmp[16];
 	int val = SendMessage(hscCtrlValues[setting], TBM_GETPOS, 0, 0);
-	double dval;
 	
 	// Adjust the value to have the appropriate number of decimal places.
 	if (setting == 0)
 	{
 		// Hue. No decimal places.
-		dval = (double)val;
 		snprintf(tmp, sizeof(tmp), "%d" NTSC_DEGREE_SYMBOL, val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		dval = (double)val / 100.0;;
-		snprintf(tmp, sizeof(tmp), "%0.2f", dval);
+		snprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
 	}
 	
 	Static_SetText(lblCtrlValues[setting], tmp);
@@ -472,41 +459,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 		return;
 	
 	// Adjust the NTSC filter.
-	switch (setting)
-	{
-		case 0:
-			mdp_md_ntsc_setup.hue = dval / 180.0;
-			break;
-		case 1:
-			mdp_md_ntsc_setup.saturation = dval - 1.0;
-			break;
-		case 2:
-			mdp_md_ntsc_setup.contrast = dval;
-			break;
-		case 3:
-			mdp_md_ntsc_setup.brightness = dval;
-			break;
-		case 4:
-			mdp_md_ntsc_setup.sharpness = dval;
-			break;
-		case 5:
-			mdp_md_ntsc_setup.gamma = (dval - 1.0) * 2.0;
-			break;
-		case 6:
-			mdp_md_ntsc_setup.resolution = dval;
-			break;
-		case 7:
-			mdp_md_ntsc_setup.artifacts = dval;
-			break;
-		case 8:
-			mdp_md_ntsc_setup.fringing = dval;
-			break;
-		case 9:
-			mdp_md_ntsc_setup.bleed = dval;
-			break;
-		default:
-			return;
-	}
+	mdp_md_ntsc_setup.params[setting] = ntsc_display_to_internal(setting, val);
 	
 	// Set the "Presets" dropdown to "Custom".
 	ComboBox_SetCurSel(cboPresets, NTSC_PRESETS_COUNT-1);

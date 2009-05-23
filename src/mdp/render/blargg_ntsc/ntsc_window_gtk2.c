@@ -366,16 +366,11 @@ static void ntsc_window_load_settings(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
 	
 	// Load all settings.
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[0]), rint(mdp_md_ntsc_setup.hue * 180.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[1]), rint((mdp_md_ntsc_setup.saturation + 1.0) * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[2]), rint(mdp_md_ntsc_setup.contrast * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[3]), rint(mdp_md_ntsc_setup.brightness * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[4]), rint(mdp_md_ntsc_setup.sharpness * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[5]), rint(((mdp_md_ntsc_setup.gamma / 2.0) + 1.0) * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[6]), rint(mdp_md_ntsc_setup.resolution * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[7]), rint(mdp_md_ntsc_setup.artifacts * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[8]), rint(mdp_md_ntsc_setup.fringing * 100.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[9]), rint(mdp_md_ntsc_setup.bleed * 100.0));
+	for (i = 0; i < NTSC_CTRL_COUNT; i++)
+	{
+		gtk_range_set_value(GTK_RANGE(hscCtrlValues[i]),
+				    ntsc_internal_to_display(i, mdp_md_ntsc_setup.params[i]));
+	}
 	
 	ntsc_window_do_callbacks = TRUE;
 }
@@ -423,20 +418,18 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	
 	// Update the label for the adjustment widget.
 	char tmp[16];
-	double val = gtk_range_get_value(range);
+	int val = (int)rint(gtk_range_get_value(range));
 	
 	// Adjust the value to have the appropriate number of decimal places.
 	if (i == 0)
 	{
 		// Hue. No decimal places.
-		val = rint(val);
-		snprintf(tmp, sizeof(tmp), "%0.0f" NTSC_DEGREE_SYMBOL, val);
+		snprintf(tmp, sizeof(tmp), "%d" NTSC_DEGREE_SYMBOL, val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		val = rint(val) / 100.0;
-		snprintf(tmp, sizeof(tmp), "%0.2f", val);
+		snprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
 	}
 	
 	gtk_label_set_text(GTK_LABEL(lblCtrlValues[i]), tmp);
@@ -445,41 +438,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 		return;
 	
 	// Adjust the NTSC filter.
-	switch (i)
-	{
-		case 0:
-			mdp_md_ntsc_setup.hue = val / 180.0;
-			break;
-		case 1:
-			mdp_md_ntsc_setup.saturation = val - 1.0;
-			break;
-		case 2:
-			mdp_md_ntsc_setup.contrast = val;
-			break;
-		case 3:
-			mdp_md_ntsc_setup.brightness = val;
-			break;
-		case 4:
-			mdp_md_ntsc_setup.sharpness = val;
-			break;
-		case 5:
-			mdp_md_ntsc_setup.gamma = (val - 1.0) * 2.0;
-			break;
-		case 6:
-			mdp_md_ntsc_setup.resolution = val;
-			break;
-		case 7:
-			mdp_md_ntsc_setup.artifacts = val;
-			break;
-		case 8:
-			mdp_md_ntsc_setup.fringing = val;
-			break;
-		case 9:
-			mdp_md_ntsc_setup.bleed = val;
-			break;
-		default:
-			return;
-	}
+	mdp_md_ntsc_setup.params[i] = ntsc_display_to_internal(i, val);
 	
 	// Set the "Presets" dropdown to "Custom".
 	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), NTSC_PRESETS_COUNT-1);

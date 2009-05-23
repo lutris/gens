@@ -18,19 +18,25 @@ extern "C" {
 in parenthesis and should remain fairly stable in future versions. */
 typedef struct md_ntsc_setup_t
 {
-	/* Basic parameters */
-	double hue;        /* -1 = -180 degrees     +1 = +180 degrees */
-	double saturation; /* -1 = grayscale (0.0)  +1 = oversaturated colors (2.0) */
-	double contrast;   /* -1 = dark (0.5)       +1 = light (1.5) */
-	double brightness; /* -1 = dark (0.5)       +1 = light (1.5) */
-	double sharpness;  /* edge contrast enhancement/blurring */
+	union {
+		struct {
+			/* Basic parameters */
+			double hue;        /* -1 = -180 degrees     +1 = +180 degrees */
+			double saturation; /* -1 = grayscale (0.0)  +1 = oversaturated colors (2.0) */
+			double contrast;   /* -1 = dark (0.5)       +1 = light (1.5) */
+			double brightness; /* -1 = dark (0.5)       +1 = light (1.5) */
+			double sharpness;  /* edge contrast enhancement/blurring */
+			
+			/* Advanced parameters */
+			double gamma;      /* -1 = dark (1.5)       +1 = light (0.5) */
+			double resolution; /* image resolution */
+			double artifacts;  /* artifacts caused by color changes */
+			double fringing;   /* color artifacts caused by brightness changes */
+			double bleed;      /* color bleed (color resolution reduction) */
+		};
+		double params[10];
+	};
 	
-	/* Advanced parameters */
-	double gamma;      /* -1 = dark (1.5)       +1 = light (0.5) */
-	double resolution; /* image resolution */
-	double artifacts;  /* artifacts caused by color changes */
-	double fringing;   /* color artifacts caused by brightness changes */
-	double bleed;      /* color bleed (color resolution reduction) */
 	float const* decoder_matrix; /* optional RGB decoder matrix, 6 elements */
 	
 	unsigned char* palette_out;  /* optional RGB palette out, 3 bytes per color */
