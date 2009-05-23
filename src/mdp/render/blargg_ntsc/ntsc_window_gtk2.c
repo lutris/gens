@@ -154,17 +154,18 @@ void ntsc_window_show(void *parent)
 	
 	// Add the presets dropdown.
 	cboPresets = gtk_combo_box_new_text();
-	unsigned int i = 0;
-	while (ntsc_presets[i].name)
-	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), ntsc_presets[i].name);
-		i++;
-	}
 	gtk_widget_show(cboPresets);
 	gtk_box_pack_start(GTK_BOX(hboxPresets), cboPresets, FALSE, FALSE, 0);
 	gtk_label_set_mnemonic_widget(GTK_LABEL(lblPresets), cboPresets);
 	g_signal_connect((gpointer)cboPresets, "changed",
 			 G_CALLBACK(ntsc_window_callback_cboPresets_changed), NULL);
+	
+	// Add the presets to the dropdown.
+	int i;
+	for (i = 0; i < NTSC_PRESETS_COUNT; i++)
+	{
+		gtk_combo_box_append_text(GTK_COMBO_BOX(cboPresets), ntsc_presets[i].name);
+	}
 	
 	// Scanlines checkbox.
 	chkScanline = gtk_check_button_new_with_mnemonic("S_canlines");
@@ -189,8 +190,7 @@ void ntsc_window_show(void *parent)
 	gtk_box_pack_start(GTK_BOX(vboxFrame), tblWidgets, TRUE, TRUE, 0);
 	
 	// Create the widgets.
-	i = 0;
-	while (ntsc_controls[i].name)
+	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
 		// Label alignment.
 		GtkWidget *alignWidgetName = gtk_alignment_new(0.0f, 0.5f, 0, 0);
@@ -241,9 +241,6 @@ void ntsc_window_show(void *parent)
 		
 		// Initialize the value label.
 		ntsc_window_callback_hscCtrlValues_value_changed(GTK_RANGE(hscCtrlValues[i]), GINT_TO_POINTER(i));
-		
-		// Next widget.
-		i++;
 	}
 	
 	// Create the dialog buttons.
@@ -335,8 +332,8 @@ static void ntsc_window_load_settings(void)
 	ntsc_window_do_callbacks = FALSE;
 	
 	// Set the preset dropdown box.
-	int i = 0;
-	while (ntsc_presets[i].name)
+	int i;
+	for (i = 0; i < NTSC_PRESETS_COUNT; i++)
 	{
 		if (!ntsc_presets[i].setup)
 		{
@@ -356,9 +353,6 @@ static void ntsc_window_load_settings(void)
 				break;
 			}
 		}
-		
-		// Next preset.
-		i++;
 	}
 	
 	// Scanlines / Interpolation

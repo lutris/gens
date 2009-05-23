@@ -190,11 +190,11 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 				  hWnd, (HMENU)IDC_NTSC_PRESETS, ntsc_hInstance, NULL);
 	SetWindowFont(cboPresets, ntsc_hFont, TRUE);
 	
-	unsigned int i = 0;
-	while (ntsc_presets[i].name)
+	// Add the presets to the dropdown.
+	int i;
+	for (i = 0; i < NTSC_PRESETS_COUNT; i++)
 	{
-		ComboBox_AddString(cboPresets, ntsc_presets[i].name);
-		i++;
+		ComboBox_AddString(cboPresets, ntsc_presets[i].name_mnemonic);
 	}
 	
 	// Scanlines checkbox.
@@ -213,8 +213,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	
 	// Create the adjustment widgets.
 	int hscTop = 8+16+24;
-	i = 0;
-	while (ntsc_controls[i].name)
+	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
 		// Label.
 		HWND lblWidgetName = CreateWindow(WC_STATIC, ntsc_controls[i].name,
@@ -243,7 +242,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 		
 		// Next widget.
 		hscTop += 26;
-		i++;
 	}
 	
 	// Create the "Close" button.
@@ -361,8 +359,8 @@ static void ntsc_window_load_settings(void)
 	ntsc_window_do_callbacks = FALSE;
 	
 	// Set the preset dropdown box.
-	int i = 0;
-	while (ntsc_presets[i].name)
+	int i;
+	for (i = 0; i < NTSC_PRESETS_COUNT; i++)
 	{
 		if (!ntsc_presets[i].setup)
 		{
@@ -382,9 +380,6 @@ static void ntsc_window_load_settings(void)
 				break;
 			}
 		}
-		
-		// Next preset.
-		i++;
 	}
 	
 	// Scanlines / Interpolation
