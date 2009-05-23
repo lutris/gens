@@ -27,58 +27,15 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "ntsc_window.h"
+#include "ntsc_window_common.h"
+
 #include "mdp_render_blargg_ntsc.h"
 #include "mdp_render_blargg_ntsc_plugin.h"
-#include "ntsc_window.h"
 #include "md_ntsc.hpp"
 
 // MDP error codes.
 #include "mdp/mdp_error.h"
-
-// Presets.
-typedef struct _ntsc_preset_t
-{
-	const char *name;
-	const md_ntsc_setup_t *setup;
-} ntsc_preset_t;
-
-static const ntsc_preset_t ntsc_presets[] =
-{
-	{"Composite",	&md_ntsc_composite},
-	{"S-Video",	&md_ntsc_svideo},
-	{"RGB",		&md_ntsc_rgb},
-	{"Monochrome",	&md_ntsc_monochrome},
-	{"Custom",	NULL},
-	{NULL, NULL}
-};
-
-// Adjustment controls.
-typedef struct _ntsc_ctrl_t
-{
-	const char *name;
-	const double min;
-	const double max;
-	const double step;
-} ntsc_ctrl_t;
-
-#define NTSC_CTRL_COUNT 10
-static const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
-{
-	{"_Hue",		-180.0, 180.0, 1.0},
-	{"_Saturation",		0.0, 2.0, 0.05},
-	{"_Contrast",		-1.0, 1.0, 0.05},
-	{"_Brightness",		-1.0, 1.0, 0.05},
-	{"S_harpness",		-1.0, 1.0, 0.05},
-	
-	// "Advanced" parameters.
-	{"_Gamma",		0.5, 1.5, 0.05},
-	{"_Resolution",		-1.0, 1.0, 0.05},
-	{"_Artifacts",		-1.0, 1.0, 0.05},
-	{"Color _Fringing",	-1.0, 1.0, 0.05},
-	{"Color B_leed",	-1.0, 1.0, 0.05},
-	
-	{NULL, 0, 0, 0}
-};
 
 // Window.
 static GtkWidget *ntsc_window = NULL;
@@ -409,16 +366,16 @@ static void ntsc_window_load_settings(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(chkInterp), mdp_md_ntsc_interp);
 	
 	// Load all settings.
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[0]), (mdp_md_ntsc_setup.hue * 180.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[1]), (mdp_md_ntsc_setup.saturation + 1.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[2]), (mdp_md_ntsc_setup.contrast));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[3]), mdp_md_ntsc_setup.brightness);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[4]), mdp_md_ntsc_setup.sharpness);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[5]), ((mdp_md_ntsc_setup.gamma / 2.0) + 1.0));
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[6]), mdp_md_ntsc_setup.resolution);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[7]), mdp_md_ntsc_setup.artifacts);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[8]), mdp_md_ntsc_setup.fringing);
-	gtk_range_set_value(GTK_RANGE(hscCtrlValues[9]), mdp_md_ntsc_setup.bleed);
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[0]), rint(mdp_md_ntsc_setup.hue * 180.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[1]), rint((mdp_md_ntsc_setup.saturation + 1.0) * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[2]), rint(mdp_md_ntsc_setup.contrast * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[3]), rint(mdp_md_ntsc_setup.brightness * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[4]), rint(mdp_md_ntsc_setup.sharpness * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[5]), rint(((mdp_md_ntsc_setup.gamma / 2.0) + 1.0) * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[6]), rint(mdp_md_ntsc_setup.resolution * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[7]), rint(mdp_md_ntsc_setup.artifacts * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[8]), rint(mdp_md_ntsc_setup.fringing * 100.0));
+	gtk_range_set_value(GTK_RANGE(hscCtrlValues[9]), rint(mdp_md_ntsc_setup.bleed * 100.0));
 	
 	ntsc_window_do_callbacks = TRUE;
 }
@@ -438,7 +395,7 @@ static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointe
 	
 	// Load the specified preset setup.
 	int i = gtk_combo_box_get_active(widget);
-	if (i == -1 || i >= (int)(sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
+	if (i == -1 || i >= NTSC_PRESETS_COUNT)
 		return;
 	
 	if (!ntsc_presets[i].setup)
@@ -468,19 +425,17 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	char tmp[16];
 	double val = gtk_range_get_value(range);
 	
-	// Round the value.
+	// Adjust the value to have the appropriate number of decimal places.
 	if (i == 0)
 	{
 		// Hue. No decimal places.
-		val = round(val);
-		snprintf(tmp, sizeof(tmp), "%0.0f°", val);
+		val = rint(val);
+		snprintf(tmp, sizeof(tmp), "%0.0f" NTSC_DEGREE_SYMBOL, val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		val *= 100;
-		val = round(val);
-		val /= 100;
+		val = rint(val) / 100.0;;
 		snprintf(tmp, sizeof(tmp), "%0.2f", val);
 	}
 	
@@ -527,7 +482,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(GtkRange *range, gp
 	}
 	
 	// Set the "Presets" dropdown to "Custom".
-	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), 4);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(cboPresets), NTSC_PRESETS_COUNT-1);
 	
 	// Reinitialize the NTSC filter with the new settings.
 	mdp_md_ntsc_reinit_setup();

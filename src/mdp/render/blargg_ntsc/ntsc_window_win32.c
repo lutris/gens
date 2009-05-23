@@ -29,9 +29,11 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "ntsc_window.h"
+#include "ntsc_window_common.h"
+
 #include "mdp_render_blargg_ntsc.h"
 #include "mdp_render_blargg_ntsc_plugin.h"
-#include "ntsc_window.h"
 #include "md_ntsc.hpp"
 
 // MDP error codes.
@@ -39,51 +41,6 @@
 
 // MDP Win32 convenience functions.
 #include "mdp/mdp_win32.h"
-
-// Presets.
-typedef struct _ntsc_preset_t
-{
-	const char *name;
-	const md_ntsc_setup_t *setup;
-} ntsc_preset_t;
-
-static const ntsc_preset_t ntsc_presets[] =
-{
-	{"Composite",	&md_ntsc_composite},
-	{"S-Video",	&md_ntsc_svideo},
-	{"RGB",		&md_ntsc_rgb},
-	{"Monochrome",	&md_ntsc_monochrome},
-	{"Custom",	NULL},
-	{NULL, NULL}
-};
-
-// Adjustment controls.
-typedef struct _ntsc_ctrl_t
-{
-	const char *name;
-	const int min;
-	const int max;
-	const int step;
-} ntsc_ctrl_t;
-
-#define NTSC_CTRL_COUNT 10
-static const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT + 1] =
-{
-	{"&Hue",		-180, 180, 1},
-	{"&Saturation",		0, 200, 5},
-	{"&Contrast",		-100, 100, 5},
-	{"&Brightness",		-100, 100, 5},
-	{"S&harpness",		-100, 100, 5},
-	
-	// "Advanced" parameters.
-	{"&Gamma",		50, 150, 5},
-	{"&Resolution",		-100, 100, 5},
-	{"&Artifacts",		-100, 100, 5},
-	{"Color &Fringing",	-100, 100, 5},
-	{"Color B&leed",	-100, 100, 5},
-	
-	{NULL, 0, 0, 0}
-};
 
 // Window.
 static HWND ntsc_window = NULL;
@@ -227,7 +184,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	// Add the presets dropdown.
 	cboPresets = CreateWindow(WC_COMBOBOX, NULL,
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
-				  8+64+8, 8+16, 104, 23*((sizeof(ntsc_presets) / sizeof(ntsc_preset_t)) - 1),
+				  8+64+8, 8+16, 104, 23*NTSC_PRESETS_COUNT,
 				  hWnd, (HMENU)IDC_NTSC_PRESETS, ntsc_hInstance, NULL);
 	SetWindowFont(cboPresets, ntsc_hFont, TRUE);
 	
@@ -554,7 +511,7 @@ static void ntsc_window_callback_cboPresets_changed(void)
 	
 	// Load the specified preset setup.
 	int i = ComboBox_GetCurSel(cboPresets);
-	if (i == -1 || i >= (int)(sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
+	if (i == -1 || i >= NTSC_PRESETS_COUNT)
 		return;
 	
 	if (!ntsc_presets[i].setup)
@@ -588,7 +545,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 	{
 		// Hue. No decimal places.
 		dval = (double)val;
-		snprintf(tmp, sizeof(tmp), "%d\xB0", val);
+		snprintf(tmp, sizeof(tmp), "%d" NTSC_DEGREE_SYMBOL, val);
 	}
 	else
 	{
@@ -640,7 +597,7 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 	}
 	
 	// Set the "Presets" dropdown to "Custom".
-	ComboBox_SetCurSel(cboPresets, 4);
+	ComboBox_SetCurSel(cboPresets, NTSC_PRESETS_COUNT-1);
 	
 	// Reinitialize the NTSC filter with the new settings.
 	mdp_md_ntsc_reinit_setup();
