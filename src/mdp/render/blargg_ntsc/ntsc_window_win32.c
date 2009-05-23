@@ -54,8 +54,10 @@ static HWND lblCtrlValues[NTSC_CTRL_COUNT];
 static HWND hscCtrlValues[NTSC_CTRL_COUNT];
 
 // Widget IDs.
-#define IDC_NTSC_PRESETS  0x1000
-#define IDC_NTSC_TRACKBAR 0x1100
+#define IDC_NTSC_PRESETS  	0x1000
+#define IDC_NTSC_SCANLINE	0x1001
+#define IDC_NTSC_INTERP		0x1002
+#define IDC_NTSC_TRACKBAR 	0x1100
 
 // Window Procedure.
 static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -184,7 +186,7 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 	// Add the presets dropdown.
 	cboPresets = CreateWindow(WC_COMBOBOX, NULL,
 				  WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST,
-				  8+64+8, 8+16, 104, 23*NTSC_PRESETS_COUNT,
+				  8+64+8, 8+16, 96, 23*NTSC_PRESETS_COUNT,
 				  hWnd, (HMENU)IDC_NTSC_PRESETS, ntsc_hInstance, NULL);
 	SetWindowFont(cboPresets, ntsc_hFont, TRUE);
 	
@@ -194,6 +196,20 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 		ComboBox_AddString(cboPresets, ntsc_presets[i].name);
 		i++;
 	}
+	
+	// Scanlines checkbox.
+	chkScanline = CreateWindow(WC_BUTTON, "S&canlines",
+				   WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+				   8+64+8+96+8, 8+16+2, 64, 16,
+				   hWnd, (HMENU)IDC_NTSC_SCANLINE, ntsc_hInstance, NULL);
+	SetWindowFont(chkScanline, ntsc_hFont, TRUE);
+	
+	// Interpolation checkbox.
+	chkInterp = CreateWindow(WC_BUTTON, "&Interpolation",
+				 WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+				 8+64+8+96+8+64+8, 8+16+2, 88, 16,
+				 hWnd, (HMENU)IDC_NTSC_INTERP, ntsc_hInstance, NULL);
+	SetWindowFont(chkInterp, ntsc_hFont, TRUE);
 	
 	// Create the adjustment widgets.
 	int hscTop = 8+16+24;
@@ -225,30 +241,10 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 		SendMessage(hscCtrlValues[i], TBM_SETRANGE, TRUE, MAKELONG(ntsc_controls[i].min, ntsc_controls[i].max));
 		SendMessage(hscCtrlValues[i], TBM_SETPOS, TRUE, 0);
 		
-		// Initialize the value label.
-		// TODO
-		//ntsc_window_callback_hscCtrlValues_value_changed(GTK_RANGE(hscCtrlValues[i]), GINT_TO_POINTER(i));
-		
 		// Next widget.
 		hscTop += 26;
 		i++;
 	}
-	
-#if 0
-	// Scanlines checkbox.
-	chkScanline = gtk_check_button_new_with_mnemonic("S_canlines");
-	gtk_widget_show(chkScanline);
-	gtk_box_pack_start(GTK_BOX(hboxPresets), chkScanline, FALSE, FALSE, 0);
-	g_signal_connect((gpointer)chkScanline, "toggled",
-			 G_CALLBACK(ntsc_window_callback_chkScanline_toggled), NULL);
-	
-	// Interpolation checkbox.
-	chkInterp = gtk_check_button_new_with_mnemonic("_Interpolation");
-	gtk_widget_show(chkInterp);
-	gtk_box_pack_start(GTK_BOX(hboxPresets), chkInterp, FALSE, FALSE, 0);
-	g_signal_connect((gpointer)chkInterp, "toggled",
-			 G_CALLBACK(ntsc_window_callback_chkInterp_toggled), NULL);
-#endif
 	
 	// Create the "Close" button.
 	HWND btnClose = CreateWindow(WC_BUTTON, TEXT("&Close"), WS_CHILD | WS_VISIBLE | WS_TABSTOP,
@@ -274,8 +270,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
  */
 static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int rval;
-	
 	switch (message)
 	{
 		case WM_CREATE:
@@ -296,6 +290,14 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 						// Presets selection has changed.
 						ntsc_window_callback_cboPresets_changed();
 					}
+					break;
+				
+				case IDC_NTSC_SCANLINE:
+					mdp_md_ntsc_scanline = (Button_GetCheck(chkScanline) == BST_CHECKED ? 1 : 0);
+					break;
+				
+				case IDC_NTSC_INTERP:
+					mdp_md_ntsc_interp = (Button_GetCheck(chkInterp) == BST_CHECKED ? 1 : 0);
 					break;
 				
 				default:
