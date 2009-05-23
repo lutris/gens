@@ -112,11 +112,13 @@ static HFONT ntsc_hFont = NULL;
 
 // Callbacks.
 static void	ntsc_window_callback_cboPresets_changed(void);
-static void	ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL update_setup);
+static void	ntsc_window_callback_hscCtrlValues_value_changed(int setting);
 #if 0
 static void	ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 #endif
+
+static BOOL	ntsc_window_do_callbacks;
 
 // Setting handling functions.
 static void ntsc_window_load_settings(void);
@@ -204,6 +206,9 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 {
 	if (ntsc_window_child_windows_created)
 		return;
+	
+	// Don't do any callbacks yet.
+	ntsc_window_do_callbacks = FALSE;
 	
 	// Create the main frame.
 	HWND grpBox = CreateWindow(WC_BUTTON, TEXT("NTSC Configuration"),
@@ -429,8 +434,24 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 				default:
 					break;
 			}
-			
 			break;
+		
+		case WM_HSCROLL:
+		{
+			// Determine which control this is.
+			// TODO: Use a hash table instead of a for loop.
+			int i;
+			for (i = 0; i < NTSC_CTRL_COUNT; i++)
+			{
+				if (hscCtrlValues[i] == (HWND)lParam)
+				{
+					// NTSC control has been adjusted.
+					ntsc_window_callback_hscCtrlValues_value_changed(i);
+					break;
+				}
+			}
+			break;
+		}
 		
 		case WM_DESTROY:
 			ntsc_window_close();
@@ -468,6 +489,8 @@ void ntsc_window_close(void)
  */
 static void ntsc_window_load_settings(void)
 {
+	ntsc_window_do_callbacks = FALSE;
+	
 	// Set the preset dropdown box.
 	int i = 0;
 	while (ntsc_presets[i].name)
@@ -511,11 +534,13 @@ static void ntsc_window_load_settings(void)
 	SendMessage(hscCtrlValues[8], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.fringing * 100.0));
 	SendMessage(hscCtrlValues[9], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.bleed * 100.0));
 	
-	// Display all settings.
+	// Update all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
 	{
-		ntsc_window_callback_hscCtrlValues_value_changed(i, FALSE);
+		ntsc_window_callback_hscCtrlValues_value_changed(i);
 	}
+	
+	ntsc_window_do_callbacks = TRUE;
 }
 
 
@@ -524,6 +549,9 @@ static void ntsc_window_load_settings(void)
  */
 static void ntsc_window_callback_cboPresets_changed(void)
 {
+	if (!ntsc_window_do_callbacks)
+		return;
+	
 	// Load the specified preset setup.
 	int i = ComboBox_GetCurSel(cboPresets);
 	if (i == -1 || i >= (int)(sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
@@ -544,9 +572,8 @@ static void ntsc_window_callback_cboPresets_changed(void)
 /**
  * ntsc_window_callback_hscCtrlValues_value_changed(): One of the adjustment controls has been changed.
  * @param setting Setting ID.
- * @param update_setup If TRUE, updates NTSC setup.
  */
-static void ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL update_setup)
+static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 {
 	if (setting < 0 || setting >= NTSC_CTRL_COUNT)
 		return;
@@ -554,57 +581,59 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL u
 	// Update the label for the adjustment widget.
 	char tmp[16];
 	int val = SendMessage(hscCtrlValues[setting], TBM_GETPOS, 0, 0);
+	double dval;
 	
 	// Adjust the value to have the appropriate number of decimal places.
 	if (setting == 0)
 	{
 		// Hue. No decimal places.
+		dval = (double)val;
 		snprintf(tmp, sizeof(tmp), "%d\xB0", val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		printf("val: %d\n", val);
-		snprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
+		dval = (double)val / 100.0;;
+		snprintf(tmp, sizeof(tmp), "%0.2f", dval);
 	}
 	
 	Static_SetText(lblCtrlValues[setting], tmp);
 	
-	if (!update_setup)
+	if (!ntsc_window_do_callbacks)
 		return;
 	
 	// Adjust the NTSC filter.
 	switch (setting)
 	{
 		case 0:
-			mdp_md_ntsc_setup.hue = val / 180.0;
+			mdp_md_ntsc_setup.hue = dval / 180.0;
 			break;
 		case 1:
-			mdp_md_ntsc_setup.saturation = val - 1.0;
+			mdp_md_ntsc_setup.saturation = dval - 1.0;
 			break;
 		case 2:
-			mdp_md_ntsc_setup.contrast = val;
+			mdp_md_ntsc_setup.contrast = dval;
 			break;
 		case 3:
-			mdp_md_ntsc_setup.brightness = val;
+			mdp_md_ntsc_setup.brightness = dval;
 			break;
 		case 4:
-			mdp_md_ntsc_setup.sharpness = val;
+			mdp_md_ntsc_setup.sharpness = dval;
 			break;
 		case 5:
-			mdp_md_ntsc_setup.gamma = (val - 1.0) * 2.0;
+			mdp_md_ntsc_setup.gamma = (dval - 1.0) * 2.0;
 			break;
 		case 6:
-			mdp_md_ntsc_setup.resolution = val;
+			mdp_md_ntsc_setup.resolution = dval;
 			break;
 		case 7:
-			mdp_md_ntsc_setup.artifacts = val;
+			mdp_md_ntsc_setup.artifacts = dval;
 			break;
 		case 8:
-			mdp_md_ntsc_setup.fringing = val;
+			mdp_md_ntsc_setup.fringing = dval;
 			break;
 		case 9:
-			mdp_md_ntsc_setup.bleed = val;
+			mdp_md_ntsc_setup.bleed = dval;
 			break;
 		default:
 			return;
