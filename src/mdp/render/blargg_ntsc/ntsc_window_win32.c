@@ -97,8 +97,8 @@ static HWND lblCtrlValues[NTSC_CTRL_COUNT];
 static HWND hscCtrlValues[NTSC_CTRL_COUNT];
 
 // Widget IDs.
-#define IDC_NTSC_TRACKBAR 0x1000
-#define IDC_NTSC_PRESETS  0x1100
+#define IDC_NTSC_PRESETS  0x1000
+#define IDC_NTSC_TRACKBAR 0x1100
 
 // Window Procedure.
 static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -111,9 +111,7 @@ static BOOL ntsc_window_child_windows_created;
 static HFONT ntsc_hFont = NULL;
 
 // Callbacks.
-#if 0
-static void	ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data);
-#endif
+static void	ntsc_window_callback_cboPresets_changed(void);
 static void	ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL update_setup);
 #if 0
 static void	ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data);
@@ -413,11 +411,19 @@ static LRESULT CALLBACK ntsc_window_wndproc(HWND hWnd, UINT message, WPARAM wPar
 			break;
 		
 		case WM_COMMAND:
-			switch (wParam)
+			switch (LOWORD(wParam))
 			{
 				case IDCLOSE:
 					// Close.
 					ntsc_window_close();
+					break;
+				
+				case IDC_NTSC_PRESETS:
+					if (HIWORD(wParam) == CBN_SELCHANGE)
+					{
+						// Presets selection has changed.
+						ntsc_window_callback_cboPresets_changed();
+					}
 					break;
 				
 				default:
@@ -494,16 +500,16 @@ static void ntsc_window_load_settings(void)
 	Button_SetCheck(chkInterp, (mdp_md_ntsc_interp ? BST_CHECKED : BST_UNCHECKED));
 	
 	// Load all settings.
-	SendMessage(hscCtrlValues[0], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.hue * 180.0));
-	SendMessage(hscCtrlValues[1], TBM_SETPOS, TRUE, (int)((mdp_md_ntsc_setup.saturation + 1.0) * 100.0));
-	SendMessage(hscCtrlValues[2], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.contrast * 100.0));
-	SendMessage(hscCtrlValues[3], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.brightness * 100.0));
-	SendMessage(hscCtrlValues[4], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.sharpness * 100.0));
-	SendMessage(hscCtrlValues[5], TBM_SETPOS, TRUE, (int)(((mdp_md_ntsc_setup.gamma / 2.0) + 1.0) * 100.0));
-	SendMessage(hscCtrlValues[6], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.resolution * 100.0));
-	SendMessage(hscCtrlValues[7], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.artifacts * 100.0));
-	SendMessage(hscCtrlValues[8], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.fringing * 100.0));
-	SendMessage(hscCtrlValues[9], TBM_SETPOS, TRUE, (int)(mdp_md_ntsc_setup.bleed * 100.0));
+	SendMessage(hscCtrlValues[0], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.hue * 180.0));
+	SendMessage(hscCtrlValues[1], TBM_SETPOS, TRUE, (int)rint((mdp_md_ntsc_setup.saturation + 1.0) * 100.0));
+	SendMessage(hscCtrlValues[2], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.contrast * 100.0));
+	SendMessage(hscCtrlValues[3], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.brightness * 100.0));
+	SendMessage(hscCtrlValues[4], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.sharpness * 100.0));
+	SendMessage(hscCtrlValues[5], TBM_SETPOS, TRUE, (int)rint(((mdp_md_ntsc_setup.gamma / 2.0) + 1.0) * 100.0));
+	SendMessage(hscCtrlValues[6], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.resolution * 100.0));
+	SendMessage(hscCtrlValues[7], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.artifacts * 100.0));
+	SendMessage(hscCtrlValues[8], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.fringing * 100.0));
+	SendMessage(hscCtrlValues[9], TBM_SETPOS, TRUE, (int)rint(mdp_md_ntsc_setup.bleed * 100.0));
 	
 	// Display all settings.
 	for (i = 0; i < NTSC_CTRL_COUNT; i++)
@@ -513,21 +519,13 @@ static void ntsc_window_load_settings(void)
 }
 
 
-#if 0
 /**
  * ntsc_window_callback_cboPresets_changed(): The "Presets" combo box has been changed.
- * @param widget
- * @param user_data
  */
-static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointer user_data)
+static void ntsc_window_callback_cboPresets_changed(void)
 {
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	if (!ntsc_window_do_callbacks)
-		return;
-	
 	// Load the specified preset setup.
-	int i = gtk_combo_box_get_active(widget);
+	int i = ComboBox_GetCurSel(cboPresets);
 	if (i == -1 || i >= (int)(sizeof(ntsc_presets) / sizeof(ntsc_preset_t)))
 		return;
 	
@@ -541,7 +539,6 @@ static void ntsc_window_callback_cboPresets_changed(GtkComboBox *widget, gpointe
 	// Load the new settings in the window.
 	ntsc_window_load_settings();
 }
-#endif
 
 
 /**
@@ -556,19 +553,19 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting, BOOL u
 	
 	// Update the label for the adjustment widget.
 	char tmp[16];
-	double val = SendMessage(hscCtrlValues[setting], TBM_GETPOS, 0, 0);
+	int val = SendMessage(hscCtrlValues[setting], TBM_GETPOS, 0, 0);
 	
 	// Adjust the value to have the appropriate number of decimal places.
 	if (setting == 0)
 	{
 		// Hue. No decimal places.
-		snprintf(tmp, sizeof(tmp), "%0.0f\xB0", val);
+		snprintf(tmp, sizeof(tmp), "%d\xB0", val);
 	}
 	else
 	{
 		// Other adjustment. 2 decimal places.
-		val /= 100;
-		snprintf(tmp, sizeof(tmp), "%0.2f", val);
+		printf("val: %d\n", val);
+		snprintf(tmp, sizeof(tmp), "%0.2f", ((double)val / 100.0));
 	}
 	
 	Static_SetText(lblCtrlValues[setting], tmp);
