@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Blargg's NTSC renderer.                                            *
+ * MDP: Blargg's NTSC Filter.                                              *
  *                                                                         *
  * Copyright (c) 2006 by Shay Green                                        *
  * MDP version Copyright (c) 2008-2009 by David Korth                      *
@@ -55,7 +55,7 @@ int MDP_FNCALL mdp_render_blargg_ntsc_init(mdp_host_t *host_srv)
 	// Save the MDP Host Services pointer.
 	ntsc_host_srv = host_srv;
 	
-	// Initialize the NTSC renderer.
+	// Initialize the NTSC filter.
 	mdp_md_ntsc_init();
 	
 	// Register the renderer.
@@ -103,7 +103,7 @@ int MDP_FNCALL mdp_render_blargg_ntsc_end(void)
 	// Unregister the renderer.
 	ntsc_host_srv->renderer_unregister(&mdp, &mdp_render);
 	
-	// Shut down the NTSC renderer.
+	// Shut down the NTSC filter.
 	mdp_md_ntsc_end();
 	
 	// Plugin is shut down.

@@ -1,4 +1,4 @@
-# MDP Render Plugin: Blargg's NTSC renderer.
+# MDP Render Plugin: Blargg's NTSC Filter.
 
 AUTOMAKE_OPTIONS = subdir-objects
 

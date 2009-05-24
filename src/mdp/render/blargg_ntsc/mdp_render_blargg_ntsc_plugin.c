@@ -1,5 +1,5 @@
 /***************************************************************************
- * MDP: Blargg's NTSC renderer. (Plugin Data File)                         *
+ * MDP: Blargg's NTSC Filter. (Plugin Data File)                           *
  *                                                                         *
  * Copyright (c) 2006 by Shay Green                                        *
  * MDP version Copyright (c) 2008-2009 by David Korth                      *
@@ -27,10 +27,10 @@
 
 static mdp_desc_t mdp_desc =
 {
-	.name = "Blargg's NTSC Renderer",
+	.name = "Blargg's NTSC Filter",
 	.author_mdp = "David Korth",
 	.author_orig = "Shay Green",
-	.description = "Blargg's NTSC Renderer for the Sega Genesis.",
+	.description = "Blargg's NTSC Filter for the Sega Genesis.",
 	.website = "http://www.fly.net/~ant/libs/ntsc.html",
 	.license = MDP_LICENSE_LGPL_21,
 	
