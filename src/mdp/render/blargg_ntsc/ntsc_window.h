@@ -32,6 +32,8 @@ extern "C" {
 DLL_LOCAL void MDP_FNCALL ntsc_window_show(void *parent);
 DLL_LOCAL void MDP_FNCALL ntsc_window_close(void);
 
+DLL_LOCAL void MDP_FNCALL ntsc_window_load_settings(void);
+
 #ifdef __cplusplus
 }
 #endif

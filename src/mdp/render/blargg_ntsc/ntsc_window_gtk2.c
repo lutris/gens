@@ -58,9 +58,6 @@ static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton
 
 static gboolean	ntsc_window_do_callbacks;
 
-// Setting handling functions.
-static void ntsc_window_load_settings(void);
-
 
 /**
  * ntsc_window_show(): Show the NTSC Plugin Options window.
@@ -327,8 +324,11 @@ static void ntsc_window_callback_response(GtkDialog *dialog, gint response_id, g
 /**
  * ntsc_window_load_settings(): Load the NTSC settings.
  */
-static void ntsc_window_load_settings(void)
+void MDP_FNCALL ntsc_window_load_settings(void)
 {
+	if (!ntsc_window)
+		return;
+	
 	ntsc_window_do_callbacks = FALSE;
 	
 	// Set the preset dropdown box.

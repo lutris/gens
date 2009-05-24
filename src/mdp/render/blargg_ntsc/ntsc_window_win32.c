@@ -79,9 +79,6 @@ static void	ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton
 
 static BOOL	ntsc_window_do_callbacks;
 
-// Setting handling functions.
-static void ntsc_window_load_settings(void);
-
 // Window size.
 #define NTSC_WINDOW_WIDTH  360
 #define NTSC_WINDOW_HEIGHT 360
@@ -354,8 +351,11 @@ void ntsc_window_close(void)
 /**
  * ntsc_window_load_settings(): Load the NTSC settings.
  */
-static void ntsc_window_load_settings(void)
+void MDP_FNCALL ntsc_window_load_settings(void)
 {
+	if (!ntsc_window)
+		return;
+	
 	ntsc_window_do_callbacks = FALSE;
 	
 	// Set the preset dropdown box.

@@ -34,6 +34,10 @@
 #include "mdp/mdp_stdint.h"
 #include "mdp/mdp_error.h"
 
+// C includes.
+#include <stdlib.h>
+#include <errno.h>
+
 // MDP Host Services.
 mdp_host_t *ntsc_host_srv = NULL;
 static int ntsc_menuItemID = 0;
@@ -131,13 +135,94 @@ static int MDP_FNCALL ntsc_menu_handler(int menu_item_id)
  */
 static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 {
-	int i;
+	MDP_UNUSED_PARAMETER(event_info);
+	
+	int i, val;
 	char buf[128];
 	
 	switch (event_id)
 	{
 		case MDP_EVENT_LOAD_CONFIG:
 			// Load NTSC configuration.
+			
+			// Check for presets.
+			ntsc_host_srv->config_get(&mdp, "_Preset", NULL, buf, sizeof(buf));
+			for (i = 0; i < NTSC_PRESETS_COUNT; i++)
+			{
+				if (!ntsc_presets[i].setup)
+				{
+					// "Custom". This is the last item in the predefined list.
+					// Since the current setup doesn't match anything else,
+					// it must be a custom setup.
+					break;
+				}
+				else
+				{
+					// Check if this preset matches the current setup.
+					if (!strncasecmp(buf, ntsc_presets[i].name, sizeof(buf)))
+					{
+						// Match found!
+						memcpy(&mdp_md_ntsc_setup, ntsc_presets[i].setup, sizeof(mdp_md_ntsc_setup));
+						break;
+					}
+				}
+			}
+			
+			// If "Custom", load customized values.
+			if (i != NTSC_PRESETS_COUNT)
+			{
+				for (i = 0; i < NTSC_CTRL_COUNT; i++)
+				{
+					ntsc_host_srv->config_get(&mdp, ntsc_controls[i].name, NULL, buf, sizeof(buf));
+					
+					if (buf[0] == 0x00)
+					{
+						// Empty value. Use "Composite" preset.
+						mdp_md_ntsc_setup.params[i] = md_ntsc_composite.params[i];
+					}
+					else
+					{
+						// Non-empty value. Convert it to an integer.
+						errno = 0;
+						val = strtol(buf, NULL, 0);
+						if (errno != 0)
+						{
+							// Error occurred while converting the number.
+							// Use the default value. ("Composite" preset.)
+							mdp_md_ntsc_setup.params[i] = md_ntsc_composite.params[i];
+						}
+						else
+						{
+							// Number converted.
+							// Convert it to an internal NTSC value.
+							mdp_md_ntsc_setup.params[i] = ntsc_display_to_internal(i, val);
+						}
+					}
+				}
+			}
+			
+			// Scanlines.
+			ntsc_host_srv->config_get(&mdp, "_Scanlines", "1", buf, sizeof(buf));
+			errno = 0;
+			val = strtol(buf, NULL, 0);
+			if (errno != 0)
+				val = 1;
+			
+			mdp_md_ntsc_scanline = (val ? 1 : 0);
+			
+			// Interpolation.
+			ntsc_host_srv->config_get(&mdp, "_Interpolation", "1", buf, sizeof(buf));
+			errno = 0;
+			val = strtol(buf, NULL, 0);
+			if (errno != 0)
+				val = 1;
+			
+			mdp_md_ntsc_interp = (val ? 1 : 0);
+			
+			// Reinitialize the NTSC settings.
+			mdp_md_ntsc_reinit_setup();
+			ntsc_window_load_settings();
+			
 			// TODO
 			break;
 		
@@ -152,7 +237,7 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 					// "Custom". This is the last item in the predefined list.
 					// Since the current setup doesn't match anything else,
 					// it must be a custom setup.
-					ntsc_host_srv->config_set(&mdp, "Preset", ntsc_presets[i].name);
+					ntsc_host_srv->config_set(&mdp, "_Preset", ntsc_presets[i].name);
 					break;
 				}
 				else
@@ -161,13 +246,29 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 					if (!memcmp(&mdp_md_ntsc_setup, ntsc_presets[i].setup, sizeof(mdp_md_ntsc_setup)))
 					{
 						// Match found!
-						ntsc_host_srv->config_set(&mdp, "Preset", ntsc_presets[i].name);
+						ntsc_host_srv->config_set(&mdp, "_Preset", ntsc_presets[i].name);
 						break;
 					}
 				}
 			}
 			
 			// Save individual values.
+			for (i = 0; i < NTSC_CTRL_COUNT; i++)
+			{
+				snprintf(buf, sizeof(buf), "%d", ntsc_internal_to_display(i, mdp_md_ntsc_setup.params[i]));
+				buf[sizeof(buf)-1] = 0x00;
+				
+				ntsc_host_srv->config_set(&mdp, ntsc_controls[i].name, buf);
+			}
+			
+			// Scanlines.
+			buf[1] = 0x00;
+			buf[0] = (mdp_md_ntsc_scanline ? '1' : '0');
+			ntsc_host_srv->config_set(&mdp, "_Scanlines", buf);
+			
+			// Interpolation.
+			buf[0] = (mdp_md_ntsc_interp ? '1' : '0');
+			ntsc_host_srv->config_set(&mdp, "_Interpolation", buf);
 			
 			break;
 		
