@@ -23,6 +23,9 @@
 #ifndef __MDP_WIN32_H
 #define __MDP_WIN32_H
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <windowsx.h>
 #include <minmax.h>

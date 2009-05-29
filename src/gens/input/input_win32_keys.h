@@ -23,12 +23,16 @@
 #ifndef GENS_INPUT_WIN32_KEYS_H
 #define GENS_INPUT_WIN32_KEYS_H
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 // Win32 virtual keycodes reported in WM_KEYDOWN's wParam parameter.
 #define GENS_KEY_BACKSPACE	VK_BACK

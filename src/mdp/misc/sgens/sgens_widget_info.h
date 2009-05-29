@@ -33,6 +33,9 @@
 // Degree symbol.
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 	#include <windows.h>
 	#define DEGREE_SYMBOL TEXT("\xB0")
 #else

@@ -81,6 +81,9 @@
 // Needed for SetCurrentDirectory.
 #ifdef GENS_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #endif /* GENS_OS_WIN32 */
 

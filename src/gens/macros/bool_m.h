@@ -30,6 +30,9 @@ extern "C" {
 #ifdef _WIN32
 	// Win32 has definitions for BOOL.
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 	#include <windows.h>
 #else /* !_WIN32 */
 	// Other systems might not have definitions for BOOL.

@@ -23,12 +23,15 @@
 #ifndef GENS_WIN32_GENS_WINDOW_SYNC_HPP
 #define GENS_WIN32_GENS_WINDOW_SYNC_HPP
 
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 void Sync_Gens_Window(void);
 void Sync_Gens_Window_FileMenu(void);

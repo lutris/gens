@@ -28,6 +28,9 @@
 
 #if defined(GENS_UI_WIN32)
 	#define WIN32_LEAN_AND_MEAN
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 	#include <windows.h>
 #elif defined(GENS_UI_GTK)
 	#include <gtk/gtk.h>

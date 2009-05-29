@@ -23,13 +23,16 @@
 #ifndef GENS_WIN32_ABOUT_WINDOW_HPP
 #define GENS_WIN32_ABOUT_WINDOW_HPP
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 extern HWND about_window;
 

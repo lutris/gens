@@ -39,6 +39,9 @@
 // Needed for HWND in input_set_cooperative_level.
 #ifdef GENS_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #endif
 

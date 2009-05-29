@@ -23,12 +23,16 @@
 #ifndef GENS_G_MAIN_WIN32_HPP
 #define GENS_G_MAIN_WIN32_HPP
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 // Win32 instance
 extern HINSTANCE ghInstance;

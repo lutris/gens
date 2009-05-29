@@ -23,12 +23,15 @@
 #ifndef WIN32_GENS_WINDOW_CALLBACKS_HPP
 #define WIN32_GENS_WINDOW_CALLBACKS_HPP
 
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 
 LRESULT CALLBACK Gens_Window_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

@@ -53,6 +53,9 @@
 // DirectSound 3 is required.
 #define DIRECTSOUND_VERSION 0x0300
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <mmsystem.h>
 #include <dsound.h>

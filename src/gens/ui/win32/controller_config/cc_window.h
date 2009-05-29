@@ -23,12 +23,16 @@
 #ifndef GENS_UI_WIN32_CC_WINDOW_H
 #define GENS_UI_WIN32_CC_WINDOW_H
 
+// Win32 includes.
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// Win32 includes.
-#include <windows.h>
 
 extern HWND cc_window;
 extern BOOL cc_window_is_configuring;

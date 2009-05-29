@@ -66,6 +66,9 @@ static inline const char* mdp_dlerror(void)
 
 /* Win32 system. */
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #include <tchar.h>
 #define MDP_DLOPEN_EXT ".dll"

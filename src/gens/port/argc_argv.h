@@ -26,13 +26,16 @@
 #ifndef GENS_ARGC_ARGV_H
 #define GENS_ARGC_ARGV_H
 
+#define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <tchar.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <tchar.h>
 
 /**
  * Struct for argc/argv conversion.
