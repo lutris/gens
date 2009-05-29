@@ -1,4 +1,4 @@
-/***************************************************************************
+\/***************************************************************************
  * Gens: Plugin Manager.                                                   *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
@@ -27,12 +27,13 @@
 #include "mdp/mdp_render.h"
 #include "mdp/mdp_host.h"
 
-#include "macros/hashtable.hpp"
-
 // MDP Incompatibility List.
 #include "mdp_incompat.hpp"
 
 #ifdef __cplusplus
+
+// Hashtable macros.
+#include "macros/hashtable.hpp"
 
 // C++ includes.
 #include <string>
