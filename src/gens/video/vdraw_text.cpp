@@ -146,9 +146,9 @@ static inline void drawChar_2x(pixel *screen, const int pitch, const int x, cons
 
 
 template<typename pixel>
-void T_drawText(pixel *screen, const int pitch, const int w, const int h,
-		const char *msg, const pixel transparentMask, const vdraw_style_t *style,
-		const bool isDDraw)
+static inline void T_drawText(pixel *screen, const int pitch, const int w, const int h,
+			      const char *msg, const pixel transparentMask, const vdraw_style_t *style,
+			      const bool isDDraw)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
