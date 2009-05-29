@@ -49,7 +49,7 @@ case $host in
 		os=win32;
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
-		cflags_win32="-mno-cygwin ${cflags_win32}";
+		cflags_win32="-mno-cygwin -mwin32 ${cflags_win32}";
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
