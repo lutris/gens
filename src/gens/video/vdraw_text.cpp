@@ -284,15 +284,15 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
-		T_drawText((unsigned short*)screen, pitch, w, h, msg,
-			   (unsigned short)m_Transparency_Mask, style,
+		T_drawText((uint16_t*)screen, pitch, w, h, msg,
+			   (uint16_t)m_Transparency_Mask, style,
 			   (isDDraw ? true : false));
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
-		T_drawText((unsigned int*)screen, pitch, w, h, msg,
-			   m_Transparency_Mask, style,
+		T_drawText((uint32_t*)screen, pitch, w, h, msg,
+			   (uint32_t)m_Transparency_Mask, style,
 			   (isDDraw ? true : false));
 	}
 }
