@@ -384,7 +384,7 @@ static void SegaCD_Display_LED(void)
  * @param perfect_sync If true, use perfect synchronization.
  */
 template<bool VDP, bool perfect_sync>
-static inline int __attribute__((always_inline)) T_gens_do_MCD_frame(void)
+static inline int T_gens_do_MCD_frame(void)
 {
 	int *buf[2], i, j;
 	int HInt_Counter;

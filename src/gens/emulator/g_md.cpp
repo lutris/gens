@@ -433,7 +433,7 @@ int Do_VDP_Only(void)
  * @param VDP If true, VDP is updated.
  */
 template<bool VDP>
-static inline int __attribute__((always_inline)) T_gens_do_MD_frame(void)
+static inline int T_gens_do_MD_frame(void)
 {
 	int *buf[2];
 	int HInt_Counter;

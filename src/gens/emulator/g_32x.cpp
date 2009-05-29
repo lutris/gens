@@ -332,7 +332,7 @@ int Do_32X_VDP_Only(void)
  * @param VDP If true, VDP is updated.
  */
 template<bool VDP>
-static inline int __attribute__((always_inline)) T_gens_do_32X_frame(void)
+static inline int T_gens_do_32X_frame(void)
 {
 	int i, j, k, l, p_i, p_j, p_k, p_l, *buf[2];
 	int HInt_Counter, HInt_Counter_32X;
