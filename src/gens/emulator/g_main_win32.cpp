@@ -29,6 +29,7 @@
 
 // C++ includes
 #include <list>
+#include <algorithm>
 using std::list;
 
 // Signal handler.
@@ -79,7 +80,6 @@ int win32_CommCtrlEx = 0;
 #endif
 #include <windows.h>
 #include <windowsx.h>
-#include <minmax.h>
 
 // argc/argv conversion.
 #include "port/argc_argv.h"
@@ -135,8 +135,8 @@ void Win32_centerOnGensWindow(HWND hWnd)
 	dy2 = (r2.bottom - r2.top) / 2;
 	
 	SetWindowPos(hWnd, NULL,
-		     max(0, r.left + (dx1 - dx2)),
-		     max(0, r.top + (dy1 - dy2)), 0, 0,
+		     std::max(0, r.left + (dx1 - dx2)),
+		     std::max(0, r.top + (dy1 - dy2)), 0, 0,
 		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
