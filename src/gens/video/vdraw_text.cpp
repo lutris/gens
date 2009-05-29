@@ -146,9 +146,9 @@ static inline void drawChar_2x(pixel *screen, const int pitch, const int x, cons
 
 
 template<typename pixel>
-void drawText_int(pixel *screen, const int pitch, const int w, const int h,
-		  const char *msg, const pixel transparentMask, const vdraw_style_t *style,
-		  const bool isDDraw)
+void T_drawText(pixel *screen, const int pitch, const int w, const int h,
+		const char *msg, const pixel transparentMask, const vdraw_style_t *style,
+		const bool isDDraw)
 {
 	int msgLength, cPos;
 	unsigned short linebreaks, msgWidth;
@@ -284,16 +284,16 @@ void draw_text(void *screen, const int pitch, const int w, const int h,
 	if (bppOut == 15 || bppOut == 16)
 	{
 		// 15/16-bit color.
-		drawText_int((unsigned short*)screen, pitch, w, h, msg,
-			     (unsigned short)m_Transparency_Mask, style,
-			     isDDraw);
+		T_drawText((unsigned short*)screen, pitch, w, h, msg,
+			   (unsigned short)m_Transparency_Mask, style,
+			   isDDraw);
 	}
 	else //if (bppOut == 32)
 	{
 		// 32-bit color.
-		drawText_int((unsigned int*)screen, pitch, w, h, msg,
-			     m_Transparency_Mask, style,
-			     isDDraw);
+		T_drawText((unsigned int*)screen, pitch, w, h, msg,
+			   m_Transparency_Mask, style,
+			   isDDraw);
 	}
 }
 
