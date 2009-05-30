@@ -48,6 +48,12 @@
 #include <shlobj.h>
 #include <tchar.h>
 
+// commctrl.h doesn't define ICC_STANDARD_CLASSES
+// unless _WIN32_WINNT is 0x0501 or higher.
+#ifndef ICC_STANDARD_CLASSES
+#define ICC_STANDARD_CLASSES 0x00004000
+#endif
+
 #include <commdlg.h>
 
 // Gens Win32 resources.
@@ -153,9 +159,17 @@ void GensUI::init(int *argc, char **argv[])
 		// Use InitCommonControlsEx().
 		INITCOMMONCONTROLSEX iccx;
 		iccx.dwSize = sizeof(iccx);
-		iccx.dwICC = ICC_STANDARD_CLASSES | ICC_WIN95_CLASSES | ICC_BAR_CLASSES |
+		iccx.dwICC = ICC_WIN95_CLASSES | ICC_BAR_CLASSES |
 			     ICC_LISTVIEW_CLASSES | ICC_USEREX_CLASSES;
 		
+		// ICC_STANDARD_CLASSES is only on XP and later.
+		if (winVersion.dwMajorVersion > 6 ||
+		    winVersion.dwMajorVersion == 5 && winVersion.dwMinorVersion >= 1)
+		{
+			iccx.dwICC |= ICC_STANDARD_CLASSES;
+		}
+		
+		// Initialize Common Controls.
 		if (InitCommonControlsEx(&iccx))
 		{
 			// CommCtrlEx initialized.
