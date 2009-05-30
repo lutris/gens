@@ -135,8 +135,8 @@ void Win32_centerOnGensWindow(HWND hWnd)
 	dy2 = (r2.bottom - r2.top) / 2;
 	
 	SetWindowPos(hWnd, NULL,
-		     std::max(0, r.left + (dx1 - dx2)),
-		     std::max(0, r.top + (dy1 - dy2)), 0, 0,
+		     std::max(0, (int)(r.left + (dx1 - dx2))),
+		     std::max(0, (int)(r.top + (dy1 - dy2))), 0, 0,
 		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
