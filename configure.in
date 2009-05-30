@@ -13,7 +13,6 @@ m4_defun([_LT_AC_LANG_F77_CONFIG], [:])
 AC_LIBTOOL_DLOPEN
 AC_ENABLE_SHARED
 AC_DISABLE_STATIC
-AC_LIBTOOL_RC
 
 # Set up libtool.
 AC_PROG_LIBTOOL
@@ -179,6 +178,17 @@ elif test x$os = xwin32; then
 
 # Win32
 AC_DEFINE(GENS_UI_WIN32, 1, Enable the Win32 UI)
+
+# Check for a Win32 resource compiler.
+AC_PATH_PROG(RC, ${host_alias}-windres, no)
+if test x$RC = xno; then
+	# Check without a host alias.
+	AC_PATH_PROG(RC, windres, no)
+	if test x$RC = xno; then
+		AC_MSG_ERROR([*** Win32 resource compiler not found!])
+	fi
+fi
+AC_SUBST(RC)
 
 fi
 
