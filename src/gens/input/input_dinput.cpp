@@ -53,6 +53,12 @@
 #endif /* UNICODE */
 #endif /* IDirectInputDevice2 */
 
+// Some old compilers may be missing WM_NCXBUTTONDBLCLK.
+// In particular, Cygwin's headers don't have it.
+#ifndef WM_NCXBUTTONDBLCLK
+#define WM_NCXBUTTONDBLCLK 0x00AD
+#endif
+
 #define MAX_JOYS 8
 
 // DirectInput versions.
