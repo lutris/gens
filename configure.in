@@ -49,6 +49,7 @@ case $host in
 		obj_format=win32;
 		AC_DEFINE(GENS_OS_WIN32, 1, Win32 operating system)
 		cflags_win32="-mno-cygwin -mwin32 ${cflags_win32}";
+		ldflags_win32="-mno-cygwin -mwin32"
 		nasm_debug="-g"
 		yasm_debug="-g stabs";
 		cflags_debug="-gstabs"
@@ -560,10 +561,10 @@ if test x$os = xwin32; then
 	# Check if the Windows console should be enabled.
 	if test x$enable_win32_console = xyes; then
 		# Enable the Windows console.
-		ldflags_win32="$LDFLAGS -Wl,-subsystem,console"
+		ldflags_win32="$ldflags_win32 -Wl,-subsystem,console"
 	else
 		# Disable the Windows console.
-		ldflags_win32="$LDFLAGS -Wl,-subsystem,windows"
+		ldflags_win32="$ldflags_win32 -Wl,-subsystem,windows"
 	fi
 	
 	# Windows NT target version and MSIE target version.
