@@ -42,6 +42,12 @@
 #include <windows.h>
 #include <windowsx.h>
 
+// DirectInput versions.
+#define DIRECTINPUT_VERSION_5 0x0500
+#define DIRECTINPUT_VERSION_3 0x0300
+
+// We want DirectInput 5 headers.
+#define DIRECTINPUT_VERSION DIRECTINPUT_VERSION_5
 #include <dinput.h>
 
 // Wine's headers are missing this definition...
@@ -60,10 +66,6 @@
 #endif
 
 #define MAX_JOYS 8
-
-// DirectInput versions.
-#define DIRECTINPUT_VERSION_5 0x0500
-#define DIRECTINPUT_VERSION_3 0x0300
 
 // DirectInput variables.
 static LPDIRECTINPUT lpDI = NULL;
