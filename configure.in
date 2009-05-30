@@ -554,8 +554,9 @@ if test x$os = xwin32; then
 		ldflags_win32="$LDFLAGS -Wl,-subsystem,windows"
 	fi
 	
-	# Windows NT target version
-	cflags_win32="${cflags_win32} -D_WIN32_WINNT=0x0400"
+	# Windows NT target version and MSIE target version.
+	# (Seriously, MSIE target version?)
+	cflags_win32="${cflags_win32} -D_WIN32_WINNT=0x0400 -D_WIN32_IE=0x0300"
 else
 	# Not Win32.
 	ldflags_win32=""
