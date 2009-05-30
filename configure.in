@@ -180,8 +180,12 @@ elif test x$os = xwin32; then
 AC_DEFINE(GENS_UI_WIN32, 1, Enable the Win32 UI)
 
 # Check for a Win32 resource compiler.
-AC_PATH_PROG(RC, ${host_alias}-windres, no)
-if test x$RC = xno; then
+RC=""
+if test x${host_alias} != x; then
+	# Check with a host alias.
+	AC_PATH_PROG(RC, ${host_alias}-windres, no)
+fi;
+if test x$RC = x -o test x$RC = xno; then
 	# Check without a host alias.
 	AC_PATH_PROG(RC, windres, no)
 	if test x$RC = xno; then
