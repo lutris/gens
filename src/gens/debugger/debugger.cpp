@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "emulator/g_main.hpp"
 #include "emulator/g_md.hpp"
@@ -835,7 +836,7 @@ static inline void Refresh_VDP_Palette_Colors(pixel *screen, pixel *palette, uns
 }
 
 template<typename pixel>
-static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned short paletteMask, pixel outlineColor)
+static inline void Refresh_VDP_Palette_Outline(pixel *screen, unsigned int paletteMask, pixel outlineColor)
 {
 	// Outline the selected palette. Ported from Gens Rerecording.
 	for (unsigned int i = 0; i < 16 * 8; i++)
@@ -856,13 +857,13 @@ static void Refresh_VDP_Palette(void)
 	{
 		// 32-bit color palette update
 		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 4);
-		Refresh_VDP_Palette_Outline(MD_Screen32, 0x03, (unsigned int)0xFFFFFF);
+		Refresh_VDP_Palette_Outline((uint32_t*)MD_Screen32, 0x03, (uint32_t)0xFFFFFF);
 	}
 	else
 	{
 		// 15/16-bit color palette update
 		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette, 4);
-		Refresh_VDP_Palette_Outline(MD_Screen, 0x03, (unsigned short)0xFFFF);
+		Refresh_VDP_Palette_Outline((uint16_t*)MD_Screen, 0x03, (uint16_t)0xFFFF);
 	}
 	
 	Print_Text_Constant("******** VDP CONTROL ********", 29, 180, 60, BLANC);
@@ -1030,13 +1031,13 @@ static void Refresh_Word_RAM_Pattern(void)
 	{
 		// 32-bit color palette update
 		Refresh_VDP_Palette_Colors(MD_Screen32, MD_Palette32, 16);
-		Refresh_VDP_Palette_Outline(MD_Screen32, 0x0F, (unsigned int)0xFFFFFF);
+		Refresh_VDP_Palette_Outline((uint32_t*)MD_Screen32, 0x0F, (uint32_t)0xFFFFFF);
 	}
 	else
 	{
 		// 15/16-bit color palette update
 		Refresh_VDP_Palette_Colors(MD_Screen, MD_Palette, 16);
-		Refresh_VDP_Palette_Outline(MD_Screen, 0x0F, (unsigned short)0xFFFF);
+		Refresh_VDP_Palette_Outline((uint16_t*)MD_Screen, 0x0F, (uint16_t)0xFFFF);
 	}
 }
 
