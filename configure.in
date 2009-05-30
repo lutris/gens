@@ -185,7 +185,7 @@ if test x${host_alias} != x; then
 	# Check with a host alias.
 	AC_PATH_PROG(RC, ${host_alias}-windres, no)
 fi;
-if test x$RC = x -o test x$RC = xno; then
+if test x$RC = x -o x$RC = xno; then
 	# Check without a host alias.
 	AC_PATH_PROG(RC, windres, no)
 	if test x$RC = xno; then
@@ -199,8 +199,6 @@ fi
 AM_CONDITIONAL([GENS_UI_GTK], [test x$ui = xgtk])
 #AM_CONDITIONAL([GENS_UI_QT4], [test x$ui = xqt4])
 AM_CONDITIONAL([GENS_UI_WIN32], [test x$os = xwin32])
-
-dnl GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED"
 
 # Check for nasm.
 AC_ARG_WITH(nasm, AC_HELP_STRING([--with-nasm[[=nasm]]], [Select nasm or yasm [[default=nasm]]]), with_nasm=$withval, with_nasm=nasm)
