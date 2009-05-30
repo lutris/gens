@@ -222,7 +222,7 @@ int audio_dsound_end(void)
  */
 static int audio_dsound_get_current_seg(void)
 {
-	unsigned int R;
+	DWORD R;
 	
 	lpDSBuffer->GetCurrentPosition(&R, NULL);
 	return (R / (audio_seg_length * Bytes_Per_Unit));
@@ -235,7 +235,7 @@ static int audio_dsound_get_current_seg(void)
  */
 int audio_dsound_check_sound_timing(void)
 {
-	unsigned int R;
+	DWORD R;
 	
 	lpDSBuffer->GetCurrentPosition(&R, NULL);
 	
@@ -313,7 +313,7 @@ int audio_dsound_write_sound_buffer(void *dump_buf)
 			audio_write_sound_mono(reinterpret_cast<short*>(lpvPtr1), audio_seg_length);
 	}
 	
-	lpDSBuffer->Unlock(lpvPtr1, dwBytes1, NULL, NULL);
+	lpDSBuffer->Unlock(lpvPtr1, dwBytes1, NULL, 0);
 	
 	return 0;
 }
@@ -350,7 +350,7 @@ void audio_dsound_clear_sound_buffer(void)
 		*w++ = 0;
 	}
 	
-	rval = lpDSBuffer->Unlock(lpvPtr1, dwBytes1, NULL, NULL);
+	rval = lpDSBuffer->Unlock(lpvPtr1, dwBytes1, NULL, 0);
 	return;
 }
 
