@@ -28,7 +28,9 @@
 #endif
 #include <windows.h>
 #include <windowsx.h>
-#include <minmax.h>
+
+// Internal max() macro.
+#define mdp_win32_max(a, b) (((a) < (b)) ? (a) : (b))
 
 /**
  * mdp_win32_center_on_window(): Center one window on top of another window.
@@ -49,8 +51,8 @@ static void mdp_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 	dy2 = (r2.bottom - r2.top) / 2;
 	
 	SetWindowPos(hWnd_top, NULL,
-		     max(0, r.left + (dx1 - dx2)),
-		     max(0, r.top + (dy1 - dy2)), 0, 0,
+		     mdp_win32_max(0, r.left + (dx1 - dx2)),
+		     mdp_win32_max(0, r.top + (dy1 - dy2)), 0, 0,
 		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
