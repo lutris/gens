@@ -138,6 +138,9 @@ void ntsc_window_show(void *parent)
 				   NTSC_WINDOW_WIDTH, NTSC_WINDOW_HEIGHT,
 				   (HWND)parent, NULL, ntsc_hInstance, NULL);
 	
+	// Load the current settings.
+	ntsc_window_load_settings();
+	
 	// Window adjustment.
 	mdp_win32_set_actual_window_size(ntsc_window, NTSC_WINDOW_WIDTH, NTSC_WINDOW_HEIGHT);
 	mdp_win32_center_on_window(ntsc_window, (HWND)parent);
@@ -249,9 +252,6 @@ static void ntsc_window_create_child_windows(HWND hWnd)
 				     NTSC_WINDOW_WIDTH-75-8, NTSC_WINDOW_HEIGHT-24-8, 75, 23,
 				     hWnd, (HMENU)IDCLOSE, ntsc_hInstance, NULL);
 	SetWindowFont(btnClose, ntsc_hFont, TRUE);
-	
-	// Load the current settings.
-	ntsc_window_load_settings();
 	
 	// Child windows created.
 	ntsc_window_child_windows_created = TRUE;
