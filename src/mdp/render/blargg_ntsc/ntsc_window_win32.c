@@ -465,37 +465,3 @@ static void ntsc_window_callback_hscCtrlValues_value_changed(int setting)
 	// Reinitialize the NTSC filter with the new settings.
 	mdp_md_ntsc_reinit_setup();
 }
-
-
-#if 0
-/**
- * ntsc_window_callback_chkScanline_toggled): The "Scanlines" checkbox was toggled.
- * @param togglebutton
- * @param user_data
- */
-static void ntsc_window_callback_chkScanline_toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	if (!ntsc_window_do_callbacks)
-		return;
-	
-	mdp_md_ntsc_scanline = gtk_toggle_button_get_active(togglebutton);
-}
-
-
-/**
- * ntsc_window_callback_chkScanline_toggled): The "Interpolation" checkbox was toggled.
- * @param togglebutton
- * @param user_data
- */
-static void ntsc_window_callback_chkInterp_toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-	MDP_UNUSED_PARAMETER(user_data);
-	
-	if (!ntsc_window_do_callbacks)
-		return;
-	
-	mdp_md_ntsc_interp = gtk_toggle_button_get_active(togglebutton);
-}
-#endif
