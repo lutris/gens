@@ -309,10 +309,10 @@ typedef struct pixel_info_t
 		(1.0f - (((ntsc) + 100) & 2))
 #endif
 
-extern pixel_info_t const md_ntsc_pixels [alignment_count];
+extern const pixel_info_t md_ntsc_pixels [alignment_count];
 
 /* Generate pixel at all burst phases and column alignments */
-static void gen_kernel( init_t* impl, float y, float i, float q, md_ntsc_rgb_t* out )
+static void gen_kernel(init_t* impl, float y, float i, float q, md_ntsc_rgb_t* out)
 {
 	/* generate for each scanline burst phase */
 	float const* to_rgb = impl->to_rgb;
@@ -330,19 +330,19 @@ static void gen_kernel( init_t* impl, float y, float i, float q, md_ntsc_rgb_t* 
 		{
 			/* negate is -1 when composite starts at odd multiple of 2 */
 			float const yy = y * impl->fringing * pixel->negate;
-			float const ic0 = (i + yy) * pixel->kernel [0];
-			float const qc1 = (q + yy) * pixel->kernel [1];
-			float const ic2 = (i - yy) * pixel->kernel [2];
-			float const qc3 = (q - yy) * pixel->kernel [3];
+			float const ic0 = (i + yy) * pixel->kernel[0];
+			float const qc1 = (q + yy) * pixel->kernel[1];
+			float const ic2 = (i - yy) * pixel->kernel[2];
+			float const qc3 = (q - yy) * pixel->kernel[3];
 			
 			float const factor = impl->artifacts * pixel->negate;
 			float const ii = i * factor;
-			float const yc0 = (y + ii) * pixel->kernel [0];
-			float const yc2 = (y - ii) * pixel->kernel [2];
+			float const yc0 = (y + ii) * pixel->kernel[0];
+			float const yc2 = (y - ii) * pixel->kernel[2];
 			
 			float const qq = q * factor;
-			float const yc1 = (y + qq) * pixel->kernel [1];
-			float const yc3 = (y - qq) * pixel->kernel [3];
+			float const yc1 = (y + qq) * pixel->kernel[1];
+			float const yc3 = (y - qq) * pixel->kernel[3];
 			
 			float const* k = &impl->kernel [pixel->offset];
 			int n;
@@ -353,28 +353,28 @@ static void gen_kernel( init_t* impl, float y, float i, float q, md_ntsc_rgb_t* 
 				float q = k[1]*qc1 + k[3]*qc3;
 				float y = k[kernel_size+0]*yc0 + k[kernel_size+1]*yc1 +
 				          k[kernel_size+2]*yc2 + k[kernel_size+3]*yc3 + rgb_offset;
-				if ( rescale_out <= 1 )
+				if (rescale_out <= 1)
 					k--;
-				else if ( k < &impl->kernel [kernel_size * 2 * (rescale_out - 1)] )
+				else if (k < &impl->kernel[kernel_size * 2 * (rescale_out - 1)])
 					k += kernel_size * 2 - 1;
 				else
 					k -= kernel_size * 2 * (rescale_out - 1) + 2;
 				{
-					int r, g, b = YIQ_TO_RGB( y, i, q, to_rgb, int, r, g );
-					*out++ = PACK_RGB( r, g, b ) - rgb_bias;
+					int r, g, b = YIQ_TO_RGB(y, i, q, to_rgb, int, r, g);
+					*out++ = PACK_RGB(r, g, b) - rgb_bias;
 				}
 			}
 		}
-		while ( alignment_count > 1 && --alignment_remain );
+		while (alignment_count > 1 && --alignment_remain);
 		
-		if ( burst_count <= 1 )
+		if (burst_count <= 1)
 			break;
 		
 		to_rgb += 6;
 		
-		ROTATE_IQ( i, q, -0.866025f, -0.5f ); /* -120 degrees */
+		ROTATE_IQ(i, q, -0.866025f, -0.5f); /* -120 degrees */
 	}
-	while ( --burst_remain );
+	while (--burst_remain);
 }
 
 static void correct_errors( md_ntsc_rgb_t color, md_ntsc_rgb_t* out );
@@ -399,10 +399,10 @@ static void correct_errors( md_ntsc_rgb_t color, md_ntsc_rgb_t* out );
 {\
 	unsigned char* out = (out_);\
 	md_ntsc_rgb_t clamped = (rgb);\
-	MD_NTSC_CLAMP_( clamped, (8 - rgb_bits) );\
-	out [0] = (unsigned char) (clamped >> 21);\
-	out [1] = (unsigned char) (clamped >> 11);\
-	out [2] = (unsigned char) (clamped >>  1);\
+	MD_NTSC_CLAMP_(clamped, (8 - rgb_bits));\
+	out[0] = (unsigned char)(clamped >> 21);\
+	out[1] = (unsigned char)(clamped >> 11);\
+	out[2] = (unsigned char)(clamped >>  1);\
 }
 
 /* blitter related */

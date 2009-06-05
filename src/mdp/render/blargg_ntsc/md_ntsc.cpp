@@ -36,54 +36,66 @@ md_ntsc_setup_t const md_ntsc_rgb        = { 0, 0, 0, 0,.2,  0,.7, -1, -1,-1, 0,
 #include <string.h>
 
 /* 2 input pixels -> 4 composite samples */
-pixel_info_t const md_ntsc_pixels [alignment_count] = {
-	{ PIXEL_OFFSET( -4, -9 ), { 0.1f, 0.9f, 0.9f, 0.1f } },
-	{ PIXEL_OFFSET( -2, -7 ), { 0.1f, 0.9f, 0.9f, 0.1f } },
+const pixel_info_t md_ntsc_pixels[alignment_count] =
+{
+	{PIXEL_OFFSET(-4, -9), {0.1f, 0.9f, 0.9f, 0.1f}},
+	{PIXEL_OFFSET(-2, -7), {0.1f, 0.9f, 0.9f, 0.1f}},
 };
 
-static void correct_errors( md_ntsc_rgb_t color, md_ntsc_rgb_t* out )
+static void correct_errors(md_ntsc_rgb_t color, md_ntsc_rgb_t* out)
 {
-	unsigned i;
-	for ( i = 0; i < rgb_kernel_size / 4; i++ )
+	for (unsigned int i = 0; i < rgb_kernel_size / 4; i++)
 	{
 		md_ntsc_rgb_t error = color -
 				out [i    ] - out [i + 2    +16] - out [i + 4    ] - out [i + 6    +16] -
 				out [i + 8] - out [(i+10)%16+16] - out [(i+12)%16] - out [(i+14)%16+16];
-		CORRECT_ERROR( i + 6 + 16 );
+		
+		CORRECT_ERROR(i + 6 + 16);
 		/*DISTRIBUTE_ERROR( 2+16, 4, 6+16 );*/
 	}
 }
 
-void md_ntsc_init( md_ntsc_t* ntsc, md_ntsc_setup_t const* setup )
+
+/**
+ * md_ntsc_init(): Initialize the NTSC filter.
+ * @param ntsc NTSC filter information.
+ * @param setup Setup parameters.
+ */
+void md_ntsc_init(md_ntsc_t* ntsc, md_ntsc_setup_t const* setup)
 {
-	int entry;
 	init_t impl;
-	if ( !setup )
-		setup = &md_ntsc_composite;
-	init( &impl, setup );
 	
-	for ( entry = 0; entry < md_ntsc_palette_size; entry++ )
+	// Default to composite video if no setup parameters were specified.
+	if (!setup)
+		setup = &md_ntsc_composite;
+	init(&impl, setup);
+	
+	for (int entry = 0; entry < md_ntsc_palette_size; entry++)
 	{
 		float bb = impl.to_float [entry >> 6 & 7];
 		float gg = impl.to_float [entry >> 3 & 7];
 		float rr = impl.to_float [entry      & 7];
 		
-		float y, i, q = RGB_TO_YIQ( rr, gg, bb, y, i );
+		float y, i, q = RGB_TO_YIQ(rr, gg, bb, y, i);
 		
-		int r, g, b = YIQ_TO_RGB( y, i, q, impl.to_rgb, int, r, g );
-		md_ntsc_rgb_t rgb = PACK_RGB( r, g, b );
+		int r, g, b = YIQ_TO_RGB(y, i, q, impl.to_rgb, int, r, g);
+		md_ntsc_rgb_t rgb = PACK_RGB(r, g, b);
 		
-		if ( setup->palette_out )
-			RGB_PALETTE_OUT( rgb, &setup->palette_out [entry * 3] );
+		if (setup->palette_out)
+			RGB_PALETTE_OUT(rgb, &setup->palette_out [entry * 3]);
 		
-		if ( ntsc )
+		if (ntsc)
 		{
-			gen_kernel( &impl, y, i, q, ntsc->table [entry] );
-			correct_errors( rgb, ntsc->table [entry] );
+			gen_kernel(&impl, y, i, q, ntsc->table [entry]);
+			correct_errors(rgb, ntsc->table [entry]);
 		}
 	}
 }
 
+
+/**
+ * MD_NTSC_RGB_OUT_(): Templated RGB OUT function.
+ */
 /* x is always zero except in snes_ntsc library */
 template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
 static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
@@ -93,6 +105,10 @@ static inline void MD_NTSC_RGB_OUT_(pixel *rgb_out, int x, md_ntsc_rgb_t raw_)
 		     ((raw_ >> (shiftB - x)) & maskB);
 }
 
+
+/**
+ * T_md_ntsc_blit(): Templated NTSC blit function.
+ */
 template<typename pixel, pixel maskR, pixel maskG, pixel maskB, int shiftR, int shiftG, int shiftB>
 static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 				  int in_row_width, int in_width, int height,
@@ -157,6 +173,10 @@ static inline void T_md_ntsc_blit(md_ntsc_t const* ntsc, uint16_t const* input,
 	}
 }
 
+
+/**
+ * T_double_scan_image(): Templated double-scan image function.
+ */
 template<typename pixel, pixel lowPixelMask, pixel darkenMask>
 static inline void T_double_scan_image(pixel *rgb_out, int in_width, int height,
 				       int out_pitch, bool scanline, bool interp)
