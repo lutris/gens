@@ -152,6 +152,9 @@ DLL_LOCAL extern md_ntsc_setup_t mdp_md_ntsc_setup;
 DLL_LOCAL extern int mdp_md_ntsc_scanline;
 DLL_LOCAL extern int mdp_md_ntsc_interp;
 
+/* Sony CXA2025AS US decoder matrix. */
+extern const float mdp_md_ntsc_sony_cxa2025as_us_matrix[6];
+
 #ifdef __cplusplus
 }
 #endif

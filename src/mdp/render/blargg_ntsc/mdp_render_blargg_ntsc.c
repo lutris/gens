@@ -219,6 +219,15 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			
 			mdp_md_ntsc_interp = (val ? 1 : 0);
 			
+			// Sony CXA2025AS US decoder matrix.
+			ntsc_host_srv->config_get(&mdp, "_Sony_CXA2025AS_US", "0", buf, sizeof(buf));
+			errno = 0;
+			val = strtol(buf, NULL, 0);
+			if (errno != 0)
+				val = 0;
+			
+			mdp_md_ntsc_setup.decoder_matrix = (val ? mdp_md_ntsc_sony_cxa2025as_us_matrix : NULL);
+			
 			// Reinitialize the NTSC settings.
 			mdp_md_ntsc_reinit_setup();
 			ntsc_window_load_settings();
@@ -269,6 +278,10 @@ static int MDP_FNCALL ntsc_event_handler(int event_id, void *event_info)
 			// Interpolation.
 			buf[0] = (mdp_md_ntsc_interp ? '1' : '0');
 			ntsc_host_srv->config_set(&mdp, "_Interpolation", buf);
+			
+			// Sony CXA2025AS US decoder matrix.
+			buf[0] = (mdp_md_ntsc_setup.decoder_matrix == mdp_md_ntsc_sony_cxa2025as_us_matrix ? 1 : 0);
+			ntsc_host_srv->config_set(&mdp, "_Sony_CXA2025AS_US", buf);
 			
 			break;
 		

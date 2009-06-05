@@ -262,6 +262,9 @@ md_ntsc_setup_t mdp_md_ntsc_setup;
 int mdp_md_ntsc_scanline = 1;
 int mdp_md_ntsc_interp = 1;
 
+/* Sony CXA2025AS US decoder matrix. */
+const float mdp_md_ntsc_sony_cxa2025as_us_matrix[6] = {1.630, 0.317, -0.378, -0.466, -1.089, 1.677};
+
 int MDP_FNCALL mdp_md_ntsc_init(void)
 {
 	// Allocate mdp_md_ntsc.
