@@ -29,7 +29,6 @@
 
 #include <string>
 #include <list>
-#include "macros/hashtable.hpp"
 
 // Event item.
 struct mdpEventItem_t

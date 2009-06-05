@@ -32,8 +32,8 @@
 
 #ifdef __cplusplus
 
-// Hashtable macros.
-#include "macros/hashtable.hpp"
+// Hashtable wrapper.
+#include "libgsft/gsft_hashtable.hpp"
 
 // C++ includes.
 #include <string>
@@ -45,11 +45,11 @@ typedef struct _mdpDLL_t
 	void		*dlhandle;
 	std::string	filename;
 } mdpDLL_t;
-typedef GENS_HASHTABLE<mdp_t*, mdpDLL_t> mapMdpDLL;
+typedef GSFT_HASHTABLE<mdp_t*, mdpDLL_t> mapMdpDLL;
 typedef std::pair<mdp_t*, mdpDLL_t> pairMdpDLL;
 
 // Render plugins.
-typedef GENS_HASHTABLE<std::string, std::list<mdp_render_t*>::iterator> mapRenderPlugin;
+typedef GSFT_HASHTABLE<std::string, std::list<mdp_render_t*>::iterator> mapRenderPlugin;
 typedef std::pair<std::string, std::list<mdp_render_t*>::iterator> pairRenderPlugin;
 
 // Menu items
@@ -64,7 +64,7 @@ typedef struct _mdpMenuItem_t
 	bool			checked;
 } mdpMenuItem_t;
 
-typedef GENS_HASHTABLE<uint16_t, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
+typedef GSFT_HASHTABLE<uint16_t, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
 typedef std::pair<uint16_t, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 
 // Windows
@@ -86,14 +86,14 @@ typedef struct _mdpDir_t
 	mdp_t		*owner;
 } mdpDir_t;
 
-typedef GENS_HASHTABLE<int, std::list<mdpDir_t>::iterator> mapDirItems;
+typedef GSFT_HASHTABLE<int, std::list<mdpDir_t>::iterator> mapDirItems;
 typedef std::pair<int, std::list<mdpDir_t>::iterator> pairDirItems;
 
 // Plugin configuration.
-typedef GENS_HASHTABLE<std::string, std::string> mapConfigItems;
+typedef GSFT_HASHTABLE<std::string, std::string> mapConfigItems;
 typedef std::pair<std::string, std::string> pairConfigItems;
 
-typedef GENS_HASHTABLE<mdp_t*, mapConfigItems> mapPluginConfig;
+typedef GSFT_HASHTABLE<mdp_t*, mapConfigItems> mapPluginConfig;
 typedef std::pair<mdp_t*, mapConfigItems> pairPluginConfig;
 
 class PluginMgr

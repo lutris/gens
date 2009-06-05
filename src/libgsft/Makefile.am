@@ -13,4 +13,10 @@ libgsft_la_SOURCES = \
 
 noinst_HEADERS = \
 		gsft_fncall.h \
+		gsft_hashtable.hpp
+
+# Win32-specific headers.
+if GENS_OS_WIN32
+noinst_HEADERS += \
 		gsft_win32.h
+endif

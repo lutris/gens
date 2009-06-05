@@ -21,7 +21,6 @@
  ***************************************************************************/
 
 #include "eventmgr.hpp"
-#include "macros/hashtable.hpp"
 
 // C++ includes
 #include <algorithm>

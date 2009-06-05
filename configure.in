@@ -525,14 +525,14 @@ fi
 
 if test x$hashtable = xtr1_unordered_map; then
 	AC_MSG_RESULT(TR1 unordered_map)
-	AC_DEFINE(GENS_HASHTABLE_TR1_UNORDERED_MAP, 1, Use the TR1 unordered_map class.)
+	AC_DEFINE(GSFT_HASHTABLE_TR1_UNORDERED_MAP, 1, Use the TR1 unordered_map class.)
 elif test x$hashtable = xgnu_hash_map; then
 	AC_MSG_RESULT(GNU hash_map)
-	AC_DEFINE(GENS_HASHTABLE_GNU_HASH_MAP, 1, Use the GNU hash_map class.)
+	AC_DEFINE(GSFT_HASHTABLE_GNU_HASH_MAP, 1, Use the GNU hash_map class.)
 elif test x$hashtable = xstd_map; then
 	AC_MSG_RESULT(Standard C++ map)
 	AC_MSG_WARN(SLOW std::map is being used; consider upgrading your compiler.)
-	AC_DEFINE(GENS_HASHTABLE_STD_MAP, 1, Use the standard C++ std::map class. (SLOW))
+	AC_DEFINE(GSFT_HASHTABLE_STD_MAP, 1, Use the standard C++ std::map class. (SLOW))
 fi
 
 # Reset test language to C.

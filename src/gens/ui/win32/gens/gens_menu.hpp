@@ -51,9 +51,9 @@ extern HACCEL	hAccelTable_Menu;
 
 // Hash table containing all the menu items.
 // Key is the menu ID.
-#include "macros/hashtable.hpp"
+#include "libgsft/gsft_hashtable.hpp"
 #include <utility>
-typedef GENS_HASHTABLE<uint16_t, HMENU> gensMenuMap_t;
+typedef GSFT_HASHTABLE<uint16_t, HMENU> gensMenuMap_t;
 typedef std::pair<uint16_t, HMENU> gensMenuMapItem_t;
 
 extern gensMenuMap_t gens_menu_map;

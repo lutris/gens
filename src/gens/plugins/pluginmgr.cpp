@@ -24,11 +24,10 @@
 #include <config.h>
 #endif
 
+#include "pluginmgr.hpp"
+
 // Message logging.
 #include "macros/log_msg.h"
-
-#include "pluginmgr.hpp"
-#include "macros/hashtable.hpp"
 
 #include "emulator/g_main.hpp"
 #include "util/file/rom.hpp"

@@ -29,7 +29,7 @@
 // C++ includes
 #include <string>
 
-#include "macros/hashtable.hpp"
+#include "libgsft/gsft_hashtable.hpp"
 #include <utility>
 
 using std::string;
@@ -39,7 +39,7 @@ using std::string;
 // CP1252 to UTF-8 mapping.
 // Only used for characters 0x80 - 0x9F.
 typedef std::pair<unsigned int, unsigned char> charConversion;
-typedef GENS_HASHTABLE<unsigned int, unsigned char> charMap;
+typedef GSFT_HASHTABLE<unsigned int, unsigned char> charMap;
 charMap charset_map_utf8_to_cp1252;
 
 static const unsigned short charset_map_utf8_to_cp1252_array[][2] =

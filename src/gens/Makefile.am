@@ -233,7 +233,6 @@ noinst_HEADERS = \
 		macros/bool_m.h \
 		macros/log_msg.h \
 		macros/fastcall.h \
-		macros/hashtable.hpp \
 		macros/malloc_align.h \
 		macros/math_m.h \
 		macros/unused.h \
