@@ -164,7 +164,7 @@ void GensUI::init(int *argc, char **argv[])
 		
 		// ICC_STANDARD_CLASSES is only on XP and later.
 		if (winVersion.dwMajorVersion > 6 ||
-		    winVersion.dwMajorVersion == 5 && winVersion.dwMinorVersion >= 1)
+		    (winVersion.dwMajorVersion == 5 && winVersion.dwMinorVersion >= 1))
 		{
 			iccx.dwICC |= ICC_STANDARD_CLASSES;
 		}
