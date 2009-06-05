@@ -56,6 +56,9 @@ using std::list;
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // Unused Parameter macro.
 #include "macros/unused.h"
 
@@ -217,11 +220,10 @@ static void dir_window_create_child_windows(HWND hWnd)
 	}
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(hWnd, DIR_WINDOW_WIDTH, dir_window_height);
+	gsft_win32_set_actual_window_size(hWnd, DIR_WINDOW_WIDTH, dir_window_height);
 	
 	// Center the window on the parent window.
-	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	Win32_centerOnGensWindow(hWnd);
+	gsft_win32_center_on_window(hWnd, gens_window);
 	
 	// Create the dialog buttons.
 	

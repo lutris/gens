@@ -12,6 +12,7 @@ lib_LTLIBRARIES = mdp_misc_sgens.la
 
 mdp_misc_sgens_la_CFLAGS	= $(AM_CFLAGS)
 mdp_misc_sgens_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_misc_sgens_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_sgens_la_SOURCES = \
 		sgens_plugin.c \
@@ -30,7 +31,7 @@ noinst_HEADERS = \
 if GENS_UI_GTK
 mdp_misc_sgens_la_SOURCES	+= sgens_window_gtk2.c
 mdp_misc_sgens_la_CFLAGS	+= @GTK_CFLAGS@
-mdp_misc_sgens_la_LIBADD	 = @GTK_LIBS@
+mdp_misc_sgens_la_LIBADD	+= @GTK_LIBS@
 noinst_HEADERS += \
 		sgens_16x16.xpm \
 		sgens_32x32.xpm
@@ -38,7 +39,7 @@ endif
 
 if GENS_UI_WIN32
 mdp_misc_sgens_la_SOURCES	+= sgens_window_win32.c sgens_dllmain.c resource.rc
-mdp_misc_sgens_la_LIBADD	 = -lgdi32
+mdp_misc_sgens_la_LIBADD	+= -lgdi32
 noinst_HEADERS += \
 		sgens.ico \
 		sgens_dllmain.h \

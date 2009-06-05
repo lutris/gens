@@ -9,6 +9,7 @@ lib_LTLIBRARIES = mdp_render_blargg_ntsc.la
 mdp_render_blargg_ntsc_la_CFLAGS	= $(AM_CFLAGS)
 mdp_render_blargg_ntsc_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_render_blargg_ntsc_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_render_blargg_ntsc_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_render_blargg_ntsc_la_SOURCES = \
 		mdp_render_blargg_ntsc_plugin.c \
@@ -28,7 +29,7 @@ noinst_HEADERS = \
 if GENS_UI_GTK
 mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_gtk2.c
 mdp_render_blargg_ntsc_la_CFLAGS	+= @GTK_CFLAGS@
-mdp_render_blargg_ntsc_la_LIBADD	 = @GTK_LIBS@
+mdp_render_blargg_ntsc_la_LIBADD	+= @GTK_LIBS@
 #noinst_HEADERS += \
 #		vlopt_16x16.xpm \
 #		vlopt_32x32.xpm
@@ -37,7 +38,7 @@ endif
 if GENS_UI_WIN32
 mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_window_win32.c
 #mdp_render_blargg_ntsc_la_SOURCES	+= ntsc_dllmain.c resource.rc
-mdp_render_blargg_ntsc_la_LIBADD	 = -lgdi32
+mdp_render_blargg_ntsc_la_LIBADD	+= -lgdi32
 #noinst_HEADERS += \
 #		vlopt.ico \
 #		vlopt_dllmain.h \

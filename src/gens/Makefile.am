@@ -331,19 +331,20 @@ gens_mdp_static = \
 gens_LDADD = \
 		${ASMFILES} \
 		${gens_mdp_static} \
-		../starscream/libstarscream.a \
-		../mdZ80/libmdZ80.a \
+		$(top_builddir)/src/starscream/libstarscream.a \
+		$(top_builddir)/src/mdZ80/libmdZ80.a \
+		$(top_builddir)/src/libgsft/libgsft.la \
 		-lm
 
 if GENS_MP3
 gens_LDADD += \
-		../mp3_dec/libmp3_dec.a
+		$(top_builddir)/src/mp3_dec/libmp3_dec.a
 endif 
 
 if GENS_ZLIB
-gens_LDADD += ../minizip/libminizip.a
+gens_LDADD += $(top_builddir)/src/minizip/libminizip.a
 if GENS_ZLIB_INTERNAL
-gens_LDADD += ../zlib/libz.a
+gens_LDADD += $(top_builddir)/src/zlib/libz.a
 else
 gens_LDADD += -lz
 endif # GENS_ZLIB_INTERNAL
@@ -351,14 +352,14 @@ endif # GENS_ZLIB
 
 if GENS_PNG
 if GENS_PNG_INTERNAL
-gens_LDADD += ../libpng/libpng.a
+gens_LDADD += $(top_builddir)/src/libpng/libpng.a
 else
 gens_LDADD += -lpng
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
 if GENS_LZMA
-gens_LDADD += ../lzma/liblzma.a
+gens_LDADD += $(top_builddir)/src/lzma/liblzma.a
 endif # GENS_LZMA
 
 
@@ -368,30 +369,30 @@ endif # GENS_LZMA
 gens_DEPENDENCIES = \
 		${ASMFILES} \
 		${gens_mdp_static} \
-		../starscream/libstarscream.a \
-		../mdZ80/libmdZ80.a \
-		$(LDTLDEPS)
+		$(top_builddir)/src/starscream/libstarscream.a \
+		$(top_builddir)/src/mdZ80/libmdZ80.a \
+		$(top_builddir)/src/libgsft/libgsft.la
 
 if GENS_MP3
 gens_DEPENDENCIES += \
-		../mp3_dec/libmp3_dec.a
+		$(top_builddir)/src/mp3_dec/libmp3_dec.a
 endif
 
 if GENS_ZLIB
-gens_DEPENDENCIES += ../minizip/libminizip.a
+gens_DEPENDENCIES += $(top_builddir)/src/minizip/libminizip.a
 if GENS_ZLIB_INTERNAL
-gens_DEPENDENCIES += ../zlib/libz.a
+gens_DEPENDENCIES += $(top_builddir)/src/zlib/libz.a
 endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
 if GENS_PNG
 if GENS_PNG_INTERNAL
-gens_DEPENDENCIES += ../libpng/libpng.a
+gens_DEPENDENCIES += $(top_builddir)/src/libpng/libpng.a
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
 if GENS_LZMA
-gens_DEPENDENCIES += ../lzma/liblzma.a
+gens_DEPENDENCIES += $(top_builddir)/src/lzma/liblzma.a
 endif # GENS_LZMA
 
 CLEANFILES = ${ASMFILES}

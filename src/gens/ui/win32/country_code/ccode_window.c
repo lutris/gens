@@ -46,7 +46,10 @@
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
-// WINE's headers don't include BUTTON_IMAGELIST or related macros and constants.
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
+// Wine's headers don't include BUTTON_IMAGELIST or related macros and constants.
 #ifndef BUTTON_IMAGELIST
 typedef struct
 {
@@ -190,8 +193,8 @@ static void ccode_window_create_child_windows(HWND hWnd)
 	ccode_window_create_lstCountryCodes(hWnd);
 	
 	// Adjust the window height based on the listbox's actual height.
-	Win32_setActualWindowSize(hWnd, CCODE_WINDOW_WIDTH, ccode_window_height);
-	Win32_centerOnGensWindow(hWnd);
+	gsft_win32_set_actual_window_size(hWnd, CCODE_WINDOW_WIDTH, ccode_window_height);
+	gsft_win32_center_on_window(hWnd, gens_window);
 	
 	// Adjust the frame's height.
 	SetWindowPos(fraCountry, 0, 0, 0,

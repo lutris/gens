@@ -1,8 +1,7 @@
 /***************************************************************************
- * Gens: Main Loop. (Win32-specific code)                                  *
+ * libgsft: Common Functions.                                              *
+ * gsft_fncall.h: Function call definitions.                               *
  *                                                                         *
- * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
- * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
@@ -20,34 +19,49 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_G_MAIN_WIN32_HPP
-#define GENS_G_MAIN_WIN32_HPP
+#ifndef __GSFT_FNCALL_H
+#define __GSFT_FNCALL_H
 
-// Win32 includes.
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// Win32 instance
-extern HINSTANCE ghInstance;
-
-// Windows version
-extern OSVERSIONINFO winVersion;
-
-// If extended Common Controls are enabled, this is set to non-zero.
-extern int win32_CommCtrlEx;
-
-// Get the default save path.
-void get_default_save_path(char *buf, size_t size);
-
-#ifdef __cplusplus
-}
+/**
+ * Function pointer calling conventions from SDL's begin_code.h
+ */
+#ifndef GSFT_FNCALL
+	#if defined(__WIN32__) && !defined(__GNUC__)
+		#define GSFT_FNCALL __cdecl
+	#elif defined(__OS2__)
+		#define GSFT_FNCALL _System
+	#else
+		#define GSFT_FNCALL
+	#endif
 #endif
 
-#endif /* GENS_G_MAIN_WIN32_HPP */
+/**
+ * DLL import/export.
+ * See http://gcc.gnu.org/wiki/Visibility
+ */
+#if defined(_WIN32) || defined(__CYGWIN__)
+	#if defined(BUILDING_DLL) || defined(DLL_EXPORT)
+		#ifdef __GNUC__
+			#define DLL_PUBLIC __attribute__ ((dllexport))
+		#else
+			#define DLL_PUBLIC __declspec(dllexport)
+		#endif
+	#else
+		#ifdef __GNUC__
+			#define DLL_PUBLIC __attribute__ ((dllimport))
+		#else
+			#define DLL_PUBLIC __declspec(dllimport)
+		#endif
+	#endif
+	#define DLL_LOCAL
+#else
+	#if __GNUC__ >= 4
+		#define DLL_PUBLIC __attribute__ ((visibility("default")))
+		#define DLL_LOCAL  __attribute__ ((visibility("hidden")))
+	#else
+		#define DLL_PUBLIC
+		#define DLL_LOCAL
+	#endif
+#endif
+
+#endif /* __GSFT_FNCALL_H */

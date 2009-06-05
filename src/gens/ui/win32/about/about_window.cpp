@@ -51,6 +51,9 @@ using std::string;
 #include "ui/win32/resource.h"
 #include "ui/win32/charset.hpp"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // git version
 #include "macros/git.h"
 
@@ -152,10 +155,10 @@ void about_window_show(void)
 				    gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(about_window, ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(about_window, ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT);
 	
 	// Center the window on the Gens window.
-	Win32_centerOnGensWindow(about_window);
+	gsft_win32_center_on_window(about_window, gens_window);
 	
 	UpdateWindow(about_window);
 	ShowWindow(about_window, SW_SHOW);

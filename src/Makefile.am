@@ -23,4 +23,4 @@ if GENS_LZMA
 SUBDIRS += lzma
 endif # GENS_LZMA
 
-SUBDIRS += gens mdp
+SUBDIRS += libgsft gens mdp

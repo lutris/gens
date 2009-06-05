@@ -51,7 +51,9 @@ using std::list;
 
 // MDP includes.
 #include "mdp/mdp_error.h"
-#include "mdp/mdp_win32.h"
+
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
 
 // For whatever reason, Wine's headers don't include the ListView_(Set|Get)CheckState macros.
 #ifndef ListView_SetCheckState
@@ -148,8 +150,8 @@ void gg_window_show(void *parent)
 	
 	// Get the HINSTANCE and fonts.
 	gg_hInstance = GetModuleHandle(NULL);
-	gg_hFont = mdp_win32_get_message_font();
-	gg_hFont_title = mdp_win32_get_title_font();
+	gg_hFont = gsft_win32_get_message_font();
+	gg_hFont_title = gsft_win32_get_title_font();
 	
 	// Create the window.
 	gg_window = CreateWindow(TEXT("gg_window_wndclass"), TEXT("Game Genie"),
@@ -159,8 +161,8 @@ void gg_window_show(void *parent)
 				 (HWND)parent, NULL, gg_hInstance, NULL);
 	
 	// Window adjustment.
-	mdp_win32_set_actual_window_size(gg_window, GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT);
-	mdp_win32_center_on_window(gg_window, (HWND)parent);
+	gsft_win32_set_actual_window_size(gg_window, GG_WINDOW_WIDTH, GG_WINDOW_HEIGHT);
+	gsft_win32_center_on_window(gg_window, (HWND)parent);
 	
 	UpdateWindow(gg_window);
 	ShowWindow(gg_window, true);

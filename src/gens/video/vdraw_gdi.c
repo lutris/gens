@@ -52,6 +52,9 @@
 #include <windows.h>
 #include <windowsx.h>
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 
 // Function prototypes.
 static int	vdraw_gdi_init(void);
@@ -407,7 +410,7 @@ int vdraw_gdi_reinit_gens_window(void)
 		SetWindowLongPtr(gens_window, GWL_STYLE, (LONG_PTR)(curStyle | WS_OVERLAPPEDWINDOW));
 		SetWindowPos(gens_window, NULL, Window_Pos.x, Window_Pos.y, 0, 0,
 			     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
-		Win32_setActualWindowSize(gens_window, w, h);
+		gsft_win32_set_actual_window_size(gens_window, w, h);
 	}
 	
 	// Reinitialize DirectDraw.

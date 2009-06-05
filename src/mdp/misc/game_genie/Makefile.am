@@ -9,6 +9,7 @@ lib_LTLIBRARIES = mdp_misc_game_genie.la
 mdp_misc_game_genie_la_CFLAGS	= $(AM_CFLAGS)
 mdp_misc_game_genie_la_CXXFLAGS	= $(AM_CXXFLAGS)
 mdp_misc_game_genie_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_misc_game_genie_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_game_genie_la_SOURCES = \
 		gg_plugin.c \
@@ -35,10 +36,10 @@ if GENS_UI_GTK
 mdp_misc_game_genie_la_SOURCES	+= gg_window_gtk2.cpp
 mdp_misc_game_genie_la_CFLAGS	+= @GTK_CFLAGS@
 mdp_misc_game_genie_la_CXXFLAGS	+= @GTK_CFLAGS@
-mdp_misc_game_genie_la_LIBADD	 = @GTK_LIBS@
+mdp_misc_game_genie_la_LIBADD	+= @GTK_LIBS@
 endif
 
 if GENS_UI_WIN32
 mdp_misc_game_genie_la_SOURCES	+= gg_window_win32.cpp
-mdp_misc_game_genie_la_LIBADD	 = -lgdi32
+mdp_misc_game_genie_la_LIBADD	+= -lgdi32
 endif

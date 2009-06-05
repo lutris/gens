@@ -1,5 +1,6 @@
 /***************************************************************************
- * MDP: Mega Drive Plugins - Win32 convenience functions.                  *
+ * libgsft: Common Functions.                                              *
+ * gsft_win32.h: Win32 convenience functions.                              *
  *                                                                         *
  * Copyright (c) 2008-2009 by David Korth                                  *
  *                                                                         *
@@ -20,24 +21,19 @@
 
 #ifdef _WIN32
 
-#ifndef __MDP_WIN32_H
-#define __MDP_WIN32_H
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+#include "gsft_win32.h"
 #include <windowsx.h>
 
 // Internal max() macro.
-#define mdp_win32_max(a, b) (((a) < (b)) ? (a) : (b))
+#define gsft_win32_max(a, b) (((a) < (b)) ? (a) : (b))
+
 
 /**
- * mdp_win32_center_on_window(): Center one window on top of another window.
+ * gsft_win32_center_on_window(): Center one window on top of another window.
  * @param hWnd_top Window to center on top.
  * @param hWnd_bottom Window to be centered over.
  */
-static void mdp_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
+void GSFT_FNCALL gsft_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 {
 	RECT r, r2;
 	int dx1, dy1, dx2, dy2;
@@ -51,18 +47,19 @@ static void mdp_win32_center_on_window(HWND hWnd_top, HWND hWnd_bottom)
 	dy2 = (r2.bottom - r2.top) / 2;
 	
 	SetWindowPos(hWnd_top, NULL,
-		     mdp_win32_max(0, r.left + (dx1 - dx2)),
-		     mdp_win32_max(0, r.top + (dy1 - dy2)), 0, 0,
+		     gsft_win32_max(0, r.left + (dx1 - dx2)),
+		     gsft_win32_max(0, r.top + (dy1 - dy2)), 0, 0,
 		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
+
 /**
- * mdp_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
+ * gsft_win32_set_actual_window_size(): Set the actual window size, including the non-client area.
  * @param hWnd Window handle.
  * @param reqW Required width.
  * @param reqH Required height.
  */
-static void mdp_win32_set_actual_window_size(HWND hWnd, const int reqW, const int reqH)
+void GSFT_FNCALL gsft_win32_set_actual_window_size(HWND hWnd, const int reqW, const int reqH)
 {
 	RECT r;
 	SetRect(&r, 0, 0, reqW, reqH);
@@ -76,10 +73,10 @@ static void mdp_win32_set_actual_window_size(HWND hWnd, const int reqW, const in
 }
 
 /**
- * mdp_win32_get_message_font(): Get the message font.
+ * gsft_win32_get_message_font(): Get the message font.
  * @return Main font. (Must be deleted with DeleteFont() when finished.)
  */
-static HFONT mdp_win32_get_message_font(void)
+HFONT GSFT_FNCALL gsft_win32_get_message_font(void)
 {
 	NONCLIENTMETRICS ncm;
 	ncm.cbSize = sizeof(ncm);
@@ -89,10 +86,10 @@ static HFONT mdp_win32_get_message_font(void)
 }
 
 /**
- * mdp_win32_get_title_font(): Get the title font.
+ * gsft_win32_get_title_font(): Get the title font.
  * @return Main font. (Must be deleted with DeleteFont() when finished.)
  */
-static HFONT mdp_win32_get_title_font(void)
+HFONT GSFT_FNCALL gsft_win32_get_title_font(void)
 {
 	NONCLIENTMETRICS ncm;
 	ncm.cbSize = sizeof(ncm);
@@ -104,7 +101,5 @@ static HFONT mdp_win32_get_title_font(void)
 	
 	return (HFONT)(CreateFontIndirect(&ncm.lfMessageFont));
 }
-
-#endif /* __MDP_WIN32_H */
 
 #endif /* _WIN32 */

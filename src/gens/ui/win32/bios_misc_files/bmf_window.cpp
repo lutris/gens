@@ -50,6 +50,9 @@ using std::string;
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // Unused Parameter macro.
 #include "macros/unused.h"
 
@@ -122,11 +125,10 @@ void bmf_window_show(void)
 				  gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(bmf_window, BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(bmf_window, BMF_WINDOW_WIDTH, BMF_WINDOW_HEIGHT);
 	
 	// Center the window on the parent window.
-	// TODO: Change Win32_centerOnGensWindow to abmfept two parameters.
-	Win32_centerOnGensWindow(bmf_window);
+	gsft_win32_center_on_window(bmf_window, gens_window);
 	
 	UpdateWindow(bmf_window);
 	ShowWindow(bmf_window, SW_SHOW);

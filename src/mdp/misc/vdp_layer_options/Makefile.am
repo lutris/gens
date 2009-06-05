@@ -12,6 +12,7 @@ lib_LTLIBRARIES = mdp_misc_vdp_layer_options.la
 
 mdp_misc_vdp_layer_options_la_CFLAGS	= $(AM_CFLAGS)
 mdp_misc_vdp_layer_options_la_LDFLAGS	= $(AM_LDFLAGS) -module -no-undefined -avoid-version
+mdp_misc_vdp_layer_options_la_LIBADD	= $(top_builddir)/src/libgsft/libgsft.la
 
 mdp_misc_vdp_layer_options_la_SOURCES = \
 		vlopt_plugin.c \
@@ -28,7 +29,7 @@ noinst_HEADERS = \
 if GENS_UI_GTK
 mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_gtk2.c
 mdp_misc_vdp_layer_options_la_CFLAGS	+= @GTK_CFLAGS@
-mdp_misc_vdp_layer_options_la_LIBADD	 = @GTK_LIBS@
+mdp_misc_vdp_layer_options_la_LIBADD	+= @GTK_LIBS@
 noinst_HEADERS += \
 		vlopt_16x16.xpm \
 		vlopt_32x32.xpm
@@ -36,7 +37,7 @@ endif
 
 if GENS_UI_WIN32
 mdp_misc_vdp_layer_options_la_SOURCES	+= vlopt_window_win32.c vlopt_dllmain.c resource.rc
-mdp_misc_vdp_layer_options_la_LIBADD	 = -lgdi32
+mdp_misc_vdp_layer_options_la_LIBADD	+= -lgdi32
 noinst_HEADERS += \
 		vlopt.ico \
 		vlopt_dllmain.h \

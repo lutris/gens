@@ -43,6 +43,9 @@
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // Main settings.
 #include "emulator/g_main.hpp"
 #include "emulator/options.hpp"
@@ -170,11 +173,10 @@ void genopt_window_show(void)
 				     gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(genopt_window, GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(genopt_window, GENOPT_WINDOW_WIDTH, GENOPT_WINDOW_HEIGHT);
 	
 	// Center the window on the Gens window.
-	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	Win32_centerOnGensWindow(genopt_window);
+	gsft_win32_center_on_window(genopt_window, gens_window);
 	
 	UpdateWindow(genopt_window);
 	ShowWindow(genopt_window, SW_SHOW);

@@ -39,15 +39,18 @@
 #include <commctrl.h>
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 
 /**
- * init(): Initialize the Zip Select dialog.
+ * zipsel_dialog_init(): Initialize the Zip Select dialog.
  * @param hWndDlg hWnd of the Zip Select dialog.
  * @param file_list File list.
  */
 static void zipsel_dialog_init(HWND hWndDlg, mdp_z_entry_t *file_list)
 {
-	Win32_centerOnGensWindow(hWndDlg);
+	gsft_win32_center_on_window(hWndDlg, gens_window);
 	
 	// Get the listbox hWnd.
 	HWND lstFiles = GetDlgItem(hWndDlg, IDC_ZIPSELECT_LSTFILES);
@@ -116,7 +119,7 @@ static INT_PTR CALLBACK zipsel_dialog_dlgproc(HWND hWndDlg, UINT message, WPARAM
 
 
 /**
- * getFile(): Opens the Zip File Selection Dialog.
+ * zipsel_dialog_get_file(): Opens the Zip File Selection Dialog.
  */
 mdp_z_entry_t* zipsel_dialog_get_file(mdp_z_entry_t *file_list)
 {

@@ -46,6 +46,9 @@
 #include "ui/win32/resource.h"
 #include "ui/win32/charset.hpp"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // Plugin Manager
 #include "plugins/pluginmgr.hpp"
 
@@ -165,11 +168,10 @@ void pmgr_window_show(void)
 				   gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(pmgr_window, PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(pmgr_window, PMGR_WINDOW_WIDTH, PMGR_WINDOW_HEIGHT);
 	
 	// Center the window on the Gens window.
-	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	Win32_centerOnGensWindow(pmgr_window);
+	gsft_win32_center_on_window(pmgr_window, gens_window);
 	
 	UpdateWindow(pmgr_window);
 	ShowWindow(pmgr_window, 1);

@@ -47,8 +47,10 @@
 // MDP includes.
 #include "mdp/mdp_error.h"
 #include "mdp/mdp_event.h"
-#include "mdp/mdp_win32.h"
 #include "mdp/mdp_mem.h"
+
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
 
 // Window.
 static HWND	sgens_window = NULL;
@@ -130,7 +132,7 @@ void MDP_FNCALL sgens_window_show(void *parent)
 	}
 	
 	// Create the font.
-	sgens_hFont = mdp_win32_get_message_font();
+	sgens_hFont = gsft_win32_get_message_font();
 	
 	// Create the window.
 	sgens_window = CreateWindow(TEXT("mdp_misc_sgens_window"), TEXT("Sonic Gens"),
@@ -140,8 +142,8 @@ void MDP_FNCALL sgens_window_show(void *parent)
 				    (HWND)parent, NULL, sgens_hInstance, NULL);
 	
 	// Window adjustment.
-	mdp_win32_set_actual_window_size(sgens_window, SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT);
-	mdp_win32_center_on_window(sgens_window, (HWND)parent);
+	gsft_win32_set_actual_window_size(sgens_window, SGENS_WINDOW_WIDTH, SGENS_WINDOW_HEIGHT);
+	gsft_win32_center_on_window(sgens_window, (HWND)parent);
 	
 	// Update the current ROM type and information display.
 	sgens_window_update_rom_type();

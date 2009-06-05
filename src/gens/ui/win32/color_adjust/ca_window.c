@@ -41,6 +41,9 @@
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // Unused Parameter macro.
 #include "macros/unused.h"
 
@@ -127,11 +130,11 @@ void ca_window_show(void)
 				 gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(ca_window, CA_WINDOW_WIDTH, CA_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(ca_window, CA_WINDOW_WIDTH, CA_WINDOW_HEIGHT);
 	
 	// Center the window on the parent window.
 	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	Win32_centerOnGensWindow(ca_window);
+	gsft_win32_center_on_window(ca_window, gens_window);
 	
 	UpdateWindow(ca_window);
 	ShowWindow(ca_window, SW_SHOW);

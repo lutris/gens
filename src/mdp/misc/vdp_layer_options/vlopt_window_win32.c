@@ -44,8 +44,8 @@
 // MDP error codes.
 #include "mdp/mdp_error.h"
 
-// MDP Win32 convenience functions.
-#include "mdp/mdp_win32.h"
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
 
 // Response ID for the "Reset" button.
 #define VLOPT_RESPONSE_RESET -64
@@ -118,7 +118,7 @@ void vlopt_window_show(void *parent)
 	}
 	
 	// Create the font.
-	vlopt_hfont = mdp_win32_get_message_font();
+	vlopt_hfont = gsft_win32_get_message_font();
 	
 	// Create the window.
 	vlopt_window = CreateWindow(TEXT("vlopt_window_wndclass"), TEXT("VDP Layer Options"),
@@ -128,8 +128,8 @@ void vlopt_window_show(void *parent)
 				    (HWND)parent, NULL, vlopt_hInstance, NULL);
 	
 	// Window adjustment.
-	mdp_win32_set_actual_window_size(vlopt_window, VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT);
-	mdp_win32_center_on_window(vlopt_window, (HWND)parent);
+	gsft_win32_set_actual_window_size(vlopt_window, VLOPT_WINDOW_WIDTH, VLOPT_WINDOW_HEIGHT);
+	gsft_win32_center_on_window(vlopt_window, (HWND)parent);
 	
 	UpdateWindow(vlopt_window);
 	ShowWindow(vlopt_window, TRUE);

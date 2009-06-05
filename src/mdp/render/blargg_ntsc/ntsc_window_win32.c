@@ -42,8 +42,8 @@
 // MDP error codes.
 #include "mdp/mdp_error.h"
 
-// MDP Win32 convenience functions.
-#include "mdp/mdp_win32.h"
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
 
 // Window.
 static HWND ntsc_window = NULL;
@@ -129,7 +129,7 @@ void ntsc_window_show(void *parent)
 	}
 	
 	// Create the font.
-	ntsc_hFont = mdp_win32_get_message_font();
+	ntsc_hFont = gsft_win32_get_message_font();
 	
 	// Create the window.
 	ntsc_window = CreateWindow(TEXT("ntsc_window_wndclass"), TEXT("Blargg's NTSC Filter"),
@@ -142,8 +142,8 @@ void ntsc_window_show(void *parent)
 	ntsc_window_load_settings();
 	
 	// Window adjustment.
-	mdp_win32_set_actual_window_size(ntsc_window, NTSC_WINDOW_WIDTH, NTSC_WINDOW_HEIGHT);
-	mdp_win32_center_on_window(ntsc_window, (HWND)parent);
+	gsft_win32_set_actual_window_size(ntsc_window, NTSC_WINDOW_WIDTH, NTSC_WINDOW_HEIGHT);
+	gsft_win32_center_on_window(ntsc_window, (HWND)parent);
 	
 	UpdateWindow(ntsc_window);
 	ShowWindow(ntsc_window, TRUE);

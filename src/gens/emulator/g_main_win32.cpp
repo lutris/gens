@@ -116,52 +116,6 @@ void get_default_save_path(char *buf, size_t size)
 
 
 /**
- * Win32_centerOnGensWindow(): Center the specified window on the Gens window.
- * @param hWnd Window handle.
- */
-void Win32_centerOnGensWindow(HWND hWnd)
-{
-	// TODO: Move this to GensUI.
-	
-	RECT r, r2;
-	int dx1, dy1, dx2, dy2;
-	
-	GetWindowRect(gens_window, &r);
-	dx1 = (r.right - r.left) / 2;
-	dy1 = (r.bottom - r.top) / 2;
-	
-	GetWindowRect(hWnd, &r2);
-	dx2 = (r2.right - r2.left) / 2;
-	dy2 = (r2.bottom - r2.top) / 2;
-	
-	SetWindowPos(hWnd, NULL,
-		     std::max(0, (int)(r.left + (dx1 - dx2))),
-		     std::max(0, (int)(r.top + (dy1 - dy2))), 0, 0,
-		     SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-}
-
-
-/**
- * Win32_setActualWindowSize(): Set the actual window size, including the non-client area.
- * @param hWnd Window handle.
- * @param reqW Required width.
- * @param reqH Required height.
- */
-void Win32_setActualWindowSize(HWND hWnd, const int reqW, const int reqH)
-{
-	RECT r;
-	SetRect(&r, 0, 0, reqW, reqH);
-	
-	// Adjust the rectangle.
-	AdjustWindowRectEx(&r, GetWindowStyle(hWnd), (GetMenu(hWnd) != NULL), GetWindowExStyle(hWnd));
-	
-	// Set the window size.
-	SetWindowPos(hWnd, NULL, 0, 0, r.right - r.left, r.bottom - r.top,
-		     SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
-}
-
-
-/**
  * WinMain: Win32 main loop.
  * @param hInst Instance ID of the Gens process.
  * @param hPrevInst Instance ID of the previous Gens process. (Win16 only.)

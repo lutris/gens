@@ -40,6 +40,9 @@
 #include "ui/win32/fonts.h"
 #include "ui/win32/resource.h"
 
+// libgsft includes.
+#include "libgsft/gsft_win32.h"
+
 // Unused Parameter macro.
 #include "macros/unused.h"
 
@@ -118,11 +121,10 @@ void selcd_window_show(void)
 				 gens_window, NULL, ghInstance, NULL);
 	
 	// Set the actual window size.
-	Win32_setActualWindowSize(selcd_window, SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT);
+	gsft_win32_set_actual_window_size(selcd_window, SELCD_WINDOW_WIDTH, SELCD_WINDOW_HEIGHT);
 	
 	// Center the window on the parent window.
-	// TODO: Change Win32_centerOnGensWindow to accept two parameters.
-	Win32_centerOnGensWindow(selcd_window);
+	gsft_win32_center_on_window(selcd_window, gens_window);
 	
 	UpdateWindow(selcd_window);
 	ShowWindow(selcd_window, SW_SHOW);

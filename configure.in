@@ -631,6 +631,7 @@ src/mp3_dec/Makefile
 src/starscream/Makefile
 src/mdZ80/Makefile
 src/lzma/Makefile
+src/libgsft/Makefile
 src/gens/Makefile
 src/gens/plugins/render/normal/Makefile
 src/gens/plugins/render/double/Makefile
