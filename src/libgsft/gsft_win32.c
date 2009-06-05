@@ -1,5 +1,5 @@
 /***************************************************************************
- * libgsft: Common Functions.                                              *
+ * libgsft: Common functions.                                              *
  * gsft_win32.h: Win32 convenience functions.                              *
  *                                                                         *
  * Copyright (c) 2008-2009 by David Korth                                  *
