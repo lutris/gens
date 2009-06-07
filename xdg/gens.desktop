@@ -5,5 +5,5 @@ Type=Application
 GenericName=Sega Genesis, Sega CD, and Sega 32X emulator
 Comment=Sega Genesis, Sega CD, and Sega 32X emulator
 Exec=gens
-Icon=/usr/share/gens/Gens2.ico
+Icon=/usr/share/gens/gensgs_48x48.png
 Categories=Application;Game;Emulator;
