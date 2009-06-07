@@ -64,15 +64,17 @@ void gens_window_create(void)
 	// Create the icon for the Gens window, and set it as default for all windows.
 	// TODO: Move this to a common C file.
 	
+	// TODO: Use the standard icon directory layout.
 	GList *gens_icon_list = NULL;
-	static const char* const gens_icon_filename[2] =
+	static const char* const gens_icon_filename[3] =
 	{
-		GENS_DATADIR "/gens_32x32.png",
-		GENS_DATADIR "/gens_16x16.png"
+		GENS_DATADIR "/gensgs_48x48.png",
+		GENS_DATADIR "/gensgs_32x32.png",
+		GENS_DATADIR "/gensgs_16x16.png"
 	};
 	
 	// Add the icons.
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		if (!g_file_test(gens_icon_filename[i], G_FILE_TEST_EXISTS))
 		{

@@ -2,9 +2,10 @@
 
 // Icons
 #define IDI_GENS_APP		0x0001
-#define IDI_GENS_MD		0x0002
-#define IDI_SONIC		0x0003
-#define IDI_SONIC_WAITING	0x0004
+#define IDI_GENS_APP_OLD	0x0002
+#define IDI_GENS_MD		0x0003
+#define IDI_SONIC		0x0004
+#define IDI_SONIC_WAITING	0x0005
 
 #define IDI_ARROW_UP		0x0010
 #define IDI_ARROW_DOWN		0x0011

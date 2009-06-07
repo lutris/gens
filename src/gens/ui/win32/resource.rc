@@ -15,7 +15,8 @@
 #include "gens/gens_window_cmds.h"
 
 // Icons
-IDI_GENS_APP		ICON		"../../../../images/win32/gens.ico"
+IDI_GENS_APP		ICON		"../../../../images/win32/gensgs.ico"
+IDI_GENS_APP_OLD	ICON		"../../../../images/win32/gens.ico"
 IDI_GENS_MD		ICON		"../../../../images/win32/gens_md.ico"
 IDI_SONIC		ICON		"../../../../images/win32/sonic.ico"
 IDI_SONIC_WAITING	ICON		"../../../../images/win32/sonic_wait.ico"
