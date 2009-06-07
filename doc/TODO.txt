@@ -22,9 +22,6 @@ Stuff done in r7:
 - 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
   (commit 4bd10d59fd6b043258027c2d9032c1d5a47b6399)
 
-BEFORE RELEASE of Gens/GS r7:
-- Update hard-coded plugin paths in pluginmgr.cpp.
-
 MDP TODO for Gens/GS r7+
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
   - Disables reset, close ROM, etc.
