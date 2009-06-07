@@ -75,7 +75,7 @@ int RenderMgr::addRenderPlugin(mdp_render_t *renderer)
 	{
 		// Plugin with this tag already exists.
 		// TODO: Show an error.
-		return 3;	// TODO: Return an MDP error code.
+		return -MDP_ERR_RENDER_DUPLICATE_TAG;
 	}
 	
 	// Add the renderer to the list.
