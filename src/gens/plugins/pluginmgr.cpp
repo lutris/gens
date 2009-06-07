@@ -138,23 +138,18 @@ void PluginMgr::init(void)
 		i++;
 	}
 	
-	// Load all external plugins.
+#if !defined(GENS_OS_WIN32)
+	// Linux/UNIX: Load external plugins from the user's ~/.gens directory first.
+	scanExternalPlugins(string(PathNames.Gens_Path) + GENS_DIR_SEPARATOR_STR + "plugins");
+#else	
+	// Win32: Load external plugins from the Gens directory.
+	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GENS_DIR_SEPARATOR_STR + "plugins");
+#endif /* GENS_OS_WIN32 */
+	
+	// System-wide plugins: If GENS_MDP_DIR is defined, load plugins from there.
 #ifdef GENS_MDP_DIR
 	scanExternalPlugins(GENS_MDP_DIR);
 #endif /* GENS_MDP_DIR */
-	
-#ifdef GENS_OS_WIN32
-	scanExternalPlugins(PathNames.Gens_EXE_Path);
-	
-	// Wine path
-	scanExternalPlugins("Z:\\home\\david\\programming\\gens\\debug-win32\\src\\mdp");
-	
-	// VMware path
-	scanExternalPlugins("Z:\\david\\programming\\gens\\debug-win32\\src\\mdp");
-#else /* !GENS_OS_WIN32 */
-	// Linux path
-	scanExternalPlugins("/home/david/programming/gens/debug-linux/src/mdp");
-#endif /* GENS_OS_WIN32 */
 }
 
 
