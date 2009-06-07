@@ -3,6 +3,9 @@
 if !GENS_OS_WIN32
 
 dist_pkgdata_DATA = \
+	gensgs_48x48.png \
+	gensgs_32x32.png \
+	gensgs_16x16.png \
 	gens_32x32.png \
 	gens_16x16.png \
 	gens_md.png \
@@ -26,6 +29,7 @@ dist_pkgdata_DATA = \
 else
 
 noinst_DATA = \
+	win32/gensgs.ico \
 	win32/gens.ico \
 	win32/gens_md.ico \
 	gens_big.bmp \
