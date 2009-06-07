@@ -21,7 +21,6 @@
  ***************************************************************************/
 
 // C++ includes.
-#include <algorithm>
 #include <string>
 #include <list>
 using std::string;
@@ -32,8 +31,9 @@ using std::list;
 // MDP includes.
 #include "mdp/mdp_error.h"
 
-// Plugin Manager.
+// Plugin Manager and Render Manager.
 #include "pluginmgr.hpp"
+#include "rendermgr.hpp"
 
 
 /**
@@ -44,42 +44,10 @@ using std::list;
  */
 int MDP_FNCALL mdp_host_renderer_register(mdp_t *plugin, mdp_render_t *renderer)
 {
-	if (!plugin || !renderer)
-		return 1;	// TODO: Return an MDP error code.
+	// This is simply a wrapper around RenderMgr::addRenderPlugin().
+	// TODO: Record the plugin that registered the renderer.
 	
-	// Check the render interface version.
-	if (MDP_VERSION_MAJOR(renderer->interfaceVersion) !=
-	    MDP_VERSION_MAJOR(MDP_RENDER_INTERFACE_VERSION))
-	{
-		// Incorrect major interface version.
-		// TODO: Add to a list of "incompatible" plugins.
-		return 2;	// TODO: Return an MDP error code.
-	}
-	
-	// Check if a plugin with this tag already exists.
-	string tag = renderer->tag;
-	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
-	mapRenderPlugin::iterator existingMDP = PluginMgr::tblRenderPlugins.find(tag);
-	if (existingMDP != PluginMgr::tblRenderPlugins.end())
-	{
-		// Plugin with this tag already exists.
-		// TODO: Show an error.
-		return 3;	// TODO: Return an MDP error code.
-	}
-	
-	// TODO: Check the minor version.
-	// Probably not needed right now, but may be needed later.
-	
-	// Add the plugin to the list.
-	PluginMgr::lstRenderPlugins.push_back(renderer);
-	
-	// Add the plugin tag to the map.
-	list<mdp_render_t*>::iterator lstIter = PluginMgr::lstRenderPlugins.end();
-	lstIter--;
-	PluginMgr::tblRenderPlugins.insert(pairRenderPlugin(tag, lstIter));
-	
-	// Render plugin added.
-	return MDP_ERR_OK;
+	return RenderMgr::addRenderPlugin(renderer);
 }
 
 

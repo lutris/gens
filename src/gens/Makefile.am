@@ -147,6 +147,7 @@ gens_SOURCES = \
 		input/input_update.c \
 		audio/audio.c \
 		plugins/pluginmgr.cpp \
+		plugins/rendermgr.cpp \
 		plugins/mdp_host_gens.c \
 		plugins/mdp_host_gens_cpp.cpp \
 		plugins/mdp_host_gens_menu.cpp \
@@ -274,6 +275,7 @@ noinst_HEADERS = \
 		input/input_update.h \
 		audio/audio.h \
 		plugins/pluginmgr.hpp \
+		plugins/rendermgr.hpp \
 		plugins/mdp_host_gens.h \
 		plugins/mdp_host_gens_cpp.hpp \
 		plugins/mdp_host_gens_menu.hpp \

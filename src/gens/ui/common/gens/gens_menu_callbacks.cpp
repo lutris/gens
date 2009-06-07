@@ -102,13 +102,17 @@ extern "C"
 }
 
 // C includes
-#include <cstring>
+#include <string.h>
 
 // C++ includes
 #include <string>
 #include <list>
 using std::string;
 using std::list;
+
+// Plugin Manager.
+#include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 
 
 static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state);
@@ -475,16 +479,12 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 				{
 					// Render mode change.
 					// TODO: Improve performance here.
-					list<mdp_render_t*>::iterator mdpIter = PluginMgr::lstRenderPlugins.begin();
-					for (unsigned int i = 1; i < (menuID & 0x00FF); i++)
-					{
-						mdpIter++;
-						if (mdpIter == PluginMgr::lstRenderPlugins.end())
-							break;
-					}
+					list<mdp_render_t*>::iterator renderIter = RenderMgr::getIterFromIndex(menuID & 0x00FF);
+					if (renderIter == RenderMgr::end())
+						break;
 					
 					// Found the renderer.
-					vdraw_set_renderer(mdpIter);
+					vdraw_set_renderer(renderIter);
 					
 					// Synchronize the Graphics Menu.
 					Sync_Gens_Window_GraphicsMenu();

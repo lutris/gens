@@ -71,8 +71,9 @@ using std::deque;
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
 
-// Plugin Manager
+// Plugin Manager and Render Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -383,8 +384,8 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 	unsigned int i = IDM_GRAPHICS_RENDER_NORMAL;
 	list<mdp_render_t*>::iterator& selMDP = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	
-	for (list<mdp_render_t*>::iterator curPlugin = PluginMgr::lstRenderPlugins.begin();
-	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)
+	for (list<mdp_render_t*>::iterator curPlugin = RenderMgr::begin();
+	     curPlugin != RenderMgr::end(); curPlugin++, i++)
 	{
 		// Delete the menu item from the map, if it exists.
 		gens_menu_map.erase(i);
@@ -413,7 +414,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(GtkWidget *container)
 		// and the external renderers if external renderers exist.
 		if (i == IDM_GRAPHICS_RENDER_NORMAL + 1)
 		{
-			if (PluginMgr::lstRenderPlugins.size() > 2)
+			if (RenderMgr::size() > 2)
 			{
 				mnuItem = gtk_separator_menu_item_new();
 				gtk_widget_show(mnuItem);

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: Plugin Manager.                                                   *
+ * Gens: MDP Plugin Manager.                                               *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -59,7 +59,6 @@
 #include <string.h>
 
 // C++ includes
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <list>
@@ -69,6 +68,10 @@ using std::list;
 
 // Dynamic library loader.
 #include "mdp/mdp_dlopen.h"
+
+// Render Manager.
+#include "rendermgr.hpp"
+
 
 // Internal render plugins.
 #include "render/normal/mdp_render_1x_plugin.h"
@@ -90,12 +93,6 @@ list<mdp_t*> PluginMgr::lstMDP;
 MDP_Incompat PluginMgr::Incompat;
 mapMdpDLL    PluginMgr::tblMdpDLL;
 
-
-/**
- * lstRenderPlugins, tblRenderPlugins: List and map containing all loaded render plugins.
- */
-list<mdp_render_t*> PluginMgr::lstRenderPlugins;
-mapRenderPlugin PluginMgr::tblRenderPlugins;
 
 /**
  * List and map containing plugin menu items.
@@ -146,7 +143,7 @@ void PluginMgr::init(void)
 	scanExternalPlugins(string(PathNames.Gens_EXE_Path) + GENS_DIR_SEPARATOR_STR + "plugins");
 #endif /* GENS_OS_WIN32 */
 	
-	// System-wide plugins: If GENS_MDP_DIR is defined, load plugins from there.
+	// System-wide plugins: 	// If GENS_MDP_DIR is defined, load plugins from there.
 #ifdef GENS_MDP_DIR
 	scanExternalPlugins(GENS_MDP_DIR);
 #endif /* GENS_MDP_DIR */
@@ -436,26 +433,6 @@ void PluginMgr::end(void)
 	lstMDP.clear();
 	tblMdpDLL.clear();
 	
-	lstRenderPlugins.clear();
-	tblRenderPlugins.clear();
-}
-
-
-/**
- * getMDPIterFromTag_Render(): Get a render plugin iterator from its tag.
- * @param tag Plugin tag.
- * @return Render plugin iterator from lstRenderPlugins.
- */
-std::list<mdp_render_t*>::iterator PluginMgr::getMDPIterFromTag_Render(string tag)
-{
-	if (tag.empty())
-		return lstRenderPlugins.end();
-	
-	// Search for the plugin tag.
-	std::transform(tag.begin(), tag.end(), tag.begin(), ::tolower);
-	mapRenderPlugin::iterator renderMDP = tblRenderPlugins.find(tag);
-	if (renderMDP == tblRenderPlugins.end())
-		return lstRenderPlugins.end();
-	else
-		return (*renderMDP).second;
+	// Clear the Render Manager.
+	RenderMgr::clear();
 }

@@ -50,8 +50,9 @@ using std::list;
 // Text drawing.
 #include "video/vdraw_text.hpp"
 
-// Plugin Manager.
+// Plugin Manager and Render Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 
 // Palette handler.
 #include "emulator/md_palette.hpp"
@@ -64,7 +65,7 @@ void vdraw_reset_renderer(const BOOL reset_video)
 	if (vdraw_set_renderer(rendMode, reset_video))
 	{
 		// Cannot initialize video mode. Try using render mode 0 (normal).
-		if (vdraw_set_renderer(PluginMgr::lstRenderPlugins.begin(), reset_video))
+		if (vdraw_set_renderer(RenderMgr::begin(), reset_video))
 		{
 			// Cannot initialize normal mode.
 			LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
@@ -83,10 +84,10 @@ void vdraw_reset_renderer(const BOOL reset_video)
  */
 int vdraw_set_renderer(const list<mdp_render_t*>::iterator& newMode, const bool forceUpdate)
 {
-	if (PluginMgr::lstRenderPlugins.size() == 0 ||
-	    newMode == PluginMgr::lstRenderPlugins.end())
+	if (RenderMgr::size() == 0 ||
+	    newMode == RenderMgr::end())
 	{
-		return 1;
+		return -1;
 	}
 	
 	list<mdp_render_t*>::iterator& Rend = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);

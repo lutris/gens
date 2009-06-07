@@ -74,8 +74,9 @@
 // Update Emulation functions
 #include "g_update.hpp"
 
-// Plugin Manager
+// Plugin Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -186,15 +187,15 @@ int Init_Settings(void)
 	PluginMgr::init();
 	
 	// Set the default renderers.
-	if (PluginMgr::lstRenderPlugins.empty())
+	if (RenderMgr::empty())
 	{
 		// No render plugins found.
 		LOG_MSG(gens, LOG_MSG_LEVEL_CRITICAL,
 			"Fatal Error: No render plugins found.");
 		return 1;	// TODO: Replace with a better error code.
 	}
-	rendMode_FS = PluginMgr::lstRenderPlugins.begin();
-	rendMode_W = PluginMgr::lstRenderPlugins.begin();
+	rendMode_FS = RenderMgr::begin();
+	rendMode_W = RenderMgr::begin();
 	
 	// Load the default configuration.
 	Config::load(Str_Tmp, NULL);

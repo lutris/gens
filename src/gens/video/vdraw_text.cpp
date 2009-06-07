@@ -44,8 +44,9 @@ using std::list;
 // MDP Render.
 #include "mdp/mdp_render.h"
 
-// Plugin Manager.
+// Plugin Manager and Render Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 
 // Commodore 64 character set.
 #include "C64_charset.h"
@@ -176,24 +177,28 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 		// Don't adjust for screen size.
 		// TODO: Fix this ugly pile of hacks.
 		
-		if (!fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
+		if (rendMode == RenderMgr::begin())
 		{
-			// Hack for windowed 1x rendering.
-			x = 8;
-			y = VDP_Num_Vis_Lines * vdraw_scale;
-		}
-		else if (fullScreen && rendMode == PluginMgr::lstRenderPlugins.begin())
-		{
-			// Hacks for fullscreen 1x rendering.
-			if (vdraw_get_sw_render())
+			// 1x rendering.
+			if (!fullScreen)
 			{
-				x = ((vdraw_border_h / 2) * vdraw_scale);
-				y = VDP_Num_Vis_Lines + 8;
+				// Hack for windowed 1x rendering.
+				x = 8;
+				y = VDP_Num_Vis_Lines * vdraw_scale;
 			}
 			else
 			{
-				x = 8;
-				y = VDP_Num_Vis_Lines;
+				// Hacks for fullscreen 1x rendering.
+				if (vdraw_get_sw_render())
+				{
+					x = ((vdraw_border_h / 2) * vdraw_scale);
+					y = VDP_Num_Vis_Lines + 8;
+				}
+				else
+				{
+					x = 8;
+					y = VDP_Num_Vis_Lines;
+				}
 			}
 		}
 		else
@@ -213,7 +218,7 @@ static inline void T_drawText(pixel *screen, const int pitch, const int w, const
 	}
 	
 	// Move the text down by another 2px in 1x rendering.
-	if (rendMode == PluginMgr::lstRenderPlugins.begin())
+	if (rendMode == RenderMgr::begin())
 	{
 		y += 2;
 	}

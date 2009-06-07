@@ -80,8 +80,9 @@
 #include "emulator/options.hpp"
 #include "ui/gens_ui.hpp"
 
-// Plugin Manager and Event Manager.
+// Plugin Manager, Render Manager, and Event Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 #include "plugins/eventmgr.hpp"
 
 // Video, Audio, Input.
@@ -503,20 +504,20 @@ int Config::load(const string& filename, void* gameActive)
 	
 	// Renderer: Full Screen.
 	string renderTag = cfg.getString("Graphics", "Render Fullscreen", "");
-	rendMode_FS = PluginMgr::getMDPIterFromTag_Render(renderTag);
-	if (rendMode_FS == PluginMgr::lstRenderPlugins.end())
+	rendMode_FS = RenderMgr::getIterFromTag(renderTag);
+	if (rendMode_FS == RenderMgr::end())
 	{
 		// Invalid mode. Set to Normal mode.
-		rendMode_FS = PluginMgr::lstRenderPlugins.begin();
+		rendMode_FS = RenderMgr::begin();
 	}
 	
 	// Renderer: Windowed.
 	renderTag = cfg.getString("Graphics", "Render Windowed", "");
-	rendMode_W = PluginMgr::getMDPIterFromTag_Render(renderTag);
-	if (rendMode_W == PluginMgr::lstRenderPlugins.end())
+	rendMode_W = RenderMgr::getIterFromTag(renderTag);
+	if (rendMode_W == RenderMgr::end())
 	{
 		// Invalid mode. Set to Normal mode.
-		rendMode_W = PluginMgr::lstRenderPlugins.begin();
+		rendMode_W = RenderMgr::begin();
 	}
 	
 #ifndef GENS_OS_WIN32

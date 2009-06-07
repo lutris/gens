@@ -57,8 +57,9 @@
 #include "gens_core/vdp/vdp_rend.h"
 #include "gens_core/misc/cpuflags.h"
 
-// Plugin Manager
+// Plugin Manager and Render Manager.
 #include "plugins/pluginmgr.hpp"
+#include "plugins/rendermgr.hpp"
 
 // File management functions.
 #include "util/file/file.hpp"
@@ -343,8 +344,8 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 	unsigned int selMenuItem = 0;
 	list<mdp_render_t*>::iterator& selMDP = (vdraw_get_fullscreen() ? rendMode_FS : rendMode_W);
 	
-	for (list<mdp_render_t*>::iterator curPlugin = PluginMgr::lstRenderPlugins.begin();
-	     curPlugin != PluginMgr::lstRenderPlugins.end(); curPlugin++, i++)
+	for (list<mdp_render_t*>::iterator curPlugin = RenderMgr::begin();
+	     curPlugin != RenderMgr::end(); curPlugin++, i++)
 	{
 		InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_STRING, i, (*curPlugin)->tag);
 		
@@ -356,7 +357,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		// and the external renderers if external renderers exist.
 		if (i == IDM_GRAPHICS_RENDER_NORMAL + 1)
 		{
-			if (PluginMgr::lstRenderPlugins.size() > 2)
+			if (RenderMgr::size() > 2)
 				InsertMenu(mnuRender, -1, MF_BYPOSITION | MF_SEPARATOR, IDM_SEPARATOR, NULL);
 		}
 	}
@@ -366,7 +367,7 @@ static void Sync_Gens_Window_GraphicsMenu_Render(HMENU parent, int position)
 		// Found a selected render mode.
 		CheckMenuRadioItem(mnuRender,
 				   IDM_GRAPHICS_RENDER_NORMAL,
-				   IDM_GRAPHICS_RENDER_NORMAL + PluginMgr::lstRenderPlugins.size() - 1,
+				   IDM_GRAPHICS_RENDER_NORMAL + RenderMgr::size() - 1,
 				   selMenuItem, MF_BYCOMMAND);
 	}
 }

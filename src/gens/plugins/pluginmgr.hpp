@@ -48,10 +48,6 @@ typedef struct _mdpDLL_t
 typedef GSFT_HASHTABLE<mdp_t*, mdpDLL_t> mapMdpDLL;
 typedef std::pair<mdp_t*, mdpDLL_t> pairMdpDLL;
 
-// Render plugins.
-typedef GSFT_HASHTABLE<std::string, std::list<mdp_render_t*>::iterator> mapRenderPlugin;
-typedef std::pair<std::string, std::list<mdp_render_t*>::iterator> pairRenderPlugin;
-
 // Menu items
 typedef struct _mdpMenuItem_t
 {
@@ -67,7 +63,7 @@ typedef struct _mdpMenuItem_t
 typedef GSFT_HASHTABLE<uint16_t, std::list<mdpMenuItem_t>::iterator> mapMenuItems;
 typedef std::pair<uint16_t, std::list<mdpMenuItem_t>::iterator> pairMenuItems;
 
-// Windows
+// Windows.
 typedef struct _mdpWindow_t
 {
 	void	*window;
@@ -112,10 +108,6 @@ class PluginMgr
 		static std::list<mdp_t*> lstMDP;
 		static MDP_Incompat Incompat;
 		static mapMdpDLL tblMdpDLL;
-		
-		// List and map containing all loaded render plugins.
-		static std::list<mdp_render_t*> lstRenderPlugins;
-		static mapRenderPlugin tblRenderPlugins;
 		
 		// List and map containing plugin menu items.
 		static std::list<mdpMenuItem_t> lstMenuItems;
