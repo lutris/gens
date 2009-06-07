@@ -116,6 +116,11 @@ mapDirItems PluginMgr::tblDirectories;
  */
 mapPluginConfig PluginMgr::tblPluginConfig;
 
+/**
+ * UUID map.
+ */
+mapUUID PluginMgr::tblUUID;
+
 
 /**
  * init(): Initialize the plugin system.
@@ -177,6 +182,28 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 		return false;
 	}
 	
+	// Check for a duplicated UUID.
+	char sUUID[17];
+	memcpy(sUUID, plugin->uuid, 16);
+	sUUID[17] = 0x00;
+	
+	mapUUID::iterator uuidIter = tblUUID.find(string(sUUID));
+	if (uuidIter != tblUUID.end())
+	{
+		// Duplicated UUID.
+		LOG_MSG(mdp, LOG_MSG_LEVEL_ERROR,
+			"%s: Duplicated UUID. (uuid == %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x)",
+			File::GetNameFromPath(filename).c_str(),
+			plugin->uuid[0], plugin->uuid[1], plugin->uuid[2], plugin->uuid[3],
+			plugin->uuid[4], plugin->uuid[5],
+			plugin->uuid[6], plugin->uuid[7],
+			plugin->uuid[8], plugin->uuid[9],
+			plugin->uuid[10], plugin->uuid[11], plugin->uuid[12], plugin->uuid[13], plugin->uuid[14], plugin->uuid[15]);
+		
+		Incompat.add(plugin, -MDP_ERR_DUPLICATE_UUID, filename);
+		return false;
+	}
+	
 	// Check required CPU flags.
 	uint32_t cpuFlagsRequired = plugin->cpuFlagsRequired;
 	if ((cpuFlagsRequired & CPU_Flags) != cpuFlagsRequired)
@@ -213,6 +240,9 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 	
 	// Add the plugin to the list of plugins.
 	lstMDP.push_back(plugin);
+	
+	// Add the UUID to the UUID map.
+	tblUUID.insert(pairUUID(string(sUUID), plugin));
 	
 	// Plugin loaded.
 	return true;

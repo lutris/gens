@@ -92,6 +92,10 @@ typedef std::pair<std::string, std::string> pairConfigItems;
 typedef GSFT_HASHTABLE<mdp_t*, mapConfigItems> mapPluginConfig;
 typedef std::pair<mdp_t*, mapConfigItems> pairPluginConfig;
 
+// UUID map.
+typedef GSFT_HASHTABLE<std::string, mdp_t*> mapUUID;
+typedef std::pair<std::string, mdp_t*> pairUUID;
+
 class PluginMgr
 {
 	public:
@@ -129,6 +133,9 @@ class PluginMgr
 		static void loadExternalPlugin(const std::string& filename);
 		
 		static void errLoadPlugin(mdp_t *plugin, int err, const std::string& filename = "");
+		
+		// UUID map.
+		static mapUUID tblUUID;
 };
 
 #endif /* __cplusplus */
