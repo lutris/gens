@@ -28,6 +28,7 @@
 #include "ui/common/about_window_data.h"
 #include "gens/gens_window.h"
 
+#include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 
 // C includes.
@@ -148,7 +149,7 @@ void about_window_show(void)
 	}
 	
 	// Create the window.
-	about_window = CreateWindow(TEXT("about_window"), TEXT("About Gens/GS"),
+	about_window = CreateWindow(TEXT("about_window"), TEXT("About " GENS_APPNAME),
 				    WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_CAPTION,
 				    CW_USEDEFAULT, CW_USEDEFAULT,
 				    ABOUT_WINDOW_WIDTH, ABOUT_WINDOW_HEIGHT,

@@ -2,7 +2,7 @@
 #define GENS_HPP
 
 // GENS version information
-#define GENS_APPNAME "Gens"
+#define GENS_APPNAME "Gens/GS"
 
 // Maximum path name length.
 // TODO: Use PATH_MAX instead?

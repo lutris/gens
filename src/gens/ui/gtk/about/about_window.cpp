@@ -28,6 +28,7 @@
 #include "ui/common/about_window_data.h"
 #include "gens/gens_window.h"
 
+#include "emulator/gens.hpp"
 #include "emulator/g_main.hpp"
 
 // C includes.
@@ -78,7 +79,7 @@ void about_window_show(void)
 	// Create the window.
 	about_window = gtk_dialog_new();
 	gtk_container_set_border_width(GTK_CONTAINER(about_window), 0);
-	gtk_window_set_title(GTK_WINDOW(about_window), "About Gens/GS");
+	gtk_window_set_title(GTK_WINDOW(about_window), "About " GENS_APPNAME);
 	gtk_window_set_position(GTK_WINDOW(about_window), GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(about_window), FALSE);
 	gtk_window_set_type_hint(GTK_WINDOW(about_window), GDK_WINDOW_TYPE_HINT_DIALOG);
