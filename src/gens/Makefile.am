@@ -398,9 +398,10 @@ endif # GENS_LZMA
 
 CLEANFILES = ${ASMFILES}
 
-# Initialize CFLAGS and CXXFLAGS.
-gens_CFLAGS = $(AM_CFLAGS)
-gens_CXXFLAGS = $(AM_CXXFLAGS)
+# Initialize CFLAGS, CXXFLAGS, and LDFLAGS.
+gens_CFLAGS	= $(AM_CFLAGS)
+gens_CXXFLAGS	= $(AM_CXXFLAGS)
+gens_LDFLAGS	= $(AM_LDFLAGS)
 
 # OS-specific includes
 
