@@ -40,11 +40,12 @@
 #include "scalebit_4x.h"
 #include "scale2x.h"
 
-#if HAVE_ALLOCA_H
+#ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
 
 #include <assert.h>
+#include <malloc.h>
 #include <stdlib.h>
 
 #define SSDST(bits, num) (uint##bits##_t *)dst##num
@@ -200,7 +201,7 @@ void MDP_FNCALL scale4x(void* void_dst, unsigned int dst_slice,
 	
 	mid_slice = (mid_slice + 0x7) & ~0x7; /* align to 8 bytes */
 	
-#if HAVE_ALLOCA
+#ifdef HAVE_ALLOCA
 	mid = alloca(6 * mid_slice); /* allocate space for 6 row buffers */
 	
 	assert(mid != 0); /* alloca should never fails */
@@ -213,7 +214,7 @@ void MDP_FNCALL scale4x(void* void_dst, unsigned int dst_slice,
 	
 	scale4x_buf(void_dst, dst_slice, mid, mid_slice, void_src, src_slice, pixel, width, height);
 	
-#if !HAVE_ALLOCA
+#ifndef HAVE_ALLOCA
 	free(mid);
 #endif
 }
