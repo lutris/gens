@@ -65,7 +65,7 @@ using std::list;
 HINSTANCE ghInstance = NULL;
 
 // Windows version
-OSVERSIONINFO winVersion;
+OSVERSIONINFOEX winVersion;
 
 // If extended Common Controls are enabled, this is set to a non-zero value.
 int win32_CommCtrlEx = 0;

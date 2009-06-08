@@ -38,7 +38,7 @@ extern "C" {
 extern HINSTANCE ghInstance;
 
 // Windows version
-extern OSVERSIONINFO winVersion;
+extern OSVERSIONINFOEX winVersion;
 
 // If extended Common Controls are enabled, this is set to non-zero.
 extern int win32_CommCtrlEx;
