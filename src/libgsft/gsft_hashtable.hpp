@@ -43,7 +43,7 @@
 // Fix a bug with hash_map<string, int>
 // See http://gcc.gnu.org/ml/libstdc++/2002-04/msg00107.html
 
-// Also includes fix for hash_map<mdp_t, int>.
+// Also includes fix for hash_map<mdp_t*, int>.
 
 #include <string>
 #include <stdint.h>
