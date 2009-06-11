@@ -1,12 +1,13 @@
-## Process this file with automake to create Makefile.in
+# mp3_dec: MP3 decoder.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-noinst_LIBRARIES = libmp3_dec.a
+noinst_LTLIBRARIES = libmp3_dec.la
 
-libmp3_dec_a_CFLAGS = $(AM_CFLAGS)
+libmp3_dec_la_CFLAGS	= $(AM_CFLAGS) -static
+libmp3_dec_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
-libmp3_dec_a_SOURCES = \
+libmp3_dec_la_SOURCES = \
 		common.c \
 		dct64_i386.c \
 		decode_i386.c \

@@ -1,12 +1,13 @@
-## Process this file with automake to create Makefile.in
+# lzma: LZMA SDK.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-liblzma_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
+noinst_LTLIBRARIES = liblzma.la
 
-noinst_LIBRARIES = liblzma.a
+liblzma_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
+liblzma_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
-liblzma_a_SOURCES = \
+liblzma_la_SOURCES = \
 		7zBuf.c \
 		7zBuf2.c \
 		7zCrc.c \

@@ -1,11 +1,13 @@
-## Process this file with automake to create Makefile.in
+# zlib: Deflate compression library.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-libz_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
+noinst_LTLIBRARIES = libz.la
 
-noinst_LIBRARIES = libz.a
-libz_a_SOURCES = \
+libz_la_CFLAGS		= $(AM_CFLAGS) -static -O3 -funroll-loops
+libz_la_LDFLAGS		= $(AM_LDFLAGS) -static
+
+libz_la_SOURCES = \
 		adler32.c \
 		compress.c \
 		crc32.c \

@@ -1,19 +1,21 @@
-## Process this file with automake to create Makefile.in
+# libpng: PNG library.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-libpng_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
+noinst_LTLIBRARIES = libpng.la
+
+libpng_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
+libpng_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
 if !GENS_X86_ASM
-libpng_a_CFLAGS += -DPNG_NO_MMX_CODE
+libpng_la_CFLAGS += -DPNG_NO_MMX_CODE
 endif # !GENS_X86_ASM
 
 if GENS_ZLIB_INTERNAL
 INCLUDES = -I@srcdir@/../zlib/
 endif # GENS_ZLIB_INTERNAL
 
-noinst_LIBRARIES = libpng.a
-libpng_a_SOURCES = \
+libpng_la_SOURCES = \
 		png.c \
 		pngset.c \
 		pngget.c \

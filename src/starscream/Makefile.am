@@ -1,13 +1,17 @@
+# starscream: Motorola 68000 emulator.
+
 AUTOMAKE_OPTIONS = subdir-objects
+
+STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
+
+.asm.lo:
+	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
 BUILT_SOURCES = main68k.asm sub68k.asm
 CLEANFILES = star_m68k star_s68k main68k.asm sub68k.asm
 
 EXTRA_DIST = stardoc_m68k.txt stardoc_s68k.txt STARCPU.H
 SUFFIXES = .asm
-
-%.o: %.asm
-	$(NASM) $< -o $@
 
 # Hack to get Starscream to build using the BUILD compiler when
 # cross-compiling for Win32.
@@ -23,6 +27,9 @@ sub68k.asm: star_s68k
 	./star_s68k sub68k.asm -hog -name sub68k_
 
 # Build libstarscream.a
-noinst_LIBRARIES = libstarscream.a
-libstarscream_a_SOURCES = main68k.asm sub68k.asm
-libstarscream_a_LIBADD = main68k.o sub68k.o
+noinst_LTLIBRARIES = libstarscream.la
+
+libstarscream_la_CFLAGS		= $(AM_CFLAGS) -static
+libstarscream_la_LDFLAGS	= $(AM_LDFLAGS) -static
+
+libstarscream_la_SOURCES	= main68k.asm sub68k.asm dummy.c

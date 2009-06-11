@@ -326,26 +326,25 @@ endif
 # Statically-linked MDP plugins.
 # TODO: Add built-in renderers automatically.
 gens_mdp_static = \
-		plugins/render/normal/libmdp_render_1x.a \
-		plugins/render/double/libmdp_render_2x.a
+		plugins/render/normal/libmdp_render_1x.la \
+		plugins/render/double/libmdp_render_2x.la
 
 gens_LDADD = \
 		${ASMFILES} \
 		${gens_mdp_static} \
-		$(top_builddir)/src/starscream/libstarscream.a \
-		$(top_builddir)/src/mdZ80/libmdZ80.a \
+		$(top_builddir)/src/starscream/libstarscream.la \
+		$(top_builddir)/src/mdZ80/libmdZ80.la \
 		$(top_builddir)/src/libgsft/libgsft.la \
 		-lm
 
 if GENS_MP3
-gens_LDADD += \
-		$(top_builddir)/src/mp3_dec/libmp3_dec.a
+gens_LDADD += $(top_builddir)/src/mp3_dec/libmp3_dec.la
 endif 
 
 if GENS_ZLIB
-gens_LDADD += $(top_builddir)/src/minizip/libminizip.a
+gens_LDADD += $(top_builddir)/src/minizip/libminizip.la
 if GENS_ZLIB_INTERNAL
-gens_LDADD += $(top_builddir)/src/zlib/libz.a
+gens_LDADD += $(top_builddir)/src/zlib/libz.la
 else
 gens_LDADD += -lz
 endif # GENS_ZLIB_INTERNAL
@@ -353,14 +352,14 @@ endif # GENS_ZLIB
 
 if GENS_PNG
 if GENS_PNG_INTERNAL
-gens_LDADD += $(top_builddir)/src/libpng/libpng.a
+gens_LDADD += $(top_builddir)/src/libpng/libpng.la
 else
 gens_LDADD += -lpng
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
 if GENS_LZMA
-gens_LDADD += $(top_builddir)/src/lzma/liblzma.a
+gens_LDADD += $(top_builddir)/src/lzma/liblzma.la
 endif # GENS_LZMA
 
 
@@ -370,30 +369,29 @@ endif # GENS_LZMA
 gens_DEPENDENCIES = \
 		${ASMFILES} \
 		${gens_mdp_static} \
-		$(top_builddir)/src/starscream/libstarscream.a \
-		$(top_builddir)/src/mdZ80/libmdZ80.a \
+		$(top_builddir)/src/starscream/libstarscream.la \
+		$(top_builddir)/src/mdZ80/libmdZ80.la \
 		$(top_builddir)/src/libgsft/libgsft.la
 
 if GENS_MP3
-gens_DEPENDENCIES += \
-		$(top_builddir)/src/mp3_dec/libmp3_dec.a
+gens_DEPENDENCIES += $(top_builddir)/src/mp3_dec/libmp3_dec.la
 endif
 
 if GENS_ZLIB
-gens_DEPENDENCIES += $(top_builddir)/src/minizip/libminizip.a
+gens_DEPENDENCIES += $(top_builddir)/src/minizip/libminizip.la
 if GENS_ZLIB_INTERNAL
-gens_DEPENDENCIES += $(top_builddir)/src/zlib/libz.a
+gens_DEPENDENCIES += $(top_builddir)/src/zlib/libz.la
 endif # GENS_ZLIB_INTERNAL
 endif # GENS_ZLIB
 
 if GENS_PNG
 if GENS_PNG_INTERNAL
-gens_DEPENDENCIES += $(top_builddir)/src/libpng/libpng.a
+gens_DEPENDENCIES += $(top_builddir)/src/libpng/libpng.la
 endif # GENS_PNG_INTERNAL
 endif # GENS_PNG
 
 if GENS_LZMA
-gens_DEPENDENCIES += $(top_builddir)/src/lzma/liblzma.a
+gens_DEPENDENCIES += $(top_builddir)/src/lzma/liblzma.la
 endif # GENS_LZMA
 
 CLEANFILES = ${ASMFILES}

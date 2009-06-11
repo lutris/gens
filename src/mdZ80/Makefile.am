@@ -1,17 +1,18 @@
-## Process this file with automake to create Makefile.in
+# mdZ80: Z80 emulator.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-ASMFILES = mdZ80_x86.o
+STRIP_FPIC=$(SHELL) '$(top_srcdir)/strip_fPIC.sh'
 
-%.o: %.asm
-	$(NASM) $< -o $@
+.asm.lo:
+	$(LIBTOOL) $(LIBTOOLFLAGS) --mode=compile --tag=ASM $(STRIP_FPIC) $(NASM) $< -o $@
 
-noinst_LIBRARIES = libmdZ80.a
+noinst_LTLIBRARIES = libmdZ80.la
 
-libmdZ80_a_CFLAGS = $(AM_CFLAGS)
+libmdZ80_la_CFLAGS	= $(AM_CFLAGS) -static
+libmdZ80_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
-libmdZ80_a_SOURCES = \
+libmdZ80_la_SOURCES = \
 		mdZ80_x86.asm \
 		mdZ80.c \
 		mdZ80_DAA.c \
@@ -23,12 +24,3 @@ noinst_HEADERS = \
 		mdZ80_opcodes.h \
 		mdZ80_DAA.h \
 		mdZ80_INC_DEC.h
-
-libmdZ80_a_LIBADD = \
-		$(ASMFILES)
-
-libmdZ80_a_DEPENDENCIES = \
-		$(ASMFILES)
-
-CLEANFILES = \
-		$(ASMFILES)

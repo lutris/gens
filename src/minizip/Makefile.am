@@ -1,15 +1,17 @@
-## Process this file with automake to create Makefile.in
+# minizip: ZIP file handling library.
 
 AUTOMAKE_OPTIONS = subdir-objects
 
-libminizip_a_CFLAGS = $(AM_CFLAGS) -O3 -funroll-loops
+noinst_LTLIBRARIES = libminizip.la
+
+libminizip_la_CFLAGS	= $(AM_CFLAGS) -static -O3 -funroll-loops
+libminizip_la_LDFLAGS	= $(AM_LDFLAGS) -static
 
 if GENS_ZLIB_INTERNAL
 INCLUDES = -I@srcdir@/../zlib/
 endif # GENS_ZLIB_INTERNAL
 
-noinst_LIBRARIES = libminizip.a
-libminizip_a_SOURCES = \
+libminizip_la_SOURCES = \
 		ioapi.c \
 		unzip.c
 
