@@ -53,7 +53,7 @@ const audio_backend_t *audio_cur_backend = NULL;
 AUDIO_BACKEND audio_cur_backend_id;
 
 // Function pointers.
-int	(*audio_write_sound_buffer)(void *dump_buf) = NULL;
+int	(*audio_write_sound_buffer)(short *dump_buf) = NULL;
 int	(*audio_play_sound)(void) = NULL;
 int	(*audio_stop_sound)(void) = NULL;
 void	(*audio_wait_for_audio_buffer)(void) = NULL;

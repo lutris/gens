@@ -34,7 +34,7 @@ extern "C" {
 int	audio_dsound_init(void);
 int	audio_dsound_end(void);
 
-int	audio_dsound_write_sound_buffer(void *dump_buf);
+int	audio_dsound_write_sound_buffer(short *dump_buf);
 void	audio_dsound_clear_sound_buffer(void);
 
 int	audio_dsound_play_sound(void);

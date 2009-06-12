@@ -255,7 +255,7 @@ int audio_dsound_check_sound_timing(void)
  * @param dump_buf Sound dumping buffer.
  * @return 0 on success; non-zero on error.
  */
-int audio_dsound_write_sound_buffer(void *dump_buf)
+int audio_dsound_write_sound_buffer(short *dump_buf)
 {
 	LPVOID lpvPtr1;
 	DWORD dwBytes1;
@@ -264,9 +264,9 @@ int audio_dsound_write_sound_buffer(void *dump_buf)
 	if (dump_buf)
 	{
 		if (audio_get_stereo())
-			audio_dump_sound_stereo(reinterpret_cast<short*>(dump_buf), audio_seg_length);
+			audio_dump_sound_stereo(dump_buf, audio_seg_length);
 		else
-			audio_dump_sound_mono(reinterpret_cast<short*>(dump_buf), audio_seg_length);
+			audio_dump_sound_mono(dump_buf, audio_seg_length);
 		return 0;
 	}
 	

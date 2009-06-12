@@ -49,7 +49,7 @@
 static int	audio_sdl_init(void);
 static int	audio_sdl_end(void);
 
-static int	audio_sdl_write_sound_buffer(void *dump_buf);
+static int	audio_sdl_write_sound_buffer(short *dump_buf);
 static void	audio_sdl_clear_sound_buffer(void);
 
 static void	audio_sdl_wait_for_audio_buffer(void);
@@ -185,14 +185,14 @@ static void audio_sdl_callback(void *user, uint8_t *buffer, int len)
  * @param dump_buf Sound dumping buffer.
  * @return 0 on success; non-zero on error.
  */
-static int audio_sdl_write_sound_buffer(void *dump_buf)
+static int audio_sdl_write_sound_buffer(short *dump_buf)
 {
 	if (dump_buf)
 	{
 		if (audio_get_stereo())
-			audio_dump_sound_stereo((short*)dump_buf, audio_seg_length);
+			audio_dump_sound_stereo(dump_buf, audio_seg_length);
 		else
-			audio_dump_sound_mono((short*)dump_buf, audio_seg_length);
+			audio_dump_sound_mono(dump_buf, audio_seg_length);
 		return 0;
 	}
 	

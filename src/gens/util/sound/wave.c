@@ -217,7 +217,8 @@ int wav_dump_update(void)
 		return 1;
 	}
 	
-	uint8_t buf[(882 * 4) + 16];
+	// TODO: Byteswap on big-endian.
+	short buf[(882 * 2) + 16];
 	audio_write_sound_buffer(buf);
 	
 	unsigned int length = (audio_seg_length * 2);

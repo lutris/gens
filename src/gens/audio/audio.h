@@ -59,7 +59,7 @@ typedef struct
 	int	(*init)(void);
 	int	(*end)(void);
 	
-	int	(*write_sound_buffer)(void *dump_buf);
+	int	(*write_sound_buffer)(short *dump_buf);
 	void	(*clear_sound_buffer)(void);
 	
 	int	(*play_sound)(void);
@@ -85,7 +85,7 @@ extern AUDIO_BACKEND audio_cur_backend_id;
 void	audio_clear_sound_buffer(void);
 
 // Function pointers.
-extern int	(*audio_write_sound_buffer)(void *dump_buf);
+extern int	(*audio_write_sound_buffer)(short *dump_buf);
 extern int	(*audio_play_sound)(void);
 extern int	(*audio_stop_sound)(void);
 extern void	(*audio_wait_for_audio_buffer)(void);
