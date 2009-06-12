@@ -176,7 +176,7 @@ static void audio_sdl_callback(void *user, uint8_t *buffer, int len)
 	
 	memcpy(buffer, audio_sdl_audiobuf, len);
 	audio_sdl_len -= len;
-	memcpy(audio_sdl_audiobuf, audio_sdl_audiobuf + len, audio_sdl_len);
+	memmove(audio_sdl_audiobuf, audio_sdl_audiobuf + len, audio_sdl_len);
 }
 
 
