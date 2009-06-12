@@ -56,7 +56,6 @@ static void	audio_sdl_wait_for_audio_buffer(void);
 
 // SDL audio variables.
 static int audio_sdl_len;
-static unsigned char *audio_sdl_pMsndOut = NULL;
 static unsigned char *audio_sdl_audiobuf = NULL;
 
 // SDL functions.
@@ -111,9 +110,6 @@ static int audio_sdl_init(void)
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 		return -1;
 	
-	// Allocate the segment buffer.
-	audio_sdl_pMsndOut = (unsigned char*)(malloc(audio_seg_length << 2));
-	
 	// Set up the SDL audio specification.
 	SDL_AudioSpec spec;
 	spec.freq = audio_get_sound_rate();
@@ -152,8 +148,6 @@ static int audio_sdl_end(void)
 	// Free the audio buffers.
 	free(audio_sdl_audiobuf);
 	audio_sdl_audiobuf = NULL;
-	free(audio_sdl_pMsndOut);
-	audio_sdl_pMsndOut = NULL;
 	
 	audio_sound_is_playing = FALSE;
 	audio_initialized = FALSE;
@@ -196,9 +190,9 @@ static int audio_sdl_write_sound_buffer(void *dump_buf)
 	if (dump_buf)
 	{
 		if (audio_get_stereo())
-			audio_dump_sound_stereo(dump_buf, audio_seg_length);
+			audio_dump_sound_stereo((short*)dump_buf, audio_seg_length);
 		else
-			audio_dump_sound_mono(dump_buf, audio_seg_length);
+			audio_dump_sound_mono((short*)dump_buf, audio_seg_length);
 		return 0;
 	}
 	
@@ -208,22 +202,21 @@ static int audio_sdl_write_sound_buffer(void *dump_buf)
 	{
 #ifdef GENS_X86_ASM
 		if (CPU_Flags & MDP_CPUFLAG_X86_MMX)
-			audio_write_sound_stereo_x86_mmx(Seg_L, Seg_R, (short*)(audio_sdl_pMsndOut), audio_seg_length);
+			audio_write_sound_stereo_x86_mmx(Seg_L, Seg_R, (short*)(audio_sdl_audiobuf + audio_sdl_len), audio_seg_length);
 		else
 #endif
-			audio_write_sound_stereo((short*)audio_sdl_pMsndOut, audio_seg_length);
+			audio_write_sound_stereo((short*)(audio_sdl_audiobuf + audio_sdl_len), audio_seg_length);
 	}
 	else
 	{
 #ifdef GENS_X86_ASM
 		if (CPU_Flags & MDP_CPUFLAG_X86_MMX)
-			audio_write_sound_mono_x86_mmx(Seg_L, Seg_R, (short*)(audio_sdl_pMsndOut), audio_seg_length);
+			audio_write_sound_mono_x86_mmx(Seg_L, Seg_R, (short*)(audio_sdl_audiobuf + audio_sdl_len), audio_seg_length);
 		else
 #endif
-			audio_write_sound_mono((short*)audio_sdl_pMsndOut, audio_seg_length);
+			audio_write_sound_mono((short*)(audio_sdl_audiobuf + audio_sdl_len), audio_seg_length);
 	}
 	
-	memcpy(audio_sdl_audiobuf + audio_sdl_len, audio_sdl_pMsndOut, audio_seg_length * 4);
 	audio_sdl_len += audio_seg_length * 4;
 	
 	SDL_UnlockAudio();
