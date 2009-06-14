@@ -185,7 +185,7 @@ bool PluginMgr::loadPlugin(mdp_t *plugin, const string& filename)
 	// Check for a duplicated UUID.
 	char sUUID[17];
 	memcpy(sUUID, plugin->uuid, 16);
-	sUUID[17] = 0x00;
+	sUUID[16] = 0x00;
 	
 	mapUUID::iterator uuidIter = tblUUID.find(string(sUUID));
 	if (uuidIter != tblUUID.end())
