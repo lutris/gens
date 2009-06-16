@@ -81,23 +81,24 @@ static const uint8_t SHIFT_BLUE_32	= 0;
 
 /**
  * T_writeBMP_rows(): Write BMP rows.
- * @param screen Pointer to the screen buffer.
- * @param bmpOut Buffer to write BMP data to.
- * @param width Width of the image.
- * @param height Height of the image.
- * @param pitch Pitch of the image. (measured in pixels)
+ * @param pixel Typename.
  * @param maskR Red mask.
  * @param maskG Green mask.
  * @param maskB Blue mask.
  * @param shiftR Red shift. (Right)
  * @param shiftG Green shift. (Right)
  * @param shiftB Blue shift. (Left)
+ * @param screen Pointer to the screen buffer.
+ * @param bmpOut Buffer to write BMP data to.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
  */
-template<typename pixel>
+template<typename pixel,
+	 const pixel maskR, const pixel maskG, const pixel maskB,
+	 const unsigned int shiftR, const unsigned int shiftG, const unsigned int shiftB>
 static inline void T_writeBMP_rows(const pixel *screen, uint8_t *bmpOut,
-				   const int width, const int height, const int pitch,
-				   const pixel maskR, const pixel maskG, const pixel maskB,
-				   const uint8_t shiftR, const uint8_t shiftG, const uint8_t shiftB)
+				   const int width, const int height, const int pitch)
 {
 	// Bitmaps are stored upside-down.
 	for (int y = height - 1; y >= 0; y--)
@@ -167,24 +168,27 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 	if (bpp == 15)
 	{
 		// 15-bit color. (Mode 555)
-		T_writeBMP_rows(static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch,
+		T_writeBMP_rows<uint16_t,
 				MASK_RED_15, MASK_GREEN_15, MASK_BLUE_15,
-				SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15);
+				SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15>
+			       (static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch);
 	}
 	else if (bpp == 16)
 	{
 		// 16-bit color. (Mode 565)
-		T_writeBMP_rows(static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch,
+		T_writeBMP_rows<uint16_t,
 				MASK_RED_16, MASK_GREEN_16, MASK_BLUE_16,
-				SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16);
+				SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16>
+			       (static_cast<const uint16_t*>(screen), &bmpData[54], w, h, pitch);
 	}
 	else //if (bpp == 32)
 	{
 		// 32-bit color.
 		// BMP uses 24-bit color, so a conversion is still necessary.
-		T_writeBMP_rows(static_cast<const uint32_t*>(screen), &bmpData[54], w, h, pitch,
+		T_writeBMP_rows<uint32_t,
 				MASK_RED_32, MASK_GREEN_32, MASK_BLUE_32,
-				SHIFT_RED_32, SHIFT_GREEN_32, SHIFT_BLUE_32);
+				SHIFT_RED_32, SHIFT_GREEN_32, SHIFT_BLUE_32>
+			       (static_cast<const uint32_t*>(screen), &bmpData[54], w, h, pitch);
 	}
 	
 	fwrite(bmpData, 1, bmpSize + 54, fImg);
@@ -197,25 +201,26 @@ int ImageUtil::writeBMP(FILE *fImg, const int w, const int h, const int pitch,
 #ifdef GENS_PNG
 /**
  * T_writePNG_rows_16(): Write 16-bit PNG rows.
- * @param screen Pointer to the screen buffer.
- * @param png_ptr PNG pointer.
- * @param info_ptr PNG info pointer.
- * @param width Width of the image.
- * @param height Height of the image.
- * @param pitch Pitch of the image. (measured in pixels)
+ * @param pixel Typename.
  * @param maskR Red mask.
  * @param maskG Green mask.
  * @param maskB Blue mask.
  * @param shiftR Red shift. (Right)
  * @param shiftG Green shift. (Right)
  * @param shiftB Blue shift. (Left)
+ * @param screen Pointer to the screen buffer.
+ * @param png_ptr PNG pointer.
+ * @param info_ptr PNG info pointer.
+ * @param width Width of the image.
+ * @param height Height of the image.
+ * @param pitch Pitch of the image. (measured in pixels)
  * @return 1 on success; 0 on error.
  */
-template<typename pixel>
+template<typename pixel,
+	 const pixel maskR, const pixel maskG, const pixel maskB,
+	 const unsigned int shiftR, const unsigned int shiftG, const unsigned int shiftB>
 static inline int T_writePNG_rows_16(const pixel *screen, png_structp png_ptr, png_infop info_ptr,
-				     const int width, const int height, const int pitch,
-				     const pixel maskR, const pixel maskG, const pixel maskB,
-				     const uint8_t shiftR, const uint8_t shiftG, const uint8_t shiftB)
+				     const int width, const int height, const int pitch)
 {
 	// Allocate the row buffer.
 	uint8_t *rowBuffer = new uint8_t[width * 3];
@@ -334,25 +339,28 @@ int ImageUtil::writePNG(FILE *fImg, const int w, const int h, const int pitch,
 #endif
 	
 	// Write the image.
+	int rval;
 	if (bpp == 15)
 	{
 		// 15-bit color. (Mode 555)
-		if (!T_writePNG_rows_16(static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch,
-					MASK_RED_15, MASK_GREEN_15, MASK_BLUE_15,
-					SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15))
-		{
+		rval = T_writePNG_rows_16<uint16_t,
+					  MASK_RED_15, MASK_GREEN_15, MASK_BLUE_15,
+					  SHIFT_RED_15, SHIFT_GREEN_15, SHIFT_BLUE_15>
+					 (static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch);
+		
+		if (!rval)
 			return 0;
-		}
 	}
 	else if (bpp == 16)
 	{
 		// 16-bit color. (Mode 565)
-		if (!T_writePNG_rows_16(static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch,
-					MASK_RED_16, MASK_GREEN_16, MASK_BLUE_16,
-					SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16))
-		{
+		rval = T_writePNG_rows_16<uint16_t,
+					  MASK_RED_16, MASK_GREEN_16, MASK_BLUE_16,
+					  SHIFT_RED_16, SHIFT_GREEN_16, SHIFT_BLUE_16>
+					 (static_cast<const uint16_t*>(screen), png_ptr, info_ptr, w, h, pitch);
+		
+		if (!rval)
 			return 0;
-		}
 	}
 	else // if (bpp == 32)
 	{
