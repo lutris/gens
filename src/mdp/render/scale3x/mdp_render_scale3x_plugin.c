@@ -42,12 +42,10 @@ static mdp_desc_t mdp_desc =
 
 mdp_render_t mdp_render =
 {
-	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
-	.scale = 3,
-	
 	.blit = mdp_render_scale3x_cpp,
 	.tag = "Scale3x",
 	
+	.scale = 3,
 	.flags = MDP_RENDER_FLAG_RGB_555to555 |
 		 MDP_RENDER_FLAG_RGB_565to565 |
 		 MDP_RENDER_FLAG_RGB_888to888

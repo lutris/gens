@@ -40,12 +40,10 @@ static mdp_desc_t mdp_desc =
 
 mdp_render_t mdp_render =
 {
-	.interfaceVersion = MDP_RENDER_INTERFACE_VERSION,
-	.scale = 2,
-	
 	.blit = mdp_md_ntsc_blit,
 	.tag = "Blargg NTSC",
 	
+	.scale = 2,
 	.flags = MDP_RENDER_FLAG_RGB_565to555 |
 		 MDP_RENDER_FLAG_RGB_565to565 |
 		 MDP_RENDER_FLAG_RGB_565to888
