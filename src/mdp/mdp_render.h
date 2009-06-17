@@ -31,9 +31,6 @@
 extern "C" {
 #endif
 
-/* MDP Render Plugin interface version. */
-#define MDP_RENDER_INTERFACE_VERSION MDP_VERSION(0, 1, 0)
-
 /* Video mode flags. */
 
 #define MDP_RENDER_VMODE_CREATE(src, dst)	\
@@ -86,15 +83,13 @@ typedef int (MDP_FNCALL *mdp_render_fn)(mdp_render_info_t *renderInfo);
 #pragma pack(1)
 typedef struct PACKED _mdp_render_t
 {
-	const uint32_t interfaceVersion;	/* Render interface version. */
-	const int scale;			/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
+	mdp_render_fn blit;	/* Blit function. */
+	const char* tag;	/* Render tag. */
 	
-	mdp_render_fn blit;			/* Blit function. */
-	const char* tag;			/* Render tag. */
+	const int scale;	/* Scaling ratio. (1 == 320x240; 2 = 640x480; etc) */
+	const uint32_t flags;	/* Render flags. */
 	
-	const uint32_t flags;			/* Render flags. */
-	
-	void *data;				/* Extra data. */
+	void *data;		/* Extra data. */
 } mdp_render_t;
 #pragma pack()
 
