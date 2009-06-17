@@ -34,7 +34,7 @@
 
 #include "about/about_window.hpp"
 
-// git version
+// Git version.
 #include "macros/git.h"
 
 const char* const about_window_title =
