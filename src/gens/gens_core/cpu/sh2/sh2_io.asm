@@ -255,21 +255,12 @@ _SH2_Write_Long:
 	push	edx
 	push	ebp
 	
-	%ifdef __GCC
-		mov	ecx, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	eax, ecx
-		shr	ecx, 24
-		mov	edx, [esp + 16 + 2 * 4]
-		call	[ebp + SH2.Write_Long + ecx * 4]
-	%else
-		mov	eax, [esp + 16 + 1 * 4]
-		mov	ebp, [esp + 16 + 0 * 4]
-		mov	ecx, eax
-		shr	eax, 24
-		mov	edx, [esp + 16 + 2 * 4]
-		call	[ebp + SH2.Write_Long + eax * 4]
-	%endif
+	mov	eax, [esp + 16 + 1 * 4]
+	mov	ebp, [esp + 16 + 0 * 4]
+	mov	ecx, eax
+	shr	eax, 24
+	mov	edx, [esp + 16 + 2 * 4]
+	call	[ebp + SH2.Write_Long + eax * 4]
 	
 	pop	ebp
 	pop	edx
