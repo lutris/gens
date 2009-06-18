@@ -59,13 +59,6 @@
 ;**************************
 
 
-; By default, regcall functions use the MSVC __fastcall convention.
-; In case you're using GCC, uncomment the __GCC definition.
-
-;%define __GCC
-;%define __GCC2
-
-
 %macro DECLV 1
 
 	global _%1
