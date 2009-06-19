@@ -81,6 +81,14 @@ case $host in
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb"
 		;;
+	i?86*haiku*)
+		os=haiku
+		obj_format=elf32;
+		AC_DEFINE(GENS_OS_HAIKU, 1, Haiku operating system)
+		nasm_debug="-g -F dwarf";
+		yasm_debug="-g dwarf2";
+		cflags_debug="-ggdb";
+		;;
 	x86_64*)
 		obj_format=elf64;
 		AC_MSG_ERROR([64-bit is currently not supported.]);
