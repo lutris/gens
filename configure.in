@@ -104,6 +104,7 @@ esac
 
 # Operating system
 AM_CONDITIONAL([GENS_OS_LINUX],  [test x$os = xlinux])
+AM_CONDITIONAL([GENS_OS_HAIKU],  [test x$os = xhaiku])
 AM_CONDITIONAL([GENS_OS_MACOSX], [test x$os = xmacosx])
 AM_CONDITIONAL([GENS_OS_UNIX],   [test x$os = xlinux -o x$os = xmacosx -o x$os = xunix])
 AM_CONDITIONAL([GENS_OS_WIN32],  [test x$os = xwin32])
@@ -153,10 +154,10 @@ if test x$ui = xgtk; then
 
 # GTK+
 GTK_VERSION=2.4.0
-AM_PATH_GTK_2_0($GTK_VERSION,
+ifdef([AM_PATH_GTK_2_0], [AM_PATH_GTK_2_0($GTK_VERSION,
 		:,
-		AC_MSG_ERROR([*** GTK+ version $GTK_VERSION or later not found!])
-)
+		AC_MSG_ERROR([[*** GTK+ version $GTK_VERSION or later not found!]])
+)])
 
 AC_DEFINE(GENS_UI_GTK, 1, Enable the GTK+ UI)
 
@@ -178,10 +179,10 @@ fi
 # SDL
 
 SDL_VERSION=1.1.3
-AM_PATH_SDL($SDL_VERSION,
+ifdef([AM_PATH_SDL], [AM_PATH_SDL($SDL_VERSION,
             :,
-            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
-)
+            AC_MSG_ERROR([[*** SDL version $SDL_VERSION not found!]])
+)])
 
 # END: Unix / Linux (and MacOS X for now)
 
