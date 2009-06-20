@@ -50,55 +50,14 @@
 // Aligned malloc().
 #include "macros/malloc_align.h"
 
-
-// OpenGL includes
-#ifndef __APPLE__
-
-// Linux/UNIX.
-#include <GL/gl.h>
-
-#define GLX_GLXEXT_PROTOTYPES
-#include <GL/glx.h>
-#include <GL/glext.h>
-
-// Needed for VSync on Linux.
-// Code copied from Mesa's glxswapcontrol.c
-// TODO: Make sure this works correctly on all drivers.
-
-#ifndef GLX_MESA_swap_control
-typedef GLint (*PFNGLXSWAPINTERVALMESAPROC)(unsigned interval);
-typedef GLint (*PFNGLXGETSWAPINTERVALMESAPROC)(void);
-#endif
-
-#if !defined(GLX_OML_sync_control) && defined(_STDINT_H)
-#define GLX_OML_sync_control 1
-typedef Bool (*PFNGLXGETMSCRATEOMLPROC)(Display *dpy, GLXDrawable drawable, int32_t *numerator, int32_t *denominator);
-#endif
-
-#ifndef GLX_MESA_swap_frame_usage
-#define GLX_MESA_swap_frame_usage 1
-typedef int (*PFNGLXGETFRAMEUSAGEMESAPROC)(Display *dpy, GLXDrawable drawable, float *usage);
-#endif
-
-// OpenGL VSync stuff
-// Copied from Mesa's glxswapcontrol.c
-PFNGLXSWAPINTERVALMESAPROC set_swap_interval = NULL;
-PFNGLXGETSWAPINTERVALMESAPROC get_swap_interval = NULL;
-
-#else /* __APPLE__ */
-
-// MacOS X.
-#include <OpenGL/gl.h>
-#include <OpenGL/OpenGL.h>
-
-#endif /* __APPLE __ */
+// OS-Specific OpenGL functions.
+#include "vdraw_gl.h"
 
 // Function prototypes.
 static int	vdraw_sdl_gl_init(void);
 static int	vdraw_sdl_gl_end(void);
 
 static void	vdraw_sdl_gl_clear_screen(void);
-static void	vdraw_sdl_gl_update_vsync(const BOOL fromInitSDLGL);
 
 static int	vdraw_sdl_gl_flip(void);
 static void	vdraw_sdl_gl_draw_border(void); // Not used in vdraw_backend_t.
@@ -140,7 +99,7 @@ const vdraw_backend_t vdraw_backend_sdl_gl =
 	.shutdown = vdraw_sdl_common_shutdown,
 	
 	.clear_screen = vdraw_sdl_gl_clear_screen,
-	.update_vsync = vdraw_sdl_gl_update_vsync,
+	.update_vsync = vdraw_gl_update_vsync,
 	
 	.flip = vdraw_sdl_gl_flip,
 	.update_renderer = vdraw_sdl_gl_update_renderer,
@@ -181,17 +140,7 @@ static inline int vdraw_sdl_gl_calc_texture_size(int scale)
  */
 int vdraw_sdl_gl_init(void)
 {
-#ifndef __APPLE__
-	// Linux/UNIX: Get the VSync functions.
-	// TODO: Copy functions to test for VSync from Mesa's glxswapcontrol.c
-	/*
-	has_OML_sync_control = is_extension_supported("GLX_OML_sync_control");
-	has_SGI_swap_control = is_extension_supported("GLX_SGI_swap_control");
-	has_MESA_swap_control = is_extension_supported("GLX_MESA_swap_control");
-	*/
-	set_swap_interval = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXSwapIntervalSGI");
-	get_swap_interval = (PFNGLXGETSWAPINTERVALMESAPROC)glXGetProcAddressARB((const GLubyte*)"glXGetSwapIntervalSGI");
-#endif
+	vdraw_gl_init_vsync();
 	
 	// OpenGL width/height.
 	// TODO: Move these values here or something.
@@ -242,7 +191,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	}
 	
 	// Update VSync.
-	vdraw_sdl_gl_update_vsync(TRUE);
+	vdraw_gl_update_vsync(TRUE);
 	
 	mdp_render_t *rendMode = get_mdp_render_t();
 	const int scale = rendMode->scale;
@@ -626,38 +575,4 @@ static void vdraw_sdl_gl_update_renderer(void)
 	
 	// Clear the screen.
 	vdraw_sdl_gl_clear_screen();
-}
-
-
-/**
- * vdraw_sdl_gl_update_vsync(): Update the VSync value.
- * @param fromInitSDLGL If TRUE, this function is being called from vdraw_sdl_gl_init_opengl().
- */
-static void vdraw_sdl_gl_update_vsync(const BOOL fromInitSDLGL)
-{
-	// Set the VSync value.
-	// TODO: Turning VSync off seems to require a refresh...
-	
-	GLint vsync = (vdraw_get_fullscreen() ? Video.VSync_FS : Video.VSync_W);
-	
-#ifndef __APPLE__
-	// Linux/UNIX.
-	if (set_swap_interval != NULL)
-	{
-		if (vsync)
-			set_swap_interval(1);
-		else if (!fromInitSDLGL)
-			vdraw_refresh_video();
-	}
-#else /* __APPLE__ */
-	// MacOS X.
-	if (vsync)
-		CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsync);
-	else
-	{
-		CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &vsync);
-		if (!fromInitSDLGL)
-			vdraw_refresh_video();
-	}
-#endif /* __APPLE __ */
 }
