@@ -124,6 +124,9 @@ Release 7 fixes the following bugs:
 - The VDP H_Int register is now initialized to 0xFF. This fixes Sik's test ROM
   that produced "rain" on Gens, but not on Regen and the actual hardware.
 
+- [Linux] Improved VSync support with the OpenGL backend. Both the MESA and SGI
+  swap control methods are now supported.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
