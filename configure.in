@@ -153,12 +153,19 @@ ui=gtk
 if test x$ui = xgtk; then
 
 # GTK+
+# Note: If AM_PATH_GTK_2_0 isn't defined, GTK+ is assumed to be installed.
 GTK_VERSION=2.4.0
-ifdef([AM_PATH_GTK_2_0], [AM_PATH_GTK_2_0($GTK_VERSION,
-		:,
-		AC_MSG_ERROR([[*** GTK+ version $GTK_VERSION or later not found!]])
-)])
-
+ifdef(
+	[AM_PATH_GTK_2_0],
+	[
+		AM_PATH_GTK_2_0(
+			$GTK_VERSION,
+			:,
+			AC_MSG_ERROR([[*** GTK+ version $GTK_VERSION or later not found!]])
+		)
+	],
+	[AC_MSG_WARN([[*** AM_PATH_GTK_2_0 is not defined. Assuming GTK+ is installed.]])]
+)
 AC_DEFINE(GENS_UI_GTK, 1, Enable the GTK+ UI)
 
 # TODO: Disable deprecated GTK+ features.
@@ -177,12 +184,19 @@ GTK_CFLAGS="$GTK_CFLAGS -DGTK_DISABLE_DEPRECATED -DDISABLE_DEPRECATED -DGSEAL_EN
 fi
 
 # SDL
-
+# Note: If AM_PATH_SDL isn't defined, SDL is assumed to be installed.
 SDL_VERSION=1.1.3
-ifdef([AM_PATH_SDL], [AM_PATH_SDL($SDL_VERSION,
-            :,
-            AC_MSG_ERROR([[*** SDL version $SDL_VERSION not found!]])
-)])
+ifdef(
+	[AM_PATH_SDL],
+	[
+		AM_PATH_SDL(
+			$SDL_VERSION,
+			:,
+			AC_MSG_ERROR([[*** SDL version $SDL_VERSION or later not found!]])
+		)
+	],
+	[AC_MSG_WARN([[*** AM_PATH_SDL is not defined. Assuming SDL is installed.]])]
+)
 
 # END: Unix / Linux (and MacOS X for now)
 
