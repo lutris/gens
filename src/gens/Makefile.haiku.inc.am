@@ -1,0 +1,108 @@
+# Haiku-specific Makefile.am
+
+# Haiku UI Header Files
+#INCLUDES += -I@srcdir@/ui/haiku/
+
+gens_SOURCES += \
+		emulator/g_main_haiku.cpp \
+		port/ini_old.c \
+		port/timer.c
+#		video/vdraw_sdl_common.c \
+#		video/vdraw_sdl.c \
+#		input/input_sdl.c \
+#		input/input_sdl_events.cpp \
+#		input/input_sdl_key_names.c \
+#		audio/audio_sdl.c
+
+#if GENS_CDROM
+#if GENS_OS_HAIKU
+#gens_SOURCES += \
+#                segacd/cd_aspi_haiku.cpp
+#endif # GENS_OS_HAIKU
+#endif # GENS_CDROM
+
+#gens_SOURCES += \
+#		ui/gtk/gens_ui_gtk.cpp \
+#		ui/gtk/gtk-misc.c \
+#		ui/gtk/gtk-uri.c \
+#		ui/gtk/gens/gens_window.c \
+#		ui/gtk/gens/gens_window_callbacks.cpp \
+#		ui/gtk/gens/gens_window_sync.cpp \
+#		ui/gtk/gens/gens_menu.cpp \
+#		ui/gtk/controller_config/cc_window.c \
+#		ui/gtk/bios_misc_files/bmf_window.cpp \
+#		ui/gtk/directory_config/dir_window.cpp \
+#		ui/gtk/general_options/genopt_window.cpp \
+#		ui/gtk/color_adjust/ca_window.c \
+#		ui/gtk/country_code/ccode_window.c \
+#		ui/gtk/zip_select/zipsel_dialog.c \
+#		ui/gtk/plugin_manager/pmgr_window.cpp \
+#		ui/gtk/about/about_window.cpp
+
+#if GENS_OPENGL
+#gens_SOURCES += \
+#		video/vdraw_sdl_gl.c \
+#		ui/gtk/opengl_resolution/glres_window.cpp
+#endif # GENS_OPENGL
+
+#if GENS_CDROM
+#gens_SOURCES += \
+#		ui/gtk/select_cdrom/selcd_window.cpp
+#endif # GENS_CDROM
+
+#noinst_HEADERS += \
+#		emulator/g_main_unix.hpp \
+#		port/ini_old.h \
+#		port/timer.h \
+#		video/vdraw_sdl_common.h \
+#		video/vdraw_sdl.h \
+#		input/input_sdl.h \
+#		input/input_sdl_events.hpp \
+#		input/input_sdl_keys.h \
+#		input/input_sdl_key_names.h \
+#		input/input_sdl_joystate.h \
+#		audio/audio_sdl.h
+
+#if GENS_CDROM
+#noinst_HEADERS += \
+#                segacd/cd_aspi.hpp \
+#		segacd/aspi.h
+#endif
+
+#noinst_HEADERS += \
+#		ui/gtk/gtk-misc.h \
+#		ui/gtk/gtk-uri.h \
+#		ui/gtk/gtk-compat.h \
+#		ui/gtk/gens/gens_window.h \
+#		ui/gtk/gens/gens_window_callbacks.hpp \
+#		ui/gtk/gens/gens_window_sync.hpp \
+#		ui/gtk/gens/gens_menu.hpp \
+#		ui/gtk/controller_config/cc_window.h \
+#		ui/gtk/bios_misc_files/bmf_window.hpp \
+#		ui/gtk/directory_config/dir_window.hpp \
+#		ui/gtk/general_options/genopt_window.hpp \
+#		ui/gtk/color_adjust/ca_window.h \
+#		ui/gtk/country_code/ccode_window.h \
+#		ui/gtk/zip_select/zipsel_dialog.h \
+#		ui/gtk/plugin_manager/pmgr_window.hpp \
+#		ui/gtk/about/about_window.hpp
+
+#if GENS_OPENGL
+#noinst_HEADERS += \
+#		video/vdraw_sdl_gl.h \
+#		video/vdraw_gl.h \
+#		ui/gtk/opengl_resolution/glres_window.hpp
+#endif # GENS_OPENGL
+
+#if GENS_CDROM
+#noinst_HEADERS += \
+#		ui/gtk/select_cdrom/selcd_window.hpp
+#endif # GENS_CDROM
+
+gens_CFLAGS += \
+		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
+		-DGENS_MDP_DIR=\"@libdir@\"
+
+gens_CXXFLAGS += \
+		-DGENS_DATADIR=\"@datadir@/@PACKAGE@\" \
+		-DGENS_MDP_DIR=\"@libdir@\"

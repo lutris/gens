@@ -28,7 +28,9 @@
 #endif
 
 // OS-specific includes.
-#if (defined(GENS_OS_UNIX))
+#if (defined(GENS_OS_HAIKU))
+// Keys may be part of UI... (TODO)
+#elif (defined(GENS_OS_UNIX))
 #include "input_sdl_keys.h"
 #elif (defined(GENS_OS_WIN32))
 #include "input_win32_keys.h"
