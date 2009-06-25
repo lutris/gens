@@ -933,8 +933,6 @@ void Options::setSegaCD_SRAMSize(const int num)
 	}
 	else
 	{
-		char bsize[256];
-		
 		BRAM_Ex_State |= 0x100;
 		BRAM_Ex_Size = num;
 		
