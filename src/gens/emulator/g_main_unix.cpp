@@ -44,29 +44,21 @@ using std::list;
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
 #include "g_md.hpp"
-#include "g_32x.hpp"
 
+// Command line parsing.
 #include "parse.hpp"
-#include "options.hpp"
 
-#include "gens_core/vdp/vdp_io.h"
 #include "util/file/config_file.hpp"
-#include "util/sound/gym.hpp"
 
-// Video, Audio, Input.
+// Video, Input.
 #include "video/vdraw_sdl.h"
 #include "video/vdraw_cpp.hpp"
-#include "audio/audio_sdl.h"
 #include "input/input_sdl.h"
 
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
 
 #include "port/timer.h"
-
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
 
 
 // On UNIX, the default save path is prefixed with the user's home directory.
@@ -191,7 +183,7 @@ int main(int argc, char *argv[])
 	GensUI::update();
 	
 	// Reset the renderer.
-	vdraw_reset_renderer(TRUE);
+	vdraw_reset_renderer(true);
 	
 	// Synchronize the Gens window.
 	Sync_Gens_Window();

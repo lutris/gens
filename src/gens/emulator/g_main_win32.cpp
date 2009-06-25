@@ -37,16 +37,15 @@ using std::list;
 
 #include "md_palette.hpp"
 #include "gens_ui.hpp"
-#include "parse.hpp"
-
 #include "g_md.hpp"
-#include "g_mcd.hpp"
-#include "g_32x.hpp"
 
-#include "gens_core/vdp/vdp_io.h"
+// Command line parsing.
+#include "parse.hpp"
+#include "port/argc_argv.h"
+
 #include "util/file/config_file.hpp"
-#include "util/sound/gym.hpp"
 
+// Video, Input, Audio.
 #include "video/vdraw.h"
 #include "input/input.h"
 #include "audio/audio.h"
@@ -56,10 +55,6 @@ using std::list;
 
 #include "gens/gens_window.h"
 #include "gens/gens_window_sync.hpp"
-
-#ifdef GENS_DEBUGGER
-#include "debugger/debugger.hpp"
-#endif /* GENS_DEBUGGER */
 
 // Win32 instance
 HINSTANCE ghInstance = NULL;
@@ -80,9 +75,6 @@ int win32_CommCtrlEx = 0;
 #endif
 #include <windows.h>
 #include <windowsx.h>
-
-// argc/argv conversion.
-#include "port/argc_argv.h"
 
 // Default save path.
 #define GENS_DEFAULT_SAVE_PATH ".\\"
