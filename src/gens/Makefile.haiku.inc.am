@@ -50,10 +50,10 @@ gens_SOURCES += \
 #		ui/gtk/select_cdrom/selcd_window.cpp
 #endif # GENS_CDROM
 
-#noinst_HEADERS += \
-#		emulator/g_main_unix.hpp \
-#		port/ini_old.h \
-#		port/timer.h \
+noinst_HEADERS += \
+		emulator/g_main_haiku.hpp \
+		port/ini_old.h \
+		port/timer.h
 #		video/vdraw_sdl_common.h \
 #		video/vdraw_sdl.h \
 #		input/input_sdl.h \
