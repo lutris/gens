@@ -403,10 +403,6 @@ gens_LDFLAGS	= $(AM_LDFLAGS)
 
 # OS-specific includes
 
-if GENS_OS_HAIKU
-include $(srcdir)/Makefile.haiku.inc.am
-endif # GENS_OS_HAIKU
-
 if GENS_OS_UNIX
 include $(srcdir)/Makefile.unix.inc.am
 endif # GENS_OS_UNIX
@@ -414,3 +410,7 @@ endif # GENS_OS_UNIX
 if GENS_OS_WIN32
 include $(srcdir)/Makefile.win32.inc.am
 endif # GENS_OS_WIN32
+
+if GENS_OS_HAIKU
+include $(srcdir)/Makefile.haiku.inc.am
+endif # GENS_OS_HAIKU
