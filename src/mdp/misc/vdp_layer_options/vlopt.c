@@ -66,6 +66,14 @@ int MDP_FNCALL vlopt_init(mdp_host_t *host_srv)
 		return -MDP_ERR_UNSUPPORTED_UI;
 	}
 	
+	// Check if MDP_VAL_VDP_LAYER_OPTIONS is supported.
+	int vdp_layer_options = vlopt_host_srv->val_get(MDP_VAL_VDP_LAYER_OPTIONS);
+	if (vdp_layer_options < 0)
+	{
+		// MDP_VAL_VDP_LAYER_OPTIONS isn't supported.
+		return vdp_layer_options;
+	}
+	
 	// Create a menu item.
 	vlopt_menuItemID = vlopt_host_srv->menu_item_add(&mdp, &vlopt_menu_handler, 0, "VDP &Layer Options");
 	printf("VDP Layer Options plugin initialized. Menu item ID: 0x%04X\n", vlopt_menuItemID);
