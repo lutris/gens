@@ -1,7 +1,7 @@
 # Haiku-specific Makefile.am
 
 # Haiku UI Header Files
-#INCLUDES += -I@srcdir@/ui/haiku/
+INCLUDES += -I@srcdir@/ui/haiku/
 
 gens_SOURCES += \
 		emulator/g_main_haiku.cpp \
@@ -22,32 +22,32 @@ gens_SOURCES += \
 #endif # GENS_CDROM
 
 #gens_SOURCES += \
-#		ui/gtk/gens_ui_gtk.cpp \
-#		ui/gtk/gtk-misc.c \
-#		ui/gtk/gtk-uri.c \
-#		ui/gtk/gens/gens_window.c \
-#		ui/gtk/gens/gens_window_callbacks.cpp \
-#		ui/gtk/gens/gens_window_sync.cpp \
-#		ui/gtk/gens/gens_menu.cpp \
-#		ui/gtk/controller_config/cc_window.c \
-#		ui/gtk/bios_misc_files/bmf_window.cpp \
-#		ui/gtk/directory_config/dir_window.cpp \
-#		ui/gtk/general_options/genopt_window.cpp \
-#		ui/gtk/color_adjust/ca_window.c \
-#		ui/gtk/country_code/ccode_window.c \
-#		ui/gtk/zip_select/zipsel_dialog.c \
-#		ui/gtk/plugin_manager/pmgr_window.cpp \
-#		ui/gtk/about/about_window.cpp
+#		ui/haiku/gens_ui_haiku.cpp \
+#		ui/haiku/haiku-misc.c \
+#		ui/haiku/haiku-uri.c \
+#		ui/haiku/gens/gens_window.c \
+#		ui/haiku/gens/gens_window_callbacks.cpp \
+#		ui/haiku/gens/gens_window_sync.cpp \
+#		ui/haiku/gens/gens_menu.cpp \
+#		ui/haiku/controller_config/cc_window.c \
+#		ui/haiku/bios_misc_files/bmf_window.cpp \
+#		ui/haiku/directory_config/dir_window.cpp \
+#		ui/haiku/general_options/genopt_window.cpp \
+#		ui/haiku/color_adjust/ca_window.c \
+#		ui/haiku/country_code/ccode_window.c \
+#		ui/haiku/zip_select/zipsel_dialog.c \
+#		ui/haiku/plugin_manager/pmgr_window.cpp \
+#		ui/haiku/about/about_window.cpp
 
 #if GENS_OPENGL
 #gens_SOURCES += \
 #		video/vdraw_sdl_gl.c \
-#		ui/gtk/opengl_resolution/glres_window.cpp
+#		ui/haiku/opengl_resolution/glres_window.cpp
 #endif # GENS_OPENGL
 
 #if GENS_CDROM
 #gens_SOURCES += \
-#		ui/gtk/select_cdrom/selcd_window.cpp
+#		ui/haiku/select_cdrom/selcd_window.cpp
 #endif # GENS_CDROM
 
 noinst_HEADERS += \
@@ -70,33 +70,32 @@ noinst_HEADERS += \
 #endif
 
 #noinst_HEADERS += \
-#		ui/gtk/gtk-misc.h \
-#		ui/gtk/gtk-uri.h \
-#		ui/gtk/gtk-compat.h \
-#		ui/gtk/gens/gens_window.h \
-#		ui/gtk/gens/gens_window_callbacks.hpp \
-#		ui/gtk/gens/gens_window_sync.hpp \
-#		ui/gtk/gens/gens_menu.hpp \
-#		ui/gtk/controller_config/cc_window.h \
-#		ui/gtk/bios_misc_files/bmf_window.hpp \
-#		ui/gtk/directory_config/dir_window.hpp \
-#		ui/gtk/general_options/genopt_window.hpp \
-#		ui/gtk/color_adjust/ca_window.h \
-#		ui/gtk/country_code/ccode_window.h \
-#		ui/gtk/zip_select/zipsel_dialog.h \
-#		ui/gtk/plugin_manager/pmgr_window.hpp \
-#		ui/gtk/about/about_window.hpp
+#		ui/haiku/haiku-misc.h \
+#		ui/haiku/haiku-uri.h \
+#		ui/haiku/gens/gens_window.h \
+#		ui/haiku/gens/gens_window_callbacks.hpp \
+#		ui/haiku/gens/gens_window_sync.hpp \
+#		ui/haiku/gens/gens_menu.hpp \
+#		ui/haiku/controller_config/cc_window.h \
+#		ui/haiku/bios_misc_files/bmf_window.hpp \
+#		ui/haiku/directory_config/dir_window.hpp \
+#		ui/haiku/general_options/genopt_window.hpp \
+#		ui/haiku/color_adjust/ca_window.h \
+#		ui/haiku/country_code/ccode_window.h \
+#		ui/haiku/zip_select/zipsel_dialog.h \
+#		ui/haiku/plugin_manager/pmgr_window.hpp \
+#		ui/haiku/about/about_window.hpp
 
 #if GENS_OPENGL
 #noinst_HEADERS += \
 #		video/vdraw_sdl_gl.h \
 #		video/vdraw_gl.h \
-#		ui/gtk/opengl_resolution/glres_window.hpp
+#		ui/haiku/opengl_resolution/glres_window.hpp
 #endif # GENS_OPENGL
 
 #if GENS_CDROM
 #noinst_HEADERS += \
-#		ui/gtk/select_cdrom/selcd_window.hpp
+#		ui/haiku/select_cdrom/selcd_window.hpp
 #endif # GENS_CDROM
 
 gens_CFLAGS += \

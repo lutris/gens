@@ -1073,9 +1073,11 @@ void Options::setBackend(VDRAW_BACKEND newBackend)
 	
 	// Initialize the new backend.
 	vdraw_backend_init(newBackend);
-	
+// Temporary - Either Haiku will need this or it won't
+#ifndef GENS_OS_HAIKU
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
+#endif
 	
 	// Print a notice about the selected backend.
 	if (is_gens_running())
@@ -1117,9 +1119,16 @@ void Options::setOpenGL_Resolution(int w, int h)
 	
 	// OpenGL mode is currently enabled. Change the resolution.
 	vdraw_reset_renderer(TRUE);
-	
+
+// Temporary Haiku compile fix - Haiku may or may not need this
+// particular function. If it does need it, (most likely), then
+// it will come in a later patch, at which point these conditions
+// will be removed again. If it's not needed, we may define these
+// conditions for only the OSs that need it.
+#ifndef GENS_OS_HAIKU
 	// Synchronize the Graphics Menu.
 	Sync_Gens_Window_GraphicsMenu();
+#endif
 }
 #endif /* GENS_OPENGL */
 
