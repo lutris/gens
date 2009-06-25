@@ -76,7 +76,6 @@ int MDP_FNCALL vlopt_init(mdp_host_t *host_srv)
 	
 	// Create a menu item.
 	vlopt_menuItemID = vlopt_host_srv->menu_item_add(&mdp, &vlopt_menu_handler, 0, "VDP &Layer Options");
-	printf("VDP Layer Options plugin initialized. Menu item ID: 0x%04X\n", vlopt_menuItemID);
 	
 	// Initialized.
 	return MDP_ERR_OK;
