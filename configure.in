@@ -77,7 +77,6 @@ case $host in
 		os=haiku
 		obj_format=elf32;
 		AC_DEFINE(GENS_OS_HAIKU, 1, Haiku operating system)
-		AC_DEFINE(GENS_OS_UNIX, 1, Unix operating system)
 		nasm_debug="-g -F dwarf";
 		yasm_debug="-g dwarf2";
 		cflags_debug="-ggdb";
