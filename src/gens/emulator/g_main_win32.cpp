@@ -76,6 +76,9 @@ int win32_CommCtrlEx = 0;
 #include <windows.h>
 #include <windowsx.h>
 
+// Message logging.
+#include "macros/log_msg.h"
+
 // Default save path.
 #define GENS_DEFAULT_SAVE_PATH ".\\"
 
@@ -189,7 +192,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	{
 		if (ROM::openROM(PathNames.Start_Rom) == -1)
 		{
-			fprintf(stderr, "%s(): Failed to load %s\n", __func__, PathNames.Start_Rom);
+			// Could not open the startup ROM.
+			// TODO: Show a message box?
+			LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+				"Failed to load ROM '%s'.", PathNames.Start_Rom);
 		}
 	}
 	

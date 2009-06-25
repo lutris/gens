@@ -60,6 +60,9 @@ using std::list;
 
 #include "port/timer.h"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 
 // On UNIX, the default save path is prefixed with the user's home directory.
 #ifdef GENS_OS_MACOSX
@@ -175,7 +178,10 @@ int main(int argc, char *argv[])
 	{
 		if (ROM::openROM(PathNames.Start_Rom) == -1)
 		{
-			fprintf(stderr, "%s(): Failed to load %s\n", __func__, PathNames.Start_Rom);
+			// Could not open the startup ROM.
+			// TODO: Show a message box?
+			LOG_MSG(gens, LOG_MSG_LEVEL_ERROR,
+				"Failed to load ROM '%s'.", PathNames.Start_Rom);
 		}
 	}
 	
