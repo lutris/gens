@@ -30,12 +30,12 @@
 #endif
 
 // OS-specific includes.
-#if defined(GENS_OS_HAIKU)
-#include "g_main_haiku.hpp"
-#elif defined(GENS_OS_UNIX)
+#if defined(GENS_OS_UNIX)
 #include "g_main_unix.hpp"
 #elif defined(GENS_OS_WIN32)
 #include "g_main_win32.hpp"
+#elif defined(GENS_OS_HAIKU)
+#include "g_main_haiku.hpp"
 #else
 #error Unsupported operating system.
 #endif
