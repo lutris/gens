@@ -114,8 +114,8 @@ typedef struct _mdp_host_t
 	/**
 	 * osd_printf(): Print a message to the on-screen display.
 	 */
-	int (MDP_FNCALL *osd_printf)(const int duration, const char *msg, ...)
-		__attribute__ ((format (printf, 2, 3)));
+	int (MDP_FNCALL *osd_printf)(const char *msg, ...)
+		__attribute__ ((format (printf, 1, 2)));
 	
 	/**
 	 * renderer_register(): Register a renderer.
