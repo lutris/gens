@@ -10,6 +10,11 @@ TODO for Gens/GS r7:
   "gtk-alternative-button-order=1" in ~/.gtkrc-2.0-kde4
 - cc_window.c: Add checkboxes to the "Input Devices" listbox for filtering.
 
+MDP TODO for Gens/GS r7:
+- Finish MDP documentation.
+- Verify mdp_host_t "No (Not NULL)" and "No (NULL)" support in emulator and plugins.
+- Implement mdp_host_t->emulator_control(MDP_EMUCTRL_RELOAD_INFO).
+
 Other TODO for Gens/GS r7:
 - [GTK+] Consider setting the event box's background color to match the border color.
 - [Win32] Disable the "Apply" button until a setting is changed.
@@ -21,7 +26,7 @@ Stuff done in r7:
 - 2xsai: Fixed a potential error due to %eax clobbering by the mode555 setting.
   (commit 4bd10d59fd6b043258027c2d9032c1d5a47b6399)
 
-MDP TODO for Gens/GS r7+
+MDP TODO for Gens/GS r7+:
 - Add "Exclusive Mode" so a plugin can gain exclusive control.
   - Disables reset, close ROM, etc.
 - Game Genie: Add support for S68K, Z80, MSH2, and SSH2.
