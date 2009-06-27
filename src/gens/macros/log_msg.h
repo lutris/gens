@@ -54,6 +54,7 @@
  */
 
 #define LOG_MSG_CHANNEL_gens	LOG_MSG_LEVEL_INFO
+#define LOG_MSG_CHANNEL_stub	LOG_MSG_LEVEL_INFO
 #define LOG_MSG_CHANNEL_video	LOG_MSG_LEVEL_INFO
 #define LOG_MSG_CHANNEL_audio	LOG_MSG_LEVEL_INFO
 #define LOG_MSG_CHANNEL_input	LOG_MSG_LEVEL_INFO
@@ -96,6 +97,11 @@ void log_msgbox(const char* msg, const char* title);
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * STUB: Indicates that this function is a stub.
+ */
+#define STUB() LOG_MSG(stub, LOG_MSG_LEVEL_WARNING, "STUB function.")
 
 /**
  * LOG_MSG(): Output a debug message.

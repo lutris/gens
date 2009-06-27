@@ -15,11 +15,6 @@
 #define CLOCK_PAL  53203424
 
 /**
- * STUB: Indicates that this function is a stub.
- */
-#define STUB fprintf(stderr, "TODO: STUB: %s()\n", __func__);
-
-/**
  * SET_VISIBLE_LINES: Sets the number of visible lines, depending on CPU mode and VDP setting.
  * If PAL and some VDP register are set, use 240 lines.
  * Otherwise, only 224 lines are visible.
