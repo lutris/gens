@@ -45,27 +45,31 @@ int MDP_FNCALL mdp_host_emulator_control(mdp_t *plugin, MDP_EMUCTRL ctrl, void *
 {
 	switch (ctrl)
 	{
-		case MDP_EMUCTRL_RESET:
+		case MDP_EMUCTRL_RESET_HARD:
 			if (!Game)
 			{
 				// No game is running.
 				// TODO: Add EMUCTRL-specific error codes.
-				return -MDP_ERR_UNKNOWN;
+				return -MDP_ERR_EMUCTRL_UNKNOWN;
 			}
 			
 			// Reset the emulated system.
 			Options::systemReset();
 			break;
-			
+		
+		case MDP_EMUCTRL_RESET_SOFT:
+			// Soft reset isn't supported.
+			return -MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED;
+		
 		case MDP_EMUCTRL_RELOAD_INFO:
 			// TODO
-			return -MDP_ERR_FUNCTION_NOT_IMPLEMENTED;
+			return -MDP_ERR_EMUCTRL_FUNCTION_NOT_IMPLEMENTED;
 		
 		case MDP_EMUCTRL_UNKNOWN:
 		default:
 			// Unknown function.
 			// TODO: Add EMUCTRL-specific error codes.
-			return -MDP_ERR_UNKNOWN;
+			return -MDP_ERR_EMUCTRL_UNKNOWN;
 	}
 	
 	return MDP_ERR_OK;
