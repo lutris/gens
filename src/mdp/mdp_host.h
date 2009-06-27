@@ -48,7 +48,8 @@ typedef enum _MDP_UI
 	MDP_UI_GTK2		= 1,
 	MDP_UI_QT4		= 2,
 	MDP_UI_WIN32		= 3,
-	MDP_UI_MACOSX_COCOA	= 4
+	MDP_UI_MACOSX_COCOA	= 4,
+	MDP_UI_BEOS		= 5
 } MDP_UI;
 
 /* MDP_VDP_LAYER_OPTIONS: Layer options bits. */
@@ -85,8 +86,9 @@ typedef int (MDP_FNCALL *mdp_menu_handler_fn)(int menu_item_id);
 typedef enum _MDP_EMUCTRL
 {
 	MDP_EMUCTRL_UNKNOWN		= 0,
-	MDP_EMUCTRL_RESET		= 1,	/* Reset emulation. */
-	MDP_EMUCTRL_RELOAD_INFO		= 2	/* Reload ROM information. */
+	MDP_EMUCTRL_RESET_HARD		= 1,	/* Reset emulation. (Hard Reset) */
+	MDP_EMUCTRL_RESET_SOFT		= 2,	/* Reset emulation. (Soft Reset) */
+	MDP_EMUCTRL_RELOAD_INFO		= 3	/* Reload ROM information. */
 } MDP_EMUCTRL;
 
 /* Directory Handler functions. */
@@ -94,10 +96,14 @@ typedef int (MDP_FNCALL *mdp_dir_get_fn)(int dir_id, char *out_buf, unsigned int
 typedef int (MDP_FNCALL *mdp_dir_set_fn)(int dir_id, const char *buf);
 
 /* MDP Host Services struct. */
-#pragma pack(1)
-typedef struct PACKED _mdp_host_t
+typedef struct _mdp_host_t
 {
+	/**
+	 * interfaceVersion: MDP version implemented by the emulator.
+	 */
 	const uint32_t interfaceVersion;
+	const uint32_t reserved;
+	/*! BEGIN: MDP v1.0 functions. !*/
 	
 	/**
 	 * val_set(), val_get(): Set or get int values.
@@ -260,6 +266,8 @@ typedef struct PACKED _mdp_host_t
 	int (MDP_FNCALL *z_open)(const char* filename, mdp_z_t **z_out);
 	int (MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
 	int (MDP_FNCALL *z_close)(mdp_z_t *z_file);
+	
+	/*! END: MDP v1.0 functions. !*/
 } mdp_host_t;
 #pragma pack()
 
