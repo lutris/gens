@@ -481,7 +481,7 @@ values:
 			is compressed and the emulator supports the compression
 			scheme used, then the compressed files can be accessed
 			by the plugin (read-only). Note that
-			<span class='function'>z_open</span> supports multi-file
+			<span class='function'>z_open()</span> supports multi-file
 			archives, so the <span class='struct'>mdp_z_t</span> struct
 			returned by this function may include a list of multiple files.
 			See <a href="mdp_z_h.html"><span class='filename'>mdp_z.h</span></a>
@@ -494,7 +494,7 @@ values:
 		<td class='req_no_null'>No (NULL)</td>
 		<td>
 			Loads a file from an archive previously opened with the
-			<span class='function'>z_open</span> function.
+			<span class='function'>z_open()</span> function.
 		</td>
 	</tr>
 	<tr>
@@ -503,7 +503,7 @@ values:
 		<td class='req_no_null'>No (NULL)</td>
 		<td>
 			Closes an archive previously opened with the
-			<span class='function'>z_open</span> function.
+			<span class='function'>z_open()</span> function.
 		</td>
 	</tr>
 </table>
