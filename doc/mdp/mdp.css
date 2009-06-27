@@ -37,7 +37,7 @@ table, table td, table th
 }
 
 /* Basic identifiers. */
-.struct, .symbol, .variable, .macro, .type, .program, .value, .filename, .mdp_version, .function
+.struct, .symbol, .variable, .macro, .type, .program, .value, .filename, .mdp_version, .function, .enum
 {
 	font-family: monospace;
 	white-space: nowrap;

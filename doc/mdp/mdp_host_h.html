@@ -1,0 +1,516 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>MDP - mdp_host.h: Host Services</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<link rel='stylesheet' href='mdp.css' type='text/css'>
+</head>
+
+<body>
+
+<h1 class='doc_title'>MDP - mdp_host.h: Host Services</h1>
+<h4 class='doc_set'>Mega Drive Plugins v1.0.0-draft</h4>
+
+<div class='navbar'>
+	<span class='navitem'><a href="index.html">Index</a></span>
+	<span class='navarrow'>→</span>
+	<span class='navitem'><a href="mdp_host_h.html">mdp_host.h</a></span>
+</div>
+
+<p>
+When a plugin is initialized, its <span class='struct'>mdp_t</span>-><span class='struct'>func</span>-><span class='function'>init</span>
+function is called with a pointer to the the emulator's <span class='struct'>mdp_host_t</span>
+struct as a parameter. This struct contains pointers to useful functions within
+the emulator.
+</p>
+
+<p>Format of the <span class='struct'>mdp_host_t</span> struct:</p>
+
+<pre class='code'>
+#include &quot;mdp/mdp_host.h&quot;
+
+typedef struct _mdp_host_t
+{
+	/**
+	 * interfaceVersion: MDP version implemented by the emulator.
+	 */
+	const uint32_t interfaceVersion;
+	const uint32_t reserved;
+	/*! BEGIN: MDP v1.0 functions. !*/
+	
+	/**
+	 * val_set(), val_get(): Set or get int values.
+	 */
+	int (MDP_FNCALL *val_set)(struct _mdp_t *plugin, uint32_t valID, int val);
+	int (MDP_FNCALL *val_get)(uint32_t valID);
+	
+	/**
+	 * osd_printf(): Print a message to the on-screen display.
+	 */
+	int (MDP_FNCALL *osd_printf)(const char *msg, ...)
+		__attribute__ ((format (printf, 1, 2)));
+	
+	/**
+	 * renderer_register(): Register a renderer.
+	 * renderer_unregister(): Unregister a renderer.
+	 */
+	int (MDP_FNCALL *renderer_register)(struct _mdp_t *plugin, mdp_render_t *renderer);
+	int (MDP_FNCALL *renderer_unregister)(struct _mdp_t *plugin, mdp_render_t *renderer);
+	
+	/**
+	 * mem_read_*(): Memory read functions.
+	 * @param memID Memory ID.
+	 * @param address Address.
+	 * @param ret_value Variable to store the return value in.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_read_8) (int memID, uint32_t address, uint8_t  *ret_value);
+	int (MDP_FNCALL *mem_read_16)(int memID, uint32_t address, uint16_t *ret_value);
+	int (MDP_FNCALL *mem_read_32)(int memID, uint32_t address, uint32_t *ret_value);
+	
+	/**
+	 * mem_write_*(): Memory write functions.
+	 * @param plugin Plugin requesting memory write.
+	 * @param memID Memory ID.
+	 * @param address Address.
+	 * @param data Data.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_write_8) (struct _mdp_t *plugin, int memID, uint32_t address, uint8_t  data);
+	int (MDP_FNCALL *mem_write_16)(struct _mdp_t *plugin, int memID, uint32_t address, uint16_t data);
+	int (MDP_FNCALL *mem_write_32)(struct _mdp_t *plugin, int memID, uint32_t address, uint32_t data);
+	
+	/**
+	 * mem_read_block_*: Memory block read functions.
+	 * @param memID Memory ID.
+	 * @param address Starting address.
+	 * @param data Data buffer to store the data in.
+	 * @param length Length of the data.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_read_block_8) (int memID, uint32_t address, uint8_t  *data, uint32_t length);
+	int (MDP_FNCALL *mem_read_block_16)(int memID, uint32_t address, uint16_t *data, uint32_t length);
+	int (MDP_FNCALL *mem_read_block_32)(int memID, uint32_t address, uint32_t *data, uint32_t length);
+	
+	/**
+	 * mem_write_block_*: Memory block write functions.
+	 * @param plugin Plugin requesting memory write.
+	 * @param memID Memory ID.
+	 * @param address Starting address.
+	 * @param data Data buffer containing the data to write.
+	 * @param length Length of the data.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_write_block_8) (struct _mdp_t *plugin, int memID, uint32_t address, uint8_t  *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_16)(struct _mdp_t *plugin, int memID, uint32_t address, uint16_t *data, uint32_t length);
+	int (MDP_FNCALL *mem_write_block_32)(struct _mdp_t *plugin, int memID, uint32_t address, uint32_t *data, uint32_t length);
+	
+	/**
+	 * mem_size_get(): Get the size of a memory block.
+	 * @param memID Memory ID.
+	 * @return Memory size, or negative on error.
+	 */
+	int (MDP_FNCALL *mem_size_get)(int memID);
+	
+	/**
+	 * mem_size_set(): Set the size of a memory block.
+	 * @param plugin Plugin requesting memory size set.
+	 * @param memID Memory ID.
+	 * @param size New memory size.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *mem_size_set)(struct _mdp_t *plugin, int memID, unsigned int size);
+	
+	/**
+	 * reg_get(): Get a register value.
+	 * @param icID ID of the IC to get a register value from.
+	 * @param regID Register ID.
+	 * @param ret_value Variable to store the return value in.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_get)(int icID, int regID, uint32_t *ret_value);
+	
+	/**
+	 * reg_set(): Get a register value.
+	 * @param plugin Plugin requesting register set.
+	 * @param icID ID of the IC to set a register value in.
+	 * @param regID Register ID.
+	 * @param new_value New register value.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_set)(struct _mdp_t *plugin, int icID, int regID, uint32_t new_value);
+	
+	/**
+	 * reg_get_all(): Get all register values for a given IC.
+	 * @param icID ID of the IC to get all register values from.
+	 * @param reg_struct Pointer to register struct for this IC.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_get_all)(int icID, void *reg_struct);
+	
+	/**
+	 * reg_set_all(): Set all register values for a given IC.
+	 * @param plugin Plugin requesting register set.
+	 * @param icID ID of the IC to set all register values in.
+	 * @param reg_struct Pointer to register struct for this IC.
+	 * @return MDP error code.
+	 */
+	int (MDP_FNCALL *reg_set_all)(struct _mdp_t *plugin, int icID, void *reg_struct);
+	
+	/**
+	 * menu_item_add(): Add a menu item.
+	 * menu_item_remove(): Remove a menu item.
+	 * menu_item_set_text(): Set menu item text.
+	 * menu_item_get_text(): Get menu item text.
+	 * menu_item_set_checked(): Set menu item "checked" state.
+	 * menu_item_get_checked(): Get menu item "checked" state.
+	 */
+	int (MDP_FNCALL *menu_item_add)(struct _mdp_t *plugin, mdp_menu_handler_fn handler, int menu_id, const char *text);
+	int (MDP_FNCALL *menu_item_remove)(struct _mdp_t *plugin, int menu_item_id);
+	int (MDP_FNCALL *menu_item_set_text)(struct _mdp_t *plugin, int menu_item_id, const char *text);
+	int (MDP_FNCALL *menu_item_get_text)(struct _mdp_t *plugin, int menu_item_id, char *text_buf, unsigned int size);
+	int (MDP_FNCALL *menu_item_set_checked)(struct _mdp_t *plugin, int menu_item_id, int checked);
+	int (MDP_FNCALL *menu_item_get_checked)(struct _mdp_t *plugin, int menu_item_id);
+	
+	/* Event handler functions. */
+	int (MDP_FNCALL *event_register)(struct _mdp_t *plugin, int event_id, mdp_event_handler_fn handler);
+	int (MDP_FNCALL *event_unregister)(struct _mdp_t *plugin, int event_id, mdp_event_handler_fn handler);
+	
+	/* Window registration. */
+	int (MDP_FNCALL *window_register)(struct _mdp_t *plugin, void *window);
+	int (MDP_FNCALL *window_unregister)(struct _mdp_t *plugin, void *window);
+	void* (MDP_FNCALL *window_get_main)(void);
+	
+	/* Emulator control. */
+	int (MDP_FNCALL *emulator_control)(struct _mdp_t *plugin, MDP_EMUCTRL ctrl, void *param);
+	
+	/* Configuration functions. */
+	int (MDP_FNCALL *config_get)(struct _mdp_t *plugin, const char* key, const char* def, char *out_buf, unsigned int size);
+	int (MDP_FNCALL *config_set)(struct _mdp_t *plugin, const char* key, const char* value);
+	
+	/* Directory functions. */
+	int (MDP_FNCALL *dir_get_default_save_path)(char* buf, unsigned int size);
+	int (MDP_FNCALL *dir_register)(struct _mdp_t *plugin, const char *dir_name,
+				       mdp_dir_get_fn get_fn, mdp_dir_set_fn set_fn);
+	int (MDP_FNCALL *dir_unregister)(struct _mdp_t *plugin, int dir_id);
+	
+	/* Compression functions. */
+	int (MDP_FNCALL *crc32)(const uint8_t* buf, int length, uint32_t *crc32_out);
+	int (MDP_FNCALL *z_open)(const char* filename, mdp_z_t **z_out);
+	int (MDP_FNCALL *z_get_file)(mdp_z_t *z_file, mdp_z_entry_t *z_entry, void *buf, size_t size);
+	int (MDP_FNCALL *z_close)(mdp_z_t *z_file);
+	
+	/*! END: MDP v1.0 functions. !*/
+} mdp_host_t;
+</pre>
+
+<p>
+Note that, unlike most other MDP structs, some fields in
+<span class='struct'>mdp_host_t</span> are declared as optional.
+That is, they do not have to be implemented by the emulator. The
+&quot;optional&quot; field may contain one of the following three
+values:
+</p>
+
+<ul>
+	<li>Yes: Function <strong>must</strong> be implemented.</li>
+	<li>
+		No (Not NULL): Function does not have to be implemented,
+		but must point to a valid function that returns
+		<span class='value'>-MDP_ERR_FUNCTION_NOT_IMPLEMENTED</span>.
+	</li>
+	<li>
+		No (NULL): Function does not have to be implemented,
+		and the pointer may be set to <span class='value'>NULL</span>.
+	</li>
+</ul>
+
+<p>Fields:</p>
+
+<table class='mdp_host_t'>
+	<tr>
+		<th>Field</th>
+		<th>Type</th>
+		<th>Required</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>interfaceVersion</td>
+		<td class='type'>uint32_t</td>
+		<td class='req_yes'>Yes</td>
+		<td>
+			The MDP interface version used by the emulator. Can be
+			generated using the
+			<span class="macro">MDP_VERSION(major, minor, revision)</span>
+			macro, or by using the MDP_INTERFACE_VERSION macro,
+			which is defined as the interface version specified in
+			the MDP headers being used.<br><br>
+			Plugins should check this value if they can take advantage
+			of functions from newer versions of MDP but want to retain
+			compatibility with older versions.
+		</td>
+	</tr>
+	<tr>
+		<td>reserved</td>
+		<td class='type'>uint32_t</td>
+		<td class='req_na'>N/A</td>
+		<td>
+			Reserved. Do not use this field.
+		</td>
+	</tr>
+	<tr>
+		<td>osd_printf</td>
+		<td class='type'>Function</td>
+		<td class='req_yes'>Yes</td>
+		<td>
+			Prints a message to the onscreen display. This function
+			supports printf()-style formatting.
+		</td>
+	</tr>
+	<tr>
+		<td>val_set<br>val_get</td>
+		<td class='type'>Function</td>
+		<td class='req_yes'>Yes</td>
+		<td>
+			Set/get emulator values. These values are defined in
+			<span class='enum'><a href="#MDP_VAL">MDP_VAL</a></span>.
+		</td>
+	</tr>
+	<tr>
+		<td>renderer_register<br>renderer_unregister</td>
+		<td class='type'>Function</td>
+		<td class='req_yes'>Yes</td>
+		<td>
+			Registers/unregisters a rendering plugin. See
+			<a href="mdp_render_h.html"><span class='filename'>mdp_render.h</span></a>
+			for more information about renderers.
+		</td>
+	</tr>
+	<tr>
+		<td>mem_read_8<br>mem_read_16<br>mem_read_32</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Reads a byte/word/dword from memory. Note that word and dword
+			memory reads must be on an aligned (even) boundary. Attempting
+			to read a word/dword on an unaligned boundary will result in
+			an error.
+		</td>
+	</tr>
+	<tr>
+		<td>mem_write_8<br>mem_write_16<br>mem_write_32</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Writes a byte/word/dword to memory. Note that word and dword
+			memory write must be on an aligned (even) boundary. Attempting
+			to write a word/dword on an unaligned boundary will result in
+			an error.
+		</td>
+	</tr>
+	<tr>
+		<td>mem_read_block_8<br>mem_read_block_16<br>mem_read_block_32</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Reads a block from memory. Note that word-sized and dword-sized
+			block reads must start on an aligned (even) boundary. Also, the
+			length parameter is in bytes/words/dwords. For example, a length
+			of <span class='value'>2</span> in the <span class='function'>mem_read_block_32()</span>
+			function will read 8 bytes.
+		</td>
+	</tr>
+	<tr>
+		<td>mem_write_block_8<br>mem_write_block_16<br>mem_write_block_32</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Writes a block to memory. Note that word-sized and dword-sized
+			block writes must start on an aligned (even) boundary. Also, the
+			length parameter is in bytes/words/dwords. For example, a length
+			of <span class='value'>2</span> in the <span class='function'>mem_write_block_32()</span>
+			function will write 8 bytes.
+		</td>
+	</tr>
+	<tr>
+		<td>reg_set<br>reg_get</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Set/get a register from an active IC. See
+			<a href="mdp_reg_h.html"><span class='filename'>mdp_reg.h</span></a>
+			for more information about registers.
+		</td>
+	</tr>
+	<tr>
+		<td>reg_set_all<br>reg_get_all</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Set/get all registers from an active IC. See
+			<a href="mdp_reg_h.html"><span class='filename'>mdp_reg.h</span></a>
+			for more information about registers.
+		</td>
+	</tr>
+	<tr>
+		<td>menu_item_add<br>menu_item_remove</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Adds or removes a menu item from the emulator's menu system.
+			Parameters include a callback function, a menu ID (e.g. if the
+			emulator supports more than one menu), and initial text. See
+			<span class='enum'><a href="#MDP_MENU">MDP_MENU</a></span>
+			for a list of valid menu IDs. (Note that if a menu ID that isn't
+			supported by the emulator is specified, it will map to the
+			default menu.)
+		</td>
+	</tr>
+	<tr>
+		<td>menu_item_set_text<br>menu_item_get_text</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Set/get the text of a menu item. If the text pointer
+			is NULL, the menu text will be cleared.
+		</td>
+	</tr>
+	<tr>
+		<td>menu_item_set_checked<br>menu_item_get_checked</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Set/get the checked state of a menu item.
+			<span class='value'>0</span> indicates not checked;
+			anything else indicates checked.
+		</td>
+	</tr>
+	<tr>
+		<td>event_register<br>event_unregister</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Registers/unregisters an event handler. See
+			<a href="mdp_event_h.html"><span class='filename'>mdp_event.h</span></a>
+			for more information about event handlers.
+		</td>
+	</tr>
+	<tr>
+		<td>window_register<br>window_unregister</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Registers/unregisters a window with the emulator's
+			window management system.
+		</td>
+	</tr>
+	<tr>
+		<td>window_get_main</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Returns a pointer to the main window. This is usually
+			of type <span class='type'>GtkWindow*</span> on GTK+ and
+			<span class='type'>HWND</span> on Win32, except it is
+			casted to <span class='type'>void*</span> in order for
+			the MDP headers to retain OS-independence. The active UI
+			system should be checked using the <span class='function'>val_get()</span>
+			MDP host services function.
+		</td>
+	</tr>
+	<tr>
+		<td>emulator_control</td>
+		<td class='type'>Function</td>
+		<td class='req_yes'>Yes</td>
+		<td>
+			Executes an emulator control function. See
+			<span class='enum'><a href="#MDP_EMUCTRL">MDP_EMUCTRL</a></span>
+			for a list of supported functions.
+		</td>
+	</tr>
+	<tr>
+		<td>config_get<br>config_set</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Get/set configuration information. Note that these
+			functions should be executed after the emulator has
+			loaded its configuration or before it saves its
+			configuration. Two events exist for this purpose; see
+			<a href="mdp_event_h.html"><span class='filename'>mdp_event.h</span></a>
+			for more information.
+		</td>
+	</tr>
+	<tr>
+		<td>dir_get_default_save_path</td>
+		<td class='type'>Function</td>
+		<td class='req_no_notnull'>No (Not NULL)</td>
+		<td>
+			Get the default save path for the emulator. This is
+			used by some plugins that save configuration files
+			separately from the main emulator configuration file.
+		</td>
+	</tr>
+	<tr>
+		<td>dir_register<br>dir_unregister</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Registers/unregisters a configurable directory
+			with the emulator. This allows the user to configure
+			all directories in a single window. Some plugins may
+			use this to separate certain types of dump files from
+			the rest of the save directory.
+		</td>
+	</tr>
+	<tr>
+		<td>crc32</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Calculates the CRC32 of a block of memory.
+		</td>
+	</tr>
+	<tr>
+		<td>z_open</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Opens a compressed (or uncompressed) file. If the file
+			is compressed and the emulator supports the compression
+			scheme used, then the compressed files can be accessed
+			by the plugin (read-only). Note that
+			<span class='function'>z_open</span> supports multi-file
+			archives, so the <span class='struct'>mdp_z_t</span> struct
+			returned by this function may include a list of multiple files.
+			See <a href="mdp_z_h.html"><span class='filename'>mdp_z.h</span></a>
+			for more information about the MDP file compression structs.
+		</td>
+	</tr>
+	<tr>
+		<td>z_get_file</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Loads a file from an archive previously opened with the
+			<span class='function'>z_open</span> function.
+		</td>
+	</tr>
+	<tr>
+		<td>z_close</td>
+		<td class='type'>Function</td>
+		<td class='req_no_null'>No (NULL)</td>
+		<td>
+			Closes an archive previously opened with the
+			<span class='function'>z_open</span> function.
+		</td>
+	</tr>
+</table>
+
+<hr>
+
+<h1>TODO</h1>
+
+</body>
+</html>
