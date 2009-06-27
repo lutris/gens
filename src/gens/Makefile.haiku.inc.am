@@ -21,13 +21,14 @@ gens_SOURCES += \
 #endif # GENS_OS_HAIKU
 #endif # GENS_CDROM
 
-#gens_SOURCES += \
+# UI sources.
+gens_SOURCES += \
 #		ui/haiku/gens_ui_haiku.cpp \
 #		ui/haiku/haiku-misc.c \
 #		ui/haiku/haiku-uri.c \
 #		ui/haiku/gens/gens_window.c \
 #		ui/haiku/gens/gens_window_callbacks.cpp \
-#		ui/haiku/gens/gens_window_sync.cpp \
+		ui/haiku/gens/gens_window_sync.cpp
 #		ui/haiku/gens/gens_menu.cpp \
 #		ui/haiku/controller_config/cc_window.c \
 #		ui/haiku/bios_misc_files/bmf_window.cpp \
@@ -69,12 +70,11 @@ noinst_HEADERS += \
 #		segacd/aspi.h
 #endif
 
-#noinst_HEADERS += \
-#		ui/haiku/haiku-misc.h \
-#		ui/haiku/haiku-uri.h \
+# UI headers.
+noinst_HEADERS += \
 #		ui/haiku/gens/gens_window.h \
 #		ui/haiku/gens/gens_window_callbacks.hpp \
-#		ui/haiku/gens/gens_window_sync.hpp \
+		ui/haiku/gens/gens_window_sync.hpp
 #		ui/haiku/gens/gens_menu.hpp \
 #		ui/haiku/controller_config/cc_window.h \
 #		ui/haiku/bios_misc_files/bmf_window.hpp \
