@@ -111,8 +111,7 @@ void Sync_Gens_Window(void)
 
 /**
  * Sync_Gens_Window_FileMenu(): Synchronize the File Menu.
- * This does NOT synchronize the ROM History submenu, since synchronizing the
- * ROM History submenu can be slow if some ROMs are located on network shares.
+ * This does NOT synchronize the ROM History submenu.
  */
 void Sync_Gens_Window_FileMenu(void)
 {
@@ -143,8 +142,6 @@ void Sync_Gens_Window_FileMenu(void)
 
 /**
  * Sync_Gens_Window_FileMenu_ROMHistory(): Synchronize the File, ROM History submenu.
- * NOTE: If some ROMs are located on network shares, this function will be SLOW,
- * since it has to check the contents of the ROM to determine its type.
  */
 void Sync_Gens_Window_FileMenu_ROMHistory(void)
 {
