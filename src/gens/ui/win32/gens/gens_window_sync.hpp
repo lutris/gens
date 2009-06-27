@@ -23,12 +23,6 @@
 #ifndef GENS_WIN32_GENS_WINDOW_SYNC_HPP
 #define GENS_WIN32_GENS_WINDOW_SYNC_HPP
 
-#define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
