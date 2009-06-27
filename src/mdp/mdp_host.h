@@ -76,7 +76,10 @@ typedef enum _MDP_UI
 /* MDP_MENU: Menu IDs. */
 typedef enum _MDP_MENU
 {
-	MDP_MENU_DEFAULT	= 0
+	MDP_MENU_DEFAULT	= 0,
+	MDP_MENU_PLUGINS	= 0,
+	MDP_MENU_VIDEO		= 1,
+	MDP_MENU_AUDIO		= 2
 } MDP_MENU;
 
 /* Menu Handler function. */
