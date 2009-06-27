@@ -38,6 +38,8 @@ using std::string;
 using std::list;
 using std::deque;
 
+// GTK+ includes.
+#include <gtk/gtk.h>
 #include "gtk-misc.h"
 
 #include "gens_window.h"
