@@ -312,7 +312,7 @@ static int ips_apply(uint32_t dest_length, list<ips_block_t>& lstIPSBlocks)
 	// Patch applied successfully.
 	// Reset the emulator for the patch to take effect.
 	// TODO: Tell the emulator to recheck the ROM for changes to the header.
-	ips_host_srv->emulator_control(&mdp, MDP_EMUCTRL_RESET, NULL);
+	ips_host_srv->emulator_control(&mdp, MDP_EMUCTRL_RESET_HARD, NULL);
 	
 	// TODO: Write a message to the OSD indicating that a patch has been loaded.
 	
