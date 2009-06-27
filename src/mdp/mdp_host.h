@@ -106,6 +106,7 @@ typedef struct _mdp_host_t
 	 */
 	const uint32_t interfaceVersion;
 	const uint32_t reserved;
+	
 	/*! BEGIN: MDP v1.0 functions. !*/
 	
 	/**
