@@ -269,7 +269,6 @@ typedef struct _mdp_host_t
 	
 	/*! END: MDP v1.0 functions. !*/
 } mdp_host_t;
-#pragma pack()
 
 #ifdef __cplusplus
 }
