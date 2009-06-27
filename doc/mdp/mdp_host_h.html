@@ -19,10 +19,10 @@
 </div>
 
 <p>
-When a plugin is initialized, its <span class='struct'>mdp_t</span>-><span class='struct'>func</span>-><span class='function'>init</span>
+When a plugin is initialized, its <span class='struct'>mdp_t</span>-><span class='struct'>func</span>-><span class='function'>init()</span>
 function is called with a pointer to the the emulator's <span class='struct'>mdp_host_t</span>
-struct as a parameter. This struct contains pointers to useful functions within
-the emulator.
+struct as a parameter. (See <a href="mdp_h.html"><span class='filename'>mdp.h</span></a> for
+more information.) This struct contains pointers to useful functions within the emulator.
 </p>
 
 <p>Format of the <span class='struct'>mdp_host_t</span> struct:</p>
@@ -210,7 +210,7 @@ typedef struct _mdp_host_t
 Note that, unlike most other MDP structs, some fields in
 <span class='struct'>mdp_host_t</span> are declared as optional.
 That is, they do not have to be implemented by the emulator. The
-&quot;optional&quot; field may contain one of the following three
+&quot;Required&quot; field may contain one of the following three
 values:
 </p>
 
