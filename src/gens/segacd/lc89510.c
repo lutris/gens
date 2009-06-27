@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: LC89510  emulator.                                                *
+ * Gens: LC89510 emulator.                                                *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
