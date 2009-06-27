@@ -66,7 +66,7 @@
 #include "video/vdraw_text.hpp"
 
 // Text drawing functions.
-static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, ...);
+static int MDP_FNCALL mdp_host_osd_printf(const char *msg, ...);
 
 
 mdp_host_t Gens_MDP_Host =
@@ -223,20 +223,19 @@ void* MDP_FNCALL mdp_host_window_get_main(void)
 
 /**
  * mdp_host_osd_printf(): Print formatted text to the screen. (va_list version)
- * @param duration Duration for the message to appear, in milliseconds.
  * @param msg Message to write. (printf-formatted)
  * @param ap Format arguments.
  * @return MDP error code.
  */
-static int MDP_FNCALL mdp_host_osd_printf(const int duration, const char *msg, ...)
+static int MDP_FNCALL mdp_host_osd_printf(const char *msg, ...)
 {
-	if (duration <= 0 || !msg)
+	if (!msg)
 		return -MDP_ERR_INVALID_PARAMETERS;
 	
 	// Print the message.
 	va_list ap;
 	va_start(ap, msg);
-	vdraw_text_vprintf(duration, msg, ap);
+	vdraw_text_vprintf(1500, msg, ap);
 	va_end(ap);
 	
 	return MDP_ERR_OK;
