@@ -117,7 +117,7 @@
 #define GENS_KEY_NUM_MINUS	'-'
 #define GENS_KEY_NUM_PLUS	'+'
 #define GENS_KEY_NUM_ENTER	B_ENTER
-#define GENS_KEY_NUM_EQUALS	'='	// lol Macintosh
+#define GENS_KEY_NUM_EQUALS	'='
 
 // Arrow Keys
 #define GENS_KEY_UP		B_UP_ARROW
