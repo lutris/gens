@@ -73,6 +73,9 @@ static void make_extension_table(const char* string)
 	unsigned int idx;
 	unsigned int i;
 	
+	if (!string)
+		return;
+	
 	/* Count the number of spaces in the string.  That gives a base-line
 	 * figure for the number of extension in the string.
 	 */
