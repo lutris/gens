@@ -180,6 +180,44 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 {
 	if (reinitSDL)
 	{
+		// Enable double buffering.
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		
+		// Color depth values.
+		if (bppOut == 15)
+		{
+			// 15-bit color. (Mode 555)
+			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 15);
+			SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
+			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  5);
+			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
+			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+			m_pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+			m_pixelFormat = GL_BGRA;
+		}
+		else if (bppOut == 16)
+		{
+			// 16-bit color. (Mode 565)
+			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+			SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
+			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
+			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
+			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+			m_pixelType = GL_UNSIGNED_SHORT_5_6_5;
+			m_pixelFormat = GL_RGB;
+		}
+		else //if (bppOut == 32)
+		{
+			// 32-bit color.
+			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+			SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
+			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
+			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
+			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+			m_pixelType = GL_UNSIGNED_BYTE;
+			m_pixelFormat = GL_BGRA;
+		}
+		
 		vdraw_sdl_gl_screen = SDL_SetVideoMode(w, h, 0, VDRAW_SDL_GL_FLAGS | (vdraw_get_fullscreen() ? SDL_FULLSCREEN : 0));
 		if (!vdraw_sdl_gl_screen)
 		{
@@ -246,44 +284,6 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, textures);
-	
-	// Enable double buffering.
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	
-	// Color depth values.
-	if (bppOut == 15)
-	{
-		// 15-bit color. (Mode 555)
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 15);
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  5);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
-		m_pixelType = GL_UNSIGNED_SHORT_1_5_5_5_REV;
-		m_pixelFormat = GL_BGRA;
-	}
-	else if (bppOut == 16)
-	{
-		// 16-bit color. (Mode 565)
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
-		m_pixelType = GL_UNSIGNED_SHORT_5_6_5;
-		m_pixelFormat = GL_RGB;
-	}
-	else //if (bppOut == 32)
-	{
-		// 32-bit color.
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
-		m_pixelType = GL_UNSIGNED_BYTE;
-		m_pixelFormat = GL_BGRA;
-	}
 	
 	// Initialize the texture.
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
