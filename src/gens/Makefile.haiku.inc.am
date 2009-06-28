@@ -54,12 +54,12 @@ gens_SOURCES += \
 noinst_HEADERS += \
 		emulator/g_main_haiku.hpp \
 		port/ini_old.h \
-		port/timer.h
+		port/timer.h \
 #		video/vdraw_sdl_common.h \
 #		video/vdraw_sdl.h \
 #		input/input_sdl.h \
 #		input/input_sdl_events.hpp \
-#		input/input_sdl_keys.h \
+		input/input_haiku_keys.h
 #		input/input_sdl_key_names.h \
 #		input/input_sdl_joystate.h \
 #		audio/audio_sdl.h

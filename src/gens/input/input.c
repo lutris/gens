@@ -4,6 +4,7 @@
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -47,17 +48,21 @@ const char input_player_names[8][4] =
 
 
 // Input backends.
-#ifdef GENS_OS_WIN32
+#if defined(GENS_OS_WIN32)
 	#include "input_dinput_t.h"
-#else /* !GENS_OS_WIN32 */
+#elseif defined(GENS_OS_HAIKU)
+	#include "input_haiku.h"
+#else /* GENS_OS_UNIX */
 	#include "input_sdl.h"
 #endif /* GENS_OS_WIN32 */
 
 static const input_backend_t * const input_backends[] =
 {
-	#ifdef GENS_OS_WIN32
+	#if defined(GENS_OS_WIN32)
 		&input_backend_dinput,
-	#else /* !GENS_OS_WIN32 */
+	#elseif defined(GENS_OS_HAIKU)
+		&input_backend_haiku,
+	#else /* !GENS_OS_UNIX */
 		&input_backend_sdl,
 	#endif /* GENS_OS_WIN32 */
 };

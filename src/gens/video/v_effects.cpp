@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifndef GENS_OS_WIN32
+#ifdef GENS_OS_UNIX
 #include <SDL/SDL.h>
 #endif
 
@@ -59,7 +59,7 @@ int Update_Gens_Logo(void)
 	{
 		// TODO: Don't use SDL for image loading.
 		// TODO: Fix this for Win32.
-#ifndef GENS_OS_WIN32
+#ifdef GENS_OS_UNIX
 		SDL_Surface* Logo;
 		
 		Logo = SDL_LoadBMP(GENS_DATADIR "/gens_big.bmp");

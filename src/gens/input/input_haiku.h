@@ -1,5 +1,5 @@
 /***************************************************************************
- * Gens: (Haiku) Main Window.                                               *
+ * Gens: Input Handler - Haiku Backend.                                    *
  *                                                                         *
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
@@ -21,18 +21,19 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.           *
  ***************************************************************************/
 
-#ifndef GENS_HAIKU_GENS_WINDOW_H
-#define GENS_HAIKU_GENS_WINDOW_H
+#ifndef GENS_INPUT_HAIKU_H
+#define GENS_INPUT_HAIKU_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern void *gens_window;
-void gens_window_create(void);
+#include "input.h"
+
+extern const input_backend_t input_backend_haiku;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* GENS_HAIKU_GENS_WINDOW_H */
+#endif /* GENS_INPUT_HAIKU_H */

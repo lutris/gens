@@ -4,6 +4,7 @@
  * Copyright (c) 1999-2002 by Stéphane Dallongeville                       *
  * Copyright (c) 2003-2004 by Stéphane Akhoun                              *
  * Copyright (c) 2008-2009 by David Korth                                  *
+ * Copyright (c) 2009 by Phil Costin                                       *
  *                                                                         *
  * This program is free software; you can redistribute it and/or modify it *
  * under the terms of the GNU General Public License as published by the   *
@@ -28,12 +29,12 @@
 #endif
 
 // OS-specific includes.
-#if (defined(GENS_OS_HAIKU))
-// Keys may be part of UI... (TODO)
-#elif (defined(GENS_OS_UNIX))
+#if (defined(GENS_OS_UNIX))
 #include "input_sdl_keys.h"
 #elif (defined(GENS_OS_WIN32))
 #include "input_win32_keys.h"
+#elif (defined(GENS_OS_HAIKU))
+#include "input_haiku_keys.h"
 #else
 #error Unsupported operating system.
 #endif
@@ -146,8 +147,10 @@ typedef enum
 // Input backends.
 typedef enum
 {
-	#ifdef GENS_OS_WIN32
+	#if defined(GENS_OS_WIN32)
 		INPUT_BACKEND_DINPUT,
+	#elseif defined(GENS_OS_HAIKU)
+		INPUT_BACKEND_HAIKU,
 	#else /* !GENS_OS_WIN32 */
 		INPUT_BACKEND_SDL,
 	#endif /* GENS_OS_WIN32 */
