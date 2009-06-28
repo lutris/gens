@@ -24,6 +24,9 @@
 #include "vdraw_gdi.h"
 #include "v_inline.h"
 
+// Message logging.
+#include "macros/log_msg.h"
+
 #include "emulator/g_main.hpp"
 
 // Gens window.
@@ -139,7 +142,10 @@ static int vdraw_gdi_init(void)
 	if (!hdcComp)
 	{
 		// Error creating the DC.
-		vdraw_init_fail("vdraw_gdi_init(): Error in CreateCompatibleDC().");
+		DWORD dwErr = GetLastError();
+		
+		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+			"CreateCompatibleDC() failed: 0x%08X", dwErr);
 		return -1;
 	}
 	
@@ -157,7 +163,16 @@ static int vdraw_gdi_init(void)
 	if (!hbmpDraw)
 	{
 		// Error creating the DIB.
-		vdraw_init_fail("vdraw_gdi_init(): Error in CreateDIBSection().");
+		DWORD dwErr = GetLastError();
+		
+		if (hdcComp)
+		{
+			DeleteDC(hdcComp);
+			hdcComp = NULL;
+		}
+		
+		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+			"CreateDIBSection() failed: 0x%08X", dwErr);
 		return -2;
 	}
 	
