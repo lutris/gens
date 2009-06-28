@@ -198,7 +198,6 @@ int vdraw_gl_is_supported(void)
 	// Close the X11 display.
 	XCloseDisplay(dpy);
 	
-	printf("GLX: %d\n", rval);
 	// If GLX was queried successfully, rval is TRUE; otherwise, it's FALSE.
 	return rval;
 }
