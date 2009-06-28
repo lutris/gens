@@ -496,10 +496,10 @@ static void vdraw_gdi_draw_border(void)
 		const uint8_t stretch = vdraw_get_stretch();
 		
 		// MD color has R and B channels swapped from Windows GDI.
-		uint8_t r = (vdraw_border_color_32 >> 16) & 0xFF;
-		uint8_t g = (vdraw_border_color_32 >> 8) & 0xFF;
-		uint8_t b = (vdraw_border_color_32) & 0xFF;
-		HBRUSH hbrBorder = CreateSolidBrush(RGB(r, g, b));
+		const uint32_t bcolor = ((vdraw_border_color_32 >> 16) & 0xFF) |
+					 (vdraw_border_color_32 & 0x00FF00) |
+					((vdraw_border_color_32 & 0xFF) << 16);
+		HBRUSH hbrBorder = CreateSolidBrush(bcolor);
 		
 		RECT rectBorder;
 		
