@@ -100,9 +100,12 @@ typedef struct _Gens_VideoSettings_t
 	int borderColorEmulation;
 	int pauseTint;
 #ifdef GENS_OPENGL
-	int Width_GL;
-	int Height_GL;
-	int glLinearFilter;
+	struct
+	{
+		int width;
+		int height;
+		int glLinearFilter;
+	} GL;
 #endif
 } Gens_VideoSettings_t;
 

@@ -179,8 +179,8 @@ void glres_window_close(void)
  */
 static void glres_window_init(void)
 {
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spnWidth), Video.Width_GL);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spnHeight), Video.Height_GL);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spnWidth), Video.GL.width);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spnHeight), Video.GL.height);
 	
 	// Disable the "Apply" button initially.
 	gtk_widget_set_sensitive(btnApply, false);

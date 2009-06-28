@@ -235,17 +235,17 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	gtk_widget_set_sensitive(gens_menu_find_item(IDM_GRAPHICS_STRETCH),
 				 (vdraw_cur_backend_flags & VDRAW_BACKEND_FLAG_STRETCH));
 	
-	// Bits per pixel
+	// SDL color depth.
 	switch (bppOut)
 	{
 		case 15:
-			id = IDM_GRAPHICS_BPP_15;
+			id = IDM_GRAPHICS_SDL_BPP_15;
 			break;
 		case 16:
-			id = IDM_GRAPHICS_BPP_16;
+			id = IDM_GRAPHICS_SDL_BPP_16;
 			break;
 		case 32:
-			id = IDM_GRAPHICS_BPP_32;
+			id = IDM_GRAPHICS_SDL_BPP_32;
 			break;
 		default:
 			id = 0;
@@ -253,7 +253,7 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	}
 	
 	if (id != 0)
-		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), TRUE);
+		gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(id)), true);
 	
 	// Rebuild the Render submenu.
 	Sync_Gens_Window_GraphicsMenu_Render(gens_menu_find_item(IDM_GRAPHICS_RENDER));
@@ -270,11 +270,11 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	
 #ifdef GENS_OPENGL
 	//gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL)), Video.OpenGL);
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)), Video.glLinearFilter);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gens_menu_find_item(IDM_GRAPHICS_OPENGL_FILTER)), Video.GL.glLinearFilter);
 	
 	// OpenGL Resolution
 	int resID = 0;
-	uint32_t curRes = GENS_GWS_RES(Video.Width_GL, Video.Height_GL);
+	uint32_t curRes = GENS_GWS_RES(Video.GL.width, Video.GL.height);
 	while (gws_opengl_resolutions[resID][0] != 0)
 	{
 		if (gws_opengl_resolutions[resID][0] == curRes)
@@ -298,7 +298,8 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	{
 		// Custom resolution. Set the text.
 		char sCustomRes[32];
-		sprintf(sCustomRes, "Custom... (%dx%d)", Video.Width_GL, Video.Height_GL);
+		snprintf(sCustomRes, sizeof(sCustomRes), "Custom... (%dx%d)", Video.GL.width, Video.GL.height);
+		sCustomRes[sizeof(sCustomRes)] = 0x00;
 		gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(mnuGLResCustom))), sCustomRes);
 	}
 	else

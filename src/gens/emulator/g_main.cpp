@@ -143,9 +143,9 @@ int Init_Settings(void)
 	Video.borderColorEmulation = 1;
 	Video.pauseTint = 1;
 #ifdef GENS_OPENGL
-	Video.Width_GL = 640;
-	Video.Height_GL = 480;
-	Video.glLinearFilter = 0;
+	Video.GL.width = 640;
+	Video.GL.height = 480;
+	Video.GL.glLinearFilter = 0;
 #endif
 	
 	// Default bpp.

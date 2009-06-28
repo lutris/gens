@@ -354,11 +354,31 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 		
+#ifdef GENS_OS_UNIX
+		case IDM_GRAPHICS_SDL_BPP_15:
+			vdraw_set_bpp(15, true);
+			Sync_Gens_Window_GraphicsMenu();
+			vdraw_text_write("SDL color depth: 15-bit (555)", 1500);
+			break;
+		
+		case IDM_GRAPHICS_SDL_BPP_16:
+			vdraw_set_bpp(16, true);
+			Sync_Gens_Window_GraphicsMenu();
+			vdraw_text_write("SDL color depth: 16-bit (565)", 1500);
+			break;
+		
+		case IDM_GRAPHICS_SDL_BPP_32:
+			vdraw_set_bpp(32, true);
+			Sync_Gens_Window_GraphicsMenu();
+			vdraw_text_write("SDL color depth: 32-bit", 1500);
+			break;
+#endif /* GENS_OS_UNIX */
+		
 #ifdef GENS_OPENGL
 		case IDM_GRAPHICS_OPENGL_FILTER:
-			Video.glLinearFilter = !state;
+			Video.GL.glLinearFilter = !state;
 			
-			if (Video.glLinearFilter)
+			if (Video.GL.glLinearFilter)
 				vdraw_text_write("Enabled OpenGL Linear Filter", 1500);
 			else
 				vdraw_text_write("Disabled OpenGL Linear Filter", 1500);
@@ -415,26 +435,6 @@ static int gens_menu_callback_GraphicsMenu(uint16_t menuID, uint16_t state)
 			Sync_Gens_Window_GraphicsMenu();
 			break;
 #endif /* GENS_OPENGL */
-		
-#ifdef GENS_OS_UNIX
-		case IDM_GRAPHICS_BPP_15:
-			vdraw_set_bpp(15, TRUE);
-			Sync_Gens_Window_GraphicsMenu();
-			vdraw_text_write("Selected 15-bit color depth", 1500);
-			break;
-		
-		case IDM_GRAPHICS_BPP_16:
-			vdraw_set_bpp(16, TRUE);
-			Sync_Gens_Window_GraphicsMenu();
-			vdraw_text_write("Selected 16-bit color depth", 1500);
-			break;
-		
-		case IDM_GRAPHICS_BPP_32:
-			vdraw_set_bpp(32, TRUE);
-			Sync_Gens_Window_GraphicsMenu();
-			vdraw_text_write("Selected 32-bit color depth", 1500);
-			break;
-#endif /* GENS_OS_UNIX */
 		
 		case IDM_GRAPHICS_COLORADJUST:
 			ca_window_show();

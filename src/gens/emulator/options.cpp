@@ -1095,12 +1095,12 @@ void Options::setOpenGL_Resolution(int w, int h)
 {
 	// TODO: Move this to VDraw_GL.
 	
-	if (Video.Width_GL == w && Video.Height_GL == h)
+	if (Video.GL.width == w && Video.GL.height == h)
 		return;
 	
 	// OpenGL resolution has changed.
-	Video.Width_GL = w;
-	Video.Height_GL = h;
+	Video.GL.width = w;
+	Video.GL.height = h;
 	
 	// Print the resolution information.
 	vdraw_text_printf(1500, "Selected %dx%d resolution", w, h);

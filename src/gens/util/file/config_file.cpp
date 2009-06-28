@@ -237,9 +237,9 @@ int Config::save(const string& filename)
 	
 	cfg.writeString("Graphics", "Backend", vdraw_backends[vdraw_cur_backend_id]->name);
 #ifdef GENS_OPENGL
-	cfg.writeInt("Graphics", "OpenGL Width", Video.Width_GL);
-	cfg.writeInt("Graphics", "OpenGL Height", Video.Height_GL);
-	cfg.writeInt("Graphics", "OpenGL Filter", Video.glLinearFilter);
+	cfg.writeInt("Graphics", "OpenGL Width", Video.GL.width);
+	cfg.writeInt("Graphics", "OpenGL Height", Video.GL.height);
+	cfg.writeInt("Graphics", "OpenGL Filter", Video.GL.glLinearFilter);
 #endif /* GENS_OPENGL */
 	
 	cfg.writeInt("Graphics", "Stretch", Options::stretch());
@@ -564,9 +564,9 @@ int Config::load(const string& filename, void* gameActive)
 	}
 	
 #ifdef GENS_OPENGL
-	Video.Width_GL = cfg.getInt("Graphics", "OpenGL Width", 640);
-	Video.Height_GL = cfg.getInt("Graphics", "OpenGL Height", 480);
-	Video.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
+	Video.GL.width = cfg.getInt("Graphics", "OpenGL Width", 640);
+	Video.GL.height = cfg.getInt("Graphics", "OpenGL Height", 480);
+	Video.GL.glLinearFilter = cfg.getInt("Graphics", "OpenGL Filter", 0);
 	
 	// Set the OpenGL renderer.
 	// NOTE: Don't do this while Gens is loading; otherwise, GTK+ raises an assert

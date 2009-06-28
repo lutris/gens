@@ -144,8 +144,8 @@ int vdraw_sdl_gl_init(void)
 	
 	// OpenGL width/height.
 	// TODO: Move these values here or something.
-	const int w = Video.Width_GL;
-	const int h = Video.Height_GL;
+	const int w = Video.GL.width;
+	const int h = Video.GL.height;
 	
 	// Set up SDL embedding.
 	vdraw_sdl_common_embed(w, h);
@@ -397,7 +397,7 @@ static int vdraw_sdl_gl_flip(void)
 	
 	// Set the GL MAG filter.
 	// TODO: Only do this when the linear filter setting is changed.
-	if (Video.glLinearFilter)
+	if (Video.GL.glLinearFilter)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	else
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -538,8 +538,8 @@ static void vdraw_sdl_gl_update_renderer(void)
 		return;
 	const int w = 320 * scale;
 	
-	if (vdraw_sdl_gl_screen->w == Video.Width_GL &&
-	    vdraw_sdl_gl_screen->h == Video.Height_GL &&
+	if (vdraw_sdl_gl_screen->w == Video.GL.width &&
+	    vdraw_sdl_gl_screen->h == Video.GL.height &&
 	    rowLength == w && textureSize == vdraw_sdl_gl_calc_texture_size(scale))
 	{
 		// No resolution switch is necessary. Simply clear the screen.
@@ -560,11 +560,11 @@ static void vdraw_sdl_gl_update_renderer(void)
 	}
 	
 	// Reinitialize the GL buffers.
-	if (vdraw_sdl_gl_screen->w == Video.Width_GL &&
-	    vdraw_sdl_gl_screen->h == Video.Height_GL)
+	if (vdraw_sdl_gl_screen->w == Video.GL.width &&
+	    vdraw_sdl_gl_screen->h == Video.GL.height)
 	{
 		// Output resolution is the same. Don't reinitialize SDL.
-		vdraw_sdl_gl_init_opengl(Video.Width_GL, Video.Height_GL, FALSE);
+		vdraw_sdl_gl_init_opengl(Video.GL.width, Video.GL.height, FALSE);
 	}
 	else
 	{
