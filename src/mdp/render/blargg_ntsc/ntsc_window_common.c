@@ -60,7 +60,7 @@ const ntsc_ctrl_t ntsc_controls[NTSC_CTRL_COUNT+1] =
 	{"Color Fringing",	"Color " NTSC_MNEMONIC_CHAR "Fringing",	-100, 100, 5},
 	{"Color Bleed",		"Color B" NTSC_MNEMONIC_CHAR "leed",	-100, 100, 5},
 	
-	{NULL, 0, 0, 0}
+	{NULL, NULL, 0, 0, 0}
 };
 
 
