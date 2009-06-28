@@ -102,22 +102,28 @@ static int vdraw_sdl_init(void)
 	// Set up SDL embedding.
 	vdraw_sdl_common_embed(w, h);
 	
+	// Return value.
+	int rval;
+	
 	// Initialize SDL.
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+	rval = SDL_InitSubSystem(SDL_INIT_VIDEO);
+	if (rval < 0)
 	{
 		// Error initializing SDL.
-		vdraw_init_fail("Couldn't initialize the SDL video subsystem.");
-		return 0;
+		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+			"SDL_InitSubSystem(SDL_INIT_VIDEO) failed: 0x%08X", rval);
+		return -1;
 	}
 	
 	// Initialize the SDL backend.
 	vdraw_sdl_screen = SDL_SetVideoMode(w, h, bppOut, VDRAW_SDL_FLAGS | (vdraw_get_fullscreen() ? SDL_FULLSCREEN : 0));
 	if (!vdraw_sdl_screen)
 	{
-		// Error initializing SDL.
-		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
-			"Error creating SDL primary surface: %s", SDL_GetError());
-		exit(1);
+		// Error setting the SDL video mode.
+		const char *sErr = SDL_GetError();
+		LOG_MSG(video, LOG_MSG_LEVEL_ERROR,
+			"SDL_SetVideoMode() failed: %s", sErr);
+		return -2;
 	}
 	
 	// Disable the cursor in fullscreen mode.
