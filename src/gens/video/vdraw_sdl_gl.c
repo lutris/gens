@@ -180,7 +180,7 @@ static int vdraw_sdl_gl_init_opengl(const int w, const int h, const BOOL reinitS
 {
 	if (reinitSDL)
 	{
-		vdraw_sdl_gl_screen = SDL_SetVideoMode(w, h, bppOut, VDRAW_SDL_GL_FLAGS | (vdraw_get_fullscreen() ? SDL_FULLSCREEN : 0));
+		vdraw_sdl_gl_screen = SDL_SetVideoMode(w, h, 0, VDRAW_SDL_GL_FLAGS | (vdraw_get_fullscreen() ? SDL_FULLSCREEN : 0));
 		if (!vdraw_sdl_gl_screen)
 		{
 			// Error initializing SDL.
