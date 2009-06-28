@@ -50,7 +50,7 @@ const char input_player_names[8][4] =
 // Input backends.
 #if defined(GENS_OS_WIN32)
 	#include "input_dinput_t.h"
-#elseif defined(GENS_OS_HAIKU)
+#elif defined(GENS_OS_HAIKU)
 	#include "input_haiku.h"
 #else /* GENS_OS_UNIX */
 	#include "input_sdl.h"
@@ -60,7 +60,7 @@ static const input_backend_t * const input_backends[] =
 {
 	#if defined(GENS_OS_WIN32)
 		&input_backend_dinput,
-	#elseif defined(GENS_OS_HAIKU)
+	#elif defined(GENS_OS_HAIKU)
 		&input_backend_haiku,
 	#else /* !GENS_OS_UNIX */
 		&input_backend_sdl,

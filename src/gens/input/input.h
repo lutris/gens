@@ -149,7 +149,7 @@ typedef enum
 {
 	#if defined(GENS_OS_WIN32)
 		INPUT_BACKEND_DINPUT,
-	#elseif defined(GENS_OS_HAIKU)
+	#elif defined(GENS_OS_HAIKU)
 		INPUT_BACKEND_HAIKU,
 	#else /* !GENS_OS_WIN32 */
 		INPUT_BACKEND_SDL,
