@@ -247,7 +247,7 @@ static int gens_menu_callback_FileMenu(uint16_t menuID, uint16_t state)
 			if (audio_get_gym_playing())
 				gym_play_stop();
 			
-			if (ROM::Recent_ROMs.size() > (menuID - IDM_FILE_ROMHISTORY_1))
+			if (ROM::Recent_ROMs.size() > ((unsigned int)menuID - IDM_FILE_ROMHISTORY_1))
 			{
 				ROM::openROM(ROM::Recent_ROMs.at(menuID - IDM_FILE_ROMHISTORY_1).filename,
 					     ROM::Recent_ROMs.at(menuID - IDM_FILE_ROMHISTORY_1).z_filename);
