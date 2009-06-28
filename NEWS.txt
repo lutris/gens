@@ -127,6 +127,13 @@ Release 7 fixes the following bugs:
 - [Linux] Improved VSync support with the OpenGL backend. Both the MESA and SGI
   swap control methods are now supported.
 
+- The video subsystem now supports fallbacks. For example, on the Linux
+  version, if SDL+OpenGL is selected but OpenGL isn't available, it will
+  simply revert back to SDL instead of crashing. As an added bonus, this
+  allows for Gens/GS to start up properly on Windows NT 4.0, since the
+  default backend on Win32 is DirectDraw 4, but NT4 doesn't support it.
+  Instead of crashing, it will fall back to the GDI backend.
+
 Release 7 has the following low-level code changes:
 
 - The video, audio, and input subsystems have been ported back to C.
