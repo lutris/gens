@@ -348,6 +348,9 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(GtkWidget *container)
 		if (vdraw_cur_backend_id == curBackend)
 			gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(mnuItem), true);
 		
+		// Check if this backend is broken.
+		gtk_widget_set_sensitive(mnuItem, !vdraw_backends_broken[curBackend]);
+		
 		// Connect the signal.
 		g_signal_connect((gpointer)mnuItem, "activate",
 				 G_CALLBACK(gens_gtk_menu_callback),

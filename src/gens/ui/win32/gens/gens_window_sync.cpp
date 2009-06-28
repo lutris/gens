@@ -300,6 +300,10 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 		InsertMenu(mnuBackend, -1, MF_BYPOSITION | MF_STRING,
 			   IDM_GRAPHICS_BACKEND + 1 + curBackend, vdraw_backends[curBackend]->name);
 		
+		// Check if this backend is broken.
+		EnableMenuItem(mnuBackend, IDM_GRAPHICS_BACKEND + 1 + curBackend,
+			       MF_BYCOMMAND | (vdraw_backends_broken[curBackend] ? MF_DISABLED : MF_ENABLED));
+		
 		// Next backend.
 		curBackend++;
 	}
