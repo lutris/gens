@@ -302,7 +302,7 @@ static void Sync_Gens_Window_GraphicsMenu_Backend(HMENU parent, int position)
 		
 		// Check if this backend is broken.
 		EnableMenuItem(mnuBackend, IDM_GRAPHICS_BACKEND + 1 + curBackend,
-			       MF_BYCOMMAND | (vdraw_backends_broken[curBackend] ? MF_DISABLED : MF_ENABLED));
+			       MF_BYCOMMAND | (vdraw_backends_broken[curBackend] ? MF_GRAYED : MF_ENABLED));
 		
 		// Next backend.
 		curBackend++;
