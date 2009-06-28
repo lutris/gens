@@ -112,9 +112,6 @@ extern const vdraw_backend_t *vdraw_cur_backend;
 extern VDRAW_BACKEND vdraw_cur_backend_id;
 extern uint32_t vdraw_cur_backend_flags;
 
-// Called if initialization fails.
-void	vdraw_init_fail(const char* err);
-
 int	vdraw_flip(void);
 void	vdraw_set_bpp(const int new_bpp, const BOOL reset_video);
 void	vdraw_refresh_video(void);

@@ -284,31 +284,6 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 
 
 /**
- * vdraw_init_fail(): Called if initialization fails.
- * @param err Error message.
- */
-void vdraw_init_fail(const char* err)
-{
-	if (!err)
-	{
-		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
-			"vdraw initialization failed: %s", err);
-	}
-	else
-	{
-		LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
-			"vdraw initialization failed.");
-	}
-	
-#ifdef GENS_OS_WIN32
-	TerminateProcess(GetCurrentProcess(), 1); //Modif N
-#endif /* GENS_OS_WIN32 */
-	
-	exit(0);
-}
-
-
-/**
  * vdraw_backend_end(): Shut down the current backend.
  * @return 0 on success; non-zero on error.
  */
