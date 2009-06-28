@@ -24,10 +24,6 @@
 #ifndef GENS_INPUT_HAIKU_KEYS_H
 #define GENS_INPUT_HAIKU_KEYS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Maps key symbols from Haiku to OS-independent key symbols.
 #define GENS_KEY_BACKSPACE	B_BACKSPACE
 #define GENS_KEY_TAB		B_TAB
@@ -194,9 +190,5 @@ extern "C" {
 #define GENS_KMOD_SHIFT		B_SHIFT_KEY
 #define GENS_KMOD_ALT		B_COMMAND_KEY
 #define GENS_KMOD_META		B_OPTION_KEY
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* GENS_INPUT_HAIKU_KEYS_H */

@@ -30,10 +30,6 @@
 #endif
 #include <windows.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // Win32 virtual keycodes reported in WM_KEYDOWN's wParam parameter.
 #define GENS_KEY_BACKSPACE	VK_BACK
 #define GENS_KEY_TAB		VK_TAB
@@ -215,9 +211,5 @@ extern "C" {
 #define GENS_KMOD_SHIFT		(GENS_KMOD_LSHIFT | GENS_KMOD_RSHIFT)
 #define GENS_KMOD_ALT		(GENS_KMOD_LALT | GENS_KMOD_RALT)
 #define GENS_KMOD_META		(GENS_KMOD_LMETA | GENS_KMOD_RMETA)
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* GENS_INPUT_WIN32_KEYS_H */

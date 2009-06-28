@@ -23,10 +23,6 @@
 #ifndef GENS_INPUT_SDL_KEYS_H
 #define GENS_INPUT_SDL_KEYS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <SDL/SDL_keysym.h>
 
 // Maps key symbols from SDL to OS-independent key symbols.
@@ -201,9 +197,5 @@ extern "C" {
 #define GENS_KMOD_SHIFT		KMOD_SHIFT
 #define GENS_KMOD_ALT		KMOD_ALT
 #define GENS_KMOD_META		KMOD_META
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* GENS_INPUT_SDL_KEYS_H */
