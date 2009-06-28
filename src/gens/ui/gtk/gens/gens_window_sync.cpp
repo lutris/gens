@@ -239,13 +239,13 @@ void Sync_Gens_Window_GraphicsMenu(void)
 	switch (bppOut)
 	{
 		case 15:
-			id = IDM_GRAPHICS_SDL_BPP_15;
+			id = IDM_GRAPHICS_BPP_15;
 			break;
 		case 16:
-			id = IDM_GRAPHICS_SDL_BPP_16;
+			id = IDM_GRAPHICS_BPP_16;
 			break;
 		case 32:
-			id = IDM_GRAPHICS_SDL_BPP_32;
+			id = IDM_GRAPHICS_BPP_32;
 			break;
 		default:
 			id = 0;
