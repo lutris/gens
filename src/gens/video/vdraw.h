@@ -62,6 +62,9 @@ typedef enum
 	VDRAW_BACKEND_MAX
 } VDRAW_BACKEND;
 
+// Broken backends array. 0 == works; nonzero == broken.
+extern uint8_t vdraw_backends_broken[VDRAW_BACKEND_MAX];
+
 // VDraw backend flags.
 #define VDRAW_BACKEND_FLAG_STRETCH	((uint32_t)(1 << 0))
 #define VDRAW_BACKEND_FLAG_VSYNC	((uint32_t)(1 << 1))

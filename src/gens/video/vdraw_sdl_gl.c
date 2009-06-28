@@ -140,6 +140,10 @@ static inline int vdraw_sdl_gl_calc_texture_size(int scale)
  */
 int vdraw_sdl_gl_init(void)
 {
+	// Make sure OpenGL is supported by the current system.
+	if (!vdraw_gl_is_supported())
+		return -1;
+	
 	vdraw_gl_init_vsync();
 	
 	// OpenGL width/height.

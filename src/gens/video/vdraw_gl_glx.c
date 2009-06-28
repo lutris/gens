@@ -176,6 +176,35 @@ static void clear_extension_table(void)
 
 
 /**
+ * vdraw_gl_is_supported(): Checks if OpenGL is supported by the current system.
+ * @return 0 if not supported; non-zero if supported.
+ */
+int vdraw_gl_is_supported(void)
+{
+	// Get the X11 display.
+	Display *dpy;
+	char *dpyname = getenv("DISPLAY");
+	dpy = XOpenDisplay(dpyname);
+	if (!dpy)
+	{
+		LOG_MSG(video, LOG_MSG_LEVEL_WARNING,
+			"Could not open X11 display. OpenGL will be disabled.");
+		return 0;
+	}
+	
+	// Query the GLX version.
+	Bool rval = glXQueryVersion(dpy, NULL, NULL);
+	
+	// Close the X11 display.
+	XCloseDisplay(dpy);
+	
+	printf("GLX: %d\n", rval);
+	// If GLX was queried successfully, rval is TRUE; otherwise, it's FALSE.
+	return rval;
+}
+
+
+/**
  * vdraw_gl_init_vsync(): Initialize VSync functionality.
  */
 void vdraw_gl_init_vsync(void)

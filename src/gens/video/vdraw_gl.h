@@ -36,6 +36,9 @@
 extern "C" {
 #endif
 
+// Checks if OpenGL is supported by the current system.
+int vdraw_gl_is_supported(void);
+
 void vdraw_gl_init_vsync(void);
 void vdraw_gl_update_vsync(const int fromInitSDLGL);
 

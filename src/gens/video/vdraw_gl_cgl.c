@@ -29,6 +29,17 @@
 
 
 /**
+ * vdraw_gl_is_supported(): Checks if OpenGL is supported by the current system.
+ * @return 0 if not supported; non-zero if supported.
+ */
+int vdraw_gl_is_supported(void)
+{
+	// OpenGL is always supported on MacOS X.
+	return 1;
+}
+
+
+/**
  * vdraw_gl_init_vsync(): Initialize VSync functionality.
  */
 void vdraw_gl_init_vsync(void)

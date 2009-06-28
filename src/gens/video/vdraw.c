@@ -97,6 +97,9 @@ const vdraw_backend_t* const vdraw_backends[] =
 	NULL
 };
 
+// Broken backends array. 0 == works; nonzero == broken.
+uint8_t vdraw_backends_broken[VDRAW_BACKEND_MAX] = {0};
+
 // Current backend.
 const vdraw_backend_t *vdraw_cur_backend = NULL;
 VDRAW_BACKEND vdraw_cur_backend_id = -1;
@@ -199,6 +202,11 @@ int vdraw_backend_init_subsystem(VDRAW_BACKEND backend)
 		// Invalid backend.
 		return -1;
 	}
+	if (vdraw_backends_broken[backend])
+	{
+		// Backend is broken.
+		return -2;
+	}
 	
 	if (vdraw_backends[backend]->init_subsystem)
 		vdraw_backends[backend]->init_subsystem();
@@ -221,6 +229,35 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 		return -1;
 	}
 	
+	// Initialize the backend.
+	if (vdraw_backends_broken[backend] != 0 ||
+	    vdraw_backends[backend]->init() != 0)
+	{
+		// Error initializing the backend.
+		
+		// Mark this backend as "broken".
+		vdraw_backends_broken[backend] = 1;
+		
+		// Search for a backend that isn't broken.
+		int i;
+		for (i = 0; i < VDRAW_BACKEND_MAX; i++)
+		{
+			if (vdraw_backends_broken[i] == 0)
+			{
+				// Found a non-broken backend. Try using it.
+				return vdraw_backend_init(i);
+			}
+		}
+		
+		if (i == VDRAW_BACKEND_MAX)
+		{
+			// All backends are broken. PANIC!
+			LOG_MSG(video, LOG_MSG_LEVEL_CRITICAL,
+				"Cannot find a working video backend.");
+			exit(1);
+		}
+	}
+	
 	// Set up the variables.
 	vdraw_cur_backend = vdraw_backends[backend];
 	vdraw_cur_backend_id = backend;
@@ -240,10 +277,6 @@ int vdraw_backend_init(VDRAW_BACKEND backend)
 	
 	// Set the backend flags.
 	vdraw_cur_backend_flags		= vdraw_cur_backend->flags;
-	
-	// Initialize the backend.
-	if (vdraw_cur_backend->init)
-		return vdraw_cur_backend->init();
 	
 	// Initialized successfully.
 	return 0;

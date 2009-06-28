@@ -1080,7 +1080,17 @@ void Options::setBackend(VDRAW_BACKEND newBackend)
 	// Print a notice about the selected backend.
 	if (is_gens_running())
 	{
-		vdraw_text_printf(1500, "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
+		if (vdraw_cur_backend_id == newBackend)
+		{
+			vdraw_text_printf(1500, "Selected Video Backend: %s", vdraw_backends[newBackend]->name);
+		}
+		else
+		{
+			// New backend is broken.
+			vdraw_text_printf(1500, "Could not initialize %s. Reverted to %s.",
+					  vdraw_backends[newBackend]->name,
+					  vdraw_cur_backend->name);
+		}
 	}
 }
 
