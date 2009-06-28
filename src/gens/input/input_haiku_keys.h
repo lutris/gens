@@ -24,6 +24,8 @@
 #ifndef GENS_INPUT_HAIKU_KEYS_H
 #define GENS_INPUT_HAIKU_KEYS_H
 
+#include <InterfaceKit.h>
+
 // Maps key symbols from Haiku to OS-independent key symbols.
 #define GENS_KEY_BACKSPACE	B_BACKSPACE
 #define GENS_KEY_TAB		B_TAB
